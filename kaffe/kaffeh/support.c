@@ -661,6 +661,10 @@ jmalloc(size_t sz)
 {
   	void	*p;
 
+	if (!sz) {
+		++sz; /* never malloc(0), it may return NULL */
+	}
+
 	if ((p = malloc(sz)) == NULL) {
 		fprintf(stderr, "Out of memory.\n");
 		exit(1);

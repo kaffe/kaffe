@@ -1,3 +1,8 @@
+Mon Feb  8 18:02:43 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffeh/support.c (jmalloc): never malloc(0), it may return
+	NULL
+
 Mon Feb  8 11:54:15 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* developers/, developers/README: new files
