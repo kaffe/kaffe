@@ -26,13 +26,14 @@ What's New in Kaffe 1.1.5
 * DNSJava, Jessie, JZLib and gjdoc merged in.
 * Added some internationalization support to kaffe's
   executable (fr, zh_TW).
-* Compiler warning fixes.
+* Many compiler warning fixes.
 * Tested in Ch environment.
 * Fixes for NetBSD, OpenBSD, FreeBSD, Darwin.
-* New ports to FreeBSD on x86-64 and Darwin on x86.
+* New ports to FreeBSD on x86-64, Darwin on x86 and 
+  HP-UX on ia64.
 * Some successes: Resin2, JSDL, SwingWT, gcjwebplugin, 
   ME4SE, MicroEmulator, VNCj, LwVCL, DirectFB kawt,
-  Eclipse 3.0.1
+  Eclipse 3.0.1, 3.1M6.
 
 What's New in Kaffe 1.1.3
 ------------------------------------------------------

@@ -447,6 +447,8 @@ EXTRA_DIST = \
 	arm/trampolines.S \
 	ia64/atomic.h \
 	ia64/common.h \
+	ia64/hpux/config.frag \
+	ia64/hpux/md.h \
 	ia64/linux/config.frag \
 	ia64/linux/md.c \
 	ia64/linux/md.h \
@@ -834,7 +836,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/alpha $(distdir)/alpha/linux $(distdir)/alpha/netbsd1 $(distdir)/alpha/osf $(distdir)/arm $(distdir)/arm/linux $(distdir)/arm/netbsd1 $(distdir)/arm/riscos $(distdir)/generic $(distdir)/i386 $(distdir)/i386/beos $(distdir)/i386/bsdi $(distdir)/i386/cygwin32 $(distdir)/i386/darwin $(distdir)/i386/dgux $(distdir)/i386/freebsd2 $(distdir)/i386/gnu $(distdir)/i386/linux $(distdir)/i386/netbsd1 $(distdir)/i386/nextstep3 $(distdir)/i386/openbsd2 $(distdir)/i386/oskit $(distdir)/i386/qnx $(distdir)/i386/sco3.2v5 $(distdir)/i386/solaris2 $(distdir)/i386/univel_svr4 $(distdir)/i386/win32 $(distdir)/ia64 $(distdir)/ia64/linux $(distdir)/m68k $(distdir)/m68k/a-ux $(distdir)/m68k/amigaos $(distdir)/m68k/linux $(distdir)/m68k/netbsd1 $(distdir)/m68k/nextstep3 $(distdir)/m68k/openbsd2 $(distdir)/m68k/sunos4 $(distdir)/mips $(distdir)/mips/irix5 $(distdir)/mips/linux $(distdir)/mips/netbsd1 $(distdir)/mips/ultrix4 $(distdir)/parisc $(distdir)/parisc/hpux $(distdir)/parisc/linux $(distdir)/powerpc $(distdir)/powerpc/aix $(distdir)/powerpc/darwin $(distdir)/powerpc/linux $(distdir)/powerpc/machten $(distdir)/powerpc/netbsd1 $(distdir)/s390 $(distdir)/s390/linux $(distdir)/sh $(distdir)/sh/linux $(distdir)/sparc $(distdir)/sparc/bsdi3 $(distdir)/sparc/linux $(distdir)/sparc/netbsd1 $(distdir)/sparc/nextstep3 $(distdir)/sparc/openbsd2 $(distdir)/sparc/solaris2 $(distdir)/sparc/sunos4 $(distdir)/sparc/uxpds $(distdir)/x86_64 $(distdir)/x86_64/linux
+	$(mkdir_p) $(distdir)/alpha $(distdir)/alpha/linux $(distdir)/alpha/netbsd1 $(distdir)/alpha/osf $(distdir)/arm $(distdir)/arm/linux $(distdir)/arm/netbsd1 $(distdir)/arm/riscos $(distdir)/generic $(distdir)/i386 $(distdir)/i386/beos $(distdir)/i386/bsdi $(distdir)/i386/cygwin32 $(distdir)/i386/darwin $(distdir)/i386/dgux $(distdir)/i386/freebsd2 $(distdir)/i386/gnu $(distdir)/i386/linux $(distdir)/i386/netbsd1 $(distdir)/i386/nextstep3 $(distdir)/i386/openbsd2 $(distdir)/i386/oskit $(distdir)/i386/qnx $(distdir)/i386/sco3.2v5 $(distdir)/i386/solaris2 $(distdir)/i386/univel_svr4 $(distdir)/i386/win32 $(distdir)/ia64 $(distdir)/ia64/hpux $(distdir)/ia64/linux $(distdir)/m68k $(distdir)/m68k/a-ux $(distdir)/m68k/amigaos $(distdir)/m68k/linux $(distdir)/m68k/netbsd1 $(distdir)/m68k/nextstep3 $(distdir)/m68k/openbsd2 $(distdir)/m68k/sunos4 $(distdir)/mips $(distdir)/mips/irix5 $(distdir)/mips/linux $(distdir)/mips/netbsd1 $(distdir)/mips/ultrix4 $(distdir)/parisc $(distdir)/parisc/hpux $(distdir)/parisc/linux $(distdir)/powerpc $(distdir)/powerpc/aix $(distdir)/powerpc/darwin $(distdir)/powerpc/linux $(distdir)/powerpc/machten $(distdir)/powerpc/netbsd1 $(distdir)/s390 $(distdir)/s390/linux $(distdir)/sh $(distdir)/sh/linux $(distdir)/sparc $(distdir)/sparc/bsdi3 $(distdir)/sparc/linux $(distdir)/sparc/netbsd1 $(distdir)/sparc/nextstep3 $(distdir)/sparc/openbsd2 $(distdir)/sparc/solaris2 $(distdir)/sparc/sunos4 $(distdir)/sparc/uxpds $(distdir)/x86_64 $(distdir)/x86_64/linux
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

@@ -106,6 +106,8 @@ EXTRA_DIST = \
 	arm/trampolines.S \
 	ia64/atomic.h \
 	ia64/common.h \
+	ia64/hpux/config.frag \
+	ia64/hpux/md.h \
 	ia64/linux/config.frag \
 	ia64/linux/md.c \
 	ia64/linux/md.h \

@@ -1,5 +1,21 @@
 2005-04-03  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/ia64/hpux/config.frag,
+	config/ia64/hpux/md.h: New files for ia64-hpux port. 
+	It was a work of minutes to copy the files around and get
+	Kaffe to build on the ia64-hpux box. 
+
+	It works as well as alpha-linux-intrp-pthreads, passing 
+	11 regression tests. I assume there is some 64 bit issue 
+	plaguing both.
+
+	* config/Makefile.am:
+	Added new files.
+
+	* README, WHATSNEW: Added the new port.
+
+2005-04-03  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/ia64/sysdepCallMethod.h:
 	Added guards.
 
