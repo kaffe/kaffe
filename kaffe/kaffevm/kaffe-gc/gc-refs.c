@@ -154,14 +154,22 @@ liveThreadWalker(jthread_t tid, void *private)
 {
   Collector *c = (Collector *)private;
   threadData *thread_data = KTHREAD(get_data)(tid);
-  Hjava_lang_VMThread *thread = (Hjava_lang_VMThread *)thread_data->jlThread;
 
-  KGC_markObject(c, NULL, unhand(thread)->thread);
-  KGC_markObject(c, NULL, thread);
-  
-  if (thread_data->exceptObj != NULL)
+  /* if the gc is invoked while a new thread is being
+   * initialized, we should not make any assumptions
+   * about what is stored in its thread_data 
+   */
+  if (THREAD_DATA_INITIALIZED(thread_data))
     {
-      KGC_markObject(c, NULL, thread_data->exceptObj);
+      Hjava_lang_VMThread *thread = (Hjava_lang_VMThread *)thread_data->jlThread;
+
+      KGC_markObject(c, NULL, unhand(thread)->thread);
+      KGC_markObject(c, NULL, thread);
+  
+      if (thread_data->exceptObj != NULL)
+        {
+          KGC_markObject(c, NULL, thread_data->exceptObj);
+        }
     }
 
   TwalkThread(c, tid);

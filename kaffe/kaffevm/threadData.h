@@ -38,4 +38,6 @@ typedef struct _threadData {
 	int		needOnStack;
 } threadData;
 
+#define THREAD_DATA_INITIALIZED(td) ((td)->jniEnv != NULL)
+
 #endif

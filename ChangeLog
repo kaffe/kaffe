@@ -1,3 +1,12 @@
+2004-12-21  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/threadData.h (THREAD_DATA_INITIALIZED): new macro
+
+	* kaffe/kaffevm/kaffe-gc/gc-refs.c (liveThreadWalker): properly handle
+	partially initialized threads
+
+	Reported by: Alexander Boettcher <ab764283@os.inf.tu-dresden.de>
+	
 2004-12-21  Adam Heath  <doogie@brainfood.com>
 
 	* AUTHORS:
