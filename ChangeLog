@@ -1,3 +1,11 @@
+Thu Mar 25 11:08:06 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/lang/Thread.java: make checkAccess() final
+	* libraries/javalib/java/io/InputStreamReader.java, PrintStream.java,
+	Reader.java, Writer.java: check for null in constructors per JDK 1.2
+	* libraries/javalib/java/awt/event/KeyEvent.java: CHAR_UNDEFINED
+	has been changed from 0x0 to 0xffff in JDK 1.2
+
 Thu Mar 25 08:06:47 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* developers/gdbinit (pmeth): print ncode data too
