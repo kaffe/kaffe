@@ -51,7 +51,6 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Vector;
 
-
 public class ObjectInputStream extends InputStream
   implements ObjectInput, ObjectStreamConstants
 {
@@ -300,6 +299,9 @@ public class ObjectInputStream extends InputStream
 	      Object obj = newObject(clazz, osc.firstNonSerializableParent);
 	      
 	      int handle = assignNewHandle(obj);
+	      Object prevObject = this.currentObject;
+	      ObjectStreamClass prevObjectStreamClass = this.currentObjectStreamClass;
+	      
 	      this.currentObject = obj;
 	      ObjectStreamClass[] hierarchy =
 		inputGetObjectStreamClasses(clazz);
@@ -347,8 +349,8 @@ public class ObjectInputStream extends InputStream
 		    }
 		}
 
-	      this.currentObject = null;
-	      this.currentObjectStreamClass = null;
+	      this.currentObject = prevObject;
+	      this.currentObjectStreamClass = prevObjectStreamClass;
 	      ret_val = processResolution(osc, obj, handle);
 		  
 	      break;
