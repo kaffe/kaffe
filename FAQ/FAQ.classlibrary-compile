@@ -33,10 +33,18 @@ be used. The URL for jikes is:
 
   http://www10.software.ibm.com/developerworks/opensource/jikes/
 
+Please note that jikes 1.14 and 1.15 have bugs that result in a
+miscompiled Klasses.jar file. Use jikes 1.13 for now.
+
 The included compiler, kjc, also works. kjc is part of the Kopi project:
 
   http://www.dms.at/kopi/kjc.html
 
-No known version of Sun's javac compiler (up through JDK 1.2) will compile
-Kaffe's classes, due to bugs that Sun has yet to fix.
+Sun's javac compiler from JDK 1.3 and JDK 1.4 works as well. If you
+are using javac from JDK 1.4, please make sure that you specify the
+-target 1.1 option. Failing to do so will result in a lot of annoying
+warning messages when you install and use the Klasses.jar file.
+
+No known older version of Sun's javac compiler (up through JDK 1.2)
+will compile Kaffe's classes, due to bugs that Sun has yet to fix.
 
