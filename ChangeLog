@@ -1,3 +1,10 @@
+Fri Sep 10 14:06:24 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/kaffe/applet/AppletViewer.java,
+	libraries/javalib/kaffe/applet/AppletTag.java: another complete
+	restructuring and rewrite to increase reusability for embedding
+	of applets.
+
 1999-09-10  Edouard G. Parmelan <Edouard.Parmelan@quadratec.fr>
 
 	* config/{arm,i386,m68k,mips,sparc}/jit.h config/m68k/openbsd2/jit.h
