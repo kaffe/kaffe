@@ -250,7 +250,6 @@ gjdoc_ressources = \
 	java.lang-classes-1.5.txt
 
 EXTRA_DIST = \
-	$(toolslib_DATA) \
 	$(gjdoc_jar_SRCS) \
 	$(gjdoc_ressources)
 
