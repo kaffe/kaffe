@@ -1,3 +1,37 @@
+Wed Jan 27 18:38:25 1999  Patrick A Tullmann  <tullmann@cs.utah.edu>
+
+       * kaffe/kaffevm/systems/unix-jthreads/signal.c,
+       kaffe/kaffevm/systems/unix-jthreads/jsignal.h,
+       kaffe/kaffevm/systems/unix-jthreads/jthread.h,
+       kaffe/kaffevm/systems/unix-jthreads/jthread.c: Rewrite the signal
+       and software interrupt code.  Clean out old hacks like
+       alarmblocked and withchild.  Separate restoring a signal handler
+       from unblocking signals and from registering initial signal
+       handler.  Use new functions for ignoring signals, clearing
+       signals, and registering synchronous vs. asynchronous vs. terminal
+       signal handlers.  Use sigsetjmp/siglongjmp in place of
+       setjmp/longjmp.
+
+       * kaffe/kaffevm/systems/unix-jthreads/jthread.c: Also, add a
+       missing "wouldlosewakeup = 1" before waitpid().  Avoids deadlock
+       due to signal arriving after waitpid() check but before process
+       blocks in select().
+       Also fixed problem where we block on sigPipe after select() by
+       counting pipes written into the pipe.
+       
+       * FAQ/FAQ.jsignal: A short file describing how signals are used in 
+       Kaffe.
+       
+       * kaffe/kaffevm/exception.c, kaffe/kaffevm/exception.h,
+       kaffe/kaffevm/intrp/machine.c, kaffe/kaffevm/jni.c: use
+       siglongjmp() instead of longjmp(), use sigsetjmp() instead of
+       setjmp(), and use sigjmp_buf instead of jmp_buf.
+       
+       * kaffe/kaffevm/locks.c: Clear the lock holder field when waiting
+       on a cond.
+       
+       * kaffe/kaffevm/debug.h: Add 1999 to copyright year, add a comment.
+       
 Wed Jan 27 21:44:13 1999  Alan L. Batongbacal <alanlb@access.rrinc.com>
 
 	* config/i386/beos/*, kaffe/kaffevm/systems/beos-native/,
