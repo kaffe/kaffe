@@ -34,10 +34,14 @@ static {
 	new SimpleTimeZone(-10*60*60*1000, "HST");
 	new SimpleTimeZone(-9*60*60*1000, "AST");
 	new SimpleTimeZone(-8*60*60*1000, "PST", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
+	new SimpleTimeZone(-8*60*60*1000, "PDT", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
 	new SimpleTimeZone(-7*60*60*1000, "PNT");
 	new SimpleTimeZone(-7*60*60*1000, "MST", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
-	new SimpleTimeZone(-6*60*60*1000, "CST");
-	new SimpleTimeZone(-5*60*60*1000, "EST");
+	new SimpleTimeZone(-7*60*60*1000, "MDT", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
+	new SimpleTimeZone(-6*60*60*1000, "CST", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
+	new SimpleTimeZone(-6*60*60*1000, "CDT", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
+	new SimpleTimeZone(-5*60*60*1000, "EST", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
+	new SimpleTimeZone(-5*60*60*1000, "EDT", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
 	new SimpleTimeZone(-5*60*60*1000, "IET");
 	new SimpleTimeZone(-4*60*60*1000, "PRT");
 	new SimpleTimeZone(-3500*60*60, "CNT");
