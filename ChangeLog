@@ -1,3 +1,9 @@
+Thu Apr 22 09:34:37 PDT 1999  Pavel Roskin <pavel_roskin@geocities.com>
+
+	* libraries/javalib/java/awt/widgets/RowCanvas.java,
+	libraries/javalib/java/awt/CardLayout.java: Fixes to avoid
+	NullPointerExceptions, prompted by running ICQJava
+
 1999-04-22  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/javalib/java/math/BigInteger.java: Make prime
