@@ -571,10 +571,10 @@ statClass(Hjava_lang_Class *clazz, int *total)
 	 */
 	misc += SIZE_IFNONZERO(clazz);		/* myself */
 	if (!CLASS_IS_PRIMITIVE(clazz)) {
-		/* For primitives, dtable is -1 and methods is the
+		/* For primitives, vtable is -1 and methods is the
 		 * class of the corresponding array
 		 */
-		misc += SIZE_IFNONZERO(clazz->dtable);
+		misc += SIZE_IFNONZERO(clazz->vtable);
 		misc += SIZE_IFNONZERO(CLASS_CONSTANTS(clazz)->data);
 		misc += SIZE_IFNONZERO(CLASS_FIELDS(clazz));
 		misc += SIZE_IFNONZERO(CLASS_STATICDATA(clazz));
