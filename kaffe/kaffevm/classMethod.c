@@ -1813,9 +1813,12 @@ lookupArray(Hjava_lang_Class* c)
 	}
 	centry->class = arr_class;
 	/*
-	 * This is what Sun's JDK returns for A[].class.getModifiers();
+	 * See JDC Bug: 4208179
 	 */
-	arr_flags = ACC_ABSTRACT | ACC_FINAL | ACC_PUBLIC;
+	arr_flags = ACC_ABSTRACT | ACC_FINAL;
+	if (c->accflags & ACC_PUBLIC) {
+		arr_flags |= ACC_PUBLIC;
+	}
 	internalSetupClass(arr_class, arr_name, arr_flags, 0, c->loader);
 	arr_class->superclass = ObjectClass;
 	buildDispatchTable(arr_class);
