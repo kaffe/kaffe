@@ -265,15 +265,6 @@ endJniInclude(void)
 }
 
 
-/*
- * Add a class.
- */
-void
-addClass(u2 this, u2 super, u2 access, constants* cpool)
-{
-}
-
-
 bool
 addSourceFile(Hjava_lang_Class* c, int idx, errorInfo *einfo)
 {
@@ -802,16 +793,6 @@ setupClass(Hjava_lang_Class* this, u2 thisidx, u2 super, u2 access_flags,
 void
 addInterfaces(Hjava_lang_Class* this, u2 icount, Hjava_lang_Class** ifaces)
 {
-}
-
-
-/*
- * Read and process a method.
- */
-void
-readMethod(classFile* fp, Hjava_lang_Class* this, constants* cpool)
-{
-	assert(false);
 }
 
 /*

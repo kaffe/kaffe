@@ -1,5 +1,13 @@
 2004-03-29  Adam Heath <doogie@debian.org>
 
+	* kaffe/kafeh/kaffeh-support.h:
+	Added missing includes and prototypes.
+
+	* kaffe/kaffeh/support.c:
+	Removed unused methods.
+
+2004-03-29  Adam Heath <doogie@debian.org>
+
 	* kaffe/kaffevm/inflate.c
 	kaffe/kaffevm/inflate.h:
 	Fixed all sign-compare-1 warnings.
