@@ -1,0 +1,42 @@
+How to statically link a native library into Kaffe
+Pat Tullmann <tullmann@cs.utah.edu>
+
+These are the steps I  went through to statically link a library
+I use into Kaffe.  (I use the name 'libmynative' as the name of
+the library in a couple places.)
+
+1) Build a static library with libtool to generate a .la file.
+   Perhaps you are enlightened enough (or a wizard) and already build
+   your libraries with libtool.  If not:
+
+    a) Compile all of libraries .c files with libtool.  Libtool
+       generates .lo files. Here's a makefile rule:
+
+	    libtool --mode=compile $(CC) -c $< -o $@
+
+    b) Link the library with libtool to get a .la version.  Here's
+       another makefile rule.  $(L_OBJS) should be the .lo's generated 
+       by the libtool compile:
+
+	    libtool --mode=link $(CC) -rpath `something` \
+		-static -export-dynamic $(L_OBJS) libmynative.la	
+
+2) Add the library to the list of libraries to link into Kaffe by
+   putting the library in the JAVA_LIBS environment variable when
+   *configuring* Kaffe.
+
+	$ JAVA_LIBS=libmynative.la ../kaffe/configure --enable-debug
+
+3) Put the .la file where it can be found at run time.  (Right next to
+   Kaffe's .la files will work...).
+
+	$ cp libmynative.la /lib/
+
+4) Invoke System.loadLibrary() in your Java code.  This will set up
+   the bindings to the native methods in your library.  The libtool
+   code in Kaffe will check the .la file, too.
+
+	System.loadLibrary("mynative");
+
+5) Use your native methods!
+
