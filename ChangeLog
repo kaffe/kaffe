@@ -1,3 +1,9 @@
+Thu Mar 18 11:29:12 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* test/regression/HelloWorldApp.class.save, test/awt/Unico/Unico.jar,
+	test/awt/Unico/unico.class, libraries/javalib/Klasses.jar,
+	libraries/javalib/pizza.jar: set binary attribute
+
 Wed Mar 17 22:50:33 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffeh/readClassConfig.h, kaffe/kaffevm/baseClasses.c,
