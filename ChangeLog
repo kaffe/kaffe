@@ -2,6 +2,20 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-14  Mark Wielaard  <mark@klomp.org>
+
+        * java/net/URLClassLoader.java (findClass): Throw
+        ClassNotFoundExceptions including urls, plus parent using toString().
+        (thisString): New field.
+        (toString): New method.
+
+        * java/lang/ClassLoader (defaultGetSystemClassLoader): Only install
+        ExtensionClassLoader when there are actual extension URLs.
+
+2005-02-16  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-14  Tom Tromey  <tromey@redhat.com>
 
         * java/net/URLClassLoader.java (URLLoader(URLClassLoader, URL,
