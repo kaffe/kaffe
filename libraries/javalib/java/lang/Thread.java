@@ -10,6 +10,8 @@
 
 package java.lang;
 
+import java.util.Hashtable;
+import java.util.Enumeration;
 import kaffe.util.Deprecated;
 
 public class Thread implements Runnable {
@@ -32,6 +34,7 @@ public class Thread implements Runnable {
   private kaffe.util.Ptr exceptObj;
   private kaffe.util.Ptr jnireferences;
   private boolean dying;
+  private Hashtable threadLocals;
 
   public native int countStackFrames();
   public static native Thread currentThread();
@@ -73,8 +76,10 @@ public class Thread implements Runnable {
 
   public Thread(ThreadGroup group, Runnable target, String name)
   {
+    final Thread parent = Thread.currentThread();
+
     if (group == null) {
-      this.group = Thread.currentThread().getThreadGroup();
+      this.group = parent.getThreadGroup();
     }
     else {
       this.group = group;
@@ -86,7 +91,20 @@ public class Thread implements Runnable {
     this.target = target;
     this.interrupting = false;
 
-    int tprio = Thread.currentThread().getPriority();
+    /*
+     * Inherit all inheritable thread-local variables from parent to child
+     */
+    if (parent.threadLocals != null) {
+      for (Enumeration e = parent.threadLocals.keys(); e.hasMoreElements(); ) {
+	Object key = e.nextElement();
+	if (key instanceof InheritableThreadLocal) {
+	  InheritableThreadLocal i = (InheritableThreadLocal) key;
+	  i.set(this, i.childValue(i.get()));
+	}
+      }
+    }
+
+    int tprio = parent.getPriority();
     int gprio = this.group.getMaxPriority();
     if (tprio < gprio) {
       setPriority0(tprio);
@@ -95,7 +113,7 @@ public class Thread implements Runnable {
       setPriority0(gprio);
     }
 
-    setDaemon(Thread.currentThread().isDaemon());
+    setDaemon(parent.isDaemon());
   }
 
   private static String generateName()
@@ -282,6 +300,17 @@ public class Thread implements Runnable {
   public String toString()
   {
     return getName();
+  }
+
+  /*
+   * This method is used by java.lang.ThreadLocal. We don't
+   * allocate the hashtable with each thread until we have to.
+   */
+  Hashtable getThreadLocals() {
+    if (threadLocals == null) {
+      threadLocals = new Hashtable();
+    }
+    return threadLocals;
   }
 
   private static native void sleep0(long millis);
