@@ -821,14 +821,11 @@ ObjectFields.class: $(srcdir)/ObjectFields.java
 MethodOptimizations.class: $(srcdir)/MethodOptimizations.java
 	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/MethodOptimizations.java
 
-NativeMethodCall.class: java/lang/System.class $(srcdir)/NativeMethodCall.java
-	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/NativeMethodCall.java
+NativeMethodCall.class java/lang/System.class: $(srcdir)/NativeMethodCall.java  $(srcdir)/System.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d .  $(srcdir)/System.java $(srcdir)/NativeMethodCall.java
 
 Exceptions.class: $(srcdir)/Exceptions.java
 	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/Exceptions.java
-
-java/lang/System.class: $(srcdir)/System.java
-	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $(srcdir)/System.java
 
 jit_stub.o: java/lang/System.class $(JAVA_CLASSES)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
