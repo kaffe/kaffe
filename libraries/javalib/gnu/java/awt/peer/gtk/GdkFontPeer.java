@@ -95,31 +95,31 @@ public class GdkFontPeer extends ClasspathFontPeer
    * triplicate.
    */
 
-  private String buildString(CharacterIterator i) {
-    String s = new String ();
-    for(char c = i.first(); c != CharacterIterator.DONE; c = i.next()) 
-      s += c;
-    return s;
+  private String buildString(CharacterIterator iter)
+  {
+    StringBuffer sb = new StringBuffer();
+    for(char c = iter.first(); c != CharacterIterator.DONE; c = iter.next()) 
+      sb.append(c);
+    return sb.toString();
   }
 
-  private String buildString(CharacterIterator iter, int begin, int limit) {
-    String s = new String ();
+  private String buildString(CharacterIterator iter, int begin, int limit)
+  {
+    StringBuffer sb = new StringBuffer();
     int i = 0;
     for(char c = iter.first(); c != CharacterIterator.DONE; c = iter.next(), i++) 
       {
         if (begin <= i)
-          s += c;
+          sb.append(c);
         if (limit <= i)
           break;
       }
-    return s;
+    return sb.toString();
   }
   
-  private String buildString(char[] chars, int begin, int limit) {
-    String s = new String ();
-    for(int i = begin; i <= limit; i++)
-      s += chars[i];
-    return s;
+  private String buildString(char[] chars, int begin, int limit)
+  {
+    return new String(chars, begin, limit - begin);
   }
 
   /* Public API */

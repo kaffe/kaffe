@@ -1,5 +1,15 @@
 2004-11-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/java/awt/peer/gtk/GdkFontPeer.java:
+        Resynced with GNU Classpath.
+
+	2004-11-16  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/awt/peer/gtk/GdkFontPeer.java
+        (buildString): Optimise String building.
+
+2004-11-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/beans/BeanInfoEmbryo.java:
         Resynced with GNU Classpath.
 
