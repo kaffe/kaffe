@@ -93,6 +93,28 @@ klseek(int fd, off_t off, int whence, off_t *out)
 	return (*out == -1) ? errno : 0;
 }
 
+/* With Tru64, stat and fstat() are silly macros, convert them to functions.  */
+#if defined(stat)
+static int
+kstat (const char *file_name, struct stat *buf)
+{
+    return stat (file_name, buf);
+}
+#else
+#define kstat	stat
+#endif
+
+#if defined(fstat)
+static int
+kfstat (int fd, struct stat *buf)
+{
+    return fstat (fd, buf);
+}
+#else
+#define kfstat	fstat
+#endif
+
+
 /*
  * We use a very simple 'fake' threads subsystem
  */
@@ -104,8 +126,8 @@ SystemCallInterface Kaffe_SystemCallInterface =
         kwrite, 
         klseek,
         close,
-        fstat,
-        stat,
+        kfstat,
+        kstat,
 
         NULL,		/* mkdir */
         NULL,		/* rmdir */
