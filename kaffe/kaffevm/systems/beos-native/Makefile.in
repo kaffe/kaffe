@@ -240,7 +240,7 @@ libkthread_la_LDFLAGS = $(KVMLIBFLAGS)
 libkthread_la_SOURCES = signal.c bjthread.c syscalls.c
 EXTRA_DIST = Makefile.frag jsignal.h jthread.h lock-impl.h thread-impl.h
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(srcdir) -I../.. -I$(srcdir)/../.. \
 	-I$(top_builddir)/config -I$(top_srcdir)/config \
 	-I$(top_builddir)/include -I$(top_srcdir)/include

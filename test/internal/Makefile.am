@@ -28,7 +28,7 @@ nodist_GEN_SRCS = \
 $(nodist_GEN_SRCS):
 	$(SHELL) $(REGEN_FORWARD) $(top_srcdir)/kaffe/kaffe/$@ $@
 
-INCLUDES = -I$(top_srcdir)/kaffe \
+AM_CPPFLAGS = -I$(top_srcdir)/kaffe \
 	-I$(top_builddir)/kaffe/kaffe \
 	$(ENGINE_INCLUDES) \
 	-I../../kaffe/kaffevm \

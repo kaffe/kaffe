@@ -234,7 +234,7 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
-INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -DKAFFEH
+AM_CPPFLAGS = -I../kaffevm -I$(srcdir)/../kaffevm -DKAFFEH
 
 bin_PROGRAMS = kaffeh
 

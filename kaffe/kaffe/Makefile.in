@@ -239,7 +239,7 @@ jrebin_PROGRAMS = kaffe-bin
 
 @NEED_LIBXPROF_TRUE@libxprof = ../xprof/libkaffexprof.la
 
-INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
+AM_CPPFLAGS = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
 	-I$(top_srcdir)/kaffe/xprof
 
 

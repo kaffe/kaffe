@@ -238,7 +238,7 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
-INCLUDES = -I$(top_builddir) -I$(top_srcdir)
+AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir)
 noinst_LTLIBRARIES = libreplace.la
 libreplace_la_SOURCES = getifaddrs.c
 

@@ -14,7 +14,7 @@ else
 libxprof = #
 endif
 
-INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
+AM_CPPFLAGS = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
 	-I$(top_srcdir)/kaffe/xprof
 
 kaffe_bin_SOURCES = main.c version.c version.h

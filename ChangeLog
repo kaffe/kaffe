@@ -1,5 +1,10 @@
 2003-05-22 Dalibor Topic <robilad@yahoo.com>
 
+	* Makefile.am:
+	(EXTRA_DIST) Added THIRDPARTY.
+	
+2003-05-22 Dalibor Topic <robilad@yahoo.com>
+
 	Regenerated *.in files using automake 1.7.5 and autoconf 2.57.
 
 	* test/regression/Makefile.am:

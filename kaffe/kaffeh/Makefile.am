@@ -6,7 +6,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -DKAFFEH
+AM_CPPFLAGS = -I../kaffevm -I$(srcdir)/../kaffevm -DKAFFEH
 
 bin_PROGRAMS = kaffeh
 

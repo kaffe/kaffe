@@ -247,7 +247,7 @@ nodist_GEN_SRCS = \
 	version.c
 
 
-INCLUDES = -I$(top_srcdir)/kaffe \
+AM_CPPFLAGS = -I$(top_srcdir)/kaffe \
 	-I$(top_builddir)/kaffe/kaffe \
 	$(ENGINE_INCLUDES) \
 	-I../../kaffe/kaffevm \

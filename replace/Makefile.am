@@ -10,7 +10,7 @@
 # Contributed by the Flux Research Group, Department of Computer Science,
 # University of Utah, http://www.cs.utah.edu/flux/
 
-INCLUDES = -I$(top_builddir) -I$(top_srcdir)
+AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir)
 noinst_LTLIBRARIES = libreplace.la
 libreplace_la_SOURCES = getifaddrs.c
 #libreplace_la_LIBADD = @LTLIBOBJS@

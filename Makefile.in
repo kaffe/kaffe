@@ -245,6 +245,7 @@ EXTRA_DIST = \
 	ChangeLog.2 \
 	ChangeLog.3 \
 	ChangeLog.4 \
+	THIRDPARTY \
 	WHATSNEW \
 	RELEASE-NOTES \
 	license.terms \
