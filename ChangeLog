@@ -1,5 +1,10 @@
 2004-12-27  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* test/regression/ProhibitedClass.java: Changed the output to be less
+	sensitive to the line number fluctuations.
+
+2004-12-27  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/soft.c
 	(instanceof_interface): Fixed instanceof implementation. It should
 	work as expected now (tested against Ant). CSTATE_PREPARED is

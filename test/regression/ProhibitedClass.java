@@ -18,14 +18,17 @@ class ProhibitedClass
 
 	is = ClassLoader.getSystemResourceAsStream("java/lang/Object.class");
 	len = is.read(bc);
-	pc.defineClass("java.lang.Object", bc, 0, len);
+	try {
+	  pc.defineClass("java.lang.Object", bc, 0, len);
+	} catch (SecurityException e) {
+	  if (e.getMessage().startsWith("Prohibited package"))
+		  System.out.println("Success.");
+	  else
+		  e.printStackTrace();
+	}
     }
 }
 
 /* Expected Output:
-java.lang.SecurityException: Prohibited package: java/lang/Object
-   at java.lang.VMClassLoader.defineClass (VMClassLoader.java)
-   at java.lang.ClassLoader.defineClass (ClassLoader.java:473)
-   at java.lang.ClassLoader.defineClass (ClassLoader.java:438)
-   at ProhibitedClass.main (ProhibitedClass.java:21)
+Success.
 */
