@@ -65,16 +65,22 @@ final public int capacity() {
 }
 
 public synchronized Object clone () {
-	Vector v = new Vector( elementData.length, capacityIncrement);
-	
-	System.arraycopy( elementData, 0, v.elementData, 0, elementCount);
-	v.elementCount = elementCount;
+        Vector v;
 
-	return v;
+        // we must invoke super.clone() to ensure that subclasses
+        // such as Stack are cloned properly.
+        try {
+                v = (Vector)super.clone();
+                v.elementData = (Object[]) elementData.clone();
+
+                return v;
+        }
+        catch (CloneNotSupportedException _) {
+                return null;
+        }
 }
 
-final public boolean contains(Object elem)
-	{
+final public boolean contains(Object elem) {
 	return (indexOf(elem) != -1);
 }
 
