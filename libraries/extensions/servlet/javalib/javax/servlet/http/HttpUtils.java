@@ -32,7 +32,7 @@ public static Hashtable parseQueryString(String s) {
 		if (send == -1) {
 			send = s.length();
 		}
-		add(h, s.substring(spos, sep-1), s.substring(sep+1, send));
+		add(h, s.substring(spos, sep), s.substring(sep+1, send));
 		spos = send+1;
 	}
 	return (h);
