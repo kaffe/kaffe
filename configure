@@ -7294,7 +7294,7 @@ Kaffe_TRANSF=`echo Kaffe | sed "s/${EXEEXT}$//" | sed ${program_transform_name}`
 
 
 
-CPPFLAGS="$CPPFLAGS -DKVER='\"\$(KVER)\"' -I\$(top_srcdir)/config -I\$(top_srcdir)/include"
+CPPFLAGS="-DKVER='\"\$(KVER)\"' -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
 LDFLAGS="$LDFLAGS $LTLDFLAGS"
 
 subdirs="libltdl"

@@ -792,7 +792,7 @@ AC_SUBST(kaffe_TRANSF)
 AC_SUBST(Kaffe_TRANSF)
 
 dnl These are not to be used during configuration, only during build.
-CPPFLAGS="$CPPFLAGS -DKVER='\"\$(KVER)\"' -I\$(top_srcdir)/config -I\$(top_srcdir)/include"
+CPPFLAGS="-DKVER='\"\$(KVER)\"' -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
 LDFLAGS="$LDFLAGS $LTLDFLAGS"
 
 AC_CONFIG_SUBDIRS(libltdl)

@@ -1,3 +1,10 @@
+Wed Mar 24 07:23:48 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in (CPPFLAGS): prepend config and include to CPPFLAGS, 
+	to prevent that files already installed in /usr/local/include take 
+	precedence
+	* configure: regen
+
 Tue Mar 23 17:09:12 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/*: fixed serial form for several classes
