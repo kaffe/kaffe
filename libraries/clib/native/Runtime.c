@@ -152,7 +152,6 @@ java_lang_Runtime_linkLibrary(struct Hjava_lang_String *jpath, struct Hjava_lang
 {
 	char path[MAXPATHLEN];
 	char errbuf[128];
-	errorInfo einfo;
 
 	stringJava2CBuf(jpath, path, sizeof(path));
 	if (loadNativeLibrary(path, loader, errbuf, sizeof(errbuf)) < 0) {
