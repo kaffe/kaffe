@@ -11,7 +11,7 @@
 
 #include "debug.h"
 #define	CDBG(s) 	DBG(INT_VMCALL, s)
-#define	RDBG(s) 	DBG(INT_NATIVE, s)
+#define	RDBG(s) 	DBG(INT_RETURN, s)
 #define	NDBG(s) 	DBG(INT_NATIVE, s)
 #define	IDBG(s)		DBG(INT_INSTR, s)
 #define	CHDBG(s)	DBG(INT_CHECKS, s)
