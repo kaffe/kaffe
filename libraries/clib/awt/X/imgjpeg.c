@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <setjmp.h>
+#include <sys/types.h>
 
 #if defined(HAVE_JPEGLIB_H)
 #include "jpeglib.h"
