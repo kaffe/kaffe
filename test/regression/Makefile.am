@@ -64,6 +64,7 @@ TESTS = \
 	Reflect.java \
 	MethodBug.java \
 	Bean.java \
+	SortTest.java \
 ## simple test for Method.invoke
 	ReflectInvoke.java \
 ## simple test for InvocationTargetExceptions
