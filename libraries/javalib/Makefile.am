@@ -4380,21 +4380,25 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/BAD_PARAM.java \
 	org/omg/CORBA/BAD_TYPECODE.java \
 	org/omg/CORBA/BooleanHolder.java \
+	org/omg/CORBA/BooleanSeqHelper.java \
 	org/omg/CORBA/BooleanSeqHolder.java \
 	org/omg/CORBA/Bounds.java \
 	org/omg/CORBA/ByteHolder.java \
 	org/omg/CORBA/COMM_FAILURE.java \
 	org/omg/CORBA/CharHolder.java \
+	org/omg/CORBA/CharSeqHelper.java \
 	org/omg/CORBA/CharSeqHolder.java \
 	org/omg/CORBA/CompletionStatus.java \
 	org/omg/CORBA/Context.java \
 	org/omg/CORBA/ContextList.java \
 	org/omg/CORBA/DATA_CONVERSION.java \
 	org/omg/CORBA/DoubleHolder.java \
+	org/omg/CORBA/DoubleSeqHelper.java \
 	org/omg/CORBA/DoubleSeqHolder.java \
 	org/omg/CORBA/FREE_MEM.java \
 	org/omg/CORBA/FixedHolder.java \
 	org/omg/CORBA/FloatHolder.java \
+	org/omg/CORBA/FloatSeqHelper.java \
 	org/omg/CORBA/FloatSeqHolder.java \
 	org/omg/CORBA/IDLEntity.java \
 	org/omg/CORBA/IMP_LIMIT.java \
@@ -4408,7 +4412,9 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/INV_POLICY.java \
 	org/omg/CORBA/IntHolder.java \
 	org/omg/CORBA/LongHolder.java \
+	org/omg/CORBA/LongLongSeqHelper.java \
 	org/omg/CORBA/LongLongSeqHolder.java \
+	org/omg/CORBA/LongSeqHelper.java \
 	org/omg/CORBA/LongSeqHolder.java \
 	org/omg/CORBA/MARSHAL.java \
 	org/omg/CORBA/NO_IMPLEMENT.java \
@@ -4420,12 +4426,16 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/OBJ_ADAPTER.java \
 	org/omg/CORBA/ORB.java \
 	org/omg/CORBA/Object.java \
+	org/omg/CORBA/OctetSeqHelper.java \
 	org/omg/CORBA/OctetSeqHolder.java \
 	org/omg/CORBA/PERSIST_STORE.java \
 	org/omg/CORBA/Principal.java \
 	org/omg/CORBA/ShortHolder.java \
+	org/omg/CORBA/ShortSeqHelper.java \
 	org/omg/CORBA/ShortSeqHolder.java \
 	org/omg/CORBA/StringHolder.java \
+	org/omg/CORBA/StringSeqHelper.java \
+	org/omg/CORBA/StringSeqHolder.java \
 	org/omg/CORBA/SystemException.java \
 	org/omg/CORBA/TCKind.java \
 	org/omg/CORBA/TRANSACTION_REQUIRED.java \
@@ -4433,12 +4443,18 @@ org_omg_CORBA_SRCS = \
 	org/omg/CORBA/TRANSIENT.java \
 	org/omg/CORBA/TypeCode.java \
 	org/omg/CORBA/TypeCodeHolder.java \
+	org/omg/CORBA/ULongLongSeqHelper.java \
 	org/omg/CORBA/ULongLongSeqHolder.java \
+	org/omg/CORBA/ULongSeqHelper.java \
 	org/omg/CORBA/ULongSeqHolder.java \
 	org/omg/CORBA/UNKNOWN.java \
+	org/omg/CORBA/UShortSeqHelper.java \
 	org/omg/CORBA/UShortSeqHolder.java \
 	org/omg/CORBA/UserException.java \
-	org/omg/CORBA/WCharSeqHolder.java
+	org/omg/CORBA/WCharSeqHelper.java \
+	org/omg/CORBA/WCharSeqHolder.java \
+	org/omg/CORBA/WStringSeqHelper.java \
+	org/omg/CORBA/WStringSeqHolder.java
 org_omg_CORBA_TypeCodePackage_SRCS = \
 	org/omg/CORBA/TypeCodePackage/BadKind.java \
 	org/omg/CORBA/TypeCodePackage/Bounds.java

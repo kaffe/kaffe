@@ -77,7 +77,7 @@ public class OBJECT_NOT_EXIST
    * @param minor additional error code.
    * @param completed the method completion status.
    */
-  OBJECT_NOT_EXIST(int minor, CompletionStatus completed)
+  public OBJECT_NOT_EXIST(int minor, CompletionStatus completed)
   {
     super("", minor, completed);
   }
@@ -88,7 +88,7 @@ public class OBJECT_NOT_EXIST
    * @param minor additional error code (the "minor").
    * @param completed the method completion status.
    */
-  OBJECT_NOT_EXIST(String reason, int minor, CompletionStatus completed)
+  public OBJECT_NOT_EXIST(String reason, int minor, CompletionStatus completed)
   {
     super(reason, minor, completed);
   }

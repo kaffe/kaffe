@@ -78,7 +78,7 @@ public class OBJ_ADAPTER
    * @param minor additional error code.
    * @param completed the method completion status.
    */
-  OBJ_ADAPTER(int minor, CompletionStatus completed)
+  public OBJ_ADAPTER(int minor, CompletionStatus completed)
   {
     super("", minor, completed);
   }
@@ -89,7 +89,7 @@ public class OBJ_ADAPTER
    * @param minor additional error code (the "minor").
    * @param completed the method completion status.
    */
-  OBJ_ADAPTER(String reason, int minor, CompletionStatus completed)
+  public OBJ_ADAPTER(String reason, int minor, CompletionStatus completed)
   {
     super(reason, minor, completed);
   }

@@ -78,7 +78,7 @@ public class NO_MEMORY
    * @param minor additional error code.
    * @param completed the method completion status.
    */
-  NO_MEMORY(int minor, CompletionStatus completed)
+  public NO_MEMORY(int minor, CompletionStatus completed)
   {
     super("", minor, completed);
   }
@@ -89,7 +89,7 @@ public class NO_MEMORY
    * @param minor additional error code (the "minor").
    * @param completed the method completion status.
    */
-  NO_MEMORY(String reason, int minor, CompletionStatus completed)
+  public NO_MEMORY(String reason, int minor, CompletionStatus completed)
   {
     super(reason, minor, completed);
   }

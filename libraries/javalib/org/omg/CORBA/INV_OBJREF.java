@@ -78,7 +78,7 @@ public class INV_OBJREF
    * @param minor additional error code.
    * @param completed the method completion status.
    */
-  INV_OBJREF(int minor, CompletionStatus completed)
+  public INV_OBJREF(int minor, CompletionStatus completed)
   {
     super("", minor, completed);
   }
@@ -89,7 +89,7 @@ public class INV_OBJREF
    * @param minor additional error code (the "minor").
    * @param completed the method completion status.
    */
-  INV_OBJREF(String reason, int minor, CompletionStatus completed)
+  public INV_OBJREF(String reason, int minor, CompletionStatus completed)
   {
     super(reason, minor, completed);
   }

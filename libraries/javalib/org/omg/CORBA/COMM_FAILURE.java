@@ -79,7 +79,7 @@ public class COMM_FAILURE
    * @param minor additional error code.
    * @param completed the method completion status.
    */
-  COMM_FAILURE(int minor, CompletionStatus completed)
+  public COMM_FAILURE(int minor, CompletionStatus completed)
   {
     super("", minor, completed);
   }
@@ -90,7 +90,7 @@ public class COMM_FAILURE
    * @param minor additional error code (the "minor").
    * @param completed the method completion status.
    */
-  COMM_FAILURE(String reason, int minor, CompletionStatus completed)
+  public COMM_FAILURE(String reason, int minor, CompletionStatus completed)
   {
     super(reason, minor, completed);
   }

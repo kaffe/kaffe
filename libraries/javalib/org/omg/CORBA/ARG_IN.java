@@ -51,5 +51,5 @@ public interface ARG_IN
    * The flag, specifying that the parameter is used to pass and not to
    * return the data.
    */
-  static final int value = 1;
+  int value = 1;
 }

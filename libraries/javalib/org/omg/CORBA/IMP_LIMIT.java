@@ -79,7 +79,7 @@ public class IMP_LIMIT
    * @param minor additional error code.
    * @param completed the method completion status.
    */
-  IMP_LIMIT(int minor, CompletionStatus completed)
+  public IMP_LIMIT(int minor, CompletionStatus completed)
   {
     super("", minor, completed);
   }
@@ -90,7 +90,7 @@ public class IMP_LIMIT
    * @param minor additional error code (the "minor").
    * @param completed the method completion status.
    */
-  IMP_LIMIT(String reason, int minor, CompletionStatus completed)
+  public IMP_LIMIT(String reason, int minor, CompletionStatus completed)
   {
     super(reason, minor, completed);
   }

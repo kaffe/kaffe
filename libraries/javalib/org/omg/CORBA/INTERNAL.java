@@ -78,7 +78,7 @@ public class INTERNAL
    * @param minor additional error code.
    * @param completed the method completion status.
    */
-  INTERNAL(int minor, CompletionStatus completed)
+  public INTERNAL(int minor, CompletionStatus completed)
   {
     super("", minor, completed);
   }
@@ -89,7 +89,7 @@ public class INTERNAL
    * @param minor additional error code (the "minor").
    * @param completed the method completion status.
    */
-  INTERNAL(String reason, int minor, CompletionStatus completed)
+  public INTERNAL(String reason, int minor, CompletionStatus completed)
   {
     super(reason, minor, completed);
   }

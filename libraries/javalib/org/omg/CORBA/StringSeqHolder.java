@@ -1,4 +1,4 @@
-/* FixedHolder.java --
+/* StringSeqHolder.java --
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -38,71 +38,69 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
-import gnu.CORBA.primitiveTypeCode;
-
-import java.math.BigDecimal;
+import gnu.CORBA.primitiveArrayTypeCode;
 
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.OutputStream;
 import org.omg.CORBA.portable.Streamable;
 
 /**
- * A holder for CORBA <code>fixed</code> that is mapped into
- * java <code>BigDecimal</code>.
- *
- * The holders have several application areas. The end user usually
- * sees them implementing CORBA methods where the primitive type
- * is passed by reference. While CORBA (or, for example, C) supports
- * this, the java does not and a wrapper class is required.
+ * A sequence holder for CORBA <code>string[]</code> that is mapped into
+ * java <code>String[]</code>.
  *
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
-public final class FixedHolder
+public final class StringSeqHolder
   implements Streamable
 {
   /**
-   * The default type code for this holder.
+   * The <code>String[]</code> (CORBA <code>string[]</code>) value,
+   * held by this StringSeqHolder.
    */
-  private static final TypeCode t_fixed =
-    new primitiveTypeCode(TCKind.tk_fixed);
+  public String[] value;
 
   /**
-   * The <code>BigDecimal</code> (CORBA <code>fixed</code>) value,
-   * held by this FixedHolder.
+   * The type code for this holder. Each holder has a different instance.
    */
-  public BigDecimal value;
+  private final primitiveArrayTypeCode typecode =
+    new primitiveArrayTypeCode(TCKind.tk_char);
 
   /**
-   * Constructs an instance of FixedHolder,
+   * Constructs an instance of StringSeqHolder,
    * initializing {@link #value} to <code>null</code>.
    */
-  public FixedHolder()
+  public StringSeqHolder()
   {
   }
 
   /**
-   * Constructs an instance of FixedHolder,
-   * initializing {@link #value} to the given <code>BigDecimal</code>.
+   * Constructs an instance of StringSeqHolder,
+   * initializing {@link #value} to the given <code>String</code>.
    *
    * @param initial_value a value that will be assigned to the
    * {@link #value} field.
    */
-  public FixedHolder(BigDecimal initial_value)
+  public StringSeqHolder(String[] initial_value)
   {
     value = initial_value;
+    typecode.setLength(value.length);
   }
 
   /**
    * Fill in the {@link value } field by reading the required data
-   * from the given stream. For <code>fixed</code>, the functionality
-   * is delegated to
-   * {@link org.omg.CORBA.portable.InputStream#read_fixed}.
+   * from the given stream. This method first reads the array size
+   * (as CORBA <code>long</code>and then all strings.
    *
    * @param input the input stream to read from.
    */
   public void _read(InputStream input)
   {
-    value = input.read_fixed();
+    value = new String[ input.read_long() ];
+    for (int i = 0; i < value.length; i++)
+      {
+        value [ i ] = input.read_wstring();
+      }
+    typecode.setLength(value.length);
   }
 
   /**
@@ -111,19 +109,23 @@ public final class FixedHolder
    */
   public TypeCode _type()
   {
-    return t_fixed;
+    return typecode;
   }
 
   /**
    * Write the {@link value } field to the given stream.
-   * For <code>fixed</code>, the functionality
-   * is delegated to
-   * {@link org.omg.CORBA.portable.OutputStream#write_fixed(BigDecimal) }.
+   * This method first writes the array size
+   * (as CORBA <code>long</code> and then all strings.
    *
    * @param output the output stream to write into.
    */
   public void _write(OutputStream output)
   {
-    output.write_fixed(value);
+    output.write_long(value.length);
+
+    for (int i = 0; i < value.length; i++)
+      {
+        output.write_wstring(value [ i ]);
+      }
   }
 }

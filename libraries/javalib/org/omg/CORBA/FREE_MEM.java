@@ -78,7 +78,7 @@ public class FREE_MEM
    * @param minor additional error code.
    * @param completed the method completion status.
    */
-  FREE_MEM(int minor, CompletionStatus completed)
+  public FREE_MEM(int minor, CompletionStatus completed)
   {
     super("", minor, completed);
   }
@@ -89,7 +89,7 @@ public class FREE_MEM
    * @param minor additional error code (the "minor").
    * @param completed the method completion status.
    */
-  FREE_MEM(String reason, int minor, CompletionStatus completed)
+  public FREE_MEM(String reason, int minor, CompletionStatus completed)
   {
     super(reason, minor, completed);
   }

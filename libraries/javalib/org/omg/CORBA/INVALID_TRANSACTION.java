@@ -78,7 +78,7 @@ public class INVALID_TRANSACTION
    * @param minor additional error code.
    * @param completed the method completion status.
    */
-  INVALID_TRANSACTION(int minor, CompletionStatus completed)
+  public INVALID_TRANSACTION(int minor, CompletionStatus completed)
   {
     super("", minor, completed);
   }
@@ -89,7 +89,7 @@ public class INVALID_TRANSACTION
    * @param minor additional error code (the "minor").
    * @param completed the method completion status.
    */
-  INVALID_TRANSACTION(String reason, int minor, CompletionStatus completed)
+  public INVALID_TRANSACTION(String reason, int minor, CompletionStatus completed)
   {
     super(reason, minor, completed);
   }

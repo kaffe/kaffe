@@ -53,5 +53,5 @@ public interface ARG_INOUT
    * The constant, specifying that the parameter is used both
    * to pass and to return the data.
    */
-  static final int value = 3;
+  int value = 3;
 }

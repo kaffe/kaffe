@@ -51,5 +51,5 @@ public interface ARG_OUT
    * The flag, indicating that the parameter is used to return, and
    * not to pass the data.
    */
-  static final int value = 2;
+  int value = 2;
 }

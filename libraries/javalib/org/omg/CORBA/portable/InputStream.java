@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package org.omg.CORBA.portable;
 
+import java.math.BigDecimal;
+
 import org.omg.CORBA.Any;
 import org.omg.CORBA.Context;
 import org.omg.CORBA.NO_IMPLEMENT;
@@ -46,14 +48,13 @@ import org.omg.CORBA.Object;
 import org.omg.CORBA.Principal;
 import org.omg.CORBA.TypeCode;
 
-import java.math.BigDecimal;
-
 /**
  * This class is used to read CORBA IDL data types.
  *
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
 public abstract class InputStream
+  extends java.io.InputStream
 {
   /**
    * Return the Object Request Broker that has created this stream.
@@ -66,10 +67,15 @@ public abstract class InputStream
   }
 
   /**
-   * Read a CORBA context.
-   * @return context
+   * This should read the CORBA context, but following the 1.4 API
+   * specification, it must not be implemented.
+   *
+   * @throws NO_IMPLEMENT, always.
    */
-  public abstract Context read_Context();
+  public Context read_Context()
+  {
+    throw new NO_IMPLEMENT();
+  }
 
   /**
    * Read a CORBA (not java) object

@@ -38,15 +38,15 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
-import org.omg.CORBA.portable.IDLEntity;
+import java.io.Serializable;
+
 import org.omg.CORBA.TypeCodePackage.BadKind;
+import org.omg.CORBA.portable.IDLEntity;
 
 /**
  * An information about a CORBA data type.
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
-import java.io.Serializable;
-
 public abstract class TypeCode
   implements IDLEntity, Serializable
 {

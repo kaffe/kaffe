@@ -125,7 +125,7 @@ public abstract class Any
                                               throws BAD_OPERATION;
 
   /**
-   * Extract another code>Any</code> from this <code>Any</code>.
+   * Extract another <code>Any</code> from this <code>Any</code>.
    *
    * @throws BAD_OPERATION  if this instance contains value other
    * than <code>any</code> or the value has not been set.
@@ -435,7 +435,7 @@ public abstract class Any
 
   /**
    * Writes out the value (without the typecode of the value), stored in
-   * this <coe>Any</code>.
+   * this <code>Any</code>.
    *
    * @param output the CORBA stream to write into.
    *

@@ -1,6 +1,94 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+	
+	2005-03-13  Audrius Meskauskas  <audriusa@bluewin.ch>
+
+	* org/omg/CORBA/BAD_CONTEXT.java,
+	org/omg/CORBA/BAD_INV_ORDER.java,
+	org/omg/CORBA/BAD_OPERATION.java,
+	org/omg/CORBA/BAD_TYPECODE.java,
+	org/omg/CORBA/COMM_FAILURE.java,
+	org/omg/CORBA/DATA_CONVERSION.java,
+	org/omg/CORBA/FREE_MEM.java,
+	org/omg/CORBA/IMP_LIMIT.java,
+	org/omg/CORBA/INITIALIZE.java,
+	org/omg/CORBA/INTERNAL.java,
+	org/omg/CORBA/INTF_REPOS.java,
+	org/omg/CORBA/INVALID_TRANSACTION.java,
+	org/omg/CORBA/INV_FLAG.java,
+	org/omg/CORBA/INV_IDENT.java,
+	org/omg/CORBA/INV_OBJREF.java,
+	org/omg/CORBA/INV_POLICY.java,
+	org/omg/CORBA/NO_IMPLEMENT.java,
+	org/omg/CORBA/NO_MEMORY.java,
+	org/omg/CORBA/NO_PERMISSION.java,
+	org/omg/CORBA/NO_RESPONSE.java,
+	org/omg/CORBA/OBJECT_NOT_EXIST.java,
+	org/omg/CORBA/OBJ_ADAPTER.java,
+	org/omg/CORBA/PERSIST_STORE.java,
+	org/omg/CORBA/TRANSACTION_REQUIRED.java,
+	org/omg/CORBA/TRANSACTION_ROLLEDBACK.java,
+	org/omg/CORBA/TRANSIENT.java: making constructors
+	public.
+
+	2005-03-13  Audrius Meskauskas  <audriusa@bluewin.ch>
+
+	* org/omg/CORBA/StringSeqHolder.java,
+	org/omg/CORBA/WStringSeqHolder.java:
+	replacing replacing CR CR LF by CR LF.
+	* org/omg/CORBA/BAD_PARAM.java: making constructors
+	public.
+
+	2005-03-13  Michael Koch  <konqueror@gmx.de>
+
+	* org/omg/CORBA/ARG_IN.java: Removed redundant modifiers.
+	* org/omg/CORBA/ARG_INOUT.java: Likewise.
+	* org/omg/CORBA/ARG_OUT.java: Likewise.
+	* org/omg/CORBA/Any.java: Fixed HTML tags.
+	* org/omg/CORBA/Principal.java: Likewise.
+	* org/omg/CORBA/BAD_PARAM.java: Reordered modifiers.
+	* org/omg/CORBA/FixedHolder.java: Reworked imports.
+	* org/omg/CORBA/StringSeqHolder.java: Likewise.
+	* org/omg/CORBA/TypeCode.java: Likewise.
+	* org/omg/CORBA/TypeCodePackage/BadKind.java: Likewise.
+	* org/omg/CORBA/TypeCodePackage/Bounds.java: Likewise.
+	* org/omg/CORBA/WStringSeqHolder.java: Likewise.
+	* org/omg/CORBA/portable/OutputStream.java: Likewise.
+
+	2005-03-12  Audrius Meskauskas  <audriusa@bluewin.ch>
+
+	* org/omg/CORBA/StringSeqHelper.java,
+	org/omg/CORBA/WStringSeqHelper.java: New files.
+
+	2005-03-11  Audrius Meskauskas  <audriusa@bluewin.ch>
+
+	* org/omg/CORBA/portable/InputStream.java (read_Context):
+	following API, this must be concrete and unimplemented.
+
+	2005-03-11  Audrius Meskauskas  <audriusa@bluewin.ch>
+
+	* org/omg/CORBA/BooleanSeqHelper.java,
+	org/omg/CORBA/CharSeqHelper.java,
+	org/omg/CORBA/DoubleSeqHelper.java,
+	org/omg/CORBA/FloatSeqHelper.java,
+	org/omg/CORBA/LongLongSeqHelper.java,
+	org/omg/CORBA/LongSeqHelper.java,
+	org/omg/CORBA/OctetSeqHelper.java,
+	org/omg/CORBA/ShortSeqHelper.java,
+	org/omg/CORBA/ULongLongSeqHelper.java,
+	org/omg/CORBA/ULongSeqHelper.java,
+	org/omg/CORBA/UShortSeqHelper.java,
+	org/omg/CORBA/WCharSeqHelper.java,
+	org/omg/CORBA/StringSeqHelper.java,
+	org/omg/CORBA/WStringSeqHelper.java:
+	New sequence holders.
+	* org/omg/CORBA/StringSeqHelper.java,
+	org/omg/CORBA/WStringSeqHelper.java: New helpers.
+	
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 
 	2005-03-11  Robert Schuster  <thebohemian@gmx.net>
 

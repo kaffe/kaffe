@@ -74,7 +74,7 @@ public class TRANSIENT
    * @param minor additional error code.
    * @param completed the method completion status.
    */
-  TRANSIENT(int minor, CompletionStatus completed)
+  public TRANSIENT(int minor, CompletionStatus completed)
   {
     super("", minor, completed);
   }
@@ -85,7 +85,7 @@ public class TRANSIENT
    * @param minor additional error code (the "minor").
    * @param completed the method completion status.
    */
-  TRANSIENT(String reason, int minor, CompletionStatus completed)
+  public TRANSIENT(String reason, int minor, CompletionStatus completed)
   {
     super(reason, minor, completed);
   }

@@ -78,7 +78,7 @@ public class INV_IDENT
    * @param minor additional error code.
    * @param completed the method completion status.
    */
-  INV_IDENT(int minor, CompletionStatus completed)
+  public INV_IDENT(int minor, CompletionStatus completed)
   {
     super("", minor, completed);
   }
@@ -89,7 +89,7 @@ public class INV_IDENT
    * @param minor additional error code (the "minor").
    * @param completed the method completion status.
    */
-  INV_IDENT(String reason, int minor, CompletionStatus completed)
+  public INV_IDENT(String reason, int minor, CompletionStatus completed)
   {
     super(reason, minor, completed);
   }

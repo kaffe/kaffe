@@ -78,7 +78,7 @@ public class TRANSACTION_REQUIRED
    * @param minor additional error code.
    * @param completed the method completion status.
    */
-  TRANSACTION_REQUIRED(int minor, CompletionStatus completed)
+  public TRANSACTION_REQUIRED(int minor, CompletionStatus completed)
   {
     super("", minor, completed);
   }
@@ -89,7 +89,7 @@ public class TRANSACTION_REQUIRED
    * @param minor additional error code (the "minor").
    * @param completed the method completion status.
    */
-  TRANSACTION_REQUIRED(String reason, int minor, CompletionStatus completed)
+  public TRANSACTION_REQUIRED(String reason, int minor, CompletionStatus completed)
   {
     super(reason, minor, completed);
   }

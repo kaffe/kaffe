@@ -80,7 +80,7 @@ public class INV_POLICY
    * @param minor additional error code.
    * @param completed the method completion status.
    */
-  INV_POLICY(int minor, CompletionStatus completed)
+  public INV_POLICY(int minor, CompletionStatus completed)
   {
     super("", minor, completed);
   }
@@ -91,7 +91,7 @@ public class INV_POLICY
    * @param minor additional error code (the "minor").
    * @param completed the method completion status.
    */
-  INV_POLICY(String reason, int minor, CompletionStatus completed)
+  public INV_POLICY(String reason, int minor, CompletionStatus completed)
   {
     super(reason, minor, completed);
   }

@@ -78,7 +78,7 @@ public class INITIALIZE
    * @param minor additional error code.
    * @param completed the method completion status.
    */
-  INITIALIZE(int minor, CompletionStatus completed)
+  public INITIALIZE(int minor, CompletionStatus completed)
   {
     super("", minor, completed);
   }
@@ -89,7 +89,7 @@ public class INITIALIZE
    * @param minor additional error code (the "minor").
    * @param completed the method completion status.
    */
-  INITIALIZE(String reason, int minor, CompletionStatus completed)
+  public INITIALIZE(String reason, int minor, CompletionStatus completed)
   {
     super(reason, minor, completed);
   }

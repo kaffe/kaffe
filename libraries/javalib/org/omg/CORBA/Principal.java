@@ -40,7 +40,7 @@ package org.omg.CORBA;
 
 /**
  * This class was used to store the client identity in the past.
- * The client identity is stored in the form of the <code>byte</byte>
+ * The client identity is stored in the form of the <code>byte</code>
  * array.
  *
  * @deprecated by CORBA 2.2.

@@ -78,7 +78,7 @@ public class INTF_REPOS
    * @param minor additional error code.
    * @param completed the method completion status.
    */
-  INTF_REPOS(int minor, CompletionStatus completed)
+  public INTF_REPOS(int minor, CompletionStatus completed)
   {
     super("", minor, completed);
   }
@@ -89,7 +89,7 @@ public class INTF_REPOS
    * @param minor additional error code (the "minor").
    * @param completed the method completion status.
    */
-  INTF_REPOS(String reason, int minor, CompletionStatus completed)
+  public INTF_REPOS(String reason, int minor, CompletionStatus completed)
   {
     super(reason, minor, completed);
   }

@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package org.omg.CORBA.portable;
 
+import java.math.BigDecimal;
+
 import org.omg.CORBA.Any;
 import org.omg.CORBA.Context;
 import org.omg.CORBA.ContextList;
@@ -45,8 +47,6 @@ import org.omg.CORBA.NO_IMPLEMENT;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.Principal;
 import org.omg.CORBA.TypeCode;
-
-import java.math.BigDecimal;
 
 /**
  * This class is used to write CORBA IDL data types.
