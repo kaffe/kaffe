@@ -64,7 +64,7 @@ JAVA_CLASSES = \
 	ObjectFields.class \
 	MethodOptimizations.class
 
-TESTS_ENVIRONMENT = env TEST_CLASSES="$(JAVA_CLASSES)" `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
+TESTS_ENVIRONMENT = env TEST_CLASSES="$(JAVA_CLASSES)" `BOOTCLASSPATH="."; export BOOTCLASSPATH; . $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
 %.class: %.java
 	$(JIKES) -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $<

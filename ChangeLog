@@ -1,3 +1,26 @@
+2003-05-18 Tim Stack <stack@cs.utah.edu>
+
+	* Makefile.am:
+	(BUILD_ENVIRONMENT-make) Separate variables sets and 'export's
+	with semi-colons.
+
+	* kaffe/kaffevm/jit/Makefile.frag:
+	Fix ENGINE_INCLUDES variable so that it works in any build
+	directory.
+
+	* libraries/javalib/rebuildLib.in:
+	Fix classpath problem in jikes branch.
+
+	* test/internal/Makefile.am:
+	Update to work with BOOTCLASSPATH changes.
+
+	* test/internal/jitBasic.c:
+	Fix includes so that it works with the jit engine.
+
+	* test/internal/jit_stub.c:
+	Update for BOOTCLASSPATH changes and small fix to work with jit
+	engine.
+
 2003-05-18  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffe/main.c:

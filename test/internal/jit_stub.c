@@ -47,17 +47,19 @@ extern int internal_test(parsedString *ps);
 
 #define	CLASSPATH1	"KAFFECLASSPATH"
 #define	CLASSPATH2	"CLASSPATH"
+#define BOOTCLASSPATH 	"BOOTCLASSPATH"
+
 #define TEST_CLASSES	"TEST_CLASSES"
 
 extern Hjava_lang_Class* ObjectClass;
 extern Hjava_lang_Class* javaLangThrowable;
+extern Hjava_lang_Class* javaLangNullPointerException;
 extern Hjava_lang_Class* javaLangArrayIndexOutOfBoundsException;
 
 /* Initialisation prototypes */
 void initClasspath(void);
 void initNative(void);
 void initThreads(void);
-static void checkCorrectVersion(void);
 
 int main(int argc, char *argv[])
 {
@@ -76,6 +78,9 @@ int main(int argc, char *argv[])
 	/* set up libtool/libltdl dlopen emulation */
 	LTDL_SET_PRELOADED_SYMBOLS();
 	
+	cp = getenv(BOOTCLASSPATH);
+	vmargs.bootClasspath = cp;
+	
 	cp = getenv(CLASSPATH1);
 	if (cp == 0) {
 		cp = getenv(CLASSPATH2);
@@ -86,7 +91,7 @@ int main(int argc, char *argv[])
 #endif
 	}
 	vmargs.classpath = cp;
-	
+
 	/* Machine specific initialisation first */
 #if defined(INIT_MD)
 	INIT_MD();
@@ -144,6 +149,7 @@ int main(int argc, char *argv[])
 		initTypes();
 		loadStaticClass(&ObjectClass, "java/lang/Object");
 		loadStaticClass(&javaLangThrowable, "java/lang/Throwable");
+		loadStaticClass(&javaLangNullPointerException, "java/lang/NullPointerException");
 		loadStaticClass(&javaLangArrayIndexOutOfBoundsException, "java/lang/ArrayIndexOutOfBoundsException");
 		memset(&mainThread, 0, sizeof(mainThread));
 		jthread_createfirst(MAINSTACKSIZE,

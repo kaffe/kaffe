@@ -28,12 +28,12 @@ int internal_test(char *class_name)
 
 #else
 
-#include <jit3/machine.h>
-#include <jit3/slots.h>
-#include <jit3/seq.h>
-#include <jit3/labels.h>
-#include <jit3/codeproto.h>
-#include <jit3/basecode.h>
+#include <machine.h>
+#include <slots.h>
+#include <seq.h>
+#include <labels.h>
+#include <codeproto.h>
+#include <basecode.h>
 
 Method *findMethodNoSig(Hjava_lang_Class *cl, Utf8Const *name)
 {
