@@ -691,7 +691,6 @@ private void generateSkel() throws IOException {
 		out.println("java.io.ObjectInput in = call.getInputStream();");
 		for (int j = 0; j < sig.length; j++) {
 			out.print("$param_" + j + " = ");
-			out.print("(" + getPrettyName(sig[j]) + ")");
 			if (sig[j] == Boolean.TYPE) {
 				out.print("in.readBoolean();");
 			}
@@ -717,10 +716,11 @@ private void generateSkel() throws IOException {
 				out.print("in.readDouble();");
 			}
 			else {
-				out.print("in.readObject();");
 				if (sig[j] != Object.class) {
+					out.print("(" + getPrettyName(sig[j]) + ")");
 					needcastcheck = true;
 				}
+				out.print("in.readObject();");
 			}
 			out.println();
 		}
