@@ -60,6 +60,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 
 #include "ltdl.h"
 
+#ifdef DLL_EXPORT
+#  define LTDL_GLOBAL_DATA	__declspec(dllexport)
+#else
+#  define LTDL_GLOBAL_DATA
+#endif
+
 /* max. filename length */
 #ifndef LTDL_FILENAME_MAX
 #define LTDL_FILENAME_MAX 1024
@@ -100,13 +106,13 @@ static const char shutdown_error[] = "library already shutdown";
 
 #ifndef HAVE_PRELOADED_SYMBOLS
 /* If libtool won't define it, we'd better do */
-const lt_dlsymlist lt_preloaded_symbols[1] = { { 0, 0 } };
+LTDL_GLOBAL_DATA const lt_dlsymlist lt_preloaded_symbols[1] = { { 0, 0 } };
 #endif
 
 static const char *last_error = 0;
 
-lt_ptr_t (*lt_dlmalloc) LTDL_PARAMS((size_t size)) = (lt_ptr_t(*)LTDL_PARAMS((size_t)))malloc;
-void	 (*lt_dlfree)  LTDL_PARAMS((lt_ptr_t ptr)) = (void(*)LTDL_PARAMS((lt_ptr_t)))free;
+LTDL_GLOBAL_DATA lt_ptr_t (*lt_dlmalloc) LTDL_PARAMS((size_t size)) = (lt_ptr_t(*)LTDL_PARAMS((size_t)))malloc;
+LTDL_GLOBAL_DATA void	 (*lt_dlfree)  LTDL_PARAMS((lt_ptr_t ptr)) = (void(*)LTDL_PARAMS((lt_ptr_t)))free;
 
 typedef struct lt_dltype_t {
 	struct lt_dltype_t *next;

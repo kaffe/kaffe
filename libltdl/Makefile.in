@@ -69,26 +69,18 @@ CXXCPP = @CXXCPP@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
 EXEEXT = @EXEEXT@
-FILE = @FILE@
-LD = @LD@
 LIBADD_DL = @LIBADD_DL@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LN_S = @LN_S@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
-NM = @NM@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 STRIP = @STRIP@
 VERSION = @VERSION@
-deplibs_check_method = @deplibs_check_method@
-file_magic_cmd = @file_magic_cmd@
-reload_flag = @reload_flag@
-with_gcc = @with_gcc@
-with_gnu_ld = @with_gnu_ld@
 
 
 AUTOMAKE_OPTIONS = no-dependencies foreign
@@ -104,7 +96,7 @@ AUTOMAKE_OPTIONS = no-dependencies foreign
 @CONVENIENCE_LTDL_TRUE@libltdlc.la
 
 libltdl_la_SOURCES = ltdl.c
-libltdl_la_LDFLAGS = -version-info 1:2:1
+libltdl_la_LDFLAGS = -no-undefined -version-info 1:2:1
 libltdl_la_LIBADD = $(LIBADD_DL)
 
 libltdlc_la_SOURCES = ltdl.c

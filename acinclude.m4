@@ -36,7 +36,7 @@ AS="$AS" DLLTOOL="$DLLTOOL" OBJDUMP="$OBJDUMP" \
 objext="$OBJEXT" exeext="$EXEEXT" reload_flag="$reload_flag" \
 deplibs_check_method="$deplibs_check_method" file_magic_cmd="$file_magic_cmd" \
 ${CONFIG_SHELL-/bin/sh} $ac_aux_dir/ltconfig --no-reexec \
-$libtool_flags --no-verify --build="$build" $ac_aux_dir/ltmain.sh $host \
+$libtool_flags --no-verify --build="$build" $ac_aux_dir/ltmain.sh $lt_target \
 || AC_MSG_ERROR([libtool configure failed])
 
 # Reload cache, that may have been modified by ltconfig
@@ -62,7 +62,6 @@ AC_REQUIRE([AC_ENABLE_FAST_INSTALL])dnl
 AC_REQUIRE([AC_CANONICAL_HOST])dnl
 AC_REQUIRE([AC_CANONICAL_BUILD])dnl
 AC_REQUIRE([AC_PROG_CC])dnl
-with_gcc="$GCC"; AC_SUBST([with_gcc])
 AC_REQUIRE([AC_PROG_LD])dnl
 AC_REQUIRE([AC_PROG_LD_RELOAD_FLAG])dnl
 AC_REQUIRE([AC_PROG_NM])dnl
@@ -79,6 +78,11 @@ file_magic*)
     AC_PATH_FILE
   fi
   ;;
+esac
+
+case "$target" in
+NONE) lt_target="$host" ;;
+*) lt_target="$target" ;;
 esac
 
 AC_CHECK_TOOL(RANLIB, ranlib, :)
@@ -108,7 +112,7 @@ test x"$pic_mode" = xno && libtool_flags="$libtool_flags --prefer-non-pic"
 
 # Some flags need to be propagated to the compiler or linker for good
 # libtool support.
-case "$host" in
+case "$lt_target" in
 *-*-irix6*)
   # Find out which ABI we are using.
   echo '[#]line __oline__ "configure"' > conftest.$ac_ext
@@ -154,7 +158,7 @@ ifdef([AC_PROVIDE_AC_LIBTOOL_WIN32_DLL],
       DllMain (0, 0, 0);],
       [lt_cv_need_dllmain=yes],[lt_cv_need_dllmain=no])])
 
-  case "$host/$CC" in
+  case "$lt_target/$CC" in
   *-*-cygwin*/gcc*-mno-cygwin*|*-*-mingw*)
     # old mingw systems require "-dll" to link a DLL, while more recent ones
     # require "-mdll"
@@ -339,7 +343,6 @@ if test -n "$FILE"; then
 else
   AC_MSG_RESULT(no)
 fi
-AC_SUBST($1)dnl
 ])
 
 
@@ -354,7 +357,6 @@ if test -z "$lt_cv_path_FILE"; then
     FILE=:
   fi
 fi
-AC_SUBST(FILE)dnl
 ])
 
 
@@ -370,7 +372,7 @@ ac_prog=ld
 if test "$ac_cv_prog_gcc" = yes; then
   # Check if gcc -print-prog-name=ld gives a path.
   AC_MSG_CHECKING([for ld used by GCC])
-  case $host in
+  case $lt_target in
   *-*-mingw*)
     # gcc leaves a trailing carriage return which upsets mingw
     ac_prog=`($CC -print-prog-name=ld) 2>&5 | tr -d '\015'` ;;
@@ -432,7 +434,6 @@ else
   AC_MSG_RESULT(no)
 fi
 test -z "$LD" && AC_MSG_ERROR([no acceptable ld found in \$PATH])
-AC_SUBST(LD)
 AC_PROG_LD_GNU
 ])
 
@@ -445,7 +446,6 @@ else
   ac_cv_prog_gnu_ld=no
 fi])
 with_gnu_ld=$ac_cv_prog_gnu_ld
-AC_SUBST(with_gnu_ld)
 ])
 
 # AC_PROG_LD_RELOAD_FLAG - find reload flag for linker
@@ -455,7 +455,6 @@ AC_DEFUN(AC_PROG_LD_RELOAD_FLAG,
 [lt_cv_ld_reload_flag='-r'])
 reload_flag=$lt_cv_ld_reload_flag
 test -n "$reload_flag" && reload_flag=" $reload_flag"
-AC_SUBST(reload_flag)
 ])
 
 # AC_DEPLIBS_CHECK_METHOD - how to check for library dependencies
@@ -568,8 +567,6 @@ esac
 ])
 file_magic_cmd=$lt_cv_file_magic_cmd
 deplibs_check_method=$lt_cv_deplibs_check_method
-AC_SUBST(file_magic_cmd)
-AC_SUBST(deplibs_check_method)
 ])
 
 
@@ -605,14 +602,13 @@ else
 fi])
 NM="$ac_cv_path_NM"
 AC_MSG_RESULT([$NM])
-AC_SUBST(NM)
 ])
 
 # AC_CHECK_LIBM - check for math library
 AC_DEFUN(AC_CHECK_LIBM,
 [AC_REQUIRE([AC_CANONICAL_HOST])dnl
 LIBM=
-case "$host" in
+case "$lt_target" in
 *-*-beos* | *-*-cygwin*)
   # These system don't have libm
   ;;

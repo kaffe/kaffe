@@ -55,7 +55,7 @@ modename="$progname"
 PROGRAM=ltmain.sh
 PACKAGE=libtool
 VERSION=1.3c
-TIMESTAMP=" (1.632 1999/11/16 15:20:50)"
+TIMESTAMP=" (1.658 1999/12/18 08:27:41)"
 
 default_mode=
 help="Try \`$progname --help' for more information."
@@ -267,6 +267,7 @@ if test -z "$show_help"; then
     modename="$modename: compile"
     # Get the compilation command and the source file.
     base_compile=
+    prev=
     lastarg=
     srcfile="$nonopt"
     suppress_output=
@@ -274,6 +275,32 @@ if test -z "$show_help"; then
     user_target=no
     for arg
     do
+      case "$prev" in
+      "") ;;
+      xcompiler)
+	# Aesthetically quote the previous argument.
+	prev=
+	lastarg=`$echo "X$arg" | $Xsed -e "$sed_quote_subst"`
+
+	case "$arg" in
+	# Double-quote args containing other shell metacharacters.
+	# Many Bourne shells cannot handle close brackets correctly
+	# in scan sets, so we specify it separately.
+	*[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*|"")
+          arg="\"$arg\""
+	  ;;
+	esac
+
+        # Add the previous argument to base_compile.
+        if test -z "$base_compile"; then
+	  base_compile="$lastarg"
+        else
+	  base_compile="$base_compile $lastarg"
+        fi
+	continue
+	;;
+      esac
+
       # Accept any command-line options.
       case "$arg" in
       -o)
@@ -286,6 +313,40 @@ if test -z "$show_help"; then
 
       -static)
 	build_old_libs=yes
+	continue
+	;;
+
+      -Xcompiler)
+        prev=xcompiler
+        continue
+	;;
+
+      -Wc,*)
+        args=`$echo "X$arg" | $Xsed -e "s/^-Wc,//"`
+        lastarg=
+	IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=','
+	for arg in $args; do
+	  IFS="$save_ifs"
+
+	  # Double-quote args containing other shell metacharacters.
+	  # Many Bourne shells cannot handle close brackets correctly
+	  # in scan sets, so we specify it separately.
+	  case "$arg" in
+	    *[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*|"")
+	    arg="\"$arg\""
+	    ;;
+	  esac
+	  lastarg="$lastarg $arg"
+	done
+	IFS="$save_ifs"
+	lastarg=`$echo "X$lastarg" | $Xsed -e "s/^ //"`
+
+        # Add the arguments to base_compile.
+	if test -z "$base_compile"; then
+	  base_compile="$lastarg"
+	else
+	  base_compile="$base_compile $lastarg"
+	fi
 	continue
 	;;
       esac
@@ -316,11 +377,11 @@ if test -z "$show_help"; then
       lastarg=`$echo "X$lastarg" | $Xsed -e "$sed_quote_subst"`
 
       # Double-quote args containing other shell metacharacters.
-      # Many Bourne shells cannot handle close brackets correctly in scan
-      # sets, so we specify it separately.
+      # Many Bourne shells cannot handle close brackets correctly
+      # in scan sets, so we specify it separately.
       case "$lastarg" in
-      *[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*)
-	lastarg="\"$lastarg\""
+      *[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*|"")
+        lastarg="\"$lastarg\""
 	;;
       esac
 
@@ -728,7 +789,13 @@ compiler."
     while test $# -gt 0; do
       arg="$1"
       shift
-      libtool_args="$libtool_args $arg"
+      case "$arg" in
+      *[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*|"")
+	qarg=\"`$echo "X$arg" | $Xsed -e "$sed_quote_subst"`\" ### testsuite: skip nested quoting test
+	;;
+      *) qarg=$arg ;;
+      esac
+      libtool_args="$libtool_args $qarg"
 
       # If the previous option needs an argument, assign it.
       if test -n "$prev"; then
@@ -822,26 +889,18 @@ compiler."
 	  continue
 	  ;;
 	xcompiler)
-	  arg=`$echo "X$arg" | $Xsed -e "$sed_quote_subst"`
-	  case "$arg" in
-	  *[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*)
-	    arg="\"$arg\""
-	    ;;
-	  esac
-	  compiler_flags="$compiler_flags $arg"
+	  compiler_flags="$compiler_flags $qarg"
 	  prev=
+	  compile_command="$compile_command $qarg"
+	  finalize_command="$finalize_command $qarg"
 	  continue
 	  ;;
 	xlinker)
-	  arg=`$echo "X$arg" | $Xsed -e "$sed_quote_subst"`
-	  case "$arg" in
-	  *[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*)
-	    arg="\"$arg\""
-	    ;;
-	  esac
-	  linker_flags="$linker_flags $arg"
-	  compiler_flags="$compiler_flags $wl$arg"
+	  linker_flags="$linker_flags $qarg"
+	  compiler_flags="$compiler_flags $wl$qarg"
 	  prev=
+	  compile_command="$compile_command $wl$qarg"
+	  finalize_command="$finalize_command $wl$qarg"
 	  continue
 	  ;;
 	*)
@@ -1039,26 +1098,40 @@ compiler."
 	;;
 	
       -Wc,*)
-	arg=`$echo "X$arg" | $Xsed -e "$sed_quote_subst"`
-	case "$arg" in
-	*[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*)
-	  arg="\"$arg\""
-	  ;;
-	esac
-	flag=`$echo "X$arg" | $Xsed -e 's/^-Wc,//'`
-	compiler_flags="$compiler_flags $flag"
+	args=`$echo "X$arg" | $Xsed -e "$sed_quote_subst" -e 's/^-Wc,//'`
+	arg=
+	IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=','
+	for flag in $args; do
+	  IFS="$save_ifs"
+	  case "$flag" in
+	    *[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*|"")
+	    flag="\"$flag\""
+	    ;;
+	  esac
+	  arg="$arg $wl$flag"
+	  compiler_flags="$compiler_flags $flag"
+	done
+	IFS="$save_ifs"
+	arg=`$echo "X$arg" | $Xsed -e "s/^ //"`
 	;;
 
       -Wl,*)
-	arg=`$echo "X$arg" | $Xsed -e "$sed_quote_subst"`
-	case "$arg" in
-	*[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*)
-	  arg="\"$arg\""
-	  ;;
-	esac
-	flag=`$echo "X$arg" | $Xsed -e 's/^-Wl,//'`
-	linker_flags="$linker_flags $flag"
-	compiler_flags="$compiler_flags $wl$flag"
+	args=`$echo "X$arg" | $Xsed -e "$sed_quote_subst" -e 's/^-Wl,//'`
+	arg=
+	IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=','
+	for flag in $args; do
+	  IFS="$save_ifs"
+	  case "$flag" in
+	    *[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*|"")
+	    flag="\"$flag\""
+	    ;;
+	  esac
+	  arg="$arg $wl$flag"
+	  compiler_flags="$compiler_flags $wl$flag"
+	  linker_flags="$linker_flags $flag"
+	done
+	IFS="$save_ifs"
+	arg=`$echo "X$arg" | $Xsed -e "s/^ //"`
 	;;
 
       -Xcompiler)
@@ -1077,7 +1150,7 @@ compiler."
 	# to be aesthetically quoted because they are evaled later.
 	arg=`$echo "X$arg" | $Xsed -e "$sed_quote_subst"`
 	case "$arg" in
-	*[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*)
+	*[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*|"")
 	  arg="\"$arg\""
 	  ;;
 	esac
@@ -1200,7 +1273,7 @@ compiler."
 	# to be aesthetically quoted because they are evaled later.
 	arg=`$echo "X$arg" | $Xsed -e "$sed_quote_subst"`
 	case "$arg" in
-	*[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*)
+	*[\[\~\#\^\&\*\(\)\{\}\|\;\<\>\?\'\ \	]*|*]*|"")
 	  arg="\"$arg\""
 	  ;;
 	esac
@@ -1952,15 +2025,7 @@ compiler."
 	esac
       done
       lib_search_path="$lib_search_path $sys_lib_search_path"
-      
-      # Make sure newdependency_libs contains only unique libraries and directories.
-      dependency_libs=
-      for deplib in $newdependency_libs; do
-	case "$dependency_libs " in
-	*" $deplib "*) ;;
-	*) dependency_libs="$dependency_libs $deplib" ;;
-	esac
-      done
+      dependency_libs="$newdependency_libs"
       
       # Eliminate all temporary directories.
       for path in $uninst_path; do

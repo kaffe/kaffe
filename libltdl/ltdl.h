@@ -54,6 +54,22 @@ Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 # define lt_ptr_t	char*
 #endif
 
+/* DLL building support on win32 hosts;  mostly to workaround their
+   ridiculous implementation of data symbol exporting. */
+#ifndef LTDL_SCOPE
+#  ifdef _WIN32
+#    ifdef DLL_EXPORT		/* defined by libtool (if required) */
+#      define LTDL_SCOPE	__declspec(dllexport)
+#    endif
+#    ifdef LIBLTDL_DLL_IMPORT	/* define if linking with this dll */
+#      define LTDL_SCOPE	extern __declspec(dllimport)
+#    endif
+#  endif
+#  ifndef LTDL_SCOPE		/* static linking or !_WIN32 */
+#    define LTDL_SCOPE	extern
+#  endif
+#endif
+
 #include <stdlib.h>
 
 #ifdef _LTDL_COMPILE_
@@ -81,11 +97,11 @@ extern int lt_dladdsearchdir LTDL_PARAMS((const char *search_dir));
 extern int lt_dlsetsearchpath LTDL_PARAMS((const char *search_path));
 extern const char *lt_dlgetsearchpath LTDL_PARAMS((void));
 
-extern const lt_dlsymlist lt_preloaded_symbols[];
+LTDL_SCOPE const lt_dlsymlist lt_preloaded_symbols[];
 #define LTDL_SET_PRELOADED_SYMBOLS() lt_dlpreload_default(lt_preloaded_symbols)
 
-extern lt_ptr_t (*lt_dlmalloc)LTDL_PARAMS((size_t size));
-extern void (*lt_dlfree)LTDL_PARAMS((lt_ptr_t ptr));
+LTDL_SCOPE lt_ptr_t (*lt_dlmalloc)LTDL_PARAMS((size_t size));
+LTDL_SCOPE void (*lt_dlfree)LTDL_PARAMS((lt_ptr_t ptr));
 
 __END_DECLS
 
