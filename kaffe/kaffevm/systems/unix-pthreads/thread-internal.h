@@ -336,6 +336,11 @@ int jthread_get_status (jthread_t thread);
  */
 void jthread_set_blocking (int fd, int blocking);
 
+/**
+ * Check the blocking state of a file descriptor
+ */
+int jthread_is_blocking (int fd);
+
 void jthread_suspend(UNUSED jthread_t jt, UNUSED void *suspender);
 
 void jthread_resume(UNUSED jthread_t jt, UNUSED void *suspender);

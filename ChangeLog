@@ -1,3 +1,25 @@
+2005-04-02  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.h:
+	(jthread_is_blocking): Added to the API for compatibility with
+	unix-pthreads.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-internal.h:
+	(jthread_exit): Changed shutdown loop to take into account
+	modifications to activeThreads list.
+	(jthread_is_blocking): New jthread call.
+	
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c
+	(clearBlockState): Set active to 0 when exiting.
+
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c
+	(jthreadedRecvFrom): Fixed logic to avoid eating all CPU.
+	
+	* config/katomic.h (__atomic_val_bysize, __atomic_bool_bysize): 
+	If gcc is 2.95 then the syntax is also different.
+
 2005-04-02  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/Makefile.am.in: (compile-classes)

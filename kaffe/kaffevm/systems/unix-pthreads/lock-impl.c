@@ -77,7 +77,11 @@ clearBlockState(jthread_t cur, unsigned int newState, sigset_t *old_mask)
    * This is needed for Darwin's pthreads.
    */
   if (cur->status == THREAD_KILL && ((cur->blockState & BS_THREAD) == 0))
+  {
+    /* Mark the thread as inactive now to acknowledge the shutdown. */
+    cur->active = 0;
     pthread_exit(NULL);
+  }
 
   pthread_sigmask(SIG_SETMASK, old_mask, NULL);
   /* Here the state is not SS_PENDING_SUSPEND so releasing the signal will

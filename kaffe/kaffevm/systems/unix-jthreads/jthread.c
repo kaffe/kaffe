@@ -3387,6 +3387,13 @@ void jthread_set_blocking(int fd, int blocking)
 	intsRestore();
 }
 
+int jthread_is_blocking(int fd)
+{
+	assert(fd < FD_SETSIZE);
+
+	return blockingFD[fd];
+}
+
 jlong jthread_get_usage(jthread_t jt)
 {
        jlong retval;

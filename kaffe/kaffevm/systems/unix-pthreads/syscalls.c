@@ -586,6 +586,7 @@ jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
 	int r;
 	jlong deadline = 0;
 	int poll_timeout;
+	int blocking = jthread_is_blocking(fd);
 
 	jthread_set_blocking(fd, 0);
 	SET_DEADLINE(deadline, timeout)
@@ -597,12 +598,12 @@ jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
 		}
 		IGNORE_EINTR(r)
 		poll_timeout = deadline - currentTime();
-		if (poll_timeout > 0) {
+		if (poll_timeout > 0 || timeout == NOTIMEOUT) {
 			waitForTimeout(fd, poll_timeout);
 		}
 		BREAK_IF_LATE(deadline, timeout)
 	}
-	jthread_set_blocking(fd, 1);
+	jthread_set_blocking(fd, blocking);
 	SET_RETURN_OUT(r, out, r)
 	return (r);
 }

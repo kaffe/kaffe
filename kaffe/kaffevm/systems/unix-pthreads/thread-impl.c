@@ -1060,10 +1060,11 @@ jthread_exit ( void )
 		repsem_post(&t->sem);
 	  }
 
-	  for ( t=activeThreads; t != NULL; t = t->next ){
+	  t = activeThreads;
+	  while (t != NULL) {
 		/* We must not kill the current thread and the main thread
 		 */
-		if ( t != cur && t != firstThread) {
+		if ( t != cur && t != firstThread && t->active) {
 		  /* Mark the thread as to be killed. */
 		  t->status = THREAD_KILL;
 		  /* Send an interrupt event to the remote thread to wake up.
@@ -1074,7 +1075,10 @@ jthread_exit ( void )
 		  unprotectThreadList(cur);
 		  pthread_join(t->tid, NULL);
 		  protectThreadList(cur);
-		}
+
+		  t = activeThreads;
+		} else
+		  t = t->next;
 	  }
 
 #if defined(KAFFE_VMDEBUG)
@@ -1550,6 +1554,20 @@ jthread_walkLiveThreads_r (void(*func)(jthread_t, void *), void *private)
   protectThreadList(cur);
   jthread_walkLiveThreads (func, private);
   unprotectThreadList(cur);
+}
+
+int
+jthread_is_blocking (int fd)
+{
+  int r;
+ 
+  r = fcntl(fd, F_GETFL, 0);
+  if (r < 0) {
+    perror("fcntl(F_GETFL)");
+    return 0;
+  }
+		  
+  return (r & O_NONBLOCK) != 0;
 }
 
 void

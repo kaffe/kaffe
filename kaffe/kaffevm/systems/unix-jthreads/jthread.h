@@ -337,6 +337,8 @@ int jthreadedPipeCreate(int *read_fd, int *write_fd);
 
 void jthread_set_blocking(int fd, int blocking);
 
+int jthread_is_blocking(int fd);
+
 /* restore an fd, i.e., put it in blocking state without async I/O */
 #define JTHREAD_RESTORE_FD
 void jthreadRestoreFD(int fd);
