@@ -10,13 +10,13 @@
 
 package java.text;
 
-import java.lang.String;
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 /* NB: Collator is serializable only in JDK 1.1, not in JDK 1.2 */
-public abstract class Collator implements Cloneable, Serializable {
+public abstract class Collator implements Comparator, Cloneable, Serializable {
 
 public final static int NO_DECOMPOSITION = 0;
 public final static int CANONICAL_DECOMPOSITION = 1;
@@ -45,6 +45,10 @@ public Object clone() {
 
 public abstract int compare(String src, String target);
 
+public int compare(Object o1, Object o2) {
+	return compare((String)o1, (String)o2);
+}
+
 public boolean equals(Object obj) {
 	if (obj instanceof Collator) {
 		Collator other = (Collator)obj;
@@ -56,7 +60,7 @@ public boolean equals(Object obj) {
 }
 
 public boolean equals(String src, String target) {
-	return (src.equals(target));
+	return compare(src, target) == 0;
 }
 
 public static synchronized Locale[] getAvailableLocales() {
@@ -91,10 +95,27 @@ public synchronized int getStrength() {
 public abstract int hashCode();
 
 public synchronized void setDecomposition(int mode) {
+	switch (mode) {
+	case NO_DECOMPOSITION:
+	case CANONICAL_DECOMPOSITION:
+	case FULL_DECOMPOSITION:
+		break;
+	default:
+		throw new IllegalArgumentException();
+	}
 	this.mode = mode;
 }
 
 public synchronized void setStrength(int strength) {
+	switch (strength) {
+	case PRIMARY:
+	case SECONDARY:
+	case TERTIARY:
+	case IDENTICAL:
+		break;
+	default:
+		throw new IllegalArgumentException();
+	}
 	this.strength = strength;
 }
 
