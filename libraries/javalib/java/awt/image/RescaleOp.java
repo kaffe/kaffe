@@ -158,8 +158,8 @@ public class RescaleOp implements BufferedImageOp, RasterOp
     // TODO The efficiency here can be improved for various data storage
     // patterns, aka SampleModels.
     float[] pixel = new float[src.numBands];
-    for (int y = src.minY; y < src.height- src.minY; y++)
-      for (int x = src.minX; x < src.width - src.minX; x++)
+    for (int y = src.minY; y < src.height + src.minY; y++)
+      for (int x = src.minX; x < src.width + src.minX; x++)
 	{
 	  src.getPixel(x, y, pixel);
 	  for (int b = 0; b < src.numBands; b++)

@@ -42,8 +42,10 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Arrays;
 
 /**
  * This class performs affine transformation between two images or 
@@ -56,13 +58,15 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
 {
     public static final int TYPE_NEAREST_NEIGHBOR = 1;
     public static final int TYPE_BILINEAR = 2;
+    public static final int TYPE_BICUBIC = 3;
 
     private AffineTransform transform;
     private RenderingHints hints;
     
     /**
      * Construct AffineTransformOp with the given xform and interpolationType.
-     * Interpolation type can be either TYPE_BILINEAR or TYPE_NEAREST_NEIGHBOR.
+     * Interpolation type can be TYPE_BILINEAR, TYPE_BICUBIC or
+     * TYPE_NEAREST_NEIGHBOR.
      *
      * @param xform AffineTransform that will applied to the source image 
      * @param interpolationType type of interpolation used
@@ -70,15 +74,23 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
     public AffineTransformOp (AffineTransform xform, int interpolationType)
     {
       this.transform = xform;
+      if (xform.getDeterminant() == 0)
+        throw new ImagingOpException(null);
 
-      if (interpolationType == 0) 
+      switch (interpolationType)
+      {
+      case TYPE_BILINEAR:
         hints = new RenderingHints (RenderingHints.KEY_INTERPOLATION, 
                                     RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-				   
-      else
+        break;
+      case TYPE_BICUBIC:
+        hints = new RenderingHints (RenderingHints.KEY_INTERPOLATION, 
+				    RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        break;
+      default:
         hints = new RenderingHints (RenderingHints.KEY_INTERPOLATION,
                                     RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-
+      }
     }
 
     /**
@@ -91,6 +103,8 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
     {
       this.transform = xform;
       this.hints = hints;
+      if (xform.getDeterminant() == 0)
+        throw new ImagingOpException(null);
     }
 
     /**
@@ -183,7 +197,97 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      */
     public WritableRaster filter (Raster src, WritableRaster dst)
     {
-      throw new UnsupportedOperationException ("not implemented yet");	
+      if (dst == src)
+        throw new IllegalArgumentException("src image cannot be the same as"
+					   + " the dst image");
+
+      if (dst == null)
+        dst = createCompatibleDestRaster(src);
+
+      if (src.getNumBands() != dst.getNumBands())
+        throw new IllegalArgumentException("src and dst must have same number"
+					   + " of bands");
+      
+      double[] dpts = new double[dst.getWidth() * 2];
+      double[] pts = new double[dst.getWidth() * 2];
+      for (int x = 0; x < dst.getWidth(); x++)
+      {
+	dpts[2 * x] = x + dst.getMinX();
+	dpts[2 * x + 1] = x;
+      }
+      Rectangle srcbounds = src.getBounds();
+      if (hints.containsValue(RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR))
+      {
+	for (int y = dst.getMinY(); y < dst.getMinY() + dst.getHeight(); y++)
+	  {
+	    try {
+	      transform.inverseTransform(dpts, 0, pts, 0, dst.getWidth() * 2);
+	    } catch (NoninvertibleTransformException e) {
+	      // Can't happen since the constructor traps this
+	      e.printStackTrace();
+	    }
+        
+	    for (int x = 0; x < dst.getWidth(); x++)
+	      {
+		if (!srcbounds.contains(pts[2 * x], pts[2 * x + 1]))
+		  continue;
+		dst.setDataElements(x + dst.getMinX(), y,
+				    src.getDataElements((int)pts[2 * x],
+							(int)pts[2 * x + 1],
+							null));
+	      }
+	  }
+      }
+      else if (hints.containsValue(RenderingHints.VALUE_INTERPOLATION_BILINEAR))
+      {
+        double[] tmp = new double[4 * src.getNumBands()];
+        for (int y = dst.getMinY(); y < dst.getMinY() + dst.getHeight(); y++)
+        {
+          try {
+            transform.inverseTransform(dpts, 0, pts, 0, dst.getWidth() * 2);
+          } catch (NoninvertibleTransformException e) {
+            // Can't happen since the constructor traps this
+            e.printStackTrace();
+          }
+	    
+          for (int x = 0; x < dst.getWidth(); x++)
+          {
+            if (!srcbounds.contains(pts[2 * x], pts[2 * x + 1]))
+              continue;
+            int xx = (int)pts[2 * x];
+            int yy = (int)pts[2 * x + 1];
+            double dx = (pts[2 * x] - xx);
+            double dy = (pts[2 * x + 1] - yy);
+		
+            // TODO write this more intelligently
+            if (xx == src.getMinX() + src.getWidth() - 1 ||
+                yy == src.getMinY() + src.getHeight() - 1)
+            {
+              // bottom or right edge
+              Arrays.fill(tmp, 0);
+              src.getPixel(xx, yy, tmp);
+            }
+            else
+	    {
+              // Normal case
+              src.getPixels(xx, yy, 2, 2, tmp);
+	      for (int b = 0; b < src.getNumBands(); b++)
+		tmp[b] = dx * dy * tmp[b]
+		  + (1 - dx) * dy * tmp[b + src.getNumBands()]
+		  + dx * (1 - dy) * tmp[b + 2 * src.getNumBands()]
+		  + (1 - dx) * (1 - dy) * tmp[b + 3 * src.getNumBands()];
+	    }
+            dst.setPixel(x, y, tmp);
+          }
+        }
+      }
+      else
+      {
+        // Bicubic
+        throw new UnsupportedOperationException("not implemented yet");
+      }
+      
+      return dst;  
     }
 
     /**

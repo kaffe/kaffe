@@ -265,6 +265,18 @@ public class ComponentSampleModel extends SampleModel
 	      }
 	    return outUShort;
 
+	  case DataBuffer.TYPE_SHORT:
+	    DataBufferShort inShort = (DataBufferShort) data;
+	    short[] outShort = (short[]) obj;
+	    if (outShort == null) outShort = new short[numBands];
+		
+	    for (int b=0; b<numBands; b++)
+	      {
+		int dOffset = totalBandDataOffsets[b];
+		outShort[b] = inShort.getData(bankIndices[b])[dOffset];
+	      }
+	    return outShort;
+
 	  case DataBuffer.TYPE_INT:
 	    DataBufferInt inInt = (DataBufferInt) data;
 	    int[] outInt = (int[]) obj;
@@ -276,8 +288,31 @@ public class ComponentSampleModel extends SampleModel
 		outInt[b] = inInt.getData(bankIndices[b])[dOffset];
 	      }
 	    return outInt;
-		
-	    // FIXME: Fill in the other possible types.
+
+	  case DataBuffer.TYPE_FLOAT:
+	    DataBufferFloat inFloat = (DataBufferFloat) data;
+	    float[] outFloat = (float[]) obj;
+	    if (outFloat == null) outFloat = new float[numBands];
+
+	    for (int b=0; b<numBands; b++)
+	      {
+		int dOffset = totalBandDataOffsets[b];
+		outFloat[b] = inFloat.getData(bankIndices[b])[dOffset];
+	      }
+	    return outFloat;
+	    
+	  case DataBuffer.TYPE_DOUBLE:
+	    DataBufferDouble inDouble = (DataBufferDouble) data;
+	    double[] outDouble = (double[]) obj;
+	    if (outDouble == null) outDouble = new double[numBands];
+
+	    for (int b=0; b<numBands; b++)
+	      {
+		int dOffset = totalBandDataOffsets[b];
+		outDouble[b] = inDouble.getData(bankIndices[b])[dOffset];
+	      }
+	    return outDouble;
+	    
 	  default:
 	      throw new IllegalStateException("unknown transfer type " +
 					      getTransferType());
@@ -449,10 +484,40 @@ public class ComponentSampleModel extends SampleModel
 	  
 	  return;
 	}
+      case DataBuffer.TYPE_SHORT:
+	{
+	  DataBufferShort out = (DataBufferShort) data;
+	  short[] in = (short[]) obj;
+	  
+	  for (int b=0; b<numBands; b++)
+	    out.getData(bankIndices[b])[totalBandDataOffsets[b]] = in[b];
+	  
+	  return;
+	}
       case DataBuffer.TYPE_INT:
 	{
 	  DataBufferInt out = (DataBufferInt) data;
 	  int[] in = (int[]) obj;
+	  
+	  for (int b=0; b<numBands; b++)
+	    out.getData(bankIndices[b])[totalBandDataOffsets[b]] = in[b];
+	  
+	  return;
+	}
+      case DataBuffer.TYPE_FLOAT:
+	{
+	  DataBufferFloat out = (DataBufferFloat) data;
+	  float[] in = (float[]) obj;
+	  
+	  for (int b=0; b<numBands; b++)
+	    out.getData(bankIndices[b])[totalBandDataOffsets[b]] = in[b];
+	  
+	  return;
+	}
+      case DataBuffer.TYPE_DOUBLE:
+	{
+	  DataBufferDouble out = (DataBufferDouble) data;
+	  double[] in = (double[]) obj;
 	  
 	  for (int b=0; b<numBands; b++)
 	    out.getData(bankIndices[b])[totalBandDataOffsets[b]] = in[b];

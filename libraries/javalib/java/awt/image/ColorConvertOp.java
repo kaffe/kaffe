@@ -300,16 +300,16 @@ public class ColorConvertOp implements BufferedImageOp, RasterOp
         RenderingHints.VALUE_COLOR_RENDER_QUALITY)
     {
       // use cie for accuracy
-      for (int y = src.getMinY(); y < src.getHeight() - src.getMinY(); y++)
-        for (int x = src.getMinX(); x < src.getWidth() - src.getMinX(); x++)
+      for (int y = src.getMinY(); y < src.getHeight() + src.getMinY(); y++)
+        for (int x = src.getMinX(); x < src.getWidth() + src.getMinX(); x++)
           dst.setPixel(x, y,
 		       dcs.fromCIEXYZ(scs.toCIEXYZ(src.getPixel(x, y, sbuf))));
     }
     else
     {
       // use rgb - it's probably faster
-      for (int y = src.getMinY(); y < src.getHeight() - src.getMinY(); y++)
-        for (int x = src.getMinX(); x < src.getWidth() - src.getMinX(); x++)
+      for (int y = src.getMinY(); y < src.getHeight() + src.getMinY(); y++)
+        for (int x = src.getMinX(); x < src.getWidth() + src.getMinX(); x++)
           dst.setPixel(x, y,
 		       dcs.fromRGB(scs.toRGB(src.getPixel(x, y, sbuf))));
     }

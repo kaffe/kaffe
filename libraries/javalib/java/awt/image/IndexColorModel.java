@@ -166,6 +166,7 @@ public class IndexColorModel extends ColorModel
    * @param cmap packed color components
    * @param start the offset of the first color component in <code>cmap</code>
    * @param hasAlpha <code>cmap</code> has alpha values
+   * @throws IllegalArgumentException if bits < 1, bits > 16, or size < 1.
    */
   public IndexColorModel (int bits, int size, byte[] cmap, int start, 
                           boolean hasAlpha)
@@ -174,34 +175,64 @@ public class IndexColorModel extends ColorModel
   }
 
   /**
-   * Each array much contain <code>size</code> elements.  For each 
-   * array, the i-th color is described by reds[i], greens[i], 
-   * blues[i], alphas[i], unless alphas is not specified, then all the 
-   * colors are opaque except for the transparent color. 
-   *
+   * Construct an IndexColorModel from an array of red, green, blue, and
+   * optional alpha components.  The component values are interleaved as RGB(A).
+   * 
    * @param bits the number of bits needed to represent <code>size</code> colors
    * @param size the number of colors in the color map
-   * @param cmap packed color components
+   * @param cmap interleaved color components
    * @param start the offset of the first color component in <code>cmap</code>
    * @param hasAlpha <code>cmap</code> has alpha values
    * @param trans the index of the transparent color
+   * @throws IllegalArgumentException if bits < 1, bits > 16, or size < 1.
    */
   public IndexColorModel (int bits, int size, byte[] cmap, int start, 
                           boolean hasAlpha, int trans)
   {
     super (bits);
+    if (bits > 16)
+      throw new IllegalArgumentException("bits > 16");
+    if (size < 1)
+      throw new IllegalArgumentException("size < 1");
     map_size = size;
     opaque = !hasAlpha;
     this.trans = trans;
+
+    rgb = new int[size];
+    if (hasAlpha)
+    {
+      for (int i = 0; i < size; i++)
+        rgb[i] =
+	  // alpha
+	  ((cmap[4 * i + 3 + start] & 0xff) << 24
+	   // red
+	   | ((cmap[4 * i + start] & 0xff) << 16)
+	   // green
+	   | ((cmap[4 * i + 1 + start] & 0xff) << 8)
+	   // blue
+	   | (cmap[4 * i + 2 + start] & 0xff));
+    }
+    else
+    {
+      for (int i = 0; i < size; i++)
+	rgb[i] = (0xff000000
+		  // red
+		  | ((cmap[3 * i + start] & 0xff) << 16)
+		  // green
+		  | ((cmap[3 * i + 1 + start] & 0xff) << 8)
+		  // blue
+		  | (cmap[3 * i + 2 + start] & 0xff));
+    }
+
     // Generate a bigint with 1's for every pixel
     validBits = validBits.setBit(size).subtract(BigInteger.ONE);
   }
 
   /**
-   * Each array much contain <code>size</code> elements.  For each 
-   * array, the i-th color is described by reds[i], greens[i], 
-   * blues[i], alphas[i], unless alphas is not specified, then all the 
-   * colors are opaque except for the transparent color. 
+   * Construct an IndexColorModel from an array of <code>size</code> packed
+   * colors.  Each int element contains 8-bit red, green, blue, and optional
+   * alpha values packed in order.  If hasAlpha is false, then all the colors
+   * are opaque except for the transparent color.
    *
    * @param bits the number of bits needed to represent <code>size</code> colors
    * @param size the number of colors in the color map
@@ -210,8 +241,11 @@ public class IndexColorModel extends ColorModel
    * @param hasAlpha <code>cmap</code> has alpha values
    * @param trans the index of the transparent color
    * @param transferType DataBuffer.TYPE_BYTE or DataBuffer.TYPE_USHORT
+   * @throws IllegalArgumentException if bits < 1, bits > 16, or size < 1.
+   * @throws IllegalArgumentException if transferType is something other than
+   * TYPE_BYTE or TYPE_USHORT.
    */
-  public IndexColorModel (int bits, int size, byte[] cmap, int start, 
+  public IndexColorModel (int bits, int size, int[] cmap, int start, 
                           boolean hasAlpha, int trans, int transferType)
   {
     super(bits * 4, // total bits, sRGB, four channels
@@ -223,9 +257,21 @@ public class IndexColorModel extends ColorModel
     if (transferType != DataBuffer.TYPE_BYTE
         && transferType != DataBuffer.TYPE_USHORT)
       throw new IllegalArgumentException();
+    if (bits > 16)
+      throw new IllegalArgumentException("bits > 16");
+    if (size < 1)
+      throw new IllegalArgumentException("size < 1");
     map_size = size;
     opaque = !hasAlpha;
     this.trans = trans;
+
+    rgb = new int[size];
+    if (!hasAlpha)
+      for (int i = 0; i < size; i++)
+	rgb[i] = cmap[i + start] | 0xff000000;
+    else
+      System.arraycopy(cmap, start, rgb, 0, size);
+
     // Generate a bigint with 1's for every pixel
     validBits = validBits.setBit(size).subtract(BigInteger.ONE);
   }
@@ -247,6 +293,9 @@ public class IndexColorModel extends ColorModel
    * @param cmap packed color components
    * @param start the offset of the first color component in <code>cmap</code>
    * @param transferType DataBuffer.TYPE_BYTE or DataBuffer.TYPE_USHORT
+   * @throws IllegalArgumentException if bits < 1, bits > 16, or size < 1.
+   * @throws IllegalArgumentException if transferType is something other than
+   * TYPE_BYTE or TYPE_USHORT.
    */
   public IndexColorModel (int bits, int size, int[] cmap, int start, 
                           int transferType, BigInteger validBits)
@@ -260,10 +309,21 @@ public class IndexColorModel extends ColorModel
     if (transferType != DataBuffer.TYPE_BYTE
         && transferType != DataBuffer.TYPE_USHORT)
       throw new IllegalArgumentException();
+    if (bits > 16)
+      throw new IllegalArgumentException("bits > 16");
+    if (size < 1)
+      throw new IllegalArgumentException("size < 1");
     map_size = size;
     opaque = false;
     this.trans = -1;
     this.validBits = validBits;
+
+    rgb = new int[size];
+    if (!hasAlpha)
+      for (int i = 0; i < size; i++)
+	rgb[i] = cmap[i + start] | 0xff000000;
+    else
+      System.arraycopy(cmap, start, rgb, 0, size);
   }
 
   public final int getMapSize ()

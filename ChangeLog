@@ -1,5 +1,45 @@
 2004-11-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/image/BandCombineOp.java,
+	libraries/javalib/java/awt/image/ConvolveOp.java,
+	libraries/javalib/java/awt/image/LookupOp.java:
+	New files taken from GNU Classpath.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/java/awt/image/AffineTransformOp.java,
+	libraries/javalib/java/awt/image/ColorConvertOp.java,
+	libraries/javalib/java/awt/image/ComponentSampleModel.java,
+	libraries/javalib/java/awt/image/IndexColorModel.java,
+	libraries/javalib/java/awt/image/Raster.java,
+	libraries/javalib/java/awt/image/RescaleOp.java,
+	libraries/javalib/java/awt/image/SampleModel.java:
+	Resynced with GNU Classpath.
+
+	2004-11-06  Jerry Quinn  <jlquinn@optonline.net>
+
+        * java/awt/image/AffineTransformOp.java (filter): Implement
+        filtering and bilinear interpolation for Rasters.
+         Add TYPE_BICUBIC.
+        * java/awt/image/IndexColorModel.java (IndexColorModel): Actually
+        use the provided colormap.  Throw documented exceptions.  Document
+        exceptions.
+        * java/awt/image/ComponentSampleModel.java (getDataElements,
+        setDataElements): Implement SHORT, FLOAT, and INT transfer types.
+        * java/awt/image/Raster.java (createBandedRaster): Implement.
+        * java/awt/image/SampleModel.java (createSubsetSampleModel): Add
+        javadocs.
+        * java/awt/image/RescaleOp.java,
+        java/awt/image/ColorConvertOp.java: Fix loop bounds.
+        * java/awt/image/BandCombineOp.java,
+        java/awt/image/LookupOp.java,
+        java/awt/image/ConvolveOp.java: New classes.
+
+2004-11-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/io/ObjectInputStream.java,
 	libraries/javalib/java/util/Vector.java:
 	Resynced with GNU Classpath.

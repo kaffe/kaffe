@@ -1321,6 +1321,7 @@ java/awt/im/spi/InputMethodContext.java
 java/awt/im/spi/InputMethodDescriptor.java
 java/awt/image/AffineTransformOp.java
 java/awt/image/AreaAveragingScaleFilter.java
+java/awt/image/BandCombineOp.java
 java/awt/image/BandedSampleModel.java
 java/awt/image/BufferStrategy.java
 java/awt/image/BufferedImage.java
@@ -1331,6 +1332,7 @@ java/awt/image/ColorConvertOp.java
 java/awt/image/ColorModel.java
 java/awt/image/ComponentColorModel.java
 java/awt/image/ComponentSampleModel.java
+java/awt/image/ConvolveOp.java
 java/awt/image/CropImageFilter.java
 java/awt/image/DataBuffer.java
 java/awt/image/DataBufferByte.java
@@ -1348,6 +1350,7 @@ java/awt/image/ImageProducer.java
 java/awt/image/ImagingOpException.java
 java/awt/image/IndexColorModel.java
 java/awt/image/Kernel.java
+java/awt/image/LookupOp.java
 java/awt/image/LookupTable.java
 java/awt/image/MemoryImageSource.java
 java/awt/image/MultiPixelPackedSampleModel.java
