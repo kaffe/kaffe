@@ -15,6 +15,47 @@
 #include "arm/common.h"
 #include "arm/threads.h"
 
+
+/* It looks like the linux kernel sets r0 to the signal number
+ * and passes a pointer to the context as the fourth argument
+ * use this hack to account for that.  -- gback
+ *
+ * Undef when this gets fixed -- check arch/arm/kernel/signal.c
+ */
+#define ARM_LINUX_HACK
+
+/* Function prototype for signal handlers */
+#if defined(HAVE_STRUCT_SIGCONTEXT_STRUCT) && !defined(__GLIBC__)
+/* Linux < 2.1.1 */
+#if defined(ARM_LINUX_HACK)
+#define SIGNAL_ARGS(sig, ctx) \
+        int sig, int r1, int r2, int r3, struct sigcontext_struct ctx
+#else
+#define	SIGNAL_ARGS(sig, ctx) \
+	int sig, struct sigcontext_struct ctx
+#endif /* ARM_LINUX_HACK */
+
+#elif defined(HAVE_STRUCT_SIGCONTEXT) || defined(__GLIBC__)
+/* Linux >= 2.1.1  or Linux 2.0.x with glibc2 */
+#if defined(ARM_LINUX_HACK)
+#define SIGNAL_ARGS(sig, ctx) \
+        int sig, int r1, int r2, int r3, struct sigcontext ctx
+#else
+#define	SIGNAL_ARGS(sig, ctx) \
+	int sig, struct sigcontext ctx
+#endif /* ARM_LINUX_HACK */
+#else
+#error Do not know how to define EXCEPTIONPROTO
+#endif
+
+#define GET_SIGNAL_CONTEXT_POINTER(ctx) (&ctx)
+
+#if defined(HAVE_REG_SIGCONTEXT)
+#define SIGNAL_PC(ctx) (ctx)->reg.ARM_pc
+#else
+#define SIGNAL_PC(ctx) (ctx)->arm_pc
+#endif
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif

@@ -1,3 +1,12 @@
+2003-09-18  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* config/arm/linux/md.h, config/arm/linux/jit-md.h: Implemented
+	SIGNAL_ARGS, SIGNAL_GET_CONTEXT_POINTER, SIGNAL_PC.
+
+	* libraries/javalib/java/io/File.java:
+	(toURI, File(URI) ) Reindented, removed unnecessary code which was
+	throwing NullPointerException.
+	
 2003-09-18  Dalibor Topic <robilad@kaffe.org>
 
 	* config/arm/trampolines.c:

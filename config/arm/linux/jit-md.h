@@ -52,29 +52,7 @@
  */
 #define ARM_LINUX_HACK
 
-/* Function prototype for signal handlers */
-#if defined(HAVE_STRUCT_SIGCONTEXT_STRUCT) && !defined(__GLIBC__)
-/* Linux < 2.1.1 */
-#if defined(ARM_LINUX_HACK)
-#define EXCEPTIONPROTO                                            \
-        int sig, int r1, int r2, int r3, struct sigcontext_struct ctx
-#else
-#define	EXCEPTIONPROTO							\
-	int sig, struct sigcontext_struct ctx
-#endif /* ARM_LINUX_HACK */
-
-#elif defined(HAVE_STRUCT_SIGCONTEXT) || defined(__GLIBC__)
-/* Linux >= 2.1.1  or Linux 2.0.x with glibc2 */
-#if defined(ARM_LINUX_HACK)
-#define EXCEPTIONPROTO                                                  \
-        int sig, int r1, int r2, int r3, struct sigcontext ctx
-#else
-#define	EXCEPTIONPROTO							\
-	int sig, struct sigcontext ctx
-#endif /* ARM_LINUX_HACK */
-#else
-#error Do not know how to define EXCEPTIONPROTO
-#endif
+#define EXCEPTIONPROTO SIGNAL_ARGS(sig, ctx)
 
 /* Get the first exception frame from a signal handler */
 #if defined(HAVE_REG_SIGCONTEXT)

@@ -294,23 +294,21 @@ public class File implements Serializable, Comparable
     return existsInternal (path);
   }
 
-//  File(URI) copied from Kaffe's File.java
   /**
    * This method initializes a new <code>File</code> object to represent
    * a file with the specified URI.
    *
    * @param uri The URI of the file
+   * @author Ito Kazumitsu
    */
-
-public File(URI uri) {
-	if (uri == null) {
-		throw new NullPointerException();
-	}
-	this.path = uri.getPath();
-	if (this.path == null) {
-		throw new IllegalArgumentException();
-	}
-}
+  public File(URI uri)
+  {
+    this.path = uri.getPath();
+    if (this.path == null)
+      {
+	throw new IllegalArgumentException();
+      }
+  }
 
   /**
    * This method initializes a new <code>File</code> object to represent
@@ -887,29 +885,30 @@ public File(URI uri) {
     return new URL (url_string);
   }
 
-// toURI() copied from Kaffe's File.java
-/**
- * @since 1.4
- */
-public URI toURI() {
-	try {
-		return new URI("file",
-			       null,
-			       (isDirectory() ?                               
-				getAbsolutePath() + separator
-				: getAbsolutePath()),
-			       null,
-			       null);
-	}
-	catch (URISyntaxException e) {
-		throw (IllegalArgumentException) 
-			new IllegalArgumentException("Couldn't convert "
-						     + toString()
-						     + " to an URI")
-			.initCause(e);
-	}
-}
-
+  /**
+   * @since 1.4
+   * @author Ito Kazumitsu
+   */
+  public URI toURI() {
+    try
+      {
+	return new URI("file",
+		       null,
+		       (isDirectory() ?                               
+			getAbsolutePath() + separator
+			: getAbsolutePath()),
+		       null,
+		       null);
+      }
+    catch (URISyntaxException e)
+      {
+	throw (IllegalArgumentException) 
+	  new IllegalArgumentException("Couldn't convert "
+				       + toString()
+				       + " to an URI").initCause(e);
+      }
+  }
+    
   /*
    * This native method actually creates the directory
    */
