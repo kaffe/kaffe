@@ -50,6 +50,12 @@ extern int maxTemp;
 #endif
 
 /*
+ * Define the version of JNI we support.
+ */
+static int java_major_version = 1;
+static int java_minor_verison = 1;
+
+/*
  * If we must manage the JNI references for the native layer then we
  * add extra functions to the JNI calls and returns to manage the
  * referencing.
@@ -106,8 +112,6 @@ extern int maxTemp;
 uintp Kaffe_JNI_estart;
 uintp Kaffe_JNI_eend;
 
-extern int java_major_version;
-extern int java_minor_version;
 extern struct JNINativeInterface Kaffe_JNINativeInterface;
 extern JavaVMInitArgs Kaffe_JavaVMInitArgs;
 extern JavaVM Kaffe_JavaVM;
