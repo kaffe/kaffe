@@ -171,16 +171,11 @@ extern long long kaffevmDebugMask;
 /* Do something that would cause GDB to gain control. */
 # define DBGGDBBREAK() { (*(int*)0) = 42; }
 
-/* XXX: change dprintf to kaffe_dprintf and get rid of the macro */
-# define dprintf       kaffe_dprintf
-
 #ifdef __cplusplus
 extern "C"
 #else
 extern
 #endif
-int kaffe_dprintf(const char *fmt, ...);
-
 #else	/* !defined(KAFFEH) */
 
 /* --- give some simple macros for debugging kaffeh */
@@ -200,6 +195,11 @@ int kaffe_dprintf(const char *fmt, ...);
 # define dprintf	printf
 
 #endif /* defined(NDEBUG) || !defined(DEBUG) */
+
+/* XXX: change dprintf to kaffe_dprintf and get rid of the macro */
+# define dprintf       kaffe_dprintf
+
+int kaffe_dprintf(const char *fmt, ...);
 
 /* Set the debugging mask to use. (give the mask) */
 void dbgSetMask(long long mask);
