@@ -341,6 +341,7 @@ dnl Checks for standard libraries
 
 AC_CHECK_LIBRARY(c,printf,STD_LIBRARIES)
 AC_CHECK_LIBRARY(m,sin,STD_LIBRARIES)
+AC_CHECK_LIBRARY(gmp,mpz_abs,STD_LIBRARIES)
 AC_SUBST(STD_LIBRARIES)
 
 dnl Checks for libraries for vm library.

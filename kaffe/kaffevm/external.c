@@ -29,7 +29,7 @@
 #include "support.h"
 #include "md.h"
 #if defined(NO_SHARED_LIBRARIES)
-#include "../../packages/external_native.h"
+#include "../../libraries/clib/external_native.h"
 #endif
 
 #if defined(NO_SHARED_LIBRARIES)
