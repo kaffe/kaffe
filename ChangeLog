@@ -51,7 +51,6 @@ Thu Mar 28 13:33:03 CET 2002 Tim Stack <stack@cs.utah.edu>
 	libraries/javalib/java/util/TimeZone.java:
 	bug fixes to get the crypto package from bouncycastle.org to work.
 	
-
 Thu Mar 28 13:05:09 CET 2002  Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/util/ResourceBundle.java :
@@ -78,8 +77,6 @@ Thu Mar 28 13:05:09 CET 2002  Dalibor Topic <robilad@yahoo.com>
 
 	Fixes Debian bug report #77022 reported by Antti-Juhani Kaijanaho
 	<antkaij@himalia.it.jyu.fi>
-
-	
 
 Thu Mar 21 22:25:16 PST 2002  Dalibor Topic <robilad@yahoo.com>
 
