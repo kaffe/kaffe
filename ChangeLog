@@ -1,3 +1,9 @@
+2003-07-06  Jim Pick  <jim@kaffe.org>
+
+	* kaffe/kaffevm/mem/gc-incremental.c:
+	Ported over "Percentage size allocations" reporting for
+	-verbosemem from TVT Kaffe.
+
 2003-07-06  Gerrit P. Haase <gp@familiehaase.de>
 
 	* configure.in:

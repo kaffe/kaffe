@@ -74,18 +74,69 @@ static void *outOfMem_allocator;
 
 #if defined(SUPPORT_VERBOSEMEM)
 
+static struct {
+  int size;
+  int count;
+  uint64 total;
+} objectSizes[] = {
+
+#define OBJECTSIZE(SZ)  { SZ, 0, 0 },
+
+  /* The smaller sizes should match what's in the
+     freelist[] array defined in gc-mem.c */
+
+  OBJECTSIZE(16)
+  OBJECTSIZE(24)
+  OBJECTSIZE(32)
+  OBJECTSIZE(40)
+  OBJECTSIZE(48)
+  OBJECTSIZE(56)
+  OBJECTSIZE(64)
+  OBJECTSIZE(80)
+  OBJECTSIZE(96)
+  OBJECTSIZE(112)
+  OBJECTSIZE(128)
+  OBJECTSIZE(160)
+  OBJECTSIZE(192)
+  OBJECTSIZE(224)
+  OBJECTSIZE(240)
+  OBJECTSIZE(496)
+  OBJECTSIZE(1000)
+  OBJECTSIZE(2016)
+  OBJECTSIZE(4040)
+  OBJECTSIZE(8192)
+  OBJECTSIZE(12288)
+  OBJECTSIZE(16483)
+  OBJECTSIZE(32768)
+  OBJECTSIZE(65536)
+  OBJECTSIZE(131072)
+  OBJECTSIZE(262144)
+  OBJECTSIZE(524288)
+  OBJECTSIZE(1048576)
+  OBJECTSIZE(0x7FFFFFFF)
+
+#undef  OBJECTSIZE
+
+  { -1, -1, -1 }
+
+};
+
 static void objectStatsChange(gc_unit*, int);
 static void objectStatsPrint(void);
+static void objectSizesAdd(size_t);
+static void objectSizesPrint(void);
 
 #define	OBJECTSTATSADD(M)	objectStatsChange(M, 1)
 #define	OBJECTSTATSREMOVE(M)	objectStatsChange(M, -1)
 #define	OBJECTSTATSPRINT()	objectStatsPrint()
+#define	OBJECTSIZESADD(S)	objectSizesAdd(S)
 
 #else
 
 #define	OBJECTSTATSADD(M)
 #define	OBJECTSTATSREMOVE(M)
 #define	OBJECTSTATSPRINT()
+#define	OBJECTSIZESADD(S)
 
 #endif
 
@@ -920,6 +971,7 @@ gcMalloc(Collector* gcif, size_t size, int fidx)
 	GC_SET_FUNCS(info, i, fidx);
 
 	OBJECTSTATSADD(unit);
+	OBJECTSIZESADD(size);
 
 	/* Determine whether we need to finalise or not */
 	if (gcFunctions[fidx].final == GC_OBJECT_NORMAL || gcFunctions[fidx].final == GC_OBJECT_FIXED) {
@@ -1151,7 +1203,8 @@ objectStatsChange(gc_unit* unit, int diff)
 	gcFunctions[idx].mem += diff * GCBLOCKSIZE(info);
 }
 
-static void
+static
+void
 objectStatsPrint(void)
 {
 	int cnt = 0;
@@ -1174,7 +1227,67 @@ objectStatsPrint(void)
 	if (cnt % 2 != 0) {
 		dprintf("\n");
 	}
+
+        objectSizesPrint();
 }
+
+static
+void
+objectSizesAdd(size_t sz)
+{
+        int i;
+        for (i = 0; sz > objectSizes[i].size; i++)
+                ;
+        objectSizes[i].count++;
+
+	/* This might be slightly misleading as it
+	 * doesn't take into account the block overhead
+	 * for small allocations */
+
+	if (objectSizes[i].size > MAX_SMALL_OBJECT_SIZE) {
+		objectSizes[i].total += sz;
+	}
+	else {
+		objectSizes[i].total += objectSizes[i].size;
+	}
+}
+
+static
+void
+objectSizesPrint(void)
+{
+        int i;
+        uint64 total;
+        int count;
+        int nr;
+        int j;
+
+        total = 0;
+        count = 0;
+        for (i = 0; objectSizes[i].size != -1; i++) {
+                count += objectSizes[i].count;
+                total += objectSizes[i].total;
+        }
+        nr = i;
+
+        if (total == 0) {
+                return;
+        }
+
+        dprintf("Percentage size allocations: %% of allocation counts / %% of memory\n");
+        dprintf("-----------------------------------------------------------------\n");
+
+
+        for (i = 0; i < nr; ) {
+                for (j = 0; j < 3 && i < nr; j++, i++) {
+                        dprintf("%10d :%5.1f /%5.1f  ", objectSizes[i].size, 
+				(float)(objectSizes[i].count * 100 / (float)count), 
+				(float)(objectSizes[i].total * 100 / (float)total));
+                }
+                dprintf("\n");
+        }
+}
+
 #endif
 
 /*
