@@ -1,5 +1,9 @@
 2004-04-03  Adam Heath <doogie@debian.org>
 
+	* kaffe/kaffevm/jni.c: Fix shadowed declaration warnings.
+
+2004-04-03  Adam Heath <doogie@debian.org>
+
         * scripts/sort-warnings.pl: Add in warnings produced by jikes.
 
 2004-04-03  Adam Heath <doogie@debian.org>

@@ -384,31 +384,31 @@ Kaffe_FindClass(JNIEnv* env UNUSED, const char* name)
 static jclass
 Kaffe_GetSuperClass(JNIEnv* env UNUSED, jclass cls)
 {
-	jclass ret;
+	jclass clz;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = ((Hjava_lang_Class*)cls)->superclass;
+	clz = ((Hjava_lang_Class*)cls)->superclass;
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (clz);
 }
 
 static jbool
 Kaffe_IsAssignableFrom(JNIEnv* env UNUSED, jclass cls1, jclass cls2)
 {
-	jbool ret;
+	jbool r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (instanceof(cls2, cls1) != 0) {
-		ret = JNI_TRUE;
+		r = JNI_TRUE;
 	}
 	else {
-		ret = JNI_FALSE;
+		r = JNI_FALSE;
 	}
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jint
@@ -595,19 +595,19 @@ Kaffe_GetObjectClass(JNIEnv* env UNUSED, jobject obj)
 static jbool
 Kaffe_IsInstanceOf(JNIEnv* env UNUSED, jobject obj, jclass cls)
 {
-	jbool ret;
+	jbool r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (soft_instanceof((Hjava_lang_Class*)cls, (Hjava_lang_Object*)obj) != 0) {
-		ret = JNI_TRUE;
+		r = JNI_TRUE;
 	}
 	else {
-		ret = JNI_FALSE;
+		r = JNI_FALSE;
 	}
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jmethodID
@@ -655,16 +655,16 @@ static jobject
 Kaffe_CallObjectMethod(JNIEnv* env, jobject obj, jmethodID meth, ...)
 {
 	va_list args;
-	jobject ret;
+	jobject r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallObjectMethodV(env, obj, meth, args);
+	r = Kaffe_CallObjectMethodV(env, obj, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jobject
@@ -709,16 +709,16 @@ static jboolean
 Kaffe_CallBooleanMethod(JNIEnv* env, jobject obj, jmethodID meth, ...)
 {
 	va_list args;
-	jboolean ret;
+	jboolean r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallBooleanMethodV(env, obj, meth, args);
+	r = Kaffe_CallBooleanMethodV(env, obj, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jboolean
@@ -763,16 +763,16 @@ static jbyte
 Kaffe_CallByteMethod(JNIEnv* env, jobject obj, jmethodID meth, ...)
 {
 	va_list args;
-	jbyte ret;
+	jbyte r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallByteMethodV(env, obj, meth, args);
+	r = Kaffe_CallByteMethodV(env, obj, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jbyte
@@ -817,16 +817,16 @@ static jchar
 Kaffe_CallCharMethod(JNIEnv* env, jobject obj, jmethodID meth, ...)
 {
 	va_list args;
-	jchar ret;
+	jchar r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallCharMethodV(env, obj, meth, args);
+	r = Kaffe_CallCharMethodV(env, obj, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jchar
@@ -871,16 +871,16 @@ static jshort
 Kaffe_CallShortMethod(JNIEnv* env, jobject obj, jmethodID meth, ...)
 {
 	va_list args;
-	jshort ret;
+	jshort r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallShortMethodV(env, obj, meth, args);
+	r = Kaffe_CallShortMethodV(env, obj, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jshort
@@ -925,16 +925,16 @@ static jint
 Kaffe_CallIntMethod(JNIEnv* env, jobject obj, jmethodID meth, ...)
 {
 	va_list args;
-	jint ret;
+	jint r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallIntMethodV(env, obj, meth, args);
+	r = Kaffe_CallIntMethodV(env, obj, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jint
@@ -979,16 +979,16 @@ static jlong
 Kaffe_CallLongMethod(JNIEnv* env, jobject obj, jmethodID meth, ...)
 {
 	va_list args;
-	jlong ret;
+	jlong r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallLongMethodV(env, obj, meth, args);
+	r = Kaffe_CallLongMethodV(env, obj, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jlong
@@ -1033,16 +1033,16 @@ static jfloat
 Kaffe_CallFloatMethod(JNIEnv* env, jobject obj, jmethodID meth, ...)
 {
 	va_list args;
-	jfloat ret;
+	jfloat r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallFloatMethodV(env, obj, meth, args);
+	r = Kaffe_CallFloatMethodV(env, obj, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jfloat
@@ -1087,16 +1087,16 @@ static jdouble
 Kaffe_CallDoubleMethod(JNIEnv* env, jobject obj, jmethodID meth, ...)
 {
 	va_list args;
-	jdouble ret;
+	jdouble r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallDoubleMethodV(env, obj, meth, args);
+	r = Kaffe_CallDoubleMethodV(env, obj, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jdouble
@@ -1189,16 +1189,16 @@ static jobject
 Kaffe_CallNonvirtualObjectMethod(JNIEnv* env, jobject obj, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jobject ret;
+	jobject r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallNonvirtualObjectMethodV(env, obj, cls, meth, args);
+	r = Kaffe_CallNonvirtualObjectMethodV(env, obj, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jobject
@@ -1242,16 +1242,16 @@ static jboolean
 Kaffe_CallNonvirtualBooleanMethod(JNIEnv* env, jobject obj, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jboolean ret;
+	jboolean r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallNonvirtualBooleanMethodV(env, obj, cls, meth, args);
+	r = Kaffe_CallNonvirtualBooleanMethodV(env, obj, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jboolean
@@ -1294,16 +1294,16 @@ static jbyte
 Kaffe_CallNonvirtualByteMethod(JNIEnv* env, jobject obj, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jbyte ret;
+	jbyte r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallNonvirtualByteMethodV(env, obj, cls, meth, args);
+	r = Kaffe_CallNonvirtualByteMethodV(env, obj, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jbyte
@@ -1346,16 +1346,16 @@ static jchar
 Kaffe_CallNonvirtualCharMethod(JNIEnv* env, jobject obj, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jchar ret;
+	jchar r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallNonvirtualCharMethodV(env, obj, cls, meth, args);
+	r = Kaffe_CallNonvirtualCharMethodV(env, obj, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jchar
@@ -1398,16 +1398,16 @@ static jshort
 Kaffe_CallNonvirtualShortMethod(JNIEnv* env, jobject obj, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jshort ret;
+	jshort r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallNonvirtualShortMethodV(env, obj, cls, meth, args);
+	r = Kaffe_CallNonvirtualShortMethodV(env, obj, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jshort
@@ -1450,16 +1450,16 @@ static jint
 Kaffe_CallNonvirtualIntMethod(JNIEnv* env, jobject obj, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jint ret;
+	jint r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallNonvirtualIntMethodV(env, obj, cls, meth, args);
+	r = Kaffe_CallNonvirtualIntMethodV(env, obj, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jint
@@ -1502,16 +1502,16 @@ static jlong
 Kaffe_CallNonvirtualLongMethod(JNIEnv* env, jobject obj, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jlong ret;
+	jlong r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallNonvirtualLongMethodV(env, obj, cls, meth, args);
+	r = Kaffe_CallNonvirtualLongMethodV(env, obj, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jlong
@@ -1554,16 +1554,16 @@ static jfloat
 Kaffe_CallNonvirtualFloatMethod(JNIEnv* env, jobject obj, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jfloat ret;
+	jfloat r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallNonvirtualFloatMethodV(env, obj, cls, meth, args);
+	r = Kaffe_CallNonvirtualFloatMethodV(env, obj, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jfloat
@@ -1606,16 +1606,16 @@ static jdouble
 Kaffe_CallNonvirtualDoubleMethod(JNIEnv* env, jobject obj, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jdouble ret;
+	jdouble r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallNonvirtualDoubleMethodV(env, obj, cls, meth, args);
+	r = Kaffe_CallNonvirtualDoubleMethodV(env, obj, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jdouble
@@ -1717,98 +1717,98 @@ Kaffe_GetObjectField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 static jboolean
 Kaffe_GetBooleanField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
-	jboolean ret;
+	jboolean r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = GET_FIELD(jboolean, obj, fld);
+	r = GET_FIELD(jboolean, obj, fld);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jbyte
 Kaffe_GetByteField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
-	jbyte ret;
+	jbyte r;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = GET_FIELD(jbyte, obj, fld);
+	r = GET_FIELD(jbyte, obj, fld);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jchar
 Kaffe_GetCharField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
-	jchar ret;
+	jchar r;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = GET_FIELD(jchar, obj, fld);
+	r = GET_FIELD(jchar, obj, fld);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jshort
 Kaffe_GetShortField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
-	jshort ret;
+	jshort r;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = GET_FIELD(jshort, obj, fld);
+	r = GET_FIELD(jshort, obj, fld);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jint
 Kaffe_GetIntField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
-	jint ret;
+	jint r;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = GET_FIELD(jint, obj, fld);
+	r = GET_FIELD(jint, obj, fld);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jlong
 Kaffe_GetLongField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
-	jlong ret;
+	jlong r;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = GET_FIELD(jlong, obj, fld);
+	r = GET_FIELD(jlong, obj, fld);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jfloat
 Kaffe_GetFloatField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
-	jfloat ret;
+	jfloat r;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = GET_FIELD(jfloat, obj, fld);
+	r = GET_FIELD(jfloat, obj, fld);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jdouble
 Kaffe_GetDoubleField(JNIEnv* env UNUSED, jobject obj, jfieldID fld)
 {
-	jdouble ret;
+	jdouble r;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = GET_FIELD(jdouble, obj, fld);
+	r = GET_FIELD(jdouble, obj, fld);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static void
@@ -1944,16 +1944,16 @@ static jobject
 Kaffe_CallStaticObjectMethod(JNIEnv* env, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jobject ret;
+	jobject r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallStaticObjectMethodV(env, cls, meth, args);
+	r = Kaffe_CallStaticObjectMethodV(env, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jobject
@@ -1997,16 +1997,16 @@ static jboolean
 Kaffe_CallStaticBooleanMethod(JNIEnv* env, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jboolean ret;
+	jboolean r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallStaticBooleanMethodV(env, cls, meth, args);
+	r = Kaffe_CallStaticBooleanMethodV(env, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jboolean
@@ -2049,16 +2049,16 @@ static jbyte
 Kaffe_CallStaticByteMethod(JNIEnv* env, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jbyte ret;
+	jbyte r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallStaticByteMethodV(env, cls, meth, args);
+	r = Kaffe_CallStaticByteMethodV(env, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jbyte
@@ -2101,16 +2101,16 @@ static jchar
 Kaffe_CallStaticCharMethod(JNIEnv* env, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jchar ret;
+	jchar r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallStaticCharMethodV(env, cls, meth, args);
+	r = Kaffe_CallStaticCharMethodV(env, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jchar
@@ -2153,16 +2153,16 @@ static jshort
 Kaffe_CallStaticShortMethod(JNIEnv* env, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jshort ret;
+	jshort r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallStaticShortMethodV(env, cls, meth, args);
+	r = Kaffe_CallStaticShortMethodV(env, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jshort
@@ -2205,16 +2205,16 @@ static jint
 Kaffe_CallStaticIntMethod(JNIEnv* env, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jint ret;
+	jint r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallStaticIntMethodV(env, cls, meth, args);
+	r = Kaffe_CallStaticIntMethodV(env, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jint
@@ -2257,16 +2257,16 @@ static jlong
 Kaffe_CallStaticLongMethod(JNIEnv* env, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jlong ret;
+	jlong r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallStaticLongMethodV(env, cls, meth, args);
+	r = Kaffe_CallStaticLongMethodV(env, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jlong
@@ -2309,16 +2309,16 @@ static jfloat
 Kaffe_CallStaticFloatMethod(JNIEnv* env, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jfloat ret;
+	jfloat r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallStaticFloatMethodV(env, cls, meth, args);
+	r = Kaffe_CallStaticFloatMethodV(env, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jfloat
@@ -2361,16 +2361,16 @@ static jdouble
 Kaffe_CallStaticDoubleMethod(JNIEnv* env, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
-	jdouble ret;
+	jdouble r;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	va_start(args, meth);
-	ret = Kaffe_CallStaticDoubleMethodV(env, cls, meth, args);
+	r = Kaffe_CallStaticDoubleMethodV(env, cls, meth, args);
 	va_end(args);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jdouble
@@ -2474,97 +2474,97 @@ Kaffe_GetStaticObjectField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
 static jboolean
 Kaffe_GetStaticBooleanField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
 {
-	jboolean ret;
+	jboolean r;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = GET_STATIC_FIELD(jboolean, fld);
+	r = GET_STATIC_FIELD(jboolean, fld);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jbyte
 Kaffe_GetStaticByteField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
 {
-	jbyte ret;
+	jbyte r;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = GET_STATIC_FIELD(jbyte, fld);
+	r = GET_STATIC_FIELD(jbyte, fld);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jchar
 Kaffe_GetStaticCharField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
 {
-	jchar ret;
+	jchar r;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = GET_STATIC_FIELD(jchar, fld);
+	r = GET_STATIC_FIELD(jchar, fld);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jshort
 Kaffe_GetStaticShortField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
 {
-	jint ret;
+	jint r;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = GET_STATIC_FIELD(jshort, fld);
+	r = GET_STATIC_FIELD(jshort, fld);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jint
 Kaffe_GetStaticIntField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
 {
-	jint ret;
+	jint r;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = GET_STATIC_FIELD(jint, fld);
+	r = GET_STATIC_FIELD(jint, fld);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jlong
 Kaffe_GetStaticLongField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
 {
-	jlong ret;
+	jlong r;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = GET_STATIC_FIELD(jlong, fld);
+	r = GET_STATIC_FIELD(jlong, fld);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jfloat
 Kaffe_GetStaticFloatField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
 {
-	jfloat ret;
+	jfloat r;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = GET_STATIC_FIELD(jfloat, fld);
+	r = GET_STATIC_FIELD(jfloat, fld);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static jdouble
 Kaffe_GetStaticDoubleField(JNIEnv* env UNUSED, jclass cls UNUSED, jfieldID fld)
 {
-	jdouble ret;
+	jdouble r;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = GET_STATIC_FIELD(jdouble, fld);
+	r = GET_STATIC_FIELD(jdouble, fld);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (r);
 }
 
 static void
@@ -2678,27 +2678,27 @@ Kaffe_NewString(JNIEnv* env UNUSED, const jchar* data, jsize len)
 static jsize
 Kaffe_GetStringLength(JNIEnv* env UNUSED, jstring data)
 {
-	jsize ret;
+	jsize len;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = STRING_SIZE((Hjava_lang_String*)data);
+	len = STRING_SIZE((Hjava_lang_String*)data);
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (len);
 }
 
 static const jchar*
 Kaffe_GetStringChars(JNIEnv* env UNUSED, jstring data, jboolean* copy)
 {
-	jchar* ret;
+	jchar* c;
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (copy != NULL) {
 		*copy = JNI_FALSE;
 	}
-	ret = STRING_DATA(((Hjava_lang_String*)data));
+	c = STRING_DATA(((Hjava_lang_String*)data));
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (c);
 }
 
 static jstring
@@ -2813,13 +2813,13 @@ Kaffe_ReleaseStringUTFChars(JNIEnv* env UNUSED, jstring data UNUSED, const jbyte
 static jsize
 Kaffe_GetArrayLength(JNIEnv* env UNUSED, jarray arr)
 {
-	jsize ret;
+	jsize len;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = obj_length((HArrayOfObject*)arr);
+	len = obj_length((HArrayOfObject*)arr);
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (len);
 }
 
 static jobjectArray
@@ -2987,31 +2987,31 @@ Kaffe_NewDoubleArray(JNIEnv* env UNUSED, jsize len)
 static jboolean*
 Kaffe_GetBooleanArrayElements(JNIEnv* env UNUSED, jbooleanArray arr, jbool* iscopy)
 {
-	jboolean* ret;
+	jboolean* array;
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (iscopy != NULL) {
 		*iscopy = JNI_FALSE;
 	}
-	ret = unhand_array((HArrayOfBoolean*)arr)->body;
+	array = unhand_array((HArrayOfBoolean*)arr)->body;
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (array);
 }
 
 static jbyte*
 Kaffe_GetByteArrayElements(JNIEnv* env UNUSED, jbyteArray arr, jbool* iscopy)
 {
-	jbyte* ret;
+	jbyte* array;
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (iscopy != NULL) {
 		*iscopy = JNI_FALSE;
 	}
-	ret = unhand_array((HArrayOfByte*)arr)->body;
+	array = unhand_array((HArrayOfByte*)arr)->body;
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (array);
 }
 
 static void*
@@ -3023,91 +3023,91 @@ Kaffe_GetPrimitiveArrayCritical(JNIEnv* env, jarray arr, jbool* iscopy)
 static jchar*
 Kaffe_GetCharArrayElements(JNIEnv* env UNUSED, jcharArray arr, jbool* iscopy)
 {
-	jchar* ret;
+	jchar* array;
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (iscopy != NULL) {
 		*iscopy = JNI_FALSE;
 	}
-	ret = unhand_array((HArrayOfChar*)arr)->body;
+	array = unhand_array((HArrayOfChar*)arr)->body;
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (array);
 }
 
 static jshort*
 Kaffe_GetShortArrayElements(JNIEnv* env UNUSED, jshortArray arr, jbool* iscopy)
 {
-	jshort* ret;
+	jshort* array;
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (iscopy != NULL) {
 		*iscopy = JNI_FALSE;
 	}
-	ret = unhand_array((HArrayOfShort*)arr)->body;
+	array = unhand_array((HArrayOfShort*)arr)->body;
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (array);
 }
 
 static jint*
 Kaffe_GetIntArrayElements(JNIEnv* env UNUSED, jintArray arr, jbool* iscopy)
 {
-	jint* ret;
+	jint* array;
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (iscopy != NULL) {
 		*iscopy = JNI_FALSE;
 	}
-	ret = unhand_array((HArrayOfInt*)arr)->body;
+	array = unhand_array((HArrayOfInt*)arr)->body;
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (array);
 }
 
 static jlong*
 Kaffe_GetLongArrayElements(JNIEnv* env UNUSED, jlongArray arr, jbool* iscopy)
 {
-	jlong* ret;
+	jlong* array;
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (iscopy != NULL) {
 		*iscopy = JNI_FALSE;
 	}
-	ret = unhand_array((HArrayOfLong*)arr)->body;
+	array = unhand_array((HArrayOfLong*)arr)->body;
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (array);
 }
 
 static jfloat*
 Kaffe_GetFloatArrayElements(JNIEnv* env UNUSED, jfloatArray arr, jbool* iscopy)
 {
-	jfloat* ret;
+	jfloat* array;
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (iscopy != NULL) {
 		*iscopy = JNI_FALSE;
 	}
-	ret = unhand_array((HArrayOfFloat*)arr)->body;
+	array = unhand_array((HArrayOfFloat*)arr)->body;
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (array);
 }
 
 static jdouble*
 Kaffe_GetDoubleArrayElements(JNIEnv* env UNUSED, jdoubleArray arr, jbool* iscopy)
 {
-	jdouble* ret;
+	jdouble* array;
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (iscopy != NULL) {
 		*iscopy = JNI_FALSE;
 	}
-	ret = unhand_array((HArrayOfDouble*)arr)->body;
+	array = unhand_array((HArrayOfDouble*)arr)->body;
 
 	END_EXCEPTION_HANDLING();
-	return (ret);
+	return (array);
 }
 
 static void
@@ -3501,7 +3501,7 @@ Kaffe_SetDoubleArrayRegion(JNIEnv* env UNUSED, jdoubleArray arr, jsize start, js
 }
 
 static jint
-Kaffe_RegisterNatives(JNIEnv* env UNUSED, jclass cls, const JNINativeMethod* methods, jint nmethods)
+Kaffe_RegisterNatives(JNIEnv* env UNUSED, jclass cls, const JNINativeMethod* methodArray, jint nmethods)
 {
 	Method* meth;
 	int nmeth;
@@ -3515,15 +3515,15 @@ Kaffe_RegisterNatives(JNIEnv* env UNUSED, jclass cls, const JNINativeMethod* met
 
 	for (j = 0; j < nmethods; j++) {
 		for (i = 0; i < nmeth; i++) {
-			if (strcmp(meth[i].name->data, methods[j].name) == 0 &&
-			    strcmp(METHOD_SIGD(&meth[i]), methods[j].signature) == 0 &&
+			if (strcmp(meth[i].name->data, methodArray[j].name) == 0 &&
+			    strcmp(METHOD_SIGD(&meth[i]), methodArray[j].signature) == 0 &&
 			    (meth[i].accflags & ACC_NATIVE) != 0) {
-				Kaffe_JNI_wrapper(&meth[i], methods[j].fnPtr); 
+				Kaffe_JNI_wrapper(&meth[i], methodArray[j].fnPtr); 
 				goto found;
 			}
 		}
 		/* Failed to find method */
-		throwException(NoSuchMethodError(methods[j].name));
+		throwException(NoSuchMethodError(methodArray[j].name));
 
 		found:;
 	}
