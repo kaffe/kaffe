@@ -120,6 +120,9 @@ createWindow ( JNIEnv* env, jclass clazz, Window parent, void* owner, jstring jT
 	height -= X->titleBarHeight + X->bottomBarHeight;
   }
 
+  if ( width <= 0 )  width = 1;
+  if ( height <= 0 ) height = 1;
+
   wnd = XCreateWindow( X->dsp, parent, x, y, width, height, 0,
 					   CopyFromParent, InputOutput, CopyFromParent,
 					   valueMask, &attributes);
@@ -228,6 +231,8 @@ void
 Java_java_awt_Toolkit_wndSetWindowBounds ( JNIEnv* env, jclass clazz, void* wnd,
 										   jint x, jint y, jint width, jint height )
 {
+  if ( width < 0 )  width = 0;
+  if ( height < 0 ) height = 0;
   XMoveResizeWindow( X->dsp, (Window)wnd, x, y, width, height);
 }
 
