@@ -71,6 +71,7 @@ java/lang/Number.class
 java/lang/NumberFormatException.class
 java/lang/Object.class
 java/lang/OutOfMemoryError.class
+java/lang/Package.class
 java/lang/Runnable.class
 java/lang/Runtime.class
 java/lang/RuntimeException.class
