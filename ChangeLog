@@ -1,4 +1,12 @@
-Tue Dec  8 11:58:47 1998  Godmar Back  <gback@marker.cs.utah.edu>
+Tue Dec  8 13:48:02 1998  Raffaele Sena <raff@aromatic.com>
+
+	* config/arm/linux/config.frag: allowed for use of shared libraries. 
+
+Tue Dec  8 13:46:05 1998  Leigh Stoller <stoller@cs.utah.edu>
+
+	* kaffe/kaffevm/jar.c: fall back to read if mmap fails.
+
+Tue Dec  8 11:58:47 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/file.h, kaffe/kaffevm/findInJar.c
 	libraries/clib/native/ClassLoader.c: fixed missing declaration of

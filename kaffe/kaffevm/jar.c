@@ -26,49 +26,55 @@
 #define	gc_free_fixed(M)	free(M)
 #endif
 
-#ifdef HAVE_MMAP
 static inline int
 jar_read(jarFile* file, char *buf, off_t len)
 {
-    if (file->offset + len > file->size)
-	len = file->size - file->offset;
-    if (len <= 0)
-	return 0;
-    memcpy(buf, file->data + file->offset, len);
-    file->offset += len;
-    return len;
+#ifdef HAVE_MMAP
+    if (file->data != (char*)-1) {
+        if (file->offset + len > file->size)
+	    len = file->size - file->offset;
+	if (len <= 0)
+	    return 0;
+	memcpy(buf, file->data + file->offset, len);
+	file->offset += len;
+	return len;
+    }
+    else
+#endif
+    return read(file->fd, buf, len);
 }
 
 static inline off_t
 jar_lseek(jarFile* file, off_t offset, int whence)
 {
-    off_t pos;
+#ifdef HAVE_MMAP
+    if (file->data != (char*)-1) {
+	off_t pos;
 
-    switch (whence) {
-	case SEEK_CUR:
-	    pos = file->offset + offset;
-	    break;
-	case SEEK_SET:
-	    pos = offset;
-	    break;
-	case SEEK_END:
-	    pos = file->size + offset;
-	    break;
-	default:
+	switch (whence) {
+	    case SEEK_CUR:
+	        pos = file->offset + offset;
+		break;
+	    case SEEK_SET:
+		pos = offset;
+		break;
+	    case SEEK_END:
+	        pos = file->size + offset;
+		break;
+	    default:
+		return (off_t)-1;
+	}
+	if (pos < 0)
 	    return (off_t)-1;
+	else if (pos > file->size)
+	    return (off_t)-1;
+	file->offset = pos;
+	return pos;
     }
-    if (pos < 0)
-	return (off_t)-1;
-    else if (pos > file->size)
-	return (off_t)-1;
-    file->offset = pos;
-    return pos;
-}
-#else
-#define jar_read(F, B, L)	read(F->fd, B, L)
-#define jar_lseek(F, O, W)	lseek(F->fd, O, W)
+    else
 #endif
-
+    return lseek(file->fd, offset, whence);
+}
 
 /*
  * Read in a central directory record.
@@ -195,14 +201,11 @@ openJarFile(char* name)
 		return (0);
 	}
 	file->data = mmap(NULL, file->size, PROT_READ, MAP_SHARED, file->fd, 0);
-	close(file->fd);
-	if (file->data == (char*)-1) {
-		gc_free_fixed(file);
-		return (0);
+	if (file->data != (char*)-1) {
+		close(file->fd);
+		file->offset = 0;
 	}
-	file->offset = 0;
 #endif
-
 	i = findFirstCentralDirRecord(file);
 	file->count = i;
 	if (i > 0) {
@@ -292,9 +295,11 @@ closeJarFile(jarFile* file)
 	}
 
 #ifdef HAVE_MMAP
-	munmap(file->data, file->size);
-#else
-	close(file->fd);
+	if (file->data != (char*)-1)
+		munmap(file->data, file->size);
+	else
 #endif
+	close(file->fd);
 	gc_free_fixed(file);
 }
+
