@@ -2534,7 +2534,7 @@ Kaffe_GetStringChars(JNIEnv* env, jstring data, jboolean* copy)
 	if (copy != NULL) {
 		*copy = JNI_FALSE;
 	}
-	ret = unhand(unhand((Hjava_lang_String*)data)->value)->body;
+	ret = STRING_DATA(((Hjava_lang_String*)data));
 
 	END_EXCEPTION_HANDLING();
 	return (ret);
