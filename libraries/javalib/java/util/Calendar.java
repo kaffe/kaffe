@@ -143,7 +143,8 @@ abstract public boolean equals(Object when);
 
 final public int get(int field)
 {
-	complete();
+	if (!isSet[field])
+		complete();
 	return (fields[field]);
 }
 
@@ -224,6 +225,22 @@ final public boolean isSet(int field)
 }
 
 abstract public void roll(int field, boolean up);
+
+public void roll(int field, int amount)
+{
+	boolean direction = true;
+	int lpc;
+	
+	if( amount < 0 )
+	{
+		amount = -amount;
+		direction = false;
+	}
+	for( lpc = 0; lpc < amount; lpc++ )
+	{
+		this.roll(field, direction);
+	}
+}
 
 final public void set(int field, int value)
 {

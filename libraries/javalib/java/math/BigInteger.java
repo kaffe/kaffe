@@ -39,8 +39,11 @@ public BigInteger(byte val[]) {
 		throw new NumberFormatException("val.length == 0");
 	int signum = (val[0] & 128) == 0 ? 1 : -1;
 	if (signum == -1) {
-		for(int i = val.length; i-- > 0; ) {
-			val[i] = (byte)~val[i]; // adjust two's complement
+		int lpc;
+
+		for( lpc = 0; lpc < val.length; lpc++ )
+		{
+			val[lpc] = (byte)~val[lpc];
 		}
 	}
 	assignBytes0(signum, val);
@@ -229,17 +232,31 @@ public BigInteger modInverse(BigInteger mod) {
 }
 
 public BigInteger shiftLeft(int n) {
-	BigInteger s = new BigInteger();
-	s.setbit0(s, n);
-	s.mul0(this, s);
-	return (s);
+	if( n < 0 )
+	{
+		return this.shiftRight(-n);
+	}
+	else
+	{
+		BigInteger s = new BigInteger();
+		s.setbit0(s, n);
+		s.mul0(this, s);
+		return (s);
+	}
 }
 
 public BigInteger shiftRight(int n) {
-	BigInteger s = new BigInteger();
-	s.setbit0(s, n);
-	s.div0(this, s);
-	return (s);
+	if( n < 0 )
+	{
+		return this.shiftLeft(-n);
+	}
+	else
+	{
+		BigInteger s = new BigInteger();
+		s.setbit0(s, n);
+		s.div0(this, s);
+		return (s);
+	}
 }
 
 public BigInteger and(BigInteger val) {

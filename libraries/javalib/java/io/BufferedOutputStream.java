@@ -28,8 +28,16 @@ public BufferedOutputStream(OutputStream out, int size) {
 
 public synchronized void flush() throws IOException {
 	if (count > 0) {
-		out.write(buf, 0, count);
-		count = 0;
+		try
+		{
+			out.write(buf, 0, count);
+			count = 0;
+		}
+		catch(InterruptedIOException e)
+		{
+			count -= e.bytesTransferred;
+			throw e;
+		}
 	}
 	out.flush();
 }
@@ -45,8 +53,16 @@ public synchronized void write(byte b[], int off, int len) throws IOException {
 
 	// Otherwise, first write out any old buffered data
 	if (count > 0) {
-		out.write(buf, 0, count);
-		count = 0;
+		try
+		{
+			out.write(buf, 0, count);
+			count = 0;
+		}
+		catch(InterruptedIOException e)
+		{
+			count -= e.bytesTransferred;
+			throw e;
+		}
 	}
 
 	// Then write out the new data directly, without copying
@@ -55,8 +71,16 @@ public synchronized void write(byte b[], int off, int len) throws IOException {
 
 public synchronized void write(int b) throws IOException {
 	if (count == buf.length) {
-		out.write(buf, 0, buf.length);
-		count = 0;
+		try
+		{
+			out.write(buf, 0, buf.length);
+			count = 0;
+		}
+		catch(InterruptedIOException e)
+		{
+			count -= e.bytesTransferred;
+			throw e;
+		}
 	}
 	buf[count++] = (byte)b;
 }

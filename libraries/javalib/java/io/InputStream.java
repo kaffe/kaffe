@@ -12,6 +12,8 @@ package java.io;
 
 abstract public class InputStream extends Object {
 
+private static final byte skipBuffer[] = new byte[1024];
+
 public int available() throws IOException {
 	return 0;
 }
@@ -56,11 +58,13 @@ public synchronized void reset() throws IOException {
 }
 
 public long skip(long n) throws IOException {
-	final byte[] buf = new byte[1024];
 	int skipped = 0;
 
 	while (n > 0) {
-		final int r = read(buf, 0, buf.length < n ? buf.length : (int)n);
+		final int r = read(skipBuffer,
+				   0,
+				   skipBuffer.length < n ?
+				   skipBuffer.length : (int)n);
 		if (r < 0)
 			break;
 		n -= r;

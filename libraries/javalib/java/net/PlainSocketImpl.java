@@ -42,10 +42,11 @@ protected void bind(InetAddress address, int lport) throws IOException {
 }
 
 protected synchronized void close() throws IOException {
+	if( !closed )
+		socketClose();
 	closed = true;
 	in = null;
 	out = null;
-	socketClose();
 }
 
 protected void connect(String host, int port) throws IOException {

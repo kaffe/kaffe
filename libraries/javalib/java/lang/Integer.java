@@ -152,10 +152,9 @@ private static int parseUnsignedInt(String s, int radix, int sign) throws Number
 			throw new NumberFormatException();
 		}
 		int nresult = (result * radix) + (sign * digit);
-		if (nresult < 0 && sign == 1) {
-			throw new NumberFormatException();
-		}
-		else if (nresult > 0 && sign == -1) {
+		if (((sign == 1) && (result > nresult)) ||
+		    ((sign == -1) && (result < nresult)) )
+		{
 			throw new NumberFormatException();
 		}
 		result = nresult;

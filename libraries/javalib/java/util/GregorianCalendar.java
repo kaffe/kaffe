@@ -200,7 +200,7 @@ private long computeDateTime() {
 	}
 
 	if (isSet[ZONE_OFFSET]) {
-		time += fields[ZONE_OFFSET];
+		time -= fields[ZONE_OFFSET];
 	}
 	
 	return (time);
@@ -216,6 +216,9 @@ protected void computeFields() {
 	// If we're in daylight saving, recompute based on this time
 	if (offset != rawoffset) {
 		computeFields(this.time + offset);
+		set(ZONE_OFFSET, (int)offset);
+	} else {
+		set(ZONE_OFFSET, (int)rawoffset);
 	}
 
 	areFieldsSet = true;
@@ -316,7 +319,23 @@ private void computeFields(long time) {
 }
 
 protected void computeTime() {
-	long offset = getTimeZone().getOffset(fields[ERA], fields[YEAR], fields[MONTH], fields[DAY_OF_MONTH], fields[DAY_OF_WEEK], fields[MILLISECOND]);
+	long offset = 0;
+
+	if( !isSet[Calendar.ERA] )
+	{
+		// Assume A.D.
+		set(Calendar.ERA, AD);
+	}
+
+	if( isSet[Calendar.ZONE_OFFSET] )
+	{
+		// The zone offset is given.
+	}
+	else
+	{
+		// Assume the time is given in current time zone.
+		offset = getTimeZone().getOffset(fields[ERA], fields[YEAR], fields[MONTH], fields[DAY_OF_MONTH], fields[DAY_OF_WEEK], fields[MILLISECOND]);
+	}
 	time = computeDateTime() - offset;
 	isTimeSet = true;
 }

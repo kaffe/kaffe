@@ -41,7 +41,11 @@ public void close() throws IOException {
 	out = 0;
 	in = 0;
 	closed = true;
-    	finished = true;
+	synchronized(this)
+	{
+		finished = true;
+		this.notifyAll();
+	}
 }
 
 public void connect(PipedOutputStream src) throws IOException {
@@ -104,7 +108,8 @@ protected synchronized void receive(int b) throws IOException {
 }
 
 //Used in java.io.PipedOutputStream
-void receivedLast() {
+synchronized void receivedLast() {
     	finished = true;
+	this.notifyAll();
 }
 }

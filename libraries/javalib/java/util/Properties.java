@@ -82,6 +82,8 @@ public String getProperty(String key) {
 	// our own because it may be overridden
 	// Software: HotJava
   // if (System.out != null) System.out.println("getProperty: " + key);
+	if( key == null )
+		return null;
 	Object propSearch = super.get(key);
 	if (propSearch != null) {
 		return ((String)propSearch);

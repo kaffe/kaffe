@@ -250,6 +250,8 @@ public Method getMethod(String name, Class parameterTypes[]) throws NoSuchMethod
 	SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkMemberAccess(this, Member.PUBLIC );
+	if( name.equals("<init>") || name.equals("<clinit>") )
+		throw new NoSuchMethodException();
 	return (getMethod0(name, parameterTypes, false));
 }
 

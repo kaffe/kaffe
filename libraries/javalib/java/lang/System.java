@@ -192,10 +192,9 @@ public static void setProperties(Properties prps) {
 
 public static void setSecurityManager(SecurityManager s) {
 	if (security != null) {
-		throw new SecurityException();
+		security.checkPermission(
+			new RuntimePermission("setSecurityManager"));
 	}
-	if (s != null) {
-		security = s;
-	}
+	security = s;
 }
 }

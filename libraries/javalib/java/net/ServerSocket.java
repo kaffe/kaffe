@@ -40,6 +40,8 @@ public ServerSocket(int port, int backlog) throws IOException {
  * @param bindAddr 	the local InetAddress the server will bind to
  */
 public ServerSocket(int port, int backlog, InetAddress bindAddr) throws IOException {
+	if (port < 0 || port > 65535)
+		throw new IllegalArgumentException();
 	SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkListen(port);
@@ -107,6 +109,9 @@ public synchronized void setSoTimeout(int timeout) throws SocketException {
 }
 
 public static synchronized void setSocketFactory(SocketImplFactory fac) throws IOException {
+	SecurityManager sm = System.getSecurityManager();
+	if( sm != null )
+		sm.checkSetFactory();
 	factory = fac;
 }
 

@@ -46,6 +46,9 @@ public static Object newInstance(Class componentType, int len) throws NegativeAr
 	if (componentType == null) {
 		throw new NullPointerException();
 	}
+	if (componentType == Void.TYPE) {
+		throw new IllegalArgumentException();
+	}
 	if (len < 0) {
 		throw new NegativeArraySizeException();
 	}
@@ -58,6 +61,9 @@ public static Object newInstance(Class componentType, int dimensions[]) throws I
 		throw new NullPointerException();
 	}
 	if (dimensions.length == 0 || dimensions.length > 255) {
+		throw new IllegalArgumentException();
+	}
+	if (componentType == Void.TYPE) {
 		throw new IllegalArgumentException();
 	}
 	for (int i = 0; i < dimensions.length; i++) {

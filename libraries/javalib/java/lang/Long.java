@@ -29,6 +29,42 @@ public Long(long value) {
 	this.value=value;
 }
 
+public static Long decode(String nm) throws NumberFormatException
+{
+	/* Strip off negative sign, if any */
+	int sign = 1;
+	if (nm.startsWith("-")) {
+		sign = -1;
+		nm = nm.substring(1);
+	}
+	if (nm.equals("0")) {
+		return (new Long(0));
+	}
+
+	/* Strip off base indicator, if any */
+	int base = 10;
+	if (nm.equals("0")) {
+		return new Long(0);
+	}
+	else if (nm.startsWith("0x")) {
+		base = 16;
+		nm = nm.substring(2);
+	}
+	else if (nm.startsWith("#")) {
+		base = 16;
+		nm = nm.substring(1);
+	}
+	else if (nm.startsWith("0")) {
+		base = 8;
+		nm = nm.substring(1);
+	}
+	/* A string like "0x-1234" must generate an error; disallow it here */
+	if (nm.startsWith("-")) {
+		throw new NumberFormatException();
+	}
+	return (new Long(parseUnsignedLong(nm, base, sign)));
+}
+
 public double doubleValue() {
 	return (double )value;
 }
@@ -59,7 +95,7 @@ public static Long getLong(String nm) {
 
 public static Long getLong(String nm, Long val) {
 	String property = System.getProperty(nm);
-	if (property != null) {
+	if (property != null && !property.equals("")) {
 		long sign = 1L;
 		if (property.startsWith("-")) {
 			sign = -1L;
@@ -111,7 +147,7 @@ public static long parseLong(String s) throws NumberFormatException {
 }
 
 public static long parseLong(String s, int radix) throws NumberFormatException {
-	if (s.length() <= 0) {
+	if (s == null || s.length() <= 0) {
 		throw new NumberFormatException();
 	}
 
@@ -125,6 +161,9 @@ public static long parseLong(String s, int radix) throws NumberFormatException {
 }
 
 private static long parseUnsignedLong(String s, int radix, long sign) throws NumberFormatException {
+	if (s == null || s.length() <= 0) {
+		throw new NumberFormatException();
+	}
 	long result = 0;
 	for (int pos = 0; pos < s.length(); pos++) {
 		int digit = Character.digit(s.charAt(pos), radix);
@@ -132,10 +171,9 @@ private static long parseUnsignedLong(String s, int radix, long sign) throws Num
 			throw new NumberFormatException();
 		}
 		long nresult = (result * radix) + (sign * digit);
-		if (nresult < 0 && sign == 1) {
-			throw new NumberFormatException();
-		}
-		else if (nresult > 0 && sign == -1) {
+		if (((sign == 1) && (result > nresult)) ||
+		    ((sign == -1) && (result < nresult)) )
+		{
 			throw new NumberFormatException();
 		}
 		result = nresult;

@@ -1,3 +1,56 @@
+Thu Mar 28 13:33:03 CET 2002 Tim Stack <stack@cs.utah.edu>
+	* libraries/javalib/java/lang/reflect/Array.java:
+	(newInstance) throw IllegalArgumentException if componentType is
+	Void.TYPE.
+	* libraries/javalib/java/math/BigInteger.java:
+	(BigInteger) make byte buffer negation loop more explicit.
+	(shiftLeft) shift right if n is negative.
+	(shiftRight) shift left if n is negative.
+	* libraries/javalib/java/io/BufferedOutputStream.java :
+	(flush) decrease count by actually transferred amount in case of
+	an InterruptedIOException.
+	(write) same.
+	* libraries/javalib/java/util/Calendar.java:
+	(get) complete fields only if field has not been set yet.
+	(roll) new method.
+	* libraries/javalib/java/lang/Class.java :
+	(getMethod) throw NoSuchMethodException if method is <init> or
+	<clinit>.
+	* libraries/javalib/java/io/InputStream.java :
+	(skipBuffer) new field.
+	(skip) use static waste buffer skipBuffer instead of allocating a
+	new one.
+	* libraries/javalib/java/lang/Integer.java :
+	(parseUnsignedInt) simplify NumberFormatException check.
+	* libraries/javalib/java/lang/Long.java :
+	(decode) new method.
+	(getLong) return default value if name is empty.
+	(parseLong) throw NumberFormatException if string is null.
+	(parseUnsignedLong) simplify NumberFormatException check.
+	* libraries/javalib/java/text/ParseException.java:
+	(ParseException) include offset in message.
+	* libraries/javalib/java/io/PipedInputStream.java :
+	(close) Notify all waiting threads.
+	(receivedLast) Synchronized method. Notify all waiting threads.
+	* libraries/javalib/java/io/PipedOutputStream.java :
+	(close) allow sink to be garbage collected.
+	* libraries/javalib/java/net/PlainSocketImpl.java:
+	(close) call socketClose if it has not been closed yet.
+	* libraries/javalib/java/util/Properties.java:
+	(getProperty) return null if key is null.
+	* libraries/javalib/java/net/ServerSocket.java:
+	(ServerSocket) throw IllegalArgumentException if port is out of
+	range.
+	(setSocketFactory) check if security manager allows to do it.
+	* libraries/javalib/java/lang/System.java:
+	(setSecurityManager) updated to conform to 1.2+ spec.
+	* libraries/javalib/java/text/SimpleDateFormat.java,
+	libraries/javalib/java/util/GregorianCalendar.java,
+	libraries/javalib/java/util/SimpleTimeZone.java,
+	libraries/javalib/java/util/TimeZone.java:
+	bug fixes to get the crypto package from bouncycastle.org to work.
+	
+
 Thu Mar 28 13:05:09 CET 2002  Dalibor Topic <robilad@yahoo.com>
 	* libraries/javalib/java/util/ResourceBundle.java :
 	(getBundle) Added locale information to exception information.

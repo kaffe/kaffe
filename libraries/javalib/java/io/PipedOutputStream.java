@@ -25,6 +25,7 @@ public PipedOutputStream(PipedInputStream snk) throws IOException {
 public void close() throws IOException {
 	if (sink != null) {
 		sink.receivedLast();
+		sink = null;
 	}
 }
 

@@ -88,7 +88,17 @@ public Object clone() {
 }
 
 public boolean equals(Object obj) {
-	return (super.equals(obj));
+	boolean retval = false;
+
+	if( obj instanceof SimpleDateFormat ) {
+		SimpleDateFormat sdf = (SimpleDateFormat)obj;
+
+		if( this.numberFormat.equals(sdf.numberFormat) &&
+		    this.syms.equals(sdf.syms) ) {
+			retval = true;
+		}
+	}
+	return retval;
 }
 
 public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
@@ -321,15 +331,18 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 					ro = Math.abs(ro);
 					buf.append("-");
 				}
-				else {
+				else if (ro > 0) {
 					buf.append("+");
 				}
-				buf.append(ro / 60);
-				buf.append(":");
-				if (ro % 60 < 10) {
-					buf.append("0");
+				if( ro != 0 )
+				{
+					buf.append(ro / 60);
+					buf.append(":");
+					if (ro % 60 < 10) {
+						buf.append("0");
+					}
+					buf.append(ro % 60);
 				}
-				buf.append(ro % 60);
 			}
 			if (pos.field == TIMEZONE_FIELD) {
 				pos.begin = cpos;
@@ -342,11 +355,25 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 				i++;
 			}
 			else {
-				while (patt[i] != '\'') {
-					buf.append(patt[i]);
+				boolean done = false;
+
+				while (!done && (i < patt.length)) {
+					switch (patt[i]) {
+					case '\'':
+						if (((i + 1) < patt.length) &&
+						    (patt[i + 1] == '\'')) {
+							buf.append('\'');
+							i++;
+						} else {
+							done = true;
+						}
+						break;
+					default:
+						buf.append(patt[i]);
+						break;
+					}
 					i++;
 				}
-				i++;
 			}
 			break;
 		default:
@@ -389,7 +416,8 @@ public Date parse(String source, ParsePosition pos) {
 	int startIndex = pos.getIndex();
 	int index = startIndex;
 	int endIndex = source.length();
-	boolean ambigousYear = false;
+
+	int tzStart = -1, tzEnd = -1;
 
 	char[] patt = pattern.toCharArray();
 	for (int i = 0; i < patt.length; ) {
@@ -408,6 +436,44 @@ public Date parse(String source, ParsePosition pos) {
 				i++;
 			}
 			else {
+				boolean done = false, error = false;
+
+				while (!done &&
+				       !error &&
+				       (i < patt.length) &&
+				       (index < endIndex) ) {
+					switch (patt[i]) {
+					case '\'':
+						if (((i + 1) < patt.length) &&
+						    (patt[i + 1] == '\'')) {
+							if (source.charAt(index) == '\'') {
+								index++;
+								i++;
+							} else {
+								System.out.println("hello - " + i + " " + index);
+								error = true;
+							}
+						} else {
+							done = true;
+						}
+						break;
+					default:
+						if( source.charAt(index) !=
+						    patt[i] ) {
+							System.out.println("hello 2 - " + i + " " + index);
+							error = true;
+						}
+						index++;
+						break;
+					}
+					i++;
+				}
+				if( error || (index >= endIndex) )
+				{
+					pos.setIndex(startIndex);
+					pos.setErrorIndex(index);
+					return null;
+				}
 				while ((i < patt.length) && patt[i] != '\'') {
 					if ((index >= endIndex) ||
 					    (source.charAt(index) != patt[i])) {
@@ -472,9 +538,24 @@ public Date parse(String source, ParsePosition pos) {
 				switch (letter) {
 				case 'y':
 					// 2 digits and only 2 digits
-					ambigousYear = (plen < 3) &&
-						(val >= 0) &&
-						(pos.getIndex() - index <= 2);
+					if( (plen < 3) &&
+					    (val >= 0) &&
+					    (pos.getIndex() - index <= 2) )
+					{
+						// The year is ambiguous,
+						// adjust century to be within
+						// 80 years before and 20 years
+						// after current time
+						int current = Calendar.getInstance().get(Calendar.YEAR);
+						int epoch = current - current % 100;
+						int year = epoch + val;
+						
+						if (year > current + 20)
+							year -= 100;
+						else if (year < current - 80)
+							year += 100;
+						val = year;
+					}
 					break;
 				case 'M':
 					val--;
@@ -512,7 +593,9 @@ public Date parse(String source, ParsePosition pos) {
 					index = parseField (source, index, Calendar.AM_PM, syms.amPmStrings);
 					break;
 				case 'z':
+					tzStart = index;
 					index = parseTimeZone (source, index, endIndex);
+					tzEnd = index;
 					break;
 				default:
 					index = -index;
@@ -526,7 +609,7 @@ public Date parse(String source, ParsePosition pos) {
 			}
 		}
 		else {
-			// match litteral
+			// match literal
 			if ((index >= endIndex) ||
 			    (source.charAt(index) != letter)) {
 				pos.setIndex(startIndex);
@@ -537,19 +620,12 @@ public Date parse(String source, ParsePosition pos) {
 		}
 	}
 
-	if (ambigousYear && calendar.isSet(Calendar.YEAR)) {
-		// adjust century to be within 80 years before and 20
-		// years after current time
-		int current = Calendar.getInstance().get(Calendar.YEAR);
-		int epoch = current - current % 100;
-		int year = epoch + calendar.get(Calendar.YEAR);
-		if (year > current + 20)
-			year -= 100;
-		else if (year < current - 80)
-			year += 100;
-		calendar.set (Calendar.YEAR, year);
+	if( tzStart != -1 )
+	{
+		// We have all the info we're gonna get, patch up the
+		// the time zone.
+		reallyParseTimeZone(source, tzStart, tzEnd);
 	}
-	
 	pos.setIndex (index);
 	return calendar.getTime();
 }
@@ -572,6 +648,50 @@ private int parseField (String source, int start, int field, String[] data) {
 		return start + bestLen;
 	}
 	return -start;
+}
+
+private void reallyParseTimeZone (String source, int start, int endIndex) {
+	
+	if (source.regionMatches (start, "GMT", 0, 3)) {
+		// GMT +/- ##:##, `should' work fine.
+		return;
+	}
+
+	// Redo localized if it applies
+	int bestZone = -1;
+	int bestLen = 0;
+	int bestType = 0;
+	for (int i = 0; i < syms.zoneStrings.length; i++) {
+		String[] zone = syms.zoneStrings[i];
+
+		for (int j = 1; j <= 4; j++) {
+			int len = zone[j].length();
+
+			if ((len > bestLen) &&
+			    source.regionMatches (true, start, zone[j], 0, len)) {
+				bestZone = i;
+				bestType = j;
+				bestLen = len;
+			}
+		}
+	}
+	if (bestZone != -1) {
+		TimeZone tz = TimeZone.getTimeZone (syms.zoneStrings[bestZone][bestType]);
+		long offset;
+
+		// Get the real offset, including DST adjustments.
+		offset = tz.getOffset(calendar.get(Calendar.ERA),
+				      calendar.get(Calendar.YEAR),
+				      calendar.get(Calendar.MONTH),
+				      calendar.get(Calendar.DAY_OF_MONTH),
+				      calendar.get(Calendar.DAY_OF_WEEK),
+				      calendar.get(Calendar.MILLISECOND));
+		calendar.set(Calendar.ZONE_OFFSET, (int)offset);
+		return;
+	}
+
+	// its RFC 822 +hhmm format
+	return;
 }
 
 private int parseTimeZone (String source, int start, int endIndex) {
@@ -644,8 +764,11 @@ private int parseTimeZone (String source, int start, int endIndex) {
 		}
 	}
 	if (bestZone != -1) {
-		TimeZone tz = TimeZone.getTimeZone (syms.zoneStrings[bestZone][0]);
-		calendar.set(Calendar.ZONE_OFFSET, tz.getRawOffset());
+		TimeZone tz = TimeZone.getTimeZone (syms.zoneStrings[bestZone][bestType]);
+		// XXX Ugh, this is messy...  Basically, we can't tell whether
+		// DST applies or not, so we have to wait till later to
+		// figure it out.
+		calendar.set(Calendar.ZONE_OFFSET, 0);
 		return start + bestLen;
 	}
 

@@ -16,7 +16,7 @@ public class ParseException extends Exception {
 private int offset;
 
 public ParseException(String mess, int off) {
-	super(mess);
+	super(mess + "; offset=" + off);
 	offset = off;
 }
 

@@ -62,6 +62,7 @@ private static void loadTimeZones() {
 	addSimple(-3*60*60*1000, "AGT");
 	addSimple(-1*60*60*1000, "CAT");
 	addSimple(0, "GMT");
+	addSimple(0, "UTC");
 	addSimple(1*60*60*1000, "ECT");
 	addSimple(1*60*60*1000, "EET");
 	addSimple(2*60*60*1000, "ART");

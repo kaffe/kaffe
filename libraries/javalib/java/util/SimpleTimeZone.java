@@ -91,7 +91,7 @@ public int getOffset(int era, int year, int month, int day, int dayOfWeek, int m
 
 	// Okay we did the easy stuff, now we have to do the hard stuff.
 
-	int dayofweekinmonth = (6 + dayOfWeek - Calendar.SUNDAY + day - 1) / 7;
+	int weekinmonth = (6 + dayOfWeek - Calendar.SUNDAY + day - 1) / 7;
 
 	int mdays;
 	switch (month) {
@@ -126,10 +126,10 @@ public int getOffset(int era, int year, int month, int day, int dayOfWeek, int m
 			sweekinmonth += weeksinmonth;
 		}
 
-		if (dayofweekinmonth < sweekinmonth) {
+		if (weekinmonth < sweekinmonth) {
 			return (offset);
 		}
-		if (dayofweekinmonth > sweekinmonth) {
+		if (weekinmonth > sweekinmonth) {
 			return (doffset);
 		}
 		if (dayOfWeek < startDayOfWeek) {
@@ -148,13 +148,13 @@ public int getOffset(int era, int year, int month, int day, int dayOfWeek, int m
 
 		int eweekinmonth = endDayOfWeekInMonth;
 		if (eweekinmonth < 0) {
-			eweekinmonth += weeksinmonth;
+			eweekinmonth = weeksinmonth;
 		}
 
-		if (dayofweekinmonth < eweekinmonth) {
+		if (weekinmonth < eweekinmonth) {
 			return (doffset);
 		}
-		if (dayofweekinmonth > eweekinmonth) {
+		if (weekinmonth > eweekinmonth) {
 			return (offset);
 		}
 		if (dayOfWeek < endDayOfWeek) {
