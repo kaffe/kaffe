@@ -21,6 +21,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.util.Properties;
 import java.util.PropertyPermission;
+import kaffe.lang.ThreadStack;
 
 public final class System {
 	final public static InputStream in;
@@ -114,12 +115,12 @@ native private static Properties initProperties(Properties props);
 
 public static void load(String filename) {
 	Runtime.getRuntime().load(filename,
-	    Class.CallStack.getCallersClassLoader());
+	    ThreadStack.getCallersClassLoader(false));
 }
 
 public static void loadLibrary(String libname) {
 	Runtime.getRuntime().loadLibrary(libname,
-	    Class.CallStack.getCallersClassLoader());
+	    ThreadStack.getCallersClassLoader(false));
 }
 
 public static String mapLibraryName(String fn) {

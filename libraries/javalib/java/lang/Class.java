@@ -26,7 +26,6 @@ import java.util.Vector;
 import kaffe.lang.ThreadStack;
 import kaffe.lang.PackageHelper;
 import kaffe.lang.PrimordialClassLoader;
-import kaffe.lang.PrimordialClassLoader;
 
 public final class Class implements Serializable {
 
@@ -42,7 +41,7 @@ private Class() {
 }
 
 public static Class forName(String className) throws ClassNotFoundException {
-	return forName(className, true, CallStack.getCallersClassLoader());
+	return forName(className, true, ThreadStack.getCallersClassLoader(false));
 }
 
 /*
@@ -380,98 +379,6 @@ public Object newInstance() throws InstantiationException, IllegalAccessExceptio
 public String toString() {
 	return (isInterface() ? "interface " : isPrimitive() ? "" : "class ")
 	    + getName();
-}
-
-/* CallStack is used to encapsulate call stack based
- * class loader inspection.
- *
- * It is used by Class.forName and other methods in 
- * java.lang that need to get hold of the ClassLoader
- * associated with their calling class.
- */
-static class CallStack {
-	private Class [] classStack;
-
-	CallStack() {
-		classStack = ThreadStack.getClassStack();
-	}
-
-	/* This method walks the call stack to find the
-	 * class loader of the calling class. It takes care
-	 * of recursive calls within library implementation,
-	 * and Method.invoke.
-	 */
-	static ClassLoader getCallersClassLoader() {
-		CallStack callStack = new CallStack();
-		/* This method is caling CallStack(),
-		 * and we want the method calling this method.
-		 * So the start frame is 2.
-		 */
-		int frame = 2;
-		Class callingClass = callStack.getStackClass(frame);
-
-		/* We could have been called recursively
-		 * within a class implementation. Then we
-		 * need to walk up the stack to find the
-		 * real calling class.
-		 */
-		if (null != callingClass
-		    && callStack.getStackClass(frame - 1) == callingClass) {
-			while (callStack.getStackClass(++frame) == callingClass) {
-			}
-
-			callingClass = callStack.getStackClass(frame);
-		}
-
-		/*
-		 * We must use the ClassLoader associated with the calling method/class.
-		 * We must handle the special case of code like this:
-		 *
-		 *    Class c = Class.class;
-		 *    Method m = c.getMethod("forName", new Class[] { String.class });
-		 *    c = (Class)m.invoke(c, new Object[] { "Class2" });
-		 *
-		 * If we didn't, then we would detect java.lang.reflect.Method as the
-		 * calling class, and end up always using the bootstrap ClassLoader.
-		 * To deal with this, we skip over java.lang.reflect.Method.
-		 *
-		 * Since Method.invoke implementation has a java and a native part,
-		 * we need to skip both.
-		 */
-
-		if (callingClass != null
-		    && callingClass.getName().equals("java.lang.reflect.Method")) {
-			frame += 2;
-			callingClass = callStack.getStackClass(frame);
-		}
-
-		if (callingClass != null) {
-			return callingClass.getClassLoader();
-		}
-
-		return null;
-	}
-
-/*
- * Determine the Class associated with the method N frames up the stack:
- *
- * Frame #      Method
- * -------      ------
- *   -2		SecurityManager.getClassContext0()
- *   -1         Class.CallStack()
- *    0		The method calling Class.CallStack()
- *    1		The method calling the method calling Class.CallStack()
- *    2		...etc...
- *
- * Returns null if not found.
- */
-	private Class getStackClass(int frame) {
-		frame += 2;
-		if (frame >= 0 && frame < classStack.length) {
-			return classStack[frame];
-		}
-		return null;
-	}
 }
 
 /**

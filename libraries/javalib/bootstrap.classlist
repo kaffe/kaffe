@@ -47,7 +47,6 @@ java/lang/Byte.class
 java/lang/Character.class
 java/lang/CharSequence.class
 java/lang/Class.class
-java/lang/Class$CallStack.class
 java/lang/ClassCastException.class
 java/lang/ClassLoader.class
 java/lang/ClassNotFoundException.class
@@ -182,7 +181,6 @@ kaffe/lang/AppClassLoader$DirSource.class
 kaffe/lang/AppClassLoader$JarSource.class
 kaffe/lang/Application.class
 kaffe/lang/ApplicationResource.class
-kaffe/lang/DummyClassLoader.class
 kaffe/lang/MemoryAdvice.class
 kaffe/lang/PrimordialClassLoader.class
 kaffe/lang/ThreadStack.class

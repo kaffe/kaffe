@@ -1,5 +1,44 @@
 2003-06-28  Helmer Kraemer  <hkraemer@freenet.de>
 
+	* libraries/javalib/kaffe/lang/ThreadStack:
+	(getCallersClassLoader): new method
+	
+	* libraries/javalib/java/lang/Class.java 
+	(CallStack): removed
+	(forName): use ThreadStack.getCallersClassLoader
+
+	* libraries/javalib/java/lang/Package.java,
+	libraries/javalib/java/lang/System.java,
+	libraries/javalib/java/lang/Runtime.java:
+	use ThreadStack.getCallersClassLoader instead of
+	Class.CallStack.getCallersClassLoader
+
+	* libraries/javalib/java/util/ResourceBundle.java:
+	(getBundle): use ThreadStack.getCallersClassLoader if loader
+	is null
+	(getSpecificBundle): throw NPE if loader is null
+
+	* libraries/javalib/bootstrap.classlist,
+	libraries/javalib/Klasses.jar.bootstrap:
+	removed java/lang/Class$CallStack.class and
+	kaffe/lang/DummyClassLoader.class
+
+	* libraries/javalib/essential.files:
+	remove kaffe/lang/DummyClassLoader.java
+
+	* libraries/javalib/kaffe/lang/DummyClassLoader.java:
+	removed
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	regenerated
+
+	* test/regression/ProcessClassInst.java,
+	test/regression/ProcessClassStop.java:
+	adjusted line numbers in expected output
+	
+2003-06-28  Helmer Kraemer  <hkraemer@freenet.de>
+
 	* kaffe/kaffevm/jit/machine.c:
 	(translate) use lockClass to guard translation so it doesn't
 	interfere with static synchronized methods

@@ -19,7 +19,7 @@ import java.net.URL;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
-import kaffe.lang.PrimordialClassLoader;
+import kaffe.lang.ThreadStack;
 
 public class Package {
 
@@ -60,13 +60,7 @@ public class Package {
 		 * Otherwise, we would just be getting the same ClassLoader
 		 * that loaded Package all the time.
 		 */
-		ClassLoader loader = Class.CallStack.getCallersClassLoader();
-
-		if (loader == null) {
-			loader = PrimordialClassLoader.getSingleton();
-		}
-
-		return loader;
+		return ThreadStack.getCallersClassLoader(true);
 	}
 
 	public String getImplementationTitle() {

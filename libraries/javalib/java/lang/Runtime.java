@@ -18,6 +18,8 @@ import java.io.FileNotFoundException;
 
 import java.util.StringTokenizer;
 
+import kaffe.lang.ThreadStack;
+
 public class Runtime
 {
 /**
@@ -124,7 +126,7 @@ public static Runtime getRuntime() {
 
 public void loadLibrary(String libname) {
 	loadLibrary(libname,
-		    Class.CallStack.getCallersClassLoader());
+		    ThreadStack.getCallersClassLoader(false));
 }
 
 void loadLibrary(String libname, ClassLoader loader) {
@@ -152,7 +154,7 @@ void loadLibrary(String libname, ClassLoader loader) {
 }
 
 public void load(String filename) {
-	load(filename, Class.CallStack.getCallersClassLoader());
+	load(filename, ThreadStack.getCallersClassLoader(false));
 }
 
 void load(String filename, ClassLoader loader) {

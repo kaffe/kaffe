@@ -1994,7 +1994,6 @@ kaffe_lang_SRCS = \
 	kaffe/lang/Application.java \
 	kaffe/lang/ApplicationResource.java \
 	kaffe/lang/ClassPathReader.java \
-	kaffe/lang/DummyClassLoader.java \
 	kaffe/lang/MemoryAdviceCallback.java \
 	kaffe/lang/MemoryAdvice.java \
 	kaffe/lang/PackageHelper.java \

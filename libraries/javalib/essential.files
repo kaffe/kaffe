@@ -287,7 +287,6 @@ kaffe/lang/Application.java
 kaffe/lang/ApplicationException.java
 kaffe/lang/ApplicationResource.java
 kaffe/lang/ClassPathReader.java
-kaffe/lang/DummyClassLoader.java
 kaffe/lang/MemoryAdvice.java
 kaffe/lang/MemoryAdviceCallback.java
 kaffe/lang/PackageHelper.java

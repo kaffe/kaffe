@@ -12,7 +12,7 @@ package java.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import kaffe.lang.DummyClassLoader;
+import kaffe.lang.ThreadStack;
 
 public abstract class ResourceBundle {
 
@@ -26,12 +26,14 @@ public ResourceBundle() {
 
 public static final ResourceBundle getBundle(String baseName)
 		throws MissingResourceException {
-	return getBundle(baseName, Locale.getDefault(), null);
+	return getBundle(baseName, Locale.getDefault(),
+			 ThreadStack.getCallersClassLoader(true));
 }
 
 public static final ResourceBundle getBundle(String baseName, Locale locale)
 		throws MissingResourceException {
-	return getBundle(baseName, locale, null);
+	return getBundle(baseName, locale,
+			 ThreadStack.getCallersClassLoader(true));
 }
 
 public static ResourceBundle getBundle(String baseName, Locale locale,
@@ -133,17 +135,13 @@ public final Object getObject(String key) throws MissingResourceException {
 private static final ResourceBundle getSpecificBundle(String baseName,
 		ClassLoader loader) {
 
-	ResourceBundle ret = (ResourceBundle)cache.get (baseName);
+	ResourceBundle ret = (ResourceBundle)cache.get (loader + baseName);
 	if (ret != null) {
 		return ret;
 	}
  
-	// baseName = baseName.replace('.', '/');
-	if (loader == null)
-		loader = DummyClassLoader.getCurrentClassLoader();
 	try {
-		// Class cls = Class.forName(baseName);
-		Class cls = loader.loadClass(baseName);
+		Class cls = Class.forName(baseName, true, loader);
 		/* 
 		 * Only call newInstance if the cast to resource bundle 
 		 * will indeed succeed.
