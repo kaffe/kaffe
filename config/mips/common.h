@@ -15,6 +15,18 @@
 #ifndef __mips_common_h
 #define __mips_common_h
 
+/* The R5900 is the Mips Core in the PS2 (Playstation 2)
+* It has most of the Mips III instructions set, some of the Mips IV 
+* instructions, it lacks the Mips II "ll" and "sc" instructions and 
+* it has 128 bit GP registers and 32 bit FPU registers. There is no 
+* FPU Emulation present in the default kernel. Since no 64 bit
+* FPU registers exist, doubles are passed in 2 GP registers.
+*/
+#ifdef _R5900
+#define PS2LINUX
+#undef HAVE_MIPSII_INSTRUCTIONS
+#endif 
+
 #if NEED_sysdepCallMethod
 
 #if !defined (_MIPS_SIM) || (_MIPS_SIM == _MIPS_SIM_ABI32)

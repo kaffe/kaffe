@@ -1,0 +1,9 @@
+# configuration file for the tritonus library
+#
+
+org.tritonus.sampled.file.AuAudioFileReader
+org.tritonus.sampled.file.WaveAudioFileReader
+org.tritonus.sampled.file.AiffAudioFileReader
+
+# end
+#

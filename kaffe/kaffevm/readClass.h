@@ -37,6 +37,10 @@ bool readInterfaces(classFile*, struct Hjava_lang_Class*, struct _errorInfo*);
 bool readMethods(classFile*, struct Hjava_lang_Class*, struct _errorInfo*);
 bool readFields(classFile*, struct Hjava_lang_Class*, struct _errorInfo*);
 bool readAttributes(classFile*, struct Hjava_lang_Class*, ReadAttrType, void*, struct _errorInfo*);
+
+#if defined KAFFEH
+void finishMethods (struct Hjava_lang_Class *this);
+#endif
   
 #endif /* kaffevm_readclass_h */
 

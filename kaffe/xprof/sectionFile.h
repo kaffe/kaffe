@@ -61,7 +61,7 @@ enum {
 		    *  char *line,
 		    *  int len) Read the data from the file
 		    */
-	SFM_FLUSH, /*
+	SFM_FLUSH  /*
 		    * (struct section_file_data *sfd,
 		    *  struct parse_state *ps,
 		    *  char *line, int line_len,
@@ -90,13 +90,13 @@ struct file_section {
 /* Bit numbers for section_file_data flags */
 enum {
 	SFDB_DIRTY,	/* Theres new data in the section */
-	SFDB_REMOVED,	/* The section needs to be removed from the file */
+	SFDB_REMOVED	/* The section needs to be removed from the file */
 };
 
 /* Flag bits for section_file_data flags */
 enum {
 	SFDF_DIRTY = (1L << SFDB_DIRTY),
-	SFDF_REMOVED = (1L << SFDB_REMOVED),
+	SFDF_REMOVED = (1L << SFDB_REMOVED)
 };
 
 /* Stores data for a section */

@@ -184,6 +184,7 @@ define_insn(prologue, prologue_xxx)
 {
 	label* l;
 
+	debug(("Method: %s\n", globalMethod->name->data));
 #if defined(KAFFE_XPROFILER)
 	if (xProfFlag)
 	{
@@ -436,6 +437,23 @@ define_insn(exception_prologue, eprologue_xLx)
 
 define_insn(epilogue, epilogue_xxx)
 {
+	extern label *getLastEpilogueLabel(void);
+	
+	label *el;
+
+	if( (el = getLastEpilogueLabel()) && (el->at == (CODEPC - 4)) )
+	{
+		/*
+		 * Nothing to jump over to get to the epilogue...  Replace
+		 * the jump code with regular epilogue.
+		 */
+		el->type = Lnull;
+		CODEPC -= 5;
+	}
+	else if( el && (el->at != (CODEPC - 4)) )
+	{
+		/* The function ends with a throw, not a return. */
+	}
 	setEpilogueLabel((uintp)CODEPC);
 	
 #if 0
@@ -502,7 +520,7 @@ define_insn(spill_float, fspill_Rxx)
 {
 	int o;
 
-	sreg_float(0);
+	(void)sreg_float(0);
 	o = const_int(1);
 
 	OUT = 0xD9;
@@ -516,7 +534,7 @@ define_insn(spill_double, fspilll_Rxx)
 {
 	int o;
 
-	sreg_double(0);
+	(void)sreg_double(0);
 	o = const_int(1);
 
 	OUT = 0xDD;
@@ -557,16 +575,16 @@ define_insn(reload_float, freload_Rxx)
 
 define_insn(reload_double, freloadl_Rxx)
 {
-	int o;
+	int r, o;
 
-	lreg_double(0);
+	r = lreg_double(0);
 	o = const_int(1);
-
+	
 	OUT = 0xDD;
 	OUT = 0x80|REG_ebp;
 	LOUT = o;
-
-	debug(("fldl %d(ebp)\n", o));
+		
+	debug(("fldl %d(ebp) %d\n", o, r));
 }
 
 void
@@ -605,7 +623,7 @@ define_insn(move_label_const, move_RxL)
 	l->at = CODEPC;
 	LOUT = 0;
 
-	debug(("movl #?,%s\n", regname(w)));
+	debug(("movl #%s,%s\n", getLabelName(l), regname(w)));
 }
 
 define_insn(move_int, move_RxR)
@@ -747,34 +765,37 @@ define_insn(adc_int, adc_RRR)
 
 define_insn(add_float, fadd_RRR)
 {
-	int r1;
-	int r2;
+	int rr, rm;
 
-	r2 = rslot_float(2);	/* Get r2 into memory */
-	r1 = rreg_float(1);		/* Load r1 into the register stack */
+	/*
+	 * XXX Order is important here...  If we put slot 2 into memory and
+	 * slot 1 into the register we get a whole bunch of excess
+	 * spills/reloaeds.
+	 */
+	rm = rslot_float(1);	/* Get slot 1 into memory */
+	rr = rreg_float(2);	/* Load slot 2 into the register stack */
 	wreg_float(0);		/* Result will be in register stack */
 
 	OUT = 0xD8;
 	OUT = 0x80|REG_ebp;
-	LOUT = r2;
+	LOUT = rm;
 
-	debug(("fadd %d(ebp)\n", r2));
+	debug(("fadd %d(ebp)\n", rm));
 }
 
 define_insn(add_double, faddl_RRR)
 {
-	int r1;
-	int r2;
+	int rr, rm;
 
-	r2 = rslot_double(2);	/* Get r2 into memory */
-	r1 = rreg_double(1);	/* Load r1 into the register stack */
+	rm = rslot_double(1);	/* Get slot 1 into memory */
+	rr = rreg_double(2);	/* Load slot 2 into the register stack */
 	wreg_double(0);		/* Result will be in register stack */
 
 	OUT = 0xDC;
 	OUT = 0x80|REG_ebp;
-	LOUT = r2;
+	LOUT = rm;
 
-	debug(("faddl %d(ebp)\n", r2));
+	debug(("faddl %d(ebp)\n", rm));
 }
 
 define_insn(sub_int, sub_RRR)
@@ -809,34 +830,32 @@ define_insn(sbc_int, sbc_RRR)
 
 define_insn(sub_float, fsub_RRR)
 {
-	int r1;
-	int r2;
+	int rr, rm;
 
-	r2 = rslot_float(2);	/* Get r2 into memory */
-	r1 = rreg_float(1);	/* Load r1 into the register stack */
+	rm = rslot_float(1);	/* Get slot 1 into memory */
+	rr = rreg_float(2);	/* Load slot 2 into the register stack */
 	wreg_float(0);		/* Result will be in register stack */
 
 	OUT = 0xD8;
-	OUT = 0xA0|REG_ebp;
-	LOUT = r2;
+	OUT = 0xA8|REG_ebp;
+	LOUT = rm;
 
-	debug(("fsub %d(ebp)\n", r2));
+	debug(("fsub %d(ebp)\n", rm));
 }
 
 define_insn(sub_double, fsubl_RRR)
 {
-	int r1;
-	int r2;
+	int rr, rm;
 
-	r2 = rslot_double(2);	/* Get r2 into memory */
-	r1 = rreg_double(1);	/* Load r1 into the register stack */
+	rm = rslot_double(1);	/* Get slot 1 into memory */
+	rr = rreg_double(2);	/* Load slot 2 into the register stack */
 	wreg_double(0);		/* Result will be in register stack */
 
 	OUT = 0xDC;
-	OUT = 0xA0|REG_ebp;
-	LOUT = r2;
+	OUT = 0xA8|REG_ebp;
+	LOUT = rm;
 
-	debug(("fsubl %d(ebp)\n", r2));
+	debug(("fsubl %d(ebp)\n", rm));
 }
 
 define_insn(neg_float, negf_RxR)
@@ -880,34 +899,32 @@ define_insn(mul_int, mul_RRR)
 
 define_insn(mul_float, fmul_RRR)
 {
-	int r1;
-	int r2;
+	int rr, rm;
 
-	r2 = rslot_float(2);	/* Get r2 into memory */
-	r1 = rreg_float(1);	/* Load r1 into the register stack */
+	rm = rslot_float(1);	/* Get slot 1 into memory */
+	rr = rreg_float(2);	/* Load slot 2 into the register stack */
 	wreg_float(0);		/* Result will be in register stack */
 
 	OUT = 0xD8;
 	OUT = 0x88|REG_ebp;
-	LOUT = r2;
+	LOUT = rm;
 
-	debug(("fmul %d(ebp)\n", r2));
+	debug(("fmul %d(ebp)\n", rm));
 }
 
 define_insn(mul_double, fmull_RRR)
 {
-	int r1;
-	int r2;
+	int rr, rm;
 
-	r2 = rslot_double(2);	/* Get r2 into memory */
-	r1 = rreg_double(1);	/* Load r1 into the register stack */
+	rm = rslot_double(1);	/* Get slot 1 into memory */
+	rr = rreg_double(2);	/* Load slot 2 into the register stack */
 	wreg_double(0);		/* Result will be in register stack */
 
 	OUT = 0xDC;
 	OUT = 0x88|REG_ebp;
-	LOUT = r2;
+	LOUT = rm;
 
-	debug(("fmull %d(ebp)\n", r2));
+	debug(("fmull %d(ebp)\n", rm));
 }
 
 define_insn(div_int, div_RRR)
@@ -974,34 +991,32 @@ define_insn(div_int, div_RRR)
 
 define_insn(div_float, fdiv_RRR)
 {
-	int r1;
-	int r2;
+	int rr, rm;
 
-	r2 = rslot_float(2);	/* Get r2 into memory */
-	r1 = rreg_float(1);	/* Load r1 into the register stack */
+	rm = rslot_float(1);	/* Get slot 1 into memory */
+	rr = rreg_float(2);	/* Load slot 2 into the register stack */
 	wreg_float(0);		/* Result will be in register stack */
 
 	OUT = 0xD8;
-	OUT = 0xB0|REG_ebp;
-	LOUT = r2;
+	OUT = 0xB8|REG_ebp;
+	LOUT = rm;
 
-	debug(("fdiv %d(ebp)\n", r2));
+	debug(("fdiv %d(ebp)\n", rm));
 }
 
 define_insn(div_double, fdivl_RRR)
 {
-	int r2;
-	int r1;
+	int rr, rm;
 
-	r2 = rslot_double(2);	/* Get r2 into memory */
-	r1 = rreg_double(1);	/* Load r1 into the register stack */
+	rm = rslot_double(1);	/* Get slot 1 into memory */
+	rr = rreg_double(2);	/* Load slot 2 into the register stack */
 	wreg_double(0);		/* Result will be in register stack */
 
 	OUT = 0xDC;
-	OUT = 0xB0|REG_ebp;
-	LOUT = r2;
+	OUT = 0xB8|REG_ebp;
+	LOUT = rm;
 
-	debug(("fdivl %d(ebp)\n", r2));
+	debug(("fdivl %d(ebp)\n", rm));
 }
 
 define_insn(rem_int, rem_RRR)
@@ -1241,10 +1256,10 @@ define_insn(store_float, fstore_RxR)
 
 	rreg_float(2);
 	w = rreg_int(1);
-
+	
 	OUT = 0xD9;
 	OUT = 0x18|w;
-
+	
 	debug(("fstp (%s)\n", regname(w)));
 }
 
@@ -1386,7 +1401,7 @@ define_insn(build_code_ref, set_wordpc_xxC)
 	l->at = CODEPC;
 	LOUT = 0;
 	l->from = CODEPC;
-	debug((".word ?\n"));
+	debug((".word %s\n", getLabelName(l)));
 }
 
 /* --------------------------------------------------------------------- */
@@ -1409,7 +1424,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT = 0;
 		l->from = CODEPC;
-		debug(("jmpl ?\n"));
+		debug(("jmpl %s\n", getLabelName(l)));
 		break;
 	case beq:
 		OUT = 0x0F;
@@ -1417,7 +1432,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT = 0;
 		l->from = CODEPC;
-		debug(("je ?\n"));
+		debug(("je %s\n", getLabelName(l)));
 		break;
 	case bne:
 		OUT = 0x0F;
@@ -1425,7 +1440,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT = 0;
 		l->from = CODEPC;
-		debug(("jne ?\n"));
+		debug(("jne %s\n", getLabelName(l)));
 		break;
 	case blt:
 		OUT = 0x0F;
@@ -1433,7 +1448,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT = 0;
 		l->from = CODEPC;
-		debug(("jlt ?\n"));
+		debug(("jlt %s\n", getLabelName(l)));
 		break;
 	case ble:
 		OUT = 0x0F;
@@ -1441,7 +1456,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT = 0;
 		l->from = CODEPC;
-		debug(("jle ?\n"));
+		debug(("jle %s\n", getLabelName(l)));
 		break;
 	case bgt:
 		OUT = 0x0F;
@@ -1449,7 +1464,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT = 0;
 		l->from = CODEPC;
-		debug(("jgt ?\n"));
+		debug(("jgt %s\n", getLabelName(l)));
 		break;
 	case bge:
 		OUT = 0x0F;
@@ -1457,7 +1472,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT = 0;
 		l->from = CODEPC;
-		debug(("jge ?\n"));
+		debug(("jge %s\n", getLabelName(l)));
 		break;
 	case bult:
 		OUT = 0x0F;
@@ -1465,7 +1480,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT = 0;
 		l->from = CODEPC;
-		debug(("jult ?\n"));
+		debug(("jult %s\n", getLabelName(l)));
 		break;
 #if 0
 	case bule:
@@ -1474,7 +1489,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT = 0;
 		l->from = CODEPC;
-		debug(("jule ?\n"));
+		debug(("jule %s\n", getLabelName(l)));
 		break;
 #endif
 	case bugt:
@@ -1483,7 +1498,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT = 0;
 		l->from = CODEPC;
-		debug(("jugt ?\n"));
+		debug(("jugt %s\n", getLabelName(l)));
 		break;
 	case buge:
 		OUT = 0x0F;
@@ -1491,7 +1506,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT = 0;
 		l->from = CODEPC;
-		debug(("juge ?\n"));
+		debug(("juge %s\n", getLabelName(l)));
 		break;
 	default:
 		ABORT();

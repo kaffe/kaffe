@@ -56,6 +56,7 @@ Awt_SRCS = \
 	$(java_awt_font_SRCS) \
 	$(java_awt_geom_SRCS) \
 	$(java_awt_image_SRCS) \
+	$(java_awt_image_renderable_SRCS) \
 	$(java_awt_peer_SRCS) \
 	$(java_awt_print_SRCS) \
 	$(java_awt_widgets_SRCS) \
@@ -92,10 +93,6 @@ Rest_SRCS = \
 RMI_SRCS = \
 	$(gnu_javax_rmi_SRCS) \
 	$(gnu_javax_rmi_CORBA_SRCS) \
-	$(gnu_xml_aelfred2_SRCS) \
-	$(gnu_xml_dom_SRCS) \
-	$(gnu_xml_pipeline_SRCS) \
-	$(gnu_xml_util_SRCS) \
 	$(java_rmi_SRCS) \
 	$(java_rmi_activation_SRCS) \
 	$(java_rmi_dgc_SRCS) \
@@ -108,22 +105,26 @@ RMI_SRCS = \
 	$(javax_naming_spi_SRCS) \
 	$(javax_rmi_SRCS) \
 	$(javax_rmi_CORBA_SRCS) \
-	$(javax_sound_sampled_SRCS) \
 	$(javax_sql_SRCS) \
 	$(javax_transaction_SRCS) \
 	$(javax_transaction_xa_SRCS) \
-	$(javax_xml_parsers_SRCS) \
-	$(javax_xml_transform_SRCS) \
-	$(javax_xml_transform_dom_SRCS) \
-	$(javax_xml_transform_sax_SRCS) \
-	$(javax_xml_transform_stream_SRCS) \
 	$(kaffe_rmi_dgc_SRCS) \
 	$(kaffe_rmi_registry_SRCS) \
 	$(kaffe_rmi_rmic_SRCS) \
 	$(kaffe_rmi_server_SRCS) \
 	$(kaffe_tools_compiler_SRCS) \
 	$(kaffe_tools_jar_SRCS) \
-	$(kaffe_tools_serialver_SRCS) \
+	$(kaffe_tools_serialver_SRCS) 
+JAXP_SRCS = \
+	$(gnu_xml_aelfred2_SRCS) \
+	$(gnu_xml_dom_SRCS) \
+	$(gnu_xml_pipeline_SRCS) \
+	$(gnu_xml_util_SRCS) \
+	$(javax_xml_parsers_SRCS) \
+	$(javax_xml_transform_SRCS) \
+	$(javax_xml_transform_dom_SRCS) \
+	$(javax_xml_transform_sax_SRCS) \
+	$(javax_xml_transform_stream_SRCS) \
 	$(org_w3c_dom_SRCS) \
 	$(org_w3c_dom_css_SRCS) \
 	$(org_w3c_dom_events_SRCS) \
@@ -135,10 +136,31 @@ RMI_SRCS = \
 	$(org_xml_sax_SRCS) \
 	$(org_xml_sax_ext_SRCS) \
 	$(org_xml_sax_helpers_SRCS) 
+SOUND_SRCS = \
+	$(org_tritonus_core_SRCS) \
+	$(org_tritonus_lowlevel_alsa_SRCS) \
+	$(org_tritonus_lowlevel_esd_SRCS) \
+	$(org_tritonus_midi_device_alsa_SRCS) \
+	$(org_tritonus_midi_file_SRCS) \
+	$(org_tritonus_sampled_convert_SRCS) \
+	$(org_tritonus_sampled_file_SRCS) \
+	$(org_tritonus_sampled_mixer_alsa_SRCS) \
+	$(org_tritonus_sampled_mixer_esd_SRCS) \
+	$(org_tritonus_share_SRCS) \
+	$(org_tritonus_share_midi_SRCS) \
+	$(org_tritonus_share_sampled_SRCS) \
+	$(org_tritonus_share_sampled_convert_SRCS) \
+	$(org_tritonus_share_sampled_file_SRCS) \
+	$(org_tritonus_share_sampled_mixer_SRCS) \
+	$(javax_sound_midi_SRCS) \
+	$(javax_sound_midi_spi_SRCS) \
+	$(javax_sound_sampled_SRCS) \
+	$(javax_sound_sampled_spi_SRCS) 
 gnu_java_awt_SRCS = \
 	gnu/java/awt/BitMaskExtent.java \
 	gnu/java/awt/Buffers.java \
-	gnu/java/awt/EventModifier.java
+	gnu/java/awt/ComponentDataBlitOp.java \
+	gnu/java/awt/EventModifier.java 
 gnu_java_nio_SRCS = \
 	gnu/java/nio/ByteBufferImpl.java \
 	gnu/java/nio/CharBufferImpl.java \
@@ -318,6 +340,10 @@ java_awt_SRCS = \
 	java/awt/FontMetrics.java \
 	java/awt/Frame.java \
 	java/awt/Graphics.java \
+	java/awt/Graphics2D.java \
+	java/awt/GraphicsConfigTemplate.java \
+	java/awt/GraphicsConfiguration.java \
+	java/awt/GraphicsDevice.java \
 	java/awt/GraphicsLink.java \
 	java/awt/GradientPaint.java \
 	java/awt/GridBagConstraints.java \
@@ -473,7 +499,10 @@ java_awt_geom_SRCS = \
 	java/awt/geom/RoundRectangle2D.java
 java_awt_image_SRCS = \
 	java/awt/image/AreaAveragingScaleFilter.java \
+	java/awt/image/BufferedImage.java \
+	java/awt/image/BufferedImageOp.java \
 	java/awt/image/ColorModel.java \
+	java/awt/image/ComponentColorModel.java \
 	java/awt/image/ComponentSampleModel.java \
 	java/awt/image/CropImageFilter.java \
 	java/awt/image/DataBuffer.java \
@@ -490,13 +519,24 @@ java_awt_image_SRCS = \
 	java/awt/image/IndexColorModel.java \
 	java/awt/image/MemoryImageSource.java \
 	java/awt/image/PixelGrabber.java \
+	java/awt/image/RasterOp.java \
+	java/awt/image/RenderedImage.java \
 	java/awt/image/RGBImageFilter.java \
 	java/awt/image/Raster.java \
 	java/awt/image/RasterFormatException.java \
 	java/awt/image/ReplicateScaleFilter.java \
 	java/awt/image/SampleModel.java \
 	java/awt/image/SinglePixelPackedSampleModel.java \
+	java/awt/image/VolatileImage.java \
 	java/awt/image/WritableRaster.java
+java_awt_image_renderable_SRCS = \
+	java/awt/image/renderable/ContextualRenderedImageFactory.java \
+	java/awt/image/renderable/ParameterBlock.java \
+	java/awt/image/renderable/RenderableImage.java \
+	java/awt/image/renderable/RenderableImageOp.java \
+	java/awt/image/renderable/RenderableImageProducer.java \
+	java/awt/image/renderable/RenderContext.java \
+	java/awt/image/renderable/RenderedImageFactory.java
 java_awt_peer_SRCS = \
 	java/awt/peer/ActiveEvent.java \
 	java/awt/peer/ComponentPeer.java \
@@ -1367,23 +1407,64 @@ javax_rmi_CORBA_SRCS = \
 	javax/rmi/CORBA/UtilDelegate.java \
 	javax/rmi/CORBA/Util.java \
 	javax/rmi/CORBA/ValueHandler.java
+javax_sound_midi_SRCS = \
+        javax/sound/midi/ControllerEventListener.java \
+        javax/sound/midi/Instrument.java \
+        javax/sound/midi/InvalidMidiDataException.java \
+        javax/sound/midi/MetaEventListener.java \
+        javax/sound/midi/MetaMessage.java \
+        javax/sound/midi/MidiChannel.java \
+        javax/sound/midi/MidiDevice.java \
+        javax/sound/midi/MidiEvent.java \
+        javax/sound/midi/MidiFileFormat.java \
+        javax/sound/midi/MidiMessage.java \
+        javax/sound/midi/MidiSystem.java \
+        javax/sound/midi/MidiUnavailableException.java \
+        javax/sound/midi/Patch.java \
+        javax/sound/midi/Receiver.java \
+        javax/sound/midi/Sequence.java \
+        javax/sound/midi/Sequencer.java \
+        javax/sound/midi/ShortMessage.java \
+        javax/sound/midi/Soundbank.java \
+        javax/sound/midi/SoundbankResource.java \
+        javax/sound/midi/Synthesizer.java \
+        javax/sound/midi/SysexMessage.java \
+        javax/sound/midi/Track.java \
+        javax/sound/midi/Transmitter.java \
+        javax/sound/midi/VoiceStatus.java 
+javax_sound_midi_spi_SRCS = \
+        javax/sound/midi/spi/MidiDeviceProvider.java \
+        javax/sound/midi/spi/MidiFileReader.java \
+        javax/sound/midi/spi/MidiFileWriter.java \
+        javax/sound/midi/spi/SoundbankReader.java 
 javax_sound_sampled_SRCS = \
-	javax/sound/sampled/AudioFileFormat.java \
-	javax/sound/sampled/AudioFormat.java \
-	javax/sound/sampled/AudioInputStream.java \
-	javax/sound/sampled/AudioSystem.java \
-	javax/sound/sampled/Clip.java \
-	javax/sound/sampled/Control.java \
-	javax/sound/sampled/DataLine.java \
-	javax/sound/sampled/LineEvent.java \
-	javax/sound/sampled/Line.java \
-	javax/sound/sampled/LineListener.java \
-	javax/sound/sampled/LineUnavailableException.java \
-	javax/sound/sampled/Mixer.java \
-	javax/sound/sampled/Port.java \
-	javax/sound/sampled/SourceDataLine.java \
-	javax/sound/sampled/TargetDataLine.java \
-	javax/sound/sampled/UnsupportedAudioFileException.java
+        javax/sound/sampled/AudioFileFormat.java \
+        javax/sound/sampled/AudioFormat.java \
+        javax/sound/sampled/AudioInputStream.java \
+        javax/sound/sampled/AudioPermission.java \
+        javax/sound/sampled/AudioSystem.java \
+        javax/sound/sampled/BooleanControl.java \
+        javax/sound/sampled/Clip.java \
+        javax/sound/sampled/CompoundControl.java \
+        javax/sound/sampled/Control.java \
+        javax/sound/sampled/DataLine.java \
+        javax/sound/sampled/EnumControl.java \
+        javax/sound/sampled/FloatControl.java \
+        javax/sound/sampled/LineEvent.java \
+        javax/sound/sampled/Line.java \
+        javax/sound/sampled/LineListener.java \
+        javax/sound/sampled/LineUnavailableException.java \
+        javax/sound/sampled/Mixer.java \
+        javax/sound/sampled/Port.java \
+        javax/sound/sampled/ReverbType.java \
+        javax/sound/sampled/SourceDataLine.java \
+        javax/sound/sampled/TargetDataLine.java \
+        javax/sound/sampled/UnsupportedAudioFileException.java 
+javax_sound_sampled_spi_SRCS = \
+        javax/sound/sampled/spi/AudioFileReader.java \
+        javax/sound/sampled/spi/AudioFileWriter.java \
+        javax/sound/sampled/spi/FormatConversionProvider.java \
+        javax/sound/sampled/spi/MixerProvider.java 
 javax_sql_SRCS = \
 	javax/sql/ConnectionEvent.java \
 	javax/sql/ConnectionEventListener.java \
@@ -1653,6 +1734,146 @@ kaffe_util_log_SRCS = \
 	kaffe/util/log/SimpleLogViewer.java
 kaffe_util_zip_SRCS = \
 	kaffe/util/zip/SwitchInflater.java
+org_tritonus_core_SRCS = \
+	org/tritonus/core/Service.java \
+	org/tritonus/core/TAudioConfig.java \
+	org/tritonus/core/TInit.java \
+	org/tritonus/core/TMidiConfig.java
+org_tritonus_lowlevel_alsa_SRCS = \
+        org/tritonus/lowlevel/alsa/AlsaCtlCardInfo.java \
+        org/tritonus/lowlevel/alsa/AlsaCtl.java \
+        org/tritonus/lowlevel/alsa/Alsa.java \
+        org/tritonus/lowlevel/alsa/AlsaMixerElement.java \
+        org/tritonus/lowlevel/alsa/AlsaMixer.java \
+        org/tritonus/lowlevel/alsa/AlsaPcmHWParamsFormatMask.java \
+        org/tritonus/lowlevel/alsa/AlsaPcmHWParams.java \
+        org/tritonus/lowlevel/alsa/AlsaPcm.java \
+        org/tritonus/lowlevel/alsa/AlsaPcmSWParams.java \
+        org/tritonus/lowlevel/alsa/AlsaSeqClientInfo.java \
+        org/tritonus/lowlevel/alsa/AlsaSeqEvent.java \
+        org/tritonus/lowlevel/alsa/AlsaSeq.java \
+        org/tritonus/lowlevel/alsa/AlsaSeqPortInfo.java \
+        org/tritonus/lowlevel/alsa/AlsaSeqPortSubscribe.java \
+        org/tritonus/lowlevel/alsa/AlsaSeqQueueInfo.java \
+        org/tritonus/lowlevel/alsa/AlsaSeqQueueStatus.java \
+        org/tritonus/lowlevel/alsa/AlsaSeqQueueTempo.java \
+        org/tritonus/lowlevel/alsa/AlsaSeqQueueTimer.java \
+        org/tritonus/lowlevel/alsa/AlsaSeqRemoveEvents.java \
+        org/tritonus/lowlevel/alsa/AlsaSeqSystemInfo.java 
+org_tritonus_lowlevel_esd_SRCS = \
+        org/tritonus/lowlevel/esd/Esd.java \
+        org/tritonus/lowlevel/esd/EsdRecordingStream.java \
+        org/tritonus/lowlevel/esd/EsdSample.java \
+        org/tritonus/lowlevel/esd/EsdStream.java 
+org_tritonus_midi_device_alsa_SRCS = \
+        org/tritonus/midi/device/alsa/AlsaMidiChannel.java \
+        org/tritonus/midi/device/alsa/AlsaMidiDevice.java \
+        org/tritonus/midi/device/alsa/AlsaMidiDeviceProvider.java \
+        org/tritonus/midi/device/alsa/AlsaMidiIn.java \
+        org/tritonus/midi/device/alsa/AlsaMidiOut.java \
+        org/tritonus/midi/device/alsa/AlsaQueueHolder.java \
+        org/tritonus/midi/device/alsa/AlsaReceiver.java \
+        org/tritonus/midi/device/alsa/AlsaSequencer.java \
+        org/tritonus/midi/device/alsa/AlsaSequencerProvider.java \
+        org/tritonus/midi/device/alsa/AlsaSequencerReceiver.java \
+        org/tritonus/midi/device/alsa/AlsaSynthesizer.java 
+org_tritonus_midi_file_SRCS = \
+        org/tritonus/midi/file/MidiConstants.java \
+        org/tritonus/midi/file/StandardMidiFileReader.java \
+        org/tritonus/midi/file/StandardMidiFileWriter.java 
+org_tritonus_sampled_convert_SRCS = \
+        org/tritonus/sampled/convert/AlawFormatConversionProvider.java \
+        org/tritonus/sampled/convert/PCM2PCMConversionProvider.java \
+        org/tritonus/sampled/convert/SampleRateConversionProvider.java \
+        org/tritonus/sampled/convert/SmartFormatConversionProvider.java \
+        org/tritonus/sampled/convert/UlawFormatConversionProvider.java 
+org_tritonus_sampled_file_SRCS = \
+        org/tritonus/sampled/file/AiffAudioFileReader.java \
+        org/tritonus/sampled/file/AiffAudioFileWriter.java \
+        org/tritonus/sampled/file/AiffAudioOutputStream.java \
+        org/tritonus/sampled/file/AiffTool.java \
+        org/tritonus/sampled/file/AuAudioFileReader.java \
+        org/tritonus/sampled/file/AuAudioFileWriter.java \
+        org/tritonus/sampled/file/AuAudioOutputStream.java \
+        org/tritonus/sampled/file/AuTool.java \
+        org/tritonus/sampled/file/WaveAudioFileReader.java \
+        org/tritonus/sampled/file/WaveAudioFileWriter.java \
+        org/tritonus/sampled/file/WaveAudioOutputStream.java \
+        org/tritonus/sampled/file/WaveTool.java 
+org_tritonus_sampled_mixer_alsa_SRCS = \
+        org/tritonus/sampled/mixer/alsa/AlsaBaseDataLine.java \
+        org/tritonus/sampled/mixer/alsa/AlsaDataLineMixer.java \
+        org/tritonus/sampled/mixer/alsa/AlsaDataLineMixerProvider.java \
+        org/tritonus/sampled/mixer/alsa/AlsaPortMixer.java \
+        org/tritonus/sampled/mixer/alsa/AlsaPortMixerProvider.java \
+        org/tritonus/sampled/mixer/alsa/AlsaSourceDataLine.java \
+        org/tritonus/sampled/mixer/alsa/AlsaTargetDataLine.java \
+        org/tritonus/sampled/mixer/alsa/AlsaUtils.java 
+org_tritonus_sampled_mixer_esd_SRCS = \
+        org/tritonus/sampled/mixer/esd/EsdClip.java \
+        org/tritonus/sampled/mixer/esd/EsdMixer.java \
+        org/tritonus/sampled/mixer/esd/EsdMixerProvider.java \
+        org/tritonus/sampled/mixer/esd/EsdSourceDataLine.java \
+        org/tritonus/sampled/mixer/esd/EsdTargetDataLine.java \
+        org/tritonus/sampled/mixer/esd/EsdUtils.java 
+org_tritonus_share_SRCS = \
+        org/tritonus/share/ArraySet.java \
+        org/tritonus/share/GlobalInfo.java \
+        org/tritonus/share/StringHashedSet.java \
+        org/tritonus/share/TCircularBuffer.java \
+        org/tritonus/share/TDebug.java \
+        org/tritonus/share/TNotifier.java \
+        org/tritonus/share/TSettings.java 
+org_tritonus_share_midi_SRCS = \
+        org/tritonus/share/midi/MidiUtils.java \
+        org/tritonus/share/midi/TMidiDevice.java \
+        org/tritonus/share/midi/TMidiFileFormat.java \
+        org/tritonus/share/midi/TSequencer.java 
+org_tritonus_share_sampled_SRCS = \
+        org/tritonus/share/sampled/AudioFileTypes.java \
+        org/tritonus/share/sampled/AudioFormatSet.java \
+        org/tritonus/share/sampled/AudioFormats.java \
+        org/tritonus/share/sampled/AudioSystemShadow.java \
+        org/tritonus/share/sampled/AudioUtils.java \
+        org/tritonus/share/sampled/Encodings.java \
+        org/tritonus/share/sampled/FloatSampleBuffer.java \
+        org/tritonus/share/sampled/TConversionTool.java \
+        org/tritonus/share/sampled/TVolumeUtils.java 
+org_tritonus_share_sampled_convert_SRCS = \
+        org/tritonus/share/sampled/convert/TAsynchronousFilteredAudioInputStream.java \
+        org/tritonus/share/sampled/convert/TEncodingFormatConversionProvider.java \
+        org/tritonus/share/sampled/convert/TFormatConversionProvider.java \
+        org/tritonus/share/sampled/convert/TMatrixFormatConversionProvider.java \
+        org/tritonus/share/sampled/convert/TSimpleFormatConversionProvider.java \
+        org/tritonus/share/sampled/convert/TSynchronousFilteredAudioInputStream.java 
+org_tritonus_share_sampled_file_SRCS = \
+        org/tritonus/share/sampled/file/AudioOutputStream.java \
+        org/tritonus/share/sampled/file/HeaderlessAudioOutputStream.java \
+        org/tritonus/share/sampled/file/TAudioFileFormat.java \
+        org/tritonus/share/sampled/file/TAudioFileReader.java \
+        org/tritonus/share/sampled/file/TAudioFileWriter.java \
+        org/tritonus/share/sampled/file/TAudioOutputStream.java \
+        org/tritonus/share/sampled/file/TDataOutputStream.java \
+        org/tritonus/share/sampled/file/THeaderlessAudioFileWriter.java \
+        org/tritonus/share/sampled/file/TNonSeekableDataOutputStream.java \
+        org/tritonus/share/sampled/file/TSeekableDataOutputStream.java 
+org_tritonus_share_sampled_mixer_SRCS = \
+        org/tritonus/share/sampled/mixer/TBaseDataLine.java \
+        org/tritonus/share/sampled/mixer/TBooleanControl.java \
+        org/tritonus/share/sampled/mixer/TClip.java \
+        org/tritonus/share/sampled/mixer/TCompoundControl.java \
+        org/tritonus/share/sampled/mixer/TCompoundControlType.java \
+        org/tritonus/share/sampled/mixer/TControlController.java \
+        org/tritonus/share/sampled/mixer/TControllable.java \
+        org/tritonus/share/sampled/mixer/TDataLine.java \
+        org/tritonus/share/sampled/mixer/TEnumControl.java \
+        org/tritonus/share/sampled/mixer/TFloatControl.java \
+        org/tritonus/share/sampled/mixer/TLine.java \
+        org/tritonus/share/sampled/mixer/TMixerInfo.java \
+        org/tritonus/share/sampled/mixer/TMixer.java \
+        org/tritonus/share/sampled/mixer/TMixerProvider.java \
+        org/tritonus/share/sampled/mixer/TPort.java \
+        org/tritonus/share/sampled/mixer/TSoftClip.java 
 org_w3c_dom_SRCS = \
 	org/w3c/dom/Attr.java \
 	org/w3c/dom/CDATASection.java \
@@ -1961,7 +2182,7 @@ gnu_regexp_message_bundles = \
 	gnu/regexp/MessagesBundle.properties
 
 EXTRA_DIST = Klasses.jar.bootstrap $(toolslib_DATA) $(Klasses_jar_SRCS) \
-	$(Awt_SRCS) $(Rest_SRCS) $(RMI_SRCS) \
+	$(Awt_SRCS) $(Rest_SRCS) $(RMI_SRCS) $(JAXP_SRCS) $(SOUND_SRCS) \
         bootstrap.classlist \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
@@ -1984,13 +2205,15 @@ rebuildLib = ./rebuildLib
 
 .PHONY: compile-classes classes
 ## classes is provided for backward compatibility; use compile-classes
-compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS) $(Awt_SRCS) $(Rest_SRCS) $(RMI_SRCS)
+compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS) $(Awt_SRCS) $(Rest_SRCS) $(RMI_SRCS) $(JAXP_SRCS) $(SOUND_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	$(SHELL) $(rebuildLib) $(Klasses_jar_SRCS)
 	$(SHELL) $(rebuildLib) $(Awt_SRCS)
 	$(SHELL) $(rebuildLib) $(Rest_SRCS)
 	$(SHELL) $(rebuildLib) $(RMI_SRCS)
+	$(SHELL) $(rebuildLib) $(JAXP_SRCS)
+	$(SHELL) $(rebuildLib) $(SOUND_SRCS)
 	echo timestamp > $(LIBDIR)/stamp
 
 $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist
@@ -2014,6 +2237,7 @@ jar-classes rt.jar: $(LIBDIR)/stamp
 	for i in $(gnu_regexp_message_bundles) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	rm -f rt.jar
 	(cd $(LIBDIR) && $(ZIP) -DX -r ../rt.jar $(SRCDIRS))
+	$(ZIP) -r rt.jar META-INF
 
 .PHONY: build-classes Klasses
 build-classes Klasses: rt.jar

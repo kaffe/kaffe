@@ -159,6 +159,7 @@ vmExcept_jumpToHandler(VmExceptHandler* frame)
 	JTHREAD_LONGJMP(JTHREAD_ACCESS_JMPBUF(frame, jbuf), 1);
 }
 
+#if defined(INTERPRETER)
 static inline void 
 vmExcept_setIntrpFrame(VmExceptHandler* eh, u4 pc, struct _methods* meth, struct Hjava_lang_Object* syncobj)
 {
@@ -169,6 +170,7 @@ vmExcept_setIntrpFrame(VmExceptHandler* eh, u4 pc, struct _methods* meth, struct
 	eh->frame.intrp.pc = pc;
 	eh->frame.intrp.syncobj = syncobj;
 }
+#endif
 
 static inline void 
 vmExcept_setSyncobj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj)

@@ -12,14 +12,16 @@
 #ifndef __jmalloc_h
 #define __jmalloc_h
 
+#include <stdlib.h>
+ 
 /*
  * Kaffe GC-aware replacements for malloc() and free(). Note that
  * there's no jcalloc() because jmalloc() returns zero'd memory.
  */
 
-extern void*	jmalloc(size_t);
-extern void*	jrealloc(void*, size_t);
-extern void	jfree(void*);
+extern void*	jmalloc(size_t bytes);
+extern void*	jrealloc(void* ptr, size_t bytes);
+extern void	jfree(void* ptr);
 
 #define KMALLOC(A)	jmalloc(A)
 #define KREALLOC(A, B)	jrealloc((A), (B))

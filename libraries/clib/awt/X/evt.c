@@ -232,19 +232,20 @@ keyNotify ( JNIEnv* env, Toolkit* X )
   keysym = XKeycodeToKeysym( X->dsp, X->event.xkey.keycode, 0);
 
 
-  // Bug fix: the keypad numbers where not handled correctly.
-  // In X, numlock is a modifier, and XKeycodeToKeysym do
-  // not do any modifier interpretation (in order to
-  // build the correct Java KeyEvent).
-  // But, as a result, since there is no NumLock modifier
-  // in Java, the information was lost, and the keypad could
-  // not work with NumLock selected.
-  // The "solution" is to use the returned keysym from XLookupString
-  // (which interpret the modifiers) if and only if it 
-  // the original keysym correspond to the keypad; this should
-  // code will all the case where the numlock alter the interpretation
-  // of the keypad; also, if the keysums are the xk_xp_<num> 
-  // we set the keychar to the correspoding digit.
+  /* Bug fix: the keypad numbers where not handled correctly.
+   * In X, numlock is a modifier, and XKeycodeToKeysym do
+   * not do any modifier interpretation (in order to
+   * build the correct Java KeyEvent).
+   * But, as a result, since there is no NumLock modifier
+   * in Java, the information was lost, and the keypad could
+   * not work with NumLock selected.
+   * The "solution" is to use the returned keysym from XLookupString
+   * (which interpret the modifiers) if and only if it 
+   * the original keysym correspond to the keypad; this should
+   * code will all the case where the numlock alter the interpretation
+   * of the keypad; also, if the keysums are the xk_xp_<num> 
+   * we set the keychar to the correspoding digit.
+   */
 
   if ((keysym >= XK_KP_Space) && (keysym <= XK_KP_9)) {
       keysym = keysym2;
@@ -514,7 +515,7 @@ mapNotify ( JNIEnv* env, Toolkit* X )
 										   X->srcIdx, id);
   }
   else {
-	// we do the ComponentEvent show/hide in Java
+	  /* we do the ComponentEvent show/hide in Java */
 	return 0;
   }
 }

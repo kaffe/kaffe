@@ -69,7 +69,7 @@ NOINSTALL_DERIVED_HDRS = \
 	java_util_zip_ZipFile.h \
 	kaffe_applet_AudioPlayer.h \
 	kaffe_lang_SystemClassLoader.h \
-	kaffe_management_Classpath.h
+	kaffe_management_Classpath.h 
 
 DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
 
@@ -90,7 +90,31 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	kaffe_security_provider_MD2.h \
 	kaffe_security_provider_MD4.h \
 	kaffe_security_provider_MD5.h \
-	kaffe_security_provider_SHA.h
+	kaffe_security_provider_SHA.h \
+	org_tritonus_lowlevel_esd_Esd.h \
+	org_tritonus_lowlevel_esd_EsdRecordingStream.h \
+	org_tritonus_lowlevel_esd_EsdSample.h \
+	org_tritonus_lowlevel_esd_EsdStream.h \
+	org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.h \
+	org_tritonus_lowlevel_alsa_AlsaCtl.h \
+	org_tritonus_lowlevel_alsa_Alsa.h \
+	org_tritonus_lowlevel_alsa_AlsaMixerElement.h \
+	org_tritonus_lowlevel_alsa_AlsaMixer.h \
+	org_tritonus_lowlevel_alsa_AlsaPcmHWParamsFormatMask.h \
+	org_tritonus_lowlevel_alsa_AlsaPcmHWParams.h \
+	org_tritonus_lowlevel_alsa_AlsaPcm.h \
+	org_tritonus_lowlevel_alsa_AlsaPcmSWParams.h \
+	org_tritonus_lowlevel_alsa_AlsaSeqClientInfo.h \
+	org_tritonus_lowlevel_alsa_AlsaSeqEvent.h \
+	org_tritonus_lowlevel_alsa_AlsaSeq.h \
+	org_tritonus_lowlevel_alsa_AlsaSeqPortInfo.h \
+	org_tritonus_lowlevel_alsa_AlsaSeqPortSubscribe.h \
+	org_tritonus_lowlevel_alsa_AlsaSeqQueueInfo.h \
+	org_tritonus_lowlevel_alsa_AlsaSeqQueueStatus.h \
+	org_tritonus_lowlevel_alsa_AlsaSeqQueueTempo.h \
+	org_tritonus_lowlevel_alsa_AlsaSeqQueueTimer.h \
+	org_tritonus_lowlevel_alsa_AlsaSeqRemoveEvents.h \
+	org_tritonus_lowlevel_alsa_AlsaSeqSystemInfo.h
 
 JNI_DERIVED_HDRS = $(INSTALL_JNI_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS)
 

@@ -33,13 +33,13 @@ TRAMPOLINE_FUNCTION()
 
 asm(
 	START_ASM_FUNC() C_FUNC_NAME(i386_do_fixup_trampoline) "\n"
-C_FUNC_NAME(i386_do_fixup_trampoline) ":			\n
-	popl	%eax						\n
-	push	%ebp						\n
-	mov	%esp,%ebp					\n
-	push	%eax						\n
-	call	" C_FUNC_NAME(soft_fixup_trampoline) "		\n
-	leave							\n
+C_FUNC_NAME(i386_do_fixup_trampoline) ":			\n \
+	popl	%eax						\n \
+	push	%ebp						\n \
+	mov	%esp,%ebp					\n \
+	push	%eax						\n \
+	call	" C_FUNC_NAME(soft_fixup_trampoline) "		\n \
+	leave							\n \
 	jmp	*%eax"
 	END_ASM_FUNC()
 );
@@ -52,16 +52,16 @@ C_FUNC_NAME(i386_do_fixup_trampoline) ":			\n
  */
 asm(
 	START_ASM_FUNC() C_FUNC_NAME(__kaffe_i386_gcj_fixup) "\n"
-C_FUNC_NAME(__kaffe_i386_gcj_fixup) ":
-	mov	(%esp), %eax	# get return address
-	add	-4(%eax), %eax	# add jump relative offset from previous instr.
-				# this points at at jmp *$off(%ebx) instr.
-	mov	2(%eax), %eax	# extract 'off'
-	add	%ebx, %eax	# compute $off(%ebx)
-	pushl	%eax		# pass as first argument
-	call	" C_FUNC_NAME(gcj_fixup_trampoline) " # returns target
-	addl	$4, %esp	# remove argument
-	jmp	*%eax		# jump to target
+C_FUNC_NAME(__kaffe_i386_gcj_fixup) ": \
+	mov	(%esp), %eax	# get return address \
+	add	-4(%eax), %eax	# add jump relative offset from previous instr. \
+				# this points at at jmp *$off(%ebx) instr. \
+	mov	2(%eax), %eax	# extract 'off' \
+	add	%ebx, %eax	# compute $off(%ebx) \
+	pushl	%eax		# pass as first argument \
+	call	" C_FUNC_NAME(gcj_fixup_trampoline) " # returns target \
+	addl	$4, %esp	# remove argument \
+	jmp	*%eax		# jump to target \
 "
 	END_ASM_FUNC()
 );

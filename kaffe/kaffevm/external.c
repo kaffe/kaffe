@@ -66,7 +66,7 @@ static inline void kdlfree(lt_ptr_t ptr) {
 #endif
 
 #ifndef LIBRARYLOAD
-#define LIBRARYLOAD(desc,filename)	((desc)=lt_dlopen((filename)))
+#define LIBRARYLOAD(desc,filename) ((desc)=lt_dlopenext((filename)))
 #endif
 
 #ifndef LIBRARYUNLOAD
@@ -184,24 +184,6 @@ loadNativeLibrary(char* lib, char *errbuf, size_t errsiz)
 	return( retval );
 }
 
-/* Standard libtool archive file extension.  */
-#undef  LTDL_ARCHIVE_EXT
-#define LTDL_ARCHIVE_EXT	".la"
-
-static char *libSuffixes[] = {
-	LTDL_ARCHIVE_EXT,
-#ifdef LTDL_SHLIB_EXT
-	LTDL_SHLIB_EXT,
-#endif
-	0
-};
-
-enum {
-	TRY_LOAD_FOUND,
-	TRY_LOAD_NOT_FOUND,
-	TRY_LOAD_ERROR,
-};
-
 /*
  * Link in a native library. If successful, returns an index >= 0 that
  * can be passed to unloadNativeLibrary(). Otherwise, returns -1 and
@@ -211,7 +193,7 @@ int
 loadNativeLibrary2(char* path, int default_refs, char *errbuf, size_t errsiz)
 {
 	struct _libHandle *lib;
-	int index, status;
+	int index;
 
 	/* Find a library handle.  If we find the library has already
 	 * been loaded, don't bother to get it again, just increase the
@@ -256,33 +238,16 @@ DBG(NATIVELIB,
 /* if we tested for existence here, libltdl wouldn't be able to look
    for system-dependent library names */
 
-	lib->name = KMALLOC(strlen(path)
-			    + 16 /* XXX extension */
-			    + 1);
-	
 	blockAsyncSignals();
 	{
-		int lpc;
-
-		status = TRY_LOAD_NOT_FOUND;
-		for( lpc = 0;
-		     (status == TRY_LOAD_NOT_FOUND) && libSuffixes[lpc];
-		     lpc++ )
-		{
-			sprintf(lib->name, "%s%s", path, libSuffixes[lpc]);
-			LIBRARYLOAD(lib->desc, lib->name);
-			if( lib->desc )
-			{
-				status = TRY_LOAD_FOUND;
-			}
-			else
+                LIBRARYLOAD(lib->desc, path);
+                if (lib->desc == 0)	
 			{
 				const char *err = LIBRARYERROR();
 				
 				/* XXX Bleh, silly guessing system. */
 				if( err == 0 )
 				{
-					status = TRY_LOAD_ERROR;
 					if (errbuf != 0)
 						strncpy(errbuf,
 							"Unknown error",
@@ -291,36 +256,30 @@ DBG(NATIVELIB,
 				else if( (strstr(err, "ile not found") ||
 					  strstr(err, "annot open")) )
 				{
-					status = TRY_LOAD_NOT_FOUND;
+                                char *last_sep = strrchr (path, file_separator[0]);
+
+                                snprintf (errbuf, errsiz, "%s: not found", 
+                                          last_sep==NULL?path:last_sep+1);
 				}
 				else
 				{
 					/* We'll assume its a real error. */
-					status = TRY_LOAD_ERROR;
 					if (errbuf != 0)
 						strncpy(errbuf, err, errsiz);
 				}
 			}
 		}
-
-	}
 	unblockAsyncSignals();
 
 	if (lib->desc == 0) {
-		if (errbuf != 0)
-		{
-			assert(errsiz != 0);
-			if (status == TRY_LOAD_NOT_FOUND) 
-				snprintf(errbuf, errsiz, "%s: not found",
-					 strrchr(path, file_separator[0]) + 1);
-			errbuf[errsiz - 1] = '\0';
-		}
 		return -1;
 	}
 
+        lib->name = KMALLOC(strlen(path)+1);
+        strcpy (lib->name, path);
+
 	lib->ref = default_refs;
 	addToCounter(&ltmem, "vmmem-libltdl", 1, GCSIZEOF(lib->name));
-	strcpy(lib->name, path);
 
 DBG(NATIVELIB,
 	dprintf("Native lib %s\n"

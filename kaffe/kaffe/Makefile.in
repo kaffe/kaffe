@@ -122,6 +122,7 @@ QT_LDADD = @QT_LDADD@
 RANLIB = @RANLIB@
 REGEN_FORWARD = @REGEN_FORWARD@
 SECURITY_LIBS = @SECURITY_LIBS@
+SOUND_DIR = @SOUND_DIR@
 STRIP = @STRIP@
 THREAD_DIR = @THREAD_DIR@
 THREAD_SYSTEM = @THREAD_SYSTEM@
@@ -152,7 +153,7 @@ kaffe_bin_SOURCES = main.c version.c version.h
 LIBKAFFEVM = ../kaffevm/libkaffevm.la $(libxprof)
 
 kaffe_bin_LDFLAGS = $(KVMBINFLAGS) -export-dynamic
-kaffe_bin_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS)
+kaffe_bin_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS) @LIBLTDL@
 kaffe_bin_DEPENDENCIES = $(LIBKAFFEVM) $(JAVA_LIBS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h

@@ -1,26 +1,47 @@
-/* 
- * Copyright (c) 2001 Transvirtual Technologies, Inc.  All rights reserved.
- * See the file "COPYING" for details.
+/*
+ *	LineUnavailableException.java
+ */
+
+/*
+ *  Copyright (c) 1999 by Matthias Pfisterer <Matthias.Pfisterer@gmx.de>
  *
- * $tvt: LineUnavailableException.java,v 1.1 2001/11/20 01:09:05 samc Exp $ 
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU Library General Public License as published
+ *   by the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
  */
-package javax.sound.sampled;
 
-/**
- * A LineUnavailableException is an exception indicating that a line
- * cannot be opened because it is unavailable. This situation arises most
- * commonly when a requested line is already in use by another application.
- */
+
+package	javax.sound.sampled;
+
+
+
 public class LineUnavailableException
-  extends Exception
+	extends	Exception
 {
-  public LineUnavailableException (String message)
-  {
-    super (message);
-  }
+	public LineUnavailableException()
+	{
+	}
 
-  public LineUnavailableException ()
-  {
-    super ();
-  }
+
+
+	public LineUnavailableException(String strMessage)
+	{
+		super(strMessage);
+	}
 }
+
+
+
+/*** LineUnavailableException.java ***/

@@ -1,0 +1,39 @@
+# Alsa files for Tritonus javax.sound implementation
+#
+# Copyright (c) 2002
+#	Dalibor Topic <robilad@yahoo.com>
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+native_LTLIBRARIES = libtritonusalsa.la
+
+libtritonusalsa_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|org)_"
+libtritonusalsa_la_LIBADD = -lasound ../common/common.o
+libtritonusalsa_la_SOURCES = \
+	init.c \
+	org_tritonus_lowlevel_alsa_Alsa.c \
+	org_tritonus_lowlevel_alsa_AlsaCtl.c \
+	org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.c \
+	org_tritonus_lowlevel_alsa_AlsaMixer.c \
+	org_tritonus_lowlevel_alsa_AlsaMixerElement.c \
+	org_tritonus_lowlevel_alsa_AlsaPcm.c \
+	org_tritonus_lowlevel_alsa_AlsaPcmHWParams.c \
+	org_tritonus_lowlevel_alsa_AlsaPcmHWParamsFormatMask.c \
+	org_tritonus_lowlevel_alsa_AlsaPcmSWParams.c \
+	org_tritonus_lowlevel_alsa_AlsaSeq.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqClientInfo.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqEvent.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqPortInfo.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqPortSubscribe.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqQueueInfo.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqQueueStatus.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqQueueTempo.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqRemoveEvents.c \
+	org_tritonus_lowlevel_alsa_AlsaSeqSystemInfo.c
+
+noinst_HEADERS = \
+	common.h \
+	constants_check.h
+
+CLEANFILES = so_locations

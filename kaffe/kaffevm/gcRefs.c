@@ -114,7 +114,7 @@ TwalkThread(Collector* collector, Hjava_lang_Thread* tid)
          */
         if (jtid == 0 || tid == jthread_getcookie((void*)jthread_current())) {
 DBG(JTHREAD,
-                dprintf("%d NOT walking jtid %p\n", jthread_current(), jtid);
+                dprintf("%p NOT walking jtid %p\n", jthread_current(), jtid);
     )   
                 return;
         }

@@ -1,16 +1,14 @@
 What's New since Kaffe OpenVM 1.0.7
 ------------------------------------------------------
-
-* Qt based AWT backend
-
-* New build system.
-
-* New version of KJC (2.1B).
+* Port to Playstation 2 GNU/Linux
 
 * Port to SuperH GNU/Linux
 
-* Many improvements to serialization, localization,
-  and reflection.
+* Qt based AWT backend
+
+* Support for javax.sound from tritonus.org
+
+* Support for JAXP from GNU JAXP
 
 * Built-in XML parser (Aelfred2).
 
@@ -20,6 +18,7 @@ What's New since Kaffe OpenVM 1.0.7
   * java.awt.dnd
   * java.awt.font
   * java.awt.geom
+  * java.awt.image.renderable
   * java.awt.print
   * java.beans.beancontext
   * java.nio
@@ -39,7 +38,10 @@ What's New since Kaffe OpenVM 1.0.7
   * javax.naming.spi
   * javax.rmi
   * javax.rmi.CORBA
+  * javax.sound.midi
+  * javax.sound.midi.spi
   * javax.sound.sampled
+  * javax.sound.sampled.spi
   * javax.sql
   * javax.swing.text
   * javax.transaction
@@ -60,6 +62,13 @@ What's New since Kaffe OpenVM 1.0.7
   * org.xml.sax
   * org.xml.sax.ext
   * org.xml.sax.helpers
+
+* New build system.
+
+* New version of KJC (2.1B).
+
+* Many improvements to serialization, localization,
+  and reflection.
 
 * Lots of bug fixes.
 

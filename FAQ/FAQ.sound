@@ -1,0 +1,46 @@
+Sound support in kaffe
+======================
+
+Dalibor Topic <robilad@yahoo.com>
+
+Introduction
+============
+
+There are two ways to play sounds in kaffe: using the java.applet
+API or using javax.sound API. Using javax.sound gives you much more
+flexibility and features than using the Applet API.
+
+Kaffe uses the LGPL-d javax.sound implementation from the Tritonus
+project. It is available under http://www.tritonus.org . Kaffe's CVS
+follows the development in tritonus' CVS tree. Kaffe uses code from
+tritonus to provide basic sound capabilities. The code from the
+tritonus project includes features not present in kaffe's version, and
+you should take a look at their code for sound & midi service
+providers not included in kaffe.
+
+Configuration
+=============
+
+The configure script provides the option
+--with-sound=BACKEND. Possible choices are:
+
+* no: no sound support will be compiled in. This is the default, so if
+  you don't specify any sound backend, no sound support is compiled at
+  all.
+
+* alsa: sound support will be provided using the alsa backend from
+  tritonus project. This backend supports sampled sounds and MIDI.
+
+* esd: sound support will be provided using the esd backend from
+  tritonus project. This backend supports sampled sounds only.
+
+Usage
+=====
+
+You can test the sound support in kaffe with programs from the Java
+Sound Examples:
+
+http://www.jsresources.org/examples/
+
+In order to test your installation, try AudioPlayer and MidiPlayer.
+

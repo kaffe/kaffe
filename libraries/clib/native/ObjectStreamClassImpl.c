@@ -207,7 +207,7 @@ java_io_ObjectStreamClass_inputClassFields0(Hjava_lang_Class* clazz,
 		typeCode = unhand(*fld)->typeCode;
 
 		assert(typeCode > 0);
-		assert(typeCode < 127); // Should be valid ASCII char...
+		assert(typeCode < 127); /* Should be valid ASCII char... */
 
 		if (typeCode == 'L' || typeCode == '[') {
                         SETOBJFIELD("readObject", "()Ljava/lang/Object;", l);
@@ -548,7 +548,7 @@ java_io_ObjectStreamClass_getSerialVersionUID0(Hjava_lang_Class* cls)
 		    (fld->accflags & (ACC_STATIC|ACC_FINAL)) == (ACC_STATIC|ACC_FINAL)) {
 			Hjava_lang_Class* ftype;
 
-			// XXX if ACC_PUBLIC, throw error
+			/* XXX if ACC_PUBLIC, throw error */
 
 			ftype = resolveFieldType(fld, cls, &einfo);
 			if (ftype == 0) {

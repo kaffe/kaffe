@@ -22,7 +22,7 @@ kaffe_bin_SOURCES = main.c version.c version.h
 LIBKAFFEVM = ../kaffevm/libkaffevm.la $(libxprof)
 
 kaffe_bin_LDFLAGS = $(KVMBINFLAGS) -export-dynamic
-kaffe_bin_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS)
+kaffe_bin_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS) @LIBLTDL@
 kaffe_bin_DEPENDENCIES = $(LIBKAFFEVM) $(JAVA_LIBS)
 
 ### Rules to generate the version-info header file

@@ -1,112 +1,174 @@
-/* 
- * Copyright (c) 2001 Transvirtual Technologies, Inc.  All rights reserved.
- * See the file "COPYING" for details.
- *
- * $tvt: AudioFileFormat.java,v 1.1 2001/11/19 20:28:44 samc Exp $ 
+/*
+ *	AudioFileFormat.java
  */
-package javax.sound.sampled;
 
-/**
- * An instance of the AudioFileFormat class describes an audio file,
- * including the file type, the file's length in bytes, the length in
- * sample frames of the audio data contained in the file, and the format
- * of the audio data.
+/*
+ *  Copyright (c) 1999 by Matthias Pfisterer <Matthias.Pfisterer@gmx.de>
  *
- * The AudioSystem class includes methods for determining the format
- * of an audio file, obtaining an audio input stream from an audio file,
- * and writing an audio file from an audio input stream.
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU Library General Public License as published
+ *   by the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
  */
+
+
+package	javax.sound.sampled;
+
+
+
 public class AudioFileFormat
 {
-  int byteLength;
-  int frameLength;
-  Type type;
-  AudioFormat format;
-
-  static class Type 
-  {
-    String name;
-    String extention;
-
-    public static final Type AIFC = new Type ("AIFC", "aifc");
-    public static final Type SND  = new Type ("SND" , "snd");
-    public static final Type AIFF = new Type ("AIFF", "aiff");
-    public static final Type AU   = new Type ("AU"  , "au");
-    public static final Type WAVE = new Type ("WAVE", "wav");
-
-    protected Type (String name, String extension)
-    {
-      this.name = name;
-      this.extention = extention;
-    }
-
-    public String getExtension () 
-    {
-      return extention;
-    }
-
-    public final boolean equals (Object obj)
-    {
-      if (obj instanceof Type)
-        {
-          Type type = (Type) obj;
-          return type.name.equals (name) && type.extention.equals (extention);
-        }
-      return false;
-    }
-
-    public final int hashCode ()
-    {
-      return super.hashCode ();
-    }
-
-    public final String toString ()
-    {
-      return "AudioFileFormat.Type: " + name + " extention: " + extention;
-    }
-  }
-
-  public AudioFileFormat (Type type, 
-                          AudioFormat format, 
-                          int frameLength) 
-  {
-    this (type, format.getFrameSize () + frameLength, format, frameLength);
-  }
-
-  protected AudioFileFormat (Type type,
-                             int byteLength,
-                             AudioFormat format,
-                             int frameLength)
-  {
-    this.type = type;
-    this.byteLength = byteLength;
-    this.format = format;
-    this.frameLength = frameLength;
-  }
 
 
-  public Type getType ()
-  {
-    return type;
-  }
+	private Type			m_type;
+	private AudioFormat		m_audioFormat;
+	private int			m_nLengthInFrames;
+	private int			m_nLengthInBytes;
 
-  public int getByteLength ()
-  {
-    return byteLength;
-  }
 
-  public AudioFormat getFormat()
-  {
-    return format;
-  }
 
-  public int getFrameLength ()
-  {
-    return frameLength;
-  }
+	public AudioFileFormat(Type type,
+			       AudioFormat audioFormat,
+			       int nLengthInFrames)
+	{
+		this(type,
+		     AudioSystem.NOT_SPECIFIED,
+		     audioFormat,
+		     nLengthInFrames);
+	}
 
-  public String toString()
-  {
-    return "AudioFileFormat: " + type + ", " + frameLength  + " frames, " + byteLength + " bytes";
-  }
+
+
+	protected AudioFileFormat(Type type,
+				  int nLengthInBytes,
+				  AudioFormat audioFormat,
+				  int nLengthInFrames)
+	{
+		m_type = type;
+		m_audioFormat = audioFormat;
+		m_nLengthInFrames = nLengthInFrames;
+		m_nLengthInBytes = nLengthInBytes;
+	}
+
+
+
+	public Type getType()
+	{
+		return m_type;
+	}
+
+
+
+	public int getByteLength()
+	{
+		return m_nLengthInBytes;
+	}
+
+
+
+
+	public AudioFormat getFormat()
+	{
+		return m_audioFormat;
+	}
+
+
+
+	public int getFrameLength()
+	{
+		return m_nLengthInFrames;
+	}
+
+
+
+	// IDEA: output "not specified" of length == AudioSystem.NOT_SPECIFIED
+	public String toString()
+	{
+		return super.toString() +
+			"[type=" + getType() +
+			", format=" + getFormat() +
+			", lengthInFrames=" + getByteLength() +
+			", lengthInBytes=" + getFrameLength() + "]";
+	}
+
+
+
+
+
+
+
+
+	public static class Type
+	{
+		// $$fb 2000-03-31: extension without dot
+		public static final Type		AIFC = new Type("AIFC", "aifc");
+		public static final Type		AIFF = new Type("AIFF", "aiff");
+		public static final Type		AU = new Type("AU", "au");
+		public static final Type		SND = new Type("SND", "snd");
+		public static final Type		WAVE = new Type("WAVE", "wav");
+
+
+
+		private String	m_strName;
+		private String	m_strExtension;
+
+
+
+		public Type(String strName, String strExtension)
+		{
+			m_strName = strName;
+			m_strExtension = strExtension;
+		}
+
+
+
+		public String getExtension()
+		{
+			return m_strExtension;
+		}
+
+
+		/*
+		 *	TODO: I requested from Sun that this should
+		 *	compare the strings
+		 */
+		public final boolean equals(Object obj)
+		{
+			return super.equals(obj);
+		}
+
+
+
+		public final int hashCode()
+		{
+			return super.hashCode();
+		}
+
+
+
+		public final String toString()
+		{
+			return m_strName;
+		}
+	}
+
+
+
+
+
 }
+
+
+
+/*** AudioFileFormat.java ***/

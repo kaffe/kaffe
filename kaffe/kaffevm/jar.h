@@ -125,7 +125,7 @@ typedef struct _jarCentralDirectoryEnd {
 typedef struct _jarEntry {
 
 	struct _jarEntry*	next;
-	char*			fileName;
+	char*		        fileName;
 	uint32			dosTime;
 	uint32			uncompressedSize;
 	uint32			compressedSize;
@@ -163,11 +163,11 @@ typedef struct _jarEntry {
 
 enum {
 	/* Indicates whether or not the file is in the cache. */
-	JFB_CACHED,
+	JFB_CACHED
 };
 
 enum {
-	JFF_CACHED = (1L << JFB_CACHED),
+	JFF_CACHED = (1L << JFB_CACHED)
 };
 
 typedef struct _jarFile {
@@ -184,12 +184,12 @@ typedef struct _jarFile {
 	int			count;
 	jarEntry**		table;
 	unsigned int		tableSize;
-	char*			error;
+	const char*		error;
 
 	/* Extra information needed when the file is mmap'ed */
 #ifdef HAVE_MMAP
-	char*			data;
-	off_t			size;
+	uint8*			data;
+	size_t			size;
 	off_t			offset;
 #endif
 

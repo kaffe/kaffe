@@ -76,9 +76,27 @@ static void removeJNIref(jref);
 #endif
 
 /*
- * Define how we get the method to call.
+ * Find the function to be called when meth is invoked on obj
  */
-#define	JNI_METHOD_CODE(M)	METHOD_INDIRECTMETHOD(M)
+static inline void*
+getMethodFunc (Method* meth, Hjava_lang_Object *obj)
+{
+	if (obj && CLASS_IS_INTERFACE (meth->class)) {
+		register short *implementors;
+		register Hjava_lang_Class *clazz;
+		
+		assert (meth->idx >= 0);
+
+		implementors = meth->class->implementors;
+		clazz = OBJECT_CLASS(obj);
+
+		assert (implementors != NULL && clazz->impl_index <= implementors[0]);
+		
+		return clazz->itable2dtable[implementors[clazz->impl_index] + meth->idx + 1]; 	
+	} else {
+		return meth->idx >= 0 ? obj->dtable->method[meth->idx] : METHOD_INDIRECTMETHOD (meth);
+	}
+}
 
 /*
  * Define how to set the frame pointer in a VmExceptHandler.
@@ -475,7 +493,7 @@ Kaffe_NewObjectV(JNIEnv* env, jclass cls, jmethodID meth, va_list args)
 	}
 	obj = newObject(clazz);
 
-	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval);
 
 	ADD_REF(obj);
 	END_EXCEPTION_HANDLING();
@@ -515,7 +533,7 @@ Kaffe_NewObjectA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* args)
 	}
 	obj = newObject(clazz);
 
-	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval, 0);
 
 	ADD_REF(obj);
 	END_EXCEPTION_HANDLING();
@@ -587,8 +605,7 @@ Kaffe_CallObjectMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval);
+	callMethodV(m, getMethodFunc (m, o), obj, args, &retval);
 
 	ADD_REF(retval.l);
 	END_EXCEPTION_HANDLING();
@@ -624,8 +641,7 @@ Kaffe_CallObjectMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval, 0);
+	callMethodA(m, getMethodFunc (m, o), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.l);
@@ -644,8 +660,7 @@ Kaffe_CallBooleanMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval);
+	callMethodV(m, getMethodFunc (m, o), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return ((jboolean) retval.i);
@@ -680,8 +695,7 @@ Kaffe_CallBooleanMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval, 0);
+	callMethodA(m, getMethodFunc (m, o), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return ((jboolean) retval.i);
@@ -700,8 +714,7 @@ Kaffe_CallByteMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval);
+	callMethodV(m, getMethodFunc (m, o), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return ((jbyte) retval.i);
@@ -736,8 +749,7 @@ Kaffe_CallByteMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval, 0);
+	callMethodA(m, getMethodFunc (m, o), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return ((jbyte) retval.i);
@@ -756,8 +768,7 @@ Kaffe_CallCharMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval);
+	callMethodV(m, getMethodFunc (m, o), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return ((jchar) retval.i);
@@ -792,8 +803,7 @@ Kaffe_CallCharMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval, 0);
+	callMethodA(m, getMethodFunc (m, o), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return ((jchar) retval.i);
@@ -812,8 +822,7 @@ Kaffe_CallShortMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval);
+	callMethodV(m, getMethodFunc (m, o), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return ((jshort) retval.i);
@@ -848,8 +857,7 @@ Kaffe_CallShortMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval, 0);
+	callMethodA(m, getMethodFunc (m, o), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return ((jshort) retval.i);
@@ -868,8 +876,7 @@ Kaffe_CallIntMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval);
+	callMethodV(m, getMethodFunc (m, o), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.i);
@@ -904,8 +911,7 @@ Kaffe_CallIntMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval, 0);
+	callMethodA(m, getMethodFunc (m, o), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.i);
@@ -924,8 +930,7 @@ Kaffe_CallLongMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval);
+	callMethodV(m, getMethodFunc (m, o), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.j);
@@ -960,8 +965,7 @@ Kaffe_CallLongMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval, 0);
+	callMethodA(m, getMethodFunc (m, o), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.j);
@@ -980,8 +984,7 @@ Kaffe_CallFloatMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval);
+	callMethodV(m, getMethodFunc (m, o), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.f);
@@ -1016,8 +1019,7 @@ Kaffe_CallFloatMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval, 0);
+	callMethodA(m, getMethodFunc (m, o), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.f);
@@ -1036,8 +1038,7 @@ Kaffe_CallDoubleMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval);
+	callMethodV(m, getMethodFunc (m, o), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.d);
@@ -1072,8 +1073,7 @@ Kaffe_CallDoubleMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, &retval, 0);
+	callMethodA(m, getMethodFunc (m, o), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.d);
@@ -1091,8 +1091,7 @@ Kaffe_CallVoidMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, 0);
+	callMethodV(m, getMethodFunc (m, o), obj, args, 0);
 
 	END_EXCEPTION_HANDLING();
 }
@@ -1123,8 +1122,7 @@ Kaffe_CallVoidMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
-			: JNI_METHOD_CODE(m)), obj, args, 0, 0);
+	callMethodA(m, getMethodFunc (m, o), obj, args, 0, 0);
 
 	END_EXCEPTION_HANDLING();
 }
@@ -1141,7 +1139,7 @@ Kaffe_CallNonvirtualObjectMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodI
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval);
 
 	ADD_REF(retval.l);
 	END_EXCEPTION_HANDLING();
@@ -1176,7 +1174,7 @@ Kaffe_CallNonvirtualObjectMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodI
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval, 0);
 
 	ADD_REF(retval.l);
 	END_EXCEPTION_HANDLING();
@@ -1195,7 +1193,7 @@ Kaffe_CallNonvirtualBooleanMethodV(JNIEnv* env, jobject obj, jclass cls, jmethod
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return ((jboolean) retval.i);
@@ -1229,7 +1227,7 @@ Kaffe_CallNonvirtualBooleanMethodA(JNIEnv* env, jobject obj, jclass cls, jmethod
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return ((jboolean) retval.i);
@@ -1247,7 +1245,7 @@ Kaffe_CallNonvirtualByteMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return ((jbyte) retval.i);
@@ -1281,7 +1279,7 @@ Kaffe_CallNonvirtualByteMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return ((jbyte) retval.i);
@@ -1299,7 +1297,7 @@ Kaffe_CallNonvirtualCharMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return ((jchar) retval.i);
@@ -1333,7 +1331,7 @@ Kaffe_CallNonvirtualCharMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return ((jchar) retval.i);
@@ -1351,7 +1349,7 @@ Kaffe_CallNonvirtualShortMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return ((jshort) retval.i);
@@ -1385,7 +1383,7 @@ Kaffe_CallNonvirtualShortMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return ((jshort) retval.i);
@@ -1403,7 +1401,7 @@ Kaffe_CallNonvirtualIntMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID m
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.i);
@@ -1437,7 +1435,7 @@ Kaffe_CallNonvirtualIntMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID m
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.i);
@@ -1455,7 +1453,7 @@ Kaffe_CallNonvirtualLongMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.j);
@@ -1489,7 +1487,7 @@ Kaffe_CallNonvirtualLongMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.j);
@@ -1507,7 +1505,7 @@ Kaffe_CallNonvirtualFloatMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.f);
@@ -1541,7 +1539,7 @@ Kaffe_CallNonvirtualFloatMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.f);
@@ -1559,7 +1557,7 @@ Kaffe_CallNonvirtualDoubleMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodI
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.d);
@@ -1593,7 +1591,7 @@ Kaffe_CallNonvirtualDoubleMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodI
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), obj, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.d);
@@ -1610,7 +1608,7 @@ Kaffe_CallNonvirtualVoidMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), obj, args, 0);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), obj, args, 0);
 
 	END_EXCEPTION_HANDLING();
 }
@@ -1640,7 +1638,7 @@ Kaffe_CallNonvirtualVoidMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), obj, args, 0, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), obj, args, 0, 0);
 
 	END_EXCEPTION_HANDLING();
 }
@@ -1896,7 +1894,7 @@ Kaffe_CallStaticObjectMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list a
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval);
 
 	ADD_REF(retval.l);
 	END_EXCEPTION_HANDLING();
@@ -1931,7 +1929,7 @@ Kaffe_CallStaticObjectMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* a
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval, 0);
 
 	ADD_REF(retval.l);
 	END_EXCEPTION_HANDLING();
@@ -1950,7 +1948,7 @@ Kaffe_CallStaticBooleanMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list 
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return ((jboolean) retval.i);
@@ -1984,7 +1982,7 @@ Kaffe_CallStaticBooleanMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* 
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return ((jboolean) retval.i);
@@ -2002,7 +2000,7 @@ Kaffe_CallStaticByteMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list arg
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return ((jbyte) retval.i);
@@ -2036,7 +2034,7 @@ Kaffe_CallStaticByteMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* arg
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return ((jbyte) retval.i);
@@ -2054,7 +2052,7 @@ Kaffe_CallStaticCharMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list arg
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return ((jchar) retval.i);
@@ -2088,7 +2086,7 @@ Kaffe_CallStaticCharMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* arg
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return ((jchar) retval.i);
@@ -2106,7 +2104,7 @@ Kaffe_CallStaticShortMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list ar
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return ((jshort) retval.i);
@@ -2140,7 +2138,7 @@ Kaffe_CallStaticShortMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* ar
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return ((jshort) retval.i);
@@ -2158,7 +2156,7 @@ Kaffe_CallStaticIntMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list args
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.i);
@@ -2192,7 +2190,7 @@ Kaffe_CallStaticIntMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* args
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.i);
@@ -2210,7 +2208,7 @@ Kaffe_CallStaticLongMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list arg
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.j);
@@ -2244,7 +2242,7 @@ Kaffe_CallStaticLongMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* arg
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.j);
@@ -2262,7 +2260,7 @@ Kaffe_CallStaticFloatMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list ar
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.f);
@@ -2296,7 +2294,7 @@ Kaffe_CallStaticFloatMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* ar
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.f);
@@ -2314,7 +2312,7 @@ Kaffe_CallStaticDoubleMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list a
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.d);
@@ -2348,7 +2346,7 @@ Kaffe_CallStaticDoubleMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* a
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval, 0);
 
 	END_EXCEPTION_HANDLING();
 	return (retval.d);
@@ -2366,7 +2364,7 @@ Kaffe_CallStaticVoidMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list arg
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
+	callMethodV(m, METHOD_INDIRECTMETHOD(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
 }
@@ -2396,7 +2394,7 @@ Kaffe_CallStaticVoidMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* arg
 		throwException(NoSuchMethodError(m->name->data));
 	}
 
-	callMethodA(m, JNI_METHOD_CODE(m), 0, args, 0, 0);
+	callMethodA(m, METHOD_INDIRECTMETHOD(m), 0, args, 0, 0);
 
 	END_EXCEPTION_HANDLING();
 }

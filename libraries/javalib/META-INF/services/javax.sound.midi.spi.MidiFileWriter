@@ -1,0 +1,7 @@
+# configuration file for the tritonus library
+#
+
+org.tritonus.midi.file.StandardMidiFileWriter
+
+# end
+#

@@ -771,8 +771,9 @@ Java_java_awt_Toolkit_clrGetColorModel ( JNIEnv* env, jclass clazz )
   case PseudoColor:  
 	cmClazz = (*env)->FindClass( env, "java/awt/IndexColorModel");
 	cmCtorId = (*env)->GetMethodID( env, cmClazz, "<init>", "(I[II)V");
-	//rgbs = (*env)->NewIntArray( env, 256, 0);
-	//cm = (*env)->NewObject( env, cmClazz, cmCtorId, 8, rgbs, 0);
+	/* rgbs = (*env)->NewIntArray( env, 256, 0);
+	 * cm = (*env)->NewObject( env, cmClazz, cmCtorId, 8, rgbs, 0);
+	 */
 	break;
 
   default:

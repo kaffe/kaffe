@@ -1,26 +1,51 @@
-/* 
- * Copyright (c) 2001 Transvirtual Technologies, Inc.  All rights reserved.
- * See the file "COPYING" for details.
- *
- * $tvt: DataLine.java,v 1.1 2001/11/20 01:09:05 samc Exp $ 
+/*
+ *	TargetDataLine.java
  */
-package javax.sound.sampled;
+
+/*
+ *  Copyright (c) 1999 by Matthias Pfisterer <Matthias.Pfisterer@gmx.de>
+ *
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU Library General Public License as published
+ *   by the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ */
 
 
-/**
- * A target data line is a type of DataLine from which audio data can be
- * read. The most common example is a data line that gets its data from
- * an audio capture device. (The device is implemented as a mixer that
- * writes to the target data line.)
- *
- * Note that the naming convention for this interface reflects the
- * relationship between the line and its mixer. From the perspective of
- * an application, a target data line may act as a source for audio data.
- */
+package	javax.sound.sampled;
+
+
+
+
 public interface TargetDataLine
-  extends DataLine
+	extends		DataLine
 {
-  public void open (AudioFormat format) throws LineUnavailableException;
-  public void open (AudioFormat format, int bufferSize) throws LineUnavailableException;
-  public int read (byte[] b, int off, int len);
+	public void open(AudioFormat audioFormat,
+			 int nBufferSize)
+		throws	LineUnavailableException;
+
+
+	public void open(AudioFormat audioFormat)
+		throws	LineUnavailableException;
+
+
+	public int read(byte[] abData,
+			int nOffset,
+			int nLength);
 }
+
+
+
+/*** TargetDataLine.java ***/
+

@@ -87,7 +87,7 @@ struct Hjava_lang_Class {
 
 	/* all interfaces supported by this class */
         struct Hjava_lang_Class** interfaces;
-	short*			if2itable;	// redundant now
+	short*			if2itable;	/* redundant now */
 	void**			itable2dtable;
 	short			interface_len;
 	short			total_interface_len;
@@ -358,6 +358,7 @@ struct classFile;
 #define	METHOD_IS_CONSTRUCTOR(METH) ((METH)->accflags & ACC_CONSTRUCTOR)
 #define	METHOD_IS_FINAL(METH) ((METH)->accflags & ACC_FINAL)
 #define	METHOD_IS_PRIVATE(METH) ((METH)->accflags & ACC_PRIVATE)
+#define	METHOD_IS_NATIVE(METH) ((METH)->accflags & ACC_NATIVE)
 
 #define CLASS_GCJ(C)		((C)->accflags & ACC_GCJ)
 #define SET_CLASS_GCJ(C)	(C)->accflags |= ACC_GCJ

@@ -22,12 +22,12 @@
 
 /* Bit numbers for the flags in the mangled_method structure */
 enum {
-	MMB_UNICODE_METHOD,	/* Indicates the method name has utf chars */
+	MMB_UNICODE_METHOD	/* Indicates the method name has utf chars */
 };
 
 /* Flags for the mangled_method structure */
 enum {
-	MMF_UNICODE_METHOD = (1L << MMB_UNICODE_METHOD),
+	MMF_UNICODE_METHOD = (1L << MMB_UNICODE_METHOD)
 };
 
 /*

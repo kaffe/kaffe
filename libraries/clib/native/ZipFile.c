@@ -100,7 +100,8 @@ java_util_zip_ZipFile_getZipEntries0(struct Hkaffe_util_Ptr* zip)
 	jarFile* zfile;
 	jarEntry* entry;
 	HObject** elems;
-	int i = 0, j;
+	int i = 0;
+	unsigned int j;
 
 	zfile = (jarFile*)zip;
 	vec = (Hjava_util_Vector*)execute_java_constructor("java.util.Vector",

@@ -1,24 +1,60 @@
-/* 
- * Copyright (c) 2001 Transvirtual Technologies, Inc.  All rights reserved.
- * See the file "COPYING" for details.
+/*
+ *	SourceDataLine.java
+ */
+
+/*
+ *  Copyright (c) 1999 by Matthias Pfisterer <Matthias.Pfisterer@gmx.de>
  *
- * $tvt: DataLine.java,v 1.1 2001/11/20 01:09:05 samc Exp $ 
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU Library General Public License as published
+ *   by the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package javax.sound.sampled;
+
+package	javax.sound.sampled;
 
 
-/**
- * A source data line is a data line to which data may be written. It
- * acts as a source to its mixer. An application writes audio bytes to a
- * source data line, which handles the buffering of the bytes and delivers
- * them to the mixer. The mixer may mix the samples with those from other
- * sources and then deliver the mix to a target such as an output port
- * (which may represent an audio output device on a sound card).
- */
+
+
 public interface SourceDataLine
-  extends DataLine
+extends DataLine
 {
-  public void open (AudioFormat format) throws LineUnavailableException;
-  public void open (AudioFormat format, int bufferSize) throws LineUnavailableException;
-  public int write (byte[] b, int off, int len);
+	public void open(AudioFormat audioFormat,
+			 int nBufferSize)
+		throws	LineUnavailableException;
+
+
+	public void open(AudioFormat audioFormat)
+		throws	LineUnavailableException;
+
+
+	/** Write data to the line.
+
+	@param abData The buffer to use.
+
+	@param nOffset
+
+	@param nLength The length of the data that should be written,
+	in bytes. Can be less that the length of abData.
+
+	@return The number of bytes written. May be less than nLength.
+
+	*/
+	public int write(byte[] abData,
+			 int nOffset,
+			 int nLength);
 }
+
+
+
+/*** SourceDataLine.java ***/
+

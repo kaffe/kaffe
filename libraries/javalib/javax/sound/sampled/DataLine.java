@@ -1,133 +1,254 @@
-/* 
- * Copyright (c) 2001 Transvirtual Technologies, Inc.  All rights reserved.
- * See the file "COPYING" for details.
+/*
+ *	DataLine.java
+ */
+
+/*
+ *  Copyright (c) 1999 by Matthias Pfisterer <Matthias.Pfisterer@gmx.de>
  *
- * $tvt: DataLine.java,v 1.1 2001/11/20 01:09:05 samc Exp $ 
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU Library General Public License as published
+ *   by the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
  */
-package javax.sound.sampled;
 
 
-/**
- * DataLine adds media-related functionality to its superinterface,
- * Line. This functionality includes transport-control methods that start,
- * stop, drain, and flush the audio data that passes through the line. A
- * data line can also report the current position, volume, and audio format
- * of the media. Data lines are used for output of audio by means of the
- * subinterfaces SourceDataLine or Clip, which allow an application program
- * to write data. Similarly, audio input is handled by the subinterface
- * TargetDataLine, which allows data to be read.
- */
+package	javax.sound.sampled;
+
+
+import	java.util.List;
+import	java.util.Arrays;
+import	java.util.Iterator;
+
+import	org.tritonus.share.TDebug;
+import	org.tritonus.share.sampled.AudioFormats;
+
+
+
 public interface DataLine
-  extends Line
+	extends	Line
 {
-  /**
-   * Besides the class information inherited from its superclass,
-   * DataLine.Info provides additional information specific to data
-   * lines. 
-   * This information includes:
-   * - the audio formats supported by the data line
-   * - the minimum and maximum sizes of its internal buffer
-   */
-  public static class Info
-    extends Line.Info
-  {
-    AudioFormat[] formats;
-    int minBufferSize = 0;
-    int maxBufferSize = 16 * 1024;
+	public void drain();
 
-    public Info (Class lineClass, AudioFormat[] formats, int minBufferSize, int maxBufferSize)
-    {
-      super (lineClass);
-      this.formats = formats;
-      this.minBufferSize = minBufferSize;
-      this.maxBufferSize = maxBufferSize;
-    }
 
-    public Info (Class lineClass, AudioFormat format, int bufferSize)
-    {
-      super (lineClass);
-      this.formats = new AudioFormat[] { format };
-      this.maxBufferSize = bufferSize;
-    }
+	public void flush();
 
-    public Info (Class lineClass, AudioFormat format)
-    {
-      super (lineClass);
-      this.formats = new AudioFormat[] { format };
-    }
 
-    public AudioFormat[] getFormats ()
-    {
-      return formats;
-    }
+	public void start();
 
-    public boolean isFormatSupported (AudioFormat format)
-    {
-      for (int i = 0; i < formats.length; i++)
-        {
-          if (formats[i].matches (format))
-            {
-              return true;
-            }
-        }
-      return false;
-    }
 
-    public int getMinBufferSize ()
-    {
-      return minBufferSize;
-    }
+	public void stop();
 
-    public int getMaxBufferSize ()
-    {
-      return maxBufferSize;
-    }
 
-    public boolean matches (Info info)
-    {
-      if (!super.matches (info) 
-          || minBufferSize < info.minBufferSize
-          || maxBufferSize > info.maxBufferSize)
-        {
-          return false;
-        }
-      for (int i = 0; i < formats.length; i++)
-        {
-          if (info.isFormatSupported (formats[i]) == false)
-            {
-              return false;
-            }
-        }
-      return true;
-    }
+	public boolean isRunning();
 
-    public String toString()
-    {
-      return "[" + minBufferSize + "-" + maxBufferSize + "]";
-    }
-  }
 
-  public void drain ();
+	public boolean isActive();
 
-  public void flush ();
 
-  public void start ();
+	public AudioFormat getFormat();
 
-  public void stop ();
 
-  public boolean isRunning ();
+	public int getBufferSize();
 
-  public boolean isActive ();
 
-  public AudioFormat getFormat ();
+	public int available();
 
-  public int getBufferSize ();
 
-  public int available ();
+	public int getFramePosition();
 
-  public int getFramePosition ();
 
-  public long getMicrosecondPosition ();
+	public long getMicrosecondPosition();
 
-  public float getLevel ();
+
+	public float getLevel();
+
+
+
+
+	public static class Info
+		extends		Line.Info
+	{
+		private AudioFormat[]	EMPTY_AUDIO_FORMAT_ARRAY = new AudioFormat[0];
+
+		private List		m_audioFormats;
+		private int		m_nMinBufferSize;
+		private int		m_nMaxBufferSize;
+
+
+		public Info(Class lineClass,
+			    AudioFormat[] aAudioFormats,
+			    int nMinBufferSize,
+			    int nMaxBufferSize)
+		{
+			super(lineClass);
+			m_audioFormats = Arrays.asList(aAudioFormats);
+			m_nMinBufferSize = nMinBufferSize;
+			m_nMaxBufferSize = nMaxBufferSize;
+		}
+
+
+
+		public Info(Class lineClass,
+			    AudioFormat audioFormat,
+			    int nBufferSize)
+		{
+			this(lineClass,
+			     new AudioFormat[]{audioFormat},
+			     nBufferSize,
+			     nBufferSize);
+		}
+
+
+
+		public Info(Class lineClass,
+			    AudioFormat audioFormat)
+		{
+			this(lineClass,
+			     audioFormat,
+			     AudioSystem.NOT_SPECIFIED);
+		}
+
+
+
+		public AudioFormat[] getFormats()
+		{
+			return (AudioFormat[]) m_audioFormats.toArray(EMPTY_AUDIO_FORMAT_ARRAY);
+		}
+
+
+
+		public boolean isFormatSupported(AudioFormat audioFormat)
+		{
+			Iterator	formats = m_audioFormats.iterator();
+			while (formats.hasNext())
+			{
+				AudioFormat	format = (AudioFormat) formats.next();
+				if (AudioFormats.matches(format, audioFormat))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+
+
+		public int getMinBufferSize()
+		{
+			return m_nMinBufferSize;
+		}
+
+
+
+		public int getMaxBufferSize()
+		{
+			return m_nMaxBufferSize;
+		}
+
+
+
+		public boolean matches(Line.Info info)
+		{
+			if (TDebug.TraceDataLine)
+			{
+				TDebug.out(">DataLine.Info.matches(): called");
+				TDebug.out("DataLine.Info.matches(): own info: " + this.toString());
+				TDebug.out("DataLine.Info.matches(): test info: " + info.toString());
+			}
+			if (!super.matches(info))
+			{
+				if (TDebug.TraceDataLine)
+				{
+					TDebug.out("<DataLine.Info.matches(): super.matches does not match()");
+				}
+				return false;
+			}
+			DataLine.Info	dataLineInfo = (DataLine.Info) info;
+			// TODO: check against documentation !!
+			// $$fb2000-12-02: handle NOT_SPECIFIED
+			if ( (getMinBufferSize()!=AudioSystem.NOT_SPECIFIED 
+			      && dataLineInfo.getMinBufferSize()!=AudioSystem.NOT_SPECIFIED
+			      && getMinBufferSize() < dataLineInfo.getMinBufferSize()) ||
+			     (getMaxBufferSize()!=AudioSystem.NOT_SPECIFIED
+			      && dataLineInfo.getMaxBufferSize()!=AudioSystem.NOT_SPECIFIED
+			      && getMaxBufferSize() > dataLineInfo.getMaxBufferSize()) )
+			{
+				TDebug.out("<DataLine.Info.matches(): buffer sizes do not match");
+				return false;
+			}
+			// $$fb2000-12-02: it's the other way round !!!
+			//                 all of this classes formats must match at least one of
+			//                 dataLineInfo's formats.
+			Iterator	formats = m_audioFormats.iterator();
+			while (formats.hasNext())
+			{
+				AudioFormat	format = (AudioFormat) formats.next();
+				if (TDebug.TraceDataLine)
+				{
+					TDebug.out("checking if supported: " + format);
+				}
+				if (!dataLineInfo.isFormatSupported(format))
+				{
+					if (TDebug.TraceDataLine)
+					{
+						TDebug.out("< format doesn't match");
+					}
+					return false;
+				}
+			}
+
+			/*
+			AudioFormat[]	infoFormats = dataLineInfo.getFormats();
+			for (int i = 0; i < infoFormats.length; i++)
+			{
+				if (TDebug.TraceDataLine)
+				{
+					TDebug.out("checking if supported: " + infoFormats[i]);
+				}
+				if (!isFormatSupported(infoFormats[i]))
+				{
+					if (TDebug.TraceDataLine)
+					{
+						TDebug.out("< formats do not match");
+					}
+					return false;
+				}
+			}
+			*/
+			if (TDebug.TraceDataLine)
+			{
+				TDebug.out("< matches: true");
+			}
+			return true;
+		}
+
+
+
+		public String toString()
+		{
+			AudioFormat[]	aFormats = getFormats();
+			String	strFormats = "formats:\n";
+			for (int i = 0; i < aFormats.length; i++)
+			{
+				strFormats += aFormats[i].toString() + "\n";
+			}
+			return super.toString() + strFormats + "minBufferSize=" + getMinBufferSize() + " maxBufferSize=" + getMaxBufferSize();
+		}
+
+	}
 }
+
+
+
+/*** DataLine.java ***/

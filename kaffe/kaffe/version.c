@@ -56,6 +56,6 @@ printFullVersion(void)
 	fprintf(versionfd, "  CFLAGS        : %s\n", VER_CFLAGS);
 	fprintf(versionfd, "  LDFLAGS       : %s\n", VER_LDFLAGS);
 	fprintf(versionfd, "  ChangeLog head: %s\n", VER_CHANGELOG_HEAD);
-	// fprintf(versionfd, "  Libraries     : %s\n", VER_KAFFELIBS);
+	/* fprintf(versionfd, "  Libraries     : %s\n", VER_KAFFELIBS); */
 }
 

@@ -24,7 +24,7 @@
 #include "files.h"
 
 /* Undefine this to make jar files mutable during the vm lifetime */
-// #define STATIC_JAR_FILES
+/* #define STATIC_JAR_FILES */
 
 #if defined(KAFFEH)
 #undef ABORT
@@ -42,6 +42,21 @@
 #define lockMutex(x)
 #define unlockMutex(x)
 #endif
+
+/*
+ * Error messages.
+ */
+
+static const char * JAR_ERROR_BAD_CENTRAL_RECORD_SIGNATURE = "Bad central record signature";
+static const char * JAR_ERROR_BAD_SIGNATURE                = "Bad signature";
+static const char * JAR_ERROR_DECOMPRESSION_FAILED         = "Decompression failed";
+static const char * JAR_ERROR_ENTRY_COUNT_MISMATCH         = "Entry count doesn't match directory size";
+static const char * JAR_ERROR_IMPOSSIBLY_LARGE_DIRECTORY   = "Impossibly large directory size";
+static const char * JAR_ERROR_IO                           = "I/O error";
+static const char * JAR_ERROR_NO_END                       = "Failed to find end of JAR record";
+static const char * JAR_ERROR_OUT_OF_MEMORY                = "Out of memory";
+static const char * JAR_ERROR_TRUNCATED_FILE               = "Truncated file";
+static const char * JAR_ERROR_UNSUPPORTED_COMPRESSION      = "Unsupported compression in JAR file";
 
 /*
  * The jarCache keeps a list of all the jarFiles cached in the system.
@@ -94,7 +109,6 @@ static jarFile *findJarFile(char *name)
 	{
 		assert(curr != NULL);
 		assert(curr->fileName != 0);
-		assert(curr->users >= 0);
 		
 		if( !strcmp(curr->fileName, name) )
 		{
@@ -190,7 +204,6 @@ static jarFile *cacheJarFile(jarFile *jf)
 	{
 		assert(curr != NULL);
 		assert(curr->fileName != 0);
-		assert(curr->users >= 0);
 		
 		/* Look for a matching JAR file */
 		if( !strcmp(curr->fileName, jf->fileName) )
@@ -318,8 +331,6 @@ static void removeJarFile(jarFile *jf)
 			jf->next = 0;
 			jf->flags &= ~JFF_CACHED;
 			jarCache.count--;
-			
-			assert(jarCache.count >= 0);
 		}
 		unlockStaticMutex(&jarCache.lock);
 	}
@@ -358,7 +369,7 @@ void flushJarCache(void)
  * This also takes an `instantiation' function which is used to convert
  * any data into the proper byte order and alignment.
  */
-static inline int jarRead(jarFile *jf, char *buf, off_t len,
+static inline int jarRead(jarFile *jf, uint8 *buf, size_t len,
 			  int (*ins_func)(uint8 *dest, uint8 *src))
 {
 	int retval = -1;
@@ -369,9 +380,9 @@ static inline int jarRead(jarFile *jf, char *buf, off_t len,
 #ifdef HAVE_MMAP
 	if( jf->data != MAP_FAILED )
 	{
-		if( (jf->offset + len) > jf->size )
+		if((jf->offset + len) > jf->size )
 		{
-			jf->error = "Truncated file";
+			jf->error = JAR_ERROR_TRUNCATED_FILE;
 		}
 		else if( ins_func )
 		{
@@ -394,17 +405,18 @@ static inline int jarRead(jarFile *jf, char *buf, off_t len,
 	else
 #endif
 	{
-		ssize_t bytes_left, bytes_read;
+		size_t bytes_left;
+		ssize_t bytes_read;
 		int rc = 0;
 
 		bytes_left = len;
 		/* XXX is this loop necessary? */
 		while( bytes_left &&
-!(rc = KREAD(jf->fd,
+		       !(rc = KREAD(jf->fd,
 				    &buf[len - bytes_left],
 				    bytes_left,
 				    &bytes_read)) &&
-bytes_read )
+		       bytes_read )
 		{
 			bytes_left -= bytes_read;
 		}
@@ -414,7 +426,7 @@ bytes_read )
 		}
 		else if( bytes_left )
 		{
-			jf->error = "Truncated file";
+			jf->error = JAR_ERROR_TRUNCATED_FILE;
 		}
 		else
 		{
@@ -460,7 +472,7 @@ static inline off_t jarSeek(jarFile *jf, off_t offset, int whence)
 	assert(jf != 0);
 	
 #ifdef HAVE_MMAP
-	if( jf->data != (char*)-1 )
+	if( jf->data != (uint8*)-1 )
 	{
 		off_t pos;
 		
@@ -617,7 +629,7 @@ static inline int instantiateSignature(uint8 *dest, uint8 *buf)
 /*
  * Read a JAR header from the file and check it's signature.
  */
-static int readJarHeader(jarFile *jf, uint32 sig, void *buf, int len)
+static int readJarHeader(jarFile *jf, uint32 sig, void *buf, size_t len)
 {
 	int retval = 0;
 
@@ -626,7 +638,6 @@ static int readJarHeader(jarFile *jf, uint32 sig, void *buf, int len)
 		(sig == LOCAL_HEADER_SIGNATURE) ||
 		(sig == CENTRAL_END_SIGNATURE));
 	assert(buf != 0);
-	assert(len >= 0);
 	
 	if( jarRead(jf, buf, len, instantiateSignature) == len )
 	{
@@ -637,7 +648,7 @@ static int readJarHeader(jarFile *jf, uint32 sig, void *buf, int len)
 		}
 		else
 		{
-			jf->error = "Bad signature";
+			jf->error = JAR_ERROR_BAD_SIGNATURE;
 		}
 	}
 	return( retval );
@@ -696,7 +707,7 @@ static int initJarEntry(jarFile *jf, jarEntry *je, char **name_strings)
 		je->compressionMethod = cdr.compressionMethod;
 		/* Read the file name */
 		if( (read_size = jarRead(jf,
-					 je->fileName,
+					 (uint8*) je->fileName,
 					 cdr.fileNameLength,
 					 0)) >= 0 )
 		{
@@ -722,7 +733,7 @@ static int initJarEntry(jarFile *jf, jarEntry *je, char **name_strings)
 	}
 	else
 	{
-		jf->error = "Bad central record signature";
+		jf->error = JAR_ERROR_BAD_CENTRAL_RECORD_SIGNATURE;
 	}
 	return( retval );
 }
@@ -751,11 +762,11 @@ static int getCentralDirCount(jarFile *jf, unsigned int *out_dir_size)
 			if( cde.nrOfEntriesInDirectory >
 			    (cde.sizeOfDirectory / FILE_SIZEOF_CENTRALDIR) )
 			{
-				jf->error = "Entry count doesn't match directory size";
+				jf->error = JAR_ERROR_ENTRY_COUNT_MISMATCH;
 			}
 			else if( cde.sizeOfDirectory > pos )
 			{
-				jf->error = "Impossibly large directory size";
+				jf->error = JAR_ERROR_IMPOSSIBLY_LARGE_DIRECTORY;
 			}
 			else if( jarSeek(jf,
 					 cde.offsetOfDirectory,
@@ -767,7 +778,7 @@ static int getCentralDirCount(jarFile *jf, unsigned int *out_dir_size)
 		}
 		else
 		{
-			jf->error = "Failed to find end of JAR record";
+			jf->error = JAR_ERROR_NO_END;
 		}
 	}
 	return( retval );
@@ -837,7 +848,7 @@ static int readJarEntries(jarFile *jf)
 		}
 		else
 		{
-			jf->error = "Out of memory";
+			jf->error = JAR_ERROR_OUT_OF_MEMORY;
 		}
 	}
 	else if( jf->error )
@@ -888,19 +899,19 @@ static uint8 *inflateJarData(jarFile *jf, jarEntry *je,
 			}
 			else
 			{
-				jf->error = "Decompression failed";
+				jf->error = JAR_ERROR_DECOMPRESSION_FAILED;
 				gc_free(retval);
 				retval = 0;
 			}
 		}
 		else
 		{
-			jf->error = "Out of memory";
+			jf->error = JAR_ERROR_OUT_OF_MEMORY;
 		}
 		gc_free(buf);
 		break;
 	default:
-		jf->error = "Unsupported compression in JAR file";
+		jf->error = JAR_ERROR_UNSUPPORTED_COMPRESSION;
 		gc_free(buf);
 		break;
 	}
@@ -938,15 +949,15 @@ uint8 *getDataJarFile(jarFile *jf, jarEntry *je)
 			{
 				gc_free(buf);
 				buf = 0;
-				jf->error = "I/O error";
+				jf->error = JAR_ERROR_IO;
 			}
 		}
 		else
 		{
-			jf->error = "Out of memory";
+			jf->error = JAR_ERROR_OUT_OF_MEMORY;
 		}
 	}
- done:
+
 	unlockMutex(jf);
 	if( buf )
 	{
@@ -1130,9 +1141,10 @@ jarFile *openJarFile(char *name)
 		{
 			addToCounter(&jarmem, "vmmem-jar files",
 				     1, GCSIZEOF(retval));
-			if( retval->table )
+			if( retval->table ) {
 				addToCounter(&jarmem, "vmmem-jar files",
 					     1, GCSIZEOF(retval->table));
+			}
 			/*
 			 * No errors, so we cache the file.  If someone else
 			 * beat us to the cache we'll use theirs instead.

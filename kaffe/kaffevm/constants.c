@@ -46,7 +46,7 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 	u2 d2, d2b;
 	u4 d4, d4b;
 	u2 poolsize;
-	const char* className = "unknown";  // CLASS_CNAME(this) won't work until after constant pool is read...
+	const char* className = "unknown";  /* CLASS_CNAME(this) won't work until after constant pool is read... */
 
 
 	if (!checkBufSize(fp, 2, className, einfo))

@@ -1,112 +1,141 @@
-/* 
- * Copyright (c) 2001 Transvirtual Technologies, Inc.  All rights reserved.
- * See the file "COPYING" for details.
+/*
+ *	Mixer.java
+ */
+
+/*
+ *  Copyright (c) 1999, 2000 by Matthias Pfisterer <Matthias.Pfisterer@gmx.de>
  *
- * $tvt: AudioFileFormat.java,v 1.1 2001/11/19 20:28:44 samc Exp $ 
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU Library General Public License as published
+ *   by the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
  */
-package javax.sound.sampled;
 
-/**
- * A mixer is an audio device with one or more lines. It need not be
- * designed for mixing audio signals. A mixer that actually mixes audio has
- * multiple input (source) lines and at least one output (target) line. The
- * former are often instances of classes that implement SourceDataLine,
- * and the latter, TargetDataLine. Port  objects, too, are either source
- * lines or target lines. A mixer can accept prerecorded, loopable sound
- * as input, by having some of its source lines be instances of objects
- * that implement the Clip interface.
- */
+
+package	javax.sound.sampled;
+
+
+
+
 public interface Mixer
-  extends Line
+	extends		Line
 {
-  /**
-   * The Mixer.Info class represents information about an audio mixer,
-   * including the product's name, version, and vendor, along with a
-   * textual description. This information may be retrieved through the
-   * getMixerInfo method of the Mixer interface.
-   */ 
-  public static class Info
-  {
-    String name;
-    String vendor;
-    String description;
-    String version;
+	public Mixer.Info getMixerInfo();
 
-    protected Info (String name, String vendor, String description, String version)
-    {
-      this.name = name;
-      this.vendor = vendor;
-      this.description = description;
-      this.version = version;
-    }
+	public Line.Info[] getSourceLineInfo();
 
-    public final boolean equals (Object obj)
-    {
-      if (!(obj instanceof Info)) 
-        {
-          return false;
-        }
-      Info info = (Info) obj;
-      return name.equals (info.name) 
-          && vendor.equals (info.vendor) 
-          && version.equals (info.vendor);
+	public Line.Info[] getTargetLineInfo();
 
-    }
+	public Line.Info[] getSourceLineInfo(Line.Info info);
 
-    public final int hashCode ()
-    {
-      return super.hashCode ();
-    }
+	public Line.Info[] getTargetLineInfo(Line.Info info);
 
-    public final String getName ()
-    {
-      return name;
-    }
+	public boolean isLineSupported(Line.Info info);
 
-    public final String getVendor ()
-    {
-      return vendor;
-    }
+	public Line getLine(Line.Info info)
+		throws	LineUnavailableException;
 
-    public final String getDescription ()
-    {
-      return description;
-    }
+	public int getMaxLines(Line.Info info);
 
-    public final String getVersion ()
-    {
-      return version;
-    }
+	public Line[] getSourceLines();
 
-    public final String toString ()
-    {
-      return "Mixer.Info: " + vendor + " " + name + " " + version;
-    }
-  }
+	public Line[] getTargetLines();
 
-  public Info getMixerInfo ();
+	public void synchronize(Line[] aLines,
+				boolean bMaintainSync);
 
-  public Line.Info[] getSourceLineInfo ();
 
-  public Line.Info[] getTargetLineInfo ();
+	public void unsynchronize(Line[] aLines);
 
-  public Line.Info[] getSourceLineInfo (Line.Info info);
 
-  public Line.Info[] getTargetLineInfo (Line.Info info);
+	public boolean isSynchronizationSupported(Line[] aLines,
+				boolean bMaintainSync);
 
-  public boolean isLineSupported (Line.Info info);
 
-  public Line getLine (Line.Info info) throws LineUnavailableException;
 
-  public int getMaxLines (Line.Info info);
+	public static class Info
+	{
+		private String		m_strName;
+		private String		m_strVendor;
+		private String		m_strDescription;
+		private String		m_strVersion;
 
-  public Line[] getSourceLines ();
 
-  public Line[] getTargetLines ();
 
-  public void synchronize (Line[] lines, boolean maintainSync);
+		protected Info(String strName,
+			    String strVendor,
+			    String strDescription,
+			    String strVersion)
+		{
+			m_strName = strName;
+			m_strVendor = strVendor;
+			m_strDescription = strDescription;
+			m_strVersion = strVersion;
+		}
 
-  public void unsynchronize (Line[] lines);
 
-  public boolean isSynchronizationSupported (Line[] lines, boolean maintainSync);
+
+		public boolean equals(Object obj)
+		{
+			return super.equals(obj);
+		}
+
+
+
+		public int hashCode()
+		{
+			return super.hashCode();
+		}
+
+
+
+		public String getName()
+		{
+			return m_strName;
+		}
+
+
+
+		public String getVendor()
+		{
+			return m_strVendor;
+		}
+
+
+
+		public String getDescription()
+		{
+			return m_strDescription;
+		}
+
+
+
+		public String getVersion()
+		{
+			return m_strVersion;
+		}
+
+
+
+		public String toString()
+		{
+			return super.toString() /* + TODO: .... */;
+		}
+
+	}
 }
+
+
+
+/*** Mixer.java ***/

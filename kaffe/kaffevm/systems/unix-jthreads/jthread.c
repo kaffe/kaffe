@@ -903,7 +903,7 @@ newThreadCtx(int stackSize)
 		return 0;
 	}
 	ct->stackBase = (ct + 1);
-	ct->stackEnd = ct->stackBase + stackSize;
+	ct->stackEnd = (char *) ct->stackBase + stackSize;
 	ct->restorePoint = ct->stackEnd;
 	ct->status = THREAD_SUSPENDED;
 
@@ -954,7 +954,7 @@ jthread_extract_stack(jthread *jtid, void **from, unsigned *len)
 	*len = jtid->restorePoint - jtid->stackBase;
 #else   
 	*from = jtid->restorePoint;
-	*len = jtid->stackEnd - jtid->restorePoint;
+	*len = (char *) jtid->stackEnd - (char *) jtid->restorePoint;
 #endif
 	return (1);
 }
@@ -1145,7 +1145,7 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char prio, void* jlThre
         jtid->restorePoint = jtid->stackEnd;
 #else
 	jtid->stackEnd = (void*)(((uintp)&jtid + 0x1000 - 1) & -0x1000);
-        jtid->stackBase = jtid->stackEnd - mainThreadStackSize;
+        jtid->stackBase = (char *) jtid->stackEnd - mainThreadStackSize;
         jtid->restorePoint = jtid->stackBase;
 #endif
 
@@ -1354,7 +1354,7 @@ DBG(JTHREAD,
 	newbsp += STACK_COPY;
 	memcpy(newbsp-STACK_COPY, oldbsp-STACK_COPY, STACK_COPY);
 #endif
-	newstack -= STACK_COPY;
+	(char *) newstack -= STACK_COPY;
 	memcpy(newstack, oldstack, STACK_COPY);
 #endif /* !STACK_GROWS_UP */
 
@@ -2395,9 +2395,9 @@ jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *out)
 	while (len > 0 && r > 0) {
 		r = (ssize_t)write(fd, ptr, len);
 		if (r >= 0) {
-			ptr += r;
+			(char *) ptr += r;
 			len -= r;
-			r = ptr - buf;
+			r = (char *) ptr - (char *) buf;
 			continue;
 		}
 		if (errno == EINTR) {
@@ -2414,7 +2414,7 @@ jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *out)
 		if (blockOnFile(fd, TH_WRITE, NOTIMEOUT)) {
 			/* interrupted by jthread_interrupt() */
 			errno = EINTR;
-			*out = ptr - buf;
+			*out = (char *) ptr - (char *) buf;
 			break;
 		}
 		r = 1;

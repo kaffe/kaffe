@@ -1,86 +1,125 @@
-/* 
- * Copyright (c) 2001 Transvirtual Technologies, Inc.  All rights reserved.
- * See the file "COPYING" for details.
+/*
+ *	LineEvent.java
+ */
+
+/*
+ *  Copyright (c) 1999 by Matthias Pfisterer <Matthias.Pfisterer@gmx.de>
  *
- * $tvt: LineEvent.java,v 1.1 2001/11/20 01:09:05 samc Exp $ 
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU Library General Public License as published
+ *   by the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
  */
-package javax.sound.sampled;
 
-import java.util.EventObject;
 
-/**
- * The LineEvent class encapsulates information that a line sends its
- * listeners whenever the line opens, closes, starts, or stops. Each of
- * these four state changes is represented by a corresponding type of
- * event. A listener receives the event as a parameter to its its update
- * method. By querying the event, the listener can learn the type of event,
- * the line responsible for the event, and how much data the line had
- * processed when the event occurred.
- */
+package	javax.sound.sampled;
+
+import	java.io.Serializable;
+import	java.util.EventObject;
+
+
+
 public class LineEvent
-  extends EventObject
+	extends	EventObject
+// implements	Serializable
 {
-  Type type;
-  long position;
+	private Type	m_type;
+	private long	m_lPosition;
 
-  /**
-   * The LineEvent.Type inner class identifies what kind of event occurred
-   * on a line. Static instances are provided for the common types (OPEN,
-   * CLOSE, START, and STOP).
-   */
-  public static class Type
-  {
-    String name;
-    public static final Type OPEN  = new Type ("open" );
-    public static final Type CLOSE = new Type ("close");
-    public static final Type START = new Type ("start");
-    public static final Type STOP  = new Type ("stop" );
 
-    protected Type (String name)
-    {
-      this.name = name;
-    }
 
-    public final boolean equals (Object obj)
-    {
-      return obj == this;
-    }
+	public LineEvent(Line line,
+			 Type type,
+			 long lPosition)
+	{
+		super(line);
+		m_type = type;
+		m_lPosition = lPosition;
+	}
 
-    public final int hashCode ()
-    {
-      return super.hashCode ();
-    }
 
-    public String toString ()
-    {
-      return name;
-    }
-  }
 
-  public LineEvent (Line line, Type type, long position)
-  {
-    super (line);
-    this.type = type;
-    this.position = position;
-  }
+	public Line getLine()
+	{
+		return (Line) getSource();
+	}
 
-  public final Line getLine ()
-  {
-    return (Line) source;
-  }
 
-  public final Type getType ()
-  {
-    return type;
-  }
 
-  public final long getFramePosition ()
-  {
-    return position;
-  }
+	public Type getType()
+	{
+		return m_type;
+	}
 
-  public String toString ()
-  {
-    return "LineEvent at frame " + position + ": " + type.toString ();
-  }
+
+
+	public long getFramePosition()
+	{
+		return m_lPosition;
+	}
+
+
+
+	public String toString()
+	{
+		return super.toString() + "[type=" + getType() + ", framePosition=" + getFramePosition() + "]";
+	}
+
+
+
+
+
+	public static class Type
+	{
+		public static final Type	OPEN = new Type("OPEN");
+		public static final Type	CLOSE = new Type("CLOSE");
+		public static final Type	START = new Type("START");
+		public static final Type	STOP = new Type("STOP");
+
+
+		private String	m_strName;
+
+
+
+		public Type(String strName)
+		{
+			m_strName = strName;
+		}
+
+
+
+		public final boolean equals(Object obj)
+		{
+			return super.equals(obj);
+		}
+
+
+
+		public final int hashCode()
+		{
+			return super.hashCode();
+		}
+
+
+
+		public final String toString()
+		{
+			return m_strName;
+		}
+	}
 }
+
+
+
+/*** LineEvent.java ***/

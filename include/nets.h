@@ -18,7 +18,7 @@
 /* some systems define this already as a macro, in which we leave it as is */
 #ifndef h_errno
 extern int h_errno;
-#endif h_errno
+#endif /* h_errno */
 
 #define	MAXHOSTNAME	128
 

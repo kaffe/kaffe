@@ -19,7 +19,12 @@
 #undef	FP_OFFSET
 
 #define	SP_OFFSET	1
+
+#ifdef PS2LINUX
+#define FP_OFFSET	36
+#else
 #define	FP_OFFSET	10
+#endif
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"

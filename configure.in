@@ -1139,7 +1139,7 @@ dnl -------------------------------------------------------------------------
 dnl Configure AWT engine
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(awt,[  --with-awt=GRAPHICSYS	  specify AWT engine (no, X, qt)])
+AC_ARG_WITH(awt,[  --with-awt=GRAPHICSYS	  specify AWT engine (no, [X], qt)])
 
 dnl If no AWT defined, choose an appropriate default.
 if test "$with_awt" = "no" ; then
@@ -1179,6 +1179,62 @@ else
 fi
 
 AC_SUBST(AWT_DIR)
+
+dnl -------------------------------------------------------------------------
+dnl Configure sound backend
+dnl -------------------------------------------------------------------------
+
+AC_ARG_WITH(sound,[  --with-sound=BACKEND        specify sound backend ([no], alsa, esd)])
+
+dnl If no sound backend defined, choose an appropriate default.
+if test "$with_sound" = "no" ; then
+       with_sound=no
+fi
+if test "$with_sound" = "" ; then
+       with_sound=no
+fi
+
+case $with_sound in
+no)
+       SOUND_DIR=
+       ;;
+
+alsa)
+       AC_CHECK_LIB(
+		asound,
+		snd_seq_open,
+		[have_alsa=yes;
+		AC_MSG_RESULT(Information: will build stuff for ALSA sequencer)],
+		[have_alsa=no;
+		AC_MSG_RESULT(Information: will not build stuff for ALSA sequencer)],
+       )
+       if test "$have_alsa" = "no"; then
+               AC_MSG_ERROR(Configuration 'with-sound=$with_sound' not supported - missing alsa support)
+       else
+               SOUND_DIR=alsa
+       fi
+       ;;
+esd)
+       AC_CHECK_LIB(
+		esd,
+		esd_open_sound,
+		[have_esd=yes;
+		AC_MSG_RESULT(Information: will build stuff for Enlightened Sound Daemon)],
+		[have_esd=no;
+		AC_MSG_RESULT(Information: will not build stuff for Enlightened Sound Daemon)],
+       )
+       if test "$have_esd" = "no"; then
+               AC_MSG_ERROR(Configuration 'with-sound=$with_sound' not supported - missing esd support)
+       else
+               SOUND_DIR=esd
+       fi
+       ;;
+*)
+       AC_MSG_ERROR(Configuration 'with-sound=$with_sound' not supported)
+       ;;
+esac
+
+AC_SUBST(SOUND_DIR)
 
 JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/native/libnative.la \
@@ -1373,6 +1429,10 @@ libraries/extensions/servlet/javalib/Makefile \
 libraries/extensions/microsoft/Makefile \
 libraries/extensions/microsoft/javalib/Makefile \
 libraries/extensions/microsoft/clib/Makefile \
+libraries/extensions/sound/Makefile \
+libraries/extensions/sound/alsa/Makefile \
+libraries/extensions/sound/common/Makefile \
+libraries/extensions/sound/esd/Makefile \
 kaffe/man/kaffe.1 \
 libraries/javalib/rebuildLib \
 kaffe/scripts/install-jar \

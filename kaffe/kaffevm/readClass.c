@@ -338,8 +338,8 @@ readMethods(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 			return false;
 		}
 	}
-	
-	// finishMethods(this);
-
+#ifdef KAFFEH	
+	finishMethods(this);
+#endif
 	return (true);
 }

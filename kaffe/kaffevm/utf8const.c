@@ -355,7 +355,7 @@ utf8ConstEncode(const jchar *chars, int clength)
 		}
 	}
 
-	// Now fill it in
+	/* Now fill it in */
 	buf = KMALLOC(size + 1);
 	if (buf == 0) {
 		return (0);

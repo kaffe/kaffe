@@ -53,7 +53,7 @@ xErrorHandler ( Display *dsp, XErrorEvent *err )
   DBG( AWT, printf("  request:    %s\n", buf));
   DBG( AWT, printf("  resource:   %lx\n", err->resourceid));
 
-  //DBG( AWT, (*JniEnv)->ThrowNew( JniEnv, AWTError, "X error occured"));
+  /* DBG( AWT, (*JniEnv)->ThrowNew( JniEnv, AWTError, "X error occured")); */
 
   return 0;
 }

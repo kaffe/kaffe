@@ -1,61 +1,105 @@
-/* 
- * Copyright (c) 2001 Transvirtual Technologies, Inc.  All rights reserved.
- * See the file "COPYING" for details.
- *
- * $tvt: AudioFileFormat.java,v 1.1 2001/11/19 20:28:44 samc Exp $ 
+/*
+ *	Control.java
  */
-package javax.sound.sampled;
 
-/**
- * Lines often have a set of controls, such as gain and pan, that affect
- * the audio signal passing through the line. Java Sound's Line objects
- * let you obtain a particular control object by passing its class as the
- * argument to a getControl method.
+/*
+ *  Copyright (c) 1999 by Matthias Pfisterer <Matthias.Pfisterer@gmx.de>
  *
- * Because the various types of controls have different purposes and
- * features, all of their functionality is accessed from the subclasses
- * that define each kind of control.
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU Library General Public License as published
+ *   by the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
  */
+
+
+package	javax.sound.sampled;
+
+
+import	org.tritonus.share.TDebug;
+
+
+
 public abstract class Control
 {
-  /**
-   * An instance of the Type class represents the type of the
-   * control. Static instances are provided for the common types.
-   */
-  public static class Type
-  {
-    String name;
+	private Type	m_type;
 
-    protected Type (String name)
-    {
-      this.name = name;
-    }
 
-    public final boolean equals (Object obj)
-    {
-      return (obj instanceof Type) && name.equals (((Type) obj).name);
-    }
 
-    public final int hashCode ()
-    {
-      return super.hashCode ();
-    }
+	protected Control(Type type)
+	{
+		if (TDebug.TraceControl)
+		{
+			TDebug.out("Control.<init>: begin");
+		}
+		m_type = type;
+		if (TDebug.TraceControl)
+		{
+			TDebug.out("Control.<init>: end");
+		}
+	}
 
-    public final String toString()
-    {
-      return "Control.Type: " + name;
-    }
-  }
 
-  Type type;
 
-  protected Control (Type type)
-  {
-    this.type = type;
-  }
+	public Type getType()
+	{
+		return m_type;
+	}
 
-  public String toString ()
-  {
-    return "Control (" + type.toString () + ")";
-  }
+
+	public String toString()
+	{
+		return super.toString() + "[type = " + getType() + "]";
+	}
+
+
+
+
+	public static class Type
+	{
+		private String	m_strName;
+
+
+
+		protected Type(String strName)
+		{
+			m_strName = strName;
+		}
+
+
+
+		public final boolean equals(Object obj)
+		{
+			return super.equals(obj);
+		}
+
+
+
+		public final int hashCode()
+		{
+			return super.hashCode();
+		}
+
+
+
+		public final String toString()
+		{
+			return m_strName;
+		}
+	}
 }
+
+
+
+/*** Control.java ***/
+

@@ -237,3 +237,28 @@ kaffe/security/provider/UpdateDigest.class
 java/security/MessageDigest.class
 java/security/MessageDigestSpi.class
 
+# needed for tritonus
+org/tritonus/lowlevel/esd/Esd.class
+org/tritonus/lowlevel/esd/EsdRecordingStream.class
+org/tritonus/lowlevel/esd/EsdSample.class
+org/tritonus/lowlevel/esd/EsdStream.class
+org/tritonus/lowlevel/alsa/AlsaCtlCardInfo.class
+org/tritonus/lowlevel/alsa/AlsaCtl.class
+org/tritonus/lowlevel/alsa/Alsa.class
+org/tritonus/lowlevel/alsa/AlsaMixerElement.class
+org/tritonus/lowlevel/alsa/AlsaMixer.class
+org/tritonus/lowlevel/alsa/AlsaPcmHWParamsFormatMask.class
+org/tritonus/lowlevel/alsa/AlsaPcmHWParams.class
+org/tritonus/lowlevel/alsa/AlsaPcm.class
+org/tritonus/lowlevel/alsa/AlsaPcmSWParams.class
+org/tritonus/lowlevel/alsa/AlsaSeqClientInfo.class
+org/tritonus/lowlevel/alsa/AlsaSeqEvent.class
+org/tritonus/lowlevel/alsa/AlsaSeq.class
+org/tritonus/lowlevel/alsa/AlsaSeqPortInfo.class
+org/tritonus/lowlevel/alsa/AlsaSeqPortSubscribe.class
+org/tritonus/lowlevel/alsa/AlsaSeqQueueInfo.class
+org/tritonus/lowlevel/alsa/AlsaSeqQueueStatus.class
+org/tritonus/lowlevel/alsa/AlsaSeqQueueTempo.class
+org/tritonus/lowlevel/alsa/AlsaSeqQueueTimer.class
+org/tritonus/lowlevel/alsa/AlsaSeqRemoveEvents.class
+org/tritonus/lowlevel/alsa/AlsaSeqSystemInfo.class

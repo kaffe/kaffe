@@ -52,7 +52,7 @@ enum {
 				 */
 	DIA_EndFunction,	/* (char *addr)  Mark the end of a function */
 	DIA_SourceLine,		/* (int line, char *addr)  Add a source line */
-	DIA_SourceFile,		/*
+	DIA_SourceFile		/*
 				 * (char *name, char *addr)  Add information
 				 * about a source file
 				 */

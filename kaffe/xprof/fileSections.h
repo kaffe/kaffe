@@ -19,11 +19,11 @@
 #include "sectionFile.h"
 
 enum {
-	JSDB_PRECOMPILE,	/* Precompile the method */
+	JSDB_PRECOMPILE	/* Precompile the method */
 };
 
 enum {
-	JSDF_PRECOMPILE = (1L << JSDB_PRECOMPILE),
+	JSDF_PRECOMPILE = (1L << JSDB_PRECOMPILE)
 };
 
 /* Structure that stores information about jitted code */
@@ -37,11 +37,11 @@ struct jit_section_data {
 extern struct file_section jit_section;
 
 enum {
-	LSDB_PRELOAD,	/* Preload the library */
+	LSDB_PRELOAD	/* Preload the library */
 };
 
 enum {
-	LSDF_PRELOAD = (1L << LSDB_PRELOAD),
+	LSDF_PRELOAD = (1L << LSDB_PRELOAD)
 };
 
 /* Structure that stores information about dynamic libraries */

@@ -164,7 +164,7 @@ extern void blockAsyncSignals(void);
 extern void unblockAsyncSignals(void);
 
 #ifdef __cplusplus
-} // extern "C"
+} /* extern "C" */
 #endif
 
 #endif

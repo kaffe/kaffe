@@ -151,8 +151,8 @@ typedef struct _nativeCodeInfo {
 	int     codelen;
 } nativeCodeInfo;
 
-#define	willCatch(FLAG)	willcatch.##FLAG = true
-#define	canCatch(FLAG)	willcatch.##FLAG
+#define	willCatch(FLAG)	willcatch. FLAG = true
+#define	canCatch(FLAG)	willcatch. FLAG
 
 void setupGlobalRegisters(void);
 void setupArgumentRegisters(void);

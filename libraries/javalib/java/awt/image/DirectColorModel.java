@@ -13,6 +13,8 @@
 
 package java.awt.image;
 
+import java.awt.Transparency;
+import java.awt.color.ColorSpace;
 
 public class DirectColorModel
   extends ColorModel
@@ -62,6 +64,21 @@ public DirectColorModel( int bits, int rmask, int gmask, int bmask, int amask) {
 		amax =  (ashift > 0) ? (0xffffffff & amask) >> ashift :
 		                       (0xffffffff & amask) << -ashift;
 	}
+}
+
+
+/** taken from GNU Classpath */
+public DirectColorModel(ColorSpace cspace, int pixelBits,
+			int rmask, int gmask, int bmask, int amask,
+			boolean isAlphaPremultiplied,
+			int transferType) {
+	super(pixelBits,
+	      ((amask == 0) ? new int[] { rmask, gmask, bmask } : new int [] { rmask, gmask, bmask, amask }),
+	      cspace,
+	      amask == 0,
+	      isAlphaPremultiplied,
+	      ((amask == 0) ? Transparency.OPAQUE : Transparency.TRANSLUCENT),
+	      transferType);
 }
 
 final public int getAlpha( int pixel) {

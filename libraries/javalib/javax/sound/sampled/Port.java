@@ -1,75 +1,129 @@
-/* 
- * Copyright (c) 2001 Transvirtual Technologies, Inc.  All rights reserved.
- * See the file "COPYING" for details.
+/*
+ *	Port.java
+ */
+
+/*
+ *  Copyright (c) 1999, 2000 by Matthias Pfisterer <Matthias.Pfisterer@gmx.de>
  *
- * $tvt: AudioFileFormat.java,v 1.1 2001/11/19 20:28:44 samc Exp $ 
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU Library General Public License as published
+ *   by the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Library General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
  */
-package javax.sound.sampled;
 
-/**
- * Ports are simple lines for input or output of audio to or from audio
- * devices. Common examples of ports that act as source lines (mixer inputs)
- * include the microphone, line input, and CD-ROM drive. Ports that act
- * as target lines (mixer outputs) include the speaker, headphone, and
- * line output. You can access port using a Port.Info  object.
- */
+
+package	javax.sound.sampled;
+
+
+import	org.tritonus.share.TDebug;
+
+
+
 public interface Port
+	extends		Line
 {
-  /**
-   * The Port.Info class extends Line.Info with additional information
-   * specific to ports, including the port's name and whether it is
-   * a source or a target for its mixer. By definition, a port acts as
-   * either a source or a target to its mixer, but not both. (Audio input
-   * ports are sources; audio output ports are targets.)
-   */
-  public static class Info
-    extends Line.Info
-  {
-    String name;
-    boolean isSource;
 
-    public static final Info MICROPHONE   = new Info (Port.class, "microphone"  , true);
-    public static final Info LINE_IN      = new Info (Port.class, "line in"     , true);
-    public static final Info COMPACT_DISC = new Info (Port.class, "compact disc", true);
-    public static final Info SPEAKER      = new Info (Port.class, "speaker"     , false);
-    public static final Info HEADPHONE    = new Info (Port.class, "headphone"   , false);
-    public static final Info LINE_OUT     = new Info (Port.class, "line out"    , false);
+	public static class Info
+		extends	Line.Info
+	{
+		public static Class getPortClass()
+		{
+			try
+			{
+				return Class.forName("javax.sound.sampled.Port");
+			}
+			catch (ClassNotFoundException e)
+			{
+				if (TDebug.TraceAllExceptions)
+				{
+					TDebug.out(e);
+				}
+			}
+			return null;
+		}
 
-    public Info (Class lineClass, String name, boolean isSource)
-    {
-      super (lineClass);
-      this.isSource = isSource;
-      this.name = name;
-    }
 
-    public String getName ()
-    {
-      return name;
-    }
 
-    public boolean isSource ()
-    {
-      return isSource ();
-    }
+		public static final Info	MICROPHONE = new Info(getPortClass(), "MICROPHONE", true);
+		public static final Info	LINE_IN = new Info(getPortClass(), "LINE_IN", true);
+		public static final Info	COMPACT_DISC = new Info(getPortClass(), "COMPACT_DISC", true);
+		public static final Info	SPEAKER = new Info(getPortClass(), "SPEAKER", false);
+		public static final Info	HEADPHONE = new Info(getPortClass(), "HEADPHONE", false);
+		public static final Info	LINE_OUT = new Info(getPortClass(), "LINE_OUT", false);
 
-    public boolean matches (Line.Info info)
-    {
-      return super.matches (info);
-    }
 
-    public final boolean equals (Object obj)
-    {
-      return super.equals (obj);
-    }
+		private String		m_strName;
+		private boolean		m_bIsSource;
+	
 
-    public final int hashCode ()
-    {
-      return super.hashCode ();
-    }
 
-    public final String toString ()
-    {
-      return super.toString ();
-    }
-  }
+
+		public Info(Class lineClass,
+			    String strName,
+			    boolean bIsSource)
+		{
+			super(lineClass);
+			m_strName = strName;
+			m_bIsSource = bIsSource;
+		}
+
+
+
+		public String getName()
+		{
+			return m_strName;
+		}
+
+
+
+		public boolean isSource()
+		{
+			return m_bIsSource;
+		}
+
+
+
+		public boolean matches(Line.Info info)
+		{
+			return super.matches(info) &&
+				this.getName().equals(((Port.Info) info).getName()) &&
+				this.isSource() == ((Port.Info) info).isSource();
+		}
+
+
+
+		public final boolean equals(Object obj)
+		{
+			return super.equals(obj);
+		}
+
+
+
+		public final int hashCode()
+		{
+			return super.hashCode();
+		}
+
+
+
+		public final String toString()
+		{
+			return super.toString() + "[name=" + getName() + ", source = " + isSource() + "]";
+		}
+	}
 }
+
+
+
+/*** Port.java ***/

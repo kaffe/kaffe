@@ -50,6 +50,15 @@ struct _Collector;
 static inline int
 binary_open(const char *file, int mode, int perm, int *);
 
+/* circular list containing all native methods of the class that's currently being processed (sorted by name) */
+struct _methodRing {
+	struct _methodRing* next;
+	struct _methodRing* prev;
+
+	const char* name;
+	const char* sig;
+	u2 access_flags;
+} *methodRing;
 
 static int 
 kread(int fd, void *buf, size_t len, ssize_t *out)
@@ -336,11 +345,49 @@ jniType(const char *sig)
 	}
 }
 
+/*
+ * Print a properly mangled method name or argument signature.  
+ */
+static void
+fprintfJni (FILE *f, const char *s) 
+{
+	while (*s && *s != ')')
+	{
+		switch (*s)
+		{
+			case '/':
+				fprintf (f, "_");
+				break;
+      
+			case '_':
+				fprintf (f, "_1");
+				break;
+      
+			case ';':
+				fprintf (f, "_2");
+				break;
+      
+			case '[':
+				fprintf (f, "_3");
+				break;
+			
+			case '$':
+				fprintf (f, "_00024");
+				break;
+
+			default:
+				fprintf (f, "%c", *s);
+				break;
+		}
+		s++;
+	}
+}
+
 int
 startFields(Hjava_lang_Class* this, u2 fct, errorInfo *einfo)
 {
 	this->fields = malloc(fct * sizeof(Field));
-	this->nfields = 0; // incremented by addField()
+	this->nfields = 0; /* incremented by addField() */
 	return true;
 }
 
@@ -380,7 +427,7 @@ addField(Hjava_lang_Class* this,
 	if (include != 0) {
 		/*
 		 * Non-static fields are represented in the struct.
- */
+		 */
 		if ((!(access_flags & ACC_STATIC)
 		     && outputField)) {
 			const char* arg;
@@ -447,6 +494,8 @@ setFieldValue(Hjava_lang_Class* this, Field* f, u2 idx)
 	u2 name_index;
 	u2 signature_index;
 	u2 access_flags;
+	const char* arg;
+	int argsize = 0;
 
 	assert(f);
 
@@ -455,19 +504,20 @@ setFieldValue(Hjava_lang_Class* this, Field* f, u2 idx)
 	signature_index = (u2)(u4)(f->type);
 	access_flags = f->accflags;
 
-	if (include != 0) {
-		const char* arg;
-		int argsize = 0;
-
-		arg = translateSig(CLASS_CONST_UTF8(this, signature_index)->data, NULL, &argsize);
-		if (access_flags & ACC_STATIC) {
-			char cval[512];
+	arg = translateSig(CLASS_CONST_UTF8(this, signature_index)->data, NULL, &argsize);
+	if (access_flags & ACC_STATIC) {
+		char cval[512];
 			
-			constValueToString(this, idx, cval, sizeof(cval));
+		constValueToString(this, idx, cval, sizeof(cval));
 
-			if (((access_flags & (ACC_PUBLIC|ACC_FINAL)) == (ACC_PUBLIC|ACC_FINAL))
-			    && (cval[0] != 0)) {
+		if (((access_flags & (ACC_PUBLIC|ACC_FINAL)) == (ACC_PUBLIC|ACC_FINAL))
+		    && (cval[0] != 0)) {
+			if (include != 0) {
 				fprintf(include, "#define %s_%s %s\n",
+					className, CLASS_CONST_UTF8(this, name_index)->data, cval);
+			}
+			if (jni_include != 0) {
+				fprintf(jni_include, "#define %s_%s %s\n",
 					className, CLASS_CONST_UTF8(this, name_index)->data, cval);
 			}
 		}
@@ -502,10 +552,8 @@ addMethod(Hjava_lang_Class* this,
 	constants* cpool;
 	const char* name;
 	const char* sig;
-	const char* str;
-	char* ret;
-	const char* tsig;
-	int args;
+        struct _methodRing* list;
+	struct _methodRing* i;
 
 	/* If we shouldn't generate method prototypes, quit now */
 	if (objectDepth > 0) {
@@ -540,29 +588,102 @@ addMethod(Hjava_lang_Class* this,
 		/* Return "success"... */
 		return (Method*)1;
 	}
-	args = 0;
+
+	/* add the method into the list of native methods of this class */
+	list = (struct _methodRing *)malloc (sizeof (struct _methodRing)); 
+
+        list->name = name;
+        list->sig  = sig;
+	list->access_flags = access_flags;
+
+	if (methodRing == NULL) {
+		methodRing = list;
+		
+		list->next = list->prev = list;
+	} else {
+		i = methodRing;
+
+		do {
+			
+			if (!strcmp (list->name, i->name)) {
+			  
+				i->next->prev = list;
+				list->next = i->next;
+
+				i->next = list;
+				list->prev = i;
+
+				return (Method*)1;	
+			}
+	
+			i = i->next;
+	
+		} while (i != methodRing);
+	
+		/* if we didn't find a suitable place, add it at the end of the list */	
+		if (i == methodRing) {
+			  i->prev->next = list;
+			  list->prev = i->prev;
+
+			  i->prev = list;
+			  list->next = i;
+		}
+	}
+
+	return (Method*)1;
+}
+
+void
+finishMethods (Hjava_lang_Class *this)
+{
+	const char *str;
+	const char *tsig;
+	struct _methodRing* i;
+	struct _methodRing* tmp;
+
+	/* don't do anything if there aren't any methods */
+	if (methodRing == NULL) {
+		return;
+	}
+
+	i = methodRing;
+	do {
+		int args = 0;
+		char* ret;
 
 	/* Generate method prototype */
-	ret = strchr(sig,')');
+		ret = strchr(i->sig,')');
 	ret++;
 
 	if (include != 0) {
 		fprintf(include, "extern %s", translateSig(ret, 0, 0));
-		fprintf(include, " %s_%s(", className, name);
-		if (!(access_flags & ACC_STATIC)) {
+			fprintf(include, " %s_%s(", className, i->name);
+			if (!(i->access_flags & ACC_STATIC)) {
 			fprintf(include, "struct H%s*", className);
-			if (sig[1] != ')') {
+				if (i->sig[1] != ')') {
 				fprintf(include, ", ");
 			}
-		} else if (sig[1] == ')') {
+			} else if (i->sig[1] == ')') {
 			fprintf(include, "void");
 		}
 	}
 
 	if (jni_include != 0) {
-		fprintf(jni_include, "JNIEXPORT %s JNICALL Java_%s_%s(JNIEnv*",
-			jniType(ret), className, name);
-		if ((access_flags & ACC_STATIC)) {
+			fprintf(jni_include, "JNIEXPORT %s JNICALL Java_%s_",
+				jniType(ret), className);
+			
+			fprintfJni(jni_include, i->name);
+
+			/* if there are other methods with the same name, we have to append the mangled signature */
+			if (i != i->next && (!strcmp (i->name, i->prev->name) || !strcmp (i->name, i->next->name))) {
+				fprintf(jni_include, "__");
+				
+				fprintfJni(jni_include, i->sig+1);
+			}
+
+			fprintf(jni_include, "(JNIEnv*");
+
+			if ((i->access_flags & ACC_STATIC)) {
 			fprintf(jni_include, ", jclass");
 		}
 		else {
@@ -570,7 +691,7 @@ addMethod(Hjava_lang_Class* this,
 		}
 	}
 
-	str = sig + 1;
+		str = i->sig + 1;
 	args++;
 	while (str[0] != ')') {
 		if (jni_include != 0)
@@ -590,7 +711,17 @@ addMethod(Hjava_lang_Class* this,
 		fprintf(jni_include, ");\n");
 	}
 
-	return (Method*)1;
+		/* move to next method */
+		tmp = i;
+		i = i->next;
+
+		/* free old one */
+		free (tmp);
+
+	} while (i != methodRing); 
+
+        /* we don't have any methods any more */	
+	methodRing = NULL;
 }
 
 bool 
@@ -755,7 +886,7 @@ kaffeh_findClass(const char* nm)
 			memset(&tmpClass, 0, sizeof(tmpClass));
 			readClass(&tmpClass, &hand, NULL, &einfo);
 
-			//constant_pool = savepool;
+			/* constant_pool = savepool; */
 			objectDepth--;
 
 			hand.type = CP_INVALID;

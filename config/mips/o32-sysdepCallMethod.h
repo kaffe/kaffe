@@ -103,8 +103,18 @@ longSysdepCallMethod(callMethodInfo *call,
     register ARG_TYPE a2 asm("$6");
     register ARG_TYPE a3 asm("$7");
 
+#ifdef PS2LINUX
+    union {
+        double d;
+        struct {
+            int hi;
+            int lo;
+        } fake_double;
+    } split;
+#else
     register double d0 asm("$f12");
     register double d2 asm("$f14");
+#endif
 
     register float f0 asm("$f12");
     register float f2 asm("$f14");
@@ -132,9 +142,25 @@ longSysdepCallMethod(callMethodInfo *call,
       }
       
       if (calltype[2] == D) {
-	  d2 = callargs[2].d;
+#ifdef PS2LINUX
+          split.d = callargs[2].d;
+          a2 = split.fake_double.hi;
+          a3 = split.fake_double.lo;
+#else
+          d2 = callargs[2].d;
+#endif
+#ifdef PS2LINUX
+          if ( calltype[0] == D) {
+              split.d = callargs[0].d;
+              a0 = split.fake_double.hi;
+              a1 = split.fake_double.lo;
+          } else {
+              f0 = callargs[0].f;
+          }
+#else
 	  if(calltype[0] == D) d0 = callargs[0].d;
 	  else f0 = callargs[0].f;
+#endif
 	  goto alldone;
       }
 
@@ -156,7 +182,13 @@ longSysdepCallMethod(callMethodInfo *call,
 
   case 2:
       if (calltype[0] == D) {
+#ifdef PS2LINUX
+          split.d = callargs[0].d;
+          a0 = split.fake_double.hi;
+          a1 = split.fake_double.lo;
+#else
 	  d0=callargs[0].d;
+#endif
 	  goto alldone;
       } else {
 	  if (calltype[0] != F) {
@@ -188,7 +220,11 @@ alldone:
   noargs:
 #endif
     /* Ensure that the assignments to f* registers won't be optimized away. */
+#ifdef PS2LINUX
+    asm ("" :: "f" (f0), "f" (f2));
+#else
     asm ("" :: "f" (f0), "f" (f2), "f" (d0), "f" (d2));
+#endif
 
     switch(call->retsize) {
     case 0:

@@ -33,7 +33,7 @@ enum {
 	bindirect		= 8,	/* Indirect */
 	bult			= 9,	/* Unsigned less than */
 	buge			= 10,	/* Unsigned greater than or equal */
-	bugt			= 11,	/* Unsigned greater than */
+	bugt			= 11	/* Unsigned greater than */
 };
 
 #define branch_a(l)			branch(l, ba)

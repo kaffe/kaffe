@@ -1,0 +1,8 @@
+# configuration file for the tritonus library
+#
+
+org.tritonus.midi.device.alsa.AlsaSequencerProvider
+org.tritonus.midi.device.alsa.AlsaMidiDeviceProvider
+
+# end
+#
