@@ -212,6 +212,8 @@ public int lastIndexOf(Object elem) {
 }
 
 public synchronized int lastIndexOf(Object elem, int index) {
+	if (index >= elementCount)
+		throw new ArrayIndexOutOfBoundsException();	// per JDK 1.3
 	for (int pos = index; pos >= 0; pos--) {
 		Object obj = elementData[pos];
 		if (elem == obj || elem.equals(obj)) {
@@ -255,12 +257,17 @@ public synchronized void removeElementAt ( int index ) {
 	elementData[elementCount] = null;
 }
 
-public synchronized void setElementAt(Object obj, int index)
-	{
+public Object set(int index, Object obj) {
 	if (index >= elementCount) {
 		throw new ArrayIndexOutOfBoundsException();
 	}
+	Object old = elementData[index];
 	elementData[index] = obj;
+	return old;
+}
+
+public synchronized void setElementAt(Object obj, int index) {
+	set(index, obj);
 }
 
 public synchronized void setSize(int newSize) {
