@@ -19,7 +19,7 @@
 #define	__NORETURN__
 #endif
 
-#include <jtypes.h>
+#include <kaffe/jtypes.h>
 
 struct _methods;
 struct Hjava_lang_Class;
@@ -88,7 +88,7 @@ extern void	classname2pathname(const char*, char*);
 /*
  * Define KMALLOC, KFREE, etc.
  */
-#include "jmalloc.h"
+#include "kaffe/jmalloc.h"
 
 /* Pick up errorInfo, postOutOfMemory, throwError, and checkPtr */
 #include "errors.h"

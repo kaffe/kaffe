@@ -14,7 +14,7 @@
 
 #include "config.h"
 #include "config-std.h"
-#include "jtypes.h"
+#include "kaffe/jtypes.h"
 #include "jni.h"
 
 #if defined(__STDC__)

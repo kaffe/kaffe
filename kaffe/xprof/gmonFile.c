@@ -22,7 +22,7 @@
 #include <sys/types.h>
 #include <sys/gmon.h>
 
-#include "jmalloc.h"
+#include "kaffe/jmalloc.h"
 
 #include "gmonFile.h"
 

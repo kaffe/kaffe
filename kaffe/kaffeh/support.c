@@ -12,7 +12,7 @@
 #include "config-std.h"
 #include "config-io.h"
 #include "debug.h"
-#include "jtypes.h"
+#include "kaffe/jtypes.h"
 #include "jsyscall.h"
 #include "gtypes.h"
 #include "gc.h"

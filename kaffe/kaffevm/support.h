@@ -51,8 +51,8 @@ struct _errorInfo;
  * that describes where the parameters are, where the return value should
  * go and what the signature of the method is.
  *
- * `jvalue' is a union defined in include/jtypes.h.  It corresponds to an
- * entry on the Java stack. 
+ * `jvalue' is a union defined in include/kaffejtypes.h.  It corresponds
+ * to an entry on the Java stack. 
  * The suffixes i,j,b,c,s,l,f,d access the corresponding element of
  * (Java) type int, long, boolean, char, short, ref, float, and double.
  *

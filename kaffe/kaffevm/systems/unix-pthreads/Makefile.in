@@ -252,13 +252,14 @@ EXTRA_DIST = Makefile.frag lock-impl.h thread-impl.h thread-internal.h \
 AM_CPPFLAGS = \
 	-I. -I$(srcdir) -I../.. -I$(srcdir)/../.. \
 	-I$(top_builddir)/config -I$(top_srcdir)/config \
-	-I$(top_builddir)/include -I$(top_srcdir)/include
+	-I$(top_builddir)/include -I$(top_srcdir)/include \
+	-I$(top_builddir)/include
 
 subdir = kaffe/kaffevm/systems/unix-pthreads
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
-	$(top_builddir)/include/jtypes.h
+	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 
@@ -267,7 +268,7 @@ am_libkthread_la_OBJECTS = lock-impl.lo signal.lo syscalls.lo \
 	thread-impl.lo
 libkthread_la_OBJECTS = $(am_libkthread_la_OBJECTS)
 
-DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include
+DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/lock-impl.Plo ./$(DEPDIR)/signal.Plo \

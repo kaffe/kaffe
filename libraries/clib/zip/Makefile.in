@@ -241,6 +241,8 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
+AM_CPPFLAGS = -I$(top_builddir)/include
+
 native_LTLIBRARIES = libzip.la
 
 libzip_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
@@ -257,7 +259,7 @@ subdir = libraries/clib/zip
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
-	$(top_builddir)/include/jtypes.h
+	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(native_LTLIBRARIES)
 
@@ -265,7 +267,7 @@ libzip_la_DEPENDENCIES =
 am_libzip_la_OBJECTS = Adler32.lo CRC32.lo Deflater.lo Inflater.lo
 libzip_la_OBJECTS = $(am_libzip_la_OBJECTS)
 
-DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include
+DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/Adler32.Plo ./$(DEPDIR)/CRC32.Plo \

@@ -10,7 +10,7 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include "classMethod.h"
-#include "jtypes.h"
+#include "kaffe/jtypes.h"
 #include "gtypes.h"
 #include "constants.h"
 #include "object.h"

@@ -323,7 +323,7 @@ subdir = test/internal
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
-	$(top_builddir)/include/jtypes.h
+	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
 check_PROGRAMS = jitBasic$(EXEEXT)
 am__objects_1 = jit_stub.$(OBJEXT)
@@ -332,7 +332,7 @@ am__objects_2 = version.$(OBJEXT)
 nodist_jitBasic_OBJECTS = $(am__objects_2)
 jitBasic_OBJECTS = $(am_jitBasic_OBJECTS) $(nodist_jitBasic_OBJECTS)
 
-DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include
+DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/jitBasic.Po ./$(DEPDIR)/jit_stub.Po \

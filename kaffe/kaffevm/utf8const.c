@@ -12,7 +12,7 @@
 #include "config-mem.h"
 #include "config-io.h"
 #include "classMethod.h"
-#include "jtypes.h"
+#include "kaffe/jtypes.h"
 #include "constants.h"
 #include "object.h"
 #include "itypes.h"

@@ -13,7 +13,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
-#include "jtypes.h"
+#include "kaffe/jtypes.h"
 #include "file.h"
 #include "errors.h"
 #include "bytecode.h"

@@ -243,7 +243,7 @@ with_engine = @with_engine@
 
 native_LTLIBRARIES = libnet.la
 
-AM_CPPFLAGS = -I$(top_srcdir)/kaffe
+AM_CPPFLAGS = -I$(top_srcdir)/kaffe -I$(top_builddir)/include
 
 libnet_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
 libnet_la_LIBADD = $(NET_LIBS)  $(top_builddir)/replace/libreplace.la
@@ -261,7 +261,7 @@ subdir = libraries/clib/net
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
-	$(top_builddir)/include/jtypes.h
+	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(native_LTLIBRARIES)
 
@@ -270,7 +270,7 @@ am_libnet_la_OBJECTS = InetAddressImpl.lo NetworkInterfaceImpl.lo \
 	PlainDatagramSocketImpl.lo PlainSocketImpl.lo
 libnet_la_OBJECTS = $(am_libnet_la_OBJECTS)
 
-DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include
+DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/InetAddressImpl.Plo \

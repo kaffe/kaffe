@@ -18,7 +18,7 @@
 #include "config-mem.h"
 #include "debug.h"
 #include "classMethod.h"
-#include "jtypes.h"
+#include "kaffe/jtypes.h"
 #include "native.h"
 #include "constants.h"
 #include "support.h"

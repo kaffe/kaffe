@@ -20,7 +20,7 @@
 #include "debug.h"
 #include "gtypes.h"
 #include "inflate.h"
-#include "jmalloc.h"
+#include "kaffe/jmalloc.h"
 
 #define	WSIZE	0x8000
 

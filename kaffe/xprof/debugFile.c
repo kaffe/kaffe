@@ -25,7 +25,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "jmalloc.h"
+#include "kaffe/jmalloc.h"
 #include "classMethod.h"
 #include "code.h"
 

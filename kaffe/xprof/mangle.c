@@ -20,7 +20,7 @@
 #include <assert.h>
 
 #include "config.h"
-#include "jmalloc.h"
+#include "kaffe/jmalloc.h"
 #include "stringSupport.h"
 #include "classMethod.h"
 #include "xprofiler.h"

@@ -362,7 +362,7 @@ subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
-	$(top_builddir)/include/jtypes.h
+	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
 SCRIPTS = $(noinst_SCRIPTS)
 
@@ -373,9 +373,10 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	all-recursive install-data-recursive install-exec-recursive \
 	installdirs-recursive install-recursive uninstall-recursive \
 	check-recursive installcheck-recursive
-DIST_COMMON = README AUTHORS ChangeLog INSTALL Makefile.am Makefile.in \
-	aclocal.m4 config.guess config.rpath config.sub configure \
-	configure.in depcomp install-sh ltmain.sh missing mkinstalldirs
+DIST_COMMON = README ./include/kaffe/jtypes.h.in AUTHORS ChangeLog \
+	INSTALL Makefile.am Makefile.in aclocal.m4 config.guess \
+	config.rpath config.sub configure configure.in depcomp \
+	install-sh ltmain.sh missing mkinstalldirs
 all: all-recursive
 
 .SUFFIXES:
@@ -395,6 +396,23 @@ $(srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(srcdir)/configure.in $(ACLOCAL_M4)
 
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ configure.in 
 	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
+
+include/kaffe/jtypes.h: include/kaffe/stamp-h2
+	@if test ! -f $@; then \
+	  rm -f include/kaffe/stamp-h2; \
+	  $(MAKE) include/kaffe/stamp-h2; \
+	else :; fi
+
+include/kaffe/stamp-h2: $(srcdir)/./include/kaffe/jtypes.h.in $(top_builddir)/config.status
+	@rm -f include/kaffe/stamp-h2
+	cd $(top_builddir) && $(SHELL) ./config.status include/kaffe/jtypes.h
+
+$(srcdir)/./include/kaffe/jtypes.h.in: @MAINTAINER_MODE_TRUE@ $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOHEADER)
+	touch $(srcdir)/./include/kaffe/jtypes.h.in
+
+distclean-hdr:
+	-rm -f include/kaffe/jtypes.h include/kaffe/stamp-h2
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -546,7 +564,7 @@ distcleancheck_listfiles = find . -type f -print
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkinstalldirs) $(distdir)/FAQ $(distdir)/compat-include $(distdir)/developers $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/test/regression
+	$(mkinstalldirs) $(distdir)/./include/kaffe $(distdir)/FAQ $(distdir)/compat-include $(distdir)/developers $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/test/regression
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -695,7 +713,7 @@ clean-am: clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-distclean-am: clean-am distclean-generic distclean-libtool \
+distclean-am: clean-am distclean-generic distclean-hdr distclean-libtool \
 	distclean-tags
 
 dvi: dvi-recursive
@@ -740,19 +758,19 @@ uninstall-info: uninstall-info-recursive
 .PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am check check-am clean \
 	clean-generic clean-libtool clean-recursive ctags \
 	ctags-recursive dist dist-all dist-gzip distcheck distclean \
-	distclean-generic distclean-libtool distclean-recursive \
-	distclean-tags distcleancheck distdir distuninstallcheck dvi \
-	dvi-am dvi-recursive info info-am info-recursive install \
-	install-am install-data install-data-am install-data-recursive \
-	install-exec install-exec-am install-exec-recursive \
-	install-info install-info-am install-info-recursive install-man \
-	install-recursive install-strip installcheck installcheck-am \
-	installdirs installdirs-am installdirs-recursive \
-	maintainer-clean maintainer-clean-generic \
-	maintainer-clean-recursive mostlyclean mostlyclean-generic \
-	mostlyclean-libtool mostlyclean-recursive pdf pdf-am \
-	pdf-recursive ps ps-am ps-recursive tags tags-recursive \
-	uninstall uninstall-am uninstall-info-am \
+	distclean-generic distclean-hdr distclean-libtool \
+	distclean-recursive distclean-tags distcleancheck distdir \
+	distuninstallcheck dvi dvi-am dvi-recursive info info-am \
+	info-recursive install install-am install-data install-data-am \
+	install-data-recursive install-exec install-exec-am \
+	install-exec-recursive install-info install-info-am \
+	install-info-recursive install-man install-recursive \
+	install-strip installcheck installcheck-am installdirs \
+	installdirs-am installdirs-recursive maintainer-clean \
+	maintainer-clean-generic maintainer-clean-recursive mostlyclean \
+	mostlyclean-generic mostlyclean-libtool mostlyclean-recursive \
+	pdf pdf-am pdf-recursive ps ps-am ps-recursive tags \
+	tags-recursive uninstall uninstall-am uninstall-info-am \
 	uninstall-info-recursive uninstall-recursive
 
 

@@ -20,8 +20,13 @@ else
 libjvmpi = #
 endif
 
-AM_CPPFLAGS = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
-	-I$(top_srcdir)/kaffe/jvmpi -I$(top_srcdir)/kaffe/xprof
+AM_CPPFLAGS = \
+	-I../kaffevm \
+	-I$(srcdir)/../kaffevm \
+	-I$(top_srcdir)/libltdl \
+	-I$(top_srcdir)/kaffe/jvmpi \
+	-I$(top_srcdir)/kaffe/xprof \
+	-I$(top_builddir)/include
 
 kaffe_bin_SOURCES = main.c version.c version.h
 

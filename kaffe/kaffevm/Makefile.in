@@ -254,7 +254,7 @@ EXTRA_DIST = \
 	systems/win32/winthread.c \
 	systems/win32/winthread.h
 
-AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/jvmpi -I$(top_srcdir)/kaffe/xprof
+AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/jvmpi -I$(top_srcdir)/kaffe/xprof -I$(top_builddir)/include
 
 native_LTLIBRARIES = libkaffevm.la
 
@@ -362,7 +362,7 @@ subdir = kaffe/kaffevm
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
-	$(top_builddir)/include/jtypes.h
+	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(native_LTLIBRARIES)
 
@@ -377,7 +377,7 @@ am_libkaffevm_la_OBJECTS = $(am__objects_1) baseClasses.lo \
 	verify.lo
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS)
 
-DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include
+DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/baseClasses.Plo \

@@ -30,7 +30,7 @@
 #include "md.h"
 #include "xprofile-md.h"
 #include "exception.h"
-#include "jmalloc.h"
+#include "kaffe/jmalloc.h"
 #include "methodCache.h"
 
 #include "memorySamples.h"

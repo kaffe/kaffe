@@ -14,7 +14,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-io.h"
-#include <jtypes.h>
+#include <kaffe/jtypes.h>
 #include <errno.h>
 
 #if defined(HAVE_STRING_H)

@@ -8,7 +8,14 @@
 
 @engine_frag@
 
-AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/xprof -I$(top_srcdir)/kaffe/jvmpi
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
+	-I.. \
+	-I$(srcdir)/.. \
+	$(ENGINE_DEFS) \
+	-I$(top_srcdir)/kaffe/xprof \
+	-I$(top_srcdir)/kaffe/jvmpi \
+	-I$(top_builddir)/include
 
 noinst_LTLIBRARIES = libengine.la
 

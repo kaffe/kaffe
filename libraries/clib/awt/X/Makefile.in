@@ -244,6 +244,7 @@ with_engine = @with_engine@
 native_LTLIBRARIES = libawt.la
 
 AM_CFLAGS = @CFLAGS@ @X_CFLAGS@
+AM_CPPFLAGS = -I$(top_builddir)/include
 
 libawt_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
 libawt_la_LIBADD = $(AWT_LIBS)
@@ -272,7 +273,7 @@ subdir = libraries/clib/awt/X
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
-	$(top_builddir)/include/jtypes.h
+	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(native_LTLIBRARIES)
 
@@ -281,7 +282,7 @@ am_libawt_la_OBJECTS = tlk.lo wnd.lo evt.lo gra.lo fnt.lo clr.lo img.lo \
 	imggif.lo imgjpeg.lo imgpng.lo cbd.lo
 libawt_la_OBJECTS = $(am_libawt_la_OBJECTS)
 
-DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include
+DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/cbd.Plo ./$(DEPDIR)/clr.Plo \

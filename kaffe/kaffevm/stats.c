@@ -1,7 +1,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
-#include "jtypes.h"
+#include "kaffe/jtypes.h"
 #if !defined(KAFFEH)
 #include "jthread.h"
 #endif

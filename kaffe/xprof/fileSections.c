@@ -21,7 +21,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "jmalloc.h"
+#include "kaffe/jmalloc.h"
 
 #include "sectionFile.h"
 #include "fileSections.h"

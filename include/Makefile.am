@@ -30,16 +30,16 @@ EXTRA_DIST = distclean-hack \
 # classes necessary to generate headers from. They are
 # at the end of bootstrap.classlist.
 
-INSTALL_DERIVED_HDRS = \
+INSTALL_DERIVED_HDRS = 
+
+NOINSTALL_DERIVED_HDRS = \
 	java_lang_Object.h \
 	java_lang_String.h \
 	java_lang_StackTraceElement.h \
 	java_lang_Thread.h \
 	java_lang_ThreadGroup.h \
 	java_lang_Throwable.h \
-	java_lang_VMThrowable.h
-
-NOINSTALL_DERIVED_HDRS = \
+	java_lang_VMThrowable.h \
 	java_io_File.h \
 	java_io_FileDescriptor.h \
 	java_io_FileInputStream.h \
@@ -169,20 +169,19 @@ noinst_HEADERS = \
 	nets.h \
 	system.h
 
-include_HEADERS = jni.h jvmpi.h
+include_HEADERS = \
+	jni.h \
+	jni_cpp.h \
+	jvmpi.h 
+
 
 nodist_pkginclude_HEADERS = \
 	$(INSTALL_DERIVED_HDRS) \
 	$(INSTALL_JNI_DERIVED_HDRS) 
 
 pkginclude_HEADERS = \
-	Arrays.h \
-	errors.h \
-	jmalloc.h \
-	jni_cpp.h \
-	jsyscall.h \
-	jtypes.h \
-	native.h
+	kaffe/jmalloc.h \
+	kaffe/jtypes.h 
 
 stamp-kaffeh:
 ## If KAFFEH does not exist, build it
@@ -238,7 +237,7 @@ CLEANFILES = $(DERIVED_HDRS) $(JNI_DERIVED_HDRS) stamp-kaffeh
 DISTCLEANFILES = \
 	$(DERIVED_HDRS) \
 	$(JNI_DERIVED_HDRS) \
-	jtypes.h \
+	kaffe/jtypes.h \
 	stamp-h0all \
 	stamp-h1all
 

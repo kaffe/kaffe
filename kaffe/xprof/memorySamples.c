@@ -19,7 +19,7 @@
 #include <string.h>
 #include <jtypes.h>
 
-#include "jmalloc.h"
+#include "kaffe/jmalloc.h"
 
 #include "memorySamples.h"
 

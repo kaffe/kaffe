@@ -6,6 +6,8 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
+AM_CPPFLAGS = -I$(top_builddir)/include
+
 native_LTLIBRARIES = libtritonuscommon.la
 
 libtritonuscommon_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe|org)_"

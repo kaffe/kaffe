@@ -241,7 +241,7 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
-AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(ENGINE_DEFS) -I$(top_srcdir)/compat-include
+AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(ENGINE_DEFS) -I$(top_srcdir)/compat-include -I$(top_builddir)/include
 
 @HAVE_GCJ_SUPPORT_TRUE@libgcj = libgcj.la
 @HAVE_GCJ_SUPPORT_FALSE@libgcj = #
@@ -264,7 +264,7 @@ subdir = kaffe/kaffevm/gcj
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
-	$(top_builddir)/include/jtypes.h
+	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 
@@ -274,7 +274,7 @@ am_libgcj_la_OBJECTS = gcj-class.lo gcj-soft.lo gcj-except.lo \
 	gcj-glue.lo eh.lo
 libgcj_la_OBJECTS = $(am_libgcj_la_OBJECTS)
 
-DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include
+DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/eh.Plo ./$(DEPDIR)/gcj-class.Plo \

@@ -12,7 +12,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
-#include "jtypes.h"
+#include "kaffe/jtypes.h"
 #include "object.h"
 #include "support.h"
 

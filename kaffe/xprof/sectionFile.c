@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#include "jmalloc.h"
+#include "kaffe/jmalloc.h"
 #include "stringSupport.h"
 #include "debug.h"
 

@@ -15,7 +15,7 @@
 #include "config-mem.h"
 #include "config-io.h"
 #include "config-signal.h"
-#include "jtypes.h"
+#include "kaffe/jtypes.h"
 #include "access.h"
 #include "object.h"
 #include "constants.h"

@@ -266,17 +266,16 @@ EXTRA_DIST = distclean-hack \
 # beside classes necesary for kjc to run, also all the
 # classes necessary to generate headers from. They are
 # at the end of bootstrap.classlist.
-INSTALL_DERIVED_HDRS = \
+INSTALL_DERIVED_HDRS = 
+
+NOINSTALL_DERIVED_HDRS = \
 	java_lang_Object.h \
 	java_lang_String.h \
 	java_lang_StackTraceElement.h \
 	java_lang_Thread.h \
 	java_lang_ThreadGroup.h \
 	java_lang_Throwable.h \
-	java_lang_VMThrowable.h
-
-
-NOINSTALL_DERIVED_HDRS = \
+	java_lang_VMThrowable.h \
 	java_io_File.h \
 	java_io_FileDescriptor.h \
 	java_io_FileInputStream.h \
@@ -405,7 +404,11 @@ noinst_HEADERS = \
 	system.h
 
 
-include_HEADERS = jni.h jvmpi.h
+include_HEADERS = \
+	jni.h \
+	jni_cpp.h \
+	jvmpi.h 
+
 
 nodist_pkginclude_HEADERS = \
 	$(INSTALL_DERIVED_HDRS) \
@@ -413,13 +416,8 @@ nodist_pkginclude_HEADERS = \
 
 
 pkginclude_HEADERS = \
-	Arrays.h \
-	errors.h \
-	jmalloc.h \
-	jni_cpp.h \
-	jsyscall.h \
-	jtypes.h \
-	native.h
+	kaffe/jmalloc.h \
+	kaffe/jtypes.h 
 
 
 CLEANFILES = $(DERIVED_HDRS) $(JNI_DERIVED_HDRS) stamp-kaffeh
@@ -427,14 +425,15 @@ CLEANFILES = $(DERIVED_HDRS) $(JNI_DERIVED_HDRS) stamp-kaffeh
 DISTCLEANFILES = \
 	$(DERIVED_HDRS) \
 	$(JNI_DERIVED_HDRS) \
-	jtypes.h \
+	kaffe/jtypes.h \
 	stamp-h0all \
 	stamp-h1all
 
 subdir = include
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_HEADER = $(top_builddir)/config/config.h jtypes.h
+CONFIG_HEADER = $(top_builddir)/config/config.h \
+	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
 DIST_SOURCES =
 HEADERS = $(include_HEADERS) $(nodist_noinst_HEADERS) \
@@ -442,9 +441,8 @@ HEADERS = $(include_HEADERS) $(nodist_noinst_HEADERS) \
 	$(pkginclude_HEADERS)
 
 DIST_COMMON = $(include_HEADERS) $(noinst_HEADERS) \
-	$(pkginclude_HEADERS) Makefile.am Makefile.in jtypes.h.in
-all: jtypes.h
-	$(MAKE) $(AM_MAKEFLAGS) all-am
+	$(pkginclude_HEADERS) Makefile.am Makefile.in
+all: all-am
 
 .SUFFIXES:
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
@@ -452,23 +450,6 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am  $(top_srcdir)/configu
 	  $(AUTOMAKE) --gnu  include/Makefile
 Makefile: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
-
-jtypes.h: stamp-h2
-	@if test ! -f $@; then \
-	  rm -f stamp-h2; \
-	  $(MAKE) stamp-h2; \
-	else :; fi
-
-stamp-h2: $(srcdir)/jtypes.h.in $(top_builddir)/config.status
-	@rm -f stamp-h2
-	cd $(top_builddir) && $(SHELL) ./config.status include/jtypes.h
-
-$(srcdir)/jtypes.h.in: @MAINTAINER_MODE_TRUE@ $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOHEADER)
-	touch $(srcdir)/jtypes.h.in
-
-distclean-hdr:
-	-rm -f jtypes.h stamp-h2
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -551,11 +532,11 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	       END { for (i in files) print i; }'`; \
 	mkid -fID $$unique
 
-TAGS:  $(HEADERS) $(SOURCES) jtypes.h.in $(TAGS_DEPENDENCIES) \
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
-	list='$(SOURCES) $(HEADERS) jtypes.h.in $(LISP) $(TAGS_FILES)'; \
+	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
 	  done | \
@@ -566,11 +547,11 @@ TAGS:  $(HEADERS) $(SOURCES) jtypes.h.in $(TAGS_DEPENDENCIES) \
 	     $$tags $$unique
 
 ctags: CTAGS
-CTAGS:  $(HEADERS) $(SOURCES) jtypes.h.in $(TAGS_DEPENDENCIES) \
+CTAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
-	list='$(SOURCES) $(HEADERS) jtypes.h.in $(LISP) $(TAGS_FILES)'; \
+	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
 	  done | \
@@ -593,6 +574,7 @@ top_distdir = ..
 distdir = $(top_distdir)/$(PACKAGE)-$(VERSION)
 
 distdir: $(DISTFILES)
+	$(mkinstalldirs) $(distdir)/kaffe
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -624,7 +606,7 @@ distdir: $(DISTFILES)
 	  dist-hook
 check-am: all-am
 check: check-am
-all-am: Makefile $(HEADERS) jtypes.h
+all-am: Makefile $(HEADERS)
 
 installdirs:
 	$(mkinstalldirs) $(DESTDIR)$(includedir) $(DESTDIR)$(pkgincludedir) $(DESTDIR)$(pkgincludedir)
@@ -660,7 +642,7 @@ clean-am: clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
 
-distclean-am: clean-am distclean-generic distclean-hdr distclean-libtool \
+distclean-am: clean-am distclean-generic distclean-libtool \
 	distclean-tags
 
 dvi: dvi-am
@@ -702,7 +684,7 @@ uninstall-am: uninstall-includeHEADERS uninstall-info-am \
 	uninstall-nodist_pkgincludeHEADERS uninstall-pkgincludeHEADERS
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool ctags distclean distclean-generic distclean-hdr \
+	clean-libtool ctags distclean distclean-generic \
 	distclean-libtool distclean-tags distdir dvi dvi-am info \
 	info-am install install-am install-data install-data-am \
 	install-exec install-exec-am install-includeHEADERS \

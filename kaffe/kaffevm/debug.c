@@ -22,7 +22,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
-#include "jtypes.h"
+#include "kaffe/jtypes.h"
 #include "gtypes.h"
 #include "gc.h"
 #include "debug.h"
