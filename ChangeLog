@@ -1,3 +1,10 @@
+Wed Mar 31 19:38:13 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/java/awt/widgets/TextArea.java: added deprecated
+	appendText
+	libraries/javalib/java/net/Socket.java: fixed Socket() constructor
+	signature
+
 Wed Mar 31 17:48:40 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/io/File.java: add listFiles() methods
