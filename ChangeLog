@@ -1,5 +1,14 @@
 1999-04-13  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
+	* configure.in: Modify --with-libraries so that it also adds
+	directories to the run-time search path.  Drop --with-rtlibraries,
+	now that it's useless.  Do not add assume -I/usr/local/include if
+	--with-includes is specified, nor -L/usr/local/lib for
+	--with-libraries.  If X_LIBS contains any -L flag but no -R, add
+	one -R for each -L.
+	* FAQ/FAQ.automake: Remove references to --with-rtlibraries.
+	* configure: Rebuilt.
+
 	* libltdl/ltdl.c: Update from libtool.  Remove warnings.  Bug
 	fixes for HP/UX.
 

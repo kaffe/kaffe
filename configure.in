@@ -13,9 +13,21 @@ dnl =========================================================================
 dnl Allow specification of header-file and library directories
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(includes, [  --with-includes=dirs    Search specified directories for header files], CPPFLAGS="$CPPFLAGS"`echo " $withval" | sed 's/ / -I/g'`)
-AC_ARG_WITH(libraries,[  --with-libraries=dirs   Search specified directories at compile time], LDFLAGS="$LDFLAGS"`echo " $withval" | sed 's/ / -L/g'`)
-AC_ARG_WITH(rtlibraries,[  --with-rtlibraries=dirs   Search specified directories at run time], LTLDFLAGS="$LTLDFLAGS"`echo " $withval" | sed 's/ / -R/g'`)
+AC_ARG_WITH(includes,
+  [  --with-includes=dirs    Search specified directories for header files],
+  [ CPPFLAGS="$CPPFLAGS"`echo " $withval" |
+	sed -e 's/ / -I/g' -e 's/-I //g' -e 's/-I$//'` ],
+  [ CPPFLAGS="$CPPFLAGS -I/usr/local/include" ])
+
+AC_ARG_WITH(libraries,
+  [  --with-libraries=dirs   Search for libraries in specified directories],
+  [ LDFLAGS="$LDFLAGS"`echo " $withval" |
+	sed -e 's/ / -L/g' -e 's/-L //g' -e 's/-L$//'`
+    LTLDFLAGS="$LTLDFLAGS"`echo " $withval" |
+	sed -e 's/ / -R/g' -e 's/-R //g' -e 's/-R$//'`],
+dnl No -R/usr/local/lib by default, as it is usually already searched
+dnl by dynamic linkers.
+  [ LDFLAGS="$LDFLAGS -L/usr/local/lib" ])
 
 dnl Find the compiler early on in case we need to override.
 AC_PROG_CC
@@ -509,8 +521,19 @@ else
   else
     PNG_LIBS=""
   fi
-  dnl -R in X_PRE_LIBS should only be replaced with -rpath here,
-  dnl otherwise configure tests that don't use libtool will fail
+
+  dnl For each -L switch in X_LIBS, add a corresponding -R, unless
+  dnl AC_PATH_XTRA has already taken care of them.
+  case "$X_LIBS" in
+  "-R"* | *" -R"*) ;;
+  "-L"* | *" -L"*)
+    for ac_xlibdir in $X_LIBS; do
+      case "$ac_xlibdir" in
+      -L*) X_LIBS="$X_LIBS "`echo "$ac_xlibdir" | sed 's/^-L/-R/'`;;
+      esac
+    done ;;
+  esac
+
   AWT_LIBS="$JPEG_LIBS $PNG_LIBS $GIF_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
   AC_SUBST(AWT_LIBS)
 fi
@@ -521,8 +544,6 @@ dnl =========================================================================
 dnl Checks for header files.
 dnl -------------------------------------------------------------------------
 
-CPPFLAGS="$CPPFLAGS -I/usr/local/include"
-LDFLAGS="$LDFLAGS -L/usr/local/lib"
 AC_HEADER_STDC
 AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h sys/socket.h winnt.h wintypes.h wtypes.h winbase.h windows.h winsock.h dlfcn.h sys/ioctl.h sys/filio.h malloc.h alloca.h sys/param.h sys/utsname.h pwd.h asm/sigcontext.h sigcontext.h asm/signal.h signal.h mach-o/rld.h sys/types.h sys/stat.h string.h sys/select.h poll.h sys/poll.h memory.h bsd/libc.h dl.h features.h sys/wait.h zlib.h netinet/tcp.h netinet/in_systm.h netinet/in.h netdb.h jpeglib.h png.h gmp.h kernel/OS.h)
 AC_HEADER_DIRENT

@@ -50,11 +50,7 @@ with `make dist'
 - I added a new flag, --with-staticvm, to make only the VM library
 static.  --with-includes and --with-libraries were also introduced, to
 allow the user to specify a list of directories to search for
-include-files and libraries.  --with-rtlibraries can be used to
-hard-code run-time library search paths into the Kaffe program, so
-that it can find libraries such as X11, libungif, etc, that happen to
-be installed in non-standard places.  This option does not affect the
-search path for native libraries loaded from Java code.
+include-files and libraries.
 
 - you may miss one or other make target that I may have eliminated
 from the Makefiles, for example, recursive `make classes' and `make
