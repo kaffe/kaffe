@@ -160,7 +160,7 @@ referenceObjectFinalizer(jobject ob)
   lockStaticMutex(&referencesLock);
   search_ref.obj = ob;
   head = (referenceLinkListHead *)hashFind(referencesHashTable, &search_ref);
-  hashRemove(referencesHashTable, &search_ref);
+  hashRemove(referencesHashTable, head);
   unlockStaticMutex(&referencesLock);
   
   assert(head != NULL);
@@ -192,6 +192,7 @@ referenceObjectFinalizer(jobject ob)
       KFREE(ll);
       ll = temp;
     }
+  KFREE(head);
   defaultObjectFinalizer(ob);
 }
 
@@ -214,7 +215,13 @@ referenceFinalizer(jobject ref)
   lockStaticMutex(&referencesLock);
   search_ref.obj = referent;
   head = (referenceLinkListHead *)hashFind(referencesHashTable, &search_ref);
-  assert(head != NULL);
+  /* The object has already been finalized though the reference is still here. */
+  if (head == NULL)
+  {
+     unlockStaticMutex(&referencesLock);
+     defaultObjectFinalizer(ref);
+     return;
+  }
 
   ll = &head->references;
   while (*ll != NULL)

@@ -1,3 +1,13 @@
+2005-05-11  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/reference.c
+	(referenceObjectFinalizer): Really remove the object from the
+	hash and free it.
+	(referenceFinalizer): If the entry has already been freed just
+	finalize the object.
+
+	Reported by Michael Koch <konqueror@gmx.de>
+
 2005-05-11  Guilhem Lavaux  <guilhem@kaffe.org>,
 	Helmer Krämer <hkraemer@freenet.de>
 
