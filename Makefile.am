@@ -75,6 +75,7 @@ EXTRA_DIST = \
 	FAQ/FAQ.gcblock \
 	FAQ/FAQ.gcj \
 	FAQ/FAQ.gcstrategy \
+	FAQ/FAQ.gnu-classpath \
 	FAQ/FAQ.hpux \
 	FAQ/FAQ.hotjava \
 	FAQ/FAQ.install-root \
@@ -134,6 +135,7 @@ EXTRA_DIST = \
 	developers/mauve-results.sh \
 	developers/mnemonicizer.awk \
 	developers/patch-libtool-quote-sys_search_path.diff \
+	developers/resync-classpath.sh \
 	developers/rpm-kaffe.spec \
 	developers/sp_offset.c \
 	developers/unicode.pl \

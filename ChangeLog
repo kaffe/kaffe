@@ -1,4 +1,15 @@
-2005-02-19  Dalibor Topic  <robilad@kaffe.org>
+2005-02-20  Dalibor Topic  <robilad@kaffe.org>
+
+	* developers/resync-classpath.sh: Added new
+	script to simplyfy resyncing with GNU Classpath.
+
+	* FAQ/FAQ.gnu-classpath: Small faq on GU Classpath
+	merge.
+
+	* Makefile.am (EXTRA_DIST) Added 
+	developers/resync-classpath.sh and FAQ/FAQ.gnu-classpath.
+
+2005-02-20  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
 	

@@ -1,0 +1,19 @@
+FAQ.gnu-classpath
+=================
+
+Author: Dalibor Topic
+
+Kaffe uses the excellent GNU Classpath[1] project for its core class library.
+
+It is mostly merged with GNU Classpath, except for two-dozen remaining classes.
+These last unmerged classes (mostly in java.lang, java.lang.reflect and 
+java.util.zip) are getting gradually replaced with their counterparts from 
+GNU Classpath. Eventually, Kaffe will be able to use GNU Classpath out of
+the box, with its own specific and additional classes overlayed.
+
+Meanwhile, synchronisaton with GNU Classpath still happens manually. There 
+is a script in the developers directory called resync-classpath.sh that 
+allows to semi-automatically apply patches to the class library from GNU 
+Classpath's commit list.
+
+[1] http://www.classpath.org
