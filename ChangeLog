@@ -4,6 +4,27 @@
 
 	2005-03-02  Michael Koch  <konqueror@gmx.de>
 
+        * gnu/java/awt/color/CieXyzConverter.java,
+        gnu/java/awt/color/ClutProfileConverter.java,
+        gnu/java/awt/color/ColorLookUpTable.java,
+        gnu/java/awt/color/ColorSpaceConverter.java,
+        gnu/java/awt/color/GrayProfileConverter.java,
+        gnu/java/awt/color/GrayScaleConverter.java,
+        gnu/java/awt/color/LinearRGBConverter.java,
+        gnu/java/awt/color/ProfileHeader.java,
+        gnu/java/awt/color/PyccConverter.java,
+        gnu/java/awt/color/RgbProfileConverter.java,
+        gnu/java/awt/color/SrgbConverter.java,
+        gnu/java/awt/color/TagEntry.java,
+        gnu/java/awt/color/ToneReproductionCurve.java:
+        Use standard copyright header.
+
+2005-03-08  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-03-02  Michael Koch  <konqueror@gmx.de>
+
         * gnu/java/awt/color/package.html,
         gnu/java/awt/image/package.html,
         gnu/java/awt/package.html,
