@@ -83,6 +83,7 @@ my %file_errors;
 my %error_counts;
 my %errors;
 my $total_errors = 0;
+my %compiler_errors;
 
 for ( my $i = 0; $i < @Registry::warnings; $i++ ) {
 	my $warning = $Registry::warnings[ $i ];
@@ -114,12 +115,16 @@ for ( my $i = 0; $i < @Registry::warnings; $i++ ) {
 		$count++;
 		$total_errors++;
 	}
+	$compiler_errors{ $compiler } += $count;
 print( STDERR "$count\n" ) if ( !$disabled{ $compiler } );
 	$text = $scanned . $text;
 }
 #print( STDERR join( "\n", keys( %file_errors ) ) . "\n" );
-print( "\nTotal Errors: $total_errors\n\n" );
-
+print( "\nTotal Errors: $total_errors\n" );
+while ( my ( $compiler, $count ) = each( %compiler_errors ) ) {
+	print( "Compiler($compiler) Errors: $count\n" ) if ( !$disabled{ $compiler } );
+}
+print( "\n" );
 #print( Dumper( \%errors ) );
 foreach my $file ( sort( { $file_errors{ $b } <=> $file_errors{ $a } } keys( %file_errors ) ) ) {
 	my $count = $file_errors{ $file };

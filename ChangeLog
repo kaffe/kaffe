@@ -1,6 +1,11 @@
 2004-12-10  Adam Heath  <doogie@brainfood.com>
 
 	* scripts/sort-warnings.pl:
+	  Print out the total errors for each compiler group.
+
+2004-12-10  Adam Heath  <doogie@brainfood.com>
+
+	* scripts/sort-warnings.pl:
 	  Fix prepending on @INC.
 
 2004-12-10  Dalibor Topic  <robilad@kaffe.org>
