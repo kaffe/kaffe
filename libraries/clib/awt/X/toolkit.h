@@ -21,7 +21,17 @@
 
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#if defined(HAVE_LIBXEXT)
 #include <X11/extensions/XShm.h>
+#else
+#define	XShmQueryExtension(X)	0
+#define	XShmDetach(X)
+#define	XShmAttach(X)
+#define	XShmCreateImage(A,B,C,D,E,F,G,H)
+#define	XShmGetImage(A,B,C,D,E,F)
+#define	XShmPutImage(A,B,C,D,E,F,G,H,I,J,K)
+#define	XShmSegmentInfo	char
+#endif
 
 #include <jni.h>
 
