@@ -11,6 +11,7 @@ srcdir=		@srcdir@
 prefix=		@prefix@
 exec_prefix=	@exec_prefix@
 nativedir=	@nativedir@
+INSTROOT=	@INSTROOT@
 CC=		@CC@
 LD=		@LD@
 AR=		@AR@
@@ -23,8 +24,9 @@ INSTALL_DATA=	@INSTALL_DATA@
 MKDIR=		@MKDIR@
 LN=		@LN_S@
 DLLTOOL=	@DLLTOOL@
+DEPTOOL=	@DEPTOOL@
 PIC=		@PIC@
-LDFLAGS=	@LIBSHARE@
+LDFLAGS=	@LIBSHARE@ @LDFLAGS@
 LIBS=		@LIBS@
 LDTAIL=		@LDTAIL@ @STD_LIBRARIES@
 KVER=		@KVER@
@@ -48,6 +50,9 @@ OBJECT.IO=\
 
 OBJECT=		$(OBJECT.IO)
 
+DEPENDS=        $(OBJECT:@OBJEXT@=.d)
+SOURCES=        $(OBJECT:@OBJEXT@=.c)
+
 all:		$(LIB)
 
 $(LIB):		$(OBJECT) lib.exp external_wrappers.h
@@ -56,21 +61,34 @@ $(LIB):		$(OBJECT) lib.exp external_wrappers.h
 .c$(OBJEXT):
 		$(CC) $(ALL_CFLAGS) -c $(PIC) $< -o $*.o
 
-external_wrappers.h:	$(OBJECT)
+external_wrappers.h:	$(SOURCES)
 		sed -n $(WRAPPER_CMD) $(srcdir)/*.c > external_wrappers.h
 		sed -n $(WRAPPER_CMD2) $(srcdir)/*.c >> external_wrappers.h
 
+.SUFFIXES: .d
+ 
+.c.d: 
+		$(DEPTOOL) $(ALL_CFLAGS) $< > $@
+
 clean:
-		rm -f $(LIB) $(OBJECT) lib.exp external_wrappers.h
+		rm -f $(LIB) $(OBJECT) lib.exp
+		rm -f $(DEPENDS) .depend external_wrappers.h
+		touch .depend
 
 distclean:	clean
-		rm -f Makefile
+		rm -f Makefile .depend
 
 install:
-		test -d $(nativedir) || $(MKDIR) $(nativedir)
-		rm -f $(nativedir)/$(LIB) $(nativedir)/$(LIBV)
-		$(INSTALL_DATA) $(LIB) $(nativedir)/$(LIBV)
-		$(LN) $(LIBV) $(nativedir)/$(LIB)
+		test -d $(INSTROOT)$(nativedir) || $(MKDIR) $(INSTROOT)$(nativedir)
+		rm -f $(INSTROOT)$(nativedir)/$(LIB) $(INSTROOT)$(nativedir)/$(LIBV)
+		$(INSTALL_DATA) $(LIB) $(INSTROOT)$(nativedir)/$(LIBV)
+		$(LN) $(LIBV) $(INSTROOT)$(nativedir)/$(LIB)
+
+derived-files:
+
+depend:         $(DEPENDS) external_wrappers.h
+		rm -f .depend
+		cat $(DEPENDS) > .depend
 
 lib.exp:
 		$(DLLTOOL) --def $(srcdir)/$(LIBNAME).def --output-exp lib.exp --output-lib $(LIBNAME).a --dllname $(LIB)
