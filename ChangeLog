@@ -1,3 +1,15 @@
+2003-06-08 Dalibor Topic <robilad@yahoo.com>
+
+	* kaffe/scripts/kaffe.in:
+	(DDD) fixed DDD recognition and invocation.
+
+	Reported by: Michael Franz <mvfranz@yahoo.com>
+
+2003-06-08 Milos Negovanovic <milosn@xtra.co.nz>
+
+	* libraries/javalib/Makefile.am.in:
+	fixed class library build on NetBSD.
+	
 2003-06-07 Mark Wielaard <mark@klomp.org>
 
 	* libraries/javalib/java/io/BufferedInputStream.java:
