@@ -1,3 +1,18 @@
+Thu Feb 11 22:11:46 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/locks.c, kaffe/kaffevm/thread.h
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c: changed the way in 
+	which we do jthread_interrupt and timeouts.
+	* test/regression/SoInterrupt.java|out,
+	test/regression/TestScriptThread.in: test for interruptable IO
+
+Thu Feb 11 21:57:40 1999  Aaron Place <beavis@ihug.co.nz>
+
+	* libraries/javalib/java/lang/reflect/Method.java, Constructor.java:
+	used getPrettyName where necessary
+	* libraries/javalib/java/lang/Class.java: moved getPrettyName to
+	java.lang.reflect. to avoid polluting public interface
+
 Thu Feb 11 16:03:18 1999  Patrick Tullmann <tullmann@cs.utah.edu>
 
 	* developers/JavaClass.pm, developer/dumpClass.pl,
