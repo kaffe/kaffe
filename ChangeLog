@@ -1,3 +1,10 @@
+Thu Aug 15 10:11:54 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/kjc.jar: updated to kjc-2.1B.
+	* WHATSNEW: added compiler update newsbit.
+	* test/regression/InnerTest.java: added anonymous inner classes to
+	expected output.
+
 Sun Aug 11 17:13:00 CEST 2002 Mathieu Dube <mdube@8d.com>
 
 	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c
