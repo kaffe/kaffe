@@ -1,3 +1,10 @@
+Tue Jan 12 23:56:06 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/io/StreamTokenizer.java: make sure
+	EOL and whitespace override alphabetic and numeric
+	* test/regression/TestScript.in: add new test for StreamTokenizer
+	* test/regression/wc.{java,out}: new test for StreamTokenizer
+
 Wed Jan 13 05:06:50 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in, libltdl/configure.in: replace autoconf/automake
