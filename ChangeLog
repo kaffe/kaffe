@@ -1,3 +1,7 @@
+Mon Feb 14 18:16:23 CET 2000  Edouard G. Parmelan <egp@free.fr>
+
+	* libraries/javalib/Klasses.jar: regen with kjc-1.4B-egp1
+
 Mon Feb 14 16:08:48 CET 2000  Moses DeJong <dejong@cs.umn.edu>
 
 	* libraries/extensions/tools/javalib/kaffe/tools/jar/Jar.java: Changed
