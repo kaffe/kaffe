@@ -21,6 +21,12 @@ public class InputEvent
 	final public static int META_MASK = 4;
 	final public static int ALT_MASK = 8;
 	final public static int BUTTON1_MASK = 16;
+	public static final int ALT_GRAPH_MASK = 32;
+	public static final int ALT_DOWN_MASK = 512;
+	public static final int BUTTON1_DOWN_MASK = 1024;
+	public static final int BUTTON2_DOWN_MASK = 2048;
+	public static final int BUTTON3_DOWN_MASK = 4096;
+	public static final int ALT_GRAPH_DOWN_MASK = 8192;
 	final public static int BUTTON2_MASK = ALT_MASK;
 	final public static int BUTTON3_MASK = META_MASK;
 	private static final long serialVersionUID = -2482525981698309786L;
@@ -39,6 +45,10 @@ public long getWhen() {
 
 public boolean isAltDown() {
 	return ((modifiers & ALT_MASK) != 0);
+}
+
+public boolean isAltGraphDown() {
+	return ((modifiers & ALT_GRAPH_MASK) != 0);
 }
 
 public boolean isConsumed() {

@@ -1,3 +1,39 @@
+Thu Jul  4 02:10:25 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in: added java.security.acl,
+	java.awt.ActiveEvent, java.awt.AWTEventListener,
+	java.security.Certificate, java.security.Identity,
+	java.security.IdentityScope, java.security.Signer.
+	* libraries/javalib/java/awt/AWTEvent.java: changed type
+	of constants to long like in the spec.
+	(AWTEvent) new constructor.
+	* libraries/javalib/java/awt/Component.java:
+	(deliverEvent) removed final modifier to comply with spec.
+	* libraries/javalib/java/awt/SystemColor.java: changed type
+	of constants to int like in the spec.
+	(SystemColor) made constructor private.
+	* libraries/javalib/java/awt/event/InputEvent.java: added
+	missing constants.
+	(isAltGraphDown) new method.
+	* libraries/javalib/java/awt/event/PaintEvent.java:
+	(PAINT_LAST) fixed wrong value of contant.
+	* libraries/javalib/java/awt/ActiveEvent.java, 
+	libraries/javalib/java/awt/event/AWTEventListener.java,
+	libraries/javalib/java/security/Certificate.java,
+	libraries/javalib/java/security/Identity.java,
+	libraries/javalib/java/security/IdentityScope.java,
+	libraries/javalib/java/security/Signer.java,
+	libraries/javalib/java/security/acl/Acl.java,
+	libraries/javalib/java/security/acl/AclEntry.java,
+	libraries/javalib/java/security/acl/AclNotFoundException.java,
+	libraries/javalib/java/security/acl/Group.java,
+	libraries/javalib/java/security/acl/LastOwnerException.java,
+	libraries/javalib/java/security/acl/NotOwnerException.java,
+	libraries/javalib/java/security/acl/Owner.java,
+	libraries/javalib/java/security/acl/Permission.java:
+	new classes and interfaces.
+
 Thu Jul  4 01:00:07 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/extensions/comm/javalib/javax/comm/CommDriver.java,

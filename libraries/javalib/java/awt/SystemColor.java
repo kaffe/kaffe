@@ -19,33 +19,33 @@ final public class SystemColor
 	int idx;
 	static int[] sysColors;
 	private static final long serialVersionUID = 4503142729533789064L;
-	final public static byte DESKTOP = 0;
-	final public static byte ACTIVE_CAPTION = 1;
-	final public static byte ACTIVE_CAPTION_TEXT = 2;
-	final public static byte ACTIVE_CAPTION_BORDER = 3;
-	final public static byte INACTIVE_CAPTION = 4;
-	final public static byte INACTIVE_CAPTION_TEXT = 5;
-	final public static byte INACTIVE_CAPTION_BORDER = 6;
-	final public static byte WINDOW = 7;
-	final public static byte WINDOW_BORDER = 8;
-	final public static byte WINDOW_TEXT = 9;
-	final public static byte MENU = 10;
-	final public static byte MENU_TEXT = 11;
-	final public static byte TEXT = 12;
-	final public static byte TEXT_TEXT = 13;
-	final public static byte TEXT_HIGHLIGHT = 14;
-	final public static byte TEXT_HIGHLIGHT_TEXT = 15;
-	final public static byte TEXT_INACTIVE_TEXT = 16;
-	final public static byte CONTROL = 17;
-	final public static byte CONTROL_TEXT = 18;
-	final public static byte CONTROL_HIGHLIGHT = 19;
-	final public static byte CONTROL_LT_HIGHLIGHT = 20;
-	final public static byte CONTROL_SHADOW = 21;
-	final public static byte CONTROL_DK_SHADOW = 22;
-	final public static byte SCROLLBAR = 23;
-	final public static byte INFO = 24;
-	final public static byte INFO_TEXT = 25;
-	final public static byte NUM_COLORS = 26;
+	final public static int DESKTOP = 0;
+	final public static int ACTIVE_CAPTION = 1;
+	final public static int ACTIVE_CAPTION_TEXT = 2;
+	final public static int ACTIVE_CAPTION_BORDER = 3;
+	final public static int INACTIVE_CAPTION = 4;
+	final public static int INACTIVE_CAPTION_TEXT = 5;
+	final public static int INACTIVE_CAPTION_BORDER = 6;
+	final public static int WINDOW = 7;
+	final public static int WINDOW_BORDER = 8;
+	final public static int WINDOW_TEXT = 9;
+	final public static int MENU = 10;
+	final public static int MENU_TEXT = 11;
+	final public static int TEXT = 12;
+	final public static int TEXT_TEXT = 13;
+	final public static int TEXT_HIGHLIGHT = 14;
+	final public static int TEXT_HIGHLIGHT_TEXT = 15;
+	final public static int TEXT_INACTIVE_TEXT = 16;
+	final public static int CONTROL = 17;
+	final public static int CONTROL_TEXT = 18;
+	final public static int CONTROL_HIGHLIGHT = 19;
+	final public static int CONTROL_LT_HIGHLIGHT = 20;
+	final public static int CONTROL_SHADOW = 21;
+	final public static int CONTROL_DK_SHADOW = 22;
+	final public static int SCROLLBAR = 23;
+	final public static int INFO = 24;
+	final public static int INFO_TEXT = 25;
+	final public static int NUM_COLORS = 26;
 	final public static SystemColor desktop;
 	final public static SystemColor activeCaption;
 	final public static SystemColor activeCaptionText;
@@ -136,7 +136,7 @@ static {
   infoText              = new SystemColor( INFO_TEXT);
 }
 
-SystemColor ( byte idx ) {
+private SystemColor ( int idx ) {
 	super( sysColors[idx]);
 	this.idx = idx;
 }

@@ -32,6 +32,7 @@ Klasses_jar_SRCS = \
 	$(java_math_SRCS) \
 	$(java_net_SRCS) \
 	$(java_security_SRCS) \
+	$(java_security_acl_SRCS) \
 	$(java_security_cert_SRCS) \
 	$(java_security_interfaces_SRCS) \
 	$(java_security_spec_SRCS) \
@@ -69,6 +70,7 @@ java_applet_SRCS = \
 	java/applet/AppletStub.java \
 	java/applet/AudioClip.java
 java_awt_SRCS = \
+	java/awt/ActiveEvent.java \
 	java/awt/AWTError.java \
 	java/awt/AWTEvent.java \
 	java/awt/AWTEventMulticaster.java \
@@ -161,6 +163,7 @@ java_awt_event_SRCS = \
 	java/awt/event/ActionListener.java \
 	java/awt/event/AdjustmentEvent.java \
 	java/awt/event/AdjustmentListener.java \
+	java/awt/event/AWTEventListener.java \
 	java/awt/event/ComponentAdapter.java \
 	java/awt/event/ComponentEvent.java \
 	java/awt/event/ComponentListener.java \
@@ -467,6 +470,7 @@ java_security_SRCS = \
 	java/security/AlgorithmParameters.java \
 	java/security/AlgorithmParametersSpi.java \
 	java/security/BasicPermission.java \
+	java/security/Certificate.java \
 	java/security/CodeSource.java \
 	java/security/DigestException.java \
 	java/security/DigestInputStream.java \
@@ -474,6 +478,8 @@ java_security_SRCS = \
 	java/security/GeneralSecurityException.java \
 	java/security/Guard.java \
 	java/security/GuardedObject.java \
+	java/security/Identity.java \
+	java/security/IdentityScope.java \
 	java/security/InvalidAlgorithmParameterException.java \
 	java/security/InvalidKeyException.java \
 	java/security/InvalidParameterException.java \
@@ -511,7 +517,17 @@ java_security_SRCS = \
 	java/security/Signature.java \
 	java/security/SignatureException.java \
 	java/security/SignatureSpi.java \
+	java/security/Signer.java \
 	java/security/UnrecoverableKeyException.java
+java_security_acl_SRCS = \
+	java/security/acl/Acl.java \
+	java/security/acl/AclEntry.java \
+	java/security/acl/AclNotFoundException.java \
+	java/security/acl/Group.java \
+	java/security/acl/LastOwnerException.java \
+	java/security/acl/Owner.java \
+	java/security/acl/NotOwnerException.java \
+	java/security/acl/Permission.java
 java_security_cert_SRCS = \
 	java/security/cert/CRL.java \
 	java/security/cert/CRLException.java \

@@ -322,7 +322,7 @@ void createNative () {
 /**
  * @deprecated
  */
-final public void deliverEvent(Event evt) {
+public void deliverEvent(Event evt) {
 	postEvent(evt);
 }
 

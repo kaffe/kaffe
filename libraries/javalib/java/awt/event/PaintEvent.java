@@ -10,10 +10,10 @@ public class PaintEvent
 	protected int y;
 	protected int width;
 	protected int height;
-	final public static int PAINT_FIRST = 800;
-	final public static int PAINT = 800;
-	final public static int UPDATE = 801;
-	final public static int PAINT_LAST = 802;
+	public static final int PAINT = 800;
+	public static final int PAINT_FIRST = 800;
+	public static final int PAINT_LAST = 801;
+	public static final int UPDATE = 801;
 	private static final long serialVersionUID = 1267492026433337593L;
 
 public PaintEvent ( Component src, int evtId, Rectangle updateRect ) {

@@ -24,20 +24,20 @@ public class AWTEvent
 	protected boolean consumed;
 	protected AWTEvent next;
 	final private static long serialVersionUID = -1825314779160409405L;
-	final public static int COMPONENT_EVENT_MASK = 0x01;
-	final public static int CONTAINER_EVENT_MASK = 0x02;
-	final public static int FOCUS_EVENT_MASK = 0x04;
-	final public static int KEY_EVENT_MASK = 0x08;
-	final public static int MOUSE_EVENT_MASK = 0x10;
-	final public static int MOUSE_MOTION_EVENT_MASK = 0x20;
-	final public static int WINDOW_EVENT_MASK = 0x40;
-	final public static int ACTION_EVENT_MASK = 0x80;
-	final public static int ADJUSTMENT_EVENT_MASK = 0x100;
-	final public static int ITEM_EVENT_MASK = 0x200;
-	final public static int TEXT_EVENT_MASK = 0x400;
-	final public static int RESERVED_ID_MAX = 1999;
-	final static int DISABLED_MASK = 0x80000000;
-	final static int TEMP_DISABLED_MASK = 0x40000000;
+	final public static long COMPONENT_EVENT_MASK = 0x01;
+	final public static long CONTAINER_EVENT_MASK = 0x02;
+	final public static long FOCUS_EVENT_MASK = 0x04;
+	final public static long KEY_EVENT_MASK = 0x08;
+	final public static long MOUSE_EVENT_MASK = 0x10;
+	final public static long MOUSE_MOTION_EVENT_MASK = 0x20;
+	final public static long WINDOW_EVENT_MASK = 0x40;
+	final public static long ACTION_EVENT_MASK = 0x80;
+	final public static long ADJUSTMENT_EVENT_MASK = 0x100;
+	final public static long ITEM_EVENT_MASK = 0x200;
+	final public static long TEXT_EVENT_MASK = 0x400;
+	final public static long RESERVED_ID_MAX = 1999;
+	final static long DISABLED_MASK = 0x80000000;
+	final static long TEMP_DISABLED_MASK = 0x40000000;
 	static Component keyTgt;
 	static Window activeWindow;
 	static Component mouseTgt;
@@ -56,7 +56,11 @@ static {
 	sources = Toolkit.evtInit();
 }
 
-protected AWTEvent ( Object source, int id ) {
+public AWTEvent(Event event) {
+	this(event.target, event.id);
+}
+
+public AWTEvent ( Object source, int id ) {
 	super( source);
 
 	this.id = id;
