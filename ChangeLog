@@ -1,3 +1,15 @@
+2004-08-11  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gthread-jni.c:
+	Resynced with GNU Classpath.
+
+	2004-08-09  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        PR AWT/16121
+        * native/jni/gtk-peer/gthread-jni.c: Include stdio.h.  Eliminate
+        type-punning compiler warnings using unions.
+        (throw): Replace bzero with memset.
+
 2004-08-10  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c,
