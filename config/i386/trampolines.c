@@ -51,18 +51,18 @@ C_FUNC_NAME(i386_do_fixup_trampoline) ":			\n \
  * on the way cross-shared library calls are made.
  */
 asm(
-	START_ASM_FUNC() C_FUNC_NAME(__kaffe_i386_gcj_fixup) "\n"
-C_FUNC_NAME(__kaffe_i386_gcj_fixup) ": \
-	mov	(%esp), %eax	# get return address \
-	add	-4(%eax), %eax	# add jump relative offset from previous instr. \
-				# this points at at jmp *$off(%ebx) instr. \
-	mov	2(%eax), %eax	# extract 'off' \
-	add	%ebx, %eax	# compute $off(%ebx) \
-	pushl	%eax		# pass as first argument \
-	call	" C_FUNC_NAME(gcj_fixup_trampoline) " # returns target \
-	addl	$4, %esp	# remove argument \
-	jmp	*%eax		# jump to target \
-"
+	START_ASM_FUNC() C_FUNC_NAME(__kaffe_i386_gcj_fixup) "	\n"
+C_FUNC_NAME(__kaffe_i386_gcj_fixup) ": \n"
+"	mov	(%esp), %eax	# get return address \n"
+"	add	-4(%eax), %eax	# add jump relative offset from previous instr. \n"
+"				# this points at at jmp *$off(%ebx) instr. \n"
+"	mov	2(%eax), %eax	# extract 'off' \n"
+"	add	%ebx, %eax	# compute $off(%ebx) \n"
+"	pushl	%eax		# pass as first argument \n"
+"	call	" C_FUNC_NAME(gcj_fixup_trampoline) " # returns target \n"
+"	addl	$4, %esp	# remove argument \n"
+"	jmp	*%eax		# jump to target \n"
+" \n"
 	END_ASM_FUNC()
 );
 

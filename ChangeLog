@@ -1,3 +1,13 @@
+2003-10-05  Dalibor Topic <robilad@kaffe.org>
+
+	*  config/i386/bsdi/md.c
+	config/i386/common.h,
+ 	config/i386/dgux/jit-md.h,
+ 	config/i386/jit.h,
+ 	config/i386/qnx/md.h,
+ 	config/i386/trampolines.c:
+	Changed multi-line strings to single line strings.
+
 2003-10-04  Dalibor Topic <robilad@kaffe.org>
 
 	* configure.in:

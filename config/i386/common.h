@@ -99,10 +99,10 @@ typedef int64	profiler_click_t;
 #define COMPARE_AND_EXCHANGE(A,O,N) \
 	({ \
 		char ret; \
-		asm volatile(" \
-			lock \n\
-			cmpxchgl %2,%1 \n\
-			sete %0" \
+		asm volatile("  \n" \
+		"	lock \n"\
+		"	cmpxchgl %2,%1 \n"\
+		"	sete %0" \
 		  : "=q" (ret), KAFFE_PLUS_M_ASM_CONSTRAINT (*(A)) \
 		  : "r" (N), "a" (O) : "cc" ); \
 		(ret); \

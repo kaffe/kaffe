@@ -40,10 +40,10 @@ typedef struct _exceptionFrame {
 /* Call the relevant exception handler (rewinding the stack as
    necessary). */
 #define CALL_KAFFE_EXCEPTION(F, H, O)					\
-        asm("   movl %2,%%eax						\n\
-		movl %0,%%ebp						\n\
-		jmp *%1							\n\
-		" : : "g" (F), "r" (H), "g" (O) : "eax")
+        asm("   movl %2,%%eax \n"					\
+	"	movl %0,%%ebp \n"					\
+	"	jmp *%1	\n"						\
+	        : : "g" (F), "r" (H), "g" (O) : "eax")
 
 
 /**/

@@ -79,32 +79,32 @@ extern void init_md(void);
  */
 #undef	sysdepCallMethod
 #define	sysdepCallMethod(CALL)						\
-	asm volatile ("							\n\
-1:									\n\
-		cmpl $0,%0						\n\
-		je 3f							\n\
-		decl %0							\n\
-		cmpb $0,(%2,%0)						\n\
-		je 1b							\n\
-		cmpb $1,(%2,%0)						\n\
-		je 2f							\n\
-		pushl 4(%1,%0,8)					\n\
-2:									\n\
-		pushl (%1,%0,8)						\n\
-		jmpl 1b							\n\
-3:									\n\
-		call *%3						\n\
-		movl %5,%%ebx						\n\
-		movb %4,%%cl						\n\
-		movl %%eax,(%%ebx)					\n\
-		cmpb $0x44,%%cl						\n\
-		je 4f							\n\
-		cmpb $0x4a,%%cl						\n\
-		jne 5f							\n\
-4:									\n\
-		movl %%edx,4(%%ebx)					\n\
-5:									\n\
-	" :								\
+	asm volatile ("	\n"						\
+"1:			\n"						\
+"		cmpl $0,%0 \n"						\
+"		je 3f \n"						\
+"		decl %0	\n"						\
+"		cmpb $0,(%2,%0)	\n"					\
+"		je 1b \n"						\
+"		cmpb $1,(%2,%0)	\n"					\
+"		je 2f \n"						\
+"		pushl 4(%1,%0,8) \n"					\
+"2:		\n"							\
+"		pushl (%1,%0,8)	\n"					\
+"		jmpl 1b	\n"						\
+"3:		\n"							\
+"		call *%3 \n"						\
+"		movl %5,%%ebx \n"					\
+"		movb %4,%%cl \n"					\
+"		movl %%eax,(%%ebx) \n"					\
+"		cmpb $0x44,%%cl \n"					\
+"		je 4f \n"						\
+"		cmpb $0x4a,%%cl	\n"					\
+"		jne 5f \n"						\
+"4:		\n"							\
+"		movl %%edx,4(%%ebx) \n"					\
+"5:		\n"							\
+"	" :								\
 	  : "r" ((CALL)->nrargs),					\
 	    "r" ((CALL)->args),						\
 	    "r" ((CALL)->callsize),					\
@@ -112,8 +112,8 @@ extern void init_md(void);
 	    "m" ((CALL)->rettype),					\
 	    "m" ((CALL)->ret)						\
 	  : "eax", "ebx", "ecx", "edx", "edi", "esi", "cc", "memory");	\
-	asm volatile ("							\n\
-		subl %0,%%esp						\n\
+	asm volatile ("	\n"						\
+"		subl %0,%%esp \n"					\
 	" : : "r" ((CALL)->argsize * sizeof(jint)) : "cc")
 
 #endif

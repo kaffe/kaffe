@@ -23,22 +23,22 @@
 
 #undef	CALL_KAFFE_FUNCTION_VARARGS
 #define	CALL_KAFFE_FUNCTION_VARARGS(meth, obj, nargs, argptr, retval)	\
-	asm volatile ("							\n\
-		movl %3,%%eax						\n\
-.L1_%5:		cmpl $0,%%eax						\n\
-		je .L2_%5						\n\
-		decl %%eax						\n\
-		pushl (%4,%%eax,4)					\n\
-		jmp .L1_%5						\n\
-.L2_%5:									\n\
-		pushl %2						\n\
-		call *%1						\n\
-		movl %%eax,%0						\n\
-		" : "=r" (retval) :					\
+	asm volatile ("	\n"						\
+"		movl %3,%%eax \n"					\
+".L1_%5:	cmpl $0,%%eax \n"					\
+"		je .L2_%5 \n"						\
+"		decl %%eax \n"						\
+"		pushl (%4,%%eax,4) \n"					\
+"		jmp .L1_%5 \n"						\
+".L2_%5:	\n"								\
+"		pushl %2 \n"						\
+"		call *%1 \n"						\
+"		movl %%eax,%0 \n"					\
+"		" : "=r" (retval) :					\
 	    "r" (meth->ncode), "r" (obj), "r" (nargs), "r" (argptr),	\
 	    "X" (__LINE__)						\
 	    : "eax", "cc" );						\
-	asm volatile ("							\n\
+	asm volatile ("	\n						"\
 		addl %0,%%esp" : : "r" (4*(nargs+1)) : "cc")
 
 /* Function prototype for signal handlers */
