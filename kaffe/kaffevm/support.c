@@ -832,7 +832,7 @@ AllocObject(const char* classname, Hjava_lang_ClassLoader* loader)
  * @return the new allocated array
  */
 Hjava_lang_Object*
-AllocArray(size_t len, int type)
+AllocArray(jsize len, int type)
 {
 	return (newArray(TYPE_CLASS(type), len));
 }

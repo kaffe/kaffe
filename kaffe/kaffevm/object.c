@@ -127,7 +127,7 @@ DBG(NEWOBJECT,
  * Allocate a new array, of whatever types.
  */
 Hjava_lang_Object*
-newArrayChecked(Hjava_lang_Class* elclass, size_t count, errorInfo *info)
+newArrayChecked(Hjava_lang_Class* elclass, jsize count, errorInfo *info)
 {
 	Hjava_lang_Class* class = 0;
 	Hjava_lang_Object* obj = 0;
@@ -180,7 +180,7 @@ DBG(NEWOBJECT,
  * Allocate a new array, of whatever types.
  */
 Hjava_lang_Object*
-newArray(Hjava_lang_Class* elclass, size_t count)
+newArray(Hjava_lang_Class* elclass, jsize count)
 {
 	Hjava_lang_Object* obj;
 	errorInfo info;
@@ -217,7 +217,7 @@ newMultiArrayChecked(Hjava_lang_Class* clazz, int* dims, errorInfo *einfo)
       return NULL;
     }
   
-  obj = newArrayChecked(CLASS_ELEMENT_TYPE(clazz), (unsigned)dims[0], einfo);
+  obj = newArrayChecked(CLASS_ELEMENT_TYPE(clazz), (jsize)dims[0], einfo);
   if (!obj)
     return NULL;
   
@@ -237,7 +237,7 @@ newMultiArrayChecked(Hjava_lang_Class* clazz, int* dims, errorInfo *einfo)
 	  for (k=0;k<localdim;k++)
 	  {
 	    stack[localptr+k] = array[k] = 
-	      newArrayChecked(CLASS_ELEMENT_TYPE(prevclazz), (unsigned)dims[j+1], einfo);
+	      newArrayChecked(CLASS_ELEMENT_TYPE(prevclazz), (jsize)dims[j+1], einfo);
 	    if (array[k] == NULL)
 	      return NULL;
 	  }

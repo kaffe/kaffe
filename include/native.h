@@ -63,7 +63,7 @@ extern HString*	stringC2Java(const char*);
 extern int	utf8ConstEqualJavaString(const Utf8Const*, const HString*);
 
 extern HObject*	AllocObject(const char*, struct Hjava_lang_ClassLoader*);
-extern HObject*	AllocArray(size_t len, int type);
+extern HObject*	AllocArray(jsize len, int type);
 extern HObject*	AllocObjectArray(int, const char*, struct Hjava_lang_ClassLoader*);
 
 /*

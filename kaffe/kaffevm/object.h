@@ -40,9 +40,9 @@ Hjava_lang_Object*	newObjectChecked(struct Hjava_lang_Class*,
 					 struct _errorInfo *);
 Hjava_lang_Object*	newObject(struct Hjava_lang_Class*);
 struct Hjava_lang_Class* newClass(void);
-Hjava_lang_Object*	newArrayChecked(struct Hjava_lang_Class*, size_t,
+Hjava_lang_Object*	newArrayChecked(struct Hjava_lang_Class*, jsize,
 					struct _errorInfo *);
-Hjava_lang_Object*	newArray(struct Hjava_lang_Class*, size_t);
+Hjava_lang_Object*	newArray(struct Hjava_lang_Class*, jsize);
 Hjava_lang_Object*	newMultiArrayChecked(struct Hjava_lang_Class*, int*,
 					     struct _errorInfo *);
 Hjava_lang_Object*	newMultiArray(struct Hjava_lang_Class*, int*);

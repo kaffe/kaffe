@@ -28,7 +28,7 @@ KaffeJNI_GetObjectArrayElement(JNIEnv* env UNUSED, jobjectArray arr, jsize elem)
 
   BEGIN_EXCEPTION_HANDLING(0);
 
-  if (elem >= obj_length((HArrayOfObject*)arr)) {
+  if (elem >= (jsize)obj_length((HArrayOfObject*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
   obj = unhand_array((HArrayOfObject*)arr)->body[elem];
@@ -43,7 +43,7 @@ KaffeJNI_SetObjectArrayElement(JNIEnv* env UNUSED, jobjectArray arr, jsize elem,
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
-  if (elem >= obj_length((HArrayOfObject*)arr)) {
+  if (elem >= (jsize)obj_length((HArrayOfObject*)arr)) {
     throwException(ArrayIndexOutOfBoundsException);
   }
   unhand_array((HArrayOfObject*)arr)->body[elem] = (Hjava_lang_Object*)val;
@@ -55,7 +55,7 @@ jobjectArray
 KaffeJNI_NewObjectArray(JNIEnv* env UNUSED, jsize len, jclass cls, jobject init)
 {
   HArrayOfObject* obj;
-  unsigned int i;
+  jsize i;
 
   BEGIN_EXCEPTION_HANDLING(0);
 

@@ -127,7 +127,8 @@ gnu_java_net_SysInetAddressImpl_getHostByName(
 		struct Hjava_lang_String* jStr)
 {
 #if defined(HAVE_GETADDRINFO)
-  int i = 0, count = 0, retryCount = 5, rc;
+  int i = 0, retryCount = 5, rc;
+  jsize count = 0;
   struct addrinfo hints, *ai = 0, *curr;
   HArrayOfArray *retval = 0;
   int iLockRoot;
@@ -171,7 +172,7 @@ gnu_java_net_SysInetAddressImpl_getHostByName(
 	}
 		
       retval = (HArrayOfArray *)
-	newArrayChecked(ObjectClass, (size_t)count, &einfo);
+	newArrayChecked(ObjectClass, count, &einfo);
       curr = ai;
       while( curr && retval )
 	{

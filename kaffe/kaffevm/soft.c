@@ -83,7 +83,7 @@ soft_newarray(jint type, jint size)
 		throwException(NegativeArraySizeException);
 	}
 
-	obj = newArrayChecked(TYPE_CLASS(type), (size_t)size, &info);
+	obj = newArrayChecked(TYPE_CLASS(type), (jsize)size, &info);
 	if (obj == 0) {
 		throwError(&info);
 	}
@@ -108,7 +108,7 @@ soft_anewarray(Hjava_lang_Class* elclass, jint size)
 		throwException(NegativeArraySizeException);
 	}
 
-	obj = newArrayChecked(elclass, (size_t)size, &info);
+	obj = newArrayChecked(elclass, (jsize)size, &info);
 	if (obj == 0) {
 		throwError(&info);
 	}

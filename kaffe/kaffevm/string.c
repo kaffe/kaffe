@@ -118,7 +118,7 @@ stringC2CharArray(const char* cs)
 
 	/* Get new array object */
 	ary = (HArrayOfChar*)newArrayChecked(TYPE_CLASS(TYPE_Char),
-					     (size_t)len, &info);
+					     (jsize)len, &info);
 	if (!ary) {
 		discardErrorInfo(&info);
 		return 0;
@@ -471,7 +471,7 @@ stringCharArray2Java(const jchar *data, int len)
 	}
 
 	/* Create a new String object */
-	ary = (HArrayOfChar*)newArrayChecked(charClass, (size_t)len,
+	ary = (HArrayOfChar*)newArrayChecked(charClass, (jsize)len,
 					     &info);
 	if (!ary) {
 		discardErrorInfo(&info);
