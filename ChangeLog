@@ -16,6 +16,8 @@ Thu Dec  3 12:24:06 1998  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/net/URL.java: fix bug in constructor
 	Reported by Alice Dubois <alice.dubois@lemel.fr>
+	* libraries/javalib/java/io/BufferedReader.java: fix bug in
+	ready() method and do some rewriting/optimization in the process.
 
 Thu Dec  3 12:14:13 1998  Parmelan, Edouard <EP510777@exchange.FRANCE.NCR.com>
 
