@@ -10,6 +10,16 @@ This will build the java libraries, put them in a Klasses.jar file
 and overwrite the version in your source tree.  Type "make install"
 to install the jar file in your target prefix.
 
+If you have added or removed files from the javalib tree, you may have
+to run "make new-classes" first.  This will update Makefile.am, but
+not Makefile.in nor Makefile.  In order to update these other files,
+for the changes to take effect, you'll need automake 1.4 or newer, and
+you'll have to configure with --enable-maintainer-mode or run automake
+by hand.
+
+If you want to rebuild not only Klasses.jar, but also the jar-files of
+Kaffe extensions, type "make CLASSDIRS=all Klasses".
+
 What compilers are known to work?
 ---------------------------------
 

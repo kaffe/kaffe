@@ -2,6 +2,19 @@ Fri Apr  9 14:00:00 PDT 1999 Transvirtual Technologies <info@transvirtual.com>
 
         * Version 1.0.b4 of Kaffe OpenVM released.
 
+Fri Apr  9 16:00:59 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* Makefile.am (EXTRA_DIST): Updated.
+	* config/Makefile.am (EXTRA_DIST): Likewise.
+	* libraries/javalib/Makefile.am (EXTRA_DIST): Likewise.
+	* test/regression/Makefile.am: Clarification about TestNative.
+	* Makefile.in, config/Makefile.in: Rebuilt.
+	* libraries/javalib/Makefile.in: Likewise.
+	* test/regression/Makefile.in: Likewise.
+	* FAQ/FAQ.classlibrary-compile: Added instructions to update the
+	list of classes and to compile extensions.
+	* FAQ/FAQ.automake, FAQ/FAQ.libtool: Updated.
+
 Thu Apr  8 14:56:35 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in (underscores): Reintroduce the underscore test,

@@ -20,6 +20,7 @@ EXTRA_DIST = \
 	FAQ/FAQ.automake \
 	FAQ/FAQ.awt \
 	FAQ/FAQ.class-states \
+	FAQ/FAQ.classlibrary-compile \
 	FAQ/FAQ.depend \
 	FAQ/FAQ.gcblock \
 	FAQ/FAQ.gcstrategy \
@@ -31,13 +32,17 @@ EXTRA_DIST = \
 	FAQ/FAQ.nativemethods \
 	FAQ/FAQ.requiredlibraries \
 	FAQ/FAQ.timing \
+	FAQ/FAQ.unicode \
 	FAQ/FAQ.win32 \
 	developers/JavaClass.pm \
 	developers/README \
+	developers/README.unicode \
+	developers/autogen.sh \
 	developers/dumpClass.pl \
 	developers/gdbinit \
 	developers/sp_offset.c \
 	developers/update-class-list \
+	developers/unicode.pl \
 	developers/utf8munge.pl
 
 CLEANFILES = BUILD_ENVIRONMENT

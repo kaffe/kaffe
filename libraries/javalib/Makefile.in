@@ -799,7 +799,10 @@ kaffe_util_zip_SRCS = \
 	kaffe/util/zip/SwitchInflater.java
 
 
-EXTRA_DIST = $(class_DATA) $(Klasses_jar_SRCS)
+EXTRA_DIST = $(class_DATA) $(Klasses_jar_SRCS) \
+	kaffe/lang/unicode.idx \
+	kaffe/lang/unicode.tbl
+
 
 LIBDIR = lib
 

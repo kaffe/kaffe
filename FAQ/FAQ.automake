@@ -20,8 +20,8 @@ AM_CPPFLAGS.  Prefer the latter for preprocessor definitions such as
 that it will take care of rebuilding autoconf/automake-related files
 whenever they become out-of-date, but only if you
 --enable-maintainer-mode at configure time.  If not, you'll have to
-run "aclocal; automake; autoconf; autoheader -l config" manually in the
-top-level source directory.
+run "aclocal; automake; autoconf; autoheader -l config" (or just
+developers/autogen.sh) manually in the top-level source directory.
 
 - you also have to specify which files should go in a distribution
 (make dist): they should either be listed as sources to some binary or
@@ -30,16 +30,16 @@ missing some file, you should run `make distcheck' instead of just
 `make dist'.  distcheck runs make dist, builds the dist tree and runs
 make check on it.
 
-- since automake doesn't accept sources from other directories,
-because this is not portable, I have created some makefiles in
-subdirectories such as jit, intrp and system/unix-*.  A special kind
-of temporary library, called libtool convenience library, is created
-to hold files from each of these directories, and then the convenience
-library is included in libkaffevm.  In other cases, such as gc-mem.c,
-I have preferred to just create a gc-mem.c forwarder (a file that
-#includes mem/gc-mem.c) within kaffe/kaffevm.  If we later decide that
-it was not a good idea, it is very easy to create a Makefile.am within
-kaffevm/mem and create a convenience library there.
+- since automake 1.4 doesn't accept sources from other directories, I
+have created some makefiles in subdirectories such as jit, intrp and
+system/unix-*.  A special kind of temporary library, called libtool
+convenience library, is created to hold files from each of these
+directories, and then the convenience library is included in
+libkaffevm.  In other cases, such as gc-mem.c, I have preferred to
+just create a gc-mem.c forwarder (a file that #includes mem/gc-mem.c)
+within kaffe/kaffevm.  If we later decide that it was not a good idea,
+it is very easy to create a Makefile.am within kaffevm/mem and create
+a convenience library there.
 
 - `make depend' is now implicit, but it only works with gcc and GNU
 make.  A distribution file with portable makefiles should be created
@@ -61,3 +61,6 @@ from the Makefiles, for example, recursive `make classes' and `make
 derived-files'.  It should be straightforward to re-create them within
 Makefile.am's, but I'd prefer to avoid these, and create actual
 dependencies to ensure that derived files are re-created as needed.
+
+--
+oliva

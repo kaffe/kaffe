@@ -642,7 +642,9 @@ kaffe_util_zip_SRCS = \
 
 ## Do not delete the previous blank line; update-class-list depends on it
 
-EXTRA_DIST = $(class_DATA) $(Klasses_jar_SRCS)
+EXTRA_DIST = $(class_DATA) $(Klasses_jar_SRCS) \
+	kaffe/lang/unicode.idx \
+	kaffe/lang/unicode.tbl
 
 LIBDIR = lib
 

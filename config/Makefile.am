@@ -25,7 +25,7 @@ EXTRA_DIST = \
 	regen-forward \
 	alpha/jit-alpha.def \
 	alpha/common.h \
-	alpha/linux/jit-md.h.not-yet \
+	alpha/linux/jit-md.h \
 	alpha/linux/config.frag \
 	alpha/linux/md.c \
 	alpha/linux/md.h \
@@ -132,11 +132,11 @@ EXTRA_DIST = \
 	m68k/amigaos/md.h \
 	m68k/linux/config.frag \
 	m68k/linux/README \
+	m68k/linux/jit-md.h \
 	m68k/linux/md.c \
 	m68k/linux/md.h \
 	m68k/netbsd1/config.frag \
 	m68k/netbsd1/jit-md.h \
-	m68k/netbsd1/jit.h \
 	m68k/netbsd1/md.c \
 	m68k/netbsd1/md.h \
 	m68k/nextstep3/config.frag \
@@ -200,7 +200,7 @@ EXTRA_DIST = \
 	sparc/netbsd1/jit-md.h \
 	sparc/netbsd1/md.c \
 	sparc/netbsd1/md.h \
-	sparc/nextstep3/jit-md.h-notyet \
+	sparc/nextstep3/jit-md.h \
 	sparc/nextstep3/config.frag \
 	sparc/nextstep3/md.c \
 	sparc/nextstep3/md.h \

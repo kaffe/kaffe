@@ -94,7 +94,6 @@ TESTS = \
 	HashtableTest1.java \
 	ReflectMultiArray.java \
 	ExecTest.java \
-## FIXME: ignore next 2
 ## Test catching our own death
 	CatchDeath.java \
 ## Test various ways of stopping threads
@@ -105,6 +104,7 @@ TESTS = \
 ## This is kind of tricky, and Sun doesn't support it.
 	SoInterrupt.java \
 	sysdepCallMethod.java \
+## This one is skipped unless you --enable-debug.
 	TestNative.java
 
 EXTRA_DIST = $(TESTS)

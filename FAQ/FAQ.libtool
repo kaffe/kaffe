@@ -11,8 +11,8 @@ that directory, then running make in the top-level directory.
 
 In order to provide dynamic linking, or simulate it, Kaffe uses
 libltdl, a library that is part of libtool.  It currently supports the
-following dlopening mechanisms: dlopen, shl_load, GNU DLD and Windows'
-LoadLibrary.
+following dlopening mechanisms: dlopen, shl_load, GNU DLD, BeOS'
+load_add_on and MS-Windows' LoadLibrary.
 
 Additionally, it supports dlopening simulation for platforms that lack
 shared libraries (or have shared libraries disabled) through the
@@ -32,8 +32,8 @@ created.
 
 By default, on platforms that lack dlopening mechanisms, Kaffe will be
 linked with its own libraries only.  You may extend this list of
-libraries by setting the JAVA_LIBS flag to a list of *libtool* (.la)
-libraries.
+libraries by setting the JAVA_LIBS flag to a list of libtool (.la) or
+regular (.a/.so/.sl/.lib) libraries.
 
 If the same symbol is defined in more than one library, it is possible
 that linking (either static or dynamic) fails.  If it does not fail,
@@ -42,16 +42,23 @@ sequence of dlopening of the libraries, and the mechanism libltdl uses
 to dlopen them.
 
 
-You may notice that, on some platforms, libtool compiles each file
-that may become part of a library twice.  It does so because a file
-must be compiled with PIC (position independent code) in order to
-become part of a shared library, but this sometimes imposes some
-overhead, and libtool believes that a static library shouldn't impose
-this overhead.  Therefore, libtool uses an object file with PIC to
-build a shared library, and one without PIC for static libraries.
+By default, libtool compiles each file that may become part of a
+library twice.  It does so because a file must be compiled with PIC
+(position independent code) in order to become part of a shared
+library, but this sometimes imposes some overhead, and libtool
+believes that a static library shouldn't impose this overhead.
+Therefore, libtool uses an object file with PIC to build a shared
+library, and one without PIC for static libraries.
 
-If you do use static libraries but you don't care about this extra
-overhead, you may use the flag --disable-static at configure time.
-Also, --disable-shared is almost equivalent to --with-staticlib; the
-only difference is that --with-staticlib does not affect libltdl,
-whereas --disable-shared does.
+Kaffe changes this libtool default so as to avoid double compilation,
+so you'll get only PIC object files if shared libraries are supported
+and not disabled, and only non-PIC ones otherwise.  You may force
+non-PIC objects to be created with --enable-static; you may force
+libtool not to create shared libraries by configuring
+--disable-shared.  In fact, --disable-shared is almost equivalent to
+--with-staticlib --with-staticvm; the only difference is that
+--with-staticlib does not affect libltdl, whereas --disable-shared
+does.
+
+--
+oliva
