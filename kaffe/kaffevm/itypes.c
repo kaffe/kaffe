@@ -36,7 +36,10 @@ static
 void
 initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 {
+	errorInfo info;
+	classEntry* centry;
 	Hjava_lang_Class* clazz = newClass();
+
 	if (clazz == 0) {
 		goto bad;
 	}
@@ -56,6 +59,20 @@ initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 	TYPE_PRIM_SIZE(clazz) = len;
 	/* prevent any attempt to process those in processClass */
 	clazz->state = CSTATE_COMPLETE;
+
+	/* Add primitive types to the class pool as well 
+	 * This allows us to find them by name---for instance from gcj code.
+	 *
+	 * Note that a user-defined "class int" is impossible cause "int"
+	 * is a keyword.
+	 */
+	centry = lookupClassEntry(clazz->name, 0, &info);
+	if (centry == 0) {
+		goto bad;
+	}
+	clazz->centry = centry;
+	centry->class = clazz;
+
 	return;
 bad:
 	fprintf(stderr, "not enough memory to run kaffe\n");
