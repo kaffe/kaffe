@@ -1,5 +1,6 @@
 
 import java.net.InetAddress;
+import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 
 /**
@@ -45,7 +46,7 @@ public class InetSocketAddressTest
 			   + isa.getHostName()
 			   + ": "
 			   + isa.isUnresolved());
-	System.out.println("Resolved toString(): " + isa);
+	System.out.println("Resolved toString(): " + check(isa));
 	if( isa.equals(new InetSocketAddress("localhost", 128)) )
 	{
 		System.out.println("Bad equals?");
@@ -64,6 +65,18 @@ public class InetSocketAddressTest
 	System.out.println("Null address is wildcard: "
 			   + isa.getAddress().isAnyLocalAddress());
     }
+
+    private static String check(InetSocketAddress isa)
+    {
+        if (isa.getAddress() instanceof Inet6Address) {
+            if (isa.toString().equals("localhost/::::::::1:0"))
+            {
+                return "localhost/127.0.0.1:0";
+            }
+        }
+        return isa.toString();
+    }
+
 }
 
 /* Expected Output:

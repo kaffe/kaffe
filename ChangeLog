@@ -3,6 +3,9 @@
 	* test/regression/InetAddressTest.java:
 	check whether InetAddress.getByName returns IPv6 address.
 
+	* test/regression/InetSocketAddressTest.java:
+	check whether new InetSocketAddress("localhost", 0) is an IPv6 address.
+
 2003-09-09  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/net/InetAddress.java:
