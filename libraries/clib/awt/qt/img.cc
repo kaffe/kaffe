@@ -40,6 +40,7 @@ createImage ( int width, int height )
   return img;
 }
 
+#if 0
 static int
 createShmXImage ( Toolkit* X, Image* img, int depth, int isMask )
 {
@@ -51,7 +52,7 @@ static void
 destroyShmXImage ( Toolkit* X, Image* img, int isMask )
 {
 }
-
+#endif
 
 
 void
@@ -185,7 +186,7 @@ reduceAlpha ( Toolkit* X, Image* img, int threshold )
 		//XPutPixel( img->xImg, j, i, 0);
 		//XPutPixel( img->xMask, j, i, 0);
 		
- 		fprintf(stderr,"reduce alpha! %d %d",img->qImg->width(),img->qImg->height());
+ 		DBG( AWT_IMG, printf("reduce alpha! %d %d",img->qImg->width(),img->qImg->height()) );
 		img->qImg->setPixel(j,i,0);
 	  }
 	}

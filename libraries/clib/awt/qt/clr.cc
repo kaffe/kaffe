@@ -11,13 +11,20 @@
 #include <limits.h>
 #include <math.h>
 
-#include <qapplication.h>
+#ifdef QPE
+#  include <qpe/qpeapplication.h>
+#else
+#  include <qapplication.h>
+#endif
 
 #include "toolkit.h"
 
 
-// Murphy
+#ifdef QPE
+extern QPEApplication *qapp;
+#else
 extern QApplication *qapp;
+#endif
 
 /********************************************************************************
  * auxiliary functions

@@ -12,14 +12,22 @@
 
 #define MAIN
 
-// Murphy
-#include <qapplication.h>
+#ifdef QPE
+#  include <qpe/qpeapplication.h>
+#else
+#  include <qapplication.h>
+#endif
+
 #include <qpaintdevicemetrics.h>
 
 #include "toolkit.h"
 #include "tlkprops.h"
 
+#ifdef QPE
+QPEApplication *qapp;
+#else
 QApplication *qapp;
+#endif
 
 /********************************************************************************
  * exported functions
@@ -40,15 +48,15 @@ jint Java_java_awt_Toolkit_tlkProperties(JNIEnv* env, jclass clazz)
 jboolean Java_java_awt_Toolkit_tlkInit(JNIEnv* env, jclass clazz,
   jstring name)
 {
-  //char    *dspName;
+  char * argv[1] = { "Qt AWT backend for Kaffe" };
+  int argc = 1;           
 
-  int qapp_argc=0;
-  char** qapp_argv=0;
-  //qapp_argv[0]="KaffeAWT";
-  // Murphy
-  //qapp = new QApplication(qapp_argc, qapp_argv);
-  qapp = new QApplication(qapp_argc, qapp_argv, QApplication::GuiServer);
-  fprintf(stderr, "qapp initialization.\n");
+#ifdef QPE
+  qapp = new QPEApplication( argc, argv);
+#else
+  qapp = new QApplication( argc, argv, QApplication::GuiServer);
+#endif  
+  qDebug( "qapp initialization.\n" );
 
   // allocate X->buf for string opeartion
   getBuffer(X, 128);

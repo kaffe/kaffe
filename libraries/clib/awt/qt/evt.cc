@@ -7,8 +7,11 @@
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
-
-#include <qapplication.h>
+#ifdef QPE
+#  include <qpe/qpeapplication.h>
+#else
+#  include <qapplication.h>
+#endif
 #include <qevent.h>
 #include <qqueue.h>
 #include <qwidget.h>
@@ -73,8 +76,12 @@ protected:
 };
 
 
-// Murphy
+#ifdef QPE
+extern QPEApplication *qapp;
+#else
 extern QApplication *qapp;
+#endif
+
 QQueue<EventPacket> g_event_queue;
 
 EventDispatcher::EventDispatcher(QWidget *parent, const char *name) {

@@ -10,7 +10,12 @@
 
 #include <limits.h>
 
-#include <qapplication.h>
+#ifdef QPE
+#  include <qpe/qpeapplication.h>
+#else
+#  include <qapplication.h>
+#endif
+
 #include <qframe.h>
 #include <qcursor.h>
 #include <qwidget.h>
@@ -19,7 +24,12 @@
 
 #define QCOLOR(c) QColor(JRED(c), JGREEN(c), JBLUE(c))
 
+#ifdef QPE
+extern QPEApplication *qapp;
+#else
 extern QApplication *qapp;
+#endif
+
 #if 0
 long StdEvents = ExposureMask | KeyPressMask | KeyReleaseMask |
 		 PointerMotionMask | /* PointerMotionHintMask | */

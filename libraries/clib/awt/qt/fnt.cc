@@ -21,7 +21,11 @@
  * this is our ultima ratio in case everything else fails, at least this
  * one should be on every X fontlist
  */
+#ifdef QPE
+char* backupFont = "unifont";
+#else
 char* backupFont = "fixed";
+#endif
 
 /*
  * these are (hopefully) the most usual XFLD font weight names, ordered

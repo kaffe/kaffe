@@ -31338,6 +31338,7 @@ echo "$as_me: error: *** Couldn't find any Qt libraries" >&2;}
             QT_IS_EMBEDDED="yes"
         fi
         ;;
+
 esac
 echo "$as_me:$LINENO: checking if Qt is static" >&5
 echo $ECHO_N "checking if Qt is static... $ECHO_C" >&6
@@ -31354,6 +31355,19 @@ echo "${ECHO_T}$QT_IS_EMBEDDED" >&6
 
 if test x$QT_IS_EMBEDDED = xyes ; then
 	QT_CXXFLAGS="$QT_CXXFLAGS -DQWS"
+
+	# test for Qtopia
+	echo "$as_me:$LINENO: checking Qtopia" >&5
+echo $ECHO_N "checking Qtopia... $ECHO_C" >&6
+	if test "x`ls $QTDIR/lib/libqpe.* 2> /dev/null`" != x ; then
+		QT_CXXFLAGS="$QT_CXXFLAGS -DQPE"
+		QT_LIB="-lqpe -lqtopia $QT_LIB"
+		echo "$as_me:$LINENO: result: found" >&5
+echo "${ECHO_T}found" >&6
+	else
+		echo "$as_me:$LINENO: result: not found" >&5
+echo "${ECHO_T}not found" >&6
+	fi
 fi
 
 QT_GUILINK=""

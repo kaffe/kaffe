@@ -1,3 +1,30 @@
+2003-06-03  Dalibor Topic <robilad@yahoo.com>
+
+	* gwqt.m4:
+	Added detection of Qtopia, which means new libs are added to the
+	linker flags, and a new macro QPE is defined for conditional
+	compilation of Qtopia specific bits.
+	
+	* aclocal.m4, configure: regenerated.
+
+2003-06-03 Jim Huang <jserv@mdk.linux.org.tw>	
+
+	Adapted Kaffe's Qt based AWT to compile under Qtopia.
+	
+	* libraries/clib/awt/qt/clr.cc,
+	libraries/clib/awt/qt/evt.cc,
+	libraries/clib/awt/qt/tlk.cc,
+	libraries/clib/awt/qt/wnd.cc:
+	Use QPEApplication instead of QApplication. Include appropriate
+	headers.
+
+	* libraries/clib/awt/qt/fnt.cc:
+	Use unifont under QPE.
+
+	* libraries/clib/awt/qt/img.cc:
+	Ifdef-ed out createShmXImage and destroyShmXImage.
+	Replaced a fprintf by a DBG.
+
 2003-06-03  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* kaffe/kaffevm/external.c
