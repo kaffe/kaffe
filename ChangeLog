@@ -1,3 +1,11 @@
+2004-03-13  Dalibor Topic <robilad@kaffe.org>
+
+	* config/m68k/jit.h:
+	(FLUSH_DCACHE): Use gcc's CACHE_INSN_CLEAR macro.
+
+	* config/m68j/cache-clear.h:
+	New file, taken from gcc's CVS. Licensed under GPL.
+
 2004-03-12  Riccardo Mottola <zuse@libero.it>,
 	    Michael Koch  <konqueror@gmx.de>
 

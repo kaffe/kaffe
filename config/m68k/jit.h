@@ -18,6 +18,8 @@
 #ifndef __m68k_jit_h
 #define __m68k_jit_h
 
+#include "clear-cache.h"
+
 /**/
 /* Exception handling information. */
 /**/
@@ -191,7 +193,8 @@ extern void m68k_do_fixup_trampoline(void);
 
    For those with 020's and 030's, this is effectively a no-op.  */
 
-#define FLUSH_DCACHE(beg,end)	__clear_cache((beg), (end))
+/* For now, let's try to use gcc's own macro */
+#define FLUSH_DCACHE(beg,end)	CLEAR_INSN_CACHE((beg),(end))
 
 
 #endif
