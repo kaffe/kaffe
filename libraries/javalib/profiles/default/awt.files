@@ -51,7 +51,6 @@ java/awt/KeyEventDispatcher.java
 java/awt/KeyEventPostProcessor.java
 java/awt/OpaqueComponent.java
 java/awt/PageAttributes.java
-java/awt/peer/ActiveEvent.java
 java/awt/ScrollPaneAdjustable.java
 java/awt/ScrollPane.java
 java/awt/SystemColor.java

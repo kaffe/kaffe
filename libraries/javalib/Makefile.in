@@ -1337,7 +1337,6 @@ java_awt_image_renderable_SRCS = \
 	java/awt/image/renderable/RenderedImageFactory.java
 
 java_awt_peer_SRCS = \
-	java/awt/peer/ActiveEvent.java \
 	java/awt/peer/ButtonPeer.java \
 	java/awt/peer/CanvasPeer.java \
 	java/awt/peer/CheckboxMenuItemPeer.java \
