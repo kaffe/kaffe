@@ -1,3 +1,54 @@
+Fri Sep 17 15:11:49 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* test/regression/forNameTest.java, libraries/clib/native/Makefile.am,
+	libraries/clib/native/ClassLoader.c,
+	libraries/javalib/java/lang/ClassLoader.java,
+	libraries/javalib/kaffe/lang/SystemClassLoader.java,
+	libraries/javalib/kaffe/applet/AppletViewer.java: finish upgrade
+	to JDK 1.2 ClassLoader paradigm
+	* libraries/clib/native/SystemClassLoader.c: new file
+	* libraries/clib/native/System.c: set "java.io.tmpdir" property
+	* libraries/javalib/java/util/jar/Attributes.java
+	libraries/javalib/java/util/jar/JarOutputStream.java
+	libraries/javalib/java/util/jar/Manifest.java: finish implementation
+	* libraries/javalib/java/util/jar/JarEntry.java,
+	libraries/javalib/java/util/jar/JarException.java,
+	libraries/javalib/java/util/jar/JarFile.java,
+	libraries/javalib/java/util/jar/JarInputStream.java,
+	libraries/javalib/java/net/JarURLConnection.java,
+	libraries/javalib/java/net/NetPermission.java,
+	libraries/javalib/java/net/URLDecoder.java,
+	libraries/javalib/kaffe/net/www/protocol/jar/JarURLConnection.java,
+	libraries/javalib/kaffe/net/www/protocol/jar/Handler.java,
+	libraries/javalib/java/security/ProtectionDomain.java: new files
+	* libraries/javalib/java/util/zip/ZipInputStream.java:
+	add missing method createZipEntry() (unimplemented)
+	* libraries/javalib/kaffe/jar/ExecJar.java,
+	libraries/javalib/kaffe/jar/ExecJarName.java: simplify using
+	new java.util.jar implementation
+	* libraries/javalib/java/io/File.java: implement createTempFile()
+	and add missing method deleteOnExit() (currently unimplemented)
+	* libraries/javalib/java/net/URLClassLoader.java: add missing
+	(but unimplemented) methods
+	* libraries/javalib/java/io/ObjectInputStream.java,
+	libraries/javalib/java/io/ObjectOutputStream.java: indicate
+	method name when throwing kaffe.util.NotImplemented exceptions
+	* libraries/javalib/java/lang/System.java: minor tweaks
+	* libraries/javalib/java/lang/Character.java: add code to replace
+	functionality of obsoleted ClassLoader.getSystemResourceAsBytes0()
+	* libraries/javalib/java/net/URL.java,
+	libraries/javalib/java/net/URLStreamHandler.java: re-work handling
+	of URL parsing, etc. to fix several bugs
+	* kaffe/kaffevm/exception.c, kaffe/kaffevm/stackTrace.c,
+	libraries/clib/native/Throwable.c: dump stack trace when
+	we get an internal error from exception
+	* test/regression/URLTest.java: new test
+	* test/regression/Makefile.am: add new test
+	* kaffe/kaffevm/Makefile.am: add "jit3" to DIST_SUBDIRS
+	* developers/autogen.sh: run update-class-list first
+	* libraries/javalib/Makefile.am: regen to add new classes
+	* */Makefile.in, libraries/javalib/Klasses.jar: regen
+
 Fri Sep 17 16:08:22 PDT 1999	Tim Wilkinson	<tim@transvirtual.com>
 
 	* Added pthreads implementation so provide real kernel threading
