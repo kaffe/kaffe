@@ -82,8 +82,7 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libqtawt_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+libqtawt_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_libqtawt_la_OBJECTS = tlk.lo wnd.lo evt.lo gra.lo fnt.lo clr.lo \
 	img.lo cbd.lo
 am__objects_1 = evt.moc.lo

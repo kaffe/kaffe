@@ -1517,6 +1517,7 @@ java_awt_image_SRCS = \
 	java/awt/image/BufferedImage.java \
 	java/awt/image/BufferedImageOp.java \
 	java/awt/image/BufferStrategy.java \
+	java/awt/image/ByteLookupTable.java \
 	java/awt/image/ColorModel.java \
 	java/awt/image/ComponentColorModel.java \
 	java/awt/image/ComponentSampleModel.java \
@@ -1536,6 +1537,8 @@ java_awt_image_SRCS = \
 	java/awt/image/ImageProducer.java \
 	java/awt/image/ImagingOpException.java \
 	java/awt/image/IndexColorModel.java \
+	java/awt/image/Kernel.java \
+	java/awt/image/LookupTable.java \
 	java/awt/image/MemoryImageSource.java \
 	java/awt/image/PackedColorModel.java \
 	java/awt/image/PixelGrabber.java \
@@ -1547,6 +1550,7 @@ java_awt_image_SRCS = \
 	java/awt/image/ReplicateScaleFilter.java \
 	java/awt/image/RGBImageFilter.java \
 	java/awt/image/SampleModel.java \
+	java/awt/image/ShortLookupTable.java \
 	java/awt/image/SinglePixelPackedSampleModel.java \
 	java/awt/image/TileObserver.java \
 	java/awt/image/VolatileImage.java \
@@ -2951,6 +2955,8 @@ javax_swing_SRCS = \
 	javax/swing/SizeRequirements.java \
 	javax/swing/SizeSequence.java \
 	javax/swing/SpinnerModel.java \
+	javax/swing/Spring.java \
+	javax/swing/SpringLayout.java \
 	javax/swing/SwingConstants.java \
 	javax/swing/SwingUtilities.java \
 	javax/swing/Timer.java \
@@ -3100,8 +3106,10 @@ javax_swing_plaf_basic_SRCS = \
 	javax/swing/plaf/basic/BasicSplitPaneDivider.java \
 	javax/swing/plaf/basic/BasicSplitPaneUI.java \
 	javax/swing/plaf/basic/BasicTabbedPaneUI.java \
+	javax/swing/plaf/basic/BasicTextFieldUI.java \
 	javax/swing/plaf/basic/BasicTextUI.java \
 	javax/swing/plaf/basic/BasicToggleButtonUI.java \
+	javax/swing/plaf/basic/BasicToolBarSeparatorUI.java \
 	javax/swing/plaf/basic/BasicToolBarUI.java \
 	javax/swing/plaf/basic/BasicTreeUI.java \
 	javax/swing/plaf/basic/BasicViewportUI.java
@@ -3123,26 +3131,31 @@ javax_swing_text_SRCS = \
 	javax/swing/text/AttributeSet.java \
 	javax/swing/text/BadLocationException.java \
 	javax/swing/text/Caret.java \
-	javax/swing/text/CharacterIterator.java \
 	javax/swing/text/ComponentView.java \
 	javax/swing/text/DefaultCaret.java \
 	javax/swing/text/DefaultEditorKit.java \
+	javax/swing/text/DefaultHighlighter.java \
 	javax/swing/text/DocumentFilter.java \
 	javax/swing/text/Document.java \
 	javax/swing/text/EditorKit.java \
 	javax/swing/text/Element.java \
+	javax/swing/text/FieldView.java \
 	javax/swing/text/GapContent.java \
+	javax/swing/text/Highlighter.java \
 	javax/swing/text/JTextComponent.java \
 	javax/swing/text/Keymap.java \
+	javax/swing/text/LayeredHighlighter.java \
 	javax/swing/text/MutableAttributeSet.java \
 	javax/swing/text/NavigationFilter.java \
 	javax/swing/text/PlainDocument.java \
-	javax/swing/text/PlainEditorKit.java \
+	javax/swing/text/PlainView.java \
 	javax/swing/text/Position.java \
 	javax/swing/text/Segment.java \
 	javax/swing/text/StyledDocument.java \
 	javax/swing/text/StyledEditorKit.java \
 	javax/swing/text/Style.java \
+	javax/swing/text/TabableView.java \
+	javax/swing/text/TabExpander.java \
 	javax/swing/text/TextAction.java \
 	javax/swing/text/ViewFactory.java \
 	javax/swing/text/View.java

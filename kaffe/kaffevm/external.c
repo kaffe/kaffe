@@ -41,8 +41,6 @@
 #include "jsignal.h"
 #include "stats.h"
 #include "native-wrapper.h"
-#define LT_NON_POSIX_NAMESPACE
-#include "ltdl.h"
 #if defined(KAFFE_FEEDBACK)
 #include "feedback.h"
 #endif
@@ -64,28 +62,8 @@
 #define STUB_POSTFIX ""
 #endif
 
-#ifndef LIBRARYHANDLE
-#define LIBRARYHANDLE lt_dlhandle
-#endif
-
-#ifndef LIBRARYINIT
-#define LIBRARYINIT() (lt_dlinit())
-#endif
-
 #ifndef LIBRARYSUFFIX
 #define LIBRARYSUFFIX ""
-#endif
-
-#ifndef LIBRARYLOAD
-#define LIBRARYLOAD(desc,filename) ((desc)=lt_dlopenext((filename)))
-#endif
-
-#ifndef LIBRARYUNLOAD
-#define LIBRARYUNLOAD(desc)		(lt_dlclose(desc))
-#endif
-
-#ifndef LIBRARYERROR
-#define LIBRARYERROR() lt_dlerror()
 #endif
 
 static struct _libHandle {
@@ -94,13 +72,13 @@ static struct _libHandle {
 	int		ref;
 } libHandle[MAXLIBS];
 
-#ifndef LIBRARYFUNCTION
-static inline lt_ptr_t findLibraryFunction(const char *name) {
+static inline void *
+findLibraryFunction(const char *name) {
   int i = 0;
-  lt_ptr_t ptr = 0;
-
+  void *ptr = NULL;
+  
   while (!ptr && libHandle[i].ref && i < MAXLIBS) {
-    ptr = lt_dlsym(libHandle[i].desc, name);
+    ptr = KaffeLib_GetSymbol(libHandle[i].desc, name);
 
 DBG(NATIVELIB,
     if (ptr == NULL) {
@@ -123,9 +101,6 @@ DBG(NATIVELIB,
 
   return ptr;
 }
-
-#define LIBRARYFUNCTION(ptr,name) ((ptr)=findLibraryFunction(name))
-#endif
 
 static char *libraryPath = "";
 
@@ -219,7 +194,7 @@ initNative(void)
 
 	DBG(INIT, dprintf("got lpath %s and libraryPath %s\n", lpath, libraryPath); )
 
-	LIBRARYINIT();
+	KaffeLib_Init();
 
 	/* Find the default library */
 	for (ptr = libraryPath; ptr != 0; ptr = nptr) {
@@ -319,10 +294,10 @@ DBG(NATIVELIB,
 
 	blockAsyncSignals();
 	{
-                LIBRARYLOAD(lib->desc, path);
+                lib->desc = KaffeLib_Load(path);
                 if (lib->desc == 0)	
 			{
-				const char *err = LIBRARYERROR();
+				const char *err = KaffeLib_GetError();
 				
 				/* XXX Bleh, silly guessing system. */
 				if( err == 0 )
@@ -410,7 +385,7 @@ DBG(NATIVELIB,
 	assert(lib->ref > 0);
 	if (--lib->ref == 0) {
 		blockAsyncSignals();
-		LIBRARYUNLOAD(lib->desc);
+		KaffeLib_Unload(lib->desc);
 		unblockAsyncSignals();
 		KFREE(lib->name);
 		lib->desc = 0;
@@ -423,13 +398,36 @@ DBG(NATIVELIB,
 void*
 loadNativeLibrarySym(const char* name)
 {
-	void* func;
+  int i = 0;
+  void* func = NULL;;
 
-	blockAsyncSignals();
-	LIBRARYFUNCTION(func, name);
-	unblockAsyncSignals();
+  blockAsyncSignals();
+  
+  while (!func && libHandle[i].ref && i < MAXLIBS) {
+    func = KaffeLib_GetSymbol(libHandle[i].desc, name);
+    
+DBG(NATIVELIB,
+    if (func == NULL) {
+	dprintf("Couldn't find %s in library handle %d == %s.\nError message is %s.\n",
+		name,
+		i,
+		libHandle[i].name,
+		KaffeLib_GetError());
+    }
+    else {
+	dprintf("Found %s in library handle %d == %s.\n",
+		name,
+        	i,
+		libHandle[i].name);
+    }
+)
 
-	return (func);
+    ++i;
+  }
+
+  unblockAsyncSignals();
+
+  return func;
 }
 
 

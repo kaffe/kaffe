@@ -84,9 +84,6 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
-/* Define to 1 if you have the <dl.h> header file. */
-#undef HAVE_DL_H
-
 /* Define to 1 if you have the `drem' function. */
 #undef HAVE_DREM
 
@@ -653,9 +650,6 @@
 
 /* Define to 1 if you have the `waitpid' function. */
 #undef HAVE_WAITPID
-
-/* Define to 1 if you have the <windows.h> header file. */
-#undef HAVE_WINDOWS_H
 
 /* Define to 1 if you have the <wintypes.h> header file. */
 #undef HAVE_WINTYPES_H
