@@ -1,3 +1,8 @@
+Sat Jul  3 16:05:55 PDT 1999	Tim Wilkinson	<tim@transvirtual.com>
+
+	* libraries/extensions/microsoft/...
+	  Added Microsoft's delegate and multicast Java extensions.
+
 1999-06-06  Mo DeJong <dejong@cs.umn.edu>
 
         * libraries/javalib/kaffe/tools/jar/Jar.java,
