@@ -34,7 +34,7 @@ private Class() { /* this class is not instantiable by the general public */ }
  * the method that called the method calling this method. This is
  * used in Class.java, System.java, and Runtime.java.
  */
-public static Class getCallingClass() {
+static Class getCallingClass() {
 	return getCallingClass0();
 }
 
