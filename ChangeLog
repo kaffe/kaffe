@@ -1,3 +1,9 @@
+2004-03-09  Dalibor Topic <robilad@kaffe.org>
+
+	* config/s390/sysdepCallMethod.h:
+	Fixed typo. Fixes a bug in Debian's BTS:
+	#227745: kaffe FTBFS on buildd for s390.
+
 2004-03-08  Dalibor Topic <robilad@kaffe.org>
 
 	* config/m68k/linux/md.h:

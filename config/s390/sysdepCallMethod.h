@@ -66,7 +66,7 @@ static inline void sysdepCallMethod(callMethodInfo *call)
   * argl becomes the argument list to the callee function.  This
   * is explained nicely at the URL above.
   */
-  int argl[(CALL)->nrargs];                /* outgoing args on stack */
+  int argl[(call)->nrargs];                /* outgoing args on stack */
   union {                                             /* fp reg args */
       float f;
       double d;
@@ -77,16 +77,16 @@ static inline void sysdepCallMethod(callMethodInfo *call)
       int argidx = {0};                           /* input arg index */
       int fpr_argc = {0};                        /* fp reg arg count */
       int gpr_argc = {0};                        /* gp reg arg count */
-      for(; argidx < (CALL)->nrargs; ++argidx) {
+      for(; argidx < (call)->nrargs; ++argidx) {
          DBG(SYSDEPCALLMETHOD,
              printf("sysdepCallMethod: arg[%2d]=%c/%d  V=%8x %8x\n",
-                    argidx, (CALL)->calltype[argidx],
-                    (CALL)->callsize[argidx],
-                    (&(CALL)->args[argidx].i)[0],
-                    (&(CALL)->args[argidx].i)[1]);
+                    argidx, (call)->calltype[argidx],
+                    (call)->callsize[argidx],
+                    (&(call)->args[argidx].i)[0],
+                    (&(call)->args[argidx].i)[1]);
             )
-         if ((CALL)->callsize[argidx] != 0) { /* if non-empty, copy: */
-           switch ((CALL)->calltype[argidx]) {
+         if ((call)->callsize[argidx] != 0) { /* if non-empty, copy: */
+           switch ((call)->calltype[argidx]) {
            case 'B':                          /* 8-bit byte          */
            case 'Z':                          /* 8-bit boolean       */
            case 'C':                          /* 16-bit char         */
@@ -94,42 +94,42 @@ static inline void sysdepCallMethod(callMethodInfo *call)
            case 'I':                          /* 32-bit int          */
            case 'L':                          /* 32-bit objectref    */
              if (gpr_argc < 5)       /* if any gp regs left, use one */
-                gpr_args[gpr_argc++] = (CALL)->args[argidx].i;
+                gpr_args[gpr_argc++] = (call)->args[argidx].i;
              else          /* otherwise, put it on the outgoing list */
-               *out_args++ = (CALL)->args[argidx].i;
+               *out_args++ = (call)->args[argidx].i;
              break;
            case 'J':                          /* 64-bit int          */
              if (gpr_argc < 4) {    /* if two gp regs left, use them */
-                gpr_args[gpr_argc++] = (&(CALL)->args[argidx].i)[0];
-                gpr_args[gpr_argc++] = (&(CALL)->args[argidx].i)[1];
+                gpr_args[gpr_argc++] = (&(call)->args[argidx].i)[0];
+                gpr_args[gpr_argc++] = (&(call)->args[argidx].i)[1];
              }
              else {        /* otherwise, put it on the outgoing list */
-               *out_args++ = (&(CALL)->args[argidx].i)[0];
-               *out_args++ = (&(CALL)->args[argidx].i)[1];
+               *out_args++ = (&(call)->args[argidx].i)[0];
+               *out_args++ = (&(call)->args[argidx].i)[1];
                if (gpr_argc == 4)
                   gpr_argc++;        /* do not use last gpr for args */
              }
              break;
            case 'F':                          /* 32-bit float        */
              if (fpr_argc < 2)       /* if any fp regs left, use one */
-                fpr_args[fpr_argc++].f = (CALL)->args[argidx].f;
+                fpr_args[fpr_argc++].f = (call)->args[argidx].f;
              else          /* otherwise, put it on the outgoing list */
-               *out_args++ = (CALL)->args[argidx].i;
+               *out_args++ = (call)->args[argidx].i;
              break;
            case 'D':                          /* 64-bit float        */
              if (fpr_argc < 2)       /* if any fp regs left, use one */
-                fpr_args[fpr_argc++].d = (CALL)->args[argidx].d;
+                fpr_args[fpr_argc++].d = (call)->args[argidx].d;
              else {        /* otherwise, put it on the outgoing list */
-               *out_args++ = (&(CALL)->args[argidx].i)[0];
-               *out_args++ = (&(CALL)->args[argidx].i)[1];
+               *out_args++ = (&(call)->args[argidx].i)[0];
+               *out_args++ = (&(call)->args[argidx].i)[1];
              }
              break;
            default:
              printf("sysdepCallMethod: unknown arg[%d] type %c\n",
-                argidx, ((CALL)->calltype[argidx]));
-           } /* switch ((CALL)->calltype[argidx]) */
-         } /* if ((CALL)->callsize[argidx] != 0) */
-      } /* for(; argidx < (CALL)->nrargs; ++argidx) */
+                argidx, ((call)->calltype[argidx]));
+           } /* switch ((call)->calltype[argidx]) */
+         } /* if ((call)->callsize[argidx] != 0) */
+      } /* for(; argidx < (call)->nrargs; ++argidx) */
     }
     asm (" \n"
 "     ld    0,0(,%2)                        # Load fpr args         \n"
@@ -140,7 +140,7 @@ static inline void sysdepCallMethod(callMethodInfo *call)
 "     std   0,0(,%2)                        # Save float result.    \n"
 "     "
         :                                     /* sets these          */
-        : "ra" ((CALL)->function),            /* uses these          */
+        : "ra" ((call)->function),            /* uses these          */
           "ra" (gpr_args),
           "ra" (fpr_args)
         : "cc",                               /* clobbers these      */
@@ -152,22 +152,22 @@ static inline void sysdepCallMethod(callMethodInfo *call)
    );
         DBG(SYSDEPCALLMETHOD,
             printf("sysdepCallMethod: rettype=%c/%d R2=%8x R3=%8x F0=%8x %8x\n",
-                   (CALL)->rettype, (CALL)->retsize, gpr_args[0],
+                   (call)->rettype, (call)->retsize, gpr_args[0],
                    gpr_args[1], ((int *)&fpr_args)[0],
                    ((int *)&fpr_args)[1]);
         )
-    switch ((CALL)->rettype) {                /* what kind of retval?*/
+    switch ((call)->rettype) {                /* what kind of retval?*/
     case 'D':                                 /* 64-bit float        */
-       (CALL)->ret->d = fpr_args[0].d;
+       (call)->ret->d = fpr_args[0].d;
        break;
     case 'F':                                 /* 32-bit float        */
-       (CALL)->ret->f = fpr_args[0].f;
+       (call)->ret->f = fpr_args[0].f;
        break;
     case 'J':                                 /* 64-bit int          */
-       (&(CALL)->ret->i)[1] = gpr_args[1];
+       (&(call)->ret->i)[1] = gpr_args[1];
     default:                                  /* all shorter types   */
-       (CALL)->ret->i = gpr_args[0];
-    } /* switch ((CALL)->rettype) */
+       (call)->ret->i = gpr_args[0];
+    } /* switch ((call)->rettype) */
 }
 #endif /* NEED_sysdepCallMethod */
 
