@@ -172,7 +172,7 @@ public final Enumeration getResources(String name) throws IOException {
 	return v.elements();
 }
 
-public Enumeration findResources(String name) throws IOException {
+protected Enumeration findResources(String name) throws IOException {
 	return new Vector().elements();		// ie, an empty Enumeration
 }
 
