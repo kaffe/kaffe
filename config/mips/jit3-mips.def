@@ -290,6 +290,13 @@ define_insn(prologue, prologue_xxC) {
 		haveint = 1;
 		i++;
 		a++;
+
+		/* If this is a sync method then we must write our
+		 * object back so we can find it in an exception.
+		 */
+		if ((meth->accflags & ACC_SYNCHRONISED) == ACC_SYNCHRONISED) {
+			ldst_RRC(_SW, REG_i4, REG_fp, 0);
+		}
 	}
 
 	sig = meth->signature->data + 1;
