@@ -242,6 +242,7 @@ newMultiArrayChecked(Hjava_lang_Class* clazz, int* dims, errorInfo *einfo)
 	      return NULL;
 	  }
 	}
+      clazz = prevclazz;
       stackptr += stacksize;
       stacksize *= dims[j];
     }

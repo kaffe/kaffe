@@ -17,6 +17,7 @@ TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT) $(SHELL) TestScript 2> /dev/null
 ALWAYS_TESTS = \
 	$(SIMPLE_HEALTH_CHECK) \
 	$(TEST_COMPILER) \
+	$(TEST_ARRAYS) \
 	$(TEST_INTS_LONGS_FLOATS_DOUBLES) \
 	$(TEST_STRINGS) \
 	$(TEST_EXCEPTIONS) \
@@ -40,6 +41,10 @@ SIMPLE_HEALTH_CHECK = \
 ## Now test the compiler
 TEST_COMPILER = \
 	HelloWorldApp.java 
+
+## Test the array creation/handling.
+TEST_ARRAYS = \
+	MultiArray.java
 
 ## Test ints, longs, floats and doubles
 TEST_INTS_LONGS_FLOATS_DOUBLES = \
