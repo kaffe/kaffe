@@ -1,3 +1,11 @@
+Fri Jul 12 15:26:03 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/io/PipedInputStream.java:
+	(PIPE_SIZE) modified to match the API spec.
+
+	* libraries/javalib/java/security/Signature.java:
+	(SIGN), (VERIFY) modified to match the API spec.
+
 Fri Jul 12 14:32:13 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/awt/Component.java:

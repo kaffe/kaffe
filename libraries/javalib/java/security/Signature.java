@@ -25,8 +25,8 @@ import java.security.spec.AlgorithmParameterSpec;
 public abstract class Signature extends SignatureSpi {
 	static final String ENGINE_CLASS = "Signature";
 	protected static final int UNINITIALIZED = 0;
-	protected static final int SIGN = 1;
-	protected static final int VERIFY = 2;
+	protected static final int SIGN = 2;
+	protected static final int VERIFY = 3;
 	protected int state;
 	private final String algorithm;
 	private Provider provider;

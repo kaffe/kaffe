@@ -18,7 +18,7 @@ public class PipedInputStream
   extends InputStream
 {
 	PipedOutputStream src = null;
-	final protected static int PIPE_SIZE = 512;
+	final protected static int PIPE_SIZE = 1024;
 	protected byte[] buffer = new byte[PIPE_SIZE];
 	protected int out;
 	protected int in;
