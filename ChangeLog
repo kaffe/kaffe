@@ -1,5 +1,18 @@
 2004-10-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/imageio/spi/ImageReaderSpi.java,
+	libraries/javalib/javax/imageio/spi/ImageWriterSpi.java:
+	Resynced with GNU Classpath.
+
+	2004-10-20  Michael Koch  <konqueror@gmx.de>
+
+        * javax/imageio/spi/ImageReaderSpi.java
+        (isOwnReader): New method.
+        * javax/imageio/spi/ImageWriterSpi.java
+        (isOwnWriter): Likewise.
+
+2004-10-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/security/auth/login/NullConfiguration.java,
 	libraries/javalib/javax/security/auth/x500/X500Principal.java,
 	libraries/javalib/javax/security/cert/X509Certificate.java,

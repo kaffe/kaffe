@@ -124,4 +124,12 @@ public abstract class ImageWriterSpi extends ImageReaderWriterSpi
   {
     return true;
   }
+
+  public boolean isOwnWriter(ImageWriter writer)
+  {
+    if (writer == null)
+      throw new IllegalArgumentException("writer may not be null");
+
+    return pluginClassName.equals(writer.getClass().getName());
+  }
 }

@@ -110,4 +110,12 @@ public abstract class ImageReaderSpi extends ImageReaderWriterSpi
   {
     return inputTypes;
   }
+
+  public boolean isOwnReader(ImageReader reader)
+  {
+    if (reader == null)
+      throw new IllegalArgumentException("reader may not be null");
+    
+    return pluginClassName.equals(reader.getClass().getName());
+  }
 }
