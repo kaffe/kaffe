@@ -1,5 +1,9 @@
 2004-02-08  Dalibor Topic <robilad@kaffe.org>
 
+	* Makefile.am (EXTRA_DIST): Removed patches to libtool.
+
+2004-02-08  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/mem/gc-mem.c
 	(printslack, gc_heap_check):
         Fixed gcc compiler warning about unused functions when
