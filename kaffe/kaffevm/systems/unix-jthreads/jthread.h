@@ -227,9 +227,9 @@ jthread_on_current_stack(void *bp)
         int rc = bp >= currentJThread->stackBase && bp < currentJThread->stackEnd;
 
 DBG(JTHREADDETAIL,
-	dprintf("on current stack: base=%p size=%d bp=%p %s\n",
+	dprintf("on current stack: base=%p size=%ld bp=%p %s\n",
 		currentJThread->stackBase,
-		(char *) currentJThread->stackEnd - (char *) currentJThread->stackBase,
+		(long)((char *) currentJThread->stackEnd - (char *) currentJThread->stackBase),
 		bp,
 		(rc ? "yes" : "no"));
     )

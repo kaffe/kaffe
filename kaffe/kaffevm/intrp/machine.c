@@ -52,12 +52,12 @@ char* engine_version = KVER;
 
 #define	define_insn(code)	break;					\
 				case code:				\
-				IDBG( dprintf("%03d: %s\n", pc, #code); )
+				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); )
 #define	define_insn_alias(code)	case code:				\
-				IDBG( dprintf("%03d: %s\n", pc, #code); )
+				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); )
 #define	define_wide_insn(code)	break;					\
 				case code:				\
-				IDBG( dprintf("%03d: %s\n", pc, #code); )
+				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); )
 
 #define EXPLICIT_CHECK_NULL(_i, _s, _n)                       \
       cbranch_ref_const_ne((_s), 0, reference_label(_i, _n)); \

@@ -202,7 +202,7 @@ DBG(NATIVENET,
 		0, (struct sockaddr*)&addr, sizeof(addr), &bsent);
 
 DBG(NATIVENET,
-	dprintf("  datagram_send() -> rc=%d bsent=%d\n", rc, bsent);
+	dprintf("  datagram_send() -> rc=%d bsent=%ld\n", rc, (long) bsent);
 )
 
 	if (rc) {
@@ -276,9 +276,9 @@ DBG(NATIVENET,
 	unhand(unhand(pkt)->address)->hostName = 0;
 
 DBG(NATIVENET,
-	dprintf("  datagram_receive(%p, %p) -> from %s:%d; brecv=%d\n",
+	dprintf("  datagram_receive(%p, %p) -> from %s:%d; brecv=%ld\n",
 		this, pkt, ip2str(ntohl(addr.sin_addr.s_addr)),
-		ntohs(addr.sin_port), r);
+		ntohs(addr.sin_port), (long) r);
 )
 }
 

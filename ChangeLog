@@ -1,3 +1,13 @@
+2003-05-26 Dan MacMahill <mcmahill@mtl.mit.edu>
+
+	* kaffe/kaffevm/exception.c,
+	kaffe/kaffevm/kaffe.def,
+	kaffe/kaffevm/intrp/machine.c,
+	kaffe/kaffevm/mem/gc-mem.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.h,
+	libraries/clib/net/PlainDatagramSocketImpl.c:
+	fix format strings for 64 bit architectures.
+	
 2003-05-25 Jim Pick <jim@kaffe.org>
 
 	* kaffe/kaffe/main.c,
@@ -178,7 +188,7 @@
 	indices into the constant pool to fix warnings on NetBSD/alpha
 	(setFieldValue) cleaned up and adapted to changes in addField
 
-	Reported by: Dan <mcmahill@mtl.mit.edu>
+	Reported by: Dan McMahill <mcmahill@mtl.mit.edu>
 	
 	* kaffe/kaffevm/itypes.c:
 	(initPrimClass) made primitive classes final

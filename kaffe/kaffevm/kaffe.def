@@ -9,7 +9,7 @@
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
-#define trace_jcode(x)	DBG(MOREJIT, dprintf ("@%d:\t", pc); dprintf x;)
+#define trace_jcode(x)	DBG(MOREJIT, dprintf ("@%ld:\t", (long) pc); dprintf x;)
 
 define_insn(NOP)
 {
@@ -1696,7 +1696,7 @@ define_insn(IFEQ)
 	check_stack_int(0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("ifeq %d\n", pc + idx));
+	trace_jcode (("ifeq %ld\n", (long) (pc + idx) ));
 
 	slot_nowriteback(stack(0));
 	begin_sync();
@@ -1713,7 +1713,7 @@ define_insn(IFNE)
 	check_stack_int(0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("ifne %d\n", pc + idx));
+	trace_jcode (("ifne %ld\n", (long) (pc + idx)));
 
 	slot_nowriteback(stack(0));
 	begin_sync();
@@ -1730,7 +1730,7 @@ define_insn(IFLT)
 	check_stack_int(0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("iflt %d\n", pc + idx));
+	trace_jcode (("iflt %ld\n", (long) (pc + idx)));
 
 	slot_nowriteback(stack(0));
 	begin_sync();
@@ -1747,7 +1747,7 @@ define_insn(IFGE)
 	check_stack_int(0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("ifge %d\n", pc + idx));
+	trace_jcode (("ifge %ld\n", (long) (pc + idx)));
 
 	slot_nowriteback(stack(0));
 	begin_sync();
@@ -1764,7 +1764,7 @@ define_insn(IFGT)
 	check_stack_int(0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("ifgt %d\n", pc + idx));
+	trace_jcode (("ifgt %ld\n", (long) (pc + idx)));
 
 	slot_nowriteback(stack(0));
 	begin_sync();
@@ -1781,7 +1781,7 @@ define_insn(IFLE)
 	check_stack_int(0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("ifle %d\n", pc + idx));
+	trace_jcode (("ifle %ld\n", (long) (pc + idx)));
 
 	slot_nowriteback(stack(0));
 	begin_sync();
@@ -1799,7 +1799,7 @@ define_insn(IF_ICMPEQ)
 	check_stack_int(1);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("if_icmpeq %d\n", pc + idx));
+	trace_jcode (("if_icmpeq %ld\n", (long) (pc + idx)));
 
 	slot_nowriteback(stack(0));
 	slot_nowriteback(stack(1));
@@ -1818,7 +1818,7 @@ define_insn(IF_ICMPNE)
 	check_stack_int(1);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("if_icmpne %d\n", pc + idx));
+	trace_jcode (("if_icmpne %ld\n", (long) (pc + idx)));
 
 	slot_nowriteback(stack(0));
 	slot_nowriteback(stack(1));
@@ -1837,7 +1837,7 @@ define_insn(IF_ICMPLT)
 	check_stack_int(1);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("if_icmplt %d\n", pc + idx));
+	trace_jcode (("if_icmplt %ld\n", (long) (pc + idx)));
 
 	slot_nowriteback(stack(0));
 	slot_nowriteback(stack(1));
@@ -1856,7 +1856,7 @@ define_insn(IF_ICMPGE)
 	check_stack_int(1);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("if_icmpge %d\n", pc + idx));
+	trace_jcode (("if_icmpge %ld\n", (long) (pc + idx)));
 
 	slot_nowriteback(stack(0));
 	slot_nowriteback(stack(1));
@@ -1875,7 +1875,7 @@ define_insn(IF_ICMPGT)
 	check_stack_int(1);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("if_icmpgt %d\n", pc + idx));
+	trace_jcode (("if_icmpgt %ld\n", (long) (pc + idx)));
 
 	slot_nowriteback(stack(0));
 	slot_nowriteback(stack(1));
@@ -1894,7 +1894,7 @@ define_insn(IF_ICMPLE)
 	check_stack_int(1);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("if_icmple %d\n", pc + idx));
+	trace_jcode (("if_icmple %ld\n", (long) (pc + idx)));
 
 	slot_nowriteback(stack(0));
 	slot_nowriteback(stack(1));
@@ -1913,7 +1913,7 @@ define_insn(IF_ACMPEQ)
 	check_stack_ref(1);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("if_acmpeq %d\n", pc + idx));
+	trace_jcode (("if_acmpeq %ld\n", (long) (pc + idx)));
 
 	slot_nowriteback(stack(0));
 	slot_nowriteback(stack(1));
@@ -1932,7 +1932,7 @@ define_insn(IF_ACMPNE)
 	check_stack_ref(1);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("if_acmpne %d\n", pc + idx));
+	trace_jcode (("if_acmpne %ld\n", (long)(pc + idx)));
 
 	slot_nowriteback(stack(0));
 	slot_nowriteback(stack(1));
@@ -1949,7 +1949,7 @@ define_insn(GOTO)
 	check_pcidx (0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("goto %d\n", pc + idx));
+	trace_jcode (("goto %ld\n", (long) (pc + idx)));
 
 	begin_sync();
 	branch_a(reference_code_label(pc+idx));
@@ -1964,7 +1964,7 @@ define_insn(JSR)
 	check_pcidx (0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("jsr %d\n", pc + idx));
+	trace_jcode (("jsr %ld\n", (long) (pc + idx)));
 
 	push(1);
 	move_label_const(stack(0), reference_code_label(npc));
@@ -3114,7 +3114,7 @@ define_insn(IFNULL)
 	check_stack_ref(0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("ifnull %d\n", pc + idx));
+	trace_jcode (("ifnull %ld\n", (long) (pc + idx)));
 
 	slot_nowriteback(stack(0));
 	begin_sync();
@@ -3131,7 +3131,7 @@ define_insn(IFNONNULL)
 	check_stack_ref(0);
 
 	idx = (int16)((getpc(0) << 8) | getpc(1));
-	trace_jcode (("ifnonnull %d\n", pc + idx));
+	trace_jcode (("ifnonnull %ld\n", (long) (pc + idx)));
 
 	slot_nowriteback(stack(0));
 
@@ -3150,7 +3150,7 @@ define_insn(GOTO_W)
 	idx = (int32)((getpc(0) << 24) | (getpc(1) << 16) |
 				(getpc(2) << 8) | getpc(3));
 
-	trace_jcode (("goto_w %d\n", pc + idx));
+	trace_jcode (("goto_w %ld\n", (long) (pc + idx)));
 
 	begin_sync();
 	branch_a(reference_code_label(pc+idx));
@@ -3167,7 +3167,7 @@ define_insn(JSR_W)
 	idx = (int32)((getpc(0) << 24) | (getpc(1) << 16) |
 				(getpc(2) << 8) | getpc(3));
 
-	trace_jcode (("jsr_w %d\n", pc + idx));
+	trace_jcode (("jsr_w %ld\n", (long) (pc + idx)));
 
 	push(1);
 	move_label_const(stack(0), reference_code_label(npc));

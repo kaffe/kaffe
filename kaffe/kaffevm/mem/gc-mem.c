@@ -322,7 +322,8 @@ DBG(GCDIAG,
 		if (*mptr != 0) {
 			blk = *mptr;
 			assert(blk->free != 0);
-DBG(GCALLOC,		dprintf("gc_heap_malloc: freelist %d at %p free %p\n", sz, *mptr, blk->free);)
+DBG(GCALLOC,		dprintf("gc_heap_malloc: freelist %ld at %p free %p\n", 
+				(long) sz, *mptr, blk->free);)
 		}
 		else {
 			blk = gc_small_block(nsz);
@@ -333,7 +334,8 @@ DBG(GCALLOC,		dprintf("gc_heap_malloc: freelist %d at %p free %p\n", sz, *mptr, 
 			blk->next = *mptr;
 			*mptr = blk;
 
-DBG(GCALLOC,		dprintf("gc_heap_malloc: small block %d at %p free %p\n", sz, *mptr, blk->free);)
+DBG(GCALLOC,		dprintf("gc_heap_malloc: small block %ld at %p free %p\n", 
+				(long) sz, *mptr, blk->free);)
 		}
 
 		/* Unlink free one and return it */
@@ -368,7 +370,8 @@ DBG(GCALLOC,		dprintf("gc_heap_malloc: small block %d at %p free %p\n", sz, *mpt
 		}
 		mem = GCBLOCK2FREE(blk, 0);
 		GC_SET_STATE(blk, 0, GC_STATE_NORMAL);
-DBG(GCALLOC,	dprintf("gc_heap_malloc: large block %d at %p\n", sz, mem);	)
+DBG(GCALLOC,	dprintf("gc_heap_malloc: large block %ld at %p\n", 
+			(long) sz, mem);	)
 		blk->avail--;
 		assert(blk->avail == 0);
 	}
@@ -883,9 +886,9 @@ gc_block_alloc(size_t size)
 		memset((void *)gc_block_base, 0, nblocks * sizeof(gc_block));
 	}
 
-	DBG(GCSYSALLOC, dprintf("pagealloc(%d)", size));
+	DBG(GCSYSALLOC, dprintf("pagealloc(%ld)", (long) size));
 	heap_addr = pagealloc(size);
-	DBG(GCSYSALLOC, dprintf(" => %p\n", heap_addr));
+	DBG(GCSYSALLOC, dprintf(" => %p\n", (void *) heap_addr));
 
 	if (!heap_addr) return 0;
 	
@@ -968,8 +971,8 @@ gc_block_alloc(size_t size)
 	n_live += size_pg;
 	last_addr = MAX(last_addr, heap_addr + size);
 	gc_heap_range = last_addr - gc_heap_base;
-	DBG(GCSYSALLOC, dprintf("%d unused bytes in heap addr range\n",
-				gc_heap_range - gc_heap_total));
+	DBG(GCSYSALLOC, dprintf("%ld unused bytes in heap addr range\n",
+				(long) (gc_heap_range - gc_heap_total)));
 	mprotect((void *) heap_addr, size, NO_PROT);
 	return GCMEM2BLOCK(heap_addr);
 }
@@ -997,7 +1000,7 @@ gc_system_alloc(size_t sz)
 	blk = gc_block_alloc(sz);
 	
 DBG(GCSYSALLOC,
-	dprintf("gc_system_alloc: %d byte at %p\n", sz, blk);		)
+	dprintf("gc_system_alloc: %ld byte at %p\n", (long) sz, blk);		)
 
 	if (blk == 0) {
 		return (0);

@@ -613,16 +613,17 @@ DBG(ELOOKUP,
 	}
 
 DBG(ELOOKUP,
-	dprintf("%s.%s has %d handlers (throw was pc=%#x):\n",
+	dprintf("%s.%s has %d handlers (throw was pc=%#lx):\n",
 		ptr->class->name->data, ptr->name->data,
-		ptr->exception_table->length, pc); )
+		ptr->exception_table->length, (long) pc); )
 
 	for (i = 0; i < ptr->exception_table->length; i++) {
 		uintp start_pc = eptr[i].start_pc;
 		uintp end_pc = eptr[i].end_pc;
 		uintp handler_pc = eptr[i].handler_pc;
 
-DBG(ELOOKUP,	dprintf("  Handler %d covers %#x-%#x\n", i, start_pc, end_pc); )
+DBG(ELOOKUP,	dprintf("  Handler %d covers %#lx-%#lx\n", i, 
+			(long) start_pc, (long) end_pc); )
 		if (pc < start_pc || pc >= end_pc) {
 			continue;
 		}
@@ -630,12 +631,14 @@ DBG(ELOOKUP,	dprintf("  Handler %d covers %#x-%#x\n", i, start_pc, end_pc); )
 		/* Found exception - is it right type */
 		if (eptr[i].catch_idx == 0) {
 			info->handler = handler_pc;
-DBG(ELOOKUP,		dprintf("  Found handler @ %#x: catches all exceptions.\n", handler_pc); )
+DBG(ELOOKUP,		dprintf("  Found handler @ %#lx: catches all exceptions.\n", 
+				(long) handler_pc); )
 			return (true);
 		}
 		/* Did I try to resolve that catch type before */
 		if (eptr[i].catch_type == UNRESOLVABLE_CATCHTYPE) {
-DBG(ELOOKUP,		dprintf("  Found handler @ %#x: Unresolvable catch type.\n", handler_pc); )
+DBG(ELOOKUP,		dprintf("  Found handler @ %#lx: Unresolvable catch type.\n", 
+				(long) handler_pc); )
 			return (false);
 		}
 		/* Resolve catch class if necessary */
@@ -665,14 +668,14 @@ DBG(ELOOKUP|DBG_RESERROR,
 		}
                 for (cptr = class; cptr != 0; cptr = cptr->superclass) {
                         if (cptr == eptr[i].catch_type) {
-DBG(ELOOKUP,	dprintf("  Found matching handler at %#x: Handles %s.\n",
-			handler_pc, CLASS_CNAME(eptr[i].catch_type)); )
+DBG(ELOOKUP,	dprintf("  Found matching handler at %#lx: Handles %s.\n",
+			(long) handler_pc, CLASS_CNAME(eptr[i].catch_type)); )
                                 info->handler = handler_pc;
                                 return (true);
                         }
                 }
-DBG(ELOOKUP,	dprintf("  Handler at %#x (handles %s), does not match.\n",
-			handler_pc, CLASS_CNAME(eptr[i].catch_type)); )
+DBG(ELOOKUP,	dprintf("  Handler at %#lx (handles %s), does not match.\n",
+			(long) handler_pc, CLASS_CNAME(eptr[i].catch_type)); )
 	}
 	return (false);
 }
