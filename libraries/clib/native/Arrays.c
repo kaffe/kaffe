@@ -15,9 +15,10 @@
 
 #include "config.h"
 #include "config-std.h"
-#include <native.h>
-#include "../../../kaffe/kaffevm/gtypes.h"
-#include "../../../kaffe/kaffevm/fp.h"
+#include "native.h"
+#include "gtypes.h"
+#include "fp.h"
+#include "support.h"
 #include "java_util_Comparator.h"
 #include "java_util_Arrays.h"
 

@@ -24,8 +24,6 @@
 #include "../../../kaffe/kaffevm/stackTrace.h"
 #include "../../../kaffe/kaffevm/support.h"
 
-extern Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
-
 HArrayOfObject* /* HArrayOfClass */
 kaffe_lang_ThreadStack_getClassStack(void)
 {

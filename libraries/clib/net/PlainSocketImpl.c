@@ -13,7 +13,7 @@
 #include "config-io.h"
 #include "config-mem.h"
 #include "config-net.h"
-#include <native.h>
+#include "support.h"
 #include "java_io_FileDescriptor.h"
 #include "java_lang_Integer.h"
 #include "java_net_SocketImpl.h"

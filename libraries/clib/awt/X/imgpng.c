@@ -25,11 +25,6 @@
 
 
 /* references to img.c */
-Image* createImage ( int width, int height );
-void Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img);
-void createXImage ( Toolkit* X, Image* img );
-void createXMaskImage ( Toolkit* X, Image* img );
-void createAlphaImage ( Toolkit* X, Image* img );
 void reduceAlpha ( Toolkit* X, Image* img, int threshold );
 
 

@@ -46,11 +46,8 @@
 
 static char cwdpath[MAXPATHLEN];
 
-extern jlong currentTime(void);
-extern userProperty* userProperties;
 extern char* realClassPath;
 extern char* realBootClassPath;
-extern jint java_lang_Object_hashCode(struct Hjava_lang_Object*);
 extern void printStackTrace(struct Hjava_lang_Throwable*,
 	struct Hjava_lang_Object*, int);
 

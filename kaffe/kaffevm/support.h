@@ -13,6 +13,7 @@
 #define	__support_h
 
 #include "config-std.h"
+#include "gtypes.h"
 #include <stdarg.h>
 
 /* For user defined properties */

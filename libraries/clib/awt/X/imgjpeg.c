@@ -31,12 +31,6 @@
 #define CM_GREEN	1
 #define CM_BLUE		2
 
-/* references to img.c */
-Image* createImage ( int width, int height );
-void Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img);
-void createXImage ( Toolkit* X, Image* img );
-
-
 #ifdef INCLUDE_JPEG
 
 /*******************************************************************************************

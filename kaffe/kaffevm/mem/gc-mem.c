@@ -41,7 +41,6 @@ static gc_block* gc_small_block(size_t);
 static gc_block* gc_large_block(size_t);
 
 static gc_block* gc_primitive_alloc(size_t);
-void gc_primitive_free(gc_block*);
 
 /**
  * A preallocated block for small objects.

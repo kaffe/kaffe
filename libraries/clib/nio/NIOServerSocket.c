@@ -8,7 +8,7 @@
  */
 
 #include "config.h"
-#include "native.h"
+#include "support.h"
 
 /* Classpath uses the same name for different variables in the inheritancy
  * tree. Kaffeh treats them straightly and it confuses the compiler.

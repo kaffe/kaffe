@@ -151,8 +151,6 @@ SystemCallInterface Kaffe_SystemCallInterface =
 };
 
 
-extern struct _Collector* main_collector; /* in mem.c */
-
 /* 
  * Ensure that files are opened in binary mode; the MS-Windows port
  * depends on this.

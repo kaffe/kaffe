@@ -19,9 +19,9 @@
 #include "config-net.h"
 #include "config-io.h"
 #include "config-hacks.h"
-#include <native.h>
 #include "java_net_NetworkInterface.h"
 #include "nets.h"
+#include "support.h"
 #include <arpa/inet.h>
 #include <jsyscall.h>
 #include "../../../kaffe/kaffevm/debug.h"

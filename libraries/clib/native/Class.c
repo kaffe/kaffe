@@ -37,8 +37,6 @@
 
 #include "defs.h"
 
-extern Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
-
 /*
  * Convert string name to class object.
  */

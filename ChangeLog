@@ -1,3 +1,21 @@
+2004-03-27  Dalibor Topic <robilad@kaffe.org>
+
+        * include/native.h,
+        kaffe/kaffeh/support.c,
+        kaffe/kaffevm/support.h,
+        kaffe/kaffevm/mem/gc-mem.c,
+        libraries/clib/awt/X/imgjpeg.c,
+        libraries/clib/awt/X/imgpng.c,
+        libraries/clib/native/Arrays.c,
+        libraries/clib/native/Class.c,
+        libraries/clib/native/System.c,
+        libraries/clib/native/ThreadStack.c,
+        libraries/clib/net/NetworkInterface.c,
+        libraries/clib/net/PlainDatagramSocketImpl.c,
+        libraries/clib/net/PlainSocketImpl.c,
+        libraries/clib/nio/NIOServerSocket.c:
+	Removed many redundant declarations.
+
 2004-03-26  Adam Heath <doogie@debian.org>
 
         * kaffe/kaffeh/main.c,
