@@ -132,6 +132,9 @@ addCheckedExceptions(struct _methods* m, uint32 len, classFile* fp,
 	constIndex *idx;
 
 	readu2(&nr, fp);
+	if (nr == 0) {
+		return true;
+	}
 	m->ndeclared_exceptions = nr;
 	idx = KMALLOC(sizeof(constIndex) * nr);
 	if (!idx) {
