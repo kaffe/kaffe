@@ -5,7 +5,7 @@
  * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * Copyright (c) 2004
+ * Copyright (c) 2004, 2005
  *      The Kaffe.org's developers. See ChangeLog for details.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -100,6 +100,54 @@ parseSize(char* arg)
 	return (sz);
 }
 
+/**
+ * Parse a property set by the user. 
+ * Users can set properties with the -D switch. 
+ * 
+ * This function modifies the global variable userProperties.
+ *
+ * @param opt the option string to parse
+ */ 
+static 
+void
+KaffeJNI_ParseUserProperty(char * opt)
+{
+  userProperty *prop; 
+  unsigned int sz;
+  char *internalOpt;
+
+  /* Allocate a new property. */
+  prop = (userProperty *)malloc(sizeof(userProperty)); 
+  assert (prop != NULL);
+
+  /* Skip '-D' in the option string. */
+  internalOpt = strdup(&opt[2]);
+
+  /* Insert new property at head of the user properties list. */
+  prop->next = userProperties;
+  userProperties = prop;
+
+  /* Search for '=' to find out whether the property is
+   * assigned a value.
+   */
+  for (sz = 0; internalOpt[sz] != 0; sz++)
+    {
+      if (internalOpt[sz] == '=')
+	{
+	  /* Split the property string into property 
+	   * name and value.
+	   */
+	  internalOpt[sz] = '\0';
+	  sz++;
+	  break;
+	}
+    }
+
+  /* Initialize new property with name and value. */
+  prop->key = internalOpt;
+  prop->value = &internalOpt[sz];
+}
+
 static jint
 KaffeJNI_ParseArgs(KaffeVM_Arguments *args, JavaVMOption *options, jint nOptions)
 {
@@ -138,26 +186,7 @@ KaffeJNI_ParseArgs(KaffeVM_Arguments *args, JavaVMOption *options, jint nOptions
 	args->verifyMode = 0;
       else if (!strncmp(opt, "-D", 2))
 	{
-	  userProperty *prop = (userProperty *)malloc(sizeof(userProperty)); 
-	  int sz;
-	  char *internalOpt = strdup(&opt[2]);
-
-	  assert (prop != 0);
-
-	  prop->next = userProperties;
-	  userProperties = prop;
-
-	  for (sz = 0; internalOpt[sz] != 0; sz++)
-	    {
-	      if (internalOpt[sz] == '=')
-		{
-		  internalOpt[sz] = 0;
-		  sz++;
-		  break;
-		}
-	    }
-	  prop->key = internalOpt;
-	  prop->value = &internalOpt[sz];
+	  KaffeJNI_ParseUserProperty(opt);
 	}
       else if (!strncmp(opt, "-Xbootclasspath:", 16))
         {

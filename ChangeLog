@@ -1,5 +1,11 @@
 2005-02-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/jni/jni-base.c (KaffeJNI_ParseUserProperty):
+	Factored out of KaffeJNI_ParseArgs to fix compiler warning,
+	and simplify code a bit. Added comments.
+
+2005-02-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/intrp/machine.c
 	(getEngine): ANSI-fied prototype.
 
