@@ -35,7 +35,7 @@
     register int r1 asm("r1");						\
     register int r2 asm("r2");						\
     register int r3 asm("r3");						\
-    int *res;								\
+    register double f0 asm("f0");                                       \
   default:								\
     {									\
       int *args = extraargs;						\
@@ -75,17 +75,28 @@
     }									\
   case 0:								\
     asm ("mov lr, pc\n							\
-	  mov pc, %2\n"							\
-        : "=r" (r0), "=r" (r1)						\
+	  mov pc, %3\n"							\
+        : "=r" (r0), "=r" (r1), "=f" (f0)				\
 	: "r" ((CALL)->function),					\
 	  "0" (r0), "1" (r1), "r" (r2), "r" (r3) 			\
 	: "ip", "rfp", "sl", "fp", "lr" 				\
 	);								\
-    res = (int *)(CALL)->ret; 						\
-    res[0] = r0; 							\
-    res[1] = r1; 							\
+    switch((CALL)->rettype)    						\
+    {									\
+    case 'D':								\
+        asm("stfd %1,%0" : "=m" ((CALL)->ret->d) : "f" (f0));		\
+	break;								\
+    case 'F':								\
+	asm("stfs %1,%0" : "=m" ((CALL)->ret->f) : "f" (f0));		\
+	break;								\
+    case 'J':								\
+	(&(CALL)->ret->i)[1] = r1;					\
+	/* follow through */						\
+    default:								\
+	(CALL)->ret->i = r0;						\
+    }									\
     break;								\
   }									\
-} while (0)								\
+} while (0)
 
 #endif

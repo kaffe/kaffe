@@ -1,3 +1,8 @@
+Thu Jan  7 01:47:59 1999  Raffaele Sena <raff@aromatic.com>,
+			  Dirk Grunwald <grunwald@pa.dec.com>
+	
+	* config/arm/common.h: floating point related fixes for Itsy.
+
 Thu Jan  7 01:40:40 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/clib/native/Runtime.c: fixed typo pointed out by
