@@ -1339,7 +1339,6 @@ buildDispatchTable(Hjava_lang_Class* class)
 			 * interface have any beside <clinit>?
 			 */
 			if (meth->accflags & ACC_STATIC) {
-				j++;		/* skip their entry */
 				continue;
 			}
 
