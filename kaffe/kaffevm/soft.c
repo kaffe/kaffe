@@ -238,11 +238,16 @@ soft_lookupmethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, int idx)
 
 notfound:
 	/*
-	 * Some compilers emit a INVOKEINTERFACE instruction for methods
-	 * that aren't defined in an interface, but inherited from Object.
+	 * Compilers following the latest version of the JLS emit a 
+	 * INVOKEINTERFACE instruction for methods that aren't defined in 
+	 * an interface, but inherited from Object.
 	 *
-	 * The Right Thing To Do (TM) in this case would be to transform the
-	 * INVOKEINTERFACE call into a (faster) INVOKEVIRTUAL call.
+	 * In this case, the JVM must
+	 * a) check that the object really implements the interface given
+	 * b) find and invoke the method on object.
+	 *
+	 * The best way to jit that would be a checkcast <interface_type>
+	 * followed by an INVOKEVIRTUAL.
 	 *
 	 * For now, we simply detect the case where an object method is called
 	 * and find it by hand using its (name, signature). 
