@@ -1,3 +1,13 @@
+Tue Jun 22 16:44:52 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/util/Locale.java: languages codes
+	should be lower case
+
+Tue Jun 22 16:13:43 PDT 1999  Pavel Roskin <pavel_roskin@geocities.com>
+
+	* libraries/javalib/kaffe/applet/AppletViewer.java: set default
+	codebase to the current directory with file: prepended.
+
 1999-06-22  Tim Wilkinson  <tim@transvirtual.com>
 
 	* kaffe/kaffevm/jit/icode.c (check_array_index,
