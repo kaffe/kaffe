@@ -1,5 +1,54 @@
 2005-01-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/Klasses.jar.bootstrap: Removed.
+	
+	* Makefile.am (SUBDIRS): reworked the build system to build the 
+	class library first, then kaffeh, and then the rest of kaffe.
+	(kaffe-build-order, all-local, install-exec-hook,
+	install-data-hook, uninstall-hook, clean-local) Removed.
+
+	* include/Makefile.am (KLASSES_JAR): Use rt.jar instead of 
+	Klasses.jar.bootstrap.
+	(NOINSTALL_JNI_DERIVED_HDRS) Added LIBTRITONUSALSA_JNI_HDRS, 
+	LIBTRITONUSESD_JNI_HDRS, LIBXMLJ_JNI_HDRS and LIBGTKPEER_JNI_HDRS.
+	(libtritonusalsa_headers, stamp-libtritonusalsa,
+	libtritonusesd_headers, stamp-libtritonusesd,
+	libxmlj_headers, stamp-libxmlj, libgtkpeer_headers,
+	stamp-libgtkpeer) Removed.
+	(CLEANFILES) Removed LIBTRITONUSALSA_JNI_HDRS, 
+	LIBTRITONUSESD_JNI_HDRS and LIBXMLJ_JNI_HDRS.
+
+	* kaffe/kaffe/Makefile.am (final-executable): Removed.
+
+	* libraries/clib/Makefile.am (SUBDIRS): Added libxmlj.
+	(DIST_SUBDIRS) Removed.
+	Added coditional build for libxmlj.
+
+	* libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.am
+	(libgtkpeer_headers): Removed.
+
+	* libraries/clib/libxmlj/Makefile.am (libxmlj_headers): Removed.
+
+	* libraries/clib/sound/alsa/Makefile.am (libtritonusalsa_headers):
+	Removed.
+
+	* libraries/clib/sound/esd/Makefile.am (libtritonusesd_headers):
+	Removed.
+	
+	* Makefile.in, 
+	include/Makefile.in,
+	kaffe/kaffe/Makefile.in,
+	libraries/clib/Makefile.in,
+	libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.in,
+	libraries/clib/libxmlj/Makefile.in,
+	libraries/clib/sound/alsa/Makefile.in,
+	libraries/clib/sound/esd/Makefile.in,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+	
+2005-01-22  Dalibor Topic  <robilad@kaffe.org>
+	
 	Resynced with GNU Classpath.
 	
 	2005-01-22  Andrew John Hughes  <gnu_andrew@member.fsf.org>

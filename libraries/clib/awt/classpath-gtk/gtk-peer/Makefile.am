@@ -77,8 +77,3 @@ libgtkpeer_la_LDFLAGS = \
 	@X_LIBS@ \
 	-lXtst
 
-$(libgtkpeer_la_SOURCES): libgtkpeer_headers
-
-.PHONY:libgtkpeer_headers
-libgtkpeer_headers:
-	@$(MAKE) -C $(top_builddir)/include libgtkpeer_headers

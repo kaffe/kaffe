@@ -14,7 +14,14 @@ ACLOCAL_AMFLAGS=-I m4
 
 AUTOMAKE_OPTIONS = foreign 1.3e
 
-SUBDIRS = . po
+# binreloc seems a bit painful to integrate, it may be unnecessary
+# if we get turn the shared native libraries into convenience
+# libraries.
+#if ENABLE_BINRELOC
+#MAYBE_BINRELOC_DIR = binreloc
+#endif
+
+SUBDIRS = . libraries/javalib config libltdl replace $(MAYBE_BINRELOC_DIR) kaffe/kaffeh include  kaffe/kaffevm libraries/clib kaffe po tools
 DIST_SUBDIRS = config include replace libltdl kaffe libraries tools test po
 
 EXTRA_DIST = \
@@ -225,34 +232,6 @@ if COND_CLASSPATH_GTK_AWT
 DIRECTORIES_AFTER_RTJAR += libraries/clib/awt/classpath-gtk
 endif
 endif
-
-
-.PHONY: kaffe-build-order
-
-kaffe-build-order:
-	@list="$(DIRECTORIES_BEFORE_RTJAR)"; for subdir in $$list; do \
-		(cd $$subdir && $(MAKE) $(KAFFE_BUILD_TARGET)) || exit $$? ; \
-	done; \
-	(cd libraries/javalib && $(MAKE) $(KAFFE_BUILD_TARGET)) || exit $$? ; \
-	list="$(DIRECTORIES_AFTER_RTJAR)"; for subdir in $$list; do \
-		(cd $$subdir && $(MAKE) $(KAFFE_BUILD_TARGET)) || exit $$? ; \
-	done ;
-
-all-local: KAFFE_BUILD_TARGET = all
-all-local: kaffe-build-order
-	cd kaffe/kaffe && $(MAKE) final-executable
-
-install-exec-hook: KAFFE_BUILD_TARGET = install-exec
-install-exec-hook: kaffe-build-order
-
-install-data-hook: KAFFE_BUILD_TARGET = install-data
-install-data-hook: kaffe-build-order
-
-uninstall-hook: KAFFE_BUILD_TARGET = uninstall
-uninstall-hook: kaffe-build-order
-
-clean-local: KAFFE_BUILD_TARGET = clean
-clean-local: kaffe-build-order
 
 check-local:
 	cd test && $(MAKE) check

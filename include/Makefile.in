@@ -372,7 +372,7 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 uudecode = @uudecode@
 with_engine = @with_engine@
-KLASSES_JAR = $(top_srcdir)/libraries/javalib/Klasses.jar.bootstrap
+KLASSES_JAR = $(top_builddir)/libraries/javalib/rt.jar
 EXTRA_DIST = distclean-hack \
 		stamp-h2.in
 
@@ -382,17 +382,12 @@ EXTRA_DIST = distclean-hack \
 # _DERIVED_ means: these headers are derived (using
 # kaffeh, from Klasses.jar.bootstrap). 
 # _JNI_DERIVED_ means: these headers are derived using kaffeh
-# from Klasses.jar.bootstrap *and* the -jni option is
+# from rt.jar *and* the -jni option is
 # set, resulting in JNI-ish method names.
 #
 # So if your class uses JNI to call its native methods
 # (like tritonus), then it goes into the JNI set,
 # otherwise it goes into the other one.
-#
-# In libraries/javalib, Klasses.jar.bootstrap contains
-# beside classes necesary for kjc to run, also all the
-# classes necessary to generate headers from. They are
-# at the end of bootstrap.classlist.
 INSTALL_DERIVED_HDRS = 
 NOINSTALL_DERIVED_HDRS = \
 	java_lang_Object.h \
@@ -461,30 +456,6 @@ NOINSTALL_DERIVED_HDRS = \
 
 DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
 INSTALL_JNI_DERIVED_HDRS = 
-NOINSTALL_JNI_DERIVED_HDRS = \
-	java_math_BigInteger.h \
-	gnu_classpath_VMSystemProperties.h \
-	gnu_java_nio_channels_FileChannelImpl.h \
-	gnu_java_nio_SelectorImpl.h \
-	java_io_ObjectInputStream.h \
-	java_io_VMObjectStreamClass.h \
-	java_nio_VMDirectByteBuffer.h \
-	java_nio_MappedByteBufferImpl.h \
-	kaffe_io_ByteToCharDefault.h \
-	kaffe_io_ByteToCharIconv.h \
-	kaffe_io_CharToByteDefault.h \
-	kaffe_io_CharToByteIconv.h \
-	kaffe_lang_MemoryAdvice.h \
-	kaffe_lang_UNIXProcess.h \
-	kaffe_management_JIT.h \
-	kaffe_management_Debug.h \
-	kaffe_management_XProfiler.h \
-	kaffe_security_provider_MD2.h \
-	kaffe_security_provider_MD4.h \
-	kaffe_security_provider_MD5.h \
-	kaffe_security_provider_SHA.h
-
-JNI_DERIVED_HDRS = $(INSTALL_JNI_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS)
 LIBTRITONUSALSA_JNI_HDRS = \
 	org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.h \
 	org_tritonus_lowlevel_alsa_AlsaCtl.h \
@@ -575,6 +546,37 @@ LIBGTKPEER_JNI_HDRS = \
 	gnu_java_awt_peer_gtk_GtkWindowPeer.h \
 	gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.h
 
+NOINSTALL_JNI_DERIVED_HDRS = \
+	java_math_BigInteger.h \
+	gnu_classpath_VMSystemProperties.h \
+	gnu_java_nio_channels_FileChannelImpl.h \
+	gnu_java_nio_SelectorImpl.h \
+	java_io_ObjectInputStream.h \
+	java_io_VMObjectStreamClass.h \
+	java_nio_VMDirectByteBuffer.h \
+	java_nio_MappedByteBufferImpl.h \
+	kaffe_io_ByteToCharDefault.h \
+	kaffe_io_ByteToCharIconv.h \
+	kaffe_io_CharToByteDefault.h \
+	kaffe_io_CharToByteIconv.h \
+	kaffe_lang_MemoryAdvice.h \
+	kaffe_lang_UNIXProcess.h \
+	kaffe_management_JIT.h \
+	kaffe_management_Debug.h \
+	kaffe_management_XProfiler.h \
+	kaffe_security_provider_MD2.h \
+	kaffe_security_provider_MD4.h \
+	kaffe_security_provider_MD5.h \
+	kaffe_security_provider_SHA.h \
+	$(LIBTRITONUSALSA_JNI_HDRS) \
+	$(LIBTRITONUSESD_JNI_HDRS) \
+	$(LIBXMLJ_JNI_HDRS) \
+	$(LIBGTKPEER_JNI_HDRS)
+
+JNI_DERIVED_HDRS = \
+	$(INSTALL_JNI_DERIVED_HDRS) \
+	$(NOINSTALL_JNI_DERIVED_HDRS)
+
 @USE_COMPAT_IFADDRS_FALSE@ifaddrs_compat = #
 @USE_COMPAT_IFADDRS_TRUE@ifaddrs_compat = ifaddrs.h
 nodist_noinst_HEADERS = \
@@ -620,9 +622,6 @@ pkginclude_HEADERS = \
 CLEANFILES = \
 	$(DERIVED_HDRS) \
 	$(JNI_DERIVED_HDRS) \
-	$(LIBTRITONUSALSA_JNI_HDRS) \
-	$(LIBTRITONUSESD_JNI_HDRS) \
-	$(LIBXMLJ_JNI_HDRS) \
 	stamp-kaffeh
 
 DISTCLEANFILES = \
@@ -957,66 +956,6 @@ $(JNI_DERIVED_HDRS): stamp-h1all
 
 stamp-h1all: HDRS = $(JNI_DERIVED_HDRS)
 stamp-h1all: rebuild-jni-hdrs
-	@echo timestamp > $@
-
-#
-# header files for alsa backend of tritonus
-#
-.PHONY:libtritonusalsa_headers
-libtritonusalsa_headers: $(LIBTRITONUSALSA_JNI_HDRS)
-
-$(LIBTRITONUSALSA_JNI_HDRS): stamp-libtritonusalsa
-	@if test -f $@; then :; else \
-	  rm -f stamp-libtritonusalsa; $(MAKE) stamp-libtritonusalsa; \
-	fi
-
-stamp-libtritonusalsa: HDRS = $(LIBTRITONUSALSA_JNI_HDRS)
-stamp-libtritonusalsa: rebuild-jni-hdrs
-	@echo timestamp > $@
-
-#
-# header files for esd backend of tritonus
-#
-.PHONY:libtritonusesd_headers
-libtritonusesd_headers: $(LIBTRITONUSESD_JNI_HDRS)
-
-$(LIBTRITONUSESD_JNI_HDRS): stamp-libtritonusesd
-	@if test -f $@; then :; else \
-	  rm -f stamp-libtritonusesd; $(MAKE) stamp-libtritonusesd; \
-	fi
-
-stamp-libtritonusesd: HDRS = $(LIBTRITONUSESD_JNI_HDRS)
-stamp-libtritonusesd: rebuild-jni-hdrs
-	@echo timestamp > $@
-
-#
-# header files for libxmlj
-#
-.PHONY:libxmlj_headers
-libxmlj_headers: $(LIBXMLJ_JNI_HDRS)
-
-$(LIBXMLJ_JNI_HDRS): stamp-libxmlj
-	@if test -f $@; then :; else \
-	  rm -f stamp-libxmlj; $(MAKE) stamp-libxmlj; \
-	fi
-
-stamp-libxmlj: HDRS = $(LIBXMLJ_JNI_HDRS)
-stamp-libxmlj: rebuild-jni-hdrs
-	@echo timestamp > $@
-
-#
-# header files for classpath's gtk awt backend
-#
-.PHONY:libgtkpeer_headers
-libgtkpeer_headers: $(LIBGTKPEER_JNI_HDRS)
-
-$(LIBGTKPEER_JNI_HDRS): stamp-libgtkpeer
-	@if test -f $@; then :; else \
-	  rm -f stamp-libgtkpeer; $(MAKE) stamp-libgtkpeer; \
-	fi
-
-stamp-libgtkpeer: HDRS = $(LIBGTKPEER_JNI_HDRS)
-stamp-libgtkpeer: rebuild-jni-hdrs
 	@echo timestamp > $@
 
 dist-hook:

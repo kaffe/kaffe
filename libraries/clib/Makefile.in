@@ -88,6 +88,7 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	uninstall-recursive
 ETAGS = etags
 CTAGS = ctags
+DIST_SUBDIRS = $(SUBDIRS)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
@@ -360,8 +361,7 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 uudecode = @uudecode@
 with_engine = @with_engine@
-SUBDIRS = classpath native io nio net zip math security management
-DIST_SUBDIRS = classpath native io nio net zip math libxmlj security management awt sound
+SUBDIRS = classpath native io nio net zip math security management awt sound $(MAYBE_LIBXMLJ_DIR)
 all: all-recursive
 
 .SUFFIXES:
@@ -658,6 +658,8 @@ uninstall-info: uninstall-info-recursive
 	mostlyclean-recursive pdf pdf-am ps ps-am tags tags-recursive \
 	uninstall uninstall-am uninstall-info-am
 
+
+@COND_LIBXMLJ_TRUE@	MAYBE_LIBXMLJ_DIR = libxmlj
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -30,8 +30,3 @@ noinst_HEADERS = \
 	common.h 
 
 CLEANFILES = so_locations
-
-$(libtritonusesd_la_SOURCES): libtritonusesd_headers
-.PHONY: libtritonusesd_headers
-libtritonusesd_headers:
-	@$(MAKE) -C $(top_builddir)/include libtritonusesd_headers

@@ -759,11 +759,6 @@ uninstall-am: uninstall-info-am uninstall-nativeLTLIBRARIES
 	tags uninstall uninstall-am uninstall-info-am \
 	uninstall-nativeLTLIBRARIES
 
-
-$(libxmlj_la_SOURCES): libxmlj_headers
-.PHONY:libxmlj_headers
-libxmlj_headers:
-	@$(MAKE) -C $(top_builddir)/include libxmlj_headers
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

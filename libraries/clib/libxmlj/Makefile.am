@@ -51,8 +51,3 @@ libxmlj_la_LDFLAGS = \
         -module \
 	-export-dynamic \
         -release $(PACKAGE_VERSION)
-
-$(libxmlj_la_SOURCES): libxmlj_headers
-.PHONY:libxmlj_headers
-libxmlj_headers:
-	@$(MAKE) -C $(top_builddir)/include libxmlj_headers

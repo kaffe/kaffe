@@ -75,14 +75,6 @@ version-info.h: $(top_srcdir)/ChangeLog $(top_builddir)/config.status
 
 DISTCLEANFILES = version-info.h
 
-#
-# relink the kaffe binary including the optinal java libs
-#
-final-executable: 
-	@rm -f kaffe-bin$(EXEEXT)
-	@$(MAKE) kaffe-bin$(EXEEXT) kaffe_bin_LDADD="$(OPT_DLOPEN_JAVA_LIBS) $(kaffe_bin_LDADD)"
-
-
 dist-hook:
 	@for file in $(DISTCLEANFILES); do \
 	  rm -f $(distdir)/$$file; \

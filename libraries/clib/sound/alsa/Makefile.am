@@ -49,8 +49,3 @@ noinst_HEADERS = \
 	constants_check.h
 
 CLEANFILES = so_locations
-
-$(libtritonusalsa_la_SOURCES): libtritonusalsa_headers
-.PHONY: libtritonusalsa_headers
-libtritonusalsa_headers:
-	@$(MAKE) -C $(top_builddir)/include libtritonusalsa_headers

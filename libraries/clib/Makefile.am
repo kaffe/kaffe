@@ -9,6 +9,8 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = classpath native io nio net zip math security management
+if COND_LIBXMLJ
+	MAYBE_LIBXMLJ_DIR = libxmlj
+endif
 
-DIST_SUBDIRS = classpath native io nio net zip math libxmlj security management awt sound
+SUBDIRS = classpath native io nio net zip math security management awt sound $(MAYBE_LIBXMLJ_DIR)
