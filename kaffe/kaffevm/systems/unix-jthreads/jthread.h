@@ -317,10 +317,18 @@ void jmutex_initialise(jmutex *lock);
 void jmutex_lock(jmutex *lock);
 void jmutex_unlock(jmutex *lock);
 
+#define JMUTEX_BLOCKED
+/* Return a list of threads blocked on a mutex.  Caller frees */
+int  jmutex_blocked(jmutex *lock, jthread_t **list);
+
 void jcondvar_initialise(jcondvar *cv);
 void jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
 void jcondvar_signal(jcondvar *cv, jmutex *lock);
 void jcondvar_broadcast(jcondvar *cv, jmutex *lock);
+
+#define JCONDVAR_WAITING
+/* Return a list of threads waiting on a condvar.  Caller frees */
+int  jcondvar_waiting(jcondvar *cv, jthread_t **list);
 
 /* Spinlocks: simple since we're uniprocessor */
 /* ARGSUSED */

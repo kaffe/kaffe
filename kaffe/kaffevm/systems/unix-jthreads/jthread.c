@@ -175,9 +175,56 @@ static void intsRestore(void);
 
 /*============================================================================
  *
- * Functions related to interrupt handling
+ * Functions related to list manipulation and interrupt handling
  *
  */
+
+/*
+ * Check whether a thread is on a given list
+ */
+static int
+isOnList(jthread *list, jthread *t)
+{
+	for (; list; list = list->nextQ) {
+		if (list == t) {
+			return (1);
+		}
+	}
+	return (0);
+}
+
+/*
+ * Transform list of threads in linear array
+ */
+static int
+makeListFromQueue(jthread *first, jthread_t **threads)
+{
+	int n = 0;
+	jthread *t;
+	jthread_t *list;
+
+	/* count them */
+	for (t = first; t; t = t->nextQ) {
+		n++;
+	}
+
+	/* list is empty */
+	if (n == 0) {
+		*threads = 0;
+		return (0);
+	}
+
+	/* allocate an array */
+	list = allocator(n * sizeof(jthread_t *));
+	assert(list != 0);
+
+	/* and copy them in */
+	for (n = 0, t = first; t; t = t->nextQ) {
+		list[n++] = t;
+	}
+	*threads = list;
+	return (n);
+}
 
 /*
  * yield to another thread
@@ -521,8 +568,28 @@ jthread_dumpthreadinfo(jthread_t tid)
 		printflags(tid->flags));
 	if (tid->blockqueue != NULL) {
 		jthread *t;
-		fprintf(stderr, " blockqueue %p (%p->", tid->blockqueue,
-							t = *tid->blockqueue);
+		int i;
+
+		fprintf(stderr, " blocked");
+		if (isOnList(waitForList, tid)) {
+			fprintf(stderr, ": waiting for children");
+		}
+		if (isOnList(alarmList, tid)) {
+			fprintf(stderr, ": sleeping");
+		}
+		for (i = 0; i < FD_SETSIZE; i++) {
+			if (isOnList(readQ[i], tid)) {
+				fprintf(stderr, ": reading from fd %d ", i);
+				break;
+			}
+			if (isOnList(writeQ[i], tid)) {
+				fprintf(stderr, ": writing to fd %d ", i);
+				break;
+			}
+		}
+
+		fprintf(stderr, "@%p (%p->", tid->blockqueue,
+					     t = *tid->blockqueue);
 		while (t && t->nextQ) {
 			t = t->nextQ; 
 			fprintf(stderr, "%p->", t);
@@ -1570,6 +1637,12 @@ jmutex_unlock(jmutex *lock)
 	intsRestore();
 }
 
+int
+jmutex_blocked(jmutex *lock, jthread_t **threads)
+{
+	return (makeListFromQueue(lock->waiting, threads));
+}
+
 void
 jcondvar_initialise(jcondvar *cv)
 {
@@ -1642,6 +1715,12 @@ jcondvar_broadcast(jcondvar *cv, jmutex *lock)
 		*cv = NULL;
 	}
 	intsRestore();
+}
+
+int  
+jcondvar_waiting(jcondvar *cv, jthread_t **threads)
+{
+	return (makeListFromQueue(*cv, threads));
 }
 
 /*============================================================================

@@ -55,9 +55,53 @@ dumpLock(iLock *lk)
 		fprintf(stderr, "lock@%p %s ", lk->address, 
 			describeObject(lk->address));
 	}
+#if !defined(JMUTEX_BLOCKED) || !defined(JCONDVAR_WAITING)
+	/* Dumb version */
 	fprintf(stderr, "held by `%s'\n .hd=%-9p .ct=%d .mx=%-9p .cv=%-9p\n",
 		(lk->holder != 0) ? nameNativeThread(lk->holder) : "noone",
 		lk->holder, lk->count, lk->mux, lk->cv);
+#else
+	/* We can do better if jmutex_blocked and jcondvar_blocked are
+	 * supported by the threading system
+	 */
+	if (lk->holder != 0) {
+		jthread_t *blocked;
+		int nblocked = jmutex_blocked(lk->mux, &blocked);
+
+		/* lock is held, say by whom and who's waiting */
+		fprintf(stderr, "\n  held by `%s'\n  blocks threads: ", 
+			    nameNativeThread(lk->holder));
+		if (nblocked > 0) {
+			int i;
+			for (i = 0; i < nblocked; i++) {
+				fprintf(stderr, "`%s'%c", 
+					    nameNativeThread(blocked[i]), 
+					    (i < nblocked - 1) ? ' ' : '\n');
+			}
+			KFREE(blocked);	   /* use thread deallocator here */
+		} else {
+			fprintf(stderr, "\n");
+		}
+	} else {
+		fprintf(stderr, " (uncontended)\n");
+	}
+	/* now check for waiters on cond variable */
+	{
+		jthread_t *blocked;
+		int nblocked = jcondvar_waiting(lk->cv, &blocked);
+
+		if (nblocked > 0) {
+			int i;
+			fprintf(stderr, "  waiting to be signaled are: ");
+			for (i = 0; i < nblocked; i++) {
+				fprintf(stderr, "`%s'%c", 
+					    nameNativeThread(blocked[i]), 
+					    (i < nblocked - 1) ? ' ' : '\n');
+			}
+			KFREE(blocked);	   /* use thread deallocator here */
+		}
+	}
+#endif
 }
 
 /*
