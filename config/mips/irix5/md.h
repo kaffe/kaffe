@@ -14,4 +14,16 @@
 
 #include "mips/threads.h"
 
+#ifdef SP_OFFSET
+#undef SP_OFFSET
+#endif
+
+#ifdef FP_OFFSET
+#undef FP_OFFSET
+#endif
+
+/* Determined on a SGI running IRIX 6.2 */ 
+#define SP_OFFSET               2
+#define FP_OFFSET               13
+
 #endif
