@@ -1,3 +1,60 @@
+2004-02-01  Helmer Kramer <hkraemer@freenet.de>
+
+	* libraries/javalib/java/lang/Thread.java
+	(threadQ), (sFunc), (sArg), (exceptPtr), (exceptObj),
+	(jnireferences), (stackOverflowError), (outOfMemoryError),
+	(sem), (nextlk), (needOnStack): removed
+
+	* kaffe/kaffevm/threadData.h
+	(jnireferences), (sem), (nextlk), (exceptPtr), (exceptObj),
+	(needOnStack): new fields replacing those in java.lang.Thread.
+
+	* kaffe/kaffevm/exception.c, kaffe/kaffevm/jni.c,
+	kaffe/kaffevm/locks.c, kaffe/kaffevm/locks.h,
+	kaffe/kaffevm/support.c, kaffe/kaffevm/intrp/icode.h,
+	kaffe/kaffevm/intrp/machine.c, kaffe/kaffevm/intrp/machine.h,
+	kaffe/kaffevm/intrp/stackTrace-impl.h, kaffe/kaffevm/jit/machine.c:
+	adapted to java.lang.Thread -> threadData change.
+
+	* kaffe/kaffevm/jni.c (Kaffe_AttachCurrentThread): implemented
+	
+	* kaffe/kaffevm/gcRefs.c
+	(TwalkThread), (liveThreadWalker): pass jthread_t, not
+	Hjava_lang_Thread* as parameter
+
+	* kaffe/kaffevm/jar.h: don't include locks.h for KAFFEH
+
+	* kaffe/kaffevm/thread.c (linkNativeAndJavaThread),
+	(unlinkNativeAndJavaThread): new methods
+	(initThreadLock): removed
+	(createInitialThread): renamed to attachFakedThreadInstance
+	(initNativeThreads): create initial thread here
+
+	adapted to java.lang.Thread -> threadData change
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
+	(jthread_walkLiveThreads): pass jthread_t as parameter
+	(jthread_createfirst): tweak guestimation of stack
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.h
+	(jthread_attach_current_thread): new method
+
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.h,
+	kaffe/kaffevm/systems/unix-pthreads/lock-impl.c
+	(jmutex_lock): deinlined
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h
+	(struct _nativeThread): renamed to struct _jthread
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthread_attach_current_thread): partially implemented
+	(jthread_createfirst): tweak guestimation of stack
+	(jthread_walkLiveThreads): pass jthread_t as parameter
+
+	adapted to struct _nativeThread renaming
+	
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated
+
 2004-02-01  Dalibor Topic <robilad@kaffe.org>
 
         developers/autogen.sh:

@@ -25,31 +25,20 @@ final private static RuntimePermission sccl = new RuntimePermission("setContextC
 
 private static int threadCount;
 
-private char[] name;
+private String name; 
 private int priority;
-private Thread threadQ;
 private kaffe.util.Ptr PrivateInfo;
-private kaffe.util.Ptr sFunc;
-private kaffe.util.Ptr sArg;
 private boolean daemon;
 private boolean interrupting;
 private Runnable target;
 private ThreadGroup group;
-private kaffe.util.Ptr exceptPtr;
-private Throwable exceptObj;
-private kaffe.util.Ptr jnireferences;
-private Throwable stackOverflowError;
-private Throwable outOfMemoryError;
 private boolean started;
 private boolean dying;
 private HashMap threadLocals;
 private Object suspendResume;
 private Object sleeper;
 private Object holder;
-private kaffe.util.Ptr sem;
-private Thread nextlk;
 private Throwable death;
-private int needOnStack;
 private ClassLoader context;
 
 private static class Sleeper {
@@ -89,12 +78,9 @@ public Thread(ThreadGroup group, Runnable target, String name) {
 	this.group.checkAccess();
 	this.group.add(this);
 
-	this.name = name.toCharArray();
+	this.name = name;
 	this.target = target;
 	this.interrupting = false;
-
-	this.stackOverflowError = new StackOverflowError();
-	this.outOfMemoryError = new OutOfMemoryError();
 
 	/*
 	 * Inherit all inheritable thread-local variables from parent to child
@@ -208,7 +194,7 @@ private static String generateName() {
 }
 
 public final String getName() {
-	return (new String(name));
+	return (name);
 }
 
 public final int getPriority() {
@@ -330,7 +316,7 @@ public final synchronized void setDaemon(boolean on) {
 }
 
 public final void setName(String name) {
-	this.name = name.toCharArray();
+	this.name = name;
 }
 
 public final void setPriority(int newPriority) {

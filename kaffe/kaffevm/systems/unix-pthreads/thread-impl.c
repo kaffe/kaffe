@@ -389,7 +389,7 @@ tSetupFirstNative(void)
   /*
    * We need to have a native thread context available as soon as possible.
    */
-  nt = thread_malloc( sizeof(struct _nativeThread));
+  nt = thread_malloc( sizeof(struct _jthread));
   nt->tid = pthread_self();
   pthread_setspecific( ntKey, nt);
   nt->stackMin  = (void*)0;
@@ -454,10 +454,10 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThrea
    * which should cover all gc-relevant stack locations
    */
 #if defined(STACK_GROWS_UP)
-  nt->stackMin  = (void*) ((uintp)&nt & -0x1000);
+  nt->stackMin  = (void*) (uintp)(&nt - 0x100);
   nt->stackMax  = (void*) ((uintp) nt->stackMin + mainThreadStackSize);
 #else
-  nt->stackMax  = (void*) (((uintp)&nt + 0x1000 - 1) & -0x1000);
+  nt->stackMax  = (void*) (uintp)(&nt + 0x100);
   nt->stackMin  = (void*) ((uintp) nt->stackMax - mainThreadStackSize);
 #endif
 
@@ -486,6 +486,26 @@ void jthread_interrupt(jthread_t tid)
 {
 	/* We need to send some signal to interrupt syscalls. */
 	pthread_kill(tid->tid, SIG_RESUME);
+}
+
+bool jthread_attach_current_thread (bool daemon)
+{
+  jthread_t		nt;
+
+  /* create the jthread* thingy */
+  nt = thread_malloc( sizeof(struct _jthread) );
+
+  nt->func         = 0;
+  nt->suspendState = 0;
+  nt->stackCur     = 0;
+  nt->daemon	 = daemon;
+
+  /* link everything together */
+  nt->tid = pthread_self();
+  pthread_setspecific( ntKey, nt);
+
+  /* and done */
+  return true;
 }
 
 /*
@@ -664,7 +684,7 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
 	  return (0);
 	}
 
-	nt = thread_malloc( sizeof(struct _nativeThread) );
+	nt = thread_malloc( sizeof(struct _jthread) );
 
 	pthread_attr_init( &nt->attr);
 	pthread_attr_setschedparam( &nt->attr, &sp);
@@ -1076,14 +1096,14 @@ jthread_unsuspendall (void)
  *
  */
 void
-jthread_walkLiveThreads (void(*func)(void*))
+jthread_walkLiveThreads (void(*func)(jthread_t))
 {
   jthread_t t;
 
   DBG( JTHREAD, dprintf("start walking threads\n"))
 
   for ( t = activeThreads; t != NULL; t = t->next) {
-	func(t->data.jlThread);
+	func(t);
   }
 
   DBG( JTHREAD, dprintf("end walking threads\n"))

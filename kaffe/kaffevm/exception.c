@@ -61,7 +61,7 @@
                                     vmExcept_jumpToHandler((VmExceptHandler *)(F)); /* Does not return */
 #else
 
-#define DISPATCH_EXCEPTION(F,H,E) unhand(ct)->exceptObj = 0;\
+#define DISPATCH_EXCEPTION(F,H,E) thread_data->exceptObj = 0;\
                                   CALL_KAFFE_EXCEPTION((F),(H),(E));
 
 #endif	/* TRANSLATOR */
@@ -302,7 +302,7 @@ throwOutOfMemory(void)
 static void
 dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 {
-	Hjava_lang_Thread*	ct;
+	threadData*		thread_data;
 	VmExceptHandler*	lastJniFrame;
 	stackTraceInfo*		frame;
 
@@ -314,10 +314,10 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 	 */
 	assert(!INTS_DISABLED());
 #endif
-	ct = getCurrentThread();
+	thread_data = THREAD_DATA(); 
 
 	/* Save exception object */
-	unhand(ct)->exceptObj = eobj;
+	thread_data->exceptObj = eobj;
 
 #if defined (HAVE_GCJ_SUPPORT)
 	/* XXX */
@@ -333,7 +333,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 	 * (there is _always_ a jni frame somewhere on the stack,
 	 *  except during initialiseKaffe() )
 	 */
-	for (lastJniFrame = (VmExceptHandler *)unhand(ct)->exceptPtr;
+	for (lastJniFrame = thread_data->exceptPtr;
 	     lastJniFrame && !vmExcept_isJNIFrame(lastJniFrame);
 	     lastJniFrame = lastJniFrame->prev);
 
@@ -349,7 +349,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 		 * if we reach the last jni frame, we're done
 		 */
 		if (lastJniFrame && vmExcept_JNIContains(lastJniFrame, frame->fp)) {
-			unhand(ct)->exceptPtr = (struct Hkaffe_util_Ptr *)lastJniFrame;
+			thread_data->exceptPtr = lastJniFrame;
 			vmExcept_jumpToHandler(lastJniFrame); /* doesn't return */
 		}
 
@@ -380,7 +380,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 
 		/* If handler found, call it */
 		if (foundHandler) {
-			unhand(ct)->needOnStack = STACK_HIGH;
+			thread_data->needOnStack = STACK_HIGH;
 			DISPATCH_EXCEPTION(frame->fp, handler, eobj); /* doesn't return */
 		}
 
@@ -414,12 +414,9 @@ unhandledException(Hjava_lang_Throwable *eobj)
 {
 	const char* cname;
 	Hjava_lang_Class* class;
-	Hjava_lang_Thread* ct;
-
-	ct = getCurrentThread();
 
 	/* Clear held exception object */
-	unhand(ct)->exceptObj = 0;
+	THREAD_DATA()->exceptObj = 0;
 
 	class = OBJECT_CLASS(&eobj->base);
 	cname = CLASS_CNAME(class);

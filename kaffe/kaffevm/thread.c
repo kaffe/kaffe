@@ -44,11 +44,6 @@
 		
 extern struct JNINativeInterface Kaffe_JNINativeInterface;
 
-/* 
- * store the native thread for the main thread here 
- * between init and createFirst 
- */
-static jthread_t	mainthread;
 static int threadStackSize;	/* native stack size */
 
 /* referenced by native/Runtime.c */
@@ -61,7 +56,6 @@ Hjava_lang_Class* ThreadGroupClass;
 Hjava_lang_ThreadGroup* standardGroup;
 
 static void firstStartThread(void*);
-static void createInitialThread(const char*);
 static void runfinalizer(void);
 
 static iStaticLock	thread_start_lock;
@@ -88,6 +82,34 @@ void *
 thread_realloc(void *p, size_t s)
 {
 	return gc_realloc(p, s, GC_ALLOC_THREADCTX);
+}
+
+static void
+linkNativeAndJavaThread(jthread_t thread, Hjava_lang_Thread *jlThread)
+{
+	threadData *thread_data = jthread_get_data(thread);
+
+	thread_data->jlThread = jlThread;
+	unhand (jlThread)->PrivateInfo = (struct Hkaffe_util_Ptr *)thread;
+
+	thread_data->jniEnv = &Kaffe_JNINativeInterface;
+
+	thread_data->needOnStack = STACK_HIGH; 
+}
+
+static void
+unlinkNativeAndJavaThread(jthread_t thread)
+{
+	threadData *thread_data = jthread_get_data(thread);
+
+	/*
+	unhand((Hjava_lang_Thread *)thread_data->jlThread)->PrivateInfo = 0;
+	*/
+
+	thread_data->jlThread = 0;
+	thread_data->jniEnv = 0;
+
+	ksemDestroy (&thread_data->sem);
 }
 
 /*
@@ -123,51 +145,30 @@ initThreads(void)
 
 
 	/* Allocate a thread to be the main thread */
-	createInitialThread("main");
+	attachFakedThreadInstance("main");
 
 	DBG(INIT, dprintf("initThreads() done\n"); )
 }
 
 
-static int
+static jthread_t
 createThread(Hjava_lang_Thread* tid, void* func, size_t stacksize,
 	     struct _errorInfo *einfo)
 {
-	struct Hkaffe_util_Ptr* nativethread;
+	jthread_t nativeThread;
 
-	nativethread = (struct Hkaffe_util_Ptr*)jthread_create(
-		unhand(tid)->priority,
-		func,
-		unhand(tid)->daemon,
-		tid,
-		stacksize);
+	nativeThread = jthread_create(unhand(tid)->priority,
+			       func,
+			       unhand(tid)->daemon,
+			       tid,
+			       stacksize);
 
-	if (!nativethread) {
+	if (nativeThread == NULL) {
 		postOutOfMemory(einfo);
 		return 0;
 	}
 
-	jthread_get_data((jthread_t)nativethread)->jniEnv = &Kaffe_JNINativeInterface;
-	unhand(tid)->PrivateInfo = nativethread;
-	/* preallocate a stack overflow error for this thread in case it 
-	 * runs out 
-	 */
-	unhand(tid)->stackOverflowError = 
-		(Hjava_lang_Throwable*)StackOverflowError;
-	unhand(tid)->needOnStack = STACK_HIGH;
-	return 1;
-}
-
-static
-void
-initThreadLock(Hjava_lang_Thread* tid)
-{
-	Ksem *sem;
-	sem = thread_malloc(sizeof(Ksem));
-	assert(sem != NULL);
-	ksemInit(sem);
-
-	unhand(tid)->sem = (struct Hkaffe_util_Ptr*)sem;
+	return nativeThread;
 }
 
 /*
@@ -176,12 +177,10 @@ initThreadLock(Hjava_lang_Thread* tid)
 void
 startThread(Hjava_lang_Thread* tid)
 {
-	int success;
+	jthread_t nativeTid;
 	struct _errorInfo info;
 	int iLockRoot;
 
-	initThreadLock(tid);
-	
 #if 0
 	if (aliveThread(tid) == true) {
 		throwException(IllegalThreadStateException);
@@ -195,11 +194,14 @@ startThread(Hjava_lang_Thread* tid)
 	 */
 	lockStaticMutex(&thread_start_lock);
 
-	success = createThread(tid, &firstStartThread,
-			       threadStackSize, &info);
+	nativeTid = createThread(tid, &firstStartThread,
+				 threadStackSize, &info);
 
+	linkNativeAndJavaThread (nativeTid, tid);
+	
 	unlockStaticMutex(&thread_start_lock);
-	if (!success) {
+
+	if (nativeTid == NULL) {
 		throwError(&info);
 	}
 }
@@ -239,39 +241,29 @@ stopThread(Hjava_lang_Thread* tid, Hjava_lang_Object* obj)
  * Create the initial thread with a given name.
  *  We should only ever call this once.
  */
-static
 void
-createInitialThread(const char* nm)
+attachFakedThreadInstance(const char* nm)
 {
 	Hjava_lang_Thread* tid;
 
-	DBG(INIT, dprintf("createInitialThread(%s)\n", nm); )
+	DBG(VMTHREAD, dprintf("attachFakedThreadInstance(%s)\n", nm); )
 
 	/* Allocate a thread to be the main thread */
 	tid = (Hjava_lang_Thread*)newObject(ThreadClass);
 	assert(tid != 0);
 
-	unhand(tid)->name = stringC2CharArray(nm);
+	unhand(tid)->name = stringC2Java(nm);
 	assert(unhand(tid)->name != NULL);
 	unhand(tid)->priority = java_lang_Thread_NORM_PRIORITY;
-	unhand(tid)->threadQ = 0;
 	unhand(tid)->daemon = 0;
 	unhand(tid)->interrupting = 0;
 	unhand(tid)->target = 0;
 	unhand(tid)->group = standardGroup;
 	unhand(tid)->started = 1;
 
-	initThreadLock(tid);
-
-	jthread_atexit(runfinalizer);
 	/* set Java thread associated with main thread */
-	mainthread = jthread_createfirst(MAINSTACKSIZE, java_lang_Thread_NORM_PRIORITY, tid);
-	jthread_get_data(mainthread)->jniEnv = &Kaffe_JNINativeInterface;
-	unhand(tid)->PrivateInfo = (struct Hkaffe_util_Ptr*)mainthread;
-	unhand(tid)->stackOverflowError = 
-		(Hjava_lang_Throwable*)StackOverflowError;
-	unhand(tid)->needOnStack = STACK_HIGH;
-        
+	linkNativeAndJavaThread (jthread_current(), tid);
+
         /*
 	 * set context class loader of primordial thread to app classloader
 	 * must not be done earlier, since getCurrentThread() won't work
@@ -285,7 +277,7 @@ createInitialThread(const char* nm)
 	/* Attach thread to threadGroup */
 	do_execute_java_method(unhand(tid)->group, "add", "(Ljava/lang/Thread;)V", 0, 0, tid);
 
-	DBG(INIT, dprintf("createInitialThread(%s) done\n", nm); )
+	DBG(VMTHREAD, dprintf("attachFakedThreadInstance(%s)=%p done\n", nm, tid); )
 }
 
 /*
@@ -293,17 +285,23 @@ createInitialThread(const char* nm)
  */
 static
 void
-startSpecialThread(void* arg)
+startSpecialThread(void *arg)
 {
-	Hjava_lang_Thread* tid;
 	void (*func)(void *);
 	void *argument;
+	int iLockRoot;
 
-	tid  = getCurrentThread();
-	func = (void*)tid->sFunc;
-	argument = (void*)tid->sArg;
-	tid->target = 0;
-	tid->group = 0;
+	ksemInit(&THREAD_DATA()->sem);
+
+	lockStaticMutex(&thread_start_lock);
+	unlockStaticMutex(&thread_start_lock);
+
+	func = (void *)THREAD_DATA()->exceptPtr;
+	THREAD_DATA()->exceptPtr = NULL;
+
+	argument = (void *)THREAD_DATA()->exceptObj;
+	THREAD_DATA()->exceptObj = NULL;
+
 	func(argument);
 }
 
@@ -321,6 +319,8 @@ createDaemon(void* func, const char* nm, void *arg, int prio,
 	     size_t stacksize, struct _errorInfo *einfo)
 {
 	Hjava_lang_Thread* tid;
+	jthread_t nativeTid;
+	int iLockRoot;
 
 DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 
@@ -328,24 +328,28 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 	tid = (Hjava_lang_Thread*)newObject(ThreadClass);
 	assert(tid != 0);
 
-	unhand(tid)->name = stringC2CharArray(nm);
+	unhand(tid)->name = stringC2Java(nm);
 	if (!unhand(tid)->name) {
 		postOutOfMemory(einfo);
 		return 0;
 	}
 	unhand(tid)->priority = prio;
-	unhand(tid)->threadQ = 0;
 	unhand(tid)->daemon = 1;
 	unhand(tid)->interrupting = 0;
-	/* we abuse these two variables as carriers */
-	unhand(tid)->sFunc = (void*)func;
-	unhand(tid)->sArg = (void*)arg;
+	unhand(tid)->target = 0;
+	unhand(tid)->group = 0;
 
-	initThreadLock(tid);
+	lockStaticMutex(&thread_start_lock);
 
-	if (!createThread(tid, startSpecialThread, stacksize, einfo)) {
-		return 0;
-	}
+	nativeTid = createThread(tid, startSpecialThread, stacksize, einfo);
+
+	linkNativeAndJavaThread (nativeTid, tid);
+
+	jthread_get_data(nativeTid)->exceptPtr = func;
+	jthread_get_data(nativeTid)->exceptObj = arg;
+
+	unlockStaticMutex(&thread_start_lock);
+
 	return (tid);
 }
 
@@ -356,21 +360,22 @@ static
 void
 firstStartThread(void* arg)
 {
-	JNIEnv *env = THREAD_JNIENV();
 	Hjava_lang_Thread* tid;
+	jthread_t cur;
+	JNIEnv *env;
 	jmethodID runmethod;
 	jthrowable eobj;
 	int iLockRoot;
 
-	/* 
-	 * Make sure the thread who created us returned from
-	 * startThread.  This ensures that privateInfo
-	 * is set when we run.
-	 */
+	cur = jthread_current();
+
+	ksemInit(&jthread_get_data(cur)->sem);
+ 
 	lockStaticMutex(&thread_start_lock);
 	unlockStaticMutex(&thread_start_lock);
 
-	tid  = getCurrentThread();
+	tid = jthread_get_data(cur)->jlThread;
+	env = &jthread_get_data(cur)->jniEnv;
 
 #if defined(ENABLE_JVMPI)
 	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_THREAD_START) )
@@ -466,8 +471,6 @@ setPriorityThread(Hjava_lang_Thread* tid, int prio)
 void
 exitThread(void)
 {
-	Hjava_lang_Thread* tid;
-
 DBG(VMTHREAD,	
 	dprintf("exitThread %p\n", getCurrentThread());		
     )
@@ -485,10 +488,7 @@ DBG(VMTHREAD,
         do_execute_java_method(getCurrentThread(), "finish", "()V", 0, 0);
 
 	/* Destroy this thread's heavy lock */
-	tid = getCurrentThread();
-	assert(tid != NULL);
-	assert(unhand(tid)->sem != NULL);
-	ksemDestroy((Ksem*)unhand(tid)->sem);
+	unlinkNativeAndJavaThread(jthread_current());
 
 	/* This never returns */
 	jthread_exit();
@@ -539,11 +539,10 @@ getCurrentThread(void)
 {
 	Hjava_lang_Thread* tid;
 	
-	tid = jthread_get_data(jthread_current())->jlThread;
+	tid = THREAD_DATA()->jlThread;
 
-#ifdef JIT3
 	assert(tid);
-#endif
+	
 	return tid;
 }
 
@@ -554,10 +553,9 @@ getCurrentThread(void)
 void
 finalizeThread(Hjava_lang_Thread* tid)
 {
-	if (unhand(tid)->PrivateInfo != 0) {
-		jthread_t jtid = (jthread_t)unhand(tid)->PrivateInfo;
-		unhand(tid)->PrivateInfo = 0;
-		thread_free(unhand(tid)->sem);
+	jthread_t jtid = (jthread_t)unhand(tid)->PrivateInfo;
+
+	if (jtid != NULL) {
 		jthread_destroy(jtid);
 	}
 }
@@ -570,13 +568,9 @@ char *
 nameThread(Hjava_lang_Thread *tid)
 {
 	static char buf[80];
-	int i = 0;
-	HArrayOfChar* name = unhand(tid)->name;
-	while (i < sizeof buf - 1 && i < ARRAY_SIZE(name)) {
-		buf[i] = ((short*)ARRAY_DATA(name))[i];
-		i++;  
-	}
-	buf[i] = 0;
+
+	stringJava2CBuf(unhand(tid)->name, buf, sizeof(buf));
+
 	return buf;
 }
 
@@ -606,6 +600,16 @@ static
 void
 runfinalizer(void)
 {
+	DBG (VMTHREAD, dprintf ("shutting down %p\n", THREAD_DATA()->jlThread); )
+
+	if (THREAD_DATA()->jlThread == 0) {
+		/* if the thread executing the shutdown hooks doesn't have a
+		 * java.lang.Thread instance or it was gc'ed in the mean time,
+		 * create a new one.
+		 */
+		attachFakedThreadInstance("main");
+	}
+
 	/* Do java-land cleanup */
 	do_execute_java_method(SystemClass, "exitJavaCleanup",
 			       "()V", NULL, true);
@@ -628,11 +632,11 @@ runfinalizer(void)
  * print info about a java thread.
  */
 static void
-dumpJavaThread(void *jlThread)
+dumpJavaThread(jthread_t thread)
 {
-        Hjava_lang_Thread *tid = jlThread;
+	Hjava_lang_Thread *tid = jthread_get_data(thread)->jlThread;
 	dprintf("`%s' ", nameThread(tid));
-	jthread_dumpthreadinfo((jthread_t)unhand(tid)->PrivateInfo);
+	jthread_dumpthreadinfo(thread);
 	dprintf("\n");
 }
 
@@ -675,6 +679,8 @@ onDeadlock(void)
 void
 initNativeThreads(int nativestacksize)
 {
+	threadData *thread_data;
+
 	DBG(INIT, dprintf("initNativeThreads(0x%x)\n", nativestacksize); )
 
 	/* Even though the underlying operating or threading system could
@@ -693,6 +699,32 @@ initNativeThreads(int nativestacksize)
 		broadcastDeath,
 		throwDeath,
 		onDeadlock);
-	
+
+	jthread_atexit(runfinalizer);
+
+	/*
+	 * Doing jthread_createfirst as early as possible has several advantages:
+	 *
+	 * 	- we can rely on a working jthread_current() and jthread_get_data()
+	 *	  everywhere else in the vm, no need to specialcase anything
+	 *
+	 *	- catching exceptions during the initialisation is easier now
+	 *
+	 * Since everything is stored in the threadData struct now, we can simply
+	 * attach a faked java.lang.Thread instance later on.
+	 */
+	jthread_createfirst(MAINSTACKSIZE, java_lang_Thread_NORM_PRIORITY, 0);
+
+	/*
+	 * initialize some things that are absolutely necessary:
+	 *    - the semaphore
+	 *    - the jniEnv
+         */
+	thread_data = THREAD_DATA(); 
+
+	ksemInit(&thread_data->sem);
+
+	thread_data->jniEnv = &Kaffe_JNINativeInterface;
+
 	DBG(INIT, dprintf("initNativeThreads(0x%x) done\n", nativestacksize); )
 }

@@ -606,12 +606,12 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 #endif
 #if defined(INTERPRETER)
 	if ((meth->accflags & ACC_NATIVE) == 0) {
-		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, getCurrentThread());
+		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, THREAD_DATA()); 
 	}
 	else {
 		Hjava_lang_Object* syncobj = 0;
 		VmExceptHandler mjbuf;
-		Hjava_lang_Thread* tid = getCurrentThread();
+		threadData* thread_data = THREAD_DATA(); 
 
 		if (meth->accflags & ACC_SYNCHRONISED) {
 			if (meth->accflags & ACC_STATIC) {
@@ -623,7 +623,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 			lockObject(syncobj);
 		}
 
-		setupExceptionHandling(&mjbuf, meth, syncobj, tid);
+		setupExceptionHandling(&mjbuf, meth, syncobj, thread_data);
 
 		/* Make the call - system dependent */
 		sysdepCallMethod(&call);
@@ -632,7 +632,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 			unlockObject(syncobj);
 		}
 
-		cleanupExceptionHandling(&mjbuf, tid);
+		cleanupExceptionHandling(&mjbuf, thread_data);
 	}
 #endif
 	if (!promoted && call.retsize == 1) {
@@ -820,12 +820,12 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 #endif
 #if defined(INTERPRETER)
 	if ((meth->accflags & ACC_NATIVE) == 0) {
-		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, getCurrentThread());
+		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, THREAD_DATA()); 
 	}
 	else {
 		Hjava_lang_Object* syncobj = 0;
 		VmExceptHandler mjbuf;
-		Hjava_lang_Thread* tid = getCurrentThread();
+		threadData* thread_data = THREAD_DATA(); 
 
 		if (meth->accflags & ACC_SYNCHRONISED) {
 			if (meth->accflags & ACC_STATIC) {
@@ -837,7 +837,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 			lockObject(syncobj);
 		}
 
-		setupExceptionHandling(&mjbuf, meth, syncobj, tid);
+		setupExceptionHandling(&mjbuf, meth, syncobj, thread_data);
 
 		/* Make the call - system dependent */
 		sysdepCallMethod(&call);
@@ -846,7 +846,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 			unlockObject(syncobj);
 		}
 
-		cleanupExceptionHandling(&mjbuf, tid);
+		cleanupExceptionHandling(&mjbuf, thread_data);
 	}
 #endif
 }

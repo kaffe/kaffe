@@ -11,9 +11,22 @@
 #include "config.h"
 #include "config-std.h"
 
-#include "lock-impl.h"
+#include "jthread.h"
 /* For NOTIMEOUT */
 #include "jsyscall.h"
+
+void
+jmutex_lock( jmutex* lk )
+{
+  jthread_t cur = jthread_current ();
+
+  cur->stackCur  = (void*)&cur;
+  cur->blockState |= BS_MUTEX;
+
+  pthread_mutex_lock( lk );
+
+  cur->blockState &= ~BS_MUTEX;
+}
 
 /*
  * Wait on the condvar with a given relative timeout in ms (which we

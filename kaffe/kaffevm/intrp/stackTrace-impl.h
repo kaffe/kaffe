@@ -13,7 +13,7 @@ struct _exceptionFrame {
         char    dummy;
 };
 
-#define STACKTRACEINIT(S,I,O,R) ((S).frame = (VmExceptHandler*)unhand(getCurrentThread())->exceptPtr)
+#define STACKTRACEINIT(S,I,O,R) ((S).frame = jthread_get_data(jthread_current())->exceptPtr)
 #define STACKTRACESTEP(S)       ((S).frame = (S).frame->prev)
 
 #define STACKTRACEPC(S)         (vmExcept_isJNIFrame((S).frame)?0:vmExcept_getPC((S).frame))

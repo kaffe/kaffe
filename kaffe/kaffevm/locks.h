@@ -13,9 +13,7 @@
 #ifndef __locks_h
 #define __locks_h
 
-#ifndef KAFFEH
 #include "thread-impl.h"
-#endif
 
 #include "md.h"
 
@@ -34,7 +32,6 @@ struct _iLock;
 #define	signalStaticCond(THING)		locks_internal_signalCond(&(THING)->lock, &(THING)->heavyLock)
 #define	broadcastStaticCond(THING)	locks_internal_broadcastCond(&(THING)->lock, &(THING)->heavyLock)
 
-struct Hjava_lang_Thread;
 struct Hjava_lang_Object;
 
 /*
@@ -46,9 +43,9 @@ struct Hjava_lang_Object;
  * unlock and for distinguishing recursive invocations).
  */
 typedef struct _iLock {
-	void*				holder;
-	struct Hjava_lang_Thread*	mux;
-	struct Hjava_lang_Thread*	cv;
+	void*		holder;
+	jthread_t	mux;
+	jthread_t	cv;
 } iLock;
 
 typedef struct _iStaticLock {

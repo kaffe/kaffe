@@ -14,10 +14,7 @@
 #ifndef __lock_impl_h
 #define __lock_impl_h
 
-/* bring in thread-impl stuff by means of threads.h, to prevent us
- * from subsequently overloading the more specific macros by the generic ones
- */ 
-#include "jthread.h"
+#include <pthread.h>
 
 typedef pthread_mutex_t jmutex;
 typedef pthread_cond_t jcondvar;
@@ -25,7 +22,7 @@ typedef pthread_cond_t jcondvar;
 /* prototypes for jmutex interfaces.  All inlined except jcondvar_wait() */
 
 static inline void jmutex_initialise( jmutex* lk ) __UNUSED__;
-static inline void jmutex_lock( jmutex* lk ) __UNUSED__;
+extern void jmutex_lock( jmutex* lk );
 static inline void jmutex_unlock( jmutex* lk ) __UNUSED__;
 
 static inline void jcondvar_initialise( jcondvar* cv ) __UNUSED__;
@@ -53,20 +50,6 @@ jmutex_initialise( jmutex* lk )
   pthread_mutexattr_setprotocol( &muxAttr, PTHREAD_PRIO_INHERIT);
 #endif
   pthread_mutex_init( lk, &muxAttr);
-}
-
-static inline
-void
-jmutex_lock( jmutex* lk )
-{
-  jthread_t cur = jthread_current ();
-
-  cur->stackCur  = (void*)&cur;
-  cur->blockState |= BS_MUTEX;
-
-  pthread_mutex_lock( lk );
-
-  cur->blockState &= ~BS_MUTEX;
 }
 
 static inline  

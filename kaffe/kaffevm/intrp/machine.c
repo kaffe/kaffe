@@ -83,10 +83,10 @@ char* engine_name = "Interpreter";
 int profFlag;			 /* flag to control profiling */
 #endif
 
-void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *retval, volatile VmExceptHandler *mjbuf, Hjava_lang_Thread *tid);
+void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *retval, volatile VmExceptHandler *mjbuf, threadData *thread_data);
 
 void
-virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retval, Hjava_lang_Thread* volatile tid)
+virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retval, threadData* volatile thread_data)
 {
 	methods *volatile const vmeth = meth;
 	Hjava_lang_Object* volatile mobj;
@@ -102,26 +102,24 @@ virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retva
 
 	errorInfo einfo;
 	Hjava_lang_Throwable* overflow;
-	jint *needOnStack;
 
-	if (tid != 0)  {
-		/* implement stack overflow check */
-		needOnStack = &unhand(tid)->needOnStack;
+	/* implement stack overflow check */
+	if (jthread_stackcheck(thread_data->needOnStack) == false) {
+		if (thread_data->needOnStack == STACK_LOW) {
+			dprintf(
+			    "Panic: unhandled StackOverflowError()\n");
+			ABORT();
+		}
+	
+		{
+			Hjava_lang_Throwable *th;
+			errorInfo einfo;
 
-		/*		dprintf ("needOnStack [%p] %p -> %d\n", &needOnStack, needOnStack, *needOnStack); */
-
-		if (jthread_stackcheck(*needOnStack) == false) {
-			overflow = (Hjava_lang_Throwable*)
-				unhand(tid)->stackOverflowError;
-			if (overflow != 0) {
-				if (*needOnStack == STACK_LOW) {
-					dprintf(
-					    "Panic: unhandled StackOverflowError()\n");
-					ABORT();
-				}
-				*needOnStack = STACK_LOW;
-				throwException(overflow);
-			}
+			thread_data->needOnStack = STACK_LOW;
+			th = (Hjava_lang_Throwable *)newObjectChecked (javaLangStackOverflowError, &einfo);
+			thread_data->needOnStack = STACK_HIGH;
+		
+			throwException(overflow);
 		}
 	}
 
@@ -167,12 +165,12 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	/* If we have any exception handlers we must prepare to catch them.
 	 * We also need to catch if we are synchronised (so we can release it).
 	 */
-	setupExceptionHandling(&mjbuf, meth, mobj, tid);
+	setupExceptionHandling(&mjbuf, meth, mobj, thread_data);
 
 	if (meth->exception_table != 0) {
 		if (JTHREAD_SETJMP(mjbuf.jbuf) != 0) {
 			meth = vmeth;
-			unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)&mjbuf;
+			thread_data->exceptPtr = &mjbuf;
 			npc = vmExcept_getPC(&mjbuf);
 			sp = &lcl[meth->localsz];
 #if defined(KAFFE_VMDEBUG)
@@ -182,9 +180,9 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 				*p = 0xdeadbeef;
 			}
 #endif
-			sp->v.taddr = (void*)unhand(tid)->exceptObj;
-			unhand(tid)->exceptObj = 0;
-			runVirtualMachine(meth, lcl, sp, npc, retval, &mjbuf, tid);
+			sp->v.taddr = (void*)thread_data->exceptObj;
+			thread_data->exceptObj = 0;
+			runVirtualMachine(meth, lcl, sp, npc, retval, &mjbuf, thread_data);
 			goto end;
 		}
 	}
@@ -223,7 +221,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 
 	sp = &lcl[meth->localsz - 1];
 
-	runVirtualMachine(meth, lcl, sp, npc, retval, &mjbuf, tid);
+	runVirtualMachine(meth, lcl, sp, npc, retval, &mjbuf, thread_data);
 
  end:
 	/* Unsync. if required */
@@ -231,12 +229,12 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 		locks_internal_unlockMutex(&mobj->lock, &mjbuf, 0); 
 	}
 
-	cleanupExceptionHandling(&mjbuf, tid);
+	cleanupExceptionHandling(&mjbuf, thread_data);
 
 RDBG(	dprintf("Returning from method %s%s.\n", meth->name->data, METHOD_SIGD(meth)); )
 }
 
-void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *retval, volatile VmExceptHandler *mjbuf, Hjava_lang_Thread *tid) {
+void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *retval, volatile VmExceptHandler *mjbuf, threadData *thread_data) {
 	bytecode *code = (bytecode*)meth->c.bcode.code;
 
 	/* Misc machine variables */
@@ -302,20 +300,17 @@ void
 setupExceptionHandling(VmExceptHandler* eh,
 		       struct _methods* meth,
 		       struct Hjava_lang_Object* syncobj,
-		       struct Hjava_lang_Thread* tid)
+		       threadData*	thread_data)
 {
   setFrame(eh, meth, syncobj);
-  if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
-    eh->prev = (VmExceptHandler*)unhand(tid)->exceptPtr;
-    unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)eh;
-  }
+
+  eh->prev = thread_data->exceptPtr;
+  thread_data->exceptPtr = eh;
 }
 
 void
 cleanupExceptionHandling(VmExceptHandler* eh,
-			 struct Hjava_lang_Thread* tid)
+			 threadData* thread_data) 
 {
-  if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
-    unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)eh->prev;
-  }
+  thread_data->exceptPtr = eh->prev;
 }

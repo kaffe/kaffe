@@ -142,31 +142,30 @@ jlong	currentTime(void);
 static void 
 checkStackOverflow(void)
 {
-	Hjava_lang_Throwable* overflow;
 	/* XXX fix this.  
 	 * We should not have to access current just to do the stack check
 	 */
-	Hjava_lang_Thread* current = getCurrentThread();
-	jint *needOnStack;
+	threadData *thread_data = jthread_get_data(jthread_current());
 
-	if (current == 0) {
+	if (jthread_stackcheck(thread_data->needOnStack)) {
 		return;
 	}
-
-	needOnStack = &unhand(current)->needOnStack;
-	if (jthread_stackcheck(*needOnStack)) {
-		return;
+	
+	if (thread_data->needOnStack == STACK_LOW) {
+		dprintf(
+			"Panic: unhandled StackOverflowError()\n");
+		ABORT();
 	}
-	overflow = (Hjava_lang_Throwable*)unhand(current)->stackOverflowError;
+	
+	{
+		Hjava_lang_Throwable *th;
+		errorInfo einfo;
 
-	if (overflow != 0) {
-		if (*needOnStack == STACK_LOW) {
-			dprintf(
-				"Panic: unhandled StackOverflowError()\n");
-			ABORT();
-		}
-		*needOnStack = STACK_LOW;
-		throwException(overflow);
+		thread_data->needOnStack = STACK_LOW;
+		th = (Hjava_lang_Throwable *)newObjectChecked (javaLangStackOverflowError, &einfo);
+		thread_data->needOnStack = STACK_HIGH;
+
+		throwException(th);
 	}
 }
 #endif /* CHECK_STACKOVERFLOW */

@@ -14,7 +14,9 @@
 #define __jar_h
 
 #include <sys/types.h>
+#if !defined(KAFFEH)
 #include "locks.h"
+#endif
 
 /*
  * JAR files are like ZIP files, they're basically a series of records

@@ -42,12 +42,12 @@ typedef enum {
 } block_state_t;
 
 /*
- * 'nativeThread' is our link between native and Java thread objects.
+ * 'jthread' is our link between native and Java thread objects.
  * It also serves as a container for our pthread extensions (namely
  * enumeration, and inter-thread suspend)
  */
-typedef struct _nativeThread {
-  threadData            data;
+typedef struct _jthread {
+  threadData		data;
   /* these are our links to the native pthread implementation */
   pthread_t             tid;
   pthread_attr_t        attr;
@@ -68,7 +68,7 @@ typedef struct _nativeThread {
   void                  *stackCur;      /* just useful if blocked or suspended */
   void                  *stackMax;
 
-  struct _nativeThread  *next;
+  struct _jthread	*next;
 } *jthread_t;
 
 extern pthread_key_t   ntKey;
@@ -82,6 +82,14 @@ jthread_t jthread_current(void)
 {
   return (jthread_t)pthread_getspecific(ntKey);
 }
+
+/**
+ * Attaches the calling thread to the vm.
+ *
+ * @param daemon wether the thread is to be treated as a daemon thread
+ *
+ */
+bool jthread_attach_current_thread (bool daemon);
 
 void jthread_sleep (jlong timeout);
 
@@ -128,7 +136,7 @@ void jthread_interrupt(jthread_t tid);
  * @param func the func to execute.
  */
 static inline
-void jthread_atexit(void* func)
+void jthread_atexit(void (* func)(void))
 {
 }
 
@@ -314,9 +322,9 @@ void jthread_init(int preemptive,                	/* preemptive scheduling */
 		  void *(*_allocator)(size_t),   	/* memory allocator */
 		  void (*_deallocator)(void*),    	/* memory deallocator */
 		  void *(*_reallocator)(void*,size_t),  /* memory reallocator */
-		  void (*_destructor1)(void*),    /* called when a thread exits */
-		  void (*_onstop)(void),          /* called when a thread is stopped */
-		  void (*_ondeadlock)(void));     /* called when we detect deadlock */
+		  void (*_destructor1)(void*),		/* called when a thread exits */
+		  void (*_onstop)(void),		/* called when a thread is stopped */
+		  void (*_ondeadlock)(void));		/* called when we detect deadlock */
 
 
 /**
@@ -372,7 +380,7 @@ void jthread_unsuspendall (void);
  * Call a function once for each active thread.
  *
  */
-void jthread_walkLiveThreads (void(*)(void*));
+void jthread_walkLiveThreads (void(*)(jthread_t));
 
 /**
  * Return thread status

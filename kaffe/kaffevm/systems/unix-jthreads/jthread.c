@@ -876,7 +876,10 @@ DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%ld) bI %d\n",
 	if (jtid->status != THREAD_SUSPENDED) {
 		jtid->status = THREAD_SUSPENDED;
 
+#ifdef ENABLE_JVMPI
 		FIRSTFRAME(currentJThread->localData.topFrame, 0);
+#endif
+
 		last = 0;
 		for (ntid = &threadQhead[jtid->priority]; 
 			*ntid != 0; 
@@ -1050,12 +1053,12 @@ jthread_destroy(jthread *jtid)
  * iterate over all live threads
  */
 void
-jthread_walkLiveThreads(void (*func)(void *jlThread))
+jthread_walkLiveThreads(void (*func)(jthread_t))
 {
         KaffeNodeQueue* liveQ;
 
         for (liveQ = liveThreads; liveQ != NULL; liveQ = liveQ->next) {
-                func(JTHREADQ(liveQ)->localData.jlThread);
+                func(JTHREADQ(liveQ));
         }
 }
 
@@ -1347,11 +1350,11 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char prio, void* jlThre
 	 *   of frames is valid.  This is done by checking its range.
 	 */
 #if defined(STACK_GROWS_UP)
-	jtid->stackBase = (void*)((uintp)&jtid & -0x1000);
+	jtid->stackBase = (void*)(uintp)(&jtid - 0x100);
 	jtid->stackEnd = jtid->stackBase + mainThreadStackSize;
         jtid->restorePoint = jtid->stackEnd;
 #else
-	jtid->stackEnd = (void*)(((uintp)&jtid + 0x1000 - 1) & -0x1000);
+	jtid->stackEnd = (void*)(uintp)(&jtid + 0x100);
         jtid->stackBase = (char *) jtid->stackEnd - mainThreadStackSize;
         jtid->restorePoint = jtid->stackBase;
 #endif

@@ -46,6 +46,8 @@ char*	nameNativeThread(void*);
 Hjava_lang_Thread* getCurrentThread(void);
 Hjava_lang_Thread* createDaemon(void*, const char*, void *arg, int,
 				size_t, struct _errorInfo *);
+void	attachFakedThreadInstance (const char *name);
+
 extern  Hjava_lang_Class* ThreadClass;
 struct  _Collector;
 
@@ -54,6 +56,8 @@ extern	jbool deadlockDetection;
 #define THREAD_NATIVE()         ((void*)jthread_current())
 
 #define THREAD_JNIENV()         (&jthread_get_data(jthread_current())->jniEnv)
+
+#define THREAD_DATA()		(jthread_get_data(jthread_current()))
 
 #if !defined(KAFFEH)
 /*

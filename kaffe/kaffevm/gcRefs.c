@@ -102,17 +102,16 @@ gc_rm_ref(const void* mem)
  */     
 static  
 void    
-TwalkThread(Collector* collector, Hjava_lang_Thread* tid)
+TwalkThread(Collector* collector, jthread_t jtid)
 {       
         void *from;
         unsigned len;  
-        jthread_t jtid = (jthread_t)unhand(tid)->PrivateInfo;
         
         /* Don't walk the gc thread's stack.  It was not stopped and
          * we hence don't have valid sp information.  In addition, there's
          * absolutely no reason why we should walk it at all.
          */
-        if (jtid == 0 || tid == jthread_get_data((void*)jthread_current())->jlThread) {
+        if (jtid == jthread_current()) {
 DBG(JTHREAD,
                 dprintf("%p NOT walking jtid %p\n", jthread_current(), jtid);
     )   
@@ -125,7 +124,7 @@ DBG(JTHREAD,
          */
         if (jthread_extract_stack(jtid, &from, &len)) {
 DBG(JTHREAD|DBG_GCWALK,
-                dprintf("walking stack of `%s' thread\n", nameThread(tid));
+                dprintf("walking stack of `%s' thread\n", nameThread(jthread_get_data(jtid)->jlThread));
     )
                 /* and walk it if needed */
                 GC_walkConservative(collector, from, len);
@@ -142,12 +141,19 @@ static Collector *running_collector;
  * soft_instanceof in walkObject, which is a big source of overhead.
  */
 static void
-liveThreadWalker(void *tid)
+liveThreadWalker(jthread_t tid)
 {
   Collector *c = running_collector;
+  threadData *thread_data = jthread_get_data(tid);
 
-  GC_markObject(c, tid);
-  TwalkThread(c, (Hjava_lang_Thread *)tid);
+  GC_markObject(c, thread_data->jlThread);
+  
+  if (thread_data->exceptObj != NULL)
+  {
+    GC_markObject(c, thread_data->exceptObj);
+  }
+
+  TwalkThread(c, tid);
 }
 
 /*

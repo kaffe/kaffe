@@ -78,7 +78,6 @@ getHeavyLock(iLock** lkp, iLock *heavyLock)
 {
 	iLock* old;
 	iLock* lk;
-	Hjava_lang_Thread* tid;
 	jlong timeout;
 
 DBG(SLOWLOCKS,
@@ -95,9 +94,8 @@ DBG(SLOWLOCKS,
 		old = *lkp;
 		if (old == LOCKINPROGRESS || !COMPARE_AND_EXCHANGE(lkp, old, LOCKINPROGRESS)) {
 			/* Someone else put the lock in LOCKINPROGRESS state */
-			tid = getCurrentThread();
 			backoffcount++;
-			ksemGet((Ksem*)(unhand(tid)->sem), timeout);
+			ksemGet(&THREAD_DATA()->sem, timeout);
 			/* Back off */
 			timeout = (timeout << 1)|timeout;
 			continue;
@@ -169,7 +167,7 @@ static void
 slowLockMutex(iLock** lkp, void* where, iLock *heavyLock)
 {
 	iLock* lk;
-	Hjava_lang_Thread* tid;
+	jthread_t cur = jthread_current ();
 
 DBG(SLOWLOCKS,
     	dprintf("slowLockMutex(**lkp=%p, where=%p, th=%p)\n",
@@ -196,11 +194,10 @@ DBG(SLOWLOCKS,
 		}
 
 		/* Otherwise wait for holder to release it */
-		tid = getCurrentThread();
-		unhand(tid)->nextlk = lk->mux;
-		lk->mux = tid;
+		jthread_get_data(cur)->nextlk = lk->mux;
+		lk->mux = cur;
 		putHeavyLock(lkp, lk);
-		ksemGet((Ksem*)(unhand(tid)->sem), 0);
+		ksemGet(&jthread_get_data(cur)->sem, 0);
 	}
 }
 
@@ -213,7 +210,7 @@ static void
 slowUnlockMutex(iLock** lkp, void* where, iLock *heavyLock)
 {
 	iLock* lk;
-	Hjava_lang_Thread* tid;
+	jthread_t tid;
 
 DBG(SLOWLOCKS,
     	dprintf("slowUnlockMutex(**lkp=%p, where=%p, th=%p)\n",
@@ -245,11 +242,11 @@ DBG(SLOWLOCKS,
 	 */
 	if (lk->mux != 0) {
 		tid = lk->mux;
-		lk->mux = unhand(tid)->nextlk;
-		unhand(tid)->nextlk = 0;
+		lk->mux = jthread_get_data(tid)->nextlk;
+		jthread_get_data(tid)->nextlk = 0;
 		lk->holder = 0;
 		putHeavyLock(lkp, lk);
-		ksemPut((Ksem*)(unhand(tid)->sem));
+		ksemPut(&jthread_get_data(tid)->sem);
 	}
 	/* If someone's waiting to be signaled keep the heavy in place */
 	else if (lk->cv != 0) {
@@ -305,8 +302,8 @@ locks_internal_waitCond(iLock** lkp, jlong timeout, iLock *heavyLock)
 {
 	iLock* lk;
 	void* holder;
-	Hjava_lang_Thread* tid;
-	Hjava_lang_Thread** ptr;
+	jthread_t cur = jthread_current();
+	jthread_t *ptr;
 	jboolean r;
 
 DBG(SLOWLOCKS,
@@ -323,12 +320,11 @@ DBG(SLOWLOCKS,
 		throwException(IllegalMonitorStateException);
 	}
 
-	tid = getCurrentThread();
-	unhand(tid)->nextlk = lk->cv;
-	lk->cv = tid;
+	jthread_get_data(cur)->nextlk = lk->cv;
+	lk->cv = cur;
 	putHeavyLock(lkp, lk);
 	slowUnlockMutex(lkp, holder, heavyLock);
-	r = ksemGet((Ksem*)unhand(tid)->sem, timeout);
+	r = ksemGet(&jthread_get_data(cur)->sem, timeout);
 
 	/* Timeout */
 	if (r == false) {
@@ -336,22 +332,22 @@ DBG(SLOWLOCKS,
 		/* Remove myself from CV or MUX queue - if I'm * not on either
 		 * then I should wait on myself to remove any pending signal.
 		 */
-		for (ptr = &lk->cv; *ptr != 0; ptr = &unhand(*ptr)->nextlk) {
-			if ((*ptr) == tid) {
-				*ptr = unhand(tid)->nextlk;
+		for (ptr = &lk->cv; *ptr != 0; ptr = &jthread_get_data(*ptr)->nextlk) {
+			if ((*ptr) == cur) {
+				*ptr = jthread_get_data(cur)->nextlk;
 				goto found;
 			}
 		}
-		for (ptr = &lk->mux; *ptr != 0; ptr = &unhand(*ptr)->nextlk) {
-			if ((*ptr) == tid) {
-				*ptr = unhand(tid)->nextlk;
+		for (ptr = &lk->mux; *ptr != 0; ptr = &jthread_get_data(*ptr)->nextlk) {
+			if ((*ptr) == cur) {
+				*ptr = jthread_get_data(cur)->nextlk;
 				goto found;
 			}
 		}
 		/* Not on list - so must have been signalled after all -
 		 * decrease the semaphore to avoid problems.
 		 */
-		ksemGet((Ksem*)(unhand(tid)->sem), 0);
+		ksemGet(&jthread_get_data(cur)->sem, 0);
 
 		found:;
 		putHeavyLock(lkp, lk);
@@ -366,7 +362,7 @@ void
 locks_internal_signalCond(iLock** lkp, iLock *heavyLock)
 {
 	iLock* lk;
-	Hjava_lang_Thread* tid;
+	jthread_t tid;
 
 DBG(SLOWLOCKS,
     	dprintf("_signalCond(**lkp=%p, th=%p)\n",
@@ -383,8 +379,8 @@ DBG(SLOWLOCKS,
 	/* Move one CV's onto the MUX */
 	tid = lk->cv;
 	if (tid != 0) {
-		lk->cv = unhand(tid)->nextlk;
-		unhand(tid)->nextlk = lk->mux;
+		lk->cv = jthread_get_data(tid)->nextlk;
+		jthread_get_data(tid)->nextlk = lk->mux;
 		lk->mux = tid;
 	}
 
@@ -395,7 +391,7 @@ void
 locks_internal_broadcastCond(iLock** lkp, iLock *heavyLock)
 {
 	iLock* lk;
-	Hjava_lang_Thread* tid;
+	jthread_t tid;
 
 DBG(SLOWLOCKS,
     	dprintf("_broadcastCond(**lkp=%p, th=%p)\n",
@@ -412,8 +408,8 @@ DBG(SLOWLOCKS,
 	/* Move all the CV's onto the MUX */
 	while (lk->cv != 0) {
 		tid = lk->cv;
-		lk->cv = unhand(tid)->nextlk;
-		unhand(tid)->nextlk = lk->mux;
+		lk->cv = jthread_get_data(tid)->nextlk;
+		jthread_get_data(tid)->nextlk = lk->mux;
 		lk->mux = tid;
 	}
 

@@ -140,9 +140,9 @@ jthread_init(
         void *(*_allocator)(size_t),		/* memory allocator */
 	void (*_deallocator)(void*),		/* memory deallocator */
 	void *(*_reallocator)(void*,size_t),	/* memory reallocator */
-	void (*_destructor1)(void*),	/* called when a thread exits */ 
-	void (*_onstop)(void), 		/* called when a thread is stopped */
-	void (*_ondeadlock)(void)); 	/* called when we detect deadlock */
+	void (*_destructor1)(void*),		/* called when a thread exits */ 
+	void (*_onstop)(void),			/* called when a thread is stopped */
+	void (*_ondeadlock)(void));		/* called when we detect deadlock */
 
 /*
  * Create the first thread - actually bind the first thread to the java
@@ -182,7 +182,7 @@ void 	jthread_atexit(void (*f)(void));
  * walk all live threads, and invoke `func', passing in their cookie
  * this is used with `func' set to walkMemory
  */
-void 	jthread_walkLiveThreads(void (*func)(void *jlThread));
+void 	jthread_walkLiveThreads(void (*func)(jthread_t));
 
 /* 
  * destroy this jthread structure 
@@ -347,5 +347,11 @@ int jthread_on_condvar(jthread_t jt);
 void jthread_clear_run(jthread_t jt);
 
 int jthread_has_run(jthread_t jt);
+
+static inline
+bool jthread_attach_current_thread(bool daemon)
+{
+	return false;
+}
 
 #endif

@@ -9,10 +9,6 @@
  * of this file. 
  */
 
-#if 0
-#define	NEED_JNIREFS	/* Define to mange local JNI refs */
-#endif
-
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
@@ -130,28 +126,28 @@ getMethodFunc (Method* meth, Hjava_lang_Object *obj)
  */
 #define	BEGIN_EXCEPTION_HANDLING(X)			\
 	VmExceptHandler ebuf;				\
+	threadData *thread_data = THREAD_DATA();	\
 	KAFFE_JNI_SETEXCEPTFP(&ebuf); 			\
-	ebuf.prev = (VmExceptHandler*)(unhand(getCurrentThread())->exceptPtr);\
+	ebuf.prev = thread_data->exceptPtr;\
 	if (JTHREAD_SETJMP(ebuf.jbuf) != 0) {		\
-		unhand(getCurrentThread())->exceptPtr = \
-		  (struct Hkaffe_util_Ptr*)ebuf.prev;	\
+		thread_data->exceptPtr = ebuf.prev;	\
 		return X;				\
 	}						\
-	unhand(getCurrentThread())->exceptPtr = (void *) &ebuf
+	thread_data->exceptPtr = &ebuf
 
 #define	BEGIN_EXCEPTION_HANDLING_VOID()			\
 	VmExceptHandler ebuf; 				\
+	threadData *thread_data = THREAD_DATA();	\
 	KAFFE_JNI_SETEXCEPTFP(&ebuf); 			\
-	ebuf.prev = (VmExceptHandler*)(unhand(getCurrentThread())->exceptPtr);\
+	ebuf.prev = thread_data->exceptPtr;	\
 	if (JTHREAD_SETJMP(ebuf.jbuf) != 0) {		\
-		unhand(getCurrentThread())->exceptPtr = \
-		  (struct Hkaffe_util_Ptr*)ebuf.prev;	\
+		thread_data->exceptPtr = ebuf.prev; \
 		return;					\
 	}						\
-	unhand(getCurrentThread())->exceptPtr = (void *) &ebuf
+	thread_data->exceptPtr = &ebuf
 
 #define	END_EXCEPTION_HANDLING()			\
-	unhand(getCurrentThread())->exceptPtr = (void *) ebuf.prev
+	thread_data->exceptPtr = ebuf.prev
 
 /*
  * Get and set fields.
@@ -206,7 +202,7 @@ JNI_CreateJavaVM(JavaVM** vm, JNIEnv** env, JavaVMInitArgs* args)
 
 	/* Setup JNI for main thread */
 #if defined(NEED_JNIREFS)
-	unhand(getCurrentThread())->jnireferences = gc_malloc(sizeof(jnirefs), &gcNormal);
+	THREAD_DATA()->jnireferences = (jnirefs *)gc_malloc(sizeof(jnirefs), &gcNormal);
 #endif
 
 	/* Return the VM and JNI we're using */
@@ -423,15 +419,9 @@ Kaffe_Throw(JNIEnv* env, jobject obj)
 	{
 		assert(((Hjava_lang_Object *)obj)->dtable);
 		
-		unhand(getCurrentThread())->exceptObj =
-			(struct Hjava_lang_Throwable*)obj;
+		thread_data->exceptObj = (struct Hjava_lang_Throwable*)obj;
 	}
-	else
-	{
-		unhand(getCurrentThread())->exceptObj =
-			unhand(getCurrentThread())->outOfMemoryError;
-	}
-	
+
 	END_EXCEPTION_HANDLING();
 	return (0);
 }
@@ -447,7 +437,7 @@ Kaffe_ThrowNew(JNIEnv* env, jclass cls, const char* mess)
 					"(Ljava/lang/String;)V",
 					checkPtr(stringC2Java((char*)mess)));
 
-	unhand(getCurrentThread())->exceptObj = (struct Hjava_lang_Throwable*)eobj;
+	thread_data->exceptObj = (struct Hjava_lang_Throwable*)eobj;
 
 	END_EXCEPTION_HANDLING();
 	return (0);
@@ -460,7 +450,7 @@ Kaffe_ExceptionOccurred(JNIEnv* env)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	obj = unhand(getCurrentThread())->exceptObj;
+	obj = thread_data->exceptObj;
 
 	ADD_REF(obj);
 	END_EXCEPTION_HANDLING();
@@ -475,7 +465,7 @@ Kaffe_ExceptionCheck(JNIEnv* env)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	obj = unhand(getCurrentThread())->exceptObj;
+	obj = thread_data->exceptObj;
 	result = (obj == NULL) ? JNI_FALSE : JNI_TRUE;
 
 	END_EXCEPTION_HANDLING();
@@ -487,8 +477,9 @@ Kaffe_ExceptionDescribe(JNIEnv* env)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
-	if (unhand(getCurrentThread())->exceptObj != 0) {
-		do_execute_java_method(unhand(getCurrentThread())->exceptObj, "printStackTrace", "()V", 0, 0, unhand(getCurrentThread())->exceptObj); 
+	if (thread_data->exceptObj != 0) {
+		do_execute_java_method(thread_data->exceptObj, "printStackTrace", "()V",
+				       0, 0, thread_data->exceptObj); 
 	}
 	END_EXCEPTION_HANDLING();
 }
@@ -498,7 +489,7 @@ Kaffe_ExceptionClear(JNIEnv* env)
 {
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
-	unhand(getCurrentThread())->exceptObj = 0;
+	thread_data->exceptObj = 0;
 
 	END_EXCEPTION_HANDLING();
 }
@@ -3593,8 +3584,11 @@ Kaffe_DestroyJavaVM(JavaVM* vm)
 static jint
 Kaffe_AttachCurrentThread(JavaVM* vm, void** penv, ThreadAttachArgs* args)
 {
-	*penv = NULL;
-	return (0);
+	if (jthread_attach_current_thread (false)) {
+		attachFakedThreadInstance ("test attach");
+		return 0;
+	}
+	return -1;
 }
 
 static jint
@@ -4091,37 +4085,37 @@ Kaffe_KNI_wrapper(Method* xmeth, void* func)
 static void*
 startJNIcall(void)
 {
+	threadData 	*thread_data = THREAD_DATA();
 #if defined(NEED_JNIREFS)
 	jnirefs* table;
 
 	table = gc_malloc(sizeof(jnirefs), &gcNormal);
-	table->prev = unhand(getCurrentThread())->jnireferences;
-	unhand(getCurrentThread())->jnireferences = table;
+	table->prev = thread_data->jnireferences;
+	thread_data->jnireferences = table;
 #endif
 	/* No pending exception when we enter JNI routine */
-	unhand(getCurrentThread())->exceptObj = 0;
-	return( THREAD_JNIENV() );
+	thread_data->exceptObj = 0;
+	return( &thread_data->jniEnv ); 
 }
 
 static void
 finishJNIcall(void)
 {
 	jref eobj;
-	Hjava_lang_Thread* ct;
+	threadData	*thread_data = THREAD_DATA();
 
-	ct = getCurrentThread();
 #if defined(NEED_JNIREFS)
 	{
 		jnirefs* table;
 
-		table = (jnirefs*)unhand(ct)->jnireferences;
-		unhand(ct)->jnireferences = table->prev;
+		table = thread_data->jnireferences;
+		thread_data->jnireferences = table->prev;
 	}
 #endif
 	/* If we have a pending exception, throw it */
-	eobj = unhand(ct)->exceptObj;
+	eobj = thread_data->exceptObj;
 	if (eobj != 0) {
-		unhand(ct)->exceptObj = 0;
+		thread_data->exceptObj = 0;
 		throwExternalException(eobj);
 	}
 }
@@ -4134,7 +4128,7 @@ addJNIref(jref obj)
 	jnirefs* table;
 	int idx;
 
-	table = (jnirefs*)unhand(getCurrentThread())->jnireferences;
+	table = THREAD_DATA()->jnireferences;
 
 	if (table->used == JNIREFS) {
 		abort();	/* FIX ME */
@@ -4158,7 +4152,7 @@ removeJNIref(jref obj)
 	int idx;
 	jnirefs* table;
 
-	table = (jnirefs*)unhand(getCurrentThread())->jnireferences;
+	table = THREAD_DATA()->jnireferences;
 
 	for (idx = 0; idx < JNIREFS; idx++) {
 		if (table->objects[idx] == obj) {
