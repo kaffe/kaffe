@@ -1,3 +1,9 @@
+2003-12-31  Mark Huizer <xaa+kaffe@timewasters.nl>
+
+	* libraries/clib/net/InetAddressImpl.c
+	(gnu_java_net_SysInetAddressImpl_getHostByName):
+	Fixed compilation on FreeBSD 5.x.
+
 2003-12-31  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/io/ObjectStreamClass.java

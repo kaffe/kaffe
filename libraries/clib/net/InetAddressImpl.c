@@ -241,7 +241,9 @@ gnu_java_net_SysInetAddressImpl_getHostByName(
 			   "Unable to contact name server");
       break;
     case EAI_NONAME:
+#if defined(EAI_NODATA) && EAI_NODATA != EAI_NONAME
     case EAI_NODATA:
+#endif
       postExceptionMessage(&einfo,
 			   JAVA_NET(UnknownHostException),
 			   "Unknown host: %s",
