@@ -137,11 +137,11 @@ countAlphas ( Image *img, int* noAlpha, int* partAlpha, int* fullAlpha )
 	for ( j=0; j<img->width; j++ ) {
 	  a = GetAlpha( img->alpha, j, i);
 	  if ( a == 0 )
-		*noAlpha++;
+		(*noAlpha)++;
 	  else if ( a == 0xff )
-		*fullAlpha++;
+		(*fullAlpha)++;
 	  else
-		*partAlpha++;
+		(*partAlpha)++;
 	}
   }
 }
@@ -208,7 +208,7 @@ long
 getScaledPixel ( Toolkit* X, Image* img, int x, int y, double dx, double dy )
 {
   unsigned long  ul, ur, ll, lr;
-  int            ulR, urR, llR, lrR, ulG, urG, llG, lrG, ulB, urB, llB, lrB, r, g, b, a;
+  int            ulR, urR, llR, lrR, ulG, urG, llG, lrG, ulB, urB, llB, lrB, r, g, b;
   int            xi = (dx) ? x+1 : x;
   int            yi = (dy) ? y+1 : y;
 
