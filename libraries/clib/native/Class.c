@@ -333,7 +333,10 @@ java_lang_Class_isInstance(struct Hjava_lang_Class* this, struct Hjava_lang_Obje
 jint
 java_lang_Class_getModifiers(struct Hjava_lang_Class* this)
 {
-	return (this->accflags & ACC_MASK);
+#ifndef ACC_SUPER
+#define ACC_SUPER ACC_SYNCHRONISED
+#endif
+	return (this->accflags & (ACC_MASK & ~ACC_SUPER));
 }
 
 HArrayOfObject*
