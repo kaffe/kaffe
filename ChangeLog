@@ -2,6 +2,23 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-01-12  Michael Koch  <konqueror@gmx.de>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+	(Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetVisible):
+	Removed setting of gdk_env.
+	
+	2005-01-12  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GdkRobotPeer.c
+	(mouseWheel): Call XFlush.
+	(keyPress): Likewise.
+	(keyRelease): Likewise.
+	
+2005-01-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-01-11  Michael Koch  <konqueror@gmx.de>
 
 	* javax/swing/UIDefaults.java (UIDefaults):
