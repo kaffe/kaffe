@@ -26,13 +26,12 @@
 
 package gnu.xml.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Dictionary;
+import java.io.*;
 
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import java.util.Dictionary;
+import java.util.Hashtable;
+
+import org.xml.sax.*;
 
 
 /**

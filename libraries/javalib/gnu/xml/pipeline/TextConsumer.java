@@ -26,16 +26,11 @@
 
 package gnu.xml.pipeline;
 
+import java.io.*;
+
+import org.xml.sax.*;
+
 import gnu.xml.util.XMLWriter;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-
-import org.xml.sax.ContentHandler;
-import org.xml.sax.DTDHandler;
-import org.xml.sax.SAXNotRecognizedException;
 
 
 /**

@@ -26,23 +26,14 @@
 
 package gnu.xml.aelfred2;
 
-import gnu.xml.pipeline.EventFilter;
-import gnu.xml.pipeline.ValidationConsumer;
-
 import java.io.IOException;
 import java.util.Locale;
 
-import org.xml.sax.ContentHandler;
-import org.xml.sax.DTDHandler;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.ext.DefaultHandler2;
+import org.xml.sax.*;
+import org.xml.sax.ext.*;
+
+import gnu.xml.pipeline.EventFilter;
+import gnu.xml.pipeline.ValidationConsumer;
 
 
 /**

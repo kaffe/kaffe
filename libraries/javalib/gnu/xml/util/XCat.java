@@ -32,8 +32,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Stack;
 import java.util.StringTokenizer;
+import java.util.Stack;
 import java.util.Vector;
 
 import org.xml.sax.Attributes;
@@ -44,8 +44,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
+
 import org.xml.sax.ext.DefaultHandler2;
 import org.xml.sax.ext.EntityResolver2;
+
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**

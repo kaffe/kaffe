@@ -1,24 +1,39 @@
 /* 
- * $Id: xmlj_error.c,v 1.1 2004/04/14 19:40:14 dalibor Exp $
- * Copyright (C) 2003 Julian Scheid
+ * Copyright (C) 2003, 2004 Free Software Foundation, Inc.
  * 
- * This file is part of GNU LibxmlJ, a JAXP-compliant Java wrapper for
- * the XML and XSLT C libraries for Gnome (libxml2/libxslt).
+ * This file is part of GNU Classpathx/jaxp.
  * 
- * GNU LibxmlJ is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2, or (at your option) any
- * later version.
+ * GNU Classpath is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
  *  
- * GNU LibxmlJ is distributed in the hope that it will be useful, but
+ * GNU Classpath is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with GNU LibxmlJ; see the file COPYING.  If not, write to the
+ * along with GNU Classpath; see the file COPYING.  If not, write to the
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307 USA. 
+ * 02111-1307 USA.
+ * 
+ * Linking this library statically or dynamically with other modules is
+ * making a combined work based on this library.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ * 
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this library with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this library, you may extend
+ * this exception to your version of the library, but you are not
+ * obligated to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
  */
 
 #include "xmlj_error.h"
@@ -31,18 +46,24 @@ static jobject xmljMakeJaxpSourceLocator (void *ctx);
 static jobject
 xmljMakeJaxpSourceLocator (void *ctx)
 {
-  xmlParserCtxtPtr parseContext = (xmlParserCtxtPtr) ctx;
-  SaxErrorContext *saxErrorContext =
+  xmlParserCtxtPtr parseContext;
+  SaxErrorContext *saxErrorContext;
+  JNIEnv *env;
+  jobject result;
+  const char *systemId;
+  const char *publicId;
+
+  parseContext = (xmlParserCtxtPtr) ctx;
+  saxErrorContext =
     (SaxErrorContext *) parseContext->_private;
-  JNIEnv *env = saxErrorContext->env;
-
-  jobject result = (*env)->AllocObject (env,
+  if (saxErrorContext == NULL)
+    return NULL;
+  
+  env = saxErrorContext->env;
+  result = (*env)->AllocObject (env,
 					saxErrorContext->sourceLocatorClass);
-
-  const char *systemId =
-    (const char *) saxErrorContext->locator->getSystemId (ctx);
-  const char *publicId =
-    (const char *) saxErrorContext->locator->getPublicId (ctx);
+  systemId = (const char *) saxErrorContext->locator->getSystemId (ctx);
+  publicId = (const char *) saxErrorContext->locator->getPublicId (ctx);
 
   (*env)->CallVoidMethod (env,
 			  result,
@@ -63,41 +84,50 @@ static void
 callErrorAdapterMethod (void *ctx, const char *msg, va_list va,
 			jmethodID methodID)
 {
-  xmlParserCtxtPtr parseContext = (xmlParserCtxtPtr) ctx;
-  SaxErrorContext *saxErrorContext =
-    (SaxErrorContext *) parseContext->_private;
-  JNIEnv *env = saxErrorContext->env;
+  xmlParserCtxtPtr parseContext;
+  SaxErrorContext *saxErrorContext;
+  JNIEnv *env;
+  
+  parseContext = (xmlParserCtxtPtr) ctx;
+  saxErrorContext = (SaxErrorContext *) parseContext->_private;
+  if (saxErrorContext == NULL)
+    return;
+  
+  env = saxErrorContext->env;
 
   if (!(*env)->ExceptionOccurred (env))
+  {
+    jobject jaxpSourceLocator = xmljMakeJaxpSourceLocator (ctx);
+    
+    char buffer[2048] = "[Error message too long]";
+    vsnprintf (buffer, sizeof buffer, msg, va);
+    
+    (*env)->CallVoidMethod (env,
+                            saxErrorContext->saxErrorAdapter,
+                            methodID,
+                            (*env)->NewStringUTF (env, buffer),
+                            jaxpSourceLocator);
+    
+    if ((*env)->ExceptionOccurred (env))
     {
-      jobject jaxpSourceLocator = xmljMakeJaxpSourceLocator (ctx);
-
-      char buffer[2048] = "[Error message too long]";
-      vsnprintf (buffer, sizeof buffer, msg, va);
-
-      (*env)->CallVoidMethod (env,
-			      saxErrorContext->saxErrorAdapter,
-			      methodID,
-			      (*env)->NewStringUTF (env, buffer),
-			      jaxpSourceLocator);
-
-      if ((*env)->ExceptionOccurred (env))
-	{
-	  xmlStopParser (parseContext);
-	}
+      xmlStopParser (parseContext);
     }
+  }
 }
 
 static void
 xmljErrorSAXFunc (void *ctx, const char *msg, ...)
 {
-  xmlParserCtxtPtr parseContext = (xmlParserCtxtPtr) ctx;
-  SaxErrorContext *saxErrorContext =
-    (SaxErrorContext *) parseContext->_private;
-
+  xmlParserCtxtPtr parseContext;
+  SaxErrorContext *saxErrorContext;
   va_list va;
+  
+  parseContext = (xmlParserCtxtPtr) ctx;
+  saxErrorContext = (SaxErrorContext *) parseContext->_private;
+  if (saxErrorContext == NULL)
+    return;
+  
   va_start (va, msg);
-
   callErrorAdapterMethod (ctx, msg, va, saxErrorContext->saxErrorMethodID);
   va_end (va);
 }
@@ -105,10 +135,15 @@ xmljErrorSAXFunc (void *ctx, const char *msg, ...)
 static void
 xmljFatalErrorSAXFunc (void *ctx, const char *msg, ...)
 {
-  xmlParserCtxtPtr parseContext = (xmlParserCtxtPtr) ctx;
-  SaxErrorContext *saxErrorContext =
-    (SaxErrorContext *) parseContext->_private;
+  xmlParserCtxtPtr parseContext;
+  SaxErrorContext *saxErrorContext;
   va_list va;
+  
+  parseContext = (xmlParserCtxtPtr) ctx;
+  saxErrorContext = (SaxErrorContext *) parseContext->_private;
+  if (saxErrorContext == NULL)
+    return;
+  
   va_start (va, msg);
   callErrorAdapterMethod (ctx, msg, va,
 			  saxErrorContext->saxFatalErrorMethodID);
@@ -118,10 +153,15 @@ xmljFatalErrorSAXFunc (void *ctx, const char *msg, ...)
 static void
 xmljWarningSAXFunc (void *ctx, const char *msg, ...)
 {
-  xmlParserCtxtPtr parseContext = (xmlParserCtxtPtr) ctx;
-  SaxErrorContext *saxErrorContext =
-    (SaxErrorContext *) parseContext->_private;
+  xmlParserCtxtPtr parseContext;
+  SaxErrorContext *saxErrorContext;
   va_list va;
+  
+  parseContext = (xmlParserCtxtPtr) ctx;
+  saxErrorContext = (SaxErrorContext *) parseContext->_private;
+  if (saxErrorContext == NULL)
+    return;
+  
   va_start (va, msg);
   callErrorAdapterMethod (ctx, msg, va, saxErrorContext->saxWarningMethodID);
   va_end (va);
@@ -149,11 +189,15 @@ xmljGetPublicId (void *ctx)
 static void
 xmljSetDocumentLocator (void *ctx, xmlSAXLocatorPtr loc)
 {
-  xmlParserCtxtPtr parseContext = (xmlParserCtxtPtr) ctx;
-  SaxErrorContext *saxErrorContext =
-    (SaxErrorContext *) parseContext->_private;
+  xmlParserCtxtPtr parseContext;
+  SaxErrorContext *saxErrorContext;
+  
+  parseContext = (xmlParserCtxtPtr) ctx;
+  saxErrorContext = (SaxErrorContext *) parseContext->_private;
+  if (saxErrorContext == NULL)
+    return;
+  
   saxErrorContext->locator = loc;
-
   loc->getPublicId = xmljGetPublicId;
   loc->getSystemId = xmljGetSystemId;
 }
@@ -269,17 +313,22 @@ xmljCreateSaxErrorContext (JNIEnv * env, jobject saxErrorAdapter,
 void
 xmljFreeSaxErrorContext (SaxErrorContext * errorContext)
 {
-  JNIEnv *env = errorContext->env;
+  JNIEnv *env;
+  
+  if (errorContext == NULL)
+    return;
+  
+  env = errorContext->env;
   if (NULL != errorContext->systemId && NULL != errorContext->systemIdCstr)
-    {
-      (*env)->ReleaseStringUTFChars (env, errorContext->systemId,
+  {
+    (*env)->ReleaseStringUTFChars (env, errorContext->systemId,
 				     errorContext->systemIdCstr);
-    }
+  }
   if (NULL != errorContext->publicId && NULL != errorContext->publicIdCstr)
-    {
-      (*env)->ReleaseStringUTFChars (env, errorContext->publicId,
-				     errorContext->publicIdCstr);
-    }
+  {
+    (*env)->ReleaseStringUTFChars (env, errorContext->publicId,
+                                   errorContext->publicIdCstr);
+  }
   free (errorContext);
 }
 
@@ -315,3 +364,63 @@ xmljXsltErrorFunc (void *ctx, const char *msg, ...)
       va_end (va);
     }
 }
+
+void
+xmljThrowException (JNIEnv *env,
+                    const char *classname,
+                    const char *message)
+{
+  jclass cls;
+  jmethodID method;
+  jthrowable ex;
+  jstring jmsg;
+
+  cls = (*env)->FindClass (env, classname);
+  if (cls == NULL)
+    {
+      fprintf (stderr, "Can't find class %s\n", classname);
+      return;
+    }
+  method = (*env)->GetMethodID (env, cls, "<init>", "(Ljava/lang/String;)V");
+  if (method == NULL)
+    {
+      printf ("Can't find method %s.<init>\n", classname);
+      return;
+    }
+  jmsg = (message == NULL) ? NULL : (*env)->NewStringUTF (env, message);
+  ex = (jthrowable) (*env)->NewObject (env, cls, method, jmsg);
+  if (ex == NULL)
+    {
+      fprintf (stderr, "Can't instantiate new %s\n", classname);
+      return;
+    }
+  (*env)->Throw (env, ex);
+}
+
+void
+xmljThrowDOMException (JNIEnv* env,
+                       int code,
+                       const char *message)
+{
+  jclass cls;
+  jmethodID method;
+  jthrowable ex;
+  jstring jmsg;
+
+  cls = (*env)->FindClass (env, "org/w3c/dom/DOMException");
+  if (cls == NULL)
+    {
+      printf ("Can't find class org.w3c.dom.DOMException\n");
+      return;
+    }
+  method = (*env)->GetMethodID (env, cls, "<init>", "(SLjava/lang/String;)V");
+  if (method == NULL)
+    {
+      printf ("Can't find method org.w3c.dom.DOMException.<init>\n");
+      return;
+    }
+  jmsg = (message == NULL) ? NULL : (*env)->NewStringUTF (env, message);
+  ex = (jthrowable) (*env)->NewObject (env, cls, method, code, jmsg);
+  (*env)->Throw (env, ex);
+}
+

@@ -26,8 +26,7 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.Document;
+import org.w3c.dom.*;
 
 
 /**
@@ -82,4 +81,5 @@ public class DomCDATA extends DomText implements CDATASection
      */
     final public short getNodeType ()
 	{ return CDATA_SECTION_NODE; }
+    
 }

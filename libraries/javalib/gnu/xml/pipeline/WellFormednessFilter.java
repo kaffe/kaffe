@@ -29,11 +29,9 @@ package gnu.xml.pipeline;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
+import gnu.xml.aelfred2.SAXDriver;
+import org.xml.sax.*;
+import org.xml.sax.ext.*;
 
 
 /**
@@ -223,7 +221,7 @@ public final class WellFormednessFilter extends EventFilter
     {
 	if (!startedDoc)
 	    fatalError ("callback outside of document?");
-	if ("before" != dtdState)
+    if ("before" != dtdState)
 	    fatalError ("two DTDs?");
 	if (!elementStack.empty ())
 	    fatalError ("DTD must precede root element");
@@ -236,7 +234,7 @@ public final class WellFormednessFilter extends EventFilter
     {
 // FIXME: not all parsers will report startDTD() ...
 // we'd rather insist we're "inside".
-	if ("after" == dtdState)
+    if ("after" == dtdState)
 	    fatalError ("not inside DTD");
 	super.notationDecl (name, publicId, systemId);
     }
@@ -247,7 +245,7 @@ public final class WellFormednessFilter extends EventFilter
     {
 // FIXME: not all parsers will report startDTD() ...
 // we'd rather insist we're "inside".
-	if ("after" == dtdState)
+    if ("after" == dtdState)
 	    fatalError ("not inside DTD");
 	super.unparsedEntityDecl (name, publicId, systemId, notationName);
     }

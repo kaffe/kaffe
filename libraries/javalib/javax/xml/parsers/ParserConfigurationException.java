@@ -1,5 +1,4 @@
 /*
- * $Id: ParserConfigurationException.java,v 1.2 2003/12/02 21:38:01 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * 
  * This file is part of GNU JAXP, a library.

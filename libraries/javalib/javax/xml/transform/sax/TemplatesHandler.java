@@ -1,5 +1,4 @@
 /*
- * $Id: TemplatesHandler.java,v 1.3 2004/03/22 11:25:29 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * 
  * This file is part of GNU JAXP, a library.
@@ -27,9 +26,8 @@
 package javax.xml.transform.sax;
 
 // Imports
-import javax.xml.transform.Templates;
-
 import org.xml.sax.ContentHandler;
+import javax.xml.transform.Templates;
 
 /**
  * Handler used to create pre-parsed XSLT transforms.

@@ -8,19 +8,20 @@ package org.xml.sax.helpers;
 import java.io.IOException;
 import java.util.Locale;
 
-import org.xml.sax.AttributeList;
+import org.xml.sax.Parser;	// deprecated
+import org.xml.sax.Locator;
+import org.xml.sax.InputSource;
+import org.xml.sax.AttributeList; // deprecated
+import org.xml.sax.EntityResolver;
+import org.xml.sax.DTDHandler;
+import org.xml.sax.DocumentHandler; // deprecated
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+
+import org.xml.sax.XMLReader;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.DTDHandler;
-import org.xml.sax.DocumentHandler;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
-import org.xml.sax.Parser;
-import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.XMLReader;
 
 
 /**

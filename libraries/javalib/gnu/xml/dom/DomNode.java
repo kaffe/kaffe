@@ -26,20 +26,12 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-import org.w3c.dom.events.DocumentEvent;
-import org.w3c.dom.events.Event;
-import org.w3c.dom.events.EventException;
-import org.w3c.dom.events.EventListener;
-import org.w3c.dom.events.EventTarget;
-import org.w3c.dom.events.MutationEvent;
-import org.w3c.dom.traversal.NodeFilter;
-import org.w3c.dom.traversal.NodeIterator;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.w3c.dom.*;
+import org.w3c.dom.events.*;
+import org.w3c.dom.traversal.*;
 
 
 /**
@@ -138,6 +130,9 @@ public abstract class DomNode
 
     // Optimize access to siblings by caching indices.
     private transient int		parentIndex;
+
+    // DOM Level 3 userData dictionary.
+    private Map                         userData;
 
 	//
 	// Some of the methods here are declared 'final' because
@@ -1575,4 +1570,178 @@ public abstract class DomNode
 	// otherwise they're unequal: one scoped, one not.
 	return false;
     }
+
+    // DOM Level 3 methods
+
+    public String getBaseURI ()
+      {
+        // TODO
+        return null;
+      }
+
+    public short compareDocumentPosition (Node other) throws DOMException
+      {
+        throw new DOMException (DOMException.NOT_SUPPORTED_ERR,
+                                "compareDocumentPosition");
+      }
+
+    public String getTextContent () throws DOMException
+      {
+        switch (getNodeType ())
+          {
+          case ELEMENT_NODE:
+          case ATTRIBUTE_NODE:
+          case ENTITY_NODE:
+          case ENTITY_REFERENCE_NODE:
+          case DOCUMENT_FRAGMENT_NODE:
+            StringBuffer buffer = new StringBuffer ();
+            NodeList children = getChildNodes ();
+            int len = children.getLength ();
+            for (int i = 0; i < len; i++)
+              {
+                Node child = children.item (i);
+                String textContent = child.getTextContent ();
+                if (textContent != null)
+                  {
+                    buffer.append (textContent);
+                  }
+              }
+            return buffer.toString ();
+          case TEXT_NODE:
+          case CDATA_SECTION_NODE:
+          case COMMENT_NODE:
+          case PROCESSING_INSTRUCTION_NODE:
+            return getNodeValue ();
+          default:
+            return null;
+          }
+      }
+
+    public void setTextContent (String textContent) throws DOMException
+      {
+        switch (getNodeType ())
+          {
+          case ELEMENT_NODE:
+          case ATTRIBUTE_NODE:
+          case ENTITY_NODE:
+          case ENTITY_REFERENCE_NODE:
+          case DOCUMENT_FRAGMENT_NODE:
+            NodeList children = getChildNodes ();
+            int len = children.getLength ();
+            for (int i = 0; i < len; i++)
+              {
+                Node child = children.item (i);
+                removeChild (child);
+              }
+            if (textContent != null)
+              {
+                Text text = getOwnerDocument ().createTextNode (textContent);
+                appendChild (text);
+              }
+            break;
+          case TEXT_NODE:
+          case CDATA_SECTION_NODE:
+          case COMMENT_NODE:
+          case PROCESSING_INSTRUCTION_NODE:
+            setNodeValue (textContent);
+            break;
+          }
+      }
+
+    public boolean isSameNode (Node other)
+      {
+        return equals (other);
+      }
+
+    public String lookupPrefix (String namespaceURI)
+      {
+        // TODO
+        return null;
+      }
+
+    public boolean isDefaultNamespace (String namespaceURI)
+      {
+        // TODO
+        return false;
+      }
+
+    public String lookupNamespaceURI (String prefix)
+      {
+        // TODO
+        return null;
+      }
+
+    public boolean isEqualNode (Node arg)
+      {
+        if (equals (arg))
+          return true;
+        if (getNodeType() != arg.getNodeType ())
+          return false;
+        if (!equal (getNodeName (), arg.getNodeName ()))
+          return false;
+        if (!equal (getLocalName (), arg.getLocalName ()))
+          return false;
+        if (!equal (getNamespaceURI (), arg.getNamespaceURI ()))
+          return false;
+        if (!equal (getPrefix (), arg.getPrefix ()))
+          return false;
+        if (!equal (getNodeValue (), arg.getNodeValue ()))
+          return false;
+        // TODO Attr NamedNodeMap
+        // TODO DocumentType
+        if (!equal (getChildNodes (), arg.getChildNodes ()))
+          return false;
+        return true;
+      }
+
+    boolean equal (String arg1, String arg2)
+      {
+        return ((arg1 == null && arg2 == null) ||
+               (arg1 != null && arg1.equals (arg2))); 
+      }
+
+    boolean equal (NodeList arg1, NodeList arg2)
+      {
+        if (arg1 == null && arg2 == null)
+          return true;
+        if (arg1 == null || arg2 == null)
+          return false;
+        int len1 = arg1.getLength ();
+        int len2 = arg2.getLength ();
+        if (len1 != len2)
+          return false;
+        for (int i = 0; i < len1; i++)
+          {
+            Node child1 = arg1.item (i);
+            Node child2 = arg2.item (i);
+            if (child1.isSameNode (child2))
+              return false;
+          }
+        return true;
+      }
+
+    public Object getFeature (String feature, String version)
+      {
+        return null;
+      }
+
+    public Object setUserData (String key, Object data, UserDataHandler handler)
+      {
+        // TODO handler
+        if (userData == null)
+          {
+            userData = new HashMap();
+          }
+        return userData.put (key, data);
+      }
+
+    public Object getUserData (String key)
+      {
+        if (userData == null)
+          {
+            return null;
+          }
+        return userData.get (key);
+      }
+
 }

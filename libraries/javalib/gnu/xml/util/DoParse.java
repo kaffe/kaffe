@@ -26,22 +26,27 @@
 
 package gnu.xml.util;
 
+import java.io.*;
+
+import org.xml.sax.*;
+import org.xml.sax.helpers.XMLReaderFactory;
+import org.xml.sax.ext.*;
+
+// import gnu.xml.pipeline.*;
+// Added imports directly to fix a GCJ problem.
+import gnu.xml.pipeline.CallFilter;
+import gnu.xml.pipeline.DomConsumer;
 import gnu.xml.pipeline.EventConsumer;
 import gnu.xml.pipeline.EventFilter;
+import gnu.xml.pipeline.LinkFilter;
 import gnu.xml.pipeline.NSFilter;
 import gnu.xml.pipeline.PipelineFactory;
 import gnu.xml.pipeline.TeeConsumer;
+import gnu.xml.pipeline.TextConsumer;
 import gnu.xml.pipeline.ValidationConsumer;
 import gnu.xml.pipeline.WellFormednessFilter;
-
-import java.io.IOException;
-
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
+import gnu.xml.pipeline.XIncludeFilter;
+import gnu.xml.pipeline.XsltFilter;
 
 
 /**

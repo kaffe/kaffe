@@ -1,5 +1,4 @@
 /*
- * $Id: ClassStuff.java,v 1.3 2003/12/02 21:38:01 dalibor Exp $
  * Copyright (C) 2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -36,8 +35,6 @@ import java.lang.reflect.Method;
 import java.util.Properties;
 
 
-// $Id: ClassStuff.java,v 1.3 2003/12/02 21:38:01 dalibor Exp $
-
 /**
  * Package-private utility methods for sharing
  * magic related to class loading.
@@ -46,7 +43,7 @@ import java.util.Properties;
  * Keep changes to the two copies in sync.
  *
  * @author David Brownell
- * @version	$Id: ClassStuff.java,v 1.3 2003/12/02 21:38:01 dalibor Exp $
+ * @version	1.2
  */
 final class ClassStuff
 {

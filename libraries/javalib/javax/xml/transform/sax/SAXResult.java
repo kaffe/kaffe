@@ -1,5 +1,4 @@
 /*
- * $Id: SAXResult.java,v 1.3 2004/03/22 11:25:29 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * 
  * This file is part of GNU JAXP, a library.
@@ -27,10 +26,9 @@
 package javax.xml.transform.sax;
 
 // Imports
-import javax.xml.transform.Result;
-
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ext.LexicalHandler;
+import javax.xml.transform.Result;
 
 /**
  * Collects the result of a SAX transform.

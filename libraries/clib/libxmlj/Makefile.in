@@ -85,15 +85,21 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 libxmlj_la_LIBADD =
-am_libxmlj_la_OBJECTS = libxmlj_la-libxsltj.lo libxmlj_la-xmlj_io.lo \
-	libxmlj_la-xmlj_error.lo
+am_libxmlj_la_OBJECTS = libxmlj_la-xmlj_dom.lo \
+	libxmlj_la-xmlj_error.lo libxmlj_la-xmlj_io.lo \
+	libxmlj_la-xmlj_node.lo libxmlj_la-xmlj_sax.lo \
+	libxmlj_la-xmlj_transform.lo libxmlj_la-xmlj_util.lo
 libxmlj_la_OBJECTS = $(am_libxmlj_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/libxmlj_la-libxsltj.Plo \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/libxmlj_la-xmlj_dom.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/libxmlj_la-xmlj_error.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/libxmlj_la-xmlj_io.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/libxmlj_la-xmlj_io.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libxmlj_la-xmlj_node.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libxmlj_la-xmlj_sax.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libxmlj_la-xmlj_transform.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libxmlj_la-xmlj_util.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
@@ -348,9 +354,19 @@ with_engine = @with_engine@
 native_LTLIBRARIES = libxmlj.la
 AM_CPPFLAGS = -I$(top_srcdir)/kaffe -I$(top_builddir)/include
 libxmlj_la_SOURCES = \
-	libxsltj.c \
+	xmlj_dom.c \
+	xmlj_dom.h \
+	xmlj_error.c \
+	xmlj_error.h \
 	xmlj_io.c \
-	xmlj_error.c
+	xmlj_io.h \
+	xmlj_node.c \
+	xmlj_node.h \
+	xmlj_sax.c \
+	xmlj_sax.h \
+	xmlj_transform.c \
+	xmlj_util.c \
+	xmlj_util.h
 
 libxmlj_la_LDFLAGS = \
         $(KLIBFLAGS) \
@@ -432,9 +448,13 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libxmlj_la-libxsltj.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libxmlj_la-xmlj_dom.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libxmlj_la-xmlj_error.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libxmlj_la-xmlj_io.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libxmlj_la-xmlj_node.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libxmlj_la-xmlj_sax.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libxmlj_la-xmlj_transform.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libxmlj_la-xmlj_util.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -460,29 +480,53 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-libxmlj_la-libxsltj.o: libxsltj.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-libxsltj.o -MD -MP -MF "$(DEPDIR)/libxmlj_la-libxsltj.Tpo" -c -o libxmlj_la-libxsltj.o `test -f 'libxsltj.c' || echo '$(srcdir)/'`libxsltj.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-libxsltj.Tpo" "$(DEPDIR)/libxmlj_la-libxsltj.Po"; else rm -f "$(DEPDIR)/libxmlj_la-libxsltj.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libxsltj.c' object='libxmlj_la-libxsltj.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-libxsltj.Po' tmpdepfile='$(DEPDIR)/libxmlj_la-libxsltj.TPo' @AMDEPBACKSLASH@
+libxmlj_la-xmlj_dom.o: xmlj_dom.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_dom.o -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_dom.Tpo" -c -o libxmlj_la-xmlj_dom.o `test -f 'xmlj_dom.c' || echo '$(srcdir)/'`xmlj_dom.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_dom.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_dom.Po"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_dom.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_dom.c' object='libxmlj_la-xmlj_dom.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_dom.Po' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_dom.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-libxsltj.o `test -f 'libxsltj.c' || echo '$(srcdir)/'`libxsltj.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_dom.o `test -f 'xmlj_dom.c' || echo '$(srcdir)/'`xmlj_dom.c
 
-libxmlj_la-libxsltj.obj: libxsltj.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-libxsltj.obj -MD -MP -MF "$(DEPDIR)/libxmlj_la-libxsltj.Tpo" -c -o libxmlj_la-libxsltj.obj `if test -f 'libxsltj.c'; then $(CYGPATH_W) 'libxsltj.c'; else $(CYGPATH_W) '$(srcdir)/libxsltj.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-libxsltj.Tpo" "$(DEPDIR)/libxmlj_la-libxsltj.Po"; else rm -f "$(DEPDIR)/libxmlj_la-libxsltj.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libxsltj.c' object='libxmlj_la-libxsltj.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-libxsltj.Po' tmpdepfile='$(DEPDIR)/libxmlj_la-libxsltj.TPo' @AMDEPBACKSLASH@
+libxmlj_la-xmlj_dom.obj: xmlj_dom.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_dom.obj -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_dom.Tpo" -c -o libxmlj_la-xmlj_dom.obj `if test -f 'xmlj_dom.c'; then $(CYGPATH_W) 'xmlj_dom.c'; else $(CYGPATH_W) '$(srcdir)/xmlj_dom.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_dom.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_dom.Po"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_dom.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_dom.c' object='libxmlj_la-xmlj_dom.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_dom.Po' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_dom.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-libxsltj.obj `if test -f 'libxsltj.c'; then $(CYGPATH_W) 'libxsltj.c'; else $(CYGPATH_W) '$(srcdir)/libxsltj.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_dom.obj `if test -f 'xmlj_dom.c'; then $(CYGPATH_W) 'xmlj_dom.c'; else $(CYGPATH_W) '$(srcdir)/xmlj_dom.c'; fi`
 
-libxmlj_la-libxsltj.lo: libxsltj.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-libxsltj.lo -MD -MP -MF "$(DEPDIR)/libxmlj_la-libxsltj.Tpo" -c -o libxmlj_la-libxsltj.lo `test -f 'libxsltj.c' || echo '$(srcdir)/'`libxsltj.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-libxsltj.Tpo" "$(DEPDIR)/libxmlj_la-libxsltj.Plo"; else rm -f "$(DEPDIR)/libxmlj_la-libxsltj.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libxsltj.c' object='libxmlj_la-libxsltj.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-libxsltj.Plo' tmpdepfile='$(DEPDIR)/libxmlj_la-libxsltj.TPlo' @AMDEPBACKSLASH@
+libxmlj_la-xmlj_dom.lo: xmlj_dom.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_dom.lo -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_dom.Tpo" -c -o libxmlj_la-xmlj_dom.lo `test -f 'xmlj_dom.c' || echo '$(srcdir)/'`xmlj_dom.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_dom.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_dom.Plo"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_dom.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_dom.c' object='libxmlj_la-xmlj_dom.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_dom.Plo' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_dom.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-libxsltj.lo `test -f 'libxsltj.c' || echo '$(srcdir)/'`libxsltj.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_dom.lo `test -f 'xmlj_dom.c' || echo '$(srcdir)/'`xmlj_dom.c
+
+libxmlj_la-xmlj_error.o: xmlj_error.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_error.o -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo" -c -o libxmlj_la-xmlj_error.o `test -f 'xmlj_error.c' || echo '$(srcdir)/'`xmlj_error.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_error.Po"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_error.c' object='libxmlj_la-xmlj_error.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_error.Po' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_error.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_error.o `test -f 'xmlj_error.c' || echo '$(srcdir)/'`xmlj_error.c
+
+libxmlj_la-xmlj_error.obj: xmlj_error.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_error.obj -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo" -c -o libxmlj_la-xmlj_error.obj `if test -f 'xmlj_error.c'; then $(CYGPATH_W) 'xmlj_error.c'; else $(CYGPATH_W) '$(srcdir)/xmlj_error.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_error.Po"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_error.c' object='libxmlj_la-xmlj_error.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_error.Po' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_error.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_error.obj `if test -f 'xmlj_error.c'; then $(CYGPATH_W) 'xmlj_error.c'; else $(CYGPATH_W) '$(srcdir)/xmlj_error.c'; fi`
+
+libxmlj_la-xmlj_error.lo: xmlj_error.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_error.lo -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo" -c -o libxmlj_la-xmlj_error.lo `test -f 'xmlj_error.c' || echo '$(srcdir)/'`xmlj_error.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_error.Plo"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_error.c' object='libxmlj_la-xmlj_error.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_error.Plo' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_error.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_error.lo `test -f 'xmlj_error.c' || echo '$(srcdir)/'`xmlj_error.c
 
 libxmlj_la-xmlj_io.o: xmlj_io.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_io.o -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_io.Tpo" -c -o libxmlj_la-xmlj_io.o `test -f 'xmlj_io.c' || echo '$(srcdir)/'`xmlj_io.c; \
@@ -508,29 +552,101 @@ libxmlj_la-xmlj_io.lo: xmlj_io.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_io.lo `test -f 'xmlj_io.c' || echo '$(srcdir)/'`xmlj_io.c
 
-libxmlj_la-xmlj_error.o: xmlj_error.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_error.o -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo" -c -o libxmlj_la-xmlj_error.o `test -f 'xmlj_error.c' || echo '$(srcdir)/'`xmlj_error.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_error.Po"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_error.c' object='libxmlj_la-xmlj_error.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_error.Po' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_error.TPo' @AMDEPBACKSLASH@
+libxmlj_la-xmlj_node.o: xmlj_node.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_node.o -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_node.Tpo" -c -o libxmlj_la-xmlj_node.o `test -f 'xmlj_node.c' || echo '$(srcdir)/'`xmlj_node.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_node.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_node.Po"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_node.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_node.c' object='libxmlj_la-xmlj_node.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_node.Po' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_node.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_error.o `test -f 'xmlj_error.c' || echo '$(srcdir)/'`xmlj_error.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_node.o `test -f 'xmlj_node.c' || echo '$(srcdir)/'`xmlj_node.c
 
-libxmlj_la-xmlj_error.obj: xmlj_error.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_error.obj -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo" -c -o libxmlj_la-xmlj_error.obj `if test -f 'xmlj_error.c'; then $(CYGPATH_W) 'xmlj_error.c'; else $(CYGPATH_W) '$(srcdir)/xmlj_error.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_error.Po"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_error.c' object='libxmlj_la-xmlj_error.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_error.Po' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_error.TPo' @AMDEPBACKSLASH@
+libxmlj_la-xmlj_node.obj: xmlj_node.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_node.obj -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_node.Tpo" -c -o libxmlj_la-xmlj_node.obj `if test -f 'xmlj_node.c'; then $(CYGPATH_W) 'xmlj_node.c'; else $(CYGPATH_W) '$(srcdir)/xmlj_node.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_node.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_node.Po"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_node.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_node.c' object='libxmlj_la-xmlj_node.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_node.Po' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_node.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_error.obj `if test -f 'xmlj_error.c'; then $(CYGPATH_W) 'xmlj_error.c'; else $(CYGPATH_W) '$(srcdir)/xmlj_error.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_node.obj `if test -f 'xmlj_node.c'; then $(CYGPATH_W) 'xmlj_node.c'; else $(CYGPATH_W) '$(srcdir)/xmlj_node.c'; fi`
 
-libxmlj_la-xmlj_error.lo: xmlj_error.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_error.lo -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo" -c -o libxmlj_la-xmlj_error.lo `test -f 'xmlj_error.c' || echo '$(srcdir)/'`xmlj_error.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_error.Plo"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_error.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_error.c' object='libxmlj_la-xmlj_error.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_error.Plo' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_error.TPlo' @AMDEPBACKSLASH@
+libxmlj_la-xmlj_node.lo: xmlj_node.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_node.lo -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_node.Tpo" -c -o libxmlj_la-xmlj_node.lo `test -f 'xmlj_node.c' || echo '$(srcdir)/'`xmlj_node.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_node.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_node.Plo"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_node.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_node.c' object='libxmlj_la-xmlj_node.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_node.Plo' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_node.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_error.lo `test -f 'xmlj_error.c' || echo '$(srcdir)/'`xmlj_error.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_node.lo `test -f 'xmlj_node.c' || echo '$(srcdir)/'`xmlj_node.c
+
+libxmlj_la-xmlj_sax.o: xmlj_sax.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_sax.o -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_sax.Tpo" -c -o libxmlj_la-xmlj_sax.o `test -f 'xmlj_sax.c' || echo '$(srcdir)/'`xmlj_sax.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_sax.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_sax.Po"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_sax.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_sax.c' object='libxmlj_la-xmlj_sax.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_sax.Po' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_sax.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_sax.o `test -f 'xmlj_sax.c' || echo '$(srcdir)/'`xmlj_sax.c
+
+libxmlj_la-xmlj_sax.obj: xmlj_sax.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_sax.obj -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_sax.Tpo" -c -o libxmlj_la-xmlj_sax.obj `if test -f 'xmlj_sax.c'; then $(CYGPATH_W) 'xmlj_sax.c'; else $(CYGPATH_W) '$(srcdir)/xmlj_sax.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_sax.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_sax.Po"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_sax.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_sax.c' object='libxmlj_la-xmlj_sax.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_sax.Po' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_sax.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_sax.obj `if test -f 'xmlj_sax.c'; then $(CYGPATH_W) 'xmlj_sax.c'; else $(CYGPATH_W) '$(srcdir)/xmlj_sax.c'; fi`
+
+libxmlj_la-xmlj_sax.lo: xmlj_sax.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_sax.lo -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_sax.Tpo" -c -o libxmlj_la-xmlj_sax.lo `test -f 'xmlj_sax.c' || echo '$(srcdir)/'`xmlj_sax.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_sax.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_sax.Plo"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_sax.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_sax.c' object='libxmlj_la-xmlj_sax.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_sax.Plo' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_sax.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_sax.lo `test -f 'xmlj_sax.c' || echo '$(srcdir)/'`xmlj_sax.c
+
+libxmlj_la-xmlj_transform.o: xmlj_transform.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_transform.o -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_transform.Tpo" -c -o libxmlj_la-xmlj_transform.o `test -f 'xmlj_transform.c' || echo '$(srcdir)/'`xmlj_transform.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_transform.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_transform.Po"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_transform.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_transform.c' object='libxmlj_la-xmlj_transform.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_transform.Po' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_transform.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_transform.o `test -f 'xmlj_transform.c' || echo '$(srcdir)/'`xmlj_transform.c
+
+libxmlj_la-xmlj_transform.obj: xmlj_transform.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_transform.obj -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_transform.Tpo" -c -o libxmlj_la-xmlj_transform.obj `if test -f 'xmlj_transform.c'; then $(CYGPATH_W) 'xmlj_transform.c'; else $(CYGPATH_W) '$(srcdir)/xmlj_transform.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_transform.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_transform.Po"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_transform.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_transform.c' object='libxmlj_la-xmlj_transform.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_transform.Po' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_transform.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_transform.obj `if test -f 'xmlj_transform.c'; then $(CYGPATH_W) 'xmlj_transform.c'; else $(CYGPATH_W) '$(srcdir)/xmlj_transform.c'; fi`
+
+libxmlj_la-xmlj_transform.lo: xmlj_transform.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_transform.lo -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_transform.Tpo" -c -o libxmlj_la-xmlj_transform.lo `test -f 'xmlj_transform.c' || echo '$(srcdir)/'`xmlj_transform.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_transform.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_transform.Plo"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_transform.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_transform.c' object='libxmlj_la-xmlj_transform.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_transform.Plo' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_transform.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_transform.lo `test -f 'xmlj_transform.c' || echo '$(srcdir)/'`xmlj_transform.c
+
+libxmlj_la-xmlj_util.o: xmlj_util.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_util.o -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_util.Tpo" -c -o libxmlj_la-xmlj_util.o `test -f 'xmlj_util.c' || echo '$(srcdir)/'`xmlj_util.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_util.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_util.Po"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_util.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_util.c' object='libxmlj_la-xmlj_util.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_util.Po' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_util.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_util.o `test -f 'xmlj_util.c' || echo '$(srcdir)/'`xmlj_util.c
+
+libxmlj_la-xmlj_util.obj: xmlj_util.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_util.obj -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_util.Tpo" -c -o libxmlj_la-xmlj_util.obj `if test -f 'xmlj_util.c'; then $(CYGPATH_W) 'xmlj_util.c'; else $(CYGPATH_W) '$(srcdir)/xmlj_util.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_util.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_util.Po"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_util.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_util.c' object='libxmlj_la-xmlj_util.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_util.Po' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_util.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_util.obj `if test -f 'xmlj_util.c'; then $(CYGPATH_W) 'xmlj_util.c'; else $(CYGPATH_W) '$(srcdir)/xmlj_util.c'; fi`
+
+libxmlj_la-xmlj_util.lo: xmlj_util.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -MT libxmlj_la-xmlj_util.lo -MD -MP -MF "$(DEPDIR)/libxmlj_la-xmlj_util.Tpo" -c -o libxmlj_la-xmlj_util.lo `test -f 'xmlj_util.c' || echo '$(srcdir)/'`xmlj_util.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libxmlj_la-xmlj_util.Tpo" "$(DEPDIR)/libxmlj_la-xmlj_util.Plo"; else rm -f "$(DEPDIR)/libxmlj_la-xmlj_util.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xmlj_util.c' object='libxmlj_la-xmlj_util.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libxmlj_la-xmlj_util.Plo' tmpdepfile='$(DEPDIR)/libxmlj_la-xmlj_util.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libxmlj_la_CFLAGS) $(CFLAGS) -c -o libxmlj_la-xmlj_util.lo `test -f 'xmlj_util.c' || echo '$(srcdir)/'`xmlj_util.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -1,5 +1,4 @@
 /*
- * $Id: Transformer.java,v 1.2 2003/12/02 21:38:02 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * Copyright (C) 2001 David Brownell
  * 

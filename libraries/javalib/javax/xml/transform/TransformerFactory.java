@@ -1,5 +1,4 @@
 /*
- * $Id: TransformerFactory.java,v 1.3 2004/03/22 11:25:28 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * Copyright (C) 2001 David Brownell
  * 
@@ -28,6 +27,13 @@
 package javax.xml.transform;
 
 // Imports
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.File;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.Properties;
 
 /**
  * Abstract class extended by implementations.
@@ -89,7 +95,7 @@ public abstract class TransformerFactory {
 	    try {
 		return (TransformerFactory) ClassStuff.createFactory (
 			"javax.xml.transform.TransformerFactory",
-			"com.icl.saxon.TransformerFactoryImpl"
+			"gnu.xml.libxmlj.transform.TransformerFactoryImpl"
 			// "gnu.xml.util.SAXNullTransformerFactory"
 			// "org.apache.xalan.processor.TransformerFactoryImpl"
 			);

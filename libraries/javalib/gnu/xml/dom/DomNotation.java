@@ -26,8 +26,7 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Notation;
+import org.w3c.dom.*;
 
 
 /**

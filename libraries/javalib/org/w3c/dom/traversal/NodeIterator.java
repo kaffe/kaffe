@@ -12,8 +12,8 @@
 
 package org.w3c.dom.traversal;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
+import org.w3c.dom.DOMException;
 
 /**
  * <code>NodeIterators</code> are used to step through a set of nodes, e.g. 

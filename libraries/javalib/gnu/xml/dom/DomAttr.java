@@ -26,10 +26,7 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.w3c.dom.*;
 import org.w3c.dom.events.MutationEvent;
 
 
@@ -263,4 +260,19 @@ public class DomAttr extends DomNsNode implements Attr
 		null, oldValue, newValue, getNodeName (), why);
 	element.dispatchEvent (event);
     }
+
+    // DOM Level 3 methods
+
+    public TypeInfo getSchemaTypeInfo ()
+      {
+        // TODO
+        return null;
+      }
+
+    public boolean isId ()
+      {
+        // TODO
+        return false;
+      }
+
 }

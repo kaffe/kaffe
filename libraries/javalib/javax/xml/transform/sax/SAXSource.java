@@ -1,5 +1,4 @@
 /*
- * $Id: SAXSource.java,v 1.5 2004/03/22 11:25:29 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * Copyright (C) 2001 David Brownell
  * 
@@ -27,11 +26,10 @@
  */
 package javax.xml.transform.sax;
 
+import org.xml.sax.XMLReader;
+import org.xml.sax.InputSource;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
 
 
 /**

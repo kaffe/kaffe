@@ -1,5 +1,4 @@
 /*
- * $Id: StreamResult.java,v 1.3 2004/03/22 11:25:29 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * Copyright (C) 2001 David Brownell
  * 
@@ -27,11 +26,10 @@
  */
 package javax.xml.transform.stream;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-
+import java.io.File;
+import java.io.IOException;
 import javax.xml.transform.Result;
 
 

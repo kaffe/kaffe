@@ -105,6 +105,19 @@ DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
 INSTALL_JNI_DERIVED_HDRS =
 
 NOINSTALL_JNI_DERIVED_HDRS = \
+	gnu_xml_libxmlj_dom_GnomeAttr.h \
+	gnu_xml_libxmlj_dom_GnomeDocument.h \
+	gnu_xml_libxmlj_dom_GnomeDocumentBuilder.h \
+	gnu_xml_libxmlj_dom_GnomeDocumentType.h	\
+	gnu_xml_libxmlj_dom_GnomeElement.h \
+	gnu_xml_libxmlj_dom_GnomeEntity.h \
+	gnu_xml_libxmlj_dom_GnomeNamedNodeMap.h \
+	gnu_xml_libxmlj_dom_GnomeNode.h \
+	gnu_xml_libxmlj_dom_GnomeNodeList.h \
+	gnu_xml_libxmlj_dom_GnomeProcessingInstruction.h \
+	gnu_xml_libxmlj_dom_MatchingNodeList.h \
+	gnu_xml_libxmlj_sax_GnomeLocator.h \
+	gnu_xml_libxmlj_sax_GnomeXMLReader.h \
 	gnu_xml_libxmlj_transform_LibxsltStylesheet.h \
 	gnu_xml_libxmlj_transform_TransformerFactoryImpl.h \
 	gnu_xml_libxmlj_transform_JavaContext.h \

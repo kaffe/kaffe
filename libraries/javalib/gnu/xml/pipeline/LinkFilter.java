@@ -27,11 +27,12 @@
 package gnu.xml.pipeline;
 
 import java.io.IOException;
-import java.net.URL;
+import java.net.URL; 
 import java.util.Enumeration;
 import java.util.Vector;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
 

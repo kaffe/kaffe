@@ -83,7 +83,10 @@ Klasses_jar_SRCS = \
 	$(gnu_regexp_SRCS) \
 	$(gnu_xml_aelfred2_SRCS) \
 	$(gnu_xml_dom_SRCS) \
+	$(gnu_xml_libxmlj_dom_SRCS) \
+	$(gnu_xml_libxmlj_sax_SRCS) \
 	$(gnu_xml_libxmlj_transform_SRCS) \
+	$(gnu_xml_libxmlj_util_SRCS) \
 	$(gnu_xml_pipeline_SRCS) \
 	$(gnu_xml_util_SRCS) \
 	$(java_applet_SRCS) \
@@ -198,9 +201,11 @@ Klasses_jar_SRCS = \
 	$(org_tritonus_share_sampled_file_SRCS) \
 	$(org_tritonus_share_sampled_mixer_SRCS) \
 	$(org_w3c_dom_SRCS) \
+	$(org_w3c_dom_bootstrap_SRCS) \
 	$(org_w3c_dom_css_SRCS) \
 	$(org_w3c_dom_events_SRCS) \
 	$(org_w3c_dom_html_SRCS) \
+	$(org_w3c_dom_ls_SRCS) \
 	$(org_w3c_dom_ranges_SRCS) \
 	$(org_w3c_dom_stylesheets_SRCS) \
 	$(org_w3c_dom_traversal_SRCS) \
@@ -599,6 +604,34 @@ gnu_xml_dom_SRCS = \
 	gnu/xml/dom/DomPI.java \
 	gnu/xml/dom/DomText.java \
 	gnu/xml/dom/JAXPFactory.java
+gnu_xml_libxmlj_dom_SRCS = \
+	gnu/xml/libxmlj/dom/GnomeAttr.java \
+	gnu/xml/libxmlj/dom/GnomeCDATASection.java \
+	gnu/xml/libxmlj/dom/GnomeCharacterData.java \
+	gnu/xml/libxmlj/dom/GnomeComment.java \
+	gnu/xml/libxmlj/dom/GnomeDocumentBuilderFactory.java \
+	gnu/xml/libxmlj/dom/GnomeDocumentBuilder.java \
+	gnu/xml/libxmlj/dom/GnomeDocumentFragment.java \
+	gnu/xml/libxmlj/dom/GnomeDocument.java \
+	gnu/xml/libxmlj/dom/GnomeDocumentType.java \
+	gnu/xml/libxmlj/dom/GnomeElement.java \
+	gnu/xml/libxmlj/dom/GnomeEntity.java \
+	gnu/xml/libxmlj/dom/GnomeEntityReference.java \
+	gnu/xml/libxmlj/dom/GnomeNamedNodeMap.java \
+	gnu/xml/libxmlj/dom/GnomeNode.java \
+	gnu/xml/libxmlj/dom/GnomeNodeList.java \
+	gnu/xml/libxmlj/dom/GnomeNotation.java \
+	gnu/xml/libxmlj/dom/GnomeProcessingInstruction.java \
+	gnu/xml/libxmlj/dom/GnomeText.java \
+	gnu/xml/libxmlj/dom/MatchingNodeList.java
+gnu_xml_libxmlj_sax_SRCS = \
+	gnu/xml/libxmlj/sax/GnomeLocator.java \
+	gnu/xml/libxmlj/sax/GnomeSAXParserFactory.java \
+	gnu/xml/libxmlj/sax/GnomeSAXParser.java \
+	gnu/xml/libxmlj/sax/GnomeXMLReader.java \
+	gnu/xml/libxmlj/sax/Namespaces.java \
+	gnu/xml/libxmlj/sax/StringArrayAttributes.java \
+	gnu/xml/libxmlj/sax/XMLName.java
 gnu_xml_libxmlj_transform_SRCS = \
 	gnu/xml/libxmlj/transform/DefaultErrorListenerImpl.java \
 	gnu/xml/libxmlj/transform/DefaultURIResolverImpl.java \
@@ -614,6 +647,10 @@ gnu_xml_libxmlj_transform_SRCS = \
 	gnu/xml/libxmlj/transform/TransformerImpl.java \
 	gnu/xml/libxmlj/transform/TransformTest.java \
 	gnu/xml/libxmlj/transform/URIResolverProxy.java
+gnu_xml_libxmlj_util_SRCS = \
+	gnu/xml/libxmlj/util/EmptyNodeList.java \
+	gnu/xml/libxmlj/util/StandaloneDocumentType.java \
+	gnu/xml/libxmlj/util/StandaloneLocator.java
 gnu_xml_pipeline_SRCS = \
 	gnu/xml/pipeline/CallFilter.java \
 	gnu/xml/pipeline/DomConsumer.java \
@@ -2485,17 +2522,29 @@ org_w3c_dom_SRCS = \
 	org/w3c/dom/DocumentFragment.java \
 	org/w3c/dom/Document.java \
 	org/w3c/dom/DocumentType.java \
+	org/w3c/dom/DOMConfiguration.java \
+	org/w3c/dom/DOMErrorHandler.java \
+	org/w3c/dom/DOMError.java \
 	org/w3c/dom/DOMException.java \
 	org/w3c/dom/DOMImplementation.java \
+	org/w3c/dom/DOMImplementationList.java \
+	org/w3c/dom/DOMImplementationSource.java \
+	org/w3c/dom/DOMLocator.java \
+	org/w3c/dom/DOMStringList.java \
 	org/w3c/dom/Element.java \
 	org/w3c/dom/Entity.java \
 	org/w3c/dom/EntityReference.java \
 	org/w3c/dom/NamedNodeMap.java \
+	org/w3c/dom/NameList.java \
 	org/w3c/dom/Node.java \
 	org/w3c/dom/NodeList.java \
 	org/w3c/dom/Notation.java \
 	org/w3c/dom/ProcessingInstruction.java \
-	org/w3c/dom/Text.java
+	org/w3c/dom/Text.java \
+	org/w3c/dom/TypeInfo.java \
+	org/w3c/dom/UserDataHandler.java
+org_w3c_dom_bootstrap_SRCS = \
+	org/w3c/dom/bootstrap/DOMImplementationRegistry.java
 org_w3c_dom_css_SRCS = \
 	org/w3c/dom/css/Counter.java \
 	org/w3c/dom/css/CSS2Azimuth.java \
@@ -2596,6 +2645,18 @@ org_w3c_dom_html_SRCS = \
 	org/w3c/dom/html/HTMLTextAreaElement.java \
 	org/w3c/dom/html/HTMLTitleElement.java \
 	org/w3c/dom/html/HTMLUListElement.java
+org_w3c_dom_ls_SRCS = \
+	org/w3c/dom/ls/DOMImplementationLS.java \
+	org/w3c/dom/ls/LSException.java \
+	org/w3c/dom/ls/LSInput.java \
+	org/w3c/dom/ls/LSLoadEvent.java \
+	org/w3c/dom/ls/LSOutput.java \
+	org/w3c/dom/ls/LSParserFilter.java \
+	org/w3c/dom/ls/LSParser.java \
+	org/w3c/dom/ls/LSProgressEvent.java \
+	org/w3c/dom/ls/LSResourceResolver.java \
+	org/w3c/dom/ls/LSSerializerFilter.java \
+	org/w3c/dom/ls/LSSerializer.java
 org_w3c_dom_ranges_SRCS = \
 	org/w3c/dom/ranges/DocumentRange.java \
 	org/w3c/dom/ranges/RangeException.java \

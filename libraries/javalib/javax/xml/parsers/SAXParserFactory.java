@@ -1,5 +1,4 @@
 /*
- * $Id: SAXParserFactory.java,v 1.3 2004/03/22 11:25:27 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * Copyright (C) 2001 David Brownell
  * 
@@ -29,9 +28,14 @@
 package javax.xml.parsers;
 
 // Imports
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.File;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.Properties;
+import org.w3c.dom.*;
+import org.xml.sax.*;
 
 /**
  * SAXParserFactory is used to bootstrap JAXP wrappers for

@@ -12,9 +12,9 @@
 
 package org.w3c.dom.ranges;
 
+import org.w3c.dom.Node;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.DocumentFragment;
-import org.w3c.dom.Node;
 
 /**
  * <p>See also the <a href='http://www.w3.org/TR/2000/REC-DOM-Level-2-Traversal-Range-20001113'>Document Object Model (DOM) Level 2 Traversal and Range Specification</a>.

@@ -4,8 +4,8 @@
 
 package org.xml.sax;
 
-import java.io.InputStream;
 import java.io.Reader;
+import java.io.InputStream;
 
 /**
  * A single input source for an XML entity.

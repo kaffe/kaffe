@@ -26,8 +26,7 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Text;
+import org.w3c.dom.*;
 
 
 /**
@@ -105,4 +104,64 @@ public class DomText extends DomCharacterData implements Text
 	    throw new DomEx (DomEx.INDEX_SIZE_ERR);
 	}
     }
+    
+    // DOM Level 3
+
+    public boolean isElementContentWhitespace ()
+      {
+        return getTextContent ().trim ().length () == 0;
+      }
+
+    public String getWholeText ()
+      {
+        Node first = this;
+        Node node = getPreviousSibling ();
+        while (node != null && node instanceof Text)
+          {
+            first = node;
+            node = node.getPreviousSibling ();
+          }
+        StringBuffer buf = new StringBuffer (first.getNodeValue ());
+        node = first.getNextSibling ();
+        while (node != null && node instanceof Text)
+          {
+            buf.append (node.getNodeValue ());
+            node = node.getNextSibling ();
+          }
+        return buf.toString ();
+      }
+
+    public Text replaceWholeText (String content) throws DOMException
+      {
+        boolean isEmpty = (content == null || content.length () == 0);
+        if (!isEmpty)
+          {
+            setNodeValue (content);
+          }
+        
+        Node first = this;
+        Node node = getPreviousSibling ();
+        while (node != null && node instanceof Text)
+          {
+            first = node;
+            node = node.getPreviousSibling ();
+          }
+        node = first.getNextSibling ();
+        Node parent = getParentNode ();
+        if (first != this || isEmpty)
+          {
+            parent.removeChild (first);
+          }
+        while (node != null && node instanceof Text)
+          {
+            Node tmp = node;
+            node = node.getNextSibling ();
+            if (tmp != this || isEmpty)
+              {
+                parent.removeChild (tmp);
+              }
+          }
+        return (isEmpty) ? null : this;
+      }
+    
 }

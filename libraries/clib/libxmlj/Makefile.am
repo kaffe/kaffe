@@ -25,9 +25,19 @@ native_LTLIBRARIES = libxmlj.la
 AM_CPPFLAGS = -I$(top_srcdir)/kaffe -I$(top_builddir)/include
 
 libxmlj_la_SOURCES = \
-	libxsltj.c \
+	xmlj_dom.c \
+	xmlj_dom.h \
+	xmlj_error.c \
+	xmlj_error.h \
 	xmlj_io.c \
-	xmlj_error.c
+	xmlj_io.h \
+	xmlj_node.c \
+	xmlj_node.h \
+	xmlj_sax.c \
+	xmlj_sax.h \
+	xmlj_transform.c \
+	xmlj_util.c \
+	xmlj_util.h
 
 libxmlj_la_LDFLAGS = \
         $(KLIBFLAGS) \

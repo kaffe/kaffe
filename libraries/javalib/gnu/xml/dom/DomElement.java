@@ -26,11 +26,7 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+import org.w3c.dom.*;
 
 
 /**
@@ -340,4 +336,28 @@ public class DomElement extends DomNsNode implements Element
 
 	attributes.removeNamedItemNS (namespace, localPart);
     }
+
+    // DOM Level 3 methods
+
+    public TypeInfo getSchemaTypeInfo ()
+      {
+        // TODO
+        return null;
+      }
+
+    public void setIdAttribute (String name, boolean isId)
+      {
+        // TODO
+      }
+
+    public void setIdAttributeNode (Attr isAddr, boolean isId)
+      {
+        // TODO
+      }
+
+    public void setIdAttributeNS (String namespaceURI, String localName,
+                                  boolean isId)
+      {
+        // TODO
+      }
 }

@@ -29,16 +29,16 @@ package gnu.xml.aelfred2;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 import org.xml.sax.Parser;
+import org.xml.sax.XMLReader;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderAdapter;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 
 /**
@@ -117,7 +117,7 @@ public final class JAXPFactory extends SAXParserFactory
     {
 	Boolean	value = (Boolean) flags.get (name);
 	
-	if (value == null)
+	if (value != null)
 	    return value.booleanValue ();
 	else
 	    try {

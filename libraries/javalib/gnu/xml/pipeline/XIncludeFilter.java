@@ -26,13 +26,12 @@
 
 package gnu.xml.pipeline;
 
-import gnu.xml.util.Resolver;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.URL; 
+import java.net.URLConnection; 
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.Vector;
@@ -45,6 +44,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
+
+import gnu.xml.util.Resolver;
 
 
 

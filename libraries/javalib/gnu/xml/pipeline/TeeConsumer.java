@@ -26,15 +26,9 @@
 
 package gnu.xml.pipeline;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.DTDHandler;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.ext.DeclHandler;
-import org.xml.sax.ext.LexicalHandler;
+import java.io.IOException;
+import org.xml.sax.*;
+import org.xml.sax.ext.*;
 //import gnu.xml.util;
 
 

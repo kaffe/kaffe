@@ -26,29 +26,15 @@
 
 package gnu.xml.pipeline;
 
-import gnu.xml.util.DomParser;
+import java.util.Hashtable;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.CharacterData;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.EntityReference;
-import org.w3c.dom.Node;
-import org.w3c.dom.ProcessingInstruction;
-import org.w3c.dom.Text;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.DTDHandler;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXParseException;
+import org.w3c.dom.*;
+import org.xml.sax.*;
 import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.AttributesImpl;
+
+import gnu.xml.util.DomParser;
 
 
 /**
@@ -671,7 +657,7 @@ public class DomConsumer implements EventConsumer
 
 		else if (prefix == null)
 		    namespace = null;
-		else if (uri != "" && uri.length () != 0)
+		else if (!"".equals(uri) && uri.length () != 0)
 		    namespace = uri;
 		else
 		    namespace = getNamespace (prefix, attrs);

@@ -47,36 +47,21 @@
 
 package gnu.xml.aelfred2;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
+import java.io.*;
+
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Stack;
+
+// maintaining 1.1 compatibility for now ... more portable, PJava, etc
+// Iterator, Hashmap and ArrayList ought to be faster
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Vector;
 
-import org.xml.sax.AttributeList;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.DTDHandler;
-import org.xml.sax.DocumentHandler;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
-import org.xml.sax.Parser;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.ext.Attributes2;
-import org.xml.sax.ext.DeclHandler;
-import org.xml.sax.ext.DefaultHandler2;
-import org.xml.sax.ext.EntityResolver2;
-import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.*;
+import org.xml.sax.ext.*;
 import org.xml.sax.helpers.NamespaceSupport;
 
 
@@ -168,6 +153,7 @@ final public class SAXDriver
     private boolean			extPE = true;
     private boolean			resolveAll = true;
     private boolean			useResolver2 = true;
+    private boolean     stringInterning = true;
 
     private int				attributeCount = 0;
     private boolean			attributes;
@@ -408,9 +394,9 @@ final public class SAXDriver
 	if ((FEATURE + "lexical-handler/parameter-entities").equals (featureId))
 	    return true;
 
-	// always interns
+	// default is true
 	if ((FEATURE + "string-interning").equals (featureId))
-	    return true;
+	    return stringInterning;
 	
 	// EXTENSIONS 1.1
 
@@ -759,28 +745,47 @@ final public class SAXDriver
 	if (namespaces) {
 	    int	index;
 
-	    // default NS declaration?
-	    if ("xmlns" == qname) {
-		declarePrefix ("", value);
-		if (!xmlNames)
-		    return;
-	    }
-
-	    // NS prefix declaration?
-	    else if ((index = qname.indexOf (':')) == 5
-		    && qname.startsWith ("xmlns")) {
-		String		prefix = qname.substring (6);
-
-		if (value.length () == 0) {
-		    verror ("missing URI in namespace decl attribute: "
-				+ qname);
-		} else
-		    declarePrefix (prefix, value);
-		if (!xmlNames)
-		    return;
-	    }
-	}
-
+      // default NS declaration?
+      if (getFeature (FEATURE + "string-interning")) {
+        if ("xmlns" == qname) {
+          declarePrefix ("", value);
+          if (!xmlNames)
+            return;
+        }
+        // NS prefix declaration?
+        else if ((index = qname.indexOf (':')) == 5
+                 && qname.startsWith ("xmlns")) {
+          String		prefix = qname.substring (6);
+          
+          if (value.length () == 0) {
+            verror ("missing URI in namespace decl attribute: "
+                    + qname);
+          } else
+            declarePrefix (prefix, value);
+          if (!xmlNames)
+            return;
+        }
+      } else {
+        if ("xmlns".equals(qname)) {
+          declarePrefix ("", value);
+          if (!xmlNames)
+            return;
+        }
+        // NS prefix declaration?
+        else if ((index = qname.indexOf (':')) == 5
+                 && qname.startsWith ("xmlns")) {
+          String		prefix = qname.substring (6);
+          
+          if (value.length () == 0) {
+            verror ("missing URI in namespace decl attribute: "
+                    + qname);
+          } else
+            declarePrefix (prefix, value);
+          if (!xmlNames)
+            return;
+        }
+      }
+  }
 	// remember this attribute ...
 
 	if (attributeCount == attributeSpecified.length) { 	// grow array?
@@ -829,9 +834,14 @@ final public class SAXDriver
 		String	qname = (String) attributeNames.elementAt (i);
 		int	index;
 
-		// default NS declaration?
-		if ("xmlns" == qname)
+    // default NS declaration?
+    if (getFeature (FEATURE + "string-interning")) {
+      if ("xmlns" == qname)
 		    continue;
+    } else {
+      if ("xmlns".equals(qname))
+		    continue;
+    }
 
 		index = qname.indexOf (':');
 
@@ -1016,8 +1026,8 @@ final public class SAXDriver
 	if (type == null)
 	    return "CDATA";
 	// ... use DeclHandler.attributeDecl to see enumerations
-	if (type == "ENUMERATION")
-	    return "NMTOKEN";
+      if (type == "ENUMERATION")
+        return "NMTOKEN";
 	return type;
     }
 

@@ -26,8 +26,7 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Entity;
+import org.w3c.dom.*;
 
 
 /**
@@ -109,4 +108,25 @@ public class DomEntity extends DomExtern implements Entity
      */
     final public short getNodeType ()
 	{ return ENTITY_NODE; }
+
+    // DOM Level 3 methods
+    
+    public String getInputEncoding ()
+      {
+        // TODO
+        return null;    
+      }
+
+    public String getXmlEncoding ()
+      {
+        // TODO
+        return null;
+      }
+
+    public String getXmlVersion ()
+      {
+        // TODO
+        return null;
+      }
+
 }

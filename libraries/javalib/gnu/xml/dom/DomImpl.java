@@ -26,10 +26,9 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.DocumentType;
-import org.w3c.dom.Element;
+import java.util.Vector;
+
+import org.w3c.dom.*;
 
 
 /**
@@ -170,4 +169,12 @@ public class DomImpl implements DOMImplementation
 	doc.appendChild (root);
 	return doc;
     }
+
+    // DOM Level 3
+
+    public Object getFeature (String feature, String version)
+      {
+        // TODO
+        return null;
+      }
 }
