@@ -1,3 +1,9 @@
+Fri Feb 12 11:24:27 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* include/Makefile.am (DERIVED_HDRS): print an `already
+	up-to-date' message for headers that do not have to be updated
+	* include/Makefile.in: regen
+
 Fri Feb 12 10:33:54 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* test/regression/TestScript.in: rework so as to accept list of

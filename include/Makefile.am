@@ -92,6 +92,7 @@ stamp-h0all: $(KLASSES_JAR)
 	  echo "$(KAFFEH) -classpath $(KLASSES_JAR) -o $$f $$class"; \
 	  $(KAFFEH) -classpath $(KLASSES_JAR) -o stamp-h0$$f $$class; \
 	  if test -f $$f && cmp $$f stamp-h0$$f >/dev/null; then \
+	    echo "$$f is already up-to-date"; \
 	    rm -f stamp-h0$$f; \
 	  else \
 	    rm -f $$f; mv stamp-h0$$f $$f; \
