@@ -87,6 +87,11 @@ DBG(CODEANALYSE,
 	 * to avoid mallocing 0 bytes.
 	 */
 	localuse = KCALLOC(sizeof(localUse), meth->localsz+1);
+	if (!localuse) {
+		KFREE(codeInfo);
+		postOutOfMemory(einfo);
+		return false;
+	}
 	codeInfo->localuse = localuse;
 
 	/* We don't need to do this twice */
@@ -389,7 +394,10 @@ verifyBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 
 		if (sp < meth->localsz || sp > meth->localsz + meth->stacksz) {
 			failed = true;
-			VDBG(dprintf("sp out of range: %d <%d> %d\n", meth->localsz, sp, meth->localsz + meth->stacksz);)
+			postExceptionMessage(einfo, JAVA_LANG(VerifyError),
+				"sp out of range: %d <%d> %d\n", 
+				meth->localsz, sp, 
+				meth->localsz + meth->stacksz);
 			break;
 		}
 

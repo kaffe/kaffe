@@ -109,9 +109,7 @@ typedef struct codeinfo {
 #define	SET_STACKPOINTER(PC, SP)	do { \
 	if ((FLAGS(PC) & FLAG_STACKPOINTERSET) && STACKPOINTER(PC) != (SP)) { \
 		failed = true; \
-		DBG(CODEANALYSE, \
-			dprintf("sp size change at pc %d: %d != %d\n", (PC), STACKPOINTER(PC), (SP)); \
-		   ) \
+		postExceptionMessage(einfo, JAVA_LANG(VerifyError), "sp size change at pc %d: %d != %d\n", (PC), STACKPOINTER(PC), (SP)); \
 	} \
 	STACKPOINTER(PC) = (SP); \
 	FLAGS(PC) |= FLAG_STACKPOINTERSET; \
@@ -197,21 +195,21 @@ typedef struct codeinfo {
 #ifdef notyet
 #define	STACK_CHECKRANGE(S)		if ((S)+sp < meth->localsz || (S)+sp > meth->localsz+meth->stacksz) { \
 						failed = true; \
-						VDBG(printf("sp out of range: %d <%d> %d\n", meth->localsz, (S)+sp, meth->localsz + meth->stacksz);) \
+						postExceptionMessage(einfo, JAVA_LANG(VerifyError), "sp out of range: %d <%d> %d\n", meth->localsz, (S)+sp, meth->localsz + meth->stacksz); \
 					}
 
 #define	STACK_CHECKTYPE(S, T)		if ((T) != SF(S).type) { \
 						failed = true; \
-						VDBG(printf("pc %d: stk %d (is %d, want %d)\n", pc, sp+(S), SF(S).type, T);) \
+						postExceptionMessage(einfo, JAVA_LANG(VerifyError), "pc %d: stk %d (is %d, want %d)\n", pc, sp+(S), SF(S).type, T); \
 					}
 
 #define	LOCAL_CHECKRANGE(L)		if ((L) < 0 || (L) >= meth->localsz) { \
 						failed = true; \
-						VDBG(printf("lcl out of range: <%d> %d\n", L, meth->localsz);) \
+						postExceptionMessage(einfo, JAVA_LANG(VerifyError), "lcl out of range: <%d> %d\n", L, meth->localsz); \
 					}
 #define	LOCAL_CHECKTYPE(L, T)		if ((T) != LCL(L).type) { \
 						failed = true; \
-						VDBG(printf("pc %d: lcl %d (is %d, want %d)\n", pc, (L), LCL(L).type, T);) \
+						postExceptionMessage(einfo, JAVA_LANG(VerifyError), "pc %d: lcl %d (is %d, want %d)\n", pc, (L), LCL(L).type, T); \
 					}
 #else
 #define	STACK_CHECKRANGE(S)
