@@ -21,6 +21,9 @@
 /* Define if you have the strchr function.  */
 #undef HAVE_STRCHR
 
+/* Define if you have the strcmp function.  */
+#undef HAVE_STRCMP
+
 /* Define if you have the strrchr function.  */
 #undef HAVE_STRRCHR
 
@@ -59,6 +62,9 @@
 
 /* Define to the name of the environment variable that determines the dynamic library search path.  */
 #undef LTDL_SHLIBPATH_VAR
+
+/* Define to the system default library search path.  */
+#undef LTDL_SYSSEARCHPATH
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.  */
 #undef LTDL_OBJDIR

@@ -1,5 +1,5 @@
 ## libtool.m4 - Configure libtool for the target system. -*-Shell-script-*-
-## Copyright (C) 1996-1999 Free Software Foundation, Inc.
+## Copyright (C) 1996-2000 Free Software Foundation, Inc.
 ## Originally by Gordon Matzigkeit <gord@gnu.ai.mit.edu>, 1996
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -137,7 +137,10 @@ case "$lt_target" in
   SAVE_CFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS -belf"
   AC_CACHE_CHECK([whether the C compiler needs -belf], lt_cv_cc_needs_belf,
-    [AC_TRY_LINK([],[],[lt_cv_cc_needs_belf=yes],[lt_cv_cc_needs_belf=no])])
+    [AC_LANG_SAVE
+     AC_LANG_C
+     AC_TRY_LINK([],[],[lt_cv_cc_needs_belf=yes],[lt_cv_cc_needs_belf=no])
+     AC_LANG_RESTORE])
   if test x"$lt_cv_cc_needs_belf" != x"yes"; then
     # this is probably gcc 2.8.0, egcs 1.0 or newer; no need for -belf
     CFLAGS="$SAVE_CFLAGS"
@@ -156,7 +159,7 @@ ifdef([AC_PROVIDE_AC_LIBTOOL_WIN32_DLL],
     [AC_TRY_LINK([],
       [extern int __attribute__((__stdcall__)) DllMain(void*, int, void*);
       DllMain (0, 0, 0);],
-      [lt_cv_need_dllmain=yes],[lt_cv_need_dllmain=no])])
+      [lt_cv_need_dllmain=no],[lt_cv_need_dllmain=yes])])
 
   case "$lt_target/$CC" in
   *-*-cygwin*/gcc*-mno-cygwin*|*-*-mingw*)
@@ -307,15 +310,15 @@ dnl not every word.  This closes a longstanding sh security hole.
     if test -f $ac_dir/$1; then
       lt_cv_path_FILE="$ac_dir/$1"
       if test -n "$file_magic_test_file"; then
-        case "$deplibs_check_method" in
-        "file_magic "*)
-          file_magic_regex="`expr \"$deplibs_check_method\" : \"file_magic \(.*\)\"`"
+	case "$deplibs_check_method" in
+	"file_magic "*)
+	  file_magic_regex="`expr \"$deplibs_check_method\" : \"file_magic \(.*\)\"`"
 	  FILE="$lt_cv_path_FILE"
-          if eval $file_magic_cmd \$file_magic_test_file 2> /dev/null |
-            egrep "$file_magic_regex" > /dev/null; then
-            :
-          else
-            cat <<EOF 1>&2
+	  if eval $file_magic_cmd \$file_magic_test_file 2> /dev/null |
+	    egrep "$file_magic_regex" > /dev/null; then
+	    :
+	  else
+	    cat <<EOF 1>&2
 
 *** Warning: the command libtool uses to detect shared libraries,
 *** $file_magic_cmd, produces output that libtool cannot recognize.
@@ -327,8 +330,8 @@ dnl not every word.  This closes a longstanding sh security hole.
 *** bug-libtool@gnu.org
 
 EOF
-          fi ;;
-        esac
+	  fi ;;
+	esac
       fi
       break
     fi
@@ -460,7 +463,7 @@ test -n "$reload_flag" && reload_flag=" $reload_flag"
 # AC_DEPLIBS_CHECK_METHOD - how to check for library dependencies
 #  -- PORTME fill in with the dynamic library characteristics
 AC_DEFUN(AC_DEPLIBS_CHECK_METHOD,
-[AC_CACHE_CHECK([how to recognise dependant libraries], 
+[AC_CACHE_CHECK([how to recognise dependant libraries],
 lt_cv_deplibs_check_method,
 [lt_cv_file_magic_cmd='$FILE'
 lt_cv_file_magic_test_file=
@@ -480,11 +483,13 @@ case "$host_os" in
 aix4* | beos*)
   lt_cv_deplibs_check_method=pass_all
   ;;
-  
+
 bsdi4*)
+  changequote(,)dnl
   lt_cv_deplibs_check_method='file_magic ELF [0-9][0-9]*-bit [ML]SB (shared object|dynamic lib)'
+  changequote([, ])dnl
   lt_cv_file_magic_test_file=/shlib/libc.so
-  ;;  
+  ;;
 
 cygwin* | mingw*)
   lt_cv_deplibs_check_method='file_magic file format pei*-i386(.*architecture: i386)?'
@@ -498,11 +503,11 @@ freebsd*)
     ;;
   esac
   ;;
-  
+
 gnu*)
   lt_cv_deplibs_check_method=pass_all
   ;;
-  
+
 irix5* | irix6*)
   case "$host_os" in
   irix5*)
@@ -517,7 +522,9 @@ irix5* | irix6*)
     *) libmagic=never-match;;
     esac
     # this will be overridden with pass_all, but let us keep it just in case
+    changequote(,)dnl
     lt_cv_deplibs_check_method="file_magic ELF ${libmagic} MSB mips-[1234] dynamic lib MIPS - version 1"
+    changequote([, ])dnl
     ;;
   esac
   lt_cv_file_magic_test_file=`echo /lib${libsuff}/libc.so*`
@@ -531,7 +538,9 @@ linux-gnu*)
     lt_cv_deplibs_check_method=pass_all ;;
   *)
     # glibc up to 2.1.1 does not perform some relocations on ARM
+    changequote(,)dnl
     lt_cv_deplibs_check_method='file_magic ELF [0-9][0-9]*-bit [LM]SB (shared object|dynamic lib )' ;;
+    changequote([, ])dnl
   esac
   lt_cv_file_magic_test_file=`echo /lib/libc.so* /lib/libc-*.so`
   ;;
@@ -546,7 +555,7 @@ osf3* | osf4* | osf5*)
 sco3.2v5*)
   lt_cv_deplibs_check_method=pass_all
   ;;
-  
+
 solaris*)
   lt_cv_deplibs_check_method=pass_all
   lt_cv_file_magic_test_file=/lib/libc.so
@@ -558,7 +567,9 @@ sysv4 | sysv4.2uw2* | sysv4.3* | sysv5*)
     lt_cv_deplibs_check_method=pass_all
     ;;
   motorola)
+    changequote(,)dnl
     lt_cv_deplibs_check_method='file_magic ELF [0-9][0-9]*-bit [ML]SB (shared object|dynamic lib) M[0-9][0-9]* Version [0-9]'
+    changequote([, ])dnl
     lt_cv_file_magic_test_file=`echo /usr/lib/libc.so*`
     ;;
   esac
@@ -637,7 +648,7 @@ AC_DEFUN(AC_LIBLTDL_CONVENIENCE, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
       ac_configure_args="$ac_configure_args --enable-ltdl-convenience" ;;
   esac
   LIBLTDL=ifelse($#,1,$1,['${top_builddir}/libltdl'])/libltdlc.la
-  INCLTDL=ifelse($#,1,-I$1,['-I${top_builddir}/libltdl'])
+  INCLTDL=ifelse($#,1,-I$1,['-I${top_srcdir}/libltdl'])
 ])
 
 # AC_LIBLTDL_INSTALLABLE[(dir)] - sets LIBLTDL to the link flags for
@@ -661,7 +672,7 @@ AC_DEFUN(AC_LIBLTDL_INSTALLABLE, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
   if test x"$enable_ltdl_install" = x"yes"; then
     ac_configure_args="$ac_configure_args --enable-ltdl-install"
     LIBLTDL=ifelse($#,1,$1,['${top_builddir}/libltdl'])/libltdl.la
-    INCLTDL=ifelse($#,1,-I$1,['-I${top_builddir}/libltdl'])
+    INCLTDL=ifelse($#,1,-I$1,['-I${top_srcdir}/libltdl'])
   else
     ac_configure_args="$ac_configure_args --enable-ltdl-install=no"
     LIBLTDL="-lltdl"

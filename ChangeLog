@@ -1,3 +1,12 @@
+Tue Feb 15 12:15:00 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* FAQ/FAQ.libtool: add URL for libtool homepage
+	* acinclude.m4, aclocal.m4, configure, ltconfig, ltmain.sh,
+	libltdl/Makefile.am, libltdl/Makefile.in, libltdl/acinclude.m4,
+	libltdl/aclocal.m4, libltdl/config.h.in, libltdl/configure,
+	libltdl/configure.in, libltdl/ltdl.c, libltdl/ltdl.h,
+	libltdl/stamp-h.in: update to current libtool CVS snapshot
+
 Mon Feb 14 18:16:23 CET 2000  Edouard G. Parmelan <egp@free.fr>
 
 	* libraries/javalib/Klasses.jar: regen with kjc-1.4B-egp1
