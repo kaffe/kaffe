@@ -1,5 +1,5 @@
 /* MessageFormat.java - Localized message formatting.
-   Copyright (C) 1999, 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2001, 2002, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -420,6 +420,7 @@ public class MessageFormat extends Format
 	  unavailable = true;
 	else
 	  thisArg = arguments[elements[i].argNumber];
+
 	AttributedCharacterIterator iterator = null;
 
 	Format formatter = null;
@@ -503,17 +504,18 @@ public class MessageFormat extends Format
   }
 
   /**
-   * Returns the pattern with the formatted objects.
-   * This is equivalent to format((Object[]) singleArg, appendBuf, fpos)
+   * Returns the pattern with the formatted objects.  The first argument
+   * must be a array of Objects.
+   * This is equivalent to format((Object[]) objectArray, appendBuf, fpos)
    *
-   * @param singleArg The object to be formatted.
+   * @param objectArray The object array to be formatted.
    * @param appendBuf The StringBuffer where the text is appened.
    * @param fpos A FieldPosition object (it is ignored).
    */
-  public final StringBuffer format (Object singleArg, StringBuffer appendBuf,
+  public final StringBuffer format (Object objectArray, StringBuffer appendBuf,
 				    FieldPosition fpos)
   {
-    return format((Object[]) singleArg, appendBuf, fpos);
+    return format ((Object[])objectArray, appendBuf, fpos);
   }
 
   /**
