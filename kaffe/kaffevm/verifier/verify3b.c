@@ -216,7 +216,7 @@ verifyMethod3b(Verifier* v)
 				newpc = curBlock->locals[n].tinfo;
 				
 				/* each instance of return address can only be used once */
-				curBlock->locals[n] = *TUNSTABLE;
+				curBlock->locals[n] = *getTUNSTABLE();
 				
 				nextBlock = inWhichBlock(newpc, blocks, v->numBlocks);
 				if (!mergeBasicBlocks(v, curBlock, nextBlock)) {

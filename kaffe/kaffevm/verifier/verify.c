@@ -666,7 +666,7 @@ checkMethodCall(Verifier* v,
 				return typeErrorInCheckMethodCall(v, argbuf, pc, idx, pool, methSig);
 			}
 			
-			binfo->opstack[paramIndex] = *TUNSTABLE;
+			binfo->opstack[paramIndex] = *getTUNSTABLE();
 			paramIndex++;
 			break;
 			
@@ -676,7 +676,7 @@ checkMethodCall(Verifier* v,
 				return typeErrorInCheckMethodCall(v, argbuf, pc, idx, pool, methSig);
 			}
 			
-			binfo->opstack[paramIndex] = *TUNSTABLE;
+			binfo->opstack[paramIndex] = *getTUNSTABLE();
 			paramIndex++;
 			break;
 			
@@ -685,7 +685,7 @@ checkMethodCall(Verifier* v,
 				return typeErrorInCheckMethodCall(v, argbuf, pc, idx, pool, methSig);
 			}
 			
-			binfo->opstack[paramIndex] = *TUNSTABLE;
+			binfo->opstack[paramIndex] = *getTUNSTABLE();
 			paramIndex++;
 			break;
 			
@@ -695,8 +695,8 @@ checkMethodCall(Verifier* v,
 				return typeErrorInCheckMethodCall(v, argbuf, pc, idx, pool, methSig);
 			}
 			
-			binfo->opstack[paramIndex]    = *TUNSTABLE;
-			binfo->opstack[paramIndex+ 1] = *TUNSTABLE;
+			binfo->opstack[paramIndex]    = *getTUNSTABLE();
+			binfo->opstack[paramIndex+ 1] = *getTUNSTABLE();
 			paramIndex += 2;
 			break;
 			
@@ -706,8 +706,8 @@ checkMethodCall(Verifier* v,
 				return typeErrorInCheckMethodCall(v, argbuf, pc, idx, pool, methSig);
 			}
 			
-			binfo->opstack[paramIndex]     = *TUNSTABLE;
-			binfo->opstack[paramIndex + 1] = *TUNSTABLE;
+			binfo->opstack[paramIndex]     = *getTUNSTABLE();
+			binfo->opstack[paramIndex + 1] = *getTUNSTABLE();
 			paramIndex += 2;
 			break;
 			
@@ -721,7 +721,7 @@ checkMethodCall(Verifier* v,
 	if (opcode != INVOKESTATIC) {
 	        /* pop object reference off the stack */
 		binfo->stacksz--;
-		binfo->opstack[binfo->stacksz] = *TUNSTABLE;
+		binfo->opstack[binfo->stacksz] = *getTUNSTABLE();
 	}
 	
 	

@@ -93,7 +93,7 @@ typedef struct Type
 /*
  * types for type checking (pass 3b)
  */
-extern Type* TUNSTABLE;
+extern Type* getTUNSTABLE(void);
 
 extern Type* TINT;
 extern Type* TFLOAT;

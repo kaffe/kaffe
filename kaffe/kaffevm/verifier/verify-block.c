@@ -52,7 +52,7 @@ createBlock(const Method* method)
 		binfo->locals = checkPtr(gc_malloc(method->localsz * sizeof(Type), KGC_ALLOC_VERIFIER));
 		
 		for (i = 0; i < method->localsz; i++) {
-			binfo->locals[i] = *TUNSTABLE;
+			binfo->locals[i] = *getTUNSTABLE();
 		}
 	} else {
 		binfo->locals = NULL;
@@ -65,7 +65,7 @@ createBlock(const Method* method)
 		binfo->opstack = checkPtr(gc_malloc(method->stacksz * sizeof(Type), KGC_ALLOC_VERIFIER));
 		
 		for (i = 0; i < method->stacksz; i++) {
-			binfo->opstack[i] = *TUNSTABLE;
+			binfo->opstack[i] = *getTUNSTABLE();
 		}
 	} else {
 		binfo->opstack = NULL;
@@ -154,7 +154,7 @@ ensureLocalTypeErrorInVerifyBasicBlock(Verifier* v,
 				       const BlockInfo* block,
 				       const unsigned int n)
 {
-	if (block->locals[n].data.class == TUNSTABLE->data.class) {
+	if (block->locals[n].data.class == getTUNSTABLE()->data.class) {
 		return verifyError(v, "attempt to access an unstable local variable");
 	} else {
 		return verifyError(v, "attempt to access a local variable not of the correct type");
@@ -268,7 +268,7 @@ void
 opstackPopBlind(BlockInfo* block)
 {
 	block->stacksz--;
-	block->opstack[block->stacksz] = *TUNSTABLE;
+	block->opstack[block->stacksz] = *getTUNSTABLE();
 }
 
 /*

@@ -407,7 +407,7 @@ printType(const Type* t)
 	dprintf("(%d)", t->tinfo);
 	switch(t->tinfo) {
 	case TINFO_SYSTEM:
-		if (type == TUNSTABLE->data.class) {
+		if (type == getTUNSTABLE()->data.class) {
 			dprintf("TUNSTABLE");
 		}
 		else if (isWide(t)) {

@@ -27,7 +27,12 @@
  * types for type checking (pass 3b)
  */
 static Type  verify_UNSTABLE;
-Type* TUNSTABLE = &verify_UNSTABLE;
+static Type* TUNSTABLE = &verify_UNSTABLE;
+
+Type* getTUNSTABLE(void)
+{
+  return TUNSTABLE;
+}
 
 static Type  verify_INT;
 Type* TINT = &verify_INT;
