@@ -1,5 +1,5 @@
 /* DefaultEditorKit.java --
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -40,9 +40,12 @@ package javax.swing.text;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 
@@ -84,6 +87,7 @@ public class DefaultEditorKit extends EditorKit
     {
       super(cutAction);
     }
+
     public void actionPerformed(ActionEvent event)
     {
     }
@@ -96,6 +100,7 @@ public class DefaultEditorKit extends EditorKit
     {
       super(defaultKeyTypedAction);
     }
+
     public void actionPerformed(ActionEvent event)
     {
       JTextComponent t = getTextComponent(event);
@@ -123,6 +128,7 @@ public class DefaultEditorKit extends EditorKit
     {
       super(insertBreakAction);
     }
+
     public void actionPerformed(ActionEvent event)
     {
     }
@@ -147,6 +153,7 @@ public class DefaultEditorKit extends EditorKit
     {
       super(insertTabAction);
     }
+
     public void actionPerformed(ActionEvent event)
     {
     }
@@ -159,6 +166,7 @@ public class DefaultEditorKit extends EditorKit
     {
       super(pasteAction);
     }
+
     public void actionPerformed(ActionEvent event)
     {
     }
@@ -364,22 +372,34 @@ public class DefaultEditorKit extends EditorKit
     return null;
   }
 
-  public void read(InputStream in, Document doc, int pos)
+  public void read(InputStream in, Document document, int offset)
     throws BadLocationException, IOException
   {
+    read(new InputStreamReader(in), document, offset);
   }
 
-  public void read(Reader in, Document doc, int pos)
+  public void read(Reader in, Document document, int offset)
     throws BadLocationException, IOException
   {
+    BufferedReader reader = new BufferedReader(in);
+
+    String line;
+    StringBuffer content = new StringBuffer();
+
+    while ((line = reader.readLine()) != null)
+      content.append(line);
+    
+    document.insertString(offset, content.toString(),
+			  SimpleAttributeSet.EMPTY);
   }
 
-  public void write(OutputStream out, Document doc, int pos, int len)
+  public void write(OutputStream out, Document document, int offset, int len)
     throws BadLocationException, IOException
   {
+    write(new OutputStreamWriter(out), document, offset, len);
   }
 
-  public void write(Writer out, Document doc, int pos, int len)
+  public void write(Writer out, Document document, int offset, int len)
     throws BadLocationException, IOException
   {
   }
