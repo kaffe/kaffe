@@ -1,3 +1,9 @@
+Tue Jan 26 09:10:43 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/classMethod.c, libraries/clib/native/Class.c:
+	throw a ClassNotFoundException if an element type for an array is
+	not found.
+
 Tue Jan 26 00:04:27 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/*, kaffe/kaffevm/{mem|jit|intr}/*,
