@@ -241,23 +241,25 @@ X_CFLAGS = @X_CFLAGS@
 X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
-libkaffevm_la_OBJECTS =  gc-mem.lo md.lo baseClasses.lo classMethod.lo \
-code-analyse.lo code.lo constants.lo debug.lo exception.lo external.lo \
-findInJar.lo fp.lo gc.lo hashtab.lo inflate.lo itypes.lo jar.lo jni.lo \
-locks.lo lookup.lo object.lo readClass.lo soft.lo stackTrace.lo \
-string.lo support.lo thread.lo utf8const.lo gcFuncs.lo gcRefs.lo \
-verify.lo
+am_libkaffevm_la_OBJECTS =  gc-mem.lo md.lo baseClasses.lo \
+classMethod.lo code-analyse.lo code.lo constants.lo debug.lo \
+exception.lo external.lo findInJar.lo fp.lo gc.lo hashtab.lo inflate.lo \
+itypes.lo jar.lo jni.lo locks.lo lookup.lo object.lo readClass.lo \
+soft.lo stackTrace.lo string.lo support.lo thread.lo utf8const.lo \
+gcFuncs.lo gcRefs.lo verify.lo
+libkaffevm_la_OBJECTS =  $(am_libkaffevm_la_OBJECTS)
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+DIST_SOURCES =  $(libkaffevm_la_SOURCES)
 HEADERS =  $(noinst_HEADERS)
 
 DIST_COMMON =  $(noinst_HEADERS) Makefile.am Makefile.in
 
 
-DISTFILES = $(DIST_COMMON) $(SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
 GZIP_ENV = --best
 DEP_FILES =  .deps/baseClasses.P .deps/classMethod.P \
@@ -269,11 +271,11 @@ DEP_FILES =  .deps/baseClasses.P .deps/classMethod.P \
 .deps/readClass.P .deps/soft.P .deps/stackTrace.P .deps/string.P \
 .deps/support.P .deps/thread.P .deps/utf8const.P .deps/verify.P
 SOURCES = $(libkaffevm_la_SOURCES)
-OBJECTS = $(libkaffevm_la_OBJECTS)
+OBJECTS = $(am_libkaffevm_la_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .S .c .lo .o .s
+.SUFFIXES: .c .lo .o
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu kaffe/kaffevm/Makefile
 
@@ -308,12 +310,6 @@ uninstall-libLTLIBRARIES:
 	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(libdir)/$$p; \
 	done
 
-.s.o:
-	$(COMPILE) -c $<
-
-.S.o:
-	$(COMPILE) -c $<
-
 mostlyclean-compile:
 	-rm -f *.o core *.core
 
@@ -324,12 +320,6 @@ distclean-compile:
 
 maintainer-clean-compile:
 
-.s.lo:
-	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
-
-.S.lo:
-	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
-
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -339,6 +329,37 @@ clean-libtool:
 distclean-libtool:
 
 maintainer-clean-libtool:
+gc-mem.lo:
+md.lo:
+baseClasses.lo:
+classMethod.lo:
+code-analyse.lo:
+code.lo:
+constants.lo:
+debug.lo:
+exception.lo:
+external.lo:
+findInJar.lo:
+fp.lo:
+gc.lo:
+hashtab.lo:
+inflate.lo:
+itypes.lo:
+jar.lo:
+jni.lo:
+locks.lo:
+lookup.lo:
+object.lo:
+readClass.lo:
+soft.lo:
+stackTrace.lo:
+string.lo:
+support.lo:
+thread.lo:
+utf8const.lo:
+gcFuncs.lo:
+gcRefs.lo:
+verify.lo:
 
 libkaffevm.la: $(libkaffevm_la_OBJECTS) $(libkaffevm_la_DEPENDENCIES)
 	$(LINK) -rpath $(libdir) $(libkaffevm_la_LDFLAGS) $(libkaffevm_la_OBJECTS) $(libkaffevm_la_LIBADD) $(LIBS)
@@ -479,22 +500,22 @@ maintainer-clean-depend:
 
 %.o: %.c
 	@echo '$(COMPILE) -c $<'; \
-	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
-	@-cp .deps/$(*F).pp .deps/$(*F).P; \
-	tr ' ' '\012' < .deps/$(*F).pp \
+	$(COMPILE) -Wp,-MD,.deps/$(*D)/$(*F).pp -c $<
+	@-cp .deps/$(*D)/$(*F).pp .deps/$(*D)/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*D)/$(*F).pp \
 	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
-	    >> .deps/$(*F).P; \
-	rm .deps/$(*F).pp
+	    >> .deps/$(*D)/$(*F).P; \
+	rm .deps/$(*D)/$(*F).pp
 
 %.lo: %.c
 	@echo '$(LTCOMPILE) -c $<'; \
-	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*D)/$(*F).pp -c $<
 	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
-	  < .deps/$(*F).pp > .deps/$(*F).P; \
-	tr ' ' '\012' < .deps/$(*F).pp \
+	  < .deps/$(*D)/$(*F).pp > .deps/$(*D)/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*D)/$(*F).pp \
 	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
-	    >> .deps/$(*F).P; \
-	rm -f .deps/$(*F).pp
+	    >> .deps/$(*D)/$(*F).P; \
+	rm -f .deps/$(*D)/$(*F).pp
 info-am:
 info: info-recursive
 dvi-am:
@@ -566,8 +587,8 @@ clean-libLTLIBRARIES maintainer-clean-libLTLIBRARIES \
 uninstall-libLTLIBRARIES install-libLTLIBRARIES mostlyclean-compile \
 distclean-compile clean-compile maintainer-clean-compile \
 mostlyclean-libtool distclean-libtool clean-libtool \
-maintainer-clean-libtool install-data-recursive \
-uninstall-data-recursive install-exec-recursive \
+maintainer-clean-libtool install-recursive uninstall-recursive \
+install-data-recursive uninstall-data-recursive install-exec-recursive \
 uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
 all-recursive check-recursive installcheck-recursive info-recursive \
 dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
@@ -599,6 +620,8 @@ md.c: stamp-h02
 	else :; fi
 stamp-h02: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_MD_C) md.c $@
+
+jit/icode.h:
 
 include $(top_srcdir)/include/distclean-hack
 

@@ -121,4 +121,8 @@ stamp-h02: $(top_builddir)/config.status
 CLEANFILES = so_locations
 DISTCLEANFILES = $(libkaffevm_la_GEN_SRCS)
 
+## This avoids that dependencies produced by `make dist' in a jit
+## configuration prevents intrp builds.
+jit/icode.h:
+
 include $(top_srcdir)/include/distclean-hack

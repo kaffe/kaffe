@@ -1,5 +1,9 @@
 1999-04-22  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
+	* kaffe/kaffevm/Makefile.am (jit/icode.h): Avoid dependency
+	problem with intrp build after jit dist.
+	* kaffe/kaffevm/Makefile.in: Regen.
+
 	* configure.in: Check for DGifOpen in libungif.
 	* configure: Regen.
 
