@@ -43,6 +43,14 @@ void bcopy(void*, void*, size_t);
 #endif
 
 #if !defined(HAVE_DECLARED_SWAB)
+
+/*
+ * Linux 2.0 systems apparently put ssize_t in sys/types.h
+ */
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif
+
 /* 
  * Some systems (Linux) do not declare swab in any standard header file
  */

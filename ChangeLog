@@ -1,3 +1,9 @@
+2003-05-30 Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/config-mem.h:
+	Include <sys/types.h> to find ssize_t on Linux 2.0
+	systems.
+
 2003-05-30  Dalibor Topic <robilad@yahoo.com>
 
 	* libltdl/acinclude.m4
