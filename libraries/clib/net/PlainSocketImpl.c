@@ -363,14 +363,19 @@ java_net_PlainSocketImpl_read(struct Hjava_net_PlainSocketImpl* this, HArrayOfBy
 void
 java_net_PlainSocketImpl_write(struct Hjava_net_PlainSocketImpl* this, HArrayOfByte* buf, jint offset, jint len)
 {
-        int r;
-	int fd;
+	int r, fd;
+	ssize_t nw;
 
 	fd = unhand(unhand(this)->fd)->fd;
-        if (fd >= 0) {
-		int rc = KSOCKWRITE(fd, &unhand_array(buf)->body[offset], len, &r);
-		if (rc) {
-			SignalError("java.io.IOException", SYS_ERROR(rc));
+	if (fd >= 0) {
+		while (len > 0) {
+			r = KSOCKWRITE(fd,
+			    &unhand_array(buf)->body[offset], len, &nw);
+			if (r) {
+				SignalError("java.io.IOException", SYS_ERROR(r));
+			}
+			offset += nw;
+			len -= nw;
 		}
 	} else {
 		SignalError("java.io.IOException", "fd invalid"); 
