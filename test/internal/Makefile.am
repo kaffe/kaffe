@@ -1,6 +1,6 @@
 # Internal testing
 #
-# Copyright (c) 2003 University of Utah and the Flux Group.
+# Copyright (c) 2003, 2004 University of Utah and the Flux Group.
 # All rights reserved..
 #
 # This file is licensed under the terms of the GNU Public License.
@@ -74,8 +74,8 @@ JAVA_CLASSES = \
 
 TESTS_ENVIRONMENT = env TEST_CLASSES="$(JAVA_CLASSES)" `BOOTCLASSPATH="."; export BOOTCLASSPATH; . $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
-%.class: %.java
-	$(JIKES) -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $<
+%.class: $(top_srcdir)/test/internal/%.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $<
 
 jit_stub.o: $(JAVA_CLASSES)
 
@@ -98,4 +98,4 @@ EXTRA_DIST = \
 	ObjectFields.java \
 	MethodOptimizations.java
 
-CLEANFILES = *.fail *.out core *.core
+CLEANFILES = *.fail *.out core *.core *.class

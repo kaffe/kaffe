@@ -2,7 +2,7 @@
  * itypes.c
  * Internal types.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -51,7 +51,7 @@ initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 		goto bad;
 	}
 
-	clazz->dtable = _PRIMITIVE_DTABLE;
+	clazz->vtable = _PRIMITIVE_DTABLE;
 	clazz->name = utf8ConstNew(name, -1);
 	clazz->accflags = ACC_PUBLIC | ACC_FINAL;
 	CLASS_PRIM_SIG(clazz) = sig;
@@ -114,6 +114,18 @@ initTypes(void)
 	TYPE_CLASS(TYPE_Int) = intClass;
 	TYPE_CLASS(TYPE_Long) = longClass;
 
+#if defined(KAFFE_XDEBUGGING)
+	byteClass->stab_id = STYPE_BYTE;
+	shortClass->stab_id = STYPE_SHORT;
+	intClass->stab_id = STYPE_INT;
+	longClass->stab_id = STYPE_LONG;
+	booleanClass->stab_id = STYPE_BOOLEAN;
+	charClass->stab_id = STYPE_CHAR;
+	floatClass->stab_id = STYPE_FLOAT;
+	doubleClass->stab_id = STYPE_DOUBLE;
+	voidClass->stab_id = STYPE_VOID;
+#endif
+	
 	DBG(INIT, dprintf("initTypes() done\n"); )
 }
 
@@ -125,15 +137,15 @@ finishTypes(void)
 {
 	DBG(INIT, dprintf("finishTypes()\n"); )
 
-	byteClass->head.dtable = ClassClass->dtable;
-	shortClass->head.dtable = ClassClass->dtable;
-	intClass->head.dtable = ClassClass->dtable;
-	longClass->head.dtable = ClassClass->dtable;
-	booleanClass->head.dtable = ClassClass->dtable;
-	charClass->head.dtable = ClassClass->dtable;
-	floatClass->head.dtable = ClassClass->dtable;
-	doubleClass->head.dtable = ClassClass->dtable;
-	voidClass->head.dtable = ClassClass->dtable;
+	byteClass->head.vtable = ClassClass->vtable;
+	shortClass->head.vtable = ClassClass->vtable;
+	intClass->head.vtable = ClassClass->vtable;
+	longClass->head.vtable = ClassClass->vtable;
+	booleanClass->head.vtable = ClassClass->vtable;
+	charClass->head.vtable = ClassClass->vtable;
+	floatClass->head.vtable = ClassClass->vtable;
+	doubleClass->head.vtable = ClassClass->vtable;
+	voidClass->head.vtable = ClassClass->vtable;
 
 	DBG(INIT, dprintf("finishTypes() done\n"); )
 }

@@ -33,6 +33,7 @@
 #include "bytecode.h"
 #include "itypes.h"
 #include "soft.h"
+#include "code.h"
 
 #include "verify.h"
 #include "verify-block.h"
@@ -1128,6 +1129,25 @@ verifyMethod3a(errorInfo* einfo,
 		jexceptionEntry *entry;
 		for (n = 0; n < method->exception_table->length; n++) {
 			entry = &(method->exception_table->entry[n]);
+
+			pc = entry->start_pc;
+			if (pc >= codelen) {
+				return verifyErrorInVerifyMethod3a(einfo, method, "try block is beyond bound of method code");
+			}
+			else if (!(status[pc] & IS_INSTRUCTION)) {
+				return verifyErrorInVerifyMethod3a(einfo, method, "try block starts in the middle of an instruction");
+			}
+			
+			pc = entry->end_pc;
+			if (pc <= entry->start_pc) {
+				return verifyErrorInVerifyMethod3a(einfo, method, "try block ends before its starts");
+			}
+			else if (pc > codelen) {
+				return verifyErrorInVerifyMethod3a(einfo, method, "try block ends beyond bound of method code");
+			}
+			else if (!(status[pc] & IS_INSTRUCTION)) {
+				return verifyErrorInVerifyMethod3a(einfo, method, "try block ends in the middle of an instruction");
+			}
 			
 			pc = entry->handler_pc;
 			if (pc >= codelen) {
@@ -1157,6 +1177,26 @@ verifyMethod3a(errorInfo* einfo,
 				if (!instanceof(javaLangThrowable, entry->catch_type)) {
 					return verifyErrorInVerifyMethod3a(einfo, method, "Exception to be handled by exception handler is not a subclass of Java/Lang/Throwable");
 				}
+			}
+		}
+	}
+
+	if (method->lvars != NULL) {
+		for (n = 0; n < method->lvars->length; n++) {
+			localVariableEntry *lve;
+
+			lve = &method->lvars->entry[n];
+
+			pc = lve->start_pc;
+			if (pc >= codelen) {
+				return verifyErrorInVerifyMethod3a(einfo, method, "local variable is beyond bound of method code");
+			}
+			else if (!(status[pc] & IS_INSTRUCTION)) {
+				return verifyErrorInVerifyMethod3a(einfo, method, "local variable starts in the middle of an instruction");
+			}
+			
+			if ((pc + lve->length) > codelen) {
+				return verifyErrorInVerifyMethod3a(einfo, method, "local variable is beyond bound of method code");
 			}
 		}
 	}

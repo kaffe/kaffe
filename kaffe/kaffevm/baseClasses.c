@@ -2,7 +2,7 @@
  * baseClasses.c
  * Handle base classes.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
@@ -46,6 +46,7 @@ Utf8Const* void_signature;
 Utf8Const* constructor_name;
 Utf8Const* Code_name;
 Utf8Const* LineNumberTable_name;
+Utf8Const* LocalVariableTable_name;
 Utf8Const* ConstantValue_name;
 Utf8Const* Exceptions_name;
 Utf8Const* SourceFile_name;
@@ -176,6 +177,7 @@ initialiseKaffe(void)
 	constructor_name = utf8ConstNew("<init>", -1);
 	Code_name = utf8ConstNew("Code", -1);
 	LineNumberTable_name = utf8ConstNew("LineNumberTable", -1);
+	LocalVariableTable_name = utf8ConstNew("LocalVariableTable", -1);
 	ConstantValue_name = utf8ConstNew("ConstantValue", -1);
 	Exceptions_name = utf8ConstNew("Exceptions", -1);
 	SourceFile_name = utf8ConstNew("SourceFile", -1);
@@ -183,8 +185,8 @@ initialiseKaffe(void)
 
 	if (!(init_name && final_name && void_signature &&
 	      constructor_name && Code_name && LineNumberTable_name &&
-	      ConstantValue_name && Exceptions_name &&
-	      SourceFile_name && InnerClasses_name)) {
+	      LocalVariableTable_name && ConstantValue_name &&
+	      Exceptions_name && SourceFile_name && InnerClasses_name)) {
 		dprintf("not enough memory to run kaffe\n");
 		ABORT();
 	}
@@ -261,10 +263,10 @@ initBaseClasses(void)
         loadStaticClass(&SystemClass, SYSTEMCLASS);
 	
         /* We must to a little cross tidying */
-        ObjectClass->head.dtable = ClassClass->dtable;
-        SerialClass->head.dtable = ClassClass->dtable;
-        CloneClass->head.dtable = ClassClass->dtable;
-        ClassClass->head.dtable = ClassClass->dtable;
+        ObjectClass->head.vtable = ClassClass->vtable;
+        SerialClass->head.vtable = ClassClass->vtable;
+        CloneClass->head.vtable = ClassClass->vtable;
+        ClassClass->head.vtable = ClassClass->vtable;
 	
 	/* Basic types classes */
 	loadStaticClass(&javaLangVoidClass, "java/lang/Void");

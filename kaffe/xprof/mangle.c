@@ -2,7 +2,7 @@
  * mangle.c
  * Routines for doing name mangling on Java types
  *
- * Copyright (c) 2000 University of Utah and the Flux Group.
+ * Copyright (c) 2000, 2004 University of Utah and the Flux Group.
  * All rights reserved.
  *
  * This file is licensed under the terms of the GNU Public License.
@@ -649,5 +649,175 @@ int mangleString(char *dest, char *src, int slen, int unicode)
 	return( retval );
 }
 
-#endif /* defined(KAFFE_XDEBUGGING) || defined(KAFFE_XPROFILER) */
+static int fputss(const char *str, int len, FILE *stream)
+{
+    unsigned int lpc;
+    int retval = 0;
 
+    for( lpc = 0; lpc < len; lpc++ )
+    {
+	putc(str[lpc], stream);
+    }
+    return( retval );
+}
+
+int vfmanglef(FILE *file, char *format, va_list args)
+{
+    unsigned int sindex, eindex;
+    int retval = 0;
+
+    for( sindex = eindex = 0; format[eindex] != '\0'; eindex++ )
+    {
+	switch( format[eindex] )
+	{
+	case '%':
+	    {
+		int done = 0;
+
+		while( !done )
+		{
+		    eindex += 1;
+		    switch( format[eindex] )
+		    {
+		    case 'q': /* qualified string */
+			{
+			    const char *quals, *str;
+			    size_t offset = 0, len;
+			    void *ptr;
+			    
+			    quals = va_arg(args, const char *);
+			    str = va_arg(args, const char *);
+			    ptr = va_arg(args, void *);
+			    
+			    len = strlen(str);
+
+			    while( offset < len )
+			    {
+				char buffer[1 + 2 + sizeof(void *) * 2 + 1];
+				const char *sub_end;
+				size_t slen;
+
+				buffer[0] = '\0';
+				sub_end = strpbrk(&str[offset], quals);
+				if( sub_end == NULL )
+				{
+				    sub_end = &str[len];
+				    if( ptr != NULL )
+				    {
+					snprintf(buffer,
+						 sizeof(buffer),
+						 "_%p",
+						 ptr);
+				    }
+				}
+				slen = sub_end - &str[offset];
+				fprintf(file, "%d", slen + strlen(buffer));
+				fputss(&str[offset], slen, file);
+				fprintf(file, "%s", buffer);
+				offset += slen + 1;
+			    }
+			    done = 1;
+			}
+			break;
+		    case 't':
+			{
+			    const char *in, *out, *str;
+			    unsigned int lpc;
+
+			    in = va_arg(args, const char *);
+			    out = va_arg(args, const char *);
+			    str = va_arg(args, const char *);
+			    
+			    assert(strlen(in) == strlen(out));
+			    for( lpc = 0; str[lpc] != '\0'; lpc++ )
+			    {
+				const char *rep;
+
+				if( (rep = strchr(in, str[lpc])) != NULL )
+				{
+				    putc(out[rep - in], file);
+				}
+				else
+				{
+				    putc(str[lpc], file);
+				}
+			    }
+			    done = 1;
+			}
+			break;
+		    case 'c':
+			{
+				char c;
+
+				c = (char)va_arg(args, int);
+				fprintf(file, "%c", c);
+				done = 1;
+			}
+			break;
+		    case 'd':
+			{
+			    int i;
+
+			    i = va_arg(args, int);
+			    fprintf(file, "%d", i);
+			    done = 1;
+			}
+			break;
+		    case 'p':
+			{
+			    void *ptr;
+
+			    ptr = va_arg(args, void *);
+			    fprintf(file, "%p", ptr);
+			    done = 1;
+			}
+			break;
+		    case 's':
+			{
+			    const char *str;
+			    
+			    str = va_arg(args, const char *);
+
+			    fprintf(file, "%s", str);
+			    done = 1;
+			}
+			break;
+		    case 'S':
+			{
+			    const char *str;
+			    size_t len;
+			    
+			    str = va_arg(args, const char *);
+			    len = va_arg(args, size_t);
+
+			    fputss(str, len, file);
+			    done = 1;
+			}
+			break;
+		    default:
+			assert(0);
+			break;
+		    }
+		}
+	    }
+	    break;
+	default:
+	    putc(format[eindex], file);
+	    break;
+	}
+    }
+    return( retval );
+}
+
+int fmanglef(FILE *file, char *format, ...)
+{
+    va_list args;
+    int retval;
+
+    va_start(args, format);
+    retval = vfmanglef(file, format, args);
+    va_end(args);
+    return( retval );
+}
+
+#endif /* defined(KAFFE_XDEBUGGING) || defined(KAFFE_XPROFILER) */

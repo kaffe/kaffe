@@ -23,12 +23,13 @@
 # the VM with `-Xxdebug' and then run this gdb macro
 # whenever you want a full backtrace:
 define xdb
-    shell as xdb.as -o xdb.o
+    shell awk -- '// { print $0; } /\$xdb\$\.java\",132,0,0,0x/ { last_line = $0; } END { split(last_line, stabargs, /,/); printf(".stabs \"$xdb$.java\",100,0,0,%s\n", stabargs[5]); }' xdb.as | as -o xdb.o
     add-symbol-file xdb.o 0
 end
 document xdb
     Load xdebugging symbol information from xdb.as
 end
+
 
 # Kaffe ignores SIGPIPE, so we should too (on systems that have SIGPIPE)
 #handle SIGPIPE nostop noprint

@@ -2,7 +2,7 @@
  * native.h
  * Native method support.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -43,7 +43,7 @@ struct _dispatchTable;
 struct _iLock;
 
 typedef struct Hjava_lang_Object {
-	struct _dispatchTable*  dtable;
+	struct _dispatchTable*  vtable;
 	struct _iLock*		lock;
 	/* Data follows on immediately */
 } Hjava_lang_Object;

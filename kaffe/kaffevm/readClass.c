@@ -247,6 +247,13 @@ readAttributes(classFile* fp, Hjava_lang_Class* this,
 					return false;
 				}
 			}
+			else if (utf8ConstEqual(name, LocalVariableTable_name)
+				 && (thingType == READATTR_METHOD)) {
+				if (!addLocalVariables((Method*)thing,
+						       len, fp, einfo)) {
+					return false;
+				}
+			}
 			else if (utf8ConstEqual(name, ConstantValue_name)
 				 && (thingType == READATTR_FIELD)) {
 				readu2(&idx, fp);

@@ -2,7 +2,7 @@
  * exception.c
  * Handle exceptions for the interpreter or translator.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  * Copyright (c) 2003
  * 	Mark J. Wielaard <mark@klomp.org>
@@ -326,7 +326,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 
 	/* Search down exception stack for a match */
 	DBG(ELOOKUP,
-	    dprintf ("dispatchException(): %s\n", ((Hjava_lang_Object*)eobj)->dtable->class->name->data);)
+	    dprintf ("dispatchException(): %s\n", ((Hjava_lang_Object*)eobj)->vtable->class->name->data);)
 
 	/*
 	 * find the last jni frame
@@ -365,7 +365,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 		 * check whether that method contains a suitable handler
 		 */
 		foundHandler = findExceptionBlockInMethod(frame->pc,
-							  eobj->base.dtable->class,
+							  eobj->base.vtable->class,
 							  frame->meth,
 							  &handler);
 

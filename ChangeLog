@@ -1,3 +1,87 @@
+2004-03-08  Timothy S. Stack <stack@cs.utah.edu>
+
+	* configure, configure.in:
+	Add a substitution for JAVAC_FLAGS and add "-g" to JAVAC_FLAGS
+	when x-debugging is turned on.
+
+	* FAQ/FAQ.xdebugging:
+	Update for changes in the xdebugging architecture.
+
+	* developers/gdbinit:
+	Update "xdb" macro to support changes in the underlying
+	implementation.
+
+	* include/native.h, kaffe/kaffevm/classMethod.c,
+	kaffe/kaffevm/exception.c, kaffe/kaffevm/gcFuncs.c,
+	kaffe/kaffevm/itypes.c, kaffe/kaffevm/jni.c,
+	kaffe/kaffevm/object.c, kaffe/kaffevm/object.h,
+	kaffe/kaffevm/stackTrace.c, kaffe/kaffevm/mem/gc-incremental.c:
+	Change "dtable" to "vtable" in Hjava_lang_Object so that it
+	integrates with gdb.
+
+	* kaffe/kaffeh/main.c, kaffe/kaffevm/baseClasses.c,
+	test/internal/jit_stub.c:
+	Add LocalVariableTable_name to list of string constants.
+
+	* kaffe/kaffeh/support.c,
+	kaffe/kaffevm/classMethod.c,
+	kaffe/kaffevm/jit/machine.c,
+	kaffe/kaffevm/jit3/machine.c,
+	libraries/clib/native/Constructor.c,
+	libraries/clib/native/Method.c:
+	Use CLASS_NFIELDS instead of "nfields", CLASS_NMETHODS instead
+	of "nmethods", and CLASS_FSIZE instead of "bfsize".
+
+	* kaffe/kaffeh/support.c, kaffe/kaffevm/code.c,
+	kaffe/kaffevm/code.h, kaffe/kaffevm/readClass.c:
+	Add addLocalVariables implementation.
+
+	* kaffe/kaffevm/classMethod.c:
+	Output stabs debugging information for classes.
+
+	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/code.c,
+	kaffe/kaffevm/verify.c:
+	More constant pool and class file checking.
+
+	* kaffe/kaffevm/classMethod.h:
+	Add builtin stab type IDs; add stab_id field to Hjava_lang_Class;
+	change nmethods, nfields, bfsize, and dtable to method_count,
+	field_count, size_in_bytes, and vtable for gdb compatibility; add
+	lvars field to methods to store the local variable table.
+
+	* kaffe/kaffeh/mem.c, kaffe/kaffevm/gc.h, kaffe/kaffevm/gcFuncs.c,
+	kaffe/kaffevm/mem/gc-incremental.c:
+	Convert GC_ALLOC #defines to an enumeration, gc_alloc_type_t.  Add
+	GC_ALLOC_LOCALVARTABLE constant for allocating local variable
+	table stuff.
+
+	* kaffe/kaffevm/gtypes.h, kaffe/kaffevm/utf8const.c:
+	Add length field to _strconst to make it gdb compatible.
+
+	* kaffe/kaffevm/jit3/machine.c:
+	Output stabs debugging information for parameters/local
+	variables.
+
+	* kaffe/xprof/Makefile.am:
+	Install libkaffexprof in the native directory.
+
+	* kaffe/xprof/debugFile.c, kaffe/xprof/debugFile.h:
+	Add support for class types, static members, parameters/local
+	variables, and some minor cleanup.
+
+	* kaffe/xprof/mangle.c, kaffe/xprof/mangle.h:
+	Add fmanglef to support some more sophisticated CPUs.
+
+	* libraries/javalib/rebuildLib.in:
+	Add substitution for JAVAC_FLAGS.
+
+	* test/internal/Makefile.am:
+	Use -g when compiling the classes, fix the dependency, and add the
+	"*.class" files to the CLEANFILES list.
+
+	* test/internal/ObjectFields.java:
+	Add tests boolean and Object.	
+	
 2004-02-25  Marius Groeger <mgroeger@sysgo.com>
 	* config/powerpc/sysdepCallMethod.h:
 	Add support for PowerPC CPUs without hardware FPU (-msoft-float)

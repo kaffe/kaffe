@@ -16,7 +16,7 @@
 
 # Makefile.in for xprof - A library to support cross language profiling
 #
-# Copyright (c) 2000, 2003 University of Utah and the Flux Group.
+# Copyright (c) 2000, 2003, 2004 University of Utah and the Flux Group.
 # All rights reserved.
 #
 # This file is licensed under the terms of the GNU Public License.
@@ -70,9 +70,9 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
-am__installdirs = $(DESTDIR)$(libdir)
-libLTLIBRARIES_INSTALL = $(INSTALL)
-LTLIBRARIES = $(lib_LTLIBRARIES)
+am__installdirs = $(DESTDIR)$(nativedir)
+nativeLTLIBRARIES_INSTALL = $(INSTALL)
+LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
 am_libkaffexprof_la_OBJECTS = callGraph.lo debugFile.lo feedback.lo \
@@ -189,6 +189,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INTLLIBS = @INTLLIBS@
 JASMIN = @JASMIN@
+JAVAC_FLAGS = @JAVAC_FLAGS@
 JAVAX_CRYPTO_JAR = @JAVAX_CRYPTO_JAR@
 JAVAX_SECURITY_JAR = @JAVAX_SECURITY_JAR@
 JAVA_LIBS = @JAVA_LIBS@
@@ -336,7 +337,7 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/kaffevm -I$(top_builddir)/include
-lib_LTLIBRARIES = libkaffexprof.la
+native_LTLIBRARIES = libkaffexprof.la
 libkaffexprof_la_LDFLAGS = \
 	-export-dynamic \
 	-release $(PACKAGE_VERSION)
@@ -401,35 +402,35 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+install-nativeLTLIBRARIES: $(native_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
-	$(mkdir_p) $(DESTDIR)$(libdir)
-	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	$(mkdir_p) $(DESTDIR)$(nativedir)
+	@list='$(native_LTLIBRARIES)'; for p in $$list; do \
 	  if test -f $$p; then \
 	    f="`echo $$p | sed -e 's|^.*/||'`"; \
-	    echo " $(LIBTOOL) --mode=install $(libLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) $$p $(DESTDIR)$(libdir)/$$f"; \
-	    $(LIBTOOL) --mode=install $(libLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) $$p $(DESTDIR)$(libdir)/$$f; \
+	    echo " $(LIBTOOL) --mode=install $(nativeLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) $$p $(DESTDIR)$(nativedir)/$$f"; \
+	    $(LIBTOOL) --mode=install $(nativeLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) $$p $(DESTDIR)$(nativedir)/$$f; \
 	  else :; fi; \
 	done
 
-uninstall-libLTLIBRARIES:
+uninstall-nativeLTLIBRARIES:
 	@$(NORMAL_UNINSTALL)
-	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	@list='$(native_LTLIBRARIES)'; for p in $$list; do \
 	    p="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " $(LIBTOOL) --mode=uninstall rm -f $(DESTDIR)$(libdir)/$$p"; \
-	  $(LIBTOOL) --mode=uninstall rm -f $(DESTDIR)$(libdir)/$$p; \
+	  echo " $(LIBTOOL) --mode=uninstall rm -f $(DESTDIR)$(nativedir)/$$p"; \
+	  $(LIBTOOL) --mode=uninstall rm -f $(DESTDIR)$(nativedir)/$$p; \
 	done
 
-clean-libLTLIBRARIES:
-	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
-	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+clean-nativeLTLIBRARIES:
+	-test -z "$(native_LTLIBRARIES)" || rm -f $(native_LTLIBRARIES)
+	@list='$(native_LTLIBRARIES)'; for p in $$list; do \
 	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
 	  test "$$dir" = "$$p" && dir=.; \
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
 libkaffexprof.la: $(libkaffexprof_la_OBJECTS) $(libkaffexprof_la_DEPENDENCIES) 
-	$(LINK) -rpath $(libdir) $(libkaffexprof_la_LDFLAGS) $(libkaffexprof_la_OBJECTS) $(libkaffexprof_la_LIBADD) $(LIBS)
+	$(LINK) -rpath $(nativedir) $(libkaffexprof_la_LDFLAGS) $(libkaffexprof_la_OBJECTS) $(libkaffexprof_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -558,7 +559,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
-	$(mkdir_p) $(DESTDIR)$(libdir)
+	$(mkdir_p) $(DESTDIR)$(nativedir)
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -585,7 +586,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
+clean-am: clean-generic clean-libtool clean-nativeLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -604,9 +605,9 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-nativeLTLIBRARIES
 
-install-exec-am: install-libLTLIBRARIES
+install-exec-am:
 
 install-info: install-info-am
 
@@ -632,20 +633,20 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-libLTLIBRARIES
+uninstall-am: uninstall-info-am uninstall-nativeLTLIBRARIES
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libLTLIBRARIES clean-libtool ctags distclean \
+	clean-libtool clean-nativeLTLIBRARIES ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am \
-	install-libLTLIBRARIES install-man install-strip installcheck \
+	install-exec-am install-info install-info-am install-man \
+	install-nativeLTLIBRARIES install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am uninstall-info-am \
-	uninstall-libLTLIBRARIES
+	uninstall-nativeLTLIBRARIES
 
 
 @engine_frag@

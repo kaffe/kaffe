@@ -2,7 +2,7 @@
  * The garbage collector.
  * The name is misleading.  GC is non-incremental at this point.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -263,7 +263,7 @@ DBG(GCWALK,
 	    case GC_ALLOC_REFARRAY: {
 		    Hjava_lang_Object *obj;
 		    obj = (Hjava_lang_Object *)(unit+1);
-		    if (obj->dtable != NULL) {
+		    if (obj->vtable != NULL) {
 			    Hjava_lang_Class *c;
 			    c = OBJECT_CLASS(obj);
 			    if (c)
@@ -1005,7 +1005,7 @@ void throwOutOfMemory(void) __NORETURN__;
 
 static
 void*
-gcMalloc(Collector* gcif, size_t size, int fidx)
+gcMalloc(Collector* gcif, size_t size, gc_alloc_type_t fidx)
 {
 	gc_block* info;
 	gc_unit* unit;
@@ -1188,7 +1188,7 @@ gcThrowOOM(Collector *gcif)
  */
 static
 void*
-gcRealloc(Collector* gcif, void* mem, size_t size, int fidx)
+gcRealloc(Collector* gcif, void* mem, size_t size, gc_alloc_type_t fidx)
 {
 	gc_block* info;
 	int idx;

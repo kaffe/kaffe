@@ -2,7 +2,7 @@
  * code.c
  * Process a new code attribute.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -151,10 +151,88 @@ addLineNumbers(Method* m, uint32 len, classFile* fp, errorInfo *info)
 		lines->entry[i].start_pc = data;
 		readu2(&data, fp);
 		lines->entry[i].line_nr = data;
+		if (lines->entry[i].start_pc >= m->c.bcode.codelen) {
+			postExceptionMessage(info,
+					     JAVA_LANG(ClassFormatError),
+					     "%s "
+					     "(Method \"%s\" has invalid pc, "
+					     "%d, for line number %d)",
+					     CLASS_CNAME(m->class),
+					     m->name->data,
+					     lines->entry[i].start_pc,
+					     lines->entry[i].line_nr);
+			return false;
+		}
 	}
 
 	/* Attach lines to method */
 	m->lines = lines;
+	return true;
+}
+
+bool
+addLocalVariables(Method *m, uint32 len, classFile *fp, errorInfo *info)
+{
+	constants *pool = CLASS_CONSTANTS(m->class);
+	localVariables *lv;
+	int i;
+	u2 nr;
+	u2 data;
+
+	readu2(&nr, fp);
+
+	lv = gc_malloc(sizeof(localVariables) +
+		       (sizeof(localVariableEntry) * nr),
+		       GC_ALLOC_LOCALVARTABLE);
+	if( lv == NULL )
+	{
+		postOutOfMemory(info);
+		return false;
+	}
+
+	lv->length = nr;
+	for( i = 0; i < nr; i++ )
+	{
+		readu2(&data, fp);
+		lv->entry[i].start_pc = data;
+		readu2(&data, fp);
+		lv->entry[i].length = data;
+		readu2(&data, fp);
+		lv->entry[i].name_index = data;
+		readu2(&data, fp);
+		lv->entry[i].descriptor_index = data;
+		readu2(&data, fp);
+		lv->entry[i].index = data;
+
+		if (pool->tags[lv->entry[i].name_index] != CONSTANT_Utf8) {
+			postExceptionMessage(info,
+					     JAVA_LANG(ClassFormatError),
+					     "invalid local variable "
+					     "name_index: %d",
+					     lv->entry[i].name_index);
+			return false;
+		}
+		if (pool->tags[lv->entry[i].descriptor_index] !=
+		    CONSTANT_Utf8) {
+			postExceptionMessage(info,
+					     JAVA_LANG(ClassFormatError),
+					     "invalid local variable "
+					     "descriptor_index: %d",
+					     lv->entry[i].name_index);
+			return false;
+		}
+		if (lv->entry[i].index > m->localsz) {
+			postExceptionMessage(info,
+					     JAVA_LANG(ClassFormatError),
+					     "invalid local variable "
+					     "index: %d",
+					     lv->entry[i].index);
+			return false;
+		}
+	}
+
+	m->lvars = lv;
+	
 	return true;
 }
 

@@ -36,6 +36,19 @@ typedef struct _lineNumbers {
 	lineNumberEntry		entry[1];
 } lineNumbers;
 
+typedef struct _localVariableEntry {
+	uintp start_pc;
+	u2 length;
+	u2 name_index;
+	u2 descriptor_index;
+	u2 index;
+} localVariableEntry;
+
+typedef struct _localVariables {
+	uint32 length;
+	localVariableEntry entry[1];
+} localVariables;
+
 struct _methods;
 struct classFile;
 
@@ -43,6 +56,8 @@ bool	addCode(struct _methods*, uint32, struct classFile*,
 		errorInfo *info);
 bool	addLineNumbers(struct _methods*, uint32, struct classFile*,
 		       errorInfo *info);
+bool	addLocalVariables(struct _methods*, uint32, struct classFile *,
+			  errorInfo *info);
 bool	addCheckedExceptions(struct _methods*, uint32,
 			     struct classFile*, errorInfo *info);
 

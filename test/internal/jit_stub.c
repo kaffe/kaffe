@@ -1,7 +1,7 @@
 /*
  * jit_stub.c
  *
- * Copyright (c) 2003 University of Utah and the Flux Group.
+ * Copyright (c) 2003, 2004 University of Utah and the Flux Group.
  * All rights reserved.
  *
  * This file is licensed under the terms of the GNU Public License.
@@ -129,6 +129,7 @@ int main(int argc, char *argv[])
 	constructor_name = utf8ConstNew("<init>", -1);
 	Code_name = utf8ConstNew("Code", -1);
 	LineNumberTable_name = utf8ConstNew("LineNumberTable", -1);
+	LocalVariableTable_name = utf8ConstNew("LocalVariableTable", -1);
 	ConstantValue_name = utf8ConstNew("ConstantValue", -1);
 	Exceptions_name = utf8ConstNew("Exceptions", -1);
 	SourceFile_name = utf8ConstNew("SourceFile", -1);
@@ -136,8 +137,8 @@ int main(int argc, char *argv[])
 
 	if (!(init_name && final_name && void_signature &&
 	      constructor_name && Code_name && LineNumberTable_name &&
-	      ConstantValue_name && Exceptions_name &&
-	      SourceFile_name && InnerClasses_name)) {
+	      LocalVariableTable_name && ConstantValue_name &&
+	      Exceptions_name && SourceFile_name && InnerClasses_name)) {
 		dprintf("not enough memory to run kaffe\n");
 		ABORT();
 	}

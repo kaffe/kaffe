@@ -2,7 +2,7 @@
  * object.h
  * Object representation.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -29,7 +29,7 @@
 /*
  * These bizzare casts provide various offset into the object structure.
  */
-#define	OBJECT_DTABLE_OFFSET	((int)&(*(Hjava_lang_Object*)0).dtable)
+#define	OBJECT_DTABLE_OFFSET	((int)&(*(Hjava_lang_Object*)0).vtable)
 #define	ARRAY_SIZE_OFFSET	((int)&ARRAY_SIZE(0))
 #define	ARRAY_DATA_OFFSET	((int)ARRAY_DATA(0))
 

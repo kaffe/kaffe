@@ -1,7 +1,7 @@
 /*
  * java.lang.reflect.Constructor.c
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -34,7 +34,7 @@ java_lang_reflect_Constructor_getModifiers(struct Hjava_lang_reflect_Constructor
 	clazz = unhand(this)->clazz;
 	slot = unhand(this)->slot;
 
-	assert(slot < clazz->nmethods);
+	assert(slot < CLASS_NMETHODS(clazz));
 
-	return (clazz->methods[slot].accflags & ACC_MASK);
+	return (CLASS_METHODS(clazz)[slot].accflags & ACC_MASK);
 }

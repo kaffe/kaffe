@@ -3,7 +3,7 @@
  *
  * Handle UTF-8 constant strings. These are intern'ed into a hash table.
  *
- * Copyright (c) 1998
+ * Copyright (c) 1998, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  */
 
@@ -166,7 +166,8 @@ utf8ConstNew(const char *s, int len)
 	memcpy((char *)fake->data, s, len);
 	((char *)fake->data)[len] = '\0';
 	fake->hash = hash;
-
+	fake->length = len;
+	
 	/* Lock intern table */
 	lockUTF();
 	utf8 = hashFind(hashTable, fake);
@@ -192,6 +193,7 @@ utf8ConstNew(const char *s, int len)
 		memcpy((char *) utf8->data, s, len);
 		((char*)utf8->data)[len] = '\0';
 		utf8->hash = hash;
+		utf8->length = len;
 	} else {
 		utf8 = fake;
 	}

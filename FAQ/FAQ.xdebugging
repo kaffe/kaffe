@@ -1,24 +1,43 @@
 
 Documentation about cross language debugging support for Kaffe's JIT
 By the University of Utah Flux Group <http://www.cs.utah.edu/flux>,
-Mar 22, 2000
-Updated Apr 22, 2003
+Last Updated March 6, 2004
 
 Introduction
 ------------
 
-Cross language debugging support allows developers to see Java
-debugging information alongside C debugging information in GDB.  The
-extra information can help regular debugging and is invaluable when
-working with the jitter.  The implementation is basically an offshoot
-of the xprofiler code.  Since the profiler already generated symbols
-for the JIT'ed code it seemed easy enough to also generate `.stabs'
-debugging information for gdb.  The result allows gdb to report the
-file and line number of the current location in the code, however, the
-implementation has some limitations:
+Cross language debugging support allows developers to see Java and C
+debugging information in GDB simultaneously.  For example, doing a
+backtrace in GDB will show the real Java line numbers and source files
+instead of question marks.  This feature offsets Kaffe's lack of a
+real Java-level debugging interface, can help diagnose problems that
+may be in the Java code or the VM itself, and is especially helpful
+when working with the jitter.  The current implementation supports the
+following:
 
-  - Only line number debugging information is generated, variable
-    locations and types aren't handled yet.
+  - Line numbers and file names in back traces.
+
+  - Object types for loaded classes.
+
+  - Parameter and local variables for classes that were compiled with
+    debugging information (the "-g" option).
+
+  - Static members for loaded classes (e.g. "print
+    java.lang.System.out").
+
+  - Shortcuts to Kaffe internal data, for example, "print
+    java.lang.Object.class" will print the Hjava_lang_Class structure
+    for "java.lang.Object".
+
+Unfortunately, there are still several limitations in the
+implementation and the approach in general:
+
+  - Local variables will not always work because the jitter often
+    fails to use the locations in the stack reserved for each
+    variable.
+
+  - Classes loaded into the non-boot class loader will have their
+    class loader's pointer appended to their name.
 
   - The debugging information is generated at runtime, so the output
     must be sent through an assembler and loaded into GDB.  We provide
@@ -42,20 +61,30 @@ Configure
 ---------
 
 The xdebugging code can be enabled by using the --enable-xdebugging
-flag when running configure.
+flag when running configure.  Note that this will also force the
+system classes to be compiled with debugging turned on so the size of
+the rt.jar file will be somewhat larger.
+
+
+Installation
+------------
+
+In addition to the standard installation procedures, you will want to
+copy the 'developers/gdbinit' file to '~/.gdbinit' or atleast copy the
+'xdb' macro into your existing file.
 
 
 Usage
 -----
 
-The xdebugging output isn't generated unless the `-Xxdebug' or
+The xdebugging output is not generated unless the `-Xxdebug' or
 `-Xxdebug_file' flags are specified on the command line.  The
 `-Xxdebug' flag uses the default file name `xdb.as', while the other
-flag takes the file name as an argument.  The generated file will have
-symbols for JIT'ed functions and whatever line debugging information
-that was taken from the java debugging information.  Finally, you can
-load the file into gdb using 'xdb' or manually by running the output
-through an assembler and loading it into gdb with 'add-symbol-file'
+flag takes the file name as an argument.  The generated file will
+contain all of the necessary "stabs" debugging information generated
+during the course of a run.  Finally, you can load the file into gdb
+using 'xdb' or manually by running the output through an assembler and
+loading it into gdb with 'add-symbol-file'
 
 Example:
 
@@ -99,7 +128,11 @@ Modified Files:
     line args.
 
   kaffe/kaffevm/jit3/machine.c: Added code to generate debugging
-    information for JIT'ed methods that had java debugging information.
+    information for JIT'ed methods that had java debugging
+    information.
+
+  kaffe/kaffevm/classMethod.c: Added code to generate type information
+    when necessary.
 
 Control Flow:
 
@@ -111,6 +144,6 @@ Control Flow:
 
 Future:
 
-  Add more debugging information, types and variable locations.
+  Add more debugging information, types and variable locations. (DONE)
 
   Automate the process of getting the information into gdb. (DONE)

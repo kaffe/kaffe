@@ -2,7 +2,7 @@
  * main.c
  * Generate native code stubs from .class files.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -31,6 +31,7 @@ Utf8Const* void_signature;
 Utf8Const* constructor_name;
 Utf8Const* Code_name;
 Utf8Const* LineNumberTable_name;
+Utf8Const* LocalVariableTable_name;
 Utf8Const* ConstantValue_name;
 Utf8Const* Exceptions_name;
 Utf8Const* SourceFile_name;
@@ -77,6 +78,7 @@ main(int argc, char* argv[])
 	constructor_name = utf8ConstNew("<init>", -1);
 	Code_name = utf8ConstNew("Code", -1);
 	LineNumberTable_name = utf8ConstNew("LineNumberTable", -1);
+	LocalVariableTable_name = utf8ConstNew("LocalVariableTable", -1);
 	ConstantValue_name = utf8ConstNew("ConstantValue", -1);
 	Exceptions_name = utf8ConstNew("Exceptions", -1);
 	SourceFile_name = utf8ConstNew("SourceFile", -1);

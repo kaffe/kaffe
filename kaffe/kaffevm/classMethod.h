@@ -2,7 +2,7 @@
  * classMethod.h
  * Class, method and field tables.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
@@ -47,6 +47,37 @@ struct Hjava_lang_String;
 
 #include <java_lang_ClassLoader.h>
 
+/**
+ * Builtin stab type IDs.
+ */
+typedef enum {
+	STYPE_INT = 1,
+	STYPE_INT_POINTER,
+	STYPE_BYTE,
+	STYPE_BYTE_POINTER,
+	STYPE_SHORT,
+	STYPE_SHORT_POINTER,
+	STYPE_CHAR,
+	STYPE_CHAR_POINTER,
+	STYPE_LONG,
+	STYPE_LONG_POINTER,
+	STYPE_FLOAT,
+	STYPE_FLOAT_POINTER,
+	STYPE_DOUBLE,
+	STYPE_DOUBLE_POINTER,
+	STYPE_BOOLEAN,
+	STYPE_BOOLEAN_POINTER,
+	STYPE_VOID,
+	STYPE_VOID_POINTER,
+	STYPE_DISPATCH_TABLE,
+	STYPE_ILOCK,
+	STYPE_PROMOTED_BYTE,
+	STYPE_PROMOTED_SHORT,
+	STYPE_PROMOTED_CHAR,
+	STYPE_PROMOTED_BOOLEAN,
+	STYPE_MAX
+} stype_t;
+
 struct Hjava_lang_Class {
 	Hjava_lang_Object	head;		/* A class is an object too */
 
@@ -71,7 +102,7 @@ struct Hjava_lang_Class {
 	   For array types, used for CLASS_ELEMENT_TYPE.
 	   For primitive types, used by CLASS_ARRAY_CACHE. */
 	Method*			methods;
-	short			nmethods;
+	short			method_count;
 
 	/* Number of methods in the dtable. */
 	/* If CLASS_IS_PRIMITIVE, then the CLASS_PRIM_SIG. */
@@ -84,14 +115,14 @@ struct Hjava_lang_Class {
 	/* The size of the non-static fields, in bytes.
 	   For a primitive type, the length in bytes.
 	   Also used temporarily while reading fields.  */
-	int			bfsize;
+	int			size_in_bytes;
 
 	/* Number of fields, including static fields. */
-	short			nfields;
+	short			field_count;
 	/* Number of static fields. */
 	short			nsfields;
 
-	struct _dispatchTable*	dtable;
+	struct _dispatchTable*	vtable;
 
 	/* all interfaces supported by this class */
         struct Hjava_lang_Class** interfaces;
@@ -128,6 +159,10 @@ struct Hjava_lang_Class {
 #ifdef KAFFE_VMDEBUG
 	int			live_count;
 #endif
+#ifdef KAFFE_XDEBUGGING
+	/** Stab type ID. */
+	int stab_id;
+#endif
 };
 
 #ifndef __DEFINED_CLASS
@@ -152,7 +187,7 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
 #if defined(TRANSLATOR)
 #define	METHOD_NATIVECODE(M)		(((M)->idx == -1) ? \
 		((M)->ncode) : \
-		((M)->class->dtable->method[(M)->idx]))
+		((M)->class->vtable->method[(M)->idx]))
 #else
 /* INTERPRETER */
 #define	METHOD_NATIVECODE(M)		((M)->ncode)
@@ -163,7 +198,7 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
  */
 #define	PMETHOD_NATIVECODE(M)		(((M)->idx == -1) ? \
 		(void*)&((M)->ncode) : \
-		&((M)->class->dtable->method[(M)->idx]))
+		&((M)->class->vtable->method[(M)->idx]))
 
 #define	METHOD_CODE_START(M)		((M)->c.ncode.ncode_start)
 #define	SET_METHOD_NATIVECODE(M, C)	METHOD_NATIVECODE(M) = (C); \
@@ -244,7 +279,7 @@ typedef struct _methods {
 	Utf8Const*		name;
 	parsed_signature_t*	parsed_sig;
 	accessFlags		accflags;
-	long			idx;	/* Index into class->dtable */
+	long			idx;	/* Index into class->vtable */
 	u2			stacksz;
 	u2			localsz;
 	/* Only used for static/final/constructor methods */
@@ -261,6 +296,7 @@ typedef struct _methods {
 	} c;
 	Hjava_lang_Class*	class;
 	struct _lineNumbers*	lines;
+	struct _localVariables* lvars;
 	struct _jexception*	exception_table;
 	int			ndeclared_exceptions;
 	union {
@@ -347,7 +383,7 @@ struct _field_info;
 struct classFile;
 
 #define CLASS_METHODS(CLASS)  ((CLASS)->methods)
-#define CLASS_NMETHODS(CLASS)  ((CLASS)->nmethods)
+#define CLASS_NMETHODS(CLASS)  ((CLASS)->method_count)
 
 /* An array containing all the Fields, static fields first. */
 #define CLASS_FIELDS(CLASS)   ((CLASS)->fields)
@@ -362,24 +398,24 @@ struct classFile;
 #define CLASS_IFIELDS(CL)     (&(CL)->fields[CLASS_NSFIELDS(CL)])
 
 /* Total number of fields (instance and static). */
-#define CLASS_NFIELDS(CLASS)  ((CLASS)->nfields)
+#define CLASS_NFIELDS(CLASS)  ((CLASS)->field_count)
 /* Number of instance (non-static) fields. */
-#define CLASS_NIFIELDS(CLASS) ((CLASS)->nfields - (CLASS)->nsfields)
+#define CLASS_NIFIELDS(CLASS) ((CLASS)->field_count - (CLASS)->nsfields)
 /* Number of static fields. */
 #define CLASS_NSFIELDS(CLASS) ((CLASS)->nsfields)
 
 /* Size of a class fields (including header), in words. */
-#define CLASS_WFSIZE(CLASS)   ((CLASS)->bfsize / sizeof(jint))
+#define CLASS_WFSIZE(CLASS)   ((CLASS)->size_in_bytes / sizeof(jint))
 
 /* Size of a class's fields (including header), in bytes. */
-#define CLASS_FSIZE(CLASS)    ((CLASS)->bfsize)
+#define CLASS_FSIZE(CLASS)    ((CLASS)->size_in_bytes)
 
-#define OBJECT_CLASS(OBJ)     ((OBJ)->dtable->class)
+#define OBJECT_CLASS(OBJ)     ((OBJ)->vtable->class)
 #define CLASS_CNAME(CL)  ((CL)->name->data)
 #define CLASS_SOURCEFILE(CL)	\
 	((CL)->sourcefile == 0 ? "source file unknown" : (CL)->sourcefile)
 #define _PRIMITIVE_DTABLE ((struct _dispatchTable*)(-1))
-#define CLASS_IS_PRIMITIVE(CL) ((CL)->dtable == _PRIMITIVE_DTABLE)
+#define CLASS_IS_PRIMITIVE(CL) ((CL)->vtable == _PRIMITIVE_DTABLE)
 
 /* Assuming CLASS_IS_PRIMITIVE(CL), return the 1-letter signature code. */
 #define CLASS_PRIM_SIG(CL) ((CL)->msize)
@@ -400,7 +436,7 @@ struct classFile;
 /* Used by the lookupArray function. */
 #define CLASS_ARRAY_CACHE(PRIMTYPE) (*(Hjava_lang_Class**)&(PRIMTYPE)->methods)
 
-#define TYPE_PRIM_SIZE(CL) ((CL)->bfsize)
+#define TYPE_PRIM_SIZE(CL) ((CL)->size_in_bytes)
 #define TYPE_SIZE(CL) \
   (CLASS_IS_PRIMITIVE(CL) ? TYPE_PRIM_SIZE (CL) : PTR_TYPE_SIZE)
 
@@ -562,6 +598,7 @@ extern Utf8Const* final_name;		/* "finalize" */
 extern Utf8Const* void_signature;	/* "()V" */
 extern Utf8Const* Code_name;		/* "Code" */
 extern Utf8Const* LineNumberTable_name;	/* "LineNumberTable" */
+extern Utf8Const* LocalVariableTable_name;	/* "LocalVariableTable" */
 extern Utf8Const* ConstantValue_name;	/* "ConstantValue" */
 extern Utf8Const* Exceptions_name;	/* "Exceptions" */
 extern Utf8Const* SourceFile_name;	/* "SourceFile" */

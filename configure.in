@@ -430,8 +430,10 @@ AC_ARG_ENABLE(xdebugging,[  --enable-xdebugging     Enable debugging symbol gene
 case "$enable_xdebugging" in
 "") ;;
 no) ;;
-*) need_libxprof=yes; CPPFLAGS="$CPPFLAGS -DKAFFE_XDEBUGGING";;
+*) need_libxprof=yes; CPPFLAGS="$CPPFLAGS -DKAFFE_XDEBUGGING"; JAVAC_FLAGS="-g $JAVAC_FLAGS";;
 esac
+
+AC_SUBST(JAVAC_FLAGS)
 
 dnl =========================================================================
 dnl Allow generation feedback data

@@ -1,7 +1,7 @@
 /*
  * support.c
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -395,7 +395,7 @@ int
 startFields(Hjava_lang_Class* this, u2 fct, errorInfo *einfo)
 {
 	this->fields = malloc(fct * sizeof(Field));
-	this->nfields = 0; /* incremented by addField() */
+	CLASS_NFIELDS(this) = 0; /* incremented by addField() */
 	return true;
 }
 
@@ -420,7 +420,7 @@ addField(Hjava_lang_Class* this,
 			CLASS_CNAME(this), CLASS_CONST_UTF8(this, name_index)->data);
 		);
 
-	f = &(this->fields[this->nfields++]);
+	f = &(this->fields[CLASS_NFIELDS(this)++]);
 
 	/*
 	 * Store enough info for the field attribute "ConstantValue" handler (setFieldValue)
@@ -738,6 +738,17 @@ addCode(Method* m, uint32 len, classFile* fp, errorInfo *einfo)
 
 bool
 addLineNumbers(Method* m, uint32 len, classFile* fp, errorInfo *info)
+{
+	/* Don't try dereferencing m! */
+	assert(m == (Method*)1);
+
+	/* checkBufSize() done in caller. */
+	seekm(fp, len);
+	return true;
+}
+
+bool
+addLocalVariables(Method* m, uint32 len, classFile* fp, errorInfo *info)
 {
 	/* Don't try dereferencing m! */
 	assert(m == (Method*)1);

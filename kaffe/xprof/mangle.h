@@ -2,7 +2,7 @@
  * mangle.h
  * Routines for doing name mangling on Java types
  *
- * Copyright (c) 2000 University of Utah and the Flux Group.
+ * Copyright (c) 2000, 2004 University of Utah and the Flux Group.
  * All rights reserved.
  *
  * This file is licensed under the terms of the GNU Public License.
@@ -100,5 +100,8 @@ int mangleString(char *dest, char *src, int slen, int unicode);
  * always set to the unmangled length of `string'.
  */
 int mangleLength(char *string, int len, char *term, int *out_len);
+
+int vfmanglef(FILE *file, char *format, va_list args);
+int fmanglef(FILE *file, char *format, ...);
 
 #endif /* __mangle_h */

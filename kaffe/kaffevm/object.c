@@ -2,7 +2,7 @@
  * object.c
  * Handle create and subsequent garbage collection of objects.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
@@ -51,7 +51,7 @@ newObjectChecked(Hjava_lang_Class* class, errorInfo *info)
 		postOutOfMemory(info);
 	} else {
 	    /* Fill in object information */
-	    obj->dtable = class->dtable;
+	    obj->vtable = class->vtable;
 
 #if defined(ENABLE_JVMPI)
 	    if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_OBJECT_ALLOC) )
@@ -114,7 +114,7 @@ newClass(void)
 	}
 
         /* Fill in object information */
-	cls->head.dtable = ClassClass->dtable;
+	cls->head.vtable = ClassClass->vtable;
 done:
 DBG(NEWOBJECT,
 	dprintf("newClass @%p\n", cls);
@@ -152,7 +152,7 @@ newArrayChecked(Hjava_lang_Class* elclass, int count, errorInfo *info)
 			}
 		}
 		if (obj != NULL) {
-			obj->dtable = class->dtable;
+			obj->vtable = class->vtable;
 			ARRAY_SIZE(obj) = count;
 
 #if defined(ENABLE_JVMPI)

@@ -20,6 +20,7 @@ TOPBLD=${top_builddir-`sed -n '/^top_builddir *= */ s///p' < Makefile`}
 
 # We now rebuild the class library using kjc and Klasses.jar.bootstrap 
 JIKES=@JIKES@
+: ${JAVAC_FLAGS=@JAVAC_FLAGS@}
 # JIKES=
 
 LIBDIR=`CDPATH=: && cd $LIBDIR && pwd`
@@ -54,5 +55,5 @@ fi
 
 cd $SRCDIR
 
-echo "Compiling classes from " ${1+"$@"} " using " $JAVAC
+echo "Compiling classes from " ${1+"$@"} " using " $JAVAC $JAVAC_FLAGS
 $JAVAC $VERBOSE $JAVAC_FLAGS -d $LIBDIR $CPATH ${1+"$@"}

@@ -1,7 +1,7 @@
 /* machine.c
  * Translate the Kaffe instruction set to the native one.
  *
- * Copyright (c) 1996-1999, 2003
+ * Copyright (c) 1996-1999, 2003, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * Cross-language profiling changes contributed by
@@ -629,47 +629,92 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 #if defined(KAFFE_XDEBUGGING)
 		struct debug_file *df = machine_debug_file;
 
-		if( df )
-		{
-			/* Mark the start of this source file */
-			addDebugInfo(df,
-				     DIA_SourceFile,
-				     meth->class->sourcefile, code->code,
-				     DIA_Function,
-				     meth, mm, meth->lines->entry[0].line_nr,
-				     code->code, code->codelen,
-				     DIA_DONE);
-		}
+		/* Mark the start of this source file */
+		addDebugInfo(df,
+			     DIA_IncludeFile,
+			     meth->class->name->data,
+			     meth->class->packageLength,
+			     meth->class->sourcefile,
+			     code->code,
+
+			     DIA_Function,
+			     meth, mm, meth->lines->entry[0].line_nr,
+			     code->code, code->codelen,
+
+			     DIA_DONE);
 #endif
 		for (i = 0; i < meth->lines->length; i++) {
 			meth->lines->entry[i].start_pc = getInsnPC(meth->lines->entry[i].start_pc, codeInfo, code) + (uintp)code->code;
 #if defined(KAFFE_XDEBUGGING)
-			if( df )
-			{
-				/* Add line debugging */
-				addDebugInfo(df,
-					     DIA_SourceLine,
-					     meth->lines->entry[i].line_nr,
-					     meth->lines->entry[i].start_pc -
-					     (uintp)code->code,
-					     DIA_DONE);
+			/* Add line debugging */
+			addDebugInfo(df,
+				     DIA_SourceLine,
+				     meth->lines->entry[i].line_nr,
+				     meth->lines->entry[i].start_pc -
+				     (uintp)code->code,
+				     DIA_DONE);
+#endif
+		}
+		if( meth->lvars != NULL ) {
+			localVariableEntry *lve;
+			
+			for (i = 0; i < meth->lvars->length; i++) {
+				lve = &meth->lvars->entry[i];
+				lve->start_pc =
+					(uintp)code->code +
+					getInsnPC(lve->start_pc,
+						  codeInfo,
+						  code);
+#if defined(KAFFE_XDEBUGGING) && defined(SLOT2LOCALOFFSET)
+				if( df != NULL ) {
+					struct Hjava_lang_Class *cl;
+					const char *vname, *vsig;
+					errorInfo einfo;
+
+					vname = CONST_UTF2CHAR(
+						lve->name_index,
+						CLASS_CONSTANTS(meth->class));
+					vsig = CONST_UTF2CHAR(
+						lve->descriptor_index,
+						CLASS_CONSTANTS(meth->class));
+					cl = getClassFromSignature(
+						vsig,
+						meth->class->loader,
+						&einfo);
+					if( cl == NULL )
+					{
+						discardErrorInfo(&einfo);
+					}
+					/* Add line debugging */
+					addDebugInfo(df,
+						     lve->index < maxArgs ?
+						     DIA_Parameter :
+						     DIA_LocalVariable,
+						     vname,
+						     cl,
+						     local(lve->index)->slot->offset,
+						     DIA_DONE);
+				}
+#endif
 			}
+#if 0
+			addDebugInfo(df,
+				     DIA_LeftBrace, lve->start_pc,
+				     DIA_RightBrace, (lve->start_pc +
+						      lve->length),
+				     DIA_DONE);
 #endif
 		}
 #if defined(KAFFE_XDEBUGGING)
-		if( df )
-		{
-			/*
-			 * Mark the end of the function.  This needs to be here
-			 * so that gdb doesn't get confused about the range of
-			 * the function since that will be determined by the
-			 * next debugging information that is added.
-			 */
-			addDebugInfo(df,
-				     DIA_EndFunction,
-				     code->code + code->codelen,
-				     DIA_DONE);
-		}
+		/*
+		 * Mark the end of the function.  This needs to be here so that
+		 * gdb doesn't get confused about the range of the function
+		 * since that will be determined by the next debugging
+		 * information that is added.
+		 */
+		addDebugInfo(df,
+			     DIA_EndFunction, code->code + code->codelen,
+			     DIA_DONE);
 #endif
 	}
 	else
@@ -678,17 +723,17 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 		/*
 		 * No line debugging, but we'd like a symbol to show up anyways
 		 */
-		if( machine_debug_file )
-		{
-			addDebugInfo(machine_debug_file,
-				     DIA_SourceFile, meth->class->sourcefile,
-				     code->code,
-				     DIA_Function, meth, mm, 0,
-				     code->code, code->codelen,
-				     DIA_EndFunction,
-				     code->code + code->codelen,
-				     DIA_DONE);
-		}
+		addDebugInfo(
+			machine_debug_file,
+			DIA_IncludeFile,
+			meth->class->name->data,
+			meth->class->packageLength,
+			meth->class->sourcefile,
+			code->code,
+			
+			DIA_Function, meth, mm, 0, code->code, code->codelen,
+			DIA_EndFunction, code->code + code->codelen,
+			DIA_DONE);
 #endif
 	}
 #if defined(KAFFE_XPROFILER) || defined(KAFFE_XDEBUGGING)
@@ -1445,7 +1490,7 @@ profilerClassStat(Hjava_lang_Class *clazz, void *param)
 	Method *meth;
 	int mindex;
 
-	for (mindex = clazz->nmethods, meth = clazz->methods; mindex-- > 0; meth++) {
+	for (mindex = CLASS_NMETHODS(clazz), meth = CLASS_METHODS(clazz); mindex-- > 0; meth++) {
 		if (meth->callsCount == 0)
 			continue;
 

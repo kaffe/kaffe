@@ -2,7 +2,7 @@
  * soft.c
  * Soft instruction support.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
@@ -62,7 +62,7 @@ soft_new(Hjava_lang_Class* c)
 
 DBG(NEWINSTR,
 	dprintf("New object of type %s (%d,%p)\n",
-		c->name->data, c->bfsize, obj); )
+		c->name->data, CLASS_FSIZE(c), obj); )
 
 	return (obj);
 bad:

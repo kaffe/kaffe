@@ -2,7 +2,7 @@
  * classMethod.c
  * Dictionary of classes, methods and fields.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
@@ -44,6 +44,7 @@
 #include "methodCache.h"
 #include "gcj/gcj.h"
 #include "xprofiler.h"
+#include "debugFile.h"
 #include "jvmpi_kaffe.h"
 
 #if 0
@@ -333,10 +334,10 @@ retry:
 			JVMPI_Event ev;
 			
 			jvmpi_methods = alloca(sizeof(JVMPI_Method) *
-					       class->nmethods);
+					       CLASS_NMETHODS(class));
 			jvmpi_fields = alloca(sizeof(JVMPI_Field) *
 					      (class->nsfields +
-					       class->nfields));
+					       CLASS_NFIELDS(class)));
 			ev.u.class_load.methods = jvmpi_methods;
 			ev.u.class_load.statics = &jvmpi_fields[0];
 			ev.u.class_load.instances =
@@ -493,6 +494,15 @@ retry:
 			}
 		}
 
+#if defined(KAFFE_XDEBUGGING)
+		if( machine_debug_file )
+		{
+			addDebugInfo(machine_debug_file,
+				     DIA_Class, class,
+				     DIA_DONE);
+		}
+#endif
+		
 		SET_CLASS_STATE(CSTATE_USABLE);
 	}
 
@@ -939,7 +949,7 @@ internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags,
 	CLASS_FIELDS(cl) = 0;
 	CLASS_FSIZE(cl) = 0;
 	cl->accflags = flags;
-	cl->dtable = 0;
+	cl->vtable = 0;
         cl->interfaces = 0;
 	cl->interface_len = 0;
 	assert(cl->state < CSTATE_LOADED);
@@ -987,6 +997,14 @@ addSourceFile(Hjava_lang_Class* c, int idx, errorInfo *einfo)
 	bool success = true;
 
 	pool = CLASS_CONSTANTS (c);
+
+	if (pool->tags[idx] != CONSTANT_Utf8) {
+		postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
+				     "invalid sourcefile index: %d",
+				     idx);
+		return false;
+	}
+	
 	sourcefile = WORD2UTF (pool->data[idx])->data;
 	basename = strrchr(sourcefile, '/');
 	if (basename == 0) {
@@ -1072,7 +1090,7 @@ startMethods(Hjava_lang_Class* this, u2 methct, errorInfo *einfo)
 	}
 	GC_WRITE(this, this->methods);
 
-	this->nmethods = 0; /* updated in addMethod */
+	CLASS_NMETHODS(this) = 0; /* updated in addMethod */
 	return true;
 }
 
@@ -1622,6 +1640,15 @@ resolveFieldType(Field *fld, Hjava_lang_Class* this, errorInfo *einfo)
 	}
 	unlockClass(this);
 
+#if defined(KAFFE_XDEBUGGING)
+	if( machine_debug_file )
+	{
+		addDebugInfo(machine_debug_file,
+			     DIA_Class, this,
+			     DIA_DONE);
+	}
+#endif
+	
 	return (clas);
 }
 
@@ -2084,16 +2111,16 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 		}
 	}
 
-	class->dtable = (dispatchTable*)gc_malloc(sizeof(dispatchTable) +
+	class->vtable = (dispatchTable*)gc_malloc(sizeof(dispatchTable) +
 		class->msize * sizeof(void*), GC_ALLOC_DISPATCHTABLE);
 
-	if (class->dtable == 0) {
+	if (class->vtable == 0) {
 		postOutOfMemory(einfo);
 		return (false);
 	}
 
-	class->dtable->class = class;
-	mtab = class->dtable->method;
+	class->vtable->class = class;
+	mtab = class->vtable->method;
 
 	/* now build a trampoline for each and every method */
 	meth = CLASS_METHODS(class);
@@ -2408,7 +2435,7 @@ bool
 checkForAbstractMethods(Hjava_lang_Class* class, errorInfo *einfo)
 {
 	int i;
-	void **mtab = class->dtable->method;
+	void **mtab = class->vtable->method;
 
 	if ((class->accflags & ACC_ABSTRACT) == 0) {
 		for (i = 0; i < class->msize; i++) {
@@ -2913,7 +2940,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	addInterfaces(arr_class, 2, arr_interfaces);
 
 	arr_class->total_interface_len = arr_class->interface_len;
-	arr_class->head.dtable = ClassClass->dtable;
+	arr_class->head.vtable = ClassClass->vtable;
 	arr_class->state = CSTATE_COMPLETE;
 	arr_class->centry = centry;
 
@@ -2928,6 +2955,14 @@ bail:
 	if (c && CLASS_IS_PRIMITIVE(c)) {
 		CLASS_ARRAY_CACHE(c) = centry->data.cl;
 	}
+	
+#if defined(KAFFE_XDEBUGGING)
+	if( (machine_debug_file != NULL) && (centry->data.cl != NULL) ) {
+		addDebugInfo(machine_debug_file,
+			     DIA_Array, centry->data.cl,
+			     DIA_DONE);
+	}
+#endif
 
 	utf8ConstRelease(arr_name);
 	return (centry->data.cl);

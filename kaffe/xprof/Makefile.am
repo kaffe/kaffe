@@ -1,6 +1,6 @@
 # Makefile.in for xprof - A library to support cross language profiling
 #
-# Copyright (c) 2000, 2003 University of Utah and the Flux Group.
+# Copyright (c) 2000, 2003, 2004 University of Utah and the Flux Group.
 # All rights reserved.
 #
 # This file is licensed under the terms of the GNU Public License.
@@ -14,7 +14,7 @@
 
 AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/kaffevm -I$(top_builddir)/include
 
-lib_LTLIBRARIES = libkaffexprof.la
+native_LTLIBRARIES = libkaffexprof.la
 
 libkaffexprof_la_LDFLAGS = \
 	-export-dynamic \

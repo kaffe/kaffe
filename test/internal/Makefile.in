@@ -16,7 +16,7 @@
 
 # Internal testing
 #
-# Copyright (c) 2003 University of Utah and the Flux Group.
+# Copyright (c) 2003, 2004 University of Utah and the Flux Group.
 # All rights reserved..
 #
 # This file is licensed under the terms of the GNU Public License.
@@ -182,6 +182,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INTLLIBS = @INTLLIBS@
 JASMIN = @JASMIN@
+JAVAC_FLAGS = @JAVAC_FLAGS@
 JAVAX_CRYPTO_JAR = @JAVAX_CRYPTO_JAR@
 JAVAX_SECURITY_JAR = @JAVAX_SECURITY_JAR@
 JAVA_LIBS = @JAVA_LIBS@
@@ -388,7 +389,7 @@ EXTRA_DIST = \
 	ObjectFields.java \
 	MethodOptimizations.java
 
-CLEANFILES = *.fail *.out core *.core
+CLEANFILES = *.fail *.out core *.core *.class
 all: all-am
 
 .SUFFIXES:
@@ -725,8 +726,8 @@ uninstall-am: uninstall-info-am
 $(nodist_GEN_SRCS):
 	$(SHELL) $(REGEN_FORWARD) $(top_srcdir)/kaffe/kaffe/$@ $@
 
-%.class: %.java
-	$(JIKES) -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $<
+%.class: $(top_srcdir)/test/internal/%.java
+	$(JIKES) -g -classpath $(top_builddir)/libraries/javalib/rt.jar -d . $<
 
 jit_stub.o: $(JAVA_CLASSES)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

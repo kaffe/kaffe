@@ -2,7 +2,7 @@
  * gcFuncs.c
  * Methods to implement gc-related activities of objects and classes
  *
- * Copyright (c) 1996, 1997, 1998, 1999
+ * Copyright (c) 1996, 1997, 1998, 1999, 2004
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
@@ -140,6 +140,7 @@ DBG(CLASSGC,
                         utf8ConstRelease(METHOD_SIG(m));
                         KFREE(METHOD_PSIG(m));
                         KFREE(m->lines);
+			KFREE(m->lvars);
 			if( m->ndeclared_exceptions != -1 )
 				KFREE(m->declared_exceptions);
                         KFREE(m->exception_table);
@@ -173,22 +174,22 @@ DBG(CLASSGC,
 
         /* free various other fixed things */
         KFREE(CLASS_STATICDATA(clazz));
-	if( clazz->dtable )
+	if( clazz->vtable )
 	{
 		for( i = 0; i < clazz->msize; i++ )
 		{
-			if( clazz->dtable->method[i] == 0 )
+			if( clazz->vtable->method[i] == 0 )
 				continue;
 			/* Free ncode if necessary: this concerns
 			 * any uninvoked trampolines
 			 */
 			if (GC_getObjectIndex(collector,
-					      clazz->dtable->method[i])
+					      clazz->vtable->method[i])
 			    == GC_ALLOC_DISPATCHTABLE) {
-				KFREE(clazz->dtable->method[i]);
+				KFREE(clazz->vtable->method[i]);
 			}
 		}
-		KFREE(clazz->dtable);
+		KFREE(clazz->vtable);
 	}
         KFREE(clazz->if2itable);
 	if( clazz->itable2dtable )
@@ -405,15 +406,15 @@ walkRefArray(Collector* collector, void* base, uint32 size)
         Hjava_lang_Object** ptr;
 
         arr = (Hjava_lang_Object*)base;
-        if (arr->dtable == 0) {                 /* see walkObject */
+        if (arr->vtable == 0) {                 /* see walkObject */
                 return;
         }
 
         ptr = OBJARRAY_DATA(arr);
         /* mark class only if not a system class (which would be anchored
          * anyway.)  */
-        if (arr->dtable->class->loader != 0) {
-                GC_markObject(collector, arr->dtable->class);
+        if (arr->vtable->class->loader != 0) {
+                GC_markObject(collector, arr->vtable->class);
         }
 
         for (i = ARRAY_SIZE(arr); --i>= 0; ) {
@@ -443,11 +444,11 @@ walkObject(Collector* collector, void* base, uint32 size)
          * Note that there is a window after the object is allocated but
          * before dtable is set.  In this case, we don't have to walk anything.
          */
-        if (obj->dtable == 0)
+        if (obj->vtable == 0)
                 return;
 
         /* retrieve the layout of this object from its class */
-        clazz = obj->dtable->class;
+        clazz = obj->vtable->class;
 
         /* class without a loader, i.e., system classes are anchored so don't
          * bother marking them.
@@ -520,7 +521,7 @@ finalizeObject(Collector* collector, void* ob)
         Hjava_lang_Object* obj = (Hjava_lang_Object*)ob;
 	Method* final;
 
-	if (!obj->dtable) {
+	if (!obj->vtable) {
 		/* Suppose we catch ThreadDeath inside newObject() */
 		return;
 	}
@@ -580,8 +581,8 @@ describeObject(const void* mem)
 	case GC_ALLOC_REFARRAY:
 	case GC_ALLOC_PRIMARRAY:
 		obj = (Hjava_lang_Object*)mem;
-		if (obj->dtable != 0) {
-			clazz = obj->dtable->class;
+		if (obj->vtable != 0) {
+			clazz = obj->vtable->class;
 			sprintf(buf, "%s", CLASS_CNAME(clazz));
 		} else {
 			sprintf(buf, "newly born %s",
@@ -641,6 +642,7 @@ initCollector(void)
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_CODEANALYSE, "code-analyse");
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_CLASSPOOL, "class-pool");
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_LINENRTABLE, "linenr-table");
+	GC_registerFixedTypeByIndex(gc, GC_ALLOC_LOCALVARTABLE, "lvar-table");
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_DECLAREDEXC, "declared-exc");
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_CLASSMISC, "class-misc");
 	GC_registerFixedTypeByIndex(gc, GC_ALLOC_VERIFIER, "verifier");

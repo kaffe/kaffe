@@ -1,7 +1,7 @@
 /*
  * java.lang.reflect.Method.c
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -105,7 +105,7 @@ java_lang_reflect_Method_getModifiers(struct Hjava_lang_reflect_Method* this)
 	clazz = unhand(this)->clazz;
 	slot = unhand(this)->slot;
 
-	assert(slot < clazz->nmethods);
+	assert(slot < CLASS_NMETHODS(clazz));
 
 	flags = clazz->methods[slot].accflags;
 	if (flags & ACC_ABSTRACT)
@@ -156,7 +156,7 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 
 	slot = unhand(this)->slot;
 
-	assert(slot < clazz->nmethods);
+	assert(slot < CLASS_NMETHODS(clazz));
 
 	/* Note: we assume here that `meth' is identical to the jmethodID which
 	 * would be returned by JNIEnv::GetMethodID for this method.

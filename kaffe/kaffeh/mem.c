@@ -24,8 +24,8 @@ struct _errorInfo;
  * Kaffeh version of various memory-related operations.
  */
 
-static void* gcMalloc(struct _Collector*, size_t, int);
-static void* gcRealloc(struct _Collector*, void*, size_t, int);
+static void* gcMalloc(struct _Collector*, size_t, gc_alloc_type_t);
+static void* gcRealloc(struct _Collector*, void*, size_t, gc_alloc_type_t);
 static void  gcFree(struct _Collector*, void*);
 
 /*
@@ -86,13 +86,13 @@ jfree(void* mem)
 }
 
 static void *
-gcMalloc(struct _Collector *collector, size_t sz, int type)
+gcMalloc(struct _Collector *collector, size_t sz, gc_alloc_type_t type)
 {
 	return(jmalloc(sz));
 }
 
 static void *
-gcRealloc(struct _Collector *collector, void *mem, size_t sz, int type)
+gcRealloc(struct _Collector *collector, void *mem, size_t sz, gc_alloc_type_t type)
 {
 	return(jrealloc(mem, sz));
 }

@@ -2,7 +2,7 @@
  * stackTrace.c
  * Handle stack trace for the interpreter or translator.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  * Copyright (c) 2003
  *	Mark J. Wielaard <mark@klomp.org>
@@ -156,7 +156,7 @@ getStackTraceElements(struct Hjava_lang_VMThrowable* state,
 	frame = 0;
 	first_frame = 0;
 	stack = (stackTraceInfo*)unhand(state)->backtrace;
-	throwable_class = ((Hjava_lang_Object*)throwable)->dtable->class;
+	throwable_class = ((Hjava_lang_Object*)throwable)->vtable->class;
 
 	for (i = 0; stack[i].meth != ENDOFSTACK; i++) {
 		meth = stack[i].meth;

@@ -2,7 +2,7 @@
  * jni.c
  * Java Native Interface.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -93,7 +93,7 @@ getMethodFunc (Method* meth, Hjava_lang_Object *obj)
 		
 		return clazz->itable2dtable[implementors[clazz->impl_index] + meth->idx + 1]; 	
 	} else {
-		return meth->idx >= 0 ? obj->dtable->method[meth->idx] : METHOD_INDIRECTMETHOD (meth);
+		return meth->idx >= 0 ? obj->vtable->method[meth->idx] : METHOD_INDIRECTMETHOD (meth);
 	}
 }
 
@@ -417,7 +417,7 @@ Kaffe_Throw(JNIEnv* env, jobject obj)
 
 	if( obj )
 	{
-		assert(((Hjava_lang_Object *)obj)->dtable);
+		assert(((Hjava_lang_Object *)obj)->vtable);
 		
 		thread_data->exceptObj = (struct Hjava_lang_Throwable*)obj;
 	}
@@ -585,7 +585,7 @@ Kaffe_GetObjectClass(JNIEnv* env, jobject obj)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	cls = ((Hjava_lang_Object*)obj)->dtable->class;
+	cls = ((Hjava_lang_Object*)obj)->vtable->class;
 
 	END_EXCEPTION_HANDLING();
 	return (cls);
