@@ -53,8 +53,20 @@ final public StringBuffer format(Object num, StringBuffer buf, FieldPosition pos
 	if (num instanceof Double) {
 		return (format(((Double)num).doubleValue(), buf, pos));
 	}
+	else if (num instanceof Float) {
+		return (format((double)((Float)num).floatValue(), buf, pos));
+	}
 	else if (num instanceof Long) {
 		return (format(((Long)num).longValue(), buf, pos));
+	}
+	else if (num instanceof Integer) {
+		return (format((long)((Integer)num).intValue(), buf, pos));
+	}
+	else if (num instanceof Short) {
+		return (format((long)((Short)num).shortValue(), buf, pos));
+	}
+	else if (num instanceof Byte) {
+		return (format((long)((Byte)num).byteValue(), buf, pos));
 	}
 	else {
 		buf.append("<unknown type>");
