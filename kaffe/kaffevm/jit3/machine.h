@@ -36,22 +36,22 @@
 /* Methods */
 
 #define	get_method_info_noerror(IDX) \
-	getMethodSignatureClass(idx, xmeth->class, true, 0, &cinfo, einfo)
+	getMethodSignatureClass(IDX, xmeth->class, true, 0, &cinfo, einfo)
 
 #define get_special_method_info_noerror(IDX) \
-	getMethodSignatureClass(idx, xmeth->class, true, 1, &cinfo, einfo)
+	getMethodSignatureClass(IDX, xmeth->class, true, 1, &cinfo, einfo)
 
 #define	get_interface_method_info_noerror(IDX) \
-	getMethodSignatureClass(idx, xmeth->class, true, 2, &cinfo, einfo)
+	getMethodSignatureClass(IDX, xmeth->class, true, 2, &cinfo, einfo)
 
 #define	get_method_info(IDX) \
-	if (getMethodSignatureClass(idx, xmeth->class, true, 0, &cinfo, einfo) == false) { success = false; goto done; }
+	if (getMethodSignatureClass(IDX, xmeth->class, true, 0, &cinfo, einfo) == false) { success = false; goto done; }
 
 #define get_special_method_info(IDX) \
-	if (getMethodSignatureClass(idx, xmeth->class, true, 1, &cinfo, einfo) == false) { success = false; goto done; }
+	if (getMethodSignatureClass(IDX, xmeth->class, true, 1, &cinfo, einfo) == false) { success = false; goto done; }
 
 #define	get_interface_method_info(IDX) \
-	if (getMethodSignatureClass(idx, xmeth->class, true, 2, &cinfo, einfo) == false) { success = false; goto done; }
+	if (getMethodSignatureClass(IDX, xmeth->class, true, 2, &cinfo, einfo) == false) { success = false; goto done; }
 
 #define	method_name()	(cinfo.name)
 #define	method_sig()	(cinfo.signature)
