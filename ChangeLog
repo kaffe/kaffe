@@ -1,3 +1,9 @@
+2003-05-07 Mark Wielaard <mark@klomp.org>
+
+	* libraries/javalib/java/lang/Runtime.java:
+	(addShutdownHook) don't throw an exception, but print warning
+	about method not being implemented.
+	
 2003-05-07 Dalibor Topic <robilad@yahoo.com>
 	* WHATSNEW:
 	Added information about native2ascii.

@@ -177,8 +177,8 @@ int waitForMemoryAdvice(int level) throws InterruptedException {
 
 public void addShutdownHook(Thread hook) {
 	// XXX implement me
-	throw new kaffe.util.NotImplemented(
-	    getClass().getName() + ".addShutdownHook()");
+       System.err.println("WARNING: Not implemented method called " +
+			  getClass().getName() + ".addShutdownHook()");
 }
 
 public boolean removeShutdownHook(Thread hook) {
