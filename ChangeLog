@@ -1,3 +1,8 @@
+1999-06-10  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libltdl/configure.in: Look for dlopen first in -ldl.
+	* libltdl/configure: Rebuilt.
+
 Wed Jun 09 14:47:52 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
 
         * config/i386/oskit/kaffe-patches removed: it hasn't been
