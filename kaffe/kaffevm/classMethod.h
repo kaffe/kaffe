@@ -13,8 +13,8 @@
 #define __classmethod_h
 
 #include "gtypes.h"
-#include "md.h"
 #include "object.h"
+#include "md.h"	 /* XXX: need this here so KAFFE_PROFILER is accurately def'd */
 #include "constants.h"
 #include "errors.h"
 
@@ -192,6 +192,8 @@ typedef struct _methods {
 	struct _jexception*	exception_table;
 	u2			ndeclared_exceptions;
 	constIndex*		declared_exceptions;
+	int			framesize;	/* JIT only: size of frame */
+
 #if defined(KAFFE_PROFILER)
 	profiler_click_t	jitClicks;
 	profiler_click_t	totalClicks;
@@ -385,7 +387,6 @@ void			finishFields(Hjava_lang_Class*);
 Method*			findMethodFromPC(uintp);
 
 void			finalizeClassLoader(Hjava_lang_ClassLoader* loader);
-void			registerClass(classEntry* entry);
 struct Hjava_lang_String* resolveString(Hjava_lang_Class* clazz, int idx,
 					errorInfo *einfo);
 

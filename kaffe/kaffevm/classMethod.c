@@ -251,10 +251,10 @@ retry:
 
 			success = computeInterfaceImplementationIndex(class, 
 								      einfo);
-		}
-		else {
+		} else {
 			success = prepareInterface(class, einfo);
 		}
+
 		if (success == false) {
 			goto done;
 		}
@@ -286,6 +286,33 @@ retry:
 	 * initialization when we bring the base classes to the LINKED state.
 	 */
 	DO_CLASS_STATE(CSTATE_CONSTINIT) {
+#if defined(HAVE_GCJ_SUPPORT)
+		int i;
+                Field *fld;
+
+		if (CLASS_GCJ(class)) {
+			success = gcjProcessClassConstants(class, 
+							   class->gcjPeer, 
+							   einfo);
+			if (success == false) {
+				goto done;
+			}
+		}
+
+		/* We must resolve field types eagerly so that class gc
+		 * will mark static fields of gcj classes.  That walking
+		 * depends on whether the UNRESOLVED_FLAG is clear.
+		 */
+		fld = CLASS_FIELDS(class);
+		for (i = 0; i < CLASS_NFIELDS(class); fld++, i++) {
+			if (resolveFieldType(fld, class, einfo) == 0) {
+				success = false;
+				goto done;
+			}
+		}
+
+#endif defined(HAVE_GCJ_SUPPORT)
+
 		/* Initialise the constants */
 		success = resolveConstants(class, einfo);
 		if (success == false) {
@@ -598,21 +625,6 @@ DBG(RESERROR,	dprintf("setupClass: not a class.\n");			)
 	internalSetupClass(cl, WORD2UTF(pool->data[c]), flags, s, loader);
 
 	return (cl);
-}
-
-/*
- * Take a prepared class and register it with the class pool.
- */
-void
-registerClass(classEntry* entry)
-{
-	int iLockRoot;
-
-	lockMutex(entry);
-
-	/* not used at this time */
-
-	unlockMutex(entry);
 }
 
 static
@@ -973,25 +985,7 @@ DBG(VMCLASSLOADER,
 				/* NB: centry->class->centry != centry */
 				centry->class = clazz;
 			}
-		}
-#if defined(HAVE_GCJ_SUPPORT)
-		/* XXX should this better be part of findClass!? 
-		 * NB: we're only here if classloader == null
-		 */
-		else if ((clazz = gcjFindClassByUtf8Name(centry->name->data, einfo))) {
-			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
-				/* XXX could say from where */
-				fprintf(stderr, "Loading precompiled %s\n", clazz->name->data);
-			}
-DBG(GCJ, 		dprintf(__FUNCTION__": adding class %s to pool@%p\n",
-				clazz->name->data, centry); 
-    )
-			centry->class = clazz;
-			clazz->centry = centry;
-			assert(CLASS_GCJ(clazz));
-		}
-#endif
-		else {
+		} else {
 			/* no classloader, use findClass */
 			clazz = findClass(centry, einfo);
 
@@ -1080,7 +1074,10 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 			goto bad;
 		}
 		/* we won't ever want to lose these classes */
-		if (!gc_add_ref(clazz)) goto bad;
+		if (!gc_add_ref(clazz)) {
+			goto bad;
+		}
+
 		(*class) = centry->class = clazz;
 	}
 	unlockMutex(centry);
@@ -1339,6 +1336,9 @@ allocStaticFields(Hjava_lang_Class* class, errorInfo *einfo)
 		/* Check whether gcj code refers to this field.  If so,
 		 * we'll have storage for this field in a fixup module.
 		 * gcjGetFieldAddr retrieves the address for the storage
+		 *
+		 * NB: Don't confuse this with the case where class is a gcj 
+		 * class.  In that case, this function is not even invoked!
 		 */
 		FIELD_ADDRESS(fld) = 
 			gcjGetFieldAddr(CLASS_CNAME(class), fld->name->data);
@@ -1429,6 +1429,52 @@ resolveStaticFields(Hjava_lang_Class* class, errorInfo *einfo)
 	return true;
 }
 
+/* 
+ * When do we need a trampoline? 
+ *
+ * NB: this method is invoked for *all* methods a class defines or
+ * inherits.
+ */
+static bool
+methodNeedsTrampoline(Method *meth)
+{
+ 	/* A gcj class's native virtual methods always need a trampoline 
+	 * since the gcj trampoline doesn't work for them.  By using a
+	 * trampoline, we can fix the vtable the first time it is invoked.
+	 *
+	 * NB: If we'll ever support CNI, revisit this.
+	 */
+	if (CLASS_GCJ((meth)->class) && (meth->accflags & ACC_NATIVE) &&
+		meth->idx != -1)
+		return (true);
+
+	/* If the method hasn't been translated, we need a trampoline
+	 * NB: we assume the TRANSLATED flag for abstract methods produced
+	 * by gcj is cleared.
+	 */
+	if (!METHOD_TRANSLATED(meth))
+		return (true);
+
+	/* We also need one if it's a static method and the class 
+	 * hasn't been initialized, because such method invocation
+	 * would constitute a first active use, requiring the initializer
+	 * to be run.
+	 */
+	if ((meth->accflags & ACC_STATIC) 
+		&& meth->class->state < CSTATE_DOING_INIT)
+	{
+		/* Exception: gcj's classes don't need trampolines for two
+		 * reasons:
+ 		 *   a) call _Jv_InitClass before invoking any static method.
+		 *   b) they're not compiled as indirect invocations anyway
+		 */
+		if (!CLASS_GCJ(meth->class)) {
+			return (true);
+		}
+	}
+	return (false);
+}
+
 /*
  * Build a trampoline if necessary, return the address of the native code
  * to either the trampoline or the translated or native code.
@@ -1446,22 +1492,7 @@ buildTrampoline(Method *meth, void **where, errorInfo *einfo)
 #if defined(TRANSLATOR)
 	methodTrampoline *tramp;
 
-#define METHOD_NEEDS_TRAMPOLINE(meth) \
-	(!METHOD_TRANSLATED(meth) || \
-	 (((meth)->accflags & ACC_STATIC) && \
-	   (meth)->class->state < CSTATE_DOING_INIT && \
-	   !CLASS_GCJ((meth)->class)))
-
-	/* When do we need a trampoline? 
-	 * - if the method hasn't been translated (naturally)
-	 * - Or, if the method has been translated, we may
-	 *   still need one if it's a static method and the class 
-	 *   hasn't been initialized, because such method invocation
-	 *   would constitute a first active use.
-	 *   Exception: gcj's classes don't need trampolines, they
-	 *   call _Jv_InitClass before invoking any static method.
-	 */
-	if (METHOD_NEEDS_TRAMPOLINE(meth)) {
+	if (methodNeedsTrampoline(meth)) {
 		/* XXX don't forget to pick those up at class gc time */
 		tramp = (methodTrampoline*)KMALLOC(sizeof(methodTrampoline));
 		if (tramp == 0) {
@@ -1476,7 +1507,15 @@ buildTrampoline(Method *meth, void **where, errorInfo *einfo)
 		 */
 		FLUSH_DCACHE(tramp, tramp+1);
 
-		assert(*where == 0 || !!!"Cannot override trampoline anchor");
+		/* for native gcj methods, we do override their 
+		 * anchors so we can patch them up before they're invoked.
+		 */
+		if (!(CLASS_GCJ((meth)->class) 
+			&& (meth->accflags & ACC_NATIVE))) 
+		{
+			assert(*where == 0 || 
+				!!!"Cannot override trampoline anchor");
+		}
 		ret = tramp;
 	} else {
 		if (CLASS_GCJ((meth)->class)) {
