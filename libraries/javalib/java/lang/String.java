@@ -396,25 +396,37 @@ public int length() {
 	return count;
 }
 
-public boolean regionMatches(boolean ignoreCase, int toffset, String other, int ooffset, int len) {
-	if (toffset < 0 || ooffset < 0) {
+public boolean regionMatches(boolean ignoreCase, int thisOffset,
+		String that, int thatOffset, int len) {
+
+	// Check bounds
+	if ((thisOffset < 0 || thisOffset + len > this.count)
+	    || (thatOffset < 0 || thatOffset + len > that.count)) {
 		return false;
 	}
-	if ( (toffset+len > count) || (ooffset+len > other.count) )
-		return false;
 
-	char c, c1;
-	for (int pos=0; pos<len; pos++) {
-		c  = value[offset+toffset+pos];
-		c1 = other.value[other.offset+ooffset+pos];
-		if ( (c != c1) && ignoreCase) {
-			c  = Character.toLowerCase( c);
-			c1 = Character.toLowerCase( c1);
+	int thisPos = this.offset + thisOffset;
+	int thatPos = that.offset + thatOffset;
+	if (!ignoreCase) {
+		while (len-- > 0) {
+			if (this.value[thisPos] != that.value[thatPos]) {
+				return false;
+			}
+			thisPos++;
+			thatPos++;
 		}
-		if ( c != c1)
-			return false;
+	} else {
+		while (len-- > 0) {
+			if (Character.toLowerCase(this.value[thisPos])
+			    != Character.toLowerCase(that.value[thatPos])
+			  && Character.toUpperCase(this.value[thisPos])
+			    != Character.toUpperCase(that.value[thatPos])) {
+				return false;
+			}
+			thisPos++;
+			thatPos++;
+		}
 	}
-
 	return true;
 }
 
