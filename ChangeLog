@@ -1,3 +1,15 @@
+Sun Jan 10 18:59:57 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* config.guess, config.sub: updated from autoconf
+	* install-sh, mkinstalldirs, missing: updated from automake
+	* libltdl: updated from libtool
+	* configure.in (TEST_VERSION): added temporary dirty hack to avoid 
+	using old automake and autoconf
+	* libltdl/configure.in (TEST_VERSION): ditto
+	* configure, config/stamp-h1.in, include/stamp-h2.in: regen
+	* kaffe/kaffevm/intrp/Mkaefile.in: ditto
+	* kaffe/kaffevm/systems/unix-internal/Makefile.in: ditto
+
 Sat Jan  9 08:19:58 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* FAQ/FAQ.automake: tip to avoid having to update
