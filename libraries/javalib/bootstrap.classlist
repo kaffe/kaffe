@@ -141,6 +141,7 @@ java/net/URLStreamHandler.class
 java/net/URLStreamHandlerFactory.class
 java/net/ProtocolException.class
 java/security/AccessControlContext.class
+java/security/AllPermissionCollection.class
 java/security/BasicPermission.class
 java/security/CodeSource.class
 java/security/cert/Certificate.class
@@ -148,6 +149,7 @@ java/security/Guard.class
 java/security/AllPermission.class
 java/security/Permission.class
 java/security/PermissionCollection.class
+java/security/Permissions.class
 java/security/Principal.class
 java/security/ProtectionDomain.class
 java/security/SecureClassLoader.class
