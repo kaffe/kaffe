@@ -355,8 +355,19 @@ Kaffe_Throw(JNIEnv* env, jobject obj)
 {
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	unhand(getCurrentThread())->exceptObj = (struct Hjava_lang_Throwable*)obj;
-
+	if( obj )
+	{
+		assert(((Hjava_lang_Object *)obj)->dtable);
+		
+		unhand(getCurrentThread())->exceptObj =
+			(struct Hjava_lang_Throwable*)obj;
+	}
+	else
+	{
+		unhand(getCurrentThread())->exceptObj =
+			unhand(getCurrentThread())->outOfMemoryError;
+	}
+	
 	END_EXCEPTION_HANDLING();
 	return (0);
 }
