@@ -1,5 +1,5 @@
 /* URLConnection.java -- Abstract superclass for reading from URL's
-   Copyright (C) 1998, 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -94,7 +94,7 @@ public abstract class URLConnection
    * to do this is implemented by this class, so just create an empty
    * instance and store it here.
    */
-  private static FileNameMap fileNameMap = new MimeTypeMapper();
+  private static FileNameMap fileNameMap;
  
   /**
    * This is the ContentHandlerFactory set by the caller, if any
@@ -888,7 +888,7 @@ public abstract class URLConnection
    */
   public static String guessContentTypeFromName(String filename)
   {
-    return(fileNameMap.getContentTypeFor(filename.toLowerCase()));
+    return getFileNameMap().getContentTypeFor(filename.toLowerCase());
   }
 
   /**
@@ -921,8 +921,14 @@ public abstract class URLConnection
    *
    * @since 1.2
    */
-  public static FileNameMap getFileNameMap()
+  public static synchronized FileNameMap getFileNameMap()
   {
+    // Delayed initialization.
+    if (fileNameMap == null)
+      {
+	fileNameMap = new MimeTypeMapper();
+      }
+
     return fileNameMap;
   }
 
@@ -947,5 +953,4 @@ public abstract class URLConnection
 
     fileNameMap = map;
   }
-} // class URLConnection
-
+}
