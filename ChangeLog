@@ -1,5 +1,14 @@
 2000-07-21  Edouard G. Parmelan  <egp@free.fr>
 
+	* configure.in (--with-libffi, --with-engine=unix-pthread): Stop
+	configure script if required library is not found.
+
+	* configure: Regen.
+
+	* libraries/clib/math/BigInteger.c: Test also HAVE_LIBGMP.
+
+	* kaffe/xprof/fileSections.c: Fix typo.
+
 	* config/arm/linux/config.frag: set ac_cv_func_mmap_fixed_mapped
 	to yes in case of cross-compiling.
 
