@@ -72,6 +72,7 @@ ksemGet(Ksem* sem, jlong timeout)
 void
 ksemPut(Ksem* sem)
 {
+	assert(sem != NULL);
 	jmutex_lock(&sem->mux);
         sem->count = 1;
 	jcondvar_signal(&sem->cv, &sem->mux);

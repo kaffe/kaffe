@@ -2486,6 +2486,7 @@ javax/swing/JCheckBoxMenuItem.java
 javax/swing/JColorChooser.java
 javax/swing/JComboBox.java
 javax/swing/JComponent.java
+javax/swing/JLayeredPane.java
 javax/swing/JDesktopPane.java
 javax/swing/JDialog.java
 javax/swing/JEditorPane.java
@@ -2494,7 +2495,6 @@ javax/swing/JFormattedTextField.java
 javax/swing/JFrame.java
 javax/swing/JInternalFrame.java
 javax/swing/JLabel.java
-javax/swing/JLayeredPane.java
 javax/swing/JList.java
 javax/swing/JMenuBar.java
 javax/swing/JMenuItem.java

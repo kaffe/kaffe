@@ -697,7 +697,7 @@ if test x"${GC_NAME}" = x"boehm-gc"; then
 				BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_LINUX_THREADS"
 			   fi
 			   if test "$ac_cv_gnu_library_version" -ge "2003"; then
-			        BOEHMGC_SPECIFIC_FLAGS="$$BOEHMGC_SPECIFIC_FLAGS -DGC_PTHREADS"
+			        BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_PTHREADS"
 			   fi
 			fi
 			;;

@@ -35,13 +35,13 @@ esac
 AC_MSG_RESULT([$QT_VER ($QT_MAJOR)])
 
 # Check that moc is in path
-AC_CHECK_PROG(MOC, moc, moc)
+AC_PATH_PROG(MOC, moc,,[$PATH:$QTDIR/bin])
 if test x$MOC = x ; then
         AC_MSG_ERROR([*** moc must be in path])
 fi
 
 # uic is the Qt user interface compiler
-AC_CHECK_PROG(UIC, uic, uic)
+AC_PATH_PROG(UIC, uic,,[$PATH:$QTDIR/bin])
 #if test x$UIC = x ; then
 #        AC_MSG_ERROR([*** uic must be in path])
 #fi

@@ -48,6 +48,7 @@ libkaffegc_la_SOURCES= \
 	boehm/solaris_pthreads.c \
 	boehm/solaris_threads.c \
 	boehm/pthread_support.c \
+	boehm/pthread_stop_world.c \
 	boehm/malloc.c \
 	boehm/mallocx.c \
 	boehm/mark.c \

@@ -1,0 +1,33 @@
+--- pthread_stop_world.c.old	2004-07-20 14:40:08.000000000 +0200
++++ pthread_stop_world.c	2004-07-20 14:41:42.000000000 +0200
+@@ -71,6 +71,8 @@
+ #  endif
+ #endif
+ 
++#if 0
++  
+ sem_t GC_suspend_ack_sem;
+ 
+ void GC_suspend_handler(int sig)
+@@ -176,6 +178,7 @@
+     GC_printf1("In GC_restart_handler for 0x%lx\n", pthread_self());
+ #endif
+ }
++#endif
+ 
+ # ifdef IA64
+ #   define IF_IA64(x) x
+@@ -242,6 +245,7 @@
+     }
+ }
+ 
++#if 0
+ /* There seems to be a very rare thread stopping problem.  To help us  */
+ /* debug that, we save the ids of the stopping thread. */
+ pthread_t GC_stopping_thread;
+@@ -443,3 +447,5 @@
+ }
+ 
+ #endif
++
++#endif

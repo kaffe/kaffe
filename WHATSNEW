@@ -16,6 +16,11 @@ executable (fr, zh_TW).
 * KJC fixes.
 * Added GNU EmbbededWindow extension from GNU Classpath.
   * gcjwebplugin is known to work with the extension.
+* New experimental Boehm-Weiser garbage collector.
+* DNSJava merged in.
+* Jessie merged in.
+* JZLib merged in.
+* GNU Classpath's implementation of Swing has been merged.
 
 What's New in Kaffe 1.1.3
 ------------------------------------------------------

@@ -1,3 +1,29 @@
+2004-07-23  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* po/fr.po: Updated translation.
+
+	* WHATSNEW: Added some entries for Kaffe 1.1.5.
+
+	* m4/gwqt.m4: Use AC_PATH_PROG instead of AC_CHECK_PROG to discover
+	the real path of moc and uic.
+
+	* configure.ac: Fixed BOEHMGC_SPECIFIC_FLAGS.
+
+	* configure: Regenerated.
+
+	* developers/boehm-with-kaffe.patch: New file to reflect specific
+	kaffe changes to the Boehm-Weiser GC.
+
+	* kaffe/kaffevm/ksem.c: Added an assertion checking.
+	
+	* kaffe/kaffevm/boehm-gc/Makefile.am
+	(libkaffegc_la_SOURCES): Added pthread_stop_world.c.
+
+	* kaffe/kaffevm/boehm-gc/Makefile.in: Regenerated.
+
+	* libraries/javalib/all.files: Swapped JDesktopPane.java and
+	JLayeredPane.java.
+
 2004-07-23  Jim Huang  <jserv@kaffe.org>
 
 	* po/kaffe.pot,
@@ -1189,7 +1215,11 @@
         libraries/javalib/Makefile.am,
         libraries/javalib/Makefile.in,
         m4/libtool.m4:
-	Regeenrated.
+	Regenerated.
+
+2004-07-21  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* WHATSNEW: Added some news to Kaffe 1.1.5.
 
 2004-07-21  Guilhem Lavaux <guilhem@kaffe.org>
 
