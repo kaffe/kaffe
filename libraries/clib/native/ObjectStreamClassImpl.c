@@ -116,7 +116,7 @@ kaffe_io_ObjectStreamClassImpl_inputClassFields(struct Hkaffe_io_ObjectStreamCla
 	}
 
 #define READ(FUNC,SIG,TYPE) \
-	((jvalue*)(((uint8*)obj) + FIELD_OFFSET(*fld)))->TYPE = \
+	((jvalue*)(((uint8*)obj) + FIELD_BOFFSET(*fld)))->TYPE = \
 		do_execute_java_method(in, #FUNC, #SIG, 0, 0).TYPE
 
 	for (i = 0; i < len; i++, fld++) {
@@ -180,7 +180,7 @@ kaffe_io_ObjectStreamClassImpl_outputClassFields(struct Hkaffe_io_ObjectStreamCl
 
 #define WRITE(FUNC,SIG,TYPE) \
 	do_execute_java_method(out, #FUNC, #SIG, 0, 0, \
-		((jvalue*)(((uint8*)obj) + FIELD_OFFSET(*fld)))->TYPE)
+		((jvalue*)(((uint8*)obj) + FIELD_BOFFSET(*fld)))->TYPE)
 
 	for (i = 0; i < len; i++, fld++) {
 		if (FIELD_ISREF(*fld)) {

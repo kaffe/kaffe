@@ -70,12 +70,14 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
 	if (loadClass == false) {
 		call->class = 0;
 		call->method = 0;
+		call->cname = 0;
 	}
 	else {
 		ci = METHODREF_CLASS(idx, pool);
 		class = getClass(ci, this, einfo);
-		if (class == NULL)
+		if (class == NULL) {
 			return (false);
+		}
 		assert(class->state >= CSTATE_LINKED);
 
                 if (isSpecial == true) {
@@ -86,6 +88,7 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
                 }
 
 		call->class = class;
+		call->cname = class->name;
 		call->method = 0;
 		/* Find method - we don't use findMethod(...) yet since this
 		 * will initialise our class (and we don't want to do that).
@@ -193,11 +196,17 @@ DBG(RESERROR,	dprintf("No Fieldref found\n");				)
 	}
 
 	ci = FIELDREF_CLASS(idx, pool);
+
 	class = getClass(ci, this, einfo);
-	if (class == NULL)
+	if (class == NULL) {
 		return (false);
+	}
 
 	ni = FIELDREF_NAMEANDTYPE(idx, pool);
+
+	ret->cname = class->name;
+	ret->name = WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)]);
+	ret->signature = WORD2UTF(pool->data[NAMEANDTYPE_SIGNATURE(ni, pool)]);
 
 DBG(FLOOKUP,	dprintf("*** getField(%s,%s,%s)\n",
 		class->name->data, 

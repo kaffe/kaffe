@@ -66,6 +66,8 @@ typedef struct _slots {
 #define CLASS_CONST_LONG(CL, IDX) \
   WORDS_TO_LONG ((CL)->constants.data[IDX], (CL)->constants.data[(IDX)+1])
 #endif
+#define	CLASS_CONST_DOUBLE(CL, IDX) \
+  CLASS_CONST_LONG(CL, IDX)
 /* The first uint16 of the INDEX'th constant pool entry. */
 #define CLASS_CONST_USHORT1(CL, INDEX) ((CL)->constants.data[INDEX] & 0xFFFF)
 /* The second uint16 of the INDEX'th constant pool entry. */

@@ -124,14 +124,14 @@ static void makeFakeCalls(void);
 /*
  * Translate a method into native code.
  */
-void
+jboolean
 translate(Method* meth, errorInfo *einfo)
 {
 	int i;
 
 	jint low;
 	jint high;
-	jlong tmpl;
+	jvalue tmpl;
 	int idx;
 	SlotInfo* tmp;
 	SlotInfo* tmp2;
@@ -293,7 +293,7 @@ SUSE(
 			postException(einfo, JAVA_LANG(VerifyError));
 			goto done1;
 			break;
-#include "kaffe.def"
+#include "kaffe-jit.def"
 		}
 
 		/* Note maximum number of temp slots used and reset it */
@@ -344,6 +344,8 @@ done2:;
 	leaveTranslator();
 
 	// MSR_STOP( jit_time);
+
+	return (success);
 }
 
 
@@ -526,7 +528,7 @@ SCHK(		sanityCheck();					)
 		/* Generate sequences */
 		assert(t->func != 0);
 		if (t->refed != 0) {
-			(*(t->func))(t);
+			(*(t->func))(t, codeInfo);
 		}
 		else {
 			/* printf("discard instruction\n"); */

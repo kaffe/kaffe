@@ -14,8 +14,9 @@
 
 struct _sequence;
 struct _label_;
+struct codeinfo;
 
-typedef void (*ifunc)(struct _sequence*);
+typedef void (*ifunc)(struct _sequence*, struct codeinfo*);
 
 #define	SEQSLOTS	5
 

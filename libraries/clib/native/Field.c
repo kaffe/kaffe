@@ -57,7 +57,7 @@ getFieldAddress(Hjava_lang_reflect_Field* this, struct Hjava_lang_Object* obj)
                 if  (!soft_instanceof(clas, obj)) {
                         SignalError("java.lang.IllegalArgumentException","");
                 }
-                return (((char*)(obj)) + FIELD_OFFSET(fld));
+                return (((char*)(obj)) + FIELD_BOFFSET(fld));
         }
 }
 

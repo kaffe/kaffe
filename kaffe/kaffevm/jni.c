@@ -115,8 +115,8 @@ static void removeJNIref(jref);
 /*
  * Get and set fields.
  */
-#define	GET_FIELD(T,O,F)	*(T*)((O) + FIELD_OFFSET((Field*)(F)))
-#define	SET_FIELD(T,O,F,V)	*(T*)((O) + FIELD_OFFSET((Field*)(F))) = (V)
+#define	GET_FIELD(T,O,F)	*(T*)((O) + FIELD_BOFFSET((Field*)(F)))
+#define	SET_FIELD(T,O,F,V)	*(T*)((O) + FIELD_BOFFSET((Field*)(F))) = (V)
 #define	GET_STATIC_FIELD(T,F)	*(T*)FIELD_ADDRESS((Field*)F)
 #define	SET_STATIC_FIELD(T,F,V)	*(T*)FIELD_ADDRESS((Field*)F) = (V)
 

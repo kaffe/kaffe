@@ -2024,31 +2024,31 @@ define_insn(GETFIELD)
 	   getting data in the right type of register.  */
 
 	if (!FIELD_ISPRIM(finfo.field)) {
-		load_offset_ref(stack(0), rstack(0), FIELD_OFFSET(finfo.field));
+		load_offset_ref(stack(0), rstack(0), FIELD_BOFFSET(finfo.field));
 	}
 	else switch (CLASS_PRIM_SIG(FIELD_TYPE(finfo.field))) {
 	case 'I':
-		load_offset_int(stack(0), rstack(0), FIELD_OFFSET(finfo.field));
+		load_offset_int(stack(0), rstack(0), FIELD_BOFFSET(finfo.field));
 		break;
 	case 'S':
-		load_offset_short(stack(0), rstack(0), FIELD_OFFSET(finfo.field));
+		load_offset_short(stack(0), rstack(0), FIELD_BOFFSET(finfo.field));
 		break;
 	case 'B':
 	case 'Z':
-		load_offset_byte(stack(0), rstack(0), FIELD_OFFSET(finfo.field));
+		load_offset_byte(stack(0), rstack(0), FIELD_BOFFSET(finfo.field));
 		break;
 	case 'C':
-		load_offset_char(stack(0), rstack(0), FIELD_OFFSET(finfo.field));
+		load_offset_char(stack(0), rstack(0), FIELD_BOFFSET(finfo.field));
 		break;
 	case 'F':
-		load_offset_float(stack(0), stack(0), FIELD_OFFSET(finfo.field));
+		load_offset_float(stack(0), stack(0), FIELD_BOFFSET(finfo.field));
 		break;
 	case 'J':
-		load_offset_long(stack_long(-1), stack(0), FIELD_OFFSET(finfo.field));
+		load_offset_long(stack_long(-1), stack(0), FIELD_BOFFSET(finfo.field));
 		push(1);
 		break;
 	case 'D':
-		load_offset_double(stack_double(-1), stack(0), FIELD_OFFSET(finfo.field));
+		load_offset_double(stack_double(-1), stack(0), FIELD_BOFFSET(finfo.field));
 		push(1);
 		break;
 
@@ -2076,51 +2076,51 @@ define_insn(PUTFIELD)
 		CHECK_NULL(PUTFIELD, rstack(1), 35);
 		if (FIELD_ISREF(finfo.field))
 			SOFT_ADDREFERENCE(rstack(1), rstack(0));
-		store_offset_ref(rstack(1), FIELD_OFFSET(finfo.field), rstack(0));
+		store_offset_ref(rstack(1), FIELD_BOFFSET(finfo.field), rstack(0));
 		pop(2);
 	}
 	else switch (CLASS_PRIM_SIG(FIELD_TYPE(finfo.field))) {
 	case 'I':
 		check_stack_ref(1);
 		CHECK_NULL(PUTFIELD, stack(1), 36);
-		store_offset_int(stack(1), FIELD_OFFSET(finfo.field), stack(0));
+		store_offset_int(stack(1), FIELD_BOFFSET(finfo.field), stack(0));
 		pop(2);
 		break;
 	case 'S':
 		check_stack_ref(1);
 		CHECK_NULL(PUTFIELD, stack(1), 37);
-		store_offset_short(stack(1), FIELD_OFFSET(finfo.field), stack(0));
+		store_offset_short(stack(1), FIELD_BOFFSET(finfo.field), stack(0));
 		pop(2);
 		break;
 	case 'B':
 	case 'Z':
 		check_stack_ref(1);
 		CHECK_NULL(PUTFIELD, stack(1), 40);
-		store_offset_byte(stack(1), FIELD_OFFSET(finfo.field), stack(0));
+		store_offset_byte(stack(1), FIELD_BOFFSET(finfo.field), stack(0));
 		pop(2);
 		break;
 	case 'C':
 		check_stack_ref(1);
 		CHECK_NULL(PUTFIELD, stack(1), 41);
-		store_offset_char(stack(1), FIELD_OFFSET(finfo.field), stack(0));
+		store_offset_char(stack(1), FIELD_BOFFSET(finfo.field), stack(0));
 		pop(2);
 		break;
 	case 'F':
 		check_stack_ref(1);
 		CHECK_NULL(PUTFIELD, stack(1), 42);
-		store_offset_float(stack(1), FIELD_OFFSET(finfo.field), stack(0));
+		store_offset_float(stack(1), FIELD_BOFFSET(finfo.field), stack(0));
 		pop(2);
 		break;
 	case 'J':
 		check_stack_ref(2);
 		CHECK_NULL(PUTFIELD, stack(2), 38);
-		store_offset_long(stack(2), FIELD_OFFSET(finfo.field), stack_long(0));
+		store_offset_long(stack(2), FIELD_BOFFSET(finfo.field), stack_long(0));
 		pop(3);
 		break;
 	case 'D':
 		check_stack_ref(2);
 		CHECK_NULL(PUTFIELD, stack(2), 39);
-		store_offset_double(stack(2), FIELD_OFFSET(finfo.field), stack_double(0));
+		store_offset_double(stack(2), FIELD_BOFFSET(finfo.field), stack_double(0));
 		pop(3);
 		break;
 	default:

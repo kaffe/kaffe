@@ -1109,7 +1109,7 @@ resolveObjectFields(Hjava_lang_Class* class)
 		/* Align field */
 		align = ALIGNMENT_OF_SIZE(fsize);
 		offset = ((offset + align - 1) / align) * align;
-		FIELD_OFFSET(fld) = offset;
+		FIELD_BOFFSET(fld) = offset;
 		offset += fsize;
 	}
 
@@ -1159,7 +1159,7 @@ DBG(GCPRECISE,
 		nbits = offset/ALIGNMENTOF_VOIDP;
 
 		/* paranoia */
-		assert(FIELD_OFFSET(fld) == offset);
+		assert(FIELD_BOFFSET(fld) == offset);
 
 		/* Set bit if this field is a reference type, except if 
 		 * it's a kaffe.util.Ptr (PTRCLASS).  */

@@ -19,6 +19,7 @@ typedef struct _callInfo {
 	Method*			method;
 	short			in;
 	short			out;
+	Utf8Const*		cname;
 	Utf8Const*		name;
 	Utf8Const*		signature;
 	char			rettype;
@@ -33,6 +34,9 @@ typedef struct _exceptionInfo {
 typedef struct _fieldInfo {
 	Field*			field;
 	Hjava_lang_Class*	class;
+	Utf8Const*		cname;
+	Utf8Const*		name;
+	Utf8Const*		signature;
 } fieldInfo;
 
 bool	getMethodSignatureClass(constIndex, Hjava_lang_Class*, bool, bool, callInfo*, errorInfo*);

@@ -197,7 +197,7 @@ typedef struct _fields {
 /* Size of field FLD, in bytes. */
 #define FIELD_SIZE(FLD)		((FLD)->bsize)
 #define FIELD_WSIZE(FLD)	((FLD)->bsize <= sizeof(jint) ? 1 : 2)
-#define FIELD_OFFSET(FLD)	((FLD)->info.boffset)
+#define FIELD_BOFFSET(FLD)	((FLD)->info.boffset)
 #define FIELD_ADDRESS(FLD)	((FLD)->info.addr)
 #define	FIELD_CONSTIDX(FLD)	((FLD)->info.idx)
 #define FIELD_ISPRIM(FLD)	(FIELD_RESOLVED(FLD)			\
