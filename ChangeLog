@@ -1,4 +1,5 @@
-2005-03-25  Wolfgang Baer <WBaer@gmx.de>
+2005-03-25  Wolfgang Baer <WBaer@gmx.de>,
+	    Arnaud Vandyck  <avdyk@gnu.org>
 
 	* kaffe/man/kaffe.1.xml: New file.
 	* kaffe/man/kaffe.1.in: Regenerated.
