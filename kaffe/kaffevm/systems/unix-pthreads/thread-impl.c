@@ -158,7 +158,7 @@ static volatile int	pendingExits;
 static int		critSection;
 
 /** helper semaphore to signal completion of critical section enter/exit */
-static sem_t		critSem;
+static repsem_t		critSem;
 
 /** Signal set which contains important signals for suspending threads. */
 static sigset_t		suspendSet;
@@ -498,7 +498,7 @@ void
 tInitLock ( jthread_t nt )
 {
   /* init a non-shared (process-exclusive) semaphore with value '0' */
-  sem_init( &nt->sem, 0, 0);
+  repsem_init( &nt->sem, 0, 0);
 }
 
 /*
@@ -542,7 +542,7 @@ jthread_init(UNUSED int pre,
   tInitSignals();
 
   pthread_key_create( &ntKey, NULL);
-  sem_init( &critSem, 0, 0);
+  repsem_init( &critSem, 0, 0);
 
   priorities = (int *)KGC_malloc (threadCollector, (maxpr+1) * sizeof(int), KGC_ALLOC_STATIC_THREADDATA);
 
@@ -733,7 +733,7 @@ void* tRun ( void* p )
 
   /* we are reasonably operational now, flag our creator that it's safe to give
    * up the thread lock */
-  sem_post( &cur->sem);
+  repsem_post( &cur->sem);
 
   while ( 1 ) {
 	DBG( JTHREAD, TMSG_LONG( "calling user func of: ", cur))
@@ -783,7 +783,7 @@ void* tRun ( void* p )
 
 	/* Wait until we get re-used (by TcreateThread). No need to update the
 	 * blockState, since we aren't active anymore */
-	sem_wait( &cur->sem);
+	repsem_wait( &cur->sem);
 
 	/*
 	 * we have already been moved back to the activeThreads list by
@@ -876,7 +876,7 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 
 	/* resurrect it */
 	nt->active = 1;
-	sem_post( &nt->sem);
+	repsem_post( &nt->sem);
 
 	unprotectThreadList(cur);
   }
@@ -942,7 +942,7 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	    break;
 	  }
 
-	  sem_destroy( &nt->sem);
+	  repsem_destroy( &nt->sem);
 	  unprotectThreadList(cur);
 	  KGC_rmRef(threadCollector, nt);
 	  return 0;
@@ -950,7 +950,7 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 
 	/* wait until the thread specific data has been set, and the new thread
 	 * is in a suspendable state */
-	sem_wait( &nt->sem);
+	repsem_wait( &nt->sem);
 
 	unprotectThreadList(cur);
   }
@@ -976,7 +976,7 @@ void tDispose ( jthread_t nt )
   pthread_detach( nt->tid);
   pthread_mutex_destroy (&nt->suspendLock);
 
-  sem_destroy( &nt->sem);
+  repsem_destroy( &nt->sem);
 
   /* The context is not freed explictly as it may cause troubles
    * with the locking system which is invoked by the GC in that case.
@@ -1073,7 +1073,7 @@ jthread_exit ( void )
 	 * not clear if this is common pthread behavior or just a implementation
 	 * linux-threads "feature")
 	 */
-	sem_wait( &cur->sem);
+	repsem_wait( &cur->sem);
   }
   else {
 	/* flag that we soon will get a new cache entry (would be annoying to
@@ -1166,7 +1166,7 @@ void KaffePThread_WaitForResume(int releaseMutex)
   cur->suspendState = 0;
   
   /* notify the critSect owner we are leaving the handler */
-  sem_post( &critSem);
+  repsem_post( &critSem);
 
   if (releaseMutex)
     {
@@ -1208,7 +1208,7 @@ suspend_signal_handler ( UNUSED int sig )
 	cur->suspendState = SS_SUSPENDED;
 
 	/* notify the critSect owner that we are now suspending in the handler */
-	sem_post( &critSem);
+	repsem_post( &critSem);
 
 	KaffePThread_WaitForResume(false);
   }
@@ -1281,7 +1281,7 @@ jthread_suspendall (void)
 			 * It shouldn't be necessary (posix sems are accumulative), and it
 			 * is bad, performancewise (at least n*2 context switches per suspend)
 			 * but it works more reliably on linux 2.2.x */
-			sem_wait( &critSem);
+			repsem_wait( &critSem);
 		      }
 		  }
 	  }
@@ -1348,7 +1348,7 @@ jthread_unsuspendall (void)
 		      DBG( JTHREAD, dprintf("error sending RESUME signal to %p: %d\n", t, status))
 		    }		  
 		  /* ack wait workaround, see jthread_suspendall remarks */
-		  sem_wait( &critSem);
+		  repsem_wait( &critSem);
 		}
 	      else
 		{

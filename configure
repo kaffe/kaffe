@@ -27599,6 +27599,75 @@ fi
 
 
 
+  echo "$as_me:$LINENO: checking for working semaphores" >&5
+echo $ECHO_N "checking for working semaphores... $ECHO_C" >&6
+  if test "$cross_compiling" = yes; then
+
+
+cat >>confdefs.h <<\_ACEOF
+#define NEED_REPLACEMENT_SEMAPHORES 1
+_ACEOF
+
+	echo "$as_me:$LINENO: result: cross compiling" >&5
+echo "${ECHO_T}cross compiling" >&6
+
+else
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#include <semaphore.h>
+int ret;
+sem_t semtest;
+
+int
+main ()
+{
+
+ret = sem_init(&semtest, 0, 0);
+return (ret < 0) ? 1 : 0;
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && { ac_try='./conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: ok" >&5
+echo "${ECHO_T}ok" >&6
+else
+  echo "$as_me: program exited with status $ac_status" >&5
+echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+( exit $ac_status )
+
+
+cat >>confdefs.h <<\_ACEOF
+#define NEED_REPLACEMENT_SEMAPHORES 1
+_ACEOF
+
+	echo "$as_me:$LINENO: result: not implemented" >&5
+echo "${ECHO_T}not implemented" >&6
+
+fi
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+fi
+
+
+
 	if test -z "$THREADLIBS"; then
 		{ { echo "$as_me:$LINENO: error: Missing library libpthread, read FAQ/FAQ.pthreads" >&5
 echo "$as_me: error: Missing library libpthread, read FAQ/FAQ.pthreads" >&2;}
@@ -56796,7 +56865,7 @@ kaffebin_TRANSF=`echo kaffe-bin | sed "s/${EXEEXT}$//" | sed ${program_transform
 
 
 
-CPPFLAGS="-I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/binreloc -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
+CPPFLAGS="-I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/replace -I\$(top_srcdir)/binreloc -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
 LIBS="$LIBS $LTLIBS"
 
 CFLAGS_WITHOUT_PG=""

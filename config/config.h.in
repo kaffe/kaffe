@@ -732,6 +732,9 @@
 /* Enable debugging symbol generation for jitted code */
 #undef KAFFE_XDEBUGGING
 
+/* Defined if we need a replacement for semaphores */
+#undef NEED_REPLACEMENT_SEMAPHORES
+
 /* If the vm is static or all libraries are static */
 #undef NO_SHARED_VMLIBRARY
 

@@ -13,9 +13,7 @@
 
 #define __USE_GNU
 #include <pthread.h>
-#if defined(HAVE_SEMAPHORE_H)
-#include <semaphore.h>
-#endif /* defined(HAVE_SEMAPHORE_H) */
+#include "repsemaphore.h"
 
 #if !defined(HAVE_PTHREAD_YIELD) && defined(HAVE_SCHED_YIELD)
 #if defined(HAVE_SCHED_H)

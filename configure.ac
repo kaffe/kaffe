@@ -637,6 +637,7 @@ if test x$with_threads = xunix-pthreads ; then
                      CC="$PTHREAD_CC"])
 	AC_CHECK_LIB(semaphore,sem_init,SEMAPHORE_LIB)
 	AC_SUBST(SEMAPHORE_LIB)
+	KAFFE_CHECK_SEMAPHORE
 
 	if test -z "$THREADLIBS"; then
 		AC_MSG_ERROR([Missing library libpthread, read FAQ/FAQ.pthreads])
@@ -2118,7 +2119,7 @@ AC_SUBST(kaffeh_TRANSF)
 AC_SUBST(kaffebin_TRANSF)
 
 dnl These are not to be used during configuration, only during build.
-CPPFLAGS="-I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/binreloc -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
+CPPFLAGS="-I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/replace -I\$(top_srcdir)/binreloc -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
 LIBS="$LIBS $LTLIBS"
 
 dnl Avoid GNU Make $(filter-out -pg,@CFLAGS@) in kaffe/xprof/Makefile.am

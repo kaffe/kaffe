@@ -25,7 +25,9 @@ libreplace_la_SOURCES = \
 	getifaddrs.c \
 	inet_pton.c \
 	inet_ntop.c \
-	memset.c
+	memset.c \
+	repsemaphore.h \
+	semaphores.c
 
 EXTRA_DIST = \
 	ifaddrs_linux.c
