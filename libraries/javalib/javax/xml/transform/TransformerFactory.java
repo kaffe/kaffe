@@ -109,7 +109,7 @@ public abstract class TransformerFactory
     try
       {
         Class t =
-          Class.forName("gnu.xml.libxmlj.transform.GnomeTransformerFactory");
+          Class.forName("gnu.xml.transform.TransformerFactoryImpl");
         return (TransformerFactory) t.newInstance();
       }
     catch (Exception e)
