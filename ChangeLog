@@ -1,5 +1,27 @@
 2004-12-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/swing/plaf/basic/BasicButtonListener.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicButtonUI.java:
+	Resynced with GNU Classpath.
+	
+	2004-12-23  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/plaf/basic/BasicButtonListener.java
+	(BasicButtonListener): New constructor.
+	* javax/swing/plaf/basic/BasicButtonUI.java
+	(createButtonListener): Usw new BasicButtonListener constructor.
+
+2004-12-23  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/awt/image/MemoryImageSource.java:
+	Resynced with GNU Classpath.
+	
+	2004-12-23  Michael Koch  <konqueror@gmx.de>
+
+	* java/awt/image/MemoryImageSource.java: Reformatted.
+	
+2004-12-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/tree/TreeCellEditor.java:
 	Resynced with GNU Classpath.
 	
