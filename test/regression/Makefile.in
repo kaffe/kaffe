@@ -95,6 +95,7 @@ KAFFE_LIBS = @KAFFE_LIBS@
 KLIBFLAGS = @KLIBFLAGS@
 KPREFIX = @KPREFIX@
 KVER = @KVER@
+KVMBINFLAGS = @KVMBINFLAGS@
 KVMLIBFLAGS = @KVMLIBFLAGS@
 Kaffe_TRANSF = @Kaffe_TRANSF@
 LIBLTDL = @LIBLTDL@
@@ -265,7 +266,7 @@ EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow) \
 	CLTestConc_run.java \
 	ZipVerifyUtils.java \
 	ClassGCTest.java \
-	ClassGCLater.java \
+	ClassGCTestLater.java \
 	LoaderTest_Class0.java \
 	LoaderTest_Class1.java \
 	LoaderTest_Class1BeanInfo.java \

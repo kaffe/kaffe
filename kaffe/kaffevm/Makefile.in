@@ -95,6 +95,7 @@ KAFFE_LIBS = @KAFFE_LIBS@
 KLIBFLAGS = @KLIBFLAGS@
 KPREFIX = @KPREFIX@
 KVER = @KVER@
+KVMBINFLAGS = @KVMBINFLAGS@
 KVMLIBFLAGS = @KVMLIBFLAGS@
 Kaffe_TRANSF = @Kaffe_TRANSF@
 LIBLTDL = @LIBLTDL@
@@ -486,6 +487,7 @@ distdir: $(DISTFILES)
 	      || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) top_distdir="$(top_distdir)" distdir="$(distdir)" dist-hook
 
 @AMDEP@include $(DEPDIR)/baseClasses.Plo
 @AMDEP@include $(DEPDIR)/classMethod.Plo
@@ -664,6 +666,11 @@ distclean-local:
 	done; \
 	$(MAKE) AM_MAKEFLAGS="DISTCLEAN_LOCAL=ignore-this-failure" \
 	  SUBDIRS=". $$subdirs" distclean-recursive || :
+
+dist-hook:
+	@for file in $(DISTCLEANFILES); do \
+	  rm -f $(distdir)/$$file; \
+	done
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

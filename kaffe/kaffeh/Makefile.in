@@ -95,6 +95,7 @@ KAFFE_LIBS = @KAFFE_LIBS@
 KLIBFLAGS = @KLIBFLAGS@
 KPREFIX = @KPREFIX@
 KVER = @KVER@
+KVMBINFLAGS = @KVMBINFLAGS@
 KVMLIBFLAGS = @KVMLIBFLAGS@
 Kaffe_TRANSF = @Kaffe_TRANSF@
 LIBLTDL = @LIBLTDL@
@@ -304,6 +305,7 @@ distdir: $(DISTFILES)
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) top_distdir="$(top_distdir)" distdir="$(distdir)" dist-hook
 
 @AMDEP@include $(DEPDIR)/constants.Po
 @AMDEP@include $(DEPDIR)/inflate.Po
@@ -425,6 +427,11 @@ mostlyclean distclean maintainer-clean
 
 $(GEN_SRCS):
 	$(SHELL) $(REGEN_FORWARD) $(srcdir)/../kaffevm/$@ $@
+
+dist-hook:
+	@for file in $(DISTCLEANFILES); do \
+	  rm -f $(distdir)/$$file; \
+	done
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

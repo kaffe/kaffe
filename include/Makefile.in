@@ -95,6 +95,7 @@ KAFFE_LIBS = @KAFFE_LIBS@
 KLIBFLAGS = @KLIBFLAGS@
 KPREFIX = @KPREFIX@
 KVER = @KVER@
+KVMBINFLAGS = @KVMBINFLAGS@
 KVMLIBFLAGS = @KVMLIBFLAGS@
 Kaffe_TRANSF = @Kaffe_TRANSF@
 LIBLTDL = @LIBLTDL@
@@ -367,6 +368,7 @@ distdir: $(DISTFILES)
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) top_distdir="$(top_distdir)" distdir="$(distdir)" dist-hook
 info-am:
 info: info-am
 dvi-am:
@@ -480,6 +482,11 @@ stamp-h1all: stamp-kaffeh $(KLASSES_JAR)
 	  fi; \
 	done
 	@echo timestamp > $@
+
+dist-hook:
+	@for file in $(DERIVED_HDRS) $(JNI_DERIVED_HDRS) jtypes.h; do \
+	  rm -f $(distdir)/$$file; \
+	done
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
