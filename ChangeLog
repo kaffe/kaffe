@@ -1,3 +1,10 @@
+2003-08-04 Guilhem Lavaux <guilhem@kaffe.org>
+	
+	* libraries/clib/awt/X/img.c:
+	(initScaledImage) fix an overread when computing a scaled image, you
+	must stop just before the end of the image so GetPixel can still
+	interpolate without error.
+
 2003-08-04 Kiyo Inaba <inaba@src.ricoh.co.jp>
 	
 	* config/alpha/linux/config.frag,

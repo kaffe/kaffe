@@ -354,12 +354,12 @@ initScaledImage ( Toolkit* X, Image *tgt, Image *src,
   for ( dy=dy0; dy != dy1; dy += dyInc ) {
 	sY = sy0 + (dy - dy0) / yScale;
 	sy = (int) sY;
-	syDelta = (sy < sy1) ? sY - sy : 0;
+	syDelta = (sy < (sy1-1)) ? sY - sy : 0;
 
 	for ( dx=dx0; dx != dx1; dx += dxInc ) {
 	  sX = sx0 + (dx - dx0) / xScale;
 	  sx = (int) sX;
-	  sxDelta = (sx < sx1) ? sX - sx : 0;
+	  sxDelta = (sx < (sx1-1)) ? sX - sx : 0;
 
 	  if ( (c = getScaledPixel( X, src, sx, sy, sxDelta, syDelta)) != -1 ){
   		XPutPixel( tgt->xImg, dx, dy, c);
