@@ -234,7 +234,7 @@ retry:
 			}
 		}
 #else
-#warning No GCJ Support
+/* #warning No GCJ Support */
 #endif
 		success = resolveObjectFields(class, einfo);
 		if (success == false) {
@@ -333,7 +333,7 @@ retry:
 			}
 		}
 
-#endif defined(HAVE_GCJ_SUPPORT)
+#endif /* defined(HAVE_GCJ_SUPPORT) */
 
 		/* Initialise the constants */
 		success = resolveConstants(class, einfo);
@@ -517,7 +517,7 @@ DBG(STATICINIT,
 		}
 #endif
 #if defined(JIT3)
-		if (exc == 0)
+		if ((exc == 0) && METHOD_JITTED(meth))
 			makeMethodInactive(meth);
 #endif
 #endif
@@ -999,6 +999,11 @@ finishFields(Hjava_lang_Class *cl)
 void
 addMethodCode(Method* m, Code* c)
 {
+	assert(m != 0);
+	assert(c != 0);
+	assert(c->code != 0);
+	assert(c->code_length != 0);
+	
 	m->c.bcode.code = c->code;
 	m->c.bcode.codelen = c->code_length;
 	m->stacksz = c->max_stack;
@@ -1084,8 +1089,13 @@ DBG(VMCLASSLOADER,
 				    (*env)->GetObjectClass(env, loader),
 				    "loadClass",
 				    "(Ljava/lang/String;Z)Ljava/lang/Class;");
-			assert(meth != 0);
-
+			if (!meth)
+			{
+				postOutOfMemory(einfo);
+				unlockMutex(centry);
+				return 0;
+			}
+			
 			clazz = (Hjava_lang_Class*)
 				(*env)->CallObjectMethod(env, loader, meth,
 							str, true);
@@ -2140,7 +2150,7 @@ prepareInterface(Hjava_lang_Class* class, errorInfo *einfo)
 				void **where;
 				where = (void**)PMETHOD_NATIVECODE(meth);
 
-				if (buildTrampoline(meth, where, einfo) == false) {
+				if (buildTrampoline(meth, where, einfo) == 0) {
 					return (false);
 				}
 			}

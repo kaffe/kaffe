@@ -1,3 +1,21 @@
+Thu Aug 15 14:20:20 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	Merged in fixes for classMethod.c from JanosVM 0.6.0
+
+	2002-03-13 Wednesday 16:03  Timothy S Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/: classMethod.c, jar.c: put junk at the end of an
+	#endif in comments
+
+	2001-03-23 Friday 15:27  Patrick A Tullmann <tullmann@cs.utah.edu>
+
+	* kaffe/kaffevm/classMethod.c: comment out warning about lack of
+	GCJ support ... not coming anytime soon
+
+	2001-10-23 Tuesday 12:23  Timothy S Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/classMethod.c: make sure the method was jitted
+	before flushing it
+
 Thu Aug 15 13:42:48 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	Merged in a fix for jni.c from JanosVM 0.6.0
 
