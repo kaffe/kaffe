@@ -2,6 +2,9 @@ Mon Dec  7 18:08:19 PST 1998  Archie Cobbs <archie@whistle.com>
 
 	* libraries/clib/{net,io}/Makefile.in: fix some breakage
 	with make depend, make derived-files, and INSTROOT
+	* includes/java_lang_Thread.h: sync exceptObj with class file
+	* kaffe/kaffevm/exception.c, kaffe/kaffevm/jni.c: adjust
+	for new type of (struct Hjava_lang_Thread*)->execptObj.
 
 Mon Dec  7 16:47:23 PST 1998	Tim Wilkinson <tim@transvirtual.com>
 

@@ -23,7 +23,7 @@ typedef struct Classjava_lang_Thread {
   struct Hjava_lang_Runnable* target;
   struct Hjava_lang_ThreadGroup* group;
   struct Hkaffe_util_Ptr* exceptPtr;
-  struct Hkaffe_util_Ptr* exceptObj;
+  struct Hjava_lang_Throwable* exceptObj;
   struct Hkaffe_util_Ptr* jnireferences;
   struct Hjava_lang_Throwable* stackOverflowError;
   jint needOnStack;
@@ -35,14 +35,15 @@ HandleTo(java_lang_Thread);
 
 extern jint java_lang_Thread_countStackFrames(struct Hjava_lang_Thread*);
 extern struct Hjava_lang_Thread* java_lang_Thread_currentThread(void);
-extern void java_lang_Thread_yield(void);
+extern void java_lang_Thread_destroy0(struct Hjava_lang_Thread*);
+extern void java_lang_Thread_finalize0(struct Hjava_lang_Thread*);
+extern void java_lang_Thread_interrupt0(struct Hjava_lang_Thread*);
 extern jbool java_lang_Thread_isAlive(struct Hjava_lang_Thread*);
-extern void java_lang_Thread_start(struct Hjava_lang_Thread*);
 extern void java_lang_Thread_setPriority0(struct Hjava_lang_Thread*, jint);
 extern void java_lang_Thread_sleep0(jlong);
-extern void java_lang_Thread_interrupt0(struct Hjava_lang_Thread*);
-extern void java_lang_Thread_destroy0(struct Hjava_lang_Thread*);
+extern void java_lang_Thread_start(struct Hjava_lang_Thread*);
 extern void java_lang_Thread_stop0(struct Hjava_lang_Thread*, struct Hjava_lang_Object*);
+extern void java_lang_Thread_yield(void);
 
 #ifdef __cplusplus
 }

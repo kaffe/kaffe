@@ -286,7 +286,7 @@ Kaffe_Throw(JNIEnv* env, jobject obj)
 {
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	unhand(getCurrentThread())->exceptObj = obj;
+	unhand(getCurrentThread())->exceptObj = (struct Hjava_lang_Throwable*)obj;
 
 	END_EXCEPTION_HANDLING();
 	return (0);
@@ -301,7 +301,7 @@ Kaffe_ThrowNew(JNIEnv* env, jclass cls, const char* mess)
 
 	eobj = execute_java_constructor(NULL, cls, "(Ljava/lang/String;)V", makeJavaString((char*)mess, strlen(mess)));
 
-	unhand(getCurrentThread())->exceptObj = (struct Hkaffe_util_Ptr*)eobj;
+	unhand(getCurrentThread())->exceptObj = (struct Hjava_lang_Throwable*)eobj;
 
 	END_EXCEPTION_HANDLING();
 	return (0);

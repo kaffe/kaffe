@@ -145,7 +145,7 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 	cname = CLASS_CNAME(class);
 
 	/* Save exception object */
-	unhand(ct)->exceptObj = (struct Hkaffe_util_Ptr*)eobj;
+	unhand(ct)->exceptObj = eobj;
 
 	/* Search down exception stack for a match */
 #if defined(INTERPRETER)
