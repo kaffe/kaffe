@@ -86,4 +86,3 @@ alpha_do_fixup_trampoline:
 #endif /* HAVE_UNDERSCORED_C_NAMES */
 
 #endif
-#endif
