@@ -9,7 +9,7 @@
 native_LTLIBRARIES = libtritonusesd.la
 
 libtritonusesd_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|org)_"
-libtritonusesd_la_LIBADD = -lesd ../common/common.o
+libtritonusesd_la_LIBADD = -lesd -L../common -ltritonuscommon
 libtritonusesd_la_SOURCES = \
 	org_tritonus_lowlevel_esd_EsdRecordingStream.c \
 	org_tritonus_lowlevel_esd_EsdStream.c

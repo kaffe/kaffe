@@ -9,7 +9,7 @@
 native_LTLIBRARIES = libtritonusalsa.la
 
 libtritonusalsa_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|org)_"
-libtritonusalsa_la_LIBADD = -lasound ../common/common.o
+libtritonusalsa_la_LIBADD = -lasound  -L../common -ltritonuscommon
 libtritonusalsa_la_SOURCES = \
 	init.c \
 	org_tritonus_lowlevel_alsa_Alsa.c \

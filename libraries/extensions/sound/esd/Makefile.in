@@ -152,7 +152,7 @@ with_engine = @with_engine@
 native_LTLIBRARIES = libtritonusesd.la
 
 libtritonusesd_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|org)_"
-libtritonusesd_la_LIBADD = -lesd ../common/common.o
+libtritonusesd_la_LIBADD = -lesd -L../common -ltritonuscommon
 libtritonusesd_la_SOURCES =  	org_tritonus_lowlevel_esd_EsdRecordingStream.c 	org_tritonus_lowlevel_esd_EsdStream.c
 
 
@@ -171,7 +171,7 @@ X_CFLAGS = @X_CFLAGS@
 X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
-libtritonusesd_la_DEPENDENCIES =  ../common/common.o
+libtritonusesd_la_DEPENDENCIES = 
 libtritonusesd_la_OBJECTS =  \
 org_tritonus_lowlevel_esd_EsdRecordingStream.lo \
 org_tritonus_lowlevel_esd_EsdStream.lo

@@ -1,3 +1,16 @@
+2003-02-14 Dalibor Topic <robilad@yahoo.com>
+
+	* configure: regenerated.
+
+	* libraries/extensions/sound/alsa/Makefile.am,
+	libraries/extensions/sound/esd/Makefile.am:
+	fixed warnings about linking to libtritonuscommon. It should now
+	build on arm linux as well.
+
+	* libraries/extensions/sound/alsa/Makefile.in,
+	libraries/extensions/sound/esd/Makefile.in:
+	regenerated.
+
 2003-02-13 Peter Naulls <peter@chocky.org>
 
 	* config/config-hacks.h,
