@@ -1,3 +1,13 @@
+Sun Sep 10 18:55:53 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
+
+	* kaffe/kaffevm/systems/unix-jthreads/signal.c (nullException): 
+	In my last big checkin, I added a freebsd-specific hack to catch
+	SEGV's on addresses other than zero.  As it turns out, this is a
+	freebsd/jit specific hack, since we don't take a sigcontext * in
+	the interpreter.
+
+	* libraries/clib/native/System.c: remove unused DBG macro def
+
 Sat Sep 09 11:49:51 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* kaffe/kaffe/main.c, kaffe/kaffeh/constants.c
