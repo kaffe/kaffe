@@ -122,6 +122,11 @@
         libraries/javalib/gnu/java/net/protocol/http/event/RequestListener.java,
 	Resynced with GNU Classpath.
 
+	2004-12-01  Chris Burdess  <dog@gnu.org>
+
+	* gnu/java/net/protocol/http/HTTPURLConnection.java:
+	HTTPURLConnection now returns Lists as getHeaderFields() values.
+
 	2004-11-30  Michael Koch  <konqueror@gmx.de>
 
 	* gnu/java/net/BASE64.java,
