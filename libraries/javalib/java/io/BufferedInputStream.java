@@ -20,15 +20,9 @@ public class BufferedInputStream extends FilterInputStream
 	final private static int DEFAULTBUFFER = 256;
 
 /*
- * Code invariants:
+ * Invariant:
  *
- * 1 markpos <= pos <= count <= buf.length >= marklimit
- *
- * 2 If (count - pos > 0) then markpos != -1. That is, we only keep
- *   data in the buffer if a mark is set. A mark remains set until
- *   more than marklimit bytes have been read and/or skipped.
- *
- * 3 If (markpos == -1) then (count == 0 && pos == 0).
+ *   markpos <= pos <= count <= buf.length >= marklimit
  */
 
 public BufferedInputStream(InputStream in) {
@@ -71,18 +65,12 @@ public boolean markSupported() {
 }
 
 public synchronized int read() throws IOException {
-	if (markpos == -1) {		// if no mark set, just read directly
-		return super.read();
-	} else if (pos == buf.length) {	// buffer consumed, invalidate it
-		pos = count = 0;
-		markpos = -1;
-		return super.read();
-	} else if (pos == count) {	// read more data into buffer first
-		if (!fillBuffer()) {
-			return -1;
-		}
+	byte[] buf = new byte[1];
+	int n = read(buf, 0, 1);
+	if (n == -1) {
+		return -1;
 	}
-	return (buf[pos++] & 0xFF);	// return next buffered byte
+	return (buf[0] & 0xff);
 }
 
 public synchronized int read(byte b[], int off, int len) throws IOException {
@@ -96,22 +84,26 @@ public synchronized int read(byte b[], int off, int len) throws IOException {
 			markpos = -1;
 		}
 
-		// If no mark is set, optimize with a direct read
-		if (markpos == -1) {
-			if ((nread = super.read(b, off, len)) == -1) {
-				return (total > 0) ? total : -1;
-			}
-			return total + nread;
-		}
-
-		// If no data in buffer, go get some more
+		// Buffer empty?
 		if (pos == count) {
+
+			// If the amount requested is more than the size
+			// of the buffer, we might as well optimize with
+			// a direct read to avoid needless copying of data.
+			if (len >= buf.length) {
+				if ((nread = super.read(b, off, len)) == -1) {
+					return (total > 0) ? total : -1;
+				}
+				return total + nread;
+			}
+
+			// Read another buffer's worth of data
 			if (!fillBuffer()) {
 				return (total > 0) ? total : -1;
 			}
 		}
 
-		// Copy a chunk of bytes from our buffer
+		// Copy the next chunk of bytes from our buffer
 		nread = count - pos;
 		if (nread > len) {
 			nread = len;
@@ -146,12 +138,7 @@ public synchronized long skip(long n) throws IOException {
 		return 0;
 	}
 
-	// Optimize for case of no mark set
-	if (markpos == -1) {
-		return super.skip(n);
-	}
-
-	// Skip buffered data, if available
+	// Skip buffered data if there is any
 	if (pos < count) {
 		if (count - pos > n) {
 			pos += (int)n;		// narrowing cast OK
@@ -174,16 +161,15 @@ public synchronized long skip(long n) throws IOException {
 }
 
 /*
- * Get more buffered data. This should only be called when are all true:
+ * Get more buffered data. This should only be called when:
  *
- *	1 markpos != -1
- *	2 pos == count
- *	3 count < buf.length
+ *	1 pos == count
+ *	2 count < buf.length
  *
  * Returns true if at least one byte was read.
  */
 private boolean fillBuffer() throws IOException {
-	int	nread;
+	int nread;
 
 	if ((nread = super.read(buf, pos, buf.length - pos)) <= 0) {
 		return false;
