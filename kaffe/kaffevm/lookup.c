@@ -76,9 +76,7 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
 		class = getClass(ci, this, einfo);
 		if (class == NULL)
 			return (false);
-		if (processClass(class, CSTATE_LINKED, einfo) == false) {
-			return (false);
-		}
+		assert(class->state >= CSTATE_LINKED);
 
                 if (isSpecial == true) {
                         if (!equalUtf8Consts(name, constructor_name) && class !=
@@ -112,6 +110,10 @@ DBG(MLOOKUP,
 	return (true);
 }
 
+/*
+ * Get and link the class to which constant pool index idx in class this
+ * refers.  The returned class object is at least LINKED.
+ */
 Hjava_lang_Class*
 getClass(constIndex idx, Hjava_lang_Class* this, errorInfo *einfo)
 {
