@@ -758,6 +758,7 @@ java_io_SRCS = \
 	java/io/SyncFailedException.java \
 	java/io/UnsupportedEncodingException.java \
 	java/io/UTFDataFormatException.java \
+	java/io/VMObjectStreamClass.java \
 	java/io/WriteAbortedException.java \
 	java/io/Writer.java
 java_lang_SRCS = \

@@ -10,6 +10,15 @@
 
 	* libraries/javalib/essential.files: Added missing files to compile
 	with KJC.
+
+	* libraries/javalib/Makefile.am:
+	(java_io_SRCS) added java/io/VMObjectStreamClass.java.
+	
+	* libraries/javalib/Makefile.in:
+	regenerated.
+
+	* libraries/javalib/java/io/VMObjectStreamClass.java:
+	Added missing file.
 	
 2003-08-11  Guilhem Lavaux <guilhem@kaffe.org>
 
