@@ -700,6 +700,30 @@ jthread_frames(jthread *thrd)
  */
 
 /*
+ * set virtual timer for 10ms round-robin time-slicing
+ */
+static void
+activate_time_slicing()
+{
+	struct itimerval tm;
+	tm.it_interval.tv_sec = tm.it_value.tv_sec = 0;
+	tm.it_interval.tv_usec = tm.it_value.tv_usec = 10000;/* 10 ms */
+	setitimer(ITIMER_VIRTUAL, &tm, 0);
+}
+
+/*
+ * deactivate virtual timer for 10ms round-robin time-slicing
+ */
+static void
+deactivate_time_slicing()
+{
+	struct itimerval tm;
+	tm.it_interval.tv_sec = tm.it_value.tv_sec = 0;
+	tm.it_interval.tv_usec = tm.it_value.tv_usec = 0;
+	setitimer(ITIMER_VIRTUAL, &tm, 0);
+}
+
+/*
  * Initialize the threading system. 
  */
 jthread * 
@@ -712,7 +736,6 @@ jthread_init(int pre,
 	void (*_onstop)())
 {
         jthread *jtid; 
-	struct itimerval tm;
 	int i;
 
 	/* 
@@ -760,9 +783,6 @@ jthread_init(int pre,
 	threadQtail = allocator((maxpr + 1) * sizeof (jthread *));
 
 	catchSignal(SIGVTALRM, interrupt);
-	tm.it_interval.tv_sec = tm.it_value.tv_sec = 0;
-	tm.it_interval.tv_usec = tm.it_value.tv_usec = 10000;/* 10 ms */
-	setitimer(ITIMER_VIRTUAL, &tm, 0);
 	catchSignal(SIGALRM, interrupt);
 	catchSignal(SIGIO, interrupt);
 
@@ -896,6 +916,15 @@ jthread_create(unsigned char pri, void (*func)(void *), int daemon,
         liveThreads = jtid;
 
         talive++;       
+	/* HACK: thread 1 is the main thread,
+	 * thread 2 and 3 are the garbage collector/finalizer.
+	 * Let's assume for now the finalizer does not have to be
+	 * preempted.
+	 */
+	if (talive > 3) {
+		activate_time_slicing();
+	}
+
         if ((jtid->daemon = daemon) != 0) {
                 tdaemon++;
         }
