@@ -64,3 +64,9 @@ Treat it as an TODO list.
 * Under Linux, EXTRA_CFLAGS=-DDEBUG doesn't compile because dprintf is defined
   in stdio.h. --> Solution:  rename dprintf to kaffe_dprintf.
 
+* Thread.interrupt() is not implemented properly.
+
+* Add some architecture-specific stack pointer alignment macro.  Currently,
+  alignment is sizeof (jlong); apparently, some architectures require more
+  specific alignments.
+
