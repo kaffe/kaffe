@@ -4,7 +4,7 @@
  * SHA1PRNG.java
  * SHA-1 based pseudo-random number generator.
  *
- * Copyright (c) 2002 The University of Utah and the Flux Group.
+ * Copyright (c) 2002, 2004 The University of Utah and the Flux Group.
  * All rights reserved.
  *
  * This file is licensed under the terms of the GNU Public License.
@@ -17,7 +17,7 @@
 
 package kaffe.security.provider;
 
-import java.util.Random;
+import kaffe.security.Randomness;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -29,6 +29,72 @@ import java.security.SecureRandomSpi;
 public class SHA1PRNG
 	extends SecureRandomSpi
 {
+	/**
+	 * The list of randomness implmentation classes, ordered from most to
+	 * least desirable.
+	 */
+	private static final String RANDOMNESS_IMPLS[] = {
+		"kaffe.security.UnixRandomness",
+		"kaffe.security.LameRandomness"
+	};
+
+	/**
+	 * The root source of randomness.
+	 */
+	private static final Randomness impl;
+	
+	static {
+		Randomness rand = null;
+		int lpc;
+
+		/* Walk the list of implementations. */
+		for( lpc = 0;
+		     (lpc < RANDOMNESS_IMPLS.length) && (rand == null);
+		     lpc++ )
+		{
+			try
+			{
+				ClassLoader cl;
+				Class rclass;
+
+				cl = ClassLoader.getSystemClassLoader();
+				/* Try to load and */
+				rclass = cl.loadClass(RANDOMNESS_IMPLS[lpc]);
+				/* ... instantiate an object. */
+				rand = (Randomness)rclass.newInstance();
+				/*
+				 * Success!
+				 * Set a property to inform the user.
+				 */
+				System.setProperty("org.kaffe.randomness",
+						   rclass.getName());
+			}
+			catch(IllegalAccessException e)
+			{
+				/* Really should not happen. */
+				throw new InternalError(e.toString());
+			}
+			catch(ExceptionInInitializerError e)
+			{
+			}
+			catch(InstantiationException e)
+			{
+			}
+			catch(NoClassDefFoundError e)
+			{
+			}
+			catch(ClassNotFoundException e)
+			{
+			}
+		}
+		if( rand == null )
+		{
+			throw new UnsatisfiedLinkError(
+				"Cannot find working Randomness");
+		}
+		impl = rand;
+	}
+	
 	/**
 	 * The "true" random seed size.
 	 */
@@ -74,14 +140,17 @@ public class SHA1PRNG
 	 */
 	public SHA1PRNG()
 	{
+		/*
+		 * Fill the seed using the implementation specific source of
+		 * randomness.
+		 */
+		impl.fill(this.seed);
+		
 		try
 		{
 			byte digest[];
 			
 			this.md = MessageDigest.getInstance("SHA-1");
-
-			/* XXX This is a lame source of randomness. */
-			new Random().nextBytes(this.seed);
 			digest = this.md.digest(this.seed);
 			System.arraycopy(digest, 0, this.data, 0, SEED_SIZE);
 		}
@@ -95,7 +164,7 @@ public class SHA1PRNG
 		}
 	}
 	
-	protected void engineSetSeed(byte[] otherSeed)
+	protected synchronized void engineSetSeed(byte[] otherSeed)
 	{
 		try
 		{
@@ -114,7 +183,7 @@ public class SHA1PRNG
 		}
 	}
 	
-	protected void engineNextBytes(byte[] bytes)
+	protected synchronized void engineNextBytes(byte[] bytes)
 	{
 		if( bytes.length < (SEED_SIZE - this.dataPos) )
 		{

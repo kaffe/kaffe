@@ -160,6 +160,7 @@ Klasses_jar_SRCS = \
 	$(kaffe_jar_SRCS) \
 	$(kaffe_lang_SRCS) \
 	$(kaffe_management_SRCS) \
+	$(kaffe_security_SRCS) \
 	$(kaffe_security_provider_SRCS) \
 	$(kaffe_tools_jar_SRCS) \
 	$(kaffe_tools_native2ascii_SRCS) \
@@ -2083,6 +2084,10 @@ kaffe_management_SRCS = \
 	kaffe/management/Debug.java \
 	kaffe/management/JIT.java \
 	kaffe/management/XProfiler.java
+kaffe_security_SRCS = \
+	kaffe/security/LameRandomness.java \
+	kaffe/security/Randomness.java \
+	kaffe/security/UnixRandomness.java
 kaffe_security_provider_SRCS = \
 	kaffe/security/provider/Kaffe.java \
 	kaffe/security/provider/MD2.java \

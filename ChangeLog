@@ -1,3 +1,26 @@
+2004-01-20  Timothy S. Stack <stack@cs.utah.edu>
+
+	* test/regression/Makefile.am:
+	Fix JASMIN_TESTS/BCEL_TESTS variables since they were being set to
+	FOO_TESTS_DIST and not $(FOO_TESTS_DIST).
+
+	* libraries/javalib/kaffe/security/LameRandomness.java,
+	libraries/javalib/kaffe/security/Randomness.java,
+	libraries/javalib/kaffe/security/UnixRandomness.java:
+	New files.  Used to break out the initial source of randomness for
+	SHA1PRNG.
+
+	* libraries/javalib/kaffe/security/provider/SHA1PRNG.java:
+	Make setSeed and nextBytes methods synchronized (Reported by:
+	"jrandom").  Allow for the initial source of randomness to be
+	determined at run-time so we can take advantage of "/dev/random",
+	if it is available.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/profiles/allatonce/all.files,
+	libraries/javalib/profiles/default/core.files:
+	Add kaffe/security/*Randomness.java.
+
 2004-01-19  Dalibor Topic <robilad@kaffe.org>
 
 	* config/arm/jit.h

@@ -270,6 +270,9 @@ kaffe/management/Classpath.java
 kaffe/management/Debug.java
 kaffe/management/JIT.java
 kaffe/management/XProfiler.java
+kaffe/security/LameRandomness.java
+kaffe/security/Randomness.java
+kaffe/security/UnixRandomness.java
 kaffe/security/provider/Kaffe.java
 kaffe/security/provider/MD2.java
 kaffe/security/provider/MD4.java

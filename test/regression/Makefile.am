@@ -258,8 +258,9 @@ JASMIN_TESTS_DIST = \
 	MethodSignature7.j \
 	MethodSignature8.j \
 	MethodSignature9.j
+
 if HAVE_JASMIN
-JASMIN_TESTS = JASMIN_TESTS_DIST
+JASMIN_TESTS = $(JASMIN_TESTS_DIST)
 else
 JASMIN_TESTS =
 endif
@@ -267,8 +268,9 @@ endif
 BCEL_TESTS_DIST = \
 	BadClassFileCode.java \
 	BadClassFileConstants.java
+
 if HAVE_BCEL
-BCEL_TESTS = BCEL_TESTS_DIST
+BCEL_TESTS = $(BCEL_TESTS_DIST)
 else
 BCEL_TESTS =
 endif
