@@ -1026,9 +1026,9 @@ resolveObjectFields(Hjava_lang_Class* class)
 		nbits = offset/ALIGNMENTOF_VOIDP;
 		BITMAP_COPY(map, class->gc_layout, nbits);
 	} else {
-		/* For now, assume we don't have to scan the header of 
-		 * the object: This will be different once class gc 
-		 * is implemented!
+		/* The walkObject routine marks the class object explicitly.
+		 * We assume that the header does not contain anything ELSE
+		 * that must be marked.  
 		 */
 		offset = sizeof(Hjava_lang_Object);
 		nbits = offset/ALIGNMENTOF_VOIDP;
@@ -1622,9 +1622,6 @@ lookupArray(Hjava_lang_Class* c)
 	centry = lookupClassEntry(arr_name, c->loader);
 
 	if (centry->class != 0) {
-#if !INTERN_UTF8CONSTS
-		gc_free(arr_name);
-#endif
 		goto found;
 	}
 
@@ -1634,9 +1631,6 @@ lookupArray(Hjava_lang_Class* c)
 	/* Incase someone else did it */
 	if (centry->class != 0) {
 		unlockMutex(centry);
-#if !INTERN_UTF8CONSTS
-		gc_free(arr_name);
-#endif
 		goto found;
 	}
 
@@ -1717,6 +1711,7 @@ finalizeClassLoader(Hjava_lang_ClassLoader* loader)
 	classEntry** entryp;
 	classEntry* entry;
 	int ipool;
+	int totalent = 0;
 
 DBG(CLASSGC,
 	dprintf("Finalizing classloader @%p\n", loader);
@@ -1726,6 +1721,7 @@ DBG(CLASSGC,
 	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
 		entryp = &classEntryPool[ipool];
 		for (;  *entryp != NULL; entryp = &(*entryp)->next) {
+			totalent++;
 			entry = *entryp;
 			if (entry->loader == loader) {
 DBG(CLASSGC,
@@ -1741,5 +1737,8 @@ DBG(CLASSGC,
 				break;
 		}
 	}
+DBG(CLASSGC,
+	dprintf("entries in class entry pool: %d\n", totalent);
+    )
         unlockStaticMutex(&classHashLock);
 }
