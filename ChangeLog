@@ -1,5 +1,10 @@
 2004-11-06  Eric Anholt  <eta@lclark.edu>
 
+	* kaffe/kaffeh/mem.c:
+	Add a missing initializer to quiet the compiler.
+
+2004-11-06  Eric Anholt  <eta@lclark.edu>
+
 	* kaffe/kaffe/main.c:
 	Remove some unused variables.
 
