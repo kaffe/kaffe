@@ -408,6 +408,14 @@ pkginclude_HEADERS = \
 
 
 CLEANFILES = $(DERIVED_HDRS) $(JNI_DERIVED_HDRS) stamp-kaffeh
+
+DISTCLEANFILES = \
+	$(DERIVED_HDRS) \
+	$(JNI_DERIVED_HDRS) \
+	jtypes.h \
+	stamp-h0all \
+	stamp-h1all
+
 subdir = include
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -627,6 +635,7 @@ clean-generic:
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -738,7 +747,7 @@ stamp-h1all: stamp-kaffeh $(KLASSES_JAR)
 	@echo timestamp > $@
 
 dist-hook:
-	@for file in $(DERIVED_HDRS) $(JNI_DERIVED_HDRS) jtypes.h; do \
+	@for file in $(DISTCLEANFILES); do \
 	  rm -f $(distdir)/$$file; \
 	done
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

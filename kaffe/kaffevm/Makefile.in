@@ -22,14 +22,6 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-# Makefile fragment to distclean DIST_SUBDIRS not in SUBDIRS
-#
-# Copyright (c) 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
-#
-# See the file "license.terms" for information on usage and redistribution 
-# of this file. 
-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -357,7 +349,7 @@ noinst_HEADERS = \
 
 CLEANFILES = so_locations
 
-DISTCLEAN_LOCAL = distclean-local
+DISTCLEANFILES = gc-mem.c md.c stamp-h01 stamp-h02
 subdir = kaffe/kaffevm
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -415,15 +407,14 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	all-recursive install-data-recursive install-exec-recursive \
 	installdirs-recursive install-recursive uninstall-recursive \
 	check-recursive installcheck-recursive
-DIST_COMMON = $(noinst_HEADERS) $(top_srcdir)/include/distclean-hack \
-	Makefile.am Makefile.in
+DIST_COMMON = $(noinst_HEADERS) Makefile.am Makefile.in
 SOURCES = $(libkaffevm_la_SOURCES)
 
 all: all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/include/distclean-hack $(top_srcdir)/configure.in $(ACLOCAL_M4)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
 	  $(AUTOMAKE) --gnu  kaffe/kaffevm/Makefile
 Makefile: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.in  $(top_builddir)/config.status
@@ -677,7 +668,7 @@ top_distdir = ../..
 distdir = $(top_distdir)/$(PACKAGE)-$(VERSION)
 
 distdir: $(DISTFILES)
-	$(mkinstalldirs) $(distdir)/../../include $(distdir)/mem $(distdir)/systems/win32
+	$(mkinstalldirs) $(distdir)/mem $(distdir)/systems/win32
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -717,6 +708,9 @@ distdir: $(DISTFILES)
 	      || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
+	  dist-hook
 check-am: all-am
 check: check-recursive
 all-am: Makefile $(LTLIBRARIES) $(HEADERS)
@@ -743,6 +737,10 @@ mostlyclean-generic:
 clean-generic:
 	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
+
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
@@ -754,8 +752,7 @@ clean-am: clean-generic clean-libtool clean-nativeLTLIBRARIES \
 distclean: distclean-recursive
 
 distclean-am: clean-am distclean-compile distclean-depend \
-	distclean-generic distclean-libtool distclean-local \
-	distclean-tags
+	distclean-generic distclean-libtool distclean-tags
 
 dvi: dvi-recursive
 
@@ -800,15 +797,14 @@ uninstall-info: uninstall-info-recursive
 	clean-generic clean-libtool clean-nativeLTLIBRARIES \
 	clean-recursive ctags ctags-recursive distclean \
 	distclean-compile distclean-depend distclean-generic \
-	distclean-libtool distclean-local distclean-recursive \
-	distclean-tags distdir dvi dvi-am dvi-recursive info info-am \
-	info-recursive install install-am install-data install-data-am \
-	install-data-recursive install-exec install-exec-am \
-	install-exec-recursive install-info install-info-am \
-	install-info-recursive install-man install-nativeLTLIBRARIES \
-	install-recursive install-strip installcheck installcheck-am \
-	installdirs installdirs-am installdirs-recursive \
-	maintainer-clean maintainer-clean-generic \
+	distclean-libtool distclean-recursive distclean-tags distdir \
+	dvi dvi-am dvi-recursive info info-am info-recursive install \
+	install-am install-data install-data-am install-data-recursive \
+	install-exec install-exec-am install-exec-recursive \
+	install-info install-info-am install-info-recursive install-man \
+	install-nativeLTLIBRARIES install-recursive install-strip \
+	installcheck installcheck-am installdirs installdirs-am \
+	installdirs-recursive maintainer-clean maintainer-clean-generic \
 	maintainer-clean-recursive mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool mostlyclean-recursive \
 	pdf pdf-am pdf-recursive ps ps-am ps-recursive tags \
@@ -835,17 +831,12 @@ md.c: stamp-h02
 stamp-h02: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_MD_C) md.c $@
 
+dist-hook:
+	@for file in $(DISTCLEANFILES); do \
+	  rm -f $(distdir)/$$file; \
+	done
+
 jit/icode.h:
-distclean-generic: $(DISTCLEAN_LOCAL)
-distclean-local:
-	@dirs='$(DIST_SUBDIRS)'; xdirs='$(SUBDIRS)'; subdirs=; \
-	for dir in $$dirs; do \
-	  for xdir in $$xdirs; do \
-	    test "$$dir" = "$$xdir" && continue 2; \
-	  done; subdirs="$$subdirs $$dir"; \
-	done; \
-	$(MAKE) AM_MAKEFLAGS="DISTCLEAN_LOCAL=ignore-this-failure" \
-	  SUBDIRS=". $$subdirs" distclean-recursive || :
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -241,7 +241,7 @@ with_engine = @with_engine@
 
 GEN_HDRS = md.h $(XPROF_HDRS) $(ENGINE_GEN_HDRS)
 
-DISTCLEANFILES = $(GEN_HDRS)
+DISTCLEANFILES = $(GEN_HDRS) stamp-h01 stamp-h02 stamp-h03
 
 noinst_HEADERS = $(GEN_HDRS) \
 	config-hacks.h config-io.h config-math.h config-mem.h \

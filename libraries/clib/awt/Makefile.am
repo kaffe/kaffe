@@ -35,5 +35,3 @@ EXTRA_DIST = \
 	win32/toolkit.hpp \
 	win32/widget.cpp \
 	win32/wnd.cpp
-
-include $(top_srcdir)/include/distclean-hack

@@ -38,7 +38,7 @@ bin_SCRIPTS = $(SCRIPTFILES_KJC) $(SCRIPTFILES_SUN) \
 	$(SCRIPTFILES_COMPAT) $(PSCRIPTFILES) \
 	$(SCRIPTFILES_XPROF)
 
-include $(top_srcdir)/include/distclean-hack
+#include $(top_srcdir)/include/distclean-hack
 
 install-exec-local:
 	@$(NORMAL_INSTALL)

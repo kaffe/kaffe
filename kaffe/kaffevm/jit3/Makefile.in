@@ -263,7 +263,7 @@ EXTRA_DIST = \
 	slots.h
 
 
-DISTCLEANFILES = icode.h jit.def trampolines.c
+DISTCLEANFILES = icode.h jit.def trampolines.c stamp-h01 stamp-h02 stamp-h03
 subdir = kaffe/kaffevm/jit3
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -463,6 +463,9 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
+	  dist-hook
 check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES)
@@ -576,6 +579,11 @@ trampolines.c: stamp-h03
 	else :; fi
 stamp-h03: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_TRAMPOLINES_C) trampolines.c $@
+
+dist-hook:
+	@for file in $(DISTCLEANFILES); do \
+	  rm -f $(distdir)/$$file; \
+	done
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

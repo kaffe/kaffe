@@ -138,8 +138,13 @@ stamp-h02: $(top_builddir)/config.status
 
 CLEANFILES = so_locations
 
+DISTCLEANFILES = gc-mem.c md.c stamp-h01 stamp-h02
+
+dist-hook:
+	@for file in $(DISTCLEANFILES); do \
+	  rm -f $(distdir)/$$file; \
+	done
+
 ## This avoids that dependencies produced by `make dist' in a jit
 ## configuration prevents intrp builds.
 jit/icode.h:
-
-include $(top_srcdir)/include/distclean-hack

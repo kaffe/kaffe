@@ -4,7 +4,7 @@
  * of various types is working.  Can be used to generate output on one
  * VM and read it in on another.
  *
- * Copyright (c) 2002 Pat Tullmann
+ * Copyright (c) 2002, 2003 Pat Tullmann
  * All Rights Reserved.
  *
  * This file is released into the public domain.
@@ -17,7 +17,7 @@ import java.math.*;
 
 public class SerializationCompatibility
 {
-	static final String filename = "serializedFoos.bin";
+	static final String FILENAME = "serializedFoos.bin";
 
 	static class ObjectCount
 	implements Serializable
@@ -296,9 +296,10 @@ public class SerializationCompatibility
 
 		if (args.length == 0)
 		{
-			generateTests(filename);
+			generateTests(FILENAME);
 			System.out.println();
-			checkFile(filename);
+			checkFile(FILENAME);
+			new File(FILENAME).delete();
 		}
 		else if (args.length == 1)
 		{

@@ -22,14 +22,6 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-# Makefile fragment to distclean DIST_SUBDIRS not in SUBDIRS
-#
-# Copyright (c) 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
-#
-# See the file "license.terms" for information on usage and redistribution 
-# of this file. 
-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -269,8 +261,6 @@ bin_SCRIPTS = $(SCRIPTFILES_KJC) $(SCRIPTFILES_SUN) \
 	$(SCRIPTFILES_COMPAT) $(PSCRIPTFILES) \
 	$(SCRIPTFILES_XPROF)
 
-
-DISTCLEAN_LOCAL = distclean-local
 subdir = kaffe/scripts
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -288,15 +278,14 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	all-recursive install-data-recursive install-exec-recursive \
 	installdirs-recursive install-recursive uninstall-recursive \
 	check-recursive installcheck-recursive
-DIST_COMMON = $(top_srcdir)/include/distclean-hack Makefile.am \
-	Makefile.in appletviewer.in install-jar.in jar.in javac.in \
-	javadoc.in javakey.in javap.in jdb.in kaffe.in kaffexprof.in \
-	kjc.in kopi.in native2ascii.in rmic.in rmiregistry.in \
-	serialver.in
+DIST_COMMON = Makefile.am Makefile.in appletviewer.in install-jar.in \
+	jar.in javac.in javadoc.in javakey.in javap.in jdb.in kaffe.in \
+	kaffexprof.in kjc.in kopi.in native2ascii.in rmic.in \
+	rmiregistry.in serialver.in
 all: all-recursive
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/include/distclean-hack $(top_srcdir)/configure.in $(ACLOCAL_M4)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
 	  $(AUTOMAKE) --gnu  kaffe/scripts/Makefile
 Makefile: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.in  $(top_builddir)/config.status
@@ -513,7 +502,6 @@ top_distdir = ../..
 distdir = $(top_distdir)/$(PACKAGE)-$(VERSION)
 
 distdir: $(DISTFILES)
-	$(mkinstalldirs) $(distdir)/../../include
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -578,6 +566,9 @@ mostlyclean-generic:
 
 clean-generic:
 
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
@@ -588,7 +579,7 @@ clean-am: clean-generic clean-libtool mostlyclean-am
 distclean: distclean-recursive
 
 distclean-am: clean-am distclean-generic distclean-libtool \
-	distclean-local distclean-tags
+	distclean-tags
 
 dvi: dvi-recursive
 
@@ -632,9 +623,9 @@ uninstall-info: uninstall-info-recursive
 .PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am check check-am clean \
 	clean-generic clean-libtool clean-recursive ctags \
 	ctags-recursive distclean distclean-generic distclean-libtool \
-	distclean-local distclean-recursive distclean-tags distdir dvi \
-	dvi-am dvi-recursive info info-am info-recursive install \
-	install-am install-binSCRIPTS install-data install-data-am \
+	distclean-recursive distclean-tags distdir dvi dvi-am \
+	dvi-recursive info info-am info-recursive install install-am \
+	install-binSCRIPTS install-data install-data-am \
 	install-data-recursive install-exec install-exec-am \
 	install-exec-local install-exec-recursive install-info \
 	install-info-am install-info-recursive install-jrebinSCRIPTS \
@@ -648,16 +639,8 @@ uninstall-info: uninstall-info-recursive
 	uninstall-info-recursive uninstall-jrebinSCRIPTS \
 	uninstall-local uninstall-recursive
 
-distclean-generic: $(DISTCLEAN_LOCAL)
-distclean-local:
-	@dirs='$(DIST_SUBDIRS)'; xdirs='$(SUBDIRS)'; subdirs=; \
-	for dir in $$dirs; do \
-	  for xdir in $$xdirs; do \
-	    test "$$dir" = "$$xdir" && continue 2; \
-	  done; subdirs="$$subdirs $$dir"; \
-	done; \
-	$(MAKE) AM_MAKEFLAGS="DISTCLEAN_LOCAL=ignore-this-failure" \
-	  SUBDIRS=". $$subdirs" distclean-recursive || :
+
+#include $(top_srcdir)/include/distclean-hack
 
 install-exec-local:
 	@$(NORMAL_INSTALL)

@@ -249,6 +249,8 @@ LIBKAFFEVM = ../kaffevm/libkaffevm.la $(libxprof)
 kaffe_bin_LDFLAGS = $(KVMBINFLAGS) -export-dynamic
 kaffe_bin_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS) @LIBLTDL@
 kaffe_bin_DEPENDENCIES = $(LIBKAFFEVM) $(JAVA_LIBS)
+
+DISTCLEANFILES = version-info.h
 subdir = kaffe/kaffe
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -457,6 +459,9 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
+	  dist-hook
 check-am: all-am
 check: check-am
 all-am: Makefile $(PROGRAMS)
@@ -484,6 +489,7 @@ clean-generic:
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -569,6 +575,11 @@ version-info.h: $(top_srcdir)/ChangeLog $(top_builddir)/config.status
 	echo '#define VER_PREFIX        "$(prefix)"'            >> $@T
 	echo '#define VER_THREAD_SYSTEM "$(THREAD_SYSTEM)"'     >> $@T
 	-mv $@T $@
+
+dist-hook:
+	@for file in $(DISTCLEANFILES); do \
+	  rm -f $(distdir)/$$file; \
+	done
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

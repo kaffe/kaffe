@@ -46,3 +46,9 @@ version-info.h: $(top_srcdir)/ChangeLog $(top_builddir)/config.status
 	echo '#define VER_THREAD_SYSTEM "$(THREAD_SYSTEM)"'     >> $@T
 	-mv $@T $@
 
+DISTCLEANFILES = version-info.h
+
+dist-hook:
+	@for file in $(DISTCLEANFILES); do \
+	  rm -f $(distdir)/$$file; \
+	done

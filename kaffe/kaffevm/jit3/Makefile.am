@@ -36,7 +36,7 @@ EXTRA_DIST = \
 	seq.h \
 	slots.h
 
-DISTCLEANFILES = icode.h jit.def trampolines.c
+DISTCLEANFILES = icode.h jit.def trampolines.c stamp-h01 stamp-h02 stamp-h03
 
 basecode.lo icode.lo machine.lo registers.lo: icode.h
 funcs.lo: jit.def trampolines.c
@@ -58,3 +58,8 @@ trampolines.c: stamp-h03
 	else :; fi
 stamp-h03: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_TRAMPOLINES_C) trampolines.c $@
+
+dist-hook:
+	@for file in $(DISTCLEANFILES); do \
+	  rm -f $(distdir)/$$file; \
+	done

@@ -229,7 +229,14 @@ stamp-h1all: stamp-kaffeh $(KLASSES_JAR)
 
 CLEANFILES = $(DERIVED_HDRS) $(JNI_DERIVED_HDRS) stamp-kaffeh
 
+DISTCLEANFILES = \
+	$(DERIVED_HDRS) \
+	$(JNI_DERIVED_HDRS) \
+	jtypes.h \
+	stamp-h0all \
+	stamp-h1all
+
 dist-hook:
-	@for file in $(DERIVED_HDRS) $(JNI_DERIVED_HDRS) jtypes.h; do \
+	@for file in $(DISTCLEANFILES); do \
 	  rm -f $(distdir)/$$file; \
 	done
