@@ -156,7 +156,7 @@ void dbgSetMaskStr(char *mask_str)
 	}
 
 	/* Special target 'list' lists all the defined options */
-	if (!strcmp(opt, "list")) {
+	if (!strcasecmp(opt, "list")) {
 		printf("Available debug opts: \n");
 		printf("  %-15s\t%16s  %s\n", "Option", "Mask", "Description");
 		for (i = 0; i < NELEMS(debug_opts); i++)
@@ -182,15 +182,14 @@ void dbgSetMaskStr(char *mask_str)
 	
 
 	while (opt) {
-		if (!strcmp(opt, "buffer"))
+		if (!strcasecmp(opt, "buffer"))
 			debugToBuffer(16 * 1024);
-		else if (!strcmp(opt, "dump"))
+		else if (!strcasecmp(opt, "dump"))
 			atexit(printDebugBuffer);
 		else
 		{
 			for (i = 0; i < NELEMS(debug_opts); i++)
-				/* probably should strcasecmp() or stricmp() */
-				if (!strcmp(opt, debug_opts[i].name))
+				if (!strcasecmp(opt, debug_opts[i].name))
 				{
 					kaffevmDebugMask |= debug_opts[i].mask;
 					break;
