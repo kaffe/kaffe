@@ -1,5 +1,7 @@
 1999-05-27  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
+	* libraries/javalib/Klasses.jar: Rebuilt.
+
 	* libraries/javalib/java/lang/String.java (indexOf): If str is
 	empty, return sIdx.
 	(lastIndexOf): If str is empty, return eIdx.
