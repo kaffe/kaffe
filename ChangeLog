@@ -1,3 +1,11 @@
+Wed Mar 24 07:48:05 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* test/regression/TestCasts.java: simplified for integration in
+	the testsuite; added expected output
+	* test/regression/TestCasts.results: removed
+	* test/regression/Makefile.am (TESTS): added TestCasts.java
+	* test/regression/Makefile.in: regen
+
 Wed Mar 24 07:23:48 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in (CPPFLAGS): prepend config and include to CPPFLAGS, 

@@ -36,6 +36,7 @@ TESTS = \
 ## Misc tests
 	ReflectInterfaces.java \
 	TestSerializable.java \
+	TestCasts.java \
 	Alias.java \
 	NullPointerTest.java \
 	LostFrame.java \
