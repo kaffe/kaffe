@@ -14,6 +14,8 @@
  * University of Utah, http://www.cs.utah.edu/flux/
  */
 
+#if defined(KAFFE_FEEDBACK)
+
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
@@ -35,7 +37,7 @@
 /* XXX Temporary for now until we define interface header file that
  * declares "translate"
  */
-#if defined(TRANSLATOR) 
+#if defined(TRANSLATOR)
 #if defined(JIT3)
 #include "jit3/machine.h"
 #else
@@ -297,3 +299,5 @@ int feedbackLibrary(char *name, int preload)
 	unlockMutex(kaffe_feedback_file);
 	return( retval );
 }
+
+#endif /* KAFFE_FEEDBACK */

@@ -13,6 +13,8 @@
  * University of Utah, http://www.cs.utah.edu/flux/
  */
 
+#if defined(KAFFE_FEEDBACK)
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -32,7 +34,7 @@ static int setJITSectionValue(struct jit_section_data *jsd,
 			      char *tag, char *value)
 {
 	int retval = 1;
-	
+
 	if( !strcmp(tag, "precompile") )
 	{
 		jsd->jsd_flags = parseFlagString(value,
@@ -42,7 +44,7 @@ static int setJITSectionValue(struct jit_section_data *jsd,
 	else if( !strcmp(tag, "address") )
 	{
 		void *addr;
-		
+
 		if( sscanf(value, "%p", &addr) != 1 )
 			jsd->jsd_address = addr;
 		else
@@ -394,3 +396,5 @@ void installFileSections(void)
 	lib_section.fs_handler = libSectionHandler;
 	addSectionType(&lib_section);
 }
+
+#endif /* KAFFE_FEEDBACK */

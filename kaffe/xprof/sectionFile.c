@@ -13,6 +13,8 @@
  * University of Utah, http://www.cs.utah.edu/flux/
  */
 
+#if defined(KAFFE_FEEDBACK)
+
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -60,7 +62,7 @@ struct parse_state {
 static int hashName(const char *name, int table_size)
 {
 	int h;
-	
+
 	for( h = 0; *name; name++ )
 		h = (64 * h + tolower(*name)) % table_size;
 	return( h );
@@ -72,7 +74,7 @@ static int hashName(const char *name, int table_size)
 static int validStringChar(int c)
 {
 	int retval = 0;
-	
+
 	if( isprint(c) &&
 	    (c != '#') &&
 	    (c != '%') &&
@@ -252,7 +254,7 @@ static int parseDirective(struct parse_state *ps, int curr)
 	line_len = ps->ps_len;
 	line = ps->ps_data;
 	save = ps->ps_save;
-	
+
 	/* The line passed in points to the beginning of the directive */
 	directive = &line[curr];
 	/* Move to the end of the directive */
@@ -308,9 +310,9 @@ static int parseDirective(struct parse_state *ps, int curr)
 		char *section_type = 0, *section_name = 0;
 		struct file_section *type;
 		int stype;
-		
+
 		/* This is the beginning of a section */
-		
+
 		/* Parse the args into type and name */
 		ps->ps_data = args;
 		ps->ps_len = args_len;
@@ -448,7 +450,7 @@ static int parseFile(struct parse_state *ps)
 	in_file = ps->ps_in_file;
 	out_file = ps->ps_out_file;
 	ps->ps_data = buffer;
-	
+
 	/* Walk over the input file line by line */
 	while( retval && (line = fgets(buffer, MAX_LINE_SIZE, in_file)) )
 	{
@@ -566,7 +568,7 @@ static int writeNewSections(struct parse_state *ps)
 
 	sf = ps->ps_section_file;
 	out_file = ps->ps_out_file;
-	
+
 	/* Walk over the hash table links */
 	sfd = sf->sf_ordered_sections;
 	while( sfd && retval )
@@ -621,7 +623,7 @@ static int writeFile(struct parse_state *ps)
 
 	sf = ps->ps_section_file;
 	in_file = ps->ps_in_file;
-	
+
 	/* Create a temporary file for the output */
 	if( (temp_name = (char *)KMALLOC(10)) &&
 	    strcpy(temp_name, "sf.XXXXXX") &&
@@ -821,7 +823,7 @@ int parseSectionLine(struct parse_state *ps, char **tag, char **value,
 	line = ps->ps_data;
 	line_len = ps->ps_len;
 	save = ps->ps_save;
-	
+
 	/* We start out looking for the tag */
 	state = SS_TAG;
 	/* Walk through the line */
@@ -1083,7 +1085,7 @@ int syncSectionFile(struct section_file *sf)
 	lockMutex(sf);
 	retval = syncFile(0, sf, sf->sf_filename);
 	unlockMutex(sf);
-	return( retval ); 
+	return( retval );
 }
 
 void addSectionType(struct file_section *fs)
@@ -1186,7 +1188,7 @@ struct section_file_data *createFileSection(char *section_type,
 	struct file_section *fs;
 	char *new_name;
 	va_list args;
-	
+
 	va_start(args, section_name);
 	/* Get the section type and ask it to create a section data object */
 	if( (fs = findSectionType(section_type)) &&
@@ -1213,3 +1215,5 @@ void deleteFileSection(struct section_file_data *sfd)
 		sfd->sfd_type->fs_handler(sfd->sfd_type, 0, SFM_DELETE, sfd);
 	}
 }
+
+#endif /* KAFFE_FEEDBACK */
