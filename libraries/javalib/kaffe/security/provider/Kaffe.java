@@ -39,8 +39,12 @@ public final class Kaffe extends Provider {
 				    "kaffe.security.provider.MD4");
 			    put("MessageDigest.MD5",
 				    "kaffe.security.provider.MD5");
-			    put("MessageDigest.SHA",
+			    put("MessageDigest.SHA-1",
 				    "kaffe.security.provider.SHA");
+			    put("Alg.Alias.MessageDigest.SHA1",
+				    "SHA-1");
+			    put("Alg.Alias.MessageDigest.SHA",
+				    "SHA-1");
 			    put("SecureRandom.SHA1PRNG",
 				    "kaffe.security.provider.SHA1PRNG");
 			    return null;

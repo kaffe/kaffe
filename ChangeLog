@@ -1,3 +1,11 @@
+Thu Jun 20 13:19:17 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+        * libraries/javalib/kaffe/security/provider/SHA.java,
+	libraries/javalib/kaffe/security/provider/Kaffe.java,
+	libraries/javalib/kaffe/security/provider/SHA1PRNG.java:
+	Some fixes from Tim Stack needed to get Tomcat 3.2.4
+	to run (thanks to Dalibor for looking into this).
+
 Wed Jun 19 18:14:31 PDT 2002  Jim Pick  <jim@kaffe.org>
 
 	From: Pat Tullmann <pat@tullmann.org>

@@ -17,7 +17,7 @@ package kaffe.security.provider;
 
 
 public final class SHA extends UpdateDigest {
-	public static final String DIGEST_NAME = "SHA";
+	public static final String DIGEST_NAME = "SHA-1";
 	public static final int DIGEST_LENGTH = 20;
 
 	public SHA() {

@@ -6,10 +6,6 @@
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
- *
- * NB!!!! THIS DOES NOT ACTUALLY IMPLEMENT SHA1PRNG - it uses random and
- *        is a place holder.
- *
  */
 
 package kaffe.security.provider;
@@ -25,14 +21,15 @@ import java.security.NoSuchAlgorithmException;
 public class SHA1PRNG
 	extends SecureRandomSpi
 {
-	private static final int SEED_SIZE = 20;
-	private static final int DATA_SIZE = 40;
+	private static final int SEED_SIZE = 8;
+	private static final int DATA_SIZE = 16;
 	
 	private MessageDigest md;
 	private byte seed[] = new byte[SEED_SIZE];
 	private int seedPos = 0;
 	private byte data[] = new byte[DATA_SIZE];
 	private int dataPos = 0;
+	private long counter = 0;
 	
 	public SHA1PRNG()
 	{
@@ -43,7 +40,7 @@ public class SHA1PRNG
 			this.md = MessageDigest.getInstance("SHA-1");
 
 			new Random().nextBytes(this.seed);
-			digest = this.md.digest(this.data);
+			digest = this.md.digest(this.seed);
 			System.arraycopy(digest, 0, this.data, 0, SEED_SIZE);
 		}
 		catch(NoSuchAlgorithmException e)
@@ -77,7 +74,8 @@ public class SHA1PRNG
 	
 	protected void engineNextBytes(byte[] bytes)
 	{
-		if( bytes.length < (20 - this.dataPos) )
+		this.counter += 1;
+		if( bytes.length < (SEED_SIZE - this.dataPos) )
 		{
 			System.arraycopy(this.data, this.dataPos,
 					 bytes, 0,
@@ -110,8 +108,24 @@ public class SHA1PRNG
 					System.arraycopy(this.seed,
 							 0,
 							 this.data,
-							 SEED_SIZE,
+							 0,
 							 SEED_SIZE);
+					this.data[SEED_SIZE    ] =
+						(byte)(this.counter);
+					this.data[SEED_SIZE + 1] =
+						(byte)(this.counter >>  8);
+					this.data[SEED_SIZE + 2] =
+						(byte)(this.counter >> 16);
+					this.data[SEED_SIZE + 3] =
+						(byte)(this.counter >> 24);
+					this.data[SEED_SIZE + 4] =
+						(byte)(this.counter >> 32);
+					this.data[SEED_SIZE + 5] =
+						(byte)(this.counter >> 40);
+					this.data[SEED_SIZE + 6] =
+						(byte)(this.counter >> 48);
+					this.data[SEED_SIZE + 7] =
+						(byte)(this.counter >> 56);
 					digest = this.md.digest(this.data);
 					System.arraycopy(digest,
 							 0,
