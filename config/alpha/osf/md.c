@@ -78,6 +78,7 @@ void alpha_disable_uac(void)
 #include "debug.h"
 #include "locks.h"
 
+/* libexc is not thread safe :-( */
 static iLock *excLock;
 
 void __alpha_osf_firstFrame (exceptionFrame *frame)
@@ -111,14 +112,19 @@ exceptionFrame * __alpha_osf_nextFrame (exceptionFrame *frame)
            the table address, not the entry address that could be used
            by exc_virtual_unwind().  */
 	lockStaticMutex (&excLock);
-	if (exc_lookup_function_table (frame->sc.sc_pc) == NULL) {
-		/* No table found ??? */
-		unlockStaticMutex (&excLock);
-		dprintf ("__alpha_osf_nextFrame(): no RPD for pc %p\n",
-			 (void*)frame->sc.sc_pc);
-		return NULL;
+	if (exc_lookup_function_table (frame->sc.sc_pc) != NULL) {
+		exc_virtual_unwind (NULL, &frame->sc);
 	}
-	exc_virtual_unwind (NULL, &frame->sc);
+	else {
+		/* No table found, is this method GCed after throw but
+                   before printStackTrace() ??? */
+#if 0
+		DBG(STACKTRACE,
+		    dprintf ("__alpha_osf_nextFrame(): no PDSC_RPD for pc %p\n",
+			     (void*)frame->sc.sc_pc); );
+#endif
+		frame->sc.sc_pc = 0;
+	}
 	unlockStaticMutex (&excLock);
 	DBG(STACKTRACE,
 	    dprintf(" -> pc 0x%p fp 0x%p sp 0x%p\n",
@@ -160,10 +166,13 @@ void __alpha_osf_register_jit_exc (void *methblock, void *codebase, void *codeen
 	pdsc->crd[1].words.rpd_offset = 0;
 
 	/* create Runtime Procedure Descriptor */
-	// pdsc->rpd.flags = (alpha_jit_info.ieee ? PDSC_EXC_IEEE : 0);
+#if 0
 	/* With -ieee, GCC alway add .eflag 48 event if function does
            not use float nor double.  */
 	pdsc->rpd.flags = PDSC_EXC_IEEE;
+#else
+	pdsc->rpd.flags = (alpha_jit_info.ieee ? PDSC_EXC_IEEE : 0);
+#endif
 	pdsc->rpd.entry_ra = 26;
 	pdsc->rpd.rsa_offset = rsa_offset;
 	pdsc->rpd.sp_set = alpha_jit_info.sp_set;
