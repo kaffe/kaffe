@@ -61,6 +61,7 @@ public AppletViewer ( File html) {
 	
 	setLayout( null);
 	setMenus();
+	state.setFont(new Font("SansSerif", Font.BOLD, 12));
 	add( "South", state);
 	addWindowListener(this);
 
