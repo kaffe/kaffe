@@ -1,3 +1,13 @@
+Sat Sep 09 11:43:32 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
+
+	* kaffe/kaffevm/mem/gc-incremental.c: In markObjectDontCheck,
+	don't update the live count the null class *.  Elsewhere, use
+	dprintf() rather than fprintf(stderr).
+
+	* kaffe/kaffevm/debug.h: If we are to use kaffe_dprintf in
+	non-debugging contexts, the #define and prototype should be
+	present.
+
 Mon Sep  4 20:05:05 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
 
 	* kaffe/kaffevm/utf8const.c: explicitly #include debug.h
