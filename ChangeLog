@@ -1,3 +1,8 @@
+2003-06-13 Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* include/dummyin6.h:
+	Add missing members sin6_flowinfo and sin6_scope_id to sockaddr_in6.
+
 2003-06-13 Dalibor Topic <robilad@yahoo.com>
 
 	* Makefile.am, include/Makefile.am:
