@@ -463,7 +463,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 	 * safe to keep it here.
 	 */
 	if (cls == ClassClass) {
-		return (3206093459760846163L);
+		return (3206093459760846163LL);
 	}
 	fld = lookupClassField(cls, serialVersionUIDName, true, &einfo);
 
