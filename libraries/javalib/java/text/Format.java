@@ -67,7 +67,7 @@ public abstract class Format implements Serializable, Cloneable
   {
     static final long serialVersionUID = 276966692217360283L;
    
-    public Field(String name)
+    protected Field(String name)
     {
       super(name);
     }
