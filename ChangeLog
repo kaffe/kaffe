@@ -1,5 +1,8 @@
 Wed Feb  3 20:48:51 1999  Godmar Back  <gback@cs.utah.edu>
 
+	* libraries/clib/native/ClassLoader.c: skip leading slashes in
+	java_lang_ClassLoader_getSystemResourceAsBytes0.
+
 	* libraries/clib/native/UNIXProcess.c: fixed KMALLOC() to allocate
 	strlen()+1 instead of strlen().  Stupid errors like that is why we 
 	have Java.

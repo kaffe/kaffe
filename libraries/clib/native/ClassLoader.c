@@ -186,12 +186,17 @@ HArrayOfByte*
 java_lang_ClassLoader_getSystemResourceAsBytes0(struct Hjava_lang_String* str)
 {
 	char* name;
+	char* lname;
 	classFile hand;
 	HArrayOfByte* data;
 	errorInfo err;
 
-	name = stringJava2C(str);
-	hand = findInJar(name, &err);
+	lname = name = stringJava2C(str);
+	/* skip leading slashes */
+	while (*lname && *lname == '/') {
+		lname++;
+	}
+	hand = findInJar(lname, &err);
 	KFREE(name);
 	if (hand.type == 0) {
 		return (NULL);
