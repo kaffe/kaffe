@@ -25,14 +25,29 @@
  * Beware that switching between setjmp and sigsetjmp may impact the
  * SP_OFFSET hack used in unix-jthreads/jthreads.c.
  */
+
 #if 1
-#define JTHREAD_SETJMP(buf)       setjmp((buf))
-#define JTHREAD_LONGJMP(buf, val) longjmp((buf), (val))
-#define JTHREAD_JMPBUF            jmp_buf
+#define JTHREAD_SETJMP(buf)		setjmp((buf))
+#if defined(__FreeBSD__) && defined(__i386__)
+/* XXX Check for a corrupted jump buffer before jumping there. This version for
+   XXX FreeBSD/i386 checks the stack pointer and PC counter. This is a temp
+   XXX hack to try to catch a bug (to reproduce: run GCTest a zillion times). */
+#define JTHREAD_LONGJMP(buf, val)	do {				     \
+					  assert((buf)->_jb[0]>0x1000	     \
+					    && (u_int)(buf)->_jb[2]>0x1000); \
+					  longjmp((buf), (val));	     \
+					} while (0)
 #else
-#define JTHREAD_SETJMP(buf)       sigsetjmp((buf), 0)
-#define JTHREAD_LONGJMP(buf, val) siglongjmp((buf), (val))
-#define JTHREAD_JMPBUF            sigjmp_buf
+#define JTHREAD_LONGJMP(buf, val)	longjmp((buf), (val))
+#endif
+#define JTHREAD_JMPBUF			jmp_buf
+
+#else
+
+#define JTHREAD_SETJMP(buf)		sigsetjmp((buf), 0)
+#define JTHREAD_LONGJMP(buf, val)	siglongjmp((buf), (val))
+#define JTHREAD_JMPBUF			sigjmp_buf
+
 #endif
 
 #endif
