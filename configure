@@ -54569,12 +54569,23 @@ _ACEOF
 
 
 
+
+case $Khost_os in
+win32*)
+	jnicall_define="__stdcall"
+	jniexport_define="__declspec(dllexport)"
+	;;
+*)
+	jnicall_define=""
+	jniexport_define=""
+	;;
+
 cat >>confdefs.h <<_ACEOF
-#define JNICALL
+#define JNICALL $jnicall_define
 _ACEOF
 
 cat >>confdefs.h <<_ACEOF
-#define JNIEXPORT
+#define JNIEXPORT $jniexport_define
 _ACEOF
 
 

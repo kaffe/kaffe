@@ -1911,8 +1911,19 @@ dnl =========================================================================
 dnl Define JNI call.
 dnl -------------------------------------------------------------------------
 
-AC_DEFINE_UNQUOTED(JNICALL, [])
-AC_DEFINE_UNQUOTED(JNIEXPORT, [])
+
+case $Khost_os in
+win32*)
+	jnicall_define="__stdcall"
+	jniexport_define="__declspec(dllexport)"
+	;;
+*)
+	jnicall_define=""
+	jniexport_define=""
+	;;
+
+AC_DEFINE_UNQUOTED(JNICALL, [$jnicall_define])
+AC_DEFINE_UNQUOTED(JNIEXPORT, [$jniexport_define])
 
 dnl -------------------------------------------------------------------------
 

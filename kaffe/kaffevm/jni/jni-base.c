@@ -92,19 +92,21 @@ KaffeJNI_ParseArgs(KaffeVM_Arguments *args, JavaVMOption *options, jint nOptions
 	{
 	  userProperty *prop = (userProperty *)malloc(sizeof(userProperty)); 
 	  int sz;
+	  char *internalOpt = strdup(opt);
+
 	  assert (prop != 0);
 
 	  prop->next = userProperties;
 	  userProperties = prop;
 
-	  for (sz = 2; opt[sz] != 0; sz++)
+	  for (sz = 2; internalOpt[sz] != 0; sz++)
 	    {
-	      opt[sz] = 0;
+	      internalOpt[sz] = 0;
 	      sz++;
 	      break;
 	    }
-	  prop->key = &opt[2];
-	  prop->value = &opt[sz];
+	  prop->key = &internalOpt[2];
+	  prop->value = &internalOpt[sz];
 	}
     }
 

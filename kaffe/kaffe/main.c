@@ -674,19 +674,21 @@ options(char** argv, int argc)
 #endif
 		else if (argv[i][1] ==  'D') {
 			/* Set a property */
+			const char *propStr = strdup(&argv[i][2]);
+			
 			prop = malloc(sizeof(userProperty));
 			assert(prop != 0);
 			prop->next = userProperties;
 			userProperties = prop;
-			for (sz = 2; argv[i][sz] != 0; sz++) {
-				if (argv[i][sz] == '=') {
-					argv[i][sz] = 0;
+			for (sz = 0; propStr[sz] != 0; sz++) {
+				if (propStr[sz] == '=') {
+					propStr[sz] = 0;
 					sz++;
 					break;
 				}
 			}
-			prop->key = &argv[i][2];
-			prop->value = &argv[i][sz];
+			prop->key = propStr;
+			prop->value = &propStr[sz];
 		}
 		else if (argv[i][1] == 'X') {
 			fprintf(stderr, 

@@ -368,6 +368,17 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 		setProperty(p, prop->key, prop->value);
 	}
 
+	prop = userProperties;
+	while (prop != 0) {
+		userProperty *nextProperty = prop->next;
+
+		free(prop->key);
+		free(prop->value);
+		free(prop);
+		prop = nextProperty;
+	}
+	userProperties = NULL;
+
 	return (p);
 }
 
