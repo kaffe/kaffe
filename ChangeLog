@@ -1,5 +1,14 @@
 2005-01-05  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/swing/InternalFrameFocusTraversalPolicy.java: 
+	Resynced with GNU Classpath.
+
+	2004-12-24  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/InternalFrameFocusTraversalPolicy.java: New file.
+
+2005-01-05  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/JFormattedTextField.java,
 	libraries/javalib/javax/swing/JWindow.java,
 	libraries/javalib/javax/swing/UIDefaults.java,
