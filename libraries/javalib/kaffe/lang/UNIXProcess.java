@@ -127,18 +127,24 @@ public int waitFor() throws InterruptedException {
 	return (exit_code);
 }
 
-public void sendSignal(int signum) throws IOException {
+public void destroy() {
+	sendSignal(getKillSignal());
+}
+
+public void sendSignal(int signum) {
+	if (!isalive)
+		return;
+	sendSignal(pid, signum);
+}
+
+public static void sendSignal(int pid, int signum) {
 	sendSignal0(pid, signum);
 }
 
-public static void sendSignal(int pid, int signum) throws IOException {
-	sendSignal0(pid, signum);
-}
-
-public native void destroy();
 private native int forkAndExec(Object cmd[], Object env[]);
 private native int execWait();
 private native static void sendSignal0(int pid, int signum);
+private native static int getKillSignal();
 
 }
 
