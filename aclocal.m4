@@ -1506,6 +1506,12 @@ AC_CACHE_VAL([lt_cv_sys_max_cmd_len], [dnl
     lt_cv_sys_max_cmd_len=8192;
     ;;
 
+  amigaos*)
+    # On AmigaOS with pdksh, this test takes hours, literally.
+    # So we just punt it and use a minimum line length of 8192.
+    lt_cv_sys_max_cmd_len=8192;
+    ;;
+
  *)
     # If test is not a shell built-in, we'll probably end up computing a
     # maximum length that is only half of the actual maximum length, but
@@ -7572,7 +7578,7 @@ if test x$QT_IS_EMBEDDED = xyes ; then
 	AC_MSG_CHECKING([Qtopia])
 	if test "x`ls $QTDIR/lib/libqpe.* 2> /dev/null`" != x ; then
 		QT_CXXFLAGS="$QT_CXXFLAGS -DQPE"
-		QT_LIB="-lqpe -lqtopia $QT_LIB"
+		QT_LIB="-lqpe -lqtopia -lm $QT_LIB"
 		AC_MSG_RESULT([found])
 	else
 		AC_MSG_RESULT([not found])

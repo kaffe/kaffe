@@ -1,3 +1,14 @@
+2003-06-24  Dalibor Topic <robilad@yahoo.com>
+
+	* developers/patch-libtool-amiga-max-command-line-length.diff:
+	new file.
+	
+	* developers/autogen.sh:
+	patch libtool to avoid spending too much time checking for maximal
+	command line length.
+
+	Reported by: Tony Wyatt <wyattaw@optushome.com.au>
+
 2003-06-23  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/jit/machine.c

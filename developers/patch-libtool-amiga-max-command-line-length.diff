@@ -1,0 +1,24 @@
+This patch should be fowarded upstream.
+
+See http://www.kaffe.org/pipermail/kaffe/2003-June/042605.html for more information.
+
+Index: libltdl/acinclude.m4
+===================================================================
+RCS file: /cvs/kaffe/kaffe/libltdl/acinclude.m4,v
+retrieving revision 1.23
+diff -u -r1.23 acinclude.m4
+--- libltdl/acinclude.m4	30 May 2003 17:14:23 -0000	1.23
++++ libltdl/acinclude.m4	10 Jun 2003 16:10:04 -0000
+@@ -669,6 +669,12 @@
+     lt_cv_sys_max_cmd_len=8192;
+     ;;
+ 
++  amigaos*)
++    # On AmigaOS with pdksh, this test takes hours, literally.
++    # So we just punt it and use a minimum line length of 8192.
++    lt_cv_sys_max_cmd_len=8192;
++    ;;
++
+  *)
+     # If test is not a shell built-in, we'll probably end up computing a
+     # maximum length that is only half of the actual maximum length, but

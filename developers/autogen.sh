@@ -104,6 +104,7 @@ libtoolize --automake --ltdl --copy --force
 patch -p0 < developers/patch-libtool-amiga.diff
 patch -p0 < developers/patch-libtool-openbsd.diff
 patch -p0 < developers/patch-libtool-realloc.diff
+patch -p0 < developers/patch-libtool-amiga-max-command-line-length.diff
 cp libltdl/acinclude.m4 libtool.m4
 
 aclocal -I .
