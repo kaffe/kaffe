@@ -18,10 +18,33 @@
 
 static jfieldID number;
 
+static void *
+bi_alloc(size_t size)
+{
+	void *p = KMALLOC(size);
+	return (p);
+}
+
+static void *
+/* ARGUSED */
+bi_realloc(void *ptr, size_t old_size, size_t new_size)
+{
+	void *p = KREALLOC(ptr, new_size);
+	return (p);
+}
+
+static void
+/* ARGUSED */
+bi_free(void *ptr, size_t size) 
+{
+	KFREE(ptr);
+}
+
 void
 Java_java_math_BigInteger_initialize0(JNIEnv* env, jclass cls)
 {
 	number = (*env)->GetFieldID(env, cls, "number", "kaffe.util.Ptr");
+	mp_set_memory_functions (bi_alloc, bi_realloc, bi_free);
 }
 
 void
@@ -29,7 +52,7 @@ Java_java_math_BigInteger_init0(JNIEnv* env, jobject r)
 {
 	mpz_ptr res;
 
-	res = (mpz_ptr)malloc(sizeof(mpz_t));
+	res = (mpz_ptr)bi_alloc(sizeof(mpz_t));
 	mpz_init(res);
 
 	(*env)->SetObjectField(env, r, number, (jobject)res);
@@ -43,7 +66,7 @@ Java_java_math_BigInteger_finalize0(JNIEnv* env, jobject r)
 	res = (*env)->GetObjectField(env, r, number);
 
 	mpz_clear(res);
-	free(res);
+	bi_free(res, sizeof(mpz_t));
 }
 
 void
@@ -59,7 +82,10 @@ Java_java_math_BigInteger_assignBytes0(JNIEnv* env, jobject r, jint sign, jarray
 	len = (*env)->GetArrayLength(env, magnitude);
 	data = (*env)->GetByteArrayElements(env, magnitude, 0);
 
-	mpz_clear(res);
+	/* clear mpz by setting it to zero; do not use mpz_clear here 
+	 * cause that would free its storage which is wrong.
+	 */
+	mpz_set_ui(res, 0);
 	for (i = 0; i < len; i++) {
 		mpz_mul_ui(res, res, (unsigned long)256);
 		mpz_add_ui(res, res, (unsigned long)(data[i] & 0xFF));
@@ -373,7 +399,7 @@ Java_java_math_BigInteger_toString0(JNIEnv* env, jobject* s, jint base)
 
 	res = mpz_get_str(0, (int)base, src);
 	str = (*env)->NewStringUTF(env, res);
-	free(res);
+	bi_free(res, 0 /* is ignored */);
 
 	return (str);
 }
