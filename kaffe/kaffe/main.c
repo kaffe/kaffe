@@ -523,6 +523,13 @@ options(char** argv, int argc)
                         prop = setKaffeAWT("kaffe.awt.nativelib=qtawt");
                 }
 #endif
+#ifdef KAFFE_NANOX_AWT_INCLUDED
+		/* Extra option to use kaffe's Nano-X AWT backend.
+		 */
+		else if (strncmp(argv[i], "-Xkaffe-nanox-awt", (j=17)) == 0) {
+			prop = setKaffeAWT("kaffe.awt.nativelib=nanoxawt");
+		}
+#endif
 #if defined(USE_GMP)
 		/* Extra option to use gmp for native, fast bignums.
 		 * Only available with binreloc, since binreloc is used to
@@ -941,6 +948,9 @@ usage(void)
 #endif
 #ifdef KAFFE_QT_AWT_INCLUDED
 	fprintf(stderr, _("	-Xkaffe-qt-awt		 Use Kaffe's Qt2/3/Embedded AWT backend\n"));
+#endif
+#ifdef KAFFE_NANOX_AWT_INCLUDED
+	fprintf(stderr, _("	-Xkaffe-nanox-awt        Use Kaffe's Nano-X AWT backend\n"));
 #endif
 
 	fprintf(stderr, _("  * Option currently ignored.\n"

@@ -1697,6 +1697,44 @@ if test x"$enable_native_awt" = x"yes"; then
    fi
 fi
 
+AC_ARG_WITH([kaffe-nanox-awt],
+	AS_HELP_STRING([--with-kaffe-nanox-awt],
+			[enable build of Kaffe's Nano-X AWT engine (not built by default)]),
+	[],
+	[with_kaffe_nanox_awt=no]
+)
+
+AM_CONDITIONAL(COND_KAFFE_NANOX_AWT, test x"$with_kaffe_nanox_awt" != x"no")
+
+if test x"$enable_native_awt" = x"yes"; then
+   if test x"$with_kaffe_nanox_awt" = x"yes"; then
+
+   	dnl -----------------------------------------------------------------------
+	dnl 	Nano-X AWT support
+	dnl -----------------------------------------------------------------------
+
+	AC_ARG_WITH(nanox-include,
+		AS_HELP_STRING([--with-nanox-includes=dir],
+		[Specify NanoX include directory]),
+		[ NANOXINC=$withval ],
+		[ NANOXINC="/usr/include/microwin" ])
+		
+	AC_ARG_WITH(nanox-library,
+		AS_HELP_STRING([--with-nanox-library=dir],
+		[Specify NanoX library directory]),
+		[ NANOXLIB=$withval ],
+		[ NANOXLIB="/usr/lib"])
+		
+	NANOX_CFLAGS="-I${NANOXINC}"
+        AWT_LIBS="-L${NANOXLIB} -lnano-X -lmwengine -lmwdrivers -lmwfonts"
+	AWT_LIBS="$CTLIBS $AWT_LIBS"
+	AC_SUBST(NANOX_CFLAGS)
+	AC_SUBST(AWT_LIBS)
+			
+	AWT_LIB="$AWT_LIB \$(top_builddir)/libraries/clib/awt/nano-X/libnanoxawt.la"
+   fi
+fi
+
 AC_ARG_WITH([classpath-gtk-awt],
             AS_HELP_STRING([--without-classpath-gtk-awt],
                            [disable build of GNU Classpath's Gtk+-based AWT engine (built by default)]),
@@ -2210,6 +2248,7 @@ AC_CONFIG_FILES([libraries/clib/awt/classpath-gtk/gtk-peer/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/classpath-gtk/resource/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/X/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/qt/Makefile])
+AC_CONFIG_FILES([libraries/clib/awt/nano-X/Makefile])
 AC_CONFIG_FILES([libraries/clib/sound/Makefile])
 AC_CONFIG_FILES([libraries/clib/sound/alsa/Makefile])
 AC_CONFIG_FILES([libraries/clib/sound/common/Makefile])

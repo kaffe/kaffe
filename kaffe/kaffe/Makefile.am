@@ -24,6 +24,10 @@ if COND_KAFFE_QT_AWT
 INCLUDE_KAFFE_QT_AWT = -DKAFFE_QT_AWT_INCLUDED
 endif
 
+if COND_KAFFE_NANOX_AWT
+INCLUDE_KAFFE_NANOX_AWT = -DKAFFE_NANOX_AWT_INCLUDED
+endif
+
 AM_CPPFLAGS = \
 	-I../kaffevm \
 	-I$(srcdir)/../kaffevm \
@@ -32,7 +36,9 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/xprof \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
 	-I$(top_builddir)/include \
-	$(INCLUDE_KAFFE_X_AWT) $(INCLUDE_KAFFE_QT_AWT)
+	$(INCLUDE_KAFFE_X_AWT) \
+	$(INCLUDE_KAFFE_QT_AWT) \
+	$(INCLUDE_KAFFE_NANOX_AWT)
 
 kaffe_bin_SOURCES = \
 	main.c \

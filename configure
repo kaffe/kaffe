@@ -491,7 +491,7 @@ ac_includes_default="\
 
 ac_subdirs_all="$ac_subdirs_all kaffe/kaffevm/boehm-gc/boehm"
 ac_subdirs_all="$ac_subdirs_all libltdl"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT abssrcdir CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB DLLTOOL ac_ct_DLLTOOL AS ac_ct_AS OBJDUMP ac_ct_OBJDUMP CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBTOOL_DEPS LIBLTDL CCLD MKINSTALLDIRS USE_NLS MSGFMT GMSGFMT XGETTEXT MSGMERGE LIBICONV LTLIBICONV INTLLIBS LIBINTL LTLIBINTL POSUB MAY_RUN_PO_TRUE MAY_RUN_PO_FALSE REGEN_FORWARD CONFIG_MD_H CONFIG_CALLKAFFEEXCEPTION_H KAFFEVM_MD_C CONFIG_JIT_MD_H KAFFEVM_JIT_DEF KAFFEVM_ICODE_H HAVE_CONFIG_JIT_MD_H USE_JIT_TRUE USE_JIT_FALSE ENGINE_NAME BCEL_JAR HAVE_BCEL_TRUE HAVE_BCEL_FALSE ENABLE_JVMPI_TRUE ENABLE_JVMPI_FALSE ENABLE_XPROF_TRUE ENABLE_XPROF_FALSE CONFIG_XPROFILE_MD_H JAVAC_FLAGS NEED_LIBXPROF_TRUE NEED_LIBXPROF_FALSE CFLAGS_PG SUN_COMPAT_TRUE SUN_COMPAT_FALSE THREAD_DIR acx_pthread_config PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS SEMAPHORE_LIB VM_LIBS USE_PRECOMPILED_RT_JAR_TRUE USE_PRECOMPILED_RT_JAR_FALSE PATH_TO_RT_JAR JIKESPROG JIKES KAFFEVM_TRAMPOLINES_C JAVA_LIBS with_engine THREAD_SYSTEM KPREFIX KAFFE_ARCHOS ZIP MKTEMP JASMIN HAVE_ZIP_TRUE HAVE_ZIP_FALSE HAVE_JIKES_TRUE HAVE_JIKES_FALSE HAVE_MKTEMP_TRUE HAVE_MKTEMP_FALSE HAVE_JASMIN_TRUE HAVE_JASMIN_FALSE KAFFE_LIBS M_LIBS NET_LIBS ZIP_LIBS LIBADD_GMP USE_GMP SECURITY_LIBS GC_NAME subdirs BOEHMGC_SPECIFIC_FLAGS HAVE_GCJ_SUPPORT_TRUE HAVE_GCJ_SUPPORT_FALSE LIBOBJS USE_COMPAT_IFADDRS_TRUE USE_COMPAT_IFADDRS_FALSE GTK_CAIRO_TRUE GTK_CAIRO_FALSE COND_NATIVE_AWT_TRUE COND_NATIVE_AWT_FALSE COND_KAFFE_X_AWT_TRUE COND_KAFFE_X_AWT_FALSE X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS AWT_LIBS COND_KAFFE_QT_AWT_TRUE COND_KAFFE_QT_AWT_FALSE MOC UIC QEMBED QT_CXXFLAGS QT_LDADD QT_GUILINK QASSISTANTCLIENT_LDADD COND_CLASSPATH_GTK_AWT_TRUE COND_CLASSPATH_GTK_AWT_FALSE PKG_CONFIG GTK_CFLAGS GTK_LIBS CAIRO_CFLAGS CAIRO_LIBS PANGOFT2_CFLAGS PANGOFT2_LIBS ALSA_CFLAGS ALSA_LIBS ESD_CONFIG ESD_CFLAGS ESD_LIBS COND_SOUND_ALSA_TRUE COND_SOUND_ALSA_FALSE COND_SOUND_ESD_TRUE COND_SOUND_ESD_FALSE COND_NATIVE_SOUND_TRUE COND_NATIVE_SOUND_FALSE COND_PURE_JAVA_MATH_TRUE COND_PURE_JAVA_MATH_FALSE MATH_LIB INCLUDED_EXTENSIONS PROFILE XML2_CONFIG XML_CFLAGS XML_LIBS XSLT_CONFIG XSLT_CFLAGS XSLT_LIBS COND_LIBXMLJ_TRUE COND_LIBXMLJ_FALSE JAVA uudecode JAVAC ANTLR ANTLR_JAR COND_GJDOC_TRUE COND_GJDOC_FALSE DLOPEN_JAVA_LIBS OPT_DLOPEN_JAVA_LIBS KLIBFLAGS KVMBINFLAGS KVMLIBFLAGS BINRELOC_CFLAGS ENABLE_BINRELOC_TRUE ENABLE_BINRELOC_FALSE KAFFEH MAKE_KAFFEH toolslibdir jredir jrebindir jrelibdir nativedir securitydir PATHSEP DIRSEP kaffe_TRANSF kaffeh_TRANSF kaffebin_TRANSF CFLAGS_WITHOUT_PG LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT abssrcdir CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB DLLTOOL ac_ct_DLLTOOL AS ac_ct_AS OBJDUMP ac_ct_OBJDUMP CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBTOOL_DEPS LIBLTDL CCLD MKINSTALLDIRS USE_NLS MSGFMT GMSGFMT XGETTEXT MSGMERGE LIBICONV LTLIBICONV INTLLIBS LIBINTL LTLIBINTL POSUB MAY_RUN_PO_TRUE MAY_RUN_PO_FALSE REGEN_FORWARD CONFIG_MD_H CONFIG_CALLKAFFEEXCEPTION_H KAFFEVM_MD_C CONFIG_JIT_MD_H KAFFEVM_JIT_DEF KAFFEVM_ICODE_H HAVE_CONFIG_JIT_MD_H USE_JIT_TRUE USE_JIT_FALSE ENGINE_NAME BCEL_JAR HAVE_BCEL_TRUE HAVE_BCEL_FALSE ENABLE_JVMPI_TRUE ENABLE_JVMPI_FALSE ENABLE_XPROF_TRUE ENABLE_XPROF_FALSE CONFIG_XPROFILE_MD_H JAVAC_FLAGS NEED_LIBXPROF_TRUE NEED_LIBXPROF_FALSE CFLAGS_PG SUN_COMPAT_TRUE SUN_COMPAT_FALSE THREAD_DIR acx_pthread_config PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS SEMAPHORE_LIB VM_LIBS USE_PRECOMPILED_RT_JAR_TRUE USE_PRECOMPILED_RT_JAR_FALSE PATH_TO_RT_JAR JIKESPROG JIKES KAFFEVM_TRAMPOLINES_C JAVA_LIBS with_engine THREAD_SYSTEM KPREFIX KAFFE_ARCHOS ZIP MKTEMP JASMIN HAVE_ZIP_TRUE HAVE_ZIP_FALSE HAVE_JIKES_TRUE HAVE_JIKES_FALSE HAVE_MKTEMP_TRUE HAVE_MKTEMP_FALSE HAVE_JASMIN_TRUE HAVE_JASMIN_FALSE KAFFE_LIBS M_LIBS NET_LIBS ZIP_LIBS LIBADD_GMP USE_GMP SECURITY_LIBS GC_NAME subdirs BOEHMGC_SPECIFIC_FLAGS HAVE_GCJ_SUPPORT_TRUE HAVE_GCJ_SUPPORT_FALSE LIBOBJS USE_COMPAT_IFADDRS_TRUE USE_COMPAT_IFADDRS_FALSE GTK_CAIRO_TRUE GTK_CAIRO_FALSE COND_NATIVE_AWT_TRUE COND_NATIVE_AWT_FALSE COND_KAFFE_X_AWT_TRUE COND_KAFFE_X_AWT_FALSE X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS AWT_LIBS COND_KAFFE_QT_AWT_TRUE COND_KAFFE_QT_AWT_FALSE MOC UIC QEMBED QT_CXXFLAGS QT_LDADD QT_GUILINK QASSISTANTCLIENT_LDADD COND_KAFFE_NANOX_AWT_TRUE COND_KAFFE_NANOX_AWT_FALSE NANOX_CFLAGS COND_CLASSPATH_GTK_AWT_TRUE COND_CLASSPATH_GTK_AWT_FALSE PKG_CONFIG GTK_CFLAGS GTK_LIBS CAIRO_CFLAGS CAIRO_LIBS PANGOFT2_CFLAGS PANGOFT2_LIBS ALSA_CFLAGS ALSA_LIBS ESD_CONFIG ESD_CFLAGS ESD_LIBS COND_SOUND_ALSA_TRUE COND_SOUND_ALSA_FALSE COND_SOUND_ESD_TRUE COND_SOUND_ESD_FALSE COND_NATIVE_SOUND_TRUE COND_NATIVE_SOUND_FALSE COND_PURE_JAVA_MATH_TRUE COND_PURE_JAVA_MATH_FALSE MATH_LIB INCLUDED_EXTENSIONS PROFILE XML2_CONFIG XML_CFLAGS XML_LIBS XSLT_CONFIG XSLT_CFLAGS XSLT_LIBS COND_LIBXMLJ_TRUE COND_LIBXMLJ_FALSE JAVA uudecode JAVAC ANTLR ANTLR_JAR COND_GJDOC_TRUE COND_GJDOC_FALSE DLOPEN_JAVA_LIBS OPT_DLOPEN_JAVA_LIBS KLIBFLAGS KVMBINFLAGS KVMLIBFLAGS BINRELOC_CFLAGS ENABLE_BINRELOC_TRUE ENABLE_BINRELOC_FALSE KAFFEH MAKE_KAFFEH toolslibdir jredir jrebindir jrelibdir nativedir securitydir PATHSEP DIRSEP kaffe_TRANSF kaffeh_TRANSF kaffebin_TRANSF CFLAGS_WITHOUT_PG LTLIBOBJS'
 ac_subst_files='cpu_os_frag cpu_frag engine_frag threads_frag gc_frag'
 
 # Initialize some variables set by options.
@@ -1139,6 +1139,12 @@ Optional Packages:
   --with-kaffe-qt-awt     enable build of Kaffe's Qt2/3/embedded-based AWT
                           engine (not built by default)
   --with-qtdir=DIR        Qt installation directory default=$QTDIR
+  --with-kaffe-nanox-awt  enable build of Kaffe's Nano-X AWT engine (not built
+                          by default)
+  --with-nanox-includes=dir
+                          Specify NanoX include directory
+  --with-nanox-library=dir
+                          Specify NanoX library directory
   --without-classpath-gtk-awt
                           disable build of GNU Classpath's Gtk+-based AWT
                           engine (built by default)
@@ -9943,7 +9949,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 9946 "configure"' > conftest.$ac_ext
+  echo '#line 9952 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -11300,7 +11306,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:11303:" \
+echo "$as_me:11309:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -12361,11 +12367,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:12364: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:12370: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:12368: \$? = $ac_status" >&5
+   echo "$as_me:12374: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -12604,11 +12610,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:12607: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:12613: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:12611: \$? = $ac_status" >&5
+   echo "$as_me:12617: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -12664,11 +12670,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:12667: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:12673: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:12671: \$? = $ac_status" >&5
+   echo "$as_me:12677: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -14853,7 +14859,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 14856 "configure"
+#line 14862 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14951,7 +14957,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 14954 "configure"
+#line 14960 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -17148,11 +17154,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17151: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17157: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17155: \$? = $ac_status" >&5
+   echo "$as_me:17161: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -17208,11 +17214,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17211: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17217: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:17215: \$? = $ac_status" >&5
+   echo "$as_me:17221: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18573,7 +18579,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18576 "configure"
+#line 18582 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -18671,7 +18677,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18674 "configure"
+#line 18680 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -19508,11 +19514,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19511: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19517: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:19515: \$? = $ac_status" >&5
+   echo "$as_me:19521: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -19568,11 +19574,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19571: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19577: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:19575: \$? = $ac_status" >&5
+   echo "$as_me:19581: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -21611,11 +21617,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:21614: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:21620: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:21618: \$? = $ac_status" >&5
+   echo "$as_me:21624: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -21854,11 +21860,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:21857: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:21863: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:21861: \$? = $ac_status" >&5
+   echo "$as_me:21867: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -21914,11 +21920,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:21917: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:21923: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:21921: \$? = $ac_status" >&5
+   echo "$as_me:21927: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -24103,7 +24109,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 24106 "configure"
+#line 24112 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -24201,7 +24207,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 24204 "configure"
+#line 24210 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -54838,6 +54844,59 @@ echo "${ECHO_T}$QT_LDADD" >&6
 fi
 
 
+# Check whether --with-kaffe-nanox-awt or --without-kaffe-nanox-awt was given.
+if test "${with_kaffe_nanox_awt+set}" = set; then
+  withval="$with_kaffe_nanox_awt"
+
+else
+  with_kaffe_nanox_awt=no
+
+fi;
+
+
+
+if test x"$with_kaffe_nanox_awt" != x"no"; then
+  COND_KAFFE_NANOX_AWT_TRUE=
+  COND_KAFFE_NANOX_AWT_FALSE='#'
+else
+  COND_KAFFE_NANOX_AWT_TRUE='#'
+  COND_KAFFE_NANOX_AWT_FALSE=
+fi
+
+
+if test x"$enable_native_awt" = x"yes"; then
+   if test x"$with_kaffe_nanox_awt" = x"yes"; then
+
+
+
+# Check whether --with-nanox-include or --without-nanox-include was given.
+if test "${with_nanox_include+set}" = set; then
+  withval="$with_nanox_include"
+   NANOXINC=$withval
+else
+   NANOXINC="/usr/include/microwin"
+fi;
+
+
+# Check whether --with-nanox-library or --without-nanox-library was given.
+if test "${with_nanox_library+set}" = set; then
+  withval="$with_nanox_library"
+   NANOXLIB=$withval
+else
+   NANOXLIB="/usr/lib"
+fi;
+
+	NANOX_CFLAGS="-I${NANOXINC}"
+        AWT_LIBS="-L${NANOXLIB} -lnano-X -lmwengine -lmwdrivers -lmwfonts"
+	AWT_LIBS="$CTLIBS $AWT_LIBS"
+
+
+
+	AWT_LIB="$AWT_LIB \$(top_builddir)/libraries/clib/awt/nano-X/libnanoxawt.la"
+   fi
+fi
+
+
 # Check whether --with-classpath-gtk-awt or --without-classpath-gtk-awt was given.
 if test "${with_classpath_gtk_awt+set}" = set; then
   withval="$with_classpath_gtk_awt"
@@ -58395,7 +58454,7 @@ EOF
 if uudecode$EXEEXT Test.uue; then
         ac_cv_prog_uudecode_base64=yes
 else
-        echo "configure: 58398: uudecode had trouble decoding base 64 file 'Test.uue'" >&5
+        echo "configure: 58457: uudecode had trouble decoding base 64 file 'Test.uue'" >&5
         echo "configure: failed file was:" >&5
         cat Test.uue >&5
         ac_cv_prog_uudecode_base64=no
@@ -58513,7 +58572,7 @@ else
 JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 cat << \EOF > $JAVA_TEST
-/* #line 58516 "configure" */
+/* #line 58575 "configure" */
 public class Test {
 }
 EOF
@@ -58550,7 +58609,7 @@ JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 TEST=Test
 cat << \EOF > $JAVA_TEST
-/* [#]line 58553 "configure" */
+/* [#]line 58612 "configure" */
 public class Test {
 public static void main (String args[]) {
         System.exit (0);
@@ -59445,6 +59504,8 @@ subdirs="$subdirs libltdl"
 
           ac_config_files="$ac_config_files libraries/clib/awt/qt/Makefile"
 
+          ac_config_files="$ac_config_files libraries/clib/awt/nano-X/Makefile"
+
           ac_config_files="$ac_config_files libraries/clib/sound/Makefile"
 
           ac_config_files="$ac_config_files libraries/clib/sound/alsa/Makefile"
@@ -59799,6 +59860,13 @@ if test -z "${COND_KAFFE_QT_AWT_TRUE}" && test -z "${COND_KAFFE_QT_AWT_FALSE}"; 
   { { echo "$as_me:$LINENO: error: conditional \"COND_KAFFE_QT_AWT\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"COND_KAFFE_QT_AWT\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${COND_KAFFE_NANOX_AWT_TRUE}" && test -z "${COND_KAFFE_NANOX_AWT_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"COND_KAFFE_NANOX_AWT\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"COND_KAFFE_NANOX_AWT\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -60360,6 +60428,7 @@ do
   "libraries/clib/awt/classpath-gtk/resource/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/classpath-gtk/resource/Makefile" ;;
   "libraries/clib/awt/X/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/X/Makefile" ;;
   "libraries/clib/awt/qt/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/qt/Makefile" ;;
+  "libraries/clib/awt/nano-X/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/nano-X/Makefile" ;;
   "libraries/clib/sound/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/sound/Makefile" ;;
   "libraries/clib/sound/alsa/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/sound/alsa/Makefile" ;;
   "libraries/clib/sound/common/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/sound/common/Makefile" ;;
@@ -60682,6 +60751,9 @@ s,@QT_CXXFLAGS@,$QT_CXXFLAGS,;t t
 s,@QT_LDADD@,$QT_LDADD,;t t
 s,@QT_GUILINK@,$QT_GUILINK,;t t
 s,@QASSISTANTCLIENT_LDADD@,$QASSISTANTCLIENT_LDADD,;t t
+s,@COND_KAFFE_NANOX_AWT_TRUE@,$COND_KAFFE_NANOX_AWT_TRUE,;t t
+s,@COND_KAFFE_NANOX_AWT_FALSE@,$COND_KAFFE_NANOX_AWT_FALSE,;t t
+s,@NANOX_CFLAGS@,$NANOX_CFLAGS,;t t
 s,@COND_CLASSPATH_GTK_AWT_TRUE@,$COND_CLASSPATH_GTK_AWT_TRUE,;t t
 s,@COND_CLASSPATH_GTK_AWT_FALSE@,$COND_CLASSPATH_GTK_AWT_FALSE,;t t
 s,@PKG_CONFIG@,$PKG_CONFIG,;t t
