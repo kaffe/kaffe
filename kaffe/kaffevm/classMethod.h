@@ -287,6 +287,7 @@ Hjava_lang_Class*	getClassFromSignature(char*, Hjava_lang_ClassLoader*, errorInf
 void			finishFields(Hjava_lang_Class*);
 Method*			findMethodFromPC(uintp);
 
+void			finalizeClassLoader(Hjava_lang_ClassLoader* loader);
 void			registerClass(classEntry* entry);
 
 Utf8Const*		makeUtf8ConstFixed(char*, int);

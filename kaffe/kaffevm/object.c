@@ -9,10 +9,10 @@
  * of this file. 
  */
 
-#define	DBG(s)
 #define	ADBG(s)
 
 #include "config.h"
+#include "debug.h"
 #include "config-std.h"
 #include "config-mem.h"
 #include "gtypes.h"
@@ -57,9 +57,10 @@ newObject(Hjava_lang_Class* class)
         /* Fill in object information */
         obj->dtable = class->dtable;
 
-ADBG(	printf("newObject %x class %s\n", obj,
+DBG(NEWOBJECT,
+	dprintf("newObject %x class %s\n", obj,
 		(class ? class->name->data : "<none>"));
-		fflush(stdout);						)
+    )
 
         return (obj);
 }
@@ -75,13 +76,17 @@ newClass(void)
 
 	cls = gc_malloc(sizeof(Hjava_lang_Class), GC_ALLOC_CLASSOBJECT);
 
-	/* We don't GC classes at the moment so secure this one */
-	gc_add_ref(cls);
+	if (DBGEXPR(NOCLASSGC, true, false)) {
+		/* Turn off class gc */
+		gc_add_ref(cls);
+	}
 
         /* Fill in object information */
 	cls->dtable = ClassClass->dtable;
 
-ADBG(	printf("newClass %x\n", cls);					)
+DBG(NEWOBJECT,
+	dprintf("newClass @%p\n", cls);					
+    )
 
         return (cls);
 }

@@ -44,6 +44,9 @@ DBG(CODEATTR,
     )
 	if (c.code_length > 0) {
 		c.code = gc_malloc(c.code_length, GC_ALLOC_BYTECODE);
+DBG(CODEATTR,	
+		dprintf("allocating bytecode @%p\n", c.code);
+    )
 		readm(c.code, c.code_length, sizeof(bytecode), fp);
 	}
 	else {

@@ -247,3 +247,12 @@ java_lang_ClassLoader_findLoadedClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
 		return (0);
 	}
 }
+
+/*
+ * Finalize a classloader
+ */
+void 
+java_lang_ClassLoader_finalize0(struct Hjava_lang_ClassLoader*this)
+{
+	finalizeClassLoader(this);
+}

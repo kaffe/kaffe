@@ -6,8 +6,13 @@ Wed Dec 16 10:52:18 1998  Godmar Back  <gback@cs.utah.edu>
 	file.encoding.pkg as for ByteToCharConverter
 	* libraries/javalib/kaffe/io/CharToByteConverter.java, 
 	ByteToCharConverter.java: consult ConverterAlias for alternate names
-	*  libraries/javalib/kaffe/io/ConverterAlias.java: find alternate
+	* libraries/javalib/kaffe/io/ConverterAlias.java: find alternate
 	names for certain encodings.
+	* kaffe/kaffevm/*: libraries/clib/native/ClassLoader.c,
+	libraries/javalib/java/lang/ClassLoader.java: 
+	implemented class garbage collection.
+	* test/regression/ClassGC.java, ClassGCTest.java: basic test for
+	class gc.
 
 Tue Dec 15 23:16:40 1998  Godmar Back  <gback@cs.utah.edu>
 

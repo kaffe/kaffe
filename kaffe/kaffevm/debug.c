@@ -101,6 +101,10 @@ static struct debug_opts
 	D(VMCLASSLOADER,"Announce when VM calls class loaders.."),
 	D(LOCKCONTENTION,"Show when a lock is contended."),
 	D(CODEANALYSE, "Debug code analysis/verification."),
+	D(CLASSGC, 	"Debug class garbage collection."),
+	D(NOCLASSGC, 	"Disable class garbage collection."),
+	D(NEWOBJECT, 	"Show when new objects are allocated."),
+	D(FINALIZE, 	"Debug finalization."),
 
 	/* you can define combinations too */
 	{ "lookup", DBG_MLOOKUP|DBG_ELOOKUP|DBG_FLOOKUP, 
@@ -113,6 +117,8 @@ static struct debug_opts
 			"Calls of interpreter (without instructions)" },
 	{ "deadlock", DBG_DETECTDEADLOCK|DBG_LOCKCONTENTION, 
 			"Debug deadlocks" },
+	{ "classgc", DBG_CLASSGC|DBG_FINALIZE, 
+			"Debug finalization (show finalization)" },
 	{ "intrpA", 
 		DBG_INT_CHECKS|DBG_INT_INSTR|DBG_INT_NATIVE|
 		DBG_INT_RETURN|DBG_INT_VMCALL, 

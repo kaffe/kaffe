@@ -815,6 +815,12 @@ DBG(VMCLASSLOADER,
 		} else {
 			/* no classloader, use findClass */
 			clazz = findClass(centry, einfo);
+			/* we do not ever unload system classes without a
+			 * classloader, so anchor this one
+			 */
+			if (clazz != NULL) {
+				gc_add_ref(clazz);
+			}
 
 			if (clazz == NULL) {
 DBG(RESERROR,
@@ -886,6 +892,8 @@ loadStaticClass(Hjava_lang_Class** class, char* name)
 		if (clazz == 0) {
 			goto bad;
 		}
+		/* we won't ever want to lose these classes */
+		gc_add_ref(clazz);
 		(*class) = centry->class = clazz;
 	}
 	unlockMutex(centry);
@@ -1633,6 +1641,10 @@ lookupArray(Hjava_lang_Class* c)
 	}
 
 	arr_class = newClass();
+	/* anchor arrays created without classloader */
+	if (c->loader == 0) {
+		gc_add_ref(arr_class);
+	}
 	centry->class = arr_class;
 	/*
 	 * This is what Sun's JDK returns for A[].class.getModifiers();
@@ -1695,3 +1707,39 @@ findMethodFromPC(uintp pc)
 	return (NULL);
 }
 #endif
+
+/*
+ * finalize a classloader and remove its entries in the class entry pool.
+ */
+void
+finalizeClassLoader(Hjava_lang_ClassLoader* loader)
+{
+	classEntry** entryp;
+	classEntry* entry;
+	int ipool;
+
+DBG(CLASSGC,
+	dprintf("Finalizing classloader @%p\n", loader);
+    )
+
+        lockStaticMutex(&classHashLock);
+	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
+		entryp = &classEntryPool[ipool];
+		for (;  *entryp != NULL; entryp = &(*entryp)->next) {
+			entry = *entryp;
+			if (entry->loader == loader) {
+DBG(CLASSGC,
+				dprintf("removing %s l=%p/c=%p\n", 
+				    entry->name->data, loader, entry->class);
+    )
+				gc_rm_ref(entry->name);
+				(*entryp) = entry->next;
+				KFREE(entry);
+			}
+			/* if this was the last item, break */
+			if (*entryp == 0)
+				break;
+		}
+	}
+        unlockStaticMutex(&classHashLock);
+}

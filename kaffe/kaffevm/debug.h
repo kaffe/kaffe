@@ -77,6 +77,10 @@
 # define DBG_GCDIAG		DBG_BIT(37)
 # define DBG_LOCKCONTENTION	DBG_BIT(38)
 # define DBG_CODEANALYSE	DBG_BIT(39)
+# define DBG_CLASSGC		DBG_BIT(40)
+# define DBG_NOCLASSGC		DBG_BIT(41)
+# define DBG_NEWOBJECT		DBG_BIT(42)
+# define DBG_FINALIZE		DBG_BIT(43)
 
 /* let's reserve 50-63 for temporary uses */
 # define DBG_SLACKANAL		DBG_BIT(50) 

@@ -33,14 +33,17 @@ extern gcFuncs gcClassObject;
 
 Hjava_lang_Class* types[MAXTYPES];
 
-void
+static void
 initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 {
-	(*class) = newClass();
-	(*class)->dtable = _PRIMITIVE_DTABLE;
-	(*class)->name = makeUtf8Const(name, -1);
-	CLASS_PRIM_SIG(*class) = sig;
-	TYPE_PRIM_SIZE(*class) = len;
+	Hjava_lang_Class* clazz = newClass();
+	(*class) = clazz;
+	gc_add_ref(clazz);
+
+	clazz->dtable = _PRIMITIVE_DTABLE;
+	clazz->name = makeUtf8Const(name, -1);
+	CLASS_PRIM_SIG(clazz) = sig;
+	TYPE_PRIM_SIZE(clazz) = len;
 }
 
 /*

@@ -1,5 +1,6 @@
 /* gc-incremental.c
- * The incremental garbage collector.
+ * The garbage collector.
+ * The name is misleading.  GC is non-incremental at this point.
  *
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
@@ -117,8 +118,64 @@ void walkMemory(void*);
 
 static void walkNull(void*, uint32);
 static void walkClass(void*, uint32);
+static void walkFields(void*, uint32);
+static void walkMethods(void*, uint32);
 static void walkObject(void*, uint32);
 static void walkRefArray(void*, uint32);
+
+#ifdef DEBUG
+/*
+ * if we are debugging, provide a bunch of fake finalizers whose only
+ * purpose it is to tell us when things are about to be freed
+ */
+static void finalizeClass(void* c)
+{
+    Hjava_lang_Class* clazz = c;
+DBG(FINALIZE,
+    dprintf("freeing class %s @ %p\n", clazz->name->data, c);
+   )
+}
+
+#define F(WHAT) 				\
+static void finalize##WHAT(void *p) {		\
+DBG(FINALIZE,					\
+    dprintf("finalize%s %p\n", #WHAT, p);	\
+   )						\
+}
+
+F(Method)
+F(Field)
+F(Dispatch)
+F(Bytecode)
+F(Jitcode)
+F(Staticdata)
+F(Etable)
+
+/* Standard GC function sets */
+static gcFuncs gcFunctions[] = {
+	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_NORMAL */
+	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_NOWALK */
+	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_FIXED */
+	{ walkObject,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_NORMALOBJECT */
+	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_PRIMARRAY */
+	{ walkRefArray,     GC_OBJECT_NORMAL },	/* GC_ALLOC_REFARRAY */
+	{ walkClass,        finalizeClass    },	/* GC_ALLOC_CLASSOBJECT */
+	{ walkObject,       finalizeObject   },	/* GC_ALLOC_FINALIZEOBJECT */
+	{ walkMethods, 	    finalizeMethod },	/* GC_ALLOC_METHOD */
+	{ walkFields, 	    finalizeField },	/* GC_ALLOC_FIELD */
+	{ walkNull,	    finalizeStaticdata },/* GC_ALLOC_STATICDATA */
+	{ walkConservative, finalizeDispatch },	/* GC_ALLOC_DISPATCHTABLE */
+	{ walkNull,	    finalizeBytecode },	/* GC_ALLOC_BYTECODE */
+	{ walkConservative, finalizeEtable },	/* GC_ALLOC_EXCEPTIONTABLE */
+	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_CONSTANT */
+	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_UTF8CONST */
+	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_INTERFACE */
+	{ walkConservative, finalizeJitcode },	/* GC_ALLOC_JITCODE */
+	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_LOCK */
+	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_THREADCTX */
+	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_REF */
+};
+#else 	/* no DEBUG, this is for real */
 
 /* Standard GC function sets */
 static gcFuncs gcFunctions[] = {
@@ -130,9 +187,9 @@ static gcFuncs gcFunctions[] = {
 	{ walkRefArray,     GC_OBJECT_NORMAL },	/* GC_ALLOC_REFARRAY */
 	{ walkClass,        GC_OBJECT_NORMAL },	/* GC_ALLOC_CLASSOBJECT */
 	{ walkObject,       finalizeObject   },	/* GC_ALLOC_FINALIZEOBJECT */
-	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_METHOD */
-	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_FIELD */
-	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_STATICDATA */
+	{ walkMethods, 	    GC_OBJECT_NORMAL },	/* GC_ALLOC_METHOD */
+	{ walkFields, 	    GC_OBJECT_NORMAL },	/* GC_ALLOC_FIELD */
+	{ walkNull,	    GC_OBJECT_NORMAL }, /* GC_ALLOC_STATICDATA */
 	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_DISPATCHTABLE */
 	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_BYTECODE */
 	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_EXCEPTIONTABLE */
@@ -144,6 +201,8 @@ static gcFuncs gcFunctions[] = {
 	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_THREADCTX */
 	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_REF */
 };
+
+#endif	/* DEBUG */
 
 #define	REFOBJALLOCSZ	128
 #define	REFOBJHASHSZ	128
@@ -262,6 +321,8 @@ walkObject(void* base, uint32 size)
 	if (obj->dtable == 0)
 		return;
 
+	markObject(obj->dtable->class);
+
 	/* retrieve the layout of this object from its class */
 	clazz = obj->dtable->class;
 	layout = clazz->gc_layout;
@@ -352,6 +413,54 @@ walkMemory(void* mem)
 	(*gcFunctions[GC_GET_FUNCS(info, idx)].walk)(mem, GCBLOCKSIZE(info));
 }
 
+#define MARK_IFNONZERO(f, field)  	\
+	if (f->field != 0) {	  	\
+		markObject(f->field);	\
+	}
+
+/*
+ * Walk the methods of a class.
+ */
+static
+void
+walkMethods(void* base, uint32 size)
+{
+	Method* m = (Method*)base;
+	int nm = size/sizeof(Method);
+
+	while (nm-- > 0) {
+		MARK_IFNONZERO(m, name)
+		MARK_IFNONZERO(m, signature)
+		/* This is either a block of memory for native or bytecode */
+		MARK_IFNONZERO(m, c.bcode.code)	/* aka c.ncode.ncode_start */
+		MARK_IFNONZERO(m, class)
+		MARK_IFNONZERO(m, lines)
+		MARK_IFNONZERO(m, exception_table)
+		MARK_IFNONZERO(m, declared_exceptions)
+		/* NB: don't need to mark ncode cause it does not point to
+		 * any allocated object.  
+		 */
+		m++;
+	}
+}
+
+/*
+ * Walk the fields of a class.
+ */
+static
+void
+walkFields(void* base, uint32 size)
+{
+	Field* fld = (Field*)base;
+	int nf = size/sizeof(Field);
+	while (nf-- > 0) {
+		MARK_IFNONZERO(fld, name)
+		MARK_IFNONZERO(fld, type)
+		markObject(*(void**)&fld->info);
+		fld++;
+	}
+}
+
 /*
  * Walk a class object.
  */
@@ -368,18 +477,19 @@ walkClass(void* base, uint32 size)
 
 	class = (Hjava_lang_Class*)base;
 
-	markObject(class->name);
+	MARK_IFNONZERO(class, name)
 	if (class->state >= CSTATE_PREPARED) {
-		markObject(class->superclass);
+		MARK_IFNONZERO(class, superclass)
 	}
-	markObject(class->constants.data);
-	markObject(class->methods);
-	markObject(class->fields);
+	MARK_IFNONZERO(class, constants.data)
+	MARK_IFNONZERO(class, methods)
+	MARK_IFNONZERO(class, fields)
 	if (!CLASS_IS_PRIMITIVE(class)) {
-		markObject(class->dtable);
+		MARK_IFNONZERO(class, dtable)
 	}
-	markObject(class->interfaces);
-	markObject(class->loader);
+	MARK_IFNONZERO(class, interfaces)
+	MARK_IFNONZERO(class, loader)
+	MARK_IFNONZERO(class, gc_layout)
 
 	/* Walk the static data elements */
 	if (class->state >= CSTATE_DOING_PREPARE) {
@@ -403,13 +513,14 @@ walkRefArray(void* base, uint32 size)
 	Hjava_lang_Object* arr;
 	int i;
 	Hjava_lang_Object** ptr;
-#ifdef notyet
-	markObject (.. class ..);
-#endif
+
 	gcStats.markedobj += 1;
 	gcStats.markedmem += size;
 
 	arr = (Hjava_lang_Object*)base;
+	if (arr->dtable != 0) {
+		markObject(arr->dtable->class);
+	}
 	ptr = OBJARRAY_DATA(arr);
 	for (i = ARRAY_SIZE(arr); --i>= 0; ) {
 		Hjava_lang_Object* el = *ptr++;

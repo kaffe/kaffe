@@ -162,4 +162,11 @@ native private void resolveClass0(Class cls);
  */
 native public static byte[] getSystemResourceAsBytes0(String name);
 
+final native private void finalize0();
+
+private Object finalizeHelper = new Object() {
+    protected void finalize() throws Throwable {
+        finalize0();
+    }
+};
 }

@@ -557,6 +557,12 @@ Success 4."
 
 # end of CLTest tests
 
+# begin of class garbage collection tests
+compile ClassGCTest
+runtest ClassGC "Success."
+
+# end of class garbage collection tests
+
 #
 # these tests must have their output sorted, because they're multi-threaded.
 #
