@@ -33,7 +33,7 @@ public class FontMetrics
 	static transient Hashtable cache = new Hashtable();
 	final private static long serialVersionUID = 1681126225205050147L;
 
-FontMetrics ( Font font ) {
+protected FontMetrics ( Font font ) {
 	fontSpec = font.encode();
 
 	nativeData = Toolkit.fntInitFontMetrics( font.nativeData);	
