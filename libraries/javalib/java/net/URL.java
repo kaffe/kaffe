@@ -116,8 +116,8 @@ import java.util.StringTokenizer;
   * done, then the above information is superseded and the behavior of this
   * class in loading protocol handlers is dependent on that factory.
   *
-  * @author Aaron M. Renn <arenn@urbanophile.com>
-  * @author Warren Levy <warrenl@cygnus.com>
+  * @author Aaron M. Renn (arenn@urbanophile.com)
+  * @author Warren Levy (warrenl@cygnus.com)
   *
   * @see URLStreamHandler
   */

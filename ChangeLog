@@ -1,5 +1,54 @@
 2004-10-14  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/net/BindException.java,
+	libraries/javalib/java/net/ConnectException.java,
+	libraries/javalib/java/net/ContentHandler.java,
+	libraries/javalib/java/net/ContentHandlerFactory.java,
+	libraries/javalib/java/net/DatagramPacket.java,
+	libraries/javalib/java/net/DatagramSocket.java,
+	libraries/javalib/java/net/DatagramSocketImpl.java,
+	libraries/javalib/java/net/DatagramSocketImplFactory.java,
+	libraries/javalib/java/net/FileNameMap.java,
+	libraries/javalib/java/net/JarURLConnection.java,
+	libraries/javalib/java/net/MalformedURLException.java,
+	libraries/javalib/java/net/MulticastSocket.java,
+	libraries/javalib/java/net/NoRouteToHostException.java,
+	libraries/javalib/java/net/PortUnreachableException.java,
+	libraries/javalib/java/net/ProtocolException.java,
+	libraries/javalib/java/net/SocketException.java,
+	libraries/javalib/java/net/SocketImpl.java,
+	libraries/javalib/java/net/SocketImplFactory.java,
+	libraries/javalib/java/net/SocketOptions.java,
+	libraries/javalib/java/net/SocketTimeoutException.java,
+	libraries/javalib/java/net/URISyntaxException.java,
+	libraries/javalib/java/net/URL.java,
+	libraries/javalib/java/net/URLDecoder.java,
+	libraries/javalib/java/net/URLEncoder.java,
+	libraries/javalib/java/net/URLStreamHandlerFactory.java,
+	libraries/javalib/java/net/UnknownHostException.java,
+	libraries/javalib/java/net/UnknownServiceException.java:
+	Resynced with GNU Classpath.
+
+	2004-10-13  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/BindException.java, java/net/ConnectException.java,
+        java/net/ContentHandler.java, java/net/ContentHandlerFactory.java,
+        java/net/DatagramPacket.java, java/net/DatagramSocket.java,
+        java/net/DatagramSocketImpl.java, java/net/DatagramSocketImplFactory.java,
+        java/net/FileNameMap.java, java/net/JarURLConnection.java,
+        java/net/MalformedURLException.java, java/net/MulticastSocket.java,
+        java/net/NoRouteToHostException.java, java/net/PortUnreachableException.java,
+        java/net/ProtocolException.java, java/net/SocketException.java,
+        java/net/SocketImpl.java, java/net/SocketImplFactory.java,
+        java/net/SocketOptions.java, java/net/SocketTimeoutException.java,
+        java/net/URISyntaxException.java, java/net/URL.java,
+        java/net/URLDecoder.java, java/net/URLEncoder.java,
+        java/net/URLStreamHandlerFactory.java, java/net/UnknownHostException.java,
+        java/net/UnknownServiceException.java:
+        Fixed @author tags to be valid HTML.
+
+2004-10-14  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/lang/Character.java,
 	libraries/javalib/java/lang/Object.java,
 	libraries/javalib/java/lang/StrictMath.java:
