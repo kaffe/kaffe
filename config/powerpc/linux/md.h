@@ -15,6 +15,9 @@
 #include "powerpc/common.h"
 #include "powerpc/threads.h"
 
+#if defined(HAVE_SYS_RESOURCE_H)
+#include <sys/resource.h>
+#endif
 
 /* Linux requires a little initialisation */
 extern void init_md(void);

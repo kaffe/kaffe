@@ -1,5 +1,12 @@
 2004-06-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/powerpc/linux/md.h:
+	Added missing include for rlim_t.
+
+	Reported by:  Michael Franz <developer.franz@verizon.net>
+
+2004-06-06  Dalibor Topic  <robilad@kaffe.org>
+
         * config/sparc/linux/sigcontextinfo32.h,
         config/sparc/linux/sigcontextinfo64.h:
 	New files, taken from glibc 2.3.2.
