@@ -46,5 +46,6 @@ BEGIN {
 	register_warning( 'incorrect type', qr/incorrect type in argument (\d+) \((different base types)\)\n${prefix_regex_nowarn}   expected ([^\n]+)\n${prefix_regex_nowarn}   got ([^\n]+)$/m ),
 	register_warning( 'incorrect type', qr/incorrect type in (assignment|return expression|initializer) $mod_type\n${prefix_regex_nowarn}   expected ([^\n]+)\n${prefix_regex_nowarn}   got ([^\n]+)$/m ),
 	register_warning( 'incorrect type', qr/incorrect type in (assignment|return expression|initializer) \(incompatible argument (\d+) $mod_type\)\n${prefix_regex_nowarn}   expected ([^\n]+)\n${prefix_regex_nowarn}   got ([^\n]+)$/m ),
+	register_warning( 'incompatible types', qr/incompatible types in conditional expression (\(different types\))$/m ),
 }
 1;
