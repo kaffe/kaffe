@@ -249,12 +249,12 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 	 */
 	if (strcmp(cname, THREADDEATHCLASS) == 0) {
 		exitThread();
-	} else {
-		fprintf(stderr, 
-			"It's not ThreadDeath, and there's no exception "
-			"handler.\n This is something I cannot handle.\n");
-		ABORT();
-	}
+	} 
+
+	/* I don't know what to do here. */
+	fprintf(stderr, "Internal error.\n"
+		"Please check your CLASSPATH and your installation.\n");
+	ABORT();
 }
 
 /*
