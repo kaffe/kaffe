@@ -199,15 +199,19 @@ DBG( vm_jit_translate, ("callinfo = 0x%x\n", &cinfo));
 	}
 #endif
 
+	codeInfo = mycodeInfo;
+	
 	/* Handle null calls specially */
 	if (METHOD_BYTECODE_LEN(xmeth) == 1 && METHOD_BYTECODE_CODE(xmeth)[0] == RETURN) {
+		/* 'nc' is a Workaround for KFREE ? : bug in gcc 2.7.2 */
+		void *nc = METHOD_NATIVECODE(xmeth); 
+		KFREE(nc);
 		SET_METHOD_NATIVECODE(xmeth, (nativecode*)nullCall);
 		goto done;
 	}
 
 	assert(reinvoke == false);
 	reinvoke = true;
-	codeInfo = mycodeInfo;
 
 	maxLocal = xmeth->localsz;
 	maxStack = xmeth->stacksz;
@@ -487,9 +491,16 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 	if (bytecode_processed > 0) {
 		codeperbytecode = code_generated / bytecode_processed;
 	}
-
+	
 	GC_WRITE(meth, code->mem);
+	{
+		/* Workaround for KFREE() ? : bug on gcc 2.7.2 */
+		void *nc = METHOD_NATIVECODE(meth);
+		KFREE(nc);
+	}
 	SET_METHOD_JITCODE(meth, code->code);
+	if( meth->c.bcode.code )
+		gc_free(meth->c.bcode.code);
 	meth->c.ncode.ncode_start = code->mem;
 	meth->c.ncode.ncode_end = (void*)((uintp)code->code + code->codelen);
 

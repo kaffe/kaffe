@@ -120,6 +120,7 @@ DBG(CLASSLOOKUP,
 		class = newClass();
 		if (class == 0) {
 			postOutOfMemory(einfo);
+			KFREE(hand.base);
 			return (0);
 		}
 
@@ -448,7 +449,7 @@ DBG(INITCLASSPATH,
 	dprintf("insertClasspath(): '%s' %spend\n", cp, prepend ? "pre" : "ap"); )
 
 	if (*cp == '\0')
-		return;
+		return (0);
 
 	lptr = 0;
 	for (ptr = classpath; ptr != 0; ptr = ptr->next) {

@@ -75,6 +75,7 @@ java_util_zip_ZipFile_getZipData0(struct Hkaffe_util_Ptr* zip, struct Hjava_util
 	}
 	array = (HArrayOfByte*)AllocArray(unhand(zentry)->size, TYPE_Byte);
 	memcpy(unhand_array(array)->body, buf, unhand(zentry)->size);
+	KFREE(buf);
 	return (array);
 }
 

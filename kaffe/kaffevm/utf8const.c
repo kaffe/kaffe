@@ -74,7 +74,7 @@ static inline void UTFfree(const void *mem)
 	int *myRoot = utfLockRoot;
 
 	_unlockMutex(&utf8Lock, myRoot);
-	jfree(mem);
+	jfree((void *)mem);
 	_lockMutex(&utf8Lock, myRoot);
 	utfLockRoot = myRoot;
 }

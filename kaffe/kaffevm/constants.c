@@ -80,7 +80,7 @@ RDBG(		dprintf("Constant type %d\n", type);			)
 			pool[i] = (ConstSlot) utf8ConstNew(fp->buf, len);
 			if (!pool[i]) {
 				postOutOfMemory(einfo);
-				return 0;
+				goto fail;
 			}
 			fp->buf += len;
 			break;
@@ -151,6 +151,7 @@ RDBG(		dprintf("Constant type %d\n", type);			)
 				JAVA_LANG(ClassFormatError), 
 				"Invalid constant type %d", type);
 fail:
+			info->size = 0;
 			while (--i >= 0) {
 				if (tags[i] == CONSTANT_Utf8) {
 					utf8ConstRelease((Utf8Const*)pool[i]);

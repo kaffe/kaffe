@@ -134,8 +134,8 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
 
 #if defined(TRANSLATOR)
 #define	METHOD_NATIVECODE(M)		(((M)->idx == -1) ? \
-		(M)->ncode : \
-		(M)->class->dtable->method[(M)->idx])
+		((M)->ncode) : \
+		((M)->class->dtable->method[(M)->idx]))
 #else
 /* INTERPRETER */
 #define	METHOD_NATIVECODE(M)		((M)->ncode)

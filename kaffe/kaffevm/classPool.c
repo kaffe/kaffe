@@ -179,7 +179,10 @@ removeClassEntries(Hjava_lang_ClassLoader* loader)
         lockStaticMutex(&classHashLock);
 	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
 		entryp = &classEntryPool[ipool];
-		for (;  *entryp != NULL; entryp = &(*entryp)->next) {
+		while (*entryp != NULL) {
+			/* loop invariant: entryp points at the next non-null
+			 * entry that must be examined.
+			 */
 			entry = *entryp;
 			if (entry->loader == loader) {
 				/*
@@ -198,12 +201,11 @@ DBG(CLASSGC,
 				(*entryp) = entry->next;
 				addToCounter(&cpemem, "vmmem-class entry pool",
 					1, -(jlong)GCSIZEOF(entry));
-				KFREE(entry);
+				gc_free(entry);
 				totalent++;
+			} else {
+				entryp = &(*entryp)->next;
 			}
-			/* if this was the last item, break */
-			if (*entryp == 0)
-				break;
 		}
 	}
         unlockStaticMutex(&classHashLock);

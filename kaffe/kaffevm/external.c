@@ -362,6 +362,13 @@ DBG(NATIVELIB,
 	dprintf("Failed to locate native function:\n\t%s.%s%s\n",
 		m->class->name->data, m->name->data, METHOD_SIGD(m));
     )
+#if defined(TRANSLATOR)
+	{
+		/* Work around for KFREE() ? : bug in gcc 2.7.2 */
+		void *nc = METHOD_NATIVECODE(m);
+		KFREE(nc);
+	}
+#endif
 	SET_METHOD_NATIVECODE(m, (void*)error_stub);
 
 	postExceptionMessage(einfo, JAVA_LANG(UnsatisfiedLinkError),

@@ -1,3 +1,26 @@
+Sat Jun 10 14:09:48 MDT 2000  Tim Stack  <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/classPool.c: bug when freeing classes (some would
+	might be freed) fixed.
+	* kaffe/kaffevm/constants.c: cleanup correctly if we run out of
+	memory while creating a utf8 constant.  Mark bad constants as bad.
+	* kaffe/kaffevm/external.c: free native code on error loading
+	native method.
+	* kaffe/kaffevm/findInJar.c: free raw class data if newClass fails 
+	on it.
+	* kaffe/kaffevm/gcFuncs.c: free un-replaced trampolines when
+	destroying a class object's dtable, same of the itable2dtable.
+	* kaffe/kaffevm/jni.c: free method native data, when setting
+	method to a native library method.
+	* kaffe/kaffevm/lookup.c: free method's native code, when setting
+	to throwAbstractMethodError.
+	* kaffe/kaffevm/thread.c: free the ksem when thread is destroyed
+	* kaffe/kaffevm/jit3/machine.c: free nativecode before setting to
+	nullCall.  Free nativecode and bytecode when installing translated 
+	method.
+	* kaffe/libraries/clib/native/ZipFile.c: free temporary buffer in 
+	ZipFile.getZipData0() native method.
+	
 Fri Jun  2 10:15:55 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/kaffe/util/UNIXTimeZone.java: speed up reading

@@ -56,7 +56,7 @@ static void
 /* ARGSUSED */
 destroyClass(Collector *collector, void* c)
 {
-        int i;
+        int i, j;
 	int idx;
 	Hjava_lang_Class* clazz = c;
 	constants* pool;
@@ -162,9 +162,41 @@ DBG(CLASSGC,
 
         /* free various other fixed things */
         KFREE(CLASS_STATICDATA(clazz));
-        KFREE(clazz->dtable);
+	if( clazz->dtable )
+	{
+		for( i = 0; i < clazz->msize; i++ )
+		{
+			if( clazz->dtable->method[i] == 0 )
+				continue;
+			/* Free ncode if necessary: this concerns
+			 * any uninvoked trampolines
+			 */
+			if (GC_getObjectIndex(collector,
+					      clazz->dtable->method[i])
+			    == GC_ALLOC_DISPATCHTABLE) {
+				KFREE(clazz->dtable->method[i]);
+			}
+		}
+		KFREE(clazz->dtable);
+	}
         KFREE(clazz->if2itable);
-        KFREE(clazz->itable2dtable);
+	if( clazz->itable2dtable )
+	{
+		j = 0;
+		for( i = 0; i < clazz->total_interface_len; i++ )
+		{
+			j += clazz->interfaces[i]->msize + 1;
+		}
+		for( i = 0; i < j; i++ )
+		{
+			if (GC_getObjectIndex(collector,
+					      clazz->itable2dtable[i])
+			    == GC_ALLOC_DISPATCHTABLE) {
+				GC_free(collector, clazz->itable2dtable[i]);
+			}
+		}
+		GC_free(collector, clazz->itable2dtable);
+	}
         KFREE(clazz->gc_layout);
 	KFREE(clazz->sourcefile);
 	KFREE(clazz->implementors);

@@ -3982,6 +3982,14 @@ Kaffe_KNI_wrapper(Method* xmeth, void* func)
 		    Kaffe_wrapper(xmeth, func, false);
 	    }
 	    else {
+#if defined(TRANSLATOR)
+		    {
+			    /* Workaround KFREE() ? : bug in gcc 2.7.2 */
+			    void *nc;
+			    nc = METHOD_NATIVECODE(xmeth);
+			    KFREE(nc);
+		    }
+#endif
 		    SET_METHOD_NATIVECODE(xmeth, func);
 	    }
 }

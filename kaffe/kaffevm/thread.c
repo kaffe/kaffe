@@ -526,6 +526,7 @@ finalizeThread(Hjava_lang_Thread* tid)
 	if (unhand(tid)->PrivateInfo != 0) {
 		jthread_t jtid = (jthread_t)unhand(tid)->PrivateInfo;
 		unhand(tid)->PrivateInfo = 0;
+		thread_free(unhand(tid)->sem);
 		jthread_destroy(jtid);
 	}
 }
