@@ -44,8 +44,7 @@
 		(val == (O) ? 1 :  0); \
 	})
 #else
-#define	COMPARE_AND_EXCHANGE(A,O,N) \
-	(*(A) == (O) ? *(A) = (N), 1 : 0)
+#error Please define COMPARE_AND_EXCHANGE or ATOMIC_EXCHANGE 
 #endif
 #endif
 
