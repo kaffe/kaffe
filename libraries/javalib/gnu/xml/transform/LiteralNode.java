@@ -38,6 +38,11 @@
 
 package gnu.xml.transform;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.StringTokenizer;
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -58,43 +63,148 @@ final class LiteralNode
    */
   final Node source;
 
+  final Collection elementExcludeResultPrefixes;
+
   LiteralNode(TemplateNode children, TemplateNode next, Node source)
   {
     super(children, next);
     this.source = source;
+    if (source.getNodeType() == Node.ELEMENT_NODE)
+      {
+        NamedNodeMap attrs = source.getAttributes();
+        Node attr = attrs.getNamedItemNS(Stylesheet.XSL_NS,
+                                         "exclude-result-prefixes");
+        if (attr != null)
+          {
+            elementExcludeResultPrefixes = new HashSet();
+            StringTokenizer st = new StringTokenizer(attr.getNodeValue());
+            while (st.hasMoreTokens())
+              {
+                elementExcludeResultPrefixes.add(st.nextToken());
+              }
+          }
+        else
+          {
+            elementExcludeResultPrefixes = Collections.EMPTY_SET;
+          }
+      }
+    else
+      {
+        elementExcludeResultPrefixes = null;
+      }
   }
 
-  void apply(Stylesheet stylesheet, String mode,
+  TemplateNode clone(Stylesheet stylesheet)
+  {
+    return new LiteralNode((children == null) ? null :
+                           children.clone(stylesheet),
+                           (next == null) ? null :
+                           next.clone(stylesheet),
+                           source);
+  }
+
+  void doApply(Stylesheet stylesheet, QName mode,
              Node context, int pos, int len,
              Node parent, Node nextSibling)
     throws TransformerException
   {
-    // Insert result node
-    Node result = source.cloneNode(false);
+    Node result = null;
     Document doc = (parent instanceof Document) ? (Document) parent :
       parent.getOwnerDocument();
-    result = doc.adoptNode(result);
-    if (result == null)
+    short nodeType = source.getNodeType();
+    if (nodeType == Node.ATTRIBUTE_NODE &&
+        parent.getFirstChild() != null)
       {
-        String msg = "Error adopting node to result tree";
-        DOMSourceLocator l = new DOMSourceLocator(context);
-        throw new TransformerException(msg, l);
-      }
-    if (nextSibling != null)
-      {
-        parent.insertBefore(result, nextSibling);
+        // Ignore attributes added after child elements
       }
     else
       {
-        parent.appendChild(result);
+        // Namespace aliasing
+        if (nodeType == Node.ELEMENT_NODE)
+          {
+            String prefix = source.getPrefix();
+            if (prefix == null)
+              {
+                prefix = "#default";
+              }
+            String resultPrefix =
+              (String) stylesheet.namespaceAliases.get(prefix);
+            if (resultPrefix != null)
+              {
+                if ("#default".equals(resultPrefix))
+                  {
+                    resultPrefix = null;
+                  }
+                String uri = source.lookupNamespaceURI(resultPrefix);
+                String name = source.getNodeName();
+                // Create a new element node in the result document
+                result = doc.createElementNS(uri, name);
+                // copy attributes
+                NamedNodeMap srcAttrs = source.getAttributes();
+                NamedNodeMap dstAttrs = result.getAttributes();
+                int l = srcAttrs.getLength();
+                for (int i = 0; i < l; i++)
+                  {
+                    Node attr = srcAttrs.item(i);
+                    if (!Stylesheet.XSL_NS.equals(attr.getNamespaceURI()))
+                      {
+                        attr = attr.cloneNode(true);
+                        attr = doc.adoptNode(attr);
+                        dstAttrs.setNamedItemNS(attr);
+                      }
+                  }
+              }
+          }
+        if (result == null)
+          {
+            // Create result node
+            result = source.cloneNode(false);
+            // Remove any XSL attributes
+            NamedNodeMap attrs = result.getAttributes();
+            if (attrs != null)
+              {
+                int l = attrs.getLength();
+                for (int i = 0; i < l; i++)
+                  {
+                    Node attr = attrs.item(i);
+                    if (Stylesheet.XSL_NS.equals(attr.getNamespaceURI()))
+                      {
+                        attrs.removeNamedItem(attr.getNodeName());
+                        i--;
+                        l--;
+                      }
+                  }
+              }
+            result = doc.adoptNode(result);
+            if (result == null)
+              {
+                String msg = "Error adopting node to result tree";
+                DOMSourceLocator l = new DOMSourceLocator(context);
+                throw new TransformerException(msg, l);
+              }
+          }
+        if (nextSibling != null)
+          {
+            parent.insertBefore(result, nextSibling);
+          }
+        else
+          {
+            parent.appendChild(result);
+          }
+        if (nodeType == Node.ELEMENT_NODE)
+          {
+            stylesheet.addNamespaceNodes(source, result, doc,
+                                         elementExcludeResultPrefixes);
+          }
+        // children
+        if (children != null)
+          {
+            children.apply(stylesheet, mode,
+                           context, pos, len,
+                           result, null);
+          }
       }
-    // Process children and next sibling
-    if (children != null)
-      {
-        children.apply(stylesheet, mode,
-                       context, pos, len,
-                       result, null);
-      }
+    // next sibling
     if (next != null)
       {
         next.apply(stylesheet, mode,

@@ -49,7 +49,7 @@ public class TransformerException
   extends Exception
 {
 
-  private  SourceLocator  locator;
+  private SourceLocator  locator;
   private Throwable  cause;
 
   /**
@@ -65,7 +65,7 @@ public class TransformerException
    */
   public TransformerException(Throwable cause)
   {
-    this(null, null, cause);
+    this(cause.getMessage(), null, cause);
   }
 
   /**

@@ -41,10 +41,11 @@ package gnu.xml.xpath;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import javax.xml.XMLConstants;
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -88,6 +89,13 @@ public final class Selector
     this.axis = axis;
     this.tests = new Test[tests.size()];
     tests.toArray(this.tests);
+    if (axis == NAMESPACE &&
+        this.tests.length > 0 &&
+        this.tests[0] instanceof NameTest)
+      {
+        NameTest nt = (NameTest) this.tests[0];
+        this.tests[0] = new NamespaceTest(nt.qName, nt.anyLocalName, nt.any);
+      }
   }
 
   /**
@@ -98,31 +106,99 @@ public final class Selector
     return tests;
   }
 
+  public boolean matches(Node context)
+  {
+    short nodeType = context.getNodeType();
+    switch (axis)
+      {
+      case CHILD:
+        if (nodeType == Node.ATTRIBUTE_NODE)
+          {
+            return false;
+          }
+        break;
+      case ATTRIBUTE:
+      case NAMESPACE:
+        if (nodeType != Node.ATTRIBUTE_NODE)
+          {
+            return false;
+          }
+        break;
+      case DESCENDANT_OR_SELF:
+        return true;
+      default:
+        return false;
+      }
+    int tlen = tests.length;
+    if (tlen > 0)
+      {
+        int pos = getContextPosition(context);
+        int len = getContextSize(context);
+        for (int j = 0; j < tlen && len > 0; j++)
+          {
+            Test test = tests[j];
+            if (!test.matches(context, pos, len))
+              {
+                return false;
+              }
+          }
+      }
+    return true;
+  }
+
+  private int getContextPosition(Node ctx)
+  {
+    int pos = 1;
+    for (ctx = ctx.getPreviousSibling(); ctx != null;
+         ctx = ctx.getPreviousSibling())
+      {
+        pos++;
+      }
+    return pos;
+  }
+
+  private int getContextSize(Node ctx)
+  {
+    if (ctx.getNodeType() == Node.ATTRIBUTE_NODE)
+      {
+        Node parent = ((Attr) ctx).getOwnerElement();
+        return parent.getAttributes().getLength();
+      }
+    Node parent = ctx.getParentNode();
+    if (parent != null)
+      {
+        return parent.getChildNodes().getLength();
+      }
+    return 1;
+  }
+
   public Object evaluate(Node context, int pos, int len)
   {
-    Set acc = new HashSet();
+    Set acc = new LinkedHashSet();
     addCandidates(context, acc);
     List candidates = new ArrayList(acc);
-    Collections.sort(candidates, documentOrderComparator);
-    return filterCandidates(candidates);
+    //Collections.sort(candidates, documentOrderComparator);
+    List ret = filterCandidates(candidates, false);
+    return ret;
   }
 
   Collection evaluate(Node context, Collection ns)
   {
-    Set acc = new HashSet();
+    Set acc = new LinkedHashSet();
     for (Iterator i = ns.iterator(); i.hasNext(); )
       {
         addCandidates((Node) i.next(), acc);
       }
     List candidates = new ArrayList(acc);
-    Collections.sort(candidates, documentOrderComparator);
-    return filterCandidates(candidates);
+    //Collections.sort(candidates, documentOrderComparator);
+    List ret = filterCandidates(candidates, true);
+    return ret;
   }
 
   /**
-   * Filter the given list of candates according to the node tests.
+   * Filter the given list of candidates according to the node tests.
    */
-  List filterCandidates(List candidates)
+  List filterCandidates(List candidates, boolean cascade)
   {
     int len = candidates.size();
     int tlen = tests.length;
@@ -132,14 +208,41 @@ public final class Selector
         for (int j = 0; j < tlen && len > 0; j++)
           {
             Test test = tests[j];
-            List successful = new ArrayList();
+            List successful = new ArrayList(len);
             for (int i = 0; i < len; i++)
               {
                 Node node = (Node) candidates.get(i);
+                if (cascade)
+                  {
+                    // Documents and DocumentFragments should be considered
+                    // if part of a location path where the axis involves
+                    // the SELF concept
+                    short nodeType = node.getNodeType();
+                    if ((nodeType == Node.DOCUMENT_NODE ||
+                         nodeType == Node.DOCUMENT_FRAGMENT_NODE) &&
+                        (axis == DESCENDANT_OR_SELF ||
+                         axis == ANCESTOR_OR_SELF ||
+                         axis == SELF) &&
+                        (tests.length == 1 &&
+                         tests[0] instanceof NodeTypeTest &&
+                         ((NodeTypeTest) tests[0]).type == (short) 0))
+                      {
+                        successful.add(node);
+                        continue;
+                      }
+                  }
                 if (test.matches(node, i + 1, len))
                   {
                     successful.add(node);
                   }
+                /*
+                   System.err.println("Testing "+node);
+                   int p = getContextPosition(node);
+                   int l = getContextSize(node);
+                   if (test.matches(node, p, l))
+                   {
+                   successful.add(node);
+                   }*/
               }
             candidates = successful;
             len = candidates.size();
@@ -189,7 +292,7 @@ public final class Selector
         addAttributes(context, candidates);
         break;
       case NAMESPACE:
-        // TODO
+        addNamespaceAttributes(context, candidates);
         break;
       case SELF:
         candidates.add(context);
@@ -231,11 +334,16 @@ public final class Selector
     while (cur != null)
       {
         acc.add(cur);
+        if (recurse)
+          {
+            addChildNodes(cur, acc, true);
+          }
         cur = cur.getNextSibling();
       }
     if (recurse)
       {
-        context = context.getParentNode();
+        context = (context.getNodeType() == Node.ATTRIBUTE_NODE) ?
+          ((Attr) context).getOwnerElement() : context.getParentNode();
         if (context != null)
           {
             addFollowingNodes(context, acc, recurse);
@@ -249,12 +357,16 @@ public final class Selector
     while (cur != null)
       {
         acc.add(cur);
+        if (recurse)
+          {
+            addChildNodes(cur, acc, true);
+          }
         cur = cur.getPreviousSibling();
       }
     if (recurse)
       {
-        // FIXME This is probably not correct
-        context = context.getParentNode();
+        context = (context.getNodeType() == Node.ATTRIBUTE_NODE) ?
+          ((Attr) context).getOwnerElement() : context.getParentNode();
         if (context != null)
           {
             addPrecedingNodes(context, acc, recurse);
@@ -270,9 +382,49 @@ public final class Selector
         int attrLen = attrs.getLength();
         for (int i = 0; i < attrLen; i++)
           {
-            acc.add(attrs.item(i));
+            Node attr = attrs.item(i);
+            if (!isNamespaceAttribute(attr))
+              {
+                acc.add(attr);
+              }
           }
       }
+  }
+
+  void addNamespaceAttributes(Node context, Collection acc)
+  {
+    NamedNodeMap attrs = context.getAttributes();
+    if (attrs != null)
+      {
+        int attrLen = attrs.getLength();
+        for (int i = 0; i < attrLen; i++)
+          {
+            Node attr = attrs.item(i);
+            if (isNamespaceAttribute(attr))
+              {
+                acc.add(attr);
+              }
+          }
+      }
+  }
+
+  final boolean isNamespaceAttribute(Node node)
+  {
+    String uri = node.getNamespaceURI();
+    return (XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(uri) ||
+            XMLConstants.XMLNS_ATTRIBUTE.equals(node.getPrefix()) ||
+            XMLConstants.XMLNS_ATTRIBUTE.equals(node.getNodeName()));
+  }
+
+  public Expr clone(Object context)
+  {
+    int len = tests.length;
+    List tests2 = new ArrayList(len);
+    for (int i = 0; i < len; i++)
+      {
+        tests2.add(tests[i].clone(context));
+      }
+    return new Selector(axis, tests2);
   }
 
   public String toString()
@@ -281,46 +433,57 @@ public final class Selector
     switch (axis)
       {
       case ANCESTOR:
-        buf.append("ancestor");
+        buf.append("ancestor::");
         break;
       case ANCESTOR_OR_SELF:
-        buf.append("ancestor-or-self");
+        buf.append("ancestor-or-self::");
         break;
       case ATTRIBUTE:
-        buf.append("attribute");
+        buf.append("attribute::");
         break;
       case CHILD:
-        buf.append("child");
+        //buf.append("child::");
         break;
       case DESCENDANT:
-        buf.append("descendant");
+        buf.append("descendant::");
         break;
       case DESCENDANT_OR_SELF:
-        buf.append("descendant-or-self");
+        buf.append("descendant-or-self::");
         break;
       case FOLLOWING:
-        buf.append("following");
+        buf.append("following::");
         break;
       case FOLLOWING_SIBLING:
-        buf.append("following-sibling");
+        buf.append("following-sibling::");
         break;
       case NAMESPACE:
-        buf.append("namespace");
+        buf.append("namespace::");
         break;
       case PARENT:
-        buf.append("parent");
+        if (tests.length == 0 ||
+            (tests[0] instanceof NodeTypeTest &&
+             ((NodeTypeTest) tests[0]).type == 0))
+          {
+            return "..";
+          }
+        buf.append("parent::");
         break;
       case PRECEDING:
-        buf.append("preceding");
+        buf.append("preceding::");
         break;
       case PRECEDING_SIBLING:
-        buf.append("preceding-sibling");
+        buf.append("preceding-sibling::");
         break;
       case SELF:
-        buf.append("self");
+        if (tests.length == 0 ||
+            (tests[0] instanceof NodeTypeTest &&
+             ((NodeTypeTest) tests[0]).type == 0))
+          {
+            return ".";
+          }
+        buf.append("self::");
         break;
       }
-    buf.append("::");
     if (tests.length == 0)
       {
         buf.append('*');

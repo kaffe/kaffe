@@ -55,28 +55,30 @@ class TemplatesImpl
   implements Templates
 {
 
-	final TransformerFactoryImpl factory;
+  final TransformerFactoryImpl factory;
   final Stylesheet stylesheet;
+  final Properties outputProperties;
 
   TemplatesImpl(TransformerFactoryImpl factory, Stylesheet stylesheet)
   {
-		this.factory = factory;
+    this.factory = factory;
     this.stylesheet = stylesheet;
+    outputProperties = new TransformerOutputProperties(stylesheet);
   }
 
   public Transformer newTransformer()
     throws TransformerConfigurationException
   {
     Stylesheet stylesheet = (Stylesheet) this.stylesheet.clone();
-    TransformerImpl transformer = new TransformerImpl(factory, stylesheet);
+    TransformerImpl transformer =
+      new TransformerImpl(factory, stylesheet, outputProperties);
     stylesheet.transformer = transformer;
     return transformer;
   }
 
   public Properties getOutputProperties()
   {
-    // TODO
-    return null;
+    return (Properties) outputProperties.clone();
   }
   
 }

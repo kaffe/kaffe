@@ -62,46 +62,50 @@ final class LangFunction
   extends Expr
 {
 
-	final Expr arg;
+  final Expr arg;
 
-	LangFunction(List args)
-	{
-		this((Expr) args.get(0));
-	}
+  LangFunction(List args)
+  {
+    this((Expr) args.get(0));
+  }
 
-	LangFunction(Expr arg)
-	{
-		this.arg = arg;
-	}
+  LangFunction(Expr arg)
+  {
+    this.arg = arg;
+  }
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val = arg.evaluate(context, pos, len);
-		String lang = _string(context, val);
-		String clang = getLang(context);
-		while (clang == null && context != null)
-		  {
-				context = context.getParentNode();
-				clang = getLang(context);
-			}
-		boolean ret = (clang == null) ? false :
-			clang.toLowerCase().startsWith(lang.toLowerCase());
-		return ret ? Boolean.TRUE : Boolean.FALSE;
-	}
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val = arg.evaluate(context, pos, len);
+    String lang = _string(context, val);
+    String clang = getLang(context);
+    while (clang == null && context != null)
+      {
+        context = context.getParentNode();
+        clang = getLang(context);
+      }
+    boolean ret = (clang == null) ? false :
+      clang.toLowerCase().startsWith(lang.toLowerCase());
+    return ret ? Boolean.TRUE : Boolean.FALSE;
+  }
 
-	String getLang(Node node)
-	{
-		if (node.getNodeType() == Node.ELEMENT_NODE)
-		  {
-				return ((Element) node).getAttribute("xml:lang");
-			}
-		return null;
-	}
-	
+  String getLang(Node node)
+  {
+    if (node.getNodeType() == Node.ELEMENT_NODE)
+      {
+        return ((Element) node).getAttribute("xml:lang");
+      }
+    return null;
+  }
+  
+  public Expr clone(Object context)
+  {
+    return new IdFunction(arg.clone(context));
+  }
 
-	public String toString()
-	{
-		return "lang(" + arg + ")";
-	}
-	
+  public String toString()
+  {
+    return "lang(" + arg + ")";
+  }
+  
 }

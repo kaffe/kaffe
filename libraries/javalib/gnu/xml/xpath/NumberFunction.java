@@ -66,27 +66,32 @@ final class NumberFunction
   extends Expr
 {
 
-	final Expr arg;
+  final Expr arg;
 
-	NumberFunction(List args)
-	{
-		this(args.size() > 0 ? (Expr) args.get(0) : null);
-	}
+  NumberFunction(List args)
+  {
+    this(args.size() > 0 ? (Expr) args.get(0) : null);
+  }
 
-	NumberFunction(Expr arg)
-	{
-		this.arg = arg;
-	}
+  NumberFunction(Expr arg)
+  {
+    this.arg = arg;
+  }
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val = (arg == null) ? null : arg.evaluate(context, pos, len);
-		return new Double(_number(context, val));
-	}
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val = (arg == null) ? null : arg.evaluate(context, pos, len);
+    return new Double(_number(context, val));
+  }
 
-	public String toString()
-	{
-		return "number(" + arg + ")";
-	}
-	
+  public Expr clone(Object context)
+  {
+    return new NumberFunction(arg.clone(context));
+  }
+
+  public String toString()
+  {
+    return "number(" + arg + ")";
+  }
+  
 }

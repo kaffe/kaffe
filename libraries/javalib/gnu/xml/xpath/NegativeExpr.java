@@ -63,6 +63,11 @@ final class NegativeExpr
     return new Double(-n);
   }
 
+  public Expr clone(Object context)
+  {
+    return new NegativeExpr(expr.clone(context));
+  }
+
   public String toString()
   {
     return "-" + expr;

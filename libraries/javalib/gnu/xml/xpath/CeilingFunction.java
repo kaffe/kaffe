@@ -52,28 +52,33 @@ final class CeilingFunction
   extends Expr
 {
 
-	final Expr arg;
+  final Expr arg;
+  
+  CeilingFunction(List args)
+  {
+    this((Expr) args.get(0));
+  }
+  
+  CeilingFunction(Expr arg)
+  {
+    this.arg = arg;
+  }
+  
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val = arg.evaluate(context, pos, len);
+    double n = _number(context, val);
+    return new Double(Math.ceil(n));
+  }
 
-	CeilingFunction(List args)
-	{
-		this((Expr) args.get(0));
-	}
-
-	CeilingFunction(Expr arg)
-	{
-		this.arg = arg;
-	}
-
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val = arg.evaluate(context, pos, len);
-		double n = _number(context, val);
-		return new Double(Math.ceil(n));
-	}
-
-	public String toString()
-	{
-		return "ceiling(" + arg + ")";
-	}
-	
+  public Expr clone(Object context)
+  {
+    return new CeilingFunction(arg.clone(context));
+  }
+  
+  public String toString()
+  {
+    return "ceiling(" + arg + ")";
+  }
+  
 }

@@ -56,50 +56,68 @@ final class SubstringFunction
   extends Expr
 {
 
-	final Expr arg1;
-	final Expr arg2;
-	final Expr arg3;
+  final Expr arg1;
+  final Expr arg2;
+  final Expr arg3;
 
-	SubstringFunction(List args)
-	{
-		arg1 = (Expr) args.get(0);
-		arg2 = (Expr) args.get(1);
-		arg3 = (args.size() > 2) ? (Expr) args.get(2) : null;
-	}
+  SubstringFunction(List args)
+  {
+    this((Expr) args.get(0), (Expr) args.get(1),
+         (args.size() > 2) ? (Expr) args.get(2) : null);
+  }
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val1 = arg1.evaluate(context, pos, len);
-		Object val2 = arg2.evaluate(context, pos, len);
-		String s = _string(context, val1);
-		int p = (val2 instanceof Double) ?
-			((Double) val2).intValue() :
-				(int) Math.round(_number(context, val2));
-		int l = s.length() + 1;
-		if (arg3 != null)
-		  {
-				Object val3 = arg3.evaluate(context, pos, len);
-				l = (val3 instanceof Double) ?
-					((Double) val3).intValue() :
-						(int) Math.round(_number(context, val3));
-			}
-		p--;
-		l--;
-		if (p < 0)
-		  {
-				p = 0;
-			}
-		if (l > s.length())
-		  {
-				l = s.length();
-			}
-		return s.substring(p, l);
-	}
+  SubstringFunction(Expr arg1, Expr arg2, Expr arg3)
+  {
+    this.arg1 = arg1;
+    this.arg2 = arg2;
+    this.arg3 = arg3;
+  }
 
-	public String toString()
-	{
-		return (arg3 == null) ? "substring(" + arg1 + "," + arg2 + ")" :
-			"substring(" + arg1 + "," + arg2 + "," + arg3 + ")";
-	}
-	
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val1 = arg1.evaluate(context, pos, len);
+    Object val2 = arg2.evaluate(context, pos, len);
+    String s = _string(context, val1);
+    int p = (val2 instanceof Double) ?
+      ((Double) val2).intValue() :
+        (int) Math.round(_number(context, val2));
+    p--;
+    if (p < 0)
+      {
+        p = 0;
+      }
+
+    int l = s.length() - p;
+    if (l <= 0)
+      {
+        return "";
+      }
+
+    if (arg3 != null)
+      {
+        Object val3 = arg3.evaluate(context, pos, len);
+        int v3 = (val3 instanceof Double) ?
+          ((Double) val3).intValue() :
+            (int) Math.round(_number(context, val3));
+        if (v3 < l) 
+          {
+            l = v3;
+          }
+      }
+
+    return s.substring(p, p + l);
+  }
+
+  public Expr clone(Object context)
+  {
+    return new SubstringFunction(arg1.clone(context), arg2.clone(context),
+                                 (arg3 == null) ? null : arg3.clone(context));
+  }
+
+  public String toString()
+  {
+    return (arg3 == null) ? "substring(" + arg1 + "," + arg2 + ")" :
+      "substring(" + arg1 + "," + arg2 + "," + arg3 + ")";
+  }
+  
 }

@@ -51,4 +51,6 @@ public abstract class Test
 
   public abstract boolean matches(Node node, int pos, int len);
 
+  public abstract Test clone(Object context);
+
 }

@@ -46,7 +46,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import javax.xml.namespace.QName;
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathVariableResolver;
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
 import gnu.xml.xpath.Expr;
 
@@ -59,18 +62,21 @@ public class Bindings
   implements XPathVariableResolver, Cloneable
 {
 
+  final Stylesheet stylesheet;
+
   /**
    * Global variables.
    */
-  LinkedList variables;
+  final LinkedList variables;
 
   /**
    * Parameter value stack.
    */
-  LinkedList parameters;
+  final LinkedList parameters;
 
-  Bindings()
+  Bindings(Stylesheet stylesheet)
   {
+    this.stylesheet = stylesheet;
     variables = new LinkedList();
     parameters = new LinkedList();
     push(true);
@@ -127,8 +133,10 @@ public class Bindings
     return false;
   }
 
-  public Object get(String name, Node context)
+  public Object get(String name, Node context, int pos, int len)
   {
+    //System.err.println("bindings.get: "+name);
+    //System.err.println("\t"+toString());
     Object ret = null;
     for (Iterator i = variables.iterator(); i.hasNext() && ret == null; )
       {
@@ -143,11 +151,11 @@ public class Bindings
             ret = pctx.get(name);
           }
       }
-    if (ret instanceof Expr && context != null)
+    /*if (ret instanceof Expr && context != null)
       {
         Expr expr = (Expr) ret;
         ret = expr.evaluate(context, 1, 1);
-      }
+      }*/
     if (ret instanceof Node)
       {
         ret = Collections.singleton(ret);
@@ -156,6 +164,7 @@ public class Bindings
       {
         ret = "";
       }
+    //System.err.println("\tret="+ret);
     return ret;
   }
 
@@ -175,7 +184,7 @@ public class Bindings
 
   public Object resolveVariable(QName qName)
   {
-    return get(qName.toString(), null);
+    return get(qName.toString(), null, 1, 1);
   }
   
   public String toString()

@@ -588,6 +588,24 @@ final class XmlParser
 	String	encodingName = null;
 	String	standalone = null;
 	int	flags = LIT_DISABLE_CREF | LIT_DISABLE_PE | LIT_DISABLE_EREF;
+        String inputEncoding = null;
+        
+        switch (this.encoding)
+          {
+          case ENCODING_EXTERNAL:
+          case ENCODING_UTF_8:
+            inputEncoding = "UTF-8";
+            break;
+          case ENCODING_ISO_8859_1:
+            inputEncoding = "ISO-8859-1";
+            break;
+          case ENCODING_UCS_2_12:
+            inputEncoding = "UTF-16BE";
+            break;
+          case ENCODING_UCS_2_21:
+            inputEncoding = "UTF-16LE";
+            break;
+          }
 
 	// Read the version.
 	require ("version");
@@ -632,7 +650,12 @@ final class XmlParser
 	skipWhitespace ();
 	require ("?>");
 
-        handler.xmlDecl(version, encodingName, "yes".equals(standalone));
+        if (inputEncoding == null)
+          {
+            inputEncoding = encodingName;
+          }
+        handler.xmlDecl(version, encodingName, "yes".equals(standalone),
+                        inputEncoding);
 
 	return encodingName;
     }

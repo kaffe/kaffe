@@ -38,6 +38,13 @@
 
 package gnu.xml.transform;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Properties;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
@@ -55,6 +62,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import gnu.xml.dom.DomDocument;
 
 /**
  * GNU transformer factory implementation.
@@ -73,19 +81,25 @@ public class TransformerFactoryImpl
   public TransformerFactoryImpl()
   {
     xpathFactory = new gnu.xml.xpath.XPathFactoryImpl();
-		resolver = new XSLURIResolver();
+    resolver = new XSLURIResolver();
   }
 
   public Transformer newTransformer(Source source)
     throws TransformerConfigurationException
   {
-    return newTemplates(source).newTransformer();
+    Stylesheet stylesheet = newStylesheet(source, 0, null);
+    Properties outputProperties =
+      new TransformerOutputProperties(stylesheet);
+    TransformerImpl transformer =
+      new TransformerImpl(this, stylesheet, outputProperties);
+    stylesheet.transformer = transformer;
+    return transformer;
   }
 
   public Transformer newTransformer()
     throws TransformerConfigurationException
   {
-    return new TransformerImpl(this, null);
+    return new TransformerImpl(this, null, new Properties());
   }
 
   public Templates newTemplates(Source source)
@@ -102,40 +116,178 @@ public class TransformerFactoryImpl
     String systemId = null;
     if (source != null)
       {
-				try
-				  {
-						DOMSource ds;
-						synchronized (resolver)
-						{
-							resolver.setUserResolver(userResolver);
-							resolver.setUserListener(userListener);
-							ds = resolver.resolveDOM(source, null, null);
-						}
-						Node node = ds.getNode();
-						if (node == null)
-						{
-							throw new TransformerConfigurationException("no source document");
-						}
-						doc = (node instanceof Document) ? (Document) node :
-							node.getOwnerDocument();
-						systemId = ds.getSystemId();
-					}
-				catch (TransformerException e)
-				  {
-						throw new TransformerConfigurationException(e);
-					}
+        try
+          {
+            DOMSource ds;
+            synchronized (resolver)
+              {
+                resolver.setUserResolver(userResolver);
+                resolver.setUserListener(userListener);
+                ds = resolver.resolveDOM(source, null, null);
+              }
+            Node node = ds.getNode();
+            if (node == null)
+              {
+                throw new TransformerConfigurationException("no source document");
+              }
+            doc = (node instanceof Document) ? (Document) node :
+              node.getOwnerDocument();
+            systemId = ds.getSystemId();
+          }
+        catch (TransformerException e)
+          {
+            throw new TransformerConfigurationException(e);
+          }
       }
     return new Stylesheet(this, parent, doc, systemId, precedence);
   }
-
+  
   public Source getAssociatedStylesheet(Source source,
                                         String media,
                                         String title,
                                         String charset)
     throws TransformerConfigurationException
   {
-    // TODO
-    throw new TransformerConfigurationException("not supported");
+    try
+      {
+        DOMSource ds;
+        synchronized (resolver)
+          {
+            resolver.setUserResolver(userResolver);
+            resolver.setUserListener(userListener);
+            ds = resolver.resolveDOM(source, null, null);
+          }
+        Node node = ds.getNode();
+        if (node == null)
+          {
+            throw new TransformerConfigurationException("no source document");
+          }
+        Document doc = (node instanceof Document) ? (Document) node :
+          node.getOwnerDocument();
+        LinkedList matches = new LinkedList();
+        for (node = doc.getFirstChild();
+             node != null;
+             node = node.getNextSibling())
+          {
+            if (node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE &&
+                "xml-stylesheet".equals(node.getNodeName()))
+              {
+                Map params = parseParameters(node.getNodeValue());
+                if (media != null && !media.equals(params.get("media")))
+                  {
+                    continue;
+                  }
+                if (title != null && !title.equals(params.get("title")))
+                  {
+                    continue;
+                  }
+                if (charset != null && !charset.equals(params.get("charset")))
+                  {
+                    continue;
+                  }
+                String href = (String) params.get("href");
+                URL url = resolver.resolveURL(null, node.getBaseURI(), href);
+                matches.add(url);
+              }
+          }
+        switch (matches.size())
+          {
+          case 0:
+            return null;
+          case 1:
+            return new StreamSource(((URL) matches.getFirst()).toString());
+          default:
+            // Create a source representing a stylesheet with a list of
+            // imports
+            DomDocument ssDoc = new DomDocument();
+            ssDoc.setBuilding(true);
+            // Create document element
+            Node root =
+              ssDoc.createElementNS(Stylesheet.XSL_NS, "stylesheet");
+            Node version =
+              ssDoc.createAttributeNS(null, "version");
+            version.setNodeValue("1.0");
+            root.getAttributes().setNamedItemNS(version);
+            ssDoc.appendChild(root);
+            // Create xsl:import for each URL
+            for (Iterator i = matches.iterator(); i.hasNext(); )
+              {
+                URL url = (URL) i.next();
+                Node imp =
+                  ssDoc.createElementNS(Stylesheet.XSL_NS, "import");
+                Node href =
+                  ssDoc.createAttributeNS(null, "href");
+                href.setNodeValue(url.toString());
+                imp.getAttributes().setNamedItemNS(href);
+                root.appendChild(imp);
+              }
+            ssDoc.setBuilding(false);
+            return new DOMSource(ssDoc);
+          }
+      }
+    catch (IOException e)
+      {
+        throw new TransformerConfigurationException(e);
+      }
+    catch (TransformerException e)
+      {
+        throw new TransformerConfigurationException(e);
+      }
+  }
+
+  Map parseParameters(String data)
+  {
+    Map ret = new LinkedHashMap();
+    int len = data.length();
+    String key = null;
+    int start = 0;
+    char quoteChar = '\u0000';
+    for (int i = 0; i < len; i++)
+      {
+        char c = data.charAt(i);
+        if (quoteChar == '\u0000' && c == ' ')
+          {
+            if (key == null && start < i)
+              {
+                key = data.substring(start, i);
+              }
+            else
+              {
+                String val = unquote(data.substring(start, i).trim());
+                ret.put(key, val);
+                key = null;
+              }
+            start = i + 1;
+          }
+        else if (c == '"')
+          {
+            quoteChar = (quoteChar == c) ? '\u0000' : c;
+          }
+        else if (c == '\'')
+          {
+            quoteChar = (quoteChar == c) ? '\u0000' : c;
+          }
+      }
+    if (start < len && key != null)
+      {
+        String val = unquote(data.substring(start, len).trim());
+        ret.put(key, val);
+      }
+    return ret;
+  }
+
+  String unquote(String text)
+  {
+    int end = text.length() - 1;
+    if (text.charAt(0) == '\'' && text.charAt(end) == '\'')
+      {
+        return text.substring(1, end);
+      }
+    if (text.charAt(0) == '"' && text.charAt(end) == '"')
+      {
+        return text.substring(1, end);
+      }
+    return text;
   }
 
   public void setURIResolver(URIResolver resolver)

@@ -43,23 +43,28 @@ import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.NodeIterator;
 import org.w3c.dom.traversal.TreeWalker;
 
-class GnomeNodeIterator
-implements NodeIterator, TreeWalker
+/**
+ * Node iterator and tree walker.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
+ */
+public class GnomeNodeIterator
+  implements NodeIterator, TreeWalker
 {
 
   Node root;
+  final int whatToShow;
+  final NodeFilter filter;
+  final boolean entityReferenceExpansion;
+  final boolean walk;
   Node current;
-  int whatToShow;
-  NodeFilter filter;
-  boolean entityReferenceExpansion;
-  boolean walk;
 
-  GnomeNodeIterator (Node root, int whatToShow, NodeFilter filter,
-                     boolean entityReferenceExpansion, boolean walk)
+  public GnomeNodeIterator(Node root, int whatToShow, NodeFilter filter,
+                           boolean entityReferenceExpansion, boolean walk)
   {
     if (root == null)
       {
-        throw new GnomeDOMException (DOMException.NOT_SUPPORTED_ERR, null);
+        throw new GnomeDOMException(DOMException.NOT_SUPPORTED_ERR, null);
       }
     this.root = root;
     this.whatToShow = whatToShow;
@@ -69,144 +74,144 @@ implements NodeIterator, TreeWalker
     current = root;
   }
 
-  public Node getRoot ()
+  public Node getRoot()
   {
     return root;
   }
 
-  public int getWhatToShow ()
+  public int getWhatToShow()
   {
     return whatToShow;
   }
 
-  public NodeFilter getFilter ()
+  public NodeFilter getFilter()
   {
     return filter;
   }
 
-  public boolean getExpandEntityReferences ()
+  public boolean getExpandEntityReferences()
   {
     return entityReferenceExpansion;
   }
 
-  public Node nextNode ()
+  public Node nextNode()
     throws DOMException
   {
     if (root == null)
       {
-        throw new GnomeDOMException (DOMException.INVALID_STATE_ERR, null);
+        throw new GnomeDOMException(DOMException.INVALID_STATE_ERR, null);
       }
     Node ret;
     do
       {
-        if (current.equals (root))
+        if (current.equals(root))
           {
-            ret = root.getFirstChild ();
+            ret = root.getFirstChild();
           }
         else if (walk)
           {
-            ret = current.getFirstChild ();
+            ret = current.getFirstChild();
             if (ret == null)
               {
-                ret = current.getNextSibling ();
+                ret = current.getNextSibling();
               }
             if (ret == null)
               {
                 Node tmp = current;
-                ret = tmp.getParentNode ();
-                while (!ret.equals (root) && tmp.equals (ret.getLastChild ()))
+                ret = tmp.getParentNode();
+                while (!ret.equals(root) && tmp.equals(ret.getLastChild()))
                   {
                     tmp = ret;
-                    ret = tmp.getParentNode ();
+                    ret = tmp.getParentNode();
                   }
-                if (ret.equals (root))
+                if (ret.equals(root))
                   {
                     ret = null;
                   }
                 else
                   {
-                    ret = ret.getNextSibling ();
+                    ret = ret.getNextSibling();
                   }
               }
           }
         else
           {
-            ret = current.getNextSibling ();
+            ret = current.getNextSibling();
           }
       }
-    while (!accept (ret));
+    while (!accept(ret));
     current = (ret == null) ? current : ret;
     return ret;
   }
 
-  public Node previousNode ()
+  public Node previousNode()
     throws DOMException
   {
     if (root == null)
       {
-        throw new GnomeDOMException (DOMException.INVALID_STATE_ERR, null);
+        throw new GnomeDOMException(DOMException.INVALID_STATE_ERR, null);
       }
     Node ret;
     do
       {
-        if (current.equals (root))
+        if (current.equals(root))
           {
-            ret = current.getLastChild ();
+            ret = current.getLastChild();
           }
         else if (walk)
           {
-            ret = current.getLastChild ();
+            ret = current.getLastChild();
             if (ret == null)
               {
-                ret = current.getPreviousSibling ();
+                ret = current.getPreviousSibling();
               }
             if (ret == null)
               {
                 Node tmp = current;
-                ret = tmp.getParentNode ();
-                while (!ret.equals (root) && tmp.equals (ret.getFirstChild ()))
+                ret = tmp.getParentNode();
+                while (!ret.equals(root) && tmp.equals(ret.getFirstChild()))
                   {
                     tmp = ret;
-                    ret = tmp.getParentNode ();
+                    ret = tmp.getParentNode();
                   }
-                if (ret.equals (root))
+                if (ret.equals(root))
                   {
                     ret = null;
                   }
                 else
                   {
-                    ret = ret.getPreviousSibling ();
+                    ret = ret.getPreviousSibling();
                   }
               }
           }
         else
           {
-            ret = current.getPreviousSibling ();
+            ret = current.getPreviousSibling();
           }
       }
-    while (!accept (ret));
+    while (!accept(ret));
     current = (ret == null) ? current : ret;
     return ret;
   }
 
-  public Node getCurrentNode ()
+  public Node getCurrentNode()
   {
     return current;
   }
 
-  public void setCurrentNode (Node current)
+  public void setCurrentNode(Node current)
     throws DOMException
   {
     if (current == null)
       {
-        throw new GnomeDOMException (DOMException.NOT_SUPPORTED_ERR, null);
+        throw new GnomeDOMException(DOMException.NOT_SUPPORTED_ERR, null);
       }
     this.current = current;
   }
 
-  public Node parentNode ()
+  public Node parentNode()
   {
-    Node ret = current.getParentNode ();
+    Node ret = current.getParentNode();
     if (!accept (ret))
       {
         ret = null;
@@ -217,107 +222,107 @@ implements NodeIterator, TreeWalker
 
   public Node firstChild ()
   {
-    Node ret = current.getFirstChild ();
-    while (!accept (ret))
+    Node ret = current.getFirstChild();
+    while (!accept(ret))
       {
-        ret = ret.getNextSibling ();
+        ret = ret.getNextSibling();
       }
     current = (ret == null) ? current : ret;
     return ret;
   }
 
-  public Node lastChild ()
+  public Node lastChild()
   {
-    Node ret = current.getLastChild ();
-    while (!accept (ret))
+    Node ret = current.getLastChild();
+    while (!accept(ret))
       {
-        ret = ret.getPreviousSibling ();
+        ret = ret.getPreviousSibling();
       }
     current = (ret == null) ? current : ret;
     return ret;
   }
 
-  public Node previousSibling ()
+  public Node previousSibling()
   {
-    Node ret = current.getPreviousSibling ();
-    while (!accept (ret))
+    Node ret = current.getPreviousSibling();
+    while (!accept(ret))
       {
-        ret = ret.getPreviousSibling ();
+        ret = ret.getPreviousSibling();
       }
     current = (ret == null) ? current : ret;
     return ret;
   }
 
-  public Node nextSibling ()
+  public Node nextSibling()
   {
-    Node ret = current.getNextSibling ();
-    while (!accept (ret))
+    Node ret = current.getNextSibling();
+    while (!accept(ret))
       {
-        ret = ret.getNextSibling ();
+        ret = ret.getNextSibling();
       }
     current = (ret == null) ? current : ret;
     return ret;
   }
 
-  public void detach ()
+  public void detach()
   {
     root = null;
   }
 
-  boolean accept (Node node)
-    {
-      if (node == null)
-        {
-          return true;
-        }
-      boolean ret;
-      switch (node.getNodeType ())
-        {
-        case Node.ATTRIBUTE_NODE:
-          ret = (whatToShow & NodeFilter.SHOW_ATTRIBUTE) != 0;
-          break;
-        case Node.CDATA_SECTION_NODE:
-          ret = (whatToShow & NodeFilter.SHOW_CDATA_SECTION) != 0;
-          break;
-        case Node.COMMENT_NODE:
-          ret = (whatToShow & NodeFilter.SHOW_COMMENT) != 0;
-          break;
-        case Node.DOCUMENT_NODE:
-          ret = (whatToShow & NodeFilter.SHOW_DOCUMENT) != 0;
-          break;
-        case Node.DOCUMENT_FRAGMENT_NODE:
-          ret = (whatToShow & NodeFilter.SHOW_DOCUMENT_FRAGMENT) != 0;
-          break;
-        case Node.DOCUMENT_TYPE_NODE:
-          ret = (whatToShow & NodeFilter.SHOW_DOCUMENT_TYPE) != 0;
-          break;
-        case Node.ELEMENT_NODE:
-          ret = (whatToShow & NodeFilter.SHOW_ELEMENT) != 0;
-          break;
-        case Node.ENTITY_NODE:
-          ret = (whatToShow & NodeFilter.SHOW_ENTITY) != 0;
-          break;
-        case Node.ENTITY_REFERENCE_NODE:
-          ret = (whatToShow & NodeFilter.SHOW_ENTITY_REFERENCE) != 0;
-          ret = ret && entityReferenceExpansion;
-          break;
-        case Node.NOTATION_NODE:
-          ret = (whatToShow & NodeFilter.SHOW_NOTATION) != 0;
-          break;
-        case Node.PROCESSING_INSTRUCTION_NODE:
-          ret = (whatToShow & NodeFilter.SHOW_PROCESSING_INSTRUCTION) != 0;
-          break;
-        case Node.TEXT_NODE:
-          ret = (whatToShow & NodeFilter.SHOW_TEXT) != 0;
-          break;
-        default:
-          ret = true;
-        }
-      if (ret && filter != null)
-        {
-          ret = (filter.acceptNode (node) == NodeFilter.FILTER_ACCEPT);
-        }
-      return ret;
-    }
+  boolean accept(Node node)
+  {
+    if (node == null)
+      {
+        return true;
+      }
+    boolean ret;
+    switch (node.getNodeType())
+      {
+      case Node.ATTRIBUTE_NODE:
+        ret = (whatToShow & NodeFilter.SHOW_ATTRIBUTE) != 0;
+        break;
+      case Node.CDATA_SECTION_NODE:
+        ret = (whatToShow & NodeFilter.SHOW_CDATA_SECTION) != 0;
+        break;
+      case Node.COMMENT_NODE:
+        ret = (whatToShow & NodeFilter.SHOW_COMMENT) != 0;
+        break;
+      case Node.DOCUMENT_NODE:
+        ret = (whatToShow & NodeFilter.SHOW_DOCUMENT) != 0;
+        break;
+      case Node.DOCUMENT_FRAGMENT_NODE:
+        ret = (whatToShow & NodeFilter.SHOW_DOCUMENT_FRAGMENT) != 0;
+        break;
+      case Node.DOCUMENT_TYPE_NODE:
+        ret = (whatToShow & NodeFilter.SHOW_DOCUMENT_TYPE) != 0;
+        break;
+      case Node.ELEMENT_NODE:
+        ret = (whatToShow & NodeFilter.SHOW_ELEMENT) != 0;
+        break;
+      case Node.ENTITY_NODE:
+        ret = (whatToShow & NodeFilter.SHOW_ENTITY) != 0;
+        break;
+      case Node.ENTITY_REFERENCE_NODE:
+        ret = (whatToShow & NodeFilter.SHOW_ENTITY_REFERENCE) != 0;
+        ret = ret && entityReferenceExpansion;
+        break;
+      case Node.NOTATION_NODE:
+        ret = (whatToShow & NodeFilter.SHOW_NOTATION) != 0;
+        break;
+      case Node.PROCESSING_INSTRUCTION_NODE:
+        ret = (whatToShow & NodeFilter.SHOW_PROCESSING_INSTRUCTION) != 0;
+        break;
+      case Node.TEXT_NODE:
+        ret = (whatToShow & NodeFilter.SHOW_TEXT) != 0;
+        break;
+      default:
+        ret = true;
+      }
+    if (ret && filter != null)
+      {
+        ret = (filter.acceptNode(node) == NodeFilter.FILTER_ACCEPT);
+      }
+    return ret;
+  }
 
 }

@@ -54,37 +54,42 @@ final class SumFunction
   extends Expr
 {
 
-	final Expr arg;
+  final Expr arg;
 
-	SumFunction(List args)
-	{
-		this((Expr) args.get(0));
-	}
+  SumFunction(List args)
+  {
+    this((Expr) args.get(0));
+  }
 
-	SumFunction(Expr arg)
-	{
-		this.arg = arg;
-	}
+  SumFunction(Expr arg)
+  {
+    this.arg = arg;
+  }
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val = arg.evaluate(context, pos, len);
-		double sum = 0.0d;
-		if (val instanceof Collection)
-		  {
-				for (Iterator i = ((Collection) val).iterator(); i.hasNext(); )
-				  {
-						Node node = (Node) i.next();
-						String s = stringValue(node);
-						sum += _number(context, s);
-					}
-			}
-		return new Double(sum);
-	}
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val = arg.evaluate(context, pos, len);
+    double sum = 0.0d;
+    if (val instanceof Collection)
+      {
+        for (Iterator i = ((Collection) val).iterator(); i.hasNext(); )
+          {
+            Node node = (Node) i.next();
+            String s = stringValue(node);
+            sum += _number(context, s);
+          }
+      }
+    return new Double(sum);
+  }
 
-	public String toString()
-	{
-		return "sum(" + arg + ")";
-	}
-	
+  public Expr clone(Object context)
+  {
+    return new SumFunction(arg.clone(context));
+  }
+
+  public String toString()
+  {
+    return "sum(" + arg + ")";
+  }
+  
 }

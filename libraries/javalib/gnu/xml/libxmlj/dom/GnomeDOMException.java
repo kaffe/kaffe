@@ -40,15 +40,15 @@ package gnu.xml.libxmlj.dom;
 import org.w3c.dom.DOMException;
 
 class GnomeDOMException
-extends DOMException
+  extends DOMException
 {
 
-  GnomeDOMException (short code, String message)
+  GnomeDOMException(short code, String message)
   {
-    super (code, createMessage (code, message));
+    super(code, createMessage(code, message));
   }
 
-  private static String createMessage (int code, String message)
+  private static String createMessage(int code, String message)
   {
     if (message != null)
       {

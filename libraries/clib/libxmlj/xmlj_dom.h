@@ -41,11 +41,14 @@
 #include "gnu_xml_libxmlj_dom_GnomeTypeInfo.h"
 
 #include <libxml/parser.h>
+#include <libxml/valid.h>
 
 void xmljValidateChildNode (JNIEnv *env, xmlNodePtr parent, xmlNodePtr child);
 int xmljIsEqualNode (xmlNodePtr node1, xmlNodePtr node2);
 int xmljIsEqualNodeList (xmlNodePtr node1, xmlNodePtr node2);
 void xmljNormalizeNode (xmlNodePtr node);
+xmlDtdPtr xmljGetDtd (xmlDocPtr doc);
+int xmljCompare (xmlNodePtr n1, xmlNodePtr n2);
 
 /* Utility */
 jobject xmljCreateDocument (JNIEnv * env, jobject self, xmlDocPtr doc);

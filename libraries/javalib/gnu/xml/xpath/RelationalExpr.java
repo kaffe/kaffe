@@ -67,32 +67,32 @@ final class RelationalExpr
   {
     Object left = lhs.evaluate(context, pos, len);
     Object right = rhs.evaluate(context, pos, len);
-
-    if (!(left instanceof Collection) &&
-        !(right instanceof Collection))
+    double ln = _number(context, left);
+    double rn = _number(context, right);
+    if (eq && ln == rn)
       {
-        double ln = _number(context, left);
-        double rn = _number(context, right);
-        if (eq && ln == rn)
+        return Boolean.TRUE;
+      }
+    if (lt)
+      {
+        if (ln < rn || Double.isInfinite(rn))
           {
             return Boolean.TRUE;
           }
-        if (lt)
+      }
+    else
+      {
+        if (ln > rn || Double.isInfinite(ln))
           {
-            if (ln < rn)
-              {
-                return Boolean.TRUE;
-              }
-          }
-        else
-          {
-            if (ln > rn)
-              {
-                return Boolean.TRUE;
-              }
+            return Boolean.TRUE;
           }
       }
     return Boolean.FALSE;
+  }
+
+  public Expr clone(Object context)
+  {
+    return new RelationalExpr(lhs.clone(context), rhs.clone(context), lt, eq);
   }
 
   public String toString()

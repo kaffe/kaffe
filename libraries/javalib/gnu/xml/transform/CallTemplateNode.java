@@ -38,8 +38,10 @@
 
 package gnu.xml.transform;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.w3c.dom.Node;
 
@@ -53,20 +55,35 @@ final class CallTemplateNode
   extends TemplateNode
 {
 
-  final String name;
+  final QName name;
   final List withParams;
 
   CallTemplateNode(TemplateNode children, TemplateNode next,
-                   String name, List withParams)
+                   QName name, List withParams)
   {
     super(children, next);
     this.name = name;
     this.withParams = withParams;
   }
 
-  void apply(Stylesheet stylesheet, String mode,
-             Node context, int pos, int len,
-             Node parent, Node nextSibling)
+  TemplateNode clone(Stylesheet stylesheet)
+  {
+    int len = withParams.size();
+    List withParams2 = new ArrayList(len);
+    for (int i = 0; i < len; i++)
+      {
+        withParams2.add(((WithParam) withParams.get(i)).clone(stylesheet));
+      }
+    return new CallTemplateNode((children == null) ? null :
+                                children.clone(stylesheet),
+                                (next == null) ? null :
+                                next.clone(stylesheet),
+                                name, withParams2);
+  }
+
+  void doApply(Stylesheet stylesheet, QName mode,
+               Node context, int pos, int len,
+               Node parent, Node nextSibling)
     throws TransformerException
   {
     if (withParams != null)
@@ -81,9 +98,12 @@ final class CallTemplateNode
             stylesheet.bindings.set(p.name, value, false);
           }
       }
-    stylesheet.callTemplate(name, mode,
-                            context, pos, len,
-                            parent, nextSibling);
+    TemplateNode t = stylesheet.getTemplate(mode, name);
+    if (t != null)
+      {
+        t.apply(stylesheet, mode, context, pos, len,
+                parent, nextSibling);
+      }
     if (withParams != null)
       {
         // pop the variable context

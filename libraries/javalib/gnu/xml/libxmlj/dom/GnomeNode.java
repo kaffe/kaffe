@@ -37,10 +37,12 @@
  */
 package gnu.xml.libxmlj.dom;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.DocumentType;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -48,13 +50,15 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.w3c.dom.UserDataHandler;
 
+import gnu.xml.libxmlj.util.StandaloneDocumentType;
+
 /**
  * A DOM node implemented in libxml2.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 class GnomeNode
-implements Node
+  implements Node, Comparable
 {
 
   /**
@@ -69,28 +73,28 @@ implements Node
    * @param node the node pointer
    * @param type the node type
    */
-  static GnomeNode newInstance (final Object doc, final Object node,
-                                final int type)
+  static GnomeNode newInstance(final Object doc, final Object node,
+                               final int type)
   {
     if (doc == null)
       {
-        throw new NullPointerException ("doc");
+        throw new NullPointerException("doc");
       }
     if (node == null)
       {
-        throw new NullPointerException ("node");
+        throw new NullPointerException("node");
       }
     if (instances == null)
       {
-        instances = new HashMap ();
+        instances = new HashMap();
       }
-    Map docNodes = (Map) instances.get (doc);
+    Map docNodes = (Map) instances.get(doc);
     if (docNodes == null)
       {
-        docNodes = new HashMap (1024); // TODO review optimal initial capacity
-        instances.put (doc, docNodes);
+        docNodes = new HashMap(1024); // TODO review optimal initial capacity
+        instances.put(doc, docNodes);
       }
-    GnomeNode nodeInstance = (GnomeNode) docNodes.get (node);
+    GnomeNode nodeInstance = (GnomeNode) docNodes.get(node);
     if (nodeInstance != null)
       {
         return nodeInstance; // Return cached version
@@ -98,48 +102,45 @@ implements Node
     switch (type)
       {
       case ELEMENT_NODE:
-        nodeInstance = new GnomeElement (node);
+        nodeInstance = new GnomeElement(node);
         break;
       case ATTRIBUTE_NODE:
-        nodeInstance = new GnomeAttr (node);
+        nodeInstance = new GnomeAttr(node);
         break;
       case TEXT_NODE:
-        nodeInstance = new GnomeText (node);
+        nodeInstance = new GnomeText(node);
         break;
       case CDATA_SECTION_NODE:
-        nodeInstance = new GnomeCDATASection (node);
+        nodeInstance = new GnomeCDATASection(node);
         break;
       case ENTITY_REFERENCE_NODE:
-        nodeInstance = new GnomeEntityReference (node);
+        nodeInstance = new GnomeEntityReference(node);
         break;
       case ENTITY_NODE:
-        nodeInstance = new GnomeEntity (node);
+        nodeInstance = new GnomeEntity(node);
         break;
       case PROCESSING_INSTRUCTION_NODE:
-        nodeInstance = new GnomeProcessingInstruction (node);
+        nodeInstance = new GnomeProcessingInstruction(node);
         break;
       case COMMENT_NODE:
-        nodeInstance = new GnomeComment (node);
+        nodeInstance = new GnomeComment(node);
         break;
       case DOCUMENT_NODE:
-        nodeInstance = new GnomeDocument (node);
+        nodeInstance = new GnomeDocument(node);
         break;
       case DOCUMENT_TYPE_NODE:
-        nodeInstance = new GnomeDocumentType (node);
+        nodeInstance = new GnomeDocumentType(node);
         break;
       case DOCUMENT_FRAGMENT_NODE:
-        nodeInstance = new GnomeDocumentFragment (node);
+        nodeInstance = new GnomeDocumentFragment(node);
         break;
       case NOTATION_NODE:
-        nodeInstance = new GnomeNotation (node);
+        nodeInstance = new GnomeNotation(node);
         break;
       default:
-        nodeInstance = new GnomeNode (node);
+        throw new IllegalArgumentException("Unknown node type: " + type);
       }
-    if (type != DOCUMENT_NODE)
-      {
-        docNodes.put (node, nodeInstance);
-      }
+    docNodes.put(node, nodeInstance);
     return nodeInstance;
   }
   
@@ -147,13 +148,13 @@ implements Node
    * Frees the specified document.
    * This removes all its nodes from the cache.
    */
-  static void freeDocument (final Object doc)
+  static void freeDocument(final Object doc)
   {
     if (instances == null || doc == null)
       {
         return;
       }
-    instances.remove (doc);
+    instances.remove(doc);
     //System.out.println("Freed "+instances.remove(doc));
   }
   
@@ -163,85 +164,170 @@ implements Node
   final Object id;
 
   Map userData;
+  Map userDataHandlers;
 
-  GnomeNode (final Object id)
+  GnomeNode(final Object id)
   {
     this.id = id;
   }
 
-  public native String getNodeName ();
+  public native String getNodeName();
 
-  public native String getNodeValue ()
+  public native String getNodeValue()
     throws DOMException;
 
-  public native void setNodeValue (String nodeValue)
+  public native void setNodeValue(String nodeValue)
     throws DOMException;
 
-  public native short getNodeType ();
+  public native short getNodeType();
 
-  public native Node getParentNode ();
+  public native Node getParentNode();
 
-  public NodeList getChildNodes ()
+  public NodeList getChildNodes()
   {
-    return new GnomeNodeList (id);
+    return new GnomeNodeList(id);
   }
 
-  public native Node getFirstChild ();
+  public native Node getFirstChild();
 
-  public native Node getLastChild ();
+  public native Node getLastChild();
 
-  public native Node getPreviousSibling ();
+  public native Node getPreviousSibling();
 
-  public native Node getNextSibling ();
+  public native Node getNextSibling();
 
-  public NamedNodeMap getAttributes ()
+  public NamedNodeMap getAttributes()
   {
-    return new GnomeNamedNodeMap (id, 0);
+    return new GnomeNamedNodeMap(id, 0);
   }
 
-  public native Document getOwnerDocument ();
+  public native Document getOwnerDocument();
 
-  public native Node insertBefore (Node newChild, Node refChild)
-    throws DOMException;
-
-  public native Node replaceChild (Node newChild, Node oldChild)
-    throws DOMException;
-
-  public native Node removeChild (Node oldChild)
-    throws DOMException;
-
-  public native Node appendChild (Node newChild)
-    throws DOMException;
-
-  public native boolean hasChildNodes ();
-
-  public native Node cloneNode (boolean deep);
-
-  public native void normalize ();
-
-  public boolean isSupported (String feature, String version)
+  public Node insertBefore(Node newChild, Node refChild)
+    throws DOMException
   {
-    return getOwnerDocument ().getImplementation ()
-      .hasFeature (feature, version);
+    if (newChild instanceof StandaloneDocumentType)
+      {
+        DocumentType dt = (DocumentType) newChild;
+        newChild = ((GnomeDocument) getOwnerDocument())
+          .createDocumentType(dt.getName(), dt.getPublicId(),
+                              dt.getSystemId());
+      }
+    if (newChild == null)
+      {
+        throw new GnomeDOMException(DOMException.NOT_FOUND_ERR, null);
+      }
+    if (!(newChild instanceof GnomeNode))
+      {
+        throw new GnomeDOMException(DOMException.WRONG_DOCUMENT_ERR, null);
+      }
+    if (refChild == null || !(refChild instanceof GnomeNode))
+      {
+        throw new GnomeDOMException(DOMException.NOT_FOUND_ERR, null);
+      }
+    return xmljInsertBefore(newChild, refChild);
   }
 
-  public native String getNamespaceURI ();
-
-  public native String getPrefix ();
-
-  public native void setPrefix (String prefix)
+  private native Node xmljInsertBefore(Node newChild, Node refChild)
     throws DOMException;
 
-  public native String getLocalName ();
-
-  public native boolean hasAttributes ();
-
-  public int hashCode ()
+  public Node replaceChild(Node newChild, Node oldChild)
+    throws DOMException
   {
-    return id.hashCode ();
+    if (newChild instanceof StandaloneDocumentType)
+      {
+        DocumentType dt = (DocumentType) newChild;
+        newChild = ((GnomeDocument) getOwnerDocument())
+          .createDocumentType(dt.getName(), dt.getPublicId(),
+                              dt.getSystemId());
+      }
+    if (newChild == null)
+      {
+        throw new GnomeDOMException(DOMException.NOT_FOUND_ERR, null);
+      }
+    if (!(newChild instanceof GnomeNode))
+      {
+        throw new GnomeDOMException(DOMException.WRONG_DOCUMENT_ERR, newChild.toString());
+      }
+    if (oldChild == null || !(oldChild instanceof GnomeNode))
+      {
+        throw new GnomeDOMException(DOMException.NOT_FOUND_ERR, null);
+      }
+    return xmljReplaceChild(newChild, oldChild);
   }
 
-  public boolean equals (Object other)
+  private native Node xmljReplaceChild(Node newChild, Node oldChild)
+    throws DOMException;
+
+  public Node removeChild(Node oldChild)
+    throws DOMException
+  {
+    if (!(oldChild instanceof GnomeNode))
+      {
+        throw new GnomeDOMException(DOMException.WRONG_DOCUMENT_ERR, null);
+      }
+    return xmljRemoveChild(oldChild);
+  }
+
+  private native Node xmljRemoveChild(Node oldChild)
+    throws DOMException;
+
+  public Node appendChild(Node newChild)
+    throws DOMException
+  {
+    if (newChild instanceof StandaloneDocumentType)
+      {
+        DocumentType dt = (DocumentType) newChild;
+        newChild = ((GnomeDocument) getOwnerDocument())
+          .createDocumentType(dt.getName(), dt.getPublicId(),
+                              dt.getSystemId());
+      }
+    if (!(newChild instanceof GnomeNode))
+      {
+        throw new GnomeDOMException(DOMException.WRONG_DOCUMENT_ERR, null);
+      }
+    return xmljAppendChild(newChild);
+  }
+
+  private native Node xmljAppendChild(Node newChild)
+    throws DOMException;
+
+  public native boolean hasChildNodes();
+
+  public Node cloneNode(boolean deep)
+  {
+    Node ret = xmljCloneNode(deep);
+    notifyUserDataHandlers(UserDataHandler.NODE_CLONED, this, ret);
+    return ret;
+  }
+  
+  private native Node xmljCloneNode(boolean deep);
+
+  public native void normalize();
+
+  public boolean isSupported(String feature, String version)
+  {
+    return getOwnerDocument().getImplementation()
+      .hasFeature(feature, version);
+  }
+
+  public native String getNamespaceURI();
+
+  public native String getPrefix();
+
+  public native void setPrefix(String prefix)
+    throws DOMException;
+
+  public native String getLocalName();
+
+  public native boolean hasAttributes();
+
+  public int hashCode()
+  {
+    return id.hashCode();
+  }
+
+  public boolean equals(Object other)
   {
     if (other == this)
       {
@@ -253,128 +339,161 @@ implements Node
 
   // DOM Level 3 methods
 
-  public native String getBaseURI ();
+  public native String getBaseURI();
 
-  public short compareDocumentPosition (Node other)
+  public short compareDocumentPosition(Node other)
     throws DOMException
   {
-    throw new DOMException (DOMException.NOT_SUPPORTED_ERR,
-                            "compareDocumentPosition");
+    return (short) compareTo(other);
   }
+
+  public final int compareTo(Object other)
+  {
+    if (other instanceof GnomeNode)
+      {
+        return xmljCompareTo(other);
+      }
+    return 0;
+  }
+
+  private native int xmljCompareTo(Object other);
   
-  public String getTextContent ()
+  public String getTextContent()
     throws DOMException
   {
-    switch (getNodeType ())
+    switch (getNodeType())
       {
       case ELEMENT_NODE:
       case ATTRIBUTE_NODE:
       case ENTITY_NODE:
       case ENTITY_REFERENCE_NODE:
       case DOCUMENT_FRAGMENT_NODE:
-        StringBuffer buffer = new StringBuffer ();
-        NodeList children = getChildNodes ();
-        int len = children.getLength ();
+        StringBuffer buffer = new StringBuffer();
+        NodeList children = getChildNodes();
+        int len = children.getLength();
         for (int i = 0; i < len; i++)
           {
-            Node child = children.item (i);
-            String textContent = child.getTextContent ();
+            Node child = children.item(i);
+            String textContent = child.getTextContent();
             if (textContent != null)
               {
-                buffer.append (textContent);
+                buffer.append(textContent);
               }
           }
-        return buffer.toString ();
+        return buffer.toString();
       case TEXT_NODE:
       case CDATA_SECTION_NODE:
       case COMMENT_NODE:
       case PROCESSING_INSTRUCTION_NODE:
-        return getNodeValue ();
+        return getNodeValue();
       default:
         return null;
       }
   }
   
-  public void setTextContent (String textContent)
+  public void setTextContent(String textContent)
     throws DOMException
   {
-    switch (getNodeType ())
+    switch (getNodeType())
       {
       case ENTITY_REFERENCE_NODE:
         // entity references are read only
-        throw new GnomeDOMException (DOMException.NO_MODIFICATION_ALLOWED_ERR,
-                                     null);
+        throw new GnomeDOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR,
+                                    null);
       case ELEMENT_NODE:
       case ATTRIBUTE_NODE:
       case ENTITY_NODE:
       case DOCUMENT_FRAGMENT_NODE:
-        NodeList children = getChildNodes ();
-        int len = children.getLength ();
+        NodeList children = getChildNodes();
+        int len = children.getLength();
         for (int i = 0; i < len; i++)
           {
-            Node child = children.item (i);
-            removeChild (child);
+            Node child = children.item(i);
+            removeChild(child);
           }
         if (textContent != null)
           {
-            Text text = getOwnerDocument ().createTextNode (textContent);
-            appendChild (text);
+            Text text = getOwnerDocument().createTextNode(textContent);
+            appendChild(text);
           }
         break;
       case TEXT_NODE:
       case CDATA_SECTION_NODE:
       case COMMENT_NODE:
       case PROCESSING_INSTRUCTION_NODE:
-        setNodeValue (textContent);
+        setNodeValue(textContent);
         break;
       }
   }
   
-  public boolean isSameNode (Node other)
+  public boolean isSameNode(Node other)
   {
-    return equals (other);
+    return equals(other);
   }
   
-  public native String lookupPrefix (String namespaceURI);
+  public native String lookupPrefix(String namespaceURI);
   
-  public native boolean isDefaultNamespace (String namespaceURI);
+  public native boolean isDefaultNamespace(String namespaceURI);
   
-  public native String lookupNamespaceURI (String prefix);
+  public native String lookupNamespaceURI(String prefix);
   
-  public native boolean isEqualNode (Node arg);
+  public native boolean isEqualNode(Node arg);
   
-  public Object getFeature (String feature, String version)
+  public Object getFeature(String feature, String version)
   {
-    return getOwnerDocument ().getImplementation ()
-      .getFeature (feature, version);
+    return getOwnerDocument().getImplementation()
+      .getFeature(feature, version);
   }
 
-  public Object setUserData (String key, Object data, UserDataHandler handler)
+  public Object setUserData(String key, Object data, UserDataHandler handler)
   {
     // TODO handler
     if (userData == null)
       {
         userData = new HashMap();
       }
-    return userData.put (key, data);
+    if (handler != null)
+      {
+        if (userDataHandlers == null)
+          {
+            userDataHandlers = new HashMap();
+          }
+        userDataHandlers.put(key, handler);
+      }
+    return userData.put(key, data);
   }
 
-  public Object getUserData (String key)
+  public Object getUserData(String key)
   {
     if (userData == null)
       {
         return null;
       }
-    return userData.get (key);
+    return userData.get(key);
   }
 
-  public String toString ()
+  void notifyUserDataHandlers(short op, Node src, Node dst)
   {
-    StringBuffer buffer = new StringBuffer (getClass ().getName ());
-    buffer.append ("[nodeName=");
-    buffer.append (getNodeName ());
-    buffer.append ("]");
-    return buffer.toString ();
+    if (userDataHandlers != null)
+      {
+        for (Iterator i = userDataHandlers.entrySet().iterator(); i.hasNext(); )
+          {
+            Map.Entry entry = (Map.Entry) i.next();
+            String key = (String) entry.getKey();
+            UserDataHandler handler = (UserDataHandler) entry.getValue();
+            Object data = userData.get(key);
+            handler.handle(op, key, data, src, dst);
+          }
+      }
+  }
+
+  public String toString()
+  {
+    StringBuffer buffer = new StringBuffer(getClass().getName());
+    buffer.append("[nodeName=");
+    buffer.append(getNodeName());
+    buffer.append("]");
+    return buffer.toString();
   }
 
 }

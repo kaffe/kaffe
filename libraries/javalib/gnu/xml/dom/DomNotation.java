@@ -1,6 +1,6 @@
 /*
  * DomNotation.java
- * Copyright (C) 1999,2000,2001 The Free Software Foundation
+ * Copyright (C) 1999,2000,2001,2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -38,8 +38,7 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.*;
-
+import org.w3c.dom.Notation;
 
 /**
  * <p> "Notation" implementation.  This is a non-core DOM class, supporting
@@ -59,33 +58,36 @@ import org.w3c.dom.*;
  * @see DomPI
  *
  * @author David Brownell 
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class DomNotation
   extends DomExtern
   implements Notation
 {
-    /**
-     * Constructs a Notation node associated with the specified document,
-     * with the specified descriptive data.  Note that at least one of
-     * the PUBLIC and SYSTEM identifiers must be provided; unlike other
-     * external objects in XML, notations may have only a PUBLIC identifier.
-     *
-     * <p>This constructor should only be invoked by a DomDoctype object
-     * as part of its declareNotation functionality, or through a subclass
-     * which is similarly used in a "Sub-DOM" style layer. 
-     *
-     * @param owner The document with which this notation is associated
-     * @param name Name of this notation
-     * @param publicId If non-null, provides the notation's PUBLIC identifier
-     * @param systemId If non-null, rovides the notation's SYSTEM identifier
-     */
-    protected DomNotation(Document owner,
-                          String name,
-                          String publicId,
-                          String systemId)
-    {
-	super (NOTATION_NODE, owner, name, publicId, systemId);
-	makeReadonly ();
-    }
-
+    
+  /**
+   * Constructs a Notation node associated with the specified document,
+   * with the specified descriptive data.  Note that at least one of
+   * the PUBLIC and SYSTEM identifiers must be provided; unlike other
+   * external objects in XML, notations may have only a PUBLIC identifier.
+   *
+   * <p>This constructor should only be invoked by a DomDoctype object
+   * as part of its declareNotation functionality, or through a subclass
+   * which is similarly used in a "Sub-DOM" style layer. 
+   *
+   * @param owner The document with which this notation is associated
+   * @param name Name of this notation
+   * @param publicId If non-null, provides the notation's PUBLIC identifier
+   * @param systemId If non-null, rovides the notation's SYSTEM identifier
+   */
+  protected DomNotation(DomDocument owner,
+                        String name,
+                        String publicId,
+                        String systemId)
+  {
+    super(NOTATION_NODE, owner, name, publicId, systemId);
+    makeReadonly();
+  }
+  
 }
+

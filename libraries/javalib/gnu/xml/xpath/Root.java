@@ -52,6 +52,11 @@ public final class Root
   extends Path
 {
 
+  public boolean matches(Node node)
+  {
+    return (node.getNodeType() == Node.DOCUMENT_NODE);
+  }
+
   public Object evaluate(Node context, int pos, int len)
   {
     return evaluate(context, Collections.EMPTY_SET);
@@ -62,6 +67,11 @@ public final class Root
     Document doc = (context instanceof Document) ? (Document) context :
       context.getOwnerDocument();
     return Collections.singleton(doc);
+  }
+
+  public Expr clone(Object context)
+  {
+    return new Root();
   }
 
   public String toString()

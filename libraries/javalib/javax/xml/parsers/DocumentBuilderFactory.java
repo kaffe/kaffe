@@ -119,7 +119,7 @@ public abstract class DocumentBuilderFactory
           }
       }
     while (className == null && count < 3);
-    return new gnu.xml.dom.JAXPFactory();
+    return new gnu.xml.dom.DomDocumentBuilderFactory();
   }
   
   private static String getFactoryClassName(ClassLoader loader, int attempt)

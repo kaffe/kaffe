@@ -39,6 +39,8 @@
 package gnu.xml.xpath;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,6 +48,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
@@ -72,8 +75,13 @@ public abstract class Expr
   implements XPathExpression
 {
 
-  static final Comparator documentOrderComparator =
+  protected static final Comparator documentOrderComparator =
     new DocumentOrderComparator();
+
+  protected static final DecimalFormat decimalFormat =
+    new DecimalFormat("####################################################" +
+                      ".####################################################",
+                      new DecimalFormatSymbols(Locale.US));
 
   public Object evaluate(Object item, QName returnType)
     throws XPathExpressionException
@@ -170,6 +178,8 @@ public abstract class Expr
   }
 
   public abstract Object evaluate(Node context, int pos, int len);
+
+  public abstract Expr clone(Object context);
   
   /* -- 4.1 Node Set Functions -- */
 
@@ -193,7 +203,7 @@ public abstract class Expr
         Collection nodeSet = (Collection) object;
         for (Iterator i = nodeSet.iterator(); i.hasNext(); )
           {
-            String string = _string(context, i.next());
+            String string = stringValue((Node) i.next());
             ret.addAll(_id (context, string));
           }
       }
@@ -224,11 +234,8 @@ public abstract class Expr
    */
   public static String _local_name(Node context, Collection nodeSet)
   {
-    if (nodeSet == null || nodeSet.size() == 0)
-      {
-        return context.getLocalName();
-      }
-    Node node = firstNode(nodeSet);
+    Node node = (nodeSet == null || nodeSet.size() == 0) ? context :
+      firstNode(nodeSet);
     return node.getLocalName();
   }
 
@@ -242,11 +249,8 @@ public abstract class Expr
    */
   public static String _namespace_uri(Node context, Collection nodeSet)
   {
-    if (nodeSet == null || nodeSet.size() == 0)
-      {
-        return context.getNamespaceURI();
-      }
-    Node node = firstNode(nodeSet);
+    Node node = (nodeSet == null || nodeSet.size() == 0) ? context :
+      firstNode(nodeSet);
     return node.getNamespaceURI();
   }
   
@@ -268,12 +272,17 @@ public abstract class Expr
    */
   public static String _name(Node context, Collection nodeSet)
   {
-    if (nodeSet == null || nodeSet.size() == 0)
+    Node node = (nodeSet == null || nodeSet.size() == 0) ? context :
+      firstNode(nodeSet);
+    switch (node.getNodeType())
       {
-        return context.getNodeName();
+      case Node.ATTRIBUTE_NODE:
+      case Node.ELEMENT_NODE:
+      case Node.PROCESSING_INSTRUCTION_NODE:
+        return node.getNodeName();
+      default:
+        return "";
       }
-    Node node = firstNode(nodeSet);
-    return node.getNodeName();
   }
 
   /**
@@ -307,13 +316,35 @@ public abstract class Expr
       }
     if (object instanceof Double)
       {
-        Double d = (Double) object;
-        String ret = d.toString();
-        if (ret.endsWith (".0"))
-          { 
-            ret = ret.substring(0, ret.length() - 2);
+        double d = ((Double) object).doubleValue();
+        if (Double.isNaN(d))
+          {
+            return "NaN";
           }
-        return ret;
+        else if (d == 0.0d)
+          {
+            return "0";
+          }
+        else if (Double.isInfinite(d))
+          {
+            if (d < 0)
+              {
+                return "-Infinity";
+              }
+            else
+              {
+                return "Infinity";
+              }
+          }
+        else
+          {
+            String ret = decimalFormat.format(d);
+            if (ret.endsWith (".0"))
+              { 
+                ret = ret.substring(0, ret.length() - 2);
+              }
+            return ret;
+          }
       }
     if (object instanceof Collection)
       {
@@ -390,7 +421,7 @@ public abstract class Expr
             return Double.NaN;
           }
       }
-    return 0.0; // TODO user-defined types
+    return Double.NaN; // TODO user-defined types
   }
 
   /**
@@ -422,11 +453,10 @@ public abstract class Expr
       case Node.DOCUMENT_FRAGMENT_NODE:
       case Node.ELEMENT_NODE: // 5.2 Element Nodes
         StringBuffer buf = new StringBuffer();
-        NodeList children = node.getChildNodes();
-        int len = children.getLength();
-        for (int i = 0; i < len; i++)
+        for (Node ctx = node.getFirstChild(); ctx != null;
+             ctx = ctx.getNextSibling())
           {
-            buf.append(stringValue(children.item(i), true));
+            buf.append(stringValue(ctx, true));
           }
         return buf.toString();
       case Node.TEXT_NODE: // 5.7 Text Nodes

@@ -52,28 +52,33 @@ final class FloorFunction
   extends Expr
 {
 
-	final Expr arg;
+  final Expr arg;
 
-	FloorFunction(List args)
-	{
-		this((Expr) args.get(0));
-	}
+  FloorFunction(List args)
+  {
+    this((Expr) args.get(0));
+  }
 
-	FloorFunction(Expr arg)
-	{
-		this.arg = arg;
-	}
+  FloorFunction(Expr arg)
+  {
+    this.arg = arg;
+  }
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val = arg.evaluate(context, pos, len);
-		double n = _number(context, val);
-		return new Double(Math.floor(n));
-	}
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val = arg.evaluate(context, pos, len);
+    double n = _number(context, val);
+    return new Double(Math.floor(n));
+  }
 
-	public String toString()
-	{
-		return "floor(" + arg + ")";
-	}
-	
+  public Expr clone(Object context)
+  {
+    return new FloorFunction(arg.clone(context));
+  }
+
+  public String toString()
+  {
+    return "floor(" + arg + ")";
+  }
+  
 }

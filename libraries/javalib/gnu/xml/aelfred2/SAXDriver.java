@@ -1,6 +1,6 @@
 /*
  * SAXDriver.java
- * Copyright (C) 1999,2000,2001 The Free Software Foundation
+ * Copyright (C) 1999,2000,2001,2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -582,14 +582,16 @@ final public class SAXDriver
 
     void xmlDecl(String version,
                  String encoding,
-                 boolean standalone)
+                 boolean standalone,
+                 String inputEncoding)
       throws SAXException
     {
       if (contentHandler instanceof ContentHandler2)
         {
           ((ContentHandler2) contentHandler).xmlDecl(version,
                                                      encoding,
-                                                     standalone);
+                                                     standalone,
+                                                     inputEncoding);
         }
     }
 
@@ -1063,7 +1065,16 @@ final public class SAXDriver
      */
     public String getLocalName (int index)
     {
-        return ((Attribute) attributesList.get (index)).localName;
+        Attribute attr = (Attribute) attributesList.get (index);
+        // FIXME attr.localName is sometimes null, why?
+        if (namespaces && attr.localName == null)
+          {
+            // XXX fix this here for now
+            int ci = attr.name.indexOf(':');
+            attr.localName = (ci == -1) ? attr.name :
+              attr.name.substring(ci + 1);
+          }
+        return attr.localName;
     }
 
     /**
@@ -1377,3 +1388,4 @@ class Attribute
         this.nameSpace = "";
     }
 }
+

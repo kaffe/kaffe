@@ -48,24 +48,24 @@ import org.w3c.dom.DOMImplementationList;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class ImplementationList
-implements DOMImplementationList
+  implements DOMImplementationList
 {
 
   private List list;
 
-  ImplementationList (List list)
+  ImplementationList(List list)
   {
     this.list = list;
   }
 
-  public int getLength ()
+  public int getLength()
   {
-    return list.size ();
+    return list.size();
   }
 
-  public DOMImplementation item (int index)
+  public DOMImplementation item(int index)
   {
-    return (DOMImplementation) list.get (index);
+    return (DOMImplementation) list.get(index);
   }
 
 }

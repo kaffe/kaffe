@@ -40,6 +40,7 @@ package gnu.xml.transform;
 
 import java.io.PrintStream;
 import java.util.Comparator;
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.w3c.dom.Node;
 import gnu.xml.xpath.DocumentOrderComparator;
@@ -57,17 +58,40 @@ abstract class TemplateNode
 
   final TemplateNode children;
   final TemplateNode next;
-  
+
   TemplateNode(TemplateNode children, TemplateNode next)
   {
     this.children = children;
     this.next = next;
   }
 
-  abstract void apply(Stylesheet stylesheet, String mode,
-                      Node context, int pos, int len,
-                      Node parent, Node nextSibling)
+  final void apply(Stylesheet stylesheet, QName mode,
+                   Node context, int pos, int len,
+                   Node parent, Node nextSibling)
+    throws TransformerException
+  {
+    if (stylesheet.terminated)
+      {
+        return;
+      }
+    if (Thread.currentThread().isInterrupted())
+      {
+        // Try to head off any infinite loops at the pass
+        return;
+      }
+    if (stylesheet.debug)
+      {
+        System.err.println("Applying " + toString());
+      }
+    doApply(stylesheet, mode, context, pos, len, parent, nextSibling);
+  }
+
+  abstract void doApply(Stylesheet stylesheet, QName mode,
+                        Node context, int pos, int len,
+                        Node parent, Node nextSibling)
     throws TransformerException;
+
+  abstract TemplateNode clone(Stylesheet stylesheet);
 
   /**
    * Debugging

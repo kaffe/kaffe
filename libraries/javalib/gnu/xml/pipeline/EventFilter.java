@@ -601,12 +601,14 @@ public class EventFilter
 	    docNext.startDocument ();
     }
 
-    public void xmlDecl(String version, String encoding, boolean standalone)
+    public void xmlDecl(String version, String encoding, boolean standalone,
+                        String inputEncoding)
       throws SAXException
     {
       if (docNext != null && docNext instanceof ContentHandler2)
         {
-          ((ContentHandler2) docNext).xmlDecl(version, encoding, standalone);
+          ((ContentHandler2) docNext).xmlDecl(version, encoding, standalone,
+                                              inputEncoding);
         }
     }
 

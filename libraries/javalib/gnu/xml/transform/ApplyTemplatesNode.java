@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.w3c.dom.Node;
 import gnu.xml.xpath.Expr;
@@ -58,24 +59,48 @@ final class ApplyTemplatesNode
 {
 
   final Expr select;
-  final String mode;
+  final QName mode;
   final List sortKeys;
   final List withParams;
+  final boolean isDefault;
 
   ApplyTemplatesNode(TemplateNode children, TemplateNode next,
-                     Expr select, String mode,
-                     List sortKeys, List withParams)
+                     Expr select, QName mode,
+                     List sortKeys, List withParams, boolean isDefault)
   {
     super(children, next);
     this.select = select;
     this.mode = mode;
     this.sortKeys = sortKeys;
     this.withParams = withParams;
+    this.isDefault = isDefault;
   }
 
-  void apply(Stylesheet stylesheet, String mode,
-             Node context, int pos, int len,
-             Node parent, Node nextSibling)
+  TemplateNode clone(Stylesheet stylesheet)
+  {
+    int len = sortKeys.size();
+    List sortKeys2 = new ArrayList(len);
+    for (int i = 0; i < len; i++)
+      {
+        sortKeys2.add(((Key) sortKeys.get(i)).clone(stylesheet));
+      }
+    len = withParams.size();
+    List withParams2 = new ArrayList(len);
+    for (int i = 0; i < len; i++)
+      {
+        withParams2.add(((WithParam) withParams.get(i)).clone(stylesheet));
+      }
+    return new ApplyTemplatesNode((children == null) ? null :
+                                  children.clone(stylesheet),
+                                  (next == null) ? null :
+                                  next.clone(stylesheet),
+                                  select.clone(stylesheet),
+                                  mode, sortKeys2, withParams2, isDefault);
+  }
+
+  void doApply(Stylesheet stylesheet, QName mode,
+               Node context, int pos, int len,
+               Node parent, Node nextSibling)
     throws TransformerException
   {
     Object ret = select.evaluate(context, pos, len);
@@ -94,23 +119,38 @@ final class ApplyTemplatesNode
               }
           }
         Collection ns = (Collection) ret;
-        List list = new ArrayList(ns);
+        List nodes = new ArrayList(ns);
         if (sortKeys != null)
           {
-            Collections.sort(list, new XSLComparator(sortKeys));
+            for (Iterator i = sortKeys.iterator(); i.hasNext(); )
+              {
+                SortKey sortKey = (SortKey) i.next();
+                sortKey.init(stylesheet, mode, context, pos, len, parent,
+                             nextSibling);
+              }
+            Collections.sort(nodes, new XSLComparator(sortKeys));
           }
         else
           {
-            Collections.sort(list, documentOrderComparator);
+            Collections.sort(nodes, documentOrderComparator);
           }
-        int l = list.size();
-        int p = 1;
-        for (Iterator i = list.iterator(); i.hasNext(); )
+        int l = nodes.size();
+        QName effectiveMode = isDefault ? mode : this.mode;
+        for (int i = 0; i < l; i++)
           {
-            Node subject = (Node) i.next();
-            stylesheet.applyTemplates((this.mode != null) ? this.mode : mode,
-                                      subject, subject, p++, l,
-                                      parent, nextSibling);
+            Node node = (Node) nodes.get(i);
+            TemplateNode t = stylesheet.getTemplate(effectiveMode, node,
+                                                    false);
+            if (t != null)
+              {
+                if (stylesheet.debug)
+                  {
+                    System.err.println("Applying " + t);
+                  }
+                stylesheet.current = node;
+                t.apply(stylesheet, effectiveMode, node, i + 1, l,
+                        parent, nextSibling);
+              }
           }
         if (withParams != null)
           {

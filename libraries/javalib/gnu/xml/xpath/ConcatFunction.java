@@ -38,6 +38,7 @@
 
 package gnu.xml.xpath;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.w3c.dom.Node;
@@ -51,39 +52,50 @@ final class ConcatFunction
   extends Expr
 {
 
-	final List args;
+  final List args;
 
-	ConcatFunction(List args)
-	{
-		this.args = args;
-	}
+  ConcatFunction(List args)
+  {
+    this.args = args;
+  }
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		StringBuffer buf = new StringBuffer();
-		for (Iterator i = args.iterator(); i.hasNext(); )
-		  {
-				Expr arg = (Expr) i.next();
-				Object val = arg.evaluate(context, pos, len);
-				buf.append(_string(context, val));
-			}
-		return buf.toString();
-	}
+  public Object evaluate(Node context, int pos, int len)
+  {
+    StringBuffer buf = new StringBuffer();
+    for (Iterator i = args.iterator(); i.hasNext(); )
+      {
+        Expr arg = (Expr) i.next();
+        Object val = arg.evaluate(context, pos, len);
+        buf.append(_string(context, val));
+      }
+    return buf.toString();
+  }
 
-	public String toString()
-	{
-		StringBuffer buf = new StringBuffer("concat(");
-		int len = args.size();
-		for (int i = 0; i < len; i++)
-		  {
-				if (i > 0)
-				  {
-						buf.append(',');
-					}
-				buf.append(args.get(i));
-			}
-		buf.append(')');
-		return buf.toString();
-	}
-	
+  public Expr clone(Object context)
+  {
+    int len = args.size();
+    List args2 = new ArrayList(len);
+    for (int i = 0; i < len; i++)
+      {
+        args2.add(((Expr) args.get(i)).clone(context));
+      }
+    return new ConcatFunction(args2);
+  }
+
+  public String toString()
+  {
+    StringBuffer buf = new StringBuffer("concat(");
+    int len = args.size();
+    for (int i = 0; i < len; i++)
+      {
+        if (i > 0)
+          {
+            buf.append(',');
+          }
+        buf.append(args.get(i));
+      }
+    buf.append(')');
+    return buf.toString();
+  }
+  
 }

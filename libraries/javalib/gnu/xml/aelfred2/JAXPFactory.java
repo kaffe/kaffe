@@ -190,5 +190,8 @@ public final class JAXPFactory extends SAXParserFactory
 		throw new Error ();
 	    }
 	}
+
+        // TODO isXIncludeAware()
+        
     }
 }

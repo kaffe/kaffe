@@ -345,7 +345,7 @@ xmljSAXResolveEntity (void *vctx,
         xmljGetMethodID (env,
                          target,
                          "resolveEntity",
-                         "(Ljava/lang/String;Ljava/lang/String;)Ljava/io/InputStream;");
+                         "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/io/InputStream;");
       if (sax->resolveEntity == NULL)
         {
           return NULL;
@@ -359,7 +359,8 @@ xmljSAXResolveEntity (void *vctx,
                                           target,
                                           sax->resolveEntity,
                                           j_publicId,
-                                          j_systemId);
+                                          j_systemId,
+                                          sax->systemId);
 
   /* Return an xmlParserInputPtr corresponding to the input stream */
   if (inputStream != NULL)

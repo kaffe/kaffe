@@ -45,13 +45,13 @@ import org.w3c.dom.Comment;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 class GnomeComment
-extends GnomeCharacterData
-implements Comment
+  extends GnomeCharacterData
+  implements Comment
 {
 
-  GnomeComment (Object id)
+  GnomeComment(Object id)
   {
-    super (id);
+    super(id);
   }
 
 }

@@ -57,39 +57,44 @@ final class NormalizeSpaceFunction
   extends Expr
 {
 
-	final Expr arg;
+  final Expr arg;
 
-	NormalizeSpaceFunction(List args)
-	{
-		this((Expr) args.get(0));
-	}
-	
-	NormalizeSpaceFunction(Expr arg)
-	{
-		this.arg = arg;
-	}
+  NormalizeSpaceFunction(List args)
+  {
+    this((Expr) args.get(0));
+  }
+  
+  NormalizeSpaceFunction(Expr arg)
+  {
+    this.arg = arg;
+  }
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val = (arg == null) ? null : arg.evaluate(context, pos, len);
-		String s = _string(context, val);
-		StringTokenizer st = new StringTokenizer(s, " \t\r\n");
-		StringBuffer buf = new StringBuffer();
-		if (st.hasMoreTokens())
-		  {
-				buf.append(st.nextToken()); 
-				while (st.hasMoreTokens())
-				  {
-						buf.append(' ');
-						buf.append(st.nextToken());
-					}
-			}
-		return buf.toString();
-	}
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val = (arg == null) ? null : arg.evaluate(context, pos, len);
+    String s = _string(context, val);
+    StringTokenizer st = new StringTokenizer(s, " \t\r\n");
+    StringBuffer buf = new StringBuffer();
+    if (st.hasMoreTokens())
+      {
+        buf.append(st.nextToken()); 
+        while (st.hasMoreTokens())
+          {
+            buf.append(' ');
+            buf.append(st.nextToken());
+          }
+      }
+    return buf.toString();
+  }
 
-	public String toString()
-	{
-		return (arg == null) ? "normalize-space()" : "normalize-space(" + arg + ")";
-	}
-	
+  public Expr clone(Object context)
+  {
+    return new NormalizeSpaceFunction(arg.clone(context));
+  }
+
+  public String toString()
+  {
+    return (arg == null) ? "normalize-space()" : "normalize-space(" + arg + ")";
+  }
+  
 }

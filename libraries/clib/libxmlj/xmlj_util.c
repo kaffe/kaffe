@@ -49,7 +49,7 @@ xmljNewString (JNIEnv * env, const xmlChar * text)
 {
   jstring ret;
 
-  if (text == NULL)
+  if (text == NULL || (*env)->ExceptionOccurred (env))
     {
       return NULL;
     }

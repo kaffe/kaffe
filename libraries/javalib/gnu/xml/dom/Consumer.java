@@ -1,6 +1,6 @@
 /*
  * Consumer.java
- * Copyright (C) 2001 The Free Software Foundation
+ * Copyright (C) 2001,2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -141,7 +141,8 @@ public class Consumer extends DomConsumer
 
 	    super.startDTD (name, publicId, systemId);
 	    // DOM L2 doctype creation model is bizarre
-	    doc.appendChild (new DomDoctype (doc, name, publicId, systemId));
+	    DomDoctype dt = new DomDoctype (doc, name, publicId, systemId);
+	    doc.appendChild (dt);
 	}
 
 	// SAX2 "lexical" event
@@ -265,6 +266,11 @@ public class Consumer extends DomConsumer
 		return doc.createTextNode (buf, off, len);
 	}
 
+        public void elementDecl(String name, String model)
+          throws SAXException
+        {
+          getDoctype().elementDecl(name, model);
+        }
 
 	public void attributeDecl (
 	    String	ename,
@@ -274,6 +280,8 @@ public class Consumer extends DomConsumer
 	    String	value
 	) throws SAXException
 	{
+          getDoctype().attributeDecl(ename, aname, type, mode, value);
+            /*
 	    if (value == null && !"ID".equals (type))
 		return;
 	    
@@ -284,16 +292,19 @@ public class Consumer extends DomConsumer
 		info.setAttrDefault (aname, value);
 	    if ("ID".equals (type))
 		info.setIdAttr (aname);
+                */
+            
 	}
 
 	// force duplicate name checking off while we're
 	// using parser output (don't duplicate the work)
 	public void startDocument () throws SAXException
 	{
-	    DomDocument		doc;
-
 	    super.startDocument ();
-	    ((DomDocument) getDocument ()).setStrictErrorChecking(false);
+	    
+            DomDocument doc = (DomDocument) getDocument ();
+            doc.setStrictErrorChecking(false);
+            doc.setBuilding(true);
 	}
 
         /**
@@ -301,21 +312,29 @@ public class Consumer extends DomConsumer
          */
         public void xmlDecl(String version,
                             String encoding,
-                            boolean standalone)
+                            boolean standalone,
+                            String inputEncoding)
           throws SAXException
         {
-          super.xmlDecl(version, encoding, standalone);
+          super.xmlDecl(version, encoding, standalone, inputEncoding);
 
           DomDocument doc = (DomDocument) getDocument();
           doc.setXmlEncoding(encoding);
+          doc.setInputEncoding(inputEncoding);
         }
 
 	public void endDocument ()
 	throws SAXException
 	{
-	    DomDocument		doc = (DomDocument) getDocument ();
+	    DomDocument doc = (DomDocument) getDocument ();
 	    doc.setStrictErrorChecking(true);
+            doc.setBuilding(false);
 	    doc.compact ();
+            DomDoctype doctype = (DomDoctype) doc.getDoctype();
+            if (doctype != null)
+              {
+                doctype.makeReadonly();
+              }
 	    super.endDocument ();
 	}
 

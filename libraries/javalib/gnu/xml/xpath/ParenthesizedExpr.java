@@ -38,6 +38,10 @@
 
 package gnu.xml.xpath;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import org.w3c.dom.Node;
 
 /**
@@ -58,7 +62,19 @@ final class ParenthesizedExpr
 
   public Object evaluate(Node context, int pos, int len)
   {
-    return expr.evaluate(context, pos, len);
+    Object ret = expr.evaluate(context, pos, len);
+    if (ret instanceof Collection)
+      {
+        List list = new ArrayList((Collection) ret);
+        Collections.sort(list, documentOrderComparator);
+        ret = list;
+      }
+    return ret;
+  }
+
+  public Expr clone(Object context)
+  {
+    return new ParenthesizedExpr(expr.clone(context));
   }
 
   public String toString()

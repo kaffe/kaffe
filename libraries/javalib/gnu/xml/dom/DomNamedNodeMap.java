@@ -38,7 +38,8 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.*;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 /**
  * <p> "NamedNodeMap" implementation. </p>
@@ -164,8 +165,6 @@ public class DomNamedNodeMap
     DomNode node = (DomNode) arg;
     if (node.owner != owner.owner)
       {
-        System.err.println(node+".owner="+node.owner);
-        System.err.println(owner+".owner="+owner.owner);
         throw new DomEx(DomEx.WRONG_DOCUMENT_ERR);
       }
     if (node.nodeType != type)
@@ -186,9 +185,13 @@ public class DomNamedNodeMap
     String nodeName = ns ? null : node.getNodeName();
     String localName = ns ? node.getLocalName() : null;
     String namespaceURI = ns ? node.getNamespaceURI() : null;
+    if ("".equals(namespaceURI))
+      {
+        namespaceURI = null;
+      }
     
     // maybe attribute ADDITION events (?)
-    
+    DomNode last = null;
     for (DomNode ctx = first; ctx != null; ctx = ctx.next)
       {
         boolean test = false;
@@ -226,20 +229,46 @@ public class DomNamedNodeMap
               {
                 first = node;
               }
+            reparent(node, nodeName, ctx.index);
+            ctx.parent = null;
             ctx.next = null;
             ctx.previous = null;
+            ctx.setDepth(0);
+            ctx.index = 0;
             return ctx;
           }
+        last = ctx;
       }
-    // prepend
-    if (first != null)
+    // append
+    if (last != null)
       {
-        first.previous = node;
+        last.next = node;
+        node.previous = last;
       }
-    node.next = first;
-    first = node;
+    else
+      {
+        first = node;
+      }
     length++;
+    reparent(node, nodeName, 0);
     return null;
+  }
+
+  void reparent(DomNode node, String nodeName, int i)
+  {
+    node.parent = owner;
+    node.setDepth(owner.depth + 1);
+    // index renumbering
+    for (DomNode ctx = node; ctx != null; ctx = ctx.next)
+      {
+        ctx.index = i++;
+      }
+    // cache xml:space
+    boolean xmlSpace = "xml:space".equals(nodeName);
+    if (xmlSpace && owner instanceof DomElement)
+      {
+        ((DomElement) owner).xmlSpace = node.getNodeValue();
+      }
   }
 
   /**
@@ -259,7 +288,7 @@ public class DomNamedNodeMap
    */
   public Node removeNamedItemNS(String namespaceURI, String localName)
   {
-    return removeNamedItem(namespaceURI, localName, false);
+    return removeNamedItem(namespaceURI, localName, true);
   }
 
   Node removeNamedItem(String uri, String name, boolean ns)
@@ -274,6 +303,7 @@ public class DomNamedNodeMap
     for (DomNode ctx = first; ctx != null; ctx = ctx.next)
       {
         boolean test = false;
+        String nodeName = ctx.getNodeName();
         if (ns)
           {
             String tln = ctx.getLocalName();
@@ -289,10 +319,16 @@ public class DomNamedNodeMap
           }
         else
           {
-            test = ctx.getNodeName().equals(name);
+            test = nodeName.equals(name);
           }
         if (test)
           {
+            // uncache xml:space
+            boolean xmlSpace = "xml:space".equals(nodeName);
+            if (xmlSpace && owner instanceof DomElement)
+              {
+                ((DomElement) owner).xmlSpace = "";
+              }
             // is this a default attribute?
             if (ctx.nodeType == Node.ATTRIBUTE_NODE)
               {
@@ -317,9 +353,12 @@ public class DomNamedNodeMap
               {
                 ctx.next.previous = ctx.previous;
               }
+            length--;
             ctx.previous = null;
             ctx.next = null;
-            length--;
+            ctx.parent = null;
+            ctx.setDepth(0);
+            ctx.index = 0;
             return ctx;
           }
       }    
@@ -333,13 +372,13 @@ public class DomNamedNodeMap
       {
         return null;
       }
-    DomDoctype.ElementInfo info =
-      doctype.getElementInfo(owner.getNodeName());
+    DTDAttributeTypeInfo info =
+      doctype.getAttributeTypeInfo(owner.getNodeName(), name);
     if (info == null)
       {
         return null;
       }
-    return info.getAttrDefault(name);
+    return info.value;
   }
 
   /**

@@ -75,18 +75,36 @@ public final class NodeTypeTest
 
   public boolean matches(Node node, int pos, int len)
   {
-    if (type > 0)
+    short nodeType = node.getNodeType();
+    switch (nodeType)
       {
-        if (node.getNodeType() != type)
+      case Node.ELEMENT_NODE:
+      case Node.ATTRIBUTE_NODE:
+      case Node.TEXT_NODE:
+      case Node.CDATA_SECTION_NODE:
+      case Node.COMMENT_NODE:
+      case Node.PROCESSING_INSTRUCTION_NODE:
+        if (type > 0)
           {
-            return false;
+            if (nodeType != type)
+              {
+                return false;
+              }
+            if (data != null && !data.equals(node.getNodeValue()))
+              {
+                return false;
+              }
           }
-        if (data != null && !data.equals(node.getNodeValue()))
-          {
-            return false;
-          }
+        return true;
+      default:
+        // Not part of XPath data model
+        return false;
       }
-    return true;
+  }
+
+  public Test clone(Object context)
+  {
+    return new NodeTypeTest(type, data);
   }
 
   public String toString()

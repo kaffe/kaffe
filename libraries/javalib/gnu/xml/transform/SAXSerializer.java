@@ -38,6 +38,9 @@
 
 package gnu.xml.transform;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.NamedNodeMap;
@@ -57,6 +60,63 @@ class SAXSerializer
 {
 
   transient NamedNodeMap attrs;
+  transient LinkedList namespaces = new LinkedList();
+
+  boolean isDefined(String prefix, String uri)
+  {
+    for (Iterator i = namespaces.iterator(); i.hasNext(); )
+      {
+        HashMap ctx = (HashMap) i.next();
+        if (uri.equals(ctx.get(prefix)))
+          {
+            return true;
+          }
+      }
+    return false;
+  }
+
+  void define(String prefix, String uri)
+  {
+    for (Iterator i = namespaces.iterator(); i.hasNext(); )
+      {
+        HashMap ctx = (HashMap) i.next();
+        if (ctx.containsKey(prefix))
+          {
+            HashMap newCtx = new HashMap();
+            newCtx.put(prefix, uri);
+            namespaces.addFirst(newCtx);
+            return;
+          }
+      }
+    HashMap ctx;
+    if (namespaces.isEmpty())
+      {
+        ctx = new HashMap();
+        namespaces.add(ctx);
+      }
+    else
+      {
+        ctx = (HashMap) namespaces.getFirst();
+      }
+    ctx.put(prefix, uri);
+  }
+
+  void undefine(String prefix, String uri)
+  {
+    for (Iterator i = namespaces.iterator(); i.hasNext(); )
+      {
+        HashMap ctx = (HashMap) i.next();
+        if (uri.equals(ctx.get(prefix)))
+          {
+            ctx.remove(prefix);
+            if (ctx.isEmpty())
+              {
+                namespaces.remove(ctx);
+              }
+            return;
+          }
+      }
+  }
 
   public int getLength()
   {
@@ -91,14 +151,35 @@ class SAXSerializer
 
   public int getIndex(String uri, String localName)
   {
-    // TODO
-    throw new UnsupportedOperationException();
+    int len = attrs.getLength();
+    for (int i = 0; i < len; i++)
+      {
+        Node attr = attrs.item(i);
+        String a_uri = attr.getNamespaceURI();
+        String a_localName = attr.getLocalName();
+        if (((a_uri == null && uri == null) ||
+             (a_uri != null && a_uri.equals(uri))) &&
+            a_localName.equals(localName))
+          {
+            return i;
+          }
+      }
+    return -1;
   }
 
   public int getIndex(String qName)
   {
-    // TODO
-    throw new UnsupportedOperationException();
+    int len = attrs.getLength();
+    for (int i = 0; i < len; i++)
+      {
+        Node attr = attrs.item(i);
+        String a_name = attr.getNodeName();
+        if (a_name.equals(qName))
+          {
+            return i;
+          }
+      }
+    return -1;
   }
 
   public String getType(String uri, String localName)
@@ -132,8 +213,14 @@ class SAXSerializer
     switch (node.getNodeType())
       {
       case Node.ELEMENT_NODE:
-        // TODO namespaces
         String uri = node.getNamespaceURI();
+        String prefix = node.getPrefix();
+        boolean defined = isDefined(prefix, uri);
+        if (!defined)
+          {
+            define(prefix, uri);
+            ch.startPrefixMapping(prefix, uri);
+          }
         String localName = node.getLocalName();
         String qName = node.getNodeName();
         ch.startElement(uri, localName, qName, this);
@@ -143,6 +230,11 @@ class SAXSerializer
             serialize(children, ch, lh);
           }
         ch.endElement(uri, localName, qName);
+        if (!defined)
+          {
+            ch.endPrefixMapping(prefix);
+            undefine(prefix, uri);
+          }
         break;
       case Node.TEXT_NODE:
         char[] chars = node.getNodeValue().toCharArray();
@@ -160,6 +252,7 @@ class SAXSerializer
           {
             ch.characters(cdata, 0, cdata.length);
           }
+        break;
       case Node.COMMENT_NODE:
         if (lh != null)
           {
@@ -184,14 +277,26 @@ class SAXSerializer
             String publicId = doctype.getPublicId();
             String systemId = doctype.getSystemId();
             lh.startDTD(node.getNodeName(), publicId, systemId);
-            // TODO entities?
+            NamedNodeMap entities = doctype.getEntities();
+            int len = entities.getLength();
+            for (int i = 0; i < len; i++)
+              {
+                Node entity = entities.item(i);
+                String entityName = entity.getNodeName();
+                lh.startEntity(entityName);
+                lh.endEntity(entityName);
+              }
             lh.endDTD();
           }
         break;
       case Node.PROCESSING_INSTRUCTION_NODE:
         ch.processingInstruction(node.getNodeName(), node.getNodeValue());
         break;
+      case Node.ENTITY_REFERENCE_NODE:
+        ch.skippedEntity(node.getNodeName());
+        break;
       }
+    attrs = null;
     if (next != null)
       {
         serialize(next, ch, lh);

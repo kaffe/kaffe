@@ -114,80 +114,38 @@ class XSLURIResolver
       }
     String systemId = (source == null) ? null : source.getSystemId();
     long lastModified = 0L, lastLastModified = 0L;
-    URL url = null;
-    Node node = null;
 
     try
       {
-        try
-          {
-            if (systemId != null)
-              {
-                try
-                  {
-                    url = new URL(systemId);
-                  }
-                catch (MalformedURLException e)
-                  {
-                    // Try building from base + href
-                  }
-              }
-            if (url == null)
-              {
-                if (base != null)
-                  {
-                    URL baseURL = new URL(base);
-                    url = new URL(baseURL, href);
-                  }
-                else
-                  {
-                    url = new URL(href);
-                  }
-              }
-            systemId = url.toString();
-            lastModified = getLastModified(url);
-          }
-        catch (MalformedURLException e)
-          {
-            // Fall back to local filesystem
-            File file = null;
-            if (href == null)
-              {
-                href = systemId;
-              }
-            if (base != null)
-              {
-                int lsi = base.lastIndexOf(File.separatorChar);
-                if (lsi != -1 && lsi < base.length() - 1)
-                  {
-                    base = base.substring(0, lsi);
-                  }
-                File baseFile = new File(base);
-                file = new File(baseFile, href);
-              }
-            else
-              {
-                file = new File(href);
-              }
-            url = file.toURL();
-            systemId = url.toString();
-            lastModified = file.lastModified();
-          }		
+        URL url = resolveURL(systemId, base, href);
+        systemId = url.toString();
+        Node node = (Node) nodeCache.get(systemId);
+        // Is the resource up to date?
+        URLConnection conn = url.openConnection();
         Long llm = (Long) lastModifiedCache.get(systemId);
-        if (llm == null || lastModified == 0L ||
-            lastModified > llm.longValue())
+        if (llm != null)
           {
-            lastModifiedCache.put(systemId, new Long(lastModified));
-            InputStream in = url.openStream();
+            lastLastModified = llm.longValue();
+            conn.setIfModifiedSince(lastLastModified);
+          }
+        conn.connect();
+        lastModified = conn.getLastModified();
+        if (node != null && 
+            lastModified > 0L &&
+            lastModified <= lastLastModified)
+          {
+            // Resource unchanged
+          }
+        else
+          {
+            // Resource new or modified
+            InputStream in = conn.getInputStream();
             InputSource input = new InputSource(in);
             input.setSystemId(systemId);
             DocumentBuilder builder = getDocumentBuilder();
             node = builder.parse(input);
             nodeCache.put(systemId, node);
-          }
-        else
-          {
-            node = (Node) nodeCache.get(systemId);
+            lastModifiedCache.put(systemId, new Long(lastModified));
           }
         return new DOMSource(node, systemId);
       }
@@ -200,34 +158,62 @@ class XSLURIResolver
         throw new TransformerException(e);
       }
   }
-  
-  long getLastModified(URL url)
+
+  URL resolveURL(String systemId, String base, String href)
     throws IOException
   {
-    URLConnection connection = url.openConnection();
-    if (connection instanceof HttpURLConnection)
-      {
-        ((HttpURLConnection) connection).setRequestMethod("HEAD");
-      }
-    long ret = connection.getLastModified();
-    // Read the associated stream and close it
+    URL url = null;
     try
       {
-        InputStream in = connection.getInputStream();
-        if (in != null)
+        if (systemId != null)
           {
-            byte[] buf = new byte[Math.max(in.available(), 4096)];
-            for (int len = in.read(buf); len != -1; len = in.read(buf))
+            try
               {
+                url = new URL(systemId);
               }
-            in.close();
+            catch (MalformedURLException e)
+              {
+                // Try building from base + href
+              }
           }
+        if (url == null)
+          {
+            if (base != null)
+              {
+                URL baseURL = new URL(base);
+                url = new URL(baseURL, href);
+              }
+            else
+              {
+                url = new URL(href);
+              }
+          }
+        return url;
       }
-    catch (IOException e)
+    catch (MalformedURLException e)
       {
-        // We tried, anyway
+        // Fall back to local filesystem
+        File file = null;
+        if (href == null)
+          {
+            href = systemId;
+          }
+        if (base != null)
+          {
+            int lsi = base.lastIndexOf(File.separatorChar);
+            if (lsi != -1 && lsi < base.length() - 1)
+              {
+                base = base.substring(0, lsi);
+              }
+            File baseFile = new File(base);
+            file = new File(baseFile, href);
+          }
+        else
+          {
+            file = new File(href);
+          }
+        return file.toURL();
       }
-    return ret;
   }
   
   DocumentBuilder getDocumentBuilder()
@@ -240,6 +226,7 @@ class XSLURIResolver
             DocumentBuilderFactory factory =
               DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
+            factory.setExpandEntityReferences(true);
             builder = factory.newDocumentBuilder();
           }
         if (userResolver != null)

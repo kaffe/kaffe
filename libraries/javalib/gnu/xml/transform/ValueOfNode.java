@@ -40,6 +40,8 @@ package gnu.xml.transform;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.text.DecimalFormat;
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -63,15 +65,25 @@ final class ValueOfNode
   {
     super(children, next);
     this.select = select;
-    this.disableOutputEscaping = disableOutputEscaping; // TODO
+    this.disableOutputEscaping = disableOutputEscaping;
   }
 
-  void apply(Stylesheet stylesheet, String mode,
+  TemplateNode clone(Stylesheet stylesheet)
+  {
+    return new ValueOfNode((children == null) ? null :
+                           children.clone(stylesheet),
+                           (next == null) ? null :
+                           next.clone(stylesheet),
+                           select.clone(stylesheet),
+                           disableOutputEscaping);
+  }
+
+  void doApply(Stylesheet stylesheet, QName mode,
              Node context, int pos, int len,
              Node parent, Node nextSibling)
     throws TransformerException
   {
-    Object ret = select.evaluate(context, 1, 1);
+    Object ret = select.evaluate(context, pos, len);
     String value = Expr._string(context, ret);
     //System.err.println("value-of: "+context+" "+ select + " -> "+ value);
     if (value != null && value.length() > 0)
@@ -79,6 +91,10 @@ final class ValueOfNode
         Document doc = (parent instanceof Document) ?
           (Document) parent : parent.getOwnerDocument();
         Text textNode = doc.createTextNode(value);
+        if (disableOutputEscaping)
+          {
+            textNode.setUserData("disable-output-escaping", "yes", stylesheet);
+          }
         if (nextSibling != null)
           {
             parent.insertBefore(textNode, nextSibling);

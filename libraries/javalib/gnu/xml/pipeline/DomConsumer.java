@@ -421,7 +421,8 @@ public class DomConsumer implements EventConsumer
         // ContentHandler2
         public void xmlDecl(String version,
                             String encoding,
-                            boolean standalone)
+                            boolean standalone,
+                            String inputEncoding)
           throws SAXException
         {
           if (document != null)

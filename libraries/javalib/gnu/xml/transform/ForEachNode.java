@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.w3c.dom.Node;
 import gnu.xml.xpath.Expr;
@@ -67,37 +68,66 @@ final class ForEachNode
     this.sortKeys = sortKeys;
   }
 
-  void apply(Stylesheet stylesheet, String mode,
+  TemplateNode clone(Stylesheet stylesheet)
+  {
+    int len = sortKeys.size();
+    List sortKeys2 = new ArrayList(len);
+    for (int i = 0; i < len; i++)
+      {
+        sortKeys2.add(((Key) sortKeys.get(i)).clone(stylesheet));
+      }
+    return new ForEachNode((children == null) ? null :
+                           children.clone(stylesheet),
+                           (next == null) ? null :
+                           next.clone(stylesheet),
+                           select.clone(stylesheet),
+                           sortKeys2);
+  }
+
+  void doApply(Stylesheet stylesheet, QName mode,
              Node context, int pos, int len,
              Node parent, Node nextSibling)
     throws TransformerException
   {
     if (children != null)
       {
+        // Set current template to null
+        Template saved = stylesheet.currentTemplate;
+        stylesheet.currentTemplate = null;
         Object ret = select.evaluate(context, pos, len);
-        //System.out.println(toString() + ": " + context+" -> "+ret);
+        //System.err.println(toString() + ": " + context+" -> "+ret);
         if (ret instanceof Collection)
           {
             Collection ns = (Collection) ret;
             List list = new ArrayList(ns);
             if (sortKeys != null)
               {
+                for (Iterator i = sortKeys.iterator(); i.hasNext(); )
+                  {
+                    SortKey sortKey = (SortKey) i.next();
+                    sortKey.init(stylesheet, mode, context, pos, len, parent,
+                                 nextSibling);
+                  }
                 Collections.sort(list, new XSLComparator(sortKeys));
               }
             else
               {
                 Collections.sort(list, documentOrderComparator);
               }
+            // Perform children for each node
             int l = list.size();
             int p = 1;
             for (Iterator i = list.iterator(); i.hasNext(); )
               {
                 Node node = (Node) i.next();
+                stylesheet.current = node;
                 children.apply(stylesheet, mode,
                                node, p++, l,
                                parent, nextSibling);
               }
           }
+        // Restore current template
+        stylesheet.currentTemplate = saved;
       }
     if (next != null)
       {

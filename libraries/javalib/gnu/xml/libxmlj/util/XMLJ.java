@@ -228,11 +228,16 @@ public final class XMLJ
   {
     if (uri != null &&
         base != null &&
-        (uri.length () > 0) &&
-        (uri.indexOf (':') == -1) &&
-        (uri.charAt (0) != '/'))
+        (uri.length() > 0) &&
+        (uri.indexOf(':') == -1) &&
+        (uri.charAt(0) != '/'))
       {
         // URI is relative
+        if (base.charAt(base.length() - 1) != '/')
+          {
+            int i = base.lastIndexOf('/');
+            base = base.substring(0, i + 1);
+          }
         return base + uri;
       }
     else
@@ -242,14 +247,14 @@ public final class XMLJ
       }
   }
 
-  public static String getBaseURI (String uri)
+  public static String getBaseURI(String uri)
   {
     if (uri != null)
       {
         int si = uri.lastIndexOf('/');
         if (si != -1)
           {
-            uri = uri.substring (0, si + 1);
+            uri = uri.substring(0, si + 1);
           }
       }
     return uri;

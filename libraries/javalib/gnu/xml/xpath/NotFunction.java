@@ -51,27 +51,32 @@ final class NotFunction
   extends Expr
 {
 
-	final Expr arg;
+  final Expr arg;
 
-	NotFunction(List args)
-	{
-		this((Expr) args.get(0));
-	}
+  NotFunction(List args)
+  {
+    this((Expr) args.get(0));
+  }
 
-	NotFunction(Expr arg)
-	{
-		this.arg = arg;
-	}
+  NotFunction(Expr arg)
+  {
+    this.arg = arg;
+  }
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val = arg.evaluate(context, pos, len);
-		return _boolean(context, val) ? Boolean.FALSE : Boolean.TRUE;
-	}
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val = arg.evaluate(context, pos, len);
+    return _boolean(context, val) ? Boolean.FALSE : Boolean.TRUE;
+  }
 
-	public String toString()
-	{
-		return "not(" + arg + ")";
-	}
-	
+  public Expr clone(Object context)
+  {
+    return new NotFunction(arg.clone(context));
+  }
+
+  public String toString()
+  {
+    return "not(" + arg + ")";
+  }
+  
 }

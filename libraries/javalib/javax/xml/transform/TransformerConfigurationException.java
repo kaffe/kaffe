@@ -70,7 +70,7 @@ public class TransformerConfigurationException
    */
   public TransformerConfigurationException(Throwable e)
   {
-    this(null, null, e);
+    this(e.getMessage(), null, e);
   }
 
   /**
@@ -85,7 +85,7 @@ public class TransformerConfigurationException
    * Constructor with detail message and locator.
    */
   public TransformerConfigurationException(String message,
-                                            SourceLocator locator)
+                                           SourceLocator locator)
   {
     this(message, locator, null);
   }

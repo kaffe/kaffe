@@ -1,6 +1,6 @@
 /*
  * DomElement.java
- * Copyright (C) 1999,2000,2001 The Free Software Foundation
+ * Copyright (C) 1999,2000,2001,2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -38,8 +38,11 @@
 
 package gnu.xml.dom;
 
+import java.util.HashSet;
+import java.util.Set;
+import javax.xml.XMLConstants;
+
 import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -49,15 +52,25 @@ import org.w3c.dom.TypeInfo;
  * <p> "Element" implementation.
  *
  * @author David Brownell 
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class DomElement
   extends DomNsNode
   implements Element
 {
 
+  /**
+   * User-defined ID attributes.
+   * Used by DomAttr.isId and DomDocument.getElementById
+   */
+  Set userIdAttrs;
+
   // Attributes are VERY expensive in DOM, and not just for
   // this implementation.  Avoid creating them.
   private DomNamedNodeMap attributes;
+
+  // xml:space cache
+  String xmlSpace = "";
 
   /**
    * Constructs an Element node associated with the specified document.
@@ -71,7 +84,7 @@ public class DomElement
    *	this is used to uniquely identify a type of element
    * @param name Name of this element, which may include a prefix
    */
-  protected DomElement(Document owner, String namespaceURI, String name)
+  protected DomElement(DomDocument owner, String namespaceURI, String name)
   {
     super(ELEMENT_NODE, owner, namespaceURI, name);
   }
@@ -117,7 +130,7 @@ public class DomElement
     return node;
   }
 
-  void setOwner(Document doc)
+  void setOwner(DomDocument doc)
   {
     if (attributes != null)
       {
@@ -151,7 +164,6 @@ public class DomElement
     return getNodeName();
   }
 
-
   /**
    * <b>DOM L1</b>
    * Returns the value of the specified attribute, or an
@@ -159,6 +171,11 @@ public class DomElement
    */
   public String getAttribute(String name)
   {
+    if ("xml:space" == name) // NB only works on interned string
+      {
+        // Use cached value
+        return xmlSpace;
+      }
     Attr attr = getAttributeNode(name);
     return (attr == null) ? "" : attr.getValue();
   }
@@ -170,7 +187,6 @@ public class DomElement
    */
   public boolean hasAttribute(String name)
   {
-    // FIXME DTD defaulted case
     return getAttributeNode(name) != null;
   }
 
@@ -181,7 +197,6 @@ public class DomElement
    */
   public boolean hasAttributeNS(String namespaceURI, String local)
   {
-    // FIXME DTD defaulted case
     return getAttributeNodeNS(namespaceURI, local) != null;
   }
 
@@ -246,7 +261,7 @@ public class DomElement
   public void setAttributeNS(String uri, String aname, String value)
   {
     if (("xmlns".equals (aname) || aname.startsWith ("xmlns:"))
-        && !DomDocument.xmlnsURI.equals (uri))
+        && !XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals (uri))
       {
         throw new DomEx(DomEx.NAMESPACE_ERR,
                         "setting xmlns attribute to illegal value", this, 0);
@@ -351,26 +366,158 @@ public class DomElement
 
   // DOM Level 3 methods
 
+  public String lookupPrefix(String namespaceURI)
+  {
+    if (namespaceURI == null)
+      {
+        return null;
+      }
+    String namespace = getNamespaceURI();
+    if (namespace != null && namespace.equals(namespaceURI))
+      {
+        return getPrefix();
+      }
+    if (attributes != null)
+      {
+        for (DomNode ctx = attributes.first; ctx != null; ctx = ctx.next)
+          {
+            if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI
+                .equals(ctx.getNamespaceURI()))
+              {
+                String value = ctx.getNodeValue();
+                if (value.equals(namespaceURI))
+                  {
+                    return ctx.getLocalName();
+                  }
+              }
+          }
+      }
+    return super.lookupPrefix(namespaceURI);
+  }
+
+  public boolean isDefaultNamespace(String namespaceURI)
+  {
+    String namespace = getNamespaceURI();
+    if (namespace != null && namespace.equals(namespaceURI))
+      {
+        return getPrefix() == null;
+      }
+    if (attributes != null)
+      {
+        for (DomNode ctx = attributes.first; ctx != null; ctx = ctx.next)
+          {
+            if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI
+                .equals(ctx.getNamespaceURI()))
+              {
+                String qName = ctx.getNodeName();
+                return (XMLConstants.XMLNS_ATTRIBUTE.equals(qName));
+              }
+          }
+      }
+    return super.isDefaultNamespace(namespaceURI);
+  }
+
+  public String lookupNamespaceURI(String prefix)
+  {
+    String namespace = getNamespaceURI();
+    if (namespace != null && equal(prefix, getPrefix()))
+      {
+        return namespace;
+      }
+    if (attributes != null)
+      {
+        for (DomNode ctx = attributes.first; ctx != null; ctx = ctx.next)
+          {
+            if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI
+                .equals(ctx.getNamespaceURI()))
+              {
+                if (prefix == null)
+                  {
+                    if (XMLConstants.XMLNS_ATTRIBUTE.equals(ctx.getNodeName()))
+                      {
+                        return ctx.getNodeValue();
+                      }
+                  }
+                else
+                  {
+                    if (prefix.equals(ctx.getLocalName()))
+                      {
+                        return ctx.getNodeValue();
+                      }
+                  }
+              }
+          }
+      }
+    return super.lookupNamespaceURI(prefix);
+  }
+  
+  public String getBaseURI()
+  {
+    if (attributes != null)
+      {
+        Node xmlBase =
+          attributes.getNamedItemNS(XMLConstants.XML_NS_URI, "base");
+        if (xmlBase != null)
+          {
+            return xmlBase.getNodeValue();
+          }
+      }
+    return super.getBaseURI();
+  }
+  
   public TypeInfo getSchemaTypeInfo()
   {
-    // TODO
+    // DTD implementation
+    DomDoctype doctype = (DomDoctype) owner.getDoctype();
+    if (doctype != null)
+      {
+        return doctype.getElementTypeInfo(getNodeName());
+      }
+    // TODO XML Schema implementation
     return null;
   }
 
   public void setIdAttribute(String name, boolean isId)
   {
-    // TODO
+    NamedNodeMap attrs = getAttributes();
+    Attr attr = (Attr) attrs.getNamedItem(name);
+    setIdAttributeNode(attr, isId);
   }
   
-  public void setIdAttributeNode(Attr isAddr, boolean isId)
+  public void setIdAttributeNode(Attr attr, boolean isId)
   {
-    // TODO
+    if (readonly)
+      {
+        throw new DomEx(DomEx.NO_MODIFICATION_ALLOWED_ERR);
+      }
+    if (attr == null || attr.getOwnerElement() != this)
+      {
+        throw new DomEx(DomEx.NOT_FOUND_ERR);
+      }
+    if (isId)
+      {
+        if (userIdAttrs == null)
+          {
+            userIdAttrs = new HashSet();
+          }
+        userIdAttrs.add(attr);
+      }
+    else if (userIdAttrs != null)
+      {
+        userIdAttrs.remove(attr);
+        if (userIdAttrs.isEmpty())
+          {
+            userIdAttrs = null;
+          }
+      }
   }
 
   public void setIdAttributeNS(String namespaceURI, String localName,
                                boolean isId)
   {
-    // TODO
+    NamedNodeMap attrs = getAttributes();
+    Attr attr = (Attr) attrs.getNamedItemNS(namespaceURI, localName);
+    setIdAttributeNode(attr, isId);
   }
   
 }

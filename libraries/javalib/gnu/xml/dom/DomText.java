@@ -1,5 +1,7 @@
 /*
+ * DomText.java
  * Copyright (C) 1999-2001 David Brownell
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -37,146 +39,184 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.*;
-
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Text;
 
 /**
  * <p> "Text" implementation.  </p>
  *
  * @author David Brownell 
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class DomText
   extends DomCharacterData
   implements Text
 {
-    // NOTE:  deleted unused per-instance "isIgnorable"
-    // support to reclaim its space.
+  
+  // NOTE:  deleted unused per-instance "isIgnorable"
+  // support to reclaim its space.
+  
+  /**
+   * Constructs a text node associated with the specified
+   * document and holding the specified data.
+   *
+   * <p>This constructor should only be invoked by a Document object
+   * as part of its createTextNode functionality, or through a subclass
+   * which is similarly used in a "Sub-DOM" style layer. 
+   */
+  protected DomText(DomDocument owner, String value)
+  {
+    super(TEXT_NODE, owner, value);
+  }
 
-    /**
-     * Constructs a text node associated with the specified
-     * document and holding the specified data.
-     *
-     * <p>This constructor should only be invoked by a Document object
-     * as part of its createTextNode functionality, or through a subclass
-     * which is similarly used in a "Sub-DOM" style layer. 
-     */
-    protected DomText (Document owner, String value)
-    {
-	super (TEXT_NODE, owner, value);
-    }
+  protected DomText(DomDocument owner, char[] buf, int off, int len)
+  {
+    super(TEXT_NODE, owner, buf, off, len);
+  }
 
-    protected DomText (Document owner, char buf [], int off, int len)
-    {
-	super (TEXT_NODE, owner, buf, off, len);
-    }
+  // Used by DomCDATA
+  DomText(short nodeType, DomDocument owner, String value)
+  {
+    super(nodeType, owner, value);
+  }
 
-    // Used by DomCDATA
-    DomText (short nodeType, Document owner, String value)
-    {
-	super (nodeType, owner, value);
-    }
+  DomText(short nodeType, DomDocument owner, char[] buf, int off, int len)
+  {
+    super(nodeType, owner, buf, off, len);
+  }
 
-    DomText (short nodeType, Document owner, char buf [], int off, int len)
-    {
-	super (nodeType, owner, buf, off, len);
-    }
+  /**
+   * <b>DOM L1</b>
+   * Returns the string "#text".
+   */
+  // can't be 'final' with CDATA subclassing
+  public String getNodeName()
+  {
+    return "#text";
+  }
 
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the string "#text".
-     */
-    // can't be 'final' with CDATA subclassing
-    public String getNodeName ()
-    {
-	return "#text";
-    }
-
-    /**
-     * <b>DOM L1</b>
-     * Splits this text node in two parts at the offset, returning
-     * the new text node (the sibling with the second part).
-     */
-    public Text splitText (int offset)
-    {
-	if (isReadonly ())
-	    throw new DomEx (DomEx.NO_MODIFICATION_ALLOWED_ERR);
-	try {
-	    String	before = getNodeValue ().substring (0, offset);
-	    String	after = getNodeValue ().substring (offset);
-	    Text	next;
-
-	    if (getNodeType () == TEXT_NODE)
-		next = getOwnerDocument ().createTextNode (after);
-	    else // CDATA_SECTION_NODE
-		next = getOwnerDocument ().createCDATASection (after);
-
-	    getParentNode ().insertBefore (next, getNextSibling ());
-	    setNodeValue (before);
-	    return next;
-
-	} catch (IndexOutOfBoundsException x) {
-	    throw new DomEx (DomEx.INDEX_SIZE_ERR);
-	}
-    }
-    
-    // DOM Level 3
-
-    public boolean isElementContentWhitespace ()
+  /**
+   * <b>DOM L1</b>
+   * Splits this text node in two parts at the offset, returning
+   * the new text node (the sibling with the second part).
+   */
+  public Text splitText(int offset)
+  {
+    if (isReadonly())
       {
-        return getTextContent ().trim ().length () == 0;
+        throw new DomEx(DomEx.NO_MODIFICATION_ALLOWED_ERR);
       }
-
-    public String getWholeText ()
+    try
       {
-        Node first = this;
-        Node node = getPreviousSibling ();
-        while (node != null && node instanceof Text)
+        String text = getNodeValue();
+        String before = text.substring(0, offset);
+        String after = text.substring(offset);
+        Text next;
+        
+        if (getNodeType() == TEXT_NODE)
           {
-            first = node;
-            node = node.getPreviousSibling ();
+            next = owner.createTextNode(after);
           }
-        StringBuffer buf = new StringBuffer (first.getNodeValue ());
-        node = first.getNextSibling ();
-        while (node != null && node instanceof Text)
+        else // CDATA_SECTION_NODE
           {
-            buf.append (node.getNodeValue ());
-            node = node.getNextSibling ();
-          }
-        return buf.toString ();
-      }
-
-    public Text replaceWholeText (String content) throws DOMException
-      {
-        boolean isEmpty = (content == null || content.length () == 0);
-        if (!isEmpty)
-          {
-            setNodeValue (content);
+            next = owner.createCDATASection(after);
           }
         
-        Node first = this;
-        Node node = getPreviousSibling ();
-        while (node != null && node instanceof Text)
+        if (this.next != null)
           {
-            first = node;
-            node = node.getPreviousSibling ();
+            parent.insertBefore(next, this.next);
           }
-        node = first.getNextSibling ();
-        Node parent = getParentNode ();
-        if (first != this || isEmpty)
+        else
           {
-            parent.removeChild (first);
+            parent.appendChild(next);
           }
-        while (node != null && node instanceof Text)
+        setNodeValue(before);
+        return next;
+        
+      }
+    catch (IndexOutOfBoundsException x)
+      {
+        throw new DomEx(DomEx.INDEX_SIZE_ERR);
+      }
+  }
+    
+  // DOM Level 3
+  
+  public boolean isElementContentWhitespace()
+  {
+    if (parent != null)
+      {
+        DomDoctype doctype = (DomDoctype) owner.getDoctype();
+        if (doctype != null)
           {
-            Node tmp = node;
-            node = node.getNextSibling ();
-            if (tmp != this || isEmpty)
+            DTDElementTypeInfo info =
+              doctype.getElementTypeInfo(parent.getNodeName());
+            if (info != null)
               {
-                parent.removeChild (tmp);
+                if (info.model == null && info.model.indexOf("#PCDATA") != -1)
+                  {
+                    return false;
+                  }
+                return getNodeValue().trim().length() == 0;
               }
           }
-        return (isEmpty) ? null : this;
       }
+    return false;
+  }
+
+  public String getWholeText()
+  {
+    DomNode ref = this;
+    DomNode ctx;
+    for (ctx = previous; ctx != null &&
+         (ctx.nodeType == TEXT_NODE || ctx.nodeType == CDATA_SECTION_NODE);
+         ctx = ctx.previous)
+      {
+        ref = ctx;
+      }
+    StringBuffer buf = new StringBuffer(ref.getNodeValue());
+    for (ctx = ref.next; ctx != null &&
+         (ctx.nodeType == TEXT_NODE || ctx.nodeType == CDATA_SECTION_NODE);
+         ctx = ctx.next)
+      {
+        buf.append(ctx.getNodeValue());
+      }
+    return buf.toString ();
+  }
+
+  public Text replaceWholeText(String content)
+    throws DOMException
+  {
+    boolean isEmpty = (content == null || content.length () == 0);
+    if (!isEmpty)
+      {
+        setNodeValue(content);
+      }
+    
+    DomNode ref = this;
+    DomNode ctx;
+    for (ctx = previous; ctx != null &&
+         (ctx.nodeType == TEXT_NODE || ctx.nodeType == CDATA_SECTION_NODE);
+         ctx = ctx.previous)
+      {
+        ref = ctx;
+      }
+    ctx = ref.next;
+    if ((isEmpty || ref != this) && parent != null)
+      {
+        parent.removeChild(ref);
+      }
+    for (; ctx != null &&
+         (ctx.nodeType == TEXT_NODE || ctx.nodeType == CDATA_SECTION_NODE);
+         ctx = ref)
+      {
+        ref = ctx.next;
+        if ((isEmpty || ctx != this) && parent != null)
+          {
+            parent.removeChild(ctx);
+          }
+      }
+    return (isEmpty) ? null : this;
+  }
     
 }

@@ -85,7 +85,7 @@ public class XPathFactoryImpl
 
   public XPath newXPath()
   {
-    return new XPathImpl(variableResolver, functionResolver);
+    return new XPathImpl(null, variableResolver, functionResolver);
   }
   
 }

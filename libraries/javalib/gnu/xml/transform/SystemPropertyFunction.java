@@ -1,5 +1,5 @@
 /*
- * Step.java
+ * SystemPropertyFunction.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -36,71 +36,95 @@
  * exception statement from your version. 
  */
 
-package gnu.xml.xpath;
+package gnu.xml.transform;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
+import javax.xml.namespace.QName;
+import javax.xml.xpath.XPathFunction;
+import javax.xml.xpath.XPathFunctionException;
 import org.w3c.dom.Node;
+import gnu.xml.xpath.Expr;
+import gnu.xml.xpath.Function;
 
 /**
- * A transition step between components in a location path.
+ * The XSLT <code>system-property()</code>function.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public final class Step
-  extends Path
+final class SystemPropertyFunction
+  extends Expr
+  implements XPathFunction, Function
 {
 
-  final Expr lhs;
-  final Path rhs;
+  List args;
 
-  public Step(Expr lhs, Path rhs)
+  public Object evaluate(List args)
+    throws XPathFunctionException
   {
-    this.lhs = lhs;
-    this.rhs = rhs;
+    String name = (String) args.get(0);
+    return systemProperty(QName.valueOf(name));
+  }
+
+  public void setArguments(List args)
+  {
+    this.args = args;
   }
 
   public Object evaluate(Node context, int pos, int len)
   {
-    Object left = lhs.evaluate(context, pos, len);
-    if (left instanceof Collection)
+    int arity = args.size();
+    List values = new ArrayList(arity);
+    for (int i = 0; i < arity; i++)
       {
-        return rhs.evaluate(context, (Collection) left);
+        Expr arg = (Expr) args.get(i);
+        values.add(arg.evaluate(context, pos, len));
       }
-    return Collections.EMPTY_SET;
+    String name = _string(context, values.get(0));
+    return systemProperty(QName.valueOf(name));
   }
 
-  Collection evaluate(Node context, Collection ns)
+  Object systemProperty(QName name)
   {
-    if (lhs instanceof Path)
+    String localName = name.getLocalName();
+    String prefix = name.getPrefix();
+    String uri = name.getNamespaceURI();
+    if (Stylesheet.XSL_NS.equals(uri) ||
+        "xsl".equals(prefix))
       {
-        ns = ((Path) lhs).evaluate(context, ns);
-      }
-    else
-      {
-        Set acc = new LinkedHashSet();
-        int pos = 1, len = ns.size();
-        for (Iterator i = ns.iterator(); i.hasNext(); )
+        if ("version".equals(localName))
           {
-            Node node = (Node) i.next();
-            Object ret = lhs.evaluate(node, pos++, len);
-            if (ret instanceof Collection)
-              {
-                acc.addAll((Collection) ret);
-              }
+            return new Double(1.0d);
           }
-        ns = acc;
+        else if ("vendor".equals(localName))
+          {
+            return "The Free Software Foundation";
+          }
+        else if ("vendor-url".equals(localName))
+          {
+            return "http://www.gnu.org/";
+          }
+        else
+          {
+            return "";
+          }
       }
-    ns = rhs.evaluate(context, ns);
-    return ns;
+    return System.getProperty(localName);
   }
 
-  public String toString()
+  public Expr clone(Object context)
   {
-    return lhs + ((lhs instanceof Root) ? "" : "/") + rhs;
+    SystemPropertyFunction f = new SystemPropertyFunction();
+    int len = args.size();
+    List args2 = new ArrayList(len);
+    for (int i = 0; i < len; i++)
+      {
+        args2.add(((Expr) args.get(i)).clone(context));
+      }
+    f.setArguments(args2);
+    return f;
   }
 
 }
+

@@ -514,7 +514,7 @@ xmljParseDocument2 (JNIEnv * env,
 
   ret = xmlParseDocument (ctx);
   doc = ctx->myDoc;
-  if (ret)
+  if (ret || !doc)
     {
       const char *msg = ctx->lastError.message;
       switch (mode)

@@ -55,28 +55,39 @@ final class SubstringAfterFunction
   extends Expr
 {
 
-	final Expr arg1;
-	final Expr arg2;
+  final Expr arg1;
+  final Expr arg2;
 
-	SubstringAfterFunction(List args)
-	{
-		arg1 = (Expr) args.get(0);
-		arg2 = (Expr) args.get(1);
-	}
+  SubstringAfterFunction(List args)
+  {
+    this((Expr) args.get(0), (Expr) args.get(1));
+  }
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val1 = arg1.evaluate(context, pos, len);
-		Object val2 = arg2.evaluate(context, pos, len);
-		String s1 = _string(context, val1);
-		String s2 = _string(context, val2);
-		int index = s1.indexOf(s2);
-		return (index == -1) ? "" : s1.substring(index + s2.length());
-	}
+  SubstringAfterFunction(Expr arg1, Expr arg2)
+  {
+    this.arg1 = arg1;
+    this.arg2 = arg2;
+  }
 
-	public String toString()
-	{
-		return "substring-after(" + arg1 + "," + arg2 + ")";
-	}
-	
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val1 = arg1.evaluate(context, pos, len);
+    Object val2 = arg2.evaluate(context, pos, len);
+    String s1 = _string(context, val1);
+    String s2 = _string(context, val2);
+    int index = s1.indexOf(s2);
+    return (index == -1) ? "" : s1.substring(index + s2.length());
+  }
+
+  public Expr clone(Object context)
+  {
+    return new SubstringAfterFunction(arg1.clone(context),
+                                      arg2.clone(context));
+  }
+
+  public String toString()
+  {
+    return "substring-after(" + arg1 + "," + arg2 + ")";
+  }
+  
 }

@@ -1,6 +1,6 @@
 /*
  * DomDocType.java
- * Copyright (C) 1999,2000,2001 The Free Software Foundation
+ * Copyright (C) 1999,2000,2001,2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -39,7 +39,6 @@
 package gnu.xml.dom;
 
 import java.util.HashMap;
-import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Entity;
@@ -74,6 +73,7 @@ import org.w3c.dom.Notation;
  * @see DomNotation
  *
  * @author David Brownell 
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class DomDoctype
   extends DomExtern
@@ -120,12 +120,17 @@ public class DomDoctype
     subset = internalSubset;
   }
 
-  // package private
-  // for JAXP-style builder backdoors
-  DomDoctype(DomDocument doc,
-             String name,
-             String publicId,
-             String systemId)
+  /**
+   * JAXP builder constructor.
+   * @param doc the document
+   * @param name the name of the document element
+   * @param publicId the public ID of the document type declaration
+   * @param systemId the system ID of the document type declaration
+   */
+  public DomDoctype(DomDocument doc,
+                    String name,
+                    String publicId,
+                    String systemId)
   {
     super(DOCUMENT_TYPE_NODE, doc, name, publicId, systemId);
     implementation = doc.getImplementation();
@@ -194,7 +199,8 @@ public class DomDoctype
       }
     getEntities();
     
-    DomDocument.verifyXmlName(name);
+    DomDocument.checkName(name, (owner != null) ?
+                          "1.1".equals(owner.getXmlVersion()) : false);
     if (entities.getNamedItem(name) != null)
       {
         return null;
@@ -249,7 +255,8 @@ public class DomDoctype
       }
     getNotations();
     
-    DomDocument.verifyXmlName(name);
+    DomDocument.checkName(name, (owner != null) ?
+                          "1.1".equals(owner.getXmlVersion()) : false);
     
     notation = new DomNotation(owner, name, publicId, systemId);
     notations.setNamedItem(notation);
@@ -293,7 +300,7 @@ public class DomDoctype
       }
   }
 
-  void setOwner(Document doc)
+  void setOwner(DomDocument doc)
   {
     if (entities != null)
       {
@@ -329,82 +336,57 @@ public class DomDoctype
   {
     return implementation;
   }
-  
-  // Yeech.  Package-private hooks, I don't like this.
-  // For all that it's better than making this stuff a
-  // public API...
-  
 
-  // package private
-  ElementInfo getElementInfo(String element)
+  public void elementDecl(String name, String model)
   {
-    ElementInfo	info = (ElementInfo) elements.get(element);
-    
-    if (info != null)
+    DTDElementTypeInfo info = getElementTypeInfo(name);
+    if (info == null)
       {
-        return info;
+        info = new DTDElementTypeInfo(name, model);
+        elements.put(name, info);
       }
-    info = new ElementInfo(this);
-    elements.put(element, info);
-    return info;
+    else
+      {
+        info.model = model;
+      }
   }
-  
-  void setHasIds()
+
+  DTDElementTypeInfo getElementTypeInfo(String name)
   {
-    ids = true;
+    return (DTDElementTypeInfo) elements.get(name);
   }
-  
+
+  public void attributeDecl(String eName, String aName, String type,
+                            String mode, String value)
+  {
+    DTDAttributeTypeInfo info = new DTDAttributeTypeInfo(eName, aName, type,
+                                                         mode, value);
+    DTDElementTypeInfo elementInfo = getElementTypeInfo(eName);
+    if (elementInfo == null)
+      {
+        elementInfo = new DTDElementTypeInfo(eName, null);
+        elements.put(eName, elementInfo);
+      }
+    elementInfo.setAttributeTypeInfo(aName, info);
+    if ("ID".equals(type))
+      {
+        ids = true;
+      }
+  }
+
+  DTDAttributeTypeInfo getAttributeTypeInfo(String elementName, String name)
+  {
+    DTDElementTypeInfo elementInfo =
+      (DTDElementTypeInfo) elements.get(elementName);
+    return (elementInfo == null) ? null :
+      elementInfo.getAttributeTypeInfo(name);
+  }
+
   boolean hasIds()
   {
     return ids;
   }
-
-  // package private
-  static class ElementInfo
-    extends HashMap
-  {
-
-    private String idAttrName;
-    private DomDoctype doctype;
-    
-    // is-a vs has-a ... just to minimize number of objects.
-    // keys in table are attribute names, values are defaults.
-    
-    ElementInfo(DomDoctype dt)
-    {
-      super(5, 5);
-      doctype = dt;
-    }
-
-    void setAttrDefault(String attName, String value)
-    {
-      if (!containsKey(attName))
-        {
-          put(attName, value);
-        }
-    }
-    
-    String getAttrDefault(String attName)
-    {
-      return (String) get(attName);
-    }
-
-    void setIdAttr(String attName)
-    {
-      if (idAttrName == null)
-        {
-          idAttrName = attName;
-        }
-      doctype.setHasIds();
-    }
-    
-    String getIdAttr()
-    {
-      return idAttrName;
-    }
-    
-  }
-
+  
   public boolean isSameNode(Node arg)
   {
     if (equals(arg))

@@ -1,5 +1,5 @@
 /*
- * ExpressionTest.java
+ * Pattern.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -41,29 +41,15 @@ package gnu.xml.xpath;
 import org.w3c.dom.Node;
 
 /**
- * Tests whether an expression matches against a given context node.
+ * Interface implemented by expressions that can for part of XSL patterns.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class ExpressionTest
-  extends Test
+public abstract class Pattern
+  extends Expr
 {
 
-  final Expr expr;
+  public abstract boolean matches(Node context);
 
-  ExpressionTest(Expr expr)
-  {
-    this.expr = expr;
-  }
-
-  public boolean matches(Node node, int pos, int len)
-  {
-    return expr._boolean(node, expr.evaluate(node, pos, len));
-  }
-
-  public String toString()
-  {
-    return "[" + expr + "]";
-  }
-  
 }
+

@@ -43,6 +43,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
@@ -54,8 +59,16 @@ import javax.xml.transform.URIResolver;
 
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
 
 import gnu.xml.libxmlj.util.XMLJ;
 
@@ -65,6 +78,7 @@ import gnu.xml.libxmlj.util.XMLJ;
  *  for transformation.
  *
  *  @author Julian Scheid
+ *  @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class GnomeTransformerFactory
   extends TransformerFactory
@@ -92,33 +106,168 @@ public class GnomeTransformerFactory
 
   //--- Implementation of javax.xml.transform.TransformerFactory
   //--- follows.
+  
+  // -- begin getAssociatedStylesheet implementation --
 
   /**
-   *  @fixme The API documentation isn't clear about what to do when
-   *  no associated stylesheet could be found. Is this supposed to
-   *  return <code>null</code>?
+   * Returns the stylesheet associated with the specified XML source, or
+   * <code>null</code> if no associated stylesheet could be found.
    */
-  public Source getAssociatedStylesheet (Source source, String media,
-					 String title,
-					 String charset) 
+  public Source getAssociatedStylesheet(Source source, String media,
+                                        String title, String charset) 
+    throws TransformerConfigurationException
+  {
+    String href= null;
+    String base = source.getSystemId();
+    if (source instanceof DOMSource)
+      {
+        Node node = ((DOMSource) source).getNode();
+        Document doc = (node.getNodeType() == Node.DOCUMENT_NODE) ?
+          (Document) node : node.getOwnerDocument();
+        if (base == null)
+          {
+            base = doc.getDocumentURI();
+          }
+        for (node = doc.getFirstChild(); node != null;
+             node = node.getNextSibling())
+          {
+            if (node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE &&
+                "xml-stylesheet".equals(node.getNodeName()))
+              {
+                String data = node.getNodeValue();
+                if (media != null &&
+                    !media.equals(parseParameter(data, "type")))
+                  {
+                    continue;
+                  }
+                if (title != null &&
+                    !title.equals(parseParameter(data, "title")))
+                  {
+                    continue;
+                  }
+                href = parseParameter(data, "href");
+              }
+          }
+      }
+    else
+      {
+        InputSource input;
+        XMLReader parser = null;
+        try
+          {
+            if (source instanceof SAXSource)
+              {
+                SAXSource sax = (SAXSource) source;
+                input = sax.getInputSource();
+                parser = sax.getXMLReader();
+              }
+            else
+              {
+                StreamSource stream = (StreamSource) source;
+                InputStream in = stream.getInputStream();
+                input = new InputSource(in);
+              }
+            input.setSystemId(base);
+            if (parser == null)
+              {
+                parser = createXMLReader();
+              }
+            AssociatedStylesheetHandler ash =
+              new AssociatedStylesheetHandler();
+            ash.media = media;
+            ash.title = title;
+            parser.setContentHandler(ash);
+            parser.parse(input);
+            href = ash.href;
+          }
+        catch (SAXException e)
+          {
+            throw new TransformerConfigurationException(e);
+          }
+        catch (IOException e)
+          {
+            throw new TransformerConfigurationException(e);
+          }
+      }
+    if (href == null)
+      {
+        return null;
+      }
+    if (base != null)
+      {
+        base = XMLJ.getBaseURI(base);
+      }
+    href = XMLJ.getAbsoluteURI(base, href);
+    return new StreamSource(href);
+  }
+
+  private XMLReader createXMLReader()
     throws TransformerConfigurationException
   {
     try
       {
-        InputStream in = XMLJ.getInputStream (source);
-        String stylesheetURI
-          = getAssociatedStylesheet (in,
-                                     source.getSystemId (),
-                                     media, title, charset);
-        StreamSource ret = new StreamSource (stylesheetURI);
-        ret.setInputStream (in);
-        return ret;
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        SAXParser parser = factory.newSAXParser();
+        return parser.getXMLReader();
       }
-    catch (IOException e)
+    catch (FactoryConfigurationError e)
       {
-        throw new TransformerConfigurationException (e);
+        throw new TransformerConfigurationException(e);
+      }
+    catch (ParserConfigurationException e)
+      {
+        throw new TransformerConfigurationException(e);
+      }
+    catch (SAXException e)
+      {
+        throw new TransformerConfigurationException(e);
       }
   }
+
+  class AssociatedStylesheetHandler
+    extends DefaultHandler
+  {
+    
+    String media;
+    String title;
+    String href;
+
+    public void processingInstruction(String target, String data)
+      throws SAXException
+    {
+      if ("xml-stylesheet".equals(target))
+        {
+          if (media != null && !media.equals(parseParameter(data, "type")))
+            {
+              return;
+            }
+          if (title != null && !title.equals(parseParameter(data, "title")))
+            {
+              return;
+            }
+          href = parseParameter(data, "href");
+        }
+    }
+    
+  }
+
+  String parseParameter(String data, String name)
+  {
+    int start = data.indexOf(name + "=");
+    if (start != -1)
+      {
+        start += name.length() + 2;
+        char delim = data.charAt(start - 1);
+        int end = data.indexOf(delim, start);
+        if (end != -1)
+          {
+            return data.substring(start, end);
+          }
+      }
+    return null;
+  }
+
+  // -- end getAssociatedStylesheet implementation --
 
   public synchronized void setAttribute (String name, Object value)
   {
@@ -193,13 +342,6 @@ public class GnomeTransformerFactory
   {
     return new GnomeTransformer (source, uriResolver, errorListener);
   }
-
-  private static native String getAssociatedStylesheet (InputStream in,
-                                                        String systemId, 
-                                                        String media,
-                                                        String title,
-                                                        String charset) 
-    throws TransformerConfigurationException;
 
   /**
    *  Perform native cleanup.

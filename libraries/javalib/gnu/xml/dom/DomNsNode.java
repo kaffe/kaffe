@@ -1,6 +1,6 @@
 /*
  * DomNsNode.java
- * Copyright (C) 1999,2000,2001 The Free Software Foundation
+ * Copyright (C) 1999,2000,2001,2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -38,134 +38,161 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.*;
-
+import javax.xml.XMLConstants;
 
 /**
  * <p> Abstract implemention of namespace support.  This facilitates
  * sharing code for attribute and element nodes.
  *
  * @author David Brownell 
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public abstract class DomNsNode
   extends DomNode
 {
-    private String		name;		// changed by setPrefix
-    private final String	namespace;
+  
+  private String name;
+  private String namespace;
+  private String prefix;
+  private String localName;
+  
+  /**
+   * Constructs a node associated with the specified document, and
+   * with the specified namespace information.
+   *
+   * @param owner The document with which this entity is associated
+   * @param namespaceURI Combined with the local part of the name,
+   *	this identifies a type of element or attribute; may be null.
+   *  If this is the empty string, it is reassigned as null so that
+   *  applications only need to test that case.
+   * @param name Name of this node, which may include a prefix
+   */
+  // package private
+  DomNsNode(short nodeType, DomDocument owner, String namespaceURI, String name)
+  {
+    super(nodeType, owner);
+    setNodeName(name);
+    setNamespaceURI(namespaceURI);
+  }
 
+  /**
+   * <b>DOM L1</b>
+   * Returns the node's name, including any namespace prefix.
+   */
+  public final String getNodeName()
+  {
+    return name;
+  }
 
-    /**
-     * Constructs a node associated with the specified document, and
-     * with the specified namespace information.
-     *
-     * @param owner The document with which this entity is associated
-     * @param namespaceURI Combined with the local part of the name,
-     *	this identifies a type of element or attribute; may be null.
-     *  If this is the empty string, it is reassigned as null so that
-     *  applications only need to test that case.
-     * @param name Name of this node, which may include a prefix
-     */
-    // package private
-    DomNsNode (short nodeType, Document owner, String namespaceURI, String name)
-    {
-	super (nodeType, owner);
-	this.name = name;
-	if ("".equals (namespaceURI))
-	    namespaceURI = null;
-	this.namespace = namespaceURI;
-    }
+  final void setNodeName(String name)
+  {
+    this.name = name.intern();
+    int index = name.indexOf(':');
+    if (index == -1)
+      {
+        prefix = null;
+        localName = this.name;
+      }
+    else
+      {
+        prefix = name.substring(0, index).intern();
+        localName = name.substring(index + 1).intern();
+      }
+  }
+  
+  /**
+   * <b>DOM L2</b>
+   * Returns the node's namespace URI
+   * <em>or null</em> if the node name is not namespace scoped.
+   */
+  public final String getNamespaceURI()
+  {
+    return namespace;
+  }
 
+  final void setNamespaceURI(String namespaceURI)
+  {
+    if ("".equals(namespaceURI))
+      {
+        namespaceURI = null;
+      }
+    namespace = (namespaceURI == null) ? null : namespaceURI.intern();
+  }
+  
+  /**
+   * <b>DOM L2</b>
+   * Returns any prefix part of the node's name (before any colon).
+   */
+  public final String getPrefix()
+  {
+    return prefix;
+  }
 
-    /**
-     * <b>DOM L1</b>
-     * Returns the node's name, including any namespace prefix.
-     */
-    final public String getNodeName ()
-    {
-	return name;
-    }
+  /**
+   * <b>DOM L2</b>
+   * Assigns the prefix part of the node's name (before any colon).
+   */
+  public final void setPrefix(String prefix)
+  {
+    if (readonly)
+      {
+        throw new DomEx(DomEx.NO_MODIFICATION_ALLOWED_ERR);
+      }
 
+    if (prefix == null)
+      {
+        name = localName;
+        return;
+      }
+    else if (namespace == null)
+      {
+        throw new DomEx(DomEx.NAMESPACE_ERR,
+                        "can't set prefix, node has no namespace URI",
+                        this, 0);
+      }
 
-    /**
-     * <b>DOM L2</b>
-     * Returns the node's namespace URI
-     * <em>or null</em> if the node name is not namespace scoped.
-     */
-    final public String getNamespaceURI ()
-    {
-	return namespace;
-    }
+    DomDocument.checkName(prefix, "1.1".equals(owner.getXmlVersion()));
+    if (prefix.indexOf (':') != -1)
+      {
+        throw new DomEx(DomEx.NAMESPACE_ERR,
+                        "illegal prefix " + prefix, this, 0);
+      }
 
+    if (XMLConstants.XML_NS_PREFIX.equals(prefix)
+        && !XMLConstants.XML_NS_URI.equals(namespace))
+      {
+        throw new DomEx(DomEx.NAMESPACE_ERR,
+                        "xml namespace is always " +
+                        XMLConstants.XML_NS_URI, this, 0);
+      }
 
-    /**
-     * <b>DOM L2</b>
-     * Returns any prefix part of the node's name (before any colon).
-     */
-    public String getPrefix ()
-    {
-	if (namespace == null)
-	    return null;
+    if (XMLConstants.XMLNS_ATTRIBUTE.equals(prefix))
+      {
+        if (namespace != null || getNodeType() != ATTRIBUTE_NODE)
+          {
+            throw new DomEx(DomEx.NAMESPACE_ERR,
+                            "xmlns attribute prefix is reserved", this, 0);
+          }
+      }
+    else if (getNodeType () == ATTRIBUTE_NODE
+             && (XMLConstants.XMLNS_ATTRIBUTE.equals(name) ||
+                 name.startsWith("xmlns:")))
+      {
+        throw new DomEx(DomEx.NAMESPACE_ERR,
+                        "namespace declarations can't change names", this, 0);
+      }
 
-	int index = name.indexOf (':');
-	if (index < 0)
-	    return null;
-	else
-	    return name.substring (0, index);
-    }
+    this.prefix = prefix.intern();
+  }
 
-
-    /**
-     * <b>DOM L2</b>
-     * Assigns the prefix part of the node's name (before any colon).
-     */
-    public void setPrefix (String prefix)
-    {
-	String local = getLocalName ();
-
-	if (isReadonly ())
-	    throw new DomEx (DomEx.NO_MODIFICATION_ALLOWED_ERR);
-
-	if (prefix == null) {
-	    name = local;
-	    return;
-	} else if (namespace == null)
-	    throw new DomEx (DomEx.NAMESPACE_ERR,
-		"can't set prefix, node has no namespace URI", this, 0);
-
-	DomDocument.verifyXmlName (prefix);
-	if (prefix.indexOf (':') != -1)
-	    throw new DomEx (DomEx.NAMESPACE_ERR,
-		"illegal prefix " + prefix, this, 0);
-
-	if ("xml".equals (prefix)
-		&& !DomDocument.xmlNamespace.equals (namespace))
-	    throw new DomEx (DomEx.NAMESPACE_ERR,
-		"xml namespace is always " + DomDocument.xmlNamespace, this, 0);
-
-	if ("xmlns".equals (prefix)) {
-	    if (namespace != null || getNodeType () != ATTRIBUTE_NODE)
-		throw new DomEx (DomEx.NAMESPACE_ERR,
-			"xmlns attribute prefix is reserved", this, 0);
-	} else if (getNodeType () == ATTRIBUTE_NODE
-		&& ("xmlns".equals (name) || name.startsWith ("xmlns:")))
-	    throw new DomEx (DomEx.NAMESPACE_ERR,
-		    "namespace declarations can't change names", this, 0);
-
-	name = prefix + ':' + local;
-    }
-
-
-    /**
-     * <b>DOM L2</b>
-     * Returns the local part of the node's name (after any colon).
-     */
-    public String getLocalName ()
-    {
-	int index = name.indexOf (':');
-	if (index < 0)
-	    return name;
-	else
-	    return name.substring (index + 1);
-    }
-    
+  /**
+   * <b>DOM L2</b>
+   * Returns the local part of the node's name (after any colon).
+   */
+  public final String getLocalName()
+  {
+    return localName;
+  }
+  
 }
+

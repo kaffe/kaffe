@@ -38,10 +38,20 @@
 
 package gnu.xml.transform;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import gnu.xml.xpath.Expr;
 
 /**
  * A template node representing an XSL <code>element</code> instruction.
@@ -52,28 +62,137 @@ final class ElementNode
   extends TemplateNode
 {
 
-  final String name;
-  final String namespace;
-  // TODO use-attribute-sets
+  final TemplateNode name;
+  final TemplateNode namespace;
+  final String uas;
+  final Node source;
+  final Collection elementExcludeResultPrefixes;
   
-  ElementNode(TemplateNode children, TemplateNode next, String name,
-              String namespace)
+  ElementNode(TemplateNode children, TemplateNode next, TemplateNode name,
+              TemplateNode namespace, String uas, Node source)
   {
     super(children, next);
     this.name = name;
     this.namespace = namespace;
+    this.uas = uas;
+    this.source = source;
+    NamedNodeMap attrs = source.getAttributes();
+    Node attr = attrs.getNamedItemNS(Stylesheet.XSL_NS,
+                                     "exclude-result-prefixes");
+    if (attr != null)
+      {
+        elementExcludeResultPrefixes = new HashSet();
+        StringTokenizer st = new StringTokenizer(attr.getNodeValue());
+        while (st.hasMoreTokens())
+          {
+            elementExcludeResultPrefixes.add(st.nextToken());
+          }
+      }
+    else
+      {
+        elementExcludeResultPrefixes = Collections.EMPTY_SET;
+      }
   }
 
-  void apply(Stylesheet stylesheet, String mode,
+  TemplateNode clone(Stylesheet stylesheet)
+  {
+    return new ElementNode((children == null) ? null :
+                           children.clone(stylesheet),
+                           (next == null) ? null :
+                           next.clone(stylesheet),
+                           name.clone(stylesheet),
+                           (namespace == null) ? null :
+                           namespace.clone(stylesheet),
+                           uas, source);
+  }
+
+  void doApply(Stylesheet stylesheet, QName mode,
              Node context, int pos, int len,
              Node parent, Node nextSibling)
     throws TransformerException
   {
     Document doc = (parent instanceof Document) ? (Document) parent :
       parent.getOwnerDocument();
-    Element element = (namespace != null) ?
-      doc.createElementNS(namespace, name) :
-      doc.createElement(name);
+    // Create a document fragment to hold the name
+    DocumentFragment fragment = doc.createDocumentFragment();
+    // Apply name to the fragment
+    name.apply(stylesheet, mode,
+               context, pos, len,
+               fragment, null);
+    // Use XPath string-value of fragment
+    String nameValue = Expr.stringValue(fragment);
+
+    String namespaceValue = null;
+    if (namespace != null)
+      {
+        // Create a document fragment to hold the namespace
+        fragment = doc.createDocumentFragment();
+        // Apply namespace to the fragment
+        namespace.apply(stylesheet, mode,
+                        context, pos, len,
+                        fragment, null);
+        // Use XPath string-value of fragment
+        namespaceValue = Expr.stringValue(fragment);
+        if (namespaceValue.length() == 0)
+          {
+            namespaceValue = null;
+          }
+      }
+    
+    String prefix = getPrefix(nameValue);
+    if (XMLConstants.XMLNS_ATTRIBUTE.equals(prefix))
+      {
+        int ci = nameValue.indexOf(':');
+        nameValue = nameValue.substring(ci + 1);
+      }
+    else
+      {
+        // Namespace aliasing
+        if (prefix == null)
+          {
+            prefix = "#default";
+          }
+        String resultPrefix =
+          (String) stylesheet.namespaceAliases.get(prefix);
+        if (resultPrefix != null)
+          {
+            if ("#default".equals(resultPrefix))
+              {
+                resultPrefix = null;
+              }
+            namespaceValue = source.lookupNamespaceURI(resultPrefix);
+          }
+        if (prefix == "#default")
+          {
+            prefix = null;
+          }
+        // Look up ordinary namespace for this prefix
+        if (namespaceValue == null)
+          {
+            if (XMLConstants.XML_NS_PREFIX.equals(prefix))
+              {
+                namespaceValue = XMLConstants.XML_NS_URI;
+              }
+            else
+              {
+                // Resolve namespace for this prefix
+                namespaceValue = source.lookupNamespaceURI(prefix);
+              }
+          }
+        /*if (prefix == null)
+          {
+            // Resolve prefix for this namespace
+            prefix = parent.lookupPrefix(namespaceValue);
+            if (prefix != null)
+              {
+                nameValue = prefix + ":" + nameValue;
+              }
+          }*/
+      }
+    // Create element
+    Element element = (namespaceValue != null) ?
+      doc.createElementNS(namespaceValue, nameValue) :
+          doc.createElement(nameValue);
     if (nextSibling != null)
       {
         parent.insertBefore(element, nextSibling);
@@ -81,6 +200,17 @@ final class ElementNode
     else
       {
         parent.appendChild(element);
+      }
+    stylesheet.addNamespaceNodes(source, element, doc,
+                                 elementExcludeResultPrefixes);
+    if (uas != null)
+      {
+        StringTokenizer st = new StringTokenizer(uas, " ");
+        while (st.hasMoreTokens())
+          {
+            addAttributeSet(stylesheet, mode, context, pos, len,
+                            element, null, st.nextToken());
+          }
       }
     if (children != null)
       {
@@ -96,12 +226,53 @@ final class ElementNode
       }
   }
 
+  final String getPrefix(String name)
+  {
+    int ci = name.indexOf(':');
+    return (ci == -1) ? null : name.substring(0, ci);
+  }
+
+  void addAttributeSet(Stylesheet stylesheet, QName mode,
+                       Node context, int pos, int len,
+                       Node parent, Node nextSibling, String attributeSet)
+    throws TransformerException
+  {
+    for (Iterator i = stylesheet.attributeSets.iterator(); i.hasNext(); )
+      {
+        AttributeSet as = (AttributeSet) i.next();
+        if (!as.name.equals(attributeSet))
+          {
+            continue;
+          }
+        if (as.uas != null)
+          {
+            StringTokenizer st = new StringTokenizer(as.uas, " ");
+            while (st.hasMoreTokens())
+              {
+                addAttributeSet(stylesheet, mode, context, pos, len,
+                                parent, nextSibling, st.nextToken());
+              }
+          }
+        if (as.children != null)
+          {
+            as.children.apply(stylesheet, mode,
+                              context, pos, len,
+                              parent, nextSibling);
+          }
+      }
+  }
+
   public String toString()
   {
     StringBuffer buf = new StringBuffer(getClass().getName());
     buf.append('[');
     buf.append("name=");
     buf.append(name);
+    if (uas != null)
+      {
+        buf.append(",uas=");
+        buf.append(uas);
+      }
     buf.append(']');
     return buf.toString();
   }

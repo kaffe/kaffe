@@ -69,6 +69,11 @@ public final class AndExpr
     return _boolean(context, right) ? Boolean.TRUE : Boolean.FALSE;
   }
 
+  public Expr clone(Object context)
+  {
+    return new AndExpr(lhs.clone(context), rhs.clone(context));
+  }
+
   public String toString()
   {
     return lhs + " and " + rhs;

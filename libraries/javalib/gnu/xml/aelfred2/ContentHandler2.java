@@ -57,8 +57,10 @@ public interface ContentHandler2
    * declaration
    * @param encoding the encoding specified in the XML declaration, if any
    * @param standalone the standalone attribute from the XML declaration
+   * @param inputEncoding the encoding of the XML input
    */
-  void xmlDecl(String version, String encoding, boolean standalone)
+  void xmlDecl(String version, String encoding, boolean standalone,
+               String inputEncoding)
     throws SAXException;
   
 }

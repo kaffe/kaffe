@@ -49,14 +49,19 @@ final class TrueFunction
   extends Expr
 {
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		return Boolean.TRUE;
-	}
+  public Object evaluate(Node context, int pos, int len)
+  {
+    return Boolean.TRUE;
+  }
 
-	public String toString()
-	{
-		return "true()";
-	}
-	
+  public Expr clone(Object context)
+  {
+    return new TrueFunction();
+  }
+
+  public String toString()
+  {
+    return "true()";
+  }
+  
 }

@@ -38,11 +38,15 @@
 
 package gnu.xml.transform;
 
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import gnu.xml.xpath.Expr;
 
 /**
  * A template node representing an XSL <code>attribute</code> instruction.
@@ -53,44 +57,155 @@ final class AttributeNode
   extends TemplateNode
 {
 
-  final String name;
-  final String namespace;
+  final TemplateNode name;
+  final TemplateNode namespace;
+  final Node source;
   
-  AttributeNode(TemplateNode children, TemplateNode next, String name,
-                String namespace)
+  AttributeNode(TemplateNode children, TemplateNode next, TemplateNode name,
+                TemplateNode namespace, Node source)
   {
     super(children, next);
     this.name = name;
     this.namespace = namespace;
+    this.source = source;
   }
 
-  void apply(Stylesheet stylesheet, String mode,
-             Node context, int pos, int len,
-             Node parent, Node nextSibling)
+  TemplateNode clone(Stylesheet stylesheet)
+  {
+    return new AttributeNode((children == null) ? null :
+                             children.clone(stylesheet),
+                             (next == null) ? null : next.clone(stylesheet),
+                             name.clone(stylesheet),
+                             (namespace == null) ? null : 
+                             namespace.clone(stylesheet),
+                             source);
+  }
+
+  void doApply(Stylesheet stylesheet, QName mode,
+               Node context, int pos, int len,
+               Node parent, Node nextSibling)
     throws TransformerException
   {
     Document doc = (parent instanceof Document) ? (Document) parent :
       parent.getOwnerDocument();
-    Attr attr = (namespace != null) ?
-      doc.createAttributeNS(namespace, name) :
-      doc.createAttribute(name);
-    NamedNodeMap attrs = parent.getAttributes();
-    if (attrs != null)
-      {
-        if (namespace != null)
+    // Create a document fragment to hold the name
+    DocumentFragment fragment = doc.createDocumentFragment();
+    // Apply name to the fragment
+    name.apply(stylesheet, mode,
+               context, pos, len,
+               fragment, null);
+    // Use XPath string-value of fragment
+    String nameValue = Expr.stringValue(fragment);
+  
+    String namespaceValue = null;
+    if (namespace != null)
+      {  
+        // Create a document fragment to hold the namespace
+        fragment = doc.createDocumentFragment();
+        // Apply namespace to the fragment
+        namespace.apply(stylesheet, mode,
+                        context, pos, len,
+                        fragment, null);
+        // Use XPath string-value of fragment
+        namespaceValue = Expr.stringValue(fragment);
+        if (namespaceValue.length() == 0)
           {
-            attrs.setNamedItemNS(attr);
+            namespaceValue = null;
+          }
+      }
+    
+    String prefix = getPrefix(nameValue);
+    if (namespaceValue == null)
+      {
+        if (prefix != null)
+          {
+            if (XMLConstants.XML_NS_PREFIX.equals(prefix))
+              {
+                namespaceValue = XMLConstants.XML_NS_URI;
+              }
+            else
+              {
+                // Resolve namespace for this prefix
+                namespaceValue = source.lookupNamespaceURI(prefix);
+              }
+          }
+      }
+    else
+      {
+        if (prefix != null)
+          {
+            String ns2 = source.lookupNamespaceURI(prefix);
+            if (ns2 != null && !ns2.equals(namespaceValue))
+              {
+                // prefix clashes, reset it
+                prefix = null;
+                int ci = nameValue.indexOf(':');
+                nameValue = nameValue.substring(ci + 1);
+              }
+          }
+      }
+    if (prefix == null)
+      {
+        // Resolve prefix for this namespace
+        prefix = source.lookupPrefix(namespaceValue);
+        if (prefix != null)
+          {
+            nameValue = prefix + ":" + nameValue;
           }
         else
           {
-            attrs.setNamedItem(attr);
+            if (namespaceValue != null)
+              {
+                // Must invent a prefix
+                prefix = inventPrefix(parent);
+                nameValue = prefix + ":" + nameValue;
+              }
           }
       }
-    if (children != null)
+    NamedNodeMap attrs = parent.getAttributes();
+    boolean insert = true;
+    if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(namespaceValue) ||
+        XMLConstants.XMLNS_ATTRIBUTE.equals(nameValue) ||
+        nameValue.startsWith("xmlns:"))
       {
-        children.apply(stylesheet, mode,
-                       context, pos, len,
-                       attr, null);
+        // Namespace declaration, do not output
+        insert = false;
+      }
+    if (prefix != null && namespaceValue == null)
+      {
+        // Not a QName
+        insert = false;
+      }
+    if (parent.getNodeType() == Node.ELEMENT_NODE &&
+        parent.getFirstChild() != null)
+      {
+        // XSLT 7.1.3 Adding an attribute to an element after children have
+        // been added to it is an error
+        insert = false;
+      }
+    if (insert)
+      {
+        // Insert attribute
+        Attr attr = (namespaceValue != null) ?
+          doc.createAttributeNS(namespaceValue, nameValue) :
+              doc.createAttribute(nameValue);
+        if (attrs != null)
+          {
+            if (namespace != null)
+              {
+                attrs.setNamedItemNS(attr);
+              }
+            else
+              {
+                attrs.setNamedItem(attr);
+              }
+          }
+        if (children != null)
+          {
+            children.apply(stylesheet, mode,
+                           context, pos, len,
+                           attr, null);
+          }
       }
     if (next != null)
       {
@@ -98,6 +213,25 @@ final class AttributeNode
                    context, pos, len,
                    parent, nextSibling);
       }
+  }
+
+  final String getPrefix(String name)
+  {
+    int ci = name.indexOf(':');
+    return (ci == -1) ? null : name.substring(0, ci);
+  }
+
+  final String inventPrefix(Node parent)
+  {
+    String base = "ns";
+    int count = 0;
+    String ret = base + Integer.toString(count);
+    while (parent.lookupNamespaceURI(ret) != null)
+      {
+        count++;
+        ret = base + Integer.toString(count);
+      }
+    return ret;
   }
   
   public String toString()

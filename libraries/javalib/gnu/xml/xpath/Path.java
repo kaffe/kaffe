@@ -47,7 +47,7 @@ import org.w3c.dom.Node;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 abstract class Path
-  extends Expr
+  extends Pattern
 {
 
   abstract Collection evaluate(Node context, Collection nodeSet);

@@ -56,27 +56,33 @@ final class LocalNameFunction
   extends Expr
 {
 
-	final Expr arg;
+  final Expr arg;
 
-	LocalNameFunction(List args)
-	{
-		this(args.size() > 0 ? (Expr) args.get(0) : null);
-	}
+  LocalNameFunction(List args)
+  {
+    this(args.size() > 0 ? (Expr) args.get(0) : null);
+  }
 
-	LocalNameFunction(Expr arg)
-	{
-		this.arg = arg;
-	}
+  LocalNameFunction(Expr arg)
+  {
+    this.arg = arg;
+  }
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val = (arg == null) ? null : arg.evaluate(context, pos, len);
-		return _local_name(context, (Collection) val);
-	}
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val = (arg == null) ? null : arg.evaluate(context, pos, len);
+    return _local_name(context, (Collection) val);
+  }
 
-	public String toString()
-	{
-		return (arg == null) ? "local-name()" : "local-name(" + arg + ")";
-	}
-	
+  public Expr clone(Object context)
+  {
+    return new LocalNameFunction((arg == null) ? null :
+                                 arg.clone(context));
+  }
+
+  public String toString()
+  {
+    return (arg == null) ? "local-name()" : "local-name(" + arg + ")";
+  }
+  
 }

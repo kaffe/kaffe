@@ -38,9 +38,11 @@
 
 package gnu.xml.xpath;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.w3c.dom.Node;
 
@@ -50,7 +52,7 @@ import org.w3c.dom.Node;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public final class UnionExpr
-  extends Expr
+  extends Pattern
 {
 
   final Expr lhs;
@@ -62,18 +64,35 @@ public final class UnionExpr
     this.rhs = rhs;
   }
 
+  public boolean matches(Node context)
+  {
+    if (lhs instanceof Pattern && rhs instanceof Pattern)
+      {
+        return ((Pattern) lhs).matches(context) ||
+          ((Pattern) rhs).matches(context);
+      }
+    return false;
+  }
+
   public Object evaluate(Node context, int pos, int len)
   {
     Object left = lhs.evaluate(context, pos, len);
     Object right = rhs.evaluate(context, pos, len);
     if (left instanceof Collection && right instanceof Collection)
       {
-        Set ret = new HashSet();
-        ret.addAll ((Collection) left);
-        ret.addAll ((Collection) right);
-        return ret;
+        Set set = new HashSet();
+        set.addAll ((Collection) left);
+        set.addAll ((Collection) right);
+        List list = new ArrayList(set);
+        Collections.sort(list, documentOrderComparator);
+        return list;
       }
     return Collections.EMPTY_SET;
+  }
+
+  public Expr clone(Object context)
+  {
+    return new UnionExpr(lhs.clone(context), rhs.clone(context));
   }
 
   public String toString()

@@ -92,6 +92,7 @@ final class EqualityExpr
       {
         Collection lns = (Collection) left;
         Collection rns = (Collection) right;
+        boolean all = true;
         for (Iterator i = lns.iterator(); i.hasNext(); )
           {
             Node ltest = (Node) i.next();
@@ -101,11 +102,21 @@ final class EqualityExpr
                 if (ltest == rtest || ltest.equals(rtest))
                   {
                     // much shorter
-                    return true;
+                    if (!invert)
+                      {
+                        return true;
+                      }
                   }
                 else if (stringValue(ltest).equals(stringValue(rtest)))
                   {
-                    return true;
+                    if (!invert)
+                      {
+                        return true;
+                      }
+                  }
+                else
+                  {
+                    all = false;
                   }
               }
           }
@@ -126,15 +137,24 @@ final class EqualityExpr
         Collection ns = flns ? (Collection) left : (Collection) right;
         double n = fln ? ((Double) left).doubleValue() :
           ((Double) right).doubleValue();
+        boolean all = true;
         for (Iterator i = ns.iterator(); i.hasNext(); )
           {
             Node test = (Node) i.next();
-            if (_number(context, stringValue(test)) == n)
+            double nn = _number(context, stringValue(test));
+            if (nn == n)
               {
-                return true;
+                if (!invert)
+                  {
+                    return true;
+                  }
+              }
+            else
+              {
+                all = false;
               }
           }
-        return false;
+        return invert ? all : false;
       }
     /*
      * If one object to be compared is a node-set and the other is a
@@ -149,15 +169,23 @@ final class EqualityExpr
       {
         Collection ns = flns ? (Collection) left : (Collection) right;
         String s = fls ? (String) left : (String) right;
+        boolean all = true;
         for (Iterator i = ns.iterator(); i.hasNext(); )
           {
             Node test = (Node) i.next();
             if (stringValue(test).equals(s))
               {
-                return true;
+                if (!invert)
+                  {
+                    return true;
+                  }
+              }
+            else
+              {
+                all = false;
               }
           }
-        return false;
+        return invert ? all : false;
       }
     /*
      * If one object to be compared is a node-set and the other is a
@@ -209,6 +237,11 @@ final class EqualityExpr
     String ls = fls ? (String) left : _string(context, left);
     String rs = frs ? (String) right : _string(context, right);
     return ls.equals(rs);
+  }
+
+  public Expr clone(Object context)
+  {
+    return new EqualityExpr(lhs.clone(context), rhs.clone(context), invert);
   }
 
   public String toString()

@@ -43,8 +43,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 import gnu.xml.xpath.Expr;
@@ -66,12 +68,23 @@ final class CopyOfNode
     this.select = select;
   }
 
-  void apply(Stylesheet stylesheet, String mode,
-             Node context, int pos, int len,
-             Node parent, Node nextSibling)
+  TemplateNode clone(Stylesheet stylesheet)
+  {
+    return new CopyOfNode((children == null) ? null :
+                          children.clone(stylesheet),
+                          (next == null) ? null :
+                          next.clone(stylesheet),
+                          select.clone(stylesheet));
+  }
+
+  void doApply(Stylesheet stylesheet, QName mode,
+               Node context, int pos, int len,
+               Node parent, Node nextSibling)
     throws TransformerException
   {
     Object ret = select.evaluate(context, pos, len);
+    Document doc = (parent instanceof Document) ? (Document) parent :
+      parent.getOwnerDocument();
     if (ret instanceof Collection)
       {
         Collection ns = (Collection) ret;
@@ -79,14 +92,53 @@ final class CopyOfNode
         Collections.sort(list, documentOrderComparator);
         for (Iterator i = list.iterator(); i.hasNext(); )
           {
-            Node node = (Node) i.next();
-            if (nextSibling != null)
+            Node src = (Node) i.next();
+            short nodeType = src.getNodeType();
+            if (nodeType == Node.DOCUMENT_NODE)
               {
-                parent.insertBefore(node, nextSibling);
+                // Use document element
+                src = ((Document) src).getDocumentElement();
+                if (src == null)
+                  {
+                    continue;
+                  }
+                nodeType = Node.ELEMENT_NODE;
+              }
+            else if (nodeType == Node.ATTRIBUTE_NODE)
+              {
+                if (parent.getFirstChild() != null)
+                  {
+                    // Ignore attempt to add attribute after children
+                    continue;
+                  }
+              }
+            if (parent.getNodeType() == Node.ATTRIBUTE_NODE &&
+                nodeType != Node.TEXT_NODE &&
+                nodeType != Node.ENTITY_REFERENCE_NODE)
+              {
+                // Ignore
+                continue;
+              }
+            Node node = src.cloneNode(true);
+            node = doc.adoptNode(node);
+            if (nodeType == Node.ATTRIBUTE_NODE)
+              {
+                NamedNodeMap attrs = parent.getAttributes();
+                if (attrs != null)
+                  {
+                    attrs.setNamedItemNS(node);
+                  }
               }
             else
               {
-                parent.appendChild(node);
+                if (nextSibling != null)
+                  {
+                    parent.insertBefore(node, nextSibling);
+                  }
+                else
+                  {
+                    parent.appendChild(node);
+                  }
               }
           }
       }
@@ -95,8 +147,6 @@ final class CopyOfNode
         String value = Expr._string(context, ret);
         if (value != null && value.length() > 0)
           {
-            Document doc = (parent instanceof Document) ?
-              (Document) parent : parent.getOwnerDocument();
             Text textNode = doc.createTextNode(value);
             if (nextSibling != null)
               {
@@ -115,6 +165,16 @@ final class CopyOfNode
                    context, pos, len,
                    parent, nextSibling);
       }
+  }
+  
+  public String toString()
+  {
+    StringBuffer buf = new StringBuffer(getClass().getName());
+    buf.append('[');
+    buf.append("select=");
+    buf.append(select);
+    buf.append(']');
+    return buf.toString();
   }
   
 }

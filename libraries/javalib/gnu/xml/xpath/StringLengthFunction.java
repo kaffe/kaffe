@@ -53,28 +53,34 @@ final class StringLengthFunction
   extends Expr
 {
 
-	final Expr arg;
+  final Expr arg;
 
-	StringLengthFunction(List args)
-	{
-		this((Expr) args.get(0));
-	}
-	
-	StringLengthFunction(Expr arg)
-	{
-		this.arg = arg;
-	}
+  StringLengthFunction(List args)
+  {
+    this(args.isEmpty() ? null : (Expr) args.get(0));
+  }
+  
+  StringLengthFunction(Expr arg)
+  {
+    this.arg = arg;
+  }
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val = (arg == null) ? null : arg.evaluate(context, pos, len);
-		String s = _string(context, val);
-		return new Double((double) s.length());
-	}
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val = (arg == null) ? null : arg.evaluate(context, pos, len);
+    String s = _string(context, val);
+    return new Double((double) s.length());
+  }
 
-	public String toString()
-	{
-		return (arg == null) ? "string-length()" : "string-length(" + arg + ")";
-	}
-	
+  public Expr clone(Object context)
+  {
+    return new StringLengthFunction((arg == null) ? null :
+                                    arg.clone(context));
+  }
+
+  public String toString()
+  {
+    return (arg == null) ? "string-length()" : "string-length(" + arg + ")";
+  }
+  
 }

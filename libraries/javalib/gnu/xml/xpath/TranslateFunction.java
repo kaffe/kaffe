@@ -62,55 +62,66 @@ final class TranslateFunction
   extends Expr
 {
 
-	final Expr arg1;
-	final Expr arg2;
-	final Expr arg3;
+  final Expr arg1;
+  final Expr arg2;
+  final Expr arg3;
 
-	TranslateFunction(List args)
-	{
-		arg1 = (Expr) args.get(0);
-		arg2 = (Expr) args.get(1);
-		arg3 = (Expr) args.get(2);
-	}
+  TranslateFunction(List args)
+  {
+    this((Expr) args.get(0), (Expr) args.get(1), (Expr) args.get(2));
+  }
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val1 = arg1.evaluate(context, pos, len);
-		Object val2 = arg2.evaluate(context, pos, len);
-		Object val3 = arg3.evaluate(context, pos, len);
-		String string = _string(context, val1);
-		String search = _string(context, val2);
-		String replace = _string(context, val3);
-		StringBuffer buf = new StringBuffer();
-		int l1 = string.length();
-		int l2 = search.length();
-		int l3 = replace.length();
-		for (int i = 0; i < l1; i++)
-		  {
-				char c = string.charAt(i);
-				boolean replaced = false;
-				for (int j = 0; j < l2; j++)
-				  {
-						if (c == search.charAt(j))
-						  {
-								if (j < l3)
-								  {
-										buf.append(replace.charAt(j));
-									}
-								replaced = true;
-							}
-					}
-				if (!replaced)
-				  {
-						buf.append(c);
-					} 
-			} 
-		return new String(buf);
-	}
-	
-	public String toString()
-	{
-		return "translate(" + arg1 + "," + arg2 + "," + arg3 + ")";
-	}
-	
+  TranslateFunction(Expr arg1, Expr arg2, Expr arg3)
+  {
+    this.arg1 = arg1;
+    this.arg2 = arg2;
+    this.arg3 = arg3;
+  }
+
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val1 = arg1.evaluate(context, pos, len);
+    Object val2 = arg2.evaluate(context, pos, len);
+    Object val3 = arg3.evaluate(context, pos, len);
+    String string = _string(context, val1);
+    String search = _string(context, val2);
+    String replace = _string(context, val3);
+    StringBuffer buf = new StringBuffer();
+    int l1 = string.length();
+    int l2 = search.length();
+    int l3 = replace.length();
+    for (int i = 0; i < l1; i++)
+      {
+        char c = string.charAt(i);
+        boolean replaced = false;
+        for (int j = 0; j < l2; j++)
+          {
+            if (c == search.charAt(j))
+              {
+                if (j < l3)
+                  {
+                    buf.append(replace.charAt(j));
+                  }
+                replaced = true;
+              }
+          }
+        if (!replaced)
+          {
+            buf.append(c);
+          } 
+      } 
+    return new String(buf);
+  }
+
+  public Expr clone(Object context)
+  {
+    return new TranslateFunction(arg1.clone(context), arg2.clone(context),
+                                 arg3.clone(context));
+  }
+  
+  public String toString()
+  {
+    return "translate(" + arg1 + "," + arg2 + "," + arg3 + ")";
+  }
+  
 }

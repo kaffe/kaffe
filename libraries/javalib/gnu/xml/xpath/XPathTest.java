@@ -35,7 +35,7 @@ public class XPathTest
         Document doc = b.parse(new InputSource(in));
         long t1, t2;
         
-        XPathImpl xpath = new XPathImpl(null, null);
+        XPathImpl xpath = new XPathImpl(null, null, null);
         t1 = System.currentTimeMillis();
         Expr expr = (Expr) xpath.compile(expression);
         t2 = System.currentTimeMillis();

@@ -1,6 +1,6 @@
 /*
  * DomEntityReference.java
- * Copyright (C) 1999,2000,2001 The Free Software Foundation
+ * Copyright (C) 1999,2000,2001,2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -38,7 +38,6 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.EntityReference;
 
 /**
@@ -72,6 +71,7 @@ import org.w3c.dom.EntityReference;
  * @see DomEntity
  *
  * @author David Brownell 
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class DomEntityReference
   extends DomNode
@@ -91,7 +91,7 @@ public class DomEntityReference
    *
    * @see DomNode#makeReadonly
    */
-  protected DomEntityReference(Document owner, String name)
+  protected DomEntityReference(DomDocument owner, String name)
   {
     super(ENTITY_REFERENCE_NODE, owner);
     this.name = name;

@@ -1,6 +1,6 @@
 /*
  * DomComment.java
- * Copyright (C) 1999,2000,2001 The Free Software Foundation
+ * Copyright (C) 1999,2000,2001,2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -39,7 +39,6 @@
 package gnu.xml.dom;
 
 import org.w3c.dom.Comment;
-import org.w3c.dom.Document;
 
 /**
  * <p> "Comment" implementation.
@@ -50,6 +49,7 @@ import org.w3c.dom.Document;
  * those comments at some point in the processing pipeline. </p>
  *
  * @author David Brownell
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class DomComment
   extends DomCharacterData
@@ -64,7 +64,7 @@ public class DomComment
    * its createComment functionality, or through a subclass which is
    * similarly used in a "Sub-DOM" style layer.
    */
-  protected DomComment(Document owner, String value)
+  protected DomComment(DomDocument owner, String value)
   {
     super(COMMENT_NODE, owner, value);
   }

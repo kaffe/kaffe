@@ -38,8 +38,12 @@
 
 package gnu.xml.transform;
 
+import java.util.Iterator;
+import java.util.StringTokenizer;
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
@@ -51,27 +55,75 @@ final class CopyNode
   extends TemplateNode
 {
 
-  CopyNode(TemplateNode children, TemplateNode next)
+  final String uas;
+
+  CopyNode(TemplateNode children, TemplateNode next, String uas)
   {
     super(children, next);
+    this.uas = uas;
   }
 
-  void apply(Stylesheet stylesheet, String mode,
-             Node context, int pos, int len,
-             Node parent, Node nextSibling)
+  TemplateNode clone(Stylesheet stylesheet)
+  {
+    return new CopyNode((children == null) ? null :
+                        children.clone(stylesheet),
+                        (next == null) ? null :
+                        next.clone(stylesheet),
+                        uas);
+  }
+
+  void doApply(Stylesheet stylesheet, QName mode,
+               Node context, int pos, int len,
+               Node parent, Node nextSibling)
     throws TransformerException
   {
-    Document doc = (parent instanceof Document) ? (Document) parent :
-      parent.getOwnerDocument();
-    Node copy = context.cloneNode(false);
-    copy = doc.adoptNode(copy);
-    if (nextSibling != null)
+    Node copy = parent;
+    switch (context.getNodeType())
       {
-        parent.insertBefore(copy, nextSibling);
+      case Node.TEXT_NODE:
+      case Node.ATTRIBUTE_NODE:
+      case Node.ELEMENT_NODE:
+      case Node.PROCESSING_INSTRUCTION_NODE:
+      case Node.COMMENT_NODE:
+        Document doc = (parent instanceof Document) ? (Document) parent :
+          parent.getOwnerDocument();
+        copy = context.cloneNode(false);
+        copy = doc.adoptNode(copy);
+        if (copy.getNodeType() == Node.ATTRIBUTE_NODE)
+          {
+            if (parent.getFirstChild() != null)
+              {
+                // Ignore attempt to add attribute after children
+              }
+            else
+              {
+                NamedNodeMap attrs = parent.getAttributes();
+                if (attrs != null)
+                  {
+                    attrs.setNamedItemNS(copy);
+                  }
+              }
+          }
+        else
+          {
+            if (nextSibling != null)
+              {
+                parent.insertBefore(copy, nextSibling);
+              }
+            else
+              {
+                parent.appendChild(copy);
+              }
+          }
       }
-    else
+    if (uas != null)
       {
-        parent.appendChild(copy);
+        StringTokenizer st = new StringTokenizer(uas, " ");
+        while (st.hasMoreTokens())
+          {
+            addAttributeSet(stylesheet, mode, context, pos, len,
+                            copy, null, st.nextToken());
+          }
       }
     if (children != null)
       {
@@ -87,4 +139,42 @@ final class CopyNode
       }
   }
   
+  void addAttributeSet(Stylesheet stylesheet, QName mode,
+                       Node context, int pos, int len,
+                       Node parent, Node nextSibling, String attributeSet)
+    throws TransformerException
+  {
+    for (Iterator i = stylesheet.attributeSets.iterator(); i.hasNext(); )
+      {
+        AttributeSet as = (AttributeSet) i.next();
+        if (!as.name.equals(attributeSet))
+          {
+            continue;
+          }
+        if (as.uas != null)
+          {
+            StringTokenizer st = new StringTokenizer(as.uas, " ");
+            while (st.hasMoreTokens())
+              {
+                addAttributeSet(stylesheet, mode, context, pos, len,
+                                parent, nextSibling, st.nextToken());
+              }
+          }
+        if (as.children != null)
+          {
+            as.children.apply(stylesheet, mode,
+                              context, pos, len,
+                              parent, nextSibling);
+          }
+      }
+  }
+
+  public String toString()
+  {
+    StringBuffer buf = new StringBuffer(getClass().getName());
+    buf.append('[');
+    buf.append(']');
+    return buf.toString();
+  }
+
 }

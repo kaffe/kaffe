@@ -52,7 +52,7 @@ import org.w3c.dom.DOMImplementationSource;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class ImplementationSource
-implements DOMImplementationSource
+  implements DOMImplementationSource
 {
 
   private static final String DIGITS = "1234567890";
@@ -64,59 +64,64 @@ implements DOMImplementationSource
 
   static
   {
-    List acc = new ArrayList ();
-    acc.add (new gnu.xml.dom.DomImpl ());
+    List acc = new ArrayList();
+    acc.add(new gnu.xml.dom.DomImpl());
     try
       {
-        acc.add (new gnu.xml.libxmlj.dom.GnomeDocumentBuilder ());
+        Class t = Class.forName("gnu.xml.libxmlj.dom.GnomeDocumentBuilder");
+        acc.add(t.newInstance());
+      }
+    catch (Exception e)
+      {
+        // libxmlj not available        
       }
     catch (UnsatisfiedLinkError e)
       {
         // libxmlj not available
       }
-    implementations = new DOMImplementation[acc.size ()];
-    acc.toArray (implementations);
+    implementations = new DOMImplementation[acc.size()];
+    acc.toArray(implementations);
   }
 
-  public DOMImplementation getDOMImplementation (String features)
+  public DOMImplementation getDOMImplementation(String features)
   {
-    List available = getImplementations (features);
-    if (available.size () == 0)
+    List available = getImplementations(features);
+    if (available.isEmpty())
       {
         return null;
       }
-    return (DOMImplementation) available.get (0);
+    return (DOMImplementation) available.get(0);
   }
 
-  public DOMImplementationList getDOMImplementationList (String features)
+  public DOMImplementationList getDOMImplementationList(String features)
   {
-    List available = getImplementations (features);
-    return new ImplementationList (available);
+    List available = getImplementations(features);
+    return new ImplementationList(available);
   }
 
   /**
    * Returns a list of the implementations that support the specified
    * features.
    */
-  private List getImplementations (String features)
+  private final List getImplementations(String features)
   {
-    List available = new ArrayList (Arrays.asList (implementations));
-    for (Iterator i = parseFeatures (features).iterator (); i.hasNext (); )
+    List available = new ArrayList(Arrays.asList(implementations));
+    for (Iterator i = parseFeatures(features).iterator(); i.hasNext(); )
       {
-        String feature = (String) i.next ();
+        String feature = (String) i.next();
         String version = null;
-        int si = feature.indexOf (' ');
+        int si = feature.indexOf(' ');
         if (si != -1)
           {
-            version = feature.substring (si + 1);
-            feature = feature.substring (0, si);
+            version = feature.substring(si + 1);
+            feature = feature.substring(0, si);
           }
-        for (Iterator j = available.iterator (); j.hasNext (); )
+        for (Iterator j = available.iterator(); j.hasNext(); )
           {
             DOMImplementation impl = (DOMImplementation) j.next();
-            if (!impl.hasFeature (feature, version))
+            if (!impl.hasFeature(feature, version))
               {
-                j.remove ();
+                j.remove();
               }
           }
       }
@@ -126,38 +131,38 @@ implements DOMImplementationSource
   /**
    * Parses the feature list into feature tokens.
    */
-  List parseFeatures (String features)
+  final List parseFeatures(String features)
   {
-    List list = new ArrayList ();
+    List list = new ArrayList();
     int pos = 0, start = 0;
-    int len = features.length ();
+    int len = features.length();
     for (; pos < len; pos++)
       {
-        char c = features.charAt (pos);
+        char c = features.charAt(pos);
         if (c == ' ')
           {
             if (pos + 1 < len &&
-                DIGITS.indexOf (features.charAt (pos + 1)) == -1)
+                DIGITS.indexOf(features.charAt(pos + 1)) == -1)
               {
-                list.add (getFeature (features, start, pos));
+                list.add(getFeature(features, start, pos));
                 start = pos + 1;
               }
           }
       }
     if (pos > start)
       {
-        list.add (getFeature (features, start, len));
+        list.add(getFeature(features, start, len));
       }
     return list;
   }
 
-  String getFeature (String features, int start, int end)
+  final String getFeature(String features, int start, int end)
   {
-    if (features.length () > 0 && features.charAt (start) == '+')
+    if (features.length() > 0 && features.charAt(start) == '+')
       {
-        return features.substring (start + 1, end);
+        return features.substring(start + 1, end);
       }
-    return features.substring (start, end);
+    return features.substring(start, end);
   }
 
 }

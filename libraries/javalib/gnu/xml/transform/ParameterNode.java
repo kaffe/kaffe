@@ -38,14 +38,12 @@
 
 package gnu.xml.transform;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.Collections;
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
-import org.w3c.dom.Text;
 import gnu.xml.xpath.Expr;
 
 /**
@@ -71,12 +69,23 @@ final class ParameterNode
     this.global = global;
   }
 
-  void apply(Stylesheet stylesheet, String mode,
+  TemplateNode clone(Stylesheet stylesheet)
+  {
+    return new ParameterNode((children == null) ? null :
+                             children.clone(stylesheet),
+                             (next == null) ? null :
+                             next.clone(stylesheet),
+                             name,
+                             select.clone(stylesheet),
+                             global);
+  }
+
+  void doApply(Stylesheet stylesheet, QName mode,
              Node context, int pos, int len,
              Node parent, Node nextSibling)
     throws TransformerException
   {
-    boolean apply = !stylesheet.bindings.containsKey(name, global);
+    boolean apply = global || !stylesheet.bindings.containsKey(name, global);
     if (apply)
       {
         // push the variable context
@@ -88,7 +97,8 @@ final class ParameterNode
             stylesheet.bindings.set(name, value, global);
           }
       }
-    // variable and param don't process children
+    // variable and param don't process children as such
+    // all subsequent instructions are processed with that variable context
     if (next != null)
       {
         next.apply(stylesheet, mode,
@@ -102,7 +112,7 @@ final class ParameterNode
       }
   }
   
-  Object getValue(Stylesheet stylesheet, String mode,
+  Object getValue(Stylesheet stylesheet, QName mode,
                   Node context, int pos, int len)
     throws TransformerException
   {
@@ -115,21 +125,32 @@ final class ParameterNode
         Document doc = (context instanceof Document) ? (Document) context :
           context.getOwnerDocument();
         DocumentFragment fragment = doc.createDocumentFragment();
-        children.apply(stylesheet, mode,
-                       context, pos, len,
-                       fragment, null);
-        Collection acc = new LinkedList();
-        Node ctx = fragment.getFirstChild();
-        for (; ctx != null; ctx = ctx.getNextSibling())
-          {
-            acc.add(ctx);
-          }
-        return acc;
+        children.apply(stylesheet, mode, context, pos, len, fragment, null);
+        return Collections.singleton(fragment);
       }
     else
       {
         return null;
       }
+  }
+  
+  public String toString()
+  {
+    StringBuffer buf = new StringBuffer(getClass().getName());
+    buf.append('[');
+    buf.append("name=");
+    buf.append(name);
+    if (select != null)
+      {
+        buf.append(",select=");
+        buf.append(select);
+      }
+    if (global)
+      {
+        buf.append(",global");
+      }
+    buf.append(']');
+    return buf.toString();
   }
 
 }

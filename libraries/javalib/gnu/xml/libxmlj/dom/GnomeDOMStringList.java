@@ -45,31 +45,35 @@ import org.w3c.dom.DOMStringList;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 class GnomeDOMStringList
-implements DOMStringList
+  implements DOMStringList
 {
 
   final String[] values;
 
-  GnomeDOMStringList (String[] values)
+  GnomeDOMStringList(String[] values)
   {
     this.values = values;
   }
 
-  public int getLength ()
+  public int getLength()
   {
     return values.length;
   }
 
-  public String item (int index)
+  public String item(int index)
   {
+    if (index < 0 || index >= values.length)
+      {
+        return null;
+      }
     return values[index];
   }
 
-  public boolean contains (String value)
+  public boolean contains(String value)
   {
     for (int i = 0; i < values.length; i++)
       {
-        if (values[i].equals (value))
+        if (values[i].equalsIgnoreCase(value))
           {
             return true;
           }

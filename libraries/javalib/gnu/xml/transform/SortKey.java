@@ -38,6 +38,10 @@
 
 package gnu.xml.transform;
 
+import javax.xml.namespace.QName;
+import javax.xml.transform.TransformerException;
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
 import gnu.xml.xpath.Expr;
 
@@ -54,19 +58,24 @@ final class SortKey
   static final int LOWER_FIRST = 2;
 
   final Expr select;
-  final String lang;
-  final String dataType;
-  final boolean descending;
-  final int caseOrder;
+  final TemplateNode langTemplate;
+  final TemplateNode dataTypeTemplate;
+  final TemplateNode orderTemplate;
+  final TemplateNode caseOrderTemplate;
 
-  SortKey(Expr select, String lang, String dataType,
-          boolean descending, int caseOrder)
+  transient String lang;
+  transient String dataType;
+  transient boolean descending;
+  transient int caseOrder;
+
+  SortKey(Expr select, TemplateNode lang, TemplateNode dataType,
+          TemplateNode order, TemplateNode caseOrder)
   {
     this.select = select;
-    this.lang = lang;
-    this.dataType = dataType;
-    this.descending = descending;
-    this.caseOrder = caseOrder;
+    this.langTemplate = lang;
+    this.dataTypeTemplate = dataType;
+    this.orderTemplate = order;
+    this.caseOrderTemplate = caseOrder;
   }
 
   String key(Node node)
@@ -81,5 +90,66 @@ final class SortKey
         return Expr._string(node, ret);
       }
   }
-  
+
+  /**
+   * Prepare for a sort.
+   * This sets all transient variables from their AVTs.
+   */
+  void init(Stylesheet stylesheet, QName mode,
+            Node context, int pos, int len,
+            Node parent, Node nextSibling)
+    throws TransformerException
+  {
+    Document doc = (context instanceof Document) ? (Document) context :
+      context.getOwnerDocument();
+    if (langTemplate == null)
+      {
+        lang = null;
+      }
+    else
+      {
+        DocumentFragment fragment = doc.createDocumentFragment();
+        langTemplate.apply(stylesheet, mode, context, pos, len,
+                           fragment, null);
+        lang = Expr.stringValue(fragment);
+      }
+    if (dataTypeTemplate == null)
+      {
+        dataType = "text";
+      }
+    else
+      {
+        DocumentFragment fragment = doc.createDocumentFragment();
+        dataTypeTemplate.apply(stylesheet, mode, context, pos, len,
+                               fragment, null);
+        dataType = Expr.stringValue(fragment);
+      }
+    if (orderTemplate == null)
+      {
+        descending = false;
+      }
+    else
+      {
+        DocumentFragment fragment = doc.createDocumentFragment();
+        orderTemplate.apply(stylesheet, mode, context, pos, len,
+                            fragment, null);
+        String order = Expr.stringValue(fragment);
+        descending = "descending".equals(order);
+      }
+    if (caseOrderTemplate == null)
+      {
+        caseOrder = DEFAULT;
+      }
+    else
+      {
+        DocumentFragment fragment = doc.createDocumentFragment();
+        caseOrderTemplate.apply(stylesheet, mode, context, pos, len,
+                                fragment, null);
+        String co = Expr.stringValue(fragment);
+        caseOrder = "upper-first".equals(co) ? UPPER_FIRST :
+          "lower-first".equals(co) ? LOWER_FIRST :
+          DEFAULT;
+      }
+  }
+
 }

@@ -54,28 +54,39 @@ final class SubstringBeforeFunction
   extends Expr
 {
 
-	final Expr arg1;
-	final Expr arg2;
+  final Expr arg1;
+  final Expr arg2;
 
-	SubstringBeforeFunction(List args)
-	{
-		arg1 = (Expr) args.get(0);
-		arg2 = (Expr) args.get(1);
-	}
+  SubstringBeforeFunction(List args)
+  {
+    this((Expr) args.get(0), (Expr) args.get(1));
+  }
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val1 = arg1.evaluate(context, pos, len);
-		Object val2 = arg2.evaluate(context, pos, len);
-		String s1 = _string(context, val1);
-		String s2 = _string(context, val2);
-		int index = s1.indexOf(s2);
-		return (index == -1) ? "" : s1.substring(0, index);
-	}
+  SubstringBeforeFunction(Expr arg1, Expr arg2)
+  {
+    this.arg1 = arg1;
+    this.arg2 = arg2;
+  }
 
-	public String toString()
-	{
-		return "substring-before(" + arg1 + "," + arg2 + ")";
-	}
-	
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val1 = arg1.evaluate(context, pos, len);
+    Object val2 = arg2.evaluate(context, pos, len);
+    String s1 = _string(context, val1);
+    String s2 = _string(context, val2);
+    int index = s1.indexOf(s2);
+    return (index == -1) ? "" : s1.substring(0, index);
+  }
+
+  public Expr clone(Object context)
+  {
+    return new SubstringBeforeFunction(arg1.clone(context),
+                                       arg2.clone(context));
+  }
+
+  public String toString()
+  {
+    return "substring-before(" + arg1 + "," + arg2 + ")";
+  }
+  
 }

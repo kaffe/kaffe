@@ -38,8 +38,8 @@
 
 package gnu.xml.transform;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
@@ -74,7 +74,7 @@ final class WithParam
     select = null;
   }
 
-  Object getValue(Stylesheet stylesheet, String mode,
+  Object getValue(Stylesheet stylesheet, QName mode,
                   Node context, int pos, int len)
     throws TransformerException
   {
@@ -90,13 +90,21 @@ final class WithParam
         content.apply(stylesheet, mode,
                       context, pos, len,
                       fragment, null);
-        Collection acc = new LinkedList();
-        Node ctx = fragment.getFirstChild();
-        for (; ctx != null; ctx = ctx.getNextSibling())
-          {
-            acc.add(ctx);
-          }
-        return acc;
+        return Collections.singleton(fragment);
+      }
+  }
+
+  WithParam clone(Stylesheet stylesheet)
+  {
+    if (content == null)
+      {
+        return new WithParam(name,
+                             select.clone(stylesheet));
+      }
+    else
+      {
+        return new WithParam(name,
+                             content.clone(stylesheet));
       }
   }
 

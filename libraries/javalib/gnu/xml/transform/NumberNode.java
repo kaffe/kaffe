@@ -56,7 +56,7 @@ final class NumberNode
   final Expr value;
 
   NumberNode(TemplateNode children, TemplateNode next,
-             Expr value, String format, String lang,
+             Expr value, TemplateNode format, String lang,
              int letterValue, String groupingSeparator, int groupingSize)
   {
     super(children, next, format, lang, letterValue, groupingSeparator,
@@ -64,10 +64,21 @@ final class NumberNode
     this.value = value;
   }
 
-  int[] compute(Stylesheet stylesheet, Node context)
+  TemplateNode clone(Stylesheet stylesheet)
+  {
+    return new NumberNode((children == null) ? null :
+                          children.clone(stylesheet),
+                          (next == null) ? null :
+                          next.clone(stylesheet),
+                          value.clone(stylesheet),
+                          format, lang, letterValue,
+                          groupingSeparator, groupingSize);
+  }
+
+  int[] compute(Stylesheet stylesheet, Node context, int pos, int len)
     throws TransformerException
   {
-    Object ret = value.evaluate(context, 1, 1);
+    Object ret = value.evaluate(context, pos, len);
     Double d = (ret instanceof Double) ? ((Double) ret) :
       new Double(Expr._number(context, ret));
     return new int[] { d.intValue() };

@@ -1,6 +1,6 @@
 /*
  * DomAttr.java
- * Copyright (C) 1999,2000,2001 The Free Software Foundation
+ * Copyright (C) 1999,2000,2001,2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -39,7 +39,6 @@
 package gnu.xml.dom;
 
 import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.TypeInfo;
@@ -72,13 +71,15 @@ import org.w3c.dom.events.MutationEvent;
  * nodes you work with.</em> </p>
  *
  * @author David Brownell
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class DomAttr
   extends DomNsNode
   implements Attr
 {
   
-  private boolean	specified;
+  private boolean specified;
+  private String value; // string value cache
   
   /**
    * Constructs an Attr node associated with the specified document.
@@ -95,17 +96,17 @@ public class DomAttr
    *	this is used to uniquely identify a type of attribute
    * @param name Name of this attribute, which may include a prefix
    */
-  protected DomAttr(Document owner, String namespaceURI, String name)
+  protected DomAttr(DomDocument owner, String namespaceURI, String name)
   {
     super(ATTRIBUTE_NODE, owner, namespaceURI, name);
     specified = true;
+    length = 1;
     
     // XXX register self to get insertion/removal events
     // and character data change events and when they happen,
     // report self-mutation
   }
   
-
   /**
    * <b>DOM L1</b>
    * Returns the attribute name (same as getNodeName)
@@ -115,7 +116,6 @@ public class DomAttr
     return getNodeName();
   }
   
-
   /**
    * <b>DOM L1</b>
    * Returns true if a parser reported this was in the source text.
@@ -125,7 +125,6 @@ public class DomAttr
     return specified;
   }
   
-
   /**
    * Records whether this attribute was in the source text.
    */
@@ -133,7 +132,6 @@ public class DomAttr
   {
     specified = value;
   }
-
 
   /**
    * <b>DOM L1</b>
@@ -143,6 +141,12 @@ public class DomAttr
    */
   public String getNodeValue()
   {
+    // If we have a simple node-value, use that
+    if (first == null)
+      {
+        return (value == null) ? "" : value;
+      }
+    // Otherwise collect child node-values
     StringBuffer buf = new StringBuffer();
     for (DomNode ctx = first; ctx != null; ctx = ctx.next)
       {
@@ -159,7 +163,6 @@ public class DomAttr
     return buf.toString();
   }
   
-
   /**
    * <b>DOM L1</b>
    * Assigns the value of the attribute; it will have one child,
@@ -171,7 +174,6 @@ public class DomAttr
     setNodeValue(value);
   }
   
-
   /**
    * <b>DOM L1</b>
    * Returns the value of the attribute as a non-null string; same
@@ -183,7 +185,6 @@ public class DomAttr
     return getNodeValue();
   }
   
-
   /**
    * <b>DOM L1</b>
    * Assigns the attribute value; using this API, no entity or
@@ -192,23 +193,66 @@ public class DomAttr
    */
   public void setNodeValue(String value)
   {
-    if (isReadonly())
+    if (readonly)
       {
         throw new DomEx(DomEx.NO_MODIFICATION_ALLOWED_ERR);
       }
-    
-    String oldValue = getValue();
+    if (value == null)
+      {
+        value = "";
+      }
+    String oldValue = getNodeValue();
     while (last != null)
       {
         removeChild(last);
       }
-    Node text = owner.createTextNode(value);
-    appendChild(text);
+    // don't create a new node just for this...
+    /*
+     Node text = owner.createTextNode(value);
+     appendChild(text);
+     */
+    this.value = value;
+    length = 1;
     specified = true;
     
     mutating(oldValue, value, MutationEvent.MODIFICATION);
   }
 
+  public final Node getFirstChild()
+  {
+    // Create a child text node if necessary
+    if (first == null)
+      {
+        length = 0;
+        Node text = owner.createTextNode((value == null) ? "" : value);
+        appendChild(text);
+      }
+    return first;
+  }
+
+  public final Node getLastChild()
+  {
+    // Create a child text node if necessary
+    if (last == null)
+      {
+        length = 0;
+        Node text = owner.createTextNode((value == null) ? "" : value);
+        appendChild(text);
+      }
+    return last;
+  }
+
+  public Node item(int index)
+  {
+    // Create a child text node if necessary
+    if (first == null)
+      {
+        length = 0;
+        Node text = owner.createTextNode((value == null) ? "" : value);
+        appendChild(text);
+      }
+    return super.item(index);
+  }
 
   /**
    * <b>DOM L2</b>
@@ -219,6 +263,20 @@ public class DomAttr
     return (Element) parent;
   }
 
+  public final Node getNextSibling()
+  {
+    return null;
+  }
+
+  public final Node getPreviousSibling()
+  {
+    return null;
+  }
+
+  public Node getParentNode()
+  {
+    return null;
+  }
 
   /**
    * Records the element with which this attribute is associated.
@@ -244,8 +302,7 @@ public class DomAttr
   public Object clone()
   {
     DomAttr retval = (DomAttr) super.clone();
-    
-    retval.specified = false;
+    retval.specified = true;
     return retval;
   }
     
@@ -271,7 +328,17 @@ public class DomAttr
   
   public TypeInfo getSchemaTypeInfo()
   {
-    // TODO
+    if (parent != null)
+      {
+        // DTD implementation
+        DomDoctype doctype = (DomDoctype) parent.owner.getDoctype();
+        if (doctype != null)
+          {
+            return doctype.getAttributeTypeInfo(parent.getNodeName(),
+                                                getNodeName());
+          }
+        // TODO XML Schema implementation
+      }
     return null;
   }
 
@@ -282,14 +349,21 @@ public class DomAttr
         DomDoctype doctype = (DomDoctype) parent.owner.getDoctype();
         if (doctype != null)
           {
-            DomDoctype.ElementInfo info =
-              doctype.getElementInfo(parent.getNodeName());
-            if (info != null)
+            DTDAttributeTypeInfo info =
+              doctype.getAttributeTypeInfo(parent.getNodeName(),
+                                           getNodeName());
+            if (info != null && "ID".equals(info.type))
               {
-                String idAttr = info.getIdAttr();
-                return (idAttr != null && idAttr.equals(getNodeName()));
+                return true;
               }
           }
+        DomElement element = (DomElement) parent;
+        if (element.userIdAttrs != null &&
+            element.userIdAttrs.contains(this))
+          {
+            return true;
+          }
+        // TODO XML Schema implementation
       }
     return false;
   }

@@ -38,6 +38,7 @@
 
 package gnu.xml.transform;
 
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
@@ -64,7 +65,16 @@ final class ProcessingInstructionNode
     this.name = name;
   }
 
-  void apply(Stylesheet stylesheet, String mode,
+  TemplateNode clone(Stylesheet stylesheet)
+  {
+    return new ProcessingInstructionNode((children == null) ? null :
+                                         children.clone(stylesheet),
+                                         (next == null) ? null :
+                                         next.clone(stylesheet),
+                                         name);
+  }
+
+  void doApply(Stylesheet stylesheet, QName mode,
              Node context, int pos, int len,
              Node parent, Node nextSibling)
     throws TransformerException
@@ -99,6 +109,16 @@ final class ProcessingInstructionNode
                    context, pos, len,
                    parent, nextSibling);
       }
+  }
+  
+  public String toString()
+  {
+    StringBuffer buf = new StringBuffer(getClass().getName());
+    buf.append('[');
+    buf.append("name=");
+    buf.append(name);
+    buf.append(']');
+    return buf.toString();
   }
   
 }

@@ -45,13 +45,13 @@ import org.w3c.dom.CDATASection;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 class GnomeCDATASection
-extends GnomeText
-implements CDATASection
+  extends GnomeText
+  implements CDATASection
 {
 
-  GnomeCDATASection (Object id)
+  GnomeCDATASection(Object id)
   {
-    super (id);
+    super(id);
   }
 
 }

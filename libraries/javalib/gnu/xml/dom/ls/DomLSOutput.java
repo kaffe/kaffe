@@ -1,6 +1,6 @@
 /*
- * DummyNode.java
- * Copyright (C) 2004 The Free Software Foundation
+ * DomLSOutput.java
+ * Copyright (C) 1999,2000,2001 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -36,36 +36,64 @@
  * exception statement from your version. 
  */
 
-package gnu.xml.transform;
+package gnu.xml.dom.ls;
 
-import javax.xml.transform.TransformerException;
-import org.w3c.dom.Node;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import org.w3c.dom.ls.LSOutput;
 
 /**
- * A template node that simply continues processing the next node.
+ * Specification of XML output to produce.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-final class DummyNode
-  extends TemplateNode
+public class DomLSOutput
+  implements LSOutput
 {
 
-  DummyNode(TemplateNode children, TemplateNode next)
+  private OutputStream out;
+  private String systemId;
+  private String encoding;
+
+  public Writer getCharacterStream()
   {
-    super(children, next);
+    return new OutputStreamWriter(out);
   }
 
-  void apply(Stylesheet stylesheet, String mode,
-             Node context, int pos, int len,
-             Node parent, Node nextSibling)
-    throws TransformerException
+  public void setCharacterStream(Writer characterStream)
   {
-    if (next != null)
-      {
-        next.apply(stylesheet, mode,
-                   context, pos, len,
-                   parent, nextSibling);
-      }
+    out = new WriterOutputStream(characterStream);
+  }
+
+  public OutputStream getByteStream()
+  {
+    return out;
+  }
+
+  public void setByteStream(OutputStream out)
+  {
+    this.out = out;
+  }
+
+  public String getSystemId()
+  {
+    return systemId;
+  }
+
+  public void setSystemId(String systemId)
+  {
+    this.systemId = systemId;
+  }
+
+  public String getEncoding()
+  {
+    return encoding;
+  }
+
+  public void setEncoding(String encoding)
+  {
+    this.encoding = encoding;
   }
   
 }

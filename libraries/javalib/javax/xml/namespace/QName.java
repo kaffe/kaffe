@@ -50,9 +50,9 @@ import javax.xml.XMLConstants;
 public class QName
 {
 
-  String namespaceURI;
-  String localName;
-  String prefix;
+  private final String namespaceURI;
+  private final String localName;
+  private final String prefix;
 
   public QName(String namespaceURI, String localPart)
   {
@@ -122,6 +122,11 @@ public class QName
         buf.append('{');
         buf.append(namespaceURI);
         buf.append('}');
+      }
+    if (prefix != null && prefix.length() > 0)
+      {
+        buf.append(prefix);
+        buf.append(':');
       }
     buf.append(localName);
     return buf.toString();

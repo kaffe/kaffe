@@ -37,6 +37,8 @@
  */
 package gnu.xml.libxmlj.dom;
 
+import java.util.Iterator;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
@@ -54,6 +56,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
+import org.w3c.dom.UserDataHandler;
 import org.w3c.dom.traversal.DocumentTraversal;
 import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.NodeIterator;
@@ -69,8 +72,8 @@ import org.w3c.dom.xpath.XPathNSResolver;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class GnomeDocument
-extends GnomeNode
-implements Document, DOMConfiguration, XPathEvaluator, DocumentTraversal
+  extends GnomeNode
+  implements Document, DOMConfiguration, XPathEvaluator, DocumentTraversal
 {
 
   DOMImplementation dom;
@@ -125,6 +128,9 @@ implements Document, DOMConfiguration, XPathEvaluator, DocumentTraversal
     return createElementNS(null, tagName);
   }
 
+  public native DocumentType createDocumentType(String name, String publicId,
+                                                String systemId);
+
   public native DocumentFragment createDocumentFragment();
 
   public native Text createTextNode(String data);
@@ -149,7 +155,20 @@ implements Document, DOMConfiguration, XPathEvaluator, DocumentTraversal
 
   public native NodeList getElementsByTagName(String tagName);
 
-  public native Node importNode(Node importedNode, boolean deep)
+  public Node importNode(Node importedNode, boolean deep)
+    throws DOMException
+  {
+    Node ret = xmljImportNode(importedNode, deep);
+    if (importedNode instanceof GnomeNode)
+      {
+        ((GnomeNode) importedNode)
+          .notifyUserDataHandlers(UserDataHandler.NODE_IMPORTED,
+                                  importedNode, ret);
+      }
+    return ret;
+  }
+
+  private native Node xmljImportNode(Node importedNode, boolean deep)
     throws DOMException;
 
   public native Element createElementNS(String namespaceURI, String
@@ -163,110 +182,141 @@ implements Document, DOMConfiguration, XPathEvaluator, DocumentTraversal
   public native NodeList getElementsByTagNameNS(String namespaceURI,
       String localName);
 
-  public native Element getElementById(String elementId);
+  public Element getElementById(String elementId)
+  {
+    Element element = xmljGetElementById(elementId);
+    if (element == null)
+      {
+        TreeWalker walker = createTreeWalker(this, NodeFilter.SHOW_ELEMENT,
+                                             null, false);
+        for (Node node = walker.nextNode(); node != null;
+             node = walker.nextNode())
+          {
+            GnomeElement e = (GnomeElement) node;
+            if (e.userIdAttrs != null)
+              {
+                for (Iterator i = e.userIdAttrs.iterator(); i.hasNext(); )
+                  {
+                    Attr attr = (Attr) i.next();
+                    if (attr.getNodeValue().equals(elementId))
+                      {
+                        return e;
+                      }
+                  }
+              }
+          }
+      }
+    return element;
+  }
+  
+  private native Element xmljGetElementById(String elementId);
 
   // DOM Level 3 methods
 
-  public native String getInputEncoding ();
+  public native String getInputEncoding();
 
-  public String getXmlEncoding ()
-  {
-    // TODO
-    return null;
-  }
+  public native String getXmlEncoding();
 
-  public native boolean getXmlStandalone ();
+  public native boolean getXmlStandalone();
 
-  public native void setXmlStandalone (boolean xmlStandalone);
+  public native void setXmlStandalone(boolean xmlStandalone);
 
-  public native String getXmlVersion ();
+  public native String getXmlVersion();
 
-  public native void setXmlVersion (String xmlVersion);
+  public native void setXmlVersion(String xmlVersion);
 
-  public boolean getStrictErrorChecking ()
+  public boolean getStrictErrorChecking()
   {
     return strictErrorChecking;
   }
 
-  public void setStrictErrorChecking (boolean strictErrorChecking)
+  public void setStrictErrorChecking(boolean strictErrorChecking)
   {
     this.strictErrorChecking = strictErrorChecking;
   }
   
-  public native String getDocumentURI ();
+  public native String getDocumentURI();
 
-  public native void setDocumentURI (String documentURI);
+  public native void setDocumentURI(String documentURI);
 
-  public Node adoptNode (Node source)
+  public Node adoptNode(Node source)
     throws DOMException
   {
     if (source == null || !(source instanceof GnomeNode))
       {
         return null;
       }
-    return doAdoptNode (source);
+    Node ret = xmljAdoptNode(source);
+    if (source instanceof GnomeNode)
+      {
+        ((GnomeNode) source).
+          notifyUserDataHandlers(UserDataHandler.NODE_ADOPTED,
+                                 source, ret);
+      }
+    return ret;
   }
 
-  private native Node doAdoptNode (Node source)
+  private native Node xmljAdoptNode(Node source)
     throws DOMException;
 
-  public DOMConfiguration getDomConfig ()
+  public DOMConfiguration getDomConfig()
   {
     return this;
   }
 
-  public void normalizeDocument ()
+  public void normalizeDocument()
   {
-    normalize ();
+    normalize();
   }
 
-  public native Node renameNode (Node n, String namespaceURI,
-                                 String qualifiedName);
+  public native Node renameNode(Node n, String namespaceURI,
+                                String qualifiedName);
 
   // -- DOMConfiguration methods --
 
-  public void setParameter (String name, Object value)
+  public void setParameter(String name, Object value)
     throws DOMException
   {
-    if ("canonical-form".equals (name))
+    name = name.toLowerCase();
+    if ("canonical-form".equals(name))
       {
         /* optional
-        canonicalForm = getBooleanValue (value);*/
+        canonicalForm = getBooleanValue(value);*/
       }
-    else if ("cdata-sections".equals (name))
+    else if ("cdata-sections".equals(name))
       {
-        cdataSections = getBooleanValue (value);
+        cdataSections = getBooleanValue(value);
       }
-    else if ("check-character-normalization".equals (name))
-      {
-        /* optional
-        checkCharacterNormalization = getBooleanValue (value);*/
-      }
-    else if ("comments".equals (name))
-      {
-        comments = getBooleanValue (value);
-      }
-    else if ("datatype-normalization".equals (name))
+    else if ("check-character-normalization".equals(name))
       {
         /* optional
-        datatypeNormalization = getBooleanValue (value);*/
+        checkCharacterNormalization = getBooleanValue(value);*/
       }
-    else if ("element-content-whitespace".equals (name))
+    else if ("comments".equals(name))
+      {
+        comments = getBooleanValue(value);
+      }
+    else if ("datatype-normalization".equals(name))
       {
         /* optional
-        elementContentWhitespace = getBooleanValue (value);*/
+        datatypeNormalization = getBooleanValue(value);*/
       }
-    else if ("entities".equals (name))
+    else if ("element-content-whitespace".equals(name))
       {
-        entities = getBooleanValue (value);
+        /* optional
+        elementContentWhitespace = getBooleanValue(value);*/
       }
-    else if ("error-handler".equals (name))
+    else if ("entities".equals(name))
+      {
+        entities = getBooleanValue(value);
+      }
+    else if ("error-handler".equals(name))
       {
         errorHandler = (DOMErrorHandler) value;
       }
-    else if ("infoset".equals (name))
+    else if ("infoset".equals(name))
       {
-        if (getBooleanValue (value))
+        if (getBooleanValue(value))
           {
             validateIfSchema = false;
             entities = false;
@@ -279,141 +329,142 @@ implements Document, DOMConfiguration, XPathEvaluator, DocumentTraversal
             namespaces = true;
           }
       }
-    else if ("namespaces".equals (name))
+    else if ("namespaces".equals(name))
       {
         /* optional
-        namespaces = getBooleanValue (value);*/
+        namespaces = getBooleanValue(value);*/
       }
-    else if ("namespace-declarations".equals (name))
+    else if ("namespace-declarations".equals(name))
       {
-        namespaceDeclarations = getBooleanValue (value);
+        namespaceDeclarations = getBooleanValue(value);
       }
-    else if ("normalize-characters".equals (name))
-      {
-        /* optional
-        normalizeCharacters = getBooleanValue (value);*/
-      }
-    else if ("split-cdata-sections".equals (name))
-      {
-        splitCdataSections = getBooleanValue (value);
-      }
-    else if ("validate".equals (name))
+    else if ("normalize-characters".equals(name))
       {
         /* optional
-        validate = getBooleanValue (value);*/
+        normalizeCharacters = getBooleanValue(value);*/
       }
-    else if ("validate-if-schema".equals (name))
+    else if ("split-cdata-sections".equals(name))
+      {
+        splitCdataSections = getBooleanValue(value);
+      }
+    else if ("validate".equals(name))
       {
         /* optional
-        validateIfSchema = getBooleanValue (value);*/
+        validate = getBooleanValue(value);*/
       }
-    else if ("well-formed".equals (name))
+    else if ("validate-if-schema".equals(name))
       {
         /* optional
-        wellFormed = getBooleanValue (value);*/
+        validateIfSchema = getBooleanValue(value);*/
+      }
+    else if ("well-formed".equals(name))
+      {
+        /* optional
+        wellFormed = getBooleanValue(value);*/
       }
     else
       {
-        throw new GnomeDOMException (DOMException.NOT_FOUND_ERR, name);
+        throw new GnomeDOMException(DOMException.NOT_FOUND_ERR, name);
       }
   }
 
-  public Object getParameter (String name)
+  public Object getParameter(String name)
     throws DOMException
   {
-    if ("canonical-form".equals (name))
+    name = name.toLowerCase();
+    if ("canonical-form".equals(name))
       {
-        return new Boolean (canonicalForm);
+        return new Boolean(canonicalForm);
       }
-    else if ("cdata-sections".equals (name))
+    else if ("cdata-sections".equals(name))
       {
-        return new Boolean (cdataSections);
+        return new Boolean(cdataSections);
       }
-    else if ("check-character-normalization".equals (name))
+    else if ("check-character-normalization".equals(name))
       {
-        return new Boolean (checkCharacterNormalization);
+        return new Boolean(checkCharacterNormalization);
       }
-    else if ("comments".equals (name))
+    else if ("comments".equals(name))
       {
-        return new Boolean (comments);
+        return new Boolean(comments);
       }
-    else if ("datatype-normalization".equals (name))
+    else if ("datatype-normalization".equals(name))
       {
-        return new Boolean (datatypeNormalization);
+        return new Boolean(datatypeNormalization);
       }
-    else if ("element-content-whitespace".equals (name))
+    else if ("element-content-whitespace".equals(name))
       {
-        return new Boolean (elementContentWhitespace);
+        return new Boolean(elementContentWhitespace);
       }
-    else if ("entities".equals (name))
+    else if ("entities".equals(name))
       {
-        return new Boolean (entities);
+        return new Boolean(entities);
       }
-    else if ("error-handler".equals (name))
+    else if ("error-handler".equals(name))
       {
         return errorHandler;
       }
-    else if ("infoset".equals (name))
+    else if ("infoset".equals(name))
       {
-        return new Boolean (!validateIfSchema &&
-                            !entities &&
-                            !datatypeNormalization &&
-                            !cdataSections &&
-                            namespaceDeclarations &&
-                            wellFormed &&
-                            elementContentWhitespace &&
-                            comments &&
-                            namespaces);
+        return new Boolean(!validateIfSchema &&
+                           !entities &&
+                           !datatypeNormalization &&
+                           !cdataSections &&
+                           namespaceDeclarations &&
+                           wellFormed &&
+                           elementContentWhitespace &&
+                           comments &&
+                           namespaces);
       }
-    else if ("namespaces".equals (name))
+    else if ("namespaces".equals(name))
       {
-        return new Boolean (namespaces);
+        return new Boolean(namespaces);
       }
-    else if ("namespace-declarations".equals (name))
+    else if ("namespace-declarations".equals(name))
       {
-        return new Boolean (namespaceDeclarations);
+        return new Boolean(namespaceDeclarations);
       }
-    else if ("normalize-characters".equals (name))
+    else if ("normalize-characters".equals(name))
       {
-        return new Boolean (normalizeCharacters);
+        return new Boolean(normalizeCharacters);
       }
-    else if ("split-cdata-sections".equals (name))
+    else if ("split-cdata-sections".equals(name))
       {
-        return new Boolean (splitCdataSections);
+        return new Boolean(splitCdataSections);
       }
-    else if ("validate".equals (name))
+    else if ("validate".equals(name))
       {
-        return new Boolean (validate);
+        return new Boolean(validate);
       }
-    else if ("validate-if-schema".equals (name))
+    else if ("validate-if-schema".equals(name))
       {
-        return new Boolean (validateIfSchema);
+        return new Boolean(validateIfSchema);
       }
-    else if ("well-formed".equals (name))
+    else if ("well-formed".equals(name))
       {
-        return new Boolean (wellFormed);
+        return new Boolean(wellFormed);
       }
     else
       {
-        throw new GnomeDOMException (DOMException.NOT_FOUND_ERR, name);
+        throw new GnomeDOMException(DOMException.NOT_FOUND_ERR, name);
       }
   }
 
-  public boolean canSetParameter (String name, Object value)
+  public boolean canSetParameter(String name, Object value)
   {
-    if (value == null)
+    name = name.toLowerCase();
+    if ("error-handler".equals(name))
       {
-        return true;
+        return (value == null || value instanceof DOMErrorHandler);
       }
-    return ("cdata-sections".equals (name) ||
-            "comments".equals (name) ||
-            "entities".equals (name) ||
-            "error-handler".equals (name) ||
-            "namespace-declarations".equals (name) ||
-            "split-cdata-sections".equals (name));
+    return ("cdata-sections".equals(name) ||
+            "comments".equals(name) ||
+            "entities".equals(name) ||
+            "namespace-declarations".equals(name) ||
+            "split-cdata-sections".equals(name));
   }
   
-  public DOMStringList getParameterNames ()
+  public DOMStringList getParameterNames()
   {
     String[] names = new String[] {
       "canonical-form",
@@ -433,41 +484,41 @@ implements Document, DOMConfiguration, XPathEvaluator, DocumentTraversal
       "validate-if-schema",
       "well-formed"
     };
-    return new GnomeDOMStringList (names);
+    return new GnomeDOMStringList(names);
   }
 
-  private boolean getBooleanValue (Object value)
+  private boolean getBooleanValue(Object value)
   {
     if (value instanceof Boolean)
       {
-        return ((Boolean) value).booleanValue ();
+        return ((Boolean) value).booleanValue();
       }
     else if (value instanceof String)
       {
-        return new Boolean ((String) value).booleanValue ();
+        return new Boolean ((String) value).booleanValue();
       }
     return false;
   }
 
   // -- XPathEvaluator methods --
 
-  public XPathExpression createExpression (String expression,
-                                           XPathNSResolver resolver)
+  public XPathExpression createExpression(String expression,
+                                          XPathNSResolver resolver)
     throws XPathException, DOMException
   {
-    return new GnomeXPathExpression (this, expression, resolver);
+    return new GnomeXPathExpression(this, expression, resolver);
   }
 
-  public XPathNSResolver createNSResolver (Node nodeResolver)
+  public XPathNSResolver createNSResolver(Node nodeResolver)
   {
-    return new GnomeXPathNSResolver (this);
+    return new GnomeXPathNSResolver(this);
   }
 
-  public native Object evaluate (String expression,
-                                 Node contextNode,
-                                 XPathNSResolver resolver,
-                                 short type,
-                                 Object result)
+  public native Object evaluate(String expression,
+                                Node contextNode,
+                                XPathNSResolver resolver,
+                                short type,
+                                Object result)
     throws XPathException, DOMException;
 
   // -- DocumentTraversal methods --
@@ -478,8 +529,8 @@ implements Document, DOMConfiguration, XPathEvaluator, DocumentTraversal
                                          boolean entityReferenceExpansion)
     throws DOMException
   {
-    return new GnomeNodeIterator (root, whatToShow, filter,
-                                  entityReferenceExpansion, false);
+    return new GnomeNodeIterator(root, whatToShow, filter,
+                                 entityReferenceExpansion, false);
   }
 
   public TreeWalker createTreeWalker(Node root,
@@ -488,21 +539,21 @@ implements Document, DOMConfiguration, XPathEvaluator, DocumentTraversal
                                     boolean entityReferenceExpansion)
     throws DOMException
   {
-    return new GnomeNodeIterator (root, whatToShow, filter,
-                                  entityReferenceExpansion, true);
+    return new GnomeNodeIterator(root, whatToShow, filter,
+                                 entityReferenceExpansion, true);
   }
 
   // -- Debugging --
   
-  public String toString ()
+  public String toString()
   {
-    StringBuffer buffer = new StringBuffer (getClass ().getName ());
-    buffer.append ("[version=");
-    buffer.append (getXmlVersion ());
-    buffer.append (",standalone=");
-    buffer.append (getXmlStandalone ());
-    buffer.append ("]");
-    return buffer.toString ();
+    StringBuffer buffer = new StringBuffer(getClass().getName());
+    buffer.append("[version=");
+    buffer.append(getXmlVersion());
+    buffer.append(",standalone=");
+    buffer.append(getXmlStandalone());
+    buffer.append("]");
+    return buffer.toString();
   }
 
 }

@@ -72,6 +72,7 @@ xmljGetNodeInstance (JNIEnv * env, xmlNodePtr node)
 {
   jclass cls;
   jmethodID method;
+  xmlElementType type;
 
   if (node == NULL)
     return NULL;
@@ -89,10 +90,25 @@ xmljGetNodeInstance (JNIEnv * env, xmlNodePtr node)
     {
       return NULL;
     }
+  type = node->type;
+  switch (type)
+    {
+    case XML_DTD_NODE:
+      type = XML_DOCUMENT_TYPE_NODE;
+      break;
+    case XML_ATTRIBUTE_DECL:
+      type = XML_ATTRIBUTE_NODE;
+      break;
+    case XML_ENTITY_DECL:
+      type = XML_ENTITY_NODE;
+      break;
+    default:
+      break;
+    }
   return (*env)->CallStaticObjectMethod (env, cls, method,
                                          xmljAsField (env, node->doc),
                                          xmljAsField (env, node),
-                                         node->type);
+                                         type);
 }
 
 void

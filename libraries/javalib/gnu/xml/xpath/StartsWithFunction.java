@@ -51,27 +51,37 @@ final class StartsWithFunction
   extends Expr
 {
 
-	final Expr arg1;
-	final Expr arg2;
+  final Expr arg1;
+  final Expr arg2;
 
-	StartsWithFunction(List args)
-	{
-		arg1 = (Expr) args.get(0);
-		arg2 = (Expr) args.get(1);
-	}
+  StartsWithFunction(List args)
+  {
+    this((Expr) args.get(0), (Expr) args.get(1));
+  }
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val1 = arg1.evaluate(context, pos, len);
-		Object val2 = arg2.evaluate(context, pos, len);
-		String s1 = _string(context, val1);
-		String s2 = _string(context, val2);
-		return s1.startsWith(s2) ? Boolean.TRUE : Boolean.FALSE;
-	}
+  StartsWithFunction(Expr arg1, Expr arg2)
+  {
+    this.arg1 = arg1;
+    this.arg2 = arg2;
+  }
 
-	public String toString()
-	{
-		return "starts-with(" + arg1 + "," + arg2 + ")";
-	}
-	
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val1 = arg1.evaluate(context, pos, len);
+    Object val2 = arg2.evaluate(context, pos, len);
+    String s1 = _string(context, val1);
+    String s2 = _string(context, val2);
+    return s1.startsWith(s2) ? Boolean.TRUE : Boolean.FALSE;
+  }
+
+  public Expr clone(Object context)
+  {
+    return new StartsWithFunction(arg1.clone(context), arg2.clone(context));
+  }
+
+  public String toString()
+  {
+    return "starts-with(" + arg1 + "," + arg2 + ")";
+  }
+  
 }

@@ -49,50 +49,68 @@ import org.w3c.dom.TypeInfo;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 class GnomeAttr
-extends GnomeNode
-implements Attr
+  extends GnomeNode
+  implements Attr
 {
 
-  GnomeAttr (Object id)
+  GnomeAttr(Object id)
   {
-    super (id);
+    super(id);
   }
   
-  public String getName ()
+  public String getName()
   {
-    return getNodeName ();
+    return getNodeName();
   }
   
-  public native boolean getSpecified ();
+  public native boolean getSpecified();
   
-  public native String getValue ();
+  public native String getValue();
   
-  public native void setValue (String value)
+  public native void setValue(String value)
     throws DOMException;
   
-  public Element getOwnerElement ()
+  public Node getParentNode()
   {
-    return (Element) getParentNode ();
+    return null;
+  }
+  
+  public Element getOwnerElement()
+  {
+    return (Element) super.getParentNode();
   }
   
   // DOM Level 3 methods
   
-  public TypeInfo getSchemaTypeInfo ()
+  public TypeInfo getSchemaTypeInfo()
   {
-    return new GnomeTypeInfo (id);
+    return new GnomeTypeInfo(id);
+  }
+
+  public boolean isId()
+  {
+    if (xmljIsId())
+      {
+        return true;
+      }
+    GnomeElement element = (GnomeElement) getOwnerElement();
+    return (element != null &&
+            element.userIdAttrs != null &&
+            element.userIdAttrs.contains(this));
   }
   
-  public native boolean isId ();
+  private native boolean xmljIsId();
 
   public String toString()
   {
-    StringBuffer buffer = new StringBuffer (getClass ().getName ());
-    buffer.append ("[name=");
-    buffer.append (getName ());
-    buffer.append (",value=");
-    buffer.append (getValue ());
-    buffer.append ("]");
-    return buffer.toString ();
+    StringBuffer buffer = new StringBuffer(getClass().getName());
+    buffer.append("[name=");
+    buffer.append(getName());
+    buffer.append(",value=");
+    buffer.append(getValue());
+    buffer.append("]");
+    return buffer.toString();
   }
   
 }
+

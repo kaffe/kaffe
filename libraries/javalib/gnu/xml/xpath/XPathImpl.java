@@ -58,14 +58,16 @@ public class XPathImpl
 {
 
   XPathParser parser;
+  NamespaceContext namespaceContext;
   XPathVariableResolver variableResolver;
   XPathFunctionResolver functionResolver;
-  NamespaceContext namespaceContext;
 
-  XPathImpl(XPathVariableResolver variableResolver,
+  XPathImpl(NamespaceContext namespaceContext,
+            XPathVariableResolver variableResolver,
             XPathFunctionResolver functionResolver)
   {
     parser = new XPathParser();
+    this.namespaceContext = namespaceContext;
     this.variableResolver = variableResolver;
     this.functionResolver = functionResolver;
     reset();
@@ -73,9 +75,9 @@ public class XPathImpl
 
   public void reset()
   {
+    parser.namespaceContext = namespaceContext;
     parser.variableResolver = variableResolver;
     parser.functionResolver = functionResolver;
-    namespaceContext = null;
   }
 
   public void setXPathVariableResolver(XPathVariableResolver resolver)
@@ -100,12 +102,12 @@ public class XPathImpl
 
   public void setNamespaceContext(NamespaceContext nsContext)
   {
-    namespaceContext = nsContext;
+    parser.namespaceContext = nsContext;
   }
 
   public NamespaceContext getNamespaceContext()
   {
-    return namespaceContext;
+    return parser.namespaceContext;
   }
 
   public XPathExpression compile(String expression)
@@ -122,7 +124,7 @@ public class XPathImpl
       }
     catch (XPathParser.yyException e)
       {
-        throw new XPathExpressionException(e);
+        throw new XPathExpressionException(expression);
       }
   }
   

@@ -63,12 +63,22 @@ public class VariableReference
         if (resolver instanceof Bindings)
           {
             // Needs context to operate properly
-            return ((Bindings) resolver).get(name, context);
+            return ((Bindings) resolver).get(name, context, pos, len);
           }
         QName qname = QName.valueOf(name);
         return resolver.resolveVariable(qname);
       }
     throw new IllegalStateException("no variable resolver");
+  }
+
+  public Expr clone(Object context)
+  {
+    XPathVariableResolver r = resolver;
+    if (context instanceof XPathVariableResolver)
+      {
+        r = (XPathVariableResolver) context;
+      }
+    return new VariableReference(r, name);
   }
 
   public String toString()

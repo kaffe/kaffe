@@ -106,7 +106,16 @@ public abstract class TransformerFactory
           }
       }
     while (className == null && count < 3);
-    return new gnu.xml.libxmlj.transform.GnomeTransformerFactory();
+    try
+      {
+        Class t =
+          Class.forName("gnu.xml.libxmlj.transform.GnomeTransformerFactory");
+        return (TransformerFactory) t.newInstance();
+      }
+    catch (Exception e)
+      {
+        throw new TransformerFactoryConfigurationError(e);
+      }
   }
   
   private static String getFactoryClassName(ClassLoader loader, int attempt)

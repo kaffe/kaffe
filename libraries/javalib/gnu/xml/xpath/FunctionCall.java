@@ -82,26 +82,53 @@ public final class FunctionCall
         XPathFunction function = resolver.resolveFunction(qname, arity);
         if (function != null)
           {
-            List values = new ArrayList(arity);
-            for (int i = 0; i < arity; i++)
-              {
-                Expr arg = (Expr) args.get(i);
-                values.add(arg.evaluate(context, pos, len));
-              }
             //System.err.println("Calling "+toString()+" with "+values);
-            try
+            if (function instanceof Expr)
               {
-                return function.evaluate(values);
+                if (function instanceof Function)
+                  {
+                    ((Function) function).setArguments(args);
+                  }
+                return ((Expr) function).evaluate(context, pos, len);
               }
-            catch (XPathFunctionException e)
+            else
               {
-                e.printStackTrace(System.err); // FIXME
-                throw new RuntimeException(e.getMessage(), e);
+                List values = new ArrayList(arity);
+                for (int i = 0; i < arity; i++)
+                  {
+                    Expr arg = (Expr) args.get(i);
+                    values.add(arg.evaluate(context, pos, len));
+                  }
+                try
+                  {
+                    return function.evaluate(values);
+                  }
+                catch (XPathFunctionException e)
+                  {
+                    e.printStackTrace(System.err); // FIXME
+                    throw new RuntimeException(e.getMessage(), e);
+                  }
               }
           }
       }
     throw new IllegalArgumentException("Invalid function call: " +
                                        toString());
+  }
+
+  public Expr clone(Object context)
+  {
+    int len = args.size();
+    List args2 = new ArrayList(len);
+    for (int i = 0; i < len; i++)
+      {
+        args2.add(((Expr) args.get(i)).clone(context));
+      }
+    XPathFunctionResolver r = resolver;
+    if (context instanceof XPathFunctionResolver)
+      {
+        r = (XPathFunctionResolver) context;
+      }
+    return new FunctionCall(r, name, args2);
   }
 
   public String toString()

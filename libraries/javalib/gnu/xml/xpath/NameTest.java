@@ -38,6 +38,7 @@
 
 package gnu.xml.xpath;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
@@ -50,56 +51,15 @@ public final class NameTest
   extends Test
 {
 
-  final String uri;
-  final String prefix;
-  final String name;
+  final QName qName;
   final boolean anyLocalName;
   final boolean any;
 
-  public NameTest(String name, boolean anyLocalName, boolean any)
+  public NameTest(QName qName, boolean anyLocalName, boolean any)
   {
     this.anyLocalName = anyLocalName;
     this.any = any;
-   
-    if (name != null)
-      { 
-        int start = name.indexOf('{');
-        int end = name.indexOf('}');
-        if (start != -1 && end > start)
-          {
-            uri = name.substring(start + 1, end);
-            name = name.substring(end + 1);
-          }
-        else
-          {
-            uri = null;
-          }
-        if (anyLocalName)
-          {
-            prefix = name;
-            this.name = null;
-          }
-        else
-          {
-            start = name.indexOf(':');
-            if (start != -1)
-              {
-                prefix = name.substring(0, start);
-                name = name.substring(start + 1);
-              }
-            else
-              {
-                prefix = null;
-              }
-            this.name = name;
-          }
-      }
-    else
-      {
-        uri = null;
-        prefix = null;
-        this.name = "";
-      }
+    this.qName = qName;
   }
 
   public boolean matchesAny()
@@ -116,36 +76,48 @@ public final class NameTest
   {
     switch (node.getNodeType())
       {
-      case Node.DOCUMENT_TYPE_NODE:
-      case Node.ENTITY_NODE:
-      case Node.ENTITY_REFERENCE_NODE:
-      case Node.NOTATION_NODE:
-        // XPath doesn't recognise these
+      case Node.ATTRIBUTE_NODE:
+        // Do not match namespace attributes
+        String uri = node.getNamespaceURI();
+        if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(uri) ||
+            XMLConstants.XMLNS_ATTRIBUTE.equals(node.getPrefix()) ||
+            XMLConstants.XMLNS_ATTRIBUTE.equals(node.getNodeName()))
+          {
+            return false;
+          }
+        // Fall through
+      case Node.ELEMENT_NODE:
+        break;
+      default:
         return false;
       }
     if (any)
       {
         return true;
       }
-    if (uri != null)
+    String uri = qName.getNamespaceURI();
+    if (!equal(uri, node.getNamespaceURI()))
       {
-        if (!uri.equals(node.getNamespaceURI()))
-          {
-            return false;
-          }
-      }
-    if (prefix != null)
-      {
-        if (!prefix.equals(node.getPrefix()))
-          {
-            return false;
-          }
+        return false;
       }
     if (anyLocalName)
       {
         return true;
       }
-    return (name.equals(node.getLocalName()));
+    String localName = qName.getLocalName();
+    return (localName.equals(node.getLocalName()));
+  }
+
+  final boolean equal(String s1, String s2)
+  {
+    return (((s1 == null || s1.length() == 0) &&
+             (s2 == null || s2.length() == 0)) ||
+            s1 != null && s1.equals(s2));
+  }
+
+  public Test clone(Object context)
+  {
+    return new NameTest(qName, anyLocalName, any);
   }
 
   public String toString ()
@@ -154,27 +126,7 @@ public final class NameTest
       {
         return "*";
       }
-    StringBuffer buf = new StringBuffer();
-    if (uri != null)
-      {
-        buf.append('{');
-        buf.append(uri);
-        buf.append('}');
-      }
-    if (prefix != null)
-      {
-        buf.append(prefix);
-        buf.append(':');
-      }
-    if (anyLocalName)
-      {
-        buf.append('*');
-      }
-    else
-      {
-        buf.append(name);
-      }
-    return buf.toString();
+    return qName.toString();
   }
   
 }

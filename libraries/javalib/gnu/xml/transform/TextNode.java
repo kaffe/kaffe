@@ -38,6 +38,7 @@
 
 package gnu.xml.transform;
 
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
@@ -63,12 +64,20 @@ final class TextNode
     this.disableOutputEscaping = disableOutputEscaping;
   }
 
-  void apply(Stylesheet stylesheet, String mode,
+  TemplateNode clone(Stylesheet stylesheet)
+  {
+    return new TextNode((children == null) ? null :
+                        children.clone(stylesheet),
+                        (next == null) ? null :
+                        next.clone(stylesheet),
+                        disableOutputEscaping);
+  }
+
+  void doApply(Stylesheet stylesheet, QName mode,
              Node context, int pos, int len,
              Node parent, Node nextSibling)
     throws TransformerException
   {
-    // TODO output escaping
     String value = "";
     Document doc = (parent instanceof Document) ? (Document) parent :
       parent.getOwnerDocument();
@@ -84,6 +93,10 @@ final class TextNode
         value = Expr.stringValue(fragment);
       }
     Text text = doc.createTextNode(value);
+    if (disableOutputEscaping)
+      {
+        text.setUserData("disable-output-escaping", "yes", stylesheet);
+      }
     // Insert into result tree
     if (nextSibling != null)
       {

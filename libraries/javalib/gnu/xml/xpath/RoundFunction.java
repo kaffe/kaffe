@@ -58,28 +58,34 @@ final class RoundFunction
   extends Expr
 {
 
-	final Expr arg;
+  final Expr arg;
 
-	RoundFunction(List args)
-	{
-		this((Expr) args.get(0));
-	}
+  RoundFunction(List args)
+  {
+    this((Expr) args.get(0));
+  }
 
-	RoundFunction(Expr arg)
-	{
-		this.arg = arg;
-	}
+  RoundFunction(Expr arg)
+  {
+    this.arg = arg;
+  }
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val = arg.evaluate(context, pos, len);
-		double n = _number(context, val);
-		return new Double(Math.round(n));
-	}
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val = arg.evaluate(context, pos, len);
+    double n = _number(context, val);
+    return (Double.isNaN(n) || Double.isInfinite(n)) ?
+      new Double(n) : new Double(Math.round(n));
+  }
 
-	public String toString()
-	{
-		return "round(" + arg + ")";
-	}
-	
+  public Expr clone(Object context)
+  {
+    return new RoundFunction(arg.clone(context));
+  }
+
+  public String toString()
+  {
+    return "round(" + arg + ")";
+  }
+  
 }

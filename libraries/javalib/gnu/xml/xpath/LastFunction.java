@@ -50,14 +50,19 @@ final class LastFunction
   extends Expr
 {
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		return new Double((double) len);
-	}
+  public Object evaluate(Node context, int pos, int len)
+  {
+    return new Double((double) len);
+  }
 
-	public String toString()
-	{
-		return "last()";
-	}
-	
+  public Expr clone(Object context)
+  {
+    return new LastFunction();
+  }
+
+  public String toString()
+  {
+    return "last()";
+  }
+  
 }

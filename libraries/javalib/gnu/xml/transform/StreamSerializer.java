@@ -42,8 +42,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.XMLConstants;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -64,61 +69,129 @@ public class StreamSerializer
   static final int KET = 0x3e; // >
   static final int EQ = 0x3d; // =
 
-  final String encoding;
+  protected String encoding;
+  boolean compatibilityMode;
+  final int mode;
   final Map namespaces;
+  protected String eol;
+  Collection cdataSectionElements = Collections.EMPTY_SET;
+
+  protected boolean discardDefaultContent;
+  protected boolean xmlDeclaration = true;
+
+  public StreamSerializer()
+  {
+    this(Stylesheet.OUTPUT_XML, null, null);
+  }
 
   public StreamSerializer(String encoding)
   {
-    this.encoding = (encoding != null) ? encoding : "UTF-8";
+    this(Stylesheet.OUTPUT_XML, encoding, null);
+  }
+
+  public StreamSerializer(int mode, String encoding, String eol)
+  {
+    this.mode = mode;
+    if (encoding == null)
+      {
+        encoding = "UTF-8";
+      }
+    this.encoding = encoding.intern();
+    compatibilityMode = true;
+    if (encoding.length() > 3)
+      {
+        String p = encoding.substring(0, 3);
+        if (p.equalsIgnoreCase("UTF") ||
+            p.equalsIgnoreCase("UCS"))
+          {
+            compatibilityMode = false;
+          }
+      }
+    this.eol = (eol != null) ? eol : System.getProperty("line.separator");
     namespaces = new HashMap();
   }
 
-  public void serialize(final Node node, final OutputStream out,
-                        final int mode)
+  void setCdataSectionElements(Collection c)
+  {
+    cdataSectionElements = c;
+  }
+
+  public void serialize(final Node node, final OutputStream out)
+    throws IOException
+  {
+    serialize(node, out, false);
+  }
+  
+  void serialize(final Node node, final OutputStream out,
+                 boolean convertToCdata)
     throws IOException
   {
     if (out == null)
       {
         throw new NullPointerException("no output stream");
       }
-    String value;
+    String value, prefix;
     Node children;
     Node next = node.getNextSibling();
     String uri = node.getNamespaceURI();
     boolean defined = false;
-    switch (node.getNodeType())
+    short nt = node.getNodeType();
+    if (convertToCdata && nt == Node.TEXT_NODE)
+      {
+        nt = Node.CDATA_SECTION_NODE;
+      }
+    switch (nt)
       {
       case Node.ATTRIBUTE_NODE:
-        if (uri != null && !isDefined(uri))
+        prefix = node.getPrefix();
+        if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(uri) ||
+            XMLConstants.XMLNS_ATTRIBUTE.equals(prefix) ||
+            (prefix != null && prefix.startsWith("xmlns:")))
           {
-            String prefix = define(uri, node.getPrefix());
+            String nsuri = node.getNodeValue();
+            if (isDefined(nsuri))
+              {
+                break;
+              }
+            define(nsuri, node.getLocalName());
+          }
+        else if (uri != null && !isDefined(uri))
+          {
+            prefix = define(uri, prefix);
             String nsname = (prefix == null) ? "xmlns" : "xmlns:" + prefix;
             out.write(SPACE);
-            out.write(nsname.getBytes(encoding));
+            out.write(encodeText(nsname));
             out.write(EQ);
-            String nsvalue = "'" + encode(uri) + "'";
+            String nsvalue = "'" + encode(uri, true, true) + "'";
             out.write(nsvalue.getBytes(encoding));
             defined = true;
           }
         out.write(SPACE);
-        out.write(node.getNodeName().getBytes(encoding));
+        String a_nodeName = node.getNodeName();
+        out.write(encodeText(a_nodeName));
+        String a_nodeValue = node.getNodeValue();
+        if (mode == Stylesheet.OUTPUT_HTML &&
+            a_nodeName.equals(a_nodeValue))
+          {
+            break;
+          }
         out.write(EQ);
-        value = "'" + encode(node.getNodeValue()) + "'";
-        out.write(value.getBytes(encoding));
+        value = "'" + encode(a_nodeValue, true, true) + "'";
+        out.write(encodeText(value));
         break;
       case Node.ELEMENT_NODE:
         value = node.getNodeName();
         out.write(BRA);
-        out.write(value.getBytes(encoding));
+        out.write(encodeText(value));
         if (uri != null && !isDefined(uri))
           {
-            String prefix = define(uri, node.getPrefix());
+            prefix = define(uri, node.getPrefix());
             String nsname = (prefix == null) ? "xmlns" : "xmlns:" + prefix;
             out.write(SPACE);
-            out.write(nsname.getBytes(encoding));
+            out.write(encodeText(nsname));
             out.write(EQ);
-            String nsvalue = "'" + encode(uri) + "'";
-            out.write(nsvalue.getBytes(encoding));
+            String nsvalue = "'" + encode(uri, true, true) + "'";
+            out.write(encodeText(nsvalue));
             defined = true;
           }
         NamedNodeMap attrs = node.getAttributes();
@@ -127,10 +200,18 @@ public class StreamSerializer
             int len = attrs.getLength();
             for (int i = 0; i < len; i++)
               {
-                Node attr = attrs.item(i);
-                serialize(attr, out, mode);
+                Attr attr = (Attr) attrs.item(i);
+                if (discardDefaultContent && !attr.getSpecified())
+                  {
+                    // NOOP
+                  }
+                else
+                  {
+                    serialize(attr, out, false);
+                  }
               }
           }
+        convertToCdata = cdataSectionElements.contains(value);
         children = node.getFirstChild();
         if (children == null)
           {
@@ -140,45 +221,204 @@ public class StreamSerializer
         else
           {
             out.write(KET);
-            serialize(children, out, mode);
+            serialize(children, out, convertToCdata);
             out.write(BRA);
             out.write(SLASH);
-            out.write(value.getBytes(encoding));
+            out.write(encodeText(value));
             out.write(KET);
           }
         break;
       case Node.TEXT_NODE:
-        out.write(encode(node.getNodeValue()).getBytes(encoding));
+        value = node.getNodeValue();
+        if (!"yes".equals(node.getUserData("disable-output-escaping")))
+          {
+            value = encode(value, false, false);
+          }
+        out.write(encodeText(value));
         break;
       case Node.CDATA_SECTION_NODE:
         value = "<![CDATA[" + node.getNodeValue() + "]]>";
-        out.write(value.getBytes(encoding));
+        out.write(encodeText(value));
         break;
       case Node.COMMENT_NODE:
-        value = "<!--" + encode(node.getNodeValue()) + "-->";
-        out.write(value.getBytes(encoding));
+        value = "<!--" + node.getNodeValue() + "-->";
+        out.write(encodeText(value));
+        Node cp = node.getParentNode();
+        if (cp != null && cp.getNodeType() == Node.DOCUMENT_NODE)
+          {
+            out.write(encodeText(eol));
+          }
         break;
       case Node.DOCUMENT_NODE:
       case Node.DOCUMENT_FRAGMENT_NODE:
         if (mode == Stylesheet.OUTPUT_XML)
           {
-            out.write(BRA);
-            out.write(0x3f);
-            out.write("xml version='1.0'".getBytes(encoding));
-            if (!("UTF-8".equalsIgnoreCase(encoding)))
+            if ("UTF-16".equalsIgnoreCase(encoding))
               {
-                out.write(" encoding='".getBytes(encoding));
-                out.write(encoding.getBytes(encoding));
-                out.write(APOS);
+                out.write(0xfe);
+                out.write(0xff);
               }
-            out.write(0x3f);
-            out.write(KET);
-            out.write(0x0a);
+            if (!"yes".equals(node.getUserData("omit-xml-declaration")) &&
+                xmlDeclaration)
+              {
+                Document doc = (node instanceof Document) ?
+                  (Document) node : null;
+                String version = (doc != null) ? doc.getXmlVersion() : null;
+                if (version == null)
+                  {
+                    version = (String) node.getUserData("version");
+                  }
+                if (version == null)
+                  {
+                    version = "1.0";
+                  }
+                out.write(BRA);
+                out.write(0x3f);
+                out.write("xml version='".getBytes("US-ASCII"));
+                out.write(version.getBytes("US-ASCII"));
+                out.write(APOS);
+                if (!("UTF-8".equalsIgnoreCase(encoding)))
+                  {
+                    out.write(" encoding='".getBytes("US-ASCII"));
+                    out.write(encoding.getBytes("US-ASCII"));
+                    out.write(APOS);
+                  }
+                if ((doc != null && doc.getXmlStandalone()) ||
+                    "yes".equals(node.getUserData("standalone")))
+                  {
+                    out.write(" standalone='yes'".getBytes("US-ASCII"));
+                  }
+                out.write(0x3f);
+                out.write(KET);
+                out.write(encodeText(eol));
+              }
+            // TODO warn if not outputting the declaration would be a
+            // problem
+          }
+        else if (mode == Stylesheet.OUTPUT_HTML)
+          {
+            // Ensure that encoding is accessible
+            String mediaType = (String) node.getUserData("media-type");
+            if (mediaType == null)
+              {
+                mediaType = "text/html";
+              }
+            String contentType = mediaType + "; charset=" +
+              ((encoding.indexOf(' ') != -1) ?
+                "\"" + encoding + "\"" :
+                encoding);
+            Document doc = (node instanceof Document) ? (Document) node :
+              node.getOwnerDocument();
+            Node html = null;
+            for (Node ctx = node.getFirstChild(); ctx != null;
+                 ctx = ctx.getNextSibling())
+              {
+                if (ctx.getNodeType() == Node.ELEMENT_NODE)
+                  {
+                    html = ctx;
+                    break;
+                  }
+              }
+            if (html == null)
+              {
+                html = doc.createElement("html");
+                node.appendChild(html);
+              }
+            Node head = null;
+            for (Node ctx = html.getFirstChild(); ctx != null;
+                 ctx = ctx.getNextSibling())
+              {
+                if (ctx.getNodeType() == Node.ELEMENT_NODE &&
+                    "head".equalsIgnoreCase(ctx.getLocalName()))
+                  {
+                    head = ctx;
+                    break;
+                  }
+              }
+            if (head == null)
+              {
+                head = doc.createElement("head");
+                Node c1 = null;
+                for (Node ctx = html.getFirstChild(); ctx != null;
+                     ctx = ctx.getNextSibling())
+                  {
+                    if (ctx.getNodeType() == Node.ELEMENT_NODE)
+                      {
+                        c1 = ctx;
+                        break;
+                      }
+                  }
+                if (c1 != null)
+                  {
+                    html.insertBefore(head, c1);
+                  }
+                else
+                  {
+                    html.appendChild(head);
+                  }
+              }
+            Node meta = null;
+            Node metaContent = null;
+            for (Node ctx = head.getFirstChild(); ctx != null;
+                 ctx = ctx.getNextSibling())
+              {
+                if (ctx.getNodeType() == Node.ELEMENT_NODE &&
+                    "meta".equalsIgnoreCase(ctx.getLocalName()))
+                  {
+                    NamedNodeMap metaAttrs = ctx.getAttributes();
+                    int len = metaAttrs.getLength();
+                    String httpEquiv = null;
+                    Node content = null;
+                    for (int i = 0; i < len; i++)
+                      {
+                        Node attr = metaAttrs.item(i);
+                        String attrName = attr.getNodeName();
+                        if ("http-equiv".equalsIgnoreCase(attrName))
+                          {
+                            httpEquiv = attr.getNodeValue();
+                          }
+                        else if ("content".equalsIgnoreCase(attrName))
+                          {
+                            content = attr;
+                          }
+                      }
+                    if ("Content-Type".equalsIgnoreCase(httpEquiv))
+                      {
+                        meta = ctx;
+                        metaContent = content;
+                        break;
+                      }
+                  }
+              }
+            if (meta == null)
+              {
+                meta = doc.createElement("meta");
+                // Insert first
+                Node first = head.getFirstChild();
+                if (first == null)
+                  {
+                    head.appendChild(meta);
+                  }
+                else
+                  {
+                    head.insertBefore(meta, first);
+                  }
+                Node metaHttpEquiv = doc.createAttribute("http-equiv");
+                meta.getAttributes().setNamedItem(metaHttpEquiv);
+                metaHttpEquiv.setNodeValue("Content-Type");
+              }
+            if (metaContent == null)
+              {
+                metaContent = doc.createAttribute("content");
+                meta.getAttributes().setNamedItem(metaContent);
+              }
+            metaContent.setNodeValue(contentType);
+            // phew
           }
         children = node.getFirstChild();
         if (children != null)
           {
-            serialize(children, out, mode);
+            serialize(children, out, convertToCdata);
           }
         break;
       case Node.DOCUMENT_TYPE_NODE:
@@ -186,34 +426,43 @@ public class StreamSerializer
         out.write(BRA);
         out.write(BANG);
         value = doctype.getNodeName();
-        out.write(value.getBytes(encoding));
+        out.write(encodeText(value));
         String publicId = doctype.getPublicId();
         if (publicId != null)
           {
-            out.write(" PUBLIC ".getBytes(encoding));
+            out.write(encodeText(" PUBLIC "));
             out.write(APOS);
-            out.write(publicId.getBytes(encoding));
+            out.write(encodeText(publicId));
             out.write(APOS);
           }
         String systemId = doctype.getSystemId();
         if (systemId != null)
           {
-            out.write(" SYSTEM ".getBytes(encoding));
+            out.write(encodeText(" SYSTEM "));
             out.write(APOS);
-            out.write(systemId.getBytes(encoding));
+            out.write(encodeText(systemId));
             out.write(APOS);
           }
         String internalSubset = doctype.getInternalSubset();
         if (internalSubset != null)
           {
-            out.write(internalSubset.getBytes(encoding));
+            out.write(encodeText(internalSubset));
           }
         out.write(KET);
-        out.write(0x0a);
+        out.write(eol.getBytes(encoding));
         break;
       case Node.ENTITY_REFERENCE_NODE:
         value = "&" + node.getNodeValue() + ";";
-        out.write(value.getBytes(encoding));
+        out.write(encodeText(value));
+        break;
+      case Node.PROCESSING_INSTRUCTION_NODE:
+        value = "<?" + node.getNodeName() + " " + node.getNodeValue() + "?>";
+        out.write(encodeText(value));
+        Node pp = node.getParentNode();
+        if (pp != null && pp.getNodeType() == Node.DOCUMENT_NODE)
+          {
+            out.write(encodeText(eol));
+          }
         break;
       }
     if (defined)
@@ -222,13 +471,15 @@ public class StreamSerializer
       }
     if (next != null)
       {
-        serialize(next, out, mode);
+        serialize(next, out, convertToCdata);
       }
   }
 
   boolean isDefined(String uri)
   {
-    return namespaces.containsKey(uri);
+    return XMLConstants.XML_NS_URI.equals(uri) ||
+      XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(uri) ||
+      namespaces.containsKey(uri);
   }
 
   String define(String uri, String prefix)
@@ -247,7 +498,41 @@ public class StreamSerializer
     namespaces.remove(uri);
   }
 
-  static String encode(String text)
+  final byte[] encodeText(String text)
+    throws UnsupportedEncodingException
+  {
+    if (compatibilityMode)
+      {
+        int len = text.length();
+        StringBuffer buf = null;
+        for (int i = 0; i < len; i++)
+          {
+            char c = text.charAt(i);
+            if (c >= 127)
+              {
+                if (buf == null)
+                  {
+                    buf = new StringBuffer(text.substring(0, i));
+                  }
+                buf.append('&');
+                buf.append('#');
+                buf.append((int) c);
+                buf.append(';');
+              }
+            else if (buf != null)
+              {
+                buf.append(c);
+              }
+          }
+        if (buf != null)
+          {
+            text = buf.toString();
+          }
+      }
+    return text.getBytes(encoding);
+  }
+
+  String encode(String text, boolean encodeCtl, boolean inAttr)
   {
     int len = text.length();
     StringBuffer buf = null;
@@ -272,13 +557,24 @@ public class StreamSerializer
           }
         else if (c == '&')
           {
-            if (buf == null)
+            if (mode == Stylesheet.OUTPUT_HTML && (i + 1) < len &&
+                text.charAt(i + 1) == '{')
               {
-                buf = new StringBuffer(text.substring(0, i));
+                if (buf != null)
+                  {
+                    buf.append(c);
+                  }
               }
-            buf.append("&amp;");
+            else
+              {
+                if (buf == null)
+                  {
+                    buf = new StringBuffer(text.substring(0, i));
+                  }
+                buf.append("&amp;");
+              }
           }
-        else if (c == '\'')
+        else if (c == '\'' && inAttr)
           {
             if (buf == null)
               {
@@ -286,13 +582,31 @@ public class StreamSerializer
               }
             buf.append("&apos;");
           }
-        else if (c == '"')
+        else if (c == '"' && inAttr)
           {
             if (buf == null)
               {
                 buf = new StringBuffer(text.substring(0, i));
               }
             buf.append("&quot;");
+          }
+        else if (encodeCtl)
+          {
+            if (c < 0x20)
+              {
+                if (buf == null)
+                  {
+                    buf = new StringBuffer(text.substring(0, i));
+                  }
+                buf.append('&');
+                buf.append('#');
+                buf.append((int) c);
+                buf.append(';');
+              }
+            else if (buf != null)
+              {
+                buf.append(c);
+              }
           }
         else if (buf != null)
           {
@@ -307,7 +621,7 @@ public class StreamSerializer
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try
       {
-        serialize(node, out, Stylesheet.OUTPUT_XML);
+        serialize(node, out);
         return new String(out.toByteArray(), encoding);
       }
     catch (IOException e)

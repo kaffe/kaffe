@@ -49,14 +49,19 @@ final class FalseFunction
   extends Expr
 {
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		return Boolean.FALSE;
-	}
+  public Object evaluate(Node context, int pos, int len)
+  {
+    return Boolean.FALSE;
+  }
 
-	public String toString()
-	{
-		return "false()";
-	}
-	
+  public Expr clone(Object context)
+  {
+    return new FalseFunction();
+  }
+
+  public String toString()
+  {
+    return "false()";
+  }
+  
 }

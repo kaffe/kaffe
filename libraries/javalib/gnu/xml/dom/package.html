@@ -1,97 +1,99 @@
-<html><head>
-<title>foo</title>
-</head><body>
+<html>
+<body>
 
-<p> This is a Free Software
-DOM Level 2 implementation, supporting these features:
-"XML",
-"Events", "MutationEvents",
-"HTMLEvents" (won't generate them though),
-"UIEvents" (also won't generate them),
-"USER-Events" (a conformant extension),
-and 
-"Traversal" (optional; no TreeWalker yet).
-It includes JAXP bootstrapping support, addressing the issue that
-DOM (Levels 1 and 2) doesn't include bootstrapping APIs.
+<p>
+This is a Free Software DOM Level 3 implementation, supporting these features:
+<ul>
+<li>"XML"</li>
+<li>"Events"</li>
+<li>"MutationEvents"</li>
+<li>"HTMLEvents" (won't generate them though)</li>
+<li>"UIEvents" (also won't generate them)</li>
+<li>"USER-Events" (a conformant extension)</li>
+<li>"Traversal" (optional)</li>
+<li>"XPath"</li>
+<li>"LS" and "LS-Async"</li>
+</ul>
 It is intended to be a reasonable base both for
 experimentation and supporting additional DOM modules as clean layers.
 </p>
 
-<p>Note that while DOM does not specify its behavior in the
+<p>
+Note that while DOM does not specify its behavior in the
 face of concurrent access, this implementation does.
 Specifically:
-if only one thread at a time accesses a Document,
+<ul>
+<li>If only one thread at a time accesses a Document,
 of if several threads cooperate for read-only access,
-then no concurrency conflicts will occur.
-If several threads mutate a given document
+then no concurrency conflicts will occur.</li>
+<li>If several threads mutate a given document
 (or send events using it) at the same time,
 there is currently no guarantee that
-they won't interfere with each other.
+they won't interfere with each other.</li>
+</ul>
 </p>
 
-<h3> Design Goals </h3>
+<h3>Design Goals</h3>
 
-<p> A number of DOM implementations are available in Java, including
+<p>
+A number of DOM implementations are available in Java, including
 commercial ones from Sun, IBM, Oracle, and DataChannel as well as
 noncommercial ones from Docuverse, OpenXML, and Silfide.  Why have
-another?  Some of the goals of this version: </p> <ul>
+another?  Some of the goals of this version:
+</p>
 
-    <li> DOM Level 2 support.  This was the first generally available
-    implementation of DOM Level 2 in Java. </li>
+<ul>
+<li>Advanced DOM support. This was the first generally available
+implementation of DOM Level 2 in Java, and one of the first Level 3
+and XPath implementations.</li>
 
-    <li> Free Software.  This one is distributed under the GPL (with
-    "library exception") so it can be used with a different class of
-    application. </li>
+<li> Free Software.  This one is distributed under the GPL (with
+"library exception") so it can be used with a different class of
+application.</li>
 
-    <li> Second implementation syndrome.  I can do it simpler this time
-    around ... and heck, writing it only takes a bit over a day once you
-    know your way around.  (Debugging is of course a different story,
-    since W3C hasn't provided any conformance test suite and publicly
-    available suites have poor coverage.)  </li>
+<li>Second implementation syndrome.  I can do it simpler this time
+around ... and heck, writing it only takes a bit over a day once you
+know your way around.</li>
 
-    <li> Sanity check the then-current Last Call DOM draft.  Best to find
-    bugs early, when they're relatively fixable.  Yes, bugs were found.
-    </li>
+<li>Sanity check the then-current Last Call DOM draft.  Best to find
+bugs early, when they're relatively fixable.  Yes, bugs were found.</li>
 
-    <li> Modularity.  Most of the implementations mentioned above are part
-    of huge packages; take all (including bugs, of which some have far
-    too many), or take nothing.  I prefer a menu approach, when possible.
-    This code is standalone, not beholden to any particular parser or XSL
-    or XPath code. </li>
+<li>Modularity.  Most of the implementations mentioned above are part
+of huge packages; take all (including bugs, of which some have far
+too many), or take nothing.  I prefer a menu approach, when possible.
+This code is standalone, not beholden to any particular parser or XSL
+or XPath code.</li>
 
-    <li> OK, I'm a hacker, I like to write code.  </li>
+<li>OK, I'm a hacker, I like to write code.</li>
+</ul>
 
-    </ul>
-
-<p> This also works with the Gnu Compiler for Java (GCJ).  GCJ promises
+<p>
+This also works with the GNU Compiler for Java (GCJ).  GCJ promises
 to be quite the environment for programming Java, both directly and from
 C++ using the new CNI interfaces (which really use C++, unlike JNI). </p>
 
 
-<h3> Open Issues </h3>
+<h3>Open Issues</h3>
 
-<p> At this writing: </p> <ul>
+<p>At this writing:</p>
+<ul>
+<li>See below for some restrictions on the mutation event
+support ... some events aren't reported (and likely won't be).</li>
 
-    <li> An approximation of XML rules for legal names is used (Unicode
-    rules with minor tweaks) rather than the huge character tables in the
-    XML appendix. </li>
+<li>More testing and conformance work is needed.</li>
 
-    <li> See below for some restrictions on the mutation event
-    support ... some events aren't reported (and likely won't be). </li>
+<li>We need an XML Schema validator (actually we need validation in the DOM
+full stop).</li>
+</ul>
 
-    <li> There's no implementation (yet)
-    for the TreeWalker traversal API.</li>
-
-    <li> More testing and conformance work is needed. </li>
-
-    </ul>
-
-<p> I ran a profiler a few times and remove some of the performance hotspots,
+<p>
+I ran a profiler a few times and remove some of the performance hotspots,
 but it's not tuned.  Reporting mutation events, in particular, is
 rather costly -- it started at about a 40% penalty for appendNode calls,
 I've got it down around 12%, but it'll be hard to shrink it much further.
 The overall code size is relatively small, though you may want to be rid of
-many of the unused DOM interface classes (HTML, CSS, and so on).</p>
+many of the unused DOM interface classes (HTML, CSS, and so on).
+</p>
 
 
 <h2><a name="features">Features of this Package</a></h2>
@@ -266,4 +268,6 @@ applications; open document architectures comparable to
 DocBook 4.0 don't yet exist in the schema world.
 Feel free to use DTDs; just don't expect DOM to help you.) </p>
 
-</body></html>
+</body>
+</html>
+

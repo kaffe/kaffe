@@ -48,6 +48,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import gnu.xml.xpath.Expr;
 import gnu.xml.xpath.NodeTypeTest;
+import gnu.xml.xpath.Pattern;
 import gnu.xml.xpath.Selector;
 import gnu.xml.xpath.Test;
 import gnu.xml.xpath.UnionExpr;
@@ -68,27 +69,42 @@ final class NodeNumberNode
   static final int ANY = 2;
 
   final int level;
-  final Expr count;
-  final Expr from;
+  final Pattern count;
+  final Pattern from;
 
   NodeNumberNode(TemplateNode children, TemplateNode next,
-                 int level, Expr count, Expr from,
-                 String format, String lang,
+                 int level, Pattern count, Pattern from,
+                 TemplateNode format, String lang,
                  int letterValue, String groupingSeparator, int groupingSize)
   {
     super(children, next, format, lang, letterValue, groupingSeparator,
           groupingSize);
     this.level = level;
-    this.count = Template.patternToXPath(count);
+    this.count = count;
     this.from = from;
   }
 
-  int[] compute(Stylesheet stylesheet, Node context)
+  TemplateNode clone(Stylesheet stylesheet)
+  {
+    return new NodeNumberNode((children == null) ? null :
+                              children.clone(stylesheet),
+                              (next == null) ? null :
+                              next.clone(stylesheet),
+                              level,
+                              (count == null) ? null :
+                              (Pattern) count.clone(stylesheet),
+                              (from == null) ? from :
+                              (Pattern) from.clone(stylesheet),
+                              format, lang, letterValue,
+                              groupingSeparator, groupingSize);
+  }
+
+  int[] compute(Stylesheet stylesheet, Node context, int pos, int len)
     throws TransformerException
   {
-    if (from != null)
+    /*if (from != null)
       {
-        Object ret = from.evaluate(context, 1, 1);
+        Object ret = from.evaluate(context, pos, len);
         if (ret instanceof Collection)
           {
             Collection ns = (Collection) ret;
@@ -107,30 +123,46 @@ final class NodeNumberNode
           {
             return new int[0];
           }
-      }
+      }*/
+    Node current = context;
     switch (level)
       {
       case SINGLE:
-        while (context != null && !countMatches(context))
+        if (from == null)
           {
-            context = context.getParentNode();
+            while (context != null && !countMatches(current, context))
+              {
+                context = context.getParentNode();
+              }
+          }
+        else
+          {
+            while (context != null && !countMatches(current, context) &&
+                   !fromMatches(context))
+              {
+                context = context.getParentNode();
+              }
           }
         return (context == null) ? new int[0] :
-          new int[] { getIndex(context) };
+          new int[] { (context == current) ? pos : getIndex(current, context) };
       case MULTIPLE:
         List ancestors = new ArrayList();
         while (context != null)
           {
-            if (countMatches(context))
+            if (countMatches(current, context))
               {
-                ancestors.add(context);
+                if (from == null || fromMatches(context))
+                  {
+                    ancestors.add(context);
+                  }
               }
             context = context.getParentNode();
           }
+        Collections.sort(ancestors, documentOrderComparator);
         int[] ret = new int[ancestors.size()];
         for (int i = 0; i < ret.length; i++)
           {
-            ret[i] = getIndex((Node) ancestors.get(i));
+            ret[i] = getIndex(current, (Node) ancestors.get(i));
           }
         return ret;
       case ANY:
@@ -139,7 +171,7 @@ final class NodeNumberNode
         Expr ancestorOrSelf = new Selector(Selector.ANCESTOR_OR_SELF,
                                            Collections.EMPTY_LIST);
         Expr any = new UnionExpr(preceding, ancestorOrSelf);
-        Object eval = any.evaluate(context, 1, 1);
+        Object eval = any.evaluate(context, pos, len);
         if (eval instanceof Collection)
           {
             Collection ns = (Collection) eval;
@@ -147,17 +179,16 @@ final class NodeNumberNode
             for (Iterator i = ns.iterator(); i.hasNext(); )
               {
                 Node candidate = (Node) i.next();
-                if (countMatches(candidate))
+                if (countMatches(current, candidate))
                   {
                     candidates.add(candidate);
+                    if (from != null && from.matches(candidate))
+                      {
+                        break;
+                      }
                   }
               }
-            int[] ret2 = new int[candidates.size()];
-            for (int i = 0; i < ret2.length; i++)
-              {
-                ret2[i] = getIndex((Node) candidates.get(i));
-              }
-            return ret2;
+            return new int[] { candidates.size() };
           }
         return new int[0];
       default:
@@ -165,18 +196,63 @@ final class NodeNumberNode
       }
   }
 
-  boolean countMatches(Node node)
+  boolean countMatches(Node current, Node node)
   {
-    Object ret = count.evaluate(node, 1, 1);
-    return (ret instanceof Collection) && ((Collection) ret).contains(node);
+    if (count == null)
+      {
+        int cnt = current.getNodeType();
+        int nnt = node.getNodeType();
+        if (cnt != nnt)
+          {
+            return false;
+          }
+        if (nnt == Node.ELEMENT_NODE || nnt == Node.ATTRIBUTE_NODE)
+          {
+            String curi = current.getNamespaceURI();
+            String nuri = node.getNamespaceURI();
+            if ((curi == null && nuri != null) ||
+                (curi != null && !curi.equals(nuri)))
+              {
+                return false;
+              }
+            String cn = current.getLocalName();
+            String nn = current.getLocalName();
+            if (!cn.equals(nn))
+              {
+                return false;
+              }
+          }
+        return true;
+      }
+    else
+      {
+        return count.matches(node);
+      }
   }
 
-  int getIndex(Node node)
+  boolean fromMatches(Node node)
+  {
+    for (Node ctx = node.getParentNode(); ctx != null;
+         ctx = ctx.getParentNode())
+      {
+        if (from.matches(ctx))
+          {
+            return true;
+          }
+      }
+    return false;
+  }
+
+  int getIndex(Node current, Node node)
   {
     int index = 0;
     do
       {
-        node = node.getPreviousSibling();
+        do
+          {
+            node = node.getPreviousSibling();
+          }
+        while (node != null && !countMatches(current, node));
         index++;
       }
     while (node != null);

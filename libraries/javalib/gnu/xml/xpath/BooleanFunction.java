@@ -59,27 +59,32 @@ final class BooleanFunction
   extends Expr
 {
 
-	final Expr arg;
+  final Expr arg;
+  
+  BooleanFunction(List args)
+  {
+    this((Expr) args.get(0));
+  }
 
-	BooleanFunction(List args)
-	{
-		this((Expr) args.get(0));
-	}
+  BooleanFunction(Expr arg)
+  {
+    this.arg = arg;
+  }
+  
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val = arg.evaluate(context, pos, len);
+    return _boolean(context, val) ? Boolean.TRUE : Boolean.FALSE;
+  }
 
-	BooleanFunction(Expr arg)
-	{
-		this.arg = arg;
-	}
-
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val = arg.evaluate(context, pos, len);
-		return _boolean(context, val) ? Boolean.TRUE : Boolean.FALSE;
-	}
-
-	public String toString()
-	{
-		return "boolean(" + arg + ")";
-	}
-	
+  public Expr clone(Object context)
+  {
+    return new BooleanFunction(arg.clone(context));
+  }
+  
+  public String toString()
+  {
+    return "boolean(" + arg + ")";
+  }
+  
 }

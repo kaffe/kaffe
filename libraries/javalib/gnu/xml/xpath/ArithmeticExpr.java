@@ -93,12 +93,29 @@ final class ArithmeticExpr
       case MULTIPLY:
         return new Double(ln * rn);
       case DIVIDE:
+        if (rn == 0.0d || rn == -0.0d)
+          {
+            return new Double(ln < 0.0d ?
+                              Double.NEGATIVE_INFINITY :
+                              Double.POSITIVE_INFINITY);
+          }
         return new Double(ln / rn);
       case MODULO:
+        if (rn == 0.0d || rn == -0.0d)
+          {
+            return new Double(ln < 0.0d ?
+                              Double.NEGATIVE_INFINITY :
+                              Double.POSITIVE_INFINITY);
+          }
         return new Double(ln % rn);
       default:
         throw new IllegalStateException();
       }
+  }
+
+  public Expr clone(Object context)
+  {
+    return new ArithmeticExpr(lhs.clone(context), rhs.clone(context), op);
   }
 
   public String toString()

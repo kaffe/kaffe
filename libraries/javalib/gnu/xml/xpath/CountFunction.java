@@ -52,27 +52,32 @@ final class CountFunction
   extends Expr
 {
 
-	final Expr arg;
+  final Expr arg;
 
-	CountFunction(List args)
-	{
-		this((Expr) args.get(0));
-	}
+  CountFunction(List args)
+  {
+    this((Expr) args.get(0));
+  }
 
-	CountFunction(Expr arg)
-	{
-		this.arg = arg;
-	}
+  CountFunction(Expr arg)
+  {
+    this.arg = arg;
+  }
 
-	public Object evaluate(Node context, int pos, int len)
-	{
-		Object val = arg.evaluate(context, pos, len);
-		return new Double((double) ((Collection) val).size());
-	}
+  public Object evaluate(Node context, int pos, int len)
+  {
+    Object val = arg.evaluate(context, pos, len);
+    return new Double((double) ((Collection) val).size());
+  }
 
-	public String toString()
-	{
-		return "count(" + arg + ")";
-	}
-	
+  public Expr clone(Object context)
+  {
+    return new CountFunction(arg.clone(context));
+  }
+
+  public String toString()
+  {
+    return "count(" + arg + ")";
+  }
+  
 }

@@ -1,6 +1,6 @@
 /*
  * DomFragment.java
- * Copyright (C) 1999,2000,2001 The Free Software Foundation
+ * Copyright (C) 1999,2000,2001,2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -38,39 +38,40 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.*;
-
+import org.w3c.dom.DocumentFragment;
 
 /**
  * <p> "DocumentFragment" implementation.  </p>
  *
  * @author David Brownell 
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class DomFragment
   extends DomNode
   implements DocumentFragment
 {
-    /**
-     * Constructs a DocumentFragment node associated with the
-     * specified document.
-     *
-     * <p>This constructor should only be invoked by a Document as part of
-     * its createDocumentFragment functionality, or through a subclass which
-     * is similarly used in a "Sub-DOM" style layer.
-     */
-    protected DomFragment (Document owner)
-    {
-	super (DOCUMENT_FRAGMENT_NODE, owner);
-    }
+  
+  /**
+   * Constructs a DocumentFragment node associated with the
+   * specified document.
+   *
+   * <p>This constructor should only be invoked by a Document as part of
+   * its createDocumentFragment functionality, or through a subclass which
+   * is similarly used in a "Sub-DOM" style layer.
+   */
+  protected DomFragment(DomDocument owner)
+  {
+    super(DOCUMENT_FRAGMENT_NODE, owner);
+  }
 
-
-    /**
-     * <b>DOM L1</b>
-     * Returns the string "#document-fragment".
-     */
-    final public String getNodeName ()
-    {
-	return "#document-fragment";
-    }
-
+  /**
+   * <b>DOM L1</b>
+   * Returns the string "#document-fragment".
+   */
+  final public String getNodeName()
+  {
+    return "#document-fragment";
+  }
+  
 }
+

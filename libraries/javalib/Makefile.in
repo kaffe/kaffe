@@ -498,6 +498,7 @@ Klasses_jar_SRCS = \
 	$(gnu_regexp_SRCS) \
 	$(gnu_xml_aelfred2_SRCS) \
 	$(gnu_xml_dom_SRCS) \
+	$(gnu_xml_dom_ls_SRCS) \
 	$(gnu_xml_libxmlj_SRCS) \
 	$(gnu_xml_libxmlj_dom_SRCS) \
 	$(gnu_xml_libxmlj_sax_SRCS) \
@@ -1879,12 +1880,17 @@ gnu_xml_aelfred2_SRCS = \
 
 gnu_xml_dom_SRCS = \
 	gnu/xml/dom/Consumer.java \
+	gnu/xml/dom/DTDAttributeTypeInfo.java \
+	gnu/xml/dom/DTDElementTypeInfo.java \
 	gnu/xml/dom/DomAttr.java \
 	gnu/xml/dom/DomCDATA.java \
 	gnu/xml/dom/DomCharacterData.java \
 	gnu/xml/dom/DomComment.java \
 	gnu/xml/dom/DomDoctype.java \
 	gnu/xml/dom/DomDocument.java \
+	gnu/xml/dom/DomDocumentBuilder.java \
+	gnu/xml/dom/DomDocumentBuilderFactory.java \
+	gnu/xml/dom/DomDocumentConfiguration.java \
 	gnu/xml/dom/DomElement.java \
 	gnu/xml/dom/DomEntity.java \
 	gnu/xml/dom/DomEntityReference.java \
@@ -1907,6 +1913,17 @@ gnu_xml_dom_SRCS = \
 	gnu/xml/dom/ImplementationList.java \
 	gnu/xml/dom/ImplementationSource.java \
 	gnu/xml/dom/JAXPFactory.java
+
+gnu_xml_dom_ls_SRCS = \
+	gnu/xml/dom/ls/DomLSEx.java \
+	gnu/xml/dom/ls/DomLSInput.java \
+	gnu/xml/dom/ls/DomLSOutput.java \
+	gnu/xml/dom/ls/DomLSParser.java \
+	gnu/xml/dom/ls/DomLSSerializer.java \
+	gnu/xml/dom/ls/FilteredSAXEventSink.java \
+	gnu/xml/dom/ls/ReaderInputStream.java \
+	gnu/xml/dom/ls/SAXEventSink.java \
+	gnu/xml/dom/ls/WriterOutputStream.java
 
 gnu_xml_libxmlj_SRCS = \
 	gnu/xml/libxmlj/RawData.java \
@@ -1981,22 +1998,31 @@ gnu_xml_pipeline_SRCS = \
 
 gnu_xml_transform_SRCS = \
 	gnu/xml/transform/AbstractNumberNode.java \
+	gnu/xml/transform/ApplyImportsNode.java \
 	gnu/xml/transform/ApplyTemplatesNode.java \
 	gnu/xml/transform/AttributeNode.java \
+	gnu/xml/transform/AttributeSet.java \
 	gnu/xml/transform/Bindings.java \
 	gnu/xml/transform/CallTemplateNode.java \
 	gnu/xml/transform/ChooseNode.java \
 	gnu/xml/transform/CommentNode.java \
 	gnu/xml/transform/CopyNode.java \
 	gnu/xml/transform/CopyOfNode.java \
+	gnu/xml/transform/CurrentFunction.java \
 	gnu/xml/transform/DOMSourceLocator.java \
 	gnu/xml/transform/DocumentFunction.java \
-	gnu/xml/transform/DummyNode.java \
+	gnu/xml/transform/ElementAvailableFunction.java \
 	gnu/xml/transform/ElementNode.java \
 	gnu/xml/transform/ErrorListenerErrorHandler.java \
 	gnu/xml/transform/ForEachNode.java \
+	gnu/xml/transform/FormatNumberFunction.java \
+	gnu/xml/transform/FunctionAvailableFunction.java \
+	gnu/xml/transform/GenerateIdFunction.java \
 	gnu/xml/transform/IfNode.java \
+	gnu/xml/transform/Key.java \
+	gnu/xml/transform/KeyFunction.java \
 	gnu/xml/transform/LiteralNode.java \
+	gnu/xml/transform/MessageNode.java \
 	gnu/xml/transform/NodeNumberNode.java \
 	gnu/xml/transform/NumberNode.java \
 	gnu/xml/transform/OtherwiseNode.java \
@@ -2006,13 +2032,16 @@ gnu_xml_transform_SRCS = \
 	gnu/xml/transform/SortKey.java \
 	gnu/xml/transform/StreamSerializer.java \
 	gnu/xml/transform/Stylesheet.java \
+	gnu/xml/transform/SystemPropertyFunction.java \
 	gnu/xml/transform/Template.java \
 	gnu/xml/transform/TemplateNode.java \
 	gnu/xml/transform/TemplatesImpl.java \
 	gnu/xml/transform/TextNode.java \
 	gnu/xml/transform/TransformerFactoryImpl.java \
 	gnu/xml/transform/TransformerImpl.java \
+	gnu/xml/transform/TransformerOutputProperties.java \
 	gnu/xml/transform/URIResolverEntityResolver.java \
+	gnu/xml/transform/UnparsedEntityUriFunction.java \
 	gnu/xml/transform/ValueOfNode.java \
 	gnu/xml/transform/WhenNode.java \
 	gnu/xml/transform/WithParam.java \
@@ -2040,9 +2069,9 @@ gnu_xml_xpath_SRCS = \
 	gnu/xml/xpath/DocumentOrderComparator.java \
 	gnu/xml/xpath/EqualityExpr.java \
 	gnu/xml/xpath/Expr.java \
-	gnu/xml/xpath/ExpressionTest.java \
 	gnu/xml/xpath/FalseFunction.java \
 	gnu/xml/xpath/FloorFunction.java \
+	gnu/xml/xpath/Function.java \
 	gnu/xml/xpath/FunctionCall.java \
 	gnu/xml/xpath/IdFunction.java \
 	gnu/xml/xpath/LangFunction.java \
@@ -2050,6 +2079,7 @@ gnu_xml_xpath_SRCS = \
 	gnu/xml/xpath/LocalNameFunction.java \
 	gnu/xml/xpath/NameFunction.java \
 	gnu/xml/xpath/NameTest.java \
+	gnu/xml/xpath/NamespaceTest.java \
 	gnu/xml/xpath/NamespaceUriFunction.java \
 	gnu/xml/xpath/NegativeExpr.java \
 	gnu/xml/xpath/NodeTypeTest.java \
@@ -2059,13 +2089,15 @@ gnu_xml_xpath_SRCS = \
 	gnu/xml/xpath/OrExpr.java \
 	gnu/xml/xpath/ParenthesizedExpr.java \
 	gnu/xml/xpath/Path.java \
+	gnu/xml/xpath/Pattern.java \
 	gnu/xml/xpath/PositionFunction.java \
+	gnu/xml/xpath/Predicate.java \
 	gnu/xml/xpath/RelationalExpr.java \
 	gnu/xml/xpath/Root.java \
 	gnu/xml/xpath/RoundFunction.java \
 	gnu/xml/xpath/Selector.java \
 	gnu/xml/xpath/StartsWithFunction.java \
-	gnu/xml/xpath/Step.java \
+	gnu/xml/xpath/Steps.java \
 	gnu/xml/xpath/StringFunction.java \
 	gnu/xml/xpath/StringLengthFunction.java \
 	gnu/xml/xpath/SubstringAfterFunction.java \
