@@ -169,6 +169,12 @@ main(int argc, char* argv[])
 		exit(1);
 	}
 
+	if (strstr(argv[farg], ".class") != NULL) {
+		fprintf(stderr,
+			"Please do not specify the .class extension\n");
+		exit(1);
+	}
+
 	/* Initialise */
 	JNI_CreateJavaVM(&global_vm, &global_env, &vmargs);
 
