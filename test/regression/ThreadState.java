@@ -50,73 +50,83 @@ public class ThreadState extends Thread {
   }
 
   public void run() {
-    verbose(getName() + " running");
+    try {
+      verbose(getName() + " running");
 
-    // Create child thread
-    Thread t = new Thread() {
-      public synchronized void run() {
-	childRunning = true;
-	verbose(ThreadState.this.getName() + " child running [child]");
-	try {
-	  this.wait(0);
-	} catch (InterruptedException e) {
-	  check(false, "thread " + e);
-	}
-	verbose(ThreadState.this.getName() + " child thread exiting");
+      // Create child thread
+      Thread t = new Thread() {
+        public synchronized void run() {
+          try {
+	    childRunning = true;
+	    verbose(ThreadState.this.getName() + " child running [child]");
+	    try {
+	      this.wait(0);
+	    } catch (InterruptedException e) {
+	      check(false, "thread " + e);
+	    }
+	  verbose(ThreadState.this.getName() + " child thread exiting");
+          } catch (Throwable t) {
+            t.printStackTrace();
+	    System.exit(-1);
+	  }
+        }
+      };
+
+      // Check state
+      check(!t.isAlive(), "alive before start()");
+      verbose(getName() + " starting child thread");
+      t.start();
+      check(t.isAlive(), "dead after start()");
+  
+      // Check setDaemon after start()
+      try {
+        t.setDaemon(false);
+        check(false, "setDaemon() after start");
+      } catch (IllegalThreadStateException e) {
       }
-    };
 
-    // Check state
-    check(!t.isAlive(), "alive before start()");
-    verbose(getName() + " starting child thread");
-    t.start();
-    check(t.isAlive(), "dead after start()");
+      // Check double start()
+      try {
+        t.start();
+        check(false, "start() while alive");
+      } catch (IllegalThreadStateException e) {
+      }
+  
+      // Wait for thread to be running
+      while (!childRunning) {
+        Thread.yield();
+      }
+      verbose(getName() + " child thread running [parent]");
 
-    // Check setDaemon after start()
-    try {
-      t.setDaemon(false);
-      check(false, "setDaemon() after start");
-    } catch (IllegalThreadStateException e) {
+      // Notify child he can exit
+      synchronized (t) {
+        t.notify();
+      }
+  
+      verbose(getName() + " joining my child thread");
+      try {
+        t.join();
+      } catch (InterruptedException e) {
+        check(false, "join: " + e);
+      }
+      check(!t.isAlive(), "alive after join()");
+  
+      // Check double start()
+      try {
+        t.start();
+        check(false, "start() after dead");
+      } catch (IllegalThreadStateException e) {
+      }
+
+      // OK
+      synchronized (ThreadState.class) {
+        System.out.println("Success.");
+      }
+      verbose(getName() + " exiting");
+    } catch (Throwable t) {
+      t.printStackTrace();
+      System.exit(-1);
     }
-
-    // Check double start()
-    try {
-      t.start();
-      check(false, "start() while alive");
-    } catch (IllegalThreadStateException e) {
-    }
-
-    // Wait for thread to be running
-    while (!childRunning) {
-      Thread.yield();
-    }
-    verbose(getName() + " child thread running [parent]");
-
-    // Notify child he can exit
-    synchronized (t) {
-      t.notify();
-    }
-
-    verbose(getName() + " joining my child thread");
-    try {
-      t.join();
-    } catch (InterruptedException e) {
-      check(false, "join: " + e);
-    }
-    check(!t.isAlive(), "alive after join()");
-
-    // Check double start()
-    try {
-      t.start();
-      check(false, "start() after dead");
-    } catch (IllegalThreadStateException e) {
-    }
-
-    // OK
-    synchronized (ThreadState.class) {
-      System.out.println("Success.");
-    }
-    verbose(getName() + " exiting");
   }
 
   public static void check(boolean that, String msg) {
