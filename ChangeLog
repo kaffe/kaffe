@@ -1,3 +1,8 @@
+Fri Mar  5 12:08:57 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthreads.c: don't use FIOASYNC
+	on Linux, Linux thinks it means O_SYNC (hmmmm...)
+
 Wed Mar  3 13:37:53 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffe/main.c, kaffe/man/kaffe.1.in: new "-addclasspath"
