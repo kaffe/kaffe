@@ -1,5 +1,12 @@
 2004-07-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/classpath/Configuration.java
+	(default_awt_toolkit): Added new field for classpath AWT.
+
+        Reported by: Jim Huang  <jserv@kaffe.org>
+
+2004-07-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/lang/Thread.java
 	(holdsLock): Implemented.
 
