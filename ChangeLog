@@ -1,3 +1,8 @@
+Tue Mar 14 14:23:22 CET 2000  Edouard G. Parmelan  <egp@free.fr>
+	
+	* libraries/javalib/kjc.jar: update to version 1.4D from
+	kjc CVS Tree compiled with kjc-1.4B-egp1.
+
 Mon Mar 13 15:23:44 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/kjc.jar: update to version 1.4C
