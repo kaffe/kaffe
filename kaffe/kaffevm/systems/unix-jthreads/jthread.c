@@ -1177,8 +1177,11 @@ jthread_setpriority(jthread* jtid, int prio)
 void
 jthread_stop(jthread *jtid)
 {
-        jtid->flags |= THREAD_FLAGS_KILLED;
 	intsDisable();
+	/* No reason to hit a dead man over the head */
+	if (jtid->status != THREAD_DEAD) {
+		jtid->flags |= THREAD_FLAGS_KILLED;
+	}
 
 	/* if it's us, die */
 	if (jtid == jthread_current() && 
