@@ -63,7 +63,9 @@ $(LIB):		$(OBJECT) lib.exp
 		$(CC) $(ALL_CFLAGS) -c $(PIC) $< -o $*.o
 
 wrappers:
-		sed -n $(WRAPPER_CMD) *.c > external_wrappers.h
+		echo '#if defined(HAVE_LIBZ) && defined(HAVE_ZLIB_H)' > external_wrappers.h
+		sed -n $(WRAPPER_CMD) *.c >> external_wrappers.h
+		echo '#endif /* defined(HAVE_LIBZ) && defined(HAVE_ZLIB_H) */' >> external_wrappers.h
 
 .SUFFIXES: .d
  
