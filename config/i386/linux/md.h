@@ -23,8 +23,8 @@
 extern void init_md(void);
 #define	INIT_MD()	init_md()
 
-#define SIGNAL_ARGS(sig, sc) int sig, struct sigcontext *##sc
-#define SIGNAL_CONTEXT_POINTER(sc) struct sigcontext *##sc
+#define SIGNAL_ARGS(sig, sc) int sig, struct sigcontext sc
+#define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext * scp
 #define GET_SIGNAL_CONTEXT_POINTER(sc) (&sc)
 #define SIGNAL_PC(scp) scp->eip
 
