@@ -1,5 +1,13 @@
 2003-08-13  Rob Gonzalez <rob@kaffe.org>
 
+	* kaffe/kaffevm/verify.c
+	(verify3) Cosmetic return changes.  Use a success variable now
+	similar to classMethod.c:processClass().  Debugger should now,
+	in theory, print out a "done verifying class whatever" regardless
+	of success or failure.
+
+2003-08-13  Rob Gonzalez <rob@kaffe.org>
+
 	* kaffe/kaffevm/verify.h
 	(type_info) union expanded to support returnAddress type address
 	value.  Type.tinfo no longer used to hold return PC.

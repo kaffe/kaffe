@@ -949,8 +949,6 @@ static Type  verify_DOUBLEARR;
 static Type* TDOUBLEARR = &verify_DOUBLEARR;
 
 
-#define IS_PRIMITIVE_TYPE(_TINFO) ((_TINFO)->tinfo & TINFO_PRIMITIVE)
-
 #define IS_PRIMITIVE_ARRAY(_TINFO) \
            (((_TINFO)->data.class) == TCHARARR->data.class  || ((_TINFO)->data.class) == TBYTEARR->data.class || \
 	    ((_TINFO)->data.class) == TSHORTARR->data.class || ((_TINFO)->data.class) == TINTARR->data.class  || \
@@ -1104,14 +1102,15 @@ initVerifierPrimTypes(void)
 bool
 verify3(Hjava_lang_Class* class, errorInfo *einfo)
 {
-	int n;
+	uint32 n;
+	bool success = true;
 	Method* method;
 	
 	// see if verification is turned on, and whether the class we're about to verify requires verification
 	//
 	// NOTE: we don't skip interfaces here because an interface may contain a <clinit> method with bytecode
 	if (isTrustedClass(class)) {
-		return(true);
+		goto done;
 	}
 	
 	
@@ -1142,7 +1141,8 @@ verify3(Hjava_lang_Class* class, errorInfo *einfo)
 				postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 						     "Method %s.%s has invalid signature, %s",
 						     CLASS_CNAME(class), METHOD_NAMED(method), METHOD_SIGD(method));
-				return(false);
+				success = false;
+				goto done;
 			}
 			else if (!verifyMethod(einfo, method)) {
 				if (einfo->type == 0) {
@@ -1150,14 +1150,16 @@ verify3(Hjava_lang_Class* class, errorInfo *einfo)
 							     "failure to verify method %s.%s ... reason unspecified",
 							     CLASS_CNAME(class), METHOD_NAMED(method));
 				}
-				return(false);
+				success = false;
+				goto done;
 			}
 		}
 	}
 	
 	
+ done:
 	DBG(VERIFY3, dprintf("\nDone Pass 3 Verifying Class \"%s\"\n", CLASS_CNAME(class)); );
-	return(true);
+	return success;
 }
 
 /*
