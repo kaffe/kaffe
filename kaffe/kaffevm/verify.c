@@ -1321,6 +1321,20 @@ verifyMethod(errorInfo *einfo, Method* method)
 }
 
 
+static inline
+BlockInfo **
+verifyErrorInVerifyMethod3a(errorInfo* einfo,
+			    Method* method,
+			    const char * msg)
+{
+	if (einfo->type == 0) {
+		postExceptionMessage(einfo, JAVA_LANG(VerifyError),
+				     "in method \"%s.%s\": %s",
+				     CLASS_CNAME(method->class), METHOD_NAMED(method), msg);
+	}
+	return NULL;
+}
+
 /*
  * verifyMethod3a()
  *     check static constraints.  section 4.8.1 of JVML Spec 2.
@@ -1338,22 +1352,15 @@ verifyMethod3a(errorInfo* einfo,
 	       uint32* status,    /* array of status info for all opcodes */
 	       uint32* numBlocks) /* number of basic blocks */
 {
-#define VERIFY_ERROR(_MSG) \
-	if (einfo->type == 0) { \
-		postExceptionMessage(einfo, JAVA_LANG(VerifyError), \
-				     "in method \"%s.%s\": %s", \
-				     CLASS_CNAME(method->class), METHOD_NAMED(method), _MSG); \
-	} \
-	return NULL
 
 #define ENSURE_NON_WIDE \
 	if (wide) { \
-		VERIFY_ERROR("illegal instruction following wide instruction"); \
+		return verifyErrorInVerifyMethod3a(einfo, method, "illegal instruction following wide instruction"); \
 	}
 
 #define CHECK_POOL_IDX(_IDX) \
 	if (_IDX > pool->size) { \
-		VERIFY_ERROR("attempt to access a constant pool index beyond constant pool range"); \
+		return verifyErrorInVerifyMethod3a(einfo, method, "attempt to access a constant pool index beyond constant pool range"); \
 	}
 	
 #define GET_IDX(_IDX, _PC) \
@@ -1369,7 +1376,7 @@ verifyMethod3a(errorInfo* einfo,
 #define BRANCH_IN_BOUNDS(_N, _INST) \
 	if (_N < 0 || _N >= codelen) { \
 		DBG(VERIFY3, dprintf("ERROR: branch to (%d) out of bound (%d) \n", _N, codelen); ); \
-		VERIFY_ERROR("branch out of method code"); \
+		return verifyErrorInVerifyMethod3a(einfo, method, "branch out of method code"); \
 	}
 
         /* makes sure the index given for a local variable is within the correct index */
@@ -1380,7 +1387,7 @@ verifyMethod3a(errorInfo* einfo,
 		    printInstruction(code[pc]); \
 		    dprintf(", localsz = %d, localindex = %d\n", method->localsz, _N); \
 		    ); \
-		VERIFY_ERROR("attempting to access a local variable beyond local array");  \
+		return verifyErrorInVerifyMethod3a(einfo, method, "attempting to access a local variable beyond local array");  \
 	}
 	
 	
@@ -1420,7 +1427,7 @@ verifyMethod3a(errorInfo* einfo,
 		DBG(VERIFY3, dprintf("        instruction: (%d) ", pc); printInstruction(code[pc]); dprintf("\n"); );
 		
 		if (codelen - pc < insnLen[code[pc]]) {
-			VERIFY_ERROR("last operand in code array is cut off");
+			return verifyErrorInVerifyMethod3a(einfo, method, "last operand in code array is cut off");
 		}
 		
 		switch(code[pc]) {
@@ -1470,7 +1477,7 @@ verifyMethod3a(errorInfo* einfo,
 			n = CONST_TAG(idx, pool);
 			if (n != CONSTANT_Integer && n != CONSTANT_Float &&
 			    n != CONSTANT_String && n != CONSTANT_ResolvedString) {
-				VERIFY_ERROR("ldc* on constant pool entry other than int/float/string");
+				return verifyErrorInVerifyMethod3a(einfo, method, "ldc* on constant pool entry other than int/float/string");
 			}
 			break;
 			
@@ -1478,7 +1485,7 @@ verifyMethod3a(errorInfo* einfo,
 			GET_WIDX(idx, pc);
 			n = CONST_TAG(idx, pool);
 			if (n != CONSTANT_Double && n != CONSTANT_Long) {
-				VERIFY_ERROR("ldc2_w on constant pool entry other than long or double");
+				return verifyErrorInVerifyMethod3a(einfo, method, "ldc2_w on constant pool entry other than long or double");
 			}
 			break;
 			
@@ -1489,7 +1496,7 @@ verifyMethod3a(errorInfo* einfo,
 			GET_WIDX(idx, pc);
 			idx = CONST_TAG(idx, pool);
 			if (idx != CONSTANT_Fieldref) {
-				VERIFY_ERROR("[get/put][field/static] accesses something in the constant pool that is not a CONSTANT_Fieldref");
+				return verifyErrorInVerifyMethod3a(einfo, method, "[get/put][field/static] accesses something in the constant pool that is not a CONSTANT_Fieldref");
 			}
 			break;
 			
@@ -1501,17 +1508,17 @@ verifyMethod3a(errorInfo* einfo,
 			GET_WIDX(idx, pc);
 			n = CONST_TAG(idx, pool);
 			if (n != CONSTANT_Methodref) {
-				VERIFY_ERROR("invoke* accesses something in the constant pool that is not a CONSTANT_Methodref");
+				return verifyErrorInVerifyMethod3a(einfo, method, "invoke* accesses something in the constant pool that is not a CONSTANT_Methodref");
 			}
 			
 			sig = METHODREF_SIGD(idx, pool);
 			if (*sig == '<') {
 				if (!strcmp(constructor_name->data, sig)) {
 					if (code[pc] != INVOKESPECIAL) {
-						VERIFY_ERROR("only invokespecial can be used to execute <init> methods");
+						return verifyErrorInVerifyMethod3a(einfo, method, "only invokespecial can be used to execute <init> methods");
 					}
 				} else {
-					VERIFY_ERROR("no method with a name whose first character is '<' may be called by an invoke instruction");
+					return verifyErrorInVerifyMethod3a(einfo, method, "no method with a name whose first character is '<' may be called by an invoke instruction");
 				}
 			}
 			
@@ -1531,18 +1538,18 @@ verifyMethod3a(errorInfo* einfo,
 			GET_WIDX(idx, pc);
 			n = CONST_TAG(idx, pool);
 			if (n != CONSTANT_InterfaceMethodref) {
-				VERIFY_ERROR("invokeinterface accesses something in the constant pool that is not a CONSTANT_InterfaceMethodref");
+				return verifyErrorInVerifyMethod3a(einfo, method, "invokeinterface accesses something in the constant pool that is not a CONSTANT_InterfaceMethodref");
 			}
 			
 			sig = INTERFACEMETHODREF_SIGD(idx, pool);
 			if (*sig == '<') {
-				VERIFY_ERROR("invokeinterface cannot be used to invoke any instruction with a name starting with '<'");
+				return verifyErrorInVerifyMethod3a(einfo, method, "invokeinterface cannot be used to invoke any instruction with a name starting with '<'");
 			}
 			
 			if (code[pc + 3] == 0) {
-				VERIFY_ERROR("fourth byte of invokeinterface is zero");
+				return verifyErrorInVerifyMethod3a(einfo, method, "fourth byte of invokeinterface is zero");
 			} else if (code[pc + 4] != 0) {
-				VERIFY_ERROR("fifth byte of invokeinterface is not zero");
+				return verifyErrorInVerifyMethod3a(einfo, method, "fifth byte of invokeinterface is not zero");
 			}
 			
 			break;
@@ -1555,7 +1562,7 @@ verifyMethod3a(errorInfo* einfo,
 			GET_WIDX(n, pc);
 			n = CONST_TAG(n, pool);
 			if (n != CONSTANT_Class && n != CONSTANT_ResolvedClass) {
-				VERIFY_ERROR("instanceof/checkcast indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
+				return verifyErrorInVerifyMethod3a(einfo, method, "instanceof/checkcast indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
 			}
 			
 			break;
@@ -1567,18 +1574,18 @@ verifyMethod3a(errorInfo* einfo,
 			GET_WIDX(idx, pc);
 			n = CONST_TAG(idx, pool);
 			if (n != CONSTANT_Class && n != CONSTANT_ResolvedClass) {
-				VERIFY_ERROR("multinewarray indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
+				return verifyErrorInVerifyMethod3a(einfo, method, "multinewarray indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
 			}
 			
 			/* number of dimensions must be <= num dimensions of array type being created */
 			sig = CLASS_NAMED(idx, pool);
 			newpc = code[pc + 3];
 			if (newpc == 0) {
-				VERIFY_ERROR("dimensions operand of multianewarray must be non-zero");
+				return verifyErrorInVerifyMethod3a(einfo, method, "dimensions operand of multianewarray must be non-zero");
 			}
 			for(n = 0; *sig == '['; sig++, n++);
 			if (n < newpc) {
-				VERIFY_ERROR("dimensions operand of multianewarray is > the number of dimensions in array being created");
+				return verifyErrorInVerifyMethod3a(einfo, method, "dimensions operand of multianewarray is > the number of dimensions in array being created");
 			}
 			
 			break;
@@ -1590,13 +1597,13 @@ verifyMethod3a(errorInfo* einfo,
 			GET_WIDX(idx, pc);
 			n = CONST_TAG(idx, pool);
 			if (n != CONSTANT_Class && n != CONSTANT_ResolvedClass) {
-				VERIFY_ERROR("new indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
+				return verifyErrorInVerifyMethod3a(einfo, method, "new indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
 			}
 			
 			/* cannot create arrays with NEW */
 			sig = CLASS_NAMED(idx, pool);
 			if (*sig == '[') {
-				VERIFY_ERROR("new instruction used to create a new array");
+				return verifyErrorInVerifyMethod3a(einfo, method, "new instruction used to create a new array");
 			}
 			break;
 			
@@ -1607,14 +1614,14 @@ verifyMethod3a(errorInfo* einfo,
 			GET_WIDX(idx, pc);
 			n = CONST_TAG(idx, pool);
 			if (n != CONSTANT_Class && n != CONSTANT_ResolvedClass) {
-				VERIFY_ERROR("anewarray indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
+				return verifyErrorInVerifyMethod3a(einfo, method, "anewarray indexes a constant pool entry that is not type CONSTANT_Class or CONSTANT_ResolvedClass");
 			}
 			
 			/* count the number of dimensions of the array being created...it must be <= 255 */
 			sig = CLASS_NAMED(idx, pool);
 			for (n = 0; *sig == '['; sig++, n++);
 			if (n > 255) {
-				VERIFY_ERROR("anewarray used to create an array of > 255 dimensions");
+				return verifyErrorInVerifyMethod3a(einfo, method, "anewarray used to create an array of > 255 dimensions");
 			}
 			
 			break;
@@ -1624,7 +1631,7 @@ verifyMethod3a(errorInfo* einfo,
 			
 			n = code[pc + 1];
 			if (n < 4 || n > 11) {
-				VERIFY_ERROR("newarray operand must be in the range [4,11]");
+				return verifyErrorInVerifyMethod3a(einfo, method, "newarray operand must be in the range [4,11]");
 			}
 			
 			break;
@@ -1807,7 +1814,7 @@ verifyMethod3a(errorInfo* einfo,
 			n += 4;
 			low = DWORD(code, n);
 			if (low < 0) {
-				VERIFY_ERROR("lookupswitch with npairs < 0");
+				return verifyErrorInVerifyMethod3a(einfo, method, "lookupswitch with npairs < 0");
 			}
 			
 			/* make sure all targets are in bounds */
@@ -1851,7 +1858,7 @@ verifyMethod3a(errorInfo* einfo,
 			high = DWORD(code, n + 8);
 			if (high < low) {
 				DBG(VERIFY3, dprintf("ERROR: low = %d, high = %d\n", low, high); );
-				VERIFY_ERROR("tableswitch high val < low val");
+				return verifyErrorInVerifyMethod3a(einfo, method, "tableswitch high val < low val");
 			}
 			n += 12;
 			
@@ -1889,7 +1896,7 @@ verifyMethod3a(errorInfo* einfo,
 			
 		default:
 			if (wide == true) {
-				VERIFY_ERROR("illegal instruction following wide instruction");
+				return verifyErrorInVerifyMethod3a(einfo, method, "illegal instruction following wide instruction");
 			}
 		}
 		
@@ -1918,7 +1925,7 @@ verifyMethod3a(errorInfo* einfo,
 			newpc = pc;
 		}
 		else if (status[pc] & START_BLOCK) {
-			VERIFY_ERROR("branch into middle of instruction");
+			return verifyErrorInVerifyMethod3a(einfo, method, "branch into middle of instruction");
 		}
 	}
 	
@@ -1931,10 +1938,10 @@ verifyMethod3a(errorInfo* einfo,
 			
 			pc = entry->handler_pc;
 			if (pc >= codelen) {
-				VERIFY_ERROR("exception handler is beyond bound of method code");
+				return verifyErrorInVerifyMethod3a(einfo, method, "exception handler is beyond bound of method code");
 			}
 			else if (!(status[pc] & IS_INSTRUCTION)) {
-				VERIFY_ERROR("exception handler starts in the middle of an instruction");
+				return verifyErrorInVerifyMethod3a(einfo, method, "exception handler starts in the middle of an instruction");
 			}
 			
 			status[pc] |= (EXCEPTION_HANDLER & START_BLOCK);
@@ -1952,10 +1959,10 @@ verifyMethod3a(errorInfo* einfo,
 					DBG(VERIFY3, dprintf("        ERROR: could not resolve catch type...\n"); );
 					entry->catch_type = UNRESOLVABLE_CATCHTYPE;
 					
-					VERIFY_ERROR("unresolvable catch type");
+					return verifyErrorInVerifyMethod3a(einfo, method, "unresolvable catch type");
 				}
 				if (!instanceof(javaLangThrowable, entry->catch_type)) {
-					VERIFY_ERROR("Exception to be handled by exception handler is not a subclass of Java/Lang/Throwable");
+					return verifyErrorInVerifyMethod3a(einfo, method, "Exception to be handled by exception handler is not a subclass of Java/Lang/Throwable");
 				}
 			}
 		}
