@@ -65,7 +65,7 @@ public synchronized int activeGroupCount() {
 	return result;
 }
 
-public void add(Thread thread) {
+public synchronized void add(Thread thread) {
 	int i;
 
 	nthreads++;
@@ -88,7 +88,7 @@ public void add(Thread thread) {
 	threads[threads.length - 1] = thread;
 }
 
-public void add(ThreadGroup group) {
+public synchronized void add(ThreadGroup group) {
 	ngroups++;
 
 	for (int i = 0; i < groups.length; i++) {
@@ -247,7 +247,7 @@ private void printThreads(int tabulation) {
 	}
 }
 
-public void remove(Thread thread) {
+public synchronized void remove(Thread thread) {
 	int i;
 
 	for (i = 0; i < threads.length; i++) {
@@ -259,7 +259,7 @@ public void remove(Thread thread) {
 	}
 }
 
-public void remove(ThreadGroup group) {
+public synchronized void remove(ThreadGroup group) {
 	int i;
 
 	for (i = 0; i < groups.length; i++) {

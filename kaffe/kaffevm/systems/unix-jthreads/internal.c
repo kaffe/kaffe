@@ -219,8 +219,9 @@ void
 Tfinalize(Hjava_lang_Thread* tid)
 {
 	if (unhand(tid)->PrivateInfo != 0) {
-		jthread_destroy((jthread_t)unhand(tid)->PrivateInfo);
+		jthread_t jtid = (jthread_t)unhand(tid)->PrivateInfo;
 		unhand(tid)->PrivateInfo = 0;
+		jthread_destroy(jtid);
 	}
 }       
 

@@ -1,3 +1,10 @@
+Thu Dec 10 23:33:39 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/systems/unix-jthreads/internal.c: fixed race condition
+	pointed out by Leigh Stoller <stoller@cs.utah.edu>
+	* libraries/javalib/java/lang/ThreadGroup.java: made essential
+	methods synchronized.
+
 Thu Dec 10 22:07:44 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/jni.c (maxLocal): declare it
