@@ -1,3 +1,28 @@
+2004-02-01  Dalibor Topic <robilad@kaffe.org>
+
+        include/gettext.h:
+	New file, taken from GNU gettext 0.14.1.
+
+	* developers/patch-gettext-bad-config-h-dependency:
+	New file. Patch for a bug in a file managed by GNU gettext.
+
+        * include/Makefile.am:
+	Added gettext.h.
+
+        * replace/getaddrinfo.c:
+	Include gettext.h instead of libintl.h.
+
+	* intl/Makefile.in:
+	Use right location of config.h for depenedencies.
+
+	* developers/autogen.sh:
+	Add developers/patch-gettext-bad-config-h-dependency patch.
+
+        * include/Makefile.in,
+        libltdl/configure,
+        libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in,
+
 2004-02-01  Helmer Kramer <hkraemer@freenet.de>
 
 	* libraries/javalib/java/lang/Thread.java

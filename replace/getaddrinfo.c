@@ -103,9 +103,7 @@
 #include <pthread.h>
 #endif
 
-#ifdef ENABLE_NLS
-#include <libintl.h>
-#endif
+#include "gettext.h"
 
 #ifndef HAVE_MEMCPY
 #define memcpy(d, s, n) bcopy((s), (d), (n))

@@ -166,6 +166,7 @@ noinst_HEADERS = \
 	dummyin6.h \
 	files.h \
 	getaddrinfo.h \
+	gettext.h \
 	nets.h \
 	system.h \
 	Arrays.h \

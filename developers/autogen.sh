@@ -120,6 +120,7 @@ cp libltdl/acinclude.m4 m4/libtool.m4
 ##gettextize -c -f --intl
 
 autopoint -f
+patch -p 0 -i  developers/patch-gettext-bad-config-h-dependency
 aclocal -I m4 
 autoheader -Wall
 automake --add-missing --force-missing --copy -Wall || true  # ignore warnings
