@@ -599,6 +599,68 @@ expandMethods(Hjava_lang_Class *cl, Method *imeth, errorInfo *einfo)
 	return( retval );
 }
 
+static int
+expandInterfaces(Hjava_lang_Class *root_class,
+		 Hjava_lang_Class *class,
+		 errorInfo *einfo)
+{
+	int i, j, k, success = 1;
+	
+	/*
+	 * Check to make sure all the interface methods are implemented,
+	 * otherwise, we'll need to add a slot.
+	 */
+	for( i = 0; (i < class->interface_len) && success; i++ )
+	{
+		Hjava_lang_Class *iface;
+		
+		iface = class->interfaces[i];
+		if( !expandInterfaces(root_class, iface, einfo) )
+		{
+			success = 0;
+			break;
+		}
+		for( j = 0; (j < CLASS_NMETHODS(iface)) && success; j++ )
+		{
+			Hjava_lang_Class *cl;
+			int foundit = 0;
+			Method *imeth;
+			
+			imeth = &CLASS_METHODS(iface)[j];
+			/* Igore statics */
+			if( imeth->accflags & ACC_STATIC )
+				continue;
+			/* Search for the corresponding slot. */
+			for( cl = class;
+			     cl && !foundit;
+			     cl = cl->superclass )
+			{
+				for( k = 0; k < CLASS_NMETHODS(cl); k++ )
+				{
+					Method *cmeth;
+					
+					cmeth = &CLASS_METHODS(cl)[k];
+					if( (cmeth->name == imeth->name) &&
+					    (cmeth->parsed_sig->signature ==
+					     imeth->parsed_sig->signature) )
+					{
+						foundit = 1;
+						break;
+					}
+				}
+			}
+			if( !foundit )
+			{
+				/* No impl, add a slot */
+				success = expandMethods(root_class,
+							imeth,
+							einfo);
+			}
+		}
+	}
+	return( success );
+}
+
 static bool
 resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo)
 {
@@ -684,58 +746,7 @@ resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo)
 	
 	if( !CLASS_IS_INTERFACE(class) )
 	{
-		/*
-		 * Check to make sure all the interface methods are
-		 * implemented, otherwise, we'll need to add a slot.
-		 */
-		for( i = 0; (i < class->interface_len) && success; i++ )
-		{
-			Hjava_lang_Class *iface;
-			
-			iface = class->interfaces[i];
-			for( j = 0; j < CLASS_NMETHODS(iface); j++ )
-			{
-				Hjava_lang_Class *cl;
-				int foundit = 0;
-				Method *imeth;
-				
-				imeth = &CLASS_METHODS(iface)[j];
-				/* Igore statics */
-				if( imeth->accflags & ACC_STATIC )
-					continue;
-				/* Search for the corresponding slot. */
-				for( cl = class;
-				     cl && !foundit;
-				     cl = cl->superclass )
-				{
-					for( k = 0;
-					     k < CLASS_NMETHODS(cl);
-					     k++ )
-					{
-						Method *cmeth;
-						
-						cmeth = &CLASS_METHODS(cl)[k];
-						if( (cmeth->name ==
-						     imeth->name) &&
-						    (cmeth->parsed_sig->
-						     signature ==
-						     imeth->parsed_sig->
-						     signature) )
-						{
-							foundit = 1;
-							break;
-						}
-					}
-				}
-				if( !foundit )
-				{
-					/* No impl, add a slot */
-					success = expandMethods(class,
-								imeth,
-								einfo);
-				}
-			}
-		}
+		success = expandInterfaces(class, class, einfo);
 	}
 
 done:

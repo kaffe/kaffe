@@ -1,3 +1,11 @@
+2003-04-09 Tim Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/classMethod.c:
+	Check for unimplemented super-interface methods and add slots if
+	necessary.
+
+	Reported by: Ito Kazumitsu <ito.kazumitsu@hitachi-cable.co.jp>
+	
 2003-04-09 Marc Kleine-Budde <kleine-budde@gmx.de>
 
 	* kaffe/xprof/xprofiler.c:
