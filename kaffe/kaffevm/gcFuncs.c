@@ -444,13 +444,18 @@ void
 /* ARGSUSED */
 finalizeObject(Collector* collector, void* ob)
 { 
+	extern JNIEnv Kaffe_JNIEnv;
+	JNIEnv *env = &Kaffe_JNIEnv;
+
         Hjava_lang_Object* obj = (Hjava_lang_Object*)ob;   
         Hjava_lang_Class* objclass = OBJECT_CLASS(obj);    
         Method* final = objclass->finalizer;               
   
         assert(final != 0);
-        callMethodA(final, METHOD_INDIRECTMETHOD(final), obj, 0, 0, 1);
-} 
+	(*env)->CallVoidMethod(env, obj, final);
+	/* ignore any resulting exception */
+	(*env)->ExceptionClear(env);
+}
 
 /*
  * Print a description of an object at a given address.

@@ -54,6 +54,7 @@ TESTS = \
 	SoTimeout.java \
 	wc.java \
 	FileTest.java \
+	finalexc.java \
 	finaltest.java \
 	finaltest2.java \
 	forNameTest.java \
