@@ -35,8 +35,6 @@ dnl -------------------------------------------------------------------------
 dynamic_libraries=yes
 vm_dynamic_library=yes
 
-AM_PROG_LIBTOOL
-
 if test x"$ac_cv_sys_symbol_underscore" = x"yes"; then
     AC_DEFINE(HAVE_UNDERSCORED_C_NAMES, 1, [Define if C symbol names start with underscore])
 fi
@@ -79,6 +77,18 @@ if test "$known" = "no" ; then
 fi
 
 dnl =========================================================================
+
+dnl =========================================================================
+dnl Configure libtool
+dnl -------------------------------------------------------------------------
+
+case "$with_staticlib,$with_staticvm" in
+yes,yes) AM_DISABLE_SHARED;;
+no,no) AM_DISABLE_STATIC;;
+# otherwise, we should compile everything twice
+esac
+
+AM_PROG_LIBTOOL
 
 dnl =========================================================================
 dnl Start of default configurations
@@ -276,7 +286,7 @@ dnl -------------------------------------------------------------------------
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_CHECK_PROG(JIKES, jikes, jikes)
-dnl We also need to install scripts
+AC_CHECK_PROG(ZIP, zip, zip)
 
 dnl If symlink is overridden then don't bother with the test.
 if test "$LN_S" = "" ; then

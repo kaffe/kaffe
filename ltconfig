@@ -1429,12 +1429,8 @@ EOF
       # Try sorting and uniquifying the output.
       if sort "$nlist" | uniq > "$nlist"T; then
         mv -f "$nlist"T "$nlist"
-        wcout=`wc "$nlist" 2>/dev/null`
-        count=`$echo "X$wcout" | $Xsed -e 's/^[ 	]*\([0-9][0-9]*\).*$/\1/'`
-        (test "$count" -ge 0) 2>/dev/null || count=-1
       else
         rm -f "$nlist"T
-        count=-1
       fi
 
       # Make sure that we snagged all the symbols we need.
@@ -1456,15 +1452,12 @@ EOF
 # define lt_ptr_t char *
 #endif
 
-/* The number of symbols in dld_preloaded_symbols, -1 if unsorted. */
-int dld_preloaded_symbol_count = $count;
-
 /* The mapping between symbol names and symbols. */
-struct {
-  char *name;
+const struct {
+  const char *name;
   lt_ptr_t address;
 }
-dld_preloaded_symbols[] =
+lt_preloaded_symbols[] =
 {
 EOF
 	  sed 's/^\(.*\) \(.*\)$/  {"\1", (lt_ptr_t) \&\2},/' < "$nlist" >> conftest.c
@@ -1482,7 +1475,7 @@ EOF
 	  save_CFLAGS="$CFLAGS"
 	  LIBS="conftestm.$objext"
 	  CFLAGS="$CFLAGS$no_builtin_flag"
-	  if { (eval echo $progname:1485: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
+	  if { (eval echo $progname:1478: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
 	    pipe_works=yes
 	  else
 	    echo "$progname: failed program was:" >&5

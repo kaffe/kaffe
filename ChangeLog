@@ -1,3 +1,11 @@
+Thu Jan 14 15:39:36 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in (ZIP): AC_CHECK_PROG zip
+	(AM_ENABLE_SHARED, AM_DISABLE_SHARED): call if possible
+	* kaffe/kaffe/kaffevm/Makefile.am (EXTRA_DIST): added kaffe.def
+	* ltconfig, ltmain.sh, libltdl: updated from libtool
+	* configure, */Makefile.in: regen
+
 Thu Jan 14 09:38:06 1999  Moses DeJong <dejong@cs.umn.edu>
 
 	* libraries/clib/native/Class.c: fix case where null is passed
