@@ -1,3 +1,8 @@
+2003-05-27 Dalibor Topic <robilad@yahoo.com>
+
+	* kaffe/kaffe/main.c:
+	fixed crash in classpath parsing.
+
 2003-05-26  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* libraries/javalib/java/util/ResourceBundle.java

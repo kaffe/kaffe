@@ -368,7 +368,7 @@ options(char** argv)
 				exit(1);
 			}
 
-			cpathlength = vmargs.classpath!=0?strlen(vmargs.classpath):0
+			cpathlength = ((vmargs.classpath != NULL) ? strlen(vmargs.classpath) : 0)
 				+ strlen(path_separator)
 				+ strlen(argv[i])
 				+ 1;
@@ -381,7 +381,7 @@ options(char** argv)
 
 			/* Construct new classpath */
 			if( vmargs.classpath != 0 )
-				strcpy(newcpath, vmargs.classpath);
+			  	strcpy(newcpath, vmargs.classpath);
 			else
 				newcpath[0] = '\0';
 			strcat(newcpath, path_separator);
