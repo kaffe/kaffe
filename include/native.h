@@ -83,7 +83,7 @@ extern void	classname2pathname(const char*, char*);
 #include "jmalloc.h"
 
 /* Pick up errorInfo, postOutOfMemory, throwError, and checkPtr */
-#include "../kaffe/kaffevm/errors.h"
+#include "errors.h"
 
 /*
  * Functions needed protect calls to non-reentrant functions when a
