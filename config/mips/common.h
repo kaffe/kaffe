@@ -37,7 +37,7 @@
 #include "atomicity.h"
 #else
 
-#define "generic/genatomic.h"
+#include "generic/genatomic.h"
 
 #endif /* defined(HAVE_MIPSII_INSTRUCTIONS) */
 
