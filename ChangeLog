@@ -1,3 +1,8 @@
+2003-12-28  Casey Marshall <rsdio@metastatic.org>
+
+	* libraries/javalib/kaffe/tools/jar/Jar.java
+	(createJar): Removed extra "Name" attribute.
+
 2003-12-27  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* configure, libraries/javalib/Makefile.am,

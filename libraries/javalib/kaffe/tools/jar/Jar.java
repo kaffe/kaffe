@@ -1050,7 +1050,6 @@ public class Jar {
 		    attr = new Attributes();
 		    jar_manifest.getEntries().put(name, attr);
 		}
-		attr.putValue("Name", name);
 
 		// Compute hash values
 		StringBuffer alglist = new StringBuffer();
