@@ -1,3 +1,27 @@
+Sun Dec 13 14:47:44 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/java/lang/Integer.java: throw NumberFormatException
+	when parseInt is called with null, as spec demands.
+	* libraries/javalib/java/net/URLConnection.java: don't ignore 
+	NullPointerException resulting from calls to Integer.parseInt.
+	* libraries/javalib/kaffe/io/ByteToCharConverter.java: ignore 
+	"file.encoding.pkg" property for now.  See comment there.
+	* libraries/javalib/java/lang/ClassLoader.java: fixed implementation of
+	findLoadedClass, added loadClassVM again. 
+	libraries/clib/native/ClassLoader.c: removed findLoadedClass0.
+	* kaffe/kaffevm/classMethod.c: changed outcall to loadClassVM
+	* kaffe/kaffevm/lookup.c: avoid throwing exceptions if catch classes
+	could not be resolved.
+	* libraries/javalib/java/io/BufferedInputStream.java: throw more
+	informative error message when reset() fails.
+	* kaffe/kaffevm/code-analyse.c: tell getMethodSignatureClass to load
+	eagerly.
+	* kaffe/kaffevm/stackTrace.[ch], libraries/clib/native/Class.c,
+	libraries/clib/native/ObjectInputStream.c, 
+	libraries/clib/native/SecurityManager.c: compute method from pc
+	when examining backtrace.  This fixes a bug introduced by me
+	on Tue Nov 24.
+
 Sat Dec 12 19:04:18 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.c: fixed loadClass to not overwrite
