@@ -198,7 +198,7 @@ public class Box extends JComponent implements Accessible
   
   public static Box createHorizontalBox()
   {
-    return null;
+    return new Box(BoxLayout.X_AXIS);
   }
   
   /**
@@ -231,12 +231,12 @@ public class Box extends JComponent implements Accessible
   
   public static Component createRigidArea(Dimension d)
   {
-    return null;
+    return new Filler(d, d, d);
   }
   
   public static Box createVerticalBox()
   {
-    return null;
+    return new Box(BoxLayout.Y_AXIS);
   }
   
   /**
