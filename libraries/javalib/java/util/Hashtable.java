@@ -206,6 +206,12 @@ public class Hashtable extends Dictionary implements Map, Cloneable, Serializabl
 	return (null);
       }
     }
+    if (space != -1) {
+      keys[space] = key;
+      elements[space] = value;
+      numberOfKeys++;
+      return (null);
+    }
     // We shouldn't get here.
     throw new Error("Inconsistent Hashtable");
   }
