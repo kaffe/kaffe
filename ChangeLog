@@ -1,5 +1,73 @@
 2004-11-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/lang/StackTraceElement.java,
+	libraries/javalib/java/nio/channels/Channels.java,
+	libraries/javalib/java/rmi/Naming.java,
+	libraries/javalib/java/rmi/registry/LocateRegistry.java,
+	libraries/javalib/java/rmi/server/RMIClassLoader.java,
+	libraries/javalib/java/security/KeyPairGeneratorSpi.java,
+	libraries/javalib/java/text/DateFormat.java,
+	libraries/javalib/java/text/DecimalFormat.java,
+	libraries/javalib/java/text/MessageFormat.java,
+	libraries/javalib/java/util/logging/Handler.java,
+	libraries/javalib/java/util/regex/Matcher.java,
+	libraries/javalib/java/util/regex/Pattern.java,
+	libraries/javalib/javax/crypto/CipherInputStream.java,
+	libraries/javalib/javax/crypto/ExemptionMechanism.java,
+	libraries/javalib/javax/crypto/Mac.java,
+	libraries/javalib/javax/imageio/ImageIO.java,
+	libraries/javalib/javax/imageio/stream/ImageInputStreamImpl.java,
+	libraries/javalib/javax/net/ssl/SSLPermission.java,
+	libraries/javalib/javax/print/DocFlavor.java,
+	libraries/javalib/javax/print/attribute/AttributeSetUtilities.java,
+	libraries/javalib/javax/security/auth/PrivateCredentialPermission.java:
+	Resynced with GNU Classpath.
+
+	2004-11-15  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/lang/StackTraceElement.java: Made final.
+        * java/nio/channels/Channels.java: Added private constructor.
+        * java/rmi/Naming.java: Added private constructor.
+        * java/rmi/registry/LocateRegistry.java: Added private constructor.
+        * java/rmi/server/RMIClassLoader.java: Added private constructor.
+        * java/security/KeyPairGeneratorSpi.java
+        (clone): Made protected and simplified implementation.
+        * java/text/DateFormat.java
+        (allFields): Made package accessible.
+        * java/text/DecimalFormat.java
+        (formatInternal): Made private.
+        * java/util/logging/Handler.java: Made constructor protected.
+        * java/util/regex/Matcher.java: Made final.
+        * java/util/regex/Pattern.java: Made final.
+        * javax/crypto/CipherInputStream.java
+        (mark): Corrected mark parameter type (from long to int).
+        * javax/crypto/ExemptionMechanism.java
+        (finalize): Added.
+        * javax/crypto/Mac.java
+        (getMacLength): Made final.
+        (clone): Made final.
+        * javax/imageio/ImageIO.java: Added private constructor.
+        * javax/imageio/stream/ImageInputStreamImpl.java
+        (checkClosed): Made final.
+        * javax/net/ssl/SSLPermission.java: Made final.
+        * javax/print/DocFlavor.java
+        (hostEncoding): Added work-around to prevent the field from being
+        a compile time constant.
+        * javax/print/attribute/AttributeSetUtilities.java: Added private
+        constructor.
+        (UnmodifiableDocAttributeSet): Made private.
+        (UnmodifiablePrintJobAttributeSet): Made private.
+        (UnmodifiablePrintRequestAttributeSet): Made private.
+        (UnmodifiablePrintServiceAttributeSet): Made private.
+        (SynchronizedAttributeSet): Made private.
+        (SynchronizedDocAttributeSet): Made private.
+        (SynchronizedPrintJobAttributeSet): Made private.
+        (SynchronizedPrintRequestAttributeSet): Made private.
+        (SynchronizedPrintServiceAttributeSet): Made private.
+        * javax/security/auth/PrivateCredentialPermission.java: Made final.
+
+2004-11-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/net/Inet6Address.java:
 	Resynced with GNU Classpath.
 
