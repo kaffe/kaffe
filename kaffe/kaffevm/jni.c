@@ -581,10 +581,10 @@ Kaffe_CallBooleanMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 	callMethodV(m, o->dtable->method[m->idx], obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.z);
+	return ((jboolean) retval.i);
 }
 
-jbool
+jboolean
 Kaffe_CallBooleanMethod(JNIEnv* env, jobject obj, jmethodID meth, ...)
 {
 	va_list args;
@@ -600,7 +600,7 @@ Kaffe_CallBooleanMethod(JNIEnv* env, jobject obj, jmethodID meth, ...)
 	return (ret);
 }
 
-jbool
+jboolean
 Kaffe_CallBooleanMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 {
 	jvalue retval;
@@ -616,7 +616,7 @@ Kaffe_CallBooleanMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 	callMethodA(m, o->dtable->method[m->idx], obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.z);
+	return ((jboolean) retval.i);
 }
 
 jbyte
@@ -635,7 +635,7 @@ Kaffe_CallByteMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 	callMethodV(m, o->dtable->method[m->idx], obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.b);
+	return ((jbyte) retval.i);
 }
 
 jbyte
@@ -670,7 +670,7 @@ Kaffe_CallByteMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 	callMethodA(m, o->dtable->method[m->idx], obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.b);
+	return ((jbyte) retval.i);
 }
 
 jchar
@@ -689,7 +689,7 @@ Kaffe_CallCharMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 	callMethodV(m, o->dtable->method[m->idx], obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.c);
+	return ((jchar) retval.i);
 }
 
 jchar
@@ -724,7 +724,7 @@ Kaffe_CallCharMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 	callMethodA(m, o->dtable->method[m->idx], obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.c);
+	return ((jchar) retval.i);
 }
 
 jshort
@@ -743,7 +743,7 @@ Kaffe_CallShortMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 	callMethodV(m, o->dtable->method[m->idx], obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.s);
+	return ((jshort) retval.i);
 }
 
 jshort
@@ -778,7 +778,7 @@ Kaffe_CallShortMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 	callMethodA(m, o->dtable->method[m->idx], obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.s);
+	return ((jshort) retval.i);
 }
 
 jint
@@ -1114,10 +1114,10 @@ Kaffe_CallNonvirtualBooleanMethodV(JNIEnv* env, jobject obj, jclass cls, jmethod
 	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.z);
+	return ((jboolean) retval.i);
 }
 
-jbool
+jboolean
 Kaffe_CallNonvirtualBooleanMethod(JNIEnv* env, jobject obj, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
@@ -1133,7 +1133,7 @@ Kaffe_CallNonvirtualBooleanMethod(JNIEnv* env, jobject obj, jclass cls, jmethodI
 	return (ret);
 }
 
-jbool
+jboolean
 Kaffe_CallNonvirtualBooleanMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID meth, jvalue* args)
 {
 	jvalue retval;
@@ -1148,7 +1148,7 @@ Kaffe_CallNonvirtualBooleanMethodA(JNIEnv* env, jobject obj, jclass cls, jmethod
 	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.z);
+	return ((jboolean) retval.i);
 }
 
 jbyte
@@ -1166,7 +1166,7 @@ Kaffe_CallNonvirtualByteMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.b);
+	return ((jbyte) retval.i);
 }
 
 jbyte
@@ -1200,7 +1200,7 @@ Kaffe_CallNonvirtualByteMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.b);
+	return ((jbyte) retval.i);
 }
 
 jchar
@@ -1218,7 +1218,7 @@ Kaffe_CallNonvirtualCharMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.c);
+	return ((jchar) retval.i);
 }
 
 jchar
@@ -1252,7 +1252,7 @@ Kaffe_CallNonvirtualCharMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.c);
+	return ((jchar) retval.i);
 }
 
 jshort
@@ -1270,7 +1270,7 @@ Kaffe_CallNonvirtualShortMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID
 	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.s);
+	return ((jshort) retval.i);
 }
 
 jshort
@@ -1304,7 +1304,7 @@ Kaffe_CallNonvirtualShortMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID
 	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.s);
+	return ((jshort) retval.i);
 }
 
 jint
@@ -1851,7 +1851,7 @@ Kaffe_CallStaticObjectMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* a
 	return (retval.l);
 }
 
-jbool
+jboolean
 Kaffe_CallStaticBooleanMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list args)
 {
 	jvalue retval;
@@ -1866,10 +1866,10 @@ Kaffe_CallStaticBooleanMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list 
 	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.z);
+	return ((jboolean) retval.i);
 }
 
-jbool
+jboolean
 Kaffe_CallStaticBooleanMethod(JNIEnv* env, jclass cls, jmethodID meth, ...)
 {
 	va_list args;
@@ -1885,7 +1885,7 @@ Kaffe_CallStaticBooleanMethod(JNIEnv* env, jclass cls, jmethodID meth, ...)
 	return (ret);
 }
 
-jbool
+jboolean
 Kaffe_CallStaticBooleanMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* args)
 {
 	jvalue retval;
@@ -1900,7 +1900,7 @@ Kaffe_CallStaticBooleanMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* 
 	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.z);
+	return ((jboolean) retval.i);
 }
 
 jbyte
@@ -1918,7 +1918,7 @@ Kaffe_CallStaticByteMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list arg
 	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.b);
+	return ((jbyte) retval.i);
 }
 
 jbyte
@@ -1952,7 +1952,7 @@ Kaffe_CallStaticByteMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* arg
 	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.b);
+	return ((jbyte) retval.i);
 }
 
 jchar
@@ -1970,7 +1970,7 @@ Kaffe_CallStaticCharMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list arg
 	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.c);
+	return ((jchar) retval.i);
 }
 
 jchar
@@ -2004,7 +2004,7 @@ Kaffe_CallStaticCharMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* arg
 	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.c);
+	return ((jchar) retval.i);
 }
 
 jshort
@@ -2022,7 +2022,7 @@ Kaffe_CallStaticShortMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list ar
 	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.s);
+	return ((jshort) retval.i);
 }
 
 jshort
@@ -2056,7 +2056,7 @@ Kaffe_CallStaticShortMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* ar
 	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval);
 
 	END_EXCEPTION_HANDLING();
-	return (retval.s);
+	return ((jshort) retval.i);
 }
 
 jint

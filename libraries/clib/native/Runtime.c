@@ -33,7 +33,7 @@
 extern char* libraryPath;
 extern size_t gc_heap_limit;
 extern size_t gc_heap_total;
-extern jbool runFinalizerOnExit;
+extern jboolean runFinalizerOnExit;
 
 
 /*
@@ -73,7 +73,7 @@ java_lang_Runtime_buildLibName(struct Hjava_lang_Runtime* this, struct Hjava_lan
 /*
  * Load in a library file.
  */
-jbool
+jboolean
 java_lang_Runtime_loadFileInternal(struct Hjava_lang_Runtime* this, struct Hjava_lang_String* s1)
 {
 	char lib[MAXPATHLEN];
@@ -153,7 +153,7 @@ java_lang_Runtime_runFinalization(struct Hjava_lang_Runtime* this)
  * Enable/disable tracing of instructions.
  */
 void
-java_lang_Runtime_traceInstructions(struct Hjava_lang_Runtime* this, jbool on)
+java_lang_Runtime_traceInstructions(struct Hjava_lang_Runtime* this, jboolean on)
 {
 	if (on == true) {
 		SignalError("java.lang.RuntimeException", "Cannot trace instructions");   
@@ -164,7 +164,7 @@ java_lang_Runtime_traceInstructions(struct Hjava_lang_Runtime* this, jbool on)
  * Enable/disable tracing of method calls.
  */
 void
-java_lang_Runtime_traceMethodCalls(struct Hjava_lang_Runtime* this, jbool on)
+java_lang_Runtime_traceMethodCalls(struct Hjava_lang_Runtime* this, jboolean on)
 {
 	if (on == true) {
 		SignalError("java.lang.RuntimeException", "Cannot trace method calls");   
@@ -175,7 +175,7 @@ java_lang_Runtime_traceMethodCalls(struct Hjava_lang_Runtime* this, jbool on)
  * Inform the runtime that it must run the finalizer when it exits.
  */
 void
-java_lang_Runtime_runFinalizersOnExit(jbool on)
+java_lang_Runtime_runFinalizersOnExit(jboolean on)
 {
 	runFinalizerOnExit = on;
 }

@@ -116,7 +116,7 @@ translateSig(char* str, char** nstr, int* argp)
 		break;
 	case 'Z':
 		arg = 1;
-		strcpy(fp, "jbool");
+		strcpy(fp, "jboolean");
 		break;
 	case 'V':
 		arg = 0;
