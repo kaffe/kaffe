@@ -2,6 +2,24 @@
 
         Resynced with GNU Classpath.
 	
+	2005-01-28  Michael Koch  <konqueror@gmx.de>
+
+	* java/awt/image/ReplicateScaleFilter.java
+	(replicatePixels): Made private.
+	* javax/swing/colorchooser/DefaultRGBChooserPanel.java
+	(DefaultRGBChooserPanel): Made package private.
+	* javax/swing/colorchooser/DefaultSwatchChooserPanel.java
+	(RecentSwatchPanel): Likewise.
+	* javax/swing/event/MouseInputAdapter.java: Reformatted.
+	(MouseInputAdapter): Made abstract.
+	* javax/swing/tree/DefaultMutableTreeNode.java
+	(random): Removed.
+	(growTree): Likewise.
+
+2005-01-27  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+	
 	2005-01-27  Michael Koch  <konqueror@gmx.de>
 
 	* java/util/GregorianCalendar.java (getLeniarDay): 

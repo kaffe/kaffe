@@ -1,5 +1,5 @@
 /* DefaultMutableTreeNode.java --
-   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -500,33 +500,6 @@ public class DefaultMutableTreeNode
       }
 
     return depth;
-  }
-
-  static Random	random = new Random(System.currentTimeMillis());
-
-  public static void growTree(DefaultMutableTreeNode root)
-  {
-    DefaultMutableTreeNode	node;
-
-    DefaultMutableTreeNode current = root;
-    int index = 0;
-
-    do
-      {
-        if (random.nextBoolean())
-          {
-            node = new DefaultMutableTreeNode(String.valueOf(index));
-            index++;
-            current.add(node);
-            current = node;
-          }
-        else
-          {
-            current = (DefaultMutableTreeNode) current.getParent();
-          }
-      }
-    while (current != root
-           && current != null);
   }
 
   /**
