@@ -236,7 +236,9 @@ GEN_SRCS = inflate.c jar.c utf8const.c readClass.c constants.c debug.c
 
 DISTCLEANFILES = $(GEN_SRCS)
 
-kaffeh_SOURCES = $(GEN_SRCS) sigs.c support.c main.c mem.c
+kaffeh_SOURCES = sigs.c support.c main.c mem.c
+
+nodist_kaffeh_SOURCES = $(GEN_SRCS)
 
 noinst_HEADERS = kaffeh-support.h \
 	java_lang_ClassLoader.h \
@@ -252,11 +254,12 @@ CONFIG_CLEAN_FILES =
 bin_PROGRAMS = kaffeh$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
+am_kaffeh_OBJECTS = sigs.$(OBJEXT) support.$(OBJEXT) main.$(OBJEXT) \
+	mem.$(OBJEXT)
 am__objects_1 = inflate.$(OBJEXT) jar.$(OBJEXT) utf8const.$(OBJEXT) \
 	readClass.$(OBJEXT) constants.$(OBJEXT) debug.$(OBJEXT)
-am_kaffeh_OBJECTS = $(am__objects_1) sigs.$(OBJEXT) support.$(OBJEXT) \
-	main.$(OBJEXT) mem.$(OBJEXT)
-kaffeh_OBJECTS = $(am_kaffeh_OBJECTS)
+nodist_kaffeh_OBJECTS = $(am__objects_1)
+kaffeh_OBJECTS = $(am_kaffeh_OBJECTS) $(nodist_kaffeh_OBJECTS)
 kaffeh_LDADD = $(LDADD)
 kaffeh_DEPENDENCIES =
 kaffeh_LDFLAGS =
@@ -279,7 +282,7 @@ DIST_SOURCES = $(kaffeh_SOURCES)
 HEADERS = $(noinst_HEADERS)
 
 DIST_COMMON = $(noinst_HEADERS) Makefile.am Makefile.in
-SOURCES = $(kaffeh_SOURCES)
+SOURCES = $(kaffeh_SOURCES) $(nodist_kaffeh_SOURCES)
 
 all: all-am
 
@@ -471,9 +474,6 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
-	$(MAKE) $(AM_MAKEFLAGS) \
-	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
-	  dist-hook
 check-am: all-am
 check: check-am
 all-am: Makefile $(PROGRAMS) $(HEADERS)
@@ -567,11 +567,6 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 
 $(GEN_SRCS):
 	$(SHELL) $(REGEN_FORWARD) $(srcdir)/../kaffevm/$@ $@
-
-dist-hook:
-	@for file in $(DISTCLEANFILES); do \
-	  rm -f $(distdir)/$$file; \
-	done
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

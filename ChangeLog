@@ -1,3 +1,33 @@
+2003-05-11 Dalibor Topic <robilad@yahoo.com>
+
+        * Makefile.am:
+	(EXTRA_DIST) added ChangeLog.4, *.m4 macros, and
+	developers/check-classpath-merge-status.
+	
+        * config/Makefile.am:
+	(EXTRA_DIST) added arm-riscos files. added m68k-amiga README
+	file. added superh files.
+
+	* include/Makefile.am:
+	Don't distribute derived headers.
+	
+	* kaffe/kaffeh/Makefile.am:
+	Don't distribute generated sources.
+	(dist-hook) commented out.
+
+	* libraries/javalib/Makefile.am:
+	(EXTRA_DIST) removed jrelib_DATA.
+	Klasses.jar.bootstrap should depend only on bootstrap classlist,
+	but the bootstrap target on rt.jar. That avoids rebuild of rt.jar
+	for a make dist.
+	
+        * Makefile.in,
+        config/Makefile.in,
+        include/Makefile.in,
+        kaffe/kaffeh/Makefile.in,
+        libraries/javalib/Makefile.in:
+	regenerated.
+
 2003-05-09 Dalibor Topic <robilad@yahoo.com>
 
 	Various fixes to get make dist to work again.

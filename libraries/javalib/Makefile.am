@@ -2228,7 +2228,6 @@ gnu_regexp_message_bundles = \
 
 EXTRA_DIST = \
 	Klasses.jar.bootstrap \
-        $(jrelib_DATA) \
         $(toolslib_DATA) \
 	META-INF \
 	gnu \
@@ -2278,7 +2277,7 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	done
 	echo timestamp > $(LIBDIR)/stamp
 
-$(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist
+bootstrap: $(srcdir)/Klasses.jar.bootstrap rt.jar
 	if [ -f $(srcdir)/Klasses.jar.bootstrap ]; then \
 		mv -f $(srcdir)/Klasses.jar.bootstrap $(srcdir)/Klasses.jar.bootstrap.save; \
 	fi
@@ -2286,7 +2285,7 @@ $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist
 	) > $(srcdir)/Klasses.jar.bootstrap
 
 .PHONY: bootstrap
-bootstrap: $(srcdir)/Klasses.jar.bootstrap
+$(srcdir)/Klasses.jar.bootstrap: bootstrap.classlist
 
 if HAVE_ZIP
 JAR_CMD1 = (cd $(srcdir) && $(ZIP) -r rt.tmp.jar META-INF) ; mv $(srcdir)/rt.tmp.jar rt.jar

@@ -149,7 +149,11 @@ else
 ifaddrs_compat = #
 endif
 
-noinst_HEADERS = $(NOINSTALL_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS) \
+nodist_noinst_HEADERS = \
+	$(NOINSTALL_DERIVED_HDRS) \
+	$(NOINSTALL_JNI_DERIVED_HDRS)
+
+noinst_HEADERS = \
 	ifaddrs_compat.h \
 	$(ifaddrs_compat) \
 	defs.h \
@@ -159,7 +163,11 @@ noinst_HEADERS = $(NOINSTALL_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS) \
 
 include_HEADERS = jni.h
 
-pkginclude_HEADERS = $(INSTALL_DERIVED_HDRS) $(INSTALL_JNI_DERIVED_HDRS) \
+nodist_pkginclude_HEADERS = \
+	$(INSTALL_DERIVED_HDRS) \
+	$(INSTALL_JNI_DERIVED_HDRS) 
+
+pkginclude_HEADERS = \
 	Arrays.h \
 	errors.h \
 	jmalloc.h \

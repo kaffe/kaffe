@@ -64,6 +64,10 @@ EXTRA_DIST = \
 	arm/netbsd1/jit3-md.h \
 	arm/netbsd1/md.c \
 	arm/netbsd1/md.h \
+        arm/riscos/config.frag \
+        arm/riscos/jit-md.h \
+        arm/riscos/md.c \
+        arm/riscos/md.h \
 	arm/threads.h \
 	arm/trampolines.c \
 	ia64/common.h \
@@ -161,6 +165,7 @@ EXTRA_DIST = \
 	m68k/a-ux/jit-md.h \
 	m68k/a-ux/md.c \
 	m68k/a-ux/md.h \
+	m68k/amigaos/README \
 	m68k/amigaos/REPORT.amiga \
 	m68k/amigaos/config.frag \
 	m68k/amigaos/md.c \
@@ -289,7 +294,14 @@ EXTRA_DIST = \
 	sparc/uxpds/config.frag \
 	sparc/uxpds/jit-md.h \
 	sparc/uxpds/md.c \
-	sparc/uxpds/md.h
+	sparc/uxpds/md.h \
+        superh/common.h \
+        superh/linux/ \
+        superh/linux/config.frag \
+        superh/linux/md.c \
+        superh/linux/md.h \
+        superh/threads.h \
+        superh/trampolines.c
 
 jit-md.h: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \

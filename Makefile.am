@@ -16,10 +16,15 @@ EXTRA_DIST = \
 	ChangeLog.1 \
 	ChangeLog.2 \
 	ChangeLog.3 \
+	ChangeLog.4 \
 	WHATSNEW \
 	RELEASE-NOTES \
 	license.terms \
 	license-lesser.terms \
+	license-w3c.terms \
+	gwqt.m4 \
+	iconv.m4 \
+	libtool.m4 \
 	FAQ/FAQ.BeOS \
 	FAQ/FAQ.Known-Bugs \
 	FAQ/FAQ.amigaos \
@@ -62,6 +67,7 @@ EXTRA_DIST = \
 	compat-include/eh-common.h \
 	compat-include/frame.h \
 	compat-include/gansidecl.h \
+	developers/check-classpath-merge-status \
 	developers/Encode.java \
 	developers/EncodeEUC_JP.java \
 	developers/FullTest.sh \

@@ -281,6 +281,10 @@ EXTRA_DIST = \
 	arm/netbsd1/jit3-md.h \
 	arm/netbsd1/md.c \
 	arm/netbsd1/md.h \
+        arm/riscos/config.frag \
+        arm/riscos/jit-md.h \
+        arm/riscos/md.c \
+        arm/riscos/md.h \
 	arm/threads.h \
 	arm/trampolines.c \
 	ia64/common.h \
@@ -378,6 +382,7 @@ EXTRA_DIST = \
 	m68k/a-ux/jit-md.h \
 	m68k/a-ux/md.c \
 	m68k/a-ux/md.h \
+	m68k/amigaos/README \
 	m68k/amigaos/REPORT.amiga \
 	m68k/amigaos/config.frag \
 	m68k/amigaos/md.c \
@@ -506,7 +511,14 @@ EXTRA_DIST = \
 	sparc/uxpds/config.frag \
 	sparc/uxpds/jit-md.h \
 	sparc/uxpds/md.c \
-	sparc/uxpds/md.h
+	sparc/uxpds/md.h \
+        superh/common.h \
+        superh/linux/ \
+        superh/linux/config.frag \
+        superh/linux/md.c \
+        superh/linux/md.h \
+        superh/threads.h \
+        superh/trampolines.c
 
 subdir = config
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -613,7 +625,7 @@ top_distdir = ..
 distdir = $(top_distdir)/$(PACKAGE)-$(VERSION)
 
 distdir: $(DISTFILES)
-	$(mkinstalldirs) $(distdir)/alpha $(distdir)/alpha/linux $(distdir)/alpha/netbsd1 $(distdir)/alpha/osf $(distdir)/arm $(distdir)/arm/linux $(distdir)/arm/netbsd1 $(distdir)/i386 $(distdir)/i386/beos $(distdir)/i386/bsdi $(distdir)/i386/cygwin32 $(distdir)/i386/dgux $(distdir)/i386/freebsd2 $(distdir)/i386/gnu $(distdir)/i386/linux $(distdir)/i386/netbsd1 $(distdir)/i386/nextstep3 $(distdir)/i386/openbsd2 $(distdir)/i386/oskit $(distdir)/i386/qnx $(distdir)/i386/sco3.2v5 $(distdir)/i386/solaris2 $(distdir)/i386/univel_svr4 $(distdir)/i386/win32 $(distdir)/ia64 $(distdir)/ia64/linux $(distdir)/m68k $(distdir)/m68k/a-ux $(distdir)/m68k/amigaos $(distdir)/m68k/linux $(distdir)/m68k/netbsd1 $(distdir)/m68k/nextstep3 $(distdir)/m68k/openbsd2 $(distdir)/m68k/sunos4 $(distdir)/mips $(distdir)/mips/irix5 $(distdir)/mips/linux $(distdir)/mips/netbsd1 $(distdir)/mips/ultrix4 $(distdir)/parisc $(distdir)/parisc/hpux $(distdir)/parisc/linux $(distdir)/powerpc $(distdir)/powerpc/aix $(distdir)/powerpc/darwin $(distdir)/powerpc/linux $(distdir)/powerpc/machten $(distdir)/powerpc/netbsd1 $(distdir)/s390 $(distdir)/s390/linux $(distdir)/sparc $(distdir)/sparc/bsdi3 $(distdir)/sparc/linux $(distdir)/sparc/netbsd1 $(distdir)/sparc/nextstep3 $(distdir)/sparc/openbsd2 $(distdir)/sparc/solaris2 $(distdir)/sparc/sunos4 $(distdir)/sparc/uxpds
+	$(mkinstalldirs) $(distdir)/alpha $(distdir)/alpha/linux $(distdir)/alpha/netbsd1 $(distdir)/alpha/osf $(distdir)/arm $(distdir)/arm/linux $(distdir)/arm/netbsd1 $(distdir)/arm/riscos $(distdir)/i386 $(distdir)/i386/beos $(distdir)/i386/bsdi $(distdir)/i386/cygwin32 $(distdir)/i386/dgux $(distdir)/i386/freebsd2 $(distdir)/i386/gnu $(distdir)/i386/linux $(distdir)/i386/netbsd1 $(distdir)/i386/nextstep3 $(distdir)/i386/openbsd2 $(distdir)/i386/oskit $(distdir)/i386/qnx $(distdir)/i386/sco3.2v5 $(distdir)/i386/solaris2 $(distdir)/i386/univel_svr4 $(distdir)/i386/win32 $(distdir)/ia64 $(distdir)/ia64/linux $(distdir)/m68k $(distdir)/m68k/a-ux $(distdir)/m68k/amigaos $(distdir)/m68k/linux $(distdir)/m68k/netbsd1 $(distdir)/m68k/nextstep3 $(distdir)/m68k/openbsd2 $(distdir)/m68k/sunos4 $(distdir)/mips $(distdir)/mips/irix5 $(distdir)/mips/linux $(distdir)/mips/netbsd1 $(distdir)/mips/ultrix4 $(distdir)/parisc $(distdir)/parisc/hpux $(distdir)/parisc/linux $(distdir)/powerpc $(distdir)/powerpc/aix $(distdir)/powerpc/darwin $(distdir)/powerpc/linux $(distdir)/powerpc/machten $(distdir)/powerpc/netbsd1 $(distdir)/s390 $(distdir)/s390/linux $(distdir)/sparc $(distdir)/sparc/bsdi3 $(distdir)/sparc/linux $(distdir)/sparc/netbsd1 $(distdir)/sparc/nextstep3 $(distdir)/sparc/openbsd2 $(distdir)/sparc/solaris2 $(distdir)/sparc/sunos4 $(distdir)/sparc/uxpds $(distdir)/superh $(distdir)/superh/linux
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

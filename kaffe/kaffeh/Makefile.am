@@ -14,7 +14,9 @@ GEN_SRCS = inflate.c jar.c utf8const.c readClass.c constants.c debug.c
 
 DISTCLEANFILES = $(GEN_SRCS)
 
-kaffeh_SOURCES = $(GEN_SRCS) sigs.c support.c main.c mem.c
+kaffeh_SOURCES = sigs.c support.c main.c mem.c
+
+nodist_kaffeh_SOURCES = $(GEN_SRCS)
 
 noinst_HEADERS = kaffeh-support.h \
 	java_lang_ClassLoader.h \
@@ -24,7 +26,7 @@ noinst_HEADERS = kaffeh-support.h \
 $(GEN_SRCS):
 	$(SHELL) $(REGEN_FORWARD) $(srcdir)/../kaffevm/$@ $@
 
-dist-hook:
-	@for file in $(DISTCLEANFILES); do \
-	  rm -f $(distdir)/$$file; \
-	done
+##dist-hook:
+##	@for file in $(DISTCLEANFILES); do \
+##	  rm -f $(distdir)/$$file; \
+##	done
