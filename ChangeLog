@@ -1,3 +1,70 @@
+2003-08-16  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* java/text/Annotation.java,
+	java/text/AttributedCharacterIterator.java,
+	java/text/AttributedStringIterator.java,
+	java/text/AttributedString.java, java/text/BreakIterator.java,
+	java/text/CharacterIterator.java, java/text/ChoiceFormat.java,
+	java/text/CollationElementIterator.java, java/text/CollationKey.java,
+	java/text/Collator.java, java/text/DateFormat.java,
+	java/text/DateFormatSymbols.java, java/text/DecimalFormat.java,
+	java/text/DecimalFormatSymbols.java, java/text/FieldPosition.java,
+	java/text/Format.java, java/text/MessageFormat.java,
+	java/text/NumberFormat.java, java/text/ParseException.java,
+	java/text/ParsePosition.java, java/text/RuleBasedCollator.java,
+	java/text/SimpleDateFormat.java, java/text/SimpleLineIterator.java,
+	java/text/SimpleSentenceIterator.java,
+	java/text/SimpleWordIterator.java,
+	java/text/StringCharacterIterator.java:
+	Merged java/text from Classpath. Plus two fixes in DecimalFormat and
+	in SimpleDateFormat.
+	(SimpleDateFormat.parse) we should protect internal calendar from
+	modification by the parser.
+	(DecimalFormat.format) exponential format may have a fractional
+	part
+	(DecimalFormat.set*Digits) Use super to ensure minimum and maximum
+	are updated synchronously.
+
+	* libraries/javalib/java/util/GregorianCalendar.java: imported
+	(getDate) 12:00 (AM/PM) fix
+
+	* libraries/javalib/java/util/Locale.java,
+	libraries/javalib/java/util/TimeZone.java,
+	libraries/javalib/java/util/SimpleTimeZone.java:
+	imported.
+
+	* libraries/javalib/bootstrap.classlist: added TimeZone to
+	get the corresponding header file.
+
+	* libraries/javalib/essential.files: Replaced
+	MessageFormat$MessagePatternDescription by MessageFormatElement.
+	
+	* libraries/javalib/gnu/java/locale/LocaleInformation* (too many
+	to list): Added locale information from classpath.
+	
+	* libraries/javalib/profiles/default/rest.files:
+	Added gnu/java/locale/LocaleInformation*
+
+	* libraries/clib/native/TimeZone.c: Added to detect currently active
+	timezone.
+
+	* libraries/clib/native/Makefile.am:
+	(UTIL_SRCS) added TimeZone.c
+
+	* include/Makefile.am:
+	(NOINSTALL_DERIVED_HDRS) added java_util_TimeZone.h
+
+
+	* libraries/javalib/Makefile.am.in: added properties file in
+	gnu/java/locale and updated bundle packaging.
+
+	* libraries/javalib/Makefile.am: regenerated.
+	
+	* include/Makefile.in, libraries/javalib/Makefile.in,
+	libraries/clib/native/Makefile.in: regenerated.
+
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated.
+
 2003-08-15  Dalibor Topic <robilad@kaffe.org>
 
 	Merged in javax.net.ssl implementation JESSIE by Casey Marshall

@@ -1,577 +1,1024 @@
-/*
- * Java core library component.
- *
- * Copyright (c) 1997, 1998, 2000
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
+/* DecimalFormat.java -- Formats and parses numbers
+   Copyright (C) 1999, 2000, 2001, 2003 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+ 
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
 package java.text;
 
 import java.util.Locale;
-import kaffe.util.NotImplemented;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
-public class DecimalFormat
-  extends NumberFormat
+/**
+ * @author Tom Tromey <tromey@cygnus.com>
+ * @date March 4, 1999
+ */
+/* Written using "Java Class Libraries", 2nd edition, plus online
+ * API docs for JDK 1.2 from http://www.javasoft.com.
+ * Status:  Believed complete and correct to 1.2.
+ * Note however that the docs are very unclear about how format parsing
+ * should work.  No doubt there are problems here.
+ */
+public class DecimalFormat extends NumberFormat
 {
-	private static final long serialVersionUID = 864413376551465018L;
-	private DecimalFormatSymbols syms;
-	private int groupsize;
-	private int multiplier;
-	private String negativeprefix;
-	private String negativesuffix;
-	private String positiveprefix;
-	private String positivesuffix;
-	private boolean decsepshown;
-	private int expo_numcount;
-	private int expoint;
-
-public DecimalFormat() {
-	this("#,##0.###;-#,##0.###", Locale.getDefault());
-}
-
-public DecimalFormat(String pattern) {
-	this(pattern, Locale.getDefault());
-}
-
-public DecimalFormat(String pattern, DecimalFormatSymbols syms) {
-	this.syms = syms;
-	applyPattern(pattern);
-}
-
-DecimalFormat(String pattern, Locale loc) {
-	this(pattern, new DecimalFormatSymbols(loc));
-}
-
-public void applyLocalizedPattern(String pattern) {
-	char[] patt = pattern.toCharArray();
-
-	for (int i = 0; i < patt.length; i++) {
-		if (patt[i] == syms.digit) {
-			patt[i] = '#';
-		}
-		else if (patt[i] == syms.patternSeparator) {
-			patt[i] = ';';
-		}
-		else if (patt[i] == syms.zeroDigit) {
-			patt[i] = '0';
-		}
-		else if (patt[i] == syms.groupSeparator) {
-			patt[i] = ',';
-		}
-		else if (patt[i] == syms.decimalSeparator) {
-			patt[i] = '.';
-		}
-		else if (patt[i] == syms.percentSign) {
-			patt[i] = '%';
-		}
-		else if (patt[i] == syms.permillSign) {
-			patt[i] = '\u2030';
-		}
-		else if (patt[i] == syms.currencySign) {
-			patt[i] = '\u00a4';
-		}
-		else if (patt[i] == syms.minusSign) {
-			patt[i] = '-';
-		}
-		else if (patt[i] == '\'') {
-			for (i++; i < patt.length && patt[i] != '\''; i++);
-		}
-		else {
-			// Just leave the character alone
-		}
-	}
-
-	applyPattern(new String(patt));
-}
-
-public void applyPattern(String pattern) {
-
-	multiplier = 100;
-	negativeprefix = "";
-	negativesuffix = "";
-	positiveprefix = "";
-	positivesuffix = "";
-	intonly = true;
-	minint = 1;
-	maxint = Integer.MAX_VALUE;
-	minfrac = 0;
-	maxfrac = 0;
-	decsepshown = false;
-	groupsize = Integer.MAX_VALUE;
-	grouping = false;
-
-	char[] patt = pattern.toCharArray();
-
-	int formatstart = 0;
-	int formatend = patt.length;
-
-	int want = 0;
-	int si = 0;
-	for (int i = 0; i < patt.length; i++) {
-		switch (patt[i]) {
-		case '0':
-		case '#':
-		case '.':
-		case ',':
-		case 'E':
-			switch (want) {
-			case 0:
-				positiveprefix = new String(patt, si, i-si);
-				want = 1;
-				formatstart = i;
-				break;
-			case 2:
-				positivesuffix = new String(patt, si, i-si);
-				want = 3;
-				break;
-			case 4:
-				negativeprefix = new String(patt, si, i-si);
-				want = 5;
-				break;
-			case 6:
-				negativesuffix = new String(patt, si, i-si);
-				want = 7;
-				break;
-			}
-			break;
-
-		case ';':
-			if ( want == 2 ) {
-				positivesuffix = new String(patt, si, i-si);
-			}
-			si = i+1;
-			formatend = i;
-			want = 4;
-			break;
-
-		default:
-			switch (want) {
-			case 1:
-				si = i;
-				want = 2;
-				break;
-			case 5:
-				si = i;
-				want = 6;
-				break;
-			}
-			break;
-		}
-	}
-	if (want == 6) {
-		negativesuffix = new String(patt, si, patt.length-si);
-	}
-
-	// If we don't distiguish between positive and negative then
-	// add some default.
-	if (positiveprefix.equals(negativeprefix) && positivesuffix.equals(negativesuffix)) {
-		char[] minus = new char[1];
-		minus[0] = syms.minusSign;
-		negativeprefix = new String(minus);
-	}
-
-	boolean dec = false;
-	boolean expo = false;
-	int group = -1;
-	int zerocount = 0;
-	int hashcount = 0;
-	
-	expo_numcount = 0;
-
-	for (int i = formatstart; i < formatend; i++) {
-		switch (patt[i]) {
-		case '0':
-			if (hashcount > 0 && dec && !expo)
-				throw new IllegalArgumentException("illegal pattern \"" + pattern + "\"");
-
-			if (expo)
-				expo_numcount++;
-			else
-				zerocount++;
-			break;
-		case '#':
-			if (zerocount > 0 && !dec)
-				throw new IllegalArgumentException("illegal pattern \"" + pattern + "\"");
-			hashcount++;
-			break;
-		case '.':
-			if (dec || expo)
-				throw new IllegalArgumentException("illegal pattern \"" + pattern + "\"");
-			dec = true;
-			minint = zerocount;
-			if (hashcount == 0)
-				hashcount = 1;
-			expoint = hashcount;
-			maxint = Integer.MAX_VALUE;
-			if (group == -1 || i - group < 2) {
-				groupsize = 0;
-				grouping = false;
-			}
-			else {
-				groupsize = i - group - 1;
-				grouping = true;
-			}
-			hashcount = 0;
-			zerocount = 0;
-			break;
-		case ',':
-			if (group >= 0)
-				throw new IllegalArgumentException("illegal pattern \"" + pattern + "\"");
-			group = i;
-			break;
-		case 'E':
-			if (group >= 0 || grouping || expo)
-				throw new IllegalArgumentException("illegal pattern \"" + pattern + "\"");
-
-			expo = true;
-			break;
-		default:
-			break;
-		}
-	}
-
-	if (expo && expo_numcount == 0)
-		throw new IllegalArgumentException("illegal pattern \"" + pattern + "\"");
-
-	if (dec) {
-		intonly = false;
-		minfrac = zerocount;
-		maxfrac = minfrac + hashcount;
-		if (zerocount > 0) {
-			decsepshown = true;
-		}
-	}
-	else {
-		minint = zerocount;
-	}
-}
-
-public Object clone() {
-	return (super.clone());
-}
-
-public boolean equals(Object obj) {
-	return (super.equals(obj));
-}
-
-private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
-	StringBuffer buf = new StringBuffer();
-	char[] val = num.toCharArray();
-
-	int decpos = num.indexOf('.');
-
-	int endpos = decpos;
-	if (endpos == -1) {
-		endpos = val.length;
-	} else {
-		/*
-	 	 * prepare num so the stuff below works:
-	 	 * 	a) if we're formatting a floating point value but don't have any
-	 	 * 	   fractional digits, we may have to round the last integer digit
-	 	 *	b) if we're formatting a floating point value that has more fractional
-	 	 * 	   digits than our pattern, round the last digit that fits into the pattern 
-	 	 */
-		if (maxfrac==0) {
-			if (val[decpos+1] >= '5') {
-				val[decpos-1] = (char)(val[decpos-1] + 1 - '0' + syms.zeroDigit);	
-			}
-		} else if ((maxfrac < val.length-decpos-1) && (val[decpos+maxfrac+1] >= '5')) {
-			val[decpos+maxfrac] = (char)(val[decpos+maxfrac] + 1 - '0' + syms.zeroDigit); 
-		}
-	}
-
-	int startpos = 0;
-	if (val[startpos] == '-') {
-		startpos++;
-	}
-
-	int count = 0;
-	for (int i = endpos - 1; i >= startpos && count < maxint; i--, count++) {
-		if (grouping && count % groupsize == 0 && count > 0) {
-			buf.append(syms.groupSeparator);
-		}
-
-		buf.append((char)(val[i] - '0' + syms.zeroDigit));
-	}
-	for (; count < minint; count++) {
-		if (grouping && count % groupsize == 0) {
-			buf.append(syms.groupSeparator);
-		}
-		buf.append(syms.zeroDigit);
-	}
-
-	buf.reverse();
-
-	if (val[0] == '-') {
-		buf.insert(0, negativeprefix);
-	}
-	else {
-		buf.insert(0, positiveprefix);
-	}
-
-
-	if (pos.getField() == INTEGER_FIELD) {
-		pos.setBeginIndex(app.length());
-		app.append(buf);
-		pos.setEndIndex(app.length());
-	}
-	else {
-		app.append(buf);
-	}
-	buf.setLength(0);
-
-	if (!intonly) {
-
-		count = 0;
-
-		if (decpos != -1) {
-			startpos = decpos + 1;
-			endpos = val.length;
-
-			/* First we remove the extra zero generated
-			 * by Double.toString()
-			 */
-			if (val[endpos-1] == '0')
-			    endpos--;
-
-			for (int i = startpos; i < endpos && count < maxfrac; i++, count++) {
-				buf.append((char)(val[i] - '0' + syms.zeroDigit));
-			}
-		}
-
-		for (; count < minfrac; count++) {
-			buf.append(syms.zeroDigit);
-		}
-
-		if (count == 0)
-			decpos = -1;
-	}
-
-	if (val[0] == '-') {
-		buf.append(negativesuffix);
-	}
-	else {
-		buf.append(positivesuffix);
-	}
-
-	if (decsepshown || (!intonly && (decpos != -1 || minfrac > 0))) {
-		app.append(syms.decimalSeparator);
-	}
-
-	if (pos.getField() == FRACTION_FIELD) {
-		pos.setBeginIndex(app.length());
-		app.append(buf);
-		pos.setEndIndex(app.length());
-	}
-	else {
-		app.append(buf);
-	}
-
-	return (app);
-}
-
-public StringBuffer format(double num, StringBuffer buf, FieldPosition pos) {
-	if (expo_numcount == 0)
-		return (format(Double.toString(num), buf, pos));
+  // This is a helper for applyPatternWithSymbols.  It reads a prefix
+  // or a suffix.  It can cause some side-effects.
+  private final int scanFix (String pattern, int index, StringBuffer buf,
+			     String patChars, DecimalFormatSymbols syms,
+			     boolean is_suffix)
+  {
+    int len = pattern.length();
+    buf.setLength(0);
+    boolean multiplierSet = false;
+    while (index < len)
+      {
+	char c = pattern.charAt(index);
+	if (c == '\'' && index + 1 < len
+	    && pattern.charAt(index + 1) == '\'')
+	  {
+	    buf.append(c);
+	    ++index;
+	  }
+	else if (c == '\'' && index + 2 < len
+		 && pattern.charAt(index + 2) == '\'')
+	  {
+	    buf.append(pattern.charAt(index + 1));
+	    index += 2;
+	  }
+	else if (c == '\u00a4')
+	  {
+	    if (index + 1 < len && pattern.charAt(index + 1) == '\u00a4')
+	      {
+		buf.append(syms.getInternationalCurrencySymbol());
+		++index;
+	      }
+	    else
+	      buf.append(syms.getCurrencySymbol());
+	  }
+	else if (is_suffix && c == syms.getPercent())
+	  {
+	    if (multiplierSet)
+	      throw new IllegalArgumentException ("multiplier already set " +
+						  "- index: " + index);
+	    multiplierSet = true;
+	    multiplier = 100;
+	    buf.append(c);
+	  }
+	else if (is_suffix && c == syms.getPerMill())
+	  {
+	    if (multiplierSet)
+	      throw new IllegalArgumentException ("multiplier already set " +
+						  "- index: " + index);
+	    multiplierSet = true;
+	    multiplier = 1000;
+	    buf.append(c);
+	  }
+	else if (patChars.indexOf(c) != -1)
+	  {
+	    // This is a pattern character.
+	    break;
+	  }
 	else
-		return (formatExponential(num, buf, pos));
-}
-	
-public StringBuffer formatExponential(double num, StringBuffer app, FieldPosition pos) {
-	double abs_val = Math.abs(num);
-	int num_power;
-	int formatted_power;
+	  buf.append(c);
+	++index;
+      }
 
-	if (abs_val == 0.0) {
-		StringBuffer buf = format(Double.toString(num), app, pos);
+    return index;
+  }
 
-		buf.append("E");
-		for (int i=0;i<expo_numcount;i++)
-			buf.append("0");
+  // A helper which reads a number format.
+  private final int scanFormat (String pattern, int index,
+				String patChars, DecimalFormatSymbols syms,
+				boolean is_positive)
+  {
+    int max = pattern.length();
 
-		return buf;
-	}
-	
-	num_power = (int)Math.floor(Math.log(abs_val)/Math.log(10));
-	formatted_power = (int)Math.floor((double)num_power / expoint) * expoint;
-	num *= Math.pow(10, -formatted_power);
+    int countSinceGroup = 0;
+    int zeroCount = 0;
+    boolean saw_group = false;
 
-	StringBuffer buf = format(Double.toString(num), app, pos);
-	String exponent = Integer.toString(formatted_power);
-	buf.append("E");
+    //
+    // Scan integer part.
+    //
+    while (index < max)
+      {
+	char c = pattern.charAt(index);
 
-	for (int i=exponent.length();i<expo_numcount;i++)
-		buf.append("0");
-	buf.append(exponent);
-	
-	return buf;
-}
-
-public StringBuffer format(long num, StringBuffer buf, FieldPosition pos) {
-	if (expo_numcount == 0)
-		return (format(Long.toString(num), buf, pos));
+	if (c == syms.getDigit())
+	  {
+	    if (zeroCount > 0)
+	      throw new IllegalArgumentException ("digit mark following " +
+						  "zero - index: " + index);
+	    ++countSinceGroup;
+	  }
+	else if (c == syms.getZeroDigit())
+	  {
+	    ++zeroCount;
+	    ++countSinceGroup;
+	  }
+	else if (c == syms.getGroupingSeparator())
+	  {
+	    countSinceGroup = 0;
+	    saw_group = true;
+	  }
 	else
-		return (format((double)num, buf, pos));
-}
+	  break;
 
-public DecimalFormatSymbols getDecimalFormatSymbols() {
-	return (syms);
-}
+	++index;
+      }
 
-public int getGroupingSize() {
-	return (groupsize);
-}
+    // We can only side-effect when parsing the positive format.
+    if (is_positive)
+      {
+	groupingUsed = saw_group;
+	groupingSize = (byte) countSinceGroup;
+	minimumIntegerDigits = zeroCount;
+      }
 
-public int getMultiplier() {
-	return (multiplier);
-}
-
-public String getNegativePrefix() {
-	return (negativeprefix);
-}
-
-public String getNegativeSuffix() {
-	return (negativesuffix);
-}
-
-public String getPositivePrefix() {
-	return (positiveprefix);
-}
-
-public String getPositiveSuffix() {
-	return (positivesuffix);
-}
-
-public int hashCode() {
-	return (super.hashCode());
-}
-
-public boolean isDecimalSeparatorAlwaysShown() {
-	return (decsepshown);
-}
-
-	
-public Number parse(String source, ParsePosition pos) {
-	StringBuffer sb = new StringBuffer();
-	int startIndex = pos.getIndex();
-	int index = parse0 (source, startIndex, source.length(), sb, false);
-
-	if (index < 0) {
-		pos.setErrorIndex (-index);
-		return null;
-	}
-
-	pos.setIndex (index);
-	
-	// try Long first.
-	try {
-		return Long.valueOf (sb.toString());
-	}
-	catch (NumberFormatException nfe) {
-	}
-	try {
-		return Double.valueOf (sb.toString());
-	}
-	catch (NumberFormatException nfe) {
-		pos.setIndex (startIndex);
-		pos.setErrorIndex (index);
-		return null;
-	}
-}
-
-private int parse0 (String source, int index, int endIndex,
-		    StringBuffer sb, boolean isExponent) 
-{
-	if (!isExponent && !isParseIntegerOnly() &&
-	    source.regionMatches (false, index, syms.nan, 0, syms.nan.length())) {
-	    sb.append("NaN");
-	    return index + syms.nan.length();
-	}
-	
-	if ((positiveprefix.length() > 0) &&
-	    source.regionMatches (false, index, positiveprefix, 0, positiveprefix.length())) {
-		index += positiveprefix.length();
-	}
-	else if ((negativeprefix.length() > 0) && 
-		 source.regionMatches (false, index, negativeprefix, 0, negativeprefix.length())) {
-		sb.append('-');
-		index += negativeprefix.length();
-	}
-
-	if (!isExponent && !isParseIntegerOnly() &&
-	    source.regionMatches (false, index, syms.infinity, 0, syms.infinity.length())) {
-	    sb.append("Inf");
-	    index += syms.infinity.length();
-	}
-	
-	boolean allowDot = !isExponent && !isParseIntegerOnly();
-	char zeroDigit = syms.zeroDigit;
-	char nineDigit = (char)(zeroDigit + 9);
-	while (index < endIndex) {
-		char c = source.charAt(index);
-		if ((zeroDigit <= c) && (c <= nineDigit)) {
-			sb.append ((char)(c - zeroDigit + '0'));
-			index++;
-		}
-		else if (c == syms.decimalSeparator && allowDot) {
-			allowDot = false;
-			sb.append ('.');
-			index++;
-		}
-		else if (c == syms.groupSeparator && isGroupingUsed() && !isExponent) {
-			index++;
-		}
-		else if (c == 'E' && !isExponent) {
-			sb.append ('E');
-			index = parse0 (source, index + 1, endIndex, sb, true);
-			if (index < 0)
-				return index;
-		}
-		else break;
-	}
-	
+    // Early termination.
+    if (index == max || pattern.charAt(index) == syms.getGroupingSeparator())
+      {
+	if (is_positive)
+	  decimalSeparatorAlwaysShown = false;
 	return index;
-}
+      }
 
-public void setDecimalFormatSymbols(DecimalFormatSymbols syms) {
-	this.syms = syms;
-}
+    if (pattern.charAt(index) == syms.getDecimalSeparator())
+      {
+	++index;
 
-public void setDecimalSeparatorAlwaysShown(boolean val) {
-	decsepshown = val;
-}
+	//
+	// Scan fractional part.
+	//
+	int hashCount = 0;
+	zeroCount = 0;
+	while (index < max)
+	  {
+	    char c = pattern.charAt(index);
+	    if (c == syms.getZeroDigit())
+	      {
+		if (hashCount > 0)
+		  throw new IllegalArgumentException ("zero mark " +
+						      "following digit - index: " + index);
+		++zeroCount;
+	      }
+	    else if (c == syms.getDigit())
+	      {
+		++hashCount;
+	      }
+	    else if (c != syms.getExponential()
+		     && c != syms.getPatternSeparator()
+		     && patChars.indexOf(c) != -1)
+	      throw new IllegalArgumentException ("unexpected special " +
+						  "character - index: " + index);
+	    else
+	      break;
 
-public void setGroupingSize(int val) {
-	groupsize = val;
-}
+	    ++index;
+	  }
 
-public void setMultiplier(int val) {
-	multiplier = val;
-}
+	if (is_positive)
+	  {
+	    maximumFractionDigits = hashCount + zeroCount;
+	    minimumFractionDigits = zeroCount;
+	  }
 
-public void setNegativePrefix(String val) {
-	negativeprefix = val;
-}
+	if (index == max)
+	  return index;
+      }
 
-public void setNegativeSuffix(String val) {
-	negativesuffix = val;
-}
+    if (pattern.charAt(index) == syms.getExponential())
+      {
+	//
+	// Scan exponential format.
+	//
+	zeroCount = 0;
+	++index;
+	while (index < max)
+	  {
+	    char c = pattern.charAt(index);
+	    if (c == syms.getZeroDigit())
+	      ++zeroCount;
+	    else if (c == syms.getDigit())
+	      {
+		if (zeroCount > 0)
+		  throw new
+		    IllegalArgumentException ("digit mark following zero " +
+					      "in exponent - index: " +
+					      index);
+	      }
+	    else if (patChars.indexOf(c) != -1)
+	      throw new IllegalArgumentException ("unexpected special " +
+						  "character - index: " +
+						  index);
+	    else
+	      break;
 
-public void setPositivePrefix(String val) {
-	positiveprefix = val;
-}
+	    ++index;
+	  }
 
-public void setPositiveSuffix(String val) {
-	positivesuffix = val;
-}
+	if (is_positive)
+	  {
+	    useExponentialNotation = true;
+	    minExponentDigits = (byte) zeroCount;
+	  }
+      }
 
-public String toLocalizedPattern() {
-	throw new NotImplemented();
-}
+    return index;
+  }
 
-public String toPattern() {
-	throw new NotImplemented();
-}
+  // This helper function creates a string consisting of all the
+  // characters which can appear in a pattern and must be quoted.
+  private final String patternChars (DecimalFormatSymbols syms)
+  {
+    StringBuffer buf = new StringBuffer ();
+    buf.append(syms.getDecimalSeparator());
+    buf.append(syms.getDigit());
+    buf.append(syms.getExponential());
+    buf.append(syms.getGroupingSeparator());
+    // Adding this one causes pattern application to fail.
+    // Of course, omitting is causes toPattern to fail.
+    // ... but we already have bugs there.  FIXME.
+    // buf.append(syms.getMinusSign());
+    buf.append(syms.getPatternSeparator());
+    buf.append(syms.getPercent());
+    buf.append(syms.getPerMill());
+    buf.append(syms.getZeroDigit());
+    buf.append('\u00a4');
+    return buf.toString();
+  }
+
+  private final void applyPatternWithSymbols (String pattern,
+					      DecimalFormatSymbols syms)
+  {
+    // Initialize to the state the parser expects.
+    negativePrefix = "";
+    negativeSuffix = "";
+    positivePrefix = "";
+    positiveSuffix = "";
+    decimalSeparatorAlwaysShown = false;
+    groupingSize = 0;
+    minExponentDigits = 0;
+    multiplier = 1;
+    useExponentialNotation = false;
+    groupingUsed = false;
+    maximumFractionDigits = 0;
+    maximumIntegerDigits = 309;
+    minimumFractionDigits = 0;
+    minimumIntegerDigits = 1;
+
+    StringBuffer buf = new StringBuffer ();
+    String patChars = patternChars (syms);
+
+    int max = pattern.length();
+    int index = scanFix (pattern, 0, buf, patChars, syms, false);
+    positivePrefix = buf.toString();
+
+    index = scanFormat (pattern, index, patChars, syms, true);
+
+    index = scanFix (pattern, index, buf, patChars, syms, true);
+    positiveSuffix = buf.toString();
+
+    if (index == pattern.length())
+      {
+	// No negative info.
+	negativePrefix = null;
+	negativeSuffix = null;
+      }
+    else
+      {
+	if (pattern.charAt(index) != syms.getPatternSeparator())
+	  throw new IllegalArgumentException ("separator character " +
+					      "expected - index: " + index);
+
+	index = scanFix (pattern, index + 1, buf, patChars, syms, false);
+	negativePrefix = buf.toString();
+
+	// We parse the negative format for errors but we don't let
+	// it side-effect this object.
+	index = scanFormat (pattern, index, patChars, syms, false);
+
+	index = scanFix (pattern, index, buf, patChars, syms, true);
+	negativeSuffix = buf.toString();
+
+	if (index != pattern.length())
+	  throw new IllegalArgumentException ("end of pattern expected " +
+					      "- index: " + index);
+      }
+  }
+
+  public void applyLocalizedPattern (String pattern)
+  {
+    // JCL p. 638 claims this throws a ParseException but p. 629
+    // contradicts this.  Empirical tests with patterns of "0,###.0"
+    // and "#.#.#" corroborate the p. 629 statement that an
+    // IllegalArgumentException is thrown.
+    applyPatternWithSymbols (pattern, symbols);
+  }
+
+  public void applyPattern (String pattern)
+  {
+    // JCL p. 638 claims this throws a ParseException but p. 629
+    // contradicts this.  Empirical tests with patterns of "0,###.0"
+    // and "#.#.#" corroborate the p. 629 statement that an
+    // IllegalArgumentException is thrown.
+    applyPatternWithSymbols (pattern, nonLocalizedSymbols);
+  }
+
+  public Object clone ()
+  {
+    DecimalFormat c = (DecimalFormat) super.clone ();
+    c.symbols = (DecimalFormatSymbols) symbols.clone ();
+    return c;
+  }
+
+  public DecimalFormat ()
+  {
+    this ("#,##0.###");
+  }
+
+  public DecimalFormat (String pattern)
+  {
+    this (pattern, new DecimalFormatSymbols ());
+  }
+
+  public DecimalFormat (String pattern, DecimalFormatSymbols symbols)
+  {
+    this.symbols = symbols;
+    applyPattern (pattern);
+  }
+
+  private final boolean equals (String s1, String s2)
+  {
+    if (s1 == null || s2 == null)
+      return s1 == s2;
+    return s1.equals(s2);
+  }
+
+  public boolean equals (Object obj)
+  {
+    if (! (obj instanceof DecimalFormat))
+      return false;
+    DecimalFormat dup = (DecimalFormat) obj;
+    return (decimalSeparatorAlwaysShown == dup.decimalSeparatorAlwaysShown
+	    && groupingSize == dup.groupingSize
+	    && minExponentDigits == dup.minExponentDigits
+	    && multiplier == dup.multiplier
+	    && equals(negativePrefix, dup.negativePrefix)
+	    && equals(negativeSuffix, dup.negativeSuffix)
+	    && equals(positivePrefix, dup.positivePrefix)
+	    && equals(positiveSuffix, dup.positiveSuffix)
+	    && symbols.equals(dup.symbols)
+	    && useExponentialNotation == dup.useExponentialNotation);
+  }
+
+  public StringBuffer format (double number, StringBuffer dest,
+			      FieldPosition fieldPos)
+  {
+    // A very special case.
+    if (Double.isNaN(number))
+      {
+	dest.append(symbols.getNaN());
+	if (fieldPos != null && fieldPos.getField() == INTEGER_FIELD)
+	  {
+	    int index = dest.length();
+	    fieldPos.setBeginIndex(index - symbols.getNaN().length());
+	    fieldPos.setEndIndex(index);
+	  }
+	return dest;
+      }
+
+    boolean is_neg = number < 0;
+    if (is_neg)
+      {
+	if (negativePrefix != null)
+	  dest.append(negativePrefix);
+	else
+	  {
+	    dest.append(symbols.getMinusSign());
+	    dest.append(positivePrefix);
+	  }
+	number = - number;
+      }
+    else
+      dest.append(positivePrefix);
+
+    int integerBeginIndex = dest.length();
+    int integerEndIndex = 0;
+    if (Double.isInfinite (number))
+      {
+	dest.append(symbols.getInfinity());
+	integerEndIndex = dest.length();
+      }
+    else
+      {
+	number *= multiplier;
+
+	// Compute exponent.
+	long exponent = 0;
+	double baseNumber;
+	if (useExponentialNotation)
+	  {
+	    exponent = (long) Math.floor (Math.log(number) / Math.log(10));
+	    if (minimumIntegerDigits > 0)
+	      exponent -= minimumIntegerDigits - 1;
+	    baseNumber = (number / Math.pow(10.0, exponent));
+	  }
+	else
+	  baseNumber = number;
+
+	// Round to the correct number of digits.
+	baseNumber += 5 * Math.pow(10.0, - maximumFractionDigits - 1);
+
+	int index = dest.length();
+	double intPart = Math.floor(baseNumber);
+	int count = 0;
+	while (count < maximumIntegerDigits
+	       && (intPart > 0 || count < minimumIntegerDigits))
+	  {
+	    long dig = (long) (intPart % 10);
+	    intPart = Math.floor(intPart / 10);
+
+	    // Append group separator if required.
+	    if (groupingUsed && count > 0 && groupingSize != 0 && count % groupingSize == 0)
+	      dest.insert(index, symbols.getGroupingSeparator());
+
+	    dest.insert(index, (char) (symbols.getZeroDigit() + dig));
+
+	    ++count;
+	  }
+
+	integerEndIndex = dest.length();
+
+	int decimal_index = integerEndIndex;
+	int consecutive_zeros = 0;
+	int total_digits = 0;
+
+	// Strip integer part from NUMBER.
+	double fracPart = baseNumber - Math.floor(baseNumber);
+	for (count = 0;
+	     count < maximumFractionDigits
+	       && (fracPart != 0 || count < minimumFractionDigits);
+	     ++count)
+	  {
+	    ++total_digits;
+	    fracPart *= 10;
+	    long dig = (long) fracPart;
+	    if (dig == 0)
+	      ++consecutive_zeros;
+	    else
+	      consecutive_zeros = 0;
+	    dest.append((char) (symbols.getZeroDigit() + dig));
+
+	    // Strip integer part from FRACPART.
+	    fracPart = fracPart - Math.floor (fracPart);
+	  }
+
+	// Strip extraneous trailing `0's.  We can't always detect
+	// these in the loop.
+	int extra_zeros = Math.min (consecutive_zeros,
+				    total_digits - minimumFractionDigits);
+	if (extra_zeros > 0)
+	  {
+	    dest.setLength(dest.length() - extra_zeros);
+	    total_digits -= extra_zeros;
+	  }
+
+	// If required, add the decimal symbol.
+	if (decimalSeparatorAlwaysShown
+	    || total_digits > 0)
+	  {
+	    dest.insert(decimal_index, symbols.getDecimalSeparator());
+	    if (fieldPos != null && fieldPos.getField() == FRACTION_FIELD)
+	      {
+		fieldPos.setBeginIndex(decimal_index + 1);
+		fieldPos.setEndIndex(dest.length());
+	      }
+	  }
+
+	// Finally, print the exponent.
+	if (useExponentialNotation)
+	  {
+	    dest.append(symbols.getExponential());
+	    if (exponent < 0)
+	      {
+		dest.append (symbols.getMinusSign ());
+		exponent = - exponent;
+	      }
+	    index = dest.length();
+	    for (count = 0;
+		 exponent > 0 || count < minExponentDigits;
+		 ++count)
+	      {
+		long dig = exponent % 10;
+		exponent /= 10;
+		dest.insert(index, (char) (symbols.getZeroDigit() + dig));
+	      }
+	  }
+      }
+
+    if (fieldPos != null && fieldPos.getField() == INTEGER_FIELD)
+      {
+	fieldPos.setBeginIndex(integerBeginIndex);
+	fieldPos.setEndIndex(integerEndIndex);
+      }
+
+    dest.append((is_neg && negativeSuffix != null)
+		? negativeSuffix
+		: positiveSuffix);
+    return dest;
+  }
+
+  public StringBuffer format (long number, StringBuffer dest,
+			      FieldPosition fieldPos)
+  {
+    // If using exponential notation, we just format as a double.
+    if (useExponentialNotation)
+      return format ((double) number, dest, fieldPos);
+
+    boolean is_neg = number < 0;
+    if (is_neg)
+      {
+	if (negativePrefix != null)
+	  dest.append(negativePrefix);
+	else
+	  {
+	    dest.append(symbols.getMinusSign());
+	    dest.append(positivePrefix);
+	  }
+	number = - number;
+      }
+    else
+      dest.append(positivePrefix);
+
+    int integerBeginIndex = dest.length();
+    int index = dest.length();
+    int count = 0;
+    while (count < maximumIntegerDigits
+	   && (number > 0 || count < minimumIntegerDigits))
+      {
+	long dig = number % 10;
+	number /= 10;
+	// NUMBER and DIG will be less than 0 if the original number
+	// was the most negative long.
+	if (dig < 0)
+	  {
+	    dig = - dig;
+	    number = - number;
+	  }
+
+	// Append group separator if required.
+	if (groupingUsed && count > 0 && groupingSize != 0 && count % groupingSize == 0)
+	  dest.insert(index, symbols.getGroupingSeparator());
+
+	dest.insert(index, (char) (symbols.getZeroDigit() + dig));
+
+	++count;
+      }
+
+    if (fieldPos != null && fieldPos.getField() == INTEGER_FIELD)
+      {
+	fieldPos.setBeginIndex(integerBeginIndex);
+	fieldPos.setEndIndex(dest.length());
+      }
+
+    if (decimalSeparatorAlwaysShown || minimumFractionDigits > 0)
+      {
+	dest.append(symbols.getDecimalSeparator());
+	if (fieldPos != null && fieldPos.getField() == FRACTION_FIELD)
+	  {
+	    fieldPos.setBeginIndex(dest.length());
+	    fieldPos.setEndIndex(dest.length() + minimumFractionDigits);
+	  }
+      }
+
+    for (count = 0; count < minimumFractionDigits; ++count)
+      dest.append(symbols.getZeroDigit());
+
+    dest.append((is_neg && negativeSuffix != null)
+		? negativeSuffix
+		: positiveSuffix);
+    return dest;
+  }
+
+  public DecimalFormatSymbols getDecimalFormatSymbols ()
+  {
+    return symbols;
+  }
+
+  public int getGroupingSize ()
+  {
+    return groupingSize;
+  }
+
+  public int getMultiplier ()
+  {
+    return multiplier;
+  }
+
+  public String getNegativePrefix ()
+  {
+    return negativePrefix;
+  }
+
+  public String getNegativeSuffix ()
+  {
+    return negativeSuffix;
+  }
+
+  public String getPositivePrefix ()
+  {
+    return positivePrefix;
+  }
+
+  public String getPositiveSuffix ()
+  {
+    return positiveSuffix;
+  }
+
+  public int hashCode ()
+  {
+    int hash = (negativeSuffix.hashCode() ^ negativePrefix.hashCode()
+		^positivePrefix.hashCode() ^ positiveSuffix.hashCode());
+    // FIXME.
+    return hash;
+  }
+
+  public boolean isDecimalSeparatorAlwaysShown ()
+  {
+    return decimalSeparatorAlwaysShown;
+  }
+
+  public Number parse (String str, ParsePosition pos)
+  {
+    // Our strategy is simple: copy the text into a buffer,
+    // translating or omitting locale-specific information.  Then
+    // let Double or Long convert the number for us.
+
+    boolean is_neg = false;
+    int index = pos.getIndex();
+    StringBuffer buf = new StringBuffer ();
+
+    // We have to check both prefixes, because one might be empty.  We
+    // want to pick the longest prefix that matches.
+    boolean got_pos = str.startsWith(positivePrefix, index);
+    String np = (negativePrefix != null
+		 ? negativePrefix
+		 : positivePrefix + symbols.getMinusSign());
+    boolean got_neg = str.startsWith(np, index);
+
+    if (got_pos && got_neg)
+      {
+	// By checking this way, we preserve ambiguity in the case
+	// where the negative format differs only in suffix.  We
+	// check this again later.
+	if (np.length() > positivePrefix.length())
+	  {
+	    is_neg = true;
+	    index += np.length();
+	  }
+	else
+	  index += positivePrefix.length();
+      }
+    else if (got_neg)
+      {
+	is_neg = true;
+	index += np.length();
+      }
+    else if (got_pos)
+      index += positivePrefix.length();
+    else
+      {
+	pos.setErrorIndex (index);
+	return null;
+      }
+
+    // FIXME: handle Inf and NaN.
+
+    // FIXME: do we have to respect minimum digits?
+    // What about leading zeros?  What about multiplier?
+
+    int start_index = index;
+    int max = str.length();
+    int last = index + maximumIntegerDigits;
+    if (last > 0 && max > last)
+      max = last;
+    char zero = symbols.getZeroDigit();
+    int last_group = -1;
+    boolean int_part = true;
+    boolean exp_part = false;
+    for (; index < max; ++index)
+      {
+	char c = str.charAt(index);
+
+	// FIXME: what about grouping size?
+	if (groupingUsed && c == symbols.getGroupingSeparator())
+	  {
+	    if (last_group != -1 
+		&& groupingSize != 0  
+		&& (index - last_group) % groupingSize != 0)
+	      {
+		pos.setErrorIndex(index);
+		return null;
+	      }
+	    last_group = index;
+	  }
+	else if (c >= zero && c <= zero + 9)
+	  {
+	    buf.append((char) (c - zero + '0'));
+	    exp_part = false;
+	  }
+	else if (parseIntegerOnly)
+	  break;
+	else if (c == symbols.getDecimalSeparator())
+	  {
+	    if (last_group != -1 
+		&& groupingSize != 0 
+		&& (index - last_group) % groupingSize != 0)
+	      {
+		pos.setErrorIndex(index);
+		return null;
+	      }
+	    buf.append('.');
+	    int_part = false;
+	  }
+	else if (c == symbols.getExponential())
+	  {
+	    buf.append('E');
+	    int_part = false;
+	    exp_part = true;
+	  }
+	else if (exp_part
+		 && (c == '+' || c == '-' || c == symbols.getMinusSign()))
+	  {
+	    // For exponential notation.
+	    buf.append(c);
+	  }
+	else
+	  break;
+      }
+
+    if (index == start_index)
+      {
+	// Didn't see any digits.
+	pos.setErrorIndex(index);
+	return null;
+      }
+
+    // Check the suffix.  We must do this before converting the
+    // buffer to a number to handle the case of a number which is
+    // the most negative Long.
+    boolean got_pos_suf = str.startsWith(positiveSuffix, index);
+    String ns = (negativePrefix == null ? positiveSuffix : negativeSuffix);
+    boolean got_neg_suf = str.startsWith(ns, index);
+    if (is_neg)
+      {
+	if (! got_neg_suf)
+	  {
+	    pos.setErrorIndex(index);
+	    return null;
+	  }
+      }
+    else if (got_pos && got_neg && got_neg_suf)
+      {
+	is_neg = true;
+      }
+    else if (got_pos != got_pos_suf && got_neg != got_neg_suf)
+      {
+	pos.setErrorIndex(index);
+	return null;
+      }
+
+    String suffix = is_neg ? ns : positiveSuffix;
+    if (is_neg)
+      buf.insert(0, '-');
+
+    String t = buf.toString();
+    Number result = null;
+    try
+      {
+	result = new Long (t);
+      }
+    catch (NumberFormatException x1)
+      {
+	try
+	  {
+	    result = new Double (t);
+	  }
+	catch (NumberFormatException x2)
+	  {
+	  }
+      }
+    if (result == null)
+      {
+	pos.setErrorIndex(index);
+	return null;
+      }
+
+    pos.setIndex(index + suffix.length());
+
+    return result;
+  }
+
+  public void setDecimalFormatSymbols (DecimalFormatSymbols newSymbols)
+  {
+    symbols = newSymbols;
+  }
+
+  public void setDecimalSeparatorAlwaysShown (boolean newValue)
+  {
+    decimalSeparatorAlwaysShown = newValue;
+  }
+
+  public void setGroupingSize (int groupSize)
+  {
+    groupingSize = (byte) groupSize;
+  }
+
+  public void setMaximumFractionDigits (int newValue)
+  {
+    super.setMaximumFractionDigits(Math.min(newValue, 340));
+  }
+
+  public void setMaximumIntegerDigits (int newValue)
+  {
+    super.setMaximumIntegerDigits(Math.min(newValue, 309));
+  }
+
+  public void setMinimumFractionDigits (int newValue)
+  {
+    super.setMinimumFractionDigits(Math.min(newValue, 340));
+  }
+
+  public void setMinimumIntegerDigits (int newValue)
+  {
+    super.setMinimumIntegerDigits(Math.min(newValue, 309));
+  }
+
+  public void setMultiplier (int newValue)
+  {
+    multiplier = newValue;
+  }
+
+  public void setNegativePrefix (String newValue)
+  {
+    negativePrefix = newValue;
+  }
+
+  public void setNegativeSuffix (String newValue)
+  {
+    negativeSuffix = newValue;
+  }
+
+  public void setPositivePrefix (String newValue)
+  {
+    positivePrefix = newValue;
+  }
+
+  public void setPositiveSuffix (String newValue)
+  {
+    positiveSuffix = newValue;
+  }
+
+  private final void quoteFix (StringBuffer buf, String text, String patChars)
+  {
+    int len = text.length();
+    for (int index = 0; index < len; ++index)
+      {
+	char c = text.charAt(index);
+	if (patChars.indexOf(c) != -1)
+	  {
+	    buf.append('\'');
+	    buf.append(c);
+	    buf.append('\'');
+	  }
+	else
+	  buf.append(c);
+      }
+  }
+
+  private final String computePattern (DecimalFormatSymbols syms)
+  {
+    StringBuffer mainPattern = new StringBuffer ();
+    // We have to at least emit a zero for the minimum number of
+    // digits.  Past that we need hash marks up to the grouping
+    // separator (and one beyond).
+    int total_digits = Math.max(minimumIntegerDigits,
+				groupingUsed ? groupingSize + 1: 0);
+    for (int i = 0; i < total_digits - minimumIntegerDigits; ++i)
+      mainPattern.append(syms.getDigit());
+    for (int i = total_digits - minimumIntegerDigits; i < total_digits; ++i)
+      mainPattern.append(syms.getZeroDigit());
+    // Inserting the gropuing operator afterwards is easier.
+    if (groupingUsed)
+      mainPattern.insert(mainPattern.length() - groupingSize,
+			 syms.getGroupingSeparator());
+    // See if we need decimal info.
+    if (minimumFractionDigits > 0 || maximumFractionDigits > 0
+	|| decimalSeparatorAlwaysShown)
+      mainPattern.append(syms.getDecimalSeparator());
+    for (int i = 0; i < minimumFractionDigits; ++i)
+      mainPattern.append(syms.getZeroDigit());
+    for (int i = minimumFractionDigits; i < maximumFractionDigits; ++i)
+      mainPattern.append(syms.getDigit());
+    if (useExponentialNotation)
+      {
+	mainPattern.append(syms.getExponential());
+	for (int i = 0; i < minExponentDigits; ++i)
+	  mainPattern.append(syms.getZeroDigit());
+	if (minExponentDigits == 0)
+	  mainPattern.append(syms.getDigit());
+      }
+
+    String main = mainPattern.toString();
+    String patChars = patternChars (syms);
+    mainPattern.setLength(0);
+
+    quoteFix (mainPattern, positivePrefix, patChars);
+    mainPattern.append(main);
+    quoteFix (mainPattern, positiveSuffix, patChars);
+
+    if (negativePrefix != null)
+      {
+	quoteFix (mainPattern, negativePrefix, patChars);
+	mainPattern.append(main);
+	quoteFix (mainPattern, negativeSuffix, patChars);
+      }
+
+    return mainPattern.toString();
+  }
+
+  public String toLocalizedPattern ()
+  {
+    return computePattern (symbols);
+  }
+
+  public String toPattern ()
+  {
+    return computePattern (nonLocalizedSymbols);
+  }
+
+  // These names are fixed by the serialization spec.
+  private boolean decimalSeparatorAlwaysShown;
+  private byte groupingSize;
+  private byte minExponentDigits;
+  private int multiplier;
+  private String negativePrefix;
+  private String negativeSuffix;
+  private String positivePrefix;
+  private String positiveSuffix;
+  private int serialVersionOnStream = 1;
+  private DecimalFormatSymbols symbols;
+  private boolean useExponentialNotation;
+  private static final long serialVersionUID = 864413376551465018L;
+
+  private void readObject(ObjectInputStream stream)
+    throws IOException, ClassNotFoundException
+  {
+    stream.defaultReadObject();
+    if (serialVersionOnStream < 1)
+      {
+        useExponentialNotation = false;
+	serialVersionOnStream = 1;
+      }
+  }
+
+  // The locale-independent pattern symbols happen to be the same as
+  // the US symbols.
+  private static final DecimalFormatSymbols nonLocalizedSymbols
+    = new DecimalFormatSymbols (Locale.US);
 }

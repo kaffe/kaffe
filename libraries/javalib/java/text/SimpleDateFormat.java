@@ -1,824 +1,807 @@
-/*
- * Java core library component.
- *
- * Copyright (c) 1997, 1998, 2000
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
+/* SimpleDateFormat.java -- A class for parsing/formating simple 
+   date constructs
+   Copyright (C) 1998, 1999, 2000, 2001, 2003 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+ 
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
+
 package java.text;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.ResourceBundle;
+import java.util.SimpleTimeZone;
+import java.util.Vector;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
-public class SimpleDateFormat
-  extends DateFormat
+/**
+ * SimpleDateFormat provides convenient methods for parsing and formatting
+ * dates using Gregorian calendars (see java.util.GregorianCalendar). 
+ */
+public class SimpleDateFormat extends DateFormat 
 {
-	private static final long serialVersionUID = 4774881970558875024L;
-	private static final String DEFAULTPATTERNCHARS = "GyMdkHmsSEDFwWahKz";
-	private DateFormatSymbols syms;
-	private String pattern;
+  /** A pair class used by SimpleDateFormat as a compiled representation
+   *  of a format string.
+   */
+  private class FieldSizePair 
+  {
+    public int field;
+    public int size;
 
-private static String getDefaultPattern(Locale loc)
-{
-	ResourceBundle bundle = getResources("dateformat", loc);
-	String date = ((String[])bundle.getObject("date"))[DateFormat.DEFAULT];
-	String time = ((String[])bundle.getObject("time"))[DateFormat.DEFAULT];
-	return date + " " + time;
-}
+    /** Constructs a pair with the given field and size values */
+    public FieldSizePair(int f, int s) {
+      field = f;
+      size = s;
+    }
+  }
+
+  private transient Vector tokens;
+  private DateFormatSymbols formatData;  // formatData
+  private Date defaultCenturyStart;
+  private transient int defaultCentury;
+  private String pattern;
+  private int serialVersionOnStream = 1; // 0 indicates JDK1.1.3 or earlier
+  private static final long serialVersionUID = 4774881970558875024L;
+
+  // This string is specified in the JCL.  We set it here rather than
+  // do a DateFormatSymbols(Locale.US).getLocalPatternChars() since
+  // someone could theoretically change those values (though unlikely).
+  private static final String standardChars = "GyMdkHmsSEDFwWahKz";
+
+  private void readObject(ObjectInputStream stream)
+    throws IOException, ClassNotFoundException
+  {
+    stream.defaultReadObject();
+    if (serialVersionOnStream < 1)
+      {
+        computeCenturyStart ();
+	serialVersionOnStream = 1;
+      }
+    else
+      // Ensure that defaultCentury gets set.
+      set2DigitYearStart(defaultCenturyStart);
+
+    // Set up items normally taken care of by the constructor.
+    tokens = new Vector();
+    compileFormat(pattern);
+  }
+
+  private void compileFormat(String pattern) 
+  {
+    // Any alphabetical characters are treated as pattern characters
+    // unless enclosed in single quotes.
+
+    char thisChar;
+    int pos;
+    int field;
+    FieldSizePair current = null;
+
+    for (int i=0; i<pattern.length(); i++) {
+      thisChar = pattern.charAt(i);
+      field = formatData.getLocalPatternChars().indexOf(thisChar);
+      if (field == -1) {
+	current = null;
+	if (Character.isLetter(thisChar)) {
+	  // Not a valid letter
+	  tokens.addElement(new FieldSizePair(-1,0));
+	} else if (thisChar == '\'') {
+	  // Quoted text section; skip to next single quote
+	  pos = pattern.indexOf('\'',i+1);
+	  if (pos == -1) {
+	    // This ought to be an exception, but spec does not
+	    // let us throw one.
+	    tokens.addElement(new FieldSizePair(-1,0));
+	  }
+	  if ((pos+1 < pattern.length()) && (pattern.charAt(pos+1) == '\'')) {
+	    tokens.addElement(pattern.substring(i+1,pos+1));
+	  } else {
+	    tokens.addElement(pattern.substring(i+1,pos));
+	  }
+	  i = pos;
+	} else {
+	  // A special character
+	  tokens.addElement(new Character(thisChar));
+	}
+      } else {
+	// A valid field
+	if ((current != null) && (field == current.field)) {
+	  current.size++;
+	} else {
+	  current = new FieldSizePair(field,1);
+	  tokens.addElement(current);
+	}
+      }
+    }
+  }
     
-public SimpleDateFormat() {
-	this(getDefaultPattern(Locale.getDefault()), Locale.getDefault());
-}
+  public String toString() 
+  {
+    StringBuffer output = new StringBuffer();
+    Enumeration e = tokens.elements();
+    while (e.hasMoreElements()) {
+      output.append(e.nextElement().toString());
+    }
+    return output.toString();
+  }
+      
+  /**
+   * Constructs a SimpleDateFormat using the default pattern for
+   * the default locale.
+   */
+  public SimpleDateFormat() 
+  {
+    /*
+     * There does not appear to be a standard API for determining 
+     * what the default pattern for a locale is, so use package-scope
+     * variables in DateFormatSymbols to encapsulate this.
+     */
+    super();
+    Locale locale = Locale.getDefault();
+    calendar = new GregorianCalendar(locale);
+    computeCenturyStart();
+    tokens = new Vector();
+    formatData = new DateFormatSymbols(locale);
+    pattern = (formatData.dateFormats[DEFAULT] + ' '
+	       + formatData.timeFormats[DEFAULT]);
+    compileFormat(pattern);
+    numberFormat = NumberFormat.getInstance(locale);
+    numberFormat.setGroupingUsed (false);
+    numberFormat.setParseIntegerOnly (true);
+  }
+  
+  /**
+   * Creates a date formatter using the specified pattern, with the default
+   * DateFormatSymbols for the default locale.
+   */
+  public SimpleDateFormat(String pattern) 
+  {
+    this(pattern, Locale.getDefault());
+  }
 
-public SimpleDateFormat(String pattern) {
-	this(pattern, Locale.getDefault());
-}
+  /**
+   * Creates a date formatter using the specified pattern, with the default
+   * DateFormatSymbols for the given locale.
+   */
+  public SimpleDateFormat(String pattern, Locale locale) 
+  {
+    super();
+    calendar = new GregorianCalendar(locale);
+    computeCenturyStart();
+    tokens = new Vector();
+    formatData = new DateFormatSymbols(locale);
+    compileFormat(pattern);
+    this.pattern = pattern;
+    numberFormat = NumberFormat.getInstance(locale);
+    numberFormat.setGroupingUsed (false);
+    numberFormat.setParseIntegerOnly (true);
+  }
 
-public SimpleDateFormat(String pattern, DateFormatSymbols syms) {
-	this.syms = syms;
-	this.pattern = pattern;
-	this.calendar = new GregorianCalendar();
-	this.numberFormat = new DecimalFormat("0");
-}
+  /**
+   * Creates a date formatter using the specified pattern. The
+   * specified DateFormatSymbols will be used when formatting.
+   */
+  public SimpleDateFormat(String pattern, DateFormatSymbols formatData)
+  {
+    super();
+    calendar = new GregorianCalendar();
+    computeCenturyStart ();
+    tokens = new Vector();
+    this.formatData = formatData;
+    compileFormat(pattern);
+    this.pattern = pattern;
+    numberFormat = NumberFormat.getInstance();
+    numberFormat.setGroupingUsed (false);
+    numberFormat.setParseIntegerOnly (true);
+  }
 
-public SimpleDateFormat(String pattern, java.util.Locale loc) {
-	this.syms = new DateFormatSymbols(loc);
-	this.pattern = pattern;
-	this.calendar = new GregorianCalendar(loc);
-	this.numberFormat = new DecimalFormat("0", loc);
-}
+  // What is the difference between localized and unlocalized?  The
+  // docs don't say.
 
-public void applyLocalizedPattern(String pattern) {
-	StringBuffer buf = new StringBuffer();
-	String locals = syms.getLocalPatternChars();
+  /**
+   * This method returns a string with the formatting pattern being used
+   * by this object.  This string is unlocalized.
+   *
+   * @return The format string.
+   */
+  public String toPattern()
+  {
+    return pattern;
+  }
 
-	for (int i = 0; i < pattern.length(); i++) {
-		char letter = pattern.charAt(i);
-		int idx = locals.indexOf(letter);
-		if (idx >= 0) {
-			buf.append(DEFAULTPATTERNCHARS.charAt(idx));
-		}
-		else {
-			buf.append(letter);
-			if (letter == '\'') {
-				do {
-					i++;
-					letter = pattern.charAt(i);
-					buf.append(letter);
-				} while (letter != '\'');
-			}
-		}
+  /**
+   * This method returns a string with the formatting pattern being used
+   * by this object.  This string is localized.
+   *
+   * @return The format string.
+   */
+  public String toLocalizedPattern()
+  {
+    String localChars = formatData.getLocalPatternChars();
+    return applyLocalizedPattern (pattern, standardChars, localChars);
+  }
+
+  /**
+   * This method sets the formatting pattern that should be used by this
+   * object.  This string is not localized.
+   *
+   * @param pattern The new format pattern.
+   */
+  public void applyPattern(String pattern)
+  {
+    tokens = new Vector();
+    compileFormat(pattern);
+    this.pattern = pattern;
+  }
+
+  /**
+   * This method sets the formatting pattern that should be used by this
+   * object.  This string is localized.
+   *
+   * @param pattern The new format pattern.
+   */
+  public void applyLocalizedPattern(String pattern)
+  {
+    String localChars = formatData.getLocalPatternChars();
+    pattern = applyLocalizedPattern (pattern, localChars, standardChars);
+    applyPattern(pattern);
+  }
+
+  private String applyLocalizedPattern(String pattern,
+				       String oldChars, String newChars)
+  {
+    int len = pattern.length();
+    StringBuffer buf = new StringBuffer(len);
+    boolean quoted = false;
+    for (int i = 0;  i < len;  i++)
+      {
+	char ch = pattern.charAt(i);
+	if (ch == '\'')
+	  quoted = ! quoted;
+	if (! quoted)
+	  {
+	    int j = oldChars.indexOf(ch);
+	    if (j >= 0)
+	      ch = newChars.charAt(j);
+	  }
+	buf.append(ch);
+      }
+    return buf.toString();
+  }
+
+  /** 
+   * Returns the start of the century used for two digit years.
+   *
+   * @return A <code>Date</code> representing the start of the century
+   * for two digit years.
+   */
+  public Date get2DigitYearStart()
+  {
+    return defaultCenturyStart;
+  }
+
+  /**
+   * Sets the start of the century used for two digit years.
+   *
+   * @param date A <code>Date</code> representing the start of the century for
+   * two digit years.
+   */
+  public void set2DigitYearStart(Date date)
+  {
+    defaultCenturyStart = date;
+    calendar.clear();
+    calendar.setTime(date);
+    int year = calendar.get(Calendar.YEAR);
+    defaultCentury = year - (year % 100);
+  }
+
+  /**
+   * This method returns the format symbol information used for parsing
+   * and formatting dates.
+   *
+   * @return The date format symbols.
+   */
+  public DateFormatSymbols getDateFormatSymbols()
+  {
+    return formatData;
+  }
+
+  /**
+   * This method sets the format symbols information used for parsing
+   * and formatting dates.
+   *
+   * @param formatData The date format symbols.
+   */
+   public void setDateFormatSymbols(DateFormatSymbols formatData)
+   {
+     this.formatData = formatData;
+   }
+
+  /**
+   * This methods tests whether the specified object is equal to this
+   * object.  This will be true if and only if the specified object:
+   * <p>
+   * <ul>
+   * <li>Is not <code>null</code>.
+   * <li>Is an instance of <code>SimpleDateFormat</code>.
+   * <li>Is equal to this object at the superclass (i.e., <code>DateFormat</code>)
+   *     level.
+   * <li>Has the same formatting pattern.
+   * <li>Is using the same formatting symbols.
+   * <li>Is using the same century for two digit years.
+   * </ul>
+   *
+   * @param obj The object to compare for equality against.
+   *
+   * @return <code>true</code> if the specified object is equal to this object,
+   * <code>false</code> otherwise.
+   */
+  public boolean equals(Object o)
+  {
+    if (o == null)
+      return false;
+
+    if (!super.equals(o))
+      return false;
+
+    if (!(o instanceof SimpleDateFormat))
+      return false;
+
+    SimpleDateFormat sdf = (SimpleDateFormat)o;
+
+    if (defaultCentury != sdf.defaultCentury)
+      return false;
+
+    if (!toPattern().equals(sdf.toPattern()))
+      return false;
+
+    if (!getDateFormatSymbols().equals(sdf.getDateFormatSymbols()))
+      return false;
+
+    return true;
+  }
+
+  /**
+   * This method returns a hash value for this object.
+   *
+   * @return A hash value for this object.
+   */
+  public int hashCode()
+  {
+    return super.hashCode() ^ toPattern().hashCode() ^ defaultCentury ^
+      getDateFormatSymbols().hashCode();
+  }
+
+
+  /**
+   * Formats the date input according to the format string in use,
+   * appending to the specified StringBuffer.  The input StringBuffer
+   * is returned as output for convenience.
+   */
+  public StringBuffer format(Date date, StringBuffer buffer, FieldPosition pos)
+  {
+    String temp;
+    calendar.setTime(date);
+    
+    // go through vector, filling in fields where applicable, else toString
+    Enumeration e = tokens.elements();
+    while (e.hasMoreElements()) {
+      Object o = e.nextElement();
+      if (o instanceof FieldSizePair) {
+	FieldSizePair p = (FieldSizePair) o;
+	int beginIndex = buffer.length();
+	switch (p.field) {
+	case ERA_FIELD:
+	  buffer.append(formatData.eras[calendar.get(Calendar.ERA)]);
+	  break;
+	case YEAR_FIELD:
+	  // If we have two digits, then we truncate.  Otherwise, we
+	  // use the size of the pattern, and zero pad.
+	  if (p.size == 2)
+	    {
+	      temp = String.valueOf(calendar.get(Calendar.YEAR));
+	      buffer.append(temp.substring(temp.length() - 2));
+	    }
+	  else
+	    withLeadingZeros(calendar.get(Calendar.YEAR), p.size, buffer);
+	  break;
+	case MONTH_FIELD:
+	  if (p.size < 3)
+	    withLeadingZeros(calendar.get(Calendar.MONTH)+1,p.size,buffer);
+	  else if (p.size < 4)
+	    buffer.append(formatData.shortMonths[calendar.get(Calendar.MONTH)]);
+	  else
+	    buffer.append(formatData.months[calendar.get(Calendar.MONTH)]);
+	  break;
+	case DATE_FIELD:
+	  withLeadingZeros(calendar.get(Calendar.DATE),p.size,buffer);
+	  break;
+	case HOUR_OF_DAY1_FIELD: // 1-24
+	  withLeadingZeros(((calendar.get(Calendar.HOUR_OF_DAY)+23)%24)+1,p.size,buffer);
+	  break;
+	case HOUR_OF_DAY0_FIELD: // 0-23
+	  withLeadingZeros(calendar.get(Calendar.HOUR_OF_DAY),p.size,buffer);
+	  break;
+	case MINUTE_FIELD:
+	  withLeadingZeros(calendar.get(Calendar.MINUTE),p.size,buffer);
+	  break;
+	case SECOND_FIELD:
+	  withLeadingZeros(calendar.get(Calendar.SECOND),p.size,buffer);
+	  break;
+	case MILLISECOND_FIELD:
+	  withLeadingZeros(calendar.get(Calendar.MILLISECOND),p.size,buffer);
+	  break;
+	case DAY_OF_WEEK_FIELD:
+	  if (p.size < 4)
+	    buffer.append(formatData.shortWeekdays[calendar.get(Calendar.DAY_OF_WEEK)]);
+	  else
+	    buffer.append(formatData.weekdays[calendar.get(Calendar.DAY_OF_WEEK)]);
+	  break;
+	case DAY_OF_YEAR_FIELD:
+	  withLeadingZeros(calendar.get(Calendar.DAY_OF_YEAR),p.size,buffer);
+	  break;
+	case DAY_OF_WEEK_IN_MONTH_FIELD:
+	  withLeadingZeros(calendar.get(Calendar.DAY_OF_WEEK_IN_MONTH),p.size,buffer);
+	  break;
+	case WEEK_OF_YEAR_FIELD:
+	  withLeadingZeros(calendar.get(Calendar.WEEK_OF_YEAR),p.size,buffer);
+	  break;
+	case WEEK_OF_MONTH_FIELD:
+	  withLeadingZeros(calendar.get(Calendar.WEEK_OF_MONTH),p.size,buffer);
+	  break;
+	case AM_PM_FIELD:
+	  buffer.append(formatData.ampms[calendar.get(Calendar.AM_PM)]);
+	  break;
+	case HOUR1_FIELD: // 1-12
+	  withLeadingZeros(((calendar.get(Calendar.HOUR)+11)%12)+1,p.size,buffer);
+	  break;
+	case HOUR0_FIELD: // 0-11
+	  withLeadingZeros(calendar.get(Calendar.HOUR),p.size,buffer);
+	  break;
+	case TIMEZONE_FIELD:
+	  TimeZone zone = calendar.getTimeZone();
+	  boolean isDST = calendar.get(Calendar.DST_OFFSET) != 0;
+	  // FIXME: XXX: This should be a localized time zone.
+	  String zoneID = zone.getDisplayName(isDST, p.size > 3 ? TimeZone.LONG : TimeZone.SHORT);
+	  buffer.append(zoneID);
+	  break;
+	default:
+	  throw new IllegalArgumentException("Illegal pattern character");
 	}
+	if (pos != null && p.field == pos.getField())
+	  {
+	    pos.setBeginIndex(beginIndex);
+	    pos.setEndIndex(buffer.length());
+	  }
+      } else {
+	buffer.append(o.toString());
+      }
+    }
+    return buffer;
+  }
 
-	this.pattern = buf.toString();
-}
+  private void withLeadingZeros(int value, int length, StringBuffer buffer) 
+  {
+    String valStr = String.valueOf(value);
+    for (length -= valStr.length(); length > 0; length--)
+      buffer.append('0');
+    buffer.append(valStr);
+  }
 
-public void applyPattern(String pattern) {
-	this.pattern = pattern;
-}
+  private final boolean expect (String source, ParsePosition pos, char ch)
+  {
+    int x = pos.getIndex();
+    boolean r = x < source.length() && source.charAt(x) == ch;
+    if (r)
+      pos.setIndex(x + 1);
+    else
+      pos.setErrorIndex(x);
+    return r;
+  }
 
-public Object clone() {
-	return (super.clone());
-}
+  /**
+   * This method parses the specified string into a date.
+   * 
+   * @param dateStr The date string to parse.
+   * @param pos The input and output parse position
+   *
+   * @return The parsed date, or <code>null</code> if the string cannot be
+   * parsed.
+   */
+  public Date parse (String dateStr, ParsePosition pos)
+  {
+    int fmt_index = 0;
+    int fmt_max = pattern.length();
+    Calendar loc_calendar = (Calendar)calendar.clone();
 
-public boolean equals(Object obj) {
-	boolean retval = false;
+    loc_calendar.clear();
+    boolean saw_timezone = false;
+    int quote_start = -1;
+    boolean is2DigitYear = false;
+    for (; fmt_index < fmt_max; ++fmt_index)
+      {
+	char ch = pattern.charAt(fmt_index);
+	if (ch == '\'')
+	  {
+	    int index = pos.getIndex();
+	    if (fmt_index < fmt_max - 1
+		&& pattern.charAt(fmt_index + 1) == '\'')
+	      {
+		if (! expect (dateStr, pos, ch))
+		  return null;
+		++fmt_index;
+	      }
+	    else
+	      quote_start = quote_start < 0 ? fmt_index : -1;
+	    continue;
+	  }
 
-	if( obj instanceof SimpleDateFormat ) {
-		SimpleDateFormat sdf = (SimpleDateFormat)obj;
+	if (quote_start != -1
+	    || ((ch < 'a' || ch > 'z')
+		&& (ch < 'A' || ch > 'Z')))
+	  {
+	    if (! expect (dateStr, pos, ch))
+	      return null;
+	    continue;
+	  }
 
-		if( this.numberFormat.equals(sdf.numberFormat) &&
-		    this.syms.equals(sdf.syms) ) {
-			retval = true;
-		}
-	}
-	return retval;
-}
+	// We've arrived at a potential pattern character in the
+	// pattern.
+	int first = fmt_index;
+	while (++fmt_index < fmt_max && pattern.charAt(fmt_index) == ch)
+	  ;
+	int fmt_count = fmt_index - first;
 
-public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
-	calendar.setTime(date);
+	// We might need to limit the number of digits to parse in
+	// some cases.  We look to the next pattern character to
+	// decide.
+	boolean limit_digits = false;
+	if (fmt_index < fmt_max
+	    && standardChars.indexOf(pattern.charAt(fmt_index)) >= 0)
+	  limit_digits = true;
+	--fmt_index;
 
-	char[] patt = pattern.toCharArray();
-	for (int i = 0; i < patt.length; ) {
-		int plen = 0;
-		char letter = patt[i];
-		i++;
-		if (letter != '\'') {
-			for (plen++; i < patt.length && patt[i] == letter; plen++, i++);
-		}
-		int cpos = buf.length();
-		int val;
-		switch (letter) {
-		case 'G':
-			val = calendar.get(Calendar.ERA);
-			buf.append(syms.eras[val]);
-			if (pos.getField() == ERA_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case 'y':
-			val = calendar.get(Calendar.YEAR);
-			if (plen < 4) {
-				val = val % 100;
-				if (val < 10) {
-					buf.append('0');
-				}
-			}
-			buf.append(val);
-			if (pos.getField() == YEAR_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case 'M':
-			val = calendar.get(Calendar.MONTH);
-			if (plen < 3) {
-				val++;
-				if (val < 10 && plen == 2) {
-					buf.append('0');
-				}
-				buf.append(val);
-			}
-			else if (plen == 3) {
-				buf.append(syms.shortMonths[val]);
-			}
-			else {
-				buf.append(syms.months[val]);
-			}
-			if (pos.getField() == MONTH_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case 'd':
-			val = calendar.get(Calendar.DAY_OF_MONTH);
-			if (plen > 1 && val < 10) {
-				buf.append('0');
-			}
-			buf.append(val);
-			if (pos.getField() == DATE_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case 'k':
-			val = calendar.get(Calendar.HOUR_OF_DAY);
-			if (val == 0) {
-				val = 24;
-			}
-			buf.append(val);
-			if (pos.getField() == HOUR_OF_DAY1_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case 'H':
-			val = calendar.get(Calendar.HOUR_OF_DAY);
-			if (plen > 1 && val < 10) {
-				buf.append('0');
-			}
-			buf.append(val);
-			if (pos.getField() == HOUR_OF_DAY0_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case 'm':
-			val = calendar.get(Calendar.MINUTE);
-			if (val < 10) {
-				buf.append('0');
-			}
-			buf.append(val);
-			if (pos.getField() == MINUTE_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case 's':
-			val = calendar.get(Calendar.SECOND);
-			if (val < 10) {
-				buf.append('0');
-			}
-			buf.append(val);
-			if (pos.getField() == SECOND_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case 'S':
-			val = calendar.get(Calendar.MILLISECOND);
-			buf.append(val);
-			if (pos.getField() == MILLISECOND_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case 'E':
-			val = calendar.get(Calendar.DAY_OF_WEEK);
-			if (plen < 4) {
-				buf.append(syms.shortWeekdays[val]);
-			}
-			else {
-				buf.append(syms.weekdays[val]);
-			}
-			if (pos.getField() == DAY_OF_WEEK_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case 'D':
-			val = calendar.get(Calendar.DAY_OF_YEAR);
-			buf.append(val);
-			if (pos.getField() == DAY_OF_YEAR_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case 'F':
-			val = calendar.get(Calendar.DAY_OF_WEEK_IN_MONTH);
-			buf.append(val);
-			break;
-		case 'w':
-			val = calendar.get(Calendar.WEEK_OF_YEAR);
-			buf.append(val);
-			if (pos.getField() == WEEK_OF_YEAR_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case 'W':
-			val = calendar.get(Calendar.WEEK_OF_MONTH);
-			buf.append(val);
-			if (pos.getField() == WEEK_OF_MONTH_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case 'a':
-			val = calendar.get(Calendar.AM_PM);
-			buf.append(syms.amPmStrings[val]);
-			if (pos.getField() == AM_PM_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case 'h':
-			val = calendar.get(Calendar.HOUR);
-			if (val == 0) {
-				val = 12;
-			}
-			if ( (plen > 1) && (val < 10) )
-				buf.append('0');
-			buf.append(val);
-			if (pos.getField() == HOUR1_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case 'K':
-			val = calendar.get(Calendar.HOUR);
-			buf.append(val);
-			if (pos.getField() == HOUR0_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case 'z':
-			TimeZone zone = calendar.getTimeZone();
-			String szone = zone.getID();
-			boolean daylight = zone.inDaylightTime(date);
-			int j;
-			for (j = 0; j < syms.zoneStrings.length; j++) {
-				String[] sel = syms.zoneStrings[j];
-				if (!szone.equals(sel[0])) {
-					continue;
-				}
-				if (plen < 4) {
-					if (daylight) {
-						buf.append(sel[4]);
-					}
-					else {
-						buf.append(sel[2]);
-					}
-				}
-				else {
-					if (daylight) {
-						buf.append(sel[3]);
-					}
-					else {
-						buf.append(sel[1]);
-					}
-				}
-				break;
-			}
-			// If no matching timezone, put in GMT info.
-			if (j == syms.zoneStrings.length) {
-				buf.append("GMT");
-				int ro = zone.getOffset(calendar.get(Calendar.ERA),
-							calendar.get(Calendar.YEAR),
-							calendar.get(Calendar.MONTH),
-							calendar.get(Calendar.DAY_OF_MONTH),
-							calendar.get(Calendar.DAY_OF_WEEK),
-							calendar.get(Calendar.MILLISECOND)) / 60000;
-				if (ro < 0) {
-					ro = Math.abs(ro);
-					buf.append("-");
-				}
-				else if (ro > 0) {
-					buf.append("+");
-				}
-				if( ro != 0 )
-				{
-					buf.append(ro / 60);
-					buf.append(":");
-					if (ro % 60 < 10) {
-						buf.append("0");
-					}
-					buf.append(ro % 60);
-				}
-			}
-			if (pos.getField() == TIMEZONE_FIELD) {
-				pos.setBeginIndex(cpos);
-				pos.setEndIndex(buf.length());
-			}
-			break;
-		case '\'':
-			if (patt[i] == '\'') {
-				buf.append('\'');
-				i++;
-			}
-			else {
-				boolean done = false;
+	// We can handle most fields automatically: most either are
+	// numeric or are looked up in a string vector.  In some cases
+	// we need an offset.  When numeric, `offset' is added to the
+	// resulting value.  When doing a string lookup, offset is the
+	// initial index into the string array.
+	int calendar_field;
+	boolean is_numeric = true;
+	String[] match = null;
+	int offset = 0;
+	boolean maybe2DigitYear = false;
+	switch (ch)
+	  {
+	  case 'd':
+	    calendar_field = Calendar.DATE;
+	    break;
+	  case 'D':
+	    calendar_field = Calendar.DAY_OF_YEAR;
+	    break;
+	  case 'F':
+	    calendar_field = Calendar.DAY_OF_WEEK_IN_MONTH;
+	    break;
+	  case 'E':
+	    is_numeric = false;
+	    offset = 1;
+	    calendar_field = Calendar.DAY_OF_WEEK;
+	    match = (fmt_count <= 3
+		     ? formatData.getShortWeekdays()
+		     : formatData.getWeekdays());
+	    break;
+	  case 'w':
+	    calendar_field = Calendar.WEEK_OF_YEAR;
+	    break;
+	  case 'W':
+	    calendar_field = Calendar.WEEK_OF_MONTH;
+	    break;
+	  case 'M':
+	    calendar_field = Calendar.MONTH;
+	    if (fmt_count <= 2)
+	      offset = -1;
+	    else
+	      {
+		is_numeric = false;
+		match = (fmt_count <= 3
+			 ? formatData.getShortMonths()
+			 : formatData.getMonths());
+	      }
+	    break;
+	  case 'y':
+	    calendar_field = Calendar.YEAR;
+	    if (fmt_count <= 2)
+	      maybe2DigitYear = true;
+	    break;
+	  case 'K':
+	    calendar_field = Calendar.HOUR;
+	    break;
+	  case 'h':
+	    calendar_field = Calendar.HOUR;
+	    break;
+	  case 'H':
+	    calendar_field = Calendar.HOUR_OF_DAY;
+	    break;
+	  case 'k':
+	    calendar_field = Calendar.HOUR_OF_DAY;
+	    break;
+	  case 'm':
+	    calendar_field = Calendar.MINUTE;
+	    break;
+	  case 's':
+	    calendar_field = Calendar.SECOND;
+	    break;
+	  case 'S':
+	    calendar_field = Calendar.MILLISECOND;
+	    break;
+	  case 'a':
+	    is_numeric = false;
+	    calendar_field = Calendar.AM_PM;
+	    match = formatData.getAmPmStrings();
+	    break;
+	  case 'z':
+	    // We need a special case for the timezone, because it
+	    // uses a different data structure than the other cases.
+	    is_numeric = false;
+	    calendar_field = Calendar.DST_OFFSET;
+	    String[][] zoneStrings = formatData.getZoneStrings();
+	    int zoneCount = zoneStrings.length;
+	    int index = pos.getIndex();
+	    boolean found_zone = false;
+	    for (int j = 0;  j < zoneCount;  j++)
+	      {
+		String[] strings = zoneStrings[j];
+		int k;
+		for (k = 1; k < strings.length; ++k)
+		  {
+		    if (dateStr.startsWith(strings[k], index))
+		      break;
+		  }
+		if (k != strings.length)
+		  {
+		    found_zone = true;
+		    saw_timezone = true;
+		    TimeZone tz = TimeZone.getTimeZone (strings[0]);
+		    loc_calendar.setTimeZone (tz);
+		    loc_calendar.set (Calendar.ZONE_OFFSET, tz.getRawOffset ());
+		    offset = 0;
+		    if (k > 2 && tz instanceof SimpleTimeZone)
+		      {
+			SimpleTimeZone stz = (SimpleTimeZone) tz;
+			offset = stz.getDSTSavings ();
+		      }
+		    pos.setIndex(index + strings[k].length());
+		    break;
+		  }
+	      }
+	    if (! found_zone)
+	      {
+		pos.setErrorIndex(pos.getIndex());
+		return null;
+	      }
+	    break;
+	  default:
+	    pos.setErrorIndex(pos.getIndex());
+	    return null;
+	  }
 
-				while (!done && (i < patt.length)) {
-					switch (patt[i]) {
-					case '\'':
-						if (((i + 1) < patt.length) &&
-						    (patt[i + 1] == '\'')) {
-							buf.append('\'');
-							i++;
-						} else {
-							done = true;
-						}
-						break;
-					default:
-						buf.append(patt[i]);
-						break;
-					}
-					i++;
-				}
-			}
-			break;
-		default:
-			for (j = 0; j < plen; j++) {
-				buf.append(letter);
-			}
-			break;
-		}
-	}
-
-	return (buf);
-}
-
-public DateFormatSymbols getDateFormatSymbols() {
-	return (syms);
-}
-
-public int hashCode() {
-	return (super.hashCode());
-}
-
-private static String NUMERIC_PATTERN = "ydhHmsSDFwWkK";
-private static int[] NUMERIC_FIELD = {
-	Calendar.MONTH,
-	Calendar.YEAR, Calendar.DAY_OF_MONTH,
-	Calendar.HOUR, Calendar.HOUR_OF_DAY,
-	Calendar.MINUTE, Calendar.SECOND, Calendar.MILLISECOND,
-	Calendar.DAY_OF_YEAR, Calendar.DAY_OF_WEEK_IN_MONTH,
-	Calendar.WEEK_OF_YEAR, Calendar.DAY_OF_WEEK_IN_MONTH,
-	Calendar.HOUR_OF_DAY, Calendar.HOUR
-};
-	
-public Date parse(String source, ParsePosition pos) {
-	calendar.clear();
-	numberFormat.setParseIntegerOnly(true);
-	numberFormat.setGroupingUsed(false);
-
-	pos.setErrorIndex(-1);
-
-	int startIndex = pos.getIndex();
-	int index = startIndex;
-	int endIndex = source.length();
-
-	int tzStart = -1, tzEnd = -1;
-
-	char[] patt = pattern.toCharArray();
-	for (int i = 0; i < patt.length; ) {
-		char letter = patt[i++];
-
-		if (letter == '\'') {
-			// quoted text
-			if ((i < patt.length) && (patt[i] == '\'')) {
-				if ((index >= endIndex) ||
-				    (source.charAt(index) != '\'')) {
-					pos.setIndex(startIndex);
-					pos.setErrorIndex(index);
-					return null;
-				}
-				index++;
-				i++;
-			}
-			else {
-				boolean done = false, error = false;
-
-				while (!done &&
-				       !error &&
-				       (i < patt.length) &&
-				       (index < endIndex) ) {
-					switch (patt[i]) {
-					case '\'':
-						if (((i + 1) < patt.length) &&
-						    (patt[i + 1] == '\'')) {
-							if (source.charAt(index) == '\'') {
-								index++;
-								i++;
-							} else {
-								error = true;
-							}
-						} else {
-							done = true;
-						}
-						break;
-					default:
-						if( source.charAt(index) !=
-						    patt[i] ) {
-							error = true;
-						}
-						index++;
-						break;
-					}
-					i++;
-				}
-				if( error || (index >= endIndex) )
-				{
-					pos.setIndex(startIndex);
-					pos.setErrorIndex(index);
-					return null;
-				}
-				while ((i < patt.length) && patt[i] != '\'') {
-					if ((index >= endIndex) ||
-					    (source.charAt(index) != patt[i])) {
-						pos.setIndex(startIndex);
-						pos.setErrorIndex(index);
-						return null;
-					}
-					index++;
-					i++;
-				}
-				i++;
-			}
-		}
-		else if (((letter >= 'a') && (letter <= 'z')) ||
-			 ((letter >= 'A') && (letter <= 'Z'))) {
-			// pattern Code
-			int plen = 1;
-			int val = -1;
-			
-			// count pattern len
-			while ((i < patt.length) && (patt[i] == letter)) {
-				plen++;
-				i++;
-			}
-			
-			// skip blanks
-			for (;;) {
-				if (index >= endIndex) {
-					pos.setIndex(startIndex);
-					pos.setErrorIndex(index);
-					return null;
-				}
-				char c = source.charAt(index);
-				if ((c != ' ') && (c != '\t'))
-					break;
-				index++;
-			}
-			pos.setIndex(index);
-
-			// handle numeric values
-			if ((NUMERIC_PATTERN.indexOf(letter) != -1) ||
-			    ((letter == 'M') && (plen <= 2))) {
-				Number number;
-				if ((i < patt.length) &&
-				    (DEFAULTPATTERNCHARS.indexOf(patt[i]) != -1)) {
-					if (index + plen > endIndex) {
-						pos.setIndex(startIndex);
-						pos.setErrorIndex(index);
-						return null;
-					}
-					number = numberFormat.parse(source.substring(0, index + plen), pos);
-				}
-				else {
-					number = numberFormat.parse(source, pos);
-				}
-				if (number == null) {
-					pos.setIndex(startIndex);
-					pos.setErrorIndex(index);
-					return null;
-				}
-				val = number.intValue();
-				switch (letter) {
-				case 'y':
-					// 2 digits and only 2 digits
-					if( (plen < 3) &&
-					    (val >= 0) &&
-					    (pos.getIndex() - index <= 2) )
-					{
-						// The year is ambiguous,
-						// adjust century to be within
-						// 80 years before and 20 years
-						// after current time
-						int current = Calendar.getInstance().get(Calendar.YEAR);
-						int epoch = current - current % 100;
-						int year = epoch + val;
-						
-						if (year > current + 20)
-							year -= 100;
-						else if (year < current - 80)
-							year += 100;
-						val = year;
-					}
-					break;
-				case 'M':
-					val--;
-					break;
-				case 'k':
-					if (val == 24)
-						val = 0;
-					break;
-				case 'h':
-					if (val == 12)
-						val = 0;
-					break;
-				}
-				calendar.set (NUMERIC_FIELD[NUMERIC_PATTERN.indexOf(letter) + 1],
-					      val);
-				index = pos.getIndex();
-			}
-			// handle strings values
-			else {
-				switch (letter) {
-				case 'G':
-					index = parseField (source, index, Calendar.ERA, syms.eras);
-					break;
-				case 'M':
-					index = parseField (source, index, Calendar.MONTH, syms.months);
-					if (index <= 0)
-						index = parseField (source, -index, Calendar.MONTH, syms.shortMonths);
-					break;
-				case 'E':
-					index = parseField (source, index, Calendar.DAY_OF_WEEK, syms.weekdays);
-					if (index <= 0)
-						index = parseField (source, -index, Calendar.DAY_OF_WEEK, syms.shortWeekdays);
-					break;
-				case 'a':
-					index = parseField (source, index, Calendar.AM_PM, syms.amPmStrings);
-					break;
-				case 'z':
-					tzStart = index;
-					index = parseTimeZone (source, index, endIndex);
-					tzEnd = index;
-					break;
-				default:
-					index = -index;
-				}
-				if (index <= 0) {
-					pos.setIndex(startIndex);
-					pos.setErrorIndex(-index);
-					return null;
-				}
-				pos.setIndex(index);
-			}
-		}
-		else {
-			// match literal
-			if ((index >= endIndex) ||
-			    (source.charAt(index) != letter)) {
-				pos.setIndex(startIndex);
-				pos.setErrorIndex(index);
-				return null;
-			}
-			index++;
-		}
-	}
-
-	if( tzStart != -1 )
-	{
-		// We have all the info we're gonna get, patch up the
-		// the time zone.
-		reallyParseTimeZone(source, tzStart, tzEnd);
-	}
-	pos.setIndex (index);
-	return calendar.getTime();
-}
-
-private int parseField (String source, int start, int field, String[] data) {
-	int best = -1;
-	int bestLen = 0;
-	
-	for (int i = data.length; i-- > 0; ) {
-		int len = data[i].length();
-		if ((len > bestLen) &&
-		    source.regionMatches (true, start, data[i], 0, len)) {
-			best = i;
-			bestLen = len;
-		}
-	}
-
-	if (best >= 0) {
-		calendar.set (field, best);
-		return start + bestLen;
-	}
-	return -start;
-}
-
-private void reallyParseTimeZone (String source, int start, int endIndex) {
-	
-	if (source.regionMatches (start, "GMT", 0, 3)) {
-		// GMT +/- ##:##, `should' work fine.
-		return;
-	}
-
-	// Redo localized if it applies
-	int bestZone = -1;
-	int bestLen = 0;
-	int bestType = 0;
-	for (int i = 0; i < syms.zoneStrings.length; i++) {
-		String[] zone = syms.zoneStrings[i];
-
-		for (int j = 1; j <= 4; j++) {
-			int len = zone[j].length();
-
-			if ((len > bestLen) &&
-			    source.regionMatches (true, start, zone[j], 0, len)) {
-				bestZone = i;
-				bestType = j;
-				bestLen = len;
-			}
-		}
-	}
-	if (bestZone != -1) {
-		TimeZone tz = TimeZone.getTimeZone (syms.zoneStrings[bestZone][bestType]);
-		long offset;
-
-		// Get the real offset, including DST adjustments.
-		offset = tz.getOffset(calendar.get(Calendar.ERA),
-				      calendar.get(Calendar.YEAR),
-				      calendar.get(Calendar.MONTH),
-				      calendar.get(Calendar.DAY_OF_MONTH),
-				      calendar.get(Calendar.DAY_OF_WEEK),
-				      calendar.get(Calendar.MILLISECOND));
-		calendar.set(Calendar.ZONE_OFFSET, (int)offset);
-		return;
-	}
-
-	// its RFC 822 +hhmm format
-	return;
-}
-
-private int parseTimeZone (String source, int start, int endIndex) {
-	// XXX better handle DST_OFFSET if tz.useDaylightTime() ?
-	calendar.set(Calendar.DST_OFFSET, 0);
-
-	if (source.regionMatches (start, "GMT", 0, 3)) {
-		int index = start + 3;
-		int sign = 0;
-
-		if (index < endIndex) {
-			switch (source.charAt(index)) {
-			case '+':
-				sign = +1;
-				break;
-			case '-':
-				sign = -1;
-			}
-		}
-		if (sign == 0) {
-			// calendar.set(Calendar.ZONE_OFFSET, 0);
-			return index;
-		}
-
-		ParsePosition pos = new ParsePosition(index + 1);
-		Number num = numberFormat.parse (source, pos);
-		if (num == null)
-			return -start;
-		int offset = num.intValue();
-		if ((pos.getIndex() < endIndex) &&
-		    (source.charAt(pos.getIndex()) == ':')) {
-			// GMT+hh:mm
-			offset *= 60;
-			pos.setIndex(pos.getIndex() + 1);
-			num = numberFormat.parse (source, pos);
-			if (num == null)
-				return -start;
-			offset += num.intValue();
-		}
-		else {
-			// GMT+hh[mm]
-			if (offset < 24)
-				offset *= 60;
-			else
-				offset = (offset / 100) * 60 + offset % 100;
-		}
-		offset *= 60 * 1000;
-		if (sign == -1)
-			offset = -offset;
-		calendar.set(Calendar.ZONE_OFFSET, offset);
-		return pos.getIndex();
-	}
-
-	// search localized timezone
-	int bestZone = -1;
-	int bestLen = 0;
-	int bestType = 0;
-	for (int i = 0; i < syms.zoneStrings.length; i++) {
-		String[] zone = syms.zoneStrings[i];
-
-		for (int j = 1; j <= 4; j++) {
-			int len = zone[j].length();
-
-			if ((len > bestLen) &&
-			    source.regionMatches (true, start, zone[j], 0, len)) {
-				bestZone = i;
-				bestType = j;
-				bestLen = len;
-			}
-		}
-	}
-	if (bestZone != -1) {
-		TimeZone tz = TimeZone.getTimeZone (syms.zoneStrings[bestZone][bestType]);
-		// XXX Ugh, this is messy...  Basically, we can't tell whether
-		// DST applies or not, so we have to wait till later to
-		// figure it out.
-		// calendar.set(Calendar.ZONE_OFFSET, 0);
-		return start + bestLen;
-	}
-
-	// try RFC 822 +hhmm format
-	DecimalFormat rfc822 = new DecimalFormat("+####;-####");
-	rfc822.setParseIntegerOnly(true);
-	rfc822.setGroupingUsed(false);
-	ParsePosition pos = new ParsePosition (start);
-	Number num = rfc822.parse (source, pos);
-	if (num == null)
-		return -start;
-
-	int offset = num.intValue();
-	int sign = 1;
-	if (offset < 0) {
-		sign = -1;
-		offset = -offset;
-	}
-	if (offset < 24)
-		offset *= 60;
+	// Compute the value we should assign to the field.
+	int value;
+	int index = -1;
+	if (is_numeric)
+	  {
+	    numberFormat.setMinimumIntegerDigits(fmt_count);
+	    if (limit_digits)
+	      numberFormat.setMaximumIntegerDigits(fmt_count);
+	    if (maybe2DigitYear)
+	      index = pos.getIndex();
+	    Number n = numberFormat.parse(dateStr, pos);
+	    if (pos == null || ! (n instanceof Long))
+	      return null;
+	    value = n.intValue() + offset;
+	  }
+	else if (match != null)
+	  {
+	    index = pos.getIndex();
+	    int i;
+	    for (i = offset; i < match.length; ++i)
+	      {
+		if (dateStr.startsWith(match[i], index))
+		  break;
+	      }
+	    if (i == match.length)
+	      {
+		pos.setErrorIndex(index);
+		return null;
+	      }
+	    pos.setIndex(index + match[i].length());
+	    value = i;
+	  }
 	else
-		offset = (offset / 100) * 60 + offset % 100;
+	  value = offset;
+	  
+	if (maybe2DigitYear)
+	  {
+	    // Parse into default century if the numeric year string has 
+	    // exactly 2 digits.
+	    int digit_count = pos.getIndex() - index;
+	    if (digit_count == 2)
+	      is2DigitYear = true;
+	  }
 
-	offset *= 60 * 1000;
-	if (sign == -1)
-		offset = -offset;
-	calendar.set(Calendar.ZONE_OFFSET, offset);
-	return pos.getIndex();
-}
+	// Assign the value and move on.
+	loc_calendar.set(calendar_field, value);
+      }
+    
+    if (is2DigitYear)
+      {
+	// Apply the 80-20 heuristic to dermine the full year based on 
+	// defaultCenturyStart. 
+	int year = defaultCentury + loc_calendar.get(Calendar.YEAR);
+	loc_calendar.set(Calendar.YEAR, year);
+	if (loc_calendar.getTime().compareTo(defaultCenturyStart) < 0)
+	  loc_calendar.set(Calendar.YEAR, year + 100);      
+      }
 
-public void setDateFormatSymbols(DateFormatSymbols syms) {
-	this.syms = syms;
-}
+    try
+      {
+	if (! saw_timezone)
+	  {
+	    // Use the real rules to determine whether or not this
+	    // particular time is in daylight savings.
+	    loc_calendar.clear (Calendar.DST_OFFSET);
+	    loc_calendar.clear (Calendar.ZONE_OFFSET);
+	  }
+        return loc_calendar.getTime();
+      }
+    catch (IllegalArgumentException x)
+      {
+        pos.setErrorIndex(pos.getIndex());
+	return null;
+      }
+  }
 
-public String toLocalizedPattern() {
-	StringBuffer buf = new StringBuffer();
-	String locals = syms.getLocalPatternChars();
-
-	for (int i = 0; i < pattern.length(); i++) {
-		int idx = DEFAULTPATTERNCHARS.indexOf(pattern.charAt(i));
-		if (idx >= 0) {
-			buf.append(locals.charAt(idx));
-		}
-		else {
-			buf.append(pattern.charAt(i));
-		}
-	}
-
-	return (buf.toString());
-}
-
-public String toPattern() {
-	return (pattern);
-}
+  // Compute the start of the current century as defined by
+  // get2DigitYearStart.
+  private void computeCenturyStart()
+  {
+    int year = calendar.get(Calendar.YEAR);
+    calendar.set(Calendar.YEAR, year - 80);
+    set2DigitYearStart(calendar.getTime());
+  }
 }

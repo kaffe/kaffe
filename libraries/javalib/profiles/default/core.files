@@ -406,3 +406,9 @@ kaffe/util/SupportDisabled.java
 kaffe/util/TimerClient.java
 kaffe/util/Timer.java
 kaffe/util/VectorSnapshot.java
+gnu/java/text/BaseBreakIterator.java
+gnu/java/text/LineBreakIterator.java
+gnu/java/text/WordBreakIterator.java
+gnu/java/text/CharacterBreakIterator.java
+gnu/java/text/SentenceBreakIterator.java
+

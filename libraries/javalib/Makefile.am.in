@@ -138,6 +138,17 @@ gnu_regexp_message_bundles = \
 	gnu/regexp/MessagesBundle_fr.properties \
 	gnu/regexp/MessagesBundle.properties
 
+gnu_java_locale_bundles = \
+	gnu/java/locale/iso3166-a3.properties \
+	gnu/java/locale/iso3166_de.properties \
+	gnu/java/locale/iso3166.properties \
+	gnu/java/locale/iso639-a2-old.properties \
+	gnu/java/locale/iso639-a3.properties \
+	gnu/java/locale/iso639_de.properties \
+	gnu/java/locale/iso639_fr.properties \
+	gnu/java/locale/iso639_ga.properties \
+	gnu/java/locale/iso639.properties
+
 EXTRA_DIST = \
 	Makefile.am.in \
 	Klasses.jar.bootstrap \
@@ -157,6 +168,7 @@ EXTRA_DIST = \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
 	$(gnu_regexp_message_bundles) \
+	$(gnu_java_locale_bundles) \
 	kaffe/io/ByteToCharEUC_JP.tbl \
 	kaffe/io/CharToByteEUC_JP.tbl 
 
@@ -223,7 +235,7 @@ jar-classes rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
 		mkdir $(LIBDIR)/gnu ; \
 		mkdir $(LIBDIR)/gnu/regexp ; \
 	fi
-	for i in $(gnu_regexp_message_bundles) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
+	for i in $(gnu_regexp_message_bundles) $(gnu_java_locale_bundles) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	rm -f rt.jar
 	$(JAR_CMD1)
 	$(JAR_CMD2)

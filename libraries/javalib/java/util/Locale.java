@@ -1,263 +1,773 @@
+/* Locale.java -- i18n locales
+   Copyright (C) 1998, 1999, 2001, 2002 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
 package java.util;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-/*
- * Java core library component.
+/**
+ * Locales represent a specific country and culture. Classes which can be
+ * passed a Locale object tailor their information for a given locale. For
+ * instance, currency number formatting is handled differently for the USA
+ * and France.
  *
- * Copyright (c) 1997, 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
+ * <p>Locales are made up of a language code, a country code, and an optional
+ * set of variant strings. Language codes are represented by
+ * <a href="http://www.ics.uci.edu/pub/ietf/http/related/iso639.txt">
+ * ISO 639:1988</a> w/ additions from ISO 639/RA Newsletter No. 1/1989
+ * and a decision of the Advisory Committee of ISO/TC39 on August 8, 1997.
  *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
+ * <p>Country codes are represented by
+ * <a href="http://www.chemie.fu-berlin.de/diverse/doc/ISO_3166.html">
+ * ISO 3166</a>. Variant strings are vendor and browser specific. Standard
+ * variant strings include "POSIX" for POSIX, "WIN" for MS-Windows, and
+ * "MAC" for Macintosh. When there is more than one variant string, they must
+ * be separated by an underscore (U+005F).
+ *
+ * <p>The default locale is determined by the values of the system properties
+ * user.language, user.region, and user.variant, defaulting to "en". Note that
+ * the locale does NOT contain the conversion and formatting capabilities (for
+ * that, use ResourceBundle and java.text). Rather, it is an immutable tag
+ * object for identifying a given locale, which is referenced by these other
+ * classes when they must make locale-dependent decisions.
+ *
+ * @see ResourceBundle
+ * @see java.text.Format
+ * @see java.text.NumberFormat
+ * @see java.text.Collator
+ * @author Jochen Hoenicke
+ * @author Paul Fisher
+ * @author Eric Blake <ebb9@email.byu.edu>
+ * @since 1.1
+ * @status updated to 1.4
  */
-/* TODO:
- * * implement getAvailableLocales.
- * * implement security checks in setDefault.
- * * add more country and language names translations (chinese, korean, japanese).
- */
-final public class Locale
-  implements Cloneable, Serializable
+public final class Locale implements Serializable, Cloneable
 {
-	final private static long serialVersionUID = 9149081749638150636L;
-	final public static PropertyPermission SET_PERMISSION =
-		new PropertyPermission("user.language", "write");
-	final public static Locale CANADA = new Locale("en", "CA");
-	final public static Locale CANADA_FRENCH = new Locale("fr", "CA");
-	final public static Locale CHINA = new Locale("zh", "CN");
-	final public static Locale CHINESE = new Locale("zh", null);
-	final public static Locale ENGLISH = new Locale("en", null);
-	final public static Locale FRANCE = new Locale("fr", "FR");
-	final public static Locale FRENCH = new Locale("fr", null);
-	final public static Locale GERMAN = new Locale("de", null);
-	final public static Locale GERMANY = new Locale("de", "DE");
-	final public static Locale ITALY = new Locale("it", "IT");
-	final public static Locale ITALIAN = new Locale("it", null);
-	final public static Locale JAPAN = new Locale("ja", "JP");
-	final public static Locale JAPANESE = new Locale("ja", null);
-	final public static Locale KOREA = new Locale("ko", "KR");
-	final public static Locale KOREAN = new Locale("ko", null);
-        final public static Locale PRC = CHINA;
-	final public static Locale SIMPLIFIED_CHINESE = CHINA;
-	final public static Locale TAIWAN = new Locale("zh", "TW");
-	final public static Locale TRADITIONAL_CHINESE = TAIWAN;
-	final public static Locale UK = new Locale("en", "GB");
-	final public static Locale US = new Locale("en", "US");
+  /** Locale which represents the English language. */
+  public static final Locale ENGLISH = new Locale("en");
 
-	/* locations of human-readable locale naming data */
-	private static final String RESOURCEBASE = "kaffe.util.locale.";
-	private static final String COUNTRY = RESOURCEBASE + "Country";
-	private static final String COUNTRY_CODES = RESOURCEBASE + "CountryCodes";
-	private static final String LANGUAGE = RESOURCEBASE + "Language";
-	private static final String LANGUAGE_CODES = RESOURCEBASE + "LanguageCodes";
+  /** Locale which represents the French language. */
+  public static final Locale FRENCH = new Locale("fr");
 
-	private static Locale defaultLocale;
-	private String lang;
-	private String cntry;
-	private String var;
-	private int hashcode;
+  /** Locale which represents the German language. */
+  public static final Locale GERMAN = new Locale("de");
 
-static {
-	String dlang = System.getProperty("user.language", "en");
-	String dcntry = System.getProperty("user.region", "US");
-	String dvar = "";
-	int pos = dcntry.indexOf('_');
-	if (pos != -1) {
-		dvar = dcntry.substring(pos + 1);
-		dcntry = dcntry.substring(pos);
-	}
-	defaultLocale = new Locale(dlang, dcntry, dvar);
-}
+  /** Locale which represents the Italian language. */
+  public static final Locale ITALIAN = new Locale("it");
 
-// Avoid recursion with String.toLowerCase() that use Locale
-private static String toLowerCase(String str) {
-	char buf[] = str.toCharArray();
-	for (int pos=0; pos < buf.length; pos++)
-		buf[pos] = Character.toLowerCase(buf[pos]);
-	return new String(buf);
-}
+  /** Locale which represents the Japanese language. */
+  public static final Locale JAPANESE = new Locale("ja");
 
-// Avoid recursion with String.toUpperCase() that use Locale
-private static String toUpperCase(String str) {
-	char buf[] = str.toCharArray();
-	for (int pos=0; pos < buf.length; pos++)
-		buf[pos] = Character.toUpperCase(buf[pos]);
-	return new String(buf);
-}
+  /** Locale which represents the Korean language. */
+  public static final Locale KOREAN = new Locale("ko");
 
-/** since 1.4 */
-public Locale(String language) {
-	this(language, "");
-}
+  /** Locale which represents the Chinese language. */
+  public static final Locale CHINESE = new Locale("zh");
 
-public Locale(String language, String country) {
-	this(language, country, "");
-}
+  /** Locale which represents the Chinese language as used in China. */
+  public static final Locale SIMPLIFIED_CHINESE = new Locale("zh", "CN");
 
-public Locale(String language, String country, String variant) {
-	lang = (language != null) ? toLowerCase(language) : "";
-	cntry = (country != null) ? toUpperCase(country) : "";
-	var = (variant != null) ? toUpperCase(variant) : "";
+  /**
+   * Locale which represents the Chinese language as used in Taiwan.
+   * Same as TAIWAN Locale.
+   */
+  public static final Locale TRADITIONAL_CHINESE = new Locale("zh", "TW");
 
-	hashcode = lang.hashCode() ^ cntry.hashCode() ^ var.hashCode();
-}
+  /** Locale which represents France. */
+  public static final Locale FRANCE = new Locale("fr", "FR");
 
-public Object clone() {
-	return (new Locale(lang, cntry, var));
-}
+  /** Locale which represents Germany. */
+  public static final Locale GERMANY = new Locale("de", "DE");
 
-public boolean equals(Object obj) {
-	if (obj instanceof Locale) {
-		Locale lcl = (Locale)obj;
-		if ((lang == lcl.lang || lang.equals(lcl.lang)) &&
-		    (cntry == lcl.cntry || cntry.equals(lcl.cntry)) &&
-		    (var == lcl.var || var.equals(lcl.var))) {
-			return (true);
-		}
-	}
-	return (false);
-}
+  /** Locale which represents Italy. */
+  public static final Locale ITALY = new Locale("it", "IT");
 
-public String getCountry() {
-	return (cntry);
-}
+  /** Locale which represents Japan. */
+  public static final Locale JAPAN = new Locale("ja", "JP");
 
-public static synchronized Locale getDefault() {
-	return (defaultLocale);
-}
+  /** Locale which represents Korea. */
+  public static final Locale KOREA = new Locale("ko", "KR");
 
-final public String getDisplayCountry() {
-	return getDisplayCountry(getDefault());
-}
+  /**
+   * Locale which represents China.
+   * Same as SIMPLIFIED_CHINESE Locale.
+   */
+  public static final Locale CHINA = SIMPLIFIED_CHINESE;
 
-public String getDisplayCountry(Locale inLocale) {
-	return getDisplayResource(inLocale, COUNTRY, getCountry());
-}
+  /**
+   * Locale which represents the People's Republic of China.
+   * Same as CHINA Locale.
+   */
+  public static final Locale PRC = CHINA;
 
-final public String getDisplayLanguage() {
-	return getDisplayLanguage(getDefault());
-}
+  /**
+   * Locale which represents Taiwan.
+   * Same as TRADITIONAL_CHINESE Locale.
+   */
+  public static final Locale TAIWAN = TRADITIONAL_CHINESE;
 
-public String getDisplayLanguage(Locale inLocale) {
-	return getDisplayResource(inLocale, LANGUAGE, getLanguage());
-}
+  /** Locale which represents the United Kingdom. */
+  public static final Locale UK = new Locale("en", "GB");
 
-final public String getDisplayName() {
-	return getDisplayName(getDefault());
-}
+  /** Locale which represents the United States. */
+  public static final Locale US = new Locale("en", "US");
 
-public String getDisplayName(Locale inLocale) {
-	String country = getDisplayCountry(inLocale);
+  /** Locale which represents the English speaking portion of Canada. */
+  public static final Locale CANADA = new Locale("en", "CA");
 
-	if (country.equals("")) {
-		return getDisplayLanguage(inLocale);
-	}
-	else {
-		return getDisplayLanguage(inLocale) + " (" + country + ')';
-	}
-}
+  /** Locale which represents the French speaking portion of Canada. */
+  public static final Locale CANADA_FRENCH = new Locale("fr", "CA");
 
-/* looks up a value in a given resource for the given locale */
-private String getDisplayResource(Locale inLocale, String resource, String value) {
-	if (value.equals("")) {
-		return "";
-	}
+  /**
+   * Compatible with JDK 1.1+.
+   */
+  private static final long serialVersionUID = 9149081749638150636L;
 
-	/* Try to get the value for the given locale */
-	ResourceBundle rb = ResourceBundle.getBundle(resource, inLocale);
+  /**
+   * The language code, as returned by getLanguage().
+   *
+   * @serial the languange, possibly ""
+   */
+  private String language;
 
-	String name =  rb.getString(value);
+  /**
+   * The country code, as returned by getCountry().
+   *
+   * @serial the country, possibly ""
+   */
+  private String country;
 
-	/* If that fails, return the value for this locale */
-	if (name.equals("")) {
-		rb =  ResourceBundle.getBundle(resource, this);
+  /**
+   * The variant code, as returned by getVariant().
+   *
+   * @serial the variant, possibly ""
+   */
+  private String variant;
 
-		name =  rb.getString(value);
-	}
+  /**
+   * This is the cached hashcode. When writing to stream, we write -1.
+   *
+   * @serial should be -1 in serial streams
+   */
+  private int hashcode;
 
-	return name;
-}
+  /**
+   * The default locale. Except for during bootstrapping, this should never be
+   * null. Note the logic in the main constructor, to detect when
+   * bootstrapping has completed.
+   */
+  private static Locale defaultLocale =
+    new Locale(System.getProperty("user.language", "en"),
+               System.getProperty("user.region", ""),
+               System.getProperty("user.variant", ""));
 
-final public String getDisplayVariant() {
-	return getDisplayVariant(getDefault());
-}
+  /**
+   * Convert new iso639 codes to the old ones.
+   *
+   * @param language the language to check
+   * @return the appropriate code
+   */
+  private String convertLanguage(String language)
+  {
+    if (language.equals(""))
+      return language;
+    language = language.toLowerCase();
+    int index = "he,id,yi".indexOf(language);
+    if (index != -1)
+      return "iw,in,ji".substring(index, index + 2);
+    return language;
+  }
 
-public String getDisplayVariant(Locale inLocale) {
-	return (var);
-}
+  /**
+   * Creates a new locale for the given language and country.
+   *
+   * @param language lowercase two-letter ISO-639 A2 language code
+   * @param country uppercase two-letter ISO-3166 A2 contry code
+   * @param variant vendor and browser specific
+   * @throws NullPointerException if any argument is null
+   */
+  public Locale(String language, String country, String variant)
+  {
+    // During bootstrap, we already know the strings being passed in are
+    // the correct capitalization, and not null. We can't call
+    // String.toUpperCase during this time, since that depends on the
+    // default locale.
+    if (defaultLocale != null)
+      {
+        language = convertLanguage(language).intern();
+        country = country.toUpperCase().intern();
+        variant = variant.toUpperCase().intern();
+      }
+    this.language = language;
+    this.country = country;
+    this.variant = variant;
+    hashcode = language.hashCode() ^ country.hashCode() ^ variant.hashCode();
+  }
 
-public String getISO3Country() throws MissingResourceException {
-	return getDefault().getDisplayResource(this,
-					       COUNTRY_CODES,
-					       getCountry());
-}
+  /**
+   * Creates a new locale for the given language and country.
+   *
+   * @param language lowercase two-letter ISO-639 A2 language code
+   * @param country uppercase two-letter ISO-3166 A2 country code
+   * @throws NullPointerException if either argument is null
+   */
+  public Locale(String language, String country)
+  {
+    this(language, country, "");
+  }
 
-/** since 1.2 */
-public static String[] getISOCountries() {
-	return getKeys(ResourceBundle.getBundle(COUNTRY_CODES));
-}
+  /**
+   * Creates a new locale for a language.
+   *
+   * @param language lowercase two-letter ISO-639 A2 language code
+   * @throws NullPointerException if either argument is null
+   * @since 1.4
+   */
+  public Locale(String language)
+  {
+    this(language, "", "");
+  }
 
-/** since 1.2 */
-public String getISO3Language() throws MissingResourceException {
-	return getDefault().getDisplayResource(this,
-					       LANGUAGE_CODES,
-					       getLanguage());
-}
+  /**
+   * Returns the default Locale. The default locale is generally once set
+   * on start up and then never changed. Normally you should use this locale
+   * for everywhere you need a locale. The initial setting matches the
+   * default locale, the user has chosen.
+   *
+   * @return the default locale for this virtual machine
+   */
+  public static Locale getDefault()
+  {
+    return defaultLocale;
+  }
 
-/** since 1.2 */
-public static String[] getISOLanguages() {
-	return getKeys(ResourceBundle.getBundle(LANGUAGE_CODES));
-}
+  /**
+   * Changes the default locale. Normally only called on program start up.
+   * Note that this doesn't change the locale for other programs. This has
+   * a security check,
+   * <code>PropertyPermission("user.language", "write")</code>, because of
+   * its potential impact to running code.
+   *
+   * @param newLocale the new default locale
+   * @throws NullPointerException if newLocale is null
+   * @throws SecurityException if permission is denied
+   */
+  public static void setDefault(Locale newLocale)
+  {
+    if (newLocale == null)
+      throw new NullPointerException();
+    SecurityManager sm = System.getSecurityManager();
+    if (sm != null)
+      sm.checkPermission(new PropertyPermission("user.language", "write"));
+    defaultLocale = newLocale;
+  }
 
-/* used to extract the keys of a resource bundle as a String [] */
-private static String [] getKeys(ResourceBundle rb) {
-	return (String []) Collections.list(rb.getKeys()).toArray(new String[0]);
-}
+  /**
+   * Returns the list of available locales.
+   *
+   * @return the installed locales
+   */
+  public static Locale[] getAvailableLocales()
+  {
+    /* I only return those for which localized language
+     * or country information exists.
+     * XXX - remove hard coded list, and implement more locales (Sun's JDK 1.4
+     * has 148 installed locales!).
+     */
+    return new Locale[]
+    {
+      ENGLISH, FRENCH, GERMAN, new Locale("ga", "")
+    };
+  }
 
-public String getLanguage() {
-	return (lang);
-}
+  /**
+   * Returns a list of all 2-letter uppercase country codes as defined
+   * in ISO 3166.
+   *
+   * @return a list of acceptible country codes
+   */
+  public static String[] getISOCountries()
+  {
+    return new String[]
+    {
+      "AD", "AE", "AF", "AG", "AI", "AL", "AM", "AN", "AO", "AQ", "AR", "AS",
+      "AT", "AU", "AW", "AZ", "BA", "BB", "BD", "BE", "BF", "BG", "BH", "BI",
+      "BJ", "BM", "BN", "BO", "BR", "BS", "BT", "BV", "BW", "BY", "BZ", "CA",
+      "CC", "CF", "CG", "CH", "CI", "CK", "CL", "CM", "CN", "CO", "CR", "CU",
+      "CV", "CX", "CY", "CZ", "DE", "DJ", "DK", "DM", "DO", "DZ", "EC", "EE",
+      "EG", "EH", "ER", "ES", "ET", "FI", "FJ", "FK", "FM", "FO", "FR", "FX",
+      "GA", "GB", "GD", "GE", "GF", "GH", "GI", "GL", "GM", "GN", "GP", "GQ",
+      "GR", "GS", "GT", "GU", "GW", "GY", "HK", "HM", "HN", "HR", "HT", "HU",
+      "ID", "IE", "IL", "IN", "IO", "IQ", "IR", "IS", "IT", "JM", "JO", "JP",
+      "KE", "KG", "KH", "KI", "KM", "KN", "KP", "KR", "KW", "KY", "KZ", "LA",
+      "LB", "LC", "LI", "LK", "LR", "LS", "LT", "LU", "LV", "LY", "MA", "MC",
+      "MD", "MG", "MH", "MK", "ML", "MM", "MN", "MO", "MP", "MQ", "MR", "MS",
+      "MT", "MU", "MV", "MW", "MX", "MY", "MZ", "NA", "NC", "NE", "NF", "NG",
+      "NI", "NL", "NO", "NP", "NR", "NU", "NZ", "OM", "PA", "PE", "PF", "PG",
+      "PH", "PK", "PL", "PM", "PN", "PR", "PT", "PW", "PY", "QA", "RE", "RO",
+      "RU", "RW", "SA", "SB", "SC", "SD", "SE", "SG", "SH", "SI", "SJ", "SK",
+      "SL", "SM", "SN", "SO", "SR", "ST", "SV", "SY", "SZ", "TC", "TD", "TF",
+      "TG", "TH", "TJ", "TK", "TM", "TN", "TO", "TP", "TR", "TT", "TV", "TW",
+      "TZ", "UA", "UG", "UM", "US", "UY", "UZ", "VA", "VC", "VE", "VG", "VI",
+      "VN", "VU", "WF", "WS", "YE", "YT", "YU", "ZA", "ZM", "ZR", "ZW"
+    };
+  }
 
-public String getVariant() {
-	return (var);
-}
+  /**
+   * Returns a list of all 2-letter lowercase language codes as defined
+   * in ISO 639 (both old and new variant).
+   *
+   * @return a list of acceptable language codes
+   */
+  public static String[] getISOLanguages()
+  {
+    return new String[]
+    {
+      "aa", "ab", "af", "am", "ar", "as", "ay", "az", "ba", "be", "bg", "bh",
+      "bi", "bn", "bo", "br", "ca", "co", "cs", "cy", "da", "de", "dz", "el",
+      "en", "eo", "es", "et", "eu", "fa", "fi", "fj", "fo", "fr", "fy", "ga",
+      "gd", "gl", "gn", "gu", "ha", "he", "hi", "hr", "hu", "hy", "ia", "id",
+      "ie", "ik", "in", "is", "it", "iu", "iw", "ja", "ji", "jw", "ka", "kk",
+      "kl", "km", "kn", "ko", "ks", "ku", "ky", "la", "ln", "lo", "lt", "lv",
+      "mg", "mi", "mk", "ml", "mn", "mo", "mr", "ms", "mt", "my", "na", "ne",
+      "nl", "no", "oc", "om", "or", "pa", "pl", "ps", "pt", "qu", "rm", "rn",
+      "ro", "ru", "rw", "sa", "sd", "sg", "sh", "si", "sk", "sl", "sm", "sn",
+      "so", "sq", "sr", "ss", "st", "su", "sv", "sw", "ta", "te", "tg", "th",
+      "ti", "tk", "tl", "tn", "to", "tr", "ts", "tt", "tw", "ug", "uk", "ur",
+      "uz", "vi", "vo", "wo", "xh", "yi", "yo", "za", "zh", "zu"
+    };
+  }
 
-public synchronized int hashCode() {
-	return (hashcode);
-}
+  /**
+   * Returns the language code of this locale. Some language codes have changed
+   * as ISO 639 has evolved; this returns the old name, even if you built
+   * the locale with the new one.
+   *
+   * @return language code portion of this locale, or an empty String
+   */
+  public String getLanguage()
+  {
+    return language;
+  }
 
-public static synchronized void setDefault(Locale newLocale) {
-	if (newLocale == null) {
-		throw new NullPointerException();
-	}
-	SecurityManager sm = System.getSecurityManager();
-	if( sm != null )
-		sm.checkPermission(SET_PERMISSION);
+  /**
+   * Returns the country code of this locale.
+   *
+   * @return country code portion of this locale, or an empty String
+   */
+  public String getCountry()
+  {
+    return country;
+  }
 
-	defaultLocale = newLocale;
-}
+  /**
+   * Returns the variant code of this locale.
+   *
+   * @return the variant code portion of this locale, or an empty String
+   */
+  public String getVariant()
+  {
+    return variant;
+  }
 
-final public String toString() {
-	StringBuffer buf = new StringBuffer();
-	boolean hasLang = lang.length() > 0;
-	boolean hasCntry = cntry.length() > 0;
-	boolean hasVar = var.length() > 0;
+  /**
+   * Gets the string representation of the current locale. This consists of
+   * the language, the country, and the variant, separated by an underscore.
+   * The variant is listed only if there is a language or country. Examples:
+   * "en", "de_DE", "_GB", "en_US_WIN", "de__POSIX", "fr__MAC".
+   *
+   * @return the string representation of this Locale
+   * @see #getDisplayName()
+   */
+  public final String toString()
+  {
+    if (language.length() == 0 && country.length() == 0)
+      return "";
+    else if (country.length() == 0 && variant.length() == 0)
+      return language;
+    StringBuffer result = new StringBuffer(language);
+    result.append('_').append(country);
+    if (variant.length() != 0)
+      result.append('_').append(variant);
+    return result.toString();
+  }
 
-	if (hasLang) {
-		buf.append(lang);
-	}
-	if (hasCntry) {
-		buf.append('_');
-		buf.append(cntry);
-	}
-	else if (hasLang && hasVar) {
-		buf.append('_');
-	}
-	if (hasVar && (hasLang || hasCntry)) {
-		buf.append('_');
-		buf.append(var);
-	}
+  /**
+   * Returns the three-letter ISO language abbrevation of this locale.
+   *
+   * @throws MissingResourceException if the three-letter code is not known
+   */
+  public String getISO3Language()
+  {
+    if (language == "")
+      return "";
+    int index
+      = ("aa,ab,af,am,ar,as,ay,az,ba,be,bg,bh,bi,bn,bo,br,ca,co,cs,cy,da,"
+         + "de,dz,el,en,eo,es,et,eu,fa,fi,fj,fo,fr,fy,ga,gd,gl,gn,gu,ha,iw,"
+         + "hi,hr,hu,hy,ia,in,ie,ik,in,is,it,iu,iw,ja,ji,jw,ka,kk,kl,km,kn,"
+         + "ko,ks,ku,ky,la,ln,lo,lt,lv,mg,mi,mk,ml,mn,mo,mr,ms,mt,my,na,ne,"
+         + "nl,no,oc,om,or,pa,pl,ps,pt,qu,rm,rn,ro,ru,rw,sa,sd,sg,sh,si,sk,"
+         + "sl,sm,sn,so,sq,sr,ss,st,su,sv,sw,ta,te,tg,th,ti,tk,tl,tn,to,tr,"
+         + "ts,tt,tw,ug,uk,ur,uz,vi,vo,wo,xh,ji,yo,za,zh,zu")
+      .indexOf(language);
 
-	return (new String(buf));
-}
-}
+    if (index % 3 != 0 || language.length() != 2)
+      throw new MissingResourceException
+        ("Can't find ISO3 language for " + language,
+         "java.util.Locale", language);
+
+    // Don't read this aloud. These are the three letter language codes.
+    return
+      ("aarabkaframharaasmaymazebakbelbulbihbisbenbodbrecatcoscescymdandeu"
+       + "dzoellengepospaesteusfasfinfijfaofrafrygaigdhglggrngujhauhebhinhrv"
+       + "hunhyeinaindileipkindislitaikuhebjpnyidjawkatkazkalkhmkankorkaskur"
+       + "kirlatlinlaolitlavmlgmrimkdmalmonmolmarmsamltmyanaunepnldnorociorm"
+       + "oripanpolpusporquerohrunronruskinsansndsagsrpsinslkslvsmosnasomsqi"
+       + "srpsswsotsunsweswatamteltgkthatirtuktgltsntonturtsotattwiuigukrurd"
+       + "uzbvievolwolxhoyidyorzhazhozul")
+      .substring(index, index + 3);
+  }
+
+  /**
+   * Returns the three-letter ISO country abbrevation of the locale.
+   *
+   * @throws MissingResourceException if the three-letter code is not known
+   */
+  public String getISO3Country()
+  {
+    if (country == "")
+      return "";
+    int index
+      = ("AD,AE,AF,AG,AI,AL,AM,AN,AO,AQ,AR,AS,AT,AU,AW,AZ,BA,BB,BD,BE,BF,"
+         + "BG,BH,BI,BJ,BM,BN,BO,BR,BS,BT,BV,BW,BY,BZ,CA,CC,CF,CG,CH,CI,CK,"
+         + "CL,CM,CN,CO,CR,CU,CV,CX,CY,CZ,DE,DJ,DK,DM,DO,DZ,EC,EE,EG,EH,ER,"
+         + "ES,ET,FI,FJ,FK,FM,FO,FR,FX,GA,GB,GD,GE,GF,GH,GI,GL,GM,GN,GP,GQ,"
+         + "GR,GS,GT,GU,GW,GY,HK,HM,HN,HR,HT,HU,ID,IE,IL,IN,IO,IQ,IR,IS,IT,"
+         + "JM,JO,JP,KE,KG,KH,KI,KM,KN,KP,KR,KW,KY,KZ,LA,LB,LC,LI,LK,LR,LS,"
+         + "LT,LU,LV,LY,MA,MC,MD,MG,MH,MK,ML,MM,MN,MO,MP,MQ,MR,MS,MT,MU,MV,"
+         + "MW,MX,MY,MZ,NA,NC,NE,NF,NG,NI,NL,NO,NP,NR,NU,NZ,OM,PA,PE,PF,PG,"
+         + "PH,PK,PL,PM,PN,PR,PT,PW,PY,QA,RE,RO,RU,RW,SA,SB,SC,SD,SE,SG,SH,"
+         + "SI,SJ,SK,SL,SM,SN,SO,SR,ST,SV,SY,SZ,TC,TD,TF,TG,TH,TJ,TK,TM,TN,"
+         + "TO,TP,TR,TT,TV,TW,TZ,UA,UG,UM,US,UY,UZ,VA,VC,VE,VG,VI,VN,VU,WF,"
+         + "WS,YE,YT,YU,ZA,ZM,ZR,ZW")
+      .indexOf(country);
+
+    if (index % 3 != 0 || country.length() != 2)
+      throw new MissingResourceException
+        ("Can't find ISO3 country for " + country,
+         "java.util.Locale", country);
+
+    // Don't read this aloud. These are the three letter country codes.
+    return
+      ("ANDAREAFGATGAIAALBARMANTAGOATAARGASMAUTAUSABWAZEBIHBRBBGDBELBFABGR"
+       + "BHRBDIBENBMUBRNBOLBRABHSBTNBVTBWABLRBLZCANCCKCAFCOGCHECIVCOKCHLCMR"
+       + "CHNCOLCRICUBCPVCXRCYPCZEDEUDJIDNKDMADOMDZAECUESTEGYESHERIESPETHFIN"
+       + "FJIFLKFSMFROFRAFXXGABGBRGRDGEOGUFGHAGIBGRLGMBGINGLPGNQGRCSGSGTMGUM"
+       + "GNBGUYHKGHMDHNDHRVHTIHUNIDNIRLISRINDIOTIRQIRNISLITAJAMJORJPNKENKGZ"
+       + "KHMKIRCOMKNAPRKKORKWTCYMKAZLAOLBNLCALIELKALBRLSOLTULUXLVALBYMARMCO"
+       + "MDAMDGMHLMKDMLIMMRMNGMACMNPMTQMRTMSRMLTMUSMDVMWIMEXMYSMOZNAMNCLNER"
+       + "NFKNGANICNLDNORNPLNRUNIUNZLOMNPANPERPYFPNGPHLPAKPOLSPMPCNPRIPRTPLW"
+       + "PRYQATREUROMRUSRWASAUSLBSYCSDNSWESGPSHNSVNSJMSVKSLESMRSENSOMSURSTP"
+       + "SLVSYRSWZTCATCDATFTGOTHATJKTKLTKMTUNTONTMPTURTTOTUVTWNTZAUKRUGAUMI"
+       + "USAURYUZBVATVCTVENVGBVIRVNMVUTWLFWSMYEMMYTYUGZAFZMBZARZWE")
+      .substring(index, index + 3);
+  }
+
+  /**
+   * Gets the country name suitable for display to the user, formatted
+   * for the default locale.  This has the same effect as
+   * <pre>
+   * getDisplayLanguage(Locale.getDefault());
+   * </pre>
+   *
+   * @return the language name of this locale localized to the default locale,
+   *         with the ISO code as backup
+   */
+  public final String getDisplayLanguage()
+  {
+    return getDisplayLanguage(defaultLocale);
+  }
+
+  /**
+   * Gets the language name suitable for display to the user, formatted
+   * for a specified locale.
+   *
+   * @param locale locale to use for formatting
+   * @return the language name of this locale localized to the given locale,
+   *         with the ISO code as backup
+   */
+  public String getDisplayLanguage(Locale locale)
+  {
+    try
+      {
+        ResourceBundle bundle
+          = ResourceBundle.getBundle("gnu.java.locale.iso639", locale);
+        return bundle.getString(language);
+      }
+    catch (MissingResourceException ex)
+      {
+        return language;
+      }
+  }
+
+  /**
+   * Returns the country name of this locale localized to the
+   * default locale. If the localized is not found, the ISO code
+   * is returned. This has the same effect as
+   * <pre>
+   * getDisplayCountry(Locale.getDefault());
+   * </pre>
+   *
+   * @return the country name of this locale localized to the given locale,
+   *         with the ISO code as backup
+   */
+  public final String getDisplayCountry()
+  {
+    return getDisplayCountry(defaultLocale);
+  }
+
+  /**
+   * Gets the country name suitable for display to the user, formatted
+   * for a specified locale.
+   *
+   * @param locale locale to use for formatting
+   * @return the country name of this locale localized to the given locale,
+   *         with the ISO code as backup
+   */
+  public String getDisplayCountry(Locale locale)
+  {
+    try
+      {
+        ResourceBundle bundle =
+          ResourceBundle.getBundle("gnu.java.locale.iso3166", locale);
+        return bundle.getString(country);
+      }
+    catch (MissingResourceException ex)
+      {
+        return country;
+      }
+  }
+
+  /**
+   * Returns the variant name of this locale localized to the
+   * default locale. If the localized is not found, the variant code
+   * itself is returned. This has the same effect as
+   * <pre>
+   * getDisplayVariant(Locale.getDefault());
+   * </pre>
+   *
+   * @return the variant code of this locale localized to the given locale,
+   *         with the ISO code as backup
+   */
+  public final String getDisplayVariant()
+  {
+    return getDisplayVariant(defaultLocale);
+  }
+
+  /**
+   * Returns the variant name of this locale localized to the
+   * given locale. If the localized is not found, the variant code
+   * itself is returned.
+   *
+   * @param locale locale to use for formatting
+   * @return the variant code of this locale localized to the given locale,
+   *         with the ISO code as backup
+   */
+  public String getDisplayVariant(Locale locale)
+  {
+    // XXX - load a bundle?
+    return variant;
+  }
+
+  /**
+   * Gets all local components suitable for display to the user, formatted
+   * for the default locale. For the language component, getDisplayLanguage
+   * is called. For the country component, getDisplayCountry is called.
+   * For the variant set component, getDisplayVariant is called.
+   *
+   * <p>The returned String will be one of the following forms:<br>
+   * <pre>
+   * language (country, variant)
+   * language (country)
+   * language (variant)
+   * country (variant)
+   * language
+   * country
+   * variant
+   * </pre>
+   *
+   * @return String version of this locale, suitable for display to the user
+   */
+  public final String getDisplayName()
+  {
+    return getDisplayName(defaultLocale);
+  }
+
+  /**
+   * Gets all local components suitable for display to the user, formatted
+   * for a specified locale. For the language component,
+   * getDisplayLanguage(Locale) is called. For the country component,
+   * getDisplayCountry(Locale) is called. For the variant set component,
+   * getDisplayVariant(Locale) is called.
+   *
+   * <p>The returned String will be one of the following forms:<br>
+   * <pre>
+   * language (country, variant)
+   * language (country)
+   * language (variant)
+   * country (variant)
+   * language
+   * country
+   * variant
+   * </pre>
+   *
+   * @param locale locale to use for formatting
+   * @return String version of this locale, suitable for display to the user
+   */
+  public String getDisplayName(Locale locale)
+  {
+    StringBuffer result = new StringBuffer();
+    int count = 0;
+    String[] delimiters = {"", " (", ","};
+    if (language.length() != 0)
+      {
+        result.append(delimiters[count++]);
+        result.append(getDisplayLanguage(locale));
+      }
+    if (country.length() != 0)
+      {
+        result.append(delimiters[count++]);
+        result.append(getDisplayCountry(locale));
+      }
+    if (variant.length() != 0)
+      {
+        result.append(delimiters[count++]);
+        result.append(getDisplayVariant(locale));
+      }
+    if (count > 1)
+      result.append(")");
+    return result.toString();
+  }
+
+  /**
+   * Does the same as <code>Object.clone()</code> but does not throw
+   * a <code>CloneNotSupportedException</code>. Why anyone would
+   * use this method is a secret to me, since this class is immutable.
+   *
+   * @return the clone
+   */
+  public Object clone()
+  {
+    // This class is final, so no need to use native super.clone().
+    return new Locale(language, country, variant);
+  }
+
+  /**
+   * Return the hash code for this locale. The hashcode is the logical
+   * xor of the hash codes of the language, the country and the variant.
+   * The hash code is precomputed, since <code>Locale</code>s are often
+   * used in hash tables.
+   *
+   * @return the hashcode
+   */
+  public synchronized int hashCode()
+  {
+    // This method is synchronized because writeObject() might reset
+    // the hashcode.
+    return hashcode;
+  }
+
+  /**
+   * Compares two locales. To be equal, obj must be a Locale with the same
+   * language, country, and variant code.
+   *
+   * @param obj the other locale
+   * @return true if obj is equal to this
+   */
+  public boolean equals(Object obj)
+  {
+    if (this == obj)
+      return true;
+    if (! (obj instanceof Locale))
+      return false;
+    Locale l = (Locale) obj;
+
+    // ??? We might also want to add:
+    //        hashCode() == l.hashCode()
+    // But this is a synchronized method.  Is the overhead worth it?
+    // Measure this to make a decision.
+    return (language == l.language
+            && country == l.country
+            && variant == l.variant);
+  }
+
+  /**
+   * Write the locale to an object stream.
+   *
+   * @param output the stream to write to
+   * @throws IOException if the write fails
+   * @serialData the hashcode should always be written as -1, and recomputed
+   *      when reading it back
+   */
+  private synchronized void writeObject(ObjectOutputStream output)
+    throws IOException
+  {
+    // Synchronized so that hashCode() doesn't get wrong value.
+    int tmpHashcode = hashcode;
+    hashcode = -1;
+    output.defaultWriteObject();
+    hashcode = tmpHashcode;
+  }
+
+  /**
+   * Reads a locale from the input stream.
+   *
+   * @param input the stream to read from
+   * @throws IOException if reading fails
+   * @throws ClassNotFoundException if reading fails
+   * @serialData the hashCode is always invalid and must be recomputed
+   */
+  private void readObject(ObjectInputStream input)
+    throws IOException, ClassNotFoundException
+  {
+    input.defaultReadObject();
+    hashcode = language.hashCode() ^ country.hashCode() ^ variant.hashCode();
+  }
+} // class Locale

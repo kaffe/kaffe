@@ -1,398 +1,622 @@
-/*
- * Java core library component.
- *
- * Copyright (c) 1997, 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- * Some more Copyright(c) 2003 Guilhem Lavaux
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
+/* MessageFormat.java - Localized message formatting.
+   Copyright (C) 1999, 2001, 2002 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+ 
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
 
 package java.text;
 
+import java.util.Date;
 import java.util.Locale;
-import kaffe.util.NotImplemented;
-
-public class MessageFormat extends Format {
-	private class MessagePatternDescription {
-		String[] strs;
-		Format[] formats;
-		int[] argumentNumber;
-	}
+import java.util.Vector;
 
 /**
- * @serial The locale to use for formatting numbers and dates.
+ * @author Tom Tromey <tromey@cygnus.com>
+ * @author Jorge Aliss <jaliss@hotmail.com>
+ * @date March 3, 1999
  */
-private Locale locale = Locale.getDefault();
-
-/**
- * @serial An array of ten formatters, which are used to format 
- * the first ten arguments.
+/* Written using "Java Class Libraries", 2nd edition, plus online
+ * API docs for JDK 1.2 from http://www.javasoft.com.
+ * Status:  Believed complete and correct to 1.2, except serialization.
+ *          and parsing.
  */
-private Format[] formats;
+final class MessageFormatElement
+{
+  // Argument number.
+  int argNumber;
+  // Formatter to be used.  This is the format set by setFormat.
+  Format setFormat;
+  // Formatter to be used based on the type.
+  Format format;
 
-/**
- * @serial The argument numbers corresponding to each formatter. 
- *  (The formatters are stored in the order they occur in the pattern, not
- *   in the order in which the arguments are specified.)
- */
-private int[] argumentNumber;
+  // Argument will be checked to make sure it is an instance of this
+  // class.
+  Class formatClass;
 
-/*
- * XXX: this class does not conform to Sun's serial form.
- * We list the members that need to initialized for proper serialization
- * below.
- */
-transient private String[] strs;
+  // Formatter type.
+  String type;
+  // Formatter style.
+  String style;
 
-/**
- * @serial
- *  One less than the number of entries in offsets. Can also be
- *  thought of as the index of the highest-numbered element in
- *  offsets that is being used. All of these arrays should have the
- *  same number of elements being used as offsets does, and so this
- *  variable suffices to tell us how many entries are in all of them.
- */
-private int maxOffset;
+  // Text to follow this element.
+  String trailer;
 
-/**
- * @serial
- *  The positions where the results of formatting each argument are
- *  to be inserted into the pattern.
- */
-private int[] offsets;
+  // Recompute the locale-based formatter.
+  void setLocale (Locale loc)
+  {
+    if (type == null)
+      ;
+    else if (type.equals("number"))
+      {
+	formatClass = java.lang.Number.class;
 
-/**
- * @serial
- *  The string that the formatted values are to be plugged into. In
- *  other words, this is the pattern supplied on construction with
- *  all of the {} expressions taken out.
- */
-private String pattern;
+	if (style == null)
+	  format = NumberFormat.getInstance(loc);
+	else if (style.equals("currency"))
+	  format = NumberFormat.getCurrencyInstance(loc);
+	else if (style.equals("percent"))
+	  format = NumberFormat.getPercentInstance(loc);
+	else if (style.equals("integer"))
+	  {
+	    NumberFormat nf = NumberFormat.getNumberInstance(loc);
+	    nf.setMaximumFractionDigits(0);
+	    nf.setGroupingUsed(false);
+	    format = nf;
+	  }
+	else
+	  {
+	    format = NumberFormat.getNumberInstance(loc);
+	    DecimalFormat df = (DecimalFormat) format;
+	    df.applyPattern(style);
+	  }
+      }
+    else if (type.equals("time") || type.equals("date"))
+      {
+	formatClass = java.util.Date.class;
 
-public MessageFormat(String patt) {
-	applyPattern(patt);
+	int val = DateFormat.DEFAULT;
+	if (style == null)
+	  ;
+	else if (style.equals("short"))
+	  val = DateFormat.SHORT;
+	else if (style.equals("medium"))
+	  val = DateFormat.MEDIUM;
+	else if (style.equals("long"))
+	  val = DateFormat.LONG;
+	else if (style.equals("full"))
+	  val = DateFormat.FULL;
+
+	if (type.equals("time"))
+	  format = DateFormat.getTimeInstance(val, loc);
+	else
+	  format = DateFormat.getDateInstance(val, loc);
+
+	if (style != null && val == DateFormat.DEFAULT)
+	  {
+	    SimpleDateFormat sdf = (SimpleDateFormat) format;
+	    sdf.applyPattern(style);
+	  }
+      }
+    else if (type.equals("choice"))
+      {
+	formatClass = java.lang.Number.class;
+
+	if (style == null)
+	  throw new
+	    IllegalArgumentException ("style required for choice format");
+	format = new ChoiceFormat (style);
+      }
+  }
 }
 
-public void applyPattern(String patt) {
-	MessagePatternDescription desc;
+public class MessageFormat extends Format
+{
+  private static final long serialVersionUID = 6479157306784022952L;
 
-	desc = tryToApplyPattern(patt);
+  // Helper that returns the text up to the next format opener.  The
+  // text is put into BUFFER.  Returns index of character after end of
+  // string.  Throws IllegalArgumentException on error.
+  private static final int scanString (String pat, int index,
+				       StringBuffer buffer)
+  {
+    int max = pat.length();
+    buffer.setLength(0);
+    for (; index < max; ++index)
+      {
+	char c = pat.charAt(index);
+	if (c == '\'' && index + 2 < max && pat.charAt(index + 2) == '\'')
+	  {
+	    buffer.append(pat.charAt(index + 1));
+	    index += 2;
+	  }
+	else if (c == '\'' && index + 1 < max
+		 && pat.charAt(index + 1) == '\'')
+	  {
+	    buffer.append(c);
+	    ++index;
+	  }
+	else if (c == '{')
+	  break;
+	else if (c == '}')
+	  throw new IllegalArgumentException ();
+	else
+	  buffer.append(c);
+      }
+    return index;
+  }
 
-	formats = desc.formats;
-	strs = desc.strs;
-	argumentNumber = desc.argumentNumber;
-	pattern = patt;
-}
+  // This helper retrieves a single part of a format element.  Returns
+  // the index of the terminating character.
+  private static final int scanFormatElement (String pat, int index,
+					      StringBuffer buffer,
+					      char term)
+  {
+    int max = pat.length();
+    buffer.setLength(0);
+    int brace_depth = 1;
 
-private MessagePatternDescription tryToApplyPattern(String patt) {
-	int len = patt.length();
-	int argcount = 0;
-	MessagePatternDescription desc = new MessagePatternDescription();
-	
-	for (int i = 0; i < len; i++) {
-		if (patt.charAt(i) == '{') {
-			argcount++;
-			while (patt.charAt(i) != '}' && i < len) {
-				i++;
-			}
-		}
-	}
+    for (; index < max; ++index)
+      {
+	char c = pat.charAt(index);
+	if (c == '\'' && index + 2 < max && pat.charAt(index + 2) == '\'')
+	  {
+	    buffer.append(c);
+	    buffer.append(pat.charAt(index + 1));
+	    buffer.append(c);
+	    index += 2;
+	  }
+	else if (c == '\'' && index + 1 < max
+		 && pat.charAt(index + 1) == '\'')
+	  {
+	    buffer.append(c);
+	    ++index;
+	  }
+	else if (c == '{')
+	  {
+	    buffer.append(c);
+	    ++brace_depth;
+	  }
+	else if (c == '}')
+	  {
+	    if (--brace_depth == 0)
+	      break;
+	    buffer.append(c);
+	  }
+	// Check for TERM after braces, because TERM might be `}'.
+	else if (c == term)
+	  break;
+	else
+	  buffer.append(c);
+      }
+    return index;
+  }
 
-	// Allocate the required number of formatting arguments and enough
-	// strings to go around them.
-	desc.formats = new Format[argcount];
-	desc.strs = new String[argcount+1];
-	desc.argumentNumber = new int[argcount];
+  // This is used to parse a format element and whatever non-format
+  // text might trail it.
+  private static final int scanFormat (String pat, int index,
+				       StringBuffer buffer, Vector elts,
+				       Locale locale)
+  {
+    MessageFormatElement mfe = new MessageFormatElement ();
+    elts.addElement(mfe);
 
-	argcount = 0;
-	int start = 0;
-	for (int curr = 0; curr < len; curr++) {
-		if (patt.charAt(curr) == '{') {
-			desc.strs[argcount] = patt.substring(start, curr);
-			curr++;
-			start = curr;
-			while (patt.charAt(curr) != '}' && curr < len) {
-				curr++;
-			}
-			parseFormat(patt.substring(start, curr), desc, argcount);
-			argcount++;
-			start = curr+1;
-		}
-	}
-	desc.strs[argcount] = patt.substring(start, len);
+    int max = pat.length();
 
-	return desc;
-}
+    // Skip the opening `{'.
+    ++index;
 
-private void parseFormat(String argument, MessagePatternDescription desc,
-			 int argcount) {
-	int anumber;
-	String aformat;
-	String astyle;
-	int nend = argument.indexOf(',');
-	int fstart = nend + 1;
-	if (nend == -1) {
-		nend = argument.length();
-		fstart = nend;
-	}
-	int fend = argument.indexOf(',', nend+1);
-	int sstart = fend + 1;
-	if (fend == -1) {
-		fend = argument.length();
-		sstart = fend;
-	}
+    // Fetch the argument number.
+    index = scanFormatElement (pat, index, buffer, ',');
+    try
+      {
+	mfe.argNumber = Integer.parseInt(buffer.toString());
+      }
+    catch (NumberFormatException nfx)
+      {
+	throw new IllegalArgumentException ();
+      }
 
-	try {
-		anumber = Integer.parseInt(argument.substring(0, nend));
-	}
-	catch (NumberFormatException _) {
-		anumber = -1;
-	}
-	aformat = argument.substring(fstart, fend);
-	astyle = argument.substring(sstart, argument.length());
+    // Extract the element format.
+    if (index < max && pat.charAt(index) == ',')
+      {
+	index = scanFormatElement (pat, index + 1, buffer, ',');
+	mfe.type = buffer.toString();
 
-	desc.argumentNumber[argcount] = anumber;
-	if (aformat.equals("time")) {
-		if (astyle.equals("")) {
-			desc.formats[argcount] = DateFormat.getTimeInstance(DateFormat.DEFAULT, locale);
-		}
-		else if (astyle.equals("short")) {
-			desc.formats[argcount] = DateFormat.getTimeInstance(DateFormat.SHORT, locale);
-		}
-		else if (astyle.equals("medium")) {
-			desc.formats[argcount] = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
-		}
-		else if (astyle.equals("long")) {
-			desc.formats[argcount] = DateFormat.getTimeInstance(DateFormat.LONG, locale);
-		}
-		else if (astyle.equals("full")) {
-			desc.formats[argcount] = DateFormat.getTimeInstance(DateFormat.FULL, locale);
-		}
-		else {
-			desc.formats[argcount] = new SimpleDateFormat(astyle, locale);
-		}
-	}
-	else if (aformat.equals("date")) {
-		if (astyle.equals("")) {
-			desc.formats[argcount] = DateFormat.getDateInstance(DateFormat.DEFAULT, locale);
-		}
-		else if (astyle.equals("short")) {
-			desc.formats[argcount] = DateFormat.getDateInstance(DateFormat.SHORT, locale);
-		}
-		else if (astyle.equals("medium")) {
-			desc.formats[argcount] = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
-		}
-		else if (astyle.equals("long")) {
-			desc.formats[argcount] = DateFormat.getDateInstance(DateFormat.LONG, locale);
-		}
-		else if (astyle.equals("full")) {
-			desc.formats[argcount] = DateFormat.getDateInstance(DateFormat.FULL, locale);
-		}
-		else {
-			desc.formats[argcount] = new SimpleDateFormat(astyle, locale);
-		}
-	}
-	else if (aformat.equals("number")) {
-		if (astyle.equals("")) {
-			desc.formats[argcount] = NumberFormat.getInstance(locale);
-		}
-		else if (astyle.equals("currency")) {
-			desc.formats[argcount] = NumberFormat.getCurrencyInstance(locale);
-		}
-		else if (astyle.equals("percent")) {
-			desc.formats[argcount] = NumberFormat.getPercentInstance(locale);
-		}
-		else if (astyle.equals("integer")) {
-			desc.formats[argcount] = NumberFormat.getNumberInstance(locale);
-		}
-		else {
-			desc.formats[argcount] = new DecimalFormat(astyle, locale);
-		}
-	}
-	else if (aformat.equals("choice")) {
-		desc.formats[argcount] = new ChoiceFormat(astyle);
-	}
-	else {
-		// Should be a string.
-		desc.formats[argcount] = null;
-	}
-}
+	// Extract the style.
+	if (index < max && pat.charAt(index) == ',')
+	  {
+	    index = scanFormatElement (pat, index + 1, buffer, '}');
+	    mfe.style = buffer.toString ();
+	  }
+      }
 
-public Object clone() {
-	MessageFormat obj = new MessageFormat("");
-	obj.locale = this.locale;
-	obj.strs = this.strs;
-	obj.formats = this.formats;
-	obj.argumentNumber = this.argumentNumber;
-	return (obj);
-}
+    // Advance past the last terminator.
+    if (index >= max || pat.charAt(index) != '}')
+      throw new IllegalArgumentException ();
+    ++index;
 
-public boolean equals(Object obj) {
-	if (obj instanceof MessageFormat) {
-		MessageFormat other = (MessageFormat)obj;
-		if (locale != other.locale) {
-			return (false);
-		}
-		for (int i = formats.length; i-- > 0; ) {
-			if (!formats[i].equals(other.formats[i])) {
-				return (false);
-			}
-			if (!strs[i].equals(other.strs[i])) {
-				return (false);
-			}
-		}
-		return (true);
-	}
-	else {
-		return (false);
-	}
-}
+    // Now fetch trailing string.
+    index = scanString (pat, index, buffer);
+    mfe.trailer = buffer.toString ();
 
-public static String format(String patt, Object args[]) {
-	return ((new MessageFormat(patt)).format(args, new StringBuffer(), null).toString());
-}
+    mfe.setLocale(locale);
 
-public final StringBuffer format(Object args[], StringBuffer buf, FieldPosition ignore) {
-	FieldPosition dummy = new FieldPosition(0);
-	MessagePatternDescription desc = new MessagePatternDescription();
-	boolean hasChanged = true;
-	StringBuffer temp_buf;
+    return index;
+  }
 
-	desc.formats = formats;
-	desc.strs = strs;
-	desc.argumentNumber = argumentNumber;
+  /**
+   * Applies the specified pattern to this MessageFormat.
+   *
+   * @param aPattern The Pattern
+   */
+  public void applyPattern (String newPattern)
+  {
+    pattern = newPattern;
 
-	do {
-		temp_buf = new StringBuffer();
+    StringBuffer tempBuffer = new StringBuffer ();
 
-		for (int i = 0; i < desc.formats.length; i++) {
-			temp_buf.append(desc.strs[i]);
-			if (desc.formats[i] == null) {
-				Object arg = args[desc.argumentNumber[i]];
-				temp_buf.append(arg!=null?arg.toString():"null");
-			}
-			else {
-				desc.formats[i].format(args[desc.argumentNumber[i]], temp_buf, dummy);
-			}
-		}
-	        temp_buf.append(desc.strs[desc.strs.length - 1]);
-		desc = tryToApplyPattern(temp_buf.toString());
-		if (desc.argumentNumber.length == 0)
-	            hasChanged = false;
-	} while(hasChanged);
-	buf.append(temp_buf.toString());
-	return (buf);
-}
+    int index = scanString (newPattern, 0, tempBuffer);
+    leader = tempBuffer.toString();
 
-public final StringBuffer format(Object arg, StringBuffer append, FieldPosition ignore) {
-	if (arg instanceof Object[]) {
-		return (format((Object[])arg, append, ignore));
-	}
-	else {
-		return (format(new Object[]{ arg }, append, ignore));
-	}
-}
+    Vector elts = new Vector ();
+    while (index < newPattern.length())
+      index = scanFormat (newPattern, index, tempBuffer, elts, locale);
 
-public Format[] getFormats() {
-	return (formats);
-}
+    elements = new MessageFormatElement[elts.size()];
+    elts.copyInto(elements);
+  }
 
-public Locale getLocale() {
-	return (locale);
-}
+  /**
+   * Overrides Format.clone()
+   */
+  public Object clone ()
+  {
+    MessageFormat c = (MessageFormat) super.clone ();
+    c.elements = (MessageFormatElement[]) elements.clone ();
+    return c;
+  }
 
-public int hashCode() {
-	return (super.hashCode());
-}
+  /**
+   * Overrides Format.equals(Object obj)
+   */
+  public boolean equals (Object obj)
+  {
+    if (! (obj instanceof MessageFormat))
+      return false;
+    MessageFormat mf = (MessageFormat) obj;
+    return (pattern.equals(mf.pattern)
+	    && locale.equals(mf.locale));
+  }
 
-public Object[] parse(String str, ParsePosition pos) {
-	Object[] data = new Object[argumentNumber.length];
-	int count, startPos, endPos;
-	int parsingPosition;
-	ParsePosition subParsePos = new ParsePosition(0);
+  /**
+   * A convinience method to format patterns.
+   *
+   * @param aPattern The pattern used when formatting.
+   * @param arguments The array containing the objects to be formatted.
+   */
+  public static String format (String pattern, Object arguments[])
+  {
+    MessageFormat mf = new MessageFormat (pattern);
+    StringBuffer sb = new StringBuffer ();
+    FieldPosition fp = new FieldPosition (NumberFormat.INTEGER_FIELD);
+    return mf.format(arguments, sb, fp).toString();
+  }
 
-	parsingPosition = pos.getIndex();
-	str = str.substring(pos.getIndex());
-	for (parsingPosition=0,count=0;count<strs.length;count++) {
-		// Check the inter-argument string.
-		endPos = strs[count].length();
-		if (!strs[count].equals(str.substring(0, endPos))) {
-			pos.setErrorIndex(parsingPosition);
-			return null;
-		}
-		str = str.substring(endPos);
+  /**
+   * Returns the pattern with the formatted objects.
+   *
+   * @param source The array containing the objects to be formatted.
+   * @param result The StringBuffer where the text is appened.
+   * @param fp A FieldPosition object (it is ignored).
+   */
+  public final StringBuffer format (Object arguments[], StringBuffer appendBuf,
+				    FieldPosition ignore)
+  {
+    appendBuf.append(leader);
 
-		parsingPosition += endPos;
-		if (count == strs.length-1)
-			break;
+    for (int i = 0; i < elements.length; ++i)
+      {
+	if (elements[i].argNumber >= arguments.length)
+	  throw new IllegalArgumentException ();
+	Object thisArg = arguments[elements[i].argNumber];
 
-		// There is predefined format: great, let it decide if it
-		// is parsable.
-		if (formats[count] != null) {
-			subParsePos.setIndex(0);
-			data[count] = formats[count].parseObject(str, subParsePos);
-			if (data[count] == null) {
-				pos.setErrorIndex(subParsePos.getErrorIndex()+parsingPosition);
-				return null;
-			}
-			str = str.substring(subParsePos.getIndex());
-			parsingPosition += subParsePos.getIndex();
-		} else {
-			int boundary;
-			// Aie ! We need to guess. Try to mimic JDK.
-			// First find the boundary of the argument.
-			if (count == strs.length-2 && strs[strs.length-1].equals(""))
-				boundary = str.length();
-			else {
-				boundary = str.indexOf(strs[count+1]);
-				if (boundary == -1) {
-					pos.setErrorIndex(parsingPosition);
-					return null;
-				}
-			}
+	Format formatter = null;
+	if (elements[i].setFormat != null)
+	  formatter = elements[i].setFormat;
+	else if (elements[i].format != null)
+	  {
+	    if (elements[i].formatClass != null
+		&& ! elements[i].formatClass.isInstance(thisArg))
+	      throw new IllegalArgumentException ();
+	    formatter = elements[i].format;
+	  }
+	else if (thisArg instanceof Number)
+	  formatter = NumberFormat.getInstance(locale);
+	else if (thisArg instanceof Date)
+	  formatter = DateFormat.getTimeInstance(DateFormat.DEFAULT, locale);
+	else
+	  appendBuf.append(thisArg);
 
-			// Just extract the string.
-			data[count] = str.substring(0, boundary);
-			str = str.substring(boundary);
-			parsingPosition += boundary;
-		}
-	}
-	pos.setIndex(parsingPosition);
+	if (formatter != null)
+	  {
+	    // Special-case ChoiceFormat.
+	    if (formatter instanceof ChoiceFormat)
+	      {
+		StringBuffer buf = new StringBuffer ();
+		formatter.format(thisArg, buf, ignore);
+		MessageFormat mf = new MessageFormat ();
+		mf.setLocale(locale);
+		mf.applyPattern(buf.toString());
+		mf.format(arguments, appendBuf, ignore);
+	      }
+	    else
+	      formatter.format(thisArg, appendBuf, ignore);
+	  }
 
-	return data;
-}
+	appendBuf.append(elements[i].trailer);
+      }
 
-public Object[] parse(String str) throws ParseException {
-	ParsePosition pos = new ParsePosition(0);
-	Object[] data;
-	
-	data = parse(str, pos);
-	if (data == null)
-		throw new ParseException("Message parsing error", pos.getErrorIndex());
+    return appendBuf;
+  }
 
-	return data;
-}
+  /**
+   * Returns the pattern with the formatted objects.
+   *
+   * @param source The object to be formatted.
+   * @param result The StringBuffer where the text is appened.
+   * @param fp A FieldPosition object (it is ignored).
+   */
+  public final StringBuffer format (Object singleArg, StringBuffer appendBuf,
+				    FieldPosition ignore)
+  {
+    Object[] args;
 
-public Object parseObject(String str, ParsePosition pos) {
-	return (parse(str, pos));
-}
+    if (singleArg instanceof Object[])
+      {
+	// This isn't specified in any manual, but it follows the
+	// JDK implementation.
+	args = (Object[]) singleArg;
+      }
+    else
+      {
+	args = new Object[1];
+	args[0] = singleArg;
+      }
+    return format (args, appendBuf, ignore);
+  }
 
-public void setFormat(int num, Format newformat) {
-	formats[num] = newformat;
-}
+  /**
+   * Returns an array with the Formats for
+   * the arguments.
+   */
+  public Format[] getFormats ()
+  {
+    Format[] f = new Format[elements.length];
+    for (int i = elements.length - 1; i >= 0; --i)
+      f[i] = elements[i].setFormat;
+    return f;
+  }
 
-public void setFormats(Format[] newformats) {
-	formats = newformats;
-}
+  /**
+   * Returns the locale.
+   */
+  public Locale getLocale ()
+  {
+    return locale;
+  }
 
-public void setLocale(Locale loc) {
-	this.locale = loc;
-}
+  /**
+   * Overrides Format.hashCode()
+   */
+  public int hashCode ()
+  {
+    // FIXME: not a very good hash.
+    return pattern.hashCode() + locale.hashCode();
+  }
 
-public String toPattern() {
-	return pattern;
-}
+  private MessageFormat ()
+  {
+  }
 
+  /**
+   * Creates a new MessageFormat object with
+   * the specified pattern
+   *
+   * @param aPattern The Pattern
+   */
+  public MessageFormat (String pattern)
+  {
+    locale = Locale.getDefault();
+    applyPattern (pattern);
+  }
+
+  public Object[] parse (String sourceStr, ParsePosition pos)
+  {
+    // Check initial text.
+    int index = pos.getIndex();
+    if (! sourceStr.startsWith(leader, index))
+      {
+	pos.setErrorIndex(index);
+	return null;
+      }
+    index += leader.length();
+
+    Vector results = new Vector (elements.length, 1);
+    // Now check each format.
+    for (int i = 0; i < elements.length; ++i)
+      {
+	Format formatter = null;
+	if (elements[i].setFormat != null)
+	  formatter = elements[i].setFormat;
+	else if (elements[i].format != null)
+	  formatter = elements[i].format;
+
+	Object value = null;
+	if (formatter instanceof ChoiceFormat)
+	  {
+	    // We must special-case a ChoiceFormat because it might
+	    // have recursive formatting.
+	    ChoiceFormat cf = (ChoiceFormat) formatter;
+	    String[] formats = (String[]) cf.getFormats();
+	    double[] limits = (double[]) cf.getLimits();
+	    MessageFormat subfmt = new MessageFormat ();
+	    subfmt.setLocale(locale);
+	    ParsePosition subpos = new ParsePosition (index);
+
+	    int j;
+	    for (j = 0; value == null && j < limits.length; ++j)
+	      {
+		subfmt.applyPattern(formats[j]);
+		subpos.setIndex(index);
+		value = subfmt.parse(sourceStr, subpos);
+	      }
+	    if (value != null)
+	      {
+		index = subpos.getIndex();
+		value = new Double (limits[j]);
+	      }
+	  }
+	else if (formatter != null)
+	  {
+	    pos.setIndex(index);
+	    value = formatter.parseObject(sourceStr, pos);
+	    if (value != null)
+	      index = pos.getIndex();
+	  }
+	else
+	  {
+	    // We have a String format.  This can lose in a number
+	    // of ways, but we give it a shot.
+	    int next_index = sourceStr.indexOf(elements[i].trailer, index);
+	    if (next_index == -1)
+	      {
+		pos.setErrorIndex(index);
+		return null;
+	      }
+	    value = sourceStr.substring(index, next_index);
+	    index = next_index;
+	  }
+
+	if (value == null
+	    || ! sourceStr.startsWith(elements[i].trailer, index))
+	  {
+	    pos.setErrorIndex(index);
+	    return null;
+	  }
+
+	if (elements[i].argNumber >= results.size())
+	  results.setSize(elements[i].argNumber + 1);
+	results.setElementAt(value, elements[i].argNumber);
+
+	index += elements[i].trailer.length();
+      }
+
+    Object[] r = new Object[results.size()];
+    results.copyInto(r);
+    return r;
+  }
+
+  public Object[] parse (String sourceStr) throws ParseException
+  {
+    ParsePosition pp = new ParsePosition (0);
+    Object[] r = parse (sourceStr, pp);
+    if (r == null)
+      throw new ParseException ("couldn't parse string", pp.getErrorIndex());
+    return r;
+  }
+
+  public Object parseObject (String sourceStr, ParsePosition pos)
+  {
+    return parse (sourceStr, pos);
+  }
+
+  /**
+   * Sets the format for the argument at an specified
+   * index.
+   *
+   * @param index The index.
+   * @format The Format object.
+   */
+  public void setFormat (int variableNum, Format newFormat)
+  {
+    elements[variableNum].setFormat = newFormat;
+  }
+
+  /**
+   * Sets the formats for the arguments.
+   *
+   * @param formats An array of Format objects.
+   */
+  public void setFormats (Format[] newFormats)
+  {
+    if (newFormats.length < elements.length)
+      throw new IllegalArgumentException ();
+    int len = Math.min(newFormats.length, elements.length);
+    for (int i = 0; i < len; ++i)
+      elements[i].setFormat = newFormats[i];
+  }
+
+  /**
+   * Sets the locale.
+   *
+   * @param locale A Locale
+   */
+  public void setLocale (Locale loc)
+  {
+    locale = loc;
+    if (elements != null)
+      {
+	for (int i = 0; i < elements.length; ++i)
+	  elements[i].setLocale(loc);
+      }
+  }
+
+  /**
+   * Returns the pattern.
+   */
+  public String toPattern ()
+  {
+    return pattern;
+  }
+
+  // The pattern string.
+  private String pattern;
+  // The locale.
+  private Locale locale;
+  // Variables.
+  private MessageFormatElement[] elements;
+  // Leader text.
+  private String leader;
 }

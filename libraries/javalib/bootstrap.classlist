@@ -118,7 +118,7 @@ java/security/ProtectionDomain.class
 java/security/SecureClassLoader.class
 java/text/Format.class
 java/text/MessageFormat.class
-java/text/MessageFormat$MessagePatternDescription.class
+java/text/MessageFormatElement.class
 java/util/AbstractCollection.class
 java/util/AbstractList.class
 java/util/AbstractList$1.class
@@ -173,6 +173,7 @@ java/util/ResourceBundle.class
 java/util/Set.class
 java/util/Stack.class
 java/util/StringTokenizer.class
+java/util/TimeZone.class
 java/util/Vector.class
 java/util/Vector$1.class
 java/util/jar/JarFile.class

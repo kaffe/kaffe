@@ -291,7 +291,8 @@ TEST_SRCS = \
 
 
 UTIL_SRCS = \
-		Arrays.c
+		Arrays.c \
+		TimeZone.c
 
 
 libnative_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
@@ -318,7 +319,7 @@ am__objects_2 = Class.lo ClassLoader.lo Compiler.lo Double.lo Float.lo \
 am__objects_3 = Array.lo Constructor.lo Field.lo Method.lo
 am__objects_4 = DateFormat.lo
 am__objects_5 = TestNative.lo
-am__objects_6 = Arrays.lo
+am__objects_6 = Arrays.lo TimeZone.lo
 am_libnative_la_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	$(am__objects_3) $(am__objects_4) $(am__objects_5) \
 	$(am__objects_6)
@@ -347,7 +348,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/String.Plo ./$(DEPDIR)/System.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/TestNative.Plo ./$(DEPDIR)/Thread.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ThreadStack.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/Throwable.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Throwable.Plo ./$(DEPDIR)/TimeZone.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/UNIXProcess.Plo ./$(DEPDIR)/ZipFile.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -434,6 +435,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ThreadStack.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Throwable.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TimeZone.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UNIXProcess.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ZipFile.Plo@am__quote@
 
