@@ -47,7 +47,7 @@ java_io_ObjectInputStream_inputClassFields(struct Hjava_io_ObjectInputStream* st
 	int i;
 
 #define	READ(FUNC,SIG,TYPE) \
-	((jvalue*)obj)[unhand(arr)->body[i+1]].TYPE = \
+	((jvalue*)(unhand(arr)->body[i+1] + (uintp)obj))->TYPE = \
 		do_execute_java_method(stream, #FUNC, #SIG, 0, 0).TYPE
 
 	for (i = 0; i < obj_length(arr); i += 2) {
