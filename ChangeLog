@@ -1,5 +1,18 @@
 2003-12-04  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/nio/channels/spi/AbstractInterruptibleChannel.java:
+	Resynced with GNU Classpath.
+
+	2003-12-02  Michael Koch  <konqueror@gmx.de>
+
+        * java/nio/channels/spi/AbstractInterruptibleChannel.java
+        (opened): Removed.
+        (closed): New field.
+        (close): Check of channel is closed already.
+        (isOpen): Return !closed.
+
+2003-12-04  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/net/Inet4Address.java,
 	libraries/javalib/java/net/Inet6Address.java,
 	libraries/javalib/java/rmi/MarshalledObject.java,
