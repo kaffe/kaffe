@@ -1,4 +1,13 @@
 /*
+ * Copyright (c) 1998 The University of Utah. All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ *
+ * Contributed by the Flux Research Group at the University of Utah.
+ * Authors: Godmar Back, Patrick Tullmann 
+ */
+/*
  * debug.h
  *
  * A dynamic debugging framework for Kaffe.  Through the magic
@@ -8,11 +17,6 @@
  * or, if it's enabled, specific debug statements can be dynamically
  * enabled at run time by setting the vmdebugmask, which is done
  * with the -vmdebug command line switch.
- *
- * INSERT COPYRIGHT HERE
- *
- * Written by Patrick Tullmann <tullmann@cs.utah.edu>, 1998
- *	   and Godmar Back <gback@cs.utah.edu>
  */
 #ifndef __kaffevm_debug_h
 #define __kaffevm_debug_h
@@ -32,7 +36,7 @@
  * then #include "debug.h" in every file where you want to use the
  * option, and then use either DBG or DBGEXPR!
  *
- * If you add option, try to invent sensible categories.
+ * If you add options, try to invent sensible categories.
  */
 /* Debug Masks: (1 bit per option) */
 # define DBG_BIT(x) (((jlong)1)<<x)
@@ -44,7 +48,7 @@
 # define DBG_EXCEPTION		DBG_BIT(4) 
 # define DBG_JTHREAD		DBG_BIT(5) 
 # define DBG_JTHREADDETAIL	DBG_BIT(6) 
-# define DBG_DETECTDEADLOCK	DBG_BIT(7) 
+/* 7 is free */
 # define DBG_BREAKONEXIT	DBG_BIT(8) 
 # define DBG_INIT		DBG_BIT(9) 
 # define DBG_GCPRIM		DBG_BIT(10) 

@@ -33,6 +33,8 @@
 
 #define	MAXLOCK		64
 #define	HASHLOCK(a)	((((uintp)(a)) / sizeof(void*)) % MAXLOCK)
+#define SPINON(addr) 	(*Kaffe_LockInterface.spinon)(addr)
+#define SPINOFF(addr) 	(*Kaffe_LockInterface.spinoff)(addr)
 
 static struct lockList {
 	void*		lock;
@@ -42,16 +44,16 @@ static struct lockList {
 /* a list in which we keep all static locks */
 static iLock *staticLocks;
 
-#ifdef DEBUG
 static void
 dumpLock(iLock *lk)
 {
 	if (lk->ref == -1) {
-		dprintf("%-20s ", lk->address);
+		fprintf(stderr, "%s ", (char*)lk->address);
 	} else {
-		dprintf("lk@ad=%p ", lk->address);
+		fprintf(stderr, "lock@%p ", lk->address);
 	}
-	dprintf(".hd=%9p .ct=%d .mx=%9p .cv=%9p\n",
+	fprintf(stderr, "held by `%s'\n .hd=%-9p .ct=%d .mx=%-9p .cv=%-9p\n",
+		(lk->holder != 0) ? nameNativeThread(lk->holder) : "noone",
 		lk->holder, lk->count, lk->mux, lk->cv);
 }
 
@@ -64,20 +66,20 @@ dumpLocks(void)
 	int i;
 	iLock* lock;
 
-	dprintf("dumping dynamic locks:\n");
+	fprintf(stderr, "Dumping dynamic locks:\n");
 	for (i = 0; i < MAXLOCK; i++) {
 		for (lock = lockTable[i].head; lock; lock = lock->next) {
-			if (lock->ref)
+			if (lock->ref) {
 				dumpLock(lock);
+			}
 		}
 	}
 
-	dprintf("dumping static locks:\n");
+	fprintf(stderr, "Dumping static locks:\n");
 	for (lock = staticLocks; lock; lock = lock->next) {
 		dumpLock(lock);
 	}
 }
-#endif
 
 /*
  * Retrieve a machine specific (possibly) locking structure associated with
@@ -90,15 +92,18 @@ newLock(void* address)
 	iLock* lock;
 	iLock* freelock;
 
-	freelock = 0;
 	lockHead = &lockTable[HASHLOCK(address)];
+	SPINON(lockHead->lock);
 
-	(*Kaffe_LockInterface.spinon)(lockHead->lock);
+retry:;
+	freelock = 0;
 
+	/* See if there's a free lock for that slot */
 	for (lock = lockHead->head; lock != NULL; lock = lock->next) {
+		/* If so, increase ref count and return */
 		if (lock->address == address) {
 			lock->ref++;
-			(*Kaffe_LockInterface.spinoff)(lockHead->lock);
+			SPINOFF(lockHead->lock);
 			return (lock);
 		}
 		if (lock->ref == 0 && freelock == 0) {
@@ -106,28 +111,33 @@ newLock(void* address)
 		}
 	}
 
-	/* Allocate a new lock structure - use a free one if we found it */
-	if (freelock != 0) {
-		lock = freelock;
-	}
-	else {
+	/* Allocate a new lock structure if needed */
+	if (freelock == 0) {
 		/* Both of these two function calls involve allocations. 
-		 * They can block and cause a thread switch.
+		 * They can block and cause a gc.  Thus, we cannot hold
+		 * the spinlock here.
 		 */
+		SPINOFF(lockHead->lock);
 		lock = gc_malloc(sizeof(iLock), GC_ALLOC_LOCK);
 		(*Kaffe_LockInterface.init)(lock);
-		/* insert into list after initializing it */
+		SPINON(lockHead->lock);
+
 		lock->next = lockHead->head;
 		lockHead->head = lock;
+
+		/* go back and see whether another thread has already
+		 * entered the entry for this address.
+		 */
+		goto retry;
 	}
 
 	/* Fill in the details */
-	lock->address = address;
-	lock->ref = 1;
-	lock->holder = NULL;
-	lock->count = 0;
-	(*Kaffe_LockInterface.spinoff)(lockHead->lock);
-	return (lock);
+	freelock->address = address;
+	freelock->ref = 1;
+	freelock->holder = NULL;
+	freelock->count = 0;
+	SPINOFF(lockHead->lock);
+	return (freelock);
 }
 
 /*
@@ -159,7 +169,7 @@ freeLock(iLock* lk)
 	struct lockList* lockHead;
 	lockHead = &lockTable[HASHLOCK(lk->address)];
 
-	(*Kaffe_LockInterface.spinon)(lockHead->lock);
+	SPINON(lockHead->lock);
 
 	/* If lock no longer in use, release it for reallocation */
 	lk->ref--;
@@ -172,7 +182,7 @@ freeLock(iLock* lk)
 DBG(VMLOCKS,	dprintf("Freeing lock for addr=0x%x\n", lk->address);	)
 	}
 
-	(*Kaffe_LockInterface.spinoff)(lockHead->lock);
+	SPINOFF(lockHead->lock);
 }
 
 /*
@@ -231,7 +241,7 @@ DBG(LOCKCONTENTION,
 /*
  * Lock a mutex.  We use the address to find a lock.
  */
-void
+iLock*
 _lockMutex(void* addr)
 {
 	iLock* lk;
@@ -248,6 +258,7 @@ DBG(VMLOCKS,	dprintf("Lock 0x%x on addr=0x%x\n", THREAD_NATIVE(), addr);    )
 	lk = newLock(addr);
 #endif
 	__lockMutex(lk);
+	return (lk);
 }
 
 /*
@@ -259,6 +270,19 @@ __unlockMutex(iLock* lk)
 {
 DBG(VMLOCKS,	dprintf("Unlock 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);   )
 
+#if defined(DEBUG)
+	if (lk->count == 0) {
+		dprintf("count == 0\n");
+		dumpLock(lk);
+		ABORT();
+	}
+	if (lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
+		dprintf("HOLDER %p != ME %p\n", lk->holder,
+			(*Kaffe_ThreadInterface.currentNative)());
+		dumpLock(lk);
+		ABORT();
+	}
+#endif
 	assert(lk->count > 0 && lk->holder == (*Kaffe_ThreadInterface.currentNative)());
 	lk->count--;
 	if (lk->count == 0) {

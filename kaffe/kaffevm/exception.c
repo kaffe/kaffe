@@ -60,7 +60,6 @@ extern uintp Kaffe_JNI_estart;
 extern uintp Kaffe_JNI_eend;
 extern void Kaffe_JNIExceptionHandler(void);
 
-extern void Tspinoffall(void);
 static bool findExceptionBlockInMethod(uintp, Hjava_lang_Class*, Method*, exceptionInfo*);
 
 /*
@@ -141,14 +140,14 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 	iLock* lk;
 	Hjava_lang_Thread* ct;
 
-	/* Release the interrupts (in case they were held when this
-	 * happened - and hope this doesn't break anything).
-	 * XXX - breaks the thread abstraction model !!!
-	 *
-	 * NB: I think we should put an assertion !intsDisabled() in here
-	 * instead. - gback
+#if defined(INTS_DISABLED)
+	/*
+	 * We should never try to dispatch an exception while interrupts are 
+	 * disabled.  If the threading system provides a means to do so, 
+	 * check that we don't attempt to do it anyway.
 	 */
-	Tspinoffall();
+	assert(!INTS_DISABLED());
+#endif
 
 	ct = getCurrentThread();
 
@@ -337,7 +336,12 @@ catchSignal(int sig, void* handler)
 	 */
 	sigaddset(&newact.sa_mask, SIGIO);
 	sigaddset(&newact.sa_mask, SIGALRM);
+#if defined(SIGVTALRM)
 	sigaddset(&newact.sa_mask, SIGVTALRM);
+#endif
+#if defined(SIGUNUSED)
+	sigaddset(&newact.sa_mask, SIGUNUSED);
+#endif
 	newact.sa_flags = 0;
 #if defined(SA_SIGINFO)
 	newact.sa_flags |= SA_SIGINFO;

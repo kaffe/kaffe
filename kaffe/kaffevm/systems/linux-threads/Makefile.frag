@@ -1,6 +1,6 @@
-# Makefile.frag for kaffevm internal threads.
+# Makefile.frag for kaffevm linux threads.
 #
-# Copyright (c) 1996, 1997, 1998
+# Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 

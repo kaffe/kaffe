@@ -1,4 +1,13 @@
 /*
+ * Copyright (c) 1998 The University of Utah. All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ *
+ * Contributed by the Flux Research Group at the University of Utah.
+ * Authors: Godmar Back, Patrick Tullmann
+ */
+/*
  * debug.c
  *
  * A dynamic debugging framework for Kaffe.  Through the magic
@@ -7,11 +16,6 @@
  * disabled in which case all of the code "just goes away",
  * or, if its enabled, the area of code to debug is dynamically
  * chosen at run time.
- *
- * INSERT COPYRIGHT HERE
- *
- * Written by Patrick Tullmann <tullmann@cs.utah.edu>, 1998
- *	   and Godmar Back <gback@cs.utah.edu>
  */
 
 #include "config.h"
@@ -64,7 +68,6 @@ static struct debug_opts
 	D(JTHREAD,  "Show jthread operations--jthreads only"),
 	D(JTHREADDETAIL,  "Show jthread operations (more detail)"),
 	D(JTHREADNOPREEMPT,  "Disable preemption in--jthreads only"),
-	D(DETECTDEADLOCK,  "Show when jthread system deadlocks--jthreads only"),
 	D(EXCEPTION, "Debug exceptions, don't catch traps"),
 	D(INIT,     "Show initialization steps."),
 	D(BREAKONEXIT, "Cause an exception before exiting. (Useful under GDB)"),
@@ -115,8 +118,7 @@ static struct debug_opts
 
 	{ "intrp", DBG_INT_NATIVE|DBG_INT_RETURN|DBG_INT_VMCALL, 
 			"Calls of interpreter (without instructions)" },
-	{ "deadlock", DBG_DETECTDEADLOCK|DBG_LOCKCONTENTION, 
-			"Debug deadlocks" },
+	{ "deadlock", DBG_LOCKCONTENTION, "Debug deadlocks" },
 	{ "classgc", DBG_CLASSGC|DBG_FINALIZE, 
 			"Debug finalization (show finalization)" },
 	{ "intrpA", 

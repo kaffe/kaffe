@@ -13,11 +13,6 @@
 
 #include "gc-mem.h"
 
-extern int gc_mode;
-
-#define	GC_DISABLED		0
-#define	GC_ENABLED		1
-
 /* Structure of a root object - essentially an indirect reference
  * to another data structure.
  */
@@ -54,8 +49,8 @@ typedef	gc_unit			gcList;
 
 /* ------------------------------------------------------------------------ */
 
-#define	LOCK()			(*Kaffe_LockInterface.spinon)(0);
-#define	UNLOCK()		(*Kaffe_LockInterface.spinoff)(0);
+#define	STOPWORLD()		(*Kaffe_ThreadInterface.GcSuspendThreads)();
+#define	RESUMEWORLD()		(*Kaffe_ThreadInterface.GcResumeThreads)();
 
 extern struct _gcStats {
         uint32  totalmem;

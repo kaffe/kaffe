@@ -89,7 +89,6 @@ initThreads(void)
 		/* Start the GC daemons we need */
 		finalman = createDaemon(&finaliserMan, "finaliser", THREAD_MAXPRIO);
 		garbageman = createDaemon(&gcMan, "gc", THREAD_MAXPRIO);
-		gc_mode = GC_ENABLED;
 	}
 }
 
@@ -219,7 +218,9 @@ firstStartThread(void* arg)
 
 	tid  = (*Kaffe_ThreadInterface.currentJava)();
 
-DBG(VMTHREAD,	dprintf("firstStartThread %x\n", tid);		)
+DBG(VMTHREAD,	
+	dprintf("firstStartThread %x\n", tid);		
+    )
 
 	/*
 	 * We use JNI here to make sure the stack is unrolled when we get
@@ -228,7 +229,7 @@ DBG(VMTHREAD,	dprintf("firstStartThread %x\n", tid);		)
 	 */
 
 	/* Find the run()V method and call it */
-	runmethod = (*env)->GetMethodID(env, (*env)->GetObjectClass(env, tid),  
+	runmethod = (*env)->GetMethodID(env, (*env)->GetObjectClass(env, tid),
 					"run", "()V");
 	if (runmethod != 0) {
 		(*env)->CallVoidMethod(env, tid, runmethod);
@@ -353,4 +354,22 @@ void
 finalizeThread(Hjava_lang_Thread* tid)
 {
 	(*Kaffe_ThreadInterface.finalize)(tid);
+}
+
+/* 
+ * extract name of a thread as a C string.
+ * Returns static buffer.
+ */
+char *
+nameThread(Hjava_lang_Thread *tid)
+{  
+	static char buf[80];
+	int i = 0;
+	HArrayOfChar* name = unhand(tid)->name;
+	while (i < sizeof buf - 1 && i < ARRAY_SIZE(name)) {
+		buf[i] = ((short*)ARRAY_DATA(name))[i];
+		i++;  
+	}
+	buf[i] = 0;
+	return buf;
 }

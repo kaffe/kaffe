@@ -98,27 +98,50 @@ static
 void
 runfinalizer(void)
 {
-	if (runFinalizerOnExit)
+	if (runFinalizerOnExit) {
 		invokeFinalizer();
+	}
 }
 
-/* 
- * For debugging purposes, the jthread system might ask us to assign
- * a name to a given thread.  This can be single-threaded.
+/*
+ * print info about a java thread.
  */
-static
-char *
-nameThread(void *tid)
+static void
+dumpJavaThread(void *jlThread)
 {
-	static char buf[80];
-	int i = 0;
-	HArrayOfChar* name = unhand((Hjava_lang_Thread*)tid)->name;
-	while (i < sizeof buf - 1 && i < ARRAY_SIZE(name)) {
-		buf[i] = ((short*)ARRAY_DATA(name))[i];
-		i++;
-	}
-	buf[i] = 0;
-	return buf;
+        Hjava_lang_Thread *tid = jlThread;
+	fprintf(stderr, "`%s' ", nameThread(tid));
+	jthread_dumpthreadinfo((jthread_t)unhand(tid)->PrivateInfo);
+	fprintf(stderr, "\n");
+}
+
+static void
+dumpThreads(void)
+{
+	fprintf(stderr, "Dumping live threads:\n");
+	jthread_walkLiveThreads(dumpJavaThread);
+}
+
+/*
+ * Return the name of a java thread, given its native thread pointer.
+ */
+char*
+nameNativeThread(void* native)
+{
+	return nameThread((Hjava_lang_Thread*)
+		jthread_getcookie((jthread_t)native));
+}
+
+/*
+ * Invoked when threading system detects a deadlock.
+ */
+static void
+onDeadlock(void)
+{
+	dumpLocks();
+	dumpThreads();
+	fprintf(stderr, "Deadlock: all threads blocked on internal events\n");
+	ABORT();
 }
 
 static
@@ -141,7 +164,7 @@ Tinit(int nativestacksize)
 		thread_free,
 		broadcastDeath,
 		throwDeath,
-		nameThread);	
+		onDeadlock);
 	assert(mainthread);
 	gc_add_ref(mainthread);
 }
@@ -240,15 +263,38 @@ TcurrentJava(void)
 
 static          
 void
-TwalkThreads(void)
+TwalkThreads(void (*walkThread)(void *))
 {               
-	/* this is from gc-incremental.c */
-	extern void walkMemory(void*);
-	jthread_walkLiveThreads(walkMemory);
+	jthread_walkLiveThreads(walkThread);
+}
+
+/*
+ * Lock out all other threads.
+ */
+static
+void
+TsuspendThreads(void)
+{               
+	jthread_suspendall();
+}
+
+/*
+ * Reallow other threads.
+ */
+static          
+void
+TresumeThreads(void)
+{               
+	jthread_unsuspendall();
 }
 
 /*      
  * Walk the thread's internal context.
+ * This is invoked by the garbage collector thread, which is not 
+ * stopped.
+ *
+ * We will iterate through all threads, including the garbage collector
+ * and those threads that haven't been started yet.
  */
 static
 void
@@ -258,16 +304,28 @@ TwalkThread(Hjava_lang_Thread* tid)
 	unsigned len;
 	jthread_t jtid = (jthread_t)unhand(tid)->PrivateInfo;
 
-        if (jtid == 0)
+	/* Don't walk the gc thread's stack.  It was not stopped and
+	 * we hence don't have valid sp information.  In addition, there's
+	 * absolutely no reason why we should walk it at all.
+	 */
+        if (jtid == 0 || tid == jthread_getcookie((void*)jthread_current())) {
+DBG(JTHREAD,
+		dprintf("%d NOT walking jtid %p\n", jthread_current(), jtid);
+    )
                 return;
+	}
  
-        markObject(unhand(tid)->exceptObj);
-
-	/* ask threading system what the interesting stack range is */
-	jthread_extract_stack(jtid, &from, &len);
-
-	/* and walk it */
-	walkConservative(from, len);
+	/* Ask threading system what the interesting stack range is;
+	 * If the thread is too young, the threading system will return
+	 * 0 from extract_stack.  In that case, we don't have walk anything.
+	 */
+	if (jthread_extract_stack(jtid, &from, &len)) {
+DBG(JTHREAD,
+		dprintf("%d walking jtid %p\n", jthread_current(), jtid);
+    )
+		/* and walk it if needed */
+		walkConservative(from, len);
+	}
 }
 
 /* called when unrolling exceptions */
@@ -379,20 +437,14 @@ Lbroadcast(iLock* lk)
 void    
 Tspinon(void* arg)
 {       
-	intsDisable();
+	jthread_spinon(arg);
 }       
         
 void            
 Tspinoff(void* arg)
 {               
-	intsRestore();
+	jthread_spinoff(arg);
 }               
-
-void    
-Tspinoffall(void* arg)
-{       
-	intsRestoreAll();
-}       
 
 /*
  * check whether we have at least `left' bytes left on the stack
@@ -434,6 +486,8 @@ ThreadInterface Kaffe_ThreadInterface = {
 	(void *(*)(void)) jthread_current,
         TwalkThreads,
         TwalkThread,
+	TsuspendThreads,
+	TresumeThreads,
         TnextFrame,
 	TcheckStack,
 

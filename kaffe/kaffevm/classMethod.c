@@ -711,6 +711,7 @@ addInterfaces(Hjava_lang_Class* c, int inr, Hjava_lang_Class** inf)
 Hjava_lang_Class*
 loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 {
+	iLock* celock;
 	classEntry* centry;
 	Hjava_lang_Class* clazz = NULL;
 
@@ -730,7 +731,7 @@ loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 	 * Failed to find class, so must now load it.
 	 * We send at most one thread to load a class. 
 	 */
-	lockMutex(centry);
+	celock = lockMutex(centry);
 
 	/* Check again in case someone else did it */
 	if (centry->class == NULL) {
@@ -833,7 +834,7 @@ DBG(RESERROR,
 	}
 
 	/* Release lock now class has been entered */
-	unlockMutex(centry);
+	unlockKnownMutex(celock);
 
 	if (clazz == NULL) {
 		return (NULL);
@@ -879,11 +880,12 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 	errorInfo info;
 	Utf8Const *utf8;
 	classEntry* centry;
+	iLock* celock;
 
 	utf8 = utf8ConstNew(name, -1);
 	centry = lookupClassEntry(utf8, 0);
 	utf8ConstRelease(utf8);
-	lockMutex(centry);
+	celock = lockMutex(centry);
 	if (centry->class == 0) {
 		clazz = findClass(centry, &info);
 		if (clazz == 0) {
@@ -893,7 +895,7 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 		gc_add_ref(clazz);
 		(*class) = centry->class = clazz;
 	}
-	unlockMutex(centry);
+	unlockKnownMutex(celock);
 
 	if (processClass(centry->class, CSTATE_LINKED, &info) == true) {
 		return;

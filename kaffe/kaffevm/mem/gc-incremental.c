@@ -103,21 +103,11 @@ static void objectStatsPrint(void);
 
 #endif
 
-/* We run the GC after allocating 1Mbyte of memory.  If we are
- * doing this incrementally, then we will have GC our entire heap
- * by the time we've allocated this much new space.
- */
-#define	ALLOCCOUNTGC	(1024*1024)
-
 static iLock gcman;
 static iLock finman;
 iLock gc_lock;			/* allocator mutex */
 
-int gc_mode = GC_DISABLED;	/* GC will be enabled after the first
-				 * thread is setup.
-				 */
 static void gcFree(void*);
-
 static void finalizeObject(void*);
 
 void walkMemory(void*);
@@ -191,6 +181,8 @@ void
 initGc(void)
 {
 	initStaticLock(&gc_lock);
+	initStaticLock(&gcman);
+	initStaticLock(&finman);
 	URESETLIST(gclists[white]);
 	URESETLIST(gclists[grey]);
 	URESETLIST(gclists[black]);
@@ -263,11 +255,9 @@ markObjectDontCheck(gc_unit *unit, gc_block *info, int idx)
 	/* If we found a new white object, mark it as grey and
 	 * move it into the grey list.
 	 */
-	LOCK();
 	GC_SET_COLOUR(info, idx, GC_COLOUR_GREY);
 	UREMOVELIST(unit);
 	UAPPENDLIST(gclists[grey], unit);
-	UNLOCK();
 }
 
 void
@@ -507,6 +497,19 @@ walkClass(void* base, uint32 size)
 		}
 	}
 
+	/*
+	 * NB: We suspect that walking the class pool should suffice if
+	 * we ensured that all classes referenced from this would show up
+	 * as a ResolvedClass entry in the pool.  However, this is not
+	 * currently the case: for instance, resolved field type are not
+	 * marked as resolved in the constant pool, even though they do
+	 * have an index there! XXX
+	 *
+	 * The second hypothesis is that if the class is loaded by the
+	 * system and thus anchored, then everything that we can reach from 
+	 * here is anchored as well.  If that property holds, we should be
+	 * able to just return if class->loader == null here.   XXX
+	 */
 	/* walk fields */
 	if (CLASS_FIELDS(class) != 0) {
 		RECORD_MARKED(1, CLASS_NFIELDS(class) * sizeof(Field));
@@ -548,17 +551,6 @@ walkClass(void* base, uint32 size)
 		walkMethods(CLASS_METHODS(class), CLASS_NMETHODS(class));
 	}
 	MARK_OBJECT_PRECISE(class->loader);
-
-	/* Walk the static data elements */
-	if (class->state >= CSTATE_DOING_PREPARE) {
-        	fld = CLASS_SFIELDS(class);
-        	n = CLASS_NSFIELDS(class);
-        	for (; --n >= 0; fld++) {
-			if (FIELD_ISREF(fld)) {
-				MARK_OBJECT_PRECISE(*(void**)FIELD_ADDRESS(fld));
-			}
-        	}
-	}
 }
 
 /*
@@ -605,13 +597,11 @@ gcMan(void* arg)
 	gc_block* info;
 	int idx;
 
-	initStaticLock(&gcman);
 	lockStaticMutex(&gcman);
 
 	/* Wake up anyone waiting for the GC to finish every time we're done */
-	for(;; broadcastStaticCond(&gcman)) {
+	for(;; gcRunning = 0, broadcastStaticCond(&gcman)) {
 
-		gcRunning = 0;
 		while (gcRunning == 0) {
 			waitStaticCond(&gcman, 0);
 		}
@@ -744,8 +734,9 @@ startGC(void)
 	gcStats.markedobj = 0;
 	gcStats.markedmem = 0;
 
+	lockStaticMutex(&gc_lock);
 	/* disable the mutator to protect colour lists */
-	LOCK();
+	STOPWORLD();
 
 	/* measure time */
 	startTiming(&gc_time, "gc-scan");
@@ -764,8 +755,11 @@ startGC(void)
 		MARK_OBJECT_PRECISE(UTOMEM(unit));
 	}
 
-	/* Walk the thread objects */
-	(*Kaffe_ThreadInterface.GcWalkThreads)();
+	/* Walk the thread objects as they threading system has them
+	 * registered.  Terminating a thread will remove it from the
+	 * threading system, stopping us here from walking it.
+	 */
+	(*Kaffe_ThreadInterface.GcWalkThreads)(walkMemory);
 }
 
 /*
@@ -845,13 +839,12 @@ finishGC(void)
 	 * Now that all lists that the mutator manipulates are in a
 	 * consistent state, we can reenable the mutator here 
 	 */
-	UNLOCK();
+	RESUMEWORLD();
 
 	/* 
 	 * Now free the objects.  We can block here since we're the only
 	 * thread manipulating the "mustfree" list.
 	 */
-	lockStaticMutex(&gc_lock);
 	startTiming(&sweep_time, "gc-sweep");
 
 	while (gclists[mustfree].cnext != &gclists[mustfree]) {
@@ -895,17 +888,18 @@ finaliserMan(void* arg)
 	gc_unit* unit;
 	int idx;
 
-	initStaticLock(&finman);
 	lockStaticMutex(&finman);
 
 	for (;;) {
 
 		finalRunning = false;
-		waitStaticCond(&finman, 0);
+		while (finalRunning == false) {
+			waitStaticCond(&finman, 0);
+		}
 		assert(finalRunning == true);
 
 		while (gclists[finalise].cnext != &gclists[finalise]) {
-			LOCK();
+			lockStaticMutex(&gc_lock);
 			unit = gclists[finalise].cnext;
 			UREMOVELIST(unit);
 			UAPPENDLIST(gclists[grey], unit);
@@ -919,7 +913,8 @@ finaliserMan(void* arg)
 			/* Objects are only finalised once */
 			GC_SET_STATE(info, idx, GC_STATE_FINALIZED);
 			GC_SET_COLOUR(info, idx, GC_COLOUR_GREY);
-			UNLOCK();
+			unlockStaticMutex(&gc_lock);
+
 			/* Call finaliser */
 			unlockStaticMutex(&finman);
 			(*gcFunctions[GC_GET_FUNCS(info,idx)].final)(UTOMEM(unit));
@@ -1044,10 +1039,8 @@ gcMalloc(size_t size, int fidx)
 		 * In addition, on some architectures (SGI), we must tell the
 		 * compiler to not delay computing mem by defining it volatile.
 		 */
-		LOCK(); 
 		GC_SET_COLOUR(info, i, GC_COLOUR_WHITE);
 		UAPPENDLIST(gclists[white], unit);
-		UNLOCK();
 	}
 	unlockStaticMutex(&gc_lock);
 	return (mem);

@@ -25,6 +25,7 @@
 #define staticLockIsInitialized(THING)	((THING)->ref == -1)
 #define	lockStaticMutex(THING)		__lockMutex((THING))
 #define	unlockStaticMutex(THING)	__unlockMutex((THING))
+#define	unlockKnownMutex(THING)		__unlockMutex((THING))
 #define	waitStaticCond(THING, TIME)	__waitCond((THING), (TIME))
 #define	signalStaticCond(THING)		__signalCond((THING))
 #define	broadcastStaticCond(THING)	__broadcastCond((THING))
@@ -50,7 +51,7 @@ extern void	__signalCond(iLock*);
 extern void	__broadcastCond(iLock*);
 extern int	__holdMutex(iLock*);
 
-extern void	_lockMutex(void*);
+extern iLock*	_lockMutex(void*);
 extern void	_unlockMutex(void*);
 extern int	_waitCond(void*, jlong);
 extern void	_signalCond(void*);
@@ -73,7 +74,5 @@ typedef struct LockInterface {
 
 extern LockInterface Kaffe_LockInterface;
 
-#ifdef DEBUG
 extern void dumpLocks(void);
-#endif
 #endif

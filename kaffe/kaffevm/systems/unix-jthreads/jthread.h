@@ -35,15 +35,12 @@
 #include "config-mem.h"
 #include "config-io.h"
 #include "config-signal.h"
-#include "jtypes.h"
-#include "gtypes.h"
-#include "thread.h"
-#include "errors.h"
-#include "support.h"
-#include "md.h"
+#include "gtypes.h"		/* for jlong */
 #include "lerrno.h"
-#include "exception.h"
-#include "jsyscall.h"
+#include "thread.h"		/* for NOTIMEOUT */
+#include "exception.h"		/* for catchSignal */
+#include "support.h"		/* for currentTime */
+#include "md.h"
 
 /*======== 	end of definitions that apply to Kaffe 	     	     ========*/
 
@@ -132,7 +129,7 @@ jthread_init(
 	void (*_deallocator)(void*),	/* memory deallocator */
 	void (*_destructor1)(void*),	/* called when a thread exits */ 
 	void (*_onstop)(void), 		/* called when a thread is stopped */
-	char *(*_nameThread)(void *tid));/* called to get a thread's name */
+	void (*_ondeadlock)(void)); 	/* called when we detect deadlock */
 
 /*
  * create a thread with a given priority
@@ -237,7 +234,7 @@ jthread_stackcheck(int left)
 /*
  * determine the "interesting" stack range a conservative gc must walk
  */
-void jthread_extract_stack(jthread_t jtid, void **from, unsigned *len);
+int jthread_extract_stack(jthread_t jtid, void **from, unsigned *len);
 
 /*
  * Disallow cancellation for current thread
@@ -252,11 +249,46 @@ void jthread_enable_stop(void);
 
 /*
  * functions to disable and restore interrupts
+ * These are *not* part of the public interface.
  */
 void 	intsDisable(void);
 void 	intsRestore(void);
-void	intsRestoreAll(void);
+#define	INTS_DISABLED()		intsDisabled()
 int 	intsDisabled(void);
+
+/*
+ * Prevent all other threads from running.
+ * In this uniprocessor implementation, this is simple.
+ */
+static inline 
+void jthread_suspendall(void)
+{
+	intsDisable();
+}
+
+/*
+ * Reallow other threads.
+ * In this uniprocessor implementation, this is simple.
+ */
+static inline 
+void jthread_unsuspendall(void)
+{
+	intsRestore();
+}
+
+/*
+ * Print info about a given jthread to stderr
+ */
+void jthread_dumpthreadinfo(jthread_t tid);
+
+/*
+ * return thread-specific data for a given jthread
+ */
+static inline void*
+jthread_getcookie(jthread_t tid) 
+{
+	return (tid->jlThread);
+}
 
 /*
  * API related to I/O
@@ -283,5 +315,20 @@ void jcondvar_initialise(jcondvar *cv);
 void jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
 void jcondvar_signal(jcondvar *cv, jmutex *lock);
 void jcondvar_broadcast(jcondvar *cv, jmutex *lock);
+
+/* Spinlocks: simple since we're uniprocessor */
+/* ARGSUSED */
+static inline
+void jthread_spinon(void *arg)
+{
+	intsDisable();
+}
+
+/* ARGSUSED */
+static inline
+void jthread_spinoff(void *arg)
+{
+	intsRestore();
+}
 
 #endif

@@ -41,6 +41,8 @@ void	startThread(Hjava_lang_Thread*);
 void	stopThread(Hjava_lang_Thread*, Hjava_lang_Object*);
 void	interruptThread(Hjava_lang_Thread*);
 void	finalizeThread(Hjava_lang_Thread*);
+char*	nameThread(Hjava_lang_Thread*);
+char*	nameNativeThread(void*);
 Hjava_lang_Thread* getCurrentThread(void);
 
 typedef struct ThreadInterface {
@@ -61,8 +63,10 @@ typedef struct ThreadInterface {
 	Hjava_lang_Thread*	(*currentJava)(void);
 	void*			(*currentNative)(void);
 
-	void			(*GcWalkThreads)(void);
+	void			(*GcWalkThreads)(void (*)(void*));
 	void			(*GcWalkThread)(Hjava_lang_Thread*);
+	void			(*GcSuspendThreads)(void);
+	void			(*GcResumeThreads)(void);
 
 	void*			(*nextFrame)(void*);
 	Hjava_lang_Throwable*	(*checkStack)(int);

@@ -38,27 +38,39 @@
 #define THREAD_FLAGS_BLOCKEDEXTERNAL	64
 
 /*
- * If debug option DETECTDEADLOCK is given, detect deadlocks.  
+ * If option DETECTDEADLOCK is given, detect deadlocks.  
  * A deadlock is defined as a situation where no thread is runnable and 
  * no threads is blocked on a timer, IO, or other external events.
+ *
+ * Undeffing this will save a few cycles, but kaffe will just hang if
+ * there is a deadlock.
  */
+#define DETECTDEADLOCK
 
+#if defined(DETECTDEADLOCK)
 #define BLOCKED_ON_EXTERNAL(t)						\
-	if (DBGEXPR(DETECTDEADLOCK, true, false)) {			\
+	do {								\
 	    tblocked_on_external++; 					\
 	    t->flags |= THREAD_FLAGS_BLOCKEDEXTERNAL;			\
-	}
+	} while (0)
 
 #define CLEAR_BLOCKED_ON_EXTERNAL(t) 					\
-	if (DBGEXPR(DETECTDEADLOCK, true, false)) {			\
+	do {								\
 		if (t->flags & THREAD_FLAGS_BLOCKEDEXTERNAL) { 		\
 			tblocked_on_external--; 			\
 			t->flags &= ~THREAD_FLAGS_BLOCKEDEXTERNAL;	\
 		}							\
-	}
+	} while (0)
 
 /* number of threads blocked on external events */
 static int tblocked_on_external;
+
+#else /* !DETECTDEADLOCK */
+
+#define BLOCKED_ON_EXTERNAL(t)
+#define CLEAR_BLOCKED_ON_EXTERNAL(t)
+
+#endif
 
 /*
  * Variables.
@@ -105,7 +117,7 @@ static void *(*allocator)(size_t); 	/* malloc */
 static void (*deallocator)(void*);	/* free */
 static void (*destructor1)(void*);	/* call when a thread exits */
 static void (*onstop)(void);		/* call when a thread is stopped */
-static char *(*nameThread)(void *); 	/* call to get a thread's name */
+static void (*ondeadlock)(void);	/* call when we detect deadlock */
 static int  max_priority;		/* maximum supported priority */
 static int  min_priority;		/* minimum supported priority */
 
@@ -466,16 +478,6 @@ intsRestore(void)
 }
 
 /*
- * reenable interrupts, non-recursive version.
- */
-void
-intsRestoreAll(void)
-{
-	blockInts = 1;
-	intsRestore();
-}
-
-/*
  * Handle a signal/interrupt.
  *
  * This is the handler given to catchSignal.
@@ -593,7 +595,6 @@ alarmException(void)
 	}
 }
 
-#ifdef DEBUG
 /*
  * print thread flags in pretty form.
  */
@@ -627,33 +628,28 @@ printflags(unsigned i)
 	return b;
 }
 
+/* 
+ * dump information about a thread to stderr
+ */
 void
-dumpThreads(void)
+jthread_dumpthreadinfo(jthread_t tid)
 {
-        jthread* tid;
-
-	dprintf("dumping live threads:\n");
-        for (tid = liveThreads; tid != NULL; tid = tid->nextlive) {
-		dprintf("tid %p, status %s flags %s\n  `%s'", tid, 
-			tid->status == THREAD_SUSPENDED ? "SUSPENDED" :
-			tid->status == THREAD_RUNNING ? "RUNNING" :
-			tid->status == THREAD_DEAD ? "DEAD" : "UNKNOWN!!!", 
-			printflags(tid->flags), nameThread(tid->jlThread));
-		if (tid->blockqueue != NULL) {
-			jthread *t;
-			dprintf(" blockqueue %p (%p->", tid->blockqueue,
+	fprintf(stderr, "tid %p, status %s flags %s\n", tid, 
+		tid->status == THREAD_SUSPENDED ? "SUSPENDED" :
+		tid->status == THREAD_RUNNING ? "RUNNING" :
+		tid->status == THREAD_DEAD ? "DEAD" : "UNKNOWN!!!", 
+		printflags(tid->flags));
+	if (tid->blockqueue != NULL) {
+		jthread *t;
+		fprintf(stderr, " blockqueue %p (%p->", tid->blockqueue,
 							t = *tid->blockqueue);
-			while (t && t->nextQ) {
-				t = t->nextQ; 
-				dprintf("%p->", t);
-			}
-			dprintf("|) ");
+		while (t && t->nextQ) {
+			t = t->nextQ; 
+			fprintf(stderr, "%p->", t);
 		}
-		dprintf("\n");
-        }
+		fprintf(stderr, "|) ");
+	}
 }
-#endif DEBUG
-
 
 /*
  * handle an interrupt.
@@ -665,19 +661,15 @@ static void
 handleInterrupt(int sig)
 {
 	switch(sig) {
-#ifdef DEBUG
-	case SIGUSR1:
-		dumpThreads();
-		break;
-#endif
-
 	case SIGALRM:
 		alarmException();
 		break;
 
+#if defined(SIGVTALRM)
 	case SIGVTALRM:
 		handleVtAlarm();
 		break;
+#endif
 
 	case SIGCHLD:
 		childDeath();
@@ -745,17 +737,18 @@ jthread_walkLiveThreads(void (*func)(void *jlThread))
 /*
  * determine the interesting stack range for a conservative gc
  */
-void
+int
 jthread_extract_stack(jthread *jtid, void **from, unsigned *len)
 {
-    assert(jtid);
+	assert(jtid);
 #if defined(STACK_GROWS_UP)
-    *from = jtid->stackBase;
-    *len = jtid->restorePoint - jtid->stackBase;
+	*from = jtid->stackBase;
+	*len = jtid->restorePoint - jtid->stackBase;
 #else   
-    *from = jtid->restorePoint;
-    *len = jtid->stackEnd - jtid->restorePoint;
+	*from = jtid->restorePoint;
+	*len = jtid->stackEnd - jtid->restorePoint;
 #endif
+	return (1);
 }
 
 /* 
@@ -764,7 +757,7 @@ jthread_extract_stack(jthread *jtid, void **from, unsigned *len)
 int
 jthread_frames(jthread *thrd)
 {
-        return 0;
+        return (0);
 }
 
 /*============================================================================
@@ -773,7 +766,7 @@ jthread_frames(jthread *thrd)
  *
  */
 
-#if defined(HAVE_SETITIMER)
+#if defined(HAVE_SETITIMER) && defined(ITIMER_VIRTUAL)
 /*
  * set virtual timer for 10ms round-robin time-slicing
  */
@@ -787,7 +780,7 @@ activate_time_slicing(void)
 }
 
 /*
- * deactivate virtual timer for 10ms round-robin time-slicing
+ * deactivate virtual timer
  */
 static void
 deactivate_time_slicing(void)
@@ -813,7 +806,7 @@ jthread_init(int pre,
 	void (*_deallocator)(void*),
 	void (*_destructor1)(void*),
 	void (*_onstop)(void),
-	char *(*_nameThread)(void *tid))
+	void (*_ondeadlock)(void))
 {
         jthread *jtid; 
 	int i;
@@ -859,21 +852,17 @@ jthread_init(int pre,
 	allocator = _allocator;
 	deallocator = _deallocator;
 	onstop = _onstop;
-	nameThread = _nameThread;
+	ondeadlock = _ondeadlock;
 	destructor1 = _destructor1;
 	threadQhead = allocator((maxpr + 1) * sizeof (jthread *));
 	threadQtail = allocator((maxpr + 1) * sizeof (jthread *));
 
+#if defined(SIGVTALRM)
 	catchSignal(SIGVTALRM, interrupt);
+#endif
 	catchSignal(SIGALRM, interrupt);
 	catchSignal(SIGIO, interrupt);
-
-	/* a we use this signal to get a thread dump */
-	DBGIF(catchSignal(SIGUSR1, interrupt);)
-
-#if defined(SIGCHLD)
         catchSignal(SIGCHLD, interrupt);
-#endif  
 
 	/* create the helper pipe for lost wakeup problem */
 	if (pipe(sigPipe) != 0)
@@ -1307,7 +1296,9 @@ dprintf("switch from %p to %p\n", lastThread, currentJThread); )
 					alarmBlocked = false;
 					sigemptyset(&nsig);
 					sigaddset(&nsig, SIGALRM);
+#if defined(SIGVTALRM)
 					sigaddset(&nsig, SIGVTALRM);
+#endif
 					sigaddset(&nsig, SIGIO);
 					sigprocmask(SIG_UNBLOCK, 
 						&nsig, 0);
@@ -1350,16 +1341,11 @@ dprintf("switch from %p to %p\n", lastThread, currentJThread); )
 			continue;
 		}
 
-		if (DBGEXPR(DETECTDEADLOCK, true, false) &&
-			tblocked_on_external == 0) {
-#ifdef DEBUG
-			extern void dumpLocks(void);	/* XXX */
-			dumpLocks();			/* XXX */
-			dumpThreads();
-#endif
-			assert(!!!"Deadlock: "
-			   " all threads blocked on internal events\n");
+#if defined(DETECTDEADLOCK)
+		if (tblocked_on_external == 0) {
+			ondeadlock();
 		}
+#endif
 		handleIO(true);
 	}
 }
@@ -1543,10 +1529,12 @@ jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 		resumeThread(tid);
 	}
 
-	/* a limited wait should not cause us to cry deadlock */
-	if (DBGEXPR(DETECTDEADLOCK, timeout != 0, false)) {
+#if defined(DETECTDEADLOCK)
+	/* a limited wait should not cause us to scream deadlock */
+	if (timeout != 0) {
 		BLOCKED_ON_EXTERNAL(currentJThread);
 	}
+#endif
 
 	/* wait to be signaled */
 	suspendOnQThread(current, cv, timeout);

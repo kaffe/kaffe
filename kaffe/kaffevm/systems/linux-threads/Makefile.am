@@ -1,4 +1,4 @@
-# Makefile.frag for kaffevm internal threads.
+# Makefile.frag for kaffevm pthreads.
 #
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
@@ -7,8 +7,8 @@
 # of this file. 
 
 noinst_LTLIBRARIES = libkthread.la
-libkthread_la_SOURCES = internal.c internalCalls.c
-EXTRA_DIST = Makefile.frag internal.h
+libkthread_la_SOURCES = internal.c pjthread.c syscalls.c
+EXTRA_DIST = Makefile.frag jthread.h
 
 @engine_frag@
 
@@ -17,4 +17,4 @@ INCLUDES = \
 	-I$(top_builddir)/config -I$(top_srcdir)/config \
 	-I$(top_builddir)/include -I$(top_srcdir)/include
 
-DEFS = $(ENGINE_DEFS) -DKVER=\"$(KVER)\"
+DEFS = $(ENGINE_DEFS) -DKVER=\"$(KVER)\" -D_REENTRANT
