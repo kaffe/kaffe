@@ -1,3 +1,12 @@
+Wed Jul  1 19:20:23 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* libraries/clib/native/Class.c: implemented makeExceptions
+	  kaffe/kaffevm/code.[ch]:
+	  kaffe/kaffevm/classMethod.h,readClassConfig.h,baseClasses.c:
+	  added fields declared_exceptions to method struct to hold the
+	  constant pool indices of declared exceptions.
+	  test/regression/TestScript: changed output for Bean and Reflect.
+
 Tue Jun 30 23:47:14 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* libraries/clib/native/ObjectStreamClass.c: implement missing
