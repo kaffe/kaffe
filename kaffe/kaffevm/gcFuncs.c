@@ -234,12 +234,12 @@ walkClass(Collector* collector, void* base, uint32 size)
                 fld = CLASS_SFIELDS(class);
                 for (n = 0; n < CLASS_NSFIELDS(class); n++) {
                         if (FIELD_RESOLVED(fld) && FIELD_ISREF(fld)) {
-				/* XXX:
-				 * static fields can refer to non 
-				 * gc-allocated objects (Example: 
-				 * java.lang.Integer.TYPE)
+				/* 
+				 * NB: This would break if static fields could
+				 * refer to non gc-allocated objects.
+				 * Check when doing GCJ.
 				 */
-                                GC_markAddress(collector, *(void**)FIELD_ADDRESS(fld));
+                                GC_markObject(collector, *(void**)FIELD_ADDRESS(fld));
                         }
                         fld++;
                 }
@@ -296,16 +296,11 @@ walkRefArray(Collector* collector, void* base, uint32 size)
 
         for (i = ARRAY_SIZE(arr); --i>= 0; ) {
                 Hjava_lang_Object* el = *ptr++;
-		/* XXX.  This sucks.
-		 * Now that some class objects are static and can't be
-		 * walked precisely with GC_markObject, problems just keep
-		 * popping up.  For instance, if a class object is stored
-		 * in a [Ljava/lang/Class array (which is a ref array), we
-		 * can't just mark it here without a test.
-		 *
-		 * We really need to fix or special case this. 
+		/* 
+		 * NB: This would break if some objects (i.e. class objects)
+		 * are not gc-allocated.
 		 */
-                GC_markAddress(collector, el);
+                GC_markObject(collector, el);
         }
 }
 

@@ -1,3 +1,13 @@
+Mon Mar  1 23:46:22 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/gcFuncs.c, kaffe/kaffevm/mem/gc-incremental.c,
+	kaffe/kaffevm/itypes.c: reverted to old fully dynamic scheme of
+	allocating class objects for now.
+
+	* test/regression/Makefile.am|in, test/regression/TestClassRef.java:
+	basic test for allocation/gc to guard against inadvertently changing
+	allocation.
+
 Mon Mar  1 15:30:30 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in: new --enable/disable-debug options to compile with

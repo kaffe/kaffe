@@ -70,6 +70,7 @@ TESTS = \
 	ExceptionTest.java \
 	ExceptionTestClassLoader.java \
 	ExceptionTestClassLoader2.java \
+	TestClassRef.java \
 	ClassGC.java \
 	GCTest.java \
 	ThreadLocalTest.java \
