@@ -70,7 +70,7 @@ static gc_freelist freelist[NR_FREELISTS+1]
 	S(1000),
 	S(2016),
 	S(4040),
-	{ (gc_block *)0xffffffff, 0 }
+	{ (gc_block *)((char*)0 - 1), 0 }
 }
 #endif /* PREDEFINED_NUMBER_OF_TILES */
 ;
@@ -125,7 +125,7 @@ gc_heap_check(void)
 
 	for (i = 0; i < NR_FREELISTS; i++) {
 		gc_block* blk = freelist[i].list;
-		if (blk == 0 || blk == (gc_block*)0xffffffff) {
+		if (blk == 0 || blk == (gc_block*)((char*)0 - 1)) {
 			continue;
 		} else {
 			gc_freeobj* mem = blk->free;

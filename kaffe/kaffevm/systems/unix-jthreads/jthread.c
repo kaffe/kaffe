@@ -914,7 +914,7 @@ jthread_walkLiveThreads(void (*func)(void *jlThread))
 int
 jthread_extract_stack(jthread *jtid, void **from, unsigned *len)
 {
-	assert(jtid);
+	assert(jtid != NULL);
 #if defined(STACK_GROWS_UP)
 	*from = jtid->stackBase;
 	*len = jtid->restorePoint - jtid->stackBase;
@@ -1058,7 +1058,7 @@ jthread_init(int pre,
 	 * the only thread running so this isn't a problem.
 	 */
 	jtid->stackBase = 0;
-	jtid->stackEnd = 0xFFFFFFFF;
+	jtid->stackEnd = (char*)0 - 1;
 #if defined(STACK_GROWS_UP)
         jtid->restorePoint = jtid->stackEnd;
 #else
