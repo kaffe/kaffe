@@ -468,7 +468,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 			break;
 		case 'F':
 			call.callsize[i] = 1;
-			in[i].f = va_arg(args, jfloat);
+			in[i].f = (jfloat)va_arg(args, jdouble);
 			break;
 		case 'D':
 			call.callsize[i] = 2;

@@ -4,6 +4,8 @@ Mon Jan 25 12:25:05 1999  Maxim Kizub <max@immsp.kiev.ua>
 	don't call new Float(float x) constructor from C because in
 	C float elipsis args are promoted to double; instead use the
 	new Float(double d) constructor.
+	* kaffe/kaffevm/support.c: make the above changes redundant
+	by pulling va_arg() floats as the doubles they really are
 
 Mon Jan 25 12:23:28 1999  Moses DeJong <dejong@cs.umn.edu>
 
