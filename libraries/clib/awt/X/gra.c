@@ -209,7 +209,10 @@ Java_java_awt_Toolkit_graDrawString ( JNIEnv* env, jclass clazz,
 									  Graphics* gr, jstring str, jint x, jint y )
 {
   jboolean     isCopy;
-  int          n, len;
+  int          len;
+#ifndef WORDS_BIGENDIAN
+  int n;
+#endif
   const jchar  *jc;
   XChar2b      *b;
 

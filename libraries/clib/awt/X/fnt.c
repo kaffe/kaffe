@@ -279,7 +279,10 @@ Java_java_awt_Toolkit_fntStringWidth ( JNIEnv* env, jclass clazz, XFontStruct* f
   jboolean isCopy;
   const jchar    *jc = (*env)->GetStringChars( env, jStr, &isCopy);
   int      len = (*env)->GetStringLength( env, jStr);
-  int      w, n;
+  int      w;
+#ifndef WORDS_BIGENDIAN
+  int      n;
+#endif
   XChar2b  *b;
 
 #ifndef WORDS_BIGENDIAN
