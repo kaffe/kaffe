@@ -1,3 +1,8 @@
+Fri Apr  2 13:55:43 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* include/system.h, libraries/clib/native/System.c: add
+	java.vendor.url.bug property and define undefined properties
+
 Fri Apr  2 10:00:59 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/io/ByteArrayInputStream.java: fixed mark()
