@@ -19,6 +19,7 @@ struct Hjava_lang_Object;
 struct Hjava_lang_Throwable;
 struct _methods;
 struct _errorInfo;
+struct _stackTraceInfo;
 
 #define UNRESOLVABLE_CATCHTYPE	((Hjava_lang_Class*)-1)
 
@@ -51,6 +52,8 @@ struct Hjava_lang_Throwable* error2Throwable(struct _errorInfo* einfo);
 void* nextFrame(void*);
 
 struct Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
+struct _methods* unwindStackFrame(struct _stackTraceInfo* frame, 
+				  struct Hjava_lang_Throwable *eobj);
 
 extern void initExceptions(void);
 

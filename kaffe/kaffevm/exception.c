@@ -20,6 +20,7 @@
 #include "access.h"
 #include "object.h"
 #include "constants.h"
+#include "md.h"
 #include "classMethod.h"
 #include "code.h"
 #include "exception.h"
@@ -31,11 +32,11 @@
 #include "itypes.h"
 #include "external.h"
 #include "soft.h"
-#include "md.h"
 #include "locks.h"
 #include "stackTrace.h"
 #include "machine.h"
 #include "slots.h"
+#include "gcj/gcj.h"
 
 #if defined(INTERPRETER)
 #define	FIRSTFRAME(f, e)	/* Does nothing */
@@ -293,13 +294,72 @@ nextFrame(void* fm)
 #endif
 }
 
+#if defined(TRANSLATOR)
+
+/* 
+ * Perform all necessary actions to unwind one stack frame
+ * and to deliver an exception if a handler exists
+ *
+ * First determine whether the method is a jitted method or not
+ * If not, check if it's handled by JNI.
+ * If not, determine whether unlocking must be done and do it.
+ * If a handler for this exception exists, dispatch to it
+ * Else return the method.
+ */
+Method*
+unwindStackFrame(stackTraceInfo* frame, Hjava_lang_Throwable *eobj)
+{
+	Method *meth;
+	Hjava_lang_Object* obj;
+	Hjava_lang_Class* class;
+	Hjava_lang_Thread* ct;
+	exceptionInfo einfo;
+	
+	ct = getCurrentThread();
+	class = OBJECT_CLASS(&eobj->base);
+
+	meth = findExceptionInMethod(frame->pc, class, &einfo);
+
+	if (einfo.method == 0 
+	    && frame->pc >= Kaffe_JNI_estart && frame->pc < Kaffe_JNI_eend) 
+	{
+		Kaffe_JNIExceptionHandler();
+	}
+
+	/* Find the sync. object */
+	if (einfo.method == 0 
+		|| (einfo.method->accflags & ACC_SYNCHRONISED) == 0) 
+	{
+		obj = 0;
+	}
+	else if (einfo.method->accflags & ACC_STATIC) {
+		obj = &einfo.class->head;
+	}
+	else {
+		FRAMEOBJECT(obj, frame->fp, einfo);
+	}
+
+	/* Handler found - dispatch exception */
+	if (einfo.handler != 0) {
+		unhand(ct)->exceptObj = 0;
+		unhand(ct)->needOnStack = STACK_HIGH;
+		CALL_KAFFE_EXCEPTION(frame->fp, einfo.handler, eobj);
+	}
+
+	/* If method found and synchronised, unlock the lock */
+	if (obj != 0 && (meth->accflags & ACC_SYNCHRONISED) != 0) {
+		_slowUnlockMutexIfHeld(&obj->lock, (void*)frame->fp);
+	}
+	return (meth);
+}
+#endif /* defined(TRANSLATOR) */
+
 static
 void
 dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 {
 	const char* cname;
 	Hjava_lang_Class* class;
-	Hjava_lang_Object* obj;
 	Hjava_lang_Thread* ct;
 
 #if defined(INTS_DISABLED)
@@ -311,10 +371,12 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 	assert(!INTS_DISABLED());
 #endif
 
+#if defined (HAVE_GCJ_SUPPORT)
+	/* XXX */
+	_Jv_Throw(eobj);
+	/* no return */	
+#endif
 	ct = getCurrentThread();
-
-	class = OBJECT_CLASS(&eobj->base);
-	cname = CLASS_CNAME(class);
 
 	/* Save exception object */
 	unhand(ct)->exceptObj = eobj;
@@ -322,6 +384,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 	/* Search down exception stack for a match */
 #if defined(INTERPRETER)
 	{
+		Hjava_lang_Object* obj;
 		exceptionInfo einfo;
 		vmException* frame;
 		bool res;
@@ -363,48 +426,13 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 #elif defined(TRANSLATOR)
 	{
 		stackTraceInfo* frame;
-		exceptionInfo einfo;
 
 		for (frame = baseframe; frame->meth != ENDOFSTACK; frame++) {
-			Method *meth;
-			
-			meth = findExceptionInMethod(frame->pc, class, &einfo);
-
-                        if (einfo.method == 0 && frame->pc >= Kaffe_JNI_estart && frame->pc < Kaffe_JNI_eend) {
-				Kaffe_JNIExceptionHandler();
-                        }
-
-			/* Find the sync. object */
-			if (einfo.method == 0 || (einfo.method->accflags & ACC_SYNCHRONISED) == 0) {
-				obj = 0;
-			}
-			else if (einfo.method->accflags & ACC_STATIC) {
-				obj = &einfo.class->head;
-			}
-			else {
-			    	FRAMEOBJECT(obj, frame->fp, einfo);
-			}
-
-#if defined(HAVE_GCJ_SUPPORT)
-			/* If this is a GCJ class - dispatch in that */
-			if (einfo.method != 0 && CLASS_GCJ(einfo.method->class)) {
-				gcjDispatchException(frame, &einfo, eobj);
-			}
-#else
-#warning No GCJ Support
-#endif
-
-			/* Handler found - dispatch exception */
-			if (einfo.handler != 0) {
-				unhand(ct)->exceptObj = 0;
-				unhand(ct)->needOnStack = STACK_HIGH;
-				CALL_KAFFE_EXCEPTION(frame->fp, einfo.handler, eobj);
-			}
-
-			/* If method found and synchronised, unlock the lock */
-			if (obj != 0 && (meth->accflags & ACC_SYNCHRONISED) != 0) {
-				_slowUnlockMutexIfHeld(&obj->lock, (void*)frame->fp);
-			}
+			Method *meth = unwindStackFrame(frame, eobj);
+			/* 
+			 * XXX: Let profiler people decide whether the
+			 * code before should go in unwindStackFrame or not
+			 */
 #if defined(KAFFE_PROFILER)
 			/* If method found and profiler enable, fix time */
 			if (profFlag && meth) {
@@ -419,6 +447,9 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 
 	/* Clear held exception object */
 	unhand(ct)->exceptObj = 0;
+
+	class = OBJECT_CLASS(&eobj->base);
+	cname = CLASS_CNAME(class);
 
 	/* We must catch 'java.lang.ThreadDeath' exceptions now and
 	 * kill the thread rather than the machine.
@@ -470,6 +501,9 @@ nullException(struct _exceptionFrame *frame)
 
 	npe = (Hjava_lang_Throwable*)newObject(javaLangNullPointerException);
 	unhand(npe)->backtrace = buildStackTrace(frame);
+#if defined(HAVE_GCJ_SUPPORT) 
+	FAKE_THROW_FRAME();
+#endif /* defined(HAVE_GCJ_SUPPORT) */
 	dispatchException(npe, (stackTraceInfo*)unhand(npe)->backtrace);
 }
 
@@ -483,6 +517,9 @@ floatingException(struct _exceptionFrame *frame)
 
 	ae = (Hjava_lang_Throwable*)newObject(javaLangArithmeticException);
 	unhand(ae)->backtrace = buildStackTrace(frame);
+#if defined(HAVE_GCJ_SUPPORT) 
+	FAKE_THROW_FRAME();
+#endif /* defined(HAVE_GCJ_SUPPORT) */
 	dispatchException(ae, (stackTraceInfo*)unhand(ae)->backtrace);
 }
 
