@@ -64,6 +64,89 @@ static int  min_priority;		/* minimum supported priority */
 
 pthread_key_t	cookie_key;	/* key to map pthread -> Hjava_lang_Thread */
 pthread_key_t	jthread_key;	/* key to map pthread -> jthread */
+pthread_key_t	sigstate_key;	/* key to map pthread -> jthread_sigstate */
+
+/* These must be thread-local */
+struct jthread_sigstate {
+    int blockInts;           /* counter that says whether irqs are blocked */
+    int sigPending;          /* flags that says whether a intr is pending */
+    int pendingSig[NSIG];    /* array that says which intrs are pending */
+};
+
+static void handleInterrupt(int s);
+
+int
+intsDisabled(void)
+{
+	struct jthread_sigstate * ms;
+	ms = (struct jthread_sigstate*)pthread_getspecific(sigstate_key);
+	return (ms ? ms->blockInts > 0 : 0);
+}
+
+static void
+intsDisable(void)
+{
+#if defined(DEBUG)
+	struct jthread *jtid = GET_JTHREAD();
+#endif
+	struct jthread_sigstate * ms;
+
+	ms = (struct jthread_sigstate*)pthread_getspecific(sigstate_key);
+	if (ms == 0) {
+		return;
+	}
+	ms->blockInts++;
+DBG(JTHREADDETAIL,
+	if (jtid)
+	    dprintf("thread %d disables interrupts %d\n", jtid->native_thread, 
+		ms->blockInts);
+    )
+}
+
+static inline void
+processSignals(struct jthread_sigstate* ms)            
+{
+        int i;
+        for (i = 1; i < NSIG; i++) {
+                if (ms->pendingSig[i]) {
+                        ms->pendingSig[i] = 0;
+                        handleInterrupt(i);
+                }
+        }
+        ms->sigPending = 0;
+}
+
+static void
+intsRestore(void)
+{
+#if defined(DEBUG)
+	struct jthread *jtid = GET_JTHREAD();
+#endif
+	struct jthread_sigstate * ms;
+	ms = (struct jthread_sigstate*)pthread_getspecific(sigstate_key);
+
+	if (ms == 0) {
+		return;
+	}
+
+DBG(JTHREADDETAIL,
+	if (jtid)
+	    dprintf("thread %d restores interrupts %d\n", jtid->native_thread, 
+		ms->blockInts);
+    )
+
+        /* DEBUG */
+        assert(ms->blockInts >= 1);
+
+        if (ms->blockInts == 1 && ms->sigPending) {
+DBG(JTHREADDETAIL,
+		if (jtid)
+		    dprintf("thread %d processes irq\n", jtid->native_thread);
+    )
+		processSignals(ms);
+        }
+        ms->blockInts--;
+}
 
 /*
  * Function declarations.
@@ -88,11 +171,15 @@ void
 /* ARGSUSED */
 jthread_spinon(void *arg)
 {
-	sigset_t nsig;
+#if 0
+	{
+		sigset_t nsig;
 
-	sigemptyset(&nsig);
-	sigaddset(&nsig, SIG_STOP);
-	sigprocmask(SIG_BLOCK, &nsig, 0);
+		sigemptyset(&nsig);
+		sigaddset(&nsig, SIG_STOP);
+		sigprocmask(SIG_BLOCK, &nsig, 0);
+	}
+#endif
 	pthread_mutex_lock(&spin);
 }
 
@@ -100,12 +187,15 @@ void
 /* ARGSUSED */
 jthread_spinoff(void *arg)
 {
-	sigset_t nsig;
-
 	pthread_mutex_unlock(&spin);
-	sigemptyset(&nsig);
-	sigaddset(&nsig, SIG_STOP);
-	sigprocmask(SIG_UNBLOCK, &nsig, 0);
+#if 0
+	{
+		sigset_t nsig;
+		sigemptyset(&nsig);
+		sigaddset(&nsig, SIG_STOP);
+		sigprocmask(SIG_UNBLOCK, &nsig, 0);
+	}
+#endif
 }
 
 int
@@ -177,11 +267,6 @@ stopHere(int s)
 	int x;
 	struct jthread *jtid = GET_JTHREAD();
 
-DBG(JTHREADDETAIL,
-	dprintf("thread %d (jthread@%p), pid %d caught signal\n",
-		jtid->native_thread, jtid, getpid());
-    )
-
 	/* DIE */
 	if (jtid->status == THREAD_DYING) {
 DBG(JTHREAD,
@@ -214,6 +299,48 @@ DBG(JTHREAD,
 		dprintf("%d resumed\n", jtid->native_thread);
 	    )
 	}
+}
+
+static void 
+handleInterrupt(int s)
+{
+	switch(s) {
+	case SIG_STOP:
+		stopHere(s);
+		break;
+
+	case SIG_RESUME:
+		resumeHere(s);
+		break;
+
+	default:
+		fprintf(stderr, "unknown signal %d\n", s);
+		ABORT();
+	}
+}
+
+void
+interrupt(int sig)
+{
+DBG(JTHREADDETAIL,
+	struct jthread *jtid = GET_JTHREAD();
+	dprintf("thread %d (jthread@%p), pid %d caught signal %d\n",
+		jtid->native_thread, jtid, getpid(), sig);
+    )
+
+	if (intsDisabled()) {
+		struct jthread_sigstate * ms; 
+		/* XXX: async-signal-safe? */
+		ms = (struct jthread_sigstate*)
+			pthread_getspecific(sigstate_key);  	
+		ms->pendingSig[sig] = 1;
+		ms->sigPending = 1;
+DBG(JTHREAD,
+		dprintf("postponing signal %d\n", sig);
+    )
+		return;
+	}
+	handleInterrupt(sig);
 }
 
 /*
@@ -320,7 +447,9 @@ jthread_destroy(jthread_t tid)
 DBG(JTHREAD, 
 	dprintf("destroying tid %d\n", tid->native_thread);	
     )
+	intsDisable();
 	pthread_join(tid->native_thread, &status);
+	intsRestore();
 	deallocator(tid);
 }
 
@@ -413,6 +542,9 @@ jthread_init(int pre,
 
         pthread_key_create(&jthread_key, 0 /* destructor */);
         pthread_key_create(&cookie_key, 0 /* destructor */);
+        pthread_key_create(&sigstate_key, 0/* XXX add destructor to dealloc */);
+	pthread_setspecific(sigstate_key, 
+		allocator(sizeof (struct jthread_sigstate)));
 
         jtid = allocator(sizeof (*jtid));
         SET_JTHREAD(jtid);
@@ -431,12 +563,12 @@ DBG(JTHREAD,
 #else
 	jtid->sp = jtid->end = &pmain;
 #endif
-	act.sa_handler = resumeHere;
+	act.sa_handler = interrupt;
 	sigfillset(&act.sa_mask);
 	act.sa_flags = SA_RESTART;
 	sigaction(SIG_RESUME, &act, 0);
 
-	act.sa_handler = stopHere;
+	act.sa_handler = interrupt;
 	sigfillset(&act.sa_mask);
 	act.sa_flags = SA_RESTART;
 	sigaction(SIG_STOP, &act, 0);
@@ -466,7 +598,7 @@ jthread_atexit(void (*f)(void))
 void 
 jthread_disable_stop(void)
 {
-	/* XXX */
+	/* XXX */	
 }
 
 /*
@@ -484,8 +616,8 @@ jthread_enable_stop(void)
 void
 jthread_interrupt(jthread_t tid)
 {
-    fprintf(stderr, "jthread_interrupt is not yet implemented\n");
-    /* ignore */
+	fprintf(stderr, "jthread_interrupt is not yet implemented\n");
+	/* ignore */
 }
 
 /*
@@ -500,6 +632,9 @@ start_me_up(void *arg)
 DBG(JTHREAD, 
 	dprintf("starting thread %p\n", tid); 
     )
+	pthread_setspecific(sigstate_key, 
+		allocator(sizeof (struct jthread_sigstate)));
+
 	pthread_mutex_lock(&threadLock);
 	SET_JTHREAD(tid);
 	SET_COOKIE(tid->jlThread);
@@ -539,6 +674,7 @@ jthread_create(unsigned int pri, void (*func)(void *), int daemon,
 	jthread_t tid;
 	pthread_attr_t attr;
 
+	intsDisable();
 	pthread_attr_init(&attr);
 
 	/* use setschedparam here */
@@ -576,6 +712,7 @@ jthread_create(unsigned int pri, void (*func)(void *), int daemon,
 DBG(JTHREAD,
 	dprintf("created thread %d, daemon=%d\n", new, daemon); )
 
+	intsRestore();
         return (tid);
 }
 
@@ -625,7 +762,9 @@ jthread_stop(jthread_t jtid)
 	/* can I cancel myself safely??? */
 	/* NB: jthread_stop should never be invoked on the current thread */
 	jtid->status = THREAD_DYING;
+	intsDisable();
 	pthread_kill(jtid->native_thread, SIGUNUSED);
+	intsRestore();
 }
 
 static void
@@ -633,6 +772,8 @@ remove_thread(jthread_t tid)
 {
 	jthread_t* ntid;
 	int found = 0;
+
+	intsDisable();
 	pthread_mutex_lock(&threadLock);
 
 	talive--;
@@ -676,6 +817,7 @@ DBG(JTHREAD,
 			(*destructor1)(tid->jlThread);
 		}
 	}
+	intsRestore();
 }
 
 /*
@@ -698,13 +840,14 @@ mark_thread_dead(void)
 void
 jthread_exit(void)
 {
+DBG(JTHREAD,
 	jthread_t currentJThread = GET_JTHREAD();
 
-DBG(JTHREAD,
 	dprintf("jthread_exit called by %d\n", currentJThread->native_thread);
     )
 
 	mark_thread_dead();
+	intsDisable();
 	pthread_exit(0);
 	while (1)
 		assert(!"This better not return.");
@@ -758,29 +901,35 @@ void jthread_exit_when_done(void)
 void 
 jmutex_initialise(jmutex *lock)
 {
+	intsDisable();
 	if (0 != pthread_mutex_init(lock, (const pthread_mutexattr_t *)0)) {
 		assert(!!!"Could not initialise mutex");   /* XXX */
 	}
+	intsRestore();
 }
 
 void
 jmutex_lock(jmutex *lock)
 {
+	/* is this function async-signal-safe??? */
 	pthread_mutex_lock(lock);
 }
 
 void
 jmutex_unlock(jmutex *lock)
 {
+	/* is this function async-signal-safe??? */
 	pthread_mutex_unlock(lock);
 }
 
 void
 jcondvar_initialise(jcondvar *cv)
 {
+	intsDisable();
 	if (0 != pthread_cond_init(cv, (const pthread_condattr_t *)0)) {
 		assert(!!!"Could not initialise condvar");   /* XXX */
 	}
+	intsRestore();
 }
 
 void
@@ -790,6 +939,7 @@ jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 	struct timeval now;
 
 	if (timeout == (jlong)0) {
+		/* is this function async-signal-safe??? */
 		pthread_cond_wait(cv, lock);
 		return;
 	}
@@ -804,17 +954,22 @@ jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 		abstime.tv_sec  += 1;
 		abstime.tv_nsec -= 1000000000;
 	}
+	/* is this function async-signal-safe??? */
 	pthread_cond_timedwait(cv, lock, &abstime);
 }
 
 void
 jcondvar_signal(jcondvar *cv, jmutex *lock)
 {
+	intsDisable();
 	pthread_cond_signal(cv);
+	intsRestore();
 }
 
 void
 jcondvar_broadcast(jcondvar *cv, jmutex *lock)
 {
+	intsDisable();
 	pthread_cond_broadcast(cv);
+	intsRestore();
 }
