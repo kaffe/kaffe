@@ -15,6 +15,13 @@
 #include "sparc/common.h"
 #include "sparc/threads.h"
 
+#undef	SP_OFFSET
+#undef	FP_OFFSET
+#define	SP_OFFSET		0
+#define	FP_OFFSET		1
+
+#define	CONTEXT_SWITCH(F,T)	sparcLinuxContextSwitch(F, T)
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif
