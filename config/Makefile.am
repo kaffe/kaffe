@@ -212,12 +212,17 @@ EXTRA_DIST = config.alias \
 	sparc/uxpds/md.c \
 	sparc/uxpds/md.h
 
+# needed for autoheader to find acconfig.h within config
+AUTOHEADER = @AUTOHEADER@ --localdir config
+
 jit-md.h: stamp-h01
-	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; fi
+	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
+	else :; fi
 stamp-h01: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(CONFIG_JIT_MD_H) jit-md.h $@
 
 md.h: stamp-h02
-	@if test ! -f $@; then rm -f stamp-h02; $(MAKE) stamp-h02; fi
+	@if test ! -f $@; then rm -f stamp-h02; $(MAKE) stamp-h02; \
+	else :; fi
 stamp-h02: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(CONFIG_MD_H) md.h $@

@@ -1,6 +1,6 @@
 # Makefile.in generated automatically by automake 1.3e from Makefile.am
 
-# Copyright (C) 1994, 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -121,7 +121,7 @@ with_engine = @with_engine@
 KAFFEH = $(top_builddir)/kaffe/kaffeh/kaffeh@EXEEXT@
 KLASSES_JAR = $(top_srcdir)/libraries/javalib/Klasses.jar
 
-KAFFEH_HDRS =  		$(srcdir)/java_lang_Throwable.h 		$(srcdir)/java_lang_Thread.h 		$(srcdir)/java_lang_ThreadGroup.h
+KAFFEH_HDRS =  		java_lang_Throwable.h 		java_lang_Thread.h 		java_lang_ThreadGroup.h
 
 
 BUILT_SOURCES = jtypes.h

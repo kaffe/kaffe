@@ -10,9 +10,9 @@ KAFFEH=		$(top_builddir)/kaffe/kaffeh/kaffeh@EXEEXT@
 KLASSES_JAR=    $(top_srcdir)/libraries/javalib/Klasses.jar
 
 KAFFEH_HDRS = \
-		$(srcdir)/java_lang_Throwable.h \
-		$(srcdir)/java_lang_Thread.h \
-		$(srcdir)/java_lang_ThreadGroup.h
+		java_lang_Throwable.h \
+		java_lang_Thread.h \
+		java_lang_ThreadGroup.h
 
 BUILT_SOURCES = jtypes.h
 

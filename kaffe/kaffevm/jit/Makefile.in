@@ -1,6 +1,6 @@
 # Makefile.in generated automatically by automake 1.3e from Makefile.am
 
-# Copyright (C) 1994, 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -382,12 +382,14 @@ mostlyclean distclean maintainer-clean
 @engine_frag@
 
 icode.h: stamp-h01
-	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; fi
+	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
+	else :; fi
 stamp-h01: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_ICODE_H) icode.h $@
 
 jit.def: stamp-h02
-	@if test ! -f $@; then rm -f stamp-h02; $(MAKE) stamp-h02; fi
+	@if test ! -f $@; then rm -f stamp-h02; $(MAKE) stamp-h02; \
+	else :; fi
 stamp-h02: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_JIT_DEF) jit.def $@
 

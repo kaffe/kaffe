@@ -11,21 +11,21 @@ AC_DEFUN(TEST_VERSION, [dnl
 test_name=`echo $1 | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz'`
 AC_MSG_CHECKING([$test_name version])
 changequote(, )dnl
-test_version=`(eval ${$1} --version) 2>&1 | sed -e 's/[^ ]* //g' -e 1q`
+test_version=`(case ${$1} in *missing*) echo missing;; *) eval ${$1} --version;; esac) 2>&1 | sed -e 's/[^ ]* //g' -e 1q`
 changequote([, ])dnl
 case "$test_version" in
 ifelse($#, 4, [$4) $1=$3
    AC_MSG_RESULT([$test_version, rejected, not using]);;
 ])dnl
-""|$2) AC_MSG_RESULT([$test_version, ok]);;
+""|missing|$2) AC_MSG_RESULT([$test_version, ok]);;
 *) $1=$3
    AC_MSG_RESULT([$test_version, too old, not using]);;
 esac])
 
 TEST_VERSION(ACLOCAL, 1.3e|1.4, "$missing_dir/missing aclocal")
-TEST_VERSION(AUTOCONF, 2.12.2|2.13*, "$missing_dir/missing autoconf")
+TEST_VERSION(AUTOCONF, 2.12.2|2.1[34]*, "$missing_dir/missing autoconf")
 TEST_VERSION(AUTOMAKE, 1.3e|1.4, "$missing_dir/missing automake")
-TEST_VERSION(AUTOHEADER, 2.12.2|2.13*, "$missing_dir/missing autoheader")
+TEST_VERSION(AUTOHEADER, 2.12.2|2.1[34]*, "$missing_dir/missing autoheader")
 
 dnl Setup version number.
 KVER=$VERSION
@@ -368,9 +368,10 @@ AC_CHECK_LIB(m,sin)
 dnl Checks for libraries for vm library.
 dnl Include work around FreeBSD modulo bug.
 
-if test "$host_os" = "freebsd2" -o "$host_os" = "netbsd1" ; then
-	AC_CHECK_LIBRARY(gcc,__moddi3,VM_LIBS)
-fi
+case "$host_os" in
+freebsd2|netbsd1)
+	AC_CHECK_LIBRARY(gcc,__moddi3,VM_LIBS);;
+esac
 
 AC_SUBST(VM_LIBS)
 

@@ -1,3 +1,30 @@
+Mon Jan 11 03:17:45 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* acconfig.h: moved into config
+	* Makefile.am, config/Makefile.am (AUTOHEADER): added --localdir
+
+	* configure.in, libltdl/configure.in: accept also autoconf 2.14,
+	it's the version number in their CVS tree now
+	* configure, libltdl/configure: regen
+
+	* acinclude.m4, ltconfig, libltdl/acinclude.m4: updated from libtool
+	* aclocal.m4, libltdl/aclocal.m4: regen
+	
+	* config/Makefile.am (jit-md.h, md.h): add `else :' to avoid bogus
+ 	errors from broken shells
+	* kaffe/kaffevm/Makefile.am (gc-mem.c, md.c, trampolines.c): ditto
+	* kaffe/kaffevm/jit/Makefile.am (icode.h, jit.def): ditto
+	* config/Makefile.in, kaffe/kaffevm/Makefile.in: regen
+	* kaffe/kaffevm/jit/Makefile.in: ditto
+
+	* include/Makefile.am (KAFFEH_HDRS): $(srcdir) not needed here
+	* include/Makefile.in: regen
+
+	* configure.in, libltdl/configure.in (TEST_VERSION): don't
+	test version number if program is missing
+	* Makefile.am: added required version of automake
+	* Makefile.in, config/stamp-h1.in, include/stamp-h2.in: regen
+
 Sun Jan 10 16:58:12 1999  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* kaffe/kaffevm/hashtab.[ch], kaffe/kaffevm/string.c, 

@@ -1367,9 +1367,6 @@ case "$host_os" in
 aix*)
   symcode='[BCDTU]'
   ;;
-sunos* | cygwin32* | mingw32*)
-  sympat='_\([_A-Za-z][_A-Za-z0-9]*\)'
-  ;;
 irix*)
   # Cannot use undefined symbols on IRIX because inlined functions mess us up.
   symcode='[BCDEGRST]'
@@ -1392,13 +1389,16 @@ cygwin32* | mingw32*)
   ;;
 esac
 
-# Write the raw and C identifiers.
-global_symbol_pipe="sed -n -e 's/^.* $symcode $sympat$/$symxfrm/p'"
+# Try without a prefix undercore, then with it.
+for ac_symprfx in "" "_"; do
 
-# Check to see that the pipe works correctly.
-pipe_works=no
-$rm conftest*
-cat > conftest.c <<EOF
+  # Write the raw and C identifiers.
+  global_symbol_pipe="sed -n -e 's/^.* $symcode $ac_symprfx$sympat$/$symxfrm/p'"
+
+  # Check to see that the pipe works correctly.
+  pipe_works=no
+  $rm conftest*
+  cat > conftest.c <<EOF
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -1410,36 +1410,36 @@ void nm_test_func(){}
 main(){nm_test_var='a';nm_test_func();return(0);}
 EOF
 
-echo "$progname:1413: checking if global_symbol_pipe works" >&5
-if { (eval echo $progname:1414: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; } && test -s conftest.$objext; then
-  # Now try to grab the symbols.
-  nlist=conftest.nm
-  if { echo "$progname:1417: eval \"$NM conftest.$objext | $global_symbol_pipe > $nlist\"" >&5; eval "$NM conftest.$objext | $global_symbol_pipe > $nlist 2>&5"; } && test -s "$nlist"; then
+  echo "$progname:1413: checking if global_symbol_pipe works" >&5
+  if { (eval echo $progname:1414: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; } && test -s conftest.$objext; then
+    # Now try to grab the symbols.
+    nlist=conftest.nm
+    if { echo "$progname:1417: eval \"$NM conftest.$objext | $global_symbol_pipe > $nlist\"" >&5; eval "$NM conftest.$objext | $global_symbol_pipe > $nlist 2>&5"; } && test -s "$nlist"; then
 
-    # Try sorting and uniquifying the output.
-    if sort "$nlist" | uniq > "$nlist"T; then
-      mv -f "$nlist"T "$nlist"
-      wcout=`wc "$nlist" 2>/dev/null`
-      count=`$echo "X$wcout" | $Xsed -e 's/^[ 	]*\([0-9][0-9]*\).*$/\1/'`
-      (test "$count" -ge 0) 2>/dev/null || count=-1
-    else
-      rm -f "$nlist"T
-      count=-1
-    fi
+      # Try sorting and uniquifying the output.
+      if sort "$nlist" | uniq > "$nlist"T; then
+        mv -f "$nlist"T "$nlist"
+        wcout=`wc "$nlist" 2>/dev/null`
+        count=`$echo "X$wcout" | $Xsed -e 's/^[ 	]*\([0-9][0-9]*\).*$/\1/'`
+        (test "$count" -ge 0) 2>/dev/null || count=-1
+      else
+        rm -f "$nlist"T
+        count=-1
+      fi
 
-    # Make sure that we snagged all the symbols we need.
-    if egrep ' nm_test_var$' "$nlist" >/dev/null; then
-      if egrep ' nm_test_func$' "$nlist" >/dev/null; then
-	cat <<EOF > conftest.c
+      # Make sure that we snagged all the symbols we need.
+      if egrep ' nm_test_var$' "$nlist" >/dev/null; then
+        if egrep ' nm_test_func$' "$nlist" >/dev/null; then
+	  cat <<EOF > conftest.c
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 EOF
-	# Now generate the symbol file.
-	sed 's/^.* \(.*\)$/extern char \1;/' < "$nlist" >> conftest.c
+	  # Now generate the symbol file.
+	  sed 's/^.* \(.*\)$/extern char \1;/' < "$nlist" >> conftest.c
 
-	cat <<EOF >> conftest.c
+	  cat <<EOF >> conftest.c
 #if defined (__STDC__) && __STDC__
 # define lt_ptr_t void *
 #else
@@ -1457,8 +1457,8 @@ struct {
 dld_preloaded_symbols[] =
 {
 EOF
-	sed 's/^\(.*\) \(.*\)$/  {"\1", (lt_ptr_t) \&\2},/' < "$nlist" >> conftest.c
-	cat <<\EOF >> conftest.c
+	  sed 's/^\(.*\) \(.*\)$/  {"\1", (lt_ptr_t) \&\2},/' < "$nlist" >> conftest.c
+	  cat <<\EOF >> conftest.c
   {0, (lt_ptr_t) 0}
 };
 
@@ -1466,37 +1466,42 @@ EOF
 }
 #endif
 EOF
-	# Now try linking the two files.
-	mv conftest.$objext conftestm.$objext
-	save_LIBS="$LIBS"
-	save_CFLAGS="$CFLAGS"
-	LIBS="conftestm.$objext"
-	CFLAGS="$CFLAGS$no_builtin_flag"
-	if { (eval echo $progname:1475: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
-	  pipe_works=yes
-	else
-	  echo "$progname: failed program was:" >&5
-	  cat conftest.c >&5
-	fi
-	LIBS="$save_LIBS"
+	  # Now try linking the two files.
+	  mv conftest.$objext conftestm.$objext
+	  save_LIBS="$LIBS"
+	  save_CFLAGS="$CFLAGS"
+	  LIBS="conftestm.$objext"
+	  CFLAGS="$CFLAGS$no_builtin_flag"
+	  if { (eval echo $progname:1475: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
+	    pipe_works=yes
+	  else
+	    echo "$progname: failed program was:" >&5
+	    cat conftest.c >&5
+	  fi
+	  LIBS="$save_LIBS"
+        else
+	  echo "cannot find nm_test_func in $nlist" >&5
+        fi
       else
-	echo "cannot find nm_test_func in $nlist" >&5
+        echo "cannot find nm_test_var in $nlist" >&5
       fi
     else
-      echo "cannot find nm_test_var in $nlist" >&5
+      echo "cannot run $global_symbol_pipe" >&5
     fi
   else
-    echo "cannot run $global_symbol_pipe" >&5
+    echo "$progname: failed program was:" >&5
+    cat conftest.c >&5
   fi
-else
-  echo "$progname: failed program was:" >&5
-  cat conftest.c >&5
-fi
-$rm conftest*
+  $rm conftest*
 
-# Do not use the global_symbol_pipe unless it works.
-echo "$ac_t$pipe_works" 1>&6
-test "$pipe_works" = yes || global_symbol_pipe=
+  # Do not use the global_symbol_pipe unless it works.
+  echo "$ac_t$pipe_works" 1>&6
+  if test "$pipe_works" = yes; then
+    break
+  else
+    global_symbol_pipe=
+  fi
+done
 
 # Check hardcoding attributes.
 echo $ac_n "checking how to hardcode library paths into programs... $ac_c" 1>&6

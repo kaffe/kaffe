@@ -6,7 +6,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-AUTOMAKE_OPTIONS = foreign
+AUTOMAKE_OPTIONS = foreign 1.3e
 
 SUBDIRS = config include libltdl libraries kaffe test
 
@@ -25,6 +25,9 @@ EXTRA_DIST = license.terms WHATSNEW \
 	FAQ/FAQ.nativemethods \
 	FAQ/FAQ.timing \
 	FAQ/FAQ.win32
+
+# needed for autoheader to find acconfig.h within config
+AUTOHEADER = @AUTOHEADER@ --localdir config
 
 depend:
 	@echo `make depend' is no longer needed
