@@ -28,8 +28,17 @@ printShortVersion(void)
 {
 	if (!versionfd)
 		versionfd = stderr;
-	fprintf(versionfd, "Kaffe Virtual Machine\n");
-	fprintf(versionfd, "Copyright (c) 1996-2000\nTransvirtual Technologies, Inc.  All rights reserved\n");
+	fprintf(versionfd, "Kaffe Virtual Machine\n\n");
+	fprintf(versionfd, "Copyright (c) 1996-2002 Transvirtual Technologies, Inc.\n");
+	fprintf(versionfd, "Copyright (c) 1996-2002 Kaffe.org project contributors (please see the\n");
+	fprintf(versionfd, "                        source code for a full list of contributors)\n\n");
+
+	fprintf(versionfd, "The Kaffe virtual machine is free software, licensed under the terms of\n");
+	fprintf(versionfd, "the GNU General Public License.  Kaffe.org is a an independent, free software\n");
+	fprintf(versionfd, "community project, not directly affiliated with Transvirtual Technologies,\n");
+	fprintf(versionfd, "Inc.  Kaffe is a Trademark of Transvirtual Technologies, Inc.  Kaffe comes\n");
+	fprintf(versionfd, "with ABSOLUTELY NO WARRANTY.\n\n");
+
 	fprintf(versionfd, "Engine: %s   Version: %s   Java Version: %s\n",
 		engine_name, engine_version, JAVA_VERSION_STRING);
 }

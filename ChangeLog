@@ -1,3 +1,9 @@
+Thu Jun 27 18:15:23 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	* kaffe/kaffe/version.c: Reworded "kaffe -version" message to
+	include more legalese, information on project, reflect fact that
+	copyright to code is held by more than just Transvirtual.
+
 Thu Jun 27 13:50:09 PDT 2002  Jim Pick  <jim@kaffe.org>
 
         * libraries/javalib/java/lang/StringBuffer: Bug in substring
