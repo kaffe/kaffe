@@ -15,6 +15,12 @@
 
 2004-03-24  Dalibor Topic <robilad@kaffe.org>
 
+	* config/config-std.h:
+	Check if WIT_DMALLOC is defined. Fixes a 
+	compiler warning.
+
+2004-03-24  Dalibor Topic <robilad@kaffe.org>
+
 	* include/kaffe/jmalloc.h:
 	[KAFFEVM_DEBUG](KFREE) Changed prototype to 
 	void * to fix compiler warnings.
