@@ -459,6 +459,7 @@ soft_nullpointer(void)
 /*
  * soft_divzero.
  */
+void
 soft_divzero(void)
 {
 	throwException(ArithmeticException);

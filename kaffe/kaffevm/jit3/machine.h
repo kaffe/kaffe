@@ -35,10 +35,13 @@
 /* -------------------------------------------------------------------- */
 /* Methods */
 
-#define	get_method_info(IDX) \
-	getMethodSignatureClass((constIndex)(IDX), meth->class, false, &cinfo)
-#define	get_special_method_info(IDX) \
-	getMethodSignatureClass((constIndex)(IDX), meth->class, true, &cinfo)
+#define get_method_info(idx)  \
+  if (getMethodSignatureClass(idx, meth->class, true, false, &cinfo, einfo) \
+        == false) { success = false; goto done; }
+
+#define get_special_method_info(idx)  \
+  if (getMethodSignatureClass(idx, meth->class, true, true, &cinfo, einfo) \
+        == false) { success = false; goto done; }
 
 #define	method_name()	(cinfo.name)
 #define	method_sig()	(cinfo.signature)
@@ -56,11 +59,15 @@
 /* -------------------------------------------------------------------- */
 /* Fields */
 
-#define	get_field_info(IDX) \
-				getField((constIndex)(IDX), meth->class, false, &finfo)
+#define get_field_info(IDX) \
+  if (getField((IDX), meth->class, false, &finfo, einfo) == false) { \
+    success = false; goto done; \
+  }
 
-#define	get_static_field_info(IDX) \
-				getField((constIndex)(IDX), meth->class, true, &finfo)
+#define get_static_field_info(IDX) \
+  if (getField((IDX), meth->class, true, &finfo, einfo) == false) { \
+    success = false; goto done; \
+  }
 
 #define field_class()		(finfo.class)
 #define field_field()		(finfo.field)
@@ -71,7 +78,11 @@
 /* -------------------------------------------------------------------- */
 /* Classes */
 
-#define	get_class_info(IDX)	crinfo = getClass((constIndex)(IDX), meth->class)
+#define get_class_info(IDX)     \
+  crinfo = getClass((IDX), meth->class, einfo); \
+  if (crinfo == 0) { \
+    success = false; goto done; \
+  }
 
 #define	class_object()		(crinfo)
 
@@ -80,6 +91,15 @@
 
 #define	object_array_offset	(ARRAY_DATA_OFFSET)
 #define	object_array_length	(ARRAY_SIZE_OFFSET)
+
+/* -------------------------------------------------------------------- */
+/* Errors */
+
+#define compile_time_error(EINFO) {             \
+        *einfo = (EINFO);                       \
+        success = false;                        \
+        goto done;                              \
+ }
 
 /* -------------------------------------------------------------------- */
 /* Switches */
@@ -116,6 +136,36 @@ extern jitflags willcatch;
 #define	willCatch(FLAG)	willcatch.##FLAG = true
 #define	canCatch(FLAG)	willcatch.##FLAG
 
+#include "locks.h"
+extern iLock translatorlock;
+
+extern int CODEPC;
+extern nativecode* codeblock;
+
+static
+inline
+void
+enterTranslator(void)
+{
+        if (!staticLockIsInitialized(&translatorlock)) {
+                initStaticLock(&translatorlock);
+        }
+        lockStaticMutex(&translatorlock);
+}
+
+static
+inline
+void
+leaveTranslator(void)
+{
+        unlockStaticMutex(&translatorlock);
+}
+
 void setupGlobalRegisters(void);
+
+#if defined(KAFFE_PROFILER)
+extern int profFlag;
+extern Method *globalMethod;
+#endif
 
 #endif

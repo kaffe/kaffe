@@ -45,10 +45,14 @@
 #include "thread.h"
 #include "itypes.h"
 #include "code.h"
+#include "stringSupport.h"
+#include "debug.h"
+#include "stats.h"
 
 char* engine_name = "Just-in-time v3";
 char* engine_version = KAFFEVERSION;
 
+iLock translatorlock;           /* lock to protect the variables below */
 int stackno;
 int maxStack;
 int maxLocal;
@@ -61,6 +65,12 @@ int tmpslot;
 int argcount = 0;		/* Function call argument count */
 uint32 pc;
 uint32 npc;
+
+#if defined(KAFFE_PROFILER)
+int profFlag; /* flag to control profiling */
+Method *globalMethod;
+static void printProfilerStats(void);
+#endif
 
 /* Various exception related things */
 extern Hjava_lang_Class javaLangArrayIndexOutOfBoundsException;
@@ -78,6 +88,7 @@ void check_null (int x, SlotInfo* obj, int y);
 void check_div (int x, SlotInfo* obj, int y);
 void check_div_long (int x, SlotInfo* obj, int y);
 void softcall_fakecall (label* from,label* to, void* func);
+#define	CHECK_NULL check_null
 
 /* Unit in which code block is increased when overrun */
 #define	ALLOCCODEBLOCKSZ	8192
@@ -99,11 +110,9 @@ struct {
 extern int enable_readonce;
 
 void	initInsnSequence(int, int, int);
-void	finishInsnSequence(nativeCodeInfo*);
-static void generateInsnSequence(void);
-static void installMethodCode(Method*, nativeCodeInfo*);
-static void pushContext(void);
-static void popContext(void);
+bool	finishInsnSequence(codeinfo*, nativeCodeInfo*, errorInfo*);
+static void generateInsnSequence(codeinfo*);
+void installMethodCode(codeinfo*, Method*, nativeCodeInfo*);
 static void nullCall(void);
 
 jlong	currentTime(void);
@@ -115,15 +124,14 @@ static void makeFakeCalls(void);
 /*
  * Translate a method into native code.
  */
-static
 void
-translate(Method* meth)
+translate(Method* meth, errorInfo *einfo)
 {
 	int i;
 
 	jint low;
 	jint high;
-	jvalue tmpl;
+	jlong tmpl;
 	int idx;
 	SlotInfo* tmp;
 	SlotInfo* tmp2;
@@ -137,13 +145,14 @@ translate(Method* meth)
 
 	nativeCodeInfo ncode;
 
-	int64 tms;
+	int64 tms = 0;
 	int64 tme;
 
-	int iLockRoot;
-
-	static iLock* translatorlock;
 	static bool reinvoke = false;
+
+	bool success = true;
+	codeinfo* codeInfo;
+	const char* str;
 
 	// MSR_START( jit_time);
 
@@ -151,19 +160,17 @@ translate(Method* meth)
 	 * to call this method - so make sure it's OK before generating
 	 * code to avoid any extra initialization calls.
 	 */
-	processClass(meth->class, CSTATE_COMPLETE);
+	processClass(meth->class, CSTATE_COMPLETE, einfo);
 
 	/* Only one in the translator at once. Must check the translation
 	 * hasn't been done by someone else once we get it.
 	 */
-	lockStaticMutex(&translatorlock);
+	enterTranslator();
 
 	lockMutex(meth->class->centry);
 
 	if (METHOD_TRANSLATED(meth)) {
-		unlockMutex(meth->class->centry);
-		unlockStaticMutex(&translatorlock);
-		return;
+		goto done1;
 	}
 
 	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
@@ -174,43 +181,36 @@ translate(Method* meth)
 
 	/* If this code block is native, then just set it up and return */
 	if ((meth->accflags & ACC_NATIVE) != 0) {
-		native(meth);
-		KAFFEJIT_TO_NATIVE(meth);
-		unlockMutex(meth->class->centry);
-		unlockStaticMutex(&translatorlock);
-		return;
+		success = native(meth, einfo);
+		if (success == true) {
+			KAFFEJIT_TO_NATIVE(meth);
+			/* Note that this is a real function not a trampoline.*/
+			if (meth->c.ncode.ncode_end == 0) {
+				meth->c.ncode.ncode_end = METHOD_NATIVECODE(meth);
+			}
+		}
+		goto done2;
 	}
 
 	/* Handle null calls specially */
-	if (meth->bcode->codelen == 1 && meth->bcode->code[0] == RETURN) {
+	if (meth->c.bcode.codelen == 1 && meth->c.bcode.code[0] == RETURN) {
 		SET_METHOD_NATIVECODE(meth, (nativecode*)nullCall);
-		unlockMutex(meth->class->centry);
-		unlockStaticMutex(&translatorlock);
-		return;
+		goto done1;
 	}
 
-	/* Save current JIT context */
-	pushContext();
-
 	/* Scan the code and determine the basic blocks */
-	verifyMethod(meth);
+        success = verifyMethod(meth, &codeInfo, einfo);
+	if (success == false) {
+		goto done2;
+	}
 
 	assert(reinvoke == false);
 	reinvoke = true;
 
 	maxLocal = meth->localsz;
 	maxStack = meth->stacksz;
-	maxArgs = 0;
-	for (i = 0; i < meth->sig->len; i++) {
-		switch (meth->sig->elem[i]->data[0]) {
-		case 'D':
-		case 'J':
-			maxArgs += 2;
-			break;
-		default:
-			maxArgs += 1;
-		}
-	}
+        str = meth->signature->data;
+        maxArgs = sizeofSig(&str, false);
 
 	if (meth->accflags & ACC_STATIC) {
 		isStatic = 1;
@@ -228,8 +228,8 @@ SUSE(
 	printf("\n");
 )
 
-	base = (bytecode*)meth->bcode->code;
-	len = meth->bcode->codelen;
+	base = (bytecode*)meth->c.bcode.code;
+	len = meth->c.bcode.codelen;
 
 	willcatch.ANY = false;
 	willcatch.BADARRAYINDEX = false;
@@ -254,7 +254,7 @@ SUSE(
 	/*
 	 * Initialise the translator.
 	 */
-	initInsnSequence(codeperbytecode * meth->bcode->codelen, meth->localsz, meth->stacksz);
+	initInsnSequence(codeperbytecode * meth->c.bcode.codelen, meth->localsz, meth->stacksz);
 
 	/***************************************/
 	/* Next reduce bytecode to native code */
@@ -269,7 +269,7 @@ SUSE(
 	monitor_enter();
 	if (IS_STARTOFBASICBLOCK(0)) {
 		end_basic_block();
-		generateInsnSequence();
+		generateInsnSequence(codeInfo);
 		start_basic_block();
 	}
 
@@ -289,10 +289,9 @@ SUSE(
 
 		switch (base[pc]) {
 		default:
-			kprintf("Unknown bytecode %d\n", base[pc]);
-			unlockMutex(meth->class->centry);
-			unlockStaticMutex(&translatorlock);
-			throwException(VerifyError);
+// DBG(jit,		dprintf("Unknown bytecode %d\n", base[pc]); )
+			postException(einfo, JAVA_LANG(VerifyError));
+			goto done1;
 			break;
 #include "kaffe.def"
 		}
@@ -307,7 +306,7 @@ SCHK(		sanityCheck();					)
 
 		if (IS_STARTOFBASICBLOCK(npc)) {
 			end_basic_block();
-			generateInsnSequence();
+			generateInsnSequence(codeInfo);
 			start_basic_block();
 			stackno = STACKPOINTER(npc);
 SCHK(			sanityCheck();				)
@@ -319,53 +318,75 @@ SCHK(			sanityCheck();				)
 
 	assert(maxTemp < MAXTEMPS);
 
-	finishInsnSequence(&ncode);
-	installMethodCode(meth, &ncode);
+	finishInsnSequence(codeInfo, &ncode, einfo);
+	installMethodCode(codeInfo, meth, &ncode);
 
-	tidyVerifyMethod();
+done:;
+	tidyVerifyMethod(codeInfo);
 
 	reinvoke = false;
-	/* Restore current JIT context */
-	popContext();
 
 // DBG( vm_jit_translate, ("Translating %s.%s%s (%s) %p\n", meth->class->name->data, meth->name->data, makeStrFromSignature(meth->sig), isStatic ? "static" : "normal", METHOD_NATIVECODE(meth)));
 
 	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
 		tme = currentTime();
 		jitStats.time += (int)(tme - tms);
-		kprintf("<JIT: %s.%s%s time %dms (%dms) @ %p (%p)>\n",
+		printf("<JIT: %s.%s%s time %dms (%dms) @ %p (%p)>\n",
 		       CLASS_CNAME(meth->class),
-		       meth->name->data, makeStrFromSignature(meth->sig),
+		       meth->name->data, meth->signature->data,
 		       (int)(tme - tms), jitStats.time,
 		       METHOD_NATIVECODE(meth), meth);
 	}
 
+done1:;
 	unlockMutex(meth->class->centry);
-	unlockStaticMutex(&translatorlock);
+done2:;
+	leaveTranslator();
 
 	// MSR_STOP( jit_time);
 }
 
+
 /*
  * Generate the code.
  */
-void
-finishInsnSequence(nativeCodeInfo* code)
+bool
+finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 {
+#if defined(CALLTARGET_ALIGNMENT)
+	int align = CALLTARGET_ALIGNMENT;
+#else
+	int align = 0;
+#endif
 	uint32 constlen;
 	nativecode* methblock;
 	nativecode* codebase;
-	nativeInfo* info;
 
 	/* Emit pending instructions */
-	generateInsnSequence();
+	generateInsnSequence(codeInfo);
 
 	/* Okay, put this into malloc'ed memory */
 	constlen = nConst * sizeof(union _constpoolval);
-	methblock = KMALLOC(constlen + CODEPC + sizeof(nativeInfo));
-	info = (nativeInfo*)(methblock + constlen);
-	codebase = ((nativecode*)info) + sizeof(nativeInfo);
+	/* Allocate some padding to align codebase if so desired 
+	 * NB: we assume the allocator returns at least 8-byte aligned 
+	 * addresses.   XXX: this should really be gc_memalign
+	 */  
+	methblock = gc_malloc(constlen + CODEPC + (align ? (align - 8) : 0), GC_ALLOC_JITCODE);
+	if (methblock == 0) {
+		postOutOfMemory(einfo);
+		return (false);
+	}
+	codebase = methblock + constlen;
+	/* align entry point if so desired */
+	if (align != 0 && (unsigned int)codebase % align != 0) {
+		int pad = (align - (unsigned int)codebase % align);
+		/* assert the allocator indeed returned 8 bytes aligned addrs */
+		assert(pad <= align - 8);	
+		codebase = (void*)codebase + pad;
+	}
 	memcpy(codebase, codeblock, CODEPC);
+	addToCounter(&jitcodeblock, "jitmem-codeblock", 1,
+		-(jlong)GCSIZEOF(codeblock));
 	gc_free(codeblock);
 
 	/* Establish any code constants */
@@ -379,54 +400,36 @@ finishInsnSequence(nativeCodeInfo* code)
 	code->memlen = constlen + CODEPC;
 	code->code = codebase;
 	code->codelen = CODEPC;
-
-	/* Fill in the info block */
-	info->ncode_start = methblock;
-	info->ncode_end = codebase + CODEPC;
-}
-
-/*
- * Get the instruction offset corresponding to the given PC.
- * If the PC doesn't point at the start of a valid instruction,
- * look forward until we find one.
- */
-static
-int
-getInsnPC(int pc)
-{
-	int res;
-
-	for (;;) {
-		res = INSNPC(pc);
-		if (res != -1) {
-			return (res);
-		}
-		pc++;
-	}
+	return (true);
 }
 
 /*
  * Install the compiled code in the method.
  */
-static
 void
-installMethodCode(Method* meth, nativeCodeInfo* code)
+installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 {
-	uint32 i;
+	int i;
 	jexceptionEntry* e;
 
 	/* Work out new estimate of code per bytecode */
 	code_generated += code->memlen;
-	bytecode_processed += meth->bcode->codelen;
+	bytecode_processed += meth->c.bcode.codelen;
 	codeperbytecode = code_generated / bytecode_processed;
 
-	GC_WRITE(meth, code->mem);
+	/* We must free the trampoline for <clinit> methods of interfaces 
+	 * before overwriting it.
+	 */
+	if (CLASS_IS_INTERFACE(meth->class) && utf8ConstEqual(meth->name, init_name)) {
+		KFREE(METHOD_NATIVECODE(meth));
+	}
 	SET_METHOD_NATIVECODE(meth, code->code);
-#if 0
+	/* Free bytecode before replacing it with native code */
+	if (meth->c.bcode.code != 0) {
+		KFREE(meth->c.bcode.code);
+	}
 	meth->c.ncode.ncode_start = code->mem;
-	meth->c.ncode.ncode_end = (void*)((uintp)code->code + code->codelen);
-#endif
-        // MSR_ADD(ncode_mem, code->codelen);
+	meth->c.ncode.ncode_end = code->code + code->codelen;
 
 	/* Flush code out of cache */
 	FLUSH_DCACHE(meth->ncode, meth->c.ncode.ncode_end);
@@ -434,22 +437,41 @@ installMethodCode(Method* meth, nativeCodeInfo* code)
 	/* Translate exception table and make it available */
 	if (meth->exception_table != 0) {
 		for (i = 0; i < meth->exception_table->length; i++) {
+			/* Note that we cannot assume that the bytecode
+			 * instructions that are at the start/end/handler
+			 * pc index have a corresponding native pc.
+			 * They only have one if they already emitted
+			 * native instructions during translation.
+			 * Jikes, for instance, likes to put a `nop' at
+			 * the end_pc index of an exception handler range.
+			 *
+			 * If this happens, we simply find the next bytecode
+			 * instruction that has a native pc and use it instead.
+			 */
+			int npc, epc;
 			e = &meth->exception_table->entry[i];
-			e->start_pc = getInsnPC(e->start_pc) + (uintp)code->code;
-			e->end_pc = getInsnPC(e->end_pc) + (uintp)code->code;
-			e->handler_pc = getInsnPC(e->handler_pc) + (uintp)code->code;
+
+			epc = e->start_pc;
+			for (npc = INSNPC(epc); npc == -1; npc = INSNPC(++epc));
+			e->start_pc = npc + (uintp)code->code;
+
+			epc = e->end_pc;
+			for (npc = INSNPC(epc); npc == -1; npc = INSNPC(++epc));
+			e->end_pc = npc + (uintp)code->code;
+
+			epc = e->handler_pc;
+			for (npc = INSNPC(epc); npc == -1; npc = INSNPC(++epc));
+			e->handler_pc = npc + (uintp)code->code;
+			assert(e->start_pc <= e->end_pc);
 		}
 	}
 
 	/* Translate line numbers table */
 	if (meth->lines != 0) {
 		for (i = 0; i < meth->lines->length; i++) {
-			meth->lines->entry[i].start_pc = getInsnPC(meth->lines->entry[i].start_pc) + (uintp)code->code;
+			meth->lines->entry[i].start_pc = INSNPC(meth->lines->entry[i].start_pc) + (uintp)code->code;
 		}
 	}
-
-	/* Make method active (so we can find if for exceptions) */
-	makeMethodActive(meth);
 }
 
 /*
@@ -485,7 +507,7 @@ initInsnSequence(int codesize, int localsz, int stacksz)
  */
 static
 void
-generateInsnSequence(void)
+generateInsnSequence(codeinfo* codeInfo)
 {
 	sequence* t;
 	int i;
@@ -530,7 +552,7 @@ SCHK(		sanityCheck();					)
  * Start a new instruction.
  */
 void
-startInsn(sequence* s)
+startInsn(sequence* s, codeinfo* codeInfo)
 {
 	SET_INSNPC(const_int(2), CODEPC);
 }
@@ -771,6 +793,7 @@ SCHK(	sanityCheck();						)
 void
 setupGlobalRegisters(void)
 {
+#if defined(NR_GLOBALS)
 	int i;
 	int j;
 	int k;
@@ -851,6 +874,7 @@ setupGlobalRegisters(void)
 			j++;
 		}
 	}
+#endif
 }
 
 /*
@@ -899,357 +923,12 @@ jit_soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 }
 
 /*
- * Dispatch an exception.  These odd structures are necessary
- *  to emulate the old exception calling convention (we will
- *  deprecate at some point).
+ * return what engine we're using
  */
-static
-void
-EcallExceptionHandler(Method* meth, uintp handler, stackTraceInfo* frame)
+char*
+getEngine()
 {
-	Hjava_lang_Object* eobj;
-	Hjava_lang_Thread* ct;
-
-	ct = getCurrentThread();
-
-	eobj = (Hjava_lang_Object*)unhand(ct)->exceptObj;
-	unhand(ct)->exceptObj = 0;
-
-	CALL_KAFFE_EXCEPTION(frame->arg0, handler, eobj);
-}
-
-/* 
- * Trampolines come in here - do the translation and replace the trampoline.
- */
-nativecode*
-soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL)
-{
-	Method* meth;
-	void** where;
-	void* tramp;
-
-	FIXUP_TRAMPOLINE_INIT;
-
-	/* Find the trampoline so we can free it later if necessary */
-	tramp = *where;
-
-	/* If this class needs initializing, do it now.  */
-	processClass(meth->class, CSTATE_COMPLETE);
-
-	/* Generate code on demand.  */
-	if (!METHOD_TRANSLATED(meth)) {
-		translate(meth);
-		// DBG( vm_jit, ("%x : %s:%s%s\n", METHOD_NATIVECODE(meth), meth->class->name->data, meth->name->data, makeStrFromSignature(meth->sig)));
-		/* Free the trampoline */
-		gc_free(tramp);
-	}
-
-	/* return (METHOD_NATIVECODE(meth)) doesn't work with egcs */
-  	*where = METHOD_NATIVECODE(meth);
-	return (*where);
-}
-
-/*
- * Include the machine specific trampoline functions.
- */
-#include "trampolines.c"
-
-static
-void
-EprocessExceptionMethod(stackTraceInfo* info, stackFrame* fm)
-{
-	if (info->meth != jniMethod) {
-		info->object = (void*)FRAMEOBJECT(fm);
-		info->arg0 = (uintp)fm->return_frame;
-	}
-	else {
-		info->object = 0;
-		info->arg0 = (uintp)unhand(getCurrentThread())->exceptPtr;
-	}
-}
-
-/*
- * Call inter-machine method
- */
-void
-EcallInterEngine(callMethodInfo* call)
-{
-	sysdepCallMethod(call);
-}
-
-/*
- * Build an interface between the JIT and a JNI method.
- */
-static
-void
-EsetupJNIcall(Method* xmeth, void* func)
-{
-	char buf[100];
-	int i;
-	methodSig* sig;
-	int count;
-	nativeCodeInfo ncode;
-	SlotInfo* tmp;
-
-	/* Convert the signature into a simple string of types, and
-	 * count the size of the arguments too.
-	 */
-	sig = xmeth->sig;
-	if (METHOD_IS_STATIC(xmeth)) {
-		isStatic = 1;
-		count = 0;
-	}
-	else {
-		isStatic = 0;
-		count = 1;
-	}
-
-	for (i = 0; i < sig->len; i++) {
-		buf[i] = sig->elem[i]->data[0];
-		switch (buf[i]) {
-		case 'D':
-		case 'J':
-			count++;
-			break;
-		default:
-			break;
-		}
-		count++;
-	}
-
-	/* Construct a wrapper to call the JNI method with the correct
-	 * arguments.
-	 */
-	maxArgs = count;
-	maxLocal = count;
-	initInsnSequence(0, xmeth->localsz + !isStatic, 0);
-	prologue(0);
-
-	/* Start a JNI call */
-	call_soft(startJNIcall);
-
-#if defined(NEED_JNIREFS)
-	/* Make the necesary JNI ref calls first */
-	if (!METHOD_IS_STATIC(xmeth)) {
-		pusharg_ref(local(0), 0);
-		begin_func_sync();
-		call_soft(addJNIref);
-		popargs();
-		end_func_sync();
-	}
-	j = i;
-	jcount = count;
-	while (j > 0) {
-		j--;
-		jcount--;
-		if (buf[j] == '[' || buf[j] == 'L') {
-			pusharg_ref(local(jcount), 0);
-			begin_func_sync();
-			call_soft(addJNIref);
-			popargs();
-			end_func_sync();
-		}
-		if (buf[j] == 'J' || buf[j] == 'D') {
-			jcount--;
-		}
-	}
-	start_sub_block();
-#endif
-
-	/* Add synchronisation if necessary */
-	mon_enter(xmeth, local(0));
-
-	/* Push the specified arguments */
-	while (i > 0) {
-		i--;
-		count--;
-		switch (buf[i]) {
-		case '[':
-		case 'L':
-			pusharg_ref(local(count), count+1+isStatic);
-			break;
-		case 'I':
-		case 'Z':
-		case 'S':
-		case 'B':
-		case 'C':
-			pusharg_int(local(count), count+1+isStatic);
-			break;
-		case 'F':
-			pusharg_float(local(count), count+1+isStatic);
-			break;
-		case 'J':
-			count--;
-			pusharg_long(local(count), count+1+isStatic);
-			break;
-		case 'D':
-			count--;
-			pusharg_double(local(count), count+1+isStatic);
-			break;
-		default:
-			ABORT();
-		}
-	}
-
-	/* If static, push the class, else push the object */
-	if (METHOD_IS_STATIC(xmeth)) {
-		pusharg_ref_const(xmeth->class, 1);
-	}
-	else {
-		pusharg_ref(local(0), 1);
-	}
-
-	/* Push the JNI info */
-	pusharg_ref_const((void*)&Kaffe_JNIEnv, 0);
-
-	/* Make the call */
-	begin_func_sync();
-	call_soft(func);
-	popargs();
-	end_func_sync();
-
-	/* Determine return type */
-	switch (sig->ret->data[0]) {
-	case 'I':
-	case 'Z':
-	case 'S':
-	case 'B':
-	case 'C':
-		slot_alloctmp(tmp);
-		return_int(tmp);
-		/* Remove synchronisation if necessary */
-		if (xmeth->accflags & ACC_SYNCHRONISED) {
-			mon_exit(xmeth, local(0));
-		}
-		begin_func_sync();
-		call_soft(finishJNIcall);
-		end_func_sync();
-		returnarg_int(tmp);
-		slot_freetmp(tmp);
-		break;
-	case 'F':
-		slot_alloctmp(tmp);
-		return_float(tmp);
-		/* Remove synchronisation if necessary */
-		if (xmeth->accflags & ACC_SYNCHRONISED) {
-			mon_exit(xmeth, local(0));
-		}
-		begin_func_sync();
-		call_soft(finishJNIcall);
-		end_func_sync();
-		returnarg_float(tmp);
-		slot_freetmp(tmp);
-		break;
-	case 'J':
-		slot_alloc2tmp(tmp);
-		return_long(tmp);
-		/* Remove synchronisation if necessary */
-		if (xmeth->accflags & ACC_SYNCHRONISED) {
-			mon_exit(xmeth, local(0));
-		}
-		begin_func_sync();
-		call_soft(finishJNIcall);
-		end_func_sync();
-		returnarg_long(tmp);
-		slot_free2tmp(tmp);
-		break;
-	case 'D':
-		slot_alloc2tmp(tmp);
-		return_double(tmp);
-		/* Remove synchronisation if necessary */
-		if (xmeth->accflags & ACC_SYNCHRONISED) {
-			mon_exit(xmeth, local(0));
-		}
-		begin_func_sync();
-		call_soft(finishJNIcall);
-		end_func_sync();
-		returnarg_double(tmp);
-		slot_free2tmp(tmp);
-		break;
-	case 'V':
-		/* Remove synchronisation if necessary */
-		if (xmeth->accflags & ACC_SYNCHRONISED) {
-			mon_exit(xmeth, local(0));
-		}
-		call_soft(finishJNIcall);
-		break;
-	case 'L':
-	case '[':
-		slot_alloctmp(tmp);
-		return_ref(tmp);
-		/* Remove synchronisation if necessary */
-		if (xmeth->accflags & ACC_SYNCHRONISED) {
-			mon_exit(xmeth, local(0));
-		}
-		begin_func_sync();
-		call_soft(finishJNIcall);
-		end_func_sync();
-		returnarg_ref(tmp);
-		slot_freetmp(tmp);
-		break;
-	default:
-		ABORT();
-	}
-
-	epilogue(0);
-	ret();
-
-	/* Generate the code */
-	if (tmpslot > maxTemp) {
-		maxTemp = tmpslot;
-	}
-	finishInsnSequence(&ncode);
-
-	/* Install it */
-	SET_METHOD_NATIVECODE(xmeth, ncode.code);
-#if 0
-	xmeth->c.ncode.ncode_start = ncode.mem;
-	xmeth->c.ncode.ncode_end = (void*)((uintp)ncode.code + ncode.codelen);
-#endif
-	xmeth->accflags |= ACC_JNI;
-        // MSR_ADD(ncode_mem, ncode.codelen);
-
-	/* Flush code out of cache */
-	FLUSH_DCACHE(ncode.code, (void*)((uintp)ncode.code + ncode.codelen));
-}
-
-typedef struct JitContext {
-	struct JitContext*	next;
-	codeinfo*		codeInfo;
-} JitContext;
-
-static JitContext* lastContext;
-
-/*
- * Push JIT context.
- */
-static
-void
-pushContext(void)
-{
-	JitContext* nc;
-
-	nc = KMALLOC(sizeof(JitContext));
-	nc->codeInfo = codeInfo;
-
-	nc->next = lastContext;
-	lastContext = nc;
-
-	codeInfo = 0;
-}
-
-static
-void
-popContext(void)
-{
-	JitContext* nc;
-
-	nc = lastContext;
-	lastContext = nc->next;
-
-	codeInfo = nc->codeInfo;
-
-	gc_free(nc);
+	return "kaffe.jit";
 }
 
 static
@@ -1322,3 +1001,67 @@ makeFakeCalls(void)
 
 	currFake = firstFake;
 }
+
+#if defined(KAFFE_PROFILER)
+static jlong click_multiplier;
+static profiler_click_t click_divisor;
+
+static int
+profilerClassStat(Hjava_lang_Class *clazz, void *param)
+{
+	Method *meth;
+	int mindex;
+
+	for (mindex = clazz->nmethods, meth = clazz->methods; mindex-- > 0; meth++) {
+		if (meth->callsCount == 0)
+			continue;
+
+		fprintf(stderr, "%10d %10.6g %10.6g %10.6g %s.%s%s\n",
+				meth->callsCount,
+				(click_multiplier * ((double)meth->totalClicks)) / click_divisor,
+				(click_multiplier * ((double)meth->totalChildrenClicks)) / click_divisor,
+				(click_multiplier * ((double)meth->jitClicks)) / click_divisor,
+
+				meth->class->name->data,
+				meth->name->data,
+				meth->signature->data
+		       );
+
+	}
+	return 0;
+}
+
+
+static void
+printProfilerStats(void)
+{
+	profiler_click_t start, end;
+	jlong m_start, m_end;
+
+	/* If the profFlag == 0, don't bother printing anything */
+	if (profFlag == 0)
+		return;
+
+	/* Need to figure out what profiler_click  _really_ is.
+	 * Use currentTime() to guest how long is a second.  Call it before
+	 * to don't count dynamic linker resolve time.  */
+	m_start = currentTime();
+	profiler_get_clicks(start);
+	sleep (1);
+	m_end = currentTime();
+	profiler_get_clicks(end);
+
+	click_multiplier = m_end - m_start;
+	click_divisor = end - start;
+
+	fprintf(stderr, "# clockTick: %lld per 1/%lld seconds aka %lld per milliseconds\n",
+		click_divisor,
+		click_multiplier,
+		click_divisor / click_multiplier);
+
+	fprintf(stderr, "# count\ttotal\tchildren\tjit\tmethod-name\n");
+
+	/* Traverse through class hash table */
+	walkClassPool(profilerClassStat, NULL);
+}
+#endif

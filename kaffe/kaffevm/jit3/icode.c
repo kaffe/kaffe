@@ -256,7 +256,7 @@ exception_prologue(void)
 }
 
 void
-epilogue(Method* meth)
+epilogue(void)
 {
 	label* l;
 
@@ -4013,7 +4013,7 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 	/* Make sure we have enough argument space */
 	if (sp_idx + 2 > sz_args) {
 		sz_args = sp_idx + 2;
-		args = gc_realloc_fixed(args, sizeof(struct pusharg_info) * sz_args);
+		args = KREALLOC(args, sizeof(struct pusharg_info) * sz_args);
 	}
 
 	/* If we've got an object ... */

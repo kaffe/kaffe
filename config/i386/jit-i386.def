@@ -236,7 +236,7 @@ define_insn(prologue, prologue_xxx)
 	}
 }
 
-define_insn(exception_prologue, eprologue_xxx)
+define_insn(exception_prologue, eprologue_xLx)
 {
 	label* l;
 

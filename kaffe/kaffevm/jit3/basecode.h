@@ -78,7 +78,7 @@ extern jvalue slot_value(SlotInfo*);
 #define	end_basic_block()	_end_basic_block()
 #define	start_sub_block()	_start_sub_block()
 #define	end_sub_block()		_end_sub_block()
-#define	end_function()		epilogue(meth)
+#define	end_function()		epilogue()
 #define	start_exception_block()	_start_exception_block(stackno)
 #define	sync_registers()	_syncRegisters(stackno, tmpslot)
 

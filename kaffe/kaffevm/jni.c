@@ -3661,9 +3661,9 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 
 	if (use_JNI) {
 		/* Start a JNI call */
-		prepare_function_call();
+		begin_func_sync();
 		call_soft(startJNIcall);
-		fixup_function_call();
+		end_func_sync();
 
 #if defined(NEED_JNIREFS)
 		{

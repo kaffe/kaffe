@@ -76,6 +76,7 @@ extern void dumpErrorInfo(errorInfo *);
 	0, "(Ljava/lang/String;)V", stringC2Java(MESS))
 
 #define NoSuchMethodError(M) NEW_LANG_EXCEPTION_MESSAGE(NoSuchMethodError, M)
+#define NoSuchFieldError(M) NEW_LANG_EXCEPTION_MESSAGE(NoSuchFieldError, M)
 #define LinkageError NEW_LANG_EXCEPTION(LinkageError)
 #define OutOfMemoryError NEW_LANG_EXCEPTION(OutOfMemoryError)
 #define UnsatisfiedLinkError NEW_LANG_EXCEPTION(UnsatisfiedLinkError)

@@ -131,7 +131,7 @@ INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(ENG
 noinst_LTLIBRARIES = libengine.la
 
 libengine_la_LDFLAGS = $(KVMLIBFLAGS)
-libengine_la_SOURCES =  	basecode.c 	constpool.c 	funcs.c 	icode.c 	labels.c 	registers.c 	slots.c 	machine.c 	seq.c
+libengine_la_SOURCES =  	basecode.c 	constpool.c 	funcs.c 	icode.c 	labels.c 	registers.c 	slots.c 	machine.c 	seq.c 	translator.c
 
 
 EXTRA_DIST =  	Makefile.frag 	basecode.h 	checks.h 	codeproto.h 	constpool.h 	icode_internal.h 	labels.h 	machine.h 	registers.h 	seq.h 	slots.h
@@ -154,7 +154,7 @@ X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 libengine_la_LIBADD = 
 libengine_la_OBJECTS =  basecode.lo constpool.lo funcs.lo icode.lo \
-labels.lo registers.lo slots.lo machine.lo seq.lo
+labels.lo registers.lo slots.lo machine.lo seq.lo translator.lo
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -169,7 +169,7 @@ TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/basecode.P .deps/constpool.P .deps/funcs.P \
 .deps/icode.P .deps/labels.P .deps/machine.P .deps/registers.P \
-.deps/seq.P .deps/slots.P
+.deps/seq.P .deps/slots.P .deps/translator.P
 SOURCES = $(libengine_la_SOURCES)
 OBJECTS = $(libengine_la_OBJECTS)
 

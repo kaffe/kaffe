@@ -149,7 +149,7 @@ void build_key(uint8*);
 void prologue(Method*);
 void mon_enter(Method*, SlotInfo*);
 void mon_exit(Method*, SlotInfo*);
-void epilogue(Method*);
+void epilogue(void);
 void breakpoint(void);
 
 void load_int(SlotInfo*, SlotInfo*);

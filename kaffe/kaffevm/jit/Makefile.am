@@ -22,7 +22,8 @@ libengine_la_SOURCES = \
 	registers.c \
 	slots.c \
 	machine.c \
-	seq.c
+	seq.c \
+	translator.c
 
 EXTRA_DIST = \
 	Makefile.frag \

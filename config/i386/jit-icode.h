@@ -36,7 +36,7 @@
 #define	HAVE_reload_double		freloadl_Rxx
 #define	HAVE_prologue			prologue_xxx
 #define	HAVE_epilogue			epilogue_xxx
-#define	HAVE_exception_prologue		eprologue_xxx
+#define	HAVE_exception_prologue		eprologue_xLx
 
 #define	HAVE_move_int_const		move_RxC
 #define	HAVE_move_int			move_RxR
