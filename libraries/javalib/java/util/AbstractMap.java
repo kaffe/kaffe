@@ -204,5 +204,17 @@ public abstract class AbstractMap implements Map {
 		return b.toString();
 	}
 
+	public Object clone() {
+		AbstractMap clone;
+		try {
+			clone = (AbstractMap)super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new Error();
+		}
+		clone.keyset = null;
+		clone.valcol = null;
+		return clone;
+	}
+
 }
 
