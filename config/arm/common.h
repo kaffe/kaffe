@@ -14,6 +14,9 @@
 #ifndef __arm_common_h
 #define __arm_common_h
 
+/* The arm never aligns to more than a 4 byte boundary. */
+#define	ALIGNMENT_OF_SIZE(S)	((S) < 4 ? (S) : 4)
+
 /*
  * The calling convention is such that the first four 32bit values are
  * passed in r0-r3, and the remainder goes on the stack.

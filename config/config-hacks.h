@@ -53,6 +53,6 @@
  * emulation.  We define this constant to declare that the word order
  * in a 64bit double is the opposite of the word order in a 64bit int.
  */
-#if defined(arm32)
+#if defined(arm32) || (defined(arm) && defined(linux))
 #define DOUBLE_ORDER_OPPOSITE
 #endif
