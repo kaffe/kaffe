@@ -78,7 +78,7 @@
 #endif
 
 #if !defined(FD_COPY)
-#define	FD_COPY(a, b)	memcpy(b, a, sizeof(*b))
+#define	FD_COPY(a, b)	memcpy(b, a, sizeof(*(b)))
 #endif
 
 #endif
