@@ -2,10 +2,23 @@
 #
 # The Kaffe Unicode Database generator.
 #
-# Creates files unicode.idx and unicode.tbl from the Unicode Database.
+# Creates files unicode.idx and unicode.tbl from the Unicode Character
+# Database file UnicodeData.txt.
 #
-# Edouard G. Parmelan <egp@quadratec.fr>
+# Latest version of this file should be download from
+#   ftp://ftp.unicode.org/Public/UNIDATA/UnicodeData.txt
+# previous version should match this:
+#   ftp://ftp.unicode.org/Public/*-Update/UnicodeData-*.txt
+#
+# Format of files unicode.tbl and unicode.idx are explain in file
+# FAQ/FAQ.unicode.
+#
+# I have test this script with UnicodeData-2.1.8.txt and
+# UnicodeData-3.0.0.txt.
+#
+# Edouard G. Parmelan <egp@free.fr>
 # March 27, 1999
+# Last edit May 2, 2000
 
 use English;
 use strict;
