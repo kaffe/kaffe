@@ -34,7 +34,7 @@ public class SoTimeout {
         Thread t = new Thread() {
             public void run() {
 		try {
-		    Socket s = new Socket(InetAddress.getLocalHost(), port);
+		    Socket s = new Socket(InetAddress.getByName(null), port);
 		    try {
 			Thread.sleep(3000);
 		    } catch (InterruptedException e) {

@@ -64,7 +64,7 @@ public class SoInterrupt {
 		    // now connect
 		    if (verbose)
 			System.out.println("connecting...");
-		    Socket s = new Socket(InetAddress.getLocalHost(), port);
+		    Socket s = new Socket(InetAddress.getByName(null), port);
 		    // wait some
 		    try {
 			Thread.sleep(1000);
