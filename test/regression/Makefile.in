@@ -193,6 +193,8 @@ TESTS = \
 	HashTest.java \
 	MapTest.java \
 	URLTest.java \
+	ReaderTest.java \
+	ReaderReadVoidTest.java \
 	ReflectInvoke.java \
 	InvTarExcTest.java \
 	CLTest.java \

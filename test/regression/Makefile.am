@@ -79,6 +79,8 @@ TESTS = \
 	HashTest.java \
 	MapTest.java \
 	URLTest.java \
+	ReaderTest.java \
+	ReaderReadVoidTest.java \
 ## simple test for Method.invoke
 	ReflectInvoke.java \
 ## simple test for InvocationTargetExceptions
