@@ -534,6 +534,7 @@ EXTRA_DIST = \
 	kaffe/util/TimerClient.java
 
 LIBDIR = lib
+ZIP = zip
 
 clean-hook:
 	rm -rf $(LIBDIR)
