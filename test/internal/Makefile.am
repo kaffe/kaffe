@@ -154,6 +154,7 @@ EXTRA_DIST = \
 	ObjectFields.java \
 	MethodOptimizations.java \
 	NativeMethodCall.java \
-	Exceptions.java
+	Exceptions.java \
+	java/lang/System.java
 
 CLEANFILES = *.fail *.out core *.core *.class

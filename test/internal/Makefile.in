@@ -455,7 +455,8 @@ EXTRA_DIST = \
 	ObjectFields.java \
 	MethodOptimizations.java \
 	NativeMethodCall.java \
-	Exceptions.java
+	Exceptions.java \
+	java/lang/System.java
 
 CLEANFILES = *.fail *.out core *.core *.class
 all: all-am
@@ -665,6 +666,7 @@ check-TESTS: $(TESTS)
 	else :; fi
 
 distdir: $(DISTFILES)
+	$(mkdir_p) $(distdir)/java/lang
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
