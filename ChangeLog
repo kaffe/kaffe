@@ -2,6 +2,14 @@
 
 	Resynced with GNU Classpath.
 
+	2003-11-27  Dalibor Topic <robilad@kaffe.org>
+
+        * java/text/FieldPosition.java (equals): Fixed comment.
+
+2004-01-03  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2003-11-15  Guilhem Lavaux <guilhem@kaffe.org>
             Jim Pick  <jim@kaffe.org>
 
