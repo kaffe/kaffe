@@ -14,6 +14,8 @@ Tue Nov 24 18:11:50 1998  Archie Cobbs <archie@whistle.com>
 	uncaught IOException
 	* libraries/javalib/java/lang/Boolean.java: allow uppercase
 	letters in Boolean(String s) constructor
+	* libraries/javalib/java/io/ObjectInputStream.java: fix infinite
+	loop on EOF bug (NADIA VIEIRA LEAO PEREIRA <972155@dcc.unicamp.br>)
 
 Wed Nov 18 18:14:05 1998  Luciane Lamour Ferreira <972311@dcc.unicamp.br>, Alexandre Oliva  <oliva@dcc.unicamp.br>
 
