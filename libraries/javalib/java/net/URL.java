@@ -430,6 +430,8 @@ public final class URL implements Serializable
 
       throw new MalformedURLException("Absolute URL required with null context");
 
+    protocol = protocol.trim();
+
     if (ph != null)
       {
 	SecurityManager s = System.getSecurityManager();
