@@ -112,6 +112,15 @@ jthread_create(unsigned int pri, 	/* initial priority */
 	void *jlThread, 		/* cookie for this thread */
 	size_t threadStackSize);	/* stack size to be allocated */
 
+struct _exceptionFrame;
+typedef void (*exchandler_t)(struct _exceptionFrame*);
+
+/*
+ * Initialize handlers for null pointer accesses and div by zero
+ */
+void 	jthread_initexceptions(exchandler_t _nullHandler,
+			       exchandler_t _floatingHandler);
+
 /*
  * set a function to be run when last non-daemon dies 
  * this is used to run the finalizer on exit.
@@ -137,7 +146,7 @@ void	jthread_setpriority(jthread_t jtid, int prio);
 /*
  * yield to another thread
  */
-static void 	
+static inline void 	
 jthread_yield(void)
 { 
 	sched_yield();
@@ -241,5 +250,7 @@ void jcondvar_initialise(jcondvar *cv);
 void jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
 void jcondvar_signal(jcondvar *cv, jmutex *lock);
 void jcondvar_broadcast(jcondvar *cv, jmutex *lock);
+
+extern void catchSignal(int sig, void* handler);
 
 #endif
