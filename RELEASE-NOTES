@@ -1,22 +1,116 @@
 Release Notes for 1.0.7
 =======================
 
-This release has been tested on the following platforms:
+This release has been tested on the following platforms (some of which
+might be unstable prototype systems rather than solid products, and as
+such, might not produce representative results):
 
-* i386 / Linux (Debian unstable)
+* i386 / Linux (Debian unstable/woody)
 
-  Reported by: Jim Pick
+  Tested Version: 1.0.7 (Final)
   Configuration: Default (jit3)
+  OS Version: Debian unstable/woody, Linux 2.4.18
+  Hardware: Athlon 1.2GHz
+  Compiled with: gcc 2.95.4
+  Results: Compiles, all "make check" tests pass.
+  Reported by: Jim Pick
 
-  Compiles, all "make check" tests pass. (RC1)
+  Tested Version: 1.0.7 (Final)
+  Configuration: Default (jit3)
+  OS Version: Debian unstable/woody, Linux 2.4.18
+  Hardware: Athlon 1.2GHz
+  Compiled with: gcc 2.95.4 (with -O4 flag)
+  Results: Compiles, 11 of 115 tests fail (a known bug).
+  Reported by: Jim Pick
 
-* PowerPC / Linux (YellowDog Linux 2.2)
+* i386 / NetBSD
 
-  Reported by: Carlos Valiente
+  Tested Version: 1.0.7 (Final)
+  Configuration: Default (jit3)
+  OS Version: NetBSD 1.5.2
+  Hardware: Pentium 120MHz (no CPU fan, might be flakey)
+  Compiled with: egcs 2.91.66
+  Results: Compiles, 8 of 115 tests failed.
+  Reported by: Jim Pick
+
+* i386 / Win32
+
+  Tested Version: 1.0.7 (Final)
+  Configuration: Default (jit3)
+  OS Version: Windows XP Pro / Cygwin
+  Hardware: IBM X22 Laptop / Mobile Pentium III 800MHz
+  Compiled with: gcc 2.95.3-5 (cygwin special)
+  Results: Compiles, many tests fail (tests don't complete).
+    A common error is:
+    assertion "!INTS_DISABLED()" failed: file 
+       ".../kaffe/kaffevm/exception.c", line 386
+    Signal 6
+  Reported by: Jim Pick
+
+  Tested Version: 1.0.7 (Final)
+  Configuration: --with-engine=intrp --with-staticlib
+                 --with-staticbin --with-staticvm
+  OS Version: Windows XP Pro / Cygwin
+  Hardware: IBM X22 Laptop / Mobile Pentium III 800MHz
+  Compiled with: gcc 2.95.3-5 (cygwin special)
+  Results: Compiles, many tests fail (tests don't complete).
+    A common error is:
+    assertion "!INTS_DISABLED()" failed: file 
+       ".../kaffe/kaffevm/exception.c", line 386
+    Signal 6
+  Reported by: Jim Pick
+
+* PowerPC / Linux
+  
+  Tested Version: 1.0.7-rc1
   Configuration: --with-engine=intrp
-
-  Compiles, all "make check" tests pass. (RC1)
-
+  OS Version: YellowDog Linux 2.2
+  Results: Compiles, all "make check" tests pass.
   ** However ** , I'm not able to run any of the sample AWT applications
   under test/awt
+  Reported by: Carlos Valiente
+
+* PowerPC / Mac OS X
+
+  Tested Version: 1.0.7 (Final)
+  Configuration: --with-engine=intrp --with-staticlib
+                 --with-staticbin --with-staticvm
+  OS Version: 10.1
+  Hardware: Apple iBook 500Mhz
+  Compiled with: Apple Computer, Inc. version gcc-934.3, based on
+                 gcc version 2.95.2
+  Results: Compiles, 6 of 114 tests failed.
+  Reported by: Jim Pick
+
+  Tested Version: 1.0.7 (Final)
+  Configuration: Default (intrp)
+  OS Version: 10.1
+  Compiled with: Apple Computer, Inc. version gcc-934.3, based on
+                 gcc version 2.95.2
+  Results: Compiles, 112 of 115 tests failed.
+           (actually, I suspect that the 3 that passed are false positives,
+            I need to check the regression testing script)
+  Reported by: Jim Pick
+
+* ARM / Linux
+
+  Tested Version: 1.0.7 (Final)
+  Configuration: Default (jit)
+  OS Version: Debian unstable/woody, Linux 2.2.17
+  Hardware: Corel Netwinder
+  Compiled with: gcc 2.95.4
+  Results: Compiled, 18 of 115 tests failed.
+  Reported by: Jim Pick
+
+  Tested Version: 1.0.7 (Final)
+  Configuration: --with-engine=intrp
+  OS Version: Debian unstable/woody, Linux 2.2.17 (NetWinder)
+  Hardware: Corel Netwinder
+  Compiled with: gcc 2.95.4
+  Results: Compiles, all tests fail.
+  Reported by: Jim Pick
+
+
+
+
 

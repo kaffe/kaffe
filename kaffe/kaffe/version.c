@@ -29,9 +29,9 @@ printShortVersion(void)
 	if (!versionfd)
 		versionfd = stderr;
 	fprintf(versionfd, "Kaffe Virtual Machine\n\n");
-	fprintf(versionfd, "Copyright (c) 1996-2002 Transvirtual Technologies, Inc.\n");
-	fprintf(versionfd, "Copyright (c) 1996-2002 Kaffe.org project contributors (please see the\n");
-	fprintf(versionfd, "                        source code for a full list of contributors)\n\n");
+	fprintf(versionfd, "Copyright (c) 1996-2002 Kaffe.org project contributors (please see\n");
+	fprintf(versionfd, "  the source code for a full list of contributors).  All rights reservced.\n");
+	fprintf(versionfd, "Portions Copyright (c) 1996-2002 Transvirtual Technologies, Inc.\n\n");
 
 	fprintf(versionfd, "The Kaffe virtual machine is free software, licensed under the terms of\n");
 	fprintf(versionfd, "the GNU General Public License.  Kaffe.org is a an independent, free software\n");
