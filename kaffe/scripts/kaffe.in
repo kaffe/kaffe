@@ -45,10 +45,13 @@ if test x"$(uname -m)"x = x"ia64"x; then
     [ "$arg" = "-ia32" ] && ia32mode=yes
   done
   if test x"${ia32mode}"x = x"yes"x; then
-    KAFFE_TARGET_ARCH=$(echo ${KAFFE_LIBDIR/ia64/i?86} | sed -e "s/.*\(i.86\)/\1/")
-    KAFFE_LIBDIR=${KAFFE_LIBDIR/ia64/$KAFFE_TARGET_ARCH}
-    KAFFE_LIBEXECDIR=${KAFFE_LIBEXECDIR/ia64/$KAFFE_TARGET_ARCH}
-    KAFFE_NATIVE_LIBRARY_DIR=${KAFFE_NATIVE_LIBRARY_DIR/ia64/$KAFFE_TARGET_ARCH}
+# These break on the script on cygwin
+#    KAFFE_TARGET_ARCH=$(echo ${KAFFE_LIBDIR/ia64/i?86} | sed -e "s/.*\(i.86\)/\1/")
+#    KAFFE_LIBDIR=${KAFFE_LIBDIR/ia64/$KAFFE_TARGET_ARCH}
+#    KAFFE_LIBEXECDIR=${KAFFE_LIBEXECDIR/ia64/$KAFFE_TARGET_ARCH}
+#    KAFFE_NATIVE_LIBRARY_DIR=${KAFFE_NATIVE_LIBRARY_DIR/ia64/$KAFFE_TARGET_ARCH}
+    echo FIXME
+    exit 1
   fi
 fi
 

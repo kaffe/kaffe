@@ -111,7 +111,7 @@ void SHA1Final(unsigned char *md, SHA1_CTX *c);
 /* I have taken some of this code from my MD5 implementation */
 
 #undef ROTATE
-#if defined(WIN32)
+#if defined(WIN32) && !defined(__GNUC__)
 #define ROTATE(a,n)     _lrotl(a,n)
 #else
 #define ROTATE(a,n)     (((a)<<(n))|(((a)&0xffffffff)>>(32-(n))))

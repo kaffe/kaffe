@@ -33,7 +33,7 @@
 #if defined(HAVE_SYS_RESOURCE_H)
 #include <sys/resource.h>
 #endif
-#if defined(HAVE_WINNT_H)
+#if !defined(HAVE_WINDOWS_H) && defined(HAVE_WINNT_H)
 #include <winnt.h>
 #endif
 #if defined(HAVE_WINTYPES_H)

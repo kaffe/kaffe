@@ -104,6 +104,8 @@ extern void dumpErrorInfo(errorInfo *);
 #define IllegalThreadStateException NEW_LANG_EXCEPTION(IllegalThreadStateException)
 #define	InstantiationException(M) NEW_LANG_EXCEPTION_MESSAGE(InstantiationException, M)
 
+#if !defined(KAFFEH)
+
 void throwError(struct _errorInfo*) __NORETURN__;
 
 /*
@@ -122,5 +124,7 @@ void *checkPtr(void *p)
 	}
 	return p;
 }
+
+#endif  /* !defined(KAFFEH) */
 
 #endif

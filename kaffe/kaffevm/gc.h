@@ -127,11 +127,13 @@ Collector* createGC(void (*_walkRootSet)(Collector*));
 #define GC_markAddress(G, addr)		\
     ((G)->ops->markAddress)((Collector*)(G), (addr))
 
+#if !defined(KAFFEH)
 static inline void GC_markObject(void *g, void *addr)
 {
 	if (addr)
 		((Collector*) g)->ops->markObject((Collector*) g, addr);
 }
+#endif
 
 #define GC_getObjectSize(G, obj)	\
     ((G)->ops->getObjectSize)((Collector*)(G), (obj))
