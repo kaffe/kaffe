@@ -66,7 +66,7 @@ native private void printStackTrace0(Object s);
 
 public String toString() {
 	if (message != null) {
-		return (this.getClass().getName() + ": " + message);
+		return (this.getClass().getName() + ": " + getMessage());
 	}
 	else {
 		return (this.getClass().getName());
