@@ -241,7 +241,6 @@ void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *r
 	bytecode *code = (bytecode*)meth->c.bcode.code;
 
 	/* Misc machine variables */
-	jlong lcc;
 	jvalue tmpl;
 	slots tmp[1];
 	slots tmp2[1];
