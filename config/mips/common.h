@@ -30,7 +30,10 @@
 #undef HAVE_MIPSII_INSTRUCTIONS
 #endif 
 
-#if defined(HAVE_MIPSII_INSTRUCTIONS)
+/* Atomicity is temporarily disabled because the compare_and_swap function 
+ * do not return the right value. Use the generic one instead.
+ */
+#if defined(HAVE_MIPSII_INSTRUCTIONS) && 0
 #include "atomicity.h"
 #else
 

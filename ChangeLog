@@ -1,5 +1,9 @@
 2005-03-22  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* config/mips/common.h: Disabled atomicity.h
+
+2005-03-22  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/ia64/common.h: Removed the inclusion of atomicity.h
 
 2005-03-22  Dalibor Topic  <robilad@kaffe.org>
