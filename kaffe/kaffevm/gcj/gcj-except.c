@@ -14,6 +14,7 @@
 #include "config-setjmp.h"
 #include "gtypes.h"
 #include "classMethod.h"
+#include "stackTrace.h"
 #include "thread.h"
 #include "gcj-except.h"
 #include "stringSupport.h"
@@ -66,7 +67,7 @@ gcjCatcher(void)
  * Dispatch a GCJ exception.
  */
 void
-gcjDispatchException(struct _exceptionFrame* frame, exceptionInfo* einfo, Hjava_lang_Throwable* eobj)
+gcjDispatchException(stackTraceInfo* frame, exceptionInfo* einfo, Hjava_lang_Throwable* eobj)
 {
 	void** q;
 	gcjException* p;
