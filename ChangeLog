@@ -1,5 +1,19 @@
 2004-10-29  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/java/awt/peer/gtk/GtkComponentPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkScrollPanePeer.java:
+        Resynced with GNU Classpath.
+
+	2004-10-29  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/awt/peer/gtk/GtkComponentPeer.java
+        (gtkWidgetSetVisible): Unused. Removed.
+        (connectJObject): Likewise.
+        * gnu/java/awt/peer/gtk/GtkScrollPanePeer.java
+        (gtkScrolledWindowSetScrollPosition): Commented out.
+
+2004-10-29  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
 	(objectStatsPrint) Fixed crash.
 

@@ -87,7 +87,6 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   native int[] gtkWidgetGetForeground ();
   native int[] gtkWidgetGetBackground ();
-  native void gtkWidgetSetVisible (boolean b);
   native void gtkWidgetGetDimensions (int[] dim);
   native void gtkWidgetGetPreferredDimensions (int[] dim);
   native void gtkWidgetGetLocationOnScreen (int[] point);
@@ -107,7 +106,6 @@ public class GtkComponentPeer extends GtkGenericPeer
     throw new RuntimeException ();
   }
 
-  native void connectJObject ();
   native void connectSignals ();
 
   protected GtkComponentPeer (Component awtComponent)
