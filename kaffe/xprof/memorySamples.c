@@ -111,8 +111,7 @@ struct memory_samples *createMemorySamples(void)
 	struct memory_samples *retval;
 
 	/* Allocate the root structure and the root branch pointers */
-	if( (retval = (struct memory_samples *)
-	     KMALLOC(sizeof(struct memory_samples))) &&
+	if( (retval = KMALLOC(sizeof(struct memory_samples))) &&
 	    (retval->ms_samples = createSampleBranches()) )
 	{
 		retval->ms_flags = 0;
@@ -368,7 +367,7 @@ void walkMemorySamples(struct memory_samples *ms,
 }
 
 /* A simple walker function that zeroes out the sample values */
-static int resetBinsWalker(void *handle, char *addr, short *bins, int size)
+static int resetBinsWalker(void *handle UNUSED, char *addr UNUSED, short *bins, size_t size)
 {
 	memset(bins, 0, size * sizeof(short));
 	return( 0 );
@@ -381,11 +380,11 @@ void resetMemorySamples(struct memory_samples *ms)
 }
 
 /* A simple walker function that prints out the bin values */
-static int printBinsWalker(void *handle, char *addr, short *bins, int size)
+static int printBinsWalker(void *handle, char *addr, short *bins, size_t size)
 {
 	FILE *file = handle;
 	int printed_header = 0;
-	int lpc;
+	size_t lpc;
 
 	for( lpc = 0; lpc < size; lpc++ )
 	{

@@ -44,7 +44,7 @@ struct memory_samples {
  * actual bins.
  */
 typedef int (*sample_walker_t)(void *handle, char *addr,
-			       short *bins, int size);
+			       short *bins, size_t size);
 
 /*
  * Create a memory_samples structure.

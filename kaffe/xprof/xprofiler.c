@@ -57,19 +57,19 @@ static volatile int xProfRecord = 1;
  * this variable while its working so that if a profiling interrupt happens
  * while its executing the appropriate function will be credited.
  */
-static char * volatile profiler_sample_override_pc = 0;
+static char * volatile profiler_sample_override_pc = NULL;
 volatile int profiler_sample_overrides = 0;
 
 /* Structures used to hold the profiling information */
-struct memory_samples *kaffe_memory_samples = 0;
-struct call_graph *kaffe_call_graph = 0;
+struct memory_samples *kaffe_memory_samples = NULL;
+struct call_graph *kaffe_call_graph = NULL;
 
 /* The name of the output files */
-char *kaffe_gmon_filename = "xgmon.out";
-char *kaffe_syms_filename = "kaffe-jit-symbols.s";
+const char *kaffe_gmon_filename = "xgmon.out";
+const char *kaffe_syms_filename = "kaffe-jit-symbols.s";
 
 /* Debugging file for profiler symbols */
-struct debug_file *profiler_debug_file = 0;
+struct debug_file *profiler_debug_file = NULL;
 static int extraProfileCount = 0;
 
 /* Number of call_arc structures to preallocate */
@@ -95,7 +95,7 @@ struct profiler_gmon_file {
  * if theres a large gap in observed memory.
  */
 static int profilerSampleWalker(void *handle, char *addr,
-				short *bins, int size)
+				short *bins, size_t size)
 {
 	struct profiler_gmon_file *pgf = handle;
 	struct gmon_file *gf = pgf->pgf_file;
@@ -105,7 +105,7 @@ static int profilerSampleWalker(void *handle, char *addr,
 	if( (addr - gf->gf_addr) > SAMPLE_GUTTER_THRESHOLD )
 	{
 		char *filename, *old_high;
-		int len;
+		size_t len;
 
 		old_high = gf->gf_high;
 		/* Rewrite the old record with the new high address */
@@ -320,7 +320,7 @@ void xProfileStage(char *stage_name)
 {
 	char *low, *high, *filename;
 	struct gmon_file *gf;
-	int len;
+	size_t len;
 
 	if( !xProfFlag )
 		return;
@@ -412,7 +412,7 @@ int profileSymbolFile(char *name)
 
 struct sigaction oldSigAction;
 
-static void profileTimerHandler(SIGNAL_ARGS(sig, sc))
+static void profileTimerHandler(SIGNAL_ARGS(sig UNUSED, sc))
 {
 	SIGNAL_CONTEXT_POINTER(scp) = GET_SIGNAL_CONTEXT_POINTER(sc);
 	char *addr = (char *)SIGNAL_PC(scp);
@@ -566,6 +566,7 @@ void profileArcHit(char *frompc, char *selfpc)
 }
 
 #if defined(KAFFE_XPROFILER) && defined(KAFFE_CPROFILER) && defined(_KAFFE_OVERRIDE_MCOUNT_DEF)
+_KAFFE_OVERRIDE_MCOUNT_DEF;
 _KAFFE_OVERRIDE_MCOUNT_DEF
 {
 	char *old_override = profiler_sample_override_pc;
@@ -609,8 +610,8 @@ _KAFFE_OVERRIDE_MCOUNT_DEF
 		if (frompc > p->textsize)
 			goto done;
 		
-		frompcindex = &p->froms[frompc /
-				       (p->hashfraction * sizeof(*p->froms))];
+		frompcindex = &(p->froms[frompc /
+				       (p->hashfraction * sizeof(*p->froms))]);
 		toindex = *frompcindex;
 		if (toindex == 0) {
 			/*

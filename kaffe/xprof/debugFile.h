@@ -99,7 +99,7 @@ typedef enum {
  * @param filename The debugging file name.
  * @return An initialized debug_file object.
  */
-struct debug_file *createDebugFile(char *filename);
+struct debug_file *createDebugFile(const char *filename);
 
 /**
  * Delete the root structure and close the output file.
@@ -134,6 +134,6 @@ extern struct debug_file *machine_debug_file;
 /**
  * Default name for the debugging file.
  */
-extern char *machine_debug_filename;
+extern const char *machine_debug_filename;
 
 #endif /* __debugfile_h */

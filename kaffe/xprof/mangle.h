@@ -52,11 +52,11 @@ void deleteMangledMethod(struct mangled_method *mm);
 /*
  * Mangle the given method name and place it in the structure
  */
-int mangleMethodName(struct mangled_method *mm, char *name);
+int mangleMethodName(struct mangled_method *mm, const char *name);
 /*
  * Mangle the given class name and place it in the structure
  */
-int mangleMethodClass(struct mangled_method *mm, void *cl, char *name);
+int mangleMethodClass(struct mangled_method *mm, void *cl, const char *name);
 /*
  * Set the number of args for this mangled method
  */
@@ -77,31 +77,31 @@ int printMangledMethod(struct mangled_method *mm, FILE *file);
  * Mangle a primitive Java type, returns a statically allocated string that
  * has the proper mangled value.
  */
-char *manglePrimitiveType(char type);
+const char *manglePrimitiveType(char type);
 /*
  * Mangle the given class name and return a KMALLOC'ed buffer with the string
  * and `prepend' extra bytes in front of the string.  (Note: the class name
  * needs to be in internal form, e.g. java/lang/Object.)
  */
-char *mangleClassType(int prepend, void *cl, char *name);
+char *mangleClassType(int prepend, void *cl, const char *name);
 /*
  * Mangle a type description and return a KMALLOC'ed buffer with the mangled
  * string and `prepend' extra bytes at the front.
  */
-char *mangleType(int prepend, char *type);
+char *mangleType(size_t prepend, const char *type);
 /*
  * Mangle string `src' of length `len', and place the result into `dest'
  */
-int mangleString(char *dest, char *src, int slen, int uc);
+size_t mangleString(char *dest, const char *src, size_t slen, int uc);
 /*
  * Determine the mangled length of the given string.  If the string doesn't
  * require any escapes then zero is returned.  If len is -1 then `term' is
  * taken as the terminating character.  If `out_len' is non-NULL then it is
  * always set to the unmangled length of `string'.
  */
-int mangleLength(char *string, int len, char *term, int *out_len);
+size_t mangleLength(const char *string, int len, const char *term, size_t *out_len);
 
-int vfmanglef(FILE *file, char *format, va_list args);
-int fmanglef(FILE *file, char *format, ...);
+int vfmanglef(FILE *file, const char *format, va_list args);
+int fmanglef(FILE *file, const char *format, ...);
 
 #endif /* __mangle_h */

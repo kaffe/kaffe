@@ -237,7 +237,7 @@ long writeGmonRecord(struct gmon_file *gf, int tag, ...)
 	return( retval );
 }
 
-int writeGmonSamples(struct gmon_file *gf, char *addr, short *bins, int size)
+int writeGmonSamples(struct gmon_file *gf, char *addr, short *bins, size_t size)
 {
 	int retval = 1;
 
@@ -293,7 +293,7 @@ int fillGmonSamples(struct gmon_file *gf, char *addr)
 	return( retval );
 }
 
-int gmonSampleWalker(void *handle, char *addr, short *bins, int size)
+int gmonSampleWalker(void *handle, char *addr, short *bins, size_t size)
 {
 	struct gmon_file *gf = handle;
 

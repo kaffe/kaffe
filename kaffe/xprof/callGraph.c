@@ -100,7 +100,7 @@ void resetCallGraph(struct call_graph *cg)
 void arcHit(struct call_graph *cg, char *frompc, char *selfpc)
 {
 	struct call_arc *ca;
-	int index;
+	int _index;
 
 	/*
 	 * NOTE: This function isn't thread-safe since its would slow us down,
@@ -109,8 +109,8 @@ void arcHit(struct call_graph *cg, char *frompc, char *selfpc)
 	 */
 	
 	/* Get the index in the hash table for this arc */
-	index = HASH_ARC(frompc, selfpc);
-	ca = cg->cg_table[index];
+	_index = HASH_ARC(frompc, selfpc);
+	ca = cg->cg_table[_index];
 	/* Walk over the arcs in the table searching for a match */
 	while( ca )
 	{
@@ -132,8 +132,8 @@ void arcHit(struct call_graph *cg, char *frompc, char *selfpc)
 		{
 			ca = &cg->cg_arcs[cg->cg_free++];
 			ca->ca_count = 1;
-			ca->ca_next = cg->cg_table[index];
-			cg->cg_table[index] = ca;
+			ca->ca_next = cg->cg_table[_index];
+			cg->cg_table[_index] = ca;
 			ca->ca_from = frompc;
 			ca->ca_to = selfpc;
 		}

@@ -53,7 +53,7 @@
 # define NAME_SEPARATORS "/"
 
   /* GCJ escapes out underscore iff this is a unicode word */
-  static inline int bad_underscore(char *p, char *end) { return 1; }
+  static inline int bad_underscore(const char *p, const char *end) { return 1; }
 #else
 # define IS_SEP(c) ((c) == '/' || (c) == '$')
 # define NAME_SEPARATORS "/$"
@@ -61,7 +61,7 @@
   /* In kaffe, everything is potential unicode-mangled, but underscores
    * are only escaped out if they precede hex digits or underscores.
    */
-  static inline int bad_underscore(char *p, char *end)
+  static inline int bad_underscore(const char *p, const char *end)
   {
 	int next = UTF8_GET(p, end);
 	return   ((next >= '0' && next <= '9')
@@ -107,9 +107,10 @@ void deleteMangledMethod(struct mangled_method *mm)
 	xProfilingOn();
 }
 
-int mangleMethodName(struct mangled_method *mm, char *name)
+int mangleMethodName(struct mangled_method *mm, const char *name)
 {
-	int retval = 0, len, m_len;
+	int retval = 0;
+	size_t len, m_len;
 
 	/* Constructors are mangled as an empty string */
 	if( !strcmp(name, "<init>") )
@@ -117,7 +118,7 @@ int mangleMethodName(struct mangled_method *mm, char *name)
 		name = "";
 	}
 	len = strlen(name);
-	if( (m_len = mangleLength(name, len, 0, 0)) )
+	if( (m_len = mangleLength(name, (int)len, 0, 0)) )
 	{
 		/*
 		 * A method name with special chars has the `U' placed at the
@@ -129,7 +130,7 @@ int mangleMethodName(struct mangled_method *mm, char *name)
 		m_len = len;
 	if( (mm->mm_method = (char *)KMALLOC(m_len + 1)) )
 	{
-		int res;
+		size_t res;
 
 		res = mangleString(mm->mm_method, name, len, m_len != len);
 		assert(res <= (m_len + 1));
@@ -138,7 +139,7 @@ int mangleMethodName(struct mangled_method *mm, char *name)
 	return( retval );
 }
 
-int mangleMethodClass(struct mangled_method *mm, void *cl, char *name)
+int mangleMethodClass(struct mangled_method *mm, void *cl, const char *name)
 {
 	int retval = 0;
 
@@ -168,7 +169,8 @@ int mangleMethodArgCount(struct mangled_method *mm, int count)
  */
 static int duplicateParameter(Method *meth, int curr_param)
 {
-	int curr_len, lpc, retval = -1;
+	int lpc, retval = -1;
+	size_t curr_len;
 
 	/* Figure out the length of the curr_param type string */
 	if( curr_param == METHOD_PSIG(meth)->nargs )
@@ -191,7 +193,7 @@ static int duplicateParameter(Method *meth, int curr_param)
 	 */
 	for( lpc = 1; (lpc < curr_param) && (retval != -1); lpc++ )
 	{
-		int arg_len;
+		size_t arg_len;
 
 		/* Figure out the length of the current parameter type */
 		if( lpc == METHOD_PSIG(meth)->nargs )
@@ -308,7 +310,7 @@ int printMangledMethod(struct mangled_method *mm, FILE *file)
 }
 
 /* Map of primitive Java types to the mangled types */
-static char *primitive_type_map[] = {
+static const char *primitive_type_map[] = {
 	"Z", "b",	/* boolean */
 	"C", "w",	/* wide char */
 	"V", "v",	/* void */
@@ -321,9 +323,9 @@ static char *primitive_type_map[] = {
 	0
 };
 
-char *manglePrimitiveType(char type)
+const char *manglePrimitiveType(char type)
 {
-	char *retval = 0;
+	const char *retval = NULL;
 	int lpc;
 
 	for( lpc = 0; primitive_type_map[lpc] && !retval; lpc += 2 )
@@ -334,11 +336,13 @@ char *manglePrimitiveType(char type)
 	return( retval );
 }
 
-char *mangleClassType(int prepend, void *cl, char *name)
+char *mangleClassType(int prepend, void *cl, const char *name)
 {
 	int quals = 0, num_chars = 0, num_underscores = 0, need_escapes = 0;
-	int ch, len, m_len = 0, error = 0, total_len = 0;
-	char *retval = 0, *curr, *end;
+	int ch, error = 0;
+	size_t len, m_len = 0, total_len = 0;
+	char *retval = 0;
+	const char *curr, *end;
 
 	/* First we find the length of mangled string */
 	len = strlen(name);
@@ -480,7 +484,7 @@ char *mangleClassType(int prepend, void *cl, char *name)
 	return( retval );
 }
 
-char *mangleType(int prepend, char *type)
+char *mangleType(size_t prepend, const char *type)
 {
 	char *retval = 0;
 
@@ -488,7 +492,7 @@ char *mangleType(int prepend, char *type)
 	{
 	case 'L':
 		/* Object reference */
-		if( (retval = mangleClassType(prepend + 1, 0, type + 1)) )
+		if( (retval = mangleClassType((int)prepend + 1, 0, type + 1)) )
 			retval[prepend] = 'P';
 		break;
 	case '[':
@@ -499,7 +503,7 @@ char *mangleType(int prepend, char *type)
 	default:
 		/* Most likely a primitive */
 		{
-			char *prim;
+			const char *prim;
 
 			if( (prim = manglePrimitiveType(type[0])) )
 			{
@@ -515,11 +519,11 @@ char *mangleType(int prepend, char *type)
 	return( retval );
 }
 
-int mangleLength(char *string, int len, char *term, int *out_len)
+size_t mangleLength(const char *string, int len, const char *term, size_t *out_len)
 {
 	int num_chars = 0, need_escapes = 0, num_underscores = 0;
 	int retval = -1, error = 0;
-	char *curr, *end;
+	const char *curr, *end;
 
 	curr = string;
 	if( len < 0 )
@@ -590,10 +594,11 @@ int mangleLength(char *string, int len, char *term, int *out_len)
 	return( retval );
 }
 
-int mangleString(char *dest, char *src, int slen, int unicode)
+size_t mangleString(char *dest, const char *src, size_t slen, int _unicode)
 {
 	int retval = 0, ch, error = 0, need_escape = 0;
-	char *start, *curr, *end;
+	char *start;
+	const char *curr, *end;
 
 	start = dest;
 	curr = src;
@@ -615,7 +620,7 @@ int mangleString(char *dest, char *src, int slen, int unicode)
 		}
 		else if( ch == '_' )
 		{
-			if( unicode && bad_underscore(curr, end) )
+			if( _unicode && bad_underscore(curr, end) )
 			{
 				need_escape = 1;
 			}
@@ -651,9 +656,9 @@ int mangleString(char *dest, char *src, int slen, int unicode)
 	return( retval );
 }
 
-static int fputss(const char *str, int len, FILE *stream)
+static int fputss(const char *str, size_t len, FILE *stream)
 {
-    unsigned int lpc;
+    size_t lpc;
     int retval = 0;
 
     for( lpc = 0; lpc < len; lpc++ )
@@ -663,7 +668,7 @@ static int fputss(const char *str, int len, FILE *stream)
     return( retval );
 }
 
-int vfmanglef(FILE *file, char *format, va_list args)
+int vfmanglef(FILE *file, const char *format, va_list args)
 {
     unsigned int sindex, eindex;
     int retval = 0;
@@ -811,7 +816,7 @@ int vfmanglef(FILE *file, char *format, va_list args)
     return( retval );
 }
 
-int fmanglef(FILE *file, char *format, ...)
+int fmanglef(FILE *file, const char *format, ...)
 {
     va_list args;
     int retval;

@@ -85,12 +85,12 @@ long writeGmonRecord(struct gmon_file *gf, int tag, ...);
  * contiguous with previous calls to this function the gap will be filled
  * in with zeroes.
  */
-int writeGmonSamples(struct gmon_file *gf, char *addr, short *bins, int count);
+int writeGmonSamples(struct gmon_file *gf, char *addr, short *bins, size_t count);
 /*
  * A walker function for walking over a memory profile and calling
  * writeGmonSamples.
  */
-int gmonSampleWalker(void *handle, char *addr, short *bins, int size);
+int gmonSampleWalker(void *handle, char *addr, short *bins, size_t size);
 /*
  * Fill the gap up to `addr' with zeros in the file.
  */
