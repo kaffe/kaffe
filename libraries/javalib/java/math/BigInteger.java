@@ -21,22 +21,50 @@ public class BigInteger extends Number {
 private static final long serialVersionUID = -8287574255936472291L;
 private Ptr number;
 
+public static final BigInteger ZERO;
+public static final BigInteger ONE;
+
 static {
 	System.loadLibrary("math");
 	initialize0();
+	/* ZERO and ONE must be defined here, not in their
+	   declarations, otherwise they'd be initialized before the
+	   libmath is loaded and initialized.  Moving their
+	   declarations after this block doesn't help.  */
+	ZERO = new BigInteger();
+	ONE = new BigInteger(1L);
 }
 
 public BigInteger(byte val[]) throws NumberFormatException {
-	this(1, val);
+	this();
+	if (val.length == 0)
+		throw new NumberFormatException("val.length == 0");
+	int signum = (val[0] & 128) == 0 ? 1 : -1;
+	if (signum == -1) {
+		for(int i = val.length; i-- > 0; ) {
+			val[i] = (byte)~val[i]; // adjust two's complement
+		}
+	}
+	assignBytes0(signum, val);
+	if (signum == -1) {
+		add0(this, ONE); // adjust two's complement
+	}
 }
 
 public BigInteger(int signum, byte magnitude[]) throws NumberFormatException {
 	this();
+	switch (signum) {
+	case -1:
+	case 0:
+	case 1:
+		break;
+	default:
+		throw new NumberFormatException("signum < -1 || signum > 1");
+	}
 	if (magnitude.length != 0) {
-		if (signum == 0) {
-			throw new NumberFormatException();
-		}
 		assignBytes0(signum, magnitude);
+		if (signum == 0 && cmp0(this, ZERO) != 0)
+			throw new NumberFormatException("signum == 0 && magnitude[i] != 0");
 	}
 }
 
@@ -50,11 +78,59 @@ public BigInteger(String val) throws NumberFormatException {
 }
 
 public BigInteger(int numBits, Random rndSrc) throws IllegalArgumentException {
-	throw new kaffe.util.NotImplemented();
+        this(1, randBytes(numBits, rndSrc));
+}
+
+private static byte[] randBytes(int numBits, Random rndSrc)
+    throws IllegalArgumentException {
+	if (numBits < 0)
+		throw new IllegalArgumentException("numBits < 0");
+	int extra = numBits % 8;
+	byte[] ret = new byte[numBits/8 + (extra>0 ? 1 : 0)];
+	rndSrc.nextBytes(ret);
+	if (extra > 0)
+		ret[0] &= ~((~0) << (8-extra));
+	return (ret);
 }
 
 public BigInteger(int bitLength, int certainty, Random rnd) {
-	throw new kaffe.util.NotImplemented();
+	this();
+	if (bitLength < 2)
+		throw new ArithmeticException("bitLength < 2");
+	byte [] bytes = new byte[(bitLength+7)/8];
+	int zeroes = 8 - bitLength%8;
+	/* andval is used to zero out unused bits in the most
+           significant byte.  */
+	byte andval = (byte)(~((~0) << zeroes));
+	/* orval is used to set the most significant bit.  */
+	byte orval = (byte)(0x100 >> zeroes);
+ rerand:
+	for(;;) {
+		/* There must be a more efficient algorithm! */
+		rnd.nextBytes(bytes);
+		/* Ensure that we have the requested length.  */
+		bytes[0] = (byte)((bytes[0] & andval) | orval);
+		assignBytes0(1, bytes);
+		if (probablyPrime0(certainty) == 1)
+			break;
+		/* Only test whether the length has changed when
+		   testLength is becomes zero.  */
+		long testLength = longValue();
+		if (bitLength < 64)
+			testLength |= ~0l << bitLength;
+		do {
+			add0(this, ONE);
+			if (++testLength == 0
+			    && bitLength0() > bitLength)
+				continue rerand;
+		} while (probablyPrime0(certainty) == 0);
+		break;
+	}
+}
+
+private BigInteger(long val) {
+	this();
+	assignLong0(val);
 }
 
 private BigInteger() {
@@ -62,8 +138,7 @@ private BigInteger() {
 }
 
 public static BigInteger valueOf(long val) {
-	// Not the fastest way to do this ...
-	return (new BigInteger(Long.toString(val)));
+	return (new BigInteger(val));
 }
 
 public BigInteger add(BigInteger val) throws ArithmeticException {
@@ -128,8 +203,7 @@ public BigInteger negate() {
 }
 
 public int signum() {
-	BigInteger zero = new BigInteger();
-	return (compareTo(zero));
+	return (compareTo(ZERO));
 }
 
 public BigInteger mod(BigInteger mod) {
@@ -230,11 +304,14 @@ public int getLowestSetBit() {
 }
 
 public int bitLength() {
-	throw new kaffe.util.NotImplemented();
+	return bitLength0();
 }
 
 public int bitCount() {
-	throw new kaffe.util.NotImplemented();
+	if (compareTo(ZERO) < 0)
+		return (negate().hamDist0(ZERO));
+	else
+		return (hamDist0(ZERO));
 }
 
 public boolean isProbablePrime(int certainty) {
@@ -303,7 +380,45 @@ public String toString() {
 }
 
 public byte[] toByteArray() {
-	throw new kaffe.util.NotImplemented();
+	byte[] ret = new byte[1 + bitLength0()/8];
+	BigInteger copy = abs(), divisor = new BigInteger();
+	divisor.setBit(32); // prepare to shift right
+	int sign = cmp0(this, ZERO);
+	if (sign < 0) {
+		sub0(copy, ONE); // adjust two's complement
+	}
+	int i = ret.length; // we know it's >= 1
+	while (i > 4) {
+		int num = copy.toInt0();
+		ret[--i] = (byte)num;
+		ret[--i] = (byte)(num>>8);
+		ret[--i] = (byte)(num>>16);
+		ret[--i] = (byte)(num>>24);
+		div0(copy, divisor);
+	}
+	{
+		int num = copy.toInt0();
+		switch (i) {
+		case 4:
+			ret[--i] = (byte)num;
+			num >>= 8;
+		case 3:
+			ret[--i] = (byte)num;
+			num >>= 8;
+		case 2:
+			ret[--i] = (byte)num;
+			num >>= 8;
+		case 1:
+			ret[--i] = (byte)num;
+		}
+	}
+	if (sign < 0) {
+		i = ret.length;
+		while (i-- > 0) {
+			ret[i] = (byte)~ret[i]; // adjust two's complement
+		}
+	}
+	return (ret);
 }
 
 public int intValue() {
@@ -311,8 +426,7 @@ public int intValue() {
 }
 
 public long longValue() {
-	// Not very efficient ...
-	return (Long.valueOf(toString()).longValue());
+	return ((long)toInt0() | shiftRight(32).toInt0());
 }
 
 public float floatValue() {
@@ -426,6 +540,8 @@ private native void clrbit0(BigInteger s, int n);
 private native void setbit0(BigInteger s, int n);
 private native int scansetbit0();
 private native int probablyPrime0(int cert);
+private native int bitLength0();
+private native int hamDist0(BigInteger s);
 
 private native static int cmp0(BigInteger s1, BigInteger s2);
 

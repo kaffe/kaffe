@@ -70,6 +70,30 @@ Java_java_math_BigInteger_finalize0(JNIEnv* env, jobject r)
 }
 
 void
+Java_java_math_BigInteger_assignLong0(JNIEnv* env, jobject r, jlong v)
+{
+	mpz_ptr res;
+	int negative = v < 0 ? -1 : 0;
+
+	res = (*env)->GetObjectField(env, r, number);
+
+	if (negative)
+		v = -v;
+	/* Note that v will remain negative if it's LONG_LONG_MIN.
+	   This is not a problem because any sign copying in the right
+	   shift will be stripped with the cast to jint, and the
+	   number will be considered positive.  Furthermore, in this
+	   case, (jint)v will be zero, so the addition will be a
+	   do-nothing operation.  At last, the number will be made
+	   negative, as appropriate.  */
+	mpz_set_ui(res, (unsigned long)(jint)(v >> 32));
+	mpz_mul_2exp(res, res, 32);
+	mpz_add_ui(res, res, (unsigned long)(jint)v);
+	if (negative)
+		mpz_neg(res, res);
+}
+
+void
 Java_java_math_BigInteger_assignBytes0(JNIEnv* env, jobject r, jint sign, jarray magnitude)
 {
 	mpz_ptr res;
@@ -463,6 +487,27 @@ Java_java_math_BigInteger_probablyPrime0(JNIEnv* env, jobject* s, jint prop)
 	src = (mpz_srcptr)(*env)->GetObjectField(env, s, number);
 
 	return (mpz_probab_prime_p(src, (int)prop));
+}
+
+jint
+Java_java_math_BigInteger_bitLength0(JNIEnv* env, jobject* s)
+{
+	mpz_srcptr src;
+
+	src = (mpz_srcptr)(*env)->GetObjectField(env, s, number);
+
+	return (mpz_sizeinbase(src, 2));
+}
+
+jint
+Java_java_math_BigInteger_hamDist0(JNIEnv* env, jobject* s1, jobject* s2)
+{
+	mpz_srcptr src1, src2;
+
+	src1 = (mpz_srcptr)(*env)->GetObjectField(env, s1, number);
+	src2 = (mpz_srcptr)(*env)->GetObjectField(env, s2, number);
+
+	return (mpz_hamdist(src1, src2));
 }
 
 #else
