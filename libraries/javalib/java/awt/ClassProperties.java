@@ -10,6 +10,8 @@
  * @author P.C.Mehlitz
  */
 
+package java.awt;
+
 class ClassProperties
 {
         boolean useOldEvents;

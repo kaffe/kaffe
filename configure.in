@@ -348,6 +348,7 @@ AC_PROG_RANLIB
 AC_CHECK_PROG(AR, ar, ar cr)
 AC_CHECK_PROGS(MKDIR, mkdirs 'mkdir -p', mkdir -p)
 AC_CHECK_PROG(DLLTOOL, dlltool, dlltool)
+AC_CHECK_PROG(JIKES, jikes, jikes)
 dnl We also need to install scripts
 INSTALL_SCRIPT='${INSTALL} -m 755'
 AC_SUBST(INSTALL_SCRIPT)

@@ -11,12 +11,19 @@
 #
 
 SRCDIR=@srcdir@
+JIKES=@JIKES@
 
-if [ -z "$JAVA" ]; then
-	JAVA="kaffe -ms 8M -mx 64M"
-fi
-if [ -z "$JAVAC" ]; then
-	JAVAC="$JAVA pizza.compiler.Main"
+if [ "$JIKES" = "" ] ; then
+	if [ -z "$JAVA" ]; then
+		JAVA="kaffe -ms 8M -mx 64M"
+	fi
+	if [ -z "$JAVAC" ]; then
+		JAVAC="$JAVA pizza.compiler.Main"
+	fi
+	CPATH="lib"
+else
+	JAVAC="jikes"
+	CPATH="lib:$SRCDIR/Klasses.jar"
 fi
 
 rm -rf lib
@@ -57,4 +64,4 @@ CLASSES="\
 "
 
 echo "Compiling classes ..."
-$JAVAC -verbose -d lib -classpath lib $CLASSES
+$JAVAC -verbose -d lib -classpath $CPATH $CLASSES
