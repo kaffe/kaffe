@@ -1,4 +1,4 @@
-/* ColorModel.java --
+/* LookupOp.java -- Filter that converts each pixel using a lookup table.
 Copyright (C) 2004  Free Software Foundation
 
 This file is part of GNU Classpath.
@@ -35,12 +35,6 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-/*
- * Created on Oct 6, 2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package java.awt.image;
 
 import java.awt.Graphics2D;
@@ -67,7 +61,8 @@ import java.awt.geom.Rectangle2D;
  * 
  * @author jlquinn
  */
-public class LookupOp implements BufferedImageOp, RasterOp {
+public class LookupOp implements BufferedImageOp, RasterOp
+{
   private LookupTable lut;
   private RenderingHints hints;
   
@@ -89,7 +84,7 @@ public class LookupOp implements BufferedImageOp, RasterOp {
   {
     if (src.getColorModel() instanceof IndexColorModel)
       throw new IllegalArgumentException("LookupOp.filter: IndexColorModel "
-          								 + "not allowed");
+					 + "not allowed");
     if (dst == null)
       dst = createCompatibleDestImage(src, src.getColorModel());
 
@@ -122,10 +117,12 @@ public class LookupOp implements BufferedImageOp, RasterOp {
           dr.setPixel(x, y, lut.lookupPixel(tmp, dbuf));
         }
     }
-    else if (lut.getNumComponents() != 1 &&
-        	 lut.getNumComponents() != src.getColorModel().getNumComponents())
-      throw new IllegalArgumentException("LookupOp.filter: Incompatible lookup "
-			 + "table and source image");
+    else if (lut.getNumComponents() != 1
+	     &&
+	     lut.getNumComponents() != src.getColorModel().getNumComponents())
+      throw new IllegalArgumentException("LookupOp.filter: "
+					 + "Incompatible lookup "
+					 + "table and source image");
 
     // No alpha to ignore
     int[] dbuf = new int[src.getColorModel().getNumComponents()];
@@ -160,12 +157,12 @@ public class LookupOp implements BufferedImageOp, RasterOp {
    * @see java.awt.image.BufferedImageOp#createCompatibleDestImage(java.awt.image.BufferedImage, java.awt.image.ColorModel)
    */
   public BufferedImage createCompatibleDestImage(BufferedImage src,
-      											 ColorModel dstCM)
+						 ColorModel dstCM)
   {
     // FIXME: set properties to those in src
     return new BufferedImage(dstCM,
-        					src.getRaster().createCompatibleWritableRaster(),
-        					src.isPremultiplied, null);
+			     src.getRaster().createCompatibleWritableRaster(),
+			     src.isPremultiplied, null);
   }
 
   /** Return corresponding destination point for source point.
@@ -177,7 +174,9 @@ public class LookupOp implements BufferedImageOp, RasterOp {
    */
   public Point2D getPoint2D(Point2D src, Point2D dst)
   {
-    if (dst == null) return (Point2D)src.clone();
+    if (dst == null)
+      return (Point2D) src.clone();
+
     dst.setLocation(src);
     return dst;
   }
@@ -218,7 +217,8 @@ public class LookupOp implements BufferedImageOp, RasterOp {
       if (src.getNumBands() != dest.getNumBands())
         throw new IllegalArgumentException();
 
-    if (lut.getNumComponents() != 1 && lut.getNumComponents() != src.getNumBands())
+    if (lut.getNumComponents() != 1
+	&& lut.getNumComponents() != src.getNumBands())
       throw new IllegalArgumentException();
 
    
