@@ -39,7 +39,9 @@ static inline void sysdepCallMethod(callMethodInfo *call) {
     register int r1 asm("r1");
     register int r2 asm("r2");
     register int r3 asm("r3");
+#ifndef __SOFTFP__
     register double f0 asm("f0");
+#endif
 
   default:
     {
@@ -60,7 +62,10 @@ static inline void sysdepCallMethod(callMethodInfo *call) {
   case 0:
     asm volatile ("mov lr, pc\n"
 "                    mov pc, %3\n"
-                  : "=r" (r0), "=r" (r1), "=f" (f0)
+                  : "=r" (r0), "=r" (r1)
+#ifndef __SOFTFP__
+		                        , "=f" (f0)
+#endif
                   : "r" (call->function),
                     "0" (r0), "1" (r1), "r" (r2), "r" (r3)
                   : "ip", "lr");
@@ -70,11 +75,20 @@ static inline void sysdepCallMethod(callMethodInfo *call) {
       break;
 
     case 'D':
+#ifdef __SOFTFP__
+      (&call->ret->i)[1] = r1;
+      (&call->ret->i)[0] = r0;
+#else
       call->ret->d = (double) f0;
+#endif
       break;
 
     case 'F':
+#ifdef __SOFTFP__
+      call->ret->i = r0;
+#else
       call->ret->f = (float) f0;
+#endif
       break;
  
     case 'J':
