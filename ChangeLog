@@ -1,3 +1,11 @@
+2003-10-24  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/gnu/java/beans/IntrospectionIncubator.java:
+	(addMethod) Add public static methods.
+
+	* libraries/javalib/java/beans/Introspector.java:
+	Merged in from GNU Classpath.
+
 2003-10-23  Marc Kleine-Budde <kleine-budde@gmx.de>
 
 	* kaffe/kaffevm/systems/win32/winthread.c
