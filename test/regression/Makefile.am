@@ -155,7 +155,14 @@ EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow) \
 	CLTestConc_run.java \
 	ZipVerifyUtils.java
 	ClassGCTest.java \
-	ClassGCLater.java
+	ClassGCLater.java \
+	LoaderTest_Class0.java \
+	LoaderTest_Class1.java \
+	LoaderTest_Class1BeanInfo.java \
+	LoaderTest_Class2.java \
+	LoaderTest_Class3.java \
+	LoaderTest_Loader1.java \
+	LoaderTest_Loader2.java
 
 CLEANFILES = *.class *.fail *.out core *.core ExceptionTest
 
