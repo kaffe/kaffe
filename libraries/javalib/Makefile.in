@@ -813,10 +813,14 @@ gnu_java_security_x509_SRCS = \
 	gnu/java/security/x509/X500DistinguishedName.java
 
 gnu_java_text_SRCS = \
+	gnu/java/text/AttributedFormatBuffer.java \
 	gnu/java/text/BaseBreakIterator.java \
 	gnu/java/text/CharacterBreakIterator.java \
+	gnu/java/text/FormatBuffer.java \
+	gnu/java/text/FormatCharacterIterator.java \
 	gnu/java/text/LineBreakIterator.java \
 	gnu/java/text/SentenceBreakIterator.java \
+	gnu/java/text/StringFormatBuffer.java \
 	gnu/java/text/WordBreakIterator.java
 
 gnu_java_util_SRCS = \
@@ -1937,7 +1941,6 @@ java_text_SRCS = \
 	java/text/DecimalFormat.java \
 	java/text/DecimalFormatSymbols.java \
 	java/text/FieldPosition.java \
-	java/text/FormatCharacterIterator.java \
 	java/text/Format.java \
 	java/text/MessageFormat.java \
 	java/text/NumberFormat.java \

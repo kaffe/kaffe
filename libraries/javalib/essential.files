@@ -377,12 +377,15 @@ java/text/DecimalFormat.java
 java/text/DecimalFormatSymbols.java
 java/text/FieldPosition.java
 java/text/Format.java
-java/text/FormatCharacterIterator.java
+gnu/java/text/FormatCharacterIterator.java
 java/text/MessageFormat.java
 java/text/NumberFormat.java
 java/text/ParseException.java
 java/text/ParsePosition.java
 java/text/SimpleDateFormat.java
+gnu/java/text/FormatBuffer.java
+gnu/java/text/AttributedFormatBuffer.java
+gnu/java/text/StringFormatBuffer.java
 java/util/AbstractCollection.java
 java/util/AbstractList.java
 java/util/AbstractMap.java

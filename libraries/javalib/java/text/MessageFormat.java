@@ -43,6 +43,7 @@ import java.util.Locale;
 import java.util.Vector;
 import java.io.InvalidObjectException;
 import java.util.HashMap;
+import gnu.java.text.FormatCharacterIterator;
 
 /**
  * @author Tom Tromey <tromey@cygnus.com>
@@ -420,7 +421,7 @@ public class MessageFormat extends Format
 
 	Format formatter = null;
 
-	if (i == 0 && fp != null && fp.getFieldAttribute() == Field.ARGUMENT)
+	if (fp != null && i == fp.getField() && fp.getFieldAttribute() == Field.ARGUMENT)
 	  fp.setBeginIndex(appendBuf.length());
 
 	if (elements[i].setFormat != null)
@@ -440,7 +441,7 @@ public class MessageFormat extends Format
 	else
 	  appendBuf.append(thisArg);
 
-	if (i == 0 && fp != null && fp.getFieldAttribute() == Field.ARGUMENT)
+	if (fp != null && fp.getField() == i && fp.getFieldAttribute() == Field.ARGUMENT)
 	  fp.setEndIndex(appendBuf.length());
 
 	if (formatter != null)
@@ -498,10 +499,10 @@ public class MessageFormat extends Format
    *
    * @param source The object to be formatted.
    * @param result The StringBuffer where the text is appened.
-   * @param fp A FieldPosition object (it is ignored).
+   * @param fpos A FieldPosition object (it is ignored).
    */
   public final StringBuffer format (Object singleArg, StringBuffer appendBuf,
-				    FieldPosition ignore)
+				    FieldPosition fpos)
   {
     Object[] args;
 
@@ -516,7 +517,7 @@ public class MessageFormat extends Format
 	args = new Object[1];
 	args[0] = singleArg;
       }
-    return format (args, appendBuf, ignore);
+    return format (args, appendBuf, fpos);
   }
 
   /**

@@ -1,3 +1,36 @@
+2004-03-21  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/gnu/java/text/FormatCharacterIterator.java,
+	libraries/javalib/java/text/FormatCharacterIterator.java: Moved into
+	a private package.
+
+	* libraries/javalib/gnu/java/text/FormatBuffer.java,
+	libraries/javalib/gnu/java/text/AttributedFormatBuffer.java,
+	libraries/javalib/gnu/java/text/StringFormatBuffer.java:
+	New private classes to handle attributed buffers before going into
+	character iterators.
+
+	* libraries/javalib/java/text/MessageFormat.java,
+	libraries/javalib/java/text/DecimalFormat.java,
+	libraries/javalib/java/text/SimpleDateFormat.java,
+	libraries/javalib/java/text/Format.java:
+	Upgraded. A big step towards complete implementation of attributes and
+	field positions.
+
+	* libraries/javalib/java/io/File.java:
+	Removed an extra 'return;'.
+
+	* libraries/javalib/gnu/java/locale/LocaleInformation_en.java:
+	Fixed a collation rule. Anyway they are still largely incomplete.
+
+	* libraries/javalib/bootstrap.classlist,
+	libraries/javalib/essential.files: Updated class lists.
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	Regenerated.
+
+	* libraries/javalib/Klasses.jar.bootstrap: Regenerated.
+
 2004-03-19  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/util/Properties.java

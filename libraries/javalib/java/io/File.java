@@ -1341,8 +1341,6 @@ public class File implements Serializable, Comparable
       sm.checkDelete(path);
 
     deleteHelper.filesToDelete.add(getAbsolutePath());
-    
-    return;
   }
 
   private void writeObject(ObjectOutputStream oos) throws IOException

@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.io.Serializable;
+import gnu.java.text.FormatCharacterIterator;
 
 /**
  * This class is the abstract superclass of classes that format and parse

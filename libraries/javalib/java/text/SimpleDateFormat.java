@@ -51,6 +51,10 @@ import java.util.SimpleTimeZone;
 import java.util.Vector;
 import java.io.ObjectInputStream;
 import java.io.IOException;
+import gnu.java.text.FormatCharacterIterator;
+import gnu.java.text.FormatBuffer;
+import gnu.java.text.AttributedFormatBuffer;
+import gnu.java.text.StringFormatBuffer;
 
 /**
  * SimpleDateFormat provides convenient methods for parsing and formatting
@@ -413,8 +417,7 @@ public class SimpleDateFormat extends DateFormat
    * appending to the specified StringBuffer.  The input StringBuffer
    * is returned as output for convenience.
    */
-  private StringBuffer formatWithAttribute(Date date, StringBuffer buffer, FieldPosition pos,
-					   Vector attributes, Vector ranges)
+  final private void formatWithAttribute(Date date, FormatBuffer buffer, FieldPosition pos)
   {
     String temp;
     AttributedCharacterIterator.Attribute attribute;
@@ -422,135 +425,134 @@ public class SimpleDateFormat extends DateFormat
 
     // go through vector, filling in fields where applicable, else toString
     Iterator iter = tokens.iterator();
-    while (iter.hasNext()) {
-      Object o = iter.next();
-      if (o instanceof FieldSizePair) {
-	FieldSizePair p = (FieldSizePair) o;
-	int beginIndex = buffer.length();
-	switch (p.field) {
-	case ERA_FIELD:
-	  attribute = DateFormat.Field.ERA;
-	  buffer.append(formatData.eras[calendar.get(Calendar.ERA)]);
-	  break;
-	case YEAR_FIELD:
-	  // If we have two digits, then we truncate.  Otherwise, we
-	  // use the size of the pattern, and zero pad.
-	  attribute = DateFormat.Field.YEAR;
-	  if (p.size == 2)
-	    {
-	      temp = String.valueOf(calendar.get(Calendar.YEAR));
-	      buffer.append(temp.substring(temp.length() - 2));
-	    }
-	  else
-	    withLeadingZeros(calendar.get(Calendar.YEAR), p.size, buffer);
-	  break;
-	case MONTH_FIELD:
-	  attribute = DateFormat.Field.MONTH;
-	  if (p.size < 3)
-	    withLeadingZeros(calendar.get(Calendar.MONTH)+1,p.size,buffer);
-	  else if (p.size < 4)
-	    buffer.append(formatData.shortMonths[calendar.get(Calendar.MONTH)]);
-	  else
-	    buffer.append(formatData.months[calendar.get(Calendar.MONTH)]);
-	  break;
-	case DATE_FIELD:
-	  attribute = DateFormat.Field.DAY_OF_MONTH;
-	  withLeadingZeros(calendar.get(Calendar.DATE),p.size,buffer);
-	  break;
-	case HOUR_OF_DAY1_FIELD: // 1-24
-	  attribute = DateFormat.Field.HOUR_OF_DAY1;
-	  withLeadingZeros(((calendar.get(Calendar.HOUR_OF_DAY)+23)%24)+1,p.size,buffer);
-	  break;
-	case HOUR_OF_DAY0_FIELD: // 0-23
-	  attribute = DateFormat.Field.HOUR_OF_DAY0;
-	  withLeadingZeros(calendar.get(Calendar.HOUR_OF_DAY),p.size,buffer);
-	  break;
-	case MINUTE_FIELD:
-	  attribute = DateFormat.Field.MINUTE;
-	  withLeadingZeros(calendar.get(Calendar.MINUTE),p.size,buffer);
-	  break;
-	case SECOND_FIELD:
-	  attribute = DateFormat.Field.SECOND;
-	  withLeadingZeros(calendar.get(Calendar.SECOND),p.size,buffer);
-	  break;
-	case MILLISECOND_FIELD:
-	  attribute = DateFormat.Field.MILLISECOND;
-	  withLeadingZeros(calendar.get(Calendar.MILLISECOND),p.size,buffer);
-	  break;
-	case DAY_OF_WEEK_FIELD:
-	  attribute = DateFormat.Field.DAY_OF_WEEK;
-	  if (p.size < 4)
-	    buffer.append(formatData.shortWeekdays[calendar.get(Calendar.DAY_OF_WEEK)]);
-	  else
-	    buffer.append(formatData.weekdays[calendar.get(Calendar.DAY_OF_WEEK)]);
-	  break;
-	case DAY_OF_YEAR_FIELD:
-	  attribute = DateFormat.Field.DAY_OF_YEAR;
-	  withLeadingZeros(calendar.get(Calendar.DAY_OF_YEAR),p.size,buffer);
-	  break;
-	case DAY_OF_WEEK_IN_MONTH_FIELD:
-	  attribute = DateFormat.Field.DAY_OF_WEEK_IN_MONTH;
-	  withLeadingZeros(calendar.get(Calendar.DAY_OF_WEEK_IN_MONTH),p.size,buffer);
-	  break;
-	case WEEK_OF_YEAR_FIELD:
-	  attribute = DateFormat.Field.WEEK_OF_YEAR;
-	  withLeadingZeros(calendar.get(Calendar.WEEK_OF_YEAR),p.size,buffer);
-	  break;
-	case WEEK_OF_MONTH_FIELD:
-	  attribute = DateFormat.Field.WEEK_OF_MONTH;
-	  withLeadingZeros(calendar.get(Calendar.WEEK_OF_MONTH),p.size,buffer);
-	  break;
-	case AM_PM_FIELD:
-	  attribute = DateFormat.Field.AM_PM;
-	  buffer.append(formatData.ampms[calendar.get(Calendar.AM_PM)]);
-	  break;
-	case HOUR1_FIELD: // 1-12
-	  attribute = DateFormat.Field.HOUR1;
-	  withLeadingZeros(((calendar.get(Calendar.HOUR)+11)%12)+1,p.size,buffer);
-	  break;
-	case HOUR0_FIELD: // 0-11
-	  attribute = DateFormat.Field.HOUR0;
-	  withLeadingZeros(calendar.get(Calendar.HOUR),p.size,buffer);
-	  break;
-	case TIMEZONE_FIELD:
-	  attribute = DateFormat.Field.TIME_ZONE;
-	  TimeZone zone = calendar.getTimeZone();
-	  boolean isDST = calendar.get(Calendar.DST_OFFSET) != 0;
-	  // FIXME: XXX: This should be a localized time zone.
-	  String zoneID = zone.getDisplayName(isDST, p.size > 3 ? TimeZone.LONG : TimeZone.SHORT);
-	  buffer.append(zoneID);
-	  break;
-	default:
-	  throw new IllegalArgumentException("Illegal pattern character " + p.field);
+    while (iter.hasNext())
+      {
+	Object o = iter.next();
+	if (o instanceof FieldSizePair)
+	  {
+	    FieldSizePair p = (FieldSizePair) o;
+	    int beginIndex = buffer.length();
+	    
+	    switch (p.field)
+	      {
+	      case ERA_FIELD:
+		buffer.append (formatData.eras[calendar.get (Calendar.ERA)], DateFormat.Field.ERA);
+		break;
+	      case YEAR_FIELD:
+		// If we have two digits, then we truncate.  Otherwise, we
+		// use the size of the pattern, and zero pad.
+		buffer.setDefaultAttribute (DateFormat.Field.YEAR);
+		if (p.size == 2)
+		  {
+		    temp = String.valueOf (calendar.get (Calendar.YEAR));
+		    buffer.append (temp.substring (temp.length() - 2));
+		  }
+		else
+		  withLeadingZeros (calendar.get (Calendar.YEAR), p.size, buffer);
+		break;
+	      case MONTH_FIELD:
+		buffer.setDefaultAttribute (DateFormat.Field.MONTH);
+		if (p.size < 3)
+		  withLeadingZeros (calendar.get (Calendar.MONTH) + 1, p.size, buffer);
+		else if (p.size < 4)
+		  buffer.append (formatData.shortMonths[calendar.get (Calendar.MONTH)]);
+		else
+		  buffer.append (formatData.months[calendar.get (Calendar.MONTH)]);
+		break;
+	      case DATE_FIELD:
+		buffer.setDefaultAttribute (DateFormat.Field.DAY_OF_MONTH);
+		withLeadingZeros (calendar.get (Calendar.DATE), p.size, buffer);
+		break;
+	      case HOUR_OF_DAY1_FIELD: // 1-24
+		buffer.setDefaultAttribute(DateFormat.Field.HOUR_OF_DAY1);
+		withLeadingZeros ( ((calendar.get (Calendar.HOUR_OF_DAY) + 23) % 24) + 1, 
+				   p.size, buffer);
+		break;
+	      case HOUR_OF_DAY0_FIELD: // 0-23
+		buffer.setDefaultAttribute (DateFormat.Field.HOUR_OF_DAY0);
+		withLeadingZeros (calendar.get (Calendar.HOUR_OF_DAY), p.size, buffer);
+		break;
+	      case MINUTE_FIELD:
+		buffer.setDefaultAttribute (DateFormat.Field.MINUTE);
+		withLeadingZeros (calendar.get (Calendar.MINUTE),
+				  p.size, buffer);
+		break;
+	      case SECOND_FIELD:
+		buffer.setDefaultAttribute (DateFormat.Field.SECOND);
+		withLeadingZeros(calendar.get (Calendar.SECOND), 
+				 p.size, buffer);
+		break;
+	      case MILLISECOND_FIELD:
+		buffer.setDefaultAttribute (DateFormat.Field.MILLISECOND);
+		withLeadingZeros (calendar.get (Calendar.MILLISECOND), p.size, buffer);
+		break;
+	      case DAY_OF_WEEK_FIELD:
+		buffer.setDefaultAttribute (DateFormat.Field.DAY_OF_WEEK);
+		if (p.size < 4)
+		  buffer.append (formatData.shortWeekdays[calendar.get (Calendar.DAY_OF_WEEK)]);
+		else
+		  buffer.append (formatData.weekdays[calendar.get (Calendar.DAY_OF_WEEK)]);
+		break;
+	      case DAY_OF_YEAR_FIELD:
+		buffer.setDefaultAttribute (DateFormat.Field.DAY_OF_YEAR);
+		withLeadingZeros (calendar.get (Calendar.DAY_OF_YEAR), p.size, buffer);
+		break;
+	      case DAY_OF_WEEK_IN_MONTH_FIELD:
+		buffer.setDefaultAttribute (DateFormat.Field.DAY_OF_WEEK_IN_MONTH);
+		withLeadingZeros (calendar.get (Calendar.DAY_OF_WEEK_IN_MONTH), 
+				 p.size, buffer);
+		break;
+	      case WEEK_OF_YEAR_FIELD:
+		buffer.setDefaultAttribute (DateFormat.Field.WEEK_OF_YEAR);
+		withLeadingZeros (calendar.get (Calendar.WEEK_OF_YEAR),
+				  p.size, buffer);
+		break;
+	      case WEEK_OF_MONTH_FIELD:
+		buffer.setDefaultAttribute (DateFormat.Field.WEEK_OF_MONTH);
+		withLeadingZeros (calendar.get (Calendar.WEEK_OF_MONTH),
+				  p.size, buffer);
+		break;
+	      case AM_PM_FIELD:
+		buffer.setDefaultAttribute (DateFormat.Field.AM_PM);
+		buffer.append (formatData.ampms[calendar.get (Calendar.AM_PM)]);
+		break;
+	      case HOUR1_FIELD: // 1-12
+		buffer.setDefaultAttribute (DateFormat.Field.HOUR1);
+		withLeadingZeros (((calendar.get (Calendar.HOUR) + 11) % 12) + 1, p.size, buffer);
+		break;
+	      case HOUR0_FIELD: // 0-11
+		buffer.setDefaultAttribute (DateFormat.Field.HOUR0);
+		withLeadingZeros (calendar.get (Calendar.HOUR), p.size, buffer);
+		break;
+	      case TIMEZONE_FIELD:
+		buffer.setDefaultAttribute (DateFormat.Field.TIME_ZONE);
+		TimeZone zone = calendar.getTimeZone();
+		boolean isDST = calendar.get (Calendar.DST_OFFSET) != 0;
+		// FIXME: XXX: This should be a localized time zone.
+		String zoneID = zone.getDisplayName (isDST, p.size > 3 ? TimeZone.LONG : TimeZone.SHORT);
+		buffer.append (zoneID);
+		break;
+	      default:
+		throw new IllegalArgumentException ("Illegal pattern character " + p.field);
+	      }
+	    if (pos != null && p.field == pos.getField())
+	      {
+		pos.setBeginIndex(beginIndex);
+		pos.setEndIndex(buffer.length());
+	      }
+	  } 
+      else
+	{  
+	  buffer.append(o.toString(), null);
 	}
-	if (pos != null && p.field == pos.getField())
-	  {
-	    pos.setBeginIndex(beginIndex);
-	    pos.setEndIndex(buffer.length());
-	  }
-	if (attributes != null)
-	  {
-	    HashMap map = new HashMap();
-
-	    map.put(attribute, attribute);
-	    attributes.add(map);
-	    ranges.add(new Integer(buffer.length()));
-	  }
-      } else {
-	buffer.append(o.toString());
-	if (attributes != null)
-	  {
-	    attributes.add(null);
-	    ranges.add(new Integer(buffer.length()));
-	  }
       }
-    }
-    return buffer;
   }
-
+  
   public StringBuffer format(Date date, StringBuffer buffer, FieldPosition pos)
   {
-    return formatWithAttribute(date, buffer, pos, null, null);
+    formatWithAttribute(date, new StringFormatBuffer (buffer), pos);
+
+    return buffer;
   }
 
   public AttributedCharacterIterator formatToCharacterIterator(Object date)
@@ -561,23 +563,17 @@ public class SimpleDateFormat extends DateFormat
     if (!(date instanceof Date))
       throw new IllegalArgumentException("argument should be an instance of java.util.Date");
 
-    Vector attributes = new Vector();
-    Vector ranges = new Vector();
-    String s = formatWithAttribute((Date)date, new StringBuffer(),
-				   null, attributes, ranges).toString();
-    Object[] int_ranges = ranges.toArray();
-    Object[] harray = attributes.toArray();
-    HashMap[] hash_array  = new HashMap[harray.length];
-    int[] iranges = new int[int_ranges.length];
-
-    for (int i=0;i<iranges.length;i++)
-      iranges[i] = ((Integer)int_ranges[i]).intValue();
-    System.arraycopy(harray, 0, hash_array, 0, harray.length);
-    return new FormatCharacterIterator(s, iranges,
-				       hash_array);
+    AttributedFormatBuffer buf = new AttributedFormatBuffer();
+    formatWithAttribute((Date)date, buf,
+			null);
+    buf.sync();
+        
+    return new FormatCharacterIterator(buf.getBuffer().toString(),
+				       buf.getRanges(),
+				       buf.getAttributes());
   }
 
-  private void withLeadingZeros(int value, int length, StringBuffer buffer) 
+  private void withLeadingZeros(int value, int length, FormatBuffer buffer) 
   {
     String valStr = String.valueOf(value);
     for (length -= valStr.length(); length > 0; length--)

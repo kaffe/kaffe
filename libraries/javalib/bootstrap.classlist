@@ -149,7 +149,10 @@ java/text/AttributedCharacterIterator$Attribute.class
 java/text/CharacterIterator.class
 java/text/Format.class
 java/text/Format$Field.class
-java/text/FormatCharacterIterator.class
+gnu/java/text/FormatCharacterIterator.class
+gnu/java/text/FormatBuffer.class
+gnu/java/text/AttributedFormatBuffer.class
+gnu/java/text/StringFormatBuffer.class
 java/text/MessageFormat.class
 java/text/MessageFormat$Field.class
 java/text/MessageFormatElement.class
@@ -244,8 +247,11 @@ kaffe/util/UTF8.class
 
 # Additional classes used by -v option passed to kjc
 java/text/FieldPosition.class
+java/text/Format$Field.class
+java/text/DateFormat$Field.class
 java/text/SimpleDateFormat.class
 java/text/NumberFormat.class
+java/text/NumberFormat$Field.class
 java/text/DecimalFormat.class
 java/text/DecimalFormatSymbols.class
 java/text/ChoiceFormat.class
