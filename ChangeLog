@@ -1,6 +1,19 @@
 2003-07-09  Dalibor Topic  <robilad@yahoo.com>
 
 	* libraries/javalib/bootstrap.classlist:
+	Removed kaffe.lang.ApplicationException and
+	kaffe.lang.ApplicationResource.
+
+	* libraries/javalib/java/lang/Thread.java:
+	Don't implement ApplicationResource.
+	(freeResource) removed.
+	
+	* libraries/javalib/Klasses.jar.bootstrap:
+	regenerated.
+	
+2003-07-09  Dalibor Topic  <robilad@yahoo.com>
+
+	* libraries/javalib/bootstrap.classlist:
 	Added missing files. Removed kaffe.lang.Application.
 
 	* libraries/javalib/java/io/File.java:

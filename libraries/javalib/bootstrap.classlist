@@ -187,7 +187,6 @@ kaffe/lang/AppClassLoader.class
 kaffe/lang/AppClassLoader$Source.class
 kaffe/lang/AppClassLoader$DirSource.class
 kaffe/lang/AppClassLoader$JarSource.class
-kaffe/lang/ApplicationResource.class
 kaffe/lang/MemoryAdvice.class
 kaffe/lang/PrimordialClassLoader.class
 kaffe/lang/ThreadStack.class

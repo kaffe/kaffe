@@ -13,10 +13,9 @@ package java.lang;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.security.AccessController;
-import kaffe.lang.ApplicationResource;
 
 public class Thread
-  implements Runnable, ApplicationResource {
+  implements Runnable {
 
 public final static int MIN_PRIORITY = 1;
 public final static int NORM_PRIORITY = 5;
@@ -201,21 +200,6 @@ void finish() {
 	}
 	if (tg != null) {
 		tg.remove(this);
-	}
-}
-
-public void freeResource() {
-	// NB:
-	// Each thread is associated with the application that created it
-	// as an ApplicationResource.
-	// If an application exits, it frees all its resources, thereby
-	// destroying all its threads.
-	// To make sure we free all threads, we must make sure that the
-	// invoking thread is not killed prematurely before it can finish
-	// that task.
-	// See also Runtime.exit()
-        if (isAlive() && currentThread() != this) {
-		destroy();
 	}
 }
 
