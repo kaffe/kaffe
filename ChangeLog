@@ -1,3 +1,10 @@
+2003-10-27  Timothy S. Stack <stack@cs.utah.edu>
+
+	* libraries/javalib/java/security/SecureRandom.java:
+	Fix computation of next(int).
+	
+	Reported by: jrandom
+
 2003-10-27  Ross Martin <hacker@ross.interwrx.com>
 
 	* libraries/javalib/java/awt/ImageLoader.java:

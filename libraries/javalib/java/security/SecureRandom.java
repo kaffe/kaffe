@@ -83,7 +83,7 @@ protected final int next(int numBits) {
 	nextBytes(res);
 	for( lpc = res.length - 1; lpc >= 0; lpc-- )
 	{
-		retval |= (res[res.length - lpc - 1] << (8 * lpc)) & 0xFF;
+		retval |= ((res[res.length - lpc - 1] & 0xFF) << (8 * lpc));
 	}
 	return retval >> (res.length * 8 - numBits);
 
