@@ -19,6 +19,9 @@
 #include "jit-md.h"
 #endif
 
+#undef SP_OFFSET
+#define SP_OFFSET 34
+
 /* Alpha's require a little initialisation for proper IEEE math.  */
 extern void init_md(void);
 #define INIT_MD()       init_md()

@@ -19,6 +19,9 @@
 #include "jit-md.h"
 #endif
 
+#undef SP_OFFSET
+#define SP_OFFSET 8
+
 /* Linux requires a little initialisation */
 extern void init_md(void);
 #define	INIT_MD()	init_md()
