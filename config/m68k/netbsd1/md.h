@@ -18,9 +18,9 @@
 #include "m68k/threads.h"
 
 /*
- * Alignment in structure is 4 bytes packed
+ * Alignment in structure is 8 bytes packed
  */
-#define ALIGNMENT_OF_SIZE(S)    ((S) < 4 ? (S) : 4)
+#define ALIGNMENT_OF_SIZE(S)    ((S) < 8 ? (S) : 8)
 
 /*
  * Stack offset.

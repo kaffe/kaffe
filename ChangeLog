@@ -1,3 +1,9 @@
+2004-07-13  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/m68k/netbsd1/md.h:
+	Fix alignment bug for 'long long'.
+	This makes kjc work with m68k/netbsd for 'jit'.
+
 2004-07-13  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/Makefile.am: Renamed all occurrences of stamp-h02
