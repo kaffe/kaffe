@@ -1,3 +1,31 @@
+Wed Jul 24 02:06:01 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/clib/native/Class.c:
+	(java_lang_Class_forName) deleted. Implemented in Java.
+	* libraries/clib/native/ClassLoader.c:
+	(java_lang_ClassLoader_resolveClass0) process files to
+	CSTATE_COMPLETE.
+	* libraries/clib/native/SystemClassLoader.c:
+	(kaffe_lang_SystemClassLoader_findClass0) Added code to load
+	arrays. Merged code to handle NoClassDefFoundErrors with such code
+	from java_lang_Class_forName.
+	* libraries/javalib/java/lang/Class.java:
+	(forName) rewritten in Java.
+	(CallStack) new inner class for call stack inspection.
+	* libraries/javalib/java/lang/Runtime.java:
+	(loadLibrary) use CallStack.getCallersClassLoader().
+	(load) same.
+	* libraries/javalib/java/lang/System.java:
+	(load) use CallStack.getCallersClassLoader().
+	(loadLibrary) same.
+	* libraries/javalib/kaffe/lang/SystemClassLoader.java:
+	(componentType) new private method to get the name of the
+	innermost component type of an array.
+	(findClass) Moved some error checks from java_lang_Class_forName
+	here.
+	* libraries/javalib/Klasses.jar.bootstrap:
+	rebuilt.
+
 Fri Jul 19 19:14:07 PDT 2002  Jim Pick  <jim@kaffe.org>
 
 	* Rebuilding the classes takes forever on my 16MB

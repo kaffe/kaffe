@@ -135,12 +135,12 @@ native private static Properties initProperties(Properties props);
 
 public static void load(String filename) {
 	Runtime.getRuntime().load(filename,
-	    Class.getStackClass(1).getClassLoader());
+	    Class.CallStack.getCallersClassLoader());
 }
 
 public static void loadLibrary(String libname) {
 	Runtime.getRuntime().loadLibrary(libname,
-	    Class.getStackClass(1).getClassLoader());
+	    Class.CallStack.getCallersClassLoader());
 }
 
 public static String mapLibraryName(String fn) {

@@ -53,8 +53,14 @@ kaffe_lang_SystemClassLoader_findClass0(Hkaffe_lang_SystemClassLoader* this, Hja
 
 		c = utf8ConstNew(name, len);
 		if (c) {
+		    if (c->data[0] == '[') {
+			clazz = loadArray(c, 0, &info);
+		    }
+		    else {
 			clazz = loadClass(c, 0, &info);
-			utf8ConstRelease(c);
+		    }
+
+		    utf8ConstRelease(c);
 		}
 	}
 
@@ -63,15 +69,40 @@ kaffe_lang_SystemClassLoader_findClass0(Hkaffe_lang_SystemClassLoader* this, Hja
 		 * upgrade error to an exception if *this* class wasn't found.
 		 * See discussion in Class.forName()
 		 */
-		if (!strcmp(info.classname, "java.lang.NoClassDefFoundError")
-		    && !strcmp(info.mess, name))
-		{
-			errorInfo info_tmp = info;
-			postExceptionMessage(&info,
-				JAVA_LANG(ClassNotFoundException), 
-				"%s", info.mess);
-			discardErrorInfo(&info_tmp);
+		if (!strcmp(info.classname, "java.lang.NoClassDefFoundError")) {
+			/*
+			 * However, we don't upgrade if it is a second attempt
+			 * to load a class whose loading has already failed.
+			 */
+			classEntry* centry;
+
+			stringJava2CBuf(str, name, len+1);
+			classname2pathname(name, name);
+			c = utf8ConstNew(name, len);
+
+			centry = lookupClassEntry(c, 0, &info);
+			if (centry == 0
+			    || (centry->class
+				&& centry->class->state == CSTATE_FAILED)) {
+				utf8ConstRelease(c);
+				throwError(&info);
+			}
+			utf8ConstRelease(c);
+
+			if (!strcmp(info.mess, name)) {
+				errorInfo info_tmp = info;
+				postExceptionMessage(&info,
+						     JAVA_LANG(ClassNotFoundException), 
+						     "%s", info.mess);
+				discardErrorInfo(&info_tmp);
+			}
 		}
+		else if ((info.type & KERR_EXCEPTION)
+			 && !strcmp(info.classname, "java.lang.NoClassDefFoundError"))
+                {
+
+		}
+
 		if (name != buffer) {
 			KFREE(name);
 		}

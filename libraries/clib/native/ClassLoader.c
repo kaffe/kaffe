@@ -127,7 +127,7 @@ void
 java_lang_ClassLoader_resolveClass0(struct Hjava_lang_ClassLoader* this, struct Hjava_lang_Class* class)
 {
 	errorInfo info;
-	if (processClass(class, CSTATE_LINKED, &info) == false) {
+	if (processClass(class, CSTATE_COMPLETE, &info) == false) {
 		throwError(&info);
 	}
 }

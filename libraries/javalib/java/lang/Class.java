@@ -36,32 +36,64 @@ public final class Class implements Serializable {
 private Class() {
 }
 
-/*
- * We must use the ClassLoader associated with the calling method/class.
- * We must handle the special case of code like this:
- *
- *    Class c = Class.class;
- *    Method m = c.getMethod("forName", new Class[] { String.class });
- *    c = (Class)m.invoke(c, new Object[] { "Class2" });
- *
- * If we didn't, then we would detect java.lang.reflect.Method as the
- * calling class, and end up always using the bootstrap ClassLoader.
- * To deal with this, we skip over java.lang.reflect.Method.
- *
- * Since Method.invoke implementation has a java and a native part,
- * we need to skip both.
- */
 public static Class forName(String className) throws ClassNotFoundException {
-	Class callingClass = getStackClass(1);
-	if (callingClass != null
-	    && callingClass.getName().equals("java.lang.reflect.Method"))
-		callingClass = getStackClass(3);
-	return forName(className, true,
-	    callingClass == null ? null : callingClass.getClassLoader());
+	return forName(className, true, null);
 }
 
-public static native Class forName(String className,
-	boolean initialize, ClassLoader loader) throws ClassNotFoundException;
+public static Class forName(String className, boolean initialize, ClassLoader loader) throws ClassNotFoundException {
+        /*
+         * NB: internally, we store class names as path names (with slashes
+         *     instead of dots.  However, we must also prevent calls to
+         *     "java/lang/Object" or "[[Ljava/lang/Object;" from succeeding.
+         *      Since class names cannot have slashes, we reject all attempts
+         *      to look up names that do.  Awkward.  Inefficient.
+         */
+	if (className.indexOf('/') != -1) {
+		throw new ClassNotFoundException("Cannot have slashes - use dots instead.");
+	}
+
+	/* find the appropriate class loader */
+	if (loader == null) {
+
+		loader = CallStack.getCallersClassLoader();
+		/* if loader is null, then the calling class has been loaded by the
+		 * bootstrap class loader. We can use the system class loader to
+		 * load the requested class.
+		 */
+		if (loader == null) {
+			loader = SystemClassLoader.getClassLoader();
+		}
+	}
+
+	/* The only checked exception that Class.forName() throws
+	 * is ClassNotFoundException.  This is an exception, not an
+	 * Error, which users often catch.
+	 *
+	 * However, Class.forName() can also throw errors, such as
+	 * NoClassDefFoundError, if for instance a superclass for
+	 * a class couldn't be found.
+	 *
+	 * When it throws which, we don't really know.  We try to be
+	 * compatible, so we upgrade the error to an exception if it's
+	 * (NoClassDefFoundError, this_class_name), or if it's a
+	 * VerifyError.
+	 * NB: 1.2 seems to be more consistent and throws
+	 * ClassNotFoundException in most cases.
+	 */
+
+	Class cls = loader.findLoadedClass(className);
+
+	if (cls == null) {
+		try {
+			cls = loader.loadClass(className, initialize);
+		}
+		catch (VerifyError error) {
+			throw new ClassNotFoundException(error.getMessage());
+		}
+	}
+
+	return cls;
+}
 
 private String fullResourceName(String name) {
 	if (name.charAt(0) == '/') {
@@ -371,25 +403,95 @@ public String toString() {
 	    + getName();
 }
 
+/* CallStack is used to encapsulate call stack based
+ * class loader inspection.
+ *
+ * It is used by Class.forName and other methods in 
+ * java.lang that need to get hold of the ClassLoader
+ * associated with their calling class.
+ */
+static class CallStack {
+	private Class [] classStack;
+
+	CallStack() {
+		classStack = SecurityManager.getClassContext0();
+	}
+
+	/* This method walks the call stack to find the
+	 * class loader of the calling class. It takes care
+	 * of recursive calls within library implementation,
+	 * and Method.invoke.
+	 */
+	static ClassLoader getCallersClassLoader() {
+		CallStack callStack = new CallStack();
+		/* This method is caling CallStack(),
+		 * and we want the method calling this method.
+		 * So the start frame is 2.
+		 */
+		int frame = 2;
+		Class callingClass = callStack.getStackClass(frame);
+
+		/* We could have been called recursively
+		 * within a class implementation. Then we
+		 * need to walk up the stack to find the
+		 * real calling class.
+		 */
+		if (null != callingClass
+		    && callStack.getStackClass(frame - 1) == callingClass) {
+			while (callStack.getStackClass(++frame) == callingClass) {
+			}
+
+			callingClass = callStack.getStackClass(frame);
+		}
+
+		/*
+		 * We must use the ClassLoader associated with the calling method/class.
+		 * We must handle the special case of code like this:
+		 *
+		 *    Class c = Class.class;
+		 *    Method m = c.getMethod("forName", new Class[] { String.class });
+		 *    c = (Class)m.invoke(c, new Object[] { "Class2" });
+		 *
+		 * If we didn't, then we would detect java.lang.reflect.Method as the
+		 * calling class, and end up always using the bootstrap ClassLoader.
+		 * To deal with this, we skip over java.lang.reflect.Method.
+		 *
+		 * Since Method.invoke implementation has a java and a native part,
+		 * we need to skip both.
+		 */
+
+		if (callingClass != null
+		    && callingClass.getName().equals("java.lang.reflect.Method")) {
+			frame += 2;
+			callingClass = callStack.getStackClass(frame);
+		}
+
+		if (callingClass != null) {
+			return callingClass.getClassLoader();
+		}
+
+		return null;
+	}
+
 /*
  * Determine the Class associated with the method N frames up the stack:
  *
  * Frame #      Method
  * -------      ------
  *   -2		SecurityManager.getClassContext0()
- *   -1		Class.getStackClass()
- *    0		The method calling Class.getStackClass()
- *    1		The method calling the method calling Class.getStackClass()
+ *   -1         Class.CallStack()
+ *    0		The method calling Class.CallStack()
+ *    1		The method calling the method calling Class.CallStack()
  *    2		...etc...
  *
  * Returns null if not found.
  */
-static Class getStackClass(int frame) {
-	Class[] classStack = SecurityManager.getClassContext0();
-	frame += 2;
-	if (frame >= 0 && frame < classStack.length)
-		return classStack[frame];
-	return null;
+	private Class getStackClass(int frame) {
+		frame += 2;
+		if (frame >= 0 && frame < classStack.length) {
+			return classStack[frame];
+		}
+		return null;
+	}
 }
-
 }

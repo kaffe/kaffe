@@ -28,6 +28,19 @@ private SystemClassLoader() {
 	super(null);		// this line is not really necessary!
 }
 
+private static String componentType(String name) {
+	int componentStart = name.lastIndexOf('[') + 1;
+	if (name.charAt(componentStart) == 'L' && name.endsWith(";")) {
+		return name.substring(componentStart + 1, name.length() - 1);
+	}
+	else if (name.length() - componentStart > 1) {
+		return name.substring(componentStart);
+	}
+	else {
+		return name.substring(componentStart - 1);
+	}
+}
+
 public static ClassLoader getClassLoader() {
 	return (singleton);
 }
@@ -85,6 +98,27 @@ public Enumeration findResources(String name) throws IOException {
 }
 
 protected Class findClass(String name) throws ClassNotFoundException {
+	/* Arrays of void are not allowed.
+	 * The simplest way to handle it is here.
+	 */
+	if (name.endsWith("[V")) {
+		throw new ClassNotFoundException(name);
+	}
+	/* Arrays of bad types would throw a NoClassDefFoundError.
+	 * Catch it here, and rethrow as ClassNotFoundException.
+	 */
+	else if (name.startsWith("[")
+		 && name.length() >= 3) {
+		try {
+			/* load the component type */
+			String componentName = componentType(name);
+			loadClass(componentName);
+		}
+		catch (NoClassDefFoundError error) {
+			throw new ClassNotFoundException(error.getMessage());
+		}
+	}
+
 	return findClass0(name);
 }
 
