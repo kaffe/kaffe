@@ -4,6 +4,11 @@
 
 	2005-03-18  Robert Schuster  <thebohemian@gmx>
 
+        * native/jni/java-nio/gnu_java_nio_VMSelector.c: Added important
+        return statement after throwing exception.
+
+	2005-03-18  Robert Schuster  <thebohemian@gmx>
+
         * native/jni/java-nio/gnu_java_nio_VMSelector.c: Implemented
     	Java_gnu_java_nio_VMSelector_select.
         * configure.ac: Added check for sys/select.h and strerro_r().
