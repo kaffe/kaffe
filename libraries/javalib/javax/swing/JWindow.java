@@ -44,6 +44,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
 import java.awt.LayoutManager;
 import java.awt.Window;
 import java.awt.event.KeyEvent;
@@ -62,22 +63,42 @@ public class JWindow extends Window implements Accessible, RootPaneContainer
 {
   private static final long serialVersionUID = 5420698392125238833L;
   
+  private boolean checking;
+  
+  protected JRootPane rootPane;
   protected AccessibleContext accessibleContext;
 
   public JWindow()
   {
     super(SwingUtilities.getOwnerFrame());
+    windowInit();
   }
 
-  public JWindow(Frame f)
+  public JWindow(GraphicsConfiguration gc)
   {
-    super(f);
+    super(SwingUtilities.getOwnerFrame(), gc);
+    windowInit();
+  }
+  
+  public JWindow(Frame owner)
+  {
+    super(owner);
+    windowInit();
   }
 
-  private boolean checking;
-  protected JRootPane rootPane;
+  public JWindow(Window owner)
+  {
+    super(owner);
+    windowInit();
+  }
 
-  protected void frameInit()
+  public JWindow(Window owner, GraphicsConfiguration gc)
+  {
+    super(owner, gc);
+    windowInit();
+  }
+
+  protected void windowInit()
   {
     super.setLayout(new BorderLayout(1, 1));
     getRootPane(); // will do set/create

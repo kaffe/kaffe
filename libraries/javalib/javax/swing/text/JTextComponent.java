@@ -651,6 +651,7 @@ public abstract class JTextComponent extends JComponent
   private static Hashtable keymaps = new Hashtable();
   private Keymap keymap;
   private char focusAccelerator = '\0';
+  private NavigationFilter navigationFilter;
   
   /**
    * Get a Keymap from the global keymap table, by name.
@@ -970,6 +971,7 @@ public abstract class JTextComponent extends JComponent
       }
     catch (BadLocationException e)
       {
+	// This can never happen.
       }
   }
 
@@ -1510,5 +1512,21 @@ public abstract class JTextComponent extends JComponent
   public char getFocusAccelerator()
   {
     return focusAccelerator;
+  }
+
+  /**
+   * @since 1.4
+   */
+  public NavigationFilter getNavigationFilter()
+  {
+    return navigationFilter;
+  }
+
+  /**
+   * @since 1.4
+   */
+  public void setNavigationFilter(NavigationFilter filter)
+  {
+    navigationFilter = filter;
   }
 }

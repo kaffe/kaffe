@@ -1,4 +1,47 @@
-2005-01-05  Dalibor Topic  <topic@notebox>
+2005-01-05  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/javax/swing/JFormattedTextField.java,
+	libraries/javalib/javax/swing/JWindow.java,
+	libraries/javalib/javax/swing/UIDefaults.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicInternalFrameTitlePane.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicSliderUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTabbedPaneUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTextPaneUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicToolBarUI.java,
+	libraries/javalib/javax/swing/text/JTextComponent.java:
+	Resynced with GNU Classpath.
+
+	2004-12-24  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JFormattedTextField.java: Implemented.
+	* javax/swing/JWindow.java
+	(JWindow): New constructors.
+	(initWindow): Renamed from initFrame.
+	* javax/swing/UIDefaults.java
+	(ActiveValue): Made interface static.
+	(LazyValue): Likewise.
+	* javax/swing/plaf/basic/BasicInternalFrameTitlePane.java
+	(TitlePaneLayout.TitlePaneLayout): New constructor.
+	* javax/swing/plaf/basic/BasicSliderUI.java
+	(ChangeHandler): Made public.
+	(FocusHandler): Likewise.
+	(PropertyChangeHandler): Likewise.
+	(ScrollListener): Likewise.
+	* javax/swing/plaf/basic/BasicTabbedPaneUI.java
+	(FocusHandler): Likewise.
+	(MouseHandler): Likewise.
+	* javax/swing/plaf/basic/BasicTextPaneUI.java
+	(BasicTextPaneUI): Extend BasicEditorPaneUI.
+	* javax/swing/plaf/basic/BasicToolBarUI.java
+	(BasicToolBarUI): Simplified. Reworked javadoc.
+	(canDock): Simplified. Make public.
+	(DockingListener): Made public.
+	* javax/swing/text/JTextComponent.java
+	(navigationFilter): New field.
+	(getNavigationFilter): New method.
+	(setNavigationFilter): Likewise.
+
+2005-01-05  Dalibor Topic  <robilad@kaffe.org>
 
 	* THIRDPARTY: Removed GNU JAXP and GNU regexp notices
 	since both are merged in into GNU Classpath now.

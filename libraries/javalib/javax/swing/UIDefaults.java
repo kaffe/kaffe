@@ -68,7 +68,7 @@ public class UIDefaults extends Hashtable
   private Locale defaultLocale;
   private PropertyChangeSupport propertyChangeSupport;
 
-  public interface ActiveValue
+  public static interface ActiveValue
   {
     Object createValue(UIDefaults table);
   }
@@ -92,7 +92,7 @@ public class UIDefaults extends Hashtable
     }
   }
 
-  public interface LazyValue
+  public static interface LazyValue
   {
     Object createValue(UIDefaults table);
   }

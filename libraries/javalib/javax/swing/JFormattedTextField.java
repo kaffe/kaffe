@@ -43,6 +43,8 @@ import java.io.Serializable;
 import java.text.Format;
 import java.text.ParseException;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.NavigationFilter;
@@ -59,6 +61,8 @@ public class JFormattedTextField extends JTextField
   {
     private static final long serialVersionUID = -5193212041738979680L;
     
+    private JFormattedTextField textField;
+    
     public AbstractFormatter ()
     {
       //Do nothing here.
@@ -72,7 +76,7 @@ public class JFormattedTextField extends JTextField
 
     protected Action[] getActions ()
     {
-      throw new InternalError ("not implemented");
+      return textField.getActions();
     }
 
     protected DocumentFilter getDocumentFilter ()
@@ -82,32 +86,35 @@ public class JFormattedTextField extends JTextField
 
     protected JFormattedTextField getFormattedTextField ()
     {
-      throw new InternalError ("not implemented");
+      return textField;
     }
 
     protected NavigationFilter getNavigationFilter ()
     {
-      throw new InternalError ("not implemented");
+      return textField.getNavigationFilter();
     }
 
-    public void install (JFormattedTextField ftf)
+    public void install(JFormattedTextField textField)
     {
-      throw new InternalError ("not implemented");
+      if (this.textField != null)
+	uninstall();
+      
+      this.textField = textField;
     }
 
     public void uninstall ()
     {
-      throw new InternalError ("not implemented");
+      this.textField = null;
     }
 
     protected void invalidEdit ()
     {
-      throw new InternalError ("not implemented");
+      textField.invalidEdit();
     }
 
     protected void setEditValid (boolean valid)
     {
-      throw new InternalError ("not implemented");
+      textField.editValid = valid;
     }
 
     public abstract Object stringToValue (String text)
@@ -127,16 +134,34 @@ public class JFormattedTextField extends JTextField
     public abstract AbstractFormatter getFormatter (JFormattedTextField tf);
   }
 
+  static class FormatterFactoryWrapper extends AbstractFormatterFactory
+  {
+    AbstractFormatter formatter;
+
+    public FormatterFactoryWrapper(AbstractFormatter formatter)
+    {
+      this.formatter = formatter;
+    }
+
+    public AbstractFormatter getFormatter(JFormattedTextField tf)
+    {
+      return formatter;
+    }
+  }
+
   public static final int COMMIT = 0;
   public static final int COMMIT_OR_REVERT = 1;
   public static final int REVERT = 2;
   public static final int PERSIST = 3;
 
   private Object value;
+  private int focusLostBehavior = COMMIT_OR_REVERT;
+  private AbstractFormatterFactory formatterFactory;
+  private boolean editValid = true;
   
   public JFormattedTextField ()
   {
-    this((AbstractFormatterFactory) null);
+    this((AbstractFormatterFactory) null, null);
   }
 
   public JFormattedTextField (Format format)
@@ -146,7 +171,7 @@ public class JFormattedTextField extends JTextField
 
   public JFormattedTextField (AbstractFormatter formatter)
   {
-    throw new InternalError ("not implemented");
+    this(new FormatterFactoryWrapper(formatter), null);
   }
 
   public JFormattedTextField (AbstractFormatterFactory factory)
@@ -156,7 +181,8 @@ public class JFormattedTextField extends JTextField
 
   public JFormattedTextField (AbstractFormatterFactory factory, Object value)
   {
-    throw new InternalError ("not implemented");
+    this.formatterFactory = factory;
+    this.value = value;
   }
 
   public JFormattedTextField (Object value)
@@ -177,17 +203,20 @@ public class JFormattedTextField extends JTextField
 
   public int getFocusLostBehaviour ()
   {
-    throw new InternalError ("not implemented");
+    return focusLostBehavior;
   }
 
   public AbstractFormatter getFormatter ()
   {
-    throw new InternalError ("not implemented");
+    if (formatterFactory == null)
+      return null;
+    
+    return formatterFactory.getFormatter(this);
   }
 
   public AbstractFormatterFactory getFormatterFactory ()
   {
-    throw new InternalError ("not implemented");
+    return formatterFactory;
   }
 
   public String getUIClassID ()
@@ -202,12 +231,12 @@ public class JFormattedTextField extends JTextField
 
   protected void invalidEdit ()
   {
-    throw new InternalError ("not implemented");
+    UIManager.getLookAndFeel().provideErrorFeedback(this);
   }
 
   public boolean isEditValid ()
   {
-    throw new InternalError ("not implemented");
+    return editValid;
   }
 
   protected void processFocusEvent (FocusEvent evt)
@@ -215,33 +244,58 @@ public class JFormattedTextField extends JTextField
     throw new InternalError ("not implemented");
   }
 
-  public void setDocument(Document newdoc)
+  public void setDocument(Document newDocument)
   {
-    Document olddoc = getDocument();
+    Document oldDocument = getDocument();
 
-    if (olddoc == newdoc)
+    if (oldDocument == newDocument)
       return;
     
-    super.setDocument(newdoc);
+    super.setDocument(newDocument);
   }
 
   public void setLostFocusBehavior (int behavior)
   {
-    throw new InternalError ("not implemented");
+    if (behavior != COMMIT
+	&& behavior != COMMIT_OR_REVERT
+	&& behavior != PERSIST
+	&& behavior != REVERT)
+      throw new IllegalArgumentException("invalid behavior");
+
+    this.focusLostBehavior = behavior;
   }
 
   protected void setFormatter (AbstractFormatter formatter)
   {
-    throw new InternalError ("not implemented");
+    AbstractFormatter oldFormatter = null;
+    
+    if (formatterFactory != null)
+      oldFormatter = formatterFactory.getFormatter(this);
+
+    if (oldFormatter == formatter)
+      return;
+
+    setFormatterFactory(new FormatterFactoryWrapper(formatter));
+    firePropertyChange("formatter", oldFormatter, formatter);
   }
 
   public void setFormatterFactory (AbstractFormatterFactory factory)
   {
-    throw new InternalError ("not implemented");
+    if (formatterFactory == factory)
+      return;
+    
+    AbstractFormatterFactory oldFactory = formatterFactory;
+    formatterFactory = factory;
+    firePropertyChange("formatterFactory", oldFactory, factory);
   }
 
   public void setValue (Object newValue)
   {
+    if (value == newValue)
+      return;
+    
+    Object oldValue = value;
     value = newValue;
+    firePropertyChange("value", oldValue, newValue);
   }
 }

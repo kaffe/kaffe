@@ -139,7 +139,7 @@ public class BasicSliderUI extends SliderUI
   /**
    * Helper class that listens to the {@link JSlider}'s model for changes.
    */
-  protected class ChangeHandler implements ChangeListener
+  public class ChangeHandler implements ChangeListener
   {
     /**
      * Called when the slider's model has been altered. The UI delegate should
@@ -182,7 +182,7 @@ public class BasicSliderUI extends SliderUI
   /**
    * Helper class that listens for focus events.
    */
-  protected class FocusHandler implements FocusListener
+  public class FocusHandler implements FocusListener
   {
     /**
      * Called when the {@link JSlider} has gained focus.  It should repaint
@@ -211,7 +211,7 @@ public class BasicSliderUI extends SliderUI
    * Helper class that listens for changes to the properties of the {@link
    * JSlider}.
    */
-  protected class PropertyChangeHandler implements PropertyChangeListener
+  public class PropertyChangeHandler implements PropertyChangeListener
   {
     /**
      * Called when one of the properties change. The UI should recalculate any
@@ -247,7 +247,7 @@ public class BasicSliderUI extends SliderUI
    * for listening to the timer and moving the thumb in the proper direction
    * every interval.
    */
-  protected class ScrollListener implements ActionListener
+  public class ScrollListener implements ActionListener
   {
     /** Indicates which direction the thumb should scroll. */
     private transient int direction;

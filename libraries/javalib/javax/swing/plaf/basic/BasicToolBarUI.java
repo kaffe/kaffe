@@ -152,11 +152,11 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
   private transient int cachedOrientation;
 
   /**
-   * This method creates a new BasicToolBarUI object for the given JToolBar.
+   * This method creates a new <code>BasicToolBarUI</code> object for the given JToolBar.
    */
   public BasicToolBarUI()
   {
-    super();
+    // Do nothing here.
   }
 
   /**
@@ -168,12 +168,9 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
    *
    * @return Whether the JToolBar can dock.
    */
-  protected boolean canDock(Component c, Point p)
+  public boolean canDock(Component c, Point p)
   {
-    if (areaOfClick(c, p) != -1)
-      return true;
-
-    return false;
+    return areaOfClick(c, p) != -1;
   }
 
   /**
@@ -937,7 +934,7 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
    * This is the MouseHandler class that allows the user to drag the JToolBar
    * in and out of the parent and dock it if it can.
    */
-  protected class DockingListener implements MouseInputListener
+  public class DockingListener implements MouseInputListener
   {
     /** Whether the JToolBar is being dragged. */
     protected boolean isDragging;

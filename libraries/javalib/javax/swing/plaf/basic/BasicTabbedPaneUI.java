@@ -84,7 +84,7 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
   /**
    * A helper class that handles focus.
    */
-  protected class FocusHandler extends FocusAdapter
+  public class FocusHandler extends FocusAdapter
   {
     /**
      * This method is called when the component gains focus.
@@ -112,7 +112,7 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
    * sets the index appropriately. In SCROLL_TAB_MODE, this class also
    * handles the mouse clicks on the scrolling buttons.
    */
-  protected class MouseHandler extends MouseAdapter
+  public class MouseHandler extends MouseAdapter
   {
     /**
      * This method is called when the mouse is pressed. The index cannot
