@@ -8,17 +8,6 @@
 #include "support.h"
 #include "stats.h"
 
-/*
- * The format for statMask (set by statsSetMaskStr) is like so:
- *	mask = element (',' element)*
- * 	element = groupname | itemname
- * 	itemname = groupname '-' item
- *
- * For example: "gc,jitmem-pusharg" will print all counters/timers belonging
- * to group "gc", and the "pusharg" counter in group "jitmem".
- */
-static char *statMask = "none";
-
 counter jitmem;
 counter jitcodeblock;
 counter utf8new;
@@ -30,6 +19,17 @@ counter cpemem;
 timespent jit_time;
 
 #if defined(KAFFE_STATS)
+
+/*
+ * The format for statMask (set by statsSetMaskStr) is like so:
+ *	mask = element (',' element)*
+ * 	element = groupname | itemname
+ * 	itemname = groupname '-' item
+ *
+ * For example: "gc,jitmem-pusharg" will print all counters/timers belonging
+ * to group "gc", and the "pusharg" counter in group "jitmem".
+ */
+static char *statMask = "none";
 
 static
 int cmp_int(const void *_a, const void *_b)
