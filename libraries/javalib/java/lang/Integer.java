@@ -33,18 +33,31 @@ public Integer(int value)
 
 public static Integer decode(String nm) throws NumberFormatException
 {
+	/* Strip off negative sign, if any */
+	int sign = 1;
+	if (nm.startsWith("-")) {
+		sign = -1;
+		nm = nm.substring(1);
+	}
+	/* Strip off base indicator, if any */
+	int base = 10;
 	if (nm.startsWith("0x")) {
-		return (Integer.valueOf(nm.substring(2), 16));
+		base = 16;
+		nm = nm.substring(2);
 	}
 	else if (nm.startsWith("#")) {
-		return (Integer.valueOf(nm.substring(1), 16));
+		base = 16;
+		nm = nm.substring(1);
 	}
 	else if (nm.startsWith("0")) {
-		return (Integer.valueOf(nm.substring(1), 8));
+		base = 8;
+		nm = nm.substring(1);
 	}
-	else {
-		return (Integer.valueOf(nm.substring(1), 10));
+	/* A string like "0x-1234" must generate an error; disallow it here */
+	if (nm.startsWith("-")) {
+		throw new NumberFormatException();
 	}
+	return new Integer(sign * parseInt(nm, base));
 }
 
 public double doubleValue() {
@@ -74,13 +87,10 @@ public static Integer getInteger(String nm, Integer val) {
 	if (val==null) arg=null; else arg=val.toString();
 
 	String prop=System.getProperty(nm, arg);
+	if (prop==null) return val;
 
 	try {
-		if (prop==null) return val;
-		else if (prop.startsWith("0x")) return Integer.valueOf(prop.substring(2), 16);
-		else if (prop.startsWith("#")) return Integer.valueOf(prop.substring(1), 16);
-		else if (prop.startsWith("0")) return Integer.valueOf(prop.substring(1), 8);
-		else return new Integer(prop);
+		return decode(prop);
 	}
 	catch (NumberFormatException e) {
 		return val;
