@@ -1,3 +1,10 @@
+2003-07-04  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* libraries/clib/native/String.c:
+	(java_lang_String_indexOf) use stricter limit in Bayer-Moore loop.
+
+	Reported by: Guilhem Lavaux <guilhem.lavaux@free.fr>
+
 2003-07-03  Guilhem Lavaux <guilhem.lavaux@free.fr>
 
 	* libraries/clib/native/String.c:
