@@ -4,6 +4,18 @@
 
 	2003-12-27  Michael Koch  <konqueror@gmx.de>
 
+        * java/nio/channels/spi/AbstractSelector.java:
+        Added import for java.nio.channels.ClosedSelectorException.
+        (close): Added synchronized to method declaration.
+        (cancelledKeys): Throw ClosedSelectorException if is closed.
+        (cancelKey): Synchronize on cancelled key set before key.
+
+2004-01-03  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2003-12-27  Michael Koch  <konqueror@gmx.de>
+
         * java/io/ObjectStreamField.java
         (isShared): Documentation added.
 
