@@ -19,7 +19,7 @@ JIKES=@JIKES@
 
 rm -rf $LIBDIR
 mkdir $LIBDIR
-LIBDIR=`cd $LIBDIR && pwd`
+LIBDIR=`CDPATH=: && cd $LIBDIR && pwd`
 VERBOSE=
 
 if [ "$JIKES" = "" ] ; then
