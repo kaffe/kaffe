@@ -1,5 +1,17 @@
 2004-11-09  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/security/Permissions.java,
+	libraries/javalib/java/security/UnresolvedPermission.java:
+        Resynced with GNU Classpath.
+
+	2004-11-06  Tom Tromey  <tromey@redhat.com>
+
+        * java/security/Permissions.java (perms): Now package-private.
+        * java/security/UnresolvedPermission.java (permissions): Now
+        package-private.
+
+2004-11-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/io/FilePermission.java:
         Resynced with GNU Classpath.
 
