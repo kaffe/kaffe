@@ -1474,10 +1474,42 @@ gnu_java_io_SRCS = \
 
 gnu_java_io_decode_SRCS = \
 	gnu/java/io/decode/Decoder.java \
+	gnu/java/io/decode/Decoder8859_13.java \
+	gnu/java/io/decode/Decoder8859_15.java \
+	gnu/java/io/decode/Decoder8859_6.java \
+	gnu/java/io/decode/Decoder8859_7.java \
+	gnu/java/io/decode/Decoder8859_8.java \
+	gnu/java/io/decode/Decoder8859_9.java \
+	gnu/java/io/decode/DecoderASCII.java \
+	gnu/java/io/decode/DecoderCp1047.java \
+	gnu/java/io/decode/DecoderEBCDIC_XML_US.java \
+	gnu/java/io/decode/DecoderEightBitLookup.java \
+	gnu/java/io/decode/DecoderUTF16BE.java \
+	gnu/java/io/decode/DecoderUTF16LE.java \
+	gnu/java/io/decode/DecoderUTF32BE.java \
+	gnu/java/io/decode/DecoderUTF32LE.java \
+	gnu/java/io/decode/DecoderWindows1250.java \
+	gnu/java/io/decode/DecoderWindows1252.java \
 	gnu/java/io/decode/KaffeDecoder.java
 
 gnu_java_io_encode_SRCS = \
 	gnu/java/io/encode/Encoder.java \
+	gnu/java/io/encode/Encoder8859_13.java \
+	gnu/java/io/encode/Encoder8859_15.java \
+	gnu/java/io/encode/Encoder8859_6.java \
+	gnu/java/io/encode/Encoder8859_7.java \
+	gnu/java/io/encode/Encoder8859_8.java \
+	gnu/java/io/encode/Encoder8859_9.java \
+	gnu/java/io/encode/EncoderASCII.java \
+	gnu/java/io/encode/EncoderCp1047.java \
+	gnu/java/io/encode/EncoderEBCDIC_XML_US.java \
+	gnu/java/io/encode/EncoderEightBitLookup.java \
+	gnu/java/io/encode/EncoderUTF16BE.java \
+	gnu/java/io/encode/EncoderUTF16LE.java \
+	gnu/java/io/encode/EncoderUTF32BE.java \
+	gnu/java/io/encode/EncoderUTF32LE.java \
+	gnu/java/io/encode/EncoderWindows1250.java \
+	gnu/java/io/encode/EncoderWindows1252.java \
 	gnu/java/io/encode/KaffeEncoder.java
 
 gnu_java_lang_SRCS = \

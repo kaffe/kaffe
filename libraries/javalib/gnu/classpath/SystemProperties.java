@@ -1,5 +1,5 @@
 /* SystemProperties.java -- Manage the System properties.
-   Copyright (C) 2004 Free Software Foundation
+   Copyright (C) 2004, 2005 Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -102,117 +102,395 @@ public class SystemProperties
         }
 
         // Common encoding aliases. See gnu.java.io.EncodingManager.
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.ISO8859_1",
-            "8859_1");
+	Properties dp = defaultProperties;
+	
+	//# UTF8
+	dp.put("gnu.java.io.encoding_scheme_alias.utf8", "UTF8");
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF8", "UTF8");
+	dp.put("gnu.java.io.encoding_scheme_alias.utf-8", "UTF8");
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF-8", "UTF8");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-1208", "UTF8");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-1209", "UTF8");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-5304", "UTF8");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-5305", "UTF8");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows-65001", "UTF8");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp1208", "UTF8");
 
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.ISO-8859-1",
-            "8859_1");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.ISO-8859-2",
-            "8859_2");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.ISO-8859-3",
-            "8859_3");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.ISO-8859-4",
-            "8859_4");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.ISO-8859-5",
-            "8859_5");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.ISO-8859-6",
-            "8859_6");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.ISO-8859-7",
-            "8859_7");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.ISO-8859-8",
-            "8859_8");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.ISO-8859-9",
-            "8859_9");
+	//# UTF16 Little Endian
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF16LE", "UTF16LE");
+	dp.put("gnu.java.io.encoding_scheme_alias.utf16le", "UTF16LE");
+	dp.put("gnu.java.io.encoding_scheme_alias.utf-16le", "UTF16LE");
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF-16LE", "UTF16LE");
+	dp.put("gnu.java.io.encoding_scheme_alias.x-utf-16le", "UTF16LE");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-1202", "UTF16LE");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-13490", "UTF16LE");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-17586", "UTF16LE");
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF16_LittleEndian",
+	       "UTF16LE");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows-1200", "UTF16LE");
 
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-8859-1",
-            "8859_1");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-8859-2",
-            "8859_2");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-8859-3",
-            "8859_3");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-8859-4",
-            "8859_4");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-8859-5",
-            "8859_5");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-8859-6",
-            "8859_6");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-8859-7",
-            "8859_7");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-8859-8",
-            "8859_8");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-8859-9",
-            "8859_9");
+	//# UTF16 Big Endian
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF16BE", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.utf16be", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.utf-16be", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF-16BE", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.x-utf-16be", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-1200", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-1201", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-5297", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-13488", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-17584", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows-1201", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp1200", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp1201", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF16_BigEndian", "UTF16BE");
 
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso8859_1",
-            "8859_1");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso8859_2",
-            "8859_2");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso8859_3",
-            "8859_3");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso8859_4",
-            "8859_4");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso8859_5",
-            "8859_5");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso8859_6",
-            "8859_6");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso8859_7",
-            "8859_7");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso8859_8",
-            "8859_8");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso8859_9",
-            "8859_9");
+	//# UTF16
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF16", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.utf16", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.utf-16", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF-16", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-10646-UCS-2", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-10646-ucs-2", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.unicode", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.csUnicode", "UTF16BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.ucs-2", "UTF16BE");
+	//# UTF32 Little Endian
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF32LE", "UTF32LE");
+	dp.put("gnu.java.io.encoding_scheme_alias.utf32le", "UTF32LE");
+	dp.put("gnu.java.io.encoding_scheme_alias.utf-32le", "UTF32LE");
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF-32LE", "UTF32LE");
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF32_LittleEndian",
+	       "UTF32LE");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-1234", "UTF32LE");
 
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-latin-1",
-            "8859_1");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-latin-2",
-            "8859_2");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-latin-3",
-            "8859_3");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-latin-4",
-            "8859_4");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-latin-5",
-            "8859_5");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-latin-6",
-            "8859_6");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-latin-7",
-            "8859_7");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-latin-8",
-            "8859_8");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.iso-latin-9",
-            "8859_9");
+	//# UTF32 Big Endian
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF32BE", "UTF32BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.utf-32be", "UTF32BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.utf32be", "UTF32BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF-32BE", "UTF32BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF32_BigEndian",
+	       "UTF32BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-1232", "UTF32BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-1233", "UTF32BE");
 
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.latin1",
-            "8859_1");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.latin2",
-            "8859_2");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.latin3",
-            "8859_3");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.latin4",
-            "8859_4");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.latin5",
-            "8859_5");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.latin6",
-            "8859_6");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.latin7",
-            "8859_7");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.latin8",
-            "8859_8");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.latin9",
-            "8859_9");
+	//# UTF32
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF32", "UTF32BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.utf-32", "UTF32BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.utf32", "UTF32BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.UTF-32", "UTF32BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-10646-UCS-4",
+	       "UTF32BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.csUCS4", "UTF32BE");
+	dp.put("gnu.java.io.encoding_scheme_alias.ucs-4", "UTF32BE");
 
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.UTF-8", "UTF8");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.utf-8", "UTF8");
+	//# US-ASCII
+	dp.put("gnu.java.io.encoding_scheme_alias.ASCII", "ASCII");
+	dp.put("gnu.java.io.encoding_scheme_alias.US-ASCII", "ASCII");
+	dp.put("gnu.java.io.encoding_scheme_alias.ascii", "ASCII");
+	dp.put("gnu.java.io.encoding_scheme_alias.ANSI_X3.4-1968", "ASCII");
+	dp.put("gnu.java.io.encoding_scheme_alias.ANSI_X3.4-1986", "ASCII");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_646.irv:1991", "ASCII");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso_646.irv:1983", "ASCII");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO646-US", "ASCII");
+	dp.put("gnu.java.io.encoding_scheme_alias.us", "ASCII");
+	dp.put("gnu.java.io.encoding_scheme_alias.csASCII", "ASCII");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-ir-6", "ASCII");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp367", "ASCII");
+	dp.put("gnu.java.io.encoding_scheme_alias.ascii7", "ASCII");
+	dp.put("gnu.java.io.encoding_scheme_alias.646", "ASCII");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows-20127", "ASCII");
 
-        // XXX FIXME - Cheat a little for ASCII.
-        // Remove when we get a real "ASCII En/Decoder"
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.ASCII", "8859_1");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.ascii", "8859_1");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.US-ASCII",
-            "8859_1");
-        defaultProperties.put("gnu.java.io.encoding_scheme_alias.us-ascii",
-            "8859_1");
+	//# iso-8859-1 (latin 1)
+	dp.put("gnu.java.io.encoding_scheme_alias.8859_1", "8859_1");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO8859_1", "8859_1");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso8859_1", "8859_1");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859_1", "8859_1");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso_8859_1", "8859_1");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-8859-1", "8859_1");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-8859-1", "8859_1");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-819", "8859_1");
+	dp.put("gnu.java.io.encoding_scheme_alias.IBM819", "8859_1");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp819", "8859_1");
+	dp.put("gnu.java.io.encoding_scheme_alias.Latin1", "8859_1");
+	dp.put("gnu.java.io.encoding_scheme_alias.latin1", "8859_1");
+	dp.put("gnu.java.io.encoding_scheme_alias.csISOLatin1", "8859_1");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-ir-100", "8859_1");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859-1:1987", "8859_1");
+	dp.put("gnu.java.io.encoding_scheme_alias.l1", "8859_1");
+	dp.put("gnu.java.io.encoding_scheme_alias.819", "8859_1");
 
-        // 8859_1 is a safe default encoding to use when not explicitly set
+	//# iso-8859-2 (latin 2)
+	dp.put("gnu.java.io.encoding_scheme_alias.8859_2", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-912_P100-1995",
+	       "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-912", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso_8859_2", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859_2", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso8859_2", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO8859_2", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-8859-2", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-8859-2", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859-2:1987", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.Latin2", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.latin2", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.csISOLatin2", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-ir-101", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.l2", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.8859_2", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp912", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.912", "8859_2");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows-28592", "8859_2");
+
+	//# iso-8859-3 (latin 3)
+	dp.put("gnu.java.io.encoding_scheme_alias.8859_3", "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-913_P100-2000",
+	       "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-913", "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso_8859_3", "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859_3", "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso8859_3", "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO8859_3", "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-8859-3", "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-8859-3", "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859-3:1988", "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.Latin3", "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.latin3", "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.csISOLatin3", "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-ir-109", "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.l3", "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp913", "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.913", "8859_3");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows-28593", "8859_3");
+
+	//# iso-8859-4 (latin 4)
+	dp.put("gnu.java.io.encoding_scheme_alias.8859_4", "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-914_P100-1995",
+	       "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-914", "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso_8859_4", "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859_4", "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso8859_4", "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO8859_4", "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-8859-4", "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-8859-4", "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.Latin4", "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.latin4", "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.csISOLatin4", "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-ir-110", "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859-4:1988", "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.l4", "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp914", "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.914", "8859_4");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows-28594", "8859_4");
+
+	//# iso-8859-5 (cyrillic)
+	dp.put("gnu.java.io.encoding_scheme_alias.8859_5", "8859_5");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-915_P100-1995",
+	       "8859_5");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-915", "8859_5");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859_5", "8859_5");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso_8859_5", "8859_5");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO8859_5", "8859_5");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso8859_5", "8859_5");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-8859-5", "8859_5");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-8859-5", "8859_5");
+	dp.put("gnu.java.io.encoding_scheme_alias.cyrillic", "8859_5");
+	dp.put("gnu.java.io.encoding_scheme_alias.csISOLatinCyrillic",
+	       "8859_5");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-ir-144", "8859_5");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859-5:1988", "8859_5");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp915", "8859_5");
+	dp.put("gnu.java.io.encoding_scheme_alias.915", "8859_5");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows-28595", "8859_5");
+
+	//# iso-8859-6 (arabic)
+	dp.put("gnu.java.io.encoding_scheme_alias.8859_6", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-1089_P100-1995",
+	       "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-1089", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859_6", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso_8859_6", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO8859_6", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso8859_6", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-8859-6", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-8859-6", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.arabic", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.csISOLatinArabic", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-ir-127", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859-6:1987", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.ECMA-114", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.ASMO-708", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.8859_6", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp1089", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.1089", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows-28596", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-8859-6-I", "8859_6");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-8859-6-E", "8859_6");
+
+	//# iso-8859-7 (greek)
+	dp.put("gnu.java.io.encoding_scheme_alias.8859_7", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-813_P100-1995",
+	       "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-813", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859_7", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso_8859_7", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO8859_7", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso8859_7", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-8859-7", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-8859-7", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.greek", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.greek8", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.ELOT_928", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.ECMA-118", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.csISOLatinGreek", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-ir-126", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859-7:1987", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp813", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.813", "8859_7");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows-28597", "8859_7");
+
+	//# iso-8859-8 (hebrew)
+	dp.put("gnu.java.io.encoding_scheme_alias.8859_8", "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-916_P100-1995",
+	       "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-916", "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859_8", "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso_8859_8", "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO8859_8", "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso8859_8", "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-8859-8", "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-8859-8", "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.hebrew", "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.csISOLatinHebrew", "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-ir-138", "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859-8:1988", "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-8859-8-I", "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-8859-8-E", "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp916", "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.916", "8859_8");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows-28598", "8859_8");
+
+	//# iso-8859-9 (latin-5)
+	dp.put("gnu.java.io.encoding_scheme_alias.8859_9", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-920_P100-1995",
+	       "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-920", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso8859_9", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO8859_9", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-8859-9", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-8859-9", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso_8859_9", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859_9", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.latin5", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.Latin5", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.csISOLatin5", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-ir-148", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859-9:1989", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.l5", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp920", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.920", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows-28599", "8859_9");
+	dp.put("gnu.java.io.encoding_scheme_alias.ECMA-128", "8859_9");
+
+	//# iso-8859-13 
+	dp.put("gnu.java.io.encoding_scheme_alias.8859_13", "8859_13");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-921_P100-1995",
+	       "8859_13");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-921", "8859_13");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859_13", "8859_13");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso_8859_13", "8859_13");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO8859_13", "8859_13");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso8859_13", "8859_13");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-8859-13", "8859_13");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-8859-13", "8859_13");
+	dp.put("gnu.java.io.encoding_scheme_alias.8859_13", "8859_13");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp921", "8859_13");
+	dp.put("gnu.java.io.encoding_scheme_alias.921", "8859_13");
+
+	//# iso-8859-15 (latin-9)
+	dp.put("gnu.java.io.encoding_scheme_alias.8859_15", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO8859_15", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso8859_15", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO-8859-15", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso-8859-15", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.8859-15", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.latin9", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.Latin9", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.ISO_8859_15", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso_8859_15", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-923_P100-1998",
+	       "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-923", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.Latin-9", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.l9", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.latin0", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.csisolatin0", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.csisolatin9", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.iso8859_15_fdis", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp923", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.923", "8859_15");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows-28605", "8859_15");
+
+	//# Windows-1252 (cp-1252)
+	dp.put("gnu.java.io.encoding_scheme_alias.Windows1252", "Windows1252");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-5348_P100-1997",
+	       "Windows1252");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-5348", "Windows1252");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows-1252",
+	       "Windows1252");
+	dp.put("gnu.java.io.encoding_scheme_alias.Windows-1252",
+	       "Windows1252");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp1252", "Windows1252");
+	dp.put("gnu.java.io.encoding_scheme_alias.CP1252", "Windows1252");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp-1252", "Windows1252");
+	dp.put("gnu.java.io.encoding_scheme_alias.CP-1252", "Windows1252");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows1252", "Windows1252");
+
+	//# Windows-1250 (cp-1250)
+	dp.put("gnu.java.io.encoding_scheme_alias.Windows1250", "Windows1250");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-5346_P100-1998",
+	       "Windows1250");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-5346", "Windows1250");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows-1250",
+	       "Windows1250");
+	dp.put("gnu.java.io.encoding_scheme_alias.Windows-1250",
+	       "Windows1250");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp1250", "Windows1250");
+	dp.put("gnu.java.io.encoding_scheme_alias.CP1250", "Windows1250");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp-1250", "Windows1250");
+	dp.put("gnu.java.io.encoding_scheme_alias.CP-1250", "Windows1250");
+	dp.put("gnu.java.io.encoding_scheme_alias.windows1250", "Windows1250");
+
+	//# ebcdic-xml-us
+	dp.put("gnu.java.io.encoding_scheme_alias.EBCDIC_XML_US",
+	       "EBCDIC_XML_US");
+	dp.put("gnu.java.io.encoding_scheme_alias.ebcdic-xml-us",
+	       "EBCDIC_XML_US");
+	dp.put("gnu.java.io.encoding_scheme_alias.ebcdic", "EBCDIC_XML_US");
+	dp.put("gnu.java.io.encoding_scheme_alias.EBCDIC", "EBCDIC_XML_US");
+	dp.put("gnu.java.io.encoding_scheme_alias.EBCDIC-XML-US",
+	       "EBCDIC_XML_US");
+	dp.put("gnu.java.io.encoding_scheme_alias.ebcdic_xml_us",
+	       "EBCDIC_XML_US");
+
+	//# ebcdic latin 1 (cp1047)
+	dp.put("gnu.java.io.encoding_scheme_alias.Cp1047", "Cp1047");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-1047_P100-1995",
+	       "Cp1047");
+	dp.put("gnu.java.io.encoding_scheme_alias.ibm-1047", "Cp1047");
+	dp.put("gnu.java.io.encoding_scheme_alias.IBM1047", "Cp1047");
+	dp.put("gnu.java.io.encoding_scheme_alias.cpibm1047", "Cp1047");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp1047", "Cp1047");
+	dp.put("gnu.java.io.encoding_scheme_alias.CP1047", "Cp1047");
+	dp.put("gnu.java.io.encoding_scheme_alias.cp-1047", "Cp1047");
+	dp.put("gnu.java.io.encoding_scheme_alias.CP-1047", "Cp1047");
+	dp.put("gnu.java.io.encoding_scheme_alias.ebcdic1047", "Cp1047");
+	dp.put("gnu.java.io.encoding_scheme_alias.EBCDIC1047", "Cp1047");
+	dp.put("gnu.java.io.encoding_scheme_alias.ebcdic-1047", "Cp1047");
+	dp.put("gnu.java.io.encoding_scheme_alias.EBCDIC-1047", "Cp1047");
+	
+	// 8859_1 is a safe default encoding to use when not explicitly set
         if (defaultProperties.get("file.encoding") == null)
             defaultProperties.put("file.encoding", "8859_1");
 

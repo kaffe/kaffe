@@ -1,3 +1,44 @@
+2005-01-31  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+	
+	2005-01-29  Quentin Anciaux  <quentin.anciaux@advalvas.be>
+
+	* gnu/classpath/SystemProperties.java (static): Add all aliases
+	for UTF8, UTF16 and UTF32 (Little and Big Endian), US-ASCII,
+	iso-8859-[1-9], iso-8859-13, iso-8859-15, cp-1250, cp-1252 and
+	cp1047 to defaultProperties.
+	* gnu/java/io/decode/Decoder8859_13.java: New class.
+	* gnu/java/io/decode/Decoder8859_15.java: Likewise.
+	* gnu/java/io/decode/Decoder8859_6.java: Likewise.
+	* gnu/java/io/decode/Decoder8859_7.java: Likewise.
+	* gnu/java/io/decode/Decoder8859_8.java: Likewise.
+	* gnu/java/io/decode/Decoder8859_9.java: Likewise.
+	* gnu/java/io/decode/DecoderASCII.java: Likewise.
+	* gnu/java/io/decode/DecoderCp1047.java: Likewise.
+	* gnu/java/io/decode/DecoderEBCDIC_XML_US.java: Likewise.
+	* gnu/java/io/decode/DecoderUTF16BE.java: Likewise.
+	* gnu/java/io/decode/DecoderUTF16LE.java: Likewise.
+	* gnu/java/io/decode/DecoderUTF32BE.java: Likewise.
+	* gnu/java/io/decode/DecoderUTF32LE.java: Likewise.
+	* gnu/java/io/decode/DecoderWindows1250.java: Likewise.
+	* gnu/java/io/decode/DecoderWindows1252.java: Likewise.
+	* gnu/java/io/encode/Encoder8859_13.java: Likewise.
+	* gnu/java/io/encode/Encoder8859_15.java: Likewise.
+	* gnu/java/io/encode/Encoder8859_6.java: Likewise.
+	* gnu/java/io/encode/Encoder8859_7.java: Likewise.
+	* gnu/java/io/encode/Encoder8859_8.java: Likewise.
+	* gnu/java/io/encode/Encoder8859_9.java: Likewise.
+	* gnu/java/io/encode/EncoderASCII.java: Likewise.
+	* gnu/java/io/encode/EncoderCp1047.java: Likewise.
+	* gnu/java/io/encode/EncoderEBCDIC_XML_US.java: Likewise.
+	* gnu/java/io/encode/EncoderUTF16BE.java: Likewise.
+	* gnu/java/io/encode/EncoderUTF16LE.java: Likewise.
+	* gnu/java/io/encode/EncoderUTF32BE.java: Likewise.
+	* gnu/java/io/encode/EncoderUTF32LE.java: Likewise.
+	* gnu/java/io/encode/EncoderWindows1250.java: Likewise.
+	* gnu/java/io/encode/EncoderWindows1252.java: Likewise.
+
 2005-01-30  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Turn jikes error messages into warnings
