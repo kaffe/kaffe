@@ -269,10 +269,10 @@
 #undef	HAVE_KILL
 
 /* Do we have sync */
-#undef	HAVE_sync
+#undef	HAVE_SYNC
 
 /* Do we have fsync */
-#undef	HAVE_fsync
+#undef	HAVE_FSYNC
 
 /* Do we have atexit */
 #undef	HAVE_ATEXIT
