@@ -78,7 +78,7 @@ main(int argc, char* argv[])
 	if (cp == 0) {
 		cp = getenv(LIBRARYPATH2);
 	}
-        vmargs.librarypath = cp;
+        vmargs.libraryhome = cp;
 
         cp = getenv(KAFFEHOME);
         if (cp == 0) {
