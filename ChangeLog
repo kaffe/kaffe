@@ -1,3 +1,11 @@
+2004-12-10  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/Makefile.am.in (all-am): Moved Adam's fix for broken 
+	rebuildLib invocation here.
+	(KAFFELIBRARYPATH): Added classpath native library.
+	
+	Reported by:  Riccardo Mottola <rmottola@users.sf.net>
+	
 2004-12-10  Adam Heath  <doogie@brainfood.com>
 
 	* libraries/javalib/gnu/java/io/encode/Encoder.java:
