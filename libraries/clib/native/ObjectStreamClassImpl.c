@@ -300,9 +300,12 @@ compareUidItem(const void* one, const void* two)
 	uidItem* o = (uidItem*)one;
 	uidItem* t = (uidItem*)two;
 
-	/* Null entries are not considered */
-	if (o->name == 0 || t->name == 0) {
-		return (0);
+	/* push null entries to the right end of the array */
+	if (o->name == 0) {
+		return (1);
+	}
+	if (t->name == 0) {
+		return (-1);
 	}
 
 	r = strcmp(o->name, t->name);
@@ -533,11 +536,20 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 			else {
 				base[i].name = mth->name->data;
 			}
-			/* We do these all the time so we don't do them again */
 			base[i].modifier = (int)mth->accflags & ACC_MASK;
 			base[i].desc = getMethodDesc(mth);
 		}
 		addToSHA(&c, base, CLASS_NMETHODS(cls));
+
+		/* Free all the descriptor strings */
+		i = CLASS_NMETHODS(cls);
+		for (i--; i >= 0; i--) {
+			KFREE((char*)base[i].desc);
+		}
+
+		/* NB: we can't reuse the base array here because
+		 * addToSHA has qsorted it.
+		 */
 
 		/* Each non-private method (sorted) -> */
 
@@ -550,6 +562,8 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 			else {
 				base[i].name = mth->name->data;
 			}
+			base[i].modifier = (int)mth->accflags & ACC_MASK;
+			base[i].desc = getMethodDesc(mth);
 		}
 		addToSHA(&c, base, CLASS_NMETHODS(cls));
 
