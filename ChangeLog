@@ -1,3 +1,20 @@
+2004-02-22  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/io/ObjectInputStream.java
+	(readClassDescriptor): Fixed field sorting. Keep elements of the
+	mapping non null.
+	(readFields): Fixed main loop and base logic. Small reindentation.
+
+	* libraries/javalib/java/io/ObjectStreamField.java
+	(lookupField): New method to update the field reference.
+	(setBooleanField, setByteField, setCharField, setShortField,
+	setIntField, setLongField, setFloatField, setDoubleField,
+	setObjectField): Improved exception reporting.
+
+	* libraries/javalib/java/io/ObjectStreamClass.java
+	(setClass, setFields): Call lookupField when building the field
+	database.
+
 2004-02-20  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/clib/native/System.c

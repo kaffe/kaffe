@@ -344,6 +344,7 @@ public class ObjectStreamClass implements Serializable
 		newFieldList[k] = exportedFields[j];
 		newFieldList[k].setPersistent(true);
 		newFieldList[k].setToSet(false);
+		newFieldList[k].lookupField(clazz);
 		j++;
 	      }
 	    else
@@ -554,6 +555,19 @@ outer:
 	    if (fields != null)
 	      {
 		Arrays.sort (fields);
+		// Retrieve field reference.
+		for (int i=0; i < fields.length; i++)
+		  {
+		    try
+		      {
+			fields[i].lookupField(cl);
+		      }
+		    catch (NoSuchFieldException _)
+		      {
+			fields[i].setToSet(false);
+		      }
+		  }
+		
 		calculateOffsets();
 		return;
 	      }
@@ -799,7 +813,7 @@ outer:
 
     fieldsArray = new ObjectStreamField[ o.length ];
     System.arraycopy(o, 0, fieldsArray, 0, o.length);
-    
+
     return fieldsArray;
   }
 
