@@ -920,7 +920,7 @@ if test "$DEPTOOL" = ""; then
 	INC_DEPEND="# automatic dependency generation not enabled in configure"
 
 			        if test "$ac_cv_prog_gcc" = "yes" ; then
-		DEPTOOL="$CC -MM"
+		DEPTOOL="$CC -M"
 		INC_DEPEND="include .depend"
 	fi
 fi

@@ -219,7 +219,7 @@ if test "$DEPTOOL" = ""; then
 	dnl otherwise, I'm at a loss, as the switch is
 	dnl very compiler specific (if avail, at all.)
         if test "$ac_cv_prog_gcc" = "yes" ; then
-		DEPTOOL="$CC -MM"
+		DEPTOOL="$CC -M"
 		INC_DEPEND="include .depend"
 	fi
 fi

@@ -8,13 +8,17 @@ for everyone who wants to make changes to Kaffe.
 
 -----------------------------------------------------------------------
 Here is how it works:  for each "file.c", a set of make dependencies
-is created using "gcc -MM".  This set of dependencies is stored in 
+is created using "gcc -M".  This set of dependencies is stored in 
 "file.d".  All .d files of a particular directory are concatenated into
 a file ".depend", which is included by the Makefile for that directory.
 
+Note that we use -M and not -MM since -MM will not include dependencies
+to files included via #include <file.h>.  However, certain files, such
+as <readClassConfig.h> are included this way.  
+
 The set of .d files is computed from the set of object files, by replacing
 the .o suffix with a .d suffix.  A .d is created from a .o file by using
-the command $DEPTOOL, which defaults to "gcc -MM".
+the command $DEPTOOL, which defaults to "gcc -M".
 The depend target depends on all .d files, so "make depend" will create
 the .d files.
 
