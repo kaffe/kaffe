@@ -53,7 +53,7 @@ extern int maxTemp;
  * Define the version of JNI we support.
  */
 static int java_major_version = 1;
-static int java_minor_verison = 1;
+static int java_minor_version = 1;
 
 /*
  * If we must manage the JNI references for the native layer then we
