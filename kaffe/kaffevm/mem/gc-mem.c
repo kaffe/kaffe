@@ -19,6 +19,7 @@
 #include "locks.h"
 #include "gc-mem.h"
 #include "gc.h"
+#include "jni.h"
 
 static gc_block* gc_small_block(size_t);
 static gc_block* gc_large_block(size_t);
@@ -107,13 +108,8 @@ gc_heap_initialise(void)
 	int t;
 
 	gc_pgsize = getpagesize();
-	/* Only set these to defaults if they've not been overridden */
-	if (gc_heap_allocation_size == 0) {
-		gc_heap_allocation_size = ALLOC_HEAPSIZE;
-	}
-	if (gc_heap_limit == 0) {
-		gc_heap_limit = MAX_HEAPSIZE;
-	}
+	gc_heap_allocation_size = Kaffe_JavaVMArgs[0].allocHeapSize;
+	gc_heap_limit = Kaffe_JavaVMArgs[0].maxHeapSize;
 
 #ifndef PREDEFINED_NUMBER_OF_TILES
 	/* old scheme, where number of tiles was approximated by a series
