@@ -731,6 +731,22 @@ public class Window extends Container implements Accessible
     return super.isShowing();
   }
 
+  public void setLocationRelativeTo (Component c)
+  {
+    if (c == null || !c.isShowing ())
+      {
+        int x = 0;
+        int y = 0;
+
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment ();
+        Point center = ge.getCenterPoint ();
+        x = center.x - (width / 2);
+        y = center.y - (height / 2);
+        setLocation (x, y);
+      }
+    // FIXME: handle case where component is non-null.
+  }
+
   /**
    * @since 1.2
    *
@@ -866,13 +882,13 @@ public class Window extends Container implements Accessible
     this.y = y;
     width = w;
     height = h;
-    if (resized)
+    if (resized && isShowing ())
       {
         ComponentEvent ce =
           new ComponentEvent(this, ComponentEvent.COMPONENT_RESIZED);
         getToolkit().getSystemEventQueue().postEvent(ce);
       }
-    if (moved)
+    if (moved && isShowing ())
       {
         ComponentEvent ce =
           new ComponentEvent(this, ComponentEvent.COMPONENT_MOVED);

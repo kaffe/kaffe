@@ -165,7 +165,7 @@ public class GtkFramePeer extends GtkWindowPeer
     setMenuBar (frame.getMenuBar ());
 
     setTitle (frame.getTitle ());
-    setResizable (frame.isResizable ());
+    gtkWindowSetResizable (frame.isResizable ());
     setIconImage(frame.getIconImage());
   }
 
@@ -237,9 +237,9 @@ public class GtkFramePeer extends GtkWindowPeer
                            frame_y,
                            frame_width,
                            frame_height);
-      }
 
-    awtComponent.validate();
+        awtComponent.validate();
+      }
   }
 
   protected void postMouseEvent(int id, long when, int mods, int x, int y, 

@@ -1,3 +1,34 @@
+2004-12-11  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphics.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkFramePeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkWindowPeer.java,
+	libraries/javalib/java/awt/Component.java,
+	libraries/javalib/java/awt/Container.java,
+	libraries/javalib/java/awt/Window.java:
+	Resynced with GNU Classpath.
+
+	2004-12-11  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GdkGraphics.java (setClip): Protect
+	against null clip region.
+	* gnu/java/awt/peer/gtk/GtkFramePeer.java (create): Call
+	gtkWindowSetResizable.
+	(postConfigureEvent): Only revalidate if frame size has changed.
+	* gnu/java/awt/peer/gtk/GtkWindowPeer.java (postConfigureEvent):
+	Only revalidate if frame size has changed.
+	* java/awt/Component.java (reshape): Only repaint and post
+	component events if component is showing.
+	* java/awt/Container.java (addImpl): Only post container event if
+	container is showing.
+	(remove): Likewise.
+	* java/awt/Window.java (setLocationRelativeTo): Implement.
+	(setBoundsCallback): Only post component events if component is
+	showing.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c (clearRect):
+	Protect against null graphics structure.  Flush gdk event queue.
+	
 2004-12-11  Adam Heath  <doogie@brainfood.com>
 
 	* include/Arrays.h, include/native.h, kaffe/kaffevm/object.c,

@@ -166,10 +166,12 @@ public class GtkWindowPeer extends GtkContainerPeer
 	|| frame_y != awtComponent.getY()
 	|| frame_width != awtComponent.getWidth()
 	|| frame_height != awtComponent.getHeight())
-      setBoundsCallback ((Window) awtComponent,
-			 frame_x, frame_y, frame_width, frame_height);
+      {
+        setBoundsCallback ((Window) awtComponent,
+                           frame_x, frame_y, frame_width, frame_height);
 
-    awtComponent.validate();
+        awtComponent.validate();
+      }
   }
 
   native void nativeSetVisible (boolean b);

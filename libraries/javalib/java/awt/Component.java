@@ -1362,7 +1362,7 @@ public abstract class Component
       peer.setBounds (x, y, width, height);
 
     // Erase old bounds and repaint new bounds for lightweights.
-    if (isLightweight())
+    if (isLightweight() && isShowing ())
       {
         boolean shouldRepaintParent = false;
         boolean shouldRepaintSelf = false;
@@ -1386,13 +1386,16 @@ public abstract class Component
           repaint();
       }
 
-    if (oldx != x || oldy != y)
+    // Only post event if this component is visible and has changed size.
+    if (isShowing ()
+        && (oldx != x || oldy != y))
       {
         ComponentEvent ce = new ComponentEvent(this,
                                                ComponentEvent.COMPONENT_MOVED);
         getToolkit().getSystemEventQueue().postEvent(ce);
       }
-    if (oldwidth != width || oldheight != height)
+    if (isShowing ()
+        && (oldwidth != width || oldheight != height))
       {
         ComponentEvent ce = new ComponentEvent(this,
                                                ComponentEvent.COMPONENT_RESIZED);

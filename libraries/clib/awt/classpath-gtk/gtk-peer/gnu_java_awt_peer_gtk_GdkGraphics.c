@@ -438,6 +438,12 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_clearRect
   g = (struct graphics *) NSA_GET_PTR (env, obj);
 
   gdk_threads_enter ();
+
+  if (!g)
+    {
+      gdk_threads_leave ();
+      return;
+    }
   if (GDK_IS_WINDOW (g->drawable))
     {
       w.widget = &widget;
@@ -455,6 +461,8 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_clearRect
 			  x + g->x_offset, y + g->y_offset, width, height);
       gdk_gc_set_foreground (g->gc, &(saved.foreground));
     }
+
+  gdk_flush ();
   gdk_threads_leave ();
 }
 
