@@ -1,5 +1,21 @@
 2004-11-26  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/image/AffineTransformOp.java,
+	libraries/javalib/java/awt/image/ColorConvertOp.java,
+	libraries/javalib/java/awt/image/LookupOp.java,
+	libraries/javalib/java/awt/image/RescaleOp.java:
+        Resynced with GNU Classpath.
+
+	2004-11-17  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/image/AffineTransformOp.java,
+        java/awt/image/ColorConvertOp.java,
+        java/awt/image/LookupOp.java,
+        java/awt/image/RescaleOp.java:
+        Added final keywords where they belong.
+
+2004-11-26  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/CardLayout.java,
 	libraries/javalib/java/awt/Component.java,
 	libraries/javalib/java/awt/Font.java,

@@ -164,7 +164,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      * @param dst destination image
      * @return transformed source image
      */
-    public BufferedImage filter (BufferedImage src, BufferedImage dst)
+    public final BufferedImage filter (BufferedImage src, BufferedImage dst)
     {
 
       if (dst == src)
@@ -195,7 +195,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      * @param dst destination raster
      * @return transformed raster
      */
-    public WritableRaster filter (Raster src, WritableRaster dst)
+    public final WritableRaster filter (Raster src, WritableRaster dst)
     {
       if (dst == src)
         throw new IllegalArgumentException("src image cannot be the same as"
@@ -297,7 +297,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      * @param src image to be transformed
      * @return bounds of the transformed image.
      */
-    public Rectangle2D getBounds2D (BufferedImage src)
+    public final Rectangle2D getBounds2D (BufferedImage src)
     {
       return getBounds2D (src.getRaster());
     }
@@ -308,7 +308,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      * @param src raster to be transformed
      * @return bounds of the transformed raster.
      */
-    public Rectangle2D getBounds2D (Raster src)
+    public final Rectangle2D getBounds2D (Raster src)
     {
       // determine new size for the transformed raster.
       // Need to calculate transformed coordinates of the lower right
@@ -327,7 +327,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      *
      * @return interpolation type
      */
-    public int getInterpolationType ()
+    public final int getInterpolationType ()
     {
       if(hints.containsValue (RenderingHints.VALUE_INTERPOLATION_BILINEAR))
         return TYPE_BILINEAR;
@@ -352,7 +352,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      *
      * @return rendering hints
      */
-    public RenderingHints getRenderingHints ()
+    public final RenderingHints getRenderingHints ()
     {
       return hints;
     }
@@ -362,7 +362,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      *
      * @return transform
      */
-    public AffineTransform getTransform ()
+    public final AffineTransform getTransform ()
     {
       return transform;
     }

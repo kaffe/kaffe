@@ -34,6 +34,7 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.awt.image;
 
 import java.awt.RenderingHints;
@@ -42,8 +43,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 
 /**
- * @author Jerry Quinn <jlquinn@optonline.net>
- *
+ * @author Jerry Quinn (jlquinn@optonline.net)
  */
 public class RescaleOp implements BufferedImageOp, RasterOp
 {
@@ -101,7 +101,7 @@ public class RescaleOp implements BufferedImageOp, RasterOp
   /* (non-Javadoc)
    * @see java.awt.image.BufferedImageOp#filter(java.awt.image.BufferedImage, java.awt.image.BufferedImage)
    */
-  public BufferedImage filter(BufferedImage src, BufferedImage dst)
+  public final BufferedImage filter(BufferedImage src, BufferedImage dst)
   {
     // TODO Make sure premultiplied alpha is handled correctly.
     // TODO See that color conversion is handled.
@@ -134,7 +134,7 @@ public class RescaleOp implements BufferedImageOp, RasterOp
   /* (non-Javadoc)
    * @see java.awt.image.RasterOp#filter(java.awt.image.Raster, java.awt.image.WritableRaster)
    */
-  public WritableRaster filter(Raster src, WritableRaster dest)
+  public final WritableRaster filter(Raster src, WritableRaster dest)
   {
     if (dest == null) dest = src.createCompatibleWritableRaster();
 
@@ -193,7 +193,7 @@ public class RescaleOp implements BufferedImageOp, RasterOp
   /* (non-Javadoc)
    * @see java.awt.image.BufferedImageOp#getBounds2D(java.awt.image.BufferedImage)
    */
-  public Rectangle2D getBounds2D(BufferedImage src)
+  public final Rectangle2D getBounds2D(BufferedImage src)
   {
     return src.getRaster().getBounds();
   }
@@ -201,7 +201,7 @@ public class RescaleOp implements BufferedImageOp, RasterOp
   /* (non-Javadoc)
    * @see java.awt.image.RasterOp#getBounds2D(java.awt.image.Raster)
    */
-  public Rectangle2D getBounds2D(Raster src)
+  public final Rectangle2D getBounds2D(Raster src)
   {
     return src.getBounds();
   }
@@ -209,7 +209,7 @@ public class RescaleOp implements BufferedImageOp, RasterOp
   /* (non-Javadoc)
    * @see java.awt.image.BufferedImageOp#getPoint2D(java.awt.geom.Point2D, java.awt.geom.Point2D)
    */
-  public Point2D getPoint2D(Point2D src, Point2D dst) {
+  public final Point2D getPoint2D(Point2D src, Point2D dst) {
     if (dst == null) dst = (Point2D) src.clone();
     else dst.setLocation(src);
     return dst;
