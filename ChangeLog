@@ -1,5 +1,11 @@
 2004-03-29  Adam Heath <doogie@debian.org>
 
+	* kaffe/kaffevm/inflate.c
+	kaffe/kaffevm/inflate.h:
+	Fixed all sign-compare-1 warnings.
+
+2004-03-29  Adam Heath <doogie@debian.org>
+
 	First pass at adding __attribute__ to various places.
 
 2004-03-29  Adam Heath <doogie@debian.org>

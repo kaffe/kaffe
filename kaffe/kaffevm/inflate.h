@@ -15,6 +15,7 @@
 #ifndef __inflate_h
 #define __inflate_h
 
+#include <sys/types.h>
 struct _huft;
 
 typedef struct _inflateInfo {
@@ -22,15 +23,15 @@ typedef struct _inflateInfo {
 	unsigned 	hufts;		/* track memory usage */
 	struct _huft*	fixed_tl;
 	struct _huft*	fixed_td;
-	int		fixed_bl;
-	int		fixed_bd;
+	size_t		fixed_bl;
+	size_t		fixed_bd;
 	unsigned	wp;		/* current position in slide */
 	uint32		bb;		/* bit buffer */
 	unsigned	bk;		/* bits in bit buffer */
 	uint8*		inbuf;
-	int		insz;
+	size_t		insz;
 	uint8*		outbuf;
-	int		outsz;
+	size_t		outsz;
 } inflateInfo;
 
 extern inflateInfo* inflate_new(void);

@@ -33,14 +33,14 @@ typedef struct _huft {
 	} v;
 } huft;
 
-static int inflate_codes(inflateInfo*, huft*, huft*, int, int);
+static int inflate_codes(inflateInfo*, huft*, huft*, size_t, size_t);
 static int inflate_stored(inflateInfo*);
 static int inflate_fixed(inflateInfo*);
 static int inflate_dynamic(inflateInfo*);
 static int inflate_block(inflateInfo*, int*);
 static int huft_free(huft*);
 static int inflate(inflateInfo*);
-static int huft_build(inflateInfo* pG, unsigned* b, unsigned n, unsigned s, uint16* d, uint16* e, huft** t, int* m);
+static int huft_build(inflateInfo* pG, unsigned* b, unsigned n, unsigned s, uint16* d, uint16* e, huft** t, size_t* m);
 
 /* Tables for deflate from PKZIP's appnote.txt. */
 static unsigned border[] = {    /* Order of the bit length code lengths */
@@ -109,15 +109,15 @@ static uint16 mask_bits[] = {
 
 static
 int
-inflate_codes(inflateInfo* pG, huft* tl, huft* td, int bl, int bd)
+inflate_codes(inflateInfo* pG, huft* tl, huft* td, size_t bl, size_t bd)
 {
-  register unsigned e;  /* table entry flag/number of extra bits */
-  unsigned n, d;        /* length and index for copy */
-  unsigned w;           /* current window position */
+  register size_t e;  /* table entry flag/number of extra bits */
+  size_t n, d;        /* length and index for copy */
+  size_t w;           /* current window position */
   huft *t;       /* pointer to table entry */
-  unsigned ml, md;      /* masks for bl and bd bits */
+  int ml, md;      /* masks for bl and bd bits */
   register uint32 b;       /* bit buffer */
-  register unsigned k;  /* number of bits in bit buffer */
+  register size_t k;  /* number of bits in bit buffer */
 
 
   /* make local copies of globals */
@@ -131,7 +131,7 @@ inflate_codes(inflateInfo* pG, huft* tl, huft* td, int bl, int bd)
   md = mask_bits[bd];
   while (1)                     /* do until end of block */
   {
-    NEEDBITS(pG, (unsigned)bl)
+    NEEDBITS(pG, bl)
     if ((e = (t = tl + ((unsigned)b & ml))->e) > 16)
       do {
         if (e == 99)
@@ -162,7 +162,7 @@ inflate_codes(inflateInfo* pG, huft* tl, huft* td, int bl, int bd)
       DUMPBITS(pG, e);
 
       /* decode distance of block to copy */
-      NEEDBITS(pG, (unsigned)bd)
+      NEEDBITS(pG, bd)
       if ((e = (t = td + ((unsigned)b & md))->e) > 16)
         do {
           if (e == 99)
@@ -213,10 +213,10 @@ static
 int
 inflate_stored(inflateInfo* pG)
 {
-  unsigned n;           /* number of bytes in block */
-  unsigned w;           /* current window position */
-  register uint32 b;       /* bit buffer */
-  register unsigned k;  /* number of bits in bit buffer */
+  size_t n;           /* number of bytes in block */
+  size_t w;           /* current window position */
+  register int32 b;       /* bit buffer */
+  register int k;  /* number of bits in bit buffer */
 
 
   /* make local copies of globals */
@@ -320,8 +320,8 @@ inflate_dynamic(inflateInfo* pG)
   unsigned n;           /* number of lengths to get */
   huft *tl;      /* literal/length code table */
   huft *td;      /* distance code table */
-  int bl;               /* lookup bits for tl */
-  int bd;               /* lookup bits for td */
+  size_t bl;            /* lookup bits for tl */
+  size_t bd;            /* lookup bits for td */
   unsigned nb;          /* number of bit length codes */
   unsigned nl;          /* number of literal/length codes */
   unsigned nd;          /* number of distance codes */
@@ -630,17 +630,17 @@ inflate_free(inflateInfo* pG)
 
 static
 int
-huft_build(inflateInfo* pG, unsigned* b, unsigned n, unsigned s, uint16* d, uint16* e, huft** t, int* m)
+huft_build(inflateInfo* pG, unsigned* b, unsigned n, unsigned s, uint16* d, uint16* e, huft** t, size_t* m)
 {
   unsigned a;                   /* counter for codes of length k */
   unsigned c[BMAX+1];           /* bit length count table */
   unsigned el;                  /* length of EOB code (value 256) */
   unsigned f;                   /* i repeats in table every f entries */
-  int g;                        /* maximum code length */
+  size_t g;                     /* maximum code length */
   int h;                        /* table level */
   register unsigned i;          /* counter, current code */
   register unsigned j;          /* counter */
-  register int k;               /* number of bits in current code */
+  register size_t k;            /* number of bits in current code */
   int lx[BMAX+1];               /* memory for l[-1..BMAX-1] */
   int *l = lx+1;                /* stack of bits per table */
   register unsigned *p;         /* pointer into c[], b[], or v[] */
@@ -648,11 +648,11 @@ huft_build(inflateInfo* pG, unsigned* b, unsigned n, unsigned s, uint16* d, uint
   huft r;                /* table entry for structure assignment */
   huft *u[BMAX];         /* table stack */
   unsigned v[N_MAX];            /* values in order of bit length */
-  register int w;               /* bits before this table == (l * h) */
+  register size_t w;            /* bits before this table == (l * h) */
   unsigned x[BMAX+1];           /* bit offsets, then code stack */
   unsigned *xp;                 /* pointer into x */
   int y;                        /* number of dummy codes added */
-  unsigned z;                   /* number of entries in current table */
+  size_t z;                     /* number of entries in current table */
 
 
   /* Generate counts for each bit length */
@@ -734,7 +734,7 @@ huft_build(inflateInfo* pG, unsigned* b, unsigned n, unsigned s, uint16* d, uint
         w += l[h++];            /* add bits already decoded */
 
         /* compute minimum size table less than or equal to *m bits */
-        z = (z = g - w) > (unsigned)*m ? *m : z;        /* upper limit */
+        z = (z = g - w) > *m ? *m : z;        /* upper limit */
         if ((f = 1 << (j = k - w)) > a + 1)     /* try a k-w bit table */
         {                       /* too few codes for k-w bit table */
           f -= a + 1;           /* deduct codes from patterns left */
