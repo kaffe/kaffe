@@ -56,21 +56,29 @@ public class JarURLConnection extends java.net.JarURLConnection {
 			return;
 		}
 
-		// Get the JAR input
-		jarFileURLConnection = jarFileURL.openConnection();
-		jarFileURLConnection.connect();
-		InputStream in = jarFileURLConnection.getInputStream();
+		// If inner URL is a file, just use it directly
+		if (jarFileURL.getProtocol().equals("file")) {
+			jarFile = new JarFile(jarFileURL.getFile());
+		} else {
 
-		// Save it to a temp file
-		File tempFile = File.createTempFile("jar", null);
-		OutputStream out = new FileOutputStream(tempFile);
-		byte[] buf = new byte[1024];
-		for (int r; (r = in.read(buf)) != -1; )
-			out.write(buf, 0, r);
-		out.close();
-// XXX need	tempFile.deleteOnExit();   but not implemented yet
+			// Get the JAR file input stream
+			jarFileURLConnection = jarFileURL.openConnection();
+			jarFileURLConnection.connect();
+			InputStream in = jarFileURLConnection.getInputStream();
 
-		jarFile = new JarFile(tempFile);
+			// Save it to a temp file
+			File tempFile = File.createTempFile("jar", null);
+			OutputStream out = new FileOutputStream(tempFile);
+			byte[] buf = new byte[1024];
+			for (int r; (r = in.read(buf)) != -1; )
+				out.write(buf, 0, r);
+			out.close();
+// XXX should use	tempFile.deleteOnExit();   but not implemented yet
+
+			jarFile = new JarFile(tempFile);
+		}
+
+		// Get the entry in the file
 		jarEntry = jarFile.getEntry(jarEntryName);
 		if (jarEntry == null) {
 			throw new IOException("JAR entry \""
