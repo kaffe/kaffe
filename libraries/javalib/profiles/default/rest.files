@@ -224,6 +224,7 @@ java/util/logging/LogManager.java
 java/util/logging/Level.java
 java/util/logging/ConsoleHandler.java
 java/util/logging/StreamHandler.java
+java/util/logging/SocketHandler.java
 java/util/logging/LoggingPermission.java
 java/util/logging/Filter.java
 java/util/logging/MemoryHandler.java

@@ -1,5 +1,13 @@
 2004-01-12  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/util/logging/SocketHandler.java:
+	New file, taken from GNU Classpath.
+
+	* libraries/javalib/profiles/default/rest.files:
+	Added java/util/logging/SocketHandler.java.
+
+2004-01-12  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/inet/ftp/Handler.java:
 	New file.
 
