@@ -42,22 +42,24 @@ import gnu.classpath.RawData;
 
 abstract class DirectByteBufferImpl extends ByteBuffer
 {
-  /** The owner is used to keep alive the object that actually owns the
-    * memory. There are three possibilities:
-    *  1) owner == this: We allocated the memory and we should free it,
-    *                    but *only* in finalize (if we've been sliced
-    *                    other objects will also have access to the
-    *                    memory).
-    *  2) owner == null: The byte buffer was created thru
-    *                    JNI.NewDirectByteBuffer. The JNI code is
-    *                    responsible for freeing the memory.
-    *  3) owner == some other object: The other object allocated the
-    *                                 memory and should free it.
-    */
+  /**
+   * The owner is used to keep alive the object that actually owns the
+   * memory. There are three possibilities:
+   *  1) owner == this: We allocated the memory and we should free it,
+   *                    but *only* in finalize (if we've been sliced
+   *                    other objects will also have access to the
+   *                    memory).
+   *  2) owner == null: The byte buffer was created thru
+   *                    JNI.NewDirectByteBuffer. The JNI code is
+   *                    responsible for freeing the memory.
+   *  3) owner == some other object: The other object allocated the
+   *                                 memory and should free it.
+   */
   private final Object owner;
+  
   final RawData address;
 
-  final static class ReadOnly extends DirectByteBufferImpl
+  static final class ReadOnly extends DirectByteBufferImpl
   {
     ReadOnly(Object owner, RawData address,
 	     int capacity, int limit,
@@ -82,7 +84,7 @@ abstract class DirectByteBufferImpl extends ByteBuffer
     }
   }
 
-  final static class ReadWrite extends DirectByteBufferImpl
+  static final class ReadWrite extends DirectByteBufferImpl
   {
     ReadWrite(int capacity)
     {

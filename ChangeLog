@@ -4,6 +4,17 @@
 	
 	2004-12-29  Michael Koch  <konqueror@gmx.de>
 
+	* java/nio/DirectByteBufferImpl.java
+	(owner): Reformatted javadoc.
+	(ReadOnly): Reorganized keywords.
+	(ReadWrite): Likewise.
+
+2005-01-05  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2004-12-29  Michael Koch  <konqueror@gmx.de>
+
 	* java/awt/Button.java,
 	java/lang/Runtime.java,
 	java/lang/System.java,
