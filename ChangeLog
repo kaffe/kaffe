@@ -1,3 +1,11 @@
+Fri Oct 22 12:07:49 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* In kaffe/kaffevm:        
+		classMethod.c classMethod.h classPool.c gcFuncs.c soft.c
+		soft.h intrp/icode.h jit/icode.c jit3/icode.c
+	did interface dispatch in constant time.
+	Renamed soft_lookupmethod to soft_lookupinterfacemethod.
+
 Mon Oct 18 12:11:58 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* Makefile.am, Makefile.in, config/Makefile.am,
