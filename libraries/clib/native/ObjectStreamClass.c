@@ -37,7 +37,7 @@ java_io_ObjectStreamClass_getMethodSignatures(struct Hjava_lang_Class* cls)
 	int i;
 	HArrayOfObject* ss;
 	Method* meth;
-	char buf[200];
+	char buf[256];		/* XXX FIXED SIZE BUFFER */
 
 	sz = CLASS_NMETHODS(cls);
 	meth = CLASS_METHODS(cls);
@@ -54,7 +54,66 @@ java_io_ObjectStreamClass_getMethodSignatures(struct Hjava_lang_Class* cls)
 jint
 java_io_ObjectStreamClass_getMethodAccess(struct Hjava_lang_Class* cls, struct Hjava_lang_String* str)
 {
-	return (0);	/* Definately not - XXX */
+	int sz;
+	int i;
+	Method* meth;
+	char* name;
+	char* sig;
+
+	/* 
+	 * the string `str' that is passed in will be one of the strings
+	 * we returned in getMethodSignatures.  We will find the name of the
+	 * method before the space and the signature after the space
+	 */
+	name = sig = makeCString(str);
+
+	/* replace " " with '0' */
+	while (*sig != ' ')
+		sig++;
+	*sig++ = '\0';
+
+	sz = CLASS_NMETHODS(cls);
+	meth = CLASS_METHODS(cls);
+	for (i = 0; i < sz; i++, meth++) {
+		if (strcmp(meth->name->data, name))
+			continue;
+		if (!strcmp(meth->signature->data, sig))
+			break;
+	}
+	assert(i < sz || !"Method not found");
+
+	gc_free_fixed(name);
+	return (meth->accflags & ACC_MASK);
+}
+
+/*
+ * Write the type of a field in a buffer as a Utf8Const and return the 
+ * first character of that buffer, which denotes its type.
+ * 
+ * If the field is not resolved, we can simply use the name.
+ * If it was resolved, we must prepend an 'L' or '[' as appropriate.
+ */
+static char
+convertFieldTypeToString(Field* fld, char *buf)
+{
+	char* type;
+
+	if (!FIELD_RESOLVED(fld)) {
+		type = ((Utf8Const*)FIELD_TYPE(fld))->data;
+		strcpy(buf, type);
+	}
+	else {
+		type = FIELD_TYPE(fld)->name->data;
+		if (type[0] =='[') {
+			strcpy(buf, type);
+		}
+		else {
+			strcpy(buf, "L");
+			strcat(buf, type);
+			strcat(buf, ";");
+		}
+	}
+	return buf[0];
 }
 
 HArrayOfObject*
@@ -64,7 +123,7 @@ java_io_ObjectStreamClass_getFieldSignatures(struct Hjava_lang_Class* cls)
 	int i;
 	HArrayOfObject* ss;
 	Field* fld;
-	char buf[200];
+	char buf[256];		/* XXX FIXED SIZE BUFFER */
 
 	sz = CLASS_NIFIELDS(cls);
 	fld = CLASS_IFIELDS(cls);
@@ -72,12 +131,7 @@ java_io_ObjectStreamClass_getFieldSignatures(struct Hjava_lang_Class* cls)
 	for (i = 0; i < sz; i++, fld++) {
 		strcpy(buf, fld->name->data);
 		strcat(buf, " ");
-		if (!FIELD_RESOLVED(fld)) {
-			strcat(buf, ((Utf8Const*)FIELD_TYPE(fld))->data);
-		}
-		else {
-			strcat(buf, FIELD_TYPE(fld)->name->data);
-		}
+		convertFieldTypeToString(fld, buf + strlen(buf));
 		unhand(ss)->body[i] = (Hjava_lang_Object*)makeJavaString(buf, strlen(buf));
 	}
 	return (ss);
@@ -86,7 +140,40 @@ java_io_ObjectStreamClass_getFieldSignatures(struct Hjava_lang_Class* cls)
 jint
 java_io_ObjectStreamClass_getFieldAccess(struct Hjava_lang_Class* cls, struct Hjava_lang_String* str)
 {
-	return (0);	/* Definately not - XXX */
+	Field* fld;
+	char* name;
+	char* sig;
+	int i;
+	int sz;
+
+	/* 
+	 * the string `str' that is passed in will be one of the strings
+	 * we returned in getFieldSignatures.  We will find the name of the
+	 * field before the space and its signature after the space
+	 */
+	name = sig = makeCString(str);
+
+	/* replace " " with '0' */
+	while (*sig != ' ')
+		sig++;
+	*sig++ = '\0';
+
+	sz = CLASS_NIFIELDS(cls);
+	fld = CLASS_IFIELDS(cls);
+
+	for (i = 0; i < sz; i++, fld++) {
+		char fsig[256];		/* XXX FIXED SIZE BUFFER */
+		if (strcmp(name, fld->name->data))
+			continue;
+		
+		convertFieldTypeToString(fld, fsig);
+		if (!strcmp(sig, fsig))
+			break;
+	}
+	assert (i < sz || !"Field not found");
+
+	gc_free_fixed(name);
+	return (fld->accflags & ACC_MASK);
 }
 
 HArrayOfObject*
@@ -98,7 +185,7 @@ java_io_ObjectStreamClass_getFields0(struct Hjava_io_ObjectStreamClass* stream, 
 	HArrayOfObject* sf;
 	Hjava_io_ObjectStreamField* obj;
 	Field* fld;
-	char buf[200];
+	char buf[256];		/* XXX FIXED SIZE BUFFER */
 	char* type;
 
 	sz = CLASS_NIFIELDS(cls);
@@ -127,25 +214,7 @@ java_io_ObjectStreamClass_getFields0(struct Hjava_io_ObjectStreamClass* stream, 
 			unhand(obj)->typeString = 0;
 		}
 		else {
-			buf[0] = 0;
-			if (!FIELD_RESOLVED(fld)) {
-				type = ((Utf8Const*)FIELD_TYPE(fld))->data;
-				unhand(obj)->type = type[0];
-				strcat(buf, type);
-			}
-			else {
-				type = FIELD_TYPE(fld)->name->data;
-				if (type[0] =='[') {
-					unhand(obj)->type = '[';
-					strcat(buf, type);
-				}
-				else {
-					unhand(obj)->type = 'L';
-					strcat(buf, "L");
-					strcat(buf, type);
-					strcat(buf, ";");
-				}
-			}
+			unhand(obj)->type = convertFieldTypeToString(fld, buf);
 			unhand(obj)->typeString = makeJavaString(buf, strlen(buf));
 		}
 		i++;
@@ -160,23 +229,29 @@ java_io_ObjectStreamClass_getSerialVersionUID(struct Hjava_lang_Class* cls)
 
 	fld = lookupClassField(cls, makeUtf8Const("serialVersionUID" , -1), true);
 	if (fld == 0) {
-		/* return (0); */
-		return (0x1234);
+		return (0L);
 	}
 	return (*(jlong*)FIELD_ADDRESS((Field*)fld));
 }
 
 jbool
-java_io_ObjectStreamClass_hasWriteObject(struct Hjava_lang_Class* cls)
+java_io_ObjectStreamClass_hasWriteObject(struct Hjava_lang_Class* class)
 {
-	Method* meth;   
+	Utf8Const* name;
+	Utf8Const* signature;
 
-	meth = findMethod(cls, makeUtf8Const("writeObject", -1),
-		makeUtf8Const("(Ljava/io/ObjectOutputStream;)V", -1));
-	if (meth != 0) {
-		return (true);
-	}
-	else {
-		return (false);
-	}
+	/* 
+	 * Note that we do not use findMethod because that would resolve
+	 * the constants in this class, which is not necessary.
+	 */
+	name = makeUtf8Const("writeObject", -1);
+	signature = makeUtf8Const("(Ljava/io/ObjectOutputStream;)V", -1);
+
+        for (; class != 0; class = class->superclass) {
+                Method* mptr = findMethodLocal(class, name, signature);
+                if (mptr != NULL) {
+                        return (true);
+                }
+        }
+	return (false);
 }
