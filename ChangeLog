@@ -1,3 +1,20 @@
+2003-08-03  Jim Pick  <jim@kaffe.org>
+
+	* README,
+	RELEASE-NOTES:
+	Updated version number in docs.
+
+	* configure.in:
+	Bumped version number.
+
+	* configure,
+	kaffe/Makefile.in,
+	kaffe/kaffe/Makefile.in,
+	kaffe/scripts/Makefile.in,
+	kaffe/scripts/compat/Makefile.in,
+	test/internal/Makefile.in:
+	Regenerated.
+
 2003-08-03  Timothy S. Stack <stack@cs.utah.edu>
 
 	* kaffe/kaffevm/jni.c:
