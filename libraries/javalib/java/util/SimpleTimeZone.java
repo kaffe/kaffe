@@ -1,6 +1,3 @@
-package java.util;
-
-import java.lang.String;
 
 /*
  * Java core library component.
@@ -11,9 +8,10 @@ import java.lang.String;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public class SimpleTimeZone
-  extends TimeZone
-{
+
+package java.util;
+
+public class SimpleTimeZone extends TimeZone {
 	private static final long serialVersionUID = -403250971215465050L;
 	private int startMonth;
 	private int startDayOfWeek;
@@ -28,46 +26,7 @@ public class SimpleTimeZone
 	private int daylightOffset;
 	private boolean useDaylight;
 
-// Install the standard SimpleTimeZones
-static {
-	new SimpleTimeZone(-11*60*60*1000, "MIT");
-	new SimpleTimeZone(-10*60*60*1000, "HST");
-	new SimpleTimeZone(-9*60*60*1000, "AST");
-	new SimpleTimeZone(-8*60*60*1000, "PST", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
-	new SimpleTimeZone(-8*60*60*1000, "PDT", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
-	new SimpleTimeZone(-7*60*60*1000, "PNT");
-	new SimpleTimeZone(-7*60*60*1000, "MST", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
-	new SimpleTimeZone(-7*60*60*1000, "MDT", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
-	new SimpleTimeZone(-6*60*60*1000, "CST", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
-	new SimpleTimeZone(-6*60*60*1000, "CDT", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
-	new SimpleTimeZone(-5*60*60*1000, "EST", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
-	new SimpleTimeZone(-5*60*60*1000, "EDT", Calendar.APRIL, 1, Calendar.SUNDAY, 2*60*60*1000, Calendar.OCTOBER, -1, Calendar.SUNDAY, 2*60*60*1000);
-	new SimpleTimeZone(-5*60*60*1000, "IET");
-	new SimpleTimeZone(-4*60*60*1000, "PRT");
-	new SimpleTimeZone(-3500*60*60, "CNT");
-	new SimpleTimeZone(-3*60*60*1000, "AGT");
-	new SimpleTimeZone(-1*60*60*1000, "CAT");
-	new SimpleTimeZone(0, "GMT");
-	new SimpleTimeZone(1*60*60*1000, "ECT");
-	new SimpleTimeZone(1*60*60*1000, "EET");
-	new SimpleTimeZone(2*60*60*1000, "ART");
-	new SimpleTimeZone(3*60*60*1000, "EAT");
-	new SimpleTimeZone(3500*60*60, "MET");
-	new SimpleTimeZone(4*60*60*1000, "NET");
-	new SimpleTimeZone(5*60*60*1000, "PLT");
-	new SimpleTimeZone(5500*60*60, "IST");
-	new SimpleTimeZone(6*60*60*1000, "BST");
-	new SimpleTimeZone(7*60*60*1000, "VST");
-	new SimpleTimeZone(8*60*60*1000, "CTT");
-	new SimpleTimeZone(9*60*60*1000, "JST");
-	new SimpleTimeZone(9500*60*60, "ACT");
-	new SimpleTimeZone(10*60*60*1000, "AET");
-	new SimpleTimeZone(11*60*60*1000, "SST");
-	new SimpleTimeZone(12*60*60*1000, "NST");
-}
-
-public SimpleTimeZone(int rawOffset, String ID)
-	{
+public SimpleTimeZone(int rawOffset, String ID) {
 	this.rawOffset = rawOffset;
 	setID(ID);
 	useDaylight = false;
@@ -86,12 +45,6 @@ public SimpleTimeZone(int rawOffset, String ID,
 	setEndRule(endMonth, endDayOfWeekInMonth, endDayOfWeek, endTime);
 
 	useDaylight = true;
-}
-
-public Object clone()
-	{
-	SimpleTimeZone tz = new SimpleTimeZone(getRawOffset(), getID(), startMonth, startDayOfWeekInMonth, startDayOfWeek, startTime, endMonth, endDayOfWeekInMonth, endDayOfWeek, endTime);
-	return ((Object)tz);
 }
 
 public boolean equals(Object o)
@@ -281,3 +234,4 @@ public boolean useDaylightTime()
 	return (useDaylight);
 }
 }
+
