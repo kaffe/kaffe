@@ -1,3 +1,9 @@
+2003-07-15  Dalibor Topic <robilad@kaffe.org>
+	
+	* test/regression/BitSetTest.java:
+        (show) don't print size, it's implementation dependant.
+        Removed size information form expected results.
+
 2003-07-14  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* java/util/BitSet.java:
