@@ -12,7 +12,7 @@
 #ifndef __parisc_hpux_threads_h
 #define __parisc_hpux_threads_h
 
-/* Stacks go up on the PARISC */
+/* Stacks grow up on the PARISC */
 #define	STACK_GROWS_UP	1
  
 /**/
