@@ -10,26 +10,26 @@
 
 package java.text;
 
-import java.lang.String;
-
 public final class CollationKey implements Comparable {
 
-private String str;
-private Collator target;
+private final String str;
+private final Collator target;
 
-private CollationKey() {}
-    
+CollationKey(Collator target, String str) {
+	this.target = target;
+	this.str = str;
+}
+
 public int compareTo(Object obj) {
 	return compareTo((CollationKey)obj);
 }
 
 public int compareTo(CollationKey other) {
 	if (target != other.target) {
-		return (-1);
+		throw new IllegalArgumentException(
+			"keys have different Collators");
 	}
-	else {
-		return (target.compare(str, other.str));
-	}
+	return (target.compare(str, other.str));
 }
 
 public boolean equals(Object obj) {
