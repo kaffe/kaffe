@@ -1,5 +1,233 @@
 2003-12-03  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/net/DatagramSocket.java,
+	libraries/javalib/java/net/MulticastSocket.java,
+	libraries/javalib/java/net/ServerSocket.java,
+	libraries/javalib/java/net/Socket.java:
+	Resynced with GNU Classpath.
+
+	2003-12-02  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/DatagramSocket.java
+        (close): Close associated DatagramChannel object.
+        * java/net/Socket.java
+        (close): Reset impl and bound before calling getChannel().close() to
+        prevent from loops.
+
+	2003-12-02  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/DatagramSocket.java
+        (DatagramSocket): Call other sister constructor.
+        (connect): Revised exception message.
+        (setBroadcast): Renamed on to enable.
+        (getLocalAddress): Completed documentation.
+        (getChannel): Likewise.
+        (isBound): Likewise.
+        (isConnected): Likewise.
+        (getRemoteSocketAddress): Likewise.
+        (getLocalSocketAddress): Likewise.
+        (getReuseAddress): Likewise.
+        (setBroadcast): Likewise.
+        (getTrafficClass): Likewise.
+        * java/net/ServerSocket.java
+        (getLocalSocketAddress): Simplified.
+        (accept): Renamed s to socket.
+        (implAccept): Likewise.
+        (toString): Made it compliant to SUNs JDK.
+        * java/net/Socket.java
+        (impl): Make private.
+        (getInetAddress): Check if socket is connected.
+        (getPort): Likewise.
+        (getInputStream): Likewise.
+        (getOutputStream): Likewise.
+        (getLocalPort): Check if socket is bound.
+        (shutdownOutput):
+        Readd accidently removed "getImpl().shutdownOutput()".
+        (connect): Completed documentation.
+        (getOOBInline): Likewise.
+        (getReuseAddress): Likewise.
+        (getTrafficClass): Likewise.
+        (isConnected): Likewise.
+        (isBound): Likewise.
+        (isClosed): Likewise.
+        (isInputShutdown): Likewise.
+        (isOutputShutdown): Likewise.
+
+	2003-12-02  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/DatagramSocket.java
+        (impl): Made private.
+        (bound): New private member variable.
+        (DatagramSocket): Fixed documentation, use getImpl().
+        (getImpl): New package-private method.
+        (isClosed): Use getImpl().
+        (getLocalAddress): Completed documentation, use getImpl().
+        (getLocalPort): Use getImpl().
+        (getSoTimeout): Likewise.
+        (setSoTimeout): Likewise.
+        (getSendBufferSize): Likewise.
+        (setSendBufferSize): Likewise.
+        (getReceiveBufferSize): Likewise.
+        (setReceiveBufferSize): Likewise.
+        (connect): Likewise.
+        (disconnect): Likewise.
+        (receive): Likewise.
+        (send): Likewise.
+        (setReuseAddress): Likewise.
+        (setTrafficClass): Likewise.
+        (bind): Added message to exception.
+        (isClosed): Completed documentation.
+        (getChannel): Likewise.
+        (connect): Added missing exception, refined exception message.
+        (isBound): Completed documentation, just return bound.
+        (isConnected): Completed documentation.
+        (getRemoteSocketAddress): Likewise.
+        (getReuseAddress): Completed documentation, use getImpl().
+        (setSoBroadcast): Likewise.
+        (getSoBroadcast): Likewise.
+        (getTrafficClass): Likewise.
+        (getLocalSocketAddress): Simplified.
+        * java/net/MulticastSocket.java
+        (MulticastSocket): Removed comment not applying anymore.
+        (getInterface): Use getImpl().
+        (getTTL): Likewise.
+        (getTimeToLive): Likewise.
+        (setInterface): Likewise.
+        (setNetworkInterface): Likewise.
+        (getNetworkInterface): Likewise.
+        (setLoopback): Likewise.
+        (getLoopback): Likewise.
+        (setTTL): Likewise.
+        (setTimeToLive): Likewise.
+        (joinGroup): Likewise.
+        (leaveGroup): Likewise.
+        (send): Likewise.
+
+	2003-12-02  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/DatagramSocket.java
+        (factory): Made private.
+        (closed): Removed.
+        (DatagramSocket): Check impl argument, use constructor with
+        SocketAddress argument.
+        (close): Set impl to null, use isClosed().
+        (isClosed): Check for impl == null.
+        (getLocalAddress): Use isClosed().
+        (getLocalPort): Check if socket is closed.
+        (getSoTimeout): Likewise.
+        (setSoTimeout): Likewise.
+        (getSendBufferSize): Likewise.
+        (setSendBufferSize): Likewise.
+        (getReceiveBufferSize): Likewise.
+        (setReceiveBufferSize): Likewise.
+        (receive): Likewise.
+        (send): Likewise.
+        (bind): Likewise.
+        (connect): Likewise.
+        (setReuseAddress): Likewise.
+        (getReuseAddress): Likewise.
+        (setBroadcast): Likewise.
+        (getBroadcast): Likewise.
+        (setTrafficClass): Likewise.
+        (getTrafficClass): Likewise.
+        * java/net/MulticastSocket.java
+        (getInterface): Check if socket is closed.
+        (getTTL): Likewise.
+        (getTimeToLive): Likewise.
+        (setInterface): Likewise.
+        (setNetworkInterface): Likewise.
+        (getNetworkInterface): Likewise.
+        (setLoopbackMode): Likewise.
+        (setTTL): Likewise.
+        (setTimeToLive): Likewise.
+        (joinGroup): Likewise.
+        (leaveGroup): Likewise.
+        (send): Likewise.
+        * java/net/ServerSocket.java
+        (closed): Removed.
+        (close): Check if socket is closed, set impl to null.
+        (isClosed): Check impl == null;
+        (ServerSocket): Check impl argument.
+        (getInetAddress): Check if socket is bound.
+        (getLocalPort): Likewise.
+        (getLocalSocketAddress): Likewise.
+        (bind): Check if socket is closed.
+        (implAccept): Likewise.
+        (setSoTimeout): Likewise.
+        (getSoTimeout): Likewise.
+        (setReuseAddress): Likewise.
+        (getReuseAddress): Likewise.
+        (setReceiveBufferSize): Likewise.
+        (getReceiveBufferSize): Likewise.
+        * java/net/Socket.java
+        (closed): Removed.
+        (Socket): Fixed documentation.
+        (connect): Check if socket is closed, changed exception text,
+        fixed documentation.
+        (getInputStream): Check of socket is closed  and connected.
+        (getOutputStream): Likewise.
+        (bind): Check if socket is closed.
+        (setTcpNoDelay): Likewise.
+        (getTcpNoDelay): Likewise.
+        (setSoLinger): Likewise.
+        (getSoLinger): Likewise.
+        (sendUrgentData): Likewise.
+        (setOOBInline): Likewise.
+        (getOOBInline): Likewise.
+        (setSoTimeout): Likewise.
+        (getSoTimeout): Likewise.
+        (setSendBufferSize): Likewise.
+        (getSendBufferSize): Likewise.
+        (setReceiveBufferSize): Likewise.
+        (getReceiveBufferSize): Likewise.
+        (setKeepAlive): Likewise.
+        (getKeepAlive): Likewise.
+        (close): Likewise.
+        (shutdownInput): Likewise.
+        (shutdownOutput): Likewise.
+        (getReuseAddress): Likewise.
+        (getTrafficClass): Likewise.
+        (setTrafficClass): Likewise.
+        (isClosed): Check impl == null.
+        (toString): Added missing ']'.
+
+	2003-12-02  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/DatagramSocket.java
+        (DatagramSocket): Move binding code to bind(), simplify constructors.
+        * java/net/MulticastSocket.java
+        (MulticastSocket): Call parent constructor with null argument,
+        bind socket after setReuseAddress is called, simplify constructors.
+        * java/net/Socket.java
+        (various): Some more getImpl() fixes.
+
+	2003-12-02  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/Socket.java
+        (implCreated): New variable that indicates created impl.
+        (getImpl): New method.
+        (toString): Return more SUN compliant string representation.
+        (various): Use getImpl() instead of impl.
+
+	2003-12-02  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/Socket.java
+        (implCreated): Dont set default value explicitely, added
+        documentation.
+        (inputShutdown): Likewise.
+        (outputShutdown): Likewise.
+        (bound): New private member variable.
+        (bind): Set bound to true.
+        (close): Set bound to false.
+        (isBound): Return bound.
+        * java/net/ServerSocket.java
+        (bound): New private member variable.
+        (bind): Set bound to true.
+        (close): Set bound to false.
+        (isBound): Return bound.
+
+2003-12-03  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/net/DatagramPacket.java:
 	Resynced with GNU Classpath.
 
