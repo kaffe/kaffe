@@ -16,7 +16,6 @@ native_LTLIBRARIES = libreplace.la
 
 libreplace_la_LDFLAGS = \
         $(KVMLIBFLAGS) \
-        -export-dynamic \
         -release $(PACKAGE_VERSION)
 
 libreplace_la_SOURCES = \

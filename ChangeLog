@@ -1,1 +1,12 @@
+2003-03-20  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Don't check for no-cpp-precomp. It confuses
+	libtool on 64 bit platforms to think that -fPIC is not supported, 
+	leading to fascinating relinking errors. A better way for older
+	darwin release must be found to deal with preprocessor breakage.
+	It also lead to tons of pointless warning messages on all systems
+	beside the -no-cpp-supporting ones, so it needs to go in this form.
+
+	* replace/Makefile.am (libreplace_la_LDFLAGS): Removed -export-dynamic.
+
 See ChangeLog.16 for earlier changes.
