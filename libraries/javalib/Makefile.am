@@ -14,12 +14,50 @@ CLASSFILE = Klasses.jar
 
 class_DATA = $(CLASSFILE) pizza.jar
 
-EXTRA_DIST = \
-	$(class_DATA) \
+Klasses_jar_SRCS = \
+	$(java_applet_SRCS) \
+	$(java_awt_SRCS) \
+	$(java_awt_datatransfer_SRCS) \
+	$(java_awt_event_SRCS) \
+	$(java_awt_image_SRCS) \
+	$(java_awt_peer_SRCS) \
+	$(java_awt_widgets_SRCS) \
+	$(java_beans_SRCS) \
+	$(java_io_SRCS) \
+	$(java_lang_SRCS) \
+	$(java_lang_ref_SRCS) \
+	$(java_lang_reflect_SRCS) \
+	$(java_math_SRCS) \
+	$(java_net_SRCS) \
+	$(java_sql_SRCS) \
+	$(java_text_SRCS) \
+	$(java_util_SRCS) \
+	$(java_util_mime_SRCS) \
+	$(java_util_zip_SRCS) \
+	$(kaffe_applet_SRCS) \
+	$(kaffe_awt_SRCS) \
+	$(kaffe_beans_editors_SRCS) \
+	$(kaffe_io_SRCS) \
+	$(kaffe_jar_SRCS) \
+	$(kaffe_lang_SRCS) \
+	$(kaffe_management_SRCS) \
+	$(kaffe_net_SRCS) \
+	$(kaffe_net_www_protocol_SRCS) \
+	$(kaffe_net_www_protocol_file_SRCS) \
+	$(kaffe_net_www_protocol_http_SRCS) \
+	$(kaffe_net_www_protocol_system_SRCS) \
+	$(kaffe_text_collator_SRCS) \
+	$(kaffe_text_dateformat_SRCS) \
+	$(kaffe_text_numberformat_SRCS) \
+	$(kaffe_util_SRCS) \
+	$(kaffe_util_log_SRCS) \
+	$(kaffe_util_zip_SRCS)
+java_applet_SRCS = \
 	java/applet/Applet.java \
 	java/applet/AppletContext.java \
 	java/applet/AppletStub.java \
-	java/applet/AudioClip.java \
+	java/applet/AudioClip.java
+java_awt_SRCS = \
 	java/awt/AWTError.java \
 	java/awt/AWTEvent.java \
 	java/awt/AWTEventMulticaster.java \
@@ -60,12 +98,6 @@ EXTRA_DIST = \
 	java/awt/HotKeyHandler.java \
 	java/awt/IllegalComponentStateException.java \
 	java/awt/Image.java \
-	java/awt/ImageDataProducer.java \
-	java/awt/ImageFileProducer.java \
-	java/awt/ImageNativeConsumer.java \
-	java/awt/ImageNativeProducer.java \
-	java/awt/ImageNativeThread.java \
-	java/awt/ImageURLProducer.java \
 	java/awt/Insets.java \
 	java/awt/ItemEvt.java \
 	java/awt/ItemSelectable.java \
@@ -100,17 +132,21 @@ EXTRA_DIST = \
 	java/awt/RootWindow.java \
 	java/awt/ScrollPane.java \
 	java/awt/Shape.java \
+	java/awt/ShortcutConsumer.java \
+	java/awt/ShortcutHandler.java \
 	java/awt/SystemColor.java \
 	java/awt/Toolkit.java \
 	java/awt/WMEvent.java \
 	java/awt/Window.java \
-	java/awt/WindowEvt.java \
+	java/awt/WindowEvt.java
+java_awt_datatransfer_SRCS = \
 	java/awt/datatransfer/Clipboard.java \
 	java/awt/datatransfer/ClipboardOwner.java \
 	java/awt/datatransfer/DataFlavor.java \
 	java/awt/datatransfer/StringSelection.java \
 	java/awt/datatransfer/Transferable.java \
-	java/awt/datatransfer/UnsupportedFlavorException.java \
+	java/awt/datatransfer/UnsupportedFlavorException.java
+java_awt_event_SRCS = \
 	java/awt/event/ActionEvent.java \
 	java/awt/event/ActionListener.java \
 	java/awt/event/AdjustmentEvent.java \
@@ -140,7 +176,8 @@ EXTRA_DIST = \
 	java/awt/event/TextListener.java \
 	java/awt/event/WindowAdapter.java \
 	java/awt/event/WindowEvent.java \
-	java/awt/event/WindowListener.java \
+	java/awt/event/WindowListener.java
+java_awt_image_SRCS = \
 	java/awt/image/AreaAveragingScaleFilter.java \
 	java/awt/image/ColorModel.java \
 	java/awt/image/CropImageFilter.java \
@@ -154,13 +191,15 @@ EXTRA_DIST = \
 	java/awt/image/MemoryImageSource.java \
 	java/awt/image/PixelGrabber.java \
 	java/awt/image/RGBImageFilter.java \
-	java/awt/image/ReplicateScaleFilter.java \
+	java/awt/image/ReplicateScaleFilter.java
+java_awt_peer_SRCS = \
 	java/awt/peer/ActiveEvent.java \
 	java/awt/peer/ComponentPeer.java \
 	java/awt/peer/FontPeer.java \
 	java/awt/peer/LightweightPeer.java \
 	java/awt/peer/MenuComponentPeer.java \
-	java/awt/peer/WindowPeer.java \
+	java/awt/peer/WindowPeer.java
+java_awt_widgets_SRCS = \
 	java/awt/widgets/Button.java \
 	java/awt/widgets/Checkbox.java \
 	java/awt/widgets/CheckboxGroup.java \
@@ -173,7 +212,8 @@ EXTRA_DIST = \
 	java/awt/widgets/TextBuffer.java \
 	java/awt/widgets/TextComponent.java \
 	java/awt/widgets/TextCursor.java \
-	java/awt/widgets/TextField.java \
+	java/awt/widgets/TextField.java
+java_beans_SRCS = \
 	java/beans/BeanDescriptor.java \
 	java/beans/BeanInfo.java \
 	java/beans/Beans.java \
@@ -197,7 +237,8 @@ EXTRA_DIST = \
 	java/beans/SimpleBeanInfo.java \
 	java/beans/VetoableChangeListener.java \
 	java/beans/VetoableChangeSupport.java \
-	java/beans/Visibility.java \
+	java/beans/Visibility.java
+java_io_SRCS = \
 	java/io/BufferedInputStream.java \
 	java/io/BufferedOutputStream.java \
 	java/io/BufferedReader.java \
@@ -267,7 +308,8 @@ EXTRA_DIST = \
 	java/io/UTFDataFormatException.java \
 	java/io/UnsupportedEncodingException.java \
 	java/io/WriteAbortedException.java \
-	java/io/Writer.java \
+	java/io/Writer.java
+java_lang_SRCS = \
 	java/lang/AbstractMethodError.java \
 	java/lang/ArithmeticException.java \
 	java/lang/ArrayIndexOutOfBoundsException.java \
@@ -342,16 +384,25 @@ EXTRA_DIST = \
 	java/lang/UnsupportedOperationException.java \
 	java/lang/VerifyError.java \
 	java/lang/VirtualMachineError.java \
-	java/lang/Void.java \
+	java/lang/Void.java
+java_lang_ref_SRCS = \
+	java/lang/ref/PhantomReference.java \
+	java/lang/ref/Reference.java \
+	java/lang/ref/ReferenceQueue.java \
+	java/lang/ref/SoftReference.java \
+	java/lang/ref/WeakReference.java
+java_lang_reflect_SRCS = \
 	java/lang/reflect/Array.java \
 	java/lang/reflect/Constructor.java \
 	java/lang/reflect/Field.java \
 	java/lang/reflect/InvocationTargetException.java \
 	java/lang/reflect/Member.java \
 	java/lang/reflect/Method.java \
-	java/lang/reflect/Modifier.java \
+	java/lang/reflect/Modifier.java
+java_math_SRCS = \
 	java/math/BigDecimal.java \
-	java/math/BigInteger.java \
+	java/math/BigInteger.java
+java_net_SRCS = \
 	java/net/BindException.java \
 	java/net/ConnectException.java \
 	java/net/ContentHandler.java \
@@ -361,6 +412,7 @@ EXTRA_DIST = \
 	java/net/DatagramSocketImpl.java \
 	java/net/DatagramSocketImplFactory.java \
 	java/net/FileNameMap.java \
+	java/net/HttpURLConnection.java \
 	java/net/InetAddress.java \
 	java/net/InetAddressImpl.java \
 	java/net/MalformedURLException.java \
@@ -383,7 +435,8 @@ EXTRA_DIST = \
 	java/net/URLStreamHandler.java \
 	java/net/URLStreamHandlerFactory.java \
 	java/net/UnknownHostException.java \
-	java/net/UnknownServiceException.java \
+	java/net/UnknownServiceException.java
+java_sql_SRCS = \
 	java/sql/CallableStatement.java \
 	java/sql/Connection.java \
 	java/sql/DataTruncation.java \
@@ -400,7 +453,8 @@ EXTRA_DIST = \
 	java/sql/Statement.java \
 	java/sql/Time.java \
 	java/sql/Timestamp.java \
-	java/sql/Types.java \
+	java/sql/Types.java
+java_text_SRCS = \
 	java/text/BreakIterator.java \
 	java/text/CharacterIterator.java \
 	java/text/ChoiceFormat.java \
@@ -422,7 +476,8 @@ EXTRA_DIST = \
 	java/text/SimpleLineIterator.java \
 	java/text/SimpleSentenceIterator.java \
 	java/text/SimpleWordIterator.java \
-	java/text/StringCharacterIterator.java \
+	java/text/StringCharacterIterator.java
+java_util_SRCS = \
 	java/util/AbstractCollection.java \
 	java/util/AbstractList.java \
 	java/util/BitSet.java \
@@ -460,10 +515,12 @@ EXTRA_DIST = \
 	java/util/SystemClassLoader.java \
 	java/util/TimeZone.java \
 	java/util/TooManyListenersException.java \
-	java/util/Vector.java \
+	java/util/Vector.java
+java_util_mime_SRCS = \
 	java/util/mime/MimeType.java \
 	java/util/mime/MimeTypeParameterList.java \
-	java/util/mime/MimeTypeParseException.java \
+	java/util/mime/MimeTypeParseException.java
+java_util_zip_SRCS = \
 	java/util/zip/Adler32.java \
 	java/util/zip/CRC32.java \
 	java/util/zip/CheckedInputStream.java \
@@ -481,9 +538,11 @@ EXTRA_DIST = \
 	java/util/zip/ZipException.java \
 	java/util/zip/ZipFile.java \
 	java/util/zip/ZipInputStream.java \
-	java/util/zip/ZipOutputStream.java \
+	java/util/zip/ZipOutputStream.java
+kaffe_applet_SRCS = \
 	kaffe/applet/AppletViewer.java \
-	kaffe/applet/AudioPlayer.java \
+	kaffe/applet/AudioPlayer.java
+kaffe_awt_SRCS = \
 	kaffe/awt/ExportTransferable.java \
 	kaffe/awt/FlavorConverter.java \
 	kaffe/awt/ImageClass.java \
@@ -491,7 +550,8 @@ EXTRA_DIST = \
 	kaffe/awt/ImageSpec.java \
 	kaffe/awt/ObjectSelection.java \
 	kaffe/awt/OpaqueComponent.java \
-	kaffe/awt/SerializerConverter.java \
+	kaffe/awt/SerializerConverter.java
+kaffe_beans_editors_SRCS = \
 	kaffe/beans/editors/BooleanEditor.java \
 	kaffe/beans/editors/ByteEditor.java \
 	kaffe/beans/editors/DoubleEditor.java \
@@ -499,7 +559,8 @@ EXTRA_DIST = \
 	kaffe/beans/editors/IntegerEditor.java \
 	kaffe/beans/editors/LongEditor.java \
 	kaffe/beans/editors/ShortEditor.java \
-	kaffe/beans/editors/StringEditor.java \
+	kaffe/beans/editors/StringEditor.java
+kaffe_io_SRCS = \
 	kaffe/io/AccessibleBAOStream.java \
 	kaffe/io/ByteToChar8859_1.java \
 	kaffe/io/ByteToCharConverter.java \
@@ -507,44 +568,96 @@ EXTRA_DIST = \
 	kaffe/io/CharToByte8859_1.java \
 	kaffe/io/CharToByteConverter.java \
 	kaffe/io/CharToByteDefault.java \
+	kaffe/io/ClassLoaderObjectInputStream.java \
 	kaffe/io/ConverterAlias.java \
-	kaffe/io/TmpFile.java \
+	kaffe/io/DefaultSerializationFactory.java \
+	kaffe/io/ObjectInputStreamImpl.java \
+	kaffe/io/ObjectOutputStreamImpl.java \
+	kaffe/io/ObjectStreamClassImpl.java \
+	kaffe/io/SerializationFactory.java \
+	kaffe/io/TmpFile.java
+kaffe_jar_SRCS = \
 	kaffe/jar/ExecJar.java \
-	kaffe/jar/ExecJarName.java \
-	kaffe/lang/UNIXProcess.java \
-	kaffe/management/Classpath.java \
+	kaffe/jar/ExecJarName.java
+kaffe_lang_SRCS = \
+	kaffe/lang/MemoryAdvice.java \
+	kaffe/lang/MemoryAdviceCallback.java \
+	kaffe/lang/SystemClassLoader.java \
+	kaffe/lang/UNIXProcess.java
+kaffe_management_SRCS = \
+	kaffe/management/Classpath.java
+kaffe_net_SRCS = \
 	kaffe/net/DefaultDatagramSocketImplFactory.java \
 	kaffe/net/DefaultFileNameMap.java \
 	kaffe/net/DefaultSocketImplFactory.java \
+	kaffe/net/DefaultStreamMap.java \
 	kaffe/net/DefaultURLStreamHandlerFactory.java \
+	kaffe/net/StreamMap.java
+kaffe_net_www_protocol_SRCS = \
+	kaffe/net/www/protocol/BasicURLConnection.java
+kaffe_net_www_protocol_file_SRCS = \
 	kaffe/net/www/protocol/file/FileURLConnection.java \
-	kaffe/net/www/protocol/file/Handler.java \
+	kaffe/net/www/protocol/file/Handler.java
+kaffe_net_www_protocol_http_SRCS = \
+	kaffe/net/www/protocol/http/Handler.java \
+	kaffe/net/www/protocol/http/HttpURLConnection.java
+kaffe_net_www_protocol_system_SRCS = \
 	kaffe/net/www/protocol/system/Handler.java \
-	kaffe/net/www/protocol/system/SystemURLConnection.java \
+	kaffe/net/www/protocol/system/SystemURLConnection.java
+kaffe_text_collator_SRCS = \
+	kaffe/text/collator/locale.java \
+	kaffe/text/collator/locale_en_US.java
+kaffe_text_dateformat_SRCS = \
 	kaffe/text/dateformat/locale.java \
-	kaffe/text/dateformat/locale_en_US.java \
+	kaffe/text/dateformat/locale_en_US.java
+kaffe_text_numberformat_SRCS = \
 	kaffe/text/numberformat/locale.java \
-	kaffe/text/numberformat/locale_en_US.java \
+	kaffe/text/numberformat/locale_en_US.java
+kaffe_util_SRCS = \
 	kaffe/util/Assert.java \
+	kaffe/util/DateParser.java \
+	kaffe/util/DateScanner.java \
 	kaffe/util/Deprecated.java \
+	kaffe/util/DoubleLinkedObject.java \
+	kaffe/util/IdentityHashtable.java \
 	kaffe/util/NotImplemented.java \
 	kaffe/util/NotImplementedReport.java \
 	kaffe/util/Ptr.java \
 	kaffe/util/Timer.java \
-	kaffe/util/TimerClient.java
+	kaffe/util/TimerClient.java \
+	kaffe/util/VectorSnapshot.java
+kaffe_util_log_SRCS = \
+	kaffe/util/log/LogClient.java \
+	kaffe/util/log/LogStream.java
+kaffe_util_zip_SRCS = \
+	kaffe/util/zip/SwitchInflater.java
+
+## Do not delete the previous blank line; update-class-list depends on it
+
+EXTRA_DIST = $(class_DATA) $(Klasses_jar_SRCS)
 
 LIBDIR = lib
 
 clean-hook:
 	rm -rf $(LIBDIR)
 
-$(srcdir)/Klasses.jar:
-	$(MAKE) classes build-classes
+.PHONY: new-classes
+new-classes: $(srcdir)/../../developers/update-class-list
+	cd $(srcdir) && $(SHELL) ../../developers/update-class-list
 
-classes: rebuildLib
-	$(SHELL) ./rebuildLib
+.PHONY: compile-classes classes
+## classes is provided for backward compatibility; use compile-classes
+compile-classes $(LIBDIR)/stamp classes: rebuildLib $(Klasses_jar_SRCS)
+	echo $(SHELL) ./rebuildLib
+	@$(SHELL) ./rebuildLib $(Klasses_jar_SRCS)
+	@echo timestamp > $(LIBDIR)/stamp
 
-build-classes:
-	rm -f $(srcdir)/$(CLASSFILE) $(LIBDIR)/$(CLASSFILE)
+.PHONY: jar-classes
+jar-classes $(LIBDIR)/Klasses.jar: $(LIBDIR)/stamp
+	rm -f $(LIBDIR)/$(CLASSFILE)
 	(cd $(LIBDIR) && $(ZIP) -r $(CLASSFILE) java kaffe)
-	mv $(LIBDIR)/$(CLASSFILE) $(srcdir)/$(CLASSFILE)
+
+.PHONY: build-classes Klasses
+build-classes Klasses: $(LIBDIR)/Klasses.jar
+	rm -f $(srcdir)/$(CLASSFILE)
+	cp $(LIBDIR)/$(CLASSFILE) $(srcdir)/$(CLASSFILE)

@@ -1,0 +1,54 @@
+#! /bin/sh
+
+# by Alexandre Oliva <oliva@dcc.unicamp.br>
+
+# This script can be used to update the list of class files to
+# compiled into Klasses.jar and included in the Kaffe distribution.
+# Whenever you add or remove a file, run this script from within
+# kaffe-src/libraries/javalib
+
+if test -f Makefile.am && grep "^Klasses_jar_SRCS" < Makefile.am > /dev/null
+then :
+else
+    echo update-class-list must be run from within directory libraries/javalib >&2
+    echo of the Kaffe source tree >&2
+    exit 1
+fi
+
+trap 'rm -f classlist pkglist macrodef; exit 1' 1 2 15
+
+find java kaffe -name \*.java -print | sort > classlist
+
+sed 's,/[^/]*$,,' < classlist | uniq > pkglist
+
+{
+  sed 's,^,	$(,;s,$,_SRCS) \\,;$s, \\$,,;s,/,_,g' < pkglist
+
+  while read pkg; do
+    echo "${pkg}_SRCS = \\" | sed 's,/,_,g'
+    grep "^${pkg}/[^/]*$" < classlist | sed 's/^/	/;s/$/ \\/;$s/ \\$//'
+  done < pkglist
+  echo
+} > macrodef
+
+rm -f classlist pkglist
+
+sed '
+/^Klasses_jar_SRCS/ {
+    p
+    r macrodef
+}
+/^Klasses_jar_SRCS/,/^$/ d
+' < Makefile.am > Makefile.am.new
+
+rm -f macrodef Makefile.am.bak
+
+mv Makefile.am Makefile.am.bak
+mv Makefile.am.new Makefile.am
+
+rm -f Makefile.am.bak
+
+cd ../..
+automake libraries/javalib/Makefile
+
+exit 0

@@ -43,3 +43,7 @@ BUILD_ENVIRONMENT-make: Makefile
 	echo CLASSPATH=\$${CLASSPATH-.}\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/Klasses.jar\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/pizza.jar\; export CLASSPATH > BUILD_ENVIRONMENT; \
 	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}`for f in $(JAVA_LIBS); do echo "$$f" | sed 's%/[^/]*$$%%'; done | (tr '\012' '$(PATHSEP)'; echo) | sed s/.$$//`\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT; \
 	echo JAVA=$(top_builddir)/kaffe/kaffe/Kaffe$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT
+
+.PHONY: Klasses new-classes compile-classes jar-classes build-classes
+Klasses new-classes compile-classes jar-classes build-classes:
+	cd libraries/javalib && $(MAKE) $@

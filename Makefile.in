@@ -402,6 +402,10 @@ BUILD_ENVIRONMENT-make: Makefile
 	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}`for f in $(JAVA_LIBS); do echo "$$f" | sed 's%/[^/]*$$%%'; done | (tr '\012' '$(PATHSEP)'; echo) | sed s/.$$//`\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT; \
 	echo JAVA=$(top_builddir)/kaffe/kaffe/Kaffe$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT
 
+.PHONY: Klasses new-classes compile-classes jar-classes build-classes
+Klasses new-classes compile-classes jar-classes build-classes:
+	cd libraries/javalib && $(MAKE) $@
+
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

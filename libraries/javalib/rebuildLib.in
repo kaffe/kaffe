@@ -11,6 +11,7 @@
 #
 
 SRCDIR=@srcdir@
+LIBDIR=`pwd`/lib
 JIKES=@JIKES@
 
 if [ "$JIKES" = "" ] ; then
@@ -26,51 +27,16 @@ if [ "$JIKES" = "" ] ; then
 	if [ -z "$JAVAC" ]; then
 		JAVAC="$JAVA pizza.compiler.Main"
 	fi
-	CPATH="lib"
+	CPATH="$LIBDIR"
 else
 	JAVAC="$JIKES"
-	CPATH="lib:$SRCDIR/Klasses.jar"
+	CPATH="$LIBDIR:Klasses.jar"
 fi
 
 rm -rf lib
 mkdir lib
 
-CLASSES="\
- $SRCDIR/java/applet/*.java \
- $SRCDIR/java/awt/*.java \
- $SRCDIR/java/awt/datatransfer/*.java \
- $SRCDIR/java/awt/event/*.java \
- $SRCDIR/java/awt/image/*.java \
- $SRCDIR/java/awt/peer/*.java \
- $SRCDIR/java/awt/widgets/*.java \
- $SRCDIR/java/beans/*.java \
- $SRCDIR/java/io/*.java \
- $SRCDIR/java/lang/*.java \
- $SRCDIR/java/lang/reflect/*.java \
- $SRCDIR/java/net/*.java \
- $SRCDIR/java/text/*.java \
- $SRCDIR/java/util/*.java \
- $SRCDIR/java/util/mime/*.java \
- $SRCDIR/java/util/zip/*.java \
- $SRCDIR/java/sql/*.java \
- $SRCDIR/java/math/*.java \
- $SRCDIR/kaffe/awt/*.java \
- $SRCDIR/kaffe/beans/editors/*.java \
- $SRCDIR/kaffe/io/*.java \
- $SRCDIR/kaffe/jar/*.java \
- $SRCDIR/kaffe/lang/*.java \
- $SRCDIR/kaffe/management/*.java \
- $SRCDIR/kaffe/net/*.java \
- $SRCDIR/kaffe/net/www/protocol/*.java \
- $SRCDIR/kaffe/net/www/protocol/file/*.java \
- $SRCDIR/kaffe/net/www/protocol/system/*.java \
- $SRCDIR/kaffe/util/*.java \
- $SRCDIR/kaffe/util/log/*.java \
- $SRCDIR/kaffe/util/zip/*.java \
- $SRCDIR/kaffe/applet/*.java \
- $SRCDIR/kaffe/text/dateformat/*.java \
- $SRCDIR/kaffe/text/numberformat/*.java \
-"
+cd $SRCDIR
 
 echo "Compiling classes ..."
-$JAVAC -verbose -d lib -classpath $CPATH $CLASSES
+$JAVAC -verbose -d $LIBDIR -classpath $CPATH ${1+"$@"}

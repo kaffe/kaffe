@@ -1,3 +1,24 @@
+Fri Feb 12 12:42:07 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/javalib/rebuildLib.in: reworked to accept list of
+	files to compile from the command line
+	* developers/update-class-list: new script to update list of Java
+	sources in libraries/javalib/Makefile.am and Makefile.in
+	* libraries/javalib/Makefile.am: updated list of Java sources, and 
+	introduced some new phony targets:
+	(new-classes): run developers/update-class-list from the proper
+	place
+	(compile-classes): run rebuildLib, if there are any sources newer
+	than lib/stamp; same as classes
+	(jar-classes): compile-classes if needed, then create
+	lib/Klasses.jar
+	(build-classes, Klasses): jar-classes if needed, then *copy*
+	lib/Klasses.jar to srcdir
+	* Makefile.am: aliases for the new targets in libraries/javalib,
+	so that they can now be run from the top of the build tree
+	* Makefile.in, libraries/javalib/Makefile.in: regen
+	* libraries/javalib/Klasses.jar: regen
+
 Fri Feb 12 12:36:49 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/javalib/kaffe/text/collator/locale_en_US.java
