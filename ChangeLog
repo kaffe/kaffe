@@ -1,3 +1,13 @@
+2005-02-06  Jim Huang  <jserv@kaffe.org>
+
+	* test/awt/WidgetsDemo/WidgetsDemo.java,
+	test/awt/WidgetsDemo/kaffe_powered.png:
+	Replace Transvirtual's logo with the new one "Powered
+	By Kaffe".
+
+	* test/awt/WidgetsDemo/tvt.jpg:
+	Remove.
+
 2005-02-06  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/native/DateFormat.c,

@@ -37,7 +37,7 @@ public class WidgetsDemo
 	TextArea TCom = new java.awt.TextArea("");
 	TextField TFirst = new java.awt.TextField("");
 	Vector persons = new Vector();
-	Image Img = getToolkit().getImage( "tvt.jpg");
+	Image Img = getToolkit().getImage( "kaffe_powered.png");
 	TextField TLast = new java.awt.TextField("");
 	int[] CCords = { 0, 0, 1000, 0, 12, 33, -280, 171,
 		1000, 0, 1000, 0, -268, 33, -192, 58,
