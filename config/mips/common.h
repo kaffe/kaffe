@@ -9,6 +9,7 @@
  * of this file. 
  *
  * by Alexandre Oliva <oliva@dcc.unicamp.br>
+ * and Edouard G. Parmelan <egp@free.fr>
  */
 
 #ifndef __mips_common_h
@@ -16,19 +17,19 @@
 
 #if NEED_sysdepCallMethod
 
-#if _MIPS_SIM == _MIPS_SIM_NABI32
-
-#define LONG_SYSDEP 1
-#include "n32-sysdepCallMethod.h"
-#undef LONG_SYSDEP
-#include "n32-sysdepCallMethod.h"
-
-#elif _MIPS_SIM == _MIPS_SIM_ABI32
+#if !defined (_MIPS_SIM) || (_MIPS_SIM == _MIPS_SIM_ABI32)
 
 #define LONG_SYSDEP 1
 #include "o32-sysdepCallMethod.h"
 #undef LONG_SYSDEP
 #include "o32-sysdepCallMethod.h"
+
+#elif (_MIPS_SIM == _MIPS_SIM_NABI32)
+
+#define LONG_SYSDEP 1
+#include "n32-sysdepCallMethod.h"
+#undef LONG_SYSDEP
+#include "n32-sysdepCallMethod.h"
 
 #else
 
@@ -45,7 +46,7 @@
  * value 'O' and if they match it's exchanged with value 'N'.
  * We return '1' if the exchange is sucessful, otherwise 0.
  */
-#define	COMPARE_AND_EXCHANGE(A,O,N)		\
+#define COMPARE_AND_EXCHANGE(A,O,N)		\
 ({						\
 	unsigned int tmp, ret;			\
  						\
@@ -58,7 +59,7 @@
 	"	movn	%0, %5, %1\n"		\
 	"	sc	%0, %2\n"		\
 	"	beqz	%0, 1b\n"		\
-	"	nop\n"				\
+	"	sync\n"				\
 	"	.set	mips0\n"		\
 	"	.set	reorder\n"		\
 	: "=&r" (tmp), "=&r" (ret), "=m" (*(A))	\
