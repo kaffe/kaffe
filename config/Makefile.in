@@ -639,6 +639,7 @@ EXTRA_DIST = \
 	powerpc/linux/config.frag \
 	powerpc/linux/md.c \
 	powerpc/linux/md.h \
+	powerpc/linux/sigcontextinfo.h \
 	powerpc/machten/config.frag \
 	powerpc/machten/md.c \
 	powerpc/machten/md.h \
