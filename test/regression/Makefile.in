@@ -153,6 +153,7 @@ TESTS = \
 	tname.java \
 	ttest.java \
 	ThreadInterrupt.java \
+	ThreadState.java \
 	UncaughtException.java \
 	IllegalWait.java \
 	Preempt.java 		\
