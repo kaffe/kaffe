@@ -1,3 +1,13 @@
+2003-02-13 Timothy S Stack <stack@cs.utah.edu>
+
+        * configure.in:
+        Add AM_CONDITIONAL(HAVE_ZIP, ...) so make files can
+        use a regular zip if its available.
+
+        * libraries/javalib/Makefile.am:
+        Use detected zip executable to build the JAR file,
+        needed to work in a cross-compile environment.
+	
 2003-02-12 Timothy S Stack <stack@cs.utah.edu>
 
         * config/i386/oskit/mkimage.sh:

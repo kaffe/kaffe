@@ -2272,6 +2272,14 @@ $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist
 .PHONY: bootstrap
 bootstrap: $(srcdir)/Klasses.jar.bootstrap
 
+if HAVE_ZIP
+JAR_CMD1 = (cd $(srcdir) && $(ZIP) -r rt.tmp.jar META-INF) ; mv $(srcdir)/rt.tmp.jar rt.jar
+JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -DX -r ../rt.jar $(SRCDIRS))
+else
+JAR_CMD1 = $(JAR) -cvf rt.jar -C $(LIBDIR) $(SRCDIRS)
+JAR_CMD2 = $(JAR) -uvf rt.jar -C $(srcdir) META-INF/
+endif
+
 .PHONY: jar-classes
 jar-classes rt.jar: $(LIBDIR)/stamp
 	cp $(srcdir)/kaffe/lang/unicode.idx $(srcdir)/kaffe/lang/unicode.tbl $(LIBDIR)/kaffe/lang
@@ -2279,8 +2287,8 @@ jar-classes rt.jar: $(LIBDIR)/stamp
 	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	for i in $(gnu_regexp_message_bundles) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	rm -f rt.jar
-	$(JAR) -cvf rt.jar -C $(LIBDIR) $(SRCDIRS)
-	$(JAR) -uvf rt.jar -C $(srcdir) META-INF/
+	$(JAR_CMD1)
+	$(JAR_CMD2)
 
 .PHONY: build-classes Klasses
 build-classes Klasses: rt.jar
