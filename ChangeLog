@@ -1,3 +1,24 @@
+2000-10-26  Edouard G. Parmelan  <egp@free.fr>
+
+	* test/regression/TestScript.in: Auto save core file.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.h
+	(jthread_initexceptions): Add missing prototype.
+	(jthread_stackcheck): Add missing function (get it from
+	unix-jthreads).
+
+	* kaffe/kaffevm/exception.c: Use header file thread-impl.h in place of
+	jthread.h to retreive prototype of function jthread_initexceptions().
+
+	* kaffe/kaffevm/mem/gc-incremental.h: Declare gc_heap_base and
+	gc_block_base as uintp.
+
+	* kaffe/kaffevm/mem/gc-mem.c: Declare gc_heap_base and
+	gc_block_base as uintp.  Simplify my previous cast of -1 to
+	pointer.
+	(gc_primitive_reserve): Declare size as size_t to avoid lost of
+	precision.
+	
 Wed Oct 25 10:23:10 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* test/regression/CLTestDelegate.java,
@@ -9,8 +30,8 @@ Wed Oct 25 10:23:10 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 2000-10-24  Edouard G. Parmelan  <egp@free.fr>
 
-	* kaffe/kaffevm/locks.h: Fix include header for thread
-	implementation and unix-pthreads
+	* kaffe/kaffevm/locks.h: Fix include header for thread implementation
+	and unix-pthreads.
 
 Wed Oct 11 10:20:07 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
