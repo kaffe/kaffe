@@ -1,3 +1,31 @@
+Tue Mar  9 23:20:15 PST 1999  Aaron Place <beavis@ihug.co.nz>
+
+	* libraries/javalib/java/beans/{FeatureDescriptor,GenericBeanInfo}.java,
+	libraries/javalib/java/io/FileDescriptor.java,
+	libraries/javalib/java/lang/Math.java,
+	libraries/javalib/java/net/{InetAddressImpl,Socket,SocketOptions}.java,
+	libraries/javalib/java/text/RuleBasedCollator.java,
+	libraries/javalib/java/util/Date.java: fixed access modifiers
+	and checked exceptions
+	* libraries/javalib/java/beans/Introspector.java,
+	libraries/javalib/java/net/URLEncoder.java,
+	libraries/javalib/java/sql/{DriverManager,Types}.java,
+	libraries/javalib/java/text/CollationElementIterator.java:
+	libraries/javalib/java/text/CollationKey.java: add a private
+	constructor.
+	* libraries/javalib/java/lang/Character.java: changed most
+	public fields to type byte
+	* libraries/javalib/java/text/CharacterIterator.java,
+	libraries/javalib/java/text/CollationElementIterator.java: type changes
+	* libraries/javalib/java/beans/SimpleBeanInfo.java: add entry for
+	loadImage(String) (not a complete implementation though)
+	* libraries/javalib/java/text/Collator.java: update getInstance(Locale)
+	* libraries/javalib/java/text/StringCharacterIterator.java: update
+	setText(int)
+	* libraries/javalib/java/text/{DecimalFormat,DecimalFormatSymbols,
+	MessageFormat,NumberFormat,SimpleDateFormat}.java: method name and
+	spelling corrections
+
 Tue Mar  9 18:40:27 PST 1999  Moses DeJong <dejong@cs.umn.edu>
 
 	* developers/autogen.sh: new file
