@@ -1930,7 +1930,7 @@ dprintf("switch from %p to %p\n", lastThread, currentJThread); )
  *
  */
 
-
+#if 0
 static void
 removeQueueFromBlockQueue(jthread *jtid, KaffeNodeQueue *queue)
 {
@@ -1946,6 +1946,7 @@ removeQueueFromBlockQueue(jthread *jtid, KaffeNodeQueue *queue)
     }
   }
 }
+#endif
 
 /*
  * resume all threads blocked on a given queue

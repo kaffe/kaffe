@@ -278,6 +278,7 @@ Klasses_jar_SRCS = \
 	$(gnu_java_lang_SRCS) \
 	$(gnu_java_lang_reflect_SRCS) \
 	$(gnu_java_locale_SRCS) \
+	$(gnu_java_io_SRCS) \
 	$(gnu_java_nio_SRCS) \
 	$(gnu_java_nio_charset_SRCS) \
 	$(gnu_java_security_SRCS) \
@@ -437,6 +438,10 @@ gnu_java_locale_SRCS = \
 	gnu/java/locale/Calendar_en.java \
 	gnu/java/locale/Calendar.java \
 	gnu/java/locale/Calendar_nl.java
+
+gnu_java_io_SRCS = \
+	gnu/java/io/NullOutputStream.java \
+	gnu/java/io/ObjectIdentityWrapper.java
 
 gnu_java_nio_SRCS = \
 	gnu/java/nio/DatagramChannelImpl.java \

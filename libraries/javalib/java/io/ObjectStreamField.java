@@ -1,190 +1,171 @@
-/*
- * Java core library component.
- *
- * Copyright (c) 2002
- *      Patrick Tullmann <pat_kaffe@tullmann.org>
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
+/* ObjectStreamField.java -- Class used to store name and class of fields
+   Copyright (C) 1998, 1999, 2003 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+ 
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
 
 package java.io;
 
-/**
- * Try to keep this class relatively light-weight since its gets pulled in by
- * lots of core classes that use it to define Sun-compatible serialization.
- */
-public class ObjectStreamField
-implements Comparable
+import gnu.java.lang.reflect.TypeSignature;
+
+// XXX doc
+public class ObjectStreamField implements Comparable
 {
-	private final Class type;
-	private final String name;
-	private final boolean unshared; // XXX unimplemented
+  private String name;
+  private Class type;
+  private String typename;
+  private int offset = -1; // XXX make sure this is correct
+  private boolean unshared;
+  private boolean persistent = false;
+  private boolean toset = true;
 
-	// Filled in on demand when getTypeString() is invoked
-	private String typeStr;
+  public ObjectStreamField (String name, Class type)
+  {
+    this (name, type, false);
+  }
 
-	// XXX this is 
-	// a byte so that native code can use it without thinking too much.
-	private final byte typeCode;
+  public ObjectStreamField (String name, Class type, boolean unshared)
+  {
+    if (name == null)
+      throw new NullPointerException();
 
-	// These are set in ObjectStreamClassImpl.c:
-	int offset;
-	boolean typeMismatch;
+    this.name = name;
+    this.type = type;
+    this.typename = TypeSignature.getEncodingOfClass(type);
+    this.unshared = unshared;
+  }
+ 
+  /**
+   * There're many cases you can't get java.lang.Class from typename 
+   * if your context
+   * class loader can't load it, then use typename to construct the field
+   */
+  ObjectStreamField (String name, String typename){
+    this.name = name;
+    this.typename = typename;
+    try
+      {
+        type = TypeSignature.getClassForEncoding(typename);
+      }
+    catch(ClassNotFoundException e)
+      {
+        type = Object.class; //FIXME: ???
+      }
+  }
+  
+  public String getName ()
+  {
+    return name;
+  }
 
-	// NOTE: Native code in ObjectStreamClassImpl.c:deepCopyFixup() creates instances
-	// of this class without using the constructor.
+  public Class getType ()
+  {
+    return type;
+  }
 
-	public ObjectStreamField(String name, Class type)
-	{
-		this(name, type, false);
-	}
-	
-	// unshared controls use of readUnshared/writeUnshared vs. readObject/writeObject
-	public ObjectStreamField(String name, Class type, boolean unshared)
-	{
-		if (name == null)
-			throw new NullPointerException();
-		this.type = type;
-		this.name = name;
-		this.unshared = unshared;
-		this.offset = -1;
-		this.typeMismatch = true; // irrelevant in user-created Fields
+  public char getTypeCode ()
+  {
+    return typename.charAt (0);
+  }
 
-		// Compute the typeCode
-		if (this.type.isArray())
-			this.typeCode = (byte)'[';
-		else if (this.type.isPrimitive())
-		{
-			if (this.type == boolean.class)
-				this.typeCode = (byte)'Z';
-			else if (this.type == long.class)
-				this.typeCode = (byte)'J';
-			else if (this.type == int.class)
-				this.typeCode = (byte)'I';
-			else if (this.type == short.class)
-				this.typeCode = (byte)'S';
-			else if (this.type == byte.class)
-				this.typeCode = (byte)'B';
-			else if (this.type == char.class)
-				this.typeCode = (byte)'C';
-			else if (this.type == float.class)
-				this.typeCode = (byte)'F';
-			else if (this.type == double.class)
-				this.typeCode = (byte)'D';
-			else 
-				// Shouldn't ever happen:
-				this.typeCode = (byte)'V';
-		}
-		else
-			this.typeCode = (byte)'L';
+  public String getTypeString ()
+  {
+    // use intern()
+    if (this.type.isPrimitive())
+      return null;
+    return typename.intern();
+  }
 
-		// this is filled in on demand:
-		this.typeStr = null;
-	}
+  public int getOffset ()
+  {
+    return offset;
+  }
 
-	// Package-private constructor used by ObjectStreamClass to represent
-	// the fields encoded instream.
-	/*package*/ ObjectStreamField(String name, byte typeCode, String typeStr)
-	{
-		if (name == null)
-			throw new NullPointerException();
-		if (typeCode == 0)
-			throw new InternalError("Illegal typeCode (0)");
-		this.name = name;
-		this.type = null; // XXX
-		this.typeStr = typeStr; // will be null for primitive types
-		this.typeCode = typeCode;
-		this.typeMismatch = false; // setMismatch will override
-		this.offset = -1;
-		this.unshared = false;
-	}
+  protected void setOffset (int off)
+  {
+    offset = off;
+  }
 
-	public String getName()
-	{
-		return this.name;
-	}
-	
-	/*package*/ void setMismatch(boolean m)
-	{
-		this.typeMismatch = m;
-	}
+  public boolean isUnshared ()
+  {
+    return unshared;
+  }
 
-	/*package*/ void setIgnored()
-	{
-		this.offset = -1;
-	}
+  public boolean isPrimitive ()
+  {
+    return type.isPrimitive ();
+  }
 
-	public Class getType()
-	{
-		return this.type;
-	}
-	
-	public char getTypeCode()
-	{
-		return (char)this.typeCode;
-	}
+  public int compareTo (Object o)
+  {
+    ObjectStreamField f = (ObjectStreamField)o;
+    boolean this_is_primitive = isPrimitive ();
+    boolean f_is_primitive = f.isPrimitive ();
 
-	public String getTypeString()
-	{
-		if (this.type == null)
-			return this.typeStr;
+    if (this_is_primitive && !f_is_primitive)
+      return -1;
 
-		if (this.type.isPrimitive())
-			return null;
-		
-		if (this.typeStr == null)
-		{
-			// XXX this is pretty lame because internally, Kaffe
-			// stores the class name the right format, and it
-			// will allocate a temporary object to return to us!
-			String baseStr;
-			if (this.type.isArray())
-				baseStr = this.type.getName();
-			else // reference type
-				baseStr = "L" + this.type.getName() + ";";
-			// See JDC bug 4405949 (for intern())
-			this.typeStr = baseStr.replace('.','/').intern();
-		}
+    if (!this_is_primitive && f_is_primitive)
+      return 1;
 
-		return this.typeStr;
-	}
+    return getName ().compareTo (f.getName ());
+  }
 
-	public boolean isUnshared()
-	{
-		return this.unshared;
-	}
+  protected void setPersistent(boolean persistent)
+  {
+    this.persistent = persistent;
+  }
 
-	protected void setOffset(int o)
-	{
-		this.offset = o;
-	}
+  protected boolean isPersistent()
+  {
+    return persistent;
+  }
 
-	public int getOffset()
-	{
-		return this.offset;
-	}
+  protected void setToSet(boolean toset)
+  {
+    this.toset = toset;
+  }
 
-	public int compareTo(Object obj)
-	{
-		ObjectStreamField other = (ObjectStreamField)obj;
+  protected boolean isToSet()
+  {
+    return toset;
+  }
 
-		/*
-		 * References beat primitives.  Name is secondary.
-		 */
-		if (other.type.isPrimitive()
-		    && (!this.type.isPrimitive()))
-			return 1;
-		else if (this.type.isPrimitive())
-			return -1;
-		return this.name.compareTo(other.name);
-	}
-
-	public String toString()
-	{
-		return this.type.getName() + " " +this.getName() 
-			+ "; //"
-			+ " @" +offset
-			+ (this.unshared ? ", unshared" : "");
-	}
+  public String toString ()
+  {
+    return "ObjectStreamField< " + type + " " + name + " >";
+  }
 }
+

@@ -185,7 +185,10 @@ public Object getOption(int option) throws SocketException {
 	case TCP_NODELAY:
 		return new Boolean(socketGetOption(option) != 0);
 	case SO_TIMEOUT:
-		return new Integer(timeout);
+		if (timeout == -1)
+			return new Integer(0);
+		else
+			return new Integer(timeout);
 	case SO_BINDADDR:
 		int val = socketGetOption(option);
 		try {

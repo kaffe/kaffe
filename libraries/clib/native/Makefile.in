@@ -250,7 +250,7 @@ IO_SRCS = \
 		ByteToCharIconv.c \
 		CharToByteDefault.c \
 		CharToByteIconv.c \
-		ObjectStreamClassImpl.c
+		ObjectInputStream.c
 
 
 LANG_SRCS = \
@@ -309,8 +309,7 @@ LTLIBRARIES = $(native_LTLIBRARIES)
 
 libnative_la_DEPENDENCIES =
 am__objects_1 = ByteToCharDefault.lo ByteToCharIconv.lo \
-	CharToByteDefault.lo CharToByteIconv.lo \
-	ObjectStreamClassImpl.lo
+	CharToByteDefault.lo CharToByteIconv.lo ObjectInputStream.lo
 am__objects_2 = Class.lo ClassLoader.lo Compiler.lo Double.lo Float.lo \
 	Math.lo MemoryAdvice.lo NativeLibrary.lo Object.lo \
 	PrimordialClassLoader.lo RMIHashes.lo Runtime.lo String.lo \
@@ -342,7 +341,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/Method.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/NativeLibrary.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Object.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ObjectStreamClassImpl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ObjectInputStream.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/PrimordialClassLoader.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/RMIHashes.Plo ./$(DEPDIR)/Runtime.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/String.Plo ./$(DEPDIR)/System.Plo \
@@ -425,7 +424,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Method.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NativeLibrary.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Object.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ObjectStreamClassImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ObjectInputStream.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrimordialClassLoader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RMIHashes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Runtime.Plo@am__quote@

@@ -225,7 +225,6 @@ java/text/ChoiceFormat.class
 # errors.  That hasn't been tested.
 
 # Needed for kaffeh run when building vm and native libs
-java/io/ObjectOutputStream.class
 java/io/RandomAccessFile.class
 java/net/DatagramPacket.class
 java/net/InetAddress.class
@@ -260,8 +259,6 @@ java/lang/Compiler.class
 java/lang/reflect/Field.class
 kaffe/lang/UNIXProcess.class
 java/net/DatagramSocketImpl.class
-java/io/ObjectStreamClass.class
-java/io/ObjectStreamField.class
 java/lang/Process.class
 kaffe/security/provider/UpdateDigest.class
 java/security/MessageDigest.class

@@ -41,15 +41,13 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_ThreadGroup.h \
 	java_lang_Throwable.h \
 	java_lang_VMThrowable.h \
+	java_lang_SecurityManager.h \
 	java_io_File.h \
 	java_io_FileDescriptor.h \
 	java_io_FileInputStream.h \
 	java_io_FileOutputStream.h \
 	java_io_InputStream.h \
 	java_io_ObjectInputStream.h \
-	java_io_ObjectOutputStream.h \
-	java_io_ObjectStreamClass.h \
-	java_io_ObjectStreamField.h \
 	java_io_PrintStream.h \
 	java_io_RandomAccessFile.h \
 	java_lang_Boolean.h \
@@ -97,7 +95,7 @@ NOINSTALL_DERIVED_HDRS = \
 	kaffe_applet_AudioPlayer.h \
 	kaffe_lang_PrimordialClassLoader.h \
 	kaffe_lang_ThreadStack.h \
-	kaffe_management_Classpath.h 
+	kaffe_management_Classpath.h
 
 DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
 
@@ -182,7 +180,7 @@ include_HEADERS = \
 
 nodist_pkginclude_HEADERS = \
 	$(INSTALL_DERIVED_HDRS) \
-	$(INSTALL_JNI_DERIVED_HDRS) \
+	$(INSTALL_JNI_DERIVED_HDRS)
 
 pkginclude_HEADERS = \
 	java_lang_Object.h \

@@ -311,3 +311,5 @@ kaffe/util/Ptr.java
 kaffe/util/UNIXTimeZone.java
 kaffe/util/UTF8.java
 kaffe/util/zip/SwitchInflater.java
+gnu/java/io/ObjectIdentityWrapper.java
+gnu/java/io/NullOutputStream.java

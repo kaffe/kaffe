@@ -1,1289 +1,777 @@
-/*
- * Java core library component.
- *
- * Copyright (c) 1997, 1998, 1999
- *      Transvirtual Technologies, Inc.  All rights reserved.
- * Copyright (c) 2002
- *	Patrick Tullmann, <pat_kaffe@tullmann.org>
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
+/* ObjectStreamClass.java -- Class used to write class information
+   about serialized objects.
+   Copyright (C) 1998, 1999, 2000, 2001, 2003  Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+ 
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
 
 package java.io;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.Security;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Hashtable;
-import java.util.ArrayList;
+import java.util.Vector;
+import gnu.java.io.NullOutputStream;
+import gnu.java.lang.reflect.TypeSignature;
+//import gnu.java.security.provider.Gnu;
 
-/*
- * TODO:
- *
- * support useProtocolVersion 
- * writeReplace / readResolve
- * enforce context restrictions on reset()
- * "unshared" objects
- * Strings larger than 64K
- * Better exception chaining/reporting
- * Security checks
- * Support overriding implementation: writeObjectOverride, no-arg constructor, etc...
- * Support for dynamic proxy classes??
- * "AnnotateClass" support
- * Do inner classes serialize correctly?
- * Replace all the native methods with pure Java (and lots of reflection).
- */
-public class ObjectStreamClass 
-implements Serializable 
+
+public class ObjectStreamClass implements Serializable
 {
-	// --- Static state 
+  /**
+     Returns the <code>ObjectStreamClass</code> for <code>cl</code>.
+     If <code>cl</code> is null, or is not <code>Serializable</code>,
+     null is returned.  <code>ObjectStreamClass</code>'s are memorized;
+     later calls to this method with the same class will return the
+     same <code>ObjectStreamClass</code> object and no recalculation
+     will be done.
 
-	public static ObjectStreamField[] NO_FIELDS = new ObjectStreamField[0];
+     @see java.io.Serializable
+  */
+  public static ObjectStreamClass lookup (Class cl)
+  {
+    if (cl == null)
+      return null;
+    if (! (Serializable.class).isAssignableFrom (cl))
+      return null;
 
-	//private static final boolean DOTRACE = Boolean.getBoolean("kaffe.debug.serialout") || Boolean.getBoolean("kaffe.debug.serialin");
-	private static final boolean DOTRACE = false;
+    return lookupForClassObject (cl);
+  }
 
-	private static final long serialVersionUID = -6120832682080437368L;
+  /**
+   * This lookup for internal use by ObjectOutputStream.  Suppose
+   * we have a java.lang.Class object C for class A, though A is not
+   * serializable, but it's okay to serialize C.
+   */
+  static ObjectStreamClass lookupForClassObject (Class cl)
+  {
+    if (cl == null)
+      return null;
 
-	// Mapping from Class -> ObjectStreamClass for that class.
-	private static final Hashtable streamClasses = new Hashtable();
+    ObjectStreamClass osc = (ObjectStreamClass)classLookupTable.get (cl);
 
-	static {
-		init0();
+    if (osc != null)
+      return osc;
+    else
+    {
+      osc = new ObjectStreamClass (cl);
+      classLookupTable.put (cl, osc);
+      return osc;
+    }
+  }
+
+
+  /**
+     Returns the name of the class that this
+     <code>ObjectStreamClass</code> represents.
+  */
+  public String getName ()
+  {
+    return name;
+  }
+
+
+  /**
+     Returns the class that this <code>ObjectStreamClass</code>
+     represents.  Null could be returned if this
+     <code>ObjectStreamClass</code> was read from an
+     <code>ObjectInputStream</code> and the class it represents cannot
+     be found or loaded.
+
+     @see java.io.ObjectInputStream
+  */
+  public Class forClass ()
+  {
+    return clazz;
+  }
+
+
+  /**
+     Returns the serial version stream-unique identifier for the class
+     represented by this <code>ObjectStreamClass</code>.  This SUID is
+     either defined by the class as <code>static final long
+     serialVersionUID</code> or is calculated as specified in
+     Javasoft's "Object Serialization Specification" XXX: add reference
+  */
+  public long getSerialVersionUID ()
+  {
+    return uid;
+  }
+
+
+  // Returns the serializable (non-static and non-transient) Fields
+  // of the class represented by this ObjectStreamClass.  The Fields
+  // are sorted by name.
+  // XXX doc
+  public ObjectStreamField[] getFields ()
+  {
+    ObjectStreamField[] copy = new ObjectStreamField[ fields.length ];
+    System.arraycopy (fields, 0, copy, 0, fields.length);
+    return copy;
+  }
+
+
+  // XXX doc
+  // Can't do binary search since fields is sorted by name and
+  // primitiveness.
+  public ObjectStreamField getField (String name)
+  {
+    for (int i=0; i < fields.length; i++)
+      if (fields[i].getName ().equals (name))
+	return fields[i];
+    return null;
+  }
+
+
+  /**
+   * Returns a textual representation of this
+   * <code>ObjectStreamClass</code> object including the name of the
+   * class it represents as well as that class's serial version
+   * stream-unique identifier.
+   *
+   * @see #getSerialVersionUID()
+   * @see #getName()
+   */
+  public String toString ()
+  {
+    return "java.io.ObjectStreamClass< " + name + ", " + uid + " >";
+  }
+
+
+  // Returns true iff the class that this ObjectStreamClass represents
+  // has the following method:
+  //
+  // private void writeObject (ObjectOutputStream)
+  //
+  // This method is used by the class to override default
+  // serialization behavior.
+  boolean hasWriteMethod ()
+  {
+    return (flags & ObjectStreamConstants.SC_WRITE_METHOD) != 0;
+  }
+
+
+  // Returns true iff the class that this ObjectStreamClass represents
+  // has the following method:
+  //
+  // private void readObject (ObjectOutputStream)
+  //
+  // This method is used by the class to override default
+  // serialization behavior.
+  boolean hasReadMethod ()
+  {
+      try
+	{
+	  Class[] readObjectParams = { ObjectInputStream.class };
+	  forClass ().getDeclaredMethod ("readObject", readObjectParams);
+	  return true;
 	}
-	
-	// -- Inner Classes
+      catch (NoSuchMethodException e)
+	{
+	  return false;
+	}
+  }
 
-	/** 
-	 * Temporary type used for reading in and processing in-stream
-	 * type descriptions.
+
+  // Returns true iff the class that this ObjectStreamClass represents
+  // implements Serializable but does *not* implement Externalizable.
+  boolean isSerializable ()
+  {
+    return (flags & ObjectStreamConstants.SC_SERIALIZABLE) != 0;
+  }
+
+
+  // Returns true iff the class that this ObjectStreamClass represents
+  // implements Externalizable.
+  boolean isExternalizable ()
+  {
+    return (flags & ObjectStreamConstants.SC_EXTERNALIZABLE) != 0;
+  }
+
+
+  // Returns the <code>ObjectStreamClass</code> that represents the
+  // class that is the superclass of the class this
+  // <code>ObjectStreamClass</code> represents.  If the superclass is
+  // not Serializable, null is returned.
+  ObjectStreamClass getSuper ()
+  {
+    return superClass;
+  }
+
+
+  // returns an array of ObjectStreamClasses that represent the super
+  // classes of CLAZZ and CLAZZ itself in order from most super to
+  // CLAZZ.  ObjectStreamClass[0] is the highest superclass of CLAZZ
+  // that is serializable.
+  static ObjectStreamClass[] getObjectStreamClasses (Class clazz)
+  {
+    ObjectStreamClass osc = ObjectStreamClass.lookup (clazz);
+
+    ObjectStreamClass[] ret_val;
+
+    if (osc == null)
+      return new ObjectStreamClass[0];
+    else
+    {
+      Vector oscs = new Vector ();
+
+      while (osc != null)
+      {
+	oscs.addElement (osc);
+	osc = osc.getSuper ();
+      }
+
+      int count = oscs.size ();
+      ObjectStreamClass[] sorted_oscs = new ObjectStreamClass[ count ];
+
+      for (int i = count - 1; i >= 0; i--)
+	sorted_oscs[ count - i - 1 ] = (ObjectStreamClass)oscs.elementAt (i);
+
+      return sorted_oscs;
+    }
+  }
+
+
+  // Returns an integer that consists of bit-flags that indicate
+  // properties of the class represented by this ObjectStreamClass.
+  // The bit-flags that could be present are those defined in
+  // ObjectStreamConstants that begin with `SC_'
+  int getFlags ()
+  {
+    return flags;
+  }
+
+
+  ObjectStreamClass (String name, long uid, byte flags,
+		     ObjectStreamField[] fields)
+  {
+    this.name = name;
+    this.uid = uid;
+    this.flags = flags;
+    this.fields = fields;
+  }
+
+  void setClass (Class cl, ObjectStreamClass superClass) throws InvalidClassException
+  {
+    this.clazz = cl;
+
+    long class_uid = getClassUID (cl);
+    if (uid == 0)
+      uid = class_uid;
+    else
+      {
+	// Check that the actual UID of the resolved class matches the UID from 
+	// the stream.    
+	if (uid != class_uid)
+	  {
+	    String msg = cl + 
+	      ": Local class not compatible: stream serialVersionUID="
+	      + uid + ", local serialVersionUID=" + class_uid;
+	    throw new InvalidClassException (msg);
+	  }
+      }
+
+    isProxyClass = clazz != null && Proxy.isProxyClass (clazz);
+    this.superClass = superClass;
+    calculateOffsets ();
+    
+    try
+      {
+	ObjectStreamField[] exportedFields = getSerialPersistentFields (clazz);  
+
+	if (exportedFields == null)
+	  return;
+
+	ObjectStreamField[] newFieldList = new ObjectStreamField[exportedFields.length + fields.length];
+	int i, j, k;
+
+	/* We now check the import fields against the exported fields.
+	 * There should not be contradiction (e.g. int x and String x)
+	 * but extra virtual fields can be added to the class.
 	 */
-	private static class InStreamTypeDescriptor
+
+	Arrays.sort(exportedFields);
+
+	i = 0; j = 0; k = 0;
+	while (i < fields.length && j < exportedFields.length)
 	{
-		String fieldName;
-		String typeName;
-		byte typeCode;
+	  int comp = fields[i].getName().compareTo (exportedFields[j].getName());
+
+	  if (comp < 0)
+	    {
+	      newFieldList[k] = fields[i];
+	      fields[i].setPersistent(false);
+	      fields[i].setToSet(false);
+	      i++;
+	    }
+	  else if (comp > 0)
+	    {
+	      /* field not found in imported fields. We add it
+	       * in the list of supported fields.
+	       */
+	      newFieldList[k] = exportedFields[j];
+	      newFieldList[k].setPersistent(true);
+	      newFieldList[k].setToSet(false);
+	      j++;
+	    }
+	  else
+	    {
+	      if (!fields[i].getType().equals (exportedFields[j].getType()))
+		throw new InvalidClassException (
+			    "serialPersistentFields must be compatible with" +
+			    " imported fields (about " + fields[i].getName() + ")");
+	      newFieldList[k] = fields[i];
+	      fields[i].setPersistent(true);
+	      i++;
+	      j++;
+	    }
+	  k++;
 	}
 
-	/** @see #putField */
-	private static class ConcretePutField
-	extends ObjectOutputStream.PutField
+	if (i < fields.length)
+	  for (;i<fields.length;i++,k++)
+	  {
+	    fields[i].setPersistent(false);
+	    fields[i].setToSet(false);
+	    newFieldList[k] = fields[i];
+	  }
+	else
+	  if (j < exportedFields.length)
+	    for (;j<exportedFields.length;j++,k++)
+	      {
+		exportedFields[j].setPersistent(true);
+		exportedFields[j].setToSet(false);
+		newFieldList[k] = exportedFields[j];
+	      }
+	
+	fields = new ObjectStreamField[k];
+	System.arraycopy (newFieldList, 0, fields, 0, k);
+      }
+    catch (NoSuchFieldException ignore)
+      {
+	return;
+      }
+    catch (IllegalAccessException ignore)
+      {
+	return;
+      }
+  }
+
+  void setSuperclass (ObjectStreamClass osc)
+  {
+    superClass = osc;
+  }
+
+
+  void calculateOffsets ()
+  {
+    int i;
+    ObjectStreamField field;
+    primFieldSize = 0;
+    int fcount = fields.length;
+    for (i = 0; i < fcount; ++ i)
+    {
+      field = fields[i];
+
+      if (! field.isPrimitive ())
+	break;
+
+      field.setOffset (primFieldSize);
+      switch (field.getTypeCode ())
+      {
+	case 'B':
+	case 'Z':
+	  ++ primFieldSize;
+	  break;
+	case 'C':
+	case 'S':
+	  primFieldSize += 2;
+	  break;
+	case 'I':
+	case 'F':
+	  primFieldSize += 4;
+	  break;
+	case 'D':
+	case 'J':
+	  primFieldSize += 8;
+	  break;
+      }
+    }
+
+    for (objectFieldCount = 0; i < fcount; ++ i)
+      fields[i].setOffset (objectFieldCount++);
+  }
+
+
+  private ObjectStreamClass (Class cl)
+  {
+    uid = 0;
+    flags = 0;
+    isProxyClass = Proxy.isProxyClass (cl);
+
+    clazz = cl;
+    name = cl.getName ();
+    setFlags (cl);
+    setFields (cl);
+    // to those class nonserializable, its uid field is 0
+    if ( (Serializable.class).isAssignableFrom (cl) && !isProxyClass)
+      uid = getClassUID (cl);
+    superClass = lookup (cl.getSuperclass ());
+  }
+
+
+  // Sets bits in flags according to features of CL.
+  private void setFlags (Class cl)
+  {
+    if ((java.io.Externalizable.class).isAssignableFrom (cl))
+      flags |= ObjectStreamConstants.SC_EXTERNALIZABLE;
+    else if ((java.io.Serializable.class).isAssignableFrom (cl))
+      // only set this bit if CL is NOT Externalizable
+      flags |= ObjectStreamConstants.SC_SERIALIZABLE;
+
+    try
+      {
+	Method writeMethod = cl.getDeclaredMethod ("writeObject",
+						   writeMethodArgTypes);
+	int modifiers = writeMethod.getModifiers ();
+	
+	if (writeMethod.getReturnType () == Void.TYPE
+	    && Modifier.isPrivate (modifiers)
+	    && !Modifier.isStatic (modifiers))
+	  flags |= ObjectStreamConstants.SC_WRITE_METHOD;
+      }
+    catch (NoSuchMethodException oh_well)
+      {
+      }
+  }
+
+
+  // Sets fields to be a sorted array of the serializable fields of
+  // clazz.
+  private void setFields (Class cl)
+  {
+    if (! isSerializable () || isExternalizable ())
+    {
+      fields = NO_FIELDS;
+      return;
+    }
+
+    try
+      {
+	fields = getSerialPersistentFields (cl);
+	if (fields != null) {
+	  Arrays.sort (fields);
+	  calculateOffsets ();
+	  return;
+	}
+      }
+    catch (NoSuchFieldException ignore)
+      {}
+    catch (IllegalAccessException ignore)
+      {}
+
+    int num_good_fields = 0;
+    Field[] all_fields = cl.getDeclaredFields ();
+
+    int modifiers;
+    // set non-serializable fields to null in all_fields
+    for (int i=0; i < all_fields.length; i++)
+    {
+      modifiers = all_fields[i].getModifiers ();
+      if (Modifier.isTransient (modifiers)
+	  || Modifier.isStatic (modifiers))
+	all_fields[i] = null;
+      else
+	num_good_fields++;
+    }
+
+    // make a copy of serializable (non-null) fields
+    fields = new ObjectStreamField[ num_good_fields ];
+    for (int from=0, to=0; from < all_fields.length; from++)
+      if (all_fields[from] != null)
+      {
+	Field f = all_fields[from];
+	fields[to] = new ObjectStreamField (f.getName (), f.getType ());
+	to++;
+      }
+
+    Arrays.sort (fields);
+    calculateOffsets ();
+  }
+
+  // Returns the serial version UID defined by class, or if that
+  // isn't present, calculates value of serial version UID.
+  private long getClassUID (Class cl)
+  {
+    try
+      {
+	// Use getDeclaredField rather than getField, since serialVersionUID
+	// may not be public AND we only want the serialVersionUID of this
+	// class, not a superclass or interface.
+	Field suid = cl.getDeclaredField ("serialVersionUID");
+	suid.setAccessible(true);
+	int modifiers = suid.getModifiers ();
+	
+	if (Modifier.isStatic (modifiers)
+	    && Modifier.isFinal (modifiers)
+	    && suid.getType() == Long.TYPE)
+	  return suid.getLong (null);
+      }
+    catch (NoSuchFieldException ignore)
+      {}
+    catch (IllegalAccessException ignore)
+      {}
+    
+    // cl didn't define serialVersionUID, so we have to compute it
+    try
+      {
+	MessageDigest md;
+	try 
+	  {
+	    md = MessageDigest.getInstance ("SHA");
+	  }
+	catch (NoSuchAlgorithmException e)
+	  {
+	    // If a provider already provides SHA, use it; otherwise, use this.
+	    //	  Gnu gnuProvider = new Gnu();
+	    //	  Security.addProvider(gnuProvider);
+	    //	  md = MessageDigest.getInstance ("SHA");
+	    throw e;
+	  }
+	
+	DigestOutputStream digest_out =
+	  new DigestOutputStream (nullOutputStream, md);
+	DataOutputStream data_out = new DataOutputStream (digest_out);
+	
+	data_out.writeUTF (cl.getName ());
+	
+	int modifiers = cl.getModifiers ();
+	// just look at interesting bits
+	modifiers = modifiers & (Modifier.ABSTRACT | Modifier.FINAL
+				 | Modifier.INTERFACE | Modifier.PUBLIC);
+	data_out.writeInt (modifiers);
+	
+	// Pretend that an array has no interfaces, because when array
+	// serialization was defined (JDK 1.1), arrays didn't have it.
+	if (! cl.isArray ())
 	{
-		private static abstract class Value
-		{
-			abstract void put(ObjectOutputStream out) throws IOException;
-		}
-
-		private final ObjectStreamField[] fields;
-
-		/** Value to write for each field. */
-		private final Value[] values;
-
-		ConcretePutField(ObjectStreamField[] fields)
-		{
-			// share fields array with creator
-			this.fields = fields;
-			this.values = new Value[fields.length];
-		}
-
-		private int findIndex(String fname)
-			throws IllegalArgumentException
-		{
-			if (fname == null)
-				throw new NullPointerException("null field name");
-
-			for (int i = 0; i < fields.length; i++)
-			{
-				if (fields[i].getName().equals(fname))
-					return i;
-			}
-			
-			throw new IllegalArgumentException(
-				"Field `" +fname+ "' is not a serializable field.");
-		}
-
-		private static void requireType(ObjectStreamField f, Class c)
-			throws IllegalArgumentException
-		{
-			if (! f.getType().equals(c))
-				throw new IllegalArgumentException("Field `" +f.getName()+ "' has type " +c.getName());
-		}
-
-		public void put(String fname, final boolean fvalue)
-		{
-			int i = findIndex(fname);
-			requireType(fields[i], boolean.class);
-			values[i] = new Value() {
-					void put(ObjectOutputStream out) throws IOException
-					{
-						out.writeBoolean(fvalue);
-					}
-				};
-		}
-		
-		public void put(String fname, final byte fvalue)
-		{
-			int i = findIndex(fname);
-			requireType(fields[i], byte.class);
-			values[i] = new Value() {
-					void put(ObjectOutputStream out) throws IOException
-					{
-						out.writeByte(fvalue);
-					}
-				};
-		}
-		
-		public void put(String fname, final char fvalue)
-		{
-			int i = findIndex(fname);
-			requireType(fields[i], char.class);
-			values[i] = new Value() {
-					void put(ObjectOutputStream out) throws IOException
-					{
-						out.writeChar(fvalue);
-					}
-				};
-		}
-		
-		public void put(String fname, final short fvalue)
-		{
-			int i = findIndex(fname);
-			requireType(fields[i], short.class);
-			values[i] = new Value() {
-					void put(ObjectOutputStream out) throws IOException
-					{
-						out.writeShort(fvalue);
-					}
-				};
-		}
-		
-		public void put(String fname, final int fvalue)
-		{
-			int i = findIndex(fname);
-			if (DOTRACE) System.out.println("PutField.put(" +fname+ ", (int)" +fvalue+ ") -> f=" +fields[i]);
-			requireType(fields[i], int.class);
-			if (DOTRACE) System.out.println("PutField.put(" +fname+ ", (int)" +fvalue+ ") -> OK!");
-			values[i] = new Value() {
-					void put(ObjectOutputStream out) throws IOException
-					{
-						out.writeInt(fvalue);
-					}
-				};
-		}
-		
-		public void put(String fname, final long fvalue)
-		{
-			int i = findIndex(fname);
-			requireType(fields[i], long.class);
-			values[i] = new Value() {
-					void put(ObjectOutputStream out) throws IOException
-					{
-						out.writeLong(fvalue);
-					}
-				};
-		}
-		
-		public void put(String fname, final float fvalue)
-		{
-			int i = findIndex(fname);
-			requireType(fields[i], float.class);
-			values[i] = new Value() {
-					void put(ObjectOutputStream out) throws IOException
-					{
-						out.writeFloat(fvalue);
-					}
-				};
-		}
-		
-		public void put(String fname, final double fvalue)
-		{
-			int i = findIndex(fname);
-			requireType(fields[i], double.class);
-			values[i] = new Value() {
-					void put(ObjectOutputStream out) throws IOException
-					{
-						out.writeDouble(fvalue);
-					}
-				};
-		}
-		
-		public void put(String fname, final Object fvalue)
-		{
-			int i = findIndex(fname);
-			if (fields[i].getType().isPrimitive())
-				throw new IllegalArgumentException("Field `" +fname+ "' has primitive type "
-								   +fields[i].getType().getName());
-			values[i] = new Value() {
-					void put(ObjectOutputStream out) throws IOException
-					{
-						out.writeObject(fvalue);
-					}
-				};
-		}
-
-		/** @deprecated use {@link ObjectOutputStream.writeFields}. */
-		public void write(ObjectOutput out) throws IOException
-		{
-			throw new kaffe.util.NotImplemented(
-				"ObjectOutputStream.PutField.write() -- its deprecated anyway.");
-		}
-
-		/*package*/ void writeTo(ObjectOutputStream out) throws IOException
-		{
-			for (int i = 0; i < values.length; i++)
-			{
-				if (values[i] != null)
-				{
-					if (DOTRACE) System.out.println("Writing " +fields[i].getName());
-					values[i].put(out); // heheheh, he said "put out"
-				}
-				else
-				{
-					// If the field wasn't given a value by
-					// the user, write the default for that type
-					// into the stream...
-					switch(fields[i].getTypeCode())
-					{
-					case '[':
-					case 'L': out.writeObject(null);
-						break;
-					case 'I': out.writeInt(0);
-						break;
-					case 'J': out.writeLong(0L);
-						break;
-					case 'Z': out.writeBoolean(false);
-						break;
-					case 'B': out.writeByte(0);
-						break;
-					case 'S': out.writeShort(0);
-						break;
-					case 'C': out.writeChar(0);
-						break;
-					case 'F': out.writeFloat(0.0f);
-						break;
-					case 'D': out.writeDouble(0.0);
-						break;
-					case 'V': 
-					default:
-						throw new InternalError("Illegal typecode in " +fields[i]);
-					}
-				}
-			}
-		}
+	  Class[] interfaces = cl.getInterfaces ();
+	  Arrays.sort (interfaces, interfaceComparator);
+	  for (int i=0; i < interfaces.length; i++)
+	    data_out.writeUTF (interfaces[i].getName ());
 	}
-
-	private static class ConcreteGetField
-	extends ObjectInputStream.GetField
+	
+	Field field;
+	Field[] fields = cl.getDeclaredFields ();
+	Arrays.sort (fields, memberComparator);
+	for (int i=0; i < fields.length; i++)
 	{
-		private static class Field
-		{
-			final String fname;
-
-			Field(String fname)
-			{
-				this.fname = fname;
-			}
-
-			boolean getBool() { throw new IllegalArgumentException("Field '" +fname+ "' is not a boolean"); }
-			byte getByte() { throw new IllegalArgumentException("Field '" +fname+ "' is not a byte"); }
-			char getChar() { throw new IllegalArgumentException("Field '" +fname+ "' is not a char"); }
-			short getShort() { throw new IllegalArgumentException("Field '" +fname+ "' is not a short"); }
-			int getInt() { throw new IllegalArgumentException("Field '" +fname+ "' is not a int"); }
-			long getLong() { throw new IllegalArgumentException("Field '" +fname+ "' is not a long"); }
-			float getFloat() { throw new IllegalArgumentException("Field '" +fname+ "' is not a float"); }
-			double getDouble() { throw new IllegalArgumentException("Field '" +fname+ "' is not a double"); }
-			Object getObject() { throw new IllegalArgumentException("Field '" +fname+ "' is not an object reference"); }
-		}
-
-		private final ObjectStreamClass objectStreamClass;
-		private final Field[] loadedFields;
-		private final ObjectStreamField[] defaultedFields;
-	
-		ConcreteGetField(ObjectStreamClass objectStreamClass, ObjectInputStream in)
-			throws IOException, ClassNotFoundException
-		{
-			this.objectStreamClass = objectStreamClass;
-			this.loadedFields = new Field[objectStreamClass.readableFields.length];
-
-			if (DOTRACE) System.out.println("ConcreteGetField: fct="+loadedFields.length);
-			
-			// Read in all the fields defined instream (regardless of
-			// whether they match in-VM types, or have in-VM offsets).
-			for (int i = 0; i < loadedFields.length; i++)
-			{
-				ObjectStreamField f = objectStreamClass.readableFields[i];
-				//f.forceTypeResolution();
-				String fname = f.getName();
-				char tcode = f.getTypeCode();
-				if (DOTRACE) System.out.println("GetField.readField("+fname+","+tcode+")");
-				loadedFields[i] = readField(in, fname, tcode);
-			}
-
-			// Now figure out which fields are "defaulted": that is the
-			// set of serializable fields in a class that are not in
-			// the in-stream representation.  Most of the time, this
-			// list is empty.
-
-			ArrayList defaultedFieldsArray = new ArrayList();
-			if (DOTRACE) System.out.println("ConcreteGetField: finding default fields.");
-			for (int i = 0; i < objectStreamClass.serializableFields.length; i++)
-			{
-				ObjectStreamField f = objectStreamClass.serializableFields[i];
-				int fi = findLoadedField(f.getName());
-				if (fi == -1)
-					defaultedFieldsArray.add(f);
-			}
-				
-			this.defaultedFields = (ObjectStreamField[])defaultedFieldsArray.toArray(new ObjectStreamField[0]);
-		}
-		
-		private int findLoadedField(String fname)
-		{
-			for (int i = 0; i < this.loadedFields.length; i++)
-			{
-				if (this.loadedFields[i].fname.equals(fname))
-					return i;
-			}
-
-			return -1;
-		}
-		
-		private int findDefaultedField(String fname)
-		{
-			for (int i = 0; i < this.defaultedFields.length; i++)
-			{
-				if (this.defaultedFields[i].getName().equals(fname))
-					return i;
-			}
-
-			return -1;
-		}
-		
-		private static Field readField(ObjectInputStream in,
-					       String fname,
-					       char tcode)
-			throws IOException, ClassNotFoundException
-		{
-			if (tcode == '[' || tcode == 'L')
-			{
-				final Object val = in.readObject();
-				return new Field(fname) {
-						Object getObject() {
-							return val;
-						}
-					};
-			}
-
-			// Primitive type
-			switch(tcode)
-			{
-			case 'I': final int ival = in.readInt();
-				return new Field(fname) {
-					int getInt() { return ival; }
-				};
-			case 'J': final long jval = in.readLong();
-				return new Field(fname) {
-					long getLong() { return jval; }
-				};
-			case 'Z': final boolean zval = in.readBoolean();
-				return new Field(fname) {
-					boolean getBoolean() { return zval; }
-				};
-			case 'B': final byte bval = in.readByte();
-				return new Field(fname) {
-					byte getByte() { return bval; }
-				};
-			case 'C': final char cval = in.readChar();
-				return new Field(fname) {
-					char getChar() { return cval; }
-				};
-			case 'S': final short sval = in.readShort();
-				return new Field(fname) {
-					short getShort() { return sval; }
-				};
-			case 'F': final float fval = in.readFloat();
-				return new Field(fname) {
-					float getFloat() { return fval; }
-				};
-			case 'D': final double dval = in.readDouble();
-				return new Field(fname) {
-					double getDouble() { return dval; }
-				};
-			case 'V': // shouldn't occur
-			default:
-				return new Field(fname);
-			}
-			
-			// not reached
-		}
-
-		public boolean defaulted(String fname) throws IOException, IllegalArgumentException
-		{
-			int fi = findLoadedField(fname);
-			if (fi != -1)
-				return false;
-			
-			fi = findDefaultedField(fname);
-			if (fi != -1)
-				return true;
-			
-			throw new IllegalArgumentException("No such field `" +fname+ "'");
-		}
-
-		private static void requireFieldCode(ObjectStreamField f, char typeCode, String typename)
-		{
-			if (f.getTypeCode() != typeCode)
-				throw new IllegalArgumentException("Field '" +f.getName()+ "' is not a " +typename);
-		}
-
-		public boolean get(String fname, boolean defvalue) throws IOException, IllegalArgumentException
-		{
-			int fi = findLoadedField(fname);
-			if (fi != -1)
-				return this.loadedFields[fi].getBool();
-			fi = findDefaultedField(fname);
-			if (fi != -1)
-			{
-				requireFieldCode(this.defaultedFields[fi], 'Z', "boolean");
-				return defvalue;
-			}
-			throw new IllegalArgumentException("No field named `" +fname+ "'");
-		}
-		
-		public byte get(String fname, byte defvalue) throws IOException, IllegalArgumentException
-		{
-			int fi = findLoadedField(fname);
-			if (fi != -1)
-				return this.loadedFields[fi].getByte();
-			fi = findDefaultedField(fname);
-			if (fi != -1)
-			{
-				requireFieldCode(this.defaultedFields[fi], 'B', "byte");
-				return defvalue;
-			}
-			throw new IllegalArgumentException("No field named `" +fname+ "'");
-		}
-	
-		public char get(String fname, char defvalue) throws IOException, IllegalArgumentException
-		{
-			int fi = findLoadedField(fname);
-			if (fi != -1)
-				return this.loadedFields[fi].getChar();
-			fi = findDefaultedField(fname);
-			if (fi != -1)
-			{
-				requireFieldCode(this.defaultedFields[fi], 'C', "char");
-				return defvalue;
-			}
-			throw new IllegalArgumentException("No field named `" +fname+ "'");
-		}
-		
-		public short get(String fname, short defvalue) throws IOException, IllegalArgumentException
-		{
-			int fi = findLoadedField(fname);
-			if (fi != -1)
-				return this.loadedFields[fi].getShort();
-			fi = findDefaultedField(fname);
-			if (fi != -1)
-			{
-				requireFieldCode(this.defaultedFields[fi], 'S', "short");
-				return defvalue;
-			}
-			throw new IllegalArgumentException("No field named `" +fname+ "'");
-		}
-		
-		public int get(String fname, int defvalue) throws IOException, IllegalArgumentException
-		{
-			int fi = findLoadedField(fname);
-			if (fi != -1)
-				return this.loadedFields[fi].getInt();
-			fi = findDefaultedField(fname);
-			if (fi != -1)
-			{
-				requireFieldCode(this.defaultedFields[fi], 'I', "int");
-				return defvalue;
-			}
-			throw new IllegalArgumentException("No field named `" +fname+ "'");
-		}
-		
-		public float get(String fname, float defvalue) throws IOException, IllegalArgumentException
-		{
-			int fi = findLoadedField(fname);
-			if (fi != -1)
-				return this.loadedFields[fi].getFloat();
-			fi = findDefaultedField(fname);
-			if (fi != -1)
-			{
-				requireFieldCode(this.defaultedFields[fi], 'F', "float");
-				return defvalue;
-			}
-			throw new IllegalArgumentException("No field named `" +fname+ "'");
-		}
-		
-		public long get(String fname, long defvalue) throws IOException, IllegalArgumentException
-		{
-			int fi = findLoadedField(fname);
-			if (fi != -1)
-				return this.loadedFields[fi].getLong();
-			fi = findDefaultedField(fname);
-			if (fi != -1)
-			{
-				requireFieldCode(this.defaultedFields[fi], 'J', "long");
-				return defvalue;
-			}
-			throw new IllegalArgumentException("No field named `" +fname+ "'");
-		}
-		
-		public double get(String fname, double defvalue) throws IOException, IllegalArgumentException
-		{
-			int fi = findLoadedField(fname);
-			if (fi != -1)
-				return this.loadedFields[fi].getDouble();
-			fi = findDefaultedField(fname);
-			if (fi != -1)
-			{
-				requireFieldCode(this.defaultedFields[fi], 'D', "double");
-				return defvalue;
-			}
-			throw new IllegalArgumentException("No field named `" +fname+ "'");
-		}
-		
-		public Object get(String fname, Object defvalue) throws IOException, IllegalArgumentException
-		{
-			int fi = findLoadedField(fname);
-			if (fi != -1)
-				return this.loadedFields[fi].getObject();
-			fi = findDefaultedField(fname);
-			if (fi != -1)
-			{
-				requireFieldCode(this.defaultedFields[fi], 'L', "object reference");
-				return defvalue;
-			}
-			throw new IllegalArgumentException("No field named `" +fname+ "'");
-		}
-		
-		public ObjectStreamClass getObjectStreamClass()
-		{
-			return this.objectStreamClass;
-		}
+	  field = fields[i];
+	  modifiers = field.getModifiers ();
+	  if (Modifier.isPrivate (modifiers)
+	      && (Modifier.isStatic (modifiers)
+		  || Modifier.isTransient (modifiers)))
+	    continue;
+	  
+	  data_out.writeUTF (field.getName ());
+	  data_out.writeInt (modifiers);
+	  data_out.writeUTF (TypeSignature.getEncodingOfClass (field.getType ()));
 	}
 	
-	// --- Instance state
-
-	private /*final*/ Class clazz;
-	private /*final*/ int method; // The serialization method used for this class
-	private /*final*/ long clazz_serialVersionUID; // Beware of static 'serialVersionUID'!
-	private ObjectStreamClass superstream; // not really a "stream"
-	
-	/** Fields to write out when serializing instances of clazz.  In canonical order.
-	 * Passed to native outputClassFields0. */
-	private ObjectStreamField[] serializableFields;
-
-	/** Fields to read in when deserializing instances of clazz.  In stream-specified
-	 * order.  See resolveVMFieldsSerialFields().  Passed to native inputClassFields0. */
-	private ObjectStreamField[] readableFields = null;
-
-	// XXX the following two fields are related to a specific object, and need
-	// to be re-set for each new instance written out...
-
-	/** Allocated on demand in putFields() */
-	private ConcretePutField userPutField;
-	/** Allocated on demand in readFields() */
-	private ConcreteGetField userGetField;
-
-
-	private ObjectStreamClass(Class clazz, int meth) {
-		if (clazz == null)
-			throw new NullPointerException();
-		this.clazz = clazz;
-		this.method = meth;
-		this.clazz_serialVersionUID = getSerialVersionUID0(clazz);
-		this.superstream = lookup(clazz.getSuperclass());
-		this.serializableFields = findSerializableFields0(this.clazz);
-	}
-	
-	/**
-	 * No-arg constructor generates an ObjectStreamClass for ObjectStreamClass.
-	 * Serialization of an ObjectStreamClass is a special, but still ends up
-	 * invoking writeObject().
-	 */
-	/*package*/ ObjectStreamClass() {
-		this.clazz = ObjectStreamClass.class;
-		this.method = ObjectStreamConstants.SC_WRITE_METHOD|ObjectStreamConstants.SC_SERIALIZABLE;
-		this.clazz_serialVersionUID = ObjectStreamClass.serialVersionUID;
-		this.superstream = null;
-		this.serializableFields = NO_FIELDS;
-	}
-	
-	public Class forClass() {
-		return clazz;
-	}
-	
-	public String getName() {
-		return clazz.getName();
-	}
-	
-	public String toString() {
-		return getName()
-			+ ": static final long serialVersionUID = "
-			+ Long.toString(getSerialVersionUID()) 
-			+ "L;";
-	}
-	
-	public static ObjectStreamClass lookup(Class cl) {
-		if (cl == null) {
-			return (null);
-		}
-		
-		if (DOTRACE) System.out.println("Looking up " + cl);
-		// First check hash table for match - return what's found
-		ObjectStreamClass osc = (ObjectStreamClass)streamClasses.get(cl);
-		if (osc != null) {
-			if (DOTRACE) System.out.println("Found in cache");
-			return (osc);
-		}
-		
-		// Otherwise we work out how the class should be serialized and
-		// make an entry for it.  If the class can't be serialized we
-		// make a null entry.
-		int method;
-		if (Externalizable.class.isAssignableFrom(cl)) {
-			method = ObjectStreamConstants.SC_SERIALIZABLE | ObjectStreamConstants.SC_EXTERNALIZABLE;
-			if (DOTRACE) System.out.println(" is externalizable");
-		}
-		else if (Serializable.class.isAssignableFrom(cl)) {
-			method = ObjectStreamConstants.SC_SERIALIZABLE;
-			if (hasWriteObject(cl)) {
-				method |= ObjectStreamConstants.SC_WRITE_METHOD;
-				if (DOTRACE) System.out.println(" has read/write");
-			}
-			if (DOTRACE) System.out.println(" is serializable");
-		}
-		else {
-			if (DOTRACE) System.out.println("Cannot be serialized");
-			// Cannot be serialized
-			return (null);
-		}
-		
-		osc = new ObjectStreamClass(cl, method);
-		streamClasses.put(cl, osc);
-		
-		return (osc);
-	}
-	
-	public ObjectStreamField getField(String name) {
-		for (int i = 0; i < this.serializableFields.length; i++)
-		{
-			if (name.equals(this.serializableFields[i].getName()))
-				return this.serializableFields[i];
-		}
-		return null;
-	}
-	
-	public ObjectStreamField[] getFields() {
-		// Return a copy of the fields, so users can't muck with real info
-		ObjectStreamField[] userf = new ObjectStreamField[serializableFields.length];
-		System.arraycopy(serializableFields, 0,
-				 userf, 0, serializableFields.length);
-		return userf;
-	}
-		
-	public long getSerialVersionUID() {
-		if (clazz_serialVersionUID == 0)
-			clazz_serialVersionUID = getSerialVersionUID0(this.clazz);
-		return clazz_serialVersionUID;
-	}
-	
-
-	// Implementation-specific methods:
-
-	/*package*/ ObjectOutputStream.PutField putFields() 
-		throws IOException
+	// write class initializer method if present
+	if (VMObjectStreamClass.hasClassInitializer (cl))
 	{
-		// XXX synchronization??
-
-		if (this.userPutField == null)
-			this.userPutField = new ConcretePutField(this.serializableFields);
-		return this.userPutField;
-	}
-
-	/*package*/ void writeFields(Object obj, ObjectOutputStream out) 
-		throws IOException
-	{
-		if (this.userPutField == null)
-			throw new NotActiveException("no current PutField object (use putFields())");
-
-		// XXX oddly, the object being serialized is irrelevant
-		this.userPutField.writeTo(out);
-	}
-
-	/*package*/ ObjectInputStream.GetField readFields(ObjectInputStream ois) 
-		throws IOException, ClassNotFoundException
-	{
-		if (this.userGetField == null)
-			this.userGetField = new ConcreteGetField(this, ois);
-		return this.userGetField;
-	}
-
-	/*package*/ Object getObject(ObjectInputStream in)
-		throws StreamCorruptedException, InvalidClassException, OptionalDataException 
-	{
-		Object obj = allocateNewObject();
-		in.makeObjectReference(obj);
-		getObjectWithoutSuper(obj, in);
-		return (obj);
-	}
-
-	private void getObjectWithoutSuper(Object obj, ObjectInputStream in)
-		throws StreamCorruptedException, InvalidClassException, OptionalDataException 
-	{
-		// Get the data in our superclasses first (if they're serializable)
-		if (superstream != null) 
-		{
-			superstream.getObjectWithoutSuper(obj, in);
-		}
-		
-		try {
-			if ((method & ObjectStreamConstants.SC_EXTERNALIZABLE) != 0) {
-				try
-				{
-					((Externalizable)obj).readExternal(in);
-				}
-				catch (IOException ioe)
-				{
-					throw new StreamCorruptedException("error in readExternal" +ioe);
-				}
-			}
-			else if ((method & ObjectStreamConstants.SC_WRITE_METHOD) != 0) {
-				boolean restore = in.enableBuffering(true);
-				this.userGetField = null;
-				invokeObjectReader0(obj, in);
-				in.enableBuffering(restore);
-				getEndOfDataBlock(in);
-			}
-			else if ((method & ObjectStreamConstants.SC_SERIALIZABLE) != 0) {
-				defaultReadObject(obj, in);
-			}
-			else {
-				throw new StreamCorruptedException("unknown method type");
-			}
-		}
-		catch (StreamCorruptedException sce) {
-			throw sce;
-		}
-		catch (ClassCastException e1) {
-			//e1.printStackTrace(); // XXXX DEBUGGING CRUFT
-			throw new StreamCorruptedException("error getting object: " + e1);
-		}
-		catch (ClassNotFoundException e2) {
-			throw new StreamCorruptedException("error getting object: " + e2);
-		}
+	  data_out.writeUTF ("<clinit>");
+	  data_out.writeInt (Modifier.STATIC);
+	  data_out.writeUTF ("()V");
 	}
 	
-	private void getEndOfDataBlock(ObjectInputStream in)
-		throws StreamCorruptedException 
+	Constructor constructor;
+	Constructor[] constructors = cl.getDeclaredConstructors ();
+	Arrays.sort (constructors, memberComparator);
+	for (int i=0; i < constructors.length; i++)
 	{
-		byte read = 0;
-
-		try {
-			read = in.readByte();
-		}
-		catch (IOException e) {
-			StreamCorruptedException sce = new StreamCorruptedException("failed to read endblockdata: " + e);
-			sce.initCause(e);
-			throw sce;
-		}
-		
-		if (read != ObjectStreamConstants.TC_ENDBLOCKDATA) {
-			throw new StreamCorruptedException("failed to read endblockdata: no marker found");
-		}
+	  constructor = constructors[i];
+	  modifiers = constructor.getModifiers ();
+	  if (Modifier.isPrivate (modifiers))
+	    continue;
+	  
+	  data_out.writeUTF ("<init>");
+	  data_out.writeInt (modifiers);
+	  
+	  // the replacement of '/' with '.' was needed to make computed
+	  // SUID's agree with those computed by JDK
+	  data_out.writeUTF (
+	    TypeSignature.getEncodingOfConstructor (constructor).replace ('/','.'));
 	}
 
-	/*package*/ Object getClass(ObjectInputStream in)
-		throws StreamCorruptedException, InvalidClassException, OptionalDataException 
+	Method method;
+	Method[] methods = cl.getDeclaredMethods ();
+	Arrays.sort (methods, memberComparator);
+	for (int i=0; i < methods.length; i++)
 	{
-		try {
-			if (DOTRACE) System.out.println("Getting class");
-			Object obj = allocateNewObject();
-			in.makeObjectReference(obj);
-			this.userGetField = null;
-			invokeObjectReader0(obj, in);
-			// Get any class annotation
-			getEndOfDataBlock(in);
-			// Get the superclass stream.
-			if (DOTRACE) System.out.println("Getting superclass");
-			((ObjectStreamClass)obj).superstream = (ObjectStreamClass)in.readObject();
-			if (DOTRACE) System.out.println("Done");
-			return (obj);
-		}
-		catch (InvalidClassException ice) {
-			throw ice; 
-		}
-		catch (StreamCorruptedException sce) {
-			throw sce; 
-		}
-		catch (IOException e1) {
-			StreamCorruptedException sce = new StreamCorruptedException("error getting object: " + e1);
-			sce.initCause(e1);
-			throw sce;
-		}
-		catch (ClassNotFoundException e2) {
-			StreamCorruptedException sce = new StreamCorruptedException("error getting object: " + e2);
-			sce.initCause(e2);
-			throw sce;
-		}
+	  method = methods[i];
+	  modifiers = method.getModifiers ();
+	  if (Modifier.isPrivate (modifiers))
+	    continue;
+	  
+	  data_out.writeUTF (method.getName ());
+	  data_out.writeInt (modifiers);
+	  
+	  // the replacement of '/' with '.' was needed to make computed
+	  // SUID's agree with those computed by JDK
+	  data_out.writeUTF (
+	    TypeSignature.getEncodingOfMethod (method).replace ('/', '.'));
 	}
+
+	data_out.close ();
+	byte[] sha = md.digest ();
+	long result = 0;
+	int len = sha.length < 8 ? sha.length : 8;
+	for (int i=0; i < len; i++)
+	  result += (long)(sha[i] & 0xFF) << (8 * i);
 	
-	/*package*/ Object getArray(ObjectInputStream in)
-		throws StreamCorruptedException, InvalidClassException
-	{
-		try {
-			Class elem = clazz.getComponentType();
-			int len = in.readInt();
-			Object obj = allocateNewArray(len);
-			in.makeObjectReference(obj);
-			
-			if (elem == Character.TYPE) {
-				char[] arr = (char[])obj;
-				for (int i = 0; i < len; i++) {
-					arr[i] = in.readChar();
-				}
-			}
-			else if (elem == Short.TYPE) {
-				short[] arr = (short[])obj;
-				for (int i = 0; i < len; i++) {
-					arr[i] = in.readShort();
-				}
-			}
-			else if (elem == Integer.TYPE) {
-				int[] arr = (int[])obj;
-				for (int i = 0; i < len; i++) {
-					arr[i] = in.readInt();
-				}
-			}
-			else if (elem == Boolean.TYPE) {
-				boolean[] arr = (boolean[])obj;
-				for (int i = 0; i < len; i++) {
-					arr[i] = in.readBoolean();
-				}
-			}
-			else if (elem == Long.TYPE) {
-				long[] arr = (long[])obj;
-				for (int i = 0; i < len; i++) {
-					arr[i] = in.readLong();
-				}
-			}
-			else if (elem == Double.TYPE) {
-				double[] arr = (double[])obj;
-				for (int i = 0; i < len; i++) {
-					arr[i] = in.readDouble();
-				}
-			}
-			else if (elem == Float.TYPE) {
-				float[] arr = (float[])obj;
-				for (int i = 0; i < len; i++) {
-					arr[i] = in.readFloat();
-				}
-			}
-			else if (elem == Byte.TYPE) {
-				byte[] arr = (byte[])obj;
-				for (int i = 0; i < len; i++) {
-					arr[i] = in.readByte();
-				}
-			}
-			else { // Must be an array of objects.
-				Object[] arr = (Object[])obj;
-				for (int i = 0; i < len; i++) {
-					arr[i] = in.readObject();
-				}
-			}
-			return (obj);
-		}
-		catch (ClassCastException e1) {
-			//e1.printStackTrace();
-			throw new StreamCorruptedException("bad array: " + e1);
-		}
-		catch (ClassNotFoundException e2) {
-			throw new StreamCorruptedException("bad array: " + e2);
-		}
-		catch (InvalidClassException ice) {
-			throw ice; 
-		}
-		catch (StreamCorruptedException sce) {
-			throw sce; 
-		}
-		catch (IOException e3) {
-			throw new StreamCorruptedException("bad array: " + e3);
-		}
-	}
-	
-	/*package*/ void putObject(Object obj, ObjectOutputStream out)
-		throws IOException 
-	{
-		out.makeObjectReference(obj);
-		putObjectWithoutSuper(obj, out);
-	}
+	return result;
+      }
+    catch (NoSuchAlgorithmException e)
+      {
+	throw new RuntimeException ("The SHA algorithm was not found to use in computing the Serial Version UID for class "
+				    + cl.getName (), e);
+      }
+    catch (IOException ioe)
+      {
+	throw new RuntimeException (ioe);
+      }
+  }
 
-	private void putObjectWithoutSuper(Object obj, ObjectOutputStream out)
-		throws IOException {
+  // Returns the value of CLAZZ's private static final field named
+  // `serialPersistentFields'.
+  private ObjectStreamField[] getSerialPersistentFields (Class clazz) throws NoSuchFieldException, IllegalAccessException
+  {
+    ObjectStreamField[] fieldsArray = null;
+    ObjectStreamField[] o;
+    // Use getDeclaredField rather than getField for the same reason
+    // as above in getDefinedSUID.
 
-		// Put the data in our superclasses first (if they're serializable)
-		if (superstream != null) {
-			superstream.putObjectWithoutSuper(obj, out);
-		}
-		
-		if ((method & ObjectStreamConstants.SC_EXTERNALIZABLE) != 0) {
-			if (DOTRACE) System.out.println("...writeExternal");
-			((Externalizable)obj).writeExternal(out);
-		}
-		else if ((method & ObjectStreamConstants.SC_WRITE_METHOD) != 0) {
-			if (DOTRACE) System.out.println("...invokeObjectWriter");
-			boolean restore = out.enableBuffering(true);
-			this.userPutField = null;
-			invokeObjectWriter0(obj, out);
-			out.enableBuffering(restore);
-			out.writeByte(ObjectStreamConstants.TC_ENDBLOCKDATA);
-		}
-		else if ((method & ObjectStreamConstants.SC_SERIALIZABLE) != 0) {
-			if (DOTRACE) System.out.println("...defaultWriteObject");
-			defaultWriteObject(obj, out);
-		}
-		else {
-			throw new StreamCorruptedException("unknown method type");
-		}
-	}
+    Field f = clazz.getDeclaredField ("serialPersistentFields");
+    f.setAccessible(true);
 
-	/*package*/ void putClass(Object obj, ObjectOutputStream out)
-		throws IOException {
+    int modifiers = f.getModifiers();
+    if (!(Modifier.isStatic (modifiers) &&
+	Modifier.isFinal (modifiers) &&
+	Modifier.isPrivate (modifiers)))
+      return null;
+    
+    o = (ObjectStreamField[])f.get (null);
 
-		out.makeObjectReference(obj);
-		this.userPutField = null;
-		invokeObjectWriter0(obj, out);
-		out.annotateClassInternal(((ObjectStreamClass)obj).clazz);
-		out.writeByte(ObjectStreamConstants.TC_ENDBLOCKDATA);
-	}
+    if (o == null)
+      return null;
+    
+    fieldsArray = new ObjectStreamField[ o.length ];
+    System.arraycopy(o, 0, fieldsArray, 0, o.length);
 
-	/*package*/ void putArray(Object obj, ObjectOutputStream out)
-		throws IOException {
+    return fieldsArray;
+  }
 
-		Class elem = obj.getClass().getComponentType();
-		
-		out.makeObjectReference(obj);
-		
-		if (elem == Character.TYPE) {
-			char[] arr = (char[])obj;
-			int len = arr.length;
-			out.writeInt(len);
-			for (int i = 0; i < len; i++) {
-				out.writeChar(arr[i]);
-			}
-		}
-		else if (elem == Byte.TYPE) {
-			byte[] arr = (byte[])obj;
-			int len = arr.length;
-			out.writeInt(len);
-			for (int i = 0; i < len; i++) {
-				out.writeByte(arr[i]);
-			}
-		}
-		else if (elem == Short.TYPE) {
-			short[] arr = (short[])obj;
-			int len = arr.length;
-			out.writeInt(len);
-			for (int i = 0; i < len; i++) {
-				out.writeShort(arr[i]);
-			}
-		}
-		else if (elem == Integer.TYPE) {
-			int[] arr = (int[])obj;
-			int len = arr.length;
-			out.writeInt(len);
-			for (int i = 0; i < len; i++) {
-				out.writeInt(arr[i]);
-			}
-		}
-		else if (elem == Boolean.TYPE) {
-			boolean[] arr = (boolean[])obj;
-			int len = arr.length;
-			out.writeInt(len);
-			for (int i = 0; i < len; i++) {
-				out.writeBoolean(arr[i]);
-			}
-		}
-		else if (elem == Long.TYPE) {
-			long[] arr = (long[])obj;
-			int len = arr.length;
-			out.writeInt(len);
-			for (int i = 0; i < len; i++) {
-				out.writeLong(arr[i]);
-			}
-		}
-		else if (elem == Double.TYPE) {
-			double[] arr = (double[])obj;
-			int len = arr.length;
-			out.writeInt(len);
-			for (int i = 0; i < len; i++) {
-				out.writeDouble(arr[i]);
-			}
-		}
-		else if (elem == Float.TYPE) {
-			float[] arr = (float[])obj;
-			int len = arr.length;
-			out.writeInt(len);
-			for (int i = 0; i < len; i++) {
-				out.writeFloat(arr[i]);
-			}
-		}
-		else { // Must be an array of objects
-			Object[] arr = (Object[])obj;
-			int len = arr.length;
-			out.writeInt(len);
-			for (int i = 0; i < len; i++) {
-				out.writeObject(arr[i]);
-			}
-		}
-	}
-	
-	/*package*/ void defaultReadObject(Object obj, ObjectInputStream in) {
-		inputClassFields0(this.clazz, this.readableFields, obj, in);
-	}
+  public static final ObjectStreamField[] NO_FIELDS = {};
 
-	/*package*/ void defaultWriteObject(Object obj, ObjectOutputStream out) {
-		outputClassFields0(this.clazz, this.serializableFields, obj, out);
-	}
+  private static Hashtable classLookupTable = new Hashtable ();
+  private static final NullOutputStream nullOutputStream = new NullOutputStream ();
+  private static final Comparator interfaceComparator = new InterfaceComparator ();
+  private static final Comparator memberComparator = new MemberComparator ();
+  private static final
+    Class[] writeMethodArgTypes = { java.io.ObjectOutputStream.class };
 
-	/*package*/ void readObject(ObjectInputStream in) 
-		throws IOException, ClassNotFoundException 
-	{
-		String name = in.readUTF();
-		if (DOTRACE) System.out.println("readObject()-> name=" + name);
-		this.clazz_serialVersionUID = in.readLong();
-		if (DOTRACE) System.out.println("readObject()-> serialVersionUID=" + clazz_serialVersionUID);
-		this.method = in.readUnsignedByte();
-		if (DOTRACE) System.out.println("readObject()-> \"method\"=" + method);
-		
-		// Resolve the class, XXX convert exceptions?
-		this.clazz = in.resolveClassInternal(name);
+  private ObjectStreamClass superClass;
+  private Class clazz;
+  private String name;
+  private long uid;
+  private byte flags;
 
-     		// Figure out what this class inVM-representation expects 
-		// its serialized form to contain...
-		this.serializableFields = findSerializableFields0(clazz);
+  // this field is package protected so that ObjectInputStream and
+  // ObjectOutputStream can access it directly
+  ObjectStreamField[] fields;
 
-		// Now read in the serialized description of the fields of the class.
-		int len = in.readShort();
+  // these are accessed by ObjectIn/OutputStream
+  int primFieldSize = -1;  // -1 if not yet calculated
+  int objectFieldCount;
 
-		// We'll track the types the instream class has:
-		InStreamTypeDescriptor[] inStreamFields = new InStreamTypeDescriptor[len];
+  boolean isProxyClass = false;
 
-		if (DOTRACE) System.out.println("readObject()-> field ct=" + len);
-		for (int i = 0; i < len; i++) {
-			inStreamFields[i] = new InStreamTypeDescriptor();
-			inStreamFields[i].typeCode = (byte)in.readUnsignedByte();
-			inStreamFields[i].fieldName = in.readUTF();
-			if (DOTRACE) System.out.println("  " +inStreamFields[i].typeCode+ ": " +inStreamFields[i].fieldName);
+  // This is probably not necessary because this class is special cased already
+  // but it will avoid showing up as a discrepancy when comparing SUIDs.
+  private static final long serialVersionUID = -6120832682080437368L;
 
-			if ((inStreamFields[i].typeCode == 'L')
-			    || (inStreamFields[i].typeCode == '[')) {
-				try {
-					inStreamFields[i].typeName = ((String)in.readObject()).intern();
-				}
-				catch (ClassNotFoundException _) {
-					// XXX better error message
-					throw new StreamCorruptedException("bad type");
-				}
-			}
-			else
-			{
-				inStreamFields[i].typeName = null;
-			}
-		}
-		
-		// Check for matching serial version UIDs
-		long localUID = getSerialVersionUID0(clazz);
-		if (clazz_serialVersionUID != localUID) {
-			throw new InvalidClassException(
-				"mismatched serial version UIDs: expected " 
-				+ clazz_serialVersionUID 
-				+ " but local class `" + clazz.getName() 
-				+ "' has UID " + localUID);
-		}
-
-		resolveVMFieldsSerialFields(inStreamFields);
-
-		// read in annotations
-		this.clazz = in.resolveClass(this);
-	}
-
-	/**
-	 * The given list of inStreamFields needs to be tweaked to "match"
-	 * the set of serially persistent fields defined in the in-VM 
-	 * class (i.e., this.serializableFields).  We only have something
-	 * interesting to do if a class has evolved and thus the in-VM
-	 * version is different from the in-stream version.  Also, folks who
-	 * play nasty games with Serialization (i.e., to test it :) might
-	 * cause problems here.
-	 *
-	 * For each in-stream field there are several things that might happen:
-	 *   - its good.  We'll read it in and set the appropriate field in
-	 *     the object
-	 *   - its irrelevant.  The in-VM repr doesn't have such a field, we
-	 *     silently ignore such changes.
-	 *   - its a mismatch.  The in-MV repr has a field of the same name
-	 *     but a different type.  To be useful with 'readFields' any errors
-	 *     are thrown during the read...
-	 *
-	 * If the in-stream fields match the in-VM fields, then we just use
-	 * the inVM field descriptor.
-	 *
-	 * The common case is that the new readableFields array is a copy of
-	 * the serializableFields array (sharing the objects).
-	 */
-	private void resolveVMFieldsSerialFields(InStreamTypeDescriptor[] inStreamFields)
-	{
-		this.readableFields = new ObjectStreamField[inStreamFields.length];
-
-		/* 
-		 * XXX this is O(N*M).  (Most times, N and M < 4, though)
-		 */
-		for (int i = 0; i < inStreamFields.length; i++)
-		{
-			InStreamTypeDescriptor inStreamField = inStreamFields[i];
-
-			int v = 0; // XXX should be able to bump start each round
-			while ((v < this.serializableFields.length)
-			       && (this.readableFields[i] == null))
-			{
-				ObjectStreamField inVMField = this.serializableFields[v];
-				this.readableFields[i] = compareFields(inStreamField, inVMField);
-				v++;
-			}
-
-			if (this.readableFields[i] == null)
-			{
-				if (DOTRACE) System.out.println("  " +inStreamField.fieldName+ 
-								" (" +inStreamField.typeName+ ")"
-								+ " not part of inVM class. ignored.");
-				// Didn't find a match
-				this.readableFields[i] = new ObjectStreamField(inStreamField.fieldName,
-									       inStreamField.typeCode,
-									       inStreamField.typeName);
-				this.readableFields[i].setIgnored();
-			}
-		}
-	}
-
-	/** Compare in-stream field definition of a field to inVM definition. */
-	private static ObjectStreamField compareFields(InStreamTypeDescriptor inStreamField,
-						       ObjectStreamField inVMField)
-	{
-		if (inStreamField.fieldName.equals(inVMField.getName()))
-		{
-			String inStreamTypeName = inStreamField.typeName;
-			String inVMTypeName = inVMField.getTypeString();
-			boolean sameTypes = false;
-
-			if ((inStreamTypeName == null)
-			    && (inVMTypeName == null)
-			    && (inStreamField.typeCode == inVMField.getTypeCode()))
-				// Primitives of the same type
-				sameTypes = true;
-			else if ((inStreamTypeName != null)
-				 && (inVMTypeName != null)
-				 && (inStreamTypeName.equals(inVMTypeName)))
-				// References of the same type
-				sameTypes = true;
-
-			if (sameTypes)
-			{
-				if (DOTRACE) System.out.println("  " +inStreamField.fieldName+ " matches inVM class field.");
-				// Its the same as the declared inVM name,
-				// note however, that the declared inVM repr might
-				// mismatch the actual inVM repr...
-				return inVMField;
-			}
-			else
-			{
-				if (DOTRACE) System.out.println("  " +inStreamField.fieldName+ " mis-match: " 
-								+inStreamField.typeCode+ "("
-								+inStreamField.typeName+ ") vs. inVM type " 
-								+inVMField.getTypeCode()+ "("
-								+inVMField.getTypeString()+ ")");
-				// its a type mismatch, against the declared inVM 
-				// repr.  Perhaps it matches the actual underlying
-				// field type, but that's too bad.  Force a mismatch:
-				ObjectStreamField osf = new ObjectStreamField(inStreamField.fieldName,
-									      inStreamField.typeCode,
-									      inStreamField.typeName);
-				osf.setMismatch(true);
-				return osf;
-			}
-		}
-
-		// no match, try next
-		return null;
-	}
+}
 
 
-	private void writeObject(ObjectOutputStream out) 
-		throws IOException {
+// interfaces are compared only by name
+class InterfaceComparator implements Comparator
+{
+  public int compare (Object o1, Object o2)
+  {
+    return ((Class)o1).getName ().compareTo (((Class)o2).getName ());
+  }
+}
 
-		if (DOTRACE) System.out.println("ObjectStreamClass.writeObject: " +this);
-		if (DOTRACE) System.out.println("...write name: writeUTF(" +getName()+ ")");
-		out.writeUTF(getName());
-		if (DOTRACE) System.out.println("...write UID: writeLong(" +clazz_serialVersionUID+ ")");
-		out.writeLong(clazz_serialVersionUID);
-		if (DOTRACE) System.out.println("...write \"method\": writeByte(" +method+ ")");
-		out.writeByte(method);
-		if (DOTRACE) System.out.println("...write field ct: writeShort(" +this.serializableFields.length+ ")");
-		//outputClassFieldInfo(out);
-		out.writeShort(this.serializableFields.length);
 
-		/* 
-		 * We write out the serializableFields info *assuming
-		 * its correct*.  (Offsets and typeMismatches may
-		 * occur later), but if the user overrides
-		 * readObject/writeObject those errors won't occur...
-		 */
-		for (int i = 0; i < this.serializableFields.length; i++)
-		{
-			ObjectStreamField f = this.serializableFields[i];
+// Members (Methods and Constructors) are compared first by name,
+// conflicts are resolved by comparing type signatures
+class MemberComparator implements Comparator
+{
+  public int compare (Object o1, Object o2)
+  {
+    Member m1 = (Member)o1;
+    Member m2 = (Member)o2;
 
-			if (DOTRACE) System.out.println("...write type code: writeShort(" +f.getTypeCode()+ ")");
-			out.writeByte((byte)f.getTypeCode());
-			if (DOTRACE) System.out.println("...write field name: writeUTF(" +f.getName()+ ")");
-			out.writeUTF(f.getName());
+    int comp = m1.getName ().compareTo (m2.getName ());
 
-			String fullTypeName = f.getTypeString(); // null for primitives
-			if (fullTypeName != null)
-			{
-				if (DOTRACE) System.out.println("...write type (string) writeObject(" +fullTypeName+ ")");
-				// Append the full typename, in "field descriptor format"
-				// as an object...
-				out.writeObject(fullTypeName);
-			}
-		}
-		if (DOTRACE) System.out.println("...Done");
-	}
-
-	private static boolean hasWriteObject(Class cls) {
-		return (hasWriteObject0(cls));
-	}
-
-	private native Object allocateNewObject();
-	private native Object allocateNewArray(int size);
-	private native static boolean hasWriteObject0(Class cls);
-	private native boolean invokeObjectReader0(Object obj, ObjectInputStream in);
-	private native boolean invokeObjectWriter0(Object obj, ObjectOutputStream out);
-	//private native void outputClassFieldInfo(ObjectOutputStream out);
-
-// --- XXXX XXX 
-	private static native void init0();
-	private static native long getSerialVersionUID0(Class cls); // XXX "compute" not get
-	private static native ObjectStreamField[] findSerializableFields0(Class clazz);
-	private static native void outputClassFields0(Class clazz,
-						      ObjectStreamField[] writeableFields,
-						      Object obj,
-						      ObjectOutputStream out);
-	private static native void inputClassFields0(Class clazz, 
-						     ObjectStreamField[] readableFields, 
-						     Object obj, 
-						     ObjectInputStream in);
+    if (comp == 0)
+      return TypeSignature.getEncodingOfMember (m1).
+	compareTo (TypeSignature.getEncodingOfMember (m2));
+    else
+      return comp;
+  }
 }

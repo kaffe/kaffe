@@ -1,3 +1,39 @@
+2003-08-11  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/clib/native/ObjectStreamClassImpl.c: removed
+
+	* libraries/clib/native/ObjectInputStream.c: added
+
+	* libraries/clib/native/Makefile.am:
+	(IO_SRCS) changed ObjectStreamClassImpl.c into ObjectInputStream.c
+
+	* libraries/clib/native/Makefile.in: regenerated.
+
+	* libraries/javalib/java/io/ObjectInputStream.java,
+	libraries/javalib/java/io/ObjectOutputStream.java,
+	libraries/javalib/java/io/ObjectStreamClass.java,
+	libraries/javalib/java/io/ObjectStreamField.java,
+	libraries/javalib/java/io/ObjectInput.java,
+	libraries/javalib/java/io/ObjectInputValidation.java,
+	libraries/javalib/java/io/ObjectOutput.java,
+	libraries/javalib/java/io/ObjectStreamConstants.java:
+	replaced with classpath's version (fixed).
+
+	* libraries/javalib/gnu/java/io/NullOutputStream.java,
+	libraries/javalib/gnu/java/io/ObjectIdentityWrapper.java:
+	added for serialization.
+
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated
+
+	* include/Makefile.am:
+	(NOINSTALL_DERIVED_HDRS) replaced java_io_ObjectStreamClass by
+	java_io_ObjectInputStream.
+
+	* include/Makefile.in: regenerated.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	(removeQueueFromBlockQueue) commented out to prevent a compiler warning.
+
 2003-08-11  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/verify.c:
