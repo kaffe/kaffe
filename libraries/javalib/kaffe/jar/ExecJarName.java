@@ -11,28 +11,34 @@
 
 package kaffe.jar;
 
-import java.lang.String;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipEntry;
 import java.io.DataInputStream;
-import java.io.IOException;
 import java.io.EOFException;
-import java.lang.reflect.Method;
+import java.io.IOException;
 import java.lang.Character;
+import java.lang.String;
+import java.lang.reflect.Method;
+import java.util.jar.*;
 import kaffe.management.Classpath;
 
 public class ExecJarName {
 
-public static void main(String[] args)
-{
-	ZipFile jar = null;
+public static JarFile getJar(String path) {
+	JarFile jar = null;
 	try {
-		jar = new ZipFile(args[0]);
+		jar = new JarFile(path);
 	}
-	catch (IOException _) {
-		System.err.println("No such JAR: " + args[0]);
+	catch (IOException e) {
+		System.err.println("Can't access JAR file ``"
+		    + path + "'': " + e);
 		System.exit(1);
 	}
+	return jar;
+}
+
+public static void main(String[] args)
+{
+	/* Check JAR file OK */
+	getJar(args[0]);
 
 	/* Add JAR to classpath */
 	Classpath.add(args[0]);
