@@ -176,11 +176,19 @@ for s in $STATICBUILD; do
 			$CONFIG_BUILD \
 			$CONFIG_STATIC
 		    
-		    doCmd "  Building ..." \
+		    # Build Kaffe, need VM to run kjc..
+		    doCmd "  Building all ..." \
 			${GMAKE} ${MAKE_OPTS} -C ${OBJ_DIR}/ all
 		    
 		    doCmd "  Building Klasses ..." \
-			${GMAKE} ${MAKE_OPTS} -C ${OBJ_DIR}/ Klasses
+			${GMAKE} ${MAKE_OPTS} -C ${OBJ_DIR}/ compile-classes
+		    
+		    doCmd "  Building bootstrap ..." \
+			${GMAKE} ${MAKE_OPTS} -C ${OBJ_DIR}/libraries/javalib bootstrap
+		    
+		    # Re-build Kaffe, in case bootstrap changed...
+		    doCmd "  Building all ..." \
+			${GMAKE} ${MAKE_OPTS} -C ${OBJ_DIR}/ all
 		    
 		    doCmd "  Installing ..." \
 			${GMAKE} ${MAKE_OPTS} -C ${OBJ_DIR}/ install
