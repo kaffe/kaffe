@@ -1169,9 +1169,8 @@ resolveFieldType(Field *fld, Hjava_lang_Class* this, errorInfo *einfo)
 		return (FIELD_TYPE(fld));
 	}
 
-	/* We lock the class while we retrieve the field name since someone
-	 * else may update it while we're doing this.  Once we've got the
-	 * name we don't really care.
+	/* We must lock the class while we retrieve the field name and
+	 * while we resolve it - or we may release the utf8's field type twice
 	 */
 	lockClass(this);
 	if (FIELD_RESOLVED(fld)) {
@@ -1179,13 +1178,13 @@ resolveFieldType(Field *fld, Hjava_lang_Class* this, errorInfo *einfo)
 		return (FIELD_TYPE(fld));
 	}
 	name = ((Utf8Const*)fld->type)->data;
-	unlockClass(this);
 
 	clas = getClassFromSignature(name, this->loader, einfo);
 
 	utf8ConstRelease((Utf8Const*)fld->type);
 	FIELD_TYPE(fld) = clas;
 	fld->accflags &= ~FIELD_UNRESOLVED_FLAG;
+	unlockClass(this);
 
 	return (clas);
 }
