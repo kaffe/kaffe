@@ -16,11 +16,11 @@
 #include "thread-impl.h"
 #include "debug.h"
 
-#if defined(KAFFE_VMDEBUG)
 static char stat_act[]   = { ' ', 'a' };
 static char stat_susp[]  = { ' ', 's', ' ', 'r', ' ', ' ', ' ', ' ', ' ', ' ', ' ' };
 static char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', ' ' };
 
+#if defined(KAFFE_VMDEBUG)
 
 #define TMSG_SHORT(_msg,_nt)     \
    dprintf(_msg" %p [tid:%4ld, java:%p]\n", \
@@ -761,9 +761,11 @@ jthread_exit ( void )
 		}
 	  }
 
+#if defined(KAFFE_VMDEBUG)
 	  if ( deadlockWatchdog ){
 		pthread_cancel( deadlockWatchdog);
 	  }
+#endif
 
 	  if ( (cur != firstThread) && (firstThread->active == 0) ) {
 		/* if the firstThread has already been frozen, it's not in the cache list */

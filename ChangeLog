@@ -1,5 +1,12 @@
 2003-05-31  Helmer Kraemer  <hkraemer@freenet.de>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	fix compilation when debugging is turned off 
+
+	Reported by: Nicolas Le Sommer <Nicolas.Le-Sommer@univ-ubs.fr>
+
+2003-05-31  Helmer Kraemer  <hkraemer@freenet.de>
+
 	* libraries/javalib/kaffe/net/www/protocol/file/FileURLConnection.java: 
 	(getPermission): new method
 	(connect): construct appropriate permission object for the connected
