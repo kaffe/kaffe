@@ -258,13 +258,11 @@ public int skipBytes(int n) throws IOException {
 }
 
 public void write(byte b[]) throws IOException {
-	write(b, 0, b.length);
+	writeBytes(b, 0, b.length);
 }
 
 public void write(byte b[], int off, int len) throws IOException {
-	for (int pos=off; pos<off+len; pos++) {
-		write((int )b[pos]);
-	}
+	writeBytes(b, off, len);
 }
 
 native public void write(int b) throws IOException;
@@ -278,9 +276,12 @@ final public void writeByte(int v) throws IOException {
 }
 
 final public void writeBytes(String s) throws IOException {
-	for (int pos=0; pos<s.length(); pos++) {
-		writeByte(s.charAt(pos) & 0xFF);
+	char[] c = s.toCharArray();
+	byte[] b = new byte[c.length];
+	for (int pos = 0; pos < c.length; pos++) {
+		b[pos] = (byte)(c[pos] & 0xFF);
 	}
+	writeBytes(b, 0, b.length);
 }
 
 native private void writeBytes(byte bytes[], int off, int len);
