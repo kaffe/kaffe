@@ -257,7 +257,7 @@ opstackWPushBlind(BlockInfo* block,
 		  const Type* type)
 {
 	opstackPushBlind(block, type);
-	opstackPushBlind(block, TWIDE);
+	opstackPushBlind(block, getTWIDE());
 }
 
 /*
@@ -379,7 +379,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 	if (block->locals[_N].data.class != (_TINFO)->data.class) { \
 		return verifyError(v, "local variable not of correct type"); \
 	} \
-	else if (block->locals[_N + 1].data.class != TWIDE->data.class) { \
+	else if (block->locals[_N + 1].data.class != getTWIDE()->data.class) { \
 		return verifyError(v, "accessing a long or double in a local where the following local has been corrupted"); \
 	}
 
@@ -418,7 +418,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 	 * this only works with doubles and longs
 	 */
 #define OPSTACK_WPEEK_T_BLIND(_TINFO) \
-	if (getOpstackTop(block)->data.class != TWIDE->data.class) { \
+	if (getOpstackTop(block)->data.class != getTWIDE()->data.class) { \
 		return verifyError(v, "trying to pop a wide value off operand stack where there is none"); \
 	} else if (getOpstackWTop(block)->data.class != (_TINFO)->data.class) { \
 		return verifyError(v, "mismatched stack types"); \
@@ -676,7 +676,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		LSTORE_common:
 			OPSTACK_WPOP_T(getTLONG());
 			block->locals[idx] = *getTLONG();
-			block->locals[idx + 1] = *TWIDE;
+			block->locals[idx + 1] = *getTWIDE();
 			break;
 			
 			
@@ -703,7 +703,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		DSTORE_common:
 			OPSTACK_WPOP_T(getTDOUBLE());
 			block->locals[idx] = *getTDOUBLE();
-			block->locals[idx + 1] = *TWIDE;
+			block->locals[idx + 1] = *getTWIDE();
 			break;
 			
 			
@@ -1269,7 +1269,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 			
 		case PUTSTATIC:
-			if (getOpstackTop(block) == TWIDE) n = 2;
+			if (getOpstackTop(block) == getTWIDE()) n = 2;
 			else                      n = 1;
 			ENSURE_OPSTACK_SIZE(n);
 			

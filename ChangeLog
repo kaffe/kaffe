@@ -1,6 +1,20 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/verifier/verify-type.c
+	(TWIDE): Made static. 
+	(getTWIDE) Added.
+
+	* kaffe/kaffevm/verifier/verify-type.h: 
+	(TWIDE) Removed prototype.
+	(getTWIDE) Added prototype.
+
+	* kaffe/kaffevm/verifier/verify.c,
+	kaffe/kaffevm/verifier/verify-block.c:
+	Replaced use of TWIDE by getTWIDE.
+	
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/verifier/verify-type.c
 	(TINT): Made static. 
 	(getTINT) Added.
 

@@ -754,13 +754,13 @@ checkMethodCall(Verifier* v,
 		
 	case 'J':
 		binfo->opstack[binfo->stacksz]     = *getTLONG();
-		binfo->opstack[binfo->stacksz + 1] = *TWIDE;
+		binfo->opstack[binfo->stacksz + 1] = *getTWIDE();
 		binfo->stacksz += 2;
 		break;
 		
 	case 'D':
 		binfo->opstack[binfo->stacksz]     = *getTDOUBLE();
-		binfo->opstack[binfo->stacksz + 1] = *TWIDE;
+		binfo->opstack[binfo->stacksz + 1] = *getTWIDE();
 		binfo->stacksz += 2;
 		break;
 		
@@ -860,7 +860,7 @@ loadInitialArgs(Verifier* v)
 				return localOverflowErrorInLoadInitialArgs(v, argbuf);
 			}
 			locals[paramCount] = *getTLONG();
-			locals[paramCount+1] = *TWIDE;
+			locals[paramCount+1] = *getTWIDE();
 			paramCount += 2;
 			break;
 			
@@ -869,7 +869,7 @@ loadInitialArgs(Verifier* v)
 				return localOverflowErrorInLoadInitialArgs(v, argbuf);
 			}
 			locals[paramCount] = *getTDOUBLE();
-			locals[paramCount+1] = *TWIDE;
+			locals[paramCount+1] = *getTWIDE();
 			paramCount += 2;
 			break;
 			

@@ -70,7 +70,12 @@ Type* getTDOUBLE(void)
  * in local variables or on the operand stack
  */
 static Type  _WIDE;
-Type* TWIDE = &_WIDE;
+static Type* TWIDE = &_WIDE;
+
+Type* getTWIDE(void)
+{
+  return TWIDE;
+}
 
 bool
 isWide(const Type * t)

@@ -100,7 +100,7 @@ extern Type* getTFLOAT(void);
 extern Type* getTLONG(void);
 extern Type* getTDOUBLE(void);
 extern Type* getTNULL(void);
-extern Type* TWIDE;
+extern Type* getTWIDE(void);
 
 extern Type* getTOBJ(void);
 
