@@ -1,5 +1,10 @@
 2004-12-18  Adam Heath  <doogieg@brainfood.com>
 
+	* kaffe/kaffe/main.c:
+	  Remove extra fprintf.
+
+2004-12-18  Adam Heath  <doogieg@brainfood.com>
+
 	* kaffe/kaffe/main.c, kaffe/kaffevm/debug.c, kaffe/kaffevm/debug.c:
 	  Add -debug-fd option, to specify where debug output should go.
 

@@ -830,7 +830,6 @@ options(char** argv, int argc)
                                 exit(1);
                         }
 			kaffe_dprintf_fd = strtol(argv[i], &end, 10);
-			fprintf(stderr, "fd=%i end=%s\n", kaffe_dprintf_fd, end);
 			if (end != 0 && *end != '\0') {
 				fprintf(stderr,
 					_("Error: -debug-fd requires an integer.\n"));
