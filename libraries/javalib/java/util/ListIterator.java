@@ -10,7 +10,7 @@
 
 package java.util;
 
-public abstract interface ListIterator extends Iterator {
+public interface ListIterator extends Iterator {
 
 public boolean hasNext();
 public Object next();

@@ -10,7 +10,7 @@
 
 package java.util;
 
-public abstract interface List extends Collection {
+public interface List extends Collection {
 
 public int size();
 public boolean isEmpty();

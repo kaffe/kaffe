@@ -10,7 +10,7 @@
 
 package java.util;
 
-public abstract interface SortedSet extends Set {
+public interface SortedSet extends Set {
 
 public Comparator comparator();
 public SortedSet subSet(Object fromElement, Object toElement);

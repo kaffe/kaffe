@@ -10,7 +10,7 @@
 
 package java.util;
 
-public abstract interface SortedMap extends Map {
+public interface SortedMap extends Map {
 
 public Comparator comparator();
 public SortedMap subMap(Object forKey, Object toKey);

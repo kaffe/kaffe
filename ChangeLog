@@ -1,3 +1,9 @@
+Sun Feb 28 15:01:54 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* In java/util: Collection.java, Comparator.java, Iterator.java,
+	List.java, ListIterator.java, Set.java, SortedMap.java, SortedSet.java:
+	declaring interfaces abstract is unneeded and generates jikes warnings
+
 Sun Feb 28 01:02:50 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/lang/ExceptionInInitializerError.java:
