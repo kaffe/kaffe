@@ -351,7 +351,6 @@ verifyBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 	fieldInfo finfo;
 	Hjava_lang_Class* type;
 	const char* sig;
-	Hjava_lang_Class* class;
 	frameElement* activeFrame;
 	bool wide;
 	bool failed;
