@@ -13,7 +13,7 @@
 CLASSFILE = rmi.jar
 SRCDIRS = java kaffe
 
-class_DATA = $(CLASSFILE)
+jrelib_DATA = $(CLASSFILE)
 
 rmi_jar_SRCS = \
 	$(java_rmi_SRCS) \
@@ -122,7 +122,7 @@ kaffe_rmi_server_SRCS = \
 
 ## Do not delete the previous blank line; update-class-list depends on it
 
-EXTRA_DIST = $(class_DATA) $(rmi_jar_SRCS)
+EXTRA_DIST = $(jrelib_DATA) $(rmi_jar_SRCS)
 
 LIBDIR = lib
 

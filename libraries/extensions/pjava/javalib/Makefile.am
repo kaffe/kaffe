@@ -13,7 +13,7 @@
 CLASSFILE = pjava.jar
 SRCDIRS = com
 
-class_DATA = $(CLASSFILE)
+jrelib_DATA = $(CLASSFILE)
 
 pjava_jar_SRCS = \
 	$(com_sun_awt_SRCS) \
@@ -32,7 +32,7 @@ com_sun_util_SRCS = \
 
 ## Do not delete the previous blank line; update-class-list depends on it
 
-EXTRA_DIST = $(class_DATA) $(pjava_jar_SRCS)
+EXTRA_DIST = $(jrelib_DATA) $(pjava_jar_SRCS)
 
 LIBDIR = lib
 

@@ -13,7 +13,7 @@
 CLASSFILE = comm.jar
 SRCDIRS = javax
 
-class_DATA = $(CLASSFILE)
+jrelib_DATA = $(CLASSFILE)
 
 comm_jar_SRCS = \
 	$(javax_comm_SRCS)
@@ -34,7 +34,7 @@ javax_comm_SRCS = \
 
 ## Do not delete the previous blank line; update-class-list depends on it
 
-EXTRA_DIST = $(class_DATA) $(comm_jar_SRCS)
+EXTRA_DIST = $(jrelib_DATA) $(comm_jar_SRCS)
 
 LIBDIR = lib
 

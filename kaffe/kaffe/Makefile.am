@@ -6,7 +6,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-libexec_PROGRAMS = Kaffe
+jrebin_PROGRAMS = Kaffe
 
 if NEED_LIBXPROF
 libxprof = ../xprof/libkaffexprof.la
@@ -45,3 +45,4 @@ version-info.h: $(top_srcdir)/ChangeLog $(top_builddir)/config.status
 	echo '#define VER_PREFIX        "$(prefix)"'            >> $@T
 	echo '#define VER_THREAD_SYSTEM "$(THREAD_SYSTEM)"'     >> $@T
 	-mv $@T $@
+

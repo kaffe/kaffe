@@ -1,6 +1,8 @@
 AC_INIT(kaffe)
 AM_INIT_AUTOMAKE(kaffe, 1.0.6)
 
+AC_PREFIX_DEFAULT(/usr/local/kaffe)
+
 AM_MAINTAINER_MODE
 
 dnl needed for autoheader to find acconfig.h
@@ -1192,16 +1194,30 @@ dnl -------------------------------------------------------------------------
 # We do this hear to because we need prefixes set.
 test "x$prefix" = xNONE && prefix=$ac_default_prefix
 test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
-nativedir=$libdir/kaffe
+
+toolslibdir=$prefix/lib
+AC_SUBST(toolslibdir)
+
+jredir=$prefix/jre
+AC_SUBST(jredir)
+
+jrebindir=$jredir/bin
+AC_SUBST(jrebindir)
+
+jrelibdir=$jredir/lib
+AC_SUBST(jrelibdir)
+
+nativedir=$jredir/lib/$Khost_cpu
 AC_SUBST(nativedir)
+
+securitydir=$jredir/lib/security
+AC_SUBST(securitydir)
 
 dnl =========================================================================
 dnl Define kaffehome.
 dnl -------------------------------------------------------------------------
 
-classdir=`eval echo $datadir`/kaffe
-AC_DEFINE_UNQUOTED(DEFAULT_KAFFEHOME, "$classdir", [Define default KAFFEHOME])
-AC_SUBST(classdir)
+AC_DEFINE_UNQUOTED(DEFAULT_KAFFEHOME, "$jrelibdir", [Define default KAFFEHOME])
 
 dnl -------------------------------------------------------------------------
 

@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.4a from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p4 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -9,6 +9,15 @@
 # but WITHOUT ANY WARRANTY, to the extent permitted by law; without
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
+
+# Top-level Makefile for Kaffe OpenVM.
+#
+# Copyright (c) 1996, 1997, 1998, 1999
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
 
 SHELL = @SHELL@
 
@@ -45,10 +54,9 @@ AUTOMAKE = @AUTOMAKE@
 AUTOHEADER = @AUTOHEADER@
 
 INSTALL = @INSTALL@
-INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
-INSTALL_STRIP_FLAG =
 transform = @program_transform_name@
 
 NORMAL_INSTALL = :
@@ -57,8 +65,6 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-
-@SET_MAKE@
 host_alias = @host_alias@
 host_triplet = @host@
 AMDEP = @AMDEP@
@@ -122,88 +128,21 @@ VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
 ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
-classdir = @classdir@
 install_sh = @install_sh@
+jrebindir = @jrebindir@
+jredir = @jredir@
+jrelibdir = @jrelibdir@
 kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
+securitydir = @securitydir@
+toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-
-# Top-level Makefile for Kaffe OpenVM.
-#
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
-#
-# See the file "license.terms" for information on usage and redistribution 
-# of this file. 
-
 
 AUTOMAKE_OPTIONS = foreign 1.3e
 
 SUBDIRS = . config include libltdl libraries kaffe test
 
-EXTRA_DIST = \
-	ChangeLog.1 \
-	ChangeLog.2 \
-	ChangeLog.3 \
-	WHATSNEW \
-	license.terms \
-	license-lesser.terms \
-	FAQ/FAQ.BeOS \
-	FAQ/FAQ.Known-Bugs \
-	FAQ/FAQ.amigaos \
-	FAQ/FAQ.automake \
-	FAQ/FAQ.awt \
-	FAQ/FAQ.class-states \
-	FAQ/FAQ.classlibrary-compile \
-	FAQ/FAQ.depend \
-	FAQ/FAQ.feedback \
-	FAQ/FAQ.gcblock \
-	FAQ/FAQ.gcj \
-	FAQ/FAQ.gcstrategy \
-	FAQ/FAQ.hotjava \
-	FAQ/FAQ.install-root \
-	FAQ/FAQ.jsignal \
-	FAQ/FAQ.kjc \
-	FAQ/FAQ.libffi \
-	FAQ/FAQ.libtool \
-	FAQ/FAQ.linux \
-	FAQ/FAQ.locks \
-	FAQ/FAQ.nativemethods \
-	FAQ/FAQ.ncr \
-	FAQ/FAQ.profiler \
-	FAQ/FAQ.pthreads \
-	FAQ/FAQ.requiredlibraries \
-	FAQ/FAQ.staticnative \
-	FAQ/FAQ.timing \
-	FAQ/FAQ.unicode \
-	FAQ/FAQ.win32 \
-	FAQ/FAQ.xdebugging \
-	FAQ/FAQ.xprofiler \
-	compat-include/ansidecl.h \
-	compat-include/eh-common.h \
-	compat-include/frame.h \
-	compat-include/gansidecl.h \
-	developers/Encode.java \
-	developers/EncodeEUC_JP.java \
-	developers/GCJ.note.1 \
-	developers/JavaClass.pm \
-	developers/README \
-	developers/README.unicode \
-	developers/README.EUC_JP \
-	developers/alignment_of_size.c \
-	developers/autogen.sh \
-	developers/createLdScript.pl \
-	developers/dumpClass.pl \
-	developers/gdbinit \
-	developers/fixup.c \
-	developers/geteh_from_libgcc2 \
-	developers/glibc-2.1.1-signal.patch \
-	developers/mangleNative.pl \
-	developers/rpm-kaffe.spec \
-	developers/sp_offset.c \
-	developers/unicode.pl \
-	developers/update-class-list \
-	developers/utf8munge.pl
+EXTRA_DIST =  	ChangeLog.1 	ChangeLog.2 	ChangeLog.3 	WHATSNEW 	license.terms 	license-lesser.terms 	FAQ/FAQ.BeOS 	FAQ/FAQ.Known-Bugs 	FAQ/FAQ.amigaos 	FAQ/FAQ.automake 	FAQ/FAQ.awt 	FAQ/FAQ.class-states 	FAQ/FAQ.classlibrary-compile 	FAQ/FAQ.depend 	FAQ/FAQ.feedback 	FAQ/FAQ.gcblock 	FAQ/FAQ.gcj 	FAQ/FAQ.gcstrategy 	FAQ/FAQ.hotjava 	FAQ/FAQ.install-root 	FAQ/FAQ.jsignal 	FAQ/FAQ.kjc 	FAQ/FAQ.libffi 	FAQ/FAQ.libtool 	FAQ/FAQ.linux 	FAQ/FAQ.locks 	FAQ/FAQ.nativemethods 	FAQ/FAQ.ncr 	FAQ/FAQ.profiler 	FAQ/FAQ.pthreads 	FAQ/FAQ.requiredlibraries 	FAQ/FAQ.staticnative 	FAQ/FAQ.timing 	FAQ/FAQ.unicode 	FAQ/FAQ.win32 	FAQ/FAQ.xdebugging 	FAQ/FAQ.xprofiler 	compat-include/ansidecl.h 	compat-include/eh-common.h 	compat-include/frame.h 	compat-include/gansidecl.h 	developers/Encode.java 	developers/EncodeEUC_JP.java 	developers/GCJ.note.1 	developers/JavaClass.pm 	developers/README 	developers/README.unicode 	developers/README.EUC_JP 	developers/alignment_of_size.c 	developers/autogen.sh 	developers/createLdScript.pl 	developers/dumpClass.pl 	developers/gdbinit 	developers/fixup.c 	developers/geteh_from_libgcc2 	developers/glibc-2.1.1-signal.patch 	developers/mangleNative.pl 	developers/rpm-kaffe.spec 	developers/sp_offset.c 	developers/unicode.pl 	developers/update-class-list 	developers/utf8munge.pl
 
 
 CLEANFILES = BUILD_ENVIRONMENT
@@ -211,21 +150,20 @@ CLEANFILES = BUILD_ENVIRONMENT
 noinst_SCRIPTS = libtool BUILD_ENVIRONMENT
 
 CLASSDIRS = libraries/javalib
-subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ./config/config.h ./include/jtypes.h
 CONFIG_CLEAN_FILES = 
 SCRIPTS =  $(noinst_SCRIPTS)
 
-DIST_SOURCES = 
 DIST_COMMON =  README AUTHORS ChangeLog INSTALL Makefile.am Makefile.in \
 acinclude.m4 aclocal.m4 config.guess config.sub configure configure.in \
-depcomp install-sh ltconfig ltmain.sh missing mkinstalldirs
+install-sh ltconfig ltmain.sh missing mkinstalldirs
 
 
-DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
+TAR = tar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
@@ -239,7 +177,7 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ configure.in  acinclude.m4
 	cd $(srcdir) && $(ACLOCAL)
 
-config.status: $(srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+config.status: $(srcdir)/configure.in $(CONFIG_STATUS_DEPENDENCIES)
 	$(SHELL) ./config.status --recheck
 $(srcdir)/configure: @MAINTAINER_MODE_TRUE@$(srcdir)/configure.in $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
 	cd $(srcdir) && $(AUTOCONF)
@@ -250,6 +188,8 @@ $(srcdir)/configure: @MAINTAINER_MODE_TRUE@$(srcdir)/configure.in $(ACLOCAL_M4) 
 # (1) if the variable is set in `config.status', edit `config.status'
 #     (which will cause the Makefiles to be regenerated when you run `make');
 # (2) otherwise, pass the desired values on the `make' command line.
+
+@SET_MAKE@
 
 all-recursive install-data-recursive install-exec-recursive \
 installdirs-recursive install-recursive uninstall-recursive  \
@@ -278,7 +218,7 @@ maintainer-clean-recursive:
 	dot_seen=no; \
 	rev=''; list='$(SUBDIRS)'; for subdir in $$list; do \
 	  rev="$$subdir $$rev"; \
-	  if test "$$subdir" = "."; then dot_seen=yes; else :; fi; \
+	  test "$$subdir" = "." && dot_seen=yes; \
 	done; \
 	test "$$dot_seen" = "no" && rev=". $$rev"; \
 	target=`echo $@ | sed s/-recursive//`; \
@@ -299,17 +239,15 @@ tags-recursive:
 
 tags: TAGS
 
-ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
-	list='$(SOURCES) $(HEADERS) $(TAGS_FILES)'; \
-	unique=`for i in $$list; do \
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
-	  done | \
-	  $(AWK) '    { files[$$0] = 1; } \
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
-	mkid -f$$here/ID $$unique $(LISP)
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $$unique $(LISP)
 
-TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
-		$(TAGS_FILES) $(LISP)
+TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
 	tags=; \
 	here=`pwd`; \
 	list='$(SUBDIRS)'; for subdir in $$list; do \
@@ -317,14 +255,12 @@ TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 	    test -f $$subdir/TAGS && tags="$$tags -i $$here/$$subdir/TAGS"; \
    fi; \
 	done; \
-	list='$(SOURCES) $(HEADERS) $(TAGS_FILES)'; \
-	unique=`for i in $$list; do \
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
-	  done | \
-	  $(AWK) '    { files[$$0] = 1; } \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
 	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
-	  || etags $(ETAGS_ARGS) $$tags  $$unique $(LISP)
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
 
 mostlyclean-tags:
 
@@ -338,64 +274,55 @@ maintainer-clean-tags:
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
 
-
 # This target untars the dist file and tries a VPATH configuration.  Then
 # it guarantees that the distribution is self-contained by making another
 # tarfile.
 distcheck: dist
-	-chmod -R a+w $(distdir) > /dev/null 2>&1; rm -rf $(distdir)
-	GZIP=$(GZIP_ENV) gunzip -c $(distdir).tar.gz | $(AMTAR) xf -
-	chmod -R a-w $(distdir); chmod a+w $(distdir)
+	-rm -rf $(distdir)
+	GZIP=$(GZIP_ENV) $(TAR) zxf $(distdir).tar.gz
 	mkdir $(distdir)/=build
 	mkdir $(distdir)/=inst
-	chmod a-w $(distdir)
-	dc_install_base=`CDPATH=: && cd $(distdir)/=inst && pwd` \
-	  && cd $(distdir)/=build \
+	dc_install_base=`cd $(distdir)/=inst && pwd`; \
+	cd $(distdir)/=build \
 	  && ../configure --srcdir=.. --prefix=$$dc_install_base \
 	  && $(MAKE) $(AM_MAKEFLAGS) \
 	  && $(MAKE) $(AM_MAKEFLAGS) dvi \
 	  && $(MAKE) $(AM_MAKEFLAGS) check \
 	  && $(MAKE) $(AM_MAKEFLAGS) install \
 	  && $(MAKE) $(AM_MAKEFLAGS) installcheck \
-	  && $(MAKE) $(AM_MAKEFLAGS) uninstall \
-	  && test `find $$dc_install_base -type f -print | wc -l` -le 1 \
-	  && $(MAKE) $(AM_MAKEFLAGS) dist \
-	  && $(MAKE) $(AM_MAKEFLAGS) distclean \
-	  && rm -f $(distdir).tar.gz \
-	  && test `find . -type f -print | wc -l` -eq 0
-	-chmod -R a+w $(distdir) > /dev/null 2>&1; rm -rf $(distdir)
+	  && $(MAKE) $(AM_MAKEFLAGS) dist
+	-rm -rf $(distdir)
 	@banner="$(distdir).tar.gz is ready for distribution"; \
 	dashes=`echo "$$banner" | sed s/./=/g`; \
 	echo "$$dashes"; \
 	echo "$$banner"; \
 	echo "$$dashes"
 dist: distdir
-	-find $(distdir) -type d ! -perm -777 -exec chmod a+rwx {} \; -o \
-	  ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
-	  ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
-	  ! -type d ! -perm -444 -exec $(SHELL) $(install_sh) -c -m a+r {} {} \; \
-	|| chmod -R a+r $(distdir)
-	$(AMTAR) chof - $(distdir) | GZIP=$(GZIP_ENV) gzip -c > $(distdir).tar.gz
-	-chmod -R a+w $(distdir) > /dev/null 2>&1; rm -rf $(distdir)
+	-chmod -R a+r $(distdir)
+	GZIP=$(GZIP_ENV) $(TAR) chozf $(distdir).tar.gz $(distdir)
+	-rm -rf $(distdir)
 dist-all: distdir
-	-find $(distdir) -type d ! -perm -777 -exec chmod a+rwx {} \; -o \
-	  ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
-	  ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
-	  ! -type d ! -perm -444 -exec $(SHELL) $(install_sh) -c -m a+r {} {} \; \
-	|| chmod -R a+r $(distdir)
-	$(AMTAR) chof - $(distdir) | GZIP=$(GZIP_ENV) gzip -c > $(distdir).tar.gz
-	-chmod -R a+w $(distdir) > /dev/null 2>&1; rm -rf $(distdir)
+	-chmod -R a+r $(distdir)
+	GZIP=$(GZIP_ENV) $(TAR) chozf $(distdir).tar.gz $(distdir)
+	-rm -rf $(distdir)
 distdir: $(DISTFILES)
-	-chmod -R a+w $(distdir) > /dev/null 2>&1; rm -rf $(distdir)
+	-rm -rf $(distdir)
 	mkdir $(distdir)
+	-chmod 777 $(distdir)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign Makefile
 	$(mkinstalldirs) $(distdir)/FAQ $(distdir)/compat-include \
 	   $(distdir)/developers
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pR $$d/$$file $(distdir); \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
@@ -404,6 +331,7 @@ distdir: $(DISTFILES)
 	    test -d $(distdir)/$$subdir \
 	    || mkdir $(distdir)/$$subdir \
 	    || exit 1; \
+	    chmod 777 $(distdir)/$$subdir; \
 	    (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir=../$(distdir) distdir=../$(distdir)/$$subdir distdir) \
 	      || exit 1; \
 	  fi; \
@@ -430,7 +358,7 @@ uninstall: uninstall-recursive
 all-am: Makefile $(SCRIPTS)
 all-redirect: all-recursive
 install-strip:
-	$(MAKE) $(AM_MAKEFLAGS) INSTALL_STRIP_FLAG=-s install
+	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
 installdirs: installdirs-recursive
 installdirs-am:
 
@@ -445,7 +373,6 @@ distclean-generic:
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-	-rm -f Makefile.in
 mostlyclean-am:  mostlyclean-tags mostlyclean-generic
 
 mostlyclean: mostlyclean-recursive
@@ -468,19 +395,18 @@ maintainer-clean-am:  maintainer-clean-tags maintainer-clean-generic \
 maintainer-clean: maintainer-clean-recursive
 	-rm -f config.status
 
-.PHONY: install-recursive uninstall-recursive install-data-recursive \
-uninstall-data-recursive install-exec-recursive \
-uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
-all-recursive check-recursive installcheck-recursive info-recursive \
-dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
+.PHONY: install-data-recursive uninstall-data-recursive \
+install-exec-recursive uninstall-exec-recursive installdirs-recursive \
+uninstalldirs-recursive all-recursive check-recursive \
+installcheck-recursive info-recursive dvi-recursive \
+mostlyclean-recursive distclean-recursive clean-recursive \
 maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
 distclean-tags clean-tags maintainer-clean-tags distdir info-am info \
 dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
 install-exec install-data-am install-data install-am install \
-uninstall-am uninstall all-redirect all-am all install-strip \
-installdirs-am installdirs mostlyclean-generic distclean-generic \
-clean-generic maintainer-clean-generic clean mostlyclean distclean \
-maintainer-clean
+uninstall-am uninstall all-redirect all-am all installdirs-am \
+installdirs mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
 depend:

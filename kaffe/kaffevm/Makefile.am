@@ -23,7 +23,7 @@ EXTRA_DIST = \
 
 INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/xprof
 
-lib_LTLIBRARIES = libkaffevm.la
+native_LTLIBRARIES = libkaffevm.la
 
 @cpu_frag@
 @cpu_os_frag@

@@ -102,11 +102,12 @@ noinst_HEADERS = $(NOINSTALL_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS) \
 	nets.h \
 	system.h
 
+include_HEADERS = jni.h
+
 pkginclude_HEADERS = $(INSTALL_DERIVED_HDRS) $(INSTALL_JNI_DERIVED_HDRS) \
 	Arrays.h \
 	errors.h \
 	jmalloc.h \
-	jni.h \
 	jni_cpp.h \
 	jsyscall.h \
 	jtypes.h \

@@ -15,7 +15,6 @@ SECURITY_SRCS =	\
 		digest.c \
 		kaffe_md5.c
 
-securitydir = $(pkglibdir)/security
 security_DATA = java.security
 
 libsecurity_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"

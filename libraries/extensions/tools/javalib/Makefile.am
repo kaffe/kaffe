@@ -13,7 +13,7 @@
 CLASSFILE = tools.jar
 SRCDIRS = kaffe
 
-class_DATA = $(CLASSFILE)
+toolslib_DATA = $(CLASSFILE)
 
 tools_jar_SRCS = \
 	$(kaffe_tools_compiler_SRCS) \
@@ -40,7 +40,7 @@ kaffe_tools_serialver_SRCS = \
 
 ## Do not delete the previous blank line; update-class-list depends on it
 
-EXTRA_DIST = $(class_DATA) $(tools_jar_SRCS)
+EXTRA_DIST = $(toolslib_DATA) $(tools_jar_SRCS)
 
 LIBDIR = lib
 

@@ -33,10 +33,10 @@ exec_prefix="@exec_prefix@"
 PATHSEP='@PATHSEP@'
 DIRSEP='@DIRSEP@'
 : ${KAFFE_LIBDIR="@libdir@"}
-: ${KAFFE_LIBEXECDIR="@libexecdir@"}
-: ${KAFFE_CLASSDIR="@datadir@/kaffe"}
+: ${KAFFE_JREDIR="@jredir@"}
+: ${KAFFE_JREBINDIR="@jrebindir@"}
+: ${KAFFE_JRELIBDIR="@jrelibdir@"}
 : ${KAFFE_NATIVE_LIBRARY_DIR="@nativedir@"}
-: ${KAFFE_OLD_NATIVE_LIBRARY_DIR="$KAFFE_CLASSDIR/lib/@KAFFE_ARCHOS@"}
 
 if test x"${KAFFEHOME+set}"x != x"set"x; then
   KAFFEHOME="@prefix@"
@@ -44,22 +44,19 @@ fi
 export KAFFEHOME
 
 CLASSPATH="${CLASSPATH-.}"
-for f in Klasses.jar comm.jar pjava.jar servlet.jar tools.jar microsoft.jar kjc.jar rmi.jar; do
-  if test -f "$KAFFE_CLASSDIR/$f"; then
-    CLASSPATH="$CLASSPATH$PATHSEP$KAFFE_CLASSDIR/$f"
+for f in rt.jar comm.jar pjava.jar servlet.jar tools.jar microsoft.jar kjc.jar rmi.jar; do
+  if test -f "$KAFFE_LIBDIR/$f"; then
+    CLASSPATH="$CLASSPATH$PATHSEP$KAFFE_LIBDIR/$f"
+  fi
+  if test -f "$KAFFE_JRELIBDIR/$f"; then
+    CLASSPATH="$CLASSPATH$PATHSEP$KAFFE_JRELIBDIR/$f"
   fi
 done
-if test -f "$KAFFE_CLASSDIR/classes.zip"; then
-  CLASSPATH="$CLASSPATH$PATHSEP$KAFFE_CLASSDIR/classes.zip"
-fi
 case "$DIRSEP" in /) ;;
 *) CLASSPATH=`echo "$CLASSPATH" | sed 's,/,'"$DIRSEP"',g'` ;;
 esac
 export CLASSPATH
 KAFFELIBRARYPATH="$KAFFE_NATIVE_LIBRARY_DIR$PATHSEP$KAFFE_LIBDIR"${KAFFELIBRARYPATH+"$PATHSEP$KAFFELIBRARYPATH"}${LD_LIBRARY_PATH+"$PATHSEP${LD_LIBRARY_PATH}"}
-if test -d "$KAFFE_OLD_NATIVE_LIBRARY_DIR"; then
-  KAFFELIBRARYPATH="$KAFFELIBRARYPATH$PATHSEP$KAFFE_OLD_NATIVE_LIBRARY_DIR"
-fi
 export KAFFELIBRARYPATH
 LD_LIBRARY_PATH="$KAFFE_LIBDIR"${LD_LIBRARY_PATH+"$PATHSEP$LD_LIBRARY_PATH"}
 export LD_LIBRARY_PATH
@@ -67,15 +64,15 @@ PATH="$PATH:$KAFFE_LIBDIR" # MS-Windows DLLs must be in the PATH
 export PATH
 
 # Slurp in system and user specific scripts
-if [ -f "@datadir@/kaffe/kafferc" ]; then
-    . @datadir@/kaffe/kafferc
+if [ -f "@jredir@/etc/kafferc" ]; then
+    . @jredir@/etc/kafferc
 fi
 if [ -f "${HOME}/.kafferc" ]; then
     . "${HOME}/.kafferc"
 fi
 
 if test x"${KAFFE_DEBUG+set}"x != x"set"x; then
-    exec $KAFFE_LIBEXECDIR/@Kaffe_TRANSF@ ${1+"$@"}
+    exec $KAFFE_JREBINDIR/@Kaffe_TRANSF@ ${1+"$@"}
 else
     case `"$KAFFE_DEBUG" --version </dev/null 2>/dev/null` in
     *"GDB"* | *"GNU gdb"*)
@@ -86,7 +83,7 @@ else
 	    echo "cd `pwd`"
 	    echo "set args $*"
 	} >/tmp/.gdbinit.$$
-	exec "$KAFFE_DEBUG" -command /tmp/.gdbinit.$$ $KAFFE_LIBEXECDIR/@Kaffe_TRANSF@
+	exec "$KAFFE_DEBUG" -command /tmp/.gdbinit.$$ $KAFFE_JREBINDIR/@Kaffe_TRANSF@
 	rm -f /tmp/.gdbinit.$$;;
     DDD*)
 	# Tell DDD to start gdb within the correct working directory,
@@ -97,16 +94,16 @@ else
 	    echo "set args $*"
 	} >/tmp/.gdbinit.$$
         exec "$KAFFE_DEBUG" --debugger "${GDB-gdb} -command /tmp/.gdbinit.$$" \
-	  $KAFFE_LIBEXECDIR/Kaffe
+	  $KAFFE_JREBINDIR/Kaffe
 	rm -f /tmp/.gdbinit.$$;;
     "GNU Emacs"*)
 	# start gdb within GNU Emacs, move into the current working
 	# directory and set up the specified argument list
-	exec "$KAFFE_DEBUG" -eval "(progn (gdb \"gdb $KAFFE_LIBEXECDIR/@Kaffe_TRANSF@\") (gud-call \"cd `pwd`\") (gud-call \"set args $*\"))";;
+	exec "$KAFFE_DEBUG" -eval "(progn (gdb \"gdb $KAFFE_JREBINDIR/@Kaffe_TRANSF@\") (gud-call \"cd `pwd`\") (gud-call \"set args $*\"))";;
     XEmacs*)
 	# start gdb within XEmacs, move into the current working
 	# directory and set up the specified argument list
-	exec "$KAFFE_DEBUG" -eval "(progn (gdb \"$KAFFE_LIBEXECDIR/@Kaffe_TRANSF@\") (gdb-call \"cd `pwd`\") (gdb-call \"set args $*\"))";;
+	exec "$KAFFE_DEBUG" -eval "(progn (gdb \"$KAFFE_JREBINDIR/@Kaffe_TRANSF@\") (gdb-call \"cd `pwd`\") (gdb-call \"set args $*\"))";;
     *) echo you must set KAFFE_DEBUG to either emacs or gdb >&2;;
     esac
 fi

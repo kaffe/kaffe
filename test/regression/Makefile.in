@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.4a from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p4 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -9,6 +9,15 @@
 # but WITHOUT ANY WARRANTY, to the extent permitted by law; without
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
+
+# Regression testing
+#
+# Copyright (c) 1996, 1997, 1998, 1999
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
 
 SHELL = @SHELL@
 
@@ -45,10 +54,9 @@ AUTOMAKE = @AUTOMAKE@
 AUTOHEADER = @AUTOHEADER@
 
 INSTALL = @INSTALL@
-INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
-INSTALL_STRIP_FLAG =
 transform = @program_transform_name@
 
 NORMAL_INSTALL = :
@@ -57,8 +65,6 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-
-@SET_MAKE@
 host_alias = @host_alias@
 host_triplet = @host@
 AMDEP = @AMDEP@
@@ -122,171 +128,43 @@ VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
 ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
-classdir = @classdir@
 install_sh = @install_sh@
+jrebindir = @jrebindir@
+jredir = @jredir@
+jrelibdir = @jrelibdir@
 kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
+securitydir = @securitydir@
+toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-
-# Regression testing
-#
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
-#
-# See the file "license.terms" for information on usage and redistribution 
-# of this file. 
-
 
 SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
 TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT) $(SHELL) TestScript
 
-ALWAYS_TESTS = \
-	HelloWorldApp.class.save \
-	HelloWorldApp.java \
-	TestIntLong.java \
-	TestFloatDouble.java \
-	DoubleCvt.java \
-	DoubleNeg.java \
-	DoubleConst.java \
-	DoublePrint.java \
-	DoubleComp.java \
-	ModuloTest.java \
-	LongNeg.java \
-	FPUStack.java \
-	divtest.java \
-	Str.java \
-	Str2.java \
-	InternHog.java \
-	IndexTest.java \
-	StackDump.java \
-	tname.java \
-	ttest.java \
-	ThreadInterrupt.java \
-	ThreadState.java \
-	UncaughtException.java \
-	IllegalWait.java \
-	Preempt.java 		\
-	ReflectInterfaces.java \
-	InnerTest.java \
-	SerialUID.java \
-	TestSerializable.java \
-	TestSerializable2.java \
-	TestCasts.java \
-	Alias.java \
-	NullPointerTest.java \
-	NullInvoke.java \
-	TableSwitch.java \
-	LostFrame.java \
-	ConstructorTest.java \
-	burford.java \
-	IllegalInterface.java \
-	GetInterfaces.java \
-	IntfTest.java \
-	SignedShort.java \
-	CharCvt.java \
-	BadFloatTest.java \
-	ProcessTest.java \
-	UDPTest.java \
-	SoTimeout.java \
-	wc.java \
-	FileTest.java \
-	finalexc.java \
-	finaltest.java \
-	finaltest2.java \
-	forNameTest.java \
-	LoaderTest.java \
-	ArrayForName.java \
-	KaffeVerifyBug.java \
-	Schtum.java \
-	Reflect.java \
-	MethodBug.java \
-	Bean.java \
-	SortTest.java \
-	HashTest.java \
-	MapTest.java \
-	URLTest.java \
-	PropertiesTest.java \
-	ReaderTest.java \
-	CharArrayReaderTest.java \
-	LineNumberReaderTest.java \
-	BufferedReaderTest.java \
-	ReaderReadVoidTest.java \
-	PipeTest.java \
-	ReflectInvoke.java \
-	InvTarExcTest.java \
-	SystemLoaderTest.java \
-	CLTest.java \
-	CLTestConc.java \
-	CLTestJLock.java \
-	CLTestLie.java \
-	CLTestFindLoaded.java \
-	ClassDeadLock.java \
-	ExceptionTest.java \
-	ExceptionTestClassLoader.java \
-	ExceptionTestClassLoader2.java \
-	TestClassRef.java \
-	ClassGC.java \
-	GCTest.java \
-	ThreadLocalTest.java \
-	BeanBug.java \
-	BitSetTest.java \
-	ExceptionInInitializerTest.java \
-	InitTest.java \
-	ProcessClassTest.java \
-	ProcessClassInst.java \
-	ProcessClassStop.java \
-	FindSystemClass.java \
-	ProcessClassLockTest.java \
-	DoubleBug.java \
-	TestUnlock.java \
-	MarkResetTest.java \
-	HashtableTest1.java \
-	ReflectMultiArray.java \
-	ExecTest.java \
-	CatchDeath.java \
-	ThreadStop.java \
-	DeadThread.java \
-	tthrd1.java \
-	SoInterrupt.java \
-	sysdepCallMethod.java \
-	DosTimeVerify.java \
-	ZipVerify.java \
-	ZipTest.java \
-	TestNative.java
+ALWAYS_TESTS =  	HelloWorldApp.class.save 	HelloWorldApp.java 	TestIntLong.java 	TestFloatDouble.java 	DoubleCvt.java 	DoubleNeg.java 	DoubleConst.java 	DoublePrint.java 	DoubleComp.java 	ModuloTest.java 	LongNeg.java 	FPUStack.java 	divtest.java 	Str.java 	Str2.java 	InternHog.java 	IndexTest.java 	StackDump.java 	tname.java 	ttest.java 	ThreadInterrupt.java 	ThreadState.java 	UncaughtException.java 	IllegalWait.java 	Preempt.java 			ReflectInterfaces.java 	InnerTest.java 	SerialUID.java 	TestSerializable.java 	TestSerializable2.java 	TestCasts.java 	Alias.java 	NullPointerTest.java 	NullInvoke.java 	TableSwitch.java 	LostFrame.java 	ConstructorTest.java 	burford.java 	IllegalInterface.java 	GetInterfaces.java 	IntfTest.java 	SignedShort.java 	CharCvt.java 	BadFloatTest.java 	ProcessTest.java 	UDPTest.java 	SoTimeout.java 	wc.java 	FileTest.java 	finalexc.java 	finaltest.java 	finaltest2.java 	forNameTest.java 	LoaderTest.java 	ArrayForName.java 	KaffeVerifyBug.java 	Schtum.java 	Reflect.java 	MethodBug.java 	Bean.java 	SortTest.java 	HashTest.java 	MapTest.java 	URLTest.java 	PropertiesTest.java 	ReaderTest.java 	CharArrayReaderTest.java 	LineNumberReaderTest.java 	BufferedReaderTest.java 	ReaderReadVoidTest.java 	PipeTest.java 	ReflectInvoke.java 	InvTarExcTest.java 	SystemLoaderTest.java 	CLTest.java 	CLTestConc.java 	CLTestJLock.java 	CLTestLie.java 	CLTestFindLoaded.java 	ClassDeadLock.java 	ExceptionTest.java 	ExceptionTestClassLoader.java 	ExceptionTestClassLoader2.java 	TestClassRef.java 	ClassGC.java 	GCTest.java 	ThreadLocalTest.java 	BeanBug.java 	BitSetTest.java 	ExceptionInInitializerTest.java 	InitTest.java 	ProcessClassTest.java 	ProcessClassInst.java 	ProcessClassStop.java 	FindSystemClass.java 	ProcessClassLockTest.java 	DoubleBug.java 	TestUnlock.java 	MarkResetTest.java 	HashtableTest1.java 	ReflectMultiArray.java 	ExecTest.java 	CatchDeath.java 	ThreadStop.java 	DeadThread.java 	tthrd1.java 	SoInterrupt.java 	sysdepCallMethod.java 	DosTimeVerify.java 	ZipVerify.java 	ZipTest.java 	TestNative.java
 
 
 TEST_Overflow = Overflow.java
-@HAVE_GCJ_SUPPORT_TRUE@TESTS = @HAVE_GCJ_SUPPORT_TRUE@$(ALWAYS_TESTS) $(TEST_Overflow)
-@HAVE_GCJ_SUPPORT_FALSE@TESTS = @HAVE_GCJ_SUPPORT_FALSE@$(ALWAYS_TESTS)
+@HAVE_GCJ_SUPPORT_TRUE@TESTS = $(ALWAYS_TESTS) $(TEST_Overflow)
+@HAVE_GCJ_SUPPORT_FALSE@TESTS = $(ALWAYS_TESTS)
 
 XFAIL_TESTS = 
 
-EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow) \
-	CLTestConc_run.java \
-	ZipVerifyUtils.java \
-	ClassGCTest.java \
-	ClassGCTestLater.java \
-	LoaderTest_Class0.java \
-	LoaderTest_Class1.java \
-	LoaderTest_Class1BeanInfo.java \
-	LoaderTest_Class2.java \
-	LoaderTest_Class3.java \
-	LoaderTest_Loader1.java \
-	LoaderTest_Loader2.java
+EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow) 	CLTestConc_run.java 	ZipVerifyUtils.java 	ClassGCTest.java 	ClassGCTestLater.java 	LoaderTest_Class0.java 	LoaderTest_Class1.java 	LoaderTest_Class1BeanInfo.java 	LoaderTest_Class2.java 	LoaderTest_Class3.java 	LoaderTest_Loader1.java 	LoaderTest_Loader2.java
 
 
-CLEANFILES = *.class *.fail *.out core *.core ExceptionTest
-subdir = test/regression
+CLEANFILES = *.class *.fail *.out core *.core ExceptionTest ziptest1.zip 	ziptest2.zip frozen_serial
+
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
 CONFIG_CLEAN_FILES =  TestScript
-DIST_SOURCES = 
 DIST_COMMON =  Makefile.am Makefile.in TestScript.in
 
 
-DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
+TAR = tar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
@@ -305,61 +183,43 @@ TAGS:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
+subdir = test/regression
+
 distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu test/regression/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pR $$d/$$file $(distdir); \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
 check-TESTS: $(TESTS)
-	@failed=0; all=0; xfail=0; xpass=0; \
+	@failed=0; all=0; \
 	srcdir=$(srcdir); export srcdir; \
 	for tst in $(TESTS); do \
-	  if test -f ./$$tst; then dir=./; \
-	  elif test -f $$tst; then dir=; \
-	  else dir="$(srcdir)/"; fi; \
-	  if $(TESTS_ENVIRONMENT) $${dir}$$tst; then \
+	  if test -f $$tst; then dir=.; \
+	  else dir="$(srcdir)"; fi; \
+	  if $(TESTS_ENVIRONMENT) $$dir/$$tst; then \
 	    all=`expr $$all + 1`; \
-	    case " $(XFAIL_TESTS) " in \
-	    *" $$tst "*) \
-	      xpass=`expr $$xpass + 1`; \
-	      failed=`expr $$failed + 1`; \
-	      echo "XPASS: $$tst"; \
-	    ;; \
-	    *) \
-	      echo "PASS: $$tst"; \
-	    ;; \
-	    esac; \
+	    echo "PASS: $$tst"; \
 	  elif test $$? -ne 77; then \
 	    all=`expr $$all + 1`; \
-	    case " $(XFAIL_TESTS) " in \
-	    *" $$tst "*) \
-	      xfail=`expr $$xfail + 1`; \
-	      echo "XFAIL: $$tst"; \
-	    ;; \
-	    *) \
-	      failed=`expr $$failed + 1`; \
-	      echo "FAIL: $$tst"; \
-	    ;; \
-	    esac; \
+	    failed=`expr $$failed + 1`; \
+	    echo "FAIL: $$tst"; \
 	  fi; \
 	done; \
 	if test "$$failed" -eq 0; then \
-	  if test "$$xfail" -eq 0; then \
-	    banner="All $$all tests passed"; \
-	  else \
-	    banner="All $$all tests behaved as expected ($$xfail expected failures)"; \
-	  fi; \
+	  banner="All $$all tests passed"; \
 	else \
-	  if test "$$xpass" -eq 0; then \
-	    banner="$$failed of $$all tests failed"; \
-	  else \
-	    banner="$$failed of $$all tests did not behave as expected ($$xpass unexpected passes)"; \
-	  fi; \
+	  banner="$$failed of $$all tests failed"; \
 	fi; \
 	dashes=`echo "$$banner" | sed s/./=/g`; \
 	echo "$$dashes"; \
@@ -389,7 +249,7 @@ uninstall: uninstall-am
 all-am: Makefile
 all-redirect: all-am
 install-strip:
-	$(MAKE) $(AM_MAKEFLAGS) INSTALL_STRIP_FLAG=-s install
+	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
 installdirs:
 
 
@@ -403,7 +263,6 @@ distclean-generic:
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-	-rm -f Makefile.in
 mostlyclean-am:  mostlyclean-generic
 
 mostlyclean: mostlyclean-am
@@ -426,7 +285,7 @@ maintainer-clean: maintainer-clean-am
 .PHONY: tags distdir check-TESTS info-am info dvi-am dvi check check-am \
 installcheck-am installcheck install-exec-am install-exec \
 install-data-am install-data install-am install uninstall-am uninstall \
-all-redirect all-am all install-strip installdirs mostlyclean-generic \
+all-redirect all-am all installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 

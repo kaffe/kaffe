@@ -13,7 +13,7 @@
 CLASSFILE = servlet.jar
 SRCDIRS = javax
 
-class_DATA = $(CLASSFILE)
+jrelib_DATA = $(CLASSFILE)
 
 servlet_jar_SRCS = \
 	$(javax_servlet_SRCS) \
@@ -43,7 +43,7 @@ javax_servlet_http_SRCS = \
 
 ## Do not delete the previous blank line; update-class-list depends on it
 
-EXTRA_DIST = $(class_DATA) $(servlet_jar_SRCS)
+EXTRA_DIST = $(jrelib_DATA) $(servlet_jar_SRCS)
 
 LIBDIR = lib
 

@@ -13,7 +13,7 @@
 CLASSFILE = microsoft.jar
 SRCDIRS = com
 
-class_DATA = $(CLASSFILE)
+jrelib_DATA = $(CLASSFILE)
 
 microsoft_jar_SRCS = \
 	$(com_ms_lang_SRCS)
@@ -24,7 +24,7 @@ com_ms_lang_SRCS = \
 
 ## Do not delete the previous blank line; update-class-list depends on it
 
-EXTRA_DIST = $(class_DATA) $(microsoft_jar_SRCS)
+EXTRA_DIST = $(jrelib_DATA) $(microsoft_jar_SRCS)
 
 LIBDIR = lib
 
