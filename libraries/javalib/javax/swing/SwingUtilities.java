@@ -76,6 +76,11 @@ public class SwingUtilities implements SwingConstants
    */
   private static OwnerFrame ownerFrame;
 
+  private SwingUtilities()
+  {
+    // Do nothing.
+  }
+  
   /**
    * Calculates the portion of the base rectangle which is inside the
    * insets.
@@ -1119,6 +1124,19 @@ public class SwingUtilities implements SwingConstants
       return new Rectangle(dx, dy, dw, dh);
 
     return new Rectangle(0, 0, 0, 0);
+  }
+  
+  /**
+   * Calculates the width of a given string.
+   *
+   * @param fm the <code>FontMetrics</code> object to use
+   * @param str the string
+   * 
+   * @return the width of the the string.
+   */
+  public static int computeStringWidth(FontMetrics fm, String str)
+  {
+    return fm.stringWidth(str);
   }
 
   /**

@@ -52,6 +52,11 @@ import javax.swing.border.TitledBorder;
 
 public class BorderFactory
 {
+  private BorderFactory()
+  {
+    // Do nothing.
+  }
+  
   /**
    * Creates a line border withe the specified color.
    *
