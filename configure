@@ -13054,11 +13054,11 @@ fi
 
 
 if test x"$pure_java_math" = x"true" ; then
-	java_math_SRCS="pure_java_math_SRCS"
+	java_math_files="pure_java_math.files"
 	NATIVE_MATH_DIR=""
 	MATH_LIB=""
 else
-	java_math_SRCS="native_java_math_SRCS"
+	java_math_files="native_java_math.files"
 	NATIVE_MATH_DIR="math"
 	MATH_LIB="\$(top_builddir)/libraries/clib/math/libmath.la"
 fi
@@ -13674,7 +13674,7 @@ s%@QT_GUILINK@%$QT_GUILINK%g
 s%@AWT_DIR@%$AWT_DIR%g
 s%@ALSA_DIR@%$ALSA_DIR%g
 s%@ESD_DIR@%$ESD_DIR%g
-s%@java_math_SRCS@%$java_math_SRCS%g
+s%@java_math_files@%$java_math_files%g
 s%@NATIVE_MATH_DIR@%$NATIVE_MATH_DIR%g
 s%@MATH_LIB@%$MATH_LIB%g
 s%@PROFILE@%$PROFILE%g

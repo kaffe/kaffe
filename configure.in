@@ -1328,16 +1328,16 @@ dnl  Otherwise use pure java implementation.
 )
 
 if test x"$pure_java_math" = x"true" ; then
-	java_math_SRCS="pure_java_math_SRCS"
+	java_math_files="pure_java_math.files"
 	NATIVE_MATH_DIR=""
 	MATH_LIB=""
 else
-	java_math_SRCS="native_java_math_SRCS"
+	java_math_files="native_java_math.files"
 	NATIVE_MATH_DIR="math"
 	MATH_LIB="\$(top_builddir)/libraries/clib/math/libmath.la"
 fi
 
-AC_SUBST(java_math_SRCS)
+AC_SUBST(java_math_files)
 AC_SUBST(NATIVE_MATH_DIR)
 AC_SUBST(MATH_LIB)
 dnl -----------------------------------------------------------------------

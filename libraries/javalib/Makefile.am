@@ -4,10 +4,15 @@
 # Copyright (c) 1997, 1998, 1999
 #      Transvirtual Technologies, Inc.  All rights reserved.
 #
+# Copyright (c) 2002, 2003
+#      Kaffe.org contributors.
+#
 # See the file "license.terms" for information on usage and redistribution
 # of this file.
 #
-# Class libraries are not currently part of the integrate Make cycle. 
+# Class libraries are currently part of the integrate Make cycle. 
+# Read FAQ/FAQ.classlibrary-compile for more information on the class library
+# build process.
 #
 
 SRCDIRS = gnu java javax kaffe org
@@ -2250,7 +2255,7 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	$(SHELL) $(rebuildLib) @essential.files
-	$(SHELL) $(rebuildLib) $(@java_math_SRCS@)
+	$(SHELL) $(rebuildLib) @@java_math_files@
 	for i in `cat $(srcdir)/profiles/$(PROFILE)/profile` ;  do $(SHELL) $(rebuildLib) @profiles/$(PROFILE)/$$i ; done
 	echo timestamp > $(LIBDIR)/stamp
 
