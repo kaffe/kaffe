@@ -1,5 +1,14 @@
 2004-11-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/java/beans/BeanInfoEmbryo.java:
+        Resynced with GNU Classpath.
+
+	2004-11-15  Craig Black  <craig.black@aonix.com>
+
+        * gnu/java/beans/BeanInfoEmbryo.java: Use TreeMap for proper sorting.
+
+2004-11-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/lang/StackTraceElement.java,
 	libraries/javalib/java/nio/channels/Channels.java,
 	libraries/javalib/java/rmi/Naming.java,
