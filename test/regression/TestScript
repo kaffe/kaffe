@@ -421,6 +421,20 @@ runtest Bean "BeanDescriptor:
   Editor: <unknown>"
 
 #
+# simple test for Method.invoke
+#
+runtest ReflectInvoke "2
+8"
+
+#
+# simple test for InvocationTargetExceptions
+#
+runtest InvTarExcTest "Caught itexception: null
+java.lang.reflect.InvocationTargetException
+	at InvTarExcTest.main(13)
+Target is: throwing inner exception"
+
+#
 # simple test for ClassLoader
 # this test must be compiled with 'nowarn' because it uses a
 # deprecated API (defineClass with 3 params)
