@@ -23,6 +23,7 @@ noinst_HEADERS = $(GEN_HDRS) \
 EXTRA_DIST = \
 	config.alias \
 	regen-forward \
+	alpha/alpha.c \
 	alpha/common.h \
 	alpha/jit-alpha.def \
 	alpha/jit-icode.h \
@@ -32,6 +33,7 @@ EXTRA_DIST = \
 	alpha/linux/md.c \
 	alpha/linux/md.h \
 	alpha/netbsd1/config.frag \
+	alpha/netbsd1/jit-md.h \
 	alpha/netbsd1/md.c \
 	alpha/netbsd1/md.h \
 	alpha/osf/config.frag \
@@ -60,6 +62,7 @@ EXTRA_DIST = \
 	arm/trampolines.c \
 	i386/beos/config.frag \
 	i386/beos/jit-md.h \
+	i386/beos/jit3-md.h \
 	i386/beos/md.c \
 	i386/beos/md.h \
 	i386/bsdi/config.frag \
@@ -97,6 +100,7 @@ EXTRA_DIST = \
 	i386/linux/md.h \
 	i386/netbsd1/config.frag \
 	i386/netbsd1/jit-md.h \
+	i386/netbsd1/jit3-md.h \
 	i386/netbsd1/md.c \
 	i386/netbsd1/md.h \
 	i386/nextstep3/config.frag \
@@ -105,6 +109,7 @@ EXTRA_DIST = \
 	i386/nextstep3/md.h \
 	i386/openbsd2/config.frag \
 	i386/openbsd2/jit-md.h \
+	i386/openbsd2/jit3-md.h \
 	i386/openbsd2/md.c \
 	i386/openbsd2/md.h \
 	i386/oskit/README \
@@ -190,6 +195,8 @@ EXTRA_DIST = \
 	mips/mips.c \
 	mips/n32-sysdepCallMethod.h \
 	mips/netbsd1/config.frag \
+	mips/netbsd1/jit-md.h \
+	mips/netbsd1/jit3-md.h \
 	mips/netbsd1/md.c \
 	mips/netbsd1/md.h \
 	mips/o32-sysdepCallMethod.h \
@@ -204,17 +211,23 @@ EXTRA_DIST = \
 	parisc/hpux/md.c \
 	parisc/hpux/md.h \
 	parisc/threads.h \
-	powerpc/callmethod_ppc.h \
-	powerpc/common.h \
 	powerpc/aix/config.frag \
 	powerpc/aix/md.c \
 	powerpc/aix/md.h \
+	powerpc/common.h \
+	powerpc/darwin/config.frag \
+	powerpc/darwin/md.c \
+	powerpc/darwin/md.h \
 	powerpc/linux/config.frag \
 	powerpc/linux/md.c \
 	powerpc/linux/md.h \
 	powerpc/machten/config.frag \
 	powerpc/machten/md.c \
 	powerpc/machten/md.h \
+	powerpc/netbsd1/config.frag \
+	powerpc/netbsd1/md.c \
+	powerpc/netbsd1/md.h \
+	powerpc/sysdepCallMethod.h \
 	powerpc/threads.h \
 	sparc/bsdi3/config.frag \
 	sparc/bsdi3/jit-md.h \
@@ -267,3 +280,8 @@ md.h: stamp-h02
 	else :; fi
 stamp-h02: $(top_builddir)/config.status
 	$(SHELL) $(REGEN_FORWARD) $(CONFIG_MD_H) md.h $@
+
+dist-hook:
+	@for file in $(DISTCLEANFILES); do \
+	  rm -f $(distdir)/$$file; \
+	done

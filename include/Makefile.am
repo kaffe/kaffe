@@ -162,3 +162,8 @@ stamp-h1all: stamp-kaffeh $(KLASSES_JAR)
 	@echo timestamp > $@
 
 CLEANFILES = $(DERIVED_HDRS) $(JNI_DERIVED_HDRS) stamp-kaffeh
+
+dist-hook:
+	@for file in $(DERIVED_HDRS) $(JNI_DERIVED_HDRS) jtypes.h; do \
+	  rm -f $(distdir)/$$file; \
+	done

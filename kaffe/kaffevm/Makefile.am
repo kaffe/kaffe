@@ -142,3 +142,8 @@ DISTCLEANFILES = $(libkaffevm_la_GEN_SRCS)
 jit/icode.h:
 
 include $(top_srcdir)/include/distclean-hack
+
+dist-hook:
+	@for file in $(DISTCLEANFILES); do \
+	  rm -f $(distdir)/$$file; \
+	done

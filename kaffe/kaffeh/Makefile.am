@@ -25,3 +25,8 @@ kaffeh_LDADD = $(KAFFE_LIBS)
 
 $(GEN_SRCS):
 	$(SHELL) $(REGEN_FORWARD) $(srcdir)/../kaffevm/$@ $@
+
+dist-hook:
+	@for file in $(DISTCLEANFILES); do \
+	  rm -f $(distdir)/$$file; \
+	done

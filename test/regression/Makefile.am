@@ -155,7 +155,7 @@ EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow) \
 	CLTestConc_run.java \
 	ZipVerifyUtils.java \
 	ClassGCTest.java \
-	ClassGCLater.java \
+	ClassGCTestLater.java \
 	LoaderTest_Class0.java \
 	LoaderTest_Class1.java \
 	LoaderTest_Class1BeanInfo.java \
