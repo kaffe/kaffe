@@ -498,12 +498,12 @@ TEST_NATIVE = \
 @HAVE_JASMIN_TRUE@	MethodSignature9.j
 
 @HAVE_JASMIN_FALSE@JASMIN_TESTS = 
+@HAVE_BCEL_FALSE@BCEL_TESTS = 
 
 @HAVE_BCEL_TRUE@BCEL_TESTS = \
 @HAVE_BCEL_TRUE@	BadClassFileCode.java \
 @HAVE_BCEL_TRUE@	BadClassFileConstants.java
 
-@HAVE_BCEL_FALSE@BCEL_TESTS = 
 
 TEST_Overflow = Overflow.java
 

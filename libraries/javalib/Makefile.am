@@ -53,6 +53,8 @@ Klasses_jar_SRCS = \
 	$(gnu_crypto_mode_SRCS) \
 	$(gnu_crypto_prng_SRCS) \
 	$(gnu_java_awt_SRCS) \
+	$(gnu_java_beans_SRCS) \
+	$(gnu_java_beans_editors_SRCS) \
 	$(gnu_java_io_SRCS) \
 	$(gnu_java_lang_SRCS) \
 	$(gnu_java_lang_reflect_SRCS) \
@@ -217,13 +219,31 @@ gnu_java_awt_SRCS = \
 	gnu/java/awt/Buffers.java \
 	gnu/java/awt/ComponentDataBlitOp.java \
 	gnu/java/awt/EventModifier.java
+gnu_java_beans_SRCS = \
+	gnu/java/beans/BeanInfoEmbryo.java \
+	gnu/java/beans/ExplicitBeanInfo.java \
+	gnu/java/beans/IntrospectionIncubator.java
+gnu_java_beans_editors_SRCS = \
+	gnu/java/beans/editors/ColorEditor.java \
+	gnu/java/beans/editors/FontEditor.java \
+	gnu/java/beans/editors/NativeBooleanEditor.java \
+	gnu/java/beans/editors/NativeByteEditor.java \
+	gnu/java/beans/editors/NativeDoubleEditor.java \
+	gnu/java/beans/editors/NativeFloatEditor.java \
+	gnu/java/beans/editors/NativeIntEditor.java \
+	gnu/java/beans/editors/NativeLongEditor.java \
+	gnu/java/beans/editors/NativeShortEditor.java \
+	gnu/java/beans/editors/StringEditor.java
 gnu_java_io_SRCS = \
 	gnu/java/io/ASN1ParsingException.java \
+	gnu/java/io/ClassLoaderObjectInputStream.java \
 	gnu/java/io/NullOutputStream.java \
 	gnu/java/io/ObjectIdentityWrapper.java \
 	gnu/java/io/PlatformHelper.java
 gnu_java_lang_SRCS = \
-	gnu/java/lang/CharData.java
+	gnu/java/lang/ArrayHelper.java \
+	gnu/java/lang/CharData.java \
+	gnu/java/lang/ClassHelper.java
 gnu_java_lang_reflect_SRCS = \
 	gnu/java/lang/reflect/TypeSignature.java
 gnu_java_locale_SRCS = \

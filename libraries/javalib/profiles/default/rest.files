@@ -12,6 +12,7 @@ gnu/java/beans/editors/ColorEditor.java
 gnu/java/beans/IntrospectionIncubator.java
 gnu/java/beans/BeanInfoEmbryo.java
 gnu/java/io/ClassLoaderObjectInputStream.java
+gnu/java/lang/ArrayHelper.java
 gnu/java/lang/ClassHelper.java
 gnu/java/locale/Calendar.java
 gnu/java/locale/Calendar_de.java

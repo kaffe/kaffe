@@ -1,4 +1,3 @@
-
 gnu/classpath/Configuration.java
 gnu/classpath/RawData.java
 gnu/crypto/cipher/IBlockCipher.java
@@ -26,6 +25,7 @@ gnu/java/beans/IntrospectionIncubator.java
 gnu/java/beans/BeanInfoEmbryo.java
 gnu/java/io/ASN1ParsingException.java
 gnu/java/io/ClassLoaderObjectInputStream.java
+gnu/java/lang/ArrayHelper.java
 gnu/java/lang/ClassHelper.java
 gnu/java/lang/reflect/TypeSignature.java
 gnu/java/locale/Calendar_de.java
