@@ -449,7 +449,7 @@ DBG(GCSTAT,
 			    " alloced %dK (#%d), marked %dK, "
 			    "swept %dK (#%d)\n"
 			    " %d objs (%dK) awaiting finalization>\n",
-			gc_heap_total/1024, 
+			(int)(gc_heap_total/1024), 
 			gcStats.totalmem/1024, 
 			(gcStats.totalmem-gcStats.freedmem)/1024, 
 			gcStats.totalobj,

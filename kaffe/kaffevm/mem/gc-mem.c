@@ -166,7 +166,7 @@ gc_heap_initialise(void)
 	if (gc_heap_initial_size > gc_heap_limit) {
 		fprintf(stderr, 
 		    "Initial heap size (%dK) > Maximum heap size (%dK)\n",
-		    gc_heap_initial_size/1024, gc_heap_limit/1024);
+		    (int) (gc_heap_initial_size/1024), (int)(gc_heap_limit/1024));
 		EXIT(-1);
 	}
 
