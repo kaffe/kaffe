@@ -1,4 +1,5 @@
 Thu Mar 28 13:33:03 CET 2002 Tim Stack <stack@cs.utah.edu>
+
 	* libraries/javalib/java/lang/reflect/Array.java:
 	(newInstance) throw IllegalArgumentException if componentType is
 	Void.TYPE.
@@ -52,6 +53,7 @@ Thu Mar 28 13:33:03 CET 2002 Tim Stack <stack@cs.utah.edu>
 	
 
 Thu Mar 28 13:05:09 CET 2002  Dalibor Topic <robilad@yahoo.com>
+
 	* libraries/javalib/java/util/ResourceBundle.java :
 	(getBundle) Added locale information to exception information.
 	* libraries/javalib/java/lang/Byte.java,
