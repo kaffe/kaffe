@@ -156,14 +156,18 @@ registerSignalHandler(int sig, void* handler, int isAsync)
 void
 registerAsyncSignalHandler(int sig, void* handler)
 {
+#if !defined(NDEBUG)
+	/* Only used in assert. */
+
 	int validSig = 
 		(sig == SIGALRM)
 #if defined(SIGVTALRM)
 		|| (sig == SIGVTALRM) 
-#endif
+#endif /* defined(SIGVTALRM) */
 		|| (sig == SIGIO)
 		|| (sig == SIGUSR1)
 		|| (sig == SIGCHLD);
+#endif /* !defined(NDEBUG) */
 
 	/* Make sure its really an asynchronous signal being registered. */
 	assert(handler != NULL);

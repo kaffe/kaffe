@@ -1,4 +1,12 @@
 2004-01-07  Dalibor Topic <robilad@kaffe.org>
+	* kaffe/kaffevm/systems/unix-jthreads/signal.c
+	(registerAsyncSignalHandler): Only define variable validSig
+	if NDEBUG is not defined.
+        Fixes a compiler warning on sparc-solaris.
+
+        Reported by: Riccardo Mottola <zuse@libero.it>
+
+2004-01-07  Dalibor Topic <robilad@kaffe.org>
 
 	* include/jni.h
 	(JNINativeInterface): Changed GetPrimitiveArrayCritical 
