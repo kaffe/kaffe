@@ -159,8 +159,8 @@ public List subList(final int fromIndex, final int toIndex) {
       if (list.modCount != this.modCount) {
 	throw new ConcurrentModificationException();
       }
-      final ListIterator it = listIterator(off + len);
-      for (int index = len - 1; it.hasPrevious(); index--) {
+      final ListIterator it = list.listIterator(off + len);
+      for (int index = len - 1; index >= 0 && it.hasPrevious(); index--) {
 	Object prev = it.previous();
 	if (o == null ? prev == null : o.equals(prev)) {
 	  return index;
