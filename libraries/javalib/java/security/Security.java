@@ -40,7 +40,7 @@ public final class Security {
 		readProps: {
 			File file = new File(
 			    System.getProperties().getProperty("java.home")
-				+ "/lib/kaffe/security/java.security");
+				+ "/jre/lib/security/java.security");
 			if (file.exists()) {
 				try {
 					props.load(

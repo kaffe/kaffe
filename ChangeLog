@@ -1,3 +1,10 @@
+Tue Aug 27 20:10:10 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/security/Security.java:
+	fixed location of java.security file for new file layout.
+
+	Reported by: Timothy S Stack <stack@cs.utah.edu>
+
 Sat Aug 24 13:30:56 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* test/regression/Reflect.java: adapted expected output for
