@@ -1,5 +1,12 @@
 2004-10-21  Eric Anholt  <eta@lclark.edu>
 
+	* config/x86_64/freebsd2/config.frag,
+	config/x86_64/freebsd2/md.c,
+	config/x86_64/freebsd2/md.h:
+	Added port to amd64-freebsd.
+
+2004-10-21  Eric Anholt  <eta@lclark.edu>
+
 	* kaffe/kaffevm/intrp/methodcalls.c:
 	Added missing extern.h include to fix crash on amd64.
 
