@@ -1,3 +1,8 @@
+Thu Jul 30 14:47:55 1998  Archie Cobbs  <archie@whistle.com>
+
+	* kaffe/kaffevm/locks.c: fix for throwing IllegalMonitorStateException 
+	if lock is not held.
+
 Wed Jul 29 14:41:09 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* libraries/javalib/java/io/File.java: fixed getParent to not 
