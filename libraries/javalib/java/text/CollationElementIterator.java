@@ -1,5 +1,5 @@
 /* CollationElementIterator.java -- Walks through collation elements
-   Copyright (C) 1998, 1999, 2001, 2002, 2003  Free Software Foundation
+   Copyright (C) 1998, 1999, 2001, 2002, 2003, 2004  Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -71,22 +71,22 @@ public final class CollationElementIterator
   /**
    * This is the RuleBasedCollator this object was created from.
    */
-  private RuleBasedCollator collator;
+  RuleBasedCollator collator;
 
   /**
    * This is the String that is being iterated over.
    */
-  private String text;
+  String text;
 
   /**
    * This is the index into the collation decomposition where we are currently scanning.
    */
-  private int index;
+  int index;
 
   /**
    * This is the index into the String where we are currently scanning.
    */
-  private int textIndex;
+  int textIndex;
 
   /**
    * Array containing the collation decomposition of the
@@ -117,7 +117,7 @@ public final class CollationElementIterator
     RuleBasedCollator.CollationElement e =
       (RuleBasedCollator.CollationElement) text_decomposition[index++];
     
-    textIndex += e.char_seq.length();
+    textIndex += e.key.length();
 
     return e;
   }
@@ -131,7 +131,7 @@ public final class CollationElementIterator
     RuleBasedCollator.CollationElement e =
       (RuleBasedCollator.CollationElement) text_decomposition[index];
 
-    textIndex -= e.char_seq.length();
+    textIndex -= e.key.length();
     
     return e;
   }
@@ -227,14 +227,16 @@ public final class CollationElementIterator
    * This method sets the <code>String</code> that it is iterating over
    * to the specified <code>String</code>.
    *
-   * @param The new <code>String</code> to iterate over.
+   * @param text The new <code>String</code> to iterate over.
+   *
+   * @since 1.2
    */
   public void setText(String text)
   {
     int idx = 0;
 
     this.text = text;
-    index = 0;
+    this.index = 0;
 
     String work_text = text.intern();
 
@@ -278,7 +280,7 @@ public final class CollationElementIterator
 	if (prefix.expansion != null)
 	  {
 	    work_text = prefix.expansion
-	      + work_text.substring (idx+prefix.char_seq.length());
+	      + work_text.substring (idx+prefix.key.length());
 	    idx = 0;
 	    v.add (prefix);
 	  }
@@ -286,7 +288,7 @@ public final class CollationElementIterator
 	  {
 	    if (!prefix.ignore)
 	      v.add (prefix);
-	    idx += prefix.char_seq.length();
+	    idx += prefix.key.length();
 	  }
       }
     
@@ -298,21 +300,20 @@ public final class CollationElementIterator
    * to the <code>String</code> represented by the specified
    * <code>CharacterIterator</code>.
    *
-   * @param ci The <code>CharacterIterator</code> containing the new <code>String</code> to iterate over.
+   * @param source The <code>CharacterIterator</code> containing the new
+   * <code>String</code> to iterate over.
    */
-  public void setText(CharacterIterator ci)
+  public void setText(CharacterIterator source)
   {
-    StringBuffer sb = new StringBuffer("");
+    StringBuffer expand = new StringBuffer();
 
     // For now assume we read from the beginning of the string.
-    char c = ci.first();
-    while (c != CharacterIterator.DONE)
-      {
-        sb.append(c);
-        c = ci.next();
-      }
+    for (char c = source.first();
+	 c != CharacterIterator.DONE;
+	 c = source.next())
+      expand.append(c);
 
-    setText(sb.toString());
+    setText(expand.toString());
   }
 
   /**
@@ -320,6 +321,8 @@ public final class CollationElementIterator
    * that is being iterated over.
    *
    * @return The iteration index position.
+   *
+   * @since 1.2
    */
   public int getOffset()
   {
@@ -351,7 +354,7 @@ public final class CollationElementIterator
       {
 	RuleBasedCollator.CollationElement e =
 	  (RuleBasedCollator.CollationElement) text_decomposition[i];
-	int idx = textIndex + e.char_seq.length();
+	int idx = textIndex + e.key.length();
 	
 	if (idx > offset)
 	  break;
