@@ -304,6 +304,9 @@
 /* Define if you have the <png.h> header file.  */
 #undef HAVE_PNG_H
 
+/* Define if you have the <poll.h> header file.  */
+#undef HAVE_POLL_H
+
 /* Define if you have the <pwd.h> header file.  */
 #undef HAVE_PWD_H
 
@@ -330,6 +333,9 @@
 
 /* Define if you have the <sys/param.h> header file.  */
 #undef HAVE_SYS_PARAM_H
+
+/* Define if you have the <sys/poll.h> header file.  */
+#undef HAVE_SYS_POLL_H
 
 /* Define if you have the <sys/resource.h> header file.  */
 #undef HAVE_SYS_RESOURCE_H
@@ -387,9 +393,6 @@
 
 /* Define if you have the gif library (-lgif).  */
 #undef HAVE_LIBGIF
-
-/* Define if you have the ungif library (-lungif).  */
-#undef HAVE_LIBUNGIF
 
 /* Define if you have the gmp library (-lgmp).  */
 #undef HAVE_LIBGMP

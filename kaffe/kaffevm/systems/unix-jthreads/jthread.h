@@ -41,6 +41,9 @@
 #include "md.h"
 
 #define  NOTIMEOUT                       0
+#if defined (HAVE_SYS_POLL_H) || defined(HAVE_POLL_H)
+#define USE_POLL	1
+#endif
 
 #if defined(__WIN32__)
 #define SIG_T   void(*)()

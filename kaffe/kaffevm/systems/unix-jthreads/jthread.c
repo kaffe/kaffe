@@ -1496,6 +1496,11 @@ dprintf("switch from %p to %p\n", lastThread, currentJThread); )
 			ondeadlock();
 		}
 #endif
+		/* if we thought we should reschedule, but there's no thread
+		 * currently runnable, reset needReschedule and wait for another
+		 * event that will set it again.
+		 */
+		needReschedule = false;
 		handleIO(true);
 	}
 }
@@ -1507,6 +1512,20 @@ dprintf("switch from %p to %p\n", lastThread, currentJThread); )
  */
 
 /*
+ * resume all threads blocked on a given queue
+ */
+static void
+resumeQueue(jthread *queue)
+{
+	jthread *tid, *ntid;
+	for (tid = queue; tid != 0; tid = ntid) {
+		ntid = tid->nextQ;
+		tid->blockqueue = 0;
+		resumeThread(tid);
+	}
+}
+
+/*
  * Process incoming SIGIO
  * return 1 if select was interrupted
  */
@@ -1515,11 +1534,21 @@ void
 handleIO(int sleep)
 {
 	int r;
+	/* NB: both pollarray and rd, wr are thread-local */
+#if USE_POLL
+	/* for poll(2) */
+	int nfd;
+#if DONT_USE_ALLOCA
+	struct pollfd pollarray[FD_SETSIZE];	/* huge (use alloca?) */
+#else
+	struct pollfd *pollarray = alloca(sizeof(struct pollfd) * (maxFd+1));
+#endif
+#else
+	/* for select(2) */
 	fd_set rd;
 	fd_set wr;
-	jthread* tid;
-	jthread* ntid;
 	struct timeval zero = { 0, 0 };
+#endif
 	int i, b = 0;
 
 	assert(intsDisabled());
@@ -1527,8 +1556,30 @@ handleIO(int sleep)
 DBG(JTHREADDETAIL,
 	dprintf("handleIO(sleep=%d)\n", sleep);		)
 
+#if USE_POLL
+	/* Build pollarray from fd_sets.
+	 * This is probably not the most efficient way to handle this.
+	 */
+	for (nfd = 0, i = 0; i <= maxFd; i++) {
+		short ev = 0;
+		if (readQ[i] != 0) { 	/* FD_ISSET(i, &readsPending) */
+			ev |= POLLIN;
+			assert(FD_ISSET(i, &readsPending));
+		}
+		if (writeQ[i] != 0) {   /* FD_ISSET(i, &writesPending) */
+			ev |= POLLOUT;
+			assert(FD_ISSET(i, &writesPending));
+		}
+		if (ev != 0) {
+			pollarray[nfd].fd = i;
+			pollarray[nfd].events = ev;
+			nfd++;
+		}
+	}
+#else
 	FD_COPY(&readsPending, &rd);
 	FD_COPY(&writesPending, &wr);
+#endif
 
 	/*
 	 * figure out which fds are ready
@@ -1538,16 +1589,33 @@ retry:
 		b = blockInts;
 		/* NB: BEGIN unprotected region */
 		blockInts = 0;
+		/* add sigpipe[0] if needed */
+#if USE_POLL
+		pollarray[nfd].fd = sigPipe[0];
+		pollarray[nfd].events = POLLIN;
+		nfd++;
+#else
 		FD_SET(sigPipe[0], &rd);
+#endif
 	}
+#if USE_POLL
+	r = poll(pollarray, nfd, sleep ? -1 : 0);
+#else
 	r = select(maxFd+1, &rd, &wr, 0, sleep ? 0 : &zero);
+#endif
 
 	if (sleep) {
+		int can_read_from_pipe = 0;
 		blockInts = b;
 		/* NB: END unprotected region */
 
+#if USE_POLL
+		can_read_from_pipe = (pollarray[--nfd].revents & POLLIN);
+#else
+		can_read_from_pipe = FD_ISSET(sigPipe[0], &rd);
+#endif
 		/* drain helper pipe if a byte was written */
-		if (r > 0 && FD_ISSET(sigPipe[0], &rd)) {
+		if (r > 0 && can_read_from_pipe) {
 			char c;
 
 			/* NB: since "rd" is a thread-local variable, it can 
@@ -1574,28 +1642,50 @@ retry:
 DBG(JTHREADDETAIL,
 	dprintf("Select returns %d\n", r);			)
 
+#if USE_POLL
+	for (i = 0; r > 0 && i < nfd; i++) {
+		int fd;
+		register short rev = pollarray[i].revents;
+		if (rev == 0) {
+			continue;
+		}
+
+		fd = pollarray[i].fd;
+		needReschedule = true;
+		r--;
+
+		/* If there's an error, we don't know whether to wake
+		 * up readers or writers.  So wake up both if so.
+		 * Note that things such as failed connect attempts
+		 * are reported as errors, not a read or write readiness.
+		 */
+		/* wake up readers when not just POLLOUT */
+		if (rev != POLLOUT && readQ[fd] != 0) {
+			resumeQueue(readQ[fd]);
+			readQ[fd] = 0;
+		}
+		/* wake up writers when not just POLLIN */
+		if (rev != POLLIN && writeQ[fd] != 0) {
+			resumeQueue(writeQ[fd]);
+			writeQ[fd] = 0;
+		}
+	}
+#else
 	for (i = 0; r > 0 && i <= maxFd; i++) {
 		if (readQ[i] != 0 && FD_ISSET(i, &rd)) {
 			needReschedule = true;
-			for (tid = readQ[i]; tid != 0; tid = ntid) {
-				ntid = tid->nextQ;
-				tid->blockqueue = 0;
-				resumeThread(tid);
-			}
+			resumeQueue(readQ[i]);
 			readQ[i] = 0;
 			r--;
 		}
 		if (writeQ[i] != 0 && FD_ISSET(i, &wr)) {
 			needReschedule = true;
-			for (tid = writeQ[i]; tid != 0; tid = ntid) {
-				ntid = tid->nextQ;
-				tid->blockqueue = 0;
-				resumeThread(tid);
-			}
+			resumeQueue(writeQ[i]);
 			writeQ[i] = 0;
 			r--;
 		}
 	}
+#endif
 	return;
 }
 

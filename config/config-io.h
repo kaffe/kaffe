@@ -11,6 +11,12 @@
 #ifndef __config_io_h
 #define __config_io_h
 
+#if defined(HAVE_POLL_H)
+#include <poll.h>
+#endif
+#if defined(HAVE_SYS_POLL_H)
+#include <sys/poll.h>
+#endif
 #if defined(HAVE_SYS_SELECT_H)
 #include <sys/select.h>
 #endif
