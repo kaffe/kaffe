@@ -350,11 +350,20 @@ tInitSignalHandlers (void)
 static
 void tMapPriorities (int npr)
 {
-  int     d, min, max, i;
+  int     d, max, min, i;
   float   r;
 
+#if defined(HAVE_SCHED_GET_PRIORITY_MIN)
   min = sched_get_priority_min( SCHEDULE_POLICY);
+#else
+  min = 0;
+#endif /* defined(HAVE_SCHED_GET_PRIORITY_MIN) */
+
+#if defined(HAVE_SCHED_GET_PRIORITY_MAX)
   max = sched_get_priority_max( SCHEDULE_POLICY);
+#else
+  max = 0;
+#endif /* defined(HAVE_SCHED_GET_PRIORITY_MAX) */
 
   d = max - min;
   r = (float)d / (float)npr;

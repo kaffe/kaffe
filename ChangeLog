@@ -1,5 +1,11 @@
 2004-03-22  Dalibor Topic <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(tMapPriorities): Only use sched_get_priority_min|max
+	if they are available on the platform.
+
+2004-03-22  Dalibor Topic <robilad@kaffe.org>
+
         * configure.in:
 	Check for sched_get_priority_max and
 	sched_get_priority_min. They are unimplemented on
