@@ -1,3 +1,9 @@
+2003-09-02  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/gnu/xml/aelfred2/XmlParser.java:
+	Corrected parseCharRef() so that it may not flush data buffer
+	when not desired.
+
 2003-09-01  Jim Pick  <jim@kaffe.org>
 
 	* libraries/clib/net/NetworkInterface.c:
