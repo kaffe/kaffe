@@ -21,6 +21,7 @@ if [ "$1" != "--override" ]; then
 WANTED_AUTOMAKE_VERS="1.8.2"
 WANTED_AUTOCONF_VERS="2.59"
 WANTED_LIBTOOL_VERS="1.5"
+WANTED_AUTOPOINT_VERS="0.13.1"
 
 ACLOCAL_VERS=`aclocal --version | 
 	sed -n 's,^aclocal (GNU automake) \(.*\)$,\1,p'`
@@ -77,6 +78,17 @@ if [ "$LIBTOOLIZE_VERS" != "$WANTED_LIBTOOL_VERS" ]; then
 	exit 1
 fi
 
+AUTOPOINT_VERS=`gettext --version |
+        sed -n 's,^gettext (GNU gettext-runtime) \(.*\)$,\1,p'`
+if [ "$AUTOPOINT_VERS" != "$WANTED_AUTOPOINT_VERS" ]; then
+        echo "Missing or wrong version for autopoint (from gettext)."
+        echo "We want autopoint $WANTED_AUTOPOINT_VERS"
+        if [ -n "$AUTOPOINT_VERS" ]; then
+                echo "We found autopoint from gettext $AUTOPOINT_VERS"
+        fi
+        exit 1
+fi
+
 fi
 
 ( cd libraries/javalib && ../../developers/update-class-list )
@@ -108,6 +120,7 @@ patch -p0 < developers/patch-libtool-amiga-max-command-line-length.diff
 patch -p0 < developers/patch-libtool-ltdl-memory-header-warning.diff
 cp libltdl/acinclude.m4 m4/libtool.m4
 
+autopoint -f
 aclocal -I m4 
 autoheader -Wall
 automake --add-missing --force-missing --copy -Wall || true  # ignore warnings

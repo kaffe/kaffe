@@ -10,11 +10,11 @@
 # of this file. 
 
 ## Tell ac local to pick up the m4 macros from m4 directory
-ACLOCAL_FLAGS=-I m4
+ACLOCAL_AMFLAGS=-I m4
 
 AUTOMAKE_OPTIONS = foreign 1.3e
 
-SUBDIRS = . config include replace libltdl libraries/clib libraries/extensions kaffe libraries/javalib test
+SUBDIRS = . config include replace libltdl libraries/clib libraries/extensions kaffe libraries/javalib test po
 
 DIST_SUBDIRS = . config include replace libltdl kaffe libraries test
 
@@ -167,4 +167,3 @@ docs-docbook-html:
 # Regenerate HTML docs and copy them to source tree
 docs-regen: docs-docbook-html
 	cp -f target/docs/docbook/*.html $(srcdir)/docs/html
-

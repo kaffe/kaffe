@@ -12,6 +12,10 @@
 /* JVM Profiling Interface */
 #undef ENABLE_JVMPI
 
+/* Define to 1 if translation of program messages to the user's native
+   language is requested. */
+#undef ENABLE_NLS
+
 /* Define to 1 if you have the `alarm' function. */
 #undef HAVE_ALARM
 
@@ -44,6 +48,10 @@
 
 /* Define to 1 if you have the `chdir' function. */
 #undef HAVE_CHDIR
+
+/* Define if the GNU dcgettext() function is already present or preinstalled.
+   */
+#undef HAVE_DCGETTEXT
 
 /* Is function select declared */
 #undef HAVE_DECLARED_SELECT
@@ -126,6 +134,9 @@
 
 /* Define to 1 if you have the `getsockname' function. */
 #undef HAVE_GETSOCKNAME
+
+/* Define if the GNU gettext() function is already present or preinstalled. */
+#undef HAVE_GETTEXT
 
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY

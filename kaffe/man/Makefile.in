@@ -47,16 +47,18 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/kaffe.1.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/alsa.m4 $(top_srcdir)/m4/esd.m4 \
-	$(top_srcdir)/m4/gnu-crypto.m4 $(top_srcdir)/m4/gwqt.m4 \
-	$(top_srcdir)/m4/herrno.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/in6addr.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
+	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/gnu-crypto.m4 \
+	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/herrno.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/in6addr.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
 	$(top_srcdir)/m4/sockinttypes.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-mkinstalldirs = $(mkdir_p)
+mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES = kaffe.1
@@ -126,6 +128,7 @@ ESD_LIBS = @ESD_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+GMSGFMT = @GMSGFMT@
 GNU_CRYPTO_HOME = @GNU_CRYPTO_HOME@
 GNU_CRYPTO_JAR = @GNU_CRYPTO_JAR@
 HAVE_BCEL_FALSE = @HAVE_BCEL_FALSE@
@@ -148,6 +151,7 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+INTLLIBS = @INTLLIBS@
 JASMIN = @JASMIN@
 JAVAX_CRYPTO_JAR = @JAVAX_CRYPTO_JAR@
 JAVAX_SECURITY_JAR = @JAVAX_SECURITY_JAR@
@@ -167,6 +171,7 @@ KVMBINFLAGS = @KVMBINFLAGS@
 KVMLIBFLAGS = @KVMLIBFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBICONV = @LIBICONV@
+LIBINTL = @LIBINTL@
 LIBLTDL = @LIBLTDL@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
@@ -174,6 +179,7 @@ LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LN_S = @LN_S@
 LTLIBICONV = @LTLIBICONV@
+LTLIBINTL = @LTLIBINTL@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
@@ -182,8 +188,11 @@ MAKEINFO = @MAKEINFO@
 MAKE_KAFFEH = @MAKE_KAFFEH@
 MATH_LIB = @MATH_LIB@
 MATH_LIBS = @MATH_LIBS@
+MKINSTALLDIRS = @MKINSTALLDIRS@
 MKTEMP = @MKTEMP@
 MOC = @MOC@
+MSGFMT = @MSGFMT@
+MSGMERGE = @MSGMERGE@
 M_LIBS = @M_LIBS@
 NEED_LIBXPROF_FALSE = @NEED_LIBXPROF_FALSE@
 NEED_LIBXPROF_TRUE = @NEED_LIBXPROF_TRUE@
@@ -199,6 +208,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATHSEP = @PATHSEP@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PATH_TO_RT_JAR = @PATH_TO_RT_JAR@
+POSUB = @POSUB@
 PROFILE = @PROFILE@
 QEMBED = @QEMBED@
 QT_CXXFLAGS = @QT_CXXFLAGS@
@@ -221,10 +231,12 @@ USE_COMPAT_IFADDRS_FALSE = @USE_COMPAT_IFADDRS_FALSE@
 USE_COMPAT_IFADDRS_TRUE = @USE_COMPAT_IFADDRS_TRUE@
 USE_JIT_FALSE = @USE_JIT_FALSE@
 USE_JIT_TRUE = @USE_JIT_TRUE@
+USE_NLS = @USE_NLS@
 USE_PRECOMPILED_RT_JAR_FALSE = @USE_PRECOMPILED_RT_JAR_FALSE@
 USE_PRECOMPILED_RT_JAR_TRUE = @USE_PRECOMPILED_RT_JAR_TRUE@
 VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
+XGETTEXT = @XGETTEXT@
 X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_LIBS = @X_LIBS@
