@@ -10,6 +10,9 @@
 
 package java.lang;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import kaffe.util.IntegerHashtable;
 
@@ -482,15 +485,16 @@ public final class Character implements Serializable, Comparable {
 
 
 	static {
-	    propTable = ClassLoader.getSystemResourceAsBytes0(
-		    "kaffe/lang/unicode.tbl");
-	    if (propTable == null) {
-		throw new Error("Missing Kaffe Unicode Database table");
+	    try {
+	    	propTable = getResource("/kaffe/lang/unicode.tbl");
+	    } catch (IOException e) {
+		throw new Error("Missing Kaffe Unicode Database table: " + e);
 	    }
-	    byte tbl[] = ClassLoader.getSystemResourceAsBytes0(
-		    "kaffe/lang/unicode.idx");
-	    if (tbl == null) {
-		throw new Error("Missing Kaffe Unicode Database index");
+	    byte tbl[];
+	    try {
+	    	tbl = getResource("/kaffe/lang/unicode.idx");
+	    } catch (IOException e) {
+		throw new Error("Missing Kaffe Unicode Database index: " + e);
 	    }
 	    if (tbl.length % 7 != 0) {
 		throw new Error("Corrupted Kaffe Unicode Database");
@@ -511,6 +515,21 @@ public final class Character implements Serializable, Comparable {
 	    }
 	}
 
+	// Read in a resource and convert it to a byte array
+	private static byte[] getResource(String name) throws IOException {
+		InputStream in = Character.class.getResourceAsStream(name);
+		if (in == null) {
+			throw new IOException("not found");
+		}
+		ByteArrayOutputStream out = new ByteArrayOutputStream(5000);
+		byte[] buf = new byte[1024];
+		int r;
+
+		while ((r = in.read(buf)) != -1) {
+			out.write(buf, 0, r);
+		}
+		return out.toByteArray();
+	}
 
 	/**
 	 * Lookup the corresponding range for the character ch.
