@@ -79,6 +79,7 @@ static struct debug_opts
 	D(ASYNCSTDIO, "Make stdio fds asynchronous despite debugging."),
 	D(CATCHOUTOFMEM, "Catch recursive out of memory exceptions."),
 	D(JARFILES, "Debug reading JAR files in jar.c."),
+	D(CODEATTR, "Show code attributes during class file parsing."),
 	D(INT_INSTR, "Show instructions. (interpreter)"),
 	D(INT_NATIVE, "Show call to native methods. (interpreter)"),
 	D(INT_RETURN, "Show return from function. (interpreter)"),

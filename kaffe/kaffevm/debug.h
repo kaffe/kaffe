@@ -54,6 +54,7 @@
 # define DBG_INT_VMCALL		DBG_BIT(21) 
 # define DBG_INT_CHECKS		DBG_BIT(22) 
 # define DBG_JTHREADNOPREEMPT	DBG_BIT(23) 
+# define DBG_CODEATTR		DBG_BIT(24) 
 
 /* let's reserve 50-63 for temporary uses */
 # define DBG_SLACKANAL		DBG_BIT(50) 
