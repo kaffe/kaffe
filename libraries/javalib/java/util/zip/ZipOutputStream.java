@@ -117,30 +117,30 @@ public void closeEntry() throws IOException
 	def.reset();
 	crc.reset();
 
-	if (curr.csize != -1 && curr.csize != out) {
+	if (curr.getCompressedSize() != -1 && curr.getCompressedSize() != out) {
 		throw new ZipException("compress size set incorrectly");
 	}
-	if (curr.size != -1 && curr.size != in) {
+	if (curr.getSize() != -1 && curr.getSize() != in) {
 		throw new ZipException("uncompress size set incorrectly");
 	}
-	if (curr.crc != -1 && curr.crc != crcval) {
+	if (curr.getCrc() != -1 && curr.getCrc() != crcval) {
 		throw new ZipException("crc set incorrectly");
 	}
 
-	curr.csize = out;
-	curr.size = in;
-	curr.crc = crcval;
+	curr.setCompressedSize(out);
+	curr.setSize(in);
+	curr.setCrc(crcval);
 
-	dout += curr.csize;
+	dout += curr.getCompressedSize();
 
 	// We only add the data descriptor when writing a compressed entry
 
 	if (curr.flag == 0x0008) {
 	    byte[] da = new byte[EXTHDR];
 	    put32(da, 0, (int)EXTSIG);
-	    put32(da, EXTCRC, (int)curr.crc);
-	    put32(da, EXTSIZ, (int) curr.csize);
-	    put32(da, EXTLEN, (int) curr.size);
+	    put32(da, EXTCRC, (int)curr.getCrc());
+	    put32(da, EXTSIZ, (int) curr.getCompressedSize());
+	    put32(da, EXTLEN, (int) curr.getSize());
 	    strm.write(da);
 	    dout += EXTHDR;
 	}
@@ -164,25 +164,25 @@ public void finish() throws IOException {
 		ZipEntry ze = (ZipEntry)e.nextElement();
 
 		// Convert name to UTF-8 binary
-		byte[] nameBuf = (ze.name != null) ?
-		    UTF8.encode(ze.name) : new byte[0];
+		byte[] nameBuf = (ze.getName() != null) ?
+		    UTF8.encode(ze.getName()) : new byte[0];
 
 		// Write central directory entry
 		put32(ch, 0, (int)CENSIG);
-		int zipver = (ze.method == STORED ? ZIPVER_1_0 : ZIPVER_2_0);
+		int zipver = (ze.getMethod() == STORED ? ZIPVER_1_0 : ZIPVER_2_0);
 		put16(ch, CENVEM, zipver);
 		put16(ch, CENVER, zipver);
 		put16(ch, CENFLG, ze.flag);
-		put16(ch, CENHOW, ze.method);
+		put16(ch, CENHOW, ze.getMethod());
 		put32(ch, CENTIM, ze.dosTime);
-		put32(ch, CENCRC, (int)ze.crc);
-		put32(ch, CENSIZ, (int)ze.csize);
-		put32(ch, CENLEN, (int)ze.size);
+		put32(ch, CENCRC, (int)ze.getCrc());
+		put32(ch, CENSIZ, (int)ze.getCompressedSize());
+		put32(ch, CENLEN, (int)ze.getSize());
 		put16(ch, CENNAM, nameBuf.length);
-		put16(ch, CENEXT, ze.extra == null ?
-			0 : ze.extra.length);
-		put16(ch, CENCOM, ze.comment == null ?
-			0 : ze.comment.length());
+		put16(ch, CENEXT, ze.getExtra() == null ?
+			0 : ze.getExtra().length);
+		put16(ch, CENCOM, ze.getComment() == null ?
+			0 : ze.getComment().length());
 		put16(ch, CENDSK, 0);
 		put16(ch, CENATT, 0);
 		put32(ch, CENATX, 0);
@@ -196,9 +196,9 @@ public void finish() throws IOException {
 		size += nameBuf.length;
 
 		// Write any extra stuff
-		if (ze.extra != null) {
-		    strm.write(ze.extra);
-		    size += ze.extra.length;
+		if (ze.getExtra() != null) {
+		    strm.write(ze.getExtra());
+		    size += ze.getExtra().length;
 		}
 
 		count++;
@@ -228,15 +228,15 @@ public void putNextEntry(ZipEntry ze) throws IOException
 {
 	closeEntry();	// Close previous entry
 
-	if (ze.method == -1) {
-		ze.method = method;
+	if (ze.getMethod() == -1) {
+		ze.setMethod(method);
 	}
-	if (ze.method == STORED) {
-		if (ze.size == -1) {
+	if (ze.getMethod() == STORED) {
+		if (ze.getSize() == -1) {
 			throw new ZipException("size not set in stored entry");
 		}
-		ze.csize = ze.size;
-		if (ze.crc == -1) {
+		ze.setCompressedSize(ze.getSize());
+		if (ze.getCrc() == -1) {
 			throw new ZipException("crc not set in stored entry");
 		}
 		ze.flag = 0;
@@ -244,8 +244,8 @@ public void putNextEntry(ZipEntry ze) throws IOException
 		ze.flag = 0x0008;
 	}
 
-	if (curr == null || curr.method != ze.method) {
-		if (ze.method == STORED) {
+	if (curr == null || curr.getMethod() != ze.getMethod()) {
+		if (ze.getMethod() == STORED) {
 			def = new Storer();
 		}
 		else {
@@ -254,21 +254,21 @@ public void putNextEntry(ZipEntry ze) throws IOException
 	}
 
 	// Convert name to UTF-8 binary
-	byte[] nameBuf = (ze.name != null) ?
-	    UTF8.encode(ze.name) : new byte[0];
+	byte[] nameBuf = (ze.getName() != null) ?
+	    UTF8.encode(ze.getName()) : new byte[0];
 
 	byte[] lh = new byte[LOCHDR];
 	put32(lh, 0, (int)LOCSIG);
 	put16(lh, LOCVER,
-		ze.method == STORED ? ZIPVER_1_0 : ZIPVER_2_0);
+		ze.getMethod() == STORED ? ZIPVER_1_0 : ZIPVER_2_0);
 	put16(lh, LOCFLG, ze.flag);
-	put16(lh, LOCHOW, ze.method);
+	put16(lh, LOCHOW, ze.getMethod());
 	put32(lh, LOCTIM, ze.dosTime);
 
-	if (ze.method == STORED) {
-		put32(lh, LOCCRC, (int)ze.crc);
-		put32(lh, LOCSIZ, (int)ze.csize);
-		put32(lh, LOCLEN, (int)ze.size);
+	if (ze.getMethod() == STORED) {
+		put32(lh, LOCCRC, (int)ze.getCrc());
+		put32(lh, LOCSIZ, (int)ze.getCompressedSize());
+		put32(lh, LOCLEN, (int)ze.getSize());
 	} else {
 		put32(lh, LOCCRC, 0);
 		put32(lh, LOCSIZ, 0);
@@ -276,7 +276,7 @@ public void putNextEntry(ZipEntry ze) throws IOException
 	}
 
 	put16(lh, LOCNAM, nameBuf.length);
-	put16(lh, LOCEXT, ze.extra == null ? 0 : ze.extra.length);
+	put16(lh, LOCEXT, ze.getExtra() == null ? 0 : ze.getExtra().length);
 
 	strm.write(lh);
 
@@ -288,9 +288,9 @@ public void putNextEntry(ZipEntry ze) throws IOException
 	dout += nameBuf.length;
 
 	// Write any extra stuff
-	if (ze.extra != null) {
-		strm.write(ze.extra);
-		dout += ze.extra.length;
+	if (ze.getExtra() != null) {
+		strm.write(ze.getExtra());
+		dout += ze.getExtra().length;
 	}
 
 	// Add entry to list of entries we need to write at the end.

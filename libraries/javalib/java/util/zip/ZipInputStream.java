@@ -79,9 +79,9 @@ public class ZipInputStream extends InflaterInputStream
       entry.offset = 0;
 
       // Select the loader, simple or inflater.
-      if (entry.method == ZipEntry.STORED) {
+      if (entry.getMethod() == ZipEntry.STORED) {
 	sinf.setMode(true);
-	sinf.setLength((int)entry.csize);
+	sinf.setLength((int)entry.getCompressedSize());
       }
       else {
 	sinf.setMode(false);
@@ -120,7 +120,7 @@ public class ZipInputStream extends InflaterInputStream
 	// from the DATA header. This is so that users can find out
 	// the compressed and uncompressed sizes of data written in
 	// a compressed entry.
-	if (entry.method == ZipEntry.DEFLATED && peekSig() == (int)EXTSIG) {
+	if (entry.getMethod() == ZipEntry.DEFLATED && peekSig() == (int)EXTSIG) {
 
 	  // Consume signature
 	  readSig();

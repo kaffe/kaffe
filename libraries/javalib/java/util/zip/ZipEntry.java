@@ -19,17 +19,17 @@ public class ZipEntry implements Cloneable, ZipConstants {
   public static final int STORED = Deflater.NO_COMPRESSION;
   public static final int DEFLATED = Deflater.DEFLATED;
 
-  String name;
-  long time = -1;
+  private String name;
+  private long time = -1;
   int dosTime;
-  long crc;
-  long size;
-  int method;
-  byte[] extra;
-  String comment;
+  private long crc;
+  private long size;
+  private int method;
+  private byte[] extra;
+  private String comment;
   int flag;
   int version;
-  long csize;
+  private long csize;
   long offset;
 
   /**

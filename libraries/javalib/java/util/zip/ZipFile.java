@@ -76,8 +76,8 @@ public InputStream getInputStream(ZipEntry ze) throws IOException
 		throw new NullPointerException();
 	}
 
-	if (ze.size == -1) {
-		ze = getEntry(ze.name);
+	if (ze.getSize() == -1) {
+		ze = getEntry(ze.getName());
 	}
 
 	byte[] buf = getZipData0(zip, ze);
