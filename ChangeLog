@@ -1,3 +1,8 @@
+2003-06-04  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libltdl/ltdl.c
+	changed LT_DLREALLOC to use lt_dlrealloc
+
 2003-06-04  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
