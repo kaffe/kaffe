@@ -551,6 +551,7 @@ EXTRA_DIST = \
 	m68k/linux/clear-cache.h \
 	m68k/linux/config.frag \
 	m68k/linux/jit-md.h \
+	m68k/linux/jit3-md.h \
 	m68k/linux/md.c \
 	m68k/linux/md.h \
 	m68k/linux/sigcontextinfo.h \

@@ -1,3 +1,11 @@
+2004-08-18  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/Makefile.am:
+	(EXTRA_DIST) Added config/m68k/linux/jit3-md.h.
+
+	* config/Makefile.in:
+	Regenerated.
+
 2004-08-18  Kiyo Inaba  <inaba@src.ricoh.co.jp>
 
 	* config/m68k/linux/jit3-md.h:
