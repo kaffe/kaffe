@@ -17,7 +17,10 @@ package kaffe.security.provider;
 
 import java.security.*;
 
-public abstract class UpdateDigest extends MessageDigest {
+// See java.security.MessageDigest for explanation of why this class
+// extends MessageDigest instead of MessageDigestSpi.
+
+public abstract class UpdateDigest extends MessageDigest/*Spi*/ {
 	private byte[] context;
 
 	protected UpdateDigest(String algorithm) {
