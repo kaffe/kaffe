@@ -52,7 +52,7 @@ void jvmpiPostEvent(JVMPI_Event *ev)
 {
 	assert(ev != NULL);
 	assert(ev->event_type >= 0);
-	assert(ev->event_type < JVMPI_EVENT_COUNT);
+	assert((ev->event_type & ~JVMPI_REQUESTED_EVENT) < JVMPI_EVENT_COUNT);
 
 	ev->env_id = THREAD_JNIENV();
 	switch( ev->event_type )

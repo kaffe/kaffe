@@ -113,6 +113,7 @@ find . -type f -name 'Makefile.in' | xargs rm -f
 
 # Now regenerate autotools
 libtoolize --automake --ltdl --copy --force
+patch -p0 < developers/patch-libtool-use-internal-argz_create_sep.diff
 cp libltdl/acinclude.m4 m4/libtool.m4
 
 # gettextize kaffe
@@ -130,3 +131,15 @@ autoconf -Wall
  patch < ../developers/patch-config.sub-superh.diff
  cd ..
 )
+
+( 
+ cd libltdl 	 
+ # Need to regenerate things because patching 	 
+ # screws up timestamps 	 
+ aclocal -I . 	 
+ automake --add-missing --force-missing --copy -Wall 	 
+ touch config-h.in 	 
+ autoconf -Wall 	 
+ patch < ../developers/patch-config.sub-superh.diff 	 
+) 	 
+ 

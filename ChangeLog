@@ -1,3 +1,23 @@
+2004-03-12  Jon Nall <nall@themountaingoats.net>
+
+	* kaffe/jvmpi/jvmpi_kaffe.c:
+	Fixed assert.
+
+	* developers/patch-libtool-use-internal-argz_create_sep.diff
+	New file.
+
+2004-03-12  Dalibor Topic <robilad@kaffe.org>
+
+	* developers/autogen.sh:
+	Patch libtool.
+
+	* libltdl/acinclude.m4,
+	libltdl/config.guess,
+	libltdl/config.sub,
+	libltdl/configure,
+	m4/libtool.m4:
+	Regenerated.
+
 2004-03-12  Dalibor Topic <robilad@kaffe.org>
 
 	* include/jni.h:

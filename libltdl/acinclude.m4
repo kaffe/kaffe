@@ -6369,5 +6369,5 @@ AC_CHECK_TYPES([error_t],
 #  include <argz.h>
 #endif])
 
-AC_CHECK_FUNCS([argz_append argz_create_sep argz_insert argz_next argz_stringify])
+AC_CHECK_FUNCS([argz_append argz_insert argz_next argz_stringify])
 ])# AC_LTDL_FUNC_ARGZ
