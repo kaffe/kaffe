@@ -1,3 +1,4 @@
+#if defined(HAVE_LIBZ) && defined(HAVE_ZLIB_H)
 KAFFE_NATIVE(java_util_zip_Adler32_update)
 KAFFE_NATIVE(java_util_zip_Adler32_update1)
 KAFFE_NATIVE(java_util_zip_CRC32_update)
@@ -18,3 +19,4 @@ KAFFE_NATIVE(java_util_zip_Inflater_getTotalOut)
 KAFFE_NATIVE(java_util_zip_Inflater_reset)
 KAFFE_NATIVE(java_util_zip_Inflater_end)
 KAFFE_NATIVE(java_util_zip_Inflater_init)
+#endif /* defined(HAVE_LIBZ) && defined(HAVE_ZLIB_H) */
