@@ -120,7 +120,7 @@ public int read ( char [] cbuf, int off, int len ) throws IOException {
 			return rd.read(cbuf, off, len);
 		}
 
-		int nread;	
+		int nread;
 		int chunk;
 		for (nread = 0; nread < len; nread += chunk) {
 			// Make sure there's something in the buffer
@@ -223,10 +223,10 @@ public boolean ready() throws IOException {
 private int fillOutBuffer () throws IOException {
 	synchronized ( lock ) {
 		int n;
+		int pos = this.pos;
 
 		if (markset) {
 			if (pos == inbuf.length) {	// mark overflow
-				markvalid = false;
 				pos = 0;
 			}
 		} else {
@@ -234,6 +234,13 @@ private int fillOutBuffer () throws IOException {
 		}
 
 		n = rd.read(inbuf, pos, inbuf.length - pos);
+
+		// defers fields update to avoid inconsistency on exception
+		if (markset && this.pos == inbuf.length) {
+			// mark overflow
+			markvalid = false;
+		}
+		this.pos = pos;
 
 		if (n >= 0) {
 			size = pos + n;
