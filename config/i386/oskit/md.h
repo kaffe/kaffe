@@ -4,6 +4,9 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  *
+ * Copyright (c) 2003
+ *      Kaffe.org contributors. See ChangeLog for details.
+ *
  * Contributed by the Flux Research Group at the University of Utah.
  * Authors: Godmar Back, Leigh Stoller
  */
@@ -12,6 +15,7 @@
 #define __i386_oskit_md_h
 
 #include "i386/common.h"
+#include "i386/sysdepCallMethod.h"
 #include "i386/threads.h"
 
 /*

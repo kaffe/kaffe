@@ -5,6 +5,9 @@
  * Copyright (c) 1996, 1997, 1998
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2003
+ *      Kaffe.org contributors. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -16,6 +19,8 @@
 
 #include "i386/common.h"
 #include "i386/threads.h"
+
+#include "support.h"
 
 #if !defined(EXTERN_C)
 #define EXTERN_C extern
@@ -33,8 +38,10 @@ EXTERN_C void* _currentFrame(void);
 
 extern void _sysdepCallMethod(void*);
 
-#undef sysdepCallMethod
-#define	sysdepCallMethod(M) _sysdepCallMethod((void*)(M)) /* Provided by WIN32-MD.ASM */
+static inline void sysdepCallMethod(callMethodInfo *call) {
+	/* Provided by WIN32-MD.ASM */
+	return _sysdepCallMethod((void*)(call));
+}
 
 extern int _compareAndExchange(void*, void*, void*);
 

@@ -162,6 +162,7 @@ EXTRA_DIST = \
 	i386/solaris2/jit-md.h \
 	i386/solaris2/md.c \
 	i386/solaris2/md.h \
+	i386/sysdepCallMethod.h \
 	i386/threads.h \
 	i386/trampolines.c \
 	i386/univel_svr4/config.frag \
