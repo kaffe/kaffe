@@ -12,6 +12,7 @@
 #define __stacktrace_h
 
 #include "exception.h"
+#include "md.h"
 
 /*
  * STACKTRACEMETHCREATE is a pointer to a method object that is stored when 
