@@ -7,6 +7,8 @@ import java.net.URL;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import kaffe.lang.Application;
+import kaffe.lang.ApplicationResource;
 
 /*
  * Java core library component.
@@ -125,8 +127,17 @@ public boolean delete() {
 native private boolean delete0();
 native private boolean rmdir0();
 
-// XXX FIXME implement me .. using Godmar's Application stuff ..
+/*
+ * Free file on the termination of the application.  Note that this
+ * will only work if the program is launched via the kaffe.lang.Application
+ * class.
+ */
 public void deleteOnExit() {
+	Application.addResource(new ApplicationResource() {
+		public void freeResource() {
+			File.this.delete();
+		}
+	});
 }
 
 public int compareTo(Object that) {
