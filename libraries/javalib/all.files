@@ -1835,6 +1835,7 @@ java/io/VMObjectStreamClass.java
 java/io/WriteAbortedException.java
 java/io/Writer.java
 java/lang/AbstractMethodError.java
+java/lang/Appendable.java
 java/lang/ArithmeticException.java
 java/lang/ArrayIndexOutOfBoundsException.java
 java/lang/ArrayStoreException.java
