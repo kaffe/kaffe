@@ -125,6 +125,10 @@ int gc_system_alloc_cnt;
  */
 #define	ROUNDUPPAGESIZE(V)	(((uintp)(V) + gc_pgsize - 1) & -gc_pgsize)
 
+static char * gc_block_base = NULL;
+
+#define KGC_BLOCKS		((gc_block *) gc_block_base)
+
 /**
  * Evaluates to the first usable address in gc_block @B.
  *
@@ -671,7 +675,6 @@ gc_large_block(size_t sz)
  */
 #define KGC_PRIM_LIST_COUNT 20
 
-char * gc_block_base = NULL;
 static gc_block *gc_prim_freelist[KGC_PRIM_LIST_COUNT+1];
 
 #ifndef PROT_NONE

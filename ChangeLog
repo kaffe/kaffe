@@ -1,5 +1,15 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c (KGC_BLOCKS): Added.
+	(gc_block_base) Made static.
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.h (KGC_BLOCKS): Removed.
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.h (gc_block_base):
+	Removed.
+
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Removed ALIGNMENTOF_VOIDP check.
 
 	* include/defs.h (ALIGNMENTOF_VOIDP): Define portably.

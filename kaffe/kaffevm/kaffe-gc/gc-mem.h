@@ -95,8 +95,6 @@ extern gc_block * gc_mem2block(const void * mem);
 
 /* ------------------------------------------------------------------------ */
 
-#define KGC_BLOCKS		((gc_block *) gc_block_base)
-
 /**
  * Tests whether a block is in use.
  *
