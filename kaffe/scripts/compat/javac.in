@@ -2,5 +2,5 @@
 # We use Pizza compiler rather than Sun's.
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-exec @bindir@/kaffe pizza.compiler.Main ${1+"$@"}
+exec @bindir@/@kaffe_TRANSF@ pizza.compiler.Main ${1+"$@"}
 

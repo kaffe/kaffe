@@ -1,60 +1,6 @@
-Kaffe's build environment now has a depend target.
+Kaffe's build environment no longer has a depend target; automake
+takes care of it with the developer's version of the makefiles.  After
+`make dist', dependencies are hard-coded into the Makefiles.
 
-Note that you must type "make depend" to create or recreate 
-the dependencies.  The use of the depend target is not mandatory--
-simply typing make will still compile the program.  It is intended
-for everyone who wants to make changes to Kaffe.
-
------------------------------------------------------------------------
-Here is how it works:  for each "file.c", a set of make dependencies
-is created using "gcc -M".  This set of dependencies is stored in 
-"file.d".  All .d files of a particular directory are concatenated into
-a file ".depend", which is included by the Makefile for that directory.
-
-Note that we use -M and not -MM since -MM will not include dependencies
-to files included via #include <file.h>.  However, certain files, such
-as <readClassConfig.h> are included this way.  
-
-The set of .d files is computed from the set of object files, by replacing
-the .o suffix with a .d suffix.  A .d is created from a .o file by using
-the command $DEPTOOL, which defaults to "gcc -M".
-The depend target depends on all .d files, so "make depend" will create
-the .d files.
-
-In addition, I added a dependency on static libraries if --with-staticlib
-is given.  This will relink Kaffe if you change libkaffevm, for instance.
-
-The clean target will remove the .d files and recreate an empty .depend,
-so that "make clean all" works.  You must type make depend after you typed 
-make clean to recreate the dependencies.
-
-The distclean target will remove the .d files and the .depend files.
-You must reconfigure, then type make depend to recreate the dependencies.
-
-Because of the ugly magic in kaffeh, its Makefile needed addition rules.
-
------------------------------------------------------------------------
-Changes to the configure setup:
-
-On systems that do not support include for Makefiles or that do not 
-have gcc or that want to use a different tool to create dependencies
-you may set the environment variable DEPTOOL before running configure.
-This will make Kaffe use the command $DEPTOOL.  In this case, set 
-INC_DEPEND to the command that your make needs to include .depend. 
-This could be INC_DEPEND="include .depend" (which is the default.)
-INC_DEPEND="# automatic dependency generation not enabled in configure"
-makes INC_DEPEND an inert comment.
-
-If DEPTOOL is not set and gcc is not available, INC_DEPEND is replaced
-with a comment and DEPTOOL with a harmless command (/bin/true).
-This should make depend a benign target.  Note that we *do* assume that 
-your make understands the include directive *if* you are using gcc
-*and* did not set DEPTOOL before calling configure.  You can't be all
-things to all people.
-
------------------------------------------------------------------------
-
-May 27, 1998
-
-	- Godmar Back <gback@cs.utah.edu>
-
+-- 
+Alexandre Oliva

@@ -56,7 +56,7 @@ if [ -f "${HOME}/.kafferc" ]; then
 fi
 
 if test x"${KAFFE_DEBUG+set}"x != x"set"x; then
-    exec $KAFFE_LIBEXECDIR/Kaffe ${1+"$@"}
+    exec $KAFFE_LIBEXECDIR/@Kaffe_TRANSF@ ${1+"$@"}
 else
     case `"$KAFFE_DEBUG" --version </dev/null 2>/dev/null` in
     *"GDB"* | *"GNU gdb"*)
@@ -67,16 +67,16 @@ else
 	    echo "cd `pwd`"
 	    echo "set args $*"
 	} >/tmp/.gdbinit.$$
-	exec "$KAFFE_DEBUG" -command /tmp/.gdbinit.$$ $KAFFE_LIBEXECDIR/Kaffe
+	exec "$KAFFE_DEBUG" -command /tmp/.gdbinit.$$ $KAFFE_LIBEXECDIR/@Kaffe_TRANSF@
 	rm -f /tmp/.gdbinit.$$;;
     "GNU Emacs"*)
 	# start gdb within GNU Emacs, move into the current working
 	# directory and set up the specified argument list
-	exec "$KAFFE_DEBUG" -eval "(progn (gdb \"gdb $KAFFE_LIBEXECDIR/Kaffe\") (gud-call \"cd `pwd`\") (gud-call \"set args $*\"))";;
+	exec "$KAFFE_DEBUG" -eval "(progn (gdb \"gdb $KAFFE_LIBEXECDIR/@Kaffe_TRANSF@\") (gud-call \"cd `pwd`\") (gud-call \"set args $*\"))";;
     XEmacs*)
 	# start gdb within XEmacs, move into the current working
 	# directory and set up the specified argument list
-	exec "$KAFFE_DEBUG" -eval "(progn (gdb \"$KAFFE_LIBEXECDIR/Kaffe\") (gdb-call \"cd `pwd`\") (gdb-call \"set args $*\"))";;
+	exec "$KAFFE_DEBUG" -eval "(progn (gdb \"$KAFFE_LIBEXECDIR/@Kaffe_TRANSF@\") (gdb-call \"cd `pwd`\") (gdb-call \"set args $*\"))";;
     *) echo you must set KAFFE_DEBUG to either emacs or gdb >&2;;
     esac
 fi

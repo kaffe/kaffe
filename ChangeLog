@@ -1,3 +1,14 @@
+Sat Feb 20 20:14:42 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in: new --with-rtlibraries switch, to pass -R flags to 
+	libtool, i.e., run-time library search path
+	* FAQ/FAQ.automake, FAQ/FAQ.depend: update
+	* configure.in: (kaffe_TRANSF, Kaffe_TRANSF): transformed names
+	* configure, */Makefile.in: regen
+	* kaffe/scripts/*.in, kaffe/scripts/compat/*.in: use transformed
+	names; use kaffe instead of java
+	* README: update
+	
 Sat Feb 20 14:14:53 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/clib/awt/X/Makefile.am: export symbols starting

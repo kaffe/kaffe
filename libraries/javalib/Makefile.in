@@ -97,6 +97,7 @@ KLIBFLAGS = @KLIBFLAGS@
 KPREFIX = @KPREFIX@
 KVER = @KVER@
 KVMLIBFLAGS = @KVMLIBFLAGS@
+Kaffe_TRANSF = @Kaffe_TRANSF@
 LD = @LD@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
@@ -122,6 +123,7 @@ ZIP_LIBS = @ZIP_LIBS@
 classdir = @classdir@
 host_cpu = @host_cpu@
 host_os = @host_os@
+kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
 

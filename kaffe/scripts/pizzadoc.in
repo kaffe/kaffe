@@ -2,5 +2,5 @@
 # Script to run PizzaDoc
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-exec @bindir@/kaffe pizza.compiler.Main -pizzadoc ${1+"$@"}
+exec @bindir@/@kaffe_TRANSF@ pizza.compiler.Main -pizzadoc ${1+"$@"}
 

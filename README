@@ -127,21 +127,24 @@ option to configure.  To install the binaries type "make install".
 To avoid conflicts with Javasoft's products, Kaffe can be reconfigured in a
 number of ways:
 
-1. Use the --program-prefix configure option to prepend a string to all
-   command names.
+1. Use --program-prefix, --program-suffix or --program-transform-name
+   configure option to prepend or append a string, or edit (with a sed
+   command) all command names.
 2. Use the --prefix configure option to place the kaffe installation tree
    somewhere other than /usr/local.
 
 For Windows 95/98/NT it's a little different.
 
-The only 'working' port to Windows '95 uses Cygnus's GNU tools for Windows
-(available from http://www.cygnus.com/ - don't ask me how to install them!)
+The only 'working' port to Windows '95 uses Cygnus's GNU tools for
+Windows (available from http://sourceware.cygnus.com/cygwin - don't
+ask me how to install them!)
+
 To configure you would type the following:
 
-        ./configure --prefix=c:/kaffe
+        ./configure --prefix=//c/kaffe
 
-This would configure Kaffe to install in c:/kaffe and build in the source
-directories.
+This would configure Kaffe to install in c:\kaffe and build in the
+source directories.
 
 Compilation and installation is as per the UNIX system.
 

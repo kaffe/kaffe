@@ -2,4 +2,4 @@
 # Script to run Sun's documenter
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-exec @bindir@/java sun.tools.javadoc.Main ${1+"$@"}
+exec @bindir@/@kaffe_TRANSF@ sun.tools.javadoc.Main ${1+"$@"}
