@@ -1,3 +1,12 @@
+2004-04-02  Dalibor Topic <robilad@kaffe.org>
+
+	*  libraries/javalib/Makefile.am.in:
+	Fixed rt.jar creation to no longer need to copy files around.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+
 2004-04-01  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* m4/gcc_attribute.m4: Really add the unused attribute.

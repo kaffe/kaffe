@@ -2672,9 +2672,15 @@ $(srcdir)/Klasses.jar.bootstrap: bootstrap.classlist
 if HAVE_ZIP
 JAR_CMD1 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -r $$dstdir/rt.jar META-INF)
 JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -DX -r ../rt.jar $(SRCDIRS))
+JAR_CMD3 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -DX -r $$dstdir/rt.jar $(gnu_regexp_message_bundles))
+JAR_CMD4 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -DX -r $$dstdir/rt.jar $(gnu_java_locale_bundles))
+JAR_CMD5 = (dstdir=`pwd`; cd $(srcdir) && $(ZIP) -DX -r $$dstdir/rt.jar $(serialized_converters))
 else
 JAR_CMD1 = $(JAR) -cvf rt.jar -C $(LIBDIR) $(SRCDIRS)
 JAR_CMD2 = $(JAR) -uvf rt.jar -C $(srcdir) META-INF/
+JAR_CMD3 = $(JAR) -uvf rt.jar -C $(srcdir) $(gnu_regexp_message_bundles)
+JAR_CMD4 = $(JAR) -uvf rt.jar -C $(srcdir) $(gnu_java_locale_bundles)
+JAR_CMD5 = $(JAR) -uvf rt.jar -C $(srcdir) $(serialized_converters)
 endif
 
 .PHONY: jar-classes
@@ -2683,21 +2689,12 @@ jar-classes rt.jar:
 	cp $(PATH_TO_RT_JAR) rt.jar
 else
 jar-classes rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
-	if [ ! -d $(LIBDIR)/kaffe ] ; then \
-	       mkdir $(LIBDIR)/kaffe ; \
-	       mkdir $(LIBDIR)/kaffe/io ; \
-	fi
-	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
-	if [ ! -d $(LIBDIR)/gnu ] ; then \
-		mkdir $(LIBDIR)/gnu ; \
-		mkdir $(LIBDIR)/gnu/regexp ; \
-		mkdir $(LIBDIR)/gnu/java ; \
-		mkdir $(LIBDIR)/gnu/java/locale ; \
-	fi
-	for i in $(gnu_regexp_message_bundles) $(gnu_java_locale_bundles) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	rm -f rt.jar
 	$(JAR_CMD1)
 	$(JAR_CMD2)
+	$(JAR_CMD3)
+	$(JAR_CMD4)
+	$(JAR_CMD5)
 endif
 
 .PHONY: build-classes Klasses
