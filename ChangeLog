@@ -1,3 +1,21 @@
+2004-04-30  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/text/DecimalFormat.java
+	(MAXIMUM_INTEGER_DIGITS): New private constant.
+	(applyPatternWithSymbols): Use MAXIMUM_INTEGER_DIGITS.
+	(parse): Fixed exponentiation parsing and grouping.
+
+	* libraries/javalib/java/util/SimpleTimeZone.java:
+	(setStartTime): Commented out an unimplemented method.
+
+	* libraries/javalib/java/text/AttributedStringIterator.java:
+	Resynced with GNU Classpath.
+
+	2004-04-20  Graydon Hoare  <graydon@redhat.com>                                                                        
+        * java/text/AttributedStringIterator.java
+        (getRunLimit): Correct logic.
+
+
 2004-05-01  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/util/prefs/AbstractPreferences.java:
@@ -36,6 +54,7 @@
         * javax/naming/CompoundName.java (endsWith): Look at correct
         element of source name.
 
+>>>>>>> 1.2290
 2004-04-28  Dalibor Topic  <robilad@kaffe.org>
 
         * configure.ac:
