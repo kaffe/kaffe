@@ -24,6 +24,9 @@ MISSING OR BROKEN FEATURES
 
   produces the wrong result.
 
+* File.getCanonicalPath() is not properly implemented.
+  This needs a native implementation.
+
 * java.net.Socket:
 
   +  getSoTimeout() 
