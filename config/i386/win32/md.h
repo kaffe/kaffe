@@ -12,6 +12,8 @@
 #ifndef __i386_win32_md_h
 #define __i386_win32_md_h
 
+#undef	NEED_sysdepCallMethod
+
 #include "i386/common.h"
 #include "i386/threads.h"
 
@@ -28,10 +30,6 @@ EXTERN_C void* _currentFrame(void);
 #endif
 
 #define	TRAMPOLINE_FUNCTION()	/* Provided by WIN32-MD.ASM */
-
-extern _callException(void*, void*, void*);
-#undef CALL_KAFFE_EXCEPTION
-#define	CALL_KAFFE_EXCEPTION(A, B, C)	_callException((void*)(A),(void*)(B),(void*)(C)) /* Provided by WIN32-MD.ASM */
 
 extern void _sysdepCallMethod(void*);
 

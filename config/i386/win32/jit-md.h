@@ -17,4 +17,8 @@
 /**/
 #include "i386/jit.h"
 
+extern void _callException(void*, void*, void*);
+#undef CALL_KAFFE_EXCEPTION
+#define	CALL_KAFFE_EXCEPTION(A, B, C) _callException((void*)(A), (void*)(B), (void*)(C))
+
 #endif
