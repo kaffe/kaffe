@@ -1,3 +1,9 @@
+Tue Jan  5 07:27:32 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffeh/support.c (binary_open): new function that adds
+	O_BINARY to the open mode
+	(Kaffe_SystemCallInterface): use binary_open instead of open
+
 Mon Jan  4 23:00:34 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/jit/machine.c: added jit_time timer/counter.

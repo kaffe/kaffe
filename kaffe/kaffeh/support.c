@@ -58,13 +58,16 @@ static void  gcFree(void*);
 static void gcAddRef(const void *);
 static bool gcRmRef(const void *);
 
+static inline int
+binary_open(const char *file, int mode, int perm);
+
 /*
  * We use a very simple 'fake' threads subsystem
  */
 
 SystemCallInterface Kaffe_SystemCallInterface =
 {
-	(int (*)(const char*, int, int)) open,	/* avoid warning */
+	binary_open,
         read,
         write, 
         lseek,
@@ -106,6 +109,15 @@ GarbageCollectorInterface Kaffe_GarbageCollectorInterface = {
 	gcAddRef,
 	gcRmRef,
 };
+
+/* 
+ * Ensure that files are opened in binary mode; the MS-Windows port
+ * depends on this.
+ */
+static inline int
+binary_open(const char *file, int mode, int perm) {
+  return open(file, mode | O_BINARY, perm);
+}
 
 /*
  * Init include file.
