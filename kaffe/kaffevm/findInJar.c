@@ -15,6 +15,7 @@
 #define	CDBG(s)
 
 #include "config.h"
+#include "debug.h"
 #include "config-std.h"
 #include "config-io.h"
 #include "config-mem.h"
@@ -37,6 +38,7 @@
 #include "classpath.h"
 #include "stringSupport.h"
 #include "stats.h"
+#include "access.h"
 #include "gcj/gcj.h"
 
 #define KLASSES_JAR	"Klasses.jar"
@@ -69,6 +71,30 @@ findClass(classEntry* centry, errorInfo *einfo)
 	Hjava_lang_Class* class = 0;
 
 	cname = centry->name->data;
+
+#if defined(HAVE_GCJ_SUPPORT)
+	/* 
+ 	 * XXX: for now, prefer *any* classes given in a .so file
+	 * What we really want is to have separate lists for each .so module
+	 * so that we can search for classes in the order that the classpath
+	 * specifies.
+	 * A good reimplementation would use a global hashtable to map
+	 * all available names to the sources from which they'd be loaded.
+	 */
+	class = gcjFindClassByUtf8Name(cname, einfo);
+	if (class != 0) {
+		if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
+			/* XXX could say from where, but see above */
+			fprintf(stderr, "Loading precompiled %s\n", cname);
+		}
+DBG(GCJ,	dprintf(__FUNCTION__": adding class %s to pool@%p\n",
+			cname, centry);
+    )
+		class->centry = centry;
+		assert(CLASS_GCJ(class));
+		return (class);
+	}
+#endif
 
 	/* Note: In order to avoid that a thread goes on and tries to link a
 	 * class that hasn't been fully read, we make sure we don't set 
