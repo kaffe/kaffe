@@ -1,3 +1,15 @@
+Wed Apr 17 22:02:42 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* libraries/javalib/java/applet/Applet.java:
+	(getAppletContext), (getAudioClip), (getCodeBase),
+	(getDocumentBase), (getImage), (getImage), (getParameter)
+	merged in fixes from pocketlinux kaffe.
+	(getAudioClip), (isActive) cosmetic changes.
+	* libraries/javalib/java/lang/Boolean.java:
+	(Boolean) use equalsIgnoreCase instead of doing it by hand.
+	* libraries/javalib/kaffe/jar/ExecJar.java:
+	(ExecJar) handle Class-Path Attribute.
+	* FAQ/FAQ.Known-Bugs: removed some fixed bugs.
+
 Mon Apr 15 20:00:56 CEST 2002 Tim Stack  <stack@cs.utah.edu>
 	* libraries/clib/net/PlainDatagramSocketImpl.c:
 	added SO_REUSEPORT support. Improved error reporting.
