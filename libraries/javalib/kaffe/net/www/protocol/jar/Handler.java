@@ -27,8 +27,7 @@ public class Handler extends URLStreamHandler {
 		return new JarURLConnection(u);
 	}
 
-	protected void parseURL(URL u, String spec0, int start, int limit)
-			throws MalformedURLException {
+	protected void parseURL(URL u, String spec0, int start, int limit) {
 		String spec = spec0.substring(start, limit);
 		String file = u.getFile();
 		String innerUrl, specFile;
@@ -48,12 +47,12 @@ public class Handler extends URLStreamHandler {
 			try {
 				new URL(innerUrl);
 			} catch (MalformedURLException e) {
-				throw new MalformedURLException(
+				throw new Error(
 				    "invalid inner URL: " + e.getMessage());
 			}
 			specFile = spec.substring(posn + 1);
 		} else if (innerUrl.equals("")) {
-			throw new MalformedURLException("no !/ in spec");
+			throw new Error("no !/ in spec");
 		} else {	// inherit inner URL from context
 			specFile = spec;
 		}
@@ -78,12 +77,17 @@ public class Handler extends URLStreamHandler {
 	// This does some rudimentary sanity checking on the URL contents
 	//   before forwarding the method call up to the superclass.
 	protected void setURL(URL u, String protocol, String host, int port,
-			String file, String ref) throws MalformedURLException {
+			String file, String ref) {
 		int sep = file.indexOf("!/");
 		if (!host.equals("") || port != -1 || sep == -1) {
-			throw new MalformedURLException("invalid JAR URL");
+			throw new Error("invalid JAR URL");
 		}
-		new URL(file.substring(0, sep));
+		try {
+			new URL(file.substring(0, sep));
+		}
+		catch (MalformedURLException _) {
+			throw new Error("invalid JAR URL");
+		}
 		super.setURL(u, protocol, host, port, file, ref);
 	}
 

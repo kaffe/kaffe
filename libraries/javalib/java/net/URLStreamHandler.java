@@ -29,11 +29,7 @@ abstract protected URLConnection openConnection(URL u) throws IOException;
 //
 // Where "port" is restricted to being between 0 and 65535.
 //
-// The JDK 1.2 docs say this can't throw a MalformedURLException.
-// That seems wrong.
-//
-protected void parseURL(URL u, String spec0, int start, int limit)
-		throws MalformedURLException {
+protected void parseURL(URL u, String spec0, int start, int limit) {
 	String spec = spec0.substring(start, limit);
 	boolean gotHost = false;
 
@@ -60,8 +56,7 @@ protected void parseURL(URL u, String spec0, int start, int limit)
 					throw new NumberFormatException();
 				}
 			} catch (NumberFormatException e) {
-				throw new MalformedURLException("bad port: "
-				  + portString);
+				port = u.getPort();
 			}
 		} else {
 			if (slash != -1) {
@@ -99,12 +94,8 @@ protected void parseURL(URL u, String spec0, int start, int limit)
 	setURL(u, u.getProtocol(), host, port, compressFile(file), u.getRef());
 }
 
-//
-// The JDK 1.2 docs say this can't throw a MalformedURLException.
-// That seems wrong.
-//
 protected void setURL(URL u, String protocol, String host, int port,
-		String file, String ref) throws MalformedURLException {
+		String file, String ref) {
 	u.set(protocol, host, port, file, ref);
 }
 
