@@ -1,4 +1,4 @@
-/* LocaleInformation_cy.java --
+/* LocaleInformation_az_Cyrl.java --
    Copyright (C) 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -45,11 +45,11 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.ListResourceBundle;
 
-public class LocaleInformation_cy extends ListResourceBundle
+public class LocaleInformation_az_Cyrl extends ListResourceBundle
 {
-  private static final String currenciesDisplayNameKeys = "INR\u00A6JPY\u00A6RUB\u00A6CNY\u00A6EUR\u00A6GBP\u00A6BRL\u00A6USD";
+  private static final String currenciesDisplayNameKeys = "AZM";
 
-  private static final String currenciesDisplayNameValues = "Rwp\u00ee India\u00A6Yen Siapan\u00A6Rwbl Rwsia\u00A6Yuan Renminbi Tseina\u00A6Ewro\u00A6Punt Sterling Prydain\u00A6Real Brasil\u00A6Doler yr UDA";
+  private static final String currenciesDisplayNameValues = "AZM";
 
   private static final Hashtable currenciesDisplayName;
   static
@@ -65,9 +65,9 @@ public class LocaleInformation_cy extends ListResourceBundle
       }
   }
 
-  private static final String currenciesSymbolKeys = "";
+  private static final String currenciesSymbolKeys = "AZM";
 
-  private static final String currenciesSymbolValues = "";
+  private static final String currenciesSymbolValues = "\u043c\u0430\u043d.";
 
   private static final Hashtable currenciesSymbol;
   static
@@ -83,63 +83,9 @@ public class LocaleInformation_cy extends ListResourceBundle
       }
   }
 
-  private static final String[] shortMonths = {
-    "Ion",
-    "Chwef",
-    "Mawrth",
-    "Ebrill",
-    "Mai",
-    "Meh",
-    "Gorff",
-    "Awst",
-    "Medi",
-    "Hyd",
-    "Tach",
-    "Rhag",
-    null,
-  };
+  private static final String territoriesKeys = "AZ";
 
-  private static final String[] months = {
-    "Ionawr",
-    "Chwefror",
-    "Mawrth",
-    "Ebrill",
-    "Mai",
-    "Mehefin",
-    "Gorffenaf",
-    "Awst",
-    "Medi",
-    "Hydref",
-    "Tachwedd",
-    "Rhagfyr",
-    null,
-  };
-
-  private static final String[] shortWeekdays = {
-    null,
-    "Sul",
-    "Llun",
-    "Maw",
-    "Mer",
-    "Iau",
-    "Gwen",
-    "Sad",
-  };
-
-  private static final String[] weekdays = {
-    null,
-    "Dydd Sul",
-    "Dydd Llun",
-    "Dydd Mawrth",
-    "Dydd Mercher",
-    "Dydd Iau",
-    "Dydd Gwener",
-    "Dydd Sadwrn",
-  };
-
-  private static final String territoriesKeys = "FR\u00A6IN\u00A6CN\u00A6DE\u00A6GB\u00A6BR\u00A6RU\u00A6JP\u00A6US\u00A6IT";
-
-  private static final String territoriesValues = "Ffrainc\u00A6India\u00A6Tseina\u00A6Yr Almaen\u00A6Prydain Fawr\u00A6Brasil\u00A6Rwsia\u00A6Siapan\u00A6Yr Unol Daleithiau\u00A6Yr Eidal";
+  private static final String territoriesValues = "\u0410\u0437\u04d9\u0440\u0431\u0430\u0458\u04b9\u0430\u043d";
 
   private static final Hashtable territories;
   static
@@ -155,9 +101,9 @@ public class LocaleInformation_cy extends ListResourceBundle
       }
   }
 
-  private static final String languagesKeys = "zh\u00A6en\u00A6ru\u00A6cy\u00A6it\u00A6fr\u00A6de\u00A6es\u00A6ja\u00A6pt";
+  private static final String languagesKeys = "az";
 
-  private static final String languagesValues = "Tseineeg\u00A6Saesneg\u00A6Rwsieg\u00A6Cymraeg\u00A6Eidaleg\u00A6Ffrangeg\u00A6Almaeneg\u00A6Sbaeneg\u00A6Siapaneeg\u00A6Portiwgaleg";
+  private static final String languagesValues = "\u0410\u0437\u04d9\u0440\u0431\u0430\u0458\u04b9\u0430\u043d";
 
   private static final Hashtable languages;
   static
@@ -175,12 +121,10 @@ public class LocaleInformation_cy extends ListResourceBundle
 
   private static final Object[][] contents =
   {
+    { "decimalSeparator", "," },
+    { "groupingSeparator", "\u00a0" },
     { "currenciesDisplayName", currenciesDisplayName },
     { "currenciesSymbol", currenciesSymbol },
-    { "shortMonths", shortMonths },
-    { "months", months },
-    { "shortWeekdays", shortWeekdays },
-    { "weekdays", weekdays },
     { "territories", territories },
     { "languages", languages },
   };

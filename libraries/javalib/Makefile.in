@@ -1548,6 +1548,7 @@ gnu_java_locale_SRCS = \
 	gnu/java/locale/LocaleInformation_as.java \
 	gnu/java/locale/LocaleInformation_as_IN.java \
 	gnu/java/locale/LocaleInformation_az.java \
+	gnu/java/locale/LocaleInformation_az_Cyrl.java \
 	gnu/java/locale/LocaleInformation_be.java \
 	gnu/java/locale/LocaleInformation_be_BY.java \
 	gnu/java/locale/LocaleInformation_bg.java \

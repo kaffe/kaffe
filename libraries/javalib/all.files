@@ -727,6 +727,7 @@ gnu/java/locale/LocaleInformation_ar_YE.java
 gnu/java/locale/LocaleInformation_as.java
 gnu/java/locale/LocaleInformation_as_IN.java
 gnu/java/locale/LocaleInformation_az.java
+gnu/java/locale/LocaleInformation_az_Cyrl.java
 gnu/java/locale/LocaleInformation_be.java
 gnu/java/locale/LocaleInformation_be_BY.java
 gnu/java/locale/LocaleInformation_bg.java

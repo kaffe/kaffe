@@ -1,3 +1,60 @@
+2005-02-19  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2005-02-20  Michael Koch  <konqueror@gmx.de>
+
+	* gnu/java/locale/LocaleInformation_af.java,
+	gnu/java/locale/LocaleInformation_am.java,
+	gnu/java/locale/LocaleInformation_ca.java,
+	gnu/java/locale/LocaleInformation_cs.java,
+	gnu/java/locale/LocaleInformation_cy.java,
+	gnu/java/locale/LocaleInformation_da.java,
+	gnu/java/locale/LocaleInformation_de.java,
+	gnu/java/locale/LocaleInformation_el.java,
+	gnu/java/locale/LocaleInformation_en.java,
+	gnu/java/locale/LocaleInformation_eo.java,
+	gnu/java/locale/LocaleInformation_es.java,
+	gnu/java/locale/LocaleInformation_et.java,
+	gnu/java/locale/LocaleInformation_eu.java,
+	gnu/java/locale/LocaleInformation_fa.java,
+	gnu/java/locale/LocaleInformation_fi.java,
+	gnu/java/locale/LocaleInformation_fr.java,
+	gnu/java/locale/LocaleInformation_ga.java,
+	gnu/java/locale/LocaleInformation_hr.java,
+	gnu/java/locale/LocaleInformation_hu.java,
+	gnu/java/locale/LocaleInformation_hy.java,
+	gnu/java/locale/LocaleInformation_id.java,
+	gnu/java/locale/LocaleInformation_is.java,
+	gnu/java/locale/LocaleInformation_it.java,
+	gnu/java/locale/LocaleInformation_ja.java,
+	gnu/java/locale/LocaleInformation_ka.java,
+	gnu/java/locale/LocaleInformation_ko.java,
+	gnu/java/locale/LocaleInformation_lo.java,
+	gnu/java/locale/LocaleInformation_lt.java,
+	gnu/java/locale/LocaleInformation_lv.java,
+	gnu/java/locale/LocaleInformation_mk.java,
+	gnu/java/locale/LocaleInformation_mn.java,
+	gnu/java/locale/LocaleInformation_ms.java,
+	gnu/java/locale/LocaleInformation_mt.java,
+	gnu/java/locale/LocaleInformation_nb.java,
+	gnu/java/locale/LocaleInformation_nl.java,
+	gnu/java/locale/LocaleInformation_nn.java,
+	gnu/java/locale/LocaleInformation_pl.java,
+	gnu/java/locale/LocaleInformation_pt.java,
+	gnu/java/locale/LocaleInformation_ro.java,
+	gnu/java/locale/LocaleInformation_ru.java,
+	gnu/java/locale/LocaleInformation_sk.java,
+	gnu/java/locale/LocaleInformation_sl.java,
+	gnu/java/locale/LocaleInformation_sq.java,
+	gnu/java/locale/LocaleInformation_sv.java,
+	gnu/java/locale/LocaleInformation_th.java,
+	gnu/java/locale/LocaleInformation_tr.java,
+	gnu/java/locale/LocaleInformation_vi.java,
+	gnu/java/locale/LocaleInformation_zh.java,
+	gnu/java/locale/LocaleInformation_zh_Hant.java: Updated.
+	* gnu/java/locale/LocaleInformation_az_Cyrl.java: New file.
+	
 2005-02-20  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h,

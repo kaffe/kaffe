@@ -47,6 +47,70 @@ import java.util.ListResourceBundle;
 
 public class LocaleInformation_mn extends ListResourceBundle
 {
+  private static final String[] shortMonths = {
+    "\u0445\u0443\u043b",
+    "\u04af\u0445\u044d",
+    "\u0431\u0430\u0440",
+    "\u0442\u0443\u0443",
+    "\u043b\u0443\u0443",
+    "\u043c\u043e\u0433",
+    "\u043c\u043e\u0440",
+    "\u0445\u043e\u043d",
+    "\u0431\u0438\u0447",
+    "\u0442\u0430\u0445",
+    "\u043d\u043e\u0445",
+    "\u0433\u0430\u0445",
+    null,
+  };
+
+  private static final String[] months = {
+    "\u0425\u0443\u043b\u0433\u0430\u043d\u0430",
+    "\u04ae\u0445\u044d\u0440",
+    "\u0411\u0430\u0440",
+    "\u0422\u0443\u0443\u043b\u0430\u0439",
+    "\u041b\u0443\u0443",
+    "\u041c\u043e\u0433\u043e\u0439",
+    "\u041c\u043e\u0440\u044c",
+    "\u0425\u043e\u043d\u044c",
+    "\u0411\u0438\u0447",
+    "\u0422\u0430\u0445\u0438\u0430",
+    "\u041d\u043e\u0445\u043e\u0439",
+    "\u0413\u0430\u0445\u0430\u0439",
+    null,
+  };
+
+  private static final String[] shortWeekdays = {
+    null,
+    "\u041d\u044f",
+    "\u0414\u0430",
+    "\u041c\u044f",
+    "\u041b\u0445",
+    "\u041f\u04af",
+    "\u0411\u0430",
+    "\u0411\u044f",
+  };
+
+  private static final String[] weekdays = {
+    null,
+    "\u043d\u044f\u043c",
+    "\u0434\u0430\u0432\u0430\u0430",
+    "\u043c\u044f\u0433\u043c\u0430\u0440",
+    "\u043b\u0445\u0430\u0433\u0432\u0430",
+    "\u043f\u04af\u0440\u044d\u0432",
+    "\u0431\u0430\u0430\u0441\u0430\u043d",
+    "\u0431\u044f\u043c\u0431\u0430",
+  };
+
+  private static final String[] eras = {
+    "\u043c.\u044d.\u04e9",
+    "\u043c.\u044d.",
+  };
+
+  private static final String[] ampms = {
+    "AM",
+    "PM",
+  };
+
   private static final String territoriesKeys = "MN";
 
   private static final String territoriesValues = "\u041c\u043e\u043d\u0433\u043e\u043b \u0443\u043b\u0441";
@@ -87,6 +151,12 @@ public class LocaleInformation_mn extends ListResourceBundle
   {
     { "decimalSeparator", "," },
     { "groupingSeparator", "\u00a0" },
+    { "shortMonths", shortMonths },
+    { "months", months },
+    { "shortWeekdays", shortWeekdays },
+    { "weekdays", weekdays },
+    { "eras", eras },
+    { "ampms", ampms },
     { "territories", territories },
     { "languages", languages },
   };
