@@ -93,9 +93,10 @@ public int hashCode() {
 }
 
 public char next() {
-	if ( pos < end ) {
-		return (text.charAt(pos++));
+	if ( pos < end - 1 ) {
+		return (text.charAt(++pos));
 	}
+	pos = end;
 	return (DONE);
 }
 
@@ -103,6 +104,7 @@ public char previous() {
 	if ( pos > begin ) {
 		return (text.charAt(--pos));
 	}
+	pos = begin;
 	return (DONE);
 }
 
