@@ -41,8 +41,46 @@
 /* For vmargs */
 #include "jni.h"
 
+#include <gtypes.h>
+#include "external.h"
+
 char *default_classpath = ".";
 
+
+#if defined(OSKIT_UNIX) && defined(OSKIT_CONFIGURED)
+#include "machine.h"
+
+/*
+ * Since the oskit bootstrapping procedure is infinitely less stable
+ * than the basic com interfaces, it seems wise to use libstartup
+ * as much as possible.  Since start_network and start_fs both call
+ * start_devices, the easiest way to avoid pulling in all drivers is
+ * to replace start_devices.
+ */
+void
+start_devices()
+{
+	static int once = 0;
+
+	if (!once) return;
+
+	oskit_osenv_t  *env = start_osenv();
+	
+	osenv_process_lock();
+	oskit_dev_init(env);
+	oskit_linux_init_osenv(env);
+
+	/* now, initialize all configured devices */
+	{
+	    	void (**init)() = init_vector;
+
+		while (*init) (*init++)();
+	}
+	oskit_dev_probe();
+	osenv_process_unlock();
+
+}
+#endif
 /*
  * since the boot people can't manage to give me a clean command line,
  * I will look for these switches at the end of the line and
@@ -54,44 +92,24 @@ oskit_kaffe_clean_cmdline(int *pargc, char ***pargv)
 	char		*cp, buf[BUFSIZ];
 	FILE		*fp;
 	int		c;
-	
-	char **argv = *pargv;
-	while (*argv && strcmp(*argv, "-h") && strcmp(*argv, "-retaddr") &&
-		strcmp(*argv, "-f"))
-			argv++;
-
-	/* eradicate them */
-	while (*argv && **argv) {
-		(*pargc)--;
-		*argv++ = 0;
-	}
 
 	oskit_clientos_init();
-	/*oskit_register(&oskit_osenv_iid,
-	  oskit_osenv_create_default());*/
 	start_osenv();
+#if !defined(OSKIT_UNIX)
 	/*
+	 * Real OSKIT kernel.
+	 */
+	start_world_pthreads();
+#else
+	/*
+	 * Unix mode.
+	 *
 	 * XXX: pthread_init() is called here instead of in the thread
 	 * init code since it needs to be done before all this goop is.
 	 */
 	pthread_init(1);
 	
-	start_clock();
-#ifndef OSKIT_UNIX
-	/*
-	 * Real OSKIT kernel.
-	 */
-	fs_init(oskit_bmod_init());
-	osenv_process_lock();
-	oskit_linux_init_devs();
-	oskit_dev_probe();
-        oskit_dump_devices();
-	osenv_process_unlock();
-	start_network_pthreads();
-#else
-	/*
-	 * Unix mode.
-	 */
+	start_clock();	
 	start_fs_native_pthreads("/");
 	start_network_native_pthreads();
 
@@ -122,6 +140,11 @@ oskit_kaffe_clean_cmdline(int *pargc, char ***pargv)
 		strcpy(default_classpath, buf);
 		fclose(fp);
 	}
+	/*
+	 * We need to be able to find .la files.  Provide a default
+	 * KAFFE_LIBDIR.
+	 */
+	setenv(LIBRARYPATH, "/lib", 0);
 }
 
 void

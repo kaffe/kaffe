@@ -43,6 +43,15 @@
 # file /etc/kaffe_classpath.
 #
 
+# LIBTOOL NOTES:
+# When using preloaded (static) libraries, libtool still needs to
+# examine the .la files (but not the real archives) at runtime,
+# KAFFELIBRARYPATH should contain the directories where all the native
+# .la library descriptions can be found.
+#
+# KAFFELIBRARYPATH's default value in the OSKit is /lib.
+
+
 # Your Kaffe object dir
 OBJDIR=/y/stoller/kaffe-oskit/obj
 
