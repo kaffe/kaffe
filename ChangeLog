@@ -1,3 +1,7 @@
+2003-07-27  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* config.rpath: Added to solve the dependence of "lib-link.m4" on it.
+
 2003-07-27  Jim Pick  <jim@kaffe.org>
 
 	* libraries/javalib/kjc.jar:
