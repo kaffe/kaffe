@@ -653,63 +653,6 @@ AC_ARG_WITH([gc],
 	    [ GC_NAME="$withval" ]
 )
 
-AC_MSG_CHECKING(which garbage collector to use)
-
-dnl Save the requested gc and set the default to 'kaffe-gc'
-if test x"${GC_NAME+set}" != x"set" ; then
-	GC_NAME="kaffe-gc"
-fi
-
-gc_frag=$srcdir/kaffe/kaffevm/$GC_NAME/Makefile.frag
-AC_SUBST(GC_NAME)
-AC_SUBST_FILE(gc_frag)
-
-dnl If the user has chosen the boehm-gc, build the specific flags.
-if test x"${GC_NAME}" = x"boehm-gc"; then
-	if test x"$with_threads" != x"unix-pthreads"; then
-		AC_MSG_ERROR(BoehmGC only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use the standard kaffe's gc.)
-	fi
-	
-	BOEHMGC_SPECIFIC_FLAGS="-DSILENT -DATOMIC_UNCOLLECTABLE -DGC_GCJ_SUPPORT -DALL_INTERIOR_POINTERS"
-
-	if test x"${Khost_cpu+set}" = "xi686"; then
-		BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DUSE_I686_PREFETCH"
-	fi
-
-	case "$Khost_os" in
-		solaris*)
-			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_SOLARIS_THREADS -DGC_SOLARIS_PTHREADS"
-			;;
-		irix*)
-			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_IRIX_THREADS"
-			;;
-		hpux*)
-			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_HPUX_THREADS"
-			;;
-		linux*)
-			if test x"$ac_cv_gnu_library_version" -ne x"no"; then
-			   if test "$ac_cv_gnu_library_version" -le "2002"; then
-				BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_LINUX_THREADS"
-			   fi
-			   if test "$ac_cv_gnu_library_version" -ge "2003"; then
-			        BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_PTHREADS"
-			   fi
-			fi
-			;;
-		*)
-			AC_MSG_ERROR(Threads support for $Khost_os unavailable in the boehm-gc. Please use the standard kaffe's gc.)
-	esac
-
-	ac_configure_args="$ac_configure_args --enable-libgc-convenience"
-	AC_CONFIG_SUBDIRS([kaffe/kaffevm/boehm-gc/boehm])
-fi
-
-AC_SUBST(BOEHMGC_SPECIFIC_FLAGS)
-
-AC_MSG_RESULT($GC_NAME)
-
-dnl =========================================================================
-
 dnl =========================================================================
 dnl Use jikes instead of kjc?
 dnl =========================================================================
@@ -1070,6 +1013,67 @@ fi
 
 dnl needed for valgrind
 AC_CHECK_HEADERS([valgrind/memcheck.h])
+
+dnl =========================================================================
+dnl Select GC to use
+dnl -------------------------------------------------------------------------
+
+KAFFE_CHECK_GLIBC_VER
+
+AC_MSG_CHECKING(which garbage collector to use)
+
+dnl Save the requested gc and set the default to 'kaffe-gc'
+if test x"${GC_NAME+set}" != x"set" ; then
+	GC_NAME="kaffe-gc"
+fi
+
+gc_frag=$srcdir/kaffe/kaffevm/$GC_NAME/Makefile.frag
+AC_SUBST(GC_NAME)
+AC_SUBST_FILE(gc_frag)
+
+dnl If the user has chosen the boehm-gc, build the specific flags.
+if test x"${GC_NAME}" = x"boehm-gc"; then
+	if test x"$with_threads" != x"unix-pthreads"; then
+		AC_MSG_ERROR(BoehmGC only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use the standard kaffe's gc.)
+	fi
+	
+	BOEHMGC_SPECIFIC_FLAGS="-DSILENT -DATOMIC_UNCOLLECTABLE -DGC_GCJ_SUPPORT -DALL_INTERIOR_POINTERS"
+
+	if test x"${Khost_cpu+set}" = "xi686"; then
+		BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DUSE_I686_PREFETCH"
+	fi
+
+	case "$Khost_os" in
+		solaris*)
+			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_SOLARIS_THREADS -DGC_SOLARIS_PTHREADS"
+			;;
+		irix*)
+			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_IRIX_THREADS"
+			;;
+		hpux*)
+			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_HPUX_THREADS"
+			;;
+		linux*)
+			if test x"$ac_cv_c_compile_value_glibc" -le x"2"; then
+			   if test "$ac_c_compile_value_glibc_minor" -le "2"; then
+				BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_LINUX_THREADS"
+			   fi
+			   if test "$ac_cv_c_compile_value_glibc_minor" -ge "3"; then
+			        BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_PTHREADS"
+			   fi
+			fi
+			;;
+		*)
+			AC_MSG_ERROR(Threads support for $Khost_os unavailable in the boehm-gc. Please use the standard kaffe's gc.)
+	esac
+
+	ac_configure_args="$ac_configure_args --enable-libgc-convenience"
+	AC_CONFIG_SUBDIRS([kaffe/kaffevm/boehm-gc/boehm])
+fi
+
+AC_SUBST(BOEHMGC_SPECIFIC_FLAGS)
+
+AC_MSG_RESULT($GC_NAME)
 
 dnl =========================================================================
 dnl Do we build a vm that collects statistics?
@@ -1504,8 +1508,6 @@ fi
 dnl ------------------------------------------------------------
 dnl Check for old linux threads (glibc <= 2.2)
 dnl ------------------------------------------------------------
-
-KAFFE_CHECK_GLIBC_VER
 
 if test "$ac_cv_c_compile_value_glibc" -le "2"; then
 	if test "$ac_cv_c_compile_value_glibc_minor" -le "2"; then

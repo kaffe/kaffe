@@ -491,7 +491,7 @@ ac_includes_default="\
 
 ac_subdirs_all="$ac_subdirs_all kaffe/kaffevm/boehm-gc/boehm"
 ac_subdirs_all="$ac_subdirs_all libltdl"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT abssrcdir CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB DLLTOOL ac_ct_DLLTOOL AS ac_ct_AS OBJDUMP ac_ct_OBJDUMP CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBTOOL_DEPS LIBLTDL CCLD MKINSTALLDIRS USE_NLS MSGFMT GMSGFMT XGETTEXT MSGMERGE LIBICONV LTLIBICONV INTLLIBS LIBINTL LTLIBINTL POSUB MAY_RUN_PO_TRUE MAY_RUN_PO_FALSE REGEN_FORWARD CONFIG_MD_H CONFIG_CALLKAFFEEXCEPTION_H KAFFEVM_MD_C CONFIG_JIT_MD_H KAFFEVM_JIT_DEF KAFFEVM_ICODE_H HAVE_CONFIG_JIT_MD_H USE_JIT_TRUE USE_JIT_FALSE ENGINE_NAME BCEL_JAR HAVE_BCEL_TRUE HAVE_BCEL_FALSE ENABLE_JVMPI_TRUE ENABLE_JVMPI_FALSE ENABLE_XPROF_TRUE ENABLE_XPROF_FALSE CONFIG_XPROFILE_MD_H JAVAC_FLAGS NEED_LIBXPROF_TRUE NEED_LIBXPROF_FALSE CFLAGS_PG SUN_COMPAT_TRUE SUN_COMPAT_FALSE THREAD_DIR acx_pthread_config PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS VM_LIBS GC_NAME subdirs BOEHMGC_SPECIFIC_FLAGS JIKESPROG JIKES KAFFEVM_TRAMPOLINES_C JAVA_LIBS with_engine THREAD_SYSTEM KPREFIX KAFFE_ARCHOS ZIP MKTEMP JASMIN HAVE_ZIP_TRUE HAVE_ZIP_FALSE HAVE_JIKES_TRUE HAVE_JIKES_FALSE HAVE_MKTEMP_TRUE HAVE_MKTEMP_FALSE HAVE_JASMIN_TRUE HAVE_JASMIN_FALSE KAFFE_LIBS M_LIBS NET_LIBS ZIP_LIBS LIBADD_GMP USE_GMP SECURITY_LIBS HAVE_GCJ_SUPPORT_TRUE HAVE_GCJ_SUPPORT_FALSE LIBOBJS USE_COMPAT_IFADDRS_TRUE USE_COMPAT_IFADDRS_FALSE GTK_CAIRO_TRUE GTK_CAIRO_FALSE COND_NATIVE_AWT_TRUE COND_NATIVE_AWT_FALSE COND_KAFFE_X_AWT_TRUE COND_KAFFE_X_AWT_FALSE X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS AWT_LIBS COND_KAFFE_QT_AWT_TRUE COND_KAFFE_QT_AWT_FALSE MOC UIC QEMBED QT_CXXFLAGS QT_LDADD QT_GUILINK COND_CLASSPATH_GTK_AWT_TRUE COND_CLASSPATH_GTK_AWT_FALSE PKG_CONFIG GTK_CFLAGS GTK_LIBS CAIRO_CFLAGS CAIRO_LIBS PANGOFT2_CFLAGS PANGOFT2_LIBS ALSA_CFLAGS ALSA_LIBS ESD_CONFIG ESD_CFLAGS ESD_LIBS COND_SOUND_ALSA_TRUE COND_SOUND_ALSA_FALSE COND_SOUND_ESD_TRUE COND_SOUND_ESD_FALSE COND_PURE_JAVA_MATH_TRUE COND_PURE_JAVA_MATH_FALSE MATH_LIB INCLUDED_EXTENSIONS PROFILE XML2_CONFIG XML_CFLAGS XML_LIBS XSLT_CONFIG XSLT_CFLAGS XSLT_LIBS COND_LIBXMLJ_TRUE COND_LIBXMLJ_FALSE USE_PRECOMPILED_RT_JAR_TRUE USE_PRECOMPILED_RT_JAR_FALSE PATH_TO_RT_JAR DLOPEN_JAVA_LIBS OPT_DLOPEN_JAVA_LIBS KLIBFLAGS KVMBINFLAGS KVMLIBFLAGS BINRELOC_CFLAGS ENABLE_BINRELOC_TRUE ENABLE_BINRELOC_FALSE KAFFEH MAKE_KAFFEH toolslibdir jredir jrebindir jrelibdir nativedir securitydir PATHSEP DIRSEP kaffe_TRANSF kaffeh_TRANSF kaffebin_TRANSF CFLAGS_WITHOUT_PG LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT abssrcdir CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB DLLTOOL ac_ct_DLLTOOL AS ac_ct_AS OBJDUMP ac_ct_OBJDUMP CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBTOOL_DEPS LIBLTDL CCLD MKINSTALLDIRS USE_NLS MSGFMT GMSGFMT XGETTEXT MSGMERGE LIBICONV LTLIBICONV INTLLIBS LIBINTL LTLIBINTL POSUB MAY_RUN_PO_TRUE MAY_RUN_PO_FALSE REGEN_FORWARD CONFIG_MD_H CONFIG_CALLKAFFEEXCEPTION_H KAFFEVM_MD_C CONFIG_JIT_MD_H KAFFEVM_JIT_DEF KAFFEVM_ICODE_H HAVE_CONFIG_JIT_MD_H USE_JIT_TRUE USE_JIT_FALSE ENGINE_NAME BCEL_JAR HAVE_BCEL_TRUE HAVE_BCEL_FALSE ENABLE_JVMPI_TRUE ENABLE_JVMPI_FALSE ENABLE_XPROF_TRUE ENABLE_XPROF_FALSE CONFIG_XPROFILE_MD_H JAVAC_FLAGS NEED_LIBXPROF_TRUE NEED_LIBXPROF_FALSE CFLAGS_PG SUN_COMPAT_TRUE SUN_COMPAT_FALSE THREAD_DIR acx_pthread_config PTHREAD_CC PTHREAD_LIBS PTHREAD_CFLAGS VM_LIBS JIKESPROG JIKES KAFFEVM_TRAMPOLINES_C JAVA_LIBS with_engine THREAD_SYSTEM KPREFIX KAFFE_ARCHOS ZIP MKTEMP JASMIN HAVE_ZIP_TRUE HAVE_ZIP_FALSE HAVE_JIKES_TRUE HAVE_JIKES_FALSE HAVE_MKTEMP_TRUE HAVE_MKTEMP_FALSE HAVE_JASMIN_TRUE HAVE_JASMIN_FALSE KAFFE_LIBS M_LIBS NET_LIBS ZIP_LIBS LIBADD_GMP USE_GMP SECURITY_LIBS GC_NAME subdirs BOEHMGC_SPECIFIC_FLAGS HAVE_GCJ_SUPPORT_TRUE HAVE_GCJ_SUPPORT_FALSE LIBOBJS USE_COMPAT_IFADDRS_TRUE USE_COMPAT_IFADDRS_FALSE GTK_CAIRO_TRUE GTK_CAIRO_FALSE COND_NATIVE_AWT_TRUE COND_NATIVE_AWT_FALSE COND_KAFFE_X_AWT_TRUE COND_KAFFE_X_AWT_FALSE X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS AWT_LIBS COND_KAFFE_QT_AWT_TRUE COND_KAFFE_QT_AWT_FALSE MOC UIC QEMBED QT_CXXFLAGS QT_LDADD QT_GUILINK COND_CLASSPATH_GTK_AWT_TRUE COND_CLASSPATH_GTK_AWT_FALSE PKG_CONFIG GTK_CFLAGS GTK_LIBS CAIRO_CFLAGS CAIRO_LIBS PANGOFT2_CFLAGS PANGOFT2_LIBS ALSA_CFLAGS ALSA_LIBS ESD_CONFIG ESD_CFLAGS ESD_LIBS COND_SOUND_ALSA_TRUE COND_SOUND_ALSA_FALSE COND_SOUND_ESD_TRUE COND_SOUND_ESD_FALSE COND_PURE_JAVA_MATH_TRUE COND_PURE_JAVA_MATH_FALSE MATH_LIB INCLUDED_EXTENSIONS PROFILE XML2_CONFIG XML_CFLAGS XML_LIBS XSLT_CONFIG XSLT_CFLAGS XSLT_LIBS COND_LIBXMLJ_TRUE COND_LIBXMLJ_FALSE USE_PRECOMPILED_RT_JAR_TRUE USE_PRECOMPILED_RT_JAR_FALSE PATH_TO_RT_JAR DLOPEN_JAVA_LIBS OPT_DLOPEN_JAVA_LIBS KLIBFLAGS KVMBINFLAGS KVMLIBFLAGS BINRELOC_CFLAGS ENABLE_BINRELOC_TRUE ENABLE_BINRELOC_FALSE KAFFEH MAKE_KAFFEH toolslibdir jredir jrebindir jrelibdir nativedir securitydir PATHSEP DIRSEP kaffe_TRANSF kaffeh_TRANSF kaffebin_TRANSF CFLAGS_WITHOUT_PG LTLIBOBJS'
 ac_subst_files='cpu_os_frag cpu_frag engine_frag threads_frag gc_frag'
 
 # Initialize some variables set by options.
@@ -27735,69 +27735,6 @@ if test "${with_gc+set}" = set; then
 
 fi;
 
-echo "$as_me:$LINENO: checking which garbage collector to use" >&5
-echo $ECHO_N "checking which garbage collector to use... $ECHO_C" >&6
-
-if test x"${GC_NAME+set}" != x"set" ; then
-	GC_NAME="kaffe-gc"
-fi
-
-gc_frag=$srcdir/kaffe/kaffevm/$GC_NAME/Makefile.frag
-
-
-
-if test x"${GC_NAME}" = x"boehm-gc"; then
-	if test x"$with_threads" != x"unix-pthreads"; then
-		{ { echo "$as_me:$LINENO: error: BoehmGC only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use the standard kaffe's gc." >&5
-echo "$as_me: error: BoehmGC only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use the standard kaffe's gc." >&2;}
-   { (exit 1); exit 1; }; }
-	fi
-
-	BOEHMGC_SPECIFIC_FLAGS="-DSILENT -DATOMIC_UNCOLLECTABLE -DGC_GCJ_SUPPORT -DALL_INTERIOR_POINTERS"
-
-	if test x"${Khost_cpu+set}" = "xi686"; then
-		BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DUSE_I686_PREFETCH"
-	fi
-
-	case "$Khost_os" in
-		solaris*)
-			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_SOLARIS_THREADS -DGC_SOLARIS_PTHREADS"
-			;;
-		irix*)
-			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_IRIX_THREADS"
-			;;
-		hpux*)
-			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_HPUX_THREADS"
-			;;
-		linux*)
-			if test x"$ac_cv_gnu_library_version" -ne x"no"; then
-			   if test "$ac_cv_gnu_library_version" -le "2002"; then
-				BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_LINUX_THREADS"
-			   fi
-			   if test "$ac_cv_gnu_library_version" -ge "2003"; then
-			        BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_PTHREADS"
-			   fi
-			fi
-			;;
-		*)
-			{ { echo "$as_me:$LINENO: error: Threads support for $Khost_os unavailable in the boehm-gc. Please use the standard kaffe's gc." >&5
-echo "$as_me: error: Threads support for $Khost_os unavailable in the boehm-gc. Please use the standard kaffe's gc." >&2;}
-   { (exit 1); exit 1; }; }
-	esac
-
-	ac_configure_args="$ac_configure_args --enable-libgc-convenience"
-
-
-subdirs="$subdirs kaffe/kaffevm/boehm-gc/boehm"
-
-fi
-
-
-
-echo "$as_me:$LINENO: result: $GC_NAME" >&5
-echo "${ECHO_T}$GC_NAME" >&6
-
-
 
 # Extract the first word of "jikes", so it can be a program name with args.
 set dummy jikes; ac_word=$2
@@ -41927,6 +41864,245 @@ done
 
 
 
+
+    ac_c_compile_value_expand="__GLIBC__"
+  echo "$as_me:$LINENO: checking value of __GLIBC__ by analyzing object code" >&5
+echo $ECHO_N "checking value of __GLIBC__ by analyzing object code... $ECHO_C" >&6
+if test "${ac_cv_c_compile_value_glibc+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+
+    save_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS -c -o conftest.o"
+    cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#if defined(HAVE_FEATURES_H)
+#include <features.h>
+#endif
+
+      #include <stddef.h>
+      #include <stdint.h>
+      #include <stdlib.h>
+      #define COMPILE_VALUE $ac_c_compile_value_expand
+      #define HEX_DIGIT(n)      ((n) >= 10 ? 'a' + (n) - 10 : '0' + (n))
+      char object_code_block[] = {
+        '\n', 'e', '4', 'V', 'A',
+        '0', 'x',
+        (char) HEX_DIGIT((((COMPILE_VALUE / 16) / 16) / 16) % 16),
+        (char) HEX_DIGIT(((COMPILE_VALUE / 16) / 16) % 16),
+        (char) HEX_DIGIT((COMPILE_VALUE / 16) % 16),
+        (char) HEX_DIGIT(COMPILE_VALUE % 16),
+        'Y', '3', 'p', 'M', '\n'
+      };
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_c_compile_value_glibc=`
+        typeset -i n=\`sed -ne 's/^e4VA0x\(.*\)Y3pM$/0x\1/p' < conftest.o\`;
+        echo $n`
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_c_compile_value_glibc=0
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+    CFLAGS="$save_CFLAGS"
+fi
+echo "$as_me:$LINENO: result: $ac_cv_c_compile_value_glibc" >&5
+echo "${ECHO_T}$ac_cv_c_compile_value_glibc" >&6
+
+cat >>confdefs.h <<_ACEOF
+#define COMPILE_VALUE_GLIBC $ac_cv_c_compile_value_glibc
+_ACEOF
+
+
+
+
+
+    ac_c_compile_value_expand="__GLIBC_MINOR__"
+  echo "$as_me:$LINENO: checking value of __GLIBC_MINOR__ by analyzing object code" >&5
+echo $ECHO_N "checking value of __GLIBC_MINOR__ by analyzing object code... $ECHO_C" >&6
+if test "${ac_cv_c_compile_value_glibc_minor+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+
+    save_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS -c -o conftest.o"
+    cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#if defined(HAVE_FEATURES_H)
+#include <features.h>
+#endif
+
+      #include <stddef.h>
+      #include <stdint.h>
+      #include <stdlib.h>
+      #define COMPILE_VALUE $ac_c_compile_value_expand
+      #define HEX_DIGIT(n)      ((n) >= 10 ? 'a' + (n) - 10 : '0' + (n))
+      char object_code_block[] = {
+        '\n', 'e', '4', 'V', 'A',
+        '0', 'x',
+        (char) HEX_DIGIT((((COMPILE_VALUE / 16) / 16) / 16) % 16),
+        (char) HEX_DIGIT(((COMPILE_VALUE / 16) / 16) % 16),
+        (char) HEX_DIGIT((COMPILE_VALUE / 16) % 16),
+        (char) HEX_DIGIT(COMPILE_VALUE % 16),
+        'Y', '3', 'p', 'M', '\n'
+      };
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_c_compile_value_glibc_minor=`
+        typeset -i n=\`sed -ne 's/^e4VA0x\(.*\)Y3pM$/0x\1/p' < conftest.o\`;
+        echo $n`
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_c_compile_value_glibc_minor=0
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+    CFLAGS="$save_CFLAGS"
+fi
+echo "$as_me:$LINENO: result: $ac_cv_c_compile_value_glibc_minor" >&5
+echo "${ECHO_T}$ac_cv_c_compile_value_glibc_minor" >&6
+
+cat >>confdefs.h <<_ACEOF
+#define COMPILE_VALUE_GLIBC_MINOR $ac_cv_c_compile_value_glibc_minor
+_ACEOF
+
+
+
+
+
+echo "$as_me:$LINENO: checking which garbage collector to use" >&5
+echo $ECHO_N "checking which garbage collector to use... $ECHO_C" >&6
+
+if test x"${GC_NAME+set}" != x"set" ; then
+	GC_NAME="kaffe-gc"
+fi
+
+gc_frag=$srcdir/kaffe/kaffevm/$GC_NAME/Makefile.frag
+
+
+
+if test x"${GC_NAME}" = x"boehm-gc"; then
+	if test x"$with_threads" != x"unix-pthreads"; then
+		{ { echo "$as_me:$LINENO: error: BoehmGC only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use the standard kaffe's gc." >&5
+echo "$as_me: error: BoehmGC only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use the standard kaffe's gc." >&2;}
+   { (exit 1); exit 1; }; }
+	fi
+
+	BOEHMGC_SPECIFIC_FLAGS="-DSILENT -DATOMIC_UNCOLLECTABLE -DGC_GCJ_SUPPORT -DALL_INTERIOR_POINTERS"
+
+	if test x"${Khost_cpu+set}" = "xi686"; then
+		BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DUSE_I686_PREFETCH"
+	fi
+
+	case "$Khost_os" in
+		solaris*)
+			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_SOLARIS_THREADS -DGC_SOLARIS_PTHREADS"
+			;;
+		irix*)
+			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_IRIX_THREADS"
+			;;
+		hpux*)
+			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_HPUX_THREADS"
+			;;
+		linux*)
+			if test x"$ac_cv_c_compile_value_glibc" -le x"2"; then
+			   if test "$ac_c_compile_value_glibc_minor" -le "2"; then
+				BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_LINUX_THREADS"
+			   fi
+			   if test "$ac_cv_c_compile_value_glibc_minor" -ge "3"; then
+			        BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_PTHREADS"
+			   fi
+			fi
+			;;
+		*)
+			{ { echo "$as_me:$LINENO: error: Threads support for $Khost_os unavailable in the boehm-gc. Please use the standard kaffe's gc." >&5
+echo "$as_me: error: Threads support for $Khost_os unavailable in the boehm-gc. Please use the standard kaffe's gc." >&2;}
+   { (exit 1); exit 1; }; }
+	esac
+
+	ac_configure_args="$ac_configure_args --enable-libgc-convenience"
+
+
+subdirs="$subdirs kaffe/kaffevm/boehm-gc/boehm"
+
+fi
+
+
+
+echo "$as_me:$LINENO: result: $GC_NAME" >&5
+echo "${ECHO_T}$GC_NAME" >&6
+
+
+
 # Check whether --with-stats or --without-stats was given.
 if test "${with_stats+set}" = set; then
   withval="$with_stats"
@@ -50754,182 +50930,6 @@ _ACEOF
 fi
 
 
-
-
-    ac_c_compile_value_expand="__GLIBC__"
-  echo "$as_me:$LINENO: checking value of __GLIBC__ by analyzing object code" >&5
-echo $ECHO_N "checking value of __GLIBC__ by analyzing object code... $ECHO_C" >&6
-if test "${ac_cv_c_compile_value_glibc+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-
-    save_CFLAGS="$CFLAGS"
-    CFLAGS="$CFLAGS -c -o conftest.o"
-    cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-#if defined(HAVE_FEATURES_H)
-#include <features.h>
-#endif
-
-      #include <stddef.h>
-      #include <stdint.h>
-      #include <stdlib.h>
-      #define COMPILE_VALUE $ac_c_compile_value_expand
-      #define HEX_DIGIT(n)      ((n) >= 10 ? 'a' + (n) - 10 : '0' + (n))
-      char object_code_block[] = {
-        '\n', 'e', '4', 'V', 'A',
-        '0', 'x',
-        (char) HEX_DIGIT((((COMPILE_VALUE / 16) / 16) / 16) % 16),
-        (char) HEX_DIGIT(((COMPILE_VALUE / 16) / 16) % 16),
-        (char) HEX_DIGIT((COMPILE_VALUE / 16) % 16),
-        (char) HEX_DIGIT(COMPILE_VALUE % 16),
-        'Y', '3', 'p', 'M', '\n'
-      };
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext
-if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
-  (eval $ac_compile) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"
-			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest.$ac_objext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_c_compile_value_glibc=`
-        typeset -i n=\`sed -ne 's/^e4VA0x\(.*\)Y3pM$/0x\1/p' < conftest.o\`;
-        echo $n`
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_c_compile_value_glibc=0
-fi
-rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
-    CFLAGS="$save_CFLAGS"
-fi
-echo "$as_me:$LINENO: result: $ac_cv_c_compile_value_glibc" >&5
-echo "${ECHO_T}$ac_cv_c_compile_value_glibc" >&6
-
-cat >>confdefs.h <<_ACEOF
-#define COMPILE_VALUE_GLIBC $ac_cv_c_compile_value_glibc
-_ACEOF
-
-
-
-
-
-    ac_c_compile_value_expand="__GLIBC_MINOR__"
-  echo "$as_me:$LINENO: checking value of __GLIBC_MINOR__ by analyzing object code" >&5
-echo $ECHO_N "checking value of __GLIBC_MINOR__ by analyzing object code... $ECHO_C" >&6
-if test "${ac_cv_c_compile_value_glibc_minor+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-
-    save_CFLAGS="$CFLAGS"
-    CFLAGS="$CFLAGS -c -o conftest.o"
-    cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-#if defined(HAVE_FEATURES_H)
-#include <features.h>
-#endif
-
-      #include <stddef.h>
-      #include <stdint.h>
-      #include <stdlib.h>
-      #define COMPILE_VALUE $ac_c_compile_value_expand
-      #define HEX_DIGIT(n)      ((n) >= 10 ? 'a' + (n) - 10 : '0' + (n))
-      char object_code_block[] = {
-        '\n', 'e', '4', 'V', 'A',
-        '0', 'x',
-        (char) HEX_DIGIT((((COMPILE_VALUE / 16) / 16) / 16) % 16),
-        (char) HEX_DIGIT(((COMPILE_VALUE / 16) / 16) % 16),
-        (char) HEX_DIGIT((COMPILE_VALUE / 16) % 16),
-        (char) HEX_DIGIT(COMPILE_VALUE % 16),
-        'Y', '3', 'p', 'M', '\n'
-      };
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext
-if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
-  (eval $ac_compile) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"
-			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest.$ac_objext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_c_compile_value_glibc_minor=`
-        typeset -i n=\`sed -ne 's/^e4VA0x\(.*\)Y3pM$/0x\1/p' < conftest.o\`;
-        echo $n`
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_c_compile_value_glibc_minor=0
-fi
-rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
-    CFLAGS="$save_CFLAGS"
-fi
-echo "$as_me:$LINENO: result: $ac_cv_c_compile_value_glibc_minor" >&5
-echo "${ECHO_T}$ac_cv_c_compile_value_glibc_minor" >&6
-
-cat >>confdefs.h <<_ACEOF
-#define COMPILE_VALUE_GLIBC_MINOR $ac_cv_c_compile_value_glibc_minor
-_ACEOF
-
-
-
-
-
 if test "$ac_cv_c_compile_value_glibc" -le "2"; then
 	if test "$ac_cv_c_compile_value_glibc_minor" -le "2"; then
 
@@ -57642,9 +57642,6 @@ s,@PTHREAD_CC@,$PTHREAD_CC,;t t
 s,@PTHREAD_LIBS@,$PTHREAD_LIBS,;t t
 s,@PTHREAD_CFLAGS@,$PTHREAD_CFLAGS,;t t
 s,@VM_LIBS@,$VM_LIBS,;t t
-s,@GC_NAME@,$GC_NAME,;t t
-s,@subdirs@,$subdirs,;t t
-s,@BOEHMGC_SPECIFIC_FLAGS@,$BOEHMGC_SPECIFIC_FLAGS,;t t
 s,@JIKESPROG@,$JIKESPROG,;t t
 s,@JIKES@,$JIKES,;t t
 s,@KAFFEVM_TRAMPOLINES_C@,$KAFFEVM_TRAMPOLINES_C,;t t
@@ -57671,6 +57668,9 @@ s,@ZIP_LIBS@,$ZIP_LIBS,;t t
 s,@LIBADD_GMP@,$LIBADD_GMP,;t t
 s,@USE_GMP@,$USE_GMP,;t t
 s,@SECURITY_LIBS@,$SECURITY_LIBS,;t t
+s,@GC_NAME@,$GC_NAME,;t t
+s,@subdirs@,$subdirs,;t t
+s,@BOEHMGC_SPECIFIC_FLAGS@,$BOEHMGC_SPECIFIC_FLAGS,;t t
 s,@HAVE_GCJ_SUPPORT_TRUE@,$HAVE_GCJ_SUPPORT_TRUE,;t t
 s,@HAVE_GCJ_SUPPORT_FALSE@,$HAVE_GCJ_SUPPORT_FALSE,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t

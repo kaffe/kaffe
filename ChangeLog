@@ -1,5 +1,14 @@
 2004-08-25  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Cleaned up checks for glibc version further.
+	Moved boehm-gc checking code after header checking code to
+	make sure the glibc version checks can use feature.h, if 
+	it is available.
+
+	Reported by: Kiyo Inaba  <inaba@src.ricoh.co.jp>
+
+2004-08-25  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Fixed small bug in libc version test.
 
 	Reported by: Luca Saiu <positron@gnu.org>
