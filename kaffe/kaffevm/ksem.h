@@ -20,10 +20,10 @@
  */
 struct Ksem;
 
-extern void ksemInit(struct Ksem* sem) __UNUSED__;
-extern void ksemPut(struct Ksem* sem) __UNUSED__;
-extern jboolean ksemGet(struct Ksem* sem, jlong timeout) __UNUSED__;
-extern void ksemDestroy(struct Ksem* sem) __UNUSED__;
+extern void ksemInit(struct Ksem* sem);
+extern void ksemPut(struct Ksem* sem);
+extern jboolean ksemGet(struct Ksem* sem, jlong timeout);
+extern void ksemDestroy(struct Ksem* sem);
 
 /*
  * Include the system locking layer interface.  See if it gives us
