@@ -20,6 +20,7 @@ JIKES=@JIKES@
 rm -rf $LIBDIR
 mkdir $LIBDIR
 LIBDIR=`cd $LIBDIR && pwd`
+VERBOSE=
 
 if [ "$JIKES" = "" ] ; then
 	if [ -z "$JAVA" ]; then
@@ -45,4 +46,4 @@ fi
 cd $SRCDIR
 
 echo "Compiling classes ..."
-$JAVAC -verbose -d $LIBDIR $CPATH ${1+"$@"}
+$JAVAC $VERBOSE -d $LIBDIR $CPATH ${1+"$@"}
