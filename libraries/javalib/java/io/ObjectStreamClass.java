@@ -821,10 +821,14 @@ implements Serializable
 			throw sce; 
 		}
 		catch (IOException e1) {
-			throw new StreamCorruptedException("error getting object: " + e1);
+			StreamCorruptedException sce = new StreamCorruptedException("error getting object: " + e1);
+			sce.initCause(e1);
+			throw sce;
 		}
 		catch (ClassNotFoundException e2) {
-			throw new StreamCorruptedException("error getting object: " + e2);
+			StreamCorruptedException sce = new StreamCorruptedException("error getting object: " + e2);
+			sce.initCause(e2);
+			throw sce;
 		}
 	}
 	
@@ -1059,7 +1063,7 @@ implements Serializable
 		// Resolve the class, XXX convert exceptions?
 		this.clazz = in.resolveClassInternal(name);
 
-		// Figure out what this class inVM-representation expects 
+     		// Figure out what this class inVM-representation expects 
 		// its serialized form to contain...
 		this.serializableFields = findSerializableFields0(clazz);
 
@@ -1103,6 +1107,9 @@ implements Serializable
 		}
 
 		resolveVMFieldsSerialFields(inStreamFields);
+
+		// read in annotations
+		this.clazz = in.resolveClass(this);
 	}
 
 	/**

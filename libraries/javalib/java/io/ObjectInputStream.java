@@ -329,13 +329,12 @@ public class ObjectInputStream
 		//   "By default the class name is resolved relative to the
 		//    class that called readObject."
 		//
-		return (Class.forName(desc.getName()));
+		return (resolveClassInternal(desc.getName()));
 	}
 	
 	/*package*/ Class resolveClassInternal(String name) 
 		throws IOException, ClassNotFoundException
 	{
-		// XXX broken like above?
 		return (Class.forName(name));
 	}
 	

@@ -1,3 +1,14 @@
+2003-04-18 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/io/ObjectInputStream.java:
+        (resolveClass) use resolveClassInternal.
+        (resolveClassInternal) removed brokenness comment.
+
+	* libraries/javalib/java/io/ObjectStreamClass.java:
+        (getClass) improved exception reporting.
+        (readObject) call resolveClass after reading an Object in
+        order to read in eventual annotations.
+
 2003-04-18 Daniel Bonniot <Daniel.Bonniot@inria.fr>
 
 	* kaffe/scripts/kaffe.in:
