@@ -62,7 +62,7 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 
 		argi = (jstring)(*env)->GetObjectArrayElement(env, args, i);
 		argichars = (*env)->GetStringUTFChars(env, argi, NULL);
-		argv[i] = KMALLOC(strlen(argichars));
+		argv[i] = KMALLOC(strlen(argichars) + 1);
 		strcpy(argv[i], argichars);
 		(*env)->ReleaseStringUTFChars(env, argi, argichars);
 	}
@@ -78,7 +78,7 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 
 		envi = (jstring)(*env)->GetObjectArrayElement(env, envs, i);
 		envichars = (*env)->GetStringUTFChars(env, envi, NULL);
-		arge[i] = KMALLOC(strlen(envichars));
+		arge[i] = KMALLOC(strlen(envichars) + 1);
 		strcpy(arge[i], envichars);
 		(*env)->ReleaseStringUTFChars(env, envi, envichars);
 	}

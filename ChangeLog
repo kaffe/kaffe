@@ -1,3 +1,9 @@
+Wed Feb  3 20:48:51 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/clib/native/UNIXProcess.c: fixed KMALLOC() to allocate
+	strlen()+1 instead of strlen().  Stupid errors like that is why we 
+	have Java.
+
 Wed Feb  3 17:54:03 1999  Jose Orlando Pereira <jop@di.uminho.pt>
 
 	* libraries/javalib/java/io/ObjectInputStream.java (readObject,
