@@ -1,3 +1,9 @@
+Wed Mar 31 14:47:02 MST 1999  Mihai Surdeanu <mihai@seas.smu.edu>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c: mark signals
+	as pending if either ints are disabled or wouldlosewakeup set;
+	postpone resetting wouldlosewakeup until after the select.
+
 Tue Mar 30 22:18:53 PST 1999  Edouard G. Parmelan <egp@quadratec.fr>
 
 	* libraries/javalib/java/lang/Character.java: use new Unicode tables

@@ -400,8 +400,12 @@ interrupt(int sig)
 	 * Record this interrupt as pending so that the forthcoming
 	 * intsRestore() (the intsRestore() in the interrupted thread)
 	 * will handle it.  Then return from the signal handler.
+	 *
+	 * Also mark the interrupt as pending if interrupts are not disabled,
+	 * but the wouldlosewakeup flag is set.  This is the case before
+	 * we go in select/poll.
 	 */
-	if (intsDisabled()) {
+	if (intsDisabled() || wouldlosewakeup) {
 		char c;
 		pendingSig[sig] = 1;
 		sigPending = 1;
@@ -415,10 +419,14 @@ interrupt(int sig)
 		 * sleep in select(), write into the sigPipe to ensure select
 		 * returns.
 		 */
+		/*
+		 * may get here more than once
+	         * but it's enough if we write just a byte
+		 * Do not reset wouldlosewakeup here
+        	 */  
 		if (wouldlosewakeup) {
 			write(sigPipe[1], &c, 1);
 			bytesInPipe++;
-			wouldlosewakeup = 0;
 		}
 
 #if KAFFE_SIGNAL_ONE_SHOT
@@ -1602,6 +1610,11 @@ retry:
 	r = poll(pollarray, nfd, sleep ? -1 : 0);
 #else
 	r = select(maxFd+1, &rd, &wr, 0, sleep ? 0 : &zero);
+
+	/* Reset wouldlosewakeup here */
+	if (wouldlosewakeup) {
+		wouldlosewakeup = 0; 
+	}
 #endif
 
 	if (sleep) {
