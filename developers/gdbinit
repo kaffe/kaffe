@@ -164,11 +164,22 @@ document intbt
     Show a backtrace for the interpreter from between <B> and (not including) <E>
 end
 
-define gcmem2block
+define gcmem2block_old
   p/x *((gc_block*)((uintp)($arg0) & -gc_pgsize))
+end
+
+define gcmem2block 
+  p/x ((gc_block *)gc_block_base)[(((uintp) ($arg0)) - gc_heap_base)/gc_pgsize]
 end
 document gcmem2block
   print the gc_block for a given pointer.
+end
+
+define gcblock 
+  p/x ((gc_block *) gc_block_base)[$arg0]
+end
+document gcblock
+    display a gc_block structure by index
 end
 
 define pcolor

@@ -151,7 +151,6 @@ java_lang_ClassLoader_findSystemClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
         }
         else {
                 name = KMALLOC (len);
-			
         }
 	if (name) {
 		stringJava2CBuf(str, name, len+1);

@@ -3475,7 +3475,8 @@ Kaffe_MonitorEnter(JNIEnv* env, jobject obj)
 {
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	lockMutex(obj);
+	/* We should never throw out of a JNI call */
+	lockJavaMutex(obj);
 
 	END_EXCEPTION_HANDLING();
 	return (0);
@@ -3486,7 +3487,7 @@ Kaffe_MonitorExit(JNIEnv* env, jobject obj)
 {
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	unlockMutex(obj);
+	unlockJavaMutex(obj);
 
 	END_EXCEPTION_HANDLING();
 	return (0);

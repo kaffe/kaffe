@@ -888,8 +888,10 @@ jthread_destroy(jthread *jtid)
 {
 	jthread *x;
 
-	for (x = liveThreads; x; x = x->nextlive)
-		assert(x != jtid);
+	if (DBGEXPR(JTHREAD, true, false)) {
+		for (x = liveThreads; x; x = x->nextlive)
+			assert(x != jtid);
+	}
 	deallocator(jtid);
 }
 

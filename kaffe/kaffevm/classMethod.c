@@ -970,7 +970,7 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 	iLock* celock;
 
 	utf8 = utf8ConstNew(name, -1);
-	assert(utf8);
+	if (!utf8) goto bad;
 	centry = lookupClassEntry(utf8, 0, &info);
 	if (!centry) goto bad;
 	
@@ -982,7 +982,7 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 			goto bad;
 		}
 		/* we won't ever want to lose these classes */
-		assert(gc_add_ref(clazz));
+		if (!gc_add_ref(clazz)) goto bad;
 		(*class) = centry->class = clazz;
 	}
 	unlockKnownMutex(celock);

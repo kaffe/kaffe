@@ -756,9 +756,6 @@ gc_primitive_reserve(void)
 		}
 		size /= 2;
 	}
-	if (r) {
-		gc_heap_total += size;
-	}
 	return r;
 }
 
@@ -857,7 +854,9 @@ gc_block_alloc(size_t size)
 		memset((void *)gc_block_base, 0, nblocks * sizeof(gc_block));
 	}
 
+	DBG(GCSYSALLOC, dprintf("pagealloc(%d)", size));
 	heap_addr = pagealloc(size);
+	DBG(GCSYSALLOC, dprintf(" => %p\n", heap_addr));
 
 	if (!heap_addr) return 0;
 	
@@ -952,11 +951,13 @@ gc_system_alloc(size_t sz)
 
 	assert(sz % gc_pgsize == 0);
 
-	/* If we will pass the heap boundary, return 0 to indicate that
-	 * we're run out.
-	 */
-	if (gc_heap_total + sz > gc_heap_limit) {
+	if (gc_heap_total == gc_heap_limit) {
 		return (0);
+	} else 	if (gc_heap_total + sz > gc_heap_limit) {
+		/* take as much memory as we can */
+		sz = gc_heap_limit - gc_heap_total;
+		assert(sz % gc_pgsize == 0);
+		DBG(GCSYSALLOC, dprintf("allocating up to limit\n"));
 	}
 #ifdef DEBUG
 	gc_system_alloc_cnt++;
@@ -971,6 +972,7 @@ DBG(GCSYSALLOC,
 		return (0);
 	}
 	gc_heap_total += sz;
+	assert(gc_heap_total <= gc_heap_limit);
 
 	/* Place block into the freelist for subsequent use */
 	DBG(GCDIAG, blk->magic = GC_MAGIC);

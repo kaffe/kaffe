@@ -366,8 +366,6 @@ verifyBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 	assert(pc == 0 || IS_STARTOFBASICBLOCK(pc) || IS_STARTOFEXCEPTION(pc));
 	assert(IS_STACKPOINTERSET(pc));
 
-	SET_DONEVERIFY(pc);
-
 	/* Get stack pointer */
 	sp = STACKPOINTER(pc);
 

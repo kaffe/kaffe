@@ -144,6 +144,10 @@ utf8ConstNew(const char *s, int len)
 	hitCounter(&utf8newalloc, "utf8-new-alloc");
 	/* Not in table; create new Utf8Const struct */
 	utf8 = gc_malloc(sizeof(Utf8Const) + len + 1, GC_ALLOC_UTF8CONST);
+	if (!utf8) {
+		unlockStaticMutex(&utf8Lock);
+		return 0;
+	}
 	memcpy((char *) utf8->data, s, len);
 	((char*)utf8->data)[len] = '\0';
 	utf8->hash = hash;
@@ -153,6 +157,7 @@ utf8ConstNew(const char *s, int len)
 	temp = hashAdd(hashTable, utf8);
 	if (!temp) {
 		KFREE(utf8);
+		unlockStaticMutex(&utf8Lock);
 		return 0;
 	}
 	assert(temp == utf8);
