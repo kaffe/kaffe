@@ -88,8 +88,6 @@ struct {
 	int time;
 } jitStats;
 
-extern int enable_readonce;
-
 static jboolean generateInsnSequence(errorInfo*);
 static void nullCall(void);
 static void makeFakeCalls(void);

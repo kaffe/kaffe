@@ -145,6 +145,32 @@ makeMethodInactive(Method* meth)
         }
 }
 
+static void
+dumpActiveMethod(Method * meth, jobject printstream)
+{
+	/* LATER */
+}
+
+/*
+ * dump all active methods loaded by a particular classloader
+ */
+void 
+dumpActiveMethods(jobject printstream, jobject loader)
+{
+	int i;
+
+	for(i = 0; i < METHCACHEHASHSZ; i++) {
+		methCacheEntry *entry = methCacheTable.hash[i];
+		while (entry) {
+			if (entry->meth->class != 0 && 
+			    entry->meth->class->loader == loader) {
+			    	dumpActiveMethod(entry->meth, printstream);
+			}
+			entry = entry->next;
+		}
+	}
+}
+
 #if defined(DUMPMETHODCACHESTATS)
 /*
  * A function to dump the length of the lists in the method cache

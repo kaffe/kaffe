@@ -9,6 +9,8 @@
 native_LTLIBRARIES = libmanagement.la
 
 libmanagement_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
-libmanagement_la_SOURCES = Classpath.c
+libmanagement_la_SOURCES = \
+	Classpath.c \
+	JIT.c
 
 CLEANFILES = so_locations

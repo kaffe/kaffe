@@ -17,5 +17,6 @@
 
 extern bool makeMethodActive(Method* meth);
 extern void makeMethodInactive(Method* meth);
+extern void dumpActiveMethods(jobject printstream, jobject loader);
 
 #endif /* __kaffevm_methodcache_h */

@@ -1,3 +1,10 @@
+Tue Oct 12 23:02:29 1999  Godmar Back  <gback@cs.utah.edu>
+
+	*  kaffe/kaffevm/methodCache.c, kaffe/kaffevm/methodCache.h,
+	kaffe/kaffevm/jit3/machine.c, libraries/clib/management/JIT.c,
+	libraries/clib/management/Makefile.am:
+	initial checkin of kaffe.management.JIT
+
 Tue Oct 12 19:06:39 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* baseClasses.c, exception.c, locks.h, thread.c, utf8const.c,
