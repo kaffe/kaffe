@@ -712,6 +712,18 @@ final native public static synchronized void unintern0(String str);
 */
 
   /**
+   * Creates a new String using the character sequence represented by
+   * the StringBuilder. Subsequent changes to buf do not affect the String.
+   *
+   * @param buffer StringBuilder to copy
+   * @throws NullPointerException if buffer is null
+   */
+  public String(StringBuilder buffer)
+  {
+    this(buffer.value, 0, buffer.count);
+  }
+
+  /**
    * Special constructor which can share an array when safe to do so.
    *
    * @param data the characters to copy

@@ -1,6 +1,30 @@
 2005-01-22  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+
+	2005-01-19  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	Merge of java.lang.Appendable to HEAD from
+	the generics branch.
+	
+	2004-08-06  Tom Tromey  <tromey@redhat.com>
+
+	* java/lang/Appendable.java: New file.
+
+	2004-09-26  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/lang/Appendable.java
+	Documented this class.
+	(append(CharSequence, int, int)): added.
+
+	2004-10-31  Robert Schuster <thebohemian@gmx.net>
+
+	* java/lang/Appendable.java (append):
+	Throws IOException.
+	
+2005-01-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 	
 	2005-01-19  Michael Koch  <konqueror@gmx.de>
 

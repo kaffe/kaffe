@@ -1918,6 +1918,7 @@ java/lang/StackOverflowError.java
 java/lang/StackTraceElement.java
 java/lang/StrictMath.java
 java/lang/StringBuffer.java
+java/lang/StringBuilder.java
 java/lang/StringIndexOutOfBoundsException.java
 java/lang/String.java
 java/lang/System.java
