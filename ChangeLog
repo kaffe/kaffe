@@ -1,3 +1,11 @@
+2003-02-09 Dalibor Topic <robilad@yahoo.com>
+
+	* FAQ/FAQ.requiredlibraries:
+	Added information on libiconv. Added information on RPMs.
+
+	* FAQ/FAQ.awt:
+	Added information on downloading SWING.
+
 2003-02-08 Dalibor Topic <robilad@yahoo.com>
 
 	* FAQ/FAQ.requiredlibraries:

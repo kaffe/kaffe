@@ -10,6 +10,14 @@ find it, using the --with-libraries="/my/dir1/lib /my/dir2/lib ..."
 flag.  You may also have to specify the location of C header files,
 --with-includes="/my/dir1/include /my/dir2/include ...".
 
+Some operating system vendors, mostly Linux distributors, split their
+packages of libraries into 'runtime' and 'development' versions. You
+may have to install both on your system in order to successfully
+compile kaffe to use the libraries. If you are looking for precompiled
+versions of these libraries for your Linux distribution, and your
+distributor uses the RPM packaging format, you should check out
+http://www.rpmfind.net.
+
 AWT backends
 ------------
 
@@ -120,6 +128,17 @@ libmd:
     available. It can be found at:
     http://www.penguin.cz/~mhi/libmd/
 
+Internationalization libraries
+------------------------------
+
+If you want to use native character set encoders and decoders, you
+need to install these libraries.
+
+libiconv:
+    This library provides an iconv() implementation for converting
+    text between native character set encodings and Unicode. It is
+    available at:
+    http://www.gnu.org/software/libiconv/
 
 
 

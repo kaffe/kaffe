@@ -14,7 +14,12 @@ We do support all deprecated methods - they should work as defined by Sun.
 Swing
 -----
 
-We completely support Swing (in its many forms and releases).
+We completely support Swing. The version that works best with kaffe is
+JFC 1.1 with SWING 1.1.1, available from
+http://java.sun.com/products/jfc/download.html. Later versions may or
+may not run. Patches to get them to run are welcome. It would be in
+general preferable to help out GNU Classpath to implement SWING,
+though.
 
 Whatever Sun may tell you about Swing being 100% pure Java - just don't
 believe them.  Swing make a number of assumptions about the underlying AWT
