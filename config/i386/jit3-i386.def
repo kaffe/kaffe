@@ -1227,12 +1227,22 @@ define_insn(ret, ret_xxx)
 
 define_insn(push_int, push_xRC)
 {
-	int r = rreg_int(1);
+	int r;
 
-	OUT = 0xFF;
-	OUT = 0xF0|r;
+	if (inRegister(1)) {
+		r = rreg_int(1);
+		OUT = 0xFF;
+		OUT = 0xF0|r;
 
-	debug(("pushl %s\n", regname(r)));
+		debug(("pushl %s\n", regname(r)));
+	}
+	else {
+		r = rslot_int(1);
+		OUT = 0xFF;
+		OUT = 0xB5;
+		LOUT = r;
+		debug(("pushl %d(ebp)\n", r));
+	}
 }
 
 define_insn(push_float, fpush_xRC)
