@@ -110,7 +110,7 @@ static struct debug_opts
 	D(CLASSGC, 	"Debug class garbage collection."),
 	D(NEWOBJECT, 	"Show when new objects are allocated."),
 	D(FINALIZE, 	"Debug finalization."),
-	D(LIBTOOL, 	"Debug libtool stuff."),
+	D(NATIVELIB, 	"Debug native library operations."),
 	D(NATIVENET,	"Show network accesses from the native code."),
 
 	D(AWT_MEM,	"AWT subsystem."),
