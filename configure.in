@@ -485,7 +485,7 @@ AC_CHECK_FUNCS(sbrk valloc memalign mallopt)
 AC_CHECK_FUNCS(waitpid kill fork execve)
 AC_CHECK_FUNCS(rld_load shl_load LoadLibrary dld_link)
 AC_CHECK_FUNCS(sync fsync)
-AC_CHECK_FUNCS(atexit on_exit)
+AC_CHECK_FUNCS(atexit on_exit vsnprintf)
 
 dnl Some systems must include dlfcn to get these right.
 AC_CACHE_CHECK([for dlopen], ac_cv_func_dlopen,
