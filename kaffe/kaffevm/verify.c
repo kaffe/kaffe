@@ -2639,6 +2639,17 @@ opstackWPushBlind(BlockInfo* block,
 }
 
 /*
+ * Helper function for opstack access in verifyBasicBlock.
+ */
+static inline
+void
+opstackPopBlind(BlockInfo* block)
+{
+	block->stacksz--;
+	block->opstack[block->stacksz] = *TUNSTABLE;
+}
+
+/*
  * Helper function for error reporting in OPSTACK_PEEK_T_BLIND macro in verifyBasicBlock.
  */
 static inline
@@ -2772,30 +2783,24 @@ verifyBasicBlock(errorInfo* einfo,
 	ENSURE_OPSTACK_SIZE(2); \
 	OPSTACK_WPEEK_T_BLIND(_TINFO)
 	
-	
-	
-#define OPSTACK_POP_BLIND \
-	block->stacksz--; \
-	block->opstack[block->stacksz] = *TUNSTABLE
-	
 #define OPSTACK_POP \
         ENSURE_OPSTACK_SIZE(1); \
-	OPSTACK_POP_BLIND
+	opstackPopBlind(block)
 
 	/* pop a type off the stack and typecheck it */
 #define OPSTACK_POP_T_BLIND(_TINFO) \
 	OPSTACK_PEEK_T_BLIND(_TINFO); \
-	OPSTACK_POP_BLIND
+	opstackPopBlind(block)
 
 #define OPSTACK_POP_T(_TINFO) \
 	OPSTACK_PEEK_T(_TINFO); \
-        OPSTACK_POP_BLIND
+        opstackPopBlind(block)
 
 
 
 #define OPSTACK_WPOP_BLIND \
-	OPSTACK_POP_BLIND; \
-	OPSTACK_POP_BLIND
+	opstackPopBlind(block); \
+	opstackPopBlind(block)
 
 #define OPSTACK_WPOP \
 	ENSURE_OPSTACK_SIZE(2); \
@@ -2815,7 +2820,7 @@ verifyBasicBlock(errorInfo* einfo,
 	/* pop _N things off the stack off the stack */
 #define OPSTACK_POP_N_BLIND(_N) \
 	for (n = 0; n < _N; n++) { \
-		OPSTACK_POP_BLIND; \
+		opstackPopBlind(block); \
 	}
 	
 #define OPSTACK_POP_N(_N) \
@@ -2961,7 +2966,7 @@ verifyBasicBlock(errorInfo* einfo,
 			}
 			
 			block->locals[idx] = *type;
-			OPSTACK_POP_BLIND;
+			opstackPopBlind(block);
 			break;
 			
 			
@@ -3126,7 +3131,7 @@ verifyBasicBlock(errorInfo* einfo,
 			if (getOpstackTop(block)->data.class != TINT->data.class) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "aaload: item on top of stack is not an integer");
 			}
-			OPSTACK_POP_BLIND;
+			opstackPopBlind(block);
 			
 			type = getOpstackTop(block);
 			if (!isArray(type)) {
@@ -3168,7 +3173,7 @@ verifyBasicBlock(errorInfo* einfo,
                                 return verifyErrorInVerifyBasicBlock(einfo, method, this, "top of opstack does not have desired type");
 			}
 
-			OPSTACK_POP_BLIND;
+			opstackPopBlind(block);
 			OPSTACK_PUSH(TINT);
 			break;
 
@@ -3253,7 +3258,7 @@ verifyBasicBlock(errorInfo* einfo,
 				    dprintf(" vs. what's we wanted: TBYTEARR or TBOOLARR"); )
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "top of opstack does not have desired type");
 			}
-			OPSTACK_POP_BLIND;
+			opstackPopBlind(block);
 			break;			
 			
 			
@@ -3413,7 +3418,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case CHECKCAST:
 			ENSURE_OPSTACK_SIZE(1);
-			OPSTACK_POP_BLIND;
+			opstackPopBlind(block);
 			goto NEW_COMMON;
 			
 		case MULTIANEWARRAY:
@@ -3423,7 +3428,7 @@ verifyBasicBlock(errorInfo* einfo,
 				if (getOpstackTop(block)->data.class != TINT->data.class) {
 					return verifyErrorInVerifyBasicBlock(einfo, method, this, "multinewarray: first <n> things on opstack must be integers");
 				}
-				OPSTACK_POP_BLIND;
+				opstackPopBlind(block);
 				n--;
 			}
 			goto NEW_COMMON;
@@ -3694,8 +3699,8 @@ verifyBasicBlock(errorInfo* einfo,
 			    !isReference(getOpstackWTop(block))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "if_acmp* when item on top of stack is not a reference type");
 			}
-			OPSTACK_POP_BLIND;
-			OPSTACK_POP_BLIND;
+			opstackPopBlind(block);
+			opstackPopBlind(block);
 			break;
 			
 		case IF_ICMPEQ:
@@ -3720,7 +3725,7 @@ verifyBasicBlock(errorInfo* einfo,
 			if (!isReference(getOpstackItem(block, 1))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "if[non]null: thing on top of stack is not a reference");
 			}
-			OPSTACK_POP_BLIND;
+			opstackPopBlind(block);
 			break;
 			
 		case LOOKUPSWITCH:
@@ -3833,7 +3838,7 @@ verifyBasicBlock(errorInfo* einfo,
 			if(!isReference(getOpstackTop(block))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "monitor*: top of stack is not an object reference");
 			}
-			OPSTACK_POP_BLIND;
+			opstackPopBlind(block);
 			break;
 			
 			
@@ -3958,7 +3963,6 @@ verifyBasicBlock(errorInfo* einfo,
 #undef OPSTACK_POP_T
 #undef OPSTACK_POP_T_BLIND
 #undef OPSTACK_POP
-#undef OPSTACK_POP_BLIND
 
 #undef OPSTACK_WPEEK_T
 #undef OPSTACK_WPEEK_T_BLIND

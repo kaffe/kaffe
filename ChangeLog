@@ -1,6 +1,13 @@
 2004-02-16  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+        (opstackPopBlind): New static inline function.
+        (OPSTACK_POP_BLIND) Removed.
+        Replaced use of OPSTACK_POP_BLIND by opstackPopBlind.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
         (opstackPeekTBlindErrorInVerifyBasicBlock): New static inline function.
         (OPSTACK_PEEK_T_BLIND) Use opstackPeekTBlindErrorInVerifyBasicBlock.
 
