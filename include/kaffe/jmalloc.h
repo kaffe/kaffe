@@ -29,12 +29,14 @@ extern void	jfree(void* ptr);
 #define KFREE(p)	jfree((void *)(p))
 
 #ifdef KAFFE_VMDEBUG
-/* Does anybody know why we are doing this? */
+/* Clear pointers after freeing the data, 
+ * to aid debugging.
+ * */
 #undef KFREE
-#define KFREE(p)	do {			\
-	jfree ((void *)p);			\
-	p = (void *)0;				\
-} while (0)
+static inline void KFREE(void *p) {
+	jfree ((void *)p);
+	p = (void *)0;
+}
 #endif
 
 #endif

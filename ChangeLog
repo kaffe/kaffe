@@ -1,3 +1,10 @@
+2003-09-05  Jim Pick  <jim@kaffe.org>
+
+	* include/kaffe/jmalloc.h:
+	Oops, my gcc 3.3 warning fix was braindamaged - I broke freevec() in
+	UNIXProcess.c (and probably other things too).  Try doing it with an
+	inlined function instead of a macro. 
+
 2003-09-05  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/net/InetSocketAddress.java:
