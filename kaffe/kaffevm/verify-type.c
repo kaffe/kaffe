@@ -10,6 +10,7 @@
  * Code for handing of types in the verifier.
  */
 
+#include "debug.h"
 #include "itypes.h"
 #include "soft.h"
 #include "verify-debug.h"

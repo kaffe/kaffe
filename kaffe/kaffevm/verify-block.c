@@ -10,6 +10,7 @@
  * Code for handing of blocks in the verifier.
  */
 
+#include "debug.h"
 #include "verify-block.h"
 
 /*
