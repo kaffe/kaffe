@@ -66,8 +66,6 @@ Rest_SRCS = \
 	$(gnu_java_nio_SRCS) \
 	$(gnu_java_nio_charset_SRCS) \
 	$(gnu_java_util_prefs_SRCS) \
-	$(gnu_javax_rmi_SRCS) \
-	$(gnu_javax_rmi_CORBA_SRCS) \
 	$(java_beans_SRCS) \
 	$(java_beans_beancontext_SRCS) \
 	$(java_nio_SRCS) \
@@ -79,9 +77,6 @@ Rest_SRCS = \
 	$(java_util_mime_SRCS) \
 	$(java_util_prefs_SRCS) \
 	$(javax_accessibility_SRCS) \
-	$(javax_rmi_SRCS) \
-	$(javax_rmi_CORBA_SRCS) \
-	$(javax_sql_SRCS) \
 	$(javax_swing_text_SRCS) \
 	$(kaffe_beans_editors_SRCS) \
 	$(kaffe_net_www_protocol_SRCS) \
@@ -95,6 +90,8 @@ Rest_SRCS = \
 	$(kaffe_text_numberformat_SRCS) \
 	$(kaffe_util_locale_SRCS) 
 RMI_SRCS = \
+	$(gnu_javax_rmi_SRCS) \
+	$(gnu_javax_rmi_CORBA_SRCS) \
 	$(gnu_xml_aelfred2_SRCS) \
 	$(gnu_xml_dom_SRCS) \
 	$(gnu_xml_pipeline_SRCS) \
@@ -109,7 +106,10 @@ RMI_SRCS = \
 	$(javax_naming_event_SRCS) \
 	$(javax_naming_ldap_SRCS) \
 	$(javax_naming_spi_SRCS) \
+	$(javax_rmi_SRCS) \
+	$(javax_rmi_CORBA_SRCS) \
 	$(javax_sound_sampled_SRCS) \
+	$(javax_sql_SRCS) \
 	$(javax_transaction_SRCS) \
 	$(javax_transaction_xa_SRCS) \
 	$(javax_xml_parsers_SRCS) \
