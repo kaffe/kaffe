@@ -17,6 +17,13 @@
 #ifndef __kaffevm_debug_h
 #define __kaffevm_debug_h
 
+/* Pascal Bourguignon <pjb@imaginet.fr> writes:
+ * We include stdio here because on Linux, stdio defines dprintf.
+ * Hence, we can override it with a macro defined here. (stdio.h
+ * is include-once).
+ */
+#include <stdio.h>
+
 /*
  * Available debugging options.
  * For an explanation, refer to the table in debug.c
@@ -141,6 +148,9 @@ void dbgSetMaskStr(char *mask_str);
 
 /* Do something that would cause GDB to gain control. */
 # define DBGGDBBREAK() { (*(int*)0) = 42; }
+
+/* XXX: change dprintf to kaffe_dprintf and get rid of the macro */
+# define dprintf       kaffe_dprintf
 
 #else	/* !defined(KAFFEH) */
 

@@ -261,7 +261,7 @@ printDebugBuffer(void)
 }
 
 int
-dprintf(const char *fmt, ...)
+kaffe_dprintf(const char *fmt, ...)
 {
 
 	int n;
