@@ -1,5 +1,19 @@
 2004-11-14  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/beans/PropertyDescriptor.java:
+        Resynced with GNU Classpath.
+
+	2004-11-13  Robert Schuster <thebohemian@gmx.net>
+
+        Complete 1.4 support
+        * java/beans/PropertyDescriptor.java:
+        (setReadMethod): New method
+        (setWriteMethod): New method
+        (equals): Implemented (1.4)
+        (checkMethods): operates on arguments now (private)
+
+2004-11-14  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/Polygon.java:
         Resynced with GNU Classpath.
 
