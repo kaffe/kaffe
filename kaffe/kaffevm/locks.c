@@ -126,6 +126,15 @@ FDBG(		printf("Freeing lock for 0x%x\n", lk->address);		)
 }
 
 /*
+ * Initialise a new lock.
+ */
+void
+__initLock(iLock* lk)
+{
+	(*Kaffe_LockInterface.init)(lk);
+}
+
+/*
  * Lock the given lock.
  */
 inline

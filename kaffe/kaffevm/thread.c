@@ -40,8 +40,6 @@ Hjava_lang_Thread* finalman;
 Hjava_lang_ThreadGroup* standardGroup;
 
 int threadStackSize;
-int talive;
-int tdaemon;
 
 static void firstStartThread(void*);
 static void createInitialThread(char*);
@@ -190,8 +188,6 @@ void
 firstStartThread(void* arg)
 {
 	Hjava_lang_Thread* tid;
-
-	(*Kaffe_ThreadInterface.init)(arg);
 
 	tid  = (*Kaffe_ThreadInterface.currentJava)();
 

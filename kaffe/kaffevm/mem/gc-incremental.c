@@ -385,10 +385,7 @@ gcMan(void* arg)
 	gc_block* info;
 	int idx;
 
-	(*Kaffe_ThreadInterface.init)(arg);
-
-	initStaticMutex(&gcman);
-	initStaticCond(&gcman);
+	initStaticLock(&gcman);
 	lockStaticMutex(&gcman);
 
 	for(;;) {
@@ -551,10 +548,7 @@ finaliserMan(void* arg)
 	gc_unit* unit;
 	int idx;
 
-	(*Kaffe_ThreadInterface.init)(arg);
-
-	initStaticMutex(&finman);
-	initStaticCond(&finman);
+	initStaticLock(&finman);
 	lockStaticMutex(&finman);
 
 	for (;;) {

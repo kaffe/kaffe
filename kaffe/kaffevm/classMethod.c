@@ -107,7 +107,7 @@ processClass(Hjava_lang_Class* class, int tostate)
 	/* Initialise class lock */
 	if (init == false) {
 		init = true;
-		initStaticMutex(&classLock);
+		initStaticLock(&classLock);
 	}
 
 #define	SET_CLASS_STATE(S)	class->state = (S)
@@ -970,7 +970,7 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 
         if (chlinit == false) {
 		chlinit = true;
-		initStaticMutex(&classHashLock);
+		initStaticLock(&classHashLock);
         }
 
 	entry = classEntryPool[hashClassName(name) & (CLASSHASHSZ-1)];

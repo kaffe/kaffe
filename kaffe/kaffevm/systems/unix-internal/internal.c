@@ -66,6 +66,7 @@ jbool runFinalizerOnExit;
 
 extern iLock waitlock;
 extern gcFuncs gcThread;
+int flag_preemption = false;
 
 void reschedule(void);
 void Tspinon(void*);
@@ -651,7 +652,7 @@ TcreateFirst(Hjava_lang_Thread* tid)
 	ctx* c;
 
 	/* We do our general initialisation first */
-	initStaticMutex(&threadLock);
+	initStaticLock(&threadLock);
 
         /* Plug in the alarm handler */
 #if defined(SIGALRM)
@@ -717,18 +718,12 @@ Tcreate(Hjava_lang_Thread* tid, void* func)
 		c->func = func;
 	}
 	else {
+		/* Every thread starts with the interrupts off */
+		Tspinoff(0);
 		(*((ctx*)unhand(currentThread)->PrivateInfo)->func)(0);
 	}
 
 	resumeThread(tid);
-}
-
-static
-void
-Tsetup(void* arg)
-{
-	/* Every thread starts with the interrupts off */
-	Tspinoff(0);
 }
 
 static
@@ -1063,6 +1058,13 @@ Tspinoff(void* arg)
 	blockInts--;
 }
 
+void
+Tspinoffall()
+{
+	blockInts = 1;
+	Tspinoff(0);
+}
+
 /*
  * Define the thread interface.
  */
@@ -1070,7 +1072,6 @@ ThreadInterface Kaffe_ThreadInterface = {
 
 	TcreateFirst,
 	Tcreate,
-	Tsetup,
 	Tsleep,
 	Tyield,
 	Tprio,

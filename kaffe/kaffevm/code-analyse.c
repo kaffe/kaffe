@@ -76,7 +76,7 @@ verifyMethod(Method* meth)
 	/* Initialise on first use */
 	if (init == false) {
 		init = true;
-		initStaticMutex(&vlock);
+		initStaticLock(&vlock);
 	}
 
 	lockStaticMutex(&vlock);

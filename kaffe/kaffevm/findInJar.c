@@ -159,7 +159,7 @@ findInJar(char* cname)
 	/* Initialise on first use */
 	if (init == false) {
 		init = true;
-		initStaticMutex(&jarlock);
+		initStaticLock(&jarlock);
 	}
 
 	/* Look for the class */

@@ -107,10 +107,9 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 
 	/* Release the interrupts (in case they were held when this
 	 * happened - and hope this doesn't break anything).
+	 * XXX - breaks the thread abstraction model !!!
 	 */
-	extern int blockInts;
-	blockInts = 1;
-	Tspinoff();
+	Tspinoffall();
 
 	ct = getCurrentThread();
 

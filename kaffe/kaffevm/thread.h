@@ -46,7 +46,6 @@ typedef struct ThreadInterface {
 
 	void			(*createFirst)(Hjava_lang_Thread*);
 	void			(*create)(Hjava_lang_Thread*, void*);
-	void			(*init)(void*);
 	void			(*sleep)(jlong);
 	void			(*yield)(void);
 	void			(*setPriority)(Hjava_lang_Thread*, jint);

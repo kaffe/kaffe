@@ -117,10 +117,10 @@ DBG(	printf("args %d envs %d\n", arglen, envlen); fflush(stdout);	)
 
 	default:
 		/* Parent */
-		unhand(unhand(this)->stdin_fd)->fd = in[1];
-		unhand(unhand(this)->stdout_fd)->fd = out[0];
-		unhand(unhand(this)->stderr_fd)->fd = err[0];
-		unhand(unhand(this)->sync_fd)->fd = sync[1];
+		unhand(unhand(this)->stdin_fd)->fd = fixfd(in[1]);
+		unhand(unhand(this)->stdout_fd)->fd = fixfd(out[0]);
+		unhand(unhand(this)->stderr_fd)->fd = fixfd(err[0]);
+		unhand(unhand(this)->sync_fd)->fd = fixfd(sync[1]);
 		close(in[0]);
 		close(out[1]);
 		close(err[1]);

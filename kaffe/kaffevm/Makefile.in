@@ -6,7 +6,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-@VPATHOPT@=	@srcdir@@VPATHSEP@@srcdir@/@with_engine@@VPATHSEP@@srcdir@/../../config/@host_cpu@/@host_os@@VPATHSEP@@srcdir@/../../config/@host_cpu@@VPATHSEP@@srcdir@/systems/unix-internal:@VPATHSEP@@srcdir@/mem
+@VPATHOPT@=	@srcdir@@VPATHSEP@@srcdir@/@with_engine@@VPATHSEP@@srcdir@/../../config/@host_cpu@/@host_os@@VPATHSEP@@srcdir@/../../config/@host_cpu@@VPATHSEP@@srcdir@/systems/@THREAD_SYSTEM@:@VPATHSEP@@srcdir@/mem
 srcdir=		@srcdir@
 prefix=		@prefix@
 exec_prefix=	@exec_prefix@
@@ -63,18 +63,12 @@ COMMON=\
 		inflate$(OBJEXT) \
 		md$(OBJEXT)
 
-#
-# Use internal threads
-#
-COMMON+=	internal$(OBJEXT) \
-		internalCalls$(OBJEXT)
-
-
 all:		mkkaffevm
 
 @engine_frag@
 @cpu_frag@
 @cpu_os_frag@
+@threads_frag@
 
 OBJECT=		$(COMMON) $(ENGINE_OBJECTS) $(CPU_OBJECTS) $(CPUOS_OBJECTS)
 

@@ -171,30 +171,22 @@ else
 	AC_MSG_RESULT(shared)
 fi
 
-
 dnl =========================================================================
-dnl Look for native thread and locking support and use it if available
+dnl Use the new internal threading system "jthreads"
 dnl -------------------------------------------------------------------------
 
-AC_MSG_CHECKING(for native threads)
-if test -f $srcdir/config/$host_cpu/$host_os/thread-native.h ; then
-	link_from="$link_from config/$host_cpu/$host_os/thread-native.h"
-	link_to="$link_to kaffe/kaffevm/thread-native.h"
-	AC_DEFINE(USE_NATIVE_THREADS)
-	AC_MSG_RESULT(yes)
-else
-	AC_MSG_RESULT(no)
+AC_ARG_WITH(threads, --with-threads={unix-internal|unix-jthreads} define which threading system to use)
+AC_MSG_CHECKING(thread system)
+if test "$with_threads" = "" ; then
+	with_threads=unix-internal
 fi
-
-AC_MSG_CHECKING(for native locks)
-if test -f $srcdir/config/$host_cpu/$host_os/locks-native.h ; then
-	link_from="$link_from config/$host_cpu/$host_os/locks-native.h"
-	link_to="$link_to kaffe/kaffevm/locks-native.h"
-	AC_DEFINE(USE_NATIVE_LOCKS)
-	AC_MSG_RESULT(yes)
-else
-	AC_MSG_RESULT(no)
+if test ! -d $srcdir/kaffe/kaffevm/systems/${with_threads} ; then
+	AC_MSG_ERROR(Configuration $host_cpu-$host_os does not support $with_threads threads)
 fi
+THREAD_SYSTEM=$with_threads
+AC_MSG_RESULT($THREAD_SYSTEM)
+AC_SUBST_FILE(threads_frag)dnl
+threads_frag=$srcdir/kaffe/kaffevm/systems/$with_threads/Makefile.frag
 
 dnl =========================================================================
 dnl Look for trampoline code if in JIT mode
@@ -239,6 +231,7 @@ AC_SUBST(VPATHOPT)
 AC_SUBST(LINKLIB)
 AC_SUBST(LINKVMLIB)
 AC_SUBST(LD)
+AC_SUBST(THREAD_SYSTEM)
 AC_DEFINE_UNQUOTED(LIBRARYSUFFIX, "$LIBEXT")
 AC_DEFINE_UNQUOTED(KAFFEVERSION, "$KVER")
 if test "$program_prefix" = "NONE" ; then

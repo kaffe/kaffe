@@ -21,8 +21,7 @@
 #define	broadcastCond			_broadcastCond
 #define	holdMutex			_holdMutex
 
-#define	initStaticMutex(THING)
-#define	initStaticCond(THING)
+#define	initStaticLock(THING)		__initLock((THING))
 #define	lockStaticMutex(THING)		__lockMutex((THING))
 #define	unlockStaticMutex(THING)	__unlockMutex((THING))
 #define	waitStaticCond(THING, TIME)	__waitCond((THING), (TIME))

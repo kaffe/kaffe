@@ -145,7 +145,7 @@ translate(Method* meth)
 
 	if (init == false) {
 		init = true;
-		initStaticMutex(&translatorlock);
+		initStaticLock(&translatorlock);
 	}
 
 	/* Only one in the translator at once. Must check the translation

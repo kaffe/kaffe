@@ -34,6 +34,7 @@ extern void initialiseKaffe(void);
 extern char* realClassPath;
 extern int threadStackSize;
 extern size_t gc_heap_limit;
+extern int flag_preemption;
 extern int flag_verify;
 extern int flag_gc;
 extern int flag_classload;
@@ -168,6 +169,9 @@ options(char** argv)
 			}
 			gc_heap_allocation_size = parseSize(argv[i]);
 		}
+		else if (strcmp(argv[i], "-nopreempt") == 0) {
+			flag_preemption = false;
+		}
 		else if (strcmp(argv[i], "-verify") == 0) {
 			flag_verify = 3;
 		}
@@ -254,6 +258,7 @@ usage(void)
 	fprintf(stderr, "	-noasyncgc *		Do not garbage collect asynchronously\n");
 	fprintf(stderr, "	-cs, -checksource *	Check source against class files\n");
 	fprintf(stderr, "	-oss <size> *		Maximum java stack size\n");
+	fprintf(stderr, "	-nopreempt 		Disable preemption\n");
 	fprintf(stderr, "	-prof *			?\n");
 	fprintf(stderr, "  * Option currently ignored.\n");
 }

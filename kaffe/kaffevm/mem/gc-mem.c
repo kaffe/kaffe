@@ -147,7 +147,7 @@ gc_heap_malloc(size_t sz)
 	if (gc_heap_init == 0) {
 		gc_heap_init = 1;
 		gc_heap_initialise();
-		initStaticMutex(&gc_lock);
+		initStaticLock(&gc_lock);
 	}
 
 	lockStaticMutex(&gc_lock);
