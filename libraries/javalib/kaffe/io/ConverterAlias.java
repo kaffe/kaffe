@@ -110,10 +110,10 @@ public class ConverterAlias {
 	alias.put("KOI8-R",		"KOI8_R");
 	alias.put("CSKOI8R",		"KOI8_R");
 
-	alias.put("EUCJP",              "EUC_JP");
-	alias.put("EUC-JP",             "EUC_JP");
-	alias.put("EUCJIS",             "EUC_JP");
-	alias.put("CSEUCPKDFMTJAPANESE","EUC_JP");
+	alias.put("EUCJP",              "EUC-JP");
+	alias.put("EUC_JP",             "EUC-JP");
+	alias.put("EUCJIS",             "EUC-JP");
+	alias.put("CSEUCPKDFMTJAPANESE","EUC-JP");
 
 	alias.put("US-ASCII",		"ASCII");
 	alias.put("ANSI_X3.4-1968",	"ASCII");
