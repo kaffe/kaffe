@@ -1,4 +1,14 @@
-2004-12-06  Dalibor Topic  <topic@notebox>
+2004-12-06  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/awt/color/ICC_Profile.java:
+        Resynced with GNU Classpath.
+
+	2004-12-06  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/awt/color/ICC_Profile.java
+        (finalize): Removed pointless field assignments.
+
+2004-12-06  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/gnu/java/net/protocol/http/HTTPConnection.java,
 	libraries/javalib/gnu/java/net/protocol/http/HTTPURLConnection.java:
@@ -54,7 +64,7 @@
 	constructor.
 	(callConstructor): Removed.
 
-2004-12-06  Dalibor Topic  <topic@notebox>
+2004-12-06  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/gnu/classpath/Configuration.java
 	(CLASSPATH_VERSION) Updated.
