@@ -1,3 +1,9 @@
+2003-07-02  Dalibor Topic <robilad@yahoo.com>
+
+	* FAQ/FAQ.classlibrary-compile:
+	Removed section on broken Makefile.am since it's no 
+	longer broken.
+
 2003-07-02  Rob Gonzalez <rob@kaffe.org>
 
 	Pass 2 verification should now be complete.
