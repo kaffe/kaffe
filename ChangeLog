@@ -1,5 +1,13 @@
 2004-07-21  Dalibor Topic  <robilad@kaffe.org>
 
+        * kaffe/kaffevm/Makefile.am:
+	(DIST_SUBDIRS) Added kaffe-gc and boehm-gc.
+
+        * kaffe/kaffevm/Makefile.in:
+	Regnerated.
+
+2004-07-21  Dalibor Topic  <robilad@kaffe.org>
+
 	Merged in dnsjava, GNU Crypto and Jessie
 
 	* FAQ/FAQ.dns:
