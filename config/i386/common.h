@@ -22,39 +22,44 @@
  *  This function is mandatory for both JIT and Interpreter (since stubs
  *  have now been deprecated).
  */
-/* Jason <jbaker@cs.utah.edu> notes that we must not use %ebx because it's
- * used for shared lib support on ELF systems (Linux, FreeBSD3.0) and gcc
- * will not save it before it uses it again, despite what we say in asm().
- */
 #if NEED_sysdepCallMethod
+/* gcc will never produce an out-of-line version of `extern inline'
+   functions.  So, if it fails to inline for some reason, we'll get a
+   linker error, and then we should try to rewrite this so that it is
+   inlined.  */
 extern inline void sysdepCallMethod(callMethodInfo *call) {
   int args = call->nrargs;
-  unsigned int retsize = call->retsize;
-  char rettype = call->rettype;
 
+  /* Push all arguments into the stack, in last-to-first order.  This
+     assumes that the second 32bit-word of longs and doubles is
+     available as an additional int argument, as callMethod[AV]() do.  */
   while (args > 0)
     asm volatile ("pushl %0" : : "m" (call->args[--args].i) : "sp");
 
-  switch(retsize) {
+  switch(call->retsize) {
   case 0:
+    /* Must be void.  */
     ((void (*)(void))(call->function))();
     break;
 
   case 1:
-    if (rettype == 'F')
+    if (call->rettype == 'F')
       call->ret->f = ((jfloat (*)(void))(call->function))();
-    else
+    else /* Must be 32-bit or smaller int.  */
       call->ret->i = ((jint (*)(void))(call->function))();
     break;
 
   default:
-    if (rettype == 'D')
+    /* It could've been `case 2;', but then we'd get an additional cmp
+     * that we don't really need.  */
+    if (call->rettype == 'D')
       call->ret->d = ((jdouble (*)(void))(call->function))();
-    else
+    else /* Must be jlong.  */
       call->ret->j = ((jlong (*)(void))(call->function))();
     break;
   }
 
+  /* Adjust the stack pointer.  */
   asm volatile ("addl %0,%%esp" : :
 		"r" (call->argsize * sizeof(jint)) : "cc", "sp");
 }
