@@ -33,7 +33,7 @@ LIBEXT=		@LIBVMEXT@
 INCLUDES=	-I. -I$(srcdir) -I$(srcdir)/../../config -I../../config -I../../include -I$(srcdir)/../../include -I../../libraries/clib
 CPPFLAGS=	@CPPFLAGS@
 CFLAGS=		@CFLAGS@
-ALL_CFLAGS=	$(CPPFLAGS) $(CFLAGS) @KAFFEVMFLAGS@ $(INCLUDES) $(ENGINE_CFLAGS) -DKVER=\"$(KVER)\" $(EXTRA_CFLAGS)
+ALL_CFLAGS=	$(INCLUDES) $(CPPFLAGS) $(CFLAGS) @KAFFEVMFLAGS@ $(ENGINE_CFLAGS) -DKVER=\"$(KVER)\" $(EXTRA_CFLAGS)
 
 LIBNAME=	libkaffevm
 LIB=		$(LIBNAME)$(LIBEXT).$(KVER)
