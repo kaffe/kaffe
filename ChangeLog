@@ -4,6 +4,8 @@ Fri Jan 15 10:23:25 1999 Edouard Parmelan <EP510777@exchange.FRANCE.NCR.com>
 	to a few global variables as appropriate
 	* kaffe/kaffe/main.c: add NULL argument to lt_dlpreload_default()
 	function call
+	* libraries/javalib/java/text/BreakIterator.java: the DONE constant
+	should be final and is not the same as CharacterIterator.DONE.
 
 Thu Jan 14 15:39:36 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 

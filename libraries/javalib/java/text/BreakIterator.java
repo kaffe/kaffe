@@ -17,7 +17,7 @@ import java.util.Locale;
 abstract public class BreakIterator
   implements Cloneable, Serializable
 {
-	public static char DONE = CharacterIterator.DONE;
+	public static final int DONE = -1;
 
 protected BreakIterator () {
 }
@@ -108,7 +108,7 @@ public int first() {
 public int following( int offs) {
 	int pos = iterator.getIndex();
 	iterator.setIndex( iterator.getBeginIndex() + offs);
-	if ( iterator.current() == DONE ) {
+	if ( iterator.current() == CharacterIterator.DONE ) {
 		iterator.setIndex( pos);
 		return DONE;
 	}
@@ -127,9 +127,9 @@ public int last() {
 public int next() {
 	int pos = iterator.getIndex();
 	boolean nl = false;
-	
+
 	for ( char c = iterator.next();;c = iterator.next() ) {
-		if ( c == DONE )
+		if ( c == CharacterIterator.DONE )
 			break;
 		if ( Character.getType( c) == Character.LINE_SEPARATOR )
 			nl = true;
@@ -156,7 +156,7 @@ public int previous() {
 	int nl = 0;
 	
 	for ( char c = iterator.previous();;c = iterator.previous() ) {
-		if ( c == DONE )
+		if ( c == CharacterIterator.DONE )
 			break;
 		if ( Character.getType( c) == Character.LINE_SEPARATOR ) {
 			nl++;
@@ -192,7 +192,7 @@ public int first() {
 public int following( int offs) {
 	int pos = iterator.getIndex();
 	iterator.setIndex( iterator.getBeginIndex() + offs);
-	if ( iterator.current() == DONE ) {
+	if ( iterator.current() == CharacterIterator.DONE ) {
 		iterator.setIndex( pos);
 		return DONE;
 	}
@@ -213,7 +213,7 @@ public int next() {
 	boolean nl = false;
 	
 	for ( char c = iterator.next();;c = iterator.next() ) {
-		if ( c == DONE )
+		if ( c == CharacterIterator.DONE )
 			break;
 		if ( c == '.' )
 			nl = true;
@@ -240,7 +240,7 @@ public int previous() {
 	int nl = 0;
 	
 	for ( char c = iterator.previous();;c = iterator.previous() ) {
-		if ( c == DONE )
+		if ( c == CharacterIterator.DONE )
 			break;
 		if ( c == '.' ) {
 			nl++;
@@ -299,14 +299,15 @@ public int next() {
 	
 	if ( Character.isSpaceChar( c) ) {
 		for ( ;;c = iterator.next()) {
-			if ( ( c == DONE) || ! Character.isSpaceChar( c) ) {
+			if ( ( c == CharacterIterator.DONE)
+			    || !Character.isSpaceChar( c) ) {
 				return (iterator.getIndex());
 			}
 		}
 	}
 	
 	for (;; c = iterator.next()){
-		if ( ( c == DONE) || Character.isSpaceChar( c) )
+		if ( ( c == CharacterIterator.DONE) || Character.isSpaceChar( c) )
 			break;
 	}
 	
@@ -334,19 +335,19 @@ public int previous() {
 	int pos = iterator.getIndex();
 	
 	for ( c = iterator.previous(); ! Character.isSpaceChar( c) ; c = iterator.previous() ){
-		if ( c == DONE ) {
+		if ( c == CharacterIterator.DONE ) {
 			iterator.setIndex( pos);
 			return (DONE);
 		}
 	}
 	for ( c = iterator.previous(); Character.isSpaceChar( c) ; c = iterator.previous() ){
-		if ( c == DONE ) {
+		if ( c == CharacterIterator.DONE ) {
 			iterator.setIndex( pos);
 			return (DONE);
 		}
 	}
 	for ( c = iterator.previous(); ! Character.isSpaceChar( c) ; c = iterator.previous() ){
-		if ( c == DONE ) {
+		if ( c == CharacterIterator.DONE ) {
 			iterator.setIndex( pos);
 			return (DONE);
 		}
