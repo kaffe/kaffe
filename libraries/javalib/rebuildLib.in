@@ -36,13 +36,13 @@ if [ "$JIKES" = "" ] ; then
 	if [ -z "$JAVAC" ]; then
 		JAVAC="$JAVA pizza.compiler.Main"
 	fi
-	CPATH="$LIBDIR${CPATH+:$CPATH}"
+	CPATH="-classpath $LIBDIR${CPATH+:$CPATH}"
 else
 	JAVAC="$JIKES"
-	CPATH="$LIBDIR${CPATH+:$CPATH}:Klasses.jar"
+	# CPATH is not needed for jikes
 fi
 
 cd $SRCDIR
 
 echo "Compiling classes ..."
-$JAVAC -verbose -d $LIBDIR -classpath $CPATH ${1+"$@"}
+$JAVAC -verbose -d $LIBDIR $CPATH ${1+"$@"}
