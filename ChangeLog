@@ -1,3 +1,8 @@
+Fri Jun 11 21:23:10 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/kaffe/net/www/protocol/http/HttpURLConnection.java:
+	added support for proxies via http.proxyHost/proxyPort properties
+
 1999-06-10  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/jni.c (Call*Method*): If method is not virtual,
