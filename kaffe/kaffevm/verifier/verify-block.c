@@ -164,7 +164,7 @@ ensureLocalTypeErrorInVerifyBasicBlock(Verifier* v,
 /*
  * Helper function for error reporting in ENSURE_OPSTACK_SIZE macro in verifyBasicBlock.
  */
-static inline
+static
 bool
 ensureOpstackSizeErrorInVerifyBasicBlock(Verifier* v,
 					 const BlockInfo* block)
@@ -301,7 +301,7 @@ opstackPopNBlind(BlockInfo* block,
 /*
  * Helper function for error reporting in OPSTACK_PEEK_T_BLIND macro in verifyBasicBlock.
  */
-static inline
+static
 bool
 opstackPeekTBlindErrorInVerifyBasicBlock(Verifier* v,
 					 BlockInfo* block,
