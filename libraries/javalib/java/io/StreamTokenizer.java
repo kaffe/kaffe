@@ -162,7 +162,12 @@ private int nextTokenType() throws IOException {
 			chr = chrRead();
 		}
 
-		ttype = TT_WORD;
+		/* JDK doc says:  When the nextToken method encounters a 
+		 * string constant, the ttype field is set to the string 
+		 * delimiter and the sval field is set to the body of the 
+		 * string. 
+		 */
+		ttype = chr;
 		sval = buffer.toString();      
 	}
 	else if (lookup[chr].isComment) {
