@@ -8,9 +8,9 @@
  * of this file. 
  */
 
+#include "debug.h"
 #include "classMethod.h"
 #include "gtypes.h"
-
 
 #ifdef DEBUG
 int jit_debug;
