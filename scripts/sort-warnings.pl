@@ -23,7 +23,7 @@ Registry::analyze_warnings();
 #	   -Wmissing-declarations -Wmissing-noreturn -Wredundant-decls -Wnested-externs -Winline -Wlong-long
 
 my $path_prefix_regex = qr/\/?([^\/]*\/)*?/;
-my $prog_regex = qr/ ?\(?(${path_prefix_regex})\b(kaffeh|config\.status|rm|mv|mkdir|ar|ranlib|echo|gmake|sh|sed|cd|grep|cat|gcc|touch|test|make)\b/;
+my $prog_regex = qr/ ?\(?(${path_prefix_regex})\b(kaffeh|config\.status|rm|mv|mkdir|ar|ranlib|echo|gmake|bash|sh|nm|sed|cd|grep|cat|gcc|touch|test|make)\b/;
 my $kjc_regex = qr/\[ (?:start compilation|compilation ended|parsed|checked body|optimized and generated|checked interfaces)/;
 my $shell_keywords = qr/(?:for|then|if) /;
 my $make_regex = qr/make\[\d+\]: (?:(?:Entering|Leaving) directory|Nothing to be done for)/;
@@ -44,6 +44,7 @@ my $skip_line_regex = qr,
 			$make_regex|
 			depmode|
 			depfile|
+			extracting\ global\ C\ symbols\ from|
 			\ \ adding:|
 			$kjc_regex|
 			$libtool_regex|
