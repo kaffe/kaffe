@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-01-06  Michael Koch  <konqueror@gmx.de>
+
+	* java/util/TimeZone.java
+	(setID): Throw NullPointerException if needed.
+	
+2005-01-07  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-01-05  Ranjit Mathew  <rmathew@hotmail.com>
 
 	* java/util/IdentityHashMap.java (put): Replace mistaken use
