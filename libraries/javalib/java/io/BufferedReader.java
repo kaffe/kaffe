@@ -15,7 +15,7 @@ import java.lang.String;
 public class BufferedReader
   extends Reader
 {
-	final private static int DEFAULTBUFFERSIZE = 1024;
+	final private static int DEFAULTBUFFERSIZE = 8192;
 	private Reader rd;
 	private char[] inbuf;
 	private int pos;	// position of next char in buffer
