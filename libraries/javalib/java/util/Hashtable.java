@@ -144,8 +144,8 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
 
     /* Go through adding all the data to the new data */
     for (int pos = oldKeys.length-1; pos >= 0; pos--) {
-      if (keys[pos] != free && keys[pos] != removed) {
-	put(keys[pos], elements[pos]);
+      if (oldKeys[pos] != free && oldKeys[pos] != removed) {
+	put(oldKeys[pos], oldElements[pos]);
       }
     }
   }
@@ -256,7 +256,7 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
 
     /* copy our entries in new hashtable */ 
     for (int pos = keys.length-1; pos >= 0; pos--) {
-      if (keys[pos] != free || keys[pos] != removed) {
+      if (keys[pos] != free && keys[pos] != removed) {
 	result.put(keys[pos], elements[pos]);
       }
     }

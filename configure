@@ -4138,7 +4138,7 @@ else
 fi
 done
 
-for ac_func in remainder remainderf fmod drem rint floor ceil finite isinf isnan strtod strdup
+for ac_func in remainder remainderf fmod fmodf drem rint floor ceil finite isinf isnan strtod strdup
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
 echo "configure:4145: checking for $ac_func" >&5

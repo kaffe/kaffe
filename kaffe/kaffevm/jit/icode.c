@@ -1015,9 +1015,6 @@ void
 rem_float(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
 	used_ieee_division = true;
-#if defined(HAVE_rem_float)
-	slot_slot_slot(dst, src, src2, HAVE_rem_float, Tcomplex);
-#else
 	end_sub_block();
 	pusharg_float(src2, 1);
 	pusharg_float(src, 0);
@@ -1025,16 +1022,12 @@ rem_float(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 	popargs();
 	end_sub_block();
 	return_float(dst);
-#endif
 }
 
 void
 rem_double(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
 	used_ieee_division = true;
-#if defined(HAVE_rem_double)
-	lslot_lslot_lslot(dst, src, src2, HAVE_rem_double, Tcomplex);
-#else
 	end_sub_block();
 	pusharg_double(src2, pusharg_long_idx_inc);
 	pusharg_double(src, 0);
@@ -1042,7 +1035,6 @@ rem_double(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 	popargs();
 	end_sub_block();
 	return_double(dst);
-#endif
 }
 
 void

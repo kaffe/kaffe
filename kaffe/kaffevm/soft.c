@@ -619,13 +619,13 @@ soft_fdivl(jdouble v1, jdouble v2)
 jfloat
 soft_frem(jfloat v1, jfloat v2)
 {
-	return (remainderf(v1, v2));
+	return (javaRemainderf(v1, v2));
 }
 
 jdouble
 soft_freml(jdouble v1, jdouble v2)
 {
-	return (remainder(v1, v2));
+	return (javaRemainder(v1, v2));
 }
 
 jlong

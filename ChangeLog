@@ -1,3 +1,18 @@
+Tue Sep 29 15:10:07 1998  Patrick Tullmann <tullmann@cs.utah.edu>
+
+	* configure.in: add fmodf to the list of checked functions (needed 
+	for change to config/config-math.h
+	* config/config-math.h: add javaRemainder and IEEERemainder functions.
+	Get rid of remainder, use IEEERemainder and javaRemainder instead.
+	* libraries/clib/native/Math.c: have
+	java_lang_Math_IEEEremainder() call IEEERemainder().
+	* kaffe/kaffe/kaffevm/soft.c, kaffe/kaffe/kaffevm/intrp/icode.h:
+	Use javaRemainder() instead of remainder().
+	* kaffe/kaffe/kaffevm/jit/icode.c: don't use IEEE remainder
+	opcodes in the JIT for remainder operations, always use the soft
+	calls.  The Java '%' operator is not the same as the IEEE spec.
+	(I think HAVE_rem_double and HAVE_rem_float are useless now.)
+	
 Fri Sep 25 11:58:18 1998  Maxim Kizub <max@immsp.kiev.ua>
 
 	* libraries/javalib/java/util/Hashtable.java: fix

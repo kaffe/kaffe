@@ -133,7 +133,7 @@ private int nextTokenType() throws IOException {
 	else if (lookup[chr].isAlphabetic) {
 		/* Parse the word and return */
 		buffer.setLength( 0);
-		while (lookup[chr].isAlphabetic) {
+		while (lookup[chr].isAlphabetic || lookup[chr].isNumeric) {
 			buffer.append((char)(chr & 0xFF));
 			chr = chrRead();
 		}
@@ -179,7 +179,13 @@ private int nextTokenType() throws IOException {
 	}
 	else {
 		/* Just return it as a token */
-		if (chr == 256) ttype = TT_EOF; else ttype = chr & 0xFF;
+		sval = null;
+		if (chr == 256) {
+			ttype = TT_EOF;
+		}
+		else {
+			ttype = chr & 0xFF;
+		}
 	}
 
 	return (ttype);
@@ -219,6 +225,7 @@ public void quoteChar(int ch) {
 public void reset() {
 	wordChars('A', 'Z');
 	wordChars('a', 'z');
+	wordChars('\u00A0', '\u00FF');
 	whitespaceChars('\u0000', '\u0020');
 	ordinaryChar(256); /* EOF */
 	parseNumbers();

@@ -14,16 +14,40 @@
 #include <math.h>
 #include <limits.h>
 
+/*
+ * Java defines two sorts of floating-point remainder operations, one
+ * IEEE 754 remainder (for java.lang.IEEEremainder()) and a
+ * different version for the % operator.
+ */
+
+/* IEEE 754 remainder for doubles */
 #if defined(HAVE_REMAINDER)
-#elif defined(HAVE_FMOD)
-#define	remainder	fmod
+#define IEEERemainder(a, b) remainder(a, b)
 #elif defined(HAVE_DREM)
-#define	remainder	drem
+#define IEEERemainder(a, b) drem(a, b)
 #else
-#error "Need some form of remainder"
+#error "Kaffe requires a truncating-division-based floating-point remainder operation"
 #endif
-#if !defined(HAVE_REMAINDERF)
-#define	remainderf(a, b) (float)remainder((double)a, (double)b)
+
+/* IEEE 754 remainder for floats */
+#if defined(HAVE_REMAINDERF)
+#define IEEERemainderf(a, b) remainderf(a, b)
+#else
+#define IEEERemainderf(a, b) ((float)IEEERemainder((double)a, (double)b))
+#endif
+
+/* Java remainder for doubles */
+#if defined(HAVE_FMOD)
+#define javaRemainder(a, b) fmod(a, b)
+#else
+#error "Kaffe requires a truncating-division-based floating-point remainder operation"
+#endif
+
+/* Java remainder for floats */
+#if defined(HAVE_FMODF)
+#define javaRemainderf(a, b) fmodf(a, b)
+#else
+#define javaRemainderf(a, b) ((float)javaRemainder((double)a, (double)b))
 #endif
 
 #if !defined(HAVE_FLOOR)

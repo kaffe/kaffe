@@ -250,8 +250,8 @@
 #define	mul_double(t, f1, f2)			(t)[0].v.tdouble = (f1)[0].v.tdouble * (f2)[0].v.tdouble
 #define	div_float(t, f1, f2)			(t)[0].v.tfloat = (f1)[0].v.tfloat / (f2)[0].v.tfloat
 #define	div_double(t, f1, f2)			(t)[0].v.tdouble = (f1)[0].v.tdouble / (f2)[0].v.tdouble
-#define	rem_float(t, f1, f2)			(t)[0].v.tfloat = remainderf((f1)[0].v.tfloat, (f2)[0].v.tfloat)
-#define	rem_double(t, f1, f2)			(t)[0].v.tdouble = remainder((f1)[0].v.tdouble, (f2)[0].v.tdouble)
+#define	rem_float(t, f1, f2)			(t)[0].v.tfloat = javaRemainderf((f1)[0].v.tfloat, (f2)[0].v.tfloat)
+#define	rem_double(t, f1, f2)			(t)[0].v.tdouble = javaRemainder((f1)[0].v.tdouble, (f2)[0].v.tdouble)
 #define	neg_float(t, f)				(t)[0].v.tfloat = -(f)[0].v.tfloat
 #define	neg_double(t, f)			(t)[0].v.tdouble = -(f)[0].v.tdouble
 

@@ -72,7 +72,7 @@ java_lang_Math_sqrt(double v)
 double
 java_lang_Math_IEEEremainder(double v1, double v2)
 {
-	return (remainder(v1, v2));
+	return (IEEERemainder(v1, v2));
 }
 
 double

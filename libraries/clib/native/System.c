@@ -55,6 +55,10 @@ java_lang_System_arraycopy(struct Hjava_lang_Object* src, jint srcpos, struct Hj
 	Hjava_lang_Class* sclass;
 	Hjava_lang_Class* dclass;
 
+	if (len == 0) {
+		return;
+	}
+
 	sclass = OBJECT_CLASS(src);
 	dclass = OBJECT_CLASS(dst);
 
