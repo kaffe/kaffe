@@ -1,3 +1,18 @@
+2003-06-26  Dalibor Topic <robilad@yahoo.com>
+
+	Updated iconv detection to GNU gettext release 0.11.3. The new
+	version of iconv.m4 triggered the merge of GPL'd autoconf-lib-link
+	m4 code from GNU gettext.
+
+	* iconv.m4: Updated to latest version from gettext 0.11.3.
+
+	* lib-link.m4, lib-ld.m4, lib-prefix.m4: new file.
+
+	* Makefile.am:
+	(EXTRA_DIST) added lib-link.m4, lib-ld.m4 and lib-prefix.m4.
+
+	Reported by: Ito Kazumitsu <kaz@maczuka.gcd.org>
+
 2003-06-26  Rob Gonzalez <rgonzale@wso.williams.edu>
 
 	* kaffe/man/kaffe.1.in:
