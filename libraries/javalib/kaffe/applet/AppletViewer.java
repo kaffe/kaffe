@@ -50,7 +50,7 @@ public class AppletViewer
 {
 	Applet app;
 	Vector apps = new Vector();
-	String codebase = "";
+	String codebase;
 	String archive = "";
 	String code;
 	Hashtable paramDict = new Hashtable();
@@ -65,6 +65,14 @@ public AppletViewer ( File html) {
 	state.setFont(new Font("SansSerif", Font.BOLD, 12));
 	add( state);
 	addWindowListener(this);
+
+	try {
+		URL codebaseUrl = new URL( "file", "",
+			System.getProperty( "user.dir") + '/');
+		codebase = codebaseUrl.toString();
+	} catch (MalformedURLException _) {
+		codebase = "";
+	}
 
 	try {
 		int ttype;
