@@ -14,19 +14,19 @@ import java.util.Random;
 
 public class SecureRandom extends Random {
 
-private static final String ENGINE_CLASS = "SecureRandom";
-private static final String DEFAULT_ALG = "SHA1PRNG";
+static final String ENGINE_CLASS = "SecureRandom";
 
-private Provider provider;
-private SecureRandomSpi engine;
+private final Provider provider;
+private final SecureRandomSpi engine;
 
 public SecureRandom() { 
 	try {
-		Security.Engine e = Security.getCryptInstance(ENGINE_CLASS, DEFAULT_ALG);
+		Security.Engine e = Security.getCryptInstance(ENGINE_CLASS);
 		provider = e.provider;
 		engine = (SecureRandomSpi)e.engine;
 	}
 	catch (NoSuchAlgorithmException e) {
+		throw new Error("no " + ENGINE_CLASS + " found");
 	}
 }
 
@@ -40,20 +40,20 @@ protected SecureRandom(SecureRandomSpi engine, Provider provider) {
 	this.provider = provider;
 }
 
-public static SecureRandom getInstance(String alg) throws NoSuchAlgorithmException {
+public static SecureRandom getInstance(String alg)
+		throws NoSuchAlgorithmException {
 	Security.Engine e = Security.getCryptInstance(ENGINE_CLASS, alg);
-	return (new SecureRandom((SecureRandomSpi)e.engine, e.provider));
+	return new SecureRandom((SecureRandomSpi)e.engine, e.provider);
 }
 
-public static SecureRandom getInstance(String alg, String provider) 
-					throws NoSuchAlgorithmException, 
-					NoSuchProviderException {
-	Security.Engine e = Security.getCryptInstance(ENGINE_CLASS, alg, provider);
-	return (new SecureRandom((SecureRandomSpi)e.engine, e.provider));
+public static SecureRandom getInstance(String alg, String prov) 
+		throws NoSuchAlgorithmException, NoSuchProviderException {
+	Security.Engine e = Security.getCryptInstance( ENGINE_CLASS, alg, prov);
+	return new SecureRandom((SecureRandomSpi)e.engine, e.provider);
 }
 
 public final Provider getProvider() {
-	return (provider);
+	return provider;
 }
 
 public void setSeed(byte[] seed) {
@@ -64,14 +64,9 @@ public void setSeed(byte[] seed) {
 
 public void setSeed(long seed) {
 	byte[] nseed = new byte[8];
-	nseed[0] = (byte)(seed);
-	nseed[1] = (byte)(seed >> 8);
-	nseed[2] = (byte)(seed >> 16);
-	nseed[3] = (byte)(seed >> 24);
-	nseed[4] = (byte)(seed >> 32);
-	nseed[5] = (byte)(seed >> 40);
-	nseed[6] = (byte)(seed >> 48);
-	nseed[7] = (byte)(seed >> 56);
+	for (int i = 0; i < 8; i++) {
+		nseed[i] = (byte)(seed >> (i * 8));
+	}
 	setSeed(nseed);
 }
 
@@ -89,11 +84,11 @@ protected final int next(int numBits) {
 }
 
 public static byte[] getSeed(int numBytes) {
-	return (new SecureRandom().getSeed(numBytes));
+	return new SecureRandom().getSeed(numBytes);
 }
 
-public byte[] generateSeed(int numBytes){
-	return (engine.engineGenerateSeed(numBytes));
+public byte[] generateSeed(int numBytes) {
+	return engine.engineGenerateSeed(numBytes);
 }
 
 }

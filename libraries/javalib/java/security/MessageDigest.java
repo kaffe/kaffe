@@ -17,33 +17,43 @@ package java.security;
 
 import java.util.Arrays;
 
+// Note: it is a historical screwup that this class extends MessageDigestSpi.
+// It should not but does. Unfortunately, MessageDigestSpi is abstract, and
+// this class inherits that abstractness. That is why we must be able to
+// cast the engine we get from the provider to a MessageDigest object instead
+// of a MessageDigestSpi object (see ***note below). Normally this class
+// would keep an instance of MessageDigestSpi in a private field, but instead
+// 'this' is that instance, so we don't need a separate field for it.
+
 public abstract class MessageDigest extends MessageDigestSpi {
 	private static final String ENGINE_CLASS = "MessageDigest";
-	private String algorithm;
+	private final String algorithm;
+   /**	private MessageDigestSpi engine; **/
 	private Provider provider;
 
 	protected MessageDigest(String algorithm) {
 		this.algorithm = algorithm;
 	}
 
-	public static MessageDigest getInstance(String alg)
+	public static MessageDigest getInstance(String algorithm)
 			throws NoSuchAlgorithmException {
-		Security.Engine e =
-			Security.getCryptInstance(ENGINE_CLASS, alg);
-		MessageDigest d = (MessageDigest)e.engine;
-		d.provider = e.provider;
-		d.algorithm = alg;
-		return d;
+		return getInstance(Security.getCryptInstance(
+			ENGINE_CLASS, algorithm));
 	}
 
-	public static MessageDigest getInstance(String alg, String provider)
-		    throws NoSuchAlgorithmException, NoSuchProviderException {
-		Security.Engine e =
-			Security.getCryptInstance(ENGINE_CLASS, alg, provider);
-		MessageDigest d = (MessageDigest)e.engine;
-		d.provider = e.provider;
-		d.algorithm = alg;
-		return d;
+	public static MessageDigest getInstance(String algorithm, String prov)
+			throws NoSuchAlgorithmException,
+				NoSuchProviderException {
+		return getInstance(Security.getCryptInstance(
+			ENGINE_CLASS, algorithm, prov));
+	}
+
+	private static MessageDigest getInstance(Security.Engine e) {
+		MessageDigest md = (MessageDigest)e.engine;	// ***note
+		// should be: md = new MessageDigest(e.algorithm);
+	  /**	md.engine = (MessageDigestSpi)e.engine;	  **/
+		md.provider = e.provider;
+		return md;
 	}
 
 	public final Provider getProvider() {
@@ -51,11 +61,11 @@ public abstract class MessageDigest extends MessageDigestSpi {
 	}
 
 	public void update(byte input) {
-		engineUpdate(input);
+		/*engine.*/engineUpdate(input);
 	}
 
 	public void update(byte[] input, int offset, int len) {
-		engineUpdate(input, offset, len);
+		/*engine.*/engineUpdate(input, offset, len);
 	}
 
 	public void update(byte[] input) {
@@ -63,14 +73,14 @@ public abstract class MessageDigest extends MessageDigestSpi {
 	}
 
 	public byte[] digest() {
-		byte[] rtn = engineDigest();
-		engineReset();
+		byte[] rtn = /*engine.*/engineDigest();
+		/*engine.*/engineReset();
 		return rtn;
 	}
 
 	public int digest(byte[] buf, int offset, int len)
 			throws DigestException {
-		int digestLen = engineGetDigestLength();
+		int digestLen = /*engine.*/engineGetDigestLength();
 		if (len < digestLen) {
 			throw new DigestException("buf.length < " + digestLen);
 		}
@@ -93,7 +103,7 @@ public abstract class MessageDigest extends MessageDigestSpi {
 	}
 
 	public void reset() {
-		engineReset();
+		/*engine.*/engineReset();
 	}
 
 	public final String getAlgorithm() {
@@ -101,51 +111,11 @@ public abstract class MessageDigest extends MessageDigestSpi {
 	}
 
 	public final int getDigestLength() {
-		return engineGetDigestLength();
+		return /*engine.*/engineGetDigestLength();
 	}
 
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
-	}
-
-	private static MessageDigest getInstance(String alg, Provider p)
-			throws NoSuchAlgorithmException {
-
-		// See if algorithm name is an alias
-		String alias = (String)p.get("Alg.Alias.MessageDigest." + alg);
-		if (alias != null) {
-			alg = alias;
-		}
-
-		// Find class that implements the algorithm
-		String cname = (String)p.get("MessageDigest." + alg);
-		if (cname == null) {
-			throw new NoSuchAlgorithmException(
-				"not defined by provider");
-		}
-
-		// Instantiate class
-		MessageDigest d;
-		try {
-			d = (MessageDigest)Class.forName(cname).newInstance();
-		} catch (ClassNotFoundException e) {
-			throw new NoSuchAlgorithmException("class "
-				+ cname + " not found");
-		} catch (InstantiationException e) {
-			throw new NoSuchAlgorithmException("cannot instantiate"
-				+ " class " + cname + ": " + e);
-		} catch (IllegalAccessException e) {
-			throw new NoSuchAlgorithmException("cannot instantiate"
-				+ " class " + cname + ": " + e);
-		} catch (ClassCastException e) {
-			throw new NoSuchAlgorithmException("cannot instantiate"
-				+ " class " + cname + ": wrong type");
-		}
-
-		// Return it
-		d.provider = p;
-		d.algorithm = alg;
-		return d;
 	}
 }
 
