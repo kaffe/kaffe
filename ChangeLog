@@ -1,5 +1,10 @@
 2005-02-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/s390/sysdepCallMethod.h: Added missing semi-colon
+	after DBG macro to fix failure on debian's s390 buildd.
+
+2005-02-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Require -no-cpp-precomp if available
 	to prevent Apple's gcc on old Darwin version to trip 
 	over itself.

@@ -158,7 +158,7 @@ static inline void sysdepCallMethod(callMethodInfo *call)
                    (call)->rettype, (call)->retsize, gpr_args[0],
                    gpr_args[1], ((int *)&fpr_args)[0],
                    ((int *)&fpr_args)[1]);
-        )
+        );
     switch ((call)->rettype) {                /* what kind of retval?*/
     case 'D':                                 /* 64-bit float        */
        (call)->ret->d = fpr_args[0].d;
