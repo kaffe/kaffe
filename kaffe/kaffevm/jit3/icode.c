@@ -3719,6 +3719,19 @@ returnarg_double(SlotInfo* src)
 #endif
 }
 
+void
+pop_slot(SlotInfo* src, int len)
+{
+#ifdef HAVE_pop_slot
+	if (len == 1) {
+		slot_slot_const(0, src, (jword)len, HAVE_pop_slot, Tload);
+	}
+	else {
+		lslot_lslot_const(0, src, (jword)len, HAVE_pop_slot, Tload);
+	}
+#endif
+}
+
 /* ----------------------------------------------------------------------- */
 /* Labels.								   */
 /*									   */

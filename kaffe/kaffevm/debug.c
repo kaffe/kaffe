@@ -126,6 +126,8 @@ static struct debug_opts
 	D(GCJ,		"Debug GCJ support."),
 	D(GCJMORE,	"Debug GCJ support (additional msg)."),
 
+	D(REGFORCE,	"Debug forced registers framework."),
+
 	/* you can define combinations too */
 	{ "lookup", DBG_MLOOKUP|DBG_ELOOKUP|DBG_FLOOKUP, 
 			"Various lookup operations" },

@@ -103,8 +103,6 @@ static void makeFakeCalls(void);
 
 /* Desktop edition */
 #include "debug.h"
-#undef	DBG
-#define	DBG(A,B)
 
 #if defined(KAFFE_PROFILER)
 int profFlag;
@@ -180,7 +178,9 @@ translate(Method* xmeth, errorInfo* einfo)
 		tms = currentTime();
 	}
 
-DBG( vm_jit_translate, ("callinfo = 0x%x\n", &cinfo));
+DBG(MOREJIT,
+    dprintf("callinfo = 0x%x\n", &cinfo);
+    )
 
 #if defined(KAFFE_PROFILER)
 	if (profFlag) {
@@ -227,12 +227,12 @@ DBG( vm_jit_translate, ("callinfo = 0x%x\n", &cinfo));
 		maxArgs += 1;
 	}
 
-SUSE(
-	printf("Method: %s.%s%s\n", CLASS_CNAME(xmeth->class), xmeth->name->data, METHOD_SIGD(xmeth));
+DBG(MOREJIT,
+	dprintf("Method: %s.%s%s\n", CLASS_CNAME(xmeth->class), xmeth->name->data, METHOD_SIGD(xmeth));
 	for (i = 0; i < maxLocal; i++) {
-		printf(" L%d: %2d", i, codeInfo->localuse[i].use);
+		dprintf(" L%d: %2d", i, codeInfo->localuse[i].use);
 	}
-	printf("\n");
+	dprintf("\n");
 )
 
 	base = (bytecode*)METHOD_BYTECODE_CODE(xmeth);
@@ -373,11 +373,13 @@ done:;
 	}
 #endif
 
-DBG( vm_jit_translate, ("Translating %s.%s%s (%s) %p\n",
-						xmeth->class->name->data,
-						xmeth->name->data,
-						METHOD_SIGD(xmeth),
-						isStatic ? "static" : "normal", METHOD_NATIVECODE(xmeth)));
+DBG(MOREJIT,
+    dprintf("Translating %s.%s%s (%s) %p\n",
+	    xmeth->class->name->data,
+	    xmeth->name->data,
+	    METHOD_SIGD(xmeth),
+	    isStatic ? "static" : "normal", METHOD_NATIVECODE(xmeth));
+    )
 
 	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
 		tme = currentTime();
@@ -713,6 +715,7 @@ SCHK(		sanityCheck();					)
 			for (i = 0; m != 0; m = m >> 1, i++) {
 				if ((m & 1) != 0) {
 					assert(!isGlobal(t->u[i].slot));
+					slot_kill_forced(t->u[i].slot);
 					slot_invalidate(t->u[i].slot);
 				}
 			}

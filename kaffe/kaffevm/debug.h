@@ -104,6 +104,8 @@
 # define DBG_INITCLASSPATH      DBG_BIT(55)
 # define DBG_CLASSLOOKUP        DBG_BIT(56)
 
+# define DBG_REGFORCE		DBG_BIT(57)
+
 # define DBG_ALL		((jlong)(-1))
 # define DBG_ANY                DBG_ALL
 

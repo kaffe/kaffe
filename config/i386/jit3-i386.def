@@ -60,7 +60,7 @@ int jit_debug;
 	}
 
 
-char* rnames[] = { "eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi" };
+char* rnames[] = { "eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi", "flt0/dbl0" };
 #define	regname(n)	rnames[n]
 
 #define	REG_eax		0
@@ -1586,22 +1586,34 @@ define_insn(popargs, popargs_xxC)
 
 define_insn(return_int, return_Rxx)
 {
+DBG(REGFORCE,
+    dprintf ("return_int()\n");
+    )
 	set_slot_register(seq_dst(s), REG_eax, Rint);
 }
 
 define_insn(return_long, returnl_Rxx)
 {
+DBG(REGFORCE,
+    dprintf ("return_long()\n");
+    )
 	set_slot_register(seq_dst(s), REG_eax, Rint);
 	set_slot_register(seq_dst(s)+1, REG_edx, Rint);
 }
 
 define_insn(return_float, freturn_Rxx)
 {
+DBG(REGFORCE,
+    dprintf ("return_float()\n");
+    )
 	set_slot_register(seq_dst(s), REG_flt0, Rfloat);
 }
 
 define_insn(return_double, freturnl_Rxx)
 {
+DBG(REGFORCE,
+    dprintf ("return_double()\n");
+    )
 	set_slot_register(seq_dst(s), REG_dbl0, Rdouble);
 }
 
@@ -2451,3 +2463,33 @@ define_insn(cmp_int_offset, cmp_xRRC)
 
         debug(("cmpl %d(%s),%s\n", off, regname(r2), regname(r1)));
 }
+
+/* --------------------------------------------------------------------- */
+
+define_insn(pop_slot, pop_slot_xRC)
+{
+	/* Dummy function to mark popped slot as read (see pop_slot()
+           in file jit3/machine.c).  This is necessary to avoid
+           elimitate requied return_float() or return_double()
+           sequences.  Real job will be done latter by
+           kill_forced_register().  */
+DBG(REGFORCE,
+    dprintf ("pop_slot(%d)\n", const_int(2));
+    )
+}
+
+void
+kill_forced_register (SlotData *s)
+{
+DBG(REGFORCE,
+    dprintf ("kill_forced_register(%s)\n", regname(s->regno));
+    )
+	if (((reginfo[s->regno].ctype & Rdouble) && (s->regno == REG_dbl0)) ||
+	    ((reginfo[s->regno].ctype & Rfloat) && (s->regno == REG_flt0))) {
+	    	OUT = 0xDD;
+		OUT = 0xD8;
+
+		debug (("fstp %%st(0)\n"));
+	}
+}
+

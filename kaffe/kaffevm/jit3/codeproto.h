@@ -131,6 +131,8 @@ void returnarg_long(SlotInfo*);
 void returnarg_float(SlotInfo*);
 void returnarg_double(SlotInfo*);
 
+void pop_slot(SlotInfo*, int len);
+
 void call(SlotInfo*);
 void call_indirect_method(Method*);
 void call_soft(void*);

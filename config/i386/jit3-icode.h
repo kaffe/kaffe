@@ -305,4 +305,10 @@
 
 #define	HAVE_cmp_offset_int			cmp_xRRC
 
+/*
+ * They are required by some architectures.
+ */
+#define HAVE_pop_slot				pop_slot_xRC
+#define HAVE_kill_forced_register		kill_forced_register
+
 #endif
