@@ -122,7 +122,7 @@ static
 void
 handleErrors(void)
 {
-	if ((*env)->ExceptionOccured(env)) {
+	if ((*env)->ExceptionOccurred(env)) {
 		(*env)->ExceptionDescribe(env);
 		(*env)->ExceptionClear(env);
 		(*vm)->DetachCurrentThread(vm);
