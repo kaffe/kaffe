@@ -33,6 +33,12 @@ JAR=CLASSPATH=$(CLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.to
 jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
 
+if HAVE_DNSJAVA
+DNSJAVA_InetAddressImpl = java/net/DNSJavaInetAddressImpl.java
+else
+DNSJAVA_InetAddressImpl =
+endif
+
 Klasses_jar_SRCS = \
 	$(gnu_java_lang_SRCS) \
 	$(gnu_java_util_SRCS) \
@@ -841,16 +847,21 @@ java_net_SRCS = \
 	java/net/DatagramSocket.java \
 	java/net/DatagramSocketImpl.java \
 	java/net/DatagramSocketImplFactory.java \
+	$(DNSJAVA_InetAddressImpl) \
 	java/net/FileNameMap.java \
 	java/net/HttpURLConnection.java \
 	java/net/InetAddress.java \
+	java/net/Inet4Address.java \
+	java/net/Inet6Address.java \
 	java/net/InetAddressImpl.java \
 	java/net/InetSocketAddress.java \
 	java/net/JarURLConnection.java \
 	java/net/MalformedURLException.java \
 	java/net/MulticastSocket.java \
+	java/net/NativeInetAddressImpl.java \
 	java/net/NetPermission.java \
 	java/net/NetworkInterface.java \
+	java/net/NetworkInterfaceImpl.java \
 	java/net/NoRouteToHostException.java \
 	java/net/PasswordAuthentication.java \
 	java/net/PlainDatagramSocketImpl.java \
@@ -2268,6 +2279,7 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	$(SHELL) $(rebuildLib) @essential.files
+	$(SHELL) $(rebuildLib) $(DNSJAVA_InetAddressImpl)
 	$(SHELL) $(rebuildLib) @$(JAVA_MATH_FILES)
 	for i in `cat $(srcdir)/profiles/$(PROFILE)/profile` ;  do \
 		$(SHELL) $(rebuildLib) @profiles/$(PROFILE)/$$i ; \

@@ -14,7 +14,7 @@ libnet_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex 
 libnet_la_LIBADD = $(NET_LIBS)  $(top_builddir)/replace/libreplace.la
 libnet_la_SOURCES = \
 	InetAddressImpl.c \
-	NetworkInterface.c \
+	NetworkInterfaceImpl.c \
 	PlainDatagramSocketImpl.c \
 	PlainSocketImpl.c
 

@@ -89,6 +89,7 @@ DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DIRSEP = @DIRSEP@
 DLOPEN_JAVA_LIBS = @DLOPEN_JAVA_LIBS@
+DNSJAVA_JAR = @DNSJAVA_JAR@
 ECHO = @ECHO@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -101,6 +102,8 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
+HAVE_DNSJAVA_FALSE = @HAVE_DNSJAVA_FALSE@
+HAVE_DNSJAVA_TRUE = @HAVE_DNSJAVA_TRUE@
 HAVE_GCJ_SUPPORT_FALSE = @HAVE_GCJ_SUPPORT_FALSE@
 HAVE_GCJ_SUPPORT_TRUE = @HAVE_GCJ_SUPPORT_TRUE@
 HAVE_JIKES_FALSE = @HAVE_JIKES_FALSE@
@@ -251,6 +254,9 @@ JAR = CLASSPATH=$(CLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.
 
 jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
+
+@HAVE_DNSJAVA_TRUE@DNSJAVA_InetAddressImpl = java/net/DNSJavaInetAddressImpl.java
+@HAVE_DNSJAVA_FALSE@DNSJAVA_InetAddressImpl = 
 
 Klasses_jar_SRCS = \
 	$(gnu_java_lang_SRCS) \
@@ -1095,16 +1101,21 @@ java_net_SRCS = \
 	java/net/DatagramSocket.java \
 	java/net/DatagramSocketImpl.java \
 	java/net/DatagramSocketImplFactory.java \
+	$(DNSJAVA_InetAddressImpl) \
 	java/net/FileNameMap.java \
 	java/net/HttpURLConnection.java \
 	java/net/InetAddress.java \
+	java/net/Inet4Address.java \
+	java/net/Inet6Address.java \
 	java/net/InetAddressImpl.java \
 	java/net/InetSocketAddress.java \
 	java/net/JarURLConnection.java \
 	java/net/MalformedURLException.java \
 	java/net/MulticastSocket.java \
+	java/net/NativeInetAddressImpl.java \
 	java/net/NetPermission.java \
 	java/net/NetworkInterface.java \
+	java/net/NetworkInterfaceImpl.java \
 	java/net/NoRouteToHostException.java \
 	java/net/PasswordAuthentication.java \
 	java/net/PlainDatagramSocketImpl.java \
@@ -2827,6 +2838,7 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	$(SHELL) $(rebuildLib) @essential.files
+	$(SHELL) $(rebuildLib) $(DNSJAVA_InetAddressImpl)
 	$(SHELL) $(rebuildLib) @$(JAVA_MATH_FILES)
 	for i in `cat $(srcdir)/profiles/$(PROFILE)/profile` ;  do \
 		$(SHELL) $(rebuildLib) @profiles/$(PROFILE)/$$i ; \

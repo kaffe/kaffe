@@ -20,4 +20,12 @@ public IllegalArgumentException () {
 public IllegalArgumentException (String s) {
 	super(s);
 }
+    
+public IllegalArgumentException (Throwable th) {
+	super(th);
+}
+
+public IllegalArgumentException (String s, Throwable th) {
+	super(s, th);
+}
 }

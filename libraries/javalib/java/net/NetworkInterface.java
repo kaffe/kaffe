@@ -20,183 +20,76 @@ import java.util.Enumeration;
 
 public final class NetworkInterface
 {
-    /*
-     * This implementation specific stuff should probably be moved elsewhere.
-     * Also, the implementation will not detect changes in the interfaces.
-     * It does the detection at class initialization and saves these objects
-     * in a global variable.
-     */
-
     /**
-     * The detected interfaces, the table maps names to NetworkInterface
-     * objects.
+     * XXX Currently, we just create a new NetworkInterfaceImpl for each
+     * request.  It would be nicer to either timeout the cache or check for
+     * diffs before throwing the objects away.
      */
-    private static final Hashtable DETECTED_INTERFACES = new Hashtable();
-
-    /**
-     * Secondary mapping from InetAddresses to interface names.
-     */
-    private static final Hashtable ADDRESS_TO_NAME = new Hashtable();
-
-    /**
-     * If not null, the SocketException thrown on initialization.
-     */
-    private static SocketException detectException;
-
-    /**
-     * Detect the interfaces in this machine.
-     *
-     * @return The native list of interfaces.
-     * @throws SocketException if there is a problem with the native code.
-     */
-    private static native kaffe.util.Ptr detectInterfaces()
-	throws SocketException;
-
-    /**
-     * Free the native objects returned by detectInterfaces.
-     *
-     * @param ifaddrs The pointer returned by detectInterfaces or null.
-     */
-    private static native void freeInterfaces(kaffe.util.Ptr ifaddrs);
-
-    /**
-     * Get the next interface in the native list.
-     *
-     * @param ifaddr The current interface.
-     * @return The next interface in the list or null if there are no more.
-     */
-    private static native kaffe.util.Ptr getNext(kaffe.util.Ptr ifaddr);
-
-    /**
-     * @param ifaddr The current interface.
-     * @return The name encoded in the native object.
-     */
-    private static native String getName(kaffe.util.Ptr ifaddr);
-    
-    /**
-     * @param ifaddr The current interface.
-     * @return The IPv4 address of this interface as a string or null if the
-     * native object doesn't have an IPv4 address.
-     */
-    private static native String getIPv4Address(kaffe.util.Ptr ifaddr);
-    
-    static
-    {
-	kaffe.util.Ptr ifaddrs = null, curr = null;
-
-	/* Our native implementation is in kaffenet */
-	System.loadLibrary("net");
-
-	try
-	{
-	    /* Detect all the network interfaces. */
-	    curr = ifaddrs = detectInterfaces();
-	    while( curr != null )
-	    {
-		NetworkInterface ni;
-		String name;
-		
-		name = getName(curr);
-		if( (ni = (NetworkInterface)DETECTED_INTERFACES.get(name))
-		    == null )
-		{
-		    ni = new NetworkInterface(name, name /* XXX */);
-		    DETECTED_INTERFACES.put(name, ni);
-		}
-		try
-		{
-		    String address;
-
-		    if( (address = getIPv4Address(curr)) != null )
-		    {
-			InetAddress ia;
-
-			ia = InetAddress.getByName(address);
-			ni.setPrimaryAddress(ia);
-			ADDRESS_TO_NAME.put(ia, ni.getName());
-			ni.getInetAddressesInternal().addElement(ia);
-		    }
-		}
-		catch(UnknownHostException e)
-		{
-		    /* Ignore... */
-		}
-		curr = getNext(curr);
-	    }
-	    DETECTED_INTERFACES.elements();
-	}
-	catch(SocketException e)
-	{
-	    detectException = e;
-	}
-	finally
-	{
-	    /* Make sure to free the native objects. */
-	    freeInterfaces(ifaddrs);
-	}
-    }
     
     public static NetworkInterface getByName(String name)
 	throws SocketException
     {
-	if( detectException == null )
-	{
-	    NetworkInterface retval = null;
-	    
-	    retval = (NetworkInterface)DETECTED_INTERFACES.get(name);
-	    return retval;
-	}
-	else
-	{
-	    throw detectException;
-	}
+	NetworkInterfaceImpl nii = new NetworkInterfaceImpl();
+	NetworkInterface retval;
+	
+	retval = (NetworkInterface)nii.getDetectedInterfaces().get(name);
+	return retval;
     }
 
     public static NetworkInterface getByInetAddress(InetAddress ia)
 	throws SocketException
     {
-	if( detectException == null )
+	NetworkInterfaceImpl nii = new NetworkInterfaceImpl();
+	NetworkInterface retval = null;
+	String name;
+	
+	if( (name = nii.nameForAddress(ia)) != null )
 	{
-	    NetworkInterface retval = null;
-	    String name;
-	    
-	    if( (name = (String)ADDRESS_TO_NAME.get(ia)) != null )
-	    {
-		retval = (NetworkInterface)DETECTED_INTERFACES.get(name);
-	    }
-	    return retval;
+	    retval = (NetworkInterface)nii.getDetectedInterfaces().get(name);
 	}
-	else
-	{
-	    throw detectException;
-	}
+	return retval;
     }
 
     public static Enumeration getNetworkInterfaces()
 	throws SocketException
     {
-	if( detectException == null )
-	{
-	    Enumeration retval = null;
+	NetworkInterfaceImpl nii = new NetworkInterfaceImpl();
+	Enumeration retval = null;
 
-	    if( DETECTED_INTERFACES.size() > 0 )
-	    {
-		retval = DETECTED_INTERFACES.elements();
-	    }
-	    return retval;
-	}
-	else
+	if( nii.getDetectedInterfaces().size() > 0 )
 	{
-	    throw detectException;
+	    retval = nii.getDetectedInterfaces().elements();
 	}
+	return retval;
     }
-    
+
+    /**
+     * The OS provided NIC name.
+     */
     private final String name;
+
+    /**
+     * Same as the above for now.
+     */
     private final String displayName;
+
+    /**
+     * An IPv4 address suitable for identifying this interface.
+     */
     private InetAddress primaryAddress;
+
+    /**
+     * The set of InetAddresses for this interface.
+     */
     private final Vector inetAddresses = new Vector();
-    
-    private NetworkInterface(String name, String displayName)
+
+    /**
+     * Construct a NetworkInterface with the given values.
+     *
+     * @param name The OS provided NIC name.
+     * @param displayName The user-interpretable NIC name.
+     */
+    NetworkInterface(String name, String displayName)
     {
 	this.name = name;
 	this.displayName = displayName;
@@ -225,6 +118,9 @@ public final class NetworkInterface
 	return this.primaryAddress;
     }
 
+    /**
+     * @return The Vector containing the NetworkInterface's addresses.
+     */
     Vector getInetAddressesInternal()
     {
 	return this.inetAddresses;

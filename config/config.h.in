@@ -97,6 +97,9 @@
 /* Enable GCJ support. */
 #undef HAVE_GCJ_SUPPORT
 
+/* Define to 1 if you have the `getaddrinfo' function. */
+#undef HAVE_GETADDRINFO
+
 /* Define to 1 if you have the `getcwd' function. */
 #undef HAVE_GETCWD
 

@@ -20,4 +20,12 @@ public UnknownHostException () {
 public UnknownHostException (String s) {
 	super(s);
 }
+
+public UnknownHostException (Throwable cause) {
+	super(cause);
+}
+
+public UnknownHostException (String s, Throwable cause) {
+	super(s, cause);
+}
 }

@@ -80,6 +80,7 @@ DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DIRSEP = @DIRSEP@
 DLOPEN_JAVA_LIBS = @DLOPEN_JAVA_LIBS@
+DNSJAVA_JAR = @DNSJAVA_JAR@
 ECHO = @ECHO@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -92,6 +93,8 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
+HAVE_DNSJAVA_FALSE = @HAVE_DNSJAVA_FALSE@
+HAVE_DNSJAVA_TRUE = @HAVE_DNSJAVA_TRUE@
 HAVE_GCJ_SUPPORT_FALSE = @HAVE_GCJ_SUPPORT_FALSE@
 HAVE_GCJ_SUPPORT_TRUE = @HAVE_GCJ_SUPPORT_TRUE@
 HAVE_JIKES_FALSE = @HAVE_JIKES_FALSE@
@@ -238,7 +241,7 @@ libnet_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex 
 libnet_la_LIBADD = $(NET_LIBS)  $(top_builddir)/replace/libreplace.la
 libnet_la_SOURCES = \
 	InetAddressImpl.c \
-	NetworkInterface.c \
+	NetworkInterfaceImpl.c \
 	PlainDatagramSocketImpl.c \
 	PlainSocketImpl.c
 
@@ -253,7 +256,7 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(native_LTLIBRARIES)
 
 libnet_la_DEPENDENCIES = $(top_builddir)/replace/libreplace.la
-am_libnet_la_OBJECTS = InetAddressImpl.lo NetworkInterface.lo \
+am_libnet_la_OBJECTS = InetAddressImpl.lo NetworkInterfaceImpl.lo \
 	PlainDatagramSocketImpl.lo PlainSocketImpl.lo
 libnet_la_OBJECTS = $(am_libnet_la_OBJECTS)
 
@@ -261,7 +264,7 @@ DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/i
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/InetAddressImpl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/NetworkInterface.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/NetworkInterfaceImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/PlainDatagramSocketImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/PlainSocketImpl.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
@@ -321,7 +324,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/InetAddressImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NetworkInterface.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NetworkInterfaceImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PlainDatagramSocketImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PlainSocketImpl.Plo@am__quote@
 

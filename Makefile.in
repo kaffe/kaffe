@@ -80,6 +80,7 @@ DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DIRSEP = @DIRSEP@
 DLOPEN_JAVA_LIBS = @DLOPEN_JAVA_LIBS@
+DNSJAVA_JAR = @DNSJAVA_JAR@
 ECHO = @ECHO@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -92,6 +93,8 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
+HAVE_DNSJAVA_FALSE = @HAVE_DNSJAVA_FALSE@
+HAVE_DNSJAVA_TRUE = @HAVE_DNSJAVA_TRUE@
 HAVE_GCJ_SUPPORT_FALSE = @HAVE_GCJ_SUPPORT_FALSE@
 HAVE_GCJ_SUPPORT_TRUE = @HAVE_GCJ_SUPPORT_TRUE@
 HAVE_JIKES_FALSE = @HAVE_JIKES_FALSE@
@@ -729,7 +732,7 @@ BUILD_ENVIRONMENT: Makefile
 		"DEBUG_ENV=$(DEBUG_ENV)" BUILD_ENVIRONMENT-make
 
 BUILD_ENVIRONMENT-make: Makefile
-	echo CLASSPATH=\$${CLASSPATH}\''$(PATHSEP)'\'.\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/rt.jar\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/kjc.jar\; export CLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' > BUILD_ENVIRONMENT.new; \
+	echo CLASSPATH=\$${CLASSPATH}\''$(PATHSEP)'\'.\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/rt.jar\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/kjc.jar\''$(PATHSEP)'\'$(DNSJAVA_JAR)\; export CLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' > BUILD_ENVIRONMENT.new; \
 	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}`for f in $(JAVA_LIBS); do echo "$$f" | sed 's%/[^/]*$$%%'; done | (tr '\012' ' '; echo) | sed -e 's/ $$//' -e "s/ /\'$(PATHSEP)\'/g"`\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT.new; \
 	echo JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT.new
 	rm -f BUILD_ENVIRONMENT

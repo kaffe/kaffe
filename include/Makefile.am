@@ -70,8 +70,10 @@ NOINSTALL_DERIVED_HDRS = \
 	java_net_DatagramPacket.h \
 	java_net_InetAddress.h \
 	java_net_InetAddressImpl.h \
+	java_net_NativeInetAddressImpl.h \
 	java_net_InetSocketAddress.h \
 	java_net_NetworkInterface.h \
+	java_net_NetworkInterfaceImpl.h \
 	java_net_PlainDatagramSocketImpl.h \
 	java_net_PlainSocketImpl.h \
 	java_net_SocketAddress.h \

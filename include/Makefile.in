@@ -80,6 +80,7 @@ DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DIRSEP = @DIRSEP@
 DLOPEN_JAVA_LIBS = @DLOPEN_JAVA_LIBS@
+DNSJAVA_JAR = @DNSJAVA_JAR@
 ECHO = @ECHO@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -92,6 +93,8 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
+HAVE_DNSJAVA_FALSE = @HAVE_DNSJAVA_FALSE@
+HAVE_DNSJAVA_TRUE = @HAVE_DNSJAVA_TRUE@
 HAVE_GCJ_SUPPORT_FALSE = @HAVE_GCJ_SUPPORT_FALSE@
 HAVE_GCJ_SUPPORT_TRUE = @HAVE_GCJ_SUPPORT_TRUE@
 HAVE_JIKES_FALSE = @HAVE_JIKES_FALSE@
@@ -295,8 +298,10 @@ NOINSTALL_DERIVED_HDRS = \
 	java_net_DatagramPacket.h \
 	java_net_InetAddress.h \
 	java_net_InetAddressImpl.h \
+	java_net_NativeInetAddressImpl.h \
 	java_net_InetSocketAddress.h \
 	java_net_NetworkInterface.h \
+	java_net_NetworkInterfaceImpl.h \
 	java_net_PlainDatagramSocketImpl.h \
 	java_net_PlainSocketImpl.h \
 	java_net_SocketAddress.h \
@@ -364,12 +369,12 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 
 
 JNI_DERIVED_HDRS = $(INSTALL_JNI_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS)
-@USE_COMPAT_IFADDRS_FALSE@ifaddrs_compat = #
 
 
 # rmi.jar
 # kaffe_rmi_server_RMIHashes.h
 @USE_COMPAT_IFADDRS_TRUE@ifaddrs_compat = ifaddrs.h
+@USE_COMPAT_IFADDRS_FALSE@ifaddrs_compat = #
 
 nodist_noinst_HEADERS = \
 	$(NOINSTALL_DERIVED_HDRS) \

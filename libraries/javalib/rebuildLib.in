@@ -9,6 +9,10 @@
 # of this file.
 #
 
+if [ -z "$1" ] ; then
+    exit 0
+fi
+
 SRCDIR=${srcdir-`sed -n '/^srcdir *= */ s///p' < Makefile`}
 LIBDIR=${LIBDIR-`sed -n '/^LIBDIR *= */ s///p' < Makefile`}
 LIBDIR=${LIBDIR-lib}
@@ -34,6 +38,7 @@ if [ -z "$JIKES" ] ; then
 	CPATH="${CPATH+-classpath $LIBRARY${CPATH+@PATHSEP@$CPATH}}"
 	CLASSPATH=./Klasses.jar.bootstrap:$CLASSPATH; export CLASSPATH
 else
+	test -f ${TOPBLD}/BUILD_ENVIRONMENT && . ${TOPBLD}/BUILD_ENVIRONMENT
 	JAVAC="$JIKES"
 	CPATH="${CPATH+-classpath $CPATH}"
 #	VERBOSE=${VERBOSE-"-verbose"}

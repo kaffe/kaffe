@@ -29,5 +29,14 @@ typedef struct { Hjava_lang_Object base; unsigned int length; union { double ali
 /* Get length of arrays */
 #define	obj_length(_obj)	((_obj)->length)
 #define unhand_array(_arr)	((_arr)->data)
+#define unhand_byte_array(_arr)		((jbyte *)((_arr)->data))
+#define unhand_char_array(_arr)		((jchar *)((_arr)->data))
+#define unhand_double_array(_arr)	((jdouble *)((_arr)->data))
+#define unhand_float_array(_arr)	((jfloat *)((_arr)->data))
+#define unhand_int_array(_arr)		((jint *)((_arr)->data))
+#define unhand_short_array(_arr)	((jshort *)((_arr)->data))
+#define unhand_long_array(_arr)		((jlong *)((_arr)->data))
+#define unhand_array_array(_arr)	((Hjava_lang_Object **)((_arr)->data))
+#define unhand_object_array(_arr)	((Hjava_lang_Object *)((_arr)->data))
 
 #endif

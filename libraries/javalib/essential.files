@@ -90,6 +90,7 @@ java/lang/Comparable.java
 java/lang/Double.java
 java/lang/Error.java
 java/lang/Exception.java
+java/lang/ExceptionInInitializerError.java
 java/lang/Float.java
 java/lang/IllegalAccessError.java
 java/lang/IllegalAccessException.java
@@ -152,8 +153,11 @@ java/net/ContentHandler.java
 java/net/ContentHandlerFactory.java
 java/net/FileNameMap.java
 java/net/InetAddress.java
+java/net/Inet4Address.java
+java/net/Inet6Address.java
 java/net/InetAddressImpl.java
 java/net/MalformedURLException.java
+java/net/NativeInetAddressImpl.java
 java/net/NetPermission.java
 java/net/SocketPermission.java
 java/net/UnknownHostException.java

@@ -138,6 +138,7 @@ TEST_MISC = \
 	GetField.java \
 	LostTrampolineFrame.java \
         NetworkInterfaceTest.java \
+        InetAddressTest.java \
         InetSocketAddressTest.java 
 
 TEST_REFLECTION = \

@@ -306,6 +306,18 @@ no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
 esac
 
 dnl =========================================================================
+dnl Allow user to specify a dnsjava.jar file for class file testing.
+dnl -------------------------------------------------------------------------
+
+AC_ARG_WITH(dnsjava,
+  [  --with-dnsjava=<jar>       Use the specified DNS java Jar file.],
+  [ DNSJAVA_JAR="$withval" ],
+  [ DNSJAVA_JAR="" ])
+
+AC_SUBST(DNSJAVA_JAR)
+AM_CONDITIONAL(HAVE_DNSJAVA, test x"$DNSJAVA_JAR" != x"")
+
+dnl =========================================================================
 dnl Allow support for profiling of C/jitted code
 dnl -------------------------------------------------------------------------
 
@@ -945,6 +957,7 @@ AC_CHECK_FUNCS([memcpy memmove])
 AC_CHECK_FUNCS([mkdir rmdir])
 AC_CHECK_FUNCS([getcwd chdir getwd gettimeofday ftime time uname getuid])
 AC_CHECK_FUNCS([localtime])
+AC_CHECK_FUNCS([getaddrinfo])
 
 AM_ICONV
 LIBS="$LIBS $LIBICONV"

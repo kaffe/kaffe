@@ -64,6 +64,7 @@ extern void dumpErrorInfo(errorInfo *);
 
 #define JAVA_LANG(NAME)		"java.lang." #NAME
 #define JAVA_IO(NAME)		"java.io." #NAME
+#define JAVA_NET(NAME)		"java.net." #NAME
 
 
 #define NEW_LANG_EXCEPTION(NAME) \
