@@ -113,7 +113,7 @@ public boolean isActive() {
 }
 
 final public static AudioClip newAudioClip( URL url) {
-	return null;
+	return new kaffe.applet.AudioPlayer(url);
 }
 
 public void play( URL url){
