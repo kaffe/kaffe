@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2003-12-27  Michael Koch  <konqueror@gmx.de>
+
+        * java/io/ObjectStreamField.java
+        (isShared): Documentation added.
+
+2004-01-03  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2003-12-29 Guilhem Lavaux <guilhem@kaffe.org>
 
         * java/io/ObjectInputStream.java: Use if instead of catching

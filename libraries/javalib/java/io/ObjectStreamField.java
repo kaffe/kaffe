@@ -108,7 +108,7 @@ public class ObjectStreamField implements Comparable
         type = Object.class; //FIXME: ???
       }
   }
-
+  
   /**
    * There are many cases you can not get java.lang.Class from typename 
    * if your context class loader cann not load it, then use typename to
@@ -206,6 +206,10 @@ public class ObjectStreamField implements Comparable
   }
 
   /**
+   * This method returns whether the field represented by this object is
+   * unshared or not.
+   *
+   * @return Tells if this field is unshared or not.
    */
   public boolean isUnshared ()
   {
@@ -289,17 +293,6 @@ public class ObjectStreamField implements Comparable
   boolean isToSet()
   {
     return toset;
-  }
-
-  /**
-   * This methods should only be used by {@link java.io.ObjectOutputStream#writeFields}
-   * as it changes the type on demand (which should never happen). However it seems
-   * that Sun's JDK has not a precise idea of the type of the field until we assign
-   * for the first time with {@link java.io.ObjectOutputStream.PutField#put}.
-   */
-  void setType(Class type)
-  {
-    this.type = type;
   }
 
   public String toString ()
