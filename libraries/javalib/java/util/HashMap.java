@@ -17,12 +17,16 @@ package java.util;
 
 import java.io.Serializable;
 
+// Simple implementation of a hash table. We keep an array of buckets,
+// where each bucket points to a singly linked list of Map.Entries.
+
 public class HashMap extends AbstractMap
 		implements Map, Cloneable, Serializable {
 	private static final int DEFAULT_CAPACITY = 11;
 	private static final float DEFAULT_LOADFACTOR = 0.75f;
 	private float loadFactor;
 	private Entry[] table;
+	private int modCount;
 	private int size;
 
 	private static class Entry implements Map.Entry {
@@ -154,6 +158,7 @@ public class HashMap extends AbstractMap
 		e = new Entry(key, val);
 		e.next = table[bucket];
 		table[bucket] = e;
+		modCount++;
 		size++;
 		return null;
 	}
@@ -164,17 +169,23 @@ public class HashMap extends AbstractMap
 		if (first == null) {
 			return null;
 		}
+
+		// Special case first entry in chain
 		if (key == null ? first.key == null : key.equals(first.key)) {
 			Object val = first.val;
 			table[bucket] = first.next;
+			modCount++;
 			size--;
 			return val;
 		}
+
+		// Maintain pointer to previous entry while going down list
 		for (Entry e = first; e.next != null; e = e.next) {
 			if (key == null ?
 			    e.next.key == null : key.equals(e.next.key)) {
 				Object val = e.next.val;
 				e.next = e.next.next;
+				modCount++;
 				size--;
 				return val;
 			}
@@ -191,6 +202,7 @@ public class HashMap extends AbstractMap
 
 	public void clear() {
 		table = new Entry[DEFAULT_CAPACITY];
+		modCount++;
 		size = 0;
 	}
 
@@ -331,21 +343,30 @@ public class HashMap extends AbstractMap
 		return ((key == null) ? 0 : key.hashCode()) % length;
 	}
 
-	// An iterator over all the Map.Entry's in this hashtable
+	// An iterator over all the Map.Entry's in this hashtable.
+	// This iterator is "fail-fast".
 	private class EntryIterator implements Iterator {
 		private int bucket;
+		private int modCount;
 		private Entry next, prev;
 
 		EntryIterator() {
+			modCount = HashMap.this.modCount;
 			bucket = -1;
 			nextBucket();
 		}
 
 		public boolean hasNext() {
+			if (modCount != HashMap.this.modCount) {
+				throw new ConcurrentModificationException();
+			}
 			return next != null;
 		}
 
 		public Object next() {
+			if (modCount != HashMap.this.modCount) {
+				throw new ConcurrentModificationException();
+			}
 			if (next == null) {
 				throw new NoSuchElementException();
 			}
@@ -357,10 +378,17 @@ public class HashMap extends AbstractMap
 		}
 
 		public void remove() {
+			if (modCount != HashMap.this.modCount) {
+				throw new ConcurrentModificationException();
+			}
 			if (prev == null) {
 				throw new IllegalStateException();
 			}
+			int beforeModCount = HashMap.this.modCount;
 			HashMap.this.remove(prev.key);
+			if (beforeModCount != HashMap.this.modCount) {
+				modCount++;
+			}
 			prev = null;
 		}
 
