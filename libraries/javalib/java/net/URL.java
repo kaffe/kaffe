@@ -19,7 +19,7 @@ import kaffe.net.DefaultURLStreamHandlerFactory;
 final public class URL
   implements Serializable
 {
-	final private static long serialVersionUID = -7627629688361524110L;
+	private final static long serialVersionUID = -7627629688361524110L;
 	private static URLStreamHandlerFactory defaultFactory = new DefaultURLStreamHandlerFactory();
 	private static URLStreamHandlerFactory factory;
 	private URLStreamHandler handler;
@@ -70,7 +70,7 @@ public URL(URL context, String spec) throws MalformedURLException {
 }
 
 public boolean equals(Object obj) {
-	if (obj == null || !(obj instanceof URL)) {
+	if (!(obj instanceof URL)) {
 		return (false);
 	}
 	URL that = (URL)obj;
@@ -86,7 +86,7 @@ public boolean equals(Object obj) {
 	return (false);
 }
 
-final public Object getContent() throws IOException {
+public final Object getContent() throws IOException {
 	openConnection();
 	return (conn.getContent());
 }
@@ -139,7 +139,7 @@ public URLConnection openConnection() throws IOException {
 	return (conn);
 }
 
-final public InputStream openStream() throws IOException {
+public final InputStream openStream() throws IOException {
 	// We *ALWAYS* open a new connection even if we already have
 	// one open.
 	openConnection();
