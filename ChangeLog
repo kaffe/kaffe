@@ -2,6 +2,17 @@
 
 	Resynced with GNU Classpath
 
+	2004-02-06  Mohan Embar  <gnustuff@thisiscool.com>
+
+        * gnu/java/net/PlainSocketImpl.java
+        (inChannelOperation): New field.
+        (isInChannelOperation): New accessor.
+        (setInChannelOperation): New modifier.
+
+2004-02-23  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath
+
 	2004-02-06  Michael Koch  <konqueror@gmx.de>
 
         * gnu/java/nio/NIOServerSocket.java
