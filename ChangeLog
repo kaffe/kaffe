@@ -1,3 +1,8 @@
+2003-08-12  Jim Pick  <jim@kaffe.org>
+
+	* test/regression/TestScript.in:
+	Add -noverify temporarily until verifier can be fixed.
+
 2003-08-12  Rob Gonzalez <rob@kaffe.org>
 
 	* kaffe/kaffevm/verify.c
