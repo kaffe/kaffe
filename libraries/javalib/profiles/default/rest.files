@@ -263,6 +263,7 @@ javax/accessibility/AccessibleTable.java
 javax/accessibility/AccessibleTableModelChange.java
 javax/accessibility/AccessibleText.java
 javax/accessibility/AccessibleValue.java
+javax/swing/event/EventListenerList.java
 javax/swing/text/AttributeSet.java
 javax/swing/text/BadLocationException.java
 kaffe/beans/editors/LongEditor.java

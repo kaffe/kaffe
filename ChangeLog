@@ -1,5 +1,16 @@
 2003-11-02  Jim Pick <jim@kaffe.org>
 
+	* libraries/javalib/javax/swing/event/EventListenerList.java:
+	New file from Classpath, used by some applications that
+	don't use the rest of Swing, eg. log4j.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/profiles/allatonce/all.files,
+	libraries/javalib/profiles/default/rest.files:
+	Update profiles.
+
+2003-11-02  Jim Pick <jim@kaffe.org>
+
 	* kaffe/kaffevm/jit3/machine.h:
 	Add NULLPOINTER to jitflags to fix compile.
 
