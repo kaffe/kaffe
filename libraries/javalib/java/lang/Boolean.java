@@ -61,4 +61,8 @@ public String toString() {
 public static Boolean valueOf(String s) {
 	return new Boolean(s);
 }
+
+public static Boolean valueOf(boolean b) {
+	return (b ? TRUE : FALSE);
+}
 }
