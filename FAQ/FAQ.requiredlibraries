@@ -12,28 +12,36 @@ flag.  You may also have to specify the location of C header files,
 
 X11/XFree:
     The AWT implementation of the Desktop Edition of Kaffe OpenVM (the
-one that's Free Software) depends on X11.  If this is not enough for
-you, you may need the Custom Edition.  See www.transvirtual.com for
-details.
+  one that's Free Software) depends on X11.  If this is not enough for
+  you, you may need the Custom Edition.  See www.transvirtual.com for
+  details.
 
 libungif: 
     You need libungif 4.0 or newer if you want Kaffe's awt to be able
-to decompress gif images.  Note that earlier versions will not work.
-You can get libungif from:
-http://prtr-13.ucsc.edu/~badger/software/libungif.shtml
+    to decompress gif images.  Note that earlier versions will not work.
+    You can get libungif from:
+    http://prtr-13.ucsc.edu/~badger/software/libungif.shtml
 
 jpeg:
     Used by Kaffe's awt to decompress jpeg images.  Available at
-http://www.ijg.org/
+    http://www.ijg.org/
 
 libpng:
     Ditto for png images.  Available at
-http://www.cdrom.com/pub/png/pngcode.html
+    http://www.cdrom.com/pub/png/pngcode.html
 
 libz:
     You need libz to use the functionality in java.util.zip.  It's
-available at http://www.cdrom.com/pub/infozip/zlib/
+    available at http://www.cdrom.com/pub/infozip/zlib/
 
 GNU gmp:
     libgmp is used in the implementation of java.math.BigInteger.
-It is available at ftp://ftp.gnu.org/pub/gmp, or from any GNU mirror.
+    It is available at ftp://ftp.gnu.org/pub/gmp, or from any GNU mirror.
+
+libmd:
+    This library is included with FreeBSD and may be included with
+    other operating systems. It supplies implementations of the MD2,
+    MD4, and MD5 hashing algorithms. If this library is not found by
+    configure, then SHA is the only hashing algorithm that will be
+    available.
+
