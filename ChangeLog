@@ -1,3 +1,8 @@
+Thu Jul 23 15:31:28 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* kaffe/kaffevm/threads.c: fixed race condition at thread startup 
+	time where privateInfo wasn't available to a newly started thread.
+
 Thu Jul 23 11:43:35 1998  Brian Burton <brian@burton-computer.com>
 
 	* libraries/javalib/java/io/StreamTokenizer.java: fix nextToken
