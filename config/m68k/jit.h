@@ -106,12 +106,12 @@ extern void m68k_do_fixup_trampoline(void);
 	{ /* sp */	0, 0, Reserved,		0, 0, 15 },		\
 	{ /* fp0 */	0, 0, Rfloat|Rdouble,	0, 0, 16 },		\
 	{ /* fp1 */	0, 0, Rfloat|Rdouble,	0, 0, 17 },		\
-	{ /* fp2 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 18 }, \
-	{ /* fp3 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 19 }, \
-	{ /* fp4 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 20 }, \
-	{ /* fp5 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 21 }, \
-	{ /* fp6 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 22 }, \
-	{ /* fp7 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 23 }, 
+	{ /* fp2 */	0, 0, Rfloat|Rdouble,	0, 0, 18 }, \
+	{ /* fp3 */	0, 0, Rfloat|Rdouble,	0, 0, 19 }, \
+	{ /* fp4 */	0, 0, Rfloat|Rdouble,	0, 0, 20 }, \
+	{ /* fp5 */	0, 0, Rfloat|Rdouble,	0, 0, 21 }, \
+	{ /* fp6 */	0, 0, Rfloat|Rdouble,	0, 0, 22 }, \
+	{ /* fp7 */	0, 0, Rfloat|Rdouble,	0, 0, 23 }, 
 
 /* Number of registers in the register set */
 #define	NR_REGISTERS	24
