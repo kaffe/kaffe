@@ -73,11 +73,6 @@ sequence* lastSpill;
 #define	MAXLABTAB	64
 label* labtab[MAXLABTAB];
 
-/* Custom edition */
-#define	lockObject	lockJavaMutex
-#define	unlockObject	unlockJavaMutex
-
-
 /* ----------------------------------------------------------------------- */
 /* Register loads and spills.						   */
 /*									   */

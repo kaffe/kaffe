@@ -196,8 +196,8 @@ Java_kaffe_lang_UNIXProcess_run(JNIEnv* env, jobject _proc_dummy)
 	child* p;
 	child** pp;
 	jmethodID notify_method = (*env)->GetMethodID(env, 
-			(*env)->FindClass(env, "java.lang.Object"),
-			"notifyAll", "()V");
+			(*env)->FindClass(env, "kaffe.lang.UNIXProcess"),
+			"processDied", "(I)V");
 
 	for (;;) {
 		rc = KWAITPID(-1, &status, 0, &npid);
@@ -210,22 +210,8 @@ Java_kaffe_lang_UNIXProcess_run(JNIEnv* env, jobject _proc_dummy)
 			if (p->pid == npid) {
 				jclass proc_class = (*env)->GetObjectClass(
 						env, p->proc);
-				jfieldID isalive_field = 
-					(*env)->GetFieldID(env, proc_class,
-					"isalive", "B");
-				jfieldID exit_code_field = 
-					(*env)->GetFieldID(env, proc_class,
-					"exit_code", "I");
-
-				(*env)->MonitorEnter(env, p->proc);
-				(*env)->SetBooleanField(env, p->proc, 
-						isalive_field, 0 /* false */);
-				(*env)->SetIntField(env, p->proc, 
-						exit_code_field, status);
-
 				(*env)->CallVoidMethod(env, 
-					p->proc, notify_method);
-				(*env)->MonitorExit(env, p->proc);
+					p->proc, notify_method, status);
 				(*env)->DeleteGlobalRef(env, p->proc);
 				*pp = p->next;
 				KFREE(p);

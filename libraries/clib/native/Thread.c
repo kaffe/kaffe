@@ -93,26 +93,6 @@ java_lang_Thread_stop0(struct Hjava_lang_Thread* this, struct Hjava_lang_Object*
 	}
 }
 
-/*
- * We suspend a thread by waiting on itself - this is going
- * away in JDK 1.2 anyhow.
- */
-void
-java_lang_Thread_suspend0(struct Hjava_lang_Thread* this)
-{
-	lockMutex(this);
-	waitCond(this, 0);
-	unlockMutex(this);
-}
-
-void
-java_lang_Thread_resume0(struct Hjava_lang_Thread* this)
-{
-	lockMutex(this);
-	signalCond(this);
-	unlockMutex(this);
-}
-
 void
 java_lang_Thread_interrupt0(struct Hjava_lang_Thread* this)
 {

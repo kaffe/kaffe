@@ -23,7 +23,7 @@
 
 /* Internal variables */
 static hashtab_t	hashTable;	/* intern hash table */
-static iLock		stringLock;	/* mutex on all intern operations */
+static iLock*		stringLock;	/* mutex on all intern operations */
 
 /* Internal functions */
 static int		stringHashValue(const void *ptr);
@@ -198,6 +198,8 @@ static void*
 stringAlloc(size_t sz)
 {
 	void* p;
+	int iLockRoot;
+
 	unlockStaticMutex(&stringLock);
 	p = KCALLOC(1, sz);
 	lockStaticMutex(&stringLock);
@@ -207,6 +209,7 @@ stringAlloc(size_t sz)
 static void
 stringFree(const void *ptr)
 {
+	int iLockRoot;
 	unlockStaticMutex(&stringLock);
 	KFREE((void*)ptr);
 	lockStaticMutex(&stringLock);
@@ -219,10 +222,10 @@ stringFree(const void *ptr)
 Hjava_lang_String *
 stringInternString(Hjava_lang_String *string)
 {
+	int iLockRoot;
 	Hjava_lang_String *temp;
 
 	/* Lock intern table */
-	assert (staticLockIsInitialized(&stringLock));
 	lockStaticMutex(&stringLock);
 
 	/* See if string is already in the table */
@@ -259,7 +262,8 @@ stringInternString(Hjava_lang_String *string)
 void
 stringUninternString(Hjava_lang_String* string)
 {
-	assert(staticLockIsInitialized(&stringLock));
+	int iLockRoot;
+
 	lockStaticMutex(&stringLock);
 	hashRemove(hashTable, string);
 	unhand(string)->interned = false;
@@ -330,11 +334,11 @@ stringCharArray2Java(const jchar *data, int len)
 	Hjava_lang_String *string;
 	HArrayOfChar *ary;
 	errorInfo info;
+	int iLockRoot;
 
 	/* Lock intern table 
 	 * NB: we must not hold stringLock when we call KMALLOC/KFREE!
 	 */
-	assert (staticLockIsInitialized(&stringLock));
 
 	/* Look for it already in the intern hash table */
 	if (hashTable != NULL) {
@@ -424,5 +428,4 @@ stringDestroy(Collector* collector, void* obj)
 void
 stringInit(void)
 {
-	initStaticLock(&stringLock);
 }

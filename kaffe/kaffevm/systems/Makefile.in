@@ -132,7 +132,7 @@ with_engine = @with_engine@
 
 
 SUBDIRS = $(THREAD_SYSTEM)
-DIST_SUBDIRS = unix-jthreads oskit-pthreads linux-threads beos-native
+DIST_SUBDIRS = unix-jthreads unix-pthread oskit-pthreads linux-threads beos-native
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h
 CONFIG_CLEAN_FILES = 

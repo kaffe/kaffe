@@ -111,7 +111,7 @@ define_insn(LDC1)
 			errorInfo ei;
 			void* s;
 
-			s = resolveString(CLASS_CONSTANTS(current_class()), idx, &ei);
+			s = resolveString(current_class(), idx, &ei);
 			if (s == 0) {
 				compile_time_error(ei);
 			}
@@ -148,7 +148,7 @@ define_insn(LDC2)
 			errorInfo ei;
 			void* s;
 
-			s = resolveString(CLASS_CONSTANTS(current_class()), idx, &ei);
+			s = resolveString(current_class(), idx, &ei);
 			if (s == 0) {
 				compile_time_error(ei);
 			}

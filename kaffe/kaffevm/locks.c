@@ -1,567 +1,492 @@
 /*
- * locks.c
+ * fastlocks.c
  * Manage locking system
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996-1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
 
+#define	LDBG(s)
+
 #include "config.h"
-#include "debug.h"
 #include "config-std.h"
 #include "object.h"
 #include "classMethod.h"
 #include "baseClasses.h"
 #include "thread.h"
-#include "jthread.h"
 #include "locks.h"
 #include "errors.h"
 #include "exception.h"
-#include "gc.h"
 #include "md.h"
+#include "jthread.h"
 
-/* Note:
- * It is wrong to call getCurrentJava() anywhere in
- * this file since it may not be initialized. 
+/*
+ * If we don't have an atomic compare and exchange defined then make one
+ * out of a simple atmoc exchange (using the LOCKINPROGRESS value the place
+ * holder).  If we don't have that, we'll just fake it.
  */
-
-/* Note:
- * USE_LOCK_CACHE can be defined to if we are prepared to keep an extra
- * pointer in the object structure to speed lock location.
- */
-
-#define	MAXLOCK		64
-#define	HASHLOCK(a)	((((uintp)(a)) / sizeof(void*)) % MAXLOCK)
-#define SPINON(addr) 	jthread_spinon(addr)
-#define SPINOFF(addr) 	jthread_spinoff(addr)
-
-static struct lockList {
-	void*		lock;
-	iLock*		head;
-} lockTable[MAXLOCK];
-
-/* a list in which we keep all static locks */
-static iLock *staticLocks;
-
-static void
-dumpLock(iLock *lk)
-{
-	if (lk->ref == -1) {
-		fprintf(stderr, "%s ", (char*)lk->address);
-	} else {
-		fprintf(stderr, "lock@%p %s ", lk->address, 
-			describeObject(lk->address));
-	}
-#if !defined(JMUTEX_BLOCKED) || !defined(JCONDVAR_WAITING)
-	/* Dumb version */
-	fprintf(stderr, "held by `%s'\n .hd=%-9p .ct=%d .mx=%-9p .cv=%-9p\n",
-		(lk->holder != 0) ? nameNativeThread(lk->holder) : "noone",
-		lk->holder, lk->count, lk->mux, lk->cv);
+#if !defined(COMPARE_AND_EXCHANGE)
+#if defined(ATOMIC_EXCHANGE)
+#define	COMPARE_AND_EXCHANGE(A,O,N) \
+	({ \
+		iLock* val = LOCKINPROGRESS; \
+		ATOMIC_EXCHANGE((A), val); \
+		if (val == (O)) { \
+			*(A) = (N); \
+		} \
+		else { \
+			*(A) = (O); \
+		} \
+		(val == (O) ? 1 :  0); \
+	})
 #else
-	/* We can do better if jmutex_blocked and jcondvar_blocked are
-	 * supported by the threading system
-	 */
-	if (lk->holder != 0) {
-		jthread_t *blocked;
-		int nblocked = jmutex_blocked(lk->mux, &blocked);
+#define	COMPARE_AND_EXCHANGE(A,O,N) \
+	(*(A) == (O) ? *(A) = (N), 1 : 0)
+#endif
+#endif
 
-		/* lock is held, say by whom and who's waiting */
-		fprintf(stderr, "\n  held by `%s'\n  blocks threads: ", 
-			    nameNativeThread(lk->holder));
-		if (nblocked > 0) {
-			int i;
-			for (i = 0; i < nblocked; i++) {
-				fprintf(stderr, "`%s'%c", 
-					    nameNativeThread(blocked[i]), 
-					    (i < nblocked - 1) ? ' ' : '\n');
-			}
-			/* free(blocked); */
-		} else {
-			fprintf(stderr, "\n");
-		}
-	} else {
-		fprintf(stderr, " (uncontended)\n");
-	}
-	/* now check for waiters on cond variable */
-	{
-		jthread_t *blocked;
-		int nblocked = jcondvar_waiting(lk->cv, &blocked);
+/* We need to treat the gc_lock special since it's guards memory allocation.
+ */
+extern iLock* gc_lock;
+static iLock _gc_lock;
 
-		if (nblocked > 0) {
-			int i;
-			fprintf(stderr, "  waiting to be signaled are: ");
-			for (i = 0; i < nblocked; i++) {
-				fprintf(stderr, "`%s'%c", 
-					    nameNativeThread(blocked[i]), 
-					    (i < nblocked - 1) ? ' ' : '\n');
-			}
-			/* free(blocked); */
-		}
+jboolean usingPosixLocks = false;
+
+static iLock* freeLocks;
+static jboolean _SemGet(void*, jlong);
+static void _SemPut(void*);
+
+#define	SEMGET		_SemGet
+#define	SEMPUT		_SemPut
+#define	LOCK(L)		jmutex_lock((L)->mux)
+#define	UNLOCK(L)	jmutex_unlock((L)->mux)
+#define	SIGNAL(L)	jcondvar_signal((L)->cv, (L)->mux)
+#define	WAIT(L,T)	jcondvar_wait((L)->cv, (L)->mux, (T))
+
+/*
+ * Initialise the locking system.
+ */
+void
+initLocking(void)
+{
+#if 0
+	if (Kaffe_LockInterface.semget == 0) {
+		Kaffe_LockInterface.semget = _SemGet;
+		Kaffe_LockInterface.semput = _SemPut;
 	}
 #endif
+	usingPosixLocks = true;
+}
+
+#if defined(DEBUG)
+void
+dumpObjectLocks(void)
+{
+}
+#endif
+
+/*
+ * Get a heavy lock for the object and hold it.  If the object doesn't
+ * have a heavy lock then we create one.
+ */
+static
+iLock*
+getHeavyLock(iLock** lkp)
+{
+	iLock* old;
+	iLock* lk;
+	Hjava_lang_Thread* tid;
+	jlong timeout;
+
+	timeout = 1;
+	for (;;) {
+		/* Get the current lock and replace it with -1 to indicate
+		 * changes are in progress.
+		 */
+		old = *lkp;
+		if (old == LOCKINPROGRESS || !COMPARE_AND_EXCHANGE(lkp, old, LOCKINPROGRESS)) {
+			tid = getCurrentThread();
+			SEMGET(unhand(tid)->sem, timeout);
+			/* Back off */
+			timeout = (timeout << 1)|timeout;
+			continue;
+		}
+		if ((((uintp)old) & 1) == 1) {
+			lk = (iLock*)(((uintp)old) & (uintp)-2);
+		}
+		else {
+			if (lkp == &gc_lock) {
+				lk = &_gc_lock;
+			}
+			else if (freeLocks != 0) {
+				lk = freeLocks;
+				freeLocks = (iLock*)lk->holder;
+			}
+			else {
+				lk = (iLock*)jmalloc(sizeof(iLock));
+			}
+			lk->holder = (void*)old;
+			lk->mux = 0;
+			lk->cv = 0;
+		}
+		return (lk);
+	}
 }
 
 /*
- * dump all locks
+ * Release the lock - only the one who has claimed it can do this
+ * so there's no need for locked instructions.
  */
+static
+void
+putHeavyLock(iLock** lkp, iLock* lk)
+{
+	assert(*lkp == LOCKINPROGRESS);
+	if (lk == LOCKFREE) {
+		*lkp = LOCKFREE;
+	}
+	else {
+		*lkp = (iLock*)(1|(uintp)lk);
+	}
+}
+
+/*
+ * Slowly lock a mutex.  We get the heavy lock and lock that instead.
+ * If we can't lock it we suspend until we can.
+ */
+void
+slowLockMutex(iLock** lkp, void* where)
+{
+	iLock* lk;
+	Hjava_lang_Thread* tid;
+
+LDBG(	printf("Slow lock\n");						)
+
+	for (;;) {
+		lk = getHeavyLock(lkp);
+
+		/* If I hold the heavy lock then just keep on going */
+		if (jthread_on_current_stack(lk->holder)) {
+			putHeavyLock(lkp, lk);
+			return;
+		}
+
+		/* If no one holds the heavy lock then claim it */
+		if (lk->holder == 0) {
+			lk->holder = where;
+			putHeavyLock(lkp, lk);
+			return;
+		}
+
+		/* Otherwise wait for holder to release it */
+		tid = getCurrentThread();
+		unhand(tid)->nextlk = lk->mux;
+		lk->mux = tid;
+		putHeavyLock(lkp, lk);
+		SEMGET(unhand(tid)->sem, 0);
+	}
+}
+
+/*
+ * Slowly unlock a mutex.  If there's someone waiting then we wake them up
+ * so they can claim the lock.  If no one is waiting we revert the lock to
+ * a fast thin lock.
+ */
+void
+slowUnlockMutex(iLock** lkp, void* where)
+{
+	iLock* lk;
+	Hjava_lang_Thread* tid;
+
+LDBG(	printf("Slow unlock\n");					)
+
+	lk = getHeavyLock(lkp);
+
+	/* Only the lock holder can be doing an unlock */
+	if (!jthread_on_current_stack(lk->holder)) {
+		putHeavyLock(lkp, lk);
+		throwException(IllegalMonitorStateException);
+	}
+
+	/* If holder isn't where we are now then this isn't the final unlock */
+	if (lk->holder > where) {
+		putHeavyLock(lkp, lk);
+		return;
+	}
+
+	/* Final unlock - if someone is waiting for it now would be a good
+	 * time to tell them.
+	 */
+	if (lk->mux != 0) {
+		tid = lk->mux;
+		lk->mux = unhand(tid)->nextlk;
+		unhand(tid)->nextlk = 0;
+		lk->holder = 0;
+		putHeavyLock(lkp, lk);
+		SEMPUT(unhand(tid)->sem);
+	}
+	/* If someone's waiting to be signaled keep the heavy in place */
+	else if (lk->cv != 0) {
+		lk->holder = 0;
+		putHeavyLock(lkp, lk);
+	}
+	else {
+		if (lk != &_gc_lock) {
+			lk->holder = (void*)freeLocks;
+			freeLocks = lk;
+		}
+		putHeavyLock(lkp, LOCKFREE);
+	}
+}
+
+void
+_slowUnlockMutexIfHeld(iLock** lkp, void* where)
+{
+	iLock* lk;
+	void* holder;
+
+	lk = getHeavyLock(lkp);
+	holder = lk->holder;
+	putHeavyLock(lkp, lk);
+
+	if (jthread_on_current_stack(holder)) {
+		slowUnlockMutex(lkp, where);
+	}
+}
+
+void*
+_releaseLock(iLock** lkp)
+{
+	iLock* lk;
+	void* holder;
+
+	lk = getHeavyLock(lkp);
+	holder = lk->holder;
+
+	/* I must be holding the damn thing */
+	assert(jthread_on_current_stack(holder));
+
+	putHeavyLock(lkp, lk);
+	slowUnlockMutex(lkp, holder);
+
+	return (holder);
+}
+
+void
+_acquireLock(iLock** lkp, void* holder)
+{
+	slowLockMutex(lkp, holder);
+}
+
+jboolean
+_waitCond(iLock** lkp, jlong timeout)
+{
+	iLock* lk;
+	void* holder;
+	Hjava_lang_Thread* tid;
+	Hjava_lang_Thread** ptr;
+	jboolean r;
+
+	lk = getHeavyLock(lkp);
+	holder = lk->holder;
+
+	/* I must be holding the damn thing */
+	if (!jthread_on_current_stack(holder)) {
+		putHeavyLock(lkp, holder);
+		throwException(IllegalMonitorStateException);
+	}
+
+	tid = getCurrentThread();
+	unhand(tid)->nextlk = lk->cv;
+	lk->cv = tid;
+	putHeavyLock(lkp, lk);
+	slowUnlockMutex(lkp, holder);
+	r = SEMGET(unhand(tid)->sem, timeout);
+
+	/* Timeout */
+	if (r == false) {
+		lk = getHeavyLock(lkp);
+		/* Remove myself from CV or MUX queue - if I'm * not on either
+		 * then I should wait on myself to remove any pending signal.
+		 */
+		for (ptr = &lk->cv; *ptr != 0; ptr = &unhand(*ptr)->nextlk) {
+			if ((*ptr) == tid) {
+				*ptr = unhand(tid)->nextlk;
+				goto found;
+			}
+		}
+		for (ptr = &lk->mux; *ptr != 0; ptr = &unhand(*ptr)->nextlk) {
+			if ((*ptr) == tid) {
+				*ptr = unhand(tid)->nextlk;
+				goto found;
+			}
+		}
+		/* Not on list - so must have been signalled after all -
+		 * decrease the semaphore to avoid problems.
+		 */
+		SEMGET(unhand(tid)->sem, 0);
+
+		found:;
+		putHeavyLock(lkp, lk);
+	}
+
+	slowLockMutex(lkp, holder);
+
+	return (r);
+}
+
+void
+_signalCond(iLock** lkp)
+{
+	iLock* lk;
+	Hjava_lang_Thread* tid;
+
+	lk = getHeavyLock(lkp);
+
+	if (!jthread_on_current_stack(lk->holder)) {
+		putHeavyLock(lkp, lk);
+		throwException(IllegalMonitorStateException);
+	}
+
+	/* Move one CV's onto the MUX */
+	tid = lk->cv;
+	if (tid != 0) {
+		lk->cv = unhand(tid)->nextlk;
+		unhand(tid)->nextlk = lk->mux;
+		lk->mux = tid;
+	}
+
+	putHeavyLock(lkp, lk);
+}
+
+void
+_broadcastCond(iLock** lkp)
+{
+	iLock* lk;
+	Hjava_lang_Thread* tid;
+
+	lk = getHeavyLock(lkp);
+
+	if (!jthread_on_current_stack(lk->holder)) {
+		putHeavyLock(lkp, lk);
+		throwException(IllegalMonitorStateException);
+	}
+
+	/* Move all the CV's onto the MUX */
+	while (lk->cv != 0) {
+		tid = lk->cv;
+		lk->cv = unhand(tid)->nextlk;
+		unhand(tid)->nextlk = lk->mux;
+		lk->mux = tid;
+	}
+
+	putHeavyLock(lkp, lk);
+}
+
+/*
+ * Lock a mutex - try to do this quickly but if we failed because
+ * we can't determine if this is a multiple entry lock or we've got
+ * contention then fall back on a slow lock.
+ */
+void
+_lockMutex(iLock** lkp, void* where)
+{
+	if (*lkp == 0) {
+		if (!COMPARE_AND_EXCHANGE(lkp, 0, (iLock*)where)) {
+			slowLockMutex(lkp, where);
+		}
+	}
+	else if ((uintp)*lkp - (uintp)where > 1024) {
+		slowLockMutex(lkp, where);
+	}
+}
+
+/*
+ * Unlock a mutex - try to do this quickly but if we failed then
+ * we've got contention so fall back on a slow lock.
+ */
+void
+_unlockMutex(iLock** lkp, void* where)
+{
+	if ((((uintp)*lkp) & 1) != 0) {
+		slowUnlockMutex(lkp, where);
+	}
+	else if ((uintp)*lkp == (uintp)where &&
+			!COMPARE_AND_EXCHANGE(lkp, (iLock*)where, LOCKFREE)) {
+		slowUnlockMutex(lkp, where);
+	}
+}
+
+void
+lockObject(Hjava_lang_Object* obj)
+{
+	_lockMutex(&obj->lock, &obj);
+}
+
+void
+unlockObject(Hjava_lang_Object* obj)
+{
+	_unlockMutex(&obj->lock, &obj);
+}
+
+void
+slowLockObject(Hjava_lang_Object* obj, void* where)
+{
+	slowLockMutex(&obj->lock, where);
+}
+
+void
+slowUnlockObject(Hjava_lang_Object* obj, void* where)
+{
+	slowUnlockMutex(&obj->lock, where);
+}
+
 void
 dumpLocks(void)
 {
-	int i;
-	iLock* lock;
-
-	fprintf(stderr, "Dumping dynamic locks:\n");
-	for (i = 0; i < MAXLOCK; i++) {
-		for (lock = lockTable[i].head; lock; lock = lock->next) {
-			if (lock->ref) {
-				dumpLock(lock);
-			}
-		}
-	}
-
-	fprintf(stderr, "Dumping static locks:\n");
-	for (lock = staticLocks; lock; lock = lock->next) {
-		dumpLock(lock);
-	}
 }
 
-/*              
- * implementation of the locking subsystem based on jlocks
+/******************************************************************************
  *
- * Note that we keep track of lk->holder, and its type is void*.
- */
-static          
-void
-initLock(iLock* lk)
-{               
-        static bool first = true;
-        static jmutex first_mutex;
-        static jcondvar first_condvar;
-        
-        /* The first lock init is for the memory manager - so we can't
-         * use it yet.  Allocate from static space.
-         */
-        if (first == true) {
-                first = false;
-                lk->mux = &first_mutex;
-                lk->cv = &first_condvar;
-        }
-        else {
-                lk->mux = gc_malloc(sizeof(jmutex), GC_ALLOC_THREADCTX);
-                lk->cv = gc_malloc(sizeof(jcondvar), GC_ALLOC_THREADCTX);
-        } 
-        jmutex_initialise(lk->mux);
-        jcondvar_initialise(lk->cv);
-}        
+ *  The following routines are used to convert POSIX style locks into the
+ *  semaphores we actually need here.
+ *
+ ******************************************************************************/
 
-/*
- * Retrieve a machine specific (possibly) locking structure associated with
- * this address.  If one isn't found, allocate it.
- */
-static iLock*
-newLock(void* address)
+static
+jboolean
+_SemGet(void* sem, jlong timeout)
 {
-	struct lockList* lockHead;
-	iLock* lock;
-	iLock* freelock;
+	jboolean r;
+	sem2posixLock* lk;
 
-	/* NB: we use a spinlock to quickly establish the case where
-	 * we a lock is already in the hashtable.  However, if we don't
-	 * find a lock, we must allocate one and initialize it.  Since
-	 * this operation can cause a gc and hence take indefinitely,
-	 * we must acquire a real lock then.
-	 */
-	lockHead = &lockTable[HASHLOCK(address)];
-	SPINON(lockHead->lock);
+	r = true;
+	lk = (sem2posixLock*)sem;
 
-retry:;
-	freelock = 0;
-
-	/* See if there's a free lock for that slot */
-	for (lock = lockHead->head; lock != NULL; lock = lock->next) {
-		/* If so, increase ref count and return */
-		if (lock->address == address) {
-			lock->ref++;
-			SPINOFF(lockHead->lock);
-			return (lock);
-		}
-		if (lock->ref == 0 && freelock == 0) {
-			freelock = lock;
-		}
-	}
-
-	/* Allocate a new lock structure if needed */
-	if (freelock == 0) {
-                /* Both of these two function calls involve allocations.
-                 * They can block and cause a gc.  Thus, we cannot hold
-                 * the spinlock here.
-                 */
-                SPINOFF(lockHead->lock);
-                lock = gc_malloc(sizeof(iLock), GC_ALLOC_LOCK);
-		/* This is a problem.  C code can do
-		 * lockMutex()... lockMutex().  If the inner lockMutex
-		 * fails, we can't throw an exception.  This seems to
-		 * imply that all lock calls must be checked.
-		 */
-		if (!lock) {
-			struct _errorInfo einfo;
-			postOutOfMemory(&einfo);
-			throwError(&einfo);
-		}
-		initLock(lock);
-                SPINON(lockHead->lock);
-
-                lock->next = lockHead->head;
-                lockHead->head = lock;
-
-                /* Go back and see whether another thread has already
-                 * entered the entry for this address.  If so, the losing 
-		 * lock will be used to next time we need a lock.
-		 * This is hopefully cheaper than using a real lock to
-		 * we don't create locks unless we have to.
-                 */
-                goto retry;
-	}
-
-	/* Fill in the details */
-	freelock->address = address;
-	freelock->ref = 1;
-	freelock->holder = NULL;
-	freelock->count = 0;
-	SPINOFF(lockHead->lock);
-	return (freelock);
-}
-
-/*
- * Retrieve a machine specific (possibly) locking structure associated with
- * this address.
- */
-iLock*
-getLock(void* address)
-{
-	struct lockList* lockHead;
-	iLock* lock;
-
-	lockHead = &lockTable[HASHLOCK(address)];
-
-	for (lock = lockHead->head; lock != NULL; lock = lock->next) {
-		if (lock->address == address) {
-			break;
-		}
-	}
-	return (lock);
-}
-
-/*
- * Free a lock if no longer in use.
- */
-static void
-freeLock(iLock* lk)
-{
-	struct lockList* lockHead;
-	lockHead = &lockTable[HASHLOCK(lk->address)];
-
-	SPINON(lockHead->lock);
-
-	/* If lock no longer in use, release it for reallocation */
-	lk->ref--;
-	if (lk->ref == 0) {
-		if (lk->count != 0)
-		    printf("lk=%p addr=%p count is %d\n", lk, 
-			lk->address, lk->count);
-		assert(lk->count == 0);
-		assert(lk->holder == NULL);
-DBG(VMLOCKS,	dprintf("Freeing lock for addr=0x%x\n", lk->address);	)
-	}
-
-	SPINOFF(lockHead->lock);
-}
-
-/*
- * Initialise a new lock.
- */
-void
-__initLock(iLock* lk, const char *lkname)
-{
-	lk->ref = -1;
-	lk->address = lkname;
-	lk->next = staticLocks;
-	staticLocks = lk;
-	initLock(lk);
-}
-
-/*
- * Lock the given lock.
- */
-inline
-void
-__lockMutex(iLock* lk)
-{
-DBG(VMLOCKS,	dprintf("Lock 0x%x on iLock=0x%x\n", jthread_current(), lk);	    )
-
-	/*
-	 * Note: simply testing 'holder == jthread_current()' is not enough.
-	 * If a thread systems uses the same value to which we initialized
-	 * holder as a thread id (null), we might be fooled into thinking 
-	 * we already hold the lock, when in fact we don't.
-	 */
-	if (lk->count > 0 && lk->holder == (void*)jthread_current()) {
-		lk->count++;
-	}
-	else {
-#ifdef DEBUG
-		int trace = 0;
-#endif
-DBG(LOCKCONTENTION,
-		if (lk->count != 0) {
-		    dprintf("%p waiting for ", jthread_current());
-		    dumpLock(lk);
-		    trace = 1;
-		}
-    )
-		jmutex_lock(lk->mux);
-		lk->holder = (void *)jthread_current();
-DBG(LOCKCONTENTION,
-		if (trace) {
-		    dprintf("%p got ", jthread_current());
-		    dumpLock(lk);
-		}
-    )
-		lk->count = 1;
-	}
-}
-
-/*
- * Lock a mutex.  We use the address to find a lock.
- */
-iLock*
-_lockMutex(void* addr)
-{
-	iLock* lk;
-
-DBG(VMLOCKS,	dprintf("Lock 0x%x on addr=0x%x\n", jthread_current(), addr);    )
-
-#if defined(USE_LOCK_CACHE)
-	lk = ((Hjava_lang_Object*)addr)->lock;
-	if (lk->address != addr) {
-		lk = newLock(addr);
-		((Hjava_lang_Object*)addr)->lock = lk;
-	}
-#else
-#if !defined(CREATE_NULLPOINTER_CHECKS)
-	/* We need this here to generate an immediate trap in the case of
-	   a statement like "synchronized((Object)null) { .. } "
-	 */
-	*((volatile unsigned char *)addr);
-#endif
-	lk = newLock(addr);
-#endif
-	__lockMutex(lk);
-	return (lk);
-}
-
-/*
- * Release a given mutex.
- */
-inline
-void
-__unlockMutex(iLock* lk)
-{
-DBG(VMLOCKS,	dprintf("Unlock 0x%x on iLock=0x%x\n", jthread_current(), lk);   )
-
-#if defined(DEBUG)
+	LOCK(lk);
 	if (lk->count == 0) {
-		dprintf("count == 0\n");
-		dumpLock(lk);
-		ABORT();
+		r = WAIT(lk, timeout);
 	}
-	if (lk->holder != jthread_current()) {
-		dprintf("HOLDER %p != ME %p\n", lk->holder, jthread_current());
-		dumpLock(lk);
-		ABORT();
+	if (r == true) {
+		lk->count--;
 	}
-#endif
-	assert(lk->count > 0 && lk->holder == (void*)jthread_current());
-	lk->count--;
-	if (lk->count == 0) {
-		lk->holder = 0;
-		jmutex_unlock(lk->mux);
-	}
+	UNLOCK(lk);
+	return (r);
 }
 
-/*
- * Release a mutex by address.
- */
+static
 void
-_unlockMutex(void* addr)
+_SemPut(void* sem)
 {
-	iLock* lk;
+	sem2posixLock* lk;
 
-DBG(VMLOCKS,	dprintf("Unlock 0x%x on addr=0x%x\n", jthread_current(), addr);  )
+	lk = (sem2posixLock*)sem;
 
-#if defined(USE_LOCK_CACHE)
-	lk = ((Hjava_lang_Object*)addr)->lock;
-#else
-#if !defined(CREATE_NULLPOINTER_CHECKS)
-	/* We need this here to generate an immediate trap in the case of
-	   a statement like "synchronized((Object)null) { .. } "
-	 */
-	*((volatile unsigned char *)addr);
-#endif
-	lk = getLock(addr);
-#endif
-	__unlockMutex(lk);
-	freeLock(lk);
-}
-
-/*
- * Release a given mutex and free it.
- */
-void
-_unlockMutexFree(iLock* lk)
-{
-	__unlockMutex(lk);
-	freeLock(lk);
-}
-
-/*
- * Wait on a conditional variable.
- */
-inline
-int
-__waitCond(iLock* lk, jlong timeout)
-{
-       int count;
-DBG(VMCONDS,	dprintf("Wait 0x%x on iLock=0x%x\n", jthread_current(), lk);	)
-
-	if (lk == 0 || lk->holder != (void*)jthread_current()) {
-		throwException(IllegalMonitorStateException);
-	}
-
-        /*
-         * We must reacquire the Java lock before we're ready to die
-         */
-        jthread_disable_stop();
-        count = lk->count;
-        lk->count = 0;
-	lk->holder = NULL; /* Debug only ? */
-        jcondvar_wait(lk->cv, lk->mux, timeout);
-        lk->holder = (void *)jthread_current();
-        lk->count = count;
-        
-        /* now it's safe to start dying */
-        jthread_enable_stop();
-
-	return (0);
-}
-
-/*
- * Wait on a conditional variable.
- */
-int
-_waitCond(void* addr, jlong timeout)
-{
-	iLock* lk;
-
-DBG(VMLOCKS,	dprintf("Wait 0x%x on addr=0x%x\n", jthread_current(), addr);    )
-
-#if defined(USE_LOCK_CACHE)
-	lk = ((Hjava_lang_Object*)addr)->lock;
-#else
-	lk = getLock(addr);
-#endif
-	__waitCond(lk, timeout);
-	return (0);
-}
-
-/*
- * Wake one thread on a conditional variable.
- */
-inline
-void
-__signalCond(iLock* lk)
-{
-DBG(VMCONDS,	dprintf("Signal 0x%x on iLock=0x%x\n", jthread_current(), lk);)
-
-	if (lk == 0 || lk->holder != (void*)jthread_current()) {
-		throwException(IllegalMonitorStateException);
-	}
-
-	jcondvar_signal(lk->cv, lk->mux);
-}
-
-/*
- * Wake one thread on a conditional variable.
- */
-void
-_signalCond(void* addr)
-{
-	iLock* lk;
-
-DBG(VMCONDS,	dprintf("Signal 0x%x on addr=0x%x\n", jthread_current(), addr);)
-
-#if defined(USE_LOCK_CACHE)
-	lk = ((Hjava_lang_Object*)addr)->lock;
-#else
-	lk = getLock(addr);
-#endif
-	__signalCond(lk);
-}
-
-/*
- * Wake all threads on a conditional variable.
- */
-inline
-void
-__broadcastCond(iLock* lk)
-{
-DBG(VMCONDS,	dprintf("Broadcast 0x%x on iLock=0x%x\n", jthread_current(), lk);)
-
-	if (lk == 0 || lk->holder != (void*)jthread_current()) {
-		throwException(IllegalMonitorStateException);
-	}
-
-	jcondvar_broadcast(lk->cv, lk->mux);
-}
-
-void
-_broadcastCond(void* addr)
-{
-	iLock* lk;
-
-DBG(VMCONDS,	dprintf("Broadcast 0x%x on addr=0x%x\n", jthread_current(), addr);)
-
-#if defined(USE_LOCK_CACHE)
-	lk = ((Hjava_lang_Object*)addr)->lock;
-#else
-	lk = getLock(addr);
-#endif
-	__broadcastCond(lk);
-}
-
-int
-__holdMutex(iLock* lk)
-{
-	if (lk == 0 || lk->holder != (void*)jthread_current()) {
-		return (0);
-	}
-	else {
-		return (1);
-	}
-}
-
-int
-_holdMutex(void* addr)
-{
-	iLock* lk;
-
-#if defined(USE_LOCK_CACHE)
-	lk = ((Hjava_lang_Object*)addr)->lock;
-#else
-	lk = getLock(addr);
-#endif
-	return (__holdMutex(lk));
+	LOCK(lk);
+        lk->count++;
+	SIGNAL(lk);
+	UNLOCK(lk);
 }

@@ -89,12 +89,12 @@ processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 	Method* meth;
 	Hjava_lang_Class* nclass;
 	Hjava_lang_Class** newifaces;
-	iLock *classLock;
 	bool success = true;	/* optimistic */
 #ifdef DEBUG
 	static int depth;
 #endif
 	static Method *object_fin;
+	int iLockRoot;
 
 	/* If this class is initialised to the required point, quit now */
 	if (class->state >= tostate) {
@@ -109,7 +109,7 @@ processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 	 * we've got to work out.
 	 */
 
-	classLock = lockMutex(class);
+	lockMutex(&class->head);
 
 DBG(RESERROR,
 	/* show calls to processClass when debugging resolution errors */
@@ -145,7 +145,7 @@ retry:
 				goto done;
 			} else {
 				while (class->state == CSTATE_DOING_PREPARE) {
-					waitStaticCond(classLock, 0);
+					waitCond(&class->head, 0);
 					goto retry;
 				}
 			}
@@ -171,10 +171,10 @@ retry:
 			 * upcall to a classloader, we must release the
 			 * classLock here.
 			 */
-			unlockKnownMutex(classLock);
+			unlockMutex(&class->head);
 			class->superclass = getClass((uintp)class->superclass, 
 						     class, einfo);
-			classLock = lockMutex(class);
+			lockMutex(&class->head);
 			if (class->superclass == 0) {
 				success = false;
 				goto done;
@@ -209,9 +209,9 @@ retry:
 		}
 		for (i = 0; i < class->interface_len; i++) {
 			uintp iface = (uintp)class->interfaces[i];
-			unlockKnownMutex(classLock);
+			unlockMutex(&class->head);
 			class->interfaces[i] = getClass(iface, class, einfo);
-			classLock = lockMutex(class);
+			lockMutex(&class->head);
 			if (class->interfaces[i] == 0) {
 				success = false;
 				goto done;
@@ -329,7 +329,7 @@ retry:
 				goto done;
 			} else {
 				while (class->state == CSTATE_DOING_SUPER) {
-					waitStaticCond(classLock, 0);
+					waitCond(&class->head, 0);
 					goto retry;
 				}
 			}
@@ -380,10 +380,10 @@ retry:
 			 * might call out into the superclass's initializer 
 			 * here!
 			 */
-			unlockKnownMutex(classLock);
+			unlockMutex(&class->head);
 			success = processClass(class->superclass, 
 					     CSTATE_COMPLETE, einfo);
-			classLock = lockMutex(class);
+			lockMutex(&class->head);
 			if (success == false) {
 				if (class->superclass->state == CSTATE_INIT_FAILED)
 					SET_CLASS_STATE(CSTATE_INIT_FAILED);
@@ -424,7 +424,7 @@ DBG(STATICINIT, dprintf("Initialising %s static %d\n", class->name->data,
 				goto done;
 			} else {
 				while (class->state == CSTATE_DOING_INIT) {
-					waitStaticCond(classLock, 0);
+					waitCond(&class->head, 0);
 					goto retry;
 				}
 			}
@@ -434,7 +434,7 @@ DBG(STATICINIT, dprintf("Initialising %s static %d\n", class->name->data,
 		class->processingThread = THREAD_NATIVE();
 
 		/* give classLock up for the duration of this call */
-		unlockKnownMutex(classLock);
+		unlockMutex(&class->head);
 
 		/* we use JNI to catch possible exceptions, except
 		 * during initialization, when JNI doesn't work yet.
@@ -457,7 +457,7 @@ DBG(STATICINIT,
 			callMethodA(meth, METHOD_INDIRECTMETHOD(meth), 0, 0, 0, 1);
 		}
 
-		classLock = lockMutex(class);
+		lockMutex(&class->head);
 
 		if (exc != 0) {
 			/* this is special-cased in throwError */
@@ -493,8 +493,8 @@ done:
 	}
 
 	/* wake up any waiting threads */
-	broadcastStaticCond(classLock);
-	unlockKnownMutex(classLock);
+	broadcastCond(&class->head);
+	unlockMutex(&class->head);
 
 DBG(RESERROR,
 	for (i = 0; i < depth; dprintf("  ", i++));
@@ -530,6 +530,8 @@ DBG(RESERROR,	dprintf("setupClass: not a class.\n");			)
 void
 registerClass(classEntry* entry)
 {
+	int iLockRoot;
+
 	lockMutex(entry);
 
 	/* not used at this time */
@@ -772,9 +774,9 @@ addInterfaces(Hjava_lang_Class* c, int inr, Hjava_lang_Class** inf)
 Hjava_lang_Class*
 loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 {
-	iLock* celock;
 	classEntry* centry;
 	Hjava_lang_Class* clazz = NULL;
+	int iLockRoot;
 
         centry = lookupClassEntry(name, loader, einfo);
 	if (!centry) return 0;
@@ -793,7 +795,7 @@ loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 	 * Failed to find class, so must now load it.
 	 * We send at most one thread to load a class. 
 	 */
-	celock = lockMutex(centry);
+	lockMutex(centry);
 
 	/* Check again in case someone else did it */
 	if (centry->class == NULL) {
@@ -905,7 +907,7 @@ DBG(VMCLASSLOADER,
 			if (clazz != NULL) {
 				if (!gc_add_ref(clazz)) {
 					postOutOfMemory(einfo);
-					unlockKnownMutex(celock);
+					unlockMutex(centry);
 					return 0;
 				}
 			} else {
@@ -923,7 +925,7 @@ DBG(RESERROR,
 	}
 
 	/* Release lock now class has been entered */
-	unlockKnownMutex(celock);
+	unlockMutex(centry);
 
 	if (clazz == NULL) {
 		return (NULL);
@@ -969,7 +971,7 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 	errorInfo info;
 	Utf8Const *utf8;
 	classEntry* centry;
-	iLock* celock;
+	int iLockRoot;
 
 	utf8 = utf8ConstNew(name, -1);
 	if (!utf8) goto bad;
@@ -977,7 +979,7 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 	if (!centry) goto bad;
 	
 	utf8ConstRelease(utf8);
-	celock = lockMutex(centry);
+	lockMutex(centry);
 	if (centry->class == 0) {
 		clazz = findClass(centry, &info);
 		if (clazz == 0) {
@@ -987,7 +989,7 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 		if (!gc_add_ref(clazz)) goto bad;
 		(*class) = centry->class = clazz;
 	}
-	unlockKnownMutex(celock);
+	unlockMutex(centry);
 
 	if (processClass(centry->class, CSTATE_LINKED, &info) == true) {
 		return;
@@ -1031,7 +1033,7 @@ resolveFieldType(Field *fld, Hjava_lang_Class* this, errorInfo *einfo)
 {
 	Hjava_lang_Class* clas;
 	const char* name;
-	iLock* lock;
+	int iLockRoot;
 
 	/* Avoid locking if we can */
 	if (FIELD_RESOLVED(fld)) {
@@ -1042,13 +1044,13 @@ resolveFieldType(Field *fld, Hjava_lang_Class* this, errorInfo *einfo)
 	 * else may update it while we're doing this.  Once we've got the
 	 * name we don't really care.
 	 */
-	lock = lockMutex(this->centry);
+	lockMutex(this->centry);
 	if (FIELD_RESOLVED(fld)) {
-		unlockKnownMutex(lock);
+		unlockMutex(this->centry);
 		return (FIELD_TYPE(fld));
 	}
 	name = ((Utf8Const*)fld->type)->data;
-	unlockKnownMutex(lock);
+	unlockMutex(this->centry);
 
 	clas = getClassFromSignature(name, this->loader, einfo);
 
@@ -1573,13 +1575,16 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
  * from utf8 to java.lang.String
  */
 Hjava_lang_String*
-resolveString(constants* pool, int idx, errorInfo *info)
+resolveString(Hjava_lang_Class* clazz, int idx, errorInfo *info)
 {
 	Utf8Const* utf8;
 	Hjava_lang_String* str = 0;
-	iLock* lock;
+	constants* pool;
+	int iLockRoot;
 
-	lock = lockMutex(pool);
+	pool = CLASS_CONSTANTS(clazz);
+
+	lockMutex(&clazz->head);
 	switch (pool->tags[idx]) {
 	case CONSTANT_String:
 		utf8 = WORD2UTF(pool->data[idx]);
@@ -1600,7 +1605,7 @@ resolveString(constants* pool, int idx, errorInfo *info)
 	default:
 		assert(!!!"Neither String nor ResolvedString?");
 	}
-	unlockKnownMutex(lock);
+	unlockMutex(&clazz->head);
 	return (str);
 }
 
@@ -1624,7 +1629,7 @@ resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
 	constants* pool;
 	Utf8Const* utf8;
 
-	lock = lockMutex(class->centry);
+	lockMutex(class->centry);
 
 	/* Scan constant pool and convert any constant strings into true
 	 * java strings.
@@ -1650,7 +1655,7 @@ resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
 	}
 
 done:
-	unlockKnownMutex(lock);
+	unlockMutex(this->centry);
 #endif	/* EAGER_LOADING */
 	return (success);
 }
@@ -1813,7 +1818,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	classEntry* centry;
 	Hjava_lang_Class* arr_class;
 	int arr_flags;
-	iLock* lock;
+	int iLockRoot;
 
 	/* If we couldn't resolve the element type, there's no way we can
 	 * construct the array type.
@@ -1850,11 +1855,11 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	}
 
 	/* Lock class entry */
-	lock = lockMutex(centry);
+	lockMutex(centry);
 
 	/* Incase someone else did it */
 	if (centry->class != 0) {
-		unlockKnownMutex(lock);
+		unlockMutex(centry);
 		goto found;
 	}
 
@@ -1904,7 +1909,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	arr_class->centry = centry;
 
 bail:
-	unlockKnownMutex(lock);
+	unlockMutex(centry);
 
 	found:;
 	if (c && CLASS_IS_PRIMITIVE(c)) {

@@ -359,7 +359,7 @@ void jmutex_unlock(jmutex *lock);
 int  jmutex_blocked(jmutex *lock, jthread_t **list);
 
 void jcondvar_initialise(jcondvar *cv);
-void jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
+jbool jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
 void jcondvar_signal(jcondvar *cv, jmutex *lock);
 void jcondvar_broadcast(jcondvar *cv, jmutex *lock);
 

@@ -51,4 +51,11 @@ struct  _Collector;
 
 #define THREAD_NATIVE()         ((void*)jthread_current())
 
+#if !defined(KAFFEH)
+/*
+ * Inject the ThreadInterface implementation header.
+ */
+#include "thread-impl.h"
+#endif
+
 #endif

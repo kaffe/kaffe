@@ -108,7 +108,7 @@ define_insn(LDC1)
 	case CONSTANT_String:
 		{
 			errorInfo _kdef_einfo;
-			void *s = resolveString(CLASS_CONSTANTS(current_class()), idx, &_kdef_einfo);
+			void *s = resolveString(current_class(), idx, &_kdef_einfo);
 
 			if (!s) { compile_time_error(_kdef_einfo); }
 			move_string_const(stack(0), s);
@@ -142,7 +142,7 @@ define_insn(LDC2)
 		{
 			errorInfo _kdef_einfo;
 			void *st = resolveString
-				(CLASS_CONSTANTS(current_class()), idx,
+				(current_class(), idx,
 				 &_kdef_einfo);
 
 			if (!st) { compile_time_error(_kdef_einfo); }

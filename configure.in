@@ -6,6 +6,17 @@ AM_MAINTAINER_MODE
 dnl needed for autoheader to find acconfig.h
 AUTOHEADER="$AUTOHEADER --localdir config"
 
+dnl abssrcdir is the absolute path to the source base (regardless of where
+dnl you are building it)
+case x$srcdir in
+x/*)
+	abssrcdir=$srcdir
+	;;
+*)
+	abssrcdir=`pwd`/$srcdir
+	;;
+esac
+
 dnl Setup version number.
 KVER=$VERSION
 
@@ -976,7 +987,7 @@ AC_SUBST(kaffe_TRANSF)
 AC_SUBST(Kaffe_TRANSF)
 
 dnl These are not to be used during configuration, only during build.
-CPPFLAGS="-DKVER='\"\$(KVER)\"' -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
+CPPFLAGS="-DKVER='\"\$(KVER)\"' -I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
 LIBS="$LIBS $LTLIBS"
 
 AC_CONFIG_SUBDIRS(libltdl)
@@ -996,6 +1007,7 @@ kaffe/kaffevm/systems/unix-jthreads/Makefile \
 kaffe/kaffevm/systems/oskit-pthreads/Makefile \
 kaffe/kaffevm/systems/linux-threads/Makefile \
 kaffe/kaffevm/systems/beos-native/Makefile \
+kaffe/kaffevm/systems/unix-pthread/Makefile \
 kaffe/kaffe/Makefile \
 kaffe/kaffeh/Makefile \
 kaffe/man/Makefile \

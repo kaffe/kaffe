@@ -48,13 +48,13 @@ _Jv_Throw(Hjava_lang_Object* obj)
 void
 _Jv_MonitorEnter(Hjava_lang_Object* obj)
 {
-	lockMutex(obj);
+	lockObject(obj);
 }
 
 void
 _Jv_MonitorExit(Hjava_lang_Object* obj)
 {
-	unlockMutex(obj);
+	unlockObject(obj);
 }
 
 Hjava_lang_Object*

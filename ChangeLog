@@ -1,3 +1,7 @@
+Thu Sep 16 20:42:31 PDT 1999	Tim Wilkinson	<tim@transvirtual.com>
+
+	* Integrated new fast locking scheme.
+
 1999-09-12  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
 	* configure.in (ssize_t): Arrange that AC_CHECK_TYPE adds a

@@ -1075,11 +1075,11 @@ jthread_init(int pre,
 	 *   of frames is valid.  This is done by checking its range.
 	 */
 #if defined(STACK_GROWS_UP)
-	jtid->stackBase = ((void *)&jtid);
+	jtid->stackBase = (void*)((uintp)&jtid & -0x1000);
 	jtid->stackEnd = jtid->stackBase + mainThreadStackSize;
         jtid->restorePoint = jtid->stackEnd;
 #else
-        jtid->stackEnd = ((void *)&jtid);
+	jtid->stackEnd = (void*)(((uintp)&jtid + 0x1000 - 1) & -0x1000);
         jtid->stackBase = jtid->stackEnd - mainThreadStackSize;
         jtid->restorePoint = jtid->stackBase;
 #endif
@@ -1825,7 +1825,7 @@ jcondvar_initialise(jcondvar *cv)
 	cv = NULL;
 }
 
-void
+jbool
 jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 {
 	jthread *current = jthread_current();
@@ -1857,6 +1857,8 @@ jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 	}
 	lock->holder = current;
 	intsRestore();
+
+	return (false);
 }
 
 void

@@ -71,7 +71,7 @@
 /* Internal variables */
 #ifndef KAFFEH				/* Yuk! */
 static hashtab_t	hashTable;
-static iLock		utf8Lock;	/* mutex on all intern operations */
+static iLock*		utf8Lock;	/* mutex on all intern operations */
 #else
 static hashtab_t	hashTable = (hashtab_t)1;
 #endif
@@ -90,6 +90,7 @@ utf8ConstNew(const char *s, int len)
 	int32 hash;
 	Utf8Const *fake;
 	char buf[200];
+	int iLockRoot;
 
 	/* Automatic length finder */
 	if (len < 0) {
@@ -113,7 +114,6 @@ utf8ConstNew(const char *s, int len)
 	}
 
 	/* Lock intern table */
-	assert (staticLockIsInitialized(&utf8Lock));
 	lockStaticMutex(&utf8Lock);
 
 	/* See if string is already in the table using a "fake" Utf8Const */
@@ -171,7 +171,8 @@ utf8ConstNew(const char *s, int len)
 void
 utf8ConstAddRef(Utf8Const *utf8)
 {
-	assert(staticLockIsInitialized(&utf8Lock));
+	int iLockRoot;
+
 	lockStaticMutex(&utf8Lock);
 	assert(utf8->nrefs >= 1);
 	utf8->nrefs++;
@@ -184,6 +185,8 @@ utf8ConstAddRef(Utf8Const *utf8)
 void
 utf8ConstRelease(Utf8Const *utf8)
 {
+	int iLockRoot;
+
 	/* NB: we ignore zero utf8s here in order to not having to do it at
 	 * the call sites, such as when destroying half-processed class 
 	 * objects because of error conditions.
@@ -191,7 +194,6 @@ utf8ConstRelease(Utf8Const *utf8)
 	if (utf8 == 0) {
 		return;
 	}
-	assert(staticLockIsInitialized(&utf8Lock));
 	lockStaticMutex(&utf8Lock);
 	assert(utf8->nrefs >= 1);
 	if (--utf8->nrefs == 0) {
@@ -305,7 +307,6 @@ utf8ConstEqualJavaString(const Utf8Const *utf8, const Hjava_lang_String *string)
 void
 utf8ConstInit(void)
 {
-	initStaticLock(&utf8Lock);
 	hashTable = hashInit(utf8ConstHashValueInternal,
 		utf8ConstCompare, 0 /* alloc */, 0 /* free */);
 	assert(hashTable);

@@ -267,7 +267,6 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 	const char* cname;
 	Hjava_lang_Class* class;
 	Hjava_lang_Object* obj;
-	iLock* lk;
 	Hjava_lang_Thread* ct;
 
 #if defined(INTS_DISABLED)
@@ -322,11 +321,9 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 				JTHREAD_LONGJMP(frame->jbuf, 1);
 			}
 
-
 			/* If not here, exit monitor if synchronised. */
-			lk = getLock(obj);
-			if (lk != 0 && lk->holder == jthread_current()) {
-				unlockKnownJavaMutex(lk);
+			if (obj !=0 && (meth->accflags & ACC_SYNCHRONISED) != 0) {
+				_slowUnlockMutexIfHeld(&obj->lock, frame->fp);
 			}
 		}
 	}
@@ -370,9 +367,8 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 			}
 
 			/* If method found and synchronised, unlock the lock */
-			lk = getLock(obj);
-			if (lk != 0 && lk->holder == jthread_current()) {
-				unlockKnownJavaMutex(lk);
+			if (obj !=0 && (meth->accflags & ACC_SYNCHRONISED) != 0) {
+				_slowUnlockMutexIfHeld(&obj->lock, frame->fp);
 			}
 #if defined(KAFFE_PROFILER)
 			/* If method found and profiler enable, fix time */

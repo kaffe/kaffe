@@ -49,6 +49,8 @@ static int threadStackSize;	/* native stack size */
 /* referenced by native/Runtime.c */
 jbool runFinalizerOnExit;	/* should we run finalizers? */
 
+extern jboolean usingPosixLocks;
+
 Hjava_lang_Class* ThreadClass;
 Hjava_lang_Class* ThreadGroupClass;
 Hjava_lang_ThreadGroup* standardGroup;
@@ -56,7 +58,7 @@ Hjava_lang_ThreadGroup* standardGroup;
 static void firstStartThread(void*);
 static void createInitialThread(const char*);
 static void runfinalizer(void);
-static iLock thread_start_lock;
+static iLock* thread_start_lock;
 
 /*
  * Initialise threads.
@@ -90,9 +92,6 @@ initThreads(void)
 
 	/* Allocate a thread to be the main thread */
 	createInitialThread("main");
-
-	/* initialize start lock */
-	initStaticLock(&thread_start_lock);
 }
 
 static int
@@ -131,6 +130,17 @@ startThread(Hjava_lang_Thread* tid)
 {
 	int success;
 	struct _errorInfo info;
+	int iLockRoot;
+	sem2posixLock* lk;
+
+	if (usingPosixLocks == true) {
+		unhand(tid)->sem = jmalloc(sizeof(sem2posixLock));
+		lk = (sem2posixLock*)unhand(tid)->sem;
+		lk->mux = thread_malloc(sizeof(jmutex));
+		lk->cv = thread_malloc(sizeof(jcondvar));
+		jmutex_initialise(lk->mux);
+		jcondvar_initialise(lk->cv);
+	}
 	
 	if (aliveThread(tid) == true) {
 		throwException(IllegalThreadStateException);
@@ -182,7 +192,7 @@ stopThread(Hjava_lang_Thread* tid, Hjava_lang_Object* obj)
 }
 
 void
-dontStopThread()
+dontStopThread(void)
 {
 	/* We get a main jthread before java.lang.Thread is even
 	   loaded, so we must check both */
@@ -197,7 +207,7 @@ dontStopThread()
 }
 
 void
-canStopThread()
+canStopThread(void)
 {
 	/* We get a main jthread before java.lang.Thread is even
 	   loaded, so we must check both */
@@ -221,6 +231,7 @@ void
 createInitialThread(const char* nm)
 {
 	Hjava_lang_Thread* tid;
+	sem2posixLock* lk;
 
 	/* Allocate a thread to be the main thread */
 	tid = (Hjava_lang_Thread*)newObject(ThreadClass);
@@ -234,6 +245,14 @@ createInitialThread(const char* nm)
 	unhand(tid)->interrupting = 0;
 	unhand(tid)->target = 0;
 	unhand(tid)->group = standardGroup;
+	if (usingPosixLocks == true) {
+		unhand(tid)->sem = jmalloc(sizeof(sem2posixLock));
+		lk = (sem2posixLock*)unhand(tid)->sem;
+		lk->mux = thread_malloc(sizeof(jmutex));
+		lk->cv = thread_malloc(sizeof(jcondvar));
+		jmutex_initialise(lk->mux);
+		jcondvar_initialise(lk->cv);
+	}
 
 	jthread_atexit(runfinalizer);
 	/* set Java thread associated with main thread */
@@ -276,6 +295,7 @@ createDaemon(void* func, const char* nm, void *arg, int prio,
 	     size_t stacksize, struct _errorInfo *einfo)
 {
 	Hjava_lang_Thread* tid;
+	sem2posixLock* lk;
 
 DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 
@@ -295,6 +315,15 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 	/* we abuse these two variables as carriers */
 	unhand(tid)->target = (void*)func;
 	unhand(tid)->group = (void*)arg;
+
+	if (usingPosixLocks == true) {
+		unhand(tid)->sem = jmalloc(sizeof(sem2posixLock));
+		lk = (sem2posixLock*)unhand(tid)->sem;
+		lk->mux = thread_malloc(sizeof(jmutex));
+		lk->cv = thread_malloc(sizeof(jcondvar));
+		jmutex_initialise(lk->mux);
+		jcondvar_initialise(lk->cv);
+	}
   
 	if (!createThread(tid, startSpecialThread, stacksize, einfo)) {
 		return 0;
@@ -314,6 +343,7 @@ firstStartThread(void* arg)
 	Hjava_lang_Thread* tid;
 	jmethodID runmethod;
 	jthrowable eobj;
+	int iLockRoot;
 
 	/* 
 	 * Make sure the thread who created us returned from
@@ -489,6 +519,7 @@ static void
 broadcastDeath(void *jlThread)
 {
         Hjava_lang_Thread *tid = jlThread;
+	int iLockRoot;
 
         /* Notify on the object just in case anyone is waiting */
         lockMutex(&tid->base);

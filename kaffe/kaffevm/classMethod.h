@@ -130,6 +130,7 @@ typedef struct _classEntry {
 	Hjava_lang_ClassLoader*	loader;
 	Hjava_lang_Class*	class;
 	struct _classEntry*	next;
+        struct _iLock*          lock;
 } classEntry;
 
 typedef struct _methods {
@@ -327,7 +328,7 @@ Method*			findMethodFromPC(uintp);
 
 void			finalizeClassLoader(Hjava_lang_ClassLoader* loader);
 void			registerClass(classEntry* entry);
-struct Hjava_lang_String* resolveString(constants* pool, int idx,
+struct Hjava_lang_String* resolveString(Hjava_lang_Class* clazz, int idx,
 					errorInfo *einfo);
 
 void walkClassPool(int (*walker)(Hjava_lang_Class *clazz, void *), void *param);

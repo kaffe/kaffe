@@ -92,9 +92,10 @@ void record_marked(int nr_of_objects, uint32 size)
         gcStats.markedmem += size;
 } 
 
-static iLock gcman;
-static iLock finman;
-iLock gc_lock;			/* allocator mutex */
+static iLock* gcman1;
+static iLock* gcman2;
+static iLock* finman;
+iLock* gc_lock;			/* allocator mutex */
 
 static void gcFree(Collector* gcif, void* mem);
 
@@ -339,17 +340,15 @@ gcMan(void* arg)
 	gc_block* info;
 	int idx;
 	Collector *gcif = (Collector*)arg;
+	int iLockRoot;
 
-	if (!staticLockIsInitialized(&gcman)) {
-		initStaticLock(&gcman);
-	}
-	lockStaticMutex(&gcman);
+	lockStaticMutex(&gcman1);
 
 	/* Wake up anyone waiting for the GC to finish every time we're done */
-	for(;; gcRunning = 0, broadcastStaticCond(&gcman)) {
+	for (;;) {
 
 		while (gcRunning == 0) {
-			waitStaticCond(&gcman, 0);
+			waitStaticCond(&gcman1, 0);
 		}
 		assert(gcRunning > 0);
 		/* 
@@ -374,7 +373,7 @@ gcMan(void* arg)
 DBG(GCSTAT,
 			dprintf("skipping collection cause allocmem==0...\n");
     )
-			continue;
+			goto gcend;
                 }
 
 		/*
@@ -404,8 +403,11 @@ DBG(GCSTAT,
 				gcStats.totalmem/1024,
 				gcStats.allocmem/(double)gcStats.totalmem);
     )
-			continue;
+			goto gcend;
 		}
+
+		lockStaticMutex(&gc_lock);
+
 		startGC(gcif);
 
 		for (unit = gclists[grey].cnext; unit != &gclists[grey]; unit = gclists[grey].cnext) {
@@ -433,6 +435,8 @@ DBG(GCSTAT,
 		}
 
 		finishGC(gcif);
+
+		unlockStaticMutex(&gc_lock);
 
 		if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0) {
 			/* print out all the info you ever wanted to know */
@@ -464,6 +468,12 @@ DBG(GCSTAT,
 		gcStats.totalobj -= gcStats.freedobj;
 		gcStats.allocobj = 0;
 		gcStats.allocmem = 0;
+
+gcend:;
+		lockStaticMutex(&gcman2);
+		gcRunning = 0;
+		broadcastStaticCond(&gcman2);
+		unlockStaticMutex(&gcman2);
 	}
 }
 
@@ -482,7 +492,6 @@ startGC(Collector *gcif)
 	gcStats.markedobj = 0;
 	gcStats.markedmem = 0;
 
-	lockStaticMutex(&gc_lock);
 	/* disable the mutator to protect colour lists */
 	STOPWORLD();
 
@@ -512,6 +521,7 @@ finishGC(Collector *gcif)
 	gc_unit* unit;
 	gc_block* info;
 	int idx;
+	int iLockRoot;
 
 	/* There shouldn't be any grey objects at this point */
 	assert(gclists[grey].cnext == &gclists[grey]);
@@ -604,7 +614,6 @@ finishGC(Collector *gcif)
 		gc_heap_free(unit);
 	}
 	stopTiming(&sweep_time);
-	unlockStaticMutex(&gc_lock);
 
 	/* If there's stuff to be finalised then we'd better do it */
 	if (gclists[finalise].cnext != &gclists[finalise]) {
@@ -629,10 +638,8 @@ finaliserMan(void* arg)
 	gc_unit* unit;
 	int idx;
 	Collector *gcif = (Collector*)arg;
+	int iLockRoot;
 
-	if (!staticLockIsInitialized(&finman)) {
-		initStaticLock(&finman);
-	}
 	lockStaticMutex(&finman);
 
 	for (;;) {
@@ -678,16 +685,19 @@ static
 void
 gcInvokeGC(Collector* gcif, int mustgc)
 {
-	if (!staticLockIsInitialized(&gcman)) {
-		initStaticLock(&gcman);
-	}
-	lockStaticMutex(&gcman);
+	int iLockRoot;
+
+	lockStaticMutex(&gcman1);
+	lockStaticMutex(&gcman2);
+
 	if (gcRunning == 0) {
 		gcRunning = mustgc ? 2 : 1;
-		signalStaticCond(&gcman);
+		signalStaticCond(&gcman1);
 	}
-	waitStaticCond(&gcman, 0);
-	unlockStaticMutex(&gcman);
+	unlockStaticMutex(&gcman1);
+
+	waitStaticCond(&gcman2, 0);
+	unlockStaticMutex(&gcman2);
 }
 
 /*
@@ -697,12 +707,10 @@ static
 void
 gcInvokeFinalizer(Collector* gcif)
 {
+	int iLockRoot;
+
 	/* First invoke the GC */
 	GC_invoke(gcif, 1);
-
-	if (!staticLockIsInitialized(&finman)) {
-		initStaticLock(&finman);
-	}
 
 	/* Run the finalizer (if might already be running as a result of
 	 * the GC)
@@ -734,18 +742,20 @@ gcMalloc(Collector* gcif, size_t size, int fidx)
 	void * volatile mem;	/* needed on SGI, see comment below */
 	int i;
 	size_t bsz;
+	int iLockRoot;
 
 	assert(gc_init != 0);
 	assert(fidx < nrTypes && size != 0);
-	lockStaticMutex(&gc_lock);
+
 	unit = gc_heap_malloc(size + sizeof(gc_unit));
 
 	/* keep pointer to object */
 	mem = UTOMEM(unit);
 	if (unit == 0) {
-		unlockStaticMutex(&gc_lock);
 		return 0;
 	}
+
+	lockStaticMutex(&gc_lock);
 
 	info = GCMEM2BLOCK(mem);
 	i = GCMEM2IDX(info, unit);
@@ -822,6 +832,7 @@ gcThrowOOM(Collector *gcif)
 {
 	Hjava_lang_Throwable *ret = 0;
 	int reffed;
+	int iLockRoot;
 
 	/*
 	 * Make sure we are the only thread to use this exception
@@ -868,6 +879,7 @@ gcRealloc(Collector* gcif, void* mem, size_t size, int fidx)
 	void* newmem;
 	gc_unit* unit;
 	int osize;
+	int iLockRoot;
 
 	assert(fidx == GC_ALLOC_FIXED);
 
@@ -910,6 +922,7 @@ gcFree(Collector* gcif, void* mem)
 	gc_block* info;
 	int idx;
 	gc_unit* unit;
+	int iLockRoot;
 
 	if (mem != 0) {
 		lockStaticMutex(&gc_lock);
@@ -940,7 +953,6 @@ static
 void
 gcInit(Collector *collector)
 {
-	initStaticLock(&gc_lock);
 	gc_init = 1;
 }
 

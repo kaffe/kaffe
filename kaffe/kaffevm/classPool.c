@@ -29,7 +29,7 @@
 #include "md.h"
 
 #define	CLASSHASHSZ	256	/* Must be a power of two */
-static iLock classHashLock;
+static iLock* classHashLock;
 static classEntry* classEntryPool[CLASSHASHSZ];
 #if defined(KAFFE_STATS)
 statobject classStats;
@@ -64,10 +64,12 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader,
 {
 	classEntry* entry;
 	classEntry** entryp;
+	int iLockRoot;
+	static int f = 0;
 
-        if (!staticLockIsInitialized(&classHashLock)) {
+        if (f == 0) {
+		f++;
 		registerUserCounter(&classStats, "class-pool", statClassPool);
-		initStaticLock(&classHashLock);
         }
 
 	entry = lookupClassEntryInternal(name, loader);
@@ -156,6 +158,7 @@ removeClassEntries(Hjava_lang_ClassLoader* loader)
 	classEntry* entry;
 	int ipool;
 	int totalent = 0;
+	int iLockRoot;
 
         lockStaticMutex(&classHashLock);
 	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {

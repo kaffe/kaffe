@@ -3478,7 +3478,7 @@ Kaffe_MonitorEnter(JNIEnv* env, jobject obj)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	/* We should never throw out of a JNI call */
-	lockJavaMutex(obj);
+	lockObject(obj);
 
 	END_EXCEPTION_HANDLING();
 	return (0);
@@ -3489,7 +3489,7 @@ Kaffe_MonitorExit(JNIEnv* env, jobject obj)
 {
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	unlockJavaMutex(obj);
+	unlockObject(obj);
 
 	END_EXCEPTION_HANDLING();
 	return (0);
@@ -3604,6 +3604,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	bool success = true;
 	int j;
 	int an;
+	int iLockRoot;
 
 	/* Convert the signature into a simple string of types, and
 	 * count the size of the arguments too.

@@ -89,7 +89,7 @@ int codeblock_size;
 static int code_generated;
 static int bytecode_processed;
 static int codeperbytecode;
-iLock translatorlock;
+iLock *translatorlock;
 
 int CODEPC;
 
@@ -149,7 +149,7 @@ translate(Method* xmeth, errorInfo* einfo)
 	static bool reinvoke = false;
 
 	jboolean success = true;
-	iLock* lock;
+	int iLockRoot;
 
 	/* Since we get here by calling the trampoline, we must be about
 	 * to call this method - so make sure it's OK before generating
@@ -157,7 +157,7 @@ translate(Method* xmeth, errorInfo* einfo)
 	 */
 	processClass(xmeth->class, CSTATE_COMPLETE, einfo);
 
-	lock = lockMutex(xmeth->class);
+	lockMutex(&xmeth->class->head);
 
 	if (METHOD_TRANSLATED(xmeth)) {
 		goto done3;
@@ -296,7 +296,7 @@ DBG(JIT,                dprintf("unreachable basic block pc [%d:%d]\n", pc, npc 
 		switch (base[pc]) {
 		default:
 			printf("Unknown bytecode %d\n", base[pc]);
-			unlockMutex(xmeth->class->centry);
+			unlockMutex(&xmeth->class->head);
 			leaveTranslator();
 			postException(einfo, JAVA_LANG(VerifyError));
                         success = false;
@@ -352,7 +352,7 @@ DBG( vm_jit_translate, ("Translating %s.%s%s (%s) %p\n",
 done2:;
 	leaveTranslator();
 done3:;
-	unlockKnownMutex(lock);
+	unlockMutex(&xmeth->class->head);
 
 	return (success);
 }

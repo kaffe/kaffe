@@ -141,15 +141,11 @@ findInJar(char* cname, errorInfo *einfo)
 	classFile hand;
 	ssize_t j;
 	jarEntry* entry;
-	static iLock jarlock;
+	static iLock* jarlock;
 	classpathEntry* ptr;
 	int i;
 	int rc;
-
-	/* Initialise on first use */
-	if (!staticLockIsInitialized(&jarlock)) {
-		initStaticLock(&jarlock);
-	}
+	int iLockRoot;
 
 	/* Look for the class */
 CDBG(	dprintf("Scanning for element %s\n", cname);		)

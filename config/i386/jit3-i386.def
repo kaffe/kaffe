@@ -1607,8 +1607,6 @@ define_insn(lshl_int_const, lshl_RRC)
 	debug(("shll #%d,%s\n", v, regname(rw)));
 }
 
-#if 0
-
 define_insn(mon_enter, monenter_xxRCC)
 {
 	Method* meth;
@@ -1778,8 +1776,6 @@ define_insn(mon_exit, monexit_xxRCC)
 		OUT = 0x08;        debug(("addl   $0x8,esp\n"));
 	}
 }
-
-#endif
 
 define_insn(get_arg_ptr, get_arg_ptr_R)
 {

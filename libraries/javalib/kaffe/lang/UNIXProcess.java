@@ -102,4 +102,16 @@ public int waitFor() throws InterruptedException {
 	}
 	return (exit_code);
 }
+
+/**
+ * Native callback.
+ */
+private void processDied(int status) {
+	synchronized(this) {
+		isalive = false;
+		exit_code = status;
+		notifyAll();
+	}
+}
+
 }

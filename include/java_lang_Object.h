@@ -16,9 +16,7 @@ struct _iLock;
 
 typedef struct Hjava_lang_Object {
 	struct _dispatchTable*  dtable;
-#if defined(USE_LOCK_CACHE)
 	struct _iLock*		lock;
-#endif
 	/* Data follows on immediately */
 } Hjava_lang_Object;
 

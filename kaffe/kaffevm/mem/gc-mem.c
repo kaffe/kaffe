@@ -28,7 +28,7 @@
 #include <unistd.h>
 #endif
 
-extern iLock gc_lock;
+extern iLock* gc_lock;
 
 static counter gcpages;
 static gc_block* gc_small_block(size_t);
@@ -272,6 +272,7 @@ gc_heap_malloc(size_t sz)
 	gc_block* blk;
 	size_t nsz;
 	int times;
+	int iLockRoot;
 
 	/* Initialise GC heap first time in - we must assume single threaded
 	 * operation here so we can do the lock initialising.
@@ -280,6 +281,8 @@ gc_heap_malloc(size_t sz)
 		gc_heap_initialise();
 		gc_heap_init = 1;
 	}
+
+	lockStaticMutex(&gc_lock);
 
 	times = 0;
 
@@ -363,6 +366,8 @@ DBG(GCALLOC,	dprintf("gc_heap_malloc: large block %d at %p\n", sz, mem);	)
 
 	assert(GC_OBJECT_SIZE(mem) >= sz);
 
+	unlockStaticMutex(&gc_lock);
+
 	return (mem);
 
 	/* --------------------------------------------------------------- */
@@ -406,6 +411,7 @@ DBG(GCALLOC,	dprintf("gc_heap_malloc: large block %d at %p\n", sz, mem);	)
 			assert (ranout++ == 0 || !!!"Ran out of memory!");
 		}
 		/* Guess we've really run out */
+		unlockStaticMutex(&gc_lock);
 		return (0);
 	}
 
