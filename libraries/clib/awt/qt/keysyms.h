@@ -24,6 +24,7 @@ signed char QFKeyCode[256] = {
 0x00,	//Key_Pause = 0x1008,
 0x9a,	//Key_Print = 0x1009,
 0x00,	//Key_SysReq = 0x100a,
+0,0,0,0,0,			// 0x100b~0x100f,
 0x24,	//Key_Home = 0x1010,		// cursor movement
 0x23,	//Key_End = 0x1011,
 0x25,	//Key_Left = 0x1012,
@@ -32,6 +33,7 @@ signed char QFKeyCode[256] = {
 0x28,	//Key_Down = 0x1015,
 0x21,	//Key_Prior = 0x1016, //Key_PageUp = //Key_Prior,
 0x22,	//Key_Next = 0x1017, //Key_PageDown = //Key_Next,
+0,0,0,0,0,0,0,0,	// 0x1018~0x101f,
 0x10,	//Key_Shift = 0x1020,		// modifiers
 0x11,	//Key_Control = 0x1021,
 0x9d,	//Key_Meta = 0x1022,

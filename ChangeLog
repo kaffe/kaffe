@@ -1,3 +1,8 @@
+2003-05-14 Seong Beom Kim <sbkim@mail.marusys.com>
+
+	* libraries/clib/awt/qt/keysyms.h:
+	(QFKeyCode) Added missing dead keys.
+	
 2003-05-14 Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/awt/image/ColorModel.java:
