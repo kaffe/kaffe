@@ -13,7 +13,7 @@ kaffe \- a virtual machine to execute Java(tm) bytecode
 .BI "[\-mx" " size" "]"
 .BI "[\-classpath" " path" "]"
 .BI "[\-addclasspath" " path" "]"
-.BI "[\-noverify]"
+.BI "[\-verify | \-noverify]"
 .BI "[\-D" "property" "=" "value" "]"
 .BI "[\-v]"
 .BI "[\-verbosegc]"
@@ -56,6 +56,9 @@ Set the path which is searched for compiled classes, e.g.
 .B "\-addclasspath path"
 Appends the given path to the current classpath setting. Multiple
 instances of this flag may be given.
+.TP
+.B "\-verify"
+Verify all bytecode that is not trusted.
 .TP
 .B "\-noverify"
 Do not verify any bytecode.
