@@ -1,8 +1,17 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+	
+	2005-03-11  Chris Burdess  <dog@gnu.org>
 
-2005-03-14  Chris Burdess  <dog@gnu.org>
+	* gnu/xml/aelfred2/SAXDriver.java: Corrected bug handling URI
+	warnings.
+
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-03-14  Chris Burdess  <dog@gnu.org>
 
 	* gnu/xml/dom/DomImpl.java,
 	gnu/xml/dom/html2/DomHTMLAnchorElement.java,

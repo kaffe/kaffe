@@ -740,10 +740,13 @@ final public class SAXDriver
     
     try
       {
-        if (baseURI == null && XmlParser.uriWarnings)
+        if (baseURI == null)
           {
-            warn ("No base URI; hope this SYSTEM id is absolute: "
-                  + systemId);
+            if (XmlParser.uriWarnings)
+              {
+                warn ("No base URI; hope this SYSTEM id is absolute: "
+                      + systemId);
+              }
             return new URL(systemId).toString();
           }
         else
