@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-03-08 David Gilbert <david.gilbert@object-refinery.com>
+
+        * java/awt/Font.java (decode): Handle null argument and allow
+        space as delimiter.
+
+2005-03-09  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-03-07  Chris Burdess  <dog@gnu.org>
 
         * gnu/java/net/protocol/https/Handler.java: New file.
