@@ -1,3 +1,8 @@
+Sun Jan 31 23:20:10 1999  grunwald@cm2081664196.cableco-op.com
+
+	* libraries/javalib/java/text/DateFormat.java: add missing
+	method getCalendar()
+
 Fri Jan 29 06:03:57 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in (KAFFE_FOR_BUILD, MAKE_KAFFEH_FOR_BUILD): get rid
