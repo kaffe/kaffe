@@ -1,3 +1,15 @@
+Wed Jan  6 00:48:47 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/gc.h, kaffe/kaffevm/hashtab.[ch],
+	kaffe/kaffevm/object.c, kaffe/kaffevm/string.c,
+	kaffe/kaffevm/stringSupport.h, kaffe/kaffevm/utf8const.c,
+	kaffe/kaffevm/mem/gc-incremental.c,
+	kaffe/kaffevm/mem/gc-mem.c:
+	libraries/clib/native/String.c, 
+	libraries/javalib/java/lang/String.java:  
+	- implemented special handling of java.lang.String objects.
+	- fixed invokeGC().
+
 Tue Jan  5 11:33:02 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffe/main.c: made -ms/-mx/-ss sun-compatible, added -as
