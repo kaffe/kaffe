@@ -1,3 +1,11 @@
+Tue Oct 12 19:06:39 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* baseClasses.c, exception.c, locks.h, thread.c, utf8const.c,
+	jit3/funcs.c, jit3/icode.c, jit3/labels.c, jit3/machine.c,
+	jit3/machine.h, jit3/registers.c, jit3/registers.h,
+	jit3/seq.h, jit3/slots.c: fixed various warnings and added
+	declarations.
+
 Tue Oct 12 10:29:41 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/libraries/clib/awt/X/evt.c, kaffe/libraries/clib/awt/X/tlk.c,
