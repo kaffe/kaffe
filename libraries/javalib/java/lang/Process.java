@@ -17,7 +17,7 @@ abstract public class Process
 {
 public Process() {}
 
-abstract public void destory();
+abstract public void destroy();
 
 abstract public int exitValue();
 
