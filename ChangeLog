@@ -1,5 +1,6 @@
 Wed Aug 19 21:54:45 1998  Archie Cobbs  <archie@whistle.com>
 
+	* kaffe/kaffevm/string.c: make sure hashChars works even if len==0
 	* libraries/javalib/java/lang/Throwable.java: use toString in
 	printStackTrace.
 	* configure.in, */Makefile.in: added INSTROOT variable
