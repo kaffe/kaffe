@@ -5,14 +5,14 @@ This release has been tested on the following platforms (some of which
 might be unstable prototype systems rather than solid products, and as
 such, might not produce representative results):
 
-* i386 / Linux (Debian unstable/woody)
+* i386 / Linux
 
   Tested Version: 1.0.7 (Final)
   Configuration: Default (jit3)
   OS Version: Debian unstable/woody, Linux 2.4.18
   Hardware: Athlon 1.2GHz
   Compiled with: gcc 2.95.4
-  Results: Compiles, all "make check" tests pass.
+  Results: Compiles, All 114 tests passed.
   Reported by: Jim Pick
 
   Tested Version: 1.0.7 (Final)
@@ -23,6 +23,92 @@ such, might not produce representative results):
   Results: Compiles, 11 of 115 tests fail (a known bug).
   Reported by: Jim Pick
 
+  Tested Version: 1.0.7-rc1
+  Configuration: Default (jit3)
+  OS Version: SuSE 7.3
+  Hardware: Athlon 600MHz
+  Results: Compiles, All 114 tests passed.
+  Reported by: Carsten Ziepke
+
+  Tested Version: 1.0.7-rc1
+  Configuration: Default (jit3)
+  OS Version: Slackware 8.0
+  Compiled with: gcc version 2.95.3 20010315 (release)
+  Results: Compiles, All 114 tests passed.
+  Reported by: Valentin Valchev
+
+  Tested Version: 1.0.7-rc1
+  Configuration: --with-engine=jit
+  OS Version: Slackware 8.0
+  Compiled with: gcc version 2.95.3 20010315 (release)
+  Results: Compiles, All 114 tests passed.
+  Reported by: Valentin Valchev
+
+  Tested Version: 1.0.7-rc1
+  Configuration: --with-engine=intrp
+  OS Version: Slackware 8.0
+  Compiled with: gcc version 2.95.3 20010315 (release)
+  Results: Compiles, All 114 tests passed.
+  Reported by: Valentin Valchev
+
+  Tested Version: 1.0.7-rc1
+  Configuration: --with-threads=pthreads
+  OS Version: Slackware 8.0
+  Compiled with: gcc version 2.95.3 20010315 (release)
+  Results: Compiles, FAILED: ExecTest, ProcessTest, SoInterrupt, SoTimeout.
+  Reported by: Valentin Valchev
+
+  Tested Version: 1.0.7-rc1
+  Configuration: --with-threads=pthreads --with-engine=jit
+  OS Version: Slackware 8.0
+  Compiled with: gcc version 2.95.3 20010315 (release)
+  Results: Compiles, FAILED: ExecTest, ProcessTest, SoInterrupt, SoTimeout, ThreadState.
+  Reported by: Valentin Valchev
+
+  Tested Version: 1.0.7-rc1
+  Configuration: --with-threads=pthreads --with-engine=intrp
+  OS Version: Slackware 8.0
+  Compiled with: gcc version 2.95.3 20010315 (release)
+  Results: Compiles, FAILED: ExecTest, ProcessTest, SoInterrupt, SoTimeout.
+  Reported by: Valentin Valchev
+
+  Tested Version: 1.0.7-rc1
+  Configuration: Default (jit3)
+  OS Version: Mandrake 8.0
+  Compiled with: gcc 2.96
+  Results: Compiles, FAILED: Bean, Reflect, ThreadLocalTest.  (Compiler problem?)
+  Reported by: Valentin Valchev
+
+  Tested Version: 1.0.7-rc1
+  Configuration: --with-engine=jit
+  OS Version: Mandrake 8.0
+  Compiled with: gcc 2.96
+  Results: Compiles, FAILED: Bean, Reflect, ThreadLocalTest.  (Compiler problem?)
+  Reported by: Valentin Valchev
+
+  Tested Version: 1.0.7-rc1
+  Configuration: --with-engine=intrp
+  OS Version: Mandrake 8.0
+  Compiled with: gcc 2.96
+  Results: Compiles, FAILED: Bean, Reflect, ThreadLocalTest.  (Compiler problem?)
+  Reported by: Valentin Valchev
+
+  Tested Version: 1.0.7-rc1
+  Configuration: --with-threads=pthreads (ji3)
+  OS Version: Mandrake 8.0
+  Compiled with: gcc 2.96
+  Results: Compiles, FAILED: Bean, ClassGC, ExecTest, ProcessTest, Reflect, SoInterrupt,
+                             SoTimeout, ThreadLocalTest.
+  Reported by: Valentin Valchev
+
+  Tested Version: 1.0.7-rc1
+  Configuration: --with-threads=pthreads --with-engine=intrp
+  OS Version: Mandrake 8.0
+  Compiled with: gcc 2.96
+  Results: Compiles, FAILED: Bean, ExecTest, ProcessTest, Reflect, SoInterrupt,
+                             SoTimeout, ThreadLocalTest.
+  Reported by: Valentin Valchev
+
 * i386 / NetBSD
 
   Tested Version: 1.0.7 (Final)
@@ -32,6 +118,13 @@ such, might not produce representative results):
   Compiled with: egcs 2.91.66
   Results: Compiles, 8 of 115 tests failed.
   Reported by: Jim Pick
+
+* i386 / Solaris
+
+  Tested Version: 1.0.7-rc1
+  Configuration: Default
+  Results: Compiles, a few "make check" failures.
+  Reported by: Dalibor Topic
 
 * i386 / Win32
 
@@ -64,7 +157,8 @@ such, might not produce representative results):
   
   Tested Version: 1.0.7-rc1
   Configuration: --with-engine=intrp
-  OS Version: YellowDog Linux 2.2
+  OS Version: YellowDog Linux 2.2, Linux 2.4.18-0.9a
+  Compiled with: gcc version 2.95.4 20010319 (prerelease/franzo/20011204)
   Results: Compiles, all "make check" tests pass.
   ** However ** , I'm not able to run any of the sample AWT applications
   under test/awt
@@ -111,6 +205,13 @@ such, might not produce representative results):
            `si_regs`"
   Reported by: Jim Pick
 
+* Sparc / Solaris
+
+  Tested Version: 1.0.7-rc1
+  Configuration: Default
+  Results: Compiles, a few "make check" failures.
+  Reported by: Dalibor Topic
+
 * ARM / Linux
 
   Tested Version: 1.0.7 (Final)
@@ -139,6 +240,13 @@ such, might not produce representative results):
   Results: Did not compile (sigcontext.h not found from md.h)
   Reported by: Jim Pick
 
+* MIPS (Big-Endian) / IRIX
+
+  Tested Version: 1.0.7-rc1
+  Configuration: Default
+  Results: Compiles, a few "make check" failures.
+  Reported by: Dalibor Topic
+
 * MIPS (Little-Endian) / Linux
 
   Tested Version: 1.0.7 (Final)
@@ -161,9 +269,50 @@ such, might not produce representative results):
 
 * IA-64 / Linux
 
+  Tested Version: 1.0.7 (Final)
+  Configuration: Default (intrp)
+  OS Version: Debian unstable/woody, Linux 2.4.9-itanium-smp
+  Hardware: Dual Itanium 800MHz
+  Compiled with: gcc version 2.96 20000731 (Debian GNU/Linux IA64 experimental)
+  Results: Compiles, 112 of 115 tests failed.
+   Most failed with:
+    error compiling:
+    lt-kaffe-bin: /home/jim/kaffe-ia64/src/kaffe-1.0.7-branch/kaffe/kaffevm/ \
+    exception.c:386: dispatchException: Assertion `!intsDisabled()' failed.
+  Reported by: Jim Pick
+
 * Alpha / Linux
 
+  Tested Version: 1.0.7 (Final)
+  Configuration: Default (jit)
+  OS Version: Debian unstable/woody, Linux 2.4.17
+  Hardware: EB164 SX164 533MHz
+  Compiled with: gcc 2.95.4
+  Results: Compiles, 112 of 115 tests failed.
+   Most failed with:
+    error compiling:
+    Internal error: caught an unexpected exception.
+    Please check your CLASSPATH and your installation.
+    java/lang/NullPointerException
+  Reported by: Jim Pick
+
+  Tested Version: 1.0.7 (Final)
+  Configuration: --with-engine=intrp
+  OS Version: Debian unstable/woody, Linux 2.4.17
+  Hardware: EB164 SX164 533MHz
+  Compiled with: gcc 2.95.4
+  Results: Compiles, 2 of 114 tests failed.
+  Reported by: Jim Pick
+
 * S390 / Linux
+
+  Tested Version: 1.0.7 (Final)
+  Configuration: Default (intrp)
+  OS Version: Debian testing/woody, Linux 2.4.17
+  Hardware: s390 virtual machine
+  Compiled with: gcc 2.95.4
+  Results: Compiles, All 114 tests passed.
+  Reported by: Jim Pick
 
 * SuperH / Linux
 
