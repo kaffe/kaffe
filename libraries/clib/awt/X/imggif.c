@@ -64,7 +64,7 @@ Image*
 readGif ( GifFileType *gf )
 {
   Image           *img = 0;
-  int             i, extCode, width, height, row, col, cmapSize;
+  int             i, extCode, width, height, row, cmapSize;
   GifRecordType   rec;
   GifByteType     *ext;
   ColorMapObject  *cmap;
@@ -176,8 +176,6 @@ readGifData ( unsigned char* buf, long len )
 {
   Image          *img = 0;
 #if defined(HAVE_GIF_LIB_H)
-  BufferSource   bufSrc;
-  GifFileType    *gf;
 
   /*
    * we don't have a enhanced GIF lib (capable of alternate input methods), backup
