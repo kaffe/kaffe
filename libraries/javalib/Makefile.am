@@ -15,6 +15,7 @@ CLASSFILE = Klasses.jar
 class_DATA = $(CLASSFILE) pizza.jar
 
 EXTRA_DIST = \
+	$(class_DATA) \
 	java/applet/Applet.java \
 	java/applet/AppletContext.java \
 	java/applet/AppletStub.java \

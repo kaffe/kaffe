@@ -1,3 +1,8 @@
+Mon Jan 11 16:27:06 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/javalib/Makefile.am (EXTRA_DIST): add class_DATA
+	* libraries/javalib/Makefile.in: regen
+
 Mon Jan 11 15:28:28 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* config/Makefile.am (EXTRA_DIST): added regen-forward
