@@ -5086,7 +5086,7 @@ dist-hook:
 	rm -f  $(distdir)/gnu/classpath/Configuration.java
 
 clean-local:
-	rm -rf $(LIBDIR) rt.jar
+	rm -rf $(LIBDIR) rt.jar tools.jar
 
 .PHONY: new-classes
 new-classes: $(top_srcdir)/developers/update-class-list

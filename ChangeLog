@@ -1,5 +1,10 @@
-2005-04-01  Dalibor Topic  <topic@localhost.localdomain>
+2005-04-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/Makefile.am.in (clean-local): 
+	Remove tools.jar as well when cleaning up.
+	
+2005-04-01  Dalibor Topic  <robilad@kaffe.org>
+	
 	Define __builtin_expected away on gcc < 3.0
 
 	* include/Makefile.am (noinst_HEADERS): Added gccbuiltin.h.
