@@ -179,6 +179,7 @@ private boolean readKeyAndValue(PushbackInputStream in) throws IOException {
 		this.value = new StringBuffer();
 
 		// Read in key
+		boolean eatSeparator = false;
 getKey:		while (true) {
 			switch (ch) {
 			case '=':
@@ -198,18 +199,27 @@ getKey:		while (true) {
 			case '\n':
 				return true;
 			default:
-				if (ch <= ' ')
+				if (ch <= ' ') {
+					eatSeparator = true;
 					break getKey;
+				}
 				in.unread(ch);
 				key.append((char) getEscapedChar(in));
 			}
 			ch = in.read();
 		}
 
-		// Eat white space before value
-		while ((ch = in.read()) <= ' ') {
-			if (ch == -1 || ch == '\n')
-				return true;
+		// Eat white space (and separator, if expecting) before value
+		while (true) {
+			while ((ch = in.read()) <= ' ') {
+				if (ch == -1 || ch == '\n')
+					return true;
+			}
+			if (eatSeparator && (ch == '=' || ch == ':')) {
+				eatSeparator = false;
+			} else {
+				break;
+			}
 		}
 
 		// Read in value
