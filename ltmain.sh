@@ -28,18 +28,23 @@ if test "X$1" = X--no-reexec; then
   # Discard the --no-reexec flag, and continue.
   shift
 elif test "X$1" = X--fallback-echo; then
-  # used as fallback echo
-  shift
-  cat <<EOF
-$*
-EOF
-  exit 0
+  # Avoid inline document here, it may be left over
+  :
 elif test "X`($echo '\t') 2>/dev/null`" = 'X\t'; then
   # Yippee, $echo works!
   :
 else
   # Restart under the correct shell, and then maybe $echo will work.
   exec $SHELL "$0" --no-reexec ${1+"$@"}
+fi
+
+if test "X$1" = X--fallback-echo; then
+  # used as fallback echo
+  shift
+  cat <<EOF
+$*
+EOF
+  exit 0
 fi
 
 # The name of this program.
@@ -50,7 +55,7 @@ modename="$progname"
 PROGRAM=ltmain.sh
 PACKAGE=libtool
 VERSION=1.2g
-TIMESTAMP=" (1.385.2.62 1999/04/07 19:35:46)"
+TIMESTAMP=" (1.385.2.63 1999/04/08 00:48:09)"
 
 default_mode=
 help="Try \`$progname --help' for more information."

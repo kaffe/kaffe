@@ -1,3 +1,10 @@
+Thu Apr  8 14:56:35 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in (underscores): Reintroduce the underscore test,
+	that is no longer performed by libtool.
+	* ltconfig, ltmain.sh: Updated from libtool.
+	* aclocal.m4, configure, */Makefile.in: Rebuilt.
+
 Wed Apr  7 23:29:49 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* configure, aclocal.m4, */Makefile.in: repair auto* damage
