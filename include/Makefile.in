@@ -137,7 +137,7 @@ CONFIG_HEADER = ../config/config.h jtypes.h
 CONFIG_CLEAN_FILES = 
 HEADERS =  $(include_HEADERS) $(noinst_HEADERS)
 
-DIST_COMMON =  Makefile.am Makefile.in jtypes.h.in stamp-h2.in
+DIST_COMMON =  ./stamp-h2.in Makefile.am Makefile.in jtypes.h.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
