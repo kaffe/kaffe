@@ -126,6 +126,11 @@ public class GdkGraphics extends Graphics
   native public void dispose ();
 
   native void copyPixmap (Graphics g, int x, int y, int width, int height);
+  native void copyAndScalePixmap (Graphics g, boolean flip_x, boolean flip_y,
+                                  int src_x, int src_y, 
+                                  int src_width, int src_height, 
+                                  int dest_x, int dest_y, 
+                                  int dest_width, int dest_height);
   public boolean drawImage (Image img, int x, int y, 
 			    Color bgcolor, ImageObserver observer)
   {
@@ -161,7 +166,10 @@ public class GdkGraphics extends Graphics
   {
     if (img instanceof GtkOffScreenImage)
       {
-	throw new RuntimeException ();
+        copyAndScalePixmap (img.getGraphics (), false, false,
+                            0, 0, img.getWidth (null), img.getHeight (null), 
+                            x, y, width, height);
+        return true;
       }
 
     GtkImage image = (GtkImage) img;
@@ -186,7 +194,60 @@ public class GdkGraphics extends Graphics
   {
     if (img instanceof GtkOffScreenImage)
       {
-	throw new RuntimeException ();
+        int dx_start, dy_start, d_width, d_height;
+        int sx_start, sy_start, s_width, s_height;
+        boolean x_flip = false;
+        boolean y_flip = false;
+
+        if (dx1 < dx2)
+        {
+          dx_start = dx1;
+          d_width = dx2 - dx1;
+        }
+        else
+        {
+          dx_start = dx2;
+          d_width = dx1 - dx2;
+          x_flip ^= true;
+        }
+        if (dy1 < dy2)
+        {
+          dy_start = dy1;
+          d_height = dy2 - dy1;
+        }
+        else
+        {
+          dy_start = dy2;
+          d_height = dy1 - dy2;
+          y_flip ^= true;
+        }
+        if (sx1 < sx2)
+        {
+          sx_start = sx1;
+          s_width = sx2 - sx1;
+        }
+        else
+        {
+          sx_start = sx2;
+          s_width = sx1 - sx2;
+          x_flip ^= true;
+        }
+        if (sy1 < sy2)
+        {
+          sy_start = sy1;
+          s_height = sy2 - sy1;
+        }
+        else
+        {
+          sy_start = sy2;
+          s_height = sy1 - sy2;
+          y_flip ^= true;
+        }
+
+        copyAndScalePixmap (img.getGraphics (), x_flip, y_flip,
+                            sx_start, sy_start, s_width, s_height, 
+                            dx_start, dy_start, d_width, d_height);
+        return true;
       }
 
     GtkImage image = (GtkImage) img;
