@@ -58,11 +58,19 @@ static inline lt_ptr_t kdlmalloc(size_t len) {
 	addToCounter(&ltmem, "vmmem-libltdl", 1, GCSIZEOF(ptr));
 	return (ptr);
 }
+static inline lt_ptr_t kdlrealloc(lt_ptr_t ptr0, size_t len) {
+	jlong len0;
+	void *ptr;
+	len0 = (jlong)GCSIZEOF(ptr0);
+	ptr = KREALLOC(ptr0, len);
+	addToCounter(&ltmem, "vmmem-libltdl", 1, ((jlong)GCSIZEOF(ptr))-len0);
+	return (ptr);
+}
 static inline void kdlfree(lt_ptr_t ptr) { 
 	addToCounter(&ltmem, "vmmem-libltdl", 1, -((jlong)GCSIZEOF(ptr)));
 	KFREE(ptr); 
 }
-#define LIBRARYINIT() ((lt_dlmalloc=kdlmalloc),(lt_dlfree=kdlfree),lt_dlinit())
+#define LIBRARYINIT() ((lt_dlmalloc=kdlmalloc),(lt_dlrealloc=kdlrealloc),(lt_dlfree=kdlfree),lt_dlinit())
 #endif
 
 #ifndef LIBRARYSUFFIX
