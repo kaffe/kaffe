@@ -370,6 +370,18 @@ document printDebugBuffer
   Print the contents of the debug buffer.
 end
 
+define pjchararr
+	set $i = 0
+	while $i < ($arg0).length
+	    printf "%c", ($arg0).data[0].body[$i]
+	    set $i = $i + 1
+	end
+	printf " (len=%d)\n", ($arg0).length
+end
+document pjchararr
+	Print a HArrayOfChar
+end
+
 define sunjlString
   set $strcount = ($arg0).count
   set $strstart = ($arg0).offset
