@@ -85,6 +85,7 @@ OBJECT=		$(OBJECT.LANG) $(OBJECT.LANG.REFLECT) \
 		$(OBJECT.IO) $(OBJECT.TEXT) $(OBJECT.TEST)
 
 DEPENDS=        $(OBJECT:@OBJEXT@=.d)
+SOURCES=        $(OBJECT:@OBJEXT@=.c)
 
 all:		$(LLIB)
 
@@ -92,15 +93,15 @@ $(LLIB):	$(LIB)
 		rm -f $(LLIB)
 		$(LN) $(LIB) $(LLIB)
 
-$(LIB):		$(OBJECT) lib.exp
+$(LIB):		$(OBJECT) lib.exp external_wrappers.h
 		@LINKLIB@
 
 .c$(OBJEXT):
 		$(CC) $(ALL_CFLAGS) -c $(PIC) $< -o $*.o
 
-wrappers:
-		sed -n $(WRAPPER_CMD) *.c > external_wrappers.h
-		cat external_wrappers.h.debug >> external_wrappers.h
+external_wrappers.h: external_wrappers.h.debug $(SOURCES)
+		sed -n $(WRAPPER_CMD) @srcdir@/*.c > external_wrappers.h
+		cat @srcdir@/external_wrappers.h.debug >> external_wrappers.h
 
 .SUFFIXES: .d
  
@@ -109,7 +110,7 @@ wrappers:
 
 clean:
 		rm -f $(LLIB) $(LIB) $(OBJECT) lib.exp
-		rm -f $(DEPENDS) .depend
+		rm -f $(DEPENDS) .depend external_wrappers.h
 		touch .depend
 
 distclean:	clean
@@ -121,9 +122,9 @@ install:
 		rm -f $(INSTROOT)$(libdir)/$(LLIB)
 		$(LN) $(LIB) $(INSTROOT)$(libdir)/$(LLIB)
 
-derived-files:	wrappers
+derived-files:	
 
-depend:		$(DEPENDS)
+depend:		external_wrappers.h $(DEPENDS)
 		rm -f .depend
 		cat $(DEPENDS) > .depend
 
