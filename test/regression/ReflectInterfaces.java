@@ -33,14 +33,16 @@ public class ReflectInterfaces
 	}
 }
 
+// Sort Output
+
 /* Expected Output:
-null
 all methods
-public abstract void ReflectInterfaces$If2.if2MethodNP()
-public abstract void ReflectInterfaces$If2.if2Method()
-public abstract void ReflectInterfaces$If1.if1MethodNP()
-public abstract void ReflectInterfaces$If1.if1Method()
 declared methods
-public abstract void ReflectInterfaces$If2.if2MethodNP()
+null
+public abstract void ReflectInterfaces$If1.if1Method()
+public abstract void ReflectInterfaces$If1.if1MethodNP()
 public abstract void ReflectInterfaces$If2.if2Method()
+public abstract void ReflectInterfaces$If2.if2Method()
+public abstract void ReflectInterfaces$If2.if2MethodNP()
+public abstract void ReflectInterfaces$If2.if2MethodNP()
 */
