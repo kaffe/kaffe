@@ -1,5 +1,5 @@
 /*
- * $Id: NNTPConnection.java,v 1.2 2004/08/09 14:38:08 dalibor Exp $
+ * $Id: NNTPConnection.java,v 1.4 2004/10/04 19:34:01 robilad Exp $
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -65,7 +65,7 @@ import gnu.inet.util.SaslOutputStream;
  * server.
  *
  * @author <a hef='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.2 $ $Date: 2004/08/09 14:38:08 $
+ * @version $Revision: 1.4 $ $Date: 2004/10/04 19:34:01 $
  */
 public class NNTPConnection
   implements NNTPConstants
@@ -1238,6 +1238,10 @@ public class NNTPConnection
   protected StatusResponse parseResponse (String line, boolean isListGroup)
     throws ProtocolException
   {
+    if (line == null)
+      {
+        throw new ProtocolException (hostname + " closed connection");
+      }
     int start = 0, end;
     short status = -1;
     String statusText = line;
