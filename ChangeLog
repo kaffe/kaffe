@@ -1,3 +1,13 @@
+2004-06-27  Jim Huang  <jserv@kaffe.org>
+
+	* test/internal/Makefile.am:
+	(AM_CPPFLAGS) Added missing includes.
+
+	* test/internal/Makefile.in:
+	Regenerated.
+
+	Reported by: Rob Gonzalez <rob@kaffe.org>
+
 2004-06-27  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/intrp/native-wrapper.h, kaffe/kaffevm/intrp/native-wrapper.c,
