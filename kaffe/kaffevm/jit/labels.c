@@ -30,6 +30,10 @@ label* firstLabel;
 label* lastLabel;
 label* currLabel;
 
+#if defined(KAFFE_VMDEBUG)
+static uint32 labelCount;
+#endif
+
 void
 resetLabels(void)
 {
@@ -167,10 +171,58 @@ newLabel(void)
 
 		/* Link elements into list */
 		for (i = 0; i < ALLOCLABELNR-1; i++) {
+#if defined(KAFFE_VMDEBUG)
+			sprintf(ret[i].name, "L%d", labelCount + i);
+#endif
+
 			ret[i].next = &ret[i+1];
 		}
 		ret[ALLOCLABELNR-1].next = 0;
 	}
 	currLabel = ret->next;
+#if defined(KAFFE_VMDEBUG)
+	labelCount += 1;
+#endif
 	return (ret);
+}
+
+label*
+getInternalLabel(label **lptr, uintp pc)
+{
+	label *curr, *retval = 0;
+
+	assert(lptr != 0);
+	
+	if( *lptr == 0 )
+	{
+		/* Start at the head of the list. */
+		*lptr = firstLabel;
+	}
+	curr = *lptr;
+	while( curr && (curr != currLabel) && !retval )
+	{
+		switch( curr->type & Ltomask )
+		{
+		case Linternal:
+			if( curr->to == pc )
+			{
+				*lptr = curr->next;
+				retval = curr;
+			}
+			break;
+		case Lcode:
+		  /* Commented out since codeInfo works
+		   * differently on jit and jit3.
+
+			if( INSNPC(curr->to) == pc )
+			{
+				*lptr = curr->next;
+				retval = curr;
+			}
+			break;
+		  */
+		}
+		curr = curr->next;
+	}
+	return( retval );
 }

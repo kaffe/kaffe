@@ -46,6 +46,9 @@ typedef struct _label_ {
 	uintp		to;
 	uintp		from;
 	int		type;
+#if defined(KAFFE_VMDEBUG)
+        char name[8];
+#endif
 } label;
 
 #define	ALLOCLABELNR	1024
@@ -55,5 +58,18 @@ void setEpilogueLabel(uintp);
 void linkLabels(struct codeinfo*, uintp);
 label* newLabel(void);
 void resetLabels(void);
+
+/**
+ * Iterate through the method internal labels that refer to the given native
+ * "pc" value.
+ *
+ * @param lptr The iteration variable, initialize *lptr to NULL to start at the
+ *   beginning of the list of labels.  The value of *lptr will then be changed
+ *   after subsequent calls until the end of the list is reached.
+ * @param pc The native PC value to search the "to" values for.
+ * @return A label matching the given "pc" or NULL if there are no more
+ *   internal labels found.
+ */
+label *getInternalLabel(label **lptr, uintp counter);
 
 #endif

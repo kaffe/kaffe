@@ -1,5 +1,17 @@
 2004-07-15  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/jit/labels.c:
+	(labelCount) Added.
+	(newLabel) Add label names.
+	(getInternalLabel) New function.
+
+        * kaffe/kaffevm/jit/labels.h:
+	(getInternalLabel) Added prototype.
+
+	Reported by: Jerry Zhou <zhgjerry@eyou.com>
+
+2004-07-15  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/external.c
 	(loadNativeLibrary2): Improve error message when library 
 	can't be found.
