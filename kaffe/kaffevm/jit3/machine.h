@@ -20,9 +20,11 @@
 				case code :
 
 /* Stack */
-#define	push(_i)		stackno -= (_i)
+#define	push(_i)		stackno -= (_i);			\
+				assert(stackno >= 0)
 #define	pop(_i)			lastuse_slot(stack(0), (_i));		\
-				stackno += (_i)
+				stackno += (_i);			\
+				assert(stackno <= maxStack+maxLocal)
 
 /* PC */
 #define	getopcode()		((int)base[pc])
@@ -129,6 +131,7 @@ typedef struct _nativeCodeInfo {
 typedef struct {
 	bool ANY;
         bool BADARRAYINDEX;
+        bool NULLPOINTER;
 } jitflags;
 
 extern jitflags willcatch;

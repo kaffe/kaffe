@@ -13,6 +13,8 @@
 
 typedef	struct {
 	Hjava_lang_Class*	type;
+	uint8			used;
+	uint8			modified;
 } frameElement;
 
 typedef struct perPCInfo {
@@ -25,10 +27,19 @@ typedef struct perPCInfo {
 	frameElement*		frame;
 } perPCInfo;
 
+typedef struct _localUse {
+	int32			use;
+	int32			first;
+	int32			last;
+	int32			write;
+	Hjava_lang_Class*	type;
+} localUse;
+
 typedef struct codeinfo {
 	uint16			codelen;
 	uint16			stacksz;
 	uint16			localsz;
+	localUse*		localuse;
 	perPCInfo		perPC[1];
 } codeinfo;
 
@@ -69,7 +80,7 @@ typedef struct codeinfo {
 #define	FLAG_STARTOFEXCEPTION		0x0002
 #define	FLAG_STACKPOINTERSET		0x0004
 #define	FLAG_NORMALFLOW			0x0008
-#define	FLAG_FLOW			0x0010
+#define	FLAG_JUMPFLOW			0x0010
 #define	FLAG_JUMP			0x0020
 #define	FLAG_NEEDVERIFY			0x0040
 #define	FLAG_DONEVERIFY			0x0080
@@ -119,7 +130,7 @@ typedef struct codeinfo {
 #define	SET_INSN(PC, V)
 #endif
 #define	SET_NORMALFLOW(pc)		FLAGS(pc) |= FLAG_NORMALFLOW
-#define	SET_JUMPFLOW(from, to)		FLAGS(to) |= FLAG_FLOW; \
+#define	SET_JUMPFLOW(from, to)		FLAGS(to) |= FLAG_JUMPFLOW; \
 					FLAGS(from) |= FLAG_JUMP
 #define	SET_STARTOFEXCEPTION(pc)	FLAGS(pc) |= FLAG_STARTOFEXCEPTION
 #define	SET_NEEDVERIFY(pc)		FLAGS(pc) |= FLAG_NEEDVERIFY
@@ -141,7 +152,8 @@ typedef struct codeinfo {
 #define	ALLOCFRAME()			KMALLOC((codeInfo->stacksz+codeInfo->localsz+1) * sizeof(frameElement))
 
 #define	ATTACH_NEW_BASICBLOCK(DPC)				\
-	if ((DPC) != 0 && !IS_STARTOFBASICBLOCK(DPC)) {		\
+	if ((DPC) != 0 && !IS_STARTOFBASICBLOCK(DPC) &&		\
+			  !IS_STARTOFEXCEPTION(DPC)) {		\
 		btail->nextBB = &codeInfo->perPC[DPC];		\
 		btail = btail->nextBB;				\
 	}
@@ -215,12 +227,17 @@ typedef struct codeinfo {
 					STACK_CHECKTYPE(S, T)
 #define	STACKOUT(S, T)			SF(S).type = (T)
 #define	STACKOUT_CONST(S, T, V)		SF(S).type = (T)
-#define	STACKOUT_LOCAL(S, T, L)		SF(S) = LCL(L)
+#define	STACKOUT_LOCAL(S, T, L)		SF(S) = LCL(L); \
+					LCL(L).used = 1
 
-#define	LOCALOUT(L, T)			LCL(L).type = (T)
-#define LOCALOUT_STACK(L, T, S)		LCL(L) = SF(S)
-#define	LOCALINOUT(L, T)
-
+#define	LOCALOUT(L, T)			LCL(L).type = (T); \
+					LCL(L).used = 1; \
+					LCL(L).modified = 1
+#define LOCALOUT_STACK(L, T, S)		LCL(L) = SF(S); \
+					LCL(L).used = 1; \
+					LCL(L).modified = 1
+#define	LOCALINOUT(L, T)		LCL(L).used = 1; \
+					LCL(L).modified = 1
 #define	STACKCOPY(F, T)			SF(T) = SF(F)
 #define	STACKOUT_STACK(T, X, F)		STACKCOPY(F, T)
 #define	STACKSWAP(F, T)			{				\
@@ -230,8 +247,10 @@ typedef struct codeinfo {
 						SF(F) = tmp;		\
 					}
 
-#define	LOCALINIT(L, T);		FRAME(pc)[(L)].type = (T)
-#define	LOCALIN(L, T)			LOCAL_CHECKTYPE(L, T);
+#define	LOCALINIT(L, T);		FRAME(pc)[(L)].type = (T); \
+					FRAME(pc)[(L)].used = 1
+#define	LOCALIN(L, T)			LOCAL_CHECKTYPE(L, T); \
+					LCL(L).used = 1
 
 struct _methods;
 bool verifyMethod(struct _methods*, codeinfo**, errorInfo*);

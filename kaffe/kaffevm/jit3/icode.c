@@ -4180,7 +4180,7 @@ check_null(int x, SlotInfo* obj, int y)
 {
 #if defined(CREATE_NULLPOINTER_CHECKS)
 #if defined(HAVE_fakecall)
-	if (!canCatch(ANY)) {
+	if (!canCatch(NULLPOINTER)) {
 		cbranch_ref_const_eq(obj, 0, newFakeCall(soft_nullpointer, pc));
 	}
 	else
@@ -4193,9 +4193,8 @@ check_null(int x, SlotInfo* obj, int y)
 		set_label(x, y);
 	}
 #else
-	if (canCatch(ANY)) {
-		begin_sync();
-		end_sync();
+	if (canCatch(NULLPOINTER)) {
+		sync_registers();
 	}
 #endif
 }
@@ -4219,8 +4218,7 @@ check_div(int x, SlotInfo* obj, int y)
 	}
 #else
 	if (canCatch(ANY)) {
-		begin_sync();
-		end_sync();
+		sync_registers();
 	}
 #endif
 }
@@ -4246,6 +4244,7 @@ check_div_long(int x, SlotInfo* obj, int y)
 #else
 	if (canCatch(ANY)) {
 		begin_sync();
+		mark_all_writes();
 		end_sync();
 	}
 #endif

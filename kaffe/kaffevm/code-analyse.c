@@ -52,6 +52,7 @@ const uint8 insnLen[256] = {
 
 static void mergeFrame(codeinfo*, int, int, frameElement*, Method*);
 static bool verifyBasicBlock(codeinfo*, Method*, int32, errorInfo*);
+static void updateLocals(codeinfo*, int32, frameElement*);
 
 bool
 verifyMethod(Method* meth, codeinfo **pcodeinfo, errorInfo *einfo)
@@ -69,6 +70,7 @@ verifyMethod(Method* meth, codeinfo **pcodeinfo, errorInfo *einfo)
 	bool failed;
 	bool wide;
 	codeinfo *codeInfo;
+	localUse* localuse;
 
 DBG(CODEANALYSE,
 	dprintf(__FUNCTION__ " %p: %s.%s\n", THREAD_NATIVE(), 
@@ -81,9 +83,23 @@ DBG(CODEANALYSE,
 		postOutOfMemory(einfo);
 		return false;
 	}
+	/* Allocate space for local register info - we add in an extra one
+	 * to avoid mallocing 0 bytes.
+	 */
+	localuse = KCALLOC(sizeof(localUse), meth->localsz+1);
+	codeInfo->localuse = localuse;
 
 	/* We don't need to do this twice */
 	meth->accflags |= ACC_VERIFIED;
+
+	for (lcl = 0; lcl < meth->localsz; lcl++) {
+		localuse = codeInfo->localuse;
+		localuse[lcl].use = 0;
+		localuse[lcl].first = 0x7FFFFFFF;
+		localuse[lcl].last = -1;
+		localuse[lcl].write = -1;
+		localuse[lcl].type = 0;
+	}
 
 DBG(CODEANALYSE,
 	dprintf(__FUNCTION__" %p: codeInfo = %p\n", THREAD_NATIVE(), codeInfo);	
@@ -229,11 +245,11 @@ DBG(CODEANALYSE,
 	if (meth->exception_table != 0) {
 		for (lcl = 0; lcl < meth->exception_table->length; lcl++) {
 			pc = meth->exception_table->entry[lcl].handler_pc;
+			ATTACH_NEW_BASICBLOCK(pc);
 			SET_STARTOFEXCEPTION(pc);
 			SET_STACKPOINTER(pc, sp);
 			SET_NEWFRAME(pc);
 			STACKINIT(0, TOBJ);
-			ATTACH_NEW_BASICBLOCK(pc);
 		}
 	}
 
@@ -361,10 +377,19 @@ verifyBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 	frameElement* activeFrame;
 	bool wide;
 	bool failed;
+	bool firsttime;
 
 	opc = pc;
 	assert(pc == 0 || IS_STARTOFBASICBLOCK(pc) || IS_STARTOFEXCEPTION(pc));
 	assert(IS_STACKPOINTERSET(pc));
+
+	/* If this block hasn't been verified before then note this */
+	if (!IS_DONEVERIFY(pc)) {
+		firsttime = true;
+	}
+	else {
+		firsttime = false;
+	}
 
 	/* Get stack pointer */
 	sp = STACKPOINTER(pc);
@@ -1928,7 +1953,12 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 	 * and merge in the frame.
 	 */
 	if (pc < meth->c.bcode.codelen && IS_NORMALFLOW(pc)) {
+		assert(IS_STARTOFBASICBLOCK(pc) || IS_STARTOFEXCEPTION(pc));
 		FRAMEMERGE(pc, sp);
+	}
+
+	if (firsttime) {
+		updateLocals(codeInfo, opc, activeFrame);
 	}
 
 done:
@@ -1987,12 +2017,15 @@ tidyVerifyMethod(codeinfo *codeInfo)
 	int pc;
 
 	/* Free the old data */
-	if (!codeInfo) return;
+	if (!codeInfo) {
+		return;
+	}
 	for (pc = 0; pc < codeInfo->codelen; pc++) {
 		if (codeInfo->perPC[pc].frame != 0) {
 			KFREE(codeInfo->perPC[pc].frame);
 		}
 	}
+	KFREE(codeInfo->localuse);
 	KFREE(codeInfo);
 DBG(CODEANALYSE,
 	dprintf(__FUNCTION__" %p: clearing codeInfo %p\n", 
@@ -2000,3 +2033,36 @@ DBG(CODEANALYSE,
     )
 }
 
+static
+void
+updateLocals(codeinfo* codeInfo, int32 pc, frameElement* frame)
+{
+	int i;
+	localUse* l;
+
+	for (i = 0; i < codeInfo->localsz; i++) {
+		if (frame[i].used == 0) {
+			continue;
+		}
+		l = &codeInfo->localuse[i];
+		if (pc < l->first) {
+			l->first = pc;
+		}
+		if (pc > l->last) {
+			l->last = pc;
+		}
+		if (frame[i].modified != 0 && pc > l->write) {
+			l->write = pc;
+		}
+		l->use++;
+		if (l->type == TUNASSIGNED) {
+			l->type = frame[i].type;
+		}
+		else if (frame[i].type == TUNASSIGNED || l->type == frame[i].type) {
+			/* Do nothing */
+		}
+		else {
+			l->type = TUNSTABLE;
+		}
+	}
+}

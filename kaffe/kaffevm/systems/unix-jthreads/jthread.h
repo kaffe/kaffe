@@ -251,6 +251,24 @@ jthread_stackcheck(int left)
 }
 
 /*
+ * Get the current stack limit.
+ */
+
+#define	REDZONE	1024
+
+static
+inline
+void*
+jthread_stacklimit(void)
+{
+#if defined(STACK_GROWS_UP)
+        return (void*)((int)currentJThread->stackEnd - REDZONE);
+#else
+        return (void*)((int)currentJThread->stackBase + REDZONE);
+#endif
+}
+
+/*
  * determine the "interesting" stack range a conservative gc must walk
  */
 int jthread_extract_stack(jthread_t jtid, void **from, unsigned *len);

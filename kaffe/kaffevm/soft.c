@@ -466,6 +466,15 @@ soft_divzero(void)
 }
 
 /*
+ * soft_stackoverflow.
+ */
+void
+soft_stackoverflow(void)
+{
+	throwException(unhand(getCurrentThread())->stackOverflowError);
+}
+
+/*
  * soft_nosuchmethod.
  */
 void            

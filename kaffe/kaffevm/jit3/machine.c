@@ -74,6 +74,7 @@ static void printProfilerStats(void);
 
 /* Various exception related things */
 extern Hjava_lang_Class javaLangArrayIndexOutOfBoundsException;
+extern Hjava_lang_Class javaLangNullPointerException;
 extern struct JNIEnv_ Kaffe_JNIEnv;
 extern Method* jniMethod;
 extern void startJNIcall(void);
@@ -101,6 +102,8 @@ static int code_generated;
 static int bytecode_processed;
 static int codeperbytecode;
 
+static codeinfo* codeInfo;
+
 int CODEPC;
 
 struct {
@@ -110,10 +113,11 @@ struct {
 extern int enable_readonce;
 
 void	initInsnSequence(int, int, int);
-bool	finishInsnSequence(codeinfo*, nativeCodeInfo*, errorInfo*);
-static void generateInsnSequence(codeinfo*);
-void installMethodCode(codeinfo*, Method*, nativeCodeInfo*);
+bool	finishInsnSequence(void*, nativeCodeInfo*, errorInfo*);
+static void generateInsnSequence(void);
+void installMethodCode(void*, Method*, nativeCodeInfo*);
 static void nullCall(void);
+static void checkCaughtExceptions(Method*, int);
 
 jlong	currentTime(void);
 Method*	findMethodFromPC(uintp);
@@ -127,8 +131,6 @@ static void makeFakeCalls(void);
 jboolean
 translate(Method* meth, errorInfo *einfo)
 {
-	int i;
-
 	jint low;
 	jint high;
 	jvalue tmpl;
@@ -151,7 +153,7 @@ translate(Method* meth, errorInfo *einfo)
 	static bool reinvoke = false;
 
 	bool success = true;
-	codeinfo* codeInfo;
+	codeinfo* myCodeInfo;
 	const char* str;
 
 	// MSR_START( jit_time);
@@ -162,15 +164,10 @@ translate(Method* meth, errorInfo *einfo)
 	 */
 	processClass(meth->class, CSTATE_COMPLETE, einfo);
 
-	/* Only one in the translator at once. Must check the translation
-	 * hasn't been done by someone else once we get it.
-	 */
-	enterTranslator();
-
 	lockMutex(meth->class->centry);
 
 	if (METHOD_TRANSLATED(meth)) {
-		goto done1;
+		goto done2;
 	}
 
 	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
@@ -195,17 +192,23 @@ translate(Method* meth, errorInfo *einfo)
 	/* Handle null calls specially */
 	if (meth->c.bcode.codelen == 1 && meth->c.bcode.code[0] == RETURN) {
 		SET_METHOD_NATIVECODE(meth, (nativecode*)nullCall);
-		goto done1;
+		goto done2;
 	}
 
 	/* Scan the code and determine the basic blocks */
-        success = verifyMethod(meth, &codeInfo, einfo);
+        success = verifyMethod(meth, &myCodeInfo, einfo);
 	if (success == false) {
 		goto done2;
 	}
 
+	/* Only one in the translator at once. Must check the translation
+	 * hasn't been done by someone else once we get it.
+	 */
+	enterTranslator();
+
 	assert(reinvoke == false);
 	reinvoke = true;
+	codeInfo = myCodeInfo;
 
 	maxLocal = meth->localsz;
 	maxStack = meth->stacksz;
@@ -231,26 +234,6 @@ SUSE(
 	base = (bytecode*)meth->c.bcode.code;
 	len = meth->c.bcode.codelen;
 
-	willcatch.ANY = false;
-	willcatch.BADARRAYINDEX = false;
-
-	/* Deterimine various exception conditions */
-	if (meth->exception_table != 0) {
-		willCatch(ANY);
-		for (i = 0; i < (int)meth->exception_table->length; i++) {
-			Hjava_lang_Class* etype;
-			etype = meth->exception_table->entry[i].catch_type;
-			if (etype == 0) {
-				willCatch(BADARRAYINDEX);
-			}
-			else {
-				if (instanceof(&javaLangArrayIndexOutOfBoundsException, etype)) {
-					willCatch(BADARRAYINDEX);
-				}
-			}
-		}
-	}
-
 	/*
 	 * Initialise the translator.
 	 */
@@ -269,7 +252,7 @@ SUSE(
 	monitor_enter();
 	if (IS_STARTOFBASICBLOCK(0)) {
 		end_basic_block();
-		generateInsnSequence(codeInfo);
+		generateInsnSequence();
 		start_basic_block();
 	}
 
@@ -278,6 +261,25 @@ SUSE(
 		assert(stackno <= maxStack+maxLocal);
 
 		npc = pc + insnLen[base[pc]];
+
+		/* Skip over the generation of any unreachable basic blocks */
+		if (IS_UNREACHABLE(pc)) {
+			while (npc < len && !IS_STARTOFBASICBLOCK(npc) && !IS_STARTOFEXCEPTION(npc)) {
+				npc = npc + insnLen[base[npc]];
+			}
+DBG(JIT,		dprintf("unreachable basic block pc [%d:%d]\n", pc, npc - 1);   )
+			if (IS_STARTOFBASICBLOCK(npc)) {
+				end_basic_block();
+				start_basic_block();
+				stackno = STACKPOINTER(npc);
+			}
+			continue;
+		}
+
+DBG(JIT,        dprintf("pc = %d, npc = %d\n", pc, npc);        )
+
+		/* Determine various exception conditions */
+		checkCaughtExceptions(meth, pc);
 
 		start_instruction();
 
@@ -306,7 +308,7 @@ SCHK(		sanityCheck();					)
 
 		if (IS_STARTOFBASICBLOCK(npc)) {
 			end_basic_block();
-			generateInsnSequence(codeInfo);
+			generateInsnSequence();
 			start_basic_block();
 			stackno = STACKPOINTER(npc);
 SCHK(			sanityCheck();				)
@@ -318,11 +320,12 @@ SCHK(			sanityCheck();				)
 
 	assert(maxTemp < MAXTEMPS);
 
-	finishInsnSequence(codeInfo, &ncode, einfo);
-	installMethodCode(codeInfo, meth, &ncode);
+	finishInsnSequence(0, &ncode, einfo);
+	installMethodCode(0, meth, &ncode);
 
 done:;
-	tidyVerifyMethod(codeInfo);
+	tidyVerifyMethod(myCodeInfo);
+	codeInfo = 0;
 
 	reinvoke = false;
 
@@ -339,9 +342,18 @@ done:;
 	}
 
 done1:;
-	unlockMutex(meth->class->centry);
-done2:;
+#if defined(KAFFE_PROFILER)
+	if (profFlag) {
+		profiler_click_t end;
+
+		profiler_get_clicks(end);
+		meth->jitClicks = end - meth->jitClicks;
+		globalMethod = 0;
+	}
+#endif
 	leaveTranslator();
+done2:;
+	unlockMutex(meth->class->centry);
 
 	// MSR_STOP( jit_time);
 
@@ -353,7 +365,7 @@ done2:;
  * Generate the code.
  */
 bool
-finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
+finishInsnSequence(void* dummy, nativeCodeInfo* code, errorInfo *einfo)
 {
 #if defined(CALLTARGET_ALIGNMENT)
 	int align = CALLTARGET_ALIGNMENT;
@@ -365,7 +377,7 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	nativecode* codebase;
 
 	/* Emit pending instructions */
-	generateInsnSequence(codeInfo);
+	generateInsnSequence();
 
 	/* Okay, put this into malloc'ed memory */
 	constlen = nConst * sizeof(union _constpoolval);
@@ -409,7 +421,7 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
  * Install the compiled code in the method.
  */
 void
-installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
+installMethodCode(void* dummy, Method* meth, nativeCodeInfo* code)
 {
 	int i;
 	jexceptionEntry* e;
@@ -509,7 +521,7 @@ initInsnSequence(int codesize, int localsz, int stacksz)
  */
 static
 void
-generateInsnSequence(codeinfo* codeInfo)
+generateInsnSequence(void)
 {
 	sequence* t;
 	int i;
@@ -528,7 +540,7 @@ SCHK(		sanityCheck();					)
 		/* Generate sequences */
 		assert(t->func != 0);
 		if (t->refed != 0) {
-			(*(t->func))(t, codeInfo);
+			(*(t->func))(t);
 		}
 		else {
 			/* printf("discard instruction\n"); */
@@ -554,7 +566,7 @@ SCHK(		sanityCheck();					)
  * Start a new instruction.
  */
 void
-startInsn(sequence* s, codeinfo* codeInfo)
+startInsn(sequence* s)
 {
 	SET_INSNPC(const_int(2), CODEPC);
 }
@@ -804,7 +816,7 @@ setupGlobalRegisters(void)
 	struct {
 		localUse* lcl;
 		SlotData* slot;
-		boolean arg;
+		jboolean arg;
 	} tmp[NR_GLOBALS];
 
 	/* If we don't have any code info we can't do any global
@@ -925,10 +937,51 @@ jit_soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 }
 
 /*
+ * check what synchronous exceptions are caught for a given instruction
+ */
+static
+void 
+checkCaughtExceptions(Method* meth, int pc)
+{
+	int i;
+
+	willcatch.BADARRAYINDEX = false;
+	willcatch.NULLPOINTER = false;
+
+	if (meth->exception_table == 0)  {
+		return;
+	}
+
+	/* Determine various exception conditions */
+	for (i = 0; i < meth->exception_table->length; i++) {
+		Hjava_lang_Class* etype;
+
+		/* include only if exception handler range matches pc */
+		if (meth->exception_table->entry[i].start_pc > pc ||
+		    meth->exception_table->entry[i].end_pc <= pc)
+			continue;
+
+		etype = meth->exception_table->entry[i].catch_type;
+		if (etype == 0) {
+			willCatch(BADARRAYINDEX);
+			willCatch(NULLPOINTER);
+		}
+		else {
+			if (instanceof(&javaLangArrayIndexOutOfBoundsException, etype)) {
+				willCatch(BADARRAYINDEX);
+			}
+			if (instanceof(&javaLangNullPointerException, etype)) {
+				willCatch(NULLPOINTER);
+			}
+		}
+	}
+}
+
+/*
  * return what engine we're using
  */
 char*
-getEngine()
+getEngine(void)
 {
 	return "kaffe.jit";
 }
@@ -1008,7 +1061,8 @@ makeFakeCalls(void)
 static jlong click_multiplier;
 static profiler_click_t click_divisor;
 
-static int
+static
+int
 profilerClassStat(Hjava_lang_Class *clazz, void *param)
 {
 	Method *meth;
@@ -1034,7 +1088,8 @@ profilerClassStat(Hjava_lang_Class *clazz, void *param)
 }
 
 
-static void
+static
+void
 printProfilerStats(void)
 {
 	profiler_click_t start, end;

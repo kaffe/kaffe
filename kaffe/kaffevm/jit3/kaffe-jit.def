@@ -141,7 +141,20 @@ define_insn(LDC2)
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
 	push(1);
-	switch (CLASS_CONST_TAG(current_class(), idx)) {
+	low = CLASS_CONST_TAG(current_class(), idx);
+	switch (low) {
+        case CONSTANT_String:
+		{
+			errorInfo ei;
+			void* s;
+
+			s = resolveString(CLASS_CONSTANTS(current_class()), idx, &ei);
+			if (s == 0) {
+				compile_time_error(ei);
+			}
+			move_string_const(stack(0), s);
+		}
+		break;
 	case CONSTANT_ResolvedString:
 		move_string_const(stack(0), (void*)CLASS_CONST_DATA(current_class(),idx));
 		break;
@@ -1751,20 +1764,20 @@ define_insn(TABLESWITCH)
 
 	end_sub_block();
 	cbranch_int_const_lt(stack(0), low, reference_label(TABLESWITCH, 8));
+	cbranch_int_const_le(stack(0), high, reference_label(TABLESWITCH, 7));
+
+	start_sub_block();
+	set_label(TABLESWITCH, 8);
+	move_int_const(stack(0), low-3); /* Position at default entry */
+	end_sub_block();
+
+	start_sub_block();
+	set_label(TABLESWITCH, 7);
 	if (low != 0) {
 		start_sub_block();
 		sub_int_const(stack(0), stack(0), low);
 		end_sub_block();
 	}
-	cbranch_int_const_le(stack(0), high-low, reference_label(TABLESWITCH, 7));
-
-	start_sub_block();
-	set_label(TABLESWITCH, 8);
-	move_int_const(stack(0), -3); /* Position at default entry */
-	end_sub_block();
-
-	start_sub_block();
-	set_label(TABLESWITCH, 7);
 	lshl_int_const(stack(0), stack(0), switchtable_shift);
 	slot_alloctmp(tmp2);
 	move_label_const(tmp2, reference_table_label(9));

@@ -32,6 +32,7 @@ void	soft_nullpointer(void);
 void	soft_divzero(void);
 void	soft_nosuchmethod(struct Hjava_lang_Class*, Utf8Const*, Utf8Const*);
 void	soft_nosuchfield(Utf8Const*, Utf8Const*);
+void	soft_stackoverflow(void);
 void	soft_checkarraystore(struct Hjava_lang_Object*, struct Hjava_lang_Object*);
 void	soft_addreference(void*, void*);
 

@@ -7,4 +7,4 @@
 # of this file. 
 
 ENGINE_INCLUDES = -Ijit3 -I$(srcdir)/jit3
-ENGINE_DEFS = -DTRANSLATOR
+ENGINE_DEFS = -DTRANSLATOR -DJIT3

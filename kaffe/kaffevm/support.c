@@ -424,6 +424,14 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 	}
 	sig++;	/* Skip trailing ')' */
 
+#if defined(STACK_LIMIT)
+	call.calltype[i] = 'L';
+	call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+	in[i].l = jthread_stacklimit();
+	s += PTR_TYPE_SIZE / SIZEOF_INT;
+	i++;
+#endif
+
 	/* Return info */
 	call.rettype = *sig;
 	if (*sig == 'L' || *sig == '[') {
@@ -626,6 +634,14 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	}
 	sig++;	/* Skip trailing ')' */
 
+#if defined(STACK_LIMIT)
+	call.calltype[i] = 'L';
+	call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+	in[i].l = jthread_stacklimit();
+	s += PTR_TYPE_SIZE / SIZEOF_INT;
+	i++;
+#endif
+
 	/* Return info */
 	call.rettype = *sig;
 	if (*sig == 'L' || *sig == '[') {
@@ -801,6 +817,10 @@ currentTime(void)
 #elif defined(HAVE_FTIME)
 	struct timeb tm;
 	ftime(&tm);
+	tme = (((jlong)tm.time * (jlong)1000) + (jlong)tm.millitm);
+#elif defined(HAVE__FTIME)
+	struct timeb tm;
+	_ftime(&tm);
 	tme = (((jlong)tm.time * (jlong)1000) + (jlong)tm.millitm);
 #elif defined(HAVE_TIME)
 	tme = (jlong)1000 * (jlong)time(0);
