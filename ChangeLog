@@ -1,3 +1,8 @@
+Tue Feb 16 09:57:31 1999  Moses DeJong <dejong@cs.umn.edu>
+
+	* libraries/javalib/java/util/zip/{ZipEntry,ZipOutputStream}.java:
+	fix a few miscellaneous bugs & incompatibilities
+
 Mon Feb 15 20:50:41 1999  Moses DeJong <dejong@cs.umn.edu>
 
 	* libraries/javalib/java/util/Map.java: added Map.remove
