@@ -1,3 +1,32 @@
+2004-11-12  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/jar/JarFile.java:
+	Resynced with GNU Classpath.
+
+	2004-11-11  Mark Wielaard  <mark@klomp.org>
+
+        * java/util/jar/JarFile.java (verify): Make package private.
+        (signaturesRead): Likewise.
+        (verified): Likewise.
+        (entryCerts): Likewise.
+        (DEBUG): Likewise.
+        (debug): Likewise.
+        (entries): Construct new JarEnumeration with reference to this.
+        (JarEnumeration): Make static.
+        (JarEnumeration.jarfile): New field.
+        (JarEnumeration.nextElement): Use and synchronize on jarfile.
+        Compare verified value to Boolean.TRUE or Boolean.False only
+        when verify is true.
+        (getEntry): Make synchronized. Compare value of verified to
+        Boolean.TRUE.
+        (getInputStream): Construct EntryInputStream with reference to this.
+        (getManifest): Make synchronized.
+        (EntryInputStream): Make static.
+        (EntryInputStream.jarfile): New field.
+        (EntryInputStream.EntryInputStream): Check if manifest exists,
+        before getting attributes.
+        (eof): Synchronize on jarfile.
+
 2004-11-12  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
