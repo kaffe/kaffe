@@ -42,31 +42,13 @@ public final class Float extends Number {
   public Float(String s) throws NumberFormatException {
     this.value = valueOf(s).value;
   }
-  
-  public boolean equals(Object obj) {
-    if ((obj!=null) && (obj instanceof Float)) {
 
-      final int leftBits=floatToIntBits(this.value);
-      final int rightBits=floatToIntBits(((Float )obj).value);
-      final int posBits=floatToIntBits(POSITIVE_INFINITY);
-      final int negBits=floatToIntBits(NEGATIVE_INFINITY);
-
-      if (this.isNaN() && ((Float )obj).isNaN()) {
-        return true;
-      }
-
-      if (((leftBits == posBits) && (rightBits == posBits))
-	  || ((leftBits == negBits) && (rightBits == negBits))) {
-	return true;
-      }
-    
-      return (leftBits == rightBits);
-    }
-    else {
-      return false;
-    }
+  public boolean equals(Object that) {
+    return (that != null
+      && that instanceof Float
+      && floatToIntBits(this.value) == floatToIntBits(((Float)that).value));
   }
-  
+
   public int hashCode() {
     return this.intValue();
   }

@@ -88,24 +88,13 @@ public final class Double extends Number {
     return toString(value);
   }
 
-  public boolean equals(Object obj) {
-    if ( (obj!=null) && (obj instanceof Double)) {
-      Double that=(Double )obj;
-      if ((this.isNaN()==true) && (that.isNaN()==true)) return true;
-    
-      double left = this.value;
-      double right = that.value;
-
-      if ((left==+0.0) && (right==-0.0)) return false;
-      if ((left==-0.0) && (right==+0.0)) return false;
-
-      return (left==right);
-    }
-    else {
-      return false;
-    }
+  public boolean equals(Object that) {
+    return (that != null
+      && that instanceof Double
+      && doubleToLongBits(this.value)
+	== doubleToLongBits(((Double)that).value));
   }
-  
+
   public float floatValue()
   {
     return ((float)value);
