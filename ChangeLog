@@ -1,3 +1,25 @@
+2000-12-26  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/clib/math/BigInteger.c (toInt0): Use mpz_get_ui().
+	Close PR#677.
+	
+	* libraries/javalib/java/math/BigInteger.java (intValue,
+	longValue): rewrite with new toInt0() semantic.
+
+	* libraries/javalib/java/net/Socket.java,
+	libraries/javalib/java/net/ServerSocket.java: catch IOException in
+	<init> to close SocketImpl to immediate release file descriptor.
+	Workaround PR#649.
+	
+	* libraries/clib/net/InetAddressImpl.c,
+	kaffe/kaffevm/systems/unix-pthreads/syscalls.c,
+	kaffe/kaffevm/systems/unix-jthreads/syscalls.c,
+	kaffe/kaffevm/systems/oskit-pthreads/syscalls.c,
+	kaffe/kaffevm/systems/beos-native/syscalls.c: gethostbyname() or
+	gethostbyaddr() may fail with h_errno = 0.  In this case, use
+	errno and mark it with (hostent*)-1.
+	Close PR#649.
+
 2000-12-21  Edouard G. Parmelan  <egp@free.fr>
 
 	* config/alpha/jit.h, config/alpha/jit-alpha.def: Reserve f30 as
@@ -637,7 +659,7 @@ Fri Jul 21 15:57:58 PDT 2000  Archie Cobbs <archie@whistle.com>
 	
 	* config/powerpc/linux/config.frag: Force with_libffi=yes as we
 	do not have assembler version of sysdepCallMethod() for PowerPC.
-	Close PR#646.
+	Close PR#647.
 
 	* kaffe/xprof/sectionFile.c (createFileSection)
 	kaffe/xprof/fileSections.c (libSectionHandler, jitSectionHandler):
@@ -645,7 +667,7 @@ Fri Jul 21 15:57:58 PDT 2000  Archie Cobbs <archie@whistle.com>
 	function fs_handler().  This is more portable and work for
 	Linux/PPC where va_list is an array.
 	Suggested by Stephane Bortzmeyer <bortzmeyer@pasteur.fr>
-	Close PR#648.
+	Close PR#646.
 
 Fri Jul 14 16:14:39 PDT 2000  Dalibor Topic <robilad@yahoo.com>
 
