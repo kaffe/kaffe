@@ -111,6 +111,23 @@ static inline lt_ptr_t findLibraryFunction(const char *name) {
 
   while (!ptr && libHandle[i].ref && i < MAXLIBS) {
     ptr = lt_dlsym(libHandle[i].desc, name);
+
+DBG(NATIVELIB,
+    if (ptr == NULL) {
+	dprintf("Couldn't find %s in library handle %d == %s.\nError message is %s.\n",
+		name,
+		i,
+		lt_dlgetinfo(libHandle[i].desc) == NULL ? "unknown" : lt_dlgetinfo(libHandle[i].desc)->name,
+		lt_dlerror());
+    }
+    else {
+	dprintf("Found %s in library handle %d == %s.\n",
+		name,
+        	i,
+        	lt_dlgetinfo(libHandle[i].desc) == NULL ? "unknown" : lt_dlgetinfo(libHandle[i].desc)->name);
+    }
+)
+
     ++i;
   }
 
