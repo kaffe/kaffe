@@ -35,7 +35,7 @@ Hjava_lang_Class* types[MAXTYPES];
 
 static
 void
-initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
+initPrimClass(Hjava_lang_Class** class, const char* name, char sig, int len)
 {
 	errorInfo info;
 	classEntry* centry;
@@ -175,13 +175,11 @@ classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo
 		start = *strp;
 		for (end = start; *end != 0 && *end != ';'; end++)
 			;
-		*strp = end;
-		if (*end == ';') {
-			(*strp)++;
-		} else {
+		if (*end != ';') {
 			postException(einfo, JAVA_LANG(VerifyError));
 			return (NULL);
 		}
+		*strp = end + 1;
 		utf8 = utf8ConstNew(start, end - start);
 		if (!utf8) {
 			postOutOfMemory(einfo);
