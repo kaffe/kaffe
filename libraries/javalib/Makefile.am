@@ -23,6 +23,7 @@ Klasses_jar_SRCS = \
 	$(java_awt_image_SRCS) \
 	$(java_awt_peer_SRCS) \
 	$(java_awt_widgets_SRCS) \
+	$(java_awt_win32_SRCS) \
 	$(java_beans_SRCS) \
 	$(java_io_SRCS) \
 	$(java_lang_SRCS) \
@@ -83,6 +84,7 @@ java_awt_SRCS = \
 	java/awt/Container.java \
 	java/awt/ContainerEvt.java \
 	java/awt/Cursor.java \
+	java/awt/DefKeyFilter.java \
 	java/awt/Defaults.java \
 	java/awt/Dialog.java \
 	java/awt/Dimension.java \
@@ -140,8 +142,7 @@ java_awt_SRCS = \
 	java/awt/Toolkit.java \
 	java/awt/WMEvent.java \
 	java/awt/Window.java \
-	java/awt/WindowEvt.java \
-	java/awt/DefKeyFilter.java
+	java/awt/WindowEvt.java
 java_awt_datatransfer_SRCS = \
 	java/awt/datatransfer/Clipboard.java \
 	java/awt/datatransfer/ClipboardOwner.java \
@@ -216,6 +217,34 @@ java_awt_widgets_SRCS = \
 	java/awt/widgets/TextComponent.java \
 	java/awt/widgets/TextCursor.java \
 	java/awt/widgets/TextField.java
+java_awt_win32_SRCS = \
+	java/awt/win32/ActionEvt.java \
+	java/awt/win32/Button.java \
+	java/awt/win32/Canvas.java \
+	java/awt/win32/Checkbox.java \
+	java/awt/win32/CheckboxMenuItem.java \
+	java/awt/win32/Choice.java \
+	java/awt/win32/Defaults.java \
+	java/awt/win32/FileDialog.java \
+	java/awt/win32/Frame.java \
+	java/awt/win32/Label.java \
+	java/awt/win32/List.java \
+	java/awt/win32/Menu.java \
+	java/awt/win32/MenuBar.java \
+	java/awt/win32/MenuItem.java \
+	java/awt/win32/NativeComponent.java \
+	java/awt/win32/NativeContainer.java \
+	java/awt/win32/Panel.java \
+	java/awt/win32/PopupMenu.java \
+	java/awt/win32/ScrollPane.java \
+	java/awt/win32/Scrollbar.java \
+	java/awt/win32/SystemColor.java \
+	java/awt/win32/TextArea.java \
+	java/awt/win32/TextComponent.java \
+	java/awt/win32/TextField.java \
+	java/awt/win32/Toolkit.java \
+	java/awt/win32/WMEvent.java \
+	java/awt/win32/Window.java
 java_beans_SRCS = \
 	java/beans/BeanDescriptor.java \
 	java/beans/BeanInfo.java \
@@ -590,17 +619,17 @@ kaffe_applet_SRCS = \
 kaffe_awt_SRCS = \
 	kaffe/awt/ExportTransferable.java \
 	kaffe/awt/FlavorConverter.java \
+	kaffe/awt/FocusHook.java \
+	kaffe/awt/HookInstaller.java \
 	kaffe/awt/ImageClass.java \
 	kaffe/awt/ImageDict.java \
 	kaffe/awt/ImageSpec.java \
+	kaffe/awt/JavaColorModel.java \
+	kaffe/awt/KeyHook.java \
+	kaffe/awt/MouseHook.java \
 	kaffe/awt/ObjectSelection.java \
 	kaffe/awt/OpaqueComponent.java \
-	kaffe/awt/SerializerConverter.java \
-	kaffe/awt/FocusHook.java \
-	kaffe/awt/HookInstaller.java \
-	kaffe/awt/JavaColorModel.java  \
-	kaffe/awt/KeyHook.java \
-	kaffe/awt/MouseHook.java 
+	kaffe/awt/SerializerConverter.java
 kaffe_beans_editors_SRCS = \
 	kaffe/beans/editors/BooleanEditor.java \
 	kaffe/beans/editors/ByteEditor.java \
@@ -626,22 +655,22 @@ kaffe_io_SRCS = \
 	kaffe/io/ObjectOutputStreamImpl.java \
 	kaffe/io/ObjectStreamClassImpl.java \
 	kaffe/io/SerializationFactory.java \
-	kaffe/io/TmpFile.java \
+	kaffe/io/StdErrorStream.java \
 	kaffe/io/StdInputStream.java \
 	kaffe/io/StdOutputStream.java \
-	kaffe/io/StdErrorStream.java
+	kaffe/io/TmpFile.java
 kaffe_jar_SRCS = \
 	kaffe/jar/ExecJar.java \
 	kaffe/jar/ExecJarName.java
 kaffe_lang_SRCS = \
+	kaffe/lang/Application.java \
+	kaffe/lang/ApplicationException.java \
+	kaffe/lang/ApplicationResource.java \
 	kaffe/lang/DummyClassLoader.java \
 	kaffe/lang/MemoryAdvice.java \
 	kaffe/lang/MemoryAdviceCallback.java \
 	kaffe/lang/SystemClassLoader.java \
-	kaffe/lang/UNIXProcess.java \
-	kaffe/lang/Application.java \
-	kaffe/lang/ApplicationException.java  \
-        kaffe/lang/ApplicationResource.java 
+	kaffe/lang/UNIXProcess.java
 kaffe_management_SRCS = \
 	kaffe/management/Classpath.java
 kaffe_net_SRCS = \
@@ -700,34 +729,6 @@ kaffe_util_log_SRCS = \
 	kaffe/util/log/SimpleLogViewer.java
 kaffe_util_zip_SRCS = \
 	kaffe/util/zip/SwitchInflater.java
-java_awt_win32_SRCS = \
-	java/awt/win32/ActionEvt.java \
-	java/awt/win32/Button.java \
-	java/awt/win32/Canvas.java \
-	java/awt/win32/Checkbox.java \
-	java/awt/win32/CheckboxMenuItem.java \
-	java/awt/win32/Choice.java \
-	java/awt/win32/Defaults.java \
-	java/awt/win32/FileDialog.java \
-	java/awt/win32/Frame.java \
-	java/awt/win32/Label.java \
-	java/awt/win32/List.java \
-	java/awt/win32/Menu.java \
-	java/awt/win32/MenuBar.java \
-	java/awt/win32/MenuItem.java \
-	java/awt/win32/NativeComponent.java \
-	java/awt/win32/NativeContainer.java \
-	java/awt/win32/Panel.java \
-	java/awt/win32/PopupMenu.java \
-	java/awt/win32/ScrollPane.java \
-	java/awt/win32/Scrollbar.java \
-	java/awt/win32/SystemColor.java \
-	java/awt/win32/TextArea.java \
-	java/awt/win32/TextComponent.java \
-	java/awt/win32/TextField.java \
-	java/awt/win32/Toolkit.java \
-	java/awt/win32/WMEvent.java \
-	java/awt/win32/Window.java
 
 ## Do not delete the previous blank line; update-class-list depends on it
 
