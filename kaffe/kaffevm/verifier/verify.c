@@ -54,8 +54,8 @@ isTrustedClass(Hjava_lang_Class* class) {
 	 *                       -verify                 ==> verifyMode = 3
 	 *                       -noverify               ==> verifyMode = 0
 	 */
-	return ((class->loader == 0 && (Kaffe_JavaVMArgs[0].verifyMode & 1) == 0) ||
-		(class->loader != 0 && (Kaffe_JavaVMArgs[0].verifyMode & 2) == 0));
+	return ((class->loader == 0 && (Kaffe_JavaVMArgs.verifyMode & 1) == 0) ||
+		(class->loader != 0 && (Kaffe_JavaVMArgs.verifyMode & 2) == 0));
 }
 
 /*

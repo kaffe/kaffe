@@ -46,6 +46,7 @@
 #include "xprofiler.h"
 #include "debugFile.h"
 #include "jvmpi_kaffe.h"
+#include "kaffe/jmalloc.h"
 
 #if 0
 #define	METHOD_TRUE_NCODE(METH)			(METH)->c.ncode.ncode_start

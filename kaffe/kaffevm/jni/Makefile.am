@@ -29,7 +29,9 @@ libkaffejni_la_SOURCES = \
 	jni-base.c \
 	jni-callmethod.c \
 	jni-fields.c \
-	jni-arrays.c
+	jni-arrays.c \
+	jni-string.c \
+	jni-helpers.c
 
 noinst_HEADERS= \
 	jni_i.h \

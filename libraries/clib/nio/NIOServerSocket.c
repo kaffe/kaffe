@@ -8,6 +8,7 @@
  */
 
 #include "config.h"
+#include "defs.h"
 #include "jni.h"
 #include "gnu_java_nio_NIOServerSocket.h"
 

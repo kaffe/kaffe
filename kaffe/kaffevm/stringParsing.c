@@ -20,6 +20,7 @@
 /* We use this in JSI stuff too, and we don't want to drag in kaffe goo. */
 #include "gtypes.h"
 #include "gc.h"
+#include "kaffe/jmalloc.h"
 #include "defs.h"
 
 #define spMalloc(x) gc_malloc(x, GC_ALLOC_FIXED)

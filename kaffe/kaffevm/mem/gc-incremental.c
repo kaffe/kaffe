@@ -601,7 +601,7 @@ DBG(GCSTAT,
 
 		startFinalizer();
 
-		if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0) {
+		if (Kaffe_JavaVMArgs.enableVerboseGC > 0) {
 			/* print out all the info you ever wanted to know */
 			dprintf(
 			    "<GC: heap %dK, total before %dK,"
@@ -624,7 +624,7 @@ DBG(GCSTAT,
 			gcStats.finalobj,
 			gcStats.finalmem/1024);
 		}
-		if (Kaffe_JavaVMArgs[0].enableVerboseGC > 1) {
+		if (Kaffe_JavaVMArgs.enableVerboseGC > 1) {
 			OBJECTSTATSPRINT();
 		}
 		gcStats.totalmem -= gcStats.freedmem;

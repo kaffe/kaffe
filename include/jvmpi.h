@@ -6,6 +6,10 @@
 #ifndef _KAFFE_JVMPI_H
 #define _KAFFE_JVMPI_H
 
+#include <jni.h>
+
+typedef void *jobjectID;
+
 enum {
 	JVMPI_FAIL = -1,
 	JVMPI_SUCCESS,

@@ -150,7 +150,7 @@ initNative(void)
 
 	DBG(INIT, dprintf("initNative()\n"); )
 
-	lpath = (char*)Kaffe_JavaVMArgs[0].libraryhome;
+	lpath = (char*)Kaffe_JavaVMArgs.libraryhome;
 	if (lpath == 0) {
 		lpath = getenv(LIBRARYPATH);
 	}
@@ -237,15 +237,15 @@ int
 loadNativeLibrary2(char* path, int default_refs, char *errbuf, size_t errsiz)
 {
 	struct _libHandle *lib;
-	int index;
+	int libIndex;
 	void *func;
 
 	/* Find a library handle.  If we find the library has already
 	 * been loaded, don't bother to get it again, just increase the
 	 * reference count.
 	 */
-	for (index = 0; index < MAXLIBS; index++) {
-		lib = &libHandle[index];
+	for (libIndex = 0; libIndex < MAXLIBS; libIndex++) {
+		lib = &libHandle[libIndex];
 		if (lib->desc == 0) {
 			goto open;
 		}
@@ -254,9 +254,9 @@ loadNativeLibrary2(char* path, int default_refs, char *errbuf, size_t errsiz)
 DBG(NATIVELIB,
 			dprintf("Native lib %s\n"
 			    "\tLOAD desc=%p index=%d ++ref=%d\n",
-			    lib->name, lib->desc, index, lib->ref);
+			    lib->name, lib->desc, libIndex, lib->ref);
     )
-			return index;
+			return libIndex;
 		}
 	}
 	if (errbuf != 0) {
@@ -335,7 +335,7 @@ DBG(NATIVELIB,
 DBG(NATIVELIB,
 	dprintf("Native lib %s\n"
 	    "\tLOAD desc=%p index=%d ++ref=%d\n",
-	    lib->name, lib->desc, index, lib->ref);
+	    lib->name, lib->desc, libIndex, lib->ref);
     )
 #if defined(KAFFE_FEEDBACK)
 	feedbackLibrary(path, true);
@@ -348,7 +348,7 @@ DBG(NATIVELIB,
 	    ((jint(JNICALL *)(JavaVM *, void *))func)(jvm, NULL);
 	}
 
-	return index;
+	return libIndex;
 }
 
 /*
@@ -357,17 +357,17 @@ DBG(NATIVELIB,
  * never be unloaded. So index should never equal zero here.
  */
 void
-unloadNativeLibrary(int index)
+unloadNativeLibrary(int libIndex)
 {
 	struct _libHandle *lib;
 
-	assert(index > 0 && index < MAXLIBS);
-	lib = &libHandle[index];
+	assert(libIndex > 0 && libIndex < MAXLIBS);
+	lib = &libHandle[libIndex];
 
 DBG(NATIVELIB,
 	dprintf("Native lib %s\n"
 	    "\tUNLOAD desc=%p index=%d --ref=%d\n",
-	    lib->name, lib->desc, index, lib->ref - 1);
+	    lib->name, lib->desc, libIndex, lib->ref - 1);
     )
 
 	assert(lib->desc != 0);

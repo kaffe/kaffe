@@ -35,6 +35,7 @@
 #include "support.h"
 #include "code-analyse.h"
 #include "funcs.h"
+#include "kaffe_jni.h"
 
 #if defined(HAVE_branch_and_link)
 #define blink 0x8000000

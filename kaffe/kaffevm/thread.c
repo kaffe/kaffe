@@ -15,7 +15,7 @@
 #include "config-mem.h"
 #include "config-io.h"
 #include "config-signal.h"
-#include "kaffe/jtypes.h"
+#include "kaffe/jni_md.h"
 #include "gtypes.h"
 #include "access.h"
 #include "object.h"
@@ -145,7 +145,7 @@ initThreads(void)
 
 
 	/* Allocate a thread to be the main thread */
-	attachFakedThreadInstance("main");
+	attachFakedThreadInstance("main", false);
 
 	DBG(INIT, dprintf("initThreads() done\n"); )
 }
@@ -242,7 +242,7 @@ stopThread(Hjava_lang_Thread* tid, Hjava_lang_Object* obj)
  *  We should only ever call this once.
  */
 void
-attachFakedThreadInstance(const char* nm)
+attachFakedThreadInstance(const char* nm, int isDaemon)
 {
 	Hjava_lang_Thread* tid;
 
@@ -255,7 +255,7 @@ attachFakedThreadInstance(const char* nm)
 	unhand(tid)->name = stringC2Java(nm);
 	assert(unhand(tid)->name != NULL);
 	unhand(tid)->priority = java_lang_Thread_NORM_PRIORITY;
-	unhand(tid)->daemon = 0;
+	unhand(tid)->daemon = isDaemon;
 	unhand(tid)->interrupting = 0;
 	unhand(tid)->target = 0;
 	unhand(tid)->group = standardGroup;
@@ -607,7 +607,7 @@ runfinalizer(void)
 		 * java.lang.Thread instance or it was gc'ed in the mean time,
 		 * create a new one.
 		 */
-		attachFakedThreadInstance("main");
+		attachFakedThreadInstance("main", false);
 	}
 
 	/* Do java-land cleanup */

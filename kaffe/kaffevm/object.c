@@ -107,7 +107,7 @@ newClass(void)
 	}
 
 	/* Turn off class gc */
-	if (Kaffe_JavaVMArgs[0].enableClassGC == 0) {
+	if (Kaffe_JavaVMArgs.enableClassGC == 0) {
 		if (!gc_add_ref(cls)) {
 			return 0;
 		}

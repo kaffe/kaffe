@@ -200,9 +200,9 @@ gc_heap_initialise(void)
 	assert(gc_pgbits < 64);
 #endif
 
-	gc_heap_allocation_size = Kaffe_JavaVMArgs[0].allocHeapSize;
-	gc_heap_initial_size = Kaffe_JavaVMArgs[0].minHeapSize;
-	gc_heap_limit = Kaffe_JavaVMArgs[0].maxHeapSize;
+	gc_heap_allocation_size = Kaffe_JavaVMArgs.allocHeapSize;
+	gc_heap_initial_size = Kaffe_JavaVMArgs.minHeapSize;
+	gc_heap_limit = Kaffe_JavaVMArgs.maxHeapSize;
 
 	/*
 	 * Perform some sanity checks.

@@ -27,6 +27,8 @@
 
 #include "debug.h"
 
+#include "kaffe_jni.h"
+
 static void spill(SlotData*);
 
 /**

@@ -19,6 +19,7 @@
 #include "basecode.h"
 #include "labels.h"
 #include "codeproto.h"
+#include "kaffe_jni.h"
 
 void
 writeslot(sequence* seq, int slot, SlotInfo* data, int len)

@@ -47,7 +47,7 @@ char*	nameNativeThread(void*);
 Hjava_lang_Thread* getCurrentThread(void);
 Hjava_lang_Thread* createDaemon(void*, const char*, void *arg, int,
 				size_t, struct _errorInfo *);
-void	attachFakedThreadInstance (const char *name);
+void	attachFakedThreadInstance (const char *name, int isDaemon);
 
 extern  Hjava_lang_Class* ThreadClass;
 struct  _Collector;

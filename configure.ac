@@ -1908,6 +1908,15 @@ AC_DEFINE_UNQUOTED(DEFAULT_KAFFEHOME, "$jrelibdir", [Define default KAFFEHOME])
 dnl -------------------------------------------------------------------------
 
 dnl =========================================================================
+dnl Define JNI call.
+dnl -------------------------------------------------------------------------
+
+AC_DEFINE_UNQUOTED(JNICALL, [])
+AC_DEFINE_UNQUOTED(JNIEXPORT, [])
+
+dnl -------------------------------------------------------------------------
+
+dnl =========================================================================
 dnl Extract path and dir separator information from paths.h
 dnl -------------------------------------------------------------------------
 
@@ -1957,7 +1966,7 @@ AC_SUBST(CFLAGS_WITHOUT_PG)
 
 
 AC_CONFIG_SUBDIRS([libltdl])
-AC_CONFIG_HEADERS([config/config.h include/kaffe/jtypes.h])
+AC_CONFIG_HEADERS([config/config.h include/kaffe/jni_md.h])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([project.xml project.properties])
 AC_CONFIG_FILES([config/Makefile])

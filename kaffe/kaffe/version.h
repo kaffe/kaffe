@@ -11,7 +11,6 @@
 #define KAFFE_KAFFE_VERSION_H
 
 #define JAVA_VERSION_STRING	"1.1"
-#define JAVA_VERSION_HEX 	0x00010001
 
 /*
  * Print copyright notice and simple version info (Java version, 

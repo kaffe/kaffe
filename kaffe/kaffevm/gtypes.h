@@ -14,7 +14,6 @@
 
 #include "config.h"
 #include "config-std.h"
-#include "kaffe/jtypes.h"
 #include "jni.h"
 
 #if defined(__STDC__)
@@ -154,10 +153,12 @@ struct _strconst {
 #define	SHIFT_jref		3
 #endif
 
+#include "kaffe_jni.h"
+
 /* The following two macros will exit or abort the JVM through the hooks
  * provided by JNI.  At this point, we only support one JVM with index 0.
  */
-#define	EXIT(X)	Kaffe_JavaVMArgs[0].exit(X)
-#define	ABORT()	Kaffe_JavaVMArgs[0].abort()
+#define	EXIT(X)	Kaffe_JavaVMArgs.exit(X)
+#define	ABORT()	Kaffe_JavaVMArgs.abort()
 
 #endif

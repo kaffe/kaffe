@@ -139,7 +139,7 @@ initialiseKaffe(void)
 		machine_debug_file = createDebugFile(machine_debug_filename);
 	}
 #endif
-        threadStackSize = Kaffe_JavaVMArgs[0].nativeStackSize;
+        threadStackSize = Kaffe_JavaVMArgs.nativeStackSize;
 
         if (threadStackSize == 0) {
                 threadStackSize = THREADSTACKSIZE;

@@ -21,6 +21,7 @@
 #include "stackTrace-impl.h"
 #include "thread-internal.h"
 #include "files.h"
+#include "kaffe/jmalloc.h"
 #include <errno.h>
 
 #if defined(INTERPRETER)

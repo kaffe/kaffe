@@ -14,6 +14,7 @@
 #include "gtypes.h"
 #include "gc.h"
 #include "hashtab.h"
+#include "kaffe/jmalloc.h"
 
 /* Initial size */
 #define INITIAL_SIZE		1024

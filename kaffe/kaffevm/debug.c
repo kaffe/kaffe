@@ -29,7 +29,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
-#include "kaffe/jtypes.h"
+#include "kaffe/jni_md.h"
 #include "gtypes.h"
 #include "gc.h"
 #include "debug.h"

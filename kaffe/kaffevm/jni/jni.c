@@ -5,6 +5,9 @@
  * Copyright (c) 1996, 1997, 2004
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2004
+ * 	The Kaffe.org's developers. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -37,11 +40,10 @@
 #include "jni_i.h"
 #include "jni_funcs.h"
 #include "native-wrapper.h"
+#include "kaffe_jni.h"
 
-extern int Kaffe_Java_Major_Version;
-extern int Kaffe_Java_Minor_Version;
 extern struct JNINativeInterface Kaffe_JNINativeInterface;
-extern JavaVMInitArgs Kaffe_JavaVMInitArgs;
+extern KaffeVM_Arguments Kaffe_JavaVMInitArgs;
 extern JavaVM Kaffe_JavaVM;
 
 static jint Kaffe_GetVersion(JNIEnv*);
@@ -142,16 +144,11 @@ Kaffe_IsSameObject(JNIEnv* env UNUSED, jobject obj1, jobject obj2)
 	}
 }
 
-static void
-Kaffe_ReleaseStringChars(JNIEnv* env UNUSED, jstring data UNUSED, const jchar* chars UNUSED)
-{
-	/* Does nothing */
-}
 
 static jint
-Kaffe_GetVersion(JNIEnv* env UNUSED)
+Kaffe_GetVersion(JNIEnv* env)
 {
-	return ((Kaffe_Java_Major_Version << 16) | Kaffe_Java_Minor_Version);
+       return Kaffe_JavaVMArgs.version;
 }
 
 /*
@@ -600,206 +597,6 @@ Kaffe_GetStaticFieldID(JNIEnv* env, jclass cls, const char* name, const char* si
 	return (fld);
 }
 
-static jstring
-Kaffe_NewString(JNIEnv* env UNUSED, const jchar* data, jsize len)
-{
-	Hjava_lang_String* str;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	str = (Hjava_lang_String*)newObject(StringClass);
-	unhand(str)->offset = 0;
-	unhand(str)->count = len;
-	unhand(str)->value = (HArrayOfChar*)newArray(TYPE_CLASS(TYPE_Char), len);                   
-	unhand(str)->interned = 0;
-	memcpy(STRING_DATA(str), data, len * sizeof(jchar));
-
-	END_EXCEPTION_HANDLING();
-	return (str);
-}
-
-static jsize
-Kaffe_GetStringLength(JNIEnv* env UNUSED, jstring data)
-{
-	jsize len;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	len = STRING_SIZE((Hjava_lang_String*)data);
-	END_EXCEPTION_HANDLING();
-	return (len);
-}
-
-static const jchar*
-Kaffe_GetStringChars(JNIEnv* env UNUSED, jstring data, jboolean* copy)
-{
-	jchar* c;
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	if (copy != NULL) {
-		*copy = JNI_FALSE;
-	}
-	c = STRING_DATA(((Hjava_lang_String*)data));
-
-	END_EXCEPTION_HANDLING();
-	return (c);
-}
-
-static jstring
-Kaffe_NewStringUTF(JNIEnv* env UNUSED, const char* data)
-{
-	Hjava_lang_String* str;
-	Utf8Const* utf8;
-	unsigned int len;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	len = strlen(data);
-	if (!utf8ConstIsValidUtf8(data, len)) {
-		str = NULL;
-	} else {
-		utf8 = checkPtr(utf8ConstNew(data, len));
-		str = utf8Const2Java(utf8);
-		utf8ConstRelease(utf8);
-		if (!str) {
-			errorInfo info;
-			postOutOfMemory(&info);
-			throwError(&info);
-		}
-	}
-
-	END_EXCEPTION_HANDLING();
-	return (str);
-}
-
-static jsize
-Kaffe_GetStringUTFLength(JNIEnv* env UNUSED, jstring data)
-{
-	Hjava_lang_String* const str = (Hjava_lang_String*)data;
-	jchar* ptr;
-	jsize len;
-	jsize count;
-	jsize i;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	ptr = STRING_DATA(str);
-	len = STRING_SIZE(str);
-
-	count = 0;
-	for (i = 0; i < len; i++) {
-		if (ptr[i] >= 0x0001 && ptr[i] <= 0x007F) {
-			count += 1;
-		}
-		else if (ptr[i] >= 0x0080 && ptr[i] <= 0x07FF) {
-			count += 2;
-		}
-		else {
-			count += 3;
-		}
-	}
-
-	END_EXCEPTION_HANDLING();
-	return (count);
-}
-
-static const jbyte*
-Kaffe_GetStringUTFChars(JNIEnv* env, jstring data, jbool* copy)
-{
-	Hjava_lang_String* const str = (Hjava_lang_String*)data;
-	jchar* ptr;
-	jbyte* buf;
-	jsize len;
-	jsize i;
-	jsize j;
-
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	/* We always copy data */
-	if (copy != NULL) {
-		*copy = JNI_TRUE;
-	}
-
-	buf = checkPtr(KMALLOC(Kaffe_GetStringUTFLength(env, data) + 1));
-
-	ptr = STRING_DATA(str);
-	len = STRING_SIZE(str);
-
-	for (j = 0, i = 0; i < len; i++) {
-		if (ptr[i] >= 0x0001 && ptr[i] <= 0x007F) {
-			buf[j++] = ptr[i] & 0x7F;
-		}
-		else if (ptr[i] >= 0x0080 && ptr[i] <= 0x07FF) {
-			buf[j++] = 0xC0 | ((ptr[i] >> 6) & 0x1F);
-			buf[j++] = 0x80 | (ptr[i] & 0x3F);
-		}
-		else {
-			buf[j++] = 0xE0 | ((ptr[i] >> 12) & 0x0F);
-			buf[j++] = 0x80 | ((ptr[i] >> 6) & 0x3F);
-			buf[j++] = 0x80 | (ptr[i] & 0x3F);
-		}
-	}
-
-	END_EXCEPTION_HANDLING();
-	return (buf);
-}
-
-static void
-Kaffe_ReleaseStringUTFChars(JNIEnv* env UNUSED, jstring data UNUSED, const jbyte* chars)
-{
-	BEGIN_EXCEPTION_HANDLING_VOID();
-
-	KFREE(chars);
-	
-	END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_GetStringRegion(JNIEnv *env, jstring data, jsize start, jsize len, jchar *buf)
-{
-	Hjava_lang_String* const str = (Hjava_lang_String*)data;
-        jchar *str_ptr;
-	jsize str_len;
-	
-        BEGIN_EXCEPTION_HANDLING_VOID();
-
-	str_ptr = STRING_DATA(str);
-	str_len = STRING_SIZE(str);
-
-	if (start >= len || start+len >= str_len) {
-	      errorInfo einfo;
-	      
-	      postException(&einfo, "java.lang.StringIndexOutOfBoundsException");
-	      throwError(&einfo);
-	}
-	
-	memcpy(buf, &str_ptr[start], len*sizeof(jchar));
-
-        END_EXCEPTION_HANDLING();
-}
-
-static void
-Kaffe_GetStringUTFRegion(JNIEnv *env, jstring data, jsize start, jsize len, char *buf)
-{
-        Hjava_lang_String* const str = (Hjava_lang_String*)data;
-	jchar *str_ptr;
-	jsize str_len;
-
-	BEGIN_EXCEPTION_HANDLING_VOID();
-	
-	str_ptr = STRING_DATA(str);
-	str_len = STRING_SIZE(str); 
-	if (start >= len || start+len >= str_len) {
-	      errorInfo einfo;
-	      
-	      postException(&einfo, "java.lang.StringIndexOutOfBoundsException");
-	      throwError(&einfo);
-	}
-
-	utf8ConstEncodeTo(&str_ptr[start], len, buf);
-
-	END_EXCEPTION_HANDLING();
-}
-
 static jsize
 Kaffe_GetArrayLength(JNIEnv* env UNUSED, jarray arr)
 {
@@ -896,13 +693,25 @@ Kaffe_DestroyJavaVM(JavaVM* vm UNUSED)
 }
 
 static jint
-Kaffe_AttachCurrentThread(JavaVM* vm UNUSED, void** penv, ThreadAttachArgs* args UNUSED)
+Kaffe_AttachCurrentThread(JavaVM* vm UNUSED, void** penv, JavaVMAttachArgs* args UNUSED)
 {
 	if (jthread_attach_current_thread (false)) {
 		ksemInit(&THREAD_DATA()->sem);
-		attachFakedThreadInstance ("test attach");
+		attachFakedThreadInstance ("test attach", false);
 		*penv = THREAD_JNIENV();
 		return 0;
+	}
+	return -1;
+}
+
+static jint
+Kaffe_AttrachCurrentThreadAsDaemon(JavaVM* vm UNUSED, void** penv, JavaVMAttachArgs* args UNUSED)
+{
+	if (jthread_attach_current_thread (true)) {
+		ksemInit(&THREAD_DATA()->sem);
+		attachFakedThreadInstance ("daemon attach", true);
+		*penv = THREAD_JNIENV();
+	        return 0;
 	}
 	return -1;
 }
@@ -973,12 +782,12 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	Kaffe_GetVersion,
 	Kaffe_DefineClass,
 	Kaffe_FindClass,
-	NULL,
-	NULL,
-	NULL,
+	KaffeJNI_FromReflectedMethod,
+	KaffeJNI_FromReflectedField,
+	KaffeJNI_ToReflectedMethod,
 	Kaffe_GetSuperClass,
 	Kaffe_IsAssignableFrom,
-	NULL,
+	KaffeJNI_ToReflectedField,
 	Kaffe_Throw,
 	Kaffe_ThrowNew,
 	Kaffe_ExceptionOccurred,
@@ -1129,14 +938,14 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	KaffeJNI_SetStaticLongField,
 	KaffeJNI_SetStaticFloatField,
 	KaffeJNI_SetStaticDoubleField,
-	Kaffe_NewString,
-	Kaffe_GetStringLength,
-	Kaffe_GetStringChars,
-	Kaffe_ReleaseStringChars,
-	Kaffe_NewStringUTF,
-	Kaffe_GetStringUTFLength,
-	Kaffe_GetStringUTFChars,
-	Kaffe_ReleaseStringUTFChars,
+	KaffeJNI_NewString,
+	KaffeJNI_GetStringLength,
+	KaffeJNI_GetStringChars,
+	KaffeJNI_ReleaseStringChars,
+	KaffeJNI_NewStringUTF,
+	KaffeJNI_GetStringUTFLength,
+	KaffeJNI_GetStringUTFChars,
+	KaffeJNI_ReleaseStringUTFChars,
 	Kaffe_GetArrayLength,
 	KaffeJNI_NewObjectArray,
 	KaffeJNI_GetObjectArrayElement,
@@ -1186,8 +995,8 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	Kaffe_MonitorEnter,
 	Kaffe_MonitorExit,
 	Kaffe_GetJavaVM,
-	Kaffe_GetStringRegion,
-	Kaffe_GetStringUTFRegion,
+	KaffeJNI_GetStringRegion,
+	KaffeJNI_GetStringUTFRegion,
 	KaffeJNI_GetPrimitiveArrayCritical,
 	KaffeJNI_ReleasePrimitiveArrayCritical,
 	NULL,
@@ -1212,7 +1021,7 @@ struct JNIInvokeInterface Kaffe_JNIInvokeInterface = {
 	Kaffe_AttachCurrentThread,
 	Kaffe_DetachCurrentThread,
 	Kaffe_GetEnv,
-	NULL
+	Kaffe_AttrachCurrentThreadAsDaemon
 };
 
 /*
@@ -1222,7 +1031,7 @@ JavaVM Kaffe_JavaVM = {
 	&Kaffe_JNIInvokeInterface,
 };
 
-JavaVMInitArgs Kaffe_JavaVMInitArgs = {
+KaffeVM_Arguments Kaffe_JavaVMInitArgs = {
 	0,		/* Version */
 	0,		/* Properties */
 	0,		/* Check source */
@@ -1251,4 +1060,4 @@ JavaVMInitArgs Kaffe_JavaVMInitArgs = {
 /*
  * Array of VMs.
  */
-JavaVMInitArgs Kaffe_JavaVMArgs[1];
+KaffeVM_Arguments Kaffe_JavaVMArgs;

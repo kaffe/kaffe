@@ -2,12 +2,14 @@
 #define _kaffe_jni_i_h_
 
 #include "config.h"
-#include "jtypes.h"
+#include "jni_md.h"
 #include "itypes.h"
 #include "threadData.h"
 #include "thread.h"
 #include "exception.h"
 #include "md.h"
+
+#define KAFFE_VM_ENV(env) ((KaffeVM_Environment *) (((JNIEnv *)(env)) + 1))
 
 /*
  * If we must manage the JNI references for the native layer then we

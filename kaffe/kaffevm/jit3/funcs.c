@@ -22,6 +22,7 @@
 #include "icode.h"
 #include "machine.h"
 #include "funcs.h"
+#include "kaffe_jni.h"
 
 #undef	define_insn
 #define	define_insn(n, i) void i (sequence* s)

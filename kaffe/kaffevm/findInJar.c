@@ -97,7 +97,7 @@ findClass(classEntry* centry, errorInfo *einfo)
 	 */
 	class = gcjFindClassByUtf8Name(cname, einfo);
 	if (class != 0) {
-		if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
+		if (Kaffe_JavaVMArgs.enableVerboseClassloading) {
 			/* XXX could say from where, but see above */
 			dprintf("Loading precompiled %s\n", cname);
 		}
@@ -233,7 +233,7 @@ DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); )
 
 			classFileInit(hand, data, entry->uncompressedSize, CP_ZIPFILE);
 
-			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
+			if (Kaffe_JavaVMArgs.enableVerboseClassloading) {
 				dprintf("Loading %s(%s)", cname, ptr->path);
 				if (entry->compressionMethod != COMPRESSION_STORED) {
 					dprintf(" [compressed]");
@@ -309,7 +309,7 @@ DBG(CLASSLOOKUP,	dprintf("Opening java file %s for %s\n", buf, cname); )
 			classFileInit(hand, data, (unsigned)sbuf.st_size, CP_DIR);
 
 			KCLOSE(fp);
-			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
+			if (Kaffe_JavaVMArgs.enableVerboseClassloading) {
 				dprintf("Loading %s\n", cname);
 			}
 			goto done;
@@ -352,8 +352,8 @@ initClasspath(void)
 
 	DBG(INIT, dprintf("initClasspath()\n"); )
 
-	cp = (char*)Kaffe_JavaVMArgs[0].bootClasspath;
-	hm = (char*)Kaffe_JavaVMArgs[0].classhome;
+	cp = (char*)Kaffe_JavaVMArgs.bootClasspath;
+	hm = (char*)Kaffe_JavaVMArgs.classhome;
 
 	if (cp != 0 && cp[0] != '\0') {
 		/* cp may reside in read-only memory, but
@@ -393,7 +393,7 @@ initClasspath(void)
 		strcat(realBootClassPath, ptr->path);
 	}
 	
-	realClassPath = (char *)Kaffe_JavaVMArgs[0].classpath;
+	realClassPath = (char *)Kaffe_JavaVMArgs.classpath;
 
 	DBG(INIT, dprintf("initClasspath() done, got %s\n", realBootClassPath); )
 }

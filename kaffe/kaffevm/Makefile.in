@@ -74,7 +74,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
-	$(top_builddir)/include/kaffe/jtypes.h
+	$(top_builddir)/include/kaffe/jni_md.h
 CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
@@ -90,7 +90,7 @@ am__libkaffevm_la_SOURCES_DIST = access.c baseClasses.c classMethod.c \
 	hashtab.c inflate.c itypes.c jar.c ksem.c locks.c lookup.c \
 	object.c readClass.c soft.c stackTrace.c stats.c string.c \
 	stringParsing.c support.c thread.c utf8const.c gcFuncs.c \
-	gcRefs.c ../../binreloc/prefix.c
+	gcRefs.c reflect.c ../../binreloc/prefix.c
 @ENABLE_BINRELOC_TRUE@am__objects_1 = prefix.lo
 am_libkaffevm_la_OBJECTS = access.lo baseClasses.lo classMethod.lo \
 	classPool.lo methodCache.lo code-analyse.lo code.lo \
@@ -99,7 +99,7 @@ am_libkaffevm_la_OBJECTS = access.lo baseClasses.lo classMethod.lo \
 	jar.lo ksem.lo locks.lo lookup.lo object.lo readClass.lo \
 	soft.lo stackTrace.lo stats.lo string.lo stringParsing.lo \
 	support.lo thread.lo utf8const.lo gcFuncs.lo gcRefs.lo \
-	$(am__objects_1)
+	reflect.lo $(am__objects_1)
 am__objects_2 = gc-mem.lo md.lo
 nodist_libkaffevm_la_OBJECTS = $(am__objects_2)
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
@@ -123,9 +123,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/locks.Plo ./$(DEPDIR)/lookup.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/md.Plo ./$(DEPDIR)/methodCache.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/object.Plo ./$(DEPDIR)/prefix.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/readClass.Plo ./$(DEPDIR)/soft.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/stackTrace.Plo ./$(DEPDIR)/stats.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/string.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/readClass.Plo ./$(DEPDIR)/reflect.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/soft.Plo ./$(DEPDIR)/stackTrace.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/stats.Plo ./$(DEPDIR)/string.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/stringParsing.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/support.Plo ./$(DEPDIR)/thread.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/utf8const.Plo
@@ -485,6 +485,7 @@ libkaffevm_la_SOURCES = \
 	utf8const.c \
 	gcFuncs.c \
 	gcRefs.c \
+	reflect.c \
 	$(BINRELOC_SOURCES)
 
 noinst_HEADERS = \
@@ -525,6 +526,7 @@ noinst_HEADERS = \
 	thread.h \
 	threadData.h \
 	utf8const.h \
+	reflect.h \
 	../../binreloc/prefix.h
 
 CLEANFILES = so_locations
@@ -627,6 +629,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/object.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prefix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/readClass.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reflect.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/soft.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stackTrace.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stats.Plo@am__quote@

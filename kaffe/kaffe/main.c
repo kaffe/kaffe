@@ -18,7 +18,7 @@
 #include "config-mem.h"
 #include "debug.h"
 #include "classMethod.h"
-#include "kaffe/jtypes.h"
+#include "kaffe/jni_md.h"
 #include "native.h"
 #include "constants.h"
 #include "support.h"
@@ -36,6 +36,7 @@
 #endif
 #include "methodCache.h"
 #include "external.h"
+#include "kaffe_jni.h"
 
 #if defined(HAVE_GETTEXT)
 #include <libintl.h>
@@ -53,7 +54,7 @@ extern int profFlag;
 
 #include "jni.h"
 
-JavaVMInitArgs vmargs;
+KaffeVM_Arguments vmargs;
 JNIEnv* global_env;
 JavaVM* global_vm;
 static int isJar = 0;
@@ -92,7 +93,7 @@ main(int argc, char* argv[])
 	textdomain(PACKAGE);
 #endif
 
-	vmargs.version = JAVA_VERSION_HEX;
+	vmargs.version = JNI_VERSION_1_1;
 
 #if defined(KAFFE_PROFILER)
 	profFlag = 0;

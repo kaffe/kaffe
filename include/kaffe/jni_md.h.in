@@ -12,6 +12,8 @@
 #ifndef __jtypes_h
 #define __jtypes_h
 
+#undef  JNIEXPORT
+#undef  JNICALL
 #undef	SIZEOF_INT
 #undef	SIZEOF_LONG
 #undef	SIZEOF_LONG_LONG
@@ -27,11 +29,9 @@ typedef short 		jshort;
 
 #if SIZEOF_INT == 4
 typedef int		jint;
-typedef unsigned int	jsize;
 #define JINT_MIN        0x80000000
 #elif SIZEOF_LONG == 4
 typedef long		jint;
-typedef unsigned long	jsize;
 #define JINT_MIN        0x80000000L
 #else
 #error "sizeof(int) or sizeof(long) must be 4"
@@ -53,34 +53,6 @@ typedef __int64		jlong;
 typedef	jchar		unicode;
 typedef	jbyte		jbool;		/* Must deprecate */
 typedef	jbyte		jboolean;
-typedef	jref		jobject;
-typedef	jref		jclass;
-typedef	jref		jstring;
-typedef	jref		jarray;
-typedef	jref		jthrowable;
-
-typedef	jref		jobjectArray;
-typedef	jref		jbooleanArray;
-typedef	jref		jbyteArray;
-typedef	jref		jcharArray;
-typedef	jref		jshortArray;
-typedef	jref		jintArray;
-typedef	jref		jlongArray;
-typedef	jref		jfloatArray;
-typedef	jref		jdoubleArray;
-
-union jvalue {
-	jboolean	z;
-	jbyte		b;
-	jchar		c; 
-	jshort		s;
-	jint		i;
-	jlong		j;
-	jfloat		f;
-	jdouble		d;
-	jref		l;
-};
-typedef union jvalue jvalue;
 
 /* An integer type big enough for a pointer or a 32-bit int/float. */
 #if SIZEOF_VOIDP <= SIZEOF_INT

@@ -8,7 +8,7 @@
  */
 #include "config.h"
 #include "config-std.h"
-#include <kaffe/jtypes.h>
+#include <kaffe/jni_md.h>
 #include <native.h>
 #include "object.h"
 #include "classMethod.h"

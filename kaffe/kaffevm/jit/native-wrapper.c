@@ -1,3 +1,16 @@
+/*
+ * native-wrapper.c
+ * Java Native Interface - JNI wrapper builder.
+ *
+ * Copyright (c) 1996, 1997, 2004
+ *	Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * Copyright (c) 2004
+ *      The kaffe.org's developers. See ChangeLog for details.
+ *
+ * See the file "license.terms" for information on usage and redistribution 
+ * of this file. 
+ */
 
 #include "jni_i.h"
 #include "classMethod.h"

@@ -12,7 +12,7 @@
 #ifndef __native_h
 #define __native_h
 
-#include <kaffe/jtypes.h>
+#include <jni.h>
 
 struct _methods;
 struct Hjava_lang_Class;

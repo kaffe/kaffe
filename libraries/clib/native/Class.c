@@ -17,7 +17,6 @@
 #include "baseClasses.h"
 #include "classMethod.h"
 #include "constants.h"
-#include "gtypes.h"
 #include "exception.h"
 #include "itypes.h"
 #include "lookup.h"
@@ -26,6 +25,7 @@
 #include "stackTrace.h"
 #include "stringSupport.h"
 #include "support.h"
+#include "reflect.h"
 
 #include "java_io_InputStream.h"
 #include "java_io_PrintStream.h"
@@ -280,147 +280,16 @@ java_lang_Class_getModifiers(struct Hjava_lang_Class* this)
 	return (this->accflags & (ACC_MASK & ~ACC_SUPER));
 }
 
-HArrayOfObject*
+HArrayOfObject* NONRETURNING
 java_lang_Class_getSigners(struct Hjava_lang_Class* this UNUSED)
 {
 	unimp("java.lang.Class:getSigners unimplemented");
 }
 
-void
+void NONRETURNING
 java_lang_Class_setSigners(struct Hjava_lang_Class* this UNUSED, HArrayOfObject* sigs UNUSED)
 {
 	unimp("java.lang.Class:setSigners unimplemented");
-}
-
-static HArrayOfObject*
-makeParameters(Method* meth)
-{
-	int i;
-	HArrayOfObject* array;
-	errorInfo info;
-	Hjava_lang_Class* clazz;
-
-	array = (HArrayOfObject*)AllocObjectArray(METHOD_NARGS(meth),
-	    "Ljava/lang/Class;", 0);
-	for (i = 0; i < METHOD_NARGS(meth); ++i) {
-		clazz = getClassFromSignaturePart(METHOD_ARG_TYPE(meth, i),
-					      meth->class->loader, &info);
-		if (clazz == 0) {
-			throwError(&info);
-		}
-		unhand_array(array)->body[i] = &clazz->head;
-	}
-
-        return (array);
-}
-
-static Hjava_lang_Class*
-makeReturn(Method* meth)
-{
-	errorInfo info;
-	Hjava_lang_Class* clazz;
-
-	clazz = getClassFromSignaturePart(METHOD_RET_TYPE(meth), meth->class->loader, &info);
-	if (clazz == 0) {
-		throwError(&info);
-	}
-	return (clazz);
-}
-
-/*
- * create an array of types for the checked exceptions that this method
- * declared to throw.  These are stored in the declared_exception table
- * as indices into the constant pool.
- *
- * We do not bother to cache the resolved types here.
- */
-static HArrayOfObject*
-makeExceptions(Method* meth)
-{
-	int nr;
-	int i;
-	HArrayOfObject* array;
-	Hjava_lang_Class** ptr;
-
-	if( meth->ndeclared_exceptions == -1 )
-	{
-		meth = meth->declared_exceptions_u.remote_exceptions;
-	}
-	nr = meth->ndeclared_exceptions;
-	array = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class;", 0);
-	ptr = (Hjava_lang_Class**)&unhand_array(array)->body[0];
-	for (i = 0; i < nr; i++) {
-		errorInfo info;
-		Hjava_lang_Class* clazz;
-		clazz = getClass(meth->declared_exceptions[i], meth->class,
-				&info);
-		if (clazz == 0) {
-			throwError(&info);
-		}
-		*ptr++ = clazz;
-	}
-	return (array);
-}
-
-static
-Hjava_lang_reflect_Constructor*
-makeConstructor(struct Hjava_lang_Class* clazz, int slot)
-{
-	Hjava_lang_reflect_Constructor* meth;
-	Method* mth;
-
-	mth = CLASS_METHODS(clazz) + slot;
-	meth = (Hjava_lang_reflect_Constructor*)
-	    AllocObject("java/lang/reflect/Constructor", 0);
-
-	unhand(meth)->clazz = clazz;
-	unhand(meth)->slot = slot;
-	unhand(meth)->parameterTypes = makeParameters(mth);
-	unhand(meth)->exceptionTypes = makeExceptions(mth);
-
-	return (meth);
-}
-
-static
-Hjava_lang_reflect_Method*
-makeMethod(struct Hjava_lang_Class* clazz, int slot)
-{
-	Hjava_lang_reflect_Method* meth;
-	Method* mth;
-
-	mth = CLASS_METHODS(clazz) + slot;
-	meth = (Hjava_lang_reflect_Method*)
-	    AllocObject("java/lang/reflect/Method", 0);
-
-	unhand(meth)->clazz = clazz;
-	unhand(meth)->slot = slot;
-	unhand(meth)->name = checkPtr(utf8Const2Java(mth->name));
-	unhand(meth)->parameterTypes = makeParameters(mth);
-	unhand(meth)->exceptionTypes = makeExceptions(mth);
-	unhand(meth)->returnType = makeReturn(mth);
-
-	return (meth);
-}
-
-static
-Hjava_lang_reflect_Field*
-makeField(struct Hjava_lang_Class* clazz, int slot)
-{
-	Hjava_lang_reflect_Field* field;
-	Field* fld;
-	errorInfo info;
-
-	fld = CLASS_FIELDS(clazz) + slot;
-	field = (Hjava_lang_reflect_Field*)
-	    AllocObject("java/lang/reflect/Field", 0);
-	unhand(field)->clazz = clazz;
-	unhand(field)->slot = slot;
-	unhand(field)->type = resolveFieldType(fld, clazz, &info);
-	if (unhand(field)->type == 0) {
-		throwError(&info);
-	}
-	unhand(field)->name = checkPtr(utf8Const2Java(fld->name));
-	return (field);
 }
 
 /*
@@ -491,7 +360,7 @@ addMethods(Hjava_lang_Class* base, Hjava_lang_Class* clas, jint declared,
 		    && !(mth[i].accflags & ACC_CONSTRUCTOR)
 		    && !isOverridden(base, clas, mth + i)
 		    && !utf8ConstEqual(init_name, mth[i].name)) {
-			**ptr = makeMethod(clas, i);
+			**ptr = KaffeVM_makeReflectMethod(clas, i);
 			(*ptr)++;
 		}
 	}
@@ -608,7 +477,7 @@ java_lang_Class_getConstructors0(struct Hjava_lang_Class* this, jboolean declare
 	mth = CLASS_METHODS(clas);
 	for (i = CLASS_NMETHODS(clas)-1; i >= 0;  i--) {
 		if (((mth[i].accflags & ACC_PUBLIC) || declared) && (mth[i].accflags & ACC_CONSTRUCTOR)) {
-			*ptr = makeConstructor(clas, i);
+			*ptr = KaffeVM_makeReflectConstructor(clas, i);
 			ptr++;
 		}
 	}
@@ -652,7 +521,7 @@ makePublicFields(Hjava_lang_Class* clazz, jboolean declared, Hjava_lang_reflect_
 		Field *fld = CLASS_FIELDS(clas);
 		for (i = CLASS_NFIELDS(clas)-1; i >= 0;  i--) {
 			if ((fld[i].accflags & ACC_PUBLIC) || declared) {
-				*ptr = makeField(clas, i);
+				*ptr = KaffeVM_makeReflectField(clas, i);
 				ptr++;
 			}
 		}
@@ -775,7 +644,7 @@ findMatchingMethod(struct Hjava_lang_Class* clas,
 		if (((mth->accflags & ACC_PUBLIC) || declared)
 		    && utf8ConstEqualJavaString(mth->name, name)) {
 			if (checkParameters(mth, arr))
-				return (makeMethod(clas, i));
+				return (KaffeVM_makeReflectMethod(clas, i));
 		}
 	}
 	return (0);
@@ -842,7 +711,7 @@ java_lang_Class_getConstructor0(struct Hjava_lang_Class* this, HArrayOfObject* a
 	for (i = 0;  i < n;  ++mth, ++i) {
 		if (((mth->accflags & ACC_PUBLIC) || declared) && (METHOD_IS_CONSTRUCTOR(mth))) {
 			if (checkParameters(mth, arr))
-				return (makeConstructor(clas, i));
+				return (KaffeVM_makeReflectConstructor(clas, i));
 		}
 	}
 
@@ -864,7 +733,7 @@ checkForField(struct Hjava_lang_Class* clazz, struct Hjava_lang_String* name, jb
 		for (i = 0;  i < n;  ++fld, ++i) {
 			if (((fld->accflags & ACC_PUBLIC) || declared)
 			    && utf8ConstEqualJavaString(fld->name, name)) {
-				return makeField(clas, i);
+				return KaffeVM_makeReflectField(clas, i);
 			}
 		}
 		clas = clas->superclass;

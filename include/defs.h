@@ -61,4 +61,8 @@
 #  endif /* HAVE__VA_COPY */
 #endif /* HAVE_VA_COPY */
 
+#ifndef NULL
+#define NULL (void *)0
+#endif
+
 #endif /* __defs_h */

@@ -23,21 +23,21 @@ void
 Java_kaffe_management_Debug_setVerboseGC
 	(JNIEnv *env UNUSED, jclass thisClass UNUSED, jint level)
 {
-	Kaffe_JavaVMArgs[0].enableVerboseGC = level;
+	Kaffe_JavaVMArgs.enableVerboseGC = level;
 }
 
 void
 Java_kaffe_management_Debug_setVerboseJIT
 	(JNIEnv *env UNUSED, jclass thisClass UNUSED, jboolean on)
 {
-	Kaffe_JavaVMArgs[0].enableVerboseJIT = on;
+	Kaffe_JavaVMArgs.enableVerboseJIT = on;
 }
 
 void
 Java_kaffe_management_Debug_setTracing
 	(JNIEnv *env UNUSED, jclass thisClass UNUSED, jint level)
 {
-	Kaffe_JavaVMArgs[0].enableVerboseCall = level;
+	Kaffe_JavaVMArgs.enableVerboseCall = level;
 }
 
 void

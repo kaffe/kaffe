@@ -210,7 +210,7 @@ removeClassEntries(Hjava_lang_ClassLoader* loader)
 				 * kept alive by their respective classes.
 				 */
 				assert(entry->data.cl == 0 ||
-					Kaffe_JavaVMArgs[0].enableClassGC != 0);
+					Kaffe_JavaVMArgs.enableClassGC != 0);
 DBG(CLASSGC,
 				dprintf("removing %s l=%p/c=%p\n",
 				    entry->name->data, loader, entry->data.cl);
@@ -243,7 +243,7 @@ destroyClassLoader(Collector *c UNUSED, void* _loader)
 
         rmoved = removeClassEntries(loader);
 
-	if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0) {
+	if (Kaffe_JavaVMArgs.enableVerboseGC > 0) {
 		dprintf("<GC: destroying classloader "
 			"@%p (%d entries removed)>\n", loader, rmoved);
    	}

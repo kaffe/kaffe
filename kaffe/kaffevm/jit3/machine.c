@@ -58,6 +58,7 @@
 #include "fileSections.h"
 #include "mangle.h"
 #include "jvmpi_kaffe.h"
+#include "kaffe_jni.h"
 
 char* engine_name = "Just-in-time v3";
 
@@ -195,7 +196,7 @@ translate(Method* xmeth, errorInfo* einfo)
 	 */
 	enterTranslator();
 
-	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
+	if (Kaffe_JavaVMArgs.enableVerboseJIT) {
 		tms = currentTime();
 	}
 
@@ -272,7 +273,7 @@ DBG(MOREJIT,
 	pc = 0;
 	start_function();
 	check_stack_limit();
-	if (Kaffe_JavaVMArgs[0].enableVerboseCall != 0) {
+	if (Kaffe_JavaVMArgs.enableVerboseCall != 0) {
 		softcall_trace(xmeth);
 	}
 	monitor_enter();
@@ -391,7 +392,7 @@ DBG(MOREJIT,
 	    isStatic ? "static" : "normal", METHOD_NATIVECODE(xmeth));
     )
 	
-	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
+	if (Kaffe_JavaVMArgs.enableVerboseJIT) {
 		tme = currentTime();
 		jitStats.time += (int)(tme - tms);
 		printf("<JIT: %s.%s%s time %dms (%dms) @ %p (%p)>\n",

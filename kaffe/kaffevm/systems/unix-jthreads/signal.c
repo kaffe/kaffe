@@ -20,6 +20,7 @@
 #include "md.h"
 #include "gc.h"
 #include "files.h"
+#include "kaffe/jmalloc.h"
 
 #if defined(INTERPRETER)
 #define	DEFINEFRAME()		/* Does nothing */

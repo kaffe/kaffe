@@ -1,3 +1,99 @@
+2004-07-04  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/jit/native-wrapper.[ch],
+	kaffe/kaffevm/jit3/native-wrapper.[ch],
+	kaffe/kaffevm/intrp/native-wrapper.[ch]:
+	Added copyright notice.
+
+	* configure.ac: Changed jtypes.h to jni_md.h. Added
+	definition for JNICALL and JNIEXPORT.
+	* configure: Regenerated.
+
+	* include/Makefile.am: Renamed jtypes.h.in to jni_md.h.in
+	* include/Makefile.in: Regenerated.
+	* include/kaffe/jtypes.h.in: Removed.
+	* include/kaffe/jni_md.h.in: New file.
+	* include/jni.h: Imported from GNU Classpath.
+	* include/jvmpi.h: Added definition for jobjectID. Include jni.h
+	* include/native.h: Use jni.h instead of jtypes.h
+	* include/kaffe_jni.h: New file to describe JNI 1.1 interface for
+	kaffe. Export global VM arguments/status.
+	* include/defs.h: Define NULL it it is not defined.
+
+	* kaffe/kaffe/version.h: Don't use JAVA_VERSION_HEX anymore.
+	
+	* kaffe/kaffevm/gtypes.h: Updated ABORT() and EXIT(). Use jni_md.h
+	instead of jtypes.h
+	
+	* kaffe/kaffe/main.c,
+	kaffe/kaffeh/mem.c,
+	kaffe/kaffeh/support.c, 
+	kaffe/kaffevm/basecode.c,
+	kaffe/kaffevm/funcs.c,
+	kaffe/kaffevm/icode.c,
+	kaffe/kaffevm/machine.c,
+	kaffe/kaffevm/code.c,
+	kaffe/kaffevm/debug.c,
+	kaffe/kaffevm/classPool.c,
+	kaffe/kaffevm/external.c,
+	kaffe/kaffevm/gcFuncs.c,
+	kaffe/kaffevm/itypes.c,
+	kaffe/kaffevm/lookup.c,
+	kaffe/kaffevm/registers.c,
+	kaffe/kaffevm/object.c,
+	kaffe/kaffevm/stackTrace.c,
+	kaffe/kaffevm/stats.c,
+	kaffe/kaffevm/string.c,
+	kaffe/kaffevm/stringParsing.c,
+	kaffe/kaffevm/support.c,
+	kaffe/kaffevm/utf8const.c,
+	kaffe/kaffevm/jit3/basecode.c,
+	kaffe/kaffevm/jit3/funcs.c,
+	kaffe/kaffevm/jit3/icode.c,
+	kaffe/kaffevm/jit3/machine.c,
+	kaffe/kaffevm/jit3/registers.c,
+	kaffe/kaffevm/mem/gc-incremental.c,
+	kaffe/kaffevm/mem/gc-mem.c,
+	kaffe/kaffevm/verifier/verify.c,
+	libraries/clib/io/ObjectInputStream.c,
+	libraries/clib/management/Debug.c,
+	Include kaffe_jni.h or jni_md.h. Updated Kaffe_JavaVMArgs.
+	* kaffe/kaffevm/reflect.c, kaffe/kaffevm/reflect.h:
+	New files.	
+	* kaffe/kaffevm/Makefile.am: Added reflect.[ch].
+	* kaffe/kaffevm/Makefile.in: Regenerated.
+
+	* kaffe/kaffevm/thread.c,
+	kaffe/kaffevm/thread.h: Make possible to attach
+	a daemon.
+	
+	* kaffe/kaffevm/classMethod.c,
+	kaffe/kaffevm/hashtab.c,
+	kaffe/kaffevm/systems/unix-jthreads/signal.c,
+	kaffe/kaffevm/systems/unix-pthreads/signal.c: Include jmalloc.h
+	
+	* kaffe/kaffevm/jni/jni-arrays.c, 
+	kaffe/kaffevm/jni/jni-base.c,
+	kaffe/kaffevm/jni/jni-callmethod.c,
+	kaffe/kaffevm/jni/jni-fields.c,
+	kaffe/kaffevm/jni/jni.c,
+	kaffe/kaffevm/jni/jni_funcs.h,
+	kaffe/kaffevm/jni/jni_i.h: Reindented.
+	* kaffe/kaffevm/jni/Makefile.am: Added jni-helpers.c,
+	jni-string.c
+	
+	* libraries/clib/native/Class.c: Moved makeMethod, makeField,
+	makeConstructor and their subfunctions to reflect.[ch].
+	Mark some functions as NONRETURNING as suggested by gcc.
+
+	* libraries/clib/nio/NIOServerSocket.c: Include defs.h
+	
+2004-07-04  Guilhem Lavaux <guilhem@kaffe.org>
+	
+	* kaffe/kaffevm/external.c
+	(loadNativeLibrary2): Renamed index to libIndex to fix warnings.
+	(unloadNativeLibrary): Likewise.
+	
 2004-07-05  Dalibor Topic  <robilad@kaffe.org>
 
         * configure.ac:

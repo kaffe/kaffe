@@ -112,6 +112,7 @@ libkaffevm_la_SOURCES = \
 	utf8const.c \
 	gcFuncs.c \
 	gcRefs.c \
+	reflect.c \
 	$(BINRELOC_SOURCES)
 
 noinst_HEADERS = \
@@ -152,6 +153,7 @@ noinst_HEADERS = \
 	thread.h \
 	threadData.h \
 	utf8const.h \
+	reflect.h \
 	../../binreloc/prefix.h
 
 gc-mem.c: stamp-h01
