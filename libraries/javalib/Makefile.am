@@ -23,7 +23,6 @@ Klasses_jar_SRCS = \
 	$(java_awt_image_SRCS) \
 	$(java_awt_peer_SRCS) \
 	$(java_awt_widgets_SRCS) \
-	$(java_awt_win32_SRCS) \
 	$(java_beans_SRCS) \
 	$(java_io_SRCS) \
 	$(java_lang_SRCS) \
@@ -217,34 +216,6 @@ java_awt_widgets_SRCS = \
 	java/awt/widgets/TextComponent.java \
 	java/awt/widgets/TextCursor.java \
 	java/awt/widgets/TextField.java
-java_awt_win32_SRCS = \
-	java/awt/win32/ActionEvt.java \
-	java/awt/win32/Button.java \
-	java/awt/win32/Canvas.java \
-	java/awt/win32/Checkbox.java \
-	java/awt/win32/CheckboxMenuItem.java \
-	java/awt/win32/Choice.java \
-	java/awt/win32/Defaults.java \
-	java/awt/win32/FileDialog.java \
-	java/awt/win32/Frame.java \
-	java/awt/win32/Label.java \
-	java/awt/win32/List.java \
-	java/awt/win32/Menu.java \
-	java/awt/win32/MenuBar.java \
-	java/awt/win32/MenuItem.java \
-	java/awt/win32/NativeComponent.java \
-	java/awt/win32/NativeContainer.java \
-	java/awt/win32/Panel.java \
-	java/awt/win32/PopupMenu.java \
-	java/awt/win32/ScrollPane.java \
-	java/awt/win32/Scrollbar.java \
-	java/awt/win32/SystemColor.java \
-	java/awt/win32/TextArea.java \
-	java/awt/win32/TextComponent.java \
-	java/awt/win32/TextField.java \
-	java/awt/win32/Toolkit.java \
-	java/awt/win32/WMEvent.java \
-	java/awt/win32/Window.java
 java_beans_SRCS = \
 	java/beans/BeanDescriptor.java \
 	java/beans/BeanInfo.java \
@@ -464,6 +435,7 @@ java_net_SRCS = \
 	java/net/SocketOptions.java \
 	java/net/SocketOutputStream.java \
 	java/net/URL.java \
+	java/net/URLClassLoader.java \
 	java/net/URLConnection.java \
 	java/net/URLEncoder.java \
 	java/net/URLStreamHandler.java \
@@ -475,6 +447,7 @@ java_security_SRCS = \
 	java/security/AccessControlException.java \
 	java/security/AccessController.java \
 	java/security/BasicPermission.java \
+	java/security/CodeSource.java \
 	java/security/DigestException.java \
 	java/security/DigestInputStream.java \
 	java/security/DigestOutputStream.java \
@@ -486,10 +459,12 @@ java_security_SRCS = \
 	java/security/NoSuchAlgorithmException.java \
 	java/security/NoSuchProviderException.java \
 	java/security/Permission.java \
+	java/security/PermissionCollection.java \
 	java/security/PrivilegedAction.java \
 	java/security/PrivilegedActionException.java \
 	java/security/PrivilegedExceptionAction.java \
 	java/security/Provider.java \
+	java/security/SecureClassLoader.java \
 	java/security/Security.java \
 	java/security/SecurityPermission.java
 java_sql_SRCS = \
@@ -667,9 +642,11 @@ kaffe_lang_SRCS = \
 	kaffe/lang/Application.java \
 	kaffe/lang/ApplicationException.java \
 	kaffe/lang/ApplicationResource.java \
+	kaffe/lang/ClassPathReader.java \
 	kaffe/lang/DummyClassLoader.java \
 	kaffe/lang/MemoryAdvice.java \
 	kaffe/lang/MemoryAdviceCallback.java \
+	kaffe/lang/ResourceReader.java \
 	kaffe/lang/SystemClassLoader.java \
 	kaffe/lang/UNIXProcess.java
 kaffe_management_SRCS = \
@@ -723,6 +700,7 @@ kaffe_util_SRCS = \
 	kaffe/util/Ptr.java \
 	kaffe/util/Timer.java \
 	kaffe/util/TimerClient.java \
+	kaffe/util/UTF8.java \
 	kaffe/util/VectorSnapshot.java
 kaffe_util_log_SRCS = \
 	kaffe/util/log/LogClient.java \
