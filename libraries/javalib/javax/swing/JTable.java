@@ -1003,11 +1003,11 @@ public class JTable extends JComponent
   }
 
   /**
-   * Get the value of the {@link #interCellSpacing} property.
+   * Get the value of the {@link #intercellSpacing} property.
    *
    * @return The current value of the property
    */
-  public Dimension getInterCellSpacing()
+  public Dimension getIntercellSpacing()
   {
     return new Dimension(columnModel.getColumnMargin(), rowMargin);
   }
@@ -1297,11 +1297,11 @@ public class JTable extends JComponent
   }
 
   /**
-   * Set the value of the {@link #interCellSpacing} property.
+   * Set the value of the {@link #intercellSpacing} property.
    *
-   * @param i The new value of the interCellSpacing property
+   * @param i The new value of the intercellSpacing property
    */ 
-  public void setInterCellSpacing(Dimension i)
+  public void setIntercellSpacing(Dimension i)
   {
     rowMargin = i.height;
     columnModel.setColumnMargin(i.width);

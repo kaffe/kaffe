@@ -1,5 +1,11 @@
 2004-12-16  Michael Koch  <konqueror@gmx.de>
 
+	* libraries/javalib/javax/swing/JTable.java
+	(getIntercellSpacing): Fixed typo in method name.
+	(setIntercellSpacing): Likewise.
+
+2004-12-16  Michael Koch  <konqueror@gmx.de>
+
 	* libraries/javalib/javax/swing/text/JTextComponent.java
 	(focusAccelerator): New variable.
 	(getFocusAccelerator): New method.
