@@ -1,3 +1,11 @@
+2004-01-19  Dalibor Topic <robilad@kaffe.org>
+
+	* Makefile.am:
+	(DIST_SUBDIRS) Added po.
+
+	* Makefile.in:
+	Regenerated.
+
 2004-01-18  Dalibor Topic <robilad@kaffe.org>
 
 	* po/LINGUAS,
