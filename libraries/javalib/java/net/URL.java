@@ -1,9 +1,9 @@
 package java.net;
 
-import java.lang.String;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.String;
 import java.util.StringTokenizer;
 import kaffe.net.DefaultURLStreamHandlerFactory;
 
@@ -49,23 +49,28 @@ public URL(String spec) throws MalformedURLException {
 		protocol = spec.substring(0, pend);
 
 		int hstart = pend+3;
-		if (spec.substring(pend+1, hstart).equals("//")) {
+		if (spec.length() >= hstart && spec.substring(pend+1, hstart).equals("//")) {
 			int hend = spec.indexOf(':', hstart);
-			if (hend == -1) {
-				hend = spec.indexOf('/', hstart);
-				if (hend == -1) {
-					throw new MalformedURLException("no host");
-				}
-				host = spec.substring(hstart, hend);
-				port = -1;
-			}
-			else {
+			if (hend != -1) {
 				host = spec.substring(hstart, hend);
 				int postart = hend+1;
 				int poend = spec.indexOf('/', postart);
 				port = Integer.parseInt(spec.substring(postart, poend));
+				fstart = spec.indexOf( '/', hstart);
 			}
-			fstart = spec.indexOf( '/', hstart);
+			else {
+				hend = spec.indexOf('/', hstart);
+				if (hend != -1) {
+					host = spec.substring(hstart, hend);
+					port = -1;
+					fstart = spec.indexOf( '/', hstart);
+				}
+				else {
+					host = spec.substring(hstart);
+					port = -1;
+					fstart = -1;
+				}
+			}
 		}
 		else {
 			host = "";
@@ -75,11 +80,17 @@ public URL(String spec) throws MalformedURLException {
 
 		if (fstart != -1) {
 			file = spec.substring(fstart);
+			int rIdx = file.lastIndexOf( '#');
+			if ( rIdx > -1 ) {
+				ref = file.substring( rIdx+1);
+				file = file.substring( 0, rIdx);
+			}
 		}
 		else {
 			file = "";
 		}
 	}
+//System.out.println("URL = " + this);
 }
 
 public URL(String protocol, String host, String file) throws MalformedURLException {
@@ -94,7 +105,9 @@ public URL(String protocol, String host, int port, String file) throws Malformed
 }
 
 public URL(URL context, String spec) throws MalformedURLException {
-	this (context == null ? spec : context.toString() + spec);
+//if (context != null) System.out.println("context = " + context);
+//if (spec != null) System.out.println("spec = " + spec);
+	this( merge( context, spec));
 }
 
 public boolean equals(Object obj) {
@@ -103,11 +116,11 @@ public boolean equals(Object obj) {
 	}
 	URL that = (URL)obj;
 
-	if (this.protocol == that.protocol &&
-	    this.host == that.host &&
+	if (this.protocol.equals( that.protocol) &&
+	    this.host.equals(that.host) &&
 	    this.port == that.port &&
-	    this.file == that.file &&
-	    this.ref == that.ref) {
+	    this.file.equals(that.file) &&
+			this.ref.equals(that.ref) ) {
 		return (true);
 	}
 	return (false);
@@ -158,13 +171,38 @@ public int hashCode() {
 	return (protocol.hashCode() ^ host.hashCode() ^ file.hashCode());
 }
 
+private static String merge(URL context, String spec) {
+	if ( context == null )
+		return spec;
+
+	String cs = context.toString();
+	
+	if ( spec == null )
+		return (cs);
+		
+	//spec is a ref ( keep file )
+	if ( spec.indexOf( '#') == 0 )
+		return (cs+spec);
+		
+	//merge files
+	int ls = cs.lastIndexOf( '/');
+	if ( ls > -1 ) {
+		int ld = cs.lastIndexOf( '.');
+		if ( ld > ls ) {
+			return (cs.substring( 0, ls+1) + spec);
+		}
+	}
+	
+	return (cs + spec);
+}
+
 public URLConnection openConnection() throws IOException {
 	if (conn == null) {
 		if (handler == null) {
 			handler = getURLStreamHandler(protocol);
 		}
 		conn = handler.openConnection(this);
-		// do not connect here
+		conn.connect();
 	}
 	return (conn);
 }
@@ -177,10 +215,10 @@ public InputStream openStream() throws IOException {
 }
 
 public boolean sameFile(URL that) {
-	if (this.protocol == that.protocol &&
-	    this.host == that.host &&
+	if (this.protocol.equals(that.protocol) &&
+	    this.host.equals(that.host) &&
 	    this.port == that.port &&
-	    this.file == that.file) {
+	    this.file.equals(that.file) ) {
 		return (true);
 	}
 	return (false);
