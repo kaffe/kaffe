@@ -1997,7 +1997,7 @@ parseSignature(Utf8Const *signature, errorInfo *einfo)
 		postOutOfMemory(einfo);
 		return (NULL);
 	}
-	PSIG_UTF8(sig) = signature;
+	utf8ConstAssign(PSIG_UTF8(sig), signature);
 	PSIG_NARGS(sig) = nargs;
 	
 	sig_iter = signature->data+1; /* skip '(' */
