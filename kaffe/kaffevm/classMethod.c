@@ -1568,10 +1568,10 @@ done:
 }
 
 /*
- * Lookup a named field.
+ * Lookup a named field.  Do not search super classes. Do not resolve the field.
  */
 Field*
-lookupClassField(Hjava_lang_Class* clp, Utf8Const* name, bool isStatic, errorInfo *einfo)
+lookupClassFieldLocal(Hjava_lang_Class* clp, Utf8Const* name, bool isStatic)
 {
 	Field* fptr;
 	int n;
@@ -1587,13 +1587,31 @@ lookupClassField(Hjava_lang_Class* clp, Utf8Const* name, bool isStatic, errorInf
 	}
 	while (--n >= 0) {
 		if (utf8ConstEqual (name, fptr->name)) {
+			return (fptr);
+		}
+		fptr++;
+	}
+	return (0);
+}
+
+/*
+ * Lookup a named field. Search superclasses and resolve the field.
+ */
+Field*
+lookupClassField(Hjava_lang_Class* clp, Utf8Const* name, bool isStatic, errorInfo *einfo)
+{
+	Field *fptr;
+	Hjava_lang_Class *c;
+
+	for (c = clp; c; c = c->superclass) {
+		fptr = lookupClassFieldLocal(c, name, isStatic);
+		if (fptr) {
 			/* Resolve field if necessary */
 			if (resolveFieldType(fptr, clp, einfo) == 0) {
 				return (NULL);
 			}
 			return (fptr);
 		}
-		fptr++;
 	}
 DBG(RESERROR,
 	dprintf("lookupClassField failed %s:%s\n", 
