@@ -127,9 +127,6 @@ libnet_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER)
 libnet_la_LIBADD = $(NET_LIBS)
 libnet_la_SOURCES =  	InetAddressImpl.c 	PlainDatagramSocketImpl.c 	PlainSocketImpl.c
 
-
-noinst_HEADERS =  	DatagramPacket.h 	InetAddress.h 	InetAddressImpl.h 	PlainDatagramSocketImpl.h 	PlainSocketImpl.h 	SocketImpl.h 	SocketOptions.h
-
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -152,8 +149,6 @@ COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CF
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
-HEADERS =  $(noinst_HEADERS)
-
 DIST_COMMON =  Makefile.am Makefile.in
 
 
@@ -337,7 +332,7 @@ install-am: all-am
 install: install-am
 uninstall-am: uninstall-nativeLTLIBRARIES
 uninstall: uninstall-am
-all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install

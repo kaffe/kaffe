@@ -30,9 +30,9 @@
 #include "../../../kaffe/kaffevm/soft.h"
 #include "../../../include/system.h"
 #include "defs.h"
-#include "InputStream.h"
-#include "PrintStream.h"
-#include "System.h"
+#include "java_io_InputStream.h"
+#include "java_io_PrintStream.h"
+#include "java_lang_System.h"
 #include <native.h>
 
 static char cwdpath[MAXPATHLEN];

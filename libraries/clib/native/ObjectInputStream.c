@@ -22,7 +22,7 @@
 #include "defs.h"
 #include "files.h"
 #include "../../../include/system.h"
-#include "ObjectInputStream.h"
+#include "java_io_ObjectInputStream.h"
 
 struct Hjava_lang_Class*
 java_io_ObjectInputStream_loadClass0(struct Hjava_io_ObjectInputStream* stream, struct Hjava_lang_Class* cls, struct Hjava_lang_String* str)

@@ -15,12 +15,12 @@
 #include "config-io.h"
 #include "config-hacks.h"
 #include <native.h>
-#include "../native/Integer.h"
-#include "../io/FileDescriptor.h"
-#include "DatagramPacket.h"
-#include "PlainDatagramSocketImpl.h"
-#include "InetAddress.h"
-#include "SocketOptions.h"
+#include "java_lang_Integer.h"
+#include "java_io_FileDescriptor.h"
+#include "java_net_DatagramPacket.h"
+#include "java_net_PlainDatagramSocketImpl.h"
+#include "java_net_InetAddress.h"
+#include "java_net_SocketOptions.h"
 #include "nets.h"
 #include <jsyscall.h>
 

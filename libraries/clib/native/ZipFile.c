@@ -16,8 +16,8 @@
 #include <native.h>
 #include "../../../kaffe/kaffevm/jar.h"
 #include "../../../kaffe/kaffevm/itypes.h"
-#include "ZipEntry.h"
-#include "Vector.h"
+#include "java_util_zip_ZipEntry.h"
+#include "java_util_Vector.h"
 
 static Hjava_util_zip_ZipEntry* makeZipEntry(jarEntry*);
 

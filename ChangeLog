@@ -1,3 +1,46 @@
+Sun Feb  7 19:50:48 1999  Archie Cobbs <archie@whistle.com>
+
+	* include/Makefile.am: generate all derived header files
+	from Klasses.jar to insure they are really consistent
+	* include/Makefile.in: regen
+	* In libraries/clib: io/File.c io/FileDescriptor.c
+	io/FileInputStream.c io/FileOutputStream.c io/Makefile.am
+	io/Makefile.in io/RandomAccessFile.c native/Array.c
+	native/Class.c native/Compiler.c native/Constructor.c
+	native/Double.c native/Field.c native/Float.c native/Makefile.am
+	native/Makefile.in native/Math.c native/Method.c
+	native/ObjectInputStream.c native/ObjectOutputStream.c
+	native/ObjectStreamClass.c native/Runtime.c
+	native/SecurityManager.c native/System.c native/Throwable.c
+	native/UNIXProcess.c native/ZipFile.c net/InetAddressImpl.c
+	net/Makefile.am net/Makefile.in net/PlainDatagramSocketImpl.c
+	net/PlainSocketImpl.c zip/Adler32.c zip/CRC32.c zip/Deflater.c
+	zip/Inflater.c zip/Makefile.am zip/Makefile.in: use generated
+	headers instead of local duplicates
+	* In libraries/clib: io/File.h io/FileDescriptor.h
+	io/FileInputStream.h io/FileOutputStream.h io/RandomAccessFile.h
+	native/Array.h native/Boolean.h native/Byte.h native/Character.h
+	native/Compiler.h native/Constructor.h native/Double.h
+	native/Field.h native/Float.h native/InputStream.h
+	native/Integer.h native/Long.h native/Math.h native/Method.h
+	native/ObjectInputStream.h native/ObjectOutputStream.h
+	native/ObjectStreamClass.h native/ObjectStreamField.h
+	native/PrintStream.h native/Runtime.h native/SecurityManager.h
+	native/Short.h native/System.h native/Throwable.h
+	native/UNIXProcess.h native/Vector.h native/ZipEntry.h
+	net/DatagramPacket.h net/InetAddress.h net/InetAddressImpl.h
+	net/PlainDatagramSocketImpl.h net/PlainSocketImpl.h
+	net/SocketImpl.h net/SocketOptions.h zip/Adler32.h zip/CRC32.h
+	zip/Deflater.h zip/Inflater.h: removed these files
+
+Sun Feb  7 19:40:48 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/lang/{Byte,Short}: use "value"
+	instead of "val" to be consistent with other wrapper classes
+	* libraries/javalib/java/lang/{Boolean,Byte,Character,Short,
+	Integer,Long,Float,Double}: make "value" final; rearrange
+	order of some field modifiers to be more standard
+
 Sun Feb  7 13:31:23 1999  Moses DeJong <dejong@cs.umn.edu>
 
 	* README: fix typo

@@ -21,9 +21,9 @@
 #include "defs.h"
 #include "files.h"
 #include "../../../include/system.h"
-#include "ObjectStreamClass.h"
-#include "ObjectStreamField.h"
-#include "Field.h"
+#include "java_io_ObjectStreamClass.h"
+#include "java_io_ObjectStreamField.h"
+#include "java_lang_reflect_Field.h"
 
 jint
 java_io_ObjectStreamClass_getClassAccess(struct Hjava_lang_Class* cls)

@@ -14,7 +14,7 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include <native.h>
-#include "Deflater.h"
+#include "java_util_zip_Deflater.h"
 
 #if defined(HAVE_LIBZ) && defined(HAVE_ZLIB_H)
 

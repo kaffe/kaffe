@@ -20,7 +20,7 @@
 #include "defs.h"
 #include "files.h"
 #include "../../../include/system.h"
-#include "ObjectOutputStream.h"
+#include "java_io_ObjectOutputStream.h"
 
 void
 java_io_ObjectOutputStream_outputClassFields(struct Hjava_io_ObjectOutputStream* stream, struct Hjava_lang_Object* obj, struct Hjava_lang_Class* cls, HArrayOfInt* arr)

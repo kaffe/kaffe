@@ -18,7 +18,7 @@
 #include <native.h>
 #include "files.h"
 #include "defs.h"
-#include "Runtime.h"
+#include "java_lang_Runtime.h"
 #include "../../../kaffe/kaffevm/external.h"
 #include "../../../kaffe/kaffevm/gc.h"
 #include "../../../kaffe/kaffevm/support.h"
@@ -73,7 +73,7 @@ java_lang_Runtime_buildLibName(struct Hjava_lang_Runtime* this, struct Hjava_lan
 /*
  * Load in a library file.
  */
-jint
+jbool
 java_lang_Runtime_loadFileInternal(struct Hjava_lang_Runtime* this, struct Hjava_lang_String* s1)
 {
 	char lib[MAXPATHLEN];
@@ -175,7 +175,7 @@ java_lang_Runtime_traceMethodCalls(struct Hjava_lang_Runtime* this, jbool on)
  * Inform the runtime that it must run the finalizer when it exits.
  */
 void
-java_lang_Runtime_runFinalizersOnExit(jbool on)
+java_lang_Runtime_runFinalizersOnExit(struct Hjava_lang_Runtime* this, jbool on)
 {
 	runFinalizerOnExit = on;
 }

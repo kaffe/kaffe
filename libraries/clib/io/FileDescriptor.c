@@ -12,7 +12,7 @@
 #include "config-std.h"
 #include "config-io.h"
 #include "files.h"
-#include "FileDescriptor.h"
+#include "java_io_FileDescriptor.h"
 #include "jsyscall.h"
 #include "../../../kaffe/kaffevm/support.h"
 

@@ -12,7 +12,7 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include <native.h>
-#include "Adler32.h"
+#include "java_util_zip_Adler32.h"
 
 #if defined(HAVE_LIBZ) && defined(HAVE_ZLIB_H)
 

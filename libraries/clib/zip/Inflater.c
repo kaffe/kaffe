@@ -12,7 +12,7 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include <native.h>
-#include "Inflater.h"
+#include "java_util_zip_Inflater.h"
 
 #if defined(HAVE_LIBZ) && defined(HAVE_ZLIB_H)
 

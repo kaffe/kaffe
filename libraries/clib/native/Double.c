@@ -19,7 +19,7 @@
 #include "../../../kaffe/kaffevm/stringSupport.h"
 #include "defs.h"
 #include "files.h"
-#include "Double.h"
+#include "java_lang_Double.h"
 #include <native.h>
 
 /*

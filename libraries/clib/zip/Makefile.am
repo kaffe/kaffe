@@ -16,8 +16,3 @@ libzip_la_SOURCES = \
 	Deflater.c \
 	Inflater.c
 
-noinst_HEADERS = \
-	Adler32.h \
-	CRC32.h \
-	Deflater.h \
-	Inflater.h

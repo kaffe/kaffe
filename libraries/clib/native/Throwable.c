@@ -12,10 +12,10 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <native.h>
-#include "../io/FileDescriptor.h"
-#include "../io/FileOutputStream.h"
-#include "PrintStream.h"
-#include "Throwable.h"
+#include "java_io_FileDescriptor.h"
+#include "java_io_FileOutputStream.h"
+#include "java_io_PrintStream.h"
+#include "java_lang_Throwable.h"
 #include "../../../kaffe/kaffevm/support.h"
 
 extern Hjava_lang_Object* buildStackTrace(void*);

@@ -20,7 +20,7 @@
 #include <native.h>
 #include "defs.h"
 #include <stdlib.h>
-#include "SecurityManager.h"
+#include "java_lang_SecurityManager.h"
 #include "../../../kaffe/kaffevm/stackTrace.h"
 #include "../../../kaffe/kaffevm/support.h"
 

@@ -22,12 +22,12 @@
 #include "../../../kaffe/kaffevm/errors.h"
 #include "../../../kaffe/kaffevm/soft.h"
 #include "../../../kaffe/kaffevm/stackTrace.h"
-#include "InputStream.h"
-#include "PrintStream.h"
-#include "System.h"
-#include "Constructor.h"
-#include "Method.h"
-#include "Field.h"
+#include "java_io_InputStream.h"
+#include "java_io_PrintStream.h"
+#include "java_lang_System.h"
+#include "java_lang_reflect_Constructor.h"
+#include "java_lang_reflect_Method.h"
+#include "java_lang_reflect_Field.h"
 #include <native.h>
 #include "defs.h"
 

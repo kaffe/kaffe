@@ -19,7 +19,7 @@
 #include <jsyscall.h>
 #include <native.h>
 #include <files.h>
-#include "UNIXProcess.h"
+#include "kaffe_lang_UNIXProcess.h"
 
 typedef struct _child {
 	jobject 		proc;

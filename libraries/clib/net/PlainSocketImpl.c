@@ -14,12 +14,12 @@
 #include "config-mem.h"
 #include "config-net.h"
 #include <native.h>
-#include "../io/FileDescriptor.h"
-#include "../native/Integer.h"
-#include "SocketImpl.h"
-#include "InetAddress.h"
-#include "PlainSocketImpl.h"
-#include "SocketOptions.h"
+#include "java_io_FileDescriptor.h"
+#include "java_lang_Integer.h"
+#include "java_net_SocketImpl.h"
+#include "java_net_InetAddress.h"
+#include "java_net_PlainSocketImpl.h"
+#include "java_net_SocketOptions.h"
 #include "nets.h"
 #include <jsyscall.h>
 

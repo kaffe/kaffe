@@ -15,11 +15,3 @@ libnet_la_SOURCES = \
 	PlainDatagramSocketImpl.c \
 	PlainSocketImpl.c
 
-noinst_HEADERS = \
-	DatagramPacket.h \
-	InetAddress.h \
-	InetAddressImpl.h \
-	PlainDatagramSocketImpl.h \
-	PlainSocketImpl.h \
-	SocketImpl.h \
-	SocketOptions.h

@@ -20,7 +20,7 @@
 #include "defs.h"
 #include "files.h"
 #include "../../../include/system.h"
-#include "File.h"
+#include "java_io_File.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
 

@@ -17,9 +17,3 @@ libio_la_SOURCES = \
 	RandomAccessFile.c \
 	AudioPlayer.c
 
-noinst_HEADERS = \
-	File.h \
-	FileDescriptor.h \
-	FileInputStream.h \
-	FileOutputStream.h \
-	RandomAccessFile.h

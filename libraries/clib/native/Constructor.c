@@ -19,8 +19,8 @@
 #include "../../../kaffe/kaffevm/itypes.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
-#include "Constructor.h"
-#include "Method.h"
+#include "java_lang_reflect_Constructor.h"
+#include "java_lang_reflect_Method.h"
 #include <native.h>
 #include <jni.h>
 #include "defs.h"

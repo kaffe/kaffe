@@ -12,7 +12,7 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include <native.h>
-#include "CRC32.h"
+#include "java_util_zip_CRC32.h"
 #include "../../../kaffe/kaffevm/gtypes.h"
 
 /*

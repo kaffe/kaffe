@@ -16,7 +16,7 @@
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include <native.h>
 #include "defs.h"
-#include "Float.h"
+#include "java_lang_Float.h"
 
 /*
  * Convert float into a string.

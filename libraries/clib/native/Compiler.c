@@ -13,7 +13,7 @@
 #include <native.h>
 #include "../../../kaffe/kaffevm/baseClasses.h"
 #include "../../../kaffe/kaffevm/support.h"
-#include "Compiler.h"
+#include "java_lang_Compiler.h"
 
 void
 java_lang_Compiler_initialize(void)

@@ -127,9 +127,6 @@ libzip_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER)
 libzip_la_LIBADD = $(ZIP_LIBS)
 libzip_la_SOURCES =  	Adler32.c 	CRC32.c 	Deflater.c 	Inflater.c
 
-
-noinst_HEADERS =  	Adler32.h 	CRC32.h 	Deflater.h 	Inflater.h
-
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -151,8 +148,6 @@ COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CF
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
-HEADERS =  $(noinst_HEADERS)
-
 DIST_COMMON =  Makefile.am Makefile.in
 
 
@@ -336,7 +331,7 @@ install-am: all-am
 install: install-am
 uninstall-am: uninstall-nativeLTLIBRARIES
 uninstall: uninstall-am
-all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
