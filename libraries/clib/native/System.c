@@ -165,7 +165,7 @@ initProxyProperties (struct Hjava_util_Properties *prop)
 	/* Check it's HTTP protocol */
 	start = proxy;
 	p = http_prefix;
-	while (*p && (tolower(*start) == *p)) {
+	while (*p && (tolower((int) *start) == *p)) {
 		start++;
 		p++;
 	}
@@ -455,7 +455,7 @@ Java_java_lang_System_setIn0(JNIEnv *env, jclass system, jobject stream)
 {
 	jfieldID in = (*env)->GetStaticFieldID(env, system, 
 					"in", "Ljava/io/InputStream;");
-	assert(in);
+	assert(in != NULL);
 	(*env)->SetStaticObjectField(env, system, in, stream);
 }
 
@@ -467,7 +467,7 @@ Java_java_lang_System_setOut0(JNIEnv *env, jclass system, jobject stream)
 {
 	jfieldID out = (*env)->GetStaticFieldID(env, system, 
 					"out", "Ljava/io/PrintStream;");
-	assert(out);
+	assert(out != NULL);
 	(*env)->SetStaticObjectField(env, system, out, stream);
 }
 
@@ -479,7 +479,7 @@ Java_java_lang_System_setErr0(JNIEnv *env, jclass system, struct Hjava_io_PrintS
 {
 	jfieldID err = (*env)->GetStaticFieldID(env, system, 
 					"err", "Ljava/io/PrintStream;");
-	assert(err);
+	assert(err != NULL);
 	(*env)->SetStaticObjectField(env, system, err, stream);
 }
 
