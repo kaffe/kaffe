@@ -12,10 +12,12 @@ ActionEvt ( Object src, int evtId, String cmd, int mod ) {
 }
 
 protected void dispatch () {
-	if ( source instanceof Component )
-		((Component)source).processEvent( this);
-	else if ( source instanceof MenuItem )
-		((MenuItem)source).processActionEvent( this);
+	if ( source instanceof Component ){
+		((Component)source).process( this);
+	}
+	else if ( source instanceof MenuItem ){
+		((MenuItem)source).process( this);
+	}
 
 	if ( (Defaults.RecycleEvents & AWTEvent.ACTION_EVENT_MASK) != 0 )	recycle();
 }

@@ -36,6 +36,18 @@ static {
 	// (because of the Color->Toolkit->Defaults cyclic classinit problem) now get their
 	// native values
 
+	// Defaults has to be initialized at least up to its 'RgbRequests' field
+	// BEFORE we call Toolkit.clrGetPixelValue(), since the first call of this
+	// native method queries Defaults.RgbRequests (as part of a PseudoColor init).
+	// If the native side kicks off the Defaults clinit, this (probably) 
+	// ends up in Defaults.clinit calling Color ctors before getting RgbRequests,
+	// i.e. before it finishes color mapping. This would cause recursive
+	// native color init 
+	try {
+		Class.forName("java/awt/Defaults");
+	} catch (Exception _) {
+	}
+
 	gray.setNativeValue();
 	darkGray.setNativeValue();
 	black.setNativeValue();

@@ -143,8 +143,6 @@ final private static ResourceBundle getSpecificBundle(String baseName) throws Mi
 			return ((ResourceBundle)cls.newInstance());
 		}
 	}
-	catch (NoClassDefFoundError __) {
-	}
 	catch (Exception _) {
 	}
 

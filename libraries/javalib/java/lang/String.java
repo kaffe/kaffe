@@ -18,8 +18,9 @@ import kaffe.io.ByteToCharConverter;
 import kaffe.io.CharToByteConverter;
 
 final public class String implements Serializable {
-// Note: value, offset, and count are not private, because
-// StringBuffer uses them for faster access
+
+	// Note: value, offset, and count are not private, because
+	// StringBuffer uses them for faster access
 	char[] value;
 	int offset;
 	int count;
@@ -34,17 +35,19 @@ public String() {
 }
 
 public String(String other) {
-	this(other.value, other.offset, other.count);
+	value = other.value;
+	offset = other.offset;
+	count = other.count;
+	hash = other.hash;
 }
 
 public String (StringBuffer sb) {
-	synchronized (sb) {
-		count = sb.length();
-		value = new char[count];
-		if (count > 0) {
-			sb.getChars(0, count, value, 0);
-		}
-	}
+
+	count = sb.used;
+	value = sb.buffer;
+
+	// mark this StringBuffer so that it knows we are using it
+	sb.isStringized = true; 
 }
 
 public String( byte[] bytes) {

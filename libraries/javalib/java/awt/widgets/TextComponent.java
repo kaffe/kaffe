@@ -26,7 +26,6 @@ abstract public class TextComponent
 	private static final long serialVersionUID = -2214773872412987419L;
 	protected transient TextListener textListener;
 	boolean isEditable = true;
-	protected static TextEvent tEvt = new TextEvent( null, TextEvent.TEXT_VALUE_CHANGED);
 
 public void actionPerformed( ActionEvent e) {
 	String cmd = e.getActionCommand();
@@ -48,7 +47,6 @@ public void actionPerformed( ActionEvent e) {
 
 public void addTextListener( TextListener l) {
 	eventMask |= AWTEvent.TEXT_EVENT_MASK;
-	textListener = AWTEventMulticaster.add( textListener, l);
 }
 
 void copyToClipboard () {
@@ -76,6 +74,12 @@ abstract public String getText();
 
 public boolean isEditable() {
 	return isEditable;
+}
+
+public boolean isFocusTraversable() {
+	return ( ((flags & IS_SHOWING) == IS_SHOWING) && 
+	         ((eventMask & AWTEvent.DISABLED_MASK) == 0) &&
+	         isEditable );
 }
 
 boolean isPrintableTyped( KeyEvent e) {
@@ -114,9 +118,15 @@ void pasteFromClipboard () {
 	}
 }
 
+void process ( TextEvent e ) {
+	if ( (textListener != null) || (eventMask & AWTEvent.TEXT_EVENT_MASK) != 0 )
+		processEvent( e);
+}
+
 protected void processTextEvent( TextEvent e) {
-	if ( hasToNotify( this, AWTEvent.TEXT_EVENT_MASK, textListener))
+	if ( textListener != null ) {
 		textListener.textValueChanged( e);
+	}
 }
 
 public void removeTextListener( TextListener l) {
@@ -133,7 +143,18 @@ abstract public void selectAll();
 abstract public void setCaretPosition( int pos);
 
 public void setEditable( boolean edit) {
-	isEditable = edit;
+	// We need to maintain a separate state for this (i.e. we can't just map it to
+	// setEnabled) because - another spec glitch - non-editable TextComponents can have
+	// pointer-selections, and they also report as isEnabled=true in the JDK.
+	
+	if ( isEditable != edit ) {
+		isEditable = edit;
+
+		// Hrmm, this is incomplete, in case we have explicitly set colors, we would
+		// loose them when the state is restored	
+		setForeground( isEditable ? Defaults.TextAreaTxtClr : Defaults.TextAreaRoTxtClr);
+		setBackground( isEditable ? Defaults.TextAreaBgClr : Defaults.TextAreaRoBgClr);
+	}
 }
 
 abstract public void setSelectionEnd( int end);

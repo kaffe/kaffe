@@ -40,19 +40,6 @@ final public void wait() throws InterruptedException {
 	wait(0);
 }
 
-final public void wait(long timeout) throws InterruptedException {
-	if (Thread.interrupted()) {
-		throw new InterruptedException();
-	}
-	if (timeout < 0) {
-		throw new IllegalArgumentException("timeout is negative");
-	}
-	wait0(timeout);
-	if (Thread.interrupted()) {
-		throw new InterruptedException();
-	}
-}
-
 final public void wait(long timeout, int nanos) throws InterruptedException {
 	/* Ignore nanos, except avoid clipping a non-zero quantity to zero */
 	if (nanos < 0 || nanos > 999999) {
@@ -64,5 +51,10 @@ final public void wait(long timeout, int nanos) throws InterruptedException {
 	wait(timeout);    
 }
 
-final native private void wait0(long timeout);
+final public void wait(long timeout) throws InterruptedException {
+	wait0(timeout);
+}
+
+final native void wait0(long timeout);
+
 }

@@ -45,48 +45,49 @@ public Window ( Frame owner ) {
 }
 
 public void addNotify () {
-	// even if this could be done in a central location, we defer this
-	// as much as possible because it might involve polling (for non-threaded
-	// AWTs), slowing down the startup time
-	Toolkit.startDispatch();
+	if ( nativeData != null )  // don't do it twice
+		return;
 
-	if ( nativeData == null ) {	
-		// Some native windowing systems require windows to be created in
-		// the thread that does the event dispatching. We force a context
-		// switch by means of a WMEvent in this case
-		if ( ((Toolkit.flags & Toolkit.IS_DISPATCH_EXCLUSIVE) != 0) &&
-		     (Thread.currentThread() != Toolkit.eventThread) ){
-			WMEvent e =  WMEvent.getEvent( this, WMEvent.WM_CREATE);
-			Toolkit.eventQueue.postEvent( e);
+	// TOP HALF - Some native windowing systems require windows to be created in
+	// the thread that does the native event loop. Check if we have to force a
+	// context switch. If so, we can assume the bottom half to be already executed
+	// in that thread
+	if ( Toolkit.switchToCreateThread( this) )
+		return;
+	
+	// BOTTOM HALF - we are now in a appropriate thread to do all involved native
+	// initialization and related internal housekeeping
 
-			while ( nativeData == null ) {
-				synchronized ( e ) {
-					try { e.wait(); } catch ( InterruptedException x ) {}
-				} 
-			}
-		}
-		else {
-			// if we have an owner that has not been created yet, do it now
-			if ( (owner != null) && (owner.nativeData == null) )
-				owner.addNotify();
+	// if we have an owner that has not been created yet, do it now
+	if ( (owner != null) && (owner.nativeData == null) )
+		owner.addNotify();
 
-			super.addNotify();
-		
-			// defer size setting as much as possible
-			if ( (width == 0) || (height == 0) )
-				setSize( getPreferredSize());
-				
-			if ( (nativeData = createNativeWindow()) == null )
-				throw new AWTError( "native create failed: " + this);
-
-			AWTEvent.registerSource( this, nativeData);
-		}
+	// finally, we can go native and create whatever is required to bring us to life
+	if ( (nativeData = createNativeWindow()) == null ){
+		throw new AWTError( "native create failed: " + this);
 	}
+
+	// enable mapping of native events to Java Components
+	AWTEvent.registerSource( this, nativeData);
+	
+	// addNotify childs and set flags. Be aware of that childs might be native, too
+	// (i.e. need a native parent before they can be addNotified by themselves)
+	super.addNotify();
+
+/*** so far, JDK doesn't set the right size in addNotify, so we skip it, too
+	// since setSize() triggers a layout, avaoid to do it before we know the right size.
+	if ( (width == 0) || (height == 0) ) {
+		// Bad! We have to defer setting a native size up to this point, because
+		// getPreferredSize() might use a careless LayoutManager who doesn't check for
+		// null peers. It really would be nice if we would already have the right coords
+		// when creating the native window
+	  setSize( getPreferredSize());
+	}
+****/
 }
 
 public void addWindowListener ( WindowListener newListener ) {
 	wndListener = AWTEventMulticaster.add( wndListener, newListener);
-	eventMask |= AWTEvent.WINDOW_EVENT_MASK;
 }
 
 void cleanUp () {
@@ -194,18 +195,23 @@ public void pack () {
 	validate();
 }
 
-protected void processFocusEvent ( FocusEvent event ) {
-	super.processFocusEvent( event);
+void process ( FocusEvent event ) {
+	super.process( event);
 
 	if ( event.id == FocusEvent.FOCUS_GAINED ) {
 		// set focus on first child which can handle it
 		if ( nChildren > 0 )
-			ShortcutHandler.focusNext( this, null);
+			ShortcutHandler.focusNext( this);
 	}
 }
 
+void process ( WindowEvent e ) {
+	if ( (wndListener != null) || (eventMask & AWTEvent.WINDOW_EVENT_MASK) != 0)
+		processEvent( e);
+}
+
 protected void processWindowEvent ( WindowEvent event ) {
-	if ( hasToNotify( this, AWTEvent.WINDOW_EVENT_MASK, wndListener) ) {
+	if ( wndListener != null ) {
 		switch ( event.id ) {
 		case WindowEvent.WINDOW_OPENED:
 			wndListener.windowOpened( event);
@@ -267,7 +273,7 @@ public void removeNotify () {
 
 			cleanUp();
 			
-			if ( hasToNotify( this, AWTEvent.WINDOW_EVENT_MASK, wndListener) ){
+			if ( (wndListener != null) || (eventMask & AWTEvent.WINDOW_EVENT_MASK) != 0 ){
 				AWTEvent.sendEvent( WindowEvt.getEvent( this,
 							                        WindowEvent.WINDOW_CLOSED), false);
 			}
@@ -280,13 +286,17 @@ public void removeWindowListener ( WindowListener listener ) {
 }
 
 public void requestFocus () {
-	if ( (nativeData != null) && ((flags & IS_VISIBLE) != 0) )
+	if ( (nativeData != null) && ((flags & IS_VISIBLE) != 0) ){
 		Toolkit.wndRequestFocus( nativeData);
+	}
 }
 
 public void reshape ( int xNew, int yNew, int wNew, int hNew ) {
 	// DEP - this should be in setBounds (the deprecated ripple effect!)
 	// this is never called by a native toplevel resize
+
+	if ( (xNew == x) && (yNew == y) && (wNew == width) && (hNew == height) )
+		return;  // avoid flicker of redundant reshapes
 
 	// Some people don't trust the automatic validation and call validate() explicitly
 	// right after a reshape. We wouldn't get this is we wait for the automatic
@@ -384,8 +394,8 @@ public void show() {
 		// is shown, and JDK sends this after it got shown, so this is the place
 		if ( (flags & IS_OPENED) == 0 ) {
 			flags |= IS_OPENED;
-			
-			if ( hasToNotify( this, AWTEvent.WINDOW_EVENT_MASK, wndListener) ){
+
+			if ( (wndListener != null) || (eventMask & AWTEvent.WINDOW_EVENT_MASK) != 0 ){
 				AWTEvent.sendEvent( WindowEvt.getEvent( this,
 				                        WindowEvent.WINDOW_OPENED), false);
 			}

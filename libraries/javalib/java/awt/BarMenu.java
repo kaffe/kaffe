@@ -48,7 +48,7 @@ public void addNotify () {
 		mb.parent = this;
 		mb.addNotify();
 		mb.propagateOldEvents( ((flags & IS_OLD_EVENT) != 0));
-	
+
 		registerHandlers();
 	}
 }
@@ -59,6 +59,10 @@ void disposeCurrent () {
 		current.dispose();
 		current = null;
 	}
+}
+
+ClassProperties getClassProperties () {
+	return ClassAnalyzer.analyzeAll( getClass(), false);
 }
 
 public Graphics getGraphics () {

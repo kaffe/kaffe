@@ -63,7 +63,7 @@ void popUpAt( int x, int y, int width, int height) {
 	setVisible( true);
 	list.select( items.indexOf( selection));
 	
-	list.requestFocus();
+	prompter.list.requestFocus();
 }
 }
 
@@ -92,7 +92,6 @@ public synchronized void addItem ( String item) {
 
 public synchronized void addItemListener ( ItemListener il) {
 	iListener = AWTEventMulticaster.add( iListener, il);
-	eventMask |= AWTEvent.ITEM_EVENT_MASK;
 }
 
 void closePrompt( boolean resetFocus) {
@@ -214,10 +213,9 @@ public void mouseReleased ( MouseEvent e) {
 }
 
 void notifyItem() {
-	if ( hasToNotify( this, AWTEvent.ITEM_EVENT_MASK, iListener) ) {
-		ItemEvt ie = ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED,
-		                                   selection, ItemEvent.SELECTED);
-		Toolkit.eventQueue.postEvent( ie);
+	if ( (iListener != null) || (eventMask & AWTEvent.ITEM_EVENT_MASK) != 0 ){
+		Toolkit.eventQueue.postEvent( ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED,
+		                                                selection, ItemEvent.SELECTED));
 	}
 }
 
@@ -284,12 +282,20 @@ protected String paramString() {
  */
 public Dimension preferredSize () {
 	Dimension d = entry.getPreferredSize();
-	d.width += BTN_WIDTH;
+	d.width += BTN_WIDTH + 2*BORDER_WIDTH;
 	return d;
 }
 
+void process ( ItemEvent e ) {
+	if ( (iListener != null) || ((eventMask & AWTEvent.ITEM_EVENT_MASK) != 0) ){
+		processEvent( e);
+	}
+}
+
 protected void processItemEvent( ItemEvent e) {
-	iListener.itemStateChanged( e);
+	if ( iListener != null ){
+		iListener.itemStateChanged( e);
+	}
 }
 
 public synchronized void remove ( String item) {
@@ -322,5 +328,11 @@ public synchronized void select ( int index) {
 	if (index >= 0 && index < items.size()) {
 		select((String)items.elementAt(index));
 	}
+}
+
+public void setEnabled ( boolean isEnabled ) {
+	super.setEnabled( isEnabled);
+
+	entry.setEnabled( isEnabled);
 }
 }

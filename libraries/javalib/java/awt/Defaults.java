@@ -43,6 +43,12 @@ class Defaults
  */
 	static int ClickInterval = 250;
 /**
+ * maximum x,y coordinate distance (in pixels) between successive MOUSE_PRESSED
+ * events which are still considered to be a click (required for some devices
+ * without exact mouse positioning).
+ */
+	static int ClickDistance = 0;
+/**
  * Sleep time (in ms) between native getNextEvent calls (= event polling rate).
  * Just used in case the native layer does not support blocked IO.
  */
@@ -186,6 +192,11 @@ class Defaults
  * Default TextArea text color
  */
 	static Color TextAreaTxtClr = Color.black;
+	static Color TextAreaRoBgClr = Color.white;
+/**
+ * text color of non-editable TextComponents
+ */
+	static Color TextAreaRoTxtClr = Color.gray;
 /**
  * Default TextArea font
  */

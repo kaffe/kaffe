@@ -60,7 +60,7 @@ protected void dispatch () {
 		}
 	}
 
-	src.processEvent( this);
+	src.process( this);
 
 	if ( (Defaults.RecycleEvents & AWTEvent.COMPONENT_EVENT_MASK) != 0 )	recycle();
 }

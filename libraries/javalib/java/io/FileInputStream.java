@@ -39,7 +39,7 @@ public FileInputStream(String name) throws FileNotFoundException {
 		 * that this constructor throws only FileNotFoundExceptions, 
 		 * hence we must map them.
 		 */
-		throw new FileNotFoundException(name + " " + e.getMessage());
+		throw new FileNotFoundException(name + ": " + e.getMessage());
 	}
 }
 

@@ -18,19 +18,17 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.GregorianCalendar;
-import java.util.SimpleTimeZone;
 import java.util.Properties;
+import java.util.SimpleTimeZone;
 
-final public class System {
-
-final static SecurityManager defaultSecurityManager = new NullSecurityManager();
-
-public static InputStream in;
-public static PrintStream out;
-public static PrintStream err;
-
-private static Properties props;
-private static SecurityManager security;
+final public class System
+{
+	final static SecurityManager defaultSecurityManager = new NullSecurityManager();
+	public static InputStream in;
+	public static PrintStream out;
+	public static PrintStream err;
+	private static Properties props;
+	private static SecurityManager security;
 
 static {
 	security = defaultSecurityManager;
@@ -44,17 +42,16 @@ static {
 	// Initialise the I/O
 	in = new BufferedInputStream(new FileInputStream(FileDescriptor.in), 128);
 	out = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.out), 128), true);
-	err = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err), 128), true);
-        // in = new BufferedInputStream(new kaffe.io.StdInputStream(), 128);
-        // out = new PrintStream(new BufferedOutputStream(new kaffe.io.StdOutputStream(), 128), true);
-        // err = new PrintStream(new BufferedOutputStream(new kaffe.io.StdErrorStream(), 128), true);	
+	err = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err), 128), true);	
 }
 
-private System() { /* this class is not instantiable by the general public */ }
+native public static void arraycopy(Object src, int src_position, Object dst, int dst_position, int length);
 
 private static void checkPropertyAccess() {
 	getSecurityManager().checkPropertiesAccess();
 }
+
+native public static long currentTimeMillis();
 
 public static void exit (int status) {
 	Runtime.getRuntime().exit(status);
@@ -89,6 +86,10 @@ public static SecurityManager getSecurityManager() {
 public static String getenv(String name) {
 	throw new Error("System.getenv no longer supported");
 }
+
+native public static int identityHashCode(Object x);
+
+native private static Properties initProperties(Properties props);
 
 public static void load(String filename) {
 	Runtime.getRuntime().load(filename);
@@ -132,10 +133,4 @@ public static void setSecurityManager(SecurityManager s) {
 		security = s;
 	}
 }
-
-native public static long currentTimeMillis();
-native public static void arraycopy(Object src, int src_position, Object dst, int dst_position, int length);
-native public static int identityHashCode(Object x);
-native private static Properties initProperties(Properties props);
-
 }

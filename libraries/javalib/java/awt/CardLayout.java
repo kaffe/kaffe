@@ -1,10 +1,11 @@
 package java.awt;
 
+import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
 public class CardLayout
-  implements LayoutManager2, java.io.Serializable
+  implements LayoutManager2, Serializable
 {
 	/** @serial undocumented */
 	int hgap;

@@ -49,14 +49,38 @@ public TextPane () {
 	setCursor( Cursor.getPredefinedCursor( Cursor.TEXT_CURSOR));
 	tCursor.setPos( xOffs, rowHeight + BORDER_WIDTH);
 	insertLine( "", 0);
+	
 	addKeyListener( this);
 	addMouseListener( this);
 	addMouseMotionListener( this);
+	addFocusListener( this);
 }
 
-void append(String s) {
-	cursorTextEnd( false);
-	insert( s, true);
+void append ( String s ) {
+	int         i, nOld, nNew;
+	TextBuffer  tb;
+	String[]    lines;
+
+	blankCursor();	
+	lines = breakLines( s);
+	
+	nOld = rows.size() - 1;
+	tb = (TextBuffer)rows.elementAt( nOld);
+	tb.append( lines[0]);
+	
+	for ( i=1; i<lines.length; i++ ){
+		tb = new TextBuffer( lines[i]);
+		tb.setMetrics( fm, tabWidth);
+		rows.addElement( tb);
+	}
+	
+	nNew = rows.size() - 1;
+	makeVisible( nNew);
+	updateVScroll();
+	
+	repaintRows( nOld, nNew - nOld);
+
+	setCursorPos( tb.len, nNew, true, true);
 }
 
 void backspace() {
@@ -269,16 +293,18 @@ void deleteSel() {
 
 public void focusGained( FocusEvent e) {
 	repaintCursor();
+	
 	super.focusGained( e);
 }
 
 public void focusLost( FocusEvent e) {
 	paintInactiveCursor();
-	super.focusLost( e);
-	
+
 	//would confuse replacement with clipboard contents via popup
-//	if ( hasSel() )
-//		copyToClipboard();
+  //	if ( hasSel() )
+  //		copyToClipboard();
+
+	super.focusLost( e);
 }
 
 int get1D( Point p) {
@@ -426,6 +452,13 @@ void insertText(String s, int pos) {
 }
 
 public void keyPressed( KeyEvent e) {
+
+	if ( parent.keyListener != null ){
+		// give our parent a chance to intercept keystrokes
+		// check for keyListeners first, it's a rare case
+		redirectKeyEvent( e);
+	}
+
 	int code = e.getKeyCode();
 	int mods = e.getModifiers();
 	boolean sh = e.isShiftDown();
@@ -500,10 +533,10 @@ public void keyPressed( KeyEvent e) {
 }
 
 public void keyReleased( KeyEvent e) {
+	redirectKeyEvent( e);
 }
 
 public void keyTyped( KeyEvent e) {
-
 	if ( ! isEditable || ! isPrintableTyped( e) )
 		return;
 
@@ -515,29 +548,49 @@ public void keyTyped( KeyEvent e) {
 	}
 	else
 		insertChar( c );
-		
-	if ( textListener != null) {
-		AWTEvent.setSource( tEvt, parent);
-		TextArea.this.processTextEvent( tEvt);
+
+  if ( parent.keyListener != null ) {
+		// check for keyListeners first, it's a rare case
+		redirectKeyEvent( e);
+	}
+
+	if ( (textListener != null) || (eventMask & AWTEvent.TEXT_EVENT_MASK) != 0 ) {
+		Toolkit.eventQueue.postEvent( TextEvt.getEvent( TextArea.this,
+		                                                TextEvt.TEXT_VALUE_CHANGED));		
 	}
 }
 
 public void mouseClicked( MouseEvent e) {
+	if ( parent.mouseListener != null ){
+		// no need to retarget, already done by mousePressed
+		parent.process( e);
+	}
 }
 
 public void mouseDragged( MouseEvent e) {
 	int y = getRowIdx( e.getY() );
 	int x = getCol( y, e.getX() );
 	updateSel( x, y, true);
+	
+	if ( parent.motionListener != null ){
+		// unlikely, check motionListener first
+		redirectMotionEvent( e);
+	}
 }
 
 public void mouseEntered( MouseEvent e) {
+	redirectMouseEvent( e);
 }
 
 public void mouseExited( MouseEvent e) {
+	redirectMouseEvent( e);
 }
 
 public void mouseMoved( MouseEvent e) {
+	if ( parent.motionListener != null ){
+		// unlikely, check listener first
+		redirectMotionEvent( e);
+	}
 }
 
 public void mousePressed( MouseEvent e) {
@@ -560,9 +613,12 @@ public void mousePressed( MouseEvent e) {
 			pasteFromClipboard();
 			break;
 	}
+	
+	redirectMouseEvent( e);
 }
 
 public void mouseReleased( MouseEvent e) {
+	redirectMouseEvent( e);
 }
 
 void newline() {
@@ -1137,6 +1193,12 @@ public void setCaretPosition( int pos) {
 
 public void setColumns( int cols) {
 	ccols = cols;
+}
+
+public void setEnabled ( boolean isEnabled ) {
+	super.setEnabled( isEnabled);
+
+	tp.setEnabled( isEnabled);
 }
 
 public void setFont( Font f) {

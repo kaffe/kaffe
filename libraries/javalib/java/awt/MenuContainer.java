@@ -15,7 +15,9 @@ import java.awt.Event;
 public interface MenuContainer {
 
 Font getFont();
+
 void remove( MenuComponent c);
+
 /**
  * @deprecated
  */

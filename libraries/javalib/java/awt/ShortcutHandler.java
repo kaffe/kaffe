@@ -60,47 +60,94 @@ static void buildCodeTable( Component tgt) {
 	}
 }
 
-static void focusNext( Container co, Component entry) {
-	boolean useNext = (entry == null);
-	
-	for ( int i=0; i<co.nChildren; i++) {
-		Component c = co.children[i];
-		if ( useNext && c.isFocusTraversable() ) {
-/*
-			if ( c instanceof Container )
-				focusNext( (Container)c, null);
-			else
-*/
-				c.requestFocus();
-			return;
-		}
-		if ( entry == c )
-			useNext = true;
+static void focusNext ( Container w ) {
+	Component c = null, cur = AWTEvent.keyTgt;
+
+	if ( (cur == null) || (cur == w) ) {
+		c = focusNext( w, null);
 	}
-	
-	if ( co.parent != null )
-		focusNext( co.parent, co);
-	else if ( (entry != null) && useNext ) // from start
-		focusNext( co, null);
+	else {
+		for ( Component cc=cur; cc.parent != null; cc = cc.parent ) {
+			if ( (c = focusNext( cc.parent, cc)) != null ){
+				break;
+			}
+		}
+		if ( c == null )
+			c = focusNext( w, null);
+	}
+
+	if ( c != null )
+		c.requestFocus();
 }
 
-static void focusPrev( Container co, Component entry) {
-	boolean useNext = (entry == null);
-	
-	for ( int i=co.nChildren-1; i>=0; i--) {
-		Component c = co.children[i];
-		if ( useNext && c.isFocusTraversable() ) {
-			c.requestFocus();
-			return;
-		}
-		if ( entry == c )
-			useNext = true;
+static Component focusNext( Container co, Component cur ) {
+	Component c;
+	int i=-1;
+
+	if ( cur != null ){
+		for ( i=0; (i<co.nChildren) && (co.children[i] != cur); i++ );
 	}
 	
-	if ( co.parent != null )
-		focusPrev( co.parent, co);
-	else if ( (entry != null) && useNext ) // from start
-		focusPrev( co, null);
+	for ( i++; i < co.nChildren; i++ ){
+		c = co.children[i];
+		if ( c instanceof Container ) {
+			if ( ((c.flags & Component.IS_NATIVE_LIKE) == 0) || (c instanceof Panel) ){
+				Component cc = focusNext( (Container)c, null);
+				if ( cc != null )
+					return cc;
+			}
+		}
+		
+		if ( c.isFocusTraversable() )
+			return c;
+	}
+	
+	return ( co.isFocusTraversable() && (cur == null) ? co : null);
+}
+
+static void focusPrev ( Container w ) {
+	Component c = null, cur = AWTEvent.keyTgt;
+
+	if ( (cur == null) || (cur == w) ) {
+		c = focusPrev( w, null);
+	}
+	else {
+		for ( Component cc=cur; cc.parent != null; cc = cc.parent ) {
+			if ( (c = focusPrev( cc.parent, cc)) != null ){
+				break;
+			}
+		}
+		if ( c == null )
+			c = focusPrev( w, null);
+	}
+
+	if ( c != null )
+		c.requestFocus();
+}
+
+static Component focusPrev( Container co, Component cur ) {
+	Component c;
+	int i=co.nChildren;
+
+	if ( cur != null ){
+		for ( i=co.nChildren-1; (i>=0) && (co.children[i] != cur); i-- );
+	}
+	
+	for ( i--; i >= 0; i-- ){
+		c = co.children[i];
+		if ( c instanceof Container ) {
+			if ( ((c.flags & Component.IS_NATIVE_LIKE) == 0) || (c instanceof Panel) ){
+				Component cc = focusPrev( (Container)c, null);
+				if ( cc != null )
+					return cc;
+			}
+		}
+		
+		if ( c.isFocusTraversable() )
+			return c;
+	}
+	
+	return ( co.isFocusTraversable() && (cur == null) ? co : null);
 }
 
 static boolean handle( KeyEvent e) {
@@ -127,14 +174,15 @@ static boolean handle( KeyEvent e) {
 	Component c = (Component) e.getSource();
 	boolean back = e.isShiftDown();
 
-	Container co = (c.parent != null ) ? c.parent : (Container)c;
+	Container co = (Container) AWTEvent.keyTgt.getToplevel();
 	
 	switch( kc) {
 		case '\t':
 			if ( back)
-			    focusPrev( co, AWTEvent.keyTgt);
+			  focusPrev( co);
 			else			
-			    focusNext( co, AWTEvent.keyTgt);
+				focusNext( co);
+
 			return true;
 	}
 

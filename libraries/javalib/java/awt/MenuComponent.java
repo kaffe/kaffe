@@ -18,8 +18,8 @@ abstract public class MenuComponent implements java.io.Serializable
 	MenuContainer parent;
 	FontMetrics fm;
 	static Font defFnt = Defaults.MenuFont;
-	final static int IS_ADD_NOTIFIED = 0x400;
-	final static int IS_OLD_EVENT = 0x20;
+	final static int IS_ADD_NOTIFIED = Component.IS_ADD_NOTIFIED;
+	final static int IS_OLD_EVENT = Component.IS_OLD_EVENT;
 	int flags;
 	Component owner;
 	private static final long serialVersionUID = -4536902356223894379L;
@@ -29,6 +29,10 @@ public MenuComponent () {
 }
 
 final public void dispatchEvent( AWTEvent e) {
+}
+
+ClassProperties getClassProperties () {
+	return ClassAnalyzer.analyzeProcessEvent( getClass(), false);
 }
 
 public Font getFont() {
@@ -66,7 +70,7 @@ public boolean postEvent ( Event evt ) {
 		}
 		else if ( owner != null ) {
 			ret = owner.postEvent( evt);
-    }
+		}
 
 		evt.recycle();
 	}

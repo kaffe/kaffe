@@ -57,7 +57,7 @@ protected void dispatch () {
 			id = FOCUS_LOST;
 			source = lastTgt = AWTEvent.keyTgt;
 			AWTEvent.keyTgt = src;
-			lastTgt.processEvent( this);
+			lastTgt.process( this);
 		  id = FOCUS_GAINED;
 		}
 
@@ -73,7 +73,7 @@ protected void dispatch () {
 
 		AWTEvent.keyTgt = src;
 		source = src;
-		src.processEvent( this);
+		src.process( this);
 		
 		ShortcutHandler.buildCodeTable( src);
 		
@@ -104,7 +104,7 @@ protected void dispatch () {
 			AWTEvent.keyTgt = null;
 			inputModifier = 0; // just a matter of safety (a reset point)
 
-			src.processEvent( this);			
+			src.process( this);			
 		}
 	}
 	

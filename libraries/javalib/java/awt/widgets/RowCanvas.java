@@ -6,6 +6,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.Vector;
 
 /**
@@ -215,9 +217,36 @@ void paintBorder () {
 }
 
 void redirectFocusEvent( FocusEvent e) {
-	if ( hasToNotify( parent, AWTEvent.FOCUS_EVENT_MASK, parent.focusListener) ){
+	if ( parent.focusListener != null ){
 		AWTEvent.setSource( e, parent);
-		parent.processFocusEvent( e);
+		parent.process( e);
+	}
+}
+
+void redirectKeyEvent( KeyEvent e) {
+	if ( parent.keyListener != null ){
+		AWTEvent.setSource( e, parent);
+		parent.process( e);
+	}
+}
+
+void redirectMotionEvent( MouseEvent e) {
+	if ( parent.motionListener != null ){
+		e.retarget( parent, x, y);
+		parent.process( e);
+
+		// be careful, the event might be used subsequently
+		e.retarget( this, -x, -y);
+	}
+}
+
+void redirectMouseEvent( MouseEvent e) {
+	if ( parent.mouseListener != null ){
+		e.retarget( parent, x, y);
+		parent.process( e);
+		
+		// be careful, the event might be used subsequently
+		e.retarget( this, -x, -y);
 	}
 }
 
@@ -237,7 +266,8 @@ void repaintRow( Graphics g, int idx) {
 }
 
 void repaintRow( int idx) {
-	repaintRow( rgr, idx);
+	if ( rgr != null )
+		repaintRow( rgr, idx);
 }
 
 int repaintRows( Graphics g, int sIdx, int len) {
@@ -264,7 +294,10 @@ int repaintRows( Graphics g, int sIdx, int len) {
 }
 
 int repaintRows( int sIdx, int len) {
-	return repaintRows( rgr, sIdx, len);
+	if ( rgr != null )
+		return repaintRows( rgr, sIdx, len);
+	else
+		return 0;
 }
 
 void setListeners() {
@@ -281,57 +314,35 @@ void setResGraphics () {
 		                                       width - 2*BORDER_WIDTH, height - 2*BORDER_WIDTH, false);
 }
 
-void shiftVertical( int rows, boolean updScroll) {
+void shiftVertical ( int rows, boolean updScroll) {
 	if ( rows == 0 )
 		return;
 
+	// PM - FIX THIS. In case we are not called from adjustmentNotify (i.e. the
+	// EventDispatchThread), where it is obsolete anyway, this might cause reverse scrolling
+	// (see Scrollbar.setValue). We currently solve this by fiddling with the inner
+	// workings of Scrollbar.
 	if ( updScroll && vScroll != null) {
-		vScroll.setValue( first);
+		vScroll.setValues( first, vScroll.vis, vScroll.min, vScroll.max, false);
 	}
 
 	int d = BORDER_WIDTH;
 
-/**************************************************************************
+	int d2 = d*2;
+	int dy = rows * rowHeight;
 
-        // hjb, 01-28-1999: only move the area that will fall in
-        // pane after the copy.
-        // otherwise text is displayed above or under the pane
-        // obscuring the scrollbar and/or other fields
+	if ( rows < 0 ){
+		rgr.copyArea( d, d-dy, width -d2, height-d2+dy-1, 0, dy);
 
-        if (rows < 0)
-            rgr.copyArea( d, d + rows * rowHeight, width- 2*d, height- 2*d,
-                          0, rows * rowHeight );
-        else
-            rgr.copyArea( d, d, width- 2*d, height- 2*d - rows * rowHeight,
-                          0, rows * rowHeight );
-
-        if ( rows < 0 ){
-                int sIdx = first + getVisibleRows() + rows;
-                int len = -rows + 1;
-                repaintRows( sIdx, len );
-        }
-        else {
-                repaintRows( first, rows-1);
-        }
-
-
- **************************************************************************/
-
-        int d2 = d*2;
-        int dy = rows * rowHeight;
-
-        if ( rows < 0 ){
-                rgr.copyArea( d, d-dy, width -d2, height-d2+dy-1, 0, dy);
-
-                int sIdx = first + getVisibleRows() + rows;
-                int len = -rows + 1;
-                repaintRows( sIdx, len );
-        }
-        else {
+		int sIdx = first + getVisibleRows() + rows;
+		int len = -rows + 1;
+		repaintRows( sIdx, len );
+	}
+	else {
 		rgr.copyArea( d, d, width -d2, height-d2-dy-1, 0, dy);
 
-                repaintRows( first, rows-1);
-        }
+		repaintRows( first, rows-1);
+	}
 
 }
 
@@ -346,7 +357,8 @@ void updateVScroll() {
 	if ( vScroll != null ) {
 		v1 = vScroll.isSliderShowing();
 		int vr = getVisibleRows();
-		vScroll.setValues( first, vr, 0, rows.size() );
+		// assumes that we are already all set and don't need adjustment notifies anymore
+		vScroll.setValues( first, vr, 0, rows.size(), false );
 		v2 = vScroll.isSliderShowing();
 	}
 	

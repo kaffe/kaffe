@@ -63,10 +63,12 @@ int getWidth() {
 
 public void handleShortcut( MenuShortcut ms) {
 	setState( !isChecked );
-	if ( hasToNotify( iListener) ) {
-		ItemEvt ie = ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, getLabel(),
-                     isChecked ? ItemEvent.SELECTED : ItemEvent.DESELECTED );
-		Toolkit.eventQueue.postEvent( ie);
+
+	if ( (iListener != null) ||
+	     ((eventMask & (AWTEvent.ITEM_EVENT_MASK|AWTEvent.DISABLED_MASK))
+	                        == AWTEvent.ITEM_EVENT_MASK) ) {
+		Toolkit.eventQueue.postEvent( ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, getLabel(),
+                                      isChecked ? ItemEvent.SELECTED : ItemEvent.DESELECTED ));
 	}
 }
 
@@ -84,9 +86,31 @@ public String paramString() {
 	return super.paramString() + ", " + (isChecked ? "checked" : "unchecked");
 }
 
+void process ( ItemEvent ie ) {
+	if ( (iListener != null) ||
+	     ((eventMask & (AWTEvent.ITEM_EVENT_MASK|AWTEvent.DISABLED_MASK))
+	                            == AWTEvent.ITEM_EVENT_MASK) ){
+		processEvent( ie);
+	}
+}
+
+protected void processEvent ( AWTEvent e ) {
+	// same uglyness like in Component.processEvent - we already had it down
+	// to the specific Event class and now have to go up to AWTEvent again because
+	// this might be re-implemented by a derived class
+
+	if ( e.id ==  ItemEvent.ITEM_STATE_CHANGED ){
+		processItemEvent( (ItemEvent) e);
+	}
+	else {
+		super.processEvent( e);
+	}
+}
+
 protected void processItemEvent ( ItemEvent ie ) {
-	if ( hasToNotify( iListener) )
+	if ( iListener != null ){
 		iListener.itemStateChanged( ie);
+	}
 }
 
 public void removeItemListener ( ItemListener listener ) {

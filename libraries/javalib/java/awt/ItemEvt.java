@@ -13,9 +13,9 @@ ItemEvt ( ItemSelectable src, int evtId, Object item, int state ) {
 
 protected void dispatch () {
 	if ( source instanceof Component )
-		((Component)source).processEvent( this);
+		((Component)source).process( this);
 	else if ( source instanceof CheckboxMenuItem )
-		((CheckboxMenuItem)source).processItemEvent( this);
+		((CheckboxMenuItem)source).process( this);
 	
 	if ( (Defaults.RecycleEvents & AWTEvent.ITEM_EVENT_MASK) != 0 )	recycle();
 }

@@ -56,8 +56,6 @@ public Component add(String name, Component child) {
 
 public void addContainerListener ( ContainerListener newListener ) {
 	cntrListener = AWTEventMulticaster.add( cntrListener, newListener);
-				// no need to traverse upwards
-	eventMask |= AWTEvent.CONTAINER_EVENT_MASK;
 }
 
 protected void addImpl(Component child, Object constraints, int index ) {
@@ -139,7 +137,7 @@ protected void addImpl(Component child, Object constraints, int index ) {
 			}
 		}
 	
-		if ( hasToNotify( this, AWTEvent.CONTAINER_EVENT_MASK, cntrListener) ){
+		if ( (cntrListener != null) || (eventMask & AWTEvent.CONTAINER_EVENT_MASK) != 0 ){
 			AWTEvent.sendEvent( ContainerEvt.getEvent( this,
 			                       ContainerEvent.COMPONENT_ADDED, child), false);
 		}
@@ -225,7 +223,14 @@ void emitRepaints ( int ux, int uy, int uw, int uh ) {
 			int uhh = (uyh < cyh) ? (uyh - c.y - uyy) : c.height;
 			
 			if ( (c.flags & IS_DIRTY) != 0 ) {
-				c.repaint( uxx, uyy, uww, uhh);
+				// Oh what a joy - Panels & Canvases don't get update() called in respond to
+				// window manager initiated draw requests (resize). Of course, this is different
+				// for explicit repaint() calls, which triggers update(). This is likely to be a bug
+				// (in the CanvasPeer), but again we have to be compatible (for a while).
+				// Also shows up in NativeGraphics.paintChild()
+				Toolkit.eventQueue.repaint(
+				    ((c.flags & IS_ASYNC_UPDATED) != 0 ? PaintEvent.PAINT : PaintEvent.UPDATE),
+				    c, uxx, uyy, uww, uhh);
 			}
 		
 			if ( c instanceof Container )
@@ -471,8 +476,13 @@ public Dimension preferredSize () {
 public void printComponents ( Graphics g ) {
 }
 
+void process ( ContainerEvent e ) {
+	if ( (cntrListener != null) || (eventMask & AWTEvent.CONTAINER_EVENT_MASK) != 0)
+		processEvent( e);
+}
+
 public void processContainerEvent ( ContainerEvent event ) {
-	if ( hasToNotify( this, AWTEvent.CONTAINER_EVENT_MASK, cntrListener) ) {
+	if ( cntrListener != null ) {
 		switch ( event.getID() ) {
 		case ContainerEvent.COMPONENT_ADDED:
 			cntrListener.componentAdded( event);
@@ -590,8 +600,8 @@ public void remove ( int index ) {
 		}
 		children[n] = null;
 		nChildren--;
-	
-		if ( hasToNotify( this, AWTEvent.CONTAINER_EVENT_MASK, cntrListener) ){
+
+		if ( (cntrListener != null) || (eventMask & AWTEvent.CONTAINER_EVENT_MASK) != 0 ){
 			AWTEvent.sendEvent( ContainerEvt.getEvent( this,
 			                       ContainerEvent.COMPONENT_REMOVED, c), false);
 		}
@@ -611,11 +621,22 @@ public void remove ( int index ) {
 }
 
 public void removeAll () {
-	// Nice though it might be to optimize this, we can't without
-	// breaking those who might inherit this class and overload
-	// things  ...
-	for ( int i = nChildren-1; i >= 0; i-- ) {
-		remove(i);
+	// let's try to do some upfront paint solicitation in case we have
+	// a lot of children (note that we have to call remove(idx) since it
+	// might be reimplemented in a derived class)
+	if ( nChildren > 3 ) {
+		int oldFlags = flags;
+		flags &= ~IS_VISIBLE;
+
+		for ( int i = nChildren-1; i >= 0; i-- )
+			remove(i);
+
+		flags = oldFlags;
+		repaint();
+	}
+	else {	
+		for ( int i = nChildren-1; i >= 0; i-- )
+			remove(i);
 	}
 }
 

@@ -23,7 +23,7 @@ protected void dispatch () {
 		src.propagateParentShowing();
 	}
 
-	src.processEvent( this);
+	src.process( this);
 	if ( (Defaults.RecycleEvents & AWTEvent.WINDOW_EVENT_MASK) != 0 )	recycle();
 }
 

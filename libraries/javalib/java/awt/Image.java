@@ -217,7 +217,10 @@ public Image getScaledInstance (int width, int height, int hints) {
 }
 
 public ImageProducer getSource () {
-	return (producer);
+	if ( producer == null )
+		producer = new ImageNativeProducer( this);
+
+	return producer;
 }
 
 public synchronized int getWidth ( ImageObserver observer ) {
@@ -347,6 +350,7 @@ class ImageFrameLoader
 	Image img;
 
 ImageFrameLoader ( Image img ) {
+	super("ImageFrameLoader");
 	this.img = img;
 
 	img.flags |= Image.BLOCK_FRAMELOADER;
@@ -453,7 +457,7 @@ static synchronized void load ( Image img ) {
 		asyncLoader = new ImageLoader();
 		asyncLoader.queueHead = asyncLoader.queueTail = img;
 
-		Thread t = new Thread( asyncLoader);
+		Thread t = new Thread( asyncLoader, "asyncLoader");
 		t.setPriority( Thread.NORM_PRIORITY - 1);
 		t.start();
 	}
@@ -609,6 +613,10 @@ class ImageNativeProducer
 	Object src;
 	int off;
 	int len;
+
+ImageNativeProducer ( Image img ) {
+	src = img;
+}
 
 ImageNativeProducer ( Image img, File file ) {
 	src = file;
@@ -840,6 +848,9 @@ public void startProduction ( ImageConsumer ic ) {
 		produceFrom( (URL)src);
 	else if ( src instanceof byte[] )
 		produceFrom( (byte[])src, off, len);
+	else if ( src instanceof Image ) {
+		Toolkit.imgProduceImage( this, ((Image)src).nativeData);
+	}
 	else
 		System.err.println( "unsupported production source: " + src.getClass());
 		

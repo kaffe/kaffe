@@ -137,6 +137,7 @@ java_awt_SRCS = \
 	java/awt/ShortcutConsumer.java \
 	java/awt/ShortcutHandler.java \
 	java/awt/SystemColor.java \
+	java/awt/TextEvt.java \
 	java/awt/Toolkit.java \
 	java/awt/WMEvent.java \
 	java/awt/Window.java \

@@ -36,6 +36,7 @@ class MouseEvt
 	final static int BUTTON_MASK = BUTTON1_MASK | BUTTON2_MASK | BUTTON3_MASK;
 	static Stack grabStack = new Stack();
 	static Point nativePos = new Point();
+	static Point pressedPos = new Point();
 
 static {
 	clickInterval = Defaults.ClickInterval;
@@ -73,7 +74,8 @@ static Component computeMouseTarget ( Container toplevel, int x, int y ) {
 		return cntr;
 	}
 
-	for ( i=0; i<cntr.nChildren; ) {
+	i = 0;
+	while (i < cntr.nChildren) {
 		c = cntr.children[i];
 
 		if ( ((c.flags & Component.IS_SHOWING) == Component.IS_SHOWING) &&
@@ -83,24 +85,28 @@ static Component computeMouseTarget ( Container toplevel, int x, int y ) {
 			v = y - c.y;
 
 			if ( c.contains( u, v) ){  // contains() might be reimplemented
+
 				xm += c.x; ym += c.y;
 
-				if ( ((c.flags & Component.IS_NATIVE_LIKE) != 0) ||   // oh, these Panels..
-				      ((c.mouseListener != null) || (c.motionListener != null)) ) {
+				// IS_MOUSE_AWARE is a uggly construct to sum up the nice little chain of discriminants:
+				//     !disabled && (mouseListener || motionListener || mouseEventMask || motionEventMask || oldEvents)
+				// We assume here that disabled comps don't emit events
+				if ( (c.flags & Component.IS_MOUSE_AWARE) != 0 ){
 					tgt = c;
-					xMouseTgt = xm; yMouseTgt = ym;
+					xMouseTgt = xm;
+					yMouseTgt = ym;
 				}
 				if ( c instanceof Container ){
-					cntr= (Container) c;
+					cntr = (Container) c;
 					x = u;
 					y = v;
-					i=0;
+					i = 0;
 					continue;
 				}
 				else {
 					return tgt;
 				}
-			}	
+			}
 		}
 		i++;
 	}
@@ -162,7 +168,7 @@ protected void dispatch () {
 				mouseDragged = true;
 				id = MOUSE_DRAGGED;
 			}
-			AWTEvent.mouseTgt.processEvent( this);
+			AWTEvent.mouseTgt.processMotion( this);
 		  break;
 		
 		case MOUSE_PRESSED:
@@ -172,6 +178,10 @@ protected void dispatch () {
 			
 			buttonPressed = true;
 			modifiers = updateInputModifier( button, true);
+			
+			// save current Position so that we can later-on check against ClickDistance
+			pressedPos.x = x;
+			pressedPos.y = y;
 
 			if ( when - lastPressed < clickInterval )
 				clicks++;
@@ -182,7 +192,7 @@ protected void dispatch () {
 			clickCount = clicks;
 			lastPressed = when;
 
-			AWTEvent.mouseTgt.processEvent( this);
+			AWTEvent.mouseTgt.processMouse( this);
 
 			// some apps might react on isPopupTrigger() for both pressed + released
 			isPopupTrigger = false;
@@ -195,23 +205,29 @@ protected void dispatch () {
 
 			updateInputModifier( button, false);
 
-			if ( !mouseDragged ) {
+			if ( mouseDragged ) {
+				// check if we have to generate a enter event for a sibling
+				sendMouseEnterEvent( nativeSource, nativePos.x, nativePos.y, false);
+				mouseDragged = false;
+			}
+
+			// some display systems can't position the mouse exactly - we tolerate
+			// every release within the Defaults.ClickDistance radius as a valid click
+			if ( !mouseDragged ||
+			     ((Math.abs(pressedPos.x - x) <= Defaults.ClickDistance) &&
+					  (Math.abs(pressedPos.y - y) <= Defaults.ClickDistance))   ) {
 				// we can't do this sync because of possible recursion, but we
 				// need to provide a clicked event as the next event to follow
 				// a MOUSE_RELEASE
 				postMouseClicked( AWTEvent.mouseTgt, when, x, y, modifiers, clickCount, button);
 			}
-			else {
-				// check if we have to generate a enter event for a sibling
-				sendMouseEnterEvent( nativeSource, nativePos.x, nativePos.y, false);
-				mouseDragged = false;
-			}
-			AWTEvent.mouseTgt.processEvent( this);
+
+			AWTEvent.mouseTgt.processMouse( this);
 		  break;
 		
 		case MOUSE_CLICKED:
 			clickCount = clicks;
-			AWTEvent.mouseTgt.processEvent( this);
+			AWTEvent.mouseTgt.processMouse( this);
 			break;
 		}
 
@@ -390,7 +406,7 @@ static void releaseMouse () {
 	}
 }
 
-MouseEvent retarget ( Component target, int dx, int dy ) {
+protected MouseEvent retarget ( Component target, int dx, int dy ) {
 	source = target;
 	x += dx;
 	y += dy;
@@ -479,7 +495,7 @@ static void transferMouse ( MouseEvt e,
 		e.source = from;
 		
 	  //System.out.println( "mouseExit:  " + from.getClass() + ": " + x + ',' + y);
-		from.processEvent( e);
+		from.processMouse( e);
 		x += from.x; y += from.y;
 	}
 
@@ -500,7 +516,7 @@ static void transferMouse ( MouseEvt e,
 		e.x = x;
 		e.y = y;
 		//System.out.println( "mouseEnter: " + to.getClass() + ": " + x + ',' + y);
-		to.processEvent( e);
+		to.processMouse( e);
 	}
 
 	// set cursor

@@ -12,7 +12,7 @@ AdjustmentEvt ( Adjustable src, int evtId, int adjType, int adjVal ) {
 }
 
 protected void dispatch () {
-	((Component)source).processEvent( this);
+	((Component)source).process( this);
 	
 	if ( (Defaults.RecycleEvents & AWTEvent.ADJUSTMENT_EVENT_MASK) != 0 ) recycle();
 }

@@ -51,7 +51,6 @@ public Checkbox ( String label, boolean state, CheckboxGroup group) {
 	setCheckboxGroup( group);
 	setState( state);
 	
-	setBackground( Color.lightGray);
 	setForeground( Color.black);
 	setFont( Defaults.TextFont);
 	addMouseListener( this);
@@ -61,7 +60,6 @@ public Checkbox ( String label, boolean state, CheckboxGroup group) {
 
 public synchronized void addItemListener ( ItemListener il) {
 	iListener = AWTEventMulticaster.add( iListener, il);
-	eventMask |= AWTEvent.ITEM_EVENT_MASK;
 }
 
 void drawButton( Graphics g, int ext, int x0, int y0 ) {
@@ -169,10 +167,11 @@ public void mouseReleased ( MouseEvent e) {
 }
 
 void notifyItem () {
-	if ( hasToNotify( this, AWTEvent.ITEM_EVENT_MASK, iListener) ){
+	if ( (iListener != null) ||
+	     ((eventMask & AWTEvent.ITEM_EVENT_MASK) != 0) ||
+	     ((flags & IS_OLD_EVENT) != 0) ) {
 		int id = ((state & CHECKED) > 0) ? ItemEvent.SELECTED : ItemEvent.DESELECTED;
-		ItemEvt ie = ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, label, id);
-		Toolkit.eventQueue.postEvent( ie);
+		Toolkit.eventQueue.postEvent( ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, label, id));
 	}
 }
 
@@ -225,8 +224,20 @@ public Dimension preferredSize () {
 	return new Dimension( cx, cy);
 }
 
+void process ( ItemEvent e ) {
+	if ( (iListener != null) || ((eventMask & AWTEvent.ITEM_EVENT_MASK) != 0) ){
+		processEvent( e);
+	}
+	
+	if ( (flags & IS_OLD_EVENT) > 0 ) {
+		postEvent( Event.getEvent( e));
+	}
+}
+
 protected void processItemEvent( ItemEvent e) {
-	iListener.itemStateChanged( e);
+	if (iListener != null) {
+		iListener.itemStateChanged( e);
+	}
 }
 
 public synchronized void removeItemListener ( ItemListener il) {

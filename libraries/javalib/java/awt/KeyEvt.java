@@ -13,17 +13,23 @@ KeyEvt ( Component src, int evtId, long time, int mods, int kCode, char kChar ) 
 
 protected void dispatch () {
 
-//if ( (id == KEY_RELEASED) && (keyCode == VK_F12) )
-//	((Component)source).dump( " ");
+if ( (id == KEY_RELEASED) && (keyCode == VK_F12) )
+	((Component)source).dump( " ");
 
 	if ( AWTEvent.keyTgt != null )           // do we have a focus window?
 		source = AWTEvent.keyTgt;
 	else
 		AWTEvent.keyTgt = (Component)source;   // hmm, just a defense line
 
+	// we interpret the setEnabled spec in a way that we don't emit events for disabled comps
+	if ( (AWTEvent.keyTgt.eventMask & AWTEvent.DISABLED_MASK) != 0 ) {
+		if ( (Defaults.RecycleEvents & AWTEvent.KEY_EVENT_MASK) != 0 ) recycle();
+		return;
+	}
+
 	if ( id == KEY_PRESSED ) {
 		accelHint = true;
-		AWTEvent.keyTgt.processEvent( this);
+		AWTEvent.keyTgt.process( this);
 
 		if ( !consumed && ShortcutHandler.handle( this) ) {
 			if ( (Defaults.RecycleEvents & AWTEvent.KEY_EVENT_MASK) != 0 ) recycle();
@@ -34,7 +40,7 @@ protected void dispatch () {
 			if ( AWTEvent.keyTgt != null ) {     // maybe a fast finger pulled the keyTgt under our feet
 				id = KEY_TYPED;
 				keyCode = 0;
-				AWTEvent.keyTgt.processEvent( this);
+				AWTEvent.keyTgt.process( this);
 			}
 		}
 		else {                        // function key, update modifiers
@@ -48,7 +54,7 @@ protected void dispatch () {
 	}
 	else if ( id == KEY_RELEASED ) {
 		accelHint = false;
-		AWTEvent.keyTgt.processEvent( this);
+		AWTEvent.keyTgt.process( this);
 	
 	 	if ( keyChar == 0 ) {
 			switch ( keyCode ) {

@@ -1,7 +1,10 @@
 package java.awt.event;
 
 import java.awt.AWTEvent;
+import java.awt.Event;
 import java.awt.ItemSelectable;
+import java.awt.Checkbox;
+import java.awt.List;
 
 /**
  * class ItemEvent - 
@@ -56,4 +59,36 @@ public String paramString() {
 	
 	return s;
 }
+
+/**
+ * Create an old style event from an Item event.  Note that we
+ * create different kinds of events if the source is a Checkbox or
+ * a List.
+ */
+protected Event initOldEvent ( Event e ) {
+	if (source instanceof Checkbox) {
+		e.target = source;
+		e.id = Event.ACTION_EVENT;
+		if (op == SELECTED) {
+			e.arg = Boolean.TRUE;
+		}
+		else {
+			e.arg = Boolean.FALSE;
+		}
+		return e;
+	}
+	else if (source instanceof List) {
+		e.target = source;
+		if (op == SELECTED) {
+			e.id = Event.LIST_SELECT;
+		}
+		else {
+			e.id = Event.LIST_DESELECT;
+		}
+		e.arg = obj;
+		return e;
+	}
+	return null;
+}
+
 }

@@ -1,5 +1,6 @@
 package java.awt;
 
+import java.awt.Event;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -47,12 +48,19 @@ public ItemPane () {
 	addKeyListener( this);
 	addMouseListener( this);
 	addMouseMotionListener( this);
+	addFocusListener( this);
 }
 
 public void keyPressed( KeyEvent e) {
 	int nIdx;
 	int mods = e.getModifiers();
-	
+
+	if ( parent.keyListener != null ){
+		// give our parent a chance to intercept keystrokes
+		// check for keyListeners first, it's a rare case
+		redirectKeyEvent( e);
+	}
+
 	//do not consume unused key for HotKeyHandler
 	if ( mods != 0 )
 		return;
@@ -91,12 +99,21 @@ public void keyPressed( KeyEvent e) {
 }
 
 public void keyReleased( KeyEvent e) {
+	if ( parent.keyListener != null ){
+		// check for keyListeners first, it's a rare case
+		redirectKeyEvent( e);
+	}
 }
 
 public void keyTyped( KeyEvent e) {
 	int mods = e.getModifiers();
 	if ( (mods == 0) || (mods == e.SHIFT_MASK ) )
 		letterNav( e.getKeyChar(), e.isShiftDown() );
+		
+	if ( parent.keyListener != null ){
+		// check for keyListeners first, it's a rare case
+		redirectKeyEvent( e);
+	}
 }
 
 void letterNav( char c, boolean acc) {
@@ -121,31 +138,48 @@ public void mouseClicked( MouseEvent e) {
 		if ( idx > -1 ) {
 			selMouse = true;
 			
-			if ( isIndexSelected( idx) )
-				deselect( idx);
-			else
+			if ( isIndexSelected( idx) ) {
+				if ( multipleMode )
+					deselect( idx);
+			}
+			else {
 				select( idx);
+			}
 		}	
 	}
 	else
 		notifyAction();
+		
+	redirectMouseEvent( e);
 }
 
 public void mouseDragged( MouseEvent e) {
+	if ( parent.motionListener != null ){
+		// unlikely, check listener first
+		redirectMotionEvent( e);
+	}
 }
 
 public void mouseEntered( MouseEvent e) {
+	redirectMouseEvent( e);
 }
 
 public void mouseExited( MouseEvent e) {
 	if ( rgr != null ) // otherwise we aren't visible anymore
 		updateFlyOver( -1);
+		
+	redirectMouseEvent( e);
 }
 
 public void mouseMoved( MouseEvent e) {
 	int row = getRowIdx( e.getY() );
 	if ( row != idxFlyOver ) {
 		updateFlyOver( row );
+	}
+	
+	if ( parent.motionListener != null ){
+		// unlikely, check listener first
+		redirectMotionEvent( e);
 	}
 }
 
@@ -155,9 +189,12 @@ public void mousePressed( MouseEvent e) {
 		
 	if ( e.isPopupTrigger() )
 		triggerPopup( e.getX(), e.getY());
+		
+	redirectMouseEvent( e);
 }
 
 public void mouseReleased( MouseEvent e) {
+	redirectMouseEvent( e);
 }
 
 public void paint ( Graphics g ) {
@@ -270,7 +307,6 @@ public synchronized void add ( String item, int index) {
 
 public synchronized void addActionListener ( ActionListener l) {
 	aListener = AWTEventMulticaster.add( aListener, l);
-	eventMask |= AWTEvent.ACTION_EVENT_MASK;
 }
 
 void addElement ( String item, int index) {
@@ -296,7 +332,6 @@ public synchronized void addItem ( String item, int index) {
 
 public synchronized void addItemListener ( ItemListener l) {
 	iListener = AWTEventMulticaster.add( iListener, l);
-	eventMask |= AWTEvent.ITEM_EVENT_MASK;
 }
 
 /**
@@ -323,8 +358,10 @@ void clearSelection ( int index ) {
 		sel = -1;
 		
 	if ( multipleMode ) {
-		multiSel.clear( index);
-		nSel--;
+		if (multiSel.get(index)) {
+			multiSel.clear( index);
+			nSel--;
+		}
 	}
 }
 
@@ -581,16 +618,18 @@ public Dimension minimumSize (int rows) {
 void notifyAction () {
 	String s = (sel >= 0) ? (String) ip.rows.elementAt( sel) : null;
 	
-	if ( ( s != null) && (hasToNotify( this, AWTEvent.ACTION_EVENT_MASK, aListener)) ){
-		ActionEvt ae = ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED, s, 0);
-		Toolkit.eventQueue.postEvent( ae);
+	if ( (s != null) &&
+	     ((aListener != null) || (eventMask & AWTEvent.ACTION_EVENT_MASK) != 0) ) {
+		Toolkit.eventQueue.postEvent( ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED, s, 0));
 	}
 }
 
 void notifyItem ( Object item, int op) {
-	if ( hasToNotify( this, AWTEvent.ITEM_EVENT_MASK, iListener) ){
-		ItemEvt ie = ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, item, op);
-		Toolkit.eventQueue.postEvent( ie);
+	if ( (iListener != null) ||
+	     (eventMask & AWTEvent.ITEM_EVENT_MASK) != 0 ||
+	     (flags & IS_OLD_EVENT) != 0 ){
+		Toolkit.eventQueue.postEvent( ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED,
+		                                                item, op));
 	}
 }
 
@@ -624,12 +663,32 @@ public Dimension preferredSize (int rows) {
 	return new Dimension( w, h);
 }
 
+void process ( ActionEvent e ) {
+	if ( (aListener != null) || ((eventMask & AWTEvent.ACTION_EVENT_MASK) != 0) ){
+		processEvent( e);
+	}
+}
+
+void process ( ItemEvent e ) {
+	if ( (iListener != null) || ((eventMask & AWTEvent.ITEM_EVENT_MASK) != 0) ){
+		processEvent( e);
+	}
+	
+	if ((flags & IS_OLD_EVENT) != 0) {
+		postEvent (Event.getEvent( e));
+	}
+}
+
 protected void processActionEvent( ActionEvent e) {
-	aListener.actionPerformed( e);
+	if ( aListener != null ){
+		aListener.actionPerformed( e);
+	}
 }
 
 protected void processItemEvent( ItemEvent e) {
-	iListener.itemStateChanged( e);
+	if (iListener != null) {
+		iListener.itemStateChanged( e);
+	}
 }
 
 public synchronized void remove ( String item) {
@@ -724,6 +783,12 @@ public void setBackground ( Color c) {
 public void setBounds ( int x, int y, int width, int height) {
 	super.setBounds( x, y, width, height);
 	ip.updateVScroll();
+}
+
+public void setEnabled ( boolean isEnabled ) {
+	super.setEnabled( isEnabled);
+
+	ip.setEnabled( isEnabled);
 }
 
 public void setFont ( Font fnt) {

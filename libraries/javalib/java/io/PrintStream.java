@@ -1,5 +1,6 @@
 package java.io;
 
+
 /*
  * Java core library component.
  *
@@ -9,15 +10,16 @@ package java.io;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public class PrintStream extends FilterOutputStream
+public class PrintStream
+  extends FilterOutputStream
 {
-	private static final char[] newline =
-			System.getProperty("line.separator").toCharArray();
-	private final boolean autoFlush;
+	final private static char[] newline = System.getProperty("line.separator").toCharArray();
+	final private boolean autoFlush;
 	private boolean error = false;
 
 public PrintStream(OutputStream out) {
-	this(out, false);
+	super(out);
+	this.autoFlush = false;
 }
 
 public PrintStream(OutputStream out, boolean autoFlush) {
@@ -33,8 +35,7 @@ public boolean checkError() {
 	return error;
 }
 
-protected void setError()
-{
+protected void setError() {
 	error = true;
 }
 
@@ -63,18 +64,92 @@ public void flush() {
 	}
 }
 
-public void write(int x) {
-	try {
-		out.write(x);
-	}
-	catch (InterruptedIOException _) {
-		Thread.currentThread().interrupt();
-	}
-	catch (IOException _) {
-		error = true;
-	}
-	if (x == '\n' && autoFlush)
+public void print(Object x) {
+	print(String.valueOf(x).getBytes());
+}
+
+public void print(String x) {
+	print((x != null ? x : "null").getBytes());
+}
+
+public void print(boolean x) {
+	print(String.valueOf(x).getBytes());
+}
+
+public void print(char x) {
+	print(String.valueOf(x).getBytes());
+}
+
+public void print(char x[]) {
+	print(String.valueOf(x).getBytes());
+}
+
+public void print(double x) {
+	print(String.valueOf(x).getBytes());
+}
+
+public void print(float x) {
+	print(String.valueOf(x).getBytes());
+}
+
+public void print(int x) {
+	print(String.valueOf(x).getBytes());
+}
+
+public void print(long x) {
+	print(String.valueOf(x).getBytes());
+}
+
+public void println() {
+	print(newline);
+	if (autoFlush) {
 		flush();
+	}
+}
+
+public void println(Object x) {
+	print(x);
+	println();
+}
+
+public void println(String x) {
+	print(x);
+	println();
+}
+
+public void println(boolean x) {
+	print(x);
+	println();
+}
+
+public void println(char x) {
+	print(x);
+	println();
+}
+
+public void println(char[] x) {
+	print(x);
+	println();
+}
+
+public void println(double x) {
+	print(x);
+	println();
+}
+
+public void println(float x) {
+	print(x);
+	println();
+}
+
+public void println(int x) {
+	print(x);
+	println();
+}
+
+public void println(long x) {
+	print(x);
+	println();
 }
 
 public void write(byte b[], int off, int len) {
@@ -87,111 +162,28 @@ public void write(byte b[], int off, int len) {
 	catch (IOException _) {
 		error = true;
 	}
-	if (autoFlush)
-		flush();
-}
-
-public void print(boolean x) {
-	print(String.valueOf(x).toCharArray());
-}
-
-public void print(char x) {
-	print(new char[] { x });
-}
-
-public void print(int x) {
-	print(String.valueOf(x).toCharArray());
-}
-
-public void print(long x) {
-	print(String.valueOf(x).toCharArray());
-}
-
-public void print(float x) {
-	print(String.valueOf(x).toCharArray());
-}
-
-public void print(double x) {
-	print(String.valueOf(x).toCharArray());
-}
-
-public void print(char x[]) {
-	for (int k = 0; k < x.length; k++)
-		write((int) x[k]);	// this is our default char encoding
-	// technically not to spec, but it appears to be what Sun does
 	if (autoFlush) {
 		flush();
 	}
 }
 
-public void print(String x) {
-	print((x != null ? x : "null").toCharArray());
-}
-
-public void print(Object x) {
-	print(String.valueOf(x).toCharArray());
-}
-
-public void println()
-{
-	print(newline);
-	if (autoFlush) {
+public void write(int x) {
+	try {
+		out.write(x);
+	}
+	catch (InterruptedIOException _) {
+		Thread.currentThread().interrupt();
+	}
+	catch (IOException _) {
+		error = true;
+	}
+	if (x == '\n' && autoFlush) {
 		flush();
 	}
 }
 
-public void println(boolean x)
-{
-	print(x);
-	println();
-}
-
-public void println(char x)
-{
-	print(x);
-	println();
-}
-
-public void println(int x)
-{
-	print(x);
-	println();
-}
-
-public void println(long x)
-{
-	print(x);
-	println();
-}
-
-public void println(float x)
-{
-	print(x);
-	println();
-}
-
-public void println(double x)
-{
-	print(x);
-	println();
-}
-
-public void println(char[] x)
-{
-	print(x);
-	println();
-}
-
-public void println(String x)
-{
-	print(x);
-	println();
-}
-
-public void println(Object x)
-{
-	print(x);
-	println();
+private void print(byte[] b) {
+	write(b, 0, b.length);
 }
 
 }

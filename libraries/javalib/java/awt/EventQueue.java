@@ -206,14 +206,14 @@ public synchronized void postEvent ( AWTEvent e ) {
 	}
 }
 
-synchronized void repaint ( Component c, int x, int y, int width, int height ) {
+synchronized void repaint ( int id, Component c, int x, int y, int width, int height ) {
 	AWTEvent e = localQueue;
 
 	// OK, this is pretty redundant to postEvent, but we don't want to
-	// scan the localQueue twice (it might get long)
+	// scan the localQueue twice (it might get large)
 	if ( e != null ) {
 		do {
-			if ( (e.id == PaintEvt.UPDATE) &&
+			if ( (e.id == id) &&
            ((PaintEvt)e).solicitRepaint( c, x, y, width, height) ){
 				return;
 			}
@@ -223,14 +223,18 @@ synchronized void repaint ( Component c, int x, int y, int width, int height ) {
 				e = e.next;
 		} while ( true );
 		
-		e.next = localEnd = PaintEvt.getEvent( c, PaintEvt.UPDATE, 0, x, y, width, height);
+		e.next = localEnd = PaintEvt.getEvent( c, id, 0, x, y, width, height);
 	}
 	else {
-		localQueue = localEnd = PaintEvt.getEvent( c, PaintEvt.UPDATE, 0, x, y, width, height);
+		localQueue = localEnd = PaintEvt.getEvent( c, id, 0, x, y, width, height);
 
-		if ( ((Toolkit.flags & Toolkit.IS_BLOCKING) != 0) &&
-		     (Thread.currentThread() != Toolkit.eventThread) )
+		if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
+			notify();  // wake up any waiter
+		}
+		else if ( ((Toolkit.flags & Toolkit.IS_BLOCKING) != 0) &&
+		     (Thread.currentThread() != Toolkit.eventThread) ) {
 			Toolkit.evtWakeup();
+		}
 	}
 }
 }

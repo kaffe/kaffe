@@ -25,9 +25,6 @@ public TextEvent ( Object src, int evtId ) {
 	super( src, evtId);
 }
 
-protected void dispatch () {
-}
-
 public String paramString() {
 	return (id == TEXT_VALUE_CHANGED) ? "TEXT_VALUE_CHANGED" : "TEXT: " + id;
 }

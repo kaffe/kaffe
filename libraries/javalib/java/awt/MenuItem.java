@@ -25,7 +25,7 @@ public class MenuItem
 	String label;
 	ActionListener aListener;
 	String aCmd;
-	boolean isEnabled = true;
+	int eventMask;
 	static MenuItem separator = new MenuItem( "-");
 	private static final long serialVersionUID = -21757335363267194L;
 
@@ -77,6 +77,10 @@ public synchronized void disable() {
 	setEnabled(false);
 }
 
+public void disableEvents ( long disableMask ) {
+	eventMask &= ~disableMask;  
+}
+
 /**
  * @deprecated
  */
@@ -89,6 +93,10 @@ public synchronized void enable() {
  */
 public void enable(boolean on) {
 	setEnabled(on);
+}
+
+public void enableEvents ( long enableMask ) {
+	eventMask |= enableMask;
 }
 
 public String getActionCommand() {
@@ -119,11 +127,13 @@ int getWidth() {
 
 public void handleShortcut ( MenuShortcut ms) {
 	int mods = (ms != null) ? ms.mods : 0;
-	
-	if ( hasToNotify( aListener) || ((flags & IS_OLD_EVENT) > 0) ) {
-		ActionEvt ae = ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED,
-		                                   getActionCommand(), mods);
-		Toolkit.eventQueue.postEvent( ae);
+
+	if ( (aListener != null) ||
+	     ((eventMask & (AWTEvent.ACTION_EVENT_MASK|AWTEvent.DISABLED_MASK))
+	                                                 == AWTEvent.ACTION_EVENT_MASK) ||
+	     ((flags & IS_OLD_EVENT) > 0) ) {
+		Toolkit.eventQueue.postEvent( ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED,
+		                                                  getActionCommand(), mods));
 		return;
 	}
 
@@ -133,22 +143,19 @@ public void handleShortcut ( MenuShortcut ms) {
 			break;
 		}
 		Menu m = (Menu)mp;
-		if (m.hasToNotify(m.aListener)) {
-			ActionEvt ae = ActionEvt.getEvent( m, ActionEvent.ACTION_PERFORMED,
-			                                   getActionCommand(), mods);
-			Toolkit.eventQueue.postEvent( ae);
+		if ( (m.aListener != null) ||
+		     ((m.eventMask & (AWTEvent.ACTION_EVENT_MASK|AWTEvent.DISABLED_MASK))
+		                                                   == AWTEvent.ACTION_EVENT_MASK) ) {
+			Toolkit.eventQueue.postEvent( ActionEvt.getEvent( m, ActionEvent.ACTION_PERFORMED,
+			                                                  getActionCommand(), mods));
 			return;
 		}
 		mp = m.parent;
 	}
 }
 
-boolean hasToNotify ( EventListener listener ) {
-	return ( isEnabled && (listener != null));
-}
-
 public boolean isEnabled() {
-	return isEnabled;
+	return (eventMask & AWTEvent.DISABLED_MASK) == 0;
 }
 
 public boolean isSeparator() {
@@ -166,7 +173,7 @@ int paint ( Graphics g, int xoff, int y, int width, Color back, Color fore, bool
 	}
 	else {
 		g.setFont( fnt);
-		if ( isEnabled ) {
+		if ( (eventMask & AWTEvent.DISABLED_MASK) == 0 ) {
 			if ( Defaults.MenuTxtCarved ) {
 				g.setColor( Color.white);
 				g.drawString( label, xoff+1, y+as+1);
@@ -186,13 +193,31 @@ public String paramString() {
 	return getClass().getName() + "[Label: " + label + "]";
 }
 
-void processActionEvent ( ActionEvent e ) {
-	if (aListener != null) {
-		aListener.actionPerformed( e);
+void process ( ActionEvent e ) {
+	if ( (aListener != null) ||
+	     ((eventMask & (AWTEvent.ACTION_EVENT_MASK|AWTEvent.DISABLED_MASK))
+	                            == AWTEvent.ACTION_EVENT_MASK) ){
+		processEvent( e);
 	}
 
 	if ( (flags & IS_OLD_EVENT) > 0 )
 		postEvent( Event.getEvent( e));
+}
+
+protected void processActionEvent ( ActionEvent e ) {
+	if (aListener != null) {
+		aListener.actionPerformed( e);
+	}
+}
+
+protected void processEvent ( AWTEvent e ) {
+	// same uglyness like in Component.processEvent - we already had it down
+	// to the specific Event class and now have to go up to AWTEvent again because
+	// this might be re-implemented by a derived class
+
+	if ( e.id == ActionEvent.ACTION_PERFORMED ) {
+		processActionEvent( (ActionEvent)e);
+	}
 }
 
 public synchronized void removeActionListener( ActionListener l) {
@@ -213,8 +238,11 @@ public void setActionCommand( String cmd) {
 	aCmd = cmd;
 }
 
-public synchronized void setEnabled( boolean b) {
-	isEnabled = b;
+public synchronized void setEnabled ( boolean isEnabled ) {
+	if ( isEnabled)
+		eventMask &= ~AWTEvent.DISABLED_MASK;
+	else
+		eventMask |= AWTEvent.DISABLED_MASK;
 }
 
 public synchronized void setLabel( String label) {

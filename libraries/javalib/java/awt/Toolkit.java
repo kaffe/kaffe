@@ -98,6 +98,7 @@ public class Toolkit
 	static LightweightPeer lightweightPeer = new LightweightPeer() {};
 	static WindowPeer windowPeer = new WindowPeer() {};
 	static FlushThread flushThread;
+	static NativeCollector collectorThread;
 	static int flags;
 	final static int FAILED = -1;
 	final static int IS_BLOCKING = 1;
@@ -120,8 +121,8 @@ static {
 		// Not much we can do here, we have to delegate the native init
 		// to a own thread since tlkInit() doesn't return. Wait for this
 		// thread to flag that initialization has been completed
-		NativeCollector nc = new NativeCollector();
-		nc.start();
+		collectorThread = new NativeCollector();
+		collectorThread.start();
 
 		try {
 			synchronized ( Toolkit.class ) {
@@ -201,6 +202,8 @@ native static synchronized AWTEvent evtPeekEvent ();
 native static synchronized AWTEvent evtPeekEventId ( int eventId );
 
 native static synchronized int evtRegisterSource ( Ptr wndData );
+
+native static synchronized void evtSendWMEvent ( WMEvent e );
 
 native static synchronized int evtUnregisterSource ( Ptr wndData );
 
@@ -483,6 +486,51 @@ static void stopDispatch () {
 		flushThread.stopFlushing();
 		flushThread = null;
 	}
+}
+
+static boolean switchToCreateThread ( Window c ) {
+	// this probably has to be abstracted away from Window, in order to
+	// enable reation of native widgets outside of their parents addNotify context
+	// (but that involves EventDispatchThread and WMEvent, too)
+	WMEvent e = null;
+
+	// even if this could be done in a central location, we defer this
+	// as much as possible because it might involve polling (for non-threaded
+	// AWTs), slowing down the startup time
+	if ( eventThread == null ) {
+		startDispatch();
+	}
+
+	if ( (flags & IS_DISPATCH_EXCLUSIVE) != 0 ){
+		if ( (flags & NATIVE_DISPATCHER_LOOP) != 0 ){
+			if ( Thread.currentThread() != collectorThread ){
+				// this is beyond our capabilities (there is no Java message entry we can call
+				// in the native collector), we have to revert to some native mechanism
+				e =  WMEvent.getEvent( c, WMEvent.WM_CREATE);
+				evtSendWMEvent( e);
+			}
+		}
+		else {
+			if ( Thread.currentThread() != eventThread ){
+				// we can force the context switch by ourselves, no need to go native
+				e =  WMEvent.getEvent( c, WMEvent.WM_CREATE);
+				eventQueue.postEvent( e);
+			}
+		}
+			
+		// Ok, we have a request out there, wait for it to be served
+		if ( e != null ) {
+			while ( c.nativeData == null ) {
+				synchronized ( e ) {
+					try { e.wait(); } catch ( InterruptedException x ) {}
+				} 
+			}
+				
+			return true;  // flag that we had a context switch
+		}
+	}
+
+	return false;     // no context switch required
 }
 
 public void sync () {

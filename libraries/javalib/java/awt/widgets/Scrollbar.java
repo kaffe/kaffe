@@ -58,7 +58,6 @@ public Scrollbar( int ori, int value, int visible, int min, int max) throws Ille
 
 public synchronized void addAdjustmentListener( AdjustmentListener al) {
 	aListener = AWTEventMulticaster.add( aListener, al);
-	eventMask |= AWTEvent.ADJUSTMENT_EVENT_MASK;
 }
 
 public int getBlockIncrement() {
@@ -315,11 +314,12 @@ public void mouseReleased( MouseEvent e) {
 }
 
 void notifyAdjust() {
-	if ( hasToNotify( this, AWTEvent.ADJUSTMENT_EVENT_MASK, aListener) ||
+	if ( (aListener != null) ||
+	     (eventMask & AWTEvent.ADJUSTMENT_EVENT_MASK) != 0 ||
 	     ((flags & IS_OLD_EVENT) != 0) ) {
-		AdjustmentEvt ae = AdjustmentEvt.getEvent( this, AdjustmentEvent.ADJUSTMENT_VALUE_CHANGED,
-		                                           currentOp, val);
-		Toolkit.eventQueue.postEvent( ae);
+		Toolkit.eventQueue.postEvent( AdjustmentEvt.getEvent( this,
+		                                                      AdjustmentEvent.ADJUSTMENT_VALUE_CHANGED,
+		                                                      currentOp, val));
 	}
 }
 
@@ -379,12 +379,19 @@ public Dimension preferredSize() {
 	}
 }
 
-protected void processAdjustmentEvent ( AdjustmentEvent e) {
-	if (  hasToNotify( this, AWTEvent.ADJUSTMENT_EVENT_MASK, aListener) ) {
-		aListener.adjustmentValueChanged( e);
+void process ( AdjustmentEvent e ) {
+	if ( (aListener != null) || ((eventMask & AWTEvent.ADJUSTMENT_EVENT_MASK) != 0) ){
+		processEvent( e);
 	}
+	
 	if ( (flags & IS_OLD_EVENT) != 0 ) {
 		postEvent( Event.getEvent( e));
+	}
+}
+
+protected void processAdjustmentEvent ( AdjustmentEvent e) {
+	if (  aListener != null ) {
+		aListener.adjustmentValueChanged( e);
 	}
 }
 
@@ -439,7 +446,16 @@ public synchronized void setValue( int value) {
 	}
 }
 
-public synchronized void setValues( int value, int visible, int min, int max) {
+public void setValues( int value, int visible, int min, int max) {
+	setValues( value, visible, min, max, true);
+}
+
+synchronized void setValues( int value, int visible, int min, int max, boolean notify ) {
+	// PM: not ideal - this is a workaround for clients with coexisting sync (own) and
+	// async (Scrollbar initiated) updates. In case they rely on sync updates, they are
+	// just interested in Scrollbar updates, but not notifications. However, this is a design
+	// flaw of these clients (this is not a public API of Scrollbar !!)
+
 	int lastVal = this.val;
 
 	if ( (value == val) && (visible == vis) && (min == this.min) && (max == this.max) )
@@ -459,7 +475,7 @@ public synchronized void setValues( int value, int visible, int min, int max) {
 	
 	update();
 
-	if ( val != lastVal)
+	if ( notify && (val != lastVal) )
 		notifyAdjust();
 }
 

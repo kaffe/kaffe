@@ -12,7 +12,7 @@ ContainerEvt ( Component src, int evtId, Component child ){
 }
 
 protected void dispatch () {
-	((Component)source).processEvent( this);
+	((Component)source).process( this);
 
 	if ( (Defaults.RecycleEvents & AWTEvent.CONTAINER_EVENT_MASK) != 0 ) recycle();
 }

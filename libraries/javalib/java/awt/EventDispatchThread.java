@@ -45,10 +45,12 @@ public void run () {
 				// this is from our KaffeServer SecurityManager, ignore
 			}
 			else {
+			  Toolkit.tlkBeep();
 				sx.printStackTrace( System.err);
 			}
 		}
 		catch ( Throwable x ) {
+			Toolkit.tlkBeep();
 			x.printStackTrace( System.err);
 		}
 	}

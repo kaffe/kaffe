@@ -33,6 +33,7 @@ import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Vector;
 import kaffe.awt.OpaqueComponent;
+import kaffe.util.Ptr;
 
 /**
  * Component - abstract root of all widgets
@@ -94,6 +95,7 @@ abstract public class Component
 	final static int IS_FONTIFIED = 0x2000;
 	final static int IS_ASYNC_UPDATED = 0x4000;
 	final static int IS_DIRTY = 0x8000;
+	final static int IS_MOUSE_AWARE = 0x10000;
 	final static int IS_SHOWING = IS_ADD_NOTIFIED | IS_PARENT_SHOWING | IS_VISIBLE;
 
 static class TreeLock
@@ -218,27 +220,26 @@ public void add ( PopupMenu menu ) {
 
 public void addComponentListener ( ComponentListener newListener ) {
 	cmpListener = AWTEventMulticaster.add( cmpListener, newListener);
-	eventMask |= AWTEvent.COMPONENT_EVENT_MASK;
 }
 
 public void addFocusListener ( FocusListener newListener ) {
 	focusListener = AWTEventMulticaster.add( focusListener, newListener);
-	eventMask |= AWTEvent.FOCUS_EVENT_MASK;
 }
 
 public void addKeyListener ( KeyListener newListener ) {
 	keyListener = AWTEventMulticaster.add( keyListener, newListener);
-	eventMask |= AWTEvent.KEY_EVENT_MASK;
 }
 
 public void addMouseListener ( MouseListener newListener ) {
 	mouseListener = AWTEventMulticaster.add( mouseListener, newListener);
-	eventMask |= AWTEvent.MOUSE_EVENT_MASK;
+	
+	flags |= IS_MOUSE_AWARE;
 }
 
 public void addMouseMotionListener ( MouseMotionListener newListener ) {
 	motionListener = AWTEventMulticaster.add( motionListener, newListener);
-	eventMask |= AWTEvent.MOUSE_MOTION_EVENT_MASK;
+	
+	flags |= IS_MOUSE_AWARE;
 }
 
 public void addNotify () {
@@ -251,17 +252,15 @@ public void addNotify () {
 		}
 		if ( parent != null ) {
 			// Note that this only works in case the parent is addNotified
-			// *before* its childs. The 'isNativeLike' test is just a
-			// proxy for the fact that the old 1.0.2 AWT did not allow
-			// lighweights (because of a missing protected ctor in Component/Container)
-			if ( props.isNativeLike &&
-			    (((parent.flags & IS_OLD_EVENT) != 0) || props.useOldEvents) ){
-				flags |= IS_OLD_EVENT;
+			// *before* its childs. (we can't use isNativeLike to filter this out
+			// unless we turn BarMenus into isNativeLike, which is bad)
+			if ( (((parent.flags & IS_OLD_EVENT) != 0) || props.useOldEvents) ){
+				flags |= (IS_OLD_EVENT | IS_MOUSE_AWARE);
 			}
 		}
 		else { // Window
 			if ( props.useOldEvents )
-				flags |= IS_OLD_EVENT;
+				flags |= (IS_OLD_EVENT | IS_MOUSE_AWARE);
 		}
 		
 		if ( popup != null ) {
@@ -286,6 +285,19 @@ public int checkImage (Image image, ImageObserver obs) {
 
 public int checkImage (Image image, int width, int height, ImageObserver obs) {
 	return (image.checkImage( width, height, obs, false));
+}
+
+void checkMouseAware () {
+	if ( ((eventMask & AWTEvent.DISABLED_MASK) == 0) &&
+	     ((mouseListener != null) ||
+	      (motionListener != null) ||
+	      (eventMask & (AWTEvent.MOUSE_EVENT_MASK|AWTEvent.MOUSE_MOTION_EVENT_MASK)) != 0 ||
+	      (flags & IS_OLD_EVENT) != 0 )) {
+		flags |= IS_MOUSE_AWARE;
+	}
+	else {
+		flags &= ~IS_MOUSE_AWARE;
+	}
 }
 
 public boolean contains ( Point pt ) {
@@ -319,7 +331,8 @@ public void disable() {
 }
 
 public void disableEvents ( long disableMask ) {
-	eventMask &= ~disableMask;  
+	eventMask &= ~disableMask;
+	checkMouseAware();
 }
 
 final public void dispatchEvent ( AWTEvent evt ) {
@@ -365,7 +378,8 @@ public void enable( boolean isEnabled) {
 }
 
 public void enableEvents ( long enableMask ) {
-	eventMask |= enableMask;  
+	eventMask |= enableMask;
+	checkMouseAware();
 }
 
 public float getAlignmentX() {
@@ -557,13 +571,6 @@ public boolean handleEvent(Event evt) {
 	}
 }
 
-static boolean hasToNotify ( Component c, int mask, EventListener listener ) {
-	// This is a helper which saves some typing, but slows down event processing
-	// (since this is still much faster than the subsequent invokeinterface, we
-	// accept that). Should be inlined for high-frequency events
-	return ((listener != null) && ((c.eventMask & mask) != 0));
-}
-
 public void hide () {
 	// DEP this should be in setVisible !! But we have to keep it here
 	// for compatibility reasons (Swing etc.)
@@ -586,7 +593,7 @@ public void hide () {
 	  // CAUTION: this might cause incompatibilities in ill-behaving apps
 	  // (doing explicit sync on show/hide/reshape), but otherwise we would have
 	  // to implement a completely redundant mechanism for Graphics updates
-		if ( hasToNotify( this, AWTEvent.COMPONENT_EVENT_MASK, cmpListener) ){
+		if ( (cmpListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
 			AWTEvent.sendEvent(  ComponentEvt.getEvent( this,
 			                            ComponentEvent.COMPONENT_HIDDEN), true);
 		}
@@ -895,6 +902,51 @@ public void print ( Graphics g ) {
 public void printAll ( Graphics g ) {
 }
 
+void process ( ActionEvent e ) {
+	// we don't know nothing about ActionEventListeners
+}
+
+void process ( AdjustmentEvent e ) {
+	// we don't know nothing about AdjustmentEventListeners
+}
+
+void process ( ComponentEvent e ) {
+	if ( (cmpListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0)
+		processEvent( e);
+}
+
+void process ( ContainerEvent e ) {
+	// we don't know nothing about ContainerEventListeners
+}
+
+void process ( FocusEvent e ) {
+	if ( (focusListener != null) || (eventMask & AWTEvent.FOCUS_EVENT_MASK) != 0){
+		processEvent( e);
+	}
+	
+	if ( (flags & IS_OLD_EVENT) != 0 ) postEvent( Event.getEvent( e));
+}
+
+void process ( ItemEvent e ) {
+	// we don't know nothing about ItemEventListeners
+}
+
+void process ( KeyEvent e ) {
+	if ( (keyListener != null) || (eventMask & AWTEvent.KEY_EVENT_MASK) != 0){
+		processEvent( e);
+	}
+
+	if ( (flags & IS_OLD_EVENT) != 0 ) postEvent( Event.getEvent( e));
+}
+
+void process ( TextEvent e ) {
+	// we don't know nothing about TextEventListeners
+}
+
+void process ( WindowEvent e ) {
+	// we don't know nothing about WindowEventListeners
+}
+
 protected void processActionEvent ( ActionEvent e ) {
 }
 
@@ -903,7 +955,7 @@ protected void processAdjustmentEvent ( AdjustmentEvent e ) {
 
 protected void processComponentEvent ( ComponentEvent event ) {
 
-	if ( hasToNotify( this, AWTEvent.COMPONENT_EVENT_MASK, cmpListener) ){
+	if ( cmpListener != null ){
 		switch ( event.getID() ) {
 		case ComponentEvent.COMPONENT_RESIZED:
 			cmpListener.componentResized( event);
@@ -938,6 +990,11 @@ protected void processEvent ( AWTEvent e ) {
 	case MouseEvent.MOUSE_RELEASED:
 	case MouseEvent.MOUSE_ENTERED:
 	case MouseEvent.MOUSE_EXITED:
+		// Not hard to anticipate that there will be AWT test suites throwing synthetic
+		// events against real components. However, this is "out of spec", most native window
+		// environments would act on the emitter side (rather than the responder), like we do
+		// (in MouseEvt). Moreover, processEvent() might be resolved by a derived class
+		// if ( (eventMask & AWTEvent.DISABLED_MASK) == 0 )
 		processMouseEvent( (MouseEvent)e);
 		break;
 		
@@ -949,6 +1006,7 @@ protected void processEvent ( AWTEvent e ) {
 	case KeyEvent.KEY_TYPED:			//400..402
 	case KeyEvent.KEY_PRESSED:
 	case KeyEvent.KEY_RELEASED:
+		// if ( (eventMask & AWTEvent.DISABLED_MASK) == 0 )
 		processKeyEvent( (KeyEvent)e);
 		break;
 			
@@ -1004,7 +1062,7 @@ protected void processEvent ( AWTEvent e ) {
 }
 
 protected void processFocusEvent ( FocusEvent event ) {
-	if ( hasToNotify( this, AWTEvent.FOCUS_EVENT_MASK, focusListener) ) {
+	if ( focusListener != null ) {
 		switch ( event.getID() ) {
 		case FocusEvent.FOCUS_GAINED:
 			focusListener.focusGained( event);
@@ -1014,15 +1072,13 @@ protected void processFocusEvent ( FocusEvent event ) {
 			break;
 		}
 	}
-	
-	if ( (flags & IS_OLD_EVENT) != 0 ) postEvent( Event.getEvent( event));
 }
 
 protected void processItemEvent ( ItemEvent e ) {
 }
 
 protected void processKeyEvent ( KeyEvent event ) {
-	if ( hasToNotify( this, AWTEvent.KEY_EVENT_MASK, keyListener) ) {
+	if ( keyListener != null ) {
 		switch ( event.id ) {
 		case KeyEvent.KEY_TYPED:
 			keyListener.keyTyped( event);
@@ -1035,12 +1091,28 @@ protected void processKeyEvent ( KeyEvent event ) {
 			break;
 		}
 	}
+}
 
-	if ( (flags & IS_OLD_EVENT) != 0 ) postEvent( Event.getEvent( event));
+void processMotion ( MouseEvent e ) {
+	if ( (motionListener != null) || (eventMask & AWTEvent.MOUSE_MOTION_EVENT_MASK) != 0)
+		processEvent( e);
+
+	if ( (flags & IS_OLD_EVENT) != 0 ){
+		postEvent( Event.getEvent( e));
+	}
+}
+
+void processMouse ( MouseEvent e ) {
+	if ( (mouseListener != null) || (eventMask & AWTEvent.MOUSE_EVENT_MASK) != 0)
+		processEvent( e);
+
+	if ( (flags & IS_OLD_EVENT) != 0 ){
+		postEvent( Event.getEvent( e));
+	}
 }
 
 protected void processMouseEvent ( MouseEvent event ) {
-	if ( hasToNotify( this, AWTEvent.MOUSE_EVENT_MASK, mouseListener) ) {
+	if ( mouseListener != null ) {
 		switch ( event.id ) {
 			case MouseEvent.MOUSE_PRESSED:
 				mouseListener.mousePressed( event);
@@ -1059,12 +1131,10 @@ protected void processMouseEvent ( MouseEvent event ) {
 				break;
 		}
 	}
-
-	if ( (flags & IS_OLD_EVENT) != 0 ) postEvent( Event.getEvent( event));
 }
 
 protected void processMouseMotionEvent ( MouseEvent event ) {
-	if ( hasToNotify( this, AWTEvent.MOUSE_MOTION_EVENT_MASK, motionListener) ) {
+	if ( motionListener != null ) {
 		switch ( event.id ) {
 		case MouseEvent.MOUSE_MOVED:
 			motionListener.mouseMoved( event);
@@ -1074,8 +1144,6 @@ protected void processMouseMotionEvent ( MouseEvent event ) {
 			return;
 		}
 	}
-
-	if ( (flags & IS_OLD_EVENT) != 0 ) postEvent( Event.getEvent( event));
 }
 
 void processPaintEvent ( int id, int ux, int uy, int uw, int uh ) {
@@ -1139,10 +1207,14 @@ public void removeKeyListener ( KeyListener listener ) {
 
 public void removeMouseListener ( MouseListener listener ) {
 	mouseListener = AWTEventMulticaster.remove( mouseListener, listener);
+	
+	checkMouseAware();
 }
 
 public void removeMouseMotionListener ( MouseMotionListener listener ) {
 	motionListener = AWTEventMulticaster.remove( motionListener, listener);
+	
+	checkMouseAware();
 }
 
 public void removeNotify () {
@@ -1154,10 +1226,12 @@ public void removeNotify () {
 
 	// the inflight video program will be ceased by now, clean up any
 	// leftover global state (remember: removeNotify can be called anywhere, anytime)
-	if ( this == AWTEvent.mouseTgt )
+	if ( this == AWTEvent.mouseTgt ){
 		AWTEvent.mouseTgt = null;
-	if ( this == AWTEvent.keyTgt )
+	}
+	if ( this == AWTEvent.keyTgt ){
 		AWTEvent.keyTgt = null;
+	}
 	if ( this == AWTEvent.activeWindow )
 		AWTEvent.activeWindow = null;
 	if ( this == FocusEvt.keyTgtRequest )
@@ -1166,8 +1240,9 @@ public void removeNotify () {
 	// this is arguable - we could also make the check in all relevant event dipatch()
 	// methods, but it's probably more efficient to do it once, at the source
 	// (note that we don't have to care for native events because of unregisterSource())
-	if ( Toolkit.eventQueue.localQueue != null )
+	if ( Toolkit.eventQueue.localQueue != null ) {
 		Toolkit.eventQueue.dropLiveEvents( this);
+	}
 }
 
 public void repaint () {
@@ -1184,14 +1259,16 @@ public void repaint ( long ms ) {
 
 public void repaint ( long ms, int x, int y, int width, int height ) {
 	if ( (flags & IS_SHOWING) == IS_SHOWING ){
-		Toolkit.eventQueue.repaint( this, x, y, width, height);
+		Toolkit.eventQueue.repaint( PaintEvent.UPDATE, this, x, y, width, height);
 	}
 }
 
 public void requestFocus () {
 	Component topNew, topOld = null;
 
-	if ( AWTEvent.keyTgt == this ) return;  // nothing to do
+	if ( AWTEvent.keyTgt == this )   // nothing to do
+		return;
+		
 	topNew = getToplevel();
 	
 	// there are bad apps out there requesting the focus for Components
@@ -1202,11 +1279,16 @@ public void requestFocus () {
 		// by a subsequent requestFocus of the toplevel
 		FocusEvt.keyTgtRequest = this;
 	}
-	else {	
-		if ( AWTEvent.keyTgt != null )
+	else {
+		if ( AWTEvent.keyTgt != null ) {
 			topOld = AWTEvent.keyTgt.getToplevel();
-		else
-			topOld = AWTEvent.activeWindow;
+		}
+		else {
+			// Don't rely on a still existing "AWTEvent.activeWindow" as a safe retreat,
+			// since some window managers don't restore the focus to it (e.g. KWM, the focus
+			// probably gets 'lost' in the Frame parent). It's kind of paranoid and mostly
+			// redundant, but we explicitly set the focus once more
+		}
 
 		if (topNew != topOld ) {  // this involves a change of active toplevels
 			FocusEvt.keyTgtRequest = this;
@@ -1257,8 +1339,9 @@ public void reshape ( int xNew, int yNew, int wNew, int hNew ) {
 				invalidate();
 				// this has to be done before issuing any PaintEvent (by repaint), since
 				// we might have some resident Graphics objects listening
-				if ( hasToNotify( this, AWTEvent.COMPONENT_EVENT_MASK, cmpListener) )
+				if ( (cmpListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
 					AWTEvent.sendEvent( ComponentEvt.getEvent( this, id), false);
+				}
 
 				// Redrawing the parent does not happen automatically, we can do it here
 				// (regardless of IS_LAYOUTING) since we have repaint - solicitation, anyway
@@ -1272,8 +1355,9 @@ public void reshape ( int xNew, int yNew, int wNew, int hNew ) {
 
 		// be aware of that this is curently used to update resident nativelike Graphics
 		// objects (widgets, Panels, Canvases, ..)
-		if ( hasToNotify( this, AWTEvent.COMPONENT_EVENT_MASK, cmpListener) )
+		if ( (cmpListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
 			AWTEvent.sendEvent( ComponentEvt.getEvent( this, id), false);
+		}
 	}
 }
 
@@ -1342,6 +1426,8 @@ public void setEnabled ( boolean isEnabled ) {
 		eventMask &= ~AWTEvent.DISABLED_MASK;
 	else
 		eventMask |= AWTEvent.DISABLED_MASK;
+		
+	checkMouseAware();
 }
 
 public void setFont ( Font fnt ) {
@@ -1441,7 +1527,7 @@ public void show () {
 
 	  // sync because it might be used to control Graphics visibility
 	  // (see hide, reshape)
-		if ( hasToNotify( this, AWTEvent.COMPONENT_EVENT_MASK, cmpListener) ){
+		if ( (cmpListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
 			AWTEvent.sendEvent( ComponentEvt.getEvent( this,
 				                         ComponentEvent.COMPONENT_SHOWN), true);
 		}

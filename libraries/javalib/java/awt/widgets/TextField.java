@@ -1,5 +1,6 @@
 package java.awt;
 
+import java.awt.TextEvt;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -41,11 +42,11 @@ public class TextField
 	NativeGraphics rgr;
 
 public TextField() {
-	this( "", 1);
+	this( "", 0);
 }
 
 public TextField( String text) {
-	this( text, (text != null) ? text.length() : 1);
+	this( text, (text != null) ? text.length() : 0);
 }
 
 public TextField( String text, int cols) {
@@ -72,7 +73,6 @@ public TextField( int cols) {
 
 public void addActionListener ( ActionListener al) {
 	aListener = AWTEventMulticaster.add( aListener, al);
-	eventMask |= AWTEvent.ACTION_EVENT_MASK;
 }
 
 public void addNotify () {
@@ -280,7 +280,7 @@ public void keyReleased ( KeyEvent evt ) {
 }
 
 public void keyTyped( KeyEvent e) {
-	if ( ! isEditable || ! isPrintableTyped( e) )
+	if ( ! isEditable || e.isConsumed() || ! isPrintableTyped( e) )
 		return;
 
 	char c = e.getKeyChar();
@@ -297,10 +297,9 @@ public void keyTyped( KeyEvent e) {
 			hiddenBuf.insert( tCursor.index, echoChar);
 		shiftTextCursor( 1, true);
 	}
-	
-	if ( textListener != null ) {
-		AWTEvent.setSource( tEvt, this);
-		processTextEvent( tEvt);
+
+	if ( (textListener != null) || (eventMask & AWTEvent.TEXT_EVENT_MASK) != 0 ) {
+		Toolkit.eventQueue.postEvent( TextEvt.getEvent( this, TextEvt.TEXT_VALUE_CHANGED));		
 	}
 }
 
@@ -341,10 +340,21 @@ public Dimension minimumSize() {
  */
 public Dimension minimumSize(int cols) {
 	FontMetrics  fm = getFontMetrics( font);
-	int          n = (cols < 10) ? 10 : cols;
-	int          w = n * fm.charWidth( 'x');
-	int          h = fm.getHeight() + 6;
-	
+	int          nc = cols;
+	int	     h = fm.getHeight() + 3*BORDER_WIDTH;
+	int	     w = 0;
+
+	if ( nc <= 0 ) {
+		if ( textBuf.len > 0 )
+			w = textBuf.getWidth( 0, textBuf.len);
+		else
+			nc = 5;
+	}
+	if ( w == 0 )
+		w = nc * fm.charWidth( 'X');
+
+
+	w += 2*(BORDER_WIDTH + xOffs);
 	return new Dimension( w, h);
 }
 
@@ -386,10 +396,9 @@ public void mouseReleased( MouseEvent e) {
 }
 
 void notifyAction(){
-	if ( hasToNotify( this, AWTEvent.ACTION_EVENT_MASK, aListener)) {
-		ActionEvt ae = ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED,
-		                                   getText(), 0);
-		Toolkit.eventQueue.postEvent( ae);
+	if ( (aListener != null) || ((eventMask & AWTEvent.ACTION_EVENT_MASK) != 0) ){
+		Toolkit.eventQueue.postEvent( ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED,
+		                                                  getText(), 0));
 	}
 }
 
@@ -427,7 +436,7 @@ public Dimension preferredSize(int cols) {
 }
 
 protected void processActionEvent ( ActionEvent e) {
-	if ( hasToNotify( this, AWTEvent.ACTION_EVENT_MASK, aListener))
+	if ( aListener != null )
 		aListener.actionPerformed( e);
 }
 
@@ -535,9 +544,6 @@ public void select( int start, int end) {
 	selStart = start;
 	selEnd = end;
 	setTextCursor( selStart, false, true);
-	
-//	if ( isShowing() )
-//		repaint();
 }
 
 public void selectAll() {
@@ -594,7 +600,7 @@ public void setFont( Font f) {
 
 void setResGraphics () {
 	rgr = NativeGraphics.getClippedGraphics( rgr, this, 0, 0,
-                                           BORDER_WIDTH, BORDER_WIDTH,
+					   BORDER_WIDTH, BORDER_WIDTH,
 		                                       width - 2*BORDER_WIDTH, height - 2*BORDER_WIDTH, false);
 }
 

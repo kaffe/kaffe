@@ -575,17 +575,24 @@ void paintChild ( Component c, boolean isUpdate ) {
 	clx -= c.x;
 	cly -= c.y;
 
-	if ( (c.flags & Component.IS_ASYNC_UPDATED) != 0 ) {
+// HACK: maybe we have to set all widgets to IS_ASYNC_UPDATED because
+// of bad apps implicitly relying on async update solicitation in order to avoid flicker
+// (doing lots of redundant repaint requests without even knowing about it). The downside is
+// that it would slow down all nice apps
+
+//	if ( (c.flags & Component.IS_ASYNC_UPDATED) != 0 ) {
+	if ( (c.flags & Component.IS_NATIVE_LIKE) != 0 ) {
 		// This is a really nasty problem with Panels and Canvases: they don't get
-		// drawn sync, but usually receive their own native update events *after* the
-		// parent got painted. We have to simulate this because - believe it or not - some
-		// apps rely on UPDATE vs. COMPONENT_RESIZED/SHOWN order (this is *bad*, since
-		// it heavily depends on unspecified behavior ofthe AWT *and* the
-		// underlying native window system).
+		// drawn sync, but usually receive their own native paint (not even update!)
+		// events *after* the parent got painted. We have to simulate this because
+		// - believe it or not - some apps rely on UPDATE/PAINT vs. 
+		// COMPONENT_RESIZED/SHOWN order (this is *bad*, since it heavily depends
+		// on unspecified behavior ofthe AWT *and* the underlying native window system).
 		// Note that we shouldn't leave the repaint up to the ragman (processPaintEvent)
 		// since some apps might even call update/paint explicitly (again, bad!). But
 		// we want to support at least those who call super.paint()
-		c.repaint( clx, cly, clw, clh);
+		// The PAINT vs. UPDATE problem also shows up in Container.emitRepaints
+		Toolkit.eventQueue.repaint( PaintEvt.PAINT, c, clx, cly, clw, clh);
 	}
 	else {
 		NativeGraphics g = getGraphics( this, nativeData, TGT_TYPE_GRAPHICS,

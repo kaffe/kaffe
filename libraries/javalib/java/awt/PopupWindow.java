@@ -316,7 +316,6 @@ void processSelection () {
 }
 
 static void resetPopup ( Window oldPopup ) {
-
 	// just reset if this is the one that is still active
 	if ( (current != null) && (current == oldPopup) ) {
 		current = null;

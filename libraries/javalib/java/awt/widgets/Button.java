@@ -52,7 +52,6 @@ public Button ( String label) {
 
 public void addActionListener ( ActionListener a) {
 	aListener = AWTEventMulticaster.add( aListener, a);
-	eventMask |= AWTEvent.ACTION_EVENT_MASK;
 }
 
 public void addNotify () {
@@ -97,7 +96,12 @@ void drawText ( Graphics g) {
 	int x = (width - fm.stringWidth( label)) / 2;
 	int y = height - (height - fm.getHeight()) / 2 - fm.getDescent();
 
-	if ( (state & PUSHED) > 0 ){
+	// If button is disabled then the text as such.
+	if (!isEnabled()) {
+		c1 = null;
+		c2 = bgClr.darker();
+	}
+	else if ( (state & PUSHED) > 0 ){
 		x--; y--;
 		c1 = Color.yellow;
 		c2 = Color.red;
@@ -148,11 +152,11 @@ public void handleShortcut( MenuShortcut ms) {
 	if ( (state & PUSHED) == 0 )
 		animate();
 		
-	if ( hasToNotify( this, AWTEvent.ACTION_EVENT_MASK, aListener) ||
+	if ( (aListener != null) ||
+	     ((eventMask & AWTEvent.ACTION_EVENT_MASK) != 0) ||
 	     ((flags & IS_OLD_EVENT) != 0) ) {
-		ActionEvt ae = ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED,
-		                                   getActionCommand(), mods);
-		Toolkit.eventQueue.postEvent( ae);
+		Toolkit.eventQueue.postEvent( ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED,
+		                                                  getActionCommand(), mods));
 	}
 }
 
@@ -225,12 +229,18 @@ public Dimension preferredSize () {
 	return new Dimension( cx, cy);
 }
 
-protected void processActionEvent( ActionEvent e) {
-	if ( hasToNotify( this, AWTEvent.ACTION_EVENT_MASK, aListener) ) {
-		aListener.actionPerformed( e);
+void process ( ActionEvent e ) {
+	if ( (aListener != null) || ((eventMask & AWTEvent.ACTION_EVENT_MASK) != 0) ){
+		processEvent( e);
 	}
 
 	if ( (flags & IS_OLD_EVENT) != 0 ) postEvent( Event.getEvent( e));
+}
+
+protected void processActionEvent( ActionEvent e) {
+	if ( aListener != null ) {
+		aListener.actionPerformed( e);
+	}
 }
 
 public void removeActionListener ( ActionListener a) {

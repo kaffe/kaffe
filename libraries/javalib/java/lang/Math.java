@@ -15,7 +15,6 @@ final public class Math
 {
 	final public static double E = 2.7182818284590452354;
 	final public static double PI = 3.14159265358979323846;
-	private static Random randomGenerator = new Random();
 
 private Math() { /* this class is not instantiable by the general public */ }
 
@@ -66,7 +65,7 @@ public static long min(long a, long b) { return (a < b) ? (a) : (b); }
 native public static double pow(double a, double b);
 
 public static synchronized double random() {
-	return randomGenerator.nextDouble();
+	return MathRandom.random.nextDouble();
 }
 
 native public static double rint(double a);
@@ -100,4 +99,14 @@ native public static double sin(double a);
 native public static double sqrt(double a);
 
 native public static double tan(double a);
+}
+
+/**
+ * This is here we we only init the random number generator when we
+ * actually use it.
+ */
+class MathRandom {
+
+static Random random = new Random();
+
 }

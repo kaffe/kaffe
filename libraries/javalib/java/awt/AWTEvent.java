@@ -134,7 +134,7 @@ static void registerSource ( Component c, Ptr nativeData ) {
 	}
 }
 
-MouseEvent retarget ( Component target, int dx, int dy ) {
+protected MouseEvent retarget ( Component target, int dx, int dy ) {
 	return null;
 }
 

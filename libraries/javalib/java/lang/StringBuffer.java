@@ -10,13 +10,16 @@ package java.lang;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public final class StringBuffer implements java.io.Serializable
+final public class StringBuffer
+  implements java.io.Serializable
 {
+	char[] buffer;
+	int used;
+	boolean isStringized;
+
 	// This is what Sun's JDK1.1 "serialver java.lang.StringBuffer" says
 	private static final long serialVersionUID = 3388685877147921107L; 
 
-	private char[] buffer;
-	private int used;
 	final private int SPARECAPACITY = 16;
 
 public StringBuffer()
@@ -39,11 +42,11 @@ public StringBuffer(int length)
 	buffer=new char[length];
 }
 
-public synchronized StringBuffer append(Object obj) {
+public StringBuffer append(Object obj) {
 	return append(String.valueOf(obj));
 }
 
-public synchronized StringBuffer append ( String str ) {
+public StringBuffer append ( String str ) {
 	if (str == null) {
 		str = String.valueOf( str);
 	}
@@ -60,12 +63,15 @@ public synchronized StringBuffer append(char c)
 	if ( used + 1 > buffer.length ) {
 		ensureCapacity(used+1);
 	}
+	if ( isStringized )
+		deStringize();
+	
 	buffer[used++] = c;
 
 	return (this);
 }
 
-public synchronized StringBuffer append(char str[])
+public StringBuffer append(char str[])
 {
 	return append(str, 0, str.length);
 }
@@ -74,6 +80,9 @@ public synchronized StringBuffer append ( char str[], int offset, int len ) {
 
 	if ( used + len > buffer.length )
 		ensureCapacity(used+len);
+		
+	if ( isStringized )
+		deStringize();
 
 	System.arraycopy( str, offset, buffer, used, len);
 	used += len;
@@ -118,6 +127,14 @@ private synchronized void checkIndex(int index) throws StringIndexOutOfBoundsExc
 		throw new StringIndexOutOfBoundsException("index = " + index + ", used = " + used);
 }
 
+void deStringize () {
+	char[] b = new char[buffer.length];
+	System.arraycopy( buffer, 0, b, 0, buffer.length);
+
+	buffer = b;
+	isStringized = false;
+}
+
 public synchronized void ensureCapacity ( int minimumCapacity ) {
 	int    n;
 	char[] oldBuffer;
@@ -129,6 +146,7 @@ public synchronized void ensureCapacity ( int minimumCapacity ) {
 
 	oldBuffer = buffer;
 	buffer = new char[n];
+	isStringized = false;
 
 	System.arraycopy( oldBuffer, 0, buffer, 0, used);
 }
@@ -157,17 +175,33 @@ public StringBuffer insert(int offset, boolean b)
 	return insert(offset, String.valueOf(b));
 }
 
-public synchronized StringBuffer insert(int offset, char c)
-	{
-	return insert(offset, String.valueOf(c));
+public synchronized StringBuffer insert ( int offset, char c ) {
+	if ((offset < 0) || (offset > used))
+		throw new StringIndexOutOfBoundsException();
+
+	ensureCapacity(used + 1);
+	if ( isStringized )
+		deStringize();
+
+	// Copy buffer up to make space.
+	System.arraycopy(buffer, offset, buffer, offset+1, used-offset);
+
+	/* Now, copy insert into place */
+	buffer[offset] = c;
+
+	/* Update used count */
+	used ++;
+
+	return (this);
 }
 
-public synchronized StringBuffer insert(int offset, char str[])
-	{
+public synchronized StringBuffer insert ( int offset, char str[] ) {
 	if ((offset < 0) || (offset > used))
 		throw new StringIndexOutOfBoundsException();
 
 	ensureCapacity(used + str.length);
+	if ( isStringized )
+		deStringize();
 
 	// Copy buffer up to make space.
 	System.arraycopy(buffer, offset, buffer, offset+str.length, used-offset);
@@ -201,13 +235,14 @@ public StringBuffer insert(int offset, long l)
 	return insert(offset, String.valueOf(l));
 }
 
-public int length()
-	{
+public int length () {
 	return used;
 }
 
-public synchronized StringBuffer reverse()
-	{
+public synchronized StringBuffer reverse() {
+	if ( isStringized )
+		deStringize();
+
 	for (int pos = used/2 - 1; pos >= 0; pos--) {
 		char ch = buffer[pos];
 		buffer[pos] = buffer[used-pos-1];
@@ -216,13 +251,17 @@ public synchronized StringBuffer reverse()
 	return (this);
 }
 
-public synchronized void setCharAt(int index, char ch)
-	{
-	checkIndex(index);
+public synchronized void setCharAt ( int index, char ch ) {
+	if ( isStringized )
+		deStringize();
+
+	if (index < 0 || index >= used)
+		throw new StringIndexOutOfBoundsException("index = " + index + ", used = " + used);
+
 	buffer[index]=ch;
 }
 
-public synchronized void setLength(int newLength) {
+public synchronized void setLength (int newLength) {
 	if (newLength < 0) {
 		throw new StringIndexOutOfBoundsException();
 	}
@@ -233,8 +272,12 @@ public synchronized void setLength(int newLength) {
 			char oldBuffer[] = buffer;
 			buffer = new char[newLength];
 			System.arraycopy(oldBuffer, 0, buffer, 0, used);
+			isStringized = false;
 		}
 		else {
+			if ( isStringized )
+				deStringize();
+
 			/* Pad buffer */
 			for (int pos = used; pos < newLength; pos++) {
 				buffer[pos] = (char) 0;
@@ -245,6 +288,7 @@ public synchronized void setLength(int newLength) {
 }
 
 public String toString() {
+	// String ctor will be responsible for to set us isStringized
 	return new String(this);
 }
 }
