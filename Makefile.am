@@ -32,6 +32,7 @@ EXTRA_DIST = \
 	FAQ/FAQ.hotjava \
 	FAQ/FAQ.install-root \
 	FAQ/FAQ.jsignal \
+	FAQ/FAQ.kjc \
 	FAQ/FAQ.libffi \
 	FAQ/FAQ.libtool \
 	FAQ/FAQ.linux \
