@@ -59,9 +59,9 @@ public int flush ( byte[] to, int tpos, int tlen ) {
 		return 0;
 	}
 	else {
-		int n = convert( buf, 0, blen, to, tpos, tlen);
-		blen -= n;
-		return n;
+		int oblen = blen;
+		blen = 0;
+		return (convert( buf, 0, oblen, to, tpos, tlen));
 	}
 }
 

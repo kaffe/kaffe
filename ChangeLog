@@ -1,3 +1,9 @@
+1999-06-01  Edouard Parmelan <Edouard.Parmelan@quadratec.fr>
+
+	* libraries/javalib/kaffe/io/CharToByteConverter.java: Avoid
+	out-of-memory error in kiev and pizzadoc.
+	* libraries/javalib/Klasses.jar: Rebuilt.
+
 1999-05-29  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/clib/native/System.c (Java_java_lang_System_setErr0):
