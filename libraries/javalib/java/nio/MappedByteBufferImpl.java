@@ -54,7 +54,7 @@ final class MappedByteBufferImpl extends MappedByteBuffer
    * Win32 uses it for the pointer returned by CreateFileMapping. */
   public long implLen;
   
-  public MappedByteBufferImpl (RawData address, int size, boolean readOnly)
+  public MappedByteBufferImpl(RawData address, int size, boolean readOnly)
     throws IOException
   {
     super(size, size, 0, -1);
@@ -62,97 +62,106 @@ final class MappedByteBufferImpl extends MappedByteBuffer
     this.readOnly = readOnly;
   }
 
-  public boolean isReadOnly ()
+  public boolean isReadOnly()
   {
     return readOnly;
   }
   
-  public byte get ()
+  public byte get()
   {
     checkForUnderflow();
 
     int pos = position();
-    byte result = DirectByteBufferImpl.getImpl(address, pos);
-    position (pos + 1);
+    byte result = VMDirectByteBuffer.get(address, pos);
+    position(pos + 1);
     return result;
   }
 
-  public ByteBuffer put (byte value)
+  public ByteBuffer put(byte value)
   {
     checkIfReadOnly();
     checkForOverflow();
 
     int pos = position();
-    DirectByteBufferImpl.putImpl(address, pos, value);
+    VMDirectByteBuffer.put(address, pos, value);
     position(pos + 1);
     return this;
   }
 
-  public byte get (int index)
+  public byte get(int index)
   {
     checkIndex(index);
 
-    return DirectByteBufferImpl.getImpl(address, index);
+    return VMDirectByteBuffer.get(address, index);
   }
 
-  public ByteBuffer get (byte[] dst, int offset, int length)
+  public ByteBuffer get(byte[] dst, int offset, int length)
   {
     checkArraySize(dst.length, offset, length);
     checkForUnderflow(length);
 
     int index = position();
-    DirectByteBufferImpl.getImpl(address, index, dst, offset, length);
+    VMDirectByteBuffer.get(address, index, dst, offset, length);
     position(index+length);
 
     return this;
   }
 
-  public ByteBuffer put (int index, byte value)
+  public ByteBuffer put(int index, byte value)
   {
     checkIfReadOnly();
     checkIndex(index);
 
-    DirectByteBufferImpl.putImpl(address, index, value);
+    VMDirectByteBuffer.put(address, index, value);
     return this;
   }
 
-  public ByteBuffer compact ()
+  public ByteBuffer compact()
   {
     int pos = position();
     if (pos > 0)
       {
 	int count = remaining();
 	// Call shiftDown method optimized for direct buffers.
-	DirectByteBufferImpl.shiftDown(address, 0, pos, count);
+	VMDirectByteBuffer.shiftDown(address, 0, pos, count);
 	position(count);
 	limit(capacity());
       }
     return this;
   }
 
-  public boolean isDirect ()
+  public boolean isDirect()
   {
     return true;
   }
 
-  public ByteBuffer slice ()
+  public ByteBuffer slice()
   {
     int rem = remaining();
-    return new DirectByteBufferImpl (this,
-				     DirectByteBufferImpl
-				     .adjustAddress(address, position()),
-				     rem, rem, 0, isReadOnly ());
+    if (isReadOnly())
+        return new DirectByteBufferImpl.ReadOnly
+      (this, VMDirectByteBuffer.adjustAddress(address, position()),
+       rem, rem, 0);
+    else
+        return new DirectByteBufferImpl.ReadWrite
+      (this, VMDirectByteBuffer.adjustAddress(address, position()),
+       rem, rem, 0);
   }
 
-  private ByteBuffer duplicate (boolean readOnly)
+  private ByteBuffer duplicate(boolean readOnly)
   {
     int pos = position();
     reset();
     int mark = position();
     position(pos);
-    DirectByteBufferImpl result
-      = new DirectByteBufferImpl (this, address, capacity (), limit (),
-				  pos, readOnly);
+    DirectByteBufferImpl result;
+    if (readOnly)
+        result = new DirectByteBufferImpl.ReadOnly(this, address, capacity(),
+                                                   limit(), pos);
+    else
+        result = new DirectByteBufferImpl.ReadWrite(this, address, capacity(),
+                                                    limit(), pos);
+
     if (mark != pos)
       {
 	result.position(mark);
@@ -162,182 +171,182 @@ final class MappedByteBufferImpl extends MappedByteBuffer
     return result;
   }
 
-  public ByteBuffer duplicate ()
+  public ByteBuffer duplicate()
   {
     return duplicate(isReadOnly());
   }
 
-  public ByteBuffer asReadOnlyBuffer ()
+  public ByteBuffer asReadOnlyBuffer()
   {
     return duplicate(true);
   }
 
-  public CharBuffer asCharBuffer ()
+  public CharBuffer asCharBuffer()
   {
-    return new CharViewBufferImpl (this, remaining() >> 1);
+    return new CharViewBufferImpl(this, remaining() >> 1);
   }
 
-  public ShortBuffer asShortBuffer ()
+  public ShortBuffer asShortBuffer()
   {
-    return new ShortViewBufferImpl (this, remaining() >> 1);
+    return new ShortViewBufferImpl(this, remaining() >> 1);
   }
 
-  public IntBuffer asIntBuffer ()
+  public IntBuffer asIntBuffer()
   {
-    return new IntViewBufferImpl (this, remaining() >> 2);
+    return new IntViewBufferImpl(this, remaining() >> 2);
   }
 
-  public LongBuffer asLongBuffer ()
+  public LongBuffer asLongBuffer()
   {
-    return new LongViewBufferImpl (this, remaining() >> 3);
+    return new LongViewBufferImpl(this, remaining() >> 3);
   }
 
-  public FloatBuffer asFloatBuffer ()
+  public FloatBuffer asFloatBuffer()
   {
-    return new FloatViewBufferImpl (this, remaining() >> 2);
+    return new FloatViewBufferImpl(this, remaining() >> 2);
   }
 
-  public DoubleBuffer asDoubleBuffer ()
+  public DoubleBuffer asDoubleBuffer()
   {
-    return new DoubleViewBufferImpl (this, remaining() >> 3);
+    return new DoubleViewBufferImpl(this, remaining() >> 3);
   }
 
-  public char getChar ()
+  public char getChar()
   {
     return ByteBufferHelper.getChar(this, order());
   }
   
-  public ByteBuffer putChar (char value)
+  public ByteBuffer putChar(char value)
   {
     ByteBufferHelper.putChar(this, value, order());
     return this;
   }
   
-  public char getChar (int index)
+  public char getChar(int index)
   {
     return ByteBufferHelper.getChar(this, index, order());
   }
   
-  public ByteBuffer putChar (int index, char value)
+  public ByteBuffer putChar(int index, char value)
   {
     ByteBufferHelper.putChar(this, index, value, order());
     return this;
   }
 
-  public short getShort ()
+  public short getShort()
   {
     return ByteBufferHelper.getShort(this, order());
   }
   
-  public ByteBuffer putShort (short value)
+  public ByteBuffer putShort(short value)
   {
     ByteBufferHelper.putShort(this, value, order());
     return this;
   }
   
-  public short getShort (int index)
+  public short getShort(int index)
   {
     return ByteBufferHelper.getShort(this, index, order());
   }
   
-  public ByteBuffer putShort (int index, short value)
+  public ByteBuffer putShort(int index, short value)
   {
     ByteBufferHelper.putShort(this, index, value, order());
     return this;
   }
 
-  public int getInt ()
+  public int getInt()
   {
     return ByteBufferHelper.getInt(this, order());
   }
   
-  public ByteBuffer putInt (int value)
+  public ByteBuffer putInt(int value)
   {
     ByteBufferHelper.putInt(this, value, order());
     return this;
   }
   
-  public int getInt (int index)
+  public int getInt(int index)
   {
     return ByteBufferHelper.getInt(this, index, order());
   }
   
-  public ByteBuffer putInt (int index, int value)
+  public ByteBuffer putInt(int index, int value)
   {
     ByteBufferHelper.putInt(this, index, value, order());
     return this;
   }
 
-  public long getLong ()
+  public long getLong()
   {
     return ByteBufferHelper.getLong(this, order());
   }
   
-  public ByteBuffer putLong (long value)
+  public ByteBuffer putLong(long value)
   {
-    ByteBufferHelper.putLong (this, value, order());
+    ByteBufferHelper.putLong(this, value, order());
     return this;
   }
   
-  public long getLong (int index)
+  public long getLong(int index)
   {
-    return ByteBufferHelper.getLong (this, index, order());
+    return ByteBufferHelper.getLong(this, index, order());
   }
   
-  public ByteBuffer putLong (int index, long value)
+  public ByteBuffer putLong(int index, long value)
   {
-    ByteBufferHelper.putLong (this, index, value, order());
-    return this;
-  }
-
-  public float getFloat ()
-  {
-    return ByteBufferHelper.getFloat (this, order());
-  }
-  
-  public ByteBuffer putFloat (float value)
-  {
-    ByteBufferHelper.putFloat (this, value, order());
-    return this;
-  }
-  
-  public float getFloat (int index)
-  {
-    return ByteBufferHelper.getFloat (this, index, order());
-  }
-
-  public ByteBuffer putFloat (int index, float value)
-  {
-    ByteBufferHelper.putFloat (this, index, value, order());
+    ByteBufferHelper.putLong(this, index, value, order());
     return this;
   }
 
-  public double getDouble ()
+  public float getFloat()
   {
-    return ByteBufferHelper.getDouble (this, order());
+    return ByteBufferHelper.getFloat(this, order());
   }
-
-  public ByteBuffer putDouble (double value)
+  
+  public ByteBuffer putFloat(float value)
   {
-    ByteBufferHelper.putDouble (this, value, order());
+    ByteBufferHelper.putFloat(this, value, order());
     return this;
   }
   
-  public double getDouble (int index)
+  public float getFloat(int index)
   {
-    return ByteBufferHelper.getDouble (this, index, order());
+    return ByteBufferHelper.getFloat(this, index, order());
+  }
+
+  public ByteBuffer putFloat(int index, float value)
+  {
+    ByteBufferHelper.putFloat(this, index, value, order());
+    return this;
+  }
+
+  public double getDouble()
+  {
+    return ByteBufferHelper.getDouble(this, order());
+  }
+
+  public ByteBuffer putDouble(double value)
+  {
+    ByteBufferHelper.putDouble(this, value, order());
+    return this;
   }
   
-  public ByteBuffer putDouble (int index, double value)
+  public double getDouble(int index)
   {
-    ByteBufferHelper.putDouble (this, index, value, order());
+    return ByteBufferHelper.getDouble(this, index, order());
+  }
+  
+  public ByteBuffer putDouble(int index, double value)
+  {
+    ByteBufferHelper.putDouble(this, index, value, order());
     return this;
   }
 
   // NOTE: In libgcj these methods are implemented in natFileChannelXxx.cc,
   // because they're small, and to put them next to FileChannelImpl::mapImpl.
-  native void unmapImpl ();
-  native boolean isLoadedImpl ();
+  native void unmapImpl();
+  native boolean isLoadedImpl();
     // FIXME: Try to load all pages into memory.
   native void loadImpl();
 

@@ -454,7 +454,7 @@ constValueToString(Hjava_lang_Class* this, u2 idx,
 		sprintf(cval, "%.7e", *(float*)&CLASS_CONST_DATA(this,idx));
 		break;
 	case CONSTANT_Long:
-#if SIZEOF_VOIDP == 8
+#if SIZEOF_VOID_P == 8
 		sprintf(cval, "0x%016lx", CLASS_CONST_DATA(this,idx));
 #else
 #if defined(WORDS_BIGENDIAN)

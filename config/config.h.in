@@ -778,8 +778,8 @@
 /* The size of a `short', as computed by sizeof. */
 #undef SIZEOF_SHORT
 
-/* The size of a `void*', as computed by sizeof. */
-#undef SIZEOF_VOIDP
+/* The size of a `void *', as computed by sizeof. */
+#undef SIZEOF_VOID_P
 
 /* The size of a `__int64', as computed by sizeof. */
 #undef SIZEOF___INT64

@@ -13,6 +13,8 @@ com/jcraft/jzlib/ZStream.java
 com/jcraft/jzlib/ZStreamException.java
 gnu/classpath/Configuration.java
 gnu/classpath/RawData.java
+gnu/classpath/RawData32.java
+gnu/classpath/RawData64.java
 gnu/classpath/ServiceFactory.java
 gnu/classpath/ServiceProviderLoadingAction.java
 gnu/crypto/Properties.java
@@ -1819,6 +1821,7 @@ java/nio/ReadOnlyBufferException.java
 java/nio/ShortBuffer.java
 java/nio/ShortBufferImpl.java
 java/nio/ShortViewBufferImpl.java
+java/nio/VMDirectByteBuffer.java
 java/nio/channels/AlreadyConnectedException.java
 java/nio/channels/AsynchronousCloseException.java
 java/nio/channels/ByteChannel.java

@@ -1,5 +1,5 @@
-/* RawData.java -- Pointer to VM specific data
-   Copyright (C) 1999, 2000, 2004  Free Software Foundation
+/* jcl.h
+   Copyright (C) 1998 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -7,7 +7,7 @@ GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
-
+ 
 GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -35,13 +35,34 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-/* This file is originally part of libgcj. */
+#ifndef __JCL_H__
+#define __JCL_H__
 
-package gnu.classpath;
+#include <stddef.h>
+#include <jni.h>
+#include <config.h>
 
-/** A type used to indicate special data used by native code that should not 
-    be marked by the garbage collector. */
+JNIEXPORT jclass JNICALL JCL_FindClass (JNIEnv * env, const char *className);
+JNIEXPORT void JNICALL JCL_ThrowException (JNIEnv * env,
+					   const char *className,
+					   const char *errMsg);
+JNIEXPORT void *JNICALL JCL_malloc (JNIEnv * env, size_t size);
+JNIEXPORT void *JNICALL JCL_realloc (JNIEnv * env, void *ptr, size_t size);
+JNIEXPORT void JNICALL JCL_free (JNIEnv * env, void *p);
+JNIEXPORT const char *JNICALL JCL_jstring_to_cstring (JNIEnv * env,
+						      jstring s);
+JNIEXPORT void JNICALL JCL_free_cstring (JNIEnv * env, jstring s, 
+					 const char *cstr);
+JNIEXPORT jint JNICALL JCL_MonitorEnter (JNIEnv * env, jobject o);
+JNIEXPORT jint JNICALL JCL_MonitorExit (JNIEnv * env, jobject o);
 
-public abstract class RawData
-{
-}
+#define JCL_RETHROW_EXCEPTION(env) if((*(env))->ExceptionOccurred((env)) != NULL) return NULL;
+
+/* Simple debug macro */
+#ifdef DEBUG
+#define DBG(x) fprintf(stderr, (x));
+#else
+#define DBG(x)
+#endif
+
+#endif

@@ -350,8 +350,8 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-SUBDIRS = native io nio net zip math security management
-DIST_SUBDIRS = native io nio net zip math libxmlj security management awt sound
+SUBDIRS = classpath native io nio net zip math security management
+DIST_SUBDIRS = classpath native io nio net zip math libxmlj security management awt sound
 all: all-recursive
 
 .SUFFIXES:

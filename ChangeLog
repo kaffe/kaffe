@@ -1,5 +1,111 @@
 2004-11-29  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac:
+	Moved classpath library up to clib.
+
+	* include/Makefile.am:
+	Adapted for java_nio_VMDirectByteBuffer.java.
+
+	* include/kaffe/jni_md.h.in,
+	kaffe/kaffeh/support.c,
+	kaffe/kaffevm/classMethod.h,
+	kaffe/kaffevm/constants.c,
+	kaffe/kaffevm/gtypes.h,
+	kaffe/xprof/memorySamples.c:
+	Replaced SIZE_OF_VOIDP with SIZEOF_VOID_P.
+
+	* libraries/clib/Makefile.am:
+	Added classpath subdir.
+
+	* libraries/clib/awt/classpath-gtk/Makefile.am:
+	Removed classpath subdir.
+
+	* libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.am:
+	Link to classpath library.
+
+	* libraries/clib/classpath/.cvsignore,
+	libraries/clib/classpath/Makefile.am,
+	libraries/clib/classpath/Makefile.in,
+	libraries/clib/classpath/jcl.c,
+	libraries/clib/classpath/jcl.h,
+	libraries/clib/classpath/jnilink.c,
+	libraries/clib/classpath/jnilink.h,
+	libraries/clib/classpath/native_state.c,
+	libraries/clib/classpath/native_state.h,
+	libraries/clib/classpath/primlib.c,
+	libraries/clib/classpath/primlib.h:
+	Moved over from libraries/clib/awt/classpath-gtk.
+
+	* libraries/clib/nio/Makefile.am:
+	Added java_nio_VMDirectByteBuffer.c.
+
+	* configure,
+	config/config.h.in,
+	include/Makefile.in,
+	libraries/clib/Makefile.in,
+	libraries/clib/awt/classpath-gtk/Makefile.in,
+	libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.in,
+	libraries/clib/nio/Makefile.in,
+	libraries/javalib/Klasses.jar.bootstrap,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files,
+	libraries/javalib/bootstrap.classlist:
+	Regenerated.
+
+	* libraries/clib/nio/java_nio_VMDirectByteBuffer.c,
+	libraries/javalib/gnu/classpath/RawData.java,
+	libraries/javalib/gnu/classpath/RawData32.java,
+	libraries/javalib/gnu/classpath/RawData64.java,
+	libraries/javalib/java/nio/DirectByteBufferImpl.java,
+	libraries/javalib/java/nio/MappedByteBufferImpl.java,
+	libraries/javalib/java/nio/VMDirectByteBuffer.java:
+	Resynced with GNU Classpath.
+
+	2004-11-21  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/nio/DirectByteBufferImpl.java
+        (ReadOnly): New inner subclass.
+        (ReadWrite): New inner subclass.
+        (owner): Made final and private.
+        (address): Made final.
+        (DirectByteBufferImpl(int)): New constructor.
+        (DirectByteBufferImpl(Object,RawData,int,int,int)): New constructor.
+        (DirectByteBufferImpl(Object,RawData,int,int,int,boolean)): Removed.
+        (allocate): Modified to instantiate ReadWrite subclass.
+        (finalize): Fixed to only free the buffer, if we own it.
+        (put): Removed read-only check.
+        (slice, duplicate): Modified to instantiate appropriate subclass.
+        (isReadOnly): Removed.
+        * java/nio/MappedByteBufferImpl.java
+        (slice, duplicate): Modified to instantiate appropriate
+        DirectByteBufferImpl subclass.
+
+	2004-11-21  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/classpath/RawData.java: Made abstract.
+        * gnu/classpath/RawData32.java,
+        gnu/classpath/RawData64.java: New files.
+        * include/Makefile.am:
+        Don't generate java_nio_DirectByteBufferImpl.h anymore
+        and generate java_nio_VMDirectByteBuffer.h now.
+        * java/nio/DirectByteBufferImpl.java:
+        Moved native methods to VMDirectByteBuffer.
+        * java/nio/MappedByteBufferImpl.java:
+        Use methods from VMDirectBteBuffer.
+        * native/jni/java-nio/Makefile.am:
+        Removed java_nio_DirectByteBufferImpl.c
+        and added java_nio_VMDirectByteBuffer.c
+        * include/java_nio_DirectByteBufferImpl.h,
+        native/jni/java-nio/java_nio_DirectByteBufferImpl.c:
+        Removed.
+        * include/java_nio_VMDirectByteBuffer.h,
+        * native/jni/java-nio/java_nio_VMDirectByteBuffer.c,
+        * vm/reference/java/nio/VMDirectByteBuffer.java:
+        New files.
+
+2004-11-29  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/BorderFactory.java,
 	libraries/javalib/javax/swing/SwingUtilities.java:
         Resynced with GNU Classpath.

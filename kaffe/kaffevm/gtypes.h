@@ -92,9 +92,9 @@ typedef	unsigned __int64	uint64;
 #error "sizeof(long) or sizeof(long long) or sizeof(__int64) must be 8"
 #endif
 
-#if SIZEOF_VOIDP == 4
+#if SIZEOF_VOID_P == 4
 typedef uint32			uintp;
-#elif SIZEOF_VOIDP == 8
+#elif SIZEOF_VOID_P == 8
 typedef uint64			uintp;
 #else
 #error "sizeof(void*) must be 4 or 8"
@@ -126,7 +126,7 @@ typedef struct _methods Method;
 typedef struct _strconst Utf8Const;
 #endif
 
-#define PTR_TYPE_SIZE	SIZEOF_VOIDP
+#define PTR_TYPE_SIZE	SIZEOF_VOID_P
 
 struct _constants;
 struct _methodTable;
@@ -147,9 +147,9 @@ struct _strconst {
 #define	SHIFT_jlong		3
 #define	SHIFT_jfloat		2
 #define	SHIFT_jdouble		3
-#if SIZEOF_VOIDP == 4
+#if SIZEOF_VOID_P == 4
 #define	SHIFT_jref		2
-#elif SIZEOF_VOIDP == 8
+#elif SIZEOF_VOID_P == 8
 #define	SHIFT_jref		3
 #endif
 

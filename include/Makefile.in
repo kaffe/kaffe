@@ -459,7 +459,7 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	gnu_java_nio_NIOServerSocket.h \
 	gnu_java_nio_SelectorImpl.h \
 	java_nio_channels_Channels.h \
-	java_nio_DirectByteBufferImpl.h \
+	java_nio_VMDirectByteBuffer.h \
 	java_nio_MappedByteBufferImpl.h \
 	kaffe_io_ByteToCharDefault.h \
 	kaffe_io_ByteToCharIconv.h \

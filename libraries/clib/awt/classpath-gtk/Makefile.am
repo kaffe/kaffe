@@ -6,4 +6,4 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = classpath gtk-peer resource
+SUBDIRS = gtk-peer resource

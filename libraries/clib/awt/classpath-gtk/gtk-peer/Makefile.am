@@ -60,11 +60,14 @@ libgtkpeer_la_CPPFLAGS = \
 	@GTK_CFLAGS@ \
 	@CAIRO_CFLAGS@ \
 	@PANGOFT2_CFLAGS@ \
-	-I$(top_srcdir)/libraries/clib/awt/classpath-gtk/classpath/ \
+	-I$(top_srcdir)/libraries/clib/classpath/ \
 	-I$(top_builddir)/include/
 
+libgtkpeer_la_DEPENDENCIES = \
+	$(top_builddir)/libraries/clib/classpath/libclasspath.la
+
 libgtkpeer_la_LIBADD = \
-	$(top_builddir)/libraries/clib/awt/classpath-gtk/classpath/native_state.lo
+	$(libgtkpeer_la_DEPENDENCIES)
 
 libgtkpeer_la_LDFLAGS = \
 	@CLASSPATH_MODULE@ \

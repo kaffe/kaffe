@@ -362,7 +362,7 @@ java/nio/channels/spi/AbstractInterruptibleChannel.class
 java/nio/channels/spi/AbstractSelector.class
 java/nio/channels/Selector.class
 java/nio/channels/Channels.class
-java/nio/DirectByteBufferImpl.class
+java/nio/VMDirectByteBuffer.class
 java/nio/ByteBuffer.class
 java/nio/Buffer.class
 java/io/VMObjectStreamClass.class

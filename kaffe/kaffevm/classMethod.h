@@ -455,7 +455,7 @@ struct classFile;
 #define CLASS_CONST_DATA(CL, IDX) ((CL)->constants.data[IDX])
 #define CLASS_CONST_UTF8(CL, IDX) WORD2UTF(CLASS_CONST_DATA(CL, IDX))
 #define CLASS_CONST_INT(CL, IDX) ((int32) CLASS_CONST_DATA(CL, IDX))
-#if SIZEOF_VOIDP == 8
+#if SIZEOF_VOID_P == 8
 #define CLASS_CONST_LONG(CL, IDX) \
   ((uint64) CLASS_CONST_DATA(CL, IDX))
 #else

@@ -81,8 +81,9 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
-libnio_la_LIBADD =
-am_libnio_la_OBJECTS = libnio_la-DirectByteBufferImpl.lo \
+am__DEPENDENCIES_1 =  \
+	$(top_builddir)/libraries/clib/classpath/libclasspath.la
+am_libnio_la_OBJECTS = libnio_la-java_nio_VMDirectByteBuffer.lo \
 	libnio_la-SelectorImpl.lo libnio_la-NIOServerSocket.lo \
 	libnio_la-FileChannelImpl.lo libnio_la-Channels.lo
 libnio_la_OBJECTS = $(am_libnio_la_OBJECTS)
@@ -367,7 +368,11 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-AM_CPPFLAGS = -I$(top_builddir)/include -I$(top_srcdir)/kaffe/kaffevm/jni
+AM_CPPFLAGS = \
+	-I$(top_builddir)/include \
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
+	-I$(top_srcdir)/libraries/clib/classpath
+
 native_LTLIBRARIES = libnio.la
 libnio_la_CFLAGS = \
 	$(CFLAGS_PG)
@@ -379,11 +384,17 @@ libnio_la_LDFLAGS = \
 	-export-symbols-regex "^([Jj]ava|kaffe|gnu)_"
 
 libnio_la_SOURCES = \
-	DirectByteBufferImpl.c \
+	java_nio_VMDirectByteBuffer.c \
 	SelectorImpl.c \
 	NIOServerSocket.c \
 	FileChannelImpl.c \
 	Channels.c
+
+libnio_la_DEPENDENCIES = \
+        $(top_builddir)/libraries/clib/classpath/libclasspath.la
+
+libnio_la_LIBADD = \
+	$(libnio_la_DEPENDENCIES)
 
 CLEANFILES = so_locations
 all: all-am
@@ -456,10 +467,10 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnio_la-Channels.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnio_la-DirectByteBufferImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnio_la-FileChannelImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnio_la-NIOServerSocket.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnio_la-SelectorImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnio_la-java_nio_VMDirectByteBuffer.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -482,12 +493,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-libnio_la-DirectByteBufferImpl.lo: DirectByteBufferImpl.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnio_la_CFLAGS) $(CFLAGS) -MT libnio_la-DirectByteBufferImpl.lo -MD -MP -MF "$(DEPDIR)/libnio_la-DirectByteBufferImpl.Tpo" -c -o libnio_la-DirectByteBufferImpl.lo `test -f 'DirectByteBufferImpl.c' || echo '$(srcdir)/'`DirectByteBufferImpl.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnio_la-DirectByteBufferImpl.Tpo" "$(DEPDIR)/libnio_la-DirectByteBufferImpl.Plo"; else rm -f "$(DEPDIR)/libnio_la-DirectByteBufferImpl.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='DirectByteBufferImpl.c' object='libnio_la-DirectByteBufferImpl.lo' libtool=yes @AMDEPBACKSLASH@
+libnio_la-java_nio_VMDirectByteBuffer.lo: java_nio_VMDirectByteBuffer.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnio_la_CFLAGS) $(CFLAGS) -MT libnio_la-java_nio_VMDirectByteBuffer.lo -MD -MP -MF "$(DEPDIR)/libnio_la-java_nio_VMDirectByteBuffer.Tpo" -c -o libnio_la-java_nio_VMDirectByteBuffer.lo `test -f 'java_nio_VMDirectByteBuffer.c' || echo '$(srcdir)/'`java_nio_VMDirectByteBuffer.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnio_la-java_nio_VMDirectByteBuffer.Tpo" "$(DEPDIR)/libnio_la-java_nio_VMDirectByteBuffer.Plo"; else rm -f "$(DEPDIR)/libnio_la-java_nio_VMDirectByteBuffer.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='java_nio_VMDirectByteBuffer.c' object='libnio_la-java_nio_VMDirectByteBuffer.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnio_la_CFLAGS) $(CFLAGS) -c -o libnio_la-DirectByteBufferImpl.lo `test -f 'DirectByteBufferImpl.c' || echo '$(srcdir)/'`DirectByteBufferImpl.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnio_la_CFLAGS) $(CFLAGS) -c -o libnio_la-java_nio_VMDirectByteBuffer.lo `test -f 'java_nio_VMDirectByteBuffer.c' || echo '$(srcdir)/'`java_nio_VMDirectByteBuffer.c
 
 libnio_la-SelectorImpl.lo: SelectorImpl.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnio_la_CFLAGS) $(CFLAGS) -MT libnio_la-SelectorImpl.lo -MD -MP -MF "$(DEPDIR)/libnio_la-SelectorImpl.Tpo" -c -o libnio_la-SelectorImpl.lo `test -f 'SelectorImpl.c' || echo '$(srcdir)/'`SelectorImpl.c; \

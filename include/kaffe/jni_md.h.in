@@ -18,7 +18,7 @@
 #undef	SIZEOF_LONG
 #undef	SIZEOF_LONG_LONG
 #undef	SIZEOF___INT64
-#undef	SIZEOF_VOIDP
+#undef	SIZEOF_VOID_P
 
 typedef float		jfloat;
 typedef double		jdouble;
@@ -55,9 +55,9 @@ typedef	jbyte		jbool;		/* Must deprecate */
 typedef	jbyte		jboolean;
 
 /* An integer type big enough for a pointer or a 32-bit int/float. */
-#if SIZEOF_VOIDP <= SIZEOF_INT
+#if SIZEOF_VOID_P <= SIZEOF_INT
 typedef jint		jword;
-#elif SIZEOF_VOIDP <= SIZEOF_LONG
+#elif SIZEOF_VOID_P <= SIZEOF_LONG
 typedef jlong		jword;
 #else
 #error "both sizeof(int) and sizeof(long) < sizeof(void*)"

@@ -1,4 +1,4 @@
-/* DirectByteBufferImpl.java --
+/* DirectByteBufferImpl.java -- 
    Copyright (C) 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -38,339 +38,375 @@ exception statement from your version. */
 
 package java.nio;
 
-import gnu.classpath.Configuration;
 import gnu.classpath.RawData;
 
-final class DirectByteBufferImpl extends ByteBuffer
+abstract class DirectByteBufferImpl extends ByteBuffer
 {
-  static
+  /** The owner is used to keep alive the object that actually owns the
+    * memory. There are three possibilities:
+    *  1) owner == this: We allocated the memory and we should free it,
+    *                    but *only* in finalize (if we've been sliced
+    *                    other objects will also have access to the
+    *                    memory).
+    *  2) owner == null: The byte buffer was created thru
+    *                    JNI.NewDirectByteBuffer. The JNI code is
+    *                    responsible for freeing the memory.
+    *  3) owner == some other object: The other object allocated the
+    *                                 memory and should free it.
+    */
+  private final Object owner;
+  final RawData address;
+
+  final static class ReadOnly extends DirectByteBufferImpl
   {
-    // load the shared library needed for native methods.
-    if (Configuration.INIT_LOAD_LIBRARY)
-      {
-        System.loadLibrary ("nio");
-      }
+    ReadOnly(Object owner, RawData address,
+	     int capacity, int limit,
+	     int position)
+    {
+      super(owner, address, capacity, limit, position);
+    }
+
+    public ByteBuffer put(byte value)
+    {
+      throw new ReadOnlyBufferException ();
+    }
+
+    public ByteBuffer put(int index, byte value)
+    {
+      throw new ReadOnlyBufferException ();
+    }
+
+    public boolean isReadOnly()
+    {
+      return true;
+    }
   }
 
-  /** Used by MappedByteBufferImpl and when slicing to prevent premature GC. */
-  protected Object owner;
-
-  RawData address;
-  private boolean readOnly;
-
-  public DirectByteBufferImpl (RawData address, long len)
+  final static class ReadWrite extends DirectByteBufferImpl
   {
-    this (null, address, (int) len, (int) len, 0, false);
+    ReadWrite(int capacity)
+    {
+      super(capacity);
+    }
+
+    ReadWrite(Object owner, RawData address,
+	      int capacity, int limit,
+	      int position)
+    {
+      super(owner, address, capacity, limit, position);
+    }
+
+    public boolean isReadOnly()
+    {
+      return false;
+    }
   }
 
-  public DirectByteBufferImpl (Object owner, RawData address,
-                               int capacity, int limit,
-                               int position, boolean readOnly)
+  DirectByteBufferImpl(int capacity)
   {
-    super (capacity, limit, position, -1);
-    this.address = address;
-    this.readOnly = readOnly;
+    super(capacity, capacity, 0, -1);
+    this.owner = this;
+    this.address = VMDirectByteBuffer.allocate(capacity);
+  }
+
+  DirectByteBufferImpl(Object owner, RawData address,
+		       int capacity, int limit,
+		       int position)
+  {
+    super(capacity, limit, position, -1);
     this.owner = owner;
+    this.address = address;
   }
 
   /**
    * Allocates a new direct byte buffer.
-   */
+   */ 
   public static ByteBuffer allocate(int capacity)
   {
-    return new DirectByteBufferImpl(allocateImpl(capacity), capacity);
+    return new DirectByteBufferImpl.ReadWrite(capacity);
   }
 
-  private static native RawData allocateImpl (int capacity);
-  private static native void freeImpl (RawData address);
-
-  protected void finalize () throws Throwable
+  protected void finalize() throws Throwable
   {
-    freeImpl (address);
+    if (owner == this)
+        VMDirectByteBuffer.free(address);
   }
-
-  static native byte getImpl (RawData address, int index);
-  static native void putImpl (RawData address, int index, byte value);
-
-  public byte get ()
+  
+  public byte get()
   {
     checkForUnderflow();
 
     int pos = position();
-    byte result = getImpl (address, pos);
-    position (pos + 1);
+    byte result = VMDirectByteBuffer.get(address, pos);
+    position(pos + 1);
     return result;
   }
 
-  public byte get (int index)
+  public byte get(int index)
   {
     checkIndex(index);
 
-    return getImpl (address, index);
+    return VMDirectByteBuffer.get(address, index);
   }
 
-  static native void getImpl (RawData address, int index,
-                              byte[] dst, int offset, int length);
-
-  public ByteBuffer get (byte[] dst, int offset, int length)
+  public ByteBuffer get(byte[] dst, int offset, int length)
   {
     checkArraySize(dst.length, offset, length);
     checkForUnderflow(length);
 
     int index = position();
-    getImpl(address, index, dst, offset, length);
+    VMDirectByteBuffer.get(address, index, dst, offset, length);
     position(index+length);
 
     return this;
   }
 
-  public ByteBuffer put (byte value)
+  public ByteBuffer put(byte value)
   {
-    checkIfReadOnly();
     checkForOverflow();
 
     int pos = position();
-    putImpl (address, pos, value);
-    position (pos + 1);
+    VMDirectByteBuffer.put(address, pos, value);
+    position(pos + 1);
     return this;
   }
-
-  public ByteBuffer put (int index, byte value)
+  
+  public ByteBuffer put(int index, byte value)
   {
-    checkIfReadOnly();
     checkIndex(index);
 
-    putImpl (address, index, value);
+    VMDirectByteBuffer.put(address, index, value);
     return this;
   }
-
-  static native void shiftDown(RawData address, int dst_offset, int src_offset, int count);
-
+  
   void shiftDown(int dst_offset, int src_offset, int count)
   {
-    shiftDown(address, dst_offset, src_offset, count);
+    VMDirectByteBuffer.shiftDown(address, dst_offset, src_offset, count);
   }
-
-  public ByteBuffer compact ()
+  
+  public ByteBuffer compact()
   {
     int pos = position();
     if (pos > 0)
       {
-        int count = remaining();
-        shiftDown(address, 0, pos, count);
-        position(count);
-        limit(capacity());
+	int count = remaining();
+	VMDirectByteBuffer.shiftDown(address, 0, pos, count);
+	position(count);
+	limit(capacity());
       }
     return this;
   }
 
-  public static native RawData adjustAddress(RawData address, int offset);
-
-  public ByteBuffer slice ()
+  public ByteBuffer slice()
   {
     int rem = remaining();
-    return new DirectByteBufferImpl (owner,
-                                     adjustAddress(address, position()),
-                                     rem, rem, 0, isReadOnly ());
+    if (isReadOnly())
+        return new DirectByteBufferImpl.ReadOnly
+      (owner, VMDirectByteBuffer.adjustAddress(address, position()),
+       rem, rem, 0);
+    else
+        return new DirectByteBufferImpl.ReadWrite
+      (owner, VMDirectByteBuffer.adjustAddress(address, position()),
+       rem, rem, 0);
   }
 
-  private ByteBuffer duplicate (boolean readOnly)
+  private ByteBuffer duplicate(boolean readOnly)
   {
     int pos = position();
     reset();
     int mark = position();
     position(pos);
-    DirectByteBufferImpl result
-      = new DirectByteBufferImpl (owner, address, capacity (), limit (),
-                                  pos, readOnly);
+    DirectByteBufferImpl result;
+    if (readOnly)
+        result = new DirectByteBufferImpl.ReadOnly(owner, address, capacity(),
+                                                   limit(), pos);
+    else
+        result = new DirectByteBufferImpl.ReadWrite(owner, address, capacity(),
+                                                    limit(), pos);
+
     if (mark != pos)
       {
-        result.position(mark);
-        result.mark();
-        result.position(pos);
+	result.position(mark);
+	result.mark();
+	result.position(pos);
       }
     return result;
   }
 
-  public ByteBuffer duplicate ()
+  public ByteBuffer duplicate()
   {
     return duplicate(isReadOnly());
   }
 
-  public ByteBuffer asReadOnlyBuffer ()
+  public ByteBuffer asReadOnlyBuffer()
   {
     return duplicate(true);
   }
 
-  public boolean isReadOnly ()
-  {
-    return readOnly;
-  }
-
-  public boolean isDirect ()
+  public boolean isDirect()
   {
     return true;
   }
 
-  public CharBuffer asCharBuffer ()
+  public CharBuffer asCharBuffer()
   {
-    return new CharViewBufferImpl (this, remaining() >> 1);
+    return new CharViewBufferImpl(this, remaining() >> 1);
   }
 
-  public ShortBuffer asShortBuffer ()
+  public ShortBuffer asShortBuffer()
   {
-    return new ShortViewBufferImpl (this, remaining() >> 1);
+    return new ShortViewBufferImpl(this, remaining() >> 1);
   }
 
-  public IntBuffer asIntBuffer ()
+  public IntBuffer asIntBuffer()
   {
-    return new IntViewBufferImpl (this, remaining() >> 2);
+    return new IntViewBufferImpl(this, remaining() >> 2);
   }
 
-  public LongBuffer asLongBuffer ()
+  public LongBuffer asLongBuffer()
   {
-    return new LongViewBufferImpl (this, remaining() >> 3);
+    return new LongViewBufferImpl(this, remaining() >> 3);
   }
 
-  public FloatBuffer asFloatBuffer ()
+  public FloatBuffer asFloatBuffer()
   {
-    return new FloatViewBufferImpl (this, remaining() >> 2);
+    return new FloatViewBufferImpl(this, remaining() >> 2);
   }
 
-  public DoubleBuffer asDoubleBuffer ()
+  public DoubleBuffer asDoubleBuffer()
   {
-    return new DoubleViewBufferImpl (this, remaining() >> 3);
+    return new DoubleViewBufferImpl(this, remaining() >> 3);
   }
 
-  public char getChar ()
+  public char getChar()
   {
     return ByteBufferHelper.getChar(this, order());
   }
-
-  public ByteBuffer putChar (char value)
+  
+  public ByteBuffer putChar(char value)
   {
     ByteBufferHelper.putChar(this, value, order());
     return this;
   }
-
-  public char getChar (int index)
+  
+  public char getChar(int index)
   {
     return ByteBufferHelper.getChar(this, index, order());
   }
-
-  public ByteBuffer putChar (int index, char value)
+  
+  public ByteBuffer putChar(int index, char value)
   {
     ByteBufferHelper.putChar(this, index, value, order());
     return this;
   }
 
-  public short getShort ()
+  public short getShort()
   {
     return ByteBufferHelper.getShort(this, order());
   }
-
-  public ByteBuffer putShort (short value)
+  
+  public ByteBuffer putShort(short value)
   {
     ByteBufferHelper.putShort(this, value, order());
     return this;
   }
-
-  public short getShort (int index)
+  
+  public short getShort(int index)
   {
     return ByteBufferHelper.getShort(this, index, order());
   }
-
-  public ByteBuffer putShort (int index, short value)
+  
+  public ByteBuffer putShort(int index, short value)
   {
     ByteBufferHelper.putShort(this, index, value, order());
     return this;
   }
 
-  public int getInt ()
+  public int getInt()
   {
     return ByteBufferHelper.getInt(this, order());
   }
-
-  public ByteBuffer putInt (int value)
+  
+  public ByteBuffer putInt(int value)
   {
     ByteBufferHelper.putInt(this, value, order());
     return this;
   }
-
-  public int getInt (int index)
+  
+  public int getInt(int index)
   {
     return ByteBufferHelper.getInt(this, index, order());
   }
-
-  public ByteBuffer putInt (int index, int value)
+  
+  public ByteBuffer putInt(int index, int value)
   {
     ByteBufferHelper.putInt(this, index, value, order());
     return this;
   }
 
-  public long getLong ()
+  public long getLong()
   {
     return ByteBufferHelper.getLong(this, order());
   }
-
-  public ByteBuffer putLong (long value)
+  
+  public ByteBuffer putLong(long value)
   {
-    ByteBufferHelper.putLong (this, value, order());
+    ByteBufferHelper.putLong(this, value, order());
+    return this;
+  }
+  
+  public long getLong(int index)
+  {
+    return ByteBufferHelper.getLong(this, index, order());
+  }
+  
+  public ByteBuffer putLong(int index, long value)
+  {
+    ByteBufferHelper.putLong(this, index, value, order());
     return this;
   }
 
-  public long getLong (int index)
+  public float getFloat()
   {
-    return ByteBufferHelper.getLong (this, index, order());
+    return ByteBufferHelper.getFloat(this, order());
+  }
+  
+  public ByteBuffer putFloat(float value)
+  {
+    ByteBufferHelper.putFloat(this, value, order());
+    return this;
+  }
+  
+  public float getFloat(int index)
+  {
+    return ByteBufferHelper.getFloat(this, index, order());
   }
 
-  public ByteBuffer putLong (int index, long value)
+  public ByteBuffer putFloat(int index, float value)
   {
-    ByteBufferHelper.putLong (this, index, value, order());
+    ByteBufferHelper.putFloat(this, index, value, order());
     return this;
   }
 
-  public float getFloat ()
+  public double getDouble()
   {
-    return ByteBufferHelper.getFloat (this, order());
+    return ByteBufferHelper.getDouble(this, order());
   }
 
-  public ByteBuffer putFloat (float value)
+  public ByteBuffer putDouble(double value)
   {
-    ByteBufferHelper.putFloat (this, value, order());
+    ByteBufferHelper.putDouble(this, value, order());
     return this;
   }
-
-  public float getFloat (int index)
+  
+  public double getDouble(int index)
   {
-    return ByteBufferHelper.getFloat (this, index, order());
+    return ByteBufferHelper.getDouble(this, index, order());
   }
-
-  public ByteBuffer putFloat (int index, float value)
+  
+  public ByteBuffer putDouble(int index, double value)
   {
-    ByteBufferHelper.putFloat (this, index, value, order());
-    return this;
-  }
-
-  public double getDouble ()
-  {
-    return ByteBufferHelper.getDouble (this, order());
-  }
-
-  public ByteBuffer putDouble (double value)
-  {
-    ByteBufferHelper.putDouble (this, value, order());
-    return this;
-  }
-
-  public double getDouble (int index)
-  {
-    return ByteBufferHelper.getDouble (this, index, order());
-  }
-
-  public ByteBuffer putDouble (int index, double value)
-  {
-    ByteBufferHelper.putDouble (this, index, value, order());
+    ByteBufferHelper.putDouble(this, index, value, order());
     return this;
   }
 }

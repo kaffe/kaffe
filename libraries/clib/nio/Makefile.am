@@ -5,7 +5,11 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-AM_CPPFLAGS = -I$(top_builddir)/include -I$(top_srcdir)/kaffe/kaffevm/jni
+AM_CPPFLAGS = \
+	-I$(top_builddir)/include \
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
+	-I$(top_srcdir)/libraries/clib/classpath
+
 native_LTLIBRARIES = libnio.la
 
 libnio_la_CFLAGS = \
@@ -18,10 +22,16 @@ libnio_la_LDFLAGS = \
 	-export-symbols-regex "^([Jj]ava|kaffe|gnu)_"
 
 libnio_la_SOURCES = \
-	DirectByteBufferImpl.c \
+	java_nio_VMDirectByteBuffer.c \
 	SelectorImpl.c \
 	NIOServerSocket.c \
 	FileChannelImpl.c \
 	Channels.c
+
+libnio_la_DEPENDENCIES = \
+        $(top_builddir)/libraries/clib/classpath/libclasspath.la
+
+libnio_la_LIBADD = \
+	$(libnio_la_DEPENDENCIES)
 
 CLEANFILES = so_locations

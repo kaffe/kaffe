@@ -30477,9 +30477,9 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-echo "$as_me:$LINENO: checking for void*" >&5
-echo $ECHO_N "checking for void*... $ECHO_C" >&6
-if test "${ac_cv_type_voidp+set}" = set; then
+echo "$as_me:$LINENO: checking for void *" >&5
+echo $ECHO_N "checking for void *... $ECHO_C" >&6
+if test "${ac_cv_type_void_p+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   cat >conftest.$ac_ext <<_ACEOF
@@ -30492,9 +30492,9 @@ $ac_includes_default
 int
 main ()
 {
-if ((void* *) 0)
+if ((void * *) 0)
   return 0;
-if (sizeof (void*))
+if (sizeof (void *))
   return 0;
   ;
   return 0;
@@ -30522,24 +30522,24 @@ if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_type_voidp=yes
+  ac_cv_type_void_p=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_type_voidp=no
+ac_cv_type_void_p=no
 fi
 rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
-echo "$as_me:$LINENO: result: $ac_cv_type_voidp" >&5
-echo "${ECHO_T}$ac_cv_type_voidp" >&6
+echo "$as_me:$LINENO: result: $ac_cv_type_void_p" >&5
+echo "${ECHO_T}$ac_cv_type_void_p" >&6
 
-echo "$as_me:$LINENO: checking size of void*" >&5
-echo $ECHO_N "checking size of void*... $ECHO_C" >&6
-if test "${ac_cv_sizeof_voidp+set}" = set; then
+echo "$as_me:$LINENO: checking size of void *" >&5
+echo $ECHO_N "checking size of void *... $ECHO_C" >&6
+if test "${ac_cv_sizeof_void_p+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test "$ac_cv_type_voidp" = yes; then
+  if test "$ac_cv_type_void_p" = yes; then
   # The cast to unsigned long works around a bug in the HP C Compiler
   # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
   # declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
@@ -30556,7 +30556,7 @@ $ac_includes_default
 int
 main ()
 {
-static int test_array [1 - 2 * !(((long) (sizeof (void*))) >= 0)];
+static int test_array [1 - 2 * !(((long) (sizeof (void *))) >= 0)];
 test_array [0] = 0
 
   ;
@@ -30597,7 +30597,7 @@ $ac_includes_default
 int
 main ()
 {
-static int test_array [1 - 2 * !(((long) (sizeof (void*))) <= $ac_mid)];
+static int test_array [1 - 2 * !(((long) (sizeof (void *))) <= $ac_mid)];
 test_array [0] = 0
 
   ;
@@ -30654,7 +30654,7 @@ $ac_includes_default
 int
 main ()
 {
-static int test_array [1 - 2 * !(((long) (sizeof (void*))) < 0)];
+static int test_array [1 - 2 * !(((long) (sizeof (void *))) < 0)];
 test_array [0] = 0
 
   ;
@@ -30695,7 +30695,7 @@ $ac_includes_default
 int
 main ()
 {
-static int test_array [1 - 2 * !(((long) (sizeof (void*))) >= $ac_mid)];
+static int test_array [1 - 2 * !(((long) (sizeof (void *))) >= $ac_mid)];
 test_array [0] = 0
 
   ;
@@ -30760,7 +30760,7 @@ $ac_includes_default
 int
 main ()
 {
-static int test_array [1 - 2 * !(((long) (sizeof (void*))) <= $ac_mid)];
+static int test_array [1 - 2 * !(((long) (sizeof (void *))) <= $ac_mid)];
 test_array [0] = 0
 
   ;
@@ -30799,10 +30799,10 @@ fi
 rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
 done
 case $ac_lo in
-?*) ac_cv_sizeof_voidp=$ac_lo;;
-'') { { echo "$as_me:$LINENO: error: cannot compute sizeof (void*), 77
+?*) ac_cv_sizeof_void_p=$ac_lo;;
+'') { { echo "$as_me:$LINENO: error: cannot compute sizeof (void *), 77
 See \`config.log' for more details." >&5
-echo "$as_me: error: cannot compute sizeof (void*), 77
+echo "$as_me: error: cannot compute sizeof (void *), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; } ;;
 esac
@@ -30821,8 +30821,8 @@ cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 $ac_includes_default
-long longval () { return (long) (sizeof (void*)); }
-unsigned long ulongval () { return (long) (sizeof (void*)); }
+long longval () { return (long) (sizeof (void *)); }
+unsigned long ulongval () { return (long) (sizeof (void *)); }
 #include <stdio.h>
 #include <stdlib.h>
 int
@@ -30832,17 +30832,17 @@ main ()
   FILE *f = fopen ("conftest.val", "w");
   if (! f)
     exit (1);
-  if (((long) (sizeof (void*))) < 0)
+  if (((long) (sizeof (void *))) < 0)
     {
       long i = longval ();
-      if (i != ((long) (sizeof (void*))))
+      if (i != ((long) (sizeof (void *))))
 	exit (1);
       fprintf (f, "%ld\n", i);
     }
   else
     {
       unsigned long i = ulongval ();
-      if (i != ((long) (sizeof (void*))))
+      if (i != ((long) (sizeof (void *))))
 	exit (1);
       fprintf (f, "%lu\n", i);
     }
@@ -30863,16 +30863,16 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_sizeof_voidp=`cat conftest.val`
+  ac_cv_sizeof_void_p=`cat conftest.val`
 else
   echo "$as_me: program exited with status $ac_status" >&5
 echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 ( exit $ac_status )
-{ { echo "$as_me:$LINENO: error: cannot compute sizeof (void*), 77
+{ { echo "$as_me:$LINENO: error: cannot compute sizeof (void *), 77
 See \`config.log' for more details." >&5
-echo "$as_me: error: cannot compute sizeof (void*), 77
+echo "$as_me: error: cannot compute sizeof (void *), 77
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -30881,13 +30881,13 @@ fi
 fi
 rm -f conftest.val
 else
-  ac_cv_sizeof_voidp=0
+  ac_cv_sizeof_void_p=0
 fi
 fi
-echo "$as_me:$LINENO: result: $ac_cv_sizeof_voidp" >&5
-echo "${ECHO_T}$ac_cv_sizeof_voidp" >&6
+echo "$as_me:$LINENO: result: $ac_cv_sizeof_void_p" >&5
+echo "${ECHO_T}$ac_cv_sizeof_void_p" >&6
 cat >>confdefs.h <<_ACEOF
-#define SIZEOF_VOIDP $ac_cv_sizeof_voidp
+#define SIZEOF_VOID_P $ac_cv_sizeof_void_p
 _ACEOF
 
 
@@ -56952,6 +56952,8 @@ subdirs="$subdirs libltdl"
 
           ac_config_files="$ac_config_files libraries/clib/Makefile"
 
+          ac_config_files="$ac_config_files libraries/clib/classpath/Makefile"
+
           ac_config_files="$ac_config_files libraries/clib/native/Makefile"
 
           ac_config_files="$ac_config_files libraries/clib/io/Makefile"
@@ -56973,8 +56975,6 @@ subdirs="$subdirs libltdl"
           ac_config_files="$ac_config_files libraries/clib/awt/Makefile"
 
           ac_config_files="$ac_config_files libraries/clib/awt/classpath-gtk/Makefile"
-
-          ac_config_files="$ac_config_files libraries/clib/awt/classpath-gtk/classpath/Makefile"
 
           ac_config_files="$ac_config_files libraries/clib/awt/classpath-gtk/gtk-peer/Makefile"
 
@@ -57876,6 +57876,7 @@ do
   "libraries/javalib/awt-implementations/kaffe/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/javalib/awt-implementations/kaffe/Makefile" ;;
   "libraries/javalib/gmp-math/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/javalib/gmp-math/Makefile" ;;
   "libraries/clib/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/Makefile" ;;
+  "libraries/clib/classpath/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/classpath/Makefile" ;;
   "libraries/clib/native/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/native/Makefile" ;;
   "libraries/clib/io/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/io/Makefile" ;;
   "libraries/clib/libxmlj/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/libxmlj/Makefile" ;;
@@ -57887,7 +57888,6 @@ do
   "libraries/clib/security/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/security/Makefile" ;;
   "libraries/clib/awt/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/Makefile" ;;
   "libraries/clib/awt/classpath-gtk/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/classpath-gtk/Makefile" ;;
-  "libraries/clib/awt/classpath-gtk/classpath/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/classpath-gtk/classpath/Makefile" ;;
   "libraries/clib/awt/classpath-gtk/gtk-peer/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/classpath-gtk/gtk-peer/Makefile" ;;
   "libraries/clib/awt/classpath-gtk/resource/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/classpath-gtk/resource/Makefile" ;;
   "libraries/clib/awt/X/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/X/Makefile" ;;

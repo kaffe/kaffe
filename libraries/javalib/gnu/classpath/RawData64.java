@@ -1,5 +1,5 @@
-/* RawData.java -- Pointer to VM specific data
-   Copyright (C) 1999, 2000, 2004  Free Software Foundation
+/* RawData64.java -- 64 bit Pointer
+   Copyright (C) 2004  Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -35,13 +35,18 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-/* This file is originally part of libgcj. */
-
 package gnu.classpath;
 
-/** A type used to indicate special data used by native code that should not 
-    be marked by the garbage collector. */
-
-public abstract class RawData
+/**
+ * A type used to indicate special data used by native code that should not
+ * be marked by the garbage collector.
+ */
+public final class RawData64 extends RawData
 {
+   final long data;
+
+   public RawData64(long data)
+   {
+     this.data = data;
+   }
 }

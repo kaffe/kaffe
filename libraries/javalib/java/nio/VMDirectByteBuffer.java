@@ -1,5 +1,5 @@
-/* RawData.java -- Pointer to VM specific data
-   Copyright (C) 1999, 2000, 2004  Free Software Foundation
+/* VMDirectByteBuffer.java --
+   Copyright (C) 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,13 +35,32 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-/* This file is originally part of libgcj. */
 
-package gnu.classpath;
+package java.nio;
 
-/** A type used to indicate special data used by native code that should not 
-    be marked by the garbage collector. */
+import gnu.classpath.Configuration;
+import gnu.classpath.RawData;
 
-public abstract class RawData
+final class VMDirectByteBuffer
 {
+  static
+  {
+    // load the shared library needed for native methods.
+    if (Configuration.INIT_LOAD_LIBRARY)
+      {
+        System.loadLibrary("nio");
+      }
+
+    init();
+  }
+
+  private static native void init();
+
+  static native RawData allocate (int capacity);
+  static native void free(RawData address);
+  static native byte get(RawData address, int index);
+  static native void get(RawData address, int index, byte[] dst, int offset, int length);
+  static native void put(RawData address, int index, byte value);
+  static native RawData adjustAddress(RawData address, int offset);
+  static native void shiftDown(RawData address, int dst_offset, int src_offset, int count);
 }

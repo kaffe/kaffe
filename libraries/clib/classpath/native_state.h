@@ -1,5 +1,5 @@
-/* RawData.java -- Pointer to VM specific data
-   Copyright (C) 1999, 2000, 2004  Free Software Foundation
+/* Magical NSA API -- Associate a C ptr with an instance of an object
+   Copyright (C) 1998 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -7,7 +7,7 @@ GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
-
+ 
 GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -35,13 +35,37 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-/* This file is originally part of libgcj. */
+#ifndef JCL_NATIVE_STATE
+#define JCL_NATIVE_STATE
 
-package gnu.classpath;
+#include <jni.h>
 
-/** A type used to indicate special data used by native code that should not 
-    be marked by the garbage collector. */
-
-public abstract class RawData
+struct state_table
 {
-}
+  jint size;			/* number of slots, should be prime */
+  jfieldID hash;		/* field containing System.identityHashCode(this) */
+  jclass clazz;			/* lock aquired for reading/writing nodes */
+  struct state_node **head;
+};
+
+struct state_node
+{
+  jint key;
+  void *c_state;
+  struct state_node *next;
+};
+
+struct state_table *init_state_table_with_size (JNIEnv *, jclass, jint);
+struct state_table *init_state_table (JNIEnv *, jclass);
+
+/* lowlevel api */
+void set_state_oid (JNIEnv *, jobject, struct state_table *, jint, void *);
+void *get_state_oid (JNIEnv *, jobject, struct state_table *, jint);
+void *remove_state_oid (JNIEnv *, jobject, struct state_table *, jint);
+
+/* highlevel api */
+int set_state (JNIEnv *, jobject, struct state_table *, void *);
+void *get_state (JNIEnv *, jobject, struct state_table *);
+void *remove_state_slot (JNIEnv *, jobject, struct state_table *);
+
+#endif

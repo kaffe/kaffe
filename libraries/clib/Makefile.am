@@ -9,6 +9,6 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = native io nio net zip math security management
+SUBDIRS = classpath native io nio net zip math security management
 
-DIST_SUBDIRS = native io nio net zip math libxmlj security management awt sound
+DIST_SUBDIRS = classpath native io nio net zip math libxmlj security management awt sound

@@ -74,7 +74,8 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
-libgtkpeer_la_DEPENDENCIES = $(top_builddir)/libraries/clib/awt/classpath-gtk/classpath/native_state.lo
+am__DEPENDENCIES_1 =  \
+	$(top_builddir)/libraries/clib/classpath/libclasspath.la
 am__libgtkpeer_la_SOURCES_DIST =  \
 	gnu_java_awt_peer_gtk_GdkGlyphVector.c \
 	gnu_java_awt_peer_gtk_GdkGraphics2D.c gdkfont.h \
@@ -500,11 +501,14 @@ libgtkpeer_la_CPPFLAGS = \
 	@GTK_CFLAGS@ \
 	@CAIRO_CFLAGS@ \
 	@PANGOFT2_CFLAGS@ \
-	-I$(top_srcdir)/libraries/clib/awt/classpath-gtk/classpath/ \
+	-I$(top_srcdir)/libraries/clib/classpath/ \
 	-I$(top_builddir)/include/
 
+libgtkpeer_la_DEPENDENCIES = \
+	$(top_builddir)/libraries/clib/classpath/libclasspath.la
+
 libgtkpeer_la_LIBADD = \
-	$(top_builddir)/libraries/clib/awt/classpath-gtk/classpath/native_state.lo
+	$(libgtkpeer_la_DEPENDENCIES)
 
 libgtkpeer_la_LDFLAGS = \
 	@CLASSPATH_MODULE@ \

@@ -146,7 +146,7 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 				goto fail;
 			readu4(&d4, fp);
 			readu4(&d4b, fp);
-#if SIZEOF_VOIDP == 8
+#if SIZEOF_VOID_P == 8
 			pool[i] = WORDS_TO_LONG(d4, d4b);
 			i++;
 			pool[i] = 0;
@@ -154,7 +154,7 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 			pool[i] = d4;
 			i++;
 			pool[i] = d4b;
-#endif /* SIZEOF_VOIDP == 8 */
+#endif /* SIZEOF_VOID_P == 8 */
 			tags[i] = CONSTANT_Unknown;
 			break;
 
@@ -164,7 +164,7 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 			readu4(&d4, fp);
 			readu4(&d4b, fp);
 
-#if SIZEOF_VOIDP == 8
+#if SIZEOF_VOID_P == 8
 #if defined(DOUBLE_ORDER_OPPOSITE)
 			pool[i] = WORDS_TO_LONG(d4b, d4);
 #else
@@ -182,7 +182,7 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 			i++;
 			pool[i] = d4b;
 #endif /* DOUBLE_ORDER_OPPOSITE */
-#endif /* SIZEOF_VOIDP == 8 */
+#endif /* SIZEOF_VOID_P == 8 */
 			tags[i] = CONSTANT_Unknown;
 			break;
 
