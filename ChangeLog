@@ -4,6 +4,16 @@
 
 	2005-03-07  Jeroen Frijters  <jeroen@frijters.net>
 
+        * java/net/URI.java (AUTHORITY_REGEXP): Corrected regexp.
+        (AUTHORITY_USERINFO_GROUP,AUTHORITY_HOST_GROUP,AUTHORITY_PORT_GROUP):
+        Adjusted to match new regexp.
+
+2005-03-09  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-03-07  Jeroen Frijters  <jeroen@frijters.net>
+
         * java/io/DataInputStream.java (ignoreInitialNewline): Removed
         (readLine): Changed newline handling.
 
