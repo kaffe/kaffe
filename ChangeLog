@@ -1,3 +1,10 @@
+Wed May  8 19:22:18 CEST 2002 Tim Stack <stack@cs.utah.edu>
+	* kaffe/kaffevm/jar.c:
+	(getDataJarFile) Send something back for entries with compressed
+	size zero.
+	* libraries/clib/native/ZipFile.c:
+	(java_util_zip_ZipFile_getZipData0) Handle zero-sized entries.
+
 Wed May  8 18:55:22 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	* kaffe/xprof/xprofiler.c: removed profiling support for extra
 	symbols. It caused compile errors.

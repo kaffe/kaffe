@@ -67,21 +67,27 @@ java_util_zip_ZipFile_getZipData0(struct Hkaffe_util_Ptr* zip, struct Hjava_util
 {
 	jarEntry entry;
 	HArrayOfByte* array;
-	uint8* buf;
+	uint8* buf = 0;
 
-	entry.fileName = "";
-	entry.uncompressedSize = unhand(zentry)->size;
-	entry.compressionMethod = unhand(zentry)->method;
-	entry.compressedSize = unhand(zentry)->csize;
-	entry.dataPos = unhand(zentry)->offset;
-
-	buf = getDataJarFile((jarFile*)zip, &entry);
-	if (buf == 0) {
-		return (0);
+	if( unhand(zentry)->size > 0 )
+	{
+		entry.fileName = "";
+		entry.uncompressedSize = unhand(zentry)->size;
+		entry.compressionMethod = unhand(zentry)->method;
+		entry.compressedSize = unhand(zentry)->csize;
+		entry.dataPos = unhand(zentry)->offset;
+		
+		buf = getDataJarFile((jarFile*)zip, &entry);
+		if (buf == 0) {
+			return (0);
+		}
 	}
 	array = (HArrayOfByte*)AllocArray(unhand(zentry)->size, TYPE_Byte);
-	memcpy(unhand_array(array)->body, buf, unhand(zentry)->size);
-	KFREE(buf);
+	if( buf )
+	{
+		memcpy(unhand_array(array)->body, buf, unhand(zentry)->size);
+		KFREE(buf);
+	}
 	return (array);
 }
 

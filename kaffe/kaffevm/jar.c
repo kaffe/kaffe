@@ -281,6 +281,8 @@ getDataJarFile(jarFile* file, jarEntry* entry)
 		file->error = "Failed to seek into JAR file";
 		return (0);
 	}
+	if (entry->compressedSize == 0)
+		return KMALLOC(4); // XXX Send something back
 	buf = KMALLOC(entry->compressedSize);
 	if (!buf) {
 		file->error = "Out of memory";
