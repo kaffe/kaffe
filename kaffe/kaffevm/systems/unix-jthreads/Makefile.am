@@ -9,7 +9,8 @@
 noinst_LTLIBRARIES = libkthread.la
 libkthread_la_LDFLAGS = $(KVMLIBFLAGS)
 libkthread_la_SOURCES = jthread.c syscalls.c signal.c
-EXTRA_DIST = Makefile.frag config-jthreads.h jsignal.h jthread.h
+EXTRA_DIST = Makefile.frag config-jthreads.h jsignal.h jthread.h \
+		lock-impl.h thread-impl.h
 
 @engine_frag@
 

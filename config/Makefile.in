@@ -147,34 +147,41 @@ noinst_HEADERS = $(GEN_HDRS) \
 EXTRA_DIST = \
 	config.alias \
 	regen-forward \
-	alpha/jit-alpha.def \
 	alpha/common.h \
-	alpha/sysdepCallMethod.h \
-	alpha/linux/jit-md.h \
+	alpha/jit-alpha.def \
+	alpha/jit-icode.h \
+	alpha/jit.h \
 	alpha/linux/config.frag \
+	alpha/linux/jit-md.h \
 	alpha/linux/md.c \
 	alpha/linux/md.h \
+	alpha/netbsd1/config.frag \
+	alpha/netbsd1/md.c \
+	alpha/netbsd1/md.h \
 	alpha/osf/config.frag \
 	alpha/osf/jit-md.h \
 	alpha/osf/md.c \
 	alpha/osf/md.h \
-	alpha/jit-icode.h \
-	alpha/jit.h \
+	alpha/sysdepCallMethod.h \
 	alpha/threads.h \
 	alpha/trampolines.c \
-	alpha/netbsd1/config.frag \
-	alpha/netbsd1/md.c \
-	alpha/netbsd1/md.h \
+	arm/common.h \
+	arm/jit-arm.def \
+	arm/jit-icode.h \
+	arm/jit.h \
+	arm/jit3-arm.def \
+	arm/jit3-icode.h \
 	arm/linux/config.frag \
+	arm/linux/jit-md.h \
 	arm/linux/md.c \
 	arm/linux/md.h \
-	arm/common.h \
-	arm/threads.h \
 	arm/netbsd1/config.frag \
+	arm/netbsd1/jit-md.h \
+	arm/netbsd1/jit3-md.h \
 	arm/netbsd1/md.c \
 	arm/netbsd1/md.h \
-	i386/jit-i386.def \
-	i386/common.h \
+	arm/threads.h \
+	arm/trampolines.c \
 	i386/beos/config.frag \
 	i386/beos/jit-md.h \
 	i386/beos/md.c \
@@ -183,24 +190,28 @@ EXTRA_DIST = \
 	i386/bsdi/jit-md.h \
 	i386/bsdi/md.c \
 	i386/bsdi/md.h \
-	i386/qnx/config.frag \
-	i386/qnx/jit-md.h \
-	i386/qnx/md.c \
-	i386/qnx/md.h \
-	i386/jit-icode.h \
-	i386/jit.h \
-	i386/threads.h \
-	i386/trampolines.c \
+	i386/common.h \
+	i386/cygwin32/config.frag \
+	i386/cygwin32/jit-md.h \
+	i386/cygwin32/md.c \
+	i386/cygwin32/md.h \
 	i386/dgux/config.frag \
 	i386/dgux/jit-md.h \
 	i386/dgux/md.c \
 	i386/dgux/md.h \
 	i386/freebsd2/config.frag \
 	i386/freebsd2/jit-md.h \
+	i386/freebsd2/jit3-md.h \
 	i386/freebsd2/md.c \
 	i386/freebsd2/md.h \
+	i386/jit-i386.def \
+	i386/jit-icode.h \
+	i386/jit.h \
+	i386/jit3-i386.def \
+	i386/jit3-icode.h \
 	i386/linux/config.frag \
 	i386/linux/jit-md.h \
+	i386/linux/jit3-md.h \
 	i386/linux/md.c \
 	i386/linux/md.h \
 	i386/netbsd1/config.frag \
@@ -215,22 +226,6 @@ EXTRA_DIST = \
 	i386/openbsd2/jit-md.h \
 	i386/openbsd2/md.c \
 	i386/openbsd2/md.h \
-	i386/sco3.2v5/config.frag \
-	i386/sco3.2v5/jit-md.h \
-	i386/sco3.2v5/md.c \
-	i386/sco3.2v5/md.h \
-	i386/solaris2/config.frag \
-	i386/solaris2/jit-md.h \
-	i386/solaris2/md.c \
-	i386/solaris2/md.h \
-	i386/univel_svr4/config.frag \
-	i386/univel_svr4/jit-md.h \
-	i386/univel_svr4/md.c \
-	i386/univel_svr4/md.h \
-	i386/cygwin32/config.frag \
-	i386/cygwin32/jit-md.h \
-	i386/cygwin32/md.c \
-	i386/cygwin32/md.h \
 	i386/oskit/README \
 	i386/oskit/config.frag \
 	i386/oskit/jit-md.h \
@@ -239,26 +234,49 @@ EXTRA_DIST = \
 	i386/oskit/md.h \
 	i386/oskit/mkimage.sh \
 	i386/oskit/oskit-configure \
-	m68k/jit-icode.h \
-	m68k/common.h \
+	i386/qnx/config.frag \
+	i386/qnx/jit-md.h \
+	i386/qnx/md.c \
+	i386/qnx/md.h \
+	i386/sco3.2v5/config.frag \
+	i386/sco3.2v5/jit-md.h \
+	i386/sco3.2v5/md.c \
+	i386/sco3.2v5/md.h \
+	i386/solaris2/config.frag \
+	i386/solaris2/jit-md.h \
+	i386/solaris2/md.c \
+	i386/solaris2/md.h \
+	i386/threads.h \
+	i386/trampolines.c \
+	i386/univel_svr4/config.frag \
+	i386/univel_svr4/jit-md.h \
+	i386/univel_svr4/md.c \
+	i386/univel_svr4/md.h \
+	i386/win32/jit-md.h \
+	i386/win32/md.h \
+	i386/win32/win32-md.asm \
 	m68k/a-ux/config.frag \
 	m68k/a-ux/jit-md.h \
 	m68k/a-ux/md.c \
 	m68k/a-ux/md.h \
-	m68k/jit-m68k.def \
-	m68k/jit.h \
-	m68k/threads.h \
 	m68k/amigaos/REPORT.amiga \
 	m68k/amigaos/config.frag \
 	m68k/amigaos/md.c \
 	m68k/amigaos/md.h \
-	m68k/linux/config.frag \
+	m68k/common.h \
+	m68k/jit-icode.h \
+	m68k/jit-m68k.def \
+	m68k/jit.h \
+	m68k/jit3-icode.h \
+	m68k/jit3-m68k.def \
 	m68k/linux/README \
+	m68k/linux/config.frag \
 	m68k/linux/jit-md.h \
 	m68k/linux/md.c \
 	m68k/linux/md.h \
 	m68k/netbsd1/config.frag \
 	m68k/netbsd1/jit-md.h \
+	m68k/netbsd1/jit3-md.h \
 	m68k/netbsd1/md.c \
 	m68k/netbsd1/md.h \
 	m68k/nextstep3/config.frag \
@@ -272,50 +290,54 @@ EXTRA_DIST = \
 	m68k/sunos4/config.frag \
 	m68k/sunos4/md.c \
 	m68k/sunos4/md.h \
+	m68k/threads.h \
 	m68k/trampolines.c \
 	mips/common.h \
-	mips/n32-sysdepCallMethod.h \
-	mips/o32-sysdepCallMethod.h \
 	mips/irix5/config.frag \
 	mips/irix5/md.c \
 	mips/irix5/md.h \
-	mips/threads.h \
+	mips/jit.h \
+	mips/jit3-icode.h \
+	mips/jit3-mips.def \
+	mips/linux/config.frag \
+	mips/linux/jit-md.h \
+	mips/linux/md.c \
+	mips/linux/md.h \
+	mips/mips.c \
+	mips/n32-sysdepCallMethod.h \
 	mips/netbsd1/config.frag \
 	mips/netbsd1/md.c \
 	mips/netbsd1/md.h \
-	mips/linux/config.frag \
-	mips/linux/md.c \
-	mips/linux/md.h \
+	mips/o32-sysdepCallMethod.h \
+	mips/threads.h \
+	mips/trampolines.c \
 	mips/ultrix4/Make.frag \
 	mips/ultrix4/config.frag \
 	mips/ultrix4/md.c \
 	mips/ultrix4/md.h \
+	parisc/common.h \
 	parisc/hpux/config.frag \
 	parisc/hpux/md.c \
 	parisc/hpux/md.h \
 	parisc/threads.h \
-	parisc/common.h \
 	powerpc/aix/config.frag \
 	powerpc/aix/md.c \
 	powerpc/aix/md.h \
-	powerpc/threads.h \
 	powerpc/linux/config.frag \
 	powerpc/linux/md.c \
 	powerpc/linux/md.h \
 	powerpc/machten/config.frag \
 	powerpc/machten/md.c \
 	powerpc/machten/md.h \
-	sparc/jit-icode.h \
-	sparc/common.h \
-	sparc/sysdepCallMethod.h \
+	powerpc/threads.h \
 	sparc/bsdi3/config.frag \
 	sparc/bsdi3/jit-md.h \
 	sparc/bsdi3/md.c \
 	sparc/bsdi3/md.h \
+	sparc/common.h \
+	sparc/jit-icode.h \
 	sparc/jit-sparc.def \
 	sparc/jit.h \
-	sparc/threads.h \
-	sparc/trampolines.c \
 	sparc/linux/config.frag \
 	sparc/linux/jit-md.h \
 	sparc/linux/md.c \
@@ -324,8 +346,8 @@ EXTRA_DIST = \
 	sparc/netbsd1/jit-md.h \
 	sparc/netbsd1/md.c \
 	sparc/netbsd1/md.h \
-	sparc/nextstep3/jit-md.h \
 	sparc/nextstep3/config.frag \
+	sparc/nextstep3/jit-md.h \
 	sparc/nextstep3/md.c \
 	sparc/nextstep3/md.h \
 	sparc/openbsd2/config.frag \
@@ -340,6 +362,9 @@ EXTRA_DIST = \
 	sparc/sunos4/jit-md.h \
 	sparc/sunos4/md.c \
 	sparc/sunos4/md.h \
+	sparc/sysdepCallMethod.h \
+	sparc/threads.h \
+	sparc/trampolines.c \
 	sparc/uxpds/config.frag \
 	sparc/uxpds/jit-md.h \
 	sparc/uxpds/md.c \
@@ -444,13 +469,13 @@ distdir: $(DISTFILES)
 	   $(distdir)/i386/openbsd2 $(distdir)/i386/oskit \
 	   $(distdir)/i386/qnx $(distdir)/i386/sco3.2v5 \
 	   $(distdir)/i386/solaris2 $(distdir)/i386/univel_svr4 \
-	   $(distdir)/m68k $(distdir)/m68k/a-ux $(distdir)/m68k/amigaos \
-	   $(distdir)/m68k/linux $(distdir)/m68k/netbsd1 \
-	   $(distdir)/m68k/nextstep3 $(distdir)/m68k/openbsd2 \
-	   $(distdir)/m68k/sunos4 $(distdir)/mips $(distdir)/mips/irix5 \
-	   $(distdir)/mips/linux $(distdir)/mips/netbsd1 \
-	   $(distdir)/mips/ultrix4 $(distdir)/parisc \
-	   $(distdir)/parisc/hpux $(distdir)/powerpc \
+	   $(distdir)/i386/win32 $(distdir)/m68k $(distdir)/m68k/a-ux \
+	   $(distdir)/m68k/amigaos $(distdir)/m68k/linux \
+	   $(distdir)/m68k/netbsd1 $(distdir)/m68k/nextstep3 \
+	   $(distdir)/m68k/openbsd2 $(distdir)/m68k/sunos4 \
+	   $(distdir)/mips $(distdir)/mips/irix5 $(distdir)/mips/linux \
+	   $(distdir)/mips/netbsd1 $(distdir)/mips/ultrix4 \
+	   $(distdir)/parisc $(distdir)/parisc/hpux $(distdir)/powerpc \
 	   $(distdir)/powerpc/aix $(distdir)/powerpc/linux \
 	   $(distdir)/powerpc/machten $(distdir)/sparc \
 	   $(distdir)/sparc/bsdi3 $(distdir)/sparc/linux \

@@ -12,8 +12,11 @@ SUBDIRS = . config include libltdl libraries kaffe test
 
 EXTRA_DIST = \
 	ChangeLog.1 \
+	ChangeLog.2 \
+	ChangeLog.3 \
 	WHATSNEW \
 	license.terms \
+	license-lesser.terms \
 	FAQ/FAQ.BeOS \
 	FAQ/FAQ.Known-Bugs \
 	FAQ/FAQ.amigaos \
@@ -29,20 +32,28 @@ EXTRA_DIST = \
 	FAQ/FAQ.jsignal \
 	FAQ/FAQ.libtool \
 	FAQ/FAQ.linux \
+	FAQ/FAQ.locks \
 	FAQ/FAQ.nativemethods \
+	FAQ/FAQ.profiler \
+	FAQ/FAQ.pthreads \
 	FAQ/FAQ.requiredlibraries \
+	FAQ/FAQ.staticnative \
 	FAQ/FAQ.timing \
 	FAQ/FAQ.unicode \
 	FAQ/FAQ.win32 \
+	developers/Encode.java \
 	developers/JavaClass.pm \
 	developers/README \
 	developers/README.unicode \
+	developers/alignment_of_size.c \
 	developers/autogen.sh \
 	developers/dumpClass.pl \
 	developers/gdbinit \
+	developers/glibc-2.1.1-signal.patch \
+	developers/rpm-kaffe.spec \
 	developers/sp_offset.c \
-	developers/update-class-list \
 	developers/unicode.pl \
+	developers/update-class-list \
 	developers/utf8munge.pl
 
 CLEANFILES = BUILD_ENVIRONMENT

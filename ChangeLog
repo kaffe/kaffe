@@ -1,3 +1,16 @@
+Mon Oct 18 12:11:58 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* Makefile.am, Makefile.in, config/Makefile.am,
+	config/Makefile.in, kaffe/kaffevm/systems/Makefile.am,
+	kaffe/kaffevm/systems/Makefile.in,
+	kaffe/kaffevm/systems/oskit-pthreads/Makefile.am,
+	kaffe/kaffevm/systems/oskit-pthreads/Makefile.in,
+	kaffe/kaffevm/systems/unix-jthreads/Makefile.am,
+	kaffe/kaffevm/systems/unix-jthreads/Makefile.in,
+	kaffe/kaffevm/systems/unix-pthreads/Makefile.am,
+	kaffe/kaffevm/systems/unix-pthreads/Makefile.in: fix files
+	listed for 'make dist'
+
 Mon Oct 18 00:00:00 PDT 1999 Transvirtual Technologies <info@transvirtual.com>
 
         * Version 1.0.5 of Kaffe OpenVM released.
