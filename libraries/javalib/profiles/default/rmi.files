@@ -49,6 +49,7 @@ java/rmi/server/RemoteRef.java
 java/rmi/server/RemoteServer.java
 java/rmi/server/RemoteStub.java
 java/rmi/server/RMIClassLoader.java
+java/rmi/server/RMIClassLoaderSpi.java
 java/rmi/server/RMIClientSocketFactory.java
 java/rmi/server/RMIFailureHandler.java
 java/rmi/server/RMIServerSocketFactory.java

@@ -47,6 +47,11 @@ endif
 
 Klasses_jar_SRCS = \
 	$(gnu_classpath_SRCS) \
+	$(gnu_crypto_cipher_SRCS) \
+	$(gnu_crypto_hash_SRCS) \
+	$(gnu_crypto_mac_SRCS) \
+	$(gnu_crypto_mode_SRCS) \
+	$(gnu_crypto_prng_SRCS) \
 	$(gnu_java_awt_SRCS) \
 	$(gnu_java_io_SRCS) \
 	$(gnu_java_lang_SRCS) \
@@ -55,7 +60,9 @@ Klasses_jar_SRCS = \
 	$(gnu_java_nio_SRCS) \
 	$(gnu_java_nio_charset_SRCS) \
 	$(gnu_java_security_SRCS) \
+	$(gnu_java_security_der_SRCS) \
 	$(gnu_java_security_provider_SRCS) \
+	$(gnu_java_security_x509_SRCS) \
 	$(gnu_java_util_SRCS) \
 	$(gnu_java_util_prefs_SRCS) \
 	$(gnu_javax_rmi_SRCS) \
@@ -117,8 +124,11 @@ Klasses_jar_SRCS = \
 	$(javax_naming_event_SRCS) \
 	$(javax_naming_ldap_SRCS) \
 	$(javax_naming_spi_SRCS) \
+	$(javax_net_SRCS) \
+	$(javax_net_ssl_SRCS) \
 	$(javax_rmi_SRCS) \
 	$(javax_rmi_CORBA_SRCS) \
+	$(javax_security_cert_SRCS) \
 	$(javax_sound_midi_SRCS) \
 	$(javax_sound_midi_spi_SRCS) \
 	$(javax_sound_sampled_SRCS) \
@@ -162,6 +172,7 @@ Klasses_jar_SRCS = \
 	$(kaffe_util_locale_SRCS) \
 	$(kaffe_util_log_SRCS) \
 	$(kaffe_util_zip_SRCS) \
+	$(org_metastatic_jessie_SRCS) \
 	$(org_tritonus_core_SRCS) \
 	$(org_tritonus_lowlevel_alsa_SRCS) \
 	$(org_tritonus_lowlevel_esd_SRCS) \
@@ -191,12 +202,24 @@ Klasses_jar_SRCS = \
 gnu_classpath_SRCS = \
 	gnu/classpath/Configuration.java \
 	gnu/classpath/RawData.java
+gnu_crypto_cipher_SRCS = \
+	gnu/crypto/cipher/IBlockCipher.java
+gnu_crypto_hash_SRCS = \
+	gnu/crypto/hash/IMessageDigest.java
+gnu_crypto_mac_SRCS = \
+	gnu/crypto/mac/IMac.java
+gnu_crypto_mode_SRCS = \
+	gnu/crypto/mode/IMode.java
+gnu_crypto_prng_SRCS = \
+	gnu/crypto/prng/IRandom.java \
+	gnu/crypto/prng/LimitReachedException.java
 gnu_java_awt_SRCS = \
 	gnu/java/awt/BitMaskExtent.java \
 	gnu/java/awt/Buffers.java \
 	gnu/java/awt/ComponentDataBlitOp.java \
 	gnu/java/awt/EventModifier.java
 gnu_java_io_SRCS = \
+	gnu/java/io/ASN1ParsingException.java \
 	gnu/java/io/NullOutputStream.java \
 	gnu/java/io/ObjectIdentityWrapper.java
 gnu_java_lang_SRCS = \
@@ -227,9 +250,19 @@ gnu_java_nio_charset_SRCS = \
 	gnu/java/nio/charset/UTF_16LE.java \
 	gnu/java/nio/charset/UTF_8.java
 gnu_java_security_SRCS = \
-	gnu/java/security/Engine.java
+	gnu/java/security/Engine.java \
+	gnu/java/security/OID.java
+gnu_java_security_der_SRCS = \
+	gnu/java/security/der/BitString.java \
+	gnu/java/security/der/DEREncodingException.java \
+	gnu/java/security/der/DER.java \
+	gnu/java/security/der/DERReader.java \
+	gnu/java/security/der/DERValue.java \
+	gnu/java/security/der/DERWriter.java
 gnu_java_security_provider_SRCS = \
 	gnu/java/security/provider/DefaultPolicy.java
+gnu_java_security_x509_SRCS = \
+	gnu/java/security/x509/X500DistinguishedName.java
 gnu_java_util_SRCS = \
 	gnu/java/util/EmptyEnumeration.java
 gnu_java_util_prefs_SRCS = \
@@ -336,6 +369,7 @@ java_awt_SRCS = \
 	java/awt/ActiveEvent.java \
 	java/awt/Adjustable.java \
 	java/awt/AdjustmentEvt.java \
+	java/awt/AlphaComposite.java \
 	java/awt/AttributeValue.java \
 	java/awt/AWTError.java \
 	java/awt/AWTEvent.java \
@@ -356,8 +390,10 @@ java_awt_SRCS = \
 	java/awt/ClassAnalyzer.java \
 	java/awt/ClassProperties.java \
 	java/awt/Color.java \
+	java/awt/ColorPaintContext.java \
 	java/awt/ComponentEvt.java \
 	java/awt/Component.java \
+	java/awt/ComponentOrientation.java \
 	java/awt/CompositeContext.java \
 	java/awt/Composite.java \
 	java/awt/ContainerEvt.java \
@@ -388,6 +424,7 @@ java_awt_SRCS = \
 	java/awt/Graphics.java \
 	java/awt/GraphicsLink.java \
 	java/awt/GridBagConstraints.java \
+	java/awt/GridBagLayoutInfo.java \
 	java/awt/GridBagLayout.java \
 	java/awt/GridLayout.java \
 	java/awt/HeadlessException.java \
@@ -435,6 +472,7 @@ java_awt_SRCS = \
 	java/awt/PSPrintJob.java \
 	java/awt/Rectangle.java \
 	java/awt/RenderingHints.java \
+	java/awt/Robot.java \
 	java/awt/RootWindow.java \
 	java/awt/RowCanvas.java \
 	java/awt/Scrollbar.java \
@@ -451,6 +489,7 @@ java_awt_SRCS = \
 	java/awt/TextCursor.java \
 	java/awt/TextEvt.java \
 	java/awt/TextField.java \
+	java/awt/TexturePaint.java \
 	java/awt/Toolkit.java \
 	java/awt/Transparency.java \
 	java/awt/WindowEvt.java \
@@ -501,7 +540,8 @@ java_awt_dnd_SRCS = \
 	java/awt/dnd/MouseDragGestureRecognizer.java
 java_awt_dnd_peer_SRCS = \
 	java/awt/dnd/peer/DragSourceContextPeer.java \
-	java/awt/dnd/peer/DropTargetContextPeer.java
+	java/awt/dnd/peer/DropTargetContextPeer.java \
+	java/awt/dnd/peer/DropTargetPeer.java
 java_awt_event_SRCS = \
 	java/awt/event/ActionEvent.java \
 	java/awt/event/ActionListener.java \
@@ -524,6 +564,7 @@ java_awt_event_SRCS = \
 	java/awt/event/InputEvent.java \
 	java/awt/event/InputMethodEvent.java \
 	java/awt/event/InputMethodListener.java \
+	java/awt/event/InvocationEvent.java \
 	java/awt/event/ItemEvent.java \
 	java/awt/event/ItemListener.java \
 	java/awt/event/KeyAdapter.java \
@@ -549,9 +590,19 @@ java_awt_font_SRCS = \
 	java/awt/font/GlyphJustificationInfo.java \
 	java/awt/font/GlyphMetrics.java \
 	java/awt/font/GlyphVector.java \
+	java/awt/font/GraphicAttribute.java \
+	java/awt/font/ImageGraphicAttribute.java \
+	java/awt/font/LineBreakMeasurer.java \
+	java/awt/font/LineMetrics.java \
 	java/awt/font/MultipleMaster.java \
+	java/awt/font/NumericShaper.java \
 	java/awt/font/OpenType.java \
-	java/awt/font/TextHitInfo.java
+	java/awt/font/ShapeGraphicAttribute.java \
+	java/awt/font/TextAttribute.java \
+	java/awt/font/TextHitInfo.java \
+	java/awt/font/TextLayout.java \
+	java/awt/font/TextMeasurer.java \
+	java/awt/font/TransformAttribute.java
 java_awt_geom_SRCS = \
 	java/awt/geom/AffineTransform.java \
 	java/awt/geom/Arc2D.java \
@@ -620,10 +671,32 @@ java_awt_image_renderable_SRCS = \
 	java/awt/image/renderable/RenderedImageFactory.java
 java_awt_peer_SRCS = \
 	java/awt/peer/ActiveEvent.java \
+	java/awt/peer/ButtonPeer.java \
+	java/awt/peer/CanvasPeer.java \
+	java/awt/peer/CheckboxMenuItemPeer.java \
+	java/awt/peer/CheckboxPeer.java \
+	java/awt/peer/ChoicePeer.java \
 	java/awt/peer/ComponentPeer.java \
+	java/awt/peer/ContainerPeer.java \
+	java/awt/peer/DialogPeer.java \
+	java/awt/peer/FileDialogPeer.java \
 	java/awt/peer/FontPeer.java \
+	java/awt/peer/FramePeer.java \
+	java/awt/peer/LabelPeer.java \
 	java/awt/peer/LightweightPeer.java \
+	java/awt/peer/ListPeer.java \
+	java/awt/peer/MenuBarPeer.java \
 	java/awt/peer/MenuComponentPeer.java \
+	java/awt/peer/MenuItemPeer.java \
+	java/awt/peer/MenuPeer.java \
+	java/awt/peer/PanelPeer.java \
+	java/awt/peer/PopupMenuPeer.java \
+	java/awt/peer/RobotPeer.java \
+	java/awt/peer/ScrollbarPeer.java \
+	java/awt/peer/ScrollPanePeer.java \
+	java/awt/peer/TextAreaPeer.java \
+	java/awt/peer/TextComponentPeer.java \
+	java/awt/peer/TextFieldPeer.java \
 	java/awt/peer/WindowPeer.java
 java_awt_print_SRCS = \
 	java/awt/print/Book.java \
@@ -682,7 +755,9 @@ java_beans_beancontext_SRCS = \
 	java/beans/beancontext/BeanContextServiceRevokedEvent.java \
 	java/beans/beancontext/BeanContextServiceRevokedListener.java \
 	java/beans/beancontext/BeanContextServices.java \
-	java/beans/beancontext/BeanContextServicesListener.java
+	java/beans/beancontext/BeanContextServicesListener.java \
+	java/beans/beancontext/BeanContextServicesSupport.java \
+	java/beans/beancontext/BeanContextSupport.java
 java_io_SRCS = \
 	java/io/BufferedInputStream.java \
 	java/io/BufferedOutputStream.java \
@@ -1061,6 +1136,7 @@ java_rmi_server_SRCS = \
 	java/rmi/server/RemoteServer.java \
 	java/rmi/server/RemoteStub.java \
 	java/rmi/server/RMIClassLoader.java \
+	java/rmi/server/RMIClassLoaderSpi.java \
 	java/rmi/server/RMIClientSocketFactory.java \
 	java/rmi/server/RMIFailureHandler.java \
 	java/rmi/server/RMIServerSocketFactory.java \
@@ -1158,11 +1234,33 @@ java_security_cert_SRCS = \
 	java/security/cert/CertificateNotYetValidException.java \
 	java/security/cert/CertificateParsingException.java \
 	java/security/cert/CertPathBuilderException.java \
+	java/security/cert/CertPathBuilder.java \
+	java/security/cert/CertPathBuilderResult.java \
+	java/security/cert/CertPathBuilderSpi.java \
 	java/security/cert/CertPath.java \
+	java/security/cert/CertPathParameters.java \
 	java/security/cert/CertPathValidatorException.java \
+	java/security/cert/CertPathValidator.java \
+	java/security/cert/CertPathValidatorResult.java \
+	java/security/cert/CertPathValidatorSpi.java \
+	java/security/cert/CertSelector.java \
 	java/security/cert/CertStoreException.java \
+	java/security/cert/CertStore.java \
+	java/security/cert/CertStoreParameters.java \
+	java/security/cert/CertStoreSpi.java \
+	java/security/cert/CollectionCertStoreParameters.java \
 	java/security/cert/CRLException.java \
 	java/security/cert/CRL.java \
+	java/security/cert/CRLSelector.java \
+	java/security/cert/LDAPCertStoreParameters.java \
+	java/security/cert/PKIXBuilderParameters.java \
+	java/security/cert/PKIXCertPathBuilderResult.java \
+	java/security/cert/PKIXCertPathChecker.java \
+	java/security/cert/PKIXCertPathValidatorResult.java \
+	java/security/cert/PKIXParameters.java \
+	java/security/cert/PolicyNode.java \
+	java/security/cert/PolicyQualifierInfo.java \
+	java/security/cert/TrustAnchor.java \
 	java/security/cert/X509Certificate.java \
 	java/security/cert/X509CRLEntry.java \
 	java/security/cert/X509CRL.java \
@@ -1188,7 +1286,9 @@ java_security_spec_SRCS = \
 	java/security/spec/InvalidParameterSpecException.java \
 	java/security/spec/KeySpec.java \
 	java/security/spec/PKCS8EncodedKeySpec.java \
+	java/security/spec/PSSParameterSpec.java \
 	java/security/spec/RSAKeyGenParameterSpec.java \
+	java/security/spec/RSAMultiPrimePrivateCrtKeySpec.java \
 	java/security/spec/RSAOtherPrimeInfo.java \
 	java/security/spec/RSAPrivateCrtKeySpec.java \
 	java/security/spec/RSAPrivateKeySpec.java \
@@ -1492,6 +1592,42 @@ javax_naming_spi_SRCS = \
 	javax/naming/spi/ResolveResult.java \
 	javax/naming/spi/Resolver.java \
 	javax/naming/spi/StateFactory.java
+javax_net_SRCS = \
+	javax/net/ServerSocketFactory.java \
+	javax/net/SocketFactory.java \
+	javax/net/VanillaServerSocketFactory.java \
+	javax/net/VanillaSocketFactory.java
+javax_net_ssl_SRCS = \
+	javax/net/ssl/HandshakeCompletedEvent.java \
+	javax/net/ssl/HandshakeCompletedListener.java \
+	javax/net/ssl/HostnameVerifier.java \
+	javax/net/ssl/HttpsURLConnection.java \
+	javax/net/ssl/KeyManagerFactory.java \
+	javax/net/ssl/KeyManagerFactorySpi.java \
+	javax/net/ssl/KeyManager.java \
+	javax/net/ssl/ManagerFactoryParameters.java \
+	javax/net/ssl/SSLContext.java \
+	javax/net/ssl/SSLContextSpi.java \
+	javax/net/ssl/SSLException.java \
+	javax/net/ssl/SSLHandshakeException.java \
+	javax/net/ssl/SSLKeyException.java \
+	javax/net/ssl/SSLPeerUnverifiedException.java \
+	javax/net/ssl/SSLPermission.java \
+	javax/net/ssl/SSLProtocolException.java \
+	javax/net/ssl/SSLServerSocketFactory.java \
+	javax/net/ssl/SSLServerSocket.java \
+	javax/net/ssl/SSLSessionBindingEvent.java \
+	javax/net/ssl/SSLSessionBindingListener.java \
+	javax/net/ssl/SSLSessionContext.java \
+	javax/net/ssl/SSLSession.java \
+	javax/net/ssl/SSLSocketFactory.java \
+	javax/net/ssl/SSLSocket.java \
+	javax/net/ssl/TrivialHostnameVerifier.java \
+	javax/net/ssl/TrustManagerFactory.java \
+	javax/net/ssl/TrustManagerFactorySpi.java \
+	javax/net/ssl/TrustManager.java \
+	javax/net/ssl/X509KeyManager.java \
+	javax/net/ssl/X509TrustManager.java
 javax_rmi_SRCS = \
 	javax/rmi/BAD_OPERATION.java \
 	javax/rmi/ORB.java \
@@ -1507,6 +1643,15 @@ javax_rmi_CORBA_SRCS = \
 	javax/rmi/CORBA/UtilDelegate.java \
 	javax/rmi/CORBA/Util.java \
 	javax/rmi/CORBA/ValueHandler.java
+javax_security_cert_SRCS = \
+	javax/security/cert/CertificateEncodingException.java \
+	javax/security/cert/CertificateException.java \
+	javax/security/cert/CertificateExpiredException.java \
+	javax/security/cert/Certificate.java \
+	javax/security/cert/CertificateNotYetValidException.java \
+	javax/security/cert/CertificateParsingException.java \
+	javax/security/cert/X509CertBridge.java \
+	javax/security/cert/X509Certificate.java
 javax_sound_midi_SRCS = \
 	javax/sound/midi/ControllerEventListener.java \
 	javax/sound/midi/Instrument.java \
@@ -1832,6 +1977,22 @@ kaffe_util_log_SRCS = \
 	kaffe/util/log/SimpleLogViewer.java
 kaffe_util_zip_SRCS = \
 	kaffe/util/zip/SwitchInflater.java
+org_metastatic_jessie_SRCS = \
+	org/metastatic/jessie/CipherSuite.java \
+	org/metastatic/jessie/Constructed.java \
+	org/metastatic/jessie/ContentType.java \
+	org/metastatic/jessie/Context.java \
+	org/metastatic/jessie/Enumerated.java \
+	org/metastatic/jessie/Jessie.java \
+	org/metastatic/jessie/ProtocolVersion.java \
+	org/metastatic/jessie/SecurityParameters.java \
+	org/metastatic/jessie/SessionContext.java \
+	org/metastatic/jessie/Session.java \
+	org/metastatic/jessie/SSLHMac.java \
+	org/metastatic/jessie/SSLSecurityParameters.java \
+	org/metastatic/jessie/Text.java \
+	org/metastatic/jessie/X509KeyManagerFactory.java \
+	org/metastatic/jessie/X509TrustManagerFactory.java
 org_tritonus_core_SRCS = \
 	org/tritonus/core/Service.java \
 	org/tritonus/core/TAudioConfig.java \

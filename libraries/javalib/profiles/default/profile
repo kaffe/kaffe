@@ -1,5 +1,4 @@
 core.files
-nio.files
 coreawt.files
 awt.files
 moreawt.files
@@ -8,3 +7,4 @@ rmi.files
 xml.files
 jaxp.files
 sound.files
+jsse.files
