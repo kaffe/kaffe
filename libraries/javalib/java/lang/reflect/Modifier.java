@@ -112,14 +112,14 @@ public class Modifier {
     if ((mod & TRANSIENT) != 0) {
       append(str, "transient");
     }
+    if ((mod & ABSTRACT) != 0) {
+      append(str, "abstract");
+    }
     if ((mod & NATIVE) != 0) {
       append(str, "native");
     }
     if ((mod & INTERFACE) != 0) {
       append(str, "interface");
-    }
-    if ((mod & ABSTRACT) != 0) {
-      append(str, "abstract");
     }
     return (new String(str));
   }
