@@ -48,14 +48,18 @@ public int indexOf(Object o) {
 
 public int lastIndexOf(Object o) {
   ListIterator it = listIterator(size());
-  int idx = 0;
+  int idx = size() - 1;
   while (it.hasPrevious()) {
     if (it.previous() == o) {
       return (idx);
     }
-    idx++;
+    idx--;
   }
   return (-1);
+}
+
+public void clear() {
+    removeRange(0, size());
 }
 
 public boolean addAll(int index, Collection c) {
@@ -104,7 +108,17 @@ public boolean equals(Object o) {
 }
 
 public int hashCode() {
-  return (super.hashCode());
+  int hashCode = 1;
+  Iterator i = iterator();
+  while (i.hasNext()) {
+      Object obj = i.next();
+      hashCode = 31*hashCode + (obj==null ? 0 : obj.hashCode());
+  }
+  return hashCode;
 }
 
+protected void removeRange(int fromIndex, int toIndex) {
+  throw new kaffe.util.NotImplemented();
+}
+ 
 }
