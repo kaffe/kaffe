@@ -20,6 +20,9 @@
 #include "gc-mem.h"
 #include "gc.h"
 #include "jni.h"
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 static gc_block* gc_small_block(size_t);
 static gc_block* gc_large_block(size_t);
