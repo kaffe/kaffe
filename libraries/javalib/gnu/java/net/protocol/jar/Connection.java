@@ -1,5 +1,5 @@
 /* Connection - jar url connection for java.net
-   Copyright (C) 1999, 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2002, 2003, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -68,7 +68,6 @@ public final class Connection extends JarURLConnection
   {
     private static Hashtable cache = new Hashtable();
     private static final int READBUFSIZE = 4*1024;
-    private static boolean is_trying = false;
     
     public static synchronized JarFile get (URL url) throws IOException
     {
@@ -77,45 +76,33 @@ public final class Connection extends JarURLConnection
       if (jf != null)
         return jf;
       
-      if (is_trying)
-        return null;
-      
-      try
-        {
-          is_trying = true;
-
-          if ("file".equals (url.getProtocol()))
-            {
-              File f = new File (url.getFile());
-              jf = new JarFile (f, true, ZipFile.OPEN_READ);
-            }
-          else
-            {
-              URLConnection urlconn = url.openConnection();
-              InputStream is = urlconn.getInputStream();
-              byte[] buf = new byte [READBUFSIZE];
-              File f = File.createTempFile ("cache", "jar");
-              FileOutputStream fos = new FileOutputStream (f); 
-              int len = 0;
-              
-              while ((len = is.read (buf)) != -1)
-                {
-                  fos.write (buf, 0, len);
-                }
-              
-              fos.close();
-              // Always verify the Manifest, open read only and delete when done.
-              // XXX ZipFile.OPEN_DELETE not yet implemented.
-              // jf = new JarFile (f, true, ZipFile.OPEN_READ | ZipFile.OPEN_DELETE);
-              jf = new JarFile (f, true, ZipFile.OPEN_READ);
-            }
+      if ("file".equals (url.getProtocol()))
+	{
+	  File f = new File (url.getFile());
+	  jf = new JarFile (f, true, ZipFile.OPEN_READ);
+	}
+      else
+	{
+	  URLConnection urlconn = url.openConnection();
+	  InputStream is = urlconn.getInputStream();
+	  byte[] buf = new byte [READBUFSIZE];
+	  File f = File.createTempFile ("cache", "jar");
+	  FileOutputStream fos = new FileOutputStream (f); 
+	  int len = 0;
+	  
+	  while ((len = is.read (buf)) != -1)
+	    {
+	      fos.write (buf, 0, len);
+	    }
+	  
+	  fos.close();
+	  // Always verify the Manifest, open read only and delete when done.
+	  // XXX ZipFile.OPEN_DELETE not yet implemented.
+	  // jf = new JarFile (f, true, ZipFile.OPEN_READ | ZipFile.OPEN_DELETE);
+	  jf = new JarFile (f, true, ZipFile.OPEN_READ);
+	}
           
-          cache.put (url, jf);
-        }
-      finally
-        {
-          is_trying = false;
-        }
+      cache.put (url, jf);
       
       return jf;
     }
