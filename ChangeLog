@@ -1,5 +1,12 @@
 2004-04-24  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* libraries/javalib/kaffe/tools/jar/Jar.java
+	(createFileLookupTable): JDK's jar tool is authorizing "../"
+	in entries. This fixes an entry name problem while building
+	rt.jar.
+
+2004-04-24  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* config/sparc/openbsd2/md.h: Added #include <sys/time.h>
 	because sys/resource.h has an undefined struct on openbsd.
 

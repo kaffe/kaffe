@@ -524,36 +524,6 @@ public class Jar {
 		System.out.println("canon     was \"" + canon + "\"");
 	    }
 
-
-	    if (canon.length() < absolute_name.length()) {
-		// Take care of the really nasty case where
-		// a dir path included . or .. which can
-		// really mess up the entry names that get
-		// put into the archive. To fix this we
-		// need to get the last path element in
-		// the canonical path and use that as our
-		// short file name
-
-		if (debug) {
-		    System.out.println("name got smaller");
-		}
-
-		int index = canon.lastIndexOf('/');
-
-		if (index == -1) {
-		    // Something really strange happended, the file
-		    // name is absolute so something is really screwed up
-
-		    throw new RuntimeException("absolute file " +
-			          canon + " had no '/' chars in it");
-		}
-
-		// gaurd against the case where / is at the end of the string
-		if ((index + 1) < canon.length()) {
-		    files[i] = canon.substring(index + 1);
-		}
-	    }
-
 	    if (debug) {
 		System.out.println("file name is \"" + files[i]
 				   + "\"");
