@@ -1,5 +1,14 @@
-2004-07-24  Dalibor Topic  <topic@mpi-sb.mpg.de>
+2004-07-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffe/main.c (setKaffeAWT, options): Fix definiiton of
+	prefix to use binreloc's LIBDIR or DEFAULT_KAFFEHOME, depending
+	on whether binreloc is available and enabled.
+	(usage): Removed binreloc guard for -Xnative-big-math.
+	
+	Reported by: Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+2004-07-24  Dalibor Topic  <robilad@kaffe.org>
+	
 	Fixed disabling of native AWT code.
 	
 	* Makefile.am (DIRECTORIES_AFTER_RTJAR): Added explicit support 
@@ -96,7 +105,9 @@
         tools/gjdoc/Makefile.in,
         tools/gjdoc/javalib/Makefile.in:
         Regenerated.
-	
+
+	Reported by: Mark Wielaard  <mark@klomp.org>
+
 2004-07-23  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* config/powerpc/darwin/md.h: Define a symbol called DARWIN
