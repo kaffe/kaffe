@@ -1,3 +1,11 @@
+1999-11-25  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
+
+	* kaffe/kaffevm/systems/unix-jthreads/Makefile.am
+	(libkthread_la_LIBADD): Added $(NET_LIBS).
+	* ltconfig, ltmain.sh, acinclude.m4, libltld/*: Update from
+	libtool.
+	* aclocal.m4, configure, */Makefile.in: Rebuilt.
+
 1999-11-21  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
 	* configure.in (enable-gcj): Check for features of recent gcc and

@@ -77,6 +77,7 @@ DLLTOOL = @DLLTOOL@
 DLOPEN_JAVA_LIBS = @DLOPEN_JAVA_LIBS@
 ENGINE_NAME = @ENGINE_NAME@
 EXEEXT = @EXEEXT@
+FILE = @FILE@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
 JAVA_LIBS = @JAVA_LIBS@
 JIKES = @JIKES@
@@ -105,11 +106,13 @@ M_LIBS = @M_LIBS@
 NET_LIBS = @NET_LIBS@
 NM = @NM@
 OBJDUMP = @OBJDUMP@
+OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
 RANLIB = @RANLIB@
 REGEN_FORWARD = @REGEN_FORWARD@
 SECURITY_LIBS = @SECURITY_LIBS@
+STRIP = @STRIP@
 THREAD_DIR = @THREAD_DIR@
 THREAD_SYSTEM = @THREAD_SYSTEM@
 VERSION = @VERSION@
@@ -117,11 +120,16 @@ VM_LIBS = @VM_LIBS@
 ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
 classdir = @classdir@
+deplibs_check_method = @deplibs_check_method@
+file_magic_cmd = @file_magic_cmd@
 host_cpu = @host_cpu@
 host_os = @host_os@
 kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
+reload_flag = @reload_flag@
 with_engine = @with_engine@
+with_gcc = @with_gcc@
+with_gnu_ld = @with_gnu_ld@
 
 # Makefile.in for kaffevm JIT3 compiler
 #
@@ -202,7 +210,7 @@ OBJECTS = $(am_libengine_la_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .c .lo .o
+.SUFFIXES: .c .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu kaffe/kaffevm/jit3/Makefile
 
@@ -222,6 +230,7 @@ maintainer-clean-noinstLTLIBRARIES:
 
 mostlyclean-compile:
 	-rm -f *.o core *.core
+	-rm -f *.$(OBJEXT)
 
 clean-compile:
 
@@ -329,6 +338,12 @@ maintainer-clean-depend:
 @AMDEP@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
 @AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LTCOMPILE) -c -o $@ $<
+
+.c.obj:
+@AMDEP@	source='$<' object='$@' @AMDEPBACKSLASH@
+@AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(COMPILE) -c `cygpath -w $<`
 
 info-am:
 info: info-am

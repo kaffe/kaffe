@@ -19,8 +19,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
-License along with this library; if not, write to the Free
-Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307  USA
 */
 
 #define _LTDL_COMPILE_
@@ -1529,6 +1530,8 @@ lt_dlsym (handle, symbol)
 		return 0;
 	}
 	if (handle->name) {
+		const char *saved_error = last_error;
+		
 		/* this is a libtool module */
 		if (handle->type->sym_prefix) {
 			strcpy(sym, handle->type->sym_prefix);
@@ -1544,6 +1547,7 @@ lt_dlsym (handle, symbol)
 				lt_dlfree(sym);
 			return address;
 		}
+		last_error = saved_error;
 	}
 	/* otherwise try "symbol" */
 	if (handle->type->sym_prefix) {

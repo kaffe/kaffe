@@ -68,6 +68,8 @@ CXX = @CXX@
 CXXCPP = @CXXCPP@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
+EXEEXT = @EXEEXT@
+FILE = @FILE@
 LD = @LD@
 LIBADD_DL = @LIBADD_DL@
 LIBTOOL = @LIBTOOL@
@@ -77,9 +79,16 @@ MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 NM = @NM@
 OBJDUMP = @OBJDUMP@
+OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
+STRIP = @STRIP@
 VERSION = @VERSION@
+deplibs_check_method = @deplibs_check_method@
+file_magic_cmd = @file_magic_cmd@
+reload_flag = @reload_flag@
+with_gcc = @with_gcc@
+with_gnu_ld = @with_gnu_ld@
 
 
 AUTOMAKE_OPTIONS = no-dependencies foreign
@@ -95,7 +104,7 @@ AUTOMAKE_OPTIONS = no-dependencies foreign
 @CONVENIENCE_LTDL_TRUE@libltdlc.la
 
 libltdl_la_SOURCES = ltdl.c
-libltdl_la_LDFLAGS = -version-info 1:1:1
+libltdl_la_LDFLAGS = -version-info 1:2:1
 libltdl_la_LIBADD = $(LIBADD_DL)
 
 libltdlc_la_SOURCES = ltdl.c
@@ -140,7 +149,7 @@ OBJECTS = $(am_libltdl_la_OBJECTS) $(am_libltdlc_la_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .c .lo .o
+.SUFFIXES: .c .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile
 
@@ -225,6 +234,7 @@ maintainer-clean-noinstLTLIBRARIES:
 
 mostlyclean-compile:
 	-rm -f *.o core *.core
+	-rm -f *.$(OBJEXT)
 
 clean-compile:
 
@@ -308,7 +318,7 @@ distcheck: dist
 	GZIP=$(GZIP_ENV) gunzip -c $(distdir).tar.gz | $(AMTAR) xf -
 	mkdir $(distdir)/=build
 	mkdir $(distdir)/=inst
-	dc_install_base=`cd $(distdir)/=inst && pwd`; \
+	dc_install_base=`CDPATH=: && cd $(distdir)/=inst && pwd`; \
 	cd $(distdir)/=build \
 	  && ../configure --srcdir=.. --prefix=$$dc_install_base \
 	  && $(MAKE) $(AM_MAKEFLAGS) \
@@ -359,6 +369,12 @@ distdir: $(DISTFILES)
 @AMDEP@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
 @AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LTCOMPILE) -c -o $@ $<
+
+.c.obj:
+@AMDEP@	source='$<' object='$@' @AMDEPBACKSLASH@
+@AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(COMPILE) -c `cygpath -w $<`
 
 info-am:
 info: info-am
@@ -463,10 +479,10 @@ local-install-files: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(DESTDIR)$(datadir)/libtool/libltdl/$$file; \
+	    cp -r $$d/$$file $(DESTDIR)$(datadir)/libtool/libltdl/$$file; \
 	  else \
 	    test -f $(DESTDIR)$(datadir)/libtool/libltdl/$$file \
-	    || cp -p $$d/$$file $(DESTDIR)$(datadir)/libtool/libltdl/$$file || :; \
+	    || cp $$d/$$file $(DESTDIR)$(datadir)/libtool/libltdl/$$file || :; \
 	  fi; \
 	done
 
