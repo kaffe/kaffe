@@ -29,7 +29,7 @@
  * have to take this into account here.  It is a convention of the
  * software floating point libraries and the build tools.
  */
-#if NEED_sysdepCallMethod
+#if defined(NEED_sysdepCallMethod)
 static inline void sysdepCallMethod(callMethodInfo *call) {
   int extraargs[(call->nrargs>4)?(call->nrargs-4):0];
   switch(call->nrargs) {
@@ -86,6 +86,6 @@ static inline void sysdepCallMethod(callMethodInfo *call) {
     }
   }
 }
-#endif /* NEED_sysdepCallMethod */
+#endif /* defined(NEED_sysdepCallMethod) */
 
 #endif /* __arm_sysdepCallMethod_h */

@@ -16,9 +16,9 @@
 #define NEED_STACK_ALIGN
 #define STACK_ALIGN(p)  ((((unsigned long)(p)) & 15) ^ (unsigned long)(p))
 
-#if NEED_sysdepCallMethod
+#if defined(NEED_sysdepCallMethod)
 #include "sysdepCallMethod.h"
-#endif
+#endif /* defined(NEED_sysdepCallMethod) */
 
 #if defined(__GNUC__)
 #define KAFFE_PROFILER 1

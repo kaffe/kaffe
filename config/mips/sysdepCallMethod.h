@@ -18,7 +18,7 @@
 #ifndef __mips_sysdepCallMethod_h
 #define __mips_sysdepCallMethod_h
 
-#if NEED_sysdepCallMethod
+#if defined(NEED_sysdepCallMethod)
 
 #include "support.h"
 
@@ -42,6 +42,6 @@
 
 #endif
 
-#endif /* NEED_sysdepCallMethod */
+#endif /* defined(NEED_sysdepCallMethod) */
 
 #endif /* __mips_sysdepCallMethod_h */

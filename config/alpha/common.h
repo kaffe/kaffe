@@ -17,14 +17,14 @@
 
 #include "atomicity.h"
 
-#if NEED_sysdepCallMethod
+#if defined(NEED_sysdepCallMethod)
 
 #define LONG_SYSDEP 1
 #include "sysdepCallMethod.h"
 #undef LONG_SYSDEP
 #include "sysdepCallMethod.h"
 
-#endif /* NEED_sysdepCallMethod */
+#endif /* defined(NEED_sysdepCallMethod) */
 
 /*
  * Do an atomic compare and exchange.  The address 'A' is checked against

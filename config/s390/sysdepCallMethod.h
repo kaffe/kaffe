@@ -24,7 +24,7 @@
  *  This function is mandatory for both JIT and Interpreter (since stubs
  *  have now been deprecated).
  */
-#if NEED_sysdepCallMethod
+#if defined(NEED_sysdepCallMethod)
 /*
  * The calling convention is as follows:
  *
@@ -169,6 +169,6 @@ static inline void sysdepCallMethod(callMethodInfo *call)
        (call)->ret->i = gpr_args[0];
     } /* switch ((call)->rettype) */
 }
-#endif /* NEED_sysdepCallMethod */
+#endif /* defined(NEED_sysdepCallMethod) */
 
 #endif /* __s390_sysdepCallMethod_h */
