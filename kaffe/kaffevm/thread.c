@@ -9,9 +9,8 @@
  * of this file. 
  */
 
-#include "debug.h"
-
 #include "config.h"
+#include "debug.h"
 #include "config-std.h"
 #include "config-mem.h"
 #include "config-io.h"
@@ -26,6 +25,7 @@
 #include "stringSupport.h"
 #include "lookup.h"
 #include "thread.h"
+#include "jthread.h"
 #include "locks.h"
 #include "exception.h"
 #include "support.h"
@@ -33,6 +33,21 @@
 #include "gc.h"
 #include "jni.h"
 #include "md.h"
+
+/* If not otherwise specified, assume at least 1MB for main thread */
+#ifndef MAINSTACKSIZE
+#define MAINSTACKSIZE (1024*1024)
+#endif
+
+/* 
+ * store the native thread for the main thread here 
+ * between init and createFirst 
+ */
+static struct Hkaffe_util_Ptr*	mainthread;
+static int threadStackSize;	/* native stack size */
+
+/* referenced by native/Runtime.c */
+jbool runFinalizerOnExit;	/* should we run finalizers? */
 
 Hjava_lang_Class* ThreadClass;
 Hjava_lang_Class* ThreadGroupClass;
@@ -42,6 +57,7 @@ Hjava_lang_ThreadGroup* standardGroup;
 
 static void firstStartThread(void*);
 static void createInitialThread(const char*);
+static void runfinalizer(void);
 static iLock thread_start_lock;
 
 /*
@@ -80,6 +96,26 @@ initThreads(void)
 	initStaticLock(&thread_start_lock);
 }
 
+static void
+createThread(Hjava_lang_Thread* tid, void* func)
+{
+	struct Hkaffe_util_Ptr* nativethread;
+
+	nativethread = (struct Hkaffe_util_Ptr*)jthread_create(
+		unhand(tid)->priority,
+		func,
+		unhand(tid)->daemon,
+		tid,
+		threadStackSize);
+	unhand(tid)->PrivateInfo = nativethread;
+	/* preallocate a stack overflow error for this thread in case it 
+	 * runs out 
+	 */
+	unhand(tid)->stackOverflowError = 
+		(Hjava_lang_Throwable*)StackOverflowError;
+	unhand(tid)->needOnStack = STACK_HIGH;
+}
+
 /*
  * Start a new thread running.
  */
@@ -89,13 +125,16 @@ startThread(Hjava_lang_Thread* tid)
 	if (aliveThread(tid) == true) {
 		throwException(IllegalThreadStateException);
 	}
+
 	/* Hold the start lock while the thread is created.
 	 * This lock prevents the new thread from running until we're
 	 * finished in create.
 	 * See also firstStartThread.
 	 */
 	lockStaticMutex(&thread_start_lock);
-	(*Kaffe_ThreadInterface.create)(tid, &firstStartThread);
+
+	createThread(tid, &firstStartThread);
+
 	unlockStaticMutex(&thread_start_lock);
 }
 
@@ -105,7 +144,7 @@ startThread(Hjava_lang_Thread* tid)
 void
 interruptThread(Hjava_lang_Thread* tid)
 {
-	(*Kaffe_ThreadInterface.interrupt)(tid);
+	jthread_interrupt((jthread_t)unhand(tid)->PrivateInfo);
 }
 
 /*
@@ -114,7 +153,7 @@ interruptThread(Hjava_lang_Thread* tid)
 void
 stopThread(Hjava_lang_Thread* tid, Hjava_lang_Object* obj)
 {
-	if ((*Kaffe_ThreadInterface.currentJava)() == tid) {
+	if (getCurrentThread() == tid) {
 		throwException((Hjava_lang_Throwable*)obj);
 	}
 	else {
@@ -123,7 +162,7 @@ stopThread(Hjava_lang_Thread* tid, Hjava_lang_Object* obj)
 		 * thread won't throw the exception `obj', but it will 
 		 * construct a new ThreadDeath exception when it dies.
 		 */
-		(*Kaffe_ThreadInterface.stop)(tid);
+		jthread_stop((jthread_t)unhand(tid)->PrivateInfo);
 	}
 }
 
@@ -149,7 +188,13 @@ createInitialThread(const char* nm)
 	unhand(tid)->target = 0;
 	unhand(tid)->group = standardGroup;
 
-	(*Kaffe_ThreadInterface.createFirst)(tid);
+	jthread_atexit(runfinalizer);
+	/* set Java thread associated with main thread */
+	SET_COOKIE(tid);
+	unhand(tid)->PrivateInfo = mainthread;
+	unhand(tid)->stackOverflowError = 
+		(Hjava_lang_Throwable*)StackOverflowError;
+	unhand(tid)->needOnStack = STACK_HIGH;
 
 	/* Attach thread to threadGroup */
 	do_execute_java_method(unhand(tid)->group, "add", "(Ljava/lang/Thread;)V", 0, 0, tid);
@@ -176,8 +221,8 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 	unhand(tid)->interrupting = 0;
 	unhand(tid)->target = 0;
 	unhand(tid)->group = 0;
-
-	(*Kaffe_ThreadInterface.create)(tid, func);
+  
+	createThread(tid, func);
 
 	return (tid);
 }
@@ -197,13 +242,13 @@ firstStartThread(void* arg)
 
 	/* 
 	 * Make sure the thread who created us returned from
-	 * Kaffe_ThreadInterface.create.  This ensures that privateInfo
+	 * startThread.  This ensures that privateInfo
 	 * is set when we run.
 	 */
 	lockStaticMutex(&thread_start_lock);
 	unlockStaticMutex(&thread_start_lock);
 
-	tid  = (*Kaffe_ThreadInterface.currentJava)();
+	tid  = getCurrentThread();
 
 DBG(VMTHREAD,	
 	dprintf("firstStartThread %x\n", tid);		
@@ -261,7 +306,7 @@ DBG(VMTHREAD,
 void
 yieldThread(void)
 {
-	(*Kaffe_ThreadInterface.yield)();
+	jthread_yield();
 }
 
 /*
@@ -272,7 +317,11 @@ setPriorityThread(Hjava_lang_Thread* tid, int prio)
 {
 	unhand(tid)->priority = prio;
 
-	(*Kaffe_ThreadInterface.setPriority)(tid, prio);
+	/* no native thread yet */
+	if (unhand(tid)->PrivateInfo == 0)
+		return;
+
+	jthread_setpriority((jthread_t)unhand(tid)->PrivateInfo, prio);
 }
 
 /*
@@ -282,7 +331,7 @@ void
 exitThread(void)
 {
         do_execute_java_method(getCurrentThread(), "finish", "()V", 0, 0);
-	(*Kaffe_ThreadInterface.exit)();
+	jthread_exit();
 }
 
 /*
@@ -292,7 +341,7 @@ void
 sleepThread(jlong time)
 {
 	if (time > 0) {
-		(*Kaffe_ThreadInterface.sleep)(time);
+		jthread_sleep(time);
 	}
 }
 
@@ -306,7 +355,7 @@ aliveThread(Hjava_lang_Thread* tid)
 
 DBG(VMTHREAD,	dprintf("aliveThread: tid 0x%x\n", tid);		)
 
-	status = (*Kaffe_ThreadInterface.alive)(tid);
+	status = jthread_alive((jthread_t)unhand(tid)->PrivateInfo);
 
 	return (status);
 }
@@ -317,11 +366,7 @@ DBG(VMTHREAD,	dprintf("aliveThread: tid 0x%x\n", tid);		)
 jint
 framesThread(Hjava_lang_Thread* tid)
 {
-	jint count;
-
-	count = (*Kaffe_ThreadInterface.frames)(tid);
-
-	return (count);
+	return (jthread_frames((jthread_t)unhand(tid)->PrivateInfo));
 }
 
 /*
@@ -330,7 +375,7 @@ framesThread(Hjava_lang_Thread* tid)
 Hjava_lang_Thread*
 getCurrentThread(void)
 {
-	return ((*Kaffe_ThreadInterface.currentJava)());
+	return (GET_COOKIE());
 }
 
 /*
@@ -340,7 +385,11 @@ getCurrentThread(void)
 void
 finalizeThread(Hjava_lang_Thread* tid)
 {
-	(*Kaffe_ThreadInterface.finalize)(tid);
+	if (unhand(tid)->PrivateInfo != 0) {
+		jthread_t jtid = (jthread_t)unhand(tid)->PrivateInfo;
+		unhand(tid)->PrivateInfo = 0;
+		jthread_destroy(jtid);
+	}
 }
 
 /* 
@@ -349,7 +398,7 @@ finalizeThread(Hjava_lang_Thread* tid)
  */
 char *
 nameThread(Hjava_lang_Thread *tid)
-{  
+{
 	static char buf[80];
 	int i = 0;
 	HArrayOfChar* name = unhand(tid)->name;
@@ -359,4 +408,109 @@ nameThread(Hjava_lang_Thread *tid)
 	}
 	buf[i] = 0;
 	return buf;
+}
+
+static void 
+broadcastDeath(void *jlThread)
+{
+        Hjava_lang_Thread *tid = jlThread;
+
+        /* Notify on the object just in case anyone is waiting */
+        lockMutex(&tid->base);
+        broadcastCond(&tid->base);
+        unlockMutex(&tid->base);
+}
+
+static void 
+throwDeath(void)
+{
+	throwException(ThreadDeath);
+}
+
+/*
+ * How do I get memory?
+ */
+static void *
+thread_malloc(size_t s)
+{
+	return gc_malloc(s, GC_ALLOC_THREADCTX);
+}
+
+static void
+thread_free(void *p)
+{
+	gc_free(p);
+}
+
+static
+void
+runfinalizer(void)
+{
+	if (runFinalizerOnExit) {
+		invokeFinalizer();
+	}
+}
+
+/*
+ * print info about a java thread.
+ */
+static void
+dumpJavaThread(void *jlThread)
+{
+        Hjava_lang_Thread *tid = jlThread;
+	fprintf(stderr, "`%s' ", nameThread(tid));
+	jthread_dumpthreadinfo((jthread_t)unhand(tid)->PrivateInfo);
+	fprintf(stderr, "\n");
+}
+
+static void
+dumpThreads(void)
+{
+	fprintf(stderr, "Dumping live threads:\n");
+	jthread_walkLiveThreads(dumpJavaThread);
+}
+
+/*
+ * Return the name of a java thread, given its native thread pointer.
+ */
+char*
+nameNativeThread(void* native)
+{
+	return nameThread((Hjava_lang_Thread*)
+		jthread_getcookie((jthread_t)native));
+}
+
+/*
+ * Invoked when threading system detects a deadlock.
+ */
+static void
+onDeadlock(void)
+{
+	dumpLocks();
+	dumpThreads();
+	fprintf(stderr, "Deadlock: all threads blocked on internal events\n");
+	ABORT();
+}
+
+void
+initNativeThreads(int nativestacksize)
+{
+	/* Even though the underlying operating or threading system could
+	 * probably extend the main thread's stack, we must impose this 
+	 * artificial boundary, because otherwise we wouldn't be able to 
+	 * catch stack overflow exceptions thrown by the main thread.
+	 */
+	threadStackSize = nativestacksize;
+	mainthread = (struct Hkaffe_util_Ptr*)jthread_init(
+		DBGEXPR(JTHREADNOPREEMPT, false, true),
+		java_lang_Thread_MAX_PRIORITY+1,
+		java_lang_Thread_MIN_PRIORITY,
+		java_lang_Thread_NORM_PRIORITY,
+		MAINSTACKSIZE,
+		thread_malloc,
+		thread_free,
+		broadcastDeath,
+		throwDeath,
+		onDeadlock);
+	assert(mainthread);
 }

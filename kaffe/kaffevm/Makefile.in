@@ -128,7 +128,7 @@ DIST_SUBDIRS = intrp jit systems
 EXTRA_DIST =  	kaffe.def 	mem/gc-incremental.c 	mem/gc-incremental.h 	mem/gc-mem.c 	mem/gc-mem.h
 
 
-INCLUDES = $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS)
+INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS)
 
 lib_LTLIBRARIES = libkaffevm.la
 

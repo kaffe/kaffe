@@ -47,11 +47,11 @@ struct _exceptionFrame;
 void throwException(struct Hjava_lang_Throwable*) __NORETURN__;
 void throwExternalException(struct Hjava_lang_Throwable*) __NORETURN__;
 void throwError(struct _errorInfo*) __NORETURN__;
+void* nextFrame(void*);
 
 struct Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
 
 extern void initExceptions(void);
-extern void catchSignal(int, void*);
 
 #if defined(__WIN32__)
 #define SIG_T   void(*)()

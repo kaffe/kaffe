@@ -19,7 +19,7 @@
 #include "baseClasses.h"
 #include "support.h"
 #include "locks.h"
-#include "thread.h"
+#include "jthread.h"
 #include "gc.h"
 #include "gc-mem.h"
 #include "jni.h"
@@ -839,7 +839,7 @@ gc_block_alloc(size_t size)
 		    dprintf("growing block array from %d to %d elements\n",
 			    onb, nblocks));
 
-		(*Kaffe_LockInterface.spinon)(0);
+		jthread_spinon(0);
 		gc_block_base = (uintp) realloc((void *) old_blocks,
 						nblocks * sizeof(gc_block));
 		if (!gc_block_base) {
@@ -847,7 +847,7 @@ gc_block_alloc(size_t size)
 			pagefree(heap_addr, size);
 			gc_block_base = old_blocks;
 			nblocks = onb;
-			(*Kaffe_LockInterface.spinoff)(0);
+			jthread_spinoff(0);
 			return 0;
 		}
 
@@ -876,7 +876,7 @@ gc_block_alloc(size_t size)
 				R(freelist[i].list);
 #undef R
 		}
-		(*Kaffe_LockInterface.spinoff)(0);
+		jthread_spinoff(0);
 		stopTiming(&growtime);
 	}
 	n_live += size_pg;

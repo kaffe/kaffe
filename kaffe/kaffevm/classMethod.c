@@ -24,6 +24,7 @@
 #include "baseClasses.h"
 #include "stringSupport.h"
 #include "thread.h"
+#include "jthread.h"
 #include "itypes.h"
 #include "bytecode.h"
 #include "exception.h"
@@ -120,7 +121,7 @@ DBG(RESERROR,
 	depth++;
 	for (i = 0; i < depth; dprintf("  ", i++));
 	dprintf("%p entering process class %s %d->%d\n", 
-		(*Kaffe_ThreadInterface.currentNative)(), class->name->data,
+		jthread_current(), class->name->data,
 		class->state, tostate);
     )
 
@@ -469,7 +470,7 @@ DBG(RESERROR,
 	for (i = 0; i < depth; dprintf("  ", i++));
 	depth--;
 	dprintf("%p leaving process class %s -> %s\n", 
-		(*Kaffe_ThreadInterface.currentNative)(), class->name->data,
+		jthread_current(), class->name->data,
 		success ? "success" : "failure");
     )
 	return (success);

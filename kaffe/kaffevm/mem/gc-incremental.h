@@ -104,8 +104,8 @@ typedef	gc_unit			gcList;
 
 /* ------------------------------------------------------------------------ */
 
-#define	STOPWORLD()		(*Kaffe_ThreadInterface.GcSuspendThreads)();
-#define	RESUMEWORLD()		(*Kaffe_ThreadInterface.GcResumeThreads)();
+#define	STOPWORLD()		jthread_suspendall()
+#define	RESUMEWORLD()		jthread_unsuspendall()
 
 extern struct _gcStats {
         uint32  totalmem;

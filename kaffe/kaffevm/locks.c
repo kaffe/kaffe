@@ -9,20 +9,20 @@
  * of this file. 
  */
 
-#include "debug.h"
 #include "config.h"
+#include "debug.h"
 #include "config-std.h"
 #include "object.h"
 #include "classMethod.h"
 #include "baseClasses.h"
-#include "thread.h"
+#include "jthread.h"
 #include "locks.h"
 #include "errors.h"
 #include "exception.h"
 #include "md.h"
 
 /* Note:
- * It is wrong to call (*Kaffe_ThreadInterface.currentJava)() anywhere in
+ * It is wrong to call getCurrentJava() anywhere in
  * this file since it may not be initialized. 
  */
 
@@ -33,8 +33,8 @@
 
 #define	MAXLOCK		64
 #define	HASHLOCK(a)	((((uintp)(a)) / sizeof(void*)) % MAXLOCK)
-#define SPINON(addr) 	(*Kaffe_LockInterface.spinon)(addr)
-#define SPINOFF(addr) 	(*Kaffe_LockInterface.spinoff)(addr)
+#define SPINON(addr) 	jthread_spinon(addr)
+#define SPINOFF(addr) 	jthread_spinoff(addr)
 
 static struct lockList {
 	void*		lock;
@@ -81,6 +81,35 @@ dumpLocks(void)
 	}
 }
 
+/*              
+ * implementation of the locking subsystem based on jlocks
+ *
+ * Note that we keep track of lk->holder, and its type is void*.
+ */
+static          
+void
+initLock(iLock* lk)
+{               
+        static bool first = true;
+        static jmutex first_mutex;
+        static jcondvar first_condvar;
+        
+        /* The first lock init is for the memory manager - so we can't
+         * use it yet.  Allocate from static space.
+         */
+        if (first == true) {
+                first = false;
+                lk->mux = &first_mutex;
+                lk->cv = &first_condvar;
+        }
+        else {
+                lk->mux = gc_malloc(sizeof(jmutex), GC_ALLOC_THREADCTX);
+                lk->cv = gc_malloc(sizeof(jcondvar), GC_ALLOC_THREADCTX);
+        } 
+        jmutex_initialise(lk->mux);
+        jcondvar_initialise(lk->cv);
+}        
+
 /*
  * Retrieve a machine specific (possibly) locking structure associated with
  * this address.  If one isn't found, allocate it.
@@ -125,7 +154,7 @@ retry:;
                  */
                 SPINOFF(lockHead->lock);
                 lock = gc_malloc(sizeof(iLock), GC_ALLOC_LOCK);
-                (*Kaffe_LockInterface.init)(lock);
+		initLock(lock);
                 SPINON(lockHead->lock);
 
                 lock->next = lockHead->head;
@@ -204,7 +233,7 @@ __initLock(iLock* lk, const char *lkname)
 	lk->address = lkname;
 	lk->next = staticLocks;
 	staticLocks = lk;
-	(*Kaffe_LockInterface.init)(lk);
+	initLock(lk);
 }
 
 /*
@@ -214,7 +243,7 @@ inline
 void
 __lockMutex(iLock* lk)
 {
-DBG(VMLOCKS,	dprintf("Lock 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);	    )
+DBG(VMLOCKS,	dprintf("Lock 0x%x on iLock=0x%x\n", jthread_current(), lk);	    )
 
 	/*
 	 * Note: simply testing 'holder == currentNative' is not enough.
@@ -222,7 +251,7 @@ DBG(VMLOCKS,	dprintf("Lock 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);	    )
 	 * holder as a thread id (null), we might be fooled into thinking 
 	 * we already hold the lock, when in fact we don't.
 	 */
-	if (lk->count > 0 && lk->holder == (*Kaffe_ThreadInterface.currentNative)()) {
+	if (lk->count > 0 && lk->holder == jthread_current()) {
 		lk->count++;
 	}
 	else {
@@ -231,15 +260,16 @@ DBG(VMLOCKS,	dprintf("Lock 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);	    )
 #endif
 DBG(LOCKCONTENTION,
 		if (lk->count != 0) {
-		    dprintf("%p waiting for ", THREAD_NATIVE());
+		    dprintf("%p waiting for ", jthread_current());
 		    dumpLock(lk);
 		    trace = 1;
 		}
     )
-		(*Kaffe_LockInterface.lock)(lk);
+		jmutex_lock(lk->mux);
+		lk->holder = (void *)jthread_current();
 DBG(LOCKCONTENTION,
 		if (trace) {
-		    dprintf("%p got ", THREAD_NATIVE());
+		    dprintf("%p got ", jthread_current());
 		    dumpLock(lk);
 		}
     )
@@ -255,7 +285,7 @@ _lockMutex(void* addr)
 {
 	iLock* lk;
 
-DBG(VMLOCKS,	dprintf("Lock 0x%x on addr=0x%x\n", THREAD_NATIVE(), addr);    )
+DBG(VMLOCKS,	dprintf("Lock 0x%x on addr=0x%x\n", jthread_current(), addr);    )
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;
@@ -277,7 +307,7 @@ inline
 void
 __unlockMutex(iLock* lk)
 {
-DBG(VMLOCKS,	dprintf("Unlock 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);   )
+DBG(VMLOCKS,	dprintf("Unlock 0x%x on iLock=0x%x\n", jthread_current(), lk);   )
 
 #if defined(DEBUG)
 	if (lk->count == 0) {
@@ -285,17 +315,17 @@ DBG(VMLOCKS,	dprintf("Unlock 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);   )
 		dumpLock(lk);
 		ABORT();
 	}
-	if (lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
-		dprintf("HOLDER %p != ME %p\n", lk->holder,
-			(*Kaffe_ThreadInterface.currentNative)());
+	if (lk->holder != jthread_current()) {
+		dprintf("HOLDER %p != ME %p\n", lk->holder, jthread_current());
 		dumpLock(lk);
 		ABORT();
 	}
 #endif
-	assert(lk->count > 0 && lk->holder == (*Kaffe_ThreadInterface.currentNative)());
+	assert(lk->count > 0 && lk->holder == jthread_current());
 	lk->count--;
 	if (lk->count == 0) {
-		(*Kaffe_LockInterface.unlock)(lk);
+		lk->holder = 0;
+		jmutex_unlock(lk->mux);
 	}
 }
 
@@ -307,7 +337,7 @@ _unlockMutex(void* addr)
 {
 	iLock* lk;
 
-DBG(VMLOCKS,	dprintf("Unlock 0x%x on addr=0x%x\n", THREAD_NATIVE(), addr);  )
+DBG(VMLOCKS,	dprintf("Unlock 0x%x on addr=0x%x\n", jthread_current(), addr);  )
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;
@@ -335,13 +365,26 @@ inline
 int
 __waitCond(iLock* lk, jlong timeout)
 {
-DBG(VMCONDS,	dprintf("Wait 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);	)
+       int count;
+DBG(VMCONDS,	dprintf("Wait 0x%x on iLock=0x%x\n", jthread_current(), lk);	)
 
-	if (lk == 0 || lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
+	if (lk == 0 || lk->holder != jthread_current()) {
 		throwException(IllegalMonitorStateException);
 	}
 
-	(*Kaffe_LockInterface.wait)(lk, timeout);
+        /*
+         * We must reacquire the Java lock before we're ready to die
+         */
+        jthread_disable_stop();
+        count = lk->count;
+        lk->count = 0;
+        jcondvar_wait(lk->cv, lk->mux, timeout);
+        lk->holder = (void *)jthread_current();
+        lk->count = count;
+        
+        /* now it's safe to start dying */
+        jthread_enable_stop();
+
 	return (0);
 }
 
@@ -353,7 +396,7 @@ _waitCond(void* addr, jlong timeout)
 {
 	iLock* lk;
 
-DBG(VMLOCKS,	dprintf("Wait 0x%x on addr=0x%x\n", THREAD_NATIVE(), addr);    )
+DBG(VMLOCKS,	dprintf("Wait 0x%x on addr=0x%x\n", jthread_current(), addr);    )
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;
@@ -371,13 +414,13 @@ inline
 void
 __signalCond(iLock* lk)
 {
-DBG(VMCONDS,	dprintf("Signal 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);)
+DBG(VMCONDS,	dprintf("Signal 0x%x on iLock=0x%x\n", jthread_current(), lk);)
 
-	if (lk == 0 || lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
+	if (lk == 0 || lk->holder != jthread_current()) {
 		throwException(IllegalMonitorStateException);
 	}
 
-	(*Kaffe_LockInterface.signal)(lk);
+	jcondvar_signal(lk->cv, lk->mux);
 }
 
 /*
@@ -388,7 +431,7 @@ _signalCond(void* addr)
 {
 	iLock* lk;
 
-DBG(VMCONDS,	dprintf("Signal 0x%x on addr=0x%x\n", THREAD_NATIVE(), addr);)
+DBG(VMCONDS,	dprintf("Signal 0x%x on addr=0x%x\n", jthread_current(), addr);)
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;
@@ -405,13 +448,13 @@ inline
 void
 __broadcastCond(iLock* lk)
 {
-DBG(VMCONDS,	dprintf("Broadcast 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);)
+DBG(VMCONDS,	dprintf("Broadcast 0x%x on iLock=0x%x\n", jthread_current(), lk);)
 
-	if (lk == 0 || lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
+	if (lk == 0 || lk->holder != jthread_current()) {
 		throwException(IllegalMonitorStateException);
 	}
 
-	(*Kaffe_LockInterface.broadcast)(lk);
+	jcondvar_broadcast(lk->cv, lk->mux);
 }
 
 void
@@ -419,7 +462,7 @@ _broadcastCond(void* addr)
 {
 	iLock* lk;
 
-DBG(VMCONDS,	dprintf("Broadcast 0x%x on addr=0x%x\n", THREAD_NATIVE(), addr);)
+DBG(VMCONDS,	dprintf("Broadcast 0x%x on addr=0x%x\n", jthread_current(), addr);)
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;
@@ -432,7 +475,7 @@ DBG(VMCONDS,	dprintf("Broadcast 0x%x on addr=0x%x\n", THREAD_NATIVE(), addr);)
 int
 __holdMutex(iLock* lk)
 {
-	if (lk == 0 || lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
+	if (lk == 0 || lk->holder != jthread_current()) {
 		return (0);
 	}
 	else {

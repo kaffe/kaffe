@@ -28,8 +28,8 @@ typedef struct _stackTrace {
 	vmException* frame;
 } stackTrace;
 
-#define STACKTRACEINIT(S,I,O)	((S).frame = (vmException*)unhand((*Kaffe_ThreadInterface.currentJava)())->exceptPtr)
-#define	STACKTRACESTEP(S)	((S).frame = (*Kaffe_ThreadInterface.nextFrame)((S).frame))
+#define STACKTRACEINIT(S,I,O)	((S).frame = (vmException*)unhand(getCurrentThread())->exceptPtr)
+#define	STACKTRACESTEP(S)	((S).frame = nextFrame((S).frame))
 #define STACKTRACEPC(S)		((S).frame->pc)
 #define STACKTRACEMETHCREATE(S)	((S).frame->meth)
 #define STACKTRACEEND(S)	((S).frame == 0 || (S).frame->meth == (Method*)1)
@@ -50,7 +50,7 @@ typedef struct _stackTrace {
 			(S).frame = (I);		\
 		}					\
 	}
-#define	STACKTRACESTEP(S)	((S).frame = (*Kaffe_ThreadInterface.nextFrame)((S).frame))
+#define	STACKTRACESTEP(S)	((S).frame = nextFrame((S).frame))
 #define STACKTRACEPC(S)		(PCFRAME((S).frame))
 #define	STACKTRACEMETHCREATE(S)	(0)
 #define	STACKTRACEEND(S)	((S).frame == 0)

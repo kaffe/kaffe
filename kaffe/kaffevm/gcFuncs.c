@@ -27,6 +27,7 @@
 #include "baseClasses.h"
 #include "stringSupport.h"
 #include "thread.h"
+#include "jthread.h"
 #include "itypes.h"
 #include "bytecode.h"
 #include "exception.h"
@@ -39,6 +40,7 @@
 #include "md.h"
 #include "jni.h"
 #include "soft.h"
+#include "thread.h"
 #include "gcRefs.h"
 
 /*****************************************************************************
@@ -285,6 +287,46 @@ walkRefArray(Collector* collector, void* base, uint32 size)
         }
 }
 
+/*      
+ * Walk the thread's internal context.
+ * This is invoked by the garbage collector thread, which is not
+ * stopped.
+ *      
+ * We will iterate through all threads, including the garbage collector
+ * and those threads that haven't been started yet.
+ */     
+static  
+void    
+TwalkThread(Collector* collector, Hjava_lang_Thread* tid)
+{       
+        void *from;
+        unsigned len;  
+        jthread_t jtid = (jthread_t)unhand(tid)->PrivateInfo;
+        
+        /* Don't walk the gc thread's stack.  It was not stopped and
+         * we hence don't have valid sp information.  In addition, there's
+         * absolutely no reason why we should walk it at all.
+         */
+        if (jtid == 0 || tid == jthread_getcookie((void*)jthread_current())) {
+DBG(JTHREAD,
+                dprintf("%d NOT walking jtid %p\n", jthread_current(), jtid);
+    )   
+                return;
+        }
+        
+        /* Ask threading system what the interesting stack range is;
+         * If the thread is too young, the threading system will return
+         * 0 from extract_stack.  In that case, we don't have walk anything.
+         */
+        if (jthread_extract_stack(jtid, &from, &len)) {
+DBG(JTHREAD,
+                dprintf("%d walking jtid %p\n", jthread_current(), jtid);
+    )
+                /* and walk it if needed */
+                GC_walkConservative(collector, from, len);
+        }
+}
+
 /*
  * Walk an object.      
  */
@@ -358,8 +400,7 @@ DBG(GCWALK,
 
         /* Special magic to handle thread objects */
         if (soft_instanceof(ThreadClass, obj)) {
-                (*Kaffe_ThreadInterface.GcWalkThread)(collector, 
-						     (Hjava_lang_Thread*)base);
+                TwalkThread(collector, (Hjava_lang_Thread*)base);
         }
 }
 

@@ -27,6 +27,7 @@
 #include "itypes.h"
 #include "locks.h"
 #include "thread.h"
+#include "jthread.h"
 #include "md.h"
 #include "gc.h"
 

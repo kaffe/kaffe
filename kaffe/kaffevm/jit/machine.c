@@ -43,6 +43,7 @@
 #include "soft.h"
 #include "jni.h"
 #include "thread.h"
+#include "jthread.h"
 
 /*
  * Define information about this engine.
@@ -133,7 +134,10 @@ static void
 checkStackOverflow(void)
 {
 	Hjava_lang_Throwable* overflow;
-	Hjava_lang_Thread* current = (*Kaffe_ThreadInterface.currentJava)();
+	/* XXX fix this.  
+	 * We should not have to access current just to do the stack check
+	 */
+	Hjava_lang_Thread* current = getCurrentThread();
 	jint *needOnStack;
 
 	if (current == 0) {
@@ -141,7 +145,10 @@ checkStackOverflow(void)
 	}
 
 	needOnStack = &unhand(current)->needOnStack;
-	overflow = (*Kaffe_ThreadInterface.checkStack)(*needOnStack);
+	if (jthread_stackcheck(*needOnStack)) {
+		return;
+	}
+	overflow = (Hjava_lang_Throwable*)unhand(current)->stackOverflowError;
 
 	if (overflow != 0) {
 		if (*needOnStack == STACK_LOW) {

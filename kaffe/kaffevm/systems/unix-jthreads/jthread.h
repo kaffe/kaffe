@@ -37,10 +37,16 @@
 #include "config-signal.h"
 #include "gtypes.h"		/* for jlong */
 #include "lerrno.h"
-#include "thread.h"		/* for NOTIMEOUT */
-#include "exception.h"		/* for catchSignal */
-#include "support.h"		/* for currentTime */
+#include "support.h"		/* XXX: for currentTime */
 #include "md.h"
+
+#define  NOTIMEOUT                       0
+
+#if defined(__WIN32__)
+#define SIG_T   void(*)()
+#else
+#define SIG_T   void*
+#endif
 
 /*======== 	end of definitions that apply to Kaffe 	     	     ========*/
 
@@ -140,6 +146,16 @@ jthread_create(unsigned char pri, 	/* initial priority */
 	int daemon, 			/* is this thread a daemon? */
 	void *jlThread, 		/* cookie for this thread */
 	size_t threadStackSize);	/* stack size to be allocated */
+
+struct _exceptionFrame;
+typedef void (*exchandler_t)(struct _exceptionFrame*);
+
+/*
+ * Register handlers for null pointer accesses and floating point exceptions
+ */
+void
+jthread_initexceptions(exchandler_t _nullHandler,
+                       exchandler_t _floatingHandler);
 
 /*
  * set a function to be run when last non-daemon dies 
@@ -330,5 +346,7 @@ void jthread_spinoff(void *arg)
 {
 	intsRestore();
 }
+
+extern void catchSignal(int, void*);
 
 #endif

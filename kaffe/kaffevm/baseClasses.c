@@ -103,7 +103,7 @@ initialiseKaffe(void)
         }
   
 	/* Initialise the (native) threading system */
-	(*Kaffe_ThreadInterface.init)(main_collector, threadStackSize);
+	initNativeThreads(threadStackSize);
 
 	/* Initialise the string and utf8 systems */
 	stringInit();

@@ -20,6 +20,7 @@
 #include "gc-mem.h"
 #include "locks.h"
 #include "thread.h"
+#include "jthread.h"
 #include "errors.h"
 #include "md.h"
 

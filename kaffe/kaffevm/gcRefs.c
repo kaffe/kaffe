@@ -17,6 +17,7 @@
 #include "gc.h"
 #include "locks.h"
 #include "thread.h"
+#include "jthread.h"
 #include "errors.h"
 #include "md.h"
 
@@ -120,5 +121,5 @@ gc_walk_refs(Collector* collector)
          * registered.  Terminating a thread will remove it from the
          * threading system, and then we won't walk it here anymore
          */
-        (*Kaffe_ThreadInterface.GcWalkThreads)(walkMemory);
+	jthread_walkLiveThreads(walkMemory);
 }

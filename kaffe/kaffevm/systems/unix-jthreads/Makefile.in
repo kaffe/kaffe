@@ -123,7 +123,7 @@ nativedir = @nativedir@
 with_engine = @with_engine@
 
 noinst_LTLIBRARIES = libkthread.la
-libkthread_la_SOURCES = internal.c jthread.c syscalls.c
+libkthread_la_SOURCES = jthread.c syscalls.c signal.c
 EXTRA_DIST = Makefile.frag config-jthreads.h jthread.h
 
 INCLUDES =  	-I. -I$(srcdir) -I../.. -I$(srcdir)/../.. 	-I$(top_builddir)/config -I$(top_srcdir)/config 	-I$(top_builddir)/include -I$(top_srcdir)/include
@@ -144,7 +144,7 @@ X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 libkthread_la_LDFLAGS = 
 libkthread_la_LIBADD = 
-libkthread_la_OBJECTS =  internal.lo jthread.lo syscalls.lo
+libkthread_la_OBJECTS =  jthread.lo syscalls.lo signal.lo
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -157,7 +157,7 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-DEP_FILES =  .deps/internal.P .deps/jthread.P .deps/syscalls.P
+DEP_FILES =  .deps/jthread.P .deps/signal.P .deps/syscalls.P
 SOURCES = $(libkthread_la_SOURCES)
 OBJECTS = $(libkthread_la_OBJECTS)
 

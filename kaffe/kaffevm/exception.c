@@ -26,6 +26,7 @@
 #include "baseClasses.h"
 #include "lookup.h"
 #include "thread.h"
+#include "jthread.h"
 #include "errors.h"
 #include "itypes.h"
 #include "external.h"
@@ -35,27 +36,18 @@
 #include "stackTrace.h"
 
 #if defined(INTERPRETER)
-#define	DEFINEFRAME()		/* Does nothing */
+struct _exceptionFrame { };
 #define	FIRSTFRAME(f, e)	/* Does nothing */
-#define	DISPATCHFRAME(e)	dispatchException((Hjava_lang_Throwable*)(e), 0)
-#define	EXCEPTIONPROTO		int sig
-#define	EXCEPTIONFRAME(f, c)	/* Does nothing */
-#define	EXCEPTIONFRAMEPTR	0
 #elif defined(TRANSLATOR)
-#define	DEFINEFRAME()		exceptionFrame frame
-#define	DISPATCHFRAME(e)	dispatchException((Hjava_lang_Throwable*)(e), &frame)
-#define	EXCEPTIONFRAMEPTR	&frame
 static void findExceptionInMethod(uintp, Hjava_lang_Class*, exceptionInfo*);
-#endif
-#define	GETNEXTFRAME(F)		((*Kaffe_ThreadInterface.nextFrame)(F))
+#endif	/* TRANSLATOR */
 
-static void nullException(EXCEPTIONPROTO);
-static void floatingException(EXCEPTIONPROTO);
+static void nullException(struct _exceptionFrame *);
+static void floatingException(struct _exceptionFrame *);
 static void dispatchException(Hjava_lang_Throwable*, struct _exceptionFrame*) __NORETURN__;
 
 Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
 
-extern Hjava_lang_Object* exceptionObject;
 extern uintp Kaffe_JNI_estart;
 extern uintp Kaffe_JNI_eend;
 extern void Kaffe_JNIExceptionHandler(void);
@@ -107,14 +99,14 @@ throwError(errorInfo* einfo)
 void
 throwExternalException(Hjava_lang_Throwable* eobj)
 {
-	DEFINEFRAME();
+	struct _exceptionFrame frame;
 	if (eobj == 0) {
 		fprintf(stderr, "Exception thrown on null object ... aborting\n");
 		ABORT();
 		EXIT(1);
 	}
 	FIRSTFRAME(frame, eobj);
-	DISPATCHFRAME(eobj);
+	dispatchException(eobj, &frame);
 }
 
 void
@@ -128,6 +120,32 @@ throwOutOfMemory(void)
 	}
 	fprintf(stderr, "(Insufficient memory)\n");
 	EXIT(-1);
+}
+
+void*
+nextFrame(void* fm)
+{  
+#if defined(TRANSLATOR)
+        exceptionFrame* nfm;
+
+        nfm = (exceptionFrame*)(((exceptionFrame*)fm)->retbp);
+        /* Note: this should obsolete the FRAMEOKAY macro */
+        if (nfm && jthread_on_current_stack((void *)nfm->retbp)) {
+                return (nfm);
+        }
+        else {
+                return (0);
+        }
+#else
+        vmException* nfm;
+        nfm = ((vmException*)fm)->prev;
+        if (nfm != 0 && nfm->meth != (Method*)1) {
+                return (nfm);
+        }
+        else {
+                return (0);
+        }
+#endif
 }
 
 static
@@ -195,7 +213,7 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 
 			/* If not here, exit monitor if synchronised. */
 			lk = getLock(obj);
-			if (lk != 0 && lk->holder == (*Kaffe_ThreadInterface.currentNative)()) {
+			if (lk != 0 && lk->holder == jthread_current()) {
 				unlockKnownMutex(lk);
 			}
 		}
@@ -205,7 +223,7 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 		exceptionFrame* frame;
 		exceptionInfo einfo;
 
-		for (frame = baseframe; frame != 0; frame = GETNEXTFRAME(frame)) {
+		for (frame = baseframe; frame != 0; frame = nextFrame(frame)) {
 			findExceptionInMethod(PCFRAME(frame), class, &einfo);
 
                         if (einfo.method == 0 && PCFRAME(frame) >= Kaffe_JNI_estart && PCFRAME(frame) < Kaffe_JNI_eend) {
@@ -232,7 +250,7 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 
 			/* If method found and synchronised, unlock the lock */
 			lk = getLock(obj);
-			if (lk != 0 && lk->holder == (*Kaffe_ThreadInterface.currentNative)()) {
+			if (lk != 0 && lk->holder == jthread_current()) {
 				unlockKnownMutex(lk);
 			}
 		}
@@ -275,105 +293,37 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 void
 initExceptions(void)
 {
-DBG(INIT,	printf("initExceptions()\n");			)
-	if (DBGEXPR(EXCEPTION, false, true)) {
+DBG(INIT,	
+	dprintf("initExceptions()\n");			
+    )
 	/* Catch signals we need to convert to exceptions */
-#if defined(SIGSEGV)
-		catchSignal(SIGSEGV, nullException);
-#endif
-#if defined(SIGBUS)
-		catchSignal(SIGBUS, nullException);
-#endif
-#if defined(SIGFPE)
-		catchSignal(SIGFPE, floatingException);
-#endif
-#if defined(SIGPIPE)
-		catchSignal(SIGPIPE, SIG_IGN);
-#endif
-	}
+	jthread_initexceptions(nullException, floatingException);
 }
 
 /*
  * Null exception - catches bad memory accesses.
  */
 static void
-nullException(EXCEPTIONPROTO)
+nullException(struct _exceptionFrame *frame)
 {
 	Hjava_lang_Throwable* npe;
 
-	DEFINEFRAME();
-
-	/* don't catch the signal if debugging exceptions */
-	if (DBGEXPR(EXCEPTION, false, true))
-		catchSignal(sig, nullException);
-
-	EXCEPTIONFRAME(frame, ctx);
 	npe = (Hjava_lang_Throwable*)NullPointerException;
-	unhand(npe)->backtrace = buildStackTrace(EXCEPTIONFRAMEPTR);
-	DISPATCHFRAME(npe);
+	unhand(npe)->backtrace = buildStackTrace(frame);
+	dispatchException(npe, frame);
 }
 
 /*
  * Division by zero.
  */
 static void
-floatingException(EXCEPTIONPROTO)
+floatingException(struct _exceptionFrame *frame)
 {
 	Hjava_lang_Throwable* ae;
-	DEFINEFRAME();
 
-	/* don't catch the signal if debugging exceptions */
-	if (DBGEXPR(EXCEPTION, false, true))
-		catchSignal(sig, floatingException);
-	EXCEPTIONFRAME(frame, ctx);
 	ae = (Hjava_lang_Throwable*)ArithmeticException;
-	unhand(ae)->backtrace = buildStackTrace(EXCEPTIONFRAMEPTR);
-	DISPATCHFRAME(ae);
-}
-
-/*
- * Setup a signal handler.
- */
-void
-catchSignal(int sig, void* handler)
-{
-	sigset_t nsig;
-
-#if defined(HAVE_SIGACTION)
-
-	struct sigaction newact;
-
-	newact.sa_handler = (SIG_T)handler;
-	sigemptyset(&newact.sa_mask);
-	/* we cannot afford to have our signal handlers preempted before
-	 * they are able to disable interrupts.
-	 */
-	sigaddset(&newact.sa_mask, SIGIO);
-	sigaddset(&newact.sa_mask, SIGALRM);
-#if defined(SIGVTALRM)
-	sigaddset(&newact.sa_mask, SIGVTALRM);
-#endif
-#if defined(SIGUNUSED)
-	sigaddset(&newact.sa_mask, SIGUNUSED);
-#endif
-	newact.sa_flags = 0;
-#if defined(SA_SIGINFO)
-	newact.sa_flags |= SA_SIGINFO;
-#endif
-	sigaction(sig, &newact, NULL);
-
-#elif defined(HAVE_SIGNAL)
-
-	signal(sig, (SIG_T)handler);
-
-#else
-	ABORT();
-#endif
-
-	/* Unblock this signal */
-	sigemptyset(&nsig);
-	sigaddset(&nsig, sig);
-	sigprocmask(SIG_UNBLOCK, &nsig, 0);
+	unhand(ae)->backtrace = buildStackTrace(frame);
+	dispatchException(ae, frame);
 }
 
 #if defined(TRANSLATOR)

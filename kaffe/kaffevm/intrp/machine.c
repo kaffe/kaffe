@@ -38,6 +38,7 @@
 #include "external.h"
 #include "baseClasses.h"
 #include "thread.h"
+#include "jthread.h"
 #include "locks.h"
 #include "checks.h"
 #include "errors.h"
@@ -107,15 +108,18 @@ virtualMachine(methods* meth, slots* volatile arg, slots* retval, Hjava_lang_Thr
 		/* implement stack overflow check */
 		needOnStack = &unhand(tid)->needOnStack;
 
-		overflow = (*Kaffe_ThreadInterface.checkStack)(*needOnStack);
-		if (overflow != 0) {
-			if (*needOnStack == STACK_LOW) {
-				fprintf(stderr, 
-				    "Panic: unhandled StackOverflowError()\n");
-				ABORT();
+		if (jthread_stackcheck(*needOnStack) == false) {
+			overflow = (Hjava_lang_Throwable*)
+				unhand(tid)->stackOverflowError;
+			if (overflow != 0) {
+				if (*needOnStack == STACK_LOW) {
+					fprintf(stderr, 
+					    "Panic: unhandled StackOverflowError()\n");
+					ABORT();
+				}
+				*needOnStack = STACK_LOW;
+				throwException(overflow);
 			}
-			*needOnStack = STACK_LOW;
-			throwException(overflow);
 		}
 	}
 

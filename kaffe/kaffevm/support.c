@@ -359,7 +359,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 #endif
 #if defined(INTERPRETER)
 	if ((meth->accflags & ACC_NATIVE) == 0) {
-		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, (*Kaffe_ThreadInterface.currentJava)());
+		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, getCurrentThread());
 	}
 	else {
 		iLock* sync;
@@ -541,7 +541,7 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 #endif
 #if defined(INTERPRETER)
 	if ((meth->accflags & ACC_NATIVE) == 0) {
-		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, (*Kaffe_ThreadInterface.currentJava)());
+		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, getCurrentThread());
 	}
 	else {
 		iLock* sync;

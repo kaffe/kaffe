@@ -23,14 +23,13 @@
 #define	THREADGROUPCLASS		"java/lang/ThreadGroup"
 #define	THREADDEATHCLASS		"java/lang/ThreadDeath"
 
-#define	NOTIMEOUT			0
-
-#define THREAD_MAXPRIO  (java_lang_Thread_MAX_PRIORITY+1)
+#define THREAD_MAXPRIO  		(java_lang_Thread_MAX_PRIORITY+1)
 
 /*
  * Interface to the thread system.
  */
 void	initThreads(void);
+void    initNativeThreads(int nativestacksize);
 void	yieldThread(void);
 void	sleepThread(jlong);
 void	exitThread(void) __NORETURN__;
@@ -48,38 +47,6 @@ Hjava_lang_Thread* createDaemon(void*, const char*, int);
 extern  Hjava_lang_Class* ThreadClass;
 struct  _Collector;
 
-typedef struct ThreadInterface {
-
-	void			(*init)(struct _Collector* col, 
-					int nativestacksize);
-	void			(*createFirst)(Hjava_lang_Thread*);
-	void			(*create)(Hjava_lang_Thread*, void*);
-	void			(*sleep)(jlong);
-	void			(*yield)(void);
-	void			(*setPriority)(Hjava_lang_Thread*, jint);
-	void			(*stop)(Hjava_lang_Thread*);
-	void			(*interrupt)(Hjava_lang_Thread*);
-	void			(*exit)(void) __NORETURN__;
-	bool			(*alive)(Hjava_lang_Thread*);
-	jint			(*frames)(Hjava_lang_Thread*);
-	void			(*finalize)(Hjava_lang_Thread*);
-
-	Hjava_lang_Thread*	(*currentJava)(void);
-	void*			(*currentNative)(void);
-
-	void			(*GcWalkThreads)(void (*)(void*));
-	void			(*GcWalkThread)(struct _Collector*, 
-						Hjava_lang_Thread*);
-	void			(*GcSuspendThreads)(void);
-	void			(*GcResumeThreads)(void);
-
-	void*			(*nextFrame)(void*);
-	Hjava_lang_Throwable*	(*checkStack)(int);
-
-} ThreadInterface;
-
-extern ThreadInterface Kaffe_ThreadInterface;
-
-#define THREAD_NATIVE()         (*Kaffe_ThreadInterface.currentNative)()
+#define THREAD_NATIVE()         (jthread_current())
 
 #endif
