@@ -1277,6 +1277,9 @@ if test x"$ac_cv_typedef_bool" = x"yes"; then
   AC_DEFINE(HAVE_BOOL, 1, [Do we have bool])
 fi
 
+AC_CHECK_TYPES([uint_fast8_t,int_fast8_t,uint_fast16_t,int_fast16_t])
+AC_CHECK_TYPES([uint_fast32_t,int_fast32_t,uint_fast64_t,int_fast64_t])
+
 dnl =========================================================================
 dnl Check for struct sigcontext.
 dnl -------------------------------------------------------------------------

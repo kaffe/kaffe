@@ -1,3 +1,10 @@
+2005-03-26  Supreet Sethi  <supreet@linux-delhi.org>,
+	    Dalibor Topic  <robilad@kaffe.org>
+
+	* config/i386/atomic.h: Added checks for headers,
+	include statement for <inttypes.h> and checks for
+	fast types to fix build on FreeBSD 4.x.
+
 2005-03-25  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/kaffe.def: (GETSTATIC) Cast

@@ -245,6 +245,18 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
+/* Define to 1 if the system has the type `int_fast16_t'. */
+#undef HAVE_INT_FAST16_T
+
+/* Define to 1 if the system has the type `int_fast32_t'. */
+#undef HAVE_INT_FAST32_T
+
+/* Define to 1 if the system has the type `int_fast64_t'. */
+#undef HAVE_INT_FAST64_T
+
+/* Define to 1 if the system has the type `int_fast8_t'. */
+#undef HAVE_INT_FAST8_T
+
 /* Define to 1 if you have the `ioctl' function. */
 #undef HAVE_IOCTL
 
@@ -656,6 +668,18 @@
 
 /* Define to 1 if the system has the type `uint8'. */
 #undef HAVE_UINT8
+
+/* Define to 1 if the system has the type `uint_fast16_t'. */
+#undef HAVE_UINT_FAST16_T
+
+/* Define to 1 if the system has the type `uint_fast32_t'. */
+#undef HAVE_UINT_FAST32_T
+
+/* Define to 1 if the system has the type `uint_fast64_t'. */
+#undef HAVE_UINT_FAST64_T
+
+/* Define to 1 if the system has the type `uint_fast8_t'. */
+#undef HAVE_UINT_FAST8_T
 
 /* Define to 1 if you have the `uname' function. */
 #undef HAVE_UNAME
