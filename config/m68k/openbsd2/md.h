@@ -94,7 +94,7 @@
 	  "m" ((CALL)->rettype),				  \
 	  "a" ((CALL)->ret)					  \
 	: "d0", "d1", "fp0", "cc", "memory");			  \
-	asm volatile ("addw %0,sp",				  \
+	asm volatile ("addw %0,sp" 				  \
 	: : "r" ((CALL)->argsize * sizeof(jint)) : "cc")
 
 #endif
