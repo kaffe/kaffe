@@ -51,186 +51,186 @@ import java.io.Serializable;
 public class ChoiceCallback implements Callback, Serializable
 {
 
-   // Constants and variables
-   // -------------------------------------------------------------------------
+  // Constants and variables
+  // -------------------------------------------------------------------------
 
-   /**
-    * @serial
-    * @since 1.4
-    */
-   private String prompt;
+  /**
+   * @serial
+   * @since 1.4
+   */
+  private String prompt;
 
-   /**
-    * @serial the list of choices.
-    * @since 1.4
-    */
-   private String[] choices;
+  /**
+   * @serial the list of choices.
+   * @since 1.4
+   */
+  private String[] choices;
 
-   /**
-    * @serial the choice to be used as the default choice.
-    * @since 1.4
-    */
-   private int defaultChoice;
+  /**
+   * @serial the choice to be used as the default choice.
+   * @since 1.4
+   */
+  private int defaultChoice;
 
-   /**
-    * @serial whether multiple selections are allowed from the list of choices.
-    * @since 1.4
-    */
-   private boolean multipleSelectionsAllowed;
+  /**
+   * @serial whether multiple selections are allowed from the list of choices.
+   * @since 1.4
+   */
+  private boolean multipleSelectionsAllowed;
 
-   /**
-    * @serial the selected choices, represented as indexes into the choices list.
-    * @since 1.4
-    */
-   private int[] selections;
+  /**
+   * @serial the selected choices, represented as indexes into the choices list.
+   * @since 1.4
+   */
+  private int[] selections;
 
-   // Constructor(s)
-   //--------------------------------------------------------------------------
+  // Constructor(s)
+  //--------------------------------------------------------------------------
 
-   /**
-    * Construct a <code>ChoiceCallback</code> with a prompt, a list of choices,
-    * a default choice, and a boolean specifying whether or not multiple
-    * selections from the list of choices are allowed.
-    *
-    * @param prompt the prompt used to describe the list of choices.
-    * @param choices the list of choices.
-    * @param defaultChoice the choice to be used as the default choice when the
-    * list of choices are displayed. This value is represented as an index into
-    * the <code>choices</code> array.
-    * @param multipleSelectionsAllowed boolean specifying whether or not
-    * multiple selections can be made from the list of choices.
-    * @throws IllegalArgumentException if <code>prompt</code> is <code>null</code>,
-    * if <code>prompt</code> has a length of <code>0</code>, if <code>choices</code>
-    * is <code>null</code>, if <code>choices</code> has a length of <code>0</code>,
-    * if any element from <code>choices</code> is <code>null</code>, if any
-    * element from <code>choices</code> has a length of <code>0</code> or if
-    * <code>defaultChoice</code> does not fall within the array boundaries of
-    * <code>choices</code>.
-    */
-   public ChoiceCallback(String prompt, String[] choices, int defaultChoice,
+  /**
+   * Construct a <code>ChoiceCallback</code> with a prompt, a list of choices,
+   * a default choice, and a boolean specifying whether or not multiple
+   * selections from the list of choices are allowed.
+   *
+   * @param prompt the prompt used to describe the list of choices.
+   * @param choices the list of choices.
+   * @param defaultChoice the choice to be used as the default choice when the
+   * list of choices are displayed. This value is represented as an index into
+   * the <code>choices</code> array.
+   * @param multipleSelectionsAllowed boolean specifying whether or not
+   * multiple selections can be made from the list of choices.
+   * @throws IllegalArgumentException if <code>prompt</code> is <code>null</code>,
+   * if <code>prompt</code> has a length of <code>0</code>, if <code>choices</code>
+   * is <code>null</code>, if <code>choices</code> has a length of <code>0</code>,
+   * if any element from <code>choices</code> is <code>null</code>, if any
+   * element from <code>choices</code> has a length of <code>0</code> or if
+   * <code>defaultChoice</code> does not fall within the array boundaries of
+   * <code>choices</code>.
+   */
+  public ChoiceCallback(String prompt, String[] choices, int defaultChoice,
 			boolean multipleSelectionsAllowed)
   {
-      super();
+    super();
 
-      setPrompt(prompt);
-      setChoices(choices);
+    setPrompt(prompt);
+    setChoices(choices);
     if (defaultChoice < 0 || defaultChoice >= this.choices.length)
       {
-         throw new IllegalArgumentException("default choice is out of bounds");
+	throw new IllegalArgumentException("default choice is out of bounds");
       }
-      this.defaultChoice = defaultChoice;
-      this.multipleSelectionsAllowed = multipleSelectionsAllowed;
-   }
+    this.defaultChoice = defaultChoice;
+    this.multipleSelectionsAllowed = multipleSelectionsAllowed;
+  }
 
-   // Instance methods
-   // -------------------------------------------------------------------------
+  // Instance methods
+  // -------------------------------------------------------------------------
 
-   /**
-    * Get the prompt.
-    *
-    * @return the prompt.
-    */
+  /**
+   * Get the prompt.
+   *
+   * @return the prompt.
+   */
   public String getPrompt()
   {
-      return prompt;
-   }
+    return prompt;
+  }
 
-   /**
-    * Get the list of choices.
-    *
-    * @return the list of choices.
-    */
+  /**
+   * Get the list of choices.
+   *
+   * @return the list of choices.
+   */
   public String[] getChoices()
   {
-      return choices;
-   }
+    return choices;
+  }
 
-   /**
-    * Get the defaultChoice.
-    *
-    * @return the defaultChoice, represented as an index into the choices list.
-    */
+  /**
+   * Get the defaultChoice.
+   *
+   * @return the defaultChoice, represented as an index into the choices list.
+   */
   public int getDefaultChoice()
   {
-      return defaultChoice;
-   }
+    return defaultChoice;
+  }
 
-   /**
-    * Get the boolean determining whether multiple selections from the choices
-    * list are allowed.
-    *
-    * @return whether multiple selections are allowed.
-    */
+  /**
+   * Get the boolean determining whether multiple selections from the choices
+   * list are allowed.
+   *
+   * @return whether multiple selections are allowed.
+   */
   public boolean allowMultipleSelections()
   {
-      return multipleSelectionsAllowed;
-   }
+    return multipleSelectionsAllowed;
+  }
 
-   /**
-    * Set the selected choice.
-    *
-    * @param selection the selection represented as an index into the choices
-    * list.
-    * @see #getSelectedIndexes()
-    */
+  /**
+   * Set the selected choice.
+   *
+   * @param selection the selection represented as an index into the choices
+   * list.
+   * @see #getSelectedIndexes()
+   */
   public void setSelectedIndex(int selection)
   {
-      this.selections = new int[1];
-      this.selections[0] = selection;
-   }
+    this.selections = new int[1];
+    this.selections[0] = selection;
+  }
 
-   /**
-    * Set the selected choices.
-    *
-    * @param selections the selections represented as indexes into the choices
-    * list.
-    * @throws UnsupportedOperationException if multiple selections are not
-    * allowed, as determined by <code>allowMultipleSelections</code>.
-    * @see #getSelectedIndexes()
-    */
+  /**
+   * Set the selected choices.
+   *
+   * @param selections the selections represented as indexes into the choices
+   * list.
+   * @throws UnsupportedOperationException if multiple selections are not
+   * allowed, as determined by <code>allowMultipleSelections</code>.
+   * @see #getSelectedIndexes()
+   */
   public void setSelectedIndexes(int[] selections)
   {
     if (!multipleSelectionsAllowed)
       {
-         throw new UnsupportedOperationException("not allowed");
+	throw new UnsupportedOperationException("not allowed");
       }
 
-      this.selections = selections;
-   }
+    this.selections = selections;
+  }
 
-   /**
-    * Get the selected choices.
-    *
-    * @return the selected choices, represented as indexes into the choices list.
-    * @see #setSelectedIndexes(int[])
-    */
+  /**
+   * Get the selected choices.
+   *
+   * @return the selected choices, represented as indexes into the choices list.
+   * @see #setSelectedIndexes(int[])
+   */
   public int[] getSelectedIndexes()
   {
-      return selections;
-   }
+    return selections;
+  }
 
   private void setPrompt(String prompt) throws IllegalArgumentException
   {
     if ((prompt == null) || (prompt.length() == 0))
       {
-         throw new IllegalArgumentException("invalid prompt");
+	throw new IllegalArgumentException("invalid prompt");
       }
-      this.prompt = prompt;
-   }
+    this.prompt = prompt;
+  }
 
   private void setChoices(String[] choices) throws IllegalArgumentException
   {
     if (choices == null || choices.length == 0)
       {
-         throw new IllegalArgumentException("invalid choices");
+	throw new IllegalArgumentException("invalid choices");
       }
     for (int i = 0; i < choices.length; i++)
       {
 	if (choices[i] == null || choices[i].length() == 0)
 	  {
-            throw new IllegalArgumentException("invalid choice at index #"+i);
-         }
+	    throw new IllegalArgumentException("invalid choice at index #"+i);
+	  }
       }
-      this.choices = choices;
-   }
+    this.choices = choices;
+  }
 }

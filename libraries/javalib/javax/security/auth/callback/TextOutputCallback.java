@@ -51,45 +51,45 @@ import java.io.Serializable;
 public class TextOutputCallback implements Callback, Serializable
 {
 
-   // Constants and variables
-   // -------------------------------------------------------------------------
+  // Constants and variables
+  // -------------------------------------------------------------------------
 
-   /** Information message */
-   public static final int INFORMATION = 0;
+  /** Information message */
+  public static final int INFORMATION = 0;
 
-   /** Warning message */
-   public static final int WARNING = 1;
+  /** Warning message */
+  public static final int WARNING = 1;
 
-   /** Error message */
-   public static final int ERROR = 2;
+  /** Error message */
+  public static final int ERROR = 2;
 
-   /**
-    * @serial
-    * @since 1.4
-    */
-   private int messageType;
+  /**
+   * @serial
+   * @since 1.4
+   */
+  private int messageType;
 
-   /**
-    * @serial
-    * @since 1.4
-    */
-   private String message;
+  /**
+   * @serial
+   * @since 1.4
+   */
+  private String message;
 
-   // Constructor(s)
-   // -------------------------------------------------------------------------
+  // Constructor(s)
+  // -------------------------------------------------------------------------
 
-   /**
-    * <p>Construct a <code>TextOutputCallback</code> with a message type and
-    * message to be displayed.</p>
-    *
-    * @param messageType the message type (INFORMATION, WARNING or ERROR).
-    * @param message the message to be displayed.
-    * @throws IllegalArgumentException if <code>messageType</code> is not either
-    * <code>INFORMATION</code>, <code>WARNING</code> or <code>ERROR</code>, if
-    * <code>message</code> is <code>null</code>, or if <code>message</code> has
-    * a length of <code>0</code>.
-    */
-   public TextOutputCallback(int messageType, String message)
+  /**
+   * <p>Construct a <code>TextOutputCallback</code> with a message type and
+   * message to be displayed.</p>
+   *
+   * @param messageType the message type (INFORMATION, WARNING or ERROR).
+   * @param message the message to be displayed.
+   * @throws IllegalArgumentException if <code>messageType</code> is not either
+   * <code>INFORMATION</code>, <code>WARNING</code> or <code>ERROR</code>, if
+   * <code>message</code> is <code>null</code>, or if <code>message</code> has
+   * a length of <code>0</code>.
+   */
+  public TextOutputCallback(int messageType, String message)
     throws IllegalArgumentException
   {
     switch (messageType)
@@ -100,41 +100,41 @@ public class TextOutputCallback implements Callback, Serializable
       default: throw new IllegalArgumentException("invalid message type");
       }
 
-      setMessage(message);
-   }
+    setMessage(message);
+  }
 
-   // Class methods
-   // -------------------------------------------------------------------------
+  // Class methods
+  // -------------------------------------------------------------------------
 
-   // Instance methods
-   // -------------------------------------------------------------------------
+  // Instance methods
+  // -------------------------------------------------------------------------
 
-   /**
-    * <p>Returns the message's <code>messageType</code>.</p>
-    *
-    * @return the message type (INFORMATION, WARNING or ERROR).
-    */
+  /**
+   * <p>Returns the message's <code>messageType</code>.</p>
+   *
+   * @return the message type (INFORMATION, WARNING or ERROR).
+   */
   public int getMessageType()
   {
-      return messageType;
-   }
+    return messageType;
+  }
 
-   /**
-    * <p>Returns the <code>message</code> to be displayed.</p>
-    *
-    * @return the message to be displayed.
-    */
+  /**
+   * <p>Returns the <code>message</code> to be displayed.</p>
+   *
+   * @return the message to be displayed.
+   */
   public String getMessage()
   {
-      return message;
-   }
+    return message;
+  }
 
   private void setMessage(String message) throws IllegalArgumentException
   {
     if ((message == null) || (message.length() == 0))
       {
-         throw new IllegalArgumentException("invalid message");
+	throw new IllegalArgumentException("invalid message");
       }
-      this.message = message;
-   }
+    this.message = message;
+  }
 }

@@ -51,50 +51,50 @@ import java.util.Locale;
 public class LanguageCallback implements Callback, Serializable
 {
 
-   // Constants and variables
-   // -------------------------------------------------------------------------
+  // Constants and variables
+  // -------------------------------------------------------------------------
 
-   /**
-    * @serial
-    * @since 1.4
-    */
-   private Locale locale;
+  /**
+   * @serial
+   * @since 1.4
+   */
+  private Locale locale;
 
-   // Constructor(s)
-   // -------------------------------------------------------------------------
+  // Constructor(s)
+  // -------------------------------------------------------------------------
 
-   /** Construct a <code>LanguageCallback</code>. */
+  /** Construct a <code>LanguageCallback</code>. */
   public LanguageCallback()
   {
-      super();
-   }
+    super();
+  }
 
-   // Class methods
-   // -------------------------------------------------------------------------
+  // Class methods
+  // -------------------------------------------------------------------------
 
-   // Instance methods
-   // -------------------------------------------------------------------------
+  // Instance methods
+  // -------------------------------------------------------------------------
 
-   /**
-    * Set the retrieved Locale.
-    *
-    * @param locale the retrieved Locale.
-    * @see #getLocale()
-    */
+  /**
+   * Set the retrieved Locale.
+   *
+   * @param locale the retrieved Locale.
+   * @see #getLocale()
+   */
   public void setLocale(Locale locale)
   {
-      this.locale = locale;
-   }
+    this.locale = locale;
+  }
 
-   /**
-    * Get the retrieved Locale.
-    *
-    * @return the retrieved Locale, or <code>null</code> if no Locale could be
-    * retrieved.
-    * @see #setLocale(Locale)
-    */
+  /**
+   * Get the retrieved Locale.
+   *
+   * @return the retrieved Locale, or <code>null</code> if no Locale could be
+   * retrieved.
+   * @see #setLocale(Locale)
+   */
   public Locale getLocale()
   {
-      return locale;
-   }
+    return locale;
+  }
 }

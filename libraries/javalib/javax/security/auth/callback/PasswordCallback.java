@@ -50,119 +50,119 @@ import java.io.Serializable;
 public class PasswordCallback implements Callback, Serializable
 {
 
-   // Constants and variables
-   // -------------------------------------------------------------------------
+  // Constants and variables
+  // -------------------------------------------------------------------------
 
-   /**
-    * @serial
-    * @since 1.4
-    */
-   private String prompt;
+  /**
+   * @serial
+   * @since 1.4
+   */
+  private String prompt;
 
-   /**
-    * @serial
-    * @since 1.4
-    */
-   private boolean echoOn;
+  /**
+   * @serial
+   * @since 1.4
+   */
+  private boolean echoOn;
 
-   /**
-    * @serial
-    * @since 1.4
-    */
-   private char[] inputPassword;
+  /**
+   * @serial
+   * @since 1.4
+   */
+  private char[] inputPassword;
 
-   // Constructor(s)
-   // -------------------------------------------------------------------------
+  // Constructor(s)
+  // -------------------------------------------------------------------------
 
-   /**
-    * Construct a <code>PasswordCallback</code> with a prompt and a boolean
-    * specifying whether the password should be displayed as it is being typed.
-    *
-    * @param prompt the prompt used to request the password.
-    * @param echoOn <code>true</code> if the password should be displayed as it
-    * is being typed.
-    * @throws IllegalArgumentException if <code>prompt</code> is <code>null</code>
-    * or if <code>prompt</code> has a length of <code>0</code>.
-    */
+  /**
+   * Construct a <code>PasswordCallback</code> with a prompt and a boolean
+   * specifying whether the password should be displayed as it is being typed.
+   *
+   * @param prompt the prompt used to request the password.
+   * @param echoOn <code>true</code> if the password should be displayed as it
+   * is being typed.
+   * @throws IllegalArgumentException if <code>prompt</code> is <code>null</code>
+   * or if <code>prompt</code> has a length of <code>0</code>.
+   */
   public PasswordCallback(String prompt, boolean echoOn)
   {
-      super();
+    super();
 
-      setPrompt(prompt);
-      this.echoOn = echoOn;
-   }
+    setPrompt(prompt);
+    this.echoOn = echoOn;
+  }
 
-   // Class methods
-   // -------------------------------------------------------------------------
+  // Class methods
+  // -------------------------------------------------------------------------
 
-   // Instance methods
-   // -------------------------------------------------------------------------
+  // Instance methods
+  // -------------------------------------------------------------------------
 
-   /**
-    * Get the prompt.
-    *
-    * @return the prompt.
-    */
+  /**
+   * Get the prompt.
+   *
+   * @return the prompt.
+   */
   public String getPrompt()
   {
-      return prompt;
-   }
+    return prompt;
+  }
 
-   /**
-    * Return whether the password should be displayed as it is being typed.
-    *
-    * @return the whether the password should be displayed as it is being typed.
-    */
+  /**
+   * Return whether the password should be displayed as it is being typed.
+   *
+   * @return the whether the password should be displayed as it is being typed.
+   */
   public boolean isEchoOn()
   {
-      return echoOn;
-   }
+    return echoOn;
+  }
 
-   /**
-    * <p>Set the retrieved password.</p>
-    *
-    * <p>This method makes a copy of the input password before storing it.</p>
-    *
-    * @param password the retrieved password, which may be <code>null</code>.
-    * @see #getPassword()
-    */
+  /**
+   * <p>Set the retrieved password.</p>
+   *
+   * <p>This method makes a copy of the input password before storing it.</p>
+   *
+   * @param password the retrieved password, which may be <code>null</code>.
+   * @see #getPassword()
+   */
   public void setPassword(char[] password)
   {
-      inputPassword = (password == null ? null : (char[]) password.clone());
-   }
+    inputPassword = (password == null ? null : (char[]) password.clone());
+  }
 
-   /**
-    * <p>Get the retrieved password.</p>
-    *
-    * <p>This method returns a copy of the retrieved password.</p>
-    *
-    * @return the retrieved password, which may be <code>null</code>.
-    * @see #setPassword(char[])
-    */
+  /**
+   * <p>Get the retrieved password.</p>
+   *
+   * <p>This method returns a copy of the retrieved password.</p>
+   *
+   * @return the retrieved password, which may be <code>null</code>.
+   * @see #setPassword(char[])
+   */
   public char[] getPassword()
   {
-      return (inputPassword == null ? null : (char[]) inputPassword.clone());
-   }
+    return (inputPassword == null ? null : (char[]) inputPassword.clone());
+  }
 
-   /** Clear the retrieved password. */
+  /** Clear the retrieved password. */
   public void clearPassword()
   {
     if (inputPassword != null)
       {
 	for (int i = 0; i < inputPassword.length; i++)
 	  {
-            inputPassword[i] = '\0';
-         }
-         inputPassword = null;
+	    inputPassword[i] = '\0';
+	  }
+	inputPassword = null;
       }
-   }
+  }
 
   private void setPrompt(String prompt) throws IllegalArgumentException
   {
     if ((prompt == null) || (prompt.length() == 0))
       {
-         throw new IllegalArgumentException("invalid prompt");
+	throw new IllegalArgumentException("invalid prompt");
       }
-      this.prompt = prompt;
-   }
+    this.prompt = prompt;
+  }
 }

@@ -43,7 +43,7 @@ package javax.security.cert;
  *
  * <p><b>This class is deprecated in favor of the {@link
  * java.security.cert.CertificateEncodingException} class. It should not be used
- * in new  applications.</b></p>
+ * in new applications.</b></p>
  */
 public class CertificateEncodingException extends CertificateException
 {

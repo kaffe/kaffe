@@ -50,129 +50,129 @@ import java.io.Serializable;
 public class NameCallback implements Callback, Serializable
 {
 
-   // Constants and variables
-   // -------------------------------------------------------------------------
+  // Constants and variables
+  // -------------------------------------------------------------------------
 
-   /**
-    * @serial
-    * @since 1.4
-    */
-   private String prompt;
+  /**
+   * @serial
+   * @since 1.4
+   */
+  private String prompt;
 
-   /**
-    * @serial
-    * @since 1.4
-    */
-   private String defaultName;
+  /**
+   * @serial
+   * @since 1.4
+   */
+  private String defaultName;
 
-   /**
-    * @serial
-    * @since 1.4
-    */
-   private String inputName;
+  /**
+   * @serial
+   * @since 1.4
+   */
+  private String inputName;
 
-   // Constructor(s)
-   // -------------------------------------------------------------------------
+  // Constructor(s)
+  // -------------------------------------------------------------------------
 
-   /**
-    * Construct a <code>NameCallback</code> with a prompt.
-    *
-    * @param prompt the prompt used to request the name.
-    * @throws IllegalArgumentException if <code>prompt</code> is <code>null</code>
-    * or if <code>prompt</code> has a length of <code>0</code>.
-    */
+  /**
+   * Construct a <code>NameCallback</code> with a prompt.
+   *
+   * @param prompt the prompt used to request the name.
+   * @throws IllegalArgumentException if <code>prompt</code> is <code>null</code>
+   * or if <code>prompt</code> has a length of <code>0</code>.
+   */
   public NameCallback(String prompt)
   {
-      super();
+    super();
 
-      setPrompt(prompt);
-   }
+    setPrompt(prompt);
+  }
 
-   /**
-    * Construct a <code>NameCallback</code> with a prompt and default name.
-    *
-    * @param prompt the prompt used to request the information.
-    * @param defaultName the name to be used as the default name displayed with
-    * the prompt.
-    * @throws IllegalArgumentException if <code>prompt</code> is <code>null</code>
-    * or if <code>prompt</code> has a length of <code>0</code>, if
-    * <code>defaultName</code> is <code>null</code>, or if <code>defaultName</code>
-    * has a length of <code>0</code>.
-    */
-   public NameCallback(String prompt, String defaultName)
+  /**
+   * Construct a <code>NameCallback</code> with a prompt and default name.
+   *
+   * @param prompt the prompt used to request the information.
+   * @param defaultName the name to be used as the default name displayed with
+   * the prompt.
+   * @throws IllegalArgumentException if <code>prompt</code> is <code>null</code>
+   * or if <code>prompt</code> has a length of <code>0</code>, if
+   * <code>defaultName</code> is <code>null</code>, or if <code>defaultName</code>
+   * has a length of <code>0</code>.
+   */
+  public NameCallback(String prompt, String defaultName)
     throws IllegalArgumentException
   {
-      super();
+    super();
 
-      setPrompt(prompt);
-      setDefaultName(defaultName);
-   }
+    setPrompt(prompt);
+    setDefaultName(defaultName);
+  }
 
-   // Class methods
-   // -------------------------------------------------------------------------
+  // Class methods
+  // -------------------------------------------------------------------------
 
-   // Instance methods
-   // -------------------------------------------------------------------------
+  // Instance methods
+  // -------------------------------------------------------------------------
 
-   /**
-    * Get the prompt.
-    *
-    * @return the prompt.
-    */
+  /**
+   * Get the prompt.
+   *
+   * @return the prompt.
+   */
   public String getPrompt()
   {
-      return prompt;
-   }
+    return prompt;
+  }
 
-   /**
-    * Get the default name.
-    *
-    * @return the default name, or <code>null</code> if this
-    * <code>NameCallback</code> was not instantiated with a
-    * <code>defaultName</code>.
-    */
+  /**
+   * Get the default name.
+   *
+   * @return the default name, or <code>null</code> if this
+   * <code>NameCallback</code> was not instantiated with a
+   * <code>defaultName</code>.
+   */
   public String getDefaultName()
   {
-      return defaultName;
-   }
+    return defaultName;
+  }
 
-   /**
-    * Set the retrieved name.
-    *
-    * @param name the retrieved name (which may be <code>null</code>).
-    * @see #getName()
-    */
+  /**
+   * Set the retrieved name.
+   *
+   * @param name the retrieved name (which may be <code>null</code>).
+   * @see #getName()
+   */
   public void setName(String name)
   {
-      this.inputName = name;
-   }
+    this.inputName = name;
+  }
 
-   /**
-    * Get the retrieved name.
-    *
-    * @return the retrieved name (which may be <code>null</code>)
-    * @see #setName(String)
-    */
+  /**
+   * Get the retrieved name.
+   *
+   * @return the retrieved name (which may be <code>null</code>)
+   * @see #setName(String)
+   */
   public String getName()
   {
-      return inputName;
-   }
+    return inputName;
+  }
 
   private void setPrompt(String prompt) throws IllegalArgumentException
   {
     if ((prompt == null) || (prompt.length() == 0))
       {
-         throw new IllegalArgumentException("invalid prompt");
+	throw new IllegalArgumentException("invalid prompt");
       }
-      this.prompt = prompt;
-   }
+    this.prompt = prompt;
+  }
 
   private void setDefaultName(String defaultName) throws IllegalArgumentException
   {
     if ((defaultName == null) || (defaultName.length() == 0))
       {
-         throw new IllegalArgumentException("invalid default name");
+	throw new IllegalArgumentException("invalid default name");
       }
-      this.defaultName = defaultName;
-   }
+    this.defaultName = defaultName;
+  }
 }

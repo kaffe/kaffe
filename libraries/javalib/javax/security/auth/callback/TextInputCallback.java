@@ -50,128 +50,128 @@ import java.io.Serializable;
 public class TextInputCallback implements Callback, Serializable
 {
 
-   // Constants and variables
-   // -------------------------------------------------------------------------
+  // Constants and variables
+  // -------------------------------------------------------------------------
 
-   /**
-    * @serial
-    * @since 1.4
-    */
-   private String prompt;
+  /**
+   * @serial
+   * @since 1.4
+   */
+  private String prompt;
 
-   /**
-    * @serial
-    * @since 1.4
-    */
-   private String defaultText;
+  /**
+   * @serial
+   * @since 1.4
+   */
+  private String defaultText;
 
-   /**
-    * @serial
-    * @since 1.4
-    */
-   private String inputText;
+  /**
+   * @serial
+   * @since 1.4
+   */
+  private String inputText;
 
-   // Constructor(s)
-   // -------------------------------------------------------------------------
+  // Constructor(s)
+  // -------------------------------------------------------------------------
 
-   /**
-    * Construct a <code>TextInputCallback</code> with a prompt.
-    *
-    * @param prompt the prompt used to request the information.
-    * @throws IllegalArgumentException if <code>prompt</code> is <code>null</code>
-    * or if <code>prompt</code> has a length of <code>0</code>.
-    */
+  /**
+   * Construct a <code>TextInputCallback</code> with a prompt.
+   *
+   * @param prompt the prompt used to request the information.
+   * @throws IllegalArgumentException if <code>prompt</code> is <code>null</code>
+   * or if <code>prompt</code> has a length of <code>0</code>.
+   */
   public TextInputCallback(String prompt) throws IllegalArgumentException
   {
-      super();
+    super();
 
-      setPrompt(prompt);
-   }
+    setPrompt(prompt);
+  }
 
-   /**
-    * Construct a <code>TextInputCallback</code> with a prompt and default
-    * input value.
-    *
-    * @param prompt the prompt used to request the information.
-    * @param defaultText the text to be used as the default text displayed with
-    * the prompt.
-    * @throws IllegalArgumentException if <code>prompt</code> is <code>null</code>,
-    * if <code>prompt</code> has a length of <code>0</code>, if
-    * <code>defaultText</code> is <code>null</code> or if <code>defaultText</code>
-    * has a length of <code>0</code>.
-    */
-   public TextInputCallback(String prompt, String defaultText)
+  /**
+   * Construct a <code>TextInputCallback</code> with a prompt and default
+   * input value.
+   *
+   * @param prompt the prompt used to request the information.
+   * @param defaultText the text to be used as the default text displayed with
+   * the prompt.
+   * @throws IllegalArgumentException if <code>prompt</code> is <code>null</code>,
+   * if <code>prompt</code> has a length of <code>0</code>, if
+   * <code>defaultText</code> is <code>null</code> or if <code>defaultText</code>
+   * has a length of <code>0</code>.
+   */
+  public TextInputCallback(String prompt, String defaultText)
     throws IllegalArgumentException
   {
-      super();
+    super();
 
-      setPrompt(prompt);
-      setDefaultText(defaultText);
-   }
+    setPrompt(prompt);
+    setDefaultText(defaultText);
+  }
 
-   // Class methods
-   // -------------------------------------------------------------------------
+  // Class methods
+  // -------------------------------------------------------------------------
 
-   // Instance methods
-   // -------------------------------------------------------------------------
+  // Instance methods
+  // -------------------------------------------------------------------------
 
-   /**
-    * Get the prompt.
-    *
-    * @return the prompt.
-    */
+  /**
+   * Get the prompt.
+   *
+   * @return the prompt.
+   */
   public String getPrompt()
   {
-      return prompt;
-   }
+    return prompt;
+  }
 
-   /**
-    * Get the default text.
-    *
-    * @return the default text, or <code>null</code> if this
-    * <code>TextInputCallback</code> was not instantiated with
-    * <code>defaultText</code>.
-    */
+  /**
+   * Get the default text.
+   *
+   * @return the default text, or <code>null</code> if this
+   * <code>TextInputCallback</code> was not instantiated with
+   * <code>defaultText</code>.
+   */
   public String getDefaultText()
   {
-      return defaultText;
-   }
+    return defaultText;
+  }
 
-   /**
-    * Set the retrieved text.
-    *
-    * @param text the retrieved text, which may be <code>null</code>.
-    */
+  /**
+   * Set the retrieved text.
+   *
+   * @param text the retrieved text, which may be <code>null</code>.
+   */
   public void setText(String text)
   {
-      this.inputText = text;
-   }
+    this.inputText = text;
+  }
 
-   /**
-    * Get the retrieved text.
-    *
-    * @return the retrieved text, which may be <code>null</code>.
-    */
+  /**
+   * Get the retrieved text.
+   *
+   * @return the retrieved text, which may be <code>null</code>.
+   */
   public String getText()
   {
-      return inputText;
-   }
+    return inputText;
+  }
 
   private void setPrompt(String prompt) throws IllegalArgumentException
   {
     if ((prompt == null) || (prompt.length() == 0))
       {
-         throw new IllegalArgumentException("invalid prompt");
+	throw new IllegalArgumentException("invalid prompt");
       }
-      this.prompt = prompt;
-   }
+    this.prompt = prompt;
+  }
 
   private void setDefaultText(String defaultText) throws IllegalArgumentException
   {
     if ((defaultText == null) || (defaultText.length() == 0))
       {
-         throw new IllegalArgumentException("invalid default text");
+	throw new IllegalArgumentException("invalid default text");
       }
-      this.defaultText = defaultText;
-   }
+    this.defaultText = defaultText;
+  }
 }

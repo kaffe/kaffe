@@ -84,72 +84,72 @@ import java.io.IOException;
 public interface CallbackHandler
 {
 
-   /**
-    * <p>Retrieve or display the information requested in the provided
-    * {@link Callback}s.</p>
-    *
-    * <p>The <code>handle()</code> method implementation checks the instance(s)
-    * of the {@link Callback} object(s) passed in to retrieve or display the
-    * requested information. The following example is provided to help
-    * demonstrate what an <code>handle()</code> method implementation might look
-    * like. This example code is for guidance only. Many details, including
-    * proper error handling, are left out for simplicity.</p>
-    *
-    * <pre>
-    *public void handle(Callback[] callbacks)
-    *throws IOException, UnsupportedCallbackException {
-    *   for (int i = 0; i < callbacks.length; i++) {
-    *      if (callbacks[i] instanceof TextOutputCallback) {
-    *         // display the message according to the specified type
-    *         TextOutputCallback toc = (TextOutputCallback)callbacks[i];
-    *         switch (toc.getMessageType()) {
-    *         case TextOutputCallback.INFORMATION:
-    *            System.out.println(toc.getMessage());
-    *            break;
-    *         case TextOutputCallback.ERROR:
-    *            System.out.println("ERROR: " + toc.getMessage());
-    *            break;
-    *         case TextOutputCallback.WARNING:
-    *            System.out.println("WARNING: " + toc.getMessage());
-    *            break;
-    *         default:
-    *            throw new IOException("Unsupported message type: "
-    *                  + toc.getMessageType());
-    *         }
-    *      } else if (callbacks[i] instanceof NameCallback) {
-    *         // prompt the user for a username
-    *         NameCallback nc = (NameCallback)callbacks[i];
-    *         // ignore the provided defaultName
-    *         System.err.print(nc.getPrompt());
-    *         System.err.flush();
-    *         nc.setName((new BufferedReader(
-    *               new InputStreamReader(System.in))).readLine());
-    *      } else if (callbacks[i] instanceof PasswordCallback) {
-    *         // prompt the user for sensitive information
-    *         PasswordCallback pc = (PasswordCallback)callbacks[i];
-    *         System.err.print(pc.getPrompt());
-    *         System.err.flush();
-    *         pc.setPassword(readPassword(System.in));
-    *      } else {
-    *         throw new UnsupportedCallbackException(
-    *               callbacks[i], "Unrecognized Callback");
-    *      }
-    *   }
-    *}
-    *
-    * // Reads user password from given input stream.
-    *private char[] readPassword(InputStream in) throws IOException {
-    *   // insert code to read a user password from the input stream
-    *}
-    * </pre>
-    *
-    * @param callbacks an array of {@link Callback} objects provided by an
-    * underlying security service which contains the information requested to
-    * be retrieved or displayed.
-    * @throws IOException if an input or output error occurs.
-    * @throws UnsupportedCallbackException if the implementation of this method
-    * does not support one or more of the Callbacks specified in the
-    * <code>callbacks</code> parameter.
-    */
-   void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException;
+  /**
+   * <p>Retrieve or display the information requested in the provided
+   * {@link Callback}s.</p>
+   *
+   * <p>The <code>handle()</code> method implementation checks the instance(s)
+   * of the {@link Callback} object(s) passed in to retrieve or display the
+   * requested information. The following example is provided to help
+   * demonstrate what an <code>handle()</code> method implementation might look
+   * like. This example code is for guidance only. Many details, including
+   * proper error handling, are left out for simplicity.</p>
+   *
+   * <pre>
+   *public void handle(Callback[] callbacks)
+   *throws IOException, UnsupportedCallbackException {
+   *   for (int i = 0; i < callbacks.length; i++) {
+   *      if (callbacks[i] instanceof TextOutputCallback) {
+   *         // display the message according to the specified type
+   *         TextOutputCallback toc = (TextOutputCallback)callbacks[i];
+   *         switch (toc.getMessageType()) {
+   *         case TextOutputCallback.INFORMATION:
+   *            System.out.println(toc.getMessage());
+   *            break;
+   *         case TextOutputCallback.ERROR:
+   *            System.out.println("ERROR: " + toc.getMessage());
+   *            break;
+   *         case TextOutputCallback.WARNING:
+   *            System.out.println("WARNING: " + toc.getMessage());
+   *            break;
+   *         default:
+   *            throw new IOException("Unsupported message type: "
+   *                  + toc.getMessageType());
+   *         }
+   *      } else if (callbacks[i] instanceof NameCallback) {
+   *         // prompt the user for a username
+   *         NameCallback nc = (NameCallback)callbacks[i];
+   *         // ignore the provided defaultName
+   *         System.err.print(nc.getPrompt());
+   *         System.err.flush();
+   *         nc.setName((new BufferedReader(
+   *               new InputStreamReader(System.in))).readLine());
+   *      } else if (callbacks[i] instanceof PasswordCallback) {
+   *         // prompt the user for sensitive information
+   *         PasswordCallback pc = (PasswordCallback)callbacks[i];
+   *         System.err.print(pc.getPrompt());
+   *         System.err.flush();
+   *         pc.setPassword(readPassword(System.in));
+   *      } else {
+   *         throw new UnsupportedCallbackException(
+   *               callbacks[i], "Unrecognized Callback");
+   *      }
+   *   }
+   *}
+   *
+   * // Reads user password from given input stream.
+   *private char[] readPassword(InputStream in) throws IOException {
+   *   // insert code to read a user password from the input stream
+   *}
+   * </pre>
+   *
+   * @param callbacks an array of {@link Callback} objects provided by an
+   * underlying security service which contains the information requested to
+   * be retrieved or displayed.
+   * @throws IOException if an input or output error occurs.
+   * @throws UnsupportedCallbackException if the implementation of this method
+   * does not support one or more of the Callbacks specified in the
+   * <code>callbacks</code> parameter.
+   */
+  void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException;
 }
