@@ -269,7 +269,7 @@ public int indexOf( String str, int sIdx) {
 		return -1;
 
 	if ( str.count == 0 )
-		return (sIdx < 0) ? -1 : (sIdx < count) ? sIdx : count;
+		return (sIdx < 0) ? 0 : (sIdx < count) ? sIdx : count;
 
 	for ( ; it<value.length; it++){
 		if ( value[it] == str.value[ic] ){
