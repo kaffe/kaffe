@@ -480,7 +480,7 @@ printType(const Type* t)
 		else if (type == getTDOUBLEARR()->data.class) {
 			dprintf("TDOUBLEARR");
 		}
-		else if (type == TOBJARR->data.class) {
+		else if (type == getTOBJARR()->data.class) {
 			dprintf("TOBJARR");
 		}
 		else {

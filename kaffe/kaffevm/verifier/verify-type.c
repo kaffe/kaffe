@@ -78,7 +78,12 @@ Type* getTOBJ(void)
 
 static const char* OBJARR_SIG = "[Ljava/lang/Object;";
 static Type  verify_OBJARR;
-Type* TOBJARR = &verify_OBJARR;
+static Type* TOBJARR = &verify_OBJARR;
+
+Type* getTOBJARR(void)
+{
+  return TOBJARR;
+}
 
 static const char* STRING_SIG = "Ljava/lang/String;";
 static Type  verify_STRING;
