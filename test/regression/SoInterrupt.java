@@ -17,6 +17,7 @@ import java.io.*;
 
 public class SoInterrupt {
     public static void main(String av[]) throws Exception {
+	final boolean verbose = av.length > 0;
 	final String foo = "foo";
 	final Thread main = Thread.currentThread();
 
@@ -29,6 +30,17 @@ public class SoInterrupt {
 	    } catch (IOException _) {}
 	}
         final int port = tryport;
+	Thread watchdog = new Thread() {
+	    public void run() {
+		try {
+		    Thread.sleep(10 * 1000);
+		} catch (InterruptedException _) { }
+		System.out.println("Watchdog Failure: Time out.");
+		System.exit(1);
+	    }
+	};
+	watchdog.start();
+
         Thread t = new Thread() {
             public void run() {
 		try {
@@ -38,7 +50,8 @@ public class SoInterrupt {
 		    } catch (InterruptedException e) {
 			System.out.println("Failure " + e);
 		    }
-		    // System.out.println("interrupting " + main);
+		    if (verbose)
+			System.out.println("interrupting " + main);
 		    // interrupt it
 		    main.interrupt();
 		    // give it some more time
@@ -49,7 +62,8 @@ public class SoInterrupt {
 		    }
 
 		    // now connect
-		    // System.out.println("connecting...");
+		    if (verbose)
+			System.out.println("connecting...");
 		    Socket s = new Socket(InetAddress.getLocalHost(), port);
 		    // wait some
 		    try {
@@ -58,7 +72,8 @@ public class SoInterrupt {
 			System.out.println("Failure " + e);
 		    }
 
-		    // System.out.println("interrupting again " + main);
+		    if (verbose)
+			System.out.println("interrupting again " + main);
 		    // interrupt it again
 		    main.interrupt();
 		    // wait some more
@@ -80,14 +95,18 @@ public class SoInterrupt {
         t.start();
         Socket rsocket = null;
 	try {
-	    // System.out.println("waiting for client...");
+	    if (verbose)
+		System.out.println("waiting for client...");
 	    rsocket = server.accept(); 
-	    // System.out.println("accepted..." + rsocket);
+	    if (verbose)
+		System.out.println("accepted..." + rsocket);
 	} catch (InterruptedIOException e) {
-	    // System.out.println(e);
+	    if (verbose)
+		System.out.println(e);
 	    System.out.println("Success 1.");
 	}
-	// System.out.println("waiting for client again...");
+	if (verbose)
+	    System.out.println("waiting for client again...");
 	rsocket = server.accept(); 
 	System.out.println("Success 2.");
 	InputStream is = rsocket.getInputStream();
@@ -105,6 +124,7 @@ public class SoInterrupt {
 	} else {
 	    System.out.println("Failure: `" + s + "'");
 	}
+	System.exit(0);
     }
 }
 
