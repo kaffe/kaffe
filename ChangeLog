@@ -30,24 +30,24 @@
 	* config/mips/irix5/jit-md.h, config/mips/irix5/jit3-md.h:
 	Copied from mips/linux as the sigcontext structure looks similar.
 	
-2004-12-18  Adam Heath  <doogieg@brainfood.com>
+2004-12-18  Adam Heath  <doogie@brainfood.com>
 
 	* kaffe/kaffe/main.c:
 	  Remove extra fprintf.
 
-2004-12-18  Adam Heath  <doogieg@brainfood.com>
+2004-12-18  Adam Heath  <doogie@brainfood.com>
 
 	* kaffe/kaffe/main.c, kaffe/kaffevm/debug.c, kaffe/kaffevm/debug.c:
 	  Add -debug-fd option, to specify where debug output should go.
 
-2004-12-18  Adam Heath  <doogieg@brainfood.com>
+2004-12-18  Adam Heath  <doogie@brainfood.com>
 
 	* configure.ac, configure:
 	  The processing of --disable-debug had the CPPFLAGS block only
 	  running when --disable-debug is specified.  It never ran in the
 	  default case, so -vmdebug was never a valid option.
 
-2004-12-16  Adam Heath  <doogieg@brainfood.com>
+2004-12-16  Adam Heath  <doogie@brainfood.com>
 
 	* config/i386/linux/xprofile-md.h, kaffe/kaffe/main.c
 	  kaffe/kaffevm/access.c, kaffe/kaffevm/classMethod.c
@@ -57,7 +57,7 @@
 	  kaffe/kaffevm/jit3/icode.c:
 	  First set of fixes after using sparse: 0 -> NULL changes.
 
-2004-12-16  Adam Heath  <doogieg@brainfood.com>
+2004-12-16  Adam Heath  <doogie@brainfood.com>
 
 	* scripts/sort-warnings.pl, scripts/SparseWarning.pm:
 	  Add support for sparse.
@@ -74,7 +74,7 @@
 	* libraries/javalib/javax/swing/TransferHandler.java
 	(createTransferable): Made protected.
 
-2004-12-16  Adam Heath  <doogieg@brainfood.com>
+2004-12-16  Adam Heath  <doogie@brainfood.com>
 
 	* libraries/clib/native/Runtime.c:
 	  Use LL suffix instead of just L for long long constant.
@@ -99,7 +99,7 @@
 	(getFocusAccelerator): New method.
 	(setFocusAccelerator): Likewise.
 
-2004-12-16  Adam Heath  <doogieg@brainfood.com>
+2004-12-16  Adam Heath  <doogie@brainfood.com>
 
 	* config/alpha/alpha.c, config/mips/common.h, config/mips/mips.c
 	  config/parisc/common.h, config/sh/common.h,
