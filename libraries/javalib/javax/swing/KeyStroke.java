@@ -96,9 +96,22 @@ public class KeyStroke
     return (KeyStroke) getAWTKeyStroke(keyCode, modifiers);
   }
 
+  /**
+   * Returns the KeyStroke according to <code>getAWTKeyStroke()</code>.
+   * But it returns null instead of throwing
+   * <code>IllegalArugmentException</code> when
+   * the keystoke sequence cannot be parsed from the given string.
+   */
   public static KeyStroke getKeyStroke(String str) 
   {
-    return (KeyStroke) getAWTKeyStroke(str);
+    try
+      {
+	return (KeyStroke) getAWTKeyStroke(str);
+      }
+    catch (IllegalArgumentException iae)
+      {
+	return null;
+      }
   }
 
   public static KeyStroke getKeyStrokeForEvent(KeyEvent event) 

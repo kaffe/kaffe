@@ -346,8 +346,12 @@ public class JRootPane extends JComponent
    */
   public void setJMenuBar(JMenuBar m)
   {
+    JLayeredPane jlPane = getLayeredPane();
+    if (menuBar != null)
+      jlPane.remove(menuBar);
     menuBar = m;
-    getLayeredPane().add(menuBar, JLayeredPane.FRAME_CONTENT_LAYER);
+    if (menuBar != null)
+      jlPane.add(menuBar, JLayeredPane.FRAME_CONTENT_LAYER);
   }
 
   /**

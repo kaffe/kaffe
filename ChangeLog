@@ -4,6 +4,30 @@
 	
 	2005-02-13  Mark Wielaard  <mark@klomp.org>
 
+	* java/awt/AWTKeyStroke.java (getAWTKeyStroke(String)): Throw
+	IllegalArgumentException when the given String is null.
+
+	* javax/swing/KeyStroke.java (getKeyStroke(String)): Return null
+	when given keystoke sequence cannot be parsed.
+
+	* javax/swing/JRootPane.java (setJMenuBar): Remove current menubar
+	if one is installed. Only install the given menubar is not null.
+
+	* javax/swing/JViewport.java (getViewSize): Return an empty
+	Dimension when the view isn't set or preferred component size when
+	no viewSize is set.
+
+	* javax/swing/ViewportLayout.java (preferredLayoutSize): Return an
+	empty Dimension when there is no view set.
+	(minimumLayoutSize): Likewise.
+	(layoutContainer): Don't try to layout when there is no view.
+
+2005-02-14  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2005-02-13  Mark Wielaard  <mark@klomp.org>
+
 	# Fixes bug #11957
 	* java/io/ObjectInputStream.java (resolveClass): Don't check "void"
 	twice.

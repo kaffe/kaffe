@@ -158,12 +158,23 @@ public class JViewport extends JComponent
     fireStateChanged();
   }
 
+  /**
+   * Returns the viewSize when set, or the preferred size of the set
+   * Component view.  If no viewSize and no Component view is set an
+   * empty Dimension is returned.
+   */
   public Dimension getViewSize()
   {
     if (isViewSizeSet)
       return viewSize;
     else
-      return getView().getSize();
+      {
+	Component view = getView();
+	if (view != null)
+	  return view.getPreferredSize();
+	else
+	  return new Dimension();
+      }
   }
 
 
