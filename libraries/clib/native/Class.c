@@ -11,18 +11,21 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
-#include "../../../kaffe/kaffevm/gtypes.h"
+
 #include "../../../kaffe/kaffevm/access.h"
-#include "../../../kaffe/kaffevm/constants.h"
-#include "../../../kaffe/kaffevm/object.h"
+#include "../../../kaffe/kaffevm/baseClasses.h"
 #include "../../../kaffe/kaffevm/classMethod.h"
+#include "../../../kaffe/kaffevm/constants.h"
+#include "../../../kaffe/kaffevm/gtypes.h"
+#include "../../../kaffe/kaffevm/exception.h"
 #include "../../../kaffe/kaffevm/itypes.h"
-#include "../../../kaffe/kaffevm/support.h"
-#include "../../../kaffe/kaffevm/stringSupport.h"
+#include "../../../kaffe/kaffevm/lookup.h"
+#include "../../../kaffe/kaffevm/object.h"
 #include "../../../kaffe/kaffevm/soft.h"
 #include "../../../kaffe/kaffevm/stackTrace.h"
-#include "../../../kaffe/kaffevm/baseClasses.h"
-#include "../../../kaffe/kaffevm/lookup.h"
+#include "../../../kaffe/kaffevm/stringSupport.h"
+#include "../../../kaffe/kaffevm/support.h"
+
 #include "java_io_InputStream.h"
 #include "java_io_PrintStream.h"
 #include "java_lang_System.h"
@@ -30,6 +33,7 @@
 #include "java_lang_reflect_Method.h"
 #include "java_lang_reflect_Field.h"
 #include "java_lang_Class.h"
+
 #include "defs.h"
 
 extern Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
