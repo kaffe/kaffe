@@ -154,6 +154,7 @@ TESTS = \
 	ttest.java \
 	ThreadInterrupt.java \
 	UncaughtException.java \
+	Preempt.java 		\
 	ReflectInterfaces.java \
 	TestSerializable.java \
 	TestCasts.java \
