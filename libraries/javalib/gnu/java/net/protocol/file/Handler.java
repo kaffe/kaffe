@@ -70,10 +70,27 @@ public class Handler extends URLStreamHandler
    *
    * @exception IOException If an error occurs
    */
-  protected URLConnection openConnection (URL url)
-    throws IOException
+  protected URLConnection openConnection(URL url) throws IOException
   {
-    return new Connection (url);
+    // If a hostname is set, then we need to switch protocols to ftp
+    // in order to transfer this from the remote host.
+    String host = url.getHost();
+    if ((host != null) && (! host.equals("")))
+      {
+        throw new IOException("ftp protocol handler not yet implemented.");
+        /*
+	// Reset the protocol (and implicitly the handler) for this URL.
+	// Then have the URL attempt the connection again, as it will
+	// get the changed handler the next time around.
+	setURL (url, "ftp", url.getHost(), url.getPort(), url.getFile(),
+		url.getRef());
+	// Until the ftp protocol handler is written, this will cause
+	// a NullPointerException.
+	return url.openConnection();
+	*/
+      }
+
+    return new Connection(url);
   }
 
   /**
@@ -315,5 +332,4 @@ public class Handler extends URLStreamHandler
     
     return sb.toString();
   }
-
 } // class Handler

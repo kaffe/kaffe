@@ -75,27 +75,24 @@ public final class Connection extends HttpURLConnection
    * The socket we are connected to
    */
   private Socket socket;
-  
-  private static String proxyHost = null;
   private static int proxyPort = 80;
   private static boolean proxyInUse = false;
+  private static String proxyHost = null;
 
   static 
   {
     // Recognize some networking properties listed at
     // http://java.sun.com/j2se/1.4/docs/guide/net/properties.html.
     String port = null;
-    proxyHost = System.getProperty ("http.proxyHost");
-    
+    proxyHost = System.getProperty("http.proxyHost");
     if (proxyHost != null)
       {
 	proxyInUse = true;
-	
-	if ((port = System.getProperty ("http.proxyPort")) != null)
+	if ((port = System.getProperty("http.proxyPort")) != null)
 	  {
 	    try
 	      {
-		proxyPort = Integer.parseInt (port);
+		proxyPort = Integer.parseInt(port);
 	      }
 	    catch (Throwable t)
 	      {
@@ -134,9 +131,9 @@ public final class Connection extends HttpURLConnection
   /**
    * Calls superclass constructor to initialize
    */
-  protected Connection (URL url)
+  protected Connection(URL url)
   {
-    super (url);
+    super(url);
 
     /* Set up some variables */
     doOutput = false;
@@ -154,34 +151,31 @@ public final class Connection extends HttpURLConnection
 
     // Get address and port number.
     int port;
-    
     if (proxyInUse)
       {
 	port = proxyPort;
-	socket = new Socket (proxyHost, port);
+	socket = new Socket(proxyHost, port);
       }
     else
       {
 	if ((port = url.getPort()) == -1)
 	  port = 80;
-
 	// Open socket and output stream.
-	socket = new Socket (url.getHost(), port);
+	socket = new Socket(url.getHost(), port);
       }
 
     if (doInput)
-      inputStream
-        = new DataInputStream (new BufferedInputStream (socket.getInputStream()));
+      inputStream = new DataInputStream
+	(new BufferedInputStream (socket.getInputStream()));
 
-    if (doOutput)
-      outputStream = new BufferedOutputStream (socket.getOutputStream());
-
+    outputStream = new BufferedOutputStream (socket.getOutputStream());
     bufferedOutputStream = new ByteArrayOutputStream (256); //default is too small
     outputWriter = new PrintWriter (new OutputStreamWriter (outputStream, "8859_1")); 
-    connected = true;
 
     sendRequest();
     receiveReply();
+
+    connected = true;
   }
 
   /**
@@ -199,7 +193,6 @@ public final class Connection extends HttpURLConnection
 	  {
 	    // Ignore errors in closing socket.
 	  }
-	
 	socket = null;
       }
   }
@@ -450,5 +443,5 @@ public final class Connection extends HttpURLConnection
     return bufferedOutputStream;
   }
 
-} // class Connection
 
+}
