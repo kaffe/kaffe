@@ -50,7 +50,6 @@ import java.io.Reader;
 import java.io.Writer;
 
 import javax.swing.Action;
-import javax.swing.JEditorPane;
 
 public class DefaultEditorKit extends EditorKit
 {
@@ -335,17 +334,6 @@ public class DefaultEditorKit extends EditorKit
       }
     },
   };
-
-  /**
-   * Called when the kit is being removed from the JEditorPane.
-   */
-  public void deinstall(JEditorPane c)
-  {
-  }
-
-  public void install(JEditorPane c)
-  {
-  }
 
   public Caret createCaret()
   {
