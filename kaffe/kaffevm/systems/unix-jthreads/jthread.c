@@ -1482,10 +1482,10 @@ jthreadedConnect(int fd, struct sockaddr* addr, size_t len)
 
 		blockOnFile(fd, TH_CONNECT);
 	}
-	intsRestore();
-	/* annul EALREADY error */
-	if (r < 0 && errno == EALREADY)
+	/* annul EISCONN error */
+	if (r < 0 && errno == EISCONN)
 		r = 0;
+	intsRestore();
 	return (r);
 }
 
