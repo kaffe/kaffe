@@ -309,13 +309,13 @@ findExceptionBlockInMethod(uintp pc, Hjava_lang_Class* class, Method* ptr, excep
 
 	eptr = &ptr->exception_table->entry[0];
 
-DBG(ELOOKUP,	
-	dprintf("Nr of exceptions = %d\n", ptr->exception_table->length); )
-
 	/* Right method - look for exception */
 	if (ptr->exception_table == 0) {
 		return (false);
 	}
+DBG(ELOOKUP,	
+	dprintf("Nr of exceptions = %d\n", ptr->exception_table->length); )
+
 	for (i = 0; i < ptr->exception_table->length; i++) {
 		uintp start_pc = eptr[i].start_pc;
 		uintp end_pc = eptr[i].end_pc;
@@ -336,11 +336,15 @@ DBG(ELOOKUP,	dprintf("Found exception 0x%x\n", handler_pc); )
 		if (eptr[i].catch_type == NULL) {
 			errorInfo info;
 			eptr[i].catch_type = getClass(eptr[i].catch_idx, ptr->class, &info);
-			/* if we could not resolve the catch class, let's raise
-			 * an error here -- not sure if this is okay.  FIXME!
+			/* If we could not resolve the catch class, simply
+			 * pretend that we didn't find a catch clause.
+			 * FIXME: check what JLS says about this.
+			 * Note that we MUST NOT throw an error here or we
+			 * will loop recursively.
 			 */
-			if (eptr[i].catch_type == NULL)
-				throwError(&info);
+			if (eptr[i].catch_type == NULL) {
+				return (false);
+			}
 		}
 		for (cptr = class; cptr != 0; cptr = cptr->superclass) {
 			if (cptr == eptr[i].catch_type) {

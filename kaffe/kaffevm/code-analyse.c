@@ -1507,7 +1507,7 @@ IDBG(		printf("%d: %d\n", pc, INSN(pc));		)
 
 		case INVOKEVIRTUAL:
 		case INVOKESPECIAL:
-			if (getMethodSignatureClass(lclw, meth->class, false, false, &call, einfo) == false) {
+			if (getMethodSignatureClass(lclw, meth->class, true, false, &call, einfo) == false) {
 				failed = true;
 				goto done;
 			}
@@ -1608,7 +1608,7 @@ IDBG(		printf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case INVOKEINTERFACE:
-			if (getMethodSignatureClass(lclw, meth->class, false, false, &call, einfo) == false) {
+			if (getMethodSignatureClass(lclw, meth->class, true, false, &call, einfo) == false) {
 				failed = true;
 				goto done;
 			}
@@ -1708,7 +1708,7 @@ IDBG(		printf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case INVOKESTATIC:
-			if (getMethodSignatureClass(lclw, meth->class, false, false, &call, einfo) == false) {
+			if (getMethodSignatureClass(lclw, meth->class, true, false, &call, einfo) == false) {
 				failed = true;
 				goto done;
 			}

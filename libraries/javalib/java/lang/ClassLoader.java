@@ -16,8 +16,21 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Hashtable;
 
 public abstract class ClassLoader {
+
+/* all classes for which this classloader was the initiating classloader
+ * This table is a mapping from name -> loadTableEntry
+ */
+private Hashtable loaded = new Hashtable();
+private static class LoadTableEntry {
+	String name;
+	Class clazz;
+	LoadTableEntry(String name) {
+	    this.name = name;
+	}
+};
 
 private ClassLoader parent;
 
@@ -42,7 +55,11 @@ final protected Class defineClass(byte data[], int offset, int length) {
 }
 
 final protected Class findLoadedClass(String name) {
-	return (findLoadedClass0(name));
+	LoadTableEntry entry = (LoadTableEntry)loaded.get(name);
+	if (entry == null)
+		return (null);
+	else
+		return (entry.clazz);
 }
 
 final protected Class findSystemClass(String name) throws ClassNotFoundException {
@@ -101,6 +118,27 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
 	return (cls);
 }
 
+/**
+ * The VM will always call loadClassVM.  Here's we check whether we asked
+ * the classloader already.  We won't ever ask a class loader twice for
+ * the same class.
+ * We synchronize this method to avoid confusing classloaders.
+ */
+private synchronized Class loadClassVM(String name, boolean resolve) throws ClassNotFoundException {
+        LoadTableEntry entry = (LoadTableEntry)loaded.get(name);
+
+	if (entry == null) {
+		LoadTableEntry newEntry = new LoadTableEntry(name);
+		/* record that we asked first */
+		loaded.put(name, newEntry);
+		newEntry.clazz = loadClass(name, resolve);
+		return (newEntry.clazz);
+        } else {
+		/* whatever it said the first time will always be its answer */
+		return (entry.clazz);
+	}
+}
+
 protected void checkPackageAccess(String name) throws SecurityException {
 }
 
@@ -155,7 +193,6 @@ protected Package[] getPackages() {
 
 native private Class defineClass0(String name, byte data[], int offset, int length);
 native private Class findSystemClass0(String name);
-native private Class findLoadedClass0(String name);
 native private void resolveClass0(Class cls);
 /**
  *  This is not part of the public interface.

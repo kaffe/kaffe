@@ -202,36 +202,3 @@ java_lang_ClassLoader_getSystemResourceAsBytes0(struct Hjava_lang_String* str)
 
 	return (data);
 }
-
-/*
- * Find a loaded class.
- */
-struct Hjava_lang_Class*
-java_lang_ClassLoader_findLoadedClass0(Hjava_lang_ClassLoader* this, Hjava_lang_String* str)
-{
-        int len = javaStringLength(str);
-        Utf8Const* c;
-        char* name;
-        char buffer[100];
-        classEntry* entry;
-
-        if (len <= 100) {
-                name = buffer;
-        }
-        else {
-                name = KMALLOC (len);
-        }
-        javaString2CString(str, name, len+1);
-        classname2pathname (name, name);
-        c = makeUtf8Const (name, len);
-        if (name != buffer) {
-                KFREE(name);
-        }
-
-        entry = lookupClassEntryInternal(c, this);
-	if (entry != 0) {
-		return (entry->class);
-	} else {
-		return (0);
-	}
-}

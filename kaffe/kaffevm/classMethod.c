@@ -757,7 +757,7 @@ DBG(VMCLASSLOADER,
 			 */
 			meth = (*env)->GetMethodID(env,
 				    (*env)->GetObjectClass(env, loader),
-				    "loadClass",
+				    "loadClassVM",
 				    "(Ljava/lang/String;Z)Ljava/lang/Class;");
 			assert(meth != 0);
 
