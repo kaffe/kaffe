@@ -310,7 +310,7 @@ dnl =========================================================================
 dnl Allow activation of jvmpi
 dnl -------------------------------------------------------------------------
 
-AC_ARG_ENABLE(debug,[  --enable-jvmpi          Enable JVMPI @<:@default=no@:>@]
+AC_ARG_ENABLE(jvmpi,[  --enable-jvmpi          Enable JVMPI @<:@default=no@:>@]
   --disable-jvmpi         Disable JVMPI])
 case "$enable_jvmpi" in
 "") ;;

@@ -18863,9 +18863,9 @@ no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
 esac
 
 
-# Check whether --enable-debug or --disable-debug was given.
-if test "${enable_debug+set}" = set; then
-  enableval="$enable_debug"
+# Check whether --enable-jvmpi or --disable-jvmpi was given.
+if test "${enable_jvmpi+set}" = set; then
+  enableval="$enable_jvmpi"
 
 fi;
 case "$enable_jvmpi" in

@@ -1,3 +1,14 @@
+2003-08-06 Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/jvmpi/Makefile.am:
+	(libkaffejvmpi_la_DEPENDENCIES) added libkaffevm.la.
+
+2003-08-06 Marc Kleine-Budde <kleine-budde@gmx.de>
+
+	* configure.in:
+	(AC_ARG_ENABLE) jvmpi
+	changed first argument to jvmpi
+
 2003-08-05 Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/baseClasses.h:
