@@ -13,7 +13,7 @@ kaffe \- a virtual machine to execute Java(tm) bytecode
 .BI "[\-mx" " size" "]"
 .BI "[\-classpath" " path" "]"
 .BI "[\-addclasspath" " path" "]"
-.BI "[\-verify | \-noverify]"
+.BI "[\-verifyremote | \-verify | \-noverify]"
 .BI "[\-D" "property" "=" "value" "]"
 .BI "[\-v]"
 .BI "[\-verbosegc]"
@@ -57,11 +57,14 @@ Set the path which is searched for compiled classes, e.g.
 Appends the given path to the current classpath setting. Multiple
 instances of this flag may be given.
 .TP
+.B "\-verifyremote"
+Verify all classes not loaded from the bootclasspath.  This is the default behavior.
+.TP
 .B "\-verify"
-Verify all bytecode that is not trusted.
+Verify all classes.
 .TP
 .B "\-noverify"
-Do not verify any bytecode.
+Do not verify any classes.
 .TP
 .B "\-Dproperty=value"
 Set a property to a given value.
