@@ -1,3 +1,11 @@
+2004-12-07  Adam Heath  <doogie@brainfood.com>
+
+        * libraries/javalib/gnu/java/io/decoder/KaffeDecoder.java,
+        libraries/javalib/gnu/java/io/encoder/KaffeEncoder.java:
+        The java spec allows for buffering when doing encoding
+        conversions.  This change does internal buffering in these
+        classes, for a huge speedup.
+
 2004-12-07  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libltdl/install-sh:

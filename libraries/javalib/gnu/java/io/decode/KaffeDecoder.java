@@ -56,6 +56,14 @@ KaffeDecoder(InputStream in, String enc)
 
 ByteToCharConverter converter;
 
+/* These three vars are used for the general buffer management */
+private int ptr = 0;
+private int end = 0;
+private char[] buffer = new char[4096];
+
+/* This array is a temporary used during the conversion process. */
+private byte[] inbuf = new byte[4096];
+
 /*************************************************************************/
 
 /*
@@ -103,15 +111,83 @@ convertToChars(byte[] buf, int buf_offset, int len,
   return(cbuf);
 }
 
-/**
-  * Read the requested number of chars from the underlying stream.
-  * Some byte fragments may remain in the converter and they are
-  * used by the following read.  So read and convertToChars must
-  * not be used for the same converter instance.
-  */
-// copied from kaffe's java/io/InputStreamReader.java
+
 public int
-read ( char cbuf[], int off, int len ) throws IOException
+read() throws IOException
+{
+    synchronized (lock) {
+        if (ptr < end) return buffer[ptr++];
+        int r = _read(buffer, 0, buffer.length);
+        if (r == -1) return -1;
+        ptr = 1;
+        end = r;
+        return buffer[0];
+    }
+}
+
+public int
+read(char cbuf[], int off, int len) throws IOException
+{
+    synchronized (lock) {
+        int bytesRead = 0;
+        if (len < end - ptr) {
+            System.arraycopy(buffer, ptr, cbuf, off, len);
+            ptr += len;
+            return len;
+        }
+
+        int preCopy = end - ptr;
+        if (preCopy > 0) {
+            System.arraycopy(buffer, ptr, cbuf, off, preCopy);
+            off += preCopy;
+            len -= preCopy;
+            bytesRead += preCopy;
+        }
+        ptr = 0;
+        end = 0; 
+
+        int remainder = len % buffer.length;
+        int bulkCopy = len - remainder;
+        if (bulkCopy > 0) {
+            int r = _read(cbuf, off, bulkCopy);
+            if (r == -1) {
+                return bytesRead == 0 ? -1 : bytesRead;
+            }
+            off += r;
+            len -= r;
+            bytesRead += r;
+        }
+
+        if (remainder > 0) {
+            int r = _read(buffer, 0, buffer.length);
+            if (r == -1) {
+                return bytesRead == 0 ? -1 : bytesRead;
+            }
+            end = r;
+            int remainderCopy = r < remainder ? r : remainder;
+            System.arraycopy(buffer, 0, cbuf, off, remainderCopy);
+            off += remainderCopy;
+            len -= remainderCopy;
+            ptr = remainderCopy;
+            bytesRead += remainderCopy;
+	}
+
+        return bytesRead;
+    }
+}
+
+/*
+ * Read the requested number of chars from the underlying stream.
+ * Some byte fragments may remain in the converter and they are
+ * used by the following read.  So read and convertToChars must
+ * not be used for the same converter instance.
+ *
+ * This method *must* be called with lock held, as it uses the
+ * instance variable inbuf.
+ */
+// copied from kaffe's java/io/InputStreamReader.java
+private int
+_read ( char cbuf[], int off, int len ) throws IOException
 {
     if (len < 0 || off < 0 || off + len > cbuf.length) {
             throw new IndexOutOfBoundsException();
@@ -119,8 +195,6 @@ read ( char cbuf[], int off, int len ) throws IOException
 
     int outlen = 0;
     boolean seenEOF = false;
-
-    byte[] inbuf = new byte[2048];
 
     while (len > outlen) {
         // First we retreive anything left in the converter

@@ -65,6 +65,15 @@ KaffeEncoder(OutputStream out, String enc)
 
 CharToByteConverter converter;
  
+/* These 2 variables are used in the general buffer management */
+private int ptr = 0;
+private char[] buffer = new char[4096];
+
+/* This buffer is used during the conversion process.  It gets expanded
+ * automatically when it overflows.
+ */
+private byte[] bbuf = new byte[buffer.length * 3];
+
 /*************************************************************************/
 
 /*
@@ -127,9 +136,74 @@ convertToBytes(char[] buf, int buf_offset, int len, byte[] bbuf,
   * Write the requested number of chars to the underlying stream
   */
 public void
+write(int c) throws IOException
+{
+    synchronized (lock) {
+        buffer[ptr++] = (char) c;
+        if (ptr == buffer.length) localFlush();
+    }
+}
+
+/**
+  * Write the requested number of chars to the underlying stream
+  */
+public void
 write(char[] buf, int offset, int len) throws IOException
 {
-  out.write(convertToBytes(buf, offset, len));
+    synchronized (lock) {
+        if (len > buffer.length - ptr) {
+            localFlush();
+            _write(buf, offset, len);
+        } else if (len == 1) {
+            buffer[ptr++] = buf[offset];
+        } else {
+            System.arraycopy(buf, offset, buffer, ptr, len);
+            ptr += len;
+        }
+    }
+}
+
+/* This *must* be called with the lock held. */
+private void
+localFlush() throws IOException
+{
+    if (ptr > 0) {
+        // Reset ptr to 0 before the _write call.  Otherwise, a
+        // very nasty loop could occur.  Please don't ask.
+        int length = ptr;
+        ptr = 0;
+        _write(buffer, 0, length);
+    }
+}
+
+public void
+flush() throws IOException
+{
+    synchronized (lock) {
+        localFlush();
+        out.flush();
+    }
+}
+/*
+ * Write the requested number of chars to the underlying stream
+ *
+ * This method *must* be called with the lock held, as it accesses
+ * the variable bbuf.
+ */
+private void
+_write(char[] buf, int offset, int len) throws IOException
+{
+    int bbuflen = converter.convert(buf, offset, len, bbuf, 0, bbuf.length);
+    int bufferNeeded = 0;
+    while (bbuflen > 0) {
+        out.write(bbuf, 0, bbuflen);
+        bbuflen = converter.flush(bbuf, 0, bbuf.length);
+        bufferNeeded += bbuflen;
+    }
+    if (bufferNeeded > bbuf.length) {
+        // increase size of array
+        bbuf = new byte[bufferNeeded];
+    }
 }
 
 } // class KaffEncoder
