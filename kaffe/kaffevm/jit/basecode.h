@@ -71,6 +71,9 @@ enum {
 #define	prepare_function_call()	_prepare_function_call(stackno, tmpslot)
 #define	fixup_function_call()	_fixup_function_call()
 #define	sync_registers()	_syncRegisters(stackno, tmpslot)
+/* For JIT3 compatibility */
+#define	begin_func_sync()	prepare_function_call()
+#define	end_func_sync()		fixup_function_call()
 
 /* -------------------------------------------------------------------- */
 /* Conditional monitors */

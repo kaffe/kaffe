@@ -104,7 +104,8 @@ define_insn(LDC1)
 
 	idx = (uint8)getpc(0);
 	push(1);
-	switch (CLASS_CONST_TAG(current_class(), idx)) {
+	low = CLASS_CONST_TAG(current_class(), idx);
+	switch (low) {
         case CONSTANT_String:
 		{
 			errorInfo ei;
