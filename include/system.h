@@ -12,7 +12,7 @@
 #ifndef __system_h
 #define __system_h
 
-#define	kaffe_version			KAFFEVERSION
+#define	kaffe_version			"1.2"
 #define	kaffe_vendor			"Kaffe.org project"
 #define	kaffe_vendor_url		"http://www.kaffe.org"
 #define	kaffe_vendor_url_bug		"http://www.kaffe.org"
@@ -20,7 +20,7 @@
 #define	kaffe_vm_specification_version	"1.0"
 #define	kaffe_vm_specification_vendor	"Sun Microsystems Inc."
 #define	kaffe_vm_specification_name	"Java Virtual Machine Specification"
-#define	kaffe_vm_version		kaffe_version
+#define	kaffe_vm_version		KAFFEVERSION
 #define	kaffe_vm_vendor			kaffe_vendor
 #define	kaffe_vm_name			"Kaffe"
 #define	kaffe_specification_version	"1.2"

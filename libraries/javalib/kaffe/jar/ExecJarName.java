@@ -15,7 +15,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.jar.JarFile;
-import kaffe.management.Classpath;
+
+import kaffe.lang.AppClassLoader;
 
 public class ExecJarName {
 
@@ -37,9 +38,6 @@ public static void main(String[] args)
 	/* Check JAR file OK */
 	getJar(args[0]);
 
-	/* Add JAR to classpath */
-	Classpath.prepend(args[0]);
-
 	/* Get command to call */
 	String command = args[1];
 
@@ -51,7 +49,10 @@ public static void main(String[] args)
 
 	/* Load in class */
 	try {
-		Class commandClass = Class.forName(command);
+		Class commandClass;
+
+		commandClass = AppClassLoader.getSingleton().
+			loadClass(command);
 
 		/* Build main(String[])V */
 		Class[] params = new Class[1];

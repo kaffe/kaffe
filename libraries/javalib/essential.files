@@ -183,6 +183,7 @@ java/security/Guard.java
 java/security/Key.java
 java/security/KeyException.java
 java/security/Permission.java
+java/security/Permissions.java
 java/security/PermissionCollection.java
 java/security/Principal.java
 java/security/PrivilegedAction.java

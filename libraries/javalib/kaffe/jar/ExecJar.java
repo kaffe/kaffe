@@ -18,7 +18,8 @@ import java.util.StringTokenizer;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import kaffe.management.Classpath;
+
+import kaffe.lang.AppClassLoader;
 
 public class ExecJar {
 
@@ -51,7 +52,10 @@ public static void main(String[] args)
 	}
 
 	// Add ourselves to the classpath
-	Classpath.add(jar.getName());
+	AppClassLoader acl;
+
+	acl = (AppClassLoader)AppClassLoader.getSingleton();
+	acl.addSource(jar.getName());
 
 	// Get "Class-Path" attribute
 	String classPath = manifest.getMainAttributes().getValue(
@@ -59,7 +63,7 @@ public static void main(String[] args)
 	if (classPath != null) {
 	    StringTokenizer st = new StringTokenizer(classPath);
 	    while(st.hasMoreElements()) {
-		Classpath.add(st.nextToken());
+		acl.addSource(st.nextToken());
 	    }
 	}
 

@@ -1,5 +1,6 @@
 package kaffe.net.www.protocol.file;
 
+import java.io.ByteArrayInputStream;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,8 +39,39 @@ public void connect() throws IOException {
 	}
 
 	File fl = new File(fn);
-	setHeaderField("content-length", Long.toString(fl.length()));
-	file = new BufferedInputStream(new FileInputStream( fl));
+
+	if( fl.isDirectory() )
+	{
+		int lpc, flatIndex = 0, len = 0;
+		String files[] = fl.list();
+		byte fileBits[][];
+		byte flatBits[];
+
+		fileBits = new byte[files.length][];
+		for( lpc = 0; lpc < files.length; lpc++ )
+		{
+			fileBits[lpc] = files[lpc].getBytes();
+			len += fileBits[lpc].length
+				+ 1 /* for line-feed */;
+		}
+		flatBits = new byte[len];
+		for( lpc = 0; lpc < files.length; lpc++ )
+		{
+			System.arraycopy(fileBits[lpc], 0,
+					 flatBits, flatIndex,
+					 fileBits[lpc].length);
+			flatIndex += fileBits[lpc].length;
+			flatBits[flatIndex] = (byte)'\n';
+			flatIndex += 1;
+		}
+		setHeaderField("content-length", Integer.toString(len));
+		this.file = new ByteArrayInputStream(flatBits);
+	}
+	else
+	{
+		setHeaderField("content-length", Long.toString(fl.length()));
+		file = new BufferedInputStream(new FileInputStream( fl));
+	}
 }
 
 public InputStream getInputStream() throws IOException {

@@ -1,3 +1,46 @@
+2003-05-30 Tim Stack <stack@cs.utah.edu>
+
+	* include/system.h:
+	Change kaffe_version to the "jdk" version, 1.2.  Move KAFFEVERSION
+	to kaffe_vm_version.
+
+	* kaffe/kaffe/main.c:
+	Don't use the AppClassLoader for kaffe.jar.ExecJar.
+
+	* libraries/clib/net/PlainSocketImpl.c:
+	SO_LINGER is set using a struct, not an int.
+
+	* libraries/javalib/Makefile.am:
+	Add gnu/java/security/provider/DefaultPolicy.java and
+	java/security/Policy.java.
+
+	* libraries/javalib/essential.files:
+	Add Permissions.java.
+
+	* libraries/javalib/gnu/java/security/provider/DefaultPolicy.java:
+	Borrowed from classpath.
+	
+	* libraries/javalib/java/net/URLConnection.java:
+	Add getPermission().
+
+	* libraries/javalib/java/security/Policy.java:
+	Borrowed from classpath.
+
+	* libraries/javalib/kaffe/jar/ExecJar.java,
+	libraries/javalib/kaffe/jar/ExecJarName.java:
+	Update to take advantage of AppClassLoader.
+
+	* libraries/javalib/kaffe/lang/AppClassLoader.java:
+	Some cleanup, added addSource method so ExecJar could add its jar
+	files to the path.
+
+	* libraries/javalib/kaffe/net/www/protocol/files/FileURLConnection.java:
+	Handle directories.
+
+	* libraries/javalib/profiles/default/core.files:
+	Add gnu/java/security/provider/DefaultPolicy.java and
+	java/security/Policy.java.
+
 2003-05-30 Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* config/config-mem.h:

@@ -435,10 +435,26 @@ java_net_PlainSocketImpl_socketSetOption(struct Hjava_net_PlainSocketImpl* this,
 	/* Do easy cases */
 	for (k = 0; k < sizeof(socketOptions) / sizeof(*socketOptions); k++) {
 		if (opt == socketOptions[k].jopt) {
+			struct linger ling;
+			char *optdata;
+			int optlen;
+			
 			v = unhand((struct Hjava_lang_Integer*)arg)->value;
+			if( socketOptions[k].copt == SO_LINGER )
+			{
+				ling.l_onoff = v;
+				ling.l_linger = v;
+				optdata = (char *)&ling;
+				optlen = sizeof(ling);
+			}
+			else
+			{
+				optdata = (char *)&v;
+				optlen = sizeof(v);
+			}
 			r = KSETSOCKOPT(unhand(unhand(this)->fd)->fd,
 				socketOptions[k].level, socketOptions[k].copt,
-				&v, sizeof(v));
+				optdata, optlen);
 			if (r) {
 				SignalError("java.net.SocketException", SYS_ERROR(r));
 			}

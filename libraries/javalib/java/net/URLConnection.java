@@ -16,12 +16,16 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.security.Permission;
+import java.security.AllPermission;
 import kaffe.net.DefaultFileNameMap;
 import kaffe.net.DefaultStreamMap;
 import kaffe.net.StreamMap;
 
 abstract public class URLConnection
 {
+	private static AllPermission ALL_PERMISSION = new AllPermission();
+	
 	private static FileNameMap fileNameMap = new DefaultFileNameMap();
 	private static StreamMap streamMap = new DefaultStreamMap();
 	protected boolean allowUserInteraction = defaultAllowUserInteraction;
@@ -43,6 +47,10 @@ abstract public void connect() throws IOException;
 
 public boolean getAllowUserInteraction() {
 	return allowUserInteraction;
+}
+
+public Permission getPermission() throws IOException {
+	return ALL_PERMISSION;
 }
 
 public Object getContent() throws IOException {

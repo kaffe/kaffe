@@ -4,6 +4,7 @@ gnu/java/util/EmptyEnumeration.java
 gnu/regexp/REFilterInputStream.java
 gnu/regexp/REFilterReader.java
 gnu/regexp/UncheckedRE.java
+gnu/java/security/provider/DefaultPolicy.java
 java/io/BufferedWriter.java
 java/io/CharArrayReader.java
 java/io/CharArrayWriter.java
@@ -144,6 +145,7 @@ java/security/MessageDigest.java
 java/security/MessageDigestSpi.java
 java/security/NoSuchAlgorithmException.java
 java/security/NoSuchProviderException.java
+java/security/Policy.java
 java/security/PrivateKey.java
 java/security/ProviderException.java
 java/security/Provider.java

@@ -99,6 +99,10 @@ public class AppClassLoader extends SecureClassLoader {
 				} catch (MalformedURLException _) {}
 			}
 		}
+
+		public String toString() {
+			return "DirSource[dir=" + this.dir + "]";
+		}
 	}
 
 	/**
@@ -175,6 +179,10 @@ public class AppClassLoader extends SecureClassLoader {
 				} catch (MalformedURLException _) {_.printStackTrace();}
 			}
 		}
+		
+		public String toString() {
+			return "JarSource[file=" + this.file + "]";
+		}
 	}
 
 /* linked list of Sources as extracted from classpath */
@@ -183,39 +191,57 @@ private Source sources;
 public static ClassLoader getSingleton() {
 	return SINGLETON;
 }
+
+private String listPath() {
+	String retval = "";
+	Source curr;
+
+	curr = this.sources;
+	while( curr != null )
+	{
+		retval += curr + File.pathSeparator;
+		curr = curr.next;
+	}
+	return retval;
+}
+
+public void addSource(String path) {
+	File f = new File (path);
+	
+	if (!f.exists()) {
+		return;
+	}
+	
+	Source s = null;
+	
+	try {
+		if (f.isDirectory()) {
+			s = new DirSource (f.getAbsoluteFile ());
+		} else {
+			s = new JarSource (f.getAbsoluteFile ());
+		}
+
+		if (this.sources == null) {
+			this.sources = s;
+		} else {
+			Source last;
+
+			for( last = this.sources;
+			     last.next != null;
+			     last = last.next );
+			last.next = s;
+		}
+	} catch (Exception _) { }
+}
 	
 private AppClassLoader() {
 	super(null);
 
 	StringTokenizer tok = new StringTokenizer (System.getProperty("java.class.path"), File.pathSeparator);
 
-        Source tmpSources = null;
-
         while (tok.hasMoreTokens ())
         {
-		File f = new File (tok.nextToken().trim());
-
-                if (!f.exists()) {
-			continue;
-		}
-
-		Source s = null;
-
-		try {
-                	if (f.isDirectory()) {
-				s = new DirSource (f.getAbsoluteFile ());
-			} else {
-				s = new JarSource (f.getAbsoluteFile ());
-			}
-
-			if (this.sources==null) {
-				this.sources = s;
-				tmpSources = this.sources;
-			} else {
-				tmpSources.next = s; 
-				tmpSources = tmpSources.next;
-			}
-		} catch (Exception _) { }
+		this.addSource(tok.nextToken().trim());
  	}    	   
 }
 
@@ -255,12 +281,6 @@ protected URL findResource (String name) {
 	}
 }
 
-protected Class loadClass(String name, boolean resolve)
-	throws ClassNotFoundException
-{
-	return super.loadClass(name, resolve);
-}
-
 protected Class findClass(String name) throws ClassNotFoundException {
 	Class ret = null;
 	
@@ -277,7 +297,5 @@ protected Class findClass(String name) throws ClassNotFoundException {
 
 	return ret;
 }
-
-private native Class findClass0(String name) throws ClassNotFoundException;
 
 }
