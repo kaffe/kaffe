@@ -14,6 +14,7 @@
 #include "config-mem.h"
 #include "config-io.h"
 #include "config-signal.h"
+#include "config-hacks.h"
 #include "jthread.h"
 #include "jsyscall.h"
 
@@ -27,6 +28,17 @@ static int
 connect_with_size_t(int fd, struct sockaddr* addr, size_t len)
 {
         return connect(fd, addr, len);
+}
+
+static ssize_t
+beos_recvfrom(int sock, void* buf, size_t len, int flags,
+              struct sockaddr* from, int* fromlen)
+{
+	if (flags & MSG_PEEK) {
+		errno = B_UNSUPPORTED;
+		return -1;
+	}
+	return recvfrom(sock, buf, len, flags, from, fromlen);
 }
 
 static int
@@ -72,7 +84,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
         connect_with_size_t,
         (int (*)(int, struct sockaddr *, size_t*))accept, 
         read,	
-        recvfrom,
+        beos_recvfrom,
         write, 
         sendto,	
         setsockopt_with_int,	/* the BeOS version takes a uint size */

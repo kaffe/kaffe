@@ -39,6 +39,17 @@
 #define  HAVE_SYS_SELECT_H 1
 #endif
 
+/* Hack to configure BeOS R4 */
+#if defined(__BEOS__)
+#include <socket.h>
+#if defined(MSG_PEEK)
+#error Looks like BeOS finally supports MSG_PEEK.
+#error Please remove the MSG_PEEK hack in config-hacks.h and syscalls.c.
+#else
+#define MSG_PEEK 0x2
+#endif
+#endif
+
 /* The 386 can do unaligned memory accesses */
 #if defined(__i386__)
 #define	HAVE_UNALIGNEDACCESS
