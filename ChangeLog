@@ -1,3 +1,9 @@
+2003-05-11 Marc Kleine-Budde <kleine-budde@gmx.de>
+
+	* libraries/clib/net/PlainSocketImpl.c:
+	(java_net_PlainSocketImpl_socketAccept) the port is not properly
+	convertet to host order, see attached diff.
+	
 2003-05-11 Dalibor Topic <robilad@yahoo.com>
 
 	* kaffe/kaffevm/readClass.h:

@@ -282,7 +282,7 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 
 	DBG(NATIVENET,
 	    dprintf("socketAccept(%p, localport=%d, addr=%s)\n", 
-		    this, addr.sin_port, ip2str(ntohl(addr.sin_addr.s_addr)));
+		    this, ntohs(addr.sin_port), ip2str(ntohl(addr.sin_addr.s_addr)));
 	    )
 
 	alen = sizeof(addr);
@@ -308,7 +308,7 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 
 	DBG(NATIVENET,
 	    dprintf("socketAccept(%p, localport=-, addr=-) -> (sock: %p; addr: %s; port:%d)\n", 
-		    this, sock, ip2str(ntohl(addr.sin_addr.s_addr)), addr.sin_port);
+		    this, sock, ip2str(ntohl(addr.sin_addr.s_addr)), ntohs(addr.sin_port));
 	    )
 }
 
