@@ -1,3 +1,7 @@
+Thu Aug 12 21:40:23 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* developers/alignment_of_size.c: new file
+
 Thu Aug 12 15:11:31 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/intrp/machine.c: add profFlag definition
