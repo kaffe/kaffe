@@ -485,16 +485,21 @@ DBG(STATICINIT,
 		}
 
 		/* Since we'll never run this again we might as well
-		 * lose it now.
+		 * lose it now. However, if there was an exception, keep
+		 * it so the stack trace doesn't lose the <clinit> frame.
 		 */
 #if defined(TRANSLATOR) && (defined (MD_UNREGISTER_JIT_EXCEPTION_INFO) || defined (JIT3))
 #if defined(MD_UNREGISTER_JIT_EXCEPTION_INFO)
-		MD_UNREGISTER_JIT_EXCEPTION_INFO (meth->c.ncode.ncode_start,
-			METHOD_NATIVECODE(meth),
-			meth->c.ncode.ncode_end - METHOD_NATIVECODE(meth));
+		if (exc == 0) {
+			MD_UNREGISTER_JIT_EXCEPTION_INFO(
+			    meth->c.ncode.ncode_start,
+			    METHOD_NATIVECODE(meth),
+			    meth->c.ncode.ncode_end - METHOD_NATIVECODE(meth));
+		}
 #endif
 #if defined(JIT3)
-		makeMethodInactive(meth);
+		if (exc == 0)
+			makeMethodInactive(meth);
 #endif
 #endif
 #if defined(KAFFE_XPROFILER)
