@@ -12,43 +12,39 @@ package java.io;
 
 public class PipedWriter extends Writer {
 
-  PipedReader rd = null;
+  final PipedOutputStream rawOutput = new PipedOutputStream();
 
-  public PipedWriter()
-  {
+  public PipedWriter() {
   }
 
-  public PipedWriter(PipedReader sink) throws IOException
-  {
-    connect(sink);
+  public PipedWriter(PipedReader reader) throws IOException {
+    connect(reader);
   }
 
-  public void connect(PipedReader sink) throws IOException
-  {
-    sink.connect(this);
+  public void connect(PipedReader reader) throws IOException {
+    rawOutput.connect(reader.rawInput);
   }
 
-  public void write(char cbuf[], int off, int len) throws IOException
-  {
-    PipedReader reader = rd;
-    if (reader == null) {
-      throw new IOException("not connected");
+  public void write(char cbuf[], int off, int len) throws IOException {
+
+    // Convert pairs of bytes to characters
+    len = (len << 1);
+    byte[] buf = new byte[len];
+    for (int i = 0; i < len; off++) {
+      buf[i++] = (byte) (cbuf[off] >> 8);
+      buf[i++] = (byte) (cbuf[off] & 0xff);
     }
-    reader.write(cbuf, off, len);
+
+    // Write each character as two bytes big endian
+    rawOutput.write(buf, 0, len);
   }
 
-  public void flush() throws IOException
-  {
-    // Does nothing.
+  public void flush() throws IOException {
+    rawOutput.flush();
   }
 
-  public void close() throws IOException
-  {
-    PipedReader reader = rd;
-    if (reader != null) {
-      reader.close();
-      rd = null;
-    }
+  public void close() throws IOException {
+    rawOutput.close();
   }
-
 }
+

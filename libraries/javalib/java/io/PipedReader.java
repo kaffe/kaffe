@@ -12,94 +12,45 @@ package java.io;
 
 public class PipedReader extends Reader {
 
-  private static final int DEFAULT = 1024;
+  final PipedInputStream rawInput = new PipedInputStream();
 
-  private PipedWriter wr = null;
-  private char buf[] = new char[DEFAULT];
-  private int inpos = 0;
-  private int outpos = 0;
-  private int size = 0;
-
-  public PipedReader()
-  {
+  public PipedReader() {
   }
 
-  public PipedReader(PipedWriter src) throws IOException
-  {
-    connect(src);
+  public PipedReader(PipedWriter writer) throws IOException {
+    connect(writer);
   }
 
-  public void connect(PipedWriter src) throws IOException
-  {
-    if (wr != null || src.rd != null) {
-      throw new IOException("already connected");
+  public void connect(PipedWriter writer) throws IOException {
+    rawInput.connect(writer.rawOutput);
+  }
+
+  public int read(char cbuf[], int off, int len) throws IOException {
+
+    // Read each character as two bytes big endian
+    len = (len << 1) & 0xfff;
+    byte[] buf = new byte[len];
+    int num = rawInput.read(buf, 0, len);
+    if (num == -1) {
+      return(-1);
     }
-    wr = src;
-    wr.rd = this;
-    lock = (Object)this;
+
+    // XXX Assume we won't ever read an odd length
+    if ((num & 0x1) != 0) {
+      throw new Error("rec'd odd length");
+    }
+
+    // Convert pairs of bytes to characters
+    for (int i = 0; i < num; i += 2) {
+      cbuf[off++] = (char) ((buf[i] << 8) | (buf[i + 1] & 0xff));
+    }
+    return (num >> 1);
   }
 
-  public int read(char cbuf[], int off, int len) throws IOException
-  {
-    int i;
-
-    synchronized(lock) {
-
-      while (size == 0) {
-        if (wr == null) {
-          return (-1);
-        }
-	try {
-          lock.wait();
-	}
-	catch (InterruptedException _) {
-	}
-      }
-
-      for (i = 0; i < len && size > 0; i++) {
-	cbuf[off++] = buf[outpos++];
-	size--;
-	if (outpos == buf.length) {
-	  outpos = 0;
-	}
-      }
-    }
-    return (i);
-  }
-
-  void write(char cbuf[], int off, int len) throws IOException
-  {
-    synchronized(lock) {
-
-      for (int i = 0; i < len; i++) {
-        for (;;) {
-          if (size < buf.length) {
-            break;
-          }
-          try {
-            lock.wait();
-          }
-          catch (InterruptedException _) {
-          }
-        }
-        buf[inpos++] = cbuf[off++];
-        size++;
-        if (inpos == buf.length) {
-          inpos = 0;
-        }
-      }
-
-    }
-  }
-
-  public void close() throws IOException
-  {
-    synchronized(lock) {
-      if (wr != null) {
-	wr.rd = null;
-        wr = null;
-      }
-    }
+  public void close() throws IOException {
+    rawInput.close();
   }
 
 }
+
+
