@@ -205,10 +205,14 @@ DBG(GCWALK,
 	    case GC_ALLOC_FINALIZEOBJECT:
 	    case GC_ALLOC_PRIMARRAY:
 	    case GC_ALLOC_REFARRAY: {
-		    Hjava_lang_Class *c
-			    = OBJECT_CLASS((Hjava_lang_Object *) (unit+1));
-		    if (c)
-			    c->live_count++;
+		    Hjava_lang_Object *obj;
+		    obj = (Hjava_lang_Object *)(unit+1);
+		    if (obj->dtable != NULL) {
+			    Hjava_lang_Class *c;
+			    c = OBJECT_CLASS(obj);
+			    if (c)
+				    c->live_count++;
+		    }
 	    }});
 	    
 
