@@ -16,7 +16,7 @@
 package java.security;
 
 public class SecureClassLoader extends ClassLoader {
-	private ClassLoader parent;
+	private final ClassLoader parent;
 
 	protected SecureClassLoader(ClassLoader parent) {
 		SecurityManager sm = System.getSecurityManager();
