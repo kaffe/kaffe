@@ -346,21 +346,6 @@ Tspinoffall(void* arg)
 {       
 	intsRestoreAll();
 }       
-        
-/*
- * Wait for a child process.
- */
-static
-int
-threadedWaitpid(int wpid, int* status, int options)
-{
-	int pid = jthreadedWaitpid(wpid, status, options);
-	if (pid == -1)
-		SignalError("java.lang.InternalError", 
-				"no waitpid() available");
-
-	return pid;
-}
 
 int mkdir_with_int(const char *path, int m)
 {
@@ -384,7 +369,7 @@ ThreadInterface Kaffe_ThreadInterface = {
         Tframes,
         Tfinalize,
         TcurrentJava,
-	jthread_current,
+	(void *(*)(void)) jthread_current,
         TwalkThreads,
         TwalkThread,
         TnextFrame,

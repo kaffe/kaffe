@@ -41,6 +41,8 @@
 #include "support.h"
 #include "md.h"
 #include "lerrno.h"
+#include "exception.h"
+
 /* 
  * make sure jsyscall doesn't redefine open, read, etc. 
  * XXX - this is not very clean
@@ -211,7 +213,7 @@ void 	jthread_interrupt(jthread_t jtid);
 /*
  * have the current thread exit
  */
-void 	jthread_exit();
+void 	jthread_exit() __NORETURN__;
 
 /*
  * determine whether a location is on the stack of the current thread

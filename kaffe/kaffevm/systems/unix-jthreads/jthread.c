@@ -1147,11 +1147,10 @@ DBG(JTHREAD,
 		    killThread(tid);
 		}
 		EXIT(0);
-	} else {
-		for (;;) {
-			killThread(currentJThread);
-			jthread_sleep(1000);
-		}
+	}
+	for (;;) {
+		killThread(currentJThread);
+		jthread_sleep(1000);
 	}
 }
 
@@ -1266,7 +1265,7 @@ handleIO(int sleep)
 	jthread* tid;
 	jthread* ntid;
 	struct timeval zero = { 0, 0 };
-	int i, b;
+	int i, b = 0;
 
 	assert(intsDisabled());
 
