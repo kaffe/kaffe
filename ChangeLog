@@ -1,3 +1,8 @@
+2003-12-10  Dalibor Topic <robilad@kaffe.org>
+
+	* config/m68k/common.h: Added missing include for 
+	support.h to fix compilation on m68k platforms.
+
 2003-12-09  Jim Pick <jim@kaffe.org>
 
 	* docs/src/docbook/port-kaffe/fdl.xml,

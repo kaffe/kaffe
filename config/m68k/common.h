@@ -26,6 +26,8 @@
 
 #include "atomicity.h"
 
+#include "support.h"
+
 /*
  * Alignment in structure is 2 bytes packed.
  */
