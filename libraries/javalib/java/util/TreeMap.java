@@ -515,6 +515,7 @@ public class TreeMap extends AbstractMap
 			} else {			// pop back up the tree
 				while (true) {
 					if (node.parent == null) {	// done
+						node = null;
 						return;
 					}
 					if (node == node.parent.left) {
