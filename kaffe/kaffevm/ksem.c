@@ -26,14 +26,17 @@ ksemInit(Ksem* sem)
 	sem->count = 0;
 }
 
-/*
+/**
  * Use a stored wakeup from the semaphore.  Block if none
  * are available.  Can wait with a timeout.  (If timeout is 0, then
  * do not timeout in wait.)
- * Returns true if the semaphore was acquired, returns false if
- * we timed-out in wait and semaphore still wasn't available.
- *
  * Spurious wakeups are not handled here.
+ *
+ * @param sem Semaphore to wait for.
+ * @param timeout The number of milliseconds to wait if different of 0.
+ * If timeout is null, wait indefinitely.
+ * @return true if the semaphore was acquired, returns false if
+ * we timed-out in wait and semaphore still wasn't available.
  */
 jboolean
 ksemGet(Ksem* volatile sem, jlong timeout)

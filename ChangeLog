@@ -1,3 +1,60 @@
+2004-10-20  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/gc.h
+	(KGC_ALLOC_STATIC_THREADDATA): New type.
+
+	* kaffe/kaffevm/gcFuncs.c
+	(initCollector): KGC_ALLOC_THREADCTX is now collectable. Register
+	KGC_ALLOC_STATIC_THREADDATA.
+
+	* kaffe/kaffevm/ksem.c
+	(ksemGet): Doxified ksemGet.
+
+	* kaffe/kaffevm/thread.c
+	(thread_start_lock): Removed.
+	(createThread): Take the argument of the thread.
+	(startThread, createDaemon):
+	Use directly ksems to handle the start synchronization.
+	(startSpecialThread, firstStartThread): Updated the start
+	synchronization to use ksem (retrieve the creating thread from the
+	arguments).
+	(initNativeThreads): Pass a pointer to the global garbage
+	collector directly.
+
+	Synchronization problem reported by Helmer Kraemer
+	<hkraemer@freenet.de>.
+	
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
+	(threadCollector): New reference to the collector to use for
+	thread handling.
+	(allocator, deallocator): Removed.
+	(newThreadCtx): Use the collector to allocate the thread context
+	and add a static reference to it.
+	(jthread_destroy): Remove the static reference to the thread
+	context.
+	(thread_static_allocator, thread_static_free, thread_reallocator):
+	Fixed memory block allocators.
+	(jthread_init): Updated prototype.
+	Removed various warnings.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.h
+	(jthread_init): Updated prototype.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(threadCollector): New reference to the collector to use for
+	thread handling.
+	(threadDestructor): Handle thread destruction advertising.
+	(thread_malloc): Allocate a collectable memory region.
+	(tSetupFirstNative, jthread_create): Add a static reference to the
+	thread context.
+	(jthread_init): Updated prototype.
+	(tRun): Signal thread destruction.
+	(tDispose): Do not free explicitly the thread context, just delete
+	the reference to it.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h
+	(jthread_init): Updated prototype.
+	
 2004-10-20  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* config/arm/sysdepCallMethod.h (sysdepCallMethod): fix

@@ -609,7 +609,10 @@ initCollector(void)
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_JAVALOADER,
 	    walkLoader, finalizeObject, destroyClassLoader,
 	    "j.l.ClassLoader");
+	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_THREADCTX, 
+	    0, KGC_OBJECT_NORMAL, 0, "thread-ctxts");
 
+	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_STATIC_THREADDATA, "thread-data");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_BYTECODE, "java-bytecode");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_EXCEPTIONTABLE, "exc-table");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JITCODE, "jitcode");
@@ -622,7 +625,6 @@ initCollector(void)
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_UTF8CONST, "utf8consts");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_INTERFACE, "interfaces");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_LOCK, "locks");
-	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_THREADCTX, "thread-ctxts");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_REF, "gc-refs");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JITTEMP, "jit-temp-data");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JAR, "jar");

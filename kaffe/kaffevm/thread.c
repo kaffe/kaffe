@@ -62,8 +62,6 @@ Hjava_lang_ThreadGroup* standardGroup;
 static void firstStartThread(void*);
 static void runfinalizer(void);
 
-static iStaticLock thread_start_lock = KAFFE_STATIC_LOCK_INITIALIZER;
-
 /*
  * How do I get memory?
  */
@@ -149,7 +147,8 @@ initThreads(void)
 
 
 static jthread_t
-createThread(Hjava_lang_VMThread* vmtid, void (*func)(void *), size_t stacksize,
+createThread(Hjava_lang_VMThread* vmtid, void (*func)(void *), void *arg,
+	     size_t stacksize,
 	     struct _errorInfo *einfo)
 {
 	jthread_t nativeThread;
@@ -159,14 +158,14 @@ createThread(Hjava_lang_VMThread* vmtid, void (*func)(void *), size_t stacksize,
 	  jthread_create(((unsigned char)unhand(tid)->priority),
 			 func,
 			 unhand(tid)->daemon,
-			 vmtid,
+			 arg,
 			 stacksize);
 
 	if (nativeThread == NULL) {
 		postOutOfMemory(einfo);
 		return 0;
 	}
-
+	
 	return nativeThread;
 }
 
@@ -185,19 +184,17 @@ startThread(Hjava_lang_VMThread* tid)
 	 * finished in create.
 	 * See also firstStartThread.
 	 */
-	lockStaticMutex(&thread_start_lock);
-
 	nativeTid = createThread(tid, &firstStartThread,
+				 jthread_current(),
 				 threadStackSize, &info);
-
-	linkNativeAndJavaThread (nativeTid, tid);
-	
-	waitStaticCond(&thread_start_lock, (jlong)0);
-	unlockStaticMutex(&thread_start_lock);
-
 	if (nativeTid == NULL) {
 		throwError(&info);
 	}
+	ksemGet(&THREAD_DATA()->sem, (jlong)0);
+
+	linkNativeAndJavaThread (nativeTid, tid);
+
+	ksemPut(&jthread_get_data(nativeTid)->sem);
 }
 
 /*
@@ -288,6 +285,7 @@ startSpecialThread(void *arg)
 	void **pointer_args = (void **)arg;
 	void *argument;
 	int iLockRoot;
+	jthread_t calling_thread;
 
 	ksemInit(&THREAD_DATA()->sem);
 
@@ -296,10 +294,14 @@ startSpecialThread(void *arg)
 	 */
 	func = (void(*)(void*))pointer_args[0];
 	argument = pointer_args[1];
+	calling_thread = (jthread_t) pointer_args[2];
 
-	lockStaticMutex(&thread_start_lock);
-	signalStaticCond(&thread_start_lock);
-	unlockStaticMutex(&thread_start_lock);
+	/* Thread started and arguments retrieved. */
+	ksemPut(&jthread_get_data(calling_thread)->sem);
+	/* We have now to wait the parent to synchronize the data
+	 * and link the thread to the Java VM.
+	 */
+	ksemGet(&THREAD_DATA()->sem, (jlong)0);
 
 	THREAD_DATA()->exceptObj = NULL;
 
@@ -324,7 +326,7 @@ createDaemon(void* func, const char* nm, void *arg, int prio,
   jthread_t nativeTid;
   int iLockRoot;
   Hjava_lang_String* name;
-  void *specialArgument[2];
+  void *specialArgument[3];
 
 DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
   
@@ -350,10 +352,9 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 				  "getSystemClassLoader",
 				  "()Ljava/lang/ClassLoader;").l;
   
-  lockStaticMutex(&thread_start_lock);
-
   specialArgument[0] = func;
   specialArgument[1] = arg;
+  specialArgument[2] = jthread_current();
   
   nativeTid = 
     jthread_create(((unsigned char)unhand(tid)->priority),
@@ -369,12 +370,12 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 
   jthread_get_data(nativeTid)->exceptPtr = NULL;
   jthread_get_data(nativeTid)->exceptObj = NULL;
-  
-  waitStaticCond(&thread_start_lock, (jlong)0);
 
-  linkNativeAndJavaThread (nativeTid, vmtid);
+  ksemGet(&THREAD_DATA()->sem, (jlong)0);
   
-  unlockStaticMutex(&thread_start_lock);
+  linkNativeAndJavaThread (nativeTid, vmtid);
+
+  ksemPut(&jthread_get_data(nativeTid)->sem);
   
   return (tid);
 }
@@ -384,22 +385,24 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
  */
 static
 void
-firstStartThread(void* arg UNUSED)
+firstStartThread(void* arg)
 {
 	Hjava_lang_VMThread* tid;
 	jthread_t cur;
 	JNIEnv *env;
 	jmethodID runmethod;
 	int iLockRoot;
+	jthread_t calling_thread = (jthread_t) arg;
 
 	cur = jthread_current();
 
 	ksemInit(&jthread_get_data(cur)->sem);
- 
-	lockStaticMutex(&thread_start_lock);
-	signalStaticCond(&thread_start_lock);
-	unlockStaticMutex(&thread_start_lock);
 
+	/* We acknowledge the parent thread that this thread has been started. */
+	ksemPut(&jthread_get_data(calling_thread)->sem);
+	/* Now we must wait the parent to link the thread to the Java VM. */
+	ksemGet(&jthread_get_data(cur)->sem, (jlong)0);
+ 
 	tid = (Hjava_lang_VMThread *)(jthread_get_data(cur)->jlThread);
 	env = &jthread_get_data(cur)->jniEnv;
 
@@ -663,9 +666,7 @@ initNativeThreads(int nativestacksize)
 		DBGEXPR(JTHREADNOPREEMPT, false, true),
 		java_lang_Thread_MAX_PRIORITY+1,
 		java_lang_Thread_MIN_PRIORITY,
-		thread_malloc,
-		thread_free,
-		thread_realloc,
+		main_collector,
 		broadcastDeath,
 		throwDeath,
 		onDeadlock);

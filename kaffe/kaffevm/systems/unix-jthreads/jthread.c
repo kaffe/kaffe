@@ -25,6 +25,7 @@
 #include "kaffe/jni_md.h"
 /* For Hjava_lang_VMThread */
 #include "thread.h"
+#include "gc.h"
 
 /* Flags used for threading I/O calls */
 #define TH_READ                         0
@@ -104,12 +105,13 @@ static int wouldlosewakeup;	/* a flag that says whether we're past the
 static int blockInts;		/* counter that says whether irqs are blocked */
 static int needReschedule;	/* is a change in the current thread required */
 
+/** This is the garbage collector to use to allocate thread data. */
+static Collector *threadCollector;
+
 /*
  * the following variables are set by jthread_init, and show how the
  * threading system is parametrized.
  */
-static void *(*allocator)(size_t); 	/* malloc */
-static void (*deallocator)(void*);	/* free */
 static void (*destructor1)(void*);	/* call when a thread exits */
 static void (*onstop)(void);		/* call when a thread is stopped */
 static void (*ondeadlock)(void);	/* call when we detect deadlock */
@@ -283,7 +285,7 @@ addToAlarmQ(jthread* jtid, jlong timeout)
 		}
 		node = KaffePoolNewNode(queuePool);
 		node->next = *tidp;
-		JTHREADQ(node) = jtid;
+		node->element = jtid;
 		*tidp = node;
 		
 		/* If I'm head of alarm list, restart alarm */
@@ -477,7 +479,7 @@ interrupt(SIGNAL_ARGS(sig, sc))
 			wouldlosewakeup++;
 		}
 
-#if KAFFE_SIGNAL_ONE_SHOT
+#if defined(KAFFE_SIGNAL_ONE_SHOT)
 		/*
 		 * On some systems, signal handlers are a one-shot deal.
 		 * Re-install the signal handler for those systems.
@@ -502,7 +504,7 @@ interrupt(SIGNAL_ARGS(sig, sc))
 
 	intsDisable();
 
-#if KAFFE_SIGNAL_ONE_SHOT
+#if defined(KAFFE_SIGNAL_ONE_SHOT)
 	/* Re-enable signal if necessary */
         restoreAsyncSignalHandler(sig, interrupt);
 #endif
@@ -804,7 +806,7 @@ DBG(JTHREAD,	dprintf("resumeThread %p\n", jtid);	)
 		}
 		else if (threadQhead[jtid->priority] == 0) {
 			threadQhead[jtid->priority] = KaffePoolNewNode(queuePool);
-			JTHREADQ(threadQhead[jtid->priority]) = jtid;
+			threadQhead[jtid->priority]->element = jtid;
 			threadQtail[jtid->priority] = threadQhead[jtid->priority];
 			if (jtid->priority > currentJThread->priority) {
 				needReschedule = true;
@@ -813,7 +815,7 @@ DBG(JTHREAD,	dprintf("resumeThread %p\n", jtid);	)
 		else {
 		        KaffeNodeQueue *queue = KaffePoolNewNode(queuePool);
 			
-			JTHREADQ(queue) = jtid;
+			queue->element = jtid;
 			threadQtail[jtid->priority]->next = queue;
 			threadQtail[jtid->priority] = queue;
 		}
@@ -840,7 +842,7 @@ addWaitQThread(jthread *jtid, KaffeNodeQueue **queue)
 	/* Insert onto head of lock wait Q */
 	node = KaffePoolNewNode(queuePool);
 	node->next = *queue;
-	JTHREADQ(node) = jtid;
+	node->element = jtid;
 	*queue = node;
 	
 	/* Add the new queue to the list of registered blocking queues */
@@ -1044,10 +1046,12 @@ newThreadCtx(size_t stackSize)
 {
 	jthread *ct;
 
-	ct = allocator(sizeof(jthread) + 16 + stackSize);
+	ct = KGC_malloc(threadCollector, sizeof(jthread) + 16 + stackSize, KGC_ALLOC_THREADCTX);
 	if (ct == 0) {
 		return 0;
 	}
+
+	KGC_addRef(threadCollector, ct);
 #if defined(__ia64__)
 	/* (gb) Align jmp_buf on 16-byte boundaries */
 	ct = (jthread *)((((unsigned long)(ct)) & 15) ^ (unsigned long)(ct));
@@ -1076,7 +1080,8 @@ jthread_destroy(jthread *jtid)
 		for (x = liveThreads; x; x = x->next)
 			assert(JTHREADQ(x) != jtid);
 	}
-	deallocator(jtid);
+	/* We do not free explicitly as it should be done by the GC. */
+	KGC_rmRef(threadCollector, jtid);
 }
 
 /*
@@ -1229,21 +1234,39 @@ static void activate_time_slicing(void) { }
 static void deactivate_time_slicing(void) { }
 #endif
 
+/**
+ * Thread allocation function alias.
+ */
+static void *thread_static_allocator(size_t bytes)
+{
+	return KGC_malloc(threadCollector, bytes, KGC_ALLOC_STATIC_THREADDATA);
+}
+
+static void thread_static_free(void *p)
+{
+	return KGC_free(threadCollector, p);
+}
+
+static void *thread_reallocator(void *p, size_t bytes)
+{
+	return KGC_realloc(threadCollector, p, bytes, KGC_ALLOC_STATIC_THREADDATA);
+}
+
 /*
  * Initialize the threading system. 
  */
 void
 jthread_init(int pre,
 	int maxpr, int minpr,
-	void *(*_allocator)(size_t), 
-	void (*_deallocator)(void*),
-	void *(*_reallocator)(void*,size_t),
+	Collector *collector,
 	void (*_destructor1)(void*),
 	void (*_onstop)(void),
 	void (*_ondeadlock)(void))
 {
         jthread *jtid; 
 	int i;
+
+	threadCollector = collector;
 
 	/* XXX this is f***ed.  On BSD, we get a SIGHUP if we try to put
 	 * a process that has a pseudo-tty in async mode in the background
@@ -1252,7 +1275,7 @@ jthread_init(int pre,
 	 */
 	ignoreSignal(SIGHUP);
 
-	KaffeSetDefaultAllocator(_allocator, _deallocator, _reallocator);
+	KaffeSetDefaultAllocator(thread_static_allocator, thread_static_free, thread_reallocator);
 	queuePool = KaffeCreatePool();
 
 #if defined(SIGVTALRM)
@@ -1300,13 +1323,11 @@ jthread_init(int pre,
 	preemptive = pre;
 	max_priority = maxpr;
 	min_priority = minpr;
-	allocator = _allocator;
-	deallocator = _deallocator;
 	onstop = _onstop;
 	ondeadlock = _ondeadlock;
 	destructor1 = _destructor1;
-	threadQhead = (KaffeNodeQueue **)allocator((maxpr + 1) * sizeof (KaffeNodeQueue *));
-	threadQtail = (KaffeNodeQueue **)allocator((maxpr + 1) * sizeof (KaffeNodeQueue *));
+	threadQhead = (KaffeNodeQueue **)thread_static_allocator((maxpr + 1) * sizeof (KaffeNodeQueue *));
+	threadQtail = (KaffeNodeQueue **)thread_static_allocator((maxpr + 1) * sizeof (KaffeNodeQueue *));
 	for (i=0;i<FD_SETSIZE;i++) {
 	  readQ[i] = writeQ[i] = NULL;
 	  blockingFD[i] = true;
@@ -1346,7 +1367,7 @@ jthread_init(int pre,
         jtid->func = (void (*)(void*))jthread_init;
         
 	liveThreads = KaffePoolNewNode(queuePool);
-	JTHREADQ(liveThreads) = jtid;
+	liveThreads->element = jtid;
         jtid->time = 0;
 
         talive++;
@@ -1532,7 +1553,7 @@ jthread_create(unsigned char pri, void (*func)(void *), int isDaemon,
 
 	liveQ = KaffePoolNewNode(queuePool);
 	liveQ->next = liveThreads;
-	JTHREADQ(liveQ) = jtid;
+	liveQ->element = jtid;
 	liveThreads = liveQ;
 
         talive++;       
@@ -1585,7 +1606,7 @@ DBG(JTHREAD,
 	 * grows downward. Both stacks start in the middle and grow outward
 	 * from each other.
 	 */
-	(char *) newstack -= (threadStackSize >> 1);
+	newstack = (void *)((uintp)newstack - (threadStackSize >> 1));
 	newbsp = newstack;
 	/* Make register stack 64-byte aligned */
 	if ((unsigned long)newbsp & 0x3f)
@@ -1593,7 +1614,7 @@ DBG(JTHREAD,
 	newbsp += STACK_COPY;
 	memcpy(newbsp-STACK_COPY, oldbsp-STACK_COPY, STACK_COPY);
 #endif
-	(char *) newstack -= STACK_COPY;
+	newstack = (void *)((uintp)newstack - STACK_COPY);
 	memcpy(newstack, oldstack, STACK_COPY);
 #endif /* !STACK_GROWS_UP */
 

@@ -21,6 +21,8 @@
 #include "thread-impl.h"
 #include "debug.h"
 #include "md.h"
+#include "gc.h"
+#include "thread.h"
 #ifdef KAFFE_BOEHM_GC
 #include "boehm-gc/boehm/include/gc.h"
 #endif
@@ -96,6 +98,11 @@ static int sigInterrupt;
 static int psigRestart;
 static int psigCancel;
 
+/**
+ * This variable holds a pointer to the garbage collector which
+ * will be used to allocate thread data.
+ */
+static Collector *threadCollector;
 
 /***********************************************************************
  * global data
@@ -148,6 +155,9 @@ static sem_t		critSem;
 /** Signal set which contains important signals for suspending threads. */
 static sigset_t		suspendSet;
 
+/** This callback is to be called when a thread exits. */
+static void (*threadDestructor)(void *);
+
 #ifdef KAFFE_VMDEBUG
 /** an optional deadlock watchdog thread (not in the activeThread list),
  * activated by KAFFE_VMDEBUG topic JTHREAD */
@@ -165,8 +175,11 @@ static void suspend_signal_handler ( int sig );
 static void resume_signal_handler ( int sig );
 static void tDispose ( jthread_t nt );
 
-static void* (*thread_malloc)(size_t);
-static void (*thread_free)(void*);
+static void *
+thread_malloc(size_t bytes)
+{
+	return KGC_malloc(threadCollector, bytes, KGC_ALLOC_THREADCTX);
+}
 
 static inline void
 protectThreadList(jthread_t cur)
@@ -487,6 +500,7 @@ tSetupFirstNative(void)
    * We need to have a native thread context available as soon as possible.
    */
   nt = thread_malloc( sizeof(struct _jthread));
+  KGC_addRef(threadCollector, nt);
   nt->tid = pthread_self();
   pthread_setspecific( ntKey, nt);
   nt->stackMin  = (void*)0;
@@ -500,24 +514,22 @@ tSetupFirstNative(void)
 void
 jthread_init(UNUSED int pre,
         int maxpr, int minpr,
-        void *(*_allocator)(size_t),
-        void (*_deallocator)(void*),
-        void *(*_reallocator)(void*,size_t) UNUSED,
-        void (*_destructor1)(void*) UNUSED,
+	Collector *thread_collector,
+	void (*destructor)(void *),
         void (*_onstop)(void) UNUSED,
         void (*_ondeadlock)(void) UNUSED)
 {
   DBG(JTHREAD, dprintf("initialized\n"))
 
-  thread_malloc = _allocator;
-  thread_free = _deallocator;
+  threadCollector = thread_collector;
+  threadDestructor = destructor;
 
   tInitSignals();
 
   pthread_key_create( &ntKey, NULL);
   sem_init( &critSem, 0, 0);
 
-  priorities = (int *)_allocator ((maxpr+1) * sizeof(int));
+  priorities = (int *)KGC_malloc (threadCollector, (maxpr+1) * sizeof(int), KGC_ALLOC_STATIC_THREADDATA);
 
   tMapPriorities(maxpr+1);
   tInitSignalHandlers();
@@ -689,6 +701,9 @@ void* tRun ( void* p )
 
 	DBG( JTHREAD, TMSG_LONG( "exiting user func of: ", cur))
 
+	if (threadDestructor)
+	  threadDestructor(cur->data.jlThread);
+
 	protectThreadList(cur);
 
 	/* remove from active list */
@@ -819,6 +834,7 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	int creation_succeeded;
 
 	nt = thread_malloc( sizeof(struct _jthread) );
+	KGC_addRef(threadCollector, nt);
 
 	pthread_attr_init( &nt->attr);
 	pthread_attr_setschedparam( &nt->attr, &sp);
@@ -876,7 +892,7 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 
 	  sem_destroy( &nt->sem);
 	  unprotectThreadList(cur);
-	  thread_free(nt);
+	  KGC_rmRef(threadCollector, nt);
 	  return 0;
 	}
 
@@ -901,12 +917,19 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 static
 void tDispose ( jthread_t nt )
 {
+  /* Remove the static reference so the thread context may be freed. */
+  KGC_rmRef(threadCollector, nt);
+
   pthread_detach( nt->tid);
   pthread_mutex_destroy (&nt->suspendLock);
 
   sem_destroy( &nt->sem);
 
-  thread_free( nt);
+  /* The context is not freed explictly as it may cause troubles
+   * with the locking system which is invoked by the GC in that case.
+   * The thread context will be automatically freed by the GC in its 
+   * thread context.
+   */
 }
 
 /*
