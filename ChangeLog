@@ -1,5 +1,9 @@
 2005-02-03  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Abort if zip can't be found.
+
+2005-02-03  Dalibor Topic  <robilad@kaffe.org>
+
         * libraries/javalib/Makefile.am.in,
         libraries/javalib/awt-implementations/kaffe/Makefile.am,
         libraries/javalib/gmp-math/Makefile.am,

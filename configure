@@ -28941,6 +28941,11 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
+if test  x"$ZIP" = x"" ; then
+   { { echo "$as_me:$LINENO: error: zip not found. You need the zip utility for the class library." >&5
+echo "$as_me: error: zip not found. You need the zip utility for the class library." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 # Extract the first word of "mktemp", so it can be a program name with args.
 set dummy mktemp; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -58390,7 +58395,7 @@ EOF
 if uudecode$EXEEXT Test.uue; then
         ac_cv_prog_uudecode_base64=yes
 else
-        echo "configure: 58393: uudecode had trouble decoding base 64 file 'Test.uue'" >&5
+        echo "configure: 58398: uudecode had trouble decoding base 64 file 'Test.uue'" >&5
         echo "configure: failed file was:" >&5
         cat Test.uue >&5
         ac_cv_prog_uudecode_base64=no
@@ -58508,7 +58513,7 @@ else
 JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 cat << \EOF > $JAVA_TEST
-/* #line 58511 "configure" */
+/* #line 58516 "configure" */
 public class Test {
 }
 EOF
@@ -58545,7 +58550,7 @@ JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 TEST=Test
 cat << \EOF > $JAVA_TEST
-/* [#]line 58548 "configure" */
+/* [#]line 58553 "configure" */
 public class Test {
 public static void main (String args[]) {
         System.exit (0);
