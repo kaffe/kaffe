@@ -271,7 +271,7 @@ oskit_pthread_select(int a, fd_set* b, fd_set* c, fd_set* d, struct timeval* e,
 static int
 oskit_pthread_forkexec(char *argv[], char *env[], int fd[4], int *outpid)
 {
-	unimp("forkexec() not implemented in linux-threads system");
+	unimp("forkexec() not implemented in OSKit");
 	return (EOPNOTSUPP);
 }
 
