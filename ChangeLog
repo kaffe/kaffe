@@ -1,3 +1,21 @@
+Fri May 31 20:30:22 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+        From: Timothy Stack <stack@cs.utah.edu>
+	
+	* Attached is a fix for unix-jthreads that should better handle
+	large timeout values.  For example:
+
+	  synchronized( this )
+	  {
+	    this.wait(Long.MAX_VALUE);
+	  }
+
+	eventually reaches this code:
+
+	  jtid->time = timeout + currentTime();
+
+	which overflows and gives a bogus value.
+
 Fri May 31 11:37:47 PDT 2002  Jim Pick  <jim@kaffe.org>
 
 	* FAQ/FAQ.coding-style: Added placeholder for coding style
@@ -15,15 +33,16 @@ Thu May 30 11:51:36 PDT 2002  Jim Pick  <jim@kaffe.org>
 	less as it seems on other JRE's. Problem is, it's not exactly well
 	documented.
 
-	It appears that with URL class the error occurs even before MediaTracker
-	enters its wait() section, and hence it never catches the notify() -
-	leading to "hangs" of several minutes or worse while Kaffe waits to time
-	out. In this patch, flags are checked for ImageObserver.ERROR before
-	entering wait(), and the synchronized section has been extended to
-	encompass all of that to prevent race-conditions between the check and
-	wait() on the assumption that with an URL the error could come in with
-	some latency. For the latter reason, imageUpdate() has also been modified
-	to fire notify() in this case.
+	It appears that with URL class the error occurs even before
+	MediaTracker enters its wait() section, and hence it never catches
+	the notify() - leading to "hangs" of several minutes or worse
+	while Kaffe waits to time out. In this patch, flags are checked
+	for ImageObserver.ERROR before entering wait(), and the
+	synchronized section has been extended to encompass all of that to
+	prevent race-conditions between the check and wait() on the
+	assumption that with an URL the error could come in with some
+	latency. For the latter reason, imageUpdate() has also been
+	modified to fire notify() in this case.
 
 	We probably SHOULD also check ABORT in the same manner, but since I
 	couldn't immediately come up with a test-case to compare this against

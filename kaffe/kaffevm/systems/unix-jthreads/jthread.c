@@ -255,26 +255,34 @@ static void
 addToAlarmQ(jthread* jtid, jlong timeout)
 {
 	jthread** tidp;
+	jlong ct;
 
 	assert(intsDisabled());
 
-	jtid->flags |= THREAD_FLAGS_ALARM;
-
-	/* Get absolute time */
-	jtid->time = timeout + currentTime();
-
-	/* Find place in alarm list and insert it */
-	for (tidp = &alarmList; (*tidp) != 0; tidp = &(*tidp)->nextalarm) {
-		if ((*tidp)->time > jtid->time) {
-			break;
+	ct = currentTime();
+	if( (timeout + ct) > ct ) {
+		jtid->flags |= THREAD_FLAGS_ALARM;
+		
+		/* Get absolute time */
+		jtid->time = timeout + ct;
+		
+		/* Find place in alarm list and insert it */
+		for (tidp = &alarmList;
+		     (*tidp) != 0;
+		     tidp = &(*tidp)->nextalarm) {
+			if ((*tidp)->time > jtid->time) {
+				break;
+			}
 		}
-	}
-	jtid->nextalarm = *tidp;
-	*tidp = jtid;
-
-	/* If I'm head of alarm list, restart alarm */
-	if (tidp == &alarmList) {
-		MALARM(timeout);
+		jtid->nextalarm = *tidp;
+		*tidp = jtid;
+		
+		/* If I'm head of alarm list, restart alarm */
+		if (tidp == &alarmList) {
+			MALARM(timeout);
+		}
+	} else {
+		/* Huge timeout value, ignore it. */
 	}
 }
 
@@ -2216,8 +2224,13 @@ jthreadedOpen(const char* path, int flags, int mode, int *out)
  * various building blocks for timeout system call functions
  */
 #define SET_DEADLINE(deadline, timeout) 		\
-	if (timeout != NOTIMEOUT) {			\
-		deadline = timeout + currentTime();	\
+	if (timeout != NOTIMEOUT) { 			\
+		jlong ct = currentTime();		\
+		deadline = timeout + ct;		\
+		if( deadline < ct ) {			\
+			deadline = 0;			\
+			timeout = NOTIMEOUT;		\
+		}					\
 	}
 
 #define BREAK_IF_LATE(deadline, timeout)		\
