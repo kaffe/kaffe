@@ -1,0 +1,44 @@
+
+/*
+ * Java core library component.
+ *
+ * Copyright (c) 1999
+ *	Archie L. Cobbs.  All rights reserved.
+ * Copyright (c) 1999
+ *	Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ *
+ * Author: Archie L. Cobbs <archie@whistle.com>
+ */
+
+package java.net;
+
+public class URLDecoder {
+
+	public URLDecoder() {
+	}
+
+	public static String decode(String s) throws Exception {
+		StringBuffer buf = new StringBuffer();
+
+		for (int pos = 0; pos < s.length(); pos++) {
+			char ch = s.charAt(pos);
+			if ((ch >= 'a' && ch <= 'z')
+			    || (ch >= 'A' && ch <= 'Z')
+			    || (ch >= '0' && ch <= '9')) {
+				buf.append(ch);
+			} else if (ch == '+') {
+				buf.append(' ');
+			} else if (ch == '%' && pos + 3 <= s.length()) {
+				buf.append((char)Integer.parseInt(
+				    s.substring(pos + 1, pos + 3), 16));
+			} else {
+				throw new Exception("invalid input");
+			}
+		}
+		return buf.toString();
+	}
+}
+
