@@ -10,69 +10,101 @@
 
 package java.net;
 
-import java.lang.String;
 import java.io.IOException;
+import java.lang.String;
 import java.util.StringTokenizer;
 
 abstract public class URLStreamHandler {
 
-public URLStreamHandler() {}
+public URLStreamHandler() {
+}
 
 abstract protected URLConnection openConnection(URL u) throws IOException;
 
-protected void parseURL(URL u, String spec, int start, int limit) {
+//
+// This algorithm works for most common Internet URLS, eg. http, ftp, etc.
+// This is how we parse "spec" (between start and limit):
+//
+//	spec   ->   [//<hostname>[:<port>]][<file>]
+//
+// Where "port" is restricted to being between 0 and 65535.
+//
+// The JDK 1.2 docs say this can't throw a MalformedURLException.
+// That seems wrong.
+//
+protected void parseURL(URL u, String spec0, int start, int limit)
+		throws MalformedURLException {
+	String spec = spec0.substring(start, limit);
+	boolean gotHost = false;
 
 	String host = u.getHost();
 	int port = u.getPort();
 	String file = u.getFile();
-	String ref = u.getRef();
+	int posn = 0;
 
-	/* spec -> [//<hostname>[:port]][/<file>] */
+	// Is a host specified?
+	if (spec.length() > 2 && spec.startsWith("//")) {
+		posn = 2;
+		gotHost = true;
+		int colon = spec.indexOf(':', posn);
+		int slash = spec.indexOf('/', posn);
 
-//System.out.println("Parsing URL " + spec);
-
-	if (start+2 < limit && spec.substring(start, start+2).equals("//")) {
-		start += 2;
-		int hend = spec.indexOf(':', start);
-		int mend = spec.indexOf('/', start);
-		if (hend != -1 && (mend == -1 || hend < mend)) {
-			host = spec.substring(start, hend);
-			int postart = hend+1;
-			int poend = spec.indexOf('/', postart);
-			if (poend == -1) {
-				poend = limit;
+		// Is a port specified?
+		if (colon != -1 && (slash == -1 || colon < slash)) {
+			host = spec.substring(posn, colon);
+			String portString = spec.substring(colon + 1,
+			    slash != -1 ? slash : spec.length());
+			try {
+				port = Integer.parseInt(portString);
+				if (port < 0 || port > 65535) {
+					throw new NumberFormatException();
+				}
+			} catch (NumberFormatException e) {
+				throw new MalformedURLException("bad port: "
+				  + portString);
 			}
-			port = Integer.parseInt(spec.substring(postart, poend));
-			start = spec.indexOf( '/', start);
+		} else {
+			if (slash != -1) {
+				host = spec.substring(posn, slash);
+			} else {
+				host = spec.substring(posn);
+			}
 		}
-		else {
-			hend = spec.indexOf('/', start);
-			if (hend != -1) {
-				host = spec.substring(start, hend);
-				start = spec.indexOf( '/', start);
-			}
-			else {
-				host = spec.substring(start);
-				start = -1;
-			}
-		}
-	}
-
-	if (start != -1) {
-		file = spec.substring(start);
-		int rIdx = file.lastIndexOf( '#');
-		if ( rIdx > -1 ) {
-			ref = file.substring( rIdx+1);
-			file = file.substring( 0, rIdx);
+		posn = slash;
+	} else {
+		if (spec.length() == 0) {
+			posn = -1;
 		}
 	}
 
-	file = compressFile(file);
+	// Is a file specified?
+	if (posn != -1) {
+		if (file.equals("") || spec.charAt(posn) == '/') {
+			file = spec.substring(posn);
+		} else {
+			int lastSlash = file.lastIndexOf('/');
+			if (lastSlash == -1) {
+				file = spec.substring(posn);
+			} else {
+				file = file.substring(0, lastSlash + 1)
+				    + spec.substring(posn);
+			}
+		}
+	} else {
+		if (gotHost) {
+			file = "/";
+		}
+	}
 
-	setURL(u, u.getProtocol(), host, port, file, ref);
+	setURL(u, u.getProtocol(), host, port, compressFile(file), u.getRef());
 }
 
-protected void setURL(URL u, String protocol, String host, int port, String file, String ref) {
+//
+// The JDK 1.2 docs say this can't throw a MalformedURLException.
+// That seems wrong.
+//
+protected void setURL(URL u, String protocol, String host, int port,
+		String file, String ref) throws MalformedURLException {
 	u.set(protocol, host, port, file, ref);
 }
 
@@ -90,10 +122,15 @@ protected String toExternalForm(URL u) {
 		}
 	}
 	buf.append(u.getFile());
+	if (u.getRef() != null && !u.getRef().equals("")) {
+		buf.append('#');
+		buf.append(u.getRef());
+	}
 	return (buf.toString());
 }
 
 private String compressFile(String file) {
+	boolean isAbsolute = file.length() > 0 && file.charAt(0) == '/';
 	StringTokenizer tok = new StringTokenizer(file, "/");
 	int len = tok.countTokens();
 	String[] array = new String[len+2];
@@ -103,7 +140,7 @@ private String compressFile(String file) {
 		if (str.equals("..")) {
 			j--;
 		}
-		else {
+		else if (!str.equals(".")) {
 			if (i+1 < len || file.endsWith("/")) {
 				str = str + '/';
 			}
@@ -114,7 +151,9 @@ private String compressFile(String file) {
 
 	// Build a string of the remaining elements.
 	StringBuffer buf = new StringBuffer();
-	buf.append('/');
+	if (isAbsolute) {
+		buf.append('/');
+	}
 	for (int i = 0; i < j; i++) {
 		buf.append(array[i]);
 	}

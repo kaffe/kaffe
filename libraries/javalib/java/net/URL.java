@@ -1,11 +1,3 @@
-package java.net;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.lang.String;
-import java.util.StringTokenizer;
-import kaffe.net.DefaultURLStreamHandlerFactory;
 
 /*
  * Java core library component.
@@ -16,57 +8,164 @@ import kaffe.net.DefaultURLStreamHandlerFactory;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-final public class URL
-  implements Serializable
-{
+
+package java.net;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.lang.String;
+import java.util.HashMap;
+import java.util.StringTokenizer;
+import kaffe.net.DefaultURLStreamHandlerFactory;
+
+public final class URL implements Serializable {
 	private final static long serialVersionUID = -7627629688361524110L;
-	private static URLStreamHandlerFactory defaultFactory = new DefaultURLStreamHandlerFactory();
+	private static URLStreamHandlerFactory defaultFactory =
+		new DefaultURLStreamHandlerFactory();
 	private static URLStreamHandlerFactory factory;
+	private static final HashMap defaultHandlers = new HashMap();
 	private URLStreamHandler handler;
 	private String protocol;
 	private String host = "";
 	private int port = -1;
-	private String file = "/";
+	private String file = "";
 	private String ref;
 	private URLConnection conn;
 
-public URL(String spec) throws MalformedURLException {
-	parseURL(spec);
+public URL(String protocol, String host, String file)
+		throws MalformedURLException {
+	this(protocol, host, -1, file, null);
 }
 
-public URL(String protocol, String host, String file) throws MalformedURLException {
-	this(protocol, host, -1, file);
+public URL(String protocol, String host, int port, String file)
+		throws MalformedURLException {
+	this(protocol, host, port, file, null);
 }
 
-public URL(String protocol, String host, int port, String file) throws MalformedURLException {
+public URL(String protocol, String host, int port, String file,
+		URLStreamHandler handler) throws MalformedURLException {
+
+	// Check null pointers
 	if (protocol == null || host == null || file == null) {
 		throw new NullPointerException();
 	}
-	handler = getURLStreamHandler(protocol);
+
+	// Check handler
+	if (handler != null) {
+		System.getSecurityManager().checkPermission(
+		    new NetPermission("specifyStreamHandler"));
+	} else {
+		handler = getDefaultHandler(protocol);
+	}
+
+	this.handler = handler;
 	handler.setURL(this, protocol, host, port, file, "");
 }
 
+public URL(String spec) throws MalformedURLException {
+	this(null, spec);
+}
+
+//
+// Create a new URL from an (optional) existing context and a String.
+//
+// Certain parts of the way an URL is parsed are universal for all protocols,
+// and others are protocol specific. This is the way we parse an URL:
+//
+//	URL   ->   [<protocol>:]<protocol-specific-stuff>[#<reference>]
+//
+// Note that handler.parseURL() is responsible for merging the URL together
+// with any inherited context. This is because different protocols have
+// different rules for how a relative URL is interpreted with context.
+//
 public URL(URL context, String spec) throws MalformedURLException {
-	// If no context of spec has a protocol - ignore context.
-	if (context == null || spec.indexOf(':') != -1) {
-		parseURL(spec);
-	}
-	// Else if spec is absolute just use context's protocol.
-	else if ( spec.charAt(0) == '/') {
+	int firstColon = spec.indexOf(':');
+	int firstSlash = spec.indexOf('/');
+	int lastHash = spec.lastIndexOf('#');
+
+	// See if "spec" specifies a protocol
+	if (firstColon != -1
+	    && (firstSlash == -1 || firstColon < firstSlash)) {
+
+		// Save protocol
+		protocol = spec.substring(0, firstColon);
+
+		// If protocols are the same, inherit from context
+		if (context != null && context.protocol.equals(protocol)) {
+			host = context.host;
+			port = context.port;
+			file = context.file;
+		}
+	} else {	// Need to inherit the protocol from the context
+		if (context == null) {
+			throw new MalformedURLException("no protocol");
+		}
 		protocol = context.protocol;
 		host = context.host;
 		port = context.port;
-		handler = getURLStreamHandler(protocol);
-		handler.parseURL(this, spec, 0, spec.length());
-	}
-	else {
-		//merge path with relative spec
-		String cs = context.toString();
-		int lsi = cs.lastIndexOf( '/') + 1;
-		parseURL(cs.substring(0, lsi) + spec);
+		file = context.file;
 	}
 
-// System.out.println("merging " + context.toString() + " and " + spec + " into " + this);
+	// Get anchor reference, if any
+	if (lastHash != -1 && lastHash + 1 < spec.length()) {
+		ref = spec.substring(lastHash + 1);
+	}
+
+	// Get default handler and use it to parse the rest, within
+	//   the context defined for this URL so far
+	handler = getDefaultHandler(protocol);
+	handler.parseURL(this, spec, firstColon + 1,
+	    lastHash != -1 ? lastHash : spec.length());
+}
+
+private static URLStreamHandler getDefaultHandler(String protocol)
+		throws MalformedURLException {
+	URLStreamHandler handler;
+
+	// Have we already determined the default handler for this protocol?
+	handler = (URLStreamHandler) defaultHandlers.get(protocol);
+	if (handler != null) {
+		return handler;
+	}
+
+	// Try handler factory previously specified, if any
+	if (factory != null) {
+		handler = factory.createURLStreamHandler(protocol);
+		if (handler != null) {
+			defaultHandlers.put(protocol, handler);
+			return handler;
+		}
+	}
+
+	// Try factories specified in java.protocol.handler.pkgs property
+	String faclist = System.getProperties()
+		.getProperty("java.protocol.handler.pkgs");
+	if (faclist != null) {
+		for (StringTokenizer s = new StringTokenizer(faclist, "|");
+		    s.hasMoreTokens(); ) {
+			try {
+				handler = (URLStreamHandler) Class.forName(
+				    s.nextToken() + "." + protocol + ".Handler"
+				    ).newInstance();
+				defaultHandlers.put(protocol, handler);
+				return handler;
+			} catch (ClassNotFoundException e) {
+			} catch (IllegalAccessException e) {
+			} catch (InstantiationException e) {
+			} catch (ClassCastException e) {
+			}
+		}
+	}
+
+	// Try default kaffe implementation
+	handler = defaultFactory.createURLStreamHandler(protocol);
+	if (handler != null) {
+		defaultHandlers.put(protocol, handler);
+		return handler;
+	}
+
+	throw new MalformedURLException("unknown protocol: " + protocol);
 }
 
 public boolean equals(Object obj) {
@@ -79,16 +178,15 @@ public boolean equals(Object obj) {
 	    this.host.equals(that.host) &&
 	    this.port == that.port &&
 	    this.file.equals(that.file) &&
-	    ((this.ref == null && that.ref == null)
-	      || this.ref.equals(that.ref)) ) {
+	    (this.ref == null ?
+	      (that.ref == null) : this.ref.equals(that.ref)) ) {
 		return (true);
 	}
 	return (false);
 }
 
 public final Object getContent() throws IOException {
-	openConnection();
-	return (conn.getContent());
+	return openConnection().getContent();
 }
 
 public String getFile() {
@@ -111,22 +209,6 @@ public String getRef() {
 	return (ref);
 }
 
-private static URLStreamHandler getURLStreamHandler(String protocol) throws MalformedURLException {
-	URLStreamHandler handler = null;
-	if (factory != null) {
-		handler = factory.createURLStreamHandler(protocol);
-		if (handler != null) {
-			return (handler);
-		}
-	}
-	handler = defaultFactory.createURLStreamHandler(protocol);
-	if (handler != null) {
-		return (handler);
-	}
-
-	throw new MalformedURLException("unknown protocol: " + protocol);
-}
-
 public int hashCode() {
 	return (protocol.hashCode() ^ host.hashCode() ^ file.hashCode());
 }
@@ -142,27 +224,7 @@ public URLConnection openConnection() throws IOException {
 public final InputStream openStream() throws IOException {
 	// We *ALWAYS* open a new connection even if we already have
 	// one open.
-	openConnection();
-	return (conn.getInputStream());
-}
-
-private void parseURL(String spec) throws MalformedURLException {
-
-	/* URL -> <protocol>:[//<hostname>[:port]][/<file>] */
-
-//System.out.println("Parsing URL " + spec);
-
-	int pend = spec.indexOf(':');
-	if (pend == -1) {
-		throw new MalformedURLException("missing protocol");
-	}
-	else {
-		protocol = spec.substring(0, pend);
-	}
-	handler = getURLStreamHandler(protocol);
-	handler.parseURL(this, spec, pend+1, spec.length());
-
-//System.out.println("URL = " + this);
+	return openConnection().getInputStream();
 }
 
 public boolean sameFile(URL that) {
@@ -185,6 +247,7 @@ protected void set(String protocol, String host, int port, String file, String r
 
 public static synchronized void setURLStreamHandlerFactory(URLStreamHandlerFactory fac) {
 	if (factory == null) {
+		System.getSecurityManager().checkSetFactory();
 		factory = fac;
 	}
 	else {
