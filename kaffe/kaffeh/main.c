@@ -14,18 +14,18 @@
 #include "config-mem.h"
 #include "kaffeh-support.h"
 
-#define	BUFSZ	100
+#define	BUFSZ	1024
 #define	PATHSZ	1024
 
 #define	PATH_SEP_CHAR	'/'
 
 FILE* include;
 FILE* jni_include;
-char className[BUFSZ];
-char pathName[BUFSZ];
-char includeName[BUFSZ];
-char realClassPath[PATHSZ];
-char tmpName[BUFSZ];
+char className[BUFSZ];		/* XXX should allocate dynamicallly */
+char pathName[BUFSZ];		/* XXX should allocate dynamicallly */
+char includeName[BUFSZ];	/* XXX should allocate dynamicallly */
+char realClassPath[PATHSZ];	/* XXX should allocate dynamicallly */
+char tmpName[BUFSZ];		/* XXX should allocate dynamicallly */
 
 int flag_shrt = 0;
 int flag_jni = 0;
@@ -60,6 +60,11 @@ main(int argc, char* argv[])
 
 		/* Derive various names from class name */
 		for (i = 0; nm[i] != 0; i++) {
+			if (i >= BUFSZ - 100) {
+				fprintf(stderr,
+				    "kaffeh: class name too long\n");
+				exit(1);
+			}
 			switch (nm[i]) {
 			case '/':
 			case '.':
