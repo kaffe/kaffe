@@ -23,7 +23,7 @@ package gnu.classpath.tools.gjdoc;
 import com.sun.javadoc.*;
 import java.util.*;
 
-public abstract class AbstractTagImpl implements Tag {
+public abstract class AbstractTagImpl implements Tag, TagContainer {
    
    private static final Tag[] emptyTags = new Tag[0];
 
@@ -41,11 +41,13 @@ public abstract class AbstractTagImpl implements Tag {
       }
    }
 
-   protected void setBody(String body) {
+   protected void setBody(String body, ClassDocImpl contextClass, MemberDocImpl contextMember) {
       this.tagMap=DocImpl.parseCommentTags(body.toCharArray(),
 					   0,
 					   body.length(),
-					   null);
+					   contextClass,
+                                           contextMember,
+                                           this);
    }
 
    public Tag[] firstSentenceTags() { 
@@ -61,5 +63,9 @@ public abstract class AbstractTagImpl implements Tag {
 
    public String text() {
       return text;
+   }
+
+   public Map getTagMap() { 
+      return tagMap; 
    }
 }

@@ -29,7 +29,7 @@ class PackageDocImpl extends DocImpl implements GjdocPackageDoc {
    private String packageName;
    private File   packageDirectory;
 
-   private List   allClassesList      = new ArrayList();
+   private Set    allClassesSet       = new TreeSet();
    private List   ordinaryClassesList = new ArrayList();
    private List   exceptionsList      = new ArrayList();
    private List   interfacesList      = new ArrayList();
@@ -48,13 +48,12 @@ class PackageDocImpl extends DocImpl implements GjdocPackageDoc {
 
    public void addClass(ClassDoc classDoc) {
       if (Main.getInstance().includeAccessLevel(((ClassDocImpl)classDoc).accessLevel)) {
-	 allClassesList.add(classDoc);
+	 allClassesSet.add(classDoc);
       }
    }
 
    public void resolve() {
-
-      for (Iterator it=allClassesList.iterator(); it.hasNext(); ) {
+      for (Iterator it=allClassesSet.iterator(); it.hasNext(); ) {
 	 ClassDocImpl classDoc=(ClassDocImpl)it.next();
 	 try {
 	     classDoc.resolve();
@@ -83,7 +82,9 @@ class PackageDocImpl extends DocImpl implements GjdocPackageDoc {
 	 this.tagMap=parseCommentTags(rawDocumentation.toCharArray(),
 				      0,
 				      rawDocumentation.length(),
-				      null);
+				      null,
+                                      null,
+                                      null);
       }
 
       resolveTags();
@@ -96,7 +97,7 @@ class PackageDocImpl extends DocImpl implements GjdocPackageDoc {
    public ClassDoc[] allClasses() 
    { 
       if (null == this.allClasses) {
-         this.allClasses = toClassDocArray(allClassesList);
+         this.allClasses = toClassDocArray(allClassesSet);
       }
       return this.allClasses;
    }
@@ -134,7 +135,7 @@ class PackageDocImpl extends DocImpl implements GjdocPackageDoc {
       return this.errors;
    }
 
-   private ClassDoc[] toClassDocArray(List classDocList)
+   private ClassDoc[] toClassDocArray(Collection classDocList)
    {
       ClassDoc[] result = (ClassDoc[])classDocList.toArray(new ClassDoc[classDocList.size()]);
       Arrays.sort(result);

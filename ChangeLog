@@ -28,6 +28,187 @@
 	
 2004-12-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* tools/gjdoc/javalib/gnu/classpath/tools/StringToolkit.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/doclets/htmldoclet/ExternalDocSet.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/InheritDocTagImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/TagContainer.java:
+	tools/gjdoc/javalib/com/sun/javadoc/ClassDoc.java,
+	tools/gjdoc/javalib/com/sun/javadoc/FieldDoc.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/FileSystemClassLoader.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/doclets/AbstractDoclet.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/doclets/htmldoclet/CssClass.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/AbstractTagImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ClassDocImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ClassDocProxy.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/DocImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ExecutableMemberDocImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/FieldDocImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/Main.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/MemberDocImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/MethodDocImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/PackageDocImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ParamTagImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/Parser.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/RootDocImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/SeeTagImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/SerialFieldTagImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/TagImpl.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/ThrowsTagImpl.java:
+	Resyned with gjdoc.
+
+	* configure.ac:
+	Build gjdoc by default.
+
+	* configure,
+	tools/gjdoc/javalib/Makefile.am,
+	tools/gjdoc/javalib/Makefile.in:
+	Regenerated.
+
+	
+	2004-12-08  Julian Scheid <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/doclets/AbstractDoclet.java: allow run()
+	to throw DocletConfigurationException; use printError() instead of
+	System.err.println() for error message output.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java:
+	generate package-list file; implement options -link, -linkoffset.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/ExternalDocSet.java:
+	initial version.
+
+	2004-12-08  Julian Scheid <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/StringToolkit.java: initial version.
+
+	2004-12-08  Julian Scheid <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java:
+	implement tag {@docRoot}.
+
+	* src/gnu/classpath/tools/gjdoc/DocImpl.java: fix handling of
+	generic inline tags.
+
+	2004-12-08  Julian Scheid <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/doclets/AbstractDoclet.java: omit unnamed
+	package from index; add method getAllPackages().
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/CssClass.java: add
+	new CSS classes for overriding information.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java: show
+	overriding information; show field type; properly handle classes
+	in the unnamed package; add link to package overview page to
+	package class list; use getAllPackages() instead of
+	rootDoc.specifiedPackages() for package menu and overview page;
+	handle case when source files are not located in the proper
+	package directory.
+
+	* src/gnu/classpath/tools/gjdoc/ExecutableMemberDocImpl.java:
+	remove dead code.
+
+	* src/gnu/classpath/tools/gjdoc/Main.java: emit warning when -J
+	option is ignored; simulate option -JD (set system property);
+	allow user to specify Java source files on the command line.
+
+	* src/gnu/classpath/tools/gjdoc/PackageDocImpl.java: use TreeSet
+	instead of ArrayList for set of all classes.
+
+	* src/gnu/classpath/tools/gjdoc/Parser.java: have
+	processSourceFile() return the resulting ClassDoc.
+
+	* src/gnu/classpath/tools/gjdoc/RootDocImpl.java: handle source
+	files specified on command line.
+
+	* src/gnu/classpath/tools/FileSystemClassLoader.java: remove debug
+	output and dead code.
+
+	2004-12-07  Julian Scheid <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/gjdoc/Parser.java: sort methods, fields,
+	and constructors.
+
+	* src/gnu/classpath/tools/gjdoc/ExecutableMemberDocImpl.java: fix
+	problems with final parameters and whitespace within array
+	dimension specifiers.
+	
+	2004-12-07  Julian Scheid <julian@sektor37.de>
+
+	* src/com/sun/javadoc/ClassDoc.java: add methods fields(boolean),
+	methods(boolean) and constructors(boolean).
+
+	* src/com/sun/javadoc/FieldDoc.java: add method constantValue().
+
+	* src/gnu/classpath/tools/FileSystemClassLoader.java: consider
+	Class-Path manifest attribute in jar files; add support for
+	finding resources.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/CssClass.java: add
+	classes for return type and specifying interfaces.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java: show
+	return type, specifying interfaces. output arbitrary inline tags.
+
+	* src/gnu/classpath/tools/gjdoc/AbstractTagImpl.java:
+	implement interface TagContainer; pass context member and context
+	tag to tag parser.
+
+	* src/gnu/classpath/tools/gjdoc/ClassDocImpl.java: add support for
+	unfiltered method, field and constructor arrays; implement
+	methods(boolean), fields(boolean) and constructors(boolean);
+	implement getFieldDoc, getMethodDoc, getConstructorDoc.
+
+	* src/gnu/classpath/tools/gjdoc/ClassDocProxy.java: implement
+	methods(boolean), fields(boolean) and constructors(boolean).
+
+	* src/gnu/classpath/tools/gjdoc/DocImpl.java: consider context
+	member and context tag in tag parser; add support for comment
+	inheritance.
+
+	* src/gnu/classpath/tools/gjdoc/FieldDocImpl.java: add dummy
+	implementation for constantValue().
+
+	* src/gnu/classpath/tools/gjdoc/InheritDocTagImpl.java: initial
+	version.
+
+	* src/gnu/classpath/tools/gjdoc/Main.java: ignore options starting
+	with -J; properly support -docletpath option.
+
+	* src/gnu/classpath/tools/gjdoc/MemberDocImpl.java: override
+	resolveComments() with support for automatic comment inheritance.
+
+	* src/gnu/classpath/tools/gjdoc/MethodDocImpl.java: remove
+	special-case handling of comment inheritance.
+
+	* src/gnu/classpath/tools/gjdoc/PackageDocImpl.java: pass null
+	context member and context tag to tag parser.
+
+	* src/gnu/classpath/tools/gjdoc/ParamTagImpl.java: support context
+	member and context tag.
+
+	* src/gnu/classpath/tools/gjdoc/Parser.java: support unfiltered
+	fields, methods and constructors.
+
+	* src/gnu/classpath/tools/gjdoc/RootDocImpl.java: don't close
+	rawCommentCache before doclet has run.
+
+	* src/gnu/classpath/tools/gjdoc/SeeTagImpl.java: remove debug
+	code.
+
+	* src/gnu/classpath/tools/gjdoc/SerialFieldTagImpl.java: support
+	for context member and context tag.
+
+	* src/gnu/classpath/tools/gjdoc/TagImpl.java: likewise.
+
+	* src/gnu/classpath/tools/gjdoc/ThrowsTagImpl.java: likewise.
+
+	* src/gnu/classpath/tools/gjdoc/TagContainer.java: initial
+	version.
+
+2004-12-08  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/xml/dom/DomAttr.java,
 	libraries/javalib/gnu/xml/dom/DomCharacterData.java,
 	libraries/javalib/gnu/xml/dom/DomDoctype.java,

@@ -140,6 +140,21 @@ interfaces();
 
 /**
   * This method returns the list of fields that are visible to the user in
+  * this class, or the list of all fields in this class.
+  *
+  * @param filtered if true, only return visible (included) fields;
+  * otherwise, return all fields.
+  *
+  * @return The list of visible fields in this class, or the list of
+  * all fields in this class.
+  */
+public abstract FieldDoc[]
+fields(boolean filtered);
+
+/*************************************************************************/
+
+/**
+  * This method returns the list of fields that are visible to the user in
   * this class.  Does this depend on the -private -protected, etc flags
   * passed to javadoc?
   *
@@ -151,6 +166,22 @@ fields();
 /*************************************************************************/
 
 /**
+  * This method returns either the list of methods that are visible to
+  * the user in the class represented by this object, or a list of all
+  * methods, excluding constructor methods.
+  *
+  * @param filtered if true, only return visible (included) methods;
+  * otherwise, return all methods.
+  *
+  * @return The list of all methods in this class, or the list of
+  * visible methods in this class.
+  */
+public abstract MethodDoc[]
+methods(boolean filtered);
+
+/*************************************************************************/
+
+/**
   * This method returns the list of methods that are visible to the user in
   * the class represented by this object, excluding constructor methods.
   *
@@ -158,6 +189,22 @@ fields();
   */
 public abstract MethodDoc[]
 methods();
+
+/*************************************************************************/
+
+/**
+  * This method returns either the list of constructors that are
+  * visible to the user in the class represented by this object, or
+  * the list of all constructors.
+  *
+  * @param filtered if true, only return visible (included)
+  * constructors; otherwise, return all constructors.
+  *
+  * @return The list of all constructors in this class, or the list
+  * visible constructors in this class.
+  */
+public abstract ConstructorDoc[]
+constructors(boolean filtered);
 
 /*************************************************************************/
 

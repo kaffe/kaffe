@@ -249,8 +249,9 @@ import com.sun.javadoc.*;
 	    if ((field.isIncluded() || fieldHasSerialTag) && parser.addComments) {
 	       field.setRawCommentText(parser.getLastComment());
 	    }
+            parser.ctx.fieldList.add(field);
 	    if (field.isIncluded()) {
-	       parser.ctx.fieldList.add(field);
+	       parser.ctx.filteredFieldList.add(field);
 	    }
 	    if (fieldHasSerialTag) {
 	       parser.ctx.sfieldList.add(field);
@@ -290,16 +291,20 @@ import com.sun.javadoc.*;
 
 	 parser.setLastComment(null);
 
-	 if (execDoc.isIncluded()) {
+         if (execDoc.isMethod()) {
+            parser.ctx.methodList.add(execDoc);
+            if (execDoc.isIncluded()) {
+               parser.ctx.filteredMethodList.add(execDoc);
+            }
+         }
+         else {
+            parser.ctx.constructorList.add(execDoc);
+            if (execDoc.isIncluded()) {
+               parser.ctx.filteredConstructorList.add(execDoc);
+            }
+         }
 
-	    if (execDoc.isMethod()) {
-	       parser.ctx.methodList.add(execDoc);
-	    }
-	    else {
-	       parser.ctx.constructorList.add(execDoc);
-	    }
-	 }
-	 else if (execDoc.isMethod() 
+	 if (execDoc.isMethod() 
 		  && (execDoc.name().equals("readObject")
 		      || execDoc.name().equals("writeObject"))) {
 
@@ -578,11 +583,17 @@ public class Parser {
 
    static Set processedFiles = new HashSet();
 
-   void processSourceFile(File file, boolean addComments, String encoding) throws IOException, ParseException {
+   ClassDocImpl processSourceFile(File file, boolean addComments, String encoding) 
+      throws IOException, ParseException
+   {
+      this.currentPackage = PackageDocImpl.DEFAULT_PACKAGE;
+      this.outerClass = null;
 
       this.addComments=addComments;
 
-      if (processedFiles.contains(file)) return;
+      if (processedFiles.contains(file)) {
+         return null;
+      }
       processedFiles.add(file);
 
       Debug.log(1,"Processing file "+file);
@@ -613,6 +624,8 @@ public class Parser {
 	Debug.log(1,"-->contextStack not empty! size is "+contextStack.size());
 	}
       */
+
+      return outerClass;
    }
       
    int parse(char[] source, int index, SourceComponent[] componentTypes) throws ParseException, IOException {
@@ -689,7 +702,11 @@ public class Parser {
 
       currentPackage.addClass(classDoc);
 
-      currentClass=classDoc;
+      currentClass = classDoc;
+
+      if (null == outerClass) {
+         outerClass = classDoc;
+      }
 
       if (classDoc.superclass()!=null)
 	 referencedClassesList.add(classDoc.superclass());
@@ -701,16 +718,27 @@ public class Parser {
       //Debug.log(9,"ctx="+ctx);
    }
 
+   private Doc[] toSortedArray(List list, Doc[] template)
+   {
+      Doc[] result = (Doc[])list.toArray(template);
+      Arrays.sort(result);
+      return result;
+   }
+
    void classClosed() throws ParseException, IOException {
 
-      //Debug.log(9,"ctx="+ctx+" fieldList="+ctx.fieldList+" classDoc="+ctx.classDoc);
-      ctx.classDoc.setFields((FieldDoc[])ctx.fieldList.toArray(new FieldDoc[ctx.fieldList.size()]));
-      ctx.classDoc.setSerializableFields((FieldDoc[])ctx.sfieldList.toArray(new FieldDoc[ctx.sfieldList.size()]));
-      ctx.classDoc.setMethods((MethodDoc[])ctx.methodList.toArray(new MethodDoc[0]));
+      ctx.classDoc.setFields((FieldDoc[])toSortedArray(ctx.fieldList, 
+                                                             new FieldDoc[0]));
+      ctx.classDoc.setFilteredFields((FieldDoc[])toSortedArray(ctx.filteredFieldList, 
+                                                                     new FieldDoc[0]));
+      ctx.classDoc.setSerializableFields((FieldDoc[])toSortedArray(ctx.sfieldList, new FieldDoc[0]));
+      ctx.classDoc.setMethods((MethodDoc[])toSortedArray(ctx.methodList, new MethodDoc[0]));
+      ctx.classDoc.setFilteredMethods((MethodDoc[])toSortedArray(ctx.filteredMethodList, new MethodDoc[0]));
       ctx.classDoc.setMaybeSerMethodList(ctx.maybeSerMethodList);
-      ctx.classDoc.setConstructors((ConstructorDoc[])ctx.constructorList.toArray(new ConstructorDoc[0]));
+      ctx.classDoc.setConstructors((ConstructorDoc[])toSortedArray(ctx.constructorList, new ConstructorDoc[0]));
+      ctx.classDoc.setFilteredConstructors((ConstructorDoc[])toSortedArray(ctx.filteredConstructorList, new ConstructorDoc[0]));
 
-      ctx.classDoc.setInnerClasses((ClassDocImpl[])ctx.innerClassesList.toArray(new ClassDocImpl[0]));
+      ctx.classDoc.setInnerClasses((ClassDocImpl[])toSortedArray(ctx.innerClassesList, new ClassDocImpl[0]));
       
       Main.getRootDoc().addClassDoc(ctx.classDoc);
       
@@ -737,27 +765,31 @@ public class Parser {
    Stack        contextStack    = new Stack();
    class Context {
       Context(ClassDocImpl classDoc) { this.classDoc=classDoc; }
-      ClassDocImpl      classDoc = null;
-      List	        fieldList        = new ArrayList();
-      List	        sfieldList       = new ArrayList();
-      List	        methodList       = new ArrayList();
-      List              maybeSerMethodList = new ArrayList();
-      List	        constructorList  = new ArrayList();
-      List              innerClassesList = new ArrayList();
+      ClassDocImpl      classDoc                 = null;
+      List	        fieldList                = new LinkedList();
+      List	        filteredFieldList        = new LinkedList();
+      List	        sfieldList               = new LinkedList();
+      List	        methodList               = new LinkedList();
+      List	        filteredMethodList       = new LinkedList();
+      List              maybeSerMethodList       = new LinkedList();
+      List	        constructorList          = new LinkedList();
+      List	        filteredConstructorList  = new LinkedList();
+      List              innerClassesList         = new LinkedList();
    }
    
    String lastComment = null;
    PackageDocImpl currentPackage = PackageDocImpl.DEFAULT_PACKAGE;
    ClassDocImpl currentClass = null;
-   List ordinaryClassesList  = new ArrayList();
-   List allClassesList       = new ArrayList();
-   List interfacesList       = new ArrayList();
+   ClassDocImpl outerClass   = null;
+   List ordinaryClassesList  = new LinkedList();
+   List allClassesList       = new LinkedList();
+   List interfacesList       = new LinkedList();
 
-   List importedClassesList  = new ArrayList();
-   List importedStringList  = new ArrayList();
-   List importedPackagesList = new ArrayList();
+   List importedClassesList  = new LinkedList();
+   List importedStringList   = new LinkedList();
+   List importedPackagesList = new LinkedList();
 
-   List referencedClassesList = new ArrayList();
+   List referencedClassesList = new LinkedList();
 
    void packageOpened(String packageName) {
       currentPackage=Main.getRootDoc().findOrCreatePackageDoc(packageName);

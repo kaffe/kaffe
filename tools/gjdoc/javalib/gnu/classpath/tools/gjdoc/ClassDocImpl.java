@@ -59,7 +59,11 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
 
    // Return constructors in class. 
    public ConstructorDoc[] constructors() {
-      return constructors;
+      return constructors(true);
+   } 
+
+   public ConstructorDoc[] constructors(boolean filter) {
+      return filter ? filteredConstructors : unfilteredConstructors;
    } 
 
    // Return true if Serializable fields are explicitly defined with the special class member serialPersistentFields. 
@@ -69,7 +73,11 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
 
    // Return fields in class. 
    public FieldDoc[] fields() {
-      return fields;
+      return fields(true);
+   } 
+
+   public FieldDoc[] fields(boolean filter) {
+      return filter ? filteredFields : unfilteredFields;
    } 
 
    /**
@@ -199,7 +207,12 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
 
    // Return methods in class. 
    public MethodDoc[] methods() {
-      return methods;
+      return methods(true);
+   } 
+
+   // Return methods in class. 
+   public MethodDoc[] methods(boolean filter) {
+      return filter ? filteredMethods : unfilteredMethods;
    } 
 
    // Return the Serializable fields of class. Return either a list of default fields documented by serial tag or return a single FieldDoc for serialPersistentField member. 
@@ -391,7 +404,11 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
    }
 
    public void setFields(FieldDoc[] fields) {
-      this.fields=fields;
+      this.unfilteredFields=fields;
+   }
+
+   public void setFilteredFields(FieldDoc[] fields) {
+      this.filteredFields=fields;
    }
 
    public void setSerializableFields(FieldDoc[] sfields) {
@@ -399,11 +416,19 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
    }
 
    public void setMethods(MethodDoc[] methods) {
-      this.methods=methods;
+      this.unfilteredMethods=methods;
+   }
+
+   public void setFilteredMethods(MethodDoc[] methods) {
+      this.filteredMethods=methods;
    }
 
    public void setConstructors(ConstructorDoc[] constructors) {
-      this.constructors=constructors;
+      this.unfilteredConstructors=constructors;
+   }
+
+   public void setFilteredConstructors(ConstructorDoc[] constructors) {
+      this.filteredConstructors=constructors;
    }
 
    // Returns the name of this Doc item. 
@@ -480,25 +505,25 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
             }
          }
 
-	 if (fields!=null) {
-            for (int i=0; i<fields.length; ++i) {
-               ((FieldDocImpl)fields[i]).resolve();
-               if (fields[i].name().equals("serialPersistentField")) {
-                  serialPersistentField=new FieldDoc[]{fields[i]};
+	 if (unfilteredFields!=null) {
+            for (int i=0; i<unfilteredFields.length; ++i) {
+               ((FieldDocImpl)unfilteredFields[i]).resolve();
+               if (unfilteredFields[i].name().equals("serialPersistentField")) {
+                  serialPersistentField=new FieldDoc[]{unfilteredFields[i]};
                   definesSerializableFields=true;
                }
             }
          }
 
-         if (methods!=null) {
-            for (int i=0; i<methods.length; ++i) {
-               ((MethodDocImpl)methods[i]).resolve();
+         if (unfilteredMethods!=null) {
+            for (int i=0; i<unfilteredMethods.length; ++i) {
+               ((MethodDocImpl)unfilteredMethods[i]).resolve();
             }
          }
 
-         if (constructors!=null) {
-            for (int i=0; i<constructors.length; ++i) {
-               ((ConstructorDocImpl)constructors[i]).resolve();
+         if (unfilteredConstructors!=null) {
+            for (int i=0; i<unfilteredConstructors.length; ++i) {
+               ((ConstructorDocImpl)unfilteredConstructors[i]).resolve();
             }
          }
 
@@ -524,9 +549,9 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
    }
 
    public FieldDoc findField(String fieldName) {
-      for (int i=0; i<fields.length; ++i) {
-	 if (fields[i].name().equals(fieldName)) {
-	    return fields[i];
+      for (int i=0; i<filteredFields.length; ++i) {
+	 if (filteredFields[i].name().equals(fieldName)) {
+	    return filteredFields[i];
 	 }
       }
       return null;
@@ -536,9 +561,9 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
 
       super.resolveComments();
 
-      if (null != fields) {
-         for (int i=0; i<fields.length; ++i) {
-            ((FieldDocImpl)fields[i]).resolveComments();
+      if (null != unfilteredFields) {
+         for (int i=0; i<unfilteredFields.length; ++i) {
+            ((FieldDocImpl)unfilteredFields[i]).resolveComments();
          }
       }
 
@@ -547,14 +572,14 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
             ((FieldDocImpl)serializableFields[i]).resolveComments();
          }
       }
-      if (null != methods) {
-         for (int i=0; i<methods.length; ++i) {
-            ((MethodDocImpl)methods[i]).resolveComments();
+      if (null != unfilteredMethods) {
+         for (int i=0; i<unfilteredMethods.length; ++i) {
+            ((MethodDocImpl)unfilteredMethods[i]).resolveComments();
          }
       }
-      if (null != constructors) {
-         for (int i=0; i<constructors.length; ++i) {
-            ((ConstructorDocImpl)constructors[i]).resolveComments();
+      if (null != unfilteredConstructors) {
+         for (int i=0; i<unfilteredConstructors.length; ++i) {
+            ((ConstructorDocImpl)unfilteredConstructors[i]).resolveComments();
          }
       }
 
@@ -567,10 +592,13 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
    private boolean isAbstract;
    private boolean isInterface;
    private ClassDoc[] interfaces;
-   private FieldDoc[] fields;
+   private FieldDoc[] filteredFields;
+   private FieldDoc[] unfilteredFields;
    private FieldDoc[] serializableFields;
-   private MethodDoc[] methods;
-   private ConstructorDoc[] constructors;
+   private MethodDoc[] filteredMethods;
+   private MethodDoc[] unfilteredMethods;
+   private ConstructorDoc[] filteredConstructors;
+   private ConstructorDoc[] unfilteredConstructors;
 
    private boolean resolved=false;
 
@@ -735,10 +763,11 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
    }
 
    public ConstructorDoc findConstructor(String name, String signature) {
-      if (null != constructors) {
-         for (int i=0; i<constructors.length; ++i) {
-            if (constructors[i].name().equals(name) && constructors[i].signature().equals(signature))
-               return constructors[i];
+      if (null != filteredConstructors) {
+         for (int i=0; i<filteredConstructors.length; ++i) {
+            ConstructorDoc constructor = filteredConstructors[i];
+            if (constructor.name().equals(name) && constructor.signature().equals(signature))
+               return constructor;
          }
       }
       return null;
@@ -786,10 +815,11 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
    }
 
    public MethodDoc findMethod(String name, String signature) {
-      if (null != methods) {
-         for (int i=0; i<methods.length; ++i) {
-            if (methods[i].name().equals(name) && methods[i].signature().equals(signature))
-               return methods[i];
+      if (null != filteredMethods) {
+         for (int i=0; i<filteredMethods.length; ++i) {
+            MethodDoc method = filteredMethods[i];
+            if (method.name().equals(name) && method.signature().equals(signature))
+               return method;
          }
       }
       return null;
@@ -830,6 +860,38 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
    public ClassDoc getBaseClassDoc()
    {
       return baseClassDoc;
+   }
+   
+   public FieldDoc getFieldDoc(String name)
+   {
+      for (int i=0; i<unfilteredFields.length; ++i) {
+         if (name.equals(unfilteredFields[i].name())) {
+            return unfilteredFields[i];
+         }
+      }
+      return null;
+   }
+
+   public MethodDoc getMethodDoc(String name, String signature)
+   {
+      for (int i=0; i<unfilteredMethods.length; ++i) {
+         if (name.equals(unfilteredMethods[i].name())
+             && signature.equals(unfilteredMethods[i].signature())) {
+            return unfilteredMethods[i];
+         }
+      }
+      return null;
+   }
+
+
+   public ConstructorDoc getConstructorDoc(String signature)
+   {
+      for (int i=0; i<unfilteredConstructors.length; ++i) {
+         if (signature.equals(unfilteredConstructors[i].signature())) {
+            return unfilteredConstructors[i];
+         }
+      }
+      return null;
    }
 }
 

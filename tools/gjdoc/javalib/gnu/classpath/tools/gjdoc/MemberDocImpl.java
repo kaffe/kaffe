@@ -191,4 +191,18 @@ public abstract class MemberDocImpl extends ProgramElementDocImpl implements Mem
 	 }
       }
    }
+
+   public void resolveComments()
+   {
+      super.resolveComments();
+
+      if (tagMap.isEmpty()) {
+         TagContainer inheritedTagMap = ClassDocImpl.findInheritedDoc(containingClass(),
+                                                                      this,
+                                                                      null);
+         if (null != inheritedTagMap) {
+            this.tagMap = inheritedTagMap.getTagMap();
+         }
+      }
+   }
 }

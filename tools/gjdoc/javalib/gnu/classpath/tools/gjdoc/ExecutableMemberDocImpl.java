@@ -125,8 +125,6 @@ public class ExecutableMemberDocImpl extends MemberDocImpl implements Executable
                               position);
       }
       
-      //System.err.println("Parsing '"+new String(source, startIndex, endIndex-startIndex)+"'");
-
       if (containingClass.isInterface())
 	 rc.accessLevel=ACCESS_PUBLIC;
 
@@ -196,25 +194,66 @@ public class ExecutableMemberDocImpl extends MemberDocImpl implements Executable
 	 else if (source[endx]==',' || source[endx]==')') {
 	    param=param.trim();
 	    if (param.length()>0) {
-	       int n;
-	       for (n=param.length()-1; n>=0; --n)
-		  if (Parser.WHITESPACE.indexOf(param.charAt(n))>=0)
+	       int n = param.length()-1;
+               int paramNameStart = 0;
+               while (n >= 0) {
+                  char c = param.charAt(n);
+		  if ('[' == c || ']' == c || Parser.WHITESPACE.indexOf(c)>=0) {
+                     paramNameStart = n + 1;
 		     break;
-	       String paramType=param.trim();
-	       String paramName="";
-	       if (n>0) {
-		  paramType=param.substring(0,n).trim();
-		  paramName=param.substring(n).trim();
+                  }
+                  else {
+                     -- n;
+                  }
+               }
+               while (n >= 0 && ('[' == param.charAt(n)
+                                 || ']' == param.charAt(n)
+                                 || Parser.WHITESPACE.indexOf(param.charAt(n))>=0)) {
+                  -- n;
+               }
+               int paramTypeEnd = n + 1;
+               int paramTypeStart = 0;
+               while (n >= 0) {
+                  char c = param.charAt(n);
+		  if ('[' == c || ']' == c || Parser.WHITESPACE.indexOf(c)>=0) {
+                     paramTypeStart = n + 1;
+		     break;
+                  }
+                  else {
+                     -- n;
+                  }
+               }
+
+	       String paramType;
+	       String paramName;
+	       if (0 != paramNameStart) {
+		  paramType=param.substring(paramTypeStart, paramTypeEnd);
+		  paramName=param.substring(paramNameStart);
 	       }
+               else {
+                  paramName = "";
+                  StringBuffer paramTypeBuffer = new StringBuffer();
+                  for (int i=0; i<param.length(); ++i) {
+                     char c = param.charAt(i);
+                     if ('[' != c && ']' != c && Parser.WHITESPACE.indexOf(c)<0) {
+                        paramTypeBuffer.append(c);
+                     }
+                  }
+                  paramType = paramTypeBuffer.toString();
+               }
 	       String dimSuffix="";
-	       while (paramName.length()>0 && "[]".indexOf(paramName.charAt(paramName.length()-1))>=0) {
-		  dimSuffix=paramName.charAt(paramName.length()-1)+dimSuffix;
-		  paramName=paramName.substring(0,paramName.length()-1).trim();
-	       }
+
+               for (int i=0; i<param.length(); ++i) {
+                  if ('[' == param.charAt(i)) {
+                     dimSuffix += "[]";
+                  }
+               }
 	       paramType+=dimSuffix;
-	       if (paramType.indexOf("][")>=0 && paramType.indexOf("[][]")<0) {
-		  throw new Error("dimSuffix='"+dimSuffix+"' paramType='"+paramType+"'");
-	       }
+
+               if (paramType.startsWith("[")) {
+                  System.err.println("broken param type in " + rc + " in " +containingClass);
+               }
+
 	       parameterList.add(new ParameterImpl(paramName, paramType, 
 						   ((ClassDocImpl)containingClass).typeForString(paramType)));
 
@@ -269,11 +308,9 @@ public class ExecutableMemberDocImpl extends MemberDocImpl implements Executable
 	 else if (source[endx]==',' || source[endx]=='{') {
 	    word=word.trim();
 	    if (word.length()>0) {
-	       //System.err.println("have thrown exception '"+word+"'");
 	       ClassDoc exceptionType=rc.containingClass().findClass(word);
 	       if (exceptionType==null) {
 		  exceptionType=new ClassDocProxy(word, rc.containingClass());
-		  //System.err.println("not found: "+exceptionType);
 	       }
 	       thrownExceptionsList.add(exceptionType);
 	    }
@@ -294,8 +331,6 @@ public class ExecutableMemberDocImpl extends MemberDocImpl implements Executable
       }
 
       rc.setThrownExceptions((ClassDoc[])thrownExceptionsList.toArray(new ClassDoc[0]));
-
-      //System.err.println("typeName="+rc.typeName);
 
       return rc;
    }

@@ -32,7 +32,9 @@ public class SerialFieldTagImpl extends AbstractTagImpl implements SerialFieldTa
    private ClassDoc     fieldTypeDoc;
    private ClassDocImpl contextClass;
 
-   public SerialFieldTagImpl(String text, ClassDocImpl contextClass) {
+   public SerialFieldTagImpl(String text, 
+                             ClassDocImpl contextClass, 
+                             MemberDocImpl contextMember) {
       super(text);
       this.contextClass=contextClass;
 
@@ -62,7 +64,7 @@ public class SerialFieldTagImpl extends AbstractTagImpl implements SerialFieldTa
 	 }
       }
       
-      setBody(description);
+      setBody(description, contextClass, contextMember);
 
    }
 

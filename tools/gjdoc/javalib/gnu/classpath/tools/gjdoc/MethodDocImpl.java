@@ -44,28 +44,4 @@ public class MethodDocImpl extends ExecutableMemberDocImpl implements MethodDoc 
    }
 
    public String toString() { return name()+((signature()==null)?"()":signature()); }
-
-   public void resolveComments()
-   {
-      super.resolveComments();
-
-      if (null == rawDocumentation) {
-         ClassDoc superclassDoc = containingClass().superclass();
-      outer:
-         while (null != superclassDoc) {
-            MethodDoc[] methods = superclassDoc.methods();
-            for (int i=0; i<methods.length; ++i) {
-               if (methods[i].name().equals(name())
-                   && methods[i].signature().equals(signature())
-                   && !methods[i].isPrivate()
-                   && !(methods[i].isPackagePrivate() 
-                        && !methods[i].containingPackage().equals(containingPackage()))) {
-                  tagMap = ((MethodDocImpl)methods[i]).getTagMap();
-                  break outer;
-               }
-            }
-            superclassDoc = superclassDoc.superclass();
-         }
-      }
-   }
 }

@@ -30,7 +30,7 @@ import javax.swing.text.Segment;
  *  Represents the least common denominator of all Javadoc
  *  comment classes.
  */
-public abstract class DocImpl implements Doc {
+public abstract class DocImpl implements Doc, TagContainer {
 
    protected static Tag[] seeTagEmptyArr = new SeeTagImpl[0];
    protected static Tag[] linkTagEmptyArr = new LinkTagImpl[0];
@@ -168,7 +168,9 @@ public abstract class DocImpl implements Doc {
          this.tagMap=parseCommentTags(charArray,
                                       startOffset,
                                       length - endOffset,
-                                      getContextClass());
+                                      getContextClass(),
+                                      getContextMember(),
+                                      null);
 
 	 rawDocOffset=Main.getRootDoc().writeRawComment(rawDocumentation);
 	 rawDocumentation=null;
@@ -258,7 +260,8 @@ public abstract class DocImpl implements Doc {
    }
 
    public static Map parseCommentTags(char[] comment, int startIndex, int endIndex, 
-				      ClassDocImpl contextClass) {
+				      ClassDocImpl contextClass, MemberDocImpl contextMember,
+                                      AbstractTagImpl contextTag) {
 
       int rawDocStart=skipHtmlWhitespace(comment, startIndex);
 
@@ -317,7 +320,7 @@ public abstract class DocImpl implements Doc {
 
 	 case STATE_BEGOFLINE:
 	    if (i==firstSentenceEnd) {
-	       addTag(tags, "text", buf.toString(), true, contextClass);
+	       contextTag = addTag(tags, "text", buf.toString(), true, contextClass, contextMember, contextTag, false);
 	       buf.setLength(0);
 	    }
 
@@ -332,7 +335,7 @@ public abstract class DocImpl implements Doc {
 	    }
 	    else if (c=='@' || (c=='{' && peek=='@') || c==EOL) {
 	       if (buf.length()>0) { 
-		  addTag(tags, "text", buf.toString(), i<firstSentenceEnd, contextClass);
+		  addTag(tags, "text", buf.toString(), i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
 		  buf.setLength(0);
 	       }
 	       if (c=='{') {
@@ -353,7 +356,7 @@ public abstract class DocImpl implements Doc {
 
 	 case STATE_WHITESPACE:
 	    if (i==firstSentenceEnd) {
-	       addTag(tags, "text", buf.toString(), true, contextClass);
+	       contextTag = addTag(tags, "text", buf.toString(), true, contextClass, contextMember, contextTag, false);
 	       buf.setLength(0);
 	    }
 
@@ -366,7 +369,7 @@ public abstract class DocImpl implements Doc {
 	    }
 	    else if (c=='@' || (c=='{' && peek=='@') || c==EOL) {
 	       if (buf.length()>0) { 
-		  addTag(tags, "text", buf.toString(), i<firstSentenceEnd, contextClass);
+		  contextTag = addTag(tags, "text", buf.toString(), i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
 		  buf.setLength(0);
 	       }
 	       if (c=='{') {
@@ -402,7 +405,7 @@ public abstract class DocImpl implements Doc {
 	    }
 	    else if (c=='@' || (c=='{' && peek=='@') || c==EOL) {
 	       paramValue=buf.toString();
-	       addTag(tags, paramName, paramValue, i<firstSentenceEnd, contextClass);
+	       contextTag = addTag(tags, paramName, paramValue, i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
 	       buf.setLength(0);
 	       if (c=='{') {
 		  ++i;
@@ -438,7 +441,7 @@ public abstract class DocImpl implements Doc {
 	    if (c=='}') {
                // tag without value
 	       paramName=buf.toString();
-	       addTag(tags, paramName, "", i<firstSentenceEnd, contextClass);
+	       contextTag = addTag(tags, paramName, "", i<firstSentenceEnd, contextClass, contextMember, contextTag, true);
                state=prevState;
                buf.setLength(0);
             }
@@ -460,7 +463,7 @@ public abstract class DocImpl implements Doc {
 	 case STATE_PARAMVALUE:
 	    if (c==EOL) {
 	       paramValue=buf.toString();
-	       addTag(tags, paramName, paramValue, i<firstSentenceEnd, contextClass);
+	       contextTag = addTag(tags, paramName, paramValue, i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
 	    }
 	    else if (c=='\n') {
 	       buf.append(c);
@@ -478,7 +481,7 @@ public abstract class DocImpl implements Doc {
 	    }
 	    else if (c==EOL || c=='}') {
 	       paramValue=buf.toString();
-	       addTag(tags, paramName, paramValue, i<firstSentenceEnd, contextClass);
+	       contextTag = addTag(tags, paramName, paramValue, i<firstSentenceEnd, contextClass, contextMember, contextTag, true);
 	       state=prevState;
 	       buf.setLength(0);
 	    }
@@ -499,7 +502,7 @@ public abstract class DocImpl implements Doc {
 	    }
 	    else if (c==EOL) {
 	       if (buf.length()>0) { 
-		  addTag(tags, "text", buf.toString(), i<firstSentenceEnd, contextClass);
+		  contextTag = addTag(tags, "text", buf.toString(), i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
 	       }
 	    }
 	    else {
@@ -520,7 +523,7 @@ public abstract class DocImpl implements Doc {
 	    }
 	    else if (c==EOL) {
 	       if (buf.length()>0) { 
-		  addTag(tags, "text", buf.toString(), i<firstSentenceEnd, contextClass);
+		  contextTag = addTag(tags, "text", buf.toString(), i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
 		  buf.setLength(0);
 	       }
 	    }
@@ -534,13 +537,13 @@ public abstract class DocImpl implements Doc {
 
 	 case STATE_TEXT:
 	    if (i==firstSentenceEnd) {
-	       addTag(tags, "text", buf.toString(), true, contextClass);
+	       contextTag = addTag(tags, "text", buf.toString(), true, contextClass, contextMember, contextTag, false);
 	       buf.setLength(0);
 	    }
 
 	    if (c==EOL) {
 	       paramValue=buf.toString();
-	       addTag(tags, "text", paramValue, i<firstSentenceEnd, contextClass);
+	       contextTag = addTag(tags, "text", paramValue, i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
 	    }
 	    else if (c=='\n') {
 	       buf.append(c);
@@ -548,7 +551,7 @@ public abstract class DocImpl implements Doc {
 	    }
 	    else if (c=='{' && peek=='@') {
 	       paramValue=buf.toString();
-	       addTag(tags, "text", paramValue, i<firstSentenceEnd, contextClass);
+	       contextTag = addTag(tags, "text", paramValue, i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
 	       ++i;
                buf.setLength(0);
 	       state=STATE_INLINEPARAM;
@@ -601,36 +604,59 @@ public abstract class DocImpl implements Doc {
       }
    }
 
-   private static void addTag(Map tags, String name,
-			      String value, boolean isFirstSentence,
-			      ClassDocImpl contextClass) {
+   private MemberDocImpl getContextMember() {
+      if (isField() || isMethod() || isConstructor()) {
+	 return (MemberDocImpl)this;
+      }
+      else {
+	 return null;
+      }
+   }
 
-      Tag tag;
+   private static AbstractTagImpl addTag(Map tags, String name,
+                                         String value, boolean isFirstSentence,
+                                         ClassDocImpl contextClass,
+                                         MemberDocImpl contextMember,
+                                         AbstractTagImpl contextTag,
+                                         boolean isInline) {
+
+      AbstractTagImpl tag;
+
       if (name.equals("param")) {
-	 tag=new ParamTagImpl(value);
+	 tag=new ParamTagImpl(value, contextClass, contextMember);
       }
       else if (name.equals("see")) {
 	 tag=new SeeTagImpl(value, contextClass);
       }
       else if (name.equals("link")) {
 	 tag=new LinkTagImpl(value, contextClass);
+         isInline = true;
+      }
+      else if (name.equals("inheritDoc")) {
+         if (value.trim().length() > 0) {
+            //printWarning("@inheritDoc tags are not supposed to have any content.");
+         }
+	 tag=new InheritDocTagImpl(contextClass, contextMember, contextTag);
+         isInline = true;
       }
       else if (name.equals("serialField")) {
-	 tag=new SerialFieldTagImpl(value, contextClass);
+	 tag=new SerialFieldTagImpl(value, contextClass, contextMember);
       }
       else if (name.equals("throws") || name.equals("exception")) {
 	 Debug.log(1,"adding tag '"+name+"' value '"+value+"'");
-	 tag=new ThrowsTagImpl(value, contextClass);
+	 tag=new ThrowsTagImpl(value, contextClass, contextMember);
 	 name="throws";
       }
       else if (name.equals("text")) {
 	 tag=new TextTagImpl(value);
+         isInline = true;
       }
       else {
 	 tag=new TagImpl("@"+name, value.trim());
+         // FIXME: consider taglets
       }
 
-      if (name.equals("text") || name.equals("link")) {
+      if (isInline) {
 	 ((List)tags.get("inline")).add(tag);
 	 if (isFirstSentence) {
             if (name.equals("text")) {
@@ -653,9 +679,9 @@ public abstract class DocImpl implements Doc {
             }
 	 }
       }
-
-      else
+      else {
 	 ((List)tags.get("all")).add(tag);
+      }
 
       List l=((List)tags.get(name));
       if (l==null) {
@@ -663,6 +689,8 @@ public abstract class DocImpl implements Doc {
 	 tags.put(name,l);
       }
       l.add(tag);
+
+      return isInline ? tag : contextTag;
    }
 
    // Return all tags in this Doc item. 
@@ -750,6 +778,147 @@ public abstract class DocImpl implements Doc {
    public void setPosition(SourcePosition position)
    {
       this.position = position;
+   }
+
+   private static TagContainer checkForInheritedDoc(ClassDoc classDoc,
+                                                    MemberDocImpl memberDoc,
+                                                    AbstractTagImpl tag)
+   {
+      DocImpl result;
+
+      if (!(classDoc instanceof ClassDocImpl)) {
+         result = null;
+      }
+      else if (null == memberDoc) {
+         result = (DocImpl)classDoc;
+      }
+      else if (memberDoc.isField()) {
+         result = (DocImpl)((ClassDocImpl)classDoc).getFieldDoc(memberDoc.name());
+      }
+      else if (memberDoc.isMethod()) {
+         result = (DocImpl)((ClassDocImpl)classDoc).getMethodDoc(memberDoc.name(), 
+                                                                 ((MethodDoc)memberDoc).signature());
+      }
+      else if (memberDoc.isConstructor()) {
+         result = (DocImpl)((ClassDocImpl)classDoc).getConstructorDoc(((ConstructorDoc)memberDoc).signature());
+      }
+      else {
+         //assert(false);
+         throw new RuntimeException("memberDoc is supposed to be field, method or constructor");
+      }
+
+      if (null != result
+          && null != memberDoc
+          && null != tag) {
+
+         TagContainer tagDoc = null;
+
+         Tag[] tags = result.tags();
+         for (int i=0; i<tags.length; ++i) {
+            if (tags[i].kind().equals(tag.kind())) {
+               if ("@param".equals(tag.kind())) {
+                  if (((ParamTagImpl)tags[i]).parameterName().equals(((ParamTagImpl)tag).parameterName())) {
+                     tagDoc = (TagContainer)tags[i];
+                     break;
+                  }
+               }
+               else if ("@throws".equals(tag.kind())) {
+                  if (((ThrowsTagImpl)tags[i]).exceptionName().equals(((ThrowsTagImpl)tag).exceptionName())) {
+                     tagDoc = (TagContainer)tags[i];
+                     break;
+                  }
+               }
+               else if ("@return".equals(tag.kind())) {
+                  tagDoc = (TagContainer)tags[i];
+               }
+            }
+         }
+
+         return tagDoc;
+      }
+
+      if (null == result || result.isEmptyDoc()) {
+         return null;
+      }
+      else {
+         return result;
+      }
+   }
+
+   public static TagContainer findInheritedDoc(ClassDoc classDoc, 
+                                               MemberDocImpl memberDoc, 
+                                               AbstractTagImpl tag)
+   {
+      TagContainer result;
+
+      // (Taken from Javadoc Solaris Tool documentation 1.5,
+      // section "Automatic Copying of Method Comments")
+
+      // Algorithm for Inheriting Method Comments - If a method does
+      // not have a doc comment, or has an {@inheritDoc} tag, the
+      // Javadoc tool searches for an applicable comment using the
+      // following algorithm, which is designed to find the most
+      // specific applicable doc comment, giving preference to
+      // interfaces over superclasses:
+
+      // 1. Look in each directly implemented (or extended) interface
+      // in the order they appear following the word implements (or
+      // extends) in the method declaration. Use the first doc comment
+      // found for this method.
+      
+      ClassDoc[] interfaces = classDoc.interfaces();
+      if (null != interfaces) {
+         for (int i=0; i<interfaces.length; ++i) {
+            result = checkForInheritedDoc(interfaces[i], memberDoc, tag);
+            if (null != result) {
+               return result;
+            }
+         }
+      }
+
+      // 2. If step 1 failed to find a doc comment, recursively apply
+      // this entire algorithm to each directly implemented (or
+      // extended) interface, in the same order they were examined
+      // in step 1.
+
+      if (null != interfaces) {
+         for (int i=0; i<interfaces.length; ++i) {
+            result = findInheritedDoc(interfaces[i], memberDoc, tag);
+            if (null != result) {
+               return result;
+            }
+         }
+      }
+
+      ClassDoc superclassDoc = classDoc.superclass();
+
+      // 3. If step 2 failed to find a doc comment and this is a class
+      // other than Object (not an interface):
+      if (!classDoc.isInterface() 
+          && null != superclassDoc
+          && !"java.lang.Object".equals(classDoc.qualifiedTypeName())) {
+
+         // 3a. If the superclass has a doc comment for this method, use it.
+
+         result = checkForInheritedDoc(superclassDoc, memberDoc, tag);
+         if (null != result) {
+            return result;
+         }
+
+         // 3b. If step 3a failed to find a doc comment, recursively
+         // apply this entire algorithm to the superclass.
+
+         return findInheritedDoc(superclassDoc,
+                                 memberDoc, tag);
+      }
+      else {
+         return null;
+      }
+   }
+   
+   public boolean isEmptyDoc()
+   {
+      return tagMap.isEmpty();
    }
 }
 

@@ -26,7 +26,9 @@ import java.text.*;
 
 public class ThrowsTagImpl extends AbstractTagImpl implements ThrowsTag {
 
-   public ThrowsTagImpl(String text, ClassDocImpl contextClass) {
+   public ThrowsTagImpl(String text, 
+                        ClassDocImpl contextClass,
+                        MemberDocImpl contextMember) {
       super(text);
 
       char[] textarr=text.toCharArray();
@@ -55,7 +57,9 @@ public class ThrowsTagImpl extends AbstractTagImpl implements ThrowsTag {
 	 }
       }
       
-      if (this.exceptionComment!=null) setBody(this.exceptionComment);
+      if (this.exceptionComment!=null) {
+         setBody(this.exceptionComment, contextClass, contextMember);
+      }
    }
 
    public ClassDoc exception() {

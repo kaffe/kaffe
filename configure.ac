@@ -1909,8 +1909,10 @@ dnl Building of gjdoc
 dnl -------------------------------------------------------------------------
 
 AC_ARG_ENABLE([gjdoc],
-		AS_HELP_STRING([--enable-gjdoc],
-				[Enable building of gjdoc]))
+		AS_HELP_STRING([--disable-gjdoc],
+				[Disable building of gjdoc]),
+		[],
+		[enable_gjdoc=yes])
 
 AM_CONDITIONAL([COND_GJDOC], [test x"$enable_gjdoc" = x"yes"])
 

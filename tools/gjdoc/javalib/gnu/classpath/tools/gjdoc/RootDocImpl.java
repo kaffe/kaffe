@@ -49,6 +49,13 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
    private List specifiedClassNames = new LinkedList();
 
    /**
+    *  All source files explicitly specified on the command line.
+    *
+    *  @contains File
+    */
+   private List specifiedSourceFiles = new LinkedList();
+
+   /**
     *  The names of all packages explicitly specified on the 
     *  command line.
     *
@@ -243,6 +250,25 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 	 }
       }
 
+      List specifiedClassesList = new LinkedList();
+
+      //--- Parse all explicitly specified source files.
+
+      for (Iterator it=specifiedSourceFiles.iterator(); it.hasNext(); ) {
+
+	 File specifiedSourceFile = (File)it.next();
+	 printNotice("Loading source file "+specifiedSourceFile+" ...");
+         ClassDocImpl classDoc = parser.processSourceFile(specifiedSourceFile, true, sourceEncoding);
+         if (null != classDoc) {
+            specifiedClassesList.add(classDoc);
+            classesList.add(classDoc);
+            classDoc.setIsIncluded(true);
+            if (0 == classDoc.containingPackage().name().length()) {
+               addPackageDoc(classDoc.containingPackage());
+            }
+         }
+      }
+
       //--- Let the user know that all specified classes are loaded.
 
       printNotice("Constructing Javadoc information...");
@@ -273,7 +299,6 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 
       //--- Assemble the array with all specified classes
 
-      List specifiedClassesList = new LinkedList();
       for (Iterator it = specifiedClassNames.iterator(); it.hasNext(); ) {
 	 String specifiedClassName = (String)it.next();
 	 ClassDocImpl specifiedClassDoc = (ClassDocImpl)classDocMap.get(specifiedClassName);
@@ -290,7 +315,7 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 
       //--- Assemble the array with all specified packages
 
-      List specifiedPackageList = new LinkedList();
+      Set specifiedPackageSet = new LinkedHashSet();
       for (Iterator it = specifiedPackageNames.iterator(); it.hasNext(); ) {
 	 String specifiedPackageName = (String)it.next();
 	 PackageDoc specifiedPackageDoc = (PackageDoc)packageDocMap.get(specifiedPackageName);
@@ -298,7 +323,7 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
             //System.err.println("include package " + specifiedPackageName);
 
 	    ((PackageDocImpl)specifiedPackageDoc).setIsIncluded(true);
-	    specifiedPackageList.add(specifiedPackageDoc);
+	    specifiedPackageSet.add(specifiedPackageDoc);
 
 	    ClassDoc[] packageClassDocs=specifiedPackageDoc.allClasses();
 	    for (int i=0; i<packageClassDocs.length; ++i) {
@@ -316,7 +341,7 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 	    }
 	 }
       }
-      this.specifiedPackages=(PackageDocImpl[])specifiedPackageList.toArray(new PackageDocImpl[0]);
+      this.specifiedPackages=(PackageDocImpl[])specifiedPackageSet.toArray(new PackageDocImpl[0]);
 
       //--- Resolve pending references in comment data of all classes
 
@@ -342,8 +367,6 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
       Arrays.sort(this.classes);
 
       //--- Close comment cache
-
-      rawCommentCache.close();
 
       parser = null;
       System.gc();
@@ -375,6 +398,7 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 	 //return rawCommentCache.readUTF();
       }
       catch (IOException e) {
+         e.printStackTrace();
 	 printFatal("Cannot read from comment cache: "+e.getMessage());
 	 return null;
       }
@@ -706,8 +730,14 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
       specifiedClassNames.add(className);
    }
 
+   public void addSpecifiedSourceFile(File sourceFile) {
+      specifiedSourceFiles.add(sourceFile);
+   }
+
    public boolean hasSpecifiedPackagesOrClasses() {
-      return !specifiedClassNames.isEmpty() || !specifiedPackageNames.isEmpty();
+      return !specifiedClassNames.isEmpty() 
+         || !specifiedPackageNames.isEmpty()
+         || !specifiedSourceFiles.isEmpty();
    }
 
    public void setOptions(String[][] customOptionArr) {
@@ -724,6 +754,13 @@ public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 
    public void flush()
    {
+      try {
+         rawCommentCache.close();
+      }
+      catch (IOException e) {
+         printError("Cannot close raw comment cache");
+      }
+
       rawCommentCache = null;
       customOptionArr = null;
       specifiedClassNames = null;

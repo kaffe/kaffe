@@ -26,6 +26,8 @@ import java.util.*;
 import java.lang.reflect.*;
 import java.text.Collator;
 
+import gnu.classpath.tools.FileSystemClassLoader;
+
 /**
  * Class that will launch the gjdoc tool.
  */
@@ -223,7 +225,22 @@ public final class Main
 
       Debug.log(1, "loading doclet class...");
 
-      Class docletClass = Class.forName(option_doclet);
+      Class docletClass;
+
+      if (null != option_docletpath) {
+        try {
+          FileSystemClassLoader docletPathClassLoader
+            = new FileSystemClassLoader(option_docletpath);
+          System.err.println("trying to load class  " + option_doclet + " from path " + option_docletpath);
+          docletClass = docletPathClassLoader.findClass(option_doclet);
+        }
+        catch (Exception e) {
+          docletClass = Class.forName(option_doclet);
+        }
+      }
+      else {
+        docletClass = Class.forName(option_doclet);
+      }
       //Object docletInstance = docletClass.newInstance();
 
       Debug.log(1, "doclet class loaded...");
@@ -310,13 +327,32 @@ public final class Main
             Debug.log(3, "done");
           }
 
-          if (optlen <= 0)
-          {
+          if (optlen <= 0) {
 
-            //--- Complain if not found
+            if (option.startsWith("-JD")) {
+              // Simulate VM option -D
+              String propertyValue = option.substring(3);
+              int ndx = propertyValue.indexOf('=');
+              if (ndx <= 0) {
+                reporter.printError("Illegal format in option " + option + ": use -JDproperty=value");
+                shutdown();
+              }
+              else {
+                String property = propertyValue.substring(0, ndx);
+                String value = propertyValue.substring(ndx + 1);
+                System.setProperty(property, value);
+              }
+            }
+            else if (option.startsWith("-J")) {
+              //--- Warn if VM option is encountered
+              reporter.printWarning("Ignored option " + option + ". Pass this option to the VM if required.");
+            }
+            else {
+              //--- Complain if not found
 
-            reporter.printError("Unknown option " + option);
-            shutdown();
+              reporter.printError("Unknown option " + option);
+              shutdown();
+            }
           }
           else
           {
@@ -409,6 +445,18 @@ public final class Main
 
         String classOrPackage = (String) it.next();
 
+        if (classOrPackage.endsWith(".java")) {
+          File sourceFile = new File(classOrPackage);
+          if (!sourceFile.exists()) {
+          }
+          else if (sourceFile.isDirectory()) {
+
+          }
+          else {
+            rootDoc.addSpecifiedSourceFile(sourceFile);
+          }
+        }
+        else {
         //--- Check for illegal name
 
         if (classOrPackage.startsWith(".")
@@ -494,6 +542,7 @@ public final class Main
                 rootDoc.addSpecifiedClassName(classOrPackage);
               }
             }
+        }
       }
 
       //--- Complain if no packages or classes specified
@@ -536,6 +585,8 @@ public final class Main
       reporter.printNotice("Running doclet...");
 
       TemporaryStore tstore = new TemporaryStore(Main.rootDoc);
+
+      Thread.currentThread().setContextClassLoader(docletClass.getClassLoader());
 
       if (null != startTempMethod)
       {

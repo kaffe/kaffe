@@ -186,4 +186,8 @@ public class FieldDocImpl extends MemberDocImpl implements FieldDoc, Cloneable {
    }
 
    public String toString() { return name(); }
+
+   public Object constantValue() {
+      return new Integer(0); // FIXME
+   }
 }

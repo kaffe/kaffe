@@ -29,7 +29,9 @@ public class ParamTagImpl extends AbstractTagImpl implements ParamTag {
    private String parameterName;
    private String parameterComment;
    
-   public ParamTagImpl(String text) {
+   public ParamTagImpl(String text,
+                       ClassDocImpl contextClass,
+                       MemberDocImpl contextMember) {
       super(text);
       char[] textarr=text.toCharArray();
       int i=0;
@@ -43,7 +45,9 @@ public class ParamTagImpl extends AbstractTagImpl implements ParamTag {
 	    break;
 	 }
       }
-      if (parameterComment!=null) setBody(parameterComment);
+      if (parameterComment!=null) {
+         setBody(parameterComment, contextClass, contextMember);
+      }
    }
 
    public String parameterComment() {

@@ -67,5 +67,17 @@ isVolatile();
 public abstract SerialFieldTag[]
 serialFieldTags();
 
+/*************************************************************************/
+
+/**
+  * This method returns the value of this static field.
+  *
+  * @return The value of this static field.
+  */
+public abstract Object
+constantValue();
+
+
+
 } // interface FieldDoc
 

@@ -144,7 +144,6 @@ public class SeeTagImpl extends AbstractTagImpl implements SeeTag {
    }
 
    public String label() {
-      if (label==null) System.err.println("ARGH! '"+text+"'");
       return label;
    }
 

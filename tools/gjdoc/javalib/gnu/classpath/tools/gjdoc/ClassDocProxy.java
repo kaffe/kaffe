@@ -48,8 +48,10 @@ public class ClassDocProxy implements ClassDoc, WritableType {
    }
 
    public ConstructorDoc[] constructors() { return new ConstructorDoc[0]; } 
+   public ConstructorDoc[] constructors(boolean filtered) { return new ConstructorDoc[0]; }
    public boolean definesSerializableFields() { return false; } 
    public FieldDoc[] fields() { return new FieldDoc[0]; } 
+   public FieldDoc[] fields(boolean filtered) { return new FieldDoc[0]; } 
    public ClassDoc findClass(java.lang.String className) { return null; } 
    public ClassDoc[] importedClasses() { return new ClassDoc[0]; } 
    public PackageDoc[] importedPackages() { return new PackageDoc[0]; } 
@@ -59,6 +61,7 @@ public class ClassDocProxy implements ClassDoc, WritableType {
    public boolean isExternalizable() { return false; } 
    public boolean isSerializable() { return false; } 
    public MethodDoc[] methods() { return new MethodDoc[0]; } 
+   public MethodDoc[] methods(boolean filtered) { return new MethodDoc[0]; } 
    public FieldDoc[] serializableFields() { return new FieldDoc[0]; } 
    public MethodDoc[] serializationMethods() { return new MethodDoc[0]; } 
    public boolean subclassOf(ClassDoc cd) { return false; } 

@@ -114,7 +114,7 @@ public abstract class AbstractDoclet
    }
 
    protected abstract void run()
-      throws IOException;
+      throws DocletConfigurationException, IOException;
 
    public static boolean start(RootDoc rootDoc) 
    {
@@ -124,7 +124,7 @@ public abstract class AbstractDoclet
          return true;
       }
       catch (DocletConfigurationException e) {
-         System.err.println(e.getMessage());
+         instance.printError(e.getMessage());
          return false;
       }
       catch (Exception e) {
@@ -620,7 +620,9 @@ public abstract class AbstractDoclet
          PackageDoc[] packages = rootDoc.specifiedPackages();
          for (int i=0, ilim=packages.length; i<ilim; ++i) {
             PackageDoc c = packages[i];
-            indexByName.put(new IndexKey(c.name()), c);
+            if (c.name().length() > 0) {
+               indexByName.put(new IndexKey(c.name()), c);
+            }
          }
 
          // Add classes, fields and methods to index
@@ -971,6 +973,24 @@ public abstract class AbstractDoclet
          classDoc = classDoc.containingClass();
       }
       return classDoc;
+   }
+
+   private SortedSet allPackages;
+
+   protected Set getAllPackages()
+   {
+      if (null == this.allPackages) {
+         allPackages = new TreeSet();
+         PackageDoc[] specifiedPackages = rootDoc.specifiedPackages();
+         for (int i=0; i<specifiedPackages.length; ++i) {
+            allPackages.add(specifiedPackages[i]);
+         }
+         ClassDoc[] specifiedClasses = rootDoc.specifiedClasses();
+         for (int i=0; i<specifiedClasses.length; ++i) {
+            allPackages.add(specifiedClasses[i].containingPackage());
+         }
+      }
+      return this.allPackages;
    }
 }
 

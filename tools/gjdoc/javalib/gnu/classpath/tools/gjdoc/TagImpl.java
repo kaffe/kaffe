@@ -34,7 +34,7 @@ public class TagImpl extends AbstractTagImpl implements Tag {
       this.kind=name;
       this.name=name;
 
-      setBody(text);
+      setBody(text, null, null);
    }
 
    public String kind() { return kind; }
