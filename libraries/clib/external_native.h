@@ -15,7 +15,7 @@
 
 #if defined(NO_SHARED_LIBRARIES)
 
-#define	KAFFE_NATIVE_PROTOTYPE(_f)	extern void _f();
+#define	KAFFE_NATIVE_PROTOTYPE(_f)	extern void _f(void);
 #define	KAFFE_NATIVE_METHOD(_n)		{ #_n, _n },
 
 #define	KAFFE_NATIVE(_f)		KAFFE_NATIVE_PROTOTYPE(_f)

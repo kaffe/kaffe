@@ -100,8 +100,8 @@ $(LIB):		$(OBJECT) lib.exp external_wrappers.h
 		$(CC) $(ALL_CFLAGS) -c $(PIC) $< -o $*.o
 
 external_wrappers.h: external_wrappers.h.debug $(SOURCES)
-		sed -n $(WRAPPER_CMD) @srcdir@/*.c > external_wrappers.h
-		cat @srcdir@/external_wrappers.h.debug >> external_wrappers.h
+		sed -n $(WRAPPER_CMD) $(srcdir)/*.c > external_wrappers.h
+		cat $(srcdir)/external_wrappers.h.debug >> external_wrappers.h
 
 .SUFFIXES: .d
  
