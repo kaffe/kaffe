@@ -308,4 +308,12 @@ public String toString() {
 	    new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
 	return (form.format(this));
 }
+
+public Object clone() {
+	try {
+		return super.clone();
+	} catch (CloneNotSupportedException e) {
+		return null;		// can't happen
+	}
+}
 }
