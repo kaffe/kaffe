@@ -7,6 +7,9 @@
 
 	* libraries/javalib/java/io/Object*.java: fixed some coding style
 	typos.
+
+	* libraries/javalib/essential.files: Added missing files to compile
+	with KJC.
 	
 2003-08-11  Guilhem Lavaux <guilhem@kaffe.org>
 

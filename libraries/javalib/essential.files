@@ -1,4 +1,6 @@
+gnu/classpath/Configuration.java
 gnu/java/lang/CharData.java
+gnu/java/lang/reflect/TypeSignature.java
 gnu/java/util/EmptyEnumeration.java
 gnu/regexp/CharIndexed.java
 gnu/regexp/CharIndexedCharArray.java
@@ -24,6 +26,7 @@ gnu/regexp/RETokenRange.java
 gnu/regexp/RETokenRepeated.java
 gnu/regexp/RETokenStart.java
 gnu/regexp/RETokenWordBoundary.java
+java/io/WriteAbortedException.java
 java/io/BufferedInputStream.java
 java/io/BufferedOutputStream.java
 java/io/BufferedReader.java
@@ -77,6 +80,7 @@ java/io/StreamCorruptedException.java
 java/io/SyncFailedException.java
 java/io/UnsupportedEncodingException.java
 java/io/UTFDataFormatException.java
+java/io/VMObjectStreamClass.java
 java/io/Writer.java
 java/lang/ArrayIndexOutOfBoundsException.java
 java/lang/ArrayStoreException.java
@@ -116,7 +120,9 @@ java/lang/NativeLibrary.java
 java/lang/NegativeArraySizeException.java
 java/lang/NoClassDefFoundError.java
 java/lang/NoSuchFieldException.java
+java/lang/NoSuchFieldError.java
 java/lang/NoSuchMethodException.java
+java/lang/NoSuchMethodError.java
 java/lang/NullPointerException.java
 java/lang/Number.java
 java/lang/NumberFormatException.java
@@ -156,6 +162,8 @@ java/lang/UnsupportedOperationException.java
 java/lang/VirtualMachineError.java
 java/lang/VMThrowable.java
 java/lang/Void.java
+java/lang/reflect/Proxy.java
+java/lang/reflect/InvocationHandler.java
 java/net/ContentHandler.java
 java/net/ContentHandlerFactory.java
 java/net/FileNameMap.java
@@ -183,13 +191,18 @@ java/security/AllPermission.java
 java/security/BasicPermission.java
 java/security/Certificate.java
 java/security/CodeSource.java
+java/security/DigestException.java
+java/security/DigestOutputStream.java
 java/security/GeneralSecurityException.java
 java/security/Guard.java
 java/security/Key.java
 java/security/KeyException.java
+java/security/MessageDigest.java
+java/security/MessageDigestSpi.java
 java/security/Permission.java
 java/security/Permissions.java
 java/security/PermissionCollection.java
+java/security/Provider.java
 java/security/Principal.java
 java/security/PrivilegedAction.java
 java/security/PrivilegedActionException.java
@@ -197,6 +210,8 @@ java/security/PrivilegedExceptionAction.java
 java/security/ProtectionDomain.java
 java/security/PublicKey.java
 java/security/SecureClassLoader.java
+java/security/Security.java
+java/security/SecurityPermission.java
 java/security/SignatureException.java
 java/security/InvalidKeyException.java
 java/security/NoSuchProviderException.java
@@ -313,4 +328,3 @@ kaffe/util/UTF8.java
 kaffe/util/zip/SwitchInflater.java
 gnu/java/io/ObjectIdentityWrapper.java
 gnu/java/io/NullOutputStream.java
-gnu/java/lang/reflect/TypeSignature.java
