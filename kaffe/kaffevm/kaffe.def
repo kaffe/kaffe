@@ -1769,31 +1769,34 @@ define_insn(LOOKUPSWITCH)
 
 	slot_alloctmp(mtable);
 	slot_alloctmp(tmp);
-	slot_alloctmp(tmp2);
 
-	move_label_const(tmp2, reference_table_label(7));
-	move_ref(tmp, tmp2);
-	add_ref_const(tmp, tmp, idx * switchpair_size);
+	move_label_const(tmp, reference_table_label(7));
 
-	end_sub_block();
-	set_label(LOOKUPSWITCH, 5);
-	start_sub_block();
-	load_key(mtable, tmp);
-	end_sub_block();
-	cbranch_int_eq(mtable, stack(0), reference_label(LOOKUPSWITCH, 6));
+	if (idx != 0) {
+		slot_alloctmp(tmp2);
+		move_ref(tmp2, tmp);
+		add_ref_const(tmp, tmp, idx * switchpair_size);
 
-	start_sub_block();
-	add_ref_const(tmp, tmp, -switchpair_size);
-	end_sub_block();
-	cbranch_ref_ne(tmp, tmp2, reference_label(LOOKUPSWITCH, 5));
+		end_sub_block();
+		set_label(LOOKUPSWITCH, 5);
+		start_sub_block();
+		load_key(mtable, tmp);
+		end_sub_block();
+		cbranch_int_eq(mtable, stack(0), reference_label(LOOKUPSWITCH, 6));
 
-	start_sub_block();
-	add_ref_const(tmp, tmp, -switchpair_addr);
-	end_sub_block();
+		start_sub_block();
+		add_ref_const(tmp, tmp, -switchpair_size);
+		end_sub_block();
+		cbranch_ref_ne(tmp, tmp2, reference_label(LOOKUPSWITCH, 5));
 
-	set_label(LOOKUPSWITCH, 6);
-	start_sub_block();
-	add_ref_const(tmp, tmp, switchpair_addr);
+		start_sub_block();
+		add_ref_const(tmp, tmp, -switchpair_addr);
+		end_sub_block();
+
+		set_label(LOOKUPSWITCH, 6);
+		start_sub_block();
+		add_ref_const(tmp, tmp, switchpair_addr);
+	}
 	load_code_ref(tmp, tmp);
 	end_sub_block();
 	branch_indirect(table_code_label(tmp));
