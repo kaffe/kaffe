@@ -160,7 +160,7 @@ public String readLine() throws IOException
 public long readLong() throws IOException
 {
 	long l1 = (long)readInt();
-	long l2 = (long)readInt();
+	long l2 = (long)readInt() & 0xFFFFFFFFL;
 	return ((l1 << 32) | l2);
 }
 
