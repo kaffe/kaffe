@@ -1,3 +1,18 @@
+Wed Aug 19 18:55:23 1998  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/m68k/common.h: Merged version between linux and netbsd/sunos.
+	config/m68k/netbsd1/jit-md.h: Change a field name to reflect 
+	structural change in 1.0b.
+	config/m68k/netbsd1/jit.h: Add trampoline support, and reorder 
+	definitions.
+	config/m68k/netbsd1/md.h: Move sysdepCallMethod definition from 
+	here to 'common.h'.
+	config/m68k/sunos4/config.frag: Remove cross development command names.
+	config/m68k/sunos4/md.h: Move sysdepCallMethod definition from here 
+	to 'common.h'.
+	config/m68k/trampolines.c: New file to support trampoline, only 
+	for staticlib.
+
 Wed Aug 19 18:03:54 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
         * libraries/clib/native/FileInputStream.c
@@ -42,6 +57,11 @@ Thu Aug 13 18:17:51 1998  Archie Cobbs <archie@whistle.com>
 
 	* config/config.h.in, libraries/clib/native/FileDescriptor.c:
 	  uppercase options HAVE_sync and HAVE_fsync
+
+Thu Aug 13 10:55:45 1998  Archie Cobbs  <archie@whistle.com>
+
+	* libraries/javalib/java/lang/Integer.java: fix decoding
+	  bugs in decode() and getInteger() methods.
 
 Mon Aug 10 19:58:36 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
