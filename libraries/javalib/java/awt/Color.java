@@ -100,6 +100,12 @@ public Color ( int r, int g, int b ) {
 	nativeValue = Toolkit.clrGetPixelValue( rgbValue);
 }
 
+public Color ( int r, int g, int b, int a ) {
+	rgbValue = ((a & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8)  | (b & 0xff);
+
+	nativeValue = Toolkit.clrGetPixelValue( rgbValue);
+}
+
 Color ( long pixRgb ) {
 	rgbValue    = (int) (pixRgb & 0xffffffff);
 	
