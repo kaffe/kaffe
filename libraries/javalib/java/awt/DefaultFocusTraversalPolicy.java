@@ -93,17 +93,17 @@ public class DefaultFocusTraversalPolicy
       {
 	if (comp.isFocusTraversableOverridden != 0
 	    && (comp.isFocusTraversable () || comp.isFocusable()))
-	  return true;
+          return true;
         
-	    if (!(comp instanceof Canvas
-		  || comp instanceof Panel
-		  || comp instanceof Label
-		  || comp instanceof ScrollPane
-		  || comp instanceof Scrollbar
-		  || comp instanceof Window
-		  || comp.isLightweight ()))
-	      return true;
-	  }
+	if (!(comp instanceof Canvas
+              || comp instanceof Panel
+              || comp instanceof Label
+              || comp instanceof ScrollPane
+              || comp instanceof Scrollbar
+              || comp instanceof Window
+              || comp.isLightweight ()))
+          return true;
+      }
     return false;
   }
 }

@@ -38,9 +38,11 @@ exception statement from your version. */
 
 package gnu.java.awt.peer.gtk;
 
+import java.awt.Font;
 import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
+import java.awt.MenuComponent;
 import java.awt.peer.MenuItemPeer;
 import java.awt.peer.MenuComponentPeer;
 import java.awt.peer.MenuBarPeer;
@@ -50,17 +52,37 @@ public class GtkMenuItemPeer extends GtkMenuComponentPeer
   implements MenuItemPeer
 {
   native void create (String label);
-  public native void connectSignals ();
+  native void connectSignals ();
+  native void gtkWidgetModifyFont (String name, int style, int size);
+
+  void create ()
+  {
+    create (((MenuItem) awtWidget).getLabel());
+  }
 
   public GtkMenuItemPeer (MenuItem item)
   {
     super (item);
-    create (item.getLabel ());
     setEnabled (item.isEnabled ());
     setParent (item);
 
     if (item.getParent() instanceof Menu && ! (item instanceof Menu))
       connectSignals();
+  }
+
+  void setFont ()
+  {
+    MenuComponent mc = ((MenuComponent) awtWidget);
+    Font f = mc.getFont ();
+
+    if (f == null)
+      {
+        MenuComponent parent = (MenuComponent) mc.getParent ();
+        Font pf = parent.getFont ();
+        gtkWidgetModifyFont (pf.getName (), pf.getStyle (), pf.getSize ());
+      }
+    else
+      gtkWidgetModifyFont(f.getName(), f.getStyle(), f.getSize());
   }
 
   void setParent (MenuItem item)
@@ -89,10 +111,8 @@ public class GtkMenuItemPeer extends GtkMenuComponentPeer
     setEnabled (true);
   }
 
-  public void setEnabled (boolean b)
-  {
-    // do nothing, for now.
-  }
+  native public void setEnabled (boolean b);
+
   native public void setLabel (String label);
 
   protected void postMenuActionEvent ()

@@ -368,7 +368,7 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
   public void setDisplayedMnemonic(int mnemonic)
   {
     if (displayedMnemonic != mnemonic)
-  {
+      {
 	firePropertyChange(DISPLAYED_MNEMONIC_CHANGED_PROPERTY,
 	                   displayedMnemonic, mnemonic);
 	displayedMnemonic = mnemonic;
@@ -386,7 +386,7 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
    * @param mnemonic The character to use for the mnemonic.
    */
   public void setDisplayedMnemonic(char mnemonic)
-      {
+  {
     setDisplayedMnemonic((int) mnemonic);
   }
 
@@ -416,16 +416,16 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
   {
     if (newIndex < -1 || (text != null && newIndex >= text.length()))
       throw new IllegalArgumentException();
-      
+
     if (text == null || text.charAt(newIndex) != displayedMnemonic)
       newIndex = -1;
-      
+
     if (newIndex != displayedMnemonicIndex)
-    {
-      firePropertyChange(DISPLAYED_MNEMONIC_INDEX_CHANGED_PROPERTY,
-                           displayedMnemonicIndex, newIndex);
-        displayedMnemonicIndex = newIndex;
-    }
+      {
+	firePropertyChange(DISPLAYED_MNEMONIC_INDEX_CHANGED_PROPERTY,
+	                   displayedMnemonicIndex, newIndex);
+	displayedMnemonicIndex = newIndex;
+      }
   }
 
   /**

@@ -108,19 +108,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics_initState__Lgnu_ja
   gdk_threads_enter ();
 
   widget = GTK_WIDGET (ptr);
-
-  if (GTK_IS_WINDOW (widget))
-    {
-      g->drawable = find_gtk_layout (widget)->bin_window;
-    }
-  else if (GTK_IS_LAYOUT (widget))
-    {
-      g->drawable = (GdkDrawable *) GTK_LAYOUT (widget)->bin_window;
-    }
-  else
-    {
-      g->drawable = (GdkDrawable *) widget->window;
-    }
+  g->drawable = (GdkDrawable *) widget->window;
 
   gdk_window_ref (g->drawable);
   g->cm = gtk_widget_get_colormap (widget);
@@ -432,8 +420,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkGraphics_clearRect
   gdk_threads_enter ();
   if (GDK_IS_WINDOW (g->drawable))
     {
-      gdk_window_clear_area ((GdkWindow *)g->drawable, 
-			     x + g->x_offset, y + g->y_offset, width, height);
+      gdk_window_clear_area ((GdkWindow *) g->drawable,
+                             x + g->x_offset, y + g->y_offset, width, height);
     }
   else
     {

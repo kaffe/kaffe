@@ -154,6 +154,35 @@ public class Raster
     return createWritableRaster(sm, location);
   }
 
+  public static WritableRaster createPackedRaster(int dataType,
+						  int w, int h,
+						  int bands, int bitsPerBand,
+						  Point location)
+  {
+    if (bands <= 0 || (bands * bitsPerBand > getTypeBits(dataType)))
+      throw new IllegalArgumentException();
+
+    SampleModel sm;
+
+    if (bands == 1)
+	sm = new MultiPixelPackedSampleModel(dataType, w, h, bitsPerBand);
+    else
+      {
+	int[] bandMasks = new int[bands];
+	int mask = 0x1;
+	for (int bits = bitsPerBand; --bits != 0;)
+	  mask = (mask << 1) | 0x1;
+	for (int i = 0; i < bands; i++)
+	  {
+	    bandMasks[i] = mask;
+	    mask <<= bitsPerBand;
+	  }
+	  
+	sm = new SinglePixelPackedSampleModel(dataType, w, h, bandMasks);
+      }
+    return createWritableRaster(sm, location);
+  }
+
   public static WritableRaster
   createInterleavedRaster(DataBuffer dataBuffer, int w, int h,
 			  int scanlineStride, int pixelStride,
@@ -329,6 +358,11 @@ public class Raster
     return height;
   }
 
+  public final int getNumBands()
+  {
+    return numBands;
+  }
+    
   public final int getNumDataElements()
   {
     return numDataElements;
@@ -472,5 +506,24 @@ public class Raster
     
     return result.toString();
   }
-  
+
+  // Map from datatype to bits
+  private static int getTypeBits(int dataType)
+  {
+    switch (dataType)
+      {
+      case DataBuffer.TYPE_BYTE:
+	return 8;
+      case DataBuffer.TYPE_USHORT:
+      case DataBuffer.TYPE_SHORT:
+	return 16;
+      case DataBuffer.TYPE_INT:
+      case DataBuffer.TYPE_FLOAT:
+	return 32;
+      case DataBuffer.TYPE_DOUBLE:
+	return 64;
+      default:
+	return 0;
+      }
+  }
 }

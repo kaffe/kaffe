@@ -37,9 +37,7 @@ exception statement from your version. */
 
 
 #include "gtkpeer.h"
-#include "gnu_java_awt_peer_gtk_GtkComponentPeer.h"
 #include "gnu_java_awt_peer_gtk_GtkWindowPeer.h"
-#include "gnu_java_awt_peer_gtk_GtkFramePeer.h"
 #include <gdk/gdkprivate.h>
 #include <gdk/gdkx.h>
 #include <X11/Xatom.h>
@@ -57,8 +55,6 @@ static void request_frame_extents (GtkWidget *window);
 static Bool property_notify_predicate (Display *display,
                                        XEvent  *xevent,
                                        XPointer arg);
-
-static GtkLayout *find_layout (GtkWindow *window);
 
 static void window_delete_cb (GtkWidget *widget, GdkEvent *event,
 			      jobject peer);
@@ -93,8 +89,7 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_create
   GtkWidget *window_widget;
   GtkWindow *window;
   void *window_parent;
-  GtkWidget *vbox;
-  GtkWidget *layout;
+  GtkWidget *fixed;
   int top = 0;
   int left = 0;
   int bottom = 0;
@@ -124,13 +119,10 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_create
 
   gtk_window_group_add_window (global_gtk_window_group, window);
 
-  vbox = gtk_vbox_new (0, 0);
-  layout = gtk_layout_new (NULL, NULL);
-  gtk_box_pack_end (GTK_BOX (vbox), layout, 1, 1, 0);
-  gtk_container_add (GTK_CONTAINER (window_widget), vbox);
+  fixed = gtk_fixed_new ();
+  gtk_container_add (GTK_CONTAINER (window_widget), fixed);
 
-  gtk_widget_show (layout);
-  gtk_widget_show (vbox);
+  gtk_widget_show (fixed);
   gtk_widget_realize (window_widget);
 
   if (decorated)
@@ -236,19 +228,12 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_connectJObject
   (JNIEnv *env, jobject obj)
 {
   void *ptr;
-  GtkLayout *layout;
 
   ptr = NSA_GET_PTR (env, obj);
 
   gdk_threads_enter ();
 
-  layout = find_layout (GTK_WINDOW (ptr));
-
-  gtk_widget_realize (GTK_WIDGET (layout));
-
-  connect_awt_hook (env, obj, 1, layout->bin_window);
-
-  gtk_widget_realize (ptr);
+  gtk_widget_realize (GTK_WIDGET (ptr));
 
   connect_awt_hook (env, obj, 1, GTK_WIDGET (ptr)->window);
 
@@ -261,23 +246,17 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_connectSignals
 {
   void *ptr;
   jobject *gref;
-  GtkLayout *layout;
 
   ptr = NSA_GET_PTR (env, obj);
-
   gref = NSA_GET_GLOBAL_REF (env, obj);
 
   gdk_threads_enter ();
 
-  gtk_widget_realize (ptr);
+  gtk_widget_realize (GTK_WIDGET (ptr));
 
-  /* Receive events from the GtkLayout too */
-  layout = find_layout (GTK_WINDOW (ptr));
-
-  g_signal_connect (G_OBJECT (layout), "event",
+  g_signal_connect (G_OBJECT (ptr), "event",
                     G_CALLBACK (pre_event_handler), *gref);
 
-  /* Connect signals for window event support. */
   g_signal_connect (G_OBJECT (ptr), "delete-event",
 		    G_CALLBACK (window_delete_cb), *gref);
 
@@ -306,14 +285,7 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_connectSignals
 		    G_CALLBACK (window_property_changed_cb), *gref);
 
   gdk_threads_leave ();
-
-  /* Connect the superclass signals.  */
-  Java_gnu_java_awt_peer_gtk_GtkComponentPeer_connectSignals (env, obj);
 }
-
-/*
- * Lower the z-level of a window. 
- */
 
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkWindowPeer_toBack (JNIEnv *env, 
@@ -323,15 +295,12 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_toBack (JNIEnv *env,
   ptr = NSA_GET_PTR (env, obj);
     
   gdk_threads_enter ();
-  gdk_window_lower (GTK_WIDGET (ptr)->window);
 
-  XFlush (GDK_DISPLAY ());
+  gdk_window_lower (GTK_WIDGET (ptr)->window);
+  gdk_flush ();
+
   gdk_threads_leave ();
 }
-
-/*
- * Raise the z-level of a window.
- */
 
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkWindowPeer_toFront (JNIEnv *env, 
@@ -341,9 +310,10 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_toFront (JNIEnv *env,
   ptr = NSA_GET_PTR (env, obj);
     
   gdk_threads_enter ();
-  gdk_window_raise (GTK_WIDGET (ptr)->window);
 
-  XFlush (GDK_DISPLAY ());
+  gdk_window_raise (GTK_WIDGET (ptr)->window);
+  gdk_flush ();
+
   gdk_threads_leave ();
 }
 
@@ -369,7 +339,9 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_setSize
   height = (height < 1) ? 1 : height;
 
   gdk_threads_enter ();
+
   gtk_widget_set_size_request (GTK_WIDGET(ptr), width, height);
+
   gdk_threads_leave ();
 }
 
@@ -406,199 +378,6 @@ Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetBounds
      the size request will not be honoured. */
   gtk_window_resize (GTK_WINDOW (ptr), width, height);
   gdk_threads_leave ();
-}
-
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkFramePeer_removeMenuBarPeer
-  (JNIEnv *env, jobject obj)
-{
-  void *wptr;
-  GtkWidget *box;
-  GtkWidget *mptr;
-  GList* children;
-
-  wptr = NSA_GET_PTR (env, obj);
-  
-  gdk_threads_enter ();
-
-  box = GTK_BIN (wptr)->child;
-  
-  children = gtk_container_get_children (GTK_CONTAINER (box));
-  
-  while (children != NULL && !GTK_IS_MENU_SHELL (children->data)) 
-  {
-    children = children->next;
-  }
-  
-  /* If there isn't a MenuBar in this Frame's list of children
-     then we can just return. */
-  if (!GTK_IS_MENU_SHELL (children->data))
-    return;
-  else
-    mptr = children->data;
-    
-  /* This will actually destroy the MenuBar. By removing it from
-     its parent, the reference count for the MenuBar widget will
-     decrement to 0. The widget will be automatically destroyed 
-     by Gtk. */
-  gtk_container_remove (GTK_CONTAINER (box), GTK_WIDGET (mptr));  
-  
-  gdk_threads_leave();
-}  
-  
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkFramePeer_setMenuBarPeer
-  (JNIEnv *env, jobject obj, jobject menubar)
-{
-  void *wptr;
-  GtkWidget *mptr;
-  GtkWidget *box;
-
-  wptr = NSA_GET_PTR (env, obj);
-  mptr = NSA_GET_PTR (env, menubar);
-  
-  gdk_threads_enter ();
-
-  box = GTK_BIN (wptr)->child;		    
-  gtk_box_pack_start (GTK_BOX (box), mptr, 0, 0, 0);
- 
-  gtk_widget_show (mptr);
-
- 
-  gdk_threads_leave ();
-}
-
-JNIEXPORT jint JNICALL
-Java_gnu_java_awt_peer_gtk_GtkFramePeer_getMenuBarHeight
-  (JNIEnv *env, jobject obj __attribute__((unused)), jobject menubar)
-{
-  GtkWidget *ptr;
-  jint height;
-  GtkRequisition gtkreq;
-  
-  ptr = NSA_GET_PTR (env, menubar);
-
-  gdk_threads_enter ();
-  gtk_widget_size_request (ptr, &gtkreq);
-
-  height = gtkreq.height;
-  gdk_threads_leave ();
-  return height;
-}
-
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkFramePeer_moveLayout
-  (JNIEnv *env, jobject obj, jint offset)
-{
-  void* ptr;
-  GList* children;
-  GtkLayout* layout;
-  GtkWidget* widget;
-
-  ptr = NSA_GET_PTR (env, obj);
-
-  gdk_threads_enter ();
-
-  layout = find_layout (GTK_WINDOW (ptr));
-
-  children = gtk_container_get_children (GTK_CONTAINER (layout));
-  
-  while (children != NULL)
-  {
-    widget = children->data;
-    gtk_layout_move (layout, widget, widget->allocation.x,
-                     widget->allocation.y+offset);
-    children = children->next;
-  }
-  
-  gdk_threads_leave ();
-}
-  
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkFramePeer_gtkLayoutSetVisible
-  (JNIEnv *env, jobject obj, jboolean visible)
-{
-  void *ptr;
-  GtkLayout *layout;
-
-  ptr = NSA_GET_PTR (env, obj);
-
-  gdk_threads_enter ();
-
-  layout = find_layout (GTK_WINDOW (ptr));
-
-  if (visible)
-    gtk_widget_show (GTK_WIDGET (layout));
-  else
-    gtk_widget_hide (GTK_WIDGET (layout));
-
-  gdk_threads_leave ();
-}
-
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkFramePeer_nativeSetIconImageFromDecoder
-  (JNIEnv *env, jobject obj, jobject decoder)
-{
-  void *ptr;
-  GdkPixbufLoader *loader = NULL;
-  GdkPixbuf *pixbuf = NULL;
-
-  ptr = NSA_GET_PTR (env, obj);
-
-  loader = NSA_GET_PB_PTR (env, decoder);
-  g_assert (loader != NULL);
-
-  gdk_threads_enter ();
-
-  pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
-  g_assert (pixbuf != NULL);
-
-  gtk_window_set_icon (GTK_WINDOW (ptr), pixbuf);
-
-  gdk_threads_leave ();
-}
-
-void free_pixbuf_data (guchar *pixels, gpointer data __attribute__((unused)))
-{
-  free(pixels);
-}
-
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkFramePeer_nativeSetIconImageFromData
-  (JNIEnv *env, jobject obj, jintArray pixelArray, jint width, jint height)
-{
-  void *ptr;
-  GdkPixbuf *pixbuf;
-  jint *pixels;
-  int pixels_length, i;
-  guchar *data;
-
-  ptr = NSA_GET_PTR (env, obj);
-
-  pixels = (*env)->GetIntArrayElements (env, pixelArray, 0);
-  pixels_length = (*env)->GetArrayLength (env, pixelArray);
-
-  data = malloc (sizeof (guchar) * pixels_length);
-  for (i = 0; i < pixels_length; i++)
-    data[i] = (guchar) pixels[i];
-
-  gdk_threads_enter ();
-
-  pixbuf = gdk_pixbuf_new_from_data (data,
-                                     GDK_COLORSPACE_RGB,
-                                     TRUE,
-                                     8,
-                                     width,
-                                     height,
-                                     width*4,
-                                     free_pixbuf_data,
-                                     NULL);
-
-  gtk_window_set_icon (GTK_WINDOW (ptr), pixbuf);
-
-  gdk_threads_leave ();
-
-  (*env)->ReleaseIntArrayElements(env, pixelArray, pixels, 0);
 }
 
 static void
@@ -785,6 +564,8 @@ window_focus_in_cb (GtkWidget * widget,
                               postWindowEventID,
                               (jint) AWT_WINDOW_GAINED_FOCUS,
                               (jobject) NULL, (jint) 0);
+  /* FIXME: somewhere after this is handled, the child window is
+     getting an expose event. */
   return FALSE;
 }
 
@@ -797,6 +578,8 @@ window_focus_out_cb (GtkWidget * widget,
                               postWindowEventID,
                               (jint) AWT_WINDOW_LOST_FOCUS,
                               (jobject) NULL, (jint) 0);
+  /* FIXME: somewhere after this is handled, the child window is
+     getting an expose event. */
   return FALSE;
 }
 
@@ -923,27 +706,4 @@ window_property_changed_cb (GtkWidget *widget __attribute__((unused)),
 				(jint) extents[1]); /* right */
 
   return FALSE;
-}
-
-static GtkLayout *
-find_layout (GtkWindow *window)
-{
-  GList* children;
-  GtkBox* vbox;
-  GtkLayout* layout;
-
-  children = gtk_container_get_children (GTK_CONTAINER (window));
-  vbox = children->data;
-  g_assert (GTK_IS_VBOX (vbox));
-
-  children = gtk_container_get_children (GTK_CONTAINER (vbox));
-  do
-  {
-    layout = children->data;
-    children = children->next;
-  }
-  while (!GTK_IS_LAYOUT (layout) && children != NULL);
-  g_assert (GTK_IS_LAYOUT (layout));
-
-  return layout;
 }

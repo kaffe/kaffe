@@ -159,7 +159,7 @@ public abstract class BasicTextUI extends TextUI
 	}
     }
   }
-
+  
   static EditorKit kit = new DefaultEditorKit();
 
   RootView rootView = new RootView();
@@ -254,7 +254,7 @@ public abstract class BasicTextUI extends TextUI
   }
 
   protected void installKeyboardActions()
-  {
+  {    
     // load any bindings for the older Keymap interface
     Keymap km = JTextComponent.getKeymap(getKeymapName());
     if (km == null)

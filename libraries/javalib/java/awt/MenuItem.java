@@ -54,8 +54,6 @@ public class MenuItem extends MenuComponent
   implements Serializable
 {
 
-// FIXME: The enabled event mask is not used at this time.
-
 /*
  * Static Variables
  */
@@ -77,7 +75,7 @@ private String actionCommand;
 /**
   * @serial Indicates whether or not this menu item is enabled.
   */
-private boolean enabled;
+private boolean enabled = true;
 
 /**
   * @serial The mask of events that are enabled for this menu item.

@@ -347,7 +347,7 @@ public class DefaultEditorKit extends EditorKit
   {
     return new PlainDocument();
   }
-
+    
   public Action[] getActions()
   {
     return defaultActions;

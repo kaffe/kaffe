@@ -75,7 +75,7 @@ public class GtkImagePainter implements Runnable, ImageConsumer
     s_width = s_height = 0;
     clip = null;
 
-    new Thread (this).start ();
+    run ();
   }
 
   public
@@ -105,7 +105,7 @@ public class GtkImagePainter implements Runnable, ImageConsumer
     s_height = Math.abs (sy2 - sy1);
     clip = new Rectangle (sx1, sy1, s_width, s_height);
 
-    new Thread (this).start ();
+    run ();
   }
 
   public void

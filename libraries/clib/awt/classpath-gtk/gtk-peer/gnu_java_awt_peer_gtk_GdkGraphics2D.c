@@ -159,18 +159,7 @@ grab_current_drawable (GtkWidget *widget, GdkDrawable **draw, GdkWindow **win)
   g_assert (draw != NULL);
   g_assert (win != NULL);
 
-  if (GTK_IS_WINDOW (widget))
-    {
-      *win = find_gtk_layout (widget)->bin_window;
-    }
-  else if (GTK_IS_LAYOUT (widget))
-    {
-      *win = GTK_LAYOUT (widget)->bin_window;
-    }
-  else
-    {
-      *win = widget->window;
-    }
+  *win = widget->window;
 
   *draw = *win;
   gdk_window_get_internal_paint_info (*win, draw, 0, 0); 

@@ -73,7 +73,7 @@ public class BasicButtonListener
           button.repaint();   
       }
   }
-
+  
   public void focusLost(FocusEvent e)
   {
     if (e.getSource() instanceof AbstractButton)

@@ -84,7 +84,7 @@ public class GtkTextFieldPeer extends GtkTextComponentPeer
 
   native int gtkEntryGetBorderWidth ();
 
-  native void gtkSetFont (String name, int style, int size);
+  native void gtkWidgetModifyFont (String name, int style, int size);
 
   public GtkTextFieldPeer (TextField tf)
   {

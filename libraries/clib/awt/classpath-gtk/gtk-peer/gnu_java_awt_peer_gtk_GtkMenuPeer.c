@@ -73,7 +73,6 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkMenuPeer_create
   GtkWidget *menu_title, *menu, *toplevel;
   const char *str;
 
-  /* Create global reference and save it for future use */
   NSA_SET_GLOBAL_REF (env, obj);
 
   str = (*env)->GetStringUTFChars (env, label, NULL);

@@ -56,7 +56,7 @@ public interface AttributeSet
   static interface ParagraphAttribute
   {
   }
-  
+
   static Object NameAttribute = StyleConstants.NameAttribute;
   static Object ResolveAttribute = StyleConstants.ResolveAttribute;
 

@@ -122,7 +122,7 @@ public class DefaultTableCellRenderer extends JLabel
   {
     if (value!=null)
       super.setText(value.toString());
-    
+
     setOpaque(true);
     if (isSelected)
       {
@@ -137,7 +137,7 @@ public class DefaultTableCellRenderer extends JLabel
 
     setEnabled(table.isEnabled());
     setFont(table.getFont());
-    return this;
+    return this;    
   }
 
   /**

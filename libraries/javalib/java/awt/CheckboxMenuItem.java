@@ -198,12 +198,9 @@ getSelectedObjects()
 public synchronized void
 addNotify()
 {
-  if (peer != null)
-    {
-      // This choice of toolkit seems unsatisfying, but I'm not sure
-      // what else to do.
-      peer = getToolkit().createCheckboxMenuItem(this);
-    }
+  if (peer == null)
+    peer = getToolkit().createCheckboxMenuItem(this);
+
   super.addNotify ();
 }
 

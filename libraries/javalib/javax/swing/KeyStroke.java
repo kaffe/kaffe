@@ -46,9 +46,9 @@ public class KeyStroke
   implements Serializable
 {
   static final long serialVersionUID = -9060180771037902530L;
-	private KeyStroke() {
+  private KeyStroke() {
   }
-
+  
   protected KeyStroke(char keyChar, int keyCode, int modifiers,
                       boolean onKeyRelease)
   {
@@ -65,12 +65,12 @@ public class KeyStroke
     return (KeyStroke) getAWTKeyStroke(keyChar);
   }
 
-	/**
+  /** 
    * @deprecated Use {@link #getKeyStroke(char)}
    *
    * This method, unlike all the other factory methods on this object,
    * returns a non-cached, non-shared object. New code should not use it.
-	 */
+   */
   public static KeyStroke getKeyStroke(char keyChar, boolean onKeyRelease) 
   {
     return new KeyStroke(keyChar, KeyEvent.VK_UNDEFINED, 0, onKeyRelease);
@@ -81,7 +81,7 @@ public class KeyStroke
     return (KeyStroke) getAWTKeyStroke(keyChar, modifiers);
   }
 
-	public static KeyStroke getKeyStroke(int keyCode, int modifiers, 
+  public static KeyStroke getKeyStroke(int keyCode, int modifiers, 
                                        boolean onKeyRelease) 
   {
     return (KeyStroke) getAWTKeyStroke(keyCode, modifiers, onKeyRelease);

@@ -317,6 +317,7 @@ setMenuBar(MenuBar menuBar)
       this.menuBar.removeNotify();  
     if (menuBar != null)
       menuBar.addNotify();
+    invalidateTree ();
     ((FramePeer) peer).setMenuBar(menuBar);
   }
   this.menuBar = menuBar;

@@ -41,6 +41,21 @@ import gnu.java.awt.Buffers;
 /* FIXME: This class does not yet support data type TYPE_SHORT */
 
 /**
+ * ComponentSampleModel supports a flexible organization of pixel samples in
+ * memory, permitting pixel samples to be interleaved by band, by scanline,
+ * and by pixel.
+ *
+ * A DataBuffer for this sample model has K banks of data.  Pixels have N
+ * samples, so there are N bands in the DataBuffer.  Each band is completely
+ * contained in one bank of data, but a bank may contain more than one band.
+ * Each pixel sample is stored in a single data element.
+ *
+ * Within a bank, each band begins at an offset stored in bandOffsets.  The
+ * banks containing the band is given by bankIndices.  Within the bank, there
+ * are three dimensions - band, pixel, and scanline.  The dimension ordering
+ * is controlled by bandOffset, pixelStride, and scanlineStride, which means
+ * that any combination of interleavings is supported.
+ *
  * @author Rolf W. Rasmussen <rolfwr@ii.uib.no>
  */
 public class ComponentSampleModel extends SampleModel
@@ -86,6 +101,7 @@ public class ComponentSampleModel extends SampleModel
     this.bandOffsets = bandOffsets;
     this.bankIndices = bankIndices;
 
+    this.numBanks = 0;
     for (int b=0; b<bankIndices.length; b++)
       this.numBanks = Math.max(this.numBanks, bankIndices[b]+1);
 

@@ -171,19 +171,7 @@ public class BasicComboPopup extends JPopupMenu implements ComboPopup
   {
     this.comboBox = comboBox;
     installComboBoxListeners();
-
-    // initialize list that will be used to display elements of the combo box	
-    this.list = createList();
-    ((JLabel) list.getCellRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
-    configureList();
-
-    // initialize scroller. Add list to the scroller.	
-    scroller = createScroller();
-    configureScroller();
-
-    // add scroller with list inside of it to JPopupMenu
-    super.add(scroller);
-
+    configurePopup();
     setLightWeightPopupEnabled(comboBox.isLightWeightPopupEnabled());
   }
 
@@ -199,6 +187,8 @@ public class BasicComboPopup extends JPopupMenu implements ComboPopup
     int popupHeight = getPopupHeightForRowCount(comboBox.getMaximumRowCount())
                       + 4;
 
+    // FIXME: Uncomment this out once preferred size of JList will be working
+    // list.setPreferredSize(new Dimension(cbBounds.width, popupHeight));
     super.setPopupSize(cbBounds.width, popupHeight);
 
     // location specified is relative to comboBox
@@ -293,7 +283,10 @@ public class BasicComboPopup extends JPopupMenu implements ComboPopup
    */
   protected void firePopupMenuWillBecomeVisible()
   {
-    // FIXME: Need to implement
+    PopupMenuListener[] ll = comboBox.getPopupMenuListeners();
+
+    for (int i = 0; i < ll.length; i++)
+      ll[i].popupMenuWillBecomeVisible(new PopupMenuEvent(comboBox));
   }
 
   /**
@@ -302,7 +295,10 @@ public class BasicComboPopup extends JPopupMenu implements ComboPopup
    */
   protected void firePopupMenuWillBecomeInvisible()
   {
-    // FIXME: Need to implement
+    PopupMenuListener[] ll = comboBox.getPopupMenuListeners();
+
+    for (int i = 0; i < ll.length; i++)
+      ll[i].popupMenuWillBecomeInvisible(new PopupMenuEvent(comboBox));
   }
 
   /**
@@ -311,7 +307,10 @@ public class BasicComboPopup extends JPopupMenu implements ComboPopup
    */
   protected void firePopupMenuCanceled()
   {
-    // FIXME: Need to implement
+    PopupMenuListener[] ll = comboBox.getPopupMenuListeners();
+
+    for (int i = 0; i < ll.length; i++)
+      ll[i].popupMenuCanceled(new PopupMenuEvent(comboBox));
   }
 
   /**
@@ -440,11 +439,7 @@ public class BasicComboPopup extends JPopupMenu implements ComboPopup
   protected void configureList()
   {
     list.setModel(comboBox.getModel());
-
-    if (comboBox.getItemCount() < comboBox.getMaximumRowCount())
-      list.setVisibleRowCount(comboBox.getItemCount());
-    else
-      list.setVisibleRowCount(comboBox.getMaximumRowCount());
+    list.setVisibleRowCount(comboBox.getMaximumRowCount());
     installListListeners();
   }
 
@@ -493,7 +488,17 @@ public class BasicComboPopup extends JPopupMenu implements ComboPopup
    */
   protected void configurePopup()
   {
-    // FIXME: Need to implement
+    // initialize list that will be used to display combo box's items
+    this.list = createList();
+    ((JLabel) list.getCellRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+    configureList();
+
+    // initialize scroller. Add list to the scroller.	
+    scroller = createScroller();
+    configureScroller();
+
+    // add scroller with list inside of it to JPopupMenu
+    super.add(scroller);
   }
 
   /*
@@ -643,8 +648,8 @@ public class BasicComboPopup extends JPopupMenu implements ComboPopup
     for (int i = 0; i < maxRowCount; i++)
       {
 	Component comp = rend.getListCellRendererComponent(list,
-	                                                   list.getModel()
-	                                                       .getElementAt(i),
+	                                                   comboBox.getModel()
+	                                                           .getElementAt(i),
 	                                                   -1, false, false);
 	Dimension dim = comp.getPreferredSize();
 	totalHeight += dim.height;
@@ -803,9 +808,11 @@ public class BasicComboPopup extends JPopupMenu implements ComboPopup
 
     public void mouseMoved(MouseEvent anEvent)
     {
-      // FIXME: Need to implement
-      // NOTE: the change isn't reflected in data model of the combo box.
-      // The items are only highlited, but not selected
+      // Highlight list cells over which the mouse is located. 
+      // This changes list model, but has no effect on combo box's data model
+      int index = list.locationToIndex(anEvent.getPoint());
+      list.setSelectedIndex(index);
+      list.repaint();
     }
   }
 
@@ -825,6 +832,12 @@ public class BasicComboPopup extends JPopupMenu implements ComboPopup
       if (e.getPropertyName().equals(JComboBox.RENDERER_CHANGED_PROPERTY))
         {
 	  list.setCellRenderer((ListCellRenderer) e.getNewValue());
+	  revalidate();
+	  repaint();
+        }
+      if (e.getPropertyName().equals(JComboBox.MODEL_CHANGED_PROPERTY))
+        {
+	  list.setModel((ComboBoxModel) e.getNewValue());
 	  revalidate();
 	  repaint();
         }

@@ -47,7 +47,7 @@ public class GtkLabelPeer extends GtkComponentPeer
     implements LabelPeer
 {
   native void create (String text, float alignment);
-  native void gtkSetFont (String name, int style, int size);
+  native void gtkWidgetModifyFont (String name, int style, int size);
   native void nativeSetAlignment (float alignment);
 
   native public void setText (String text);

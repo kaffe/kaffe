@@ -151,7 +151,6 @@ Java_gnu_java_awt_peer_gtk_GtkTextComponentPeer_setCaretPosition
   GtkWidget *text = NULL;
   GtkTextBuffer *buf;
   GtkTextIter iter;
-  GtkTextMark *mark;
   GtkTextMark *oldmark;
   GtkTextIter olditer;
   int oldpos;
@@ -325,10 +324,6 @@ Java_gnu_java_awt_peer_gtk_GtkTextComponentPeer_select
   GtkWidget *text = NULL;
   GtkTextBuffer *buf;
   GtkTextIter iter;
-  GtkTextMark *mark;
-  GtkTextMark *oldmark;
-  GtkTextIter olditer;
-  int oldpos;
 
   ptr = NSA_GET_PTR (env, obj);
 

@@ -52,7 +52,7 @@ public class GtkTextAreaPeer extends GtkTextComponentPeer
 
   native void create (int width, int height, int scrollbarVisibility);
 
-  native void gtkSetFont (String name, int style, int size);
+  native void gtkWidgetModifyFont (String name, int style, int size);
   native void gtkWidgetRequestFocus ();
 
   void create ()

@@ -44,14 +44,15 @@ JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkPanelPeer_create
   (JNIEnv *env, jobject obj)
 {
-  gpointer widget;
+  GtkWidget *widget;
 
-  /* Create global reference and save it for future use */
   NSA_SET_GLOBAL_REF (env, obj);
 
   gdk_threads_enter ();
   
-  widget = gtk_layout_new (NULL, NULL);
+  widget = gtk_fixed_new ();
+
+  gtk_fixed_set_has_window (GTK_FIXED (widget), TRUE);
 
   GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
 
@@ -70,7 +71,7 @@ Java_gnu_java_awt_peer_gtk_GtkPanelPeer_connectJObject
 
   gdk_threads_enter ();
   gtk_widget_realize (GTK_WIDGET (ptr));
-  connect_awt_hook (env, obj, 1, GTK_LAYOUT (ptr)->bin_window);
+  connect_awt_hook (env, obj, 1, GTK_WIDGET (ptr)->window);
 
   gdk_threads_leave ();
 }

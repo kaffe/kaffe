@@ -1100,7 +1100,7 @@ public abstract class KeyboardFocusManager
   {
     synchronized (e)
       {
-    e.setSource (target);
+        e.setSource (target);
         target.dispatchEvent (e);
       }
   }

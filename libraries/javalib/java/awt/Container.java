@@ -527,7 +527,7 @@ public class Container extends Component
   /**
    * Recursively invalidates the container tree.
    */
-  private void invalidateTree()
+  void invalidateTree()
   {
     for (int i = 0; i < ncomponents; i++)
       {
@@ -572,8 +572,8 @@ public class Container extends Component
       }
 
     /* children will call invalidate() when they are layed out. It
-       is therefore imporant that valid is not set to true
-       before after the children has been layed out. */
+       is therefore important that valid is not set to true
+       until after the children have been layed out. */
     valid = true;
 
     if (cPeer != null)
@@ -704,6 +704,8 @@ public class Container extends Component
   {
     if (!isShowing())
       return;
+    // Paint self first.
+    super.paint(g);
     // Visit heavyweights as well, in case they were
     // erased when we cleared the background for this container.
     visitChildren(g, GfxPaintVisitor.INSTANCE, false);
@@ -1509,7 +1511,7 @@ public class Container extends Component
         && dispatcher != null 
         && dispatcher.handleEvent (e))
       return;
-
+    
     if ((e.id <= ContainerEvent.CONTAINER_LAST
              && e.id >= ContainerEvent.CONTAINER_FIRST)
         && (containerListener != null

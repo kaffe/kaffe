@@ -52,13 +52,13 @@ public class GtkButtonPeer extends GtkComponentPeer
 {
   native void create (String label);
 
-  public native void connectJObject ();
   public native void connectSignals ();
 
-  native void gtkSetFont (String name, int style, int size);
+  native void gtkWidgetModifyFont (String name, int style, int size);
   native void gtkSetLabel (String label);
   native void gtkWidgetSetForeground (int red, int green, int blue);
   native void gtkActivate ();
+  native void gtkWidgetRequestFocus ();
 
   public GtkButtonPeer (Button b)
   {
@@ -86,8 +86,8 @@ public class GtkButtonPeer extends GtkComponentPeer
 	if (!me.isConsumed ()
 	    && (me.getModifiersEx () & MouseEvent.BUTTON1_DOWN_MASK) != 0
 	    && awtComponent.getBounds().contains(p))
-	  postActionEvent (((Button)awtComponent).getActionCommand (), 
-			   me.getModifiersEx ());
+          postActionEvent (((Button) awtComponent).getActionCommand (), 
+                           me.getModifiersEx ());
       }
 
     if (e.getID () == KeyEvent.KEY_PRESSED)

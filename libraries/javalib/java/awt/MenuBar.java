@@ -141,17 +141,17 @@ setHelpMenu(Menu menu)
       helpMenu.removeNotify ();
       helpMenu.parent = null;
     }
+  helpMenu = menu;
 
-  if (menu.parent != null)
-    menu.parent.remove (menu);
   if (menu.parent != null)
     menu.parent.remove (menu);
   menu.parent = this;
 
+  MenuBarPeer peer = (MenuBarPeer) getPeer ();
   if (peer != null)
     {
-      MenuBarPeer mp = (MenuBarPeer) peer;
-      mp.addHelpMenu (menu);
+      menu.addNotify();
+      peer.addHelpMenu (menu);
     }
 }
 
@@ -176,8 +176,7 @@ add(Menu menu)
 
   if (peer != null)
     {
-      MenuBarPeer mp = (MenuBarPeer) peer;
-      mp.addMenu (menu);
+      menu.addNotify();
     }
 
   return(menu);
@@ -247,8 +246,7 @@ getMenuCount()
 public int
 countMenus()
 {
-  // FIXME: How does the help menu fit in here?
-  return menus.size ();
+  return menus.size () + (getHelpMenu () == null ? 0 : 1);
 }
 
 /*************************************************************************/
@@ -281,6 +279,11 @@ addNotify()
   {
     Menu mi = (Menu)e.nextElement();
     mi.addNotify();
+  }
+  if (helpMenu != null)
+  {
+    helpMenu.addNotify();
+    ((MenuBarPeer) peer).addHelpMenu(helpMenu);
   }
 }
 

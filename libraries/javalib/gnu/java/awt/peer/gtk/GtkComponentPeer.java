@@ -77,6 +77,8 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   Insets insets;
 
+  boolean isInRepaint;
+
   /* this isEnabled differs from Component.isEnabled, in that it
      knows if a parent is disabled.  In that case Component.isEnabled 
      may return true, but our isEnabled will always return false */
@@ -97,10 +99,7 @@ public class GtkComponentPeer extends GtkGenericPeer
   native void gtkWidgetRequestFocus ();
   native void gtkWidgetDispatchKeyEvent (int id, long when, int mods,
                                          int keyCode, int keyLocation);
-  native void gtkSetFont (String name, int style, int size);
-  native void gtkWidgetQueueDrawArea(int x, int y, int width, int height);
-  native void addExposeFilter();
-  native void removeExposeFilter();
+  native void gtkWidgetRepaintArea(int x, int y, int width, int height);
 
   void create ()
   {
@@ -134,8 +133,6 @@ public class GtkComponentPeer extends GtkGenericPeer
 
     setComponentBounds ();
 
-    Rectangle bounds = awtComponent.getBounds ();
-    setBounds (bounds.x, bounds.y, bounds.width, bounds.height);
     setVisibleAndEnabled ();
   }
 
@@ -154,15 +151,27 @@ public class GtkComponentPeer extends GtkGenericPeer
       gtkWidgetSetParent (p);
   }
 
+  void beginNativeRepaint ()
+  {
+    isInRepaint = true;
+  }
+
+  void endNativeRepaint ()
+  {
+    isInRepaint = false;
+  }
+
   /*
    * Set the bounds of this peer's AWT Component based on dimensions
    * returned by the native windowing system.  Most Components impose
-   * their dimensions on the peers so the default implementation does
-   * nothing.  However some peers, like GtkFileDialogPeer, need to
-   * pass their size back to the AWT Component.
+   * their dimensions on the peers which is what the default
+   * implementation does.  However some peers, like GtkFileDialogPeer,
+   * need to pass their size back to the AWT Component.
    */
   void setComponentBounds ()
   {
+    Rectangle bounds = awtComponent.getBounds ();
+    setBounds (bounds.x, bounds.y, bounds.width, bounds.height);
   }
 
   void setVisibleAndEnabled ()
@@ -265,8 +274,8 @@ public class GtkComponentPeer extends GtkGenericPeer
               // Some peers like GtkFileDialogPeer are repainted by Gtk itself
               if (g == null)
                 break;
-		
-              g.setClip (((PaintEvent)event).getUpdateRect());
+
+              g.setClip (((PaintEvent) event).getUpdateRect());
 
               if (id == PaintEvent.PAINT)
                 awtComponent.paint (g);
@@ -310,21 +319,6 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   public void paint (Graphics g)
   {
-    Component parent = awtComponent.getParent();
-    GtkComponentPeer parentPeer = null;
-    if ((parent instanceof Container) && !parent.isLightweight())
-      parentPeer = (GtkComponentPeer) parent.getPeer();
-
-    addExposeFilter();
-    if (parentPeer != null)
-      parentPeer.addExposeFilter();
-
-    Rectangle clip = g.getClipBounds();
-    gtkWidgetQueueDrawArea(clip.x, clip.y, clip.width, clip.height);
-
-    removeExposeFilter();
-    if (parentPeer != null)
-      parentPeer.removeExposeFilter();
   }
 
   public Dimension preferredSize ()
@@ -371,8 +365,11 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   public void repaint (long tm, int x, int y, int width, int height)
   {
+    beginNativeRepaint ();
+    gtkWidgetRepaintArea (x, y, width, height);
+    endNativeRepaint ();
     q.postEvent (new PaintEvent (awtComponent, PaintEvent.UPDATE,
-				 new Rectangle (x, y, width, height)));
+                                 new Rectangle (x, y, width, height)));
   }
 
   public void requestFocus ()
@@ -426,8 +423,14 @@ public class GtkComponentPeer extends GtkGenericPeer
     if (parent instanceof Window && !lightweightChild)
       {
 	Insets insets = ((Window) parent).getInsets ();
-	// Convert from Java coordinates to GTK coordinates.
-	setNativeBounds (x - insets.left, y - insets.top, width, height);
+        GtkWindowPeer peer = (GtkWindowPeer) parent.getPeer ();
+        int menuBarHeight = 0;
+        if (peer instanceof GtkFramePeer)
+          menuBarHeight = ((GtkFramePeer) peer).getMenuBarHeight ();
+
+        // Convert from Java coordinates to GTK coordinates.
+        setNativeBounds (x - insets.left, y - insets.top + menuBarHeight,
+                         width, height);
       }
     else
       setNativeBounds (x, y, width, height);
@@ -448,7 +451,7 @@ public class GtkComponentPeer extends GtkGenericPeer
     // FIXME: This should really affect the widget tree below me.
     // Currently this is only handled if the call is made directly on
     // a text widget, which implements setFont() itself.
-    gtkSetFont(f.getName(), f.getStyle(), f.getSize());
+    gtkWidgetModifyFont(f.getName(), f.getStyle(), f.getSize());
   }
 
   public void setForeground (Color c) 
@@ -488,8 +491,9 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   protected void postExposeEvent (int x, int y, int width, int height)
   {
-    q.postEvent (new PaintEvent (awtComponent, PaintEvent.PAINT,
-				 new Rectangle (x, y, width, height)));
+    if (!isInRepaint)
+      q.postEvent (new PaintEvent (awtComponent, PaintEvent.PAINT,
+                                   new Rectangle (x, y, width, height)));
   }
 
   protected void postKeyEvent (int id, long when, int mods,

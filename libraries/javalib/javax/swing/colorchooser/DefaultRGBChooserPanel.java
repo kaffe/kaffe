@@ -73,11 +73,14 @@ public class DefaultRGBChooserPanel extends AbstractColorChooserPanel
      */
     public void stateChanged(ChangeEvent e)
     {
-      if (internalChange)
+      if (updateChange)
 	return;
+
       int color = R.getValue() << 16 | G.getValue() << 8 | B.getValue();
 
+      sliderChange = true;
       getColorSelectionModel().setSelectedColor(new Color(color));
+      sliderChange = false;
     }
   }
 
@@ -93,23 +96,32 @@ public class DefaultRGBChooserPanel extends AbstractColorChooserPanel
      */
     public void stateChanged(ChangeEvent e)
     {
-      if (internalChange)
+      if (updateChange)
 	return;
+
       int red = ((Number) RSpinner.getValue()).intValue();
       int green = ((Number) GSpinner.getValue()).intValue();
       int blue = ((Number) BSpinner.getValue()).intValue();
 
       int color = red << 16 | green << 8 | blue;
 
+      spinnerChange = true;
       getColorSelectionModel().setSelectedColor(new Color(color));
+      spinnerChange = false;
     }
   }
 
+  /** Whether the color change was initiated by the spinners. */
+  private transient boolean spinnerChange = false;
+
+  /** Whether the color change was initiated by the sliders. */
+  private transient boolean sliderChange = false;
+
   /**
-   * Whether the color change was initiated from the slider or spinner rather
-   * than externally.
+   * Whether the change was forced by the chooser (meaning the color has
+   * already been changed).
    */
-  private transient boolean internalChange = false;
+  private transient boolean updateChange = false;
 
   /** The ChangeListener for the sliders. */
   private transient ChangeListener colorChanger;
@@ -175,22 +187,28 @@ public class DefaultRGBChooserPanel extends AbstractColorChooserPanel
     int green = rgb >> 8 & 0xff;
     int blue = rgb & 0xff;
 
-    internalChange = true;
+    updateChange = true;
 
-    if (R != null)
-      R.setValue(red);
-    if (RSpinner != null)
-      RSpinner.setValue(new Integer(red));
-    if (G != null)
-      G.setValue(green);
-    if (GSpinner != null)
-      GSpinner.setValue(new Integer(green));
-    if (B != null)
-      B.setValue(blue);
-    if (BSpinner != null)
-      BSpinner.setValue(new Integer(blue));
+    if (! sliderChange)
+      {
+	if (R != null)
+	  R.setValue(red);
+	if (G != null)
+	  G.setValue(green);
+	if (B != null)
+	  B.setValue(blue);
+      }
+    if (! spinnerChange)
+      {
+	if (GSpinner != null)
+	  GSpinner.setValue(new Integer(green));
+	if (RSpinner != null)
+	  RSpinner.setValue(new Integer(red));
+	if (BSpinner != null)
+	  BSpinner.setValue(new Integer(blue));
+      }
 
-    internalChange = false;
+    updateChange = false;
 
     revalidate();
     repaint();

@@ -44,33 +44,30 @@ Java_gnu_java_awt_peer_gtk_GtkLabelPeer_create
   (JNIEnv *env, jobject obj, jstring text, jfloat xalign)
 {
   GtkWidget *label;
-  GtkWidget *ebox;
-  GtkContainer *ebox_container;
+  GtkWidget *eventbox;
   const char *str;
 
-  /* Create global reference and save it for future use */
   NSA_SET_GLOBAL_REF (env, obj);
 
   str = (*env)->GetStringUTFChars (env, text, 0);
 
   gdk_threads_enter ();
 
-  ebox = gtk_event_box_new ();
-  ebox_container = GTK_CONTAINER (ebox);
+  eventbox = gtk_event_box_new ();
   label = gtk_label_new (str);
   gtk_misc_set_alignment (GTK_MISC (label), xalign, 0.5);
-  gtk_container_add (ebox_container, label);
+  gtk_container_add (GTK_CONTAINER (eventbox), label);
   gtk_widget_show (label);
 
   gdk_threads_leave ();
 
   (*env)->ReleaseStringUTFChars (env, text, str);
 
-  NSA_SET_PTR (env, obj, ebox);
+  NSA_SET_PTR (env, obj, eventbox);
 }
 
 JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkLabelPeer_gtkSetFont
+Java_gnu_java_awt_peer_gtk_GtkLabelPeer_gtkWidgetModifyFont
   (JNIEnv *env, jobject obj, jstring name, jint style, jint size)
 {
   const char *font_name;
@@ -121,7 +118,7 @@ Java_gnu_java_awt_peer_gtk_GtkLabelPeer_setText
 
   gdk_threads_enter ();
 
-  label = gtk_bin_get_child (GTK_BIN(ptr));
+  label = gtk_bin_get_child (GTK_BIN (ptr));
 
   gtk_label_set_label (GTK_LABEL (label), str);
 

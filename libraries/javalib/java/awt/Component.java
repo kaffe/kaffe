@@ -293,7 +293,7 @@ public abstract class Component
    * @see #getLocale()
    * @see #setLocale(Locale)
    */
-  Locale locale;
+  Locale locale = Locale.getDefault ();
 
   /**
    * True if the object should ignore repaint events (usually because it is
@@ -4728,8 +4728,8 @@ p   * <li>the set of backward traversal keys
                     return;
               }
           }
-      processEvent (e);
-  }
+        processEvent (e);
+      }
   }
 
   /**

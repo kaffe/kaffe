@@ -195,7 +195,13 @@ MenuComponent()
 public Font
 getFont()
 {
-  return(font);
+  if (font != null)
+    return font;
+
+  if (parent != null)
+    return parent.getFont ();
+
+  return null;
 }
 
 /*************************************************************************/

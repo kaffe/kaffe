@@ -311,7 +311,7 @@ public class DefaultKeyboardFocusManager extends KeyboardFocusManager
                         MenuItem item = menu.getItem (j);
                         MenuShortcut shortcut = item.getShortcut ();
 
-                        if (shortcut != null)
+                        if (item.isEnabled() && shortcut != null)
                           {
                             // Dispatch a new ActionEvent if:
                             //
@@ -444,7 +444,7 @@ public class DefaultKeyboardFocusManager extends KeyboardFocusManager
 
     Component previous = policy.getComponentBefore (focusCycleRoot, focusComp);
     if (previous != null)
-    previous.requestFocusInWindow ();
+      previous.requestFocusInWindow ();
   }
 
   public void focusNextComponent (Component comp)
@@ -455,7 +455,7 @@ public class DefaultKeyboardFocusManager extends KeyboardFocusManager
 
     Component next = policy.getComponentAfter (focusCycleRoot, focusComp);
     if (next != null)
-    next.requestFocusInWindow ();
+      next.requestFocusInWindow ();
   }
 
   public void upFocusCycle (Component comp)
@@ -468,7 +468,7 @@ public class DefaultKeyboardFocusManager extends KeyboardFocusManager
         FocusTraversalPolicy policy = focusCycleRoot.getFocusTraversalPolicy ();
         Component defaultComponent = policy.getDefaultComponent (focusCycleRoot);
         if (defaultComponent != null)
-        defaultComponent.requestFocusInWindow ();
+          defaultComponent.requestFocusInWindow ();
       }
     else
       {
@@ -489,7 +489,7 @@ public class DefaultKeyboardFocusManager extends KeyboardFocusManager
         FocusTraversalPolicy policy = cont.getFocusTraversalPolicy ();
         Component defaultComponent = policy.getDefaultComponent (cont);
         if (defaultComponent != null)
-        defaultComponent.requestFocusInWindow ();
+          defaultComponent.requestFocusInWindow ();        
         setGlobalCurrentFocusCycleRoot (cont);
       }
   }

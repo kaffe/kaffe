@@ -1,5 +1,483 @@
 2004-09-26  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkFramePeer.c,
+	libraries/javalib/java/awt/image/MultiPixelPackedSampleModel.java:
+	New files taken from GNU Classpath.
+
+	* libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.am:
+	(libgtkpeer_la_SOURCES) Added gnu_java_awt_peer_gtk_GtkFramePeer.c.
+
+	* libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.in,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+	
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkCheckboxMenuItemPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkCheckboxPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkEvents.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkGenericPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkLabelPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkListPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuBarPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuItemPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkPanelPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkTextAreaPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkTextComponentPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkTextFieldPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gtkpeer.h,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphics.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkButtonPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkCheckboxPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkClipboard.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkComponentPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkDialogPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkFileDialogPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkFramePeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkGenericPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkImagePainter.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkLabelPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkListPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkMenuBarPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkMenuComponentPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkMenuItemPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkTextAreaPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkTextFieldPeer.java,
+	libraries/javalib/java/awt/CheckboxMenuItem.java,
+	libraries/javalib/java/awt/Component.java,
+	libraries/javalib/java/awt/Container.java,
+	libraries/javalib/java/awt/DefaultFocusTraversalPolicy.java,
+	libraries/javalib/java/awt/DefaultKeyboardFocusManager.java,
+	libraries/javalib/java/awt/Frame.java,
+	libraries/javalib/java/awt/KeyboardFocusManager.java,
+	libraries/javalib/java/awt/Menu.java,
+	libraries/javalib/java/awt/MenuBar.java,
+	libraries/javalib/java/awt/MenuComponent.java,
+	libraries/javalib/java/awt/MenuItem.java,
+	libraries/javalib/java/awt/Panel.java,
+	libraries/javalib/java/awt/Window.java,
+	libraries/javalib/java/awt/datatransfer/Clipboard.java,
+	libraries/javalib/java/awt/datatransfer/ClipboardOwner.java,
+	libraries/javalib/java/awt/image/ColorModel.java,
+	libraries/javalib/java/awt/image/ComponentSampleModel.java,
+	libraries/javalib/java/awt/image/Raster.java,
+	libraries/javalib/java/awt/image/SinglePixelPackedSampleModel.java,
+	libraries/javalib/java/awt/peer/MenuBarPeer.java,
+	libraries/javalib/javax/swing/AbstractButton.java,
+	libraries/javalib/javax/swing/DebugGraphics.java,
+	libraries/javalib/javax/swing/DefaultButtonModel.java,
+	libraries/javalib/javax/swing/InputVerifier.java,
+	libraries/javalib/javax/swing/JComponent.java,
+	libraries/javalib/javax/swing/JLabel.java,
+	libraries/javalib/javax/swing/KeyStroke.java,
+	libraries/javalib/javax/swing/colorchooser/DefaultHSBChooserPanel.java,
+	libraries/javalib/javax/swing/colorchooser/DefaultRGBChooserPanel.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicButtonListener.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicComboBoxUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicComboPopup.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTabbedPaneUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTableHeaderUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTableUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTextUI.java,
+	libraries/javalib/javax/swing/table/DefaultTableCellRenderer.java,
+	libraries/javalib/javax/swing/table/DefaultTableModel.java,
+	libraries/javalib/javax/swing/text/AbstractDocument.java,
+	libraries/javalib/javax/swing/text/AttributeSet.java,
+	libraries/javalib/javax/swing/text/DefaultEditorKit.java:
+	Resynced with GNU Classpath.
+
+	2004-09-23  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/table/DefaultTableModel.java: Whitespace cleanup.
+
+	2004-09-23  Mark Wielaard  <mark@klomp.org>
+
+	* java/awt/Component.java: Whitespace cleanup.
+	* java/awt/Container.java: Likewise.
+	* java/awt/DefaultFocusTraversalPolicy.java: Likewise.
+	* java/awt/DefaultKeyboardFocusManager.java: Likewise.
+	* java/awt/KeyboardFocusManager.java: Likewise.
+
+	2004-09-23  Mark Wielaard  <mark@klomp.org>
+
+	* examples/gnu/classpath/examples/awt/Demo.java: Add help menu
+	example.
+
+	* include/gnu_java_awt_peer_gtk_GtkButtonPeer.h: Regenerate with gcjh
+	from CVS.
+	* include/gnu_java_awt_peer_gtk_GtkCheckboxPeer.h: Likewise.
+	* include/gnu_java_awt_peer_gtk_GtkComponentPeer.h: Likewise.
+	* include/gnu_java_awt_peer_gtk_GtkFramePeer.h: Likewise.
+	* include/gnu_java_awt_peer_gtk_GtkGenericPeer.h: Likewise.
+	* include/gnu_java_awt_peer_gtk_GtkLabelPeer.h: Likewise.
+	* include/gnu_java_awt_peer_gtk_GtkListPeer.h: Likewise.
+	* include/gnu_java_awt_peer_gtk_GtkMenuBarPeer.h: Likewise.
+	* include/gnu_java_awt_peer_gtk_GtkMenuItemPeer.h: Likewise.
+	* include/gnu_java_awt_peer_gtk_GtkTextAreaPeer.h: Likewise.
+	* include/gnu_java_awt_peer_gtk_GtkTextFieldPeer.h: Likewise.
+
+	2004-09-23  David Jee  <djee@redhat.com>
+
+	PR AWT/17059
+	* gnu/java/awt/peer/gtk/GtkMenuBarPeer.java
+	(nativeSetHelpMenu): New native method declaration.
+	(addHelpMenu): Call nativeSetHelpMenu().
+	(addMenu): Remove.
+	* java/awt/MenuBar.java
+	(setHelpMenu): Call addNotify() on the new help menu.
+	(add): Call addNotify() on the new menu.
+	(addNotify): Set the help menu if one exists.
+	* java/awt/peer/MenuBarPeer.java
+	(addMenu): Remove.
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuBarPeer.c
+	(nativeSetHelpMenu): New method.
+
+	2004-09-23  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/AbstractButton.java: Whitespace cleanup.
+	* javax/swing/DefaultButtonModel.java: Likewise.
+	* javax/swing/JLabel.java: Likewise.
+	* javax/swing/KeyStroke.java: Likewise.
+	* javax/swing/plaf/basic/BasicButtonListener.java: Likewise.
+	* javax/swing/plaf/basic/BasicComboBoxUI.java: Likewise.
+	* javax/swing/plaf/basic/BasicComboPopup.java: Likewise.
+	* javax/swing/plaf/basic/BasicTableHeaderUI.java: Likewise.
+	* javax/swing/plaf/basic/BasicTableUI.java: Likewise.
+	* javax/swing/plaf/basic/BasicTextUI.java: Likewise.
+	* javax/swing/table/DefaultTableCellRenderer.java: Likewise.
+	* javax/swing/text/AbstractDocument.java: Likewise.
+	* javax/swing/text/AttributeSet.java: Likewise.
+	* javax/swing/text/DefaultEditorKit.java: Likewise.
+
+	2004-09-23  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/InputVerifier.java:
+	Re-formatted.
+	* javax/swing/JComponent.java
+	(inputVerifier): New property field.
+	(getInputVerifier): New method.
+	(setInputVerifier): Likewise.
+
+	2004-09-23  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/DebugGraphics.java:
+	Re-formatted. Fixed some javadocs.
+
+	2004-09-23  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/AbstractButton.java:
+	Little re-formatting.
+	(changeEvent): Made protected.
+	(fireStateChanged): Removed argument.
+	(setHorizontalAlignment): Abort method when old value is equal too new
+	value.
+	(setHorizontalTextPosition): Likewise.
+	(setVerticalAlignment): Likewise.
+	(setVerticalTextPosition): Likewise.
+	(setBorderPainted): Likewise.
+	(setIcon): Likewise.
+	(setText): Likewise.
+	(setIconTextGap): Likewise.
+	(setMargin): Likewise.
+	(setPressedIcon): Likewise.
+	(setFocusPainted): Likewise.
+	(setDisabledSelectedIcon): Likewise.
+	(setRolloverIcon): Likewise.
+	(setRolloverSelectedIcon): Likewise.
+	(setSelectedIcon): Likewise.
+	(setContentAreaFilled): Likewise.
+
+	2004-09-23  Jerry Quinn  <jlquinn@optonline.net>
+
+	* java/awt/image/ComponentSampleModel.java: Add documentation.
+
+	2004-09-22  Patrik Reali  <reali@acm.org>
+
+	* doc/www.gnu.org/announce/20040913.wml: classpath 0.11 release announce
+	* doc/www.gnu.org/downloads/downloads.wml: classpath 0.11 download added
+	* doc/www.gnu.org/newsitems.txt: classpath 0.11, inetlib 1.1 
+
+	2004-09-22  David Jee  <djee@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GtkMenuItemPeer.java
+	(setEnabled): Make it a native method.
+	* java/awt/DefaultKeyboardFocusManager.java
+	(postProcessKeyEvent): Only post event if the menu item
+	is active.
+	* java/awt/MenuItem.java:
+	Private field 'enabled' should be true by default.
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuItemPeer.c
+	(setEnabled): New function.
+
+	2004-09-22  Jerry Quinn  <jlquinn@optonline.net>
+
+	* java/awt/image/ColorModel.java (getDataElement): Implemented.
+	Update javadoc.
+	(getDataElements): Add missing version.  Remove bogus version.
+	Update javadoc.
+	* java/awt/image/MultiPixelPackedSampleModel.java: Implement.
+	* java/awt/image/Raster.java
+	(createPackedRaster(int,int,int,int,int,Point)): Implement for
+	bands>1.
+	(getNumBands): Implement.
+	* java/awt/image/SinglePixelPackedSampleModel.java
+	(SinglePixelPackedSampleModel): Throw exception for unsupported
+	datatype.
+
+	2004-09-22  Olga Rodimina  <rodimina@redhat.com>
+
+	* javax/swing/plaf/basic/BasicComboBoxUI.java:
+	(paintCurrentValue): Pass correct parameters to 
+	getListCellRendererComponent().
+	(ListDataHandler.intervalRemoved): Implemented. 
+	(PropertyChangeHandler.propertyChange): Handle changes in
+	MODEL_CHANGED_PROPERTY of the JComboBox
+	* javax/swing/plaf/basic/BasicComboPopup.java:
+	(BasicComboPopup): Moved code that configures popup to 
+	configurePopup() and call it instead. 
+	(firePopupMenuWillBecomeVisible): Implemented.
+	(firePopupMenuWillBecomeInvisible): Likewise.
+	(firePopupMenuCanceled): Likewise.
+	(configureList): Set list's visibleRowCount same as 
+	comboBox's visibleRowCount.
+	(configurePopup): Implemented.
+	(getPopupHeightForRowCount): Get item's from JComboBox's model and 
+	not from model of the JList.
+	(ListMouseMotionHandler.mouseMoved): Implemented.
+	(PropertyChangeHandler.propertyChange): Handles change in the
+	JComboBox's model.
+
+	2004-09-22  Kim Ho  <kho@redhat.com>
+
+	* javax/swing/colorchooser/DefaultHSBChooserPanel.java:
+	(stateChanged): Only update the image and the track if
+	the values are not being adjusted.
+	(updateChooser): Grab the new mouse point from the
+	spinner values. Update the image and track only if 
+	the values are not being adjusted. 
+	(getHSBValues): New method.
+	* javax/swing/colorchooser/DefaultRGBChooserPanel.java:
+	(SliderHandler::stateChanged): Changed internalChange 
+	to updateChange. Set sliderChange.
+	(SpinnerHandler::stateChanged): Ditto. Set spinnerChange.
+	(spinnerChange): New variable.
+	(sliderChange): Ditto.
+	(updateChange): Renamed from internalChange.
+	(updateChooser): Do not update sliders if the sliders
+	were the original source of the change. Ditto for spinners.
+	* javax/swing/plaf/basic/BasicTabbedPaneUI.java:
+	(mousePress): Don't scroll the JViewport if there will
+	be extra space at the end of the run. Change layout() to
+	revalidate().
+	(calculateSize): Use the component's width/height unless
+	it is smaller than the max tab width/height.
+	(calculateTabRects): Subtract the tab run overlay.
+	(rotateTabRuns): Don't rotate if there's only one run.
+	(layoutContainer): Reuse the viewport point.
+	(createLayoutManager): Set the viewport to use no layout.
+	(paintTabArea): Don't paint the tabs that are not visible
+	to the JViewport.
+	(paintContentBorderTopEdge): Check for scroll tab layout before
+	looking for gap.
+	(paintContentBorderLeftEdge): Ditto.
+	(paintContentBorderBottomEdge): Ditto.
+	(paintContentBorderRightEdge): Ditto.
+
+	2004-09-22  Michael Koch  <konqueror@gmx.de>
+
+	* gnu/java/awt/peer/gtk/GtkClipboard.java,
+	java/awt/datatransfer/Clipboard.java,
+	java/awt/datatransfer/ClipboardOwner.java:
+	Reformated to make it use our coding standard.
+
+	2004-09-22  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GtkFramePeer.java (setMenuBar): Set menu
+	bar's width.
+	* gnu/java/awt/peer/gtk/GtkMenuBarPeer.java (nativeSetHelpMenu):
+	Add FIXME comment.
+	(addHelpMenu): Elide call to nativeSetHelpMenu.
+	* java/awt/Menu.java (isTearOff): Rename to tearOff.
+	(menuSerializedDataVersion): Initialize to 1.
+	(separatorLabel): Mark transient.
+	(insert(MenuItem,int)): Implement.
+	* java/awt/MenuBar.java (setHelpMenu): Call getPeer to retrieve
+	peer.
+	(countMenus): Count help menu.
+	* java/awt/MenuItem.java: Remove event mask FIXME.
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuItemPeer.c
+	(gtkWidgetModifyFont): Only set font if label is non-NULL.
+	(setLabel): Don't treat "-" specially.
+
+	2004-09-22  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GtkButtonPeer.java (gtkWidgetSetFont):
+	Rename ...
+	(gtkWidgetModifyFont): New method.
+	* gnu/java/awt/peer/gtk/GtkFramePeer.java,
+	jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFramePeer.c
+	(setMenuBarWidth): New method.
+	(setBounds): Set the menu bar width.
+	(postConfigureEvent): Set the menu bar width if the window's
+	width has changed.
+	* gnu/java/awt/peer/gtk/GtkMenuBarPeer.java (GtkMenuBarPeer):
+	Don't call create.
+	(setFont): New method.
+	* gnu/java/awt/peer/gtk/GtkMenuComponentPeer.java (create): New
+	method.
+	(setFont): Likewise.
+	(GtkMenuComponentPeer): Call create and setFont.
+	* gnu/java/awt/peer/gtk/GtkMenuItemPeer.java,
+	jni/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuItemPeer.c
+	(connectSignals): Make package private.
+	(gtkWidgetModifyFont): New method.
+	(create): Likewise.
+	(GtkMenuItemPeer): Don't call create.
+	(setFont): New method.
+	* java/awt/CheckboxMenuItem.java (addNotify): Fix peer == null
+	condition.
+	* java/awt/Container.java (validateTree): Fix comment typos.
+	* java/awt/MenuComponent.java (getFont): Return parent's font if
+	our font is null.
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GtkCheckboxMenuItemPeer.c
+	(create): Remove call to deprecated
+	gtk_check_menu_item_set_show_toggle function.
+
+	2004-09-22  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GtkFramePeer.java:
+	(gtkFixedMove): Remove method.
+
+	2004-09-22  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* Makefile.am (gtk_c_source_files): Add
+	gnu_java_awt_peer_gtk_GtkFramePeer.c.
+	* Makefile.in: Regenerate.
+	* gnu/java/awt/peer/gtk/GdkGraphics.java (getClipBounds): Remove
+	comment.
+	* gnu/java/awt/peer/gtk/GtkButtonPeer.java,
+	jni/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c
+	(create): Pack GtkButton in GtkEventBox.
+	(connectJObject): Remove.
+	(focus_in_cb): New function.
+	(focus_out_cb): Likewise.
+	(connectSignals): Connect focus-in-event and focus-out-event
+	signals.
+	(gtkSetFont): Rename to ...
+	(gtkWidgetModifyFont): New method.
+	(gtkWidgetRequestFocus): New method.
+	* gnu/java/awt/peer/gtk/GtkCheckboxPeer.java,
+	jni/gtk-peer/gnu_java_awt_peer_gtk_GtkCheckboxPeer.c
+	(gtkSetFont): Rename to ...
+	(gtkWidgetModifyFont): New method.
+	* gnu/java/awt/peer/gtk/GtkComponentPeer.java,
+	jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c
+	(isInRepaint): New field.
+	(gtkSetFont): Remove method.
+	(addExposeFilter): Likewise.
+	(removeExposeFilter): Likewise.
+	(gtkWidgetQueueDrawArea): Rename to ...
+	(gtkWidgetRepaintArea): New method.
+	(beginNativeRepaint): New method.
+	(endNativeRepaint): New method.
+	(setComponentBounds): Move implementation here from
+	GtkComponentPeer.
+	(paint): Remove implementation.
+	(repaint): Wrap call to gtkWidgetRepaintArea with calls to
+	beginNativeRepaint and endNativeRepaint.
+	(setBounds): Use menu bar height in bounds calculation.
+	(postExposeEvent): Only post paint event if we're not doing a
+	native repaint.
+	(gtkWidgetSetParent): Replace gtk_layout_put with gtk_fixed_put.
+	(setNativeBounds): Replace gtk_layout_move with gtk_fixed_move.
+	(find_gtk_layout): Remove function.
+	(filter_expose_event_handler): Likewise.
+	* gnu/java/awt/peer/gtk/GtkDialogPeer.java (postExposeEvent):
+	Likewise.
+	* gnu/java/awt/peer/gtk/GtkFileDialogPeer.java
+	(setComponentBounds): Call GtkComponentPeer's
+	setComponentBounds.
+	* gnu/java/awt/peer/gtk/GtkFramePeer.java (getMenuBarHeight):
+	New method.
+	(moveLayout): Rename to ...
+	(gtkFixedMove): New method.
+	(gtkLayoutSetVisible): Rename to ...
+	(gtkFixedSetVisible): New method.
+	(setMenuBar): Rearrange, to make the three separate cases
+	clearer.
+	(postExposeEvent): Only post paint event if we're not doing a
+	native repaint.
+	* gnu/java/awt/peer/gtk/GtkGenericPeer.java,
+	jni/gtk-peer/gnu_java_awt_peer_gtk_GtkGenericPeer.c
+	(gtkWidgetModifyFont): New method.
+	* gnu/java/awt/peer/gtk/GtkImagePainter.java
+	(GtkImagePainter(GtkImage,GdkGraphics,int,int,int,int,Color)):
+	Call run directly, rather than spawning a new thread.
+	(GtkImagePainter(GtkImage,GdkGraphics,int,int,int,int,int,int,int,int,Color)):
+	Likewise.
+	* gnu/java/awt/peer/gtk/GtkLabelPeer.java,
+	jni/gtk-peer/gnu_java_awt_peer_gtk_GtkLabelPeer.c (gtkSetFont):
+	Rename to ...
+	(gtkWidgetModifyFont): New method.
+	(create): Rename ebox to eventbox.
+	* gnu/java/awt/peer/gtk/GtkListPeer.java,
+	jni/gtk-peer/gnu_java_awt_peer_gtk_GtkListPeer.c (gtkSetFont):
+	Rename to ...
+	(gtkWidgetModifyFont): New method.
+	* gnu/java/awt/peer/gtk/GtkMenuComponentPeer.java
+	(GtkMenuComponentPeer): Set the default font.
+	* gnu/java/awt/peer/gtk/GtkTextAreaPeer.java,
+	jni/gtk-peer/gnu_java_awt_peer_gtk_GtkTextAreaPeer.c
+	(gtkSetFont): Rename to ...
+	(gtkWidgetModifyFont): New method.
+	* gnu/java/awt/peer/gtk/GtkTextFieldPeer.java,
+	jni/gtk-peer/gnu_java_awt_peer_gtk_GtkTextFieldPeer.c: Likewise.
+	* java/awt/Component.java (locale): Initialize to default
+	locale.
+	* java/awt/Container.java (invalidateTree): Make
+	package-private.
+	(paint): Paint self first.
+	(setMenuBar): Call invalidateTree.
+	* java/awt/Panel.java (dispatchEventImpl): Remove method.
+	* java/awt/Window.java (show): Call no-parameter variant of
+	requestFocusInWindow.
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c (initState):
+	Remove special case for window widget.
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c
+	(grab_current_drawable): Likewise.
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GtkEmbeddedWindowPeer.c
+	(create): Replace GtkLayout with GtkFixed.
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GtkEvents.c
+	(pre_event_handler): Remove special cases for GDK_EXPOSE events.
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFramePeer.c: New file.
+	Move all GtkFramePeer native method implementations here from
+	gnu_java_awt_peer_gtk_GtkWindowPeer.c.
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GtkPanelPeer.c (create):
+	Replace GtkLayout with GtkFixed.
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+	(find_layout): Remove function.
+	(create): Replace GtkLayout with GtkFixed.
+	(connectSignals): Remove find_layout call.
+	(toBack): Replace XFlush with gdk_flush.
+	(toFront): Replace XFlush with gdk_flush.
+	Move GtkFramePeer native method implementations to
+	gnu_java_awt_peer_gtk_GtkFramePeer.c.
+	* jni/gtk-peer/gtkpeer.h: Remove declaration of find_gtk_layout.
+
+	2004-09-22  Michael Koch  <konqueror@gmx.de>
+
+	* native/jni/gtk-peer/Makefile.am:
+	Added new file gnu_java_awt_peer_gtk_GtkFramePeer.c.
+
+2004-09-26  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/util/VMTimeZone.java:
         Resynced with GNU Classpath.
 

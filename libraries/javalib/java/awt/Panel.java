@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package java.awt;
 
-import java.awt.event.PaintEvent;
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
@@ -95,36 +94,6 @@ public class Panel extends Container implements Accessible
   public Panel(LayoutManager layoutManager)
   {
     setLayout(layoutManager);
-  }
-
-  /**
-   * Consume initial application-requested paint event if it has not
-   * already been consumed, and if the initial system-requested paint
-   * event has not already been handled.  Otherwise, call
-   * super.dispatchEventImpl.  These extra steps are required to
-   * prevent a Panel from being painted twice when it is initially
-   * shown.
-   *
-   * @param e the event to dispatch
-   */
-  void dispatchEventImpl (AWTEvent e)
-  {
-    if (e instanceof PaintEvent)
-      {
-        if (e.id == PaintEvent.UPDATE)
-          {
-            if (!initialUpdateConsumed
-                && !initialSystemUpdateDone)
-              {
-                e.consume ();
-                initialUpdateConsumed = true;
-              }
-          }
-        else if (e.id == PaintEvent.PAINT)
-          initialSystemUpdateDone = true;
-      }
-    else
-      super.dispatchEventImpl (e);
   }
 
   /**

@@ -1699,6 +1699,7 @@ java_awt_image_SRCS = \
 	java/awt/image/Kernel.java \
 	java/awt/image/LookupTable.java \
 	java/awt/image/MemoryImageSource.java \
+	java/awt/image/MultiPixelPackedSampleModel.java \
 	java/awt/image/PackedColorModel.java \
 	java/awt/image/PixelGrabber.java \
 	java/awt/image/PixelInterleavedSampleModel.java \

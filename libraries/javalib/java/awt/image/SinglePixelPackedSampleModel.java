@@ -59,6 +59,16 @@ public class SinglePixelPackedSampleModel extends SampleModel
 				      int scanlineStride, int[] bitMasks)
   {
     super(dataType, w, h, bitMasks.length);
+
+    switch (dataType)
+      {
+      case DataBuffer.TYPE_BYTE:
+      case DataBuffer.TYPE_USHORT:
+      case DataBuffer.TYPE_INT:
+	break;
+      default:
+	throw new IllegalArgumentException("SinglePixelPackedSampleModel unsupported dataType");
+      }
     
     this.scanlineStride = scanlineStride;
     this.bitMasks = bitMasks;

@@ -37,14 +37,21 @@ exception statement from your version. */
 
 
 #include "gtkpeer.h"
-#include "gnu_java_awt_peer_gtk_GtkComponentPeer.h"
 #include "gnu_java_awt_peer_gtk_GtkButtonPeer.h"
+
+static gboolean focus_in_cb (GtkWidget *widget,
+                             GdkEventFocus *event,
+                             jobject peer);
+static gboolean focus_out_cb (GtkWidget *widget,
+                              GdkEventFocus *event,
+                              jobject peer);
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkButtonPeer_create
   (JNIEnv *env, jobject obj, jstring label)
 {
   const char *c_label;
+  GtkWidget *eventbox;
   GtkWidget *button;
 
   NSA_SET_GLOBAL_REF (env, obj);
@@ -53,41 +60,46 @@ Java_gnu_java_awt_peer_gtk_GtkButtonPeer_create
 
   gdk_threads_enter ();
 
+  eventbox = gtk_event_box_new ();
   button = gtk_button_new_with_label (c_label);
+  gtk_container_add (GTK_CONTAINER (eventbox), button);
   gtk_widget_show (button);
 
   gdk_threads_leave ();
 
   (*env)->ReleaseStringUTFChars (env, label, c_label);
-  NSA_SET_PTR (env, obj, button);
-}
-
-JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GtkButtonPeer_connectJObject
-  (JNIEnv *env, jobject obj)
-{
-  void *ptr;
-
-  ptr = NSA_GET_PTR (env, obj);
-
-  gdk_threads_enter ();
-
-  gtk_widget_realize (GTK_WIDGET (ptr));
-
-  connect_awt_hook (env, obj, 1, GTK_BUTTON(ptr)->event_window);
-
-  gdk_threads_leave ();
+  NSA_SET_PTR (env, obj, eventbox);
 }
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkButtonPeer_connectSignals
   (JNIEnv *env, jobject obj)
 {
-  /* FIXME: Do we need to connect any signals here? Otherwise just do not
-     override parent method. */
+  void *ptr;
+  jobject *gref;
+  GtkWidget *button;
 
-  /* Connect the superclass signals.  */
-  Java_gnu_java_awt_peer_gtk_GtkComponentPeer_connectSignals (env, obj);
+  ptr = NSA_GET_PTR (env, obj);
+  gref = NSA_GET_GLOBAL_REF (env, obj);
+
+  gdk_threads_enter ();
+
+  gtk_widget_realize (GTK_WIDGET (ptr));
+  button = gtk_bin_get_child (GTK_BIN (ptr));
+
+  g_signal_connect (G_OBJECT (ptr), "event",
+                    G_CALLBACK (pre_event_handler), *gref);
+
+  g_signal_connect (G_OBJECT (button), "event",
+                    G_CALLBACK (pre_event_handler), *gref);
+
+  g_signal_connect (G_OBJECT (button), "focus-in-event",
+                    G_CALLBACK (focus_in_cb), *gref);
+
+  g_signal_connect (G_OBJECT (button), "focus-out-event",
+                    G_CALLBACK (focus_out_cb), *gref);
+
+  gdk_threads_leave ();
 }
 
 JNIEXPORT void JNICALL 
@@ -113,7 +125,7 @@ Java_gnu_java_awt_peer_gtk_GtkButtonPeer_gtkSetLabel
 }
 
 JNIEXPORT void JNICALL 
-Java_gnu_java_awt_peer_gtk_GtkButtonPeer_gtkSetFont
+Java_gnu_java_awt_peer_gtk_GtkButtonPeer_gtkWidgetModifyFont
   (JNIEnv *env, jobject obj, jstring name, jint style, jint size)
 {
   const char *font_name;
@@ -185,4 +197,43 @@ Java_gnu_java_awt_peer_gtk_GtkButtonPeer_gtkActivate
   gtk_widget_activate (GTK_WIDGET (ptr));
 
   gdk_threads_leave ();
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkButtonPeer_gtkWidgetRequestFocus
+  (JNIEnv *env, jobject obj)
+{
+  void *ptr;
+  GtkWidget *button;
+
+  ptr = NSA_GET_PTR (env, obj);
+
+  gdk_threads_enter ();
+  button = gtk_bin_get_child (GTK_BIN (ptr));
+  gtk_widget_grab_focus (button);
+  gdk_threads_leave ();
+}
+
+static gboolean
+focus_in_cb (GtkWidget *widget __attribute((unused)),
+             GdkEventFocus *event __attribute((unused)),
+             jobject peer)
+{
+  (*gdk_env)->CallVoidMethod (gdk_env, peer,
+                              postFocusEventID,
+                              AWT_FOCUS_GAINED,
+                              JNI_FALSE);
+  return FALSE;
+}
+
+static gboolean
+focus_out_cb (GtkWidget *widget __attribute((unused)),
+              GdkEventFocus *event __attribute((unused)),
+              jobject peer)
+{
+  (*gdk_env)->CallVoidMethod (gdk_env, peer,
+                              postFocusEventID,
+                              AWT_FOCUS_LOST,
+                              JNI_FALSE);
+  return FALSE;
 }

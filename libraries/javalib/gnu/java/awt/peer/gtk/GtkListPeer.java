@@ -60,7 +60,7 @@ public class GtkListPeer extends GtkComponentPeer
   native void create (int rows);
   native void connectJObject ();
   native void connectSignals ();
-  native void gtkSetFont (String name, int style, int size);
+  native void gtkWidgetModifyFont (String name, int style, int size);
   native void gtkWidgetRequestFocus ();
 
   native void getSize (int rows, int visibleRows, int dims[]);

@@ -431,22 +431,22 @@ public abstract class AbstractDocument
     {
       return Collections.enumeration(tree_children);
     }
-
+      
     public boolean getAllowsChildren()
     {
       return true;
     }
-
+      
     public TreeNode getChildAt(int index)
     {
       return (TreeNode) tree_children.get(index);
     }
-
+      
     public int getChildCount()
     {
       return tree_children.size();
     }
-
+      
     public int getIndex(TreeNode node)
     {
       return tree_children.indexOf(node);
@@ -551,28 +551,28 @@ public abstract class AbstractDocument
     {
       return AbstractDocument.this;
     }
-
+      
     public Element getElement(int index)
     {
       return (Element) element_children.get(index);
     }
-
+      
     public String getName()
     {
       return (String) getAttribute(NameAttribute);
     }
-
+      
     public Element getParentElement()
     {
       return element_parent;
     }
-
+      
     public abstract int getEndOffset();
-
+      
     public abstract int getElementCount();
-
+      
     public abstract int getElementIndex(int offset);
-
+      
     public abstract int getStartOffset();
   }
 

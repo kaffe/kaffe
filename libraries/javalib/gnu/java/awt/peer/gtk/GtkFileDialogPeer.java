@@ -94,6 +94,7 @@ public class GtkFileDialogPeer extends GtkDialogPeer implements FileDialogPeer
                                                       awtComponent.getY (),
                                                       dims[0], dims[1]);
       }
+    super.setComponentBounds ();
   }
 
   public void setFile (String fileName)

@@ -291,7 +291,7 @@ public class Window extends Container implements Accessible
           initialFocusOwner = policy.getInitialComponent (this);
 
         if (initialFocusOwner != null)
-          initialFocusOwner.requestFocusInWindow (false);
+          initialFocusOwner.requestFocusInWindow ();
 
         shown = true;
       }
