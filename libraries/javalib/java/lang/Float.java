@@ -19,7 +19,9 @@ public final class Float extends Number {
   public static final float MAX_VALUE = intBitsToFloat(0x7f7fffff);
   public static final Class TYPE = Class.getPrimitiveClass("float");
 
-  private static final int DECIMAL_PRECISION = 7; // ceiling (23 log 2)
+  private static final int NUM_MANTISSA_BITS = 23;
+  private static final int EXPONENT_MASK = 0x7f800000;
+  private static final int MANTISSA_MASK = 0x007fffff;
 
   private final float value;
 
@@ -86,29 +88,43 @@ public final class Float extends Number {
   }
 
   public static String toString(float value) {
+    int precision, bitIndex;
+
+    // Handle exceptional values
     if (isNaN(value))
       return "NaN";
     if (value == POSITIVE_INFINITY)
       return "Infinity";
     if (value == NEGATIVE_INFINITY)
       return "-Infinity";
-    return Double.normalToString((double) value, DECIMAL_PRECISION);
+
+    // Determine number of digits of decimal precision to display
+    int bits = floatToIntBits(value);
+    if ((bits & EXPONENT_MASK) == 0) {			// denormalized value
+	    for (bitIndex = NUM_MANTISSA_BITS - 1;
+		bitIndex > 0 && ((1 << bitIndex) & bits) == 0;
+		bitIndex--);
+	    precision = Double.bitsToDecimal[bitIndex];
+    } else {						// normalized value
+	    precision = Double.bitsToDecimal[NUM_MANTISSA_BITS - 1];
+    }
+
+    // Add an extra digit to handle rounding
+    precision++;
+
+    // Display value
+    return Double.toStringWithPrecision(value, precision);
   }
 
   public String toString() {
-    return toString(this.floatValue());
+    return toString(value);
   }
   
   public static boolean isNaN(float v) {
-    /* A NaN is the only number which doesn't equal itself. Unfortunately,
-       this test doesn't seem to work on all platforms. */
-    /* return (v != v); */
+    int bits = floatToIntBits(v);
 
-    final int expMask = 0x7f800000;	// exponent mask
-    final int manMask = 0x007fffff;	// mantissa mask
-    final int bits = floatToIntBits(v);
-
-    return ((bits & expMask) == expMask && (bits & manMask) != 0);
+    return ((bits & EXPONENT_MASK) == EXPONENT_MASK
+	&& (bits & MANTISSA_MASK) != 0);
   }
   
   public boolean isNaN() {

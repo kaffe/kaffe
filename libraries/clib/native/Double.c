@@ -24,36 +24,40 @@
 #include <native.h>
 
 /*
- * Convert a "normal" double to a string.
- *
- * Here "val" is the double or float value and "maxPrecision" is
- * the maximum number of digits after the decimal point that are
- * significant (and therefore should be displayed).
+ * Convert a "normal" double to a string with the supplied precision.
  *
  * This assumes printf(3) conforms to ISO 9899: 1990 (``ISO C'').
  *
- * XXX We still seem to pring e.g., 3.39999999 instead of 3.4,
- * XXX so this isn't completely working yet.
+ * XXX We still print some values incorrectly. For example the double
+ * XXX 0x400B333333333333 should be displayed as "3.4" instead of what
+ * XXX we display, "3.3999999999999999".
  */
 struct Hjava_lang_String*
-java_lang_Double_normalToString(jdouble val, jint maxPrecision)
+java_lang_Double_toStringWithPrecision(jdouble val, jint precision)
 {
-	static const jlong negBit = 0x8000000000000000LL; /* "LL" gcc-ism */
 	const jlong bits = java_lang_Double_doubleToLongBits(val);
 	char *s, buf[MAXNUMLEN];
 	int k;
 
 	/* Deal with negative numbers manually so negative zero is "-0.0" */
 	s = buf;
-	if (bits & negBit) {
+	if (bits & DSIGNBIT) {
 		val = -val;
 		*s++ = '-';
 	}
 
+	/* Print in normal or 'scientific' form according to value */
 	if (val == 0.0 || (val >= 1.0e-3 && val < 1.0e7)) {
+		static const double powTen[] = {
+		  1.0e0, 1.0e1, 1.0e2, 1.0e3, 1.0e4, 1.0e5, 1.0e6
+		};
+
+		/* Account for precision digits ahead of the decimal point */
+		for (k = 6; k >= 0 && val < powTen[k]; k--);
+		precision -= k + 1;
 
 		/* Print in decimal notation */
-		sprintf(s, "%.*f", (int) maxPrecision, (double) val);
+		sprintf(s, "%.*f", (int) precision, (double) val);
 
 		/* Remove trailing zeroes after the decimal point */
 		for (k = strlen(buf) - 1;
@@ -65,7 +69,7 @@ java_lang_Double_normalToString(jdouble val, jint maxPrecision)
 		char *t, *eptr, *eval;
 
 		/* Print in exponential notation */
-		sprintf(s, "%.*E", (int) maxPrecision, (double) val);
+		sprintf(s, "%.*E", (int) precision - 1, (double) val);
 
 		/* Find the exponent */
 		eptr = strchr(buf, 'E');

@@ -19,7 +19,18 @@ public final class Double extends Number {
   public static final double MAX_VALUE = longBitsToDouble(0x7fefffffffffffffL);
   public static final Class TYPE = Class.getPrimitiveClass("double");
 
-  private static final int DECIMAL_PRECISION = 16;  // ceiling (51 log 2)
+  private static final int NUM_MANTISSA_BITS = 52;
+  private static final long EXPONENT_MASK = 0x7ff0000000000000L;
+  private static final long MANTISSA_MASK = 0x000fffffffffffffL;
+
+  // This table that tells us how many decimal digits are needed to uniquely
+  // specify N binary bits, i.e.: bitsToDecimal[N-1] = Ceiling(N ln 2 / ln 10).
+  static final int bitsToDecimal[] = new int[] {
+     1,  1,  1,  2,  2,  2,  3,  3,  3,  4,  4,  4,  4,  5,  5,  5,
+     6,  6,  6,  7,  7,  7,  7,  8,  8,  8,  9,  9,  9, 10, 10, 10,
+    10, 11, 11, 11, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 15, 15,
+    15, 16, 16, 16
+  };
 
   /* This is what Sun's JDK1.1 "serialver java.lang.Double" spits out */
   private static final long serialVersionUID = -9172774392245257468L;
@@ -29,7 +40,7 @@ public final class Double extends Number {
   public static native long doubleToLongBits(double value);
   public static native double longBitsToDouble(long bits);
 
-  static native String normalToString(double value, int maxPrecision);
+  static native String toStringWithPrecision(double value, int precision);
   static native double valueOf0(String s) throws NumberFormatException;
   
   public Double(double value) {
@@ -45,13 +56,32 @@ public final class Double extends Number {
   }
 
   public static String toString(double value) {
+    int precision, bitIndex;
+
+    // Handle exceptional values
     if (isNaN(value))
       return "NaN";
     if (value == POSITIVE_INFINITY)
       return "Infinity";
     if (value == NEGATIVE_INFINITY)
       return "-Infinity";
-    return Double.normalToString(value, DECIMAL_PRECISION);
+
+    // Determine number of digits of decimal precision to display
+    long bits = doubleToLongBits(value);
+    if ((bits & EXPONENT_MASK) == 0) {			// denormalized value
+	    for (bitIndex = NUM_MANTISSA_BITS - 1;
+		bitIndex > 0 && ((1L << bitIndex) & bits) == 0;
+		bitIndex--);
+	    precision = bitsToDecimal[bitIndex];
+    } else {						// normalized value
+	    precision = bitsToDecimal[NUM_MANTISSA_BITS - 1];
+    }
+
+    // Add an extra digit to handle rounding
+    precision++;
+
+    // Display value
+    return toStringWithPrecision(value, precision);
   }
 
   public String toString() {
@@ -104,17 +134,12 @@ public final class Double extends Number {
   }
   
   public static boolean isNaN(double v) {
-    /* A NaN is the only number which doesn't equal itself. Unfortunately,
-       this test doesn't seem to work on all platforms. */
-    /* return (v != v); */
+    long bits = doubleToLongBits(v);
 
-    final long expMask = 0x7ff0000000000000L;	// exponent mask
-    final long manMask = 0x000fffffffffffffL;	// mantissa mask
-    final long bits = doubleToLongBits(v);
-
-    return ((bits & expMask) == expMask && (bits & manMask) != 0);
+    return ((bits & EXPONENT_MASK) == EXPONENT_MASK
+	&& (bits & MANTISSA_MASK) != 0);
   }
-
+ 
   public long longValue() {
     return (long) value;
   }
