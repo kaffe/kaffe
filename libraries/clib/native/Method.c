@@ -39,13 +39,22 @@ java_lang_reflect_Method_getModifiers(struct Hjava_lang_reflect_Method* this)
 {
 	Hjava_lang_Class* clazz;
 	jint slot;
+	int flags;
 
 	clazz = unhand(this)->clazz;
 	slot = unhand(this)->slot;
 
 	assert(slot < clazz->nmethods);
 
-	return (clazz->methods[slot].accflags & ACC_MASK);
+	flags = clazz->methods[slot].accflags;
+	if (flags & ACC_ABSTRACT)
+		/* If an abstract method is ever referenced,
+		 * it's native code is throwAbstractMethodError, and
+		 * ACC_NATIVE is set in findLocalMethod.
+		 */
+		return (flags & (ACC_MASK-ACC_NATIVE));
+	else
+		return (flags & ACC_MASK);
 }
 
 jobject
