@@ -52,7 +52,7 @@ typedef struct _exceptionFrame {
 
 typedef struct _methodTrampoline {
         unsigned short call;
-	int fixup;
+	int fixup __attribute__ ((packed));
 	struct _methods* meth;
 	void** where;
 } methodTrampoline;
