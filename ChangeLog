@@ -1,3 +1,11 @@
+Fri Dec 11 22:54:09 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/object.c, kaffe/kaffevm/mem/gc-incremental.c:
+	reintroduced non-finalizer allocation types.
+	* libraries/clib/native/Thread.c, 
+	libraries/javalib/java/lang/Thread.java: implemented clever new
+	way of finalizing threads suggested by Alexandre. 
+
 Fri Dec 11 18:38:52 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/mem/gc-block-hash.c, include/jmalloc.h,

@@ -60,8 +60,6 @@ Treat it as an TODO list.
 
   Note kaffe's jni.h doesn't even define these array types as of yet.
 
-* If a thread stops in a static initializer, then this will cause problems.
-
 * The -mx and other options that take a numeric argument behave different
   than Sun's.  Kaffe wants a space, Sun doesn't.
   Example:	Kaffe:	-mx 32m  Sun:  -mx32m
