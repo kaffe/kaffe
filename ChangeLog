@@ -1,3 +1,10 @@
+2004-01-12  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/java/awt/GridBagLayout.java:
+	Replaced by implementation from GNU Classpath. 
+
+	This fixes a bug with the Babylon Chat Server client.
+
 2004-01-11  Jim Pick  <jim@kaffe.org>
 
 	* m4/alsa.m4:
