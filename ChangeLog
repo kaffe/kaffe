@@ -1,5 +1,13 @@
 2004-08-04  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* libraries/clib/awt/X/Makefile.am: Changed X_FLAGS into X_CFLAGS.
+
+	* libraries/clib/awt/X/Makefile.in: Regenerated.
+
+	Reported by Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+2004-08-04  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* libraries/javalib/gnu/java/nio/SelectorImpl.java,
 	libraries/javalib/gnu/java/nio/VMSelector.java:
 	Resynchronized with GNU Classpath.
