@@ -1,5 +1,17 @@
 2003-12-19  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/clib/native/CharToByteIconv.c:
+	Include unistd.h if available.
+	(Java_kaffe_io_CharToByteIconv_convert): Fixed type mismatch
+	warning.
+
+	* libraries/clib/native/ByteToCharIconv.c:
+        Include unistd.h if available.
+        (Java_kaffe_io_ByteToCharIconv_convert): Fixed type mismatch
+        warning.
+
+2003-12-19  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
 	(jthread_current, jthread_on_current_stack, 
 	jthread_stackcheck, jthread_relaxstack, 

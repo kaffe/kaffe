@@ -23,6 +23,10 @@
 
 #include <errno.h>
 
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
+
 static jfieldID cd_id;
 static jmethodID carry_id;
 
@@ -71,7 +75,7 @@ Java_kaffe_io_ByteToCharIconv_convert (JNIEnv* env, jobject _this,
 #if defined(HAVE_ICONV)
     jboolean	isCopy;
     jbyte	*jb = (*env)->GetByteArrayElements(env, fromBytes, &isCopy);
-    char	*icv_in = (char*) (jb + fromPos);
+    const char	*icv_in = (char*) (jb + fromPos);
     size_t	icv_inlen = fromLen;
     jchar	*jc  = (*env)->GetCharArrayElements(env, toChars, &isCopy);
     char	*icv_out = (char *) (jc + toPos);

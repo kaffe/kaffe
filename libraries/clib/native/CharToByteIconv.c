@@ -21,6 +21,10 @@
 #include <iconv.h>
 #endif
 
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
+
 static jfieldID cd_id;
 static jmethodID carry_id;
 
@@ -69,7 +73,7 @@ Java_kaffe_io_CharToByteIconv_convert (JNIEnv* env, jobject _this,
 #if defined(HAVE_ICONV)
     jboolean	isCopy;
     jchar	*jc  = (*env)->GetCharArrayElements(env, fromChars, &isCopy);
-    char	*icv_in = (char*) (jc + fromPos);
+    const char	*icv_in = (char*) (jc + fromPos);
     size_t	icv_inlen = fromLen * 2;
     jbyte	*jb = (*env)->GetByteArrayElements(env, toBytes, &isCopy);
     char	*icv_out = (char *) (jb + toPos);
