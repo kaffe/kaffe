@@ -409,6 +409,9 @@
 /* Define if you have the Xext library (-lXext).  */
 #undef HAVE_LIBXEXT
 
+/* Define if you have the ffi library (-lffi).  */
+#undef HAVE_LIBFFI
+
 /* Define if you have the gcc library (-lgcc).  */
 #undef HAVE_LIBGCC
 
