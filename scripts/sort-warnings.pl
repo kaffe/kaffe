@@ -52,9 +52,15 @@ my $skip_line_regex = qr,
 			Compiling\ classes\ from|
 			\ [0-9][0-9]+\.[0-9]%
 		)|
-		awaiting\ finalization>$
+		(
+			is\ already\ up-to-date|
+			awaiting\ finalization>
+		)$
 	),x;
 
+my %ignore = (
+	'gcc/traditional:1' => 1,
+);
 
 # No User Servicable Parts Below
 
@@ -94,10 +100,12 @@ for ( my $i = 0; $i < @Registry::warnings; $i++ ) {
 	my $compiler = $warning->compiler();
 	my $type = $warning->name();
 	my $regex = $warning->regex();
+	my $ignore = $warning->ignore() || $ignore{ $type };
 
 	if ( !$disabled{ $compiler } ) {
 		print( STDERR "\t$type" );
 		print( STDERR '*' ) if ( $warning->get_description() );
+		print( STDERR '!' ) if ( $ignore );
 		print( STDERR "\t\t" );
 	}
 	my @matches;
@@ -113,13 +121,17 @@ for ( my $i = 0; $i < @Registry::warnings; $i++ ) {
 		$file =~ s,(?:(?:\.\./)+|/tmp/topic/)(include|kaffe|libraries|config)/,$1/,;
 		# skip files if they are absolute, on the assumption they are system files.
 		next if ( $file =~ m,^/, || $disabled{ $compiler } );
-		push( @{ $errors{ $type }{ $file }{ $line } }, [ grep( { defined( $_ ) } @matches ) ] );
-		$file_errors{ $file }++;
-		$error_counts{ $type }++;
+		if ( !$ignore ) {
+			push( @{ $errors{ $type }{ $file }{ $line } }, [ grep( { defined( $_ ) } @matches ) ] );
+			$file_errors{ $file }++;
+			$error_counts{ $type }++;
+		}
 		$count++;
-		$total_errors++;
 	}
-	$compiler_errors{ $compiler } += $count;
+	if ( !$ignore ) {
+		$total_errors += $count;
+		$compiler_errors{ $compiler } += $count;
+	}
 print( STDERR "$count\n" ) if ( !$disabled{ $compiler } );
 	$text = $scanned . $text;
 }
@@ -138,6 +150,7 @@ print( "\n" );
 foreach my $type ( sort( { $error_counts{ $b } <=> $error_counts{ $a } } keys( %errors ) ) ) {
 	my $h1 = $errors{ $type };
 	my $warning = Registry::get_warning( $type );
+	next if ( $warning->ignore() || $ignore{ $type } );
 	print( "Type: $type\n" );
 	my $description = $warning->get_description();
 	print( "Description:\n" . join( "", map( { "\t$_\n" } split( "\n", $description ) ) ) ) if ( $description );

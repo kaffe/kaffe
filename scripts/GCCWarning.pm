@@ -18,8 +18,8 @@ BEGIN {
 
 sub new {
 	my $class = shift;
-	my ( $name, $regex, $description ) = @_;
-	my $warning = $class->SUPER::new( 'gcc', $name, qr/${prefix_regex}$regex/, $description );
+	my ( $name, $regex, $description, $ignore ) = @_;
+	my $warning = $class->SUPER::new( 'gcc', $name, qr/${prefix_regex}$regex/, $description, $ignore );
 	Registry::add_warning($warning);
 	return $warning;
 }

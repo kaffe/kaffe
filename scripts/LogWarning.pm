@@ -11,12 +11,22 @@ sub new {
 	my %data = (
 		'compiler'	=> $_[ 0 ],
 		'simple-name'	=> $_[ 1 ],
-		'regex'		=> $_[ 2 ]
+		'regex'		=> $_[ 2 ],
+		'ignore'	=> $_[ 4 ],
 	);
 
 	my $self = bless( \%data, $class );
 	$data{ 'description' } = ref( $_[ 3 ] ) ? $_[ 3 ] : new WarningDescription( $self, $_[ 3 ] );
 	return $self;
+}
+
+sub ignore {
+	my $self = shift;
+	if ( $_[ 0 ] ) {
+		$self->{ 'ignore' } = $_[ 0 ];
+	} else {
+		return $self->{ 'ignore' };
+	}
 }
 
 sub compiler {

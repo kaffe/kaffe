@@ -16,8 +16,8 @@ BEGIN {
 
 sub new {
 	my $class = shift;
-	my ( $name, $regex, $description ) = @_;
-	my $warning = $class->SUPER::new( 'jikes', $name, qr/${jikes_prefix}$regex/, $description );
+	my ( $name, $regex, $description, $ignore ) = @_;
+	my $warning = $class->SUPER::new( 'jikes', $name, qr/${jikes_prefix}$regex/, $description, $ignore );
 	Registry::add_warning($warning);
 	return $warning;
 }
