@@ -1,3 +1,8 @@
+2004-12-18  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/mips/irix5/jit-md.h, config/mips/irix5/jit3-md.h:
+	Copied from mips/linux as the sigcontext structure looks similar.
+	
 2004-12-18  Adam Heath  <doogieg@brainfood.com>
 
 	* kaffe/kaffe/main.c:
