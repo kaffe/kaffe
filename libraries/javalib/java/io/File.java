@@ -110,9 +110,13 @@ public String getName() {
 
 public String getParent()
 	{
-	if (path.endsWith(separator)) path=path.substring(0, path.length()-1);
+	String newpath = path;
+	// drop trailing separator
+	if (path.endsWith(separator)) {
+		newpath=path.substring(0, path.length()-1);
+	}
 
-	int slashIndex=path.lastIndexOf(separatorChar);
+	int slashIndex=newpath.lastIndexOf(separatorChar);
 	if (slashIndex==-1) {
 		return null;
 	} 
@@ -120,7 +124,7 @@ public String getParent()
 		return File.separator;
 	}
 	else {
-		return path.substring(0, slashIndex);
+		return newpath.substring(0, slashIndex);
 	}
 }
 
