@@ -1,3 +1,12 @@
+Fri Apr 26 02:36:55 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* FAQ/FAQ.classlibrary-compile: added paragraph on jikes
+	bugs. Updated information on Sun's javac to reflect later
+	versions.
+	* WHATSNEW: updated kjc entry.
+	* libraries/javalib/java/util/zip/ZipFile.java:
+	(getInputStream) throw NullPointerException if ZipEntry parameter
+	is null.
+
 Tue Apr 23 12:54:15 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	* kaffe/kaffevm/object.c:
 	(newArrayChecked) Added simple checks for overflow. It fixes a
