@@ -6,4 +6,4 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = common $(SOUND_DIR)
+SUBDIRS = common $(ALSA_DIR) $(ESD_DIR)

@@ -5,11 +5,17 @@
 #undef __CHAR_UNSIGNED__
 #endif
 
+/* Define to empty if the keyword does not work.  */
+#undef const
+
 /* Define if you have a working `mmap' system call.  */
 #undef HAVE_MMAP
 
 /* Define if you have the strftime function.  */
 #undef HAVE_STRFTIME
+
+/* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
+#undef HAVE_SYS_WAIT_H
 
 /* Define if your struct tm has tm_zone.  */
 #undef HAVE_TM_ZONE
@@ -18,8 +24,17 @@
    tzname.  */
 #undef HAVE_TZNAME
 
+/* Define if utime(file, NULL) sets file's timestamp to the present.  */
+#undef HAVE_UTIME_NULL
+
 /* Define as __inline if that's what the C compiler calls it.  */
 #undef inline
+
+/* Define to `long' if <sys/types.h> doesn't define.  */
+#undef off_t
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef pid_t
 
 /* Define as the return type of signal handlers (int or void).  */
 #undef RETSIGTYPE
@@ -193,6 +208,9 @@
 /* Define if you have the rint function.  */
 #undef HAVE_RINT
 
+/* Define if you have the rmdir function.  */
+#undef HAVE_RMDIR
+
 /* Define if you have the sbrk function.  */
 #undef HAVE_SBRK
 
@@ -226,11 +244,23 @@
 /* Define if you have the socket function.  */
 #undef HAVE_SOCKET
 
+/* Define if you have the strdup function.  */
+#undef HAVE_STRDUP
+
 /* Define if you have the strerror function.  */
 #undef HAVE_STRERROR
 
+/* Define if you have the strstr function.  */
+#undef HAVE_STRSTR
+
 /* Define if you have the strtod function.  */
 #undef HAVE_STRTOD
+
+/* Define if you have the strtol function.  */
+#undef HAVE_STRTOL
+
+/* Define if you have the strtoul function.  */
+#undef HAVE_STRTOUL
 
 /* Define if you have the sync function.  */
 #undef HAVE_SYNC
@@ -295,6 +325,9 @@
 /* Define if you have the <kernel/OS.h> header file.  */
 #undef HAVE_KERNEL_OS_H
 
+/* Define if you have the <limits.h> header file.  */
+#undef HAVE_LIMITS_H
+
 /* Define if you have the <mach-o/rld.h> header file.  */
 #undef HAVE_MACH_O_RLD_H
 
@@ -352,6 +385,9 @@
 /* Define if you have the <sys/ipc.h> header file.  */
 #undef HAVE_SYS_IPC_H
 
+/* Define if you have the <syslog.h> header file.  */
+#undef HAVE_SYSLOG_H
+
 /* Define if you have the <sys/ndir.h> header file.  */
 #undef HAVE_SYS_NDIR_H
 
@@ -384,9 +420,6 @@
 
 /* Define if you have the <sys/utsname.h> header file.  */
 #undef HAVE_SYS_UTSNAME_H
-
-/* Define if you have the <sys/wait.h> header file.  */
-#undef HAVE_SYS_WAIT_H
 
 /* Define if you have the <time.h> header file.  */
 #undef HAVE_TIME_H

@@ -18,21 +18,29 @@ tritonus project includes features not present in kaffe's version, and
 you should take a look at their code for sound & midi service
 providers not included in kaffe.
 
+For example, this includes providers for mp3, ogg vorbis, gsm, and
+other sound file formats, as well as a midi service provider for
+MidiShare.
+
 Configuration
 =============
 
-The configure script provides the option
---with-sound=BACKEND. Possible choices are:
+The default setting is to compile sound support for all sound backends
+that are found. Supported sound backends are ALSA and Enlightment
+Sound Demon (Esd) . The Alsa backend provides sampled and midi
+functionality. Esd provides support for sampled functionality only. In
+practice, this means that you won't be able to use MIDI on platforms
+other than Linux.
 
-* no: no sound support will be compiled in. This is the default, so if
-  you don't specify any sound backend, no sound support is compiled at
-  all.
+You can specifically turn sound backends on or off. The connfigure
+script provides the options
+--with-alsa:  for turning ALSA support on/off, and
+--with-esd:   for turning Esd support on/off.
 
-* alsa: sound support will be provided using the alsa backend from
-  tritonus project. This backend supports sampled sounds and MIDI.
+Each option is on by default.
 
-* esd: sound support will be provided using the esd backend from
-  tritonus project. This backend supports sampled sounds only.
+You can also turn off sound support completely, by using
+--disable-sound.
 
 Usage
 =====

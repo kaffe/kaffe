@@ -124,7 +124,7 @@ static int nextEvent ( JNIEnv* env, jclass clazz, Toolkit *X, int blockIt )
  *         1       2       4       8      32   : X
  */
 
-static __inline__ int keyMod ( int keyState )
+static inline int keyMod ( int keyState )
 {
   int mod = 0;
   if ( keyState & 3 ) mod |= 1; /* shift or lock */

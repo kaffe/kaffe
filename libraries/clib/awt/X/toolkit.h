@@ -239,7 +239,7 @@ extern long StdEvents, PopupEvents;
  * heap wrapper macros
  */
 
-static __inline__ void* _awt_malloc_wrapper ( size_t size )
+static inline void* _awt_malloc_wrapper ( size_t size )
 {
   void *adr;
   enterUnsafeRegion();
@@ -249,7 +249,7 @@ static __inline__ void* _awt_malloc_wrapper ( size_t size )
   return adr;
 }
 
-static __inline__ void* _awt_calloc_wrapper ( int n, size_t size )
+static inline void* _awt_calloc_wrapper ( int n, size_t size )
 {
   void *adr;
   enterUnsafeRegion();
@@ -259,7 +259,7 @@ static __inline__ void* _awt_calloc_wrapper ( int n, size_t size )
   return adr;
 }
 
-static __inline__ void _awt_free_wrapper ( void* adr )
+static inline void _awt_free_wrapper ( void* adr )
 {
   DBG( AWT_MEM, printf("free: %p\n", adr));
   enterUnsafeRegion();
@@ -283,7 +283,7 @@ static __inline__ void _awt_free_wrapper ( void* adr )
  */
 
 
-static __inline__ char* java2CString ( JNIEnv *env, Toolkit* X, jstring jstr ) {
+static inline char* java2CString ( JNIEnv *env, Toolkit* X, jstring jstr ) {
   jboolean isCopy;
   register int i;
   int      n = (*env)->GetStringLength( env, jstr);
@@ -303,7 +303,7 @@ static __inline__ char* java2CString ( JNIEnv *env, Toolkit* X, jstring jstr ) {
   return X->buf;
 }
 
-static __inline__ char* jchar2CString ( Toolkit* X, jchar* jc, int len ) {
+static inline char* jchar2CString ( Toolkit* X, jchar* jc, int len ) {
   register int i;
   int      n = len+1;
   
@@ -320,7 +320,7 @@ static __inline__ char* jchar2CString ( Toolkit* X, jchar* jc, int len ) {
   return X->buf;
 }
 
-static __inline__ void* getBuffer ( Toolkit* X, unsigned int nBytes ) {
+static inline void* getBuffer ( Toolkit* X, unsigned int nBytes ) {
   if ( nBytes > X->nBuf ) {
 	if ( X->buf )
 	  AWT_FREE( X->buf);
@@ -382,7 +382,7 @@ jlong Java_java_awt_Toolkit_clrDark ( JNIEnv* env, jclass clazz, jint rgb );
    else                  _var >>= -_shift;
 
 
-static __inline__ jint
+static inline jint
 pixelValue ( Toolkit* X, jint rgb )
 {
   int      r,g,b;
@@ -420,7 +420,7 @@ pixelValue ( Toolkit* X, jint rgb )
   }
 }
 
-static __inline__ void
+static inline void
 rgbValues ( Toolkit* X, unsigned long pixel, int* r, int* g, int* b )
 {
   Visual         *v;
@@ -491,13 +491,13 @@ void initScaledImage ( Toolkit* X, Image *tgt, Image *src,
 void Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img);
 
 
-static __inline__ void
+static inline void
 PutAlpha ( AlphaImage* img, int col, int row, unsigned char alpha )
 {
   img->buf[ row*img->width + col ] = alpha;
 }
 
-static __inline__ int
+static inline int
 GetAlpha ( AlphaImage* img, int col, int row )
 {
   return img->buf[ row*img->width + col];
@@ -545,7 +545,7 @@ jobject selectionRequest ( JNIEnv* env, Toolkit* X );
 #define WND_MAPPED     0x08
 #define WND_DESTROYED  0x10
 
-static __inline__ int getFreeSourceIdx ( Toolkit* X, Window wnd ) {
+static inline int getFreeSourceIdx ( Toolkit* X, Window wnd ) {
   register int i, n;
 
   /*
@@ -566,7 +566,7 @@ static __inline__ int getFreeSourceIdx ( Toolkit* X, Window wnd ) {
   return -1;
 }
 
-static __inline__ int getSourceIdx ( Toolkit* X, Window w )
+static inline int getSourceIdx ( Toolkit* X, Window w )
 {
   int      n;
   register int i;
@@ -590,7 +590,7 @@ static __inline__ int getSourceIdx ( Toolkit* X, Window w )
   }
 }
 
-static __inline__ int checkSource ( Toolkit* X, int idx )
+static inline int checkSource ( Toolkit* X, int idx )
 {
   return ( (idx >= 0) && (idx < X->nWindows) && (X->windows[idx].w) );
 }
@@ -604,7 +604,7 @@ static __inline__ int checkSource ( Toolkit* X, int idx )
 #define FWD_CLEAR  1  /* reset focus forwarding */
 #define FWD_REVERT 2  /* reset focus on owner */
 
-static __inline__ void resetFocusForwarding ( Toolkit* X )
+static inline void resetFocusForwarding ( Toolkit* X )
 {
   X->fwdIdx = -1;
   X->focusFwd = 0;

@@ -8,6 +8,7 @@
  * of this file. 
  */
 
+#include "defs.h"
 #include "toolkit.h"
 
 #if defined(HAVE_JPEGLIB_H) && defined(HAVE_LIBJPEG)
@@ -15,15 +16,12 @@
 #endif
 
 #ifdef INCLUDE_JPEG
-#ifdef __cplusplus
-extern "C" {
-#endif
+BEGIN_C_DECLS
 
 #include "jpeglib.h"
 #include "jerror.h"
-#ifdef __cplusplus
-}
-#endif
+
+END_C_DECLS
 #endif
 
 

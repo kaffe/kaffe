@@ -13,9 +13,9 @@
 #define __system_h
 
 #define	kaffe_version			KAFFEVERSION
-#define	kaffe_vendor			"Transvirtual Technologies, Inc."
+#define	kaffe_vendor			"Kaffe.org project"
 #define	kaffe_vendor_url		"http://www.kaffe.org"
-#define	kaffe_vendor_url_bug		"http://www.kaffe.org/cgi-bin/kaffe"
+#define	kaffe_vendor_url_bug		"http://www.kaffe.org"
 
 #define	kaffe_vm_specification_version	"1.0"
 #define	kaffe_vm_specification_vendor	"Sun Microsystems Inc."

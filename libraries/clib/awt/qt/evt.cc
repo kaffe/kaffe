@@ -225,7 +225,7 @@ void forwardFocus ( int cmd, void* wnd );  /* from wnd.c */
  * ShiftButton    NA ControlButton  AltButton  : QT
  */
 
-static __inline__ int keyMod ( int keyState )
+static inline int keyMod ( int keyState )
 {
   int mod = 0;
   if ( keyState & Qt::ShiftButton )   mod |= 1;
@@ -234,7 +234,7 @@ static __inline__ int keyMod ( int keyState )
   return mod;
 }
 
-static __inline__ int mapButton( int button )
+static inline int mapButton( int button )
 {
   if ( button & Qt::LeftButton) return 1;
   if ( button & Qt::RightButton) return 3;

@@ -8,6 +8,7 @@
  * of this file. 
  */
 
+#include "defs.h"
 #include "toolkit.h"
 
 #include "qimage.h"
@@ -17,13 +18,11 @@
 #endif
 
 #if defined(INCLUDE_GIF)
-#ifdef __cplusplus
-extern "C" {
-#endif
+BEGIN_C_DECLS
+
 #include "gif_lib.h"
-#ifdef __cplusplus
-}
-#endif
+
+END_C_DECLS
 #endif
 
 

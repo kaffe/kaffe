@@ -37,7 +37,7 @@ void reduceAlpha ( Toolkit* X, Image* img, int threshold );
  * auxiliary funtions
  */
 
-static __inline__ int
+static inline int
 hasAlpha ( png_structp png_ptr )
 {
   return  (png_ptr->color_type == PNG_COLOR_TYPE_GRAY_ALPHA ||
@@ -45,7 +45,7 @@ hasAlpha ( png_structp png_ptr )
 
 }
 
-static __inline__ jint
+static inline jint
 readARGB ( unsigned char** p, int hasAlpha )
 {
   jint argb;
@@ -65,7 +65,7 @@ readARGB ( unsigned char** p, int hasAlpha )
 }
 
 
-static __inline__ void
+static inline void
 setPixel ( Image* img, unsigned long argb, int row, int col )
 {
   if ( img->alpha ){

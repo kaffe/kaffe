@@ -197,7 +197,7 @@ reduceAlpha ( Toolkit* X, Image* img, int threshold )
 }
 
 #if 0
-static __inline__ int
+static inline int
 interpolate ( int ul, int ur, int ll, int lr, double dx, double dy )
 {
   double u = ul + (double)(ur - ul) * dx;

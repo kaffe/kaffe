@@ -33,7 +33,7 @@ void createMaskImage ( Toolkit* X, Image* img );
 * auxiliary funtions
 */
 
-__inline__ int
+inline int
 hasAlpha ( png_structp png_ptr )
 {
 	return  (png_ptr->color_type == PNG_COLOR_TYPE_GRAY_ALPHA ||
@@ -41,7 +41,7 @@ hasAlpha ( png_structp png_ptr )
 	
 }
 
-__inline__ jint
+inline jint
 readARGB ( unsigned char** p, int hasAlpha )
 {
 	jint argb;
@@ -61,7 +61,7 @@ readARGB ( unsigned char** p, int hasAlpha )
 }
 
 
-__inline__ void
+inline void
 setPixel ( Image* img, unsigned long argb, int row, int col )
 {
 	if ( img->alpha ){

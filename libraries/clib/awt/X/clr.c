@@ -19,7 +19,7 @@
  * auxiliary functions
  */
 
-static __inline__ int
+static inline int
 xclrEquals ( XColor* pc, int r, int g, int b )
 {
   return ((pc->red == r) && (pc->green == g) && (pc->blue == b));
@@ -30,7 +30,7 @@ xclrEquals ( XColor* pc, int r, int g, int b )
  * this is a rather crude color difference - a HSV difference might be
  * more ergonomical, but also much more expensive
  */
-static __inline__ double
+static inline double
 colorDiff ( int r1, int g1, int b1, int r2, int g2, int b2 )
 {
   int dr,dg, db;

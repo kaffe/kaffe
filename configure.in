@@ -413,7 +413,7 @@ dnl =========================================================================
 dnl Use the new internal threading system "jthreads"
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(threads,[  --with-threads=SYSTEM   Define which threading system to use])
+AC_ARG_WITH(threads,[  --with-threads=SYSTEM   Define which threading system to use [default=unix-jthreads]])
 AC_MSG_CHECKING(thread system)
 if test x"$with_threads" = x"" ; then
 	with_threads=unix-jthreads
@@ -432,7 +432,7 @@ dnl =========================================================================
 dnl Use jikes instead of kjc?
 dnl =========================================================================
 
-AC_ARG_WITH(jikes,[  --with-jikes[=JIKES]      Define to use jikes compiler])
+AC_ARG_WITH(jikes,[  --with-jikes[=JIKES]    Define to use jikes compiler [default=no]])
 AC_MSG_CHECKING([whether to use jikes])
 if test x"$with_jikes" = x"" ; then
 	use_jikes=no
@@ -514,6 +514,9 @@ ln() {
 	fi
 }
 
+dnl Check for AWK. Used by kaffexprof
+AC_PROG_AWK
+
 dnl =========================================================================
 dnl Checks for types
 dnl -------------------------------------------------------------------------
@@ -524,6 +527,9 @@ AC_CHECK_SIZEOF(long,0)
 AC_CHECK_SIZEOF(long long,0)
 AC_CHECK_SIZEOF(__int64,0)
 AC_CHECK_SIZEOF(void*,0)
+
+AC_TYPE_OFF_T
+AC_TYPE_PID_T
 
 dnl =========================================================================
 dnl Checks for alignments
@@ -589,6 +595,8 @@ LIBS="$KSAVE_LIBS"
 dnl =========================================================================
 dnl Checks for libraries
 dnl -------------------------------------------------------------------------
+
+AC_PROG_GCC_TRADITIONAL
 
 dnl Libraries for programs such as Kaffe and kaffeh
 
@@ -747,6 +755,7 @@ gmp.h \
 iconv.h \
 jpeglib.h \
 kernel/OS.h \
+limits.h \
 mach-o/rld.h \
 malloc.h \
 memory.h \
@@ -771,7 +780,7 @@ sys/stat.h \
 sys/time.h \
 sys/types.h \
 sys/utsname.h \
-sys/wait.h \
+syslog.h \
 time.h \
 unistd.h \
 utime.h \
@@ -779,6 +788,7 @@ dnl windows headers
 winbase.h windows.h winnt.h winsock.h wintypes.h wtypes.h \
 zlib.h)
 
+AC_HEADER_SYS_WAIT
 AC_HEADER_DIRENT
 
 dnl We need both getrusage and the header containing its decls.
@@ -859,6 +869,7 @@ AC_STRUCT_TM
 AC_STRUCT_TIMEZONE
 AC_C_BIGENDIAN
 AC_C_CHAR_UNSIGNED
+AC_C_CONST
 AC_C_INLINE
 
 dnl =========================================================================
@@ -943,10 +954,13 @@ dnl Checks for library functions.
 dnl -------------------------------------------------------------------------
 
 AC_FUNC_STRFTIME
+AC_FUNC_MEMCMP
 AC_FUNC_MMAP
+AC_FUNC_UTIME_NULL
+
 AC_CHECK_FUNCS([select socket getsockname getpagesize])
 AC_CHECK_FUNCS([memcpy memmove])
-AC_CHECK_FUNCS([mkdir])
+AC_CHECK_FUNCS([mkdir rmdir])
 AC_CHECK_FUNCS([getcwd chdir getwd gettimeofday ftime time uname getuid])
 AC_CHECK_FUNCS([localtime])
 
@@ -955,7 +969,9 @@ LIBS="$LIBS $LIBICONV"
 
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
-AC_CHECK_FUNCS([remainder remainderf fmod fmodf drem rint floor ceil finite isinf isnan strtod mergesort])
+AC_CHECK_FUNCS([remainder remainderf fmod fmodf drem])
+AC_CHECK_FUNCS([rint floor ceil finite isinf isnan strtod mergesort])
+AC_CHECK_FUNCS([strdup strstr strtod strtol strtoul])
 LIBS="$KSAVE_LIBS"
 
 dnl Test whether LONG_MIN / -1l crashes
@@ -1184,57 +1200,77 @@ dnl -------------------------------------------------------------------------
 dnl Configure sound backend
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(sound,[  --with-sound=BACKEND        specify sound backend ([no], alsa, esd)])
+dnl Check for ALSA
 
-dnl If no sound backend defined, choose an appropriate default.
-if test "$with_sound" = "no" ; then
-       with_sound=no
-fi
-if test "$with_sound" = "" ; then
-       with_sound=no
-fi
+AC_CHECK_LIB(
+	asound,
+	snd_seq_open,
+	[have_alsa=yes;
+	AC_MSG_RESULT(Information: ALSA found)],
+	[have_alsa=no;
+	AC_MSG_RESULT(Information: ALSA not)],
+)
 
-case $with_sound in
+dnl Check for esd
+
+AC_CHECK_LIB(
+	esd,
+	esd_open_sound,
+	[have_esd=yes;
+	AC_MSG_RESULT(Information: Enlightened Sound Daemon found)],
+	[have_esd=no;
+	AC_MSG_RESULT(Information: Enlightened Sound Daemon not found)],
+)
+
+dnl Use alsa
+dnl default is yes, if present.
+
+AC_ARG_WITH(alsa,[  --with-alsa             Use ALSA for sound [default=yes]])
+
+case $with_alsa in
 no)
-       SOUND_DIR=
-       ;;
-
-alsa)
-       AC_CHECK_LIB(
-		asound,
-		snd_seq_open,
-		[have_alsa=yes;
-		AC_MSG_RESULT(Information: will build stuff for ALSA sequencer)],
-		[have_alsa=no;
-		AC_MSG_RESULT(Information: will not build stuff for ALSA sequencer)],
-       )
-       if test "$have_alsa" = "no"; then
-               AC_MSG_ERROR(Configuration 'with-sound=$with_sound' not supported - missing alsa support)
-       else
-               SOUND_DIR=alsa
-       fi
-       ;;
-esd)
-       AC_CHECK_LIB(
-		esd,
-		esd_open_sound,
-		[have_esd=yes;
-		AC_MSG_RESULT(Information: will build stuff for Enlightened Sound Daemon)],
-		[have_esd=no;
-		AC_MSG_RESULT(Information: will not build stuff for Enlightened Sound Daemon)],
-       )
-       if test "$have_esd" = "no"; then
-               AC_MSG_ERROR(Configuration 'with-sound=$with_sound' not supported - missing esd support)
-       else
-               SOUND_DIR=esd
-       fi
-       ;;
+	;;
 *)
-       AC_MSG_ERROR(Configuration 'with-sound=$with_sound' not supported)
-       ;;
+	if test "$have_alsa" = "no"; then
+		AC_MSG_ERROR([Configuration 'with-alsa' not supported - missing alsa support])
+	else
+		ALSA_DIR=alsa
+	fi
+	;;
 esac
 
-AC_SUBST(SOUND_DIR)
+dnl Use esd
+dnl default is yes, if present.
+
+AC_ARG_WITH(esd,[  --with-esd              Use esd for sound [default=yes]])
+
+case $with_esd in
+no)
+	;;
+*)
+	if test "$have_esd" = "no"; then
+		AC_MSG_ERROR([Configuration 'with-esd' not supported - missing esd support])
+	else
+		ESD_DIR=esd
+	fi
+	;;
+esac
+
+dnl Global sound setting
+dnl No overrides --with-* settings
+
+AC_ARG_ENABLE(sound,[  --disable-sound         Disable javax.sound support])
+case "$enable_sound" in
+no)
+	ALSA_DIR=""
+	ESD_DIR=""
+	;;
+*)
+	;;
+esac
+
+AC_SUBST(ALSA_DIR)
+AC_SUBST(ESD_DIR)
 
 JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/native/libnative.la \
