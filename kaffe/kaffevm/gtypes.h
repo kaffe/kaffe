@@ -13,45 +13,76 @@
 #define __gtype_h
 
 #include "config.h"
+#include "config-std.h"
 #include "jtypes.h"
 #include "jni.h"
 
 #if defined(__STDC__)
+#if !defined(HAVE_INT8)
 typedef signed char		int8;
+#endif
 #elif defined(__CHAR_UNSIGNED__)
 #error "no signed char type"
 #else
+#if !defined(HAVE_INT8)
 typedef	char			int8;
 #endif
+#endif
 
+#if !defined(HAVE_UINT8)
 typedef	unsigned char		uint8;
+#endif
 
 #if SIZEOF_SHORT == 2
+#if !defined(HAVE_INT16)
 typedef	short			int16;
+#endif
+#if !defined(HAVE_UINT16)
 typedef	unsigned short		uint16;
+#endif
 #else
 #error "sizeof(short) must be 2"
 #endif
 
 #if SIZEOF_INT == 4
+#if !defined(HAVE_INT32)
 typedef	int			int32;
+#endif
+#if !defined(HAVE_UINT32)
 typedef	unsigned int		uint32;
+#endif
 #elif SIZEOF_LONG == 4
+#if !defined(HAVE_INT32)
 typedef	long			int32;
+#endif
+#if !defined(HAVE_UINT32)
 typedef	unsigned long		uint32;
+#endif
 #else
 #error "sizeof(int) or sizeof(long) must be 4"
 #endif
 
 #if SIZEOF_LONG == 8
+#if !defined(HAVE_INT64)
 typedef	long			int64;
+#endif
+#if !defined(HAVE_UINT64)
 typedef	unsigned long		uint64;
+#endif
 #elif SIZEOF_LONG_LONG == 8
+#if !defined(HAVE_INT64)
 typedef	long long		int64;
+#endif
+#if !defined(HAVE_UINT64)
 typedef	unsigned long long	uint64;
+#endif
 #elif SIZEOF___INT64 == 8
+#if !defined(HAVE_INT64)
 typedef	__int64			int64;
+#endif
+#if !defined(HAVE_UINT64)
 typedef	unsigned __int64	uint64;
+#endif
 #else
 #error "sizeof(long) or sizeof(long long) or sizeof(__int64) must be 8"
 #endif
@@ -64,10 +95,12 @@ typedef uint64			uintp;
 #error "sizeof(void*) must be 4 or 8"
 #endif
 
+#if !defined(HAVE_BOOL)
 typedef enum _bool {
 	false	= 0,
 	true	= 1
 } bool;
+#endif
 
 typedef uint8			u1;
 typedef uint16			u2;

@@ -32,29 +32,6 @@
  */
 int getsockopt(int,int,int,void*,int*);
 
-/*
- * BeOS defines a bunch of signed and unsigned int types plus bool.
- */
-#include <support/SupportDefs.h>
-#define HAVE_INT8
-#define HAVE_INT16
-#define HAVE_INT32
-#define HAVE_INT64
-#define HAVE_BOOL
-
-/*
- * The ff comes from gtypes.h; we define it here because of an icky
- * include file chicken-and-egg problem.
- */
-#if SIZEOF_VOIDP == 4
-typedef uint32			uintp;
-#elif SIZEOF_VOIDP == 8
-typedef uint64			uintp;
-#else
-#error "sizeof(void*) must be 4 or 8"
-#endif
-#define HAVE_UINTP 1
-
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif

@@ -42,6 +42,9 @@
 #if defined(HAVE_BSD_LIBC_H)
 #include <bsd/libc.h>
 #endif
+#if defined(HAVE_KERNEL_OS_H)
+#include <kernel/OS.h>
+#endif
 
 #undef	__NORETURN__
 #if defined(__GNUC__)

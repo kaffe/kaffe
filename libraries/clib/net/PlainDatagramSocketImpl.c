@@ -13,6 +13,7 @@
 #include "config-mem.h"
 #include "config-net.h"
 #include "config-io.h"
+#include "config-hacks.h"
 #include <native.h>
 #include "../native/Integer.h"
 #include "../io/FileDescriptor.h"

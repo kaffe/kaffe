@@ -10,6 +10,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
+#include "config-io.h"
 #include "classMethod.h"
 #include "jtypes.h"
 #include "constants.h"

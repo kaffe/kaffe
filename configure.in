@@ -436,7 +436,7 @@ dnl -------------------------------------------------------------------------
 
 CPPFLAGS="$CPPFLAGS -I/usr/local/include"
 AC_HEADER_STDC
-AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h sys/socket.h winnt.h wintypes.h wtypes.h winbase.h windows.h winsock.h dlfcn.h sys/ioctl.h sys/filio.h malloc.h alloca.h sys/param.h sys/utsname.h pwd.h asm/sigcontext.h sigcontext.h asm/signal.h signal.h mach-o/rld.h sys/types.h sys/stat.h string.h sys/select.h memory.h bsd/libc.h dl.h features.h sys/wait.h zlib.h netinet/tcp.h netinet/in_systm.h netinet/in.h netdb.h jpeglib.h gif_lib.h png.h gmp.h)
+AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h sys/socket.h winnt.h wintypes.h wtypes.h winbase.h windows.h winsock.h dlfcn.h sys/ioctl.h sys/filio.h malloc.h alloca.h sys/param.h sys/utsname.h pwd.h asm/sigcontext.h sigcontext.h asm/signal.h signal.h mach-o/rld.h sys/types.h sys/stat.h string.h sys/select.h memory.h bsd/libc.h dl.h features.h sys/wait.h zlib.h netinet/tcp.h netinet/in_systm.h netinet/in.h netdb.h jpeglib.h gif_lib.h png.h gmp.h kernel/OS.h)
 AC_HEADER_DIRENT
 
 dnl We need both getrusage and the header containing its decls.
@@ -469,6 +469,46 @@ AC_STRUCT_TIMEZONE
 AC_C_BIGENDIAN
 AC_C_CHAR_UNSIGNED
 AC_C_INLINE
+
+dnl =========================================================================
+dnl Check for [u]int{8,16,32,64} and bool.
+dnl -------------------------------------------------------------------------
+
+if test $ac_cv_typedef_int8 = yes; then
+  AC_DEFINE(HAVE_INT8, 1, [Do we have int8])
+fi
+
+if test $ac_cv_typedef_uint8 = yes; then
+  AC_DEFINE(HAVE_UINT8, 1, [Do we have uint8])
+fi
+
+if test $ac_cv_typedef_int16 = yes; then
+  AC_DEFINE(HAVE_INT16, 1, [Do we have int16])
+fi
+
+if test $ac_cv_typedef_uint16 = yes; then
+  AC_DEFINE(HAVE_UINT16, 1, [Do we have uint16])
+fi
+
+if test $ac_cv_typedef_int32 = yes; then
+  AC_DEFINE(HAVE_INT32, 1, [Do we have int32])
+fi
+
+if test $ac_cv_typedef_uint32 = yes; then
+  AC_DEFINE(HAVE_UINT32, 1, [Do we have uint32])
+fi
+
+if test $ac_cv_typedef_int64 = yes; then
+  AC_DEFINE(HAVE_INT64, 1, [Do we have int64])
+fi
+
+if test $ac_cv_typedef_uint64 = yes; then
+  AC_DEFINE(HAVE_UINT64, 1, [Do we have uint64])
+fi
+
+if test $ac_cv_typedef_bool = yes; then
+  AC_DEFINE(HAVE_BOOL, 1, [Do we have bool])
+fi
 
 dnl =========================================================================
 dnl Check for struct sigcontext.
