@@ -78,12 +78,24 @@ void initTypes(void);
 void
 initialiseKaffe(void)
 {
+        /* Set default thread stack size if not set */
+        extern JavaVMInitArgs Kaffe_JavaVMArgs[];
+	int threadStackSize;
 	Method* meth;
 
 	/* Machine specific initialisation first */
 #if defined(INIT_MD)
 	INIT_MD();
 #endif
+
+        threadStackSize = Kaffe_JavaVMArgs[0].nativeStackSize;
+ 
+        if (threadStackSize == 0) {
+                threadStackSize = THREADSTACKSIZE;
+        }
+  
+	/* Initialise the (native) threading system */
+	(*Kaffe_ThreadInterface.init)(threadStackSize);
 
 	/* Setup CLASSPATH */
 	initClasspath();

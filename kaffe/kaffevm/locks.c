@@ -10,8 +10,6 @@
  */
 
 #include "debug.h"
-#define THREAD_JAVA()	getCurrentThread()
-
 #include "config.h"
 #include "config-std.h"
 #include "object.h"
@@ -22,6 +20,12 @@
 #include "errors.h"
 #include "exception.h"
 #include "md.h"
+
+/* Note:
+ * It is wrong to call (*Kaffe_ThreadInterface.currentJava)() anywhere in
+ * this file since it may not be initialized. 
+ */
+#define THREAD_NATIVE()		(*Kaffe_ThreadInterface.currentNative)()
 
 /* Note:
  * USE_LOCK_CACHE can be defined to if we are prepared to keep an extra
@@ -144,9 +148,15 @@ inline
 void
 __lockMutex(iLock* lk)
 {
-DBG(VMLOCKS,	dprintf("Lock 0x%x on iLock=0x%x\n", THREAD_JAVA(), lk);	    )
+DBG(VMLOCKS,	dprintf("Lock 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);	    )
 
-	if (lk->holder == (*Kaffe_ThreadInterface.currentNative)()) {
+	/*
+	 * Note: simply testing 'holder == currentNative' is not enough.
+	 * If a thread systems uses the same value to which we initialized
+	 * holder as a thread id (null), we might be fouled into thinking 
+	 * we already hold the lock, when in fact we don't.
+	 */
+	if (lk->count > 0 && lk->holder == (*Kaffe_ThreadInterface.currentNative)()) {
 		lk->count++;
 	}
 	else {
@@ -163,7 +173,7 @@ _lockMutex(void* addr)
 {
 	iLock* lk;
 
-DBG(VMLOCKS,	dprintf("Lock 0x%x on addr=0x%x\n", THREAD_JAVA(), addr);    )
+DBG(VMLOCKS,	dprintf("Lock 0x%x on addr=0x%x\n", THREAD_NATIVE(), addr);    )
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;
@@ -184,9 +194,9 @@ inline
 void
 __unlockMutex(iLock* lk)
 {
-DBG(VMLOCKS,	dprintf("Unlock 0x%x on iLock=0x%x\n", THREAD_JAVA(), lk);   )
+DBG(VMLOCKS,	dprintf("Unlock 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);   )
 
-	assert(lk->holder == (*Kaffe_ThreadInterface.currentNative)());
+	assert(lk->count > 0 && lk->holder == (*Kaffe_ThreadInterface.currentNative)());
 	lk->count--;
 	if (lk->count == 0) {
 		(*Kaffe_LockInterface.unlock)(lk);
@@ -201,7 +211,7 @@ _unlockMutex(void* addr)
 {
 	iLock* lk;
 
-DBG(VMLOCKS,	dprintf("Unlock 0x%x on addr=0x%x\n", THREAD_JAVA(), addr);  )
+DBG(VMLOCKS,	dprintf("Unlock 0x%x on addr=0x%x\n", THREAD_NATIVE(), addr);  )
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;
@@ -219,7 +229,7 @@ inline
 int
 __waitCond(iLock* lk, jlong timeout)
 {
-DBG(VMCONDS,	dprintf("Wait 0x%x on iLock=0x%x\n", THREAD_JAVA(), lk);	)
+DBG(VMCONDS,	dprintf("Wait 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);	)
 
 	if (lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
 		throwException(IllegalMonitorStateException);
@@ -238,7 +248,7 @@ _waitCond(void* addr, jlong timeout)
 	iLock* lk;
 	int count;
 
-DBG(VMLOCKS,	dprintf("Wait 0x%x on addr=0x%x\n", THREAD_JAVA(), addr);    )
+DBG(VMLOCKS,	dprintf("Wait 0x%x on addr=0x%x\n", THREAD_NATIVE(), addr);    )
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;
@@ -256,7 +266,7 @@ inline
 void
 __signalCond(iLock* lk)
 {
-DBG(VMCONDS,	dprintf("Signal 0x%x on iLock=0x%x\n", THREAD_JAVA(), lk);)
+DBG(VMCONDS,	dprintf("Signal 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);)
 
 	if (lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
 		throwException(IllegalMonitorStateException);
@@ -273,7 +283,7 @@ _signalCond(void* addr)
 {
 	iLock* lk;
 
-DBG(VMCONDS,	dprintf("Signal 0x%x on addr=0x%x\n", THREAD_JAVA(), addr);)
+DBG(VMCONDS,	dprintf("Signal 0x%x on addr=0x%x\n", THREAD_NATIVE(), addr);)
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;
@@ -290,7 +300,7 @@ inline
 void
 __broadcastCond(iLock* lk)
 {
-DBG(VMCONDS,	dprintf("Broadcast 0x%x on iLock=0x%x\n", THREAD_JAVA(), lk);)
+DBG(VMCONDS,	dprintf("Broadcast 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);)
 
 	if (lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
 		throwException(IllegalMonitorStateException);
@@ -304,7 +314,7 @@ _broadcastCond(void* addr)
 {
 	iLock* lk;
 
-DBG(VMCONDS,	dprintf("Broadcast 0x%x on addr=0x%x\n", THREAD_JAVA(), addr);)
+DBG(VMCONDS,	dprintf("Broadcast 0x%x on addr=0x%x\n", THREAD_NATIVE(), addr);)
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;

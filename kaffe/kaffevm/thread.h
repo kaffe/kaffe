@@ -40,10 +40,9 @@ void	startThread(Hjava_lang_Thread*);
 void	stopThread(Hjava_lang_Thread*, Hjava_lang_Object*);
 Hjava_lang_Thread* getCurrentThread(void);
 
-extern int threadStackSize;
-
 typedef struct ThreadInterface {
 
+	void			(*init)(int nativestacksize);
 	void			(*createFirst)(Hjava_lang_Thread*);
 	void			(*create)(Hjava_lang_Thread*, void*);
 	void			(*sleep)(jlong);

@@ -39,8 +39,6 @@ Hjava_lang_Thread* garbageman;
 Hjava_lang_Thread* finalman;
 Hjava_lang_ThreadGroup* standardGroup;
 
-int threadStackSize;
-
 static void firstStartThread(void*);
 static void createInitialThread(char*);
 static Hjava_lang_Thread* createDaemon(void*, char*, int);
@@ -51,14 +49,6 @@ static Hjava_lang_Thread* createDaemon(void*, char*, int);
 void
 initThreads(void)
 {
-	/* Set default thread stack size if not set */
-	extern JavaVMInitArgs Kaffe_JavaVMArgs[];
-	threadStackSize = Kaffe_JavaVMArgs[0].nativeStackSize;
-
-	if (threadStackSize == 0) {
-		threadStackSize = THREADSTACKSIZE;
-	}
-
 	/* Get a handle on the thread and thread group classes */
 	ThreadClass = lookupClass(THREADCLASS);
 	assert(ThreadClass != 0);
