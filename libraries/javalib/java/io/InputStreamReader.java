@@ -21,7 +21,7 @@ public class InputStreamReader
 	private InputStream strm;
 	private byte[] inbuf = new byte[BUFDEFAULT];
 
-public InputStreamReader(InputStream in) {	
+public InputStreamReader(InputStream in) {
 	strm = in;
 	encoding = ByteToCharConverter.getDefault();
 }
@@ -43,10 +43,11 @@ public String getEncoding() {
 
 public int read ( char cbuf[], int off, int len ) throws IOException {
 	int outlen = 0;
+	boolean seenEOF = false;
 
 	synchronized ( lock ) {
 		while (len > outlen) {
-			// First we return anything left in the converter
+			// First we retreive anything left in the converter
 			int inpos = encoding.withdraw(inbuf, 0, inbuf.length);
 			int n = len - outlen;
 			int m = inbuf.length - inpos;
@@ -56,13 +57,14 @@ public int read ( char cbuf[], int off, int len ) throws IOException {
 			int inlen = strm.read(inbuf, inpos, n);
 			if (inlen < 0) {
 				inlen = 0;
+				seenEOF = true;
 			}
 			outlen += encoding.convert(inbuf, 0, inpos+inlen, cbuf, off+outlen, len-outlen);
-			if (inlen < n) {
+			if (inlen < n || !encoding.havePending()) {
 				break;
 			}
 		}
-		if (outlen <= 0) {
+		if (seenEOF && !encoding.havePending()) {
 			return (-1);
 		}
 		return (outlen);
