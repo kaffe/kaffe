@@ -1,8 +1,15 @@
-What's New since Kaffe OpenVM 1.0.6
------------------------------------
+What's New in Kaffe OpenVM 1.0.7 (Release Candidate 1)
+------------------------------------------------------
+
+This release is dedicated to the memory of Edouard G. Parmelan, one of
+the most active Kaffe developers, a member of the core team, and one of
+the driving forces behind the project. 
+
 * Port to ia64 GNU/Linux
 
 * Port to s390 GNU/Linux
+
+* Port to PA-RISC GNU/Linux
 
 * Port to Darwin (Mac OS X).
 
