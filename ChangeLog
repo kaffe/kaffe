@@ -1,3 +1,11 @@
+2003-03-30 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/Klasses.jar.bootstrap:
+	rebuilt. Fixed build crashes with jit.
+
+	* libraries/javalib/java/io/ObjectOutputStream.java:
+	fixed compilation problems with javac from JDK 1.3.1.
+
 2003-03-14 Tim Stack <stack@cs.utah.edu>
 
 	* kaffe/kaffevm/jit3/machine.c: Aggressively spill Rreadonce

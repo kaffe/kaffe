@@ -75,18 +75,18 @@ public class ObjectOutputStream
 			if (size > 0) {
 				if (buffering) {
 					if (size < 256) {
-						out.write(ObjectStreamConstants.TC_BLOCKDATA);
-						out.write(size);
+						this.out.write(ObjectStreamConstants.TC_BLOCKDATA);
+						this.out.write(size);
 					}
 					else {
-						out.write(ObjectStreamConstants.TC_BLOCKDATALONG);
-						out.write((size >> 24) & 0xFF);
-						out.write((size >> 16) & 0xFF);
-						out.write((size >>  8) & 0xFF);
-						out.write((size      ) & 0xFF);
+						this.out.write(ObjectStreamConstants.TC_BLOCKDATALONG);
+						this.out.write((size >> 24) & 0xFF);
+						this.out.write((size >> 16) & 0xFF);
+						this.out.write((size >>  8) & 0xFF);
+						this.out.write((size      ) & 0xFF);
 					}
 				}
-				buffer.writeTo(out);
+				buffer.writeTo(this.out);
 				buffer.reset();
 			}
 		}
