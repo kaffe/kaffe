@@ -398,11 +398,21 @@ struct classFile;
 #define TYPE_SIZE(CL) \
   (CLASS_IS_PRIMITIVE(CL) ? TYPE_PRIM_SIZE (CL) : PTR_TYPE_SIZE)
 
-#define	METHOD_IS_STATIC(METH) ((METH)->accflags & ACC_STATIC)
-#define	METHOD_IS_CONSTRUCTOR(METH) ((METH)->accflags & ACC_CONSTRUCTOR)
-#define	METHOD_IS_FINAL(METH) ((METH)->accflags & ACC_FINAL)
-#define	METHOD_IS_PRIVATE(METH) ((METH)->accflags & ACC_PRIVATE)
-#define	METHOD_IS_NATIVE(METH) ((METH)->accflags & ACC_NATIVE)
+
+#define METHOD_IS_PUBLIC(METH)       ((METH)->accflags & ACC_PUBLIC)
+#define METHOD_IS_PROTECTED(METH)    ((METH)->accflags & ACC_PROTECTED)
+#define METHOD_IS_PRIVATE(METH)      ((METH)->accflags & ACC_PRIVATE)
+
+#define METHOD_IS_CONSTRUCTOR(METH)  ((METH)->accflags & ACC_CONSTRUCTOR)
+#define METHOD_IS_STATIC(METH)       ((METH)->accflags & ACC_STATIC)
+
+#define METHOD_IS_ABSTRACT(METH)     ((METH)->accflags & ACC_ABSTRACT)
+#define METHOD_IS_FINAL(METH)        ((METH)->accflags & ACC_FINAL)
+
+#define METHOD_IS_NATIVE(METH)       ((METH)->accflags & ACC_NATIVE)
+#define METHOD_IS_STRICT(METH)       ((METH)->accflags & ACC_STRICT)
+#define METHOD_IS_SYNCHRONISED(METH) ((METH)->accflags & ACC_SYNCHRONISED)
+
 
 #define CLASS_GCJ(C)		((C)->accflags & ACC_GCJ)
 #define SET_CLASS_GCJ(C)	(C)->accflags |= ACC_GCJ
