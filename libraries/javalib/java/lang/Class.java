@@ -3,6 +3,7 @@
  *
  * Copyright (c) 1997, 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
+ * Portions Copyright (C) 1998, 2002 Free Software Foundation
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -491,5 +492,81 @@ static class CallStack {
 		}
 		return null;
 	}
+}
+
+/**
+ * Returns the desired assertion status of this class, if it were to be
+ * initialized at this moment. The class assertion status, if set, is
+ * returned; the backup is the default package status; then if there is
+ * a class loader, that default is returned; and finally the system default
+ * is returned. This method seldom needs calling in user code, but exists
+ * for compilers to implement the assert statement. Note that there is no
+ * guarantee that the result of this method matches the class's actual
+ * assertion status.
+ *
+ * @return the desired assertion status
+ * @see ClassLoader#setClassAssertionStatus(String, boolean)
+ * @see ClassLoader#setPackageAssertionStatus(String, boolean)
+ * @see ClassLoader#setDefaultAssertionStatus(boolean)
+ * @since 1.4
+ */
+public boolean desiredAssertionStatus() {
+	ClassLoader c = getClassLoader();
+	Object status;
+	if (c == null)
+		return ClassLoader.systemDefaultAssertionStatus;
+	if (c.classAssertionStatus != null) {
+		synchronized (c) {
+			status = c.classAssertionStatus.get(getName());
+			if (status != null)
+				return status.equals(Boolean.TRUE);
+		}
+	} else {
+		status = ClassLoader.systemClassAssertionStatus.get(getName());
+		if (status != null)
+			return status.equals(Boolean.TRUE);
+	}
+	if (c.packageAssertionStatus != null) {
+		synchronized (c) {
+			String name = getPackagePortion(getName());
+			if ("".equals(name))
+				status = c.packageAssertionStatus.get(null);
+			else {
+				do {
+					status = c.packageAssertionStatus.get(name);
+					name = getPackagePortion(name);
+				} while (! "".equals(name) && status == null);
+			}
+			if (status != null)
+				return status.equals(Boolean.TRUE);
+		}
+	} else {
+		String name = getPackagePortion(getName());
+		if ("".equals(name))
+			status = ClassLoader.systemPackageAssertionStatus.get(null);
+		else {
+			do {
+				status = ClassLoader.systemPackageAssertionStatus.get(name);
+				name = getPackagePortion(name);
+			} while (! "".equals(name) && status == null);
+		}
+		if (status != null)
+			return status.equals(Boolean.TRUE);
+	}
+	return c.defaultAssertionStatus;
+}
+
+/**
+ * Strip the last portion of the name (after the last dot).
+ *
+ * @param name the name to get package of
+ * @return the package name, or "" if no package
+ */
+private static String getPackagePortion(String name)
+{
+	int lastInd = name.lastIndexOf('.');
+	if (lastInd == -1)
+		return "";
+	return name.substring(0, lastInd);
 }
 }

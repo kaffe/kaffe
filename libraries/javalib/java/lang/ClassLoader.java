@@ -3,6 +3,7 @@
  *
  * Copyright (c) 1997, 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
+ * Portions Copyright (C) 1998, 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -16,7 +17,9 @@ import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Vector;
@@ -51,6 +54,54 @@ private static final Package [] NO_PACKAGES = new Package[0];
  * in this Map.
  */
 private final Hashtable protectionDomains = new Hashtable();
+
+/**
+ * The command-line state of the default assertion status overrides.
+ */
+// Package visible for use by Class.
+// XXX should be set from command line
+static final boolean systemDefaultAssertionStatus = true;
+
+/**
+ * The desired assertion status of classes loaded by this loader, if not
+ * overridden by package or class instructions.
+ */
+// Package visible for use by Class.
+boolean defaultAssertionStatus = systemDefaultAssertionStatus;
+
+/**
+ * The command-line state of the package assertion status overrides. This
+ * map is never modified, so it does not need to be synchronized.
+ */
+// Package visible for use by Class.
+// XXX should be set from command line
+static final Map systemPackageAssertionStatus = new HashMap();
+
+/**
+ * The map of package assertion status overrides, or null if no package
+ * overrides have been specified yet. The values of the map should be
+ * Boolean.TRUE or Boolean.FALSE, and the unnamed package is represented
+ * by the null key. This map must be synchronized on this instance.
+ */
+// Package visible for use by Class.
+Map packageAssertionStatus;
+
+/**
+ * The command-line state of the class assertion status overrides. This
+ * map is never modified, so it does not need to be synchronized.
+ */
+// Package visible for use by Class.
+// XXX should be set from command line
+static final Map systemClassAssertionStatus = new HashMap();
+
+/**
+ * The map of class assertion status overrides, or null if no class
+ * overrides have been specified yet. The values of the map should be
+ * Boolean.TRUE or Boolean.FALSE. This map must be synchronized on this
+ * instance.
+ */
+// Package visible for use by Class.
+Map classAssertionStatus;
 
 private ProtectionDomain defaultProtectionDomain;
 private final ClassLoader parent;
@@ -309,4 +360,77 @@ ProtectionDomain getProtectionDomain(Class clazz) {
 private native Class defineClass0(String name, byte data[], int off, int len);
 private native void resolveClass0(Class cls);
 
+/**
+ * Set the default assertion status for classes loaded by this classloader,
+ * used unless overridden by a package or class request.
+ *
+ * @param enabled true to set the default to enabled
+ * @see #setClassAssertionStatus(String, boolean)
+ * @see #setPackageAssertionStatus(String, boolean)
+ * @see #clearAssertionStatus()
+ * @since 1.4
+ */
+public void setDefaultAssertionStatus(boolean enabled)
+{
+	defaultAssertionStatus = enabled;
+}
+  
+/**
+ * Set the default assertion status for packages, used unless overridden
+ * by a class request. This default also covers subpackages, unless they
+ * are also specified. The unnamed package should use null for the name.
+ *
+ * @param name the package (and subpackages) to affect
+ * @param enabled true to set the default to enabled
+ * @see #setDefaultAssertionStatus(String, boolean)
+ * @see #setClassAssertionStatus(String, boolean)
+ * @see #clearAssertionStatus()
+ * @since 1.4
+ */
+public synchronized void setPackageAssertionStatus(String name,
+                                                   boolean enabled)
+{
+	if (packageAssertionStatus == null)
+		packageAssertionStatus
+		  = new HashMap(systemPackageAssertionStatus);
+	packageAssertionStatus.put(name, enabled ? Boolean.TRUE : Boolean.FALSE);
+}
+  
+/**
+ * Set the default assertion status for a class. This only affects the
+ * status of top-level classes, any other string is harmless.
+ *
+ * @param name the class to affect
+ * @param enabled true to set the default to enabled
+ * @throws NullPointerException if name is null
+ * @see #setDefaultAssertionStatus(String, boolean)
+ * @see #setPackageAssertionStatus(String, boolean)
+ * @see #clearAssertionStatus()
+ * @since 1.4
+ */
+public synchronized void setClassAssertionStatus(String name,
+                                                 boolean enabled)
+{
+	if (classAssertionStatus == null)
+		classAssertionStatus = new HashMap(systemClassAssertionStatus);
+	// The toString() hack catches null, as required.
+	classAssertionStatus.put(name.toString(), enabled ? Boolean.TRUE : Boolean.FALSE);
+}
+  
+/**
+ * Resets the default assertion status of this classloader, its packages
+ * and classes, all to false. This allows overriding defaults inherited
+ * from the command line.
+ *
+ * @see #setDefaultAssertionStatus(boolean)
+ * @see #setClassAssertionStatus(String, boolean)
+ * @see #setPackageAssertionStatus(String, boolean)
+ * @since 1.4
+ */
+public synchronized void clearAssertionStatus()
+{
+	defaultAssertionStatus = false;
+	packageAssertionStatus = new HashMap();
+	classAssertionStatus = new HashMap();
+}
 }
