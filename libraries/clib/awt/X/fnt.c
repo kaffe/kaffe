@@ -129,7 +129,7 @@ Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, XFontStruct* fs 
   jarray    widths;
   jint      *jw;
   jboolean isCopy;
-  register  i, j;
+  register int i, j;
 
   widths = (*env)->NewIntArray( env, 256);
   jw = (*env)->GetIntArrayElements( env, widths, &isCopy);
@@ -210,13 +210,15 @@ Java_java_awt_Toolkit_fntStringWidth ( JNIEnv* env, jclass clazz, XFontStruct* f
   jboolean isCopy;
   const jchar    *jc = (*env)->GetStringChars( env, jStr, &isCopy);
   int      len = (*env)->GetStringLength( env, jStr);
-  int      w, n;
+  int      w;
   XChar2b  *b;
 
 #ifndef WORDS_BIGENDIAN
-  n = sizeof(XChar2b)*len;
-  b = (XChar2b*) getBuffer( X, n);
-  swab( jc, b, n);
+  {
+    int n = sizeof(XChar2b)*len;
+    b = (XChar2b*) getBuffer( X, n);
+    swab( jc, b, n);
+  }
 #else
   b = (XChar2b*) jc;
 #endif

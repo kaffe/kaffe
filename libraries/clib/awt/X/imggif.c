@@ -17,8 +17,10 @@
 
 #include "toolkit.h"
 
+#if defined(HAVE_GIF_LIB_H)
 static int iOffset[] = { 0, 4, 2, 1 };
 static int iJumps[] = { 8, 8, 4, 2 };
+#endif
 
 /* references to img.c */
 Image* createImage ( int width, int height );

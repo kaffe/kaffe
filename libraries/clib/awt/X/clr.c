@@ -426,11 +426,11 @@ initColorMapping ( JNIEnv* env, Toolkit* X )
 
 #ifdef DEBUG
   fprintf( stderr, "visual:\n");
-  fprintf( stderr, "  id:          %d\n", v->visualid);
+  fprintf( stderr, "  id:          %d\n", (int)v->visualid);
   fprintf( stderr, "  class:       %d\n", v->class);
-  fprintf( stderr, "  red_mask     %x\n", v->red_mask);
-  fprintf( stderr, "  green_mask   %x\n", v->green_mask);
-  fprintf( stderr, "  blue_mask    %x\n", v->blue_mask);
+  fprintf( stderr, "  red_mask     %x\n", (int)v->red_mask);
+  fprintf( stderr, "  green_mask   %x\n", (int)v->green_mask);
+  fprintf( stderr, "  blue_mask    %x\n", (int)v->blue_mask);
   fprintf( stderr, "  bits_per_rgb %x\n", v->bits_per_rgb);
   fprintf( stderr, "  map_entries  %d\n", v->map_entries);
 #endif

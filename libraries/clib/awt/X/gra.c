@@ -181,7 +181,7 @@ Java_java_awt_Toolkit_graDrawString ( JNIEnv* env, jclass clazz,
 									  Graphics* gr, jstring str, jint x, jint y )
 {
   jboolean     isCopy;
-  int          n, len;
+  int          len;
   const jchar  *jc;
   XChar2b      *b;
 
@@ -191,9 +191,11 @@ Java_java_awt_Toolkit_graDrawString ( JNIEnv* env, jclass clazz,
   jc = (*env)->GetStringChars( env, str, &isCopy);
 
 #ifndef WORDS_BIGENDIAN
-  n = sizeof(XChar2b)*len;
-  b = (XChar2b*) getBuffer( X, n);
-  swab( jc, b, n);
+  {
+    int n = sizeof(XChar2b)*len;
+    b = (XChar2b*) getBuffer( X, n);
+    swab( jc, b, n);
+  }
 #else
   b = (XChar2b*) jc;
 #endif
@@ -249,7 +251,7 @@ Java_java_awt_Toolkit_graFillOval ( JNIEnv* env, jclass clazz, Graphics* gr,
 int jarray2Points ( JNIEnv* env, Toolkit* X, XPoint** pp, int x0, int y0,
 					jarray xPoints, jarray yPoints, int nPoints )
 {
-  register i;
+  register int i;
   int      n;
   jboolean isCopy;
   jint     *jx = (*env)->GetIntArrayElements( env, xPoints, &isCopy);

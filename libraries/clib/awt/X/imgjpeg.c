@@ -244,7 +244,7 @@ readJpeg ( struct jpeg_decompress_struct* cinfo, int colors )
 Image*
 readJpegFile ( FILE* infile )
 {
-  Image *img;
+  Image *img = 0;
 
 #ifdef HAVE_JPEGLIB_H
   struct jpeg_decompress_struct cinfo;

@@ -323,7 +323,7 @@ Java_java_awt_Toolkit_imgSetIdxPels ( JNIEnv* env, jclass clazz, Image * img,
 									  jarray clrMap, jarray idxPels, jint trans,
 									  jint off, jint scan)
 {
-  register        row, col;
+  register int    row, col;
   unsigned long   pix;
   jint            rgb;
   jboolean        isCopy;
@@ -338,7 +338,7 @@ Java_java_awt_Toolkit_imgSetIdxPels ( JNIEnv* env, jclass clazz, Image * img,
 
   for ( row = y; row < maxRow; row++) {
     for ( col = x; col < maxCol; col++, idx++) {
-      rgb = clr[*idx];
+      rgb = clr[(int)*idx];
       pix = pixelValue( X, rgb);
       if ( trans >= 0 ) {
 		if ( *idx == trans ){
@@ -361,7 +361,7 @@ Java_java_awt_Toolkit_imgSetRGBPels ( JNIEnv* env, jclass clazz, Image * img,
 									  jint x, jint y, jint w, jint h,
 									  jarray rgbPels, jint off, jint scan)
 {
-  register        row, col;
+  register int    row, col;
   unsigned long   pix;
   jboolean        isCopy;
   jint            *rgbs = (*env)->GetIntArrayElements( env, rgbPels, &isCopy);
