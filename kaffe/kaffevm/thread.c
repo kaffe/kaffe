@@ -290,12 +290,16 @@ startSpecialThread(void *arg)
 
 	ksemInit(&THREAD_DATA()->sem);
 
+	/* We save the value before the lock so we are sure
+	 * pointer_args is still a valid pointer on the stack.
+	 */
+	func = (void(*)(void*))pointer_args[0];
+	argument = pointer_args[1];
+
 	lockStaticMutex(&thread_start_lock);
 	signalStaticCond(&thread_start_lock);
 	unlockStaticMutex(&thread_start_lock);
 
-	func = (void(*)(void*))pointer_args[0];
-	argument = pointer_args[1];
 	THREAD_DATA()->exceptObj = NULL;
 
 	func(argument);

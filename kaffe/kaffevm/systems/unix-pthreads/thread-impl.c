@@ -148,10 +148,17 @@ static sem_t		critSem;
 /** Signal set which contains important signals for suspending threads. */
 static sigset_t		suspendSet;
 
-/* an optional deadlock watchdog thread (not in the activeThread list),
- * activated by KAFFE_VMDEBUG topic JTHREAD */
 #ifdef KAFFE_VMDEBUG
+/** an optional deadlock watchdog thread (not in the activeThread list),
+ * activated by KAFFE_VMDEBUG topic JTHREAD */
 static pthread_t	deadlockWatchdog;
+
+/**
+ * This is a debugging variable to analyze possible deadlock when dumping thread states.
+ * It retains a pointer to the thread holding the thread list lock.
+ */
+static jthread_t        threadListOwner;
+
 #endif /* KAFFE_VMDEBUG */
 
 static void suspend_signal_handler ( int sig );
@@ -166,11 +173,17 @@ protectThreadList(jthread_t cur)
 {
   cur->blockState |= BS_THREAD;
   jmutex_lock(&activeThreadsLock);
+#ifdef KAFFE_VMDEBUG
+  threadListOwner = cur;
+#endif
 }
 
 static inline void
 unprotectThreadList(jthread_t cur)
 {
+#ifdef KAFFE_VMDEBUG
+  threadListOwner = NULL;
+#endif
   jmutex_unlock(&activeThreadsLock);
   cur->blockState &= ~BS_THREAD;
 }
@@ -219,9 +232,11 @@ tDump (void)
   DBG(JTHREAD, {
 	jthread_t	cur = jthread_current();
 
-	protectThreadList(cur);
-
 	dprintf("\n======================== thread dump =========================\n");
+
+	dprintf("thread list lock owner: %p (name=%s)\n", threadListOwner);
+
+	protectThreadList(cur);
 
 	dprintf("state:  nonDaemons: %d, critSection: %d\n",
 					 nonDaemons, critSection);
@@ -232,9 +247,9 @@ tDump (void)
 	dprintf("\ncached threads:\n");
 	tDumpList( cur, cache);
 
-	dprintf("====================== end thread dump =======================\n");
-
 	unprotectThreadList(cur);
+
+	dprintf("====================== end thread dump =======================\n");
   })
 }
 
@@ -1246,7 +1261,7 @@ jthread_unsuspendall (void)
 		    {
 		      DBG( JTHREAD, dprintf("error sending RESUME signal to %p: %d\n", t, status))
 		    }		  
-		  /* ack wait workaround, see TentercritSect remarks */
+		  /* ack wait workaround, see jthread_suspendall remarks */
 		  sem_wait( &critSem);
 		}
 	      else
