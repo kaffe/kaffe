@@ -1,3 +1,8 @@
+Sat Jul 10 17:42:52 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/lang/String.java: optimize regionMatches()
+	* kaffe/kaffe/kaffevm/jit/machine.c: align profiling output columns
+
 Sat Jul 10 16:53:19 PDT 1999 Edouard G. Parmelan <edouard.parmelan@quadratec.fr>
 
 	* FAQ/FAQ.profiler config/i386/common.h config/i386/jit-i386.def
