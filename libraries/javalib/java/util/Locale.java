@@ -78,6 +78,7 @@ import java.io.Serializable;
  * @author Jochen Hoenicke
  * @author Paul Fisher
  * @author Eric Blake (ebb9@email.byu.edu)
+ * @author Andrew John Hughes (gnu_andrew@member.fsf.org)
  * @since 1.1
  * @status updated to 1.4
  */
@@ -590,25 +591,33 @@ public final class Locale implements Serializable, Cloneable
   }
 
   /**
-   * Gets the language name suitable for display to the user, formatted
-   * for a specified locale.
+   * <p>
+   * Gets the name of the language specified by this locale, in a form suitable
+   * for display to the user.  If possible, the display name will be localized
+   * to the specified locale.  For example, if the locale instance is
+   * <code>Locale.GERMANY</code>, and the specified locale is <code>Locale.UK</code>,
+   * the result would be 'German'.  Using the German locale would instead give
+   * 'Deutsch'.  If the display name can not be localized to the supplied
+   * locale, it will fall back on other output in the following order:
+   * </p>
+   * <ul>
+   * <li>the display name in the default locale</li>
+   * <li>the display name in English</li>
+   * <li>the ISO code</li>
+   * </ul>
+   * <p>
+   * If the language is unspecified by this locale, then the empty string is
+   * returned.
+   * </p>
    *
-   * @param locale locale to use for formatting
+   * @param inLocale the locale to use for formatting the display string.
    * @return the language name of this locale localized to the given locale,
-   *         with the ISO code as backup
+   *         with the default locale, English and the ISO code as backups.
+   * @throws NullPointerException if the supplied locale is null.
    */
-  public String getDisplayLanguage(Locale locale)
+  public String getDisplayLanguage(Locale inLocale)
   {
-    try
-      {
-        ResourceBundle bundle
-          = ResourceBundle.getBundle("java.util.iso639", locale);
-        return bundle.getString(language);
-      }
-    catch (MissingResourceException ex)
-      {
-        return language;
-      }
+    return getDisplayString(inLocale, language, "languages");
   }
 
   /**
@@ -628,25 +637,33 @@ public final class Locale implements Serializable, Cloneable
   }
 
   /**
-   * Gets the country name suitable for display to the user, formatted
-   * for a specified locale.
+   * <p>
+   * Gets the name of the country specified by this locale, in a form suitable
+   * for display to the user.  If possible, the display name will be localized
+   * to the specified locale.  For example, if the locale instance is
+   * <code>Locale.GERMANY</code>, and the specified locale is <code>Locale.UK</code>,
+   * the result would be 'Germany'.  Using the German locale would instead give
+   * 'Deutschland'.  If the display name can not be localized to the supplied
+   * locale, it will fall back on other output in the following order:
+   * </p>
+   * <ul>
+   * <li>the display name in the default locale</li>
+   * <li>the display name in English</li>
+   * <li>the ISO code</li>
+   * </ul>
+   * <p>
+   * If the country is unspecified by this locale, then the empty string is
+   * returned.
+   * </p>
    *
-   * @param locale locale to use for formatting
+   * @param inLocale the locale to use for formatting the display string.
    * @return the country name of this locale localized to the given locale,
-   *         with the ISO code as backup
+   *         with the default locale, English and the ISO code as backups.
+   * @throws NullPointerException if the supplied locale is null.
    */
-  public String getDisplayCountry(Locale locale)
+  public String getDisplayCountry(Locale inLocale)
   {
-    try
-      {
-        ResourceBundle bundle =
-          ResourceBundle.getBundle("java.util.iso3166", locale);
-        return bundle.getString(country);
-      }
-    catch (MissingResourceException ex)
-      {
-        return country;
-      }
+    return getDisplayString(inLocale, country, "territories");
   }
 
   /**
@@ -665,19 +682,115 @@ public final class Locale implements Serializable, Cloneable
     return getDisplayVariant(defaultLocale);
   }
 
+
   /**
-   * Returns the variant name of this locale localized to the
-   * given locale. If the localized is not found, the variant code
-   * itself is returned.
+   * <p>
+   * Gets the name of the variant specified by this locale, in a form suitable
+   * for display to the user.  If possible, the display name will be localized
+   * to the specified locale.  For example, if the locale instance is a revised
+   * variant, and the specified locale is <code>Locale.UK</code>, the result would be
+   * 'REVISED'.  Using the German locale would instead give 'Revidiert'.  If the
+   * display name can not be localized to the supplied locale, it will fall back on
+   * other output in the following order:
+   * </p>
+   * <ul>
+   * <li>the display name in the default locale</li>
+   * <li>the display name in English</li>
+   * <li>the ISO code</li>
+   * </ul>
+   * <p>
+   * If the variant is unspecified by this locale, then the empty string is
+   * returned.
+   * </p>
    *
-   * @param locale locale to use for formatting
-   * @return the variant code of this locale localized to the given locale,
-   *         with the ISO code as backup
+   * @param inLocale the locale to use for formatting the display string.
+   * @return the variant name of this locale localized to the given locale,
+   *         with the default locale, English and the ISO code as backups.
+   * @throws NullPointerException if the supplied locale is null.
    */
-  public String getDisplayVariant(Locale locale)
+  public String getDisplayVariant(Locale inLocale)
   {
-    // XXX - load a bundle?
-    return variant;
+    return getDisplayString(inLocale, variant, "variants");
+  }
+
+  /**
+   * This method is used by the display name lookup methods to retrieve
+   * the localized name of a particular piece of locale data.    
+   * If the display name can not be localized to the supplied
+   * locale, it will fall back on other output in the following order:
+   * </p>
+   * <ul>
+   * <li>the display name in the default locale</li>
+   * <li>the display name in English</li>
+   * <li>the ISO code</li>
+   * </ul>
+   * <p>
+   * If the language is unspecified by this locale, then the empty string is
+   * returned.
+   * </p>
+   *
+   * @param inLocale the locale to use for formatting the display string.
+   * @param key the locale data used as a key to the localized lookup tables.
+   * @param tableName the name of the hashtable containing the localized data.
+   */
+  private String getDisplayString(Locale inLocale, String key, String tableName)
+  {
+    String displayString;
+    Hashtable table;
+
+    if (key.equals(""))
+      {
+	return "";
+      }
+    /* Display in inLocale */
+    try
+      {
+        table = (Hashtable)
+	  ResourceBundle.getBundle("gnu.java.locale.LocaleInformation",
+				   inLocale).getObject(tableName);
+	displayString = (String) table.get(key);
+      }
+    catch (MissingResourceException exception)
+      {
+	displayString = null;
+      }
+    /* Display in default locale */
+    if (displayString == null)
+      {
+	try 
+	  {
+	    ResourceBundle bundle;
+	    
+	    bundle = ResourceBundle.getBundle("gnu.java.locale.LocaleInformation");
+	    table = (Hashtable) bundle.getObject(tableName);
+	    displayString = (String) table.get(key);
+	  }
+	catch (MissingResourceException exception)
+	  {
+	    displayString = null;
+	  }
+      }
+    /* Display in English */
+    if (displayString == null)
+      {
+	try
+	  {
+	    table = (Hashtable)
+	      ResourceBundle.getBundle("gnu.java.locale.LocaleInformation",
+				       Locale.ENGLISH).getObject(tableName);
+	    displayString= (String) table.get(key);
+	  }
+	catch (MissingResourceException exception)
+	  {
+	    displayString = null;
+	  }
+      }
+    /* Display ISO code */
+    if (displayString == null)
+      {
+	displayString = key;
+      }
+    return displayString;
   }
 
   /**

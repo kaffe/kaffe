@@ -45,7 +45,7 @@ public ZipFile(String fname) throws IOException
 {
 	name = fname;
 	/* only have one thread at a time attempt to open the zip file */
-	synchronized(fname) {
+	synchronized(ZipFile.class) {
 	    zip = openZipFile0(fname);
 	}
 	if (zip == null) {
