@@ -556,7 +556,10 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 		i = CLASS_NMETHODS(cls);
 		mth = CLASS_METHODS(cls);
 		for (i--; i >= 0; i--, mth++) {
-			if ((mth->accflags & (ACC_CONSTRUCTOR|ACC_PRIVATE)) != 0) { 
+			/* skip private methods, constructors, and
+			 * <clinit> again.  Do not include <clinit> twice 
+			 */
+			if (((mth->accflags & (ACC_CONSTRUCTOR|ACC_PRIVATE)) != 0) || (utf8ConstEqual(mth->name, init_name) && utf8ConstEqual(mth->signature, void_signature))) { 
 				base[i].name = 0;
 			}
 			else {
