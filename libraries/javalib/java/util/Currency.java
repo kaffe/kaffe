@@ -1,5 +1,5 @@
 /* Currency.java -- Representation of a currency
-   Copyright (C) 2003, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.util.Properties;
 
 /**
  * Representation of a currency for a particular locale.  Each currency

@@ -1,7 +1,5 @@
-/*
-java.beans.XMLDecoder
-
-Copyright (C) 2004 Free Software Foundation, Inc.
+/* java.beans.XMLDecoder --
+   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -37,18 +35,20 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.beans;
+
+import gnu.java.beans.decoder.DecoderContext;
+import gnu.java.beans.decoder.DefaultExceptionListener;
+import gnu.java.beans.decoder.PersistenceParser;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import gnu.java.beans.decoder.DefaultExceptionListener;
-import gnu.java.beans.decoder.PersistenceParser;
-import gnu.java.beans.decoder.DecoderContext;
-
-/** The XMLDecoder reads XML data that is structured according to
+/**
+ * The XMLDecoder reads XML data that is structured according to
  * <a href="http://java.sun.com/products/jfc/tsc/articles/persistence3/javabeans.dtd">this</a> DTD
  * and creates objects according to the content. Usually such data is generated using the
  * {@link XMLEncoder} class.
@@ -59,7 +59,7 @@ import gnu.java.beans.decoder.DecoderContext;
  * 	&lt;string&gt;Hello World&lt;/string&gt;
  * 	&lt;int&gt;200&lt;/int&gt;
  * &lt;/java&gt;
- * </code
+ * </code>
  * <p>To read the <code>String</code> and the <code>Integer</code> instance the following can be used (assume
  * the XML data can be obtained from the InputStream):</p>
  * <code>

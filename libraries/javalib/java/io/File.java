@@ -1,5 +1,5 @@
 /* File.java -- Class representing a file on disk
-   Copyright (C) 1998, 1999, 2000, 2001, 2003, 2004
+   Copyright (C) 1998, 1999, 2000, 2001, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -40,6 +40,7 @@ exception statement from your version. */
 package java.io;
 
 import gnu.classpath.SystemProperties;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;

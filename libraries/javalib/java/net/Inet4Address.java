@@ -1,5 +1,5 @@
 /* Inet4Address.java --
-   Copyright (C) 2002, 2003, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -39,7 +39,6 @@ exception statement from your version. */
 package java.net;
 
 import java.io.ObjectStreamException;
-import java.util.Arrays;
 
 /*
  * Written using on-line Java Platform 1.4 API Specification and
