@@ -1051,6 +1051,19 @@ if test x"$have_resource_h" = x"yes"; then
    AC_CHECK_FUNCS(getrusage, have_rusage=yes)
 fi
 
+dnl Check whether there exists mprotect. If it exists and we are
+dnl on HPUX, then prevent kaffe from using it when the pointer does not
+dnl come from mmap.
+AC_CHECK_FUNCS(mprotect)
+if test x"$ac_cv_func_mprotect" = x"yes"; then
+   case "$Khost_os" in
+	hpux*)
+		;;
+	*) AC_DEFINE(HAVE_COMPATIBLE_MPROTECT, 1, [Does mprotect support protecting region not covered by mmap ?])
+		;;
+   esac
+fi
+
 dnl needed for valgrind
 AC_CHECK_HEADERS([valgrind/memcheck.h])
 

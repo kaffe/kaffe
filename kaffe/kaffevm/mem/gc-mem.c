@@ -625,11 +625,28 @@ uintp gc_block_base;
 static gc_block *gc_last_block;
 static gc_block *gc_prim_freelist[GC_PRIM_LIST_COUNT+1];
 
+#ifndef PROT_NONE
+#define PROT_NONE 0
+#endif
+
+#if !defined(HAVE_MPROTECT) || !defined(HAVE_COMPATIBLE_MPROTECT)
+#define mprotect(A,L,P)
+#define ALL_PROT
+#define NO_PROT
+#else
+/* In a sense, this is backwards. */
+#define ALL_PROT PROT_READ|PROT_WRITE|PROT_EXEC
+#define NO_PROT  PROT_NONE
+#endif
+
 /* Mark a primitive block as used */
 static inline void 
 gc_block_add(gc_block *b)
 {
   b->nr = 1;
+#if defined(KAFFE_VMDEBUG)
+  mprotect(GCBLOCK2BASE(b), b->size, ALL_PROT);
+#endif
 }
 
 /* Mark a primitive block as unused */
@@ -637,6 +654,9 @@ static inline void
 gc_block_rm(gc_block *b)
 {
   b->nr = 0;
+#if defined(KAFFE_VMDEBUG)
+  mprotect(GCBLOCK2BASE(b), b->size, NO_PROT);
+#endif
 }
 
 /* Get the end a gc block
@@ -945,6 +965,8 @@ pagealloc(size_t size)
 	ptr = (void*)((((uintp)ptr) + gc_pgsize - 1) & -gc_pgsize);
 
 #endif
+	mprotect(ptr, size, ALL_PROT);
+
 	addToCounter(&gcpages, "gcmem-system pages", 1, size);
 	return ((uintp) ptr);
 }
@@ -1071,6 +1093,9 @@ gc_block_alloc(size_t size)
 	gc_heap_range = last_addr - gc_heap_base;
 	DBG(GCSYSALLOC, dprintf("%ld unused bytes in heap addr range\n",
 				(long) (gc_heap_range - gc_heap_total)));
+#if defined(KAFFE_VMDEBUG)
+	mprotect((void *) heap_addr, size, NO_PROT);
+#endif
 	return GCMEM2BLOCK(heap_addr);
 }
 

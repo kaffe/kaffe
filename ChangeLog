@@ -1,5 +1,15 @@
 2004-05-29  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* configure.ac: Check for mprotect. If the host is an HPUX disable
+	the use of it for some code.
+
+	* config/config.h.in, configure: Regenerated.
+
+	* kaffe/kaffevm/mem/gc-mem.c: Added memory protection handling for
+	the heap.
+
+2004-05-29  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-jthreads/signal.c
 	(nullException): Check whether currentJThread exists.
 
