@@ -1967,13 +1967,21 @@ jthreadedConnect(int fd, struct sockaddr* addr, size_t len, int timeout)
 			break;	/* success or real error */
 		}
 		if (r == -1 && errno == EISCONN) {
-			/* on Solaris 2.5, connect returns EISCONN
-			   when we retry a connect attempt in
-			   background.  This might lead to false
-			   positives if the connect fails and another
-			   thread tries to connect this socket and
-			   succeeds before this one is waken up.
-			   Let's just hope it doesn't happen for now.  */
+			/* On Solaris 2.5, after getting EINPROGRESS
+			   from a non-blocking connect request, we
+			   won't ever get success.  When we're waken
+			   up, we'll either get EISCONN, which should
+			   be taken as success, or a real failure.
+			   However, we can't map EISCONN to success
+			   inconditionally, because attempting to
+			   connect the same socket again should raise
+			   an exception.
+
+			   Mapping EISCONN to success might lead to
+			   false positives if connect fails and
+			   another thread succeeds to connect this
+			   socket before this one is waken up.  Let's
+			   just hope it doesn't happen for now.  */
 			if (inProgress) {
 				r = 0;
 			}

@@ -1,3 +1,8 @@
+Wed Feb 17 01:24:34 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
+	(jthreadedConnect): clarify EINPROGRESS/EISCONN comment
+
 Tue Feb 16 09:57:31 1999  Moses DeJong <dejong@cs.umn.edu>
 
 	* libraries/javalib/java/util/zip/{ZipEntry,ZipOutputStream}.java:
