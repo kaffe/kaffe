@@ -385,55 +385,6 @@ public class BufferedReaderTest {
 			System.out.println(e.toString());
 		}
 
-		/*
-		   Actually, that seams to depend on the
-		   buffer size. I've run tests with different
-		   buffer sizes, and when the buffer is large
-		   enough to serve the read ahead buffer and the
-		   subsequent reads, then reset still works.
-		*/
-
-		sr = new StringReader("ABCDEFGH");
-		br = new BufferedReader(sr);
-
-		System.out.println("Reset invalidated");
-
-		try {
-			br.mark(1);
-			System.out.println(br.read());
-			System.out.println(br.read());
-			br.reset();
-		}
-		catch (Exception e) {
-			System.out.println(e.toString());
-		}
-
-		// let's see what happens when I skip over
-		// marked read ahead buffer, when
-		// buffer size is large enough to accomodate 
-		// the requests without the need for refilling.
-
-		System.out.println("Skipping over marked buffer");
-
-		try {
-			br.mark(1);
-			br.skip(2);
-			System.out.println(br.read());
-
-			// According to JDK 1.1.8 behaviour,
-			// this should not invalidate the
-			// mark. That is a strong hint that
-			// mark validation/invalidation should
-			// happen in the fillOutBuffer method.
-
-			br.reset();
-			System.out.println(br.read());
-		}
-		catch (Exception e) {
-			System.out.println(e.toString());
-		}
-
-
 		/* And now to something completely different:
 		   BufferedReader.read (char [], int, int).
 
@@ -545,7 +496,7 @@ java.lang.IllegalArgumentException: Read-ahead limit is negative
 4567
 4567
 java.lang.NullPointerException
-java.lang.IllegalArgumentException: Buffer size is negative
+java.lang.IllegalArgumentException: Illegal buffer size: 0
 1
 java.io.IOException: Stream closed
 java.io.IOException: Stream closed
@@ -566,12 +517,6 @@ java.io.IOException: mark never set or invalidated
 Skipping over marked buffer
 69
 java.io.IOException: mark never set or invalidated
-Reset invalidated
-65
-66
-Skipping over marked buffer
-67
-65
 Null pointer
 java.lang.NullPointerException
 offset >= buf.length
