@@ -1,6 +1,9 @@
-Kaffe's build environment no longer has a depend target; automake
-takes care of it with the developer's version of the makefiles.  After
-`make dist', dependencies are hard-coded into the Makefiles.
+Kaffe's build environment no longer has a depend target.  The automake
+snapshot recommended for Kaffe (see FAQ.automake) takes care of
+generating dependencies as a side-effect of compilation, if possible,
+unless you `configure --disable-dependency-tracking', or in addition
+to compilation, if some dependency generator is available and you
+`configure --enable-dependency-tracking'.  
 
 -- 
 Alexandre Oliva
