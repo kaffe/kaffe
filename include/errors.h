@@ -75,6 +75,7 @@ extern void dumpErrorInfo(errorInfo *);
   (struct Hjava_lang_Throwable*)execute_java_constructor("java.io." #NAME, \
 	0, "(Ljava/lang/String;)V", stringC2Java(MESS))
 
+#define NoClassDefFoundError NEW_LANG_EXCEPTION(NoClassDefFoundError)
 #define NoSuchMethodError(M) NEW_LANG_EXCEPTION_MESSAGE(NoSuchMethodError, M)
 #define NoSuchFieldError(M) NEW_LANG_EXCEPTION_MESSAGE(NoSuchFieldError, M)
 #define LinkageError NEW_LANG_EXCEPTION(LinkageError)

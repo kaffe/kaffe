@@ -485,6 +485,15 @@ soft_stackoverflow(void)
 }
 
 /*
+ * soft_nosuchclass.
+ */
+void            
+soft_nosuchclass(void)
+{
+	throwException(NoClassDefFoundError);
+}
+
+/*
  * soft_nosuchmethod.
  */
 void            

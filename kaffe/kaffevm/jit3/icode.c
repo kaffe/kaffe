@@ -4619,6 +4619,14 @@ softcall_fakecall(label* from, label* to, void* func)
 }
 
 void
+softcall_nosuchclass(void)
+{
+	begin_func_sync();
+	call_soft(soft_nosuchclass);
+	end_func_sync();
+}
+
+void
 softcall_nosuchmethod(struct Hjava_lang_Class* cls, Utf8Const* name, Utf8Const* sig)
 {
 	begin_func_sync();

@@ -78,6 +78,7 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
 		ci = METHODREF_CLASS(idx, pool);
 		class = getClass(ci, this, einfo);
 		if (class == NULL) {
+			countInsAndOuts(sig->data, &call->in, &call->out, &call->rettype);
 			return (false);
 		}
 		assert(class->state >= CSTATE_LINKED);

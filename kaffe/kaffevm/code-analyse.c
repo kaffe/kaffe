@@ -1525,8 +1525,10 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 		case INVOKEVIRTUAL:
 		case INVOKESPECIAL:
 			if (getMethodSignatureClass(lclw, meth->class, true, false, &call, einfo) == false) {
+#if 0
 				failed = true;
 				goto done;
+#endif
 			}
 
 			sig = call.signature->data;
@@ -1626,8 +1628,10 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case INVOKEINTERFACE:
 			if (getMethodSignatureClass(lclw, meth->class, true, false, &call, einfo) == false) {
+#if 0
 				failed = true;
 				goto done;
+#endif
 			}
 
 			sig = call.signature->data;
@@ -1726,8 +1730,10 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case INVOKESTATIC:
 			if (getMethodSignatureClass(lclw, meth->class, true, false, &call, einfo) == false) {
+#if 0
 				failed = true;
 				goto done;
+#endif
 			}
 
 			sig = call.signature->data;
@@ -1824,10 +1830,12 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case NEW:
 			class = getClass(lclw, meth->class, einfo);
+#if 0
 			if (class == 0) {
 				failed = true;
 				goto done;
 			}
+#endif
 			STKPUSH(1);
 			STACKOUT(0, TOBJ);
 			INCPC(3);
@@ -1841,10 +1849,12 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case ANEWARRAY:
 			class = getClass(lclw, meth->class, einfo);
+#if 0
 			if (class == 0) {
 				failed = true;
 				goto done;
 			}
+#endif
 			STACKIN(0, TINT);
 			STACKOUT(0, TOBJ);
 			INCPC(3);
@@ -1852,10 +1862,12 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case MULTIANEWARRAY:
 			class = getClass(lclw, meth->class, einfo);
+#if 0
 			if (class == 0) {
 				failed = true;
 				goto done;
 			}
+#endif
 			for (idx = INSN(pc+3) - 1; idx >= 0; idx--) {
 				STACKIN(idx, TINT);
 			}
@@ -1878,10 +1890,12 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case CHECKCAST:
 			class = getClass(lclw, meth->class, einfo);
+#if 0
 			if (class == 0) {
 				failed = true;
 				goto done;
 			}
+#endif
 			/* SET_INSN(pc, CHECKCAST_FAST); */
 			STACKIN(0, TOBJ);
 			STACKOUT(0, TOBJ);
@@ -1890,10 +1904,12 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		case INSTANCEOF:
 			class = getClass(lclw, meth->class, einfo);
+#if 0
 			if (class == 0) {
 				failed = true;
 				goto done;
 			}
+#endif
 			/* SET_INSN(pc, INSTANCEOF_FAST); */
 			STACKIN(0, TOBJ);
 			STACKOUT(0, TINT);

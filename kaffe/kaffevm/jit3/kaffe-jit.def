@@ -2246,7 +2246,7 @@ define_insn(INVOKEVIRTUAL)
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
 
-	get_method_info(idx);
+	get_method_info_noerror(idx);
 
 	/* If method doesn't exists, call 'NoSuchMethodError' */
 	if (method_method() == 0) {
@@ -2301,7 +2301,7 @@ define_insn(INVOKESPECIAL)
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
 
-	get_special_method_info(idx);
+	get_special_method_info_noerror(idx);
 
 	/* If method doesn't exists, call 'NoSuchMethodError' */
 	if (method_method() == 0) {
@@ -2346,7 +2346,7 @@ define_insn(INVOKESTATIC)
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
 
-	get_method_info(idx);
+	get_method_info_noerror(idx);
 
 	/* If method doesn't exists, call 'NoSuchMethodError' */
 	if (method_method() == 0) {
@@ -2387,7 +2387,7 @@ define_insn(INVOKEINTERFACE)
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
 
-	get_interface_method_info(idx);
+	get_interface_method_info_noerror(idx);
 
 	/* If method doesn't exists, call 'NoSuchMethodError' */
 	if (method_method() == 0) {
@@ -2436,9 +2436,15 @@ define_insn(NEW)
 
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
 
-	get_class_info(idx);
-	push(1);
-	softcall_new(stack(0), class_object());
+	get_class_info_noerror(idx);
+	if (class_object() == 0) {
+		push(1);
+		softcall_nosuchclass();
+	}
+	else {
+		push(1);
+		softcall_new(stack(0), class_object());
+	}
 }
 
 define_insn(NEWARRAY)

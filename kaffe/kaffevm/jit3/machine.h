@@ -35,6 +35,15 @@
 /* -------------------------------------------------------------------- */
 /* Methods */
 
+#define	get_method_info_noerror(IDX) \
+	getMethodSignatureClass(idx, xmeth->class, true, 0, &cinfo, einfo)
+
+#define get_special_method_info_noerror(IDX) \
+	getMethodSignatureClass(idx, xmeth->class, true, 1, &cinfo, einfo)
+
+#define	get_interface_method_info_noerror(IDX) \
+	getMethodSignatureClass(idx, xmeth->class, true, 2, &cinfo, einfo)
+
 #define	get_method_info(IDX) \
 	if (getMethodSignatureClass(idx, xmeth->class, true, 0, &cinfo, einfo) == false) { success = false; goto done; }
 
@@ -61,16 +70,6 @@
 /* Fields */
 
 #define	get_field_info(IDX) \
-	getField((constIndex)(IDX), xmeth->class, false, &finfo)
-
-#define	get_static_field_info(IDX) \
-	getField((constIndex)(IDX), xmeth->class, true, &finfo)
-
-/* Desktop edition */
-#undef	get_field_info
-#undef	get_static_field_info
-
-#define	get_field_info(IDX) \
 	if (getField((constIndex)(IDX), xmeth->class, false, &finfo, einfo) == false) { \
 		success = false ; goto done; \
 	}
@@ -89,10 +88,9 @@
 /* -------------------------------------------------------------------- */
 /* Classes */
 
-#define	get_class_info(IDX)	crinfo = getClass((constIndex)(IDX), xmeth->class)
+#define	get_class_info_noerror(IDX) \
+	crinfo = getClass((IDX), xmeth->class, einfo)
 
-/* Desktop edition */
-#undef	get_class_info
 #define	get_class_info(IDX) \
 	crinfo = getClass((IDX), xmeth->class, einfo); \
 	if (crinfo == 0) { \

@@ -289,6 +289,7 @@ void softcall_monitorexit(SlotInfo*);
 void softcall_initialise_class(struct Hjava_lang_Class*);
 void softcall_addreference(SlotInfo*, SlotInfo*);
 void softcall_addreference_static(void*, SlotInfo*);
+void softcall_nosuchclass(void);
 void softcall_nosuchfield(Utf8Const*, Utf8Const*);
 void softcall_nosuchmethod(struct Hjava_lang_Class*, Utf8Const*, Utf8Const*);
 void softcall_newarray_const(SlotInfo*, int, int);
