@@ -86,27 +86,27 @@ private static CharToByteConverter getConverterInternal(String enc)
 	if (cls == noConverter) {
 		return (null);
 	}
+	String realenc = ConverterAlias.alias(enc);
 	if (cls == useIconv) {
-		return (getCharToByteIconv(ConverterAlias.alias(enc)));
+		return (getCharToByteIconv(ConverterAlias.iconvAlias(realenc)));
 	}
 	try {
 		if (cls == null) {
-			String realenc = ConverterAlias.alias(enc);
 			if (ConverterAlias.shouldUseIconv(realenc)) {
-				CharToByteConverter conv = getCharToByteIconv(realenc);
+				CharToByteConverter conv = getCharToByteIconv(ConverterAlias.iconvAlias(realenc));
 				cache.put(enc, (conv != null ? useIconv : noConverter));
 				return (conv);
 			}
-			realenc = encodingRoot + ".CharToByte" + realenc;
-			cls = Class.forName(realenc);
+			String enccls = encodingRoot + ".CharToByte" + realenc;
+			cls = Class.forName(enccls);
 			cache.put(enc, cls);
 		}
 		return (CharToByteConverter)cls.newInstance();
 	}
 	catch (ClassNotFoundException _) {
 		try {
-			String realenc = encodingRoot + ".CharToByte" + ConverterAlias.alias(enc);
-			InputStream in = ClassLoader.getSystemResourceAsStream(realenc.replace('.', '/') + ".ser");
+			String enccls = encodingRoot + ".CharToByte" + realenc;
+			InputStream in = ClassLoader.getSystemResourceAsStream(enccls.replace('.', '/') + ".ser");
 			if (in != null) {
 				ObjectInputStream oin = new ObjectInputStream(in);
 				Object obj = oin.readObject();
@@ -126,7 +126,7 @@ private static CharToByteConverter getConverterInternal(String enc)
 	catch (IllegalAccessException _) {
 	}
 	// Finally, try iconv.
-	CharToByteConverter conv = getCharToByteIconv(ConverterAlias.alias(enc));
+	CharToByteConverter conv = getCharToByteIconv(realenc);
 	cache.put(enc, (conv != null ? useIconv : noConverter));
 	return (conv);
 }

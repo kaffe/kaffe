@@ -1,3 +1,12 @@
+2004-10-07  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/kaffe/io/ByteToCharConverter.java,
+	libraries/javalib/kaffe/io/CharToByteConverter.java,
+	libraries/javalib/kaffe/io/ConverterAlias.java:
+	When to use iconv, use encoding names defined in iconv.
+	New method iconvAlias in ConverterAlias.java returns such
+	names.
+
 2004-10-05  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/javax/imageio/spi/ImageReaderSpi.java,

@@ -109,27 +109,27 @@ private static ByteToCharConverter getConverterInternal ( String enc ) {
 	if (cls == noConverter) {
 		return (null);
 	}
+	String realenc = ConverterAlias.alias(enc);
 	if (cls == useIconv) {
-		return (getByteToCharIconv(ConverterAlias.alias(enc)));
+		return (getByteToCharIconv(ConverterAlias.iconvAlias(realenc)));
 	}
 	try {
 		if (cls == null) {
-			String realenc = ConverterAlias.alias(enc);
 			if (ConverterAlias.shouldUseIconv(realenc)) {
-				ByteToCharConverter conv = getByteToCharIconv(realenc);
+				ByteToCharConverter conv = getByteToCharIconv(ConverterAlias.iconvAlias(realenc));
 				cache.put(enc, (conv != null ? useIconv : noConverter));
 				return (conv);
 			}
-			realenc = encodingRoot + ".ByteToChar" + realenc;
-			cls = Class.forName(realenc);
+			String enccls = encodingRoot + ".ByteToChar" + realenc;
+			cls = Class.forName(enccls);
 			cache.put(enc, cls);
 		}
 		return ((ByteToCharConverter)cls.newInstance());
 	}
 	catch (ClassNotFoundException _) {
 		try {
-			String realenc = encodingRoot + ".ByteToChar" + ConverterAlias.alias(enc);
-			InputStream in = ClassLoader.getSystemResourceAsStream(realenc.replace('.', '/') + ".ser");
+			String enccls = encodingRoot + ".ByteToChar" + realenc;
+			InputStream in = ClassLoader.getSystemResourceAsStream(enccls.replace('.', '/') + ".ser");
 			if (in != null) {
 				ObjectInputStream oin = new ObjectInputStream(in);
 				Object obj = oin.readObject();
@@ -149,7 +149,7 @@ private static ByteToCharConverter getConverterInternal ( String enc ) {
 	catch (InstantiationException _) {
 	}
 	// Finally, try iconv.
-        ByteToCharConverter conv = getByteToCharIconv(ConverterAlias.alias(enc));
+        ByteToCharConverter conv = getByteToCharIconv(realenc);
 	cache.put(enc, (conv != null ? useIconv : noConverter));
 	return (conv);
 }
