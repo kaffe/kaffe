@@ -5,7 +5,7 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * Copyright (c) 2003
+ * Copyright (c) 2003, 2004
  *      Kaffe.org contributors. See ChangeLog for details.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -35,6 +35,7 @@
 #define SIGNAL_CONTEXT_POINTER(scp) struct vregs * scp
 #define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)
 #define SIGNAL_PC(scp) ((scp)->eip)
+#define STACK_POINTER(scp) ((scp)->sp)
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"

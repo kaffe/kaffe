@@ -19,6 +19,7 @@
 #include "jsignal.h"
 #include "md.h"
 #include "gc.h"
+#include "files.h"
 
 #if defined(INTERPRETER)
 #define	DEFINEFRAME()		/* Does nothing */
@@ -35,16 +36,19 @@ static void floatingException(EXCEPTIONPROTO);
 
 static exchandler_t nullHandler;
 static exchandler_t floatingHandler;
+static exchandler_t stackOverflowHandler;
 
 /*
  * Setup the internal exceptions.
  */
 void
 jthread_initexceptions(exchandler_t _nullHandler,
-		       exchandler_t _floatingHandler)
+		       exchandler_t _floatingHandler,
+		       exchandler_t _stackOverflowHandler)
 {
 	nullHandler = _nullHandler;
 	floatingHandler = _floatingHandler;
+	stackOverflowHandler = _stackOverflowHandler;
 
 	if (DBGEXPR(EXCEPTION, false, true)) {
 		/* Catch signals we need to convert to exceptions */
@@ -67,8 +71,10 @@ jthread_initexceptions(exchandler_t _nullHandler,
  * Null exception - catches bad memory accesses.
  */
 static void
-nullException(EXCEPTIONPROTO)
+nullException(SIGNAL_ARGS(sig, ctx))
 {
+        void *stackptr;
+  
 	DEFINEFRAME();
 #if defined(__FreeBSD__) && !defined(INTERPRETER)
 	if ((uintp) ctx->sc_err > gc_heap_base) {
@@ -84,7 +90,17 @@ nullException(EXCEPTIONPROTO)
 	unblockSignal(sig);
 
 	EXCEPTIONFRAME(frame, ctx);
-	nullHandler(EXCEPTIONFRAMEPTR);
+#if defined(STACK_POINTER)
+	stackptr = (void *)STACK_POINTER(GET_SIGNAL_CONTEXT_POINTER(ctx));
+#if defined(STACK_GROWS_UP)
+	if (stackptr >= currentJThread->stackEnd)
+#else
+	if (stackptr <= currentJThread->stackBase)
+#endif
+	  stackOverflowHandler(EXCEPTIONFRAMEPTR);
+	else
+#endif // STACK_POINTER
+	  nullHandler(EXCEPTIONFRAMEPTR);
 }
 
 /*
@@ -132,6 +148,10 @@ registerSignalHandler(int sig, void* handler, int isAsync)
 	}
 
 	newact.sa_flags = 0;
+#if defined(SA_ONSTACK)
+	if (sig == SIGSEGV)
+	  newact.sa_flags |= SA_ONSTACK;
+#endif
 #if defined(SA_SIGINFO)
 	newact.sa_flags |= SA_SIGINFO;
 #endif
@@ -319,4 +339,80 @@ blockAsyncSignals(void)
 #endif
 	sigprocmask(SIG_BLOCK, &nsig, 0);
 	
+}
+
+#if defined(STACK_POINTER) && defined(SA_ONSTACK) && defined(HAVE_SIGALTSTACK)
+
+static JTHREAD_JMPBUF outOfLoop;
+static void *stackPointer;
+
+static void 
+infiniteLoop()
+{
+  int a;
+  infiniteLoop();
+  a = 0;
+}
+
+static void
+stackOverflowDetector(SIGNAL_ARGS(sig, sc))
+{
+  stackPointer = (void *)STACK_POINTER(GET_SIGNAL_CONTEXT_POINTER(sc));
+  unblockSignal(SIGSEGV);
+  JTHREAD_LONGJMP(outOfLoop, 1);
+}
+#endif
+
+void
+detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
+{
+        stack_t newstack;
+
+#if defined(HAVE_GETRLIMIT)
+	struct rlimit rl;
+	
+	if (getrlimit(RLIMIT_STACK, &rl) >= 0)
+	  mainThreadStackSize = (rl.rlim_max >= RLIM_INFINITY) ? rl.rlim_cur : rl.rlim_max;
+#endif
+
+#if defined(STACK_POINTER) && defined(SA_ONSTACK) && defined(HAVE_SIGALTSTACK)
+
+	newstack.ss_size = THREADSTACKSIZE;
+	newstack.ss_flags = 0;
+	newstack.ss_sp = KMALLOC(newstack.ss_size);
+	if (sigaltstack(&newstack, NULL) < 0)
+	  {
+	    dprintf("Unexpected error calling sigaltstack: %s\n",
+		    SYS_ERROR(errno));
+	    EXIT(1);
+	  }
+	
+	registerSignalHandler(SIGSEGV, stackOverflowDetector, false);
+	
+	if (JTHREAD_SETJMP(outOfLoop) == 0)
+	  infiniteLoop();
+
+#if defined(STACK_GROWS_UP)
+	jtid->stackEnd = stackPointer;
+	jtid->stackBase = (char *)jtid->stackEnd - mainThreadStackSize;
+	jtid->restorePoint = jtid->stackEnd;
+#else
+	jtid->stackBase = stackPointer;
+	jtid->stackEnd = (char *)jtid->stackBase + mainThreadStackSize;
+	jtid->restorePoint = jtid->stackBase;
+#endif
+
+#else // STACK_POINTER
+
+#if defined(STACK_GROWS_UP)
+	jtid->stackBase = (void*)(uintp)(&jtid - 0x100);
+	jtid->stackEnd = jtid->stackBase + mainThreadStackSize;
+        jtid->restorePoint = jtid->stackEnd;
+#else
+	jtid->stackEnd = (void*)(uintp)(&jtid + 0x100);
+        jtid->stackBase = (char *) jtid->stackEnd - mainThreadStackSize;
+        jtid->restorePoint = jtid->stackBase;
+#endif
+
+#endif
 }

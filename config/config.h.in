@@ -399,6 +399,9 @@
 /* Define to 1 if you have the `sigaddset' function. */
 #undef HAVE_SIGADDSET
 
+/* Define to 1 if you have the `sigaltstack' function. */
+#undef HAVE_SIGALTSTACK
+
 /* Define to 1 if you have the <sigcontext.h> header file. */
 #undef HAVE_SIGCONTEXT_H
 

@@ -26,6 +26,7 @@
 #define SIGNAL_CONTEXT_POINTER(scp) ucontext_t* scp
 #define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
 #define SIGNAL_PC(scp) ((scp)->uc_mcontext.gregs[REG_PC])
+#define STACK_POINTER(scp) ((scp)->uc_mcontext.gregs[REG_SP])
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"

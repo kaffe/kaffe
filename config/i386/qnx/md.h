@@ -66,6 +66,7 @@ struct _sigcontext {
 #define SIGNAL_CONTEXT_POINTER(scp) struct _sigcontext *scp
 #define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
 #define SIGNAL_PC(scp) ((scp)->sc_ip)
+#define STACK_POINTER(scp) ((scp)->sc_sp)
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"

@@ -1350,15 +1350,7 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char prio, void* jlThre
 	 * - to help in determining whether the next frame in the link chain
 	 *   of frames is valid.  This is done by checking its range.
 	 */
-#if defined(STACK_GROWS_UP)
-	jtid->stackBase = (void*)(uintp)(&jtid - 0x100);
-	jtid->stackEnd = jtid->stackBase + mainThreadStackSize;
-        jtid->restorePoint = jtid->stackEnd;
-#else
-	jtid->stackEnd = (void*)(uintp)(&jtid + 0x100);
-        jtid->stackBase = (char *) jtid->stackEnd - mainThreadStackSize;
-        jtid->restorePoint = jtid->stackBase;
-#endif
+	detectStackBoundaries(jtid, mainThreadStackSize);
 
 	jtid->localData.jlThread = jlThread;
 

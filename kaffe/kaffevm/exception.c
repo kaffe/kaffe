@@ -68,6 +68,7 @@
 
 static void nullException(struct _exceptionFrame *) NONRETURNING;
 static void floatingException(struct _exceptionFrame *) NONRETURNING;
+static void stackOverflowException(struct _exceptionFrame *) NONRETURNING;
 static void dispatchException(Hjava_lang_Throwable*, stackTraceInfo*) NONRETURNING;
 
 static bool findExceptionBlockInMethod(uintp, Hjava_lang_Class*, Method*, uintp*);
@@ -443,6 +444,10 @@ unhandledException(Hjava_lang_Throwable *eobj)
 			dprintf("%s: %s\n", cname, stringJava2C(msg));
 		} else {
 			dprintf("%s\n", cname);
+			if (strcmp(cname, "java/lang/StackOverflowError") == 0)
+			  dprintf("This error may occur because the stack size is not sufficient. \n"
+				  "Try to increase the stack size using 'ulimit -s' or with the '-ss'\n"
+				  "option on kaffe.\n");
 		}
 	}
 	printStackTrace((Hjava_lang_Throwable*)eobj, 0, 1);
@@ -459,7 +464,28 @@ DBG(INIT,
 	dprintf("initExceptions()\n");
     )
 	/* Catch signals we need to convert to exceptions */
-	jthread_initexceptions(nullException, floatingException);
+	jthread_initexceptions(nullException, floatingException, stackOverflowException);
+}
+
+/*
+ * Stack Overflow exception - catches stack overflows.
+ */
+static void
+stackOverflowException(struct _exceptionFrame *frame)
+{
+  	Hjava_lang_Throwable* soe;
+	Hjava_lang_VMThrowable* vmstate;
+	Hjava_lang_Object* backtrace;
+
+	soe = (Hjava_lang_Throwable*)newObject(javaLangStackOverflowError);
+	vmstate = (Hjava_lang_VMThrowable*)newObject(javaLangVMThrowable);
+	backtrace = buildStackTrace(frame);
+	unhand(vmstate)->backtrace = backtrace;
+	unhand(soe)->vmState = vmstate;
+#if defined(HAVE_GCJ_SUPPORT)
+	FAKE_THROW_FRAME();
+#endif /* defined(HAVE_GCJ_SUPPORT) */
+	dispatchException(soe, (stackTraceInfo*)backtrace);
 }
 
 /*

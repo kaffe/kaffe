@@ -37,7 +37,8 @@
 #define	SIGNAL_ARGS(sig, sc) int sig, struct sigcontext* sc
 #define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext* scp
 #define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
-#define SIGNAL_PC(scp) ((scp)->si_regs.pc)
+#define SIGNAL_PC(scp) ((scp)->sigc_pc)
+#define STACK_POINTER(scp) ((scp)->sigc_sp)
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"

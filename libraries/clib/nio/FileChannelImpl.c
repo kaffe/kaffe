@@ -67,6 +67,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_open(JNIEnv *env, jobject filechannel
   int fd;
   int rc;
   int open_options = 0;
+  jclass clazz;
   
   str = (*env)->GetStringUTFChars(env, fileName, NULL);
     
@@ -106,9 +107,9 @@ Java_gnu_java_nio_channels_FileChannelImpl_open(JNIEnv *env, jobject filechannel
   case 0:
     break;
   default:
-    (*env)->ThrowNew(env,
-		     (*env)->FindClass(env, "java.io.FileNotFoundException"),
-		     SYS_ERROR(rc));
+    clazz = (*env)->FindClass(env, "java.io.FileNotFoundException");
+    (*env)->ThrowNew(env, clazz, SYS_ERROR(rc));
+    return -1;
   }
   return fd;
 }

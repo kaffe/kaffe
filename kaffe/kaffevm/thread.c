@@ -714,14 +714,14 @@ initNativeThreads(int nativestacksize)
 	 * Since everything is stored in the threadData struct now, we can simply
 	 * attach a faked java.lang.Thread instance later on.
 	 */
-#ifdef HAVE_GETRLIMIT
+#if defined(HAVE_GETRLIMIT)
 	{
 		struct rlimit rl;
 		
 		if (getrlimit(RLIMIT_STACK, &rl) < 0)
 			stackSize = MAINSTACKSIZE;
 		else
-			stackSize = (rl.rlim_max == RLIM_INFINITY) ? rl.rlim_cur : rl.rlim_max;
+			stackSize = (rl.rlim_max >= RLIM_INFINITY) ? rl.rlim_cur : rl.rlim_max;
 	}
 #else
 	stackSize = MAINSTACKSIZE;

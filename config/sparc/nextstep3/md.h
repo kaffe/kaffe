@@ -18,7 +18,8 @@
 #define SIGNAL_ARGS(sig, sc) int sig, int code, struct sigcontext* sc
 #define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext* scp
 #define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
-#define SIGNAL_PC(scp) ((scp)->sc_eip)
+#define SIGNAL_PC(scp) ((scp)->sc_pc)
+#define STACK_POINTER(scp) ((scp)->sc_sp)
 
 
 #if defined(TRANSLATOR)

@@ -8,6 +8,9 @@
  * Copyright (c) 1996, 1997, 1998, 1999
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2004
+ *      The Kaffe.org's team.
+ *
  * This file is licensed under the terms of the GNU Public License.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -15,6 +18,7 @@
  *
  * Written by Patrick Tullmann <tullmann@cs.utah.edu> and
  *            Godmar Back <gback@cs.utah.edu>
+ *
  */
 /*
  * Signal handling API
@@ -40,5 +44,7 @@ void clearSignal(int sig);
 void unblockSignal(int sig);
 void unblockAsyncSignals(void);
 void blockAsyncSignals(void);
+
+void detectStackBoudaries(jthread jtid, int mainThreadStackSize);
 
 #endif /* UNIXJTHREAD_SIGNAL_H */

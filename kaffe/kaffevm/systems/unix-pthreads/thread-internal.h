@@ -310,7 +310,8 @@ typedef void (*exchandler_t)(struct _exceptionFrame*);
  *
  */             
 void jthread_initexceptions(exchandler_t _nullHandler,
-			    exchandler_t _floatingHandler);
+			    exchandler_t _floatingHandler,
+			    exchandler_t _stackOverflowHandler);
 
 /**
  * Initialize the thread subsystem.

@@ -390,6 +390,7 @@ public class SimpleTimeZone extends TimeZone
    * @param dayOfWeek The day of week where daylight savings start.
    * @param time The time in milliseconds standard time where daylight
    * savings start.
+   * @exception IllegalArgumentException if parameters are out of range.
    * @see SimpleTimeZone
    */
   public void setStartRule(int month, int day, int dayOfWeek, int time)
@@ -402,6 +403,52 @@ public class SimpleTimeZone extends TimeZone
     this.startDayOfWeek = Math.abs(dayOfWeek);
     this.startTime = time;
     useDaylight = true;
+  }
+
+  /**
+   * Sets the daylight savings start rule.  You must also set the
+   * end rule with <code>setEndRule</code> or the result of
+   * getOffset is undefined.  For the parameters see the ten-argument
+   * constructor above.
+   *
+   * @param month The month where daylight savings start, zero
+   * based.  You should use the constants in Calendar.
+   * @param day A day of month or day of week in month.
+   * @param dayOfWeek The day of week where daylight savings start.
+   * @param time The time in milliseconds standard time where daylight
+   * savings start.
+   * @exception IllegalArgumentException if parameters are out of range.
+   * @see SimpleTimeZone
+   */
+  public void setStartRule(int month,
+			   int day,
+			   int time)
+  {
+    setStartRule(month, day, 0, time);
+  }
+
+  /**
+   * Sets the daylight savings start rule.  You must also set the
+   * end rule with <code>setEndRule</code> or the result of
+   * getOffset is undefined.  For the parameters see the ten-argument
+   * constructor above.
+   *
+   * @param month The month where daylight savings start, zero
+   * based.  You should use the constants in Calendar.
+   * @param day A day of month or day of week in month.
+   * @param dayOfWeek The day of week where daylight savings start.
+   * @param time The time in milliseconds standard time where daylight
+   * savings start.
+   * @param after
+   * @exception IllegalArgumentException if parameters are out of range.
+   * @see SimpleTimeZone
+   */
+  public void setStartRule(int startMonth,
+			   int startDay,
+			   int startDayOfWeek,
+			   int startTime,
+			   boolean after)
+  {
   }
 
   /**

@@ -41,7 +41,8 @@ static exchandler_t floatingHandler;
  */
 void
 jthread_initexceptions(exchandler_t _nullHandler,
-		       exchandler_t _floatingHandler)
+		       exchandler_t _floatingHandler,
+		       exchandler_t _stackOverflowHandler UNUSED)
 {
 	nullHandler = _nullHandler;
 	floatingHandler = _floatingHandler;

@@ -5,7 +5,7 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * Copyright (c) 2003
+ * Copyright (c) 2003, 2004
  *      Kaffe.org contributors. See ChangeLog for details.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -25,6 +25,7 @@
 #define SIGNAL_CONTEXT_POINTER(scp) ucontext_t* ctx
 #define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
 #define SIGNAL_PC(scp) ((scp)->uc_mcontext.regs[EIP])
+#define STACK_POINTER(scp) ((scp)->uc_mcontext.regs[ESP])
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"

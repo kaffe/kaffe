@@ -41,6 +41,7 @@ extern void init_md(void);
 
 #define GET_SIGNAL_CONTEXT_POINTER(sc) (&sc)
 #define SIGNAL_PC(scp) (scp)->eip
+#define STACK_POINTER(scp) (scp)->esp
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"

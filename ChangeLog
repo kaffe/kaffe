@@ -1,3 +1,49 @@
+2004-04-22  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* configure.ac: Check for sigaltstack.
+
+	* config/i386/beos/md.h, config/i386/bsdi/md.h, config/i386/dgux/md.h,
+	config/i386/freebsd2/md.h, config/i386/gnu/md.h,
+	config/i386/linux/md.h, config/i386/netbsd1/md.h,
+	config/i386/nextstep3/md.h, config/i386/openbsd2/md.h,
+	config/i386/oskit/md.h, config/i386/qnx/md.h,
+	config/i386/sco3.2v5/md.h, config/i386/solaris2/md.h,
+	config/i386/univel_svr4/md.h, config/sparc/bsdi3/md.h, 
+	config/sparc/linux/md.h, config/sparc/netbsd1/md.h,
+	config/sparc/nextstep3/md.h, config/sparc/openbsd2/md.h,
+	config/sparc/solaris2/md.h, config/sparc/sunos4/md.h,
+	config/sparc/uxpds/md.h: Added the new STACK_POINTER macro.
+
+	* kaffe/kaffevm/exception.c
+	(stackOverflowHandler): New exception handler.
+	(initExceptions): Updated the call to jthread_init_exceptions.
+
+	* kaffe/kaffevm/thread.c: Loosened the check for infinity concerning
+	rlim_max.
+	
+	* kaffe/kaffevm/systems/unix-jthreads/jsignal.h,
+	kaffe/kaffevm/systems/unix-jthreads/signal.c
+	(detectStackBoundaries): Detect the real boundaries of the main
+	stack.
+	(infiniteLoop, stackOverflowDetector): Helpers to detect boundaries
+	of the stack.
+	(registerSignalHandler): Use SA_ONSTACK if available to use an
+	alternate stack for SIGSEGV.
+	(nullException): Use SIGNAL_ARGS instead of EXCEPTIONPROTO. If
+	STACK_POINTER is available check for the position of the stack pointer
+	in the stack and call the right handler accordingly.
+	(jthread_initexceptions): New parameter for stack overflows.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h,
+	kaffe/kaffevm/systems/unix-pthreads/signal.c,
+	kaffe/kaffevm/systems/oskit-pthreads/jthread.h,
+	kaffe/kaffevm/systems/oskit-pthreads/signal.c,
+	kaffe/kaffevm/systems/beos-native/signal.c,
+	kaffe/kaffevm/systems/beos-native/jthread.h:
+	Changed the prototype of jthread_initexceptions to the new one.
+
+	* configure, config/config.h.in: Regenerated.
+
 2004-04-22  Dalibor Topic <robilad@kaffe.org>
 
         * libraries/javalib/java/sql/Array.java,
