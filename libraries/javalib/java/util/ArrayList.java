@@ -22,6 +22,7 @@ public class ArrayList extends AbstractList
 		implements List, Cloneable, Serializable {
 
 	private static final int DEFAULT_CAPACITY = 32;
+	private boolean fixed;		// means that size must remain fixed
 	private Object[] a;
 	private int off;
 	private int len;
@@ -52,9 +53,10 @@ public class ArrayList extends AbstractList
 
 	// Used by Arrays.asList()
 	ArrayList(Object[] a) {
-		a = a;
+		this.a = a;
 		off = 0;
 		len = a.length;
+		fixed = true;
 	}
 
 	public void trimToSize() {
@@ -70,7 +72,7 @@ public class ArrayList extends AbstractList
 	public void ensureCapacity(int minCapacity) {
 
 		// Check current capacity
-		if (a.length - off >= minCapacity) {
+		if (fixed || a.length - off >= minCapacity) {
 			return;
 		}
 
@@ -136,6 +138,7 @@ public class ArrayList extends AbstractList
 		clone.a = new Object[len];
 		System.arraycopy(a, off, clone.a, 0, len);
 		clone.off = 0;
+		clone.fixed = false;
 		return clone;
 	}
 
@@ -174,11 +177,17 @@ public class ArrayList extends AbstractList
 	}
 
 	public boolean add(Object element) {
+		if (fixed) {
+			throw new UnsupportedOperationException();
+		}
 		add(len, element);
 		return true;
 	}
 
 	public void add(int index, Object element) {
+		if (fixed) {
+			throw new UnsupportedOperationException();
+		}
 		if (index < 0 || index > len) {
 			throw new IndexOutOfBoundsException();
 		}
@@ -197,22 +206,34 @@ public class ArrayList extends AbstractList
 	}
 
 	public Object remove(int index) {
+		if (fixed) {
+			throw new UnsupportedOperationException();
+		}
 		Object old = a[off + index];	// exception here is OK
 		removeRange(index, index + 1);
 		return old;
 	}
 
 	public void clear() {
+		if (fixed) {
+			throw new UnsupportedOperationException();
+		}
 		modCount++;
 		off = len = 0;
 	}
 
 	public boolean addAll(Collection c) {
+		if (fixed) {
+			throw new UnsupportedOperationException();
+		}
 		addAll(len, c);
 		return true;
 	}
 
 	public boolean addAll(int index, Collection c) {
+		if (fixed) {
+			throw new UnsupportedOperationException();
+		}
 		if (index < 0 || index > len) {
 			throw new IndexOutOfBoundsException();
 		}
@@ -237,6 +258,9 @@ public class ArrayList extends AbstractList
 	}
 
 	protected void removeRange(int fromIndex, int toIndex) {
+		if (fixed) {
+			throw new UnsupportedOperationException();
+		}
 		if (fromIndex < 0 || toIndex > len) {
 			throw new IndexOutOfBoundsException();
 		}
