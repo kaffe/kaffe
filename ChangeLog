@@ -1,5 +1,21 @@
 2003-09-22  Dalibor Topic <robilad@kaffe.org>
 
+	Fix for getaddrinfo on sparc-solaris2.9 compiler breakage.
+	
+	* configure.in:
+	Check for struct addrinfo.
+
+	* sockaddrin6.m4:
+	(AC_STRUCT_ADDRINFO) New check.
+
+	* include/getaddrinfo.h:
+	Redefine addrinfo away if struct addrinfo is declared.
+	
+	* aclocal.m4, configure, config/config.h.in:
+	Regenerated.
+	
+2003-09-22  Dalibor Topic <robilad@kaffe.org>
+
 	* sockinttypes.m4:
 	Updated to getaddrinfo-1.6.1. From the getaddrinfo docs:
 

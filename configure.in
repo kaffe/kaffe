@@ -987,6 +987,7 @@ AC_REPLACE_FUNCS([memset])
 AC_TYPE_SOCKLEN_T
 AC_TYPE_IN_PORT_T
 AC_DECL_H_ERRNO
+AC_STRUCT_ADDRINFO
 
 AC_CHECK_FUNCS([getaddrinfo getnameinfo])
 if test "$ac_cv_func_getaddrinfo$ac_cv_func_getnameinfo" != yesyes ; then

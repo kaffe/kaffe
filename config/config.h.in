@@ -421,6 +421,9 @@
 /* Define to 1 if you have the `strtoul' function. */
 #undef HAVE_STRTOUL
 
+/* Define to 1 if <netdb.h> defines `struct addrinfo' */
+#undef HAVE_STRUCT_ADDRINFO
+
 /* Define to 1 if <netinet/in.h> defines `struct in6_addr' */
 #undef HAVE_STRUCT_IN6_ADDR
 

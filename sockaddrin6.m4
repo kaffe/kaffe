@@ -58,3 +58,17 @@ if test "$ac_cv_struct_sockaddr_storage" = yes; then
 [Define to 1 if <netinet/in.h> defines `struct sockaddr_storage'])
 fi])
 
+dnl * 
+dnl * Check for struct addrinfo
+dnl * 
+AC_DEFUN(AC_STRUCT_ADDRINFO,
+[AC_CACHE_CHECK(for struct addrinfo, ac_cv_struct_addrinfo,
+[AC_TRY_COMPILE([
+#include <netdb.h>],[
+struct addrinfo info;
+], [ac_cv_struct_addrinfo=yes], [ac_cv_struct_addrinfo=no])])
+if test "$ac_cv_struct_addrinfo" = yes; then
+    AC_DEFINE(HAVE_STRUCT_ADDRINFO, 1,
+[Define to 1 if <netdb.h> defines `struct addrinfo'])
+fi])
+
