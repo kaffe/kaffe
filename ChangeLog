@@ -1,5 +1,7 @@
 Mon Jul  5 16:04:55 PDT 1999  Archie Cobbs <archie@whistle.com>
 
+	* libraries/javalib/java/io/BufferedInputStream.java: remove
+	overly eager 'direct' reading
 	* libraries/javalib/java/io/Piped{Reader,Writer}.java: rewrite
 	in terms of PipedInputStream and PipedOutputStream.
 
