@@ -469,7 +469,7 @@ jthreadedAccept(int fd, struct sockaddr* addr, int* len,
 		int timeout, int* out)
 {
 	/* absolute time at which time out is reached */
-#if defined(SO_RCVTIMEO) && !defined(__FreeBSD__)
+#if defined(SO_RCVTIMEO) && !defined(HAVE_BROKEN_SO_RCVTIMEO)
 	int ret;
 	struct timeval old_tv;
 	struct timeval new_tv;
