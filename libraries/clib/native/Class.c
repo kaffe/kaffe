@@ -94,31 +94,22 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 	 * Note:
 	 * The JDK documentation says: "...this method attempts to locate, 
 	 * load and link the class."
+	 * 
+	 * At some point, there was some uncertainty about whether forName
+	 * would initialize the class.  Sun has clarified this as follows:
+	 * JLS 20.3.8 should state that a call to 
+	 * java.lang.Class.forName("X") causes the class named "X" to be 
+	 * initialized.
+	 *
+	 * We should note that JDK1.2 has a method 
+	 * forName(String, boolean, ClassLoader) where the boolean says whether
+	 * the class should be initialized.  forName("X") is identical to
+	 * forName("X", true, null) in that model.
 	 *
 	 * loadClass returns the class in state CSTATE_LINKED.
 	 * Processing to CSTATE_OK will initialize the class, resolve
 	 * its constants and run its static initializers.
 	 *
-	 * According to 2.16.4 of the VM Specification, a class should be
-	 * initialized at its first active use.   The VM Specification
-	 * does not mention whether Class.forName is an active use, and
-	 * although 2.16.4 seems to imply that it is not, Sun's implementation 
-	 * seems to run the static initializerss of a class when 
-	 * Class.forName is called (see forNameTest.java)
-	 *
-	 * On the other hand, processing the class to CSTATE_OK is bad
-	 * because our constant resolution will require that all classes
-	 * to which the class refers are resolvable.  In practice, this
-	 * causes ClassNotFoundExceptions to be thrown in situations where
-	 * Sun would not throw such an exception, for instance, if serialver
-	 * finds that .class files are missing.  This should be tolerable.
-	 *
-	 * Also, 2.16.4 of the VM spec says:
-	 *
-	 *  "The intent here is that a type has a set of initializers that 
-	 *   put it in a consistent state, and that this state is the first 
-	 *   state that is observed by other classes".
-	 * 
 	 * We are somewhat inconsistent here.  The following list lists
 	 * the functions that return or process Class objects to or for
 	 * the user, and the state in which the class is afterwards:
