@@ -48,7 +48,6 @@ private final Set loadedLibraries = new HashSet();
  * We keep a reference to all packages loaded by this loader.
  */
 private final Hashtable loadedPackages = new Hashtable();
-private static final Package [] NO_PACKAGES = new Package[0];
 
 /**
  * We keep the references to loaded classes and their protection domain
@@ -132,7 +131,7 @@ protected Class loadClass(String name, boolean resolve)
 			if (parent != null) {
 				c = parent.loadClass(name, resolve);
 			} else {
-				PrimordialClassLoader.getSingleton().
+				c = PrimordialClassLoader.getSingleton().
 					loadClass(name, resolve);
 			}
 		} catch (ClassNotFoundException _) {
@@ -207,22 +206,25 @@ protected final void setSigners(Class cl, Object signers[]) {
 }
 
 protected final Class findLoadedClass(String name) {
-        return (Class) loadedClasses.get(name);
+	return (Class) loadedClasses.get(name); 
 }
 
 public URL getResource(String name) {
-	try {
-	    /*
-	     * Note: if you're looking right here because kaffe crashed
-	     * at this point, there's probably a problem with exception
-	     * handling, because this is usually the place where the very
-	     * first exception is thrown after kaffe starts up.
-	     */
-		return (URL)getResources(name).nextElement();
-	} catch (IOException e) {
-	} catch (NoSuchElementException e) {
+	URL ret = null;
+
+	if (parent != null) {
+		ret = parent.getResource (name);
+	} else {
+		// we have to call findResource directly, since getResource()
+		// would cause an endless loop 
+		ret = PrimordialClassLoader.getSingleton().findResource (name);
 	}
-	return null;
+
+	if (ret == null) {
+		ret = findResource (name);
+	}
+	
+	return ret;
 }
 
 public final Enumeration getResources(String name) throws IOException {
@@ -232,8 +234,9 @@ public final Enumeration getResources(String name) throws IOException {
 		for (Enumeration e = parent.getResources(name); e.hasMoreElements();) {
 			v.addElement(e.nextElement());
 		}
-	} else if (this != getSystemClassLoader()) {
-		for (Enumeration e=getSystemClassLoader().getResources(name); e.hasMoreElements();) {
+	} else {
+		// we have to call findResources directly, since getResources() would cause an endless loop
+		for (Enumeration e=PrimordialClassLoader.getSingleton().findResources(name); e.hasMoreElements();) {
 			v.addElement (e.nextElement ());
 		}
 	}
@@ -304,43 +307,41 @@ protected Package definePackage(String name, String specTitle,
 }
 
 protected Package getPackage(String name) {
-	Package pack = (Package) loadedPackages.get(name);
+	Package ret = null;
 
-	if (pack == null) {
-		if (parent != null) {
-			pack = parent.getPackage(name);
-		} else if (this != getSystemClassLoader()) {
-			pack = getSystemClassLoader().getPackage(name);
-		}
+	if (parent!=null) {
+		ret = parent.getPackage (name);
+	} else {
+		ret = PrimordialClassLoader.getSingleton().getPackage(name);
+	}	
+
+	if (ret == null) {
+		ret = (Package) loadedPackages.get (name);
 	}
 
-	return pack;
+	return ret;
 }
 
 protected Package[] getPackages() {
-	Package [] values = (Package []) (loadedPackages.values().toArray(NO_PACKAGES));
-	Package [] packs = (values.length == 0)
-		? NO_PACKAGES
-		: (Package []) values;
+	Package[] myPackages;
 
-	Package[] ancestorPacks = null;
+	myPackages = new Package[loadedPackages.size()];
+	loadedPackages.values().toArray (myPackages);
+
+	Package[] ancestorPackages = null;
 
 	if (parent != null) {
-		ancestorPacks = parent.getPackages();
-	} else if (this != getSystemClassLoader()) {
-		ancestorPacks = getSystemClassLoader().getPackages();
-	}
-
-	if (ancestorPacks != null) {
-		Package [] allPacks = new Package[packs.length
-						 + ancestorPacks.length];
-		System.arraycopy(packs, 0, allPacks, 0, packs.length);
-		System.arraycopy(ancestorPacks, 0, allPacks, packs.length,
-				 ancestorPacks.length);
-		packs = allPacks;
-	}
-
-	return packs;
+		ancestorPackages = parent.getPackages();
+	} else {
+		ancestorPackages = PrimordialClassLoader.getSingleton().getPackages();
+	} 
+	
+	Package[] ret = new Package[myPackages.length + ancestorPackages.length];
+	
+	System.arraycopy (ret, 0, ancestorPackages, 0, ancestorPackages.length);
+	System.arraycopy (ret, ancestorPackages.length, myPackages, 0, myPackages.length);
+		
+	return ret;
 }
 
 protected String findLibrary(String libname) {

@@ -23,6 +23,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.jar.JarFile;
 import java.util.jar.Attributes;
+import java.security.ProtectionDomain;
 
 /**
  * Java-level access to the primordial class loader.
@@ -31,6 +32,9 @@ public final class PrimordialClassLoader extends ClassLoader {
 	
 private static final PrimordialClassLoader SINGLETON =
 	new PrimordialClassLoader();
+
+private static final Package[] NO_PACKAGES = new Package[0];
+private static final ProtectionDomain DEFAULT_PROTECTION_DOMAIN = new ProtectionDomain(null, null);
 
 private PrimordialClassLoader() {
 	super(null);
@@ -45,7 +49,7 @@ public Class loadClass(String name, boolean resolve)
 	{
 		throw new ClassNotFoundException(name);
 	}
-	
+
 	if( (retval = this.findLoadedClass(name)) == null )
 	{
 		retval = this.findClass(name);
@@ -104,7 +108,7 @@ public static PrimordialClassLoader getSingleton() {
  * the named resource (which may appear more than once). Make sure
  * it really exists in each place before adding it.
  */
-void findResources(Vector v, String name) throws IOException {
+protected void findResources(Vector v, String name) throws IOException {
 	// search the bootclasspath first
 	String fileSep = System.getProperties().getProperty("file.separator");
 	String pathSep = System.getProperties().getProperty("path.separator");
@@ -154,15 +158,43 @@ void findResources(Vector v, String name) throws IOException {
 	}
 }
 
+public URL findResource (String name) {
+	try {
+		Vector v = new Vector ();
+		
+		findResources (v, name);
+
+		if (v.size()>0) {
+			return (URL)v.elementAt (0);
+		}
+	} catch (IOException _) {
+	}
+ 
+	return null;
+}
+
 public Enumeration findResources(String name) throws IOException {
 	Vector retval = new Vector();
 
 	this.findResources(retval, name);
+	
 	return retval.elements();
 }
 
+public Package getPackage (String name) {
+	return null;
+}
+
+public Package[] getPackages () {
+	return NO_PACKAGES;
+}
+
+public ProtectionDomain getProtectionDomain (Class clazz) {
+	return DEFAULT_PROTECTION_DOMAIN;
+}
+
 protected Class findClass(String name) throws ClassNotFoundException {
-	return findClass0 (name);
+	return findClass0(name); 
 }
 
 private native Class findClass0(String name) throws ClassNotFoundException;

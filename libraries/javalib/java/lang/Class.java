@@ -25,6 +25,8 @@ import java.security.ProtectionDomain;
 import java.util.Vector;
 import kaffe.lang.ThreadStack;
 import kaffe.lang.PackageHelper;
+import kaffe.lang.PrimordialClassLoader;
+import kaffe.lang.PrimordialClassLoader;
 
 public final class Class implements Serializable {
 
@@ -263,22 +265,22 @@ native public String getName();
 
 public Package getPackage() {
 	ClassLoader loader = getClassLoader();
-	if (loader != null) {
-		String pkgName = PackageHelper.getPackageName(this);
-		if (pkgName != null) {
-			return loader.getPackage(pkgName);
-		}
+	
+	if (loader == null) {
+		return PrimordialClassLoader.getSingleton().
+				getPackage(PackageHelper.getPackageName(this));
 	}
 
-	return null;
+	return loader.getPackage(PackageHelper.getPackageName(this));
 }
 
 public ProtectionDomain getProtectionDomain() {
 	ClassLoader loader = getClassLoader ();
 
 	if (loader == null) {
-		loader = ClassLoader.getSystemClassLoader ();
+		return PrimordialClassLoader.getSingleton().getProtectionDomain(this);	
 	}
+
 	return loader.getProtectionDomain(this);
 }
 
@@ -323,13 +325,14 @@ public URL getResource(String name) {
  *		if no resource with the specified name is found.
  */
 public InputStream getResourceAsStream(String name) {
-  	try {
-            URL res = getResource(name);
-            return (res == null ? null : res.openStream());
-  	}
-  	catch (IOException e) {
-  		return null;
-  	}
+  	ClassLoader loader = getClassLoader();
+	name = fullResourceName (name);
+
+	if (loader == null) {
+		return ClassLoader.getSystemResourceAsStream(name);
+	}
+	
+	return loader.getResourceAsStream(name);
 }
 
 native public Object[] getSigners();

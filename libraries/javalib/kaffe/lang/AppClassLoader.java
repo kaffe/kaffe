@@ -26,14 +26,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.jar.JarFile;
 import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 /**
  * ClassLoader used to load application classes from the CLASSPATH.
  */
 public class AppClassLoader extends SecureClassLoader {
-
-	private static final PrimordialClassLoader PRIMORDIAL_LOADER =
-		PrimordialClassLoader.getSingleton();
 
 	private static final AppClassLoader SINGLETON =
 		new AppClassLoader();
@@ -136,24 +134,31 @@ public class AppClassLoader extends SecureClassLoader {
 						codeSource = new CodeSource (file.toURL(), new Certificate[0]);
 					} catch (MalformedURLException _) {}
        				}
-
+		
                                 Class ret = defineClass (name, buf, 0, length, codeSource);
 
 				String pkgName = PackageHelper.getPackageName(ret);
 				if (getPackage(pkgName) == null) {
-					Attributes attrs = jar.getManifest().getAttributes (pkgName);
+					Manifest mf = jar.getManifest();
 
-					if (attrs == null) {
-						attrs = jar.getManifest().getMainAttributes();
+					if (mf == null) {
+						definePackage(pkgName, null, null, null, null, null, null, null);
+					} else {
+						Attributes attrs = jar.getManifest().getAttributes (pkgName);
+
+						if (attrs == null) {
+							attrs = jar.getManifest().getMainAttributes();
+						}
+                       
+			 			definePackage(pkgName,  
+                                			attrs.getValue(Attributes.Name.SPECIFICATION_TITLE),
+	                                		attrs.getValue(Attributes.Name.SPECIFICATION_VERSION),
+        	                        		attrs.getValue(Attributes.Name.SPECIFICATION_VENDOR),
+                	                		attrs.getValue(Attributes.Name.IMPLEMENTATION_TITLE),
+                        	        		attrs.getValue(Attributes.Name.IMPLEMENTATION_VERSION),
+                                			attrs.getValue(Attributes.Name.IMPLEMENTATION_VENDOR),
+                                			null);
 					}
-                        		definePackage(pkgName,  
-                                		attrs.getValue(Attributes.Name.SPECIFICATION_TITLE),
-                                		attrs.getValue(Attributes.Name.SPECIFICATION_VERSION),
-                                		attrs.getValue(Attributes.Name.SPECIFICATION_VENDOR),
-                                		attrs.getValue(Attributes.Name.IMPLEMENTATION_TITLE),
-                                		attrs.getValue(Attributes.Name.IMPLEMENTATION_VERSION),
-                                		attrs.getValue(Attributes.Name.IMPLEMENTATION_VENDOR),
-                                		null);
 				}
 
 				return ret;
@@ -219,10 +224,8 @@ private AppClassLoader() {
  * the named resource (which may appear more than once). Make sure
  * it really exists in each place before adding it.
  */
-public Enumeration findResources(String name) throws IOException {
+protected Enumeration findResources(String name) throws IOException {
 	Vector v = new Vector();
-
-	PRIMORDIAL_LOADER.findResources(v, name);
 
 	if (name.charAt(0) == '/') {
 		name = name.substring (1);
@@ -234,6 +237,24 @@ public Enumeration findResources(String name) throws IOException {
 	return v.elements();
 }
 
+protected URL findResource (String name) {
+	Vector v = new Vector();
+
+	if (name.charAt(0) == '/') {
+		name = name.substring (1);
+	}
+
+	for (Source i=this.sources; i!=null && v.size()==0; i=i.next) {
+		i.findResources (v, name);
+	}
+
+	if (v.size()>0) {
+		return (URL)v.elementAt(0);
+	} else {
+		return null;
+	}
+}
+
 protected Class loadClass(String name, boolean resolve)
 	throws ClassNotFoundException
 {
@@ -242,18 +263,9 @@ protected Class loadClass(String name, boolean resolve)
 
 protected Class findClass(String name) throws ClassNotFoundException {
 	Class ret = null;
-
-	try
-	{
-		ret = PRIMORDIAL_LOADER.loadClass(name);
-		return ret;
-	}
-	catch(ClassNotFoundException _e)
-	{
-		// ignore
-	}
-	// then search the application classpath
+	
 	String fileName = name.replace ('.', '/') + ".class";
+
 	for (Source i=this.sources; i!=null && ret==null; i=i.next) {
 		ret = i.findClass (name, fileName);
 	}

@@ -1,3 +1,33 @@
+2003-05-27  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* libraries/javalib/kaffe/lang/PrimordialClassLoader.java: 
+	(getPackage, getPackages, getProtectionDomain, findResource): new
+	methods so Class and ClassLoader can delegate calls to the primordial
+	class loader
+	
+	* libraries/javalib/java/lang/ClassLoader.java: 
+	(loadClass, getResource, getResources, getPackage, getPackages):
+	delegate call to PrimordialClassLoader if parent is null
+	
+	* libraries/javalib/java/lang/Class.java: 
+	(getPackage, getProtectionDomain): delegate to PrimordialClassLoader
+	if class loader is null	
+	
+	* libraries/javalib/kaffe/lang/AppClassLoader.java 
+	(findResources, findClass): don't delegate call to the primordial
+	class loader, since ClassLoader already does this
+	(findResource): new method to search for only one resource
+
+	* test/regression/ProhibitedClass.java,
+	test/regression/ProcessClassInst.java,
+	test/regression/ProcessClassStop.java: 
+	adjusted line numbers in stack traces
+	
+2003-05-27  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/kaffe/lang/AppClassLoader.java
+	(JarSource.findClass): properly handle jar files without manifest
+
 2003-05-27 Tim Stack <stack@cs.utah.edu>
 
 	* aclocal.m4, configure, libtool.m4:
