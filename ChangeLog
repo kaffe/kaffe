@@ -1,5 +1,15 @@
 2004-01-25  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/clib/net/PlainDatagramSocketImpl.c,
+	libraries/clib/net/PlainSocketImpl.c:
+	Added comments.
+	(ip62str): Only define if HAVE_STRUCT_SOCKADDR_IN6
+	is defined, since it's only used in that case.
+
+        Reported by: Riccardo Mottola <zuse@libero.it>
+
+2004-01-25  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/external.c:
 	Include <stdarg.h> if it exists. Include <stdio.h> to fix
 	compiler warnings on HP-UX about missing vsnprintf prototype.

@@ -33,7 +33,7 @@
 
 #if !defined(HAVE_GETADDRINFO) || !defined(HAVE_GETNAMEINFO)
 #include "getaddrinfo.h"
-#endif
+#endif /* !defined(HAVE_GETADDRINFO) || !defined(HAVE_GETNAMEINFO) */
 
 /*
  * Supported socket options
@@ -43,21 +43,26 @@
 	  int level;
 	  int copt;
   } socketOptions[] = {
-#ifdef SO_SNDBUF
+
+#if defined(SO_SNDBUF)
     { java_net_SocketOptions_SO_SNDBUF,		SOL_SOCKET,	SO_SNDBUF },
-#endif
-#ifdef SO_RCVBUF
+#endif /* defined(SO_SNDBUF) */
+
+#if defined(SO_RCVBUF)
     { java_net_SocketOptions_SO_RCVBUF,		SOL_SOCKET,	SO_RCVBUF },
-#endif
-#ifdef SO_LINGER
+#endif /* defined(SO_RCVBUF) */
+
+#if defined(SO_LINGER)
     { java_net_SocketOptions_SO_LINGER,		SOL_SOCKET,	SO_LINGER },
-#endif
-#ifdef SO_REUSEADDR
+#endif /* defined(SO_LINGER) */
+
+#if defined(SO_REUSEADDR)
     { java_net_SocketOptions_SO_REUSEADDR,	SOL_SOCKET,	SO_REUSEADDR },
-#endif
-#ifdef TCP_NODELAY
+#endif /* defined(SO_REUSEADDR) */
+
+#if defined(TCP_NODELAY)
     { java_net_SocketOptions_TCP_NODELAY,	IPPROTO_TCP,	TCP_NODELAY },
-#endif
+#endif /* defined(TCP_NODELAY) */
   };
 
 #if defined(KAFFE_VMDEBUG) && !defined(NDEBUG)
@@ -68,21 +73,27 @@
 	  int opt;
 	  char *name;
   } optionNames[] = {
-#ifdef SO_SNDBUF
+
+#if defined(SO_SNDBUF)
     { java_net_SocketOptions_SO_SNDBUF, "SO_SNDBUF" },
-#endif
-#ifdef SO_RCVBUF
+#endif /* defined(SO_SNDBUF) */
+
+#if defined(SO_RCVBUF)
     { java_net_SocketOptions_SO_RCVBUF, "SO_RCVBUF" },
-#endif
-#ifdef SO_LINGER
+#endif /* defined(SO_RCVBUF) */
+
+#if defined(SO_LINGER)
     { java_net_SocketOptions_SO_LINGER, "SO_LINGER" },
-#endif
-#ifdef SO_REUSEADDR
+#endif /* defined(SO_LINGER) */
+
+#if defined(SO_REUSEADDR)
     { java_net_SocketOptions_SO_REUSEADDR, "SO_REUSEADDR" },
-#endif
-#ifdef TCP_NODELAY
+#endif /* defined(SO_REUSEADDR) */
+
+#if defined(TCP_NODELAY)
     { java_net_SocketOptions_TCP_NODELAY, "TCP_NODELAY" },
-#endif
+#endif /* defined(TCP_NODELAY) */
+
     { java_net_SocketOptions_SO_BINDADDR, "SO_BINDADDR" },
     { java_net_SocketOptions_SO_TIMEOUT, "SO_TIMEOUT" },
     { java_net_SocketOptions_IP_MULTICAST_IF, "IP_MULTICAST_IF" }
@@ -102,6 +113,7 @@ ip2str(jint addr)
 	return addrbuf;
 }
 
+#if defined(HAVE_STRUCT_SOCKADDR_IN6)
 /* Generate a string for an inet6 addr (in host form). */
 static char *
 ip62str(struct in6_addr *addr) 
@@ -124,6 +136,7 @@ ip62str(struct in6_addr *addr)
 	}
 	return addrbuf;
 }
+#endif /* defined(HAVE_STRUCT_SOCKADDR_IN6) */
 #endif /* defined(KAFFE_VMDEBUG) && !defined(NDEBUG) */
 
 /*
@@ -178,24 +191,30 @@ gnu_java_net_PlainSocketImpl_socketConnect(struct Hgnu_java_net_PlainSocketImpl*
 	memset(&addr, 0, sizeof(addr));
 	if (obj_length(unhand(daddr)->addr) == 4) {
 	        alen = sizeof(addr.addr4); 
+
 #if defined(BSD44)
 		addr.addr4.sin_len = sizeof(addr.addr4);
-#endif
+#endif /* defined(BSD44) */
+
 		addr.addr4.sin_family = AF_INET;
 		addr.addr4.sin_port = htons(dport);
 		memcpy(&addr.addr4.sin_addr, 
 		       unhand_byte_array(unhand(daddr)->addr), sizeof(addr.addr4.sin_addr));
+
 #if defined(HAVE_STRUCT_SOCKADDR_IN6)
 	} else if (obj_length(unhand(daddr)->addr) == 16) {
 	        alen = sizeof(addr.addr6);
+
 #if defined(BSD44)
 		addr.addr6.sin6_len = sizeof(addr.addr6);
-#endif
+#endif /*  defined(BSD44) */
+
 		addr.addr6.sin6_family = AF_INET6;
 		addr.addr6.sin6_port = htons(dport);
 		memcpy(&addr.addr6.sin6_addr, 
 		       unhand_byte_array(unhand(daddr)->addr), sizeof(addr.addr6.sin6_addr));
-#endif
+#endif /* defined(HAVE_STRUCT_SOCKADDR_IN6) */
+
 	} else {
 		SignalError("java.net.SocketException", "Unsupported address family");
 	}
@@ -264,9 +283,11 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 	memset(&addr, 0, sizeof(addr));
 	if (obj_length(unhand(laddr)->addr) == 4) {
 	        alen = sizeof(addr.addr4);
+
 #if defined(BSD44)
 		addr.addr4.sin_len = sizeof(addr.addr4);
-#endif
+#endif /*  defined(BSD44) */
+
 		addr.addr4.sin_family = AF_INET;
 		addr.addr4.sin_port = htons(lport);
 		memcpy(&addr.addr4.sin_addr, 
@@ -276,12 +297,15 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 		    dprintf("socketBind(%p, %s, -) -> (lport: %d)\n", this,
 			    ip2str(addr.addr4.sin_addr.s_addr), lport);
 		    );
+
 #if defined(HAVE_STRUCT_SOCKADDR_IN6)
 	} else if (obj_length(unhand(laddr)->addr) == 16) {
 	        alen = sizeof(addr.addr6);
+
 #if defined(BSD44)
 		addr.addr6.sin6_len = sizeof(addr.addr6);
-#endif
+#endif /* defined(BSD44) */
+
 		addr.addr6.sin6_family = AF_INET6;
 		addr.addr6.sin6_port = htons(lport);
 		memcpy(&addr.addr6.sin6_addr, 
@@ -291,7 +315,8 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 		    dprintf("socketBind(%p, %s, -) -> (lport: %d)\n", this,
 			    ip62str(&addr.addr6.sin6_addr), lport);
 		    );
-#endif
+#endif /* defined(HAVE_STRUCT_SOCKADDR_IN6) */
+
 	} else {
 		SignalError("java.net.SocketException", "Unsupported address family");
 	}
@@ -359,9 +384,11 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 	
 	remote_addr = NULL;
 	memset(&addr, 0, sizeof(addr));
+
 #if defined(BSD44)
 	addr.sin_len = sizeof(addr);
-#endif
+#endif /* defined(BSD44) */
+
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(unhand(sock)->localport);
 	/* I guess the next line is too much as unhand(sock)->address is not supposed
@@ -415,7 +442,8 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 			       &in6->sin6_addr,
 			       sizeof(in6->sin6_addr));
 			break;
-#endif
+#endif /* defined(AF_INET6) */
+
 		default:
 			/* Ignore */
 			break;
@@ -444,10 +472,11 @@ gnu_java_net_PlainSocketImpl_socketAvailable(struct Hgnu_java_net_PlainSocketImp
 	int r;
 	jint len;
 	int fd;
+
 #if (!(defined(HAVE_IOCTL) && defined(FIONREAD)) && !defined(__WIN32__))
 	static struct timeval tm = { 0, 0 };
 	fd_set rd;
-#endif
+#endif /* (!(defined(HAVE_IOCTL) && defined(FIONREAD)) && !defined(__WIN32__)) */
 
 	DBG(NATIVENET,
 	    dprintf("socketAvailable(%p)\n", this);
@@ -460,10 +489,10 @@ gnu_java_net_PlainSocketImpl_socketAvailable(struct Hgnu_java_net_PlainSocketImp
 	if (r < 0) {
 		SignalError("java.io.IOException", SYS_ERROR(errno));
 	}
-#else
+#else /* !(defined(HAVE_IOCTL) && defined(FIONREAD)) */
 #if defined(__WIN32__) /* Windows hack - XXX */
 	len = 0;
-#else
+#else /* !defined(__WIN32__) */
 	/* This uses KSELECT() to work out if we can read - but what
 	 * happens at the end of file?
 	 */

@@ -71,6 +71,7 @@ ip2str(jint addr)
 	return addrbuf;
 }
 
+#if defined(HAVE_STRUCT_SOCKADDR_IN6)
 /* Generate a string for an inet6 addr (in host form). */
 static char *
 ip62str(struct in6_addr *addr) 
@@ -93,7 +94,9 @@ ip62str(struct in6_addr *addr)
 	}
 	return addrbuf;
 }
-#endif /* KAFFE_VMDEBUG */
+#endif /* defined(HAVE_STRUCT_SOCKADDR_IN6) */
+#endif /* defined(KAFFE_VMDEBUG) && !defined(NDEBUG) */
+
 /*
  * Create a datagram socket.
  */
@@ -144,9 +147,11 @@ gnu_java_net_PlainDatagramSocketImpl_bind(struct Hgnu_java_net_PlainDatagramSock
 	memset(&addr, 0, sizeof(addr));
 	if (obj_length(unhand(laddr)->addr) == 4) {
 		alen = sizeof(addr.addr4);
+
 #if defined(BSD44)
 		addr.addr4.sin_len = sizeof(addr.addr4);
-#endif
+#endif /* defined(BSD44) */
+
 		addr.addr4.sin_family = AF_INET;
 		addr.addr4.sin_port = htons(port);
 		memcpy(&addr.addr4.sin_addr, unhand_byte_array(unhand(laddr)->addr),
@@ -156,12 +161,15 @@ DBG(NATIVENET,
 	dprintf("datagram_bind4(%p, %s, %d)\n", 
 		this, ip2str(addr.addr4.sin_addr.s_addr), port);
 )
+
 #if defined(HAVE_STRUCT_SOCKADDR_IN6)
 	} else if (obj_length(unhand(laddr)->addr) == 16) {
 		alen = sizeof(addr.addr6);
+
 #if defined(BSD44)
 		addr.addr6.sin6_len = sizeof(addr.addr6);
-#endif
+#endif /* defined(BSD44) */
+
 		addr.addr6.sin6_family = AF_INET6;
 		addr.addr6.sin6_port = htons(port);
 		memcpy(&addr.addr6.sin6_addr, unhand_byte_array(unhand(laddr)->addr),
@@ -171,7 +179,8 @@ DBG(NATIVENET,
 	dprintf("datagram_bind6(%p, %s, %d)\n", 
 		this, ip62str(&addr.addr6.sin6_addr), port);
 )		
-#endif
+#endif /* defined(HAVE_STRUCT_SOCKADDR_IN6) */
+
 	} else {
 		SignalError("java.net.SocketException", "Unsupported address family");
 	}
@@ -223,9 +232,11 @@ DBG(NATIVENET,
         memset(&addr, 0, sizeof(addr));
         if (obj_length(unhand(unhand(pkt)->address)->addr) == 4) {
 	    alen = sizeof(addr.addr4);
+
 #if defined(BSD44)
 	    addr.addr4.sin_len = sizeof(addr.addr4);
-#endif
+#endif /* defined(BSD44) */
+
 	    addr.addr4.sin_family = AF_INET;
 	    addr.addr4.sin_port = htons(unhand(pkt)->port);
 	    memcpy(&addr.addr4.sin_addr.s_addr, unhand_byte_array(unhand(unhand(pkt)->address)->addr),
@@ -239,9 +250,11 @@ DBG(NATIVENET,
 #if defined(HAVE_STRUCT_SOCKADDR_IN6)
 	} else if (obj_length(unhand(unhand(pkt)->address)->addr) == 16) {
 	    alen = sizeof(addr.addr6);
+
 #if defined(BSD44)
 	    addr.addr6.sin6_len = sizeof(addr.addr6);
-#endif
+#endif /* defined(BSD44) */
+
 	    addr.addr6.sin6_family = AF_INET6;
 	    addr.addr6.sin6_port = htons(unhand(pkt)->port);
 	    memcpy(&addr.addr6.sin6_addr, unhand_byte_array(unhand(unhand(pkt)->address)->addr),
@@ -252,7 +265,7 @@ DBG(NATIVENET,
 		ip62str(&addr.addr6.sin6_addr),
 		unhand(pkt)->port);
 )
-#endif
+#endif /* defined(HAVE_STRUCT_SOCKADDR_IN6) */
 
         } else {
 	    SignalError("java.net.SocketException", "Unsupported packet internet address");
@@ -288,10 +301,12 @@ gnu_java_net_PlainDatagramSocketImpl_peek(struct Hgnu_java_net_PlainDatagramSock
 
 	if (saddr.addr4.sin_family == AF_INET) {
 	    memcpy(unhand_byte_array(unhand(addr)->addr), &saddr.addr4.sin_addr, sizeof(saddr.addr4.sin_addr));
+
 #if defined(HAVE_STRUCT_SOCKADDR_IN6)
 	} else if (saddr.addr6.sin6_family == AF_INET6) {
 	    memcpy(unhand_byte_array(unhand(addr)->addr), &saddr.addr6.sin6_addr, sizeof(saddr.addr6.sin6_addr));
-#endif
+#endif /*  defined(HAVE_STRUCT_SOCKADDR_IN6) */
+
 	} else {
 	    SignalError("java.net.SocketException", "Unsupported address family");
 	}
@@ -366,6 +381,7 @@ DBG(NATIVENET,
 		unhand(pkt)->address = (struct Hjava_net_InetAddress*)
 			execute_java_constructor("java/net/InetAddress", 0, 0, "([B)V",
 						 array_address);
+
 #if defined(HAVE_STRUCT_SOCKADDR_IN6)
 	} else if (addr.addr6.sin6_family == AF_INET6) {
 		array_address = (HArrayOfByte*)AllocArray(sizeof(addr.addr6.sin6_addr), TYPE_Byte);
@@ -374,7 +390,7 @@ DBG(NATIVENET,
 		unhand(pkt)->address = (struct Hjava_net_InetAddress*)
 			execute_java_constructor("java/net/Inet6Address", 0, 0, "([BLjava/lang/String;)V",
 						 array_address);
-#endif
+#endif /* defined(HAVE_STRUCT_SOCKADDR_IN6) */
 		
 	} else {
 		SignalError("java.net.SocketException", "Unsupported address family");
@@ -437,6 +453,7 @@ gnu_java_net_PlainDatagramSocketImpl_socketSetOption(struct Hgnu_java_net_PlainD
 
 	switch(opt) {
 	case java_net_SocketOptions_IP_MULTICAST_IF:
+
 #if defined(IP_MULTICAST_IF)
 		addrp = (struct Hjava_net_InetAddress*)arg;
 		{
@@ -455,10 +472,11 @@ gnu_java_net_PlainDatagramSocketImpl_socketSetOption(struct Hgnu_java_net_PlainD
 					    SYS_ERROR(r));
 			}
 		}
-#else
+#else /* !defined(IP_MULTICAST_IF) */
 			SignalError("java.net.SocketException",
 				    "IP_MULTICAST_IF is not supported");
-#endif
+#endif /* defined(IP_MULTICAST_IF) */
+
 		break;
 
 	case java_net_SocketOptions_SO_BINDADDR:
@@ -505,6 +523,7 @@ gnu_java_net_PlainDatagramSocketImpl_socketGetOption(struct Hgnu_java_net_PlainD
 		}
 		r = htonl(addr.sin_addr.s_addr);
 		break;
+
 #if defined(IP_MULTICAST_IF)
 	case java_net_SocketOptions_IP_MULTICAST_IF:
 		r = KGETSOCKOPT(unhand(unhand(this)->fd)->nativeFd,
@@ -515,7 +534,8 @@ gnu_java_net_PlainDatagramSocketImpl_socketGetOption(struct Hgnu_java_net_PlainD
 		}
 		r = ntohl(ia.s_addr);
 		break;
-#endif
+#endif /* defined(IP_MULTICAST_IF) */
+
 	case java_net_SocketOptions_SO_TIMEOUT: /* JAVA takes care */
 	default:
 		SignalError("java.net.SocketException",
@@ -530,6 +550,7 @@ gnu_java_net_PlainDatagramSocketImpl_socketGetOption(struct Hgnu_java_net_PlainD
 void
 gnu_java_net_PlainDatagramSocketImpl_join(struct Hgnu_java_net_PlainDatagramSocketImpl* this, struct Hjava_net_InetAddress* laddr)
 {
+
 #if defined(IP_ADD_MEMBERSHIP)
 	int r;
 	struct ip_mreq ipm;
@@ -554,10 +575,11 @@ DBG(NATIVENET,
 	if (r) {
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
-#else
+#else /* !defined(IP_ADD_MEMBERSHIP) */
 	SignalError("java.net.SocketException",
 		"IP_ADD_MEMBERSHIP not supported");
-#endif
+#endif /* defined(IP_ADD_MEMBERSHIP) */
+
 }
 
 /*
@@ -566,6 +588,7 @@ DBG(NATIVENET,
 void
 gnu_java_net_PlainDatagramSocketImpl_leave(struct Hgnu_java_net_PlainDatagramSocketImpl* this, struct Hjava_net_InetAddress* laddr)
 {
+
 #if defined(IP_DROP_MEMBERSHIP)
 	int r;
 	struct ip_mreq ipm;
@@ -590,10 +613,11 @@ DBG(NATIVENET,
 	if (r) {
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
-#else
+#else /* !defined(IP_DROP_MEMBERSHIP) */
 	SignalError("java.net.SocketException",
 		"IP_DROP_MEMBERSHIP not supported");
-#endif
+#endif /* defined(IP_DROP_MEMBERSHIP) */
+
 }
 
 /*
@@ -602,6 +626,7 @@ DBG(NATIVENET,
 void
 gnu_java_net_PlainDatagramSocketImpl_joinGroup(struct Hgnu_java_net_PlainDatagramSocketImpl* this, struct Hjava_net_SocketAddress *jsa, struct Hjava_net_NetworkInterface *jni)
 {
+
 #if defined(IP_ADD_MEMBERSHIP)
 	struct Hjava_net_InetSocketAddress *jisa;
 	struct ip_mreq ipm;
@@ -642,10 +667,11 @@ DBG(NATIVENET,
 	if (r) {
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
-#else
+#else /* !defined(IP_ADD_MEMBERSHIP) */
 	SignalError("java.net.SocketException",
 		"IP_ADD_MEMBERSHIP not supported");
-#endif
+#endif /* defined(IP_ADD_MEMBERSHIP) */
+
 }
 
 /*
@@ -654,6 +680,7 @@ DBG(NATIVENET,
 void
 gnu_java_net_PlainDatagramSocketImpl_leaveGroup(struct Hgnu_java_net_PlainDatagramSocketImpl* this, struct Hjava_net_SocketAddress *jsa, struct Hjava_net_NetworkInterface *jni)
 {
+
 #if defined(IP_ADD_MEMBERSHIP)
 	struct Hjava_net_InetSocketAddress *jisa;
 	struct ip_mreq ipm;
@@ -689,10 +716,11 @@ gnu_java_net_PlainDatagramSocketImpl_leaveGroup(struct Hgnu_java_net_PlainDatagr
 	if (r) {
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
-#else
+#else /* !defined(IP_ADD_MEMBERSHIP) */
 	SignalError("java.net.SocketException",
 		"IP_ADD_MEMBERSHIP not supported");
-#endif
+#endif /* defined(IP_ADD_MEMBERSHIP) */
+
 }
 
 /*
@@ -701,6 +729,7 @@ gnu_java_net_PlainDatagramSocketImpl_leaveGroup(struct Hgnu_java_net_PlainDatagr
 void
 gnu_java_net_PlainDatagramSocketImpl_setTTL(struct Hgnu_java_net_PlainDatagramSocketImpl* this, jbool ttl)
 {
+
 #if defined(IP_MULTICAST_TTL)
 	int r;
 	unsigned char v = (unsigned char)ttl;
@@ -710,10 +739,11 @@ gnu_java_net_PlainDatagramSocketImpl_setTTL(struct Hgnu_java_net_PlainDatagramSo
 	if (r) {
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
-#else
+#else /* !defined(IP_MULTICAST_TTL) */
 	SignalError("java.net.SocketException",
 		"IP_MULTICAST_TTL not supported");
-#endif
+#endif /* defined(IP_MULTICAST_TTL) */
+
 }
 
 /*
@@ -722,6 +752,7 @@ gnu_java_net_PlainDatagramSocketImpl_setTTL(struct Hgnu_java_net_PlainDatagramSo
 jbyte
 gnu_java_net_PlainDatagramSocketImpl_getTTL(struct Hgnu_java_net_PlainDatagramSocketImpl* this)
 {
+
 #if defined(IP_MULTICAST_TTL)
 	unsigned char v;
 	int s;
@@ -733,8 +764,9 @@ gnu_java_net_PlainDatagramSocketImpl_getTTL(struct Hgnu_java_net_PlainDatagramSo
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
 	return (jbyte)v;
-#else
+#else /* !defined(IP_MULTICAST_TTL) */
 	SignalError("java.net.SocketException",
 		"IP_MULTICAST_TTL not supported");
-#endif
+#endif /* defined(IP_MULTICAST_TTL) */
+
 }
