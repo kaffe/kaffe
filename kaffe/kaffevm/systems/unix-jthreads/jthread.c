@@ -1947,7 +1947,7 @@ jthreadedConnect(int fd, struct sockaddr* addr, size_t len, int timeout)
  */
 int
 jthreadedAccept(int fd, struct sockaddr* addr, size_t* len, 
-		int timeout, int* out)
+		int timeout, ssize_t* out)
 {
 	int r;
 	int haveBlocked = 0;

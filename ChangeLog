@@ -1,3 +1,8 @@
+Mon Feb  8 18:03:59 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c (jthreadedAccept):
+	out was declared as ssize_t* in jthread.h
+
 Mon Feb  8 18:02:43 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffeh/support.c (jmalloc): never malloc(0), it may return
