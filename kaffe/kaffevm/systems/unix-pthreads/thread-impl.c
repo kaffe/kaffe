@@ -58,7 +58,7 @@ static char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', '
 #define SCHEDULE_POLICY     SCHED_OTHER
 
 /* our upper create limit, to ensure we don't blow the system */
-#define MAX_SYS_THREADS     _POSIX_THREAD_THREADS_MAX - 1
+#define MAX_SYS_THREADS     PTHREAD_THREADS_MAX - 1
 
 /* our upper limit for cached threads (0 = no caching at all) */
 #define MAX_CACHED_THREADS  MAX_SYS_THREADS - 3
