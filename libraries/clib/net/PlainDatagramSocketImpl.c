@@ -149,8 +149,6 @@ java_net_PlainDatagramSocketImpl_receive(struct Hjava_net_PlainDatagramSocketImp
 	int rc;
 	struct sockaddr_in addr;
 	size_t alen = sizeof(addr);
-	unsigned char *ipbyte;
-	char ipstr[32];
 
 	/* Which port am I receiving from */
 	addr.sin_port = htons(unhand(this)->localPort);
@@ -163,10 +161,10 @@ java_net_PlainDatagramSocketImpl_receive(struct Hjava_net_PlainDatagramSocketImp
 	unhand(pkt)->length = r;
 	unhand(pkt)->port = ntohs(addr.sin_port);
 	unhand(unhand(pkt)->address)->address = ntohl(addr.sin_addr.s_addr);
-	ipbyte = (unsigned char *) &addr.sin_addr.s_addr;
-	sprintf(ipstr, "%d.%d.%d.%d",	/* inet_ntoa() is not thread safe */
-	    ipbyte[0], ipbyte[1], ipbyte[2], ipbyte[3]);
-	unhand(unhand(pkt)->address)->hostName = stringC2Java(ipstr);
+	/* zero out hostname to overwrite old name which does not match
+	 * the new address from which the packet came.
+	 */
+	unhand(unhand(pkt)->address)->hostName = 0;
 }
 
 /*
