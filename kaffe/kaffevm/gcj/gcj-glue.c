@@ -11,6 +11,8 @@
 #include "gcj.h"
 #include "object.h"
 
+#if defined(HAVE_GCJ_SUPPORT)
+
 static Hjava_lang_Class* kenvFindClassByAddress2(void *clazz, errorInfo *einfo);
 
 /*
@@ -533,3 +535,5 @@ kenvFree(void * ptr)
 {
 	KFREE(ptr);
 }
+
+#endif
