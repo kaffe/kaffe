@@ -2,6 +2,21 @@
 
 	Resynced with GNU Classpath.
 
+	2003-11-28  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+        * java/text/SimpleDateFormat.java (compileFormat):
+        isLowerCase() and isUpperCase() allow too many characters.
+        Just use >= 'A' && <= 'Z' || >= 'a' && <= 'z'.
+
+	2003-11-15  Michael Koch  <konqueror@gmx.de>
+
+        * java/text/SimpleDateFormat.java (equals):
+        Removed some redundant obj == null checks.
+
+2004-01-03  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2003-12-26  Michael Koch  <konqueror@gmx.de>
 
         * java/text/NumberFormat.java

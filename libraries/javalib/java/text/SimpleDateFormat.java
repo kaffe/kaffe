@@ -119,8 +119,8 @@ public class SimpleDateFormat extends DateFormat
       field = formatData.getLocalPatternChars().indexOf(thisChar);
       if (field == -1) {
 	current = null;
-	if (Character.isLowerCase (thisChar)
-	    || Character.isUpperCase (thisChar)) {
+	if ((thisChar >= 'A' && thisChar <= 'Z')
+	    || (thisChar >= 'a' && thisChar <= 'z')) {
 	  // Not a valid letter
 	  tokens.add(new FieldSizePair(-1,0));
 	} else if (thisChar == '\'') {
@@ -376,9 +376,6 @@ public class SimpleDateFormat extends DateFormat
    */
   public boolean equals(Object o)
   {
-    if (o == null)
-      return false;
-
     if (!super.equals(o))
       return false;
 
