@@ -74,6 +74,11 @@ public int hashCode()
 	return (val);	// What should this be do you suppose ???
 }
 
+public byte byteValue()
+	{
+	return (val);
+}
+
 public int intValue()
 	{
 	return ((int)val);
