@@ -903,4 +903,9 @@ public void update ( Graphics g ) {
 
 public void validate () {
 }
+
+final public Object getTreeLock() {
+        return Toolkit.singleton;
+}
+
 }
