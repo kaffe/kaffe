@@ -159,7 +159,7 @@ dnl =========================================================================
 dnl Allow selection of a specific execution engine
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(engine,[  --with-engine=ENGINE    Force use of a specific execution engine])
+AC_ARG_WITH(engine,[  --with-engine=ENGINE    Force use given execution engine (intrp or jit)])
 
 dnl Translate 'interpreter' to 'intrp'
 if test x"$with_engine" = x"interpreter" ; then

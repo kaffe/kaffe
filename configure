@@ -35,7 +35,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --disable-libtool-lock  force libtool not to do file locking"
 ac_help="$ac_help
-  --with-engine=ENGINE    Force use of a specific execution engine"
+  --with-engine=ENGINE    Force use given execution engine (intrp or jit)"
 ac_help="$ac_help
   --enable-debug            Enable run-time debugging machinery
   --disable-debug           Disable assertion checking (but not -g)"
