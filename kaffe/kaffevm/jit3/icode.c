@@ -906,10 +906,15 @@ add_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
 #if defined(HAVE_add_int_const)
 	if (slot_type(src) == Tconst) {
+#if 0
+		/* Disabled as it does not clear Carry and breaks
+                   add_long() on ARM */
 		if (slot_type(src2) == Tconst) {
 			move_int_const(dst, slot_value(src).i + slot_value(src2).i);
 		}
-		else {
+		else
+#endif
+		{
 			add_int_const(dst, src2, slot_value(src).i);
 		}
 	}
@@ -2448,7 +2453,7 @@ load_offset_scaled_int(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		lshl_int_const(tmp, idx, SHIFT_jint);
-		add_ref(tmp, tmp, src);
+		add_ref(tmp, src, tmp);
 		load_offset_int(dst, tmp, offset);
 		slot_freetmp(tmp);
 	}
@@ -2469,7 +2474,7 @@ load_offset_scaled_ref(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		lshl_int_const(tmp, idx, SHIFT_jref);
-		add_ref(tmp, tmp, src);
+		add_ref(tmp, src, tmp);
 		load_offset_ref(dst, tmp, offset);
 		slot_freetmp(tmp);
 	}
@@ -2487,19 +2492,12 @@ load_offset_scaled_long(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 	slot_slot_slot_const_const(dst, src, idx, offset, 0, HAVE_load_offset_scaled_long, Tload);
 #else
 	{
-		SlotInfo* nidx;
-		slot_alloctmp(nidx);
-		lshl_int_const(nidx, idx, 1);
-                /* Don't use LSLOT & HSLOT here */
-		if (src != dst) {
-			load_offset_scaled_int(dst, src, nidx, offset);
-			load_offset_scaled_int(dst+1, src, nidx, offset+4);
-		}
-		else {
-			load_offset_scaled_int(dst+1, src, nidx, offset+4);
-			load_offset_scaled_int(dst, src, nidx, offset);
-		}
-		slot_freetmp(nidx);
+		SlotInfo* tmp;
+		slot_alloctmp(tmp);
+		lshl_int_const(tmp, idx, SHIFT_jlong);
+		add_ref(tmp, src, tmp);
+		load_offset_long(dst, tmp, offset);
+		slot_freetmp(tmp);
 	}
 #endif
 }
@@ -2518,7 +2516,7 @@ load_offset_scaled_float(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		lshl_int_const(tmp, idx, SHIFT_jfloat);
-		add_ref(tmp, tmp, src);
+		add_ref(tmp, src, tmp);
 		load_offset_float(dst, tmp, offset);
 		slot_freetmp(tmp);
 	}
@@ -2539,7 +2537,7 @@ load_offset_scaled_double(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offse
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		lshl_int_const(tmp, idx, SHIFT_jdouble);
-		add_ref(tmp, tmp, src);
+		add_ref(tmp, src, tmp);
 		load_offset_double(dst, tmp, offset);
 		slot_freetmp(tmp);
 	}
@@ -2559,7 +2557,7 @@ load_offset_scaled_byte(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 	{
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
-		add_ref(tmp, idx, src);
+		add_ref(tmp, src, idx);
 		load_offset_byte(dst, tmp, offset);
 		slot_freetmp(tmp);
 	}
@@ -2580,7 +2578,7 @@ load_offset_scaled_char(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		lshl_int_const(tmp, idx, SHIFT_jchar);
-		add_ref(tmp, tmp, src);
+		add_ref(tmp, src, tmp);
 		load_offset_char(dst, tmp, offset);
 		slot_freetmp(tmp);
 	}
@@ -2601,7 +2599,7 @@ load_offset_scaled_short(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		lshl_int_const(tmp, idx, SHIFT_jshort);
-		add_ref(tmp, tmp, src);
+		add_ref(tmp, src, tmp);
 		load_offset_short(dst, tmp, offset);
 		slot_freetmp(tmp);
 	}
@@ -3059,7 +3057,7 @@ store_offset_scaled_int(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		lshl_int_const(tmp, idx, SHIFT_jint);
-		add_ref(tmp, tmp, dst);
+		add_ref(tmp, dst, tmp);
 		store_offset_int(tmp, offset, src);
 		slot_freetmp(tmp);
 	}
@@ -3080,7 +3078,7 @@ store_offset_scaled_ref(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		lshl_int_const(tmp, idx, SHIFT_jref);
-		add_ref(tmp, tmp, dst);
+		add_ref(tmp, dst, tmp);
 		store_offset_ref(tmp, offset, src);
 		slot_freetmp(tmp);
 	}
@@ -3098,13 +3096,12 @@ store_offset_scaled_long(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src
 	slot_slot_slot_const_const(dst, idx, src, offset, 0, HAVE_store_offset_scaled_long, Tstore);
 #else
 	{
-		SlotInfo* nidx;
-		slot_alloctmp(nidx);
-		lshl_int_const(nidx, idx, 1);
-                /* Don't use LSLOT & HSLOT here */
-		store_offset_scaled_int(dst, nidx, offset, src);
-		store_offset_scaled_int(dst, nidx, offset+4, src+1);
-		slot_freetmp(nidx);
+		SlotInfo* tmp;
+		slot_alloctmp(tmp);
+		lshl_int_const(tmp, idx, SHIFT_jlong);
+		add_ref(tmp, dst, tmp);
+		store_offset_long(tmp, offset, src);
+		slot_freetmp(tmp);
 	}
 #endif
 }
@@ -3123,7 +3120,7 @@ store_offset_scaled_float(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* sr
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		lshl_int_const(tmp, idx, SHIFT_jfloat);
-		add_ref(tmp, tmp, dst);
+		add_ref(tmp, dst, tmp);
 		store_offset_float(tmp, offset, src);
 		slot_freetmp(tmp);
 	}
@@ -3144,7 +3141,7 @@ store_offset_scaled_double(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* s
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		lshl_int_const(tmp, idx, SHIFT_jdouble);
-		add_ref(tmp, tmp, dst);
+		add_ref(tmp, dst, tmp);
 		store_offset_double(tmp, offset, src);
 		slot_freetmp(tmp);
 	}
@@ -3170,7 +3167,7 @@ store_offset_scaled_byte(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src
 	{
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
-		add_ref(tmp, idx, dst);
+		add_ref(tmp, dst, idx);
 		store_offset_byte(tmp, offset, src);
 		slot_freetmp(tmp);
 	}
@@ -3199,7 +3196,7 @@ store_offset_scaled_char(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		lshl_int_const(tmp, idx, SHIFT_jchar);
-		add_ref(tmp, tmp, dst);
+		add_ref(tmp, dst, tmp);
 		store_offset_char(tmp, offset, src);
 		slot_freetmp(tmp);
 	}
@@ -3220,7 +3217,7 @@ store_offset_scaled_short(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* sr
 		SlotInfo* tmp;
 		slot_alloctmp(tmp);
 		lshl_int_const(tmp, idx, SHIFT_jshort);
-		add_ref(tmp, tmp, dst);
+		add_ref(tmp, dst, tmp);
 		store_offset_short(tmp, offset, src);
 		slot_freetmp(tmp);
 	}
@@ -4496,7 +4493,7 @@ check_array_store(SlotInfo* array, SlotInfo* obj)
 }
 
 void
-explict_check_null(int x, SlotInfo* obj, int y)
+explicit_check_null(int x, SlotInfo* obj, int y)
 {
 #if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
 	if (!canCatch(ANY)) {
@@ -4517,7 +4514,7 @@ void
 check_null(int x, SlotInfo* obj, int y)
 {
 #if defined(CREATE_NULLPOINTER_CHECKS)
-	explict_check_null(x, obj, y);
+	explicit_check_null(x, obj, y);
 #else
 	if (canCatch(ANY)) {
 		begin_func_sync();
