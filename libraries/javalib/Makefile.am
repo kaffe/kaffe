@@ -363,7 +363,6 @@ java_lang_SRCS = \
 	java/lang/NoSuchMethodError.java \
 	java/lang/NoSuchMethodException.java \
 	java/lang/NullPointerException.java \
-	java/lang/NullSecurityManager.java \
 	java/lang/Number.java \
 	java/lang/NumberFormatException.java \
 	java/lang/Object.java \
