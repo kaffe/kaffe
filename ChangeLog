@@ -1,3 +1,25 @@
+2003-10-25  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/gnu/java/nio/FileLockImpl.java,
+        libraries/javalib/gnu/java/nio/PipeImpl.java,
+        libraries/javalib/gnu/java/nio/SelectorImpl.java,
+        libraries/javalib/gnu/java/nio/SelectorProviderImpl.java,
+        libraries/javalib/gnu/java/nio/SocketChannelImpl.java,
+        libraries/javalib/java/awt/geom/CubicCurve2D.java,
+        libraries/javalib/java/awt/geom/GeneralPath.java,
+        libraries/javalib/java/awt/geom/QuadCurve2D.java,
+        libraries/javalib/java/io/File.java,
+        libraries/javalib/java/lang/StringBuffer.java,
+        libraries/javalib/java/net/InetSocketAddress.java,
+        libraries/javalib/java/nio/ByteOrder.java,
+        libraries/javalib/java/nio/channels/FileChannelImpl.java,
+        libraries/javalib/java/text/DateFormat.java,
+        libraries/javalib/java/text/FormatCharacterIterator.java,
+        libraries/javalib/java/text/SimpleDateFormat.java,
+        libraries/javalib/java/util/logging/ErrorManager.java,
+        libraries/javalib/javax/naming/spi/NamingManager.java:
+	Resynced with GNU Classpath.
+
 2003-10-25  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* config/arm/linux/jit-md.h:

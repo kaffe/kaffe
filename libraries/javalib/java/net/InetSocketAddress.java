@@ -68,7 +68,7 @@ public class InetSocketAddress extends SocketAddress
     throws IllegalArgumentException
   {
     if (port < 0 || port > 65535)
-      throw new IllegalArgumentException("Bad port number: " + port);
+      throw new IllegalArgumentException ("Bad port number: " + port);
 
     if (addr == null)
       addr = InetAddress.ANY_IF;
@@ -104,6 +104,7 @@ public class InetSocketAddress extends SocketAddress
   {
     if (hostname == null)
       throw new IllegalArgumentException ("Null host name value");
+    
     if (port < 0 || port > 65535)
       throw new IllegalArgumentException ("Bad port number: " + port);
 

@@ -49,9 +49,19 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import gnu.classpath.Configuration;
 
 public class SelectorImpl extends AbstractSelector
 {
+  static
+  {
+    // load the shared library needed for native methods.
+    if (Configuration.INIT_LOAD_LIBRARY)
+      {
+        System.loadLibrary ("javanio");
+      }
+  }
+  
   private Set keys;
   private Set selected;
 
@@ -59,8 +69,8 @@ public class SelectorImpl extends AbstractSelector
   {
     super (provider);
     
-    keys = new HashSet ();
-    selected = new HashSet ();
+    keys = new HashSet();
+    selected = new HashSet();
   }
 
   protected void finalize() throws Throwable
@@ -100,32 +110,32 @@ public class SelectorImpl extends AbstractSelector
   {
     int[] result;
     int counter = 0;
-    Iterator it = keys.iterator ();
+    Iterator it = keys.iterator();
 
     // Count the number of file descriptors needed
-    while (it.hasNext ())
+    while (it.hasNext())
       {
-        SelectionKeyImpl key = (SelectionKeyImpl) it.next ();
+        SelectionKeyImpl key = (SelectionKeyImpl) it.next();
 
-        if ((key.interestOps () & ops) != 0)
+        if ((key.interestOps() & ops) != 0)
           {
             counter++;
           }
       }
 
-    result = new int[counter];
+    result = new int [counter];
 
     counter = 0;
-    it = keys.iterator ();
+    it = keys.iterator();
 
     // Fill the array with the file descriptors
-    while (it.hasNext ())
+    while (it.hasNext())
       {
-        SelectionKeyImpl key = (SelectionKeyImpl) it.next ();
+        SelectionKeyImpl key = (SelectionKeyImpl) it.next();
 
-        if ((key.interestOps () & ops) != 0)
+        if ((key.interestOps() & ops) != 0)
           {
-            result[counter] = key.getNativeFD();
+            result [counter] = key.getNativeFD();
             counter++;
           }
       }
@@ -136,12 +146,12 @@ public class SelectorImpl extends AbstractSelector
   public int select (long timeout)
   {
     if (!isOpen())
-      throw new ClosedSelectorException ();
+      throw new ClosedSelectorException();
 
     if (keys == null)
-	    {
+      {
         return 0;
-	    }
+      }
 
     deregisterCancelledKeys();
 
@@ -156,25 +166,25 @@ public class SelectorImpl extends AbstractSelector
     int result = implSelect (read, write, except, timeout);
     end();
 
-    Iterator it = keys.iterator ();
+    Iterator it = keys.iterator();
 
-    while (it.hasNext ())
+    while (it.hasNext())
       {
         int ops = 0;
-        SelectionKeyImpl key = (SelectionKeyImpl) it.next ();
+        SelectionKeyImpl key = (SelectionKeyImpl) it.next();
 
         // If key is already selected retrieve old ready ops.
         if (selected.contains (key))
           {
-            ops = key.readyOps ();
+            ops = key.readyOps();
           }
 
         // Set new ready read/accept ops
         for (int i = 0; i < read.length; i++)
           {
-            if (key.getNativeFD() == read[i])
+            if (key.getNativeFD() == read [i])
               {
-                if (key.channel () instanceof ServerSocketChannelImpl)
+                if (key.channel() instanceof ServerSocketChannelImpl)
                   {
                     ops = ops | SelectionKey.OP_ACCEPT;
                   }
@@ -188,11 +198,11 @@ public class SelectorImpl extends AbstractSelector
         // Set new ready write ops
         for (int i = 0; i < write.length; i++)
           {
-            if (key.getNativeFD() == write[i])
+            if (key.getNativeFD() == write [i])
               {
                 ops = ops | SelectionKey.OP_WRITE;
                 
-//                 if (key.channel ().isConnected ())
+//                 if (key.channel().isConnected())
 //                   {
 //                     ops = ops | SelectionKey.OP_WRITE;
 //                   }
@@ -212,7 +222,7 @@ public class SelectorImpl extends AbstractSelector
           }
 
         // Set new ready ops
-        key.readyOps (key.interestOps () & ops);
+        key.readyOps (key.interestOps() & ops);
       }
 
     deregisterCancelledKeys();
@@ -233,10 +243,10 @@ public class SelectorImpl extends AbstractSelector
   {
     Iterator it = cancelledKeys().iterator();
 
-    while (it.hasNext ())
+    while (it.hasNext())
       {
-        keys.remove ((SelectionKeyImpl) it.next ());
-        it.remove ();
+        keys.remove ((SelectionKeyImpl) it.next());
+        it.remove();
       }
   }
 

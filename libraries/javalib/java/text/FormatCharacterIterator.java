@@ -156,7 +156,7 @@ class FormatCharacterIterator implements AttributedCharacterIterator
 	if (attributes[currentAttrIndex] == null)
 	  break;
 	newKeys = attributes[currentAttrIndex].keySet();
-     }
+      }
     while (newKeys.containsAll(reqAttrs));
    
     return (currentAttrIndex > 0) ? ranges[currentAttrIndex-1] : 0;
@@ -366,7 +366,8 @@ class FormatCharacterIterator implements AttributedCharacterIterator
       } 
     while (c != DONE);
 
-    HashMap[] new_attributes = new HashMap[attributes.length + more_attributes.size()];
+    HashMap[] new_attributes = new HashMap[attributes.length
+					   + more_attributes.size()];
     int[] new_ranges = new int[ranges.length + more_ranges.size()];
     
     System.arraycopy(attributes, 0, new_attributes, 0, attributes.length);

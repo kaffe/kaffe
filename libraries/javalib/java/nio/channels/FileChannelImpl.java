@@ -47,6 +47,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.MappedByteBufferImpl;
+import gnu.classpath.Configuration;
 import gnu.classpath.RawData;
 
 /**
