@@ -52,7 +52,7 @@ extern int vfprintf(FILE *, char *, va_list);
 #if defined(HAVE_GETRLIMIT)
 #define KAFFEMD_STACKSIZE
 
-static inline size_t mdGetStackSize()
+static inline size_t mdGetStackSize(void)
 {
   struct rlimit rl;
 
