@@ -17,6 +17,9 @@
 /**/
 #include "arm/jit.h"
 
+#undef FIRSTFRAME
+#define FIRSTFRAME(f, o) (f) = *(exceptionFrame *)__builtin_frame_address(0)
+
 /**/
 /* Extra exception handling information. */
 /**/
@@ -43,14 +46,6 @@
 #if defined(SA_SIGINFO)
 #undef SA_SIGINFO
 #endif
-
-/* It looks like the linux kernel sets r0 to the signal number
- * and passes a pointer to the context as the fourth argument
- * use this hack to account for that.  -- gback
- *
- * Undef when this gets fixed -- check arch/arm/kernel/signal.c
- */
-#define ARM_LINUX_HACK
 
 #define EXCEPTIONPROTO SIGNAL_ARGS(sig, ctx)
 

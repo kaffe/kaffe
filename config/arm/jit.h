@@ -32,20 +32,20 @@ exceptionFrame * ->   |  return fp value    |      [fp - 12]
 
 /* Structure of exception frame on stack */
 typedef struct _exceptionFrame {
-        char*   retfp;		/* should be "addr_t" */
-        char*   retsp;
-        char*   retpc;
+        uintp   retfp;
+        uintp   retsp;
+        uintp   retpc;
 } exceptionFrame;
 
 /* Get the next frame in the chain */
 #define NEXTFRAME(f)                                                    \
-        ((uintp)((exceptionFrame*)(f))->retfp - sizeof(exceptionFrame))
+        (((exceptionFrame*)(f))->retfp - sizeof(exceptionFrame))
 
 /* Extract the PC from the given frame */
 #define PCFRAME(f)                                                      \
-        ((uintp)((f)->retpc - 4))
+        ((f)->retpc - 4)
 #define FPFRAME(f)							\
-	((uintp)((f)->retfp))
+	((f)->retfp)
 
 /* Get the first exception frame from a subroutine call */
 #define FIRSTFRAME(f, o)                                                \

@@ -590,7 +590,7 @@ Java_java_math_BigInteger_assignBytes0(JNIEnv* env, jobject r, jint sign, jbyteA
 	gmp_not_found(env);
 }
 
-void
+jint
 Java_java_math_BigInteger_assignString0(JNIEnv* env, jobject r, jstring val, jint radix)
 {
 	gmp_not_found(env);
