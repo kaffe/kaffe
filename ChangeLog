@@ -1,3 +1,10 @@
+Sat Feb 13 11:00:49 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* include/native.h, kaffe/kaffevm/support.c: 
+	added enter/leaveUnsafeRegion to export a primitive to native
+	code to protect non-reentrant library functions, such as malloc()
+	* libraries/clib/awt/X/toolkit.h: use it
+
 Sat Feb 13 01:14:16 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* include/Arrays.h

@@ -14,6 +14,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
+#include <native.h>		/* needed for enter/leaveUnsafeRegion */
 
 #define DBG(x,y)
 #define DBG_ACTION(x,y)
@@ -427,14 +428,20 @@ jobject selectionRequest ( JNIEnv* env, Toolkit* X );
 
 static __inline__ void* _awt_malloc_wrapper ( size_t size )
 {
-  void *adr = malloc( size);
+  void *adr;
+  enterUnsafeRegion();
+  adr = malloc( size);
+  leaveUnsafeRegion();
   DBG( awt_mem, ("malloc: %d  -> %x\n", size, adr));
   return adr;
 }
 
 static __inline__ void* _awt_calloc_wrapper ( int n, size_t size )
 {
-  void *adr = calloc( n, size);
+  void *adr;
+  enterUnsafeRegion();
+  adr = calloc( n, size);
+  leaveUnsafeRegion();
   DBG( awt_mem, ("calloc: %d,%d  -> %x\n", n, size, adr));
   return adr;
 }
@@ -442,7 +449,9 @@ static __inline__ void* _awt_calloc_wrapper ( int n, size_t size )
 static __inline__ void _awt_free_wrapper ( void* adr )
 {
   DBG( awt_mem, ("free: %x\n", adr));
+  enterUnsafeRegion();
   free( adr);
+  leaveUnsafeRegion();
 }
 
 

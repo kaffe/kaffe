@@ -32,6 +32,7 @@
 #include "itypes.h"
 #include "external.h"
 #include "thread.h"
+#include "jthread.h"
 #include "locks.h"
 
 #if !defined(HAVE_GETTIMEOFDAY)
@@ -749,6 +750,24 @@ kprintf(FILE* out, const char* mess, ...)
 	va_start(argptr, mess);
 	vfprintf(out, mess, argptr);
 	va_end(argptr);
+}
+
+/*
+ * Enter/leave critical region.  This interface is exported to 
+ * native libraries to protect calls to non-reentrant functions.
+ * It works as a global masterlock for C libraries that are not
+ * thread-safe.
+ */
+void 
+enterUnsafeRegion(void)
+{
+	jthread_spinon(0);
+}
+
+void 
+leaveUnsafeRegion(void)
+{
+	jthread_spinoff(0);
 }
 
 #if defined(NO_SHARED_LIBRARIES)
