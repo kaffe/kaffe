@@ -263,7 +263,7 @@ public void setYear(int year) {
  * @deprecated
  */
 public String toGMTString() {
-	DateFormat form = DateFormat.getDateTimeInstance();
+	DateFormat form = new SimpleDateFormat("d MMM yyyy HH:mm:ss GMT");
 	form.setTimeZone(TimeZone.getTimeZone("GMT"));
 	return (form.format(this));
 }
@@ -278,8 +278,8 @@ public String toLocaleString() {
 }
 
 public String toString() {
-	// need a string of the form: "Thu May 13 17:52:20 MDT 1999"
-	SimpleDateFormat form = new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy");
+	SimpleDateFormat form =
+	    new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
 	return (form.format(this));
 }
 }
