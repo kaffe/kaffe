@@ -393,9 +393,6 @@ public final class Connection extends HttpURLConnection
       throw new ProtocolException
         ("Want output stream while haven't setDoOutput(true)");
     
-    if (!method.equals ("POST")) //But we might support "PUT" in future
-      setRequestMethod ("POST");
-  
     if (bufferedOutputStream == null)
       bufferedOutputStream = new ByteArrayOutputStream (256); //default is too small
     
