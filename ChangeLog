@@ -1,3 +1,8 @@
+1999-05-25  Pavel Roskin <pavel_roskin@geocities.com>
+
+	* kaffe/kaffevm/*, libraries/clib/zip/Deflater.c: printf replaced
+	with dprintf inside debug macros.
+
 1999-05-25  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/javalib/Makefile.am (CLEAN): Wipe out LIBDIR.

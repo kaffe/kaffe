@@ -330,7 +330,7 @@ DBG(CODEANALYSE,
 #if VDBG(1) - 1 == 0
 	for (bcurr = bhead; bcurr != NULL; bcurr = bcurr->nextBB) {
 		if ((bcurr->flags & FLAG_DONEVERIFY) == 0) {
-			VDBG(printf("%s.%s%s pc %d bcurr->flags 0x%04x\n", meth->class->name->data, meth->name->data, meth->signature->data, bcurr - codeInfo->perPC, bcurr->flags);)
+			VDBG(dprintf("%s.%s%s pc %d bcurr->flags 0x%04x\n", meth->class->name->data, meth->name->data, meth->signature->data, bcurr - codeInfo->perPC, bcurr->flags);)
 		}
 	}
 #endif
@@ -378,7 +378,7 @@ verifyBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 
 		if (sp < meth->localsz || sp > meth->localsz + meth->stacksz) {
 			failed = true;
-			VDBG(printf("sp out of range: %d <%d> %d\n", meth->localsz, sp, meth->localsz + meth->stacksz);)
+			VDBG(dprintf("sp out of range: %d <%d> %d\n", meth->localsz, sp, meth->localsz + meth->stacksz);)
 			break;
 		}
 
@@ -398,7 +398,7 @@ verifyBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 		lclw = WORD(pc+1);
 		lclww = DWORD(pc+1);
 
-IDBG(		printf("%d: %d\n", pc, INSN(pc));		)
+IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 
 		switch (INSN(pc)) {
 		case NOP:

@@ -77,7 +77,7 @@ findClass(classEntry* centry, errorInfo *einfo)
 	assert(centry->class == 0);
 
 	/* Look for the class */
-CDBG(	printf("Scanning for class %s\n", cname);		)
+CDBG(	dprintf("Scanning for class %s\n", cname);		)
 
 	strcpy(buf, cname);
 	strcat(buf, ".class");
@@ -151,7 +151,7 @@ findInJar(char* cname, errorInfo *einfo)
 	}
 
 	/* Look for the class */
-CDBG(	printf("Scanning for element %s\n", cname);		)
+CDBG(	dprintf("Scanning for element %s\n", cname);		)
 
 	/* One into the jar at once */
 	lockStaticMutex(&jarlock);
@@ -160,7 +160,7 @@ CDBG(	printf("Scanning for element %s\n", cname);		)
 		hand.type = ptr->type;
 		switch (ptr->type) {
 		case CP_ZIPFILE:
-ZDBG(			printf("Opening JAR file %s for %s\n", ptr->path, cname); )
+ZDBG(			dprintf("Opening JAR file %s for %s\n", ptr->path, cname); )
 			if (ptr->u.jar == 0) {
 				ptr->u.jar = openJarFile(ptr->path);
 				if (ptr->u.jar == 0) {
@@ -196,7 +196,7 @@ ZDBG(			printf("Opening JAR file %s for %s\n", ptr->path, cname); )
 			strcpy(buf, ptr->path);
 			strcat(buf, file_separator);
 			strcat(buf, cname);
-FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
+FDBG(			dprintf("Opening java file %s for %s\n", buf, cname); )
 			rc = KOPEN(buf, O_RDONLY|O_BINARY, 0, &fp);
 			/* if we can't open the file, we keep looking */
 			if (rc) {
@@ -311,7 +311,7 @@ makeClasspath(char* cp)
 {
 	char* end;
 
-PDBG(	printf("initClasspath(): '%s'\n", cp);				)
+PDBG(	dprintf("initClasspath(): '%s'\n", cp);				)
 
 	for (;;) {
 		/* FIXME: requires path_separator to have length 1 */
@@ -377,7 +377,7 @@ addClasspath(const char* cp)
 	classpathEntry* ptr;
 	classpathEntry* lptr;
 
-PDBG(	printf("addClasspath(): '%s'\n", cp);				)
+PDBG(	dprintf("addClasspath(): '%s'\n", cp);				)
 
 	lptr = 0;
 	for (ptr = classpath; ptr != 0; ptr = ptr->next) {

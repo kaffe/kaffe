@@ -49,7 +49,7 @@ readClass(Hjava_lang_Class* classThis, classFile* fp, struct Hjava_lang_ClassLoa
 	readu2(&minor_version, fp);
 	readu2(&major_version, fp);
 
-DBG(	printf("major=%d, minor=%d\n", major_version, minor_version);	)
+DBG(	dprintf("major=%d, minor=%d\n", major_version, minor_version);	)
 
 	if (major_version != MAJOR_VERSION) {
 		fprintf(stderr, "Warning: Major version number mismatch.\n");
@@ -85,7 +85,7 @@ readInterfaces(classFile* fp, Hjava_lang_Class* this)
 	u2 interfaces_count;
 
 	readu2(&interfaces_count, fp);
-DBG(	printf("interfaces_count=%d\n", interfaces_count);	)
+DBG(	dprintf("interfaces_count=%d\n", interfaces_count);	)
 
 #ifdef READINTERFACES
 	READINTERFACES(fp, this, interfaces_count);
@@ -105,7 +105,7 @@ readFields(classFile* fp, Hjava_lang_Class* this)
 	void* fieldThis;
 
 	readu2(&fields_count, fp);
-DBG(	printf("fields_count=%d\n", fields_count);		)
+DBG(	dprintf("fields_count=%d\n", fields_count);		)
 	fieldThis = 0;
 
 #if defined(READFIELD_START)
@@ -138,7 +138,7 @@ readAttributes(classFile* fp, Hjava_lang_Class* this, void* thing)
 	u2 cnt;
 
 	readu2(&cnt, fp);
-DBG(	printf("attributes_count=%d\n", cnt);				)
+DBG(	dprintf("attributes_count=%d\n", cnt);				)
 
 	/* Skip attributes for the moment */
 	for (i = 0; i < cnt; i++) {
@@ -165,7 +165,7 @@ readMethods(classFile* fp, Hjava_lang_Class* this)
 	Method* methodThis;
 
 	readu2(&methods_count, fp);
-DBG(	printf("methods_count=%d\n", methods_count);		)
+DBG(	dprintf("methods_count=%d\n", methods_count);		)
 	methodThis = 0;
 
 #ifdef READMETHOD_START

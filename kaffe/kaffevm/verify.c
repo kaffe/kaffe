@@ -34,7 +34,7 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 	int i;
 	int tag;
 
-DBG(	printf("Verifing class %s\n", (char*)class->name->data);	)
+DBG(	dprintf("Verifing class %s\n", (char*)class->name->data);	)
 
 	error = false;
 
