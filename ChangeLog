@@ -1,3 +1,11 @@
+2003-08-25  Mark Wielaard  <mark@klomp.org>
+
+        * include/jni_cpp.h (JNIEnv::CheckException): Change to
+        ExceptionCheck.
+
+	Reported by:	Chris Halls <halls@debian.org>
+			Bernhard Rosenkraenzer <bero@arklinux.org>
+
 2003-08-24  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jqueue.c,

@@ -1201,9 +1201,9 @@ inline jint JNIEnv::GetJavaVM(JavaVM** a)
 	return (functions->GetJavaVM(this, a));
 }
 
-inline jboolean JNIEnv::CheckException(void)
+inline jboolean JNIEnv::ExceptionCheck(void)
 {
-	return (functions->CheckException(this));
+	return (functions->ExceptionCheck(this));
 }
 
 #endif
