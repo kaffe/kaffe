@@ -1,3 +1,9 @@
+Sat Jan  2 14:16:14 1999  Godmar Back <gback@cs.utah.edu>
+
+	* libraries/clib/awt/X/imgjpeg.c: initialized local var img to zero
+	to avoid undefined results when JPEG library is not available.
+	* libraries/javalib/java/awt/widgets/TextArea.java: fixed typo.
+
 Mon Dec 28 17:40:44 1998  Edouard Parmelan <EP510777@exchange.FRANCE.NCR.com>
 
 	* kaffe/kaffevm/findInJar.c: avoid KMALLOC() of zero bytes
