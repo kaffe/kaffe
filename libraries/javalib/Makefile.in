@@ -357,8 +357,6 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 SUBDIRS = . awt-implementations gmp-math
 SRCDIRS = com gnu java javax kaffe org
-@COND_PURE_JAVA_MATH_FALSE@JAVA_MATH_FILES = native_java_math.files
-@COND_PURE_JAVA_MATH_TRUE@JAVA_MATH_FILES = pure_java_math.files
 JAVA = $(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
 KAFFELIBRARYPATH = $(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/:$(top_builddir)/libraries/clib/nio/
 BOOTCLASSPATH = $(LIBDIR):$(srcdir)/Klasses.jar.bootstrap
@@ -4799,9 +4797,7 @@ EXTRA_DIST = \
 	javax \
 	kaffe \
 	org \
-	pure-java \
 	all.files \
-	native_java_math.files \
         bootstrap.classlist \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \

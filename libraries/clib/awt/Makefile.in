@@ -89,6 +89,7 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	uninstall-recursive
 ETAGS = etags
 CTAGS = ctags
+DIST_SUBDIRS = X qt classpath-gtk
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
@@ -343,21 +344,13 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-@COND_KAFFE_X_AWT_FALSE@MAYBE_KAFFE_X_AWT = 
 @COND_KAFFE_X_AWT_TRUE@MAYBE_KAFFE_X_AWT = X
-@COND_KAFFE_QT_AWT_FALSE@MAYBE_KAFFE_QT_AWT = 
 @COND_KAFFE_QT_AWT_TRUE@MAYBE_KAFFE_QT_AWT = qt
-@COND_CLASSPATH_GTK_AWT_FALSE@MAYBE_CLASSPATH_GTK_AWT = 
 @COND_CLASSPATH_GTK_AWT_TRUE@MAYBE_CLASSPATH_GTK_AWT = classpath-gtk
 SUBDIRS = \
 	$(MAYBE_KAFFE_X_AWT) \
 	$(MAYBE_KAFFE_QT_AWT) \
 	$(MAYBE_CLASSPATH_GTK_AWT)
-
-DIST_SUBDIRS = \
-	X \
-	qt \
-	classpath-gtk
 
 EXTRA_DIST = \
 	win32/btn.cpp \

@@ -18,31 +18,20 @@
 
 if COND_KAFFE_X_AWT
 MAYBE_KAFFE_X_AWT = X
-else
-MAYBE_KAFFE_X_AWT =
 endif
 
 if COND_KAFFE_QT_AWT
 MAYBE_KAFFE_QT_AWT = qt
-else
-MAYBE_KAFFE_QT_AWT =
 endif
 
 if COND_CLASSPATH_GTK_AWT
 MAYBE_CLASSPATH_GTK_AWT = classpath-gtk
-else
-MAYBE_CLASSPATH_GTK_AWT =
 endif
 
 SUBDIRS = \
 	$(MAYBE_KAFFE_X_AWT) \
 	$(MAYBE_KAFFE_QT_AWT) \
 	$(MAYBE_CLASSPATH_GTK_AWT)
-
-DIST_SUBDIRS = \
-	X \
-	qt \
-	classpath-gtk
 
 EXTRA_DIST = \
 	win32/btn.cpp \

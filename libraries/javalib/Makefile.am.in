@@ -25,13 +25,6 @@ SUBDIRS = . awt-implementations gmp-math
 
 SRCDIRS = com gnu java javax kaffe org
 
-## Pick source of java math implementation
-if COND_PURE_JAVA_MATH
-  JAVA_MATH_FILES = pure_java_math.files
-else
-  JAVA_MATH_FILES = native_java_math.files
-endif
-
 ## taken from top level Makefile.am
 JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
 KAFFELIBRARYPATH=$(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/:$(top_builddir)/libraries/clib/nio/
@@ -166,9 +159,7 @@ EXTRA_DIST = \
 	javax \
 	kaffe \
 	org \
-	pure-java \
 	all.files \
-	native_java_math.files \
         bootstrap.classlist \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \

@@ -1,3 +1,29 @@
+2004-07-29  Dalibor Topic  <robilad@kaffe.org>
+
+        * Makefile.am:
+	(DIST_SUBDIRS) Remove '.'.
+
+	Reported by: Casey Marshall <csm@gnu.org>
+
+        * kaffe/kaffevm/boehm-gc/Makefile.am:
+	(libkaffegc_la_SOURCES) Removed unused files, and cleaned up.
+
+        * libraries/clib/awt/Makefile.am:
+	Cleaned up. Removed DIST_SUBDIRS.
+
+	Reported by: Alexandre Duret-Lutz <adl@src.lip6.fr>
+
+        * libraries/javalib/Makefile.am.in:
+	Cleaned up. Removed unused files and directories from
+	EXTRA_DIST.
+
+        * Makefile.in,
+        kaffe/kaffevm/boehm-gc/Makefile.in,
+        libraries/clib/awt/Makefile.in,
+        libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in:
+	Regenerated.
+
 2004-07-26  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/gnu/java/io/EncodingManager.java:
