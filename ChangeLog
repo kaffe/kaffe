@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-11  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c (create):
+        Use GTK's built-in file system backend.  Use GTK_RESPONSE_ACCEPT.
+        (handle_response): Use GTK_RESPONSE_ACCEPT.
+
+2005-02-14  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-10  Michael Koch  <konqueror@gmx.de>
 
         * configure.ac: Define GTK_CAIRO in config.h

@@ -62,15 +62,17 @@ Java_gnu_java_awt_peer_gtk_GtkFileDialogPeer_create
 
   gdk_threads_enter ();
   
-  widget = gtk_file_chooser_dialog_new("",
-                                       GTK_WINDOW(parentp),
-                                       GTK_FILE_CHOOSER_ACTION_OPEN,
-                                       GTK_STOCK_OK, GTK_RESPONSE_OK,
-                                       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                       NULL);
-
-  /* GtkFileChooser doesn't show hidden files by default. */
-  g_object_set(GTK_FILE_CHOOSER(widget), "show_hidden", TRUE);
+  /* FIXME: we should be using the default gnome-vfs backend but it is
+     not currently thread-safe.  See:
+     http://bugzilla.gnome.org/show_bug.cgi?id=166852 */
+  widget = gtk_file_chooser_dialog_new_with_backend
+    ("Open File",
+     GTK_WINDOW(parentp),
+     GTK_FILE_CHOOSER_ACTION_OPEN,
+     "gtk+",
+     GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+     GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+     NULL);
 
   /* GtkFileSelect is not modal by default */
   gtk_window_set_modal (GTK_WINDOW (widget), TRUE);
@@ -221,7 +223,7 @@ handle_response (GtkDialog *dialog __attribute__((unused)),
   /* We only need this for the case when the user closed the window,
      or clicked ok or cancel. */
   if (responseId != GTK_RESPONSE_DELETE_EVENT
-      && responseId != GTK_RESPONSE_OK
+      && responseId != GTK_RESPONSE_ACCEPT
       && responseId != GTK_RESPONSE_CANCEL)
     return;
 
@@ -245,7 +247,7 @@ handle_response (GtkDialog *dialog __attribute__((unused)),
     return;
   }
 
-  if (responseId == GTK_RESPONSE_OK) {
+  if (responseId == GTK_RESPONSE_ACCEPT) {
     fileName = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (GTK_WIDGET (ptr)));
     str_fileName = (*gdk_env())->NewStringUTF (gdk_env(), fileName);
   }
