@@ -23,7 +23,7 @@ typedef struct _stackTrace {
 #define	STACKTRACESTEP(S)	((S).frame = (*Kaffe_ThreadInterface.nextFrame)((S).frame))
 #define STACKTRACEPC(S)		((S).frame->pc)
 #define STACKTRACEMETH(S)	((S).frame->meth)
-#define STACKTRACEEND(S)	((S).frame == 0)
+#define STACKTRACEEND(S)	((S).frame == 0 || (S).frame->meth == (Method*)1)
 
 #elif defined(TRANSLATOR)
 
