@@ -1185,7 +1185,13 @@ if test x"$with_awt" = x"no" ; then
 	with_awt=no
 fi
 if test x"$with_awt" = x"" ; then
-	with_awt=X
+	# if no X is available, and AWT is undefined,
+	# don't build AWT support
+        if test x"$no_x" = x"yes"; then
+	        with_awt=no
+	else
+	        with_awt=X
+	fi
 fi
 
 case $with_awt in

@@ -1,3 +1,13 @@
+2003-04-24 Dalibor Topic <robilad@yahoo.com>
+
+	* configure.in:
+	Don't compile AWT support when no AWT backend is specified, and X
+	can not be found.
+
+	Reported by: Kiyo Inaba  <inaba@src.ricoh.co.jp>
+
+	* configure, include/Makefile.in: regenerated.
+	
 2003-04-24 Kapil Vaswani <kapil@csa.iisc.ernet.in>
 
 	* kaffe/kaffevm/external.c:

@@ -12534,7 +12534,13 @@ if test x"$with_awt" = x"no" ; then
 	with_awt=no
 fi
 if test x"$with_awt" = x"" ; then
-	with_awt=X
+	# if no X is available, and AWT is undefined,
+	# don't build AWT support
+        if test x"$no_x" = x"yes"; then
+	        with_awt=no
+	else
+	        with_awt=X
+	fi
 fi
 
 case $with_awt in
@@ -12555,7 +12561,7 @@ qt)
 
 
 echo $ac_n "checking QTDIR""... $ac_c" 1>&6
-echo "configure:12559: checking QTDIR" >&5
+echo "configure:12565: checking QTDIR" >&5
 # Check whether --with-qtdir or --without-qtdir was given.
 if test "${with_qtdir+set}" = set; then
   withval="$with_qtdir"
@@ -12576,7 +12582,7 @@ QTDIR=`echo $QTDIR | perl -p -e 's/\\\\/\\//g'`
 
 # Figure out which version of Qt we are using
 echo $ac_n "checking Qt version""... $ac_c" 1>&6
-echo "configure:12580: checking Qt version" >&5
+echo "configure:12586: checking Qt version" >&5
 QT_VER=`grep 'define.*QT_VERSION_STR\W' $QTDIR/include/qglobal.h | perl -p -e 's/\D//g'`
 case "${QT_VER}" in
     2*)
@@ -12595,7 +12601,7 @@ echo "$ac_t""$QT_VER ($QT_MAJOR)" 1>&6
 # Extract the first word of "moc", so it can be a program name with args.
 set dummy moc; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:12599: checking for $ac_word" >&5
+echo "configure:12605: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_MOC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -12629,7 +12635,7 @@ fi
 # Extract the first word of "uic", so it can be a program name with args.
 set dummy uic; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:12633: checking for $ac_word" >&5
+echo "configure:12639: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_UIC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -12665,7 +12671,7 @@ fi
 # Extract the first word of "qembed", so it can be a program name with args.
 set dummy qembed; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:12669: checking for $ac_word" >&5
+echo "configure:12675: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_QEMBED'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -12755,13 +12761,13 @@ EOF
         ;;
 esac
 echo $ac_n "checking if Qt is static""... $ac_c" 1>&6
-echo "configure:12759: checking if Qt is static" >&5
+echo "configure:12765: checking if Qt is static" >&5
 echo "$ac_t""$QT_IS_STATIC" 1>&6
 echo $ac_n "checking if Qt is multithreaded""... $ac_c" 1>&6
-echo "configure:12762: checking if Qt is multithreaded" >&5
+echo "configure:12768: checking if Qt is multithreaded" >&5
 echo "$ac_t""$QT_IS_MT" 1>&6
 echo $ac_n "checking if Qt is embedded""... $ac_c" 1>&6
-echo "configure:12765: checking if Qt is embedded" >&5
+echo "configure:12771: checking if Qt is embedded" >&5
 echo "$ac_t""$QT_IS_EMBEDDED" 1>&6
 
 if test x$QT_IS_EMBEDDED = xyes ; then
@@ -12835,7 +12841,7 @@ if test x$QT_IS_STATIC = xyes ; then
     OLDLIBS="$LIBS"
     LIBS="$QT_LDADD"
     echo $ac_n "checking for XftFontOpen in -lXft""... $ac_c" 1>&6
-echo "configure:12839: checking for XftFontOpen in -lXft" >&5
+echo "configure:12845: checking for XftFontOpen in -lXft" >&5
 ac_lib_var=`echo Xft'_'XftFontOpen | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -12843,7 +12849,7 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-lXft  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 12847 "configure"
+#line 12853 "configure"
 #include "confdefs.h"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
@@ -12854,7 +12860,7 @@ int main() {
 XftFontOpen()
 ; return 0; }
 EOF
-if { (eval echo configure:12858: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:12864: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -12878,10 +12884,10 @@ fi
 fi
 
 echo $ac_n "checking QT_CXXFLAGS""... $ac_c" 1>&6
-echo "configure:12882: checking QT_CXXFLAGS" >&5
+echo "configure:12888: checking QT_CXXFLAGS" >&5
 echo "$ac_t""$QT_CXXFLAGS" 1>&6
 echo $ac_n "checking QT_LDADD""... $ac_c" 1>&6
-echo "configure:12885: checking QT_LDADD" >&5
+echo "configure:12891: checking QT_LDADD" >&5
 echo "$ac_t""$QT_LDADD" 1>&6
 
 
@@ -12909,7 +12915,7 @@ fi
 
 
 echo $ac_n "checking for snd_seq_open in -lasound""... $ac_c" 1>&6
-echo "configure:12913: checking for snd_seq_open in -lasound" >&5
+echo "configure:12919: checking for snd_seq_open in -lasound" >&5
 ac_lib_var=`echo asound'_'snd_seq_open | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -12917,7 +12923,7 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-lasound  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 12921 "configure"
+#line 12927 "configure"
 #include "confdefs.h"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
@@ -12928,7 +12934,7 @@ int main() {
 snd_seq_open()
 ; return 0; }
 EOF
-if { (eval echo configure:12932: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:12938: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -12956,17 +12962,17 @@ fi
 have_esd_h=no
 ac_safe=`echo "esd.h" | sed 'y%./+-%__p_%'`
 echo $ac_n "checking for esd.h""... $ac_c" 1>&6
-echo "configure:12960: checking for esd.h" >&5
+echo "configure:12966: checking for esd.h" >&5
 if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 12965 "configure"
+#line 12971 "configure"
 #include "confdefs.h"
 #include <esd.h>
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:12970: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:12976: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   rm -rf conftest*
@@ -12989,7 +12995,7 @@ echo "$ac_t""Warning: Could not find Enlightened Sound Daemon header file" 1>&6
 fi
 
 echo $ac_n "checking for esd_open_sound in -lesd""... $ac_c" 1>&6
-echo "configure:12993: checking for esd_open_sound in -lesd" >&5
+echo "configure:12999: checking for esd_open_sound in -lesd" >&5
 ac_lib_var=`echo esd'_'esd_open_sound | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -12997,7 +13003,7 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-lesd  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 13001 "configure"
+#line 13007 "configure"
 #include "confdefs.h"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
@@ -13008,7 +13014,7 @@ int main() {
 esd_open_sound()
 ; return 0; }
 EOF
-if { (eval echo configure:13012: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:13018: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -13110,17 +13116,17 @@ else
 		else
 			ac_safe=`echo "gmp.h" | sed 'y%./+-%__p_%'`
 echo $ac_n "checking for gmp.h""... $ac_c" 1>&6
-echo "configure:13114: checking for gmp.h" >&5
+echo "configure:13120: checking for gmp.h" >&5
 if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 13119 "configure"
+#line 13125 "configure"
 #include "confdefs.h"
 #include <gmp.h>
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:13124: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:13130: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   rm -rf conftest*
@@ -13147,17 +13153,17 @@ fi
 	else
 		ac_safe=`echo "gmp.h" | sed 'y%./+-%__p_%'`
 echo $ac_n "checking for gmp.h""... $ac_c" 1>&6
-echo "configure:13151: checking for gmp.h" >&5
+echo "configure:13157: checking for gmp.h" >&5
 if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 13156 "configure"
+#line 13162 "configure"
 #include "confdefs.h"
 #include <gmp.h>
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:13161: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:13167: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   rm -rf conftest*
@@ -13201,7 +13207,7 @@ fi
 
 
 echo $ac_n "checking if malloc debugging is wanted""... $ac_c" 1>&6
-echo "configure:13205: checking if malloc debugging is wanted" >&5
+echo "configure:13211: checking if malloc debugging is wanted" >&5
 # Check whether --with-dmalloc or --without-dmalloc was given.
 if test "${with_dmalloc+set}" = set; then
   withval="$with_dmalloc"
@@ -13320,7 +13326,7 @@ if test x"$cross_compiling" = x"yes"; then
   # Extract the first word of "kaffeh", so it can be a program name with args.
 set dummy kaffeh; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:13324: checking for $ac_word" >&5
+echo "configure:13330: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_KAFFEH'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -13395,7 +13401,7 @@ EOF
 
 
 echo $ac_n "checking how to run the C preprocessor""... $ac_c" 1>&6
-echo "configure:13399: checking how to run the C preprocessor" >&5
+echo "configure:13405: checking how to run the C preprocessor" >&5
 # On Suns, sometimes $CPP names a directory.
 if test -n "$CPP" && test -d "$CPP"; then
   CPP=
@@ -13410,13 +13416,13 @@ else
   # On the NeXT, cc -E runs the code through the compiler's parser,
   # not just through cpp.
   cat > conftest.$ac_ext <<EOF
-#line 13414 "configure"
+#line 13420 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:13420: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:13426: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -13427,13 +13433,13 @@ else
   rm -rf conftest*
   CPP="${CC-cc} -E -traditional-cpp"
   cat > conftest.$ac_ext <<EOF
-#line 13431 "configure"
+#line 13437 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:13437: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:13443: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -13444,13 +13450,13 @@ else
   rm -rf conftest*
   CPP="${CC-cc} -nologo -E"
   cat > conftest.$ac_ext <<EOF
-#line 13448 "configure"
+#line 13454 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:13454: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:13460: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -13476,7 +13482,7 @@ echo "$ac_t""$CPP" 1>&6
 
 
 echo $ac_n "checking for path separator""... $ac_c" 1>&6
-echo "configure:13480: checking for path separator" >&5
+echo "configure:13486: checking for path separator" >&5
 if eval "test \"`echo '$''{'ac_cv_kaffe_pathsep'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -13493,7 +13499,7 @@ PATHSEP=$ac_cv_kaffe_pathsep
 
 
 echo $ac_n "checking for directory separator""... $ac_c" 1>&6
-echo "configure:13497: checking for directory separator" >&5
+echo "configure:13503: checking for directory separator" >&5
 if eval "test \"`echo '$''{'ac_cv_kaffe_dirsep'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
