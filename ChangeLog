@@ -2,6 +2,28 @@
 
         Resynced with GNU Classpath.
 
+	2004-01-30  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/net/protocol/http/Connection.java
+        (getOutputStream): Fixed typo.
+
+	2004-01-12  David Jee  <djee@redhat.com>
+
+        * gnu/java/net/protocol/http/Connection.java
+        (sendRequest): Fix a small typo.
+
+	2004-01-12  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/net/protocol/http/Connection.java
+        (connect): Dont initialize bufferedOutputStream.
+        (sendRequest): Handle case when bufferedOutputStream is null.
+        (getOutputStream): Throw exception if called after it got connected.
+        Initialize bufferedOutputStream.
+
+2004-02-02  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2004-01-21  Jeroen Frijters  <jeroen@frijters.net>
 
         * gnu/java/io/PlatformHelper.java (isRootDirectory): Fixed, by
