@@ -1,3 +1,35 @@
+2001-08-14  Edouard G. Parmelan  <egp@free.fr>
+
+	* WHATSNEW: notable changes since 1.0.6.
+
+	* configure.in, configure (AC_KAFFE_IF_SUPPORTED_ENGINE): don't
+	select engine if engine-md.h does not exist.
+
+	* acinclude.m4, aclocal.m4
+	(lt_cv_global_symbol_to_c_name_address): Minor zsh fix for Darwin.
+
+	* config/powerpc/darwin/config.frag, config/powerpc/darwin/md.h,
+	config/powerpc/darwin/md.c: Initial support of Darwin.
+
+	* include/system.h: Handle Darwin (__APPLE__) and AIX (_AIX).
+
+	* config/powerpc/common.h: Use new sysdepCallMethod.h.
+
+	* config/powerpc/sysdepCallMethod.h: New implementation of
+	sysdepCallMethod() for SVR4 ABI, AIX ABI and Darwin ABI.
+
+	* config/powerpc/callmethod_ppc.h: removed.
+
+	* config/config-hacks.h: Use official macro _AIX.
+
+	* config/powerpc/aix/config.frag: Don't define AIX nor unix.
+
+	* config/i386/openbsd2/jit3-md.h: add JIT3 on OpenBSD Intel.
+
+	* kaffe/kaffevm/jit3/icode.c (return_float, return_double): Remove
+	floating_point_stack_mark_use() and use begin_sync(), end_sync()
+	as in TVT sources.
+
 2001-08-06  Edouard G. Parmelan  <egp@free.fr>
 
 	* config/config-setjmp.h: Use alternate JTHREAD_SETJMP() based on
