@@ -1,3 +1,9 @@
+Thu Sep 24 13:38:51 PDT 1998	Tim Wilkinson	<tim@transvirtual.com>
+
+	* Added java.sql package.
+	* Added java.math package (not complete).
+	* Added Linux/MIPS port.
+
 Thu Sep 24 11:30:20 1998  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/io/File.java: fix bug in mkdirs()
