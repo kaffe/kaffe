@@ -1,3 +1,14 @@
+Mon Mar 20 17:46:38 MST 2000  Godmar Back <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/classMethod.[ch], itypes.c: fix Mo's problem with
+	bad error checking in class lookup.  Distinguish between
+	getClassFromSignature (single name) and getClassFromSignaturePart 
+	(name is part of signature)
+	* libraries/extensions/microsoft/clib/Delegate.c,
+	libraries/clib/native/Class.c: ditto.
+	* string.c, utf8const.c, stringSupport.h: added utf8 encoding 
+	function to convert from java string to utf8 directly.
+
 Mon Mar 20 17:47:56 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/classMethod.h:
