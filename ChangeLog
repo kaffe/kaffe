@@ -1,4 +1,11 @@
+2004-03-05  Cliff Wright <cliffw@messagegate.com>
+
+	* libraries/clib/io/FileDescriptor.c:
+	Fixed parameter order to KLSEEK and added a missing
+	return check.
+
 2004-03-05  Jim Huang <jimchyun@ccns.ncku.edu.tw>
+
 	* libraries/clib/awt/X/tlk.c
 	* libraries/clib/awt/X/toolkit.h:
 	Support XOM (X Output Method) for i18n context drawing.

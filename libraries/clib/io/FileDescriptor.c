@@ -404,14 +404,14 @@ void java_io_FileDescriptor_nativeSetLength(struct Hjava_io_FileDescriptor* this
     ssize_t ret;
 
     /* Save the old file position */
-    rc = KLSEEK(nativeFd, SEEK_CUR, 0, &oldPosition);
+    rc = KLSEEK(nativeFd, 0, SEEK_CUR, &oldPosition);
     if (rc != 0)
     {
       SignalError("java.io.IOException", SYS_ERROR(rc));
     }
 
     /* Go to new_length-1 */
-    rc = KLSEEK(nativeFd, SEEK_SET, new_length-1, &cur);
+    rc = KLSEEK(nativeFd, new_length-1, SEEK_SET, &cur);
     if (rc != 0)
     {
       SignalError("java.io.IOException", SYS_ERROR(rc));
@@ -425,7 +425,8 @@ void java_io_FileDescriptor_nativeSetLength(struct Hjava_io_FileDescriptor* this
     }
     
     /* Go back to the old position */
-    rc = KLSEEK(nativeFd, SEEK_SET, oldPosition, &cur);
+    rc = KLSEEK(nativeFd, oldPosition, SEEK_SET, &cur);
+    if (rc != 0)
     {
       SignalError("java.io.IOException", SYS_ERROR(rc));
     }
