@@ -61,8 +61,10 @@ EXTRA_DIST = \
 	arm/threads.h \
 	arm/trampolines.c \
 	ia64/common.h \
+	ia64/linux/config.frag \
 	ia64/linux/md.c \
 	ia64/linux/md.h \
+	ia64/linux/xprofile-md.h \
 	ia64/threads.h \
 	ia64/sysdepCallMethod.h \
 	i386/beos/config.frag \
@@ -216,6 +218,9 @@ EXTRA_DIST = \
 	parisc/hpux/config.frag \
 	parisc/hpux/md.c \
 	parisc/hpux/md.h \
+	parisc/linux/config.frag \
+	parisc/linux/md.c \
+	parisc/linux/md.h \
 	parisc/threads.h \
 	powerpc/aix/config.frag \
 	powerpc/aix/md.c \
@@ -235,6 +240,11 @@ EXTRA_DIST = \
 	powerpc/netbsd1/md.h \
 	powerpc/sysdepCallMethod.h \
 	powerpc/threads.h \
+	s390/common.h \
+	s390/linux/config.frag \
+	s390/linux/md.c \
+	s390/linux/md.h \
+	s390/linux/threads.h \
 	sparc/bsdi3/config.frag \
 	sparc/bsdi3/jit-md.h \
 	sparc/bsdi3/md.c \

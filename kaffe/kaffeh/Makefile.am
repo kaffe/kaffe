@@ -18,7 +18,8 @@ kaffeh_SOURCES = $(GEN_SRCS) sigs.c support.c main.c mem.c
 
 noinst_HEADERS = kaffeh-support.h \
 	java_lang_ClassLoader.h \
-	java_lang_Object.h
+	java_lang_Object.h \
+	java_lang_String.h
 
 $(GEN_SRCS):
 	$(SHELL) $(REGEN_FORWARD) $(srcdir)/../kaffevm/$@ $@

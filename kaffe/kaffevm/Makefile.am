@@ -119,7 +119,8 @@ noinst_HEADERS = \
 	stringSupport.h \
 	support.h \
 	gcRefs.h \
-	thread.h
+	thread.h \
+	utf8const.h
 
 gc-mem.c: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \

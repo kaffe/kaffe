@@ -24,6 +24,8 @@ EXTRA_DIST = \
 	FAQ/FAQ.awt \
 	FAQ/FAQ.class-states \
 	FAQ/FAQ.classlibrary-compile \
+	FAQ/FAQ.coding-style \
+	FAQ/FAQ.debugging \
 	FAQ/FAQ.depend \
 	FAQ/FAQ.feedback \
 	FAQ/FAQ.gcblock \
@@ -54,6 +56,7 @@ EXTRA_DIST = \
 	compat-include/gansidecl.h \
 	developers/Encode.java \
 	developers/EncodeEUC_JP.java \
+	developers/FullTest.sh \
 	developers/GCJ.note.1 \
 	developers/JavaClass.pm \
 	developers/README \
