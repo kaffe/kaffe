@@ -139,18 +139,6 @@ public class CLTestConc extends ClassLoader
     }
 }
 
-class CLTestConc_bis {
-    public String toString() {
-	return Thread.currentThread().getName();
-    }
-}
-
-class CLTestConc_run {
-    public String toString() {
-        return new CLTestConc_bis().toString();
-    }
-}
-
 // javac flags: -nowarn
 /* Expected Output:
 Success.
