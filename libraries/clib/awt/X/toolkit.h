@@ -22,9 +22,11 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+#ifdef HAVE_LIBXEXT
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <X11/extensions/XShm.h>
+#endif
 
 #include <jni.h>
 #if defined(HAVE_STRING_H)
@@ -96,10 +98,14 @@ typedef struct _Image {
   Pixmap           pix;            /* pixmap for screen images */
 
   XImage           *xImg;          /* "real" image */
+#ifdef HAVE_LIBXEXT
   XShmSegmentInfo  *shmiImg;       /* Shm info for shared mem real image */
+#endif
 
   XImage           *xMask;         /* mask image for reduced alpha (on/off) images */
+#ifdef HAVE_LIBXEXT
   XShmSegmentInfo  *shmiMask;      /* Shm info for shared mem mask image */
+#endif
 
   AlphaImage       *alpha;         /* full alpha channel (for alpha != 0x00 or 0xff) */
 

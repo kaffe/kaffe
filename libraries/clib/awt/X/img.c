@@ -37,6 +37,7 @@ createImage ( int width, int height )
   return img;
 }
 
+#ifdef HAVE_LIBXEXT
 int
 createShmXImage ( Toolkit* X, Image* img, int depth, int isMask )
 {
@@ -120,6 +121,7 @@ destroyShmXImage ( Toolkit* X, Image* img, int isMask )
   if ( X->shm == SUSPEND_SHM )
 	X->shm = USE_SHM;
 }
+#endif /* HAVE_LIBXEXT */
 
 
 
@@ -142,6 +144,7 @@ createXImage ( Toolkit* X, Image* img )
   bitmap_pad = bytes_per_pix * 8;
   nPix = img->width * img->height;
 
+#ifdef HAVE_LIBXEXT
   if ( (X->shm == USE_SHM) && (nPix > X->shmThreshold) && (img->alpha == 0) ) {
 	if ( createShmXImage( X, img, depth, False) ){
 	  DBG( awt_img, ( "alloc Shm: %x %x %x (%dx%d) \n", img, img->xImg, img->shmiImg,
@@ -149,6 +152,7 @@ createXImage ( Toolkit* X, Image* img )
 	  return;
 	}
   }
+#endif
 
   data = AWT_CALLOC( nPix, bytes_per_pix);
   img->xImg = XCreateImage( X->dsp, vis, depth, ZPixmap, 0,
@@ -168,6 +172,7 @@ createXMaskImage ( Toolkit* X, Image* img )
   nPix   = img->width * img->height;
   nBytes = bytes_per_line * img->height;
 
+#ifdef HAVE_LIBXEXT
   if ( (X->shm == USE_SHM) && (nPix > X->shmThreshold) ) {
 	if ( createShmXImage( X, img, 1, True) ){
 	  DBG( awt_img, ( "alloc Shm mask: %x %x %x (%dx%d) \n", img, img->xMask, img->shmiMask,
@@ -175,6 +180,7 @@ createXMaskImage ( Toolkit* X, Image* img )
 	  return;
 	}
   }
+#endif
 
   data = AWT_MALLOC( nBytes);
   memset( data, 0xff, nBytes);
@@ -535,33 +541,41 @@ Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img)
 	 */
 
 	if ( img->xImg ){
+#ifdef HAVE_LIBXEXT
 	  if ( img->shmiImg ) {
 		DBG( awt_img, ( "free Shm: %x %x %x (%dx%d)\n", img, img->xImg, img->shmiImg,
 						img->width, img->height));
 		destroyShmXImage( X, img, False);
 	  }
 	  else {
+#endif
 		DBG( awt_img, ( "free: %x %x (%dx%d)\n", img, img->xImg, img->width, img->height));
 		AWT_FREE( img->xImg->data);
 		img->xImg->data = 0;
 		XDestroyImage( img->xImg);
+#ifdef HAVE_LIBXEXT
 	  }
+#endif
 	  img->xImg = 0;
 	}
 
 	if ( img->xMask ){
+#ifdef HAVE_LIBXEXT
 	  if ( img->shmiMask ) {
 		DBG( awt_img, ( "free Shm mask: %x %x %x (%dx%d)\n", img, img->xMask, img->shmiMask,
 						img->width, img->height));
 		destroyShmXImage( X, img, True);
 	  }
 	  else {
+#endif
 		DBG( awt_img, ( "free mask: %x %x (%dx%d)\n", img, img->xMask,
 						img->width, img->height));
 		AWT_FREE( img->xMask->data);
 		img->xMask->data = 0;
 		XDestroyImage( img->xMask);
+#ifdef HAVE_LIBXEXT
 	  }
+#endif
 	  img->xMask = 0;
 	}
 

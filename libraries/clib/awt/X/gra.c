@@ -655,6 +655,7 @@ drawAlphaImage ( Graphics* gr, Image* img,
   DBG( awt_gra, ("drawAlphaImage: %x %x (%x, %x),  %d,%d  %d,%d  %d,%d  %x\n",
 				 gr, img, img->xImg, img->alpha, srcX, srcY, dstX, dstY, width, height, bgval));
 
+#ifdef HAVE_LIBXEXT
   if ( X->shm == USE_SHM ){
 	dstImg = createImage( width, height);
 	createXImage( X, dstImg);
@@ -663,10 +664,13 @@ drawAlphaImage ( Graphics* gr, Image* img,
 	  XShmGetImage( X->dsp, gr->drw, dstXim, dstX, dstY, 0xffffffff);
 	}
 	else {  /* Shm failed, backup to normal XImage */
+#endif
 	  Java_java_awt_Toolkit_imgFreeImage( 0, 0, dstImg);
 	  dstImg = 0;
+#ifdef HAVE_LIBXEXT
 	}
   }
+#endif
 
   if ( !dstXim ) {
 	dstXim = XGetImage( X->dsp, gr->drw, dstX, dstY, width, height, 0xffffffff, ZPixmap);
@@ -703,16 +707,20 @@ drawAlphaImage ( Graphics* gr, Image* img,
 	  }
 	}
 
+#ifdef HAVE_LIBXEXT
 	if ( dstImg != 0 ){
 	  XShmPutImage( X->dsp, gr->drw, gr->gc, dstXim, 0, 0, dstX, dstY, width, height, False);
 	  XSync( X->dsp, False);
 	  Java_java_awt_Toolkit_imgFreeImage( 0, 0, dstImg);
 	}
 	else {
+#endif
 	  XPutImage( X->dsp, gr->drw, gr->gc, dstXim, 0, 0, dstX, dstY, width, height);
 	  XFlush( X->dsp);
 	  XDestroyImage( dstXim);
+#ifdef HAVE_LIBXEXT
 	}
+#endif
 
 	XFLUSH( X, True);
   }
@@ -755,14 +763,18 @@ Java_java_awt_Toolkit_graDrawImage ( JNIEnv* env, jclass clazz, Graphics* gr, Im
 	  XSetBackground( X->dsp, gr->gc, 0);
 
 	  /* draw the mask bitmap */
+#ifdef HAVE_LIBXEXT
 	  if ( img->shmiMask ){
 		XShmPutImage( X->dsp, gr->drw, gr->gc, img->xMask,
 					  srcX, srcY, dstX, dstY, width, height, False);
 	  }
 	  else {
+#endif
 		XPutImage( X->dsp, gr->drw, gr->gc, img->xMask,
 				   srcX, srcY, dstX, dstY, width, height);
+#ifdef HAVE_LIBXEXT
 	  }
+#endif
 
 	  /* restore gc values except of the function */
 	  XChangeGC( X->dsp, gr->gc, GCFunction|GCPlaneMask|GCForeground|GCBackground, &values);
@@ -774,14 +786,18 @@ Java_java_awt_Toolkit_graDrawImage ( JNIEnv* env, jclass clazz, Graphics* gr, Im
 	}
 
 	/* this is the real image drawing */
+#ifdef HAVE_LIBXEXT
 	if ( img->shmiImg ){
 	  XShmPutImage( X->dsp, gr->drw, gr->gc, img->xImg,
 					srcX, srcY, dstX, dstY, width, height, False);
 	}
 	else {
+#endif
 	  XPutImage( X->dsp, gr->drw, gr->gc, img->xImg,
 				 srcX, srcY, dstX, dstY, width, height);
+#ifdef HAVE_LIBXEXT
 	}
+#endif
 
 	/* in case we had a mask, restore the original function */
 	if ( img->xMask )
@@ -841,9 +857,11 @@ Java_java_awt_Toolkit_graDrawImageScaled ( JNIEnv* env, jclass clazz, Graphics* 
   initScaledImage( X, tgt, img, dx0-x0, dy0-y0, dx1-x0, dy1-y0, sx0, sy0, sx1, sy1);
   Java_java_awt_Toolkit_graDrawImage ( env, clazz, gr, tgt, 0, 0,
 									   x0, y0, tgt->width, tgt->height, bgval);
+#ifdef HAVE_LIBXEXT
   if ( tgt->shmiImg ) {
 	XSync( X->dsp, False); /* since we're going to destroy tgt, process its drawing first */
   }
+#endif
   Java_java_awt_Toolkit_imgFreeImage( env, clazz, tgt);
 
   if ( tmpXImg ) {

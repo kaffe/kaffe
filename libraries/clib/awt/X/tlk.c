@@ -111,6 +111,7 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
    * We just can use XShm in case we don't run remote, and we better don't rely on
    * XShmQueryExtension to make this distinction
    */
+#ifdef HAVE_LIBXEXT
   if ( (dspName[0] == ':') || (strncmp( "localhost", dspName, 9) == 0) ) {
 	if ( XShmQueryExtension( X->dsp) ){
 	  X->shm =  USE_SHM;
@@ -121,6 +122,7 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
 	  X->shmThreshold = 4096;
 	}
   }
+#endif
 
   WM_PROTOCOLS     = XInternAtom( X->dsp, "WM_PROTOCOLS", False);
   WM_DELETE_WINDOW = XInternAtom( X->dsp, "WM_DELETE_WINDOW", False);
