@@ -149,6 +149,8 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ENABLE_BINRELOC_FALSE = @ENABLE_BINRELOC_FALSE@
+ENABLE_BINRELOC_TRUE = @ENABLE_BINRELOC_TRUE@
 ENABLE_JVMPI_FALSE = @ENABLE_JVMPI_FALSE@
 ENABLE_JVMPI_TRUE = @ENABLE_JVMPI_TRUE@
 ENABLE_XPROF_FALSE = @ENABLE_XPROF_FALSE@
@@ -232,6 +234,7 @@ NEED_LIBXPROF_TRUE = @NEED_LIBXPROF_TRUE@
 NET_LIBS = @NET_LIBS@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OPT_DLOPEN_JAVA_LIBS = @OPT_DLOPEN_JAVA_LIBS@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
@@ -685,6 +688,13 @@ version-info.h: $(top_srcdir)/ChangeLog $(top_builddir)/config.status
 	echo '#define VER_PREFIX        "$(prefix)"'            >> $@T
 	echo '#define VER_THREAD_SYSTEM "$(THREAD_SYSTEM)"'     >> $@T
 	-mv $@T $@
+
+#
+# relink the kaffe binary including the optinal java libs
+#
+final-executable: 
+	@rm -f kaffe-bin$(EXEEXT)
+	@$(MAKE) kaffe-bin$(EXEEXT) kaffe_bin_LDADD="$(OPT_DLOPEN_JAVA_LIBS) $(kaffe_bin_LDADD)"
 
 dist-hook:
 	@for file in $(DISTCLEANFILES); do \

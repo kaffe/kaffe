@@ -1728,8 +1728,11 @@ if test x"$enable_libxmlj" = x"yes" ; then
       AC_MSG_ERROR([unable to locate libxml.]))
     AM_PATH_XSLT([1.0.24],[CFLAGS="${XSLT_CFLAGS} ${CFLAGS}"] [CPPFLAGS="${XSLT_CFLAGS} ${CPPFLAGS}"] [LIBS="${XSLT_LIBS} ${LIBS}"] ,
       AC_MSG_ERROR([unable to locate libxslt.]))
+    LIBXMLJ_LIB="\$(top_builddir)/libraries/clib/libxmlj/libxmlj.la"
   else
     AC_MSG_ERROR([Not building libxmlj - only available with pthreads.])
+    enable_libxmlj="no"
+    LIBXMLJ_LIB=""
   fi
 fi
 
@@ -1772,12 +1775,8 @@ JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/io/libio.la \
 \$(top_builddir)/libraries/clib/nio/libnio.la \
 \$(top_builddir)/libraries/clib/zip/libzip.la \
-$MATH_LIB \
-$ALSA_LIB \
-$ESD_LIB \
 \$(top_builddir)/libraries/clib/management/libmanagement.la \
 \$(top_builddir)/libraries/clib/security/libsecurity.la \
-$AWT_LIB \
 $JAVA_LIBS \
 "
 
@@ -1786,6 +1785,21 @@ for lib in $JAVA_LIBS; do
   DLOPEN_JAVA_LIBS="$DLOPEN_JAVA_LIBS -dlopen $lib"
 done
 AC_SUBST(DLOPEN_JAVA_LIBS)
+
+
+OPT_JAVA_LIBS=" \
+$ALSA_LIB \
+$ESD_LIB \
+$LIBXMLJ_LIB \
+$AWT_LIB \
+"
+
+OPT_DLOPEN_JAVA_LIBS=
+for lib in $OPT_JAVA_LIBS; do
+  OPT_DLOPEN_JAVA_LIBS="$OPT_DLOPEN_JAVA_LIBS -dlopen $lib"
+done
+AC_SUBST(OPT_DLOPEN_JAVA_LIBS)
+
 
 if test x"$dynamic_libraries" = x"no"; then
 	KLIBFLAGS=-static
@@ -1869,8 +1883,21 @@ AC_SUBST(jrelibdir)
 nativedir=$jredir/lib/$Khost_cpu
 AC_SUBST(nativedir)
 
-securitydir=$jredir/lib/security
+Securitydir=$jredir/lib/security
 AC_SUBST(securitydir)
+
+dnl =========================================================================
+dnl Additional directories for jni library path
+dnl -------------------------------------------------------------------------
+
+AC_ARG_WITH([jni_library_path],
+		AS_HELP_STRING([--with-jni-library-path=dir],
+				[additional directories to search for native jni libraries]))
+
+if test x"$with_jni_library_path" != "x"; then
+	AC_DEFINE_UNQUOTED(JNI_LIBRARY_PATH, "$with_jni_library_path",
+				[additional directories to search for native jni libraries])
+fi
 
 dnl =========================================================================
 dnl Define kaffehome.

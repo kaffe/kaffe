@@ -46,6 +46,9 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
+@COND_LIBXMLJ_TRUE@am__append_1 = libraries/clib/libxmlj
+@COND_SOUND_ALSA_TRUE@am__append_2 = libraries/clib/sound
+@COND_SOUND_ALSA_FALSE@@COND_SOUND_ESD_TRUE@am__append_3 = libraries/clib/sound
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/project.properties.in \
 	$(srcdir)/project.xml.in $(top_srcdir)/configure \
@@ -154,6 +157,8 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ENABLE_BINRELOC_FALSE = @ENABLE_BINRELOC_FALSE@
+ENABLE_BINRELOC_TRUE = @ENABLE_BINRELOC_TRUE@
 ENABLE_JVMPI_FALSE = @ENABLE_JVMPI_FALSE@
 ENABLE_JVMPI_TRUE = @ENABLE_JVMPI_TRUE@
 ENABLE_XPROF_FALSE = @ENABLE_XPROF_FALSE@
@@ -237,6 +242,7 @@ NEED_LIBXPROF_TRUE = @NEED_LIBXPROF_TRUE@
 NET_LIBS = @NET_LIBS@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OPT_DLOPEN_JAVA_LIBS = @OPT_DLOPEN_JAVA_LIBS@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
@@ -349,7 +355,7 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 ACLOCAL_AMFLAGS = -I m4
 AUTOMAKE_OPTIONS = foreign 1.3e
-SUBDIRS = . config include replace libltdl kaffe/kaffevm libraries/clib libraries/extensions kaffe libraries/javalib tools test po
+SUBDIRS = 
 DIST_SUBDIRS = . config include replace libltdl kaffe libraries tools test po
 EXTRA_DIST = \
 	ChangeLog.1 \
@@ -454,6 +460,29 @@ EXTRA_DIST = \
 CLEANFILES = BUILD_ENVIRONMENT
 noinst_SCRIPTS = libtool BUILD_ENVIRONMENT
 CLASSDIRS = libraries/javalib
+
+#
+# things we need to compile before we can compile rt.jar 
+#
+DIRECTORIES_BEFORE_RTJAR = \
+	config \
+	include \
+	replace \
+	libltdl \
+	kaffe/kaffevm \
+	libraries/clib \
+	kaffe
+
+
+#
+# things we need to compile after we have compiled rt.jar 
+#
+DIRECTORIES_AFTER_RTJAR = \
+	tools \
+	test \
+	po \
+	libraries/clib/awt\
+$(am__append_1) $(am__append_2) $(am__append_3)
 all: all-recursive
 
 .SUFFIXES:
@@ -782,8 +811,9 @@ distcleancheck: distclean
 	       $(distcleancheck_listfiles) ; \
 	       exit 1; } >&2
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) check-local
 check: check-recursive
-all-am: Makefile $(SCRIPTS)
+all-am: Makefile $(SCRIPTS) all-local
 installdirs: installdirs-recursive
 installdirs-am:
 install: install-recursive
@@ -832,8 +862,12 @@ info: info-recursive
 info-am:
 
 install-data-am:
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
 
 install-exec-am:
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) install-exec-hook
 
 install-info: install-info-recursive
 
@@ -860,23 +894,26 @@ ps: ps-recursive
 ps-am:
 
 uninstall-am: uninstall-info-am
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
 
 uninstall-info: uninstall-info-recursive
 
-.PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am am--refresh check \
-	check-am clean clean-generic clean-libtool clean-recursive \
-	ctags ctags-recursive dist dist-all dist-bzip2 dist-gzip \
-	dist-shar dist-tarZ dist-zip distcheck distclean \
-	distclean-generic distclean-hdr distclean-libtool \
-	distclean-recursive distclean-tags distcleancheck distdir \
-	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am install-man \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	maintainer-clean-recursive mostlyclean mostlyclean-generic \
-	mostlyclean-libtool mostlyclean-recursive pdf pdf-am ps ps-am \
-	tags tags-recursive uninstall uninstall-am uninstall-info-am
+.PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am all-local \
+	am--refresh check check-am check-local clean clean-generic \
+	clean-libtool clean-recursive ctags ctags-recursive dist \
+	dist-all dist-bzip2 dist-gzip dist-shar dist-tarZ dist-zip \
+	distcheck distclean distclean-generic distclean-hdr \
+	distclean-libtool distclean-recursive distclean-tags \
+	distcleancheck distdir distuninstallcheck dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-exec install-exec-am install-info \
+	install-info-am install-man install-strip installcheck \
+	installcheck-am installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic maintainer-clean-recursive \
+	mostlyclean mostlyclean-generic mostlyclean-libtool \
+	mostlyclean-recursive pdf pdf-am ps ps-am tags tags-recursive \
+	uninstall uninstall-am uninstall-info-am
 
 
 depend:
@@ -926,6 +963,46 @@ docs-docbook-html:
 # Regenerate HTML docs and copy them to source tree
 docs-regen: docs-docbook-html
 	cp -f target/docs/docbook/*.html $(srcdir)/docs/html
+
+all-local:
+	@list="$(DIRECTORIES_BEFORE_RTJAR)"; for subdir in $$list; do \
+		$(MAKE) -C $$subdir all || exit $$? ; \
+	done; \
+	$(MAKE) -C libraries/javalib all || exit $$? ; \
+	list="$(DIRECTORIES_AFTER_RTJAR)"; for subdir in $$list; do \
+		$(MAKE) -C $$subdir all || exit $$? ; \
+	done ; \
+	$(MAKE) -C kaffe/kaffe final-executable
+
+install-exec-hook:
+	@list="$(DIRECTORIES_BEFORE_RTJAR)"; for subdir in $$list; do \
+		$(MAKE) -C $$subdir install-exec || exit $$? ; \
+	done; \
+	$(MAKE) -C libraries/javalib install-exec || exit $$? ; \
+	list="$(DIRECTORIES_AFTER_RTJAR)"; for subdir in $$list; do \
+		$(MAKE) -C $$subdir install-exec || exit $$? ; \
+	done 
+
+install-data-hook:
+	@list="$(DIRECTORIES_BEFORE_RTJAR)"; for subdir in $$list; do \
+		$(MAKE) -C $$subdir install-data || exit $$? ; \
+	done; \
+	$(MAKE) -C libraries/javalib install-data || exit $$? ; \
+	list="$(DIRECTORIES_AFTER_RTJAR)"; for subdir in $$list; do \
+		$(MAKE) -C $$subdir install-data || exit $$? ; \
+	done 
+
+uninstall-hook:
+	@list="$(DIRECTORIES_BEFORE_RTJAR)"; for subdir in $$list; do \
+		$(MAKE) -C $$subdir uninstall || exit $$? ; \
+	done; \
+	$(MAKE) -C libraries/javalib uninstall || exit $$? ; \
+	list="$(DIRECTORIES_AFTER_RTJAR)"; for subdir in $$list; do \
+		$(MAKE) -C $$subdir uninstall || exit $$? ; \
+	done 
+
+check-local:
+	$(MAKE) -C test check
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

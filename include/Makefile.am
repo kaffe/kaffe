@@ -106,23 +106,6 @@ DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
 INSTALL_JNI_DERIVED_HDRS =
 
 NOINSTALL_JNI_DERIVED_HDRS = \
-	gnu_xml_libxmlj_dom_GnomeAttr.h \
-	gnu_xml_libxmlj_dom_GnomeDocument.h \
-	gnu_xml_libxmlj_dom_GnomeDocumentBuilder.h \
-	gnu_xml_libxmlj_dom_GnomeDocumentType.h	\
-	gnu_xml_libxmlj_dom_GnomeElement.h \
-	gnu_xml_libxmlj_dom_GnomeEntity.h \
-	gnu_xml_libxmlj_dom_GnomeNamedNodeMap.h \
-	gnu_xml_libxmlj_dom_GnomeNode.h \
-	gnu_xml_libxmlj_dom_GnomeNodeList.h \
-	gnu_xml_libxmlj_dom_GnomeProcessingInstruction.h \
-	gnu_xml_libxmlj_dom_MatchingNodeList.h \
-	gnu_xml_libxmlj_sax_GnomeLocator.h \
-	gnu_xml_libxmlj_sax_GnomeXMLReader.h \
-	gnu_xml_libxmlj_transform_LibxsltStylesheet.h \
-	gnu_xml_libxmlj_transform_TransformerFactoryImpl.h \
-	gnu_xml_libxmlj_transform_JavaContext.h \
-	gnu_xml_libxmlj_transform_LibxmlDocument.h \
 	java_math_BigInteger.h \
 	gnu_java_nio_channels_FileChannelImpl.h \
 	gnu_java_nio_NIOServerSocket.h \
@@ -141,11 +124,13 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	kaffe_security_provider_MD2.h \
 	kaffe_security_provider_MD4.h \
 	kaffe_security_provider_MD5.h \
-	kaffe_security_provider_SHA.h \
-	org_tritonus_lowlevel_esd_Esd.h \
-	org_tritonus_lowlevel_esd_EsdRecordingStream.h \
-	org_tritonus_lowlevel_esd_EsdSample.h \
-	org_tritonus_lowlevel_esd_EsdStream.h \
+	kaffe_security_provider_SHA.h
+
+
+JNI_DERIVED_HDRS = $(INSTALL_JNI_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS)
+
+
+LIBTRITONUSALSA_JNI_HDRS = \
 	org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.h \
 	org_tritonus_lowlevel_alsa_AlsaCtl.h \
 	org_tritonus_lowlevel_alsa_Alsa.h \
@@ -167,7 +152,37 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	org_tritonus_lowlevel_alsa_AlsaSeqRemoveEvents.h \
 	org_tritonus_lowlevel_alsa_AlsaSeqSystemInfo.h
 
-JNI_DERIVED_HDRS = $(INSTALL_JNI_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS)
+
+LIBTRITONUSESD_JNI_HDRS = \
+	org_tritonus_lowlevel_esd_Esd.h \
+	org_tritonus_lowlevel_esd_EsdRecordingStream.h \
+	org_tritonus_lowlevel_esd_EsdSample.h \
+	org_tritonus_lowlevel_esd_EsdStream.h \
+	org_tritonus_lowlevel_esd_Esd.h \
+	org_tritonus_lowlevel_esd_EsdRecordingStream.h \
+	org_tritonus_lowlevel_esd_EsdSample.h \
+	org_tritonus_lowlevel_esd_EsdStream.h
+
+
+LIBXMLJ_JNI_HDRS = \
+	gnu_xml_libxmlj_dom_GnomeAttr.h \
+	gnu_xml_libxmlj_dom_GnomeDocument.h \
+	gnu_xml_libxmlj_dom_GnomeDocumentBuilder.h \
+	gnu_xml_libxmlj_dom_GnomeDocumentType.h	\
+	gnu_xml_libxmlj_dom_GnomeElement.h \
+	gnu_xml_libxmlj_dom_GnomeEntity.h \
+	gnu_xml_libxmlj_dom_GnomeNamedNodeMap.h \
+	gnu_xml_libxmlj_dom_GnomeNode.h \
+	gnu_xml_libxmlj_dom_GnomeNodeList.h \
+	gnu_xml_libxmlj_dom_GnomeProcessingInstruction.h \
+	gnu_xml_libxmlj_dom_MatchingNodeList.h \
+	gnu_xml_libxmlj_sax_GnomeLocator.h \
+	gnu_xml_libxmlj_sax_GnomeXMLReader.h \
+	gnu_xml_libxmlj_transform_LibxsltStylesheet.h \
+	gnu_xml_libxmlj_transform_TransformerFactoryImpl.h \
+	gnu_xml_libxmlj_transform_JavaContext.h \
+	gnu_xml_libxmlj_transform_LibxmlDocument.h
+
 
 if USE_COMPAT_IFADDRS
 ifaddrs_compat = ifaddrs.h
@@ -246,19 +261,15 @@ stamp-h0all: stamp-kaffeh $(KLASSES_JAR)
 	done
 	@echo timestamp > $@
 
-$(JNI_DERIVED_HDRS): stamp-h1all
-	@if test -f $@; then :; else \
-## If this file is removed after stamp-h1all is built, force its rebuild.
-	  rm -f stamp-h1all; $(MAKE) JNI_DERIVED_HDRS=$@ stamp-h1all; \
-	fi
 
-stamp-h1all: stamp-kaffeh $(KLASSES_JAR)
+.PHONY: rebuild-jni-hdrs
+rebuild-jni-hdrs: stamp-kaffeh $(KLASSES_JAR)
 ## Then, generate each header file,
 ## but if it does not change, do not touch it
-	@set -e; for f in $(JNI_DERIVED_HDRS); do \
+	@set -e; for f in $(HDRS); do \
 	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
-	  echo "$(KAFFEH) -jni -classpath $(KLASSES_JAR) -o $$f $$class"; \
-	  $(KAFFEH) -jni -classpath $(KLASSES_JAR) -o stamp-h1$$f $$class; \
+	  echo "$(KAFFEH) -jni -classpath $(KLASSES_JAR):$(top_builddir)/libraries/javalib/lib -o $$f $$class"; \
+	  $(KAFFEH) -jni -classpath $(KLASSES_JAR):$(top_builddir)/libraries/javalib/lib -o stamp-h1$$f $$class; \
 	  if test -f $$f && cmp $$f stamp-h1$$f >/dev/null; then \
 	    echo "$$f is already up-to-date"; \
 	    rm -f stamp-h1$$f; \
@@ -268,14 +279,70 @@ stamp-h1all: stamp-kaffeh $(KLASSES_JAR)
 	done
 	@echo timestamp > $@
 
-CLEANFILES = $(DERIVED_HDRS) $(JNI_DERIVED_HDRS) stamp-kaffeh
+
+#
+# jni headers of the core libraries
+#
+$(JNI_DERIVED_HDRS): stamp-h1all
+	@if test -f $@; then :; else \
+	  rm -f stamp-h1all; $(MAKE) JNI_DERIVED_HDRS=$@ stamp-h1all; \
+	fi
+
+stamp-h1all: HDRS = $(JNI_DERIVED_HDRS)
+stamp-h1all: rebuild-jni-hdrs
+
+#
+# header files for alsa backend of tritonus
+#
+libtritonusalsa_headers: stamp-libtritonusalsa
+	@if test -f $@; then :; else \
+	  rm -f stamp-libtritonusalsa; $(MAKE) JNI_DERIVED_HDRS=$@ stamp-libtritonusalsa; \
+	fi
+
+stamp-libtritonusalsa: HDRS = $(LIBTRITONUSALSA_JNI_HDRS)
+stamp-libtritonusalsa: rebuild-jni-hdrs
+
+#
+# header files for esd backend of tritonus
+#
+libtritonusesd_headers: stamp-libtritonusesd
+	@if test -f $@; then :; else \
+	  rm -f stamp-libtritonusesd; $(MAKE) JNI_DERIVED_HDRS=$@ stamp-libtritonusesd; \
+	fi
+
+stamp-libtritonusesd: HDRS = $(LIBTRITONUSESD_JNI_HDRS)
+stamp-libtritonusesd: rebuild-jni-hdrs
+
+#
+# header files for libxmlj
+#
+libxmlj_headers: stamp-libxmlj
+	@if test -f $@; then :; else \
+	  rm -f stamp-libxmlj; $(MAKE) JNI_DERIVED_HDRS=$@ stamp-libxmlj; \
+	fi
+
+stamp-libxmlj: HDRS = $(LIBXMLJ_JNI_HDRS)
+stamp-libxmlj: rebuild-jni-hdrs
+
+
+
+CLEANFILES = \
+	$(DERIVED_HDRS) \
+	$(JNI_DERIVED_HDRS) \
+	$(LIBTRITONUSALSA_JNI_HDRS) \
+	$(LIBTRITONUSESD_JNI_HDRS) \
+	$(LIBXMLJ_JNI_HDRS) \
+	stamp-kaffeh
 
 DISTCLEANFILES = \
 	$(DERIVED_HDRS) \
 	$(JNI_DERIVED_HDRS) \
 	kaffe/jtypes.h \
 	stamp-h0all \
-	stamp-h1all
+	stamp-h1all \
+	stamp-libtritonusalsa \
+	stamp-libtritonusesd \
+	stamp-libxmlj
 
 dist-hook:
 	@for file in $(DISTCLEANFILES); do \

@@ -398,6 +398,9 @@
 /* Define if you have POSIX threads libraries and header files. */
 #undef HAVE_PTHREAD
 
+/* Define to 1 if you have the <pthread.h> header file. */
+#undef HAVE_PTHREAD_H
+
 /* Define to 1 if you have the <pwd.h> header file. */
 #undef HAVE_PWD_H
 
@@ -686,6 +689,9 @@
 
 /* Define to 1 if `in6addr_loopback' is declared by <netinet/in.h> */
 #undef IN6ADDR_LOOPBACK_DECLARED
+
+/* additional directories to search for native jni libraries */
+#undef JNI_LIBRARY_PATH
 
 /* Full path to the directory containing kaffe's locales */
 #undef KAFFE_LOCALEDIR

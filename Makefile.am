@@ -14,8 +14,7 @@ ACLOCAL_AMFLAGS=-I m4
 
 AUTOMAKE_OPTIONS = foreign 1.3e
 
-SUBDIRS = . config include replace libltdl kaffe/kaffevm libraries/clib libraries/extensions kaffe libraries/javalib tools test po
-
+SUBDIRS =
 DIST_SUBDIRS = . config include replace libltdl kaffe libraries tools test po
 
 EXTRA_DIST = \
@@ -171,3 +170,77 @@ docs-docbook-html:
 # Regenerate HTML docs and copy them to source tree
 docs-regen: docs-docbook-html
 	cp -f target/docs/docbook/*.html $(srcdir)/docs/html
+
+
+#
+# things we need to compile before we can compile rt.jar 
+#
+DIRECTORIES_BEFORE_RTJAR = \
+	config \
+	include \
+	replace \
+	libltdl \
+	kaffe/kaffevm \
+	libraries/clib \
+	kaffe
+
+#
+# things we need to compile after we have compiled rt.jar 
+#
+DIRECTORIES_AFTER_RTJAR = \
+	tools \
+	test \
+	po \
+	libraries/clib/awt
+
+if COND_LIBXMLJ
+DIRECTORIES_AFTER_RTJAR += libraries/clib/libxmlj
+endif
+
+if COND_SOUND_ALSA
+DIRECTORIES_AFTER_RTJAR += libraries/clib/sound
+else 
+if COND_SOUND_ESD
+DIRECTORIES_AFTER_RTJAR += libraries/clib/sound
+endif
+endif
+
+all-local:
+	@list="$(DIRECTORIES_BEFORE_RTJAR)"; for subdir in $$list; do \
+		$(MAKE) -C $$subdir all || exit $$? ; \
+	done; \
+	$(MAKE) -C libraries/javalib all || exit $$? ; \
+	list="$(DIRECTORIES_AFTER_RTJAR)"; for subdir in $$list; do \
+		$(MAKE) -C $$subdir all || exit $$? ; \
+	done ; \
+	$(MAKE) -C kaffe/kaffe final-executable
+
+install-exec-hook:
+	@list="$(DIRECTORIES_BEFORE_RTJAR)"; for subdir in $$list; do \
+		$(MAKE) -C $$subdir install-exec || exit $$? ; \
+	done; \
+	$(MAKE) -C libraries/javalib install-exec || exit $$? ; \
+	list="$(DIRECTORIES_AFTER_RTJAR)"; for subdir in $$list; do \
+		$(MAKE) -C $$subdir install-exec || exit $$? ; \
+	done 
+
+install-data-hook:
+	@list="$(DIRECTORIES_BEFORE_RTJAR)"; for subdir in $$list; do \
+		$(MAKE) -C $$subdir install-data || exit $$? ; \
+	done; \
+	$(MAKE) -C libraries/javalib install-data || exit $$? ; \
+	list="$(DIRECTORIES_AFTER_RTJAR)"; for subdir in $$list; do \
+		$(MAKE) -C $$subdir install-data || exit $$? ; \
+	done 
+
+uninstall-hook:
+	@list="$(DIRECTORIES_BEFORE_RTJAR)"; for subdir in $$list; do \
+		$(MAKE) -C $$subdir uninstall || exit $$? ; \
+	done; \
+	$(MAKE) -C libraries/javalib uninstall || exit $$? ; \
+	list="$(DIRECTORIES_AFTER_RTJAR)"; for subdir in $$list; do \
+		$(MAKE) -C $$subdir uninstall || exit $$? ; \
+	done 
+
+check-local:
+	$(MAKE) -C test check

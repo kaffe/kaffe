@@ -51,3 +51,8 @@ libxmlj_la_CFLAGS = \
 	-Wall \
 	-fbounds-check
 
+
+$(libxmlj_la_SOURCES): libxmlj_headers
+.PHONY:libxmlj_headers
+libxmlj_headers:
+	@$(MAKE) -C $(top_builddir)/include libxmlj_headers

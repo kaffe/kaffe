@@ -78,8 +78,6 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	uninstall-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = native io nio net zip math libxmlj security management \
-	awt sound
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
@@ -132,6 +130,8 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ENABLE_BINRELOC_FALSE = @ENABLE_BINRELOC_FALSE@
+ENABLE_BINRELOC_TRUE = @ENABLE_BINRELOC_TRUE@
 ENABLE_JVMPI_FALSE = @ENABLE_JVMPI_FALSE@
 ENABLE_JVMPI_TRUE = @ENABLE_JVMPI_TRUE@
 ENABLE_XPROF_FALSE = @ENABLE_XPROF_FALSE@
@@ -215,6 +215,7 @@ NEED_LIBXPROF_TRUE = @NEED_LIBXPROF_TRUE@
 NET_LIBS = @NET_LIBS@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OPT_DLOPEN_JAVA_LIBS = @OPT_DLOPEN_JAVA_LIBS@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
@@ -333,7 +334,8 @@ with_engine = @with_engine@
 
 # Build libxmlj only desired
 @COND_LIBXMLJ_TRUE@MAYBE_LIBXMLJ = libxmlj
-SUBDIRS = native io nio net zip $(MAYBE_NATIVE_MATH) $(MAYBE_LIBXMLJ) security management awt sound
+DIST_SUBDIRS = native io nio net zip math libxmlj security management awt sound
+SUBDIRS = native io nio net zip $(MAYBE_NATIVE_MATH) security management
 all: all-recursive
 
 .SUFFIXES:

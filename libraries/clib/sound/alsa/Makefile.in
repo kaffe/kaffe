@@ -185,6 +185,8 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ENABLE_BINRELOC_FALSE = @ENABLE_BINRELOC_FALSE@
+ENABLE_BINRELOC_TRUE = @ENABLE_BINRELOC_TRUE@
 ENABLE_JVMPI_FALSE = @ENABLE_JVMPI_FALSE@
 ENABLE_JVMPI_TRUE = @ENABLE_JVMPI_TRUE@
 ENABLE_XPROF_FALSE = @ENABLE_XPROF_FALSE@
@@ -268,6 +270,7 @@ NEED_LIBXPROF_TRUE = @NEED_LIBXPROF_TRUE@
 NET_LIBS = @NET_LIBS@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OPT_DLOPEN_JAVA_LIBS = @OPT_DLOPEN_JAVA_LIBS@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
@@ -711,6 +714,11 @@ uninstall-am: uninstall-info-am uninstall-nativeLTLIBRARIES
 	tags uninstall uninstall-am uninstall-info-am \
 	uninstall-nativeLTLIBRARIES
 
+
+$(libtritonusalsa_la_SOURCES): libtritonusalsa_headers
+.PHONY: libtritonusalsa_headers
+libtritonusalsa_headers:
+	@$(MAKE) -C $(top_builddir)/include libtritonusalsa_headers
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

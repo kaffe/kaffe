@@ -164,6 +164,11 @@ initNative(void)
 		len += strlen(lpath);
 	}
 
+#ifdef JNI_LIBRARY_PATH
+	len += strlen (path_separator);
+	len += strlen (JNI_LIBRARY_PATH);
+#endif
+
 	/*
 	 * Build a library path from the given library path.
 	 */
@@ -172,6 +177,11 @@ initNative(void)
 	if (lpath != 0) {
 		strcat(libraryPath, lpath);
 	}
+
+#ifdef JNI_LIBRARY_PATH
+	strcat (libraryPath, path_separator);
+	strcat (libraryPath, JNI_LIBRARY_PATH);
+#endif
 
 	DBG(INIT, dprintf("got lpath %s and libraryPath %s\n", lpath, libraryPath); )
 
