@@ -262,6 +262,7 @@ Klasses_jar_SRCS = \
 	$(javax_swing_text_SRCS) \
 	$(javax_swing_text_html_SRCS) \
 	$(javax_swing_text_html_parser_SRCS) \
+	$(javax_swing_text_rtf_SRCS) \
 	$(javax_swing_tree_SRCS) \
 	$(javax_swing_undo_SRCS) \
 	$(javax_transaction_SRCS) \
@@ -3926,6 +3927,14 @@ javax_swing_text_html_SRCS = \
 	javax/swing/text/html/HTML.java
 javax_swing_text_html_parser_SRCS = \
 	javax/swing/text/html/parser/ParserDelegator.java
+javax_swing_text_rtf_SRCS = \
+	javax/swing/text/rtf/ControlWordToken.java \
+	javax/swing/text/rtf/RTFEditorKit.java \
+	javax/swing/text/rtf/RTFParseException.java \
+	javax/swing/text/rtf/RTFParser.java \
+	javax/swing/text/rtf/RTFScanner.java \
+	javax/swing/text/rtf/TextToken.java \
+	javax/swing/text/rtf/Token.java
 javax_swing_tree_SRCS = \
 	javax/swing/tree/AbstractLayoutCache.java \
 	javax/swing/tree/DefaultMutableTreeNode.java \

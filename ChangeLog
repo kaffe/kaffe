@@ -2,6 +2,20 @@
 
 	Resynced with GNU Classpath.
 
+	2005-03-04  Roman Kennke  <roman@ontographics.com>
+
+        * javax/swing/text/rtf/ControlWordToken.java: New file.
+        * javax/swing/text/rtf/RTFEditorKit.java: New file.
+        * javax/swing/text/rtf/RTFParseException.java: New file.
+        * javax/swing/text/rtf/RTFParser.java: New file.
+        * javax/swing/text/rtf/RTFScanner.java: New file.
+        * javax/swing/text/rtf/TextToken.java: New file.
+        * javax/swing/text/rtf/Token.java: New file.
+
+2005-03-08  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-03-08  Audrius Meskauskas  <audriusa@bluewin.ch>
 
         * org/omg/CORBA/BooleanHolder.java,
