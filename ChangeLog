@@ -1,4 +1,21 @@
-2004-09-20  Dalibor Topic  <robilad@kaffe.org>
+2004-09-21  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/javax/swing/JInternalFrame.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicInternalFrameTitlePane.java:
+        Resynced with GNU Classpath.
+
+	2004-09-20  Jeroen Frijters  <jeroen@frijters.net>
+
+        * javax/swing/JInternalFrame.java
+        (CONTENT_PANE_PROPERTY,FRAME_ICON_PROPERTY,GLASS_PANE_PROPERTY,
+        IS_CLOSED_PROPERTY,IS_ICON_PROPERTY,IS_MAXIMUM_PROPERTY,
+        IS_SELECTED_PROPERTY,LAYERED_PANE_PROPERTY,MENU_BAR_PROPERTY,
+        ROOT_PANE_PROPERTY,TITLE_PROPERTY): Made final as per API spec.
+        * javax/swing/plaf/basic/BasicInternalFrameTitlePane.java
+        (CLOSE_CMD,ICONIFY_CMD,MAXIMIZE_CMD,MOVE_CMD,RESTORE_CMD,SIZE_CMD):
+        Made final as per API spec.
+
+2004-09-21  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/util/Collections.java:
 	Resynced with GNU Classpath.

@@ -439,22 +439,22 @@ public class BasicInternalFrameTitlePane extends JComponent
   }
 
   /** The action command for the Close action. */
-  protected static String CLOSE_CMD = "Close";
+  protected static final String CLOSE_CMD = "Close";
 
   /** The action command for the Minimize action. */
-  protected static String ICONIFY_CMD = "Minimize";
+  protected static final String ICONIFY_CMD = "Minimize";
 
   /** The action command for the Maximize action. */
-  protected static String MAXIMIZE_CMD = "Maximize";
+  protected static final String MAXIMIZE_CMD = "Maximize";
 
   /** The action command for the Move action. */
-  protected static String MOVE_CMD = "Move";
+  protected static final String MOVE_CMD = "Move";
 
   /** The action command for the Restore action. */
-  protected static String RESTORE_CMD = "Restore";
+  protected static final String RESTORE_CMD = "Restore";
 
   /** The action command for the Size action. */
-  protected static String SIZE_CMD = "Size";
+  protected static final String SIZE_CMD = "Size";
 
   /** The action associated with closing the JInternalFrame. */
   protected Action closeAction;

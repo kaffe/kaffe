@@ -341,67 +341,67 @@ public class JInternalFrame extends JComponent implements Accessible,
    * The property fired in a PropertyChangeEvent when the contentPane property
    * changes.
    */
-  public static String CONTENT_PANE_PROPERTY = "contentPane";
+  public static final String CONTENT_PANE_PROPERTY = "contentPane";
 
   /**
    * The property fired in a PropertyChangeEvent when the frameIcon property
    * changes.
    */
-  public static String FRAME_ICON_PROPERTY = "frameIcon";
+  public static final String FRAME_ICON_PROPERTY = "frameIcon";
 
   /**
    * The property fired in a PropertyChangeEvent when the glassPane property
    * changes.
    */
-  public static String GLASS_PANE_PROPERTY = "glassPane";
+  public static final String GLASS_PANE_PROPERTY = "glassPane";
 
   /**
    * The property fired in a PropertyChangeEvent when the closed property
    * changes.
    */
-  public static String IS_CLOSED_PROPERTY = "closed";
+  public static final String IS_CLOSED_PROPERTY = "closed";
 
   /**
    * The property fired in a PropertyChangeEvent when the icon property
    * changes.
    */
-  public static String IS_ICON_PROPERTY = "icon";
+  public static final String IS_ICON_PROPERTY = "icon";
 
   /**
    * The property fired in a PropertyChangeEvent when the maximum property
    * changes.
    */
-  public static String IS_MAXIMUM_PROPERTY = "maximum";
+  public static final String IS_MAXIMUM_PROPERTY = "maximum";
 
   /**
    * The property fired in a PropertyChangeEvent when the selected property
    * changes.
    */
-  public static String IS_SELECTED_PROPERTY = "selected";
+  public static final String IS_SELECTED_PROPERTY = "selected";
 
   /**
    * The property fired in a PropertyChangeEvent when the layeredPane property
    * changes.
    */
-  public static String LAYERED_PANE_PROPERTY = "layeredPane";
+  public static final String LAYERED_PANE_PROPERTY = "layeredPane";
 
   /**
    * The property fired in a PropertyChangeEvent when the jMenuBar property
    * changes.
    */
-  public static String MENU_BAR_PROPERTY = "jMenuBar";
+  public static final String MENU_BAR_PROPERTY = "jMenuBar";
 
   /**
    * The property fired in a PropertyChangeEvent when the rootPane property
    * changes.
    */
-  public static String ROOT_PANE_PROPERTY = "rootPane";
+  public static final String ROOT_PANE_PROPERTY = "rootPane";
 
   /**
    * The property fired in a PropertyChangeEvent when the title property
    * changes.
    */
-  public static String TITLE_PROPERTY = "title";
+  public static final String TITLE_PROPERTY = "title";
 
   /** Whether the JInternalFrame is closable. */
   protected boolean closable;
