@@ -699,7 +699,7 @@ DBG(VMCLASSLOADER,
 		if (clazz == NULL) {
 			SET_LANG_EXCEPTION_MESSAGE(einfo, 
 				ClassNotFoundException, name->data)
-			return NULL;
+			return (NULL);
 		}
 		clazz->centry = centry;
 DBG(VMCLASSLOADER,		
@@ -736,21 +736,18 @@ DBG(VMCLASSLOADER,
 DBG(RESERROR,
 			dprintf("NoClassDefFoundError: `%s'\n", name->data);
     )
-			if (0) {
-			SET_LANG_EXCEPTION_MESSAGE(einfo, 
-				ClassNotFoundException, name->data)
-			} else {
 			SET_LANG_EXCEPTION_MESSAGE(einfo, 
 				NoClassDefFoundError, name->data)
-			}
 		}
+	} else {
+		clazz = centry->class;
 	}
 
 	/* Release lock now class has been entered and processed */
 	unlockMutex(centry);
 
 	if (clazz == NULL) {
-		return NULL;
+		return (NULL);
 	}
 
 	found:;
