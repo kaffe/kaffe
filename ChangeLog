@@ -1,4 +1,10 @@
-2005-01-23  Guilhem Lavaux  <guilhem@kaffe.org>
+2005-01-29  Dalibor Topic  <robilad@kaffe.org>
+
+	* test/regression/Makefile.am (EXTRA_DIST): Added 
+	HelloWorldApp.class.
+	(CLEANFILES) Removed *.class.
+
+2005-01-29  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* include/Makefile.in,
 	kaffe/kaffevm/Makefile.in,

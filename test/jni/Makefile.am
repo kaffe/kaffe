@@ -57,7 +57,9 @@ jniReflect_LDADD= \
 	@LIBLTDL@
 jniReflect_DEPENDENCIES= $(LIBKAFFEVM)
 
+EXTRA_DIST = HelloWorldApp.class
+
 TESTS_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 TESTS = $(check_PROGRAMS)
 
-CLEANFILES = *.fail *.out core *.core *.class
+CLEANFILES = *.fail *.out core *.core
