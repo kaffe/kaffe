@@ -1,5 +1,13 @@
 2003-04-23 Dalibor Topic <robilad@yahoo.com>
 
+	* FAQ/FAQ.classlibrary-compile:
+	Added information on using prebuilt rt.jar, and debugging
+	class library compilation crashes.
+
+	Reported by: Kevin D. Kissell <kevink@mips.com>
+	
+2003-04-23 Dalibor Topic <robilad@yahoo.com>
+
 	* libraries/javalib/essential.files,
 	libraries/javalib/profiles/default/core.files:
 	moved java.io.SerializedPermission to essential files. It's

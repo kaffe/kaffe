@@ -229,5 +229,33 @@ Currently, there are three profiles available.
   optimized for speed, so it only invokes the compiler once on all
   source files. It uses more then 50M of memory with kjc.
 
-If you write your own profiles, sending them to the kaffe mailing list
+If you write your own profiles, send them to the kaffe mailing list
 kaffe@kaffe.org.
+
+How do I use a precompiled class library?
+-----------------------------------------
+
+The configure script allows you to specify a precompiled rt.jar file
+using the --with-rt-jar option. The specified jar file will be
+installed as kaffe's class library.
+
+That allows you to precompile kaffe's class library on a faster
+platform than the one you're building on, for example.
+
+You can not use the class library from another JVM.
+
+Crashes during compilation of class library
+-------------------------------------------
+
+When kaffe crashes during compilation of class library, you should try
+to compile the class library with jikes, or another Java compiler. Or
+you can use a precompiled rt.jar.
+
+You should first rebuild kaffe with --enable-debug, install it, set
+KAFFE_DEBUG to the debugger of your choice, and try to rebuild kaffe
+with kjc from the freshly installed, broken kaffe.
+
+So if you're having problems with the JIT, you could configure kaffe
+for rebuild using --with-jikes="/path/to/broken/kaffe -vmdebug
+JIT,MOREJIT at.dms.kjc.Main". The extra output from the jit engine
+should give you an idea where to start debugging.
