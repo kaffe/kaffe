@@ -138,10 +138,6 @@ public class Timer {
 				start();
 			}
 
-			// Add task to queue
-			tasks.add(task);
-			task.changed = true;
-
 			// Wake up thread if necessary
 			boolean wake = false;
 			try {
@@ -152,6 +148,10 @@ public class Timer {
 			if (wake) {
 				notify();
 			}
+
+			// Add task to queue
+			tasks.add(task);
+			task.changed = true;
 		}
 
 		// Unschedule a task; returns true if task was scheduled
