@@ -26,6 +26,16 @@
 #define NOTIMEOUT	0
 
 /*
+ * We currently don't support exec'ing external processes.  While that
+ * is easy to do, it unclear how we can wait for the process to exit since
+ * it must be done from the same thread that created it.  This might not
+ * be the case.
+ * It's not clear how best to achieve this - TIM 10/17/99
+ */
+#undef	HAVE_FORK
+#undef	HAVE_WAITPID
+
+/*
  * various building blocks for timeout system call functions
  */
 #define SET_DEADLINE(deadline, timeout) 		\
@@ -496,32 +506,6 @@ jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
 	return (r);
 }
 
-/* 
- * Wait for a child process.
- */
-int
-jthreadedWaitpid(int wpid, int* status, int options, int *outpid)
-{
-#if defined(HAVE_WAITPID)
-	int npid;
-
-DBG(JTHREAD,
-	dprintf("waitpid %d current=%p\n", wpid, currentJThread); )
-
-	for (;;) {
-		npid = waitpid(wpid, status, options|WNOHANG);
-		/* XXX what return codes should cause us to return an error? */
-		if (npid > 0) {
-			*outpid = npid;
-			break;
-		}
-	}
-	return (0);
-#else
-	return (EOPNOTSUPPORT);
-#endif
-}
-
 /* helper function for forkexec, close fd[0..n-1] */
 static void
 close_fds(int fd[], int n)
@@ -531,9 +515,6 @@ close_fds(int fd[], int n)
                 close(fd[i++]);
 	}
 }
-
-/* NOT YET !!! - XXX */
-#undef	HAVE_FORK
 
 int 
 jthreadedForkExec(char **argv, char **arge, int ioes[4], int *outpid)
@@ -565,15 +546,6 @@ jthreadedForkExec(char **argv, char **arge, int ioes[4], int *outpid)
 	unimp("fork() not provided");
 #endif
 
-DBG(JTHREAD,	
-	{
-		char **d = argv;
-		dprintf("argv = [`%s ", *d++); 
-		while (*d)
-			dprintf(", `%s'", *d++);
-		dprintf("]\n");
-	}
-    )
 	/* Create the pipes to communicate with the child */
 	/* Make sure fds get closed if we can't create all pipes */
 	for (nfd = 0; nfd < 8; nfd += 2) {
@@ -667,6 +639,28 @@ DBG(JTHREAD,
 	/* NEVER REACHED */	
 }
 
+/* 
+ * Wait for a child process.
+ */
+int
+jthreadedWaitpid(int wpid, int* status, int options, int *outpid)
+{
+#if defined(HAVE_WAITPID)
+	int npid;
+
+	npid = waitpid(wpid, status, options);
+	if (npid > 0) {
+		*outpid = npid;
+		return (0);
+	}
+	else {
+		return (-1);
+	}
+#else
+	return (EOPNOTSUPPORT);
+#endif
+}
+
 /*
  * The syscall interface as provided by the internal jthread system.
  */
@@ -700,6 +694,6 @@ SystemCallInterface Kaffe_SystemCallInterface = {
         jthreadedGetHostByAddr,
         jthreadedSelect,	
         jthreadedForkExec,
-        0 /*jthreadedWaitpid*/,
+        jthreadedWaitpid,
         jthreadedKill
 };
