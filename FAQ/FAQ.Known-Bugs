@@ -24,6 +24,17 @@ MISSING OR BROKEN FEATURES
 
   produces the wrong result.
 
+* java.io.OutputStreamWriter is not buffered like it should.
+  This can lead to many small writes where a conformant implementation
+  would do a few large writes.
+  On systems with abysmal NFS performance (such as Linux) this may lead
+  to execution times two orders of magnitude larger for applications such
+  as antlr.
+
+  Workaround:
+  + wrap the OutputStreamWriter in a BufferedWriter
+  + use a local filesystem
+
 * File.getCanonicalPath() is not properly implemented.
   This needs a native implementation.
 
