@@ -1831,15 +1831,18 @@ jthread_stop(jthread *jtid)
 	intsDisable();
 	/* No reason to hit a dead man over the head */
 	if (jtid->status != THREAD_DEAD) {
-		jtid->flags |= THREAD_FLAGS_KILLED;
+	  jtid->flags |= THREAD_FLAGS_KILLED;
 	}
 
 	/* if it's us, die */
-	if (jtid == jthread_current() && 
-		(jtid->flags & THREAD_FLAGS_DONTSTOP) != 0 && blockInts == 1)
-		die();
+	if (jtid == jthread_current()
+	    && (jtid->flags & THREAD_FLAGS_DONTSTOP) == 0 && blockInts == 1)
+	  die();
 
-        resumeThread(jtid);
+	/* We only have to resume the thread if it is not us. */
+	if (jtid != jthread_current())
+          resumeThread(jtid);
+
 	intsRestore();
 }
 
@@ -2403,8 +2406,8 @@ jcondvar_broadcast(jcondvar *cv, jmutex *lock)
 		for (condp = cv; *condp != 0; condp = &(*condp)->next)
 			;
 		(*condp) = lock->waiting;
-		lock->waiting = *condp;
-		*condp = NULL;
+		lock->waiting = *cv;
+		*cv = NULL;
 	}
 	intsRestore();
 }
