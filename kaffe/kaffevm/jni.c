@@ -4108,6 +4108,7 @@ JavaVMInitArgs Kaffe_JavaVMInitArgs = {
 	1,		/* Disable async GC */
 	0,		/* Enable verbose class loading */
 	0,		/* Enable verbose JIT */
+	0,		/* Enable verbose calls */
 	ALLOC_HEAPSIZE,	/* Inc heap size */
 	0,		/* Class home */
 	0,		/* Library home */
