@@ -1,3 +1,8 @@
+2003-06-14 Dalibor Topic <robilad@yahoo.com>
+
+      * Makefile.am:
+      (EXTRA_DIST) Added ChangeLog.5.
+
 2003-06-14 Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* include/dummyin6.h:
