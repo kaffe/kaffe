@@ -20,7 +20,7 @@ public class ZipEntry implements Cloneable, ZipConstants {
   public static final int DEFLATED = Deflater.DEFLATED;
 
   String name;
-  long time;
+  long time = -1;
   int dosTime;
   long crc;
   long size;
@@ -93,6 +93,8 @@ public class ZipEntry implements Cloneable, ZipConstants {
 
   public long getTime()
   {
+    if (time == -1 && dosTime != 0)
+      setDosTime(dosTime);
     return (time);
   }
 
@@ -205,6 +207,7 @@ public class ZipEntry implements Cloneable, ZipConstants {
 
   void setDosTime(int date) {
       Calendar cal = new GregorianCalendar();
+      cal.clear();
       cal.set (((date >> 25) & 0x7F) + 1980,
 	       ((date >> 21) & 0xF) - 1,
 	       (date >> 16) & 0x1F,

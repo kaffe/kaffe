@@ -137,6 +137,8 @@ DBG(JARFILES,
 	ret->compressionMethod  = head.compressionMethod;
         ret->compressedSize = head.compressedSize;
         ret->uncompressedSize = head.uncompressedSize;
+	ret->dosTime = ((head.lastModifiedDate << 16)
+			| head.lastModifiedTime);
 
 	READBYTES(file, head.fileNameLength, ret->fileName);
 	SKIPBYTES(file, head.extraFieldLength + head.fileCommentLength);

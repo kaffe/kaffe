@@ -119,6 +119,6 @@ makeZipEntry(jarEntry* entry)
 	unhand(zentry)->version = 0;
 	unhand(zentry)->csize = entry->compressedSize;
 	unhand(zentry)->offset = entry->dataPos;
-
+	unhand(zentry)->dosTime = entry->dosTime;
 	return (zentry);
 }

@@ -71,7 +71,7 @@ typedef struct _jarEntry {
 	uint16			compressionMethod;
 	uint32			compressedSize;
 	uint32			uncompressedSize;
-
+	uint32			dosTime;
 } jarEntry;
 
 typedef struct _jarFile {
