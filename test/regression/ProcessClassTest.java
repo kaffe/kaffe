@@ -23,11 +23,8 @@ public class ProcessClassTest
 
 	thread.start();
 	try {
-	    synchronized(thread) {
-		thread.wait();
-	    }
-	}
-	catch (InterruptedException t) {
+	    thread.join();
+	} catch (InterruptedException t) {
 	    System.out.println(thread.getName() + " " + class_name + " " + t);
 	}
     }
