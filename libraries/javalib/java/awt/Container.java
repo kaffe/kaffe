@@ -400,7 +400,7 @@ public void list(PrintWriter out, int indent) {
     super.list(out, indent);
 
     Component[] comps = getComponents();
-    for (int i = comps.length - 1; i > 0; --i) {
+    for (int i = comps.length - 1; i >= 0; --i) {
 	comps[i].list(out, indent + 2);
     }
 

@@ -1,3 +1,11 @@
+2003-04-02 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/awt/Component.java:
+	(getWidth, getHeight) new methods.
+	
+	* libraries/javalib/java/awt/Container.java:
+	(list) fixed listing of 0-th component.
+
 2003-04-02 Tony Wyatt <wyattaw@optushome.com.au>
 
 	* config/m68k/a-ux/md.h,

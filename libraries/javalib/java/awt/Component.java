@@ -464,6 +464,10 @@ public Graphics getGraphics () {
 		return null;
 }
 
+public int getHeight() {
+	return height;
+}
+
 public Locale getLocale () {
 	if (locale != null) {
 		return (locale);
@@ -547,6 +551,10 @@ Component getToplevel () {
 
 final public Object getTreeLock() {
 	return treeLock;
+}
+
+public int getWidth() {
+	return width;
 }
 
 public int getX() {
