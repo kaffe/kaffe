@@ -1,3 +1,25 @@
+2004-03-17  Dalibor Topic <robilad@kaffe.org>
+
+        * libraries/javalib/gnu/regexp/REException.java,
+        libraries/javalib/gnu/regexp/REFilterInputStream.java,
+        libraries/javalib/gnu/regexp/REMatch.java,
+        libraries/javalib/gnu/regexp/REMatchEnumeration.java,
+        libraries/javalib/gnu/regexp/RESyntax.java,
+        libraries/javalib/gnu/regexp/REToken.java,
+        libraries/javalib/gnu/regexp/RETokenAny.java,
+        libraries/javalib/gnu/regexp/RETokenBackRef.java,
+        libraries/javalib/gnu/regexp/RETokenChar.java,
+        libraries/javalib/gnu/regexp/RETokenEnd.java,
+        libraries/javalib/gnu/regexp/RETokenEndSub.java,
+        libraries/javalib/gnu/regexp/RETokenOneOf.java,
+        libraries/javalib/gnu/regexp/RETokenPOSIX.java,
+        libraries/javalib/gnu/regexp/RETokenRange.java,
+        libraries/javalib/gnu/regexp/RETokenRepeated.java,
+        libraries/javalib/gnu/regexp/RETokenStart.java,
+        libraries/javalib/gnu/regexp/RETokenWordBoundary.java,
+        libraries/javalib/gnu/regexp/UncheckedRE.java:
+	Replaced by implementation from GNU Classpath.
+
 2004-03-16  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/javalib/gnu/regexp/CharIndexed.java,
