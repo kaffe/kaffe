@@ -1676,7 +1676,6 @@ kaffe_jar_SRCS = \
 kaffe_lang_SRCS = \
 	kaffe/lang/AppClassLoader.java \
 	kaffe/lang/ApplicationException.java \
-	kaffe/lang/Application.java \
 	kaffe/lang/ApplicationResource.java \
 	kaffe/lang/ClassPathReader.java \
 	kaffe/lang/MemoryAdviceCallback.java \

@@ -1,3 +1,25 @@
+2003-07-09  Dalibor Topic  <robilad@yahoo.com>
+
+	* libraries/javalib/bootstrap.classlist:
+	Added missing files. Removed kaffe.lang.Application.
+
+	* libraries/javalib/java/io/File.java:
+	(DeleteOnExitHook) new internal class.
+	(deleteOnExitHook) new static field.
+	(deleteOnExit) use deleteOnExitHook to delete the file on exit.
+
+	*
+	libraries/javalib/kaffe/net/www/protocol/system/SystemURLConnection.java,
+	libraries/javalib/kaffe/tools/compiler/Compiler_kjc.java,
+	libraries/javalib/kaffe/tools/compiler/Compiler_pizza.java:
+	rewritten not to use Application.
+
+	* libraries/javalib/Klasses.jar.bootstrap:
+	regenerated.
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	regenerated.
+	
 2003-07-08  Guilhem Lavaux <guilhem.lavaux@free.fr>
 
 	* include/Makefile.am:

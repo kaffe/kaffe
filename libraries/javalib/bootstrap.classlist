@@ -11,6 +11,7 @@ java/io/DataOutput.class
 java/io/DataOutputStream.class
 java/io/EOFException.class
 java/io/File.class
+java/io/File$DeleteOnExitHook.class
 java/io/FileDescriptor.class
 java/io/FileInputStream.class
 java/io/FileNotFoundException.class
@@ -131,6 +132,13 @@ java/util/AbstractMapEntrySet.class
 java/util/AbstractSet.class
 java/util/ArrayList.class
 java/util/Collection.class
+java/util/Collections.class
+java/util/Collections$2.class
+java/util/Collections$EmptyList.class
+java/util/Collections$EmptyMap.class
+java/util/Collections$EmptySet.class
+java/util/Collections$SyncCollection.class
+java/util/Collections$SyncSet.class
 java/util/Comparator.class
 java/util/ConcurrentModificationException.class
 java/util/Dictionary.class
@@ -179,7 +187,6 @@ kaffe/lang/AppClassLoader.class
 kaffe/lang/AppClassLoader$Source.class
 kaffe/lang/AppClassLoader$DirSource.class
 kaffe/lang/AppClassLoader$JarSource.class
-kaffe/lang/Application.class
 kaffe/lang/ApplicationResource.class
 kaffe/lang/MemoryAdvice.class
 kaffe/lang/PrimordialClassLoader.class

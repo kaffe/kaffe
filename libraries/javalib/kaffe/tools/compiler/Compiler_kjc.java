@@ -10,8 +10,8 @@
 
 package kaffe.tools.compiler;
 
-import kaffe.lang.Application;
-import kaffe.lang.ApplicationException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class Compiler_kjc extends Compiler {
 
@@ -29,30 +29,29 @@ public boolean compile(String name) {
 				"-classpath", classpath,
 				name };
 	}
-	Application app;
 	try {
-		app = new Application("at.dms.kjc.Main", args);
+		Class mainclass = Class.forName("at.dms.kjc.Main");
+		Method mainmeth = mainclass.getMethod("main", new Class[] {String[].class});
+		mainmeth.invoke(null, args);
 	}
-	catch (ApplicationException _) {
-		return (false);
+	catch (ClassNotFoundException e) {
+	    e.printStackTrace();
+	    return false;
 	}
-	try {
-		app.waitFor();
+	catch (IllegalAccessException e) {
+	    e.printStackTrace();
+	    return false;
 	}
-	catch (InterruptedException _) {
+	catch (InvocationTargetException e) {
+	    e.printStackTrace();
+	    return false;
 	}
-	int code = app.exitValue();
-	if (code == 0) {
-		return (true);
+	catch (NoSuchMethodException e) {
+	    e.printStackTrace();
+	    return false;
 	}
-	Throwable thrw = app.exitException();
-	if (thrw instanceof Exception) {
-		exception = (Exception)thrw;
-	}
-	else {
-		exception = new Exception("exited with errorcode " + code);
-	}
-	return (false);
+
+	return true;
 }
 
 }

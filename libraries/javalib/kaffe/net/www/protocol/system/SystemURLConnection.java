@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import kaffe.net.www.protocol.BasicURLConnection;
-import kaffe.lang.Application;
 
 public class SystemURLConnection
   extends BasicURLConnection
@@ -31,12 +30,7 @@ public SystemURLConnection(URL url)
 public void connect() throws IOException
 {
 	String filename = url.getFile();
-	Application currentApp = Application.getApplication();
-	if (currentApp != null) {
-		data = currentApp.getResourceAsStream(filename);
-	} else {
-		data = ClassLoader.getSystemResourceAsStream(filename);
-	}
+	data = ClassLoader.getSystemResourceAsStream(filename);
 	setContentTypeFromName();
 }
 

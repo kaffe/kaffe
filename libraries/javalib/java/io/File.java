@@ -4,11 +4,13 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Random;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import kaffe.lang.Application;
-import kaffe.lang.ApplicationResource;
 
 /*
  * Java core library component.
@@ -30,6 +32,7 @@ public class File implements Serializable, Comparable {
 
 	private static final Random random = new Random();
 	private final String path;
+        private static DeleteOnExitHook deleteOnExitHook = new DeleteOnExitHook();
 
 static {
 	System.loadLibrary("io");
@@ -173,16 +176,16 @@ native private boolean delete0();
 native private boolean rmdir0();
 
 /*
- * Free file on the termination of the application.  Note that this
- * will only work if the program is launched via the kaffe.lang.Application
- * class.
+ * Free file on the termination of the application.
  */
 public void deleteOnExit() {
-	Application.addResource(new ApplicationResource() {
-		public void freeResource() {
-			File.this.delete();
-		}
-	});
+    // Check the SecurityManager
+    SecurityManager sm = System.getSecurityManager ();
+    if (sm != null) {
+      sm.checkDelete(path);
+    }
+
+    deleteOnExitHook.addFile(this);
 }
 
 public int compareTo(Object that) {
@@ -476,4 +479,24 @@ public URI toURI() {
 	}
 }
 
+    private static class DeleteOnExitHook extends Thread {
+
+	private Set files = Collections.synchronizedSet(new HashSet());
+
+	public DeleteOnExitHook() {
+	}
+
+	public void addFile(File file) {
+	    files.add(file);
+	}
+
+	public void run() {
+	    Iterator iter = files.iterator();
+
+	    while(iter.hasNext()) {
+		File file = (File) iter.next();
+		file.delete();
+	    }
+	}
+    }
 }
