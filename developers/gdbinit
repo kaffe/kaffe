@@ -803,3 +803,18 @@ end
 document vmdebug_setopt
   Turn on some bits in the debug mask, based on the STRING given
 end
+
+define repeatrun
+	set height 0
+        set $repeatrun_count = $arg0
+        set $repeatrun_i = 0
+        while $repeatrun_i < $repeatrun_count
+                printf "Iteration %d:\n", $repeatrun_i
+                r
+                set $repeatrun_i = $repeatrun_i + 1 
+        end
+        printf "Done with %d iterations.\n", $repeatrun_count
+end
+document repeatrun
+  Invoke run the specified number of times.
+end
