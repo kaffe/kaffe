@@ -846,6 +846,7 @@ gcMalloc(size_t size, int fidx)
 		initGc();
 	}
 
+	assert(size != 0);
 	unit = gc_heap_malloc(size + sizeof(gc_unit));
 
 	/* keep pointer to object */
