@@ -79,3 +79,16 @@
 #if defined(arm32) || (defined(arm) && defined(linux))
 #define DOUBLE_ORDER_OPPOSITE
 #endif
+
+/*
+ * If we have the necessary infra-structure, then include GCJ support.
+ */
+#if defined(HAVE___THROW) && \
+    defined(HAVE___TERMINATE_FUNC) && \
+    defined(HAVE___GET_EH_INFO)
+
+#ifndef HAVE_GCJ_SUPPORT
+#define HAVE_GCJ_SUPPORT 1
+#endif
+
+#endif

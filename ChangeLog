@@ -1,3 +1,9 @@
+Thu Nov  4 13:11:31 MST 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* numerous files: first stage of new gcj integration.
+	This is a partial first checkin (use tag "before_godmars_gcj" to
+	get the before world) caused by the CVS repository move.
+
 Tue Nov  2 13:55:48 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/kjc.jar: upgrade to version 1.3D

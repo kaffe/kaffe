@@ -43,6 +43,8 @@ LIBS="$CTLIBS $LIBS"
 
 dnl Find the compiler early on in case we need to override.
 AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_CXXCPP
 
 dnl If gcc is the compiler, compile with -Wall for lots of warnings
 if test "$GCC" = "yes"; then
@@ -117,6 +119,9 @@ AC_SUBST(LIBLTDL)
 ## Let users override the linker used by libtool, but default to $CC.
 CCLD=${CCLD:-'$(CC)'}
 AC_SUBST(CCLD)
+AC_SUBST(CXX)
+AC_SUBST(CXXDEPMODE)
+AC_SUBST(CXXCPP)
 
 dnl =========================================================================
 dnl Do we need underscore?
