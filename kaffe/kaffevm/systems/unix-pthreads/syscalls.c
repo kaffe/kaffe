@@ -657,7 +657,7 @@ jthreadedWaitpid(int wpid, int* status, int options, int *outpid)
 		return (-1);
 	}
 #else
-	return (EOPNOTSUPPORT);
+	return (-1);
 #endif
 }
 
