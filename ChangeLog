@@ -2,6 +2,18 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-27  Roman Kennke  <roman@ontographics.com>
+
+        * javax/swing/plaf/basic/BasicListUI:
+        fixed modifiers of several fields, methods and inner
+        classes to match the 'spec'.
+        (getMaximumSize): removed. It's not in the spec and the
+        implementations was superfluous.
+
+2005-03-02  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-27  Chris Burdess  <dog@gnu.org>
 
         * gnu/xml/aelfred2/JAXPFactory.java,

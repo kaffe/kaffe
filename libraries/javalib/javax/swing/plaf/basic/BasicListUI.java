@@ -79,7 +79,7 @@ public class BasicListUI extends ListUI
    * A helper class which listens for {@link ComponentEvent}s from
    * the JList.
    */
-  class ComponentHandler extends ComponentAdapter {
+  private class ComponentHandler extends ComponentAdapter {
 
     /**
      * Called when the component is hidden. Invalidates the internal
@@ -94,7 +94,7 @@ public class BasicListUI extends ListUI
    * A helper class which listens for {@link FocusEvents}
    * from the JList.
    */
-  class FocusHandler implements FocusListener
+  public class FocusHandler implements FocusListener
   {
     /**
      * Called when the JList acquires focus.
@@ -131,7 +131,7 @@ public class BasicListUI extends ListUI
    *
    * @see javax.swing.JList#model
    */
-  class ListDataHandler implements ListDataListener
+  public class ListDataHandler implements ListDataListener
   {
     /**
      * Called when a general change has happened in the model which cannot
@@ -169,7 +169,7 @@ public class BasicListUI extends ListUI
    * A helper class which listens for {@link ListSelectionEvent}s
    * from the {@link JList}'s {@link ListSelectionModel}.
    */
-  class ListSelectionHandler implements ListSelectionListener
+  public class ListSelectionHandler implements ListSelectionListener
   {
     /**
      * Called when the list selection changes.  
@@ -185,7 +185,7 @@ public class BasicListUI extends ListUI
    * A helper class which listens for {@link MouseEvent}s 
    * from the {@link JList}.
    */
-  class MouseInputHandler implements MouseInputListener
+  public class MouseInputHandler implements MouseInputListener
   {
     /**
      * Called when a mouse button press/release cycle completes
@@ -268,7 +268,7 @@ public class BasicListUI extends ListUI
    * Helper class which listens to {@link PropertyChangeEvent}s
    * from the {@link JList}.
    */
-  class PropertyChangeHandler implements PropertyChangeListener
+  public class PropertyChangeHandler implements PropertyChangeListener
   {
     /**
      * Called when the {@link JList} changes one of its bound properties.
@@ -302,45 +302,45 @@ public class BasicListUI extends ListUI
   }
 
   /** The current focus listener. */
-  FocusHandler focusListener;
+  protected FocusHandler focusListener;
 
   /** The data listener listening to the model. */
-  ListDataHandler listDataListener;
+  protected ListDataHandler listDataListener;
 
   /** The selection listener listening to the selection model. */
-  ListSelectionHandler listSelectionListener;
+  protected ListSelectionHandler listSelectionListener;
 
   /** The mouse listener listening to the list. */
-  MouseInputHandler mouseInputListener;
+  protected MouseInputHandler mouseInputListener;
 
   /** The property change listener listening to the list. */
-  PropertyChangeHandler propertyChangeListener;
+  protected PropertyChangeHandler propertyChangeListener;
 
   /** The component listener that receives notification for resizing the
    * JList component.*/
-  ComponentListener componentListener;
+  private ComponentListener componentListener;
 
   /** Saved reference to the list this UI was created for. */
-  JList list;
+  protected JList list;
 
   /** The height of a single cell in the list. */
-  int cellHeight;
+  protected int cellHeight;
 
   /** The width of a single cell in the list. */
-  int cellWidth;
+  protected int cellWidth;
 
   /** 
    * An array of varying heights of cells in the list, in cases where each
    * cell might have a different height.
    */
-  int[] cellHeights;
+  protected int[] cellHeights;
 
   /**
    * A simple counter. When nonzero, indicates that the UI class is out of
    * date with respect to the underlying list, and must recalculate the
    * list layout before painting or performing size calculations.
    */
-  int updateLayoutStateNeeded;
+  protected int updateLayoutStateNeeded;
 
   /**
    * Calculate the height of a particular row. If there is a fixed {@link
@@ -352,7 +352,7 @@ public class BasicListUI extends ListUI
    *
    * @return The height, in pixels, of the specified row
    */
-  int getRowHeight(int row)
+  protected int getRowHeight(int row)
   {
     if (row < 0 || row >= cellHeights.length)
       return -1;
@@ -402,7 +402,7 @@ public class BasicListUI extends ListUI
    * @return The Y coordinate of the specified row, or <code>-1</code> if
    * the specified row number is invalid
    */
-  int convertRowToY(int row)
+  protected int convertRowToY(int row)
   {
     int y = 0;
     for (int i = 0; i < row; ++i)
@@ -425,7 +425,7 @@ public class BasicListUI extends ListUI
    * @return The row number containing the specified Y value, or <code>-1</code>
    * if the specified Y coordinate is invalid
    */
-  int convertYToRow(int y0)
+  protected int convertYToRow(int y0)
   {
     for (int row = 0; row < cellHeights.length; ++row)
       {
@@ -443,7 +443,7 @@ public class BasicListUI extends ListUI
    * #cellWidth} properties by examining the variouis properties of the
    * {@link JList}.
    */
-  void updateLayoutState()
+  protected void updateLayoutState()
   {
     int nrows = list.getModel().getSize();
     cellHeight = -1;
@@ -482,7 +482,7 @@ public class BasicListUI extends ListUI
    *
    * @see #updateLayoutStateNeeded
    */
-  void damageLayout()
+  private void damageLayout()
   {
     updateLayoutStateNeeded = 1;
     list.revalidate();
@@ -492,7 +492,7 @@ public class BasicListUI extends ListUI
    * Calls {@link #updateLayoutState} if {@link #updateLayoutStateNeeded}
    * is nonzero, then resets {@link #updateLayoutStateNeeded} to zero.
    */
-  void maybeUpdateLayoutState()
+  protected void maybeUpdateLayoutState()
   {
     if (updateLayoutStateNeeded != 0)
       {
@@ -521,7 +521,7 @@ public class BasicListUI extends ListUI
    *
    * @see #uninstallDefaults
    */
-  void installDefaults()
+  protected void installDefaults()
   {
     UIDefaults defaults = UIManager.getLookAndFeelDefaults();
     list.setForeground(defaults.getColor("List.foreground"));
@@ -535,7 +535,7 @@ public class BasicListUI extends ListUI
    * Resets to <code>null</code> those defaults which were installed in 
    * {@link #installDefaults}
    */
-  void uninstallDefaults()
+  protected void uninstallDefaults()
   {
     UIDefaults defaults = UIManager.getLookAndFeelDefaults();
     list.setForeground(null);
@@ -550,7 +550,7 @@ public class BasicListUI extends ListUI
    *
    * @see #uninstallListeners
    */
-  void installListeners()
+  protected void installListeners()
   {
     list.addFocusListener(focusListener);
     list.getModel().addListDataListener(listDataListener);
@@ -564,7 +564,7 @@ public class BasicListUI extends ListUI
   /**
    * Detaches all the listeners we attached in {@link #installListeners}.
    */
-  void uninstallListeners()
+  protected void uninstallListeners()
   {
     list.removeFocusListener(focusListener);
     list.getModel().removeListDataListener(listDataListener);
@@ -577,14 +577,14 @@ public class BasicListUI extends ListUI
   /**
    * Installs keyboard actions for this UI in the {@link JList}.
    */
-  void installKeyboardActions()
+  protected void installKeyboardActions()
   {
   }
 
   /**
    * Uninstalls keyboard actions for this UI in the {@link JList}.
    */
-  void uninstallKeyboardActions()
+  protected void uninstallKeyboardActions()
   {
   }
 
@@ -623,18 +623,6 @@ public class BasicListUI extends ListUI
   }
 
   /**
-   * Gets the maximum size this list can assume.
-   *
-   * @param c The component to measure the size of
-   *
-   * @return A new Dimension representing the component's maximum size
-   */
-  public Dimension getMaximumSize(JComponent c)
-  {
-    return new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
-  }
-
-  /**
    * Gets the size this list would prefer to assume. This is calculated by
    * calling {@link #getCellBounds} over the entire list.
    *
@@ -657,7 +645,7 @@ public class BasicListUI extends ListUI
    * @param g The graphics context to paint in
    * @param c The component to paint the background of
    */
-  public void paintBackground(Graphics g, JComponent c)
+  private void paintBackground(Graphics g, JComponent c)
   {
     Dimension size = getPreferredSize(c);
     Color save = g.getColor();
@@ -679,8 +667,9 @@ public class BasicListUI extends ListUI
    * @param sel A selection model to provide to the cell renderer
    * @param lead The lead selection index of the list
    */
-  void paintCell(Graphics g, int row, Rectangle bounds, ListCellRenderer rend,
-                 ListModel data, ListSelectionModel sel, int lead)
+  protected void paintCell(Graphics g, int row, Rectangle bounds,
+                 ListCellRenderer rend, ListModel data,
+                 ListSelectionModel sel, int lead)
   {
     boolean is_sel = list.isSelectedIndex(row);
     boolean has_focus = false;
