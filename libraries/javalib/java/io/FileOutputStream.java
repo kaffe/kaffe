@@ -32,12 +32,12 @@ public FileOutputStream(FileDescriptor fdObj)
 	fd = fdObj;
 }
 
-public FileOutputStream(String name) throws IOException
+public FileOutputStream(String name) throws FileNotFoundException
 {
 	this(name, false);
 }
 
-public FileOutputStream(String name, boolean append) throws IOException
+public FileOutputStream(String name, boolean append) throws FileNotFoundException
 {
 	System.getSecurityManager().checkWrite(name);
 	if (append == false) {
