@@ -241,6 +241,8 @@ void repaintRow( int idx) {
 }
 
 int repaintRows( Graphics g, int sIdx, int len) {
+	if ( g == null )
+		return 0;
 	int rs = rows.size();
 	int d = BORDER_WIDTH;
 	int y = d;

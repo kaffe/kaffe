@@ -194,6 +194,8 @@ public void setVgap ( int vgap) {
 
 public void show ( Container parent, String name) {
 	Component nc = (Component)tab.get( name);
+	if ( nc == null )
+		return;
 	int cc = parent.getComponentCount();
 	
 	for ( int i=0; i<cc; i++) {
