@@ -15,7 +15,10 @@ JIKES=@JIKES@
 
 if [ "$JIKES" = "" ] ; then
 	if [ -z "$JAVA" ]; then
-		JAVA="kaffe -ms 8M -mx 64M"
+# use this if you have the memory
+		JAVA="kaffe -ms64M -mx64M"
+# else use this:
+#		JAVA="kaffe -ms32M -mx32M"
 	fi
 	if [ -z "$JAVAC" ]; then
 		JAVAC="$JAVA pizza.compiler.Main"
