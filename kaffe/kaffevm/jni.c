@@ -3539,6 +3539,40 @@ Kaffe_DetachCurrentThread(JavaVM* vm)
 	return (0);
 }
 
+static jint
+Kaffe_GetEnv(JavaVM* vm, void** penv, jint interface_id)
+{
+	JavaVM* currentVM;
+
+	/* In the event of any error condition, we side effect the argument
+	   pointer as well as return an error code */
+	(*penv) = NULL;
+
+	/* Insure that the current thread is associated with the
+	   given VM. This gets the JavaVM to which the current thread
+	   is attached.  I *think* this is a good way to do this. */
+	Kaffe_GetJavaVM((JNIEnv*)&Kaffe_JNIEnv, &currentVM);
+	if (!Kaffe_IsSameObject((JNIEnv*)&Kaffe_JNIEnv, currentVM, vm))
+		return (JNI_EDETACHED);
+
+	/* Is the requested version of the interface known? */
+	switch (interface_id) {
+	case JNI_VERSION_1_1:
+		(*penv) = (JNIEnv*)&Kaffe_JNIEnv;
+		return (JNI_OK);
+	case JNI_VERSION_1_2:
+		(*penv) = (JNIEnv*)&Kaffe_JNIEnv;
+		return (JNI_OK);
+#if 0
+	case JVMDI_VERSION_1:
+		(*penv) = (JVMDI_Interface_1*)&Kaffe_JVMDIEnv;
+		return (JNI_OK);
+#endif
+	default:
+		return (JNI_EVERSION);
+	}
+}
+
 static void
 strcatJNI(char* to, const char* from)
 {
@@ -4327,6 +4361,7 @@ struct JNIInvokeInterface Kaffe_JNIInvokeInterface = {
 	Kaffe_DestroyJavaVM,
 	Kaffe_AttachCurrentThread,
 	Kaffe_DetachCurrentThread,
+	Kaffe_GetEnv,
 };
 
 /*
