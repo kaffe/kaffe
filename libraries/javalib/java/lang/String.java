@@ -269,7 +269,7 @@ public int indexOf( String str, int sIdx) {
 		return -1;
 
 	if ( str.count == 0 )
-		return sIdx;
+		return (sIdx < 0) ? -1 : (sIdx < count) ? sIdx : count;
 
 	for ( ; it<value.length; it++){
 		if ( value[it] == str.value[ic] ){
@@ -335,7 +335,7 @@ public int lastIndexOf( String str, int eIdx) {
 	}
 
 	if (str.count == 0)
-		return eIdx;
+		return (eIdx < 0) ? -1 : (eIdx < count) ? eIdx : count;
 
 	for ( ; it>=offset; it--) {
 		if ( value[it] == str.value[ic] ) {
