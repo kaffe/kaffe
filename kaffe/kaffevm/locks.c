@@ -48,10 +48,23 @@
 #endif
 #endif
 
-/* We need to treat the gc_lock special since it's guards memory allocation.
+/* We need to treat the gc locks special since it's guards memory allocation.
+ * I'm not proud of this - it's a hack waiting for a better idea - TIM.
  */
 extern iLock* gc_lock;
-static iLock _gc_lock;
+extern iLock* gcman1;
+extern iLock* gcman2;
+extern iLock* finman;
+#define	NR_SPECIAL_LOCKS	4
+static struct {
+	iLock**	key;
+	iLock	lock;
+} specialLocks[NR_SPECIAL_LOCKS] = {
+	{ &gc_lock,	{ 0, 0, 0 } },
+	{ &gcman1,	{ 0, 0, 0 } },
+	{ &gcman2,	{ 0, 0, 0 } },
+	{ &finman,	{ 0, 0, 0 } }
+};
 
 static jboolean _SemGet(void*, jlong);
 static void _SemPut(void*);
@@ -83,6 +96,7 @@ getHeavyLock(iLock** lkp)
 	iLock* lk;
 	Hjava_lang_Thread* tid;
 	jlong timeout;
+	int i;
 
 	timeout = 1;
 	for (;;) {
@@ -101,10 +115,14 @@ getHeavyLock(iLock** lkp)
 			lk = (iLock*)(((uintp)old) & (uintp)-2);
 		}
 		else {
-			if (lkp == &gc_lock) {
-				lk = &_gc_lock;
+			lk = 0;
+			for (i = 0; i < NR_SPECIAL_LOCKS; i++) {
+				if (specialLocks[i].key == lkp) {
+					lk = &specialLocks[i].lock;
+					break;
+				}
 			}
-			else {
+			if (lk == 0) {
 				lk = (iLock*)jmalloc(sizeof(iLock));
 			}
 			lk->holder = (void*)old;
@@ -179,6 +197,7 @@ slowUnlockMutex(iLock** lkp, void* where)
 {
 	iLock* lk;
 	Hjava_lang_Thread* tid;
+	int i;
 
 LDBG(	printf("Slow unlock\n");					)
 
@@ -213,7 +232,13 @@ LDBG(	printf("Slow unlock\n");					)
 		putHeavyLock(lkp, lk);
 	}
 	else {
-		if (lk != &_gc_lock) {
+		for (i = 0; i < NR_SPECIAL_LOCKS; i++) {
+			if (specialLocks[i].key == lkp) {
+				lk = 0;
+				break;
+			}
+		}
+		if (lk != 0) {
 			jfree(lk);
 		}
 		putHeavyLock(lkp, LOCKFREE);

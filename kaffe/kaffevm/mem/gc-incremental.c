@@ -97,9 +97,9 @@ void record_marked(int nr_of_objects, uint32 size)
         gcStats.markedmem += size;
 } 
 
-static iLock* gcman1;
-static iLock* gcman2;
-static iLock* finman;
+iLock* gcman1;
+iLock* gcman2;
+iLock* finman;
 iLock* gc_lock;			/* allocator mutex */
 
 static void gcFree(Collector* gcif, void* mem);
