@@ -46,12 +46,29 @@ jint Java_java_awt_Toolkit_tlkProperties(JNIEnv* env, jclass clazz)
 }
 
 
+void qtawtMessageOutput(QtMsgType type, const char *msg)
+{
+  switch ( type ) {
+    case QtDebugMsg:
+      fprintf(stderr, "QtAWT: %s\n", msg);
+      break;
+    case QtWarningMsg:
+      fprintf(stderr, "QtAWT - Warning: %s\n", msg);
+      break;
+    case QtFatalMsg:
+      fprintf(stderr, "QtAWT - Fatal: %s\n", msg);
+      abort();		// dump core on purpose
+  }
+}
+
 // tlkInit(System.getProperty( "awt.display")); in Toolkit.java
 jboolean Java_java_awt_Toolkit_tlkInit(JNIEnv* env, jclass clazz,
   jstring name)
 {
   char * argv[1] = { "Qt AWT backend for Kaffe" };
   int argc = 1;           
+
+  qInstallMsgHandler(qtawtMessageOutput);
 
 #ifdef QPE
   qapp = new QPEApplication(argc, argv);

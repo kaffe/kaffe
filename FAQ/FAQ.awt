@@ -155,6 +155,18 @@ Troubleshooting
     implementation is still rather rough, so it prints a lot of
     debugging output which confuses the framebuffer, apparently.
 
+  * Qt AWT backend crashes, how can I help?
+
+    Firsr, Qt AWT backend in Kaffe is still buggy, so any feedback 
+    is important to developers for improving. You may attempt to 
+    enable the debug option in Kaffe (configure as --enable-debug 
+    support), and execute a Java AWT application like:
+
+      kaffe -vmdebug AWT -cp <PATH> <CLASSNAME>
+
+    Qt AWT backend will dump debug messages in stderr, and you could
+    redirect to text file. It's sometimes useful for trouble shooting.
+
   Finally, if all else fails, you are on your own. Build kaffe with
   support for debugging, read FAQ/FAQ.debugging and try to figure
   out what's wrong using a debugger. Good luck and please keep in

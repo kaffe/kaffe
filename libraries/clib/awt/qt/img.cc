@@ -91,7 +91,7 @@ needsFullAlpha ( Toolkit* X, Image *img, double threshold )
 
   if ( !img->alpha ) return 0;
 
-  max = (img->width * img->height) * threshold;
+  max = (img->width * img->height) * (int)threshold;
 
   for ( i=0; i<img->height; i++ ) {
 	for ( j=0; j<img->width; j++ ) {

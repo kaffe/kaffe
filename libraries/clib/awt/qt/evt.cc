@@ -522,8 +522,10 @@ jobject Java_java_awt_Toolkit_evtGetNextEvent(JNIEnv* env, jclass clazz)
     packet=g_event_queue.dequeue();
     event=packet->getEvent();
     index=packet->getIndex();
-    jEvt = processEvent(env, X, event, index);
-    delete event;
+    if (event) {
+      jEvt = processEvent(env, X, event, index);
+      delete event;
+    }
     delete packet;
   }
 

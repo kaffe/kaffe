@@ -1,5 +1,20 @@
 2004-07-12  Jim Huang  <jserv@kaffe.org>
 
+	* libraries/clib/awt/qt/evt.cc:
+	Safer way to handler processEvent.
+
+	* libraries/clib/awt/qt/img.cc:
+	Add type conversion with threshold.
+
+	* libraries/clib/awt/qt/tlk.cc:
+	Implement message handler for Qt AWT backend, and it is more
+	convenient to debug or catch some messages from Qt core.
+
+	* FAQ/FAQ.awt:
+	Update Qt AWT backend debugging information.
+								       
+2004-07-12  Jim Huang  <jserv@kaffe.org>
+
 	* libraries/javalib/java/awt/ScrollPane.java
 	(ScrollPane): supports GraphicsEnvironment.isHeadless() checks.
 	(addImpl): checks scrollbar type.
