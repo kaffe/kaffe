@@ -1273,57 +1273,6 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoDrawGdkTextLayout
 }
 
 JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoShowGlyphs
-   (JNIEnv *env, jobject obj, jintArray java_codes, jfloatArray java_posns)
-{
-  struct graphics2d *gr = NULL;
-  cairo_glyph_t *glyphs = NULL;
-  jfloat *native_posns = NULL;
-  jint *native_codes = NULL;
-  jint i;
-  jint ncodes, nposns;
-
-  gdk_threads_enter();
-  if (peer_is_disposed(env, obj)) { gdk_threads_leave(); return; }
-
-  gr = (struct graphics2d *) NSA_GET_G2D_PTR (env, obj);
-  g_assert (gr != NULL);
-
-  native_codes = (*env)->GetIntArrayElements (env, java_codes, NULL);  
-  native_posns = (*env)->GetFloatArrayElements (env, java_posns, NULL);  
-  g_assert (native_codes != NULL);
-  g_assert (native_posns != NULL);
-
-  ncodes = (*env)->GetArrayLength (env, java_codes);
-  nposns = (*env)->GetArrayLength (env, java_posns);
-  g_assert (2 * ncodes == nposns);
-
-  if (gr->debug) printf ("cairo_show_glyphs (%d glyphs)\n", ncodes);
-
-  glyphs = malloc (sizeof(cairo_glyph_t) * ncodes);
-  g_assert (glyphs);
-
-  for (i = 0; i < ncodes; ++i)
-    {
-      glyphs[i].index = native_codes[i];
-      glyphs[i].x = (double) native_posns[2*i];
-      glyphs[i].y = (double) native_posns[2*i + 1];
-      if (gr->debug) printf ("cairo_show_glyphs (glyph %d (code %d) : %f,%f)\n", 
-			     i, glyphs[i].index, glyphs[i].x, glyphs[i].y);
-    }
-
-  (*env)->ReleaseIntArrayElements (env, java_codes, native_codes, 0);
-  (*env)->ReleaseFloatArrayElements (env, java_posns, native_posns, 0);
-
-  begin_drawing_operation (gr);
-  cairo_show_glyphs (gr->cr, glyphs, ncodes);
-  end_drawing_operation (gr);
-
-  free(glyphs);
-  gdk_threads_leave();
-}
-
-JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoSetOperator 
    (JNIEnv *env, jobject obj, jint op)
 {
