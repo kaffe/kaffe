@@ -1,3 +1,8 @@
+Fri Mar 12 11:07:01 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/awt/Canvas.java: add addNotify() method
+	which calls super.addNotify() to fix Netscape applet problem
+
 Fri Mar 12 01:52:01 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/mem/gc-incremental.c: let getObjectIndex return -1
