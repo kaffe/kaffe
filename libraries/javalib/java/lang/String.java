@@ -23,6 +23,9 @@ final public class String implements Serializable
 	int offset;
 	int count;
 
+	/* This is what Sun's JDK1.1 "serialver java.lang.String" spits out */
+	static final long serialVersionUID = -6849794470754667710L;
+
 public String()
 	{
 	value = new char[0];
