@@ -217,6 +217,7 @@ java/lang/Void.java
 java/lang/ref/Reference.java
 java/lang/ref/ReferenceQueue.java
 java/lang/ref/WeakReference.java
+java/lang/ref/SoftReference.java
 java/lang/reflect/Proxy.java
 java/lang/reflect/InvocationHandler.java
 java/net/ContentHandler.java

@@ -1,4 +1,11 @@
-2003-06-16  Dalibor Topic  <robilad@kaffe.org>
+2004-06-17  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/essential.files: Added
+	java/lang/ref/SoftReference.java.
+
+	* config/m68k/openbsd2/md.h: Fixed sigcontext struct.
+
+2004-06-16  Dalibor Topic  <robilad@kaffe.org>
 
         * libraries/javalib/java/text/BreakIterator.java,
         libraries/javalib/java/text/Collator.java,
@@ -29,7 +36,7 @@
 	(formatInternal) Added "arguments == null ||" to the checking
 	of the availability of the argument.
 
-2003-06-15  Dalibor Topic  <robilad@kaffe.org>
+2004-06-15  Dalibor Topic  <robilad@kaffe.org>
 
         * libraries/javalib/java/util/ResourceBundle.java:
 	Replaced by implementation from GNU Classpath.
@@ -123,7 +130,7 @@
 	(main2): The application class loader is now directly managed by the
 	core VM.
 
-2003-06-15  Dalibor Topic  <robilad@kaffe.org>
+2004-06-15  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/nio/Buffer.java,
 	libraries/javalib/java/nio/ByteBuffer.java,
@@ -5184,7 +5191,7 @@
 	* kaffe/kaffevm/intrp/checks.h:
 	Fixed some checks to print out right results.
 
-2003-03-27  Riccardo Mottola <zuse@libero.it>
+2004-03-27  Riccardo Mottola <zuse@libero.it>
 
 	* kaffe/kaffeh/support.c:
 	Fixed warnings due to passing arguments of 
