@@ -141,8 +141,7 @@ else
 TESTS = $(ALWAYS_TESTS)
 endif
 
-XFAIL_TESTS = \
-	PropertiesTest.java
+XFAIL_TESTS =
 
 EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow)
 
