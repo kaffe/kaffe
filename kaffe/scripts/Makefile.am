@@ -14,7 +14,7 @@ SCRIPTFILES_KJC=\
 		kjc kopi
 
 SCRIPTFILES_SUN=\
-		jar javakey javap jdb \
+		jar javah javakey javap jdb \
 		native2ascii rmic serialver
 
 if SUN_COMPAT

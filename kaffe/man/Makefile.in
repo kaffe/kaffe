@@ -216,6 +216,7 @@ jredir = @jredir@
 jrelibdir = @jrelibdir@
 kaffe_TRANSF = @kaffe_TRANSF@
 kaffebin_TRANSF = @kaffebin_TRANSF@
+kaffeh_TRANSF = @kaffeh_TRANSF@
 libdir = @libdir@
 libexecdir = @libexecdir@
 localstatedir = @localstatedir@

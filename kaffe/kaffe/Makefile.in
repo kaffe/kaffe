@@ -216,6 +216,7 @@ jredir = @jredir@
 jrelibdir = @jrelibdir@
 kaffe_TRANSF = @kaffe_TRANSF@
 kaffebin_TRANSF = @kaffebin_TRANSF@
+kaffeh_TRANSF = @kaffeh_TRANSF@
 libdir = @libdir@
 libexecdir = @libexecdir@
 localstatedir = @localstatedir@
@@ -234,9 +235,9 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
 jrebin_PROGRAMS = kaffe-bin
+@NEED_LIBXPROF_FALSE@libxprof = #
 
 @NEED_LIBXPROF_TRUE@libxprof = ../xprof/libkaffexprof.la
-@NEED_LIBXPROF_FALSE@libxprof = #
 
 INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
 	-I$(top_srcdir)/kaffe/xprof

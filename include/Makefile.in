@@ -216,6 +216,7 @@ jredir = @jredir@
 jrelibdir = @jrelibdir@
 kaffe_TRANSF = @kaffe_TRANSF@
 kaffebin_TRANSF = @kaffebin_TRANSF@
+kaffeh_TRANSF = @kaffeh_TRANSF@
 libdir = @libdir@
 libexecdir = @libexecdir@
 localstatedir = @localstatedir@
@@ -369,12 +370,12 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 
 
 JNI_DERIVED_HDRS = $(INSTALL_JNI_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS)
+@USE_COMPAT_IFADDRS_FALSE@ifaddrs_compat = #
 
 
 # rmi.jar
 # kaffe_rmi_server_RMIHashes.h
 @USE_COMPAT_IFADDRS_TRUE@ifaddrs_compat = ifaddrs.h
-@USE_COMPAT_IFADDRS_FALSE@ifaddrs_compat = #
 
 nodist_noinst_HEADERS = \
 	$(NOINSTALL_DERIVED_HDRS) \

@@ -1489,8 +1489,10 @@ AC_SUBST(DIRSEP)
 
 dnl Set up program transform names
 kaffe_TRANSF=`echo kaffe | sed ${program_transform_name}`
+kaffeh_TRANSF=`echo kaffeh | sed "s/${EXEEXT}$//" | sed ${program_transform_name}`
 kaffebin_TRANSF=`echo kaffe-bin | sed "s/${EXEEXT}$//" | sed ${program_transform_name}`
 AC_SUBST(kaffe_TRANSF)
+AC_SUBST(kaffeh_TRANSF)
 AC_SUBST(kaffebin_TRANSF)
 
 dnl These are not to be used during configuration, only during build.
@@ -1567,6 +1569,7 @@ kaffe/scripts/kaffexprof \
 kaffe/scripts/javac \
 kaffe/scripts/javakey \
 kaffe/scripts/jar \
+kaffe/scripts/javah \
 kaffe/scripts/javap \
 kaffe/scripts/jdb \
 kaffe/scripts/kjc \

@@ -220,6 +220,7 @@ jredir = @jredir@
 jrelibdir = @jrelibdir@
 kaffe_TRANSF = @kaffe_TRANSF@
 kaffebin_TRANSF = @kaffebin_TRANSF@
+kaffeh_TRANSF = @kaffeh_TRANSF@
 libdir = @libdir@
 libexecdir = @libexecdir@
 localstatedir = @localstatedir@
@@ -236,9 +237,9 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
+@NEED_LIBXPROF_FALSE@libxprof = #
 
 @NEED_LIBXPROF_TRUE@libxprof = ../../kaffe/xprof/libkaffexprof.la
-@NEED_LIBXPROF_FALSE@libxprof = #
 
 check_PROGRAMS = jitBasic
 

@@ -225,6 +225,7 @@ jredir = @jredir@
 jrelibdir = @jrelibdir@
 kaffe_TRANSF = @kaffe_TRANSF@
 kaffebin_TRANSF = @kaffebin_TRANSF@
+kaffeh_TRANSF = @kaffeh_TRANSF@
 libdir = @libdir@
 libexecdir = @libexecdir@
 localstatedir = @localstatedir@
@@ -254,9 +255,9 @@ JAR = CLASSPATH=$(CLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.
 
 jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
+@HAVE_DNSJAVA_FALSE@DNSJAVA_InetAddressImpl = 
 
 @HAVE_DNSJAVA_TRUE@DNSJAVA_InetAddressImpl = java/net/DNSJavaInetAddressImpl.java
-@HAVE_DNSJAVA_FALSE@DNSJAVA_InetAddressImpl = 
 
 Klasses_jar_SRCS = \
 	$(gnu_java_lang_SRCS) \

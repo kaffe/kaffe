@@ -216,6 +216,7 @@ jredir = @jredir@
 jrelibdir = @jrelibdir@
 kaffe_TRANSF = @kaffe_TRANSF@
 kaffebin_TRANSF = @kaffebin_TRANSF@
+kaffeh_TRANSF = @kaffeh_TRANSF@
 libdir = @libdir@
 libexecdir = @libexecdir@
 localstatedir = @localstatedir@
@@ -242,7 +243,7 @@ SCRIPTFILES_KJC = \
 
 
 SCRIPTFILES_SUN = \
-		jar javakey javap jdb \
+		jar javah javakey javap jdb \
 		native2ascii rmic serialver
 
 
@@ -267,7 +268,7 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/jtypes.h
 CONFIG_CLEAN_FILES = install-jar kaffe kaffexprof javac javakey jar \
-	javap jdb kjc kopi javadoc appletviewer rmic rmiregistry \
+	javah javap jdb kjc kopi javadoc appletviewer rmic rmiregistry \
 	serialver native2ascii
 SCRIPTS = $(bin_SCRIPTS) $(jrebin_SCRIPTS)
 
@@ -279,8 +280,8 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	installdirs-recursive install-recursive uninstall-recursive \
 	check-recursive installcheck-recursive
 DIST_COMMON = Makefile.am Makefile.in appletviewer.in install-jar.in \
-	jar.in javac.in javadoc.in javakey.in javap.in jdb.in kaffe.in \
-	kaffexprof.in kjc.in kopi.in native2ascii.in rmic.in \
+	jar.in javac.in javadoc.in javah.in javakey.in javap.in jdb.in \
+	kaffe.in kaffexprof.in kjc.in kopi.in native2ascii.in rmic.in \
 	rmiregistry.in serialver.in
 all: all-recursive
 
@@ -301,6 +302,8 @@ javac: $(top_builddir)/config.status javac.in
 javakey: $(top_builddir)/config.status javakey.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 jar: $(top_builddir)/config.status jar.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+javah: $(top_builddir)/config.status javah.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 javap: $(top_builddir)/config.status javap.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
