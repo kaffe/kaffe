@@ -18,7 +18,6 @@ toolslib_DATA = $(CLASSFILE)
 tools_jar_SRCS = \
 	$(kaffe_tools_compiler_SRCS) \
 	$(kaffe_tools_jar_SRCS) \
-	$(kaffe_tools_javap_SRCS) \
 	$(kaffe_tools_serialver_SRCS)
 kaffe_tools_compiler_SRCS = \
 	kaffe/tools/compiler/Compiler.java \
@@ -33,8 +32,6 @@ kaffe_tools_jar_SRCS = \
 	kaffe/tools/jar/XPFileOutputStream.java \
 	kaffe/tools/jar/XPFileReader.java \
 	kaffe/tools/jar/XPFileWriter.java
-kaffe_tools_javap_SRCS = \
-	kaffe/tools/javap/JavaP.java
 kaffe_tools_serialver_SRCS = \
 	kaffe/tools/serialver/SerialVer.java
 

@@ -1,3 +1,12 @@
+Sat Oct 19 20:11:39 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	*  kaffe/scripts/javap.in:
+	use kjc's dissasembler instead of our own implementation.
+	libraries/extensions/tools/javalib/Makefile.am,
+	libraries/extensions/tools/javalib/Makefile.in:
+	removed kaffe's disassembler implementation.
+	libraries/extensions/tools/javalib/kaffe/tools/javap/JavaP.java:
+	removed.
+
 Sat Oct 19 18:18:45 CEST 2002 Jukka Santala <jsantala@tml.hut.fi>
 	* libraries/javalib/rebuildLib.in:
 	If you take a look at rebuildLib(.in), you'll see it changes to
