@@ -10,7 +10,7 @@
 # of this file. 
 
 if COND_LIBXMLJ
-	MAYBE_LIBXMLJ_DIR = libxmlj
+  MAYBE_LIBXMLJ_DIR = libxmlj
 endif
 
-SUBDIRS = classpath native io nio net zip math security management awt sound $(MAYBE_LIBXMLJ_DIR)
+SUBDIRS = classpath native io nio net zip math security management $(MAYBE_LIBXMLJ_DIR) awt sound
