@@ -58,6 +58,7 @@ java_lang_reflect_Method_invoke(struct Hjava_lang_reflect_Method* this, struct H
 	Hjava_lang_Class* a;
 	Hjava_lang_Object** body;
 	int i;
+	void* code;
 
 	clazz = unhand(this)->clazz;
 	slot = unhand(this)->slot;
@@ -99,7 +100,15 @@ java_lang_reflect_Method_invoke(struct Hjava_lang_reflect_Method* this, struct H
 			}
 		}
 	}
-	callMethodA(meth, METHOD_NATIVECODE(meth), obj, args, &ret);
+
+	/* Select which method to really call, and call it */
+	if (METHOD_IS_STATIC(meth)) {
+		code = METHOD_INDIRECTMETHOD(meth);
+	}
+	else {
+		code = obj->dtable->method[meth->idx];
+	}
+	callMethodA(meth, code, obj, args, &ret);
 
 	retclazz = unhand(this)->returnType;
 	if (retclazz == javaLangVoidClass) {
