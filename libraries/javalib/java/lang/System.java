@@ -40,7 +40,7 @@ public static native void debugE(Throwable t);	// print stack trace to stderr
 ****/
 static {
 	// Initialise the I/O
-	if (getProperty("kaffe.embedded", "false").equals("false")) {
+	if (SystemProperties.getProperty("kaffe.embedded", "false").equals("false")) {
 		in = new BufferedInputStream(new FileInputStream(FileDescriptor.in), 128);
 		out = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.out), 128), true);
 		err = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err), 128), true);
@@ -134,7 +134,7 @@ public static void loadLibrary(String libname) {
 }
 
 public static String mapLibraryName(String fn) {
-	return NativeLibrary.getLibPrefix() + fn + NativeLibrary.getLibSuffix();
+	return Runtime.getRuntime().mapLibraryName(fn);
 }
 
 public static void runFinalization() {

@@ -376,6 +376,8 @@ DBG(GCPRECISE,
                 walkMethods(collector, gc_info, CLASS_METHODS(class), CLASS_NMETHODS(class));
         }
         KGC_markObject(collector, gc_info, class->loader);
+	KGC_markObject(collector, gc_info, class->signers);
+	KGC_markObject(collector, gc_info, class->protectionDomain);
 }
 
 /*****************************************************************************

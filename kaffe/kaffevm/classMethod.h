@@ -156,6 +156,7 @@ struct Hjava_lang_Class {
 	short			nr_inner_classes;
 	struct _innerClass*	inner_classes;
 
+	/* misc other stuff */
 	void*			gcjPeer;	/* only needed if GCJ_SUPPORT */
 #ifdef KAFFE_VMDEBUG
 	int			live_count;
@@ -167,6 +168,9 @@ struct Hjava_lang_Class {
 
 	/** The array of 'signer' objects; usually Certificates. */
 	HArrayOfObject*		signers;
+
+	/** The protection domain */
+	struct Hjava_lang_Object*	protectionDomain;
 };
 
 #ifndef __DEFINED_CLASS

@@ -198,7 +198,7 @@ main(int argc, char* argv[])
 			libargs += 1;
 		}
 		
-		i = loadNativeLibrary(libpath, errbuf, sizeof(errbuf));
+		i = loadNativeLibrary(libpath, NULL, errbuf, sizeof(errbuf));
 		if( i > 0 )
 		{
 			jint (*onload_func)(JavaVM *jvm, char *, void *);

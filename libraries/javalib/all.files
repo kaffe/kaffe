@@ -1838,7 +1838,6 @@ java/lang/InterruptedException.java
 java/lang/LinkageError.java
 java/lang/Long.java
 java/lang/Math.java
-java/lang/NativeLibrary.java
 java/lang/NegativeArraySizeException.java
 java/lang/NoClassDefFoundError.java
 java/lang/NoSuchFieldError.java

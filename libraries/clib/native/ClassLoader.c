@@ -31,7 +31,8 @@
  * Translate an array of bytes into a class.
  */
 struct Hjava_lang_Class*
-java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct Hjava_lang_String* name, HArrayOfByte* data, jint offset, jint length)
+java_lang_VMClassLoader_defineClass(struct Hjava_lang_ClassLoader* this, struct Hjava_lang_String* name,
+				    HArrayOfByte* data, jint offset, jint length, struct Hjava_lang_Object* protectionDomain)
 {
 	Hjava_lang_Class *clazz, *dup_clazz;
 	classFile hand;
@@ -66,6 +67,9 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	if (clazz == 0) {
 		throwError(&info);
 	}
+
+	/* set protection domain of new class */
+	unhand(clazz)->protectionDomain = protectionDomain;
 
 	/*
 	 * See if an entry for that name and class loader already exists
@@ -116,9 +120,10 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
  * Resolve classes reference by this class.
  */
 void
-java_lang_ClassLoader_resolveClass0(struct Hjava_lang_ClassLoader* this UNUSED, struct Hjava_lang_Class* class)
+java_lang_VMClassLoader_resolveClass(struct Hjava_lang_Class* class)
 {
 	errorInfo info;
+
 	if (processClass(class, CSTATE_COMPLETE, &info) == false) {
 		throwError(&info);
 	}

@@ -242,6 +242,7 @@ destroyClassLoader(Collector *c UNUSED, void* _loader)
         int rmoved;
 
         rmoved = removeClassEntries(loader);
+	unloadNativeLibraries(loader);
 
 	if (Kaffe_JavaVMArgs.enableVerboseGC > 0) {
 		dprintf("<GC: destroying classloader "

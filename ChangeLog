@@ -1,5 +1,52 @@
 2004-12-21  Helmer Kraemer  <hkraemer@freenet.de>
 
+	Merged java.lang.ClassLoader from GNU Classpath
+
+	* kaffe/kaffevm/external.c, kaffe/kaffevm/external.h, kaffe/kaffevm/classPool.c,
+	kaffe/kaffe/main.c: keep track of the associated class loader of a native library;
+	unload native libraries when a class loader is gced, throw an exception if a
+	library is loaded by more than one class loader
+	
+	* kaffe/kaffevm/gcFuncs.c, kaffe/kaffevm/classMethod.h: add protectionDomain field
+	to Hjava_lang_Class
+
+	* libraries/javalib/kaffe/lang/ThreadStack.java, kaffe/kaffevm/thread.c: use
+	ClassLoader.getSystemClassLoader instead of AppClassLoader.getSingleton so we
+	don't mess up the initialization order of the runtime library
+
+	* libraries/javalib/java/lang/ClassLoader.java, gnu/java/util/DoubleEnumeration.java:
+	new files, taken from GNU classpath
+
+	* libraries/javalib/java/lang/VMClassLoader.java: new file
+
+	* libraries/javalib/java/lang/Class.java, libraries/clib/native/Class.c,
+	libraries/clib/native/ClassLoader.c: updated to class loader changes
+
+	* libraries/javalib/kaffe/lang/PrimordialClassLoader.java: deny loading of classes
+	from the gnu.classpath package
+	
+	* libraries/javalib/java/lang/System.java, libraries/javalib/java/lang/Runtime.java:
+	moved handling of native libraries into java.lang.Runtime.
+	
+	* libraries/javalib/java/lang/NativeLibrary.java,
+	libraries/clib/native/NativeLibrary.c: removed
+
+	* libraries/javalib/bootstrap.classlist, libraries/javalib/all.files,
+	libraries/javalib/Makefile.am, libraries/javalib/Makefile.in, include/Makefile.am,
+	include/Makefile.in: updated
+
+	* test/regression/ProcessClassInst.java, test/regression/ProcessClassStop.java,
+	ProhibitedClass.java: updated expected output
+
+	* test/regression/KaffeInternal.java: check that access to gnu.classpath
+	package is denied for non-bootstrap classes
+
+	* test/regression/Makefile.am, test/regression/Makefile.in,
+	test/regression/PrimordialLoaderTest.java: new test case for the java
+	interface to the primordial class loader
+
+2004-12-21  Helmer Kraemer  <hkraemer@freenet.de>
+
 	* kaffe/kaffevm/threadData.h (THREAD_DATA_INITIALIZED): new macro
 
 	* kaffe/kaffevm/kaffe-gc/gc-refs.c (liveThreadWalker): properly handle

@@ -40,6 +40,7 @@
 #include "jthread.h"
 #include "jsignal.h"
 #include "stats.h"
+#include "locks.h"
 #if defined(KAFFE_FEEDBACK)
 #include "feedback.h"
 #endif
@@ -68,40 +69,11 @@
 static struct _libHandle {
 	LIBRARYHANDLE	desc;
 	char*		name;
-	int		ref;
+	Hjava_lang_ClassLoader*		loader;
 } libHandle[MAXLIBS];
 
-static inline void *
-findLibraryFunction(const char *name) {
-  int i = 0;
-  void *ptr = NULL;
-  
-  while (!ptr && libHandle[i].ref && i < MAXLIBS) {
-    ptr = KaffeLib_GetSymbol(libHandle[i].desc, name);
-
-DBG(NATIVELIB,
-    if (ptr == NULL) {
-	dprintf("Couldn't find %s in library handle %d == %s.\nError message is %s.\n",
-		name,
-		i,
-		lt_dlgetinfo(libHandle[i].desc) == NULL ? "unknown" : lt_dlgetinfo(libHandle[i].desc)->name,
-		lt_dlerror());
-    }
-    else {
-	dprintf("Found %s in library handle %d == %s.\n",
-		name,
-        	i,
-        	lt_dlgetinfo(libHandle[i].desc) == NULL ? "unknown" : lt_dlgetinfo(libHandle[i].desc)->name);
-    }
-);
-
-    ++i;
-  }
-
-  return ptr;
-}
-
-static char *libraryPath = NULL;
+static iStaticLock	libraryLock = KAFFE_STATIC_LOCK_INITIALIZER; /* mutex on all intern operations */
+static const char *libraryPath = NULL;
 
 extern JavaVM Kaffe_JavaVM;
 
@@ -206,7 +178,7 @@ initNative(void)
 
 	       	DBG(INIT, dprintf("trying to load %s\n", lib); );
 
-		if (loadNativeLibrary(lib, NULL, 0) >= 0) {
+		if (loadNativeLibrary(lib, NULL, NULL, 0) >= 0) {
 			DBG(INIT, dprintf("initNative() done\n"); );
 			return;
 		}
@@ -218,26 +190,20 @@ initNative(void)
 	EXIT(1);
 }
 
-int
-loadNativeLibrary(char* lib, char *errbuf, size_t errsiz)
-{
-	int retval;
-
-	retval = loadNativeLibrary2(lib, 1, errbuf, errsiz);
-	return( retval );
-}
-
 /*
  * Link in a native library. If successful, returns an index >= 0 that
  * can be passed to unloadNativeLibrary(). Otherwise, returns -1 and
  * fills errbuf (if not NULL) with the error message. Assumes synchronization.
  */
 int
-loadNativeLibrary2(char* path, int default_refs, char *errbuf, size_t errsiz)
+loadNativeLibrary(char* path, struct Hjava_lang_ClassLoader* loader, char *errbuf, size_t errsiz)
 {
 	struct _libHandle *lib;
 	int libIndex;
 	void *func;
+	int iLockRoot;
+
+	lockStaticMutex(&libraryLock);
 
 	/* Find a library handle.  If we find the library has already
 	 * been loaded, don't bother to get it again, just increase the
@@ -248,15 +214,24 @@ loadNativeLibrary2(char* path, int default_refs, char *errbuf, size_t errsiz)
 		if (lib->desc == 0) {
 			goto open;
 		}
-		if (strcmp(lib->name, path) == 0) {
-			lib->ref++;
+		if (strcmp(lib->name, path) != 0)
+			continue;
+
+		if (lib->loader != loader) {
+			if (errbuf != NULL) {
+				strncpy(errbuf, "Already loaded\n", errsiz);
+			}
+			unlockStaticMutex(&libraryLock);
+			return -1;
+		}
+
 DBG(NATIVELIB,
 			dprintf("Native lib %s\n"
-			    "\tLOAD desc=%p index=%d ++ref=%d\n",
-			    lib->name, lib->desc, libIndex, lib->ref);
+			    "\tLOAD desc=%p index=%d loader=%p\n",
+			    lib->name, lib->desc, libIndex, lib->loader);
     );
-			return libIndex;
-		}
+		unlockStaticMutex(&libraryLock); 
+		return libIndex;
 	}
 	if (errbuf != 0) {
 		assert(errsiz > 0);
@@ -264,6 +239,7 @@ DBG(NATIVELIB,
 		strncpy(errbuf, "Too many open libraries", errsiz);
 		errbuf[errsiz - 1] = '\0';
 	}
+	unlockStaticMutex(&libraryLock);
 	return -1;
 
 	/* Open the library */
@@ -283,10 +259,9 @@ DBG(NATIVELIB,
 /* if we tested for existence here, libltdl wouldn't be able to look
    for system-dependent library names */
 
-	blockAsyncSignals();
 	{
                 lib->desc = KaffeLib_Load(path);
-                if (lib->desc == 0)	
+                if (lib->desc == NULL)	
 			{
 				const char *err = KaffeLib_GetError();
 
@@ -322,25 +297,26 @@ DBG(NATIVELIB,
 					if (errbuf != 0)
 						strncpy(errbuf, err, errsiz);
 				}
+			
+				unlockStaticMutex(&libraryLock);
+				return -1;
 			}
 		}
-	unblockAsyncSignals();
-
-	if (lib->desc == 0) {
-		return -1;
-	}
 
         lib->name = gc_malloc(strlen(path)+1, KGC_ALLOC_NATIVELIB);
         strcpy (lib->name, path);
 
-	lib->ref = default_refs;
+	lib->loader = loader;
 	addToCounter(&ltmem, "vmmem-libltdl", 1, GCSIZEOF(lib->name));
+
+	unlockStaticMutex(&libraryLock);
 
 DBG(NATIVELIB,
 	dprintf("Native lib %s\n"
-	    "\tLOAD desc=%p index=%d ++ref=%d\n",
-	    lib->name, lib->desc, libIndex, lib->ref);
+	    "\tLOAD desc=%p index=%d loader=%p\n",
+	    lib->name, lib->desc, libIndex, lib->loader);
     );
+
 #if defined(KAFFE_FEEDBACK)
 	feedbackLibrary(path, true);
 #endif
@@ -361,28 +337,37 @@ DBG(NATIVELIB,
  * never be unloaded. So index should never equal zero here.
  */
 void
-unloadNativeLibrary(int libIndex)
+unloadNativeLibraries(struct Hjava_lang_ClassLoader* loader)
 {
-	struct _libHandle *lib;
+	int libIndex;
+	int iLockRoot;
 
-	assert(libIndex > 0 && libIndex < MAXLIBS);
-	lib = &libHandle[libIndex];
+	lockStaticMutex(&libraryLock);
+
+	/* we should never ever unload libraries of the bootstrap loader */
+	assert (loader != NULL);
+
+	for (libIndex = 0; libIndex < MAXLIBS; libIndex++) {
+		struct _libHandle* lib = &libHandle[libIndex];
+
+		if (lib->desc == NULL)
+			continue;
+
+		if (lib->loader != loader)
+			continue;
 
 DBG(NATIVELIB,
-	dprintf("Native lib %s\n"
-	    "\tUNLOAD desc=%p index=%d --ref=%d\n",
-	    lib->name, lib->desc, libIndex, lib->ref - 1);
+    dprintf("Native lib %s\n"
+	    "\tUNLOAD desc=%p index=%d loader=%p\n",
+	    lib->name, lib->desc, libIndex, lib->loader);
     );
 
-	assert(lib->desc != 0);
-	assert(lib->ref > 0);
-	if (--lib->ref == 0) {
-		blockAsyncSignals();
 		KaffeLib_Unload(lib->desc);
-		unblockAsyncSignals();
 		KFREE(lib->name);
 		lib->desc = NULL;
 	}
+
+	unlockStaticMutex(&libraryLock);
 }
 
 /*
@@ -393,10 +378,11 @@ loadNativeLibrarySym(const char* name)
 {
   int i = 0;
   void* func = NULL;;
+  int iLockRoot;
 
-  blockAsyncSignals();
+  lockStaticMutex(&libraryLock);
   
-  while (!func && libHandle[i].ref && i < MAXLIBS) {
+  while (!func && i < MAXLIBS && libHandle[i].desc!=NULL) {
     func = KaffeLib_GetSymbol(libHandle[i].desc, name);
     
 DBG(NATIVELIB,
@@ -418,7 +404,7 @@ DBG(NATIVELIB,
     ++i;
   }
 
-  unblockAsyncSignals();
+  unlockStaticMutex(&libraryLock);
 
   return func;
 }

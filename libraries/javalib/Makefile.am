@@ -1508,6 +1508,7 @@ gnu_java_text_SRCS = \
 	gnu/java/text/StringFormatBuffer.java \
 	gnu/java/text/WordBreakIterator.java
 gnu_java_util_SRCS = \
+	gnu/java/util/DoubleEnumeration.java \
 	gnu/java/util/EmptyEnumeration.java
 gnu_java_util_prefs_SRCS = \
 	gnu/java/util/prefs/FileBasedFactory.java \
@@ -2300,7 +2301,6 @@ java_lang_SRCS = \
 	java/lang/LinkageError.java \
 	java/lang/Long.java \
 	java/lang/Math.java \
-	java/lang/NativeLibrary.java \
 	java/lang/NegativeArraySizeException.java \
 	java/lang/NoClassDefFoundError.java \
 	java/lang/NoSuchFieldError.java \
@@ -2338,6 +2338,9 @@ java_lang_SRCS = \
 	java/lang/UnsatisfiedLinkError.java \
 	java/lang/UnsupportedClassVersionError.java \
 	java/lang/UnsupportedOperationException.java \
+	java/lang/VerifyError.java \
+	java/lang/VirtualMachineError.java \
+	java/lang/VMClassLoader.java \
 	java/lang/VMCompiler.java \
 	java/lang/VMObject.java \
 	java/lang/VMSecurityManager.java \

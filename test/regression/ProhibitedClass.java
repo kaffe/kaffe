@@ -24,8 +24,8 @@ class ProhibitedClass
 
 /* Expected Output:
 java.lang.SecurityException: Prohibited package: java/lang/Object
-   at java.lang.ClassLoader.defineClass0 (ClassLoader.java)
-   at java.lang.ClassLoader.defineClass (ClassLoader.java:177)
-   at java.lang.ClassLoader.defineClass (ClassLoader.java:168)
+   at java.lang.VMClassLoader.defineClass (VMClassLoader.java)
+   at java.lang.ClassLoader.defineClass (ClassLoader.java:473)
+   at java.lang.ClassLoader.defineClass (ClassLoader.java:438)
    at ProhibitedClass.main (ProhibitedClass.java:21)
 */

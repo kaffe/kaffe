@@ -17,11 +17,21 @@
 #include "files.h"
 #include "defs.h"
 #include "java_io_File.h"
+#include "java_lang_String.h"
 #include "java_lang_Runtime.h"
 #include "external.h"
 #include "gc.h"
 #include "support.h"
 #include "stringSupport.h"
+#include "external.h"
+
+#ifndef LIBRARYPREFIX
+#define	LIBRARYPREFIX	"lib"
+#endif
+
+#ifndef LIBRARYSUFFIX
+#define LIBRARYSUFFIX	""
+#endif
 
 extern jboolean runFinalizerOnExit;
 
@@ -130,4 +140,47 @@ void
 java_lang_Runtime_runFinalizersOnExit(jboolean on)
 {
 	runFinalizerOnExit = on;
+}
+
+
+/*
+ * Attempt to link in a shared library. Throws an UnsatisfiedLinkError
+ * if the attempt fails.
+ */
+jboolean
+java_lang_Runtime_linkLibrary(struct Hjava_lang_String *jpath, struct Hjava_lang_ClassLoader* loader)
+{
+	char path[MAXPATHLEN];
+	char errbuf[128];
+	errorInfo einfo;
+
+	stringJava2CBuf(jpath, path, sizeof(path));
+	if (loadNativeLibrary(path, loader, errbuf, sizeof(errbuf)) < 0) {
+ 		if( strstr(errbuf, ": not found") ) {
+			/* simply proceed if file was not found, java part
+			 * will throw an exception later if library could
+			 * not be found.
+			 */
+			return false;
+ 		} else {
+			postExceptionMessage(&einfo, 
+					     JAVA_LANG(UnsatisfiedLinkError),
+					     "%s",
+					     errbuf);
+			throwError(&einfo);
+		}
+	}
+	return true;
+}
+
+struct Hjava_lang_String*
+java_lang_Runtime_getLibPrefix()
+{
+	return checkPtr(stringC2Java(LIBRARYPREFIX));
+}
+
+struct Hjava_lang_String*
+java_lang_Runtime_getLibSuffix()
+{
+	return checkPtr(stringC2Java(LIBRARYSUFFIX));
 }

@@ -416,7 +416,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_Integer.h \
 	java_lang_Long.h \
 	java_lang_Math.h \
-	java_lang_NativeLibrary.h \
 	java_lang_Runtime.h \
 	java_lang_Short.h \
 	java_lang_System.h \

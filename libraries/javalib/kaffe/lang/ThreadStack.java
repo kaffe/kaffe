@@ -84,7 +84,7 @@ public class ThreadStack
 		 * we return the AppClassLoader in this case.
 		 */
 		if (frameIdx == classStack.length) {
-			return AppClassLoader.getSingleton();
+			return ClassLoader.getSystemClassLoader();
 		}
 
 		/*
@@ -97,7 +97,7 @@ public class ThreadStack
 		 * this should not happen ....
 		 */
 		if (frameIdx==classStack.length) {
-			return javaPrimordial ? PrimordialClassLoader.getSingleton() : null;
+			return null;
 		}
 
 		/*
@@ -112,7 +112,7 @@ public class ThreadStack
 
 		ClassLoader ret = classStack[frameIdx].getClassLoader();
 
-		return (ret==null && javaPrimordial) ? PrimordialClassLoader.getSingleton() : ret; 
+		return (ret==null && javaPrimordial) ? PrimordialClassLoader.getSingleton() : ret;
 	}
 
 	/**

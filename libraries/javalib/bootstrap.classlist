@@ -98,7 +98,6 @@ java/lang/InterruptedException.class
 java/lang/LinkageError.class
 java/lang/Long.class
 java/lang/Math.class
-java/lang/NativeLibrary.class
 java/lang/NegativeArraySizeException.class
 java/lang/NoClassDefFoundError.class
 java/lang/NoSuchMethodException.class

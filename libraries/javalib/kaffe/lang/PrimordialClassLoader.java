@@ -56,7 +56,8 @@ public Class loadClass(String name, boolean resolve)
 {
 	Class retval;
 
-	if( name.startsWith("kaffe.lang.") )
+	if( name.startsWith("kaffe.lang.") ||
+            name.startsWith("gnu.classpath.") )
 	{
 		throw new ClassNotFoundException(name);
 	}

@@ -95,7 +95,7 @@ am__objects_1 = libnative_la-ByteToCharDefault.lo \
 am__objects_2 = libnative_la-Class.lo libnative_la-ClassLoader.lo \
 	libnative_la-Double.lo libnative_la-Float.lo \
 	libnative_la-Math.lo libnative_la-MemoryAdvice.lo \
-	libnative_la-NativeLibrary.lo libnative_la-Object.lo \
+	libnative_la-Object.lo \
 	libnative_la-PrimordialClassLoader.lo libnative_la-Runtime.lo \
 	libnative_la-String.lo libnative_la-System.lo \
 	libnative_la-Thread.lo libnative_la-ThreadStack.lo \
@@ -412,7 +412,6 @@ LANG_SRCS = \
 		Float.c \
 		Math.c \
 		MemoryAdvice.c \
-		NativeLibrary.c \
 		Object.c \
 		PrimordialClassLoader.c \
 		Runtime.c \
@@ -548,7 +547,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Math.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-MemoryAdvice.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Method.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-NativeLibrary.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Object.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-PrimordialClassLoader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Runtime.Plo@am__quote@
@@ -653,13 +651,6 @@ libnative_la-MemoryAdvice.lo: MemoryAdvice.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='MemoryAdvice.c' object='libnative_la-MemoryAdvice.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-MemoryAdvice.lo `test -f 'MemoryAdvice.c' || echo '$(srcdir)/'`MemoryAdvice.c
-
-libnative_la-NativeLibrary.lo: NativeLibrary.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-NativeLibrary.lo -MD -MP -MF "$(DEPDIR)/libnative_la-NativeLibrary.Tpo" -c -o libnative_la-NativeLibrary.lo `test -f 'NativeLibrary.c' || echo '$(srcdir)/'`NativeLibrary.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-NativeLibrary.Tpo" "$(DEPDIR)/libnative_la-NativeLibrary.Plo"; else rm -f "$(DEPDIR)/libnative_la-NativeLibrary.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='NativeLibrary.c' object='libnative_la-NativeLibrary.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-NativeLibrary.lo `test -f 'NativeLibrary.c' || echo '$(srcdir)/'`NativeLibrary.c
 
 libnative_la-Object.lo: Object.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-Object.lo -MD -MP -MF "$(DEPDIR)/libnative_la-Object.Tpo" -c -o libnative_la-Object.lo `test -f 'Object.c' || echo '$(srcdir)/'`Object.c; \

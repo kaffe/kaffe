@@ -148,7 +148,24 @@ public void loadLibrary(String libname) {
 		    ThreadStack.getCallersClassLoader(false));
 }
 
-void loadLibrary(String libname, ClassLoader loader) {
+   /**
+    * Tries to load and link a native library.
+    *
+    * @return true if successfull
+    * @throws UnsatisfiedLinkError if the library was found but could not be linked.
+    */
+   private static native boolean linkLibrary(String name, ClassLoader loader)
+      throws UnsatisfiedLinkError;
+
+   private static native String getLibPrefix ();
+   private static native String getLibSuffix ();
+
+   static String mapLibraryName (String name)
+   {
+      return getLibPrefix() + name + getLibSuffix();
+   }
+
+void loadLibrary(String libname, ClassLoader loader) throws UnsatisfiedLinkError {
 	SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkLink(libname);
@@ -156,20 +173,24 @@ void loadLibrary(String libname, ClassLoader loader) {
 	String filename;
 	String[] names;
 
-	if (loader != null && (filename = loader.findLibrary(libname)) != null)
-		names = new String[] { filename };
-	else
-		names = NativeLibrary.getLibraryNames(libname);
-	for (int i = 0; i < names.length; i++) {
-		try {
-			new NativeLibrary(names[i], loader);
+	if (loader != null && (filename = loader.findLibrary(libname)) != null) {
+		if (linkLibrary(filename, loader))
 			return;
-		} catch (FileNotFoundException e) {
-		} catch (UnsatisfiedLinkError e) {
-			errmsg = e.getMessage();
+	} else {
+		String libPath = System.getProperty("kaffe.library.path")
+				 + File.pathSeparatorChar
+				 + System.getProperty("java.library.path");
+
+		StringTokenizer t = new StringTokenizer(libPath,
+					new String(new char[] { File.pathSeparatorChar }));
+		while (t.hasMoreTokens ()) {
+			if (linkLibrary(t.nextToken() + File.separator + mapLibraryName(libname),
+					loader))
+				return;
 		}
 	}
-	throw new UnsatisfiedLinkError(errmsg + "\nAdding its directory to LD_LIBRARY_PATH may help.");
+	throw new UnsatisfiedLinkError("Could not find library '" + libname +
+				       "'\nAdding its directory to LD_LIBRARY_PATH may help.");
 }
 
 public void load(String filename) {
@@ -180,12 +201,9 @@ void load(String filename, ClassLoader loader) {
 	SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkLink(filename);
-	try {
-		new NativeLibrary(filename, loader);
-	}
-	catch (FileNotFoundException e) {
+
+	if (!linkLibrary(filename, loader))
 		throw new UnsatisfiedLinkError(filename + ": not found");
-	}
 }
 
 native public long maxMemory();

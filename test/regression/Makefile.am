@@ -164,6 +164,7 @@ TEST_REFLECTION = \
 
 ## tests for ClassLoader
 TEST_CLASS_LOADING = \
+	PrimordialLoaderTest.java \
 	SystemLoaderTest.java \
 	NoClassDefTest.java \
 	CLTest.java \

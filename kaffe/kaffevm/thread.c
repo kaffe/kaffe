@@ -249,12 +249,19 @@ attachFakedThreadInstance(const char* nm, int isDaemon)
         /*
 	 * set context class loader of primordial thread to app classloader
 	 * must not be done earlier, since getCurrentThread() won't work
-         * before the KTHREAD(createfirst) and the jthreadID assignment
+         * before the KTHREAD(createfirst) and the jthreadID assignment.
+	 *
+	 * If we're creating the Thread instance of the main thread, this
+	 * will trigger the initialization process of the java part of the
+	 * runtime. One pitfall during initialization is that java.lang.System
+	 * has to be initialized before kaffe.lang.AppClassLoader. Therefore,
+	 * we cannot call AppClassLoader.getSingleton() here, since that would
+	 * cause System and AppClassLoader to be initialized in the wrong order.
 	 */
-	  do_execute_java_class_method (&retval, "kaffe/lang/AppClassLoader",
-					NULL,
-					"getSingleton",
-					"()Ljava/lang/ClassLoader;");
+	do_execute_java_class_method (&retval, "java/lang/ClassLoader",
+				      NULL,
+				      "getSystemClassLoader",
+				      "()Ljava/lang/ClassLoader;");
         unhand(tid)->contextClassLoader = (struct Hjava_lang_ClassLoader *) retval.l;
 
 	/* Attach thread to threadGroup */

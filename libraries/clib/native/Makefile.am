@@ -29,7 +29,6 @@ LANG_SRCS = \
 		Float.c \
 		Math.c \
 		MemoryAdvice.c \
-		NativeLibrary.c \
 		Object.c \
 		PrimordialClassLoader.c \
 		Runtime.c \

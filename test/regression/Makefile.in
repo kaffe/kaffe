@@ -493,6 +493,7 @@ TEST_REFLECTION = \
 	DeleteFile.java
 
 TEST_CLASS_LOADING = \
+	PrimordialLoaderTest.java \
 	SystemLoaderTest.java \
 	NoClassDefTest.java \
 	CLTest.java \

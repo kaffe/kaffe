@@ -286,7 +286,7 @@ native public String getName();
 
 public Package getPackage() {
 	ClassLoader loader = getClassLoader();
-	
+
 	if (loader == null) {
 		return PrimordialClassLoader.getSingleton().
 				getPackage(PackageHelper.getPackageName(this));
@@ -295,15 +295,7 @@ public Package getPackage() {
 	return loader.getPackage(PackageHelper.getPackageName(this));
 }
 
-public ProtectionDomain getProtectionDomain() {
-	ClassLoader loader = getClassLoader ();
-
-	if (loader == null) {
-		return PrimordialClassLoader.getSingleton().getProtectionDomain(this);	
-	}
-
-	return loader.getProtectionDomain(this);
-}
+native public ProtectionDomain getProtectionDomain();
 
 native static Class getPrimitiveClass(String name);
 
@@ -492,7 +484,7 @@ public boolean desiredAssertionStatus() {
 	ClassLoader c = getClassLoader();
 	Object status;
 	if (c == null)
-		return ClassLoader.systemDefaultAssertionStatus;
+		return VMClassLoader.defaultAssertionStatus();
 	if (c.classAssertionStatus != null) {
 		synchronized (c) {
 			status = c.classAssertionStatus.get(getName());
@@ -500,7 +492,7 @@ public boolean desiredAssertionStatus() {
 				return status.equals(Boolean.TRUE);
 		}
 	} else {
-		status = ClassLoader.systemClassAssertionStatus.get(getName());
+		status = ClassLoader.StaticData.systemClassAssertionStatus.get(getName());
 		if (status != null)
 			return status.equals(Boolean.TRUE);
 	}
@@ -521,10 +513,10 @@ public boolean desiredAssertionStatus() {
 	} else {
 		String name = getPackagePortion(getName());
 		if ("".equals(name))
-			status = ClassLoader.systemPackageAssertionStatus.get(null);
+			status = ClassLoader.StaticData.systemPackageAssertionStatus.get(null);
 		else {
 			do {
-				status = ClassLoader.systemPackageAssertionStatus.get(name);
+				status = ClassLoader.StaticData.systemPackageAssertionStatus.get(name);
 				name = getPackagePortion(name);
 			} while (! "".equals(name) && status == null);
 		}
