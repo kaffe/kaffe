@@ -681,6 +681,7 @@ void
 initNativeThreads(int nativestacksize)
 {
 	threadData *thread_data;
+	int stackSize;
 
 	DBG(INIT, dprintf("initNativeThreads(0x%x)\n", nativestacksize); )
 
@@ -714,7 +715,20 @@ initNativeThreads(int nativestacksize)
 	 * Since everything is stored in the threadData struct now, we can simply
 	 * attach a faked java.lang.Thread instance later on.
 	 */
-	jthread_createfirst(MAINSTACKSIZE, (unsigned char)java_lang_Thread_NORM_PRIORITY, 0);
+#ifdef HAVE_GETRLIMIT
+	{
+		struct rlimit rl;
+		
+		if (getrlimit(RLIMIT_STACK, &rl) < 0)
+			stackSize = MAINSTACKSIZE;
+		else
+			stackSize = (rl.rlim_max == RLIM_INFINITY) ? rl.rlim_cur : rl.rlim_max;
+	}
+#else
+	stackSize = MAINSTACKSIZE;
+#endif
+	DBG(INIT, dprintf("Detected stackSize %d\n", stackSize); )
+	jthread_createfirst(stackSize, (unsigned char)java_lang_Thread_NORM_PRIORITY, 0);
 
 	/*
 	 * initialize some things that are absolutely necessary:

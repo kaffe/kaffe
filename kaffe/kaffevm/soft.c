@@ -135,7 +135,7 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, slots* args)
 	int i;
 	int* arraydims;
 
-        if (dims < MAXDIMS) {
+        if (dims < MAXDIMS-1) {
 		arraydims = array;
 	}
 	else {
