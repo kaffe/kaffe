@@ -1,6 +1,13 @@
 2004-02-15  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+        (getOpstackTop): New static inline function.
+        (OPSTACK_TOP) Removed.
+        Replaced use of OPSTACK_Top by getOpstackTop.
+
+2004-02-15  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
         (getOpstackItem): New static inline function.
         (OPSTACK_ITEM) Removed.
         Replaced use of OPSTACK_ITEM by getOpstackItem.

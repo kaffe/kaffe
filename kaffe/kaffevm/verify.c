@@ -2567,6 +2567,18 @@ getOpstackItem(BlockInfo* block,
 }
 
 /*
+ * Helper function for opstack access in verifyBasicBlock.
+ *
+ * @return first item on the operand stack from the top.
+ */
+static inline
+Type *
+getOpstackTop(BlockInfo* block)
+{
+	return getOpstackItem(block, 1);
+}
+
+/*
  * verifyBasicBlock()
  *   Simulates execution of a basic block by modifying its simulated operand stack and local variable array.
  */
@@ -2649,7 +2661,6 @@ verifyBasicBlock(errorInfo* einfo,
 	}
 	
 	
-#define OPSTACK_TOP  getOpstackItem(block, 1)
 #define OPSTACK_WTOP getOpstackItem(block, 2)
 
 #define OPSTACK_INFO(_N) \
@@ -2681,10 +2692,10 @@ verifyBasicBlock(errorInfo* einfo,
 	
 	/* ensure that the top item on the stack is of type _T	*/
 #define OPSTACK_PEEK_T_BLIND(_TINFO) \
-	if (!typecheck(einfo, this, _TINFO, OPSTACK_TOP)) { \
+	if (!typecheck(einfo, this, _TINFO, getOpstackTop(block))) { \
 		DBG(VERIFY3, \
 		    dprintf("                OPSTACK_TOP: "); \
-		    printType(OPSTACK_TOP); \
+		    printType(getOpstackTop(block)); \
 		    dprintf(" vs. what's we wanted: "); \
 		    printType(_TINFO); dprintf("\n"); ); \
 		return verifyErrorInVerifyBasicBlock(einfo, method, this, "top of opstack does not have desired type"); \
@@ -2698,7 +2709,7 @@ verifyBasicBlock(errorInfo* einfo,
 	 * this only works with doubles and longs
 	 */
 #define OPSTACK_WPEEK_T_BLIND(_TINFO) \
-	if (OPSTACK_TOP->data.class != TWIDE->data.class) { \
+	if (getOpstackTop(block)->data.class != TWIDE->data.class) { \
 		return verifyErrorInVerifyBasicBlock(einfo, method, this, "trying to pop a wide value off operand stack where there is none"); \
 	} else if (OPSTACK_WTOP->data.class != (_TINFO)->data.class) { \
 		return verifyErrorInVerifyBasicBlock(einfo, method, this, "mismatched stack types"); \
@@ -2890,7 +2901,7 @@ verifyBasicBlock(errorInfo* einfo,
 			GET_CONST_INDEX;
 		ASTORE_common:
 			ENSURE_OPSTACK_SIZE(1);
-			type = OPSTACK_TOP;
+			type = getOpstackTop(block);
 			
 			if (!IS_ADDRESS(type) && !isReference(type)) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "astore: top of stack is not a return address or reference type");
@@ -3035,7 +3046,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case ARRAYLENGTH:
 			ENSURE_OPSTACK_SIZE(1);
 			
-			type = OPSTACK_TOP;
+			type = getOpstackTop(block);
 			if (!isArray(type)) {
 				DBG(VERIFY3, dprintf("%stype = ", indent); printType(type); dprintf("\n"); );
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "arraylength: top of operand stack is not an array");
@@ -3059,12 +3070,12 @@ verifyBasicBlock(errorInfo* einfo,
 		case AALOAD:
 			ENSURE_OPSTACK_SIZE(2);
 			
-			if (OPSTACK_TOP->data.class != TINT->data.class) {
+			if (getOpstackTop(block)->data.class != TINT->data.class) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "aaload: item on top of stack is not an integer");
 			}
 			OPSTACK_POP_BLIND;
 			
-			type = OPSTACK_TOP;
+			type = getOpstackTop(block);
 			if (!isArray(type)) {
 				DBG(VERIFY3, dprintf("%serror: type = ", indent); printType(type); dprintf("\n"); );
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "aaload: top of operand stack is not an array");
@@ -3095,11 +3106,11 @@ verifyBasicBlock(errorInfo* einfo,
 			/* BALOAD can be used for bytes or booleans .... */
 			OPSTACK_POP_T(TINT);
 
-			if (!typecheck (einfo, this, TBYTEARR, OPSTACK_TOP) &&
-			    !typecheck (einfo, this, TBOOLARR, OPSTACK_TOP)) {
+			if (!typecheck (einfo, this, TBYTEARR, getOpstackTop(block)) &&
+			    !typecheck (einfo, this, TBOOLARR, getOpstackTop(block))) {
                                 DBG(VERIFY3,
                                     dprintf("                OPSTACK_TOP: ");
-                                    printType(OPSTACK_TOP);
+                                    printType(getOpstackTop(block));
                                     dprintf(" vs. what's we wanted: TBYTEARR or TBOOLARR"); )
                                 return verifyErrorInVerifyBasicBlock(einfo, method, this, "top of opstack does not have desired type");
 			}
@@ -3181,11 +3192,11 @@ verifyBasicBlock(errorInfo* einfo,
 			OPSTACK_POP_T(TINT);
 			OPSTACK_POP_T(TINT);
 
-			if ( !typecheck(einfo, this, TBYTEARR, OPSTACK_TOP) &&
-			     !typecheck(einfo, this, TBOOLARR, OPSTACK_TOP)) {
+			if ( !typecheck(einfo, this, TBYTEARR, getOpstackTop(block)) &&
+			     !typecheck(einfo, this, TBOOLARR, getOpstackTop(block))) {
 				DBG(VERIFY3,
 				    dprintf("                OPSTACK_TOP: ");
-				    printType(OPSTACK_TOP);
+				    printType(getOpstackTop(block));
 				    dprintf(" vs. what's we wanted: TBYTEARR or TBOOLARR"); )
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "top of opstack does not have desired type");
 			}
@@ -3344,7 +3355,7 @@ verifyBasicBlock(errorInfo* einfo,
 			if (!isReference(getOpstackItem(block, 1))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "instanceof: top of stack is not a reference type");
 			}
-			*OPSTACK_TOP = *TINT;
+			*getOpstackTop(block) = *TINT;
 			break;
 			
 		case CHECKCAST:
@@ -3356,7 +3367,7 @@ verifyBasicBlock(errorInfo* einfo,
 			n = code[pc + 3];
 			ENSURE_OPSTACK_SIZE(n);
 			while (n > 0) {
-				if (OPSTACK_TOP->data.class != TINT->data.class) {
+				if (getOpstackTop(block)->data.class != TINT->data.class) {
 					return verifyErrorInVerifyBasicBlock(einfo, method, this, "multinewarray: first <n> things on opstack must be integers");
 				}
 				OPSTACK_POP_BLIND;
@@ -3369,7 +3380,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 			CHECK_STACK_OVERFLOW(1);
 			block->stacksz++;
-			type = OPSTACK_TOP;
+			type = getOpstackTop(block);
 			
 			if (pool->tags[idx] == CONSTANT_ResolvedClass) {
 				type->tinfo = TINFO_CLASS;
@@ -3390,7 +3401,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 			DBG(VERIFY3,
 			    dprintf("%s", indent);
-			    printType(OPSTACK_TOP);
+			    printType(getOpstackTop(block));
 			    dprintf("\n"); );
 			break;
 			
@@ -3399,7 +3410,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 			CHECK_STACK_OVERFLOW(1);
 			block->stacksz++;
-			type = OPSTACK_TOP;
+			type = getOpstackTop(block);
 			if (pool->tags[idx] == CONSTANT_ResolvedClass) {
 				type->tinfo = TINFO_CLASS;
 				type->data.class = CLASS_CLASS(idx, pool);
@@ -3420,7 +3431,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 			DBG(VERIFY3,
 			    dprintf("%s", indent);
-			    printType(OPSTACK_TOP);
+			    printType(getOpstackTop(block));
 			    dprintf("\n"); );
 			break;
 			
@@ -3429,7 +3440,7 @@ verifyBasicBlock(errorInfo* einfo,
 			GET_WIDX;
 			OPSTACK_PEEK_T(TINT);
 			
-			type = OPSTACK_TOP;
+			type = getOpstackTop(block);
 			if (pool->tags[idx] == CONSTANT_ResolvedClass) {
 				class = CLASS_CLASS(idx, pool);
 				type->tinfo = TINFO_CLASS;
@@ -3458,14 +3469,14 @@ verifyBasicBlock(errorInfo* einfo,
 			
 			DBG(VERIFY3,
 			    dprintf("%s", indent);
-			    printType(OPSTACK_TOP);
+			    printType(getOpstackTop(block));
 			    dprintf("\n"); );
 			break;
 			
 			
 		case GETFIELD:
 			ENSURE_OPSTACK_SIZE(1);
-			if (!checkUninit(this, OPSTACK_TOP)) {
+			if (!checkUninit(this, getOpstackTop(block))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "getfield: uninitialized type on top of operand stack");
 			}
 			
@@ -3505,7 +3516,7 @@ verifyBasicBlock(errorInfo* einfo,
 			case 'L':
 				CHECK_STACK_OVERFLOW(1);
 				block->stacksz++;
-				type = OPSTACK_TOP;
+				type = getOpstackTop(block);
 				type->tinfo = TINFO_SIG;
 				type->data.name = sig;
 				break;
@@ -3519,11 +3530,11 @@ verifyBasicBlock(errorInfo* einfo,
 			
 			
 		case PUTFIELD:
-			if (isWide(OPSTACK_TOP)) n = 3;
+			if (isWide(getOpstackTop(block))) n = 3;
 			else                      n = 2;
 			ENSURE_OPSTACK_SIZE(n);
 			
-			if (!checkUninit(this, OPSTACK_TOP)) {
+			if (!checkUninit(this, getOpstackTop(block))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "putfield: uninitialized type on top of operand stack");
 			}
 			
@@ -3569,7 +3580,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 			
 		case PUTSTATIC:
-			if (OPSTACK_TOP == TWIDE) n = 2;
+			if (getOpstackTop(block) == TWIDE) n = 2;
 			else                      n = 1;
 			ENSURE_OPSTACK_SIZE(n);
 			
@@ -3614,7 +3625,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case JSR:
 			CHECK_STACK_OVERFLOW(1);
 			block->stacksz++;
-			type = OPSTACK_TOP;
+			type = getOpstackTop(block);
 			type->tinfo = TINFO_ADDR;
 			type->data.addr = pc + insnLen[code[pc]];
 			break;
@@ -3626,7 +3637,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case IF_ACMPEQ:
 		case IF_ACMPNE:
 			ENSURE_OPSTACK_SIZE(2);
-			if (!isReference(OPSTACK_TOP) ||
+			if (!isReference(getOpstackTop(block)) ||
 			    !isReference(OPSTACK_WTOP)) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "if_acmp* when item on top of stack is not a reference type");
 			}
@@ -3722,7 +3733,7 @@ verifyBasicBlock(errorInfo* einfo,
 			ENSURE_OPSTACK_SIZE(1);
 			t->tinfo = TINFO_SIG;
 			t->data.sig  = getReturnSig(method);
-			if (!typecheck(einfo, this, t, OPSTACK_TOP)) {
+			if (!typecheck(einfo, this, t, getOpstackTop(block))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "areturn: top of stack is not type compatible with method return type");
 			}
 			break;
@@ -3737,8 +3748,8 @@ verifyBasicBlock(errorInfo* einfo,
 			}
 			t->tinfo = TINFO_CLASS;
 			t->data.class = javaLangThrowable;
-			if (!typecheck(einfo, this, t, OPSTACK_TOP)) {
-				DBG(VERIFY3, dprintf("%sATHROW error: ", indent); printType(OPSTACK_TOP); dprintf ("\n"); );
+			if (!typecheck(einfo, this, t, getOpstackTop(block))) {
+				DBG(VERIFY3, dprintf("%sATHROW error: ", indent); printType(getOpstackTop(block)); dprintf ("\n"); );
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "athrow: object on top of stack is not a subclass of throwable");
 			}
 			
@@ -3766,7 +3777,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case MONITORENTER:
 		case MONITOREXIT:
 			ENSURE_OPSTACK_SIZE(1);
-			if(!isReference(OPSTACK_TOP)) {
+			if(!isReference(getOpstackTop(block))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "monitor*: top of stack is not an object reference");
 			}
 			OPSTACK_POP_BLIND;
@@ -3775,20 +3786,20 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case DUP:
 			ENSURE_OPSTACK_SIZE(1);
-			if (isWide(OPSTACK_TOP)) {
+			if (isWide(getOpstackTop(block))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "dup: on a long or double");
 			}
 			
-			OPSTACK_PUSH(OPSTACK_TOP);
+			OPSTACK_PUSH(getOpstackTop(block));
 			break;
 			
 		case DUP_X1:
 			ENSURE_OPSTACK_SIZE(2);
-			if (isWide(OPSTACK_TOP) || isWide(OPSTACK_WTOP)) {
+			if (isWide(getOpstackTop(block)) || isWide(OPSTACK_WTOP)) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "dup_x1: splits up a double or long");
 			}
 			
-			OPSTACK_PUSH(OPSTACK_TOP);
+			OPSTACK_PUSH(getOpstackTop(block));
 			
 			*getOpstackItem(block, 2) = *getOpstackItem(block, 3);
 			*getOpstackItem(block, 3) = *getOpstackItem(block, 1);
@@ -3796,11 +3807,11 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case DUP_X2:
 			ENSURE_OPSTACK_SIZE(3);
-			if (isWide(OPSTACK_TOP)) {
+			if (isWide(getOpstackTop(block))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "cannot dup_x2 when top item on operand stack is a two byte item");
 			}
 			
-			OPSTACK_PUSH(OPSTACK_TOP);
+			OPSTACK_PUSH(getOpstackTop(block));
 			
 			*getOpstackItem(block, 2) = *getOpstackItem(block, 3);
 			*getOpstackItem(block, 3) = *getOpstackItem(block, 4);
@@ -3848,12 +3859,12 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case SWAP:
 			ENSURE_OPSTACK_SIZE(2);
-			if (isWide(OPSTACK_TOP) || isWide(OPSTACK_WTOP)) {
+			if (isWide(getOpstackTop(block)) || isWide(OPSTACK_WTOP)) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "cannot swap 2 bytes of a long or double");
 			}
 			
-			*type         = *OPSTACK_TOP;
-			*OPSTACK_TOP  = *OPSTACK_WTOP;
+			*type         = *getOpstackTop(block);
+			*getOpstackTop(block)  = *OPSTACK_WTOP;
 			*OPSTACK_WTOP = *type;
 			break;
 			
@@ -3910,8 +3921,6 @@ verifyBasicBlock(errorInfo* einfo,
 #undef OPSTACK_INFO
 
 #undef OPSTACK_WTOP
-#undef OPSTACK_TOP
-#undef OPSTACK_ITEM
 
 #undef CHECK_STACK_OVERFLOW
 #undef ENSURE_OPSTACK_SIZE
