@@ -1,3 +1,60 @@
+Tue Jun 29 12:40:28 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
+
+	* kaffe/kaffevm/jar.c: Not only was it not calling closeJarFile,
+	but it was not properly maintaining the jarmem stats
+
+
+Tue Jun 29 12:19:19 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
+
+	* Added File FAQ/FAQ.locks 
+
+Mon Jun 28 17:39:43 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
+
+	* include/native.h kaffe/kaffevm/baseClasses.c 
+	  kaffe/kaffevm/baseClasses.h kaffe/kaffevm/classMethod.c 
+	  kaffe/kaffevm/classMethod.h kaffe/kaffevm/classPool.c 
+	  kaffe/kaffevm/code-analyse.c kaffe/kaffevm/code-analyse.h 
+	  kaffe/kaffevm/code.c kaffe/kaffevm/code.h 
+	  kaffe/kaffevm/constants.c kaffe/kaffevm/errors.h 
+	  kaffe/kaffevm/exception.c kaffe/kaffevm/exception.h 
+	  kaffe/kaffevm/findInJar.c kaffe/kaffevm/gc.h 
+	  kaffe/kaffevm/gcFuncs.c kaffe/kaffevm/gcRefs.c 
+	  kaffe/kaffevm/gcRefs.h kaffe/kaffevm/hashtab.c 
+	  kaffe/kaffevm/inflate.c kaffe/kaffevm/itypes.c 
+	  kaffe/kaffevm/jar.c kaffe/kaffevm/jni.c 
+	  kaffe/kaffevm/kaffe.def kaffe/kaffevm/locks.c 
+	  kaffe/kaffevm/object.c kaffe/kaffevm/object.h 
+	  kaffe/kaffevm/readClass.c kaffe/kaffevm/readClass.h 
+	  kaffe/kaffevm/readClassConfig.h kaffe/kaffevm/soft.c 
+	  kaffe/kaffevm/stackTrace.c kaffe/kaffevm/string.c 
+	  kaffe/kaffevm/support.c kaffe/kaffevm/thread.c 
+	  kaffe/kaffevm/thread.h kaffe/kaffevm/utf8const.c 
+	  kaffe/kaffevm/intrp/machine.h kaffe/kaffevm/jit/machine.c 
+	  kaffe/kaffevm/jit/machine.h kaffe/kaffevm/mem/gc-incremental.c 
+	  kaffe/kaffevm/mem/gc-incremental.h kaffe/kaffevm/mem/gc-mem.c 
+	  kaffe/kaffevm/systems/unix-jthreads/jthread.c 
+	  libraries/clib/io/AudioPlayer.c libraries/clib/io/File.c 
+	  libraries/clib/native/Array.c libraries/clib/native/Class.c 
+	  libraries/clib/native/ClassLoader.c 
+	  libraries/clib/native/DateFormat.c 
+	  libraries/clib/native/Double.c 
+	  libraries/clib/native/ObjectStreamClassImpl.c 
+	  libraries/clib/native/Runtime.c libraries/clib/native/String.c 
+	  libraries/clib/native/UNIXProcess.c 
+	  libraries/clib/native/ZipFile.c 
+	  libraries/clib/net/InetAddressImpl.c 
+	  libraries/clib/zip/Inflater.c:
+	Anywhere and everywhere, added checks for malloc failure.
+	
+	gc_malloc will return null when out of memory, as will all the string
+	and utf8Const functions which allocate.  In other places error codes
+	propagate further than ever before.
+	
+	The garbage collector now handles out of memory conditions:  Before,
+	it would start ignoring the heap limits just before an
+	OutOfMemoryError was allocating.  Now, space is reserved for both the
+	error and it's stacktrace.
+	
 Mon Jun 28 12:36:21 PDT 1999  Edouard Parmelan <Edouard.Parmelan@quadratec.fr>
 
 	* config/i386/jit-i386.def, config/i386/jit-icode.h: fix i386
