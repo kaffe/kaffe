@@ -2,7 +2,8 @@
 
 	* libraries/javalib/bootstrap.classlist,
 	libraries/javalib/Klasses.jar.bootstrap:
-	Added java/security/AllPermission.class,
+	Added java/util/AbstractList$2.class,
+	java/security/AllPermission.class,
 	java/security/PermissionCollection.class, and
 	java/security/ProtectionDomain.class.
 
