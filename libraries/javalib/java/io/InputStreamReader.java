@@ -60,7 +60,7 @@ public int read ( char cbuf[], int off, int len ) throws IOException {
 				seenEOF = true;
 			}
 			outlen += encoding.convert(inbuf, 0, inpos+inlen, cbuf, off+outlen, len-outlen);
-			if (inlen < n || !encoding.havePending()) {
+			if (inlen < n || !this.ready()) {
 				break;
 			}
 		}
@@ -72,6 +72,6 @@ public int read ( char cbuf[], int off, int len ) throws IOException {
 }
 
 public boolean ready() throws IOException {
-	return (strm.available() > 0 ? true : false);
+	return ((encoding.havePending() || (strm.available() > 0)) ? true : false);
 }
 }
