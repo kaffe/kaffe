@@ -123,7 +123,7 @@ extern void arm_do_fixup_trampoline(void);
 #define FILL_IN_TRAMPOLINE(T,M,W)		\
 	do {					\
 	  (T)->loadlr = 0xE1A0c00F; 		\
-	  (T)->branch = 0xE59FF000; 		\
+	  (T)->branch = 0xE59FF004; 		\
 	  (T)->meth = (M);			\
 	  (T)->where = (W);			\
 	  (T)->trampaddr = (void**)arm_do_fixup_trampoline; \
