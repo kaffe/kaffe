@@ -25,17 +25,17 @@ public class URLDecoder {
 
 		for (int pos = 0; pos < s.length(); pos++) {
 			char ch = s.charAt(pos);
-			if ((ch >= 'a' && ch <= 'z')
-			    || (ch >= 'A' && ch <= 'Z')
-			    || (ch >= '0' && ch <= '9')) {
-				buf.append(ch);
-			} else if (ch == '+') {
+			if (ch == '+') {
 				buf.append(' ');
-			} else if (ch == '%' && pos + 3 <= s.length()) {
-				buf.append((char)Integer.parseInt(
-				    s.substring(pos + 1, pos + 3), 16));
+			} else if (ch == '%') {
+				if (pos + 3 <= s.length()) {
+					buf.append((char)Integer.parseInt(
+					    s.substring(pos + 1, pos + 3), 16));
+				} else {
+					throw new Exception("invalid input");
+				}
 			} else {
-				throw new Exception("invalid input");
+				buf.append(ch);
 			}
 		}
 		return buf.toString();
