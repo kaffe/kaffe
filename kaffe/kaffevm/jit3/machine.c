@@ -387,8 +387,8 @@ SCHK(			sanityCheck();				)
 	}
 
 done:;
-	resetLabels();
-	resetConstants();
+	KaffeJIT3_resetLabels();
+	KaffeJIT3_resetConstants();
 	tidyAnalyzeMethod(&codeInfo);
 
 	reinvoke = false;
@@ -491,7 +491,7 @@ finishInsnSequence(void* dummy UNUSED, nativeCodeInfo* code, errorInfo* einfo)
 	relinkFakeCalls();
 
 	/* Okay, put this into malloc'ed memory */
-	constlen = nConst * sizeof(union _constpoolval);
+	constlen = KaffeJIT3_getNumberOfConstants() * sizeof(union _constpoolval);
 	methblock = gc_malloc(sizeof(jitCodeHeader) +
 			      constlen +
 			      CODEPC,
@@ -509,10 +509,10 @@ finishInsnSequence(void* dummy UNUSED, nativeCodeInfo* code, errorInfo* einfo)
 	gc_free(codeblock);
 
 	/* Establish any code constants */
-	establishConstants(jch->pool);
+	KaffeJIT3_establishConstants(jch->pool);
 
 	/* Link it */
-	linkLabels((uintp)jch->code_start);
+	KaffeJIT3_linkLabels((uintp)jch->code_start);
 
 	/* Note info on the compiled code for later installation */
 	code->mem = methblock;
@@ -1407,7 +1407,7 @@ newFakeCall(void* func, uintp currpc)
 	from = reference_code_label(currpc);
 
 	/* This is where I'm calling to */
-	to = newLabel();
+	to = KaffeJIT3_newLabel();
 	to->type = Linternal;
 	to->at = 0;
 	to->to = 0;

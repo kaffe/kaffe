@@ -458,7 +458,7 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	generateInsnSequence(codeInfo);
 
 	/* Okay, put this into malloc'ed memory */
-	constlen = nConst * sizeof(union _constpoolval);
+	constlen = KaffeJIT_getNumberOfConstants() * sizeof(union _constpoolval);
 	/* Allocate some padding to align codebase if so desired 
 	 */
 	methblock = gc_malloc(sizeof(jitCodeHeader) + exc_len + constlen + CODEPC + (align ? (align - ALIGNMENT_OF_SIZE(sizeof(jdouble))) : 0), KGC_ALLOC_JITCODE);
@@ -484,10 +484,10 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	KFREE(codeblock);
 
 	/* Establish any code constants */
-	establishConstants(jch->pool);
+	KaffeJIT_establishConstants(jch->pool);
 
 	/* Link it */
-	linkLabels(codeInfo, (uintp)jch->code_start);
+	KaffeJIT_linkLabels(codeInfo, (uintp)jch->code_start);
 
 	/* Note info on the compiled code for later installation */
 	code->mem = methblock;
@@ -537,10 +537,6 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 	/* install the jitted code */
 	SET_METHOD_JITCODE(meth, code->code);
 
-	/* Free bytecode before replacing it with native code */
-	if (meth->c.bcode.code != 0) {
-		KFREE(meth->c.bcode.code);
-	}
 	meth->c.ncode.ncode_start = code->mem;
 	meth->c.ncode.ncode_end = (char*)code->code + code->codelen;
 
@@ -549,8 +545,6 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 	
 	/* Flush code out of cache */
 	FLUSH_DCACHE(METHOD_NATIVECODE(meth), meth->c.ncode.ncode_end);
-
-	gc_free(tramp);
 
 #if defined(MD_REGISTER_JIT_EXCEPTION_INFO)
 	MD_REGISTER_JIT_EXCEPTION_INFO (meth->c.ncode.ncode_start,
@@ -606,8 +600,8 @@ initInsnSequence(Method* meth, int codesize, int localsz, int stacksz,
 	initSeq();
 	initRegisters();
 	initSlots(stackno);
-	resetLabels();
-	resetConstants();
+	KaffeJIT_resetLabels();
+	KaffeJIT_resetConstants();
 
 	localinfo = &slotinfo[0];
 	tempinfo = &localinfo[stackno];
@@ -630,7 +624,7 @@ initInsnSequence(Method* meth, int codesize, int localsz, int stacksz,
 	 * add the method we're translating as the first entry to the constant pool,
 	 * so that we can look it up pretty easily when creating stack traces.
 	 */
-	newConstant(CPref, meth);
+	KaffeJIT_newConstant(CPref, meth);
 	return true;
 }
 

@@ -44,7 +44,7 @@ void printCodeLabels(void)
 {
 	label *il, *curr = NULL;
 
-	while( (il = getInternalLabel(&curr, CODEPC)) )
+	while( (il = KaffeJIT3_getInternalLabel(&curr, CODEPC)) )
 	{
 		kaffe_dprintf("%s:\n", il->name);
 	}

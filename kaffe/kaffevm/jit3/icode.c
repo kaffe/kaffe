@@ -217,7 +217,7 @@ prologue(Method* meth)
 	used_ieee_rounding = false;
 	used_ieee_division = false;
 
-	l = newLabel();
+	l = KaffeJIT3_newLabel();
 	l->type = Lnull;
 	l->at = 0;
 	l->to = 0;
@@ -254,8 +254,8 @@ check_stack_limit(void)
 	label* l;
 	constpool* c;
 
-	l = newLabel();
-	c = newConstant(CPref, soft_stackoverflow);
+	l = KaffeJIT3_newLabel();
+	c = KaffeJIT3_newConstant(CPref, soft_stackoverflow);
 	l->type = Lexternal;
 	l->at = 0;
 	l->to = (uintp)c;
@@ -265,7 +265,7 @@ check_stack_limit(void)
 #elif defined(HAVE_check_stack_limit)
 	label* l;
 
-	l = newLabel();
+	l = KaffeJIT3_newLabel();
 	l->type = Lexternal;
 	l->at = 0;
 	l->to = (uintp)soft_stackoverflow;
@@ -281,7 +281,7 @@ exception_prologue(void)
 {
 	label* l;
 
-	l = newLabel();
+	l = KaffeJIT3_newLabel();
 	l->type = Lnull;
 	l->at = 0;
 	l->to = 0;
@@ -297,7 +297,7 @@ epilogue(Method* meth UNUSED)
 {
 	label* l;
 	
-	l = newLabel();
+	l = KaffeJIT3_newLabel();
 	l->type = Lnull;	/* Lnegframe|Labsolute|Lgeneral */
 	l->at = 0;
 	l->to = 0;
@@ -319,7 +319,7 @@ ret(void)
 {
 	label *l;
 
-	l = newLabel();
+	l = KaffeJIT3_newLabel();
 	l->at = 0;
 	l->to = 0;
 	l->from = 0;
@@ -346,7 +346,7 @@ mon_enter(methods* meth, SlotInfo* obj)
 		label* l;
 
 		begin_func_sync();
-		l = newLabel();
+		l = KaffeJIT3_newLabel();
 		l->type = Lexternal;
 		l->at = 0;
 		l->to = (uintp)slowLockObject;
@@ -386,7 +386,7 @@ mon_exit(methods* meth, SlotInfo* obj)
 		label* l;
 
 		begin_func_sync();
-		l = newLabel();
+		l = KaffeJIT3_newLabel();
 		l->type = Lexternal;
 		l->at = 0;
 		l->to = (uintp)slowUnlockObject;
@@ -420,7 +420,7 @@ softcall_monitorenter(SlotInfo* mon)
 #if defined(HAVE_mon_enter)
 	label* l;
 
-	l = newLabel();
+	l = KaffeJIT3_newLabel();
 	l->type = Lexternal;
 	l->at = 0;
 	l->to = (uintp)slowLockObject;
@@ -439,7 +439,7 @@ softcall_monitorexit(SlotInfo* mon)
 #if defined(HAVE_mon_exit)
 	label* l;
 
-	l = newLabel();
+	l = KaffeJIT3_newLabel();
 	l->type = Lexternal;
 	l->at = 0;
 	l->to = (uintp)slowUnlockObject;
@@ -595,8 +595,8 @@ move_int_const(SlotInfo* dst, jint val)
 		constpool *c;
 		label* l;
 
-		c = newConstant(CPint, val);
-		l = newLabel();
+		c = KaffeJIT3_newConstant(CPint, val);
+		l = KaffeJIT3_newLabel();
 		l->type = Lconstant;
 		l->at = 0;
 		l->to = (uintp)c;
@@ -629,8 +629,8 @@ move_ref_const(SlotInfo* dst, void *val)
 		constpool *c;
 		label* l;
 
-		c = newConstant(CPref, val);
-		l = newLabel();
+		c = KaffeJIT3_newConstant(CPref, val);
+		l = KaffeJIT3_newLabel();
 		l->type = Lconstant;
 		l->at = 0;
 		l->to = (uintp)c;
@@ -660,8 +660,8 @@ move_string_const(SlotInfo* dst, void *val)
 	constpool *c;
 	SlotInfo* tmp;
 
-	c = newConstant(CPstring, val);
-	l = newLabel();
+	c = KaffeJIT3_newConstant(CPstring, val);
+	l = KaffeJIT3_newLabel();
 	l->type = Lconstant;
 	l->at = 0;
 	l->to = (uintp)c;
@@ -691,8 +691,8 @@ move_long_const(SlotInfo* dst, jlong val)
 		label* l;
 		SlotInfo* tmp;
 
-		c = newConstant(CPlong, val);
-		l = newLabel();
+		c = KaffeJIT3_newConstant(CPlong, val);
+		l = KaffeJIT3_newLabel();
 		l->type = Lconstant;
 		l->at = 0;
 		l->to = (uintp)c;
@@ -738,8 +738,8 @@ move_float_const(SlotInfo* dst, float val)
 		constpool *c;
 		label* l;
 
-		c = newConstant(CPfloat, val);
-		l = newLabel();
+		c = KaffeJIT3_newConstant(CPfloat, val);
+		l = KaffeJIT3_newLabel();
 		l->type = Lconstant;
 		l->at = 0;
 		l->to = (uintp)c;
@@ -772,8 +772,8 @@ move_double_const(SlotInfo* dst, jdouble val)
 		constpool *c;
 		label* l;
 
-		c = newConstant(CPdouble, val);
-		l = newLabel();
+		c = KaffeJIT3_newConstant(CPdouble, val);
+		l = KaffeJIT3_newLabel();
 		l->type = Lconstant;
 		l->at = 0;
 		l->to = (uintp)c;
@@ -3705,7 +3705,7 @@ static void
 _call_soft(void *routine, int profiled)
 {
 #if defined(HAVE_call_soft)
-	label* l = newLabel();
+	label* l = KaffeJIT3_newLabel();
 	l->type = Labsolute|Lexternal | (profiled ? 0 : Lnoprofile);
 	l->at = 0;
 	l->to = (uintp)routine;	/* What place does it goto */
@@ -3714,7 +3714,7 @@ _call_soft(void *routine, int profiled)
 	slot_const_const(0, (jword)l, ba, HAVE_call_soft, Tnull);
 #elif defined(HAVE_call_ref)
 	label* l;
-	l = newLabel();
+	l = KaffeJIT3_newLabel();
 	l->type = Lexternal | (profiled ? 0 : Lnoprofile);
 	l->at = 0;
 	l->to = (uintp)routine;	/* What place does it goto */
@@ -3726,8 +3726,8 @@ _call_soft(void *routine, int profiled)
 	constpool* c;
 	SlotInfo* tmp;
 
-	l = newLabel();
-	c = newConstant(CPref, routine);
+	l = KaffeJIT3_newLabel();
+	c = KaffeJIT3_newConstant(CPref, routine);
 	l->type = Lconstant;
 	l->at = 0;
 	l->to = (uintp)c;
@@ -3886,7 +3886,7 @@ reference_label(int32 i UNUSED, int32 n)
 
 	assert(n < MAXLABTAB);
 	if (labtab[n] == 0) {
-		l = newLabel();
+		l = KaffeJIT3_newLabel();
 		labtab[n] = l;
 		l->type = Lnull;
 		l->at = 0;
@@ -3903,7 +3903,7 @@ reference_label(int32 i UNUSED, int32 n)
 label*
 reference_code_label(uintp offset)
 {
-	label* l = newLabel();
+	label* l = KaffeJIT3_newLabel();
 	l->at = 0;		/* Where is the jump */
 	l->to = offset;		/* What place does it goto */
 	l->from = 0;
@@ -3918,7 +3918,7 @@ reference_table_label(int32 n)
 
 	assert(n < MAXLABTAB);
 	if (labtab[n] == 0) {
-		l = newLabel();
+		l = KaffeJIT3_newLabel();
 		labtab[n] = l;
 		l->type = Lnull;
 		l->at = 0;
@@ -3950,7 +3950,7 @@ set_label(int i UNUSED, int n)
 {
 	assert(n < MAXLABTAB);
 	if (labtab[n] == 0) {
-		labtab[n] = newLabel();
+		labtab[n] = KaffeJIT3_newLabel();
 		labtab[n]->type = Linternal;
 		labtab[n]->at = 0;
 		labtab[n]->from = 0;
@@ -4765,8 +4765,8 @@ ccall_soft_ugt(void* routine)
 	constpool* c;
 	SlotInfo* tmp;
 
-	l = newLabel();
-	c = newConstant(CPref, routine);
+	l = KaffeJIT3_newLabel();
+	c = KaffeJIT3_newConstant(CPref, routine);
 	l->type = Lconstant;
 	l->at = 0;
 	l->to = (uintp)c;
@@ -4831,19 +4831,19 @@ softcall_fakecall(label* from, label* to, void* func)
 	/* We must put our 'from' in a constant.  We use the 'from' as
 	 * the constant value so it won't be aliases with others.
 	 */
-	c = newConstant(CPlabel, from);
+	c = KaffeJIT3_newConstant(CPlabel, from);
 	from->type |= Lconstantpool|Labsolute|Llong;
 	from->at = (uintp)c;
 
-	from = newLabel();
+	from = KaffeJIT3_newLabel();
 	from->type = Lconstant;
 	from->at = 0;
 	from->to = (uintp)c;
 	from->from = 0;
 
 	/* Build a label to hold the fake call */
-	l = newLabel();
-	c = newConstant(CPref, func);
+	l = KaffeJIT3_newLabel();
+	c = KaffeJIT3_newConstant(CPref, func);
 	l->type = Lconstant;
 	l->at = 0;
 	l->to = (uintp)c;
@@ -4860,7 +4860,7 @@ softcall_fakecall(label* from, label* to, void* func)
 	slot_slot_const(NULL, NULL, (jword)to, HAVE_set_label, Tnull);
 
 	/* Build a label to hold the fake call */
-	l = newLabel();
+	l = KaffeJIT3_newLabel();
 	l->type = Lexternal;
 	l->at = 0;
 	l->to = (uintp)func;

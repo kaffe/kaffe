@@ -84,18 +84,6 @@ typedef struct _constpoolchunk {
 } constpoolchunk;
 
 /**
- * These variables track the pool of constpool objects allocated by the jitter.
- * The set of valid constpool objects is the sublist between firstConst and
- * currConst, exclusive.
- */
-extern constpool* firstConst;
-extern constpool* lastConst;
-extern constpool* currConst;
-
-/** The number of active constpool objects. */
-extern uint32 nConst;
-
-/**
  * Allocate a new constpool object and link it in to the global list.
  *
  * @param type Type of value to store in the constpool.
@@ -104,7 +92,7 @@ extern uint32 nConst;
  * Example:
  *   newConstant(CPint, 256);
  */
-constpool* newConstant(int type, ...);
+constpool* KaffeJIT3_newConstant(int type, ...);
 
 /**
  * Copy the list of constant values to the given location and update the "at"
@@ -112,11 +100,16 @@ constpool* newConstant(int type, ...);
  *
  * @param at The location of the constant pool for the current method.
  */
-void establishConstants(void *at);
+void KaffeJIT3_establishConstants(void *at);
 
 /**
  * Reset the constant pool global data structures for a new method.
  */
-void resetConstants(void);
+void KaffeJIT3_resetConstants(void);
+
+/**
+ * Return the number of constants allocated since the last resetConstants.
+ */
+uint32 KaffeJIT3_getNumberOfConstants(void);
 
 #endif

@@ -421,9 +421,10 @@ kaffe_dprintf(const char *fmt, ...)
 		 */
 		max = 0;
 		while (max < n) {
-                        rc = KWRITE(kaffe_dprintf_fd,
+                        w = write(kaffe_dprintf_fd,
                                        debugBuffer + max,
-                                       (size_t)n - max,&w);
+                                       (size_t)n - max);
+			rc = errno;
 
 			if (w >= 0)
 				/* ignore errors */

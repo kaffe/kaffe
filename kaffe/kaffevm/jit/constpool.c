@@ -21,16 +21,16 @@
 #include <stdarg.h>
 
 
-constpool* firstConst;
-constpool* lastConst;
-constpool* currConst;
-uint32 nConst;
+static constpool* firstConst;
+static constpool* lastConst;
+static constpool* currConst;
+static uint32 nConst;
 
 /*
  * Allocate a new constant.
  */
 constpool*
-newConstant(int type, ...)
+KaffeJIT_newConstant(int type, ...)
 {
 	constpool *c;
 	union _constpoolval val;
@@ -101,7 +101,7 @@ newConstant(int type, ...)
 }
 
 void
-establishConstants(void *at)
+KaffeJIT_establishConstants(void *at)
 {
 	constpool *c;
 
@@ -113,8 +113,14 @@ establishConstants(void *at)
 }
 
 void
-resetConstants (void)
+KaffeJIT_resetConstants (void)
 {
 	currConst = firstConst;
 	nConst = 0;
+}
+
+uint32
+KaffeJIT_getNumberOfConstants(void)
+{
+	return nConst;
 }

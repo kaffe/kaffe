@@ -888,7 +888,7 @@ define_insn(prologue, prologue_xxC)
 	alpha_jit_info.rsa_size = rsa_size;
 
 	/* return address */
-	L = newLabel();
+	L = KaffeJIT_newLabel();
 	L->type = Lrsa|Labsolute|Lgeneral;
 	L->at = (uintp)CODEPC;
 	op_stq(REG_ra, REG_sp, 0);
@@ -897,7 +897,7 @@ define_insn(prologue, prologue_xxC)
 
 	/* registers s0 - s5 and fp (also know as s6) */
 	for (r = 0; r < 7; r++, N++) {
-		L = newLabel();
+		L = KaffeJIT_newLabel();
 		L->type = Lrsa|Labsolute|Lgeneral;
 		L->at = (uintp)CODEPC;
 		op_stq(REG_s0+r, REG_sp, SLOTSIZE * N);
@@ -905,7 +905,7 @@ define_insn(prologue, prologue_xxC)
 
 	/* registers f2 - f9 */
 	for (r = 0; r < (9 - 2 + 1); r++, N++) {
-		L = newLabel();
+		L = KaffeJIT_newLabel();
 		L->type = Lrsa|Labsolute|Lgeneral;
 		L->at = (uintp)CODEPC;
 		op_stt(REG_f2+r, REG_sp, SLOTSIZE * N);
@@ -916,7 +916,7 @@ define_insn(prologue, prologue_xxC)
 
 
 	/* setup our virtual frame pointer, it's not part of the prologue.  */
-	L = newLabel();
+	L = KaffeJIT_newLabel();
 	L->type = Lframe|Labsolute|Lgeneral;
 	L->at = (uintp)CODEPC;
 	op_lda(REG_fp, REG_sp, 0);
@@ -1125,7 +1125,7 @@ define_insn(epilogue, epilogue_xxx)
 	 *    area as specified by PDSC_RPD_RSA_OFFSET.  */
 
 	/* return address */
-	l = newLabel();
+	l = KaffeJIT_newLabel();
 	l->type = Lrsa|Labsolute|Lgeneral;
 	l->at = (uintp)CODEPC;
 	op_ldq(REG_ra, REG_sp, 0);
@@ -1134,7 +1134,7 @@ define_insn(epilogue, epilogue_xxx)
 
 	/* registers s0 - s5 and fp (also know as s6) */
 	for (r = 0; r < 7; r++, N++) {
-		l = newLabel();
+		l = KaffeJIT_newLabel();
 		l->type = Lrsa|Labsolute|Lgeneral;
 		l->at = (uintp)CODEPC;
 		op_ldq(REG_s0+r, REG_sp, SLOTSIZE * N);
@@ -1142,7 +1142,7 @@ define_insn(epilogue, epilogue_xxx)
 
 	/* registers f2 - f9 */
 	for (r = 0; r < (9 - 2 + 1); r++, N++) {
-		l = newLabel();
+		l = KaffeJIT_newLabel();
 		l->type = Lrsa|Labsolute|Lgeneral;
 		l->at = (uintp)CODEPC;
 		op_ldt(REG_f2+r, REG_sp, SLOTSIZE * N);
@@ -1156,7 +1156,7 @@ define_insn(epilogue, epilogue_xxx)
 	 *    leaves SP pointing to a lower stack address than it had on entry
 	 *    to the procedure, as specified in Section 4.1.7.  */
 
-	l = newLabel();
+	l = KaffeJIT_newLabel();
 	l->type = Lframe|Labsolute|Lgeneral;
 	l->at = (uintp)CODEPC;
 	op_lda(REG_sp, REG_sp, 0);
@@ -1180,7 +1180,7 @@ define_insn(eprologue, eprologue_xxx)
 	 * and FP set.  */
 	alpha_ldgp(REG_pv);
 
-	l = newLabel();
+	l = KaffeJIT_newLabel();
 	l->type = Lnegframe|Labsolute|Lgeneral;
 	l->at = (uintp)CODEPC;
 	op_lda(REG_sp, REG_fp, 0);
@@ -1316,8 +1316,8 @@ alpha_move_const_32(int w, int val)
 
 #define alpha_move_const_pool(w, l, t, d, op)				\
 	do {								\
-		constpool *_c = newConstant((t), (d));			\
-		label *_l = ((l) ? (l) : newLabel());			\
+		constpool *_c = KaffeJIT_newConstant((t), (d));			\
+		label *_l = ((l) ? (l) : KaffeJIT_newLabel());			\
 		int _w = (w);						\
 									\
 		_l->from = 0;						\

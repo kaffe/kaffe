@@ -1,4 +1,38 @@
-2004-12-22  Guilhem Lavaux  <guilhem@kaffe.org>
+2004-12-27  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/alpha/jit-alpha.def,
+	config/i386/jit-i386.def,
+	config/i386/jit3-i386.def,
+	config/powerpc/jit3-powerpc.def,
+	kaffe/kaffevm/jit/funcs.c,
+	kaffe/kaffevm/jit/icode.c,
+	kaffe/kaffevm/jit/machine.c,
+	kaffe/kaffevm/jit3/funcs.c,
+	kaffe/kaffevm/jit3/icode.c,
+	kaffe/kaffevm/jit3/machine.c: Adjusted calls to the new name of
+	some JIT compiler symbols.
+
+	* kaffe/kaffevm/jit/constpool.c, kaffe/kaffevm/jit/constpool.h,
+	* kaffe/kaffevm/jit/labels.c, kaffe/kaffevm/jit/labels.h:
+	Renamed functions to use the KaffeJIT_ prefix.
+
+	* kaffe/kaffevm/jit/machine.h: New macro KJIT to follow the prefix name.
+
+	* kaffe/kaffevm/jit/native-wrapper.c: Renamed calls to the JIT
+	compiler using the KJIT macro.
+
+	* kaffe/kaffevm/jit3/constpool.c, kaffe/kaffevm/jit3/constpool.h,
+	kaffe/kaffevm/jit3/labels.c, kaffe/kaffevm/jit3/labels.h:
+	Renamed functions to use the KaffeJIT_ prefix.
+
+	* kaffe/kaffevm/jit3/machine.h: New macro KJIT to follow the prefix name.
+
+	* kaffe/kaffevm/jni/jni-base.c
+	(parseSize): Imported from kaffe/main.c
+	(KaffeJNI_ParseArgs): Added support for debug output and stack
+	size setting.
+	
+2004-12-25  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* configure.ac: Fixed CPPFLAGS generation to be compatible with
 	boehm's configure.

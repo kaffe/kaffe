@@ -73,12 +73,37 @@ concatString(const char *s1, const char *s2)
   return strcat(strcpy(s, s1), s2);
 }
 
+static
+size_t
+parseSize(char* arg)
+{
+	size_t sz;
+	char* narg;
+
+	sz = strtol(arg, &narg, 0);
+	switch (narg[0]) {
+	case 'b': case 'B':
+		break;
+
+	case 'k': case 'K':
+		sz *= 1024;
+		break;
+
+	case 'm': case 'M':
+		sz *= 1024 * 1024;
+		break;
+	}
+
+	return (sz);
+}
+
 static jint
 KaffeJNI_ParseArgs(KaffeVM_Arguments *args, JavaVMOption *options, jint nOptions)
 {
   int i;
   char *classpath = NULL;
   char *bootClasspath = NULL;  
+  size_t sz;
 
   for (i = 0; i < nOptions; i++)
     {
@@ -178,6 +203,24 @@ KaffeJNI_ParseArgs(KaffeVM_Arguments *args, JavaVMOption *options, jint nOptions
 	    free(classpath);
 
 	  classpath = newPath;
+	}
+      else if (!strncmp(opt, "-Xvmdebug:", 10))
+	{
+	  if (!dbgSetMaskStr(&opt[10]))
+	    return 0;
+	}
+      else if (!strncmp(opt, "-Xss:", 5))
+        {
+	  sz = parseSize(&opt[5]);
+	  if (sz < THREADSTACKSIZE)
+	    {
+	      fprintf(stderr,  "Warning: Attempt to set stack size smaller than %d - ignored.\n", THREADSTACKSIZE);
+	    }
+	  else
+	    {
+	      args->nativeStackSize = sz;
+	    }
+	  dprintf("Setup stack size to %d\n", sz);
 	}
     }
   args->bootClasspath = bootClasspath;

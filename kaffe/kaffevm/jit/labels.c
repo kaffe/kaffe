@@ -26,16 +26,16 @@
 #include "machine.h"
 #include "stats.h"
 
-label* firstLabel;
-label* lastLabel;
-label* currLabel;
+static label* firstLabel;
+static label* lastLabel;
+static label* currLabel;
 
 #if defined(KAFFE_VMDEBUG)
 static uint32 labelCount;
 #endif
 
 void
-resetLabels(void)
+KaffeJIT_resetLabels(void)
 {
 	currLabel = firstLabel;
 }
@@ -45,7 +45,7 @@ resetLabels(void)
  * Set epilogue label destination.
  */
 void
-setEpilogueLabel(uintp to)
+KaffeJIT_setEpilogueLabel(uintp to)
 {
 	label* l;
 
@@ -64,7 +64,7 @@ setEpilogueLabel(uintp to)
  * fragment into the program.
  */
 void
-linkLabels(codeinfo* codeInfo, uintp codebase)
+KaffeJIT_linkLabels(codeinfo* codeInfo, uintp codebase)
 {
 	long dest = 0;
 	int* place;
@@ -149,7 +149,7 @@ linkLabels(codeinfo* codeInfo, uintp codebase)
  * Allocate a new label.
  */
 label*
-newLabel(void)
+KaffeJIT_newLabel(void)
 {
 	int i;
 	label* ret = currLabel;
@@ -187,7 +187,7 @@ newLabel(void)
 }
 
 label*
-getInternalLabel(label **lptr, uintp pc)
+KaffeJIT_getInternalLabel(label **lptr, uintp pc)
 {
 	label *curr, *retval = NULL;
 

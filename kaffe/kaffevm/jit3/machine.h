@@ -12,6 +12,8 @@
 
 /* -------------------------------------------------------------------- */
 
+#define KJIT(funcName) KaffeJIT3_ ## funcName
+
 /* Instructions */
 #define	define_insn(code)	break;					\
 				case code :

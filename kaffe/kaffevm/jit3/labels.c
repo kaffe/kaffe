@@ -40,7 +40,7 @@ static uint32 labelCount;
 #include "debug.h"
 
 #if defined(KAFFE_VMDEBUG)
-char *getLabelName(label *l)
+char *KaffeJIT3_getLabelName(label *l)
 {
 	static char labeladdress[32]; /* XXX one more global */
 	
@@ -69,7 +69,7 @@ void
 objectStatsPrint(void);
 
 void
-resetLabels(void)
+KaffeJIT3_resetLabels(void)
 {
 	currLabel = firstLabel;
 	while( (labelchunks != NULL) && (labelchunks->next != NULL) )
@@ -86,7 +86,7 @@ resetLabels(void)
 	}
 }
 
-label *getLastEpilogueLabel(void)
+label *KaffeJIT3_getLastEpilogueLabel(void)
 {
 	label* l, *retval = NULL;
 
@@ -107,7 +107,7 @@ DBG(MOREJIT, if( retval ) { kprintf("%s:\n", retval->name); });
  * Set epilogue label destination.
  */
 void
-setEpilogueLabel(uintp to)
+KaffeJIT3_setEpilogueLabel(uintp to)
 {
 	label* l;
 
@@ -129,7 +129,7 @@ DBG(MOREJIT, kprintf("%s:\n", l->name));
  * fragment into the program.
  */
 void
-linkLabels(uintp codebase)
+KaffeJIT3_linkLabels(uintp codebase)
 {
 	long dest;
 	int* place;
@@ -217,7 +217,7 @@ linkLabels(uintp codebase)
 }
 
 label*
-newLabel(void)
+KaffeJIT3_newLabel(void)
 {
 	int i;
 	label* ret;
@@ -258,7 +258,7 @@ newLabel(void)
 }
 
 label*
-getInternalLabel(label **lptr, uintp _pc)
+KaffeJIT3_getInternalLabel(label **lptr, uintp _pc)
 {
 	label *curr, *retval = NULL;
 

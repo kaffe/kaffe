@@ -54,10 +54,10 @@ typedef struct _label_ {
 #define	ALLOCLABELNR	1024
 
 struct codeinfo;
-void setEpilogueLabel(uintp);
-void linkLabels(struct codeinfo*, uintp);
-label* newLabel(void);
-void resetLabels(void);
+void KaffeJIT_setEpilogueLabel(uintp);
+void KaffeJIT_linkLabels(struct codeinfo*, uintp);
+label* KaffeJIT_newLabel(void);
+void KaffeJIT_resetLabels(void);
 
 /**
  * Iterate through the method internal labels that refer to the given native
@@ -70,6 +70,6 @@ void resetLabels(void);
  * @return A label matching the given "pc" or NULL if there are no more
  *   internal labels found.
  */
-label *getInternalLabel(label **lptr, uintp counter);
+label *KaffeJIT_getInternalLabel(label **lptr, uintp counter);
 
 #endif

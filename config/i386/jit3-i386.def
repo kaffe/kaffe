@@ -193,7 +193,7 @@ define_insn(prologue, prologue_xxx)
 	{
 		/* Store the pointer to this function in eax */
 		OUT(0xB8|REG_eax);
-		l = (label*)newLabel();
+		l = (label*)KaffeJIT3_newLabel();
 		l->type = Llong|Linternal|Labsolute;
 		l->to = 0;
 		l->at = (uintp)CODEPC;
@@ -442,7 +442,7 @@ define_insn(epilogue, epilogue_xxx)
 {	
 	label *el;
 
-	if( (el = getLastEpilogueLabel()) && (el->at == (CODEPC - 4)) )
+	if( (el = KaffeJIT3_getLastEpilogueLabel()) && (el->at == (CODEPC - 4)) )
 	{
 		/*
 		 * Nothing to jump over to get to the epilogue...  Replace
@@ -455,7 +455,7 @@ define_insn(epilogue, epilogue_xxx)
 	{
 		/* The function ends with a throw, not a return. */
 	}
-	setEpilogueLabel((uintp)CODEPC);
+	KaffeJIT3_setEpilogueLabel((uintp)CODEPC);
 
 #if 0
 	/* If this method uses IEEE, restore it */
@@ -616,7 +616,7 @@ define_insn(move_label_const, move_RxL)
 	l->at = CODEPC;
 	LOUT(0);
 
-	debug(("movl #%s,%s\n", getLabelName(l), regname(w)));
+	debug(("movl #%s,%s\n", KaffeJIT3_getLabelName(l), regname(w)));
 }
 
 define_insn(move_int, move_RxR)
@@ -947,7 +947,7 @@ define_insn(div_int, div_RRR)
 	OUT(0xFF);
 	debug(("cmp #0xFF,%s\n", regname(r)));
 
-	l1 = newLabel();
+	l1 = KaffeJIT3_newLabel();
 	l1->type = Linternal| Llong8|Lrelative;
 	OUT(0x74);
 	l1->at = CODEPC;
@@ -1039,7 +1039,7 @@ define_insn(rem_int, rem_RRR)
 	OUT(0xFF);
 	debug(("cmp #0xFF,%s\n", regname(r)));
 
-	l1 = newLabel();
+	l1 = KaffeJIT3_newLabel();
 	l1->type = Linternal| Llong8|Lrelative;
 	OUT(0x74);
 	l1->at = CODEPC;
@@ -1393,7 +1393,7 @@ define_insn(build_code_ref, set_wordpc_xxC)
 	l->at = CODEPC;
 	LOUT(0);
 	l->from = CODEPC;
-	debug((".word %s\n", getLabelName(l)));
+	debug((".word %s\n", KaffeJIT3_getLabelName(l)));
 }
 
 /* --------------------------------------------------------------------- */
@@ -1416,7 +1416,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT(0);
 		l->from = CODEPC;
-		debug(("jmpl %s\n", getLabelName(l)));
+		debug(("jmpl %s\n", KaffeJIT3_getLabelName(l)));
 		break;
 	case beq:
 		OUT(0x0F);
@@ -1424,7 +1424,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT(0);
 		l->from = CODEPC;
-		debug(("je %s\n", getLabelName(l)));
+		debug(("je %s\n", KaffeJIT3_getLabelName(l)));
 		break;
 	case bne:
 		OUT(0x0F);
@@ -1432,7 +1432,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT(0);
 		l->from = CODEPC;
-		debug(("jne %s\n", getLabelName(l)));
+		debug(("jne %s\n", KaffeJIT3_getLabelName(l)));
 		break;
 	case blt:
 		OUT(0x0F);
@@ -1440,7 +1440,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT(0);
 		l->from = CODEPC;
-		debug(("jlt %s\n", getLabelName(l)));
+		debug(("jlt %s\n", KaffeJIT3_getLabelName(l)));
 		break;
 	case ble:
 		OUT(0x0F);
@@ -1448,7 +1448,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT(0);
 		l->from = CODEPC;
-		debug(("jle %s\n", getLabelName(l)));
+		debug(("jle %s\n", KaffeJIT3_getLabelName(l)));
 		break;
 	case bgt:
 		OUT(0x0F);
@@ -1456,7 +1456,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT(0);
 		l->from = CODEPC;
-		debug(("jgt %s\n", getLabelName(l)));
+		debug(("jgt %s\n", KaffeJIT3_getLabelName(l)));
 		break;
 	case bge:
 		OUT(0x0F);
@@ -1464,7 +1464,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT(0);
 		l->from = CODEPC;
-		debug(("jge %s\n", getLabelName(l)));
+		debug(("jge %s\n", KaffeJIT3_getLabelName(l)));
 		break;
 	case bult:
 		OUT(0x0F);
@@ -1472,7 +1472,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT(0);
 		l->from = CODEPC;
-		debug(("jult %s\n", getLabelName(l)));
+		debug(("jult %s\n", KaffeJIT3_getLabelName(l)));
 		break;
 #if 0
 	case bule:
@@ -1481,7 +1481,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT(0);
 		l->from = CODEPC;
-		debug(("jule %s\n", getLabelName(l)));
+		debug(("jule %s\n", KaffeJIT3_getLabelName(l)));
 		break;
 #endif
 	case bugt:
@@ -1490,7 +1490,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT(0);
 		l->from = CODEPC;
-		debug(("jugt %s\n", getLabelName(l)));
+		debug(("jugt %s\n", KaffeJIT3_getLabelName(l)));
 		break;
 	case buge:
 		OUT(0x0F);
@@ -1498,7 +1498,7 @@ define_insn(branch, branch_xCC)
 		l->at = CODEPC;
 		LOUT(0);
 		l->from = CODEPC;
-		debug(("juge %s\n", getLabelName(l)));
+		debug(("juge %s\n", KaffeJIT3_getLabelName(l)));
 		break;
 	default:
 		ABORT();

@@ -32,13 +32,9 @@ typedef struct _constpool {
 
 #define ALLOCCONSTNR	32
 
-extern constpool* firstConst;
-extern constpool* lastConst;
-extern constpool* currConst;
-extern uint32 nConst;
-
-constpool* newConstant(int type, ...);
-void establishConstants(void *at);
-void resetConstants(void);
+constpool* KaffeJIT_newConstant(int type, ...);
+void KaffeJIT_establishConstants(void *at);
+void KaffeJIT_resetConstants(void);
+uint32 KaffeJIT_getNumberOfConstants(void);
 
 #endif

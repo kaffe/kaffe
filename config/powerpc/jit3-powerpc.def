@@ -111,11 +111,11 @@ define_insn(prologue, prologue_xxx)
 		{
 			label *l;
 
-			l = newLabel();
+			l = KaffeJIT3_newLabel();
 			l->type = Lsavedregs | Labsolute | Lgeneral;
 			l->at = CODEPC;
 			l->to = 0;
-			l = newLabel();
+			l = KaffeJIT3_newLabel();
 			l->type = Lreg_s | Labsolute | Lgeneral;
 			l->at = CODEPC;
 			LOUT(ppc_op_stmw(0, PPC_RSP, 0));
@@ -275,7 +275,7 @@ define_insn(exception_prologue, eprologue_xxx)
 	{
 #if 1
 #elif 1
-		label *l = newLabel();
+		label *l = KaffeJIT3_newLabel();
 
 		l->type = Lframe | Labsolute | Lgeneral;
 		l->at = CODEPC;
@@ -321,7 +321,7 @@ define_insn(epilogue, epilogue_xxx)
 		int lrOffset = 0, localRegs;
 		label *fl;
 
-		fl = newLabel();
+		fl = KaffeJIT3_newLabel();
 		fl->type = Lframe | Lrelative | Lgeneral;
 		fl->at = CODEPC;
 		fl->from = PPC_FRAME_LR;
@@ -334,7 +334,7 @@ define_insn(epilogue, epilogue_xxx)
 		 * we readjust the stack pointer.
 		 */
 		LOUT(ppc_op_lwz(PPC_R0, PPC_RSP, lrOffset));
-		fl = newLabel();
+		fl = KaffeJIT3_newLabel();
 		fl->type = Lframe | Labsolute | Lgeneral;
 		fl->at = (uintp)CODEPC;
 		LOUT(ppc_op_addi(PPC_RSP, PPC_RSP, 0));
@@ -349,11 +349,11 @@ define_insn(epilogue, epilogue_xxx)
 		{
 			label *l;
 
-			l = newLabel();
+			l = KaffeJIT3_newLabel();
 			l->type = Lsavedregs | Labsolute | Lgeneral;
 			l->at = CODEPC;
 			l->to = 0;
-			l = newLabel();
+			l = KaffeJIT3_newLabel();
 			l->type = Lreg_s | Labsolute | Lgeneral;
 			l->at = CODEPC;
 			LOUT(ppc_op_lmw(0, PPC_RSP, 0));
@@ -395,7 +395,7 @@ define_insn(spill_int, spill_Rxx)
 	int o = const_int(1);
 	label *l;
 	
-	l = newLabel();
+	l = KaffeJIT3_newLabel();
 	l->type = Llong16noalign | Lexternal | Labsolute;
 	l->at = CODEPC;
 	l->to = o;
@@ -416,7 +416,7 @@ define_insn(spill_float, fspill_Rxx)
 	int o = const_int(1);
 	label *l;
 
-	l = newLabel();
+	l = KaffeJIT3_newLabel();
 	l->type = Llong16noalign | Lexternal | Labsolute;
 	l->at = CODEPC;
 	l->to = o;
@@ -431,7 +431,7 @@ define_insn(spill_double, fspilll_Rxx)
 	int o = const_int(1);
 	label *l;
 
-	l = newLabel();
+	l = KaffeJIT3_newLabel();
 	l->type = Llong16noalign | Lexternal | Labsolute;
 	l->at = CODEPC;
 	l->to = o;
@@ -447,7 +447,7 @@ define_insn(reload_int, reload_Rxx)
 	int o = const_int(1);
 	label *l;
 		
-	l = newLabel();
+	l = KaffeJIT3_newLabel();
 	l->type = Llong16noalign | Lexternal | Labsolute;
 	l->at = CODEPC;
 	l->to = o;
@@ -463,7 +463,7 @@ define_insn(reload_float, freload_Rxx)
 	int o = const_int(1);
 	label *l;
 
-	l = newLabel();
+	l = KaffeJIT3_newLabel();
 	l->type = Llong16noalign | Lexternal | Labsolute;
 	l->at = CODEPC;
 	l->to = o;
@@ -478,7 +478,7 @@ define_insn(reload_double, freloadl_Rxx)
 	int o = const_int(1);
 	label *l;
 
-	l = newLabel();
+	l = KaffeJIT3_newLabel();
 	l->type = Llong16noalign | Lexternal | Labsolute;
 	l->at = CODEPC;
 	l->to = o;
@@ -1352,7 +1352,7 @@ define_insn(cvt_int_float, cvtif_RxR)
 	{
 		label *l;
 
-		l = newLabel();
+		l = KaffeJIT3_newLabel();
 		l->type = Lsavedregs | Lrelative | Lgeneral;
 		l->from = -8;
 		l->to = 0;
@@ -1367,7 +1367,7 @@ define_insn(cvt_int_float, cvtif_RxR)
 	{
 		label *l;
 
-		l = newLabel();
+		l = KaffeJIT3_newLabel();
 		l->type = Lsavedregs | Lrelative | Lgeneral;
 		l->from = -4;
 		l->to = 0;
@@ -1385,7 +1385,7 @@ define_insn(cvt_int_float, cvtif_RxR)
 	{
 		label *l;
 
-		l = newLabel();
+		l = KaffeJIT3_newLabel();
 		l->type = Lsavedregs | Lrelative | Lgeneral;
 		l->from = -8;
 		l->to = 0;
@@ -1421,7 +1421,7 @@ define_insn(cvt_int_double, cvtid_RxR)
 	{
 		label *l;
 
-		l = newLabel();
+		l = KaffeJIT3_newLabel();
 		l->type = Lsavedregs | Lrelative | Lgeneral;
 		l->from = -8;
 		l->to = 0;
@@ -1434,7 +1434,7 @@ define_insn(cvt_int_double, cvtid_RxR)
 	{
 		label *l;
 
-		l = newLabel();
+		l = KaffeJIT3_newLabel();
 		l->type = Lsavedregs | Lrelative | Lgeneral;
 		l->from = -4;
 		l->to = 0;
@@ -1448,7 +1448,7 @@ define_insn(cvt_int_double, cvtid_RxR)
 	{
 		label *l;
 
-		l = newLabel();
+		l = KaffeJIT3_newLabel();
 		l->type = Lsavedregs | Lrelative | Lgeneral;
 		l->from = -8;
 		l->to = 0;
@@ -1490,7 +1490,7 @@ define_insn(cvt_float_int, cvtfi_RxR)
 	{
 		label *l;
 
-		l = newLabel();
+		l = KaffeJIT3_newLabel();
 		l->type = Lsavedregs | Lrelative | Lgeneral;
 		l->from = -8;
 		l->to = 0;
@@ -1505,7 +1505,7 @@ define_insn(cvt_float_int, cvtfi_RxR)
 	{
 		label *l;
 
-		l = newLabel();
+		l = KaffeJIT3_newLabel();
 		l->type = Lsavedregs | Lrelative | Lgeneral;
 		l->from = -4;
 		l->to = 0;
@@ -1542,7 +1542,7 @@ define_insn(cvt_double_int, cvtdi_RxR)
 	{
 		label *l;
 
-		l = newLabel();
+		l = KaffeJIT3_newLabel();
 		l->type = Lsavedregs | Lrelative | Lgeneral;
 		l->from = -8;
 		l->to = 0;
@@ -1557,7 +1557,7 @@ define_insn(cvt_double_int, cvtdi_RxR)
 	{
 		label *l;
 
-		l = newLabel();
+		l = KaffeJIT3_newLabel();
 		l->type = Lsavedregs | Lrelative | Lgeneral;
 		l->from = -4;
 		l->to = 0;
@@ -1761,7 +1761,7 @@ define_insn(call_ref, call_xCC)
 {
 	label *sl, *l = const_label(1);
 
-	sl = newLabel();
+	sl = KaffeJIT3_newLabel();
 	sl->type = Lframe | Lrelative | Lgeneral;
 	sl->at = CODEPC;
 	sl->from = -72;
@@ -1777,7 +1777,7 @@ define_insn(call_ref, call_xCC)
 
 define_insn(call, call_xRC)
 {
-	label *l = newLabel();
+	label *l = KaffeJIT3_newLabel();
 	int r = rreg_int(1);
 	assert(const_int(2) == ba);
 
@@ -1794,7 +1794,7 @@ define_insn(call, call_xRC)
 
 define_insn(branch_indirect, branch_indirect_xRC)
 {
-	label *l = newLabel();
+	label *l = KaffeJIT3_newLabel();
 	int r = rreg_int(1);
 	assert(const_int(2) == ba);
 

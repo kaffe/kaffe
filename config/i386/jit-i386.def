@@ -300,7 +300,7 @@ define_insn(exception_prologue, eprologue_xLx)
 
 define_insn(epilogue, epilogue_xxx)
 {
-	setEpilogueLabel((uintp)CODEPC);
+	KaffeJIT_setEpilogueLabel((uintp)CODEPC);
 
 #if 0
 	/* If this method uses IEEE, restore it */
@@ -776,7 +776,7 @@ define_insn(div_int, div_RRR)
 	OUT(0xFF);
 	debug(("cmp #0xFF,%s\n", regname(r)));
 
-	l1 = newLabel();
+	l1 = KaffeJIT_newLabel();
 	l1->type = Linternal| Llong8|Lrelative;
 	OUT(0x74);
 	l1->at = CODEPC;
@@ -866,7 +866,7 @@ define_insn(rem_int, rem_RRR)
 	OUT(0xFF);
 	debug(("cmp #0xFF,%s\n", regname(r)));
 
-	l1 = newLabel();
+	l1 = KaffeJIT_newLabel();
 	l1->type = Linternal| Llong8|Lrelative;
 	OUT(0x74);
 	l1->at = CODEPC;

@@ -132,9 +132,9 @@ typedef struct _labelchunk {
  *
  * @param to - The address of the epilogue instructions for this method.
  *
- * XXX Should be setEpilogueLabels().
+ * XXX Should be KaffeJIT3_setEpilogueLabels().
  */
-void setEpilogueLabel(uintp to);
+void KaffeJIT3_setEpilogueLabel(uintp to);
 
 /**
  * Finds and returns the last epilogue label created for this method.  This is
@@ -157,7 +157,7 @@ void setEpilogueLabel(uintp to);
  * returns - The last epilogue label created for this method or NULL if no
  *   epilogue labels were created.
  */
-label *getLastEpilogueLabel(void);
+label *KaffeJIT3_getLastEpilogueLabel(void);
 
 /**
  * Link all the active labels into the code.  This involves computing the
@@ -169,17 +169,17 @@ label *getLastEpilogueLabel(void);
  * @param codebase - The final destination for the method code.  Note: The constant
  *   pool, if there is one, will immediately precede this address.
  */
-void linkLabels(uintp codebase);
+void KaffeJIT3_linkLabels(uintp codebase);
 
 /**
  * @return A new label object that is linked into the global list.
  */
-label* newLabel(void);
+label* KaffeJIT3_newLabel(void);
 
 /**
  * Reset the global list of labels for a new method.
  */
-void resetLabels(void);
+void KaffeJIT3_resetLabels(void);
 
 /**
  * Iterate through the method internal labels that refer to the given native
@@ -192,7 +192,7 @@ void resetLabels(void);
  * @return A label matching the given "pc" or NULL if there are no more
  *   internal labels found.
  */
-label *getInternalLabel(label **lptr, uintp counter);
+label *KaffeJIT3_getInternalLabel(label **lptr, uintp counter);
 
 #if defined(KAFFE_VMDEBUG)
 /*
@@ -200,7 +200,7 @@ label *getInternalLabel(label **lptr, uintp counter);
  *   referenced code has already been generated.  Useful for printing out
  *   the target of branches.
  */
-char *getLabelName(label *l);
+char *KaffeJIT3_getLabelName(label *l);
 #endif
 
 #endif

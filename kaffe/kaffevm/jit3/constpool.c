@@ -20,14 +20,22 @@
 
 #include <stdarg.h>
 
+/**
+ * These variables track the pool of constpool objects allocated by the jitter.
+ * The set of valid constpool objects is the sublist between firstConst and
+ * currConst, exclusive.
+ */
+static constpool* firstConst;
+static constpool* lastConst;
+static constpool* currConst;
+
 static constpoolchunk* poolchunks;
-constpool* firstConst;
-constpool* lastConst;
-constpool* currConst;
-uint32 nConst;
+
+/** The number of active constpool objects. */
+static uint32 nConst;
 
 constpool*
-newConstant(int type, ...)
+KaffeJIT3_newConstant(int type, ...)
 {
 	union _constpoolval val;
 	constpool *c;
@@ -111,7 +119,7 @@ newConstant(int type, ...)
 	return (c);
 }
 
-const char *constpoolTypeNames[] = {
+static const char *constpoolTypeNames[] = {
 	"<invalid>",
 	"int",
 	"long",
@@ -159,7 +167,7 @@ printConstant(FILE *file, constpool *cp)
 #endif /* defined(KAFFE_VMDEBUG) */
 
 void
-establishConstants(void *at)
+KaffeJIT3_establishConstants(void *at)
 {
 	constpool *c;
 
@@ -175,7 +183,7 @@ DBG(MOREJIT,	printConstant(stderr, c));
 }
 
 void
-resetConstants(void)
+KaffeJIT3_resetConstants(void)
 {
 	currConst = firstConst;
 	nConst = 0;
@@ -191,4 +199,10 @@ resetConstants(void)
 		poolchunks->data[ALLOCCONSTNR - 1].next = NULL;
 		lastConst = &poolchunks->data[ALLOCCONSTNR - 1];
 	}
+}
+
+uint32
+KaffeJIT3_getNumberOfConstants(void)
+{
+	return nConst;
 }

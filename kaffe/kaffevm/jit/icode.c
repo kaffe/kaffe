@@ -194,7 +194,7 @@ prologue(Method* meth)
 	used_ieee_rounding = false;
 	used_ieee_division = false;
 
-	l = newLabel();
+	l = KaffeJIT_newLabel();
 	l->type = Lnull;
 	l->at = 0;
 	l->to = 0;
@@ -209,7 +209,7 @@ exception_prologue(void)
 {
 	label* l;
 
-	l = newLabel();
+	l = KaffeJIT_newLabel();
 	l->type = Lnull;
 	l->at = 0;
 	l->to = 0;
@@ -230,7 +230,7 @@ ret(void)
 {
 	label *l;
 	
-	l = newLabel();
+	l = KaffeJIT_newLabel();
 	l->at = 0;
 	l->to = 0;
 	l->from = 0;
@@ -372,8 +372,8 @@ move_int_const(SlotInfo* dst, jint val)
 		label* l;
 		SlotInfo* tmp;
 
-		c = newConstant(CPint, val);
-		l = newLabel();
+		c = KaffeJIT_newConstant(CPint, val);
+		l = KaffeJIT_newLabel();
 		l->type = Lconstant;
 		l->at = 0;
 		l->to = (uintp)c;
@@ -400,8 +400,8 @@ move_ref_const(SlotInfo* dst, void *val)
 		label* l;
 		SlotInfo* tmp;
 
-		c = newConstant(CPref, val);
-		l = newLabel();
+		c = KaffeJIT_newConstant(CPref, val);
+		l = KaffeJIT_newLabel();
 		l->type = Lconstant;
 		l->at = 0;
 		l->to = (uintp)c;
@@ -424,8 +424,8 @@ move_string_const(SlotInfo* dst, void *val)
 	constpool *c;
 	SlotInfo* tmp;
 
-	c = newConstant(CPstring, val);
-	l = newLabel();
+	c = KaffeJIT_newConstant(CPstring, val);
+	l = KaffeJIT_newLabel();
 	l->type = Lconstant;
 	l->at = 0;
 	l->to = (uintp)c;
@@ -450,8 +450,8 @@ move_long_const(SlotInfo* dst, jlong val)
 		label* l;
 		SlotInfo* tmp;
 
-		c = newConstant(CPlong, val);
-		l = newLabel();
+		c = KaffeJIT_newConstant(CPlong, val);
+		l = KaffeJIT_newLabel();
 		l->type = Lconstant;
 		l->at = 0;
 		l->to = (uintp)c;
@@ -482,8 +482,8 @@ move_float_const(SlotInfo* dst, float val)
 		label* l;
 		SlotInfo* tmp;
 
-		c = newConstant(CPfloat, val);
-		l = newLabel();
+		c = KaffeJIT_newConstant(CPfloat, val);
+		l = KaffeJIT_newLabel();
 		l->type = Lconstant;
 		l->at = 0;
 		l->to = (uintp)c;
@@ -510,8 +510,8 @@ move_double_const(SlotInfo* dst, jdouble val)
 		label* l;
 		SlotInfo* tmp;
 
-		c = newConstant(CPdouble, val);
-		l = newLabel();
+		c = KaffeJIT_newConstant(CPdouble, val);
+		l = KaffeJIT_newLabel();
 		l->type = Lconstant;
 		l->at = 0;
 		l->to = (uintp)c;
@@ -2590,7 +2590,7 @@ void
 call_soft(void *routine)
 {
 #if defined(HAVE_call_soft)
-	label* l = newLabel();
+	label* l = KaffeJIT_newLabel();
 	l->type = Labsolute|Lexternal|Lnoprofile;
 	l->at = 0;
 	l->to = (uintp)routine;	/* What place does it goto */
@@ -2599,7 +2599,7 @@ call_soft(void *routine)
 	slot_const_const(0, (jword)l, ba, HAVE_call_soft, Tnull);
 #elif defined(HAVE_call_ref)
 	label* l;
-	l = newLabel();
+	l = KaffeJIT_newLabel();
 	l->type = Lexternal|Lnoprofile;
 	l->at = 0;
 	l->to = (uintp)routine;	/* What place does it goto */
@@ -2611,8 +2611,8 @@ call_soft(void *routine)
 	constpool* c;
 	SlotInfo* tmp;
 
-	l = newLabel();
-	c = newConstant(CPref, routine);
+	l = KaffeJIT_newLabel();
+	c = KaffeJIT_newConstant(CPref, routine);
 	l->type = Lconstant;
 	l->at = 0;
 	l->to = (uintp)c;
@@ -2719,7 +2719,7 @@ reference_label(int32 i, int32 n)
 
 	assert(n < MAXLABTAB);
 	if (labtab[n] == 0) {
-		l = newLabel();
+		l = KaffeJIT_newLabel();
 		labtab[n] = l;
 		l->type = Lnull;
 		l->at = 0;
@@ -2736,7 +2736,7 @@ reference_label(int32 i, int32 n)
 label*
 reference_code_label(uintp offset)
 {
-	label* l = newLabel();
+	label* l = KaffeJIT_newLabel();
 	l->at = 0;		/* Where is the jump */
 	l->to = offset;		/* What place does it goto */
 	l->from = 0;
@@ -2751,7 +2751,7 @@ reference_table_label(int32 n)
 
 	assert(n < MAXLABTAB);
 	if (labtab[n] == 0) {
-		l = newLabel();
+		l = KaffeJIT_newLabel();
 		labtab[n] = l;
 		l->type = Lnull;
 		l->at = 0;
@@ -2783,7 +2783,7 @@ set_label(int i, int n)
 {
 	assert(n < MAXLABTAB);
 	if (labtab[n] == 0) {
-		labtab[n] = newLabel();
+		labtab[n] = KaffeJIT_newLabel();
 		labtab[n]->type = Linternal;
 		labtab[n]->at = 0;
 		labtab[n]->from = 0;
