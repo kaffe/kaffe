@@ -1,3 +1,13 @@
+Mon Feb  8 03:25:19 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* include/Makefile.am (DERIVED_HDRS): do not create them in the
+	source tree
+	(DISTCLEANFILES): remove DERIVED_HDRS
+	* include/Makefile.in: regen
+	* include/java_lang_Thread.h: remove
+	* include/java_lang_ThreadGroup.h: ditto
+	* include/java_lang_Throwable.h: ditto
+
 Sun Feb  7 19:50:48 1999  Archie Cobbs <archie@whistle.com>
 
 	* include/Makefile.am: generate all derived header files
