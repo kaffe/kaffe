@@ -1,3 +1,16 @@
+Sat Dec 12 06:27:25 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/javalib/java/lang/Thread.java (Finalizer): new private 
+	inner class
+	(finalize0): moved into Finalizer, renamed to finalize
+	* include/java_lang_Thread$Finalizer.h: new file
+	* libraries/clib/native/Thread.c: include Thread$Finalizer.h
+	(finalize0): renamed
+	* include/Makefile.in (derived-files): run kaffeh for
+	Thread.Finalizer, but don't install the header file
+	* include/java_lang_Thread.h: regen
+	* libraries/javalib/Klasses.jar: regen
+
 Sat Dec 12 05:59:21 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* include/Makefile.in (INCLUDEFILES): remove trailing backslash

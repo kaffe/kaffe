@@ -30,13 +30,13 @@ typedef struct Classjava_lang_Thread {
   jbool dying;
   struct Hjava_util_Hashtable* threadLocals;
   struct Hjava_lang_Object* suspendResume;
+  struct Hjava_lang_Object* finalizeHelper;
 } Classjava_lang_Thread;
 HandleTo(java_lang_Thread);
 
 extern jint java_lang_Thread_countStackFrames(struct Hjava_lang_Thread*);
 extern struct Hjava_lang_Thread* java_lang_Thread_currentThread(void);
 extern void java_lang_Thread_destroy0(struct Hjava_lang_Thread*);
-extern void java_lang_Thread_finalize0(struct Hjava_lang_Thread*);
 extern void java_lang_Thread_interrupt0(struct Hjava_lang_Thread*);
 extern jbool java_lang_Thread_isAlive(struct Hjava_lang_Thread*);
 extern void java_lang_Thread_setPriority0(struct Hjava_lang_Thread*, jint);
