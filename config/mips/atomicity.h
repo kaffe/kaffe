@@ -29,8 +29,7 @@ compare_and_swap (volatile long int *p, long int oldval, long int newval)
   long int ret, temp;
 
   __asm__ __volatile__
-    ("/* Inline compare & swap */\n"
-     "1:\n\t"
+    ("1:\n\t"
      ".set	push\n\t"
      ".set	mips2\n\t"
      "ll	%1,%5\n\t"
@@ -41,7 +40,6 @@ compare_and_swap (volatile long int *p, long int oldval, long int newval)
      ".set	pop\n\t"
      "beqz	%0,1b\n"
      "2:\n\t"
-     "/* End compare & swap */"
      : "=&r" (ret), "=&r" (temp), "=m" (*p)
      : "r" (oldval), "r" (newval), "m" (*p)
      : "memory");

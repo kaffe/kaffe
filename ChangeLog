@@ -1,3 +1,11 @@
+2004-07-13  Riccardo Mottola <rmottola@users.sf.net>
+
+        * config/mips/atomicity.h:
+        removed inline assembler comments from swp&cmp since they confuse some assemblers
+
+        * config/mips/irix5/md.h:
+        added signal macros
+
 2004-07-13  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* config/m68k/netbsd1/md.h:
