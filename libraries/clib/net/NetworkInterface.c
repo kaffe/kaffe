@@ -78,7 +78,7 @@ static struct Hjava_net_InetAddress *
 getInetAddress(struct ifaddrs *ifa)
 {
   struct Hjava_lang_String *address_string = NULL;
-  jvalue jvalue;
+  jvalue jv;
   struct Hjava_net_InetAddress *retval = NULL;
 
   if( ifa )
@@ -116,9 +116,9 @@ getInetAddress(struct ifaddrs *ifa)
     }
   if (address_string) {
     do_execute_java_class_method
-      (&jvalue, "java/net/InetAddress", 0, "getByName", "(Ljava/lang/String;)Ljava/net/InetAddress;",
+      (&jv, "java/net/InetAddress", 0, "getByName", "(Ljava/lang/String;)Ljava/net/InetAddress;",
        address_string);
-    retval = (struct Hjava_net_InetAddress *)jvalue.l;
+    retval = (struct Hjava_net_InetAddress *)jv.l;
   }
   return( retval );
 }

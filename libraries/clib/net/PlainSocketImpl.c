@@ -392,7 +392,7 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 	HArrayOfByte *remote_addr;
 	struct Hgnu_java_net_PlainSocketImpl* accepted_socket =
 	  (struct Hgnu_java_net_PlainSocketImpl *)sock;
-	jvalue jvalue;
+	jvalue jv;
 
 	remote_addr = NULL;
 	memset(&addr, 0, sizeof(addr));
@@ -468,12 +468,12 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 	}
 
 	/* and use that byte array to create an appropriate Inet*Address instance */
-	do_execute_java_class_method (&jvalue, "java.net.InetAddress",
+	do_execute_java_class_method (&jv, "java.net.InetAddress",
 							      0, 
 							      "getByAddress",
 							      "([B)Ljava/net/InetAddress;",
 							      remote_addr);
-	unhand(sock)->address = jvalue.l;
+	unhand(sock)->address = jv.l;
 	unhand(sock)->port = ntohs(addr.sin_port);
 
 	alen = sizeof(addr);

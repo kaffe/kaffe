@@ -680,18 +680,18 @@ expandMethods(Hjava_lang_Class *cl, Method *imeth, errorInfo *einfo)
 				      sizeof(Method) *
 				      (CLASS_NMETHODS(cl) + 1), KGC_ALLOC_METHOD)) )
 	{
-		int index;
+		int i;
 		
-		index = CLASS_NMETHODS(cl);
-		CLASS_NMETHODS(cl) = index + 1;
+		i = CLASS_NMETHODS(cl);
+		CLASS_NMETHODS(cl) = i + 1;
 		CLASS_METHODS(cl) = new_methods;
 		utf8ConstAddRef(imeth->name);
 		utf8ConstAddRef(imeth->parsed_sig->signature);
-		new_methods[index] = *imeth;
-		new_methods[index].ndeclared_exceptions = -1;
-		new_methods[index].declared_exceptions_u.remote_exceptions =
+		new_methods[i] = *imeth;
+		new_methods[i].ndeclared_exceptions = -1;
+		new_methods[i].declared_exceptions_u.remote_exceptions =
 			imeth;
-		new_methods[index].class = cl;
+		new_methods[i].class = cl;
 		retval = 1;
 	}
 	else
@@ -1184,7 +1184,7 @@ addField(Hjava_lang_Class* c,
 	constIndex sc;
 	Field* ft;
 	constants* pool;
-	int index;
+	int i;
 	const char* sig;
 
 	pool = CLASS_CONSTANTS (c);
@@ -1200,12 +1200,12 @@ DBG(RESERROR,	dprintf("addField: no field name.\n");			)
 
 	--CLASS_FSIZE(c);	/* holds field count initially */
 	if (access_flags & ACC_STATIC) {
-		index = CLASS_NSFIELDS(c);
+		i = CLASS_NSFIELDS(c);
 	}
 	else {
-		index = CLASS_FSIZE(c) + CLASS_NSFIELDS(c);
+		i = CLASS_FSIZE(c) + CLASS_NSFIELDS(c);
 	}
-	ft = &CLASS_FIELDS(c)[index];
+	ft = &CLASS_FIELDS(c)[i];
 	ft->clazz = c;
 	
 DBG(CLASSFILE,

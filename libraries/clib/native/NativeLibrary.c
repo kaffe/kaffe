@@ -61,11 +61,11 @@ java_lang_NativeLibrary_linkLibrary(struct Hjava_lang_String *jpath)
 	char path[MAXPATHLEN];
 	char errbuf[128];
 	errorInfo einfo;
-	int index = -1;
+	int i = -1;
 
 	stringJava2CBuf(jpath, path, sizeof(path));
-	if ((index = loadNativeLibrary(path, errbuf, sizeof(errbuf))) < 0) {
- 		if( strstr(errbuf, "ile not found") ) {
+	if ((i = loadNativeLibrary(path, errbuf, sizeof(errbuf))) < 0) {
+ 		if( strstr(errbuf, "File not found") ) {
  			postExceptionMessage(&einfo,
  					     JAVA_IO(FileNotFoundException),
  					     "%s",
@@ -78,18 +78,18 @@ java_lang_NativeLibrary_linkLibrary(struct Hjava_lang_String *jpath)
 			throwError(&einfo);
 		}
 	}
- 	if( index == -1 )
+ 	if( i == -1 )
  		throwError(&einfo);
 
-	return index;
+	return i;
 }
 
 /*
  * Unlink a shared library.
  */
 void
-java_lang_NativeLibrary_unlinkLibrary(int index)
+java_lang_NativeLibrary_unlinkLibrary(int i)
 {
-	unloadNativeLibrary(index);
+	unloadNativeLibrary(i);
 }
 

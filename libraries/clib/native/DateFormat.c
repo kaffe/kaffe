@@ -24,12 +24,12 @@
 #endif
 
 Hjava_lang_String*
-java_text_DateFormat_format0(jlong time, int fmt)
+java_text_DateFormat_format0(jlong _time, int fmt)
 {
 	time_t date;
 	char str[64];
 
-	date = time / 1000;
+	date = _time / 1000;
 	switch (fmt) {
 	case 0:
 		SIMPLETIME(str, localtime(&date));

@@ -117,7 +117,7 @@ static jboolean generateInsnSequence(errorInfo*);
  * @param meth The method that may contain an exception handler.
  * @param pc The location within the method to look for a handler.
  */
-static void checkCaughtExceptions(Method* meth, uint32 pc);
+static void checkCaughtExceptions(Method* meth, uint32 _pc);
 
 static void initFakeCalls(void);
 static void makeFakeCalls(void);
@@ -525,18 +525,18 @@ finishInsnSequence(void* dummy UNUSED, nativeCodeInfo* code, errorInfo* einfo)
  */
 static
 int
-getInsnPC(int pc, codeinfo* codeInfo, nativeCodeInfo *code)
+getInsnPC(int _pc, codeinfo* _codeInfo, nativeCodeInfo *code)
 {
-	int maxPc = codeInfo->codelen;
+	int maxPc = _codeInfo->codelen;
 
-	while (pc < maxPc) {
-		if (IS_STARTOFINSTRUCTION(pc)) {
-			int res = INSNPC(pc);
+	while (_pc < maxPc) {
+		if (IS_STARTOFINSTRUCTION(_pc)) {
+			int res = INSNPC(_pc);
 			if (res != -1) {
 				return (res);
 			}
 		}
-		pc ++;
+		_pc ++;
 	}
 	return code->codelen;
 }
@@ -868,7 +868,7 @@ SCHK(		sanityCheck();					);
  */
 static
 void 
-checkCaughtExceptions(Method* meth, uint32 pc)
+checkCaughtExceptions(Method* meth, uint32 _pc)
 {
 	unsigned int i;
 
@@ -884,8 +884,8 @@ checkCaughtExceptions(Method* meth, uint32 pc)
 		Hjava_lang_Class* etype;
 
 		/* include only if exception handler range matches pc */
-		if (meth->exception_table->entry[i].start_pc > pc ||
-		    meth->exception_table->entry[i].end_pc <= pc)
+		if (meth->exception_table->entry[i].start_pc > _pc ||
+		    meth->exception_table->entry[i].end_pc <= _pc)
 			continue;
 
 		willCatch(ANY);

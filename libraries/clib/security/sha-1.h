@@ -122,16 +122,16 @@ void SHA1Final(unsigned char *md, SHA1_CTX *c);
 /* 5 instructions with rotate instruction, else 9 */
 #define Endian_Reverse32(a) \
 	{ \
-	unsigned long l=(a); \
-	(a)=((ROTATE(l,8)&0x00FF00FF)|(ROTATE(l,24)&0xFF00FF00)); \
+	unsigned long __l=(a); \
+	(a)=((ROTATE(__l,8)&0x00FF00FF)|(ROTATE(__l,24)&0xFF00FF00)); \
 	}
 #else
 /* 6 instructions with rotate instruction, else 8 */
 #define Endian_Reverse32(a) \
 	{ \
-	unsigned long l=(a); \
-	l=(((l&0xFF00FF00)>>8L)|((l&0x00FF00FF)<<8L)); \
-	(a)=ROTATE(l,16L); \
+	unsigned long __l=(a); \
+	l=(((__l&0xFF00FF00)>>8L)|((__l&0x00FF00FF)<<8L)); \
+	(a)=ROTATE(__l,16L); \
 	}
 #endif
 

@@ -102,7 +102,7 @@ hashDestroy(hashtab_t tab)
 void *
 hashAdd(hashtab_t tab, const void *ptr)
 {
-	int	index;
+	int	i;
 	void	*rtn;
 
 	if (NEED_RESIZE(tab)) {
@@ -111,13 +111,13 @@ hashAdd(hashtab_t tab, const void *ptr)
 			return (0);
 		}
 	}
-	index = hashFindSlot(tab, ptr);
-	assert(index != -1);
-	if (tab->list[index] == NULL || tab->list[index] == DELETED) {
-		tab->list[index] = ptr;
+	i = hashFindSlot(tab, ptr);
+	assert(i != -1);
+	if (tab->list[i] == NULL || tab->list[i] == DELETED) {
+		tab->list[i] = ptr;
 		tab->count++;
 	}
-	rtn = (void *) tab->list[index];
+	rtn = (void *) tab->list[i];
 
 	return(rtn);
 }
@@ -129,15 +129,15 @@ hashAdd(hashtab_t tab, const void *ptr)
 void
 hashRemove(hashtab_t tab, const void *ptr)
 {
-	int index;
+	int i;
 
-	index = hashFindSlot(tab, ptr);
-	assert(index != -1);
-	if (tab->list[index] != NULL
-	    && tab->list[index] != DELETED
-	    && tab->list[index] == ptr) {
+	i = hashFindSlot(tab, ptr);
+	assert(i != -1);
+	if (tab->list[i] != NULL
+	    && tab->list[i] != DELETED
+	    && tab->list[i] == ptr) {
 		tab->count--;
-		tab->list[index] = DELETED;
+		tab->list[i] = DELETED;
 	}
 }
 
@@ -147,13 +147,13 @@ hashRemove(hashtab_t tab, const void *ptr)
 void *
 hashFind(hashtab_t tab, const void *ptr)
 {
-	int index;
+	int i;
 	void *rtn;
 
-	index = hashFindSlot(tab, ptr);
-	assert(index != -1);
-	rtn = (tab->list[index] == DELETED) ?
-		NULL : (void *) tab->list[index];
+	i = hashFindSlot(tab, ptr);
+	assert(i != -1);
+	rtn = (tab->list[i] == DELETED) ?
+		NULL : (void *) tab->list[i];
 
 	return(rtn);
 }
@@ -168,7 +168,7 @@ hashFindSlot(hashtab_t tab, const void *ptr)
 	const int hash = (*tab->hash)(ptr);
 	const int startIndex = hash & (tab->size - 1);
 	const int step = LIST_STEP(hash);
-	int index, deletedIndex = -1;
+	int i, deletedIndex = -1;
 
 	/* Sanity check */
 	if (ptr == NULL || ptr == DELETED) {
@@ -176,24 +176,24 @@ hashFindSlot(hashtab_t tab, const void *ptr)
 	}
 
 	/* Find slot */
-	index = startIndex;
+	i = startIndex;
 	for (;;) {
-		const void **const ptr2 = &tab->list[index];
+		const void **const ptr2 = &tab->list[i];
 
 		if (*ptr2 == NULL) {
-			return (deletedIndex >= 0) ? deletedIndex : index;
+			return (deletedIndex >= 0) ? deletedIndex : i;
 		}
 		if (*ptr2 == DELETED) {
 			if (deletedIndex == -1) {
-				deletedIndex = index;
+				deletedIndex = i;
 			}
 		} else if (*ptr2 == ptr || (*tab->comp)(ptr, *ptr2) == 0) {
-			return(index);
+			return(i);
 		}
-		index = (index + step) & (tab->size - 1);
+		i = (i + step) & (tab->size - 1);
 
 		/* Check for looping all the way through the table */
-		if (index == startIndex) {
+		if (i == startIndex) {
                         if (deletedIndex >= 0) {
                                 return(deletedIndex);
                         }
@@ -214,7 +214,7 @@ hashResize(hashtab_t tab)
 {
 	const int newSize = (tab->size > 0) ? (tab->size * 2) : INITIAL_SIZE;
 	const void **newList;
-	int index;
+	int i;
 
 	/* Get a bigger list */
 	if (tab->alloc) {
@@ -241,18 +241,18 @@ hashResize(hashtab_t tab)
 	}
 
 	/* Rehash old list contents into new list */
-	for (index = tab->size - 1; index >= 0; index--) {
-		const void *ptr = tab->list[index];
+	for (i = tab->size - 1; i >= 0; i--) {
+		const void *ptr = tab->list[i];
 
 		if (ptr != NULL && ptr != DELETED) {
 			const int hash = (*tab->hash)(ptr);
 			const int step = LIST_STEP(hash);
-			int i;
+			int j;
 
-			for (i = hash & (newSize - 1);
-			    newList[i] != NULL;
-			    i = (i + step) & (newSize - 1));
-			newList[i] = ptr;
+			for (j = hash & (newSize - 1);
+			    newList[j] != NULL;
+			    j = (j + step) & (newSize - 1));
+			newList[j] = ptr;
 		}
 	}
 

@@ -506,9 +506,9 @@ _syncRegisters(uintp stk UNUSED, uintp temp UNUSED)
 }
 
 void
-_start_instruction(uintp pc)
+_start_instruction(uintp _pc)
 {
-	slot_const_const(0, 0, pc, startInsn, Tnull);
+	slot_const_const(0, 0, _pc, startInsn, Tnull);
 }
 
 void
@@ -3968,14 +3968,14 @@ set_label(int i UNUSED, int n)
 
 #if defined(HAVE_build_code_ref)
 label*
-build_code_ref(uint8* pos, uintp pc)
+build_code_ref(uint8* pos, uintp _pc)
 {
 	label* l;
 	jint offset;
 
 	offset = (pos[0] * 0x01000000 + pos[1] * 0x00010000 +
 		  pos[2] * 0x00000100 + pos[3] * 0x00000001);
-	l = reference_code_label(pc+offset);
+	l = reference_code_label(_pc+offset);
 
 	slot_slot_const(0, 0, (jword)l, HAVE_build_code_ref, Tnull);
 	return (l);

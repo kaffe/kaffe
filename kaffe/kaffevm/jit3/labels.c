@@ -258,7 +258,7 @@ newLabel(void)
 }
 
 label*
-getInternalLabel(label **lptr, uintp pc)
+getInternalLabel(label **lptr, uintp _pc)
 {
 	label *curr, *retval = 0;
 
@@ -275,14 +275,14 @@ getInternalLabel(label **lptr, uintp pc)
 		switch( curr->type & Ltomask )
 		{
 		case Linternal:
-			if( curr->to == pc )
+			if( curr->to == _pc )
 			{
 				*lptr = curr->next;
 				retval = curr;
 			}
 			break;
 		case Lcode:
-			if( INSNPC(curr->to) == pc )
+			if( INSNPC(curr->to) == _pc )
 			{
 				*lptr = curr->next;
 				retval = curr;

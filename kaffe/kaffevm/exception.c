@@ -531,7 +531,7 @@ floatingException(struct _exceptionFrame *frame)
  * the current frame (the 'throw' or from a nested method call).
  */
 static bool
-findExceptionBlockInMethod(uintp pc, Hjava_lang_Class* class, Method* ptr, uintp* handler)
+findExceptionBlockInMethod(uintp _pc, Hjava_lang_Class* class, Method* ptr, uintp* handler)
 {
 	jexceptionEntry* eptr;
 	Hjava_lang_Class* cptr;
@@ -551,7 +551,7 @@ DBG(ELOOKUP,
 DBG(ELOOKUP,
 	dprintf("%s.%s has %d handlers (throw was pc=%#lx):\n",
 		ptr->class->name->data, ptr->name->data,
-		ptr->exception_table->length, (long) pc); )
+		ptr->exception_table->length, (long) _pc); )
 
 	for (i = 0; i < ptr->exception_table->length; i++) {
 		uintp start_pc = eptr[i].start_pc;
@@ -560,7 +560,7 @@ DBG(ELOOKUP,
 
 DBG(ELOOKUP,	dprintf("  Handler %d covers %#lx-%#lx\n", i, 
 			(long) start_pc, (long) end_pc); )
-		if (pc < start_pc || pc >= end_pc) {
+		if (_pc < start_pc || _pc >= end_pc) {
 			continue;
 		}
 

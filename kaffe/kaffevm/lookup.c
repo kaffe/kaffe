@@ -40,7 +40,7 @@
  * call->method is set to NULL in this case.
  */
 bool
-getMethodSignatureClass(constIndex idx, Hjava_lang_Class* this, bool loadClass, int isSpecial, callInfo* call, errorInfo *einfo)
+getMethodSignatureClass(constIndex idx, Hjava_lang_Class* this, bool shouldLoadClass, int isSpecial, callInfo* call, errorInfo *einfo)
 {
 	constants* pool;
 	constIndex ci;
@@ -74,7 +74,7 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
 	call->name = name;
 	call->signature = sig;
 
-	if (loadClass == true) {
+	if (shouldLoadClass == true) {
 		ci = METHODREF_CLASS(idx, pool);
 		class = getClass(ci, this, einfo);
 		if (class == NULL) {
@@ -137,7 +137,7 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
 	countInsAndOuts(sig->data, &call->in, &call->out, &call->rettype);
 
 DBG(MLOOKUP,	
-	if (loadClass) 
+	if (shouldLoadClass) 
 		dprintf("getMethodSignatureClass(%s,%s,%s) -> %s\n",
 			call->class->name->data, name->data, sig->data, 
 			(call->method ? "success" : "failure"));	)
@@ -243,7 +243,7 @@ getClass(constIndex idx, Hjava_lang_Class* this, errorInfo *einfo)
 }
 
 bool
-getField(constIndex idx, Hjava_lang_Class* this, bool isStatic, fieldInfo* ret, errorInfo *einfo)
+getField(constIndex idx, Hjava_lang_Class* this, bool isStaticField, fieldInfo* ret, errorInfo *einfo)
 {
 	constants* pool;
 	constIndex ci;
@@ -281,7 +281,7 @@ DBG(FLOOKUP,	dprintf("*** getField(%s,%s,%s)\n",
 		WORD2UTF(pool->data[NAMEANDTYPE_SIGNATURE(ni, pool)])->data);
     )
 
-	field = lookupClassField(class, WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)]), isStatic, einfo);
+	field = lookupClassField(class, WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)]), isStaticField, einfo);
 	if (field == 0) {
 		return (false);
 	}

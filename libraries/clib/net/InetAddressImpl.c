@@ -127,7 +127,7 @@ gnu_java_net_SysInetAddressImpl_getHostByName(
 		struct Hjava_lang_String* jStr)
 {
 #if defined(HAVE_GETADDRINFO)
-  int index = 0, count = 0, retryCount = 5, rc;
+  int i = 0, count = 0, retryCount = 5, rc;
   struct addrinfo hints, *ai = 0, *curr;
   HArrayOfArray *retval = 0;
   int iLockRoot;
@@ -227,9 +227,9 @@ gnu_java_net_SysInetAddressImpl_getHostByName(
 	    }
 	  if( addr && retval )
 	    {
-	      unhand_array_array(retval)[index] =
+	      unhand_array_array(retval)[i] =
 		&addr->base;
-	      index += 1;
+	      i += 1;
 	    }
 	  curr = curr->ai_next;
 	}
@@ -362,11 +362,11 @@ gnu_java_net_SysInetAddressImpl_getHostByAddr(
   struct Hjava_lang_String *retval = 0;
 #if defined(AF_INET6)
   struct sockaddr_in6 sa_buf;
-  struct sockaddr_in6 *sin6 = &sa_buf;
+  struct sockaddr_in6 *sain6 = &sa_buf;
 #else
   struct sockaddr_in sa_buf;
 #endif
-  struct sockaddr_in *sin = (struct sockaddr_in *)&sa_buf;
+  struct sockaddr_in *sain = (struct sockaddr_in *)&sa_buf;
   int rc, retryCount = 5;
   int iLockRoot;
   errorInfo einfo;
@@ -378,31 +378,31 @@ gnu_java_net_SysInetAddressImpl_getHostByAddr(
     {
     case 4:
 #if defined(BSD44)
-      sin->sin_len = sizeof(struct sockaddr_in);
+      sain->sin_len = sizeof(struct sockaddr_in);
 #else
       sin_len = sizeof(struct sockaddr_in);
 #endif
-      sin->sin_family = AF_INET;
-      sin->sin_port = 0;
-      memcpy(&sin->sin_addr, unhand_byte_array(addr), addr->length);
+      sain->sin_family = AF_INET;
+      sain->sin_port = 0;
+      memcpy(&sain->sin_addr, unhand_byte_array(addr), addr->length);
       break;
 #if defined(AF_INET6)
     case 16:
 #if defined(BSD44)
-      sin6->sin6_len = sizeof(struct sockaddr_in6);
+      sain6->sin6_len = sizeof(struct sockaddr_in6);
 #else
       sin_len = sizeof(struct sockaddr_in);
 #endif
-      sin6->sin6_family = AF_INET6;
-      sin6->sin6_port = 0;
+      sain6->sin6_family = AF_INET6;
+      sain6->sin6_port = 0;
 #if defined(HAVE_STRUCT_SOCKADDR_IN6_SIN6_FLOWINFO)
-      sin6->sin6_flowinfo = 0;
+      sain6->sin6_flowinfo = 0;
 #endif /* HAVE_STRUCT_SOCKADDR_IN6_SIN6_FLOWINFO */
-      memcpy(&sin6->sin6_addr,
+      memcpy(&sain6->sin6_addr,
 	     unhand_byte_array(addr),
 	     addr->length);
 #if defined(HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID)
-      sin6->sin6_scope_id = 0;
+      sain6->sin6_scope_id = 0;
 #endif /* HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID */
       break;
 #endif
@@ -416,7 +416,7 @@ gnu_java_net_SysInetAddressImpl_getHostByAddr(
   lockStaticMutex(&nsLock);
   while( ((rc = getnameinfo((const struct sockaddr *)&sa_buf,
 #if defined(BSD44)
-			    sin->sin_len,
+			    sain->sin_len,
 #else
 			    sin_len,
 #endif
@@ -452,7 +452,7 @@ gnu_java_net_SysInetAddressImpl_getHostByAddr(
       postOutOfMemory(&einfo);
       break;
     case EAI_NONAME:
-      inet_ntop(sin->sin_family,
+      inet_ntop(sain->sin_family,
 		unhand_byte_array(addr),
 		hostname,
 		NI_MAXHOST);
@@ -462,7 +462,7 @@ gnu_java_net_SysInetAddressImpl_getHostByAddr(
 			   hostname);
       break;
     case EAI_SYSTEM:
-      inet_ntop(sin->sin_family,
+      inet_ntop(sain->sin_family,
 		unhand_byte_array(addr),
 		hostname,
 		NI_MAXHOST);
@@ -473,7 +473,7 @@ gnu_java_net_SysInetAddressImpl_getHostByAddr(
 			   hostname);
       break;
     default:
-      inet_ntop(sin->sin_family,
+      inet_ntop(sain->sin_family,
 		unhand_byte_array(addr),
 		hostname,
 		NI_MAXHOST);

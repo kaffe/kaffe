@@ -1,3 +1,18 @@
+2004-12-11  Adam Heath  <doogie@brainfood.com>
+
+	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/exception.c,
+	  kaffe/kaffevm/hashtab.c, kaffe/kaffevm/lookup.c,
+	  kaffe/kaffevm/jit3/labels.c, kaffe/kaffevm/jit3/machine.c,
+	  kaffe/kaffevm/jit3/icode.c,
+	  libraries/clib/native/DateFormat.c,
+	  libraries/clib/native/NativeLibrary.c,
+	  libraries/clib/net/InetAddressImpl.c,
+	  libraries/clib/net/NetworkInterface.c,
+	  libraries/clib/net/PlainSocketImpl.c,
+	  libraries/clib/nio/java_nio_VMDirectByteBuffer.c,
+	  libraries/clib/security/sha-1.h:
+	  Fix lots of -Wshadow warnings.
+
 2004-12-10  Adam Heath  <doogie@brainfood.com>
 
 	* kaffe/kaffevm/systems/unix-pthreads/signal.c,
