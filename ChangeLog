@@ -1,3 +1,8 @@
+Fri Feb 12 12:36:49 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/javalib/kaffe/text/collator/locale_en_US.java
+	(contents): missing comma in initializer
+
 Fri Feb 12 11:24:27 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* include/Makefile.am (DERIVED_HDRS): print an `already
