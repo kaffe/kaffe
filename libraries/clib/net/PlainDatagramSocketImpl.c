@@ -23,6 +23,7 @@
 #include "java_net_SocketOptions.h"
 #include "nets.h"
 #include <jsyscall.h>
+#include "../../../kaffe/kaffevm/debug.h"
 
 /*
  * Supported socket options
@@ -43,6 +44,41 @@ static const struct {
 #endif
   };
 
+#ifdef DEBUG
+static const struct {
+    int opt;
+    const char *name;
+} optionNames[] = {
+#ifdef SO_SNDBUF
+    { java_net_SocketOptions_SO_SNDBUF,		"SO_SNDBUF" },
+#endif
+#ifdef SO_RCVBUF
+    { java_net_SocketOptions_SO_RCVBUF,		"SO_RCVBUF" },
+#endif
+#ifdef SO_REUSEADDR
+    { java_net_SocketOptions_SO_REUSEADDR,	"SO_REUSEADDR" },
+#endif
+};
+#endif /*DEBUG*/
+
+#ifdef DEBUG
+/* Generate a string for an inet addr (in host form). */
+static char *
+ip2str(jint addr) 
+{
+	static char addrbuf[16];
+	unsigned int top = (addr >> 24) & 0xFF;
+	unsigned int tmid = (addr >> 16) & 0xFF;
+	unsigned int bmid = (addr >> 8) & 0xFF;
+	unsigned int bottom = addr & 0xFF;
+
+	sprintf(addrbuf, "%u.%u.%u.%u", top, tmid, bmid, bottom);
+	return addrbuf;
+}
+#endif /* DEBUG */
+
+
+
 /*
  * Create a datagram socket.
  */
@@ -52,12 +88,21 @@ java_net_PlainDatagramSocketImpl_datagramSocketCreate(struct Hjava_net_PlainData
 	int fd;
 	int rc;
 
+DBG(NATIVENET,
+	dprintf("datagram_create(%p)\n", this);
+)
+
 	rc = KSOCKET(AF_INET, SOCK_DGRAM, 0, &fd);
 	if (rc) {
 		unhand(unhand(this)->fd)->fd = -1;
 		SignalError("java.net.SocketException", SYS_ERROR(rc));
 	}
 	unhand(unhand(this)->fd)->fd = fd;
+
+DBG(NATIVENET,
+	dprintf("datagram_create(%p) -> fd=%d\n", this, fd);
+)
+
 #if defined(SOL_SOCKET) && defined(SO_BROADCAST)
 	/* On some systems broadcasting is off by default - enable it here */
 	{
@@ -78,6 +123,11 @@ java_net_PlainDatagramSocketImpl_bind(struct Hjava_net_PlainDatagramSocketImpl* 
 	struct sockaddr_in addr;
 	int alen;
 	const int fd = unhand(unhand(this)->fd)->fd;
+
+DBG(NATIVENET,
+	dprintf("datagram_bind(%p, %s, %d)\n", 
+		this, ip2str(unhand(laddr)->address), port);
+)
 
 	memset(&addr, 0, sizeof(addr));
 #if defined(BSD44)
@@ -101,6 +151,11 @@ java_net_PlainDatagramSocketImpl_bind(struct Hjava_net_PlainDatagramSocketImpl* 
 		port = ntohs(addr.sin_port);
 	}
 	unhand(this)->localPort = port;
+
+DBG(NATIVENET,
+	dprintf("  datagram_bind(%p, %s, -) -> (localPort: %d)\n",
+		this, ip2str(unhand(laddr)->address), port);
+)
 }
 
 void
@@ -110,6 +165,11 @@ java_net_PlainDatagramSocketImpl_send(struct Hjava_net_PlainDatagramSocketImpl* 
 	ssize_t bsent;
 	struct sockaddr_in addr;
 
+DBG(NATIVENET,
+	dprintf("datagram_send(%p, %p [%d bytes])\n",
+		this, pkt, unhand(pkt)->length);
+)
+
 	memset(&addr, 0, sizeof(addr));
 #if defined(BSD44)
 	addr.sin_len = sizeof(addr);
@@ -118,7 +178,20 @@ java_net_PlainDatagramSocketImpl_send(struct Hjava_net_PlainDatagramSocketImpl* 
 	addr.sin_port = htons(unhand(pkt)->port);
 	addr.sin_addr.s_addr = htonl(unhand(unhand(pkt)->address)->address);
 
-	rc = KSENDTO(unhand(unhand(this)->fd)->fd, unhand_array(unhand(pkt)->buf)->body, unhand(pkt)->length, 0, (struct sockaddr*)&addr, sizeof(addr), &bsent);
+DBG(NATIVENET,
+	dprintf("  datagram_send() to %s:%d\n",
+		ip2str(unhand(unhand(pkt)->address)->address),
+		unhand(pkt)->port);
+)
+
+	rc = KSENDTO(unhand(unhand(this)->fd)->fd,
+		unhand_array(unhand(pkt)->buf)->body, unhand(pkt)->length,
+		0, (struct sockaddr*)&addr, sizeof(addr), &bsent);
+
+DBG(NATIVENET,
+	dprintf("  datagram_send() -> rc=%d bsent=%d\n", rc, bsent);
+)
+
 	if (rc) {
 		SignalError("java.net.SocketException", SYS_ERROR(rc));
 	}
@@ -132,7 +205,9 @@ java_net_PlainDatagramSocketImpl_peek(struct Hjava_net_PlainDatagramSocketImpl* 
 	struct sockaddr_in saddr;
 	int alen = sizeof(saddr);
 
-	rc = KRECVFROM(unhand(unhand(this)->fd)->fd, 0, 0, MSG_PEEK, (struct sockaddr*)&saddr, &alen, 0 /* timeout */, &r);
+	rc = KRECVFROM(unhand(unhand(this)->fd)->fd,
+		0, 0, MSG_PEEK, (struct sockaddr*)&saddr,
+		&alen, 0 /* timeout */, &r);
 	if (rc) {
 		SignalError("java.net.SocketException", SYS_ERROR(rc));
 	}
@@ -150,10 +225,23 @@ java_net_PlainDatagramSocketImpl_receive(struct Hjava_net_PlainDatagramSocketImp
 	struct sockaddr_in addr;
 	int alen = sizeof(addr);
 
+	assert(this);
+	assert(pkt);
+
+DBG(NATIVENET,
+	dprintf("datagram_receive(%p, %p [%d bytes])\n",
+		this, pkt, unhand(pkt)->length);
+)
+
 	/* Which port am I receiving from */
 	addr.sin_port = htons(unhand(this)->localPort);
 
-	rc = KRECVFROM(unhand(unhand(this)->fd)->fd, unhand_array(unhand(pkt)->buf)->body, unhand(pkt)->length, 0, (struct sockaddr*)&addr, &alen, unhand(this)->timeout, &r);
+	/* XXX should assert (unhand(pkt)->length <= unhand_array(unhand(pkt)->buf)->length), no? */
+
+	rc = KRECVFROM(unhand(unhand(this)->fd)->fd,
+		unhand_array(unhand(pkt)->buf)->body,
+		unhand(pkt)->length, 0, (struct sockaddr*)&addr,
+		&alen, unhand(this)->timeout, &r);
 	if (rc) {
 		SignalError("java.net.SocketException", SYS_ERROR(rc));
 	}
@@ -165,6 +253,12 @@ java_net_PlainDatagramSocketImpl_receive(struct Hjava_net_PlainDatagramSocketImp
 	 * the new address from which the packet came.
 	 */
 	unhand(unhand(pkt)->address)->hostName = 0;
+
+DBG(NATIVENET,
+	dprintf("  datagram_receive(%p, %p) -> from %s:%d; brecv=%d\n",
+		this, pkt, ip2str(ntohl(addr.sin_addr.s_addr)),
+		ntohs(addr.sin_port), r);
+)
 }
 
 /*
@@ -174,6 +268,10 @@ void
 java_net_PlainDatagramSocketImpl_datagramSocketClose(struct Hjava_net_PlainDatagramSocketImpl* this)
 {
 	int r;
+
+DBG(NATIVENET,
+	dprintf("datagram_close(%p)\n", this);
+)
 
 	if (unhand(unhand(this)->fd)->fd != -1) {
 		r = KSOCKCLOSE(unhand(unhand(this)->fd)->fd);
@@ -200,7 +298,8 @@ java_net_PlainDatagramSocketImpl_socketSetOption(struct Hjava_net_PlainDatagramS
 				socketOptions[k].level, socketOptions[k].copt,
 				&v, sizeof(v));
 			if (r) {
-				SignalError("java.net.SocketException", SYS_ERROR(r));    
+				SignalError("java.net.SocketException",
+					SYS_ERROR(r));
 			}
 			return;
 		}
@@ -216,21 +315,25 @@ java_net_PlainDatagramSocketImpl_socketSetOption(struct Hjava_net_PlainDatagramS
 #endif
 		addr.sin_family = AF_INET;
 		addr.sin_addr.s_addr = htonl(unhand(addrp)->address);
-		r = KSETSOCKOPT(unhand(unhand(this)->fd)->fd, IPPROTO_IP, IP_MULTICAST_IF, &addr, sizeof(addr));
+		r = KSETSOCKOPT(unhand(unhand(this)->fd)->fd,
+			IPPROTO_IP, IP_MULTICAST_IF, &addr, sizeof(addr));
 		if (r) {
 			SignalError("java.net.SocketException", SYS_ERROR(r));
 		}
 #else
-		SignalError("java.net.SocketException", "IP_MULTICAST_IF is not supported");
+		SignalError("java.net.SocketException",
+			"IP_MULTICAST_IF is not supported");
 #endif
 		break;
 
 	case java_net_SocketOptions_SO_BINDADDR:
-		SignalError("java.net.SocketException", "Read-only socket option");    
+		SignalError("java.net.SocketException",
+			"Read-only socket option");
 		break;
 	case java_net_SocketOptions_SO_TIMEOUT: /* JAVA takes care */
 	default:
-		SignalError("java.net.SocketException", "Unimplemented socket option");   
+		SignalError("java.net.SocketException",
+			"Unimplemented socket option");
 	} 
 }
 
@@ -249,7 +352,8 @@ java_net_PlainDatagramSocketImpl_socketGetOption(struct Hjava_net_PlainDatagramS
 				socketOptions[k].level, socketOptions[k].copt,
 				&v, &vsize);
 			if (r) {
-				SignalError("java.net.SocketException", SYS_ERROR(r));
+				SignalError("java.net.SocketException",
+					SYS_ERROR(r));
 			}
 			return v;
 		}
@@ -266,17 +370,19 @@ java_net_PlainDatagramSocketImpl_socketGetOption(struct Hjava_net_PlainDatagramS
 		break;
 #if defined(IP_MULTICAST_IF)
 	case java_net_SocketOptions_IP_MULTICAST_IF:
-		r = KGETSOCKOPT(unhand(unhand(this)->fd)->fd, IPPROTO_IP, IP_MULTICAST_IF, &addr, &alen);
+		r = KGETSOCKOPT(unhand(unhand(this)->fd)->fd,
+			IPPROTO_IP, IP_MULTICAST_IF, &addr, &alen);
 		if (r) {
 			SignalError("java.net.SocketException", SYS_ERROR(r));
 			return (0);	/* NOT REACHED, avoid warning */
 		}
-		r = ntohl(addr.sin_addr.s_addr);    
+		r = ntohl(addr.sin_addr.s_addr);
 		break;
 #endif
 	case java_net_SocketOptions_SO_TIMEOUT: /* JAVA takes care */
 	default:
-		SignalError("java.net.SocketException", "Unimplemented socket option");   
+		SignalError("java.net.SocketException",
+			"Unimplemented socket option");
 	} 
 	return r;
 }
@@ -294,12 +400,14 @@ java_net_PlainDatagramSocketImpl_join(struct Hjava_net_PlainDatagramSocketImpl* 
 	ipm.imr_multiaddr.s_addr = htonl(unhand(laddr)->address);
 	ipm.imr_interface.s_addr = htonl(INADDR_ANY);
 
-	r = KSETSOCKOPT(unhand(unhand(this)->fd)->fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &ipm, sizeof(ipm));
+	r = KSETSOCKOPT(unhand(unhand(this)->fd)->fd,
+		IPPROTO_IP, IP_ADD_MEMBERSHIP, &ipm, sizeof(ipm));
 	if (r) {
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
 #else
-	SignalError("java.net.SocketException", "IP_ADD_MEMBERSHIP not supported");
+	SignalError("java.net.SocketException",
+		"IP_ADD_MEMBERSHIP not supported");
 #endif
 }
 
@@ -316,12 +424,14 @@ java_net_PlainDatagramSocketImpl_leave(struct Hjava_net_PlainDatagramSocketImpl*
 	ipm.imr_multiaddr.s_addr = htonl(unhand(laddr)->address);
 	ipm.imr_interface.s_addr = htonl(INADDR_ANY);
 
-	r = KSETSOCKOPT(unhand(unhand(this)->fd)->fd, IPPROTO_IP, IP_DROP_MEMBERSHIP, &ipm, sizeof(ipm));
+	r = KSETSOCKOPT(unhand(unhand(this)->fd)->fd,
+		IPPROTO_IP, IP_DROP_MEMBERSHIP, &ipm, sizeof(ipm));
 	if (r) {
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
 #else
-	SignalError("java.net.SocketException", "IP_DROP_MEMBERSHIP not supported");
+	SignalError("java.net.SocketException",
+		"IP_DROP_MEMBERSHIP not supported");
 #endif
 }
 
@@ -335,12 +445,14 @@ java_net_PlainDatagramSocketImpl_setTTL(struct Hjava_net_PlainDatagramSocketImpl
 	int r;
 	unsigned char v = (unsigned char)ttl;
 
-	r = KSETSOCKOPT(unhand(unhand(this)->fd)->fd, IPPROTO_IP, IP_MULTICAST_TTL, &v, sizeof(v));
+	r = KSETSOCKOPT(unhand(unhand(this)->fd)->fd,
+		IPPROTO_IP, IP_MULTICAST_TTL, &v, sizeof(v));
 	if (r) {
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
 #else
-	SignalError("java.net.SocketException", "IP_MULTICAST_TTL not supported");
+	SignalError("java.net.SocketException",
+		"IP_MULTICAST_TTL not supported");
 #endif
 }
 
@@ -355,12 +467,14 @@ java_net_PlainDatagramSocketImpl_getTTL(struct Hjava_net_PlainDatagramSocketImpl
 	int s;
 	int r;
 
-	r = KGETSOCKOPT(unhand(unhand(this)->fd)->fd, IPPROTO_IP, IP_MULTICAST_TTL, &v, &s);
+	r = KGETSOCKOPT(unhand(unhand(this)->fd)->fd,
+		IPPROTO_IP, IP_MULTICAST_TTL, &v, &s);
 	if (r) {
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}
 	return (jbyte)v;
 #else
-	SignalError("java.net.SocketException", "IP_MULTICAST_TTL not supported");
+	SignalError("java.net.SocketException",
+		"IP_MULTICAST_TTL not supported");
 #endif
 }
