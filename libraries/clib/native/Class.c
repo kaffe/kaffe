@@ -520,7 +520,10 @@ countMethods(Hjava_lang_Class* base, Hjava_lang_Class* clas, jint declared)
 	int count = 0;
 
 	for (i = CLASS_NMETHODS(clas)-1 ; i >= 0; i--) {
-		if (((mth[i].accflags & ACC_PUBLIC) || declared) && !(mth[i].accflags & ACC_CONSTRUCTOR) && !isOverridden(base, clas, mth + i)) {
+		if (((mth[i].accflags & ACC_PUBLIC) || declared)
+		    && !(mth[i].accflags & ACC_CONSTRUCTOR)
+		    && !isOverridden(base, clas, mth + i)
+		    && !utf8ConstEqual(init_name, mth[i].name)) {
 			count++;
 		}
 	}
@@ -539,7 +542,10 @@ addMethods(Hjava_lang_Class* base, Hjava_lang_Class* clas, jint declared,
 	int i;
 
 	for (i = CLASS_NMETHODS(clas)-1; i >= 0; i--) {
-		if (((mth[i].accflags & ACC_PUBLIC) || declared) && !(mth[i].accflags & ACC_CONSTRUCTOR) && !isOverridden(base, clas, mth + i)) {
+		if (((mth[i].accflags & ACC_PUBLIC) || declared)
+		    && !(mth[i].accflags & ACC_CONSTRUCTOR)
+		    && !isOverridden(base, clas, mth + i)
+		    && !utf8ConstEqual(init_name, mth[i].name)) {
 			**ptr = makeMethod(clas, i);
 			(*ptr)++;
 		}
