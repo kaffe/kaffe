@@ -21,25 +21,6 @@
 #include "fp.h"
 
 /*
- * Bit patterns according to IEEE 754. Note use of "LL" gcc-ism.
- */
-
-#define DEXPMASK	0x7ff0000000000000LL
-#define DMANMASK	0x000fffffffffffffLL
-#define DSIGNBIT	0x8000000000000000LL
-#define DINFBITS	0x7ff0000000000000LL
-#define DNANBITS	0x7ff8000000000000LL
-
-#define FEXPMASK	0x7f800000
-#define FMANMASK	0x007fffff
-#define FSIGNBIT	0x80000000
-#define FINFBITS	0x7f800000
-#define FNANBITS	0x7fc00000
-
-#define DISNAN(db)	((db & DEXPMASK) == DEXPMASK && (db & DMANMASK) != 0)
-#define FISNAN(db)	((db & FEXPMASK) == FEXPMASK && (db & FMANMASK) != 0)
-
-/*
  * Convert double to jlong.
  */
 jlong
