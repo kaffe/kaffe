@@ -38,6 +38,7 @@ initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 {
 	errorInfo info;
 	classEntry* centry;
+	char entryName[10];
 	Hjava_lang_Class* clazz = newClass();
 
 	if (clazz == 0) {
@@ -66,7 +67,9 @@ initPrimClass(Hjava_lang_Class** class, char* name, char sig, int len)
 	 * Note that a user-defined "class int" is impossible cause "int"
 	 * is a keyword.
 	 */
-	centry = lookupClassEntry(clazz->name, 0, &info);
+	assert(strlen(name) <= 8);
+	sprintf(entryName, ";%s", name);
+	centry = lookupClassEntry(entryName, 0, &info);
 	if (centry == 0) {
 		goto bad;
 	}
@@ -122,12 +125,7 @@ finishTypes(void)
 	voidClass->head.dtable = ClassClass->dtable;
 }
 
-Hjava_lang_Class*
-getClassFromSignature(const char* sig, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
-{
-	return (classFromSig(&sig, loader, einfo));
-}
-
+static
 Hjava_lang_Class*
 classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 {
@@ -153,20 +151,60 @@ classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo
 		for (end = start; *end != 0 && *end != ';'; end++)
 			;
 		*strp = end;
-		if (*end != 0) {
+		if (*end == ';') {
 			(*strp)++;
+		} else {
+			postException(einfo, JAVA_LANG(VerifyError));
+			return (NULL);
 		}
 		utf8 = utf8ConstNew(start, end - start);
 		if (!utf8) {
 			postOutOfMemory(einfo);
-			return 0;
+			return (0);
 		}
 		cl = loadClass(utf8, loader, einfo);
 		utf8ConstRelease(utf8);
 		return(cl);
+
 	default:
 		/* malformed signature */
 		postException(einfo, JAVA_LANG(VerifyError));
 		return (NULL);
 	}
+}
+
+/*
+ * Get a class by name from loader 'loader'
+ * Fails if there are extraneous characters as in "Ljava/lang/Object;V"
+ *
+ * To be used if "sig" contains exactly one class name.
+ */
+Hjava_lang_Class*
+getClassFromSignature(const char* sig, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
+{
+	Hjava_lang_Class *cls = classFromSig(&sig, loader, einfo);
+
+	/* name must consume all characters in string */
+	if (cls != 0 && *sig == 0) {
+		return (cls);
+	}
+	/* 
+	 * or rather VerifyError?  It could be a malformed sig in a malformed
+	 * .class file, or it could be a malformed user input from 
+	 * Class.forName()
+	 */
+	postException(einfo, JAVA_LANG(NoClassDefFoundError));
+	return (0);
+}
+
+/*
+ * Like getClassFromSignature, except don't check that there are no
+ * extraneous characters after a parsed name.
+ *
+ * Can be used if "sig" is a pointer in a signature, i.e., is a signature part.
+ */
+Hjava_lang_Class*
+getClassFromSignaturePart(const char* sig, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
+{
+	return (classFromSig(&sig, loader, einfo));
 }
