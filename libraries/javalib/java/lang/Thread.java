@@ -48,6 +48,7 @@ private Thread nextlk;
 private Throwable death;
 private int needOnStack;
 private int noStopCount = 0;
+private ClassLoader context;
 
 private static class Sleeper {
 }
@@ -122,6 +123,8 @@ public Thread(ThreadGroup group, Runnable target, String name) {
 	}
 
 	setDaemon(parent.isDaemon());
+
+	context = parent.getContextClassLoader();
 }
 
 public Thread(ThreadGroup group, String name) {
@@ -332,10 +335,6 @@ final public void setPriority(int newPriority) {
 	setPriority0(newPriority);
 }
 
-public void setContextClassLoader(ClassLoader cl) {
-	// XXX implement me
-}
-
 native private void setPriority0(int prio);
 
 public static void sleep(long millis) throws InterruptedException {
@@ -469,5 +468,14 @@ public static void yield() {
 }
 
 native public static void yield0();
+
+public ClassLoader getContextClassLoader() {
+	return (context);
+}
+
+public void setContextClassLoader(ClassLoader cl) {
+	// XXX call security manager for RuntimePermission("setContextClassLoader")
+	context = cl;
+}
 
 }
