@@ -200,6 +200,7 @@ getDataJarFile(jarFile* file, jarEntry* entry)
 			gc_free_fixed(buf);
 			return (nbuf);
 		}
+		file->error = "Decompression failed";
 		gc_free_fixed(buf);
 		gc_free_fixed(nbuf);
 		return (0);
