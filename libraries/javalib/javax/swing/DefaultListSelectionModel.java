@@ -600,4 +600,21 @@ public class DefaultListSelectionModel implements Cloneable,
   {
     return (ListSelectionListener[]) getListeners(ListSelectionListener.class);
   }
+
+  /**
+   * Returns a clone of this object.
+   * <code>listenerList</code> don't gets duplicated.
+   *
+   * @return the cloned object
+   *
+   * @throws CloneNotSupportedException if an error occurs
+   */
+  public Object clone()
+    throws CloneNotSupportedException
+  {
+    DefaultListSelectionModel model =
+      (DefaultListSelectionModel) super.clone();
+    model.sel = (BitSet) sel.clone();
+    return model;
+  }
 }

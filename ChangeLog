@@ -4,6 +4,15 @@
 	
 	2005-01-19  Michael Koch  <konqueror@gmx.de>
 
+	* javax/swing/DefaultListSelectionModel.java
+	(clone): New method.
+	
+2005-01-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2005-01-19  Michael Koch  <konqueror@gmx.de>
+
 	* gnu/java/awt/ClasspathToolkit.java:
 	Import statements reworked.
 	(imageCache): Made it of type java.util.HashMap.
