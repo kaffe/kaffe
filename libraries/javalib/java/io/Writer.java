@@ -27,6 +27,9 @@ public abstract class Writer {
 
   protected Writer(Object lk)
   {
+    if (lk == null) {
+      throw new NullPointerException();
+    }
     lock = lk;
   }
 

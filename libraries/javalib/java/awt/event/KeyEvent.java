@@ -132,7 +132,7 @@ public class KeyEvent
 	final public static int VK_KANA = 0x15;
 	final public static int VK_KANJI = 0x19;
 	final public static int VK_UNDEFINED = 0x0;
-	final public static char CHAR_UNDEFINED = 0x0;
+	final public static char CHAR_UNDEFINED = 0xffff;
 
 public KeyEvent ( Component src, int evtId, long time, int mods, int kCode) {
 	super( src, evtId);

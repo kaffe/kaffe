@@ -15,13 +15,14 @@ abstract public class Reader
 	protected Object lock;
 	protected char[] cbuf;
 
-protected Reader()
-	{
+protected Reader() {
 	lock = this;
 }
 
-protected Reader(Object lk)
-	{
+protected Reader(Object lk) {
+	if (lk == null) {
+		throw new NullPointerException();
+	}
 	lock = lk;
 }
 

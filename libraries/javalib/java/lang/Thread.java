@@ -102,7 +102,7 @@ public static int activeCount() {
 	return (Thread.currentThread().getThreadGroup().activeCount());
 }
 
-public void checkAccess() {
+public final void checkAccess() {
 	System.getSecurityManager().checkAccess(this);
 }
 
