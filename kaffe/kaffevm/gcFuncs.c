@@ -342,7 +342,7 @@ DBG(GCPRECISE,
 /* 1. GCJ work-around, see
  * http://sourceware.cygnus.com/ml/java-discuss/1999-q4/msg00379.html
  */
-				if (FIELD_TYPE(fld) == StringClass) {
+				if (FIELD_TYPE(fld) == getStringClass()) {
 					KGC_markAddress(collector, gc_info, *faddr);
 				} else {
 					KGC_markObject(collector, gc_info, *faddr);

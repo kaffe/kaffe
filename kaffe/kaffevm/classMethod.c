@@ -1542,6 +1542,7 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 	Utf8Const *utf8;
 	classEntry* centry;
 	int iLockRoot;
+	bool refAdded;
 
 	utf8 = utf8ConstNew(name, -1);
 	if (!utf8) goto bad;
@@ -1564,7 +1565,8 @@ DBG(VMCLASSLOADER,
 			goto bad;
 		}
 		/* we won't ever want to lose these classes */
-		if (!gc_add_ref(clazz)) {
+		refAdded = gc_add_ref(clazz);
+		if (!refAdded) {
 			goto bad;
 		}
 

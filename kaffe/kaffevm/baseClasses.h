@@ -61,4 +61,6 @@ extern struct Hjava_lang_Class* javaLangStackOverflowError;
 
 extern struct Hjava_lang_ClassLoader *appClassLoader;
 
+extern Hjava_lang_Class* getStringClass(void);
+
 #endif

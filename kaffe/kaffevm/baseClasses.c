@@ -101,6 +101,16 @@ Hjava_lang_ClassLoader* appClassLoader;
 void initClasspath(void);
 void initNative(void);
 
+Hjava_lang_Class* 
+getStringClass(void)
+{
+  if (StringClass == NULL) {
+    loadStaticClass(&StringClass, STRINGCLASS);
+  }
+
+  return StringClass;
+}
+
 /*
  * Initialise the machine.
  *

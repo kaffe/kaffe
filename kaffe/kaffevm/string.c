@@ -479,7 +479,7 @@ stringCharArray2Java(const jchar *data, int len)
 	}
 	
 	memcpy(ARRAY_DATA(ary), data, len * sizeof(jchar));
-	string = (Hjava_lang_String*)newObjectChecked(StringClass, &info);
+	string = (Hjava_lang_String*)newObjectChecked(getStringClass(), &info);
 	if (!string) {
 		discardErrorInfo(&info);
 		return 0;
