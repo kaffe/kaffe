@@ -231,17 +231,14 @@ EXTRA_DIST = \
 	i386/cygwin32/jit-md.h \
 	i386/cygwin32/md.c \
 	i386/cygwin32/md.h \
-	i386/oskit/config.frag \
 	i386/oskit/README \
-	i386/oskit/config-oskit-unix.sh \
-	i386/oskit/config-oskit.sh \
+	i386/oskit/config.frag \
 	i386/oskit/jit-md.h \
-	i386/oskit/kaffe-patches \
-	i386/oskit/kaffe_classpath \
+	i386/oskit/ld-oskit.sh \
 	i386/oskit/md.c \
 	i386/oskit/md.h \
 	i386/oskit/mkimage.sh \
-	i386/oskit/oskit-patches-0.96 \
+	i386/oskit/oskit-configure \
 	m68k/jit-icode.h \
 	m68k/common.h \
 	m68k/a-ux/config.frag \
