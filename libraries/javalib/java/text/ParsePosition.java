@@ -12,18 +12,45 @@ package java.text;
 
 public class ParsePosition {
 
-int idx;
+	private int index;
+	private int errorIndex;
 
-public ParsePosition(int idx) {
-	this.idx = idx;
+	public ParsePosition(int index) {
+		this.index = index;
+		this.errorIndex = -1;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
+	public int getErrorIndex() {
+		return errorIndex;
+	}
+
+	public void setErrorIndex(int errorIndex) {
+		this.errorIndex = errorIndex;
+	}
+
+	public boolean equals(Object obj) {
+		if (obj == null || !getClass().equals(obj.getClass()))
+			return false;
+		ParsePosition that = (ParsePosition)obj;
+		return this.index == that.index
+		    && this.errorIndex == that.errorIndex;
+	}
+
+	public int hashCode() {
+		return index + errorIndex;
+	}
+
+	public String toString() {
+		return getClass().getName()
+		    + "[index=" + index + ",errorIndex=" + errorIndex + ']';
+	}
 }
 
-public int getIndex() {
-	return (idx);
-}
-
-public void setIndex(int idx) {
-	this.idx = idx;
-}
-
-}
