@@ -208,8 +208,6 @@ Java_kaffe_lang_UNIXProcess_run(JNIEnv* env, jobject _proc_dummy)
 		for (pp = &children; *pp != 0; pp = &p->next) {
 			p = *pp;
 			if (p->pid == npid) {
-				jclass proc_class = (*env)->GetObjectClass(
-						env, p->proc);
 				(*env)->CallVoidMethod(env, 
 					p->proc, notify_method, status);
 				(*env)->DeleteGlobalRef(env, p->proc);
