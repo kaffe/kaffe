@@ -1,3 +1,17 @@
+Sat Jul  6 00:36:20 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* WHATSNEW: included port to GNU/Linux on SuperH.
+
+Sat Jul  6 00:31:19 CEST 2002 Kiyo Inaba  <inaba@src.ricoh.co.jp>
+
+	* config/superh/common.h, config/superh/linux/config.frag,
+	config/superh/linux/md.c, config/superh/linux/md.h,
+	config/superh/threads.h, config/superh/trampolines.c:
+	new files, merged in from pocketlinux kaffe. This is a port to
+	GNU/Linux on the SuperH architecture.
+
+	* config.sub: updated checks for superh.
+
 Thu Jul  4 12:46:53 CEST 2002 Dalibor Topic <robilad@yahoo.com>
  
 	* libraries/javalib/java/security/acl/Acl.java:

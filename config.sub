@@ -996,8 +996,8 @@ case $basic_machine in
 	we32k)
 		basic_machine=we32k-att
 		;;
-	sh3 | sh4 | sh3eb | sh4eb)
-		basic_machine=sh-unknown
+	sh3 | sh4 | sh3eb | sh4eb | superh)
+		basic_machine=superh-unknown
 		;;
 	sh64)
 		basic_machine=sh64-unknown
