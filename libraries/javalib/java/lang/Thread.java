@@ -484,4 +484,19 @@ public void setContextClassLoader(ClassLoader cl) {
 	context = cl;
 }
 
+public static boolean holdsLock(Object obj) {
+  // use obj.notify to check if the current thread holds
+  // the monitor of the object.
+  // if it doesn't, notify will throw an exception.
+  try {
+    obj.notify();
+    // okay, current thread holds lock
+    return true;
+  }
+  catch (IllegalMonitorStateException e) {
+    // it doesn't hold the lock
+    return false;
+  }
+}
+
 }

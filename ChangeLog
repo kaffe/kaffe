@@ -1,5 +1,12 @@
 2004-07-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/lang/Thread.java
+	(holdsLock): Implemented.
+
+	Reported by: Jim Huang  <jserv@kaffe.org>
+	
+2004-07-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/sparc/jit-sparc.def:
 	Fixed stray LOUT without closing brace.
 
