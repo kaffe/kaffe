@@ -1,6 +1,14 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+	
+	2005-03-13  Michael Koch  <konqueror@gmx.de>
+
+	* gnu/xml/aelfred2/XmlParser.java: Fixed typo.
+	
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 
 	2005-03-11  Roman Kennke  <roman@kennke.org>
 
