@@ -7,6 +7,16 @@
 
 2004-11-10  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/geom/GeneralPath.java:
+	Resynced with GNU Classpath.
+
+	2004-11-07  Sven de Marothy  <sven@physto.se>
+
+        * java/awt/geom/GeneralPath.java (evaluateCrossings):
+        Fixed epsilon value, should always be nonzero.
+
+2004-11-10  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/image/BandedSampleModel.java:
 	Resynced with GNU Classpath.
 

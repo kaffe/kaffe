@@ -778,7 +778,10 @@ public final class GeneralPath implements Shape, Cloneable
 
     /* Get a value which is hopefully small but not insignificant relative
      the path. */
-    epsilon = ypoints[0] * 1E-9;
+    epsilon = ypoints[0] * 1E-7;
+
+    if(epsilon == 0) 
+      epsilon = 1E-7;
 
     pos = 0;
     while (pos < index)
