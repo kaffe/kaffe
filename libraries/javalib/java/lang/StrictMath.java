@@ -70,7 +70,7 @@ import java.util.Random;
  * Note that angles are specified in radians.  Conversion functions are
  * provided for your convenience.
  *
- * @author Eric Blake <ebb9@email.byu.edu>
+ * @author Eric Blake (ebb9@email.byu.edu)
  * @since 1.3
  */
 public final strictfp class StrictMath

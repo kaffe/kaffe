@@ -1,5 +1,6 @@
 /* java.lang.Object - The universal superclass in Java
-   Copyright (C) 1998, 1999, 2001, 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2004
+   Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,7 +39,6 @@ exception statement from your version. */
 
 package java.lang;
 
-import gnu.classpath.Configuration;
 
 /**
  * Object is the ultimate superclass of every class
@@ -56,8 +56,8 @@ import gnu.classpath.Configuration;
  * of <code>clone</code> which is accessible.
  *
  * @author John Keiser
- * @author Eric Blake <ebb9@email.byu.edu>
- * @since 1.0
+ * @author Eric Blake (ebb9@email.byu.edu)
+ * @author Tom Tromey (tromey@cygnus.com)
  */
 public class Object
 {
