@@ -2970,7 +2970,7 @@ KAFFE_LIBS="$KAFFE_LIBS"
 
 
 KSAVE_LIBS="$LIBS"
-LIBS="$M_LIBS $SAVE_LIBS"
+LIBS="$M_LIBS $KSAVE_LIBS"
 echo $ac_n "checking for _mwvalidcheckl in -lmw""... $ac_c" 1>&6
 echo "configure:2976: checking for _mwvalidcheckl in -lmw" >&5
 ac_lib_var=`echo mw'_'_mwvalidcheckl | sed 'y%./+-%__p_%'`
@@ -3018,11 +3018,11 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
-M_LIBS=`echo $LIBS | sed "s% $KSAVE_LIBS$%%"`
+M_LIBS=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
 LIBS="$KSAVE_LIBS"
 
 KSAVE_LIBS="$LIBS"
-LIBS="$M_LIBS $SAVE_LIBS"
+LIBS="$M_LIBS $KSAVE_LIBS"
 echo $ac_n "checking for sin in -lm""... $ac_c" 1>&6
 echo "configure:3028: checking for sin in -lm" >&5
 ac_lib_var=`echo m'_'sin | sed 'y%./+-%__p_%'`
@@ -3070,7 +3070,7 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
-M_LIBS=`echo $LIBS | sed "s% $KSAVE_LIBS$%%"`
+M_LIBS=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
 LIBS="$KSAVE_LIBS"
 
 
@@ -3080,7 +3080,7 @@ LIBS="$KSAVE_LIBS"
 case "$host_os" in
 freebsd2|netbsd1)
 	KSAVE_LIBS="$LIBS"
-LIBS="$VM_LIBS $SAVE_LIBS"
+LIBS="$VM_LIBS $KSAVE_LIBS"
 echo $ac_n "checking for __moddi3 in -lgcc""... $ac_c" 1>&6
 echo "configure:3086: checking for __moddi3 in -lgcc" >&5
 ac_lib_var=`echo gcc'_'__moddi3 | sed 'y%./+-%__p_%'`
@@ -3128,7 +3128,7 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
-VM_LIBS=`echo $LIBS | sed "s% $KSAVE_LIBS$%%"`
+VM_LIBS=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
 LIBS="$KSAVE_LIBS"
 ;;
 esac
@@ -3186,7 +3186,7 @@ fi
 
 if test $ac_cv_func_gethostname = no; then
       KSAVE_LIBS="$LIBS"
-LIBS="$NET_LIBS $SAVE_LIBS"
+LIBS="$NET_LIBS $KSAVE_LIBS"
 echo $ac_n "checking for gethostname in -lnsl""... $ac_c" 1>&6
 echo "configure:3192: checking for gethostname in -lnsl" >&5
 ac_lib_var=`echo nsl'_'gethostname | sed 'y%./+-%__p_%'`
@@ -3234,7 +3234,7 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
-NET_LIBS=`echo $LIBS | sed "s% $KSAVE_LIBS$%%"`
+NET_LIBS=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
 LIBS="$KSAVE_LIBS"
 
 fi
@@ -3288,7 +3288,7 @@ fi
 
 if test $ac_cv_func_gethostbyname = no; then
       KSAVE_LIBS="$LIBS"
-LIBS="$NET_LIBS $SAVE_LIBS"
+LIBS="$NET_LIBS $KSAVE_LIBS"
 echo $ac_n "checking for gethostbyname in -lnsl""... $ac_c" 1>&6
 echo "configure:3294: checking for gethostbyname in -lnsl" >&5
 ac_lib_var=`echo nsl'_'gethostbyname | sed 'y%./+-%__p_%'`
@@ -3336,7 +3336,7 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
-NET_LIBS=`echo $LIBS | sed "s% $KSAVE_LIBS$%%"`
+NET_LIBS=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
 LIBS="$KSAVE_LIBS"
 
 fi
@@ -3390,7 +3390,7 @@ fi
 
 if test $ac_cv_func_connect = no; then
   KSAVE_LIBS="$LIBS"
-LIBS="$NET_LIBS $SAVE_LIBS"
+LIBS="$NET_LIBS $KSAVE_LIBS"
 echo $ac_n "checking for connect in -lsocket""... $ac_c" 1>&6
 echo "configure:3396: checking for connect in -lsocket" >&5
 ac_lib_var=`echo socket'_'connect | sed 'y%./+-%__p_%'`
@@ -3438,14 +3438,14 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
-NET_LIBS=`echo $LIBS | sed "s% $KSAVE_LIBS$%%"`
+NET_LIBS=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
 LIBS="$KSAVE_LIBS"
 
 fi
 
 
 KSAVE_LIBS="$LIBS"
-LIBS="$ZIP_LIBS $SAVE_LIBS"
+LIBS="$ZIP_LIBS $KSAVE_LIBS"
 echo $ac_n "checking for deflate in -lz""... $ac_c" 1>&6
 echo "configure:3451: checking for deflate in -lz" >&5
 ac_lib_var=`echo z'_'deflate | sed 'y%./+-%__p_%'`
@@ -3493,13 +3493,13 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
-ZIP_LIBS=`echo $LIBS | sed "s% $KSAVE_LIBS$%%"`
+ZIP_LIBS=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
 LIBS="$KSAVE_LIBS"
 
 
 
 KSAVE_LIBS="$LIBS"
-LIBS="$MATH_LIBS $SAVE_LIBS"
+LIBS="$MATH_LIBS $KSAVE_LIBS"
 echo $ac_n "checking for mpz_add in -lgmp""... $ac_c" 1>&6
 echo "configure:3505: checking for mpz_add in -lgmp" >&5
 ac_lib_var=`echo gmp'_'mpz_add | sed 'y%./+-%__p_%'`
@@ -3547,7 +3547,7 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
-MATH_LIBS=`echo $LIBS | sed "s% $KSAVE_LIBS$%%"`
+MATH_LIBS=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
 LIBS="$KSAVE_LIBS"
 
 
@@ -4390,9 +4390,9 @@ if test x"$no_x" = x"yes"; then
   AWT_LIBS=
 else
   OLIBS=$LIBS
-  LIBS="$ZIP_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
+  LIBS="$ZIP_LIBS $M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
   KSAVE_LIBS="$LIBS"
-LIBS="$X_LIBS $SAVE_LIBS"
+LIBS="$X_LIBS $KSAVE_LIBS"
 echo $ac_n "checking for XShmQueryExtension in -lXext""... $ac_c" 1>&6
 echo "configure:4398: checking for XShmQueryExtension in -lXext" >&5
 ac_lib_var=`echo Xext'_'XShmQueryExtension | sed 'y%./+-%__p_%'`
@@ -4440,11 +4440,11 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
-X_LIBS=`echo $LIBS | sed "s% $KSAVE_LIBS$%%"`
+X_LIBS=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
 LIBS="$KSAVE_LIBS"
 
   KSAVE_LIBS="$LIBS"
-LIBS="$JPEG_LIBS $SAVE_LIBS"
+LIBS="$JPEG_LIBS $KSAVE_LIBS"
 echo $ac_n "checking for jpeg_read_header in -ljpeg""... $ac_c" 1>&6
 echo "configure:4450: checking for jpeg_read_header in -ljpeg" >&5
 ac_lib_var=`echo jpeg'_'jpeg_read_header | sed 'y%./+-%__p_%'`
@@ -4492,11 +4492,11 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
-JPEG_LIBS=`echo $LIBS | sed "s% $KSAVE_LIBS$%%"`
+JPEG_LIBS=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
 LIBS="$KSAVE_LIBS"
 
   KSAVE_LIBS="$LIBS"
-LIBS="$PNG_LIBS $SAVE_LIBS"
+LIBS="$PNG_LIBS $KSAVE_LIBS"
 echo $ac_n "checking for png_create_info_struct in -lpng""... $ac_c" 1>&6
 echo "configure:4502: checking for png_create_info_struct in -lpng" >&5
 ac_lib_var=`echo png'_'png_create_info_struct | sed 'y%./+-%__p_%'`
@@ -4544,11 +4544,11 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
-PNG_LIBS=`echo $LIBS | sed "s% $KSAVE_LIBS$%%"`
+PNG_LIBS=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
 LIBS="$KSAVE_LIBS"
 
   KSAVE_LIBS="$LIBS"
-LIBS="$GIF_LIBS $SAVE_LIBS"
+LIBS="$GIF_LIBS $KSAVE_LIBS"
 echo $ac_n "checking for DGifOpenFileHandle in -lgif""... $ac_c" 1>&6
 echo "configure:4554: checking for DGifOpenFileHandle in -lgif" >&5
 ac_lib_var=`echo gif'_'DGifOpenFileHandle | sed 'y%./+-%__p_%'`
@@ -4596,13 +4596,13 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
-GIF_LIBS=`echo $LIBS | sed "s% $KSAVE_LIBS$%%"`
+GIF_LIBS=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
 LIBS="$KSAVE_LIBS"
 
   LIBS=$OLIBS
       if test "$PNG_LIBS" != "" ; then
 	if test "$ZIP_LIBS" != "" ; then
-		PNG_LIBS="$PNG_LIBS $ZIP_LIBS"
+		PNG_LIBS="$PNG_LIBS $ZIP_LIBS $M_LIBS"
 	else
 		PNG_LIBS=""
 	fi

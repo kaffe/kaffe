@@ -344,9 +344,9 @@ dnl -------------------------------------------------------------------------
 
 AC_DEFUN(AC_CHECK_LIBRARY, [dnl
 KSAVE_LIBS="$LIBS"
-LIBS="$$3 $SAVE_LIBS"
+LIBS="$$3 $KSAVE_LIBS"
 AC_CHECK_LIB($1,$2)
-$3=`echo $LIBS | sed "s% $KSAVE_LIBS$%%"`
+$3=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
 LIBS="$KSAVE_LIBS"
 ])
 
@@ -408,7 +408,7 @@ if test x"$no_x" = x"yes"; then
   AWT_LIBS=
 else
   OLIBS=$LIBS
-  LIBS="$ZIP_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
+  LIBS="$ZIP_LIBS $M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
   AC_CHECK_LIBRARY(Xext,XShmQueryExtension,X_LIBS)
   AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBS)
   AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBS)
@@ -418,7 +418,7 @@ else
   dnl we can't include png support.
   if test "$PNG_LIBS" != "" ; then
 	if test "$ZIP_LIBS" != "" ; then
-		PNG_LIBS="$PNG_LIBS $ZIP_LIBS"
+		PNG_LIBS="$PNG_LIBS $ZIP_LIBS $M_LIBS"
 	else
 		PNG_LIBS=""
 	fi

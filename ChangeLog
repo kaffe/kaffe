@@ -1,3 +1,8 @@
+Thu Feb 11 16:47:02 1999  Edouard Parmelan  <Edouard.Parmelan@quadratec.fr>
+
+	* configure.in (AC_CHECK_LIBRARY): use KSAVE_LIBS, not SAVE_LIBS
+	(PNG_LIBS): need M_LIBS
+
 Wed Feb 10 12:45:34 PST 1999	Tim Wilkinson   <tim@transvirtual.com>
 
 	* Merged in TVT's custom edition libraries.
