@@ -1,14 +1,3 @@
-**********************************************************************
-
-NOTE:
-
-Kaffe has its own jitterbug bug tracking system now.
-See www.kaffe.org and http://www.kaffe.org/cgi-bin/kaffe
-
-We will note new bugs only there.
-
-**********************************************************************
-
 This file is a list of known bugs, short-comings and oddities.  
 Treat it as an TODO list.   This file is divided in three sections.
 
