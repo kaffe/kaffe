@@ -1,6 +1,16 @@
 2005-01-05  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+
+	2004-12-30  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JFormattedTextField.java
+	(getFocusLostBehavior): Fixed typo in method name.
+	(setFocusLostBehavior): Likewise.
+
+2005-01-05  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 	
 	2004-12-29  Mark Wielaard  <mark@klomp.org>
 

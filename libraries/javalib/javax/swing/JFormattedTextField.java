@@ -199,7 +199,7 @@ public class JFormattedTextField extends JTextField
     throw new InternalError ("not implemented");
   }
 
-  public int getFocusLostBehaviour ()
+  public int getFocusLostBehavior()
   {
     return focusLostBehavior;
   }
@@ -252,7 +252,7 @@ public class JFormattedTextField extends JTextField
     super.setDocument(newDocument);
   }
 
-  public void setLostFocusBehavior (int behavior)
+  public void setFocusLostBehavior(int behavior)
   {
     if (behavior != COMMIT
 	&& behavior != COMMIT_OR_REVERT
