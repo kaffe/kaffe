@@ -24,40 +24,68 @@ public abstract class HttpServlet
 public HttpServlet() {
 }
 
-protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".doGet()");
+protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Method GET not supported");
 }
 
 protected long getLastModified(HttpServletRequest req) {
-	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".getLastModified()");
+	return (-1);
 }
 
-protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".doPost()");
+protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Method POST not supported");
 }
 
-protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".doPut()");
+protected void doPut(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Method PUT not supported");
 }
 
-protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".doDelete()");
+protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Method DELETE not supported");
 }
 
-protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".doOptions()");
+protected void doOptions(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Method OPTIONS not supported");
 }
 
-protected void doTrace(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".doTrace()");
-}
-
-protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".service(HttpServletRequest,HttpServletResponse)");
+protected void doTrace(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Method TRACE not supported");
 }
 
 public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
-	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".service(ServletRequest,ServletResponse)");
+	try {
+		service((HttpServletRequest)req, (HttpServletResponse)res);
+	}
+	catch (ClassCastException _) {
+		throw new ServletException("not an http request");
+	}
+}
+
+protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	if (req.getMethod().equals("GET")) {
+		doGet(req, res);
+	}
+	else if (req.getMethod().equals("HEAD")) {
+		doGet(req, res);
+	}
+	else if (req.getMethod().equals("POST")) {
+		doPost(req, res);
+	}
+	else if (req.getMethod().equals("DELETE")) {
+		doDelete(req, res);
+	}
+	else if (req.getMethod().equals("OPTIONS")) {
+		doOptions(req, res);
+	}
+	else if (req.getMethod().equals("PUT")) {
+		doPut(req, res);
+	}
+	else if (req.getMethod().equals("TRACE")) {
+		doTrace(req, res);
+	}
+	else {
+		res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Method " + req.getMethod() + " not supported");
+	}
 }
 
 }

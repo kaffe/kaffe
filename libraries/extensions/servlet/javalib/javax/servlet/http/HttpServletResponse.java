@@ -11,8 +11,9 @@
 package javax.servlet.http;
 
 import java.io.IOException;
+import javax.servlet.ServletResponse;
 
-public interface HttpServletResponse {
+public interface HttpServletResponse extends ServletResponse {
 
 public static final int SC_CONTINUE = 100;
 public static final int SC_SWITCHING_PROTOCOLS = 101;
