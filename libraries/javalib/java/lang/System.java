@@ -126,6 +126,6 @@ public static void setSecurityManager(SecurityManager s) {
 native public static long currentTimeMillis();
 native public static void arraycopy(Object src, int src_position, Object dst, int dst_position, int length);
 native public static int identityHashCode(Object x);
-native public static Properties initProperties(Properties props);
+native private static Properties initProperties(Properties props);
 
 }
