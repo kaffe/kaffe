@@ -12,8 +12,9 @@ package java.util;
 
 import java.lang.String;
 import java.lang.System;
-import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.io.Serializable;
 
 public class Date implements Serializable, Cloneable
@@ -277,7 +278,8 @@ public String toLocaleString() {
 }
 
 public String toString() {
-	DateFormat form = DateFormat.getDateTimeInstance( DateFormat.LONG, DateFormat.LONG);
+	// need a string of the form: "Thu May 13 17:52:20 MDT 1999"
+	SimpleDateFormat form = new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy");
 	return (form.format(this));
 }
 }
