@@ -265,6 +265,7 @@ Kaffe_Throw(JNIEnv* env, jobject obj)
 	unhand(getCurrentThread())->exceptObj = obj;
 
 	END_EXCEPTION_HANDLING();
+	return (0);
 }
 
 jint
@@ -279,6 +280,7 @@ Kaffe_ThrowNew(JNIEnv* env, jclass cls, const char* mess)
 	unhand(getCurrentThread())->exceptObj = (struct Hkaffe_util_Ptr*)eobj;
 
 	END_EXCEPTION_HANDLING();
+	return (0);
 }
 
 jobject
@@ -3408,6 +3410,7 @@ jint
 Kaffe_DetachCurrentThread(JavaVM* vm)
 {
 	stopThread((*Kaffe_ThreadInterface.currentJava)(), 0);
+	return (0);
 }
 
 static
