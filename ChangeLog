@@ -1,3 +1,18 @@
+2004-03-24  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/mem/gc-incremental.c: Fixed typo.
+
+	* libraries/javalib/java/text/SimpleDateFormat.java
+	(formatWithAttribute): Fixed FieldPosition interpretation.
+
+	* libraries/javalib/java/text/FieldPosition.java
+	(FieldPosition): Fixed constructor as in spec.
+
+	* libraries/javalib/gnu/java/text/FormatBuffer.java,
+	libraries/javalib/gnu/java/text/AttributedFormatBuffer.java,
+	libraries/javalib/gnu/java/text/StringFormatBuffer.java:
+	(getDefaultAttribute): New method.
+
 2004-03-24  Dalibor Topic <robilad@kaffe.org>
 
 	* include/kaffe/jmalloc.h:

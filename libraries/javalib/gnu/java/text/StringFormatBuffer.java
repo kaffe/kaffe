@@ -42,6 +42,7 @@ import java.util.HashMap;
 public class StringFormatBuffer implements FormatBuffer
 {
   private StringBuffer buffer;
+  private AttributedCharacterIterator.Attribute defaultAttr;
 
   public StringFormatBuffer(int prebuffer)
   {
@@ -80,6 +81,12 @@ public class StringFormatBuffer implements FormatBuffer
 
   public void setDefaultAttribute(AttributedCharacterIterator.Attribute attr)
   {
+    defaultAttr = attr;
+  }
+
+  public AttributedCharacterIterator.Attribute getDefaultAttribute()
+  {
+    return defaultAttr;
   }
 
   public void cutTail(int length)

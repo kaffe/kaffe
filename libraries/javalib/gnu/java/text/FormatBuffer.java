@@ -47,6 +47,7 @@ public interface FormatBuffer
   public void append(char c);
   public void append(char c, AttributedCharacterIterator.Attribute attr);
   public void setDefaultAttribute(AttributedCharacterIterator.Attribute attr);
+  public AttributedCharacterIterator.Attribute getDefaultAttribute();
   public void cutTail(int length);
   public void clear();
 

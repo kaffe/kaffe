@@ -621,7 +621,7 @@ DBG(GCSTAT,
 			dprintf(
 			    "<GC: heap %dK, total before %dK,"
 			    " after %dK (%d/%d objs)\n %2.1f%% free,"
-			    " alloced %dK (#%d), marked %dK, "
+			    " allocated %dK (#%d), marked %dK, "
 			    "swept %dK (#%d)\n"
 			    " %d objs (%dK) awaiting finalization>\n",
 			(int)(gc_heap_total/1024), 

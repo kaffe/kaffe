@@ -534,7 +534,8 @@ public class SimpleDateFormat extends DateFormat
 	      default:
 		throw new IllegalArgumentException ("Illegal pattern character " + p.field);
 	      }
-	    if (pos != null && p.field == pos.getField())
+	    if (pos != null && (buffer.getDefaultAttribute() == pos.getFieldAttribute()
+				|| p.field == pos.getField()))
 	      {
 		pos.setBeginIndex(beginIndex);
 		pos.setEndIndex(buffer.length());

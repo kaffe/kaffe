@@ -154,6 +154,11 @@ public class AttributedFormatBuffer implements FormatBuffer
     startingRange = currentPos;
   }
 
+  public AttributedCharacterIterator.Attribute getDefaultAttribute()
+  {
+    return defaultAttr;
+  }
+
   public void cutTail(int length)
   {
     buffer.setLength(buffer.length()-length);
