@@ -1,3 +1,9 @@
+2004-09-12  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* configure.ac: Fixed a typo for SO_RCVTIMEO.
+
+	* configure: Regenerated.
+
 2004-09-12  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/javax/swing/DefaultListSelectionModel.java:

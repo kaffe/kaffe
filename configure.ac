@@ -1505,7 +1505,7 @@ int main(void) {
 	return ret;
 }
 ]])],[ac_cv_so_rcvtimeo_broken=no],[ac_cv_so_rcvtimeo_broken=yes],[ac_cv_so_rcvtimeo_broken=cross])])
-if test x"$ac_cv_sr_rcvtimeo_broken" = x"yes"; then
+if test x"$ac_cv_so_rcvtimeo_broken" = x"yes"; then
   AC_DEFINE(HAVE_BROKEN_SO_RCVTIMEO, 1, [Define if setsockopt(SO_RCVTIMEO) is broken])
 fi
 

@@ -50833,7 +50833,7 @@ fi
 fi
 echo "$as_me:$LINENO: result: $ac_cv_so_rcvtimeo_broken" >&5
 echo "${ECHO_T}$ac_cv_so_rcvtimeo_broken" >&6
-if test x"$ac_cv_sr_rcvtimeo_broken" = x"yes"; then
+if test x"$ac_cv_so_rcvtimeo_broken" = x"yes"; then
 
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_BROKEN_SO_RCVTIMEO 1
