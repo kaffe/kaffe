@@ -1,14 +1,3 @@
-package java.util;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PushbackInputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.lang.String;
-import java.lang.System;
 
 /*
  * Java core library component.
@@ -19,8 +8,20 @@ import java.lang.System;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public class Properties extends Hashtable
-{
+
+package java.util;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.PushbackInputStream;
+import java.io.Writer;
+import java.lang.String;
+import java.lang.System;
+
+public class Properties extends Hashtable {
 	private static final long serialVersionUID = 4112578634029874840L;
 	protected Properties defaults;
 	private StringBuffer key, value;
@@ -100,6 +101,10 @@ public String getProperty(String key, String defaultValue) {
 	String result=getProperty(key);
 
 	if (result==null) return defaultValue; else return result;
+}
+
+public Object setProperty(String key, String value) {
+	return super.put(key, value);
 }
 
 public void list(PrintStream out) {
