@@ -37,7 +37,6 @@ private static void checkMulticastAddress(InetAddress addr) throws IOException {
 
 protected void init(int port, InetAddress bindAddr) throws SocketException {
 	impl.setOption(SocketOptions.SO_REUSEADDR, new Boolean(true));
-	impl.setOption(SocketOptions.SO_REUSEPORT, new Boolean(true));
 	super.init(port, bindAddr);
 }
 

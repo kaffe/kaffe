@@ -42,11 +42,6 @@ static const struct {
 #ifdef SO_REUSEADDR
     { java_net_SocketOptions_SO_REUSEADDR,	SOL_SOCKET,	SO_REUSEADDR },
 #endif
-#ifdef SO_REUSEPORT
-    { java_net_SocketOptions_SO_REUSEPORT,	SOL_SOCKET,	SO_REUSEPORT },
-#else
-#warning "Unable to bind multiple MulticastSocket's to the same port without SO_REUSEPORT"
-#endif
   };
 
 #ifdef DEBUG
@@ -62,9 +57,6 @@ static const struct {
 #endif
 #ifdef SO_REUSEADDR
     { java_net_SocketOptions_SO_REUSEADDR,	"SO_REUSEADDR" },
-#endif
-#ifdef SO_REUSEPORT
-    { java_net_SocketOptions_SO_REUSEPORT,	"SO_REUSEPORT" },
 #endif
 };
 #endif /*DEBUG*/
@@ -146,18 +138,8 @@ DBG(NATIVENET,
 	addr.sin_addr.s_addr = htonl(unhand(laddr)->address);
 
 	r = KBIND(fd, (struct sockaddr*)&addr, sizeof(addr));
-	switch( r )
-	{
-	case 0:
-		break;
-	case EADDRNOTAVAIL:
-	case EADDRINUSE:
-	case EACCES:
-		SignalError("java.net.BindException", SYS_ERROR(r));
-		break;
-	default:
+	if (r) {
 		SignalError("java.net.SocketException", SYS_ERROR(r));
-		break;
 	}
 
 	if (port == 0) {
@@ -257,19 +239,11 @@ DBG(NATIVENET,
 	/* XXX should assert (unhand(pkt)->length <= unhand_array(unhand(pkt)->buf)->length), no? */
 
 	rc = KRECVFROM(unhand(unhand(this)->fd)->fd,
-		&(unhand_array(unhand(pkt)->buf)->body)[unhand(pkt)->offset],
+		unhand_array(unhand(pkt)->buf)->body,
 		unhand(pkt)->length, 0, (struct sockaddr*)&addr,
 		&alen, unhand(this)->timeout, &r);
-	switch( rc )
-	{
-	case 0:
-		break;
-	case EINTR:
-		SignalError("java.io.InterruptedIOException", SYS_ERROR(rc));
-		break;
-	default:
+	if (rc) {
 		SignalError("java.net.SocketException", SYS_ERROR(rc));
-		break;
 	}
 
 	unhand(pkt)->length = r;
