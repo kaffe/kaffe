@@ -235,7 +235,13 @@ public void interrupt() {
 			h.notify();
 		}
 	}
+	else {
+		// I consider this a hack - TIM 9/14/99
+		interrupt0();
+	}
 }
+
+native private void interrupt0();
 
 public static boolean interrupted() {
 	Thread curr = Thread.currentThread();
@@ -368,7 +374,13 @@ final public synchronized void stop(Throwable o) {
 			h.notify();
 		}
 	}
+	else {
+		// I consider this a hack - TIM 9/14/99
+		stop0(o);
+	}
 }
+
+native private void stop0(Object o);
 
 /**
  * @deprecated
