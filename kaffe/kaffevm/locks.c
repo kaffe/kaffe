@@ -366,6 +366,7 @@ locks_internal_waitCond(iLock** lkp, iLock *heavyLock, jlong timeout)
   volatile jthread_t *ptr;
   jboolean r;
   threadData *tdata;
+  unsigned int oldLockCount;
   
   DBG(SLOWLOCKS,
       dprintf("_waitCond(lk=%p, timeout=%ld, th=%p)\n",
@@ -384,6 +385,11 @@ locks_internal_waitCond(iLock** lkp, iLock *heavyLock, jlong timeout)
   tdata = KTHREAD(get_data)(cur);
   tdata->nextlk = lk->cv;
   lk->cv = cur;
+  /* Here we need to reduce the lock count to 1 to be sure
+   * the lock is completely released when we invoke slowUnlockMutex.
+   */
+  oldLockCount = lk->lockCount;
+  lk->lockCount = 1;
 
   putHeavyLock(lk);
   slowUnlockMutex((volatile iLock *volatile *)lkp, heavyLock);
@@ -417,6 +423,10 @@ locks_internal_waitCond(iLock** lkp, iLock *heavyLock, jlong timeout)
   }
   
   slowLockMutex((volatile iLock *volatile *)lkp, heavyLock);
+  /* This is safe as no other thread touches the lockcount if it is not
+   * owning the lock.
+   */
+  lk->lockCount = oldLockCount;
   
   return (r);
 }
