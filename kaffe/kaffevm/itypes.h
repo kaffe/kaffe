@@ -13,6 +13,7 @@
 #define __itypes_h
 
 #include "gtypes.h"
+#include "errors.h"
 
 #define	TYPE_Boolean	4
 #define	TYPE_Char	5
@@ -39,9 +40,19 @@ extern struct Hjava_lang_Class* byteClass;
 extern struct Hjava_lang_Class* shortClass;     
 extern struct Hjava_lang_Class* voidClass;
 
+extern struct Hjava_lang_Class* intArrClass;
+extern struct Hjava_lang_Class* byteArrClass;
+extern struct Hjava_lang_Class* charArrClass;
+extern struct Hjava_lang_Class* shortArrClass;
+extern struct Hjava_lang_Class* longArrClass;
+extern struct Hjava_lang_Class* floatArrClass;
+extern struct Hjava_lang_Class* doubleArrClass;
+extern struct Hjava_lang_Class* objectArrClass;
+
 #define	TYPE_CLASS(t)		types[t]
 
 extern void finishTypes(void);
 extern void initTypes(void);
+extern void initArrayClasses(errorInfo*);
 
 #endif

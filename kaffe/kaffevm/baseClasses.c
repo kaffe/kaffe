@@ -38,6 +38,7 @@
 #include "feedback.h"
 #include "debugFile.h"
 #include "fileSections.h"
+#include "verify.h"
 
 Utf8Const* init_name;
 Utf8Const* final_name;
@@ -294,7 +295,13 @@ initBaseClasses(void)
 
 	/* Fixup primitive types */
 	finishTypes();
-
+	
+	/* Initialize array types supported by the instruction set */
+	initArrayClasses(&einfo);
+	
+	/* Initialize basic type structures in the verifier */
+	initVerifierTypes();
+	
 	if (!processClass(StringClass, CSTATE_COMPLETE, &einfo))
 		abortWithEarlyClassFailure(&einfo);
 }

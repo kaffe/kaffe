@@ -1,3 +1,25 @@
+2003-08-07  Rob Gonzalez <rob@kaffe.org>
+
+	Committed full bytecode verifier.
+
+	* kaffe/kaffevm/verify.c
+	The bytecode verifier.
+	
+	* kaffe/kaffevm/verify.h
+	New file.
+
+	* kaffe/kaffevm/Makefile.am
+	Addition for verify.h
+
+	* kaffe/kaffevm/baseClasses.c
+	Added calls to initArrayClasses() and initVerifierTypes()
+	after finishTypes().
+
+	* kaffe/kaffevm/itypes.h
+	* kaffe/kaffevm/itypes.c
+	Added pointers and initialization method for array of primitive
+	types.
+
 2003-08-07 Milos Negovanovic <milosn@bmf.bounceme.net>,
 	   Dalibor Topic <robilad@kaffe.org>
 
