@@ -64,7 +64,8 @@ libkaffevm_la_DEPENDENCIES = \
 	systems/$(THREAD_SYSTEM)/libkthread.la \
 	verifier/libkaffeverifier.la \
 	$(GC_NAME)/libkaffegc.la \
-	jni/libkaffejni.la
+	jni/libkaffejni.la \
+        $(top_builddir)/replace/libreplace.la 
 
 libkaffevm_la_LIBADD = \
 	$(libkaffevm_la_DEPENDENCIES) \

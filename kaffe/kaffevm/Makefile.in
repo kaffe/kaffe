@@ -94,7 +94,7 @@ am__DEPENDENCIES_1 =
 am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(ENGINE_NAME)/libengine.la \
 	$(am__DEPENDENCIES_2) systems/$(THREAD_SYSTEM)/libkthread.la \
 	verifier/libkaffeverifier.la $(GC_NAME)/libkaffegc.la \
-	jni/libkaffejni.la
+	jni/libkaffejni.la $(top_builddir)/replace/libreplace.la
 am__libkaffevm_la_SOURCES_DIST = access.c baseClasses.c classMethod.c \
 	classPool.c methodCache.c code-analyse.c code.c constants.c \
 	debug.c exception.c external.c file.c findInJar.c fp.c gc.c \
@@ -467,7 +467,8 @@ libkaffevm_la_DEPENDENCIES = \
 	systems/$(THREAD_SYSTEM)/libkthread.la \
 	verifier/libkaffeverifier.la \
 	$(GC_NAME)/libkaffegc.la \
-	jni/libkaffejni.la
+	jni/libkaffejni.la \
+        $(top_builddir)/replace/libreplace.la 
 
 libkaffevm_la_LIBADD = \
 	$(libkaffevm_la_DEPENDENCIES) \
