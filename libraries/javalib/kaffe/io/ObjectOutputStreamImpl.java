@@ -79,6 +79,7 @@ public ObjectOutputStreamImpl(OutputStream out, ObjectOutputStream p) {
 public void writeStreamHeader() throws IOException {
 	writeShort(ObjectStreamConstants.STREAM_MAGIC);
 	writeShort(ObjectStreamConstants.STREAM_VERSION);
+	drain();
 }
 
 public void drain() throws IOException {

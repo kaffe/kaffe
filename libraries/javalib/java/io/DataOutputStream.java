@@ -114,14 +114,14 @@ final public void writeUTF(String str) throws IOException {
 		}
 	}
 	c = null;
-	byte result[] = b.toByteArray();
 
-	if (result.length > 65535)
+	int len = b.size();
+	if (len > 65535) {
 		throw new UTFDataFormatException("String too long");
-
+	}
 	synchronized(this) {
-		writeShort(result.length);
-		write(result, 0, result.length);
+		writeShort(len);
+		b.writeTo(this);
 	}
 }
 }

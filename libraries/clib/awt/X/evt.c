@@ -16,47 +16,25 @@
 
 #if defined(USE_THREADED_AWT)
 #include "jsyscall.h"
+#include "../../../../kaffe/kaffevm/locks.h"
 void jthreadedBlockEAGAIN(int fd);   /* move to SysCallInterface ? */
 int jthreadedFileDescriptor(int fd);
 extern void* currentJThread;
 #endif
 
+void forwardFocus ( int cmd, Window wnd );  /* from wnd.c */
+
+
 /*******************************************************************************
  *
  */
-
-__inline__ int getSourceIdx ( Toolkit* X, Window w )
-{
-  int      n;
-  register int i;
-
-  if ( w == X->lastWindow ){
-	return X->srcIdx;
-  }
-  else {
-	for ( i = (unsigned long) w, n=0; n < X->nWindows; i++, n++ ) {
-	  i %= X->nWindows;
-	  if ( X->windows[i] == w ){
-		X->srcIdx = i;
-		X->lastWindow = w;
-		return X->srcIdx;
-	  }
-	  
-	  if ( X->windows[i] == 0 ){
-		return -1;
-	  }
-	}
-	return -1;
-  }
-}
-
 
 int nextEvent ( JNIEnv* env, jclass clazz, Toolkit *X, int blockIt )
 {
   if ( X->preFetched )
 	return 1;
 
-#if defined(USE_THREADED_AWT)
+#if defined(USE_THREADED_AWT) && !defined(SUN_AWT_FIX)
   /*
    * We can't use QueuedAfterFlush since it seems to rely on blocked IO. At least
    * XFree86-3.3.2 subsequently hangs in _XFlushInt. This is the weak point of
@@ -66,18 +44,19 @@ int nextEvent ( JNIEnv* env, jclass clazz, Toolkit *X, int blockIt )
 	while ( X->pending <= 0 ) {
 	  XFlush( X->dsp);
 	  if ( (X->pending = XEventsQueued( X->dsp, QueuedAlready)) == 0 ) {
-
-		/* give up the lock on the Toolkit class, or we probably end up in a deadlock */
 		X->blocking = 1;
-		(*env)->MonitorExit( env, clazz);
-		jthreadedBlockEAGAIN( ConnectionNumber( X->dsp));
+
+		/* Note that we might get blocked here, but we still have the Toolkit.class
+		 * lock. Since the new locking interface requires locks to occur symmetrical
+		 * inside of the same stack frame, we have to backup to some VM specific
+		 * functionality, here.
+		 */
+		UNBLOCK_EXECUTE( clazz, (jthreadedBlockEAGAIN( ConnectionNumber( X->dsp))));
 
 		/*
 		 * getting here just means we got input, it doesn't mean we have events. It also
 		 * doesn't mean there currently is no other thread doing X requests
 		 */
-		(*env)->MonitorEnter( env, clazz);
-
 		X->blocking = 0;
 		X->pending = XEventsQueued( X->dsp, QueuedAfterReading);
 	  }
@@ -174,7 +153,7 @@ jmethodID  getWMEvent;
 
 #define    WM_KILLED           1905
 
-#if defined(DEBUG)
+//#if defined(DEBUG)
 static char *eventStr ( int evtId )
 {
   switch (evtId) {
@@ -205,7 +184,7 @@ static char *eventStr ( int evtId )
   default: return "<unknown>";
   }
 };
-#endif
+//#endif
 
 jobject
 skip ( JNIEnv* env, Toolkit* X )
@@ -219,13 +198,15 @@ keyNotify ( JNIEnv* env, Toolkit* X )
 {
   KeySym          keysym;
   XComposeStatus  ioStatus;
-  int             n, keyCode, keyChar, mod;
+  int             n, keyCode, keyChar, mod, idx;
 
   /*
-   * This is just preliminary, it does not use input methods yet. Even keysym
-   * mapping is not fully supported
+   * We should eventually support input methods here.
+   * Note that 'keysym' is queried separately (with a standard state), to
+   * ensure the "one physical key -> one keycode" invariant
    */
-  n = XLookupString( &X->event.xkey, X->buf, X->nBuf, &keysym, &ioStatus);
+  n = XLookupString( &X->event.xkey, X->buf, X->nBuf, 0, &ioStatus);
+  keysym = XKeycodeToKeysym( X->dsp, X->event.xkey.keycode, 0);
 
   if ( (keysym >= 0xff00) || (n == 0) ) {
 	keyCode = FKeyCode[keysym & 0xff];
@@ -244,52 +225,43 @@ keyNotify ( JNIEnv* env, Toolkit* X )
   }
   else {
 	keyChar = (unsigned char)X->buf[0];
-	if (keyChar >= 'a' && keyChar <= 'z') {
-		keyCode = keyChar & ~0x20;
-	}
-	else {
-		/* This should be table driven in some way */
-		switch (keyChar) {
-		case '~': keyCode = '`'; break;	/* Doesn't work */
-		case '!': keyCode = '1'; break;
-		case '@': keyCode = '2'; break;
-		case '#': keyCode = '3'; break;
-		case '$': keyCode = '4'; break;
-		case '%': keyCode = '5'; break;
-		case '^': keyCode = '6'; break;
-		case '&': keyCode = '7'; break;
-		case '*': keyCode = '8'; break;
-		case '(': keyCode = '9'; break;
-		case ')': keyCode = '0'; break;
-		case '_': keyCode = '-'; break;
-		case '+': keyCode = '='; break;
-		case '{': keyCode = '['; break;
-		case '}': keyCode = ']'; break;
-		case '|': keyCode = '\\'; break;
-		case ':': keyCode = ';'; break;
-		case '"': keyCode = '\''; break; /* Doesn't work */
-		case '<': keyCode = ','; break;
-		case '>': keyCode = '.'; break;
-		case '?': keyCode = '/'; break;
-		default:
-			keyCode = keyChar;
-			break;
-		}
-	}
+	keyCode = LKeyCode[keysym & 0xff];
   }
 
   X->evtId = (X->event.xany.type == KeyPress)? KEY_PRESSED : KEY_RELEASED;
   mod = keyMod( X->event.xkey.state);
 
+  if ( X->fwdIdx >= 0 ) {
+	/*
+	 * watch out - we still might have key events for a already
+	 * unregistered forwardee in the queue (since we fake X, we can't rely on it
+	 * to remove key events for a destroyed forwardee)
+	 */
+	if ( !checkSource( X, X->fwdIdx) )
+	  return 0;
+	idx = X->fwdIdx;
+  }
+  else {
+	idx = X->srcIdx;
+  }
+
   return (*env)->CallStaticObjectMethod( env, KeyEvent, getKeyEvent,
-										 X->srcIdx, X->evtId, keyCode, keyChar, mod);
+										 idx, X->evtId, keyCode, keyChar, mod);
 }
 
 
 jobject
 buttonNotify ( JNIEnv* env, Toolkit* X )
 {
-  X->evtId = ( X->event.xany.type == ButtonPress ) ?  MOUSE_PRESSED : MOUSE_RELEASED;
+  if ( X->event.xany.type == ButtonPress ) {
+	X->evtId = MOUSE_PRESSED;
+
+	if ( (X->windows[X->srcIdx].w == X->focus) && (X->fwdIdx >= 0) )
+	  forwardFocus( FWD_REVERT, X->event.xany.window);
+  }
+  else {
+	X->evtId = MOUSE_RELEASED;
+  }
 
   return (*env)->CallStaticObjectMethod( env, MouseEvent, getMouseEvent,
 										 X->srcIdx, X->evtId,
@@ -322,7 +294,7 @@ jobject
 focusNotify ( JNIEnv* env, Toolkit* X )
 {
   int et = X->event.xany.type;
-  int sIdx = X->srcIdx;
+  int idx = (X->focusFwd) ? X->fwdIdx : X->srcIdx;
 
   /*
    * get rid of all these fancy intermediate focus events (the real thing should
@@ -334,13 +306,33 @@ focusNotify ( JNIEnv* env, Toolkit* X )
 	X->pending--;
 	if ( getSourceIdx( X, X->event.xfocus.window) >= 0 ) {
 	  et = X->event.xany.type;
-	  sIdx = X->srcIdx;
+	  idx = (X->focusFwd) ? X->fwdIdx : X->srcIdx;
 	}
   }
 
-  X->evtId = (et == FocusIn) ? FOCUS_GAINED : FOCUS_LOST;
+  if ( et == FocusIn ) {
+	X->evtId = FOCUS_GAINED;
+	X->focus = X->event.xany.window;
+  }
+  else {
+	X->evtId = FOCUS_LOST;
+	X->focus = 0;
+  }
 
-  return (*env)->CallStaticObjectMethod( env, FocusEvent, getFocusEvent, sIdx, X->evtId);
+  /*
+   * No matter what the focus change is - if we get a REAL focus notification,
+   * it means that we will end focus forwarding (which is done on the owner-basis,
+   * not by means of a global grab mode)
+   */
+  resetFocusForwarding( X);
+
+  if ( checkSource( X, idx) ){
+	return (*env)->CallStaticObjectMethod( env, FocusEvent, getFocusEvent, idx,
+										   X->evtId, JNI_FALSE);
+  }
+  else {
+	return 0;
+  }
 }
 
 
@@ -390,6 +382,8 @@ destroyNotify ( JNIEnv* env, Toolkit* X )
    * external client, since removeNotify() calls evtUnregisterSource() (i.e.
    * removes windows properly from the dispatch table)
    */
+  X->windows[X->srcIdx].flags &= ~WND_MAPPED;
+
   return (*env)->CallStaticObjectMethod( env, WMEvent, getWMEvent,
 										 X->srcIdx, (X->evtId = WM_KILLED));
 }
@@ -398,13 +392,29 @@ destroyNotify ( JNIEnv* env, Toolkit* X )
 jobject
 mapNotify ( JNIEnv* env, Toolkit* X )
 {
-  X->evtId = (X->event.xany.type == MapNotify) ? WINDOW_DEICONIFIED : WINDOW_ICONIFIED;
+  int id = 0;
 
-  if ( X->event.xany.window == X->newWindow )  /* 'BadMatch' focus set workaround */
-	X->newWindow = 0;
+  if ( X->event.xany.type == MapNotify ) {
+	if ( (X->windows[X->srcIdx].flags & WND_MAPPED) == 0 ){
+	  id = WINDOW_DEICONIFIED;
+	  X->windows[X->srcIdx].flags |= WND_MAPPED;
+	}
+  }
+  else {
+	if ( (X->windows[X->srcIdx].flags & WND_MAPPED) != 0 ){
+	  id = WINDOW_ICONIFIED;
+	  X->windows[X->srcIdx].flags &= ~WND_MAPPED;
+	}
+  }
 
-  return (*env)->CallStaticObjectMethod( env, WindowEvent, getWindowEvent,
-										 X->srcIdx, X->evtId);
+  if ( id ) {
+	return (*env)->CallStaticObjectMethod( env, WindowEvent, getWindowEvent,
+										   X->srcIdx, id);
+  }
+  else {
+	// we do the ComponentEvent show/hide in Java
+	return 0;
+  }
 }
 
 
@@ -443,31 +453,80 @@ configureNotify ( JNIEnv* env, Toolkit* X )
 jobject
 clientMessage ( JNIEnv* env, Toolkit* X )
 {
+  if ( X->windows[X->srcIdx].flags & WND_DESTROYED ){
+	/* we lost him, Jim */
+	return 0;
+  }
+
   if ( X->event.xclient.message_type == WM_PROTOCOLS ) {
 	if ( X->event.xclient.data.l[0] == WM_DELETE_WINDOW ) {
 	  return (*env)->CallStaticObjectMethod( env, WindowEvent, getWindowEvent,
 											 X->srcIdx, (X->evtId = WINDOW_CLOSING));
 	}
 	else if ( X->event.xclient.data.l[0] == WM_TAKE_FOCUS ) {
-	  XSetInputFocus( X->dsp, X->event.xany.window, RevertToNone, CurrentTime);
+	  XSetInputFocus( X->dsp, X->event.xany.window, RevertToParent, CurrentTime);
 	}
   }
+
   /*
-   * this is a workaround for the common problem of requesting the focus for not
+   * This is a workaround for the common problem of requesting the focus for not
    * yet mapped windows (resulting in BadMatch errors)
    */
   else if ( X->event.xclient.message_type == RETRY_FOCUS ) {
-	if ( (X->event.xclient.window == X->newWindow) && (X->event.xclient.data.l[0] > 0) ){
-	  X->event.xclient.data.l[0]--;
-	  XSendEvent( X->dsp, X->event.xany.window, False, StdEvents, &X->event);
-	}
-	else {
-	  if ( !X->newWindow ){
-		XSetInputFocus( X->dsp, (Window)X->event.xclient.window, RevertToNone, CurrentTime);
+	if ( X->windows[X->srcIdx].flags & WND_MAPPED ) {
+	  XSetInputFocus( X->dsp, (Window)X->event.xclient.window, RevertToParent, CurrentTime);
+	  if ( X->event.xclient.data.l[1] ) {
+		/* we have a pending forward request, too */
+		forwardFocus( FWD_SET, X->event.xclient.data.l[1]);
 	  }
 	}
   }
-  return NULL;
+
+  /*
+   * This is a workaround for X not having "owned" windows (popups), which do
+   * not "shade" the titlebar of their owner (i.e. don't indicate a change in
+   * the activeWindow). The only way to implement this reliable (w/o playing
+   * around with a window manager) is to not let these popups select on
+   * key events at all. But rather than to expose this to the Java side (like
+   * the JDK does), we hide this in the native layer
+   */
+  else if ( X->event.xclient.message_type == FORWARD_FOCUS ) {
+	switch ( X->event.xclient.data.l[0] ){
+	case FWD_SET:
+	  DBG( awt_evt, ("FWD_SET: %x (%d) %x\n", X->event.xany.window, X->srcIdx, X->windows[X->srcIdx].owner));
+
+	  if ( (X->srcIdx != X->fwdIdx) && (X->focus == X->windows[X->srcIdx].owner) ){
+		X->fwdIdx = X->srcIdx;
+		X->focusFwd = X->event.xany.window;
+		return (*env)->CallStaticObjectMethod( env, FocusEvent, getFocusEvent,
+											   X->srcIdx, FOCUS_GAINED, JNI_TRUE);
+	  }
+	  else {
+		return 0;
+	  }
+
+	case FWD_CLEAR:
+	  DBG( awt_evt, ("FWD_CLEAR: %x (%d) %x\n", X->event.xany.window, X->srcIdx, X->windows[X->srcIdx].owner));
+
+	  if ( X->fwdIdx >= 0 ) {
+		resetFocusForwarding( X);
+		return (*env)->CallStaticObjectMethod( env, FocusEvent, getFocusEvent,
+											   X->srcIdx, FOCUS_LOST, JNI_FALSE);
+	  }
+	  else {
+		return 0;
+	  }
+
+	case FWD_REVERT:
+	  DBG( awt_evt, ("FWD_REVERT: %x\n", X->event.xany.window));
+	  if ( X->event.xany.window == X->focus ) {
+		resetFocusForwarding( X);
+		return (*env)->CallStaticObjectMethod( env, FocusEvent, getFocusEvent,
+											   X->srcIdx, FOCUS_GAINED, JNI_FALSE);
+	  }
+	}
+  }
+  return 0;
 }
 
 jobject
@@ -495,7 +554,7 @@ reparentNotify ( JNIEnv* env, Toolkit* X )
 	right  = w - wc - left;
 	bottom = h - hc - top;
 
-	if ( XGetTransientForHint( X->dsp, window, &owner) && X->dialogInsets.guess ) {
+	if ( (X->windows[X->srcIdx].flags & WND_DIALOG) && X->dialogInsets.guess ) {
 	  in = &(X->dialogInsets);
 	  if ( (left != in->left) || (top != in->top) ||
 		   (right != in->right) || (bottom != in->bottom) ){
@@ -591,6 +650,9 @@ jobject
 Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz )
 {
   jclass Component;
+  int r;
+  unsigned long mask;
+  XSetWindowAttributes attrs;
 
   ComponentEvent = (*env)->FindClass( env, "java/awt/ComponentEvt");
   MouseEvent     = (*env)->FindClass( env, "java/awt/MouseEvt");
@@ -605,7 +667,7 @@ Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz )
   getMouseEvent     = (*env)->GetStaticMethodID( env, MouseEvent, "getEvent",
 												 "(IIIII)Ljava/awt/MouseEvt;");
   getFocusEvent     = (*env)->GetStaticMethodID( env, FocusEvent, "getEvent",
-												 "(II)Ljava/awt/FocusEvt;");
+												 "(IIZ)Ljava/awt/FocusEvt;");
   getWindowEvent    = (*env)->GetStaticMethodID( env, WindowEvent, "getEvent",
 												 "(II)Ljava/awt/WindowEvt;");
   getKeyEvent       = (*env)->GetStaticMethodID( env, KeyEvent, "getEvent",
@@ -614,9 +676,6 @@ Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz )
 												 "(IIIIII)Ljava/awt/PaintEvt;");
   getWMEvent        = (*env)->GetStaticMethodID( env, WMEvent, "getEvent",
 												 "(II)Ljava/awt/WMEvent;");
-
-  X->nWindows = 47;
-  X->windows = AWT_CALLOC( X->nWindows, sizeof(Window));
 
 #if defined(UNIX_JTHREADS)
   /*
@@ -717,7 +776,7 @@ Java_java_awt_Toolkit_evtWakeup ( JNIEnv* env, jclass clazz )
   XEvent event;
 
   DBG( awt_evt, ("evtWakeup\n"));
-  DBG_ACTION( awt, XSynchronize( X->dsp, False));
+  //DBG_ACTION( awt, XSynchronize( X->dsp, False));
 
   event.xclient.type = ClientMessage; 
   event.xclient.message_type = WAKEUP;
@@ -727,43 +786,49 @@ Java_java_awt_Toolkit_evtWakeup ( JNIEnv* env, jclass clazz )
   XSendEvent( X->dsp, X->wakeUp, False, 0, &event);
   XFlush( X->dsp);
 
-  DBG_ACTION( awt, XSynchronize( X->dsp, True));
+  //DBG_ACTION( awt, XSynchronize( X->dsp, True));
 }
 
-jint
-Java_java_awt_Toolkit_evtRegisterSource ( JNIEnv* env, jclass clazz, void* wnd )
+/*
+ * This is a helper for (IS_DISPATCH_EXCLUSIVE | NATIVE_DISPATCHER_LOOP) windowing
+ * systems, where we need to execute certain requests (e.g. window creation) to
+ * the native event thread. Not required here
+ */
+void
+Java_java_awt_Toolkit_evtSendWMEvent ( JNIEnv* env, jclass clazz, jobject wmEvt )
 {
-  register int i;
-  int      n;
+}
 
+
+jint
+Java_java_awt_Toolkit_evtRegisterSource ( JNIEnv* env, jclass clazz, Window wnd )
+{
   /*
-   * we don't use a double hashing here because collisions are very unlikely
-   * (window IDs usually already are hashed, so it does not make sense to
-   * hash them again - we just could make it worse
+   * We have done that already during the various wndCreateXX()
    */
-  for ( i = (unsigned long)wnd, n=0; n < X->nWindows; i++, n++ ) {
-	i %= X->nWindows;
-	if ( (int)X->windows[i] <= 0 ) {
-	  X->windows[i] = (Window)wnd;
-	  return i;
-	}
-  }
-	
-  fprintf( stderr, "window table out of space: %d", X->nWindows);
-  return -1;
+  int i = getSourceIdx( X, wnd);
+
+  DBG( awt_evt, ("registerSource( %x) -> %d\n", wnd, i));
+
+  return i;
 }
 
 
 jint
-Java_java_awt_Toolkit_evtUnregisterSource ( JNIEnv* env, jclass clazz, void* wnd )
+Java_java_awt_Toolkit_evtUnregisterSource ( JNIEnv* env, jclass clazz, Window wnd )
 {
-  int i = getSourceIdx( X, (Window)wnd);
+  int i = getSourceIdx( X, wnd);
 
-  if ( i >= 0 )
-	X->windows[i] = -1;
+  if ( i >= 0 ){
+	X->windows[i].w = -1;
+	X->windows[i].flags = 0;
+	X->windows[i].owner = 0;
+  }
 
-  if ( X->lastWindow == (Window) wnd )
+  if ( X->lastWindow == wnd )
 	X->lastWindow = 0;
+
+  DBG( awt_evt, ("unregisterSource( %x) -> %d\n", wnd, i));
 
   return i;
 }

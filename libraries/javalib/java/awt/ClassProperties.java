@@ -12,6 +12,7 @@
 
 package java.awt;
 
+
 class ClassProperties
 {
 	boolean useOldEvents;

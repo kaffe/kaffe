@@ -1,5 +1,6 @@
 package java.awt;
 
+import java.awt.event.FocusEvent;
 import java.awt.event.PaintEvent;
 
 /**
@@ -94,6 +95,32 @@ synchronized void dropPaintEvents ( Object source, int x, int y, int w, int h ) 
 	}
 }
 
+synchronized void dropPendingEvents ( Component src, int id ) {
+	AWTEvent e = localQueue;
+	AWTEvent del, last = null;
+
+	while ( e != null ) {
+		if ( ((id != 0) && (e.id != id)) ||
+		     ((src != null) && (e.getSource() != src)) ) {
+			last = e;
+			e = e.next;
+			continue;
+		}
+	
+		if ( localEnd == e )
+			localEnd = last;
+
+ 		if ( last == null )
+			localQueue = e.next;
+		else
+			last.next = e.next;
+
+		del = e;
+		e = e.next;
+		del.recycle();  // watch out - recycle mutates the 'next' field
+	}
+}
+
 public AWTEvent getNextEvent () {
 	AWTEvent e;
 
@@ -144,7 +171,6 @@ public AWTEvent getNextEvent () {
 				e.next = null;
 				return e;
 			}
-
 			// we don't have to check Toolkit.IS_BLOCKING here, since we reach
 			// this point only in case it is not blocked, or evtGetNextEvent()
 			// returned 'null'
@@ -155,6 +181,22 @@ public AWTEvent getNextEvent () {
 			}
 		}
 	}
+}
+
+synchronized boolean hasPendingEvents ( Component c, int id ) {
+	AWTEvent e;
+
+	for ( e=localQueue; e != null; e = e.next ) {
+		if ( (c != null) && (c != e.getSource()) )
+			continue;
+	
+		if ( (id != 0) && (id != e.id) )
+			continue;
+	
+		return true;
+	}
+
+	return false;
 }
 
 public synchronized AWTEvent peekEvent () {
@@ -206,21 +248,30 @@ public synchronized void postEvent ( AWTEvent e ) {
 	}
 }
 
-synchronized void repaint ( int id, Component c, int x, int y, int width, int height ) {
+void postFocusEvent ( FocusEvent evt ) {
+	if ( evt.id == FocusEvent.FOCUS_GAINED ) {
+		dropPendingEvents( null, FocusEvent.FOCUS_GAINED);
+	}
+	
+	postEvent( evt);
+}
+
+synchronized void postPaintEvent ( int id, Component c, int x, int y, int width, int height ) {
 	AWTEvent e = localQueue;
 
 	// OK, this is pretty redundant to postEvent, but we don't want to
 	// scan the localQueue twice (it might get large)
 	if ( e != null ) {
 		do {
-			if ( (e.id == id) &&
-           ((PaintEvt)e).solicitRepaint( c, x, y, width, height) ){
+			if ( (e.id == id) && ((PaintEvt)e).solicitRepaint( c, x, y, width, height) ){
 				return;
 			}
-			if ( e.next == null )
+			if ( e.next == null ) {
 				break;
-			else
+			}
+			else {
 				e = e.next;
+			}
 		} while ( true );
 		
 		e.next = localEnd = PaintEvt.getEvent( c, id, 0, x, y, width, height);

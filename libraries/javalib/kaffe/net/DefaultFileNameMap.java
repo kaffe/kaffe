@@ -29,7 +29,7 @@ public String getContentTypeFor(String filename) {
 		return ("text/html");
 	}
 	if (filename.endsWith(".txt")) {
-		return ("image/plain");
+		return ("text/plain");
 	}
 	return (null);
 }

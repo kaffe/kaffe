@@ -118,6 +118,10 @@ Java_java_awt_Toolkit_graCopyArea ( JNIEnv* env, jclass clazz, Graphics* gr,
 {
   DBG( awt_gra, ("copyArea: %x, %d,%d-%d,%d  %d,%d\n", gr, x,y,width,height, xDelta,yDelta));
 
+  /* some X servers act alleric on that (careless bitblt, again) */
+  if ( (width < 0) || (height < 0) )
+	return;
+
   x += gr->x0; y += gr->y0;
   XCopyArea( X->dsp, gr->drw, gr->drw, gr->gc, x, y, width, height, x + xDelta, y + yDelta);
   XFLUSH( X, False);
@@ -655,6 +659,8 @@ drawAlphaImage ( Graphics* gr, Image* img,
   DBG( awt_gra, ("drawAlphaImage: %x %x (%x, %x),  %d,%d  %d,%d  %d,%d  %x\n",
 				 gr, img, img->xImg, img->alpha, srcX, srcY, dstX, dstY, width, height, bgval));
 
+  if ( !img ) return;
+
 #ifdef HAVE_LIBXEXT
   if ( X->shm == USE_SHM ){
 	dstImg = createImage( width, height);
@@ -739,8 +745,13 @@ Java_java_awt_Toolkit_graDrawImage ( JNIEnv* env, jclass clazz, Graphics* gr, Im
 				 gr, img,  img->xImg,img->xMask,img->alpha,  img->width,img->height,
 				 srcX,srcY,  dstX,dstY,	 width,height, bgval));
 
+  if ( !img ) return;
+
   dstX += gr->x0;
   dstY += gr->y0;
+
+  dstX += img->left;
+  dstY += img->top;
 
   if ( img->pix ) {
 	XCopyArea( X->dsp, img->pix, gr->drw, gr->gc, srcX, srcY, width, height, dstX, dstY);
@@ -819,6 +830,8 @@ Java_java_awt_Toolkit_graDrawImageScaled ( JNIEnv* env, jclass clazz, Graphics* 
 
   DBG( awt_gra, ("drawImageScaled: %x %x (%x), %d,%d,%d,%d, %d,%d,%d,%d, %x\n",
 				 gr, img, img->xImg, dx0, dy0, dx1, dy1, sx0, sy0, sx1, sy1, bgval));
+
+  if ( !img ) return;
 
   /* screen images don't have an XImage, we have to get the data first */
   if ( tmpXImg ) {

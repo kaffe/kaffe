@@ -2,6 +2,7 @@ package kaffe.io;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.String;
+import java.util.Hashtable;
 
 /*
  * Java core library component.
@@ -18,6 +19,7 @@ abstract public class CharToByteConverter
 	protected int blen;
 	private static String encodingRoot;
 	private static String encodingDefault;
+	private static Hashtable cache = new Hashtable();
 
 static {
 	// see explanation in ByteToCharConverter
@@ -67,9 +69,18 @@ public int flush ( byte[] to, int tpos, int tlen ) {
 
 public static CharToByteConverter getConverter(String enc) throws UnsupportedEncodingException
 {
+	CharToByteConverter conv;
+
+	conv = (CharToByteConverter)cache.get(enc);
+	if (conv != null) {
+		return (conv);
+	}
+
 	String realenc = ConverterAlias.alias(enc);
 	try {
-		return ((CharToByteConverter)Class.forName(encodingRoot + ".CharToByte" + realenc).newInstance());
+		conv = (CharToByteConverter)Class.forName(encodingRoot + ".CharToByte" + realenc).newInstance();
+		cache.put(enc, conv);
+		return (conv);
 	}
 	catch (ClassNotFoundException _) {
 		throw new UnsupportedEncodingException(enc);

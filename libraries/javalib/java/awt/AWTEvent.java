@@ -1,17 +1,11 @@
 package java.awt;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ContainerEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.event.TextEvent;
-import java.awt.event.WindowEvent;
 import java.util.EventObject;
 import java.util.Stack;
+import kaffe.awt.FocusHook;
+import kaffe.awt.KeyHook;
+import kaffe.awt.MouseHook;
 import kaffe.util.Ptr;
 
 /**
@@ -30,7 +24,7 @@ public class AWTEvent
 	protected int id;
 	protected boolean consumed = false;
 	protected AWTEvent next;
-	private static final long serialVersionUID = -1825314779160409405L;
+	final private static long serialVersionUID = -1825314779160409405L;
 	final public static int COMPONENT_EVENT_MASK = 0x01;
 	final public static int CONTAINER_EVENT_MASK = 0x02;
 	final public static int FOCUS_EVENT_MASK = 0x04;
@@ -44,6 +38,7 @@ public class AWTEvent
 	final public static int TEXT_EVENT_MASK = 0x400;
 	final public static int RESERVED_ID_MAX = 1999;
 	final static int DISABLED_MASK = 0x80000000;
+	final static int TEMP_DISABLED_MASK = 0x40000000;
 	static Component keyTgt;
 	static Window activeWindow;
 	static Component mouseTgt;
@@ -54,6 +49,9 @@ public class AWTEvent
 	protected static Object evtLock = new Object();
 	protected static RootWindow root;
 	protected static Component nativeSource;
+	protected static KeyHook keyHook;
+	protected static MouseHook mouseHook;
+	protected static FocusHook focusHook;
 
 static {
 	sources = Toolkit.evtInit();
@@ -92,10 +90,9 @@ protected static Component getToplevel ( Component c ) {
 	// a dispatch() method - and that would slow down dispatching. Since it also would be
 	// difficult to decide what to do (because of inconsistent global state), we prefer a
 	// clean cut and rely on no events being dispatched on removeNotified Components
-	while ( ! (c instanceof Window) ){
-		c = c.parent;
-	}
-
+	
+	while ( c.parent != null ) c = c.parent;
+	
 	return c;
 }
 
@@ -160,13 +157,20 @@ static void unregisterSource ( Component c, Ptr nativeData ) {
 	if ( c == nativeSource ) // just a matter of safety (avoid temp garbage)
 		nativeSource = null;
 
-	if ( (--nSources	== 0) && Defaults.AutoStop ) {
-		// give the SecurityManager a chance to step in before
-		// closing down the Toolkit
-		System.getSecurityManager().checkExit( 0);
+	if ( --nSources	== 0 ) {
+		if ( Defaults.AutoStop ) {
+			// give the SecurityManager a chance to step in before
+			// closing down the Toolkit
+			System.getSecurityManager().checkExit( 0);
 		
-		Toolkit.terminate();
-		System.exit( 0); // not strictly required (if there are no persistent daemons)
+			Toolkit.terminate();
+			System.exit( 0); // not strictly required (if there are no persistent daemons)
+		}
+		else {
+			// no need to continue dispatching (but a subsequent registerSource might
+			// restart to dispatch, again)
+			Toolkit.stopDispatch();
+		}
 	}
 }
 }

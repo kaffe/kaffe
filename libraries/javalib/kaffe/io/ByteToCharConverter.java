@@ -13,11 +13,13 @@ package kaffe.io;
 import java.lang.String;
 import java.io.UnsupportedEncodingException;
 import kaffe.util.Assert;
+import java.util.Hashtable;
 
 abstract public class ByteToCharConverter
 {
 	private static String encodingRoot;
 	private static String encodingDefault;
+	private static Hashtable cache = new Hashtable();
 	protected byte[] buf;
 	protected int blen;
 
@@ -78,12 +80,18 @@ public int flush ( char[] to, int tpos, int tlen ) {
 	}
 }
 
-public static ByteToCharConverter getConverter ( String enc )
-			throws UnsupportedEncodingException
-{
+public static ByteToCharConverter getConverter ( String enc ) throws UnsupportedEncodingException {
+	ByteToCharConverter conv;
+
+	conv = (ByteToCharConverter)cache.get(enc);
+	if (conv != null) {
+		return (conv);
+	}
 	String realenc = ConverterAlias.alias(enc);
 	try {
-		return ((ByteToCharConverter)Class.forName(encodingRoot + ".ByteToChar" + realenc).newInstance());
+		conv = (ByteToCharConverter)Class.forName(encodingRoot + ".ByteToChar" + realenc).newInstance();
+		cache.put(enc, conv);
+		return (conv);
 	}
 	catch (ClassNotFoundException _) {
 		throw new UnsupportedEncodingException(enc);

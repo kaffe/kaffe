@@ -10,6 +10,15 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
+# Native support for standard Java libraries
+#
+# Copyright (c) 1996, 1997, 1998, 1999
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -59,8 +68,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
-AMDEP = @AMDEP@
-AMTAR = @AMTAR@
 AS = @AS@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
@@ -68,9 +75,6 @@ CC = @CC@
 CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
 CONFIG_MD_H = @CONFIG_MD_H@
 CPP = @CPP@
-CXX = @CXX@
-CXXCPP = @CXXCPP@
-DEPDIR = @DEPDIR@
 DIRSEP = @DIRSEP@
 DLLTOOL = @DLLTOOL@
 DLOPEN_JAVA_LIBS = @DLOPEN_JAVA_LIBS@
@@ -122,59 +126,24 @@ kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
 
-# Native support for standard Java libraries
-#
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
-#
-# See the file "license.terms" for information on usage and redistribution 
-# of this file. 
-
-
 native_LTLIBRARIES = libnative.la
 
-IO_SRCS = \
-		ObjectStreamClassImpl.c
+IO_SRCS =  		ObjectStreamClassImpl.c
 
 
-LANG_SRCS = \
-		ClassLoader.c \
-		Class.c \
-		Compiler.c \
-		Double.c \
-		Float.c \
-		Math.c \
-		Object.c \
-		Runtime.c \
-		SecurityManager.c \
-		String.c \
-		System.c \
-		Thread.c \
-		Throwable.c \
-		UNIXProcess.c \
-		CharToByteDefault.c \
-		ByteToCharDefault.c \
-		ZipFile.c \
-		MemoryAdvice.c
+LANG_SRCS =  		ClassLoader.c 		Class.c 		Compiler.c 		Double.c 		Float.c 		Math.c 		Object.c 		Runtime.c 		SecurityManager.c 		String.c 		System.c 		Thread.c 		Throwable.c 		UNIXProcess.c 		CharToByteDefault.c 		ByteToCharDefault.c 		ZipFile.c 		MemoryAdvice.c 		Application.c
 
 
-REFLECT_SRCS = \
-		Array.c \
-		Constructor.c \
-		Field.c \
-		Method.c
+REFLECT_SRCS =  		Array.c 		Constructor.c 		Field.c 		Method.c
 
 
-TEXT_SRCS = \
-		DateFormat.c
+TEXT_SRCS =  		DateFormat.c
 
 
-TEST_SRCS = \
-		TestNative.c
+TEST_SRCS =  		TestNative.c
 
 
-UTIL_SRCS = \
-		Arrays.c
+UTIL_SRCS =  		Arrays.c
 
 
 libnative_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
@@ -197,42 +166,38 @@ X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 libnative_la_DEPENDENCIES = 
-am_libnative_la_OBJECTS =  ObjectStreamClassImpl.lo ClassLoader.lo \
-Class.lo Compiler.lo Double.lo Float.lo Math.lo Object.lo Runtime.lo \
+libnative_la_OBJECTS =  ObjectStreamClassImpl.lo ClassLoader.lo Class.lo \
+Compiler.lo Double.lo Float.lo Math.lo Object.lo Runtime.lo \
 SecurityManager.lo String.lo System.lo Thread.lo Throwable.lo \
 UNIXProcess.lo CharToByteDefault.lo ByteToCharDefault.lo ZipFile.lo \
-MemoryAdvice.lo Array.lo Constructor.lo Field.lo Method.lo \
-DateFormat.lo TestNative.lo Arrays.lo
-libnative_la_OBJECTS =  $(am_libnative_la_OBJECTS)
+MemoryAdvice.lo Application.lo Array.lo Constructor.lo Field.lo \
+Method.lo DateFormat.lo TestNative.lo Arrays.lo
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
-LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES =  $(libnative_la_SOURCES)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 DIST_COMMON =  Makefile.am Makefile.in
 
 
-DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
+TAR = gtar
 GZIP_ENV = --best
-depcomp = $(SHELL) $(top_srcdir)/depcomp
-DEP_FILES =  @AMDEP@ $(DEPDIR)/Array.Plo $(DEPDIR)/Arrays.Plo \
-$(DEPDIR)/ByteToCharDefault.Plo $(DEPDIR)/CharToByteDefault.Plo \
-$(DEPDIR)/Class.Plo $(DEPDIR)/ClassLoader.Plo $(DEPDIR)/Compiler.Plo \
-$(DEPDIR)/Constructor.Plo $(DEPDIR)/DateFormat.Plo $(DEPDIR)/Double.Plo \
-$(DEPDIR)/Field.Plo $(DEPDIR)/Float.Plo $(DEPDIR)/Math.Plo \
-$(DEPDIR)/MemoryAdvice.Plo $(DEPDIR)/Method.Plo $(DEPDIR)/Object.Plo \
-$(DEPDIR)/ObjectStreamClassImpl.Plo $(DEPDIR)/Runtime.Plo \
-$(DEPDIR)/SecurityManager.Plo $(DEPDIR)/String.Plo $(DEPDIR)/System.Plo \
-$(DEPDIR)/TestNative.Plo $(DEPDIR)/Thread.Plo $(DEPDIR)/Throwable.Plo \
-$(DEPDIR)/UNIXProcess.Plo $(DEPDIR)/ZipFile.Plo
+DEP_FILES =  .deps/Application.P .deps/Array.P .deps/Arrays.P \
+.deps/ByteToCharDefault.P .deps/CharToByteDefault.P .deps/Class.P \
+.deps/ClassLoader.P .deps/Compiler.P .deps/Constructor.P \
+.deps/DateFormat.P .deps/Double.P .deps/Field.P .deps/Float.P \
+.deps/Math.P .deps/MemoryAdvice.P .deps/Method.P .deps/Object.P \
+.deps/ObjectStreamClassImpl.P .deps/Runtime.P .deps/SecurityManager.P \
+.deps/String.P .deps/System.P .deps/TestNative.P .deps/Thread.P \
+.deps/Throwable.P .deps/UNIXProcess.P .deps/ZipFile.P
 SOURCES = $(libnative_la_SOURCES)
-OBJECTS = $(am_libnative_la_OBJECTS)
+OBJECTS = $(libnative_la_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .c .lo .o
+.SUFFIXES: .S .c .lo .o .s
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu libraries/clib/native/Makefile
 
@@ -262,10 +227,15 @@ install-nativeLTLIBRARIES: $(native_LTLIBRARIES)
 
 uninstall-nativeLTLIBRARIES:
 	@$(NORMAL_UNINSTALL)
-	@list='$(native_LTLIBRARIES)'; for p in $$list; do \
-	  echo " $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(nativedir)/$$p"; \
+	list='$(native_LTLIBRARIES)'; for p in $$list; do \
 	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(nativedir)/$$p; \
 	done
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
 
 mostlyclean-compile:
 	-rm -f *.o core *.core
@@ -277,6 +247,12 @@ distclean-compile:
 
 maintainer-clean-compile:
 
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -286,32 +262,6 @@ clean-libtool:
 distclean-libtool:
 
 maintainer-clean-libtool:
-ObjectStreamClassImpl.lo:
-ClassLoader.lo:
-Class.lo:
-Compiler.lo:
-Double.lo:
-Float.lo:
-Math.lo:
-Object.lo:
-Runtime.lo:
-SecurityManager.lo:
-String.lo:
-System.lo:
-Thread.lo:
-Throwable.lo:
-UNIXProcess.lo:
-CharToByteDefault.lo:
-ByteToCharDefault.lo:
-ZipFile.lo:
-MemoryAdvice.lo:
-Array.lo:
-Constructor.lo:
-Field.lo:
-Method.lo:
-DateFormat.lo:
-TestNative.lo:
-Arrays.lo:
 
 libnative.la: $(libnative_la_OBJECTS) $(libnative_la_DEPENDENCIES)
 	$(LINK) -rpath $(nativedir) $(libnative_la_LDFLAGS) $(libnative_la_OBJECTS) $(libnative_la_LIBADD) $(LIBS)
@@ -350,6 +300,11 @@ distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 subdir = libraries/clib/native
 
 distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu libraries/clib/native/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -361,30 +316,37 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 
-@AMDEP@include $(DEP_FILES)
+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
+
+-include $(DEP_FILES)
 
 mostlyclean-depend:
 
 clean-depend:
 
 distclean-depend:
-	-rm -rf $(DEPDIR)
+	-rm -rf .deps
 
 maintainer-clean-depend:
 
-@AMDEP@CCDEPMODE = @CCDEPMODE@
+%.o: %.c
+	@echo '$(COMPILE) -c $<'; \
+	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-cp .deps/$(*F).pp .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm .deps/$(*F).pp
 
-.c.o:
-@AMDEP@	source='$<' object='$@' \
-@AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' \
-@AMDEP@	$(CCDEPMODE) $(depcomp) \
-	$(COMPILE) -c $<
-
-.c.lo:
-@AMDEP@	source='$<' object='$@' \
-@AMDEP@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' \
-@AMDEP@	$(CCDEPMODE) $(depcomp) \
-	$(LTCOMPILE) -c -o $@ $<
+%.lo: %.c
+	@echo '$(LTCOMPILE) -c $<'; \
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
+	  < .deps/$(*F).pp > .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm -f .deps/$(*F).pp
 info-am:
 info: info-am
 dvi-am:
@@ -460,7 +422,7 @@ mostlyclean-depend distclean-depend clean-depend \
 maintainer-clean-depend info-am info dvi-am dvi check check-am \
 installcheck-am installcheck install-exec-am install-exec \
 install-data-am install-data install-am install uninstall-am uninstall \
-all-redirect all-am all install-strip installdirs mostlyclean-generic \
+all-redirect all-am all installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 

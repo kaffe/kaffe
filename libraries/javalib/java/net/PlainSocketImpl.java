@@ -30,19 +30,19 @@ static {
 	System.loadLibrary("net");
 }
 
-protected synchronized void accept(SocketImpl s) throws IOException {
+protected void accept(SocketImpl s) throws IOException {
 	socketAccept(s);
 }
 
-protected synchronized int available() throws IOException {
+protected int available() throws IOException {
 	return (socketAvailable());
 }
 
-protected synchronized void bind(InetAddress address, int lport) throws IOException {
+protected void bind(InetAddress address, int lport) throws IOException {
 	socketBind(address, lport);
 }
 
-protected synchronized void close() throws IOException {
+protected void close() throws IOException {
 	in = null;
 	out = null;
 	socketClose();
@@ -56,7 +56,7 @@ protected void connect(InetAddress address, int port) throws IOException {
 	socketConnect(address, port);
 }
 
-protected synchronized void create(boolean stream) throws IOException {
+protected void create(boolean stream) throws IOException {
 	socketCreate(stream);
 }
 
@@ -79,47 +79,47 @@ protected synchronized OutputStream getOutputStream() throws IOException {
 	return (out);
 }
 
-protected synchronized void listen(int count) throws IOException {
+protected void listen(int count) throws IOException {
 	socketListen(count);
 }
 
-protected synchronized void setTcpNoDelay(boolean on) throws SocketException {
+protected void setTcpNoDelay(boolean on) throws SocketException {
 	socketSetOption(TCP_NODELAY, new Integer(on ? 1 : 0));
 }
 
-protected synchronized boolean getTcpNoDelay() throws SocketException {
+protected boolean getTcpNoDelay() throws SocketException {
 	return socketGetOption(TCP_NODELAY) != 0;
 }
 
-protected synchronized void setSoLinger(boolean on, int howlong) throws SocketException {
+protected void setSoLinger(boolean on, int howlong) throws SocketException {
 	socketSetOption(SO_LINGER, new Integer(on ? howlong : 0));
 }
 
-protected synchronized int getSoLinger() throws SocketException {
+protected int getSoLinger() throws SocketException {
 	return socketGetOption(SO_LINGER);
 }
 
-protected synchronized void setSoTimeout(int timeout) throws SocketException {
+protected void setSoTimeout(int timeout) throws SocketException {
 	setOption(SocketOptions.SO_TIMEOUT, new Integer(timeout));
 }
 
-protected synchronized int getSoTimeout() throws SocketException {
+protected int getSoTimeout() throws SocketException {
 	return ((Integer)getOption(SocketOptions.SO_TIMEOUT)).intValue();
 }
 
-protected synchronized void setSendBufferSize(int size) throws SocketException {
+protected void setSendBufferSize(int size) throws SocketException {
 	socketSetOption(SO_SNDBUF, new Integer(size));
 }
 
-protected synchronized int getSendBufferSize() throws SocketException {
+protected int getSendBufferSize() throws SocketException {
 	return socketGetOption(SO_SNDBUF);
 }
 
-protected synchronized void setReceiveBufferSize(int size) throws SocketException {
+protected void setReceiveBufferSize(int size) throws SocketException {
 	socketSetOption(SO_RCVBUF, new Integer(size));
 }
 
-protected synchronized int getReceiveBufferSize() throws SocketException {
+protected int getReceiveBufferSize() throws SocketException {
 	return socketGetOption(SO_RCVBUF);
 }
 
@@ -184,6 +184,20 @@ public Object getOption(int option) throws SocketException {
 	}
 }
 
+protected int read(byte[] buf, int offset, int len) throws IOException {
+	int r = socketRead(buf, offset, len);
+	if (r > 0 || len == 0) {
+		return (r);
+	}
+	else {
+		return (-1);
+	}
+}
+
+protected void write(byte[] buf, int offset, int len) throws IOException {
+	socketWrite(buf, offset, len);
+}
+
 public native void socketSetOption(int option, Object data) throws SocketException;
 public native int socketGetOption(int option) throws SocketException;
 native private void socketAccept(SocketImpl sock);
@@ -193,7 +207,7 @@ native private void socketClose();
 native private void socketConnect(InetAddress addr, int port);
 native private void socketCreate(boolean stream);
 native private void socketListen(int count);
-native protected void write(byte[] buf, int offset, int len) throws IOException;
-native protected int read(byte[] buf, int offset, int len) throws IOException;
+native private int socketRead(byte[] buf, int offset, int len) throws IOException;
+native private void socketWrite(byte[] buf, int offset, int len) throws IOException;
 
 }

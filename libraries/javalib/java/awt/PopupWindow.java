@@ -1,10 +1,12 @@
 package java.awt;
 
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowEvent;
 import java.util.Vector;
 
 /**
@@ -26,148 +28,20 @@ class PopupWindow
 	Vector items;
 	Component client;
 	PopupWindow sub;
-	static Window current;
-
-class PopupListener
-  implements MouseListener, MouseMotionListener, KeyListener
-{
-public PopupListener () {
-	addMouseListener( this);
-	addMouseMotionListener( this);
-	addKeyListener( this);
-}
-
-public void keyPressed ( KeyEvent evt ) {
-	int cc = evt.getKeyCode();
-	switch( cc) {
-		case KeyEvent.VK_ENTER:
-			processSelection();
-			evt.consume();
-			break;
-		case KeyEvent.VK_UP:
-			if ( selectPrev() )
-				evt.consume();
-			break;
-		case KeyEvent.VK_DOWN:
-			if ( selectNext() )
-				evt.consume();
-			break;
-		case KeyEvent.VK_ESCAPE:
-			disposeAll();
-			evt.consume();
-			break;
-		case KeyEvent.VK_LEFT:
-			if ( selectUpper() )
-				evt.consume();
-			break;
-		case KeyEvent.VK_RIGHT:
-			if ( selectLower() )
-				evt.consume();
-			break;
-	}
-}
-
-public void keyReleased ( KeyEvent evt ) {
-}
-
-public void keyTyped ( KeyEvent evt ) {
-}
-
-public void mouseClicked ( MouseEvent evt ) {
-}
-
-public void mouseDragged ( MouseEvent evt ) {
-	int u = evt.getX();
-	int v = evt.getY();
-
-	if ( contains( u, v) ) {
-		selectItem( itemAt( v ));
-
-		if ( (selection != null) && (selection instanceof Menu) )
-			openSubMenu();
-	}
-	else {
-		if ( client instanceof PopupWindow ) {
-			PopupWindow master = (PopupWindow) client;
-			u -= (master.x - x);
-			v -= (master.y - y);
-			if ( master.contains( u, v) && (master.itemAt( v) != master.selection) )
-				master.disposeSubMenus();
-		}
-	}
-}
-
-public void mouseEntered ( MouseEvent evt ) {
-	requestFocus();
-}
-
-public void mouseExited ( MouseEvent evt ) {
-}
-
-public void mouseMoved ( MouseEvent evt ) {
-	selectItem( itemAt( evt.getY() ));
-}
-
-public void mousePressed ( MouseEvent evt ) {
-	selectItem( itemAt( evt.getY() ));
-}
-
-public void mouseReleased ( MouseEvent evt ) {
-	if ( contains( evt.getX(), evt.getY()) && (selection != null) )  // action!
-		processSelection();
-	else {
-		if ( PopupWindow.this == MouseEvt.getGrab() )
-			MouseEvt.releaseMouse();
-		else
-			disposeAll();
-	}
-}
-}
+	static boolean skipRelease;
 
 public PopupWindow ( Component client, Frame fr, Vector items) {
 	super( fr);
 	this.client = client;
 	this.items  = items;
-	
-	new PopupListener();
-
-	if ( !(client instanceof PopupWindow) )
-		setPopup( this);
-}
-
-static boolean checkPopup ( Object src ) {
-	if ( current == null ) {
-		return true;
-	}
-	if ( (src != null) &&
-	     (src instanceof PopupWindow) && (((PopupWindow)src).rootWnd() == current) ) {
-		return true;
-	}
-
-	current.dispose();
-	current = null;
-	return false;
-}
-
-static boolean closePopup () {
-	if ( current == null ) {
-		return false;
-	}
-
-	current.dispose();
-	current = null;
-	return true;
 }
 
 public void dispose () {
-	if ( !(client instanceof PopupWindow) )
-		resetPopup( this);
-
 	disposeSubMenus();		
 	super.dispose();
 
 	if ( this == MouseEvt.getGrab() )
-		MouseEvt.releaseMouse();
+		MouseEvt.releaseMouse( client);
 }
 
 void disposeAll() {
@@ -185,14 +59,17 @@ void disposeAll() {
 }
 
 void disposeSubMenus() {
-	for ( PopupWindow p = sub; p != null; p = p.sub)
-		p.dispose();
+	PopupWindow pop;
+
+	for ( pop = sub; pop != null; pop = pop.sub)
+		pop.dispose();
+
 	sub = null;
 }
 
 int getY ( MenuItem mi) {
 	int s = items.size();
-	int y = 2;
+	int y = 1;
 	
 	for ( int i=0; i<s; i++) {
 		MenuItem cmi = (MenuItem)items.elementAt( i);
@@ -202,6 +79,18 @@ int getY ( MenuItem mi) {
 	}
 
 	return -1;
+}
+
+boolean isMaster ( Component c ) {
+	PopupWindow pop = this;
+	
+	while ( pop.client instanceof PopupWindow ) {
+		if ( pop.client == c ) 
+			return true;
+		pop = (PopupWindow) pop.client;
+	}
+	
+	return false;
 }
 
 MenuItem itemAt ( int yPos) {
@@ -236,13 +125,13 @@ boolean openSubMenu () {
 
 public void paint( Graphics g) {
 	int s = items.size();
-	int x = xOffs;
-	int y = 2;   // border width
+	int y = 1;   // border width
 
 	g.setColor( Color.black);
 	g.drawRect( 0, 0, width-1, height-1);
 	g.setColor( bgClr);		
 	g.fill3DRect( 1, 1, width-2, height-2, true);
+	
 	for ( int i=0; i<s; i++) {
 		MenuItem mi = (MenuItem)items.elementAt( i);
 		y += paintItem( mi, g, y);
@@ -250,12 +139,13 @@ public void paint( Graphics g) {
 }
 
 int paintItem ( MenuItem mi, Graphics g, int y) {
-	int ih = mi.paint( g, xOffs, y +2, width, bgClr, fgClr, mi == selection);
+
+	int ih = mi.paint( g, 1, xOffs, y, width-3, 0, bgClr, fgClr, mi == selection);
 
 	// draw the submenu mark
 	if ( mi instanceof Menu) {
 		int my = y + ih/2;
-		int mx = width - 4;
+		int mx = width - 5;
 		for ( int i=0; i<4; i++)
 			g.drawLine( mx-2*i, my-i, mx-2*i, my+i);
 	}
@@ -275,6 +165,11 @@ public void popupAt ( int x, int y ) {
 
 	setBounds( x, y, md.width, md.height);
 	setVisible( true);
+
+	if ( !(client instanceof PopupWindow) ){
+		skipRelease = true;
+		requestFocus();
+	}
 
 	// in case we still have a pressed button, let the popup grab the mouse
 	// so that we can handle drags
@@ -302,23 +197,135 @@ public Dimension preferredSize() {
 	return new Dimension( tw+cs*xOffs +4, th +4);  // border width
 }
 
+void process ( FocusEvent evt ) {
+	if ( evt.id == evt.FOCUS_GAINED ){
+		disposeSubMenus();
+	}
+	else if ( (AWTEvent.keyTgt != sub) && !isMaster(AWTEvent.keyTgt)) {
+		disposeAll();
+	}
+}
+
+void process ( KeyEvent evt ) {
+	// we have to process our own keys first to make sure they don't get passed
+	// to our owner
+	switch ( evt.id ){
+	case evt.KEY_PRESSED:
+		switch( evt.getKeyCode() ) {
+		case KeyEvent.VK_ENTER:
+			processSelection();
+			evt.consumed = true;
+			break;
+		case KeyEvent.VK_UP:
+			if ( selectPrev() )
+				evt.consumed = true;
+			break;
+		case KeyEvent.VK_DOWN:
+			if ( selectNext() )
+				evt.consumed = true;
+			break;
+		case KeyEvent.VK_ESCAPE:
+			disposeAll();
+			evt.consumed = true;
+			break;
+		case KeyEvent.VK_LEFT:
+			if ( selectUpper() )
+				evt.consumed = true;
+			break;
+		case KeyEvent.VK_RIGHT:
+			if ( selectLower() )
+				evt.consumed = true;
+			break;
+		}
+	}
+
+	super.process( evt);
+}
+
+void processMotion ( MouseEvent evt ) {
+	int u = evt.getX();
+	int v = evt.getY();
+	MenuItem mi;
+
+	switch ( evt.id ){
+	
+	case evt.MOUSE_MOVED:
+		mi = itemAt( v);
+		
+		if ( (sub != null) && (mi != selection) )
+			requestFocus();
+			
+		selectItem( mi);
+		break;
+		
+	case evt.MOUSE_DRAGGED:
+		skipRelease = false;
+
+		if ( contains( u, v) ) {
+			selectItem( itemAt( v ));
+
+			if ( (selection != null) && (selection instanceof Menu) )
+				openSubMenu();
+		}
+		else {
+			if ( client instanceof PopupWindow ) {
+				PopupWindow master = (PopupWindow) client;
+				u -= (master.x - x);
+				v -= (master.y - y);
+				if ( master.contains( u, v) && (master.itemAt( v) != master.selection) ){
+					master.disposeSubMenus();
+				}
+			}
+		}
+		break;
+	}
+}
+
+void processMouse ( MouseEvent evt ) {
+	int u = evt.getX();
+	int v = evt.getY();
+
+	super.processMouse( evt);
+
+	switch ( evt.id ){
+	
+	case evt.MOUSE_PRESSED:
+		selectItem( itemAt( v));
+		break;
+	
+	case evt.MOUSE_RELEASED:
+		if ( MouseEvt.getGrab() == this )
+			MouseEvt.releaseMouse(null);
+	
+		if ( skipRelease ) {
+			skipRelease = false;
+			break;
+		}
+	
+		if ( contains( u, v) && (selection != null) ){  // action!
+			processSelection();
+		}
+		else {
+			disposeAll();
+		}
+		break;
+		
+	case evt.MOUSE_ENTERED:
+		requestFocus();
+		break;
+	}
+}
+
 void processSelection () {
 	if ( selection == null)
 		return;
+		
 	if ( selection instanceof Menu){
-		disposeSubMenus();
-		openSubMenu();
+		selectLower();
 	}
 	else {
 		disposeAll(); // clean up before doing any popup triggered actions
 		selection.handleShortcut( null);
-	}
-}
-
-static void resetPopup ( Window oldPopup ) {
-	// just reset if this is the one that is still active
-	if ( (current != null) && (current == oldPopup) ) {
-		current = null;
 	}
 }
 
@@ -339,23 +346,32 @@ boolean selectItem ( MenuItem nmi) {
 		return false;
 		
 	Graphics g = getGraphics();
-
-	if ( selection != null){
-		MenuItem cmi = selection;
-		selection = null;
-		paintItem( cmi, g, getY( cmi) );
-	}
+	if ( g != null ) {
+		if ( selection != null){
+			MenuItem cmi = selection;
+			selection = null;
+			paintItem( cmi, g, getY( cmi) );
+		}
 	
-	selection = nmi;
-	paintItem( selection, g, getY( selection) );
+		selection = nmi;
+		paintItem( selection, g, getY( selection) );
 		
-	g.dispose();
+		g.dispose();
+	}
+
 	return true;	
 }
 
 boolean selectLower() {
-	if ( sub == null )
-		return false;
+	if ( sub == null ) {
+		if ( selection instanceof Menu){
+			disposeSubMenus();
+			openSubMenu();
+		}
+		else {
+			return false;
+		}
+	}
 
 	sub.requestFocus();
 	Vector v = sub.items;
@@ -414,18 +430,8 @@ boolean selectUpper() {
 		return false;
 		
 	PopupWindow p = (PopupWindow)client;
-	dispose();
 	p.requestFocus();
-	p.sub = null;
 	
 	return true;
-}
-
-static void setPopup ( Window newPopup ) {
-	if ( current != null ) { // it has to be one
-		current.dispose();
-	}
-	
-	current = newPopup;
 }
 }

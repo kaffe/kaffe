@@ -35,18 +35,20 @@ public void firePropertyChange(String propertyName, Object oldValue, Object newV
 	}
 
 	// Is anyone interested ?
-	if (listeners.size() == 0) {
-		return;
+	Vector vec;
+	int size;
+	synchronized (this) {
+		size = listeners.size();
+		if (size == 0) {
+			return;
+		}
+		// Clone the set of listeners to avoid synchronization problems.
+		vec = (Vector)listeners.clone();
 	}
-
-	// Clone the set of listeners to avoid synchrnization problems.
-	Vector vec = (Vector)listeners.clone();
-
 	PropertyChangeEvent evt = new PropertyChangeEvent(source, propertyName, oldValue, newValue);
-	for (int dis = 0; dis < vec.size(); dis++) {
+	for (int dis = 0; dis < size; dis++) {
 		((PropertyChangeListener)vec.elementAt(dis)).propertyChange(evt);
 	}
-
 }
 
 public synchronized void removePropertyChangeListener(PropertyChangeListener listener) {

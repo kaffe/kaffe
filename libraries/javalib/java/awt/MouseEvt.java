@@ -56,7 +56,7 @@ static void clickToFocus ( Component newKeyTgt ) {
 	// lightweight behavior
 	
 	//if ( newKeyTgt.isFocusTraversable() )
-		//newKeyTgt.requestFocus();
+	//	newKeyTgt.requestFocus();
 }
 
 static Component computeMouseTarget ( Container toplevel, int x, int y ) {
@@ -172,7 +172,6 @@ protected void dispatch () {
 		  break;
 		
 		case MOUSE_PRESSED:
-			PopupWindow.checkPopup( AWTEvent.mouseTgt);    // the old highlander theme..
 			if ( (AWTEvent.mouseTgt != AWTEvent.keyTgt) )  // decide upon focus policy
 				clickToFocus( AWTEvent.mouseTgt);
 			
@@ -282,6 +281,7 @@ static synchronized MouseEvt getEvent ( int srcIdx, int id, int button, int x, i
 	MouseEvt    e;
 	Component   source = sources[srcIdx];
 	long        when = System.currentTimeMillis();
+	boolean     popupTrigger = (button == 3) && (id == MOUSE_PRESSED);
 	
 	if ( (Toolkit.flags & Toolkit.EXTERNAL_DECO) != 0 ) {
 		Rectangle   d = source.deco;
@@ -294,7 +294,7 @@ static synchronized MouseEvt getEvent ( int srcIdx, int id, int button, int x, i
 	nativePos.y = y;
 
 	if ( cache == null ) {
-		e = new MouseEvt( source, id, when, inputModifier, x, y, 0, (button == 3));
+		e = new MouseEvt( source, id, when, inputModifier, x, y, 0, popupTrigger);
 	}
 	else {
 		e = cache;
@@ -309,7 +309,7 @@ static synchronized MouseEvt getEvent ( int srcIdx, int id, int button, int x, i
 		e.x          = x;
 		e.y          = y;
 		e.clickCount = 0;
-		e.isPopupTrigger = (button == 3);	
+		e.isPopupTrigger = popupTrigger;	
 	}
 
 	e.button = button;
@@ -331,7 +331,7 @@ static void grabMouse ( Component grab ) {
 	// note that grabs currently don't work with Windows being moved
 	// explicitly during the grab (since this requires the xMouseTgt,yMouseTgt
 	// to be recomputed)
-	
+
 	synchronized ( MouseEvt.class ) {
 		if ( nativeSource == null )
 			return;
@@ -378,31 +378,34 @@ protected void recycle () {
 	}
 }
 
-static void releaseMouse () {
-	Cursor curs;
-	Component grab;
+static void releaseMouse ( Component c ) {
+	Cursor curs = null;
+	Component grab = (Component)grabStack.peek();
 
 	synchronized ( MouseEvt.class ) {
 		if ( !mouseGrabbed )
 			return;
 
-		grabStack.pop();
+		while ( grab != c ) {
+			grabStack.pop();
 		
-		if ( grabStack.isEmpty() ){
-			AWTEvent.mouseTgt = null;
-			xMouseTgt = yMouseTgt = 0;
-			curs = nativeSource.cursor;
-			mouseGrabbed = false;
-		}
-		else {
+			if ( grabStack.isEmpty() ){
+				AWTEvent.mouseTgt = null;
+				xMouseTgt = yMouseTgt = 0;
+				mouseGrabbed = false;
+				curs = nativeSource.cursor;
+				break;
+			}
+
 			grab = (Component)grabStack.peek();
 			xMouseTgt = grab.x - nativeSource.x;
 			yMouseTgt = grab.y - nativeSource.y;
 			AWTEvent.mouseTgt  = grab;
 			curs = grab.cursor;
 		}
-
-		nativeSource.setNativeCursor( curs);
+		
+		if ( curs != null )
+			nativeSource.setNativeCursor( curs);	
 	}
 }
 

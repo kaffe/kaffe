@@ -103,9 +103,13 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
   }
 
   DBG( awt, ("synchronize X\n"));
-  DBG_ACTION(awt, XSynchronize( X->dsp, True));
+  //DBG_ACTION(awt, XSynchronize( X->dsp, True));
+
+  X->nWindows = 47;
+  X->windows = AWT_CALLOC( X->nWindows, sizeof(WindowRec));
 
   X->root   = DefaultRootWindow( X->dsp);
+  X->fwdIdx = -1;
 
   /*
    * We just can use XShm in case we don't run remote, and we better don't rely on
@@ -130,6 +134,7 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
   WM_TAKE_FOCUS    = XInternAtom( X->dsp, "WM_TAKE_FOCUS", False);
   WAKEUP           = XInternAtom( X->dsp, "WAKEUP", False);
   RETRY_FOCUS      = XInternAtom( X->dsp, "RETRY_FOCUS", False);
+  FORWARD_FOCUS    = XInternAtom( X->dsp, "FORWARD_FOCUS", False);
 
   return JNI_TRUE;
 }

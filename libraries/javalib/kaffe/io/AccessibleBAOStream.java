@@ -19,6 +19,8 @@
 package kaffe.io;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
 
 public class AccessibleBAOStream
   extends ByteArrayOutputStream
@@ -30,9 +32,9 @@ public AccessibleBAOStream ( byte[] buf ) {
 public AccessibleBAOStream ( byte[] buf, int offset ) {
 	this.buf = buf;
 	this.count = offset;
-	
-	if ( offset > buf.length )
+	if ( offset > buf.length ) {
 		throw new IllegalArgumentException( "offset too large");
+	}
 }
 
 public AccessibleBAOStream ( int size ) {
@@ -42,4 +44,33 @@ public AccessibleBAOStream ( int size ) {
 public byte[] getBuffer() {
 	return buf;
 }
+
+public void readFrom(InputStream in) {
+	int remain;
+	int r;
+
+	for (;;) {
+		remain = buf.length - count;
+		if (remain <= 0) {
+			byte oldBuf[] = buf;
+			buf = new byte[oldBuf.length + 1024];
+			System.arraycopy(oldBuf, 0, buf, 0, oldBuf.length);
+			remain = buf.length - count;
+		}
+		if (remain > 1024) {
+			remain = 1024;
+		}
+		try {
+			r = in.read(buf, count, remain);
+		}
+		catch (IOException _) {
+			break;
+		}
+		if (r <= 0) {
+			break;
+		}
+		count += r;
+	}
+}
+
 }

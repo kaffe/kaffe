@@ -8,10 +8,12 @@
  * of this file. 
  */
 
+#define __config_setjmp_h /* png.h doesn't like us including setjmp.h */
+
 #include "toolkit.h"
 
 #if defined(HAVE_PNG_H) && defined(HAVE_LIBPNG) && defined(HAVE_LIBZ)
-#define INCLUDE_PNG
+#define INCLUDE_PNG 1
 #endif
 
 #if defined(INCLUDE_PNG)
@@ -158,12 +160,12 @@ readInterlacedData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Ima
 Image*
 readPng ( png_structp png_ptr, png_infop info_ptr )
 {
-  Image          *volatile img = 0;
+  Image          *img = 0;
   double         screen_gamma = 1.2, file_gamma;
   int            i, number_passes;
   int            row_bytes;
-  png_bytepp     volatile rows = 0;
-  png_bytep      volatile data = 0;
+  png_bytepp     rows = 0;
+  png_bytep      data = 0;
 
   if ( setjmp(png_ptr->jmpbuf) ) {
 	if ( img )
@@ -186,10 +188,12 @@ readPng ( png_structp png_ptr, png_infop info_ptr )
 	}
 	else
 #endif
-	if ( png_get_gAMA(png_ptr, info_ptr, &file_gamma) )
-	  png_set_gamma( png_ptr, screen_gamma, file_gamma);
-	else
-	  png_set_gamma( png_ptr, screen_gamma, 0.50);
+	if ( png_get_gAMA(png_ptr, info_ptr, &file_gamma) ) {
+		png_set_gamma( png_ptr, screen_gamma, file_gamma);
+	}
+	else {
+		png_set_gamma( png_ptr, screen_gamma, 0.50);
+	}
   }
 
   png_set_strip_16( png_ptr);
@@ -273,6 +277,24 @@ bufferRead ( png_structp png_ptr, png_bytep data, png_size_t length )
 }
 
 
+/**************************************************************************************
+ * file descriptor IO
+ * (intercept all file io and map it to AWT_xx file io maros, in order
+ * to obtain thread safety)
+ */
+typedef struct {
+  int fd;
+} FileSource;
+
+void fileRead ( png_structp png_ptr, png_bytep data, png_size_t length )
+{
+  FileSource *psource = png_get_io_ptr( png_ptr);
+  int        n = AWT_READ( psource->fd, data, length);
+  
+  if ( n != length )
+	png_error( png_ptr, "illegal data read");
+}
+
 #endif /* INCLUDE_PNG */
 
 /**************************************************************************************
@@ -280,12 +302,15 @@ bufferRead ( png_structp png_ptr, png_bytep data, png_size_t length )
  */
 
 Image*
-readPngFile ( FILE* infile )
+readPngFile ( int infile )
 {
   Image          *img = 0;
-#if defined(INCLUDE_PNG)
+#ifdef INCLUDE_PNG
   png_structp    png_ptr;
   png_infop      info_ptr;
+  FileSource     source;
+
+  source.fd = infile;
 
   png_ptr = png_create_read_struct( PNG_LIBPNG_VER_STRING,
 									(png_voidp)0, (png_error_ptr)0, (png_error_ptr)0);
@@ -293,7 +318,7 @@ readPngFile ( FILE* infile )
 	return 0;
 
   info_ptr = png_create_info_struct( png_ptr);
-  png_init_io( png_ptr, infile);
+  png_set_read_fn( png_ptr, &source, fileRead);
 
   img = readPng( png_ptr, info_ptr);
 
@@ -308,7 +333,7 @@ Image*
 readPngData ( unsigned char* buf, long len )
 {
   Image          *img = 0;
-#if defined(INCLUDE_PNG)
+#ifdef INCLUDE_PNG
   png_structp    png_ptr;
   png_infop      info_ptr;
   BufferSource   source;

@@ -38,14 +38,14 @@ public SimpleDateFormat(String pattern, DateFormatSymbols syms) {
 	this.syms = syms;
 	this.pattern = pattern;
 	this.calendar = new GregorianCalendar();
-	this.format = new DecimalFormat("0");
+	this.numberFormat = new DecimalFormat("0");
 }
 
 public SimpleDateFormat(String pattern, java.util.Locale loc) {
 	this.syms = new DateFormatSymbols(loc);
 	this.pattern = pattern;
 	this.calendar = new GregorianCalendar(loc);
-	this.format = new DecimalFormat("0", loc);
+	this.numberFormat = new DecimalFormat("0", loc);
 }
 
 public void applyLocalizedPattern(String pattern) {

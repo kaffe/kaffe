@@ -26,7 +26,7 @@ public class List
   extends Container
   implements ItemSelectable
 {
-	private static final long serialVersionUID = -3304312411574666869L;
+	final private static long serialVersionUID = -3304312411574666869L;
 	ActionListener aListener;
 	ItemListener iListener;
 	ItemPane ip = new ItemPane();
@@ -71,12 +71,12 @@ public void keyPressed( KeyEvent e) {
 		case e.VK_DOWN:
 			nIdx = getSelectedIndex() + 1;
 			this.makeVisible( nIdx);
-			select( nIdx);
+			selectEvent( nIdx, true);
 			break;
 		case e.VK_UP:
 			nIdx = getSelectedIndex() - 1;
 			this.makeVisible( nIdx);
-			select( nIdx);
+			selectEvent( nIdx, true);
 			break;
 		case e.VK_ENTER:
 			notifyAction();
@@ -102,13 +102,16 @@ public void keyReleased( KeyEvent e) {
 	if ( parent.keyListener != null ){
 		// check for keyListeners first, it's a rare case
 		redirectKeyEvent( e);
+		e.consume();
 	}
 }
 
 public void keyTyped( KeyEvent e) {
 	int mods = e.getModifiers();
-	if ( (mods == 0) || (mods == e.SHIFT_MASK ) )
+	if ( (mods == 0) || (mods == e.SHIFT_MASK ) ) {
 		letterNav( e.getKeyChar(), e.isShiftDown() );
+		e.consume();
+	}
 		
 	if ( parent.keyListener != null ){
 		// check for keyListeners first, it's a rare case
@@ -126,7 +129,7 @@ void letterNav( char c, boolean acc) {
 	for ( int i=0; i<rs; i++) {
 		String s = (String)rows.elementAt( i);
 		if ( s.regionMatches( true, 0, lnsBuf.toString(), 0, lnsBuf.length() ) ){
-			select( i);
+			selectEvent( i, true);
 			return;
 		}
 	}
@@ -140,10 +143,10 @@ public void mouseClicked( MouseEvent e) {
 			
 			if ( isIndexSelected( idx) ) {
 				if ( multipleMode )
-					deselect( idx);
+					deselectElement( idx, true, true);
 			}
 			else {
-				select( idx);
+				selectEvent( idx, true);
 			}
 		}	
 	}
@@ -233,7 +236,8 @@ void repaintItem( Graphics g, int idx) {
 }
 
 void repaintItem( int idx) {
-	repaintItem( rgr, idx);
+	if ( rgr != null )
+		repaintItem( rgr, idx);
 }
 
 void repaintRow( Graphics g, int idx) {
@@ -270,7 +274,7 @@ void updateHScroll( String as) {
 }
 
 public List () {
-	this( 3, false);
+	this( 4, false);
 }
 
 public List ( int rows) {
@@ -396,10 +400,10 @@ public synchronized void delItems ( int start, int end ) {
 }
 
 public synchronized void deselect ( int index) {
-	deselectElement( index, true);
+	deselectElement( index, true, false);
 }
 
-void deselectElement ( int index, boolean repaint) {
+void deselectElement ( int index, boolean repaint, boolean fire) {
 
 	try {
 		Object item = ip.rows.elementAt( index);
@@ -408,7 +412,9 @@ void deselectElement ( int index, boolean repaint) {
 		if ( repaint)
 			ip.repaintRows( index, 1);
 
-		notifyItem( new Integer(index), ItemEvent.DESELECTED);
+		if (fire) {
+			notifyItem( new Integer(index), ItemEvent.DESELECTED);
+		}
 	}
 	catch ( Exception e) {}
 }
@@ -628,8 +634,8 @@ void notifyItem ( Object item, int op) {
 	if ( (iListener != null) ||
 	     (eventMask & AWTEvent.ITEM_EVENT_MASK) != 0 ||
 	     (flags & IS_OLD_EVENT) != 0 ){
-		Toolkit.eventQueue.postEvent( ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED,
-		                                                item, op));
+		ItemEvt e = ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, item, op);
+		Toolkit.eventQueue.postEvent( e);
 	}
 }
 
@@ -673,7 +679,7 @@ void process ( ItemEvent e ) {
 	if ( (iListener != null) || ((eventMask & AWTEvent.ITEM_EVENT_MASK) != 0) ){
 		processEvent( e);
 	}
-	
+
 	if ((flags & IS_OLD_EVENT) != 0) {
 		postEvent (Event.getEvent( e));
 	}
@@ -709,7 +715,7 @@ public synchronized void removeAll () {
 
 void removeElement ( int index) {
 	try {
-		deselectElement( index, false);
+		deselectElement( index, false, true);
 		ip.rows.removeElementAt( index);
 	
 		ip.updateVScroll();
@@ -745,7 +751,22 @@ public void requestFocus () {
 	ip.requestFocus();
 }
 
+public void reshape ( int x, int y, int w, int h ) {
+	super.reshape( x, y, w, h);
+	
+	// there is no need for validation of compound IS_NATIVE_LIKES, they are no Containers
+	// in JDK, so we automagically have to re-layout them
+	ip.innerLayout();
+	flags |= IS_VALID;
+}
+
 public void select ( int index ) {
+	// It's unclear whether a user selection should fire an event of
+	// not - but some code appears rely on event *NOT* being sent.
+	selectEvent( index, false);
+}
+
+void selectEvent ( int index, boolean fire ) {
 	if ( (index < 0) || (index > ip.rows.size() - 1) )
 		return;
 
@@ -761,14 +782,19 @@ public void select ( int index ) {
 		int oldSel = sel;
 		sel = index;
 		ip.repaintRows( oldSel, 1);
-		notifyItem( new Integer( oldSel), ItemEvent.DESELECTED);		
+		if (fire) {
+			notifyItem( new Integer( oldSel), ItemEvent.DESELECTED);		
+		}
 	}
 	else
 		sel = index;
 
 	ip.makeVisible( index);
 	ip.repaintRows( index, 1);
-	notifyItem( new Integer( index), ItemEvent.SELECTED);
+
+	if (fire) {
+		notifyItem( new Integer( index), ItemEvent.SELECTED);
+	}
 }
 
 public void setBackground ( Color c) {

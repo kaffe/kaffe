@@ -46,7 +46,7 @@ public final static int HOUR0_FIELD = 16;
 public final static int TIMEZONE_FIELD = 17;
 
 protected Calendar calendar;
-protected NumberFormat format;
+protected NumberFormat numberFormat;
 
 private boolean lenient = true;
 
@@ -60,7 +60,7 @@ public Object clone() {
 public boolean equals(Object obj) {
 	if (obj instanceof DateFormat) {
 		DateFormat other = (DateFormat)obj;
-		if (calendar == other.calendar && format == other.format) {
+		if (calendar == other.calendar && numberFormat == other.numberFormat) {
 			return (true);
 		}
 	}
@@ -134,7 +134,7 @@ public final static DateFormat getInstance() {
 }
 
 public NumberFormat getNumberFormat() {
-	return (format);
+	return (numberFormat);
 }
 
 public TimeZone getTimeZone() {
@@ -181,7 +181,7 @@ public void setLenient(boolean val) {
 }
 
 public void setNumberFormat(NumberFormat form) {
-	format = form;
+	numberFormat = form;
 }
 
 public void setTimeZone(TimeZone zone) {

@@ -14,10 +14,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
-#include <native.h>		/* needed for enter/leaveUnsafeRegion */
-
-#define DBG(x,y)
-#define DBG_ACTION(x,y)
+#include "config-setjmp.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -29,12 +26,8 @@
 #endif
 
 #include <jni.h>
-#if defined(HAVE_STRING_H)
-#include <string.h>
-#endif
-
-#include "config.h"
-#include "config-mem.h"
+#include <native.h>
+#include "../../../../kaffe/kaffevm/debug.h"
 
 /*******************************************************************************
  * color conversion structures
@@ -110,9 +103,11 @@ typedef struct _Image {
   AlphaImage       *alpha;         /* full alpha channel (for alpha != 0x00 or 0xff) */
 
   int              trans;          /* transparent index */
+  int              left, top;      /* some GIF movies require drawing offsets */
   int              width, height;  /* we need this in case we are a pixmap */
 
-  int              latency;        /* between image flips, for "gif-movies" */
+  short            latency;        /* between image flips, for "gif-movies" */
+  short            frame;          /* frame number for animations */
   struct _Image    *next;          /* next movie-frame */
 } Image;
 
@@ -129,6 +124,20 @@ typedef struct _DecoInset {
   char           guess;
 } DecoInset;           
 
+
+/*******************************************************************************
+ * We use  our own structure instead of directly storing X window handles, to
+ * enable us to attach and query attributes (owners, states, flags..) to particular
+ * X window instances. We could do this by means of X properties, but this might
+ * end up in costly round-trips and even more memory (than we trade for speed here).
+ * It's a must have for our popup key/focus event forwarding (see wnd.c)
+ */
+
+typedef struct _WindowRec {
+  Window         w;
+  unsigned       flags;
+  Window         owner;
+} WindowRec;
 
 /*******************************************************************************
  * this is the master AWT structure (singleton object), glueing it al together
@@ -162,13 +171,15 @@ typedef struct _Toolkit {
 
   Window         lastWindow;
   int            srcIdx;
-  Window         *windows;
+  WindowRec      *windows;
   int            nWindows;
 
   Window         cbdOwner;
   Window         wakeUp;
 
-  Window         newWindow;
+  Window         focus;     /* this is the real focus, if it is in our process */
+  Window         focusFwd;  /* this might be a (owned) window we forward the focus to */
+  int            fwdIdx;    /* cached index of the focus forward window */
 } Toolkit;
 
 
@@ -185,6 +196,7 @@ Atom WM_DELETE_WINDOW;
 Atom WM_TAKE_FOCUS;
 Atom WAKEUP;
 Atom RETRY_FOCUS;
+Atom FORWARD_FOCUS;
 Atom SELECTION_DATA;
 Atom JAVA_OBJECT;
 
@@ -200,6 +212,7 @@ extern Atom WM_DELETE_WINDOW;
 extern Atom WM_TAKE_FOCUS;
 extern Atom WAKEUP;
 extern Atom RETRY_FOCUS;
+extern Atom FORWARD_FOCUS;
 extern Atom SELECTION_DATA;
 extern Atom JAVA_OBJECT;
 
@@ -208,7 +221,50 @@ extern JNIEnv* JniEnv;
 
 #endif /* MAIN */
 
-extern long StdEvents;
+extern long StdEvents, PopupEvents;
+
+
+/*****************************************************************************************
+ * heap wrapper macros
+ */
+
+static __inline__ void* _awt_malloc_wrapper ( size_t size )
+{
+  void *adr;
+  enterUnsafeRegion();
+  adr = malloc( size);
+  leaveUnsafeRegion();
+  DBG( awt_mem, ("malloc: %d  -> %x\n", size, adr));
+  return adr;
+}
+
+static __inline__ void* _awt_calloc_wrapper ( int n, size_t size )
+{
+  void *adr;
+  enterUnsafeRegion();
+  adr = calloc( n, size);
+  leaveUnsafeRegion();
+  DBG( awt_mem, ("calloc: %d,%d  -> %x\n", n, size, adr));
+  return adr;
+}
+
+static __inline__ void _awt_free_wrapper ( void* adr )
+{
+  DBG( awt_mem, ("free: %x\n", adr));
+  enterUnsafeRegion();
+  free( adr);
+  leaveUnsafeRegion();
+}
+
+#define AWT_MALLOC(_n) \
+  _awt_malloc_wrapper( _n)
+
+#define AWT_CALLOC(_n,_sz) \
+  _awt_calloc_wrapper( _n, _sz)
+
+#define AWT_FREE(_adr) \
+  _awt_free_wrapper( _adr);
+
 
 /*******************************************************************************
  *
@@ -223,8 +279,8 @@ static __inline__ char* java2CString ( JNIEnv *env, Toolkit* X, jstring jstr ) {
 
   if ( n >= X->nBuf ) {
 	if ( X->buf )
-	  KFREE( X->buf);
-	X->buf = KMALLOC( n+1);
+	  AWT_FREE( X->buf);
+	X->buf = AWT_MALLOC( n+1);
 	X->nBuf = n+1;
   }
 
@@ -241,8 +297,8 @@ static __inline__ char* jchar2CString ( Toolkit* X, jchar* jc, int len ) {
   
   if ( n > X->nBuf ) {
 	if ( X->buf )
-	  KFREE( X->buf);
-	X->buf  = KMALLOC( n);
+	  AWT_FREE( X->buf);
+	X->buf  = AWT_MALLOC( n);
 	X->nBuf = n;
   }
 
@@ -255,8 +311,8 @@ static __inline__ char* jchar2CString ( Toolkit* X, jchar* jc, int len ) {
 static __inline__ void* getBuffer ( Toolkit* X, unsigned int nBytes ) {
   if ( nBytes > X->nBuf ) {
 	if ( X->buf )
-	  KFREE( X->buf);
-	X->buf  = KMALLOC( nBytes);
+	  AWT_FREE( X->buf);
+	X->buf  = AWT_MALLOC( nBytes);
 	X->nBuf = nBytes;
   }
   return X->buf;
@@ -283,7 +339,7 @@ static __inline__ void* getBuffer ( Toolkit* X, unsigned int nBytes ) {
 #define CM_GENERIC      5  /* grays, DirectColor (packed) etc. */
 
 
-void initColorMapping ( JNIEnv* env, Toolkit* X);
+void initColorMapping ( JNIEnv* env, jclass clazz, Toolkit* X);
 jlong Java_java_awt_Toolkit_clrBright ( JNIEnv* env, jclass clazz, jint rgb );
 jlong Java_java_awt_Toolkit_clrDark ( JNIEnv* env, jclass clazz, jint rgb );
 
@@ -415,7 +471,6 @@ Image* createImage ( int width, int height);
 void createXMaskImage ( Toolkit* X, Image* img );
 void createXImage ( Toolkit* X, Image* img );
 void createAlphaImage ( Toolkit* X, Image* img );
-int needsFullAlpha ( Toolkit* X, Image *img, double threshold );
 void initScaledImage ( Toolkit* X, Image *tgt, Image *src,
 					   int dx0, int dy0, int dx1, int dy1,
 					   int sx0, int sy0, int sx1, int sy1 );
@@ -452,51 +507,102 @@ jobject selectionRequest ( JNIEnv* env, Toolkit* X );
 #define XFLUSH(_X,_force)
 
 
+
 /*****************************************************************************************
- * heap wrapper macros
+ * file io wrapper macros (for image production)
  */
 
-//#undef malloc
-//#undef calloc
-//#undef free
+#define AWT_OPEN(_file)               open(_file, 0)
+#define AWT_REWIND(_fd)               lseek(_fd, 0, SEEK_SET)
+#define AWT_SETPOS(_fd,_off)          lseek(_fd, _off, SEEK_CUR)
+#define AWT_READ(_fd,_buf,_count)     read(_fd,_buf,_count)
+#define AWT_CLOSE(_fd)                close(_fd)
 
-static __inline__ void* _awt_malloc_wrapper ( size_t size )
-{
-  void *adr;
-  enterUnsafeRegion();
-  adr = malloc( size);
-  leaveUnsafeRegion();
-  DBG( awt_mem, ("malloc: %d  -> %x\n", size, adr));
-  return adr;
+
+
+/*****************************************************************************************
+ * macros to manage the source table (conversion of X windows to/from indices, which
+ * are consistent with the AWTEvent.sources array)
+ */
+
+#define WND_FRAME      0x01
+#define WND_WINDOW     0x02
+#define WND_DIALOG     0x04
+
+#define WND_MAPPED     0x08
+#define WND_DESTROYED  0x10
+
+static __inline__ int getFreeSourceIdx ( Toolkit* X, Window wnd ) {
+  register i, n;
+
+  /*
+   * we don't use a double hashing here because collisions are very unlikely
+   * (window IDs usually already are hashed, so it does not make sense to
+   * hash them again - we just could make it worse
+   */
+  for ( i = (unsigned long)wnd, n=0; n < X->nWindows; i++, n++ ) {
+	i %= X->nWindows;
+	if ( (int)(X->windows[i].w) <= 0 ) {
+	  X->srcIdx = i;
+	  X->lastWindow = wnd;
+
+	  return i;
+	}
+  }
+
+  return -1;
 }
 
-static __inline__ void* _awt_calloc_wrapper ( int n, size_t size )
+static __inline__ int getSourceIdx ( Toolkit* X, Window w )
 {
-  void *adr;
-  enterUnsafeRegion();
-  adr = calloc( n, size);
-  leaveUnsafeRegion();
-  DBG( awt_mem, ("calloc: %d,%d  -> %x\n", n, size, adr));
-  return adr;
+  int      n;
+  register int i;
+
+  if ( w == X->lastWindow ){
+	return X->srcIdx;
+  }
+  else {
+	for ( i = (unsigned long) w, n=0; n < X->nWindows; i++, n++ ) {
+	  i %= X->nWindows;
+	  if ( X->windows[i].w == w ){
+		X->srcIdx = i;
+		X->lastWindow = w;
+		return X->srcIdx;
+	  }
+	  else if ( X->windows[i].w == 0 ){
+		return -1;
+	  }
+	}
+	return -1;
+  }
 }
 
-static __inline__ void _awt_free_wrapper ( void* adr )
+static __inline__ int checkSource ( Toolkit* X, int idx )
 {
-  DBG( awt_mem, ("free: %x\n", adr));
-  enterUnsafeRegion();
-  free( adr);
-  leaveUnsafeRegion();
+  return ( (idx >= 0) && (idx < X->nWindows) && (X->windows[idx].w) );
 }
 
 
-#define AWT_MALLOC(_n) \
-  _awt_malloc_wrapper( _n)
+/*****************************************************************************************
+ * focus forwarding
+ */
 
-#define AWT_CALLOC(_n,_sz) \
-  _awt_calloc_wrapper( _n, _sz)
+#define FWD_SET    0  /* set focus forwarding */
+#define FWD_CLEAR  1  /* reset focus forwarding */
+#define FWD_REVERT 2  /* reset focus on owner */
 
-#define AWT_FREE(_adr) \
-  _awt_free_wrapper( _adr);
+static __inline__ void resetFocusForwarding ( Toolkit* X )
+{
+  X->fwdIdx = -1;
+  X->focusFwd = 0;
+}
+
+
+/*****************************************************************************************
+ * Macros to implement keyboard handling for owned windows (which don't ever get
+ * the X focus). This is done by means of forwarding and generation of "artificial"
+ * focus events (generated from clientMessages.
+ */
 
 
 #endif

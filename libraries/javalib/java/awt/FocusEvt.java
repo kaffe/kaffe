@@ -9,17 +9,16 @@ class FocusEvt
 	static FocusEvt cache;
 	static Component keyTgtRequest;
 	static Window newActiveWindow;
-	static boolean temporaryHint;
 
-FocusEvt ( Component src, int evtId ) {
-	super( src, evtId);
+FocusEvt ( Component src, int evtId, boolean isTemporary ) {
+	super( src, evtId, isTemporary);
 }
 
 static void checkActiveWindow( Component c) {
 	Component top = c.getToplevel();
 
 	if ( (top != AWTEvent.activeWindow) && (top != null) ) {
-		FocusEvt e = getEvent( top, FocusEvent.FOCUS_GAINED);
+		FocusEvt e = getEvent( top, FocusEvent.FOCUS_GAINED, false);
 		e.dispatch();
 	}
 }
@@ -27,20 +26,6 @@ static void checkActiveWindow( Component c) {
 protected void dispatch () {
 	WindowEvt  we;
 	Component  src = (Component) source;
-	Component  lastTgt;
-
-	// We don't support 'isTemporary' in the native layer. The spec says that it
-	// should be set for events where the focus is changed as "a indirect result
-	// of another operation.. and will automatically be restored once this operation
-	// is finished". Oh, great! That is exactly were the native windowing system
-	// kicks in, and there are not even two of them doing this in the same way. The best
-	// approximation we can do is to set this if we show owned Windows, but even here the
-	// focus could wander away to a external toplevel, never to be restored. Anyway, this
-	// simple approach makes Swing happy for the moment
-	if ( temporaryHint ) {
-		isTemporary = true;
-		temporaryHint = false;
-	}
 
 	if ( id == FOCUS_GAINED ) {
 		if ( (keyTgtRequest != null) ) {
@@ -53,22 +38,29 @@ protected void dispatch () {
 			keyTgtRequest = null;
 		}		
 
+		// we should make the next active window known (within java.awt)
+		// prior to sending the DEACTIVATED messages because RootWindow
+		// instances might have to react on this
+		newActiveWindow = (Window) getToplevel( src);
+
 		if ( (AWTEvent.keyTgt != null) && (AWTEvent.keyTgt != src) ) {
+			Component lastTgt = AWTEvent.keyTgt;
+			source = lastTgt;
 			id = FOCUS_LOST;
-			source = lastTgt = AWTEvent.keyTgt;
 			AWTEvent.keyTgt = src;
 			lastTgt.process( this);
 		  id = FOCUS_GAINED;
 		}
 
-		// we should make the next active window known (within java.awt)
-		// prior to sending the DEACTIVATED messages because RootWindow
-		// instances might have to react on this
-		newActiveWindow = (Window) getToplevel( src);
-		if ( (AWTEvent.activeWindow != null) && (newActiveWindow != AWTEvent.activeWindow)
-		       && ((newActiveWindow instanceof Frame) || (newActiveWindow == root)) ) {
-			we = WindowEvt.getEvent( AWTEvent.activeWindow, WindowEvent.WINDOW_DEACTIVATED);
-			AWTEvent.activeWindow.processEvent( we);
+		if ( (newActiveWindow != AWTEvent.activeWindow) /* && (newActiveWindow instanceof Frame) */) {
+		  if ( (AWTEvent.activeWindow != null) ) {
+				we = WindowEvt.getEvent( AWTEvent.activeWindow, WindowEvent.WINDOW_DEACTIVATED);
+				AWTEvent.activeWindow.process( we);
+			}
+
+			we = WindowEvt.getEvent( newActiveWindow, WindowEvent.WINDOW_ACTIVATED);
+			newActiveWindow.process( we);
+			AWTEvent.activeWindow = (Window) newActiveWindow;
 		}
 
 		AWTEvent.keyTgt = src;
@@ -76,44 +68,29 @@ protected void dispatch () {
 		src.process( this);
 		
 		ShortcutHandler.buildCodeTable( src);
-		
-		if ( (newActiveWindow != AWTEvent.activeWindow) && (newActiveWindow instanceof Frame) ) {
-			we = WindowEvt.getEvent( newActiveWindow, WindowEvent.WINDOW_ACTIVATED);
-			newActiveWindow.processEvent( we);
-			AWTEvent.activeWindow = (Window) newActiveWindow;
-		}
-		else if ( newActiveWindow == root )
-			AWTEvent.activeWindow = null;
 	}
 	else if ( id == FOCUS_LOST ) {
-		if ( src == AWTEvent.activeWindow ) { // native generated focus lost
-			we = WindowEvt.getEvent( AWTEvent.activeWindow, WindowEvent.WINDOW_DEACTIVATED);
-			AWTEvent.activeWindow.processEvent( we);
-			AWTEvent.activeWindow = null;
-			
-			// seems to be silly, but JDK marks *all* toplevel losts as temporary
-			// we wouldn't need that for swing, since we try harder with 'temporaryHint', but
-			// there are some native window managers (Enlightenment) having trouble with
-			// 'owned' window focus
-			isTemporary = true;
-		}
-
 		if ( AWTEvent.keyTgt != null ) {
-			src    = AWTEvent.keyTgt;
-			source = src;
-			AWTEvent.keyTgt = null;
+			source = AWTEvent.keyTgt;
 			inputModifier = 0; // just a matter of safety (a reset point)
 
-			src.process( this);			
+			AWTEvent.keyTgt.process( this);
+			AWTEvent.keyTgt = null;
+		}
+
+		if ( src == AWTEvent.activeWindow ) { // native generated focus lost
+			we = WindowEvt.getEvent( AWTEvent.activeWindow, WindowEvent.WINDOW_DEACTIVATED);
+			AWTEvent.activeWindow.process( we);
+			AWTEvent.activeWindow = null;
 		}
 	}
 	
 	if ( (Defaults.RecycleEvents & AWTEvent.FOCUS_EVENT_MASK) != 0 )	recycle();
 }
 
-static synchronized FocusEvt getEvent ( Component source, int id ) {
+static synchronized FocusEvt getEvent ( Component source, int id, boolean isTemporary ) {
 	if ( cache == null ){
-		return new FocusEvt( source, id);
+		return new FocusEvt( source, id, isTemporary);
 	}
 	else {
 		FocusEvt e = cache;
@@ -122,20 +99,20 @@ static synchronized FocusEvt getEvent ( Component source, int id ) {
 		
 		e.id = id;
 		e.source = source;
-		e.isTemporary = false;
+		e.isTemporary = isTemporary;
 
 		return e;
 	}
 }
 
-static synchronized FocusEvt getEvent ( int srcIdx, int id ) {
+static synchronized FocusEvt getEvent ( int srcIdx, int id, boolean isTemporary ) {
 	FocusEvt  e;
 	Component source = sources[srcIdx];
 
 	if ( source == null ) return null;
 
 	if ( cache == null ){
-		e = new FocusEvt( source, id);
+		e = new FocusEvt( source, id, isTemporary);
 	}
 	else {
 		e = cache;
@@ -144,13 +121,17 @@ static synchronized FocusEvt getEvent ( int srcIdx, int id ) {
 		
 		e.id = id;
 		e.source = source;
-		e.isTemporary = false;
+		e.isTemporary = isTemporary;
 	}
 
 	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
-		// this is not used as a direct return value for EventQueue.getNextEvent(), 
-		// it has to be Java-queued by the native layer
-		Toolkit.eventQueue.postEvent( e);
+		// This is not used as a direct return value for EventQueue.getNextEvent(), 
+		// it has to be Java-queued by the native layer.
+		// Note that we use the specific postFocusEvent, because we have to take care of
+		// focus solicitation for the Java queue. Otherwise, we might get several pending
+		// focus events (this is called from the native side), which might lead to out-of-order
+		// focus events in case the application forwards the focus (e.g. toplevel -> 1st child)
+		Toolkit.eventQueue.postFocusEvent( e);
 	}
 	
 	return e;
@@ -167,15 +148,5 @@ protected void recycle () {
 		next = cache;	
 		cache = this;
 	}
-}
-
-static void sendFocusEvent ( Component src, boolean focusGained, boolean sync ) {
-	int id = focusGained ? FOCUS_GAINED : FOCUS_LOST;
-	FocusEvt e = getEvent( src, id);
-
-	if ( sync )
-		e.dispatch();
-	else
-		Toolkit.eventQueue.postEvent( e);
 }
 }

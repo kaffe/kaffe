@@ -33,6 +33,24 @@ static synchronized TextEvt getEvent ( Object source, int id ){
 	}	
 }
 
+static synchronized TextEvt getEvent( int srcIdx) {
+	Component src = sources[srcIdx];
+
+	if ( cache == null ){
+		return new TextEvt( src, TextEvent.TEXT_VALUE_CHANGED);
+	}
+	else {
+		TextEvt e = cache;
+		cache = (TextEvt)e.next;
+		e.next = null;
+		
+		e.source = src;
+		e.id = TextEvent.TEXT_VALUE_CHANGED;
+		
+		return e;
+	}	
+}
+
 protected void recycle () {
 	synchronized ( TextEvt.class ) {
 		source = null;

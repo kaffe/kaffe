@@ -11,19 +11,21 @@
 
 package kaffe.net.www.protocol.system;
 
-import java.net.URLConnection;
-import java.net.URL;
-import java.net.FileNameMap;
 import java.awt.Image;
-import java.io.IOException;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.awt.Toolkit;
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.FileNameMap;
+import java.net.URL;
+import java.net.URLConnection;
 import kaffe.net.www.protocol.BasicURLConnection;
 
-public class SystemURLConnection extends BasicURLConnection {
-
-private InputStream data;
+public class SystemURLConnection
+  extends BasicURLConnection
+{
+	private InputStream data;
 
 public SystemURLConnection(URL url)
 {
@@ -39,7 +41,9 @@ public void connect() throws IOException
 
 public InputStream getInputStream() throws IOException
 {
+	if ( data == null )
+		throw new FileNotFoundException();
+
 	return data;
 }
-
 }

@@ -13,7 +13,7 @@ package java.awt;
 public class Panel
   extends Container
 {
-	private static final long serialVersionUID = -2728009084054400034L;
+	final private static long serialVersionUID = -2728009084054400034L;
 	private static LayoutManager defaultLayout = new FlowLayout();
 
 public Panel() {
@@ -49,7 +49,9 @@ void processPaintEvent ( int id, int ux, int uy, int uw, int uh ) {
 	NativeGraphics g = NativeGraphics.getClippedGraphics( null, this, 0,0,
 	                                                      ux, uy, uw, uh,
 	                                                      false);
-	if ( g != null ){	
+	if ( g != null ){
+		markRepaints( ux, uy, uw, uh);
+
 		if ( id == PaintEvt.UPDATE ) {
 			update( g);
 		}
@@ -65,6 +67,9 @@ void processPaintEvent ( int id, int ux, int uy, int uw, int uh ) {
 			paint( g);
 		}
 		g.dispose();
+
+		if ( hasDirties() )
+			emitRepaints( ux, uy, uw, uh);
 	}
 }
 }

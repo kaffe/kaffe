@@ -50,7 +50,7 @@ abstract public class Component
   extends Object
   implements ImageObserver, MenuContainer, Serializable
 {
-	private final static long serialVersionUID = -7644114512714619750L;
+	final private static long serialVersionUID = -7644114512714619750L;
 	Container parent;
 	int x;
 	int y;
@@ -100,9 +100,7 @@ abstract public class Component
 
 static class TreeLock
 {
-	// Object for locking the validation/invalidation tree.
 }
-
 /*
  * JDK serialization.
  *  While this is serializing something like what JDK expects, we don't handle the more complex
@@ -601,20 +599,20 @@ public void hide () {
 }
 
 public boolean imageUpdate (Image img, int infoflags, int x, int y, int width, int height ) {
-  if ( (infoflags & (ALLBITS | FRAMEBITS)) != 0 ) {
-	if ( (flags & IS_SHOWING) == IS_SHOWING )
-	  repaint();
-  }
- 
-  // We return false if we're no longer interested in updates.This is *NOT*
-  // what is said in the Addison-Wesley documentation, but is what is says
-  // in the JDK javadoc documentation.
-  if ( (infoflags & (ALLBITS | ABORT | ERROR)) != 0 ) {
-	return (false);
-  }
-  else {
-	return (true);
-  }
+	if ( (infoflags & (ALLBITS | FRAMEBITS)) != 0 ) {
+		if ( (flags & IS_SHOWING) == IS_SHOWING )
+			repaint();
+	}
+
+	// We return false if we're no longer interested in updates.This is *NOT*
+	// what is said in the Addison-Wesley documentation, but is what is says
+	// in the JDK javadoc documentation.
+	if ( (infoflags & (ALLBITS | ABORT | ERROR)) != 0 ) {
+		return (false);
+	}
+	else {
+		return (true);
+	}
 }
 
 /**
@@ -920,6 +918,11 @@ void process ( ContainerEvent e ) {
 }
 
 void process ( FocusEvent e ) {
+	if ( AWTEvent.focusHook != null ){
+		if ( AWTEvent.focusHook.intercept( e) )
+			return;
+	}
+
 	if ( (focusListener != null) || (eventMask & AWTEvent.FOCUS_EVENT_MASK) != 0){
 		processEvent( e);
 	}
@@ -932,6 +935,11 @@ void process ( ItemEvent e ) {
 }
 
 void process ( KeyEvent e ) {
+	if ( AWTEvent.keyHook != null ){
+		if ( AWTEvent.keyHook.intercept( e) )
+			return;
+	}
+
 	if ( (keyListener != null) || (eventMask & AWTEvent.KEY_EVENT_MASK) != 0){
 		processEvent( e);
 	}
@@ -1094,6 +1102,11 @@ protected void processKeyEvent ( KeyEvent event ) {
 }
 
 void processMotion ( MouseEvent e ) {
+	if ( AWTEvent.mouseHook != null ){
+		if ( AWTEvent.mouseHook.intercept( e) )
+			return;
+	}
+
 	if ( (motionListener != null) || (eventMask & AWTEvent.MOUSE_MOTION_EVENT_MASK) != 0)
 		processEvent( e);
 
@@ -1103,6 +1116,11 @@ void processMotion ( MouseEvent e ) {
 }
 
 void processMouse ( MouseEvent e ) {
+	if ( AWTEvent.mouseHook != null ){
+		if ( AWTEvent.mouseHook.intercept( e) )
+			return;
+	}
+
 	if ( (mouseListener != null) || (eventMask & AWTEvent.MOUSE_EVENT_MASK) != 0)
 		processEvent( e);
 
@@ -1226,12 +1244,10 @@ public void removeNotify () {
 
 	// the inflight video program will be ceased by now, clean up any
 	// leftover global state (remember: removeNotify can be called anywhere, anytime)
-	if ( this == AWTEvent.mouseTgt ){
+	if ( this == AWTEvent.mouseTgt )
 		AWTEvent.mouseTgt = null;
-	}
-	if ( this == AWTEvent.keyTgt ){
+	if ( this == AWTEvent.keyTgt )
 		AWTEvent.keyTgt = null;
-	}
 	if ( this == AWTEvent.activeWindow )
 		AWTEvent.activeWindow = null;
 	if ( this == FocusEvt.keyTgtRequest )
@@ -1259,16 +1275,26 @@ public void repaint ( long ms ) {
 
 public void repaint ( long ms, int x, int y, int width, int height ) {
 	if ( (flags & IS_SHOWING) == IS_SHOWING ){
-		Toolkit.eventQueue.repaint( PaintEvent.UPDATE, this, x, y, width, height);
+	
+		// be paranoid, some clients might request repaints outside their own turf
+		if ( x < 0 ) x = 0;
+		if ( y < 0 ) y = 0;
+		if ( (x + width) > this.width )
+			width = this.width - x;
+		if ( (y + height) > this.height )
+			height = this.height - y;
+	
+		Toolkit.eventQueue.postPaintEvent( PaintEvent.UPDATE, this, x, y, width, height);
 	}
 }
 
 public void requestFocus () {
-	Component topNew, topOld = null;
+	Component topNew;
 
-	if ( AWTEvent.keyTgt == this )   // nothing to do
+	if ( AWTEvent.keyTgt == this ){   // nothing to do
 		return;
-		
+	}
+
 	topNew = getToplevel();
 	
 	// there are bad apps out there requesting the focus for Components
@@ -1280,22 +1306,12 @@ public void requestFocus () {
 		FocusEvt.keyTgtRequest = this;
 	}
 	else {
-		if ( AWTEvent.keyTgt != null ) {
-			topOld = AWTEvent.keyTgt.getToplevel();
-		}
-		else {
-			// Don't rely on a still existing "AWTEvent.activeWindow" as a safe retreat,
-			// since some window managers don't restore the focus to it (e.g. KWM, the focus
-			// probably gets 'lost' in the Frame parent). It's kind of paranoid and mostly
-			// redundant, but we explicitly set the focus once more
-		}
-
-		if (topNew != topOld ) {  // this involves a change of active toplevels
+		if (topNew != AWTEvent.activeWindow ) {  // this involves a change of active toplevels
 			FocusEvt.keyTgtRequest = this;
 			topNew.requestFocus();
 		}
 		else {                                 // intra toplevel focus change
-			AWTEvent.sendEvent( FocusEvt.getEvent( this, FocusEvent.FOCUS_GAINED), false);
+			Toolkit.eventQueue.postFocusEvent( FocusEvt.getEvent( this, FocusEvent.FOCUS_GAINED, false));
 		}
 	}
 }
@@ -1332,8 +1348,12 @@ public void reshape ( int xNew, int yNew, int wNew, int hNew ) {
 			if ( (flags & IS_SHOWING) == IS_SHOWING ) {
 				x0 = (xNew < x) ? xNew : x;
 				y0 = (yNew < y) ? yNew : y;
-				x1 = (a = xNew + wNew) > (b = x + width)  ? a : b;
-				y1 = (a = yNew + hNew) > (b = y + height) ? a : b;
+				a = xNew + wNew;
+				b = x + width;
+				x1 = (a > b ? a : b);
+				a = yNew + hNew;
+				b = y + height;
+				y1 = (a > b ? a : b);
 			
 				x = xNew; y = yNew; width = wNew; height = hNew;
 				invalidate();
@@ -1367,6 +1387,8 @@ public void reshape ( int xNew, int yNew, int wNew, int hNew ) {
  * to change the default behavior
  */
 public void resize ( Dimension d ) {
+	// Part of the JDK resize/setSize/setBounds/reshape twist. Don't change or you
+	// might break compatibility of derived app classes. The workhorse is still reshape
 	setSize( d.width, d.height);
 }
 
@@ -1376,6 +1398,8 @@ public void resize ( Dimension d ) {
  * to change the default behavior
  */
 public void resize ( int wNew, int hNew ) {
+	// Part of the JDK resize/setSize/setBounds/reshape twist. Don't change or you
+	// might break compatibility of derived app classes. The workhorse is still reshape
 	setBounds( x, y, wNew, hNew);
 }
 
@@ -1404,10 +1428,14 @@ public void setBackground ( Color clr ) {
 }
 
 public void setBounds ( Rectangle r ) {
+	// Part of the JDK resize/setSize/setBounds/reshape twist. Don't change or you
+	// might break compatibility of derived app classes. The workhorse is still reshape
 	setBounds( r.x, r.y, r.width, r.height);
 }
 
 public void setBounds ( int xNew, int yNew, int wNew, int hNew ) {
+	// Part of the JDK resize/setSize/setBounds/reshape twist. Don't change or you
+	// might break compatibility of derived app classes. The workhorse is still reshape
 	reshape( xNew, yNew, wNew, hNew );
 }
 
@@ -1494,11 +1522,28 @@ void setNativeCursor ( Cursor cursor ) {
 }
 
 public void setSize ( Dimension dim ) {
+	// Part of the JDK resize/setSize/setBounds/reshape twist. Don't change or you
+	// might break compatibility of derived app classes. The workhorse is still reshape
 	resize( dim);
 }
 
 public void setSize ( int newWidth, int newHeight ) {
+	// Part of the JDK resize/setSize/setBounds/reshape twist. Don't change or you
+	// might break compatibility of derived app classes. The workhorse is still reshape
 	resize( newWidth, newHeight);
+}
+
+void setTempEnabled ( boolean isEnabled ) {
+	if ( isEnabled) {
+		if ( (eventMask & AWTEvent.TEMP_DISABLED_MASK) != 0 ) 
+			eventMask &= ~(AWTEvent.DISABLED_MASK | AWTEvent.TEMP_DISABLED_MASK);
+	}
+	else {
+		if ( (eventMask & AWTEvent.DISABLED_MASK) == 0 )
+			eventMask |= (AWTEvent.DISABLED_MASK | AWTEvent.TEMP_DISABLED_MASK);
+	}
+	
+	checkMouseAware();
 }
 
 public void setVisible ( boolean b ) {

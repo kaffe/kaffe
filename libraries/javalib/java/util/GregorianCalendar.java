@@ -34,52 +34,43 @@ static {
 	stdDateChange = new GregorianCalendar(1582, Calendar.OCTOBER, 15);
 }
 
-public GregorianCalendar()
-	{
+public GregorianCalendar() {
 	this(TimeZone.getDefault(), Locale.getDefault());
 }
 
-public GregorianCalendar(Locale aLocale)
-	{
+public GregorianCalendar(Locale aLocale) {
 	this(TimeZone.getDefault(), aLocale);
 }
 
-public GregorianCalendar(TimeZone zone)
-	{
+public GregorianCalendar(TimeZone zone) {
 	this(zone, Locale.getDefault());
 }
 
-public GregorianCalendar(TimeZone zone, Locale aLocale)
-	{
+public GregorianCalendar(TimeZone zone, Locale aLocale) {
 	super(zone, aLocale);
 	setTime(new Date());
 }
 
-public GregorianCalendar(int year, int month, int date)
-	{
+public GregorianCalendar(int year, int month, int date) {
 	super();
 	set(year, month, date);
 }
 
-public GregorianCalendar(int year, int month, int date, int hour, int minute)
-	{
+public GregorianCalendar(int year, int month, int date, int hour, int minute) {
 	super();
 	set(year, month, date, hour, minute);
 }
 
-public GregorianCalendar(int year, int month, int date, int hour, int minute, int second)
-	{
+public GregorianCalendar(int year, int month, int date, int hour, int minute, int second) {
 	super();
 	set(year, month, date, hour, minute, second);
 }
 
-public void add(int field, int amount)
-	{
+public void add(int field, int amount) {
 	throw new NotImplemented(GregorianCalendar.class.getName() + ".add(int,int)");
 }
 
-public boolean after(Object when)
-	{
+public boolean after(Object when) {
 	try {
 		GregorianCalendar cal = (GregorianCalendar)when;
 		if (getTimeInMillis() > cal.getTimeInMillis()) {
@@ -93,8 +84,7 @@ public boolean after(Object when)
 	return (false);
 }
 
-public boolean before(Object when)
-	{
+public boolean before(Object when) {
 	try {
 		GregorianCalendar cal = (GregorianCalendar)when;
 		if (getTimeInMillis() < cal.getTimeInMillis()) {
@@ -109,8 +99,7 @@ public boolean before(Object when)
 }
 
 // Calculate the date & time
-private long computeDateTime()
-	{
+private long computeDateTime() {
 	long time = 0L;
 	int end;
 
@@ -214,8 +203,7 @@ private long computeDateTime()
 	return (time);
 }
 
-protected void computeFields()
-	{
+protected void computeFields() {
 	// Calculate the calendar fields from the millisecond time.
 	long rawoffset = getTimeZone().getRawOffset();
 	computeFields(this.time + rawoffset);
@@ -231,8 +219,7 @@ protected void computeFields()
 }
 
 // Calculate the calendar fields from the millisecond time.
-private void computeFields(long time)
-	{
+private void computeFields(long time) {
 	long rem = time;
 	long days = rem / MILLISECSPERDAY;
 	rem %= MILLISECSPERDAY;
@@ -331,8 +318,7 @@ protected void computeTime() {
 	isTimeSet = true;
 }
 
-public boolean equals(Object obj)
-	{
+public boolean equals(Object obj) {
 	if (obj instanceof GregorianCalendar) {
 		GregorianCalendar cal = (GregorianCalendar)obj;
 		if (isLenient() == cal.isLenient() &&
@@ -346,13 +332,11 @@ public boolean equals(Object obj)
 	return (false);
 }
 
-public int getGreatestMinimum(int field)
-	{
+public int getGreatestMinimum(int field) {
 	return (getMinimum(field));
 }
 
-final public Date getGregorianChange()
-	{
+final public Date getGregorianChange() {
 	if (dateChange == null) {
 		return (stdDateChange.getTime());
 	}
@@ -361,8 +345,7 @@ final public Date getGregorianChange()
 	}
 }
 
-public int getLeastMaximum(int field)
-	{
+public int getLeastMaximum(int field) {
 	switch (field) {
 	case DAY_OF_MONTH: // DATE
 		return (28);
@@ -371,8 +354,7 @@ public int getLeastMaximum(int field)
 	}
 }
 
-public int getMaximum(int field)
-	{
+public int getMaximum(int field) {
 	switch (field) {
 	case ERA:
 		return (1);
@@ -412,8 +394,7 @@ public int getMaximum(int field)
 	}
 }
 
-public int getMinimum(int field)
-	{
+public int getMinimum(int field) {
 	switch (field) {
 	case ERA:
 		return (0);
@@ -452,13 +433,11 @@ public int getMinimum(int field)
 	}
 }
 
-public synchronized int hashCode()
-	{
+public synchronized int hashCode() {
 	return (getFirstDayOfWeek() ^ getMinimalDaysInFirstWeek());
 }
 
-public boolean isLeapYear(int year)
-	{
+public boolean isLeapYear(int year) {
 	if (year % 400 == 0) {
 		return (true);
 	}
@@ -471,13 +450,11 @@ public boolean isLeapYear(int year)
 	return (false);
 }
 
-public void roll(int field, boolean up)
-	{
+public void roll(int field, boolean up) {
 	throw new NotImplemented(GregorianCalendar.class.getName() + ".roll(int,boolean)");
 }
 
-public void setGregorianChange(Date date)
-	{
+public void setGregorianChange(Date date) {
 	dateChange = Calendar.getInstance();
 	dateChange.setTime(date);
 }

@@ -12,10 +12,11 @@
 
 package java.awt.image;
 
+import kaffe.awt.JavaColorModel;
+
 abstract public class ColorModel
 {
 	protected int pixel_bits;
-	static ColorModel defaultCM;
 
 public ColorModel ( int bitsPerPixel ) {
 	pixel_bits = bitsPerPixel;
@@ -37,15 +38,8 @@ public int getRGB ( int pixel ) {
 }
 
 public static ColorModel getRGBdefault() {
-	if (defaultCM == null)
-		defaultCM = new DirectColorModel( 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-
-	return defaultCM;
+	return JavaColorModel.getSingleton();
 }
 
 abstract public int getRed ( int pixel );
-
-boolean isJavaModel () {
-	return false;
-}
 }

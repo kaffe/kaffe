@@ -44,8 +44,12 @@ protected void dispatch () {
 		break;
 		
 	case WM_DISPATCH_MODAL:
+System.out.println( "run");
 		Toolkit.eventThread.run( w);
-		synchronized (this) { this.notifyAll(); }
+		synchronized (this) {
+System.out.println( "notify");
+		  this.notifyAll();
+		}
 		break;
 		
 	case WM_SHOW:

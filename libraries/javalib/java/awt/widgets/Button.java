@@ -21,9 +21,9 @@ import kaffe.awt.ImageSpec;
  */
 public class Button
   extends Component
-  implements MouseListener, FocusListener, ShortcutConsumer
+  implements ShortcutConsumer
 {
-	private static final long serialVersionUID = -8774683716313001058L;
+	final private static long serialVersionUID = -8774683716313001058L;
 	String label;
 	ActionListener aListener;
 	String aCmd;
@@ -41,13 +41,12 @@ public Button () {
 public Button ( String label) {
 	cursor = Cursor.getPredefinedCursor( Cursor.HAND_CURSOR);
 	
+	flags |= IS_MOUSE_AWARE;
+	
 	setFont( Defaults.BtnFont);
 	setBackground( Defaults.BtnClr);
 	setForeground( Defaults.BtnTxtClr);
 	setLabel( label);
-	
-	addMouseListener( this);
-	addFocusListener( this);
 }
 
 public void addActionListener ( ActionListener a) {
@@ -56,6 +55,7 @@ public void addActionListener ( ActionListener a) {
 
 public void addNotify () {
 	super.addNotify();
+
 	if ( shortcut != null )
 		ShortcutHandler.addShortcut( shortcut, getToplevel(), this);
 		
@@ -78,6 +78,10 @@ void animate() {
 	Toolkit.tlkSync();
 	
 	g.dispose();
+}
+
+void checkMouseAware () {
+	// we always want our processMouse to be called
 }
 
 void drawImage ( Graphics g) {
@@ -126,14 +130,6 @@ void drawText ( Graphics g) {
 	g.drawString( label, x, y);	
 }
 
-public void focusGained( FocusEvent e) {
-	repaint();
-}
-
-public void focusLost( FocusEvent e) {
-	repaint();
-}
-
 public String getActionCommand () {
 	return ( (aCmd != null) ? aCmd : label);
 }
@@ -160,37 +156,9 @@ public void handleShortcut( MenuShortcut ms) {
 	}
 }
 
-public void mouseClicked ( MouseEvent evt ) {
-}
-
-public void mouseEntered ( MouseEvent evt ) {
-	state |= HILIGHTED;
-	repaint();
-}
-
-public void mouseExited ( MouseEvent evt ) {
-	state &= ~HILIGHTED;
-	repaint();
-}
-
-public void mousePressed ( MouseEvent evt ) {
-	state |= PUSHED;
-	if ( AWTEvent.keyTgt != this )
-		requestFocus();
-	else
-		repaint();
-}
-
-public void mouseReleased ( MouseEvent evt ) {
-	if ( contains( evt.getX(), evt.getY()))
-		handleShortcut( null);
-	state &= ~PUSHED;
-	repaint();
-}
-
 public void paint ( Graphics g) {
 	int d = BORDER_WIDTH;
-	
+
 	if ( (imgs != null) && imgs.isPlain() ) {
 		g.setColor( parent.getBackground() );
 		g.fillRect( 0, 0, width, height);
@@ -237,10 +205,44 @@ void process ( ActionEvent e ) {
 	if ( (flags & IS_OLD_EVENT) != 0 ) postEvent( Event.getEvent( e));
 }
 
+void process ( FocusEvent e ) {
+	repaint();
+
+	super.process( e);
+}
+
 protected void processActionEvent( ActionEvent e) {
 	if ( aListener != null ) {
 		aListener.actionPerformed( e);
 	}
+}
+
+void processMouse ( MouseEvent e ) {
+	switch ( e.id ) {
+		case e.MOUSE_ENTERED:
+			state |= HILIGHTED;
+			repaint();
+			break;
+		case e.MOUSE_EXITED:
+			state &= ~HILIGHTED;
+			repaint();
+			break;
+		case e.MOUSE_PRESSED:
+			state |= PUSHED;
+			if ( AWTEvent.keyTgt != Button.this )
+				requestFocus();
+			else
+				repaint();
+			break;
+		case e.MOUSE_RELEASED:
+			if ( contains( e.getX(), e.getY()))
+				handleShortcut( null);
+			state &= ~PUSHED;
+			repaint();
+			break;
+	}
+
+	super.process( e);
 }
 
 public void removeActionListener ( ActionListener a) {

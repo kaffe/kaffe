@@ -56,7 +56,7 @@ public static final int HTTP_UNAVAILABLE = 503;
 public static final int HTTP_GATEWAY_TIMEOUT = 504;
 public static final int HTTP_VERSION = 505;
 
-static private boolean followRedirects;
+static private boolean followRedirects = true;
 
 protected String method = "GET";
 protected int responseCode;

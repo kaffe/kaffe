@@ -24,7 +24,7 @@ import java.util.Vector;
 public class TextArea
   extends TextComponent
 {
-	private static final long serialVersionUID = 3692302836626095722L;
+	final private static long serialVersionUID = 3692302836626095722L;
 	final public static int SCROLLBARS_BOTH = 0;
 	final public static int SCROLLBARS_VERTICAL_ONLY = 1;
 	final public static int SCROLLBARS_HORIZONTAL_ONLY = 2;
@@ -56,7 +56,7 @@ public TextPane () {
 	addFocusListener( this);
 }
 
-void append ( String s ) {
+synchronized void append ( String s ) {
 	int         i, nOld, nNew;
 	TextBuffer  tb;
 	String[]    lines;
@@ -466,7 +466,7 @@ public void keyPressed( KeyEvent e) {
 	//do not consume unused key for ShortcutHandler
 	if ( (mods != 0) && (mods != e.SHIFT_MASK) )
 		return;
-		
+
 	switch( code) {
 		case e.VK_LEFT:
 			cursorLeft( 1, sh);
@@ -529,11 +529,13 @@ public void keyPressed( KeyEvent e) {
 		  return;
 	}
 
-  e.consume();
+  e.consumed = true;
 }
 
 public void keyReleased( KeyEvent e) {
 	redirectKeyEvent( e);
+	
+	e.consumed = true;
 }
 
 public void keyTyped( KeyEvent e) {
@@ -558,6 +560,8 @@ public void keyTyped( KeyEvent e) {
 		Toolkit.eventQueue.postEvent( TextEvt.getEvent( TextArea.this,
 		                                                TextEvt.TEXT_VALUE_CHANGED));		
 	}
+	
+	e.consumed = true;
 }
 
 public void mouseClicked( MouseEvent e) {
@@ -809,7 +813,7 @@ int selXStart( int row) {
 	return 0;
 }
 
-void setContents( String s) {
+synchronized void setContents( String s) {
 	String[] sa = breakLines( s);
 	rows.removeAllElements();
 	for ( int i=0; i<sa.length; i++)
@@ -965,7 +969,7 @@ public void add( PopupMenu m) {
 	tp.add( m);
 }
 
-public synchronized void append( String str) {
+public void append( String str) {
 	tp.append( str);
 }
 
@@ -975,7 +979,6 @@ public synchronized void append( String str) {
 public void appendText(String s) {
 	append(s);
 }
-
 
 protected void buildMenu() {
 	PopupMenu p = new PopupMenu();
@@ -1163,6 +1166,15 @@ public synchronized void replaceText( String str, int start, int end) {
 
 public void requestFocus() {
 	tp.requestFocus();
+}
+
+public void reshape ( int x, int y, int w, int h ) {
+	super.reshape( x, y, w, h);
+	
+	// there is no need for validation of compound IS_NATIVE_LIKES, they are no Containers
+	// in JDK, so we automagically have to re-layout them
+	tp.innerLayout();
+	flags |= IS_VALID;
 }
 
 public void select( int start, int end) {

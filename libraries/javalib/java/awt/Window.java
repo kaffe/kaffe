@@ -2,6 +2,7 @@ package java.awt;
 
 import java.awt.BorderLayout;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.PaintEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -26,7 +27,7 @@ public class Window
 	WindowListener wndListener;
 	Frame owner;
 	static Window dummy = new Window();
-	private static final long serialVersionUID = 4497834738069338734L;
+	final private static long serialVersionUID = 4497834738069338734L;
 
 Window () {
 	// windows aren't visible per se, but they are exposed, colored and fontified
@@ -177,8 +178,10 @@ final public String getWarningString() {
 
 public void hide() {
 	super.hide();
-	if ( nativeData != null )
+	
+	if ( nativeData != null ){
 		Toolkit.wndSetVisible( nativeData, false);
+	}
 }
 
 public boolean isShowing () {
@@ -196,12 +199,22 @@ public void pack () {
 }
 
 void process ( FocusEvent event ) {
+	Component c;
+	
 	super.process( event);
 
 	if ( event.id == FocusEvent.FOCUS_GAINED ) {
-		// set focus on first child which can handle it
-		if ( nChildren > 0 )
-			ShortcutHandler.focusNext( this);
+		// Set focus on first child which can handle it. We do this automatic focus forwarding
+		// ONLY if there are no other pending requests, and we do it sync (we are already in the
+		// thread which processed the FOCUS_GAINED) to avoid any interference with popup focus
+		// transitions. This is because we might otherwise get a out-of-order focus event:
+		// (popup1-lost -> owner-gained ->post forward , popup2-gained, forward-gained ->popup2-lost)
+		if ( (nChildren > 0) && !Toolkit.eventQueue.hasPendingEvents( null, FocusEvt.FOCUS_GAINED) ) {
+			c = ShortcutHandler.focusNext( this);
+			if ( (c != null) && (c != this) ) {
+				AWTEvent.sendEvent( FocusEvt.getEvent( c, FocusEvt.FOCUS_GAINED, false), true);
+			}
+		}
 	}
 }
 
@@ -211,35 +224,27 @@ void process ( WindowEvent e ) {
 }
 
 protected void processWindowEvent ( WindowEvent event ) {
+	// This is a artificial constraint - we could happily emit ACTIVATED/DEACTIVATED
+	// events with out popup focus mechanism, but the JDK class docu says it just
+	// handles OPENED/CLOSED.
 	if ( wndListener != null ) {
 		switch ( event.id ) {
 		case WindowEvent.WINDOW_OPENED:
 			wndListener.windowOpened( event);
 			break;
-		case WindowEvent.WINDOW_CLOSING:
-			wndListener.windowClosing( event);
-			break;
 		case WindowEvent.WINDOW_CLOSED:
 			wndListener.windowClosed( event);
-			break;
-		case WindowEvent.WINDOW_ICONIFIED:
-			wndListener.windowIconified( event);
-			break;
-		case WindowEvent.WINDOW_DEICONIFIED:
-			wndListener.windowDeiconified( event);
-			break;
-		case WindowEvent.WINDOW_ACTIVATED:
-			wndListener.windowActivated( event);
-			break;
-		case WindowEvent.WINDOW_DEACTIVATED:
-			wndListener.windowDeactivated( event);
 			break;
 		}
 	}
 }
 
 public void removeNotify () {
-	if ( nativeData != null ) {
+	if ( (flags & IS_ADD_NOTIFIED) != 0 ) {
+
+		// use this rather than nativeData, because the sync FOCUS_LOST might get us recursive
+    flags &= ~IS_ADD_NOTIFIED;
+
 		// Some native windowing systems require windows to be destroyed from
 		// the thread which created them. Even though this should be ensured
 		// by calling removeNotify via the WindowEvt.dispatch(), it is more safe
@@ -263,14 +268,13 @@ public void removeNotify () {
 			// we might get problems because of an already deleted window - we better
 			// simulate sync what has to be processed anyway (this error typically shows
 			// up in a KaffeServer context)
-			if ( AWTEvent.activeWindow == this ){
+			if ( (AWTEvent.activeWindow == this) && (AWTEvent.keyTgt != null) ){
 				AWTEvent.sendEvent( FocusEvt.getEvent( AWTEvent.keyTgt,
-				                                       FocusEvent.FOCUS_LOST), true);
+				                                       FocusEvent.FOCUS_LOST, false), true);
 			}
 
 			super.removeNotify();
 			Toolkit.wndDestroyWindow( nativeData);
-
 			cleanUp();
 			
 			if ( (wndListener != null) || (eventMask & AWTEvent.WINDOW_EVENT_MASK) != 0 ){
@@ -278,6 +282,9 @@ public void removeNotify () {
 							                        WindowEvent.WINDOW_CLOSED), false);
 			}
 		}
+
+		// use this rather than nativeData, because the sync FOCUS_LOST might get us recursive
+                // flags &= ~IS_ADD_NOTIFIED;
 	}
 }
 
@@ -375,10 +382,6 @@ public void show() {
 	}
 	else {
 		super.show();
-
-		// another "Swing approximation": see FocusEvt.dispatch for details
-		if ( owner != null )
-			FocusEvt.temporaryHint = true;
 
 		// Some apps carelessly start to draw (or do other display related things)
 		// immediately after a show(), which is usually not called from the

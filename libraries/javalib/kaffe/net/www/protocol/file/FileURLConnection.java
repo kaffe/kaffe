@@ -1,8 +1,11 @@
 package kaffe.net.www.protocol.file;
 
 import java.awt.Toolkit;
+import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -21,15 +24,26 @@ import kaffe.net.www.protocol.BasicURLConnection;
 public class FileURLConnection
   extends BasicURLConnection
 {
+	InputStream file;
+
 public FileURLConnection(URL url) {
 	super(url);
 }
 
 public void connect() throws IOException {
+	String fn = url.getFile();
+
 	setContentTypeFromName();
+
+	if ( (File.separatorChar == '\\') && (fn.indexOf('/') >= 0) ){
+		// we are on a DOS-like filesystem, replace URL slashes
+		fn = fn.replace( '/', File.separatorChar);
+	}
+	
+	file = new BufferedInputStream(new FileInputStream( fn));
 }
 
 public InputStream getInputStream() throws IOException {
-	return (new FileInputStream(url.getFile()));
+	return (file);
 }
 }

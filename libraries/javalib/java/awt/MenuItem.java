@@ -27,7 +27,7 @@ public class MenuItem
 	String aCmd;
 	int eventMask;
 	static MenuItem separator = new MenuItem( "-");
-	private static final long serialVersionUID = -21757335363267194L;
+	final private static long serialVersionUID = -21757335363267194L;
 
 public MenuItem() {
 	this( null, null);
@@ -104,7 +104,7 @@ public String getActionCommand() {
 }
 
 int getHeight() {
-	return ( isSeparator() ? 4 : fm.getHeight() + 4);
+	return ( isSeparator() ? 5 : fm.getHeight() + 5);
 }
 
 public String getLabel() {
@@ -128,10 +128,11 @@ int getWidth() {
 public void handleShortcut ( MenuShortcut ms) {
 	int mods = (ms != null) ? ms.mods : 0;
 
+	if ( (eventMask & AWTEvent.DISABLED_MASK) != 0 )
+		return;
+
 	if ( (aListener != null) ||
-	     ((eventMask & (AWTEvent.ACTION_EVENT_MASK|AWTEvent.DISABLED_MASK))
-	                                                 == AWTEvent.ACTION_EVENT_MASK) ||
-	     ((flags & IS_OLD_EVENT) > 0) ) {
+	     ( ((eventMask & AWTEvent.ACTION_EVENT_MASK) != 0) || ((flags & IS_OLD_EVENT) != 0) ) ) {
 		Toolkit.eventQueue.postEvent( ActionEvt.getEvent( this, ActionEvent.ACTION_PERFORMED,
 		                                                  getActionCommand(), mods));
 		return;
@@ -143,9 +144,7 @@ public void handleShortcut ( MenuShortcut ms) {
 			break;
 		}
 		Menu m = (Menu)mp;
-		if ( (m.aListener != null) ||
-		     ((m.eventMask & (AWTEvent.ACTION_EVENT_MASK|AWTEvent.DISABLED_MASK))
-		                                                   == AWTEvent.ACTION_EVENT_MASK) ) {
+		if ( (m.aListener != null) || ((m.eventMask & AWTEvent.ACTION_EVENT_MASK) != 0) ) {
 			Toolkit.eventQueue.postEvent( ActionEvt.getEvent( m, ActionEvent.ACTION_PERFORMED,
 			                                                  getActionCommand(), mods));
 			return;
@@ -162,28 +161,40 @@ public boolean isSeparator() {
 	return (separator == this);
 }
 
-int paint ( Graphics g, int xoff, int y, int width, Color back, Color fore, boolean sel) {
+int paint ( Graphics g, int x, int xoff, int y, int width, int height,
+            Color back, Color fore, boolean sel) {
 	int ih = getHeight();
-	int as = fm.getAscent();
+	int ya = (height > 0) ? y + (height - ih) / 2 : y;
+	int xo = x + xoff;
 	
 	if ( separator == this) {
-		int ys = y+ih/2;
 		g.setColor( back);
-		g.draw3DRect( 5, ys-1, width -10, 1, false);
+		g.draw3DRect( x + 2, y + ih/2, width - 4, 1, false);
 	}
 	else {
+		ya += fm.getAscent() + 3;
 		g.setFont( fnt);
+		
+		if ( sel && ((eventMask & AWTEvent.DISABLED_MASK) == 0) ) {
+			g.setColor( Defaults.MenuSelBgClr);
+			g.fill3DRect( x+1, y+1, width-2, ih-1, false);
+		}
+		else {
+			g.setColor( back);
+			g.fillRect( x+1, y+1, width-1, ih);
+		}
+		
 		if ( (eventMask & AWTEvent.DISABLED_MASK) == 0 ) {
 			if ( Defaults.MenuTxtCarved ) {
 				g.setColor( Color.white);
-				g.drawString( label, xoff+1, y+as+1);
+				g.drawString( label, xo+1, ya+1);
 			}
 			g.setColor( sel ? Defaults.MenuSelTxtClr : fore);
 		}
 		else {
 			g.setColor( back.darker() );
 		}
-		g.drawString( label, xoff, y+as);
+		g.drawString( label, xo, ya);
 	}
 			
 	return ih;

@@ -31,12 +31,12 @@ class Defaults
  * (usually a simple Window displaying scrolled text). If ConsoleClass is null, no
  * io redirection is performed
  */
-	static String ConsoleClass = /*"kaffe.util.log.SimpleLogViewer" */ null;
+	static String ConsoleClass = /* "kaffe.util.log.SimpleLogViewer" */ null;
 /**
  * If set to 'true', the last Window that is closed will automatically
  * call a System.exit()
  */
-	static boolean AutoStop = true;
+	static boolean AutoStop = false;
 /**
  * Upper bound (in ms) between mouse button press events which will be
  * considered as a 'click' (will increase the MouseEvent clickCount)
@@ -84,7 +84,8 @@ class Defaults
 /**
  * Pixel height of MenuBars
  */
-	static int MenuBarHeight = 20;
+	static int MenuBarHeight = 21;
+	static int ScrollbarWidth = 14;
 /**
  * Frame decoration extends (titlebar, size-borders) in pixels. For native windowing
  * systems (like X) this is just a guess, to be used for the first Frame to be opened,
@@ -176,6 +177,7 @@ class Defaults
  * Default background color for menus
  */
 	static Color MenuBgClr = Color.lightGray;
+	static Color MenuSelBgClr = new Color( 180, 180, 180);
 /**
  * If set to 'true', menu text will be drawn "carved" (with a down-right highlight)
  */
@@ -289,7 +291,7 @@ class Defaults
 /**
  * If set to 'true', Label text will be drawn carved (with right-down highlight)
  */
-	static boolean LabelTxtCarved = true;
+	static boolean LabelTxtCarved = false;
 /**
  * Default background color for Buttons
  */
@@ -380,6 +382,15 @@ class Defaults
  */
 	static int MemImageSrcThreshold = Integer.MAX_VALUE;
 	static int RecycleEvents = 0;
+/**
+ * Name of the file to load as the startup banner.
+ */
+	static String banner;
+/**
+ * Name of the file to play when we need to 'beep'
+ */
+	static String beep;
+	static String UserInitClass = setStringValue( "awt.UserInitClass", null);
 
 static {
 	// these are the computed values
@@ -388,11 +399,6 @@ static {
 	ScreenWidth  = sd.width;
 	ScreenHeight = sd.height;
 
-	// HACK HACK HACK XXX
-	if (ScreenSize == 0) {
-		ScreenSize = 130;
-	}
-	
 	// we assume a 4:3 width/height ratio of the display
 	XResolution = (int)((double) ScreenWidth  * 10 / ( 0.8 * ScreenSize)); // dpi
 	YResolution = (int)((double) ScreenHeight * 10 / ( 0.6 * ScreenSize)); // dpi
@@ -439,7 +445,79 @@ static {
 	
 	WndFontMetrics = Toolkit.getDefaultToolkit().getFontMetrics( WndFont);
 
-	String banner = System.getProperty( "banner", "banner.gif");
-	Toolkit.tlkDisplayBanner(banner);
+	beep = System.getProperty("awt.beep", "beep.wav");
+
+	// Display startup banner, if any
+	if ( (banner = System.getProperty("awt.banner", "banner.gif")) != null ){
+		Toolkit.tlkDisplayBanner(banner);
+	}
+	
+	if ( UserInitClass != null ) {
+		try {
+			Class asc = Class.forName( UserInitClass);
+		}
+		catch ( Exception x ) {
+			System.err.println( "UserInitClass not initialized: " + x);
+		}
+	}
+}
+
+static boolean setBooleanValue ( String propKey, boolean defValue ) {
+	boolean    val;
+	
+	String s = System.getProperty( propKey);
+	if ( s != null ) {
+		val = s.equalsIgnoreCase( "true");
+	}
+	else {	
+		val = defValue;
+	}
+		
+	return val;
+}
+
+static Color setColorValue ( String propKey, Color defValue ) {
+	Color    val = defValue;
+	
+	String s = System.getProperty( propKey);
+	if ( s != null ) {
+		try {
+			val = new Color( Integer.parseInt( s, 16));
+		}
+		catch ( NumberFormatException x ) {
+			System.err.println( "malformed awt property: " + propKey);
+		}
+		s = null;
+	}
+		
+	return val;
+}
+
+static int setIntValue ( String propKey, int defValue ) {
+	int    val = defValue;
+	
+	String s = System.getProperty( propKey);
+	if ( s != null ) {
+		try {
+			val = Integer.parseInt( s);
+		}
+		catch ( NumberFormatException x ) {
+			System.err.println( "malformed awt property: " + propKey);
+		}
+		s = null;
+	}
+		
+	return val;
+}
+
+static String setStringValue ( String propKey, String defValue ) {
+	// we could do this directly via System.getProperty(key,def), but just
+	// for Strings, and we want more types
+	
+	String val = System.getProperty( propKey);
+	if ( val == null )
+		val = defValue;
+
+	return val;
 }
 }

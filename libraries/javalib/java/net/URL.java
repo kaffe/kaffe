@@ -19,91 +19,19 @@ import kaffe.net.DefaultURLStreamHandlerFactory;
 final public class URL
   implements Serializable
 {
-	private static final long serialVersionUID = -7627629688361524110L;
+	final private static long serialVersionUID = -7627629688361524110L;
 	private static URLStreamHandlerFactory defaultFactory = new DefaultURLStreamHandlerFactory();
 	private static URLStreamHandlerFactory factory;
 	private URLStreamHandler handler;
 	private String protocol;
-	private String host;
-	private int port;
-	private String file;
+	private String host = "";
+	private int port = -1;
+	private String file = "/";
 	private String ref;
 	private URLConnection conn;
 
 public URL(String spec) throws MalformedURLException {
-	int fstart;
-
-	/* URL -> [<protocol>:][//<hostname>[:port]][/<file>] */
-
-//System.out.println("Parsing URL " + spec);
-
-	int pend = spec.indexOf(':', 0);
-	if (pend == -1) {
-		// Although it doesn't say in the spec, it appears that
-		// the protocol defaults to 'file' if it's missing.
-		protocol = "file";
-		host = "";
-		port = -1;
-		file = spec;
-	}
-	else {
-		protocol = spec.substring(0, pend);
-
-		int hstart = pend+3;
-		if (spec.length() >= hstart && spec.substring(pend+1, hstart).equals("//")) {
-			int hend = spec.indexOf(':', hstart);
-			if (hend != -1) {
-				host = spec.substring(hstart, hend);
-				int postart = hend+1;
-				int poend = spec.indexOf('/', postart);
-				if (poend == -1) {
-					poend = spec.length();
-				}
-// XXX Should we do this?  	try {
-					port = Integer.parseInt(
-					    spec.substring(postart, poend));
-			//	} catch (NumberFormatException e) {
-			//		throw new MalformedURLException(
-			//		    "bad port \""
-			//		    + spec.substring(postart, poend)
-			//		    + "\"");
-			//	}
-				fstart = spec.indexOf( '/', hstart);
-			}
-			else {
-				hend = spec.indexOf('/', hstart);
-				if (hend != -1) {
-					host = spec.substring(hstart, hend);
-					port = -1;
-					fstart = spec.indexOf( '/', hstart);
-				}
-				else {
-					host = spec.substring(hstart);
-					port = -1;
-					fstart = -1;
-				}
-			}
-		}
-		else {
-			host = "";
-			port = -1;
-			fstart = pend + 1;
-		}
-
-		if (fstart != -1) {
-			file = spec.substring(fstart);
-			int rIdx = file.lastIndexOf( '#');
-			if ( rIdx > -1 ) {
-				ref = file.substring( rIdx+1);
-				file = file.substring( 0, rIdx);
-			}
-		}
-		else {
-			file = "";
-		}
-	}
-	handler = getURLStreamHandler(protocol);
-//System.out.println("URL = " + this);
+	parseURL(spec);
 }
 
 public URL(String protocol, String host, String file) throws MalformedURLException {
@@ -111,55 +39,38 @@ public URL(String protocol, String host, String file) throws MalformedURLExcepti
 }
 
 public URL(String protocol, String host, int port, String file) throws MalformedURLException {
-	if (protocol == null
-	    || (host == null && !protocol.equals("file"))
-	    || file == null) {
+	if (protocol == null || host == null || file == null) {
 		throw new NullPointerException();
 	}
-	this.protocol = protocol;
-	this.host = host;
-	this.file = file;
-	this.port = port;
 	handler = getURLStreamHandler(protocol);
+	handler.setURL(this, protocol, host, port, file, "");
 }
 
 public URL(URL context, String spec) throws MalformedURLException {
-	// First build the URL from the spec
-	this(spec != null ? spec : context.toString());
-	if (spec == null) {
-		return;
+	// If no context of spec has a protocol - ignore context.
+	if (context == null || spec.indexOf(':') != -1) {
+		parseURL(spec);
 	}
-	// If spec was absolute we ignore the context
-	if (context == null || !this.protocol.equals("file") || spec.equals("file")) {
-		return;
+	// Else if spec is absolute just use context's protocol.
+	else if ( spec.charAt(0) == '/') {
+		protocol = context.protocol;
+		host = context.host;
+		port = context.port;
+		handler = getURLStreamHandler(protocol);
+		handler.parseURL(this, spec, 0, spec.length());
 	}
-
-	this.protocol = context.protocol;
-	this.host = context.host;
-	this.port = context.port;
-
-	// If file wasn't absolute then we append it to the context
-	// after removing any file it has
-	if (this.file.charAt(0) != '/') {
-		int last = context.file.lastIndexOf('/');
-		if (last == -1) {
-			this.file = context.file + '/' + this.file;
-		}
-		else if (last == context.file.length() - 1) {
-			this.file = context.file + this.file;
-		}
-		else {
-			this.file = context.file.substring(0, last+1) + this.file;
-		}
+	else {
+		//merge path with relative spec
+		String cs = context.toString();
+		int lsi = cs.lastIndexOf( '/') + 1;
+		parseURL(cs.substring(0, lsi) + spec);
 	}
 
-	handler = getURLStreamHandler(protocol);
-
-//System.out.println("merging " + context.toString() + " and " + spec + " into " + this);
+// System.out.println("merging " + context.toString() + " and " + spec + " into " + this);
 }
 
 public boolean equals(Object obj) {
-	if (!(obj instanceof URL)) {
+	if (obj == null || !(obj instanceof URL)) {
 		return (false);
 	}
 	URL that = (URL)obj;
@@ -221,18 +132,37 @@ public int hashCode() {
 }
 
 public URLConnection openConnection() throws IOException {
-	if (conn == null) {
-		conn = handler.openConnection(this);
-		conn.connect();
-	}
+	// We *ALWAYS* open a new connection even if we already have
+	// one open.
+	conn = handler.openConnection(this);
+	conn.connect();
 	return (conn);
 }
 
-public final InputStream openStream() throws IOException {
-	if (conn == null) {
-		openConnection();
-	}
+final public InputStream openStream() throws IOException {
+	// We *ALWAYS* open a new connection even if we already have
+	// one open.
+	openConnection();
 	return (conn.getInputStream());
+}
+
+private void parseURL(String spec) throws MalformedURLException {
+
+	/* URL -> [<protocol>:][//<hostname>[:port]][/<file>] */
+
+//System.out.println("Parsing URL " + spec);
+
+	int pend = spec.indexOf(':', 0);
+	if (pend == -1) {
+		protocol = "file";
+	}
+	else {
+		protocol = spec.substring(0, pend);
+	}
+	handler = getURLStreamHandler(protocol);
+	handler.parseURL(this, spec, pend+1, spec.length());
+
+//System.out.println("URL = " + this);
 }
 
 public boolean sameFile(URL that) {

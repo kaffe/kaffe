@@ -20,7 +20,7 @@ public class ScrollPane
   extends Container
   implements AdjustmentListener
 {
-	private static final long serialVersionUID = 7956609840827222915L;
+	final private static long serialVersionUID = 7956609840827222915L;
 	final public static int SCROLLBARS_AS_NEEDED = 0;
 	final public static int SCROLLBARS_ALWAYS = 1;
 	final public static int SCROLLBARS_NEVER = 2;
@@ -210,7 +210,7 @@ public Adjustable getHAdjustable () {
 }
 
 public int getHSrollbarHeight () {
-	return (hScroll == null) ? 0 : Scrollbar.SCROLLBAR_WIDTH;
+	return (hScroll == null) ? 0 : Defaults.ScrollbarWidth;
 }
 
 public Point getScrollPosition () {
@@ -226,7 +226,7 @@ public Adjustable getVAdjustable () {
 }
 
 public int getVScrollbarWidth () {
-	return (vScroll == null) ? 0 : Scrollbar.SCROLLBAR_WIDTH;
+	return (vScroll == null) ? 0 : Defaults.ScrollbarWidth;
 }
 
 public Dimension getViewportSize () {
@@ -246,7 +246,7 @@ public void layout() {
 		return;
 	}
 	int bw = BORDER_WIDTH;
-	int sw = Scrollbar.SCROLLBAR_WIDTH;
+	int sw = Defaults.ScrollbarWidth;
 	Dimension cd = child.getPreferredSize();
 	int w, h;
 
@@ -275,7 +275,7 @@ public void layout() {
 }
 
 public void paint ( Graphics g ) {
-	int sw = Scrollbar.SCROLLBAR_WIDTH;
+	int sw = Defaults.ScrollbarWidth;
 	int vw = ((vScroll.flags & IS_VISIBLE) != 0) ? sw : 0;
 	int hh = ((hScroll.flags & IS_VISIBLE) != 0) ? sw : 0;
 

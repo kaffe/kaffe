@@ -38,10 +38,11 @@ protected ClassLoader(ClassLoader parent) {
 }
 
 final protected Class defineClass(String name, byte data[], int offset, int length) throws ClassFormatError {
-	Class clazz =defineClass0(name, data, offset, length);
+	Class clazz = defineClass0(name, data, offset, length);
 	if (name != null) {
 		loadedClasses.put(name, clazz);
-	} else {
+	}
+	else {
 		loadedClasses.put(clazz.getName(), clazz);
 	}
 	return (clazz);
@@ -81,7 +82,12 @@ public static URL getSystemResource(String name) {
 
 public static InputStream getSystemResourceAsStream(String name) {
 	byte[] data = getSystemResourceAsBytes0(name);
-	return (data != null) ? new ByteArrayInputStream(data) : null;
+	if (data == null) {
+		return (null);
+	}
+	else {
+		return (new ByteArrayInputStream(data));
+	}
 }
 
 public Class loadClass(String name) throws ClassNotFoundException {
@@ -109,7 +115,7 @@ protected Class loadClass(String name, boolean resolve) throws ClassNotFoundExce
 	return (cls);
 }
 
-void checkPackageAccess(String name) throws SecurityException {
+protected void checkPackageAccess(String name) throws SecurityException {
 }
 
 protected Class findLocalClass(String name) throws ClassNotFoundException {
@@ -124,7 +130,7 @@ final protected void setSigners(Class cl, Object signers[]) {
 	// Signer's are not currently supported.
 }
 
-public final ClassLoader getParent() {
+public ClassLoader getParent() {
 	return (parent);
 }
 
@@ -133,11 +139,11 @@ public final Enumeration getResources(String name) throws IOException {
 }
 
 
-Enumeration getLocalResources(String name) throws IOException {
+public Enumeration getLocalResources(String name) throws IOException {
 	return (null);
 }
 
-URL getLocalResource(String name) {
+public URL getLocalResource(String name) {
 	return (null);
 }
 
@@ -145,7 +151,7 @@ public static Enumeration getSystemResources(String name) throws IOException {
 	throw new kaffe.util.NotImplemented(ClassLoader.class.getName() + ".getSystemResources(String)");
 }
 
-static ClassLoader getBaseClassLoader() {
+public static ClassLoader getBaseClassLoader() {
 	return (null);
 }
 
@@ -165,14 +171,9 @@ native private Class defineClass0(String name, byte data[], int offset, int leng
 native private Class findSystemClass0(String name);
 native private Class findLoadedClass0(String name);
 native private void resolveClass0(Class cls);
-native static byte[] getSystemResourceAsBytes0(String name);
-
-final native private void finalize0();
-
-private Object finalizeHelper = new Object() {
-    protected void finalize() throws Throwable {
-        finalize0();
-    }
-};
+/**
+ *  This is not part of the public interface.
+ */
+native public static byte[] getSystemResourceAsBytes0(String name);
 
 }

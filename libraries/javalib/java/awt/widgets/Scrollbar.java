@@ -21,7 +21,7 @@ public class Scrollbar
   extends Component
   implements Adjustable, MouseListener, MouseMotionListener, TimerClient
 {
-	private static final long serialVersionUID = 8451667562882310543L;
+	final private static long serialVersionUID = 8451667562882310543L;
 	final public static int HORIZONTAL = 0;
 	final public static int VERTICAL = 1;
 	int min;
@@ -37,7 +37,6 @@ public class Scrollbar
 	Rectangle dragRect = new Rectangle();
 	static int currentOp;
 	static Point dragOffs = new Point();
-	static int SCROLLBAR_WIDTH = 14;
 
 public Scrollbar() {
 	this( VERTICAL);
@@ -372,10 +371,10 @@ protected String paramString() {
  */
 public Dimension preferredSize() {
 	if ( ori == VERTICAL ) {
-		return new Dimension( SCROLLBAR_WIDTH, 100);
+		return new Dimension( Defaults.ScrollbarWidth, 100);
 	}
 	else {
-		return new Dimension( 100, SCROLLBAR_WIDTH);
+		return new Dimension( 100, Defaults.ScrollbarWidth);
 	}
 }
 

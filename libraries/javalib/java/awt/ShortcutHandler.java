@@ -60,7 +60,7 @@ static void buildCodeTable( Component tgt) {
 	}
 }
 
-static void focusNext ( Container w ) {
+static Component focusNext ( Container w ) {
 	Component c = null, cur = AWTEvent.keyTgt;
 
 	if ( (cur == null) || (cur == w) ) {
@@ -76,8 +76,7 @@ static void focusNext ( Container w ) {
 			c = focusNext( w, null);
 	}
 
-	if ( c != null )
-		c.requestFocus();
+	return c;
 }
 
 static Component focusNext( Container co, Component cur ) {
@@ -105,7 +104,7 @@ static Component focusNext( Container co, Component cur ) {
 	return ( co.isFocusTraversable() && (cur == null) ? co : null);
 }
 
-static void focusPrev ( Container w ) {
+static Component focusPrev ( Container w ) {
 	Component c = null, cur = AWTEvent.keyTgt;
 
 	if ( (cur == null) || (cur == w) ) {
@@ -121,8 +120,7 @@ static void focusPrev ( Container w ) {
 			c = focusPrev( w, null);
 	}
 
-	if ( c != null )
-		c.requestFocus();
+	return c;
 }
 
 static Component focusPrev( Container co, Component cur ) {
@@ -151,6 +149,8 @@ static Component focusPrev( Container co, Component cur ) {
 }
 
 static boolean handle( KeyEvent e) {
+	Component c, cNext;
+	Container co;	
 	int em = e.getModifiers();
 	int cc = e.getKeyCode();
 	
@@ -170,20 +170,15 @@ static boolean handle( KeyEvent e) {
 		}
 	}
 			
-	char kc = e.getKeyChar();
-	Component c = (Component) e.getSource();
-	boolean back = e.isShiftDown();
-
-	Container co = (Container) AWTEvent.keyTgt.getToplevel();
+	c = (Component) e.getSource();
+	co = (Container) c.getToplevel();
 	
-	switch( kc) {
-		case '\t':
-			if ( back)
-			  focusPrev( co);
-			else			
-				focusNext( co);
-
-			return true;
+	// some day, we might add other focus-switch hotkeys (e.g. menubar, 1st, next-in-group etc.)
+	if ( e.getKeyChar() == '\t' ) {
+		cNext = e.isShiftDown() ? focusPrev( co) : focusNext( co);
+		if ( cNext != c )	
+			cNext.requestFocus();
+		return true;
 	}
 
 	return false;

@@ -1,3 +1,9 @@
+package java.util;
+
+import java.io.Serializable;
+import java.lang.String;
+import java.lang.System;
+
 /*
  * Java core library component.
  *
@@ -7,13 +13,6 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-
-package java.util;
-
-import java.io.Serializable;
-import java.lang.String;
-import java.lang.System;
-
 final public class Locale
   implements Cloneable, Serializable
 {
@@ -52,13 +51,13 @@ static {
 }
 
 public Locale(String language, String country) {
-	this(language, country, null);
+	this(language, country, "");
 }
 
 public Locale(String language, String country, String variant) {
-	lang = language;
-	cntry = country;
-	var = variant;
+	lang = (language != null) ? language.toLowerCase(): "";
+	cntry = (country != null) ? country.toUpperCase() : "";
+	var = (variant != null) ? variant : "";
 	hashcode = super.hashCode();
 }
 
@@ -152,24 +151,26 @@ public static synchronized void setDefault(Locale newLocale) {
 
 final public String toString() {
 	StringBuffer buf = new StringBuffer();
+	boolean hasLang = (lang != null) && (lang.length() > 0);
+	boolean hasCntry = (cntry != null) && (cntry.length() > 0);
+	boolean hasVar = (var != null) && (var.length() > 0);
 
-	if (lang != null) {
+	if ( hasLang ) {
 		buf.append(lang);
-		if (cntry != null) {
+		if ( hasCntry ) {
 			buf.append("_");
 		}
 	}
-	if (cntry != null) {
+	if ( hasCntry ) {
 		buf.append(cntry);
-		if (var != null) {
+		if ( hasVar ) {
 			buf.append("_");
 		}
 	}
-	if (var != null) {
+	if ( hasVar) {
 		buf.append(var);
 	}
 
 	return (new String(buf));
 }
-
 }

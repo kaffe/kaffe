@@ -35,6 +35,35 @@ static synchronized AdjustmentEvt getEvent ( Adjustable source, int id, int adjT
 	}	
 }
 
+static synchronized AdjustmentEvt getEvent ( int srcIdx, int op, int val){
+	// This is exclusively called by the native event emitter
+
+        	AdjustmentEvt   e;
+	Component      source = sources[srcIdx];
+
+	if ( cache == null ){
+		e = new AdjustmentEvt( (Adjustable)source, ADJUSTMENT_VALUE_CHANGED, op,val );
+	}
+	else {
+		e = cache;
+		cache = (AdjustmentEvt)e.next;
+		e.next = null;
+
+		e.source = source;
+		e.id = ADJUSTMENT_VALUE_CHANGED;
+		e.adjType = op;
+		e.adjVal = val;
+	}
+
+	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
+		// this is not used as a direct return value for EventQueue.getNextEvent(), 
+		// it has to be Java-queued by the native layer
+		Toolkit.eventQueue.postEvent( e);
+	}
+
+        return e;
+}
+
 protected void recycle () {
 	synchronized ( AdjustmentEvt.class ) {
 		source = null;

@@ -15,7 +15,7 @@ package java.awt;
 public class Canvas
   extends Component
 {
-private static final long serialVersionUID = -2284879212465893870L;
+	final private static long serialVersionUID = -2284879212465893870L;
 
 public Canvas() {
 	// Canvases usually get their own update events, not being updated
@@ -54,7 +54,6 @@ public boolean isFocusTraversable () {
 //	// normally be blanked by the native window system
 //	g.clearRect( 0, 0, width, height);
 //}
-
 void processPaintEvent ( int id, int ux, int uy, int uw, int uh ) {
 	NativeGraphics g = NativeGraphics.getClippedGraphics( null, this, 0,0,
 	                                                      ux, uy, uw, uh,

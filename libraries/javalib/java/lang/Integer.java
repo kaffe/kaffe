@@ -124,7 +124,7 @@ public static int parseInt(String s) throws NumberFormatException
 public static int parseInt(String s, int radix) throws NumberFormatException
 {
 	if (s == null || s.length() <= 0) {
-		throw new NumberFormatException();
+		throw new NumberFormatException("bad number: " + s);
 	}
 
 	/* Check for negativity */

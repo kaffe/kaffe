@@ -29,22 +29,7 @@ public class Font implements Serializable
 	final public static int PLAIN = 0;
 	final public static int BOLD = 1;
 	final public static int ITALIC = 2;
-	static Hashtable nativeSpecs = new Hashtable();
 	private static final long serialVersionUID = -4206021311591459213L;
-
-static {
-	nativeSpecs.put( "Default", Defaults.FsDefault);
-	nativeSpecs.put( "Monospaced", Defaults.FsMonospaced);
-	nativeSpecs.put( "SansSerif", Defaults.FsSansSerif);
-	nativeSpecs.put( "Serif", Defaults.FsSerif);
-	nativeSpecs.put( "Dialog", Defaults.FsDialog);
-	nativeSpecs.put( "DialogInput", Defaults.FsDialogInput);
-	nativeSpecs.put( "ZapfDingbats", Defaults.FsZapfDingbats);
-	
-	nativeSpecs.put( "Helvetica", Defaults.FsSansSerif);
-	nativeSpecs.put( "TimesRoman", Defaults.FsSerif);
-	nativeSpecs.put( "Courier", Defaults.FsMonospaced);
-}
 
 public Font ( String fntName, int fntStyle, int fntSize ) {
 	Object v;
@@ -54,10 +39,47 @@ public Font ( String fntName, int fntStyle, int fntSize ) {
 	style = fntStyle;
 	size = fntSize;
 	
-	if ( (v = nativeSpecs.get( name)) != null )
-		spec = (String)v;
-	else
+	/* Translate a font name into the true font - we have a number
+	 * of aliases to deal with which are kept in java.awt.Defaults.
+	 * We no longer cache them since this means Default changes will
+	 * not be seen.  However to speed the comparision we intern the
+	 * search string so we can do simple pointer checks (since string
+	 * constants are interned by default).
+	 */
+	name = name.intern();
+	if (name == "Default") {
+		spec = Defaults.FsDefault;
+	}
+	else if (name == "Monospaced") {
+		spec = Defaults.FsMonospaced;
+	}
+	else if (name == "SansSerif") {
+		spec = Defaults.FsSansSerif;
+	}
+	else if (name == "Serif") {
+		spec = Defaults.FsSerif;
+	}
+	else if (name == "Dialog") {
+		spec = Defaults.FsDialog;
+	}
+	else if (name == "DialogInput") {
+		spec = Defaults.FsDialogInput;
+	}
+	else if (name == "ZapfDingbats") {
+		spec = Defaults.FsZapfDingbats;
+	}
+	else if (name == "Helvetica") {
+		spec = Defaults.FsSansSerif;
+	}
+	else if (name == "TimesRoman") {
+		spec = Defaults.FsSerif;
+	}
+	else if (name == "Courier") {
+		spec = Defaults.FsSerif;
+	}
+	else {
 		spec = name;
+	}
 
 	nativeData = Toolkit.fntInitFont( spec, style, size);
 }

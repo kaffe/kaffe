@@ -153,37 +153,39 @@ boolean openSelection () {
 
 public void paint ( Graphics g) {
 	int sz = mb.menus.size();
-	int x0 = Dx;
-	int y0;
+	int dx2 = 2 * Dx;
+	int x0 = 1;
+	int y0 = 1;
+	int mh = height - 2;
 
 	g.setColor( getBackground());
 	g.fill3DRect( 0, 0, width, height, true);
 	
 	for ( int i=0; i<sz; i++) {
 		Menu m = (Menu)mb.menus.elementAt( i);
-		int mw = m.getWidth();
-		
-		y0 = (height - m.fm.getHeight()) / 2;
-		m.paint( g, x0, y0, mw+2*Dx, bgClr, fgClr, selection == m);
-		x0 += mw+2*Dx;
+		int mw = m.getWidth() +dx2;
+
+		m.paint( g, x0, Dx, y0, mw, mh, bgClr, fgClr, selection == m);
+		x0 += mw;
 	}
 }
 
 void paintMenu ( Graphics g, Menu m) {
 	int sz = mb.menus.size();
-	int x0 = Dx;
-	int y0;
+	int x0 = 1;
+	int dx2 = 2 * Dx;
+	int y0 = 1;
+	int mh = height - 2;
 	
 	for ( int i=0; i<sz; i++) {
 		Menu cm = (Menu)mb.menus.elementAt( i);
-		int mw = cm.getWidth();
-		y0 = (height - cm.fm.getHeight()) / 2;
+		int mw = cm.getWidth() + dx2;
 
 		if ( m == cm) {
-			cm.paint( g, x0, y0, mw+2*Dx, bgClr, fgClr, selection == cm);
+			cm.paint( g, x0, Dx, y0, mw, mh, bgClr, fgClr, selection == cm);
 			return;
 		}
-		x0 += mw+2*Dx;
+		x0 += mw;
 	}
 		
 }

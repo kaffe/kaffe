@@ -15,31 +15,50 @@ import java.lang.System;
 import java.net.URLStreamHandlerFactory;
 import java.net.URLStreamHandler;
 import java.util.StringTokenizer;
+import java.util.Hashtable;
 
 public class DefaultURLStreamHandlerFactory implements URLStreamHandlerFactory {
 
 final private static String defaultName = "kaffe.net.www.protocol.";
+final private static String tvtName = "com.transvirtual.net.www.protocol.";
+
+private Hashtable cache = new Hashtable();
 
 public URLStreamHandler createURLStreamHandler(String protocol)
 {
 	URLStreamHandler handler;
 
+	handler = (URLStreamHandler)cache.get(protocol);
+	if (handler != null) {
+		return (handler);
+	}
+
 	String pkgs = System.getProperty("java.protocol.handler.pkgs");
 	if (pkgs != null) {
 		StringTokenizer tokenizer = new StringTokenizer(pkgs, "|");
 		while (tokenizer.hasMoreTokens()) {
-			String theClass = tokenizer.nextToken()+"."+protocol+".Handler";
-			handler = tryClass(theClass);
+			String theClass = tokenizer.nextToken();
+			handler = tryClass(theClass + "." + protocol + ".Handler");
 			if (handler != null) {
+				cache.put(protocol, handler);
 				return (handler);
 			}
 		}
 	}
 
-	/* Try the default name */
-	String classPath = defaultName + protocol + ".Handler";
+	/* Try the TVT default name */
+	String classPath = tvtName + protocol + ".Handler";
 	handler = tryClass(classPath);
 	if (handler != null) {
+		cache.put(protocol, handler);
+		return (handler);
+	}
+
+	/* Try the default name */
+	classPath = defaultName + protocol + ".Handler";
+	handler = tryClass(classPath);
+	if (handler != null) {
+		cache.put(protocol, handler);
 		return (handler);
 	}
 

@@ -11,11 +11,14 @@ package java.awt;
  * of this file.
  * @author P.C.Mehlitz
  */
-public class Color implements java.io.Serializable
+public class Color
+  implements java.io.Serializable
 {
-	/* XXX implement serial form! */
+/* XXX implement serial form! */
 	int rgbValue;
 	int nativeValue = 0xffffffff;
+	Color brighter;
+	Color darker;
 	final public static Color darkGray = new Color( (byte)64, (byte)64, (byte)64);
 	final public static Color black = new Color( (byte)0, (byte)0, (byte)0);
 	final public static Color red = new Color( (byte)255, (byte)0, (byte)0);
@@ -29,7 +32,7 @@ public class Color implements java.io.Serializable
 	final public static Color white = new Color( (byte)255, (byte)255, (byte)255);
 	final public static Color lightGray = new Color( (byte)192, (byte)192, (byte)192);
 	final public static Color gray = new Color( (byte)128, (byte)128, (byte)128);
-	private static final long serialVersionUID = 118526816881161077L;
+	final private static long serialVersionUID = 118526816881161077L;
 
 static {
 	// Make sure all the static fields which have not been initialized completely
@@ -99,7 +102,8 @@ public Color ( int r, int g, int b ) {
 
 Color ( long pixRgb ) {
 	rgbValue    = (int) (pixRgb & 0xffffffff);
-	nativeValue = (int) (pixRgb >> 32);
+	
+	nativeValue = Toolkit.clrGetPixelValue( rgbValue);
 }
 
 /**
@@ -119,7 +123,7 @@ public static int HSBtoRGB ( float hue, float sat, float bri ) {
 	else {
 		hue *= 6.0f;                 // remove scaling
 		hi = (int) Math.floor( hue);
-		if ( hi == 6 ) hi = 0;       // 360° == 0°
+		if ( hi == 6 ) hi = 0;       // 360ø == 0ø
 		
 		hfrac = hue - hi;
 		bri *= 255;
@@ -184,7 +188,7 @@ public static float[] RGBtoHSB ( int r, int g, int b, float[] hsb ) {
 			else
 				hsb[0] = (4.0f + (rf - gf)/dif) / 6.0f;
 			
-			if ( hsb[0] < 0 ) hsb[0] += 1.0f;            // wrap hue around 360°
+			if ( hsb[0] < 0 ) hsb[0] += 1.0f;            // wrap hue around 360ø
 		}
 		else {                                         // we don't want NaNs
 			hsb[0] = 0.0f;
@@ -199,15 +203,23 @@ public static float[] RGBtoHSB ( int r, int g, int b, float[] hsb ) {
 }
 
 public Color brighter() {
-	// we need to do this native because we don't know what native visual we use
-	// (could be VGA 16 PseudoColor, which isn't realy suitable for arithmetic RGB ops)
-	return new Color( Toolkit.clrBright( rgbValue));
+	if ( brighter == null ) {
+		// we need to do this native because we don't know what native visual we use
+		// (could be VGA 16 PseudoColor, which isn't realy suitable for arithmetic RGB ops)
+		brighter = new Color( Toolkit.clrBright( rgbValue));
+	}
+	
+	return brighter;
 }
 
 public Color darker () {
-	// we need to do this native because we don't know what native visual we use
-	// (could be VGA 16 PseudoColor, which isn't realy suitable for arithmetic RGB ops)
-	return new Color( Toolkit.clrDark( rgbValue));
+	if ( darker == null ) {
+		// we need to do this native because we don't know what native visual we use
+		// (could be VGA 16 PseudoColor, which isn't realy suitable for arithmetic RGB ops)
+		darker = new Color( Toolkit.clrDark( rgbValue));
+	}
+	
+	return darker;
 }
 
 public static Color decode ( String s ) throws NumberFormatException {

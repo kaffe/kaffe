@@ -79,7 +79,11 @@ native private Process execInternal(String cmdarray[], String envp[]) throws IOE
 
 public void exit(int status) {
 	System.getSecurityManager().checkExit(status);
-	exitInternal(status);
+	// Handle application extensions - if this thread is part of an
+	// application then we exit that rather than the whole thing.
+	if (kaffe.lang.Application.exit(status) == false) {
+		exitInternal(status);
+	}
 }
 
 native private void exitInternal(int status);

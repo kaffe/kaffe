@@ -161,11 +161,6 @@ public class Hashtable extends Dictionary implements Map, Cloneable, Serializabl
     int space = -1;
     for (int i = posn; i < limit; i++) {
       Object mkey = keys[i];
-      if (key.equals(mkey)) {
-	Object oldElement = elements[i];
-	elements[i] = value;
-	return (oldElement);
-      }
       if (mkey == removed) {
 	if (space == -1) {
 	  space = i;
@@ -179,6 +174,11 @@ public class Hashtable extends Dictionary implements Map, Cloneable, Serializabl
 	elements[space] = value;
 	numberOfKeys++;
 	return (null);
+      }
+      else if (key.equals(mkey)) {
+	Object oldElement = elements[i];
+	elements[i] = value;
+	return (oldElement);
       }
     }
     for (int i = 0; i < posn; i++) {

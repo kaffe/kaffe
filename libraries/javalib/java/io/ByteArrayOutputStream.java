@@ -13,18 +13,16 @@ import java.lang.String;
  * of this file.
  */
 public class ByteArrayOutputStream
-  extends OutputStream
-{
-	protected byte[] buf;
-	protected int count;
+  extends OutputStream {
 
-public ByteArrayOutputStream()
-	{
+protected byte[] buf;
+protected int count;
+
+public ByteArrayOutputStream() {
 	this(32);
 }
 
-public ByteArrayOutputStream(int size)
-	{
+public ByteArrayOutputStream(int size) {
 	buf = new byte[size];
 	count = 0;
 }
@@ -37,18 +35,15 @@ private void ensureCapacity ( int size ) {
 	}
 }
 
-public synchronized void reset()
-	{
+public synchronized void reset() {
 	count = 0;
 }
 
-public int size()
-	{
+public int size() {
 	return (count);
 }
 
-public synchronized byte[] toByteArray()
-	{
+public synchronized byte[] toByteArray() {
 	byte result[] = new byte[count];
 	System.arraycopy(buf, 0, result, 0, count);
 	return (result);
@@ -70,8 +65,7 @@ private String toString ( ByteToCharConverter encoding ) {
 	return new String( cBuf);
 }
 
-public String toString(String enc) throws UnsupportedEncodingException
-{
+public String toString(String enc) throws UnsupportedEncodingException {
 	return (toString(ByteToCharConverter.getConverter(enc)));
 }
 
@@ -88,14 +82,13 @@ public synchronized void write ( byte b[], int off, int len ) {
 	count += len;
 }
 
-public synchronized void write(int b)
-	{
+public synchronized void write(int b) {
 	ensureCapacity(count+1);
 	buf[count++]=(byte)b;
 }
 
-public synchronized void writeTo(OutputStream out) throws IOException
-{
+public synchronized void writeTo(OutputStream out) throws IOException {
 	out.write(buf, 0, count);
 }
+
 }

@@ -16,7 +16,7 @@ import kaffe.io.ByteToCharConverter;
 public class InputStreamReader
   extends Reader
 {
-	final private static int BUFDEFAULT = 1024;
+	final private static int BUFDEFAULT = 128;
 	private ByteToCharConverter encoding;
 	private InputStream strm;
 	private byte[] inbuf = new byte[BUFDEFAULT];

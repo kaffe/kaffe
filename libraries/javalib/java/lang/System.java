@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.io.IOException;
 import java.util.Properties;
 
 final public class System
@@ -29,16 +30,30 @@ final public class System
 	private static SecurityManager security;
 
 static {
-		// XXX what are the constraints on the initialization order in here?
+	// XXX what are the constraints on the initialization order in here?
 
 	security = defaultSecurityManager;
 
 	props = initProperties(new Properties());
+	// Load any system properties from the system.properties resource
+	InputStream sin = ClassLoader.getSystemResourceAsStream("system.properties");
+	if (sin != null) {
+		try {
+			props.load(sin);
+			sin.close();
+		}
+		catch (IOException e) {
+		}
+	}
 
 	// Initialise the I/O
 	in = new BufferedInputStream(new FileInputStream(FileDescriptor.in), 128);
 	out = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.out), 128), true);
 	err = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err), 128), true);	
+
+	//in = new BufferedInputStream(new kaffe.io.StdInputStream(), 128);
+	//out = new PrintStream(new BufferedOutputStream(new kaffe.io.StdOutputStream(), 128), true);
+	//err = new PrintStream(new BufferedOutputStream(new kaffe.io.StdErrorStream(), 128), true);
 
 	// Initiate the default timezone implementation & default calendar implementation.  
 	try

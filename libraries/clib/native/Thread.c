@@ -26,7 +26,7 @@ java_lang_Thread_currentThread(void)
  * Yield processor to another thread of the same priority.
  */
 void
-java_lang_Thread_yield(void)
+java_lang_Thread_yield0(void)
 {
 	yieldThread();
 }

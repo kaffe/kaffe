@@ -12,8 +12,8 @@ package java.lang;
 
 import java.util.Enumeration;
 
-public class ThreadGroup {
-
+public class ThreadGroup
+{
 	private ThreadGroup parent;
 	private String name;
 	private int maxPriority;
@@ -347,5 +347,4 @@ public void uncaughtException(Thread t, Throwable e) {
 		e.printStackTrace(System.err);
 	}
 }
-
 }

@@ -355,7 +355,7 @@ initColormap ( JNIEnv* env, Toolkit* X, Colormap cm, Rgb2Pseudo* map )
 
 
 Rgb2Pseudo*
-initRgb2Pseudo ( JNIEnv* env, Toolkit* X )
+initRgb2Pseudo ( JNIEnv* env, jclass clazz, Toolkit* X )
 {
   Colormap dcm;
   int i, j, k;
@@ -385,7 +385,7 @@ initRgb2Pseudo ( JNIEnv* env, Toolkit* X )
  */
 
 Rgb2True*
-initRgb2True ( Toolkit* X )
+initRgb2True (JNIEnv* env, jclass clazz,  Toolkit* X )
 {
   Visual *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
   unsigned int m;
@@ -537,7 +537,7 @@ void setPartMapFromDMap ( Toolkit *X, Colormap dcm,
 }
 
 Rgb2Direct*
-initRgb2Direct ( Toolkit* X )
+initRgb2Direct ( JNIEnv* env, jclass clazz, Toolkit* X )
 {
   Visual      *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
   Rgb2Direct  *map = (Rgb2Direct*) AWT_MALLOC( sizeof( Rgb2Direct));
@@ -603,7 +603,7 @@ initRgb2Direct ( Toolkit* X )
  */
 
 void
-initColorMapping ( JNIEnv* env, Toolkit* X )
+initColorMapping ( JNIEnv* env, jclass clazz,  Toolkit* X )
 {
   Visual *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
 
@@ -619,13 +619,13 @@ initColorMapping ( JNIEnv* env, Toolkit* X )
   /* check for directly supported color modes / visuals */
   switch ( v->class ) {
   case DirectColor:
-	X->dclr = initRgb2Direct( X);
+	X->dclr = initRgb2Direct( env, clazz, X);
 	break;
   case TrueColor:
-	X->tclr = initRgb2True( X);
+	X->tclr = initRgb2True( env, clazz, X);
 	break;
   case PseudoColor:  
-	X->pclr = initRgb2Pseudo( env, X); 
+	X->pclr = initRgb2Pseudo( env, clazz, X); 
 	break;
   default:
 	X->colorMode = CM_GENERIC;
@@ -649,7 +649,7 @@ Java_java_awt_Toolkit_clrGetPixelValue ( JNIEnv* env, jclass clazz, jint rgb )
    * (the notorious DefaultsRGB workaround)
    */
   if ( !X->colorMode )
-	initColorMapping( env, X);
+	initColorMapping( env, clazz, X);
 
   pix = pixelValue( X, rgb);
   DBG( awt_clr, ("clrGetPixelValue: %8x -> %x (%d)\n", rgb, pix, pix));
@@ -744,4 +744,42 @@ Java_java_awt_Toolkit_clrDark ( JNIEnv* env, jclass clazz, jint rgb )
   modPix = pixelValue( X, modRgb);
 
   return (((jlong)modPix << 32) | modRgb);
+}
+
+jobject
+Java_java_awt_Toolkit_clrGetColorModel ( JNIEnv* env, jclass clazz )
+{
+  jobject    cm = 0;
+  jclass     cmClazz;
+  jmethodID  cmCtorId;
+  Visual     *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
+  jint       rm, gm, bm;
+
+  if ( !X->colorMode )
+	initColorMapping( env, clazz, X);
+
+  switch ( v->class ) {
+  case DirectColor:
+
+	break;
+
+  case TrueColor:
+	cmClazz = (*env)->FindClass( env, "java/awt/image/DirectColorModel");
+	cmCtorId = (*env)->GetMethodID( env, cmClazz, "<init>", "(IIIII)V");
+	cm = (*env)->NewObject( env, cmClazz, cmCtorId,
+							v->bits_per_rgb, v->red_mask, v->green_mask, v->blue_mask, 0);
+	break;
+
+  case PseudoColor:  
+	cmClazz = (*env)->FindClass( env, "java/awt/IndexColorModel");
+	cmCtorId = (*env)->GetMethodID( env, cmClazz, "<init>", "(I[II)V");
+	//rgbs = (*env)->NewIntArray( env, 256, 0);
+	//cm = (*env)->NewObject( env, cmClazz, cmCtorId, 8, rgbs, 0);
+	break;
+
+  default:
+
+  }
+
+  return cm;
 }

@@ -27,7 +27,7 @@ public class TextField
   extends TextComponent
   implements MouseMotionListener, KeyListener, FocusListener, MouseListener, ComponentListener
 {
-	private static final long serialVersionUID = -2966288784432217853L;
+	final private static long serialVersionUID = -2966288784432217853L;
 	char echoChar;
 	ActionListener aListener;
 	int cols;
@@ -227,50 +227,75 @@ public void keyPressed( KeyEvent e) {
 	int code = e.getKeyCode();
 
 	// do not consume unused keys for ShortcutHandler
-	if ( (mods != 0) && (mods != e.SHIFT_MASK) )
+	if ( (mods != 0) && (mods != e.SHIFT_MASK) ) {
 		return;
+	}
 
 	switch( code ){
-		case KeyEvent.VK_ENTER:
-			notifyAction();
-			break;
-		case KeyEvent.VK_ESCAPE:
+	case KeyEvent.VK_ENTER:
+		notifyAction();
+		break;
+	case KeyEvent.VK_ESCAPE:
+		if (isEditable) {
 			setText( "");
-			break;
-		case KeyEvent.VK_HOME:
-			if ( shift) extendSelectionTo( 0, false);
-			else        setTextCursor( 0, true, false);
-			break;
-		case KeyEvent.VK_END:
-			if ( shift) extendSelectionTo( textBuf.len, true);
-			else        setTextCursor( textBuf.len, true, false);
-			break;
-		case KeyEvent.VK_LEFT:
-			if ( shift) extendSelectionTo( tCursor.index-1, false);
-			else        shiftTextCursor( -1, true);
-			break;
-		case KeyEvent.VK_RIGHT:
-			if ( shift) extendSelectionTo( tCursor.index+1, true);
-			else        shiftTextCursor( 1, true);
-			break;
-		case KeyEvent.VK_BACK_SPACE:
-			if ( selStart != selEnd)
+		}
+		break;
+	case KeyEvent.VK_HOME:
+		if ( shift) {
+			extendSelectionTo( 0, false);
+		}
+		else {
+			setTextCursor( 0, true, false);
+		}
+		break;
+	case KeyEvent.VK_END:
+		if ( shift) {
+			extendSelectionTo( textBuf.len, true);
+		}
+		else {
+			setTextCursor( textBuf.len, true, false);
+		}
+		break;
+	case KeyEvent.VK_LEFT:
+		if ( shift) {
+			extendSelectionTo( tCursor.index-1, false);
+		}
+		else {
+			shiftTextCursor( -1, true);
+		}
+		break;
+	case KeyEvent.VK_RIGHT:
+		if ( shift) {
+			extendSelectionTo( tCursor.index+1, true);
+		}
+		else {
+			shiftTextCursor( 1, true);
+		}
+		break;
+	case KeyEvent.VK_BACK_SPACE:
+		if (isEditable) {
+			if ( selStart != selEnd) {
 				deleteSelection();
+			}
 			else if ( tCursor.index > 0) {
 				textBuf.remove( tCursor.index-1, 1);
 				shiftTextCursor( -1, true);
 			}
-			break;
-		case KeyEvent.VK_DELETE:
-			if ( selStart != selEnd)
+		}
+		break;
+	case KeyEvent.VK_DELETE:
+		if (isEditable) {
+			if ( selStart != selEnd) {
 				deleteSelection();
-			else if ( tCursor.index < textBuf.len){
+			}
+			else if ( tCursor.index < textBuf.len) {
 				textBuf.remove( tCursor.index, 1);
 				repaintTrailing();
 			}
-			break;
-		default:
-		  return;
+		}
+		break;
+	default:
+		return;
 	}
 	
 	e.consume();
@@ -402,6 +427,16 @@ void notifyAction(){
 	}
 }
 
+void process ( ActionEvent e ) {
+	if ( (aListener != null) || ((eventMask & (AWTEvent.ACTION_EVENT_MASK|AWTEvent.DISABLED_MASK)) == AWTEvent.ACTION_EVENT_MASK) ){
+		processEvent( e);
+	}
+
+	if ( (flags & IS_OLD_EVENT) > 0 ) {
+		postEvent( Event.getEvent( e));
+	}
+}
+
 public void paint( Graphics g) {
 	int d = BORDER_WIDTH;
 	paintBorder( g);
@@ -457,6 +492,8 @@ public void removeNotify () {
 }
 
 void repaintFrom( int start){
+	if ( (flags & IS_SHOWING) != IS_SHOWING ) return;
+
 	TextBuffer tb = getBuffer();
 
 	if ( start > 0 )

@@ -113,6 +113,9 @@ protected static EventListener addInternal ( EventListener listeners,
 	if ( newListener == null )    // strange, but check it (wrong order of args?)
 		return listeners;
 
+	// Note that we don't check against multiple adds of the same listener. Would be
+	// reasonable, but the spec doesn't clarify this, and Suns impl obviously allows it
+
 	return new AWTEventMulticaster( listeners, newListener);
 }
 
@@ -303,18 +306,23 @@ public static ContainerListener remove ( ContainerListener listeners,
 }
 
 protected EventListener remove( EventListener remListener) {
+
+  // check if this refers to our own fields
 	if ( remListener == a )
 		return b;
 	if ( remListener == b )
 		return a;
-		
+	
+	// nope, recursive descent
 	EventListener l1, l2;
 	l1 = removeInternal( a, remListener);
 	l2 = removeInternal( b, remListener);
 	
+	// neither a nor b (subtree) had it, so there's nothing to remove at all
 	if ( (l1 == a) && (l2 == b) )
 		return this;
 		
+	// Ok, it was in our subtrees, construct a new cell from the mod subtree
 	return addInternal( l1, l2);
 }
 

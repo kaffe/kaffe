@@ -40,8 +40,6 @@ protected void dispatch () {
 		src.x = x;
 		src.y = y;
 
-		PopupWindow.checkPopup( src); // close any open popups
-
 		if ( (src.flags & Component.IS_VALID) == 0 ){
 			// if source is already visible, we wait for the subsequent
 			// expose (fake repaint by temp changing visibility)

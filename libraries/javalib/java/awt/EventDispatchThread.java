@@ -45,7 +45,7 @@ public void run () {
 				// this is from our KaffeServer SecurityManager, ignore
 			}
 			else {
-			  Toolkit.tlkBeep();
+				Toolkit.tlkBeep();
 				sx.printStackTrace( System.err);
 			}
 		}
@@ -78,8 +78,9 @@ void run ( Window modalWindow ) {
 						e.dispatch();
 						// this is better than to rely on a WINDOW_CLOSED, since we can
 						// save postEvents AND make dispatching faster
-						if ( (modalWindow.flags & Component.IS_ADD_NOTIFIED) == 0 )
+						if ( (modalWindow.flags & Component.IS_ADD_NOTIFIED) == 0 ){
 							return;
+						}
 					}
 				}
 			}

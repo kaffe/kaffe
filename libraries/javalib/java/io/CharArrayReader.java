@@ -49,6 +49,9 @@ public class CharArrayReader extends Reader {
   public int read(char b[], int off, int len) throws IOException
   {
      synchronized(lock) {
+       if (count == 0) {
+	 return (-1);
+       }
        int cnt = (len < count ? len : count);
        System.arraycopy(buf, pos, b, off, cnt);
        pos += cnt;

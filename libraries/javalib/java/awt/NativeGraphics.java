@@ -124,7 +124,7 @@ public Graphics create () {
 									fgClr, bgClr, font, false);
 	if ( xClr != null )
 		g.setXORMode( xClr);
-		
+
 	return g;
 }
 
@@ -272,8 +272,15 @@ public boolean drawImage ( Image img,
 		return (false);
 	}
 
-	// We don't create a scaled Image instance since we can draw scaled
-	drawImgScaled( img, dx0, dy0, dx1, dy1, sx0, sy0, sx1, sy1, bgColor);
+	if ( ((sx1 - sx0) == (dx1 - dx0)) && ((sy1 - sy0) == (dy1 - dy0)) ) {
+		// bozo. don't you know about the costs of image scaling?
+		drawImg( img, dx0, dy0, sx0, sy0, (sx1 - sx0), (sy1 - sy0), bgColor);
+	}
+	else {
+		// We don't create a scaled Image instance since we can draw scaled
+		drawImgScaled( img, dx0, dy0, dx1, dy1, sx0, sy0, sx1, sy1, bgColor);
+	}
+	
 	return true;
 }
 
@@ -284,10 +291,14 @@ public boolean drawImage ( Image img,
 	return drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null, observer);
 }
 
-void drawImg ( Image img,	int x, int y, int sx, int sy,	int width, int height, Color background ){
+void drawImg ( Image img,	int x, int y, int sx, int sy,	int width, int height, Color background ){	
 	if ( (img.flags & Image.BLOCK_FRAMELOADER) != 0 ){
 		img.activateFrameLoader();
 	}
+	else if ( (img.flags & Image.IS_ANIMATION) != 0 ) {
+		Toolkit.imgSetFrame( img.nativeData, 0);
+	}
+	
 	Toolkit.graDrawImage( nativeData, img.nativeData,
 	                      sx, sy, x, y, width, height,
 		                    (background == null) ? -1 : background.nativeValue);
@@ -592,7 +603,7 @@ void paintChild ( Component c, boolean isUpdate ) {
 		// since some apps might even call update/paint explicitly (again, bad!). But
 		// we want to support at least those who call super.paint()
 		// The PAINT vs. UPDATE problem also shows up in Container.emitRepaints
-		Toolkit.eventQueue.repaint( PaintEvt.PAINT, c, clx, cly, clw, clh);
+		Toolkit.eventQueue.postPaintEvent( PaintEvt.PAINT, c, clx, cly, clw, clh);
 	}
 	else {
 		NativeGraphics g = getGraphics( this, nativeData, TGT_TYPE_GRAPHICS,
@@ -626,6 +637,16 @@ public void setClip ( Shape clip ){
 }
 
 public void setClip ( int x, int y, int width, int height ) {
+	if ( target != null ) {
+		// be paranoid, native widgets automatically clip to their boundaries
+		if ( x < 0 ) x = 0;
+		if ( y < 0 ) y = 0;
+		if ( (x + width) > target.width )
+			width = target.width - x;
+		if ( (y + height) > target.height ) 
+			height = target.height - y;
+	}
+
 	xClip      = x;
 	yClip      = y;
 	wClip  = width;

@@ -11,17 +11,15 @@ package java.io;
  * of this file.
  */
 public class FilterInputStream
-  extends InputStream
-{
+  extends InputStream {
+
 	protected InputStream in;
 
-protected FilterInputStream(InputStream in)
-	{
+protected FilterInputStream(InputStream in) {
 	this.in = in;
 }
 
-public int available() throws IOException
-{
+public int available() throws IOException {
 	try {
 		return (in.available());
 	}
@@ -30,8 +28,7 @@ public int available() throws IOException
 	}
 }
 
-public void close() throws IOException
-{
+public void close() throws IOException {
 	try {
 		in.close();
 	}
@@ -39,8 +36,7 @@ public void close() throws IOException
 	}
 }
 
-public synchronized void mark(int readlimit)
-	{
+public synchronized void mark(int readlimit) {
 	try {
 		in.mark(readlimit);
 	}
@@ -48,8 +44,7 @@ public synchronized void mark(int readlimit)
 	}
 }
 
-public boolean markSupported()
-	{
+public boolean markSupported() {
 	try {
 		return (in.markSupported());
 	}
@@ -58,8 +53,7 @@ public boolean markSupported()
 	}
 }
 
-public int read() throws IOException
-{
+public int read() throws IOException {
 	try {
 		return (in.read());
 	}
@@ -68,13 +62,11 @@ public int read() throws IOException
 	}
 }
 
-public int read(byte b[]) throws IOException
-{
+public int read(byte b[]) throws IOException {
 	return (read(b, 0, b.length));
 }
 
-public int read(byte b[], int off, int len) throws IOException
-{
+public int read(byte b[], int off, int len) throws IOException {
 	try {
 		return (in.read(b, off, len));
 	}
@@ -83,8 +75,7 @@ public int read(byte b[], int off, int len) throws IOException
 	}
 }
 
-public synchronized void reset() throws IOException
-{
+public synchronized void reset() throws IOException {
 	try {
 		in.reset();
 	}
@@ -93,8 +84,7 @@ public synchronized void reset() throws IOException
 	}
 }
 
-public long skip(long n) throws IOException
-{
+public long skip(long n) throws IOException {
 	try {
 		return (in.skip(n));
 	}

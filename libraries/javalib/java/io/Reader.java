@@ -13,7 +13,7 @@ package java.io;
 abstract public class Reader
 {
 	protected Object lock;
-	protected char[] cbuf;
+	private char[] single = new char[1];
 
 protected Reader() {
 	lock = this;
@@ -33,18 +33,14 @@ public void mark(int readAheadLimit) throws IOException
 	// Stream does not support marking.
 }
 
-public boolean markSupported()
-	{
+public boolean markSupported() {
 	return (false);
 }
 
-public int read () throws IOException
-{
+public int read () throws IOException {
 	// this is just the VERY inefficient generic read(), it should be
 	// overridden in almost every subclass
-	if ( cbuf == null ) cbuf = new char[1];
-
-	return (read( cbuf, 0, 1) < 0) ? -1 : cbuf[0];
+	return (read( single, 0, 1) < 0) ? -1 : single[0];
 }
 
 public int read(char cbuf[]) throws IOException

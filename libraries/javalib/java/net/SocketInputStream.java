@@ -17,7 +17,7 @@ class SocketInputStream
   extends InputStream {
 
 private SocketImpl impl;
-private byte[] buf;
+private byte[] buf = new byte[1];
 
 public SocketInputStream(SocketImpl impl) {
 	this.impl = impl;
@@ -35,9 +35,6 @@ public int read(byte b[], int off, int length) throws IOException {
 
 public int read() throws IOException {
 	synchronized (this) {
-		if (buf == null) {
-			buf = new byte[1];
-		}
 		if (impl.read(buf, 0, 1) == 1) {
 			return (buf[0] & 0xFF);
 		}

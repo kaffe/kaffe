@@ -19,7 +19,7 @@ import kaffe.awt.OpaqueComponent;
 abstract public class Container
   extends Component
 {
-	private static final long serialVersionUID = 4613797578919906343L;
+	final private static long serialVersionUID = 4613797578919906343L;
 	Component[] children;
 	int nChildren;
 	LayoutManager layoutm;
@@ -228,7 +228,7 @@ void emitRepaints ( int ux, int uy, int uw, int uh ) {
 				// for explicit repaint() calls, which triggers update(). This is likely to be a bug
 				// (in the CanvasPeer), but again we have to be compatible (for a while).
 				// Also shows up in NativeGraphics.paintChild()
-				Toolkit.eventQueue.repaint(
+				Toolkit.eventQueue.postPaintEvent(
 				    ((c.flags & IS_ASYNC_UPDATED) != 0 ? PaintEvent.PAINT : PaintEvent.UPDATE),
 				    c, uxx, uyy, uww, uhh);
 			}
@@ -381,12 +381,16 @@ public void layout() {
 
 	// another slow-downer: the async validation of swing forces us to sync on treeLock
 	synchronized ( treeLock ) {
-		if ( (layoutm != null) && (nChildren > 0) && ((flags & IS_LAYOUTING) == 0) ) {
+
+//		swing books need layout anyway ( even without children )!!!
+//		if ( (layoutm != null) && (nChildren > 0) && ((flags & IS_LAYOUTING) == 0) ) {
+		if ( (layoutm != null) && ((flags & IS_LAYOUTING) == 0) ) {
 			flags |= IS_LAYOUTING;
 			layoutm.layoutContainer( this);
 			flags &= ~IS_LAYOUTING;
 		}
 	}
+
 }
 
 /**
@@ -452,6 +456,7 @@ public Dimension minimumSize () {
 public void paint ( Graphics g ) {
 	// standard JDK behavior is to paint last added childs first, simulating
 	// a first-to-last z order
+
 	for ( int i=nChildren-1; i>=0; i-- ) {
 		Component c = children[i];
 
@@ -505,10 +510,10 @@ void processPaintEvent ( int id, int ux, int uy, int uw, int uh ) {
 			update( g);
 		}
 		else {
-		  paint( g);
+			paint( g);
 		}
 		g.dispose();
-		
+	
 		if ( hasDirties() )
 			emitRepaints( ux, uy, uw, uh);
 	}
@@ -562,6 +567,14 @@ void propagateParentShowing () {
 			children[i].flags &= ~IS_PARENT_SHOWING;
 			children[i].propagateParentShowing();
 		}
+	}
+}
+
+void propagateTempEnabled ( boolean isEnabled ) {
+	setTempEnabled ( isEnabled );
+
+	for ( int i=0; i<nChildren; i++ ){
+		children[i].setTempEnabled( isEnabled);
 	}
 }
 

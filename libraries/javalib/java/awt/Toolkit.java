@@ -20,8 +20,10 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.InputEvent;
 import java.awt.image.ColorModel;
+import java.awt.image.DirectColorModel;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
+import java.awt.image.IndexColorModel;
 import java.awt.peer.ComponentPeer;
 import java.awt.peer.LightweightPeer;
 import java.awt.peer.WindowPeer;
@@ -78,7 +80,7 @@ public void run () {
 	// layer before falling into its dispatcher loop
 
   try {
-		if ( !Toolkit.tlkInit( System.getProperty( "display")) ) {
+		if ( !Toolkit.tlkInit( System.getProperty( "awt.display")) ) {
 			throw new AWTError( "native layer init failed");
 		}
   } catch ( Exception x ) {
@@ -95,6 +97,7 @@ public class Toolkit
 	static EventQueue eventQueue;
 	static EventDispatchThread eventThread;
 	static NativeClipboard clipboard;
+	static ColorModel colorModel;
 	static LightweightPeer lightweightPeer = new LightweightPeer() {};
 	static WindowPeer windowPeer = new WindowPeer() {};
 	static FlushThread flushThread;
@@ -112,7 +115,7 @@ static {
 	flags = tlkProperties();
 
 	if ( (flags & NATIVE_DISPATCHER_LOOP) == 0 ) {
-		if ( !tlkInit( System.getProperty( "display")) ) {
+		if ( !tlkInit( System.getProperty( "awt.display")) ) {
 			throw new AWTError( "native layer initialization failed");
 		}
 		initToolkit();
@@ -158,6 +161,8 @@ public int checkImage(Image image, int width, int height, ImageObserver observer
 native static synchronized long clrBright ( int rgbValue );
 
 native static synchronized long clrDark ( int rgbValue );
+
+native static synchronized ColorModel clrGetColorModel();
 
 native static synchronized int clrGetPixelValue ( int rgb );
 
@@ -246,7 +251,11 @@ native static synchronized boolean fntIsWideFont ( Ptr fmData);
 native static synchronized int fntStringWidth ( Ptr fmData, String s );
 
 public ColorModel getColorModel () {
-	return null;
+	if ( colorModel == null ){
+		colorModel = clrGetColorModel();
+	}
+
+	return colorModel;
 }
 
 public static Toolkit getDefaultToolkit () {
@@ -265,10 +274,18 @@ public FontMetrics getFontMetrics ( Font font ) {
 }
 
 public Image getImage ( String filename ) {
-	return new Image( new File( filename));
+	File f = new File( filename);
+	
+	// Hmm, that's a inconsistency with getImage(URL). The doc isn't very
+	// helpful, here (class doc says nothing, book tells us it should return
+	// null in case it's not there - but that is not known a priori for URLs)
+	return (f.exists()) ? new Image( f) : null;
 }
 
 public Image getImage ( URL url ) {
+	// how can we return 'null' before we start to produce this thing (which
+	// isn't supposed to happen here)? We are NOT going to open the URLConnection
+	// twice just to check if it is there
 	return new Image( url);
 }
 
@@ -399,11 +416,13 @@ native static synchronized boolean imgIsMultiFrame( Ptr imgData);
 
 native static synchronized void imgProduceImage( ImageNativeProducer prod, Ptr imgData);
 
+native static synchronized Ptr imgSetFrame( Ptr imgData, int frame);
+
 native static synchronized void imgSetIdxPels( Ptr imgData, int x, int y, int w, int h, int[] rgbs, byte[] pels, int trans, int off, int scans);
 
 native static synchronized void imgSetRGBPels( Ptr imgData, int x, int y, int w, int h, int[] rgbs, int off, int scans);
 
-static void initToolkit () {
+static synchronized void initToolkit () {
 	// this is called when the native layer has been initialized, and it is safe
 	// to query native settings / rely on native functionality
 
@@ -459,7 +478,7 @@ static void redirectStreams () {
 	}
 }
 
-static void startDispatch () {
+static synchronized void startDispatch () {
 	if ( eventThread == null ) {
 		eventThread = new EventDispatchThread( eventQueue);
 		eventThread.start();
@@ -476,7 +495,7 @@ static void startDispatch () {
 	}
 }
 
-static void stopDispatch () {
+static synchronized void stopDispatch () {
 	if ( eventThread != null ) {
 		eventThread.stopDispatching();
 		eventThread = null;
@@ -494,11 +513,13 @@ static boolean switchToCreateThread ( Window c ) {
 	// (but that involves EventDispatchThread and WMEvent, too)
 	WMEvent e = null;
 
-	// even if this could be done in a central location, we defer this
-	// as much as possible because it might involve polling (for non-threaded
-	// AWTs), slowing down the startup time
-	if ( eventThread == null ) {
-		startDispatch();
+	synchronized ( Toolkit.class ) {
+		// even if this could be done in a central location, we defer this
+		// as much as possible because it might involve polling (for non-threaded
+		// AWTs), slowing down the startup time
+		if ( eventThread == null ) {
+			startDispatch();
+		}
 	}
 
 	if ( (flags & IS_DISPATCH_EXCLUSIVE) != 0 ){
@@ -557,7 +578,7 @@ native static synchronized int tlkGetScreenHeight ();
 
 native static synchronized int tlkGetScreenWidth ();
 
-native static synchronized boolean tlkInit ( String displayName );
+native static boolean tlkInit ( String displayName );
 
 native static synchronized int tlkProperties();
 

@@ -1,4 +1,3 @@
-
 /*
  * Java core library component.
  *
@@ -18,9 +17,10 @@ import java.lang.String;
 import java.lang.System;
 import kaffe.lang.DummyClassLoader;
 
-abstract public class ResourceBundle {
-
-protected ResourceBundle parent;
+abstract public class ResourceBundle
+{
+	protected ResourceBundle parent;
+	static Hashtable cache = new Hashtable();
 
 public ResourceBundle() {
 	parent = null;
@@ -31,16 +31,32 @@ final public static ResourceBundle getBundle(String baseName) throws MissingReso
 }
 
 final public static ResourceBundle getBundle(String baseName, Locale locale) throws MissingResourceException {
-	ResourceBundle bundle = getBundleWithLocale(baseName, locale);
-	/* It would appear that if we fail to load a resource bundle for
-	 * a given locale, we just load the default one instead.
-	 */
-	if (bundle == null && locale != Locale.getDefault()) {
-		bundle = getBundleWithLocale(baseName, Locale.getDefault());
+	ResourceBundle   bundle = null;
+	String           key = baseName + locale;
+	Object           val = cache.get( key);
+	
+	if ( val != null ) {
+		bundle = (ResourceBundle) val;
 	}
+	else {
+	  bundle = getBundleWithLocale(baseName, locale);
+	
+		/* It would appear that if we fail to load a resource bundle for
+		 * a given locale, we just load the default one instead.
+		 */
+		if (bundle == null && locale != Locale.getDefault()) {
+			bundle = getBundleWithLocale(baseName, Locale.getDefault());
+		}
+		
+		if ( bundle != null ) {
+			cache.put( key, bundle);
+		}
+	}
+	
 	if (bundle == null) {
 		throw new MissingResourceException("no bundles found: " + baseName, "ResourceBundle", baseName);
 	}
+
 	return (bundle);
 }
 
@@ -172,5 +188,4 @@ abstract protected Object handleGetObject(String key) throws MissingResourceExce
 protected void setParent(ResourceBundle par) {
 	parent = par;
 }
-
 }

@@ -9,13 +9,12 @@
  */
 
 #include "toolkit.h"
-#include "config-setjmp.h"
 
 #if defined(HAVE_JPEGLIB_H) && defined(HAVE_LIBJPEG)
 #define INCLUDE_JPEG 1
 #endif
 
-#if defined(INCLUDE_JPEG)
+#ifdef INCLUDE_JPEG
 #include "jpeglib.h"
 #include "jerror.h"
 #endif
@@ -38,7 +37,7 @@ void Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img)
 void createXImage ( Toolkit* X, Image* img );
 
 
-#if defined(INCLUDE_JPEG)
+#ifdef INCLUDE_JPEG
 
 /*******************************************************************************************
  * required typedefs and structs
@@ -59,6 +58,7 @@ error_exit ( j_common_ptr cinfo)
   longjmp(myerr->setjmp_buffer, 1);
 }
 
+
 typedef struct {
   struct jpeg_source_mgr pub;	/* public fields */
 
@@ -69,6 +69,18 @@ typedef struct {
 } bufsrc_mgr;
 
 typedef bufsrc_mgr * bufsrc_ptr;
+
+
+#define BUF_SIZE 2048
+
+typedef struct {
+  struct jpeg_source_mgr pub;	/* public fields */
+
+  int fd;
+  JOCTET *buffer;
+} filesrc_mgr;
+
+typedef filesrc_mgr * filesrc_ptr;
 
 
 /*******************************************************************************************
@@ -163,6 +175,94 @@ jpeg_buffer_src (j_decompress_ptr cinfo, unsigned char* buf, long len )
 }
 
 
+/*******************************************************************************************
+ * file desriptor read extension for the standard jpeg lib input management (jdatasrc.c)
+ */
+
+METHODDEF(void)
+init_file_source (j_decompress_ptr cinfo)
+{
+  /* nothing to do */
+}
+
+METHODDEF(boolean)
+get_file_source (j_decompress_ptr cinfo)
+{
+  filesrc_ptr src = (filesrc_ptr) cinfo->src;
+  int         n = AWT_READ( src->fd, src->buffer, BUF_SIZE);
+
+  if ( n < 0 ) {
+    WARNMS(cinfo, JWRN_JPEG_EOF);
+    src->pub.next_input_byte = end_marker;
+	src->pub.bytes_in_buffer = sizeof(end_marker);
+  }
+  else {
+	src->pub.next_input_byte = src->buffer;
+	src->pub.bytes_in_buffer = n;
+  }
+
+  return TRUE;
+}
+
+
+METHODDEF(void)
+skip_file_source ( j_decompress_ptr cinfo, long num_bytes )
+{
+  filesrc_ptr src = (filesrc_ptr) cinfo->src;
+  int         n;
+
+  if ( num_bytes < src->pub.bytes_in_buffer ){
+	src->pub.next_input_byte += num_bytes;
+	src->pub.bytes_in_buffer -= num_bytes;
+  }
+  else {
+	num_bytes -= src->pub.bytes_in_buffer;
+
+	AWT_SETPOS( src->fd, num_bytes);
+	get_file_source( cinfo);
+  }
+}
+
+
+METHODDEF(void)
+term_file_source (j_decompress_ptr cinfo)
+{
+  /* nothing to do, here
+   * the file is closed by our caller, the buffer is allocated on the stack
+   */
+}
+
+
+GLOBAL(void)
+jpeg_file_src (j_decompress_ptr cinfo, int fd )
+{
+  filesrc_ptr src;
+
+  if (cinfo->src == NULL) {	/* first time for this JPEG object? */
+    src = (filesrc_ptr)
+      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
+				  sizeof(filesrc_mgr));
+    src->buffer = (JOCTET *)
+	  (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
+								  BUF_SIZE * sizeof(JOCTET));
+	cinfo->src = (struct jpeg_source_mgr *) src;
+  }
+  else {
+	src = (filesrc_ptr) cinfo->src;
+  }
+
+  src->pub.init_source = init_file_source;
+  src->pub.fill_input_buffer = get_file_source;
+  src->pub.skip_input_data = skip_file_source;
+  src->pub.resync_to_restart = jpeg_resync_to_restart; /* use default method */
+  src->pub.term_source = term_file_source;
+
+  src->pub.bytes_in_buffer = 0; /* forces fill_input_buffer on first read */
+  src->pub.next_input_byte = NULL; /* until buffer loaded */
+
+  src->fd = fd;
+}
+
 
 /************************************************************************************
  * JPEG auxiliary funcs (production callbacks)
@@ -242,15 +342,15 @@ readJpeg ( struct jpeg_decompress_struct* cinfo, volatile int colors )
  */
 
 Image*
-readJpegFile ( FILE* infile )
+readJpegFile ( int infile )
 {
   Image *img = 0;
 
-#if defined(INCLUDE_JPEG)
+#ifdef INCLUDE_JPEG
   struct jpeg_decompress_struct cinfo;
 
   jpeg_create_decompress( &cinfo);
-  jpeg_stdio_src( &cinfo, infile);
+  jpeg_file_src( &cinfo, infile);
 
   img = readJpeg( &cinfo, MAX_JPEG_COLORS);
 
@@ -266,7 +366,7 @@ readJpegData ( unsigned char* buf, long len )
 {
   Image *img = 0;
 
-#if defined(INCLUDE_JPEG)
+#ifdef INCLUDE_JPEG
   struct jpeg_decompress_struct cinfo;
 
   jpeg_create_decompress( &cinfo);

@@ -30,6 +30,7 @@ public Timer () {
 		clients[i] = new TimerClientEntry();
 	}
 	
+	setDaemon( true);
 	start();
 }
 
@@ -72,7 +73,7 @@ public synchronized boolean addClient ( TimerClient tc, int startWait, int inter
 	return true;
 }
 
-public static Timer getDefaultTimer () {
+public static synchronized Timer getDefaultTimer () {
 	if ( defaultTimer == null ) {
 		defaultTimer = new Timer();
 	}

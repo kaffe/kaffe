@@ -52,16 +52,7 @@ final public void wait(long timeout, int nanos) throws InterruptedException {
 }
 
 final public void wait(long timeout) throws InterruptedException {
-	if (Thread.interrupted()) {
-		throw new InterruptedException();
-	}
-	if (timeout < 0) {
-		throw new IllegalArgumentException("timeout is negative");
-	}
-	wait0(timeout);
-	if (Thread.interrupted()) {
-		throw new InterruptedException();
-	}
+	Thread.currentThread().waitOn(this, timeout);
 }
 
 final native void wait0(long timeout);

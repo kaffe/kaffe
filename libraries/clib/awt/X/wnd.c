@@ -21,6 +21,60 @@ long StdEvents = ExposureMask | KeyPressMask | KeyReleaseMask |
 		 EnterWindowMask | LeaveWindowMask | StructureNotifyMask |
 		 FocusChangeMask | VisibilityChangeMask;
 
+long PopupEvents = ExposureMask |
+		 PointerMotionMask | /* PointerMotionHintMask | */
+		 ButtonPressMask | ButtonReleaseMask | ButtonMotionMask |
+		 EnterWindowMask | LeaveWindowMask | StructureNotifyMask |
+		 VisibilityChangeMask;
+
+/*
+ * X dosen't have "owned" popups (menus, choice windows etc.), all it has
+ * are 'isTransientFor' properties, and these might not be honored by native
+ * window managers in a way that the popup, when getting the focus, doesn't
+ * visibly take the focus away from the owner ("shading" its titlebar). The
+ * only reliable, non wm-dependent way to prevent this seems to be not to select
+ * key events for the popup (i.e. not giving it the focus at all). But we don't
+ * want to let this native layer deficiency (of a single platform) show up on
+ * the Java side. We implement these temporary popup focus shifts by means of
+ * focus forwarding in the native layer, which means we have to take care of
+ * propper forwarding/restore during setVisible/requestFocus/destroy, and
+ * focus/key events. The owner never gives up the focus with respect to X,
+ * but the native layer keeps track of all the involved retargeting of
+ * Java events, thus giving Java the illusion of a real focus switch.
+ * Since this comes with some "artificial" events we have
+ * to process in the Java event queue, we use ClientMessages mapped to the
+ * corresponding Java FocusEvents.
+ */
+
+void 
+forwardFocus ( int cmd, Window wnd )
+{
+  XEvent event;
+
+  event.xclient.type = ClientMessage; 
+  event.xclient.message_type = FORWARD_FOCUS;
+  event.xclient.format = 32;
+  event.xclient.data.l[0] = cmd;
+  event.xclient.window = wnd;
+	  
+  XSendEvent( X->dsp, wnd, False, StdEvents, &event);
+}
+
+void 
+retryFocus ( Window wnd, Window owner, int count )
+{
+  XEvent event;
+
+  event.xclient.type = ClientMessage; 
+  event.xclient.message_type = RETRY_FOCUS;
+  event.xclient.format = 32;
+  event.xclient.data.l[0] = count;
+  event.xclient.data.l[1] = owner;
+  event.xclient.window = wnd;
+	  
+  XSendEvent( X->dsp, (Window)wnd, False, StdEvents, &event);
+  XSync( X->dsp, False);
+}
 
 Cursor
 getCursor ( jint jCursor )
@@ -93,7 +147,7 @@ Java_java_awt_Toolkit_wndSetResizable ( JNIEnv* env, jclass clazz, void* wnd, jb
 
 
 Window
-createWindow ( JNIEnv* env, jclass clazz, Window parent, void* owner, jstring jTitle,
+createWindow ( JNIEnv* env, jclass clazz, Window parent, Window owner, jstring jTitle,
 			   jint x, jint y, jint width, jint height,
 			   jint jCursor, jint clrBack, jboolean isResizable )
 {
@@ -103,7 +157,8 @@ createWindow ( JNIEnv* env, jclass clazz, Window parent, void* owner, jstring jT
   Atom                   protocol[2];
   int                    i;
 
-  attributes.event_mask = StdEvents;
+  /* note that we don't select on key / focus events for popus (owner, no title) */
+  attributes.event_mask = (owner && !jTitle) ? PopupEvents :  StdEvents;
   attributes.background_pixel = clrBack;
   attributes.bit_gravity = ForgetGravity;
   attributes.cursor = getCursor( jCursor);
@@ -129,15 +184,14 @@ createWindow ( JNIEnv* env, jclass clazz, Window parent, void* owner, jstring jT
   DBG( awt_wnd, (" -> %x\n", wnd));
 
   if ( wnd ) {
-	X->newWindow = wnd;
-
 	i=0;
 	protocol[i++] = WM_DELETE_WINDOW;
 	protocol[i++] = WM_TAKE_FOCUS;
 	XSetWMProtocols( X->dsp, wnd, protocol, i);
 
-	if ( owner )
-	  XSetTransientForHint( X->dsp, wnd, (Window)owner );
+	if ( owner ){
+	  XSetTransientForHint( X->dsp, wnd, owner );
+	}
 
 	if ( !isResizable )
 	  Java_java_awt_Toolkit_wndSetResizable( env, clazz,
@@ -153,17 +207,47 @@ createWindow ( JNIEnv* env, jclass clazz, Window parent, void* owner, jstring jT
   }
 }
 
+/*
+ * We register here (and not in evt.c, during evtRegisterSource) because
+ * we want to be able to store attributes (flags, owner), without being
+ * forced to use fancy intermediate cache mechanisms (or intermediate
+ * register states). Storing own Window attributes (flags, owners) in the native
+ * layer is essential for mechanisms like the popup focus forwarding, but can
+ * be used in other places (like inset detection and mapping) as well, to avoid
+ * costly round-trips or additional state passed in from the Java side
+ */
+int
+registerSource ( Toolkit* X, Window wnd, Window owner, int flags)
+{
+  int i = getFreeSourceIdx( X, wnd);
+
+  if ( i >= 0 ) {
+	X->windows[i].w = wnd;
+	X->windows[i].flags = flags;
+	X->windows[i].owner = owner;
+	return i;
+  }
+  else {
+	DBG( awt_evt, ("window table out of space: %d", X->nWindows));
+	return -1;
+  }
+}
+
 
 void*
 Java_java_awt_Toolkit_wndCreateFrame ( JNIEnv* env, jclass clazz, jstring jTitle,
 									   jint x, jint y, jint width, jint height,
 									   jint jCursor, jint clrBack, jboolean isResizable )
 {
-  DBG( awt_wnd, ("createFrame( %p, %d,%d,%d,%d,..)\n", jTitle,x,y,width,height));
-
-  return (void*) createWindow( env, clazz, DefaultRootWindow( X->dsp), 0, jTitle,
+  Window w = createWindow( env, clazz, DefaultRootWindow( X->dsp), 0, jTitle,
 							   x, y, width, height,
 							   jCursor, clrBack, isResizable);
+  DBG( awt_wnd, ("createFrame( %p, %d,%d,%d,%d,..) -> %x\n", jTitle,x,y,width,height, w));
+
+  if ( w )
+	registerSource( X, w, 0, WND_FRAME);
+
+  return (void*)w;
 }
 
 
@@ -172,10 +256,16 @@ Java_java_awt_Toolkit_wndCreateWindow ( JNIEnv* env, jclass clazz, void* owner,
 										jint x, jint y, jint width, jint height,
 										jint jCursor, jint clrBack )
 {
-  DBG( awt_wnd, ("createWindow( %p, %d,%d,%d,%d,..)\n", owner,x,y,width,height));
-  return (void*) createWindow( env, clazz, X->root, owner, NULL,
+
+  Window w = createWindow( env, clazz, X->root, (Window)owner, NULL,
 							   x, y, width, height,
 							   jCursor, clrBack, JNI_TRUE);
+  DBG( awt_wnd, ("createWindow( %p, %d,%d,%d,%d,..) -> %x\n", owner,x,y,width,height, w));
+
+  if ( w )
+	registerSource( X, w, (Window)owner, WND_WINDOW);
+
+  return (void*)w;
 }
 
 
@@ -184,53 +274,97 @@ Java_java_awt_Toolkit_wndCreateDialog ( JNIEnv* env, jclass clazz, void* owner, 
 										jint x, jint y, jint width, jint height,
 										jint jCursor, jint clrBack, jboolean isResizable )
 {
-  DBG( awt_wnd, ("createDialog( %p,%p, %d,%d,%d,%d,..)\n", owner,jTitle,x,y,width,height));
-  return (void*) createWindow( env, clazz, DefaultRootWindow( X->dsp), owner, jTitle,
+  Window w = createWindow( env, clazz, DefaultRootWindow( X->dsp), (Window)owner, jTitle,
 							   x, y, width, height,
 							   jCursor, clrBack, isResizable);
+  DBG( awt_wnd, ("createDialog( %p,%p, %d,%d,%d,%d,..) -> %x\n", owner,jTitle,x,y,width,height));
+
+  if ( w )
+	registerSource( X, w, (Window)owner, WND_DIALOG);
+
+  return (void*)w;
 }
 
 
 void
-Java_java_awt_Toolkit_wndDestroyWindow ( JNIEnv* env, jclass clazz, void* wnd )
+Java_java_awt_Toolkit_wndDestroyWindow ( JNIEnv* env, jclass clazz, Window wnd )
 {
-  /* this is just a last defense against multiple destroy requests causing X errors */
-  static Window lastDestroyed;
+  int i = getSourceIdx( X, wnd);
 
-  DBG( awt_wnd, ("destroy window: %x\n", wnd));
+  DBG( awt_wnd, ("destroy window: %x (%d)\n", wnd, i));
 
-  if ( (Window)wnd != lastDestroyed ) {
+  if ( (i >= 0) && !(X->windows[i].flags & WND_DESTROYED) ) {
+	if ( wnd == X->focusFwd ) {
+	  /*
+	   * reset focus forwading NOW, we can't do it from a clientMessage, since any 
+	   * real focusLost notification would be scrubbed by the subsequent XDestroyWindow
+	   */
+	  resetFocusForwarding( X);
+
+	  if ( X->windows[i].owner && (X->windows[i].owner == X->focus) ) {
+		/*
+		 * This was a explicit dispose(), and the owner still is the real focus window.
+		 * Let's make it think it got back the focus
+		 */
+		forwardFocus( FWD_REVERT, X->windows[i].owner);
+	  }
+	}
+
+	X->windows[i].flags |= WND_DESTROYED;
+	X->windows[i].flags &= ~WND_MAPPED;
+
 	XSync( X->dsp, False); /* maybe we still have pending requests for wnd */
-	XDestroyWindow( X->dsp, (Window)wnd);
-
-	lastDestroyed = (Window)wnd;
+	XDestroyWindow( X->dsp, wnd);
   }
 }
 
 
 void
-Java_java_awt_Toolkit_wndRequestFocus ( JNIEnv* env, jclass clazz, void* wnd )
+Java_java_awt_Toolkit_wndRequestFocus ( JNIEnv* env, jclass clazz, Window wnd )
 {
-  XEvent event;
+  XEvent  event;
+  int     i = getSourceIdx( X, wnd);
 
-  DBG( awt_wnd, ("request focus: %x\n", wnd));
-  /*
-   * If this is the most recently created window, there is a good chance that
-   * it is not mapped yet. In this case, we avoid getting annoying BadMatch errors
-   * by retrying later
-   */
-  if ( (Window)wnd == X->newWindow ){
-    event.xclient.type = ClientMessage; 
-	event.xclient.message_type = RETRY_FOCUS;
-	event.xclient.format = 32;
-	event.xclient.data.l[0] = 5;
-	event.xclient.window = (Window)wnd;
+  DBG( awt_wnd, ("request focus: %x (%d)\n", wnd, i));
 
-	XSendEvent( X->dsp, (Window)wnd, False, StdEvents, &event);
-	XSync( X->dsp, False);
+  if ( (i < 0) || (X->windows[i].flags & WND_DESTROYED) )
+	return;
+
+  if ( (X->windows[i].owner) && (X->windows[i].flags & WND_WINDOW) ) {
+	if ( X->focus != X->windows[i].owner ) {
+	  /* if our owner doesn't have it yet, make him the focus window */
+	  XSetInputFocus( X->dsp, X->windows[i].owner, RevertToParent, CurrentTime);
+	}
+
+	/*
+	 * This marks the beginning of a focus forward to a owned window
+	 * (which isn't allowed to get the real focus because it would
+	 * "shade" the titlebar of the owner)
+	 */
+	forwardFocus( FWD_SET, wnd);
   }
-  else
-	XSetInputFocus( X->dsp, (Window)wnd, RevertToNone, CurrentTime);
+  else {
+	if ( (X->windows[i].flags & WND_MAPPED) == 0 ){
+	  /* If it's not mapped yet, try again later. Somebody might
+       * have been too fast with requesting the focus of a not yet visible
+	   * window, resulting in BadMatch errors
+	   */
+	  retryFocus( wnd, X->windows[i].owner, 5);
+	}
+	else if ( (X->focusFwd) && (wnd == X->focus) ) {
+	  /* We still have it in real life, but we have to pretend we re-gained it
+	   * from our ownee. Reset forwarding here (instead of in the ClientMessage),
+	   * because a subsequent destroy of the ownee otherwise might cause another
+	   * revert (with the Java keyTgtRequest already eaten up by this FWD_REVERT)
+	   */
+	  resetFocusForwarding( X);
+	  forwardFocus( FWD_REVERT, wnd);
+	}
+	else {
+	  /* we don't reset X->focusFwd here, that's done in the event handler */
+	  XSetInputFocus( X->dsp, (Window)wnd, RevertToParent, CurrentTime);
+	}
+  }
 }
 
 
@@ -297,12 +431,12 @@ Java_java_awt_Toolkit_wndSetBounds ( JNIEnv* env, jclass clazz, void* wnd,
 }
 
 void
-Java_java_awt_Toolkit_wndRepaint ( JNIEnv* env, jclass clazz, void* wnd,
+Java_java_awt_Toolkit_wndRepaint ( JNIEnv* env, jclass clazz, Window wnd,
 								   jint x, jint y, jint width, jint height )
 {
   DBG( awt_wnd, ("wndRepaint: %x %d,%d,%d,%d\n", wnd, x, y, width, height));
 
-  XClearArea( X->dsp, (Window)wnd, x, y, width, height, True);
+  XClearArea( X->dsp, wnd, x, y, width, height, True);
 }
 
 void
@@ -312,45 +446,39 @@ Java_java_awt_Toolkit_wndSetIcon ( JNIEnv* env, jclass clazz, void* wnd, void* i
 
 
 void
-Java_java_awt_Toolkit_wndSetVisible ( JNIEnv* env, jclass clazz, void* wnd, jboolean showIt )
+Java_java_awt_Toolkit_wndSetVisible ( JNIEnv* env, jclass clazz, Window wnd, jboolean showIt )
 {
-  Window owner = 0;
-  DBG( awt_wnd, ("setVisible: %x %d\n", wnd, showIt));
+  int     i = getSourceIdx( X, wnd);
+  Window  owner;
 
-  XGetTransientForHint( X->dsp, (Window)wnd, &owner);
+  DBG( awt_wnd, ("setVisible: %x (%d) %d\n", wnd, i, showIt));
+
+  if ( (i < 0) || (X->windows[i].flags & WND_DESTROYED) )
+	return;
+
+  owner = X->windows[i].owner;
 
   if ( showIt ){
-	XMapWindow( X->dsp, (Window)wnd);
+	X->windows[i].flags |= WND_MAPPED;
+	XMapRaised( X->dsp, wnd);
 	XSync( X->dsp, False);
 
-	if ( owner ) {
-	  /*
-	   * This is a fix for some WindowManagers with focus problems of decorated
-	   * transients (e.g. AfterStep). The decoration of the transient has to be
-	   * explicitly focused in order to activate the Dialog.
-	   */
-	  Window   rWnd, pWnd, *cWnds = 0;
-	  int      nChilds;
-
-	  XQueryTree( X->dsp, (Window)wnd, &rWnd, &pWnd, &cWnds, &nChilds);
-	  if ( cWnds) XFree( cWnds); /* we aren't interested in descendants */
-	  XSetInputFocus( X->dsp, pWnd, RevertToNone, CurrentTime);
-	}
+	/*
+	 * Don't automatically forward the focus for owned popups, the standard JDK behavior
+	 * is NOT to set the focus on them unless explicitly requested. It would break
+	 * Swing heavyweight popups (JWindowPopup, both keyboard input and the famous
+	 * "first on Solaris" jitter)
+	 */
   }
   else {
-	if ( owner ) {
-	  /*
-	   * Hiding a transient? Not a good idea! This is a WM bug workaround for a
-	   * very obscurure attempt of some apps to work around non-resizable Dialogs
-	   * (they show(), getPreferredSize(), hide(), setSize() and show() again)
-	   */
-	  XSetTransientForHint( X->dsp, (Window)wnd, 0);
-	  XUnmapWindow( X->dsp, (Window)wnd);
-	  XSync( X->dsp, False);
+	if ( wnd == X->focusFwd ) {
+	  forwardFocus( FWD_CLEAR, owner);
+	  forwardFocus( FWD_REVERT, owner);
 	}
-	else {
-	  XUnmapWindow( X->dsp, (Window)wnd);
-	}
+
+	X->windows[i].flags &= ~WND_MAPPED;
+	XUnmapWindow( X->dsp, wnd);
+	XSync( X->dsp, False);
   }
 }
 

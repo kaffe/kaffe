@@ -38,6 +38,36 @@ static synchronized ItemEvt getEvent ( ItemSelectable source, int id, Object ite
 	}	
 }
 
+static synchronized ItemEvt getEvent ( int srcIdx, int op, int idx ){
+	// This is exclusively called by the native event emitter
+
+	ItemEvt   e;
+	Component      source = sources[srcIdx];
+	Object 	           item = new Integer( idx);
+
+	if ( cache == null ){
+                e = new ItemEvt( (ItemSelectable)source, ITEM_STATE_CHANGED, item, op );
+	}
+	else {
+		e = cache;
+		cache = (ItemEvt)e.next;
+		e.next = null;
+
+		e.source = source;
+                e.id = ITEM_STATE_CHANGED;
+		e.obj = item;
+                e.op = op;
+	}
+
+	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
+		// this is not used as a direct return value for EventQueue.getNextEvent(), 
+		// it has to be Java-queued by the native layer
+		Toolkit.eventQueue.postEvent( e);
+	}
+
+        return e;
+}
+
 protected void recycle () {
 	synchronized ( ItemEvt.class ) {
 		source = null;

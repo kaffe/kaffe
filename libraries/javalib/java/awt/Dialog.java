@@ -16,7 +16,7 @@ import kaffe.util.Ptr;
 public class Dialog
   extends Frame
 {
-	private static final long serialVersionUID = 5920926903803293709L;
+	final private static long serialVersionUID = 5920926903803293709L;
 	static Insets dialogInsets;
 	static Rectangle dialogDeco;
 
@@ -76,6 +76,13 @@ Ptr createNativeWindow () {
 	                               cursor.type, bgClr.nativeValue, ((flags & IS_RESIZABLE) != 0));
 }
 
+public void hide () {
+	if ( (flags & IS_MODAL) != 0 )
+		dispose();
+	else
+		super.hide();
+}
+
 public boolean isModal() {
 	return ((flags & IS_MODAL) != 0);
 }
@@ -122,7 +129,16 @@ public void show () {
 	super.show ();
 	
 	if ( (flags & IS_MODAL) != 0 ) {
-		Toolkit.eventThread.run( this);
+		if ( owner != null ) {
+			// We don't use native modal dialogs, so let's at least temporarily
+			// disable the owner
+			owner.propagateTempEnabled( false);
+			Toolkit.eventThread.run( this);
+			owner.propagateTempEnabled( true);
+		}
+		else {
+			Toolkit.eventThread.run( this);
+		}
 	}
 }
 }

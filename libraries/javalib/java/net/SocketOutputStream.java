@@ -16,7 +16,7 @@ class SocketOutputStream
   extends OutputStream {
 
 private SocketImpl impl;
-private byte[] buf;
+private byte[] buf = new byte[1];
 
 public SocketOutputStream(SocketImpl impl) {
 	this.impl = impl;
@@ -27,15 +27,10 @@ public void write(byte b[]) throws IOException {
 }
 
 public void write(byte b[], int off, int len) throws IOException {
-	synchronized (this) {
-		impl.write(b, off, len);
-	}
+	impl.write(b, off, len);
 }
 
 public void write(int b) throws IOException {
-	if (buf == null) {
-		buf = new byte[1];
-	}
 	buf[0] = (byte)b;
 	write(buf);
 }

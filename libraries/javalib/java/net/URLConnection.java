@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Hashtable;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
 import kaffe.net.DefaultFileNameMap;
 import kaffe.net.StreamMap;
 import kaffe.net.DefaultStreamMap;
@@ -109,8 +112,13 @@ public String getHeaderFieldKey(int n) {
 
 public long getHeaderFieldDate(String name, long def) {
 	String date = getHeaderField(name);
-	// Parse date goes here !!
-	return (def);
+	try {
+		Date d = DateFormat.getDateInstance().parse(name);
+		return (d.getTime());
+	}
+	catch (ParseException _) {
+		return (def);
+	}
 }
 
 public int getHeaderFieldInt(String name, int def) {

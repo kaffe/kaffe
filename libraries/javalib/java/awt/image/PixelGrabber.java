@@ -3,6 +3,7 @@ package java.awt.image;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.util.Hashtable;
+import kaffe.awt.JavaColorModel;
 
 public class PixelGrabber
   implements ImageConsumer
@@ -26,7 +27,7 @@ public PixelGrabber ( Image img, int x, int y, int w, int h, boolean forceRGB) {
 	this.width = w;
 	this.height = h;
 	this.producer = img.getSource();
-	this.model = forceRGB ? ColorModel.getRGBdefault() : null;
+	this.model = forceRGB ? JavaColorModel.getSingleton() : null;
 }
 
 public PixelGrabber ( Image img, int x, int y, int w, int h, int[] pels, int off, int scan) {
@@ -42,7 +43,7 @@ public PixelGrabber ( ImageProducer ip, int x, int y, int w, int h, int[] pels, 
 	this.pels = pels;
 	this.off = off;
 	this.scan = scan;
-	this.model = ColorModel.getRGBdefault();
+	this.model = JavaColorModel.getSingleton();
 }
 
 public synchronized void abortGrabbing () {

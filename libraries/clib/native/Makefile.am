@@ -29,7 +29,8 @@ LANG_SRCS = \
 		CharToByteDefault.c \
 		ByteToCharDefault.c \
 		ZipFile.c \
-		MemoryAdvice.c
+		MemoryAdvice.c \
+		Application.c
 
 REFLECT_SRCS = \
 		Array.c \

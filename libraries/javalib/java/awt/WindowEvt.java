@@ -50,9 +50,6 @@ static synchronized WindowEvt getEvent ( int srcIdx, int id ) {
 	// this protects us from "normal" window destruction triggered by removeNotify()
 	if ( source == null ) return null;
 
-	if ( (id == WINDOW_ICONIFIED) || (id == WINDOW_DEICONIFIED) )
-		PopupWindow.checkPopup( source); // close any open popups
-
 	if ( cache == null ){
 		e = new WindowEvt( (Window)source, id);
 	}

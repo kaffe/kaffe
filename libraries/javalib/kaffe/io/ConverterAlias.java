@@ -22,6 +22,7 @@ public class ConverterAlias {
 
     static {
 	alias.put("ISO-8859-1", 	"8859_1");
+	alias.put("iso-8859-1", 	"8859_1");
 	/* add more here */
     }
 

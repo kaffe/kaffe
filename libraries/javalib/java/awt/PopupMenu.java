@@ -15,7 +15,7 @@ package java.awt;
 public class PopupMenu
   extends Menu
 {
-	private static final long serialVersionUID = -4620452533522760060L;
+	final private static long serialVersionUID = -4620452533522760060L;
 	PopupWindow wnd;
 
 public PopupMenu() {
@@ -54,6 +54,6 @@ public void show( Component c, int x, int y) {
 	wnd = new PopupWindow( c, (pc instanceof Frame) ? (Frame)pc : null, items);
 	wnd.popupAt( x, y);
 	
-	wnd.requestFocus();
+//	wnd.requestFocus();
 }
 }

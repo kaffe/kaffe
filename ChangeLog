@@ -1,3 +1,12 @@
+Fri Jul 23 17:43:44 PDT 1999	Tim Wilkinson <tim@transvirtual.com>
+
+	* Merge of TVT's current custom sources.
+	* Includes the source code for the Windows 9x/NT port under
+	  Visual Studio 6.0 (no build tree yet - to follow).
+	* Reworked thread interrupts and thread deaths to be implemented
+	  at Java level only - currently ThreadDeath does not work in all
+	  circumstances (needs to be fixed).
+
 Wed Jul 21 18:49:06 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* configure.in: add security subdir and check for libmd

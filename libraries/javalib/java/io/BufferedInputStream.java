@@ -17,7 +17,8 @@ public class BufferedInputStream extends FilterInputStream
 	protected int pos;
 	protected int markpos;
 	protected int marklimit;
-	final private static int DEFAULTBUFFER = 256;
+	private byte[] single = new byte[1];
+	final private static int DEFAULTBUFFER = 2048;
 
 /*
  * Invariant:
@@ -65,17 +66,22 @@ public boolean markSupported() {
 }
 
 public synchronized int read() throws IOException {
-	byte[] buf = new byte[1];
-	int n = read(buf, 0, 1);
-	if (n == -1) {
-		return -1;
+	if (read(single, 0, 1) == -1) {
+		return (-1);
 	}
-	return (buf[0] & 0xff);
+	else {
+		return (single[0] & 0xFF);
+	}
 }
 
 public synchronized int read(byte b[], int off, int len) throws IOException {
-	int nread, total = 0;
+	/* Common case short-cut */
+	if (len == 1 && pos < count) {
+		b[off] = buf[pos++];
+		return (1);
+	}
 
+	int total = 0;
 	while (len > 0) {
 
 		// If buffer fully consumed, invalidate mark & reset buffer
@@ -85,6 +91,7 @@ public synchronized int read(byte b[], int off, int len) throws IOException {
 		}
 
 		// Buffer empty?
+		int nread;
 		if (pos == count) {
 
 			// If the amount requested is more than the size

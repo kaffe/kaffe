@@ -167,7 +167,7 @@ public Object readObject() throws OptionalDataException, ClassNotFoundException,
 
 	case ObjectStreamConstants.TC_RESET:
 		resetObjectReferences();
-		break;
+		return (readObject());
 
 	case ObjectStreamConstants.TC_BLOCKDATA:
 		int l = read();

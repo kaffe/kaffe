@@ -13,11 +13,11 @@
 
 
 /* interfaces of image conversion functions */
-Image* readGifFile ( FILE* );
+Image* readGifFile ( int fd );
 Image* readGifData ( unsigned char*, long len );
-Image* readJpegFile ( FILE* );
+Image* readJpegFile ( int fd );
 Image* readJpegData ( unsigned char*, long len );
-Image* readPngFile ( FILE* );
+Image* readPngFile ( int fd );
 Image* readPngData ( unsigned char*, long len );
 
 /************************************************************************************
@@ -621,42 +621,60 @@ Java_java_awt_Toolkit_imgCreateScaledImage ( JNIEnv* env, jclass clazz,
 void
 Java_java_awt_Toolkit_imgProduceImage ( JNIEnv* env, jclass clazz, jobject producer, Image* img )
 {
-  int       i, j;
-  int       r, g, b;
-  unsigned long pix;
-  jboolean  isCopy;
-  jclass    prodClazz  = (*env)->GetObjectClass( env, producer);
-  jclass    modelClazz = (*env)->FindClass( env, "java/awt/image/ColorModel");
+  int            i, j;
+  int            r, g, b;
+  unsigned long  pix;
+  jclass         prodClazz, modelClazz;
+  jmethodID      modelCtor, setDim, setCM, setHints, setPix, imgCompl;
+  jobject        model;
+  jarray         pelArray;
+  jint           *pels;
+  jboolean       isCopy;
 
-  jmethodID modelCtor = (*env)->GetStaticMethodID( env, modelClazz, "getRGBdefault", "()Ljava/awt/image/ColorModel;");
-  jmethodID setDim    = (*env)->GetMethodID( env, prodClazz, "setDimensions", "(II)V");
-  jmethodID setCM     = (*env)->GetMethodID( env, prodClazz, "setColorModel", "(Ljava/awt/image/ColorModel;)V");
-  jmethodID setHints  = (*env)->GetMethodID( env, prodClazz, "setHints", "(I)V");
-  jmethodID setPix    = (*env)->GetMethodID( env, prodClazz, "setPixels", "(IIIILjava/awt/image/ColorModel;[III)V");
-  jmethodID imgCompl  = (*env)->GetMethodID( env, prodClazz, "imageComplete", "(I)V");
+  prodClazz  = (*env)->GetObjectClass( env, producer);
+  modelClazz = (*env)->FindClass( env, "kaffe/awt/JavaColorModel");
 
-  jobject   model     = (*env)->CallStaticObjectMethod( env, modelClazz, modelCtor);
+  modelCtor = (*env)->GetStaticMethodID( env, modelClazz, "getSingleton", "()Lkaffe/awt/JavaColorModel;");
+  setDim    = (*env)->GetMethodID( env, prodClazz, "setDimensions", "(II)V");
+  setCM     = (*env)->GetMethodID( env, prodClazz, "setColorModel", "(Ljava/awt/image/ColorModel;)V");
+  setHints  = (*env)->GetMethodID( env, prodClazz, "setHints", "(I)V");
+  setPix    = (*env)->GetMethodID( env, prodClazz, "setPixels", "(IIIILjava/awt/image/ColorModel;[III)V");
+  imgCompl  = (*env)->GetMethodID( env, prodClazz, "imageComplete", "(I)V");
+
+  model     = (*env)->CallStaticObjectMethod( env, modelClazz, modelCtor);
 
   /* for JDK compat, the pixel buffer has to be large enough to hold the *complete* image */
-  jarray    pelArray  = (*env)->NewIntArray( env, img->width * img->height);
-  jint*     pels = (*env)->GetIntArrayElements( env, pelArray, &isCopy);
+  pelArray  = (*env)->NewIntArray( env, img->width * img->height);
+  pels = (*env)->GetIntArrayElements( env, pelArray, &isCopy);
 
   (*env)->CallVoidMethod( env, producer, setDim, img->width, img->height);
   (*env)->CallVoidMethod( env, producer, setCM, model);
   (*env)->CallVoidMethod( env, producer, setHints, 6); /* TOPDOWNLEFTRIGHT | COMPLETESCANLINES */
 
-  for ( j=0; j<img->height; j++ ) {
-	for ( i=0; i<img->width; i++ ) {
-	  if ( (img->xMask == 0) || XGetPixel( img->xMask, i, j) ) {
-		pix = XGetPixel( img->xImg, i, j);
-		rgbValues( X, pix, &r, &g, &b);
-		pels[j*img->width+i] = (0xff000000 | (r << 16) | (g << 8) | b);
-	  }
-	  else {
-		pels[j*img->width+i] = 0;
+  if ( img->pix && !img->xImg ) {
+	img->xImg = XGetImage( X->dsp, img->pix, 0, 0, img->width, img->height, 0xffffffff, ZPixmap);
+  }
+
+  if ( img->xImg ) {
+	for ( j=0; j<img->height; j++ ) {
+	  for ( i=0; i<img->width; i++ ) {
+		if ( (img->xMask == 0) || XGetPixel( img->xMask, i, j) ) {
+		  pix = XGetPixel( img->xImg, i, j);
+		  rgbValues( X, pix, &r, &g, &b);
+		  pels[j*img->width+i] = (0xff000000 | (r << 16) | (g << 8) | b);
+		}
+		else {
+		  pels[j*img->width+i] = 0;
+		}
 	  }
 	}
   }
+
+  if ( img->pix && img->xImg ) {
+	XDestroyImage( img->xImg);
+	img->xImg = 0;
+  }
+
   if ( isCopy ) {
     (*env)->ReleaseIntArrayElements( env, pelArray, pels, JNI_COMMIT);
   }
@@ -695,13 +713,13 @@ void*
 Java_java_awt_Toolkit_imgCreateFromFile ( JNIEnv* env, jclass clazz, jstring fileName )
 {
   Image *img = 0;
-  FILE  *infile;
+  int   infile;
   char  *fn = java2CString( env, X, fileName);
   unsigned char  sig[SIG_LENGTH];
 
-  if ((infile = fopen( fn, "rb")) != NULL) {
-	if ( fread( sig, 1, sizeof(sig), infile) == sizeof(sig) ) {
-	  rewind( infile);  /* some native converters can't skip the signature read */
+  if ( (infile = AWT_OPEN( fn)) >= 0 ) {
+	if ( AWT_READ( infile, sig, sizeof(sig)) == sizeof(sig) ) {
+	  AWT_REWIND( infile);  /* some native converters can't skip the signature read */
 
 	  switch ( imageFormat( sig) ) {
 	  case SIG_GIF:
@@ -717,7 +735,7 @@ Java_java_awt_Toolkit_imgCreateFromFile ( JNIEnv* env, jclass clazz, jstring fil
 		img = unknownImage;
 	  }
 	}
-	fclose( infile);
+	AWT_CLOSE( infile);
   }
 
   return img;
@@ -752,6 +770,25 @@ Java_java_awt_Toolkit_imgCreateFromData ( JNIEnv* env, jclass clazz,
 
   (*env)->ReleaseByteArrayElements( env, jbuffer, jb, JNI_ABORT);
   return img;  
+}
+
+void*
+Java_java_awt_Toolkit_imgSetFrame ( JNIEnv* env, jclass clazz, Image* img, int frameNo )
+{
+  int i;
+  Image *imgCur = img;
+
+  if ( !img->next )
+	return img;
+
+  while ( img->frame != frameNo ) {
+	img = img->next;
+
+	if ( img == imgCur )
+	  break;
+  }
+
+  return img;
 }
 
 

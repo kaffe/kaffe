@@ -465,7 +465,7 @@ java_net_PlainSocketImpl_socketGetOption(struct Hjava_net_PlainSocketImpl* this,
 }
 
 jint
-java_net_PlainSocketImpl_read(struct Hjava_net_PlainSocketImpl* this, HArrayOfByte* buf, jint offset, jint len)
+java_net_PlainSocketImpl_socketRead(struct Hjava_net_PlainSocketImpl* this, HArrayOfByte* buf, jint offset, jint len)
 {
         ssize_t r;
 	int rc;
@@ -498,7 +498,7 @@ java_net_PlainSocketImpl_read(struct Hjava_net_PlainSocketImpl* this, HArrayOfBy
 }
 
 void
-java_net_PlainSocketImpl_write(struct Hjava_net_PlainSocketImpl* this, HArrayOfByte* buf, jint offset, jint len)
+java_net_PlainSocketImpl_socketWrite(struct Hjava_net_PlainSocketImpl* this, HArrayOfByte* buf, jint offset, jint len)
 {
 	int r;
 	int fd;

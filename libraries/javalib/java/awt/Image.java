@@ -13,9 +13,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
+import kaffe.awt.JavaColorModel;
 import kaffe.io.AccessibleBAOStream;
 import kaffe.util.Ptr;
 import kaffe.util.VectorSnapshot;
@@ -52,6 +54,7 @@ public class Image
 	final static int READY = ImageObserver.WIDTH | ImageObserver.HEIGHT | ImageObserver.ALLBITS | PRODUCING;
 	final static int SCREEN = 1 << 10;
 	final static int BLOCK_FRAMELOADER = 1 << 11;
+	final static int IS_ANIMATION = 1 << 12;
 	final public static Object UndefinedProperty = ImageLoader.class;
 
 Image ( File file ) {
@@ -356,6 +359,7 @@ ImageFrameLoader ( Image img ) {
 	img.flags |= Image.BLOCK_FRAMELOADER;
 
 	setPriority( NORM_PRIORITY - 3);
+	setDaemon( true);
 	start();
 }
 
@@ -368,18 +372,23 @@ public void run () {
 		runINPLoop();
 	}
 	else {
-		for (;;) {
-		}
+		throw new Error("Unhandled production: " + img.producer);
 	}
 }
 
 public void runINPLoop () {
-	int w, h, latency;
-	Ptr ptr;
+	int w, h, latency, dt;
+	long t;
+	Ptr ptr = img.nativeData;
+
+	img.flags |= Image.IS_ANIMATION;
 
 	// we already have the whole thing physically read in, so just start to notify round-robin. We also
 	// got the first frame propperly reported, i.e. we start with flipping to the next one
 	do {
+		latency = Toolkit.imgGetLatency( img.nativeData);
+		t = System.currentTimeMillis();
+
 	  // wait until we get requested the next time (to prevent being spinned around by a MediaTracker)
 		synchronized ( img ) {
 			try {
@@ -388,12 +397,21 @@ public void runINPLoop () {
 				}
 			} catch ( InterruptedException _ ) {}
 		}
-		latency = Toolkit.imgGetLatency( img.nativeData);
-		try { Thread.sleep( latency); } catch ( Exception _ ) {}
+		
+		dt = (int) (System.currentTimeMillis() - t);
+		if ( dt < latency ){
+				try { Thread.sleep( latency - dt); } catch ( Exception _ ) {}
+		}
+		if ( (latency == 0) || (dt < 2*latency) ){
+			if ( (ptr = Toolkit.imgGetNextFrame( img.nativeData)) == null )
+				break;
+		}
+		else {
+			// Most probably we weren't visible for a while, reset because this might be a
+			// animation with delta frames (and the first one sets the background)
+			ptr = Toolkit.imgSetFrame( img.nativeData, 0);
+		}
 
-		if ( (ptr = Toolkit.imgGetNextFrame( img.nativeData)) == null )
-
-			break;
 		img.nativeData = ptr;
 		w = Toolkit.imgGetWidth( img.nativeData);
 		h = Toolkit.imgGetHeight( img.nativeData);
@@ -423,7 +441,7 @@ public synchronized void imageComplete ( int status ) {
 	int s = 0;
 
 	if ( status == STATICIMAGEDONE ){
-	  s = ImageObserver.ALLBITS;
+		s = ImageObserver.ALLBITS;
 		// give native layer a chance to do alpha channel reduction
 		if ( !(img.producer instanceof ImageNativeProducer) )
 			Toolkit.imgComplete( img.nativeData, status);
@@ -572,32 +590,33 @@ public void setPixels ( int x, int y, int w, int h,
 		return;
 	}
 
-	if ( model instanceof DirectColorModel ) {
+	if ( model instanceof JavaColorModel ) {
+		// Ok, nothing to convert here
+	}
+	else if ( model instanceof DirectColorModel ) {
 		// in case our pels aren't default RGB yet, convert them using the ColorModel
-		if ( model != ColorModel.getRGBdefault() ){
-			int xw = x + w;
-			int yh = y + h;
-			int i, j, idx;
-			int i0 = y * scansize + offset;
-			for ( j = y; j < yh; j++, i0 += scansize ) {
-				for ( i = x, idx = i+i0; i < xw; i++, idx++) {
-					// are we allowed to in-situ change the array?
-					pixels[idx] = model.getRGB( pixels[idx]);
-				}
+		int xw = x + w;
+		int yh = y + h;
+		int i, j, idx;
+		int i0 = y * scansize + offset;
+		for ( j = y; j < yh; j++, i0 += scansize ) {
+			for ( i = x, idx = i+i0; i < xw; i++, idx++) {
+				// are we allowed to change the array in-situ?
+				pixels[idx] = model.getRGB( pixels[idx]);
 			}
 		}
-
-		Toolkit.imgSetRGBPels( img.nativeData, x, y, w, h, pixels, offset, scansize);
-		img.stateChange( ImageObserver.SOMEBITS, x, y, w, h);
 	}
 	else {
 		System.out.println("Unhandled colorModel: " + model.getClass());
 	}
+	
+	Toolkit.imgSetRGBPels( img.nativeData, x, y, w, h, pixels, offset, scansize);
+	img.stateChange( ImageObserver.SOMEBITS, x, y, w, h);
 }
 
 public void setProperties ( Hashtable properties ) {
 	img.props = properties;
-  img.stateChange( img.flags | ImageObserver.PROPERTIES, 0, 0, img.width, img.height);
+	img.stateChange( img.flags | ImageObserver.PROPERTIES, 0, 0, img.width, img.height);
 }
 }
 
@@ -624,12 +643,9 @@ ImageNativeProducer ( Image img, File file ) {
 	// check if we can produce immediately
 	if ( file.exists() ) {
 		if  ( file.length() < Defaults.FileImageThreshold ){
-		  img.flags |= Image.PRODUCING;
-			synchronized ( ImageLoader.syncLoader ) {
-				ImageLoader.syncLoader.img = img;
-				img.producer = this;
-				startProduction( ImageLoader.syncLoader);
-			}
+			img.flags |= Image.PRODUCING;
+			img.producer = this;
+			ImageLoader.loadSync(img);
 		}
 	}
 	else {
@@ -725,10 +741,6 @@ void produceFrom ( Ptr ptr ) {
 }
 
 void produceFrom ( URL url ) {
-	Ptr    ptr;
-	byte[] buf = new byte[1024];
-	int    n;
-
 	// since this is most likely used in a browser context (no file
 	// system), the only thing we can do (in the absence of a suspendable
 	// native image production) is to temporarily store the data in
@@ -741,17 +753,24 @@ void produceFrom ( URL url ) {
 	// Some could be done in Java (at the expense of a significant speed
 	// degradation - this is the classical native functionality), but
 	// things like Jpeg ?
+
 	try {
-		InputStream in = url.openStream();
-		if ( in != null ) {
-			AccessibleBAOStream out = new AccessibleBAOStream(8192);
-			while ((n = in.read(buf)) >= 0) {
-				out.write(buf, 0, n);
+		URLConnection conn = url.openConnection();
+		if (conn != null) {
+			int sz = conn.getContentLength();
+			if (sz <= 0) {  // it's unknown, let's assume some size
+				sz = 4096;
 			}
-			in.close();
-			if ( (ptr = Toolkit.imgCreateFromData(out.getBuffer(), 0, out.size())) != null ){
-				produceFrom( ptr);
-				return;
+			AccessibleBAOStream out = new AccessibleBAOStream(sz);
+			InputStream in = conn.getInputStream();
+			if ( in != null ) {
+				out.readFrom(in);
+				in.close();
+				Ptr ptr = Toolkit.imgCreateFromData(out.getBuffer(), 0, out.size());
+				if ( ptr != null ){
+					produceFrom( ptr);
+					return;
+				}
 			}
 		}
 	}
@@ -841,19 +860,21 @@ void setPixels ( int x, int y, int w, int h,
 
 public void startProduction ( ImageConsumer ic ) {
 	addConsumer( ic);
-
-	if ( src instanceof File )
+	if ( src instanceof File ) {
 		produceFrom( (File)src);
-	else if ( src instanceof URL )
+	}
+	else if ( src instanceof URL ) {
 		produceFrom( (URL)src);
-	else if ( src instanceof byte[] )
+	}
+	else if ( src instanceof byte[] ) {
 		produceFrom( (byte[])src, off, len);
+	}
 	else if ( src instanceof Image ) {
 		Toolkit.imgProduceImage( this, ((Image)src).nativeData);
 	}
-	else
+	else {
 		System.err.println( "unsupported production source: " + src.getClass());
-		
+	}
 	removeConsumer( ic);
 }
 }

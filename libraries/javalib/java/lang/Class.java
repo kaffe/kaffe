@@ -36,17 +36,17 @@ public static Class forName(String className) throws ClassNotFoundException {
 native public static Class forName(String className, boolean initialize, ClassLoader loader) throws ClassNotFoundException;
 
 private String fullResourceName(String name) {
-	if (name.charAt(0) != '/') {
-		String cname = getName();
-		StringBuffer buf = new StringBuffer();
-		int tail = cname.lastIndexOf('.');
-		if (tail != -1) {
-			buf.append(cname.substring(0, tail+1).replace('.', '/'));
-		}
-		buf.append(name);
-		name = buf.toString();
+	if (name.charAt(0) == '/') {
+		return (name.substring(1));
 	}
-	return (name);
+	String cname = getName();
+	StringBuffer buf = new StringBuffer();
+	int tail = cname.lastIndexOf('.');
+	if (tail != -1) {
+		buf.append(cname.substring(0, tail+1).replace('.', '/'));
+	}
+	buf.append(name);
+	return (buf.toString());
 }
 
 /**
@@ -217,7 +217,8 @@ public InputStream getResourceAsStream(String name) {
 	if (loader == null)  {
 		loader = SystemClassLoader.getClassLoader();
 	}
-	return (loader.getResourceAsStream(fullResourceName(name)));
+	InputStream strm = loader.getResourceAsStream(fullResourceName(name));
+	return (strm);
 }
 
 native public Object[] getSigners();

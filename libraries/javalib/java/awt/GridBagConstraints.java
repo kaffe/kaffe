@@ -1,3 +1,7 @@
+package java.awt;
+
+import java.io.Serializable;
+
 /**
  * class GridBagConstraints - 
  *
@@ -9,44 +13,36 @@
  *
  * @author J.Mehlitz
  */
-
-package java.awt;
-
-import java.io.Serializable;
-
 public class GridBagConstraints
   implements Cloneable, Serializable
 {
-
-private static final long serialVersionUID = -1000070633030801713L;
-final public static int RELATIVE = -1;
-final public static int REMAINDER = 0;
-final public static int NONE = 0;
-final public static int BOTH = 1;
-final public static int HORIZONTAL = 2;
-final public static int VERTICAL = 3;
-
-final public static int CENTER = 10;
-final public static int NORTH = 11;
-final public static int NORTHEAST = 12;
-final public static int EAST = 13;
-final public static int SOUTHEAST = 14;
-final public static int SOUTH = 15;
-final public static int SOUTHWEST = 16;
-final public static int WEST = 17;
-final public static int NORTHWEST = 18;
-
-public int gridx = RELATIVE;
-public int gridy = RELATIVE;
-public int gridwidth = 1;
-public int gridheight = 1;
-public double weightx = 0;
-public double weighty = 0;
-public int anchor = CENTER;
-public int fill = NONE;
-public int ipadx = 0;
-public int ipady = 0;
-public Insets insets = new Insets( 0, 0, 0, 0);
+	final private static long serialVersionUID = -1000070633030801713L;
+	final public static int RELATIVE = -1;
+	final public static int REMAINDER = 0;
+	final public static int NONE = 0;
+	final public static int BOTH = 1;
+	final public static int HORIZONTAL = 2;
+	final public static int VERTICAL = 3;
+	final public static int CENTER = 10;
+	final public static int NORTH = 11;
+	final public static int NORTHEAST = 12;
+	final public static int EAST = 13;
+	final public static int SOUTHEAST = 14;
+	final public static int SOUTH = 15;
+	final public static int SOUTHWEST = 16;
+	final public static int WEST = 17;
+	final public static int NORTHWEST = 18;
+	public int gridx = RELATIVE;
+	public int gridy = RELATIVE;
+	public int gridwidth = 1;
+	public int gridheight = 1;
+	public double weightx = 0;
+	public double weighty = 0;
+	public int anchor = CENTER;
+	public int fill = NONE;
+	public int ipadx = 0;
+	public int ipady = 0;
+	public Insets insets = new Insets( 0, 0, 0, 0);
 
 public GridBagConstraints() {
 }
@@ -60,5 +56,55 @@ public Object clone() {
 	catch ( CloneNotSupportedException e) {
 		return null;
 	}
+}
+
+public String toString() {
+	String san, sfl;
+	
+	switch ( anchor ) {
+		case NORTH:
+			san = "north";
+			break;
+		case NORTHEAST:
+			san = "northeast";
+			break;
+		case EAST:
+			san = "east";
+			break;
+		case SOUTHEAST:
+			san = "southeast";
+			break;
+		case SOUTH:
+			san = "south";
+			break;
+		case SOUTHWEST:
+			san = "southwest";
+			break;
+		case WEST:
+			san = "west";
+			break;
+		case NORTHWEST:
+			san = "northwest";
+			break;
+		default:
+			san = "center";
+	}
+	
+	switch ( fill ) {
+		case HORIZONTAL:
+			sfl = "horz";
+			break;
+		case VERTICAL:
+			sfl = "vert";
+			break;
+		case BOTH:
+			sfl = "both";
+			break;
+		default:
+			sfl = "none";			
+	}
+	
+	return ("Constraint:" + gridx + "," + gridy + " " + gridwidth + "x" + gridheight +
+			",fill:" + sfl + ",anchor:" + san + ",weight:" + weightx + "x" + weighty);
 }
 }

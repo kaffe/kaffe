@@ -19,7 +19,7 @@ public class CheckboxMenuItem
 {
 	boolean isChecked;
 	ItemListener iListener;
-	private static final long serialVersionUID = 6190621106981774043L;
+	final private static long serialVersionUID = 6190621106981774043L;
 
 public CheckboxMenuItem () {
 	this( "", false);
@@ -62,24 +62,26 @@ int getWidth() {
 }
 
 public void handleShortcut( MenuShortcut ms) {
+	if ( (eventMask & AWTEvent.DISABLED_MASK) != 0 )
+		return;
+
 	setState( !isChecked );
 
 	if ( (iListener != null) ||
-	     ((eventMask & (AWTEvent.ITEM_EVENT_MASK|AWTEvent.DISABLED_MASK))
-	                        == AWTEvent.ITEM_EVENT_MASK) ) {
+	     ( ((eventMask & AWTEvent.ITEM_EVENT_MASK) != 0) || ((flags & IS_OLD_EVENT) > 0) ) ) {
 		Toolkit.eventQueue.postEvent( ItemEvt.getEvent( this, ItemEvent.ITEM_STATE_CHANGED, getLabel(),
                                       isChecked ? ItemEvent.SELECTED : ItemEvent.DESELECTED ));
 	}
 }
 
-int paint ( Graphics g, int xoff, int y, int width, Color back, Color fore, boolean sel) {
-	int cm = getHeight();
-//	g.setColor( isChecked ? Defaults.FocusClr : Defaults.BtnClr);
-	g.setColor( Defaults.BtnClr);
-	g.fill3DRect( xoff, y + cm/5, cm/2, cm/2, !isChecked);
-	xoff += 3*cm/4;
+int paint ( Graphics g, int x, int xoff, int y, int width, int height, Color back, Color fore, boolean sel) {
+	int ih = super.paint( g, x, xoff + 6, y, width, height, back, fore, sel);
+	int y0 = y + (ih - 8) / 2 + 1;
 
-	return super.paint( g, xoff, y, width, back, fore, sel);
+	g.setColor( Defaults.BtnClr);
+	g.fill3DRect( x+3, y0, 8, 8, !isChecked);
+
+	return ih;
 }
 
 public String paramString() {

@@ -16,19 +16,13 @@ final public class StringBuffer
 	char[] buffer;
 	int used;
 	boolean isStringized;
-
-	// This is what Sun's JDK1.1 "serialver java.lang.StringBuffer" says
-	private static final long serialVersionUID = 3388685877147921107L; 
-
 	final private int SPARECAPACITY = 16;
 
-public StringBuffer()
-	{
-	buffer=new char[SPARECAPACITY];
+public StringBuffer() {
+	buffer = new char[SPARECAPACITY];
 }
 
-public StringBuffer(String str)
-	{
+public StringBuffer(String str) {
 	if ( str == null)
 		str = String.valueOf( str);
 	used   = str.length();
@@ -36,8 +30,7 @@ public StringBuffer(String str)
 	System.arraycopy(str.toCharArray(), 0, buffer, 0, used);
 }
 
-public StringBuffer(int length)
-	{
+public StringBuffer(int length) {
 	if (length<0) throw new NegativeArraySizeException();
 	buffer=new char[length];
 }
@@ -53,76 +46,63 @@ public StringBuffer append ( String str ) {
 	return (append( str.value, str.offset, str.count));
 }
 
-public StringBuffer append(boolean b)
-	{
+public StringBuffer append(boolean b) {
 	return append(String.valueOf(b));
 }
 
-public synchronized StringBuffer append(char c)
-{
+public synchronized StringBuffer append(char c) {
 	if ( used + 1 > buffer.length ) {
-		ensureCapacity(used+1);
+		ensureCapacity(used + 1);
 	}
-	if ( isStringized )
+	if ( isStringized ) {
 		deStringize();
-	
+	}
 	buffer[used++] = c;
-
 	return (this);
 }
 
-public StringBuffer append(char str[])
-{
+public StringBuffer append(char str[]) {
 	return append(str, 0, str.length);
 }
 
 public synchronized StringBuffer append ( char str[], int offset, int len ) {
-
-	if ( used + len > buffer.length )
+	if ( used + len > buffer.length ) {
 		ensureCapacity(used+len);
-		
-	if ( isStringized )
+	}
+	if ( isStringized ) {
 		deStringize();
-
+	}
 	System.arraycopy( str, offset, buffer, used, len);
 	used += len;
-
 	return this;
 }
 
-public StringBuffer append(double d)
-	{
+public StringBuffer append(double d) {
 	return append(String.valueOf(d));
 }
 
-public StringBuffer append(float f)
-	{
+public StringBuffer append(float f) {
 	return append(String.valueOf(f));
 }
 
-public StringBuffer append(int i)
-	{
+public StringBuffer append(int i) {
 	return append(String.valueOf(i));
 }
 
-public StringBuffer append(long l)
-	{
+public StringBuffer append(long l) {
 	return append(String.valueOf(l));
 }
 
-public int capacity()
-	{
+public int capacity() {
 	return buffer.length;
 }
 
-public synchronized char charAt(int index)
-	{
+public synchronized char charAt(int index) {
 	checkIndex(index);
 	return buffer[index];
 }
 
-private synchronized void checkIndex(int index) throws StringIndexOutOfBoundsException
-{
+private synchronized void checkIndex(int index) throws StringIndexOutOfBoundsException {
 	if (index < 0 || index >= used)
 		throw new StringIndexOutOfBoundsException("index = " + index + ", used = " + used);
 }
@@ -151,37 +131,35 @@ public synchronized void ensureCapacity ( int minimumCapacity ) {
 	System.arraycopy( oldBuffer, 0, buffer, 0, used);
 }
 
-public synchronized void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin)
-	{
+public synchronized void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin) {
 	checkIndex(srcBegin);
 	checkIndex(srcEnd-1);
 	System.arraycopy(buffer, srcBegin, dst, dstBegin, srcEnd-srcBegin);
 }
 
-public synchronized StringBuffer insert(int offset, Object obj)
-	{
+public synchronized StringBuffer insert(int offset, Object obj) {
 	return insert(offset, String.valueOf(obj));
 }
 
-public synchronized StringBuffer insert(int offset, String str)
-	{
-	if ( str == null)
+public synchronized StringBuffer insert(int offset, String str) {
+	if ( str == null) {
 		str = String.valueOf( str);
+	}
 	return insert(offset, str.toCharArray());
 }
 
-public StringBuffer insert(int offset, boolean b)
-	{
+public StringBuffer insert(int offset, boolean b) {
 	return insert(offset, String.valueOf(b));
 }
 
 public synchronized StringBuffer insert ( int offset, char c ) {
-	if ((offset < 0) || (offset > used))
+	if ((offset < 0) || (offset > used)) {
 		throw new StringIndexOutOfBoundsException();
-
+	}
 	ensureCapacity(used + 1);
-	if ( isStringized )
+	if ( isStringized ) {
 		deStringize();
+	}
 
 	// Copy buffer up to make space.
 	System.arraycopy(buffer, offset, buffer, offset+1, used-offset);
@@ -196,12 +174,13 @@ public synchronized StringBuffer insert ( int offset, char c ) {
 }
 
 public synchronized StringBuffer insert ( int offset, char str[] ) {
-	if ((offset < 0) || (offset > used))
+	if ((offset < 0) || (offset > used)) {
 		throw new StringIndexOutOfBoundsException();
-
+	}
 	ensureCapacity(used + str.length);
-	if ( isStringized )
+	if ( isStringized ) {
 		deStringize();
+	}
 
 	// Copy buffer up to make space.
 	System.arraycopy(buffer, offset, buffer, offset+str.length, used-offset);
@@ -215,23 +194,19 @@ public synchronized StringBuffer insert ( int offset, char str[] ) {
 	return (this);
 }
 
-public StringBuffer insert(int offset, double d)
-	{
+public StringBuffer insert(int offset, double d) {
 	return insert(offset, String.valueOf(d));
 }
 
-public StringBuffer insert(int offset, float f)
-	{
+public StringBuffer insert(int offset, float f) {
 	return insert(offset, String.valueOf(f));
 }
 
-public StringBuffer insert(int offset, int i)
-	{
+public StringBuffer insert(int offset, int i) {
 	return insert(offset, String.valueOf(i));
 }
 
-public StringBuffer insert(int offset, long l)
-	{
+public StringBuffer insert(int offset, long l) {
 	return insert(offset, String.valueOf(l));
 }
 
@@ -240,9 +215,9 @@ public int length () {
 }
 
 public synchronized StringBuffer reverse() {
-	if ( isStringized )
+	if ( isStringized ) {
 		deStringize();
-
+	}
 	for (int pos = used/2 - 1; pos >= 0; pos--) {
 		char ch = buffer[pos];
 		buffer[pos] = buffer[used-pos-1];
@@ -252,9 +227,9 @@ public synchronized StringBuffer reverse() {
 }
 
 public synchronized void setCharAt ( int index, char ch ) {
-	if ( isStringized )
+	if ( isStringized ) {
 		deStringize();
-
+	}
 	if (index < 0 || index >= used)
 		throw new StringIndexOutOfBoundsException("index = " + index + ", used = " + used);
 

@@ -1,6 +1,8 @@
 package java.awt;
 
 import java.awt.event.InputEvent;
+import java.awt.event.WindowEvent;
+import java.awt.Cursor;
 import java.util.Enumeration;
 import kaffe.util.Ptr;
 
@@ -24,7 +26,22 @@ public class Frame
 	static Insets frameInsets;
 	static Insets menuFrameInsets;
 	static Rectangle frameDeco;
-	private static final long serialVersionUID = 2673458971256075116L;
+	final private static long serialVersionUID = 2673458971256075116L;
+
+	public static final int CROSSHAIR_CURSOR = Cursor.CROSSHAIR_CURSOR;
+	public static final int DEFAULT_CURSOR = Cursor.DEFAULT_CURSOR;
+	public static final int HAND_CURSOR = Cursor.HAND_CURSOR;
+	public static final int TEXT_CURSOR = Cursor.TEXT_CURSOR;
+	public static final int WAIT_CURSOR = Cursor.WAIT_CURSOR;
+	public static final int E_RESIZE_CURSOR = Cursor.E_RESIZE_CURSOR;
+	public static final int N_RESIZE_CURSOR = Cursor.N_RESIZE_CURSOR;
+	public static final int NE_RESIZE_CURSOR = Cursor.NE_RESIZE_CURSOR;
+	public static final int NW_RESIZE_CURSOR = Cursor.NW_RESIZE_CURSOR;
+	public static final int S_RESIZE_CURSOR = Cursor.S_RESIZE_CURSOR;
+	public static final int SE_RESIZE_CURSOR = Cursor.SE_RESIZE_CURSOR;
+	public static final int SW_RESIZE_CURSOR = Cursor.SW_RESIZE_CURSOR;
+	public static final int W_RESIZE_CURSOR = Cursor.W_RESIZE_CURSOR;
+
 
 static {
 	// these are just the guesses (to be overwritten by a subsequent
@@ -182,6 +199,37 @@ public Dimension preferredSize () {
 		d.height += Defaults.MenuBarHeight;
 	}
 	return (d);
+}
+
+protected void processWindowEvent ( WindowEvent event ) {
+	// should be in Windows, but the JDK docu says Windows don't understand
+	// all of the WindowEvents (probably because they didn't implement popups
+	// w/o titlebar shading on Solaris)
+	if ( wndListener != null ) {
+		switch ( event.id ) {
+		case WindowEvent.WINDOW_OPENED:
+			wndListener.windowOpened( event);
+			break;
+		case WindowEvent.WINDOW_CLOSING:
+			wndListener.windowClosing( event);
+			break;
+		case WindowEvent.WINDOW_CLOSED:
+			wndListener.windowClosed( event);
+			break;
+		case WindowEvent.WINDOW_ICONIFIED:
+			wndListener.windowIconified( event);
+			break;
+		case WindowEvent.WINDOW_DEICONIFIED:
+			wndListener.windowDeiconified( event);
+			break;
+		case WindowEvent.WINDOW_ACTIVATED:
+				wndListener.windowActivated( event);
+			break;
+		case WindowEvent.WINDOW_DEACTIVATED:
+				wndListener.windowDeactivated( event);
+			break;
+		}
+	}
 }
 
 public void remove ( MenuComponent mc ) {

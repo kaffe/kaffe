@@ -68,6 +68,10 @@ public void adjustmentValueChanged( AdjustmentEvent e) {
 }
 
 public void componentHidden ( ComponentEvent evt ) {
+	if ( rgr != null ) {
+		// PM targeting rgr would be more clean
+		rgr.componentHidden( evt);
+	}
 }
 
 public void componentMoved ( ComponentEvent evt ) {
@@ -79,6 +83,10 @@ public void componentResized ( ComponentEvent evt ) {
 }
 
 public void componentShown ( ComponentEvent evt ) {
+	if ( rgr != null ) {
+	  // PM targeting rgr would be more clean
+		rgr.componentShown( evt);
+	}
 }
 
 public void focusGained( FocusEvent e) {
@@ -144,7 +152,7 @@ void hPosChange() {
 void innerLayout() {
 	int w = parent.width;
 	int h = parent.height;
-	int sbd = Scrollbar.SCROLLBAR_WIDTH;
+	int sbd = Defaults.ScrollbarWidth;
 
 	boolean vVis = (vScroll != null ) && vScroll.isSliderShowing();
 	boolean hVis = (hScroll != null ) && hScroll.isSliderShowing();
@@ -309,13 +317,16 @@ void setListeners() {
 }
 
 void setResGraphics () {
+	// Hmm, we don't use NativeGraphics.setTarget here, because it adds
+	// significant overhead (complete parent chain listening), and we can
+	// listen to the relevant events explicitly
 	rgr = NativeGraphics.getClippedGraphics( rgr, this, 0, 0,
                                            BORDER_WIDTH, BORDER_WIDTH,
 		                                       width - 2*BORDER_WIDTH, height - 2*BORDER_WIDTH, false);
 }
 
 void shiftVertical ( int rows, boolean updScroll) {
-	if ( rows == 0 )
+	if ( (rows == 0) || (rgr == null) )
 		return;
 
 	// PM - FIX THIS. In case we are not called from adjustmentNotify (i.e. the
@@ -327,19 +338,19 @@ void shiftVertical ( int rows, boolean updScroll) {
 	}
 
 	int d = BORDER_WIDTH;
-
 	int d2 = d*2;
 	int dy = rows * rowHeight;
+	int vr = getVisibleRows();
 
 	if ( rows < 0 ){
-		rgr.copyArea( d, d-dy, width -d2, height-d2+dy-1, 0, dy);
+		if ( -rows < vr )  // otherwise the new top wasn't visible
+			rgr.copyArea( d, d-dy, width -d2, height-d2+dy-1, 0, dy);
 
-		int sIdx = first + getVisibleRows() + rows;
-		int len = -rows + 1;
-		repaintRows( sIdx, len );
+		repaintRows( first + vr + rows, 1 - rows );
 	}
 	else {
-		rgr.copyArea( d, d, width -d2, height-d2-dy-1, 0, dy);
+		if ( rows < vr )   // otherwise the old top will not be visible anymore
+			rgr.copyArea( d, d, width -d2, height-d2-dy-1, 0, dy);
 
 		repaintRows( first, rows-1);
 	}

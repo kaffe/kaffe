@@ -9,7 +9,6 @@
  */
 
 #include "toolkit.h"
-#include <stdio.h>
 
 #if defined(HAVE_GIF_LIB_H) && (defined(HAVE_LIBGIF) || defined(HAVE_LIBUNGIF))
 #define INCLUDE_GIF 1
@@ -20,15 +19,15 @@
 #endif
 
 
+static int iOffset[] = { 0, 4, 2, 1 };
+static int iJumps[] = { 8, 8, 4, 2 };
+
+
 /**************************************************************************************
  * internal functions
  */
 
 #if defined(INCLUDE_GIF)
-
-static int iOffset[] = { 0, 4, 2, 1 };
-static int iJumps[] = { 8, 8, 4, 2 };
-
 void
 writeRow ( Image* img, GifPixelType* rowBuf, GifColorType* cm, int row )
 {
@@ -63,14 +62,13 @@ Image*
 readGif ( GifFileType *gf )
 {
   Image           *firstImg = 0, *img;
-  int             i, extCode, width, height, row, cmapSize, nFrames = 0;
+  int             i, extCode, width, height, row, cmapSize;
+  int             trans = -1, nFrames = 0, delay = 0;
   GifRecordType   rec;
   GifByteType     *ext;
   ColorMapObject  *cmap;
   GifColorType    *clrs;
   GifPixelType    *rowBuf = (GifPixelType*) AWT_MALLOC( gf->SWidth * sizeof( GifPixelType) );
-
-  img = createImage( gf->SWidth, gf->SHeight);
 
   do {
 	CHECK( DGifGetRecordType( gf, &rec));
@@ -90,14 +88,34 @@ readGif ( GifFileType *gf )
 	   * create our image objects and keep track of frames 
 	   */
 	  if ( !firstImg ) {     /* this is the first (maybe only) frame */
-		firstImg = img;
+		firstImg = img = createImage( width, height);
 	  }
 	  else {                 /* this is a subsequent gif-movie frame, link it in */
-		img->next = createImage( gf->SWidth, gf->SHeight);
-		if ( !img->latency )
-		  img->latency = 100;  /* default */
+		img->next = createImage( width, height);
 		img = img->next;
 	  }
+
+	  /*
+	   * The trans index might have been cached by a preceeding extension record. Now
+	   * that we have the Image object, it's time to store it in img and to create the
+	   * mask
+	   */
+	  if ( trans != -1 ) {
+		img->trans = trans;
+		createXMaskImage( X, img);
+		trans = -1;
+	  }
+
+	  if ( delay == 0 )
+		delay = 1000;
+	  else if ( delay < 100 )
+		delay = 100;
+
+	  img->latency = delay;
+	  img->left = gf->Image.Left;
+	  img->top = gf->Image.Top;
+	  img->frame = nFrames;
+
 	  nFrames++;
 	  createXImage( X, img);
 
@@ -129,10 +147,16 @@ readGif ( GifFileType *gf )
 	  CHECK( DGifGetExtension( gf, &extCode, &ext));
 
 	  if ( extCode == 0xf9 ) {   /* graphics extension */
+		/*
+		 * extension record with transparency spec are preceeding description records
+		 * (which create new Images), so just cache the tranp index, here
+		 */
 		if ( ext[1] & 1 ) {      /* transparent index following */
-		  img->trans = ext[4];
-		  createXMaskImage( X, img);
+		  trans = ext[4];
+		  delay = ((ext[3] << 8) | ext[2]) * 10; /* delay in 1/100 secs */
 		}
+	  }
+	  else if ( extCode == 0xff ) {  /* application extension block */
 	  }
 
 	  while ( ext != NULL ) {
@@ -182,6 +206,23 @@ readGifBuffer ( GifFileType *gf, GifByteType* buf, int length )
   }
 }
 
+/*
+ * intercept all file io and map it to AWT_xx file io maros
+ * (in order to obtain thread safety)
+ */
+typedef struct {
+  int fd;
+} FileSource;
+
+int
+readGifFileSource( GifFileType *gf, GifByteType* buf, int length )
+{
+  FileSource *psource = (FileSource*)gf->UserData;
+  int n =  AWT_READ( psource->fd, buf, length);
+
+  return (n < 0) ? 0 : n;
+}
+
 #endif /* INCLUDE_GIF */
 
 /**************************************************************************************
@@ -189,14 +230,22 @@ readGifBuffer ( GifFileType *gf, GifByteType* buf, int length )
  */
 
 Image*
-readGifFile ( FILE* infile )
+readGifFile ( int infile )
 {
   Image          *img = 0;
 
 #if defined(INCLUDE_GIF)
+
+  /*
+   * we don't use DGifOpenFile because file io might be intercepted
+   * (because of threading)
+   */
+  FileSource     fileSrc;
   GifFileType    *gf;
 
-  if ( !(gf = DGifOpenFileHandle( fileno( infile))) )
+  fileSrc.fd = infile;
+
+  if ( !(gf = DGifOpen( &fileSrc, readGifFileSource)) )
 	return 0;
 
   img = readGif( gf);

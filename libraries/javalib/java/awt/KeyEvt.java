@@ -12,38 +12,18 @@ KeyEvt ( Component src, int evtId, long time, int mods, int kCode, char kChar ) 
 }
 
 protected void dispatch () {
-
-	if ( (id == KEY_RELEASED) && (keyCode == VK_F12) )
-		((Component)source).dump( " ");
-
 	if ( AWTEvent.keyTgt != null )           // do we have a focus window?
 		source = AWTEvent.keyTgt;
-	else
+	else {
+		if ( source == null )
+			return;
 		AWTEvent.keyTgt = (Component)source;   // hmm, just a defense line
-
-	// we interpret the setEnabled spec in a way that we don't emit events for disabled comps
-	if ( (AWTEvent.keyTgt.eventMask & AWTEvent.DISABLED_MASK) != 0 ) {
-		if ( (Defaults.RecycleEvents & AWTEvent.KEY_EVENT_MASK) != 0 ) recycle();
-		return;
 	}
 
 	if ( id == KEY_PRESSED ) {
 		accelHint = true;
-		AWTEvent.keyTgt.process( this);
-
-		if ( !consumed && ShortcutHandler.handle( this) ) {
-			if ( (Defaults.RecycleEvents & AWTEvent.KEY_EVENT_MASK) != 0 ) recycle();
-			return;
-		}
-		
-		if ( keyChar != 0 ) {         // printable key
-			if ( AWTEvent.keyTgt != null ) {     // maybe a fast finger pulled the keyTgt under our feet
-				id = KEY_TYPED;
-				keyCode = 0;
-				AWTEvent.keyTgt.process( this);
-			}
-		}
-		else {                        // function key, update modifiers
+		if ( keyChar == 0 ){
+			// update modifiers for function keys
 			switch ( keyCode ) {
 			case VK_SHIFT:        inputModifier |= SHIFT_MASK; break;
 			case VK_CONTROL:      inputModifier |= CTRL_MASK;  break;
@@ -51,12 +31,30 @@ protected void dispatch () {
 			case VK_META:         inputModifier |= META_MASK;
 			}
 		}
+
+		// we interpret the setEnabled spec in a way that we don't emit events for disabled comps
+		if ( (AWTEvent.keyTgt.eventMask & AWTEvent.DISABLED_MASK) == 0 ) {
+			AWTEvent.keyTgt.process( this);
+
+			if ( !consumed && !ShortcutHandler.handle( this) ) {
+				if ( keyChar != 0 ) {         // printable key
+					if ( AWTEvent.keyTgt != null ) {     // maybe a fast finger pulled the keyTgt under our feet
+						id = KEY_TYPED;
+						keyCode = 0;
+						AWTEvent.keyTgt.process( this);
+					}
+				}
+			}
+		}	
 	}
-	else if ( id == KEY_RELEASED ) {
+	else if ( id == KEY_RELEASED ) {	
 		accelHint = false;
-		AWTEvent.keyTgt.process( this);
-	
-	 	if ( keyChar == 0 ) {
+
+		if ( (AWTEvent.keyTgt.eventMask & AWTEvent.DISABLED_MASK) == 0 ) {
+			AWTEvent.keyTgt.process( this);
+		}
+
+		if ( keyChar == 0 ) {
 			switch ( keyCode ) {
 			case VK_SHIFT:        inputModifier &= ~SHIFT_MASK; break;
 			case VK_CONTROL:      inputModifier &= ~CTRL_MASK;  break;
@@ -65,8 +63,33 @@ protected void dispatch () {
 			}
 		}
 	}
+
+	if ( (Defaults.RecycleEvents & AWTEvent.KEY_EVENT_MASK) != 0 )
+		recycle();
+}
+
+static synchronized KeyEvt getEvent ( Component source, int id, int keyCode, int keyChar, int modifier ) {
+	KeyEvt    e;
+	long      when = System.currentTimeMillis();
 	
-	if ( (Defaults.RecycleEvents & AWTEvent.KEY_EVENT_MASK) != 0 )	recycle();
+	if ( cache == null ) {
+		e = new KeyEvt( source, id, when, modifier, keyCode, (char)keyChar);
+	}
+	else {
+		e = cache;
+		cache = (KeyEvt) e.next;
+		e.next = null;
+	
+		e.id         = id;
+		e.source     = source;
+		e.when       = when;
+		e.modifiers  = modifier;
+		e.keyCode    = keyCode;
+		e.keyChar    = (char)keyChar;
+		e.consumed	 = false;
+	}
+
+	return e;
 }
 
 static synchronized KeyEvt getEvent ( int srcIdx, int id, int keyCode, int keyChar, int modifier ) {

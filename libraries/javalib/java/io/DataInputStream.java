@@ -88,24 +88,20 @@ final public int readInt() throws IOException {
  */
 final public String readLine() throws IOException {
 	final StringBuffer buffer = new StringBuffer();
-	int nread = 0;
+	final byte[] data = new byte[1];
+	boolean eof = false;
 
 	while (true) {
-		final int data = super.read();
-		final char ch = (char) (data & 0xff);
-
-		if (data == -1) {
+		if (read(data, 0, 1) != 1) {
+			eof = true;
 			break;
 		}
-		nread++;
-
+		final char ch = (char) (data[0] & 0xff);
 		if (ch == '\n') {
 			break;
 		}
 
 		if (ch == '\r') {       // Check for '\r\n'
-			int data2;
-
 			// Note that we don't know whether the InputStream
 			// implements mark() and reset(), but we're using
 			// them anyway. If they don't, then characters
@@ -117,17 +113,21 @@ final public String readLine() throws IOException {
 			// FilterInputStream...
 
 			super.mark(1);
-			data2 = super.read();
-			if (data2 != -1 && (char) (data2 & 0xff) != '\n') {
+			if (read(data, 0, 1) == 1 && data[0] != '\n') {
 				try {
 					super.reset();
-				} catch (IOException e) { }
+				}
+				catch (IOException e) {
+				}
 			}
 			break;
 		}
 		buffer.append(ch);
 	}
-	return (nread == 0) ? null : buffer.toString();
+	if (eof == true && buffer.length() == 0) {
+		return (null);
+	}
+	return (buffer.toString());
 }
 
 final public long readLong() throws IOException {

@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
 import java.util.Vector;
 
 /**
@@ -25,7 +26,7 @@ public class Choice
   extends Container
   implements ItemSelectable, ActionListener, ItemListener, MouseListener, KeyListener, FocusListener
 {
-	private static final long serialVersionUID = -4075310674757313071L;
+	final private static long serialVersionUID = -4075310674757313071L;
 	Vector items = new Vector();
 	Object selection;
 	ItemListener iListener;
@@ -40,8 +41,9 @@ class ChoiceWindow
 {
 	List list = new List();
 
-public ChoiceWindow ( Frame parent) {
-	super( parent );
+public ChoiceWindow ( Frame owner ) {
+	super( owner);
+
 	setLayout( null);
 	list.removeHScroll();
 	this.add( list);
@@ -65,6 +67,13 @@ void popUpAt( int x, int y, int width, int height) {
 	
 	prompter.list.requestFocus();
 }
+
+protected void process ( WindowEvent e ) {
+	super.process( e);
+
+	if ( e.id == WindowEvent.WINDOW_DEACTIVATED )
+		closePrompt( false);
+}
 }
 
 public Choice () {
@@ -72,6 +81,7 @@ public Choice () {
 	setBackground( Color.lightGray);
 	add ( entry);
 	
+	entry.setEditable(false);
 	entry.addActionListener( this);
 	entry.addKeyListener( this);
 	
@@ -177,10 +187,18 @@ public void itemStateChanged ( ItemEvent e) {
 	}
 }
 
-public void keyPressed( KeyEvent e) {
+public void keyPressed ( KeyEvent e ) {
+	Object src = e.getSource();
 	int cc = e.getKeyCode();
-	if ( cc == e.VK_DOWN )
-		openPrompt();
+	
+	if ( (prompter != null) && (src == prompter.list) ){
+		if ( cc == e.VK_ESCAPE )
+			closePrompt( true);
+	}
+	else {	
+		if ( cc == e.VK_DOWN )
+			openPrompt();
+	}
 }
 
 public void keyReleased( KeyEvent e) {
@@ -221,14 +239,16 @@ void notifyItem() {
 
 void openPrompt() {
 	if ( prompter == null) {
-		Frame fr = (Frame)entry.getToplevel();
-		prompter = new ChoiceWindow( fr );
+		Component top = getToplevel();
+		prompter = new ChoiceWindow( (top instanceof Frame) ? (Frame)top : null );
+		
 		Point p = getLocationOnScreen();
 		prompter.popUpAt( p.x, p.y+height+1, width,
 		                  Math.min( items.size() + 1, 8)*Defaults.WndFontMetrics.getHeight());
 		prompter.list.addItemListener( this);
 		prompter.list.addActionListener( this);
-		prompter.list.addFocusListener( this);
+		prompter.list.addKeyListener( this);
+//		prompter.list.addFocusListener( this);
 		
 		repaint();
 	}
@@ -312,6 +332,15 @@ public synchronized void removeItemListener ( ItemListener il) {
 
 public void requestFocus () {
 	entry.requestFocus();
+}
+
+public void reshape ( int x, int y, int w, int h ) {
+	super.reshape( x, y, w, h);
+	
+	// there is no need for validation of compound IS_NATIVE_LIKES, they are no Containers
+	// in JDK, so we automagically have to re-layout them
+	doLayout();
+	flags |= IS_VALID;
 }
 
 public synchronized void select ( String item) {

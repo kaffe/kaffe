@@ -17,6 +17,7 @@ public class StringTokenizer
   implements Enumeration
 {
 	private char[] input;
+	private String sinput;
 	private String delims;
 	private boolean retDelim;
 	private int position;
@@ -30,6 +31,7 @@ public StringTokenizer(String str, String delim) {
 }
 
 public StringTokenizer(String str, String delim, boolean ret) {
+	sinput = str;
 	input = str.toCharArray();
 	delims = delim;
 	retDelim = ret;
@@ -92,7 +94,8 @@ private String nextTokenInternal() {
 		position++;
 		// If we're returning them, do it now
 		if (retDelim) {
-			return (new String(input, position-1, 1));
+			return (sinput.substring(position-1, position));
+			//return (new String(input, position-1, 1));
 		}
 		// Otherwise step though stream until we've reached a
 		// non-delimiter
@@ -115,7 +118,8 @@ private String nextTokenInternal() {
 		}
 	}
 
-	return (new String(input, start, position-start));
+	return (sinput.substring(start, position));
+	//return (new String(input, start, position-start));
 }
 
 }

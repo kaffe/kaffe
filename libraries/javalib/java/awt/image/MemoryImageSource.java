@@ -14,6 +14,7 @@ package java.awt.image;
 
 import java.util.Hashtable;
 import java.util.Vector;
+import kaffe.awt.JavaColorModel;
 
 public class MemoryImageSource
   implements ImageProducer
@@ -59,11 +60,11 @@ public MemoryImageSource( int w, int h, ColorModel cm, int[] pix, int off, int s
 }
 
 public MemoryImageSource( int w, int h, int[] pix, int off, int scan) {
-	this( w, h, ColorModel.getRGBdefault(), pix, off, scan, null);
+	this( w, h, JavaColorModel.getSingleton(), pix, off, scan, null);
 }
 
 public MemoryImageSource( int w, int h, int[] pix, int off, int scan, Hashtable props) {
-	this( w, h, ColorModel.getRGBdefault(), pix, off, scan, props);
+	this( w, h, JavaColorModel.getSingleton(), pix, off, scan, props);
 }
 
 public void addConsumer( ImageConsumer ic) {

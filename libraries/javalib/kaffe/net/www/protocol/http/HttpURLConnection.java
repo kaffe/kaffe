@@ -16,15 +16,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.DataOutputStream;
 import java.io.DataInputStream;
+import java.io.BufferedInputStream;
 import java.util.StringTokenizer;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.Socket;
 import java.io.FileInputStream;
-// import java.io.IOException;
-// import java.io.InputStream;
-// import java.net.URL;
-// import java.net.URLConnection;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.awt.Toolkit;
 
 public class HttpURLConnection
@@ -34,10 +35,13 @@ final private static String[] headers = {
 	"content-encoding",
 	"content-length",
 	"content-type",
+	"content-location",
 	"date",
 	"expiration",
 	"If-Modified-Since",
 	"lastModified",
+	"location",
+	"server"
 };
 final private static int ContentEncoding = 0;
 final private static int ContentLength = 1;
@@ -48,86 +52,116 @@ final private static int IfModifiedSince = 5;
 final private static int LastModified = 6;
 
 private static String proxyHost;
-private static int proxyPort;
-private static boolean useProxy;
+private static int proxyPort = -1;
+private static boolean useProxy = false;
+
 private String[] headersValue = new String[headers.length];
 
 private Socket sock;
-private DataInputStream in;
+private InputStream in;
 private DataOutputStream out;
+private boolean redir = getFollowRedirects();
 
 static {
-    // How these properties are undocumented in the API doc.  We know 
-    // about them from www.icesoft.no's webpage
-    //
-    proxyHost = System.getProperty("http.proxyHost");
-    if (proxyHost != null) {
-	// I believe Sun also supports a http.nonProxyHosts property to
-	// avoid proxy use for local sites.  For now, we always use a
-	// proxy if these properties are set.
-	useProxy = true;
-	String pp = System.getProperty("http.proxyPort");
-	if (pp == null) {
-	    proxyPort = 80;
-	} else {
-	    proxyPort = Integer.parseInt(pp);
+	// How these properties are undocumented in the API doc.  We know
+	// about them from www.icesoft.no's webpage
+	//
+	proxyHost = System.getProperty("http.proxyHost");
+	if (proxyHost != null) {
+		// Sun also supports a http.nonProxyHosts property to
+		// avoid proxy use for local sites.  It's a regular expression
+		// like so "*.pa.dec.com|*.compaq.com"
+		// For now, we always use a proxy if these properties are set.
+		// 
+		// In JDK 1.2, the properties are read when an connection
+		// is established, allowing the use of different proxies
+		// during the run-time of a program.  FIXME
+		useProxy = true;
+		String pp = System.getProperty("http.proxyPort");
+		if (pp != null) {
+			proxyPort = Integer.parseInt(pp);
+		}
 	}
-    }
 }
+
 
 public HttpURLConnection(URL url) {
 	super(url);
 }
 
 public void connect() throws IOException {
-	int port = useProxy ? proxyPort : url.getPort();
-	if (port == -1) {
-		port = 80;
-	}
-	sock = new Socket(useProxy ? proxyHost : url.getHost(), port);
-
-	in = new DataInputStream(sock.getInputStream());
-	out = new DataOutputStream(sock.getOutputStream());
-
-	// Make the http request.
-	if (useProxy) {
-		out.writeBytes(method + " " + url.toString() + " HTTP/1.0\n\n");
-	} else {
-		String file = url.getFile();
-		if (file.equals("")) {
-			file = "/";
-		}
-		out.writeBytes(method + " " + file + " HTTP/1.0\n\n");
-	}
-
 	for (;;) {
-		String line = in.readLine();
-		if (line == null || line.equals("")) {
+		int port;
+		String host;
+		if (useProxy) {
+			port = proxyPort;
+			host = proxyHost;
+		}
+		else {
+			port = url.getPort();
+			host = url.getHost();
+		}
+		if (port == -1) {
+			port = 80;
+		}
+		sock = new Socket(host, port);
+
+		in = new BufferedInputStream(sock.getInputStream());
+		out = new DataOutputStream(sock.getOutputStream());
+
+		// Make the http request.
+		String file;
+		if (useProxy) {
+			file = url.toString();
+		}
+		else {
+			file = url.getFile();
+			if (file.equals("")) {
+				file = "/";
+			}
+		}
+		out.writeBytes(method + " " + file + " HTTP/1.0\r\n\r\n");
+		out.flush();
+
+		DataInputStream inp = new DataInputStream(in);
+		for (;;) {
+			String line = inp.readLine();
+			if (line == null || line.equals("")) {
+				break;
+			}
+			// This is the page response 
+			else if (line.startsWith("HTTP")) {
+				responseMessage = line;
+				StringTokenizer tok = new StringTokenizer(line);
+				if (tok.countTokens() >= 3) {
+					tok.nextToken();
+					try {
+						responseCode = Integer.parseInt(tok.nextToken());
+					}
+					catch (NumberFormatException _) {
+						responseCode = HTTP_SERVER_ERROR;
+					}
+				}
+			}
+			// Everything else is a colon seperated header and value.
+			else {
+				int pos = line.indexOf(':');
+				if (pos > 0) {
+					String key = line.substring(0, pos);
+					for (pos++; Character.isWhitespace(line.charAt(pos)); pos++)
+						;
+					String val = line.substring(pos);
+					setHeaderField(key, val);
+				}
+			}
+		}
+
+		// Handle redirection
+		String location = getHeaderField("location");
+		if (redir == false || responseCode < HTTP_MULT_CHOICE || responseCode > HTTP_USE_PROXY || location == null) {
 			break;
 		}
-		// This is the page response 
-		else if (line.startsWith("HTTP")) {
-			responseMessage = line;
-			StringTokenizer tok = new StringTokenizer(line);
-			if (tok.countTokens() >= 3) {
-				tok.nextToken();
-				try {
-					responseCode = Integer.parseInt(tok.nextToken());
-				}
-				catch (NumberFormatException _) {
-					responseCode = HTTP_SERVER_ERROR;
-				}
-			}
-		}
-		// Everything else is a colon seperated header and value.
-		else {
-			StringTokenizer tok = new StringTokenizer(line, " \t:");
-			if (tok.countTokens() == 2) {
-				String key = tok.nextToken();
-				String val = tok.nextToken();
-				setHeaderField(key, val);
-			}
-		}
+		url = new URL(location);
 	}
 }
 
@@ -169,7 +203,7 @@ protected void setHeaderField( String key, String value) {
 
 public Object getContent() throws IOException {
 	if (headersValue[ContentEncoding] == null) {
-		return (null);
+		return (in);
 	}
 	/*
 	 * We only understand a limited number of things so far
@@ -178,8 +212,8 @@ public Object getContent() throws IOException {
 		return (Toolkit.getDefaultToolkit().getImage(url).getSource());
 	}
 
-	// Return null if we don't understand
-	return (null);
+	// Return the input stream if we don't understand
+	return (in);
 }
 
 protected void setContentTypeFromName() {
@@ -194,10 +228,18 @@ public void disconnect() {
 	}
 	catch (IOException _) {
 	}
+	sock = null;
 }
 
 public boolean usingProxy() {
 	return (useProxy);
+}
+
+/**
+ * Used by the ICE browser.
+ */
+public void setInstanceFollowRedirects(boolean redir) {
+	this.redir = redir;
 }
 
 }

@@ -10,6 +10,8 @@
 
 package java.awt.image;
 
+import kaffe.awt.JavaColorModel;
+
 abstract public class RGBImageFilter
   extends ImageFilter
 {
@@ -52,11 +54,11 @@ public void filterRGBPixels( int x, int y, int w, int h, int[] pels, int off, in
 		}
 	}
 	
-	consumer.setPixels( x, y, w, h, ColorModel.getRGBdefault(), pels, off, scan);
+	consumer.setPixels( x, y, w, h, JavaColorModel.getSingleton(), pels, off, scan);
 }
 
 public void setColorModel( ColorModel model) {
-	ColorModel cm = ColorModel.getRGBdefault();
+	ColorModel cm = JavaColorModel.getSingleton();
 	
 	if ( (model instanceof IndexColorModel) && canFilterIndexColorModel) {
 		cm = filterIndexColorModel( (IndexColorModel) model);
