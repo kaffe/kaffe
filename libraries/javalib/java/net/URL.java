@@ -47,11 +47,6 @@ public URL(String protocol, String host, int port, String file)
 // Note special handling for "file:" that mirrors what JDK seems to do
 public URL(String protocol, String host, int port, String file,
 		URLStreamHandler handler) throws MalformedURLException {
-	if (protocol == null
-	    || (host == null && !protocol.equals("file"))
-	    || file == null) {
-		throw new NullPointerException();
-	}
 	if (protocol.equals("file") && host != null && host.length() != 0) {
 		setHandler("ftp", handler);
 	} else {

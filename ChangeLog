@@ -1,3 +1,9 @@
+2003-09-14  Dalibor Topic <robilad@kaffe.org>,
+            Helmer Kraemer  <hkraemer@freenet.de>
+
+	* libraries/javalib/java/net/URL.java:
+	(URL) Don't explicitely throw NullPointerExceptions.
+	
 2003-09-13  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/gnu/xml/aelfred2/XmlParser.java:
