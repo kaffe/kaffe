@@ -34,7 +34,7 @@ javax_comm_SRCS = \
 
 ## Do not delete the previous blank line; update-class-list depends on it
 
-EXTRA_DIST = $(jrelib_DATA) $(comm_jar_SRCS)
+EXTRA_DIST = $(comm_jar_SRCS)
 
 LIBDIR = lib
 

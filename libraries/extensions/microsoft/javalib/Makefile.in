@@ -371,7 +371,7 @@ com_ms_lang_SRCS = \
 	com/ms/lang/MulticastNotSupportedException.java \
 	com/ms/lang/MulticastDelegate.java
 
-EXTRA_DIST = $(jrelib_DATA) $(microsoft_jar_SRCS)
+EXTRA_DIST = $(microsoft_jar_SRCS)
 LIBDIR = lib
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
 Klasses_jar = $(top_srcdir)/libraries/javalib/Klasses.jar

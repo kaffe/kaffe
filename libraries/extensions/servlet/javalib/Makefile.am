@@ -43,7 +43,7 @@ javax_servlet_http_SRCS = \
 
 ## Do not delete the previous blank line; update-class-list depends on it
 
-EXTRA_DIST = $(jrelib_DATA) $(servlet_jar_SRCS)
+EXTRA_DIST = $(servlet_jar_SRCS)
 
 LIBDIR = lib
 

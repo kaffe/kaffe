@@ -1,5 +1,22 @@
 2005-02-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/extensions/comm/javalib/Makefile.am,
+	libraries/extensions/microsoft/javalib/Makefile.am,
+	libraries/extensions/pjava/javalib/Makefile.am,
+	libraries/extensions/servlet/javalib/Makefile.am:
+	(EXTRA_DIST) Removed the compiled jar files from
+	distributed source tarball.
+
+	Reported by:  David Walluck <walluck@mandrake.org>
+
+	* libraries/extensions/comm/javalib/comm.jar,
+	libraries/extensions/microsoft/javalib/microsoft.jar,
+	libraries/extensions/pjava/javalib/pjava.jar,
+	libraries/extensions/servlet/javalib/servlet.jar:
+	Removed JAR files from CVS.
+
+2005-02-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* THIRDPARTY: Updated to reflect removal of java & javac 
 	configure detection macros.
 

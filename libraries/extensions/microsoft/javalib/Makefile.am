@@ -24,7 +24,7 @@ com_ms_lang_SRCS = \
 
 ## Do not delete the previous blank line; update-class-list depends on it
 
-EXTRA_DIST = $(jrelib_DATA) $(microsoft_jar_SRCS)
+EXTRA_DIST = $(microsoft_jar_SRCS)
 
 LIBDIR = lib
 

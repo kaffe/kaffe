@@ -391,7 +391,7 @@ javax_servlet_http_SRCS = \
 	javax/servlet/http/HttpSessionContext.java \
 	javax/servlet/http/HttpUtils.java
 
-EXTRA_DIST = $(jrelib_DATA) $(servlet_jar_SRCS)
+EXTRA_DIST = $(servlet_jar_SRCS)
 LIBDIR = lib
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
 Klasses_jar = $(top_srcdir)/libraries/javalib/Klasses.jar
