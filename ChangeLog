@@ -1,5 +1,10 @@
 2004-12-09  Adam Heath  <doogie@brainfood.com>
 
+	* configure, configure.ac: If --with-jikes is given with no value,
+	  then use "$JIKESPROG +Pno-switchcheck +Pno-shadow +E."
+
+2004-12-09  Adam Heath  <doogie@brainfood.com>
+
 	* binreloc/prefix.c, binreloc/prefix.h, kaffe/kaffe/main.c,
 	  kaffe/kaffevm/stackTrace.c, kaffe/kaffevm/support.c,
 	  kaffe/kaffevm/support.h, kaffe/kaffevm/thread.c,

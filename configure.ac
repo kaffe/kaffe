@@ -669,7 +669,7 @@ dnl =========================================================================
 AC_CHECK_PROG(JIKESPROG, jikes, jikes)
 AC_ARG_WITH([jikes],
             AS_HELP_STRING([--with-jikes<=JIKES>],
-                           [Define to use jikes compiler @<:@default=no@:>@]),
+                           [Define to use jikes compiler @<:@default=no@:>@.  If yes, use jikes +Pno-switchcheck +Pno-shadow +E]),
 	[JIKES="$withval"],
 	[JIKES=""])
 
@@ -677,16 +677,16 @@ AC_MSG_CHECKING([whether to use jikes])
 
 case $with_jikes in
 yes)
+	JIKES="$JIKESPROG +Pno-switchcheck +Pno-shadow +E"
 	use_jikes="yes ($JIKES)"
-	JIKES=$JIKESPROG
 	;;
 no)
 	use_jikes="no"
 	JIKES=
 	;;
 *)
-	use_jikes="yes ($JIKES)"
 	JIKES="$with_jikes"
+	use_jikes="yes ($JIKES)"
 	;;
 esac
 
