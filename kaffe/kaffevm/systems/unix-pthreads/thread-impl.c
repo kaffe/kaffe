@@ -1227,3 +1227,27 @@ TwalkThread ( Hjava_lang_Thread* thread )
   walkConservative( base, size);
 }
 #endif
+
+/*
+ * Get the current stack limit.
+ * Adapted from kaffe/kaffevm/systems/unix-jthreads/jthread.h
+ */
+void jthread_relaxstack(int yes)
+{
+        if( yes )
+        {
+#if defined(STACK_GROWS_UP)
+                (uintp)jthread_current()->stackMax += STACKREDZONE;
+#else
+                (uintp)jthread_current()->stackMin -= STACKREDZONE;
+#endif
+        }
+        else
+        {
+#if defined(STACK_GROWS_UP)
+                (uintp)jthread_current()->stackMax -= STACKREDZONE;
+#else
+                (uintp)jthread_current()->stackMin += STACKREDZONE;
+#endif
+        }
+}

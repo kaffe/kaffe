@@ -1,5 +1,23 @@
 2004-05-26  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.h:
+	(jcondvar_signal, jcondvar_broadcast) 
+	Moved UNUSED in front of variables for g++.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	(jthread_relaxstack) New function.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h:
+	(jthread_stop, jthread_atexit, jthread_dumpthreadinfo, 
+	jthread_spinon, jthread_spinoff, jthread_suspend,
+	jthread_resume, jthread_from_data, jthread_get_usage,
+	jthread_is_interrupted) Moved UNUSED in front of variables 
+	for g++.
+	(jthread_relaxstack) Deinlined to fix compilation problems
+	with g++.
+
+2004-05-26  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.h:
 	Moved UNUSED in front of variables for g++.
 

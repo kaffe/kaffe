@@ -125,7 +125,7 @@ void jthread_enable_stop(void)
  * @param tid the thread to stop.
  */
 static inline
-void jthread_stop(jthread_t tid UNUSED)
+void jthread_stop(UNUSED jthread_t tid)
 {
 }
 
@@ -142,7 +142,7 @@ void jthread_interrupt(jthread_t tid);
  * @param func the func to execute.
  */
 static inline
-void jthread_atexit(void (* func)(void) UNUSED)
+void jthread_atexit(UNUSED void (* func)(void))
 {
 }
 
@@ -152,7 +152,7 @@ void jthread_atexit(void (* func)(void) UNUSED)
  * @param tid the thread whose info is to be dumped.
  */
 static inline
-void jthread_dumpthreadinfo(jthread_t tid UNUSED)
+void jthread_dumpthreadinfo(UNUSED jthread_t tid)
 {
 }
 
@@ -257,28 +257,8 @@ void* jthread_stacklimit(void)
 
 /*
  * Get the current stack limit.
- * Adapted from kaffe/kaffevm/systems/unix-jthreads/jthread.h
  */
-static inline 
-void jthread_relaxstack(int yes)
-{
-	if( yes )
-	{
-#if defined(STACK_GROWS_UP)
-		(uintp)jthread_current()->stackMax += STACKREDZONE;
-#else
-		(uintp)jthread_current()->stackMin -= STACKREDZONE;
-#endif
-	}
-	else
-	{
-#if defined(STACK_GROWS_UP)
-		(uintp)jthread_current()->stackMax -= STACKREDZONE;
-#else
-		(uintp)jthread_current()->stackMin += STACKREDZONE;
-#endif
-	}
-}
+void jthread_relaxstack(int yes);
 
 /**
  * yield.
@@ -295,7 +275,7 @@ void jthread_yield (void)
  *
  */
 static inline
-void jthread_spinon(int dummy UNUSED)
+void jthread_spinon(UNUSED int dummy)
 {
 }
 
@@ -304,7 +284,7 @@ void jthread_spinon(int dummy UNUSED)
  *
  */
 static inline
-void jthread_spinoff(int dummy UNUSED)
+void jthread_spinoff(UNUSED int dummy)
 {
 }
 
@@ -400,33 +380,33 @@ int jthread_get_status (jthread_t thread);
 void jthread_set_blocking (int fd, int blocking);
 
 static inline void
-jthread_suspend(jthread_t jt UNUSED, void *suspender UNUSED)
+jthread_suspend(UNUSED jthread_t jt, UNUSED void *suspender)
 {
 	/* TODO */
 }
 
 static inline void
-jthread_resume(jthread_t jt UNUSED, void *suspender UNUSED)
+jthread_resume(UNUSED jthread_t jt, UNUSED void *suspender)
 {
 	/* TODO */
 }
 
 static inline jthread_t
-jthread_from_data(threadData *td UNUSED, void *suspender UNUSED)
+jthread_from_data(UNUSED threadData *td, UNUSED void *suspender)
 {
 	/* TODO */
 	return NULL;
 }
 
 static inline
-jlong jthread_get_usage(jthread_t jt UNUSED)
+jlong jthread_get_usage(UNUSED jthread_t jt)
 {
 	/* TODO */
 	return 0;
 }
 
 static inline
-int jthread_is_interrupted(jthread_t jt UNUSED)
+int jthread_is_interrupted(UNUSED jthread_t jt)
 {
 	/* TODO */
 	return 0;

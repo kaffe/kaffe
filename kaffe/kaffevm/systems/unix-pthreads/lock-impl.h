@@ -83,14 +83,14 @@ jcondvar_initialise( jcondvar* cv )
 
 static inline
 void
-jcondvar_signal( jcondvar* cv, jmutex* mux UNUSED)
+jcondvar_signal( jcondvar* cv, UNUSED jmutex* mux)
 {
   pthread_cond_signal( cv );
 }       
 
 static inline
 void
-jcondvar_broadcast ( jcondvar* cv, jmutex* mux UNUSED)
+jcondvar_broadcast ( jcondvar* cv, UNUSED jmutex* mux)
 {
   pthread_cond_broadcast( cv );
 }
