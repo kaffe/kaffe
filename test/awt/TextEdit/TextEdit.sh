@@ -1,1 +1,0 @@
-kaffe -jar TextEdit.jar $*
