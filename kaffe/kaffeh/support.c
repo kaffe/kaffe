@@ -400,11 +400,11 @@ addField(Hjava_lang_Class* this,
 	Field* f;
 
 	if (CLASS_CONST_TAG(this, name_index) != CONSTANT_Utf8) {
-		dprintf("addMethod(): no method name.\n"); /* XXX */
+		dprintf("addField(): no method name.\n"); /* XXX */
 		return (0);
 	}
 	if (CLASS_CONST_TAG(this, signature_index) != CONSTANT_Utf8) {
-		dprintf("addMethod(): no signature name.\n"); /* XXX */
+		dprintf("addField(): no signature name.\n"); /* XXX */
 		return (0);
 	}
 
@@ -419,8 +419,8 @@ addField(Hjava_lang_Class* this,
 	 * Store enough info for the field attribute "ConstantValue" handler (setFieldValue)
 	 * to print the field name/signature/access.
 	 */
-	f->name = (void*)((u4)name_index);
-	f->type = (void*)((u4)signature_index); 
+	f->name = CLASS_CONST_UTF8(this, name_index);
+	f->type = (Hjava_lang_Class*)CLASS_CONST_UTF8(this, signature_index);
 	f->accflags = access_flags;
 	f->bsize = 0; /* not used by kaffeh */
 	f->info.idx = 0; /* not used by kaffeh */
@@ -492,34 +492,21 @@ constValueToString(Hjava_lang_Class* this, u2 idx,
 void
 setFieldValue(Hjava_lang_Class* this, Field* f, u2 idx)
 {
-	u2 name_index;
-	u2 signature_index;
-	u2 access_flags;
-	const char* arg;
-	int argsize = 0;
-
 	assert(f);
 
-	/* Pull saved info out of field (see addField()) */
-	name_index = (u2)(u4)(f->name);
-	signature_index = (u2)(u4)(f->type);
-	access_flags = f->accflags;
-
-	arg = translateSig(CLASS_CONST_UTF8(this, signature_index)->data, NULL, &argsize);
-	if (access_flags & ACC_STATIC) {
+	if ((f->accflags & (ACC_STATIC|ACC_PUBLIC|ACC_FINAL)) == (ACC_STATIC|ACC_PUBLIC|ACC_FINAL)) {
 		char cval[512];
 			
 		constValueToString(this, idx, cval, sizeof(cval));
 
-		if (((access_flags & (ACC_PUBLIC|ACC_FINAL)) == (ACC_PUBLIC|ACC_FINAL))
-		    && (cval[0] != 0)) {
+		if (cval[0] != 0) {
 			if (include != 0) {
 				fprintf(include, "#define %s_%s %s\n",
-					className, CLASS_CONST_UTF8(this, name_index)->data, cval);
+					className, f->name->data, cval);
 			}
 			if (jni_include != 0) {
 				fprintf(jni_include, "#define %s_%s %s\n",
-					className, CLASS_CONST_UTF8(this, name_index)->data, cval);
+					className, f->name->data, cval);
 			}
 		}
 	}

@@ -1,3 +1,23 @@
+2003-05-23  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffeh/support.c:
+	(addField) store name and type of field as Utf8Const*, not
+	indices into the constant pool to fix warnings on NetBSD/alpha
+	(setFieldValue) cleaned up and adapted to changes in addField
+
+	Reported by: Dan <mcmahill@mtl.mit.edu>
+	
+	* kaffe/kaffevm/itypes.c:
+	(initPrimClass) made primitive classes final
+
+	* libraries/javalib/java/lang/StringBuffer.java: 
+	(append) added missing method to append a StringBuffer
+
+	Reported by: Greg Wooledge <greg@wooledge.org>
+	
+	* libraries/javalib/java/beans/PropertyChangeSupport.java: 
+	(firePropertyChange) added missing firePropertyChange variants
+	
 2003-05-23 Helmer Kraemer  <hkraemer@freenet.de>
 
 	* libraries/javalib/Makefile.am:

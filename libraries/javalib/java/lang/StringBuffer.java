@@ -87,6 +87,10 @@ public StringBuffer append(long l) {
 	return append(String.valueOf(l));
 }
 
+public StringBuffer append (StringBuffer sb) {
+	return append (sb.buffer, 0, sb.used);
+}
+
 public int capacity() {
 	return buffer.length;
 }

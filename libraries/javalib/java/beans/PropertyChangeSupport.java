@@ -36,12 +36,39 @@ public synchronized void addPropertyChangeListener(PropertyChangeListener listen
 	addPropertyChangeListener(null, listener);
 }
 
-public void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-	// Check for equality.
-	if (oldValue != null && oldValue.equals(newValue)) {
+public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {
+	if ((oldValue == newValue) ||
+	    (!PROPERTY_LISTENERS.containsKey(null) && !PROPERTY_LISTENERS.containsKey(propertyName))) {
 		return;
 	}
 
+	firePropertyChange (propertyName, new PropertyChangeEvent (source, propertyName,
+								   new Boolean (oldValue),
+								   new Boolean (newValue)));
+}
+
+public void firePropertyChange(String propertyName, int oldValue, int newValue) {
+        if ((oldValue == newValue) ||
+            (!PROPERTY_LISTENERS.containsKey(null) && !PROPERTY_LISTENERS.containsKey(propertyName))) {
+                return;
+        }
+            
+        firePropertyChange (propertyName, new PropertyChangeEvent (source, propertyName,
+                                                                   new Integer (oldValue),
+                                                                   new Integer (newValue)));
+}
+
+public void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+	if ((oldValue!=null && oldValue.equals(newValue)) ||  
+	    (!PROPERTY_LISTENERS.containsKey(null) && !PROPERTY_LISTENERS.containsKey(propertyName))) {
+		return;
+	}
+
+	firePropertyChange (propertyName, new PropertyChangeEvent (source, propertyName,
+								   oldValue, newValue));
+}
+
+public void firePropertyChange (String propertyName, PropertyChangeEvent pce) {
 	// Is anyone interested ?
 	Vector vec = (Vector) PROPERTY_LISTENERS.get (propertyName);
         if (vec == null) {
@@ -62,9 +89,8 @@ public void firePropertyChange(String propertyName, Object oldValue, Object newV
 			return;
 		}
 	}
-	PropertyChangeEvent evt = new PropertyChangeEvent(source, propertyName, oldValue, newValue);
 	for (int dis = 0; dis < size; dis++) {
-		((PropertyChangeListener)vec.elementAt(dis)).propertyChange(evt);
+		((PropertyChangeListener)vec.elementAt(dis)).propertyChange(pce);
 	}
 }
 
