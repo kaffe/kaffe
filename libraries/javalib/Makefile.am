@@ -70,13 +70,13 @@ java_applet_SRCS = \
 	java/applet/AppletStub.java \
 	java/applet/AudioClip.java
 java_awt_SRCS = \
-	java/awt/ActiveEvent.java \
 	java/awt/AWTError.java \
 	java/awt/AWTEvent.java \
 	java/awt/AWTEventMulticaster.java \
 	java/awt/AWTException.java \
 	java/awt/AWTPermission.java \
 	java/awt/ActionEvt.java \
+	java/awt/ActiveEvent.java \
 	java/awt/Adjustable.java \
 	java/awt/AdjustmentEvt.java \
 	java/awt/BarMenu.java \
@@ -160,11 +160,11 @@ java_awt_datatransfer_SRCS = \
 	java/awt/datatransfer/Transferable.java \
 	java/awt/datatransfer/UnsupportedFlavorException.java
 java_awt_event_SRCS = \
+	java/awt/event/AWTEventListener.java \
 	java/awt/event/ActionEvent.java \
 	java/awt/event/ActionListener.java \
 	java/awt/event/AdjustmentEvent.java \
 	java/awt/event/AdjustmentListener.java \
-	java/awt/event/AWTEventListener.java \
 	java/awt/event/ComponentAdapter.java \
 	java/awt/event/ComponentEvent.java \
 	java/awt/event/ComponentListener.java \
@@ -527,8 +527,8 @@ java_security_acl_SRCS = \
 	java/security/acl/AclNotFoundException.java \
 	java/security/acl/Group.java \
 	java/security/acl/LastOwnerException.java \
-	java/security/acl/Owner.java \
 	java/security/acl/NotOwnerException.java \
+	java/security/acl/Owner.java \
 	java/security/acl/Permission.java
 java_security_cert_SRCS = \
 	java/security/cert/CRL.java \
@@ -573,8 +573,8 @@ java_security_spec_SRCS = \
 java_sql_SRCS = \
 	java/sql/Array.java \
 	java/sql/Blob.java \
-	java/sql/Clob.java \
 	java/sql/CallableStatement.java \
+	java/sql/Clob.java \
 	java/sql/Connection.java \
 	java/sql/DataTruncation.java \
 	java/sql/DatabaseMetaData.java \
@@ -857,7 +857,7 @@ kaffe_util_locale_SRCS = \
 	kaffe/util/locale/Language_it.java \
 	kaffe/util/locale/Language_ja.java \
 	kaffe/util/locale/Language_ko.java \
-	kaffe/util/locale/Language_zh.java 
+	kaffe/util/locale/Language_zh.java
 kaffe_util_log_SRCS = \
 	kaffe/util/log/LogClient.java \
 	kaffe/util/log/LogStream.java \
@@ -1017,11 +1017,11 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	echo timestamp > $(LIBDIR)/stamp
 
 $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist
-	cp kaffe/lang/unicode.idx kaffe/lang/unicode.tbl lib/kaffe/lang
+	cp $(srcdir)/kaffe/lang/unicode.idx $(srcdir)/kaffe/lang/unicode.tbl lib/kaffe/lang
 	if [ -f $(srcdir)/Klasses.jar.bootstrap ]; then \
 		mv -f $(srcdir)/Klasses.jar.bootstrap $(srcdir)/Klasses.jar.bootstrap.save; \
 	fi
-	(cd $(LIBDIR) && $(ZIP) -DX -r - `grep '\.class$$' ../bootstrap.classlist` \
+	(cd $(LIBDIR) && $(ZIP) -DX -r - `grep '\.class$$' $(srcdir)//bootstrap.classlist` \
 	 kaffe/lang/unicode.idx \
 	 kaffe/lang/unicode.tbl \
 	) > $(srcdir)/Klasses.jar.bootstrap
