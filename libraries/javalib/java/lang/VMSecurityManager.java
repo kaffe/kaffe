@@ -58,7 +58,19 @@ final class VMSecurityManager
    * @return an array of the declaring classes of each stack frame
    */
   static Class[] getClassContext() {
-    return (ThreadStack.getClassStack());
+    Class[] rawStack = ThreadStack.getClassStack();
+    int i = 0;
+    while (i < rawStack.length
+	   && (rawStack[i] == ThreadStack.class
+	       || rawStack[i] == VMSecurityManager.class
+	       || rawStack[i] == SecurityManager.class))
+      i++;
+
+    Class[] stack = new Class[rawStack.length - i];
+    for (int j = 0; j < stack.length; j++, i++)
+      stack[j] = rawStack[i];
+
+    return stack;
   }
 
   /**
