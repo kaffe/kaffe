@@ -3,7 +3,9 @@ class btest extends Thread
 
   public void run()
     {
-      System.out.println(isAlive()+" 1");
+      synchronized(this) {
+	System.out.println(isAlive()+" 1");
+      }
     }
 }
 
@@ -15,11 +17,13 @@ public class DeadThread
       int c = 0;
         
       b = new btest();
-      b.start();
-      while(b.isAlive() && c < 10)
+      synchronized(b) {
+        b.start();
+        while(b.isAlive() && c < 10)
         {
           System.out.println(++c+" "+b.isAlive());
-          try{Thread.sleep(1000);}catch(InterruptedException e){}
+          try{b.wait(1000);}catch(InterruptedException e){}
         }
+      }
     }
 }
