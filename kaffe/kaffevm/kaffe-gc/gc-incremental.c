@@ -576,7 +576,6 @@ DBG(GCSTAT,
 			goto gcend;
 		}
 
-		lockStaticMutex(&gc_lock);
 		DBG(GCSTAT, walkClassPool(gcClearCounts, NULL));
 		    
 		startGC(gcif);
@@ -621,8 +620,6 @@ DBG(GCSTAT,
 			    "-----------------------------------");
 		    walkClassPool(gcDumpCounts, NULL));
 		    
-		unlockStaticMutex(&gc_lock);
-
 		startFinalizer();
 
 		if (Kaffe_JavaVMArgs.enableVerboseGC > 0) {
@@ -691,6 +688,9 @@ startGC(Collector *gcif)
 		jvmpiPostEvent(&ev);
 	}
 #endif
+
+	KTHREAD(lockGC)();
+	lockStaticMutex(&gc_lock);
 	
 	/* disable the mutator to protect colour lists */
 	STOPWORLD();
@@ -759,7 +759,7 @@ finishGC(Collector *gcif)
 	stopTiming(&gc_time);
 	
 	RESUMEWORLD();
-
+	
 	/* 
 	 * Now move the black objects back to the white queue for next time.
 	 */
@@ -778,6 +778,9 @@ finishGC(Collector *gcif)
 			KGC_SET_COLOUR(info, idx, KGC_COLOUR_WHITE);
 		}
 	}
+	
+	KTHREAD(unlockGC)();
+	unlockStaticMutex(&gc_lock);
 
 	startTiming(&sweep_time, "gctime-sweep");
 

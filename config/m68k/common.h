@@ -24,14 +24,8 @@
 #ifndef __m68k_common_h
 #define __m68k_common_h
 
-#include "atomicity.h"
-
-/*
- * Do an atomic compare and exchange.  The address 'A' is checked against
- * value 'O' and if they match it's exchanged with value 'N'.
- * We return '1' if the exchange is successful, otherwise 0.
- */
-
-#define COMPARE_AND_EXCHANGE(A, O, N)  (compare_and_swap((long int*) A, (long int) O, (long int) N)) 
+#include "atomic.h"
+#include "katomic.h"
+#include "generic/comparexch.h"
 
 #endif

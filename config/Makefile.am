@@ -46,6 +46,7 @@ noinst_HEADERS = \
 	config-setjmp.h \
 	config-signal.h \
 	config-std.h \
+	katomic.h \
 	kaffe-unix-stack.h \
 	sysdepCallMethod-ffi.h
 
@@ -53,8 +54,10 @@ EXTRA_DIST = \
 	config.alias \
 	regen-forward \
 	stamp-h1.in \
+	generic/comparexch.h \
+	generic/genatomic.h \
 	alpha/alpha.c \
-	alpha/atomicity.h \
+	alpha/atomic.h \
 	alpha/callKaffeException.h \
 	alpha/common.h \
 	alpha/jit-alpha.def \
@@ -101,7 +104,7 @@ EXTRA_DIST = \
 	arm/threads.h \
 	arm/sysdepCallMethod.h \
 	arm/trampolines.S \
-	ia64/atomicity.h \
+	ia64/atomic.h \
 	ia64/common.h \
 	ia64/linux/config.frag \
 	ia64/linux/md.c \
@@ -109,12 +112,14 @@ EXTRA_DIST = \
 	ia64/threads.h \
 	ia64/sysdepCallMethod.h \
 	x86_64/common.h \
+	x86_64/atomic.h \
 	x86_64/linux/config.frag \
 	x86_64/linux/md.c \
 	x86_64/linux/md.h \
 	x86_64/linux/sigcontextinfo.h \
 	x86_64/threads.h \
 	x86_64/sysdepCallMethod.h \
+	i386/atomic.h \
 	i386/beos/config.frag \
 	i386/beos/jit-md.h \
 	i386/beos/jit3-md.h \
@@ -206,7 +211,7 @@ EXTRA_DIST = \
 	i386/win32/jit-md.h \
 	i386/win32/md.h \
 	i386/win32/win32-md.asm \
-	m68k/atomicity.h \
+	m68k/atomic.h \
 	m68k/a-ux/config.frag \
 	m68k/a-ux/jit-md.h \
 	m68k/a-ux/md.c \
@@ -316,8 +321,8 @@ EXTRA_DIST = \
 	powerpc/sysdepCallMethod.h \
 	powerpc/threads.h \
 	powerpc/trampolines.S \
-	s390/atomicity32.h \
-	s390/atomicity64.h \
+	powerpc/atomic.h \
+	s390/atomic.h \
 	s390/common.h \
 	s390/linux/config.frag \
 	s390/linux/md.c \
@@ -325,9 +330,9 @@ EXTRA_DIST = \
 	s390/linux/sigcontextinfo.h \
 	s390/sysdepCallMethod.h \
 	s390/threads.h \
-	sparc/atomicity-sparc32.h \
-	sparc/atomicity-sparc32v9.h \
-	sparc/atomicity-sparc64.h \
+	sparc/atomic-sparc32.h \
+	sparc/atomic-sparc32v9.h \
+	sparc/atomic-sparc64.h \
 	sparc/bsdi3/config.frag \
 	sparc/bsdi3/jit-md.h \
 	sparc/bsdi3/md.c \

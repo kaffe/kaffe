@@ -790,7 +790,6 @@ void* tRun ( void* p )
 
 	unprotectThreadList(cur);
 
-
 	if ( nCached >= MAX_CACHED_THREADS ){
 	  break;
 	}
@@ -988,8 +987,14 @@ jthread_create ( unsigned int pri, void* func, int isDaemon, void* jlThread, siz
 static
 void tDispose ( jthread_t nt )
 {
+  /* We must lock the GC to prevent any garbage collection in this
+   * function.
+   */
+  jthread_lockGC();
+
   /* Remove the static reference so the thread context may be freed. */
   KGC_rmRef(threadCollector, nt);
+
   KaffeVM_unlinkNativeAndJavaThread();
 
   pthread_detach( nt->tid);
@@ -1002,6 +1007,7 @@ void tDispose ( jthread_t nt )
    * The thread context will be automatically freed by the GC in its 
    * thread context.
    */
+  jthread_unlockGC();
 }
 
 /**
@@ -1124,7 +1130,7 @@ jthread_exit ( void )
  * Thread is being finalized - free any held resource.
  */
 void
-jthread_destroy (UNUSED jthread_t cur)
+jthread_destroy (jthread_t cur)
 {
   DBG( JTHREAD, TMSG_SHORT( "finalize ", cur));
 }
@@ -1182,6 +1188,23 @@ jthread_yield (void)
 #elif defined(HAVE_SCHED_YIELD)
   sched_yield();
 #endif
+}
+
+
+/******************************************************************************
+ * the GC lock
+ */
+
+static pthread_mutex_t GClock = PTHREAD_MUTEX_INITIALIZER;
+
+void jthread_lockGC(void)
+{
+  pthread_mutex_lock(&GClock);
+}
+
+void jthread_unlockGC(void)
+{
+  pthread_mutex_unlock(&GClock);
 }
 
 /*******************************************************************************

@@ -22,13 +22,9 @@
 /* The arm never aligns to more than a 4 byte boundary. */
 #define	ALIGNMENT_OF_SIZE(S)	((S) < 4 ? (S) : 4)
 
-/*
- * Do an atomic compare and exchange.  The address 'A' is checked against
- * value 'O' and if they match it's exchanged with value 'N'.
- * We return '1' if the exchange is successful, otherwise 0.
- */
+#define atomic_compare_and_exchange_val_acq(A, N, O) (compare_and_swap((long int *) A, (long int) O, (long int) N))
 
-
-#define COMPARE_AND_EXCHANGE(A, O, N)  (compare_and_swap((long int*) A, (long int) O, (long int) N))
+#include "katomic.h"
+#include "generic/comparexch.h"
 
 #endif

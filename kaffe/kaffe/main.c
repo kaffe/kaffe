@@ -219,7 +219,7 @@ main(int argc, char* argv[])
 		}
 	}
 
-	return (main2(global_env, argv, farg, argc));
+	return main2(global_env, argv, farg, argc);
 }
 
 /*

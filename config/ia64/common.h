@@ -31,7 +31,8 @@
 #include <ia64intrin.h>
 #endif
 
-#undef COMPARE_AND_EXCHANGE
-#define COMPARE_AND_EXCHANGE(A, O, N)  (compare_and_swap((long int*) A, (long int) O, (long int) N))
+#include "atomic.h"
+#include "katomic.h"
+#include "generic/comparexch.h"
 
 #endif

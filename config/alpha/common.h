@@ -15,8 +15,6 @@
 #ifndef __alpha_common_h
 #define __alpha_common_h
 
-#include "atomicity.h"
-
 #if defined(NEED_sysdepCallMethod)
 
 #define LONG_SYSDEP 1
@@ -26,11 +24,8 @@
 
 #endif /* defined(NEED_sysdepCallMethod) */
 
-/*
- * Do an atomic compare and exchange.  The address 'A' is checked against
- * value 'O' and if they match it's exchanged with value 'N'.
- * We return '1' if the exchange is sucessful, otherwise 0.
- */
-#define COMPARE_AND_EXCHANGE(A,O,N) (compare_and_swap((long int*) A, (long int) O, (long int) N))
+#include "atomic.h"
+#include "katomic.h"
+#include "generic/comparexch.h"
 
 #endif

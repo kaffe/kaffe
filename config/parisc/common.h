@@ -20,25 +20,8 @@
 #define NEED_STACK_ALIGN
 #define STACK_ALIGN(p)  ((((unsigned long)(p)) & 15) ^ (unsigned long)(p))
 
-/*
- * Do an atomic compare and exchange.  The address 'A' is checked against
- * value 'O' and if they match it's exchanged with value 'N'.
- * We return '1' if the exchange is sucessful, otherwise 0.
- *
- * pa doesn't have an atomic compare-and-exchange instruction. we use
- * a C version a la MIPS for now. Might not be SMP safe.
- */
-#define COMPARE_AND_EXCHANGE(A,O,N)            \
-({                                             \
-    int ret = 0;                               \
-    KTHREAD(suspendall)();                      \
-                                               \
-    if (*(A) == (O)) {                         \
-       *(A) = (N);                             \
-       ret = 1;                                \
-    }                                          \
-    KTHREAD(unsuspendall)();                    \
-    ret;                                       \
-})
+#include "generic/genatomic.h"
+#include "katomic.h"
+#include "generic/comparexch.h"
 
 #endif

@@ -285,6 +285,21 @@ void jthread_exit ( void );
 void jthread_destroy (jthread_t thread);
 
 /**
+ * Lock the special GC mutex. This mutex must be available to anyone doing
+ * some GC sensitive operations (like intra-thread handling and the GC itself).
+ * It may not be handled using the standard scheme as we can neither use fast
+ * lock at some point of the thread handling nor the standard mutex for
+ * the same reason. This call must be available in any circumstances after 
+ * jthread_init.
+ */
+void jthread_lockGC(void);
+
+/**
+ * Unlock the special GC mutex.
+ */
+void jthread_unlockGC(void);
+
+/**
  * Suspends all threads but the calling one. 
  *
  * Currently needed by the garbage collector.

@@ -20,11 +20,14 @@
 #ifndef _ATOMICITY_H
 #define _ATOMICITY_H    1
 
-static inline int
+
+/* Kaffe: Modified by Guilhem Lavaux to return the oldval */
+
+static inline long int
 __attribute__ ((unused))
 compare_and_swap (volatile long int *p, long int oldval, long int newval)
 {
-  int result, tmp;
+  long int result, tmp;
   __asm__ ("\n"
            "0:\tldr\t%1,[%2]\n\t"
            "mov\t%0,#0\n\t"
@@ -34,8 +37,11 @@ compare_and_swap (volatile long int *p, long int oldval, long int newval)
            "cmp\t%1,%0\n\t"
            "swpne\t%1,%0,[%2]\n\t"
            "bne\t0b\n\t"
-           "mov\t%0,#1\n"
+           "mov\t%0,%4\n"
+	   "jmp\t2f\n\t"
            "1:"
+	   "mov\t%0,%1\n\t"
+	   "2:"
            : "=&r" (result), "=&r" (tmp)
            : "r" (p), "r" (newval), "r" (oldval)
            : "cc", "memory");

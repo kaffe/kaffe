@@ -93,6 +93,7 @@ static KaffeNodeQueue* writeQ[FD_SETSIZE];	/* threads blocked on write */
 static jbool blockingFD[FD_SETSIZE];            /* file descriptor which should 
 						   really block */
 static jmutex threadLock;	/* static lock to protect liveThreads etc. */
+static jmutex GClock;
 
 static int sigPending;		/* flags that says whether a intr is pending */
 static int pendingSig[NSIG];	/* array that says which intrs are pending */
@@ -119,6 +120,7 @@ static int  max_priority;		/* maximum supported priority */
 static int  min_priority;		/* minimum supported priority */
 
 jthread* currentJThread = NULL;
+static jthread* firstThread = NULL;
 
 /* Context switch related functions */
 #ifndef JTHREAD_CONTEXT_SAVE
@@ -1169,6 +1171,7 @@ void jthread_resume(jthread_t jt, void *suspender)
 					jt->status = THREAD_SUSPENDED;
 				}
 				resumeThread(jt);
+				jt->suspender = NULL;
 			}
 		}
 		intsRestore();
@@ -1272,6 +1275,7 @@ jthread_init(int pre,
 	int i;
 
 	threadCollector = collector;
+	blockInts = 0;
 
 	/* XXX this is f***ed.  On BSD, we get a SIGHUP if we try to put
 	 * a process that has a pseudo-tty in async mode in the background
@@ -1391,6 +1395,8 @@ jthread_init(int pre,
 	 * XXX We should be smarter about that.
 	 */
 	activate_time_slicing();
+
+	jmutex_initialise(&GClock);
 }
 
 jthread_t
@@ -1411,6 +1417,8 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned int prio, void* jlThrea
 	jtid->localData.jlThread = jlThread;
 
 	jthread_setpriority(jtid, prio);
+
+	firstThread = jtid;
 
 	return (jtid);
 }
@@ -1921,9 +1929,11 @@ DBG(JTHREAD,
 	jmutex_lock(&threadLock);
 
 	talive--;
-	if (currentJThread->daemon) {
-		tdaemon--;
-	}
+	if (currentJThread->daemon)
+	  {
+	    tdaemon--;
+	  }
+
 	KaffeVM_unlinkNativeAndJavaThread();
 
 	assert(!(currentJThread->flags & THREAD_FLAGS_EXITING));
@@ -1934,31 +1944,55 @@ DBG(JTHREAD,
 
 	/* If we only have daemons left, then we should exit. */
 	if (talive == tdaemon) {
-DBG(JTHREAD,
-	dprintf("all done, closing shop\n");	);
-		if (runOnExit != 0) {
-		    runOnExit();
-		}
-		/* we disable interrupts while we go out to prevent a reschedule
-		 * in killThread()
-		 */
-		intsDisable();
+	  
+	  DBG(JTHREAD,
+	      dprintf("all done, closing shop\n");	);
+	  
+	  if (runOnExit != 0) {
+	    runOnExit();
+	  }
+	  /* we disable interrupts while we go out to prevent a reschedule
+	   * in killThread()
+	   */
+	  intsDisable();
+	  
+	  for (liveQ = liveThreads; liveQ != 0; liveQ = liveQ->next) {
+	    tid = JTHREADQ(liveQ);
+	    /* The current thread is still on the live
+	     * list, and we don't want to recursively
+	     * suicide.
+	     */			
+	    if (!(tid->flags & THREAD_FLAGS_EXITING) && tid != firstThread)
+	      killThread(tid);
+	  }
 
-		for (liveQ = liveThreads; liveQ != 0; liveQ = liveQ->next) {
-		        tid = JTHREADQ(liveQ);
-		        /* The current thread is still on the live
-			 * list, and we don't want to recursively
-			 * suicide.
-			 */
-			if (!(tid->flags & THREAD_FLAGS_EXITING))
-				killThread(tid);
-		}
-		EXIT(0);
+	  if (currentJThread == firstThread)
+	  {
+	      DBG(JTHREAD,  dprintf("jthread_exit(%p): we're the main thread, returning.\n", currentJThread); );
+	      return;
+	  }
+
+	  /* Wake up the first thread */
+	  DBG(JTHREAD, dprintf("jthread_exit(%p): waking up main thread.\n", currentJThread));
+	  firstThread->suspender = NULL;
+	  resumeThread(firstThread);
+
+	} else if (currentJThread == firstThread) {
+	  /* The main thread is not exiting. Remove the flag to prevent
+	   * reschedule() from killing us. */
+	  intsDisable();
+	  currentJThread->flags &= ~THREAD_FLAGS_EXITING;
+	  currentJThread->suspender = NULL;
+	  suspendOnQThread(currentJThread, NULL, NOTIMEOUT);
+	  assert(talive == tdaemon);
+	  return;
 	}
+
 	/* we disable interrupts while we go out to prevent a reschedule
 	 * in killThread()
 	 */
 	intsDisable();
+
 	for (;;) {
 		killThread(currentJThread);
 		jthread_sleep((jlong) 1000);
@@ -2417,6 +2451,22 @@ jmutex_destroy(jmutex *lock)
 {
 	assert(lock->holder == NULL);
 	assert(lock->waiting == NULL);
+}
+
+/* JThreads does not have special ambiguities concerning the
+ * handling of the GC lock.
+ */
+
+void
+jthread_lockGC(void)
+{
+  jmutex_lock(&GClock);
+}
+
+void
+jthread_unlockGC(void)
+{
+  jmutex_unlock(&GClock);
 }
 
 void

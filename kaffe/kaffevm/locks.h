@@ -46,13 +46,13 @@ struct Hjava_lang_Object;
  */
 typedef struct _iLock {
   uintp         in_progress;
-  uint16        num_wait;
-  uint8         lockCount;
+  uintp         num_wait;
   void*		holder;
   jthread_t	mux;
   jthread_t	cv;
   Ksem          sem;
-  void *lkp;
+  uint8         lockCount;
+  void*	hlockHolder;
 } iLock;
 
 typedef struct _iStaticLock {

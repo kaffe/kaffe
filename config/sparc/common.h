@@ -16,14 +16,16 @@
 
 /* Include the right compare_and_swap definition */
 #if defined(__sparcv9)
-#include "atomicity-sparc32v9.h"
+#include "atomic-sparc32v9.h"
 #else /* !defined(__sparcv9) */
 #if defined(__arch64__)
-#include "atomicity-sparc64.h"
+#include "atomic-sparc64.h"
 #else /* !defined(__arch64__) */
-#include "atomicity-sparc32.h"
+#include "atomic-sparc32.h"
 #endif /* defined(__arch64__) */
 #endif /* defined(__sparcv9) */
+
+#include "katomic.h"
 
 #if defined(NEED_sysdepCallMethod)
 
@@ -34,12 +36,6 @@
 
 #endif /* defined(NEED_sysdepCallMethod) */
 
-/*
- * Do an atomic compare and exchange.  The address 'A' is checked against
- * value 'O' and if they match it's exchanged with value 'N'.
- * We return '1' if the exchange is successful, otherwise 0.
- */
-
-#define COMPARE_AND_EXCHANGE(A, O, N)  (compare_and_swap((long int*) A, (long int) O, (long int) N))
+#include "generic/comparexch.h"
 
 #endif

@@ -20,24 +20,8 @@
 
 #include <stddef.h>
 
-/*
- * Do an atomic compare and exchange.  The address 'A' is checked against
- * value 'O' and if they match it's exchanged with value 'N'.
- * We return '1' if the exchange is sucessful, otherwise 0.
- *
- * Copied from "config/mips/common.h".
- */
-#define COMPARE_AND_EXCHANGE(A,O,N)		\
-({						\
-    int ret = 0;				\
-    KTHREAD(suspendall)();			\
-						\
-    if (*(A) == (O)) {				\
-	*(A) = (N);				\
-	ret = 1;				\
-    }						\
-    KTHREAD(unsuspendall)();			\
-    ret;					\
-})
+#include "generic/genatomic.h"
+#include "katomic.h"
+#include "generic/comparexch.h"
 
 #endif /* !defined(__sh_common_h) */

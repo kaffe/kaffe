@@ -386,6 +386,7 @@ noinst_HEADERS = \
 	config-setjmp.h \
 	config-signal.h \
 	config-std.h \
+	katomic.h \
 	kaffe-unix-stack.h \
 	sysdepCallMethod-ffi.h
 
@@ -393,8 +394,10 @@ EXTRA_DIST = \
 	config.alias \
 	regen-forward \
 	stamp-h1.in \
+	generic/comparexch.h \
+	generic/genatomic.h \
 	alpha/alpha.c \
-	alpha/atomicity.h \
+	alpha/atomic.h \
 	alpha/callKaffeException.h \
 	alpha/common.h \
 	alpha/jit-alpha.def \
@@ -441,7 +444,7 @@ EXTRA_DIST = \
 	arm/threads.h \
 	arm/sysdepCallMethod.h \
 	arm/trampolines.S \
-	ia64/atomicity.h \
+	ia64/atomic.h \
 	ia64/common.h \
 	ia64/linux/config.frag \
 	ia64/linux/md.c \
@@ -449,12 +452,14 @@ EXTRA_DIST = \
 	ia64/threads.h \
 	ia64/sysdepCallMethod.h \
 	x86_64/common.h \
+	x86_64/atomic.h \
 	x86_64/linux/config.frag \
 	x86_64/linux/md.c \
 	x86_64/linux/md.h \
 	x86_64/linux/sigcontextinfo.h \
 	x86_64/threads.h \
 	x86_64/sysdepCallMethod.h \
+	i386/atomic.h \
 	i386/beos/config.frag \
 	i386/beos/jit-md.h \
 	i386/beos/jit3-md.h \
@@ -546,7 +551,7 @@ EXTRA_DIST = \
 	i386/win32/jit-md.h \
 	i386/win32/md.h \
 	i386/win32/win32-md.asm \
-	m68k/atomicity.h \
+	m68k/atomic.h \
 	m68k/a-ux/config.frag \
 	m68k/a-ux/jit-md.h \
 	m68k/a-ux/md.c \
@@ -656,8 +661,8 @@ EXTRA_DIST = \
 	powerpc/sysdepCallMethod.h \
 	powerpc/threads.h \
 	powerpc/trampolines.S \
-	s390/atomicity32.h \
-	s390/atomicity64.h \
+	powerpc/atomic.h \
+	s390/atomic.h \
 	s390/common.h \
 	s390/linux/config.frag \
 	s390/linux/md.c \
@@ -665,9 +670,9 @@ EXTRA_DIST = \
 	s390/linux/sigcontextinfo.h \
 	s390/sysdepCallMethod.h \
 	s390/threads.h \
-	sparc/atomicity-sparc32.h \
-	sparc/atomicity-sparc32v9.h \
-	sparc/atomicity-sparc64.h \
+	sparc/atomic-sparc32.h \
+	sparc/atomic-sparc32v9.h \
+	sparc/atomic-sparc64.h \
 	sparc/bsdi3/config.frag \
 	sparc/bsdi3/jit-md.h \
 	sparc/bsdi3/md.c \
@@ -828,7 +833,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/alpha $(distdir)/alpha/linux $(distdir)/alpha/netbsd1 $(distdir)/alpha/osf $(distdir)/arm $(distdir)/arm/linux $(distdir)/arm/netbsd1 $(distdir)/arm/riscos $(distdir)/i386 $(distdir)/i386/beos $(distdir)/i386/bsdi $(distdir)/i386/cygwin32 $(distdir)/i386/darwin $(distdir)/i386/dgux $(distdir)/i386/freebsd2 $(distdir)/i386/gnu $(distdir)/i386/linux $(distdir)/i386/netbsd1 $(distdir)/i386/nextstep3 $(distdir)/i386/openbsd2 $(distdir)/i386/oskit $(distdir)/i386/qnx $(distdir)/i386/sco3.2v5 $(distdir)/i386/solaris2 $(distdir)/i386/univel_svr4 $(distdir)/i386/win32 $(distdir)/ia64 $(distdir)/ia64/linux $(distdir)/m68k $(distdir)/m68k/a-ux $(distdir)/m68k/amigaos $(distdir)/m68k/linux $(distdir)/m68k/netbsd1 $(distdir)/m68k/nextstep3 $(distdir)/m68k/openbsd2 $(distdir)/m68k/sunos4 $(distdir)/mips $(distdir)/mips/irix5 $(distdir)/mips/linux $(distdir)/mips/netbsd1 $(distdir)/mips/ultrix4 $(distdir)/parisc $(distdir)/parisc/hpux $(distdir)/parisc/linux $(distdir)/powerpc $(distdir)/powerpc/aix $(distdir)/powerpc/darwin $(distdir)/powerpc/linux $(distdir)/powerpc/machten $(distdir)/powerpc/netbsd1 $(distdir)/s390 $(distdir)/s390/linux $(distdir)/sh $(distdir)/sh/linux $(distdir)/sparc $(distdir)/sparc/bsdi3 $(distdir)/sparc/linux $(distdir)/sparc/netbsd1 $(distdir)/sparc/nextstep3 $(distdir)/sparc/openbsd2 $(distdir)/sparc/solaris2 $(distdir)/sparc/sunos4 $(distdir)/sparc/uxpds $(distdir)/x86_64 $(distdir)/x86_64/linux
+	$(mkdir_p) $(distdir)/alpha $(distdir)/alpha/linux $(distdir)/alpha/netbsd1 $(distdir)/alpha/osf $(distdir)/arm $(distdir)/arm/linux $(distdir)/arm/netbsd1 $(distdir)/arm/riscos $(distdir)/generic $(distdir)/i386 $(distdir)/i386/beos $(distdir)/i386/bsdi $(distdir)/i386/cygwin32 $(distdir)/i386/darwin $(distdir)/i386/dgux $(distdir)/i386/freebsd2 $(distdir)/i386/gnu $(distdir)/i386/linux $(distdir)/i386/netbsd1 $(distdir)/i386/nextstep3 $(distdir)/i386/openbsd2 $(distdir)/i386/oskit $(distdir)/i386/qnx $(distdir)/i386/sco3.2v5 $(distdir)/i386/solaris2 $(distdir)/i386/univel_svr4 $(distdir)/i386/win32 $(distdir)/ia64 $(distdir)/ia64/linux $(distdir)/m68k $(distdir)/m68k/a-ux $(distdir)/m68k/amigaos $(distdir)/m68k/linux $(distdir)/m68k/netbsd1 $(distdir)/m68k/nextstep3 $(distdir)/m68k/openbsd2 $(distdir)/m68k/sunos4 $(distdir)/mips $(distdir)/mips/irix5 $(distdir)/mips/linux $(distdir)/mips/netbsd1 $(distdir)/mips/ultrix4 $(distdir)/parisc $(distdir)/parisc/hpux $(distdir)/parisc/linux $(distdir)/powerpc $(distdir)/powerpc/aix $(distdir)/powerpc/darwin $(distdir)/powerpc/linux $(distdir)/powerpc/machten $(distdir)/powerpc/netbsd1 $(distdir)/s390 $(distdir)/s390/linux $(distdir)/sh $(distdir)/sh/linux $(distdir)/sparc $(distdir)/sparc/bsdi3 $(distdir)/sparc/linux $(distdir)/sparc/netbsd1 $(distdir)/sparc/nextstep3 $(distdir)/sparc/openbsd2 $(distdir)/sparc/solaris2 $(distdir)/sparc/sunos4 $(distdir)/sparc/uxpds $(distdir)/x86_64 $(distdir)/x86_64/linux
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

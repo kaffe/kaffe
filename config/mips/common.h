@@ -32,37 +32,13 @@
 
 #if defined(HAVE_MIPSII_INSTRUCTIONS)
 #include "atomicity.h"
-#endif /* defined(HAVE_MIPSII_INSTRUCTIONS) */
-
-#if defined(HAVE_MIPSII_INSTRUCTIONS)
-
-/*
- * Do an atomic compare and exchange.  The address 'A' is checked against
- * value 'O' and if they match it's exchanged with value 'N'.
- * We return '1' if the exchange is sucessful, otherwise 0.
- */
-#define COMPARE_AND_EXCHANGE(A,O,N)	(compare_and_swap((long int*) A, (long int) O, (long int) N))
-
 #else
 
-/*
- * Do an atomic compare and exchange.  The address 'A' is checked against
- * value 'O' and if they match it's exchanged with value 'N'.
- * We return '1' if the exchange is sucessful, otherwise 0.
- */
-#define COMPARE_AND_EXCHANGE(A,O,N)		\
-({						\
-    int ret = 0;				\
-    KTHREAD(suspendall)();			\
-						\
-    if (*(A) == (O)) {				\
-	*(A) = (N);				\
-	ret = 1;				\
-    }						\
-    KTHREAD(unsuspendall)();			\
-    ret;					\
-})
+#define "generic/genatomic.h"
 
-#endif
+#endif /* defined(HAVE_MIPSII_INSTRUCTIONS) */
+
+#include "generic/comparexch.h"
+#include "katomic.h"
     
 #endif

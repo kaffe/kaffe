@@ -15,12 +15,6 @@
 #ifndef __s390_h
 #define __s390_h
 
-#if defined(__s390x__)
-#include "atomicity64.h"
-#else
-#include "atomicity32.h"
-#endif /* defined(__s390x__) */
-
 /* The s390 gcc port aligns to the appropriate boundary: 1->1, 2->2, 4->4,
    and 8->8.  So alignment is pretty simple: */
 #define  ALIGNMENT_OF_SIZE(S) (S)
@@ -47,11 +41,8 @@ typedef int64  profiler_click_t;
 
 #endif
 
-/*
- * Do an atomic compare and exchange.  The address 'A' is checked against  
- * value 'O' and if they match it's exchanged with value 'N'.
- * We return '1' if the exchange is sucessful, otherwise 0.
- */
-#define COMPARE_AND_EXCHANGE(A, O, N)  (compare_and_swap((long int*) A, (long int) O, (long int) N))
+#include "atomic.h"
+#include "katomic.h"
+#include "generic/comparexch.h"
 
 #endif /* __s390_h */

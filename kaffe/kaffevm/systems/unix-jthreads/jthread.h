@@ -239,7 +239,7 @@ void 	jthread_interrupt(jthread_t jtid);
 /*
  * have the current thread exit
  */
-void 	jthread_exit(void) NONRETURNING;
+void 	jthread_exit(void);
 
 /*
  * determine whether a location is on the stack of the current thread
@@ -292,6 +292,16 @@ void jthread_suspendall(void);
  * In this uniprocessor implementation, this is simple.
  */
 void jthread_unsuspendall(void);
+
+/** 
+ * Special GC mutex lock.
+ */
+void jthread_lockGC(void);
+
+/**
+ * Special GC mutex unlock.
+ */
+void jthread_unlockGC(void);
 
 /*
  * Print info about a given jthread to stderr

@@ -40,8 +40,8 @@ struct Ksem;
 #ifndef THREAD_SYSTEM_HAS_KSEM
 
  extern void ksem_init(struct Ksem* sem);
- extern void ksem_put(struct Ksem* sem);
- extern jboolean ksem_get(struct Ksem* sem, jlong timeout);
+ extern void ksem_put(volatile struct Ksem* sem);
+ extern jboolean ksem_get(volatile struct Ksem* sem, jlong timeout);
  extern void ksem_destroy(struct Ksem* sem);
 
 /*

@@ -55,20 +55,9 @@ typedef uint64 profiler_click_t;
 
 #endif
 
-#if defined(__GNUC__)
-/*
- * Do an atomic compare and exchange.  The address 'A' is checked against  
- * value 'O' and if they match it's exchanged with value 'N'.
- * We return '1' if the exchange is sucessful, otherwise 0.
- */
-#define COMPARE_AND_EXCHANGE(A,O,N)                             \
-        ({ char ret;                                            \
-           asm volatile ("lock ; cmpxchgq %2,%1 ; sete %0"      \
-                         : "=q" (ret), "+m" (*(A))              \
-                         : "r" (N), "a" (O)                     \
-                         : "cc", "memory");                     \
-           (ret);                                               \
-        })
-#endif
+
+#include "atomic.h"
+#include "katomic.h"
+#include "generic/comparexch.h"
 
 #endif

@@ -1,3 +1,77 @@
+2005-03-20  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/Makefile.am: Updated EXTRA_DIST and noinst_HEADERS.
+
+	* config/Makefile.in, config/config.h.in: Regenerated.
+
+	* config/katomic.h,
+	config/alpha/atomic.h,
+	config/generic/comparexch.h,
+	config/generic/genatomic.h,
+	config/i386/atomic.h,
+	config/ia64/atomic.h,
+	config/m68k/atomic.h,
+	config/powerpc/atomic.h,
+	config/s390/atomic.h,
+	config/sparc/atomic-sparc32.h,
+	config/sparc/atomic-sparc32v9.h,
+	config/sparc/atomic-sparc64.h,
+	config/x86_64/atomic.h: New files.
+
+	* config/alpha/atomicity.h,
+	config/ia64/atomicity.h,
+	config/m68k/atomicity.h,
+	config/s390/atomicity32.h,
+	config/s390/atomicity64.h,
+	config/sparc/atomicity-sparc32.h,
+	config/sparc/atomicity-sparc32v9.h,
+	config/sparc/atomicity-sparc64.h: Removed files.
+
+	* config/arm/atomicity.h
+	(compare_and_swap): Modified to return the old value as needed by
+	katomic.h.
+	
+	* config/alpha/common.h,
+	config/arm/common.h,
+	config/i386/common.h,
+	config/ia64/common.h,
+	config/m68k/common.h,
+	config/mips/common.h,
+	config/parisc/common.h,
+	config/powerpc/common.h,
+	config/s390/common.h,
+	config/sh/common.h,
+	config/sparc/common.h,
+	config/x86_64/common.h: Use the common code in generic/*.
+	
+	* kaffe/kaffe/main.c: Removed some parenthesis.
+
+	* kaffe/kaffevm/locks.c: Fixed warnings which has appeared after
+	atomic* merge. Fixed the use of the volatile modifier.
+	(getHeavyLock): Use atomic_decrement and atomic_increment.
+
+	* kaffe/kaffevm/ksem.c, kaffe/kaffevm/ksem.h:
+	Fixed the use of the volatile modifier.
+	
+	* kaffe/kaffevm/locks.h
+	(iLock): Use uintp for num_wait because COMPARE_AND_EXCHANGE likes
+	big registers and uint16 could have cause overlap with the next field.
+
+	* kaffe-gc/gc-incremental.c:
+	(gcMan): Use KTHREAD(lockGC) to prevent deadlocks.
+	(startGC, stopGC): Moved lock to these functions.
+	
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.h
+	(jthread_lockGC, jthread_unlockGC): New functions.
+	(jthread_init): Initialize GClock.
+	(jthread_createfirst): Remember the first thread.
+	(jthread_exit): Follows JNI specification when exiting the VM.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-impl.h
+	(jthread_lockGC, jthread_unlockGC): New functions.
+	
 2005-03-20  Jeff Bailey  <jbailey@raspberryginger.com>
 
 	* kaffe/kaffevm/jit/Makefile.am,
