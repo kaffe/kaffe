@@ -1,3 +1,16 @@
+Wed Feb 23 09:46:26 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/kaffe/util/UTF8.java: add new decode() methods
+	* libraries/javalib/java/util/zip/ZipInputStream.java,
+        libraries/javalib/java/util/zip/ZipOutputStream.java: fix UTF-8 stuff
+        * libraries/javalib/Klasses.jar: regen
+
+Tue Feb 22 17:02:40 CET 2000  Moses DeJong <dejong@cs.umn.edu>
+
+        * libraries/javalib/java/util/zip/ZipOutputStream.java: Fixed
+	  bug caused by writing the default crc value of a compressed
+	  ZipEntry. Output now matches Sun output.
+
 Sun Feb 20 17:00:34 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/AbstractCollection.java: fix
