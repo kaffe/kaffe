@@ -1,5 +1,10 @@
 2004-12-29  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* config/sparc/jit-sparc.def: Renamed setEpilogueLabel to match the
+	new symbol names.
+
+2004-12-29  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/jsignal.h,
 	kaffe/kaffevm/systems/unix-jthreads/jsignal.h,
 	kaffe/kaffevm/systems/unix-pthreads/signal.c,

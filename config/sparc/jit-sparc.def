@@ -140,7 +140,7 @@ define_insn(prologue, prologue_xLC)
 
 define_insn(epilogue, epilogue_xxx)
 {
-	setEpilogueLabel ((uintp)CODEPC);
+	KaffeJIT_setEpilogueLabel ((uintp)CODEPC);
 
 	insn_RRC(2, (unsigned int)0x38, REG_g0, REG_i7, 8);
 	insn_RRR(0x3D, REG_g0, REG_g0, REG_g0);
