@@ -1,5 +1,17 @@
 2005-01-01  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/intrp/methodcalls.c,
+	kaffe/kaffevm/jit/methodcalls.c
+	(engine_callMethod): Clear the return value to be sure that no
+	bits are one.
+	
+	* kaffe/kaffevm/systems/unix-jthreads/signal.c,
+	kaffe/kaffevm/systems/unix-pthreads/signal.c
+	(detectStackBoundaries): Restore old signal handlers for SIGSEGV
+	and SIGBUS.
+
+2005-01-01  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	First bug fix of the year ! :)
 
 	* kaffe/kaffevm/external.c: Adapted error handling to darwin's and

@@ -480,13 +480,13 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 	jtid->stackCur = jtid->stackMin;
 #endif
 
+	/* We restore the old signal handlers (SIG_DFL and SIG_IGN are included.
+	 */ 
 #if defined(SIGSEGV)
-	if (handler_segv != NULL)
-	  registerSyncSignalHandler(SIGSEGV, handler_segv);
+	registerSignalHandler(SIGSEGV, handler_segv, false);
 #endif
 #if defined(SIGBUS)
-	if (handler_bus != NULL)
-	  registerSyncSignalHandler(SIGBUS, handler_bus);
+	registerSignalHandler(SIGBUS, handler_bus, false);
 #endif
 }
 

@@ -123,11 +123,12 @@ floatingException(EXCEPTIONPROTO)
  * OS signal handling code.  See FAQ/FAQ.jsignal for information.
  * ----------------------------------------------- */
 
-static void
+static void *
 registerSignalHandler(int sig, void* handler, int isAsync)
 {
 #if defined(HAVE_SIGACTION)
 	struct sigaction newact;
+	struct sigaction oldact;
 
 	newact.sa_handler = (SIG_T)handler;
 	sigemptyset(&newact.sa_mask);
@@ -156,11 +157,12 @@ registerSignalHandler(int sig, void* handler, int isAsync)
 #if defined(SA_RESTART)
 	newact.sa_flags |= SA_RESTART;
 #endif
-	sigaction(sig, &newact, NULL);
+	sigaction(sig, &newact, &oldact);
 
+	return oldact.sa_handler;
 #elif defined(HAVE_SIGNAL)
 #warning The default signal() semantics may not be sufficient for Kaffe.
-	signal(sig, (SIG_T)handler);
+	return signal(sig, (SIG_T)handler);
 
 #else
 #error No signal handler support.  Jthreads requires signal support.	
@@ -171,7 +173,7 @@ registerSignalHandler(int sig, void* handler, int isAsync)
 /*
  * Register a handler for an asynchronous signal.
  */
-void
+void *
 registerAsyncSignalHandler(int sig, void* handler)
 {
 #if !defined(NDEBUG)
@@ -196,13 +198,13 @@ registerAsyncSignalHandler(int sig, void* handler)
 	 * Register an asynchronous signal handler that will block all
 	 * other asynchronous signals while the handler is running.
 	 */
-	registerSignalHandler(sig, handler, true);
+	return registerSignalHandler(sig, handler, true);
 }
 
 /*
  * Register a signal handler for a synchronous signal.
  */
-void
+void *
 registerSyncSignalHandler(int sig, void* handler)
 {
 #if !defined(NDEBUG)
@@ -225,7 +227,7 @@ registerSyncSignalHandler(int sig, void* handler)
 	assert(validSig);
 	
 	/* Register a synchronous signal handler */
-	registerSignalHandler(sig, handler, false);
+	return registerSignalHandler(sig, handler, false);
 }
 
 /*
@@ -443,14 +445,15 @@ void
 detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 {
 	static volatile char *guessPointer;
+	void *old_sigsegv, *old_sigbus;
 
 	setupSigAltStack();
 
 #if defined(SIGSEGV)
-	registerSyncSignalHandler(SIGSEGV, stackOverflowDetector);
+	old_sigsegv = registerSyncSignalHandler(SIGSEGV, stackOverflowDetector);
 #endif
 #if defined(SIGBUS)
-	registerSyncSignalHandler(SIGBUS, stackOverflowDetector);
+	old_sigbus = haregisterSyncSignalHandler(SIGBUS, stackOverflowDetector);
 #endif
 	
 	if (JTHREAD_SETJMP(outOfLoop) == 0)
@@ -483,6 +486,13 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 	jtid->stackEnd = guessPointer;
 	jtid->stackBase = (char *)jtid->stackEnd - mainThreadStackSize;
 	jtid->restorePoint = jtid->stackBase;
+#endif
+
+#if defined(SIGSEGV)
+	registerSignalHandler(SIGSEGV, old_sigsegv, false);
+#endif
+#if defined(SIGBUS)
+	registerSignalHandler(SIGBUS, old_sigbus, false);
 #endif
 }
 

@@ -101,6 +101,11 @@ engine_callMethod (callMethodInfo *call)
 			lockObject(syncobj);
 		}
 
+		/* Put 0 in the biggest field. This is needed for some architecture which stores
+		 * the bytes out of order. */
+		if (call->ret != NULL)
+		  call->ret->j = 0;
+
 		setupExceptionHandling(&mjbuf, meth, syncobj, thread_data);
 
 		/* This exception has yet been handled by the VM creator.

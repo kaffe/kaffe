@@ -193,5 +193,8 @@ engine_buildTrampoline (Method *meth, void **where, errorInfo *einfo)
 void
 engine_callMethod (callMethodInfo *call)
 {
+	/* Clear the long value to clear the all return value. */
+	if (call->ret != NULL)
+	  call->ret->j = 0;
 	sysdepCallMethod (call);
 }
