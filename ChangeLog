@@ -1,3 +1,8 @@
+Fri Dec 10 17:03:08 PST 1999  Dalibor Topic <dtopic@socs.uts.edu.au>
+
+	* libraries/javalib/java/io/StreamTokenizer.java: fix bugs
+	in lineno() and toString() methods
+
 Thu Dec  9 11:51:04 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/net/URLDecoder.java: fix bug parsing %xx
