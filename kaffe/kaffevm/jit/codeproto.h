@@ -25,6 +25,7 @@ void _start_exception_block(uintp);
 void finish_function(void);
 
 void move_any(SlotInfo*, SlotInfo*);
+void move_anylong(SlotInfo*, SlotInfo*);
 
 void move_int_const(SlotInfo*, jint);
 void move_ref_const(SlotInfo*, void*);

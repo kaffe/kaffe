@@ -22,6 +22,7 @@
 #include "machine.h"
 #include "basecode.h"
 #include "icode.h"
+#include "icode_internal.h"
 #include "labels.h"
 #include "constpool.h"
 #include "codeproto.h"
@@ -106,10 +107,7 @@ struct {
 
 extern int enable_readonce;
 
-void	initInsnSequence(int, int, int);
-void	finishInsnSequence(nativeCodeInfo*);
 static void generateInsnSequence(void);
-void	installMethodCode(Method*, nativeCodeInfo*);
 static void checkCaughtExceptions(Method* meth, int pc);
 
 void	endBlock(sequence*);
@@ -125,8 +123,6 @@ jlong	currentTime(void);
 void
 translate(Method* meth)
 {
-	int i;
-
 	jint low;
 	jint high;
 	jlong tmpl;
@@ -140,12 +136,11 @@ translate(Method* meth)
 	int len;
 	callInfo cinfo;
 	fieldInfo finfo;
-	Field *field;
 	Hjava_lang_Class* crinfo;
 
 	nativeCodeInfo ncode;
 
-	int64 tms;
+	int64 tms = 0;
 	int64 tme;
 
 	static iLock translatorlock;

@@ -16,6 +16,8 @@
 #include "registers.h"
 #include "icode.h"
 #include "basecode.h"
+#include "labels.h"
+#include "codeproto.h"
 #include "md.h"
 
 #define	ASSIGNSLOT(D, S)	(D).s.slot = (S); \
@@ -40,8 +42,6 @@ _slot_slot_const(SlotInfo* dst, SlotInfo* s1, jword s2, ifunc f, int type)
 {
 	sequence* seq;
 #if defined(TWO_OPERAND)
-	SlotInfo* olddst = 0;
-
 	/* Two operand systems cannot handle three operand ops.
 	 * We need to fixit so the dst is one of the source ops.
 	 */
