@@ -1,3 +1,8 @@
+2004-05-23  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/kjc.jar: Regenerated after removing the wrongly
+	optimized code.
+
 2004-05-22  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/kjc.jar: Regenerated.
