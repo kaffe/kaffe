@@ -8,12 +8,6 @@
  * Make runtime engine runtime selectable
  * Make gc backend runtime selectable
 
-* Nasty bugs:
- * Fix FreeBSD -posix CFLAGS breakage
- * Hope for someone to regenerate the Classpath locale data soon enough
-   to include collator information necessary fot gjdoc.
- * Make javac wrap jikes with appropriate bootclasspath setting for now.
-
 * Missing features
  * Implement support for extension override mechanism, and allow overriding
    with older versions of APIs as well, which is needed for DOM.

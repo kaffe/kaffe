@@ -1,5 +1,10 @@
 2005-03-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO: Removed all nasty bugs, as they were all fixed. Wow!
+	Looks like the release is really getting closer.
+
+2005-03-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/Makefile.am.in (EXTRA_DIST, dist-hook):
 	Copy source code manually to avoid automake bugs. This fixes
 	make distcheck again.
