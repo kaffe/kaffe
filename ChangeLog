@@ -1,3 +1,9 @@
+Thu Feb 11 16:03:18 1999  Patrick Tullmann <tullmann@cs.utah.edu>
+
+	* developers/JavaClass.pm, developer/dumpClass.pl,
+	developer/utf8munge.pl:  useful perl5 scripts for manipulating .class
+	files.
+
 Thu Feb 11 14:25:46 1999  Moses DeJong <dejong@cs.umn.edu>
 
 	* libraries/javalib/java/util/zip/ZipEntry.java,
