@@ -1,3 +1,12 @@
+2003-02-13 Peter Naulls <peter@chocky.org>
+
+	* config/config-hacks.h,
+	configure.in:
+	Use __arm__ to detect an arm platform.
+
+	* config/config-hacks.h:
+	fixed a typo and a comment on arm platform.
+	
 2003-02-13 Timothy S Stack <stack@cs.utah.edu>
 
         * configure.in:

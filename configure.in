@@ -1052,7 +1052,7 @@ AC_CACHE_CHECK([whether strtod(\"-0.0\") is broken],
     AC_TRY_RUN([
 #include <stdlib.h>
 /* definition DOUBLE_ORDER_OPPOSITE from config/config-hacks.h */
-#if defined(arm32) || (defined(arm) && defined(linux))
+#if defined(__arm__)
 #define DOUBLE_ORDER_OPPOSITE
 #endif
 /* definition of uint32 from kaffe/kaffevm/gtypes.h */

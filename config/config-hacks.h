@@ -22,7 +22,7 @@
 #define HAVE_DYN_UNDERSTORE 1
 #endif  
 
-/* Hack for Window's */ 
+/* Hack for Windows */
 #if defined(__WIN32__) || defined(WIN32) || defined(_WIN32)
 #undef	__WIN32__
 #define __WIN32__ 1
@@ -68,15 +68,14 @@
 #define	HAVE_UNALIGNEDACCESS
 #endif
 
-/* The arm32, while being a little endian machine, uses a big endian
- * word order for its doubles.  The arm32 uses software floating point 
- * emulation.  We define this constant to declare that the word order
- * in a 64bit double is the opposite of the word order in a 64bit int.
+/* ARM processors, in little endian mode, use a big endian word order for
+ * doubles.  We define this constant to declare that the word order in a
+ * 64 bit double is the opposite of the word order in a 64 bit int.
  *
  * If you change this definition, also change strtod("-0.0") check
  * in configure.in.
  */
-#if defined(arm32) || (defined(arm) && defined(linux))
+#if defined(__arm__)
 #define DOUBLE_ORDER_OPPOSITE
 #endif
 
