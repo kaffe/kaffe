@@ -160,15 +160,16 @@
 	unsigned int tmp, ret = 0;		\
 						\
 	asm volatile(				\
+	"	clrl	%1\n"			\
 	"1:	movel	%2, %0\n"		\
 	"	cmpl	%4, %0\n"		\
 	"	bne	2f\n"			\
 	"	casl	%0, %5, %2\n"		\
 	"	bne	1b\n"			\
-	"	movl	#1, %1\n"		\
+	"	movq	#1, %1\n"		\
 	"2:\n"					\
-	: "=&r" (tmp), "=&r" (ret), "=m" (*(A))	\
-	: "m" (*(A)), "r" (O), "r" (N)		\
+	: "=&r" (tmp), "=&d" (ret), "=m" (*(A))	\
+	: "m" (*(A)), "d" (O), "d" (N)		\
 	: "memory");				\
 						\
 	ret;					\

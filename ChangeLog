@@ -1,3 +1,23 @@
+2003-03-07 Tony Wyatt <wyattaw@optushome.com.au>
+
+	* configure/m68k/common.h:
+	The COMPARE_AND_EXCHANGE macro has been modified to make it
+	work. I have modified it to work in all three of the calls in
+	locks.c, without the assembler syntax errors that it originally
+	generated.
+
+	* configure/m68k/threads.h:
+	I have removed the definition of "SP_OFFSET" from this common
+	file. Since it is peculiar to each OS, it belongs in the next
+	level down in the source tree. Other OS versions that do not
+	define their own values for SP_OFFSET, will  now fail. Those that
+	do not define SP_OFFSET and are now broken are a-ux, nextstep3 and
+	openbsd2.
+
+	* config/m68k/amigaos/md.h:
+	I have added an #include of "common.h" which was omitted.
+	I have added the definition of SP_OFFSET.
+	
 2003-03-07 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/Klasses.jar.bootstrap:

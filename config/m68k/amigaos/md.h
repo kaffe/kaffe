@@ -18,6 +18,12 @@
 #define __m68k_amigaos_md_h
 
 #include "m68k/threads.h"
+#include "m68k/common.h"
+
+/*	Define Stack Offset
+*/
+#undef	SP_OFFSET
+#define	SP_OFFSET	2
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"
