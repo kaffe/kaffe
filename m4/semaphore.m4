@@ -8,6 +8,7 @@ dnl the same distribution terms as the rest of that program.
 
 AC_DEFUN([KAFFE_CHECK_SEMAPHORE],
 [
+  AC_CHECK_HEADERS([semaphore.h])
   AC_MSG_CHECKING([for working semaphores])
   AC_RUN_IFELSE(AC_LANG_PROGRAM(
 [

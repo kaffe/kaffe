@@ -1,3 +1,19 @@
+2004-11-28  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* configure: Regenerated.
+
+	* m4/semaphore.m4, configure.ac: Moved the test for semaphore.h
+	into semaphore.m4.
+
+	* replace/repsemaphore.h: Only define the replacement functions if
+	we are in pthread mode (and so HAVE_PTHREAD_H is defined).
+
+	* replace/semaphores.c: semaphore.h should not be a criterion to
+	decide whether we need the
+	replacement. NEED_REPLACEMENT_SEMAPHORES already contains all the
+	necessary information (we are in pthread mode and semaphore.h is
+	not working properly).
+	
 2004-11-27  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/util/ResourceBundle.java:

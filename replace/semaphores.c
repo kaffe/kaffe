@@ -35,7 +35,7 @@
  */
 #include "config.h"
 
-#if defined(NEED_REPLACEMENT_SEMAPHORES) || !defined(HAVE_SEMAPHORE_H)
+#if defined(NEED_REPLACEMENT_SEMAPHORES)
 
 #include <errno.h>
 #include "repsemaphore.h"

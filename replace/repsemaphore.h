@@ -48,7 +48,7 @@
 #define repsem_destroy sem_destroy
 #define repsem_t sem_t
 
-#else
+#elif defined(HAVE_PTHREAD_H)
 
 #include <pthread.h>
 
