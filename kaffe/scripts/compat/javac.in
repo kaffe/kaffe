@@ -1,28 +1,4 @@
 #! /bin/sh
-# We use kjc compiler rather than Sun's.
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-lib_path=@prefix@
-
-# Ensure that /usr/lib/rt.jar is in the classpath. 
-for opt in ${1+"$@"}; do 
-    if [ "x$classpath" = "xtrue" ]; then
-        classpath=$opt
-        continue
-    fi
-    if [ $opt = "-classpath" ]; then
-        classpath="true"
-        continue
-    fi
-    args="${args} $opt"
-done
-if [ "x$classpath" != "x" ]; then
-    echo $classpath | grep -q ${lib_path}/rt.jar
-    if [ $? -eq 1 ]; then
-        classpath=${lib_path}/rt.jar:${classpath}
-    fi
-    args="${args} -classpath $classpath"
-fi
-
-exec @bindir@/@kaffe_TRANSF@ $JAVA_OPTS at.dms.kjc.Main $args
+# We use the jikes compiler detected by configure
+@JIKESPROG@ -bootclasspath  @prefix@/jre/lib/rt.jar ${1+"$@"}
 exit $?

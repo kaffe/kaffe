@@ -1,5 +1,10 @@
 2005-02-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/scripts/compat/javac.in: Switched to use jikes
+	with correct bootclasspath.
+
+2005-02-08  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/s390/sysdepCallMethod.h: Added missing semicolon.
 
 2005-02-08  Dalibor Topic  <robilad@kaffe.org>
