@@ -46,8 +46,7 @@ resetLabels(void)
 void
 linkLabels(uintp codebase)
 {
-	long dest;
-	long from;
+	long dest = 0;
 	int* place;
 	label* l;
 

@@ -2549,17 +2549,20 @@ void
 call_indirect_method(Method *meth)
 {
 	void* ptr;
-	SlotInfo *tmp;
 
 	ptr = &METHOD_NATIVECODE(meth);
 
 #if defined(HAVE_call_indirect_const)
 	slot_const_const(0, (jword)ptr, ba, HAVE_call_indirect_const, Tnull);
 #else
-	slot_alloctmp(tmp);
-	move_ref_const(tmp, ptr);
-	load_ref(tmp, tmp);
-	call(tmp);
+	{
+		SlotInfo *tmp;
+
+		slot_alloctmp(tmp);
+		move_ref_const(tmp, ptr);
+		load_ref(tmp, tmp);
+		call(tmp);
+	}
 #endif
 }
 
