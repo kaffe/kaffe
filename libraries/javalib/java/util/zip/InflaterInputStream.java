@@ -31,7 +31,13 @@ public InflaterInputStream(InputStream in, Inflater inf) {
 
 public InflaterInputStream(InputStream in, Inflater inf, int size) {
 	super(in);
+	if (in == null)
+	  throw new NullPointerException("in");
+	if (inf == null)
+	  throw new NullPointerException("inf");
 	this.inf = inf;
+	if (size < 1)
+	  throw new IllegalArgumentException("size < 1");
 	buf = new byte[size];
 	len = 0;
 }
