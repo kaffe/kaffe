@@ -16,7 +16,7 @@ public class DateFormatTest
 
 	System.out.println("Same time zone");
 	sdf = new SimpleDateFormat("yyMMddHHmmssSSS");
-	date = new Date();
+	date = new Date(1098968427000L); // 04-10-28 14:00:27 GMT+00:00
 	str = sdf.format(date);
 
 	try {

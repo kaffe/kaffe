@@ -1,3 +1,8 @@
+2004-11-04  Noa Resare  <noa@resare.com>
+
+	* tests/regression/DateFormatTest.java: Test with a constant date
+        inside the DST range to trigger DST bugs.
+
 2004-11-02  Eric Anholt  <eta@lclark.edu>
 
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
