@@ -1,3 +1,16 @@
+2005-02-07  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/exception.c (vmExcept_isJNIFrame,
+	vmExcept_setSyncObj, vmExcept_getSyncObj, vmExcept_setPC,
+	vmExcept_getPC): Clarified asserts.
+	(vmExcept_JNIContains, vmExcept_setJNIFrame) Use
+	JNIFrameAddress type.
+
+	* kaffe/kaffevm/exception.h (JNIFrameAddress): New type.
+	(VmExceptHandler, vmExcept_setJNIFrame) Use JNIFrameAddress. 
+
+	That fixes 210 warnings on powerpc-linux-intrp.
+
 2005-02-06  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/exception.c (vmExcept_isJNIFrame,

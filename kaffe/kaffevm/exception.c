@@ -76,25 +76,25 @@ static bool findExceptionBlockInMethod(uintp, Hjava_lang_Class*, Method*, uintp*
 bool
 vmExcept_isJNIFrame(VmExceptHandler* eh)
 {
-	assert(eh);
+	assert(eh != NULL);
 	return (eh->meth == VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
 }
 
 static bool
-vmExcept_JNIContains(VmExceptHandler* eh, uintp fp)
+vmExcept_JNIContains(VmExceptHandler* eh, JNIFrameAddress fp)
 {
-	assert(eh);
+	assert(eh != NULL);
 	assert(eh->meth == VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
-	assert(fp);
+	assert(fp != NULL);
 
 	return (eh->frame.jni.fp == fp);
 }
 
 void 
-vmExcept_setJNIFrame(VmExceptHandler* eh, uintp fp)
+vmExcept_setJNIFrame(VmExceptHandler* eh, JNIFrameAddress fp)
 {
-	assert(eh);
-	assert(fp != 0);
+	assert(eh != NULL);
+	assert(fp != NULL);
 
 	eh->meth = VMEXCEPTHANDLER_KAFFEJNI_HANDLER;
 	eh->frame.jni.fp = fp;
@@ -109,8 +109,8 @@ vmExcept_jumpToHandler(VmExceptHandler* frame)
 void 
 vmExcept_setSyncObj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj)
 {
-	assert(eh);
-	assert(eh->meth != 0);
+	assert(eh != NULL);
+	assert(eh->meth != NULL);
 	assert(eh->meth != VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
 	eh->frame.intrp.syncobj = syncobj;
 }
@@ -118,8 +118,8 @@ vmExcept_setSyncObj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj)
 static struct Hjava_lang_Object*
 vmExcept_getSyncObj(VmExceptHandler* eh)
 {
-	assert(eh);
-	assert(eh->meth != 0);
+	assert(eh != NULL);
+	assert(eh->meth != NULL);
 	assert(eh->meth != VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
 	return eh->frame.intrp.syncobj;
 }
@@ -127,8 +127,8 @@ vmExcept_getSyncObj(VmExceptHandler* eh)
 void 
 vmExcept_setPC(volatile VmExceptHandler* eh, u4 pc)
 {
-	assert(eh);
-	assert(eh->meth != 0);
+	assert(eh != NULL);
+	assert(eh->meth != NULL);
 	assert(eh->meth != VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
 	eh->frame.intrp.pc = pc;
 }
@@ -136,8 +136,8 @@ vmExcept_setPC(volatile VmExceptHandler* eh, u4 pc)
 u4 
 vmExcept_getPC(const VmExceptHandler* eh)
 {
-	assert(eh);
-	assert(eh->meth != 0);
+	assert(eh != NULL);
+	assert(eh->meth != NULL);
 	assert(eh->meth != VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
 	return eh->frame.intrp.pc;
 }

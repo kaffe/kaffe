@@ -53,6 +53,12 @@ typedef struct _jexception {
 	jexceptionEntry			entry[1];
 } jexception;
 
+#if defined(TRANSLATOR)
+typedef uintp                   JNIFrameAddress;
+#else
+typedef struct VmExceptHandler* JNIFrameAddress;
+#endif
+
 /*
  * A VmExceptHandle is used to handle *any* exception in native code
  * in the core of the VM.  Set up when entering Kaffe_JNI methods, or
@@ -79,7 +85,7 @@ typedef struct VmExceptHandler {
 		struct
 		{
 			/* Frame address for JNI entry function. */
-			uintp	        		fp;
+			JNIFrameAddress	        		fp;
 		} jni;
 		/*
 		 * The intrp bits are only valid if meth != 0 && meth
@@ -106,7 +112,7 @@ void unhandledException(struct Hjava_lang_Throwable *eobj) NONRETURNING;
 extern void initExceptions(void);
 
 bool vmExcept_isJNIFrame(VmExceptHandler* eh);
-void vmExcept_setJNIFrame(VmExceptHandler* eh, uintp fp);
+void vmExcept_setJNIFrame(VmExceptHandler* eh, JNIFrameAddress fp);
 void vmExcept_setSyncObj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj);
 void vmExcept_setPC(volatile VmExceptHandler* eh, u4 pc);
 u4 vmExcept_getPC(const VmExceptHandler* eh);
