@@ -112,7 +112,7 @@ public class Hashtable extends Dictionary
 	}
 
 	public synchronized Object clone() {
-		return new Hashtable((Hashtable)map.clone());
+		return new Hashtable((HashMap)map.clone());
 	}
 
 	public synchronized String toString() {
