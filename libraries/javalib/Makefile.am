@@ -795,6 +795,7 @@ serialized_converters = \
 	kaffe/io/ByteToCharCP875.ser \
 	kaffe/io/ByteToCharCP918.ser \
 	kaffe/io/ByteToCharEUC_JP.ser \
+	kaffe/io/ByteToCharKOI8_R.ser \
 	kaffe/io/CharToByte8859_2.ser \
 	kaffe/io/CharToByte8859_3.ser \
 	kaffe/io/CharToByte8859_4.ser \
@@ -846,7 +847,8 @@ serialized_converters = \
 	kaffe/io/CharToByteCP871.ser \
 	kaffe/io/CharToByteCP875.ser \
 	kaffe/io/CharToByteCP918.ser \
-	kaffe/io/CharToByteEUC_JP.ser
+	kaffe/io/CharToByteEUC_JP.ser \
+	kaffe/io/CharToByteKOI8_R.ser
 
 EXTRA_DIST = $(class_DATA) $(Klasses_jar_SRCS) \
 	$(serialized_converters) \
