@@ -2,6 +2,15 @@
 
 	Resynced with GNU inetlib.
 	
+	2005-02-17  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* gnu/java/nio/channels/FileChannelImpl.java (write(ByteBuffer)):
+	Move the position of the source buffer forward.
+	
+2005-02-19  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU inetlib.
+	
 	2005-02-17  Chris Burdess  <dog@gnu.org>
   	 
         * BASE64.java: Truncate encodedbyte array.
