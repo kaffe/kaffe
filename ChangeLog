@@ -1,3 +1,8 @@
+Tue Aug 25 01:08:03 1998  Pavel Roskin <pavel.roskin@ecsoft.co.uk>
+
+	* config/parisc/hpux/md.h: include common.h:
+	config/parisc/common.h: new file
+
 Tue Aug 25 00:59:00 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/mem/gc-incremental.c: 
