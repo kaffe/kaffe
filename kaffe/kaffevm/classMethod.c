@@ -1725,6 +1725,13 @@ lookupArray(Hjava_lang_Class* c)
 	int arr_flags;
 	iLock* lock;
 
+	/* If we couldn't resolve the element type, there's no way we can
+	 * construct the array type.
+	 */
+	if (c == 0) {
+		return (0);
+	}
+
 	/* Build signature for array type */
 	if (CLASS_IS_PRIMITIVE (c)) {
 		arr_class = CLASS_ARRAY_CACHE(c);
