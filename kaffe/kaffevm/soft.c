@@ -230,6 +230,11 @@ soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, in
 	implementors = ifclass->implementors;
 	i = cls->impl_index;
 
+#if 1	/* it should never be necessary to initialize the class here
+	 * cause we're invoking a method on an existing, created object
+	 */
+        assert (cls->state >= CSTATE_USABLE);
+#else
 	/* initialize class if necessary */
         if (cls->state < CSTATE_USABLE) {
 		errorInfo info;
@@ -237,13 +242,24 @@ soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, in
 			throwError(&info);
 		}
 	}
+#endif
 
+	/* handle invocations on java.lang.Object methods via INVOKEINTERFACE */
 	if (implementors == 0 || i > implementors[0]) {
 		goto notfound;
 	}
 
 	/* skip word at the beginning of itable2dtable */
 	ncode = cls->itable2dtable[implementors[i] + idx + 1];
+
+	/* This means this class does not implement this interface method 
+	 * at all.  This is something we detect at the time the interface
+	 * dispatch table is built.  To avoid this test, we could instead
+	 * point at a nosuchmethod routine there.  However, we would have
+	 * to find a way to pass along the information which methods it
+	 * is that's missing (or create multiple nosuch_method routines,
+	 * given that they should be rare---minus possible DoS.)
+	 */
 	if (ncode == (void*)0xffffffff) {
 		goto notfound;
 	}
