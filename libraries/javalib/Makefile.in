@@ -52,12 +52,13 @@ classes:	.dir-stamp
 		$(TOUCH) .dir-stamp
 
 build-classes:
-		rm -f $(CLASSFILE)
-		(cd $(LIBDIR) && $(ZIP) -r ../$(CLASSFILE) java kaffe)
+		rm -f $(srcdir)/$(CLASSFILE) $(LIBDIR)/$(CLASSFILE)
+		(cd $(LIBDIR) && $(ZIP) -r $(CLASSFILE) java kaffe)
+		mv $(LIBDIR)/$(CLASSFILE) $(srcdir)/$(CLASSFILE)
 
 install-classes:
 		test -d $(INSTROOT)$(classdir) || $(MKDIR) $(INSTROOT)$(classdir)
-		$(INSTALL_DATA) $(CLASSFILE) $(INSTROOT)$(classdir)/$(CLASSFILE)
+		$(INSTALL_DATA) $(srcdir)/$(CLASSFILE) $(INSTROOT)$(classdir)/$(CLASSFILE)
 
 derived-files:	classes build-classes
 
