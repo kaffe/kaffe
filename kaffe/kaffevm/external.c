@@ -260,6 +260,7 @@ DBG(NATIVELIB,
 	}
 	if (errbuf != 0) {
 		assert(errsiz > 0);
+		DBG(NATIVELIB, dprintf("Too many open libraries\n"); )
 		strncpy(errbuf, "Too many open libraries", errsiz);
 		errbuf[errsiz - 1] = '\0';
 	}
@@ -288,6 +289,8 @@ DBG(NATIVELIB,
                 if (lib->desc == 0)	
 			{
 				const char *err = KaffeLib_GetError();
+
+				DBG(NATIVELIB, dprintf("Error loading %s: %s\n", path, err); )
 				
 				/* XXX Bleh, silly guessing system. */
 				if( err == 0 )
