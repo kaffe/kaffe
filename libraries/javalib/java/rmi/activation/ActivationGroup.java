@@ -1,5 +1,5 @@
-/*
-  Copyright (c) 1996, 1997, 1998, 1999 Free Software Foundation, Inc.
+/* ActivationGroup.java --
+   Copyright (c) 1996, 1997, 1998, 1999 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -37,10 +37,10 @@ exception statement from your version. */
 
 package java.rmi.activation;
 
-import java.rmi.MarshalledObject;
-import java.rmi.Remote;
-import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.rmi.RemoteException;
+import java.rmi.Remote;
+import java.rmi.MarshalledObject;
 
 public abstract class ActivationGroup
 	extends UnicastRemoteObject

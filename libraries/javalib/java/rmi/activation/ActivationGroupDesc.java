@@ -1,5 +1,5 @@
-/*
-  Copyright (c) 1996, 1997, 1998, 1999 Free Software Foundation, Inc.
+/* ActivationGroupDesc.java --
+   Copyright (c) 1996, 1997, 1998, 1999 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,8 +38,8 @@ exception statement from your version. */
 package java.rmi.activation;
 
 import java.io.Serializable;
-import java.rmi.MarshalledObject;
 import java.util.Properties;
+import java.rmi.MarshalledObject;
 
 public final class ActivationGroupDesc implements Serializable
 {

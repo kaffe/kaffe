@@ -1,5 +1,5 @@
-/*
-  Copyright (c) 1996, 1997, 1998, 1999 Free Software Foundation, Inc.
+/* ServerRef.java --
+   Copyright (c) 1996, 1997, 1998, 1999, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -39,6 +39,8 @@ package java.rmi.server;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.server.RemoteStub;
+import java.rmi.server.ServerNotActiveException;
 
 public interface ServerRef extends RemoteRef
 {

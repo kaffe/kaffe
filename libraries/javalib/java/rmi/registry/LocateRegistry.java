@@ -1,5 +1,5 @@
-/*
-  Copyright (c) 1996, 1997, 1998, 1999 Free Software Foundation, Inc.
+/* LocateRegistry.java --
+   Copyright (c) 1996, 1997, 1998, 1999 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -37,16 +37,16 @@ exception statement from your version. */
 
 package java.rmi.registry;
 
-import gnu.java.rmi.registry.RegistryImpl;
-import gnu.java.rmi.registry.RegistryImpl_Stub;
-import gnu.java.rmi.server.UnicastRef;
-
 import java.rmi.RemoteException;
-import java.rmi.server.ObjID;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.RMISocketFactory;
 import java.rmi.server.RemoteRef;
+import java.rmi.server.ObjID;
+
+import gnu.java.rmi.server.UnicastRef;
+import gnu.java.rmi.registry.RegistryImpl;
+import gnu.java.rmi.registry.RegistryImpl_Stub;
 
 public final class LocateRegistry {
 
