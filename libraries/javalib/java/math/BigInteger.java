@@ -426,11 +426,17 @@ public byte[] toByteArray() {
 }
 
 public int intValue() {
-	return (toInt0());
+	int v = toInt0();
+	if (signum() < 0)
+		v = -v;
+	return v;
 }
 
 public long longValue() {
-	return ((long)toInt0() | shiftRight(32).toInt0());
+	long v = ((long)shiftRight(32).toInt0()) << 32 | (long)toInt0();
+	if (signum() < 0)
+		v = -v;
+	return v;
 }
 
 public float floatValue() {
