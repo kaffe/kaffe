@@ -40,9 +40,9 @@ public class SoTimeout {
 		    } catch (InterruptedException e) {
 			System.out.println("Failure " + e);
 		    }
-		    PrintWriter p = new PrintWriter(s.getOutputStream());
-		    p.println(foo);
-		    p.close();
+		    OutputStream o = s.getOutputStream();
+		    o.write('1');
+            o.close();
 		} catch (Exception e) {
 		    System.out.println("Failure " + e);
 		}
@@ -61,16 +61,14 @@ public class SoTimeout {
 	System.out.println("Success 2.");
         rsocket.setSoTimeout(2000);	// NB:	2 * 2000 > 3000
 	InputStream is = rsocket.getInputStream();
-	LineNumberReader r = new LineNumberReader(new InputStreamReader(is));
-        byte []b = null;
         try {
-	    r.readLine();
+	    is.read();
 	} catch (InterruptedIOException e) {
 	    // System.out.println(e);
 	    System.out.println("Success 3.");
 	}
-	String s = r.readLine();
-	if (s.equals(foo)) {
+	int b = is.read();
+	if (b == '1') {
 	    System.out.println("Success 4.");
 	}
 	System.exit(0);

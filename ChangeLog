@@ -1,3 +1,10 @@
+2004-12-08  Adam Heath  <doogie@brainfood.com>
+
+	* test/regression/SoTimeout.java: No longer use buffered
+	  anything, nor any encoder/decoder stuff.  It's not specified
+	  what should happen to buffered data when an IOException
+	  occurs(InterruptedIOException included).
+
 2004-12-08  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/object.c
