@@ -1,5 +1,24 @@
 2003-06-12 Dalibor Topic <robilad@yahoo.com>
 
+	Linux 2.0.x IPv6 support compilation fixes.
+	
+	* configure.in:
+	Added checks for linux/netlink.h, linux/rtnetlink.h and
+	netpacket/packet.h.
+	
+	* replace/getifaddrs.c:
+	Only compile replacement code if the headers linux/netlink.h,
+	linux/rtnetlink.h and netpacket/packet.h are found.
+
+	* replace/ifaddrs_linux.c:
+	Only include linux/netlink.h, linux/rtnetlink.h and
+	netpacket/packet.h if they are found by configure.
+	
+	Reported by: Ito Kazumitsu <kaz@maczuka.gcd.org>,
+	Kiyo Inaba <inaba@src.ricoh.co.jp>
+	
+2003-06-12 Dalibor Topic <robilad@yahoo.com>
+
 	* FAQ/FAQ.code-layout: new file.
 	
 2003-06-12 Dalibor Topic <robilad@yahoo.com>

@@ -235,6 +235,12 @@
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
+/* Define to 1 if you have the <linux/netlink.h> header file. */
+#undef HAVE_LINUX_NETLINK_H
+
+/* Define to 1 if you have the <linux/rtnetlink.h> header file. */
+#undef HAVE_LINUX_RTNETLINK_H
+
 /* Define to 1 if you have the `localtime' function. */
 #undef HAVE_LOCALTIME
 
@@ -300,6 +306,9 @@
 
 /* Define to 1 if you have the <netinet/tcp.h> header file. */
 #undef HAVE_NETINET_TCP_H
+
+/* Define to 1 if you have the <netpacket/packet.h> header file. */
+#undef HAVE_NETPACKET_PACKET_H
 
 /* Define to 1 if you have the `on_exit' function. */
 #undef HAVE_ON_EXIT

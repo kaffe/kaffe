@@ -17,7 +17,7 @@
 
 #if defined(HAVE_GETIFADDRS)
 
-#elif defined(linux)
+#elif defined(linux) && defined(HAVE_LINUX_NETLINK_H) && defined(HAVE_LINUX_RTNETLINK_H) && defined(HAVE_NETPACKET_PACKET_H)
 
 #if !defined(__set_errno)
 #define __set_errno(x) errno = x

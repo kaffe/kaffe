@@ -39,11 +39,22 @@
 
 #include <sys/socket.h>
 #include <asm/types.h>
+
+#ifdef HAVE_LINUX_NETLINK_H
 #include <linux/netlink.h>
+#endif
+
+#ifdef HAVE_LINUX_RTNETLINK_H
 #include <linux/rtnetlink.h>
+#endif
+
 #include <sys/types.h>
 #include <sys/socket.h>
+
+#ifdef HAVE_NETPACKET_PACKET_H
 #include <netpacket/packet.h>
+#endif
+
 #include <net/ethernet.h>     /* the L2 protocols */
 #include <sys/uio.h>
 #include <net/if.h>
