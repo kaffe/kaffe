@@ -1,5 +1,9 @@
 2003-11-02  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* librairies/clib/zip/Deflater.c: Readded DBG macro.
+
+2003-11-02  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* libraries/javalib/java/io/BufferedInputStream.java,
 	libraries/javalib/java/io/BufferedOutputStream.java,
 	libraries/javalib/java/io/BufferedReader.java, 

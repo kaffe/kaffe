@@ -8,6 +8,7 @@
  * of this file. 
  */
 
+#define DBG(s)
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
@@ -56,7 +57,7 @@ java_util_zip_Deflater_deflate(struct Hjava_util_zip_Deflater* this, HArrayOfByt
 
 	r = deflate(dstream, unhand(this)->finish ? Z_FINISH : Z_NO_FLUSH);
 
-DBG(NATIVELIB,	dprintf("Deflate: in %d left %d out %d status %d\n", ilen, dstream->avail_in, len - dstream->avail_out, r);	)
+DBG(	dprintf("Deflate: in %d left %d out %d status %d\n", ilen, dstream->avail_in, len - dstream->avail_out, r);	)
 
 	switch (r) {
 	case Z_OK:
