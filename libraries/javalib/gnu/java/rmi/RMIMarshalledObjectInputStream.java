@@ -39,10 +39,9 @@ exception statement from your version. */
 package gnu.java.rmi;
 
 import gnu.java.rmi.server.RMIObjectInputStream;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.IOException;
+import java.io.ByteArrayInputStream;
 
 /**
  * This class is only for java.rmi.MarshalledObject to deserialize object from 

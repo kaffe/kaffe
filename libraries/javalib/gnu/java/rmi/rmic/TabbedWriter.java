@@ -38,8 +38,8 @@ exception statement from your version. */
 package gnu.java.rmi.rmic;
 
 import java.io.FilterWriter;
-import java.io.IOException;
 import java.io.Writer;
+import java.io.IOException;
 
 public class TabbedWriter
 	extends FilterWriter {

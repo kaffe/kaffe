@@ -38,8 +38,8 @@ exception statement from your version. */
 package gnu.java.util.prefs;
 
 import java.util.HashMap;
-import java.util.prefs.AbstractPreferences;
-import java.util.prefs.BackingStoreException;
+
+import java.util.prefs.*;
 
 /**
  * A Preference node which holds all entries in memory
