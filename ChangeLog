@@ -1,3 +1,72 @@
+Tue Jan 18 22:03:38 CET 2000  Edouard G. Parmelan  <egp@free.fr>
+
+	* kaffe/kaffevm/systems/oskit-pthreads/syscalls.c: fix unimp()
+	message, it's no longer linux-thread.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c (jthreadWaitpid):
+	break loop on ECHILD.
+	* libraries/clib/native/UNIXProcess.c (execWait): call KWAITPID()
+	with corresponding process pid.
+
+	* libraries/javalib/java/math/BigInteger.java: detect bad radix.
+	* libraries/clib/math/BigInteger.c: include class header, fix
+	declaration of divideAndRemainder(), throw NumberFormatException in
+	assignString0().
+
+	* libraries/javalib/java/math/BigDecimal.java: implement it with
+	java.math.BigInteger.
+
+	* include/Makefile.am: Generate JNI or KNI class header files.
+	Allows parallel make.
+
+	* include/native.h include/java_lang_Object.h: remove hand written
+	java_lang_Object.h and move definition of Hjava_lang_Object in
+	native.h.
+	* include/java_lang_String.h: remove, it's generated from
+	Klasses.jar.
+	* kaffe/kaffeh/java_lang_Object.h kaffe/kaffeh/java_lang_String.h
+	kaffe/kaffeh/java_lang_ClassLoader.h: dummy class header file need to
+	compile kaffeh.
+	* kaffe/kaffeh/support.c: avoid output typedef for java.lang.Object
+	and java.lang.Class.
+
+	* kaffe/kaffevm/classMethod.h: include java_lang_ClassLoader.h.
+
+	* libraries/clib/io/AudioPlayer.c libraries/clib/management/JIT.c
+	libraries/clib/native/Application.c
+	libraries/clib/native/ByteToCharDefault.c
+	libraries/clib/native/CharToByteDefault.c
+	libraries/clib/native/Class.c libraries/clib/native/ClassLoader.c
+	libraries/clib/native/DateFormat.c
+	libraries/clib/native/MemoryAdvice.c libraries/clib/native/Object.c
+	libraries/clib/native/String.c libraries/clib/native/Thread.c
+	libraries/clib/native/ZipFile.c libraries/clib/security/digest.c:
+	include class header.
+
+	* libraries/clib/native/Double.c libraries/clib/native/Float.c:
+	include class header and remove no longer native valueOf().
+
+	* libraries/clib/native/ObjectStreamClassImpl.c: include class
+	header and change direct call to Kaffe_NewObject().
+
+	* libraries/clib/native/RMIHashes.c: add note to include class
+	header when extentions jar will be managed in include/Makefile.am.
+
+	* kaffe/kaffevm/classMethod.c kaffe/kaffevm/gcRefs.c
+	kaffe/kaffevm/jni.c kaffe/kaffevm/locks.c
+	kaffe/kaffevm/mem/gc-incremental.c kaffe/kaffevm/mem/gc-mem.c
+	libraries/clib/awt/X/cbd.c libraries/clib/awt/X/clr.c
+	libraries/clib/awt/X/evt.c libraries/clib/awt/X/gra.c
+	libraries/clib/awt/X/img.c libraries/clib/awt/X/imggif.c
+	libraries/clib/awt/X/imgpng.c libraries/clib/awt/X/tlk.c
+	libraries/clib/awt/X/wnd.c: make most functions static.
+
+	* libraries/javalib/java/lang/Class.java: add missing native
+	setSigners().
+
+	* include/Makefile.in: regen
+	* libraries/javalib/Klasses.jar: regen with kjc-1.4B
+
 Fri Jan 14 12:58:19 CET 2000  Edouard G. Parmelan  <egp@free.fr>
 
 	* libraries/clib/native/UNIXProcess.c (forkAndExec): save
