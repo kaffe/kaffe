@@ -1,3 +1,9 @@
+2003-09-02  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/clib/io/FileDescriptor.c:
+	(java_io_FileDescriptor_nativeReadByte) check for EOF (rc == 0 && ret
+	== 0).
+
 2003-09-02  Timothy S. Stack <stack@cs.utah.edu>
 
 	* kaffe/kaffevm/intrp/icode.h,

@@ -101,7 +101,6 @@ jlong java_io_FileDescriptor_nativeOpen(struct Hjava_io_FileDescriptor* this, st
     break;
   default:
     SignalError("java.io.FileNotFoundException", SYS_ERROR(rc));
-    return -1;
   }
   return fd;
 }
@@ -114,7 +113,6 @@ jlong java_io_FileDescriptor_nativeClose(struct Hjava_io_FileDescriptor* this, j
   if (rc != 0)
     {
       SignalError("java.io.IOException", SYS_ERROR(rc));
-      return -1;
     }
   return 0;
 }
@@ -133,7 +131,6 @@ jlong java_io_FileDescriptor_nativeWriteByte(struct Hjava_io_FileDescriptor* thi
     if (rc != 0 && rc != EINTR)
     {
       SignalError("java.io.IOException", SYS_ERROR(rc));
-      return -1;
     }
   }
   while (rc != 0);
@@ -156,7 +153,6 @@ jlong java_io_FileDescriptor_nativeWriteBuf(struct Hjava_io_FileDescriptor* this
     if (rc != 0 && rc != EINTR)
     {
       SignalError("java.io.IOException", SYS_ERROR(rc));
-      return -1;
     }
     nativeWritten += ret;
   }
@@ -175,10 +171,11 @@ jint java_io_FileDescriptor_nativeReadByte(struct Hjava_io_FileDescriptor* this,
   do
   {
     rc = KREAD(nativeFd, &native_data, 1, &ret);
+    if (rc == 0 && ret == 0)
+      return -1;
     if (rc != 0 && rc != EINTR)
     {
       SignalError("java.io.IOException", SYS_ERROR(rc));
-      return -1;
     }
   }
   while (ret != 1);
@@ -209,7 +206,6 @@ extern jint java_io_FileDescriptor_nativeReadBuf(struct Hjava_io_FileDescriptor*
     if (rc != 0 && rc != EINTR)
     {
       SignalError("java.io.IOException", SYS_ERROR(rc));
-      return -1;
     }
     nativeRead += ret;
   }
