@@ -2579,6 +2579,18 @@ getOpstackTop(BlockInfo* block)
 }
 
 /*
+ * Helper function for opstack access in verifyBasicBlock.
+ *
+ * @return second item on the operand stack from the top.
+ */
+static inline
+Type *
+getOpstackWTop(BlockInfo* block)
+{
+	return getOpstackItem(block, 2);
+}
+
+/*
  * verifyBasicBlock()
  *   Simulates execution of a basic block by modifying its simulated operand stack and local variable array.
  */
@@ -2660,9 +2672,6 @@ verifyBasicBlock(errorInfo* einfo,
 		return verifyErrorInVerifyBasicBlock(einfo, method, this, "stack overflow"); \
 	}
 	
-	
-#define OPSTACK_WTOP getOpstackItem(block, 2)
-
 #define OPSTACK_INFO(_N) \
         (block->opstack[block->stacksz - _N].tinfo)
 
@@ -2711,7 +2720,7 @@ verifyBasicBlock(errorInfo* einfo,
 #define OPSTACK_WPEEK_T_BLIND(_TINFO) \
 	if (getOpstackTop(block)->data.class != TWIDE->data.class) { \
 		return verifyErrorInVerifyBasicBlock(einfo, method, this, "trying to pop a wide value off operand stack where there is none"); \
-	} else if (OPSTACK_WTOP->data.class != (_TINFO)->data.class) { \
+	} else if (getOpstackWTop(block)->data.class != (_TINFO)->data.class) { \
 		return verifyErrorInVerifyBasicBlock(einfo, method, this, "mismatched stack types"); \
 	}
 	
@@ -3638,7 +3647,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case IF_ACMPNE:
 			ENSURE_OPSTACK_SIZE(2);
 			if (!isReference(getOpstackTop(block)) ||
-			    !isReference(OPSTACK_WTOP)) {
+			    !isReference(getOpstackWTop(block))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "if_acmp* when item on top of stack is not a reference type");
 			}
 			OPSTACK_POP_BLIND;
@@ -3795,7 +3804,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case DUP_X1:
 			ENSURE_OPSTACK_SIZE(2);
-			if (isWide(getOpstackTop(block)) || isWide(OPSTACK_WTOP)) {
+			if (isWide(getOpstackTop(block)) || isWide(getOpstackWTop(block))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "dup_x1: splits up a double or long");
 			}
 			
@@ -3821,8 +3830,8 @@ verifyBasicBlock(errorInfo* einfo,
 		case DUP2:
 			ENSURE_OPSTACK_SIZE(2);
 			
-			OPSTACK_PUSH(OPSTACK_WTOP);
-			OPSTACK_PUSH(OPSTACK_WTOP);
+			OPSTACK_PUSH(getOpstackWTop(block));
+			OPSTACK_PUSH(getOpstackWTop(block));
 			break;
 			
 		case DUP2_X1:
@@ -3859,13 +3868,13 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case SWAP:
 			ENSURE_OPSTACK_SIZE(2);
-			if (isWide(getOpstackTop(block)) || isWide(OPSTACK_WTOP)) {
+			if (isWide(getOpstackTop(block)) || isWide(getOpstackWTop(block))) {
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "cannot swap 2 bytes of a long or double");
 			}
 			
 			*type         = *getOpstackTop(block);
-			*getOpstackTop(block)  = *OPSTACK_WTOP;
-			*OPSTACK_WTOP = *type;
+			*getOpstackTop(block)  = *getOpstackWTop(block);
+			*getOpstackWTop(block) = *type;
 			break;
 			
 			
@@ -3919,8 +3928,6 @@ verifyBasicBlock(errorInfo* einfo,
 
 #undef LOCALS_INFO
 #undef OPSTACK_INFO
-
-#undef OPSTACK_WTOP
 
 #undef CHECK_STACK_OVERFLOW
 #undef ENSURE_OPSTACK_SIZE
