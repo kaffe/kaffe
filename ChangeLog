@@ -1,5 +1,21 @@
 2004-12-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/classpath/Makefile.am:
+	Removed primlib.c and primlib.h as they are not used anywhere,
+	and break compilation to static libraries.
+
+	* libraries/clib/awt/classpath-gtk/classpath/Makefile.in,
+	libraries/clib/classpath/Makefile.in:
+	Regenerated.
+
+	* libraries/clib/classpath/primlib.c,
+	libraries/clib/classpath/primlib.h:
+	Removed.
+
+	Reported by:  Peter Naulls <peter@chocky.org>
+
+2004-12-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/Klasses.jar.bootstrap:
 	Regenerated.
 

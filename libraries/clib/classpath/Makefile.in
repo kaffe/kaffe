@@ -75,8 +75,7 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 libclasspath_la_LIBADD =
-am_libclasspath_la_OBJECTS = jcl.lo jnilink.lo primlib.lo \
-	native_state.lo
+am_libclasspath_la_OBJECTS = jcl.lo jnilink.lo native_state.lo
 libclasspath_la_OBJECTS = $(am_libclasspath_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -366,7 +365,6 @@ AM_CPPFLAGS = \
 
 libclasspath_la_SOURCES = jcl.c jcl.h \
 			  jnilink.c jnilink.h \
-			  primlib.c primlib.h \
 			  native_state.c native_state.h
 
 libclasspath_la_LDFLAGS = @CLASSPATH_MODULE@
@@ -442,7 +440,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jcl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jnilink.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/native_state.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/primlib.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
