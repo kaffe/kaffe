@@ -1,6 +1,7 @@
 Mon Aug 10 12:40:55 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/io/RandomAccessFile.java: fix for PR #523
+	* kaffe/kaffevm/locks.c: fix for PR #536
 
 Mon Aug  9 13:07:21 PDT 1999  Patrick Tullmann <tullmann@cs.utah.edu>
 
