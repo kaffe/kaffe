@@ -874,97 +874,97 @@ static const uint8 insnLen[256] = {
 //
 // types for type checking (pass 3b)
 //
-static const Type  verify_UNSTABLE = { (Hjava_lang_Class*)1, 0 };
-static const Type* TUNSTABLE       = &verify_UNSTABLE;
+static Type  verify_UNSTABLE;
+static Type* TUNSTABLE = &verify_UNSTABLE;
 
 // TODO: remove completely
-static Type  verify_VOID   = { NULL, 0 };
-static Type* TVOID         = &verify_VOID;
+static Type  verify_VOID;
+static Type* TVOID = &verify_VOID;
 
-static Type  verify_INT    = { NULL, 0 };
-static Type* TINT          = &verify_INT;
+static Type  verify_INT;
+static Type* TINT = &verify_INT;
        
-static Type  verify_FLOAT  = { NULL, 0 };
-static Type* TFLOAT        = &verify_FLOAT;
+static Type  verify_FLOAT;
+static Type* TFLOAT = &verify_FLOAT;
        
-static Type  verify_LONG   = { NULL, 0 };
-static Type* TLONG         = &verify_LONG;
+static Type  verify_LONG;
+static Type* TLONG = &verify_LONG;
        
-static Type  verify_DOUBLE = { NULL, 0 };
-static Type* TDOUBLE       = &verify_DOUBLE;
+static Type  verify_DOUBLE;
+static Type* TDOUBLE = &verify_DOUBLE;
 
 // used for the second space of LONGs and DOUBLEs
 // in local variables or on the operand stack
-const Type  _WIDE         = { (Hjava_lang_Class*)5, 0 };
-const Type* TWIDE        = &_WIDE;
-#define IS_WIDE(_TINFO)         ((_TINFO)->type == TWIDE->type)
+static Type  _WIDE;
+static Type* TWIDE = &_WIDE;
+#define IS_WIDE(_TINFO)         ((_TINFO)->data.class == TWIDE->data.class)
 
 
 
 // returnAddress type
-const Type  verify_ADDR = { (Hjava_lang_Class*)2, 0 };
-const Type* TADDR       = &verify_ADDR;
-#define IS_ADDRESS(_TINFO)      ((_TINFO)->type == TADDR->type)
+static Type  verify_ADDR;
+static Type* TADDR = &verify_ADDR;
+#define IS_ADDRESS(_TINFO) ((_TINFO)->data.class == TADDR->data.class)
 
-const Type  verify_NULL = { (Hjava_lang_Class*)3, 0 };
-const Type* TNULL       = &verify_NULL;
+static Type  verify_NULL;
+static Type* TNULL = &verify_NULL;
 
 
 static const char* OBJECT_SIG  = "Ljava/lang/Object;";
 static Type  verify_OBJ;
-static Type* TOBJ          = &verify_OBJ;
+static Type* TOBJ = &verify_OBJ;
 
 static const char* OBJARR_SIG = "[Ljava/lang/Object;";
 static Type  verify_OBJARR;
-static Type* TOBJARR          = &verify_OBJARR;
+static Type* TOBJARR = &verify_OBJARR;
 
 
 static const char* STRING_SIG = "Ljava/lang/String;";
 static Type  verify_STRING;
-static Type* TSTRING       = &verify_STRING;
+static Type* TSTRING = &verify_STRING;
 
 
 static const char* CHARARR_SIG = "[C";
 static Type  verify_CHARARR;
-static Type* TCHARARR         = &verify_CHARARR;
+static Type* TCHARARR = &verify_CHARARR;
 
 static const char* BYTEARR_SIG = "[B";
 static Type  verify_BYTEARR;
-static Type* TBYTEARR         = &verify_BYTEARR;
+static Type* TBYTEARR = &verify_BYTEARR;
 
 static const char* BOOLARR_SIG = "[Z";
 static Type  verify_BOOLARR;
-static Type* TBOOLARR         = &verify_BOOLARR;
+static Type* TBOOLARR = &verify_BOOLARR;
 
 static const char* SHORTARR_SIG = "[S";
 static Type  verify_SHORTARR;
-static Type* TSHORTARR        = &verify_SHORTARR;
+static Type* TSHORTARR = &verify_SHORTARR;
 
 static const char* INTARR_SIG = "[I";
 static Type  verify_INTARR;
-static Type* TINTARR          = &verify_INTARR;
+static Type* TINTARR = &verify_INTARR;
 
 static const char* LONGARR_SIG = "[J";
 static Type  verify_LONGARR;
-static Type* TLONGARR         = &verify_LONGARR;
+static Type* TLONGARR = &verify_LONGARR;
 
 static const char* FLOATARR_SIG = "[F";
 static Type  verify_FLOATARR;
-static Type* TFLOATARR        = &verify_FLOATARR;
+static Type* TFLOATARR = &verify_FLOATARR;
 
 static const char* DOUBLEARR_SIG = "[D";
 static Type  verify_DOUBLEARR;
-static Type* TDOUBLEARR       = &verify_DOUBLEARR;
+static Type* TDOUBLEARR = &verify_DOUBLEARR;
 
 
-#define IS_PRIMITIVE_TYPE(_TINFO) ((_TINFO)->type == TINT->type  || (_TINFO)->type == TFLOAT->type || \
-				   (_TINFO)->type == TLONG->type || (_TINFO)->type == TDOUBLE->type)
+#define IS_PRIMITIVE_TYPE(_TINFO) ((_TINFO)->data.class == TINT->data.class  || (_TINFO)->data.class == TFLOAT->data.class || \
+				   (_TINFO)->data.class == TLONG->data.class || (_TINFO)->data.class == TDOUBLE->data.class)
 
 #define IS_PRIMITIVE_ARRAY(_TINFO) \
-           (((_TINFO)->type) == TCHARARR->type  || ((_TINFO)->type) == TBYTEARR->type || \
-	    ((_TINFO)->type) == TSHORTARR->type || ((_TINFO)->type) == TINTARR->type  || \
-	    ((_TINFO)->type) == TLONGARR->type  || \
-            ((_TINFO)->type) == TFLOATARR->type || ((_TINFO)->type) == TDOUBLEARR->type)
+           (((_TINFO)->data.class) == TCHARARR->data.class  || ((_TINFO)->data.class) == TBYTEARR->data.class || \
+	    ((_TINFO)->data.class) == TSHORTARR->data.class || ((_TINFO)->data.class) == TINTARR->data.class  || \
+	    ((_TINFO)->data.class) == TLONGARR->data.class  || \
+            ((_TINFO)->data.class) == TFLOATARR->data.class || ((_TINFO)->data.class) == TDOUBLEARR->data.class)
 
 
 
@@ -1044,44 +1044,72 @@ static bool               checkMethodCall(errorInfo* einfo, const Method* method
 void
 initVerifierPrimTypes(void)
 {
-	TOBJ->type    = ObjectClass;
-	TINT->type    = intClass;
-	TLONG->type   = longClass;
-	TFLOAT->type  = floatClass;
-	TDOUBLE->type = doubleClass;
+	TUNSTABLE->tinfo = TINFO_CLASS;
+	TUNSTABLE->data.class = (Hjava_lang_Class*)TUNSTABLE;
 	
-	TOBJ->type = (Hjava_lang_Class*)OBJECT_SIG;
-	TOBJ->tinfo = CLASS_SIGSTR;
+	TNULL->tinfo = TINFO_CLASS;
+	TNULL->data.class = (Hjava_lang_Class*)TNULL;
 	
-	TOBJARR->type = (Hjava_lang_Class*)OBJARR_SIG;
-	TOBJARR->tinfo = CLASS_SIGSTR;
+	TADDR->tinfo = TINFO_CLASS;
+	TADDR->data.class = (Hjava_lang_Class*)TADDR;
 	
-	TSTRING->type = (Hjava_lang_Class*)STRING_SIG;
-	TSTRING->tinfo = CLASS_SIGSTR;
+	TVOID->tinfo = TINFO_CLASS;
+	TVOID->data.class = (Hjava_lang_Class*)TVOID;
 	
-	TCHARARR->type = (Hjava_lang_Class*)CHARARR_SIG;
-	TCHARARR->tinfo = CLASS_SIGSTR;
+	TWIDE->tinfo = TINFO_CLASS;
+	TWIDE->data.class = (Hjava_lang_Class*)TWIDE;
 	
-	TBYTEARR->type = (Hjava_lang_Class*)BYTEARR_SIG;
-	TBYTEARR->tinfo = CLASS_SIGSTR;
 	
-	TBOOLARR->type = (Hjava_lang_Class*)BOOLARR_SIG;
-	TBOOLARR->tinfo = CLASS_SIGSTR;
+	TOBJ->tinfo = TINFO_CLASS;
+	TOBJ->data.class = ObjectClass;
 	
-	TSHORTARR->type = (Hjava_lang_Class*)SHORTARR_SIG;
-	TSHORTARR->tinfo = CLASS_SIGSTR;
+	TINT->tinfo = TINFO_CLASS;
+	TINT->data.class = intClass;
 	
-	TINTARR->type = (Hjava_lang_Class*)INTARR_SIG;
-	TINTARR->tinfo = CLASS_SIGSTR;
+	TLONG->tinfo = TINFO_CLASS;
+	TLONG->data.class = longClass;
 	
-	TLONGARR->type = (Hjava_lang_Class*)LONGARR_SIG;
-	TLONGARR->tinfo = CLASS_SIGSTR;
+	TFLOAT->tinfo = TINFO_CLASS;
+	TFLOAT->data.class = floatClass;
 	
-	TFLOATARR->type = (Hjava_lang_Class*)FLOATARR_SIG;
-	TFLOATARR->tinfo = CLASS_SIGSTR;
+	TDOUBLE->tinfo = TINFO_CLASS;
+	TDOUBLE->data.class = doubleClass;
 	
-	TDOUBLEARR->type = (Hjava_lang_Class*)DOUBLEARR_SIG;
-	TDOUBLEARR->tinfo = CLASS_SIGSTR;
+	
+	TOBJ->tinfo = TINFO_SIGSTR;
+	TOBJ->data.sig = OBJECT_SIG;
+	
+	TOBJARR->tinfo = TINFO_SIGSTR;	
+	TOBJARR->data.sig = OBJARR_SIG;
+	
+	
+	TSTRING->data.sig = STRING_SIG;
+	TSTRING->tinfo = TINFO_SIGSTR;
+	
+	
+	TCHARARR->tinfo = TINFO_SIGSTR;
+	TCHARARR->data.sig = CHARARR_SIG;
+	
+	TBYTEARR->tinfo = TINFO_SIGSTR;
+	TBYTEARR->data.sig = BYTEARR_SIG;
+	
+	TBOOLARR->tinfo = TINFO_SIGSTR;
+	TBOOLARR->data.sig = BOOLARR_SIG;
+	
+	TSHORTARR->tinfo = TINFO_SIGSTR;
+	TSHORTARR->data.sig = SHORTARR_SIG;
+	
+	TINTARR->tinfo = TINFO_SIGSTR;
+	TINTARR->data.sig = INTARR_SIG;
+	
+	TLONGARR->tinfo = TINFO_SIGSTR;
+	TLONGARR->data.sig = LONGARR_SIG;
+	
+	TFLOATARR->tinfo = TINFO_SIGSTR;
+	TFLOATARR->data.sig = FLOATARR_SIG;
+	
+	TDOUBLEARR->tinfo = TINFO_SIGSTR;	
+	TDOUBLEARR->data.sig = DOUBLEARR_SIG;
 }
 
 
@@ -1112,7 +1140,7 @@ verify3(Hjava_lang_Class* class, errorInfo *einfo)
 	DBG(VERIFY3, {
 		Hjava_lang_Class* tmp;
 		for (tmp = class->superclass; tmp; tmp = tmp->superclass) {
-			dprintf("                        |-> %s\n", tmp->name->data);
+			dprintf("                        |-> %s\n", CLASS_CNAME(tmp));
 		}
 	});
 	
@@ -2443,7 +2471,7 @@ verifyBasicBlock(errorInfo* einfo,
 	// checks whether the specified local variable is of the specified type.
 #define ENSURE_LOCAL_TYPE(_N, _TINFO) \
 	if (!typecheck(einfo, this, (_TINFO), &block->locals[_N])) { \
-		if (block->locals[_N].type == TUNSTABLE->type) { \
+		if (block->locals[_N].data.class == TUNSTABLE->data.class) { \
 			VERIFY_ERROR("attempt to access an unstable local variable"); \
 		} else { \
 			VERIFY_ERROR("attempt to access a local variable not of the correct type"); \
@@ -2452,10 +2480,10 @@ verifyBasicBlock(errorInfo* einfo,
 	
 	// only use with TLONG and TDOUBLE
 #define ENSURE_LOCAL_WTYPE(_N, _TINFO) \
-	if (block->locals[_N].type != (_TINFO)->type) { \
+	if (block->locals[_N].data.class != (_TINFO)->data.class) { \
 		VERIFY_ERROR("local variable not of correct type"); \
 	} \
-	else if (block->locals[_N + 1].type != TWIDE->type) { \
+	else if (block->locals[_N + 1].data.class != TWIDE->data.class) { \
 		VERIFY_ERROR("accessing a long or double in a local where the following local has been corrupted"); \
 	}
 
@@ -2490,7 +2518,7 @@ verifyBasicBlock(errorInfo* einfo,
 	
 	
 #define OPSTACK_PUSH_BLIND_INFO(_T, _TI) \
-	block->opstack[block->stacksz].type  = (_T); \
+	block->opstack[block->stacksz].data.class  = (_T); \
         block->opstack[block->stacksz].tinfo = (_TI); \
 	block->stacksz++
 
@@ -2537,9 +2565,9 @@ verifyBasicBlock(errorInfo* einfo,
 	// ensure that the top item on the stack is of wide type _T
 	// this only works with doubles and longs
 #define OPSTACK_WPEEK_T_BLIND(_TINFO) \
-	if (OPSTACK_TOP->type != TWIDE->type) { \
+	if (OPSTACK_TOP->data.class != TWIDE->data.class) { \
 		VERIFY_ERROR("trying to pop a wide value off operand stack where there is none"); \
-	} else if (OPSTACK_WTOP->type != (_TINFO)->type) { \
+	} else if (OPSTACK_WTOP->data.class != (_TINFO)->data.class) { \
 		VERIFY_ERROR("mismatched stack types"); \
 	}
 	
@@ -2670,7 +2698,7 @@ verifyBasicBlock(errorInfo* einfo,
 			case CONSTANT_String:
 				// we do this because we might be loading a class before
 				// loading String
-				OPSTACK_PUSH_INFO((Hjava_lang_Class*)STRING_SIG, CLASS_SIGSTR);
+				OPSTACK_PUSH_INFO((Hjava_lang_Class*)STRING_SIG, TINFO_SIGSTR);
 				break;
 			}
 			break;
@@ -2856,14 +2884,14 @@ verifyBasicBlock(errorInfo* einfo,
 			OPSTACK_POP_T(TINT);   // array size
 			
 			switch(code[pc + 1]) {
-			case 4:  OPSTACK_PUSH(TBOOLARR);   break;
-			case 5:  OPSTACK_PUSH(TCHARARR);   break;
-			case 6:  OPSTACK_PUSH(TFLOATARR);  break;
-			case 7:  OPSTACK_PUSH(TDOUBLEARR); break;
-			case 8:  OPSTACK_PUSH(TBYTEARR);   break;
-			case 9:  OPSTACK_PUSH(TSHORTARR);  break;
-			case 10: OPSTACK_PUSH(TINTARR);    break;
-			case 11: OPSTACK_PUSH(TLONGARR);   break;
+			case TYPE_Boolean: OPSTACK_PUSH(TBOOLARR);   break;
+			case TYPE_Char:    OPSTACK_PUSH(TCHARARR);   break;
+			case TYPE_Float:   OPSTACK_PUSH(TFLOATARR);  break;
+			case TYPE_Double:  OPSTACK_PUSH(TDOUBLEARR); break;
+			case TYPE_Byte:    OPSTACK_PUSH(TBYTEARR);   break;
+			case TYPE_Short:   OPSTACK_PUSH(TSHORTARR);  break;
+			case TYPE_Int:     OPSTACK_PUSH(TINTARR);    break;
+			case TYPE_LONG:    OPSTACK_PUSH(TLONGARR);   break;
 			default: VERIFY_ERROR("newarray of unknown type");
 			}
 			break;
@@ -2895,7 +2923,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case AALOAD:
 			ENSURE_OPSTACK_SIZE(2);
 			
-			if (OPSTACK_TOP->type != TINT->type) {
+			if (OPSTACK_TOP->data.class != TINT->data.class) {
 				VERIFY_ERROR("aaload: item on top of stack is not an integer");
 			}
 			OPSTACK_POP_BLIND;
@@ -2906,15 +2934,13 @@ verifyBasicBlock(errorInfo* einfo,
 				VERIFY_ERROR("aaload: top of operand stack is not an array");
 			}
 			
-			if (type->tinfo & CLASS_NAMESTR || type->tinfo & CLASS_SIGSTR) {
-				sig = (char*)type->type;
-				sig++;
-				type->type = (Hjava_lang_Class*)sig;
-				type->tinfo = CLASS_SIGSTR;
+			if (type->tinfo & TINFO_NAMESTR || type->tinfo & TINFO_SIGSTR) {
+				type->tinfo = TINFO_SIGSTR;
+				(type->data.sig)++;
 			}
-			else if (type->type != TNULL->type) {
-				type->type = (Hjava_lang_Class*)(CLASS_CNAME(type->type) + 1);
-				type->tinfo = CLASS_SIGSTR;
+			else if (type->data.class != TNULL->data.class) {
+				type->tinfo = TINFO_SIGSTR;
+				type->data.sig = CLASS_CNAME(type->data.class) + 1;
 			}
 			DBG(VERIFY3, dprintf("%sarray type: ", indent); printType(type); dprintf("\n"); );
 			break;
@@ -2952,7 +2978,7 @@ verifyBasicBlock(errorInfo* einfo,
 			// assignment compatible with the type of the array
 			ENSURE_OPSTACK_SIZE(3);
 			
-			if (OPSTACK_ITEM(2)->type != TINT->type) {
+			if (OPSTACK_ITEM(2)->data.class != TINT->data.class) {
 				VERIFY_ERROR("aastore: array index is not an integer");
 			}
 			
@@ -2970,18 +2996,16 @@ verifyBasicBlock(errorInfo* einfo,
 				VERIFY_ERROR("aastore: top of operand stack is not an array");
 			}
 			
-			if (arrayType->tinfo & CLASS_NAMESTR || arrayType->tinfo & CLASS_SIGSTR) {
-				sig = (const char*)arrayType->type;
-				sig++;
-				arrayType->type = (Hjava_lang_Class*)(sig);
-				arrayType->tinfo = CLASS_SIGSTR;
+			if (arrayType->tinfo & TINFO_NAMESTR || arrayType->tinfo & TINFO_SIGSTR) {
+				arrayType->tinfo = TINFO_SIGSTR;
+				(arrayType->data.sig)++;
 			}
 			else {
-				if (arrayType->type == TOBJARR->type) {
+				if (arrayType->data.class == TOBJARR->data.class) {
 					*arrayType = *TOBJ;
-				} else if (arrayType->type != TNULL->type) {
-					arrayType->type = (Hjava_lang_Class*)(CLASS_CNAME(arrayType->type) + 1);
-					arrayType->tinfo = CLASS_SIGSTR;
+				} else if (arrayType->data.class != TNULL->data.class) {
+					arrayType->tinfo = TINFO_SIGSTR;
+					arrayType->data.sig = CLASS_CNAME(arrayType->data.class) + 1;
 				}
 			}
 			
@@ -3195,7 +3219,7 @@ verifyBasicBlock(errorInfo* einfo,
 			n = code[pc + 3];
 			ENSURE_OPSTACK_SIZE(n);
 			while (n > 0) {
-				if (OPSTACK_TOP->type != TINT->type) {
+				if (OPSTACK_TOP->data.class != TINT->data.class) {
 					VERIFY_ERROR("multinewarray: first <n> things on opstack must be integers");
 				}
 				OPSTACK_POP_BLIND;
@@ -3214,9 +3238,9 @@ verifyBasicBlock(errorInfo* einfo,
 				namestr = CLASS_NAMED(idx, pool);
 				
 				if (*namestr == '[') {
-					OPSTACK_PUSH_INFO((Hjava_lang_Class*)namestr, CLASS_SIGSTR);
+					OPSTACK_PUSH_INFO((Hjava_lang_Class*)namestr, TINFO_SIGSTR);
 				} else {
-					OPSTACK_PUSH_INFO((Hjava_lang_Class*)namestr, CLASS_NAMESTR);
+					OPSTACK_PUSH_INFO((Hjava_lang_Class*)namestr, TINFO_NAMESTR);
 				}
 			}
 			
@@ -3233,8 +3257,8 @@ verifyBasicBlock(errorInfo* einfo,
 			block->stacksz++;
 			type = OPSTACK_TOP;
 			if (pool->tags[idx] == CONSTANT_ResolvedClass) {
-				type->type = CLASS_CLASS(idx, pool);
-				type->tinfo = 0;
+				type->tinfo = TINFO_CLASS;
+				type->data.class = CLASS_CLASS(idx, pool);
 			} else {
 				const char* namestr = CLASS_NAMED(idx, pool);
 				
@@ -3242,13 +3266,13 @@ verifyBasicBlock(errorInfo* einfo,
 					VERIFY_ERROR("new: used to create an array");
 				}
 				
-				type->type = (Hjava_lang_Class*)namestr;
-				type->tinfo = CLASS_NAMESTR;
+				type->tinfo = TINFO_NAMESTR;				
+				type->data.name = namestr;
 			}
 			
 			*uninits = pushUninit(*uninits, type);
-			type->type  = (Hjava_lang_Class*)(*uninits);
 			type->tinfo = UNINIT;
+			type->data.uninit  = *uninits;
 			
 			DBG(VERIFY3,
 			    dprintf("%s", indent);
@@ -3264,10 +3288,10 @@ verifyBasicBlock(errorInfo* einfo,
 			type = OPSTACK_TOP;
 			if (pool->tags[idx] == CONSTANT_ResolvedClass) {
 				class = CLASS_CLASS(idx, pool);
-				type->type  = lookupArray(class, einfo);
-				type->tinfo = 0;
+				type->tinfo = TINFO_CLASS;
+				type->data.class  = lookupArray(class, einfo);
 				
-				if (type->type == NULL) {
+				if (type->data.class == NULL) {
 					VERIFY_ERROR("anewarray: error creating array type");
 				}
 			} else {
@@ -3284,8 +3308,8 @@ verifyBasicBlock(errorInfo* einfo,
 					sprintf(namestr, "[L%s;", sig);
 				}
 				
-				type->type  = (Hjava_lang_Class*)namestr;
-				type->tinfo = CLASS_SIGSTR;
+				type->tinfo = TINFO_SIGSTR;
+				type->data.sig  = namestr;
 			}
 			
 			DBG(VERIFY3,
@@ -3305,11 +3329,11 @@ verifyBasicBlock(errorInfo* einfo,
 			n = FIELDREF_CLASS(idx, pool);
 			
 			if (pool->tags[n] == CONSTANT_ResolvedClass) {
-				t->type  = CLASS_CLASS(n, pool);
-				t->tinfo = 0;
+				t->tinfo = TINFO_CLASS;
+				t->data.class = CLASS_CLASS(n, pool);
 			} else {
-				t->type  = (Hjava_lang_Class*)CLASS_NAMED(n, pool);
-				t->tinfo = CLASS_NAMESTR;
+				t->tinfo = TINFO_NAMESTR;
+				t->data.name = CLASS_NAMED(n, pool);
 			}
 			
 			OPSTACK_POP_T_BLIND(t);
@@ -3335,7 +3359,7 @@ verifyBasicBlock(errorInfo* einfo,
 				
 			case '[':
 			case 'L':
-				OPSTACK_PUSH_BLIND_INFO((Hjava_lang_Class*)sig, CLASS_SIGSTR);
+				OPSTACK_PUSH_BLIND_INFO((Hjava_lang_Class*)sig, TINFO_SIGSTR);
 				break;
 				
 			default:
@@ -3344,7 +3368,6 @@ verifyBasicBlock(errorInfo* einfo,
 				break;
 			}
 			break;
-			
 			
 			
 		case PUTFIELD:
@@ -3372,8 +3395,8 @@ verifyBasicBlock(errorInfo* einfo,
 				
 			case '[':
 			case 'L':
-				t->type  = (Hjava_lang_Class*)sig;
-				t->tinfo = CLASS_SIGSTR;
+				t->tinfo = TINFO_SIGSTR;
+				t->data.sig = sig;
 				OPSTACK_POP_T_BLIND(t);
 				break;
 				
@@ -3386,11 +3409,11 @@ verifyBasicBlock(errorInfo* einfo,
 			
 			n = FIELDREF_CLASS(idx, pool);
 			if (pool->tags[n] == CONSTANT_ResolvedClass) {
-				t->type  = CLASS_CLASS(n, pool);
-				t->tinfo = 0;
+				t->tinfo = TINFO_CLASS;
+				t->data.class = CLASS_CLASS(n, pool);
 			} else {
-				t->type  = (Hjava_lang_Class*)CLASS_NAMED(n, pool);
-				t->tinfo = CLASS_NAMESTR;
+				t->tinfo = TINFO_NAMESTR;
+				t->data.name = CLASS_NAMED(n, pool);
 			}
 			
 			OPSTACK_POP_T_BLIND(t);
@@ -3419,8 +3442,8 @@ verifyBasicBlock(errorInfo* einfo,
 				
 			case '[':
 			case 'L':
-				t->type  = (Hjava_lang_Class*)sig;
-				t->tinfo = CLASS_SIGSTR;
+				t->tinfo = TINFO_SIGSTR;
+				t->data.sig = sig;
 				OPSTACK_POP_T_BLIND(t);
 				break;
 				
@@ -3441,7 +3464,7 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case JSR_W:
 		case JSR:
-			OPSTACK_PUSH_INFO(TADDR->type, pc + insnLen[code[pc]]);
+			OPSTACK_PUSH_INFO(TADDR->data.class, pc + insnLen[code[pc]]);
 			break;
 
 		case RET:
@@ -3545,8 +3568,8 @@ verifyBasicBlock(errorInfo* einfo,
 			break;
 		case ARETURN:
 			ENSURE_OPSTACK_SIZE(1);
-			t->type  = (Hjava_lang_Class*)getReturnSig(method);
-			t->tinfo = CLASS_SIGSTR;
+			t->tinfo = TINFO_SIGSTR;
+			t->data.sig  = getReturnSig(method);
 			if (!typecheck(einfo, this, t, OPSTACK_TOP)) {
 				VERIFY_ERROR("areturn: top of stack is not type compatible with method return type");
 			}
@@ -3555,10 +3578,12 @@ verifyBasicBlock(errorInfo* einfo,
 		case ATHROW:
 			ENSURE_OPSTACK_SIZE(1);
 			if (!javaLangThrowable) {
+				// TODO: this is here for now, but perhaps we should have a TTHROWABLE that initialized as
+				//       a signature, like we do for String and Object
 				loadStaticClass(&javaLangThrowable, "java/lang/Throwable");
 			}
-			t->type = javaLangThrowable;
-			t->tinfo = 0;
+			t->tinfo = TINFO_CLASS;
+			t->data.class = javaLangThrowable;
 			if (!typecheck(einfo, this, t, OPSTACK_TOP)) {
 				DBG(VERIFY3, dprintf("%sATHROW error: ", indent); printType(OPSTACK_TOP); dprintf ("\n"); );
 				VERIFY_ERROR("athrow: object on top of stack is not a subclass of throwable");
@@ -3879,24 +3904,25 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		}
 		
 		if (pool->tags[classIdx] == CONSTANT_Class) {
-			methodRefClass->type = (Hjava_lang_Class*)(UNRESOLVED_CLASS_NAMED(classIdx, pool));
-			methodRefClass->tinfo = CLASS_NAMESTR;
+			methodRefClass->tinfo = TINFO_NAMESTR;
+			methodRefClass->data.name = UNRESOLVED_CLASS_NAMED(classIdx, pool);
 		} else {
-			// resolved class...verify2 guarantees this
-			methodRefClass->type = CLASS_CLASS(classIdx, pool);
-			methodRefClass->tinfo = 0;
+			methodRefClass->tinfo = TINFO_CLASS;
+			methodRefClass->data.class = CLASS_CLASS(classIdx, pool);
 		}
 		
 		
 		if (!strcmp(METHODREF_NAMED(idx,pool), constructor_name->data)) {
 			if (receiver->tinfo & UNINIT) {
-				UninitializedType* uninit = (UninitializedType*)receiver->type;
+				UninitializedType* uninit = receiver->data.uninit;
 				
 				if (receiver->tinfo & UNINIT_SUPER) {
-					Type t = { uninit->type.type->superclass, 0 };
+					Type t;
+					t.tinfo = TINFO_CLASS;
+					t.data.class = uninit->type.data.class->superclass;
 					
 					if (!sameType(methodRefClass, &uninit->type) &&
-					    uninit->type.type != TOBJ->type &&
+					    uninit->type.data.class != TOBJ->data.class &&
 					    !sameType(methodRefClass, &t)) {
 						VERIFY_ERROR("incompatible receiving type for superclass constructor call");
 					}
@@ -3955,8 +3981,8 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 		switch (*argbuf) {
 		case '[':
 		case 'L':
-			t->type = (Hjava_lang_Class*)argbuf;
-			t->tinfo = CLASS_SIGSTR;
+			t->tinfo = TINFO_SIGSTR;
+			t->data.sig = argbuf;
 			
 			if (!typecheck(einfo, method->class, t, &binfo->opstack[paramIndex])) {
 				TYPE_ERROR;
@@ -3968,7 +3994,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 			
 		case 'Z': case 'S': case 'B': case 'C':
 		case 'I':
-			if (binfo->opstack[paramIndex].type != TINT->type) {
+			if (binfo->opstack[paramIndex].data.class != TINT->data.class) {
 				TYPE_ERROR;
 			}
 			
@@ -3977,7 +4003,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 			break;
 			
 		case 'F':
-			if (binfo->opstack[paramIndex].type != TFLOAT->type) {
+			if (binfo->opstack[paramIndex].data.class != TFLOAT->data.class) {
 				TYPE_ERROR;
 			}
 			
@@ -3986,7 +4012,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 			break;
 			
 		case 'J':
-			if (binfo->opstack[paramIndex].type != TLONG->type ||
+			if (binfo->opstack[paramIndex].data.class != TLONG->data.class ||
 			    !IS_WIDE(&binfo->opstack[paramIndex + 1])) {
 				TYPE_ERROR;
 			}
@@ -3997,7 +4023,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 			break;
 			
 		case 'D':
-			if (binfo->opstack[paramIndex].type != TDOUBLE->type ||
+			if (binfo->opstack[paramIndex].data.class != TDOUBLE->data.class ||
 			    !IS_WIDE(&binfo->opstack[paramIndex + 1])) {
 				TYPE_ERROR;
 			}
@@ -4067,8 +4093,8 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 	case 'L':
 		*sigs = pushSig(*sigs, argbuf);
 		
-		binfo->opstack[binfo->stacksz].type = (Hjava_lang_Class*)argbuf;
-		binfo->opstack[binfo->stacksz].tinfo = CLASS_SIGSTR;
+		binfo->opstack[binfo->stacksz].data.class = (Hjava_lang_Class*)argbuf;
+		binfo->opstack[binfo->stacksz].tinfo = TINFO_SIGSTR;
 		binfo->stacksz++;
 		
 		// no freeing of the argbuf here...
@@ -4125,12 +4151,12 @@ loadInitialArgs(const Method* method, errorInfo* einfo,
 		}
 		
 		// the first local variable in every method is the class to which it belongs		
-		locals[0].type = method->class;
+		locals[0].data.class = method->class;
 		paramCount++;
 		if (!strcmp(METHOD_NAMED(method), constructor_name->data)) {
 			// the local reference in a constructor is uninitialized
 			*uninits = pushUninit(*uninits, &locals[0]);
-			locals[0].type = (Hjava_lang_Class*)(*uninits);
+			locals[0].data.class = (Hjava_lang_Class*)(*uninits);
 			locals[0].tinfo = UNINIT_SUPER;
 		}
 	}
@@ -4148,8 +4174,8 @@ loadInitialArgs(const Method* method, errorInfo* einfo,
 		
 		switch (*argbuf) {
 		case 'Z': case 'S': case 'B': case 'C':
-		case 'I': type = TINT->type;    break;
-		case 'F': type = TFLOAT->type;  break;
+		case 'I': type = TINT->data.class;    break;
+		case 'F': type = TFLOAT->data.class;  break;
 			
 		case 'J': locals[paramCount] = *TLONG;   goto WIDE_param;
 		case 'D': locals[paramCount] = *TDOUBLE; goto WIDE_param;
@@ -4167,7 +4193,7 @@ loadInitialArgs(const Method* method, errorInfo* einfo,
 						     CLASS_CNAME(method->class), METHOD_NAMED(method));
 				goto failure;
 			}
-			type = TWIDE->type;
+			type = TWIDE->data.class;
 			break;
 			
 		default:
@@ -4187,13 +4213,13 @@ loadInitialArgs(const Method* method, errorInfo* einfo,
 			newsig = checkPtr(KMALLOC((strlen(argbuf) + 1) * sizeof(char)));
 			*sigs = pushSig(*sigs, newsig);
 			sprintf(newsig, "%s", argbuf);
-			block->locals[paramCount].type = (Hjava_lang_Class*)newsig;
-			block->locals[paramCount].tinfo = CLASS_SIGSTR;
+			block->locals[paramCount].data.class = (Hjava_lang_Class*)newsig;
+			block->locals[paramCount].tinfo = TINFO_SIGSTR;
 			paramCount++;
 			continue;
 		}
 		
-		locals[paramCount].type = type;
+		locals[paramCount].data.class = type;
 		locals[paramCount].tinfo = 0;
 		paramCount++;
 	}
@@ -4233,11 +4259,11 @@ static
 void
 resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type)
 {
-	char* sig;
+	const char* sig;
 	char* tmp;
 
-	if (type->tinfo & CLASS_NAMESTR) {
-		sig = (char*)type->type;
+	if (type->tinfo & TINFO_NAMESTR) {
+		sig = type->data.sig;
 		
 		if (*sig != '[') {
 			tmp = checkPtr(KMALLOC((strlen(sig) + 3) * sizeof(char)));
@@ -4245,16 +4271,16 @@ resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type)
 			sig = tmp;
 		}
 		
-		type->type = getClassFromSignature(sig, this->loader, einfo);
-		type->tinfo = 0;
+		type->tinfo = TINFO_CLASS;
+		type->data.class = getClassFromSignature(sig, this->loader, einfo);
 		
 		if (tmp) {
 			KFREE(tmp);
 		}
 	}
-	else if (type->tinfo & CLASS_SIGSTR) {
-		type->type = getClassFromSignature((const char *)type->type, this->loader, einfo);
-		type->tinfo = 0;
+	else if (type->tinfo & TINFO_SIGSTR) {
+		type->tinfo = TINFO_CLASS;
+		type->data.class = getClassFromSignature(type->data.sig, this->loader, einfo);
 	}
 }
 
@@ -4269,8 +4295,8 @@ resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type)
  *
  * note: the precedence of merged types goes (from highest to lowest):
  *     actual pointer to Hjava_lang_Class*
- *     CLASS_SIGSTR
- *     CLASS_NAMESTR
+ *     TINFO_SIGSTR
+ *     TINFO_NAMESTR
  *
  * TODO: right now the priority is to be a common superclass, as stated in
  *       the JVML2 specs.  a better verification technique might check this first,
@@ -4286,17 +4312,17 @@ bool
 mergeTypes(errorInfo* einfo, Hjava_lang_Class* this,
 	   Type* t1, Type* t2)
 {
-	if (t1->type == TADDR->type || t2->type == TADDR->type) {
-		/* if one of the types is TADDR, the other one must also be TADDR */
-		if (t1->type != TADDR->type || t2->type != TADDR->type) {
+	if (IS_ADDRESS(t1) || IS_ADDRESS(t2)) {
+		// if one of the types is TADDR, the other one must also be TADDR 
+		if (t1->data.class != t2->data.class) {
 			return false;
 		}
-
+		
+		// TODO: should this be an error if they don't agree?
 		t2->tinfo = t1->tinfo;
-
 		return true;
 	}
-	else if (t2->type == TUNSTABLE->type || sameType(t1, t2)) {
+	else if (t2->data.class == TUNSTABLE->data.class || sameType(t1, t2)) {
 		return false;
 	}
 	else if (t1->tinfo & UNINIT || t2->tinfo & UNINIT ||
@@ -4306,7 +4332,7 @@ mergeTypes(errorInfo* einfo, Hjava_lang_Class* this,
 		return true;
 	}
 	// references only from here on out
-	else if (t1->type == TOBJ->type) {
+	else if (t1->data.class == TOBJ->data.class) {
 		*t2 = *t1;
 		return true;
 	}
@@ -4314,17 +4340,17 @@ mergeTypes(errorInfo* einfo, Hjava_lang_Class* this,
 	
 	// not equivalent, must resolve them
 	resolveType(einfo, this, t1);
-	if (t1->type == NULL) {
+	if (t1->data.class == NULL) {
 		return false;
 	}
 
 	resolveType(einfo, this, t2);
-	if (t2->type == NULL) {
+	if (t2->data.class == NULL) {
 		return false;
 	}
 	
-	if (CLASS_IS_INTERFACE(t1->type) &&
-	    instanceof_interface(t1->type, t2->type)) {
+	if (CLASS_IS_INTERFACE(t1->data.class) &&
+	    instanceof_interface(t1->data.class, t2->data.class)) {
 	
 		/* t1 is an interface and t2 implements it,
 		 * so the interface is the merged type.
@@ -4334,8 +4360,8 @@ mergeTypes(errorInfo* einfo, Hjava_lang_Class* this,
 		
 		return true;
 	
-	} else if (CLASS_IS_INTERFACE(t2->type) &&
-		   instanceof_interface(t2->type, t1->type)) {
+	} else if (CLASS_IS_INTERFACE(t2->data.class) &&
+		   instanceof_interface(t2->data.class, t1->data.class)) {
 		
 		/* same as above, but we don't need to merge, since
 		 * t2 already is the merged type
@@ -4348,11 +4374,11 @@ mergeTypes(errorInfo* einfo, Hjava_lang_Class* this,
 		 * check for common superclasses. Only merge iff t2 is
 		 * not the common superclass.
 		 */
-		Hjava_lang_Class *tmp = t2->type;
+		Hjava_lang_Class *tmp = t2->data.class;
 		
-		t2->type = getCommonSuperclass(t1->type, t2->type);
-	
-		return tmp != t2->type;
+		t2->data.class = getCommonSuperclass(t1->data.class, t2->data.class);
+		
+		return tmp != t2->data.class;
 	} 
 }
 
@@ -4378,7 +4404,7 @@ getCommonSuperclass(Hjava_lang_Class* t1, Hjava_lang_Class* t2)
 	
 	// error of some kind...at the very least, we shoulda gotten to Object
 	// when traversing the class hirearchy
-	return TUNSTABLE->type;
+	return TUNSTABLE->data.class;
 }
 
 
@@ -4390,18 +4416,25 @@ static
 bool
 isReference(const Type* type)
 {
+	// this method basically catches NULL pointer types for the rest of the type checking system
+	if (!type->data.class)
+		return false;
+	
+	
 	if (IS_ADDRESS(type)) {
+		// check IS_ADDRESS first because tinfo represents a return address value (i.e. PC)
 		return false;
 	}
-
-	if (type->tinfo & CLASS_NAMESTR || type->tinfo & CLASS_SIGSTR)
+	else if (type->tinfo & TINFO_NAMESTR ||
+		 type->tinfo & TINFO_SIGSTR ||
+		 type->tinfo & UNINIT) {
 		return true;
+	}
 	
-	return type->type &&
-		(type->type != TUNSTABLE->type &&
-		 type->type != TWIDE->type &&
-		 type->type != TVOID->type &&
-		 !IS_PRIMITIVE_TYPE(type));
+	return (type->data.class != TUNSTABLE->data.class &&
+		type->data.class != TWIDE->data.class &&
+		type->data.class != TVOID->data.class &&
+		!IS_PRIMITIVE_TYPE(type));
 }
 
 /*
@@ -4412,24 +4445,18 @@ static
 bool
 isArray(const Type* type)
 {
-	const char* sig;
-	Hjava_lang_Class* cl;
-	
-	if (!isReference(type))
+	if (!isReference(type)) {
 		return false;
-	
-	if (type->tinfo & CLASS_NAMESTR || type->tinfo & CLASS_SIGSTR) {
-		sig = (char*)type->type;
-		
-		return (*sig == '[');
 	}
-	else if (type->tinfo) {
+	else if (type->tinfo & TINFO_NAMESTR || type->tinfo & TINFO_SIGSTR) {
+		return (*(type->data.sig) == '[');
+	}
+	else if (type->tinfo != TINFO_CLASS) {
 		return false;
 	}
 	else {
-		cl = type->type;
-		return (cl == TNULL->type ||
-			*(cl->name->data) == '[');
+		return (type->data.class == TNULL->data.class ||
+			*(CLASS_CNAME(type->data.class)) == '[');
 	}
 }
 
@@ -4440,12 +4467,13 @@ isArray(const Type* type)
  */
 static
 bool
-sameType(Type* t1, Type* t2) {
+sameType(Type* t1, Type* t2)
+{
 	const char* sig1 = NULL;
 	const char* sig2 = NULL;
 	uint32 len1, len2;
 	
-	if (t1->type == t2->type) {
+	if (t1->data.class == t2->data.class) {
 		return true;
 	}
 	else if (!(isReference(t1) && isReference(t2))) {
@@ -4453,7 +4481,7 @@ sameType(Type* t1, Type* t2) {
 	}
 	else if (t1->tinfo & UNINIT) {
 		if (t2->tinfo & UNINIT) {
-			return (t1->type == t2->type);
+			return (t1->data.class == t2->data.class);
 		}
 		
 		return false;
@@ -4461,19 +4489,19 @@ sameType(Type* t1, Type* t2) {
 	else if (t2->tinfo & UNINIT) {
 		return false;
 	}
-	else if (t1->type == TNULL->type || t2->type == TNULL->type) {
+	else if (t1->data.class == TNULL->data.class || t2->data.class == TNULL->data.class) {
 		return true;
 	}
 	
 	
-	if (t1->tinfo & CLASS_NAMESTR) {
-		sig1 = (const char*)t1->type;
+	if (t1->tinfo & TINFO_NAMESTR) {
+		sig1 = t1->data.name;
 		
-		if (t2->tinfo & CLASS_NAMESTR) {
-			return (!strcmp(sig1, (const char*)t2->type));
+		if (t2->tinfo & TINFO_NAMESTR) {
+			return (!strcmp(sig1, t2->data.name));
 		}
-		else if (t2->tinfo & CLASS_SIGSTR) {
-			sig2 = (const char*)t2->type;
+		else if (t2->tinfo & TINFO_SIGSTR) {
+			sig2 = t2->data.sig;
 			
 			len1 = strlen(sig1);
 			len2 = strlen(sig2);
@@ -4483,21 +4511,21 @@ sameType(Type* t1, Type* t2) {
 				return false;
 		}
 		else {
-			if (strcmp(sig1, CLASS_CNAME(t2->type)))
+			if (strcmp(sig1, CLASS_CNAME(t2->data.class)))
 				return false;
 		}
 		
 		*t1 = *t2;
 		return true;
 	}
-	else if (t1->tinfo & CLASS_SIGSTR) {
-		sig1 = (const char*)t1->type;
+	else if (t1->tinfo & TINFO_SIGSTR) {
+		sig1 = t1->data.sig;
 		
-		if (t2->tinfo & CLASS_SIGSTR) {
-			return (!strcmp(sig1, (const char*)t2->type));
+		if (t2->tinfo & TINFO_SIGSTR) {
+			return (!strcmp(sig1, t2->data.sig));
 		}
-		else if (t2->tinfo & CLASS_NAMESTR) {
-			sig2 = (const char*)t2->type;
+		else if (t2->tinfo & TINFO_NAMESTR) {
+			sig2 = t2->data.name;
 			
 			len1 = strlen(sig1);
 			len2 = strlen(sig2);
@@ -4510,7 +4538,7 @@ sameType(Type* t1, Type* t2) {
 			return true;
 		}
 		else {
-			sig2 = CLASS_CNAME(t2->type);
+			sig2 = CLASS_CNAME(t2->data.class);
 			
 			len1 = strlen(sig1);
 			len2 = strlen(sig2);
@@ -4524,10 +4552,10 @@ sameType(Type* t1, Type* t2) {
 		}
 	}
 	else {
-		sig1 = CLASS_CNAME(t1->type);
+		sig1 = CLASS_CNAME(t1->data.class);
 		
-		if (t2->tinfo & CLASS_SIGSTR) {
-			sig2 = (const char*)t2->type;
+		if (t2->tinfo & TINFO_SIGSTR) {
+			sig2 = t2->data.sig;
 			
 			len1 = strlen(sig1);
 			len2 = strlen(sig2);
@@ -4538,8 +4566,8 @@ sameType(Type* t1, Type* t2) {
 			*t2 = *t1;
 			return true;
 		}
-		else if (t2->tinfo & CLASS_NAMESTR) {
-			sig2 = (const char*)t2->type;
+		else if (t2->tinfo & TINFO_NAMESTR) {
+			sig2 = t2->data.name;
 			
 			if (strcmp(sig1, sig2))
 				return false;
@@ -4549,7 +4577,7 @@ sameType(Type* t1, Type* t2) {
 		}
 		else {
 			// we should never get here
-			sig2 = CLASS_CNAME(t2->type);
+			sig2 = CLASS_CNAME(t2->data.class);
 			return (!strcmp(sig1, sig2));
 		}
 	}
@@ -4579,16 +4607,16 @@ typecheck(errorInfo* einfo, Hjava_lang_Class* this, Type* t1, Type* t2)
 	}
 
 	resolveType(einfo, this, t1);
-	if (t1->type == NULL) {
+	if (t1->data.class == NULL) {
 		return false;
 	}
 
 	resolveType(einfo, this, t2);
-	if (t2->type == NULL) {
+	if (t2->data.class == NULL) {
 		return false;
 	}
 
-	return instanceof(t1->type, t2->type);
+	return instanceof(t1->data.class, t2->data.class);
 }
 
 /*
@@ -4744,8 +4772,10 @@ checkUninit(Hjava_lang_Class* this, Type* type)
 {
 	if (type->tinfo & UNINIT) {
 		if (type->tinfo & UNINIT_SUPER) {
-			UninitializedType* uninit = (UninitializedType*)type->type;
-			Type t = { this, 0 };
+			UninitializedType* uninit = type->data.uninit;
+			Type t;
+			t.tinfo = TINFO_CLASS;
+			t.data.class = this;
 			
 			if (!sameType(&uninit->type, &t)) {
 				return false;
@@ -4796,14 +4826,14 @@ popUninit(const Method* method, UninitializedType* uninit, BlockInfo* binfo)
 	
 	for (n = 0; n < method->localsz; n++) {
 		if (binfo->locals[n].tinfo & UNINIT &&
-		    ((UninitializedType*)binfo->locals[n].type) == uninit) {
+		    ((UninitializedType*)binfo->locals[n].data.class) == uninit) {
 			binfo->locals[n] = uninit->type;
 		}
 	}
 	
 	for (n = 0; n < binfo->stacksz; n++) {
 		if (binfo->opstack[n].tinfo & UNINIT &&
-		    ((UninitializedType*)binfo->opstack[n].type) == uninit) {
+		    ((UninitializedType*)binfo->opstack[n].data.class) == uninit) {
 			binfo->opstack[n] = uninit->type;
 		}
 	}
@@ -5126,75 +5156,75 @@ static
 void
 printType(const Type* t)
 {
-	const Hjava_lang_Class* type = t->type;
+	const Hjava_lang_Class* type = t->data.class;
 	
 	dprintf("(%d)", t->tinfo);
 	
 	if (type == NULL) {
 		dprintf("NULL");
 	}
-	else if (type == TNULL->type) {
+	else if (type == TNULL->data.class) {
 		dprintf("TNULL");
 	}
-	else if (type == TADDR->type) {
+	else if (type == TADDR->data.class) {
 		dprintf("TADDR");
 	}
-	else if (type == TUNSTABLE->type) {
+	else if (type == TUNSTABLE->data.class) {
 		dprintf("TUNSTABLE");
 	}
-	else if (type == TWIDE->type) {
+	else if (type == TWIDE->data.class) {
 		dprintf("TWIDE");
 	}
 	
-	else if (type == TVOID->type) {
+	else if (type == TVOID->data.class) {
 		dprintf("TVOID");
 	}
 	
-	else if (type == TINT->type) {
+	else if (type == TINT->data.class) {
 		dprintf("TINT");
 	}
-	else if (type == TLONG->type) {
+	else if (type == TLONG->data.class) {
 		dprintf("TLONG");
 	}
-	else if (type == TFLOAT->type) {
+	else if (type == TFLOAT->data.class) {
 		dprintf("TFLOAT");
 	}
-	else if (type == TDOUBLE->type) {
+	else if (type == TDOUBLE->data.class) {
 		dprintf("TDOUBLE");
 	}
 	
-	else if (type == TCHARARR->type) {
+	else if (type == TCHARARR->data.class) {
 		dprintf("TCHARARR");
 	}
-	else if (type == TBOOLARR->type) {
+	else if (type == TBOOLARR->data.class) {
 		dprintf("TBOOLARR");
 	}
-	else if (type == TBYTEARR->type) {
+	else if (type == TBYTEARR->data.class) {
 		dprintf("TBYTEARR");
 	}
-	else if (type == TSHORTARR->type) {
+	else if (type == TSHORTARR->data.class) {
 		dprintf("TSHORTARR");
 	}
-	else if (type == TINTARR->type) {
+	else if (type == TINTARR->data.class) {
 		dprintf("TINTARR");
 	}
-	else if (type == TLONGARR->type) {
+	else if (type == TLONGARR->data.class) {
 		dprintf("TLONGARR");
 	}
-	else if (type == TFLOATARR->type) {
+	else if (type == TFLOATARR->data.class) {
 		dprintf("TFLOATARR");
 	}
-	else if (type == TDOUBLEARR->type) {
+	else if (type == TDOUBLEARR->data.class) {
 		dprintf("TDOUBLEARR");
 	}
-	else if (type == TOBJARR->type) {
+	else if (type == TOBJARR->data.class) {
 		dprintf("TOBJARR");
 	}
-	else if (t->tinfo & CLASS_NAMESTR || t->tinfo & CLASS_SIGSTR) {
+	else if (t->tinfo & TINFO_NAMESTR || t->tinfo & TINFO_SIGSTR) {
 		dprintf("%s", (const char *)type);
 	}
 	else if (t->tinfo & UNINIT) {
-                printType(&((UninitializedType*)t->type)->type);
+                printType(&(t->data.uninit->type));
 	}
 	else {
 		if (type->name == NULL || CLASS_CNAME(type) == NULL) {

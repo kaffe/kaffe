@@ -1,5 +1,24 @@
 2003-08-12  Rob Gonzalez <rob@kaffe.org>
 
+	* kaffe/kaffevm/verify.h
+	* kaffe/kaffevm/verify.c
+	(Type.type) change to a union Type.data.
+	This makes many current casts unnecessary and generally improves
+	code readability.
+
+	(CLASS_SIGSTR) renamed TINFO_SIGSTR
+	(CLASS_NAMESTR) renamed TINFO_NAMESTR
+	(TINFO_CLASS) added
+
+	* kaffe/kaffevm/verify.c
+	(initVerifierTypes) Initialization of all static Type objects
+	moved here for readability.
+
+	(verifyMethod3b:NEWARRAY) Take advantage of itypes.h constants,
+	such as TYPE_Boolean, to remove hard-coded values.
+
+2003-08-12  Rob Gonzalez <rob@kaffe.org>
+
 	* test/regression/TestScript.in
 	Made $JAVA dependent upon $KAFFEHOME to ensure that the
 	correct kaffe binary is used during make check.
