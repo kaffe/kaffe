@@ -464,7 +464,7 @@ public class ToolTipManager extends MouseAdapter implements MouseMotionListener
    */
   private void showTip()
   {
-    if (! enabled)
+    if (! enabled || currentComponent == null)
       return;
 
     if (currentTip == null

@@ -170,7 +170,7 @@ public class GtkFramePeer extends GtkWindowPeer
   native void nativeSetIconImageFromData (int[] pixels, int width, int height);
   public void setIconImage (Image image) 
   {
-      if (image != null)
+      if (image != null && image instanceof GtkImage)
         {
           GtkImage img = (GtkImage) image;
           // FIXME: Image should be loaded, but if not, do image loading here.

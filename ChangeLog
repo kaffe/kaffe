@@ -1,3 +1,84 @@
+2004-11-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphics2D.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkFramePeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkToolkit.java,
+	libraries/javalib/java/awt/print/PrinterJob.java,
+	libraries/javalib/javax/swing/JComponent.java,
+	libraries/javalib/javax/swing/JDesktopPane.java,
+	libraries/javalib/javax/swing/JMenuItem.java,
+	libraries/javalib/javax/swing/JTable.java,
+	libraries/javalib/javax/swing/JTree.java,
+	libraries/javalib/javax/swing/JViewport.java,
+	libraries/javalib/javax/swing/RepaintManager.java,
+	libraries/javalib/javax/swing/ScrollPaneLayout.java,
+	libraries/javalib/javax/swing/ToolTipManager.java,
+	libraries/javalib/javax/swing/TransferHandler.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicLookAndFeel.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicMenuItemUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTableHeaderUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTextUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTreeUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicViewportUI.java,
+	libraries/javalib/javax/swing/text/SimpleAttributeSet.java,
+	libraries/javalib/javax/swing/tree/DefaultTreeCellRenderer.java,
+	libraries/javalib/javax/swing/tree/DefaultTreeModel.java:
+	Resynced with GNU Classpath.
+
+	2004-11-11  Graydon Hoare  <graydon@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GdkGraphics2D.java
+        (GdkGraphics2D): Set clip after transform.
+        (drawImage): Protect against null image.
+        * gnu/java/awt/peer/gtk/GtkFramePeer.java
+        (setIconImage): Protect against non-GtkImage args.
+        * gnu/java/awt/peer/gtk/GtkToolkit.java
+        (checkImage): Protect against non-GtkImage args.
+        * java/awt/print/PrinterJob.java:
+        (print): Add variant taking PrintRequestAttributeSet.
+        (printDialog): Likewise.
+        * javax/swing/JComponent.java:
+        (transferHandler): New field.
+        (getComponentGraphics): Build new Graphics for each sub-paint.
+        (getTransferHandler): New method.
+        (setTransferHandler): New method.
+        * javax/swing/JDesktopPane.java
+        (setDragMode): Force LIVE_DRAG_MODE.
+        * javax/swing/JMenuItem.java
+        (menuSelectionChanged): Protect against null parent.
+        * javax/swing/JTable.java (setDefaultRenderer): New method.
+        * javax/swing/JTree.java: Get basic ctors and UI working.
+        * javax/swing/JViewport.java (JViewport): Set scroll mode.
+        * javax/swing/RepaintManager.java
+        (addDirtyRegion): Skip empty regions.
+        * javax/swing/ScrollPaneLayout.java (minimumLayoutSize): Do not
+        bound scrollpane minimum by central view minimum.
+        * javax/swing/ToolTipManager.java
+        (showTip): Guard against null component.
+        * javax/swing/TransferHandler.java: Stub out.
+        * javax/swing/plaf/basic/BasicLookAndFeel.java:
+        Add entry for TextPaneUI, change Tree icons to pngs.
+        * javax/swing/plaf/basic/BasicMenuItemUI.java:
+        (installDefaults): Set text position and alignment.
+        (paintMenuItem): Layout icon with normal compound function.
+        * javax/swing/plaf/basic/BasicTableHeaderUI.java:
+        (getMaximumSize): Delete.
+        (getMinimumSize): Delete.
+        (getPreferredSize): Use column model's total width.
+        * javax/swing/plaf/basic/BasicTextPaneUI.java: New file.
+        * javax/swing/plaf/basic/BasicTextUI.java
+        (modelChanged): Make resilient against nulls.
+        * javax/swing/plaf/basic/BasicTreeUI.java:
+        Add some simplistic config / painting functions.
+        * javax/swing/plaf/basic/BasicViewportUI.java
+        (paintSimple): Add new non-backingstore paint mode.
+        (paintBackingStore): Split out backing store code.
+        (paint): Switch on painting mode.
+        * javax/swing/text/SimpleAttributeSet.java
+        (SimpleAttributeSet): Resist nulls.
+        * javax/swing/tree/DefaultTreeCellRenderer.java: Implement.
+        * javax/swing/tree/DefaultTreeModel.java: Partially implement.
+
 2004-11-12  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/util/jar/JarFile.java:

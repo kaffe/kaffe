@@ -154,7 +154,10 @@ public class JDesktopPane extends JLayeredPane implements Accessible
 
     // FIXME: Unsupported mode.
     if (mode == OUTLINE_DRAG_MODE)
-      throw new IllegalArgumentException("Outline drag modes are unsupported.");
+      {
+        // throw new IllegalArgumentException("Outline drag modes are unsupported.");
+        mode = LIVE_DRAG_MODE;
+      }
 
     dragMode = mode;
   }

@@ -37,6 +37,7 @@ exception statement from your version. */
 
 
 package java.awt.print;
+import javax.print.attribute.PrintRequestAttributeSet;
 
 /**
   * This class controls printing.
@@ -194,6 +195,8 @@ pageDialog(PageFormat page_format);
   * Prints the pages.
   */
 public abstract void print () throws PrinterException;
+public abstract void print (PrintRequestAttributeSet attributes) throws PrinterException;
+
 
 /**
   * Displays a dialog box to the user which allows the print job
@@ -204,6 +207,9 @@ public abstract void print () throws PrinterException;
   */
 public abstract boolean
 printDialog();
+
+public abstract boolean 
+printDialog(PrintRequestAttributeSet attributes);
 
 /*************************************************************************/
 

@@ -60,6 +60,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.MenuElement;
 import javax.swing.MenuSelectionManager;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
@@ -392,6 +393,9 @@ public class BasicMenuItemUI extends MenuItemUI
     selectionBackground = defaults.getColor("MenuItem.selectionBackground");
     selectionForeground = defaults.getColor("MenuItem.selectionForeground");
     acceleratorDelimiter = defaults.getString("MenuItem.acceleratorDelimiter");
+
+    menuItem.setHorizontalTextPosition(SwingConstants.TRAILING);
+    menuItem.setHorizontalAlignment(SwingConstants.LEADING);
   }
 
   /**
@@ -551,23 +555,14 @@ public class BasicMenuItemUI extends MenuItemUI
 	  }
       }
 
-    // paint icon
-    // FIXME: should paint different icon at different button state's.
-    // i.e disabled icon when button is disabled.. etc.
-    Icon i = m.getIcon();
-    if (i != null)
-      {
-	i.paintIcon(c, g, vr.x, vr.y);
-
-	// Adjust view rectangle, s.t text would be drawn after menu item's icon.
-	vr.x += i.getIconWidth() + defaultTextIconGap;
-      }
-
     // paint text and user menu icon if it exists	     
-    SwingUtilities.layoutCompoundLabel(c, fm, m.getText(), m.getIcon(),
+    Icon i = m.getIcon();
+    SwingUtilities.layoutCompoundLabel(c, fm, m.getText(), i,
                                        vertAlign, horAlign, vertTextPos,
                                        horTextPos, vr, ir, tr,
                                        defaultTextIconGap);
+    if (i != null)
+      i.paintIcon(c, g, ir.x, ir.y);
 
     paintText(g, m, tr, m.getText());
 

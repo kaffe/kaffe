@@ -675,6 +675,11 @@ public class JTable extends JComponent
     return renderer;
   }
 
+  public void setDefaultRenderer(Class columnClass, TableCellRenderer rend)
+  {
+    defaultRenderersByColumnClass.put(columnClass, rend);
+  }
+
   public TableCellRenderer getDefaultRenderer(Class columnClass)
   {
     if (defaultRenderersByColumnClass.containsKey(columnClass))

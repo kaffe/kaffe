@@ -309,6 +309,9 @@ public class RepaintManager
   public synchronized void addDirtyRegion(JComponent component, int x, int y,
                                           int w, int h)
   {
+    if (w == 0 || h == 0)
+      return;
+
     Rectangle r = new Rectangle(x, y, w, h);
     if (dirtyComponents.containsKey(component))
       r = r.union((Rectangle)dirtyComponents.get(component));

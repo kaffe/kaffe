@@ -461,8 +461,17 @@ public abstract class BasicTextUI extends TextUI
 
   protected void modelChanged()
   {
+    if (textComponent == null || rootView == null) 
+      return;
     ViewFactory factory = rootView.getViewFactory();
-    Element elem = textComponent.getDocument().getDefaultRootElement();
+    if (factory == null) 
+      return;
+    Document doc = textComponent.getDocument();
+    if (doc == null)
+      return;
+    Element elem = doc.getDefaultRootElement();
+    if (elem == null)
+      return;
     setView(factory.create(elem));
   }
 }

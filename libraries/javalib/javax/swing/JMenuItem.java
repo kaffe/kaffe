@@ -529,19 +529,20 @@ public class JMenuItem extends AbstractButton implements Accessible,
    */
   public void menuSelectionChanged(boolean changed)
   {
+    Component parent = this.getParent();
     if (changed)
       {
 	model.setArmed(true);
 
-	if (this.getParent() instanceof JPopupMenu)
-	  ((JPopupMenu) this.getParent()).setSelected(this);
+	if (parent != null && parent instanceof JPopupMenu)
+	  ((JPopupMenu) parent).setSelected(this);
       }
     else
       {
 	model.setArmed(false);
 
-	if (this.getParent() instanceof JPopupMenu)
-	  ((JPopupMenu) this.getParent()).getSelectionModel().clearSelection();
+	if (parent != null && parent instanceof JPopupMenu)
+	  ((JPopupMenu) parent).getSelectionModel().clearSelection();
       }
   }
 

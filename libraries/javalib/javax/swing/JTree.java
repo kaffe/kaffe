@@ -40,7 +40,9 @@ package javax.swing;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.accessibility.Accessible;
@@ -52,12 +54,16 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.plaf.TreeUI;
 import javax.swing.tree.ExpandVetoException;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+
 
 public class JTree extends JComponent
   implements Scrollable, Accessible
@@ -100,7 +106,7 @@ public class JTree extends JComponent
    */
   public JTree()
   {
-    treeModel = createTreeModel(null);
+    this(createTreeModel(null));
   }
 
   /**
@@ -110,7 +116,7 @@ public class JTree extends JComponent
    */
   public JTree(Hashtable value)
   {
-    treeModel = createTreeModel(value);
+    this(createTreeModel(value));
   }
 
   /**
@@ -120,7 +126,7 @@ public class JTree extends JComponent
    */
   public JTree(Object[] value)
   {
-    treeModel = createTreeModel(value);
+    this(createTreeModel(value));
   }
 
   /**
@@ -131,6 +137,8 @@ public class JTree extends JComponent
   public JTree(TreeModel model)
   {
     treeModel = model;
+    setCellRenderer(new DefaultTreeCellRenderer());
+    updateUI();
   }
 
   /**
@@ -152,6 +160,7 @@ public class JTree extends JComponent
    */
   public JTree(TreeNode root, boolean asksAllowChildren)
   {
+    this(new DefaultTreeModel(root, asksAllowChildren));
   }
 
   /**
@@ -161,7 +170,81 @@ public class JTree extends JComponent
    */
   public JTree(Vector value)
   {
-    treeModel = createTreeModel(value);
+    this(createTreeModel(value));
+  }
+
+  public static class DynamicUtilTreeNode 
+    extends DefaultMutableTreeNode
+  {
+    protected Object childValue;
+    protected boolean loadedChildren;
+    public DynamicUtilTreeNode(Object value,
+                               Object children) 
+    {
+      super(value);
+      childValue = children;
+      loadedChildren = false;
+    }
+
+    public int getChildCount()
+    {
+      loadChildren();
+      return super.getChildCount();
+    }
+
+    protected void loadChildren()
+    {
+      if (!loadedChildren)
+        {
+          createChildren(this, childValue);
+          loadedChildren = true;
+        }
+    }
+    
+    public Enumeration children()
+    {
+      loadChildren();
+      return super.children();
+    }
+
+    public boolean isLeaf() 
+    {
+      return (childValue == null || 
+              !(childValue instanceof Hashtable
+               || childValue instanceof Vector
+               || childValue.getClass().isArray()));
+    }
+
+    public static void createChildren(DefaultMutableTreeNode parent,
+                                      Object children)
+    {
+      if (children instanceof Hashtable)
+        {
+          Hashtable tab = (Hashtable) children;
+          Enumeration e = tab.keys();
+          while (e.hasMoreElements()) 
+            {
+              Object key = e.nextElement();
+              Object val = tab.get(key);
+              parent.add(new DynamicUtilTreeNode(key, val));
+            }
+        }
+      else if (children instanceof Vector)
+        {
+          Iterator i = ((Vector)children).iterator();
+          while (i.hasNext())
+            {
+              Object n = i.next();
+              parent.add(new DynamicUtilTreeNode(n,n));
+            }
+        }
+      else if (children.getClass().isArray())
+        {
+          Object[] arr = (Object[]) children;
+          for (int i = 0; i < arr.length; ++i)
+            parent.add(new DynamicUtilTreeNode(arr[i], arr[i]));
+      }
+    }
   }
 
   /**
@@ -171,8 +254,7 @@ public class JTree extends JComponent
    */
   protected static TreeModel createTreeModel(Object value)
   {
-    // FIXME: Implement this.
-    return null;
+    return new DefaultTreeModel(new DynamicUtilTreeNode(value, value));
   }
 
   /**
@@ -201,6 +283,8 @@ public class JTree extends JComponent
   public void updateUI()
   {
     setUI((TreeUI) UIManager.getUI(this));
+    revalidate();
+    repaint();
   }
 
   /**

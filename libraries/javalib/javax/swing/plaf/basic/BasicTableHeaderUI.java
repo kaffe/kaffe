@@ -182,84 +182,6 @@ public class BasicTableHeaderUI
 
   }
 
-  public Dimension getMaximumSize(JComponent c)
-  {
-    TableColumnModel cmod = header.getColumnModel();
-    TableCellRenderer defaultRend = header.getDefaultRenderer();
-    int ncols = cmod.getColumnCount();    
-    int spacing = 0;
-    Dimension ret = getPreferredSize(c);
-    
-    if (header.getTable() != null 
-        && header.getTable().getInterCellSpacing() != null)
-      spacing = header.getTable().getInterCellSpacing().width;
-
-    ret.width = 0;
-    for (int i = 0; i < ncols; ++i)      
-      {
-        TableColumn col = cmod.getColumn(i);
-        TableCellRenderer rend = col.getHeaderRenderer();
-        if (rend == null)
-          rend = defaultRend;
-        Object val = col.getHeaderValue();
-        Component comp = rend.getTableCellRendererComponent(header.getTable(),
-                                                            val,
-                                                            false, // isSelected
-                                                            false, // isFocused
-                                                            -1, i);
-        comp.setFont(header.getFont());
-        comp.setBackground(header.getBackground());
-        comp.setForeground(header.getForeground());
-        if (comp instanceof JComponent)
-          ((JComponent)comp).setBorder(cellBorder);
-
-        Dimension d = comp.getMaximumSize();
-        ret.width += col.getMaxWidth();
-        ret.height = Math.max(ret.height, d.height);
-        ret.width += spacing;
-      }
-    return ret;
-  }
-
-  public Dimension getMinimumSize(JComponent c)
-  {
-    TableColumnModel cmod = header.getColumnModel();
-    TableCellRenderer defaultRend = header.getDefaultRenderer();
-    int ncols = cmod.getColumnCount();    
-    int spacing = 0;
-    Dimension ret = getPreferredSize(c);
-
-    if (header.getTable() != null 
-        && header.getTable().getInterCellSpacing() != null)
-      spacing = header.getTable().getInterCellSpacing().width;
-
-    ret.width = 0;
-    for (int i = 0; i < ncols; ++i)      
-      {
-        TableColumn col = cmod.getColumn(i);
-        TableCellRenderer rend = col.getHeaderRenderer();
-        if (rend == null)
-          rend = defaultRend;
-        Object val = col.getHeaderValue();
-        Component comp = rend.getTableCellRendererComponent(header.getTable(),
-                                                            val,
-                                                            false, // isSelected
-                                                            false, // isFocused
-                                                            -1, i);
-        comp.setFont(header.getFont());
-        comp.setBackground(header.getBackground());
-        comp.setForeground(header.getForeground());
-        if (comp instanceof JComponent)
-          ((JComponent)comp).setBorder(cellBorder);
-
-        Dimension d = comp.getMinimumSize();
-        ret.width += col.getMinWidth();
-        ret.width += spacing;
-        ret.height = Math.max(ret.height, d.height);
-      }
-    return ret;
-  }
-  
   public Dimension getPreferredSize(JComponent c)
   {
     TableColumnModel cmod = header.getColumnModel();
@@ -291,10 +213,10 @@ public class BasicTableHeaderUI
           ((JComponent)comp).setBorder(cellBorder);
 
         Dimension d = comp.getPreferredSize();
-        ret.width += d.width;
         ret.width += spacing;
         ret.height = Math.max(d.height, ret.height);        
       }
+    ret.width = cmod.getTotalColumnWidth();
     return ret;
   }
   

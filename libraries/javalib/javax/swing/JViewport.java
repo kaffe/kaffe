@@ -127,6 +127,7 @@ public class JViewport extends JComponent
   public JViewport()
   {
     setOpaque(true);
+    setScrollMode(BLIT_SCROLL_MODE);
     updateUI();
   }
 

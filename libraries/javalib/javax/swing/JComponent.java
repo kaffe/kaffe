@@ -325,6 +325,8 @@ public abstract class JComponent extends Container implements Serializable
   private ActionMap actionMap;
   private InputVerifier inputVerifier;
 
+  private TransferHandler transferHandler;
+
   /** 
    * A lock held during recursive painting; this is used to serialize
    * access to the double buffer, and also to select the "top level" 
@@ -862,9 +864,10 @@ public abstract class JComponent extends Container implements Serializable
    */
   protected Graphics getComponentGraphics(Graphics g)
   {    
-    g.setFont(this.getFont());
-    g.setColor(this.getForeground());
-    return g;
+    Graphics g2 = g.create();
+    g2.setFont(this.getFont());
+    g2.setColor(this.getForeground());
+    return g2;
   }
 
 
@@ -2066,6 +2069,32 @@ public abstract class JComponent extends Container implements Serializable
   public void setRequestFocusEnabled(boolean e)
   {
     requestFocusEnabled = e;
+  }
+
+  /**
+   * Get the value of the {@link #transferHandler} property.
+   *
+   * @return The current value of the property
+   *
+   * @see ComponentUI#setTransferHandler
+   */
+
+  public TransferHandler getTransferHandler()
+  {
+    return transferHandler;
+  }
+
+  /**
+   * Set the value of the {@link #transferHandler} property.
+   *
+   * @param newHandler The new value of the property
+   *
+   * @see ComponentUI#getTransferHandler
+   */
+
+  void setTransferHandler (TransferHandler newHandler)
+  {
+    transferHandler = newHandler;
   }
 
   /**

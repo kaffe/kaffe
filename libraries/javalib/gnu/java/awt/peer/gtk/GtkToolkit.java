@@ -122,7 +122,14 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
   public int checkImage (Image image, int width, int height, 
 			 ImageObserver observer) 
   {
-    int status = ((GtkImage) image).checkImage ();
+    int status = ImageObserver.ALLBITS 
+      | ImageObserver.WIDTH 
+      | ImageObserver.HEIGHT;
+
+    if (image instanceof GtkImage)
+      {        
+        status = ((GtkImage) image).checkImage ();
+      }
 
     if (observer != null)
       observer.imageUpdate (image, status,

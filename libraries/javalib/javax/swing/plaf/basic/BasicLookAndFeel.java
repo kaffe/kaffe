@@ -138,6 +138,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       "TabbedPaneUI", "javax.swing.plaf.basic.BasicTabbedPaneUI",
       "TableHeaderUI", "javax.swing.plaf.basic.BasicTableHeaderUI",
       "TableUI", "javax.swing.plaf.basic.BasicTableUI",
+      "TextPaneUI", "javax.swing.plaf.basic.BasicTextPaneUI",
       "TextAreaUI", "javax.swing.plaf.basic.BasicTextAreaUI",
       "TextFieldUI", "javax.swing.plaf.basic.BasicTextFieldUI",
       "TextPaneUI", "javax.swing.plaf.basic.BasicTextPaneUI",
@@ -901,8 +902,8 @@ public abstract class BasicLookAndFeel extends LookAndFeel
       }),
       "Tree.background", new ColorUIResource(Color.white),
       "Tree.changeSelectionWithFocus", Boolean.TRUE,
-      // XXX Don't use gif
-      "Tree.closedIcon", new IconUIResource(new ImageIcon("icons/TreeClosed.gif")),
+      "Tree.closedIcon", new IconUIResource(new ImageIcon("icons/TreeClosed.png")),
+      "Tree.collapsedIcon", new IconUIResource(new ImageIcon("icons/TreeCollapsed.png")),
       "Tree.drawsFocusBorderAroundIcon", Boolean.FALSE,
       "Tree.editorBorder", new BorderUIResource.LineBorderUIResource(Color.lightGray),
       "Tree.focusInputMap", new UIDefaults.LazyInputMap(new Object[] {
@@ -950,13 +951,12 @@ public abstract class BasicLookAndFeel extends LookAndFeel
         "ctrl PAGE_DOWN", "scrollDownChangeLead"
       }),
       "Tree.font", new FontUIResource("Dialog", Font.PLAIN, 12),
+      "Tree.expandedIcon", new IconUIResource(new ImageIcon("icons/TreeExpanded.png")),
       "Tree.foreground", new ColorUIResource(Color.black),
       "Tree.hash", new ColorUIResource(Color.gray),
-      // XXX Don't use gif
-      "Tree.leafIcon", new IconUIResource(new ImageIcon("icons/TreeLeaf.gif")),
+      "Tree.leafIcon", new IconUIResource(new ImageIcon("icons/TreeLeaf.png")),
       "Tree.leftChildIndent", new Integer(7),
-      // XXX Don't use gif
-      "Tree.openIcon", new IconUIResource(new ImageIcon("icons/TreeOpen.gif")),
+      "Tree.openIcon", new IconUIResource(new ImageIcon("icons/TreeOpen.png")),
       "Tree.rightChildIndent", new Integer(13),
       "Tree.rowHeight", new Integer(16),
       "Tree.scrollsOnExpand", Boolean.TRUE,

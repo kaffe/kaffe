@@ -321,7 +321,6 @@ public class ScrollPaneLayout
               insetsSize.setSize(insets.left + insets.right,
                                  insets.top + insets.bottom);
 
-            maybeSetMinimumSize(viewport, viewportSize);
             maybeSetMinimumSize(colHead, columnHeaderSize);
             maybeSetMinimumSize(rowHead, rowHeaderSize);
             

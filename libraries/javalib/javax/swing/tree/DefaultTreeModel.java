@@ -175,9 +175,12 @@ public class DefaultTreeModel
    * @param value1 TODO
    * @return Object
    */
-  public Object getChild(Object value0, int value1)
+  public Object getChild(Object node, int idx)
   {
-    return null; // TODO
+    if (node instanceof TreeNode)
+      return ((TreeNode)node).getChildAt(idx);
+    else
+      return null;
   }
 
   /**
@@ -185,9 +188,12 @@ public class DefaultTreeModel
    * @param value0 TODO
    * @return int
    */
-  public int getChildCount(Object value0)
+  public int getChildCount(Object node)
   {
-    return 0; // TODO
+    if (node instanceof TreeNode)
+      return ((TreeNode)node).getChildCount();
+    else
+      return 0;
   }
 
   /**
@@ -195,9 +201,12 @@ public class DefaultTreeModel
    * @param value0 TODO
    * @return boolean
    */
-  public boolean isLeaf(Object value0)
+  public boolean isLeaf(Object node)
   {
-    return false; // TODO
+    if (node instanceof TreeNode)
+      return ((TreeNode)node).isLeaf();
+    else
+      return true;
   }
 
   /**
