@@ -1,3 +1,9 @@
+2004-12-20  Adam Heath  <doogie@brainfood.com>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	  Fix problem reported by Michael Franz <mvfranz@gmail.com;
+	  missing ';' after DBG call for systems using FIOASYNC.
+
 2004-12-20  Timothy S. Stack  <stack@cs.utah.edu>
 
 	* config/powerpc/jit-labels.h:

@@ -2582,7 +2582,7 @@ jthreadedFileDescriptor(int fd)
 	 */
 	r = ioctl(fd, FIOASYNC, &on);
 	if (r < 0) {
-		DBG(JTHREAD, perror("FIOASYNC"); )
+		DBG(JTHREAD, perror("FIOASYNC"); );
         }
 #endif
 
