@@ -1,3 +1,13 @@
+2004-07-15  Jim Huang  <jserv@kaffe.org>
+
+	* libraries/javalib/java/awt/MouseEvt.java
+	(clickToFocus): JDK allows components which are not 
+	isFocusTraversable() to gain the focus by means of 
+	explicit requestFocus().
+	
+	* libraries/javalib/java/awt/PaintEvt.java
+	(dispatch): Boundary check performed.
+	
 2004-07-14  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/ksem.c (ksemGet): Readded jmutex_lock.

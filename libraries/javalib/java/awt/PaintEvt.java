@@ -1,16 +1,21 @@
-package java.awt;
-
-import java.awt.event.PaintEvent;
-
-/**
+/*
+ * PaintEvt
  *
  * Copyright (c) 1998
- *   Transvirtual Technologies Inc.  All rights reserved.
+ *	Transvirtual Technologies Inc.  All rights reserved.
+ *
+ * Copyright (c) 2004
+ *	Kaffe.org contributors. See ChangeLog for details.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  * @author P.C.Mehlitz
  */
+
+package java.awt;
+
+import java.awt.event.PaintEvent;
+
 class PaintEvt
   extends PaintEvent
 {
@@ -28,8 +33,12 @@ PaintEvt ( Component src, int evtId, long ms, int x, int y, int width, int heigh
 }
 
 protected void dispatch () {
-	((Component)source).processPaintEvent( id, x, y, width, height);
-
+	if ( (width > 0) && (height > 0) ) {
+		Component c = (Component) source;
+		if ( (c.flags & Component.IS_SHOWING) == Component.IS_SHOWING ) {
+			c.processPaintEvent( id, x, y, width, height);
+		}
+	}
 	recycle();
 }
 

@@ -1,18 +1,22 @@
-package java.awt;
-
-import java.awt.event.MouseEvent;
-import java.util.Stack;
-
-/**
+/*
  *
  * Copyright (c) 1998
- *   Transvirtual Technologies Inc.  All rights reserved.
+ *	Transvirtual Technologies Inc.  All rights reserved.
+ *
+ * Copyright (c) 2004
+ *	Kaffe.org contributors. See ChangeLog for details.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  *
  * @author P.C.Mehlitz
  */
+
+package java.awt;
+
+import java.awt.event.MouseEvent;
+import java.util.Stack;
+
 class MouseEvt
   extends MouseEvent
 {
@@ -50,9 +54,13 @@ static void clickToFocus ( Component newKeyTgt ) {
 	// focus events will be processed AFTER the mouse event. This is the opposite order
 	// compared to native handling (for toplevels). We try to be compatible with
 	// lightweight behavior
-	
-	//if ( newKeyTgt.isFocusTraversable() )
-	//	newKeyTgt.requestFocus();
+
+	// note that the JDK allows components which are not isFocusTraversable() to gain
+	// the focus by means of explicit requestFocus() (not very intuitive) OR by means of
+	// mouseclicks (even on components which are not mouse aware, which sounds silly)
+
+	if ( ((newKeyTgt.flags & Component.IS_NATIVE_LIKE) != 0) && newKeyTgt.isFocusTraversable() )
+		newKeyTgt.requestFocus();	
 }
 
 static Component computeMouseTarget ( Container toplevel, int x, int y ) {
