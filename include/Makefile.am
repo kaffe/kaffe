@@ -25,6 +25,8 @@ NOINSTALL_DERIVED_HDRS = \
 	java_io_InputStream.h \
 	java_io_ObjectInputStream.h \
 	java_io_ObjectOutputStream.h \
+	java_io_ObjectStreamClass.h \
+	java_io_ObjectStreamField.h \
 	java_io_PrintStream.h \
 	java_io_RandomAccessFile.h \
 	java_lang_Boolean.h \
@@ -66,7 +68,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_util_zip_ZipEntry.h \
 	java_util_zip_ZipFile.h \
 	kaffe_applet_AudioPlayer.h \
-	kaffe_io_ObjectStreamClassImpl.h \
 	kaffe_lang_SystemClassLoader.h \
 	kaffe_management_Classpath.h
 

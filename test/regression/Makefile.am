@@ -45,12 +45,19 @@ ALWAYS_TESTS = \
 	IllegalWait.java \
 ## Test that preemption works---may not be supported by all threading systems
 	Preempt.java 		\
+## Serialization tests
+	TestSerializable.java \
+	TestSerializable2.java \
+	SerializationCompatibility.java \
+	SerialPersistentFields.java \
+	TestSerialVersions.java \
+	TestSerialPersistent.java \
+	TestSerialFields.java \
+	TestObjectStreamField.java \
 ## Misc tests
 	ReflectInterfaces.java \
 	InnerTest.java \
 	SerialUID.java \
-	TestSerializable.java \
-	TestSerializable2.java \
 	TestCasts.java \
 	Alias.java \
 	NullPointerTest.java \

@@ -31,6 +31,8 @@ byte TC_ENDBLOCKDATA = (byte)0x78;
 byte TC_RESET = (byte)0x79;
 byte TC_BLOCKDATALONG = (byte)0x7A;
 byte TC_EXCEPTION = (byte)0x7B;
+byte TC_LONGSTRING = (byte)0x7C;
+byte TC_PROXYCLASSHANDLEDESC = (byte)0x7D;
 byte TC_MAX = (byte)0x7B;
 
 byte SC_WRITE_METHOD = (byte)0x01;

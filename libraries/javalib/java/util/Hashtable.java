@@ -1,4 +1,3 @@
-
 /*
  * Java core library component.
  *
@@ -16,18 +15,24 @@
 package java.util;
 
 import java.io.Serializable;
+import java.io.ObjectStreamField;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class Hashtable extends Dictionary
 		implements Map, Cloneable, Serializable {
+
 	private static final long serialVersionUID = 1421746759512286392L;
+	private static final ObjectStreamField[] serialPersistentFields = 
+	{
+		new ObjectStreamField("threshold", int.class),
+		new ObjectStreamField("loadFactor", float.class),
+	};
+
 	private static final int DEFAULT_CAPACITY = 11;
 	private static final float DEFAULT_LOADFACTOR = 0.75f;
-	private HashMap map;
-
-	/* We need to keep these values for serialization */
-	private float loadFactor;
+	private transient HashMap map;
 
 	public Hashtable() {
 		this(DEFAULT_CAPACITY, DEFAULT_LOADFACTOR);
@@ -39,7 +44,6 @@ public class Hashtable extends Dictionary
 
 	public Hashtable(int initialCapacity, float loadFactor) {
 		map = new HashMap(initialCapacity, loadFactor);
-		this.loadFactor = loadFactor;
 	}
 
 	public Hashtable(Map t) {
@@ -154,35 +158,50 @@ public class Hashtable extends Dictionary
 
 	/* Serialization ---------------------------------------- */
 
-	class DefaultSerialization {
-
-	private float loadFactor;
-	private int threshold;
-
-	private void readDefaultObject() {
-		map = new HashMap((int)(threshold / loadFactor), loadFactor);
-	}
-
-	private void writeDefaultObject() {
-		loadFactor = map.loadFactor;
-		threshold = (int)(map.getTableLength() * loadFactor);
-	}
-
+	/**
+	 * See ObjectInputStream doc.  (Used when serialized stream
+	 * contains a class that doesn't indicate (in stream) that
+	 * this class is a superclass, but in the VM this class is a
+	 * superclass of that class.
+	 */
+	private void readObjectNoData() 
+	{
+		this.map = new HashMap();
 	}
 
 	/**
-	* read this hashtable from a stream
-	*/
-	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
-		// read all default fields
-		stream.defaultReadObject();
+	 * Read this hashtable from a stream.  Tries to be compatible
+	 * with Sun's serialized hashtables.
+	 *
+	 * Sun's hashtable are serialized as:
+	 *    int threshhold
+	 *    float loadfactor
+	 *    int capacity
+	 *    int element count
+	 *    <key>, <object> elements.
+	 *
+	 * We don't really match that format naturally, so some fudging
+	 * goes on.
+	 */
+	private void readObject(ObjectInputStream stream) 
+		throws IOException, ClassNotFoundException 
+	{
+		// Get the "fields" out of the stream.  Should be a "loadFactor" field and a "threshold" field.
+		ObjectInputStream.GetField fieldMucker = stream.readFields();
+		float loadFactor = fieldMucker.get("loadFactor", DEFAULT_LOADFACTOR);
+		int threshold = fieldMucker.get("threshold", (int)0);
 
-		// create buckets
-		stream.readInt();	// Capacity - ignore.
-		int size = stream.readInt();
+		// "capacity" and "size" are stored in the blockdata:
+
+		// No need to synchronized(this), as nothing has a handle on this yet
+
+		int capacity = stream.readInt();
+		this.map = new HashMap(capacity, loadFactor);
 
 		// Read entries
-		for (int i = 0; i < size; i++) {
+		int size = stream.readInt();
+		while (size-- > 0)
+		{
 			Object k = stream.readObject();
 			Object o = stream.readObject();
 			map.put(k, o);
@@ -190,21 +209,30 @@ public class Hashtable extends Dictionary
 	}
 
 	/**
-	* write this hashtable into a stream
-	*/
-	private void writeObject(java.io.ObjectOutputStream stream) throws IOException {
-		// write all default fields
-		stream.defaultWriteObject();
+	 * Write this hashtable into a stream.  See readObject() doc
+	 * for format info.
+	 */
+	private void writeObject(ObjectOutputStream stream) 
+		throws IOException 
+	{
+		// Fake the "threshold" and "loadFactor" fields:
+		ObjectOutputStream.PutField fieldMucker = stream.putFields();
+		fieldMucker.put("loadFactor", (float)(this.map.loadFactor));
+		fieldMucker.put("threshold", (int)(this.map.size() * map.loadFactor));
+		stream.writeFields();
 
-		// remember how many buckets there were
-		stream.writeInt(map.getTableLength());
-		stream.writeInt(map.size());
-
-		Iterator i = map.entrySet().iterator();
-		while(i.hasNext()) {
-			Map.Entry e = (Map.Entry)i.next();
-			stream.writeObject(e.getKey());
-			stream.writeObject(e.getValue());
+		// "capacity" and "size" are stored in the blockdata:
+		synchronized(this)
+		{
+			stream.writeInt(map.getTableLength()); // current capacity of table
+			stream.writeInt(map.size()); // number of elements
+			
+			Iterator i = map.entrySet().iterator();
+			while(i.hasNext()) {
+				Map.Entry e = (Map.Entry)i.next();
+				stream.writeObject(e.getKey());
+				stream.writeObject(e.getValue());
+			}
 		}
 	}
 

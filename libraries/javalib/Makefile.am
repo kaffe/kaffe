@@ -299,6 +299,7 @@ java_io_SRCS = \
 	java/io/ObjectStreamClass.java \
 	java/io/ObjectStreamConstants.java \
 	java/io/ObjectStreamException.java \
+	java/io/ObjectStreamField.java \
 	java/io/OptionalDataException.java \
 	java/io/OutputStream.java \
 	java/io/OutputStreamWriter.java \
@@ -749,15 +750,148 @@ kaffe_io_SRCS = \
 	kaffe/io/CircularBuffer.java \
 	kaffe/io/ClassLoaderObjectInputStream.java \
 	kaffe/io/ConverterAlias.java \
-	kaffe/io/DefaultSerializationFactory.java \
 	kaffe/io/NullOutputStream.java \
-	kaffe/io/ObjectInputStreamImpl.java \
-	kaffe/io/ObjectOutputStreamImpl.java \
-	kaffe/io/ObjectStreamClassImpl.java \
-	kaffe/io/SerializationFactory.java \
 	kaffe/io/StdErrorStream.java \
 	kaffe/io/StdInputStream.java \
 	kaffe/io/StdOutputStream.java
+kaffe_jar_SRCS = \
+	kaffe/jar/ExecJar.java \
+	kaffe/jar/ExecJarName.java
+kaffe_lang_SRCS = \
+	kaffe/lang/Application.java \
+	kaffe/lang/ApplicationException.java \
+	kaffe/lang/ApplicationResource.java \
+	kaffe/lang/ClassPathReader.java \
+	kaffe/lang/DummyClassLoader.java \
+	kaffe/lang/MemoryAdvice.java \
+	kaffe/lang/MemoryAdviceCallback.java \
+	kaffe/lang/PackageHelper.java \
+	kaffe/lang/ResourceReader.java \
+	kaffe/lang/SystemClassLoader.java \
+	kaffe/lang/UNIXProcess.java
+kaffe_management_SRCS = \
+	kaffe/management/Classpath.java \
+	kaffe/management/Debug.java \
+	kaffe/management/JIT.java \
+	kaffe/management/XProfiler.java
+kaffe_net_SRCS = \
+	kaffe/net/DefaultDatagramSocketImplFactory.java \
+	kaffe/net/DefaultFileNameMap.java \
+	kaffe/net/DefaultSocketImplFactory.java \
+	kaffe/net/DefaultStreamMap.java \
+	kaffe/net/DefaultURLStreamHandlerFactory.java \
+	kaffe/net/StreamMap.java
+kaffe_net_www_protocol_SRCS = \
+	kaffe/net/www/protocol/BasicURLConnection.java
+kaffe_net_www_protocol_file_SRCS = \
+	kaffe/net/www/protocol/file/FileURLConnection.java \
+	kaffe/net/www/protocol/file/Handler.java
+kaffe_net_www_protocol_ftp_SRCS = \
+	kaffe/net/www/protocol/ftp/FtpURLConnection.java \
+	kaffe/net/www/protocol/ftp/Handler.java
+kaffe_net_www_protocol_http_SRCS = \
+	kaffe/net/www/protocol/http/Handler.java \
+	kaffe/net/www/protocol/http/HttpURLConnection.java
+kaffe_net_www_protocol_jar_SRCS = \
+	kaffe/net/www/protocol/jar/Handler.java \
+	kaffe/net/www/protocol/jar/JarURLConnection.java
+kaffe_net_www_protocol_system_SRCS = \
+	kaffe/net/www/protocol/system/Handler.java \
+	kaffe/net/www/protocol/system/SystemURLConnection.java
+kaffe_security_SRCS = \
+	kaffe/security/Engine.java
+kaffe_security_provider_SRCS = \
+	kaffe/security/provider/Kaffe.java \
+	kaffe/security/provider/MD2.java \
+	kaffe/security/provider/MD4.java \
+	kaffe/security/provider/MD5.java \
+	kaffe/security/provider/SHA.java \
+	kaffe/security/provider/SHA1PRNG.java \
+	kaffe/security/provider/UpdateDigest.java
+kaffe_text_collator_SRCS = \
+	kaffe/text/collator/locale.java \
+	kaffe/text/collator/locale_en_US.java
+kaffe_text_dateformat_SRCS = \
+	kaffe/text/dateformat/locale.java \
+	kaffe/text/dateformat/locale_en_US.java
+kaffe_text_numberformat_SRCS = \
+	kaffe/text/numberformat/locale.java \
+	kaffe/text/numberformat/locale_en_US.java
+kaffe_util_SRCS = \
+	kaffe/util/Assert.java \
+	kaffe/util/Base64.java \
+	kaffe/util/DateParser.java \
+	kaffe/util/DateScanner.java \
+	kaffe/util/Deprecated.java \
+	kaffe/util/DoubleLinkedObject.java \
+	kaffe/util/IdentityHashtable.java \
+	kaffe/util/IntegerHashtable.java \
+	kaffe/util/IntegerIntegerHashtable.java \
+	kaffe/util/LongHashtable.java \
+	kaffe/util/NotImplemented.java \
+	kaffe/util/NotImplementedReport.java \
+	kaffe/util/Ptr.java \
+	kaffe/util/SupportDisabled.java \
+	kaffe/util/Timer.java \
+	kaffe/util/TimerClient.java \
+	kaffe/util/UNIXTimeZone.java \
+	kaffe/util/UTF8.java \
+	kaffe/util/VectorSnapshot.java
+kaffe_util_locale_SRCS = \
+	kaffe/util/locale/Country.java \
+	kaffe/util/locale/Country_de.java \
+	kaffe/util/locale/Country_en.java \
+	kaffe/util/locale/Country_fr.java \
+	kaffe/util/locale/Country_it.java \
+	kaffe/util/locale/Country_ja.java \
+	kaffe/util/locale/Country_ko.java \
+	kaffe/util/locale/Country_zh.java \
+	kaffe/util/locale/Language.java \
+	kaffe/util/locale/Language_de.java \
+	kaffe/util/locale/Language_en.java \
+	kaffe/util/locale/Language_fr.java \
+	kaffe/util/locale/Language_it.java \
+	kaffe/util/locale/Language_ja.java \
+	kaffe/util/locale/Language_ko.java \
+	kaffe/util/locale/Language_zh.java
+kaffe_util_log_SRCS = \
+	kaffe/util/log/LogClient.java \
+	kaffe/util/log/LogStream.java \
+	kaffe/util/log/SimpleLogViewer.java
+kaffe_util_zip_SRCS = \
+	kaffe/util/zip/SwitchInflater.java
+OMITTED_PACKAGES_SRCS = \
+	$(java_awt_win32_SRCS)
+java_awt_win32_SRCS = \
+	java/awt/win32/ActionEvt.java \
+	java/awt/win32/Button.java \
+	java/awt/win32/Canvas.java \
+	java/awt/win32/Checkbox.java \
+	java/awt/win32/CheckboxMenuItem.java \
+	java/awt/win32/Choice.java \
+	java/awt/win32/Defaults.java \
+	java/awt/win32/FileDialog.java \
+	java/awt/win32/Frame.java \
+	java/awt/win32/Label.java \
+	java/awt/win32/List.java \
+	java/awt/win32/Menu.java \
+	java/awt/win32/MenuBar.java \
+	java/awt/win32/MenuItem.java \
+	java/awt/win32/NativeComponent.java \
+	java/awt/win32/NativeContainer.java \
+	java/awt/win32/NativeGraphics.java \
+	java/awt/win32/Panel.java \
+	java/awt/win32/PopupMenu.java \
+	java/awt/win32/ScrollPane.java \
+	java/awt/win32/Scrollbar.java \
+	java/awt/win32/SystemColor.java \
+	java/awt/win32/TextArea.java \
+	java/awt/win32/TextComponent.java \
+	java/awt/win32/TextField.java \
+	java/awt/win32/Toolkit.java \
+	java/awt/win32/WMEvent.java \
+	java/awt/win32/Window.java
+
 kaffe_jar_SRCS = \
 	kaffe/jar/ExecJar.java \
 	kaffe/jar/ExecJarName.java
@@ -1021,7 +1155,7 @@ $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist
 	if [ -f $(srcdir)/Klasses.jar.bootstrap ]; then \
 		mv -f $(srcdir)/Klasses.jar.bootstrap $(srcdir)/Klasses.jar.bootstrap.save; \
 	fi
-	(cd $(LIBDIR) && $(ZIP) -DX -r - `grep '\.class$$' $(srcdir)//bootstrap.classlist` \
+	(cd $(LIBDIR) && $(ZIP) -DX -r - `grep '\.class$$' $(srcdir)/bootstrap.classlist` \
 	 kaffe/lang/unicode.idx \
 	 kaffe/lang/unicode.tbl \
 	) > $(srcdir)/Klasses.jar.bootstrap

@@ -1,4 +1,3 @@
-
 /*
  * Java core library component.
  *
@@ -16,6 +15,10 @@
 package java.util;
 
 import java.io.Serializable;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamField;
 
 // Simple implementation of a hash table. We keep an array of buckets,
 // where each bucket points to a singly linked list of Entry's (see below).
@@ -24,6 +27,18 @@ public class HashMap extends AbstractMap
 		implements Cloneable, Serializable {
 	private static final int DEFAULT_CAPACITY = 11;
 	private static final float DEFAULT_LOADFACTOR = 0.75f;
+
+	/** From JDK1.4.0 'serialver java.util.HashMap': */
+	static final long serialVersionUID = 362498820763181265L;
+
+	// HashMaps are explicitly serialized/deserialized (to be compatible
+	// with Sun's HashMaps) 
+	private static final ObjectStreamField[] serialPersistentFields = 
+	{
+		new ObjectStreamField("threshold", int.class),
+		new ObjectStreamField("loadFactor", float.class),
+	};
+	
 	float loadFactor;
 	Entry[] table;
 	private int modCount;
@@ -305,5 +320,69 @@ public class HashMap extends AbstractMap
 			}
 		}
 	}
+
+	/**
+	 * Read this hashmap from a stream.  Tries to be compatible
+	 * with Sun's serialized hashtables.
+	 *
+	 * Sun's hashmaps are serialized as:
+	 *   int threshhold (defined as (capacity * loadFactor))
+	 *   float loadfactor
+	 *   int capacity
+	 *   int element count
+	 *   <key>, <object> elements.
+	 *
+	 * We don't really match that format naturally, so some fudging
+	 * goes on.
+	 */
+	private void readObject(ObjectInputStream stream) 
+		throws IOException, ClassNotFoundException
+	{
+
+		// Get the "fields" out of the stream.  Should be a "loadFactor" field and a "threshold" field.
+		ObjectInputStream.GetField fieldMucker = stream.readFields();
+		this.loadFactor = fieldMucker.get("loadFactor", DEFAULT_LOADFACTOR);
+		int threshold = fieldMucker.get("threshold", (int)0); // not used by Kaffe
+
+		// "capacity" and "size" are stored in the blockdata:
+
+		// No need to synchronized(this), as nothing has a handle on this yet
+
+		int capacity = stream.readInt();
+		this.table = new Entry[capacity];
+		
+		// Read entries
+		int size = stream.readInt();
+		while (size-- > 0)
+		{
+			Object k = stream.readObject();
+			Object o = stream.readObject();
+			this.put(k, o);
+		}
+	}
+
+	private void writeObject(ObjectOutputStream stream) 
+		throws IOException 
+	{
+		// Fake the "threshold" and "loadFactor" fields:
+		ObjectOutputStream.PutField fieldMucker = stream.putFields();
+		fieldMucker.put("loadFactor", (float)(this.loadFactor));
+		fieldMucker.put("threshold", (int)(this.size() * this.loadFactor));
+		stream.writeFields();
+
+		// "capacity" and "size" are stored in the blockdata:
+		stream.writeInt(this.table.length);
+		stream.writeInt(this.size()); // number of elements
+			
+		// XXX or just go through the table directly?
+		Iterator i = this.entrySet().iterator();
+		while(i.hasNext()) {
+			Map.Entry e = (Map.Entry)i.next();
+			stream.writeObject(e.getKey());
+			stream.writeObject(e.getValue());
+		}
+	}
+	
+
 }
 

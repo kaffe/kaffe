@@ -24,12 +24,15 @@
 #include <native.h>
 #include "java_io_ObjectInputStream.h"
 #include "java_io_ObjectOutputStream.h"
-#include "kaffe_io_ObjectStreamClassImpl.h"
+#include "java_io_ObjectStreamClass.h"
+#include "java_io_ObjectStreamField.h"
 
 #include <jni.h>
 
-static Hjava_lang_Object* newSerialObject(Hjava_lang_Class*,Hjava_lang_Object*);
-static HArrayOfObject* getFields(struct Hkaffe_io_ObjectStreamClassImpl*);
+/*
+ * Technically, this file should probably be named ObjectStreamClass.c
+ * (without the Impl).
+ */
 static char* getClassName(Hjava_lang_Class* cls);
 
 /* NB: these guys are all write once and then immutable */
@@ -38,7 +41,9 @@ static Utf8Const* writeObjectName;
 static Utf8Const* readObjectName;
 static Utf8Const* ObjectOutputStreamSig;
 static Utf8Const* ObjectInputStreamSig;
-static Hjava_lang_Class* ptrType;
+static Utf8Const* serialPersistentFieldsName;
+static Hjava_lang_Class* ObjectStreamFieldClass;
+static Hjava_lang_Class* ObjectStreamFieldClassArray;
 
 /*
  * Used to hold a descriptor item while calculating the serialUID.
@@ -51,7 +56,7 @@ typedef struct {
 
 
 void
-kaffe_io_ObjectStreamClassImpl_init(void)
+java_io_ObjectStreamClass_init0(void)
 {
 	errorInfo einfo;
 
@@ -76,9 +81,17 @@ kaffe_io_ObjectStreamClassImpl_init(void)
 		postOutOfMemory(&einfo);
 		goto oos;
 	}
-	ptrType = lookupClass("kaffe/util/Ptr", NULL, &einfo);
-	if (ptrType == 0) {
-		utf8ConstRelease(ObjectInputStreamSig);
+	serialPersistentFieldsName = utf8ConstNew("serialPersistentFields", -1);
+	if (!serialPersistentFieldsName) {
+		postOutOfMemory(&einfo);
+		goto spfn;
+	}
+	ObjectStreamFieldClass = lookupClass("java/io/ObjectStreamField", NULL, &einfo);
+	ObjectStreamFieldClassArray = lookupClass("[Ljava/io/ObjectStreamField;", NULL, &einfo);
+	if ((ObjectStreamFieldClass == 0)
+	    || (ObjectStreamFieldClassArray == 0)) {
+		utf8ConstRelease(serialPersistentFieldsName);
+spfn:		utf8ConstRelease(ObjectInputStreamSig);
 oos: 		utf8ConstRelease(ObjectOutputStreamSig);
 ron: 		utf8ConstRelease(readObjectName);
 won: 		utf8ConstRelease(writeObjectName);
@@ -88,7 +101,7 @@ svun: 		utf8ConstRelease(serialVersionUIDName);
 }
 
 struct Hjava_lang_Object*
-kaffe_io_ObjectStreamClassImpl_allocateNewObject(struct Hkaffe_io_ObjectStreamClassImpl* cls)
+java_io_ObjectStreamClass_allocateNewObject(struct Hjava_io_ObjectStreamClass* cls)
 {
 	Hjava_lang_Object* obj;
 	Hjava_lang_Class* clazz;
@@ -127,191 +140,210 @@ kaffe_io_ObjectStreamClassImpl_allocateNewObject(struct Hkaffe_io_ObjectStreamCl
 }
 
 struct Hjava_lang_Object*
-kaffe_io_ObjectStreamClassImpl_allocateNewArray(struct Hkaffe_io_ObjectStreamClassImpl* cls, jint sz)
+java_io_ObjectStreamClass_allocateNewArray(struct Hjava_io_ObjectStreamClass* cls, jint sz)
 {
 	return (newArray(CLASS_ELEMENT_TYPE(unhand(cls)->clazz), sz));
 }
 
+/* Invoked by ObjectStreamClass.defaultReadObject()
+ *
+ * private native static void inputClassFields0(
+ * 		Class clazz, ObjectStreamField[] readFields, 
+ * 		Object obj, ObjectInputStream in);
+ */
 void
-kaffe_io_ObjectStreamClassImpl_inputClassFields(struct Hkaffe_io_ObjectStreamClassImpl* cls, struct Hjava_lang_Object* obj, struct Hjava_io_ObjectInputStream* in)
+java_io_ObjectStreamClass_inputClassFields0(Hjava_lang_Class* clazz,
+					    HArrayOfObject* readFields, /* ObjectStreamField[] readFields */
+					    struct Hjava_lang_Object* obj,
+					    struct Hjava_io_ObjectInputStream* in)
 {
 	int i;
 	int len;
-	Field** fld;
+	Hjava_io_ObjectStreamField** fld;
 
-	if (unhand(cls)->fields == 0) {
-		unhand(cls)->fields = getFields(cls);
-	}
-	fld = (Field**)unhand_array(unhand(cls)->fields)->body;
-	len = obj_length(unhand(cls)->fields);
+	assert(clazz != 0); /* XXX just used for pretty exception messages... */
+	assert(readFields != 0);
+	assert(obj != 0);
+	assert(in != 0);
 
-	if (unhand(cls)->iclazz != unhand(cls)->clazz) {
-		obj = newSerialObject(unhand(cls)->iclazz, obj);
-	}
-
-#define READ(FUNC,SIG,TYPE) \
-	((jvalue*)(((uint8*)obj) + FIELD_BOFFSET(*fld)))->TYPE = \
-		do_execute_java_method(in, #FUNC, #SIG, 0, 0).TYPE
+	fld = (Hjava_io_ObjectStreamField**)unhand_array(readFields)->body;
+	len = obj_length(readFields);
 
 	for (i = 0; i < len; i++, fld++) {
-		if (FIELD_ISREF(*fld)) {
-                        READ(readObject, ()Ljava/lang/Object;, l);
+		char typeCode;
+
+		if (unhand(*fld)->typeMismatch)
+		{
+			/*
+			 * If there was a typeMismatch, we discovered
+			 * that by comparing the *names* of the types
+			 * in the inStream repr and the inVM repr.
+			 * Thus, the 'type' field of *fld is null, and
+			 * can't be used in the error message.  We
+			 * could use (*fld)->typeName, but that's a
+			 * java.lang.String and is surprisingly
+			 * annoying to stick in an exception message.
+			 */
+			char fldname[128];
+			stringJava2CBuf(unhand(*fld)->name, fldname, sizeof(fldname));
+			SignalErrorf("java.io.InvalidClassException",
+				     "Field `%s' incompatible serialization type in %s.",
+				     fldname,
+				     CLASS_CNAME(clazz));
 		}
-		else switch (CLASS_PRIM_SIG(FIELD_TYPE(*fld))) {
+
+/*
+ * Run the right reader method on 'in', and store result at right
+ * offset into 'obj'.  Silently ignore fields that don't exist in the
+ * class.
+ */
+#define SETOBJFIELD(FUNC,SIG,TYPE)						\
+	if (unhand(*fld)->offset == -1)						\
+		do_execute_java_method(in, FUNC, SIG, 0, 0);			\
+	else									\
+		((jvalue*)(((uint8*)obj) + unhand(*fld)->offset))->TYPE =	\
+			do_execute_java_method(in, FUNC, SIG, 0, 0).TYPE
+
+		typeCode = unhand(*fld)->typeCode;
+
+		assert(typeCode > 0);
+		assert(typeCode < 127); // Should be valid ASCII char...
+
+		if (typeCode == 'L' || typeCode == '[') {
+                        SETOBJFIELD("readObject", "()Ljava/lang/Object;", l);
+		}
+		else switch (typeCode) {
                 case 'B':
-                        READ(readByte, ()B, b);
+                        SETOBJFIELD("readByte", "()B", b);
                         break;
                 case 'C':
-                        READ(readChar, ()C, c);
+                        SETOBJFIELD("readChar", "()C", c);
                         break;
                 case 'D':
-                        READ(readDouble, ()D, d);
+                        SETOBJFIELD("readDouble", "()D", d);
                         break;
                 case 'F':
-                        READ(readFloat, ()F, f);
+                        SETOBJFIELD("readFloat", "()F", f);
                         break;
                 case 'J':
-                        READ(readLong, ()J, j);
+                        SETOBJFIELD("readLong", "()J", j);
                         break;
                 case 'S':
-                        READ(readShort, ()S, s);
+                        SETOBJFIELD("readShort", "()S", s);
                         break;
                 case 'Z':
-                        READ(readBoolean, ()Z, z);
+                        SETOBJFIELD("readBoolean", "()Z", z);
                         break;
                 case 'I':
-                        READ(readInt, ()I, i);
+                        SETOBJFIELD("readInt", "()I", i);
                         break;
                 default:
-                        SignalError("java.io.InvalidClassException", "Unknown data type");
+                        SignalErrorf("java.io.InvalidClassException",
+				     "Unknown data type %s in class %s",
+				     CLASS_CNAME(unhand(*fld)->type),
+				     CLASS_CNAME(clazz));
 		}
-	}
-
-	if (unhand(cls)->clazz != unhand(cls)->iclazz) {
-		/* Transfer the inner class data to the outer class */
-		do_execute_java_method(obj, "readDefaultObject", "()V", 0, 0);
 	}
 }
 
+/*
+ * private static native void outputClassFields0(Class clazz,
+ *						 ObjectStreamField[] writableFields,
+ *						 Object obj,
+ *						 ObjectOutputStream out);
+ */
 void
-kaffe_io_ObjectStreamClassImpl_outputClassFields(struct Hkaffe_io_ObjectStreamClassImpl* cls, struct Hjava_lang_Object* obj, struct Hjava_io_ObjectOutputStream* out)
+java_io_ObjectStreamClass_outputClassFields0(Hjava_lang_Class* clazz,
+					     HArrayOfObject* serializableFields, 
+					     Hjava_lang_Object* obj,
+					     Hjava_io_ObjectOutputStream* out)
 {
 	int i;
 	int len;
-	Field** fld;
+	Hjava_io_ObjectStreamField** fld;
 
-	if (unhand(cls)->fields == 0) {
-		unhand(cls)->fields = getFields(cls);
-	}
-	fld = (Field**)unhand_array(unhand(cls)->fields)->body;
-	len = obj_length(unhand(cls)->fields);
+	assert(clazz != 0); /* clazz just used for pretty error messages. */
+	assert(serializableFields != 0);
+	assert(obj != 0);
+	assert(out != 0);
 
-	if (unhand(cls)->iclazz != unhand(cls)->clazz) {
-		/* Transfer the outer class data to the inner class */
-		obj = newSerialObject(unhand(cls)->iclazz, obj);
-		do_execute_java_method(obj, "writeDefaultObject", "()V", 0, 0);
-	}
+	fld = (Hjava_io_ObjectStreamField**)unhand_array(serializableFields)->body;
+	len = obj_length(serializableFields);
 
+/* Write field of 'obj' to 'out'. */
 #define WRITE(FUNC,SIG,TYPE) \
-	do_execute_java_method(out, #FUNC, #SIG, 0, 0, \
-		((jvalue*)(((uint8*)obj) + FIELD_BOFFSET(*fld)))->TYPE)
+	do_execute_java_method(out, FUNC, SIG, 0, 0, \
+		((jvalue*)(((uint8*)obj) + unhand(*fld)->offset))->TYPE)
 
 	for (i = 0; i < len; i++, fld++) {
-		if (FIELD_ISREF(*fld)) {
-                        WRITE(writeObject, (Ljava/lang/Object;)V, l);
+		if (unhand(*fld)->offset == -1)
+		{
+			char fldname[128];
+			stringJava2CBuf(unhand(*fld)->name, fldname, sizeof(fldname));
+			SignalErrorf("java.io.InvalidClassException",
+				     "No field named `%s' in type %s.",
+				     fldname, 
+				     CLASS_CNAME(clazz));
 		}
-		else switch (CLASS_PRIM_SIG(FIELD_TYPE(*fld))) {
+
+		if (unhand(*fld)->typeMismatch)
+		{
+			char fldname[128];
+			stringJava2CBuf(unhand(*fld)->name, fldname, sizeof(fldname));
+			SignalErrorf("java.io.InvalidClassException",
+				     "Field `%s' serialization type (%s) does not match actual type in %s.",
+				     fldname,
+				     CLASS_CNAME(unhand(*fld)->type),
+				     CLASS_CNAME(clazz));
+		}
+
+
+		if (! CLASS_IS_PRIMITIVE(unhand(*fld)->type)) {
+                        WRITE("writeObject", "(Ljava/lang/Object;)V", l);
+		}
+		else switch (CLASS_PRIM_SIG(unhand(*fld)->type)) {
                 case 'B':
-                        WRITE(writeByte, (I)V, b);
+                        WRITE("writeByte", "(I)V", b);
                         break;
                 case 'C':
-                        WRITE(writeChar, (I)V, c);
+                        WRITE("writeChar", "(I)V", c);
                         break;
                 case 'D':
-                        WRITE(writeDouble, (D)V, d);
+                        WRITE("writeDouble", "(D)V", d);
                         break;
                 case 'F':
-                        WRITE(writeFloat, (F)V, f);
+                        WRITE("writeFloat", "(F)V", f);
                         break;
                 case 'J':
-                        WRITE(writeLong, (J)V, j);
+                        WRITE("writeLong", "(J)V", j);
                         break;
                 case 'S':
-                        WRITE(writeShort, (I)V, s);
+                        WRITE("writeShort", "(I)V", s);
                         break;
                 case 'Z':
-                        WRITE(writeBoolean, (Z)V, z);
+                        WRITE("writeBoolean", "(Z)V", z);
                         break;
                 case 'I':
-                        WRITE(writeInt, (I)V, i);
+                        WRITE("writeInt", "(I)V", i);
                         break;
                 default:
                         SignalError("java.io.InvalidClassException", "Unknown data type");
-		}
-	}
-}
-
-void
-kaffe_io_ObjectStreamClassImpl_outputClassFieldInfo(struct Hkaffe_io_ObjectStreamClassImpl* cls, struct Hjava_io_ObjectOutputStream* out)
-{
-	Hjava_lang_Class* type;
-	int i;
-	int len;
-	Field** fld;
-	char* tname;
-	char buf[128];
-
-	/* If we have no fields, we must build an array of field pointers
-	 * and sort them.
-	 */
-	if (unhand(cls)->fields == 0) {
-		unhand(cls)->fields = getFields(cls);
-	}
-	fld = (Field**)unhand_array(unhand(cls)->fields)->body;
-	len = obj_length(unhand(cls)->fields);
-
-	do_execute_java_method(out, "writeShort", "(I)V", 0, 0, len);
-
-	for (i = 0; i < len; i++, fld++) {
-		type = FIELD_TYPE(*fld);
-		if (CLASS_IS_PRIMITIVE(type)) {
-			do_execute_java_method(out, "writeByte", "(I)V", 0, 0, CLASS_PRIM_SIG(type));
-			do_execute_java_method(out, "writeUTF", "(Ljava/lang/String;)V", 0, 0, checkPtr(utf8Const2Java((*fld)->name)));
-/* We dont output the modifiers 
-			do_execute_java_method(out, "writeShort", "(I)V", 0, 0, (*fld)->accflags);
-*/
-		}
-		else {
-			if (!FIELD_RESOLVED(*fld)) {
-				tname = (char*)((Utf8Const*)type)->data;
-			}
-			else {
-				tname = (char*)type->name->data;
-			}
-			if (tname[0] == '[') {
-				strcpy(buf, tname);
-			}
-			else {
-				strcpy(buf, "L");
-				strcat(buf, tname);
-				strcat(buf, ";");
-			}
-			do_execute_java_method(out, "writeByte", "(I)V", 0, 0, buf[0]);
-			do_execute_java_method(out, "writeUTF", "(Ljava/lang/String;)V", 0, 0, checkPtr(utf8Const2Java((*fld)->name)));
-/* We dont output the modifiers 
-			do_execute_java_method(out, "writeShort", "(I)V", 0, 0, (*fld)->accflags);
-*/
-			do_execute_java_method(out, "writeObject", "(Ljava/lang/Object;)V", 0, 0, checkPtr(stringC2Java(buf)));
 		}
 	}
 }
 
 jboolean
-kaffe_io_ObjectStreamClassImpl_invokeObjectReader0(struct Hkaffe_io_ObjectStreamClassImpl* cls, struct Hjava_lang_Object* obj, struct Hjava_io_ObjectInputStream* in)
+java_io_ObjectStreamClass_invokeObjectReader0(struct Hjava_io_ObjectStreamClass* cls,
+					      struct Hjava_lang_Object* obj,
+					      struct Hjava_io_ObjectInputStream* in)
 {
 	Method* meth;
 	Hjava_lang_Object* oldObj;
 	struct Hjava_io_ObjectStreamClass* oldCls;
+
+	assert(cls);
+	assert(obj);
+	assert(in);
 
 	oldObj = unhand(in)->currentObject;
 	oldCls = unhand(in)->currentStreamClass;
@@ -333,7 +365,7 @@ kaffe_io_ObjectStreamClassImpl_invokeObjectReader0(struct Hkaffe_io_ObjectStream
 }
 
 jboolean
-kaffe_io_ObjectStreamClassImpl_invokeObjectWriter0(struct Hkaffe_io_ObjectStreamClassImpl* cls, struct Hjava_lang_Object* obj, struct Hjava_io_ObjectOutputStream* out)
+java_io_ObjectStreamClass_invokeObjectWriter0(struct Hjava_io_ObjectStreamClass* cls, struct Hjava_lang_Object* obj, struct Hjava_io_ObjectOutputStream* out)
 {
 	Method* meth;
 	Hjava_lang_Object* oldObj;
@@ -345,6 +377,11 @@ kaffe_io_ObjectStreamClassImpl_invokeObjectWriter0(struct Hkaffe_io_ObjectStream
 	unhand(out)->currentStreamClass = (struct Hjava_io_ObjectStreamClass*)cls;
 
 	meth = findMethodLocal(unhand(cls)->clazz, writeObjectName, ObjectOutputStreamSig);
+	if (meth == 0) {
+		errorInfo info;
+		postExceptionMessage(&info, JAVA_LANG(NoSuchMethodError), writeObjectName->data);
+		throwError(&info);
+	}
 	do_execute_java_method(obj, 0, 0, meth, 0, out);
 
 	unhand(out)->currentObject = oldObj;
@@ -483,7 +520,7 @@ getClassName(Hjava_lang_Class* cls)
 }
 
 jlong
-kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
+java_io_ObjectStreamClass_getSerialVersionUID0(Hjava_lang_Class* cls)
 {
 	Field* fld;
 	Method* mth;
@@ -510,6 +547,8 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 		if (utf8ConstEqual (serialVersionUIDName, fld->name) &&
 		    (fld->accflags & (ACC_STATIC|ACC_FINAL)) == (ACC_STATIC|ACC_FINAL)) {
 			Hjava_lang_Class* ftype;
+
+			// XXX if ACC_PUBLIC, throw error
 
 			ftype = resolveFieldType(fld, cls, &einfo);
 			if (ftype == 0) {
@@ -732,7 +771,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 }
 
 jbool
-kaffe_io_ObjectStreamClassImpl_hasWriteObject0(struct Hjava_lang_Class* clazz)
+java_io_ObjectStreamClass_hasWriteObject0(struct Hjava_lang_Class* clazz)
 {
 	if (findMethodLocal(clazz, writeObjectName, ObjectOutputStreamSig) == 0) {
 		return (false);
@@ -742,92 +781,193 @@ kaffe_io_ObjectStreamClassImpl_hasWriteObject0(struct Hjava_lang_Class* clazz)
 	}
 }
 
-static
-Hjava_lang_Class*
-findDefaultSerialization(Hjava_lang_Class* clazz)
+/* Find field in the given class with the given name.  Returns 0 if not found. */
+static Field*
+findField(Hjava_lang_Class* clazz, Hjava_lang_String* jFieldName)
 {
-	char* name;
-	Hjava_lang_Class* nclazz;
-	errorInfo einfo;
-
-	name = KMALLOC(strlen(clazz->name->data) + 22);
-	if (!name) {
-		postOutOfMemory(&einfo);
-		throwError(&einfo);
-	}
-	strcpy(name, clazz->name->data);
-	strcat(name, "$DefaultSerialization");
-
-	/* Use the JNI because it handles errors */
-	nclazz = lookupClass(name, clazz->loader, &einfo);
-	if (nclazz == 0) {
-		discardErrorInfo(&einfo);
-		nclazz = clazz;
-	}
-
-	KFREE(name);
-
-	return (nclazz);
-}
-
-/*
- * Create an instance of the inner class using the given object.  This is
- * slightly dodgy since it just finds the first <init> method which takes
- * an argument - but then there shouldn't be any others.
- */
-static
-Hjava_lang_Object*
-newSerialObject(Hjava_lang_Class* clazz, Hjava_lang_Object* obj)
-{
-	int n;
-	Method* mptr;
-
-	n = CLASS_NMETHODS(clazz);
-	for (mptr = CLASS_METHODS(clazz); --n >= 0; ++mptr) {
-		if (utf8ConstEqual(mptr->name, constructor_name) && !utf8ConstEqual(METHOD_SIG(mptr), void_signature)) {
-			extern JNIEnv Kaffe_JNIEnv;
-			JNIEnv *env = &Kaffe_JNIEnv;
-			return ((Hjava_lang_Object*)(*env)->NewObject(env, clazz, (jmethodID)mptr, obj));
-		}
-	}
-
-	return (0);
-}
-
-static
-int
-compare(const void* o, const void* t)
-{
-	Field* one = *(Field**)o;
-	Field* two = *(Field**)t;
-
-	if (FIELD_ISREF(one)) {
-		if (!FIELD_ISREF(two)) {
-			return (1);
-		}
-	}
-	else if (FIELD_ISREF(two)) {
-		return (-1);
-	}
-	return (strcmp(one->name->data, two->name->data));
-}
-
-static
-HArrayOfObject*
-getFields(struct Hkaffe_io_ObjectStreamClassImpl* cls)
-{
-	Hjava_lang_Class* clazz;
-	int len;
 	Field* fld;
-	int cnt;
-	HArrayOfObject* array;
 	int i;
 
-	/* Check for the default serialization implemented as an inner-class */
-	if (unhand(cls)->iclazz == 0) {
-		unhand(cls)->iclazz = findDefaultSerialization(unhand(cls)->clazz);
+	for (fld = CLASS_IFIELDS(clazz), i = CLASS_NIFIELDS(clazz);
+	     i-- > 0;
+	     fld++)
+	{
+		if (utf8ConstEqualJavaString(fld->name, jFieldName))
+			return fld;
 	}
-	clazz = unhand(cls)->iclazz;
+
+	return 0;
+}
+
+/* Can throw exceptions. */
+static HArrayOfObject*
+deepCopyFixup(Hjava_lang_Class* clazz, HArrayOfObject* origArray)
+{
+	const int len = obj_length(origArray);
+	HArrayOfObject* nArray;
+	int i;
+
+	nArray = (HArrayOfObject*)newArray(ObjectStreamFieldClass, len);
+	for (i = 0; i < len; i++)
+	{
+		const Hjava_io_ObjectStreamField* origField;
+		Hjava_io_ObjectStreamField* newField;
+		Field* fld;
+
+		origField = (Hjava_io_ObjectStreamField*)(unhand_array(origArray)->body[i]);
+		newField = (Hjava_io_ObjectStreamField*)newObject(ObjectStreamFieldClass);
+
+		assert(unhand(origField)->typeCode > 0);
+
+		unhand(newField)->type = unhand(origField)->type;
+		unhand(newField)->typeCode = unhand(origField)->typeCode;
+		unhand(newField)->name = unhand(origField)->name;
+		unhand(newField)->unshared = unhand(origField)->unshared;
+
+		fld = findField(clazz, unhand(origField)->name);
+
+		if (fld == 0)
+		{
+			unhand(newField)->offset = -1;
+			unhand(newField)->typeMismatch = 0;
+		}
+		else
+		{
+			errorInfo einfo;
+
+			unhand(newField)->offset = FIELD_BOFFSET(fld);
+
+			if (!resolveFieldType(fld, clazz, &einfo))
+				throwError(&einfo);
+
+			/* Basically, we cache the type mismatch so we don't have to re-discover it later. */
+			if (FIELD_TYPE(fld) != unhand(newField)->type)
+				unhand(newField)->typeMismatch = 1;
+			else
+				unhand(newField)->typeMismatch = 0;
+		}
+
+		unhand_array(nArray)->body[i] = (void*)newField;
+	}
+
+	return nArray;
+}
+
+
+/* XXX redundant with ObjectStreamField.compareTo() */
+static int
+compare(const void* o, const void* t)
+{
+	Hjava_io_ObjectStreamField* one = *(Hjava_io_ObjectStreamField**)o;
+	Hjava_io_ObjectStreamField* two = *(Hjava_io_ObjectStreamField**)t;
+
+	bool oneIsRef = !CLASS_IS_PRIMITIVE(unhand(one)->type);
+	bool twoIsRef = !CLASS_IS_PRIMITIVE(unhand(two)->type);
+
+	/*
+	 * References beat primitives.  Name is secondary sort.
+	 */
+
+	if (oneIsRef) { 
+		if (!twoIsRef) {
+			return (1); /* first is "greater" */
+		}
+	}
+	else if (twoIsRef) {
+		return (-1); /* second is "greater" */
+	}
+
+	/* XXX String.compareTo(String s).  Move into string.c? */
+	{
+		Hjava_lang_String* name1 = unhand(one)->name;
+		Hjava_lang_String* name2 = unhand(two)->name;
+		int len1 = STRING_SIZE(name1);
+		int len2 = STRING_SIZE(name2);
+		int min;
+		int pos;
+
+		min = len1;
+		if (len2 < min)
+			min = len2;
+		for (pos = 0; pos < min; pos++)
+		{
+			jchar c1 = STRING_DATA(name1)[pos];
+			jchar c2 = STRING_DATA(name2)[pos];
+			if (c1 != c2)
+				return c1 - c2;
+		}
+
+		return (len1 - len2);
+	}
+}
+
+// private static native ObjectStreamField[] findSerializableFields0(Class clazz);
+HArrayOfObject* /*Array of Hjava_io_ObjectStreamField* */
+java_io_ObjectStreamClass_findSerializableFields0(struct Hjava_lang_Class* clazz)
+{
+	errorInfo einfo;
+	int len;
+	Field* fld;
+	HArrayOfObject* array;
+	int i;
+	int cnt;
+
+	/*
+	 * Make sure the static initializers of clazz have run
+	 */
+	if (!processClass(clazz, CSTATE_COMPLETE, &einfo)) {
+		throwError(&einfo);
+	}
+
+	/*
+	 * Lookup _local_ field "serialPersistentFields". If it exists,
+	 * make a deep copy and return the deep copy.  Fixup the deeply
+	 * copied ObjectStreamField objects to have the correct
+	 * offset (-1 if the field doesn't exist in the class).
+	 */
+	for (fld = CLASS_SFIELDS(clazz), i = CLASS_NSFIELDS(clazz);
+	     i-- > 0;
+	     fld++)
+	{
+		if (utf8ConstEqual (serialPersistentFieldsName, fld->name) &&
+		    /* Note, field is silently ignored if not private. */
+		    ((fld->accflags & (ACC_PRIVATE|ACC_STATIC|ACC_FINAL))
+		     == (ACC_PRIVATE|ACC_STATIC|ACC_FINAL))) {
+			HArrayOfObject* userArray;
+			Hjava_lang_Class* ftype;
+
+			ftype = resolveFieldType(fld, clazz, &einfo);
+			if (ftype == 0) {
+				throwError(&einfo);
+			}
+
+			/* Silently ignore if its the wrong type. */
+			if (ftype != ObjectStreamFieldClassArray)
+				break;
+			
+			userArray = *((HArrayOfObject**)FIELD_ADDRESS(fld));
+
+			/*
+			 * XXX the JDK says (see bug 4334265) that a null
+			 * serialPersistentFields is simply ignored (it
+			 * really should be equivalent to an empty array...)
+			 */
+			if (userArray == 0)
+				break;
+
+			array = deepCopyFixup(clazz, userArray);
+
+			/* Fields must be in canonical order. */
+			qsort(unhand_array(array)->body, obj_length(array), sizeof(void*), compare);
+			return array;
+		}
+	}
+
+	/*
+	 * Create a custom ObjectStreamField array.  One entry for
+	 * each non-transient instance field.  (We skip silly
+	 * inner-class crap, too.)
+	 */
 
 	/* Count the number of fields we need to store */
 	len = CLASS_NIFIELDS(clazz);
@@ -845,10 +985,12 @@ getFields(struct Hkaffe_io_ObjectStreamClassImpl* cls)
 	}
 
 	/* Build an array of those fields */
-	array = (HArrayOfObject*)newArray(ptrType, cnt);
+	array = (HArrayOfObject*)newArray(ObjectStreamFieldClass, cnt);
 	cnt = 0;
 	fld = CLASS_IFIELDS(clazz);
 	for (i = 0; i < len; i++, fld++) {
+		Hjava_io_ObjectStreamField* newField;
+
 		if ((fld->accflags & ACC_TRANSIENT) != 0) {
 			continue;
 		}
@@ -856,10 +998,27 @@ getFields(struct Hkaffe_io_ObjectStreamClassImpl* cls)
 		if (strncmp(fld->name->data, "this$", 5) == 0) {
 			continue;
 		}
-		unhand_array(array)->body[cnt] = (void*)fld;
+
+		newField = (Hjava_io_ObjectStreamField*)newObject(ObjectStreamFieldClass);
+		unhand(newField)->type = resolveFieldType(fld, clazz, &einfo);
+		if (unhand(newField)->type == 0)
+			throwError(&einfo);
+		if (CLASS_IS_PRIMITIVE(unhand(newField)->type))
+			unhand(newField)->typeCode = CLASS_PRIM_SIG(unhand(newField)->type);
+		else if (CLASS_IS_ARRAY(unhand(newField)->type))
+			unhand(newField)->typeCode = '[';
+		else
+			unhand(newField)->typeCode = 'L';
+		unhand(newField)->name = utf8Const2Java(fld->name);
+		unhand(newField)->unshared = 0;
+		unhand(newField)->offset = FIELD_BOFFSET(fld);
+		unhand(newField)->typeMismatch = false;
+
+		unhand_array(array)->body[cnt] = (void*)newField;
 		cnt++;
 	}
 
+	/* Fields must be in canonical order. */
 	qsort(unhand_array(array)->body, cnt, sizeof(void*), compare);
 
 	return (array);

@@ -23,7 +23,7 @@ mkdir $LIBDIR
 LIBDIR=`CDPATH=: && cd $LIBDIR && pwd`
 VERBOSE=
 
-if [ "$JIKES" = "" ] ; then
+if [ -z "$JIKES" ] ; then
 	if [ -z "$JAVA" ]; then
 		test -f ${TOPBLD}/BUILD_ENVIRONMENT &&
 		. ${TOPBLD}/BUILD_ENVIRONMENT
@@ -37,6 +37,7 @@ if [ "$JIKES" = "" ] ; then
 else
 	JAVAC="$JIKES"
 	CPATH="${CPATH+-classpath $CPATH}"
+#	VERBOSE=${VERBOSE-"-verbose"}
 fi
 
 cd $SRCDIR

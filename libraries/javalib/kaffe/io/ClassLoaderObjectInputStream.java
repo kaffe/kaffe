@@ -8,6 +8,8 @@ import java.io.ObjectStreamClass;
 
 public class ClassLoaderObjectInputStream extends ObjectInputStream {
 
+private final static boolean DOTRACE = true;
+
 private ClassLoader loader;
 
 public ClassLoaderObjectInputStream(InputStream in, ClassLoader cld) throws IOException, StreamCorruptedException {
@@ -18,9 +20,9 @@ public ClassLoaderObjectInputStream(InputStream in, ClassLoader cld) throws IOEx
 protected Class resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException
 {
 	Class cls;
-//System.out.println("Loading class " + desc.getName() + " from " + loader);
+	if (DOTRACE) System.out.println("Loading class " + desc.getName() + " from " + loader);
 	cls = loader.loadClass(desc.getName());
-//System.out.println("  done");
+	if (DOTRACE) System.out.println("  done");
 	return (cls);
 }
 

@@ -1,3 +1,49 @@
+Thu Oct 31 2002  Patrick Tullmann  <pat@tullmann.org>
+	* developers/update-class-list: tweak warning message format
+	* include/Makefile.am: add java_io_ObjectStreamClass.h and
+	java_io_ObjectStreamField.h, remove kaffe_io_ObjectStreamClassImpl.h
+	* libraries/javalib/java/awt/Component.java:
+	Not compatible with Sun's serialization, so don't claim to be.
+	Remove hacky (and now unsupported Kaffe-specific serialization
+	support)
+	* libraries/javalib/Makefile.am, 
+	libraries/javalib/bootstrap.classlist:
+	drop kaffe.io.ObjectStreamClassImpl, add java/io/ObjectStreamField
+	* libraries/javalib/java/io/ObjectInputStream.java,
+	libraries/javalib/java/io/ObjectOutputStream.java,
+	libraries/javalib/java/io/ObjectStreamConstants.java,
+	libraries/javalib/java/io/ObjectStreamField.java,
+	libraries/javalib/java/io/ObjectStreamClass.java,
+	libraries/clib/native/ObjectStreamClassImpl.c: support
+	serialPersistentFields, support ObjectStreamField and simplify
+	stream reading code, add a large serialization TODO list,
+	remove serialization "factory" support (customization should
+	be possible via subclassing accessors to per-field
+	serialization state, improve error messages, more asserts,
+	better error handling,
+	* libraries/javalib/kaffe/io/DefaultSerializationFactory.java,
+	libraries/javalib/kaffe/io/ObjectInputStreamImpl.java,
+	libraries/javalib/kaffe/io/ObjectOutputStreamImpl.java,
+	libraries/javalib/kaffe/io/ObjectStreamClassImpl.java,
+	libraries/javalib/kaffe/io/SerializationFactory.java:
+	Removed.
+	* libraries/javalib/java/io/OptionalDataException.java:
+	constructors should be package private
+	* libraries/javalib/java/math/BigInteger.java,
+	libraries/javalib/java/util/HashTable.java,
+	libraries/javalib/java/util/HashMap.java:
+	Re-write serialization compatibility support to use
+	public APIs.
+	* test/regression/Makefile.am,
+	test/regression/SerialPersistentFields.java,
+	test/regression/SerializationCompatibility.java,
+	test/regression/TestObjectStreamField.java,
+	test/regression/TestSerialFields.java,
+	test/regression/TestSerialPersistent.java,
+	test/regression/TestSerialVersions.java:
+	Add six new serialization tests
+	* Klasser.jar.bootstrap, <various>/Makefile.in: regenerated
+	
 Mon Oct 28 07:57:51 PST 2002  Jim Pick  <jim@kaffe.org>
 
 	* config/config-signal.h: Fixed typo.

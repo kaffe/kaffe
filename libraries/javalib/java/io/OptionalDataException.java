@@ -1,6 +1,3 @@
-package java.io;
-
-
 /*
  * Java core library component.
  *
@@ -10,6 +7,8 @@ package java.io;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+package java.io;
+
 public class OptionalDataException
   extends ObjectStreamException
 {
@@ -26,11 +25,11 @@ public class OptionalDataException
 	 * XXX fix this
 	 * XXX hardcode serialVersionUID for this class
 	 */
-        public OptionalDataException(boolean eof) {
+        /*package*/ OptionalDataException(boolean eof) {
 		this.eof = eof;
 	}
 
-        public OptionalDataException(int length) {
+        /*package*/ OptionalDataException(int length) {
 		this.length = length;
 		this.eof = false; /* ??? */
 	}

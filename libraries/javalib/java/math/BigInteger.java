@@ -12,12 +12,27 @@ package java.math;
 
 import java.util.Random;
 import kaffe.util.Ptr;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamField;
+import java.io.IOException;
 
 public class BigInteger extends Number implements Comparable {
 
 private static final long serialVersionUID = -8287574255936472291L;
-private Ptr number;
-private int hash;
+
+// serialization is explicitly managed in readObject/writeObject (for
+// compatibility with Sun)
+private static final ObjectStreamField[] serialPersistentFields = {
+	new ObjectStreamField("bitCount", int.class),
+	new ObjectStreamField("bitLength", int.class),
+	new ObjectStreamField("lowestSetBit", int.class),
+	new ObjectStreamField("magnitude", byte[].class),
+	new ObjectStreamField("signum", int.class),
+};
+
+private transient Ptr number;
+private transient int hash;
 
 private static final BigInteger MINUS_ONE;
 public static final BigInteger ZERO;
@@ -531,11 +546,6 @@ protected void finalize() throws Throwable {
 	super.finalize();
 }
 
-/**
- * inner class for Sun compatible default serialization
- */
-class DefaultSerialization {
-
     	/* serialized form is
 	 * int bitCount
 	 *
@@ -576,30 +586,31 @@ class DefaultSerialization {
 	 *   signum of 0. This is necessary to ensures that there is exactly
 	 *   one representation for each BigInteger value.
 	 */
-
-	private int bitCount;
-	private int bitLength;
-	private int firstNonzeroByteNum;
-	private int lowestSetBit;
-	private int signum;
-	private byte [] magnitude;
-
-	private void readDefaultObject() {
-		BigInteger.this.init0();
-		BigInteger.this.assignBytes0(signum, magnitude);
-	}
-
-	private void writeDefaultObject() {
-		bitCount = -1;
-		bitLength = -1;
-		firstNonzeroByteNum = -2;
-		lowestSetBit = BigInteger.this.getLowestSetBit();
-		signum = BigInteger.this.signum();
-		/* XXX not implemented */
-		magnitude = BigInteger.this.toByteArray();
-	}
+private void writeObject(ObjectOutputStream stream) 
+	throws IOException 
+{
+	ObjectOutputStream.PutField fieldMunger = stream.putFields();
+	fieldMunger.put("bitCount", (int)bitCount());
+	fieldMunger.put("bitLength", (int)bitLength());
+	fieldMunger.put("lowestSetBit", (int)getLowestSetBit());
+	fieldMunger.put("magnitude", (byte[])this.toByteArray());
+	fieldMunger.put("signum", (int)signum());
+	stream.writeFields();
 }
 
+private void readObject(ObjectInputStream stream) 
+	throws IOException, ClassNotFoundException
+{
+	init0();
+	ObjectInputStream.GetField fieldMunger = stream.readFields();
+	// "bitCount" ignored
+	// "bitLength" ignored
+	// "lowestSetBit" ignored
+	byte[] magnitude = (byte[])fieldMunger.get("magnitude", (byte[])null);
+	int signum = fieldMunger.get("signum", (int)0);
+	this.assignBytes0(signum, magnitude);
+}
+	
 private native void init0();
 private native void finalize0();
 

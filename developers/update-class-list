@@ -24,7 +24,7 @@ omitted_packages="\
 java/awt/win32 \
 "
 
-echo WARNING: Omitting $omitted_packages packages from the list of packages
+echo "WARNING: Omited packages: $omitted_packages"
 find $SRCDIRS -name \*.java -print | sort > classlist
 
 
