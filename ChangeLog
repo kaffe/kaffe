@@ -1,5 +1,7 @@
 2000-03-15  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
+	* kaffe/kaffe/version.c (versionfd): Initialize at run-time.
+
 	* kaffe/kaffe/Makefile.am (version-info.h): Depend on
 	config.status too.
 	(.PHONY): Removed.

@@ -19,11 +19,15 @@
 extern char* engine_name;	/* defined in the engine's library */
 extern char* engine_version;	/* defined in the engine's library */
 
-static FILE* versionfd = stderr;
+/* Must not be initialized in place, because stderr is not always a
+ * compile-time constant. */
+static FILE* versionfd /* = stderr */;
 
 void
 printShortVersion(void)
 {
+	if (!versionfd)
+		versionfd = stderr;
 	fprintf(versionfd, "Kaffe Virtual Machine\n");
 	fprintf(versionfd, "Copyright (c) 1996-2000\nTransvirtual Technologies, Inc.  All rights reserved\n");
 	fprintf(versionfd, "Engine: %s   Version: %s   Java Version: %s\n",
