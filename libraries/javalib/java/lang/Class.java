@@ -237,23 +237,4 @@ public String toString() {
 		return ("class " + getName());
 	}
 }
-
-/*
- * This function is used when printing class name within methods
- */
-public String getPrettyName() {
-	Class cls = this;
-	StringBuffer str = new StringBuffer();
-	for (int count = 0;; count++) {
-		if (!cls.isArray()) {
-			str.append(cls.getName());
-			for (; count > 0; count--) {
-				str.append("[]");
-			}
-			return (str.toString());
-		}
-		cls = cls.getComponentType();
-	}
-}
-
 }

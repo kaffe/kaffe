@@ -106,7 +106,7 @@ public String toString()
 
 	// Signature
 	for (int i = 0; i < parameterTypes.length; i++) {
-		str.append(parameterTypes[i].getName());
+		str.append(Method.getPrettyName(parameterTypes[i]));
 		if (i+1 < parameterTypes.length) {
 			str.append(",");
 		}

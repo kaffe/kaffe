@@ -122,11 +122,11 @@ public String toString()
 	}
 
 	// Return type
-	str.append(returnType.getPrettyName());
+	str.append(getPrettyName(returnType));
 	str.append(" ");
 
 	// Class name
-	str.append(clazz.getPrettyName());
+	str.append(clazz.getName());
 	str.append(".");
 
 	// Method name
@@ -135,7 +135,7 @@ public String toString()
 
 	// Signature
 	for (int i = 0; i < parameterTypes.length; i++) {
-		str.append(parameterTypes[i].getPrettyName());
+		str.append(getPrettyName(parameterTypes[i]));
 		if (i+1 < parameterTypes.length) {
 			str.append(",");
 		}
@@ -145,7 +145,7 @@ public String toString()
         if (exceptionTypes.length > 0) {
                 str.append(" throws ");
                 for (int i = 0; i < exceptionTypes.length; i++) {
-                        str.append(exceptionTypes[i].getPrettyName());
+                        str.append(exceptionTypes[i].getName());
                         if (i+1 < exceptionTypes.length) {
                                 str.append(",");
                         }
@@ -153,5 +153,19 @@ public String toString()
         }
 
 	return (new String(str));
+}
+
+static String getPrettyName(Class cls) {
+	StringBuffer str = new StringBuffer();
+	for (int count = 0;; count++) {
+		if (!cls.isArray()) {
+			str.append(cls.getName());
+			for (; count > 0; count--) {
+				str.append("[]");
+			}
+			return (str.toString());
+		}
+		cls = cls.getComponentType();
+	}
 }
 }
