@@ -79,6 +79,7 @@ _LTDLL_EXTERN int lt_dlpreload __P((const lt_dlsymlist *preloaded));
 _LTDLL_EXTERN int lt_dlpreload_default __P((const lt_dlsymlist *preloaded));
 _LTDLL_EXTERN int lt_dlexit __P((void));
 _LTDLL_EXTERN lt_dlhandle lt_dlopen __P((const char *filename));
+_LTDLL_EXTERN lt_dlhandle lt_dlopenext __P((const char *filename));
 _LTDLL_EXTERN int lt_dlclose __P((lt_dlhandle handle));
 _LTDLL_EXTERN lt_ptr_t lt_dlsym __P((lt_dlhandle handle, const char *name));
 _LTDLL_EXTERN const char *lt_dlerror __P((void));

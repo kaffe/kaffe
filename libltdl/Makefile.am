@@ -5,25 +5,26 @@ AUTOMAKE_OPTIONS = no-dependencies foreign
 LTDL_VERSION = -version-info 1:1:1
 
 if INSTALL_LTDL
-LTDL_FLAGS = $(LTDL_VERSION) -rpath $(libdir) 
 include_HEADERS = ltdl.h
 else
-LTDL_FLAGS =
 noinst_HEADERS = ltdl.h
 endif
 
-EXTRA_LTLIBRARIES = libltdl.la libltdlc.la
-
-lib_LTLIBRARIES = @LIBLIBS@
-noinst_LTLIBRARIES = @NOINSTLIBS@
+noinst_LTLIBRARIES = libltdl.la
 
 libltdl_la_SOURCES = ltdl.c
-libltdl_la_LDFLAGS = $(LTDL_FLAGS)
 libltdl_la_LIBADD = $(LIBADD_DL)
 
-libltdlc_la_SOURCES = $(libltdl_la_SOURCES)
-libltdlc_la_LDFLAGS =
-libltdlc_la_LIBADD = $(libltdl_la_LIBADD)
+lib_LTLIBRARIES = @LIBLIBS@
+EXTRA_LTLIBRARIES =
+
+@TOINST@/libltdl.la: $(libltdl_la_OBJECTS) $(libltdl_la_DEPENDENCIES)
+	@test -d $(TOINST) || mkdir $(TOINST)
+	$(LINK) -o $@ $(libltdl_la_OBJECTS) \
+		-rpath $(libdir) $(LTDL_VERSION) $(libltdl_la_LIBADD)
+
+distclean-local:
+	test -z $(TOINST) || rm -rf $(TOINST)
 
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck

@@ -1,3 +1,18 @@
+Wed Jan 27 05:37:43 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* ltconfig, ltmain.sh: minor update for new warning messages
+	* acinclude.m4, libltdl/acinclude.m4: new aliases for macros
+	* aclocal.m4, configure, libltdl/aclocal.m4: regen
+	* libltdl/configure.in, libltdl/Makefile.am: updated
+	* libltdl/configure, libltdl/Makefile.in: regen
+	* libltdl/ltdl.c, libltdl/ltdl.h: clean up memory management, new
+	function lt_dlopenext(), that dlopens a library when its extension 
+	is not given
+	* kaffe/kaffevm/external.c (LIBRARYLOAD): use the new function
+	lt_dlopenext()
+	(LIBRARYERROR): return NULL when file is not found, so that we can 
+	easily avoid file not found from being printed multiple times
+
 Tue Jan 26 23:21:00 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/gcFuncs.c, kaffe/kaffevm/gcRefs.c

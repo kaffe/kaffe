@@ -74,32 +74,26 @@ LN_S = @LN_S@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 NM = @NM@
-NOINSTLIBS = @NOINSTLIBS@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
+TOINST = @TOINST@
 USE_SYMBOL_UNDERSCORE = @USE_SYMBOL_UNDERSCORE@
 VERSION = @VERSION@
 
 AUTOMAKE_OPTIONS = no-dependencies foreign
 
 LTDL_VERSION = -version-info 1:1:1
-@INSTALL_LTDL_TRUE@LTDL_FLAGS = $(LTDL_VERSION) -rpath $(libdir) 
-@INSTALL_LTDL_FALSE@LTDL_FLAGS = 
+
 @INSTALL_LTDL_TRUE@include_HEADERS = ltdl.h
 @INSTALL_LTDL_FALSE@noinst_HEADERS = ltdl.h
 
-EXTRA_LTLIBRARIES = libltdl.la libltdlc.la
-
-lib_LTLIBRARIES = @LIBLIBS@
-noinst_LTLIBRARIES = @NOINSTLIBS@
+noinst_LTLIBRARIES = libltdl.la
 
 libltdl_la_SOURCES = ltdl.c
-libltdl_la_LDFLAGS = $(LTDL_FLAGS)
 libltdl_la_LIBADD = $(LIBADD_DL)
 
-libltdlc_la_SOURCES = $(libltdl_la_SOURCES)
-libltdlc_la_LDFLAGS = 
-libltdlc_la_LIBADD = $(libltdl_la_LIBADD)
+lib_LTLIBRARIES = @LIBLIBS@
+EXTRA_LTLIBRARIES = 
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/../mkinstalldirs
 CONFIG_CLEAN_FILES = 
@@ -110,10 +104,9 @@ DEFS = @DEFS@ -I. -I$(srcdir)
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
+libltdl_la_LDFLAGS = 
 libltdl_la_DEPENDENCIES = 
 libltdl_la_OBJECTS =  ltdl.lo
-libltdlc_la_DEPENDENCIES = 
-libltdlc_la_OBJECTS =  ltdl.lo
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -129,8 +122,8 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-SOURCES = $(libltdl_la_SOURCES) $(libltdlc_la_SOURCES)
-OBJECTS = $(libltdl_la_OBJECTS) $(libltdlc_la_OBJECTS)
+SOURCES = $(libltdl_la_SOURCES)
+OBJECTS = $(libltdl_la_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
@@ -224,9 +217,6 @@ maintainer-clean-libtool:
 
 libltdl.la: $(libltdl_la_OBJECTS) $(libltdl_la_DEPENDENCIES)
 	$(LINK)  $(libltdl_la_LDFLAGS) $(libltdl_la_OBJECTS) $(libltdl_la_LIBADD) $(LIBS)
-
-libltdlc.la: $(libltdlc_la_OBJECTS) $(libltdlc_la_DEPENDENCIES)
-	$(LINK)  $(libltdlc_la_LDFLAGS) $(libltdlc_la_OBJECTS) $(libltdlc_la_LIBADD) $(LIBS)
 
 install-includeHEADERS: $(include_HEADERS)
 	@$(NORMAL_INSTALL)
@@ -370,7 +360,7 @@ clean: clean-am
 
 distclean-am:  distclean-libLTLIBRARIES distclean-noinstLTLIBRARIES \
 		distclean-compile distclean-libtool distclean-tags \
-		distclean-generic clean-am
+		distclean-generic clean-am distclean-local
 	-rm -f libtool
 
 distclean: distclean-am
@@ -403,6 +393,14 @@ all-redirect all-am all installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
+
+@TOINST@/libltdl.la: $(libltdl_la_OBJECTS) $(libltdl_la_DEPENDENCIES)
+	@test -d $(TOINST) || mkdir $(TOINST)
+	$(LINK) -o $@ $(libltdl_la_OBJECTS) \
+		-rpath $(libdir) $(LTDL_VERSION) $(libltdl_la_LIBADD)
+
+distclean-local:
+	test -z $(TOINST) || rm -rf $(TOINST)
 
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck

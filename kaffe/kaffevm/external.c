@@ -53,11 +53,18 @@
 #endif
 
 #ifndef LIBRARYLOAD
-#define LIBRARYLOAD(desc,filename) ((desc)=lt_dlopen((filename)))
+#define LIBRARYLOAD(desc,filename) ((desc)=lt_dlopenext((filename)))
 #endif
 
 #ifndef LIBRARYERROR
-#define LIBRARYERROR() (lt_dlerror())
+#define LIBRARYERROR() (getLibraryError())
+static inline const char *getLibraryError() {
+/* Ignore file not found errors */
+	const char *err = lt_dlerror();
+	if (strcmp(err, "file not found") == 0)
+		err = 0;
+	return err;
+}
 #endif
 
 static struct {
@@ -193,9 +200,14 @@ loadNativeLibrary(char* lib)
         LIBRARYLOAD(libHandle[i].desc, lib);
 
 	if (libHandle[i].desc == 0) {
-		if (access(lib, R_OK) == 0) {
-			/* If the file doesn't exist, ignore the error */
-			printf("Library load failed: %s\n", LIBRARYERROR());
+		const char *err = LIBRARYERROR();
+		/* If the file doesn't exist, our lt_dlerror wrapper
+                   will return NULL.  Since we don't want to print
+                   file not found multiple times, we'll ignore this
+                   particular error, and print only other kinds of
+                   errors. */
+		if (err) {
+			printf("Library load failed: %s\n", err);
 		}
 		return (0);
 	}

@@ -50,7 +50,7 @@ modename="$progname"
 PROGRAM=ltmain.sh
 PACKAGE=libtool
 VERSION=1.2e
-TIMESTAMP=" (1.222 1999/01/24 20:43:44)"
+TIMESTAMP=" (1.250 1999/01/27 07:41:11)"
 
 default_mode=
 help="Try \`$progname --help' for more information."
@@ -656,6 +656,7 @@ compiler."
     convenience=
     old_convenience=
     deplibs=
+    linkopts=
 
     if test -n "$shlibpath_var"; then
       # get the directories listed in $shlibpath_var
@@ -688,6 +689,7 @@ compiler."
     perm_rpath=
     temp_rpath=
     finalize_rpath=
+    thread_safe=no
     vinfo=
 
     # We need to know -static, to get the right output filenames.
@@ -902,6 +904,11 @@ compiler."
 	  compile_command="$compile_command $link_static_flag"
 	  finalize_command="$finalize_command $link_static_flag"
 	fi
+	continue
+	;;
+
+      -thread-safe)
+	thread_safe=yes
 	continue
 	;;
 
@@ -1364,14 +1371,6 @@ compiler."
 	;;
       esac
 
-      if test -n "$xrpath"; then
-	temp_xrpath=
-	for libdir in $xrpath; do
-	  temp_xrpath="$temp_xrpath -R$libdir"
-	done
-	deplibs="$temp_xrpath $deplibs"
-      fi
-
       output_objdir=`$echo "X$output" | $Xsed -e 's%/[^/]*$%%'`
       if test "X$output_objdir" = "X$output"; then
 	output_objdir="$objdir"
@@ -1597,10 +1596,6 @@ compiler."
 
       if test "$build_libtool_libs" = yes; then
 	# Transform deplibs into only deplibs that can be linked in shared.
-	## Gordon: Do you check for the existence of the libraries in deplibs
-	## on the system?  That should maybe be merged in here someplace....
-	## Actually: I think test_compile and file_magic do this... file_regex
-	## sorta does this. Only pass_all needs to be changed.  -Toshio
 	name_save=$name
 	libname_save=$libname
 	release_save=$release
@@ -1698,7 +1693,7 @@ EOF
 	  fi
 	  deplibs=$newdeplibs
 	  ;;
-	file_magic* | file_regex)
+	file_magic*)
 	  set dummy $deplibs_check_method
 	  file_magic_regex="`expr \"$deplibs_check_method\" : \"$2 \(.*\)\"`"
 	  for a_deplib in $deplibs; do
@@ -1706,15 +1701,7 @@ EOF
 	    # If $name is empty we are operating on a -L argument.
 	    if test "$name" != "" ; then
 	      libname=`eval \\$echo \"$libname_spec\"`
-	      case "$deplibs_check_method" in
-		file_magic*)
-		  for i in $lib_search_path; do
-		   # This needs to be more general than file_regex in order to
-		   # catch things like glibc on linux.  Maybe file_regex
-		   # should be more general as well, but maybe not.  Since
-		   # library names are supposed to conform to
-		   # library_name_spec, I think file_regex should remain
-		   # strict.  What do you think Gordon?
+	      for i in $lib_search_path; do
 		    potential_libs=`ls $i/$libname[.-]* 2>/dev/null`
 		    for potent_lib in $potential_libs; do
 		      # Follow soft links.
@@ -1736,30 +1723,15 @@ EOF
 				   | $Xsed -e 's,[^/]*$,,'`"$potliblink";;
 			esac
 		      done
-		      file_output=`eval $file_magic_command \"\$potlib\" \
-				   | sed '11,$d'`
-		      if test `expr "X$file_output" : "X.*$file_magic_regex"` -ne 0 ; then
+		      if eval $file_magic_command \"\$potlib\" \
+			 | sed '11,$d' \
+			 | egrep "$file_magic_regex" > /dev/null; then
 			newdeplibs="$newdeplibs $a_deplib"
 			a_deplib=""
 			break 2
 		      fi
 		    done
-		  done
-		  ;;
-		file_regex)
-		  deplib_matches=`eval \\$echo \"$library_names_spec\"`
-		  set dummy $deplib_matches
-		  deplib_match=$2
-		  for i in $lib_search_path; do
-		    potential_libs=`ls $i/$deplib_match* 2>/dev/null`
-		    if test "$potential_libs" != "" ; then
-		      newdeplibs="$newdeplibs $a_deplib"
-		      a_deplib=""
-		      break
-		    fi
-		  done
-		  ;;
-	      esac
+	      done
 	      if test -n "$a_deplib" ; then
 		droppeddeps=yes
 		echo
@@ -1774,9 +1746,16 @@ EOF
 	    fi
 	  done # Gone through all deplibs.
 	  ;;
-	none | unknown | *) newdeplibs="";
+	none | unknown | *) newdeplibs=""
 	  if $echo "X$deplibs" | $Xsed -e 's/ -lc$//' -e 's/[ 	]//g' \
 	     | grep . >/dev/null; then
+	    echo
+	    if test "X$deplibs_check_method" = "Xnone"; then
+	      echo "*** Warning: inter-library dependencies are not supported in this platform."
+	    else
+	      echo "*** Warning: inter-library dependencies are not known to be supported."
+	    fi
+	    echo "*** All declared inter-library dependencies are being dropped."
 	    droppeddeps=yes
 	  fi
 	  ;;
@@ -1787,27 +1766,34 @@ EOF
 	libname=$libname_save
 	name=$name_save
 
-	if test "$module,$droppeddeps" = "yes,yes"; then
-	  echo
-	  echo "*** Warning: libtool could not satisfy all dependencies of module $libname"
-	  echo "*** Therefore, instead of creating a dynamic module that would not run, "
-	  echo "*** libtool will create a static module.  As long as the dlopening"
-	  echo "*** application is linked with the -dlopen flag, this should be enough."
-	  if test -z "$global_symbol_pipe"; then
+	if test "$droppeddeps" = yes; then
+	  if test "$module" = yes; then
 	    echo
-	    echo "*** However, this would only work if libtool was able to extract symbol"
-	    echo "*** lists from a program, using \`nm' or equivalent, but libtool could"
-	    echo "*** not find such a program.  So, this module is mostly useless."
-	  fi
-	  if test "$build_old_libs" = no; then
-	    oldlibs="$output_objdir/$libname.$libext"
-	    build_libtool_libs=module
-	    build_old_libs=yes
+	    echo "*** Warning: libtool could not satisfy all declared inter-library"
+	    echo "*** dependencies of module $libname.  Therefore, libtool will create"
+	    echo "*** a static module, that should work as long as the dlopening"
+	    echo "*** application is linked with the -dlopen flag."
+	    if test -z "$global_symbol_pipe"; then
+	      echo
+	      echo "*** However, this would only work if libtool was able to extract symbol"
+	      echo "*** lists from a program, using \`nm' or equivalent, but libtool could"
+	      echo "*** not find such a program.  So, this module is probably useless."
+	      echo "*** \`nm' from GNU binutils and a full rebuild may help."
+	    fi
+	    if test "$build_old_libs" = no; then
+	      oldlibs="$output_objdir/$libname.$libext"
+	      build_libtool_libs=module
+	      build_old_libs=yes
+	    else
+	      build_libtool_libs=no
+	    fi
+	    dlname=
+	    library_names=
 	  else
-	    build_libtool_libs=no
+	    echo "*** The inter-library dependencies that have been dropped here will be"
+	    echo "*** automatically added whenever a program is linked with this library"
+	    echo "*** or is declared to -dlopen it."
 	  fi
-	  dlname=
-	  library_names=
 	fi
       fi
 
@@ -1833,9 +1819,6 @@ EOF
 	do
 	  linknames="$linknames $link"
 	done
-
-	# Use standard objects if they are PIC.
-	test -z "$pic_flag" && libobjs=`$echo "X$libobjs" | $SP2NL | $Xsed -e "$lo2o" | $NL2SP`
 
 	if test -n "$whole_archive_flag_spec"; then
 	  if test -n "$convenience"; then
@@ -2548,6 +2531,14 @@ fi\
       old_library=
       test "$build_old_libs" = yes && old_library="$libname.$libext"
       $show "creating $output"
+
+      if test -n "$xrpath"; then
+	temp_xrpath=
+	for libdir in $xrpath; do
+	  temp_xrpath="$temp_xrpath -R$libdir"
+	done
+	dependency_libs="$temp_xrpath $dependency_libs"
+      fi
 
       # Only create the output if not a dry run.
       if test -z "$run"; then
