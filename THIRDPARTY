@@ -217,6 +217,10 @@ See license.terms for details of the GNU GPL.
 More information on GNU gettext is available from 
 http://www.gnu.org/software/gettext/.
 
+* m4/alsa.m4
+
+Autoconf/automake macros taken from ALSA CVS.  Licensed under the GPL/LGPL.
+
 * libraries/javalib/kjc.jar
 
 Kopi Java Compiler 2.1B with kaffe specific patches and bugfixes. Kjc is

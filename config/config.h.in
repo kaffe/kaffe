@@ -196,6 +196,9 @@
 /* Define to 1 if you have the `kill' function. */
 #undef HAVE_KILL
 
+/* Define to 1 if you have the `asound' library (-lasound). */
+#undef HAVE_LIBASOUND
+
 /* Define to 1 if you have the `Csup' library (-lCsup). */
 #undef HAVE_LIBCSUP
 
