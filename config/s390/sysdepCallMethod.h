@@ -87,7 +87,7 @@ static inline void sysdepCallMethod(callMethodInfo *call)
                     (call)->callsize[argidx],
                     (&(call)->args[argidx].i)[0],
                     (&(call)->args[argidx].i)[1]);
-            )
+            );
          if ((call)->callsize[argidx] != 0) { /* if non-empty, copy: */
            switch ((call)->calltype[argidx]) {
            case 'B':                          /* 8-bit byte          */

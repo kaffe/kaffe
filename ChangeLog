@@ -1,5 +1,9 @@
 2005-02-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/s390/sysdepCallMethod.h: Added missing semicolon.
+
+2005-02-08  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Use a single AC_CHECK_HEADERS macro
 	to reduce the bloat in the configure script.
 
