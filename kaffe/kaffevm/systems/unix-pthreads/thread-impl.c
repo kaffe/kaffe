@@ -137,7 +137,7 @@ static pthread_mutex_t		activeThreadsLock = PTHREAD_MUTEX_INITIALIZER;
 
 /** This mutex lock protects calls into non-reentrant system services.
  */
-pthread_mutex_t		systemMutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t		systemMutex = PTHREAD_MUTEX_INITIALIZER;
 
 /** We don't throw away threads when their user func terminates, but suspend
  * and cache them for later re-use */
