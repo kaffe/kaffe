@@ -1,3 +1,11 @@
+Mon Feb  8 16:34:32 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* include/Makefile.am (DERIVED_HDRS): create the header file with
+	prefix `temp_', then rename it to the correct header name if
+	kaffeh succeeds
+	(CLEANFILES): renamed from DISTCLEANFILES; added temp_*.h
+	* include/Makefile.in: regen
+
 Mon Feb  8 10:47:55 1999  Jose Orlando Pereira <jop@di.uminho.pt>
 
 	* libraries/javalib/java/net/DatagramSocket.java: bind socket

@@ -78,7 +78,9 @@ include_HEADERS = $(INSTALL_DERIVED_HDRS) \
 
 $(DERIVED_HDRS): $(KLASSES_JAR)
 	@test -x $(KAFFEH) || ($(MAKE_KAFFEH))
-	$(KAFFEH) -classpath $(KLASSES_JAR) \
+	$(KAFFEH) -classpath $(KLASSES_JAR) -o temp_$@ \
 	    `echo $@ | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`
+	rm -f $@
+	mv temp_$@ $@
 
-DISTCLEANFILES = $(DERIVED_HDRS)
+CLEANFILES = $(DERIVED_HDRS) temp_*.h

@@ -137,7 +137,7 @@ noinst_HEADERS = $(NOINSTALL_DERIVED_HDRS) 	defs.h 	files.h 	nets.h 	system.h
 include_HEADERS = $(INSTALL_DERIVED_HDRS) 	jtypes.h 	native.h 	jmalloc.h 	jsyscall.h 	jni.h 	jni_cpp.h 	Arrays.h 	java_lang_Object.h 	java_lang_String.h
 
 
-DISTCLEANFILES = $(DERIVED_HDRS)
+CLEANFILES = $(DERIVED_HDRS) temp_*.h
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config/config.h jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -285,11 +285,11 @@ installdirs:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
-	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 mostlyclean-am:  mostlyclean-hdr mostlyclean-tags mostlyclean-generic
@@ -324,8 +324,10 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 $(DERIVED_HDRS): $(KLASSES_JAR)
 	@test -x $(KAFFEH) || ($(MAKE_KAFFEH))
-	$(KAFFEH) -classpath $(KLASSES_JAR) \
+	$(KAFFEH) -classpath $(KLASSES_JAR) -o temp_$@ \
 	    `echo $@ | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`
+	rm -f $@
+	mv temp_$@ $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
