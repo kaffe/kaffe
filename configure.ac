@@ -1671,8 +1671,12 @@ if test x"$enable_native_awt" = x"yes"; then
 	if test x"$with_threads" != x"unix-pthreads"; then
                 AC_MSG_ERROR([Configuration --with-classpath-gtk-awt not supported - only available with pthreads])
 	fi
-
-	dnl Check for AWT related gthread/gtk/libart_lgpl
+	
+	dnl Check for AWT related gthread/gtk/libart_lgpl.
+	dnl for some obscure reason, it doesn't work without AC_PATH_X
+	dnl with Kaffe's configure acript, but it works without it with
+	dnl classpath's script. m4 is bizarre.
+	AC_PATH_X
 	AC_PATH_XTRA
 	if test "$no_x" = yes; then
           AC_MSG_ERROR([GTK+ peers requested but no X library available])

@@ -199,7 +199,8 @@ public class JTree extends JComponent
     protected boolean loadedChildren;
 
     /**
-     * XXX: Currently not implemented.
+     * Currently not set or used by this class.
+     * It might be set and used in later versions of this class.
      */
     protected boolean hasChildren;
     
