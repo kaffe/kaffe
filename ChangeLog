@@ -1,5 +1,33 @@
 2004-10-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/imageio/metadata/package.html:
+	New file taken from GNU Classpath.
+
+	* libraries/javalib/javax/imageio/event/IIOReadProgressListener.java,
+	libraries/javalib/javax/imageio/event/IIOReadUpdateListener.java,
+	libraries/javalib/javax/imageio/event/IIOReadWarningListener.java,
+	libraries/javalib/javax/imageio/event/IIOWriteProgressListener.java,
+	libraries/javalib/javax/imageio/event/IIOWriteWarningListener.java,
+	libraries/javalib/javax/imageio/metadata/IIOMetadataFormat.java,
+	libraries/javalib/javax/imageio/stream/ImageInputStreamImpl.java:
+	Resynced with GNU Classpath.
+
+	2004-10-21  Michael Koch  <konqueror@gmx.de>
+
+        * javax/imageio/event/IIOReadProgressListener.java,
+        javax/imageio/event/IIOReadUpdateListener.java,
+        javax/imageio/event/IIOReadWarningListener.java,
+        javax/imageio/event/IIOWriteProgressListener.java,
+        javax/imageio/event/IIOWriteWarningListener.java,
+        javax/imageio/metadata/IIOMetadataFormat.java,
+        javax/imageio/stream/FileCacheImageInputStream.java,
+        javax/imageio/stream/FileCacheImageOutputStream.java,
+        javax/imageio/stream/ImageInputStreamImpl.java:
+        Import cleanup.
+        * javax/imageio/metadata/package.html: New file.
+
+2004-10-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/crypto/BadPaddingException.java,
 	libraries/javalib/javax/crypto/CipherInputStream.java,
 	libraries/javalib/javax/crypto/CipherOutputStream.java,

@@ -39,6 +39,7 @@ exception statement from your version. */
 package javax.imageio.metadata;
 
 import java.util.Locale;
+
 import javax.imageio.ImageTypeSpecifier;
 
 /**
