@@ -1,3 +1,17 @@
+2004-04-04  Dalibor Topic <robilad@kaffe.org>
+
+	* developers/autogen.sh: Updated to libtool 1.5.4.
+
+	* FAQ/FAQ.automake: Updated version info accordingly.
+
+	* configure,
+	libltdl/acinclude.m4,
+	libltdl/configure,
+	libltdl/ltmain.sh,
+	m4/libtool.m4,
+	scripts/ltmain.sh:
+	Regenerated.
+
 2004-04-04  Adam Heath <doogie@debian.org>
 
 	* kaffe/kaffevm/debug.c: Fix const casting.
