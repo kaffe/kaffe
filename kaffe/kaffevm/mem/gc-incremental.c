@@ -267,10 +267,15 @@ static
 void
 walkObject(void* base, uint32 size)
 {
+	Hjava_lang_Object *obj = (Hjava_lang_Object*)base;
 	walkConservative(base, size);
 
 	/* Special magic to handle thread objects */
-	if (soft_instanceof(ThreadClass, (Hjava_lang_Object*)base)) {
+	/* 
+	 * Note that there is a window after the object is allocated but
+	 * before dtable is set.
+	 */
+	if ((obj->dtable != 0) && soft_instanceof(ThreadClass, obj)) {
 		(*Kaffe_ThreadInterface.GcWalkThread)((Hjava_lang_Thread*)base);
 	}
 }
@@ -638,6 +643,7 @@ gcMalloc(size_t size, int fidx)
 	static int gc_init = 0;
 	gc_block* info;
 	gc_unit* unit;
+	void *mem;
 	int i;
 
 	/* Initialise GC */
@@ -647,6 +653,9 @@ gcMalloc(size_t size, int fidx)
 	}
 
 	unit = gc_heap_malloc(size + sizeof(gc_unit));
+
+	/* keep pointer to object */
+	mem = UTOMEM(unit);
 	if (unit == 0) {
 		throwOutOfMemory();
 	}
@@ -680,12 +689,19 @@ ADBG(	printf("gcMalloc: 0x%x (%d)\n", unit, size);			)
 		GC_SET_COLOUR(info, i, GC_COLOUR_FIXED);
 	}
 	else {
+		/*
+		 * Note that as soon as we put the object on the white list,
+		 * the gc might come along and free the object if it can't
+		 * find any references to it.  This is why we need to keep
+		 * a reference in `mem'.  Note that keeping a reference in
+		 * `unit' will not do because markObject performs a UTOUNIT()!
+		 */
 		LOCK(); 
 		GC_SET_COLOUR(info, i, GC_COLOUR_WHITE);
 		UAPPENDLIST(gclists[white], unit);
 		UNLOCK();
 	}
-	return (UTOMEM(unit));
+	return (mem);
 }
 
 /*
