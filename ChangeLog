@@ -1,3 +1,13 @@
+Tue Dec 28 10:14:16 CET 1999  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/javalib/java/util/zip/ZipInputStream.java: Skip remaining
+	compressed data closeEntry(), this close PR#568, PR#589 and PR#590.
+	* libraries/clib/zip/Deflater.c libraries/clib/zip/Inflater.c: Fix
+	SignalError() message test.  Create kaffe_zalloc() and kaffe_zfree()
+	for inflateInit2().  Use Z_SYNC_FLUSH for inflate().
+	* libraries/javalib/kjc.jar: update to version 1.4B
+	* libraries/javalib/Klasses.jar: regen with kjc-1.4B
+
 1999-12-18  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
 	* ltconfig, ltmain.sh, acinclude.m4, libltld/*: Update from
