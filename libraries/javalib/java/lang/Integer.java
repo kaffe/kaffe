@@ -118,7 +118,7 @@ public static int parseInt(String s, int radix) throws NumberFormatException
 	/* Check for negativity */
 	if (s.charAt(0)=='-')
 		{
-		return parseInt(s.substring(1))*-1;
+		return parseInt(s.substring(1), radix)*-1;
 	}
 	else
 		{
