@@ -611,6 +611,7 @@ inflate_free(inflateInfo* pG)
     pG->fixed_td = pG->fixed_tl = 0;
     gc_free_fixed(pG->slide);
   }
+  gc_free_fixed(pG);
 
   return 0;
 }
