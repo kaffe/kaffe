@@ -381,6 +381,7 @@ DBG(VMCONDS,	dprintf("Wait 0x%x on iLock=0x%x\n", jthread_current(), lk);	)
         jthread_disable_stop();
         count = lk->count;
         lk->count = 0;
+	lk->holder = NULL; /* Debug only ? */
         jcondvar_wait(lk->cv, lk->mux, timeout);
         lk->holder = (void *)jthread_current();
         lk->count = count;

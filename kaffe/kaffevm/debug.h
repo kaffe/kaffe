@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 The University of Utah. All rights reserved.
+ * Copyright (c) 1998, 1999 The University of Utah. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -118,7 +118,7 @@
  *		to the default value.
  *
  *	Example:  if (DBGEXPR(EXCEPTION, false, true))
- *			catchSignal(SIGSEGV);
+ *			restoreSynchSignalHandler(SIGSEGV);
  *
  *	does not catch SIGSEGV if you're debugging exceptions, but in all
  *	other cases.

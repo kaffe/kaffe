@@ -167,7 +167,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	}
 
 	if (meth->exception_table != 0) {
-		if (setjmp(mjbuf.jbuf) != 0) {
+		if (sigsetjmp(mjbuf.jbuf, false) != 0) {
 			unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)&mjbuf;
 			npc = mjbuf.pc;
 			sp = &lcl[meth->localsz];

@@ -58,7 +58,7 @@
 
 #ifndef LIBRARYERROR
 #define LIBRARYERROR() (getLibraryError())
-static inline const char *getLibraryError() {
+static inline const char *getLibraryError(void) {
 /* Ignore file not found errors */
 	const char *err = lt_dlerror();
 	if (strcmp(err, "file not found") == 0)
