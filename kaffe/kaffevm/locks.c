@@ -61,13 +61,6 @@ initLocking(void)
 {
 }
 
-#if defined(KAFFE_VMDEBUG)
-void
-dumpObjectLocks(void)
-{
-}
-#endif
-
 /*
  * Get a heavy lock for the object and hold it.  If the object doesn't
  * have a heavy lock then we create one.
