@@ -97,6 +97,7 @@ public class InetAddress implements Serializable
    * Dummy InetAddress, used to bind socket to any (all) network interfaces.
    */
   static InetAddress ANY_IF;
+    
 
   /**
    * The size of the cache.
@@ -301,7 +302,6 @@ public class InetAddress implements Serializable
   {
     // This is the IPv4 implementation.
     // Any class derived from InetAddress should override this.
-    
     return equals (ANY_IF);
   }
 
@@ -530,8 +530,7 @@ public class InetAddress implements Serializable
    */
   public boolean equals (Object obj)
   {
-    if (obj == null
-        || ! (obj instanceof InetAddress))
+    if (! (obj instanceof InetAddress))
       return false;
     
     // "The Java Class Libraries" 2nd edition says "If a machine has
@@ -656,7 +655,7 @@ public class InetAddress implements Serializable
    * Returns an InetAddress object representing the IP address of the given
    * hostname.  This name can be either a hostname such as "www.urbanophile.com"
    * or an IP address in dotted decimal format such as "127.0.0.1".  If the
-   * hostname is null, the hostname of the local machine is supplied by
+   * hostname is null or "", the hostname of the local machine is supplied by
    * default.  This method is equivalent to returning the first element in
    * the InetAddress array returned from GetAllByName.
    *
@@ -682,7 +681,7 @@ public class InetAddress implements Serializable
     if (hostname == null || hostname == "")
       return getByName(LOCALHOST_NAME);
 
-    // Assume that the host string is an IP address.
+    // Assume that the host string is an IP address
     byte[] address = aton (hostname);
     if (address != null)
       return new InetAddress (address);
@@ -878,7 +877,7 @@ public class InetAddress implements Serializable
   private static native byte[] lookupInaddrAny() throws UnknownHostException;
 
   /*
-   * Needed for serialization.
+   * Needed for serialization
    */
   private void readResolve() throws ObjectStreamException
   {

@@ -4,6 +4,15 @@
 
 	2004-03-20  Michael Koch  <konqueror@gmx.de>
 
+        * java/net/InetAddress.java: Reformated.
+        (equals): Removed unneeded pointer check.
+
+2004-03-21  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2004-03-20  Michael Koch  <konqueror@gmx.de>
+
         * gnu/java/net/protocol/http/Connection.java
         (getOutputStream): Dont set POST method.
 
