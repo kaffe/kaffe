@@ -1,3 +1,8 @@
+Mon Apr  1 21:49:08 PST 2002  Jim Pick  <jim@kaffe.org>
+
+	* changed "make install" to install files in same way as
+	Sun's JDK/JRE.
+
 Thu Mar 28 13:33:03 CET 2002 Tim Stack <stack@cs.utah.edu>
 
 	* libraries/javalib/java/lang/reflect/Array.java:
