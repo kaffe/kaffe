@@ -2,8 +2,14 @@
  * powerpc/common.h
  * Common PowerPC configuration information.
  *
- * by Kevin B. Hendricks <khendricks@ivey.uwo.ca>
- * and Edouard G. Parmelan <egp@free.fr>
+ * Copyright (c) 2001
+ *	Edouard G. Parmelan.  All rights reserved.
+ *
+ * Copyright (c) 2001
+ *	Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #ifndef __powerpc_common_h
@@ -12,18 +18,9 @@
 #define NEED_STACK_ALIGN
 #define STACK_ALIGN(p)  ((((unsigned long)(p)) & 15) ^ (unsigned long)(p))
 
-#if defined(EGP)
 #if NEED_sysdepCallMethod
-#include "callmethod_v4.h"
+#include "sysdepCallMethod.h"
 #endif
-#else
-#if defined(__linux__) || defined(__NetBSD__)
-#if NEED_sysdepCallMethod
-#include "callmethod_ppc.h"
-#define	sysdepCallMethod(CALL) sysdepCallMethod_ppc(CALL)
-#endif
-#endif
-#endif /* defined(EGP) */
 
 
 /*
