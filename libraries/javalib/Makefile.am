@@ -2630,9 +2630,12 @@ javax_imageio_event_SRCS = \
 	javax/imageio/event/IIOWriteProgressListener.java \
 	javax/imageio/event/IIOWriteWarningListener.java
 javax_imageio_metadata_SRCS = \
+	javax/imageio/metadata/IIOInvalidTreeException.java \
 	javax/imageio/metadata/IIOMetadata.java \
 	javax/imageio/metadata/IIOMetadataController.java \
-	javax/imageio/metadata/IIOMetadataFormat.java
+	javax/imageio/metadata/IIOMetadataFormat.java \
+	javax/imageio/metadata/IIOMetadataFormatImpl.java \
+	javax/imageio/metadata/IIOMetadataNode.java
 javax_imageio_spi_SRCS = \
 	javax/imageio/spi/IIORegistry.java \
 	javax/imageio/spi/IIOServiceProvider.java \
@@ -2647,7 +2650,9 @@ javax_imageio_spi_SRCS = \
 javax_imageio_stream_SRCS = \
 	javax/imageio/stream/IIOByteBuffer.java \
 	javax/imageio/stream/ImageInputStream.java \
-	javax/imageio/stream/ImageOutputStream.java
+	javax/imageio/stream/ImageInputStreamImpl.java \
+	javax/imageio/stream/ImageOutputStream.java \
+	javax/imageio/stream/ImageOutputStreamImpl.java
 javax_naming_SRCS = \
 	javax/naming/AuthenticationException.java \
 	javax/naming/AuthenticationNotSupportedException.java \
