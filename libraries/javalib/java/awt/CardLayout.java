@@ -53,7 +53,7 @@ import java.util.Hashtable;
  */
 public class CardLayout implements LayoutManager2, Serializable
 {
-  static final long serialVersionUID = -4328196481005934313L;
+  private static final long serialVersionUID = -4328196481005934313L;
 
   /**
    * Initializes a new instance of <code>CardLayout</code> with horizontal
@@ -111,10 +111,7 @@ public class CardLayout implements LayoutManager2, Serializable
   {
     tab.put (name, comp);
     // First component added is the default component.
-    if (tab.size() == 1)
-      comp.setVisible(true);
-    else
-      comp.setVisible(false);
+    comp.setVisible(tab.size() == 1);
   }
 
   /**
@@ -474,13 +471,13 @@ public class CardLayout implements LayoutManager2, Serializable
   private Hashtable tab;
 
   // These constants are used by the private gotoComponent method.
-  private int FIRST = 0;
-  private int LAST = 1;
-  private int NEXT = 2;
-  private int PREV = 3;
+  private static final int FIRST = 0;
+  private static final int LAST = 1;
+  private static final int NEXT = 2;
+  private static final int PREV = 3;
 
   // These constants are used by the private getSize method.
-  private int MIN = 0;
-  private int MAX = 1;
-  private int PREF = 2;
+  private static final int MIN = 0;
+  private static final int MAX = 1;
+  private static final int PREF = 2;
 }

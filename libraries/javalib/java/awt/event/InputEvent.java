@@ -350,6 +350,7 @@ public abstract class InputEvent extends ComponentEvent
    * XXX Sun claims this can be localized via the awt.properties file - how
    * do we implement that?
    *
+   * @param modifiers the modifiers
    * @return a string representation of the modifiers in this bitmask
    * @since 1.4
    */
