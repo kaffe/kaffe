@@ -1729,7 +1729,7 @@ load_offset_scaled_int(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
 	lshl_int_const(tmp, idx, SHIFT_jint);
-	add_ref(tmp, tmp, src);
+	add_ref(tmp, src, tmp);
 	load_offset_int(dst, tmp, offset);
 	slot_freetmp(tmp);
 }
@@ -1740,7 +1740,7 @@ load_offset_scaled_ref(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
 	lshl_int_const(tmp, idx, SHIFT_jref);
-	add_ref(tmp, tmp, src);
+	add_ref(tmp, src, tmp);
 	load_offset_ref(dst, tmp, offset);
 	slot_freetmp(tmp);
 }
@@ -1748,18 +1748,12 @@ load_offset_scaled_ref(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 void
 load_offset_scaled_long(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
-	SlotInfo* nidx;
-	slot_alloctmp(nidx);
-	lshl_int_const(nidx, idx, 1);
-	if (src != LSLOT(dst)) {
-		load_offset_scaled_int(LSLOT(dst), src, nidx, offset);
-		load_offset_scaled_int(HSLOT(dst), src, nidx, offset+4);
-	}
-	else {
-		load_offset_scaled_int(HSLOT(dst), src, nidx, offset+4);
-		load_offset_scaled_int(LSLOT(dst), src, nidx, offset);
-	}
-	slot_freetmp(nidx);
+	SlotInfo* tmp;
+	slot_alloctmp(tmp);
+	lshl_int_const(tmp, idx, SHIFT_jlong);
+	add_ref(tmp, src, tmp);
+	load_offset_long(dst, tmp, offset);
+	slot_freetmp(tmp);
 }
 
 void
@@ -1768,7 +1762,7 @@ load_offset_scaled_float(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
 	lshl_int_const(tmp, idx, SHIFT_jfloat);
-	add_ref(tmp, tmp, src);
+	add_ref(tmp, src, tmp);
 	load_offset_float(dst, tmp, offset);
 	slot_freetmp(tmp);
 }
@@ -1779,7 +1773,7 @@ load_offset_scaled_double(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offse
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
 	lshl_int_const(tmp, idx, SHIFT_jdouble);
-	add_ref(tmp, tmp, src);
+	add_ref(tmp, src, tmp);
 	load_offset_double(dst, tmp, offset);
 	slot_freetmp(tmp);
 }
@@ -1789,7 +1783,7 @@ load_offset_scaled_byte(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
-	add_ref(tmp, idx, src);
+	add_ref(tmp, src, idx);
 	load_offset_byte(dst, tmp, offset);
 	slot_freetmp(tmp);
 }
@@ -1800,7 +1794,7 @@ load_offset_scaled_char(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
 	lshl_int_const(tmp, idx, SHIFT_jchar);
-	add_ref(tmp, tmp, src);
+	add_ref(tmp, src, tmp);
 	load_offset_char(dst, tmp, offset);
 	slot_freetmp(tmp);
 }
@@ -1811,7 +1805,7 @@ load_offset_scaled_short(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
 	lshl_int_const(tmp, idx, SHIFT_jshort);
-	add_ref(tmp, tmp, src);
+	add_ref(tmp, src, tmp);
 	load_offset_short(dst, tmp, offset);
 	slot_freetmp(tmp);
 }
@@ -2206,7 +2200,7 @@ store_offset_scaled_int(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
 	lshl_int_const(tmp, idx, SHIFT_jint);
-	add_ref(tmp, tmp, dst);
+	add_ref(tmp, dst, tmp);
 	store_offset_int(tmp, offset, src);
 	slot_freetmp(tmp);
 }
@@ -2217,7 +2211,7 @@ store_offset_scaled_ref(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
 	lshl_int_const(tmp, idx, SHIFT_jref);
-	add_ref(tmp, tmp, dst);
+	add_ref(tmp, dst, tmp);
 	store_offset_ref(tmp, offset, src);
 	slot_freetmp(tmp);
 }
@@ -2225,12 +2219,12 @@ store_offset_scaled_ref(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 void
 store_offset_scaled_long(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
-	SlotInfo* nidx;
-	slot_alloctmp(nidx);
-	lshl_int_const(nidx, idx, 1);
-	store_offset_scaled_int(dst, nidx, offset, LSLOT(src));
-	store_offset_scaled_int(dst, nidx, offset+4, HSLOT(src));
-	slot_freetmp(nidx);
+	SlotInfo* tmp;
+	slot_alloctmp(tmp);
+	lshl_int_const(tmp, idx, SHIFT_jlong);
+	add_ref(tmp, dst, tmp);
+	store_offset_long(tmp, offset, src);
+	slot_freetmp(tmp);
 }
 
 void
@@ -2239,7 +2233,7 @@ store_offset_scaled_float(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* sr
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
 	lshl_int_const(tmp, idx, SHIFT_jfloat);
-	add_ref(tmp, tmp, dst);
+	add_ref(tmp, dst, tmp);
 	store_offset_float(tmp, offset, src);
 	slot_freetmp(tmp);
 }
@@ -2250,7 +2244,7 @@ store_offset_scaled_double(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* s
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
 	lshl_int_const(tmp, idx, SHIFT_jdouble);
-	add_ref(tmp, tmp, dst);
+	add_ref(tmp, dst, tmp);
 	store_offset_double(tmp, offset, src);
 	slot_freetmp(tmp);
 }
@@ -2260,7 +2254,7 @@ store_offset_scaled_byte(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src
 {
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
-	add_ref(tmp, idx, dst);
+	add_ref(tmp, dst, idx);
 	store_offset_byte(tmp, offset, src);
 	slot_freetmp(tmp);
 }
@@ -2271,7 +2265,7 @@ store_offset_scaled_char(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
 	lshl_int_const(tmp, idx, SHIFT_jchar);
-	add_ref(tmp, tmp, dst);
+	add_ref(tmp, dst, tmp);
 	store_offset_char(tmp, offset, src);
 	slot_freetmp(tmp);
 }
@@ -2282,7 +2276,7 @@ store_offset_scaled_short(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* sr
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
 	lshl_int_const(tmp, idx, SHIFT_jshort);
-	add_ref(tmp, tmp, dst);
+	add_ref(tmp, dst, tmp);
 	store_offset_short(tmp, offset, src);
 	slot_freetmp(tmp);
 }
@@ -3175,7 +3169,7 @@ cvt_int_short(SlotInfo* dst, SlotInfo* src)
 /*									   */
 
 void
-breakpoint()
+softcall_breakpoint()
 {
 	ABORT();
 }
@@ -3384,6 +3378,18 @@ softcall_nullpointer(void)
 	call_soft(soft_nullpointer);
 }
 
+
+void
+softcall_nosuchclass(Utf8Const* name)
+{
+	sync_registers();
+	prepare_function_call();
+	pusharg_utf8_const(name, 0);
+	call_soft(soft_nosuchclass);
+	popargs();
+	fixup_function_call();
+}
+
 void
 softcall_nosuchmethod(Hjava_lang_Class* cls, Utf8Const* name, Utf8Const* sig)
 {
@@ -3393,6 +3399,18 @@ softcall_nosuchmethod(Hjava_lang_Class* cls, Utf8Const* name, Utf8Const* sig)
 	pusharg_utf8_const(name, 0);
 	pusharg_class_const(cls, 0);
 	call_soft(soft_nosuchmethod);
+	popargs();
+	fixup_function_call();
+}
+
+void
+softcall_nosuchfield(Utf8Const* cls, Utf8Const* name)
+{
+	sync_registers();
+	prepare_function_call();
+	pusharg_utf8_const(name, 1);
+	pusharg_utf8_const(cls, 0);
+	call_soft(soft_nosuchfield);
 	popargs();
 	fixup_function_call();
 }
@@ -3452,7 +3470,9 @@ softcall_multianewarray(SlotInfo* dst, int size, SlotInfo* stktop, Hjava_lang_Cl
 	pusharg_class_const(classobj, 0);
 	call_soft(soft_multianewarray);
 	popargs();
+	pop(size);
 	fixup_function_call();
+	push(1);
 	return_ref(dst);
 }
 
