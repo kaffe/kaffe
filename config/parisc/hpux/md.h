@@ -12,6 +12,7 @@
 #ifndef __parisc_hpux_md_h
 #define __parisc_hpux_md_h
  
+#include "parisc/common.h"
 #include "parisc/threads.h"
 
 #define	LIBRARYPATH	"SHLIB_PATH"
