@@ -1,5 +1,25 @@
 2004-03-16  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/util/AbstractListIterator.java,
+	libraries/javalib/java/util/AbstractMapEntry.java,
+	libraries/javalib/java/util/AbstractMapEntrySet.java:
+	Removed since no longer necessary after the merge of collection
+	classes with GNU Classpath.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+
+	* libraries/javalib/bootstrap.classlist,
+	libraries/javalib/essential.files:
+	Removed purged files.
+
+	* libraries/javalib/profiles/default/core.files,
+	libraries/javalib/profiles/allatonce/all.files:
+	Moved java,util.ZipOutputStream to essential files.
+
+2004-03-16  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/util/zip/ZipFile.java
 	(close) Don't set zip to null when closing, otherwise
 	getEntry on a closed zip file will crash.

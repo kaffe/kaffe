@@ -385,10 +385,7 @@ java/text/ParsePosition.java
 java/text/SimpleDateFormat.java
 java/util/AbstractCollection.java
 java/util/AbstractList.java
-java/util/AbstractListIterator.java
 java/util/AbstractMap.java
-java/util/AbstractMapEntry.java
-java/util/AbstractMapEntrySet.java
 java/util/AbstractSequentialList.java
 java/util/AbstractSet.java
 java/util/ArrayList.java
@@ -450,6 +447,7 @@ java/util/zip/ZipEntry.java
 java/util/zip/ZipException.java
 java/util/zip/ZipFile.java
 java/util/zip/ZipInputStream.java
+java/util/zip/ZipOutputStream.java
 kaffe/io/ByteToCharConverter.java
 kaffe/io/ByteToCharDefault.java
 kaffe/io/ByteToCharIconv.java

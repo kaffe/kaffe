@@ -1008,7 +1008,6 @@ java/util/zip/CRC32.java
 java/util/zip/DeflaterOutputStream.java
 java/util/zip/GZIPInputStream.java
 java/util/zip/GZIPOutputStream.java
-java/util/zip/ZipOutputStream.java
 javax/accessibility/AccessibleAction.java
 javax/accessibility/AccessibleBundle.java
 javax/accessibility/AccessibleComponent.java

@@ -157,15 +157,12 @@ java/util/AbstractCollection.class
 java/util/AbstractList.class
 java/util/AbstractList$1.class
 java/util/AbstractList$2.class
-java/util/AbstractListIterator.class
 java/util/AbstractMap.class
 java/util/AbstractMap$1.class
 java/util/AbstractMap$1$1.class
 java/util/AbstractMap$2.class
 java/util/AbstractMap$2$1.class
 java/util/AbstractMap$BasicMapEntry.class
-java/util/AbstractMapEntry.class
-java/util/AbstractMapEntrySet.class
 java/util/AbstractSequentialList.class
 java/util/AbstractSet.class
 java/util/ArrayList.class
