@@ -736,6 +736,11 @@ public class DecimalFormat extends NumberFormat
     return dest;
   }
 
+  public Currency getCurrency()
+  {
+    return symbols.getCurrency();
+  }
+
   public DecimalFormatSymbols getDecimalFormatSymbols ()
   {
     return symbols;
@@ -953,6 +958,11 @@ public class DecimalFormat extends NumberFormat
     pos.setIndex(index + suffix.length());
 
     return result;
+  }
+
+  public void setCurrency(Currency currency)
+  {
+    symbols.setCurrency(currency);
   }
 
   public void setDecimalFormatSymbols (DecimalFormatSymbols newSymbols)

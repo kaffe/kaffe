@@ -1543,6 +1543,7 @@ java_util_SRCS = \
 	java/util/Collections.java \
 	java/util/Comparator.java \
 	java/util/ConcurrentModificationException.java \
+	java/util/Currency.java \
 	java/util/Date.java \
 	java/util/Dictionary.java \
 	java/util/EmptyStackException.java \

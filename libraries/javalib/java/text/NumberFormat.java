@@ -41,6 +41,7 @@ package java.text;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
+import java.util.Currency;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
@@ -316,6 +317,16 @@ public abstract class NumberFormat extends Format implements Cloneable
     return computeInstance (loc, "currencyFormat", "$#,##0.00;($#,##0.00)");
   }
 
+  public Currency getCurrency()
+  {
+    throw new UnsupportedOperationException("getCurrency");
+  }
+
+  public void setCurrency(Currency currency)
+  {
+    throw new UnsupportedOperationException("setCurrency");    
+  }
+
   /**
    * This method returns a default instance for the default locale. This
    * will be a concrete subclass of <code>NumberFormat</code>, but the 
@@ -396,8 +407,6 @@ public abstract class NumberFormat extends Format implements Cloneable
    * will be a concrete subclass of <code>NumberFormat</code>, but the 
    * actual class returned is dependent on the locale.
    *
-   * @param locale The desired locale.
-   *
    * @return An instance of the default <code>NumberFormat</code> class.
    */
   public static final NumberFormat getNumberInstance ()
@@ -411,11 +420,41 @@ public abstract class NumberFormat extends Format implements Cloneable
    * <code>NumberFormat</code>, but the actual class returned is dependent
    * on the locale.
    *
-   * @return An instance of a generic number formatter for the default locale.
+   * @param loc the desired locale.
+   *
+   * @return An instance of a generic number formatter for the specified locale.
    */
   public static NumberFormat getNumberInstance (Locale loc)
   {
     return computeInstance (loc, "numberFormat", "#,##0.###");
+  }
+
+  /**
+   * This method returns an integer formatting and parsing class for the
+   * default locale. This will be a concrete subclass of <code>NumberFormat</code>,
+   * but the actual class returned is dependent on the locale.
+   *
+   * @return An instance of an integer number formatter for the default locale.
+   */
+  public static final NumberFormat getIntegerInstance()
+  {
+    return getIntegerInstance (Locale.getDefault());
+  }
+
+  /**
+   * This method returns an integer formatting and parsing class for the
+   * default locale. This will be a concrete subclass of <code>NumberFormat</code>,
+   * but the actual class returned is dependent on the locale.
+   *
+   * @param loc the desired locale.
+   *
+   * @return An instance of an integer number formatter for the default locale.
+   */
+  public static NumberFormat getIntegerInstance(Locale loc)
+  {
+    NumberFormat format = computeInstance (loc, "numberFormat", "#,##0");
+    format.setParseIntegerOnly (true);
+    return format;
   }
 
   /**

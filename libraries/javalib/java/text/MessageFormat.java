@@ -453,6 +453,8 @@ public class MessageFormat extends Format
 		else
 		  formatter.format(thisArg, appendBuf, ignore);
 	      }
+
+	    elements[i].format = formatter;
 	  }
 
 	if (output_iterator != null)
@@ -547,16 +549,38 @@ public class MessageFormat extends Format
 
   /**
    * Creates a new MessageFormat object with
-   * the specified pattern
+   * the specified pattern. The locale resource bundle 
+   * is taken as the system default one.
    *
-   * @param aPattern The Pattern
+   * @param pattern The Pattern
    */
   public MessageFormat (String pattern)
   {
-    locale = Locale.getDefault();
+    this(pattern, Locale.getDefault());
+  }
+
+  /**
+   * Creates a new MessageFormat object with
+   * the specified pattern and Locale context.
+   *
+   * @param pattern the pattern
+   * @param locale Locale environment to use
+   */
+  public MessageFormat (String pattern, Locale locale)
+  {
+    this.locale = locale;
     applyPattern (pattern);
   }
 
+  /**
+   * Parse a string <code>sourceStr</code> against the pattern specified
+   * to the MessageFormat constructor.
+   *
+   * @param sourceStr the string to be parsed.
+   * @param pos the current parse position (and eventually the error position).
+   * @return the array of parsed objects sorted according to their argument number
+   * in the pattern.
+   */ 
   public Object[] parse (String sourceStr, ParsePosition pos)
   {
     // Check initial text.
@@ -704,6 +728,72 @@ public class MessageFormat extends Format
   public String toPattern ()
   {
     return pattern;
+  }
+
+  /**
+   * Return the formatters used sorted by argument index. It uses the
+   * internal table to fill in this array: if a format has been
+   * set using <code>setFormat</code> or <code>setFormatByArgumentIndex</code>
+   * then it returns it at the right index. If not it uses the detected
+   * formatters during a <code>format</code> call. If nothing is known
+   * about that argument index it just puts null at that position.
+   * To get useful informations you may have to call <code>format</code>
+   * at least once.
+   *
+   * @return an array of formatters sorted by argument index.
+   */
+  public Format[] getFormatsByArgumentIndex()
+  {
+    int argNumMax = 0;
+    // First, find the greatest argument number.
+    for (int i=0;i<elements.length;i++)
+      if (elements[i].argNumber > argNumMax)
+	argNumMax = elements[i].argNumber;
+
+    Format[] formats = new Format[argNumMax];
+    for (int i=0;i<elements.length;i++)
+      {
+	if (elements[i].setFormat != null)
+	  formats[elements[i].argNumber] = elements[i].setFormat;
+	else if (elements[i].format != null)
+	  formats[elements[i].argNumber] = elements[i].format;
+      }
+    return formats;
+  }
+
+  /**
+   * Set the format to used using the argument index number.
+   *
+   * @param argumentIndex the argument index.
+   * @param newFormat the format to use for this argument.
+   */
+  public void setFormatByArgumentIndex(int argumentIndex,
+				       Format newFormat)
+  {
+    for (int i=0;i<elements.length;i++)
+      {
+	if (elements[i].argNumber == argumentIndex)
+	  elements[i].setFormat = newFormat;
+      }
+  }
+
+  /**
+   * Set the format for argument using a specified array of formatters
+   * which is sorted according to the argument index. If the number of
+   * elements in the array is fewer than the number of arguments only
+   * the arguments specified by the array are touched.
+   *
+   * @param newFormats array containing the new formats to set.
+   *
+   * @throws NullPointerException if newFormats is null
+   */
+  public void setFormatsByArgumentIndex(Format[] newFormats)
+  {
+    for (int i=0;i<newFormats.length;i++)
+      {
+	// Nothing better than that can exist here.
+	setFormatByArgumentIndex(i, newFormats[i]);
+      }
   }
 
   // The pattern string.
