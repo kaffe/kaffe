@@ -8,7 +8,7 @@
 #
 # Class structure:  Generally references to hashes. Tables are implemented as arrays.
 #
-# TODO: 
+# TODO:
 #	make a &checkClass() function.
 #	change a lot of 'local's to 'my's. (not local(%class), though)
 #	Make CLASSIN and CLASSOUT parameters to read/write functions.
@@ -76,14 +76,16 @@ $sig{'C'} = 'char';
 *ACC_PROTECTED = \0x0004;
 *ACC_STATIC    = \0x0008;
 *ACC_FINAL     = \0x0010;
-*ACC_SUPER     = \0x0020;
+*ACC_SUPER     = \0x0020;		# class only
+*ACC_SYNCHRONIZED = \0x0020;		# field/method
 *ACC_VOLATILE  = \0x0040;
 *ACC_TRANSIENT = \0x0080;
 *ACC_INTERFACE = \0x0200;
 *ACC_ABSTRACT  = \0x0400;
 *ACC_NATIVE    = \0x0100;
+*ACC_STRICT    = \0x0800;
 
-*ACC_UNKNOWN   = \0xF800;
+*ACC_UNKNOWN   = \0xF000;
 
 ###
 ###  Global variables
@@ -137,13 +139,13 @@ sub parseJavaSig() {
     $repct = $jsig =~ s/^(I|J|Z|F|D|B|S|C|L|\[|\))//;  ## No V types
     die "badly formed signature at $jsig" if ($repct == 0);
     $arg = $1;
-    
+
     ## Stop if we hit the end paren
     last SIGPARSE if $arg eq "\)";
-    
+
     if ($arg eq '[') {
       $depth++;
-      # continue parsing array type... 
+      # continue parsing array type...
       next SIGPARSE;
     } elsif ($arg eq 'L') {
       $jsig =~ s/^([^;]*);//;
@@ -153,7 +155,7 @@ sub parseJavaSig() {
       ## convert single-char identifier to english
       $arg = $sig{$arg};
     }
-    
+
     ## If we hit an array, tack the array depth on the end
     if ($depth > 0) {
       $arg = $arg . "[]" x $depth;
@@ -179,7 +181,7 @@ sub parseJavaSig() {
     $jsig =~ s/^(I|J|Z|F|D|B|S|C|L)//; ## No [ or V
     die "badly formed return type: \'$jsig\'" if ($repct == 0);
     $ret = $1;
-  } 
+  }
 
   if ($ret eq 'L') {
     $jsig =~ s/^([^;]*);//;
@@ -194,7 +196,7 @@ sub parseJavaSig() {
   if ($depth > 0) {
     $ret = $ret . "[]" x $depth;
   }
-    
+
   ### Return the info in an easy-to-use list
   return ($package, $ret, $class, $method, @args);
 }
@@ -204,10 +206,10 @@ sub parseJavaSig() {
 ###
 
 sub printClass {
-    my $r_cl = shift;		
+    my $r_cl = shift;
     my %class = %{$r_cl};
 
-    my $flStr = &ACCFlagsToString($class{accessFlags});
+    my $flStr = &ACCFlagsToString($class{accessFlags}, 1);
     print "$flStr\n";
 
     &printConstantPool($r_cl);
@@ -250,8 +252,8 @@ sub printMethods {
 	print "Methods:\n";
 	while ($i < $class{methodCt}) {
 	    my %method = %{$class{methods}[$i]};
-    
-	    my $accflags = ACCFlagsToString($method{accessFlags});
+
+	    my $accflags = ACCFlagsToString($method{accessFlags}, 0);
 	    my $name = $class{constantPool}[$method{nameIndex}]->{val};
 	    my $desc = $class{constantPool}[$method{descriptorIndex}]->{val};
 
@@ -282,8 +284,8 @@ sub printFields {
 	print "Fields:\n";
 	while ($i < $class{fieldCt}) {
 	    my %field = %{$class{fields}[$i]};
-    
-	    my $accflags = ACCFlagsToString($field{accessFlags});
+
+	    my $accflags = ACCFlagsToString($field{accessFlags}, 0);
 	    my $name = $class{constantPool}[$field{nameIndex}]->{val};
 	    my $desc = $class{constantPool}[$field{descriptorIndex}]->{val};
 
@@ -310,7 +312,7 @@ sub printInterfaces {
     if ($class{interfaceCt} == 0) {
 	print "No interfaces.\n";
     } else {
-	my $i = 0; 
+	my $i = 0;
 	print "Interfaces:\n";
 	while ($i < $class{interfaceCt}) {
 	    my $iClass = $class{interfaces}[$i];
@@ -326,19 +328,26 @@ sub printInterfaces {
 
 sub ACCFlagsToString {
     my $flags = shift;
+    my $isClass = shift;
     my @flags = ();
 
     push(@flags, "public") if $flags & $ACC_PUBLIC;
     push(@flags, "private") if $flags & $ACC_PRIVATE;
     push(@flags, "protected") if $flags & $ACC_PROTECTED;
+    push(@flags, "abstract") if $flags & $ACC_ABSTRACT;
     push(@flags, "static") if $flags & $ACC_STATIC;
     push(@flags, "final") if $flags & $ACC_FINAL;
-    push(@flags, "super") if $flags & $ACC_SUPER;
+    if ($isClass) {
+	push(@flags, "super") if $flags & $ACC_SUPER;
+    }
+    else {
+	push(@flags, "synchronized") if $flags & $ACC_SYNCHRONIZED;
+    }
+    push(@flags, "native") if $flags & $ACC_NATIVE;
     push(@flags, "volatile") if $flags & $ACC_VOLATILE;
     push(@flags, "transient") if $flags & $ACC_TRANSIENT;
+    push(@flags, "strictfp") if $flags & $ACC_STRICT;
     push(@flags, "interface") if $flags & $ACC_INTERFACE;
-    push(@flags, "abstract") if $flags & $ACC_ABSTRACT;
-    push(@flags, "native") if $flags & $ACC_NATIVE;
     push(@flags, "UNKNOWN") if $flags & $ACC_UNKNOWN;
 
     return join(',', @flags);
@@ -360,7 +369,7 @@ sub printConstantPool {
 	    my $ni = $cpEntry{nameIndex};
 
     	    &checkIndex($ni, "Name", $CONSTANT_Utf8);
-    
+
 	    my $nm = $class{constantPool}[$ni]->{val};
 
 	    print (".name @ $ni ($nm);");
@@ -375,7 +384,7 @@ sub printConstantPool {
     	} elsif ($cpEntry{tag} eq $CONSTANT_String) {
 	    my $si = $cpEntry{stringIndex};
     	    &checkIndex($si, "String", $CONSTANT_Utf8);
-	    
+
 	    my $str = $class{constantPool}[$si]->{val};
 
 	    print (".string @ $cpEntry{stringIndex} ($str);");
@@ -408,7 +417,7 @@ sub printConstantPool {
     	}
 
 	print ("\n");
-	
+
 	$i++;
     }
 }
@@ -420,7 +429,7 @@ sub printAttributes {
 
     my $i = 0;
     my %class = %{$r_class};
-    
+
     print ("${prefix}Attributes:\n");
     foreach $r_attr (@{$r_attrs}) {
 
@@ -438,7 +447,32 @@ sub printAttributes {
 	    print (" @ " . $idx . " (\"" . $name . "\")");
 	  }
 	}
+	elsif ($name eq 'InnerClasses') {
+	    my ($high, $low) = unpack("CC", $r_attr->{attr});
+	    my $nr = ($high * 256) + $low;
 
+	    print (" @ $nr entries");
+
+	    my $array = substr ($r_attr->{attr}, 2);
+	    for (my $i = 0; $i < $nr; $i++, $array = substr ($array, 8)) {
+		my ($inner, $outer, $name, $acces) = unpack ("nnnn", $array);
+
+		print("\n");
+		# print("${prefix}\t\t$i] $inner, $outer, $name, $acces");
+
+		print("${prefix}\t\t$i]");
+		print(" .inner = " . $inner);
+		print(" (" . $class{constantPool}[$class{constantPool}[$inner]->{nameIndex}]->{val} . ")") if $inner;
+
+		print(" .outer = $outer");
+		print(" (" . $class{constantPool}[$class{constantPool}[$outer]->{nameIndex}]->{val} . ")") if $outer;
+
+		print(" .name = $name");
+		print(" ($class{constantPool}[$name]->{val})") if ($name);
+
+		print(" .acces = $acces (" . &ACCFlagsToString($acces, 1) .")");
+	    }
+	}
 	print ("\n");
     }
 }
@@ -451,67 +485,67 @@ sub readClass {
     my $classFile = shift;
     local(%class) = (());
 
-    open(CLASSIN, $classFile) 
+    open(CLASSIN, $classFile)
 	|| open(CLASSIN, "${classFile}.class")
 	    || die ("Cannot open $classFile for reading");
-    
+
     ###
     ### Header Magic
     ###
-    	
+
     $class{magic} = read_u4();
     if ($class{magic} != $classMagic) {
     	fatal("Bad class magic '$class{magic}' --expected '$classMagic'.  $classFile is probably not a Java class file.");
     }
-    
+
     ## Read in the major and minor version numbers
     $class{minorVersion} = &read_u2();
     $class{majorVersion} = &read_u2();
-    
-    print("Version: $class{majorVersion}.$class{minorVersion}  (expected 45.3)\n") 
+
+    print("Version: $class{majorVersion}.$class{minorVersion}  (expected 45.3)\n")
     	if ($class{minorVersion} ne 3) || ($class{majorVersion} ne 45);
-    
+
     ###
     ### Constant Pool
     ###
     $class{constantPoolCt} = &read_u2();
     $class{constantPool} = [];
-    
+
     $i = 1; # constant pool actually starts with entry 1...
     while ($i < $class{constantPoolCt}) {
     	my %cpEntry;
     	$cpEntry{tag} = &read_u1();
-    
+
     	if ($cpEntry{tag} eq $CONSTANT_Class) {
     	    $cpEntry{nameIndex} = &read_u2();
-    
+
     	    &checkIndex($cpEntry{nameIndex}, "Name");
     	} elsif ($cpEntry{tag} eq $CONSTANT_FieldRef) {
     	    $cpEntry{classIndex} = &read_u2();
     	    $cpEntry{nameTypeIndex} = &read_u2();
-    	    
+
     	    &checkIndex($cpEntry{classIndex}, "Class");
     	    &checkIndex($cpEntry{nameTypeIndex}, "Name & Type");
     	} elsif ($cpEntry{tag} eq $CONSTANT_MethodRef) {
     	    $cpEntry{classIndex} = &read_u2();
     	    $cpEntry{nameTypeIndex} = &read_u2();
-    
+
     	    &checkIndex($cpEntry{classIndex}, "Class");
     	    &checkIndex($cpEntry{nameTypeIndex}, "Name & Type");
     	} elsif ($cpEntry{tag} eq $CONSTANT_InterfaceMethodRef) {
     	    $cpEntry{classIndex} = &read_u2();
     	    $cpEntry{nameTypeIndex} = &read_u2();
-    
+
     	    &checkIndex($cpEntry{classIndex}, "Class");
     	    &checkIndex($cpEntry{nameTypeIndex}, "Name & Type");
     	} elsif ($cpEntry{tag} eq $CONSTANT_String) {
     	    $cpEntry{stringIndex} = &read_u2();
-    
+
     	    &checkIndex($cpEntry{stringIndex}, "String");
     	} elsif ($cpEntry{tag} eq $CONSTANT_NameAndType) {
     	    $cpEntry{nameIndex} = &read_u2();
     	    $cpEntry{descriptorIndex} = &read_u2();
-    
+
     	    &checkIndex($cpEntry{nameIndex}, "Name");
     	    &checkIndex($cpEntry{descriptorIndex}, "Descriptor");
     	} elsif ($cpEntry{tag} eq $CONSTANT_Integer) {
@@ -531,7 +565,7 @@ sub readClass {
     	} else {
     	    &fatal("Unknown Constant type $cpEntry{tag}!\n");
     	}
-    
+
     	$class{constantPool}[$i] = \%cpEntry;
 
 	## Ick.  8-byte entries take two constant pool entries
@@ -540,46 +574,46 @@ sub readClass {
     } continue {
     	$i++;
     }
-    
+
     ###
     ### Misc. Class Info
     ###
-    
+
     $class{accessFlags} = &read_u2();
-    
+
     $class{thisClass} = &read_u2();
     &checkIndex($class{thisClass}, "this_class", $CONSTANT_Class);
-    
+
     $class{superClass} = &read_u2();
     if ($class{superClass} != 0) {
       &checkIndex($class{superClass}, "super_class", $CONSTANT_Class);
-    } 
+    }
     # so what if it's java.lang.Object
     # else {
-    #  print ("Warning: class has no super class.  Must be java.lang.Object\n"); 
+    #  print ("Warning: class has no super class.  Must be java.lang.Object\n");
     #}
-    
+
     ###
     ### Direct super-interfaces
     ###
     $class{interfaceCt} = &read_u2();
     $class{interfaces} = [];
-    
+
     $i = 0;
     while ($i < $class{interfaceCt}) {
     	$class{interfaces}[$i] = &read_u2();
-    
-    	&checkIndex($class{interfaces}[$i], "Interface \#$i", $CONSTANT_Class);	
+
+    	&checkIndex($class{interfaces}[$i], "Interface \#$i", $CONSTANT_Class);
     } continue {
     	$i++;
     }
-    
+
     ###
     ### Fields
     ###
     $class{fieldCt} = &read_u2();
     $class{fields} = [];
-    
+
     $i = 0;
     while ($i < $class{fieldCt}) {
     	my %field;
@@ -588,39 +622,39 @@ sub readClass {
     	$field{descriptorIndex} = &read_u2();
     	$field{attributesCt} = &read_u2();
     	$field{attributes} = &readAttributes($field{attributesCt});
-    
+
     	&checkIndex($field{nameIndex}, "Field Name", $CONSTANT_Utf8);
     	&checkIndex($field{descriptorIndex}, "Field Descriptor", $CONSTANT_Utf8);
-    
+
     	$class{fields}[$i] = \%field;
     } continue {
     	$i++;
     }
-    
+
     ###
     ### Methods
     ###
     $class{methodCt} = &read_u2();
     $class{methods} = [];
-    
+
     $i = 0;
     while ($i < $class{methodCt}) {
     	my %method;
-    
+
     	$method{accessFlags} = &read_u2();
     	$method{nameIndex} = &read_u2();
     	$method{descriptorIndex} = &read_u2();
     	$method{attributesCt} = &read_u2();
     	$method{attributes} = &readAttributes($method{attributesCt});
-    
+
     	&checkIndex($method{nameIndex}, "Method Name", $CONSTANT_Utf8);
     	&checkIndex($method{descriptorIndex}, "Method Descriptor", $CONSTANT_Utf8);
-    
+
     	$class{methods}[$i] = \%method;
     } continue {
     	$i++;
     }
-    
+
     ###
     ### Class attributes
     ###
@@ -644,10 +678,10 @@ sub writeClass {
     local(%class) = %{$r_class};
 
     if ($classFile =~ /\.class$/) {
-	open(CLASSOUT, ">$classFile") 
+	open(CLASSOUT, ">$classFile")
 	    || die ("Cannot open $classFile for writing");
     } else {
-	open(CLASSOUT, ">$classFile.class") 
+	open(CLASSOUT, ">$classFile.class")
 	    || die ("Cannot open $classFile.class for writing");
     }
 
@@ -658,13 +692,13 @@ sub writeClass {
     if ($class{magic} != $classMagic) {
     	fatal("Bad class magic '$class{magic}' --expected '$classMagic'.  Not writing class file.");
     }
-    	
+
     &write_u4($class{magic});
-    
+
     ## Write major/minor version numbers
     &write_u2($class{minorVersion});
     &write_u2($class{majorVersion});
-    
+
     ###
     ### Constant Pool
     ###
@@ -674,7 +708,7 @@ sub writeClass {
     while ($i < $class{constantPoolCt}) {
     	my %cpEntry = %{$class{constantPool}[$i]};
     	&write_u1($cpEntry{tag});
-    
+
     	if ($cpEntry{tag} eq $CONSTANT_Class) {
     	    &checkIndex($cpEntry{nameIndex}, "Name", $CONSTANT_Utf8);
 
@@ -716,32 +750,32 @@ sub writeClass {
     } continue {
     	$i++;
     }
-    
+
     ###
     ### Misc. Class Info
     ###
-    
+
     &write_u2($class{accessFlags});
     &write_u2($class{thisClass});
     &write_u2($class{superClass});
-    
+
     ###
     ### Direct super-interfaces
     ###
     &write_u2($class{interfaceCt});
-    
+
     $i = 0;
     while ($i < $class{interfaceCt}) {
     	&write_u2($class{interfaces}[$i]);
     } continue {
     	$i++;
     }
-    
+
     ###
     ### Fields
     ###
     &write_u2($class{fieldCt});
-    
+
     $i = 0;
     while ($i < $class{fieldCt}) {
     	my %field = %{$class{fields}[$i]};
@@ -753,16 +787,16 @@ sub writeClass {
     } continue {
     	$i++;
     }
-    
+
     ###
     ### Methods
     ###
     &write_u2($class{methodCt});
-    
+
     $i = 0;
     while ($i < $class{methodCt}) {
     	my %method = %{$class{methods}[$i]};
-    
+
     	&write_u2($method{accessFlags});
     	&write_u2($method{nameIndex});
 	&write_u2($method{descriptorIndex});
@@ -771,7 +805,7 @@ sub writeClass {
     } continue {
     	$i++;
     }
-    
+
     ###
     ### Class attributes
     ###
@@ -792,15 +826,15 @@ sub writeClass {
 sub checkIndex {
     my ($val, $name, $type) = @_;
 
-    # $class is a global 
+    # $class is a global
 
     if ($val == 0) {
       &fatal("ERROR: Found constant pool index 0 for $name.  (Expecting a CONSTANT_$CONSTANTNames{$type} entry.)");
     }
-     
+
     if ($val >= $class{constantPoolCt}) {
 	&fatal("ERROR: $name index for current constant is $val, must be less than $class{constantPoolCt}\n");
-    } 
+    }
 
     if (defined($type)) {
 	my $actualTag = $class{constantPool}[$val]{tag};
@@ -854,7 +888,7 @@ sub read_n {
 
 sub read_float {
     my $intVal = shift;
-    
+
     return "+INF" if ($intVal == 0x7f800000);
     return "-INF" if ($intVal == 0xff800000);
     if ((($intVal >= 0x7f800001) && ($intVal <= 0x7fffffff))
@@ -899,7 +933,7 @@ sub read_utf8 {
 
 sub readAttributes {
     my ($ct) = @_;
-    
+
     my @attrs = [];
 
     return undef if ($ct < 1);
@@ -910,7 +944,7 @@ sub readAttributes {
         $attribute{nameIndex} = &read_u2();
 	$attribute{len} = &read_u4();
 	$attribute{attr} = &read_n($attribute{len});
-	
+
 	&checkIndex($attribute{nameIndex}, "Attribute Name", $CONSTANT_Utf8);
 
 	$attrs[$i] = \%attribute;
@@ -954,7 +988,7 @@ sub write_u1 {
 }
 
 sub write_n {
-    my $val = shift; 
+    my $val = shift;
     print CLASSOUT $val;	# XXX assumes $val."length" is 'n'
 }
 
