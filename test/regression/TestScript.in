@@ -62,7 +62,7 @@ run()
 	    error=$?
 	else
 	    # grep will take care of stripping \r from DOS-like output
-	    $JAVA $* 2>&1 | grep . > "$RESULT"
+	    $JAVA $* 2>&1 | grep '.*' > "$RESULT"
 	    error=$?
 	fi
 	if test ! -f "$1.out"; then
