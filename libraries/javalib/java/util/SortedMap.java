@@ -13,7 +13,7 @@ package java.util;
 public interface SortedMap extends Map {
 
 public Comparator comparator();
-public SortedMap subMap(Object forKey, Object toKey);
+public SortedMap subMap(Object fromKey, Object toKey);
 public SortedMap headMap(Object toKey);
 public SortedMap tailMap(Object fromKey);
 public Object firstKey();
