@@ -122,11 +122,11 @@ public String toString()
 	}
 
 	// Return type
-	str.append(returnType.getName());
+	str.append(returnType.getPrettyName());
 	str.append(" ");
 
 	// Class name
-	str.append(clazz.getName());
+	str.append(clazz.getPrettyName());
 	str.append(".");
 
 	// Method name
@@ -135,7 +135,7 @@ public String toString()
 
 	// Signature
 	for (int i = 0; i < parameterTypes.length; i++) {
-		str.append(parameterTypes[i].getName());
+		str.append(parameterTypes[i].getPrettyName());
 		if (i+1 < parameterTypes.length) {
 			str.append(",");
 		}
@@ -145,7 +145,7 @@ public String toString()
         if (exceptionTypes.length > 0) {
                 str.append(" throws ");
                 for (int i = 0; i < exceptionTypes.length; i++) {
-                        str.append(exceptionTypes[i].getName());
+                        str.append(exceptionTypes[i].getPrettyName());
                         if (i+1 < exceptionTypes.length) {
                                 str.append(",");
                         }

@@ -230,14 +230,23 @@ native public boolean isPrimitive();
 
 native public Object newInstance() throws InstantiationException, IllegalAccessException;
 
+/*
+ * toString() 
+ */
 public String toString() {
+	if (isInterface()) {
+		return ("interface " + getName());
+	} else {
+		return ("class " + getName());
+	}
+}
+
+/*
+ * This function is used when printing class name within methods
+ */
+public String getPrettyName() {
 	Class cls = this;
 	StringBuffer str = new StringBuffer();
-	if (isInterface()) {
-		str.append("interface ");
-	} else {
-		str.append("class ");
-	}
 	for (int count = 0;; count++) {
 		if (!cls.isArray()) {
 			str.append(cls.getName());
