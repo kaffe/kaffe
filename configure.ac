@@ -1465,6 +1465,45 @@ if test x"$ac_cv_declared_swab" = x"yes"; then
   AC_DEFINE(HAVE_DECLARED_SWAB, 1, [Is function swab declared])
 fi
 
+dnl =========================================================
+dnl Test whether SO_RCVTIMEO is broken
+dnl =========================================================
+AC_CACHE_CHECK([whether setsockopt(SO_RCVTIMEO) is broken],
+  ac_cv_so_rcvtimeo_broken, [dnl
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif
+
+#if defined(HAVE_SYS_SOCKET_H)
+#include <sys/socket.h>
+#endif
+
+#if defined(HAVE_SYS_TIME_H)
+#include <sys/time.h>
+#endif
+
+int main(void) {
+	int fd;
+	int ret;
+	struct timeval new_tv;
+
+	/* Open the socket (INET/TCP).*/
+	fd = socket(AF_INET, SOCK_STREAM, 0);
+
+	/* set the timeout for the incoming queue */
+	/* 1 second for example */
+	new_tv.tv_sec = 1;
+	new_tv.tv_usec = 0;
+
+	ret = setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &new_tv, sizeof(new_tv)); 
+	return ret;
+}
+]])],[ac_cv_so_rcvtimeo_broken=no],[ac_cv_so_rcvtimeo_broken=yes],[ac_cv_so_rcvtimeo_broken=cross])])
+if test x"$ac_cv_sr_rcvtimeo_broken" = x"yes"; then
+  AC_DEFINE(HAVE_BROKEN_SO_RCVTIMEO, 1, [Define if setsockopt(SO_RCVTIMEO) is broken])
+fi
+
 dnl ------------------------------------------------------------
 dnl determine whether to enable the cairo GTK Graphics2D backend
 dnl ------------------------------------------------------------

@@ -55,6 +55,9 @@
 /* Do we have bool */
 #undef HAVE_BOOL
 
+/* Define if setsockopt(SO_RCVTIMEO) is broken */
+#undef HAVE_BROKEN_SO_RCVTIMEO
+
 /* Define to 1 if you have the <bsd/libc.h> header file. */
 #undef HAVE_BSD_LIBC_H
 
