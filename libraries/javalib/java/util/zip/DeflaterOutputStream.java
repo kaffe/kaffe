@@ -30,7 +30,13 @@ public DeflaterOutputStream(OutputStream out, Deflater defx) {
 
 public DeflaterOutputStream(OutputStream out, Deflater defx, int size) {
 	super(out);
+	if (out == null)
+	  throw new NullPointerException("out");
+	if (defx == null)
+	  throw new NullPointerException("def");
 	def = defx;
+	if (size < 1)
+	  throw new IllegalArgumentException("size < 1");
 	buf = new byte[size];
 }
 
