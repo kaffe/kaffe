@@ -201,6 +201,10 @@ synchronized boolean hasPendingEvents ( Component c, int id ) {
 	return false;
 }
 
+public static boolean isDispatchThread() {
+	return Thread.currentThread() == Toolkit.eventThread;
+}
+
 public synchronized AWTEvent peekEvent () {
 	if ( localQueue != null ){
 		return localQueue;
@@ -235,7 +239,7 @@ public synchronized void postEvent ( AWTEvent e ) {
 			// If we use blocked IO, and this is not the eventThread, wake it up by creating
 			// some IO traffic. No need to do that if we have a native dispatcher loop
 			if ( ((Toolkit.flags & Toolkit.IS_BLOCKING) != 0)
-		        && (Thread.currentThread() != Toolkit.eventThread) ){
+			     && !isDispatchThread()){
 				Toolkit.evtWakeup();
 			}
 		}
@@ -285,7 +289,7 @@ synchronized void postPaintEvent ( int id, Component c, int x, int y, int width,
 			notify();  // wake up any waiter
 		}
 		else if ( ((Toolkit.flags & Toolkit.IS_BLOCKING) != 0) &&
-		     (Thread.currentThread() != Toolkit.eventThread) ) {
+			  !isDispatchThread()){
 			Toolkit.evtWakeup();
 		}
 	}

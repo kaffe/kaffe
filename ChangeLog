@@ -1,3 +1,12 @@
+Thu Jul  4 03:19:53 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/awt/EventQueue.java: Use isDispatchThread
+	instead of directly accessing the fields in Toolkit.
+	(isDispatchThread) new method.
+	* libraries/javalib/java/awt/EventDispatchThread.java,
+	libraries/javalib/java/awt/Toolkit.java: Use isDispatchThread
+	instead of directly accessing the fields in Toolkit.
+
 Thu Jul  4 03:12:42 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/awt/image/AreaAveragingScaleFilter.java:

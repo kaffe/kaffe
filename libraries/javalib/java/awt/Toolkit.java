@@ -203,7 +203,7 @@ static void createNative ( Component c ) {
 			}
 		}
 		else {
-			if ( Thread.currentThread() != eventThread ){
+			if ( !EventQueue.isDispatchThread()) {
 				// we can force the context switch by ourselves, no need to go native
 				e =  WMEvent.getEvent( c, WMEvent.WM_CREATE);
 				eventQueue.postEvent( e);
@@ -254,7 +254,7 @@ static void destroyNative ( Component c ) {
 			}
 		}
 		else {
-			if ( Thread.currentThread() != eventThread ){
+			if ( !EventQueue.isDispatchThread()) {
 				// we can force the context switch by ourselves, no need to go native
 				e =  WMEvent.getEvent( c, WMEvent.WM_DESTROY);
 				eventQueue.postEvent( e);

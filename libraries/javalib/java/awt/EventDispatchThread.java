@@ -57,7 +57,7 @@ void run ( Component modalWindow ) {
 
 	// check if we are outside of the dispatcher thread (to prevent 
 	// race conditions)
-	if ( Thread.currentThread() != Toolkit.eventThread ) {
+	if ( !EventQueue.isDispatchThread()) {
 		e = WMEvent.getEvent( modalWindow, WMEvent.WM_DISPATCH_MODAL);
 		Toolkit.eventQueue.postEvent( e);
 		synchronized ( e ) {
