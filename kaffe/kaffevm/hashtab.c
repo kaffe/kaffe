@@ -56,7 +56,7 @@ hashInit(hashfunc_t hash, compfunc_t comp, int flags)
 	hashtab_t tab;
 
 	if ((tab = KMALLOC(sizeof(*tab))) == NULL) {
-		assert(0);
+		assert(!"hashInit out of memory"); /* XXX OutOfMemoryError? */
 	}
 	memset(tab, 0, sizeof(*tab));
 	tab->hash = hash;
@@ -229,7 +229,7 @@ hashFindSlot(hashtab_t tab, const void *ptr)
                         if (deletedIndex >= 0) {
                                 return(deletedIndex);
                         }
-			assert(0);	/* should never happen */
+			assert(!"hashFindSlot: no slot!");
 		}
 	}
 }
@@ -247,7 +247,7 @@ hashResize(hashtab_t tab)
 
 	/* Get a bigger list */
 	if ((newList = KMALLOC(newSize * sizeof(*newList))) == NULL) {
-		assert(0);	/* XXX OutOfMemoryError instead? */
+		assert(!"hashResize out of memory"); /* XXX OutOfMemoryError? */
 	}
 	memset(newList, 0, newSize * sizeof(*newList));
 
