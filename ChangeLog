@@ -2,6 +2,18 @@
 
         Resynced with GNU Classpath.
 
+	2005-01-25  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+        * java/text/SimpleDateFormat.java:
+        (parse): Use offset to set ZONE_OFFSET
+        rather than the DST_OFFSET, so that
+        GMT offset timezones change the right
+        one.
+
+2005-01-26  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2005-01-25  Michael Koch  <konqueror@gmx.de>
 
         * javax/swing/DefaultCellRenderer.java: Removed.

@@ -840,7 +840,7 @@ public class SimpleDateFormat extends DateFormat
 		// We need a special case for the timezone, because it
 		// uses a different data structure than the other cases.
 		is_numeric = false;
-		calendar_field = Calendar.DST_OFFSET;
+		calendar_field = Calendar.ZONE_OFFSET;
 		String[][] zoneStrings = formatData.getZoneStrings();
 		int zoneCount = zoneStrings.length;
 		int index = pos.getIndex();
@@ -868,8 +868,8 @@ public class SimpleDateFormat extends DateFormat
 			    found_zone = true;
 			    saw_timezone = true;
 			    TimeZone tz = TimeZone.getTimeZone (strings[0]);
-			    calendar.set (Calendar.ZONE_OFFSET, tz.getRawOffset ());
-			    offset = tz.getDSTSavings();
+			    calendar.set (Calendar.DST_OFFSET, tz.getDSTSavings());
+                            offset = tz.getRawOffset ();
 			    pos.setIndex(index + strings[k].length());
 			    break;
 			  }
