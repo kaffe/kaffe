@@ -14,9 +14,11 @@
 package kaffe.jar;
 
 import java.io.IOException;
+import java.util.StringTokenizer;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import kaffe.management.Classpath;
 
 public class ExecJar {
 
@@ -46,6 +48,19 @@ public static void main(String[] args)
 	if (mainClass == null) {
 		System.err.println("No ``Main-Class'' found in manifest");
 		System.exit(1);
+	}
+
+	// Add ourselves to the classpath
+	Classpath.add(jar.getName());
+
+	// Get "Class-Path" attribute
+	String classPath = manifest.getMainAttributes().getValue(
+					Attributes.Name.CLASS_PATH);
+	if (classPath != null) {
+	    StringTokenizer st = new StringTokenizer(classPath);
+	    while(st.hasMoreElements()) {
+		Classpath.add(st.nextToken());
+	    }
 	}
 
 	// Now call ExecJarName's main()
