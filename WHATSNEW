@@ -1,4 +1,34 @@
-What's New since Kaffe OpenVM 1.0.7
+What's New since Kaffe OpenVM 1.1.1
+------------------------------------------------------
+* New packages:
+  * javax.net
+  * javax.net.ssl
+* Lots of configuration/compile fixes, including: arm-linux, 
+  parisc-hpux, parisc-linux, sparc-solaris.
+* Improved RMI, JVMPI, java.text and NIO support.
+* Improved garbage collector and jit3 memory consumption.
+* Further merge with GNU Classpath: Collections, many networking,
+  IO and zip classes.
+* Fixes for several bugs in kjc.
+* Improved support for building without GNU make.
+* Lots of bug fixes, compiler warning fixes, and small
+  improvements.
+* Some successes: Tomcat4, eXist, JavaLayer, JOrbis.
+
+What's New in Kaffe OpenVM 1.1.1
+------------------------------------------------------
+* Much of the new bytecode verifier has been added (but not all of
+  it).  Soon, we will be able to safely run untrusted code!
+* Lots of configuration/compile fixes, including: NetBSD, OpenBSD,
+  Linux 2.0, Linux/S390, AmigaOS, OpenBSD/Sparc, Cygwin
+* Lots of class library fixes
+* Added JNI 1.2/1.4 features
+* The beginnings of JVMPI support
+* Some infrastructure for NIO support
+* Some successes: Eclipse (loads, doesn't completely work yet),
+  Jetty w/JSP, Java-Gnome, Qt AWT under QTopia, Snark, hsqldb
+
+What's New in Kaffe OpenVM 1.1.0
 ------------------------------------------------------
 * Port to x86-64 GNU/Linux
 
