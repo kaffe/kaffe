@@ -178,9 +178,17 @@ public static void setOut(PrintStream out) {
 
 native private static void setOut0(PrintStream out);
 
+public static String setProperty(String key, String value) {
+	checkPropertyAccess();
+	return (String)props.setProperty(key, value);
+}
+
 public static void setProperties(Properties prps) {
 	checkPropertyAccess();
-
+	if (prps == null) {
+		props.clear();
+		return;
+	}
 	props = prps;
 }
 
