@@ -211,20 +211,40 @@ execute_java_constructor(const char* cname, Hjava_lang_Class* cc, const char* si
 }
 
 /* This is defined in the alpha port.  It causes all integer arguments
-   to be promoted to jlong, and all jfloats to be promoted to jdouble.
-   Note that, when a jfloat is promoted, its calltype will be marked
-   as 'D'.  It implies NO_HOLES, unless explicitly defined otherwise.  */
+   to be promoted to jlong, and all jfloats to be promoted to jdouble,
+   unless explicitly overridden.  It implies NO_HOLES, unless
+   explicitly defined otherwise.  */
 #if PROMOTE_TO_64bits
-# define PROM_i j
-# define PROM_f d
+# ifndef PROMOTE_jint2jlong
+#  define PROMOTE_jint2jlong 1
+# endif
+# ifndef PROMOTE_jfloat2jdouble
+#  define PROMOTE_jfloat2jdouble 1
+# endif
 /* NO_HOLES causes all types to occupy only one slot in callargs, but
    not affecting their callsizes, that can still be used to
    distinguish among types.  */
 # ifndef NO_HOLES
 #  define NO_HOLES 1
 # endif
-#else /* ! PROMOTE_TO_64bits */
+#endif
+
+/* If PROMOTE_jint2jlong is enabled, all integer values are to be
+   passed as jlongs.  It is only set by PROMOTE_TO_64bits.  */
+#if PROMOTE_jint2jlong
+# define PROM_i j
+#else
 # define PROM_i i
+#endif
+
+/* If PROMOTE_jfloat2jdouble is enabled, jfloats are to be passed as
+   jdoubles.  Note that, when a jfloat is promoted, its calltype will
+   be marked as 'D'.  No known port uses this.  In fact, alpha must
+   explicitly set it to 0, to prevent PROMOTE_TO_64bits from enabling
+   it.  */
+#if PROMOTE_jfloat2jdouble
+# define PROM_f d
+#else
 # define PROM_f f
 #endif
 
@@ -341,7 +361,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 		case 'F':
 			call.callsize[i] = 1;
 			in[i].PROM_f = args[i].f;
-#if PROMOTE_TO_64bits
+#if PROMOTE_jfloat2jdouble
 			call.calltype[i] = 'D';
 #endif
 			break;

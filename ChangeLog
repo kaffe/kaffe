@@ -1,3 +1,19 @@
+1999-04-15  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* config/alpha/sysdepCallMethod.h (sysdepCallMethod):
+	Unfortunately, floats can't be promoted to doubles, so we have to
+	explicitly test each argument whether it must be loaded as double, 
+	float or long.  So, define PROMOTE_jfloat2jdouble to 0.
+	* kaffe/kaffevm/support.c: Reintroduce PROMOTE_jfloat2jdouble and
+	PROMOTE_jint2jlong, for finer-grained control on promotion.  We
+	could have done with just PROMOTE_jint2jlong, but so what?
+	* config/alpha/osf/config.frag: We need -mieee in CFLAGS for
+	DoublePrint and DoubleComp to pass.
+	* config/alpha/linux/config.frag: Likewise.
+	* config/alpha/osf/md.c (init_md): IEEE_TRAP_ENABLE_INV breaks
+	them too.  Now we pass all tests!
+	* config/alpha/linux/md.c (init_md): Likewise.
+	
 Thu Apr 15 15:00:14 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/clib/native/ObjectStreamClassImpl.c: don't include

@@ -30,6 +30,7 @@
 void
 init_md(void)
 {
+#if 1 /* This doesn't seem to make any difference, but let's keep it.  */
 	/* Set the bits in the hw fpcr for cpu's that implement
 	   all the bits.  */
 	__asm__ __volatile__(
@@ -38,10 +39,13 @@ init_md(void)
 		"excb"
 		: : "f"(FPCR_INED | FPCR_UNFD | FPCR_DYN_NORMAL
 			| FPCR_OVFD | FPCR_DZED));
+#endif
 
+#if 0 /* This breaks DoublePrint and DoubleComp tests.  */
 	/* Set the software emulation bits in the kernel for
 	   those that don't.  */
 	ieee_set_fp_control(IEEE_TRAP_ENABLE_INV);
+#endif
 }
 
 

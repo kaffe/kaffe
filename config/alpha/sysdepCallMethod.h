@@ -36,6 +36,10 @@
 # define PROMOTE_TO_64bits 1
 #endif
 
+#ifndef PROMOTE_jfloat2jdouble
+# define PROMOTE_jfloat2jdouble 0
+#endif
+
   /* ARG_TYPE is the type of a register used for passing arguments.  */
 #define ARG_TYPE long
   /* ARG_TYPES is a parameter list declaration for a function type
@@ -52,7 +56,9 @@
   /* ARG_REG a case label and a statement that arranges for one
      argument to be passed. */
 #define ARG_REG(n) \
-case n+1: (calltype[n]=='D') ? (f##n = callargs[n].d) : (a##n = callargs[n].j)
+case n+1: (calltype[n]==D) ? (d##n = callargs[n].d) \
+        : (calltype[n]==F) ? (f##n = callargs[n].f) \
+        : (a##n = callargs[n].j)
 
 /*
  * Make a call to a native or Java (JIT) method.
@@ -71,6 +77,7 @@ static inline void sysdepCallMethod(callMethodInfo *call) {
   void *func = call->function;
   jvalue *callargs;
   char *calltype;
+  char D = 'D', F = 'F';
 #ifdef SYSDEP_ONE_VERSION
   ARG_TYPE extraargs[((args>ARG_COUNT)?(args-ARG_COUNT-ARG_DISPLACEMENT):0)];
 #endif
@@ -95,6 +102,7 @@ longSysdepCallMethod(callMethodInfo *call,
 		     void *func,
 		     jvalue *callargs,
 		     char *calltype) {
+  char D = 'D', F = 'F';
   ARG_TYPE extraargs[args-ARG_COUNT-ARG_DISPLACEMENT];
 
   goto manyargs;
@@ -108,12 +116,19 @@ longSysdepCallMethod(callMethodInfo *call,
     register ARG_TYPE a4 asm("$20");
     register ARG_TYPE a5 asm("$21");
 
-    register double f0 asm("$f16");
-    register double f1 asm("$f17");
-    register double f2 asm("$f18");
-    register double f3 asm("$f19");
-    register double f4 asm("$f20");
-    register double f5 asm("$f21");
+    register double d0 asm("$f16");
+    register double d1 asm("$f17");
+    register double d2 asm("$f18");
+    register double d3 asm("$f19");
+    register double d4 asm("$f20");
+    register double d5 asm("$f21");
+
+    register float f0 asm("$f16");
+    register float f1 asm("$f17");
+    register float f2 asm("$f18");
+    register float f3 asm("$f19");
+    register float f4 asm("$f20");
+    register float f5 asm("$f21");
 
   default:
 #if ! defined(LONG_SYSDEP) && ! defined(SYSDEP_ONE_VERSION)
@@ -138,6 +153,7 @@ longSysdepCallMethod(callMethodInfo *call,
 #endif
     /* Ensure that the assignments to f* registers won't be optimized away. */
     asm ("" :: "f" (f0), "f" (f1), "f" (f2), "f" (f3), "f" (f4), "f" (f5) );
+    asm ("" :: "f" (d0), "f" (d1), "f" (d2), "f" (d3), "f" (d4), "f" (d5) );
 
     switch(call->retsize) {
     case 0:
