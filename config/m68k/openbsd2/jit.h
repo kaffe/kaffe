@@ -71,33 +71,6 @@ typedef struct _exceptionFrame {
 		: "d0", "cc", "memory")
 
 /**/
-/* Native function invocation. */
-/**/
-#define	CALL_KAFFE_FUNCTION_VARARGS(meth, obj, nargs, argptr, retval)	\
-	__asm__ __volatile__(						\
-		"movem%.l %/d2-%/d7/%/a1-%/a5,%-\n\t"			\
-		"fmovem %/fp0-%/fp7,%-\n\t"				\
-		"move%.l %3,%/d0\n\t"					\
-		"beq 2f\n\t"						\
-		"lea %4@(%/d0:L:4),%/a0\n\t"				\
-		"subq%.l %#1,%/d0\n"					\
-	"1:	move%.l %/a0@-,%-\n\t"					\
-		"dbra %/d0, 1b\n"					\
-	"2:	move%.l %2,%-\n\t"					\
-		"jsr %1\n\t"						\
-		"move%.l %5,%/d1\n\t"					\
-		"addl %/d1,%/sp\n\t"					\
-		"move%.l %/d0,%0\n\t"					\
-		"fmovem %+,%/fp0-%/fp7\n\t"				\
-		"movem%.l %+,%/d2-%/d7/%/a1-%/a5"			\
-		: "=m"(retval)						\
-		: "m"(*meth->ncode), "g"(obj), "g"(nargs), "a"(argptr),	\
-		  "m"(4*(nargs+1))					\
-		: "cc", "memory", "a0","d0","d1")
-		
-
-
-/**/
 /* Method dispatch.  */
 /**/
 
