@@ -1,3 +1,8 @@
+2004-07-09  Jim Huang  <jserv@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/signal.c
+	(registerSignalHandler): Add missing declaration of oldact.
+
 2004-07-08  Jim Huang  <jserv@kaffe.org>
 
 	* po/zh_TW.po: Updated and fix minor typo

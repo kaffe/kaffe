@@ -138,7 +138,7 @@ static void *
 registerSignalHandler(int sig, void* handler, int isAsync)
 {
 #if defined(HAVE_SIGACTION)
-	struct sigaction newact;
+	struct sigaction newact, oldact;
 
 	newact.sa_handler = (SIG_T)handler;
 	sigemptyset(&newact.sa_mask);
