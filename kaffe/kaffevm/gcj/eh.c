@@ -17,6 +17,8 @@
 
 /* Begin of kaffe-specific configuration header */
 #include "config.h"
+#if defined(HAVE_GCJ_SUPPORT)
+
 #include "gtypes.h"
 #include "md.h"
 #include "gansidecl.h"
@@ -1011,3 +1013,5 @@ label:
 }
 #endif /* DWARF2_UNWIND_INFO */
 
+/*----------------------------------------------------------------------*/
+#endif /* defined(HAVE_GCJ_SUPPORT) */
