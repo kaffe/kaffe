@@ -110,9 +110,6 @@ struct _strconst {
 	char			data[1]; /* In Utf8 format, with final '\0'. */
 };
 
-typedef char*	utf8str;	/* UTF8 strings can be represented as \0
-				   terminated char* */
-
 #define	SHIFT_jchar		1
 #define	SHIFT_jbyte		0
 #define	SHIFT_jshort		1
