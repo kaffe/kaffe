@@ -12,6 +12,7 @@ armv4l)		Khost_cpu=arm ;;
 mipsel)		Khost_cpu=mips ;;
 alpha*)		Khost_cpu=alpha ;;
 sparc*)		Khost_cpu=sparc ;;
+powerpc*)	Khost_cpu=powerpc ;;
 
 esac
 
