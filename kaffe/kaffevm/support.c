@@ -1,0 +1,635 @@
+/*
+ * support.c
+ * Native language support (excluding string routines).
+ *
+ * Copyright (c) 1996, 1997
+ *	Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution 
+ * of this file. 
+ */
+
+#include "config.h"
+#include "config-std.h"
+#include "config-mem.h"
+#include <stdarg.h>
+#include "classMethod.h"
+#include "jtypes.h"
+#include "access.h"
+#include "object.h"
+#include "constants.h"
+#include "baseClasses.h"
+#include "lookup.h"
+#include "errors.h"
+#include "exception.h"
+#include "slots.h"
+#include "machine.h"
+#include "support.h"
+#include "md.h"
+#include "itypes.h"
+#include "external.h"
+#include "thread.h"
+#include "locks.h"
+
+#if !defined(HAVE_GETTIMEOFDAY)
+#include <sys/timeb.h>
+#endif
+
+#define	MAXEXCEPTIONLEN		200
+#define	ERROR_SIGNATURE		"(Ljava/lang/String;)V"
+
+/* Anchor point for user defined properties */
+userProperty* userProperties;
+
+#if defined(NO_SHARED_LIBRARIES)
+/* Internal native functions */
+static nativeFunction null_funcs[1];
+nativeFunction* native_funcs = null_funcs;
+#endif
+
+
+/*
+ * Call a Java method from native code.
+ */
+jvalue
+do_execute_java_method(void* obj, char* method_name, char* signature, Method* mb, int isStaticCall, ...)
+{
+	char* sig;
+	int args;
+	va_list argptr;
+	jvalue retval;
+
+	if (mb == 0) {
+		if (isStaticCall) {
+			mb = lookupClassMethod((Hjava_lang_Class*)obj, method_name, signature);
+		}
+		else {
+			mb = lookupObjectMethod((Hjava_lang_Object*)obj, method_name, signature);
+		}
+	}
+	/* No method or wrong type - throw exception */
+	if (mb == 0) {
+		throwException(NoSuchMethodError(method_name));
+	}
+	else if (isStaticCall && (mb->accflags & ACC_STATIC) == 0) {
+		throwException(NoSuchMethodError(method_name));
+	}
+	else if (!isStaticCall && (mb->accflags & ACC_STATIC) != 0) {
+		throwException(NoSuchMethodError(method_name));
+	}
+
+	va_start(argptr, isStaticCall);
+	callMethodV(mb, METHOD_INDIRECTMETHOD(mb), obj, argptr, &retval);
+	va_end(argptr);
+
+	return (retval);
+}
+
+/*
+ * Call a Java static method on a class from native code.
+ */
+jvalue
+do_execute_java_class_method(char* cname, char* method_name, char* signature, ...)
+{
+	char* sig;
+	int args;
+	va_list argptr;
+	Method* mb;
+	jvalue retval;
+	char cnname[CLASSMAXSIG];	/* Unchecked buffer - FIXME! */
+
+	/* Convert "." to "/" */
+	classname2pathname(cname, cnname);
+
+	mb = lookupClassMethod(lookupClass(cnname), method_name, signature);
+
+	/* Method must be static to invoke it here */
+	if (mb == 0 || (mb->accflags & ACC_STATIC) == 0) {
+		throwException(NoSuchMethodError(method_name));
+	}
+
+	/* Make the call */
+	va_start(argptr, signature);
+	callMethodV(mb, METHOD_INDIRECTMETHOD(mb), 0, argptr, &retval);
+	va_end(argptr);
+
+	return (retval);
+}
+
+/*
+ * Allocate an object and execute the constructor.
+ */
+Hjava_lang_Object*
+execute_java_constructor(char* cname, Hjava_lang_Class* cc, char* signature, ...)
+{
+	int args;
+	Hjava_lang_Object* obj;
+	char* sig;
+	va_list argptr;
+	Method* mb;
+	char buf[MAXEXCEPTIONLEN];
+	jvalue retval;
+
+	if (cc == 0) {
+		/* Convert "." to "/" */
+		classname2pathname(cname, buf);
+
+		cc = lookupClass (buf);
+		assert(cc != 0);
+	}
+
+	/* We cannot construct interfaces or abstract classes */
+	if (CLASS_IS_INTERFACE(cc) || CLASS_IS_ABSTRACT(cc)) {
+		throwException(InstantiationException(cc->name->data));
+	}
+
+	if (cc->state != CSTATE_OK) {
+		processClass(cc, CSTATE_OK);
+	}
+
+	mb = lookupClassMethod(cc, constructor_name->data, signature);
+	if (mb == 0) {
+		throwException(NoSuchMethodError(constructor_name->data));
+	}
+
+	obj = newObject(cc);
+	assert(obj != 0);
+
+	/* Make the call */
+	va_start(argptr, signature);
+	callMethodV(mb, METHOD_INDIRECTMETHOD(mb), obj, argptr, &retval);
+	va_end(argptr);
+
+	return (obj);
+}
+
+/*
+ * Generic routine to call a native or Java method (array style).
+ */
+void
+callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
+{
+	char* sig;
+	int i;
+	int s;
+	callMethodInfo call;
+	jvalue in[MAXMARGS];
+	jvalue tmp;
+	Hjava_lang_Object* sync;
+
+	if (ret == 0) {
+		ret = &tmp;
+	}
+	sig = meth->signature->data;
+	i = 0;
+	s = 0;
+
+
+	/* If this method isn't static, we must insert the object as
+	 * the first argument.  To do this we copy down the argument
+	 * array and stick the object at the beginning.
+ 	 */
+	if ((meth->accflags & ACC_STATIC) == 0) {
+		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+		s += call.callsize[i];
+		call.calltype[i] = 'L';
+		in[i].l = obj;
+		if (args != 0) {
+			memcpy(&in[i+1], args, sizeof(jvalue) * (MAXMARGS-i-1));
+		}
+		args = in;
+		i++;
+	}
+
+	sig++;	/* Skip leading '(' */
+	for (; *sig != ')'; i++, sig++) {
+		call.calltype[i] = *sig;
+		switch (*sig) {
+		case 'I':
+		case 'Z':
+		case 'S':
+		case 'B':
+		case 'C':
+		case 'F':
+			call.callsize[i] = 1;
+			break;
+
+		case 'D':
+		case 'J':
+			call.callsize[i] = 2;
+			i++;
+			call.callsize[i] = 0;
+			break;
+
+		case '[':
+			call.calltype[i] = 'L';	/* Looks like an object */
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+			while (*sig == '[') {
+				sig++;
+			}
+			if (*sig == 'L') {
+				while (*sig != ';') {
+					sig++;
+				}
+			}
+			break;
+		case 'L':
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+			while (*sig != ';') {
+				sig++;
+			}
+			break;
+		default:
+			ABORT();
+		}
+		s += call.callsize[i];
+	}
+	sig++;	/* Skip trailing ')' */
+
+	/* Return info */
+	call.rettype = *sig;
+	if (*sig == 'L' || *sig == '[') {
+		call.retsize = PTR_TYPE_SIZE / SIZEOF_INT;
+	}
+	else if (*sig == 'V') {
+		call.retsize = 0;
+	}
+	else if (*sig == 'D' || *sig == 'J') {
+		call.retsize = 2;
+	}
+	else {
+		call.retsize = 1;
+	}
+
+	/* Call info and arguments */
+	call.function = func;
+	call.nrargs = i;
+	call.argsize = s;
+	call.args = args;
+	call.ret = ret;
+
+#if defined(TRANSLATOR)
+	/* Make the call - system dependent */
+	sysdepCallMethod(&call);
+#endif
+#if defined(INTERPRETER)
+	meth = (Method*)call.function;
+	if ((meth->accflags & ACC_NATIVE) == 0) {
+		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, (*Kaffe_ThreadInterface.currentJava)());
+	}
+	else {
+                if (METHOD_NATIVECODE(meth) == 0) {
+                        native(meth);
+                }
+		call.function = METHOD_NATIVECODE(meth);
+
+		if (meth->accflags & ACC_SYNCHRONISED) {
+			if (meth->accflags & ACC_STATIC) {
+				sync = &meth->class->head;
+			}
+			else {
+				sync = (Hjava_lang_Object*)args[0].l;
+			}
+			lockMutex(sync);
+		}
+		else {
+			sync = 0;
+		}
+
+		/* Make the call - system dependent */
+		sysdepCallMethod(&call);
+
+		if (sync != 0) {
+			unlockMutex(sync);
+		}
+	}
+#endif
+}
+
+/*
+ * Generic routine to call a native or Java method (varargs style).
+ */
+void
+callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
+{
+	char* sig;
+	int i;
+	int s;
+	callMethodInfo call;
+	jvalue in[MAXMARGS];
+	jvalue tmp;
+	Hjava_lang_Object* sync;
+
+	if (ret == 0) {
+		ret = &tmp;
+	}
+	sig = meth->signature->data;
+	i = 0;
+	s = 0;
+
+	/* If this method isn't static, we must insert the object as
+	 * the first argument and get the function code.
+ 	 */
+	if ((meth->accflags & ACC_STATIC) == 0) {
+		call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+		s += call.callsize[i];
+		call.calltype[i] = 'L';
+		in[i].l = obj;
+		i++;
+	}
+
+	sig++;	/* Skip leading '(' */
+	for (; *sig != ')'; i++, sig++) {
+		call.calltype[i] = *sig;
+		switch (*sig) {
+		case 'I':
+			call.callsize[i] = 1;
+			in[i].i = va_arg(args, jint);
+			break;
+		case 'Z':
+			call.callsize[i] = 1;
+			in[i].z = va_arg(args, jboolean);
+			break;
+		case 'S':
+			call.callsize[i] = 1;
+			in[i].s = va_arg(args, jshort);
+			break;
+		case 'B':
+			call.callsize[i] = 1;
+			in[i].b = va_arg(args, jbyte);
+			break;
+		case 'C':
+			call.callsize[i] = 1;
+			in[i].c = va_arg(args, jchar);
+			break;
+		case 'F':
+			call.callsize[i] = 1;
+			in[i].f = va_arg(args, jfloat);
+			break;
+		case 'D':
+			call.callsize[i] = 2;
+			in[i].d = va_arg(args, jdouble);
+			break;
+		case 'J':
+			call.callsize[i] = 2;
+			in[i].j = va_arg(args, jlong);
+			break;
+		case '[':
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+			call.calltype[i] = 'L';	/* Looks like an object */
+			in[i].l = va_arg(args, jref);
+			while (*sig == '[') {
+				sig++;
+			}
+			if (*sig == 'L') {
+				while (*sig != ';') {
+					sig++;
+				}
+			}
+			break;
+		case 'L':
+			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+			in[i].l = va_arg(args, jref);
+			while (*sig != ';') {
+				sig++;
+			}
+			break;
+		default:
+			ABORT();
+		}
+		s += call.callsize[i];
+	}
+	sig++;	/* Skip trailing ')' */
+
+	/* Return info */
+	call.rettype = *sig;
+	if (*sig == 'L' || *sig == '[') {
+		call.retsize = PTR_TYPE_SIZE / SIZEOF_INT;
+	}
+	else if (*sig == 'V') {
+		call.retsize = 0;
+	}
+	else if (*sig == 'D' || *sig == 'J') {
+		call.retsize = 2;
+	}
+	else {
+		call.retsize = 1;
+	}
+
+	/* Call info and arguments */
+	call.function = func;
+	call.nrargs = i;
+	call.argsize = s;
+	call.args = in;
+	call.ret = ret;
+
+#if defined(TRANSLATOR)
+	/* Make the call - system dependent */
+	sysdepCallMethod(&call);
+#endif
+#if defined(INTERPRETER)
+	meth = (Method*)call.function;
+	if ((meth->accflags & ACC_NATIVE) == 0) {
+		virtualMachine(meth, (slots*)call.args, (slots*)call.ret, (*Kaffe_ThreadInterface.currentJava)());
+	}
+	else {
+                if (METHOD_NATIVECODE(meth) == 0) {
+                        native(meth);
+                }
+		call.function = METHOD_NATIVECODE(meth);
+
+		if (meth->accflags & ACC_SYNCHRONISED) {
+			if (meth->accflags & ACC_STATIC) {
+				sync = &meth->class->head;
+			}
+			else {
+				sync = (Hjava_lang_Object*)call.args[0].l;
+			}
+			lockMutex(sync);
+		}
+		else {
+			sync = 0;
+		}
+
+		/* Make the call - system dependent */
+		sysdepCallMethod(&call);
+
+		if (sync != 0) {
+			unlockMutex(sync);
+		}
+	}
+#endif
+}
+
+/*
+ * Lookup a method given class, name and signature.
+ */
+Method*
+lookupClassMethod(Hjava_lang_Class* cls, char* name, char* sig)
+{
+	return (findMethod(cls, makeUtf8Const(name,-1), makeUtf8Const(sig,-1)));
+}
+
+/*
+ * Lookup a method given object, name and signature.
+ */
+Method*
+lookupObjectMethod(Hjava_lang_Object* obj, char* name, char* sig)
+{
+	return (lookupClassMethod(OBJECT_CLASS(obj), name, sig));
+}
+
+/*
+ * Signal an error by creating the object and throwing the exception.
+ */
+void
+SignalError(char* cname, char* str)
+{
+	Hjava_lang_Object* obj;
+
+	obj = execute_java_constructor(cname, 0, ERROR_SIGNATURE, makeJavaString(str, strlen(str)));
+	throwException(obj);
+}
+
+/*
+ * Convert a class name to a path name.
+ */
+void
+classname2pathname(char* from, char* to)
+{
+	int i;
+
+	/* Convert any '.' in name to '/' */
+	for (i = 0; from[i] != 0; i++) {
+		if (from[i] == '.') {
+			to[i] = '/';
+		}
+		else {
+			to[i] = from[i];
+		}
+	}
+	to[i] = 0;
+}
+
+/*
+ * Return current time in milliseconds.
+ */
+jlong
+currentTime(void)
+{
+	jlong tme;
+
+#if defined(HAVE_GETTIMEOFDAY)
+	struct timeval tm;
+	gettimeofday(&tm, 0);
+	tme = (((jlong)tm.tv_sec * (jlong)1000) + ((jlong)tm.tv_usec / (jlong)1000));
+#elif defined(HAVE_FTIME)
+	struct timeb tm;
+	ftime(&tm);
+	tme = (((jlong)tm.time * (jlong)1000) + (jlong)tm.millitm);
+#elif defined(HAVE_TIME)
+	tme = (jlong)1000 * (jlong)time(0);
+#else
+	tme = 0;
+#endif
+	return (tme);
+}
+
+/*
+ * Set a property to a value.
+ */
+void
+setProperty(void* properties, char* key, char* value)
+{
+	Hjava_lang_String* jkey;
+	Hjava_lang_String* jvalue;
+
+	jkey = makeJavaString(key, strlen(key));
+	jvalue = makeJavaString(value, strlen(value));
+
+	do_execute_java_method(properties, "put",
+		"(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+		0, false, jkey, jvalue);
+}
+
+/*
+ * Allocate a new object of the given class name.
+ */
+Hjava_lang_Object*
+AllocObject(char* classname)
+{
+	return (newObject(lookupClass(classname)));
+}
+
+/*
+ * Allocate a new array of a given size and type.
+ */
+Hjava_lang_Object*
+AllocArray(int len, int type)
+{
+	return (newArray(TYPE_CLASS(type), len));
+}
+
+/*
+ * Allocate a new array of the given size and class name.
+ */
+Hjava_lang_Object*
+AllocObjectArray(int sz, char* classname)
+{
+	if (sz < 0) {
+		throwException(NegativeArraySizeException);
+	}
+        return (newArray(getClassFromSignature(classname, NULL), sz));
+
+}
+
+/*
+ * Used to generate exception for unimplemented features.
+ */
+void
+unimp(char* mess)
+{
+	SignalError("java.lang.InternalError", mess);
+}
+
+/*
+ * Print messages.
+ */
+void
+kprintf(FILE* out, const char* mess, ...)
+{
+	va_list argptr;
+
+	va_start(argptr, mess);
+	vfprintf(out, mess, argptr);
+	va_end(argptr);
+}
+
+#if defined(NO_SHARED_LIBRARIES)
+/*
+ * Register an user function statically linked in the binary.
+ */
+void
+addNativeMethod(char* name, void* func)
+{
+	static int funcs_nr = 0;
+	static int funcs_max = 0;
+
+	/* If we run out of space, reallocate */
+	if (funcs_nr + 1 >= funcs_max) {
+		funcs_max += NATIVE_FUNC_INCREMENT;
+		if (native_funcs != null_funcs) {
+			native_funcs = gc_realloc_fixed(native_funcs, funcs_max * sizeof(nativeFunction));
+		}
+		else {
+			native_funcs = gc_malloc_fixed(NATIVE_FUNC_INCREMENT * sizeof(nativeFunction));
+		}
+	}
+	native_funcs[funcs_nr].name = gc_malloc_fixed(strlen(name) + 1);
+	strcpy(native_funcs[funcs_nr].name, name);
+	native_funcs[funcs_nr].func = func;
+	funcs_nr++;
+	native_funcs[funcs_nr].name = 0;
+	native_funcs[funcs_nr].func = 0;
+}
+#endif

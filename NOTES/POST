@@ -1,0 +1,110 @@
+KAFFE v0.10.0 - A JIT and interpreting virtual machine to run Java(tm)* code
+============================================================================
+
+Kaffe is a virtual machine design to execute Java bytecode.
+This machine can be configured in two modes.  In one mode it operates as
+a pure bytecode interpreter (not unlike Javasoft's machine); in the second
+mode if performs "just-in-time" code conversion from the abstract code to
+the host machine's native code.  This will ultimately allow execution of
+Java code at the same speed as standard compiled code but while maintaining
+the advantages and flexibility of code independence.
+
+New Features
+------------
+
+This version of Kaffe has the following new features:
+
+ * Serialization support
+ * Reflection support
+ * RMI support
+ * Support for ZIP functions.
+ * Support for BigInteger functions.
+ * Improvements and additions to networking.
+ * Deprecation of old Kaffe stub functions from kaffeh.
+ * Deprecation of old assembly code thread system (now uses longjmp).
+ * Overhalled the machine specific configuration system.
+ * Addition of thread interface to aid porting.
+ * Addition of GC interface to allow use of different GC systems.
+ * Addition of system call interface (not yet complete) to aid porting.
+ * Better handling of JAR files (now handles compressed JARs).
+
+Platforms
+---------
+
+Kaffe will run on the following platforms ('J' indicates 'just-in-time'
+support, 'I' indicates 'interpreter' support):
+
+  ========================================================================
+  uProc     | Mode |    Systems
+  ========================================================================
+  i386      | J+I  |    FreeBSD 2.x +   Unixware        NetBSD 1.x
+            |      |    Solaris 2.x     BSDI 2.x        Linux 2.0.0 +
+            |      |    SCO 3.2v5       NeXTStep 3.x    Windows '95
+            |      |    DG/UX           OpenBSD 2.x     OpenStep 4.x
+            |      |    QNX 4.x
+  ------------------------------------------------------------------------
+  Sparc     | J+I  |    SunOS 4.x       Solaris 2.x     NetBSD 1.x
+            |      |    NeXTStep 3.x    Linux           Fujitsu UXP/DS
+            |      |    BSDI 3.x
+  ------------------------------------------------------------------------
+  Alpha     | J+I  |    Linux           OSF/1 		NetBDS 1.x
+  ------------------------------------------------------------------------
+  M68K      | J+I  |    AmigaOS         NeXTStep 3.x    NetBSD 1.x
+            |      |    SunOS 4.x       Linux           AUX
+            |      |    OpenBSD 2.x
+  ------------------------------------------------------------------------
+  PowerPC   | I    |    MkLinux         MachTen 4.0.3   AIX
+  ------------------------------------------------------------------------
+  MIPS      | I    |    IRIX 5 & 6      NetBSD 1.x
+  ------------------------------------------------------------------------
+  PARISC    | I    |    HPUX 10.x
+  ------------------------------------------------------------------------  
+  StrongARM | I    |    RiscIX          (work-in-progress)
+  ========================================================================
+
+I encourage people to make ports to other platforms and to feed them back
+to me.  I would recommend that initial ports concentrate on the interpreter.
+These can then be used as the basis for developing JIT versions for these
+systems.
+
+The sources for Kaffe can be found at the following location:
+
+Europe:
+        ftp://ftp.kaffe.org/pub/kaffe/
+        ftp://ftp.sarc.city.ac.uk/pub/kaffe/
+        ftp://ftp.doc.ic.ac.uk/packages/kaffe/
+        ftp://ftp.lysator.liu.se/pub/languages/java/kaffe/
+        ftp://sunsite.mff.cuni.cz/Languages/Java/kaffe/
+        ftp://sunsite.auc.dk/pub/languages/java/kaffe/
+        ftp://alterego.stack.urc.tue.nl/pub/kaffe/
+	ftp://ftp.fh-wolfenbuettel.de/pub/lang/java/kaffe/
+	ftp://ftp.uni-erlangen.de/pub/source/Java/kaffe/
+	ftp://gd.tuwien.ac.at/languages/java/kaffe/
+USA:
+        ftp://ftp.transvirtual.com/pub/kaffe/
+        ftp://ftp.cs.columbia.edu/pub/kaffe/
+Japan:
+        ftp://ftp.webcity.co.jp/pub/andoh/java/kaffe/
+Others:
+        ftp://ftp.unicamp.br/pub/languages/java/kaffe/
+
+
+What you need
+-------------
+
+For a Kaffe system you need the following parts:
+
+ kaffe-0.10.0.tgz			Virtual machine and all bits
+					provided by transvirtual.com
+
+ Please note that you *must* get the Javasoft classes.zip file from them.
+
+Uncompress and untar these archives into the same directory, configure,
+make and install.
+
+Enjoy.
+
+Tim Wilkinson
+<tim@kaffe.org>
+----
+* Java is a registered trademark of Sun Microsystems, Inc.

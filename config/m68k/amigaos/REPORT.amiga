@@ -1,0 +1,200 @@
+KAFFE                                                                REPORT
+===========================================================================
+Written by Tim Wilkinson <tim@tjwassoc.demon.co.uk>, 1996.
+Ported to AmigaOS by Matthias Hopf <mshopf@informatik.uni-erlangen.de>
+
+
+When you have any problems running kaffe or I would like to get information
+about your kaffe configuration, please send this formular to me by private
+email. Please read the file COMMONPROBLEMS.amiga before, too.
+
+
+Please fill in as much information as possible. Fill in each answer one
+line below the according question.
+
+Strings specified in quotes (e.g. 'echo yes') are commands to be executed.
+Please add their output as the answer to the question. Examples of good
+answers are given in brackets.
+
+Please delete all lines of the formular which do not begin with ":" or are
+part of your answer before sending the mail to me. If you are not sure
+which lines to delete, skip this step :)
+
+If you have a snoopdos logfile or anything else that could help debugging,
+please add it at the end of the form.
+
+Thanks
+
+Matthias Hopf
+<mshopf@informatik.uni-erlangen.de>
+
+----
+* Java and Javasoft are registered trademark of Sun Microsystems, Inc.
+
+
+==================================> CUT <==================================
+
+:VERSION:
+- What is the kaffe version you are using?                 [ 0.5p4, 0.5.5 ]
+
+
+
+:BINARYFROM:
+- Where did you get the binary from or did you compile the source yourself?
+-                                      [ ftp.ninemoons.com, self-compiled ]
+
+
+
+:GGVERSION:
+- When you compiled kaffe yourself, which GG snapshot did you use?
+-                                                                [ 961012 ]
+
+
+
+:SOURCEFROM:
+- Where did you get the source files from (specify the path, when
+- possible)?           [ ftp.ninemoons.com/gg/current/kaffe-0.5p4-src.tgz ]
+
+
+
+:IXEMULVERSION:
+- 'version ixemul.library full'          [ ixemul.library 45.0 (05.10.96) ]
+
+
+- 'version ixnet.library full'            [ ixnet.library 45.0 (05.10.96) ]
+
+
+
+:OSVERSION:
+- 'version'                            [ Kickstart 40.68, Workbench 40.42 ]
+
+
+
+:CPU:
+- 'cpu'     [ System: 68030 68882 (INST: Cache Burst) (DATA: Cache Burst) ]
+
+
+
+:SUNCLASSES:
+- Where did you get Sun's classes.zip file from (specify the path, when
+- possible)?           [ ftp.ninemoons.com/gg/current/kaffe-0.5p4-sun.tgz ]
+
+
+- 'list classes.zip'    (in the according directory)
+-         [ classes.zip              1475175 ---arw-d 27-Jun-96  06:54:53 ]
+
+
+
+:IXPREFS:
+- 'ixprefs -R'               (capital 'R'!)
+-                            [ Accept AmigaOS wildcard notation,
+-                              Case insensitive UNIX pattern matching, ...]
+
+
+
+:CLASSPATH:
+- 'echo "$CLASSPATH"'                      [ .;GG:share/kaffe/classes.zip ]
+
+
+
+:KAFFEHOME:
+- 'echo "$KAFFEHOME"'                                    [ GG:share/kaffe ]
+
+
+
+:TZ:
+- 'echo "$TZ"'                                      [ europe/berlin, MET-1]
+
+
+
+:STACK:
+- 'stack'                                                         [ 40000 ]
+
+
+
+:CLASSHELLOWORLDAPP:
+- 'kaffe HelloWorldApp'        (in the test/ directory)     [ Hello World ]
+
+
+
+:CLASSJAVAC:
+- 'kaffe sun.tools.javac.Main DateTest.java'              (in test/general)
+-                                                               [no output]
+
+
+
+:CLASSDATETEST:
+- 'kaffe DateTest'              (in test/general)
+-                               [ Today is Sun Oct 27 17:43:06  1996, ... ]
+
+
+
+:CLASST16:
+- (only when test CLASSJAVAC did not fail)
+- 'kaffe sun.tools.javac.Main T16.java'                   (in test/threads)
+- 'kaffe T16'                (interrupt after several seconds with Ctrl-C.)
+-                                                     [ 0 1 2 3 4 5 6 ... ]
+
+
+
+:BUGS:
+- If you found any additional bugs, please specify here.
+
+
+:MISC:
+- Anything that comes to your mind and does not fit elsewhere :)
+
+
+::
+------------------------------------------------------------------------
+- Please fill out the following informations only when you have problems
+- when running kaffe or when I asked you to specify the according
+- information. You may cut the form here otherwise.
+------------------------------------------------------------------------
+
+
+:PROBLEM:
+- Please specify as much information as possible about your problem.
+- Does the machine crash, what does it do before that, which guru?
+
+
+
+:BADCLASSES:
+- Which classes do not work (exept noted in COMMONPROBLEMS.amiga/BUGS)?
+
+
+
+:LISTENV:
+- 'list env:'                                       [ rather long listing ]
+
+
+
+:SET:
+- 'set'                                             [ rather long listing ]
+
+
+
+:ENV:
+- 'env'        (if available from GG:bin)           [ rather long listing ]
+
+
+
+:SNOOPDOS:
+- When you have any SnoopDos log handy, please add it below.
+
+
+
+:ENFORCER:
+- When you noticed any Enforcer hits, please add (some of them) below.
+
+
+
+:MUNGWALL:
+- When you noticed any Mungwall hits, please add (some of them) below.
+
+
+
+- That's it folks :)
+
+- Matthias Hopf
+- <mshopf@informatik.uni-erlangen.de>

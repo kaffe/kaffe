@@ -1,0 +1,426 @@
+#! /bin/sh
+#
+# Perform a standard set of test on the Kaffe system.  This script should
+# be built up as we add more test and so, hopefully, avoid re-releasing
+# bugs which have been fixed.
+#
+# Copyright (c) 1996, 1997
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+RESULT=/tmp/kaffer.$$
+CHECK=/tmp/kaffec.$$
+JAVA=kaffe
+JAVAC=javac
+overallerror=0
+error=0
+
+# If we have a destination directory, clean it and make sure we use it
+# for later compilations.
+if test "$DESTDIR" != "" ; then
+	rm -f $DESTDIR/*.class
+else
+	DESTDIR="."
+fi
+
+compile()
+{
+	echo ERROR > $RESULT
+	$JAVAC -d $DESTDIR $1.java > $RESULT 2>&1
+	if test "`cat $RESULT`" != "" ; then
+		echo "error compiling"
+		cat $RESULT
+		error=1
+	fi
+	rm -f $RESULT $CHECK
+}
+
+run()
+{
+	echo "$2" > $CHECK
+	echo ERROR > $RESULT
+	(cd $DESTDIR ; $JAVA $1 > $RESULT 2>&1)
+	if cmp -s $RESULT $CHECK ; then
+		:
+	else
+		echo "error running"
+		echo "  Should have got:"
+		cat $CHECK
+		echo "  But got instead:"
+		cat $RESULT
+		error=1
+	fi
+	rm -f $RESULT $CHECK
+}
+
+runtest()
+{
+	error=0
+	echo -n "$1 ... " 1>&2
+	compile $1
+	if test $error = 0 ; then
+		run $1 "$2"
+	fi
+	if test $error = 0 ; then
+		echo "passed" 1>&2
+	else
+		overallerror=1
+	fi
+}
+
+ignoretest()
+{
+	error=0
+	echo "$1 ... ignored" 1>&2
+}
+
+# Simple health check
+cp HelloWorldApp.class.save $DESTDIR/HelloWorldApp.class
+run HelloWorldApp "Hello World!"
+
+# Now test the compiler
+rm -f $DESTDIR/HelloWorldApp.class
+runtest HelloWorldApp "Hello World!"
+
+# Test ints, longs, floats and doubles
+runtest TestIntLong "Some mathmatical tests
+Results Good"
+ignoretest TestFloatDouble "Some mathmatical tests
+Results Good"
+
+# Test strings
+runtest Str "12abcd34567890"
+runtest Str2 "12"
+
+# Test exceptions
+runtest IndexTest "0
+1
+2
+3
+4
+5
+Catch
+java.lang.ArrayIndexOutOfBoundsException
+	at IndexTest.main(7)"
+runtest StackDump "java.lang.NullPointerException
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.f(8)
+	at StackDump.main(14)"
+
+# Test threads
+runtest tname "Hello, my name is main"
+runtest ttest "run 0
+run 1
+run 2
+run 3
+run 4
+run 5
+run 6
+run 7
+run 8
+run 9
+run 10
+run 11
+run 12
+run 13
+run 14
+run 15
+run 16
+run 17
+run 18
+run 19
+run 20
+run 21
+run 22
+run 23
+run 24
+run 25
+run 26
+run 27
+run 28
+run 29
+run 30
+run 31
+run 32
+run 33
+run 34
+run 35
+run 36
+run 37
+run 38
+run 39
+run 40
+run 41
+run 42
+run 43
+run 44
+run 45
+run 46
+run 47
+run 48
+run 49
+run 50
+run 51
+run 52
+run 53
+run 54
+run 55
+run 56
+run 57
+run 58
+run 59
+run 60
+run 61
+run 62
+run 63
+run 64
+run 65
+run 66
+run 67
+run 68
+run 69
+run 70
+run 71
+run 72
+run 73
+run 74
+run 75
+run 76
+run 77
+run 78
+run 79
+run 80
+run 81
+run 82
+run 83
+run 84
+run 85
+run 86
+run 87
+run 88
+run 89
+run 90
+run 91
+run 92
+run 93
+run 94
+run 95
+run 96
+run 97
+run 98
+run 99
+run 0
+run 1
+run 2
+run 3
+run 4
+run 5
+run 6
+run 7
+run 8
+run 9
+run 10
+run 11
+run 12
+run 13
+run 14
+run 15
+run 16
+run 17
+run 18
+run 19
+run 20
+run 21
+run 22
+run 23
+run 24
+run 25
+run 26
+run 27
+run 28
+run 29
+run 30
+run 31
+run 32
+run 33
+run 34
+run 35
+run 36
+run 37
+run 38
+run 39
+run 40
+run 41
+run 42
+run 43
+run 44
+run 45
+run 46
+run 47
+run 48
+run 49
+run 50
+run 51
+run 52
+run 53
+run 54
+run 55
+run 56
+run 57
+run 58
+run 59
+run 60
+run 61
+run 62
+run 63
+run 64
+run 65
+run 66
+run 67
+run 68
+run 69
+run 70
+run 71
+run 72
+run 73
+run 74
+run 75
+run 76
+run 77
+run 78
+run 79
+run 80
+run 81
+run 82
+run 83
+run 84
+run 85
+run 86
+run 87
+run 88
+run 89
+run 90
+run 91
+run 92
+run 93
+run 94
+run 95
+run 96
+run 97
+run 98
+run 99"
+
+runtest burford "Starting burford...
+Starting feeders...
+Feeders completed...
+burford awakened -- result = 100"
+
+runtest IllegalInterface "Exception caught: java.lang.InstantiationException: Illegalif"
+
+runtest GetInterfaces "Hello world!
+interface0: if0
+interface1: if1"
+
+runtest DeadThread "1 true
+true 1"
+
+runtest SignedShort "-1"
+
+runtest BadFloatTest "1.2345 9.8765"
+
+runtest ExecTest "Okay
+Okay"
+
+runtest finaltest "3.1415926536"
+echo -n "finaltest2 ... " 1>&2
+compile finaltest2
+if test $error = 0 ; then
+	run finaltest "3.1415926536"
+fi
+if test $error = 0 ; then
+	echo "passed" 1>&2
+else
+	overallerror=1
+fi
+
+runtest forNameTest "constructor called"
+runtest KaffeVerifyBug "okay"
+runtest Schtum "Okay"
+
+runtest tthrd1 "main start
+thrd start
+thrd join
+true 1
+main end"
+
+runtest Reflect "Method: public static void java.lang.System.loadLibrary(java.lang.String)
+Method: public static void java.lang.System.load(java.lang.String)
+Method: public static void java.lang.System.runFinalizersOnExit(boolean)
+Method: public static void java.lang.System.runFinalization()
+Method: public static void java.lang.System.gc()
+Method: public static void java.lang.System.exit(int)
+Method: public static java.lang.String java.lang.System.getenv(java.lang.String)
+Method: public static java.lang.String java.lang.System.getProperty(java.lang.String,java.lang.String)
+Method: public static java.lang.String java.lang.System.getProperty(java.lang.String)
+Method: public static void java.lang.System.setProperties(java.util.Properties)
+Method: public static java.util.Properties java.lang.System.getProperties()
+Method: public static native int java.lang.System.identityHashCode(java.lang.Object)
+Method: public static native void java.lang.System.arraycopy(java.lang.Object,int,java.lang.Object,int,int)
+Method: public static native long java.lang.System.currentTimeMillis()
+Method: public static java.lang.SecurityManager java.lang.System.getSecurityManager()
+Method: public static void java.lang.System.setSecurityManager(java.lang.SecurityManager)
+Method: public static void java.lang.System.setErr(java.io.PrintStream)
+Method: public static void java.lang.System.setOut(java.io.PrintStream)
+Method: public static void java.lang.System.setIn(java.io.InputStream)
+Method: public final void java.lang.Object.wait()
+Method: public final void java.lang.Object.wait(long,int)
+Method: public final native void java.lang.Object.wait(long)
+Method: public final native void java.lang.Object.notifyAll()
+Method: public final native void java.lang.Object.notify()
+Method: public java.lang.String java.lang.Object.toString()
+Method: public boolean java.lang.Object.equals(java.lang.Object)
+Method: public native int java.lang.Object.hashCode()
+Method: public final native java.lang.Class java.lang.Object.getClass()
+Constructor: public java.lang.Object()
+Field: public static final java.io.PrintStream java.lang.System.err
+Field: public static final java.io.PrintStream java.lang.System.out
+Field: public static final java.io.InputStream java.lang.System.in"
+
+runtest Bean "BeanDescriptor:
+  Class: class Bean
+  Method: public java.lang.String Bean.getArray(int)
+  Method: public void Bean.setArray(int,java.lang.String)
+  Method: public final native void java.lang.Object.notifyAll()
+  Method: public final void java.lang.Object.wait()
+  Method: public final void java.lang.Object.wait(long,int)
+  Method: public java.lang.String java.lang.Object.toString()
+  Method: public final native void java.lang.Object.notify()
+  Method: public static void Bean.main(java.lang.String[])
+  Method: public boolean java.lang.Object.equals(java.lang.Object)
+  Method: public void Bean.setValue(java.lang.String)
+  Method: public final native void java.lang.Object.wait(long)
+  Method: public native int java.lang.Object.hashCode()
+  Method: public void Bean.setArray(java.lang.String[])
+  Method: public final native java.lang.Class java.lang.Object.getClass()
+  Method: public java.lang.String Bean.getValue()
+  Method: public java.lang.String[] Bean.getArray()
+  Property: type class java.lang.Class, read public final native java.lang.Class java.lang.Object.getClass(), write <none>
+  Editor: <unknown>
+  Property: type class java.lang.String, read public java.lang.String Bean.getValue(), write public void Bean.setValue(java.lang.String)
+  Editor: class sun.beans.editors.StringEditor
+  Property: type class [Ljava.lang.String;, read public java.lang.String[] Bean.getArray(), write public void Bean.setArray(java.lang.String[]), idx read public java.lang.String Bean.getArray(int), idx write public void Bean.setArray(int,java.lang.String)
+  Editor: <unknown>"
+
+# All done okay
+exit $overallerror

@@ -1,0 +1,62 @@
+#
+# Java core library component.
+#
+# Copyright (c) 1997, 1998
+#      Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file.
+#
+# Class library's are not currently part of the integrate Make cycle.
+#
+
+srcdir=         @srcdir@
+prefix=		@prefix@
+classdir=	@datadir@/kaffe
+
+INSTALL=        @INSTALL@
+INSTALL_DATA=	@INSTALL_DATA@
+MKDIR=		@MKDIR@
+TOUCH=		touch
+MAKEJAVA=	$(srcdir)/makeJava
+ZIP=		zip
+
+CLASSFILE=	klasses.zip
+SRCDIR=		$(srcdir)
+LIBDIR=		lib
+
+all:
+
+install:
+		test -d $(classdir) || $(MKDIR) $(classdir)
+		$(INSTALL_DATA) $(srcdir)/$(CLASSFILE) $(classdir)/$(CLASSFILE)
+
+clean:
+		rm -rf $(LIBDIR) .dir-stamp
+
+distclean:
+		rm -rf $(LIBDIR) klasses.zip
+		rm -f Makefile
+
+#############################################################################
+
+SOURCES=\
+	java/lang/Thread.java \
+	kaffe/util/Ptr.java \
+
+classes:	.dir-stamp stuff
+
+.dir-stamp:
+		test -d $(LIBDIR) || $(MKDIR) $(LIBDIR)
+		$(TOUCH) .dir-stamp
+
+stuff:
+		@$(MAKEJAVA) -srcdir $(SRCDIR) -dstdir $(LIBDIR) $(SOURCES)
+
+build-classes:
+		rm -f $(CLASSFILE)
+		(cd $(LIBDIR) && $(ZIP) -r0 ../$(CLASSFILE) java kaffe)
+
+install-classes:
+		test -d $(classdir) || $(MKDIR) $(classdir)
+		$(INSTALL_DATA) $(CLASSFILE) $(classdir)/$(CLASSFILE)

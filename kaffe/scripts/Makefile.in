@@ -1,0 +1,34 @@
+# Misc. scripts
+#
+# Copyright (c) 1996, 1997
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+srcdir=		@srcdir@
+prefix=		@prefix@
+exec_prefix=	@exec_prefix@
+bindir=		@bindir@
+INSTALL=	@INSTALL@
+INSTALL_SCRIPT=	@INSTALL_SCRIPT@
+MKDIR=		@MKDIR@
+SCREXT=		@SCREXT@
+KPREFIX=	@KPREFIX@
+
+SCRIPTFILES=	appletviewer jar javac javadoc javakey javap jdb \
+		native2ascii report-kaffe-bug rmic rmiregistry serialver
+
+all:
+
+clean:
+
+distclean:
+		rm -f Makefile
+
+install:
+		test -d $(bindir) || $(MKDIR) $(bindir)
+		for i in $(SCRIPTFILES) ;\
+		do \
+			$(INSTALL_SCRIPT) $(srcdir)/$$i$(SCREXT) $(bindir)/$(KPREFIX)$$i$(SCREXT)  ;\
+		done

@@ -1,0 +1,3124 @@
+/* jit-alpha.def
+ * Alpha instruction definition.
+ *
+ * Copyright (c) 1996, 1997
+ *	Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution 
+ * of this file. 
+ */
+
+/* Turn this on for full denormal/NaN/Inf support at the expense of speed.
+   It is possible that this may be able to be turned off anyway on the
+   EV5 and higher, as they require no kernel support for such things.  */
+
+#define AXP_FULL_IEEE_FP
+
+#define	DEBUG
+
+#include <string.h>
+#include "classMethod.h"
+#include "access.h"
+#include "constpool.h"
+#include "exception.h"
+#include "thread.h"
+#include "gc.h"
+
+
+#define	REG_v0			0
+#define REG_fp			15
+#define	REG_a0			16
+#define REG_t9			23
+#define REG_t10			24
+#define REG_t11			25
+#define	REG_ra			26
+#define REG_pv			27
+#define REG_at			28
+#define REG_gp			29
+#define REG_sp			30
+#define REG_zero		31
+#define REG_f0			(32+0)
+#define REG_fa0			(32+16)
+#define REG_fzero		(32+31)
+
+
+#ifdef DEBUG
+static const char * const rnames[] = {
+	"v0",
+	"t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7",
+	"s0", "s1", "s2", "s3", "s4", "s5",
+	"fp",
+	"a0", "a1", "a2", "a3", "a4", "a5",
+	"t8", "t9", "t10", "t11",
+	"ra",
+	"pv",
+	"at",
+	"gp",
+	"sp",
+	"zero",
+	"f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7",
+	"f8", "f9", "f10", "f11", "f12", "f13", "f14", "f15",
+	"f16", "f17", "f18", "f19", "f20", "f21", "f22", "f23",
+	"f24", "f25", "f26", "f27", "f28", "f29", "f30", "f31"
+};
+
+#define	regname(n)	rnames[n]
+#define	fregname(n)	rnames[n]
+#endif
+
+int *alpha_slot2argoffset;
+int alpha_nslot2argoffset;
+
+#define alpha_s32_rangecheck(v)	((v) >= -0x80000000L && (v) < 0x80000000L)
+
+
+/* --------------------------------------------------------------------- */
+/* Instruction formats							 */
+
+#define insn_bra(op, ra, disp)						\
+	LOUT = (((op) << 26) | (((ra) & 0x1F) << 21)			\
+		| ((((disp) + 4) / 4) & 0x1FFFFF))
+
+#define insn_mem(op, ra, rb, off)					\
+	LOUT = (((op) << 26) | (((ra) & 0x1F) << 21)			\
+		| (((rb) & 0x1F) << 16) | ((off) & 0xFFFF))
+
+#define insn_mfc(op, fn, ra, rb)					\
+	LOUT = (((op) << 26) | (((ra) & 0x1F) << 21)			\
+		| (((rb) & 0x1F) << 16) | ((fn) & 0xFFFF))
+
+#define insn_fp(op, fn, ra, rb, rc)					\
+	LOUT = (((op) << 26) | (((ra) & 0x1F) << 21)			\
+		| (((rb) & 0x1F) << 16) | (((fn) & 0x7FF) << 5)		\
+		| ((rc) & 0x1F))
+
+#define insn_opr(op, fn, ra, rb, rc)					\
+	LOUT = (((op) << 26) | (((ra) & 0x1F) << 21)			\
+		| (((rb) & 0x1F) << 16) | (((fn) & 0x7F) << 5)		\
+		| ((rc) & 0x1F))
+
+#define insn_oprl(op, fn, ra, lit, rc)					\
+	LOUT = (((op) << 26) | (((ra) & 0x1F) << 21)			\
+		| (((lit) & 0xFF) << 13) | 0x1000 | (((fn) & 0x7F) << 5)\
+		| ((rc) & 0x1F))
+
+#define insn_mbr(op, fn, ra, rb, extra)					\
+	LOUT = (((op) << 26) | (((ra) & 0x1F) << 21)			\
+		| (((rb) & 0x1F) << 16) | (((fn) & 3) << 14)		\
+		| ((extra) & 0x3FFF))
+
+
+/* --------------------------------------------------------------------- */
+/* Specific Instructions						 */
+
+#ifdef DEBUG
+int jit_debug;
+#define	debug(x)	(jit_debug ? printf("%lx:\t", CODEPC), printf x : 0)
+#else
+#define	debug(x)	((void)0)
+#endif
+
+#define op_addl(ra, rb, rc)						\
+	debug(("addl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x10, 0x00, (ra), (rb), (rc))
+
+#define op_addl_i(ra, ib, rc)						\
+	debug(("addl\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	insn_oprl(0x10, 0x00, (ra), (ib), (rc))
+
+#define op_addq(ra, rb, rc)						\
+	debug(("addq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x10, 0x20, (ra), (rb), (rc))
+
+#define op_addq_i(ra, ib, rc)						\
+	debug(("addq\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	insn_oprl(0x10, 0x20, (ra), (ib), (rc))
+
+#define op_adds(ra, rb, rc)						\
+	debug(("adds\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	insn_fp(0x16, 0x080, (ra), (rb), (rc))
+
+#define op_adds_su(ra, rb, rc)						\
+	debug(("adds/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))),\
+	insn_fp(0x16, 0x580, (ra), (rb), (rc))
+
+#define op_addt(ra, rb, rc)						\
+	debug(("addt\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	insn_fp(0x16, 0x0A0, (ra), (rb), (rc))
+
+#define op_addt_su(ra, rb, rc)						\
+	debug(("addt/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))),\
+	insn_fp(0x16, 0x5A0, (ra), (rb), (rc))
+
+#define op_and(ra, rb, rc)						\
+	debug(("and\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x11, 0x00, (ra), (rb), (rc))
+
+#define op_and_i(ra, ib, rc)						\
+	debug(("and\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	insn_oprl(0x11, 0x00, (ra), (ib), (rc))
+
+#define op_andnot_i(ra, ib, rc)						\
+	debug(("andnot\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	insn_oprl(0x11, 0x08, (ra), (ib), (rc))
+
+#define op_beq(ra, disp)						\
+	debug(("beq\t%s,%+d\n",regname(ra),(disp))),			\
+	insn_bra(0x39, (ra), (disp))
+
+#define op_bge(ra, disp)						\
+	debug(("bge\t%s,%+d\n",regname(ra),(disp))),			\
+	insn_bra(0x3E, (ra), (disp))
+
+#define op_bgt(ra, disp)						\
+	debug(("bgt\t%s,%+d\n",regname(ra),(disp))),			\
+	insn_bra(0x3F, (ra), (disp))
+
+#define op_ble(ra, disp)						\
+	debug(("ble\t%s,%+d\n",regname(ra),(disp))),			\
+	insn_bra(0x3B, (ra), (disp))
+
+#define op_blt(ra, disp)						\
+	debug(("blt\t%s,%+d\n",regname(ra),(disp))),			\
+	insn_bra(0x3A, (ra), (disp))
+
+#define op_bne(ra, disp)						\
+	debug(("bne\t%s,%+d\n",regname(ra),(disp))),			\
+	insn_bra(0x3D, (ra), (disp))
+
+#define op_br(ra, disp)							\
+	debug(("br\t%s,%+d\n",regname(ra),(disp))),			\
+	insn_bra(0x30, (ra), (disp))
+
+#define op_cmpeq(ra, rb, rc)						\
+	debug(("cmpeq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x10, 0x2D, (ra), (rb), (rc))
+
+#define op_cmpeq_i(ra, ib, rc)						\
+	debug(("cmpeq\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	insn_oprl(0x10, 0x2D, (ra), (ib), (rc))
+
+#define op_cmple(ra, rb, rc)						\
+	debug(("cmple\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x10, 0x6D, (ra), (rb), (rc))
+
+#define op_cmple_i(ra, ib, rc)						\
+	debug(("cmple\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	insn_oprl(0x10, 0x6D, (ra), (ib), (rc))
+
+#define op_cmplt(ra, rb, rc)						\
+	debug(("cmplt\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x10, 0x4D, (ra), (rb), (rc))
+
+#define op_cmplt_i(ra, ib, rc)						\
+	debug(("cmplt\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	insn_oprl(0x10, 0x4D, (ra), (ib), (rc))
+
+#define op_cmpult(ra, rb, rc)						\
+	debug(("cmpult\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x10, 0x1D, (ra), (rb), (rc))
+
+#define op_cmpult_i(ra, ib, rc)						\
+	debug(("cmpult\t%s,%d,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	insn_oprl(0x10, 0x1D, (ra), (ib), (rc))
+
+#define op_cpysn(ra, rb, rc)						\
+	debug(("cpysn\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	insn_fp(0x17, 0x021, REG_zero, (rb), (rc))
+
+#define op_cvtlq(rb, rc)						\
+	debug(("cvtlq\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	insn_fp(0x17, 0x010, REG_zero, (rb), (rc))
+
+#define op_cvtql(rb, rc)						\
+	debug(("cvtql\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	insn_fp(0x17, 0x030, REG_zero, (rb), (rc))
+
+#define op_cvtqs(rb, rc)						\
+	debug(("cvtqs\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	insn_fp(0x16, 0x0BC, REG_zero, (rb), (rc))
+
+#define op_cvtqt(rb, rc)						\
+	debug(("cvtqt\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	insn_fp(0x16, 0x0BE, REG_zero, (rb), (rc))
+
+#define op_cvtst(rb, rc)						\
+	debug(("cvtst\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	insn_fp(0x16, 0x2AC, REG_zero, (rb), (rc))
+
+#define op_cvttq_c(rb, rc)						\
+	debug(("cvttq/c\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	insn_fp(0x16, 0x02F, REG_zero, (rb), (rc))
+
+#define op_cvtts(rb, rc)						\
+	debug(("cvtts\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	insn_fp(0x16, 0x0AC, REG_zero, (rb), (rc))
+
+#define op_cvtts_su(rb, rc)						\
+	debug(("cvtts/su\t%s,%s\n",fregname(rb),fregname(rc))),		\
+	insn_fp(0x16, 0x5AC, REG_zero, (rb), (rc))
+
+#define op_divs(ra, rb, rc)						\
+	debug(("divs\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	insn_fp(0x16, 0x083, (ra), (rb), (rc))
+
+#define op_divs_su(ra, rb, rc)						\
+	debug(("divs/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))),\
+	insn_fp(0x16, 0x583, (ra), (rb), (rc))
+
+#define op_divt(ra, rb, rc)						\
+	debug(("divt\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	insn_fp(0x16, 0x0A3, (ra), (rb), (rc))
+
+#define op_divt_su(ra, rb, rc)						\
+	debug(("divt/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))),\
+	insn_fp(0x16, 0x5A3, (ra), (rb), (rc))
+
+#define op_extbl(ra, rb, rc)						\
+	debug(("extbl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x12, 0x06, (ra), (rb), (rc))
+
+#define op_extwl(ra, rb, rc)						\
+	debug(("extwl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x12, 0x16, (ra), (rb), (rc))
+
+#define op_extqh(ra, rb, rc)						\
+	debug(("extqh\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x12, 0x7A, (ra), (rb), (rc))
+
+#define op_fmov(ra, rb)							\
+	debug(("fmov\t%s,%s\n",fregname(ra),fregname(rb))),		\
+	insn_fp(0x17, 0x020, (ra), (ra), (rb))
+
+#define op_insbl(ra, rb, rc)						\
+	debug(("insbl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x12, 0x0B, (ra), (rb), (rc))
+
+#define op_inswl(ra, rb, rc)						\
+	debug(("inswl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x12, 0x1B, (ra), (rb), (rc))
+
+#define op_jmp(ra, rb, hint)						\
+	debug(("jmp\t%s,(%s),%+d\n",regname(ra),regname(rb),(hint))),	\
+	insn_mbr(0x1A, 0, (ra), (rb), (hint))
+
+#define op_jsr(ra, rb, hint)						\
+	debug(("jsr\t%s,(%s),%+d\n",regname(ra),regname(rb),(hint))),	\
+	insn_mbr(0x1A, 1, (ra), (rb), (hint))
+
+#define op_lda(ra, rb, off)						\
+	debug(("lda\t%s,%hd(%s)\n",regname(ra),(short)(off),regname(rb))), \
+	insn_mem(0x08, (ra), (rb), (off))
+
+#define op_ldah(ra, rb, off)						\
+	debug(("ldah\t%s,%hd(%s)\n",regname(ra),(short)(off),regname(rb))), \
+	insn_mem(0x09, (ra), (rb), (off))
+
+#define op_ldl(ra, rb, off)						\
+	debug(("ldl\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	insn_mem(0x28, (ra), (rb), (off))
+
+#define op_ldq(ra, rb, off)						\
+	debug(("ldq\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	insn_mem(0x29, (ra), (rb), (off))
+
+#define op_ldq_u(ra, rb, off)						\
+	debug(("ldq_u\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	insn_mem(0x0B, (ra), (rb), (off))
+
+#define op_lds(ra, rb, off)						\
+	debug(("lds\t%s,%hd(%s)\n",fregname(ra),(off),regname(rb))),	\
+	insn_mem(0x22, (ra), (rb), (off))
+
+#define op_ldt(ra, rb, off)						\
+	debug(("ldt\t%s,%hd(%s)\n",fregname(ra),(off),regname(rb))),	\
+	insn_mem(0x23, (ra), (rb), (off))
+
+#define op_mov(ra, rb)							\
+	debug(("mov\t%s,%s\n",regname(ra),regname(rb))),		\
+	insn_opr(0x11, 0x20, REG_zero, (ra), (rb))
+
+#define op_mskbl(ra, rb, rc)						\
+	debug(("mskbl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x12, 0x02, (ra), (rb), (rc))
+
+#define op_mskwl(ra, rb, rc)						\
+	debug(("mskwl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x12, 0x12, (ra), (rb), (rc))
+
+#define op_mull(ra, rb, rc)						\
+	debug(("mull\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x13, 0x00, (ra), (rb), (rc))
+
+#define op_mull_i(ra, ib, rc)						\
+	debug(("mull\t%s,%d,%s\n",regname(ra),(ib),regname(rc))),	\
+	insn_oprl(0x13, 0x00, (ra), (ib), (rc))
+
+#define op_mulq(ra, rb, rc)						\
+	debug(("mulq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x13, 0x20, (ra), (rb), (rc))
+
+#define op_mulq_i(ra, ib, rc)						\
+	debug(("mulq\t%s,%d,%s\n",regname(ra),(ib),regname(rc))),	\
+	insn_opr(0x13, 0x20, (ra), (ib), (rc))
+
+#define op_muls(ra, rb, rc)						\
+	debug(("muls\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	insn_fp(0x16, 0x082, (ra), (rb), (rc))
+
+#define op_muls_su(ra, rb, rc)						\
+	debug(("muls/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))),\
+	insn_fp(0x16, 0x582, (ra), (rb), (rc))
+
+#define op_mult(ra, rb, rc)						\
+	debug(("mult\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	insn_fp(0x16, 0x0A2, (ra), (rb), (rc))
+
+#define op_mult_su(ra, rb, rc)						\
+	debug(("mult/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))),\
+	insn_fp(0x16, 0x5A2, (ra), (rb), (rc))
+
+#define op_or(ra, rb, rc)						\
+	debug(("or\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))),	\
+	insn_opr(0x11, 0x20, (ra), (rb), (rc))
+
+#define op_ret(ra, rb, code)						\
+	debug(("ret\t%s,(%s),%d\n",regname(ra),regname(rb),(code))),	\
+	insn_mbr(0x1A, 2, (ra), (rb), (code))
+
+#define op_s4addl(ra, rb, rc)						\
+	debug(("s4addl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x10, 0x02, (ra), (rb), (rc))
+
+#define op_s4addq(ra, rb, rc)						\
+	debug(("s4addq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x10, 0x22, (ra), (rb), (rc))
+
+#define op_s4subl(ra, rb, rc)						\
+	debug(("s4subl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x10, 0x0B, (ra), (rb), (rc))
+
+#define op_s4subq(ra, rb, rc)						\
+	debug(("s4subq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x10, 0x2B, (ra), (rb), (rc))
+
+#define op_s8addl(ra, rb, rc)						\
+	debug(("s8addl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x10, 0x12, (ra), (rb), (rc))
+
+#define op_s8addq(ra, rb, rc)						\
+	debug(("s8addq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x10, 0x32, (ra), (rb), (rc))
+
+#define op_s8subl(ra, rb, rc)						\
+	debug(("s8subl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x10, 0x1B, (ra), (rb), (rc))
+
+#define op_s8subq(ra, rb, rc)						\
+	debug(("s8subq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x10, 0x3B, (ra), (rb), (rc))
+
+#define op_sll(ra, rb, rc)						\
+	debug(("sll\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x12, 0x39, (ra), (rb), (rc))
+
+#define op_sll_i(ra, ib, rc)						\
+	debug(("sll\t%s,%d,%s\n",regname(ra),(ib),regname(rc))),	\
+	insn_oprl(0x12, 0x39, (ra), (ib), (rc))
+
+#define op_sra(ra, rb, rc)						\
+	debug(("sra\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x12, 0x3C, (ra), (rb), (rc))
+
+#define op_sra_i(ra, ib, rc)						\
+	debug(("sra\t%s,%d,%s\n",regname(ra),(ib),regname(rc))),	\
+	insn_oprl(0x12, 0x3C, (ra), (ib), (rc))
+
+#define op_srl(ra, rb, rc)						\
+	debug(("srl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))),	\
+	insn_opr(0x12, 0x34, (ra), (rb), (rc))
+
+#define op_srl_i(ra, ib, rc)						\
+	debug(("srl\t%s,%d,%s\n",regname(ra),(ib),regname(rc))),	\
+	insn_oprl(0x12, 0x34, (ra), (ib), (rc))
+
+#define op_stl(ra, rb, off)						\
+	debug(("stl\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	insn_mem(0x2C, (ra), (rb), (off))
+
+#define op_stq(ra, rb, off)						\
+	debug(("stq\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	insn_mem(0x2D, (ra), (rb), (off))
+
+#define op_stq_u(ra, rb, off)						\
+	debug(("stq_u\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	insn_mem(0x0F, (ra), (rb), (off))
+
+#define op_sts(ra, rb, off)						\
+	debug(("sts\t%s,%hd(%s)\n",fregname(ra),(off),regname(rb))),	\
+	insn_mem(0x26, (ra), (rb), (off))
+
+#define op_stt(ra, rb, off)						\
+	debug(("stt\t%s,%hd(%s)\n",fregname(ra),(off),regname(rb))),	\
+	insn_mem(0x27, (ra), (rb), (off))
+
+#define op_subl(ra, rb, rc)						\
+	debug(("subl\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))),\
+	insn_opr(0x10, 0x09, (ra), (rb), (rc))
+
+#define op_subl_i(ra, ib, rc)						\
+	debug(("subl\t%s,%d,%s\n",regname(ra),(ib),regname(rc))),	\
+	insn_oprl(0x10, 0x09, (ra), (ib), (rc))
+
+#define op_subq(ra, rb, rc)						\
+	debug(("subq\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))),\
+	insn_opr(0x10, 0x29, (ra), (rb), (rc))
+
+#define op_subq_i(ra, ib, rc)						\
+	debug(("subq\t%s,%d,%s\n",regname(ra),(ib),regname(rc))),	\
+	insn_oprl(0x10, 0x29, (ra), (ib), (rc))
+
+#define op_subs(ra, rb, rc)						\
+	debug(("subs\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	insn_fp(0x16, 0x081, (ra), (rb), (rc))
+
+#define op_subs_su(ra, rb, rc)						\
+	debug(("subs/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))),\
+	insn_fp(0x16, 0x581, (ra), (rb), (rc))
+
+#define op_subt(ra, rb, rc)						\
+	debug(("subt\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))), \
+	insn_fp(0x16, 0x0A1, (ra), (rb), (rc))
+
+#define op_subt_su(ra, rb, rc)						\
+	debug(("subt/su\t%s,%s,%s\n",fregname(ra),fregname(rb),fregname(rc))),\
+	insn_fp(0x16, 0x5A1, (ra), (rb), (rc))
+
+#define op_trapb()							\
+	debug(("trapb\n")),						\
+	insn_mfc(0x18, 0x0000, 0, 0)
+
+#define op_unop()							\
+	debug(("unop\n")),						\
+	insn_mem(0x0B, REG_zero, REG_zero, 0)
+
+#define op_xor(ra, rb, rc)						\
+	debug(("xor\t%s,%s,%s\n",regname(ra),regname(rb),regname(rc))), \
+	insn_opr(0x11, 0x40, (ra), (rb), (rc))
+
+#define op_zapnot_i(ra, ib, rc)						\
+	debug(("zapnot\t%s,%#x,%s\n",regname(ra),(unsigned char)(ib),regname(rc))), \
+	insn_oprl(0x12, 0x31, (ra), (ib), (rc))
+
+
+/* The Byte-Word instruction extension present as of the EV56.  */
+
+#define op_ldbu(ra, rb, off)						\
+	debug(("ldbu\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	insn_mem(0x0A, (ra), (rb), (off))
+
+#define op_ldwu(ra, rb, off)						\
+	debug(("ldwu\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	insn_mem(0x0C, (ra), (rb), (off))
+
+#define op_sextb(rb, rc)						\
+	debug(("sextb\t%s,%s\n",regname(rb),regname(rc))),		\
+	insn_opr(0x1C, 0x00, REG_zero, (rb), (rc))
+
+#define op_sextw(rb, rc)						\
+	debug(("sextw\t%s,%s\n",regname(rb),regname(rc))),		\
+	insn_opr(0x1C, 0x01, REG_zero, (rb), (rc))
+
+#define op_stb(ra, rb, off)						\
+	debug(("stb\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	insn_mem(0x0E, (ra), (rb), (off))
+
+#define op_stw(ra, rb, off)						\
+	debug(("stw\t%s,%hd(%s)\n",regname(ra),(off),regname(rb))),	\
+	insn_mem(0x0D, (ra), (rb), (off))
+
+
+static inline long
+alpha_have_bwx(void)
+{
+#ifdef HAVE_ALPHA_ASM_AMASK
+	long r;
+	__asm__("amask 1,%0" : "=r"(r));
+#else
+	/* For those whose assemblers are so far behind not to
+	   have the amask instruction.  */
+	register long r __asm__("$0");
+	__asm__(".long %1"
+		: "=r"(r)
+		: "i"((0x11 << 26) | (REG_zero << 21) | (1 << 13)
+		      | 0x1000 | (0x61 << 5) | REG_v0));
+#endif
+	return !r;
+}
+
+/* --------------------------------------------------------------------- */
+/* Recognize constants that go to either and or zapnot.  */
+
+static inline long
+alpha_zapnot_const(long x)
+{
+	/* Create a mask of bits in which bit n == 1 iff byte n == 0xFF.  */
+	__asm__("cmpbge %1,%2,%0" : "=r"(x) : "r"(x), "r"(-1));
+	return x;
+}
+
+int
+alpha_andconst_rangecheck(long v)
+{
+	if (v >= 0 && v <= 0xFF) {
+		/* we can just use "and" */
+		return 1;
+	}
+	else if (~v >= 0 && ~v <= 0xFF) {
+		/* we can use "andnot" */
+		return 1;
+	}
+	else if ((alpha_zapnot_const(v) ^ alpha_zapnot_const(~v)) == 0xFF) {
+		/* we can use "zapnot" */
+		return 1;
+	}
+	return 0;
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(unimplemented, unimplemented)
+{
+	abort();
+}
+
+define_insn(nop, nop)
+{
+	/* Presumably we're nop'ing for alignment not delay.  */
+	op_unop();
+}
+
+static void
+alpha_ldgp(int reg)
+{
+	long hi, lo;
+
+	hi = -CODEPC;
+	lo = (short)hi;
+	hi = (hi - lo) >> 16;
+
+	if (hi) {
+		op_ldah(REG_gp, reg, hi);
+		op_lda(REG_gp, REG_gp, lo);
+	}
+	else {
+		op_lda(REG_gp, reg, lo);
+	}
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(prologue, prologue_xxC)
+{
+	int r;
+	int l;
+	int sl;
+	int aspill;
+	char *sig;
+	label* L;
+	Method* meth;
+
+	L = const_label(1);
+	meth = const_method(2);
+
+#ifdef DEBUG
+	if (jit_debug) {
+		printf("\n%s.%s %s\n", meth->class->name->data,
+			meth->name->data, meth->signature->data);
+	}
+#endif
+
+	L->type = Lnegframe|Labsolute|Lgeneral;
+	L->at = (uintp)CODEPC;
+	op_lda(REG_sp, REG_sp, 0);
+
+	op_mov(REG_pv, REG_gp);
+
+	L = newLabel();
+	L->type = Lframe|Labsolute|Lgeneral;
+	L->at = (uintp)CODEPC;
+	op_stq(REG_fp, REG_sp, -SLOTSIZE);
+
+	L = newLabel();
+	L->type = Lframe|Labsolute|Lgeneral;
+	L->at = (uintp)CODEPC;
+	op_lda(REG_fp, REG_sp, 0);
+
+	L = newLabel();
+	L->type = Lframe|Labsolute|Lgeneral;
+	L->at = (uintp)CODEPC;
+	op_stq(REG_ra, REG_sp, -2*SLOTSIZE);
+
+	/* Work out which register is what and where.  */
+	l = maxLocal + maxStack + maxTemp;
+	if (alpha_nslot2argoffset < l) {
+		alpha_nslot2argoffset = l;
+		alpha_slot2argoffset = gc_realloc_fixed(alpha_slot2argoffset,
+						        sizeof(int)*l);
+	}
+
+	/* Work out arg spill space */
+	aspill = (maxArgs < 6 ? maxArgs : 6);
+
+	/* Assign arguments, locals and temps to slots */
+	sig = meth->signature->data;
+	for (r = 0; r < l; r++) {
+		if (r >= maxArgs) {
+			alpha_slot2argoffset[r] = -SLOTSIZE * (3+aspill+(r-maxArgs));
+		}
+		else if (r < 6) {
+			alpha_slot2argoffset[r] = -SLOTSIZE * (3+aspill-(1+r));
+		}
+		else {
+			alpha_slot2argoffset[r] = SLOTSIZE * (r-6);
+		}
+	}
+
+	/* Now assign the registers to slots */
+        if (isStatic) {
+		r = 0;
+	}
+	else {
+		forceRegister(&localinfo[0], REG_a0, Rref);
+		r = 1;
+	}
+	sl = r;
+
+	sig = meth->signature->data;
+	for (; *++sig != ')' && r < 6; r++, sl++) {
+		switch (*sig) {
+		case '[':
+			while (*++sig == '[')
+				continue;
+			if (*sig == 'L') {
+				sig = strchr(sig, ';');
+			}
+			forceRegister(&localinfo[sl], REG_a0+r, Rref);
+			break;
+		case 'L':
+			sig = strchr(sig, ';');
+			forceRegister(&localinfo[sl], REG_a0+r, Rref);
+			break;
+		case 'B':
+		case 'C':
+		case 'I':
+		case 'S':
+		case 'Z':
+			forceRegister(&localinfo[sl], REG_a0+r, Rint);
+			break;
+		case 'F':
+			forceRegister(&localinfo[sl], REG_fa0+r, Rfloat);
+			break;
+		case 'J':
+			forceRegister(&localinfo[sl], REG_a0+r, Rlong);
+			s++;
+			break;
+		case 'D':
+			forceRegister(&localinfo[sl], REG_fa0+r, Rdouble);
+			s++;
+			break;
+		default:
+			abort();
+		}
+	}
+}
+
+define_insn(epilogue, epilogue_xxx)
+{
+	label *l;
+
+	op_ldq(REG_ra, REG_fp, -2*SLOTSIZE);
+	op_ldq(REG_fp, REG_fp, -SLOTSIZE);
+
+	l = newLabel();
+	l->type = Lframe|Labsolute|Lgeneral;
+	l->at = (uintp)CODEPC;
+	op_lda(REG_sp, REG_sp, 0);
+}
+
+define_insn(eprologue, eprologue_xxx)
+{
+	label *l;
+
+	alpha_ldgp(REG_pv);
+
+	l = newLabel();
+	l->type = Lnegframe|Labsolute|Lgeneral;
+	l->at = (uintp)CODEPC;
+	op_lda(REG_sp, REG_fp, 0);
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(spill_int, spilli_RCx)
+{
+	int r = sreg_int(0);
+	int o = const_int(1);
+
+	assert(o >= -0x8000 && o < 0x8000);
+
+	/* Always spill integers in wide mode, so that we don't end up with
+	   garbage when slots are manipulated in "any" mode, e.g. with dup.  */
+
+	op_stq(r, REG_fp, o);
+}
+
+define_insn(spill_ref, spillr_RCx)
+{
+	int r = sreg_ref(0);
+	int o = const_int(1);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_stq(r, REG_fp, o);
+}
+
+define_insn(spill_long, spilll_RCx)
+{
+	int r = sreg_long(0);
+	int o = const_int(1);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_stq(r, REG_fp, o);
+}
+
+define_insn(spill_float, spillf_RCx)
+{
+	int r = sreg_float(0);
+	int o = const_int(1);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_sts(r, REG_fp, o);
+}
+
+define_insn(spill_double, spilld_RCx)
+{
+	int r = sreg_double(0);
+	int o = const_int(1);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_stt(r, REG_fp, o);
+}
+
+define_insn(reload_int, reloadi_RCx)
+{
+	int r = lreg_int(0);
+	int o = const_int(1);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_ldl(r, REG_fp, o);
+}
+
+define_insn(reload_ref, reloadr_RCx)
+{
+	int r = lreg_ref(0);
+	int o = const_int(1);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_ldq(r, REG_fp, o);
+}
+
+define_insn(reload_long, reloadl_RCx)
+{
+	int r = lreg_long(0);
+	int o = const_int(1);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_ldq(r, REG_fp, o);
+}
+
+define_insn(reload_float, reloadf_RCx)
+{
+	int r = lreg_float(0);
+	int o = const_int(1);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_lds(r, REG_fp, o);
+}
+
+define_insn(reload_double, reloadd_RCx)
+{
+	int r = lreg_double(0);
+	int o = const_int(1);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_ldt(r, REG_fp, o);
+}
+
+/* --------------------------------------------------------------------- */
+
+static void
+alpha_move_const_32(int w, int val)
+{
+	long hi, lo, extra, tmp;
+	int b = REG_zero;
+
+	lo = (short)val;
+	tmp = val - lo;
+	hi = (short)(tmp >> 16);
+
+	if (tmp - (hi << 16)) {
+		extra = 0x4000;
+		tmp -= 0x40000000;
+		hi = (short)(tmp >> 16);
+	}
+	else {
+		extra = 0;
+	}
+
+	if (extra)
+		op_ldah(w, b, extra), b = w;
+	if (hi)
+		op_ldah(w, b, hi), b = w;
+	op_lda(w, b, lo);
+}
+
+#define alpha_move_const_pool(w, l, t, d, op)				\
+	do {								\
+		constpool *_c = newConstant((t), (d));			\
+		label *_l = ((l) ? (l) : newLabel());			\
+		int _w = (w);						\
+									\
+		_l->from = 0;						\
+		_l->to = (uintp)_c;					\
+		_l->at = CODEPC;					\
+									\
+		/* We shouldn't need _this_much gp space per function.	\
+	   	   Hell, we don't allow that much per C object file.	\
+		_l->type = Lconstant|Lrelative|Llong16x16;		\
+		op_ldah(_w, REG_gp, 0); */				\
+									\
+		_l->type = Lconstant|Lrelative|Lshort16|Lrangecheck;	\
+		op(_w, REG_gp, 0);					\
+	} while (0)
+
+define_insn(move_int_const, movei_RxC)
+{
+	alpha_move_const_32(wreg_int(0), const_int(2));
+}
+
+/* We manipulate the constpool ourselves here so that (1) we don't waste
+   too many registers, and (2) so that we can overlap the long offset
+   addition with the actual load.  */
+
+define_insn(move_ref_const, mover_RxC)
+{
+	long r = const_long(2);
+	int w = wreg_ref(0);
+
+	if (alpha_s32_rangecheck(r)) {
+		alpha_move_const_32(w, r);
+	}
+	else {
+		alpha_move_const_pool(w, NULL, CPref, r, op_ldq);
+	}
+}
+
+define_insn(move_long_const, movel_RxC)
+{
+	long r = const_long(2);
+	int w = wreg_long(0);
+
+	if (alpha_s32_rangecheck(r)) {
+		alpha_move_const_32(w, r);
+	}
+	else {
+		alpha_move_const_pool(w, NULL, CPlong, r, op_ldq);
+	}
+}
+
+define_insn(move_label_const, move_RxL)
+{
+	label* l = const_label(2);
+	int w = wreg_ref(0);
+
+	l->type |= Lrelative | Llong16x16 | Lrangecheck;
+	l->at = CODEPC;
+	l->from = 0;
+
+	op_ldah(w, REG_gp, 0);
+	op_lda(w, w, 0);
+}
+
+define_insn(move_float_const, movef_RxC)
+{
+	double val = const_double(2);
+	int w = wreg_float(0);
+
+	if (val == 0.0) {
+		op_fmov(REG_fzero, w);
+	}
+	else {
+		alpha_move_const_pool(w, NULL, CPfloat, val, op_lds);
+	}
+}
+
+define_insn(move_double_const, moved_RxC)
+{
+	double val = const_double(2);
+	int w = wreg_double(0);
+
+	if (val == 0.0) {
+		op_fmov(REG_fzero, w);
+	}
+	else {
+		alpha_move_const_pool(w, NULL, CPdouble, val, op_ldt);
+	}
+}
+
+define_insn(move_int, movei_RxR)
+{
+	/* In general, we win by always forcing the source slot
+	   into a register so it's there for later.  */
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	if (r != w) {
+		op_mov(r, w);
+	}
+}
+
+define_insn(move_ref, mover_RxR)
+{
+	/* In general, we win by always forcing the source slot
+	   into a register so it's there for later.  */
+	int r = rreg_ref(2);
+	int w = wreg_ref(0);
+
+	if (r != w) {
+		op_mov(r, w);
+	}
+}
+
+define_insn(move_long, movel_RxR)
+{
+	/* In general, we win by always forcing the source slot
+	   into a register so it's there for later.  */
+	int r = rreg_long(2);
+	int w = wreg_long(0);
+
+	if (r != w) {
+		op_mov(r, w);
+	}
+}
+
+define_insn(move_float, movef_RxR)
+{
+	/* In general, we win by always forcing the source slot
+	   into a register so it's there for later.  */
+	int r = rreg_float(2);
+	int w = wreg_float(0);
+
+	if (r != w) {
+		op_fmov(r, w);
+	}
+}
+
+define_insn(move_double, moved_RxR)
+{
+	/* In general, we win by always forcing the source slot
+	   into a register so it's there for later.  */
+	int r = rreg_double(2);
+	int w = wreg_double(0);
+
+	if (r != w) {
+		op_fmov(r, w);
+	}
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(add_int_const, addi_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_int(1);
+	int w = wreg_int(0);
+
+	if (o >= 0 && o <= 0xFF) {
+		op_addl_i(r, o, w);
+	}
+	else if (o >= -0xFF && o <= 0) {
+		op_subl_i(r, -o, w);
+	}
+	else {
+		abort();
+	}
+}
+
+define_insn(add_ref_const, addr_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_ref(1);
+	int w = wreg_ref(0);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_lda(w, r, o);
+}
+
+define_insn(add_long_const, addl_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_long(1);
+	int w = wreg_long(0);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_lda(w, r, o);
+}
+
+define_insn(add_int, addi_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_addl(r1, r2, w);
+}
+
+define_insn(add_ref, addr_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_ref(1);
+	int w = wreg_ref(0);
+
+	op_addq(r1, r2, w);
+}
+
+define_insn(add_long, addl_RRR)
+{
+	int r2 = rreg_long(2);
+	int r1 = rreg_long(1);
+	int w = wreg_long(0);
+
+	op_addq(r1, r2, w);
+}
+
+define_insn(add_float, addf_RRR)
+{
+	int r2 = rreg_float(2);
+	int r1 = rreg_float(1);
+	int w = wreg_float(0);
+
+#ifndef AXP_FULL_IEEE_FP
+	op_adds(r1, r2, w);
+#else
+	op_adds_su(r1, r2, w);
+	op_trapb();
+#endif
+}
+
+define_insn(add_double, addd_RRR)
+{
+	int r2 = rreg_double(2);
+	int r1 = rreg_double(1);
+	int w = wreg_double(0);
+
+#ifndef AXP_FULL_IEEE_FP
+	op_addt(r1, r2, w);
+#else
+	op_addt_su(r1, r2, w);
+	op_trapb();
+#endif
+}
+
+define_insn(sub_int_const, subi_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_int(1);
+	int w = wreg_int(0);
+
+	if (o >= 0 && o <= 0xFF) {
+		op_subl_i(r, o, w);
+	}
+	else if (o >= -0xFF && o <= 0) {
+		op_addl_i(r, -o, w);
+	}
+	else {
+		abort();
+	}
+}
+
+define_insn(sub_long_const, subl_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_long(1);
+	int w = wreg_long(0);
+
+	assert(o > -0x8000 && o <= 0x8000);
+	op_lda(w, r, -o);
+}
+
+define_insn(sub_int, subi_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_subl(r1, r2, w);
+}
+
+define_insn(sub_long, subl_RRR)
+{
+	int r2 = rreg_long(2);
+	int r1 = rreg_long(1);
+	int w = wreg_long(0);
+
+	op_subq(r1, r2, w);
+}
+
+define_insn(sub_float, subf_RRR)
+{
+	int r2 = rreg_float(2);
+	int r1 = rreg_float(1);
+	int w = wreg_float(0);
+
+#ifndef AXP_FULL_IEEE_FP
+	op_subs(r1, r2, w);
+#else
+	op_subs_su(r1, r2, w);
+	op_trapb();
+#endif
+}
+
+define_insn(sub_double, subd_RRR)
+{
+	int r2 = rreg_double(2);
+	int r1 = rreg_double(1);
+	int w = wreg_double(0);
+
+#ifndef AXP_FULL_IEEE_FP
+	op_subt(r1, r2, w);
+#else
+	op_subt_su(r1, r2, w);
+	op_trapb();
+#endif
+}
+
+/* Implement these because the compiler don't know about $zero and will
+   attempt to load a constant zero.  */
+
+define_insn(neg_int, negi_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	op_subl(REG_zero, r, w);
+}
+
+define_insn(neg_long, negl_RxR)
+{
+	int r = rreg_long(2);
+	int w = wreg_long(0);
+
+	op_subq(REG_zero, r, w);
+}
+
+define_insn(neg_float, negf_RxR)
+{
+	int r = rreg_float(2);
+	int w = wreg_float(0);
+
+#ifndef AXP_FULL_IEEE_FP
+	op_cpysn(r, r, w);
+#else
+	op_subs_su(REG_fzero, r, w);
+	op_trapb();
+#endif
+}
+
+define_insn(neg_double, negd_RxR)
+{
+	int r = rreg_double(2);
+	int w = wreg_double(0);
+
+#ifndef AXP_FULL_IEEE_FP
+	op_cpysn(r, r, w);
+#else
+	op_subt_su(REG_fzero, r, w);
+	op_trapb();
+#endif
+}
+
+define_insn(mul_int_const, muli_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_int(1);
+	int w = wreg_int(0);
+
+	assert(o >= 0 && o <= 0xFF);
+	switch (o) {
+	case 0:
+		op_mov(REG_zero, w);
+		break;
+	case 1:
+		op_mov(r, w);
+		break;
+	case 2:
+		op_addl(r, r, w);
+		break;
+	case 3:
+		op_s4subl(r, r, w);
+		break;
+	case 4:
+		op_s4addl(r, REG_zero, w);
+		break;
+	case 5:
+		op_s4addl(r, r, w);
+		break;
+	case 7:
+		op_s8subl(r, r, w);
+		break;
+	case 8:
+		op_s8addl(r, REG_zero, w);
+		break;
+	case 9:
+		op_s8addl(r, r, w);
+		break;
+	default:
+		op_mull_i(r, o, w);
+		break;
+	}
+}
+
+define_insn(mul_long_const, mull_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_long(1);
+	int w = wreg_long(0);
+
+	assert(o >= 0 && o <= 0xFF);
+	switch (o) {
+	case 0:
+		op_mov(REG_zero, w);
+		break;
+	case 1:
+		op_mov(r, w);
+		break;
+	case 2:
+		op_addq(r, r, w);
+		break;
+	case 3:
+		op_s4subq(r, r, w);
+		break;
+	case 4:
+		op_s4addq(r, REG_zero, w);
+		break;
+	case 5:
+		op_s4addq(r, r, w);
+		break;
+	case 7:
+		op_s8subq(r, r, w);
+		break;
+	case 8:
+		op_s8addq(r, REG_zero, w);
+		break;
+	case 9:
+		op_s8addq(r, r, w);
+		break;
+	default:
+		op_mulq_i(r, o, w);
+		break;
+	}
+}
+
+define_insn(mul_int, muli_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_mull(r1, r2, w);
+}
+
+define_insn(mul_long, mull_RRR)
+{
+	int r2 = rreg_long(2);
+	int r1 = rreg_long(1);
+	int w = wreg_long(0);
+
+	op_mulq(r1, r2, w);
+}
+
+define_insn(mul_float, mulf_RRR)
+{
+	int r2 = rreg_float(2);
+	int r1 = rreg_float(1);
+	int w = wreg_float(0);
+
+#ifndef AXP_FULL_IEEE_FP
+	op_muls(r1, r2, w);
+#else
+	op_muls_su(r1, r2, w);
+	op_trapb();
+#endif
+}
+
+define_insn(mul_double, muld_RRR)
+{
+	int r2 = rreg_double(2);
+	int r1 = rreg_double(1);
+	int w = wreg_double(0);
+
+#ifndef AXP_FULL_IEEE_FP
+	op_mult(r1, r2, w);
+#else
+	op_mult_su(r1, r2, w);
+	op_trapb();
+#endif
+}
+
+/* While we don't have a native integer division instruction, we do have
+   library functions with extra friendly calling conventions.  */
+
+static void
+alpha_division(sequence *s, int type, void *fn)
+{
+	extern void alpha_do_call_div();
+
+	int r1 = NOREG, r2 = NOREG;
+
+	/* Move the arguments into place.  */
+
+	if (slotInRegister(1, type)) {
+		r1 = fastSlotRegister(seq_slot(s, 1), type, rread);
+	}
+	if (slotInRegister(2, type)) {
+		r2 = fastSlotRegister(seq_slot(s, 2), type, rread);
+	}
+
+	if (r2 == REG_t10 && r1 == REG_t11) {
+		/* Urg.  They are just in the wrong place.  Exchange them
+		   and diddle the compiler's structures.  */
+		register_invalidate(REG_t10);
+		register_invalidate(REG_t11);
+		forceRegister(seq_slot(s, 1), REG_t10, type);
+		forceRegister(seq_slot(s, 2), REG_t11, type);
+
+		op_mov(REG_t10, REG_at);
+		op_mov(REG_t11, REG_t10);
+		op_mov(REG_at, REG_t11);
+	}
+	else {
+		if (r2 == REG_t10) {
+			forceRegister(seq_slot(s, 2), REG_t11, type);
+			op_mov(REG_t10, REG_t11);
+		}
+		if (r1 == NOREG) {
+			r1 = slowSlotOffset(seq_slot(s, 1), type, rread);
+			assert(r1 >= -0x8000 && r1 < 0x8000);
+			forceRegister(seq_slot(s, 1), REG_t10, type);
+			if (type == Rint)
+				op_ldl(REG_t10, REG_fp, r1);
+			else
+				op_ldq(REG_t10, REG_fp, r1);
+		}
+		else if (r1 != REG_t10) {
+			forceRegister(seq_slot(s, 1), REG_t10, type);
+			op_mov(r1, REG_t10);
+		}
+		if (r2 == NOREG) {
+			r2 = slowSlotOffset(seq_slot(s, 2), type, rread);
+			assert(r2 >= -0x8000 && r2 < 0x8000);
+			forceRegister(seq_slot(s, 2), REG_t11, type);
+			if (type == Rint)
+				op_ldl(REG_t11, REG_fp, r2);
+			else
+				op_ldq(REG_t11, REG_fp, r2);
+		}
+		else if (r2 != REG_t10 && r2 != REG_t11) {
+			forceRegister(seq_slot(s, 2), REG_t11, type);
+			op_mov(r2, REG_t11);
+		}
+	}
+
+	clobberRegister(REG_t9);
+	clobberRegister(REG_pv);
+
+	/* Here's the special hack for Java exception handling.  */
+
+	clobberRegister(REG_v0);
+	alpha_move_const_pool(REG_pv, NULL, CPref, alpha_do_call_div, op_ldq);
+	alpha_move_const_pool(REG_v0, NULL, CPref, fn, op_ldq);
+
+	op_jsr(REG_t9, REG_pv, 0);
+
+	alpha_ldgp(REG_t9);
+
+	forceRegister(seq_dst(s), REG_pv, type);
+}
+
+define_insn(div_int, divi_RRR)
+{
+	extern void __divl();
+	alpha_division(s, Rint, &__divl);
+}
+
+define_insn(div_long, divl_RRR)
+{
+	extern void __divq();
+	alpha_division(s, Rlong, &__divq);
+}
+
+define_insn(div_float, divf_RRR)
+{
+	int r2 = rreg_float(2);
+	int r1 = rreg_float(1);
+	int w = wreg_float(0);
+
+#ifndef AXP_FULL_IEEE_FP
+	op_divs(r1, r2, w);
+#else
+	op_divs_su(r1, r2, w);
+	op_trapb();
+#endif
+}
+
+define_insn(div_double, divd_RRR)
+{
+	int r2 = rreg_double(2);
+	int r1 = rreg_double(1);
+	int w = wreg_double(0);
+
+#ifndef AXP_FULL_IEEE_FP
+	op_divt(r1, r2, w);
+#else
+	op_divt_su(r1, r2, w);
+	op_trapb();
+#endif
+}
+
+define_insn(rem_int, remi_RRR)
+{
+	extern void __reml();
+	alpha_division(s, Rint, &__reml);
+}
+
+define_insn(rem_long, reml_RRR)
+{
+	extern void __remq();
+	alpha_division(s, Rlong, &__remq);
+}
+
+/* --------------------------------------------------------------------- */
+
+static inline void
+alpha_and_const(int r, long o, int w)
+{
+	if (o >= 0 && o <= 0xFF) {
+		op_and_i(r, o, w);
+	}
+	else if (~o >= 0 && ~o <= 0xFF) {
+		op_andnot_i(r, ~o, w);
+	}
+	else {
+		/* Our rangecheck asserts that this is the only other
+		   option here.  */
+		o = alpha_zapnot_const(o);
+		op_zapnot_i(r, o, w);
+	}
+}
+
+define_insn(and_int_const, andi_RRC)
+{
+	alpha_and_const(rreg_int(1), const_int(2), wreg_int(0));
+}
+
+define_insn(and_long_const, andl_RRC)
+{
+	alpha_and_const(rreg_long(1), const_long(2), wreg_long(0));
+}
+
+define_insn(and_int, andi_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_and(r1, r2, w);
+}
+
+define_insn(and_long, andl_RRR)
+{
+	int r2 = rreg_long(2);
+	int r1 = rreg_long(1);
+	int w = wreg_long(0);
+
+	op_and(r1, r2, w);
+}
+
+define_insn(or_int, ori_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_or(r1, r2, w);
+}
+
+define_insn(or_long, orl_RRR)
+{
+	int r2 = rreg_long(2);
+	int r1 = rreg_long(1);
+	int w = wreg_long(0);
+
+	op_or(r1, r2, w);
+}
+
+define_insn(xor_int, xori_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_xor(r1, r2, w);
+}
+
+define_insn(xor_long, xorl_RRR)
+{
+	int r2 = rreg_long(2);
+	int r1 = rreg_long(1);
+	int w = wreg_long(0);
+
+	op_xor(r1, r2, w);
+}
+
+define_insn(ashr_int_const, ashri_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_sra_i(r, o, w);
+}
+
+define_insn(ashr_long_const, ashrl_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_long(1);
+	int w = wreg_long(0);
+
+	op_sra_i(r, o, w);
+}
+
+define_insn(ashr_int, ashri_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_sra(r1, r2, w);
+}
+
+define_insn(ashr_long, ashrl_RRR)
+{
+	int r2 = rreg_long(2);
+	int r1 = rreg_long(1);
+	int w = wreg_long(0);
+
+	op_sra(r1, r2, w);
+}
+
+define_insn(lshr_int_const, lshri_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_srl_i(r, o, w);
+}
+
+define_insn(lshr_long_const, lshrl_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_long(1);
+	int w = wreg_long(0);
+
+	op_srl_i(r, o, w);
+}
+
+define_insn(lshr_int, lshri_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_srl(r1, r2, w);
+}
+
+define_insn(lshr_long, lshrl_RRR)
+{
+	int r2 = rreg_long(2);
+	int r1 = rreg_long(1);
+	int w = wreg_long(0);
+
+	op_srl(r1, r2, w);
+}
+
+define_insn(lshl_int_const, lshli_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_int(1);
+	int w = wreg_int(0);
+
+	/* Attempt to use an addition instruction because (1) they slot
+	   better on the EV5, and (2) they have better latency on the EV4.  */
+	switch (o) {
+	case 0:
+		if (r != w)
+			op_mov(r, w);
+		break;
+	case 1:
+		op_addl(r, r, w);
+		break;
+	case 2:
+		op_s4addl(r, REG_zero, w);
+		break;
+	case 3:
+		op_s8addl(r, REG_zero, w);
+		break;
+	default:
+		op_sll_i(r, o, w);
+		op_addl(w, REG_zero, w);	/* care for proper overflow. */
+		break;
+	}
+}
+
+define_insn(lshl_long_const, lshll_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_long(1);
+	int w = wreg_long(0);
+
+	/* Attempt to use an addition instruction because (1) they slot
+	   better on the EV5, and (2) they have better latency on the EV4.  */
+	switch (o) {
+	case 0:
+		if (r != w)
+			op_mov(r, w);
+		break;
+	case 1:
+		op_addq(r, r, w);
+		break;
+	case 2:
+		op_s4addq(r, REG_zero, w);
+		break;
+	case 3:
+		op_s8addq(r, REG_zero, w);
+		break;
+	default:
+		op_sll_i(r, o, w);
+		break;
+	}
+}
+
+define_insn(lshl_int, lshli_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_sll(r1, r2, w);
+	op_addl(w, REG_zero, w);	/* care for proper overflow. */
+}
+
+define_insn(lshl_long, lshll_RRR)
+{
+	int r2 = rreg_long(2);
+	int r1 = rreg_long(1);
+	int w = wreg_long(0);
+
+	op_sll(r1, r2, w);
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(load_int, loadi_RxR)
+{
+	int r = rreg_ref(2);
+	int w = wreg_int(0);
+
+	op_ldl(w, r, 0);
+}
+
+define_insn(load_offset_int, loadi_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_ref(1);
+	int w = wreg_int(0);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_ldl(w, r, o);
+}
+
+define_insn(load_ref, loadr_RxR)
+{
+	int r = rreg_ref(2);
+	int w = wreg_ref(0);
+
+	op_ldq(w, r, 0);
+}
+
+define_insn(load_offset_ref, loadr_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_ref(1);
+	int w = wreg_ref(0);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_ldq(w, r, o);
+}
+
+define_insn(load_long, loadl_RxR)
+{
+	int r = rreg_ref(2);
+	int w = wreg_long(0);
+
+	op_ldq(w, r, 0);
+}
+
+define_insn(load_offset_long, loadl_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_ref(1);
+	int w = wreg_long(0);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_ldq(w, r, o);
+}
+
+define_insn(load_float, loadf_RxR)
+{
+	int r = rreg_ref(2);
+	int w = rreg_float(0);
+
+	op_lds(w, r, 0);
+}
+
+define_insn(load_double, loadd_RxR)
+{
+	int r = rreg_ref(2);
+	int w = wreg_double(0);
+
+	op_ldt(w, r, 0);
+}
+
+define_insn(load_byte, loadb_RxR)
+{
+	int r = rreg_ref(2);
+	int w = wreg_int(0);
+
+	if (alpha_have_bwx()) {
+		op_ldbu(w, r, 0);
+		op_sextb(w, w);
+	}
+	else {
+#if 0
+		op_ldq_u(w, r, 0);
+		op_addq_i(r, 1, REG_at);
+		op_extqh(w, REG_at, w);
+		op_sra_i(w, 56, w);
+#endif
+		op_mov(r, REG_at);
+                op_ldq_u(w, r, 0);
+                op_extbl(w, REG_at, w);
+                op_sll_i(w, 56, w);
+                op_sra_i(w, 56, w);    
+	}
+}
+
+define_insn(load_char, loadc_RxR)
+{
+	int r = rreg_ref(2);
+	int w = wreg_int(0);
+
+	if (alpha_have_bwx()) {
+		op_ldwu(w, r, 0);
+	}
+	else {
+		/* Note that an aligned pointer is assumed here.  */
+		op_ldq_u(w, r, 0);
+		op_extwl(w, r, w);
+	}
+}
+
+define_insn(load_short, loads_RxR)
+{
+	int r = rreg_ref(2);
+	int w = wreg_int(0);
+
+	if (alpha_have_bwx()) {
+		op_ldwu(w, r, 0);
+		op_sextw(w, w);
+	}
+	else {
+		/* Note that an aligned pointer is assumed here.  */
+		op_ldq_u(w, r, 0);
+		op_addq_i(r, 2, REG_at);
+		op_extqh(w, REG_at, w);
+		op_sra_i(w, 48, w);
+	}
+}
+
+define_insn(store_int, storei_xRR)
+{
+	int r = rreg_int(2);
+	int w = rreg_ref(1);
+
+	op_stl(r, w, 0);
+}
+
+define_insn(store_offset_int, storei_xRRC)
+{
+	int o = const_int(2);
+	int w = rreg_ref(1);
+	int r = rreg_int(0);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_stl(r, w, o);
+}
+
+define_insn(store_ref, storer_xRR)
+{
+	int r = rreg_ref(2);
+	int w = rreg_ref(1);
+
+	op_stq(r, w, 0);
+}
+
+define_insn(store_offset_ref, storer_xRRC)
+{
+	int o = const_int(2);
+	int w = rreg_ref(1);
+	int r = rreg_ref(0);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_stq(r, w, o);
+}
+
+define_insn(store_long, storel_xRR)
+{
+	int w = rreg_ref(1);
+	int r = rreg_long(2);
+
+	op_stq(r, w, 0);
+}
+
+define_insn(store_offset_long, storel_xRRC)
+{
+	int o = const_int(2);
+	int w = rreg_ref(1);
+	int r = rreg_long(0);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_stq(r, w, o);
+}
+
+define_insn(store_float, storef_xRR)
+{
+	int r = rreg_float(2);
+	int w = rreg_ref(1);
+
+	op_sts(r, w, 0);
+}
+
+define_insn(store_double, stored_xRR)
+{
+	int r = rreg_double(2);
+	int w = rreg_ref(1);
+
+	op_stt(r, w, 0);
+}
+
+define_insn(store_byte, storeb_xRR)
+{
+	int r = rreg_int(2);
+	int w = rreg_ref(1);
+
+	if (alpha_have_bwx()) {
+		op_stb(r, w, 0);
+	}
+	else {
+		op_ldq_u(REG_at, w, 0);
+		clobberRegister(r);
+		op_insbl(r, w, r);
+		op_mskbl(REG_at, w, REG_at);
+		op_or(r, REG_at, r);
+		op_stq_u(r, w, 0);
+	}
+}
+
+define_insn(store_short, stores_xRR)
+{
+	int r = rreg_int(2);
+	int w = rreg_ref(1);
+
+	if (alpha_have_bwx()) {
+		op_stw(r, w, 0);
+	}
+	else {
+		/* Note that an aligned pointer is assumed here.  */
+		op_ldq_u(REG_at, w, 0);
+		clobberRegister(r);
+		op_inswl(r, w, r);
+		op_mskwl(REG_at, w, REG_at);
+		op_or(r, REG_at, r);
+		op_stq_u(r, w, 0);
+	}
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(cvt_int_byte, cvtib_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	if (alpha_have_bwx()) {
+		op_sextb(r, w);
+	}
+	else {
+		op_sll_i(r, 56, w);
+		op_sra_i(w, 56, w);
+	}
+}
+
+define_insn(cvt_int_short, cvtis_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	if (alpha_have_bwx()) {
+		op_sextw(r, w);
+	}
+	else {
+		op_sll_i(r, 48, w);
+		op_sra_i(w, 48, w);
+	}
+}
+
+define_insn(cvt_int_long, cvtil_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_long(0);
+
+	op_addl(r, REG_zero, w);
+}
+
+define_insn(cvt_long_int, cvtli_RxR)
+{
+	int r = rreg_long(2);
+	int w = wreg_int(0);
+
+	op_addl(r, REG_zero, w);
+}
+
+define_insn(cvt_int_float, cvtif_RxR)
+{
+	int r = rreg_float(2);
+	int w = wreg_float(0);
+
+	op_cvtlq(r, w);
+	op_cvtqs(w, w);
+}
+
+define_insn(cvt_long_float, cvtlf_RxR)
+{
+	int r = rreg_double(2);
+	int w = wreg_float(0);
+
+	op_cvtqs(r, w);
+}
+
+define_insn(cvt_int_double, cvtid_RxR)
+{
+	int r = rreg_float(2);
+	int w = wreg_double(0);
+
+	op_cvtlq(r, w);
+	op_cvtqt(w, w);
+}
+
+define_insn(cvt_long_double, cvtld_RxR)
+{
+	int r = rreg_double(2);
+	int w = wreg_double(0);
+
+	op_cvtqt(r, w);
+}
+
+define_insn(cvt_float_int, cvtfi_RxR)
+{
+	int r = rreg_float(2);
+	int w = wreg_float(0);
+
+	op_cvtst(r, w);
+	op_cvttq_c(w, w);
+	op_cvtql(w, w);
+}
+
+define_insn(cvt_float_long, cvtfl_RxR)
+{
+	int r = rreg_float(2);
+	int w = wreg_double(0);
+
+	op_cvtst(r, w);
+	op_cvttq_c(w, w);
+}
+
+define_insn(cvt_double_long, cvtdl_RxR)
+{
+	int r = rreg_double(2);
+	int w = wreg_double(0);
+
+	op_cvttq_c(r, w);
+}
+
+define_insn(cvt_double_int, cvtdi_RxR)
+{
+	int r = rreg_double(2);
+	int w = wreg_float(0);
+
+	op_cvttq_c(r, w);
+	op_cvtql(w, w);
+}
+
+define_insn(cvt_float_double, cvtfd_RxR)
+{
+	int r = rreg_float(2);
+	int w = wreg_double(0);
+
+	op_cvtst(r, w);
+}
+
+define_insn(cvt_double_float, cvtdf_RxR)
+{
+	int r = rreg_double(2);
+	int w = wreg_float(0);
+
+#ifndef AXP_FULL_IEEE_FP
+	op_cvtts(r, w);
+#else
+	op_cvtts_su(r, w);
+	op_trapb();
+#endif
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(lcmp, lcmp_RRR)
+{
+	int r2 = rreg_long(2);
+	int r1 = rreg_long(1);
+	int w = wreg_int(0);
+
+	op_cmplt(r1, r2, w);
+	op_cmplt(r2, r1, REG_at);
+	op_subl(w, REG_at, w);
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(build_key, set_word_xxC)
+{
+	jint val = const_int(2);
+
+	debug((".long %08x\n", val));
+	LOUT = val;
+}
+
+define_insn(build_code_ref, set_wordpc_xxC)
+{
+	label* l = const_label(2);
+
+	l->type |= Lrelative | Llong | Lrangecheck;
+	l->at = CODEPC;
+	l->from = 0;
+
+	debug((".gprel ?\n"));
+	LOUT = 0;
+}
+
+define_insn(load_code_ref, loadpc_RxR)
+{
+	int r = rreg_long(2);
+	int w = wreg_long(0);
+
+	op_ldl(w, r, 0);
+	op_addq(w, REG_gp, w);
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(set_label, set_label_xxC)
+{
+	label* l = const_label(2);
+
+	l->to = CODEPC;
+}
+
+define_insn(branch, branch_xCC)
+{
+	label* l = const_label(1);
+	int bt = const_int(2);
+
+	l->type |= Llong21 | Lrelative | Lrangecheck;
+	l->at = CODEPC;
+
+	switch (bt) {
+	case ba:
+		op_br(REG_zero, 0);
+		break;
+	default:
+		abort();
+	}
+
+	l->from = CODEPC;
+}
+
+static inline void
+alpha_cbranch(int r1, int r2, label *l, int bt)
+{
+	int ne;
+
+	/* Do the compare and branch with cmp{eq,le,lt} and b{ne,eq} because
+	   that slots better on the ev5 than a sub and b*.  */
+
+	switch (bt) {
+	case beq:
+		op_cmpeq(r1, r2, REG_at);
+		ne = 1;
+		break;
+	case bne:
+		op_cmpeq(r1, r2, REG_at);
+		ne = 0;
+		break;
+	case blt:
+		op_cmplt(r1, r2, REG_at);
+		ne = 1;
+		break;
+	case ble:
+		op_cmple(r1, r2, REG_at);
+		ne = 1;
+		break;
+	case bgt:
+		op_cmple(r1, r2, REG_at);
+		ne = 0;
+		break;
+	case bge:
+		op_cmplt(r1, r2, REG_at);
+		ne = 0;
+		break;
+	case bult:
+		op_cmpult(r1, r2, REG_at);
+		ne = 1;
+		break;
+	default:
+		abort();
+	}
+
+	l->type |= Llong21 | Lrelative | Lrangecheck;
+	l->at = CODEPC;
+
+	if (ne)
+		op_bne(REG_at, 0);
+	else
+		op_beq(REG_at, 0);
+
+	l->from = CODEPC;
+}
+
+define_insn(cbranch_int, cbranchi_xRRLC)
+{
+	alpha_cbranch(rreg_int(1), rreg_int(2), const_label(3), const_int(4));
+}
+
+define_insn(cbranch_ref, cbranchr_xRRLC)
+{
+	alpha_cbranch(rreg_ref(1), rreg_ref(2), const_label(3), const_int(4));
+}
+
+static void
+alpha_cbranch_const(int r, long o, label *l, int bt, bool is_int)
+{
+	static const int negate_test[] = {
+		[beq] bne, [blt] bge, [ble] bgt, [bgt] ble,
+		[bge] blt, [bne] beq, [bult] buge, [buge] bult
+	};
+
+	int t;
+
+	if (o == 0) {
+		t = r;
+	}
+	else if (o > 0 && o <= 0xFF) {
+		/* Do the compare and branch with cmp{eq,le,lt} and b{ne,eq}
+		   because that slots better on the ev5 than a sub and b*.  */
+
+		switch (bt) {
+		case beq:
+			op_cmpeq_i(r, o, REG_at);
+			bt = bne;
+			break;
+		case bne:
+			op_cmpeq_i(r, o, REG_at);
+			break;
+		case blt:
+			op_cmplt_i(r, o, REG_at);
+			bt = bne;
+			break;
+		case ble:
+			op_cmple_i(r, o, REG_at);
+			bt = bne;
+			break;
+		case bgt:
+			op_cmple_i(r, o, REG_at);
+			bt = beq;
+			break;
+		case bge:
+			op_cmplt_i(r, o, REG_at);
+			bt = beq;
+			break;
+		case bult:
+			op_cmpult_i(r, o, REG_at);
+			bt = bne;
+			break;
+		default:
+			abort();
+		}
+		t = REG_at;
+	}
+	else if (o < 0 && o >= -0xFF) {
+		if (is_int)
+			op_addl_i(r, o, REG_at);
+		else
+			op_addq_i(r, o, REG_at);
+		t = REG_at;
+		bt = negate_test[bt];
+	}
+	else {
+		/* The rangechecks should have been set up to prevent this.  */
+		assert(!is_int && o >= -0x8000 && o < 0x8000);
+		op_lda(REG_at, r, o);
+		t = REG_at;
+		bt = negate_test[bt];
+	}
+
+	l->type |= Llong21 | Lrelative | Lrangecheck;
+	l->at = CODEPC;
+
+	switch (bt) {
+	case beq:
+		op_beq(t, 0);
+		break;
+	case bne:
+		op_bne(t, 0);
+		break;
+	case blt:
+		op_blt(t, 0);
+		break;
+	case ble:
+		op_ble(t, 0);
+		break;
+	case bgt:
+		op_bgt(t, 0);
+		break;
+	case bge:
+		op_bge(t, 0);
+		break;
+	default:
+		abort();
+	}
+
+	l->from = CODEPC;
+}
+
+define_insn(cbranch_int_const, cbranchi_xRCLC)
+{
+	alpha_cbranch_const(rreg_int(1), const_int(2), const_label(3),
+			    const_int(4), true);
+}
+
+define_insn(cbranch_ref_const, cbranchr_xRCLC)
+{
+	alpha_cbranch_const(rreg_ref(1), const_long(2), const_label(3),
+			    const_int(4), false);
+}
+
+define_insn(branch_indirect, branch_indirect_xRC)
+{
+	int r = rreg_long(1);
+	assert(const_int(2) == ba);
+
+	op_jmp(REG_zero, r, 0);
+}
+
+define_insn(call_ref, call_xCC)
+{
+	/* Since we can't tell where we are finally going to be located,
+	   we can't tell if we are going to be in range for a bsr.
+	   Nevertheless, we implement this insn such that we don't wind
+	   up muddying too many registers, since we have to have the
+	   value in $pv due to calling convention constraints.  */
+
+        label* l = const_label(1);
+        assert(const_int(2) == ba);
+
+#if 0
+	/* For normal function calls, these should have been flushed
+	   already.  For specials like soft_badarrayindex that aren't
+	   considered in the the normal basic block divisions, this
+	   is in fact wrong, because this flush isn't happening before
+	   the test, and so we'll later think that the up-to-date
+	   value for the slot is on the stack when it isn't.  */
+	clobberRegister(REG_pv);
+	clobberRegister(REG_ra);
+#endif
+
+	alpha_move_const_pool(REG_pv, l, CPref, l->to, op_ldq);
+
+	op_jsr(REG_ra, REG_pv, 0);
+
+	alpha_ldgp(REG_ra);
+}
+
+define_insn(call, call_xRC)
+{
+	int r;
+
+	assert(const_int(2) == ba);
+
+	/* Like call_xCC, clobbers do not belong here, even though we
+	   kill $ra and $pv.  */
+
+	if (slotInRegister(1, Rref)) {
+		r = rreg_ref(1);
+		if (r != REG_pv) {
+			op_mov(r, REG_pv);
+		}
+	}
+	else {
+		r = rslot_ref(1);
+		assert(r >= -0x8000 && r < 0x8000);
+		op_ldq(REG_pv, REG_fp, r);
+		r = REG_pv;
+	}
+
+	op_jsr(REG_ra, r, 0);
+	alpha_ldgp(REG_ra);
+}
+
+define_insn(ret, ret_xxx)
+{
+	op_ret(REG_zero, REG_ra, 1);
+}
+
+static void
+alpha_pusharg_integer(sequence *s, int type)
+{
+	int a = const_int(2);
+	int w, r;
+
+	if (a < 6) {
+		w = REG_a0 + a;
+		if (slotInRegister(1, type)) {
+			r = fastSlotRegister(seq_slot(s, 1), type, rread);
+			if (r != w) {
+				clobberRegister(w);
+				op_mov(r, w);
+			}
+		}
+		else {
+			r = slowSlotOffset(seq_slot(s, 1), type, rread);
+			assert(r >= -0x8000 && r < 0x8000);
+			clobberRegister(w);
+			if (type == Rint)
+				op_ldl(w, REG_fp, r);
+			else
+				op_ldq(w, REG_fp, r);
+		}
+	}
+	else {
+		w = SLOT2PUSHOFFSET(a);
+		if (slotInRegister(1, type)) {
+			r = fastSlotRegister(seq_slot(s, 1), type, rread);
+		}
+		else {
+			r = slowSlotOffset(seq_slot(s, 1), type, rread);
+			assert(r >= -0x8000 && r < 0x8000);
+			if (type == Rint)
+				op_ldl(REG_at, REG_fp, r);
+			else
+				op_ldq(REG_at, REG_fp, r);
+			r = REG_at;
+		}
+		assert(w >= -0x8000 && w < 0x8000);
+		op_stq(r, REG_sp, w);
+	}
+}
+
+define_insn(pusharg_int, pushi_xRC)
+{
+	alpha_pusharg_integer(s, Rint);
+}
+
+define_insn(push_ref, pushr_xRC)
+{
+	alpha_pusharg_integer(s, Rref);
+}
+
+define_insn(push_long, pushl_xRC)
+{
+	alpha_pusharg_integer(s, Rlong);
+}
+
+static void
+alpha_pusharg_integer_const(long c, int a)
+{
+	int w;
+	if (a < 6) {
+		w = REG_a0 + a;
+		clobberRegister(w);
+		if (alpha_s32_rangecheck(c)) {
+			alpha_move_const_32(w, c);
+		}
+		else {
+			alpha_move_const_pool(w, NULL, CPlong, c, op_ldq);
+		}
+	}
+	else {
+		w = SLOT2PUSHOFFSET(a);
+		if (c == 0) {
+			op_stq(REG_zero, REG_sp, w);
+		}
+		else if (alpha_s32_rangecheck(c)) {
+			alpha_move_const_32(REG_at, c);
+			op_stq(REG_at, REG_sp, w);
+		}
+		else {
+			alpha_move_const_pool(REG_at, NULL, CPlong, c, op_ldq);
+			op_stq(REG_at, REG_sp, w);
+		}
+	}
+}
+
+define_insn(pusharg_int_const, pushi_xCC)
+{
+	alpha_pusharg_integer_const(const_int(1), const_int(2));
+}
+
+define_insn(pusharg_ref_const, pushr_xCC)
+{
+	alpha_pusharg_integer_const(const_long(1), const_int(2));
+}
+
+define_insn(pusharg_long_const, pushl_xCC)
+{
+	alpha_pusharg_integer_const(const_long(1), const_int(2));
+}
+
+define_insn(push_float, pushf_xRC)
+{
+	int a = const_int(2);
+	int r, w;
+
+	if (a < 6) {
+		w = REG_fa0 + a;
+		if (slotInRegister(1, Rfloat)) {
+			r = fastSlotRegister(seq_slot(s, 1), Rfloat, rread);
+			if (r != w) {
+				clobberRegister(w);
+				op_fmov(r, w);
+			}
+		}
+		else {
+			r = rslot_float(1);
+			assert(r >= -0x8000 && r < 0x8000);
+			clobberRegister(w);
+			op_lds(w, REG_fp, r);
+		}
+	}
+	else {
+		w = SLOT2PUSHOFFSET(a);
+		r = rreg_float(1);
+		assert(w >= -0x8000 && w < 0x8000);
+		op_sts(r, REG_sp, w);
+	}
+}
+
+define_insn(push_double, pushd_xRC)
+{
+	int a = const_int(2);
+	int r, w;
+
+	if (a < 6) {
+		w = REG_fa0 + a;
+		if (slotInRegister(1, Rdouble)) {
+			r = fastSlotRegister(seq_slot(s, 1), Rdouble, rread);
+			if (r != w) {
+				clobberRegister(w);
+				op_fmov(r, w);
+			}
+		}
+		else {
+			r = rslot_double(1);
+			assert(r >= -0x8000 && r < 0x8000);
+			clobberRegister(w);
+			op_ldt(w, REG_fp, r);
+		}
+	}
+	else {
+		w = SLOT2PUSHOFFSET(a);
+		r = rreg_double(1);
+		assert(w >= -0x8000 && w < 0x8000);
+		op_stt(r, REG_sp, w);
+	}
+}
+
+define_insn(popargs, popargs_xxC)
+{
+}
+
+define_insn(return_int, returni_Rxx)
+{
+	forceRegister(seq_dst(s), REG_v0, Rint);
+}
+
+define_insn(return_ref, returnr_Rxx)
+{
+	forceRegister(seq_dst(s), REG_v0, Rref);
+}
+
+define_insn(return_long, returnl_Rxx)
+{
+	forceRegister(seq_dst(s), REG_v0, Rlong);
+}
+
+define_insn(return_float, returnf_Rxx)
+{
+	forceRegister(seq_dst(s), REG_f0, Rfloat);
+}
+
+define_insn(return_double, returnd_Rxx)
+{
+	forceRegister(seq_dst(s), REG_f0, Rdouble);
+}
+
+define_insn(returnarg_int, returnargi_xxR)
+{
+	int r;
+
+	if (slotInRegister(2, Rint)) {
+		r = rreg_int(2);
+		if (r != REG_v0)
+			op_mov(r, REG_v0);
+	}
+	else {
+		r = rslot_int(2);
+		assert(r >= -0x8000 && r < 0x8000);
+		op_ldl(REG_v0, REG_fp, r);
+	}
+}
+
+define_insn(returnarg_ref, returnargr_xxR)
+{
+	int r;
+
+	if (slotInRegister(2, Rref)) {
+		r = rreg_ref(2);
+		if (r != REG_v0)
+			op_mov(r, REG_v0);
+	}
+	else {
+		r = rslot_ref(2);
+		assert(r >= -0x8000 && r < 0x8000);
+		op_ldq(REG_v0, REG_fp, r);
+	}
+}
+
+define_insn(returnarg_long, returnargl_xxR)
+{
+	int r;
+
+	if (slotInRegister(2, Rlong)) {
+		r = rreg_long(2);
+		if (r != REG_v0)
+			op_mov(r, REG_v0);
+	}
+	else {
+		r = rslot_long(2);
+		assert(r >= -0x8000 && r < 0x8000);
+		op_ldq(REG_v0, REG_fp, r);
+	}
+}
+
+define_insn(returnarg_float, returnargf_xxR)
+{
+	int r;
+
+	if (slotInRegister(2, Rfloat)) {
+		r = rreg_float(2);
+		if (r != REG_f0)
+			op_fmov(r, REG_f0);
+	}
+	else {
+		r = rslot_float(2);
+		assert(r >= -0x8000 && r < 0x8000);
+		op_lds(REG_f0, REG_fp, r);
+	}
+}
+
+define_insn(returnarg_double, returnargd_xxR)
+{
+	int r;
+
+	if (slotInRegister(2, Rdouble)) {
+		r = rreg_double(2);
+		if (r != REG_f0)
+			op_fmov(r, REG_f0);
+	}
+	else {
+		r = rslot_double(2);
+		assert(r >= -0x8000 && r < 0x8000);
+		op_ldq(REG_f0, REG_fp, r);
+	}
+}
+
+/* --------------------------------------------------------------------- */
+
+/* Since we can't properly walk the stack in C, we can't find the current
+   Java frame for beginning the exception handling search.  So we bounce
+   to C calls through a trampoline that saves the current Java frame.  */
+
+void alpha_do_call_c();
+
+define_insn(call_soft, call_soft_xCC)
+{
+        label* l = const_label(1);
+        assert(const_int(2) == ba);
+
+	alpha_move_const_pool(REG_pv, NULL, CPref, &alpha_do_call_c, op_ldq);
+	alpha_move_const_pool(REG_v0, l, CPref, l->to, op_ldq);
+
+	op_jsr(REG_ra, REG_pv, 0);
+
+	alpha_ldgp(REG_ra);
+}
+
+/* Annoyingly, GCC will not let you pass parameters to asm blocks at the
+   top level.  So we put it in this function so that we can get the 
+   constants passed in.  */
+
+static void __attribute__((unused))
+silly_wrapper(void)
+{
+   asm(".align 3
+	.globl alpha_do_call_c
+alpha_do_call_c:
+	ldgp	$29,0($27)
+	subq	$30,32,$30
+	# Create the exceptionFrame structure; also our return information
+	stq	$15,8($30)
+	stq	$26,0($30)
+	# Save the exception structure in the thread context
+	lda	$2,16-%1($30)		# be prepared for null thread
+	ldq	$1,currentThread
+	beq	$1,1f
+	ldq	$2,threadContext
+	ldl	$1,%0($1)
+	s8addq	$1,$2,$2
+	ldq	$2,0($2)
+	stq	$30,%1($2)
+	# We don't want to calculate that again on the way out
+1:	stq	$2,16($30)
+	# Chain to the C code
+	mov	$0,$27
+	jsr	$26,($0),0
+	# Reset the thread context exception info
+	ldq	$1,16($30)
+	ldq	$26,0($30)
+	stq	$31,%1($1)
+	addq	$30,32,$30
+	ret"
+	: : "i"(offsetof(Hjava_lang_Thread, data[0].PrivateInfo)),
+            "i"(offsetof(ctx, exceptPtr)));
+
+   /* And another version for chaining to the division routines.  */
+
+   asm(".align 3
+	.globl alpha_do_call_div
+alpha_do_call_div:
+	ldgp	$29,0($27)
+	subq	$30,48,$30
+	# Save everything we change
+	stq	$3,32($30)
+	stq	$2,24($30)
+	stq	$1,16($30)
+	# Create the exceptionFrame structure; also our return information
+	stq	$15,8($30)
+	stq	$23,0($30)
+	# Save the exception structure in the thread context
+	lda	$2,40-%1($30)
+	ldq	$1,currentThread
+	beq	$1,1f
+	ldq	$2,threadContext
+	ldl	$1,%0($1)
+	s8addq	$1,$2,$2
+	ldq	$2,0($2)
+	stq	$30,%1($2)
+	# We don't want to calculate that again on the way out
+1:	stq	$2,40($30)
+	# Chain to the C code
+	mov	$0,$27
+	jsr	$23,($0),0
+	# Reset the thread context exception info and exit
+	ldq	$1,40($30)
+	ldq	$3,32($30)
+	ldq	$2,24($30)
+	ldq	$23,0($30)
+	stq	$31,%1($1)
+	ldq	$1,16($30)
+	addq	$30,48,$30
+	ret	$31,($23),1"
+	: : "i"(offsetof(Hjava_lang_Thread, data[0].PrivateInfo)),
+            "i"(offsetof(ctx, exceptPtr)));
+}
+
+
+/* --------------------------------------------------------------------- */
+
+/* We need to walk through the function signature in order to find out
+   the type of each argument so that we know what register to put it in.
+   Past that, we simply have to be clever about getting the arguments
+   past 6 on to the stack in the right place.
+
+   The other nifty thing we do here is save all of the call-saved regs
+   so that we don't have to do it in each frame of the generated functions.
+
+   And finally, we have to save the incoming saved Java frame information
+   so that exceptions are handled properly even if we've got a call chain
+   like c -> java -> c -> java.
+
+   NOTE!  This relies on the assumption that only ways out of an exception
+   are (1) an ABEND somewhere in the call chain below us, (2) the exception
+   is caught and processed in the jvm and we have an orderly return, or
+   (3) someone down below uses longjmp to get back to somewhere above.
+   Anything else and we'll spooge our caller's saved regs.
+
+   Also note the label "native_code_breakpoint" that is handy for stopping
+   at in the debugger.  */
+
+/* The stack frame that is built here looks like this:
+ *
+ *	incoming sp ->	+------------------------+
+ *			| 8 saved fregs          |
+ *			+------------------------+
+ *			| Unused                 |
+ *			+------------------------+
+ *			| Saved exceptPtr        |
+ *			+------------------------+
+ *			| Saved &exceptPtr       |
+ *			+------------------------+
+ *			| Saved fp               |
+ *			+------------------------+
+ *			| Saved ra               |
+ *	outgoing fp ->	+------------------------+
+ *			| 6 saved iregs		 |
+ *			+------------------------+
+ *			| Java fp chain          |
+ *			+------------------------+
+ *			| Java ra chain          |
+ *			+------------------------+
+ *			| On stack arguments     |
+ *	outgoing sp ->	+------------------------+
+ */
+
+void alpha_do_call_kaffe(void *fn, void *regs,
+			 long n_stack_args, va_list stack_args,
+			 void **exceptPtrAddr);
+
+   asm(".text
+	.align 3
+	.globl alpha_do_call_kaffe
+	.ent alpha_do_call_kaffe
+alpha_do_call_kaffe:
+	.frame	$15,22*8,$26
+	subq	$30,22*8,$30
+	# Store all of the fp call-saved registers
+	stt	$f9,21*8($30)
+	stt	$f8,20*8($30)
+	stt	$f7,19*8($30)
+	stt	$f6,18*8($30)
+	stt	$f5,17*8($30)
+	stt	$f4,16*8($30)
+	stt	$f3,15*8($30)
+	stt	$f2,14*8($30)
+	# Store our local call-frame information
+	stq	$21,11*8($30)
+	stq	$17,10*8($30)
+	stq	$15,9*8($30)
+	stq	$26,8*8($30)
+	# Store all of the int call-saved registers
+	stq	$14,7*8($30)
+	stq	$13,6*8($30)
+	stq	$12,5*8($30)
+	stq	$11,4*8($30)
+	stq	$10,3*8($30)
+	stq	$9,2*8($30)
+	# Finalize the stack frame
+	addq	$30,8*8,$15
+	.prologue 0
+	# Make sure the new stack will be 16-byte aligned
+	subq	$30,8,$0
+	cmovlbs	$18,$0,$30
+	# Copy the arguments past six onto the current stack
+	addl	$20,$31,$20
+	addq	$19,$20,$20
+	br	1f
+0:	ldq	$1,0($20)
+	subq	$30,8,$30
+	addq	$20,8,$20
+	subq	$18,1,$18
+	stq	$1,0($30)
+1:	bgt	$18,0b
+	# Create a fake Java-like stack frame from the saved exception info
+	ldq	$1,0($21)
+	mov	$31,$2
+	mov	$31,$3
+	beq	$1,2f
+	ldq	$2,0($1)
+	ldq	$3,8($1)
+2:	stq	$1,4*8($15)
+	stq	$2,-8*8($15)
+	stq	$3,-7*8($15)
+	stq	$31,0($21)
+	# Load up the incoming argument registers
+	mov	$16,$27
+	ldq	$16,0*8($17)
+	ldq	$18,2*8($17)
+	ldq	$19,3*8($17)
+	ldq	$20,4*8($17)
+	ldq	$21,5*8($17)
+	ldt	$f16,6*8($17)
+	ldt	$f17,7*8($17)
+	ldt	$f18,8*8($17)
+	ldt	$f19,9*8($17)
+	ldt	$f20,10*8($17)
+	ldt	$f21,11*8($17)
+	ldq	$17,1*8($17)
+native_code_breakpoint:
+	jsr	$26,($27),0
+	# Reset the stack from the on-stack arguments
+	subq	$15,8*8,$30
+	# Store the outgoing result registers
+	ldq	$17,2*8($15)
+	stq	$0,0*8($17)
+	stt	$f0,6*8($17)
+	sts	$f0,7*8($17)
+	# Reset the Java exception info like we found it
+	ldq	$1,3*8($15)
+	ldq	$2,4*8($15)
+	beq	$1,3f
+	stq	$2,0($1)
+	# Load up all of the call-saved registers
+3:	ldq	$9,2*8($30)
+	ldq	$10,3*8($30)
+	ldq	$11,4*8($30)
+	ldq	$12,5*8($30)
+	ldq	$13,6*8($30)
+	ldq	$14,7*8($30)
+	ldq	$26,8*8($30)
+	ldq	$15,9*8($30)
+	ldt	$f2,14*8($30)
+	ldt	$f3,15*8($30)
+	ldt	$f4,16*8($30)
+	ldt	$f5,17*8($30)
+	ldt	$f6,18*8($30)
+	ldt	$f7,19*8($30)
+	ldt	$f8,20*8($30)
+	ldt	$f9,21*8($30)
+	addq	$30,22*8,$30
+	ret
+	.end alpha_do_call_kaffe");
+
+
+jword
+alpha_call_kaffe_method_varargs(Method *meth, Hjava_lang_Object *obj, va_list argptr)
+{
+	struct {
+		long iargs[6];
+		double fargs[6];
+	} regs;
+	const char *sig;
+	void *dummy = NULL;
+	int i;
+
+	regs.iargs[0] = (long)obj;
+
+	sig = meth->signature->data;
+	assert(*sig == '(');
+	for (i = 1, sig++; *sig != ')' ; ++i, ++sig) {
+		switch (*sig) {
+		case '[':
+			while (*++sig == '[')
+				continue;
+			if (*sig == 'L') {
+		case 'L':
+				sig = strchr(sig, ';');
+			}
+		case 'J':
+			if (i < 6)
+				regs.iargs[i] = va_arg(argptr, long);
+			break;
+
+		case 'I':
+		case 'Z':
+		case 'S':
+		case 'B':
+		case 'C':
+			if (i < 6)
+				regs.iargs[i] = va_arg(argptr, int);
+			break;
+
+		case 'F':
+			if (i < 6)
+				regs.fargs[i] = va_arg(argptr, float);
+			break;
+		case 'D':
+			if (i < 6)
+				regs.fargs[i] = va_arg(argptr, double);
+			break;
+
+		default:
+			abort();
+		}
+	}
+
+	alpha_do_call_kaffe(meth->ncode, &regs, i-6, argptr,
+			    (currentThread
+			     ? &TCTX(currentThread)->exceptPtr
+			     : &dummy));
+
+	switch (*++sig) {
+	case 'L':
+	case '[':
+	case 'J':
+	case 'I':
+	case 'Z':
+	case 'S':
+	case 'B':
+	case 'C':
+		return regs.iargs[0];
+	case 'F':
+		return *(unsigned int *)&regs.fargs[1];
+	case 'D':
+		return *(long *)&regs.fargs[0];
+	case 'V':
+		return 0;
+	}
+	abort();
+	return 0;
+}
+
+jword
+alpha_call_kaffe_static_varargs(Method *meth, va_list argptr)
+{
+	struct {
+		long iargs[6];
+		double fargs[6];
+	} regs;
+	const char *sig;
+	void *dummy = NULL;
+	int i;
+
+	sig = meth->signature->data;
+	assert(*sig == '(');
+	for (i = 0, sig++; *sig != ')' ; ++i, ++sig) {
+		switch (*sig) {
+		case '[':
+			while (*++sig == '[')
+				continue;
+			if (*sig == 'L') {
+		case 'L':
+				sig = strchr(sig, ';');
+			}
+		case 'J':
+			if (i < 6)
+				regs.iargs[i] = va_arg(argptr, long);
+			break;
+
+		case 'I':
+		case 'Z':
+		case 'S':
+		case 'B':
+		case 'C':
+			if (i < 6)
+				regs.iargs[i] = va_arg(argptr, int);
+			break;
+
+		case 'F':
+			if (i < 6)
+				regs.fargs[i] = va_arg(argptr, float);
+			break;
+		case 'D':
+			if (i < 6)
+				regs.fargs[i] = va_arg(argptr, double);
+			break;
+
+		default:
+			abort();
+		}
+	}
+
+	alpha_do_call_kaffe(meth->ncode, &regs, i-6, argptr,
+			    (currentThread
+			     ? &TCTX(currentThread)->exceptPtr
+			     : &dummy));
+
+	switch (*++sig) {
+	case 'L':
+	case '[':
+	case 'J':
+	case 'I':
+	case 'Z':
+	case 'S':
+	case 'B':
+	case 'C':
+		return regs.iargs[0];
+	case 'F':
+		return *(unsigned int *)&regs.fargs[1];
+	case 'D':
+		return *(long *)&regs.fargs[0];
+	case 'V':
+		return 0;
+	}
+	abort();
+	return 0;
+}
+
+jword
+alpha_call_kaffe_function(Method *meth, Hjava_lang_Object *obj)
+{
+	struct {
+		long iargs[6];
+		double fargs[6];
+	} regs;
+	va_list dummy;
+	void *other_dummy = NULL;
+
+	regs.iargs[0] = (long)obj;
+
+	alpha_do_call_kaffe(meth->ncode, &regs, 0, dummy,
+			    (currentThread
+			     ? &TCTX(currentThread)->exceptPtr
+			     : &other_dummy));
+
+	return regs.iargs[0];
+}

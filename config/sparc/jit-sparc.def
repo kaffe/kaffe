@@ -1,0 +1,1162 @@
+/* jit-sparc.def
+ * SPARC instruction definition.
+ *
+ * Copyright (c) 1996, 1997
+ *	Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution 
+ * of this file. 
+ */
+
+#undef	DEBUG
+
+#ifdef DEBUG
+#define	debug(x)	printf##x
+#else
+#define	debug(x)
+#endif
+
+#include "classMethod.h"
+#include "access.h"
+
+#define	REG_g0			0
+#define	REG_o0			8
+#define	REG_o1			9
+#define	REG_sp			14
+#define	REG_o7			15
+#define	REG_i0			24
+#define	REG_i1			25
+#define	REG_fp			30
+#define	REG_i7			31
+#define	REG_f0			32
+#define	REG_f1			33
+
+static char* rnames[] = {
+	"g0", "g1", "g2", "g3", "g4", "g5", "g6", "g7",
+	"o0", "o1", "o2", "o3", "o4", "o5", "o6", "o7",
+	"l0", "l1", "l2", "l3", "l4", "l5", "l6", "l7",
+	"i0", "i1", "i2", "i3", "i4", "i5", "i6", "i7",
+	"f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7",
+	"f8", "f9", "f10", "f11", "f12", "f13", "f14", "f15",
+	"f16", "f17", "f18", "f19", "f20", "f21", "f22", "f23", "f24",
+	"f25", "f26", "f27", "f28", "f29", "f30", "f31"			};
+#define	regname(n)	rnames[n]
+#define	fregname(n)	rnames[(n)+32]
+
+static int argcount = 0;
+
+/* --------------------------------------------------------------------- */
+/* Instruction formats							 */
+
+#define	insn_call(disp)					\
+	LOUT = 0x40000000 | ((disp) & 0x3FFFFFFF)
+
+#define	insn_offset(op, dst, imm)			\
+	LOUT = 0x01000000 | ((dst) << 25) | 		\
+		((op) << 22) | ((imm) & 0x3FFFFF)
+
+#define	insn_branch(cond, anull, dest)			\
+	LOUT = 0x00800000 | ((anull) << 29) |		\
+		((cond) << 25) | ((dest) & 0x3FFFFF)
+
+#define	insn_RRR(op, dst, rs1, rs2)			\
+	LOUT = 0x80000000 | ((dst) << 25) |		\
+		((op) << 19) | ((rs1) << 14) | (rs2)
+
+#define	ldst_RRR(op, dst, rs1, rs2)			\
+	LOUT = 0xC0000000 | ((dst) << 25) |		\
+		((op) << 19) | ((rs1) << 14) | (rs2)
+
+#define	ldst_RRC(op, dst, rs1, cnst)			\
+	LOUT = 0xC0002000 | ((dst) << 25) |		\
+		((op) << 19) | ((rs1) << 14) |		\
+		((cnst) & MASKL13BITS)
+
+#define	insn_RRC(op, op2, dst, rs1, cnst)		\
+	LOUT = 0x00002000 | ((op) << 30) |		\
+		((dst) << 25) | ((op2) << 19) |		\
+		((rs1) << 14) | ((cnst) & MASKL13BITS)
+
+#define	finsn_RRR(op, dst, rs1, rs2)			\
+	LOUT = 0x81A00000 | ((dst) << 25) |	\
+		((rs1) << 14) | ((op) << 5) |	\
+		(rs2)
+
+/* --------------------------------------------------------------------- */
+/* Various masks							 */
+
+#define	MASKL12BITS	0x00000FFF
+#define	MASKL13BITS	0x00001FFF
+#define	MASKU20BITS	0xFFFFFC00
+
+#define	NMASKL12BITS	(~MASKL12BITS)
+#define	NMASKL13BITS	(~MASKL13BITS)
+#define	NMASKU20BITS	(~MASKU20BITS)
+
+/* --------------------------------------------------------------------- */
+
+#define	NOP()	insn_offset(4, REG_g0, 0);		\
+		debug(("nop\n"));
+
+define_insn(unimplemented, unimplemented)
+{
+	abort();
+}
+
+define_insn(nop, nop)
+{
+	NOP();
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(prologue, prologue_xLC)
+{
+	int i;
+	int limit;
+	label* l;
+
+	/* Remember where the framesize should go */
+	l = (label*)const_int(1);
+	l->type = Lframe|Labsolute|Lgeneral;
+	l->at = (uintp)CODEPC;
+
+	insn_RRC(2, 0x3c, REG_sp, REG_sp, 0);
+
+	debug(("save sp,?,sp\n"));
+
+	limit = 6;
+	if (maxArgs < limit) {
+		limit = maxArgs;
+	}
+
+	/* Force the first 6 arguments to the corresponding registers */
+	for (i = 0; i < limit; i++) {
+		forceRegister(&localinfo[i], REG_i0 + i, Rint /* ? */);
+	}
+}
+
+define_insn(epilogue, epilogue_xxx)
+{
+	insn_RRC(2, 0x38, REG_g0, REG_i7, 8);
+	insn_RRR(0x3D, REG_g0, REG_g0, REG_g0);
+
+	debug(("ret\n"));
+	debug(("restore\n"));
+}
+
+define_insn(eprologue, eprologue_xxx)
+{
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(spill_int, spill_Rxx)
+{
+	int r = sreg_int(0);
+	int o = const_int(1);
+
+	ldst_RRC(0x04, r, REG_fp, o);
+
+	debug(("st %s,[fp+%d]\n", regname(r), o));
+}
+
+define_insn(spill_float, fspill_Rxx)
+{
+	int r = sreg_float(0);
+	int o = const_int(1);
+
+	ldst_RRC(0x24, r, REG_fp, o);
+
+	debug(("stf %s,[fp+%d]\n", fregname(r), o));
+}
+
+define_insn(spill_double, fspilll_Rxx)
+{
+	int r = sreg_double(0);
+	int o = const_int(1);
+
+	ldst_RRC(0x24, r, REG_fp, o);
+	debug(("stf %s,[fp+%d]\n", fregname(r), o));
+
+	ldst_RRC(0x24, r+1, REG_fp, o+4);
+	debug(("stf %s,[fp+%d]\n", fregname(r+1), o+4));
+}
+
+define_insn(reload_int, reload_Rxx)
+{
+	int r = lreg_int(0);
+	int o = const_int(1);
+
+	ldst_RRC(0, r, REG_fp, o);
+
+	debug(("ld %s,[fp+%d]\n", regname(r), o));
+}
+
+define_insn(reload_float, freload_Rxx)
+{
+	int r = lreg_float(0);
+	int o = const_int(1);
+
+	ldst_RRC(0x20, r, REG_fp, o);
+
+	debug(("ldf %s,[fp+%d]\n", fregname(r), o));
+}
+
+define_insn(reload_double, freloadl_Rxx)
+{
+	int r = lreg_double(0);
+	int o = const_int(1);
+
+	ldst_RRC(0x20, r, REG_fp, o);
+	debug(("ldf %s,[fp+%d]\n", fregname(r), o));
+
+	ldst_RRC(0x20, r+1, REG_fp, o+4);
+	debug(("ldf %s,%d[fp]\n", fregname(r+1), o+4));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(move_int_const, move_RxC)
+{
+	int val = const_int(2);
+	int w = wreg_int(0);
+
+	if ((val & NMASKL12BITS) == 0 || (val & NMASKL12BITS) == NMASKL12BITS) {
+		insn_RRC(2, 2, w, REG_g0, val & MASKL13BITS);
+		debug(("mov %d,%s\n", val & MASKL13BITS, regname(w)));
+	}
+	else {
+		insn_offset(4, w, val >> 10);
+		debug(("sethi 0x%x,%s ; 0x%x\n", val & MASKU20BITS, regname(w), val));
+		if ((val & NMASKU20BITS) != 0) {
+			insn_RRC(2, 2, w, w, val & NMASKU20BITS);
+			debug(("or 0x%x,%s,%s\n", val & NMASKU20BITS, regname(w), regname(w)));
+		}
+	}
+}
+
+define_insn(move_label_const, move_RxL)
+{
+	label* l = (label*)const_int(2);
+	int w = wreg_int(0);
+
+	l->type |= Llong22x10|Labsolute;
+	l->at = (uintp)CODEPC;
+
+	insn_offset(4, w, 0);		/* upper 22 bits */
+	insn_RRC(2, 2, w, w, 0);	/* lower 10 bits */
+	debug(("sethi ?,%s\n", regname(w)));
+	debug(("or ?,%s,%s\n", regname(w), regname(w)));
+}
+
+define_insn(move_int, move_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	if (r != w) {
+		insn_RRR(2, w, r, REG_g0);
+		debug(("mov %s,%s\n", regname(r), regname(w)));
+	}
+}
+
+define_insn(move_float, fmove_RxR)
+{
+	int r = rreg_float(2);
+	int w = wreg_float(0);
+
+	if (r != w) {
+		finsn_RRR(1, w, 0, r);
+		debug(("fmovs %s,%s\n", fregname(r), fregname(w)));
+	}
+}
+
+define_insn(move_double, fmovel_RxR)
+{
+	int r = rreg_double(2);
+	int w = wreg_double(0);
+
+	if (r != w) {
+		finsn_RRR(1, w, 0, r);
+		finsn_RRR(1, w+1, 0, r+1);
+		debug(("fmovs %s,%s\n", fregname(r), fregname(w)));
+		debug(("fmovs %s,%s\n", fregname(r+1), fregname(w+1)));
+	}
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(add_int, add_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(0x10, w, r1, r2);
+
+	debug(("addcc %s,%s,%s\n", regname(r1), regname(r2), regname(w)));
+}
+
+define_insn(add_int_const, add_RRC)
+{
+	int o;
+	int r;
+	int w;
+
+	o = const_int(2);
+	r = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRC(2, 0x10, w, r, o);
+
+	debug(("addcc %s,%d,%s\n", regname(r), o, regname(w)));
+}
+
+define_insn(adc_int, adc_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(0x08, w, r1, r2);
+
+	debug(("addx %s,%s,%s\n", regname(r1), regname(r2), regname(w)));
+}
+
+define_insn(add_float, fadd_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_float(2);
+	r1 = rreg_float(1);
+	w = wreg_float(0);
+
+	finsn_RRR(0x41, w, r1, r2);
+
+	debug(("fadds %s,%s,%s\n", fregname(r1), fregname(r2), fregname(w)));
+}
+
+define_insn(add_double, faddl_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_double(2);
+	r1 = rreg_double(1);
+	w = wreg_double(0);
+
+	finsn_RRR(0x42, w, r1, r2);
+
+	debug(("faddd %s,%s,%s\n", fregname(r1), fregname(r2), fregname(w)));
+}
+
+define_insn(sub_int, sub_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(0x14, w, r1, r2);
+
+	debug(("subcc %s,%s,%s\n", regname(r1), regname(r2), regname(w)));
+}
+
+define_insn(sub_int_const, sub_RRC)
+{
+	int o;
+	int r;
+	int w;
+
+	o = const_int(2);
+	r = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRC(2, 0x14, w, r, o);
+
+	debug(("subcc %s,%d,%s\n", regname(r), o, regname(w)));
+}
+
+define_insn(sbc_int, sbc_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(0xC, w, r1, r2);
+
+	debug(("subx %s,%s,%s\n", regname(r1), regname(r2), regname(w)));
+}
+
+define_insn(sub_float, fsub_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_float(2);
+	r1 = rreg_float(1);
+	w = wreg_float(0);
+
+	finsn_RRR(0x45, w, r1, r2);
+
+	debug(("fsubs %s,%s,%s\n", fregname(r1), fregname(r2), fregname(w)));
+}
+
+define_insn(sub_double, fsubl_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_double(2);
+	r1 = rreg_double(1);
+	w = wreg_double(0);
+
+	finsn_RRR(0x46, w, r1, r2);
+
+	debug(("fsubd %s,%s,%s\n", fregname(r1), fregname(r2), fregname(w)));
+}
+
+define_insn(mul_float, fmul_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_float(2);
+	r1 = rreg_float(1);
+	w = wreg_float(0);
+
+	finsn_RRR(0x49, w, r1, r2);
+
+	debug(("fmuls %s,%s,%s\n", fregname(r1), fregname(r2), fregname(w)));
+}
+
+define_insn(mul_double, fmull_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_double(2);
+	r1 = rreg_double(1);
+	w = wreg_double(0);
+
+	finsn_RRR(0x4A, w, r1, r2);
+
+	debug(("fmuld %s,%s,%s\n", fregname(r1), fregname(r2), fregname(w)));
+}
+
+define_insn(div_float, fdiv_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_float(2);
+	r1 = rreg_float(1);
+	w = wreg_float(0);
+
+	finsn_RRR(0x4D, w, r1, r2);
+
+	debug(("fdivs %s,%s,%s\n", fregname(r1), fregname(r2), fregname(w)));
+}
+
+define_insn(div_double, fdivl_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_double(2);
+	r1 = rreg_double(1);
+	w = wreg_double(0);
+
+	finsn_RRR(0x4E, w, r1, r2);
+
+	debug(("fdivd %s,%s,%s\n", fregname(r1), fregname(r2), fregname(w)));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(and_int, and_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(1, w, r1, r2);
+
+	debug(("and %s,%s,%s\n", regname(r1), regname(r2), regname(w)));
+}
+
+define_insn(or_int, or_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(2, w, r1, r2);
+
+	debug(("or %s,%s,%s\n", regname(r1), regname(r2), regname(w)));
+}
+
+define_insn(xor_int, xor_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(3, w, r1, r2);
+
+	debug(("xor %s,%s,%s\n", regname(r1), regname(r2), regname(w)));
+}
+
+define_insn(ashr_int, ashr_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(0x27, w, r1, r2);
+
+	debug(("sra %s,%s,%s\n", regname(r1), regname(r2), regname(w)));
+}
+
+define_insn(lshr_int, lshr_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(0x26, w, r1, r2);
+
+	debug(("srl %s,%s,%s\n", regname(r1), regname(r2), regname(w)));
+}
+
+define_insn(lshl_int, lshl_RRR)
+{
+	int r1;
+	int r2;
+	int w;
+
+	r2 = rreg_int(2);
+	r1 = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRR(0x25, w, r1, r2);
+
+	debug(("sll %s,%s,%s\n", regname(r1), regname(r2), regname(w)));
+}
+
+define_insn(lshl_int_const, lshl_RRC)
+{
+	int r;
+	int o;
+	int w;
+
+	o = const_int(2);
+	r = rreg_int(1);
+	w = wreg_int(0);
+
+	insn_RRC(2, 0x25, w, r, o);
+
+	debug(("sll %s,%d,%s\n", regname(r), o, regname(w)));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(load_int, load_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	ldst_RRR(0, w, r, REG_g0);
+
+	debug(("ld [%s],%s\n", regname(r), regname(w)));
+}
+
+define_insn(load_offset_int, load_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_int(1);
+	int w = wreg_int(0);
+
+	ldst_RRC(0, w, r, o);
+
+	debug(("ld %s,[%s+%d]\n", regname(w), regname(r), o));
+}
+
+define_insn(load_float, fload_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_float(0);
+
+	ldst_RRR(0x20, w, r, REG_g0);
+
+	debug(("ldf [%s],%s\n", regname(r), fregname(w)));
+}
+
+define_insn(load_double, floadl_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_double(0);
+
+	ldst_RRR(0x20, w, r, REG_g0);
+	debug(("ldf [%s],%s\n", regname(r), fregname(w)));
+
+	ldst_RRC(0x20, w+1, r, 4);
+	debug(("ldf [%s+4],%s\n", regname(r), fregname(w+1)));
+}
+
+define_insn(load_byte, loadb_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	ldst_RRR(9, w, r, REG_g0);
+
+	debug(("ldsb [%s],%s\n", regname(r), regname(w)));
+}
+
+define_insn(load_char, loadc_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	ldst_RRR(2, w, r, REG_g0);
+
+	debug(("lduh [%s],%s\n", regname(r), regname(w)));
+}
+
+define_insn(load_short, loads_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	ldst_RRR(0xA, w, r, REG_g0);
+
+	debug(("ldsh [%s],%s\n", regname(r), regname(w)));
+}
+
+define_insn(store_int, store_xRR)
+{
+	int r = rreg_int(2);
+	int w = rreg_int(1);
+
+	ldst_RRR(4, r, w, REG_g0);
+
+	debug(("st %s,[%s]\n", regname(r), regname(w)));
+}
+
+define_insn(store_offset_int, store_xRRC)
+{
+	int o = const_int(2);
+	int r = rreg_int(1);
+	int w = rreg_int(0);
+
+	ldst_RRC(0x04, w, r, o);
+
+	debug(("st %s,[%s+%d]\n", regname(w), regname(r), o));
+}
+
+define_insn(store_float, fstore_xRR)
+{
+	int r = rreg_float(2);
+	int w = rreg_int(1);
+
+	ldst_RRR(0x24, r, w, REG_g0);
+
+	debug(("stf %s,[%s]\n", fregname(r), regname(w)));
+}
+
+define_insn(store_double, fstorel_xRR)
+{
+	int r = rreg_double(2);
+	int w = rreg_int(1);
+
+	ldst_RRR(0x24, r, w, REG_g0);
+	debug(("stf %s,[%s]\n", fregname(r), regname(w)));
+
+	ldst_RRC(0x24, r+1, w, 4);
+	debug(("stf %s,[%s+4]\n", fregname(r+1), regname(w)));
+}
+
+define_insn(store_byte, storeb_xRR)
+{
+	int r = rreg_int(2);
+	int w = rreg_int(1);
+
+	ldst_RRR(5, r, w, REG_g0);
+
+	debug(("stb %s,[%s]\n", regname(r), regname(w)));
+}
+
+define_insn(store_short, stores_xRR)
+{
+	int r = rreg_int(2);
+	int w = rreg_int(1);
+
+	ldst_RRR(6, r, w, REG_g0);
+
+	debug(("sth %s,[%s]\n", regname(r), regname(w)));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(cmp_int, cmp_xRR)
+{
+	int r1 = rreg_int(1);
+	int r2 = rreg_int(2);
+
+	insn_RRR(0x14, REG_g0, r1, r2);
+
+	debug(("subxx %s,%s,g0\n", regname(r2), regname(r1)));
+}
+
+define_insn(cmp_int_const, cmp_xRC)
+{
+	int r = rreg_int(1);
+	int o = const_int(2);
+
+	insn_RRC(2, 0x14, REG_g0, r, o);
+
+	debug(("subxx %d,%s,g0\n", o, regname(r)));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(cvt_int_float, cvtif_RxR)
+{
+	int r;
+	int w;
+
+	r = rreg_float(2);
+	w = wreg_float(0);
+
+	finsn_RRR(0xC4, w, REG_g0, r);
+
+	debug(("fitos %s,%s\n", regname(r), fregname(w)));
+}
+
+define_insn(cvt_int_double, cvtid_RxR)
+{
+	int r;
+	int w;
+
+	r = rreg_float(2);
+	w = wreg_double(0);
+
+	finsn_RRR(0xC8, w, REG_g0, r);
+
+	debug(("fitod %s,%s\n", regname(r), fregname(w)));
+}
+
+define_insn(cvt_float_int, cvtfi_RxR)
+{
+	int r;
+	int w;
+
+	r = rreg_float(2);
+	w = wreg_float(0);
+
+	finsn_RRR(0xD1, w, REG_g0, r);
+
+	debug(("fstoi %s,%s\n", fregname(r), fregname(w)));
+}
+
+define_insn(cvt_double_int, cvtdi_RxR)
+{
+	int r;
+	int w;
+
+	r = rreg_double(2);
+	w = wreg_float(0);
+
+	finsn_RRR(0xD2, w, REG_g0, r);
+
+	debug(("fdtoi %s,%s\n", fregname(r), fregname(w)));
+}
+
+define_insn(cvt_float_double, cvtfd_RxR)
+{
+	int r;
+	int w;
+
+	r = rreg_float(2);
+	w = wreg_double(0);
+
+	finsn_RRR(0xC9, w, REG_g0, r);
+
+	debug(("fstod %s,%s\n", fregname(r), fregname(w)));
+}
+
+define_insn(cvt_double_float, cvtdf_RxR)
+{
+	int r;
+	int w;
+
+	r = rreg_double(2);
+	w = wreg_float(0);
+
+	finsn_RRR(0xC6, w, REG_g0, r);
+
+	debug(("fdtos %s,%s\n", fregname(r), fregname(w)));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(build_key, set_word_xxC)
+{
+	jint val = const_int(2);
+
+	LOUT = val
+
+	debug((".word %08x\n", val));
+}
+
+define_insn(build_code_ref, set_wordpc_xxC)
+{
+	label* l = (label*)const_int(2);
+
+	l->type |= Llong|Labsolute;
+	l->at = (uintp)CODEPC;
+	LOUT = 0;
+	l->from = (uintp)CODEPC;
+	debug((".word ?\n"));
+}
+
+#if 0
+define_insn(build_const_ref, set_wordconst_xxC)
+{
+	label* l = (label*)const_int(2);
+
+	/* Align data onto relevant boundary */
+	if (l->size == 2 && ((uintp)CODEPC) % 8 != 0) {
+		LOUT = 0;
+	}
+
+	l->to = (uintp)CODEPC;
+
+	LOUT = l->u.word[0];
+	debug((".word 0x08x\n", l->u.word[0]));
+
+	if (l->size == 2) {
+		LOUT = l->u.word[1];
+		debug((".word 0x08x\n", l->u.word[1]));
+	}
+}
+#endif
+
+/* --------------------------------------------------------------------- */
+
+define_insn(set_label, set_label_xxC)
+{
+	label* l = (label*)const_int(2);
+	l->to = (uint32)CODEPC;
+}
+
+define_insn(branch, branch_xCC)
+{
+	label* l = (label*)const_int(1);
+	int bt = const_int(2);
+
+	l->type |= Llong22|Lrelative;
+	l->at = (uintp)CODEPC;
+	l->from = (uintp)CODEPC;
+
+	switch (bt) {
+	case ba:
+		insn_branch(0x08, 0, 0);
+		debug(("ba ?\n"));
+		break;
+	case beq:
+		insn_branch(0x01, 0, 0);
+		debug(("be ?\n"));
+		break;
+	case bne:
+		insn_branch(0x09, 0, 0);
+		debug(("bne ?\n"));
+		break;
+	case blt:
+		insn_branch(0x03, 0, 0);
+		debug(("bl ?\n"));
+		break;
+	case ble:
+		insn_branch(0x02, 0, 0);
+		debug(("ble ?\n"));
+		break;
+	case bgt:
+		insn_branch(0x0a, 0, 0);
+		debug(("bgt ?\n"));
+		break;
+	case bge:
+		insn_branch(0x0b, 0, 0);
+		debug(("bge ?\n"));
+		break;
+	case bult:
+		insn_branch(0x05, 0, 0);
+		debug(("bul ?\n"));
+		break;
+	case bugt:
+		insn_branch(0x0a, 0, 0);		/* WRONG!!! SIGNED!!! */
+		debug(("bugt ?\n"));
+		break;
+	default:
+		abort();
+	}
+
+	NOP();
+}
+
+define_insn(branch_indirect, branch_indirect_xRC)
+{
+	int r = rreg_int(1);
+	assert(const_int(2) == ba);
+
+	insn_RRR(0x38, REG_g0, r, REG_g0);
+
+	debug(("jmpl [%s]\n", regname(r)));
+
+	NOP();
+}
+
+define_insn(call_ref, call_xCC)
+{
+	label* l = (label*)const_int(1);
+	assert(const_int(2) == ba);
+
+	l->type |= Llong30|Lrelative;
+	l->at = (uintp)CODEPC;
+	l->from = (uintp)CODEPC;
+	
+	insn_call(0);
+	debug(("call ?\n"));
+
+	NOP();
+}
+
+define_insn(call, call_xRC)
+{
+	int r = rreg_int(1);
+	assert(const_int(2) == ba);
+
+	insn_RRR(0x38, REG_o7, r, REG_g0);
+
+	debug(("jmpl [%s],o7\n", regname(r)));
+
+	NOP();
+}
+
+define_insn(ret, ret_xxx)
+{
+}
+
+define_insn(push_int, push_xRC)
+{
+	int r;
+	int a;
+	int w;
+
+	a = const_int(2);
+	r = rreg_int(1);
+
+	if (a < 6) {
+		w = REG_o0 + a;
+		if (r != w) {
+			clobberRegister(w);
+			insn_RRR(2, w, r, REG_g0);
+			debug(("mov %s,%s\n", regname(r), regname(w)));
+		}
+	}
+	else {
+		w = SLOT2PUSHOFFSET(a);
+		ldst_RRC(0x04, r, REG_sp, w);
+		debug(("st %s,[sp+%d]\n", regname(r), w));
+	}
+	argcount++;
+}
+
+define_insn(push_float, fpush_xRC)
+{
+	int r;
+	int a;
+	int w;
+
+	a = const_int(2);
+
+	if (a < 6) {
+		r = rreg_int(1);
+		w = REG_o0 + a;
+		if (r != w) {
+			clobberRegister(w);
+			insn_RRR(2, w, r, REG_g0);
+			debug(("mov %s,%s\n", regname(r), regname(w)));
+		}
+	}
+	else {
+		r = rreg_float(1);
+		w = SLOT2PUSHOFFSET(a);
+		ldst_RRC(0x24, r, REG_sp, w);
+		debug(("stf %s,[sp+%d]\n", fregname(r), w));
+	}
+	argcount++;
+}
+
+define_insn(push_double, fpushl_xRC)
+{
+	int r;
+	int a;
+	int w;
+
+	a = const_int(2);
+
+	if (a < 6) {
+		w = REG_o0 + a;
+		r = rslot_double(1);
+
+		clobberRegister(w);
+
+		ldst_RRC(0, w, REG_fp, r);
+		debug(("ld %s,[fp+%d]\n", regname(w), r));
+	}
+	else {
+		r = rreg_double(1);
+		w = SLOT2PUSHOFFSET(a);
+
+		ldst_RRC(0x24, r, REG_sp, w);
+		debug(("stf %s,[sp+%d]\n", fregname(r), w));
+	}
+	a++;
+
+	if (a < 6) {
+		w = REG_o0 + a;
+		r = rslot_double(1);
+
+		clobberRegister(w);
+		ldst_RRC(0, w, REG_fp, r+4);
+		debug(("ld %s,[fp+%d]\n", regname(w), r+4));
+	}
+	else {
+		r = rreg_double(1);
+		w = SLOT2PUSHOFFSET(a);
+
+		ldst_RRC(0x24, r+1, REG_sp, w);
+		debug(("stf %s,[sp+%d]\n", fregname(r+1), w));
+	}
+
+	argcount += 2;
+}
+
+define_insn(popargs, popargs_xxC)
+{
+	argcount = 0;
+}
+
+define_insn(return_int, return_Rxx)
+{
+	forceRegister(seq_dst(s), REG_o0, Rint);
+}
+
+define_insn(return_long, returnl_Rxx)
+{
+	forceRegister(seq_dst(s), REG_o0, Rint);
+	forceRegister(seq_dst(s)+1, REG_o1, Rint);
+}
+
+define_insn(return_float, freturn_Rxx)
+{
+	forceRegister(seq_dst(s), REG_f0, Rfloat);
+}
+
+define_insn(return_double, freturnl_Rxx)
+{
+	forceRegister(seq_dst(s), REG_f0, Rdouble);
+}
+
+define_insn(returnarg_int, returnarg_xxR)
+{
+	int r = rreg_int(2);
+	insn_RRR(2, REG_i0, r, REG_g0);
+}
+
+define_insn(returnarg_long, returnargl_xxR)
+{
+	int r1;
+	int r2;
+	SlotInfo* r;
+
+	r = seq_slot(s, 2);
+	r1 = _slowSlotRegister(r, Rint, rread);
+	r2 = _slowSlotRegister(r+1, Rint, rread);
+
+	if (REG_i0 != r2) {
+		insn_RRR(2, REG_i0, r1, REG_g0);
+		insn_RRR(2, REG_i1, r2, REG_g0);
+	}
+	else if (REG_i1 != r1) {
+		insn_RRR(2, REG_i1, r2, REG_g0);
+		insn_RRR(2, REG_i0, r1, REG_g0);
+	}
+	else {
+		abort();
+	}
+}
+
+define_insn(returnarg_float, freturnarg_xxR)
+{
+	int r = rreg_float(2);
+
+	finsn_RRR(1, 0 /* REG_f0 */, 0, r);
+	debug(("fmovs %s,%s\n", fregname(REG_f0), fregname(r)));
+}
+
+define_insn(returnarg_double, freturnargl_xxR)
+{
+	int r = rreg_double(2);
+
+	finsn_RRR(1, 0 /* REG_f0 */, 0, r);
+	finsn_RRR(1, 1 /* REG_f1 */, 0, r+1);
+	debug(("fmovs %s,%s\n", fregname(REG_f0), fregname(r)));
+	debug(("fmovs %s,%s\n", fregname(REG_f1), fregname(r+1)));
+}

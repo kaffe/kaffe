@@ -1,0 +1,25 @@
+# Build the shared library support.
+#
+# Copyright (c) 1996, 1997
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "lib-license.terms" for information on usage and redistribution 
+# of this file. 
+
+srcdir=		@srcdir@
+MKDIR=		@MKDIR@
+subdirs=	native net zip math
+
+all:
+	@for i in $(subdirs); do (cd $$i && $(MAKE) all) || exit 1 ; done
+
+clean:
+	for i in $(subdirs); do (cd $$i && $(MAKE) clean) ; done
+
+distclean:
+	for i in $(subdirs); do (cd $$i && $(MAKE) distclean) ; done
+	rm -f Makefile
+	-rmdir $(subdirs)
+
+install:
+	for i in $(subdirs); do (cd $$i && $(MAKE) install) || exit 1 ; done

@@ -1,0 +1,32 @@
+# Testing
+#
+# Copyright (c) 1996, 1997
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+srcdir=		@srcdir@
+
+all:
+
+test:
+		@echo "*** Running tests"
+		@DESTDIR=`pwd` ; export DESTDIR ;\
+		. ../ENVIRONMENT ;\
+		cd $(srcdir)/regression &&\
+		if ./TestScript ; then \
+			echo "*** Passed" ; \
+			exit 0 ;\
+		else \
+			echo "*** Failed" ; \
+			exit 1 ;\
+		fi
+
+clean:
+		rm -f *.class kaffe.core core
+
+distclean:
+		rm -f *.class Makefile kaffe.core core
+
+install:

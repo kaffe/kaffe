@@ -1,0 +1,29 @@
+FAQ for Linux
+=============
+
+Doesn't work on Linux 1.2.13
+----------------------------
+
+Kaffe is no longer supported on Linux 1.2.13.  This is because of a limitation
+in the shared library implementation on this system.  You should still
+be able to use Kaffe in static library mode however (but don't quote me).
+
+No 'dlopen' and 'dlsym'
+-----------------------
+
+Some verison of Linux fail to locate the dynamic library loading code
+during configure.  This fault usually manifests itself during linking
+as a failure to find 'dlopen' and 'dlsym'.  To fix this problem you will
+need to create a sybolic link as follows:
+
+	ln -s libdl.so.xx.xx /lib/libdl.so
+
+Where 'xx.xx' is the version number of this library (ls -l /lib/libdl.so.*
+should tell you this).
+
+Once this has been done rebuild as follows:
+
+	make distclean
+	./configure
+	make
+	make install

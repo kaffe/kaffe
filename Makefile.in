@@ -1,0 +1,31 @@
+# Base level Makefile.in for kaffe.
+#
+# Copyright (c) 1996, 1997
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+@VPATHOPT@=	@srcdir@
+
+subdirs=	@subdirs@
+
+all:
+	@for i in $(subdirs); do (cd $$i && $(MAKE)) || exit 1 ; done
+
+test:	DUMMY
+	@(cd test && $(MAKE) test)
+
+clean:
+	@for i in $(subdirs); do (cd $$i && $(MAKE) clean) ; done
+
+distclean:
+	@for i in $(subdirs); do (cd $$i && $(MAKE) distclean) ; done
+	rm -f ENVIRONMENT ENVIRONMENT.BAT Makefile
+	rm -f config.cache config.log config.status
+	-rmdir @subdirs@
+
+install:
+	@for i in $(subdirs); do (cd $$i && $(MAKE) install) || exit 1 ; done
+
+DUMMY:

@@ -1,0 +1,263 @@
+KAFFE v0.10.0 - A JIT and interpreting virtual machine to run Java(tm)* code
+============================================================================
+
+				*** NEWS ***
+				============
+
+This is a major fix, rearrange and general bug release from the 0.9.2 release.
+We're tried to make many features easier to understand and easier to port.
+However, this is not the pending 1.0.0. release which will include such
+niceties as JNI, better JIT, faster interpreting and AWT.  We hope to ship
+that "real soon now".
+
+What it is
+==========
+
+This is Kaffe, a virtual machine design to execute Java bytecode.
+This machine can be configured in two modes.  In one mode it operates as
+a pure bytecode interpreter (not unlike Javasoft's machine); in the second
+mode if performs "just-in-time" code conversion from the abstract code to
+the host machine's native code.  This will ultimately allow execution of
+Java code at the same speed as standard compiled code but while maintaining
+the advantages and flexibility of code independence.
+
+What's new
+==========
+
+Major changes also include:
+
+ * Serialization support
+ * Reflection support
+ * RMI support
+ * Support for ZIP functions.
+ * Support for BigInteger functions.
+ * Improvements and additions to networking.
+ * Deprecation of old Kaffe stub functions from kaffeh.
+ * Deprecation of old assembly code thread system (now uses longjmp).
+ * Overhalled the machine specific configuration system.
+ * Addition of thread interface to aid porting.
+ * Addition of GC interface to allow use of different GC systems.
+ * Addition of system call interface (not yet complete) to aid porting.
+ * Better handling of JAR files (now handles compressed JARs).
+
+PLESE NOTE that we no longer ship with a copy of Javasoft's classes.zip file.
+You need to get these for yourself (sorry, but we need to avoid any legal
+hassel here).
+
+What can run Kaffe
+==================
+
+This version of Kaffe has undergone some massive changes since the last
+release.  As such many platform we once supported are currently unavailable
+(mostly because we don't have access to the necessary hardware+software to
+update them).  They are included here to encourage others to update them.
+At the moment i386 and Sparc platforms are know to work; time and resources
+permitting others platforms will be restored.
+
+This version of Kaffe will run on the following platforms:
+
+  ========================================================================
+  uProc     | Mode |    Systems
+  ========================================================================
+  i386      | J+I  |    FreeBSD 2.x +   Unixware        NetBSD 1.x
+            |      |    Solaris 2.x     BSDI 2.x        Linux 2.0.0 +
+            |      |    SCO 3.2v5       NeXTStep 3.x    Windows '95
+            |      |    DG/UX		OpenBSD 2.x	OpenStep 4.x
+            |      |    QNX 4.x
+  ------------------------------------------------------------------------
+  Sparc     | J+I  |    SunOS 4.x       Solaris 2.x     NetBSD 1.x
+            |      |    NeXTStep 3.x    Linux           Fujitsu UXP/DS
+            |      |    BSDI 3.x
+  ------------------------------------------------------------------------
+
+  Included but unlikely to work at the moment:
+  ========================================================================
+  Alpha     | J+I  |    Linux		OSF/1		NetBSD 1.x
+  ------------------------------------------------------------------------
+  M68K      | J+I  |    AmigaOS         NeXTStep 3.x    NetBSD 1.x
+            |      |    SunOS 4.x	Linux		AUX
+            |      |    OpenBSD 2.x
+  ------------------------------------------------------------------------
+  MIPS      | I    |    IRIX 5 & 6	NetBSD 1.x
+  ------------------------------------------------------------------------
+  PowerPC   | I    |    MkLinux         MachTen 4.0.3	AIX
+  ------------------------------------------------------------------------
+  PARISC    | I    |    HPUX 10.x
+  ------------------------------------------------------------------------
+  StrongARM | I    |    RiscIX		(work-in-progress)
+  ========================================================================
+
+Although the system is relatively portable, some machine and processor
+specific code is necessary.  If operating in an interpreting mode, it
+is only necessary to supply thread switching code.  This allows relatively
+simple ports of Kaffe to be made to new platforms.
+If operating in JIT mode, significant machine dependent code is required in
+order to provide the internal native code generator.  Ports to new
+architecture are obviously more complex although the code generator is itself
+reasonably portable.
+
+Who can use Kaffe
+=================
+
+This version of Kaffe is distributed under the GPL (GNU Public License).
+Please read the license to make sure its okay to use it in your circumstances.
+
+Kaffe Web and FTP sites
+=======================
+
+Kaffe is available from various sites.  The primary site is:
+
+        ftp://ftp.transvirtual.com/pub/kaffe/
+
+Kaffe mailing lists
+===================
+
+A couple of mailing lists are available for information and discussion of
+the Kaffe project.  There lists are:
+  
+        kaffe@kaffe.org                         - General discussions
+        kaffe-announce@kaffe.org                - Announcements
+
+These lists are archived at:
+
+	http://opera.inrialpes.fr/tools/Kaffe/messages/
+
+To subscribe to these lists send a message containing the word "subscribe"
+to either:
+        
+        kaffe-request@kaffe.org
+        kaffe-announce-request@kaffe.org
+  
+depending what you are interested in.
+
+If you want to report bugs directly to me, you can now use the script
+
+	report-kaffe-bug
+
+This should be automatically installed during the standard installation
+procedure.  The system is based on GNU's GNATS but has been specifically
+tailored for Kaffe's purposes.  Just invoke the command from your shell
+and it'll ask for all the necessary details.
+
+You can also check out the Kaffe related web pages at:
+
+        http://www.kaffe.org/
+
+What you need
+=============
+
+For a Kaffe system you need the following parts:
+
+ kaffe-0.10.0.tgz                       Virtual machine and all bits
+					provided by transvirtual.com
+
+ NOTE THAT WE NO LONGER SHIP WITH JAVASOFT'S CLASSES.ZIP!!  You should
+ get these files for youself from Javasoft.
+
+Uncompress and untar these archives into the same directory.
+
+Compiling Kaffe for UNIX
+========================
+
+The machine comes complete with the interpreter, stub generator, and
+supporting native libraries.   Compilation is controlled using the
+GNU autoconf program.  To generate the necessary makefiles
+type "./configure" in this directory.  This will identify your system
+and configure the software appropriately.  If JIT mode is supported on your
+system it will be selected automatically, otherwise it defaults to
+interpreting mode.  Compilation should then be a simple matter of
+typing "make" in this directory.
+
+By default, the system will install into the /usr/local hierarchy as per
+the standard GNU coding rules.  This can be changed using the --prefix
+option to configure.  To install the binaries type "make install".
+
+Kaffe and Java conflicts
+========================
+
+To avoid comflicts with Javasoft's products Kaffe can be reconfigured in a
+number of ways:
+
+1. Use the --program-prefix configure option to prepend a string to all
+   command names.
+2. Use the --prefix configure option to place the kaffe installation tree
+   somewhere other than /usr/local.
+3. Use the KAFFE_CLASSPATH environment variable rather than the standard
+   CLASSPATH environment to avoid "odd" class conflicts which have been
+   reported.
+
+Compiling Kaffe for Windows '95
+===============================
+
+The only 'working' port to Windows '95 uses Cygnus's GNU tools for Windows
+(available from http://www.cygnus.com/ - don't ask me how to install them!)
+To configure you would type the following:
+
+        ./configure --prefix=c:/kaffe
+
+This would configure Kaffe to install in c:/kaffe and build in the source
+directories.
+
+Compilation and installation is as per the UNIX system.
+
+Running Kaffe
+=============
+
+Before running Kaffe it is necessary to configure the environment.
+This requires the setting of CLASSPATH, KAFFEHOME and LD_LIBRARY_PATH.
+For the standard installation these would be defined as follows:
+
+	CLASSPATH=.:/usr/local/share/kaffe/klasses.zip:/usr/local/share/kaffe/classes.zip
+        KAFFEHOME=/usr/local/share/kaffe
+        LD_LIBRARY_PATH=/usr/lib:/usr/local/lib
+
+A file "ENVIRONMENT" is generated by the configure program which contains
+a /bin/sh environment setup.  This may help you to figure out what to
+set to what if you alter the standard installation point.
+
+The source comes with a test program "HelloWorldApp" which can be found
+in the test directory in the distribution.  After installation, run this
+program from the test directory by typing the following:
+
+        cd <java source directory>/test
+        kaffe HelloWorldApp
+
+This should load and execute the HelloWorld application.  If all is well
+it will print "Hello World!".   As a further test you might like to try
+compiling the HelloWorldApp source.  To do this type the following:
+
+        javac HelloWorldApp.java
+
+"javac" is a shell script which has been provided to invoke Kaffe on
+the standard Java compiler.  If all is well, the application should compile
+without incident.
+
+The state of play
+=================
+
+Kaffe should run all Java code.  However there are still bugs and plenty
+of untested native library functions.  Some functions which are not
+currently implemented (most often because I don't understand exactly what
+they are suppose to do) will simply abort if called.  If you can help
+out on any of these then please do *BUT* remember, this is a clean-room
+implementation (I have never seen any of Sun's Java source code) and
+I cannot simply encorporate Javasoft's* code.
+
+Kaffe and Sun's Java
+====================
+
+Kaffe is a clean-room implementation of a virtual machine which can run
+Java bytecode.  It is capable of interpreting code generated by Sun's
+software but has not been derived from any Sun code.  Currently this version
+utilises Sun's freely available compiled class library but it is hoped
+that this will be replaced with a freely available version in due time.
+At the moment it is impossible to validate whether this software is
+Java compatible(tm) (the test suites are not publically available) and
+the terms under which this can be claimed are unknown.
+
+Erm, that's it ....
+
+Tim Wilkinson
+<tim@transvirtual.com>
+----
+* Java and Javasoft are registered trademark of Sun Microsystems, Inc.

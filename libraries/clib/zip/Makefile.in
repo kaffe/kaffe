@@ -1,0 +1,77 @@
+# Native support for zip Java library
+#
+# Copyright (c) 1996, 1997
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "lib-license.terms" for information on usage and redistribution 
+# of this file. 
+
+@VPATHOPT@=	@srcdir@
+srcdir=		@srcdir@
+prefix=		@prefix@
+exec_prefix=	@exec_prefix@
+libdir=		@libdir@
+CC=		@CC@
+LD=		@LD@
+AR=		@AR@
+RANLIB=		@RANLIB@
+INCLUDES=	-I$(srcdir) -I../../../include -I$(srcdir)/../../../include -I../../../config -I$(srcdir)/../../../config
+CFLAGS=		@CFLAGS@
+ALL_CFLAGS=	$(CFLAGS) $(INCLUDES) $(EXTRA_CFLAGS)
+INSTALL=	@INSTALL@
+INSTALL_DATA=	@INSTALL_DATA@
+MKDIR=		@MKDIR@
+LN=		@LN_S@
+DLLTOOL=	@DLLTOOL@
+PIC=		@PIC@
+LDFLAGS=	@LIBSHARE@
+LIBS=		@LIBS@
+LDTAIL=		@LDTAIL@ @STD_LIBRARIES@ @ZIP_LIBRARIES@
+KVER=		@KVER@
+OBJEXT=		@OBJEXT@
+LIBEXT=		@LIBEXT@
+
+LIBNAME=	libzip
+LIB=		$(LIBNAME)$(LIBEXT).$(KVER)
+LLIB=		$(LIBNAME)$(LIBEXT)
+
+WRAPPER_CMD=	"s%^\(java_[^(]*\).*$$%KAFFE_NATIVE(\1)%p"
+
+OBJECT.UTIL.ZIP=\
+		Adler32$(OBJEXT) \
+		CRC32$(OBJEXT) \
+		Deflater$(OBJEXT) \
+		Inflater$(OBJEXT)
+
+OBJECT=		$(OBJECT.UTIL.ZIP)
+
+all:		$(LLIB)
+
+$(LLIB):        $(LIB)
+		rm -f $(LLIB)
+		$(LN) $(LIB) $(LLIB)
+
+$(LIB):		$(OBJECT) lib.exp
+		@LINKLIB@
+
+.c$(OBJEXT):
+		$(CC) $(ALL_CFLAGS) -c $(PIC) $< -o $*.o
+
+wrappers:
+		sed -n $(WRAPPER_CMD) *.c > external_wrappers.h
+
+clean:
+		rm -f $(LLIB) $(LIB) $(OBJECT) lib.exp
+
+distclean:	clean
+		rm -f Makefile
+
+install:
+		test -d $(libdir) || $(MKDIR) $(libdir)
+		$(INSTALL_DATA) $(LIB) $(libdir)/$(LIB)
+		rm -f $(libdir)/$(LLIB)
+		$(LN) $(LIB) $(libdir)/$(LLIB)
+
+lib.exp:
+		$(DLLTOOL) --def $(srcdir)/$(LIBNAME).def --output-exp lib.exp --output-lib $(LIBNAME).a --dllname $(LLIB)
+		touch lib.exp

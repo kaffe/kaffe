@@ -1,0 +1,45 @@
+# Makefile.in for kaffe - a Java(tm) compatible virtual machine wrapper.
+#
+# Copyright (c) 1996, 1997
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+@VPATHOPT@=	@srcdir@
+srcdir=		@srcdir@
+prefix=		@prefix@
+exec_prefix=	@exec_prefix@
+bindir=		@bindir@
+libdir=         @libdir@
+INSTALL=	@INSTALL@
+INSTALL_PROGRAM=@INSTALL_PROGRAM@
+MKDIR=		@MKDIR@
+CC=		@CC@
+INCLUDES=	-I. -I$(srcdir)/../kaffevm -I../../config -I$(srcdir)/../../config -I../../include -I$(srcdir)/../../include
+CFLAGS=		@CFLAGS@
+LDFLAGS=	@KAFFELINK@
+ALL_CFLAGS=	$(CFLAGS) @KAFFEFLAGS@ $(INCLUDES) $(EXTRA_CFLAGS)
+LIBS=		@NOSHAREDLIBS@
+OBJEXT=		@OBJEXT@
+EXEEXT=		@EXEEXT@
+
+OBJECT=		main$(OBJEXT)
+
+all:		kaffe$(EXEEXT)
+
+kaffe$(EXEEXT):	$(OBJECT)
+		$(CC) $(ALL_CFLAGS) $(LDFLAGS) -o kaffe$(EXEEXT) $(OBJECT) $(LIBS)
+
+.c$(OBJEXT):
+		$(CC) $(ALL_CFLAGS) -c $<
+
+clean:
+		rm -f $(LIB) kaffe$(EXEEXT) kaffe.core $(OBJECT)
+
+distclean:	clean
+		rm -f Makefile
+
+install:
+		test -d $(bindir) || $(MKDIR) $(bindir)
+		$(INSTALL_PROGRAM) kaffe$(EXEEXT) $(bindir)/kaffe$(EXEEXT)

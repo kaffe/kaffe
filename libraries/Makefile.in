@@ -1,0 +1,30 @@
+# Base level Makefile.in for kaffe.
+#
+# Copyright (c) 1996, 1997
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+csubdir=	clib
+jsubdir=	javalib
+
+all:
+	@(cd $(csubdir) && $(MAKE) all)
+	@(cd $(jsubdir) && $(MAKE) all)
+
+test:
+
+clean:
+	@(cd $(csubdir) && $(MAKE) clean)
+	@(cd $(jsubdir) && $(MAKE) clean)
+
+distclean:
+	@(cd $(csubdir) && $(MAKE) distclean)
+	@(cd $(jsubdir) && $(MAKE) distclean)
+	rm -f Makefile
+	-rmdir $(csubdir) $(jsubdir)
+
+install:
+	@(cd $(csubdir) && $(MAKE) install)
+	@(cd $(jsubdir) && $(MAKE) install)

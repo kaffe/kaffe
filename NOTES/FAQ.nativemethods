@@ -1,0 +1,23 @@
+From: Paul M Reilly <pmr@preilly.bbn.com>
+
+Q. What's it take to get native code running in Kaffe?
+
+A. For the most part, follow the steps described in various Java texts
+(e.g. ``teach yourself Java in 21 days'', Chapter 20, or Chapter 13 of
+``Programming with Java!'').  The major gotcha is in the naming of the
+shared library.  If you are building a library to handle display
+functions, loading it with the following Java code,
+
+      public class Display {
+
+        public native void toScreen();
+
+        static {
+          System.loadLibrary("Display");
+        }
+      }
+
+
+then make sure to name the library "libDisplay.so" and put the
+library in a directory that is listed in the LD_LIBRARY_PATH
+environment variable.

@@ -1,0 +1,40 @@
+# Library support
+#
+# Copyright (c) 1996, 1997
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+prefix=		@prefix@
+srcdir=		@srcdir@
+incdir=		@includedir@/kaffe
+INSTALL=	@INSTALL@
+INSTALL_DATA=	@INSTALL_DATA@
+MKDIR=		@MKDIR@
+
+INCLUDEFILES= \
+		native.h \
+		jsyscall.h \
+		Arrays.h \
+		java_lang_Object.h \
+		java_lang_String.h \
+		java_lang_Throwable.h \
+		java_lang_Thread.h \
+		java_lang_ThreadGroup.h \
+
+
+all:
+
+clean:
+
+distclean:
+		rm -f Makefile jtypes.h
+
+install:
+		test -d $(incdir) || $(MKDIR) $(incdir)
+		$(INSTALL_DATA) jtypes.h $(incdir)/jtypes.h
+		for i in $(INCLUDEFILES) ;\
+		do \
+			$(INSTALL_DATA) $(srcdir)/$$i $(incdir)/$$i ;\
+		done

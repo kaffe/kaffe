@@ -1,0 +1,13 @@
+This is the m68k/linux specific readme file.
+
+The m68k/linux port was put together by birddog@shebiki.demon.co.uk.
+
+It is based on the various other m68k ports as well as the other various 
+linux ports.
+
+I am still working on JIT.
+
+My current m68k system is: linux 1.2.13pl9 with a watchtower derived file 
+base.
+
+--birddog
