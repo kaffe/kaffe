@@ -108,13 +108,14 @@ public int getVgap () {
 }
 
 public void layoutContainer ( Container parent) {
+	int nChildren = parent.getComponentCount(); // beware of Frame Menubars
+	if (nChildren == 0) return;
+
 	Insets in = parent.getInsets(); // getInsets() might be reimplemented (swing)
 	int tw = parent.width - in.left - in.right - hgap;
 	int th = parent.height - in.top - in.bottom - vgap;
 	
-	Dimension d = adjustDim( parent);
-	int nChildren = parent.getComponentCount(); // beware of Frame Menubars
-	
+	Dimension d = adjustDim( parent); // #rows & #columns
 	int cw = tw / d.width;
 	int ch = th / d.height;
 	
