@@ -1,3 +1,9 @@
+Mon Jul 24 14:00:00 PDT 2000  Tim Wilkinson <tim@transvirtual.com>
+
+        * Version 1.0.6 of Kaffe OpenVM released.
+	  This is a bugfix and stabilization release before the merge
+	  of the desktop and custom editions.
+
 2000-07-24  Alexandre Oliva  <aoliva@redhat.com>
 
 	* test/regression/Makefile.am (TEST_Overflow): Do not allow
