@@ -79,7 +79,7 @@ public static void arraycopy(Object src, int src_position, Object dst, int dst_p
 
     final int src_length = Array.getLength(src);
 
-    if (src_position + length > src_length)
+    if ((long)src_position + (long)length > (long)src_length)
 	throw new ArrayIndexOutOfBoundsException("src_position + length > src.length: " + src_position + " + " + length + " > " + src_length);
 
     if (dst_position < 0)
@@ -87,7 +87,7 @@ public static void arraycopy(Object src, int src_position, Object dst, int dst_p
 
     final int dst_length = Array.getLength(dst);
 
-    if (dst_position + length > dst_length)
+    if ((long)dst_position + (long)length > (long)dst_length)
 	throw new ArrayIndexOutOfBoundsException("dst_position + length > dst.length: " + dst_position + " + " + length + " > " + dst_length);
 
     if (length < 0)
