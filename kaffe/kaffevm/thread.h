@@ -49,6 +49,8 @@ Hjava_lang_Thread* createDaemon(void*, const char*, void *arg, int,
 extern  Hjava_lang_Class* ThreadClass;
 struct  _Collector;
 
+extern	jbool deadlockDetection;
+
 #define THREAD_NATIVE()         ((void*)jthread_current())
 
 #if !defined(KAFFEH)

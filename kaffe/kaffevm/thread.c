@@ -49,6 +49,8 @@ static int threadStackSize;	/* native stack size */
 /* referenced by native/Runtime.c */
 jbool runFinalizerOnExit;	/* should we run finalizers? */
 
+jbool deadlockDetection = 1;	/* abort if we detect deadlock */
+
 Hjava_lang_Class* ThreadClass;
 Hjava_lang_Class* ThreadGroupClass;
 Hjava_lang_ThreadGroup* standardGroup;
@@ -590,6 +592,9 @@ nameNativeThread(void* native)
 static void
 onDeadlock(void)
 {
+	if (!deadlockDetection) {
+		return;
+	}
 #if defined(JTHREAD_RESTORE_FD)
         jthreadRestoreFD(2);
 #endif

@@ -352,11 +352,14 @@ options(char** argv)
                 else if (strcmp(argv[i], "-jar") == 0) {
                         isJar = 1;
                 }
-		else if (strcmp(argv[i], "-prof") == 0) {
 #if defined(KAFFE_PROFILER)
+		else if (strcmp(argv[i], "-prof") == 0) {
 			profFlag = 1;
 			vmargs.enableClassGC = 0;
+		}
 #endif
+		else if (strcmp(argv[i], "-nodeadlock") == 0) {
+			deadlockDetection = 0;
 		}
 #if defined(KAFFE_STATS)
                 else if (strcmp(argv[i], "-vmstats") == 0) {
@@ -444,7 +447,10 @@ usage(void)
 	fprintf(stderr, "	-v, -verbose		Be verbose\n");
 	fprintf(stderr, "	-verbosejit		Print message during JIT code generation\n");
 	fprintf(stderr, "	-verbosemem		Print detailed memory allocation statistics\n");
+	fprintf(stderr, "	-nodeadlock		Disable deadlock detection\n");
+#if defined(KAFFE_PROFILER)
 	fprintf(stderr, "	-prof			Enable profiling of Java methods\n");
+#endif
 	fprintf(stderr, "	-debug * 		Trace method calls\n");
 	fprintf(stderr, "	-noasyncgc *		Do not garbage collect asynchronously\n");
 	fprintf(stderr, "	-cs, -checksource *	Check source against class files\n");
