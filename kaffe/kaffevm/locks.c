@@ -1,5 +1,5 @@
 /*
- * fastlocks.c
+ * locks.c
  * Manage locking system
  *
  * Copyright (c) 1996-1999
@@ -99,8 +99,8 @@ getHeavyLock(iLock** lkp)
 	int i;
 
 DBG(SLOWLOCKS,
-    	dprintf("getHeavyLock(**lkp=%p, *lk=%p)\n",
-		lkp, *lkp);
+    	dprintf("  getHeavyLock(**lkp=%p, *lk=%p, th=%p)\n",
+		lkp, *lkp, jthread_current());
 )
  
 	timeout = 1;
@@ -121,6 +121,9 @@ DBG(SLOWLOCKS,
 
 		/* If bottom bit is set, strip off and use pointer as pointer to heavy lock */
 		if ((((uintp)old) & 1) == 1) {
+DBG(SLOWLOCKS,
+    			dprintf("    got cached lock\n");
+)
 			lk = (iLock*)(((uintp)old) & (uintp)-2);
 		}
 		else {
@@ -133,7 +136,7 @@ DBG(SLOWLOCKS,
 				}
 			}
 DBG(SLOWLOCKS,
-    			dprintf("  got %s lock\n",
+    			dprintf("    got %s lock\n",
 				(lk == 0) ? "new" : "special");
 )
 			if (lk == 0) {
@@ -158,8 +161,8 @@ putHeavyLock(iLock** lkp, iLock* lk)
 	assert(*lkp == LOCKINPROGRESS);
 
 DBG(SLOWLOCKS,
-	dprintf("putHeavyLock(**lkp=%p, *lk=%p)\n", 
-		lkp, lk);
+	dprintf("  putHeavyLock(**lkp=%p, *lk=%p, th=%p)\n", 
+		lkp, lk, jthread_current());
 )
 
 	if (lk == LOCKFREE) {
@@ -181,8 +184,8 @@ slowLockMutex(iLock** lkp, void* where)
 	Hjava_lang_Thread* tid;
 
 DBG(SLOWLOCKS,
-    	printf("slowLockMutex(**lkp=%p, where=%p)\n",
-	       lkp, where);
+    	dprintf("slowLockMutex(**lkp=%p, where=%p, th=%p)\n",
+	       lkp, where, jthread_current());
 )
 
 	for (;;) {
@@ -223,8 +226,8 @@ slowUnlockMutex(iLock** lkp, void* where)
 	int i;
 
 DBG(SLOWLOCKS,
-    	printf("slowUnlockMutex(**lkp=%p, where=%p)\n",
-	       lkp, where);
+    	dprintf("slowUnlockMutex(**lkp=%p, where=%p, th=%p)\n",
+	       lkp, where, jthread_current());
 )
 
 	lk = getHeavyLock(lkp);
@@ -277,6 +280,11 @@ _slowUnlockMutexIfHeld(iLock** lkp, void* where)
 	iLock* lk;
 	void* holder;
 
+DBG(SLOWLOCKS,
+    	dprintf("slowUnlockMutexIfHeld(**lkp=%p, where=%p, th=%p)\n",
+	       lkp, where, jthread_current());
+)
+
 	lk = getHeavyLock(lkp);
 	holder = lk->holder;
 	putHeavyLock(lkp, lk);
@@ -291,6 +299,11 @@ _releaseLock(iLock** lkp)
 {
 	iLock* lk;
 	void* holder;
+
+DBG(SLOWLOCKS,
+    	dprintf("_releaseLock(**lkp=%p, th=%p)\n",
+	       lkp, jthread_current());
+)
 
 	lk = getHeavyLock(lkp);
 	holder = lk->holder;
@@ -318,6 +331,11 @@ _waitCond(iLock** lkp, jlong timeout)
 	Hjava_lang_Thread* tid;
 	Hjava_lang_Thread** ptr;
 	jboolean r;
+
+DBG(SLOWLOCKS,
+    	dprintf("_waitCond(**lkp=%p, timeout=%ld, th=%p)\n",
+	       lkp, (long)timeout, jthread_current());
+)
 
 	lk = getHeavyLock(lkp);
 	holder = lk->holder;
@@ -373,6 +391,11 @@ _signalCond(iLock** lkp)
 	iLock* lk;
 	Hjava_lang_Thread* tid;
 
+DBG(SLOWLOCKS,
+    	dprintf("_signalCond(**lkp=%p, th=%p)\n",
+	       lkp, jthread_current());
+)
+
 	lk = getHeavyLock(lkp);
 
 	if (!jthread_on_current_stack(lk->holder)) {
@@ -396,6 +419,11 @@ _broadcastCond(iLock** lkp)
 {
 	iLock* lk;
 	Hjava_lang_Thread* tid;
+
+DBG(SLOWLOCKS,
+    	dprintf("_broadcastCond(**lkp=%p, th=%p)\n",
+	       lkp, jthread_current());
+)
 
 	lk = getHeavyLock(lkp);
 
