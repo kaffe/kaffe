@@ -1,6 +1,12 @@
 2004-02-15  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+        (ensureOpstackSizeErrorInVerifyBasicBlock): New static inline function.
+        (ENSURE_OPSTACK_SIZE) Use ensureOpstackSizeErrorInVerifyBasicBlock.
+
+2004-02-15  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
         (ensureLocalTypeErrorInVerifyBasicBlock): New static inline function.
         (ENSURE_LOCAL_TYPE) Use ensureLocalTypeErrorInVerifyBasicBlock.
 	Removed unnecessary undef for VERIFY_ERROR.

@@ -2509,6 +2509,23 @@ ensureLocalTypeErrorInVerifyBasicBlock(errorInfo* einfo,
 }
 
 /*
+ * Helper function for error reporting in ENSURE_OPSTACK_SIZE macro in verifyBasicBlock.
+ */
+static inline
+bool
+ensureOpstackSizeErrorInVerifyBasicBlock(errorInfo* einfo,
+					 const Method* method,
+					 BlockInfo* block,
+					 Hjava_lang_Class* this)
+{
+	DBG(VERIFY3,
+	    dprintf("                here's the stack: \n");
+	    printBlock(method, block, "                    ");
+	    );
+	return verifyErrorInVerifyBasicBlock(einfo, method, this, "not enough items on stack for operation");
+}
+
+/*
  * verifyBasicBlock()
  *   Simulates execution of a basic block by modifying its simulated operand stack and local variable array.
  */
@@ -2579,8 +2596,7 @@ verifyBasicBlock(errorInfo* einfo,
 	
 #define ENSURE_OPSTACK_SIZE(_N) \
 	if (block->stacksz < (_N)) { \
-                DBG(VERIFY3, dprintf("                here's the stack: \n"); printBlock(method, block, "                    "); ); \
-		return verifyErrorInVerifyBasicBlock(einfo, method, this, "not enough items on stack for operation"); \
+		return ensureOpstackSizeErrorInVerifyBasicBlock(einfo, method, block, this); \
 	}
 
 #define CHECK_STACK_OVERFLOW(_N) \
