@@ -27,7 +27,7 @@ private Class() { /* this class is not instantiable by the general public */ }
 
 // NB: kaffeh does not support mangling of overloaded native methods
 // yet, pending resolution of bug #65
-native public static Class forName0(String className) throws ClassNotFoundException;
+private native static Class forName0(String className) throws ClassNotFoundException;
 
 public static Class forName(String className) throws ClassNotFoundException {
 	return (forName0(className));
