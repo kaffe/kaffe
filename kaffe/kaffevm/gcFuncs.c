@@ -354,7 +354,7 @@ DBG(GCPRECISE,
         } else {
                 /* array classes should keep their element type alive */
 		Hjava_lang_Class *etype = CLASS_ELEMENT_TYPE(class);
-		if (!CLASS_IS_PRIMITIVE(etype)) {
+		if (etype && !CLASS_IS_PRIMITIVE(etype)) {
 			GC_markObject(collector, etype);
 		}
         }
