@@ -338,7 +338,6 @@ Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, XOC xoc )
 Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, XFontStruct* fs )
 #endif	
 {
-  int       n = 256;
   jintArray widths;
   jint      *jw;
   jboolean isCopy;
@@ -350,6 +349,7 @@ Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, XFontStruct* fs 
   int num;
 #else  
   register  int i, j;
+  const int n = 256;
 #endif  
 
   widths = (*env)->NewIntArray( env, 256);
@@ -396,12 +396,13 @@ Java_java_awt_Toolkit_fntBytesWidth ( JNIEnv* env, jclass clazz,
   jboolean  isCopy;
   jbyte    *jb = (*env)->GetByteArrayElements( env, jBytes, &isCopy);
   int       n = (*env)->GetArrayLength( env, jBytes);
-  int       w;
 #ifdef KAFFE_I18N
   wchar_t   *wch;
   XRectangle *ink_array, *logical_array;
   XRectangle overall_ink, overall_logical;
   int num;
+#else
+  int       w;
 #endif
 
   if ( off+len > n ) len = n - off;
