@@ -1,3 +1,10 @@
+2003-05-26 Jim Pick <jim@kaffe.org>
+
+	* libraries/javalib/java/util/zip/ZipFile.java:
+	(getImportStream) Fixed "out of memory" bug that
+	occurred when using a ZipEntry that was created
+	from a String.
+
 2003-05-27 Dalibor Topic <robilad@yahoo.com>
 
 	* kaffe/kaffe/main.c:
