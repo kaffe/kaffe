@@ -1,5 +1,19 @@
 1999-04-18  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
+	* kaffe/kaffevm/intrp/Makefile.am: Use KVMLIBFLAGS to build
+	convenience libraries that will go into libkaffevm.la.
+	* kaffe/kaffevm/jit/Makefile.am: Likewise.
+	* kaffe/kaffevm/systems/beos-native/Makefile.am: Likewise.
+	* kaffe/kaffevm/systems/linux-threads/Makefile.am: Likewise.
+	* kaffe/kaffevm/systems/oskit-pthreads/Makefile.am: Likewise.
+	* kaffe/kaffevm/systems/unix-jthreads/Makefile.am: Likewise.
+	* kaffe/kaffevm/intrp/Makefile.in: Regen.
+	* kaffe/kaffevm/jit/Makefile.in: Regen.
+	* kaffe/kaffevm/systems/beos-native/Makefile.in: Regen.
+	* kaffe/kaffevm/systems/linux-threads/Makefile.in: Regen.
+	* kaffe/kaffevm/systems/oskit-pthreads/Makefile.in: Regen.
+	* kaffe/kaffevm/systems/unix-jthreads/Makefile.in: Regen.
+
 	* libraries/javalib/java/lang/reflect/Method.java (equals): Must
 	also compare name and return type.
 

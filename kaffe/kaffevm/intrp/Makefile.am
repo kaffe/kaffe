@@ -12,6 +12,7 @@ INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(ENG
 
 noinst_LTLIBRARIES = libengine.la
 
+libengine_la_LDFLAGS = $(KVMLIBFLAGS)
 libengine_la_SOURCES = \
 	machine.c
 
