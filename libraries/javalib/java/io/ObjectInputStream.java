@@ -85,7 +85,7 @@ public int read(byte[] buffer, int offset, int count) throws IOException
 		}
 		buffer[offset+i] = (byte)val;
 	}
-	return (i);
+	return (i > 0 ? i : -1);
 }
 
 public boolean readBoolean() throws IOException
