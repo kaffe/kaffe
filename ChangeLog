@@ -1,7 +1,45 @@
+2000-06-15  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/javalib/kaffe/io/ObjectStreamClassImpl.java
+	(getObjectWithoutSuper, invokeSuperclassInitV),
+	libraries/clib/native/ObjectStreamClassImpl.c
+	(kaffe_io_ObjectStreamClassImpl_invokeSuperclassInitV): when super
+	class of a serialized class is not Serializable, call <init>()V.
+	This close PR#89.
+
+	* libraries/javalib/kaffe/io/ObjectInputStreamImpl.java (getObject):
+	rethrow InvalidClassException.
+
+	* test/regression/TestSerializable2.java
+	test/regression/Makefile.am test/regression/Makefile.in: new test
+	case.
+	
 Wed Jun 14 16:12:53 MDT 2000  Godmar Back <gback@cs.utah.edu>
 
 	* libraries/clib/native/Class.c: fix getMethods0 to not report
 	overridden methods twice.
+
+2000-06-14  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/javalib/kaffe/io/ByteToCharConverter.java (withdraw),
+	libraries/javalib/java/io/InputStreamReader.java (read): In some
+	cases, bytes left in the ByteToCharConverter's buffer must be
+	reprocessed with new input bytes, and cannot be just flushed.
+	Submitted by Ito Kazumitsu <ito@maczuka.gcd.org>
+
+	* libraries/javalib/java/io/OutputStreamWriter.java (write): The
+	assumption that the input length is equal to the output length, is
+	not necessarily true for non-ASCII characters.
+	Submitted by Ito Kazumitsu <ito@maczuka.gcd.org>
+	
+	* libraries/javalib/java/awt/event/KeyEvent.java
+	(getKeyModifiersText): Use StringBuffer().
+
+	* libraries/javalib/kaffe/net/www/protocol/http/HttpURLConnection.java:
+	Better handle HTTP Header fields, suggested by Nic Ferrier
+	<nferrier@tapsellferrier.co.uk>.
+	Fix PR#613 Suggested by John Stracke <francis@thibault.org>.
+	Different implementation by Edouard G. Parmelan.
 
 Tue Jun 13 22:17:51 MDT 2000  Tim Stack  <stack@cs.utah.edu>
 	
@@ -1106,6 +1144,16 @@ Thu Nov 11 13:17:02 PST 1999  Benny <benny.sjostrand@framfab.se>
 
 	* libraries/javalib/java/io/RandomAccessFile.java: fix \r\n bug
 	(PR #570)
+
+1999-11-08  Tim Wilkinson <tim@transvirtual.com>
+
+	* libraries/javalib/java/io/FileInputStream.java: check arguments
+	to read call to avoid SEGV (PR#583).
+
+	* libraries/javalib/kaffe/io/ByteToCharConverter.java,
+	libraries/javalib/kaffe/io/CharToByteConverter.java: always
+	convert a new converter since they store state and are therefore
+	not thread safe (PR#583).
 
 Thu Nov  4 13:11:31 MST 1999  Godmar Back  <gback@cs.utah.edu>
 
