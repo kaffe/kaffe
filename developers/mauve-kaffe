@@ -51,3 +51,6 @@ JDBC2.0
 # The behaviour of the garbage collector cannot be predicted.
 # (Note: trailing '.' is to avoid disabling the reflect testcases.)
 !java.lang.ref.
+
+# Swing missing
+!javax.swing
