@@ -5,7 +5,7 @@
 #include "jni.h"
 #include "stackTrace-impl.h"
 #include "exception.h"
-#include "jnirefs.h"
+#include "jni/jnirefs.h"
 #include "ksem.h"
 
 /*

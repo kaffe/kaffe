@@ -1,3 +1,9 @@
+2004-07-07  Fabien Renaud  <renaud@nentec.de>
+
+	* kaffe/kaffevm/threadData.h:
+	Added jni to jnirefs include to fix build with qt 
+	and pthreads.
+
 2004-07-07  Jim Huang <jserv@kaffe.org>
 
  	* libraries/javalib/java/awt/Graphics.java:
