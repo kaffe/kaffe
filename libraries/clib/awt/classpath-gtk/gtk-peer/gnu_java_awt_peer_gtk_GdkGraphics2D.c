@@ -1,5 +1,5 @@
 /* gnu_java_awt_peer_gtk_GdkGraphics2d.c
-   Copyright (C) 2003 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2005  Free Software Foundation, Inc.
 
    This file is part of GNU Classpath.
    
@@ -45,7 +45,8 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk-pixbuf/gdk-pixdata.h>
 
-#include <cairo.h>
+#include <cairo-ft.h>
+#include <cairo-xlib.h>
 
 #include <stdio.h>
 #include <stdlib.h>
