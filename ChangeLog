@@ -1,3 +1,37 @@
+Thu Jul  4 02:46:31 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/Makefile.am: added java.sql.Array,
+	java.sql.Blob, java.sql.Clob and java.text.Annotation
+
+	* libraries/javalib/Makefile.in: added java.sql.Array,
+	java.sql.Blob, java.sql.Clob and java.text.Annotation
+
+	* libraries/javalib/java/beans/Introspector.java:
+	(USE_ALL_BEANINFO), (IGNORE_IMMEDIATE_BEANINFO),
+	(IGNORE_ALL_BEANINFO) added missing constants.
+
+	* libraries/javalib/java/sql/Array.java: new interface.
+
+	* libraries/javalib/java/sql/Blob.java: new interface.
+
+	* libraries/javalib/java/sql/Clob.java: new interface.
+
+	* libraries/javalib/java/sql/Types.java:
+	(BOOLEAN), (DATALINK), (JAVA_OBJECT), (DISTINCT), (STRUCT),
+	(ARRAY), (BLOB), (CLOB), (REF)  added missing constants.
+
+	* libraries/javalib/java/text/Annotation.java: new class.
+
+	* libraries/javalib/java/text/DecimalFormat.java: updated to use
+	acessor methods for FieldPosition.
+
+	* libraries/javalib/java/text/FieldPosition.java: made fields
+	private.
+	(equals), (hashCode), (setBeginIndex), (setEndIndex) new methods.
+
+	* libraries/javalib/java/text/SimpleDateFormat.java:  updated to
+	use acessor methods for FieldPosition.
+
 Thu Jul  4 02:41:04 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/awt/Event.java:

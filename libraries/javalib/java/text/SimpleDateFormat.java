@@ -118,9 +118,9 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 		case 'G':
 			val = calendar.get(Calendar.ERA);
 			buf.append(syms.eras[val]);
-			if (pos.field == ERA_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == ERA_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case 'y':
@@ -132,9 +132,9 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 				}
 			}
 			buf.append(val);
-			if (pos.field == YEAR_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == YEAR_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case 'M':
@@ -152,9 +152,9 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 			else {
 				buf.append(syms.months[val]);
 			}
-			if (pos.field == MONTH_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == MONTH_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case 'd':
@@ -163,9 +163,9 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 				buf.append('0');
 			}
 			buf.append(val);
-			if (pos.field == DATE_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == DATE_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case 'k':
@@ -174,9 +174,9 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 				val = 24;
 			}
 			buf.append(val);
-			if (pos.field == HOUR_OF_DAY1_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == HOUR_OF_DAY1_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case 'H':
@@ -185,9 +185,9 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 				buf.append('0');
 			}
 			buf.append(val);
-			if (pos.field == HOUR_OF_DAY0_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == HOUR_OF_DAY0_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case 'm':
@@ -196,9 +196,9 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 				buf.append('0');
 			}
 			buf.append(val);
-			if (pos.field == MINUTE_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == MINUTE_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case 's':
@@ -207,17 +207,17 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 				buf.append('0');
 			}
 			buf.append(val);
-			if (pos.field == SECOND_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == SECOND_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case 'S':
 			val = calendar.get(Calendar.MILLISECOND);
 			buf.append(val);
-			if (pos.field == MILLISECOND_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == MILLISECOND_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case 'E':
@@ -228,17 +228,17 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 			else {
 				buf.append(syms.weekdays[val]);
 			}
-			if (pos.field == DAY_OF_WEEK_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == DAY_OF_WEEK_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case 'D':
 			val = calendar.get(Calendar.DAY_OF_YEAR);
 			buf.append(val);
-			if (pos.field == DAY_OF_YEAR_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == DAY_OF_YEAR_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case 'F':
@@ -248,25 +248,25 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 		case 'w':
 			val = calendar.get(Calendar.WEEK_OF_YEAR);
 			buf.append(val);
-			if (pos.field == WEEK_OF_YEAR_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == WEEK_OF_YEAR_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case 'W':
 			val = calendar.get(Calendar.WEEK_OF_MONTH);
 			buf.append(val);
-			if (pos.field == WEEK_OF_MONTH_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == WEEK_OF_MONTH_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case 'a':
 			val = calendar.get(Calendar.AM_PM);
 			buf.append(syms.amPmStrings[val]);
-			if (pos.field == AM_PM_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == AM_PM_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case 'h':
@@ -277,17 +277,17 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 			if ( (plen > 1) && (val < 10) )
 				buf.append('0');
 			buf.append(val);
-			if (pos.field == HOUR1_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == HOUR1_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case 'K':
 			val = calendar.get(Calendar.HOUR);
 			buf.append(val);
-			if (pos.field == HOUR0_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == HOUR0_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case 'z':
@@ -344,9 +344,9 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 					buf.append(ro % 60);
 				}
 			}
-			if (pos.field == TIMEZONE_FIELD) {
-				pos.begin = cpos;
-				pos.end = buf.length();
+			if (pos.getField() == TIMEZONE_FIELD) {
+				pos.setBeginIndex(cpos);
+				pos.setEndIndex(buf.length());
 			}
 			break;
 		case '\'':

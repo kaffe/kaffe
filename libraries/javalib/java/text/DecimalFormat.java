@@ -282,10 +282,10 @@ private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
 	}
 
 
-	if (pos.field == INTEGER_FIELD) {
-		pos.begin = app.length();
+	if (pos.getField() == INTEGER_FIELD) {
+		pos.setBeginIndex(app.length());
 		app.append(buf);
-		pos.end = app.length();
+		pos.setEndIndex(app.length());
 	}
 	else {
 		app.append(buf);
@@ -322,10 +322,10 @@ private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
 		app.append(syms.decimalSeparator);
 	}
 
-	if (pos.field == FRACTION_FIELD) {
-		pos.begin = app.length();
+	if (pos.getField() == FRACTION_FIELD) {
+		pos.setBeginIndex(app.length());
 		app.append(buf);
-		pos.end = app.length();
+		pos.setEndIndex(app.length());
 	}
 	else {
 		app.append(buf);

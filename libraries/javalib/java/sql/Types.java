@@ -33,9 +33,17 @@ public static final int FLOAT = 6;
 public static final int REAL = 7;
 public static final int DOUBLE = 8;
 public static final int VARCHAR = 12;
+public static final int BOOLEAN = 16;
+public static final int DATALINK = 70;
 public static final int DATE = 91;
 public static final int TIME = 92;
 public static final int TIMESTAMP = 93;
 public static final int OTHER = 1111;
-
+public static final int JAVA_OBJECT = 2000;
+public static final int DISTINCT = 2001;
+public static final int STRUCT = 2002;
+public static final int ARRAY = 2003;
+public static final int BLOB = 2004;
+public static final int CLOB = 2005;
+public static final int REF = 2006;
 }

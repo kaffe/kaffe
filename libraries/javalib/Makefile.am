@@ -569,6 +569,9 @@ java_security_spec_SRCS = \
 	java/security/spec/RSAPublicKeySpec.java \
 	java/security/spec/X509EncodedKeySpec.java
 java_sql_SRCS = \
+	java/sql/Array.java \
+	java/sql/Blob.java \
+	java/sql/Clob.java \
 	java/sql/CallableStatement.java \
 	java/sql/Connection.java \
 	java/sql/DataTruncation.java \
@@ -587,6 +590,7 @@ java_sql_SRCS = \
 	java/sql/Timestamp.java \
 	java/sql/Types.java
 java_text_SRCS = \
+	java/text/Annotation.java \
 	java/text/AttributedCharacterIterator.java \
 	java/text/BreakIterator.java \
 	java/text/CharacterIterator.java \

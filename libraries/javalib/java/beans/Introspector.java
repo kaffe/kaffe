@@ -17,6 +17,10 @@ import java.util.TooManyListenersException;
  */
 public class Introspector {
 
+public static final int USE_ALL_BEANINFO = 1;
+public static final int IGNORE_IMMEDIATE_BEANINFO = 2;
+public static final int IGNORE_ALL_BEANINFO = 3;
+
 private static String[] beansearch = { "kaffe.beans.infos" };
 
 private static Hashtable cache = new Hashtable();
