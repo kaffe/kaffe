@@ -2272,7 +2272,7 @@ define_insn(GETSTATIC)
 	case 'S':
 		push(1);
 		if (FIELD_IS_CONSTANT()) {
-			move_int_const(stack(0), *(jint *)FIELD_ADDRESS(field_field()));
+			move_int_const(stack(0), *(jshort *)FIELD_ADDRESS(field_field()));
 		} else {
 			load_addr_short(stack(0), FIELD_ADDRESS(field_field()));
 		}
