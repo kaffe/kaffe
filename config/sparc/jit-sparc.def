@@ -51,38 +51,38 @@ static int argcount = 0;
 /* Instruction formats							 */
 
 #define	insn_call(disp)					\
-	LOUT = 0x40000000 | ((disp) & 0x3FFFFFFF)
+	LOUT(0x40000000 | ((disp) & 0x3FFFFFFF))
 
 #define	insn_offset(op, dst, imm)			\
-	LOUT = 0x01000000 | ((dst) << 25) | 		\
-		((op) << 22) | ((imm) & 0x3FFFFF)
+	LOUT(0x01000000 | ((dst) << 25) | 		\
+		((op) << 22) | ((imm) & 0x3FFFFF))
 
 #define	insn_branch(cond, anull, dest)			\
-	LOUT = 0x00800000 | ((anull) << 29) |		\
-		((cond) << 25) | ((dest) & 0x3FFFFF)
+	LOUT(0x00800000 | ((anull) << 29) |		\
+		((cond) << 25) | ((dest) & 0x3FFFFF))
 
 #define	insn_RRR(op, dst, rs1, rs2)			\
-	LOUT = 0x80000000 | ((dst) << 25) |		\
-		((op) << 19) | ((rs1) << 14) | (rs2)
+	LOUT(0x80000000 | ((dst) << 25) |		\
+		((op) << 19) | ((rs1) << 14) | (rs2))
 
 #define	ldst_RRR(op, dst, rs1, rs2)			\
-	LOUT = 0xC0000000 | ((dst) << 25) |		\
-		((op) << 19) | ((rs1) << 14) | (rs2)
+	LOUT(0xC0000000 | ((dst) << 25) |		\
+		((op) << 19) | ((rs1) << 14) | (rs2))
 
 #define	ldst_RRC(op, dst, rs1, cnst)			\
-	LOUT = 0xC0002000 | ((dst) << 25) |		\
+	LOUT(0xC0002000 | ((dst) << 25) |		\
 		((op) << 19) | ((rs1) << 14) |		\
-		((cnst) & MASKL13BITS)
+		((cnst) & MASKL13BITS))
 
 #define	insn_RRC(op, op2, dst, rs1, cnst)		\
-	LOUT = 0x00002000 | ((op) << 30) |		\
+	LOUT(0x00002000 | ((op) << 30) |		\
 		((dst) << 25) | ((op2) << 19) |		\
-		((rs1) << 14) | ((cnst) & MASKL13BITS)
+		((rs1) << 14) | ((cnst) & MASKL13BITS))
 
 #define	finsn_RRR(op, dst, rs1, rs2)			\
-	LOUT = 0x81A00000 | ((dst) << 25) |	\
+	LOUT(0x81A00000 | ((dst) << 25) |	\
 		((rs1) << 14) | ((op) << 5) |	\
-		(rs2)
+		(rs2))
 
 /* --------------------------------------------------------------------- */
 /* Various masks							 */
@@ -876,7 +876,7 @@ define_insn(build_key, set_word_xxC)
 {
 	jint val = const_int(2);
 
-	LOUT = val;
+	LOUT(val);
 
 	debug((".word %08x\n", val));
 }
@@ -887,7 +887,7 @@ define_insn(build_code_ref, set_wordpc_xxC)
 
 	l->type |= Llong|Labsolute;
 	l->at = (uintp)CODEPC;
-	LOUT = 0;
+	LOUT(0);
 	l->from = (uintp)CODEPC;
 	debug((".word ?\n"));
 }
@@ -899,16 +899,16 @@ define_insn(build_const_ref, set_wordconst_xxC)
 
 	/* Align data onto relevant boundary */
 	if (l->size == 2 && ((uintp)CODEPC) % 8 != 0) {
-		LOUT = 0;
+		LOUT(0;
 	}
 
 	l->to = (uintp)CODEPC;
 
-	LOUT = l->u.word[0];
+	LOUT(l->u.word[0]);
 	debug((".word 0x08x\n", l->u.word[0]));
 
 	if (l->size == 2) {
-		LOUT = l->u.word[1];
+		LOUT(l->u.word[1]);
 		debug((".word 0x08x\n", l->u.word[1]));
 	}
 }
