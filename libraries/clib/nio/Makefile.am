@@ -23,7 +23,7 @@ libnio_la_LDFLAGS = \
 
 libnio_la_SOURCES = \
 	java_nio_VMDirectByteBuffer.c \
-	SelectorImpl.c \
+	gnu_java_nio_VMSelector.c \
 	FileChannelImpl.c
 
 libnio_la_DEPENDENCIES = \

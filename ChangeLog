@@ -2,6 +2,19 @@
 
 	Resynced with GNU Classpath.
 
+	2005-03-18  Robert Schuster  <thebohemian@gmx>
+
+        * native/jni/java-nio/gnu_java_nio_VMSelector.c: Implemented
+    	Java_gnu_java_nio_VMSelector_select.
+        * configure.ac: Added check for sys/select.h and strerro_r().
+
+	* libraries/clib/nio/SelectorImpl.c: Removed. Replaced by 
+	gnu_java_nio_VMSelector.c.
+
+2005-03-21  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-03-17  Chris Burdess  <dog@gnu.org>
 
         * gnu/xml/dom/html2/DomHTMLDocument.java: Fixed element creation and

@@ -1488,7 +1488,7 @@ if test x"$ac_cv_strtod_m0_broken" = x"yes"; then
   AC_DEFINE(STRTOD_m0_BROKEN, 1, [Define if strtod(\"-0.0\") is broken])
 fi
 
-AC_CHECK_FUNCS([strerror hstrerror])
+AC_CHECK_FUNCS([strerror hstrerror strerror_r])
 AC_CHECK_FUNCS([fcntl ioctl])
 AC_CHECK_FUNCS([alarm setitimer])
 AC_CHECK_FUNCS([sigprocmask sigsetmask sigemptyset sigaddset signal sigaction])
