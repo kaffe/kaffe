@@ -52,6 +52,7 @@ static void generateMangledName(char*, const char*);
 #endif
 static void discoverClasspath(const char*);
 static void makeClasspath(char*);
+static classFile findClassInJar(char*, struct _errorInfo*);
 
 /*
  * Find the named class in a directory or JAR file.
@@ -83,7 +84,7 @@ CDBG(	dprintf("Scanning for class %s\n", cname);		)
 	strcat(buf, ".class");
 
 	/* Find class in Jar file */
-	hand = findInJar(buf, einfo);
+	hand = findClassInJar(buf, einfo);
 	if (hand.type == CP_INVALID) {
 		return (0);
 	}
@@ -132,8 +133,8 @@ CDBG(	dprintf("Scanning for class %s\n", cname);		)
 /*
  * Locate the given name in the CLASSPATH.
  */
-classFile
-findInJar(char* cname, errorInfo *einfo)
+static classFile
+findClassInJar(char* cname, errorInfo *einfo)
 {
 	char buf[MAXBUF];
 	int fp;
@@ -253,19 +254,8 @@ FDBG(			dprintf("Opening java file %s for %s\n", buf, cname); )
 	/* If we call out the loop then we didn't find anything */
 	hand.type = CP_INVALID;
 	/* cut off the ".class" suffix for the exception msg */
-	{	int dot = strlen(cname) - strlen(".class");
-		if ((dot > 0) && (strcmp(cname + dot, ".class") == 0)) {
-			cname[dot] = 0;
-		}
-		else {
-			dot = -1;
-		}
-		cname[dot] = '\0';
-		postExceptionMessage(einfo, JAVA_LANG(NoClassDefFoundError), cname);
-		if (dot > 0) {
-			cname[dot] = '.';
-		}
-	}
+	cname[strlen(cname) - strlen(".class")] = '\0';
+	postExceptionMessage(einfo, JAVA_LANG(NoClassDefFoundError), cname);
 
 	done:;
 	unlockStaticMutex(&jarlock);
