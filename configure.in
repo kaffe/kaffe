@@ -892,8 +892,11 @@ AC_CACHE_CHECK([for declaration of swab],
 #include <stdlib.h>
 #endif
 ], [ void *foo = swab; ],
-  ac_cv_declared_swab=yes; AC_DEFINE(HAVE_DECLARED_SWAB, 1, [Is function swab declared]), ac_cv_declared_swab=no)
+  ac_cv_declared_swab=yes, ac_cv_declared_swab=no)
 ])
+if test "x$ac_cv_declared_swab" = "xyes"; then
+  AC_DEFINE(HAVE_DECLARED_SWAB, 1, [Is function swab declared])
+fi
 
 dnl -------------------------------------------------------------------------
 
