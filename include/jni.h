@@ -294,8 +294,8 @@ struct JNINativeInterface {
 	
         void* reserved12; /* GetStringRegion */
         void* reserved13; /* GetStringUTFRegion */
-        void* reserved14; /* GetPrimitiveArrayCritical */
-        void* reserved15; /* ReleasePromitiveArrayCritical */
+	void* (*GetPrimitiveArrayCritical)	(JNIEnv*, jarray, jboolean);
+	void  (*ReleasePrimitiveArrayCritical)	(JNIEnv*, jarray, void*, jint);
         void* reserved16; /* GetStringCritical */
         void* reserved17; /* ReleaseStringCritical */
         void* reserved18; /* NewWeakGlobalRef */

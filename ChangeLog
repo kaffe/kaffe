@@ -1,3 +1,26 @@
+2004-01-02  Mark Wielaard <mark@klomp.org>
+
+	Fix for eclipse3.
+
+	* include/jni.h
+	(JNINativeInterface): Added GetPrimitiveArrayCritical
+	and ReleasePrimitiveArrayCritical.
+
+	* kaffe/kaffevm/jni.c
+	(Kaffe_GetPrimitiveArrayCritical,
+	Kaffe_ReleasePrimitiveArrayCritical): New functions.
+	(Kaffe_JNINativeInterface) Added Kaffe_GetPrimitiveArrayCritical
+	and Kaffe_ReleasePrimitiveArrayCritical.
+
+2004-01-02  Mark Wielaard <mark@klomp.org>,
+	    Dalibor Topic <robilad@kaffe.org>
+
+	Fix for eclipse3 and jython crash.
+
+	* kaffe/kaffevm/jit3/machine.c
+	(installMethodCode) Changed assert for bad exception table entrys 
+	to a warning message.
+
 2004-01-02  Dalibor Topic <robilad@kaffe.org>
 
 	* config/m68k/netbsd1/config.frag

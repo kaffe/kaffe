@@ -3024,6 +3024,12 @@ Kaffe_GetByteArrayElements(JNIEnv* env, jbyteArray arr, jbool* iscopy)
 	return (ret);
 }
 
+static void*
+Kaffe_GetPrimitiveArrayCritical(JNIEnv* env, jarray arr, jbool* iscopy)
+{
+  return (Kaffe_GetByteArrayElements(env, (jbyteArray)arr, iscopy));
+}
+
 static jchar*
 Kaffe_GetCharArrayElements(JNIEnv* env, jcharArray arr, jbool* iscopy)
 {
@@ -3156,6 +3162,12 @@ Kaffe_ReleaseByteArrayElements(JNIEnv* env, jbyteArray arr, jbyte* elems, jint m
 		}
 	}
 	END_EXCEPTION_HANDLING();
+}
+
+static void
+Kaffe_ReleasePrimitiveArrayCritical(JNIEnv* env, jbyteArray arr, jbyte* elems, jint mode)
+{
+  Kaffe_ReleaseByteArrayElements(env, (jbyteArray)arr, (jbyte*)elems, mode);
 }
 
 static void
@@ -4425,8 +4437,8 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	Kaffe_GetJavaVM,
 	NULL,
 	NULL,
-	NULL,
-	NULL,
+	Kaffe_GetPrimitiveArrayCritical,
+	Kaffe_ReleasePrimitiveArrayCritical,
 	NULL,
 	NULL,
 	NULL,
