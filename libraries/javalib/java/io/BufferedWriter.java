@@ -73,6 +73,7 @@ public class BufferedWriter extends Writer {
   {
     synchronized(lock) {
       wr.write(wrbuf, 0, pos);
+      wr.flush();
       pos = 0;
       size = wrbuf.length;
     }
