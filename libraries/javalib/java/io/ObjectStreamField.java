@@ -329,162 +329,128 @@ public class ObjectStreamField implements Comparable
     this.field = f;
   }
 
+  /**
+   * This method check whether the field described by this
+   * instance of ObjectStreamField is compatible with the
+   * actual implementation of this field.
+   *
+   * @throws NullPointerException if this field does not exist
+   * in the real class.
+   * @throws InvalidClassException if the types are incompatible.
+   */
+  void checkFieldType() throws InvalidClassException
+  {
+    Class ftype = field.getType();
+
+    if (!ftype.isAssignableFrom(type))
+      throw new InvalidClassException
+	("invalid field type for " + name +
+	 " in class " + field.getDeclaringClass());
+  }
+
   public String toString ()
   {
     return "ObjectStreamField< " + type + " " + name + " >";
   }
 
-  /*
-   * These methods set the required field in the class instance obj.
-   * They may throw NullPointerException if the field does not really exist.
-   */
-
-  final void setBooleanField(Object obj, boolean val) throws IOException
+  final void setBooleanField(Object obj, boolean val)
   {
     try
       {
 	field.setBoolean(obj, val);
       }
-    catch (IllegalArgumentException _)
-      {
-	throw new InvalidClassException("incompatible field type for " + 
-					obj.getClass().getName() + "." + name);
-      }
     catch(IllegalAccessException x)
       {
 	throw new InternalError(x.getMessage());
       }
   }
   
-  final void setByteField(Object obj, byte val) throws IOException
+  final void setByteField(Object obj, byte val)
   {
     try
       {
 	field.setByte(obj, val);
       }
-    catch (IllegalArgumentException _)
-      {
-	throw new InvalidClassException("incompatible field type for " + 
-					obj.getClass().getName() + "." + name);
-      }
     catch(IllegalAccessException x)
       {
 	throw new InternalError(x.getMessage());
       }
   }
   
-  final void setCharField(Object obj, char val) throws IOException
+  final void setCharField(Object obj, char val)
   {
     try
       {
 	field.setChar(obj, val);
       }
-    catch (IllegalArgumentException _)
-      {
-	throw new InvalidClassException("incompatible field type for " + 
-					obj.getClass().getName() + "." + name);
-      }
     catch(IllegalAccessException x)
       {
 	throw new InternalError(x.getMessage());
       }
   }
   
-  final void setShortField(Object obj, short val) throws IOException
+  final void setShortField(Object obj, short val)
   {
     try
       {
 	field.setShort(obj, val);
       }
-    catch (IllegalArgumentException _)
-      {
-	throw new InvalidClassException("incompatible field type for " + 
-					obj.getClass().getName() + "." + name);
-      }
     catch(IllegalAccessException x)
       {
 	throw new InternalError(x.getMessage());
       }
   }
   
-  final void setIntField(Object obj, int val) throws IOException
+  final void setIntField(Object obj, int val)
   {
     try
       {
 	field.setInt(obj, val);
       }
-    catch (IllegalArgumentException _)
-      {
-	throw new InvalidClassException("incompatible field type for " + 
-					obj.getClass().getName() + "." + name);
-      }
     catch(IllegalAccessException x)
       {
 	throw new InternalError(x.getMessage());
       }
-    catch (Exception _)
-      {
-      }
   }
   
-  final void setLongField(Object obj, long val) throws IOException
+  final void setLongField(Object obj, long val)
   {
     try
       {
 	field.setLong(obj, val);
       }
-    catch (IllegalArgumentException _)
-      {
-	throw new InvalidClassException("incompatible field type for " + 
-					obj.getClass().getName() + "." + name);
-      }
     catch(IllegalAccessException x)
       {
 	throw new InternalError(x.getMessage());
       }
   }
   
-  final void setFloatField(Object obj, float val) throws IOException
+  final void setFloatField(Object obj, float val)
   {
     try
       {
 	field.setFloat(obj, val);
       }
-    catch (IllegalArgumentException _)
-      {
-	throw new InvalidClassException("incompatible field type for " + 
-					obj.getClass().getName() + "." + name);
-      }
     catch(IllegalAccessException x)
       {
 	throw new InternalError(x.getMessage());
       }
   }
   
-  final void setDoubleField(Object obj, double val) throws IOException
+  final void setDoubleField(Object obj, double val)
   {
     try
       {
 	field.setDouble(obj, val);
       }
-    catch (IllegalArgumentException _)
-      {
-	throw new InvalidClassException("incompatible field type for " + 
-					obj.getClass().getName() + "." + name);
-      }
     catch(IllegalAccessException x)
       {
 	throw new InternalError(x.getMessage());
       }
   }
   
-  final void setObjectField(Object obj, String valtype, Object val) throws IOException
-  {
-    if (valtype == null ||
-	!typename.equals(valtype))
-      throw new InvalidClassException("incompatible field type for " + 
-				      obj.getClass().getName() + "." + name);
- 
+  final void setObjectField(Object obj, Object val)
+  { 
     try
       {
 	field.set(obj, val);
