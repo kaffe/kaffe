@@ -1,5 +1,27 @@
 2004-10-04  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/beans/EventHandler.java,
+	libraries/javalib/java/beans/PropertyChangeSupport.java,
+	libraries/javalib/java/beans/VetoableChangeSupport.java,
+	libraries/javalib/java/beans/beancontext/BeanContextChildSupport.java,
+	libraries/javalib/java/beans/beancontext/BeanContextMembershipEvent.java:
+        Resynced with GNU Classpath.
+
+	2004-09-30  Michael Koch  <konqueror@gmx.de>
+
+        * java/beans/Beans.java,
+        java/beans/EventHandler.java,
+        java/beans/EventSetDescriptor.java,
+        java/beans/Introspector.java,
+        java/beans/PropertyEditorManager.java,
+        java/beans/beancontext/BeanContext.java,
+        java/beans/beancontext/BeanContextChild.java,
+        java/beans/beancontext/BeanContextChildSupport.java,
+        java/beans/beancontext/BeanContextMembershipEvent.java:
+        Reordered import statements and removed redundant modifiers.
+
+2004-10-04  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/image/RescaleOp.java,
 	libraries/javalib/javax/swing/plaf/basic/BasicComboPopup.java,
 	libraries/javalib/javax/swing/plaf/basic/BasicOptionPaneUI.java:
