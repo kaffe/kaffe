@@ -1,20 +1,18 @@
 This file is a list of known bugs, short-comings and oddities.  
-Treat it as an TODO list.
+Treat it as an TODO list.   This file is divided in three sections.
+
+MISSING OR BROKEN FEATURES
+---------------------------------------------------------------------------
 
 * java.net.Socket:
 
      getSoTimeout() 
      setSoTimeout(int) 	are not implemented.
 
-* Add some architecture-specific stack pointer alignment macro.  Currently,
-  alignment is sizeof (jlong); apparently, some architectures require more
-  specific alignments.
+* Kaffe does not currently provide its own implementation of RMI.
 
-* Kaffe fails to work for several people under SunOS 4.1.3.  The error
-  message seems to be "Can not find native library in path".  This problem
-  is unclear: either a problem in the kaffe script that use @libdir@ and set 
-  LD_LIBRARY_PATH (less likely), or a problem in the dynamic linking 
-  mechanisms on this system.  Check the mailing list archive for more info.
+* Kaffe's java.lang.Character class does not conform to Sun's spec.  The 
+  handling of unicode characters is incomplete.
 
 * Object serialization is broken.  Even simple tests fail.  Many run-time 
   classes do not properly serialize or deserialize.
@@ -29,11 +27,37 @@ Treat it as an TODO list.
   Note that some of our classes currently report Sun's serialVersionUIDs,
   even though they're incompatible.
 
-* Kaffe does not currently provide its own implementation of RMI.
-
 * java.math.* is incomplete.  java.math.BigInteger is mostly written and
   relies on the GNU Multi-precision math package (GMP).  BigDecimal is
   completely incomplete (?) and will just throw exceptions when used.
+
+* The conversion of floats or doubles to strings does not conform to Sun's
+  spec.  Instead, Kaffe uses the output format provided by printf().
+
+
+ARCHITECTURE-SPECIFIC PROBLEMS
+---------------------------------------------------------------------------
+
+* Kaffe fails to work for several people under SunOS 4.1.3.  The error
+  message seems to be "Can not find native library in path".  This problem
+  is unclear: either a problem in the kaffe script that use @libdir@ and set 
+  LD_LIBRARY_PATH (less likely), or a problem in the dynamic linking 
+  mechanisms on this system.  Check the mailing list archive for more info.
+
+* There have been reports of problems with exception handling on Linux 2.1.
+  These problems have to do with libc versions.  Unfortunately, no patches
+  have been submitted.  As a matter of precautious, make sure you run your
+  kaffe binary on the system on which it was compiled, that is, don't run
+  Linux 2.0 binaries on 2.1 or vice versa.  The test LostFrame in 
+  test/regression (and possibly others) should fail if you're affected
+  by this problem.
+
+
+THINGS WHERE KAFFE'S BEHAVIOR DIFFERS
+---------------------------------------------------------------------------
+
+* java.util.Random produces different results than Sun's.  While the basic
+  algorithm is the same, Kaffe uses different multipliers and modulos.
 
 * There is a problem with String.intern().  Specifically, if an interned string
   is scheduled for finalization, but is then reattached through the finalizer
@@ -46,6 +70,14 @@ Treat it as an TODO list.
 * Class.getFields() returns Fields in reverse order compared to Sun's jdk.
   Apparently, this causes some software such Cygnus's kawa to fail in 
   certain circumstances.  It seems like they should fix that.
+
+
+MISCELLANEOUS & TODO
+---------------------------------------------------------------------------
+
+* Add some architecture-specific stack pointer alignment macro.  Currently,
+  alignment is sizeof (jlong); apparently, some architectures require more
+  specific alignments.
 
 * While Kaffe currently doesn't compile with other compilers than Cygnus
   cygwin32 gcc compiler, we do know that people are trying to compile it
@@ -65,6 +97,14 @@ Treat it as an TODO list.
   Example:	Kaffe:	-mx 32m  Sun:  -mx32m
   Pointed out by David Tucker <dbtucker@acm.jhu.edu> on Sat, 21 Nov 1998
 
-* java.util.Random produces different results than Sun's.  While the basic
-  algorithm is the same, Kaffe uses different multipliers and modulos.
+* The call to `native' in external.c is unprotected in the interpreter.
+  In the jitter, this call is protected by locking the class.
+
+* When verifying a method, we lock the whole class.  This means that other
+  threads attempting the call other methods may be blocked until the
+  verification succeeds.  This could lead to deadlock.
+  
+* OutOfMemoryErrors are not handled properly.
+
+* Stopping threads at inopportune times may corrupt the VM.
 
