@@ -1,3 +1,39 @@
+Thu Apr  4 14:03:07 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* developers/utf8munge.pl: Fix perl path. Taken from RedHat's
+	distribution of kaffe 1.0.6.
+	* libraries/clib/native/System.c: Include for <sys/time.h>. Fixes
+	compilation problems. Taken from RedHat's distribution of kaffe
+	1.0.6.
+	* config/alpha/threads.h: Set SP_OFFSET to 8.
+	Patch taken from Madrake's cooker distribution of kaffe 1.0.6.
+	* libraries/javalib/java/lang/String.java:
+	(getBytes) Fix bug with too small buffer.
+	Patch taken from Mandrake's cooker distribution of kaffe 1.0.6.
+	* config/sparc/linux/jit-md.h: remove asm/sigcontext
+	includes. Include asm/ptrace. Change type of ctx in EXCEPTIONPROTO
+	to struct sigcontext*.
+	Patch taken from Mandrake's cooker distribution of kaffe 1.0.6.
+	* config/config-std.h: include string.h if it is available.
+	Patch taken from Madrake's cooker distribution of kaffe 1.0.6.
+	* libraries/javalib/java/awt/widgets/TextComponent.java:
+	(addTextListener) Add the text listener.
+	* libraries/javalib/java/awt/widgets/TextField.java:
+	(keyPressed) Fix buggy handling of key change.
+	Patch by Maurizio De Cecco <maurizio@mandrakesoft.com>
+	Patch taken from Mandrake's cooker distribution of kaffe 1.0.6.
+	* libraries/javalib/java/awt/Component.java:
+	(transferFocus) Fixed bug in focus traversal.
+	Patch taken from Mandrake's cooker distribution of kaffe 1.0.6.
+	* libraries/javalib/java/awt/FontMetrics.java: Fix bug with
+	premature freeing of native font data.
+	Patch by Maurizio De Cecco <maurizio@mandrakesoft.com>
+	Patch taken from Mandrake's cooker distribution of kaffe 1.0.6.
+	* libraries/clib/awt/X/evt.c: Include X11/keysim.
+	(keyNotify) Fixed bug in handling of keypad numbers.
+	* libraries/clib/awt/X/keysyms.h: Fixed bug with size of FKeyCode.
+	Patch by Maurizio De Cecco <maurizio@mandrakesoft.com>
+	Patch taken from Mandrake's cooker distribution of kaffe 1.0.6.
+
 Mon Apr  1 21:49:08 PST 2002  Jim Pick  <jim@kaffe.org>
 
 	* changed "make install" to install files in same way as
