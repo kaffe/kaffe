@@ -70,7 +70,7 @@ Method: public static java.lang.String java.lang.System.setProperty(java.lang.St
 Method: public static java.util.Properties java.lang.System.getProperties()
 Method: public static native int java.lang.System.identityHashCode(java.lang.Object)
 Method: public static native long java.lang.System.currentTimeMillis()
-Method: public static native void java.lang.System.arraycopy(java.lang.Object,int,java.lang.Object,int,int)
+Method: public static void java.lang.System.arraycopy(java.lang.Object,int,java.lang.Object,int,int)
 Method: public static void java.lang.System.exit(int)
 Method: public static void java.lang.System.gc()
 Method: public static void java.lang.System.load(java.lang.String)
