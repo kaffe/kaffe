@@ -17,8 +17,8 @@
 #include "../../../kaffe/kaffevm/object.h"
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/itypes.h"
-#include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/exception.h"
+#include "../../../kaffe/kaffevm/errors.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
 #include "Method.h"
 #include "Boolean.h"
@@ -309,13 +309,13 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 	 */
 	targetexc = (*env)->ExceptionOccurred(env);
 	if (targetexc != 0) {
-		Hjava_lang_Object* obj;
+		struct Hjava_lang_Throwable* e;
 
 		(*env)->ExceptionClear(env);
-		obj = execute_java_constructor(
+		e = (struct Hjava_lang_Throwable *)execute_java_constructor(
 			"java.lang.reflect.InvocationTargetException", 0, 
 			"(Ljava/lang/Throwable;)V", targetexc);
-		throwException(obj);
+		throwException(e);
 		assert(!"Not here");
 	}
 

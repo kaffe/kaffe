@@ -96,6 +96,7 @@ typedef struct {
 struct Hjava_lang_String;
 struct Hjava_lang_Class;
 struct Hjava_lang_Object;
+struct Hjava_lang_Throwable;
 
 extern void		setProperty(void*, char*, char*);
 extern char*		getEngine(void);

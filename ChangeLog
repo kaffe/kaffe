@@ -1,3 +1,18 @@
+Wed Dec  9 22:01:05 1998  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/errors.h kaffe/kaffevm/exception.c
+	kaffe/kaffevm/exception.h kaffe/kaffevm/findInJar.c
+	include/jni.h kaffe/kaffevm/soft.c kaffe/kaffevm/support.c
+	kaffe/kaffevm/support.h libraries/clib/native/Class.c
+	libraries/clib/native/Method.c libraries/clib/awt/X/img.c
+	libraries/clib/awt/X/img.c libraries/clib/awt/X/img.c
+	libraries/clib/awt/X/img.c libraries/clib/awt/X/evt.c
+	libraries/clib/awt/X/imggif.c libraries/clib/awt/X/imgjpeg.c
+	libraries/clib/awt/X/clr.c libraries/clib/awt/X/gra.c
+	libraries/clib/awt/X/img.c libraries/clib/awt/X/imgpng.c
+	libraries/clib/awt/X/toolkit.h: eliminate compiler warnings
+	* libraries/javalib/Klasses.jar: synchronize
+
 Wed Dec  9 18:41:09 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/lang/Cloneable.java

@@ -18,6 +18,7 @@
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/itypes.h"
 #include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/errors.h"
 #include "../../../kaffe/kaffevm/soft.h"
 #include "../../../kaffe/kaffevm/stackTrace.h"
 #include "InputStream.h"
@@ -756,7 +757,7 @@ java_lang_Class_getMethod0(struct Hjava_lang_Class* this, struct Hjava_lang_Stri
 	/* like SignalError, except that the name of the class that is
 	 * not found becomes the error message 
 	 */
-	throwException(execute_java_constructor(
+	throwException((struct Hjava_lang_Throwable*)execute_java_constructor(
 		"java.lang.NoSuchMethodException", 0, 
 		"(Ljava/lang/String;)V", name));
 }

@@ -65,10 +65,10 @@ extern void Tspinoffall(void);
  * Throw an internal exception.
  */
 void
-throwException(Hjava_lang_Object* eobj)
+throwException(Hjava_lang_Throwable* eobj)
 {
 	if (eobj != 0) {
-		unhand((Hjava_lang_Throwable*)eobj)->backtrace = buildStackTrace(0);
+		unhand(eobj)->backtrace = buildStackTrace(0);
 	}
 	throwExternalException(eobj);
 }
@@ -83,11 +83,11 @@ throwError(errorInfo* einfo)
 	if (!strcmp(einfo->classname, 
 		"java.lang.ExceptionInInitializerError")) 
 	{
-		throwException(
+		throwException((Hjava_lang_Throwable*)
 			execute_java_constructor(einfo->classname, 
 			    0, "(Ljava/lang/Throwable;)V", einfo->mess));
 	} else {
-		throwException(
+		throwException((Hjava_lang_Throwable*)
 			execute_java_constructor(einfo->classname, 
 			    0, "(Ljava/lang/String;)V",
 			    makeJavaString(einfo->mess, strlen(einfo->mess))));
@@ -98,7 +98,7 @@ throwError(errorInfo* einfo)
  * Throw an exception.
  */
 void
-throwExternalException(Hjava_lang_Object* eobj)
+throwExternalException(Hjava_lang_Throwable* eobj)
 {
 	DEFINEFRAME();
 	if (eobj == 0) {
@@ -113,7 +113,7 @@ throwExternalException(Hjava_lang_Object* eobj)
 void
 throwOutOfMemory(void)
 {
-	Hjava_lang_Object* err;
+	Hjava_lang_Throwable* err;
 
 	err = OutOfMemoryError;
 	if (err != NULL) {

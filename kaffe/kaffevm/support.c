@@ -580,9 +580,10 @@ lookupObjectMethod(Hjava_lang_Object* obj, char* name, char* sig, errorInfo *ein
 void
 SignalError(char* cname, char* str)
 {
-	Hjava_lang_Object* obj;
+	Hjava_lang_Throwable* obj;
 
-	obj = execute_java_constructor(cname, 0, ERROR_SIGNATURE, makeJavaString(str, strlen(str)));
+	obj = (Hjava_lang_Throwable*)execute_java_constructor(cname,
+		0, ERROR_SIGNATURE, makeJavaString(str, strlen(str)));
 	throwException(obj);
 }
 

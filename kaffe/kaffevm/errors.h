@@ -37,18 +37,20 @@ typedef struct _errorInfo {
   (ep)->mess = MESS; }
 
 #define NEW_LANG_EXCEPTION(NAME) \
-  execute_java_constructor("java.lang." #NAME, 0, "()V")
+  (struct Hjava_lang_Throwable*)execute_java_constructor("java.lang." #NAME, \
+	0, "()V")
 
 #define NEW_LANG_EXCEPTION_MESSAGE(NAME, MESS) \
-  execute_java_constructor("java.lang." #NAME, 0, "(Ljava/lang/String;)V", \
-	makeJavaString(MESS, strlen(MESS)))
+  (struct Hjava_lang_Throwable*)execute_java_constructor("java.lang." #NAME, \
+	0, "(Ljava/lang/String;)V", makeJavaString(MESS, strlen(MESS)))
 
 #define NEW_IO_EXCEPTION(NAME) \
-  execute_java_constructor("java.io." #NAME, 0, "()V")
+  (struct Hjava_lang_Throwable*)execute_java_constructor("java.io." #NAME, \
+	0, "()V")
 
 #define NEW_IO_EXCEPTION_MESSAGE(NAME, MESS) \
-  execute_java_constructor("java.io." #NAME, 0, "(Ljava/lang/String;)V", \
-	makeJavaString(MESS, strlen(MESS)))
+  (struct Hjava_lang_Throwable*)execute_java_constructor("java.io." #NAME, \
+	0, "(Ljava/lang/String;)V", makeJavaString(MESS, strlen(MESS)))
 
 #define NoSuchMethodError(M) NEW_LANG_EXCEPTION_MESSAGE(NoSuchMethodError, M)
 #define ClassFormatError NEW_LANG_EXCEPTION(ClassFormatError)

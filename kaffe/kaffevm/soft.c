@@ -357,7 +357,7 @@ soft_checkcast(Hjava_lang_Class* c, Hjava_lang_Object* o)
 		 * Let's be a bit more informative as to why the class 
 		 * cast exception happened.
 		 */
-		Hjava_lang_Object* ccexc;
+		Hjava_lang_Throwable* ccexc;
 		char *fromtype = CLASS_CNAME(OBJECT_CLASS(o));
 		char *totype = CLASS_CNAME(c);
 		char *format = "can't cast `%s' to `%s'";
@@ -382,7 +382,7 @@ soft_athrow(Hjava_lang_Object* o)
 		soft_nullpointer();
 	}
 	else {
-		throwExternalException(o);
+		throwExternalException((Hjava_lang_Throwable*)o);
 	}
 }
 

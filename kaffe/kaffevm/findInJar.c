@@ -19,6 +19,7 @@
 #include "config-io.h"
 #include "config-mem.h"
 #include "gtypes.h"
+#include "support.h"
 #include "file.h"
 #include "exception.h"
 #include "readClass.h"
