@@ -9,5 +9,5 @@
 native_LTLIBRARIES = libmath.la
 
 libmath_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER)
-libmath_la_LIBADD = $(MATH_LIBS)
+libmath_la_LIBADD = $(MATH_LIBS) $(M_LIBS)
 libmath_la_SOURCES = BigInteger.c

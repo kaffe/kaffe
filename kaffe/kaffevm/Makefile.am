@@ -30,7 +30,7 @@ libkaffevm_la_LDFLAGS = $(KVMLIBFLAGS) -export-dynamic -release $(KVER)
 libkaffevm_la_LIBADD = \
 	$(top_builddir)/libltdl/libltdl.la \
 	$(ENGINE_NAME)/libengine.la \
-	systems/$(THREAD_SYSTEM)/libkthread.la $(VM_LIBS)
+	systems/$(THREAD_SYSTEM)/libkthread.la $(VM_LIBS) $(M_LIBS)
 libkaffevm_la_SOURCES = \
 	baseClasses.c \
 	classMethod.c \

@@ -35,10 +35,6 @@ dnl -------------------------------------------------------------------------
 dynamic_libraries=yes
 vm_dynamic_library=yes
 
-if test x"$ac_cv_sys_symbol_underscore" = x"yes"; then
-    AC_DEFINE(HAVE_UNDERSCORED_C_NAMES, 1, [Define if C symbol names start with underscore])
-fi
-
 dnl -------------------------------------------------------------------------
 
 dnl =========================================================================
@@ -89,6 +85,15 @@ yes,yes) : ${enable_static=no};;
 esac
 
 AM_PROG_LIBTOOL
+AC_SUBST(LIBTOOL_DEPS)
+
+dnl =========================================================================
+dnl Do we need underscore?
+dnl -------------------------------------------------------------------------
+
+if test x"$ac_cv_sys_symbol_underscore" = x"yes"; then
+    AC_DEFINE(HAVE_UNDERSCORED_C_NAMES, 1, [Define if C symbol names start with underscore])
+fi
 
 dnl =========================================================================
 dnl Start of default configurations
@@ -349,10 +354,17 @@ dnl =========================================================================
 dnl Checks for libraries
 dnl -------------------------------------------------------------------------
 
-dnl Checks for standard libraries
+dnl Libraries for programs such as Kaffe and kaffeh
 
-AC_CHECK_LIB(mw,_mwvalidcheckl)
-AC_CHECK_LIB(m,sin)
+KAFFE_LIBS="$KAFFE_LIBS"
+AC_SUBST(KAFFE_LIBS)
+
+dnl Checks for general math libraries
+
+AC_CHECK_LIBRARY(mw,_mwvalidcheckl,M_LIBS)
+AC_CHECK_LIBRARY(m,sin,M_LIBS)
+
+AC_SUBST(M_LIBS)
 
 dnl Checks for libraries for vm library.
 dnl Include work around FreeBSD modulo bug.
@@ -364,7 +376,7 @@ esac
 
 AC_SUBST(VM_LIBS)
 
-dnl Check libraries for native library.
+dnl Check for libraries for native library.
 dnl None required.
 
 dnl Check for libraries for net library.
@@ -566,7 +578,6 @@ fi
 AC_SUBST(AWT_DIR)
 
 JAVA_LIBS=" \
-$JAVA_LIBS \
 \$(top_builddir)/libraries/clib/native/libnative.la \
 \$(top_builddir)/libraries/clib/net/libnet.la \
 \$(top_builddir)/libraries/clib/io/libio.la \
@@ -574,7 +585,14 @@ $JAVA_LIBS \
 \$(top_builddir)/libraries/clib/math/libmath.la \
 \$(top_builddir)/libraries/clib/management/libmanagement.la \
 $AWT_LIB \
+$JAVA_LIBS \
 "
+
+DLOPEN_JAVA_LIBS=
+for lib in $JAVA_LIBS; do
+  DLOPEN_JAVA_LIBS="$DLOPEN_JAVA_LIBS -dlopen $lib"
+done
+AC_SUBST(DLOPEN_JAVA_LIBS)
 
 if test "$dynamic_libraries" = no; then
 	KLIBFLAGS=-static
@@ -592,14 +610,36 @@ fi
 AC_SUBST(KVMLIBFLAGS)
 
 dnl =========================================================================
-dnl Whenever we prepare KAFFEH for cross builds, this should be fixed
+dnl Set up for local build of kaffeh when cross-compiling
 dnl -------------------------------------------------------------------------
 
-KAFFEH_FOR_HOST="\$(top_builddir)/kaffe/kaffeh/kaffeh\$(EXEEXT)"
-MAKE_KAFFEH_FOR_HOST="cd \$(top_builddir)/kaffe/kaffeh && \$(MAKE)"
+if test "$cross_compiling" = yes; then
+  dnl check for variables that, if not defined in config.frag or config.cache,
+  dnl may take wrong values
+  if test x"${ac_cv_c_bigendian+set}" != x"set"; then
+    AC_MSG_WARN([when cross compiling, you may want to set ac_cv_c_bigendian to yes or no])
+  fi
+  if test x"${ac_cv_c_char_unsigned}" != x"set"; then
+    AC_MSG_WARN([when cross compiling, you may want to set ac_cv_c_char_unsigned to yes or no])
+  fi
+  dnl force user to set BUILD_CC
+  if test x"${BUILD_CC+set}" != x"set" &&
+     test x"${ac_cv_BUILD_CC}" != x"set"; then
+    AC_MSG_ERROR([when cross compiling, BUILD_CC should be set to the local C compiler])
+  fi
+  ac_cv_BUILD_CC="${BUILD_CC-${ac_cv_BUILD_CC}}"
+  BUILD_CC="$ac_cv_BUILD_CC"
+  KAFFEH_FOR_BUILD="\$(top_builddir)/kaffe/kaffeh/kaffeh-build"
+  MAKE_KAFFEH_FOR_BUILD="cd \$(top_builddir)/kaffe/kaffeh && \$(MAKE) kaffeh-build"
+else
+  BUILD_CC="$CC" dnl just in case
+  KAFFEH_FOR_BUILD="\$(top_builddir)/kaffe/kaffeh/kaffeh\$(EXEEXT)"
+  MAKE_KAFFEH_FOR_BUILD="cd \$(top_builddir)/kaffe/kaffeh && \$(MAKE)"
+fi
 
-AC_SUBST(KAFFEH_FOR_HOST)
-AC_SUBST(MAKE_KAFFEH_FOR_HOST)
+AC_SUBST(BUILD_CC)
+AC_SUBST(KAFFEH_FOR_BUILD)
+AC_SUBST(MAKE_KAFFEH_FOR_BUILD)
 
 dnl =========================================================================
 dnl Define directory to put native library support

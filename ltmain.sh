@@ -584,13 +584,13 @@ compiler."
 # #include <windows.h>
 # #undef WIN32_LEAN_AND_MEAN
 # #include <stdio.h>
-# 
+#
 # BOOL APIENTRY DllMain (HINSTANCE hInst, DWORD reason, LPVOID reserved);
-# 
+#
 # #include <cygwin/cygwin_dll.h>
 # DECLARE_CYGWIN_DLL( DllMain );
 # HINSTANCE __hDllInstance_base;
-# 
+#
 # BOOL APIENTRY
 # DllMain (HINSTANCE hInst, DWORD reason, LPVOID reserved)
 # {
@@ -611,9 +611,9 @@ compiler."
     convenience=
     old_convenience=
     deplibs=
-    eval lib_search_path=\"$sys_lib_search_path\"
+    eval lib_search_path=\"$sys_lib_search_path_spec\"
     
-    avoid_versioning=no
+    avoid_version=no
     dlfiles=
     dlprefiles=
     dlpredeps=
@@ -733,8 +733,8 @@ compiler."
 	continue
 	;;
 
-      -avoid-versioning)
-	avoid_versioning=yes
+      -avoid-version)
+	avoid_version=yes
 	continue
 	;;
 
@@ -840,7 +840,7 @@ compiler."
 	;;
 
       -R*)
-        xrpath="$xrpath "`echo "X$arg" | $Xsed -e 's/^-R//'`
+	xrpath="$xrpath "`echo "X$arg" | $Xsed -e 's/^-R//'`
 	continue
 	;;
 
@@ -1231,7 +1231,7 @@ compiler."
     *.la)
       # Make sure we only generate libraries of the form `libNAME.la'.
       case "$outputname" in
-      lib*) 
+      lib*)
 	name=`$echo "X$outputname" | $Xsed -e 's/\.la$//' -e 's/^lib//'`
 	eval libname=\"$libname_spec\"
 	;;
@@ -1252,8 +1252,8 @@ compiler."
       esac
 
       if test -n "$xrpath"; then
-        temp_xrpath=
-        for libdir in $xrpath; do
+	temp_xrpath=
+	for libdir in $xrpath; do
 	  temp_xrpath="$temp_xrpath -R$libdir"
 	done
 	deplibs="$temp_xrpath $deplibs"
@@ -1434,7 +1434,7 @@ compiler."
 	fi
 
 	# Remove version info from name if versioning should be avoided
-	if test "$avoid_versioning" = yes && test "$need_version" = no; then
+	if test "$avoid_version" = yes && test "$need_version" = no; then
 	  major=
 	  versuffix=
 	  verstring=""
@@ -1504,8 +1504,8 @@ compiler."
 	major=""
 	newdeplibs=
 	case "$deplibs_check_method" in
-	pass_all)  
-	  newdeplibs=$deplibs 
+	pass_all)
+	  newdeplibs=$deplibs
 		    ;; # Don't check for shared/static.  Everything works.
 		       # This might be a little naive.  We might want to check
 		       # whether the library exists or not.  But this is on
@@ -2003,6 +2003,11 @@ lt_preloaded_symbols[] =
   {0, (lt_ptr_t) 0}
 };
 
+/* This works around a problem in FreeBSD linker */
+static const void *lt_preloaded_setup() {
+  return lt_preloaded_symbols;
+}
+
 #ifdef __cplusplus
 }
 #endif\
@@ -2010,8 +2015,9 @@ lt_preloaded_symbols[] =
 	  fi
 
 	  # Now compile the dynamic symbol file.
-	  $show "(cd $objdir && $C_compiler -c$no_builtin_flag \"$dlsyms\")"
-	  $run eval '(cd $objdir && $C_compiler -c$no_builtin_flag "$dlsyms")' || exit $?
+	  # pic_flag works around a bug in FreeBSD linker
+	  $show "(cd $objdir && $C_compiler -c$no_builtin_flag $pic_flag -DPIC \"$dlsyms\")"
+	  $run eval '(cd $objdir && $C_compiler -c$no_builtin_flag $pic_flag -DPIC "$dlsyms")' || exit $?
 
 	  # Transform the symbol file into the correct name.
 	  compile_command=`$echo "X$compile_command" | $Xsed -e "s%@SYMFILE@%$objdir/${output}S.${objext}%"`
@@ -3130,6 +3136,7 @@ Compile a source file into a libtool library object.
 
 This mode accepts the following additional options:
 
+  -o OUTPUT-FILE    set the output file name to OUTPUT-FILE
   -static           always build a \`.o' file suitable for static linking
 
 COMPILE-COMMAND is a command to be used in creating a \`standard' object file
@@ -3198,7 +3205,7 @@ a program from several object files.
 The following components of LINK-COMMAND are treated specially:
 
   -all-static       do not do any dynamic linking at all
-  -avoid-versioning do not add a version suffix if possible
+  -avoid-version    do not add a version suffix if possible
   -dlopen FILE      \`-dlpreopen' FILE if it cannot be dlopened at runtime
   -dlpreopen FILE   link in FILE and add its symbols to lt_preloaded_symbols
   -export-dynamic   allow symbols from OUTPUT-FILE to be resolved with dlsym(3)

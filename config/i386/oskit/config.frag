@@ -64,7 +64,7 @@ eval `$CPP conftest.c 2>&1 | grep oskit_env | awk '{print $3}'`
 #
 if [ "$oskit_env" = "real" ]
 then
-STD_LIBRARIES="\
+KAFFE_LIBS="\
                 -loskit_startup \
                 -loskit_threads \
                 -loskit_svm -loskit_amm \
@@ -76,9 +76,9 @@ STD_LIBRARIES="\
 		-loskit_freebsd_c_r \
                 -loskit_diskpart -loskit_fs -loskit_com \
                 -loskit_threads \
-"
+$KAFFE_LIBS "
 else
-STD_LIBRARIES="\
+KAFFE_LIBS="\
                 -loskit_startup \
                 -loskit_threads \
                 -loskit_bootp \
@@ -90,6 +90,6 @@ STD_LIBRARIES="\
 		-loskit_freebsd_c_r \
                 -loskit_diskpart -loskit_fs -loskit_com \
                 -loskit_threads \
-"
+$KAFFE_LIBS "
 fi
 

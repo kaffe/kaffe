@@ -29,7 +29,10 @@ EXTRA_DIST = license.terms WHATSNEW \
 depend:
 	@echo \`make depend\' is no longer needed
 
-noinst_SCRIPTS = BUILD_ENVIRONMENT
+noinst_SCRIPTS = libtool BUILD_ENVIRONMENT
+
+libtool: $(LIBTOOL_DEPS)
+	$(SHELL) ./config.status --recheck
 
 BUILD_ENVIRONMENT: Makefile
 	$(MAKE) top_srcdir=`cd $(top_srcdir) >/dev/null; pwd` \

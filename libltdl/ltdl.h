@@ -75,17 +75,20 @@ typedef struct {
 
 __BEGIN_DECLS
 _LTDLL_EXTERN int lt_dlinit __P((void));
-_LTDLL_EXTERN int lt_dlpreopen __P((const lt_dlsymlist *preloaded));
-_LTDLL_EXTERN int lt_dlpreopen_default_ __P((const lt_dlsymlist *preloaded));
+_LTDLL_EXTERN int lt_dlpreload __P((const lt_dlsymlist *preloaded));
+_LTDLL_EXTERN int lt_dlpreload_default __P((const lt_dlsymlist *preloaded));
 _LTDLL_EXTERN int lt_dlexit __P((void));
 _LTDLL_EXTERN lt_dlhandle lt_dlopen __P((const char *filename));
 _LTDLL_EXTERN int lt_dlclose __P((lt_dlhandle handle));
 _LTDLL_EXTERN lt_ptr_t lt_dlsym __P((lt_dlhandle handle, const char *name));
 _LTDLL_EXTERN const char *lt_dlerror __P((void));
-_LTDLL_EXTERN const char *lt_dlsearchpath __P((const char *search_path));
+_LTDLL_EXTERN int lt_dladdsearchdir __P((const char *search_dir));
+_LTDLL_EXTERN int lt_dlsetsearchpath __P((const char *search_path));
+_LTDLL_EXTERN const char *lt_dlgetsearchpath __P((void));
 
 extern const lt_dlsymlist lt_preloaded_symbols[];
-#define lt_dlpreopen_default() lt_dlpreopen_default_(lt_preloaded_symbols)
+#define LTDL_SET_PRELOADED_SYMBOLS() lt_dlpreload_default(lt_preloaded_symbols)
+
 __END_DECLS
 
 #endif /* !_LTDL_H_ */

@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to create configure.
 dnl Initialize the libltdl package.
 AC_INIT(ltdl.c)
-AM_INIT_AUTOMAKE(libltdl,0.1)
+AM_INIT_AUTOMAKE(libltdl,1.0,-)
 
 AM_MAINTAINER_MODE
 
@@ -20,6 +20,7 @@ AC_SUBST(NOINSTLIBS)
 
 AC_PROG_CC
 AM_PROG_LIBTOOL
+AC_SUBST(LIBTOOL_DEPS)
 
 AC_CACHE_CHECK([which extension is used for shared libraries],
   libltdl_cv_shlibext, [dnl
@@ -39,7 +40,7 @@ changequote([, ])
 libltdl_cv_shlibext=`cat conftest`
 rm -f conftest
 ])
-if test x"$libltdl_cv_shlibext" != x""; then
+if test -n "$libltdl_cv_shlibext"; then
   AC_DEFINE_UNQUOTED(LTDL_SHLIB_EXT, "$libltdl_cv_shlibext")
 fi
 
@@ -55,28 +56,42 @@ AC_CACHE_CHECK([which variable specifies run-time library path],
 libltdl_cv_shlibpath_var=`cat conftest`
 rm -f conftest
 ])
-if test x"$libltdl_cv_shlibpath_var" != x""; then
+if test -n "$libltdl_cv_shlibpath_var"; then
   AC_DEFINE_UNQUOTED(LTDL_SHLIBPATH_VAR, "$libltdl_cv_shlibpath_var")
 fi
 
+AC_CACHE_CHECK([for objdir],
+  libltdl_cv_objdir, [dnl
+(
+  rm -f conftest
+  ./libtool --config > conftest
+  . ./conftest
+  rm -f conftest
+  echo "$objdir" > conftest
+)
+libltdl_cv_objdir=`cat conftest`
+rm -f conftest
+])
+test -z "$libltdl_cv_objdir" && libltdl_cv_objdir=".libs"
+AC_DEFINE_UNQUOTED(LTDL_OBJDIR, "$libltdl_cv_objdir")
+
 AC_HEADER_STDC
-AC_CHECK_HEADERS(malloc.h memory.h stdlib.h unistd.h stdio.h ctype.h dlfcn.h dl.h)
+AC_CHECK_HEADERS(malloc.h memory.h stdlib.h stdio.h ctype.h dlfcn.h dl.h)
 AC_CHECK_HEADERS(string.h strings.h, break)
 AC_CHECK_FUNCS(strdup strchr strrchr index rindex)
 
 AC_CACHE_CHECK([whether libtool supports -dlopen/-dlpreopen],
-	libltdl_cv_dlpreopen, [dnl
+       libltdl_cv_preloaded_symbols, [dnl
   if grep '^global_symbol_pipe=..*$' ./libtool >/dev/null; then
-    libltdl_cv_dlpreopen=yes
+    libltdl_cv_preloaded_symbols=yes
   else
-    libltdl_cv_dlpreopen=no
+    libltdl_cv_preloaded_symbols=no
   fi
 ])
-if test x"$libltdl_cv_dlpreopen" = x"yes"; then
-  AC_DEFINE(HAVE_DLPREOPEN)
+if test x"$libltdl_cv_preloaded_symbols" = x"yes"; then
+  AC_DEFINE(HAVE_PRELOADED_SYMBOLS)
 fi
 
-supported=yes
 test_dlerror=no
 LIBADD_DL=
 AC_CHECK_FUNCS(dlopen, [AC_DEFINE(HAVE_LIBDL) test_dlerror=yes],

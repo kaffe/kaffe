@@ -1136,7 +1136,7 @@ else
     if test "$with_gcc" = yes; then
       # collect2 in egcs and probably latest gcc has full support for
       # -shared flag, so we feel much better.
-      archive_cmds='$CC -shared $thread_safe_flags -o $objdir/$soname $libobjs $deplibs'
+      archive_cmds='$CC -shared -o $objdir/$soname $libobjs $deplibs'
     else
       archive_cmds='$NM $libobjs | $global_symbol_pipe | sed '\''s/.* //'\' | sort | uniq' > $lib.exp        else cat $export_symbols > $lib.exp~
       $CC -o $objdir/$soname $libobjs $deplibs ${wl}-bE:$lib.exp ${wl}-bM:SRE ${wl}-bnoentry'
@@ -1469,14 +1469,14 @@ EOF
 
       # Try sorting and uniquifying the output.
       if sort "$nlist" | uniq > "$nlist"T; then
-        mv -f "$nlist"T "$nlist"
+	mv -f "$nlist"T "$nlist"
       else
-        rm -f "$nlist"T
+	rm -f "$nlist"T
       fi
 
       # Make sure that we snagged all the symbols we need.
       if egrep ' nm_test_var$' "$nlist" >/dev/null; then
-        if egrep ' nm_test_func$' "$nlist" >/dev/null; then
+	if egrep ' nm_test_func$' "$nlist" >/dev/null; then
 	  cat <<EOF > conftest.c
 #ifdef __cplusplus
 extern "C" {
@@ -1523,11 +1523,11 @@ EOF
 	    cat conftest.c >&5
 	  fi
 	  LIBS="$save_LIBS"
-        else
+	else
 	  echo "cannot find nm_test_func in $nlist" >&5
-        fi
+	fi
       else
-        echo "cannot find nm_test_var in $nlist" >&5
+	echo "cannot find nm_test_var in $nlist" >&5
       fi
     else
       echo "cannot run $global_symbol_pipe" >&5
@@ -1591,9 +1591,9 @@ finish_eval=
 shlibpath_var=
 version_type=none
 dynamic_linker="$host_os ld.so"
-sys_lib_search_path="/lib /usr/lib /usr/local/lib"
+sys_lib_search_path_spec="/lib /usr/lib /usr/local/lib"
 file_magic_command=
-deplibs_check_method='unkwnon'
+deplibs_check_method='unknown'
 # Need to set the preceding variable on all platforms that support
 # interlibrary dependencies.
 # 'none' -- dependencies not supported.
@@ -1722,7 +1722,7 @@ linux-gnu*)
   shlibpath_var=LD_LIBRARY_PATH
   deplibs_check_method='file_magic ELF [0-9][0-9]*-bit [LM]SB shared object'
   file_magic_command=file
-  sys_lib_search_path="/lib /usr/lib /usr/local/lib `echo $LD_LIBRARY_PATH | sed -e 's/:/ /g'`"
+  sys_lib_search_path_spec="/lib /usr/lib /usr/local/lib `echo $LD_LIBRARY_PATH | sed -e 's/:/ /g'`"
 
   if test -f /lib/ld.so.1; then
     dynamic_linker='GNU ld.so'
@@ -1790,7 +1790,7 @@ solaris*)
   postinstall_cmds='chmod +x $lib'
   deplibs_check_method="file_magic ELF [0-9][0-9]-bit [LM]SB dynamic lib"
   file_magic_command="file"
-  sys_lib_search_path="/lib /usr/lib /usr/local/lib `echo $LD_LIBRARY_PATH | sed -e 's/:/ /g'`"
+  sys_lib_search_path_spec="/lib /usr/lib /usr/local/lib `echo $LD_LIBRARY_PATH | sed -e 's/:/ /g'`"
   ;;
 
 sunos4*)
@@ -1896,7 +1896,7 @@ case "$ltmain" in
     old_postuninstall_cmds archive_cmds archive_sym_cmds postinstall_cmds postuninstall_cmds \
     file_magic_command deplibs_check_method allow_undefined_flag no_undefined_flag \
     finish_cmds finish_eval global_symbol_pipe \
-    hardcode_libdir_flag_spec hardcode_libdir_separator sys_lib_search_path \
+    hardcode_libdir_flag_spec hardcode_libdir_separator sys_lib_search_path_spec \
     compiler_c_o compiler_o_lo need_locks; do
 
     case "$var" in
@@ -1904,7 +1904,7 @@ case "$ltmain" in
     old_postinstall_cmds | old_postuninstall_cmds | \
     archive_cmds | archive_sym_cmds | \
     postinstall_cmds | postuninstall_cmds | \
-    finish_cmds | sys_lib_search_path)
+    finish_cmds | sys_lib_search_path_spec)
       # Double-quote double-evaled strings.
       eval "$var=\\\"\`\$echo \"X\$$var\" | \$Xsed -e \"\$double_quote_subst\" -e \"\$sed_quote_subst\"\`\\\""
       ;;
@@ -2159,7 +2159,7 @@ hardcode_minus_L=$hardcode_minus_L
 hardcode_shlibpath_var=$hardcode_shlibpath_var
 
 # System search path for libraries
-sys_lib_search_path=$sys_lib_search_path
+sys_lib_search_path_spec=$sys_lib_search_path_spec
 
 # Fix the shell variable \$srcfile for the compiler.
 fix_srcfile_path="$fix_srcfile_path"

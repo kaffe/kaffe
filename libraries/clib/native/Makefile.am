@@ -45,6 +45,7 @@ TEST_SRCS = \
 		TestNative.c
 
 libnative_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER)
+libnative_la_LIBADD = $(M_LIBS)
 libnative_la_SOURCES = $(IO_SRCS) $(LANG_SRCS) $(REFLECT_SRCS) $(TEXT_SRCS) $(TEST_SRCS)
 
 noinst_HEADERS = \

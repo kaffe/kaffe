@@ -108,6 +108,9 @@ ${CONFIG_SHELL-/bin/sh} $ac_aux_dir/ltconfig --no-reexec \
 $libtool_flags --no-verify $ac_aux_dir/ltmain.sh $host \
 || AC_MSG_ERROR([libtool configure failed])
 
+# This can be used to rebuild libtool when needed
+LIBTOOL_DEPS="$ac_aux_dir/ltconfig $ac_aux_dir/ltmain.sh"
+
 # Redirect the config.log output again, so that the ltconfig log is not
 # clobbered by the next message.
 exec 5>>./config.log
@@ -202,15 +205,15 @@ changequote(,)dnl
       sub_uncdrive='s%^\([A-Za-z]\):/%//\1/%'
 changequote([,])dnl
       while echo $ac_prog | grep "$re_direlt" > /dev/null 2>&1; do
-        ac_prog=`echo $ac_prog| sed "s%$re_direlt%/%"`
+	ac_prog=`echo $ac_prog| sed "s%$re_direlt%/%"`
       done
       case "$host_os" in
       cygwin*)
-        # Convert to a UNC path for cygwin
-        test -z "$LD" && LD=`echo X$ac_prog | $Xsed -e "$sub_uncdrive"`
+	# Convert to a UNC path for cygwin
+	test -z "$LD" && LD=`echo X$ac_prog | $Xsed -e "$sub_uncdrive"`
 	;;
       *)
-        test -z "$LD" && LD="$ac_prog"
+	test -z "$LD" && LD="$ac_prog"
 	;;
       esac
       ;;
@@ -226,15 +229,15 @@ changequote(,)dnl
 changequote([,])dnl
       sub_uncdir='s%\\%/%g'
       while echo $ac_prog | grep "$re_direlt" > /dev/null 2>&1; do
-        ac_prog=`echo $ac_prog| sed "s%$re_direlt%\1%"`
+	ac_prog=`echo $ac_prog| sed "s%$re_direlt%\1%"`
       done
       case "$host_os" in
       cygwin*)
-        # Convert to a UNC path for cygwin
-        test -z "$LD" && LD=`echo X$ac_prog | sed -e 's%^X%%' -e "$sub_uncdrive" -e "$sub_uncdir"`
+	# Convert to a UNC path for cygwin
+	test -z "$LD" && LD=`echo X$ac_prog | sed -e 's%^X%%' -e "$sub_uncdrive" -e "$sub_uncdir"`
 	;;
       *)
-        test -z "$LD" && LD="$ac_prog"
+	test -z "$LD" && LD="$ac_prog"
 	;;
       esac
       ;;
@@ -265,7 +268,7 @@ AC_CACHE_VAL(ac_cv_path_LD,
       if "$ac_cv_path_LD" -v 2>&1 < /dev/null | egrep '(GNU|with BFD)' > /dev/null; then
 	test "$with_gnu_ld" != no && break
       else
-        test "$with_gnu_ld" != yes && break
+	test "$with_gnu_ld" != yes && break
       fi
     fi
   done
@@ -310,13 +313,13 @@ else
       # Adding the `sed 1q' prevents false positives on HP-UX, which says:
       #   nm: unknown option "B" ignored
       if ($ac_dir/nm -B /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
-        ac_cv_path_NM="$ac_dir/nm -B"
+	ac_cv_path_NM="$ac_dir/nm -B"
 	break
       elif ($ac_dir/nm -p /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
-        ac_cv_path_NM="$ac_dir/nm -p"
+	ac_cv_path_NM="$ac_dir/nm -p"
 	break
       else
-        ac_cv_path_NM=${ac_cv_path_NM="$ac_dir/nm"} # keep the first match, but
+	ac_cv_path_NM=${ac_cv_path_NM="$ac_dir/nm"} # keep the first match, but
 	continue # so that we can try to find one that supports BSD flags
       fi
     fi
@@ -407,28 +410,28 @@ EOF
 
       # Try sorting and uniquifying the output.
       if sort "$ac_nlist" | uniq > "$ac_nlist"T; then
-        mv -f "$ac_nlist"T "$ac_nlist"
-        ac_wcout=`wc "$ac_nlist" 2>/dev/null`
+	mv -f "$ac_nlist"T "$ac_nlist"
+	ac_wcout=`wc "$ac_nlist" 2>/dev/null`
 changequote(,)dnl
-        ac_count=`echo "X$ac_wcout" | sed -e 's,^X,,' -e 's/^[ 	]*\([0-9][0-9]*\).*$/\1/'`
+	ac_count=`echo "X$ac_wcout" | sed -e 's,^X,,' -e 's/^[ 	]*\([0-9][0-9]*\).*$/\1/'`
 changequote([,])dnl
-        (test "$ac_count" -ge 0) 2>/dev/null || ac_count=-1
+	(test "$ac_count" -ge 0) 2>/dev/null || ac_count=-1
       else
-        rm -f "$ac_nlist"T
-        ac_count=-1
+	rm -f "$ac_nlist"T
+	ac_count=-1
       fi
 
       # Make sure that we snagged all the symbols we need.
       if egrep ' nm_test_var$' "$ac_nlist" >/dev/null; then
-        if egrep ' nm_test_func$' "$ac_nlist" >/dev/null; then
+	if egrep ' nm_test_func$' "$ac_nlist" >/dev/null; then
 	  cat <<EOF > conftest.c
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 EOF
-          # Now generate the symbol file.
-          sed 's/^.* \(.*\)$/extern char \1;/' < "$ac_nlist" >> conftest.c
+	  # Now generate the symbol file.
+	  sed 's/^.* \(.*\)$/extern char \1;/' < "$ac_nlist" >> conftest.c
 
 	  cat <<EOF >> conftest.c
 #if defined (__STDC__) && __STDC__
@@ -450,8 +453,8 @@ dld_preloaded_symbols[] =
 changequote([,])dnl
 {
 EOF
-        sed 's/^\(.*\) \(.*\)$/  {"\1", (lt_ptr_t) \&\2},/' < "$ac_nlist" >> conftest.c
-        cat <<\EOF >> conftest.c
+	sed 's/^\(.*\) \(.*\)$/  {"\1", (lt_ptr_t) \&\2},/' < "$ac_nlist" >> conftest.c
+	cat <<\EOF >> conftest.c
   {0, (lt_ptr_t) 0}
 };
 
@@ -459,25 +462,25 @@ EOF
 }
 #endif
 EOF
-          # Now try linking the two files.
-          mv conftest.$ac_objext conftestm.$ac_objext
+	  # Now try linking the two files.
+	  mv conftest.$ac_objext conftestm.$ac_objext
 	  ac_save_LIBS="$LIBS"
 	  ac_save_CFLAGS="$CFLAGS"
-          LIBS="conftestm.$ac_objext"
+	  LIBS="conftestm.$ac_objext"
 	  CFLAGS="$CFLAGS$no_builtin_flag"
-          if AC_TRY_EVAL(ac_link) && test -s conftest; then
-            ac_pipe_works=yes
-          else
-            echo "configure: failed program was:" >&AC_FD_CC
-            cat conftest.c >&AC_FD_CC
-          fi
-          LIBS="$ac_save_LIBS"
+	  if AC_TRY_EVAL(ac_link) && test -s conftest; then
+	    ac_pipe_works=yes
+	  else
+	    echo "configure: failed program was:" >&AC_FD_CC
+	    cat conftest.c >&AC_FD_CC
+	  fi
+	  LIBS="$ac_save_LIBS"
 	  CFLAGS="$ac_save_CFLAGS"
-        else
-          echo "cannot find nm_test_func in $ac_nlist" >&AC_FD_CC
-        fi
+	else
+	  echo "cannot find nm_test_func in $ac_nlist" >&AC_FD_CC
+	fi
       else
-        echo "cannot find nm_test_var in $ac_nlist" >&AC_FD_CC
+	echo "cannot find nm_test_var in $ac_nlist" >&AC_FD_CC
       fi
     else
       echo "cannot run $ac_cv_sys_global_symbol_pipe" >&AC_FD_CC
@@ -536,9 +539,9 @@ if AC_TRY_EVAL(ac_compile); then
       ac_cv_sys_symbol_underscore=yes
     else
       if egrep '^nm_test_func ' "$ac_nlist" >/dev/null; then
-        :
+	:
       else
-        echo "configure: cannot find nm_test_func in $ac_nlist" >&AC_FD_CC
+	echo "configure: cannot find nm_test_func in $ac_nlist" >&AC_FD_CC
       fi
     fi
   else

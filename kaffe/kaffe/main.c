@@ -64,7 +64,8 @@ main(int argc, char* argv[])
 
 	JNI_GetDefaultJavaVMInitArgs(&vmargs);
 
-	lt_dlpreopen_default();
+	/* set up libtool/libltdl dlopen emulation */
+	LTDL_SET_PRELOADED_SYMBOLS();
 
 	cp = getenv(CLASSPATH1);
 	if (cp == 0) {

@@ -1,3 +1,34 @@
+Mon Jan 18 18:00:48 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* ltconfig, ltmain.sh: update from libtool, with work-around for
+	FreeBSD linker bug in static module -dlopen
+	* libltdl/*: updated from libtool, with local patches for
+	dlopening non-libtool libraries
+	* kaffe/kaffe/main.c: update to use new default macro
+
+	* acinclude.m4: updated from libtool with macro to...
+	* Makefile.am: rebuild libtool script when needed
+	* configure.in: ditto
+	* aclocal.m4, configure, */Makefile.in: regen
+
+	* configure.in: first cut at cross-compilation (untested)
+	* kaffe/kaffeh/Makefile.am: ditto
+
+	* configure.in: test underscores after AM_PROG_LIBTOOL
+
+	* config/i386/oskit/config.frag: s/STD_LIBRARIES/KAFFE_LIBS/
+	* configure.in: AC_SUBST KAFFE_LIBS
+	* kaffe/kaffe/Makefile.am (Kaffe_LDADD): add KAFFE_LIBS
+
+	* configure.in: add -lmw and -lm to M_LIBS
+	* libraries/clib/native/Makefile.am (libnative_la_LDADD): M_LIBS
+	* libraries/clib/math/Makefile.am (libmath_la_LDADD): ditto
+	* kaffe/kaffevm/Makefile.am (libkaffevm_la_LDADD): ditto
+
+	* configure.in (JAVA_LIBS): prepend, not append, Kaffe libraries
+	(DLOPEN_JAVA_LIBS): built from JAVA_LIBS
+	* kaffe/kaffe/Makefile.am (Kaffe_LDADD): add DLOPEN_JAVA_LIBS
+	
 Sun Jan 17 07:27:40 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* ltconfig: updated from libtool, to fix SunOS4/GNU ld problem

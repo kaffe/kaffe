@@ -69,6 +69,7 @@ LD = @LD@
 LIBADD_DL = @LIBADD_DL@
 LIBLIBS = @LIBLIBS@
 LIBTOOL = @LIBTOOL@
+LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LN_S = @LN_S@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
@@ -81,7 +82,7 @@ VERSION = @VERSION@
 
 AUTOMAKE_OPTIONS = no-dependencies foreign
 
-LTDL_VERSION = -version-info 1:0:1
+LTDL_VERSION = -version-info 1:1:1
 @INSTALL_LTDL_TRUE@LTDL_FLAGS = $(LTDL_VERSION) -rpath $(libdir) 
 @INSTALL_LTDL_FALSE@LTDL_FLAGS = 
 @INSTALL_LTDL_TRUE@include_HEADERS = ltdl.h
@@ -95,12 +96,10 @@ noinst_LTLIBRARIES = @NOINSTLIBS@
 libltdl_la_SOURCES = ltdl.c
 libltdl_la_LDFLAGS = $(LTDL_FLAGS)
 libltdl_la_LIBADD = $(LIBADD_DL)
-libltdl_la_DEPENDENCIES = libtool
 
 libltdlc_la_SOURCES = $(libltdl_la_SOURCES)
 libltdlc_la_LDFLAGS = 
 libltdlc_la_LIBADD = $(libltdl_la_LIBADD)
-libltdlc_la_DEPENDENCIES = libtool
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/../mkinstalldirs
 CONFIG_CLEAN_FILES = 
@@ -111,7 +110,9 @@ DEFS = @DEFS@ -I. -I$(srcdir)
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
+libltdl_la_DEPENDENCIES = 
 libltdl_la_OBJECTS =  ltdl.lo
+libltdlc_la_DEPENDENCIES = 
 libltdlc_la_OBJECTS =  ltdl.lo
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -403,8 +404,8 @@ distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
 
-libtool: ../libtool
-	./config.status --recheck
+libtool: $(LIBTOOL_DEPS)
+	$(SHELL) ./config.status --recheck
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
