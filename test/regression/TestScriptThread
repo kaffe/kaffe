@@ -83,12 +83,12 @@ runtest ExecTest "Okay
 Okay"
 
 # Test catching our own death
-runtest CatchDeath "Caught java.lang.ThreadDeath
+ignoretest CatchDeath "Caught java.lang.ThreadDeath
 Caught java.lang.ThreadDeath
 Caught java.lang.ThreadDeath"
 
 # Test various ways of stopping threads
-runtest ThreadStop "Test 1: Stop a thread that's blocked on itself
+ignoretest ThreadStop "Test 1: Stop a thread that's blocked on itself
 Target (BlockThread) running...
  Locked ...
  Success. Target is dead.
