@@ -143,6 +143,7 @@ ALWAYS_TESTS = \
 	HelloWorldApp.java \
 	TestIntLong.java \
 	TestFloatDouble.java \
+	DoubleCvt.java \
 	DoubleNeg.java \
 	DoublePrint.java \
 	DoubleComp.java \

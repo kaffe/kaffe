@@ -18,6 +18,7 @@ ALWAYS_TESTS = \
 ## Test ints, longs, floats and doubles
 	TestIntLong.java \
 	TestFloatDouble.java \
+	DoubleCvt.java \
 	DoubleNeg.java \
 	DoublePrint.java \
 	DoubleComp.java \
