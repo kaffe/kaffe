@@ -1009,7 +1009,7 @@ gcRealloc(Collector* gcif, void* mem, size_t size, int fidx)
 	unit = UTOUNIT(mem);
 	info = GCMEM2BLOCK(unit);
 	idx = GCMEM2IDX(info, unit);
-	osize = GCBLOCKSIZE(info);
+	osize = GCBLOCKSIZE(info) - sizeof(gc_unit);
 
 	/* Can only handled fixed objects at the moment */
 	assert(GC_GET_COLOUR(info, idx) == GC_COLOUR_FIXED);
@@ -1017,7 +1017,7 @@ gcRealloc(Collector* gcif, void* mem, size_t size, int fidx)
 	unlockStaticMutex(&gc_lock);
 
 	/* If we'll fit into the current space, just send it back */
-	if (osize >= size + sizeof(gc_unit)) {
+	if (osize >= size) {
 		return (mem);
 	}
 
