@@ -1176,10 +1176,10 @@ load_deplibs(handle, deplibs)
 		ret = 0;
 		goto cleanup;
 	}
-	names = lt_dlmalloc(depcount * sizeof(char*));
+	names = (char**)lt_dlmalloc(depcount * sizeof(char*));
 	if (!names)
 		goto cleanup;
-	handles = lt_dlmalloc(depcount * sizeof(lt_dlhandle*));
+	handles = (lt_dlhandle*)lt_dlmalloc(depcount * sizeof(lt_dlhandle*));
 	if (!handles)
 		goto cleanup;
 	depcount = 0;
@@ -1196,9 +1196,9 @@ load_deplibs(handle, deplibs)
 				*end = 0; /* set a temporary string terminator */
 				if (strncmp(p, "-l", 2) == 0) {
 					name = lt_dlmalloc(3+ /* "lib" */
-					 strlen(p+2)+strlen(shlib_ext)+1);
+							   strlen(p+2)+1);
 					if (name)
-						sprintf(name, "lib%s%s", p+2, shlib_ext);
+						sprintf (name, "lib%s", p+2);
 				} else
 					name = strdup(p);
 				if (name)
@@ -1213,7 +1213,7 @@ load_deplibs(handle, deplibs)
 	}
 	/* load the deplibs (in reverse order) */
 	for (i = 0; i < depcount; i++) {
-		lt_dlhandle handle = lt_dlopen(names[depcount-1-i]);
+		lt_dlhandle handle = lt_dlopenext(names[depcount-1-i]);
 		if (!handle) {
 			int j;
 			for (j = 0; j < i; j++)
