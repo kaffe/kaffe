@@ -1,5 +1,8 @@
 Sun Jul 26 14:33:54 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
+	* libraries/javalib/java/io/FileInputStream.java:  map IOException 
+	to FileNotFoundException to comply with spec.
+
 	* libraries/javalib/java/lang/ThreadGroup.java: fixed printThreads 
 	and printGroups to deal with null entries which may exist  
 	after threads or groups are removed.
