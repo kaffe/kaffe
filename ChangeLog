@@ -1,3 +1,10 @@
+2003-08-22  Dalibor Topic <robilad@kaffe.org>,
+
+	* libraries/javalib/Klasses.jar.bootstrap:
+	Regenerated to fix build problems.
+
+	Reported by: Ito Kazumitsu <kas@maczuka.gcd.org>
+
 2003-08-21  Dalibor Topic <robilad@kaffe.org>,
             Helmer Kraemer  <hkraemer@freenet.de>
 
