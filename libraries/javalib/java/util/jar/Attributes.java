@@ -1,5 +1,5 @@
 /* Attributes.java -- Represents attribute name/value pairs from a Manifest
-   Copyright (C) 2000, 2002 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -97,6 +97,18 @@ public class Attributes implements Cloneable, Map
    * <p>When comparing Names (with <code>equals</code>) all characters are
    * converted to lowercase. But you can get the original case sensitive
    * string with the <code>toString()</code> method.</p>
+   *
+   * <p>Most important attributes have a constant defined in this
+   * class. Some other attributes used in Manifest files are:
+   * <ul>
+   * <li> "Created-By" - General main attribute, tool and version
+   * that created this Manifest file.</li>
+   * <li> "Java-Bean" - Bean objects attribute, whether the entry is a Bean.
+   * Value is either "true" or "false".</li>
+   * <li> "Magic" - Signing attribute, application specific signing attribute.
+   * Must be understood by the manifest parser when present to validate the
+   * jar (entry).</li>
+   * </ul>
    *
    * @since 1.2
    * @author Mark Wielaard (mark@klomp.org)
