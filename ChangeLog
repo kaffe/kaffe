@@ -1,5 +1,9 @@
 2004-04-03  Adam Heath <doogie@debian.org>
 
+        * scripts/sort-warnings.pl: Add in warnings produced by jikes.
+
+2004-04-03  Adam Heath <doogie@debian.org>
+
 	* libraries/javalib/rebuildLib.in: Quote @JIKES@, so that
 	  additional arguments can be passed to it.
 

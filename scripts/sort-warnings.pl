@@ -6,12 +6,20 @@ use Data::Dumper;
 my $prefix_regex = qr/^([^:\n]+):(\d+): warning: /m;
 my $prefix_regex_noparam = qr/^(?:[^:\n]+):(?:\d+): warning: /m;
 my $prefix_regex2 = qr/^([^:\n]+):(\d+):(?:\d+): warning: /m;
+my $jikes_prefix = qr/([^:\n]+):(\d+):\d+:\d+:\d+: Semantic Warning: /m;
 
 #<robilad> guilhem: ~3000 unique ones with -Wall -W -Wtraditional -Wundef -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual
 #          -Wcast-align -Wwrite-strings -Wconversion -Wsign-compare -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes
 #          -Wmissing-declarations -Wmissing-noreturn -Wredundant-decls -Wnested-externs -Winline -Wlong-long
 
 my @warning_types = (
+	'java:throws-unchecked'		=> qr/${jikes_prefix}Since type "([^"]+)" is an unchecked exception, it does not need to be listed in the throws clause.$/m,
+	'java:modifier-order'		=> qr/${jikes_prefix}The modifier "([^"]+)" did not appear in the recommended order public\/protected\/private, abstract, static, final, synchronized, transient, volatile, strictfp.$/m,
+	'java:public-in-interface'	=> qr/${jikes_prefix}The use of the "([^"]+)" modifier in this context is redundant and strongly discouraged as a matter of style.$/m,
+	'java:exception-superclass'	=> qr/${jikes_prefix}The listing of type "([^"]+)" in the throws clause is not necessary, since its superclass, "([^"]+)", is also listed.$/m,
+	'java:override-default'		=> qr/${jikes_prefix}Method "([^"]+)" in class "([^"]+)" does not override or hide the corresponding method with default access in class "([^"]+)".$/m,
+	'java:invalid-zip'		=> qr/${jikes_prefix}The file "([^"]+)" does not exist or else is not a valid zip file.$/m,
+
 	'missing-prototypes-mismatch'	=> qr/${prefix_regex}no previous prototype for `([^']+)'\n${prefix_regex_noparam}type mismatch with previous implicit declaration\n${prefix_regex}previous implicit declaration of `[^']+'\n${prefix_regex_noparam}`[^']+' was previously implicitly declared to return `([^']+)'$/m,
 
 	'-Wformat-nonliteral'		=> qr/${prefix_regex}format not a string literal, argument types not checked$/m,
