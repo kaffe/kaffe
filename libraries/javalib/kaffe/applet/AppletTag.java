@@ -4,8 +4,8 @@ package kaffe.applet;
  * Copyright (c) 1998
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  *
  * @author J.Mehlitz, G.Back
  */
@@ -130,6 +130,13 @@ void parseParam( StreamTokenizer st) throws IOException {
 	String val = null;
 
 	while ( st.nextToken() != '>' ) {
+		/* Set ordinary chars to word chars,
+		 * so we can parse unquoted file names
+		 * as a single token.
+		 */
+		st.wordChars('!', '/');
+		st.wordChars('{', '~');
+		st.wordChars('[', '_');
 		if (st.sval == null) {
 			continue;
 		}
@@ -159,9 +166,14 @@ void parseParam( StreamTokenizer st) throws IOException {
 
 	if ( key != null && val != null ) {
 		key = key.toLowerCase();
-//System.out.println( "put: " + key + " " + val);
+// System.out.println( "put: " + key + " " + val);
 		paramDict.put( key, val);
 	}
+
+	/* Reset non-alphabetic word chars to ordinary chars. */
+	st.ordinaryChars('!', '/');
+	st.ordinaryChars('{', '~');
+	st.ordinaryChars('[', '_');
 }
 
 public AppletTag( StreamTokenizer st ) throws IOException {

@@ -4,7 +4,10 @@
 # You should run this from the top-level directory.
 # Written by Mo DeJong.
 
-( cd libraries/javalib && ../../developers/update-class-list )
+## update class list breaks on Mandrake 9.0
+## generating a ton of double entries
+##
+## ( cd libraries/javalib && ../../developers/update-class-list )
 aclocal -I .
 autoheader -l config
 automake --add-missing --verbose

@@ -1,5 +1,6 @@
 What's New since Kaffe OpenVM 1.0.7
 ------------------------------------------------------
+* New build system.
 
 * New version of KJC (2.1B).
 
@@ -10,7 +11,7 @@ What's New in Kaffe OpenVM 1.0.7
 
 This release is dedicated to the memory of Edouard G. Parmelan, one of
 the most active Kaffe developers, a member of the core team, and one of
-the driving forces behind the project. 
+the driving forces behind the project.
 
 * Port to ia64 GNU/Linux
 

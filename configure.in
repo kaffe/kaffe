@@ -30,7 +30,7 @@ AC_ARG_WITH(includes,
   [  --with-includes=dirs    Search specified directories for header files],
   [ CPPFLAGS="$CPPFLAGS"`echo " $withval" |
 	sed -e 's/ / -I/g' -e 's/-I //g' -e 's/-I$//'` ],
-  [ CPPFLAGS="$CPPFLAGS -I/usr/local/include" ])
+  [ CPPFLAGS="$CPPFLAGS" ])
 
 AC_ARG_WITH(libraries,
   [  --with-libraries=dirs   Search for libraries in specified directories],

@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p6 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -142,7 +142,7 @@ SRCDIRS = kaffe
 
 toolslib_DATA = $(CLASSFILE)
 
-tools_jar_SRCS =  	$(kaffe_tools_compiler_SRCS) 	$(kaffe_tools_jar_SRCS)  	$(kaffe_tools_serialver_SRCS)
+tools_jar_SRCS =  	$(kaffe_tools_compiler_SRCS) 	$(kaffe_tools_jar_SRCS) 	$(kaffe_tools_serialver_SRCS)
 
 kaffe_tools_compiler_SRCS =  	kaffe/tools/compiler/Compiler.java 	kaffe/tools/compiler/Compiler_default.java 	kaffe/tools/compiler/Compiler_jikes.java 	kaffe/tools/compiler/Compiler_kjc.java 	kaffe/tools/compiler/Compiler_pizza.java
 
@@ -168,7 +168,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
@@ -213,8 +213,7 @@ distdir: $(DISTFILES)
 	cd $(top_srcdir) \
 	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu libraries/extensions/tools/javalib/Makefile
 	$(mkinstalldirs) $(distdir)/kaffe/tools/compiler \
-	   $(distdir)/kaffe/tools/jar \
-	   $(distdir)/kaffe/tools/serialver
+	   $(distdir)/kaffe/tools/jar $(distdir)/kaffe/tools/serialver
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
