@@ -49,7 +49,7 @@ Java_gnu_java_awt_peer_gtk_GtkLabelPeer_create
 
   NSA_SET_GLOBAL_REF (env, obj);
 
-  str = (*env)->GetStringUTFChars (env, text, 0);
+  str = (*env)->GetStringUTFChars (env, text, NULL);
 
   gdk_threads_enter ();
 
@@ -114,7 +114,7 @@ Java_gnu_java_awt_peer_gtk_GtkLabelPeer_setText
 
   ptr = NSA_GET_PTR (env, obj);
 
-  str = (*env)->GetStringUTFChars (env, text, 0);
+  str = (*env)->GetStringUTFChars (env, text, NULL);
 
   gdk_threads_enter ();
 

@@ -307,7 +307,7 @@ unblockSignal(int sig)
 
 	sigemptyset(&nsig);
 	sigaddset(&nsig, sig);
-	sigprocmask(SIG_UNBLOCK, &nsig, 0);
+	sigprocmask(SIG_UNBLOCK, &nsig, NULL);
 }
 
 
@@ -327,7 +327,7 @@ unblockAsyncSignals(void)
 #if defined(SIGVTALRM)
 	sigaddset(&nsig, SIGVTALRM);
 #endif
-	sigprocmask(SIG_UNBLOCK, &nsig, 0);
+	sigprocmask(SIG_UNBLOCK, &nsig, NULL);
 	
 }
 
@@ -347,7 +347,7 @@ blockAsyncSignals(void)
 #if defined(SIGVTALRM)
 	sigaddset(&nsig, SIGVTALRM);
 #endif
-	sigprocmask(SIG_BLOCK, &nsig, 0);
+	sigprocmask(SIG_BLOCK, &nsig, NULL);
 	
 }
 

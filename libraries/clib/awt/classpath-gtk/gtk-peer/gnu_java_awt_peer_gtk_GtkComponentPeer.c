@@ -680,7 +680,7 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetLocationOnScreen
   jint *point;
 
   ptr = NSA_GET_PTR (env, obj);
-  point = (*env)->GetIntArrayElements (env, jpoint, 0);
+  point = (*env)->GetIntArrayElements (env, jpoint, NULL);
 
   gdk_threads_enter ();
 
@@ -710,7 +710,7 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetDimensions
 
   ptr = NSA_GET_PTR (env, obj);
 
-  dims = (*env)->GetIntArrayElements (env, jdims, 0);  
+  dims = (*env)->GetIntArrayElements (env, jdims, NULL);  
   dims[0] = dims[1] = 0;
 
   gdk_threads_enter ();
@@ -739,7 +739,7 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetPreferredDimensions
 
   ptr = NSA_GET_PTR (env, obj);
 
-  dims = (*env)->GetIntArrayElements (env, jdims, 0);  
+  dims = (*env)->GetIntArrayElements (env, jdims, NULL);  
   dims[0] = dims[1] = 0;
 
   gdk_threads_enter ();

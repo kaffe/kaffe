@@ -64,7 +64,7 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_getScreenSizeDimensions
   (JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)),
    jintArray jdims)
 {
-  jint *dims = (*env)->GetIntArrayElements (env, jdims, 0);  
+  jint *dims = (*env)->GetIntArrayElements (env, jdims, NULL);  
 
   gdk_threads_enter ();
 
@@ -101,7 +101,7 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_loadSystemColors
   jint *colors;
   GtkStyle *style;
 
-  colors = (*env)->GetIntArrayElements (env, jcolors, 0);
+  colors = (*env)->GetIntArrayElements (env, jcolors, NULL);
 
   gdk_threads_enter ();
 

@@ -177,7 +177,7 @@ Java_gnu_java_awt_peer_gtk_GtkFileDialogPeer_nativeSetDirectory
 
   ptr = NSA_GET_PTR (env, obj);
 
-  str = (*env)->GetStringUTFChars (env, directory, 0);
+  str = (*env)->GetStringUTFChars (env, directory, NULL);
 
   gdk_threads_enter ();
   gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER(ptr), str);
@@ -195,7 +195,7 @@ Java_gnu_java_awt_peer_gtk_GtkFileDialogPeer_nativeSetFile
 
   ptr = NSA_GET_PTR (env, obj);
     
-  str = (*env)->GetStringUTFChars (env, filename, 0);
+  str = (*env)->GetStringUTFChars (env, filename, NULL);
      
   gdk_threads_enter ();
   gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (ptr), str);

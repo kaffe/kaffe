@@ -137,7 +137,7 @@ Java_gnu_java_awt_peer_gtk_GdkFontPeer_setFont
   pfont->desc = pango_font_description_new ();
   g_assert (pfont->desc != NULL);
 
-  family_name = (*env)->GetStringUTFChars(env, family_name_str, 0);
+  family_name = (*env)->GetStringUTFChars(env, family_name_str, NULL);
   g_assert (family_name != NULL);
   pango_font_description_set_family (pfont->desc, family_name);
   (*env)->ReleaseStringUTFChars(env, family_name_str, family_name);

@@ -318,7 +318,7 @@ void* tWatchdogRun (void* p)
 	usleep( 5000);
   }
 
-  return 0;
+  return NULL;
 }
 
 static
@@ -337,7 +337,7 @@ void tStartDeadlockWatchdog (void)
 #endif
   pthread_attr_setstacksize( &attr, 4096);
 
-  pthread_create( &deadlockWatchdog, &attr, tWatchdogRun, 0);
+  pthread_create( &deadlockWatchdog, &attr, tWatchdogRun, NULL);
 }
 #endif /* KAFFE_VMDEBUG */
 
@@ -660,7 +660,7 @@ bool jthread_attach_current_thread (bool isDaemon)
   /* create the jthread* thingy */
   nt = thread_malloc( sizeof(struct _jthread) );
 
-  nt->func         = 0;
+  nt->func         = NULL;
   nt->suspendState = 0;
 #if defined(KAFFEMD_STACKSIZE)
   stackSize = mdGetStackSize();
@@ -680,7 +680,7 @@ bool jthread_attach_current_thread (bool isDaemon)
   stackSize = MAINSTACKSIZE;
 #endif
   detectStackBoundaries(nt, stackSize);
-  nt->stackCur     = 0; 
+  nt->stackCur     = NULL; 
   nt->daemon       = isDaemon;
 
   /* link everything together */
@@ -761,7 +761,7 @@ void* tRun ( void* p )
 	}
 
 	/* unlink Java and native thread */
-	cur->data.jlThread = 0;
+	cur->data.jlThread = NULL;
 	cur->suspendState = 0;
 
 	/* link into cache list (if still within limit) */
@@ -794,7 +794,7 @@ void* tRun ( void* p )
 
   tDispose( cur);
 
-  return 0;
+  return NULL;
 }
 
 
@@ -866,7 +866,7 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	nt->data.jlThread = jlThread;
 	nt->daemon = isDaemon;
 	nt->func = func;
-	nt->stackCur = 0;
+	nt->stackCur = NULL;
 	nt->status = THREAD_RUNNING;
 
 #if defined(SCHEDULE_POLICY)
@@ -899,9 +899,9 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	nt->data.jlThread       = jlThread;
 	nt->func         = func;
 	nt->suspendState = 0;
-	nt->stackMin     = 0;
-	nt->stackMax     = 0;
-	nt->stackCur     = 0;
+	nt->stackMin     = NULL;
+	nt->stackMax     = NULL;
+	nt->stackCur     = NULL;
 	nt->daemon	 = isDaemon;
 	nt->status = THREAD_RUNNING;
 	pthread_mutex_init(&nt->suspendLock, NULL);
@@ -947,7 +947,7 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	  repsem_destroy( &nt->sem);
 	  unprotectThreadList(cur);
 	  KGC_rmRef(threadCollector, nt);
-	  return 0;
+	  return NULL;
 	}
 
 	/* wait until the thread specific data has been set, and the new thread
@@ -1049,7 +1049,7 @@ jthread_exit ( void )
 	  }
 
 	  unprotectThreadList(cur);
-	  pthread_exit( 0);
+	  pthread_exit( NULL);
 
 	  /* we shouldn't get here, this is a last safeguard */
 	  EXIT(0);
@@ -1070,7 +1070,7 @@ jthread_exit ( void )
 
 	for ( t=activeThreads; (t != NULL) && (t->next != cur); t=t->next );
 	assert( t != NULL);
-	t->next = 0;
+	t->next = NULL;
 
 	unprotectThreadList(cur);
 
@@ -1173,7 +1173,7 @@ void KaffePThread_WaitForResume(int releaseMutex)
   
   DBG( JTHREADDETAIL, dprintf("sigwait return: %p\n", cur));
     
-  cur->stackCur     = 0;
+  cur->stackCur     = NULL;
   cur->suspendState = 0;
   
   /* notify the critSect owner we are leaving the handler */

@@ -123,7 +123,7 @@ jlong
 currentTime(void)
 {
     struct timeval tm;
-    gettimeofday(&tm, 0);
+    gettimeofday(&tm, NULL);
     return (((jlong)tm.tv_sec * 1000L) + ((jlong)tm.tv_usec / 1000L));
 }
 
@@ -696,7 +696,7 @@ jthreadedForkExec(char **argv, char **arge,
 	 * reenable signals in the child after we cleaned up.
 	 */
 	sigfillset(&nsig);
-	sigprocmask(SIG_BLOCK, &nsig, 0);
+	sigprocmask(SIG_BLOCK, &nsig, NULL);
 
 	pid = fork();
 
@@ -709,7 +709,7 @@ jthreadedForkExec(char **argv, char **arge,
 		}
 
 		/* now reenable interrupts */
-		sigprocmask(SIG_UNBLOCK, &nsig, 0);
+		sigprocmask(SIG_UNBLOCK, &nsig, NULL);
 
 		/* set stdin, stdout, and stderr up from the pipes */
 		dup2(fds[IN_IN], 0);
@@ -752,7 +752,7 @@ jthreadedForkExec(char **argv, char **arge,
 		err = errno;
 		/* Close all pipe fds */
 		close_fds(fds, 8);
-		sigprocmask(SIG_UNBLOCK, &nsig, 0);
+		sigprocmask(SIG_UNBLOCK, &nsig, NULL);
 		return (err);
 
 	default:
@@ -769,7 +769,7 @@ jthreadedForkExec(char **argv, char **arge,
 		ioes[2] = fds[ERR_IN];
 		ioes[3] = fds[SYNC_OUT];
 
-		sigprocmask(SIG_UNBLOCK, &nsig, 0);
+		sigprocmask(SIG_UNBLOCK, &nsig, NULL);
 		*outpid = pid;
 		return (0);
 	}

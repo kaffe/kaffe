@@ -1,5 +1,15 @@
 2004-12-19  Adam Heath  <doogie@brainfood.com>
 
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkChoicePeer.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkLabelPeer.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkToolkit.c:
+	  Sparse NULL-constant fixes.
+
+2004-12-19  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c,
 	  kaffe/kaffevm/systems/unix-pthreads/signal.c,
 	  kaffe/kaffevm/systems/unix-pthreads/syscalls.c,

@@ -99,7 +99,7 @@ Java_gnu_java_awt_peer_gtk_GtkChoicePeer_nativeAdd
 
   ptr = NSA_GET_PTR (env, obj);
   
-  label = (*env)->GetStringUTFChars (env, item, 0);      
+  label = (*env)->GetStringUTFChars (env, item, NULL);      
 
   gdk_threads_enter ();
   gtk_combo_box_insert_text (GTK_COMBO_BOX (ptr), index, label);
