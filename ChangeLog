@@ -1,3 +1,7 @@
+Fri Apr 26 2002 Patrick Tullmann  <pat@tullmann.org>
+	* kaffe/kaffevm/exceptions.c: Improve the ELOOKUP tracing
+	of exception lookup.  Add some asserts to dispatchException().
+
 Fri Apr 26 09:45:41 CEST 2002 Randolph Chung <tausq@debian.org>
 	* config/parisc/common.h, config/parisc/linux/config.frag,
 	config/parisc/linux/md.c, config/parisc/linux/md.h: initial

@@ -562,7 +562,6 @@ findExceptionInMethod(uintp pc, Hjava_lang_Class* class, exceptionInfo* info)
 			return ptr;
 		}
 	}
-DBG(ELOOKUP,	dprintf("Exception not found.\n");			)
 	return ptr;
 }
 #endif
@@ -578,6 +577,10 @@ findExceptionBlockInMethod(uintp pc, Hjava_lang_Class* class, Method* ptr, excep
 	Hjava_lang_Class* cptr;
 	int i;
 
+	assert(class);
+	assert(ptr);
+	assert(info);
+
 	/* Stash method & class */
 	info->method = ptr;
 	info->class = ptr->class;
@@ -586,29 +589,39 @@ findExceptionBlockInMethod(uintp pc, Hjava_lang_Class* class, Method* ptr, excep
 
 	/* Right method - look for exception */
 	if (ptr->exception_table == 0) {
+DBG(ELOOKUP,
+		dprintf("%s.%s has no handlers.\n", ptr->class->name->data, ptr->name->data); )
 		return (false);
 	}
-DBG(ELOOKUP,
-	dprintf("Nr of exceptions = %d\n", ptr->exception_table->length); )
 
+DBG(ELOOKUP,
+	dprintf("%s.%s has %d handlers (throw was pc=%#x):\n",
+		ptr->class->name->data, ptr->name->data,
+		ptr->exception_table->length, pc); )
+
+	/*
+	 * XXX this list could be sorted so that if pc < start_pc, no
+	 * further searching is necessary.
+	 */
 	for (i = 0; i < ptr->exception_table->length; i++) {
 		uintp start_pc = eptr[i].start_pc;
 		uintp end_pc = eptr[i].end_pc;
 		uintp handler_pc = eptr[i].handler_pc;
 
-DBG(ELOOKUP,	dprintf("Exceptions %p (%p-%p)\n", pc, start_pc, end_pc); )
+DBG(ELOOKUP,	dprintf("  Handler %d covers %#x-%#x\n", i, start_pc, end_pc); )
 		if (pc < start_pc || pc > end_pc) {
 			continue;
 		}
-DBG(ELOOKUP,	dprintf("Found exception %p\n", handler_pc); )
 
 		/* Found exception - is it right type */
 		if (eptr[i].catch_idx == 0) {
 			info->handler = handler_pc;
+DBG(ELOOKUP,		dprintf("  Found handler @ %#x: catches all exceptions.\n", handler_pc); )
 			return (true);
 		}
 		/* Did I try to resolve that catch type before */
 		if (eptr[i].catch_type == UNRESOLVABLE_CATCHTYPE) {
+DBG(ELOOKUP,		dprintf("  Found handler @ %#x: Unresolvable catch type.\n", handler_pc); )
 			return (false);
 		}
 		/* Resolve catch class if necessary */
@@ -629,8 +642,8 @@ DBG(ELOOKUP,	dprintf("Found exception %p\n", handler_pc); )
 			 */
 			if (eptr[i].catch_type == NULL) {
 DBG(ELOOKUP|DBG_RESERROR,
-				dprintf("Couldn't resolve catch class\n");
-    )
+				dprintf("Couldn't resolve catch class @ cp idx=%d\n",
+					eptr[i].catch_idx); )
 				eptr[i].catch_type = UNRESOLVABLE_CATCHTYPE;
 				throwError(&info);
 				return (false);
@@ -638,10 +651,14 @@ DBG(ELOOKUP|DBG_RESERROR,
 		}
                 for (cptr = class; cptr != 0; cptr = cptr->superclass) {
                         if (cptr == eptr[i].catch_type) {
+DBG(ELOOKUP,	dprintf("  Found matching handler at %#x: Handles %s.\n",
+			handler_pc, CLASS_CNAME(eptr[i].catch_type)); )
                                 info->handler = handler_pc;
                                 return (true);
                         }
                 }
+DBG(ELOOKUP,	dprintf("  Handler at %#x (handles %s), does not match.\n",
+			handler_pc, CLASS_CNAME(eptr[i].catch_type)); )
 	}
 	return (false);
 }
