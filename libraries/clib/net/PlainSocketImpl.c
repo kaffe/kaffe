@@ -400,8 +400,8 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 	addr.sin_addr.s_addr = INADDR_ANY;
 
 	DBG(NATIVENET,
-	    dprintf("socketAccept(%p, localport=%d, addr=%s)\n", 
-		    this, ntohs(addr.sin_port), ip2str(addr.sin_addr.s_addr));
+	    dprintf("socketAccept(%p, localport=%d, addr=%s, timeout=%d)\n", 
+		    this, ntohs(addr.sin_port), ip2str(addr.sin_addr.s_addr), unhand(this)->timeout);
 	    );
 
 	alen = sizeof(addr);
@@ -410,6 +410,10 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 			     (struct sockaddr*)&addr, &alen, unhand(this)->timeout, &r);
 	} while (rc == EINTR);
 	if (rc == ETIMEDOUT) {
+	  	DBG(NATIVENET,
+	    		dprintf("socketAcceptTimedOut(%p, localport=%d, addr=%s, timeout=%d)\n", 
+			this, ntohs(addr.sin_port), ip2str(addr.sin_addr.s_addr), unhand(this)->timeout);
+	    	);
 	        SignalError("java.net.SocketTimeoutException",
 			    "Accept timed out");
 	}
