@@ -52,11 +52,10 @@ readClass(Hjava_lang_Class* classThis, classFile* fp, struct Hjava_lang_ClassLoa
 
 RCDBG(	dprintf("major=%d, minor=%d\n", major_version, minor_version);	)
 
-	if (major_version != MAJOR_VERSION) {
-		dprintf("Warning: Major version number mismatch.\n");
-	}
-	if (minor_version != MINOR_VERSION) {
-		dprintf("Warning: Minor version number mismatch.\n");
+	if (! ((major_version == MAJOR_VERSION_V1_1 && minor_version == MINOR_VERSION_V1_1) ||
+	       (major_version == MAJOR_VERSION_V1_4 && minor_version == MINOR_VERSION_V1_4))) {
+		dprintf("Warning: Unrecognized version number %d/%d in classfile.\n",
+			major_version, minor_version);
 	}
 
 	if (readConstantPool(classThis, fp, einfo) == false) {

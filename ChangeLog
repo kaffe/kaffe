@@ -1,3 +1,11 @@
+Sun May 12 12:25:28 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	* kaffe/kaffevm/readClass.c,
+	kaffe/kaffevm/readClass.h: Recognize version numbers on classes
+	compiled with JDK 1.4.0.  (Does anybody know if the class format
+	actually changed?  Or if there are any changes in behaviour that
+	depends on the version number?)
+
 Sun May 12 16:44:29 CEST 2002 Tim Stack <stack@cs.utah.edu>
 
 	* libraries/javalib/Makefile.am,

@@ -13,8 +13,10 @@
 #define __readclass_h
 
 #define	JAVAMAGIC	0xCafeBabe
-#define	MAJOR_VERSION	45
-#define	MINOR_VERSION	3
+#define	MAJOR_VERSION_V1_1	45
+#define	MINOR_VERSION_V1_1	3
+#define	MAJOR_VERSION_V1_4	46
+#define	MINOR_VERSION_V1_4	0
 
 typedef struct _field_info {
 	u2		access_flags;
