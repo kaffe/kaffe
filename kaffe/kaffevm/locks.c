@@ -351,6 +351,12 @@ DBG(VMLOCKS,	dprintf("Lock 0x%x on addr=0x%x\n", jthread_current(), addr);    )
 		((Hjava_lang_Object*)addr)->lock = lk;
 	}
 #else
+#if !defined(CREATE_NULLPOINTER_CHECKS)
+	/* We need this here to generate an immediate trap in the case of
+	   a statement like "synchronized((Object)null) { .. } "
+	 */
+	*((volatile unsigned char *)addr);
+#endif
 	lk = newLock(addr);
 #endif
 	__lockMutex(lk);
@@ -399,6 +405,12 @@ DBG(VMLOCKS,	dprintf("Unlock 0x%x on addr=0x%x\n", jthread_current(), addr);  )
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;
 #else
+#if !defined(CREATE_NULLPOINTER_CHECKS)
+	/* We need this here to generate an immediate trap in the case of
+	   a statement like "synchronized((Object)null) { .. } "
+	 */
+	*((volatile unsigned char *)addr);
+#endif
 	lk = getLock(addr);
 #endif
 	__unlockMutex(lk);
