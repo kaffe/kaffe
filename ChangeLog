@@ -1,3 +1,17 @@
+2005-04-03  Rei Odaira <ray@is.s.u-tokyo.ac.jp>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
+	(jthreadedSelect): Fixed timeout handling, fdset handling. maxFd,
+	readsPending, writesPending updated properly.
+
+	* libraries/clib/nio/gnu_java_nio_VMSelector.c
+	(helper_select, select0): Use a negative value to avoid confusion
+	between the number of filedescriptor and the error value returned
+	by select.
+
+	* libraries/javalib/java/nio/channels/spi/AbstractSelectableChannel.java
+	(register): Check for blocking state.
+
 2005-04-03  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/Makefile.am 

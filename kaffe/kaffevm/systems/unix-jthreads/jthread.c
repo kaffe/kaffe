@@ -3325,29 +3325,64 @@ jthreadedSelect(int a, fd_set* b, fd_set* c, fd_set* d,
 	tval.tv_sec = 0;
 	tval.tv_usec = 0;
 
-	time_milli = e->tv_usec / 1000 + e->tv_sec * 1000;
+	if (e != NULL)
+		time_milli = e->tv_usec / 1000 + e->tv_sec * 1000;
+	else
+		time_milli = NOTIMEOUT;
 
 	intsDisable();
 
 	for (;;) {
-		if ((*out = select(a, b, c, d, &tval)) == -1) {
+		fd_set tmp_b, tmp_c, tmp_d;
+
+		FD_COPY(b, &tmp_b);
+		FD_COPY(c, &tmp_c);
+		FD_COPY(d, &tmp_d);
+
+		if ((*out = select(a, &tmp_b, &tmp_c, &tmp_d, &tval)) == -1) {
 			rc = errno;
 			break;
 		}
-		if ((*out == 0 && second_time) || *out != 0)
+		if ((*out == 0 && second_time) || *out != 0) {
+			FD_COPY(&tmp_b, b);
+			FD_COPY(&tmp_c, c);
+			FD_COPY(&tmp_d, d);
 			break;
+		}
 
 		if (time_milli != 0) {
+			int interrupted;
+
+			BLOCKED_ON_EXTERNAL(currentJThread);
+
+			if (a - 1 > maxFd)
+				maxFd = a - 1;
+
 			for (i=0;i<a;i++) {
-				if (b && FD_ISSET(i, b))
+				if (b && FD_ISSET(i, b)) {
+					FD_SET(i, &readsPending);
 					addWaitQThread(currentJThread, &readQ[i]);
-				if (c && FD_ISSET(i, c))
+				}
+				if (c && FD_ISSET(i, c)) {
+					FD_SET(i, &writesPending);
 					addWaitQThread(currentJThread, &writeQ[i]);
+				}
 			}
 
-			if (suspendOnQThread(currentJThread, NULL, time_milli)) {
+			interrupted = suspendOnQThread(currentJThread, NULL, time_milli);
+
+			for (i=0;i<a;i++) {
+				if (b && FD_ISSET(i, b))
+					FD_CLR(i, &readsPending);
+				if (c && FD_ISSET(i, c))
+					FD_CLR(i, &writesPending);
+			}
+			if (interrupted) {
 				rc = EINTR;
 				*out = 0;
+				FD_ZERO(b);
+				FD_ZERO(c);
+				FD_ZERO(d);
 				break;
 			}
 		}

@@ -166,7 +166,7 @@ helper_select (JNIEnv *env, jclass thread_class, jmethodID thread_interrupted,
 		/* Here we know we got EINTR. */
 		if ( (*env)->CallStaticBooleanMethod(env, thread_class, thread_interrupted) )
 		{
-			return EINTR;
+			return -2;
 		}
 
 		if (timeout)
@@ -249,7 +249,7 @@ Java_gnu_java_nio_VMSelector_select (JNIEnv *env,
 	result = helper_select (env, thread_class, thread_interrupted, max_fd + 1, &read_fds, &write_fds,
 								&except_fds, time_data);
 
-	if( result == EINTR ) {
+	if( result == -2 ) {
 		/* The behavior of JRE 1.4.1 is that no exception is thrown
 		 * when the thread is interrupted, but the thread's interrupt
 		 * status is set. Clear all of our select sets and return 0,
