@@ -41,7 +41,7 @@
 /* AG_DISPLACEMENT is the offset between the beginning of a
    variable-sized array, allocated in the stack, and the position of
    the first argument that can't be passed in a register.  */
-#define ARG_DISPLACEMENT -1
+#define ARG_DISPLACEMENT 1
 /* ARG_REG a case label and a statement that arranges for one argument
    to be passed. */
 #define ARG_REG(n) case n+1: a##n = callargs[n].i
@@ -64,7 +64,7 @@ sysdepCallMethod(callMethodInfo *call) {
   void *func = call->function;
   jvalue *callargs;
 #ifdef SYSDEP_ONE_VERSION
-  ARG_TYPE extraargs[((args>ARG_COUNT)?(args-ARG_COUNT-ARG_DISPLACEMENT):0)];
+  ARG_TYPE extraargs[((args>ARG_COUNT)?(args-ARG_COUNT+ARG_DISPLACEMENT):0)];
 #endif
 
   if (args == 0)
@@ -82,7 +82,7 @@ sysdepCallMethod(callMethodInfo *call) {
 static inline void
 longSysdepCallMethod(callMethodInfo *call,
 		     unsigned args, void *func, jvalue *callargs) {
-  ARG_TYPE extraargs[args-ARG_COUNT-ARG_DISPLACEMENT];
+  ARG_TYPE extraargs[args-ARG_COUNT+ARG_DISPLACEMENT];
 
   goto manyargs;
 #endif
@@ -102,7 +102,7 @@ longSysdepCallMethod(callMethodInfo *call,
   manyargs:
     {
       jvalue *last = &callargs[args];
-      ARG_TYPE *xargs = extraargs+ARG_DISPLACEMENT + args-ARG_COUNT;
+      ARG_TYPE *xargs = extraargs-ARG_DISPLACEMENT + args-ARG_COUNT;
       while (last != &callargs[ARG_COUNT])
 	*--xargs = (--last)->i;
     }

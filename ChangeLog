@@ -1,5 +1,12 @@
 2004-03-24  Dalibor Topic <robilad@kaffe.org>
 
+	* config/sparc/sysdepCallMethod.h
+	(ARGS_DISPLACEMENT) Changed to 1 and inverted all
+	operations on it in order to fix a compiler warning
+	on netbsd-sparc.
+
+2004-03-24  Dalibor Topic <robilad@kaffe.org>
+
 	* config/alpha/atomicity.h:
 	New file, taken from GNU libc 2.3.2.
 
