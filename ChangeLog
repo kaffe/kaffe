@@ -1,5 +1,16 @@
 2004-12-03  Dalibor Topic  <robilad@kaffe.org>
 
+	*  libraries/javalib/java/awt/geom/Area.java:
+	Resynced with GNU Classpath.
+
+	2004-12-01  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/geom/Area.java
+        (QuadSegment.curveArea): Remove unused variables.
+        (CubicSegment.curveArea): Likewise.
+
+2004-12-03  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/locale/LocaleInformation_af_ZA.java,
 	libraries/javalib/gnu/java/locale/LocaleInformation_ar_DZ.java,
 	libraries/javalib/gnu/java/locale/LocaleInformation_ar_IN.java,
