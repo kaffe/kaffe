@@ -1,6 +1,18 @@
 2005-01-08  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+
+	2005-01-08  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* java/nio/charset/Charset.java (providers):
+	New method to make an array of CharsetProviders defined in
+	META-INF/services/java.nio.charset.spi.CharsetProvider.
+	(charsetForName, availableCharsets): Use the
+	new method providers().
+	
+2005-01-08  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 	
 	2005-01-08  Michael Koch  <konqueror@gmx.de>
 

@@ -65,6 +65,11 @@ public abstract class Charset implements Comparable
   private static CharsetEncoder cachedEncoder;
   private static CharsetDecoder cachedDecoder;
  
+  /**
+   * Charset providers.
+   */
+  private static CharsetProvider[] providers;
+  
   static
   {
     synchronized (Charset.class)
@@ -135,68 +140,72 @@ public abstract class Charset implements Comparable
    * Retrieves a charset for the given charset name.
    *
    * @return A charset object for the charset with the specified name, or
-   *   <code>null</code> if no such charset exists.
+   * <code>null</code> if no such charset exists.
    *
    * @throws IllegalCharsetNameException  if the name is illegal
    */
-  private static Charset charsetForName (String charsetName)
+  private static Charset charsetForName(String charsetName)
   {
     checkName (charsetName);
     Charset cs = null;
-    CharsetProvider[] providers = providers ();
-    for (int i = 0; i < providers.length; i++) {
-        cs = providers[i].charsetForName (charsetName);
-        if (cs != null) break;
-    }
+    CharsetProvider[] providers = providers();
+    for (int i = 0; i < providers.length; i++)
+      {
+        cs = providers[i].charsetForName(charsetName);
+        if (cs != null)
+	  break;
+      }
     return cs;
   }
 
-  public static SortedMap availableCharsets ()
+  public static SortedMap availableCharsets()
   {
-    TreeMap charsets = new TreeMap (String.CASE_INSENSITIVE_ORDER);
+    TreeMap charsets = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 
-    CharsetProvider[] providers = providers ();
+    CharsetProvider[] providers = providers();
     for (int j = 0; j < providers.length; j++)
       {
-        for (Iterator i = providers[j].charsets (); i.hasNext (); )
+        for (Iterator i = providers[j].charsets(); i.hasNext(); )
           {
-            Charset cs = (Charset) i.next ();
-            charsets.put (cs.name (), cs);
+            Charset cs = (Charset) i.next();
+            charsets.put(cs.name(), cs);
           }
       }
 
-    return Collections.unmodifiableSortedMap (charsets);
+    return Collections.unmodifiableSortedMap(charsets);
   }
 
-  private static CharsetProvider provider ()
+  private static CharsetProvider provider()
   {
-    return Provider.provider ();
+    return Provider.provider();
   }
 
-  // we need to support multiple providers, reading them from
-  // java.nio.charset.spi.CharsetProvider in the resource directory
-  // META-INF/services
-
-  private static CharsetProvider[] providers;
-  private static CharsetProvider[] providers ()
+  /**
+   * We need to support multiple providers, reading them from
+   * java.nio.charset.spi.CharsetProvider in the resource directory
+   * META-INF/services.
+   */
+  private static CharsetProvider[] providers()
   {
     if (providers == null)
       {
         try
           {
-            Enumeration en = ClassLoader.getSystemResources("META-INF/services/java.nio.charset.spi.CharsetProvider");
+            Enumeration en = ClassLoader.getSystemResources
+	      ("META-INF/services/java.nio.charset.spi.CharsetProvider");
             LinkedHashSet set = new LinkedHashSet();
-            set.add(provider ());
+            set.add(provider());
             while (en.hasMoreElements())
               {
-                BufferedReader rdr = new BufferedReader(new InputStreamReader(
-                    ((URL)(en.nextElement())).openStream()));
+                BufferedReader rdr = new BufferedReader(new InputStreamReader
+                  (((URL) (en.nextElement())).openStream()));
                 while (true)
                   {
                     String s = rdr.readLine();
-                    if (s == null) break;
-                    CharsetProvider p = (CharsetProvider)(
-                        (Class.forName(s)).newInstance());
+                    if (s == null)
+		      break;
+                    CharsetProvider p =
+		      (CharsetProvider) ((Class.forName(s)).newInstance());
                     set.add(p);
                   }
                }
