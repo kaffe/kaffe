@@ -42,7 +42,7 @@ public static void main(String[] args)
 	getJar(args[0]);
 
 	/* Add JAR to classpath */
-	Classpath.add(args[0]);
+	Classpath.prepend(args[0]);
 
 	/* Get command to call */
 	String command = args[1];
