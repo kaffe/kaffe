@@ -1,3 +1,8 @@
+2004-08-17  Kiyo Inaba  <inaba@src.ricoh.co.jp>
+
+	* config/m68k/jit3-m68k.def:
+	Make kjc works.
+
 2004-08-16  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/m68k/openbsd2/md.h

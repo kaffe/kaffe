@@ -1302,13 +1302,11 @@ define_insn(eprologue, eprologue_xxx)
 	l->at = (uintp)CODEPC+2;
 	op_addal_ia(0, REG_a0);
 
-#if	(0)		// don't destroy our good registers
 #if !defined(HAVE_NO_SUBAW)
 	op_subaw_ia(SRNR * SLOTSIZE, REG_a0);
 #else
 	op_subal_ia(SRNR * SLOTSIZE, REG_a0);
 #endif
-#endif		// end no-oped section
 
 	op_moveal_aa(REG_a0, REG_sp);
 }
