@@ -922,17 +922,17 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 
 .PHONY: jar-classes
 jar-classes $(LIBDIR)/Klasses.jar: $(LIBDIR)/stamp
-	rm -f $(LIBDIR)/$(CLASSFILE)
+	rm -f $(LIBDIR)/Klasses.jar
 	cp $(srcdir)/kaffe/lang/unicode.idx $(srcdir)/kaffe/lang/unicode.tbl $(LIBDIR)/kaffe/lang
 	cp $(srcdir)/kaffe/io/ByteToCharEUC_JP.tbl $(srcdir)/kaffe/io/CharToByteEUC_JP.tbl $(LIBDIR)/kaffe/io
 	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
-	(cd $(LIBDIR) && $(ZIP) -DX -r $(CLASSFILE) $(SRCDIRS))
+	(cd $(LIBDIR) && $(ZIP) -DX -r Klasses.jar $(SRCDIRS))
 
 .PHONY: build-classes Klasses
-build-classes Klasses: $(LIBDIR)/$(CLASSFILE)
-	rm -f $(srcdir)/$(CLASSFILE)
-	cp $(LIBDIR)/$(CLASSFILE) $(srcdir)/$(CLASSFILE)
+build-classes Klasses: $(LIBDIR)/Klasses.jar
+	rm -f $(srcdir)/Klasses.jar
+	cp $(LIBDIR)/Klasses.jar $(srcdir)/Klasses.jar
 
-rt.jar: Klasses.jar
-	cp Klasses.jar rt.jar
+$(CLASSFILE): $(srcdir)/Klasses.jar
+	cp $(srcdir)/Klasses.jar $(CLASSFILE)
 
