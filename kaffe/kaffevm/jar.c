@@ -181,7 +181,7 @@ openJarFile(char* name)
 
 	file = KMALLOC(sizeof(jarFile));
 
-	file->fd = KOPEN(name, O_RDONLY, 0);
+	file->fd = KOPEN(name, O_RDONLY|O_BINARY, 0);
 	if (file->fd == -1) {
 		KFREE(file);
 		return (0);
