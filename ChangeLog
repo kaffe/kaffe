@@ -1,5 +1,11 @@
 2004-08-22  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/jit/icode.c
+	(move_float_const_bits): Removed. Unused.
+	(set_label): Cleaned up. The change was unnecessary.
+
+2004-08-22  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/sparc/jit-icode.h, config/i386/jit-icode.h,
 	config/alpha/jit-icode.h, config/arm/jit-icode.h,
 	config/m68k/jit-icode.h

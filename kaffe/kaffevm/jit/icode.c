@@ -469,26 +469,6 @@ move_long_const(SlotInfo* dst, jlong val)
 }
 
 void
-move_float_const_bits(SlotInfo* dst, int val)
-{
-	constpool *c;
-        label* l;
-        SlotInfo* tmp;
-
-        c = newConstant(CPint, val);
-        l = newLabel();
-        l->type = Lconstant;
-        l->at = 0;
-        l->to = (uintp)c;
-        l->from = 0;
-
-        slot_alloctmp(tmp);
-        move_label_const(tmp, l);
-        load_float(dst, tmp);
-        slot_freetmp(tmp);
-}
-
-void
 move_float_const(SlotInfo* dst, float val)
 {
 #if defined(HAVE_move_float_const)
@@ -2812,7 +2792,7 @@ set_label(int i, int n)
 	}
 	else {
 		assert(labtab[n]->type == Lnull);
-		labtab[n]->type = Linternal | (labtab[n]->type & ~Ltomask);
+		labtab[n]->type = Linternal;
 		slot_slot_const(0, 0, (jword)labtab[n], HAVE_set_label, Tnull);
 		labtab[n] = 0;
 	}
