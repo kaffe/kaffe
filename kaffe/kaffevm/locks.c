@@ -54,12 +54,14 @@
  */
 extern iLock* gc_lock;
 extern iLock* gcman;
+extern iLock* finman;
 static struct {
 	iLock**	key;
 	iLock	lock;
 } specialLocks[] = {
 	{ &gc_lock,	{ 0, 0, 0 } },
 	{ &gcman,	{ 0, 0, 0 } },
+	{ &finman,	{ 0, 0, 0 } },
 };
 #define	NR_SPECIAL_LOCKS	(sizeof(specialLocks)/sizeof(specialLocks[0]))
 
