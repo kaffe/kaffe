@@ -591,6 +591,7 @@ java_util_zip_SRCS = \
 	java/util/zip/ZipOutputStream.java
 kaffe_applet_SRCS = \
 	kaffe/applet/AppletViewer.java \
+	kaffe/applet/AppletTag.java \
 	kaffe/applet/AudioPlayer.java
 kaffe_awt_SRCS = \
 	kaffe/awt/ExportTransferable.java \

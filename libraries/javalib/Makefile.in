@@ -738,6 +738,7 @@ java_util_zip_SRCS = \
 
 kaffe_applet_SRCS = \
 	kaffe/applet/AppletViewer.java \
+	kaffe/applet/AppletTag.java \
 	kaffe/applet/AudioPlayer.java
 
 kaffe_awt_SRCS = \
