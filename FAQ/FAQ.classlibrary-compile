@@ -206,3 +206,29 @@ How do I pick which class library profile to use?
 
 The configure script has the option --with-class-library-profile,
 which allows you to specify a profile to use for the class library.
+
+Which profiles are available?
+-----------------------------
+
+Currently, there are three profiles available.
+
+* default:
+
+  Builds the whole class library. This profile is optimized for low
+  memory consumption. The memory requirement to build the class
+  library with this profile is about 20M using kjc.
+
+* minimal:
+
+  Builds only the classes required to compile java.lang.Object. It is
+  useful as a starting point for adapting the class library to your
+  needs.
+
+* allatonce:
+
+  Builds the whole class library in a single pass. This profile is
+  optimized for speed, so it only invokes the compiler once on all
+  source files. It uses more then 50M of memory with kjc.
+
+If you write your own profiles, sending them to the kaffe mailing list
+kaffe@kaffe.org.

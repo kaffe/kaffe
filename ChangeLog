@@ -1,3 +1,34 @@
+2003-02-12 Dalibor Topic <robilad@yahoo.com>
+
+	Added new class library compilation runs to default profile in
+	order to reduce memory usage for class library compilation to
+	20M. This should help people building kaffe on devices with less
+	than 32 M of RAM to avoid swapping.
+
+	Added new 'allatonce' profile that compiles the class library in a
+	single run. It needs more than 50 M of memory.
+	
+	* libraries/javalib/profiles/default/profile:
+	Added new runs.
+	
+	* libraries/javalib/profiles/default/awt.files:
+	split into three runs.
+
+	* libraries/javalib/profiles/default/jaxp.files:
+	split into two runs.
+
+	* libraries/javalib/profiles/default/coreawt.files,
+	libraries/javalib/profiles/default/moreawt.files,
+	libraries/javalib/profiles/default/xml.files:
+	new files.
+
+	* libraries/javalib/profiles/allatonce/profile,
+	libraries/javalib/profiles/allatonce/all.files:
+	new files.
+
+	* FAQ/FAQ.classlibrary-compile:
+	Documented available profiles.
+	
 2003-02-11 Dalibor Topic <robilad@yahoo.com>
 
 	* configure.in:
