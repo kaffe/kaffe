@@ -2,6 +2,18 @@
 
 	Resynced with GNU Classpath.
 
+	2004-01-04  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/net/protocol/jar/Connection.java
+        (Connection): Made class final.
+        (Connection): Made constructor protected.
+        (getJarFile): Check doInput.
+        (getInputStream): Likewise.
+
+2004-01-08  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2004-01-06  Michael Koch  <konqueror@gmx.de>
 
         * gnu/java/net/protocol/file/Connection.java

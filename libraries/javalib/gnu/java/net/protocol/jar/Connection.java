@@ -44,6 +44,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Hashtable;
@@ -57,7 +58,7 @@ import java.util.zip.ZipFile;
  *
  * @author Kresten Krab Thorup <krab@gnu.org>
  */
-public class Connection extends JarURLConnection
+public final class Connection extends JarURLConnection
 {
   private JarFile jar_file;
   private JarEntry jar_entry;
@@ -120,17 +121,18 @@ public class Connection extends JarURLConnection
     }
   }
 
-  public Connection(URL url)
+  protected Connection(URL url)
     throws MalformedURLException
   {
     super(url);
   }
-  
-  public void connect() throws IOException
+
+  public synchronized void connect() throws IOException
   {
+    // Call is ignored if already connected.
     if (connected)
       return;
-    
+
     jar_url = getJarFileURL();
     jar_file = JarFileCache.get (jar_url);
     String entry_name = getEntryName();
@@ -143,29 +145,35 @@ public class Connection extends JarURLConnection
         if(jar_entry == null)
           throw new IOException ("No entry for " + entry_name + " exists.");
       }
-    
+
     connected = true;
   }
-  
-  public JarFile getJarFile() throws IOException
-  {
-    if (!connected)
-      connect();
-    
-    return jar_file;
-  }
-  
+
   public InputStream getInputStream() throws IOException
   {
     if (!connected)
       connect();
+
+    if (! doInput)
+      throw new ProtocolException("Can't open InputStream if doInput is false");
     
     if (jar_entry == null)
       throw new IOException (jar_url + " couldn't be found.");
     
     return jar_file.getInputStream (jar_entry);
   }
-  
+
+  public synchronized JarFile getJarFile() throws IOException
+  {
+    if (!connected)
+      connect();
+
+    if (! doInput)
+      throw new ProtocolException("Can't open JarFile if doInput is false");
+
+    return jar_file;
+  }
+
   public int getContentLength()
   {
     if (!connected)
