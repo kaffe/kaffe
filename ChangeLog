@@ -1,3 +1,12 @@
+Sun Mar 21 21:13:00 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/jit/icode.c: fix stack corruption problem with
+	floating point remainder functions
+	* kaffe/kaffevm/debug.c: accept lower case -vmdebug options
+	* kaffe/kaffevm/intrp/checks.h: match printf formats with args
+	* libraries/clib/awt/X/toolkit.h imggif.c, imgpng.c: fix warnings
+	* test/regression/GCTest.java: fix synchronized output fix
+
 Sat Mar 20 14:59:00 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/lang/String.java: fix lastIndexOf(int, int)
