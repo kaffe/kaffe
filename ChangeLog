@@ -1,3 +1,9 @@
+Fri Aug 13 12:16:21 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* configure.in: default to JIT3 engine if supported
+	* config/i386/freebsd2/jit3-md.h: new file
+	* configure, include/Makefile.in: regen
+
 Thu Aug 12 21:40:23 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* developers/alignment_of_size.c: new file
