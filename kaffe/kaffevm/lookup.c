@@ -324,5 +324,5 @@ static
 void
 throwAbstractMethodError(void)
 {
-	throwException(AbstractMethodError);
+	throwFreshException(AbstractMethodError);
 }

@@ -241,7 +241,7 @@ DBG(SLOWLOCKS,
 	if (!jthread_on_current_stack(lk->holder)) {
 		putHeavyLock(lkp, lk);
 		jthread_enable_stop();
-		throwException(IllegalMonitorStateException);
+		throwFreshException(IllegalMonitorStateException);
 	}
 
 	/* If holder isn't where we are now then this isn't the final unlock */
@@ -351,7 +351,7 @@ DBG(SLOWLOCKS,
 	/* I must be holding the damn thing */
 	if (!jthread_on_current_stack(holder)) {
 		putHeavyLock(lkp, holder);
-		throwException(IllegalMonitorStateException);
+		throwFreshException(IllegalMonitorStateException);
 	}
 
 	tid = getCurrentThread();
@@ -408,7 +408,7 @@ DBG(SLOWLOCKS,
 
 	if (!jthread_on_current_stack(lk->holder)) {
 		putHeavyLock(lkp, lk);
-		throwException(IllegalMonitorStateException);
+		throwFreshException(IllegalMonitorStateException);
 	}
 
 	/* Move one CV's onto the MUX */
@@ -437,7 +437,7 @@ DBG(SLOWLOCKS,
 
 	if (!jthread_on_current_stack(lk->holder)) {
 		putHeavyLock(lkp, lk);
-		throwException(IllegalMonitorStateException);
+		throwFreshException(IllegalMonitorStateException);
 	}
 
 	/* Move all the CV's onto the MUX */

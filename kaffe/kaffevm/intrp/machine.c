@@ -246,7 +246,7 @@ void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *r
 		switch (code[pc]) {
 		default:
 			dprintf("Unknown bytecode %d\n", code[pc]);
-			throwException(NEW_LANG_EXCEPTION(VerifyError));
+			throwFreshException(NEW_LANG_EXCEPTION(VerifyError));
 			break;
 #include "kaffe.def"
 		}

@@ -247,7 +247,7 @@ Kaffe_GetVersion(JNIEnv* env)
 static void
 postError(JNIEnv* env, errorInfo* info)
 {
-	Kaffe_Throw(env, error2Throwable(info));
+	Kaffe_Throw(env, error2Throwable(info, NULL));
 }
 
 static jref
@@ -423,7 +423,7 @@ Kaffe_AllocObject(JNIEnv* env, jclass cls)
 	clazz = (Hjava_lang_Class*)cls;
 
 	if (CLASS_IS_INTERFACE(clazz) || CLASS_IS_ABSTRACT(clazz)) {
-		throwException(InstantiationException(clazz->name->data));
+		throwFreshException(InstantiationException(clazz->name->data));
 	}
 	obj = newObject(clazz);
 
@@ -445,7 +445,7 @@ Kaffe_NewObjectV(JNIEnv* env, jclass cls, jmethodID meth, va_list args)
 	clazz = (Hjava_lang_Class*)cls;
 
 	if (CLASS_IS_INTERFACE(clazz) || CLASS_IS_ABSTRACT(clazz) || !METHOD_IS_CONSTRUCTOR(m)) {
-		throwException(InstantiationException(clazz->name->data));
+		throwFreshException(InstantiationException(clazz->name->data));
 	}
 	obj = newObject(clazz);
 
@@ -485,7 +485,7 @@ Kaffe_NewObjectA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* args)
 	clazz = (Hjava_lang_Class*)cls;
 
 	if (CLASS_IS_INTERFACE(clazz) || CLASS_IS_ABSTRACT(clazz) || !METHOD_IS_CONSTRUCTOR(m)) {
-		throwException(InstantiationException(clazz->name->data));
+		throwFreshException(InstantiationException(clazz->name->data));
 	}
 	obj = newObject(clazz);
 
@@ -558,7 +558,7 @@ Kaffe_CallObjectMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -595,7 +595,7 @@ Kaffe_CallObjectMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -615,7 +615,7 @@ Kaffe_CallBooleanMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -651,7 +651,7 @@ Kaffe_CallBooleanMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -671,7 +671,7 @@ Kaffe_CallByteMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -707,7 +707,7 @@ Kaffe_CallByteMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -727,7 +727,7 @@ Kaffe_CallCharMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -763,7 +763,7 @@ Kaffe_CallCharMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -783,7 +783,7 @@ Kaffe_CallShortMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -819,7 +819,7 @@ Kaffe_CallShortMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -839,7 +839,7 @@ Kaffe_CallIntMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -875,7 +875,7 @@ Kaffe_CallIntMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -895,7 +895,7 @@ Kaffe_CallLongMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -931,7 +931,7 @@ Kaffe_CallLongMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -951,7 +951,7 @@ Kaffe_CallFloatMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -987,7 +987,7 @@ Kaffe_CallFloatMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -1007,7 +1007,7 @@ Kaffe_CallDoubleMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -1043,7 +1043,7 @@ Kaffe_CallDoubleMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -1062,7 +1062,7 @@ Kaffe_CallVoidMethodV(JNIEnv* env, jobject obj, jmethodID meth, va_list args)
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -1094,7 +1094,7 @@ Kaffe_CallVoidMethodA(JNIEnv* env, jobject obj, jmethodID meth, jvalue* args)
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, (m->idx >= 0 ? o->dtable->method[m->idx]
@@ -1112,7 +1112,7 @@ Kaffe_CallNonvirtualObjectMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodI
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
@@ -1147,7 +1147,7 @@ Kaffe_CallNonvirtualObjectMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodI
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
@@ -1166,7 +1166,7 @@ Kaffe_CallNonvirtualBooleanMethodV(JNIEnv* env, jobject obj, jclass cls, jmethod
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
@@ -1200,7 +1200,7 @@ Kaffe_CallNonvirtualBooleanMethodA(JNIEnv* env, jobject obj, jclass cls, jmethod
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
@@ -1218,7 +1218,7 @@ Kaffe_CallNonvirtualByteMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
@@ -1252,7 +1252,7 @@ Kaffe_CallNonvirtualByteMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
@@ -1270,7 +1270,7 @@ Kaffe_CallNonvirtualCharMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
@@ -1304,7 +1304,7 @@ Kaffe_CallNonvirtualCharMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
@@ -1322,7 +1322,7 @@ Kaffe_CallNonvirtualShortMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
@@ -1356,7 +1356,7 @@ Kaffe_CallNonvirtualShortMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
@@ -1374,7 +1374,7 @@ Kaffe_CallNonvirtualIntMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID m
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
@@ -1408,7 +1408,7 @@ Kaffe_CallNonvirtualIntMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID m
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
@@ -1426,7 +1426,7 @@ Kaffe_CallNonvirtualLongMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
@@ -1460,7 +1460,7 @@ Kaffe_CallNonvirtualLongMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
@@ -1478,7 +1478,7 @@ Kaffe_CallNonvirtualFloatMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
@@ -1512,7 +1512,7 @@ Kaffe_CallNonvirtualFloatMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
@@ -1530,7 +1530,7 @@ Kaffe_CallNonvirtualDoubleMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodI
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), obj, args, &retval);
@@ -1564,7 +1564,7 @@ Kaffe_CallNonvirtualDoubleMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodI
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), obj, args, &retval, 0);
@@ -1581,7 +1581,7 @@ Kaffe_CallNonvirtualVoidMethodV(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), obj, args, 0);
@@ -1611,7 +1611,7 @@ Kaffe_CallNonvirtualVoidMethodA(JNIEnv* env, jobject obj, jclass cls, jmethodID 
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), obj, args, 0, 0);
@@ -1867,7 +1867,7 @@ Kaffe_CallStaticObjectMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list a
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
@@ -1902,7 +1902,7 @@ Kaffe_CallStaticObjectMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* a
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
@@ -1921,7 +1921,7 @@ Kaffe_CallStaticBooleanMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
@@ -1955,7 +1955,7 @@ Kaffe_CallStaticBooleanMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* 
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
@@ -1973,7 +1973,7 @@ Kaffe_CallStaticByteMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list arg
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
@@ -2007,7 +2007,7 @@ Kaffe_CallStaticByteMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* arg
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
@@ -2025,7 +2025,7 @@ Kaffe_CallStaticCharMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list arg
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
@@ -2059,7 +2059,7 @@ Kaffe_CallStaticCharMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* arg
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
@@ -2077,7 +2077,7 @@ Kaffe_CallStaticShortMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list ar
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
@@ -2111,7 +2111,7 @@ Kaffe_CallStaticShortMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* ar
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
@@ -2129,7 +2129,7 @@ Kaffe_CallStaticIntMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list args
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
@@ -2163,7 +2163,7 @@ Kaffe_CallStaticIntMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* args
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
@@ -2181,7 +2181,7 @@ Kaffe_CallStaticLongMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list arg
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
@@ -2215,7 +2215,7 @@ Kaffe_CallStaticLongMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* arg
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
@@ -2233,7 +2233,7 @@ Kaffe_CallStaticFloatMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list ar
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
@@ -2267,7 +2267,7 @@ Kaffe_CallStaticFloatMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* ar
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
@@ -2285,7 +2285,7 @@ Kaffe_CallStaticDoubleMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list a
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
@@ -2319,7 +2319,7 @@ Kaffe_CallStaticDoubleMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* a
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), 0, args, &retval, 0);
@@ -2337,7 +2337,7 @@ Kaffe_CallStaticVoidMethodV(JNIEnv* env, jclass cls, jmethodID meth, va_list arg
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodV(m, JNI_METHOD_CODE(m), 0, args, &retval);
@@ -2367,7 +2367,7 @@ Kaffe_CallStaticVoidMethodA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* arg
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (!METHOD_IS_STATIC(m)) {
-		throwException(NoSuchMethodError(m->name->data));
+		throwFreshException(NoSuchMethodError(m->name->data));
 	}
 
 	callMethodA(m, JNI_METHOD_CODE(m), 0, args, 0, 0);
@@ -2787,7 +2787,7 @@ Kaffe_GetObjectArrayElement(JNIEnv* env, jobjectArray arr, jsize elem)
 	BEGIN_EXCEPTION_HANDLING(0);
 
 	if (elem >= obj_length((HArrayOfObject*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	obj = unhand_array((HArrayOfObject*)arr)->body[elem];
 
@@ -2802,7 +2802,7 @@ Kaffe_SetObjectArrayElement(JNIEnv* env, jobjectArray arr, jsize elem, jobject v
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (elem >= obj_length((HArrayOfObject*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	unhand_array((HArrayOfObject*)arr)->body[elem] = (Hjava_lang_Object*)val;
 
@@ -3223,7 +3223,7 @@ Kaffe_GetBooleanArrayRegion(JNIEnv* env, jbooleanArray arr, jsize start, jsize l
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (start >= obj_length((HArrayOfBoolean*)arr) || start + len > obj_length((HArrayOfBoolean*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	memcpy(data, &unhand_array((HArrayOfBoolean*)arr)->body[start], len * sizeof(jboolean));
 
@@ -3236,7 +3236,7 @@ Kaffe_GetByteArrayRegion(JNIEnv* env, jbyteArray arr, jsize start, jsize len, jb
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (start >= obj_length((HArrayOfByte*)arr) || start + len > obj_length((HArrayOfByte*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	memcpy(data, &unhand_array((HArrayOfByte*)arr)->body[start], len * sizeof(jbyte));
 
@@ -3249,7 +3249,7 @@ Kaffe_GetCharArrayRegion(JNIEnv* env, jcharArray arr, jsize start, jsize len, jc
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (start >= obj_length((HArrayOfChar*)arr) || start + len > obj_length((HArrayOfChar*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	memcpy(data, &unhand_array((HArrayOfChar*)arr)->body[start], len * sizeof(jchar));
 
@@ -3262,7 +3262,7 @@ Kaffe_GetShortArrayRegion(JNIEnv* env, jshortArray arr, jsize start, jsize len, 
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (start >= obj_length((HArrayOfShort*)arr) || start + len > obj_length((HArrayOfShort*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	memcpy(data, &unhand_array((HArrayOfShort*)arr)->body[start], len * sizeof(jshort));
 
@@ -3275,7 +3275,7 @@ Kaffe_GetIntArrayRegion(JNIEnv* env, jintArray arr, jsize start, jsize len, jint
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (start >= obj_length((HArrayOfInt*)arr) || start + len > obj_length((HArrayOfInt*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	memcpy(data, &unhand_array((HArrayOfInt*)arr)->body[start], len * sizeof(jint));
 
@@ -3288,7 +3288,7 @@ Kaffe_GetLongArrayRegion(JNIEnv* env, jlongArray arr, jsize start, jsize len, jl
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (start >= obj_length((HArrayOfLong*)arr) || start + len > obj_length((HArrayOfLong*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	memcpy(data, &unhand_array((HArrayOfLong*)arr)->body[start], len * sizeof(jlong));
 
@@ -3301,7 +3301,7 @@ Kaffe_GetFloatArrayRegion(JNIEnv* env, jfloatArray arr, jsize start, jsize len, 
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (start >= obj_length((HArrayOfFloat*)arr) || start + len > obj_length((HArrayOfFloat*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	memcpy(data, &unhand_array((HArrayOfFloat*)arr)->body[start], len * sizeof(jfloat));
 
@@ -3314,7 +3314,7 @@ Kaffe_GetDoubleArrayRegion(JNIEnv* env, jdoubleArray arr, jsize start, jsize len
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (start >= obj_length((HArrayOfDouble*)arr) || start + len > obj_length((HArrayOfDouble*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	memcpy(data, &unhand_array((HArrayOfDouble*)arr)->body[start], len * sizeof(jdouble));
 
@@ -3327,7 +3327,7 @@ Kaffe_SetBooleanArrayRegion(JNIEnv* env, jbooleanArray arr, jsize start, jsize l
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (start >= obj_length((HArrayOfBoolean*)arr) || start+len > obj_length((HArrayOfBoolean*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	memcpy(&unhand_array((HArrayOfBoolean*)arr)->body[start], data, len * sizeof(jboolean));
 
@@ -3340,7 +3340,7 @@ Kaffe_SetByteArrayRegion(JNIEnv* env, jbyteArray arr, jsize start, jsize len, jb
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (start >= obj_length((HArrayOfByte*)arr) || start+len > obj_length((HArrayOfByte*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	memcpy(&unhand_array((HArrayOfByte*)arr)->body[start], data, len * sizeof(jbyte));
 
@@ -3353,7 +3353,7 @@ Kaffe_SetCharArrayRegion(JNIEnv* env, jcharArray arr, jsize start, jsize len, jc
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (start >= obj_length((HArrayOfChar*)arr) || start+len > obj_length((HArrayOfChar*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	memcpy(&unhand_array((HArrayOfChar*)arr)->body[start], data, len * sizeof(jchar));
 
@@ -3366,7 +3366,7 @@ Kaffe_SetShortArrayRegion(JNIEnv* env, jshortArray arr, jsize start, jsize len, 
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (start >= obj_length((HArrayOfShort*)arr) || start+len > obj_length((HArrayOfShort*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	memcpy(&unhand_array((HArrayOfShort*)arr)->body[start], data, len * sizeof(jshort));
 
@@ -3379,7 +3379,7 @@ Kaffe_SetIntArrayRegion(JNIEnv* env, jintArray arr, jsize start, jsize len, jint
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (start >= obj_length((HArrayOfInt*)arr) || start+len > obj_length((HArrayOfInt*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	memcpy(&unhand_array((HArrayOfInt*)arr)->body[start], data, len * sizeof(jint));
 
@@ -3392,7 +3392,7 @@ Kaffe_SetLongArrayRegion(JNIEnv* env, jlongArray arr, jsize start, jsize len, jl
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (start >= obj_length((HArrayOfLong*)arr) || start+len > obj_length((HArrayOfLong*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	memcpy(&unhand_array((HArrayOfLong*)arr)->body[start], data, len * sizeof(jlong));
 
@@ -3405,7 +3405,7 @@ Kaffe_SetFloatArrayRegion(JNIEnv* env, jfloatArray arr, jsize start, jsize len, 
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (start >= obj_length((HArrayOfFloat*)arr) || start+len > obj_length((HArrayOfFloat*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	memcpy(&unhand_array((HArrayOfFloat*)arr)->body[start], data, len * sizeof(jfloat));
 
@@ -3418,7 +3418,7 @@ Kaffe_SetDoubleArrayRegion(JNIEnv* env, jdoubleArray arr, jsize start, jsize len
 	BEGIN_EXCEPTION_HANDLING_VOID();
 
 	if (start >= obj_length((HArrayOfDouble*)arr) || start+len > obj_length((HArrayOfDouble*)arr)) {
-		throwException(ArrayIndexOutOfBoundsException);
+		throwFreshException(ArrayIndexOutOfBoundsException);
 	}
 	memcpy(&unhand_array((HArrayOfDouble*)arr)->body[start], data, len * sizeof(jdouble));
 
@@ -3448,7 +3448,7 @@ Kaffe_RegisterNatives(JNIEnv* env, jclass cls, const JNINativeMethod* methods, j
 			}
 		}
 		/* Failed to find method */
-		throwException(NoSuchMethodError(methods[j].name));
+		throwFreshException(NoSuchMethodError(methods[j].name));
 
 		found:;
 	}

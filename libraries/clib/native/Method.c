@@ -324,7 +324,7 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 		e = (struct Hjava_lang_Throwable *)execute_java_constructor(
 			"java.lang.reflect.InvocationTargetException", 0, 0,
 			"(Ljava/lang/Throwable;)V", targetexc);
-		throwException(e);
+		throwFreshException(e);
 		assert(!"Not here");
 	}
 

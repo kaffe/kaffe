@@ -166,7 +166,7 @@ startThread(Hjava_lang_Thread* tid)
 	
 #if 0
 	if (aliveThread(tid) == true) {
-		throwException(IllegalThreadStateException);
+		throwFreshException(IllegalThreadStateException);
 	}
 #endif
 
@@ -537,7 +537,12 @@ throwDeath(void)
 	Hjava_lang_Throwable *death = cur->death;
 
 	cur->death = NULL;
-	throwException(death ? death : ThreadDeath);
+	if (death) {
+		throwException(death);
+	}
+	else {
+		throwFreshException(ThreadDeath);
+	}
 }
 
 static
