@@ -39,7 +39,9 @@
 #if defined(__APPLE__) || defined(_AIX)
 # define FPR_ARGS	13
 #else
-# define FPR_ARGS	8
+# ifndef _SOFT_FLOAT
+#  define FPR_ARGS	8
+# endif /* !_SOFT_FLOAT */
 #endif
 
 /* ARG_DISPLACEMENT is the offset between the beginning of a
@@ -78,14 +80,16 @@ static inline void sysdepCallMethod(callMethodInfo* call)
     jvalue *last = &callargs[call->nrargs];
 
     int nr_gpr = 0;
-    int nr_fpr = 0;
 #if !defined(__APPLE__)
     int nr_stack = 0;
 #endif
 
     unsigned long *stack;
     unsigned long *gpr;
+#if defined(__APPLE__) || !(_SOFT_FLOAT)
+    int nr_fpr = 0;
     double *fpr;
+#endif
 
     /* Compute gpr[], fpr[] and stack[] arrays' size */
     while (args != last) {
@@ -96,9 +100,17 @@ static inline void sysdepCallMethod(callMethodInfo* call)
 		nr_fpr++;
 	    nr_gpr += 2;
 #else
+#ifdef _SOFT_FLOAT
+	    if (nr_gpr & 1)
+		nr_gpr++;
+	    if ((nr_gpr + 1) < GPR_ARGS) {
+		nr_gpr += 2;
+	    }
+#else
 	    if (nr_fpr < FPR_ARGS) {
 		nr_fpr++;
 	    }
+#endif /* _SOFT_FLOAT */
 	    else {
 		if (nr_stack & 1)
 		    nr_stack += 3;
@@ -114,9 +126,14 @@ static inline void sysdepCallMethod(callMethodInfo* call)
 		nr_fpr++;
 	    nr_gpr++;
 #else
+#ifdef _SOFT_FLOAT
+	    if (nr_gpr < GPR_ARGS)
+		nr_gpr++;
+#else
 	    if (nr_fpr < FPR_ARGS) {
 		nr_fpr++;
 	    }
+#endif /* _SOFT_FLOAT */
 	    else {
 		nr_stack++;
 	    }
@@ -181,7 +198,11 @@ static inline void sysdepCallMethod(callMethodInfo* call)
     }
 #else
     {
-	int nr = nr_gpr + 2 * nr_fpr + nr_stack;
+	int nr = nr_gpr
+#ifndef _SOFT_FLOAT
+	      + 2 * nr_fpr
+#endif
+	      + nr_stack;
 
 	/* stack, if used, must be 16 bytes aligned */
 	if (nr_stack)
@@ -192,8 +213,9 @@ static inline void sysdepCallMethod(callMethodInfo* call)
 
 	/* gpr[] and fpr[] are in callee local variable area.  */
 	gpr = stack + nr_stack;
+#ifndef _SOFT_FLOAT
 	fpr = (double*)(gpr + nr_gpr);
-
+#endif
 	/* if __buildin_alloc() does not handle link-area, skip it.  */
 	stack += ARG_DISPLACEMENT;
 
@@ -203,7 +225,9 @@ static inline void sysdepCallMethod(callMethodInfo* call)
 #endif
 
     /* build gpr[], fpr[] and stack[] arrays */
+#ifndef _SOFT_FLOAT
     nr_fpr = 0;
+#endif
     args = callargs;
 
     while (args != last) {
@@ -216,9 +240,18 @@ static inline void sysdepCallMethod(callMethodInfo* call)
 		*(double*)stack = args->d;
 	    stack += 2;
 #else
+#ifdef _SOFT_FLOAT
+	    if (nr_gpr & 1)
+		nr_gpr++;
+	    if ((nr_gpr + 1) < GPR_ARGS) {
+		*((double *) (&gpr[nr_gpr])) = args->d;
+		nr_gpr += 2;
+	    }
+#else
 	    if (nr_fpr < FPR_ARGS) {
 		fpr[nr_fpr++] = args->d;
 	    }
+#endif /* _SOFT_FLOAT */
 	    else {
 		if (((long)stack) & 4)
 		    stack++;
@@ -236,9 +269,16 @@ static inline void sysdepCallMethod(callMethodInfo* call)
 		*(float*)stack = args->f;
 	    stack++;
 #else
+#ifdef _SOFT_FLOAT
+	    if (nr_gpr < GPR_ARGS) {
+		*((double *) (&gpr[nr_gpr])) = args->f;
+		nr_gpr++;
+	    }
+#else
 	    if (nr_fpr < FPR_ARGS) {
 		fpr[nr_fpr++] = (double)args->f;
 	    }
+#endif /* _SOFT_FLOAT */
 	    else {
 		*(float*)stack = args->f;
 		stack++;
@@ -299,6 +339,7 @@ static inline void sysdepCallMethod(callMethodInfo* call)
 	register ARG_TYPE a6 asm("r9");
 	register ARG_TYPE a7 asm("r10");
 
+#ifndef _SOFT_FLOAT
 	register double d0 asm("fr1");
 	register double d1 asm("fr2");
 	register double d2 asm("fr3");
@@ -336,6 +377,7 @@ static inline void sysdepCallMethod(callMethodInfo* call)
 	ARG_FPR(0);
 	/* case 0: */
 	}
+#endif /* !_SOFT_FLOAT */
 
 	/* load GPR registers from gpr[] */
 	switch (nr_gpr) {
@@ -350,6 +392,7 @@ static inline void sysdepCallMethod(callMethodInfo* call)
 	/* case 0: */
 	}
 
+#ifndef _SOFT_FLOAT
 	/* Ensure that the assignments to f* registers won't be optimized away. */
 	asm ("" ::
 	     "f" (d0), "f" (d1), "f" (d2), "f" (d3),
@@ -358,6 +401,7 @@ static inline void sysdepCallMethod(callMethodInfo* call)
 	asm ("" ::
 	     "f" (d8), "f" (d9), "f" (d10), "f" (d11), "f" (d12));
 #endif
+#endif /* _SOFT_FLOAT */
 
 	switch(call->retsize) {
 	case 0:
