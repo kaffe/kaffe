@@ -38,6 +38,7 @@ exception statement from your version. */
 package java.security.spec;
 
 import java.math.BigInteger;
+import java.security.spec.RSAOtherPrimeInfo;
 
 /**
  * This class specifies an RSA multi-prime private key, as defined in the

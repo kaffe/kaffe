@@ -1,5 +1,20 @@
 2004-03-22  Dalibor Topic <robilad@kaffe.org>
 
+        * libraries/javalib/java/security/spec/DSAParameterSpec.java,
+        libraries/javalib/java/security/spec/DSAPrivateKeySpec.java,
+        libraries/javalib/java/security/spec/DSAPublicKeySpec.java,
+        libraries/javalib/java/security/spec/EncodedKeySpec.java,
+        libraries/javalib/java/security/spec/PKCS8EncodedKeySpec.java,
+        libraries/javalib/java/security/spec/RSAKeyGenParameterSpec.java,
+        libraries/javalib/java/security/spec/RSAMultiPrimePrivateCrtKeySpec.java,
+        libraries/javalib/java/security/spec/RSAPrivateCrtKeySpec.java,
+        libraries/javalib/java/security/spec/RSAPrivateKeySpec.java,
+        libraries/javalib/java/security/spec/RSAPublicKeySpec.java,
+        libraries/javalib/java/security/spec/X509EncodedKeySpec.java:
+	Replaced by implementation from GNU Classpath.
+
+2004-03-22  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
 	(tMapPriorities): Only use sched_get_priority_min|max
 	if they are available on the platform.
