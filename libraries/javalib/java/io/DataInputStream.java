@@ -18,19 +18,19 @@ public DataInputStream(InputStream in) {
 	super(in);
 }
 
-final public int read(byte b[]) throws IOException {
+public final int read(byte b[]) throws IOException {
 	return read(b, 0, b.length);
 }
 
-final public int read(byte b[], int off, int len) throws IOException {
+public final int read(byte b[], int off, int len) throws IOException {
 	return super.read(b, off, len);
 }
 
-final public boolean readBoolean() throws IOException {
+public final boolean readBoolean() throws IOException {
 	return (readUnsignedByte() != 0);
 }
 
-final public byte readByte() throws IOException {
+public final byte readByte() throws IOException {
 	int value = read();
 	if (value == -1) {
 		throw new EOFException();
@@ -38,7 +38,7 @@ final public byte readByte() throws IOException {
 	return ((byte)value);
 }
 
-final public char readChar() throws IOException {
+public final char readChar() throws IOException {
 	int val = read() << 8;
 	val |= read();
 	if (val == -1) {
@@ -47,19 +47,19 @@ final public char readChar() throws IOException {
 	return ((char)val);
 }
 
-final public double readDouble() throws IOException {
+public final double readDouble() throws IOException {
 	return Double.longBitsToDouble(readLong());
 }
 
-final public float readFloat() throws IOException {
+public final float readFloat() throws IOException {
 	return Float.intBitsToFloat(readInt());
 }
 
-final public void readFully(byte b[]) throws IOException {
+public final void readFully(byte b[]) throws IOException {
 	readFully(b, 0, b.length);    
 }
 
-final public void readFully(byte b[], int off, int len) throws IOException {
+public final void readFully(byte b[], int off, int len) throws IOException {
 	if (b == null) {
 		throw new NullPointerException();
 	}
@@ -73,7 +73,7 @@ final public void readFully(byte b[], int off, int len) throws IOException {
 	}
 }
 
-final public int readInt() throws IOException {
+public final int readInt() throws IOException {
 	int v1 = read() << 24;
 	v1 |= read() << 16;
 	v1 |= read() << 8;
@@ -87,7 +87,7 @@ final public int readInt() throws IOException {
 /**
  * @deprecated
  */
-final public String readLine() throws IOException {
+public final String readLine() throws IOException {
 	final StringBuffer buffer = new StringBuffer();
 	final byte[] data = new byte[1];
 	boolean eof = false;
@@ -131,22 +131,11 @@ final public String readLine() throws IOException {
 	return (buffer.toString());
 }
 
-final public long readLong() throws IOException {
-	long v1 = (long)read() << 56;
-	v1 |= (long)read() << 48;
-	v1 |= (long)read() << 40;
-	v1 |= (long)read() << 32;
-	v1 |= (long)read() << 24;
-	v1 |= (long)read() << 16;
-	v1 |= (long)read() << 8;
-	int v2 = read();
-	if (v2 == -1) {
-		throw new EOFException();
-	}
-	return (v1 | (long)v2);
+public final long readLong() throws IOException {
+	return ((long)readInt() << 32) | ((long)readInt() & 0xffffffffL);
 }
 
-final public short readShort() throws IOException {
+public final short readShort() throws IOException {
 	int val = read() << 8;
 	val |= read();
 	if (val == -1) {
@@ -155,19 +144,23 @@ final public short readShort() throws IOException {
 	return ((short)val);
 }
 
-final public String readUTF() throws IOException {
+public final String readUTF() throws IOException {
 	return UTF8.decode(this, readUnsignedShort());
 }
 
-final public int readUnsignedByte() throws IOException {
+public final int readUnsignedByte() throws IOException {
 	return readByte() & 0xff;
 }
 
-final public int readUnsignedShort() throws IOException {
+public final int readUnsignedShort() throws IOException {
 	return readShort() & 0xffff;
 }
 
-final public int skipBytes(int n) throws IOException {
-	return (int)in.skip((long)n);
+public final int skipBytes(int n) throws IOException {
+	int remain = n;
+	while (remain > 0) {
+		remain -= (int)in.skip((long)remain);
+	}
+	return n;
 }
 }
