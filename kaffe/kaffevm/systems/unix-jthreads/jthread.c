@@ -844,6 +844,9 @@ newThreadCtx(int stackSize)
 	jthread *ct;
 
 	ct = allocator(sizeof(jthread) + stackSize);
+	if (ct == 0) {
+		return 0;
+	}
 	ct->stackBase = (ct + 1);
 	ct->stackEnd = ct->stackBase + stackSize;
 	ct->restorePoint = ct->stackEnd;
@@ -1102,10 +1105,16 @@ jthread_enable_stop(void)
 void
 jthread_interrupt(jthread *jtid)
 {
-	if (jtid != currentJThread) {
+	intsDisable();
+
+	/* make sure we only resume suspended threads 
+	 * (and neither dead nor runnable threads)
+	 */
+	if (jtid != currentJThread && jtid->status == THREAD_SUSPENDED) {
 		jtid->flags |= THREAD_FLAGS_INTERRUPTED;
 		resumeThread(jtid);
 	}
+	intsRestore();
 }
 
 static void 
