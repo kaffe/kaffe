@@ -38,7 +38,7 @@ private Throwable exceptObj;
 private kaffe.util.Ptr jnireferences;
 private Throwable stackOverflowError;
 private Throwable outOfMemoryError;
-private boolean dying;
+private boolean started, dying;
 private Hashtable threadLocals;
 private Object suspendResume;
 private Object sleeper;
@@ -251,7 +251,7 @@ public static boolean interrupted() {
 }
 
 final public boolean isAlive () {
-	return (!dying);
+	return (started && !dying);
 }
 
 final public boolean isDaemon() {
@@ -353,7 +353,12 @@ public static void sleep(long millis, int nanos) throws InterruptedException
 	sleep(millis);
 }
 
-native public synchronized void start();
+public synchronized void start() {
+	started = true;
+	start0();
+}
+
+native public void start0();
 
 /**
  * @deprecated
