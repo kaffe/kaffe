@@ -1,3 +1,9 @@
+2004-10-22  Eric Anholt  <eta@lclark.edu>
+
+	* kaffe/kaffevm/stackTrace.c,
+	kaffe/kaffevm/stackTrace.h:
+	Made printStackTrace an exported function.
+
 2004-10-22  Noa Resare  <noa@resare.com>
 
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:

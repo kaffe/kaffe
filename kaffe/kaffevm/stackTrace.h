@@ -30,5 +30,6 @@ typedef struct _stackTraceInfo {
 #define ENDOFSTACK	((struct _methods*)-1)
 
 Hjava_lang_Object*	buildStackTrace(struct _exceptionFrame*);
+void			printStackTrace(struct Hjava_lang_Throwable*, struct Hjava_lang_Object*, int);
 
 #endif

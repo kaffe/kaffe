@@ -44,7 +44,6 @@
 static Method*
 stacktraceFindMethod (uintp fp, uintp pc);
 HArrayOfObject*     getStackTraceElements(struct Hjava_lang_VMThrowable*, struct Hjava_lang_Throwable*);
-void                printStackTrace(struct Hjava_lang_Throwable*, struct Hjava_lang_Object*, int);
 
 Hjava_lang_Object*
 buildStackTrace(struct _exceptionFrame* base)
