@@ -669,6 +669,7 @@ kaffe_io_SRCS = \
 	kaffe/io/CharToByteHashBased.java \
 	kaffe/io/CharToByteIconv.java \
 	kaffe/io/CharToByteUTF8.java \
+	kaffe/io/CircularBuffer.java \
 	kaffe/io/ClassLoaderObjectInputStream.java \
 	kaffe/io/ConverterAlias.java \
 	kaffe/io/DefaultSerializationFactory.java \
