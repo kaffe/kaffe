@@ -123,16 +123,9 @@ automake --add-missing --force-missing --copy -Wall || true  # ignore warnings
 autoconf -Wall
 
 (
- cd scripts
- patch < ../developers/patch-config.sub-superh.diff
- cd ..
-)
-
-(
  cd libltdl
  # Need to regenerate things because patching 	 
  # screws up timestamps 	 
  autoreconf -i -Wall
- patch < ../developers/patch-config.sub-superh.diff
  touch config-h.in
 ) 	 

@@ -1,5 +1,5 @@
 /*
- * superh/threads.h
+ * sh/threads.h
  * Super-H threading information.
  *
  * Copyright (c) 2001
@@ -9,8 +9,8 @@
  * of this file. 
  */
 
-#ifndef __superh_threads_h
-#define __superh_threads_h
+#if ! defined(__sh_threads_h)
+#define __sh_threads_h
 
 /**/
 /* Thread handling */
@@ -31,4 +31,4 @@
 #define	FP_OFFSET		6
 #define	SP_OFFSET		7
 
-#endif
+#endif /* ! defined(__sh_threads_h) */

@@ -1,10 +1,10 @@
 #
-# superh/Linux configuration.
+# sh/Linux configuration.
 #
 # Written by Kiyo Inaba <k-inaba@mxb.mesh.ne.jp>, 2002;
 #	to support cross compilation and endian.
 #
-Khost_cpu=superh
+Khost_cpu=sh
 Khost_os=linux
 CFLAGS="-g"
 if [ "$cross_compiling" = yes ]; then

@@ -1,5 +1,5 @@
 /*
- * superh/sysdepCallMethod.h
+ * sh/sysdepCallMethod.h
  * Common sysdepCallMethod for Super-H.
  *
  * Copyright (c) 2001
@@ -12,8 +12,8 @@
  * of this file. 
  */
 
-#ifndef __superh_sysdepCallMethod_h
-#define __superh_sysdepCallMethod_h
+#if ! defined(__sh_sysdepCallMethod_h)
+#define __sh_sysdepCallMethod_h
 
 #include "support.h"
 
@@ -83,4 +83,4 @@ static inline void sysdepCallMethod(callMethodInfo *call)
   }
 }
 
-#endif /* __superh_sysdepCallMethod_h */
+#endif /* ! defined(__sh_sysdepCallMethod_h) */

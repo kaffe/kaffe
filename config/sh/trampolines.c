@@ -1,6 +1,6 @@
 /*
- * mips/trampolines.c
- * MIPS trampolines codes for various occasions.
+ * sh/trampolines.c
+ * Super-H trampolines codes for various occasions.
  *
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
@@ -32,8 +32,8 @@ TRAMPOLINE_FUNCTION()
 #endif
 
 asm(
-	START_ASM_FUNC() C_FUNC_NAME(superh_do_fixup_trampoline) " \n"
-C_FUNC_NAME(superh_do_fixup_trampoline) ": \n"
+	START_ASM_FUNC() C_FUNC_NAME(sh_do_fixup_trampoline) " \n"
+C_FUNC_NAME(sh_do_fixup_trampoline) ": \n"
 "	mov.l	r4,@-r15 \n"
 "	mov.l	r5,@-r15 \n"
 "	mov.l	r6,@-r15 \n"

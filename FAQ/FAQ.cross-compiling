@@ -106,17 +106,6 @@ The 'with-threads' option and 'without-x' option is not related to
 library issue, but I usually specify these too to reduce the time needed
 for build.
 
-Super-H
-=======
-Usually, cross-tools suffix and host name needed for kaffe is same.
-But in case of Hitachi Super-H family, these are different. So in
-this case you have to specify
-  CC=sh3-linux-gcc NM=sh3-linux-nm AR=sh3-linux-ar \
-	../kaffe-1.1.0/configure --host=superh-linux --build=i686-linux \
-	--with-staticbin --with-staticlib --with-staticvm \
-	--with-threads=unix-jthreads --without-x \
-	--with-rt-jar=/tmp/rt.jar
-
 So where's cross tools?
 =======================
 One of the hardest thing for cross-compiling kaffe should be this. If

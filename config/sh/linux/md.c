@@ -1,5 +1,5 @@
 /*
- * superh/linux/md.c
+ * sh/linux/md.c
  * Linux SuperH specific functions.
  *
  * Copyright (c) 2001

@@ -354,13 +354,13 @@ EXTRA_DIST = \
 	sparc/uxpds/jit-md.h \
 	sparc/uxpds/md.c \
 	sparc/uxpds/md.h \
-        superh/common.h \
-        superh/linux/config.frag \
-        superh/linux/md.c \
-        superh/linux/md.h \
-	superh/sysdepCallMethod.h \
-        superh/threads.h \
-        superh/trampolines.c
+        sh/common.h \
+        sh/linux/config.frag \
+        sh/linux/md.c \
+        sh/linux/md.h \
+	sh/sysdepCallMethod.h \
+        sh/threads.h \
+        sh/trampolines.c
 
 jit-md.h: stamp-h01
 	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \

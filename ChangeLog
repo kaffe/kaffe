@@ -1,5 +1,42 @@
 2004-07-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/superh: Moved over to
+	* config/sh: new directory.
+
+        * Makefile.am:
+	(EXTRA_DIST) Removed superh patch.
+
+        * Makefile.in:
+	Regenerated.
+
+        * FAQ/FAQ.cross-compiling:
+	Removed extra secion on superh.
+
+        * config/Makefile.am:
+	(EXTRA_DIST) Renamed superh files to begin with sh.
+        
+	* config/Makefile.in:
+	Regenerated.
+
+        * config/config.alias,
+        config/superh/common.h,
+        config/superh/sysdepCallMethod.h,
+        config/superh/threads.h,
+        config/superh/trampolines.c,
+        config/superh/linux/config.frag,
+        config/superh/linux/md.c,
+        config/superh/linux/md.h:
+	Use sh instead of superh.
+
+        * developers/autogen.sh:
+	Removed superh patch.
+
+        * libltdl/config.sub,
+        scripts/config.sub:
+	Rengenerated.
+
+2004-07-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/classpath/Configuration.java
 	(default_awt_toolkit): Added new field for classpath AWT.
 

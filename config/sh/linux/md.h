@@ -1,5 +1,5 @@
 /*    
- * superh/linux/md.h
+ * sh/linux/md.h
  * Linux SuperH configuration information.
  *
  * Copyright (c) 2001
@@ -12,12 +12,12 @@
  * of this file.
  */
  
-#ifndef __superh_linux_md_h
-#define __superh_linux_md_h
+#if ! defined(__sh_linux_md_h)
+#define __sh_linux_md_h
  
-#include "superh/common.h"
-#include "superh/sysdepCallMethod.h"
-#include "superh/threads.h"
+#include "sh/common.h"
+#include "sh/sysdepCallMethod.h"
+#include "sh/threads.h"
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"
@@ -50,4 +50,4 @@
 #define GET_SIGNAL_CONTEXT_POINTER(sc) &sc
 #define SIGNAL_PC(scp) scp->sc_pc
 
-#endif
+#endif /* ! defined(__sh_linux_md_h) */
