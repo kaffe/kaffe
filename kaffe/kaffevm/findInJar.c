@@ -324,6 +324,12 @@ initClasspath(void)
 		len += strlen(ptr->path) + 1;
 	}
 
+	if (len == 0) {
+		/* Error on classpath will be reported latter */
+		realClassPath = "";
+		return;
+	}
+	
 	realClassPath = KMALLOC(len);
 	for (ptr = classpath; ptr != 0; ptr = ptr->next) {
 		if (ptr != classpath) {
