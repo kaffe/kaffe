@@ -90,7 +90,7 @@ Java_kaffe_io_ByteToCharIconv_convert (JNIEnv* env, jobject _this,
 #endif
     ret = iconv (cd, &icv_in, &icv_inlen, &icv_out, &icv_outlen);
 #ifndef WORDS_BIGENDIAN
-    swab (buffer, jc + toPos, toLen - (icv_outlen / 2));
+    swab (buffer, jc + toPos, toLen * 2 - icv_outlen);
     KFREE (buffer);
 #endif
     if (icv_inlen > 0) {
