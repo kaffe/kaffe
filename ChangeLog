@@ -1,3 +1,7 @@
+Thu Jan 20 13:40:56 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/clib/awt/X/img.c: remove unused function
+
 Tue Jan 18 22:03:38 CET 2000  Edouard G. Parmelan  <egp@free.fr>
 
 	* kaffe/kaffevm/systems/oskit-pthreads/syscalls.c: fix unimp()
