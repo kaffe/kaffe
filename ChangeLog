@@ -1,4 +1,10 @@
 2003-12-31  Guilhem Lavaux <guilhem@kaffe.org>
+	
+	* libraries/javalib/java/io/File.java: Merged case insensitivity
+	from classpath.
+	(File): Fixed root directory handling on windows platform.
+
+2003-12-31  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/java/net/URL.java,
 	libraries/javalib/java/net/URLStreamHandler.java:

@@ -94,6 +94,9 @@ public class File implements Serializable, Comparable
    * is taken from the <code>path.separator</code> system property.
    */
   public static final char pathSeparatorChar = pathSeparator.charAt(0);
+
+  // FIXME: We support only caseSensitive filesystems currently.
+  static boolean caseSensitive = true;
   
   static
   {
@@ -264,15 +267,15 @@ public class File implements Serializable, Comparable
    */
   public boolean equals (Object obj)
   {
-    if (obj == null)
+    if (! (obj instanceof File))
       return false;
     
-    if (!(obj instanceof File))
-      return false;
+    File other = (File) obj;
 
-    File f = (File) obj;
-
-    return f.getPath ().equals (getPath ());
+    if (caseSensitive)
+      return path.equals (other.path);
+    else
+      return path.equalsIgnoreCase (other.path);
   }
 
   /*
@@ -288,9 +291,9 @@ public class File implements Serializable, Comparable
    *
    * @exception SecurityException If reading of the file is not permitted
    */
-  public boolean exists ()
+  public boolean exists()
   {
-    checkRead ();
+    checkRead();
     return existsInternal (path);
   }
 
@@ -356,12 +359,15 @@ public class File implements Serializable, Comparable
    */
   public File (File directory, String name)
   {
+    if (name == null)
+      throw new NullPointerException("filename is null");
+
     String dirPath;
     
     if (directory == null)
       dirPath = "";
     else if (directory.getPath() == "")
-      dirPath = "/";
+      dirPath = PlatformHelper.isWindows ? "\\" : "/";
     else
       dirPath = directory.getPath();
 
@@ -520,9 +526,12 @@ public class File implements Serializable, Comparable
    *
    * @return The hash code for this object
    */
-  public int hashCode ()
+  public int hashCode()
   {
-    return path.hashCode() ^ 1234321;
+    if (caseSensitive)
+      return path.hashCode() ^ 1234321;
+    else
+      return path.toLowerCase().hashCode() ^ 1234321;
   }
 
   /**
@@ -1260,23 +1269,23 @@ public class File implements Serializable, Comparable
     if (time < 0)
       throw new IllegalArgumentException("Negative modification time: " + time);
 
-    checkWrite ();
+    checkWrite();
     return setLastModifiedInternal (path, time);
   }
 
-  private void checkWrite ()
+  private void checkWrite()
   {
     // Check the SecurityManager
-    SecurityManager s = System.getSecurityManager ();
+    SecurityManager s = System.getSecurityManager();
     
     if (s != null)
       s.checkWrite (path);
   }
 
-  private void checkRead ()
+  private void checkRead()
   {
     // Check the SecurityManager
-    SecurityManager s = System.getSecurityManager ();
+    SecurityManager s = System.getSecurityManager();
     
     if (s != null)
       s.checkRead (path);
@@ -1323,32 +1332,32 @@ public class File implements Serializable, Comparable
    *
    * @since 1.2 
    */
-  public void deleteOnExit ()
+  public void deleteOnExit()
   {
     // Check the SecurityManager
-    SecurityManager sm = System.getSecurityManager ();
+    SecurityManager sm = System.getSecurityManager();
     if (sm != null)
       sm.checkDelete(path);
 
-    deleteHelper.filesToDelete.add (getAbsolutePath());
+    deleteHelper.filesToDelete.add(getAbsolutePath());
     
     return;
   }
 
   private void writeObject (ObjectOutputStream oos) throws IOException
   {
-    oos.defaultWriteObject ();
+    oos.defaultWriteObject();
     oos.writeChar (separatorChar);
   }
 
   private void readObject (ObjectInputStream ois)
     throws ClassNotFoundException, IOException
   {
-    ois.defaultReadObject ();
+    ois.defaultReadObject();
 
     // If the file was from an OS with a different dir separator,
     // fixup the path to use the separator on this OS.
-    char oldSeparatorChar = ois.readChar ();
+    char oldSeparatorChar = ois.readChar();
     
     if (oldSeparatorChar != separatorChar)
       path = path.replace (oldSeparatorChar, separatorChar);
