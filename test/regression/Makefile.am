@@ -86,6 +86,7 @@ TESTS = \
 	URLTest.java \
 	ReaderTest.java \
 	CharArrayReaderTest.java \
+	LineNumberReaderTest.java \
 	BufferedReaderTest.java \
 	ReaderReadVoidTest.java \
 ## simple test for Method.invoke

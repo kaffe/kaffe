@@ -202,6 +202,7 @@ TESTS = \
 	URLTest.java \
 	ReaderTest.java \
 	CharArrayReaderTest.java \
+	LineNumberReaderTest.java \
 	BufferedReaderTest.java \
 	ReaderReadVoidTest.java \
 	ReflectInvoke.java \

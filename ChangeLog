@@ -43,7 +43,8 @@ Fri Jul 14 16:14:39 PDT 2000  Dalibor Topic <robilad@yahoo.com>
 	(skip) Use a buffer for skipping, improves speed. Throws an exception 
 	if skip count is negative.
 	* test/regression/CharArrayReaderTest.java: new test
-	* test/regression/Makefile.{in,am}: add new test
+	* test/regression/LineNumberReaderTest.java: new test
+	* test/regression/Makefile.{in,am}: add new tests
 
 Thu Jul 13 12:17:42 PDT 2000  Archie Cobbs <archie@whistle.com>
 
