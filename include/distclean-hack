@@ -1,0 +1,19 @@
+# Makefile fragment to distclean DIST_SUBDIRS not in SUBDIRS
+#
+# Copyright (c) 1999
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+DISTCLEAN_LOCAL = distclean-local
+distclean-generic: $(DISTCLEAN_LOCAL)
+distclean-local:
+	@subdirs=; \
+	for dir in $(DIST_SUBDIRS); do \
+	  for xdir in $(SUBDIRS); do \
+	    test "$$dir" = "$$xdir" && continue 2; \
+	  done; subdirs="$$subdirs $$dir"; \
+	done; \
+	$(MAKE) AM_MAKEFLAGS="DISTCLEAN_LOCAL=ignore-this-failure" \
+	  SUBDIRS=". $$subdirs" distclean-recursive || :
