@@ -83,7 +83,7 @@ public class InetSocketAddress extends SocketAddress
 
     if (addr == null)
       {
-	addr = InetAddress.ANY_IF;
+	this.addr = InetAddress.ANY_IF;
 	this.hostname = "";
       }
     else

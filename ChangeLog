@@ -1,5 +1,10 @@
 2003-12-24  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* libraries/javalib/java/net/InetSocketAddress.java
+	(InetSocketAddress): Fix concerning "any address".
+
+2003-12-24  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* libraries/javalib/java/net/ServerSocket.java
 	(bind): Check whether the address to bind to is null.
 
