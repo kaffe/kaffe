@@ -51,8 +51,8 @@ public final class Character extends Object {
 
   public static final Class TYPE = Class.getPrimitiveClass("char");
 
-  private char value;
-  
+  private final char value;
+
   public Character(char value)
   {
     this.value=value;

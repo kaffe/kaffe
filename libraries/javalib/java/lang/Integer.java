@@ -13,10 +13,10 @@ package java.lang;
 final public class Integer
   extends Number
 {
-	private int value;
-	final public static Class TYPE = Class.getPrimitiveClass("int");
-	final public static int MIN_VALUE = 0x80000000;
-	final public static int MAX_VALUE = 0x7fffffff;
+	private final int value;
+	public static final Class TYPE = Class.getPrimitiveClass("int");
+	public static final int MIN_VALUE = 0x80000000;
+	public static final int MAX_VALUE = 0x7fffffff;
 
 	/* This is what Sun's JDK1.1 "serialver java.lang.Integer" spits out */
 	private static final long serialVersionUID = 1360826667806852920L;
@@ -27,7 +27,7 @@ public Integer(String s) throws NumberFormatException
 }
 
 public Integer(int value)
-	{
+{
 	this.value=value;
 }
 

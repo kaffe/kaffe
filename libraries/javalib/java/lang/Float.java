@@ -11,7 +11,7 @@
 package java.lang;
 
 public final class Float extends Number {
-  private float value;
+  private final float value;
   
   public static final float POSITIVE_INFINITY = 1.0f / 0.0f;
   public static final float NEGATIVE_INFINITY = -1.0f / 0.0f;

@@ -18,8 +18,7 @@ public final class Double extends Number {
   public static final double MIN_VALUE = 2.2250738585072014E-308;
   public static final Class TYPE = Class.getPrimitiveClass("double");
 
-
-  private double value;
+  private final double value;
 
   public static native String toString(double d);
   public static native Double valueOf(String s) throws NumberFormatException;

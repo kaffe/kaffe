@@ -12,10 +12,10 @@ package java.lang;
  */
 final public class Boolean
 {
-	final public static Boolean TRUE = new Boolean(true);
-	final public static Boolean FALSE = new Boolean(false);
-	final public static Class TYPE = Class.getPrimitiveClass("boolean");
-	private boolean value;
+	public static final Boolean TRUE = new Boolean(true);
+	public static final Boolean FALSE = new Boolean(false);
+	public static final Class TYPE = Class.getPrimitiveClass("boolean");
+	private final boolean value;
 
 public Boolean(String s) {
 	value = (s != null && s.toLowerCase().equals("true"));

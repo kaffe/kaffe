@@ -16,7 +16,7 @@ final public class Short
 	final public static short MIN_VALUE = -0x8000;
 	final public static short MAX_VALUE = 0x7FFF;
 	final public static Class TYPE = Class.getPrimitiveClass("short");
-	private short val;
+	private final short value;
 
 public Short(String s) throws NumberFormatException
 {
@@ -24,8 +24,8 @@ public Short(String s) throws NumberFormatException
 }
 
 public Short(short value)
-	{
-	val = value;
+{
+	this.value = value;
 }
 
 public static Short decode(String nm) throws NumberFormatException
@@ -50,33 +50,33 @@ public static Short decode(String nm) throws NumberFormatException
 
 public double doubleValue()
 	{
-	return ((double)val);
+	return ((double)value);
 }
 
 public boolean equals(Object obj) {
 	return (obj != null)
 	    && (obj instanceof Short)
-	    && (((Short) obj).val == this.val);
+	    && (((Short) obj).value == this.value);
 }
 
 public float floatValue()
 	{
-	return ((float)val);
+	return ((float)value);
 }
 
 public int hashCode()
 	{
-	return (val);	// What should this be do you suppose ???
+	return (value);	// What should this be do you suppose ???
 }
 
 public int intValue()
 	{
-	return ((int)val);
+	return ((int)value);
 }
 
 public long longValue()
 	{
-	return ((long)val);
+	return ((long)value);
 }
 
 public static short parseShort(String s) throws NumberFormatException
@@ -91,7 +91,7 @@ public static short parseShort(String s, int radix) throws NumberFormatException
 
 public String toString()
 	{
-	return (toString(val));
+	return (toString(value));
 }
 
 public static String toString(short s)

@@ -12,17 +12,17 @@ package java.lang;
  */
 final public class Byte extends Number
 {
-	final public static byte MIN_VALUE = -0x80;
-	final public static byte MAX_VALUE = 0x7F;
-	final public static Class TYPE = Class.getPrimitiveClass("byte");
-	private byte val;
+	public static final byte MIN_VALUE = -0x80;
+	public static final byte MAX_VALUE = 0x7F;
+	public static final Class TYPE = Class.getPrimitiveClass("byte");
+	private final byte value;
 
 public Byte(String s) throws NumberFormatException {
 	this(parseByte(s));
 }
 
 public Byte(byte value) {
-	val = value;
+	this.value = value;
 }
 
 public static Byte decode(String nm) throws NumberFormatException {
@@ -45,37 +45,37 @@ public static Byte decode(String nm) throws NumberFormatException {
 }
 
 public double doubleValue() {
-	return ((double)val);
+	return ((double)value);
 }
 
 public boolean equals(Object obj) {
 	return (obj != null)
 	    && (obj instanceof Byte)
-	    && (((Byte) obj).val == this.val);
+	    && (((Byte) obj).value == this.value);
 }
 
 public float floatValue() {
-	return ((float)val);
+	return ((float)value);
 }
 
 public int hashCode() {
-	return (val);	// What should this be do you suppose ???
+	return (value);	// What should this be do you suppose ???
 }
 
 public byte byteValue() {
-	return (val);
+	return (value);
 }
 
 public short shortValue() {
-	return ((short)val);
+	return ((short)value);
 }
 
 public int intValue() {
-	return ((int)val);
+	return ((int)value);
 }
 
 public long longValue() {
-	return ((long)val);
+	return ((long)value);
 }
 
 public static byte parseByte(String s) throws NumberFormatException {
@@ -87,7 +87,7 @@ public static byte parseByte(String s, int radix) throws NumberFormatException {
 }
 
 public String toString() {
-	return (toString(val));
+	return (toString(value));
 }
 
 public static String toString(byte s) {

@@ -14,10 +14,10 @@ package java.lang;
 final public class Long
   extends Number
 {
-	private long value;
-	final public static long MIN_VALUE = 0x8000000000000000L;
-	final public static long MAX_VALUE = 0x7fffffffffffffffL;
-	final public static Class TYPE = Class.getPrimitiveClass("long");
+	private final long value;
+	public static final long MIN_VALUE = 0x8000000000000000L;
+	public static final long MAX_VALUE = 0x7fffffffffffffffL;
+	public static final Class TYPE = Class.getPrimitiveClass("long");
 
 public Long(String s) throws NumberFormatException {
 	this(valueOf(s).longValue());
