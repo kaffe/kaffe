@@ -1,3 +1,9 @@
+1999-09-08  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/javalib/java/math/BigInteger.java (toByteArray):
+	Initialize divisor correctly.
+	Reported by Hrishikesh Dandekar <Hrishikesh_Dandekar@NAI.com>
+	
 1999-08-30  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/scripts/kaffe.in (KAFFE_DEBUG): Support DDD/gdb.

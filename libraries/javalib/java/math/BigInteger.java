@@ -376,7 +376,7 @@ public String toString() {
 public byte[] toByteArray() {
 	byte[] ret = new byte[1 + bitLength0()/8];
 	BigInteger copy = abs(), divisor = new BigInteger();
-	divisor.setBit(32); // prepare to shift right
+	divisor.setbit0(divisor, 32); // prepare to shift right
 	int sign = cmp0(this, ZERO);
 	if (sign < 0) {
 		sub0(copy, ONE); // adjust two's complement
