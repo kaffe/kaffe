@@ -315,6 +315,10 @@ int jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
 int jthreadedWaitpid(int wpid, int* status, int options, int *);
 int jthreadedForkExec(char **argv, char **arge, int ioes[4], int *);
 
+/* restore an fd, i.e., put it in blocking state without async I/O */
+#define JTHREAD_RESTORE_FD
+int jthreadRestoreFD(int fd);
+
 /* 
  * Locking API
  */

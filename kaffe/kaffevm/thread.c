@@ -486,6 +486,9 @@ nameNativeThread(void* native)
 static void
 onDeadlock(void)
 {
+#if defined(JTHREAD_RESTORE_FD)
+        jthreadRestoreFD(2);
+#endif
 	dumpLocks();
 	dumpThreads();
 	fprintf(stderr, "Deadlock: all threads blocked on internal events\n");

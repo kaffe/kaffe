@@ -1,3 +1,9 @@
+Sat Mar 27 14:18:31 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/thread.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.[ch]: export function
+	to restore fds to non-blocking state.
+
 Fri Mar 26 18:25:19 1999  Alan L. Batongbacal <alanlb@access.rrinc.com>
 
 	* FAQ/FAQ.BeOS: removed SoTimeout from list of failed tests

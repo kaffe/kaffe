@@ -1947,6 +1947,16 @@ jthreadedFileDescriptor(int fd)
 }
 
 /*
+ * clear non-blocking flag for a file descriptor
+ */
+int 
+jthreadRestoreFD(int fd)
+{
+	/* clear nonblocking flag */
+	fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) & ~O_NONBLOCK);
+}
+
+/*
  * In SVR4 systems (notably AIX and HPUX 9.x), putting a file descriptor 
  * in non-blocking mode affects the actual terminal file.  
  * Thus, the shell we see the fd in
@@ -1960,8 +1970,9 @@ restore_fds(void)
 {
 	int i;
 	/* clear non-blocking flag for file descriptor stdin, stdout, stderr */
-	for (i = 0; i < 3; i++)
-	    fcntl(i, F_SETFL, fcntl(i, F_GETFL, 0) & ~O_NONBLOCK);
+	for (i = 0; i < 3; i++) {
+		jthreadRestoreFD(i);
+    	}
 }
 
 static void
