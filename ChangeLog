@@ -1,3 +1,7 @@
+Mon Jul 24 10:12:53 PDT 2000  Archie Cobbs <archie@whistle.com>
+
+	* test/regression/CharArrayReaderTest.java: fix expected output
+
 2000-07-24  Edouard G. Parmelan  <egp@free.fr>
 
 	* test/regression/PropertiesTest.java: Add magic comment java args
