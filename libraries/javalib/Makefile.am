@@ -7,7 +7,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file.
 #
-# Class libraries are not currently part of the integrate Make cycle.
+# Class libraries are not currently part of the integrate Make cycle. 
 #
 
 CLASSFILE = Klasses.jar
