@@ -12,10 +12,10 @@ package kaffe.lang;
 
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PipedOutputStream;
 
 public class UNIXProcess
   extends Process
@@ -31,11 +31,7 @@ public class UNIXProcess
 	OutputStream stdin_stream;
 	InputStream raw_stdout;
 	InputStream raw_stderr;
-	ProcessInputStream piped_stdout_in;
-	ProcessInputStream piped_stderr_in;
-	PipedOutputStream piped_stdout_out;
-	PipedOutputStream piped_stderr_out;
-	int numReaders;
+	int numReaders;		// what's that for?
 	private static Thread tidy;
 
 static {
@@ -53,9 +49,16 @@ public UNIXProcess(String argv[], String arge[]) {
 	stdout_fd = new FileDescriptor();
 	stderr_fd = new FileDescriptor();
 	sync_fd = new FileDescriptor();
+
 	pid = forkAndExec(argv, arge);
 	isalive = true;
 
+        // Create streams from the file descriptors
+	stdin_stream = new FileOutputStream(stdin_fd);
+	raw_stdout = new FileInputStream(stdout_fd);
+	raw_stderr = new FileInputStream(stderr_fd);
+
+	// now signal child to proceed
 	FileOutputStream sync = new FileOutputStream(sync_fd);
 	byte[] sbuf = new byte[1];
 	try {
@@ -63,9 +66,6 @@ public UNIXProcess(String argv[], String arge[]) {
 	}
 	catch (IOException _) {
 	}
-}
-
-public void destory() {
 }
 
 native public void destroy();
@@ -87,8 +87,6 @@ public InputStream getInputStream() {
 public OutputStream getOutputStream() {
 	return stdin_stream;
 }
-
-native public void notifyReaders();
 
 native public void run();
 
