@@ -42,14 +42,16 @@ TRAMPOLINE_FUNCTION()
 
 asm(
 	START_ASM_FUNC(alpha_do_fixup_trampoline) "		\n\
+	.frame	$30,14*8,$26,0					\n\
+	.mask	0x04000000,-14*8				\n\
 	ldgp	$29,0($27)					\n\
 	lda    	$30,-14*8($30)		# reserve 14 on stack	\n\
-	.frame	$30,14*8,$26,0					\n\
+								\n\
 	# Save frame registers					\n\
 	stq	$26,0*8($30)		# ra			\n\
-	.mask	0x04000000,-14*8				\n\
 	.prologue 1						\n\
-	# Save register arguments				\n\
+								\n\
+	# Save register arguments as local variables		\n\
 	stq	$16,1*8($30)		# a0			\n\
 	stq	$17,2*8($30)		# a1			\n\
 	stq	$18,3*8($30)		# a2			\n\
@@ -63,16 +65,13 @@ asm(
 	stt	$f20,11*8($30)					\n\
 	stt	$f21,12*8($30)					\n\
 								\n\
-	# Load the method pointer saved in t1 by FILL_IN_TRAMPOLINE \n\
-	#ldq	$16,8($1)					\n\
-	mov	$1,$16						\n\
+	# Compute the address of methodTrampoline.method	\n\
+	lda	$16,8($1)					\n\
 	# Call C to do the fixup				\n\
 	jsr	$26," C_FUNC_NAME(soft_fixup_trampoline) "	\n\
 	ldgp	$29,0($26)					\n\
-	mov	$0,$27						\n\
 								\n\
-	ldq	$26,0*8($30)					\n\
-	# Restore register arguments				\n\
+	# Reload register arguments				\n\
 	ldq	$16,1*8($30)		# a0			\n\
 	ldq	$17,2*8($30)		# a1			\n\
 	ldq	$18,3*8($30)		# a2			\n\
@@ -85,7 +84,12 @@ asm(
 	ldt	$f19,10*8($30)					\n\
 	ldt	$f20,11*8($30)					\n\
 	ldt	$f21,12*8($30)					\n\
+								\n\
+	ldq	$26,0*8($30)		# ra			\n\
 	lda    	$30,14*8($30)		# release stack		\n\
+								\n\
+	# Jump to translated method				\n\
+	mov	$0,$27						\n\
 	jmp	$31,($27),0					\n"
     	END_ASM_FUNC(alpha_do_fixup_trampoline)
 );
