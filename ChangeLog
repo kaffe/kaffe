@@ -7,6 +7,11 @@
 
 2005-04-01  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* java/awt/image/IndexColorModel.java
+	(getRGB): Check if pixel is negative.
+
+2005-04-01  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
 	(jthread_suspendall, jthread_unsuspendall): Check whether the thread
 	subsystem has been initialized as some architecture needs to invoke it
