@@ -1,3 +1,31 @@
+Thu Mar 28 13:05:09 CET 2002  Dalibor Topic <robilad@yahoo.com>
+	* libraries/javalib/java/util/ResourceBundle.java :
+	(getBundle) Added locale information to exception information.
+	* libraries/javalib/java/lang/Byte.java,
+	libraries/javalib/java/lang/Character.java,
+	libraries/javalib/java/lang/Double.java,
+	libraries/javalib/java/lang/Float.java,
+	libraries/javalib/java/lang/Integer.java,
+	libraries/javalib/java/lang/Long.java,
+	libraries/javalib/java/lang/Short.java:
+	added compareTo methods to compare with same type.
+	* test/regression/CLTestJLock.java,
+	test/regression/ProcessClassInst.java,
+	test/regression/TestUnlock.java: increased watchdog time
+	limits. Old, slow processors under load had a hard time passing
+	these tests.
+	* kaffe/kaffevm/code-analyse.c:
+	(verifyBasicBlock) improved error message.
+
+	* libraries/javalib/java/awt/FontMetrics.java:
+	(FontMetrics) changed constructor access to protected to comply
+	with spec.
+
+	Fixes Debian bug report #77022 reported by Antti-Juhani Kaijanaho
+	<antkaij@himalia.it.jyu.fi>
+
+	
+
 Thu Mar 21 22:25:16 PST 2002  Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/net/DatagramPacket.java:
