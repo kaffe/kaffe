@@ -372,7 +372,7 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
 	displayedMnemonic = mnemonic;
 
 	if (text != null)
-	  setDisplayedMnemonicIndex(text.indexOf(mnemonic));
+	  setDisplayedMnemonicIndex(text.toUpperCase().indexOf(mnemonic));
       }
   }
 
