@@ -10,7 +10,7 @@
 
 package java.lang;
 
-public final class Float extends Number {
+public final class Float extends Number implements Comparable {
 
   public static final float POSITIVE_INFINITY = 1.0f / 0.0f;
   public static final float NEGATIVE_INFINITY = -1.0f / 0.0f;
@@ -46,6 +46,13 @@ public final class Float extends Number {
   public boolean equals(Object that) {
     return (that instanceof Float
       && floatToIntBits(this.value) == floatToIntBits(((Float)that).value));
+  }
+
+  public int compareTo(Object o) {
+    final int bits1 = floatToIntBits(this.value);
+    final int bits2 = floatToIntBits(((Float)o).value);
+
+    return (bits1 == bits2) ? 0 : (bits1 < bits2) ? -1 : 1;
   }
 
   public int hashCode() {

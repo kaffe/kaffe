@@ -10,7 +10,7 @@
 
 package java.lang;
 
-public final class Double extends Number {
+public final class Double extends Number implements Comparable {
 
   public static final double POSITIVE_INFINITY = 1.0 / 0.0;
   public static final double NEGATIVE_INFINITY = -1.0 / 0.0;
@@ -53,6 +53,13 @@ public final class Double extends Number {
 
   public double doubleValue() {
     return value;
+  }
+
+  public int compareTo(Object o) {
+    final long bits1 = doubleToLongBits(this.value);
+    final long bits2 = doubleToLongBits(((Double)o).value);
+
+    return (bits1 == bits2) ? 0 : (bits1 < bits2) ? -1 : 1;
   }
 
   public static String toString(double value) {

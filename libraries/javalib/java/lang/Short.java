@@ -1,6 +1,3 @@
-package java.lang;
-
-
 /*
  * Java core library component.
  *
@@ -10,9 +7,11 @@ package java.lang;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-final public class Short
-  extends Number
-{
+
+package java.lang;
+
+final public class Short extends Number implements Comparable {
+
 	final public static short MIN_VALUE = -0x8000;
 	final public static short MAX_VALUE = 0x7FFF;
 	final public static Class TYPE = Class.getPrimitiveClass("short");
@@ -47,6 +46,10 @@ public double doubleValue()
 public boolean equals(Object obj) {
 	return (obj instanceof Short)
 	    && (((Short) obj).value == this.value);
+}
+
+public int compareTo(Object o) {
+	return (int)value - (int)((Short)o).value;
 }
 
 public float floatValue()

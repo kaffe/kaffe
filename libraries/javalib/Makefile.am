@@ -329,6 +329,7 @@ java_lang_SRCS = \
 	java/lang/ClassNotFoundException.java \
 	java/lang/CloneNotSupportedException.java \
 	java/lang/Cloneable.java \
+	java/lang/Comparable.java \
 	java/lang/Compiler.java \
 	java/lang/Double.java \
 	java/lang/Error.java \
@@ -484,6 +485,7 @@ java_text_SRCS = \
 java_util_SRCS = \
 	java/util/AbstractCollection.java \
 	java/util/AbstractList.java \
+	java/util/Arrays.java \
 	java/util/BitSet.java \
 	java/util/Calendar.java \
 	java/util/Collection.java \

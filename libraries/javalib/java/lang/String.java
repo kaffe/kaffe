@@ -17,7 +17,7 @@ import java.util.Locale;
 import kaffe.io.ByteToCharConverter;
 import kaffe.io.CharToByteConverter;
 
-final public class String implements Serializable {
+final public class String implements Serializable, Comparable {
 
 	// Note: value, offset, and count are not private, because
 	// StringBuffer uses them for faster access
@@ -116,6 +116,10 @@ public char charAt ( int index ) {
 		throw new StringIndexOutOfBoundsException();
 
 	return value[offset+index];
+}
+
+public int compareTo(Object o) {
+	return compareTo((String)o);
 }
 
 public int compareTo( String s1) {

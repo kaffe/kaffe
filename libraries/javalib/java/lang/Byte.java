@@ -11,7 +11,7 @@ package java.lang;
  * of this file.
  */
 
-public final class Byte extends Number
+public final class Byte extends Number implements Comparable
 {
 	final public static byte MIN_VALUE = -0x80;
 	final public static byte MAX_VALUE = 0x7F;
@@ -92,4 +92,9 @@ public static Byte valueOf(String s) throws NumberFormatException {
 public static Byte valueOf(String s, int radix) throws NumberFormatException {
 	return (new Byte(parseByte(s, radix)));
 }
+
+public int compareTo(Object o) {
+	return (int)value - (int)((Byte)o).value;
+}
+
 }

@@ -11,9 +11,8 @@
 package java.lang;
 
 
-final public class Long
-  extends Number
-{
+final public class Long extends Number implements Comparable {
+
 	final private long value;
 	final public static long MIN_VALUE = 0x8000000000000000L;
 	final public static long MAX_VALUE = 0x7fffffffffffffffL;
@@ -37,6 +36,13 @@ public double doubleValue() {
 public boolean equals(Object obj) {
 	return (obj instanceof Long) &&
 		(((Long)obj).value == this.value);
+}
+
+public int compareTo(Object o) {
+	final long long1 = this.value;
+	final long long2 = ((Long)o).value;
+
+	return (long1 == long2) ? 0 : (long1 < long2) ? -1 : 1;
 }
 
 public float floatValue() {

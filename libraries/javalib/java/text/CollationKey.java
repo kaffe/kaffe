@@ -12,13 +12,17 @@ package java.text;
 
 import java.lang.String;
 
-public final class CollationKey {
+public final class CollationKey implements Comparable {
 
 private String str;
 private Collator target;
 
 private CollationKey() {}
     
+public int compareTo(Object obj) {
+	return compareTo((CollationKey)obj);
+}
+
 public int compareTo(CollationKey other) {
 	if (target != other.target) {
 		return (-1);
@@ -29,12 +33,8 @@ public int compareTo(CollationKey other) {
 }
 
 public boolean equals(Object obj) {
-	if (obj instanceof CollationKey) {
-		if (compareTo((CollationKey)obj) == 0) {
-			return (true);
-		}
-	}
-	return (false);
+	return (obj instanceof CollationKey)
+		&& compareTo((CollationKey)obj) == 0;
 }
 
 public String getSourceString() {

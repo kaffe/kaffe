@@ -17,8 +17,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.io.Serializable;
 
-public class Date implements Serializable, Cloneable
-{
+public class Date implements Serializable, Cloneable, Comparable {
+
 	private static final long serialVersionUID = 7523967970034938905L;
 	private long time = 0;
 
@@ -81,11 +81,19 @@ public boolean before(Date when) {
 	return (getTime() < when.getTime());
 }
 
+public int compareTo(Object o) {
+	return compareTo((Date)o);
+}
+
+public int compareTo(Date that) {
+	final long thisTime = this.getTime();
+	final long thatTime = that.getTime();
+
+	return (thisTime == thatTime) ? 0 : (thisTime < thatTime) ? -1 : 1;
+}
+
 public boolean equals(Object obj) {
-	if (obj instanceof Date) {
-		return (getTime() == ((Date)obj).getTime());
-	}
-	return false;
+	return (obj instanceof Date) && getTime() == ((Date)obj).getTime();
 }
 
 /**

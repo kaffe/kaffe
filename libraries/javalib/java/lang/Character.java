@@ -12,7 +12,7 @@ package java.lang;
 
 import java.io.Serializable;
 
-public final class Character implements Serializable {
+public final class Character implements Serializable, Comparable {
 
   public static final int MIN_RADIX = 2;
   public static final int MAX_RADIX = 36;
@@ -78,6 +78,11 @@ public final class Character implements Serializable {
   public String toString()
   {
     return (String.valueOf(value));
+  }
+
+  public int compareTo(Object o)
+  {
+    return (int)value - (int)((Character)o).value;
   }
 
   /**

@@ -10,9 +10,8 @@
 
 package java.lang;
 
-final public class Integer
-  extends Number
-{
+final public class Integer extends Number implements Comparable {
+
 	private int value;
 	final public static Class TYPE = Class.getPrimitiveClass("int");
 	final public static int MIN_VALUE = 0x80000000;
@@ -72,6 +71,13 @@ public double doubleValue() {
 public boolean equals(Object obj) {
 	return (obj instanceof Integer) &&
 		(((Integer)obj).value == this.value);
+}
+
+public int compareTo(Object o) {
+	final int int1 = this.value;
+	final int int2 = ((Integer)o).value;
+
+	return (int1 == int2) ? 0 : (int1 < int2) ? -1 : 1;
 }
 
 public float floatValue() {
