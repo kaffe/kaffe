@@ -437,8 +437,6 @@ define_insn(exception_prologue, eprologue_xLx)
 #endif
 }
 
-extern label *getLastEpilogueLabel(void);
-
 define_insn(epilogue, epilogue_xxx)
 {	
 	label *el;
