@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 The University of Utah. All rights reserved.
+ * Copyright (c) 1998, 2000 The University of Utah. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -8,8 +8,8 @@
  * Authors: Godmar Back
  */
 
-#ifndef __i386_freebsd2_jit_md_h
-#define __i386_freebsd2_jit_md_h
+#ifndef __i386_oskit_jit_md_h
+#define __i386_oskit_jit_md_h
 
 /**/
 /* Include common information. */

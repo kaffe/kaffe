@@ -10,9 +10,6 @@
 #
 # XXX could use a --bootloader=foo option
 #
-# XXX Instead of groking the magical (and useless -DOSKIT_UNIX),
-# should take a --unixmode parameter.
-#
 
 # the OSKit install directory
 oskit=/z/oskit
@@ -24,6 +21,8 @@ gcc=gcc
 bootloaderObject=multiboot.o
 #bootloaderObject=dos.o
 
+# Uncomment this line to include memdebug support
+loskit_memdebug="-loskit_memdebug"
 
 # remove all the -lm's from the library list.  We need to link against
 # the proper  oskit_<OS>_m library
@@ -41,8 +40,17 @@ for a in $*; do
 	;;
     -lm) 
 	;;
-    -DOSKIT_UNIX) 
+    --oskitunix) 
 	is_unix=true;
+	;;
+    kaffeh)
+	### XXX This is a bad hack to prevent trying to link kaffeh
+	rm -f kaffeh
+	echo "#!/bin/sh" > kaffeh
+	echo "echo KAFFEH HACK HAS STRUCK.  See $0" >> kaffeh
+	echo "#eof" > kaffeh
+	echo "KAFFEH NOT REALLY BUILT.  THIS IS A HACK BECAUSE IT WILL NOT LINK AGAINST THE OSKIT."
+	exit 0
 	;;
     *) 
 	args="$args $a";
@@ -57,6 +65,7 @@ if test -z "$is_unix"; then
 	$args						\
 	-nostdlib 					\
 	-L${oskit}/lib					\
+	-Wl,--start-group				\
 	-loskit_startup  				\
 	-loskit_clientos				\
 	-loskit_threads  				\
@@ -67,41 +76,42 @@ if test -z "$is_unix"; then
 	-loskit_linux_dev 				\
 	-loskit_dev					\
 	-loskit_netbsd_fs				\
-	-loskit_kern					\
 	-loskit_lmm					\
 	-loskit_diskpart 				\
 	-loskit_memfs					\
-	-loskit_freebsd_c_r  				\
 	-loskit_fsnamespace_r				\
 	-loskit_com					\
+	-loskit_kern					\
 	-loskit_freebsd_m 				\
+	$loskit_memdebug \
 	-loskit_freebsd_c_r				\
-	-loskit_threads					\
+	-Wl,--end-group					\
 	${oskit}/lib/oskit/crtn.o 
 else
-    ### OSKit/UNIX link line (shield our eyes)
+    ### OSKit/UNIX link line (shield your eyes)
     $gcc -v -e _start				\
-	${oskit}/lib/unix/crt1.o 		\
-	${oskit}/lib/unix/crti.o		\
-  	${oskit}/lib/unix/crtbegin.o		\
+	${oskit}/lib/oskit/unix/crt1.o 		\
+	${oskit}/lib/oskit/unix/crti.o		\
+        ${oskit}/lib/oskit/unix_support_pthreads.o	\
   	$args					\
   	-nostdlib  				\
 	-L${oskit}/lib				\
-        ${oskit}/lib/unix_support_pthreads.o	\
         -loskit_startup  			\
 	-loskit_clientos 			\
 	-loskit_fsnamespace_r			\
         -loskit_threads 			\
+	$loskit_memdebug \
 	-loskit_unix 				\
+	-loskit_freebsd_net 			\
+	-loskit_linux_dev 			\
 	-loskit_dev				\
   	-loskit_freebsd_c_r  			\
+	-loskit_lmm \
 	-loskit_com				\
   	-loskit_freebsd_m 			\
 	-loskit_freebsd_c_r			\
-        -lfreebsdsys				\
         -loskit_threads				\
-  	${oskit}/lib/unix/crtend.o 		\
-	${oskit}/lib/unix/crtn.o
+	${oskit}/lib/oskit/unix/crtn.o
 fi
 
 #eof

@@ -32,7 +32,6 @@
 #include <oskit/dev/freebsd.h>
 #include <oskit/net/freebsd.h>
 #include <oskit/net/socket.h>
-#include <oskit/startup.h>
 #include <oskit/dev/dev.h>
 #include <oskit/dev/freebsd.h>
 #include <oskit/dev/net.h>
@@ -50,7 +49,6 @@
 void get_fake_commandline(int *pargc, char ***pargv);
 
 char *default_classpath = ".";
-
 
 #if defined(OSKIT_UNIX) && defined(OSKIT_CONFIGURED)
 #include "machine.h"
@@ -101,7 +99,10 @@ static void start_unix_oskit(void)
 	pthread_init(1);
 	
 	start_fs_native_pthreads("/");
+	// printf("  Native FS hack started.\n");
+
 	start_network_native_pthreads();
+	// printf("  Native Network hack started.\n");
 
 	/*
 	 * I guess I could reimplement getcwd here using native_
@@ -132,7 +133,6 @@ static void start_real_oskit(int *pargc, char ***pargv)
 	 * Set up the bmod filesystem.
 	 */
 	start_fs_bmod_pthreads();
-
 
 	/*
 	 * This is a local hack to read a "command-line" for
@@ -196,8 +196,6 @@ oskit_kaffe_main(int *pargc, char ***pargv)
 		c = strlen(buf);
 		if (buf[c - 1] == '\n')
 			buf[c - 1] = NULL;
-
-		/* printf("CLASSPATH = %s\n", buf); */
 
 		if ((default_classpath = (char *) malloc(c + 1)) == NULL)
 			panic("oskit_kaffe_main: No memory for default_classpath.\n");

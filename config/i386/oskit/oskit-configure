@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 1998, 1999 The University of Utah. All rights reserved.
+# Copyright (c) 1998-2000 The University of Utah. All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file.
@@ -35,18 +35,15 @@ SRCDIR=/usr/src/kaffe   	# set via --srcdir=
 OSKITDIR=/usr/lib/oskit/	# set via --oskitdir=
 
 # The OSKit CC wrapper from the OSKit bin directory
-OSKITCC=i386-oskit-gcc		# set via --oskitcc=
+OSKITCC=x86-oskit-gcc		# set via --oskitcc=
 OSKITCCARGS="-posix-oskit -pthread -nostdinc"
-
-
-# XXX the gcc specs file that ships with 990722 forgot these libraries:
-OSKITCC_HACKLIBS="-lmemfs -llinux_dev -lfsnamespace_r"
 
 OSKITCCLD=ld-oskit.sh
 
 KAFFEH=kaffeh		# set via --localkaffeh
 
 OSKITUNIX_CCFLAGS=
+OSKITUNIX_LDFLAGS=
 
 ## The arguments unilaterally passed to Kaffe's configure
 OSKIT_CONFIG_ARGS="--with-threads=oskit-pthreads \
@@ -65,7 +62,8 @@ do
 			SRCDIR=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;
 			shift;;
 		--oskitunix )
-			OSKITUNIX_CCFLAGS='-DOSKIT_UNIX';
+			OSKITUNIX_CCFLAGS='-hosted-oskit';
+			OSKITUNIX_LDFLAGS='--oskitunix';
 			shift;;
 		--oskitdir=* )
 			OSKITDIR=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;
@@ -118,7 +116,7 @@ export CC
 ### Oh, we pass the OSKITUNIX_CCFLAGS to the ld-script because it needs
 ### to link different libraries in for a UNIX-mode oskit.
 
-CCLD="${SRCDIR}/config/i386/oskit/${OSKITCCLD} --oskit=${OSKITDIR} ${OSKITUNIX_CCFLAGS}"
+CCLD="${SRCDIR}/config/i386/oskit/${OSKITCCLD} --oskit=${OSKITDIR} ${OSKITUNIX_LDFLAGS}"
 export CCLD
 
 LD="${CCLD}"

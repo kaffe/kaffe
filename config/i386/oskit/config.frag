@@ -1,5 +1,5 @@
 #
-# Copyright (c) 1998, 1999 The University of Utah. All rights reserved.
+# Copyright (c) 1998, 1999, 2000 The University of Utah. All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file.
@@ -41,7 +41,7 @@ ac_cv_lib_md_MD5Init='no'
 CPP="$CC -E"
 
 dynamic_libraries=no
-
+ 
 # as far as Kaffe is concerned, we have these XXX
 # we might actually have them meanwhile ???
 ac_cv_func_sigemptyset='yes'
