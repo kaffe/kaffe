@@ -1,3 +1,8 @@
+Mon Dec  7 17:13:01 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/java/lang/String.java: fixes for indexOf and
+	lastIndexOf so that mauve's string tests pass.
+
 Mon Dec  7 13:11:20 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/locks.c: fixed race condition in newLock where
