@@ -1,3 +1,31 @@
+Fri Jul 14 16:14:39 PDT 2000  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/io/CharArrayReader.java: count actually
+	means index of first invalid character, not buffer length.
+	Removed semi-colon after class definition.
+	(CharArrayReader(char[], int, int)) Added checks for illegal
+	arguments. Fixed count.
+	(checkIfStillOpen) Method added. Throws IOException if
+	stream is closed.
+	(close) Releases the reference to buf and allows it to be
+	garbage collected.
+	(read) Now checks if stream is open before reading. Fixed count. 
+	(read(char[],int,int)) Now checks if stream is open before reading.
+	Fixed count. Added checks for arguments. Uses Math.min to determine
+	number of characters to copy.
+	(ready) Returns true only if there are characters left to read
+	in the buffer.
+	(mark) Fixed race condition. Now checks if stream is
+	open before marking.
+	(reset) Now checks if stream is open before reseting.
+	Doesn't modify count any longer.
+	(skip) Now checks if stream is open before skipping.
+	Fixed count. If skip length < 0, it behaves as if skip
+	length == 0. Uses Math.min to determine number of
+	characters to skip.
+	* test/regression/CharArrayReaderTest.java: new test
+	* test/regression/Makefile.{in,am}: add new test
+
 Thu Jul 13 12:17:42 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/classMethod.c: don't discard <clinit> if it
