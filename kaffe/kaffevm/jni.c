@@ -2584,13 +2584,15 @@ Kaffe_NewStringUTF(JNIEnv* env, const char* data)
 {
 	Hjava_lang_String* str;
 	Utf8Const* utf8;
+	int len;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	if (!utf8ConstIsValidUtf8(data, strlen(data))) {
+	len = strlen(data);
+	if (!utf8ConstIsValidUtf8(data, len)) {
 		str = NULL;
 	} else {
-		utf8 = utf8ConstNew(data, -1);
+		utf8 = utf8ConstNew(data, len);
 		str = utf8Const2Java(utf8);
 		utf8ConstRelease(utf8);
 	}
