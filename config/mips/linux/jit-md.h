@@ -26,4 +26,13 @@
 #undef SA_SIGINFO
 #endif
 
+/* Define the entry into a signal handler */
+#define EXCEPTIONPROTO  int sig, int cause, struct sigcontext *ctx
+
+/* Get the first exception frame from a signal handler */
+#define MIPS_FP 30
+#define EXCEPTIONFRAME(f, c) \
+	(f).return_frame = (void *)(unsigned long)(c)->sc_regs[MIPS_FP]; \
+	(f).return_pc = (void *)(unsigned long)(c)->sc_pc
+
 #endif

@@ -34,15 +34,9 @@
 /* Signal handling */
 /**/
 #include <signal.h>
-
-/* Define the entry into a signal handler */
-#define EXCEPTIONPROTO  int sig, int cause, struct sigcontext *ctx
-
-/* Get the first exception frame from a signal handler */
-#define MIPS_FP 30
-#define EXCEPTIONFRAME(f, c) \
-	(f).return_frame = (void*)(c)->sc_regs[MIPS_FP]; \
-	(f).return_pc = (void*)(c)->sc_pc
-
+#define SIGNAL_ARGS(sig, sc) int sig, int dummy, struct sigcontext *sc
+#define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext * scp
+#define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)
+#define SIGNAL_PC(scp) scp->pc
 
 #endif

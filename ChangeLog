@@ -1,3 +1,16 @@
+2003-12-12  Atsushi Nemoto  <anemo@mba.ocn.ne.jp>
+
+	Fixed build on mipsel-linux for jit3.
+
+	* config/mips/linux/md.h
+	(EXCEPTIONPROTO, MIPS_FP, EXCEPTIONFRAME) Moved to 
+	config/mips/linux/jit-md.h.
+	(SIGNAL_ARGS, SIGNAL_CONTEXT_POINTER, 
+	GET_SIGNAL_CONTEXT_POINTER, SIGNAL_PC) New macros.
+
+	* config/mips/linux/jit-md.h
+	(EXCEPTIONPROTO, MIPS_FP, EXCEPTIONFRAME) New macros.
+
 2003-12-12  Dalibor Topic <robilad@kaffe.org>
 
 	* config/parisc/sysdepCallMethod.h: New file.
