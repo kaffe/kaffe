@@ -102,10 +102,14 @@ public class TreeMap extends AbstractMap
 		}
 	}
 
+	// XXX this is not linear time like it should be..
 	public TreeMap(SortedMap m) {
-		c = m.comparator();
-		throw new kaffe.util.NotImplemented(Collections.class.getName()
-		    + ".<init>(SortedMap m)");
+		Comparator c = m.comparator();
+		this.c = (c != null) ? c : Arrays.DEFAULT_COMPARATOR;
+		for (Iterator i = m.entrySet().iterator(); i.hasNext(); ) {
+			Map.Entry e = (Map.Entry)i.next();
+			put(e.getKey(), e.getValue());
+		}
 	}
 
 	public int size() {
@@ -497,13 +501,19 @@ public class TreeMap extends AbstractMap
 			if (prev == null) {
 				throw new IllegalStateException();
 			}
-			Object key = node.key;
+			Object key = null;
+			if (node != null) {
+				key = node.key;
+			}
 			TreeMap.this.deleteNode(prev);
 			modCount++;
-			node = find(key);		// is this required?
+			if (node != null) {
+				node = find(key);	// is this required?
+			}
 			prev = null;
 		}
 
+		// Starting at any node in the tree, go to the next node
 		private void nextNode() {
 			if (node == null) {		// first time called
 				if (root == NIL) {	// tree is empty
@@ -514,19 +524,12 @@ public class TreeMap extends AbstractMap
 				node = node.right;
 			} else {			// pop back up the tree
 				while (true) {
-					if (node.parent == null) {	// done
-						node = null;
-						return;
-					}
-					if (node == node.parent.left) {
+					if (node.parent == null
+					  || node == node.parent.left) {
 						node = node.parent;
 						return;
 					}
 					node = node.parent;
-					if (node.right != NIL) {
-						node = node.right;
-						break;
-					}
 				}
 			}
 			while (node.left != NIL) {
