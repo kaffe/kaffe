@@ -1,3 +1,35 @@
+2000-07-21  Edouard G. Parmelan  <egp@free.fr>
+
+	* config/arm/linux/config.frag: set ac_cv_func_mmap_fixed_mapped
+	to yes in case of cross-compiling.
+
+	* libraries/javalib/java/applet/Applet.java (newAudioClip):
+	Returns a new kaffe.applet.AudioClip.
+
+	* libraries/javalib/java/lang/String.java (copyValueOf): Relax
+	IndexOutOfBoundsException to allow 0 length source as JDK does.
+	Reported by Brinkman, David N <DB132330@exchange.ColumbiaSC.NCR.com>.
+	
+	* libraries/javalib/java/util/Locale.java: Use canonical forms of
+	locals and avoid null pointers.
+	Reported by Brinkman, David N <DB132330@exchange.ColumbiaSC.NCR.com>.
+	
+	* libraries/javalib/java/util/Properties.java: Unicode escape is
+	`\u' not `\\u'.
+	Reported by Brinkman, David N <DB132330@exchange.ColumbiaSC.NCR.com>.
+	
+	* config/powerpc/linux/config.frag: Force with_libffi=yes as we
+	do not have assembler version of sysdepCallMethod() for PowerPC.
+	Close PR#646.
+
+	* kaffe/xprof/sectionFile.c (createFileSection)
+	kaffe/xprof/fileSections.c (libSectionHandler, jitSectionHandler):
+	Pass and use va_list * in place of va_list to variable arguments
+	function fs_handler().  This is more portable and work for
+	Linux/PPC where va_list is an array.
+	Suggested by Stephane Bortzmeyer <bortzmeyer@pasteur.fr>
+	Close PR#648.
+
 Fri Jul 14 16:14:39 PDT 2000  Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/io/CharArrayReader.java: count actually
