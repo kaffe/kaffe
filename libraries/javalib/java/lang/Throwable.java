@@ -172,7 +172,7 @@ public class Throwable implements Serializable
   public Throwable(String message, Throwable cause)
   {
     this(message);
-    initCause(cause);
+    this.cause = cause;
   }
 
   /**
