@@ -1,3 +1,8 @@
+2004-10-20  Timothy S. Stack <stack@cs.utah.edu>
+
+	* FAQ/FAQ.debugging: Added information for
+	manually running the jit tests.
+
 2004-10-19  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* config/arm/sysdepCallMethod.h

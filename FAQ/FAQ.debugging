@@ -69,6 +69,17 @@ jitBasic environment variables:
 
 	TEST_CLASSES - The classes to test against.
 
+To run it manually, you need to do something like the following 
+in sh/bash:
+
+  . ../../BUILD_ENVIRONMENT
+  export BOOTCLASSPATH=${BOOTCLASSPATH}:.
+  export TEST_CLASSES="ConstMethods.class"
+  ./jitBasic
+
+It "should" complain if it has any problems and it should print out 
+a bunch of debugging info as it jits the methods.  If its completely 
+silent, something is probably wrong.
 
 Regression Tests
 ================
