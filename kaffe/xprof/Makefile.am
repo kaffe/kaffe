@@ -1,6 +1,6 @@
 # Makefile.in for xprof - A library to support cross language profiling
 #
-# Copyright (c) 2000 University of Utah and the Flux Group.
+# Copyright (c) 2000, 2003 University of Utah and the Flux Group.
 # All rights reserved.
 #
 # This file is licensed under the terms of the GNU Public License.
@@ -44,4 +44,6 @@ noinst_HEADERS = \
 	sectionFile.h \
 	xprofiler.h
 
-AM_CFLAGS = @CFLAGS_WITHOUT_PG@
+# Ignore the warning!  We need to override CFLAGS or else it compile with -pg
+# and cause an endless recursion in the mcount code.
+CFLAGS = @CFLAGS_WITHOUT_PG@

@@ -16,7 +16,7 @@
 
 # Makefile.in for xprof - A library to support cross language profiling
 #
-# Copyright (c) 2000 University of Utah and the Flux Group.
+# Copyright (c) 2000, 2003 University of Utah and the Flux Group.
 # All rights reserved.
 #
 # This file is licensed under the terms of the GNU Public License.
@@ -62,7 +62,10 @@ AWT_LIBS = @AWT_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CCLD = @CCLD@
-CFLAGS = @CFLAGS@
+
+# Ignore the warning!  We need to override CFLAGS or else it compile with -pg
+# and cause an endless recursion in the mcount code.
+CFLAGS = @CFLAGS_WITHOUT_PG@
 CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
 COND_PURE_JAVA_MATH_FALSE = @COND_PURE_JAVA_MATH_FALSE@
 COND_PURE_JAVA_MATH_TRUE = @COND_PURE_JAVA_MATH_TRUE@
@@ -271,8 +274,6 @@ noinst_HEADERS = \
 	sectionFile.h \
 	xprofiler.h
 
-
-AM_CFLAGS = @CFLAGS_WITHOUT_PG@
 subdir = kaffe/xprof
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
