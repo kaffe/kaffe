@@ -637,10 +637,11 @@ if test x$with_threads = xunix-pthreads ; then
 
 	KAFFE_LIB_SOLARIS_PTHREAD
 
-	if test x"$ac_cv_gnu_library_version" != x"no" -a "$ac_cv_gnu_library_version" -le "2002"; then
-		AC_DEFINE([OLD_LINUXTHREADS],1, [Is set if the current GLIBC is using the old Linuxthreads library])
+        if test x"$ac_cv_gnu_library_version" != x"no"; then
+		if "$ac_cv_gnu_library_version" -le "2002"; then
+			AC_DEFINE([OLD_LINUXTHREADS],1, [Is set if the current GLIBC is using the old Linuxthreads library])
+		fi
 	fi
-
 	VMLIBS="$VM_LIBS $PTHREAD_LIBS"
  else
         CPPFLAGS="$CPPFLAGS -DBR_PTHREADS=0"
@@ -1711,8 +1712,8 @@ dnl  Use native implementation
 esac],
 [
 dnl  If nothing is set, use native implementation if GNU MP can be found.
-	if test $ac_cv_lib_gmp_mpz_get_d = no; then
-		if test $ac_cv_lib_gmp___gmpz_get_d = no; then
+        if test "$ac_cv_lib_gmp_mpz_get_d" = no; then
+                if test "$ac_cv_lib_gmp___gmpz_get_d" = no; then
 			AC_MSG_ERROR([Could not find GNU MP library.  Install the gmp development package, or pass --enable-pure-java-math to configure.])
 		fi
 	fi

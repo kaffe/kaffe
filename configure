@@ -27350,14 +27350,15 @@ fi
 	esac
 
 
-	if test x"$ac_cv_gnu_library_version" != x"no" -a "$ac_cv_gnu_library_version" -le "2002"; then
+        if test x"$ac_cv_gnu_library_version" != x"no"; then
+		if "$ac_cv_gnu_library_version" -le "2002"; then
 
 cat >>confdefs.h <<\_ACEOF
 #define OLD_LINUXTHREADS 1
 _ACEOF
 
+		fi
 	fi
-
 	VMLIBS="$VM_LIBS $PTHREAD_LIBS"
  else
         CPPFLAGS="$CPPFLAGS -DBR_PTHREADS=0"
@@ -53728,8 +53729,8 @@ echo "$as_me: error: bad value ${enableval} for --enable-pure-java-math" >&2;}
 esac
 else
 
-	if test $ac_cv_lib_gmp_mpz_get_d = no; then
-		if test $ac_cv_lib_gmp___gmpz_get_d = no; then
+        if test "$ac_cv_lib_gmp_mpz_get_d" = no; then
+                if test "$ac_cv_lib_gmp___gmpz_get_d" = no; then
 			{ { echo "$as_me:$LINENO: error: Could not find GNU MP library.  Install the gmp development package, or pass --enable-pure-java-math to configure." >&5
 echo "$as_me: error: Could not find GNU MP library.  Install the gmp development package, or pass --enable-pure-java-math to configure." >&2;}
    { (exit 1); exit 1; }; }

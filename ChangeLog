@@ -1,4 +1,10 @@
-2004-06-23  Michael Franz <developer.franz@verizon.net>
+2004-08-01  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* configure.ac: Fixed warnings in tests.
+
+	* configure.in: Regenerated.
+	
+2004-06-30  Michael Franz <developer.franz@verizon.net>
 
         * config/i386/common.h,
         config/i386/beos/md.h,
