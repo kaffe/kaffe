@@ -1,3 +1,16 @@
+Thu Jan 13 16:11:04 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/text/StringCharacterIterator.java:
+	fix bug in setIndex() method
+	* libraries/javalib/java/text/DateFormat.java,
+	libraries/javalib/java/text/Format.java: add parseObject()
+
+Thu Jan 13 14:36:27 PST 2000  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/io/Reader.java,
+	libraries/javalib/java/io/InputStream.java: have skip()
+	continue even if read() returns zero to be JDK compatible
+
 Wed Jan 12 11:12:20 PST 2000  Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/lang/Thread.java: make toString()
