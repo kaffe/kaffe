@@ -22,6 +22,7 @@ abstract public class ByteToCharConverter
 {
 	private static String encodingRoot;
 	private static String encodingDefault;
+	private static ByteToCharConverter defaultConverter = new ByteToCharDefault();
 	private static Hashtable cache = new Hashtable();
 	private static Object noConverter = new Object();
 	protected byte[] buf;
@@ -138,7 +139,7 @@ public static ByteToCharConverter getDefault() {
 
 	conv = getConverterInternal(encodingDefault);
 	if (conv == null) {
-		conv = getConverterInternal("Default");
+		conv = defaultConverter;
 	}
 	return (conv);
 }

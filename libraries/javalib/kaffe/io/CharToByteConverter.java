@@ -22,6 +22,7 @@ abstract public class CharToByteConverter
 	protected int blen;
 	private static String encodingRoot;
 	private static String encodingDefault;
+	private static CharToByteConverter defaultConverter = new CharToByteDefault();
 	private static Hashtable cache = new Hashtable();
 	private static Object noConverter = new Object();
 
@@ -124,7 +125,7 @@ public static CharToByteConverter getConverter(String enc) throws UnsupportedEnc
 public static CharToByteConverter getDefault() {
 	CharToByteConverter conv = getConverterInternal(encodingDefault);
 	if (conv == null) {
-		conv = getConverterInternal("Default");
+		conv = defaultConverter;
 	}
 	return (conv);
 }
