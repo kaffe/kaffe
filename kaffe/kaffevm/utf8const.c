@@ -218,7 +218,7 @@ utf8ConstNew(const char *s, int len)
 		jfree(utf8);
 	}
 
-	assert(temp->nrefs > 0);
+	assert(temp == 0 || temp->nrefs > 0);
 	return (temp);
 }
 
