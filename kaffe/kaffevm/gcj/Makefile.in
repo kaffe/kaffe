@@ -140,7 +140,7 @@ with_gnu_ld = @with_gnu_ld@
 # of this file. 
 
 
-INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(ENGINE_DEFS)
+INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(ENGINE_DEFS) -I$(top_srcdir)/compat-include
 
 noinst_LTLIBRARIES = libgcj.la
 
@@ -148,7 +148,8 @@ libgcj_la_SOURCES = \
 	gcj-class.cc \
 	gcj-soft.cc \
 	gcj-except.c \
-	gcj-glue.c
+	gcj-glue.c \
+	eh.c
 
 
 EXTRA_DIST = \
@@ -172,7 +173,7 @@ X_PRE_LIBS = @X_PRE_LIBS@
 libgcj_la_LDFLAGS = 
 libgcj_la_LIBADD = 
 am_libgcj_la_OBJECTS =  gcj-class.lo gcj-soft.lo gcj-except.lo \
-gcj-glue.lo
+gcj-glue.lo eh.lo
 libgcj_la_OBJECTS =  $(am_libgcj_la_OBJECTS)
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -191,8 +192,8 @@ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
 GZIP_ENV = --best
 depcomp = $(SHELL) $(top_srcdir)/depcomp
-DEP_FILES =  @AMDEP@ $(DEPDIR)/gcj-class.Plo $(DEPDIR)/gcj-except.Plo \
-$(DEPDIR)/gcj-glue.Plo $(DEPDIR)/gcj-soft.Plo
+DEP_FILES =  @AMDEP@ $(DEPDIR)/eh.Plo $(DEPDIR)/gcj-class.Plo \
+$(DEPDIR)/gcj-except.Plo $(DEPDIR)/gcj-glue.Plo $(DEPDIR)/gcj-soft.Plo
 SOURCES = $(libgcj_la_SOURCES)
 OBJECTS = $(am_libgcj_la_OBJECTS)
 
@@ -240,6 +241,7 @@ gcj-class.lo:
 gcj-soft.lo:
 gcj-except.lo:
 gcj-glue.lo:
+eh.lo:
 
 libgcj.la: $(libgcj_la_OBJECTS) $(libgcj_la_DEPENDENCIES)
 	$(CXXLINK)  $(libgcj_la_LDFLAGS) $(libgcj_la_OBJECTS) $(libgcj_la_LIBADD) $(LIBS)
@@ -289,6 +291,7 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 
+@AMDEP@include $(DEPDIR)/eh.Plo
 @AMDEP@include $(DEPDIR)/gcj-class.Plo
 @AMDEP@include $(DEPDIR)/gcj-except.Plo
 @AMDEP@include $(DEPDIR)/gcj-glue.Plo
@@ -420,6 +423,16 @@ all-redirect all-am all install-strip installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
+
+@engine_frag@
+
+#
+#eh.lo: $(srcdir)/eh.c
+#	@AMDEP@ source='eh.c' object='eh.lo' @AMDEPBACKSLASH@
+#	@AMDEP@ depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
+#	@AMDEP@ $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+#	$(LTCOMPILE) -fexceptions -c -o eh.lo $(srcdir)/eh.c
+#
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

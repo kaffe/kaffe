@@ -24,15 +24,11 @@
 #include <gcj/method.h>
 #include <gcj/javaprims.h>
 
+/* XXX FIXME */
 extern "C" {
 extern jobject soft_newarray(jint type, jint size);
 extern JArray<java::lang::Object *> *soft_anewarray(void *type, jint size);
 extern void* soft_vmultianewarray(struct Hjava_lang_Class* clazz, jint dims, va_list ap);
-
-/* rename to _Jv_Throw ? */
-extern void soft_athrow(void *) __attribute__((__noreturn__));
-/* rename to _Jv_ThrowBadArrayIndex ? */
-extern void soft_badarrayindex();
 
 extern bool soft_checkcast(void *type, java::lang::Object *obj);
 extern bool soft_instanceof(void *type, java::lang::Object *obj);
@@ -79,12 +75,6 @@ DBG(GCJ,
 		kenvProcessClass(kClass);
 		type->state = JV_STATE_DONE;
 	}
-}
-
-extern "C" void
-_Jv_Throw(void* obj)
-{
-	soft_athrow(obj);
 }
 
 extern "C" jint
@@ -141,13 +131,17 @@ DBG(GCJ,
 extern "C" void
 _Jv_ThrowBadArrayIndex(void)
 {
-	soft_badarrayindex();
+	kenvThrowBadArrayIndex(/* reserved for index */ -9999);
 }
 
 extern "C" jboolean 
 _Jv_CheckCast(java::lang::Class* type, java::lang::Object* obj)
 {
 DBG(GCJ, dprintf("%s: %p @%p %p\n", __FUNCTION__, type, GCJ2KAFFE(type), obj);)
+	if (GCJ2KAFFE(type) == 0) {
+		_Jv_InitClass(type);
+	}
+	assert(GCJ2KAFFE(type) != 0);
 	return (soft_checkcast(GCJ2KAFFE(type), obj));
 }
 
@@ -155,6 +149,10 @@ extern "C" jboolean
 _Jv_IsInstanceOf(java::lang::Object* obj, java::lang::Class* type)
 {
 DBG(GCJ, dprintf("%s: %p @%p %p\n", __FUNCTION__, type, GCJ2KAFFE(type), obj);)
+	if (GCJ2KAFFE(type) == 0) {
+		_Jv_InitClass(type);
+	}
+	assert(GCJ2KAFFE(type) != 0);
 	return (soft_instanceof(GCJ2KAFFE(type), obj));
 }
 

@@ -15,23 +15,4 @@
 #define	GCJ_LANGUAGECODE	11
 #define	GCJ_VERSIONCODE		1
 
-/* From libgcc2.c */
-void** __get_eh_info(void);
-
-/* From eh-common.h */
-typedef struct __eh_info {
-
-	void*			match_function;
-	short			language;
-	short			version;
-
-} __eh_info;
-
-typedef struct _gcjException {
-
-	__eh_info		eh_info;
-	Hjava_lang_Class*	class;
-
-} gcjException;
-
 #endif

@@ -1,3 +1,15 @@
+/*
+ * gcj-glue.c
+ *
+ * Copyright (c) 1996, 1997, 1998, 1999
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ *
+ * Written by Godmar Back <gback@cs.utah.edu>
+ */
+
 #include "config.h"
 #include "debug.h"
 #include "config-mem.h"
@@ -8,11 +20,14 @@
 #include "baseClasses.h"
 #include "stringSupport.h"
 #include "gcj.h"
+#include "jit3/machine.h"
 #include "object.h"
 
-#if defined(HAVE_GCJ_SUPPORT)
+#if !defined(TRANSLATOR)
+#error gcj only available for translator at this time
+#endif
 
-static Hjava_lang_Class* kenvFindClassByAddress2(void *clazz, errorInfo *einfo);
+#if defined(HAVE_GCJ_SUPPORT)
 
 /*
  * GCJ code wants to create an object.  
@@ -20,7 +35,7 @@ static Hjava_lang_Class* kenvFindClassByAddress2(void *clazz, errorInfo *einfo);
 Hjava_lang_Object *
 kenvCreateObject(struct Hjava_lang_Class *clazz, int size)
 {
-	/* !? */
+	/* !? --- I think that may be i386 specific -- XXX optimize me */
 	assert(((CLASS_FSIZE(clazz)+3)&~3) == size); 
 	return (newObject(clazz));
 }
@@ -32,7 +47,7 @@ kenvCreateObject(struct Hjava_lang_Class *clazz, int size)
 Hjava_lang_Class *
 kenvFindClass(char *cname, errorInfo *einfo)
 {
-	char buf[1024];		/* XXX */
+	char buf[1024];			/* XXX */
 	Utf8Const *name;
 	Hjava_lang_Class *class;
 
@@ -47,6 +62,9 @@ kenvFindClass(char *cname, errorInfo *einfo)
 			strcpy(buf, cname+1);
 			assert(buf[strlen(buf) - 1] == ';');
 			buf[strlen(buf) - 1] = '\0';
+		} else {
+			/* else could be a primitive class such as "long" */
+			strcpy(buf, cname);
 		}
 		name = utf8ConstNew(buf, -1);
                 class = loadClass(name, 0, einfo);
@@ -77,11 +95,39 @@ DBG(GCJ, dprintf("processing kaffe class for %s@%p from st=%d to %d...\n",
 	}
 }
 
+/* Given a const char * type name as a class name, create a
+ * pathname.  I.e., makes a utf8const "[Ljava/lang/String;" from
+ * [Ljava.lang.String
+ */
+static 
+Utf8Const *
+makePathUtf8FromClassChar(const char *name)
+{
+	int n;
+	char buf[256], *b = buf;
+	Utf8Const *utf8;
+
+	n = strlen(name);
+	if (n > sizeof(buf) - 1) {
+		b = KMALLOC(n + 1);
+	}
+	classname2pathname(name, b);
+	utf8 = utf8ConstNew(b, n);
+	if (b != buf) {
+		KFREE(b);
+	}
+	return (utf8);
+}
+
+/*
+ * Create a kaffe class from the gcj info
+ */
 Hjava_lang_Class*
 kenvMakeClass(neutralClassInfo *info, errorInfo *einfo)
 {
-	Hjava_lang_Class *class = newClass();
 	int n;
+	classEntry *centry;
+	Hjava_lang_Class *class = newClass();
 
 DBG(GCJ, dprintf("making kaffe class for %s@%p vtab=%p gcj=%p...\n",  
 	info->name, class, info->vtable, info->gcjClass);)
@@ -90,8 +136,7 @@ DBG(GCJ, dprintf("making kaffe class for %s@%p vtab=%p gcj=%p...\n",
 		goto oom;
 	}
 
-	/* classname2pathname(info->name, buf); ???? */
-	class->name = utf8ConstNew(info->name, -1);
+	class->name = makePathUtf8FromClassChar(info->name);
 
 	/* We must take care to not free some of these fields when unloading 
 	 * fully or partially loaded gcj classes (if that'll ever be supported) 
@@ -132,8 +177,8 @@ DBG(GCJ, dprintf("making kaffe class for %s@%p vtab=%p gcj=%p...\n",
 	}
 
 	/* 
-	 * I copy those such that resolveInterfaces can proceed like
-	 * for kaffe classes.
+	 * I copy those such that resolveInterfaces can proceed the same
+	 * way it does for for kaffe classes.
 	 */
 	class->interface_len = info->interfaceCount;
 	n = info->interfaceCount * sizeof(struct Hjava_lang_Class**);
@@ -144,19 +189,33 @@ DBG(GCJ, dprintf("making kaffe class for %s@%p vtab=%p gcj=%p...\n",
 
 	class->state = CSTATE_PRELOADED;
 	if (class->superclass == 0 && CLASS_IS_INTERFACE(class)) {	
-		/* gcj set superclass to zero for interfaces, but we 
-		 * set it to ObjectClass 
+		/* gcj sets superclass to zero for interfaces, but we 
+		 * set it to ObjectClass.
 		 */
 		class->superclass = ObjectClass;
 	}
 
 	SET_CLASS_GCJ(class);
 
-	/* anchor this class */
+	/* XXX: find a better place to do this:
+	 * If we're invoked via loadClass, the caller will anchor us after
+	 * we return.  This gc_add_ref call is only necessary if we're
+	 * resolving a class referenced from gcj code via its address, 
+	 * bypassing the usual name-based lookup path.   XXX
+	 */
 	if (!gc_add_ref(class)) {
-		postOutOfMemory(einfo);
-		return (0);
+		goto oom;
 	}
+
+	/* make sure this class is registered with the class pool 
+	 * Same caveat as for call to gc_add_ref above applies.
+	 */
+        centry = lookupClassEntry(class->name, 0, einfo);
+        if (centry == 0) {
+                return (0);
+        }
+	class->centry = centry;
+        centry->class = class;
 
 	return (class);
 oom:
@@ -165,7 +224,7 @@ oom:
 }
 
 /*
- *
+ * Build a Kaffe Method* struct from a GCJ method description
  *
  * NB:  It ain't pretty, and it duplicates a lot of code from 
  * classMethod.c:addMethod()
@@ -186,7 +245,10 @@ kenvMakeMethod(neutralMethodInfo* info, Hjava_lang_Class *c, errorInfo *einfo)
 	utf8ConstRelease(signature);
 
         if (METHOD_PSIG(mt) == NULL) {
-DBG(GCJ, dprintf("could not parse signature %s.%s ...\n", info->name, info->signature); )
+DBG(GCJ, 	
+		dprintf("could not parse signature %s.%s ...\n", 
+			info->name, info->signature); 
+    )
                 return (false);
         }
         mt->class = c;
@@ -196,31 +258,72 @@ DBG(GCJ, dprintf("could not parse signature %s.%s ...\n", info->name, info->sign
         mt->localsz = 0;
         mt->exception_table = 0;
 
-	if (info->idx == -1) {
+	if (*info->idx == -1) {
 		mt->idx = -1;
 	} else {
-		assert(c->superclass);
+		int supermsize;
+
+		/* avoid accessing superclass when mt->class == ObjectClass */
+		if (c == ObjectClass) {
+			supermsize = 0;
+		} else {
+			supermsize = c->superclass->msize;
+		}
+		assert(c == ObjectClass || c->superclass != 0);
+
 		/* assign a new method index unless this method was inherited */
-		if (getInheritedMethodIndex(c->superclass, mt) == false) {
-			mt->idx = c->superclass->msize + info->idx;
+		if (c->superclass != 0 
+		    && getInheritedMethodIndex(c->superclass, mt) == false) 
+		{
+			mt->idx = supermsize + (*info->idx)++;
 		}
 	}
-	METHOD_NATIVECODE(mt) = mt->ncode = info->ncode;
+	mt->ncode = info->ncode;
+
+	/* Interfaces and abstract class don't have a vtable in gcj, but 
+	 * their methods have non-zero indices.  METHOD_NATIVECODE accesses
+	 * a location within the dtable if idx != 0.
+	 *
+	 * XXX: Fix this whole "METHOD_NATIVECODE" mess and come up with
+	 * a more viable abstraction instead.
+	 */
+	if (!CLASS_IS_INTERFACE(mt->class) && !CLASS_IS_ABSTRACT(mt->class)) {
+		METHOD_NATIVECODE(mt) = mt->ncode;
+	}
 
         /* Mark constructors as such */
         if (utf8ConstEqual (mt->name, constructor_name)) {
                 mt->accflags |= ACC_CONSTRUCTOR;
         }
-	mt->accflags |= ACC_TRANSLATED;
+
+	/* Assumption 1: gcj always sets the 0x4000 ACC_TRANSLATED flag, 
+	 * even in abstract methods.
+	 */
+	assert(mt->accflags & ACC_TRANSLATED);
+
+	/*
+	 * We clear ACC_TRANSLATED flags for methods with no code, such as
+	 * abstract methods.
+	 */
+	if (info->ncode == 0 || (info->accflags & ACC_NATIVE)) {
+		mt->accflags &= ~ACC_TRANSLATED;
+	}
 
         CLASS_NMETHODS(c)++;
-DBG(GCJ, dprintf("making kaffe method %s.%s @%p idx=%d ncode=%p...\n", 
-	mt->name->data, METHOD_SIGD(mt), 
-	mt, mt->idx, METHOD_NATIVECODE(mt));)
+
+DBG(GCJ, 
+	dprintf("making kaffe method %s.%s @%p idx=%d m->ncode=%p...\n", 
+	    mt->name->data, METHOD_SIGD(mt), 
+	    mt, mt->idx, mt->ncode);
+    )
         return (true);
 }
 
-/* see addField in classMethod.c */
+/* 
+ * Create a kaffe Field structure from GCJ field description
+ *
+ * compare addField in classMethod.c 
+ */
 bool
 kenvMakeField(neutralFieldInfo* info, Hjava_lang_Class *c, errorInfo *einfo)
 {
@@ -236,17 +339,22 @@ kenvMakeField(neutralFieldInfo* info, Hjava_lang_Class *c, errorInfo *einfo)
         fld->accflags = info->flags;
 	fld->name = utf8ConstNew(info->name, -1);
 
-	/* need to think about what that would mean */
+	/* For now, that's true.  However, see
+	 * http://sourceware.cygnus.com/ml/java-discuss/1999-q4/msg00379.html
+	 * http://sourceware.cygnus.com/ml/java-discuss/1999-q4/msg00380.html
+	 * for how things may change.
+	 */
 	assert(!(fld->accflags & FIELD_CONSTANT_VALUE));
 
 	/* The resolved flags have the same meaning as in Kaffe---note that
-	 * gcj only resolves types if it can.  Array types, for instance,
-	 * are stored as unresolved field refs.  
+	 * gcj only resolves types if it can do so at link/compile time.  
+	 * Array types, for instance, are stored as unresolved field refs.
 	 */
 	if ((fld->accflags & FIELD_UNRESOLVED_FLAG) == 0) {
 		/* can't use kenvFindClassByAddress2 here cause we must avoid
 		 * attempts to process this class---especially if the
-		 * field points to a type of itself.
+		 * field points to a type that is the type of its enclosing
+		 * object.
 		 */
 		ftype = gcjFindClassByAddress(info->type, einfo);
 		if (!ftype) {
@@ -272,7 +380,7 @@ kenvMakeField(neutralFieldInfo* info, Hjava_lang_Class *c, errorInfo *einfo)
 	} else {
 		const char *ksig = info->type;
 		FIELD_TYPE(fld) = (Hjava_lang_Class*)
-			utf8ConstNew(info->type, -1);
+			makePathUtf8FromClassChar(ksig);
 		if (ksig[0] == 'L' || ksig[0] == '[') {
 			assert(info->bsize == PTR_TYPE_SIZE);
 		} /* else unresolved primitive type */
@@ -282,26 +390,21 @@ kenvMakeField(neutralFieldInfo* info, Hjava_lang_Class *c, errorInfo *einfo)
 		FIELD_ADDRESS(fld) = info->u.addr;
 	}
 
-DBG(GCJ, dprintf("making kaffe field #%d %s.%s @%p type=%p flags=0x%x addr=%p\n", 
-	info->idx,
-	CLASS_CNAME(c), fld->name->data, fld, 
-	fld->type,
-	fld->accflags, FIELD_ADDRESS(fld));
+DBG(GCJ, 
+	dprintf("making kaffe field #%d %s.%s @%p type=%p flags=0x%x addr=%p\n",
+		info->idx, CLASS_CNAME(c), fld->name->data, fld, 
+		fld->type, fld->accflags, FIELD_ADDRESS(fld));
     )
+
         CLASS_NFIELDS(c)++;
         if (fld->accflags & ACC_STATIC) {
                 CLASS_NSFIELDS(c)++;
         }
+
 	/* Instance fields are inserted in opposite order, so let's switch
-	 * them here.
+	 * them here.  This is what finishFields does.
 	 */
 	if (info->idx == 0) {
-DBG(GCJ,
-	dprintf("Finishing fields %p CLASS_IFIELDS %p CLASS_SFIELDS %p "
-		"CLASS_NFIELDS %d CLASS_NIFIELDS %d CLASS_NSFIELDS %d\n",
-		c, CLASS_IFIELDS(c), CLASS_SFIELDS(c),
-		CLASS_NFIELDS(c), CLASS_NIFIELDS(c), CLASS_NSFIELDS(c));
-    )
 		finishFields(c);
 	}
 	return (true);
@@ -325,7 +428,9 @@ kenvMakeJavaString(const char *utf8data, int utf8length, int utf8hash)
 	 */
 	assert((u->hash & 0xffff) == utf8hash);
 	s = utf8Const2Java(u);
-#if 1
+#if 0	/* This is kind of excessive, but turn it on if you need the
+	 * addresses of strings
+	 */
 DBG(GCJ, dprintf("making str `%s' ->%p value->%p v.dtable->%p\n",
 		utf8data, s, s->value, ((Hjava_lang_Object*)s->value)->dtable);
     )
@@ -346,7 +451,7 @@ DBG(GCJ, dprintf("making str `%s' ->%p value->%p v.dtable->%p\n",
 /*
  * Given a pointer to a java::lang::Class, return kaffe's surrogate class 
  */
-static Hjava_lang_Class*
+Hjava_lang_Class*
 kenvFindClassByAddress2(void *clazz, errorInfo *einfo)
 {
 	Hjava_lang_Class *kclass;
@@ -356,16 +461,17 @@ kenvFindClassByAddress2(void *clazz, errorInfo *einfo)
 	 */
 	kclass = gcjFindClassByAddress(clazz, einfo);
 
-	/* XXX either it wasn't preloaded or some other problem occurred
-	 * during processing.  XXX FIXME
+	/* Either it wasn't preloaded or some other problem occurred
+	 * during processing.  XXX think about what it would to do if
+	 * another problem occurred.
 	 *
-	 * If not a precompiled class, it could be an unresolved ref.
+	 * If it's not a precompiled class, it could be an unresolved ref.
 	 */
-	if (kclass == 0 /* XXX:  && error was class not found */) {
+	if (kclass == 0 /* XXX:  && error was class not found !? */) {
 		/* It could be a kaffe class, which was an unresolved symbol  
 		 * in the shared module, but for which there should be an entry
 		 * in the symbol table of the fixup module which we've loaded
-		 * by now
+		 * by now.
 		 */
 		char *name;
 		name = gcjFindUnresolvedClassByAddress(clazz);
@@ -383,8 +489,10 @@ DBG(GCJ, 		dprintf("gcjGetClass: failed to process class %s@%p\n",
 			return (0);
 		}        
 	}
-DBG(GCJ,dprintf("%s: %p -> %p %s\n", __FUNCTION__, clazz,
-	kclass, kclass ? CLASS_CNAME(kclass) : "<nil>");
+
+DBG(GCJ,
+	dprintf("%s: %p -> %p %s\n", __FUNCTION__, clazz,
+		kclass, kclass ? CLASS_CNAME(kclass) : "<nil>");
     )
 	return (kclass);
 }
@@ -406,44 +514,83 @@ kenvFindClassByAddress(void *gcjclazz)
 /*
  * Find a method that implements an interface by its name and signature
  * Unfortunately, gcj doesn't use the constant-time method to lookup
- * interfaces yet.  They use a cache instead.  Should this become a
- * problem we can use a cache as well---but I hope they'll just follow
- * suit and implement the lookup based on interface class and index.
+ * interfaces yet.  I hope they'll follow suit and implement the lookup 
+ * based on interface class and index.
  */
+
+#define HSIZE	1024
+struct mCacheEntry {
+	Hjava_lang_Class 	*kclass;
+	const char 		*mname;
+	const char 		*msig;
+	Method 			*meth;
+} mCache[HSIZE];
+
+#define MHASH(V)   ((((uintp)(V) >> 2) ^ ((uintp)(V) >> 9))%HSIZE)
+
+/* Try to lookup a class/methodname/methodsignature combo in the cache,
+ * return location to where Method can be found.  If we have a cache miss,
+ * clear that location.
+ */
+static inline
+Method **
+tryCache(Hjava_lang_Class *kclass, const char *mname, const char *msig)
+{
+	/* XXX doublecheck how good this is */
+	int h = MHASH(kclass) ^ MHASH(mname) ^ MHASH(msig);
+	struct mCacheEntry *e = mCache + h;
+
+	if (e->kclass != kclass || e->mname != mname || e->msig != msig) {
+		e->kclass = kclass;
+		e->mname = mname;
+		e->msig = msig;
+		e->meth = 0;
+	}
+	return (&(e->meth));
+}
+
 void* 
 kenvFindMethod(Hjava_lang_Class *kclass, 
 		const char *mname,
 	        const char *msig)
 {
-	Utf8Const *name, *sig;
 	Method *meth; 
+	Method **mptr;
 	errorInfo info;
-	char buf[128], *p = buf;
-	int siglen;
 
-	name = utf8ConstNew(mname, -1);
-	
-	siglen = strlen(msig);
-	if (siglen > sizeof (buf)) {
-		p = KMALLOC(siglen+1);
+	mptr = tryCache(kclass, mname, msig);
+	meth = *mptr;
+	if (meth) {
+		goto found;
 	}
 
-	/* Ouch. GCJ keeps signatures in dotted form, we keep them
-	 * in slashed form
-	 */
-	classname2pathname(msig, p);
-	sig = utf8ConstNew(p, siglen);
+        for (; kclass != 0; kclass = kclass->superclass) {
 
-	meth = findMethod(kclass, name, sig, &info);
-	if (!meth) {
-		throwError(&info);
-	}
-	utf8ConstRelease(name);
-	utf8ConstRelease(sig);
+		int n = CLASS_NMETHODS(kclass);        
+		for (meth = CLASS_METHODS(kclass); --n >= 0; ++meth) {
 
-	if (p != buf) {
-		KFREE(p);
+			/* Ouch.  GCJ keeps signatures in dotted form, we 
+			 * keep them in slashed form.
+			 */
+			if (!strcmp(mname, meth->name->data)
+			    && comparePath2ClassName(
+			    		PSIG_DATA(METHOD_PSIG(meth)), 
+					msig))
+			{
+				*mptr = meth;
+			    	goto found;
+			}
+		}
 	}
+	postExceptionMessage(&info, JAVA_LANG(NoSuchMethodError), mname);
+	throwError(&info);
+	return (0);
+found:
+
+DBG(GCJ, dprintf("%s: %s.%s is at %p\n", 
+		__FUNCTION__, mname, msig, METHOD_NATIVECODE(meth));
+    )
+	assert(METHOD_NATIVECODE(meth));
 	return (METHOD_NATIVECODE(meth));
 }
 
@@ -466,6 +613,16 @@ kenvTranslateMethod(const char *classname, const char *mname, const char *msig)
 		throwError(&info);
 	}
 
+	/* 
+	 * GCJ invokes (static) native methods w/o calling Jv_InitClass
+	 * first.  (Jv_InitClass is the first thing a gcj static method
+	 * does.)  Hence, make sure the class's static initialized has
+	 * been invoked to ensure the static native method is even here.
+	 *
+	 * XXX need a different approach for static linking here!
+	 */
+	kenvProcessClass(kclass);
+
 	for (cc = kclass; cc; cc = cc->superclass) {
 		int  nm = CLASS_NMETHODS(cc);
 		meth = CLASS_METHODS(cc);
@@ -478,6 +635,11 @@ kenvTranslateMethod(const char *classname, const char *mname, const char *msig)
 			meth++;
 		}
 	}
+DBG(GCJ,
+	dprintf("%s: NoSuchMethod %s.%s.%s\n", __FUNCTION__, 
+			classname, mname, msig);
+    )
+
 	postExceptionMessage(&info, JAVA_LANG(NoSuchMethodError), 
 		"%s.%s.%s", classname, mname, msig);
 	throwError(&info);
@@ -494,9 +656,13 @@ found:
 	return (METHOD_NATIVECODE(meth));
 }
 
-
 /*
- * Given a kaffe class that is a surrogate gcj class, find the superclass.
+ * Find a class by its GCJ address.
+ * Exception: if we're asked to find a class with the address
+ * "ObjectClass", return the address of ObjectClass???
+ *
+ * XXX this has only to do with interface/java.lang.Object
+ * XXX CLEAN ME UP and possibly eliminate this function.
  */
 Hjava_lang_Class* 
 gcjGetClass(void *jclazz, errorInfo *einfo)
@@ -513,7 +679,9 @@ gcjGetClass(void *jclazz, errorInfo *einfo)
 
 	kclass = kenvFindClassByAddress2(jclazz, einfo);
 	if (kclass == 0) {
-DBG(GCJ, dprintf("gcjGetClass: class not found at %p\n", jclazz); )
+DBG(GCJ, 	
+		dprintf("gcjGetClass: class not found at %p\n", jclazz); 
+	)
 		return (0);
 	}
 	return (kclass);

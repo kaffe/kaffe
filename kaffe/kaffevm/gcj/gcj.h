@@ -34,6 +34,11 @@ extern fixup_table_t *fixupTable;
 extern "C" {
 #endif
 
+struct kaffe_frame_descriptor {
+        int idx;
+	int offset;
+};
+
 typedef struct {
 	int	idx;			/* index running from fCount...0 */
 	char* 	name;			/* zero-terminated utf8 */
@@ -51,7 +56,7 @@ typedef struct {
 	char* 	signature;		/* zero-terminated utf8 */
 	unsigned short accflags;	/* flags according to java conv. */
 	void* 	ncode;			/* where the code is */
-	int	idx;			/* index of this method */
+	int	*idx;			/* ptr to vtable index of this method */
 } neutralMethodInfo;
 
 typedef struct {
@@ -85,6 +90,8 @@ extern struct Hjava_lang_Class* gcjFindClassByUtf8Name(
 	const char* utf8name, struct _errorInfo*);
 extern bool gcjProcessClass(struct Hjava_lang_Class* clazz, void *gcjClass,
 			    struct _errorInfo* einfo);
+extern bool gcjProcessClassConstants(struct Hjava_lang_Class* clazz, 
+				     void *gcjClass, struct _errorInfo* einfo);
 
 extern struct Hjava_lang_Class* gcjGetClass(void *jclazz, struct _errorInfo*);
 
@@ -92,8 +99,9 @@ extern char *gcjFindUnresolvedClassByAddress(void *symbol);
 extern struct Hjava_lang_Class* gcjFindClassByAddress(void *clazz, 
 						      struct _errorInfo*);
 
-extern void *kenvTranslateMethod(const char *classname, 
-				 const char *mname, const char *msig);
+extern struct Hjava_lang_Class *gcjFindMatchClass(void *minfo, 
+						  struct _errorInfo *einfo);
+
 /*
  * Methods prefixed with "kenv" are implemented in the kaffe glue code
  * to allow it to access functions from the kaffe environment  
@@ -108,6 +116,9 @@ extern struct Hjava_lang_Object * kenvCreateObject(
 extern void* kenvFindMethod(struct Hjava_lang_Class *kclass, 
 	const char *mname, 
 	const char *msig);
+
+extern void *kenvTranslateMethod(const char *classname, 
+				 const char *mname, const char *msig);
 
 extern void* kenvMakeJavaString(const char *utf8data, int utf8length, 
 				int utf8hash);
@@ -124,12 +135,14 @@ extern bool kenvMakeField(neutralFieldInfo* info,
 extern void kenvProcessClass(struct Hjava_lang_Class* clazz);
 extern void kenvPostClassNotFound(const char *utf8name, struct _errorInfo *);
 
+extern void kenvThrowBadArrayIndex(int idx);
+extern struct Hjava_lang_Class* kenvFindClassByAddress2(void *clazz, 
+							struct _errorInfo *);
+
 extern void* kenvMalloc(int size, struct _errorInfo *);
 extern void kenvFree(void * ptr);
 
-/* XXX LATER
-void gcjDispatchException(stackTraceInfo* frame, exceptionInfo* einfo, Hjava_lang_Throwable* eobj);
-*/
+extern bool comparePath2ClassName(const char *cname, const char *pname);
 
 #define GCJ2KAFFE(gcjClass)	((struct Hjava_lang_Class*)((gcjClass)->thread))
 

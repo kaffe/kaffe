@@ -25,6 +25,7 @@
 #include <gcj/method.h>
 
 static java::lang::Class *preCList;
+static char *findPrimitiveClass(void *symbol);
 
 /*
  * Repeat those from libjava/include/java-cpool.h
@@ -160,7 +161,11 @@ extern "C" char *
 gcjFindUnresolvedClassByAddress(void *symbol)
 {
 	assert (fixupTable);
-	return (fixupTable->findClass(symbol));
+	char *name = fixupTable->findClass(symbol);
+	if (name == 0) {
+		name = findPrimitiveClass(symbol);
+	}
+	return (name);
 }
 
 
@@ -412,7 +417,8 @@ makeMethods(java::lang::Class *clazz,
 		struct Hjava_lang_Class *kclass, 
 		struct _errorInfo *einfo)
 {
-	int vidx = 0;	// virtual index
+	int vidx = 0;		// virtual index
+	int minusone = -1;
 
 	for (int i = 0; i < clazz->method_count; i++) {
 		neutralMethodInfo minfo;
@@ -429,11 +435,12 @@ makeMethods(java::lang::Class *clazz,
 		    (meth->accflags & Modifier::PRIVATE) ||
 			!strcmp(meth->name->data, "<init>")) 
 		{
-			minfo.idx = -1;
+			minfo.idx = &minusone;
 		} else {
-			minfo.idx = vidx++;
+			minfo.idx = &vidx;
 		}
 
+		/* kenvMakeMethod will increase vidx as appropriate */
 		if (kenvMakeMethod(&minfo, kclass, einfo) == false) {
 			return (false);
 		}
@@ -457,6 +464,20 @@ DBG(GCJ, 		dprintf("%s: found class by j.l.C `%s'\n",
 	return (0);
 }
 
+extern "C" bool
+comparePath2ClassName(const char *cname, const char *pname) 
+{
+	register unsigned int a, b;
+
+        while ((a = *cname++), (b = *pname++), a && b) {
+		if (a == b || a == '/' && b == '.') {
+			continue;
+		}
+		return (false);
+	}
+	return (!(a || b));
+}
+
 /*
  * This method finds a gcj class by its utf8 name.
  * We find the gcj, remove it from the list of gcj classes,
@@ -468,8 +489,10 @@ gcjFindClassByUtf8Name(const char* utf8name, struct _errorInfo *einfo)
 	java::lang::Class* ptr;
 
 	for (ptr = preCList; ptr != 0; ptr = ptr->next) {
-		if (!strcmp(utf8name, ptr->name->data)) {
-DBG(GCJ, dprintf("%s: found class by name `%s'\n", __FUNCTION__, utf8name); )
+		if (comparePath2ClassName(utf8name, ptr->name->data)) {
+DBG(GCJ, 		dprintf("%s: found class by name `%s'\n", 
+				__FUNCTION__, utf8name); 
+    )
 
 			return (constructSurrogate(ptr, einfo));
 		}
@@ -483,7 +506,10 @@ DBG(GCJ, dprintf("%s: found class by name `%s'\n", __FUNCTION__, utf8name); )
  * We must perform the same steps that the gcj-compiled code expects the
  * libjava/libgcj run-time to do.
  *
- * Mainly this is the resolution of constant pool entries. 
+ * This is the construction of the kaffe surrogate fields and methods
+ * and the resolution of constant pool entries.   The latter is done
+ * in gcjProcessClassConstants which is invoked at a later processing
+ * stage for bootstrapping reasons.
  */
 bool
 gcjProcessClass(struct Hjava_lang_Class* kclazz, void *gcjClass, 
@@ -491,7 +517,22 @@ gcjProcessClass(struct Hjava_lang_Class* kclazz, void *gcjClass,
 {
 	java::lang::Class *clazz = (java::lang::Class*)gcjClass;
 
-DBG(GCJ, dprintf("GCJ: ProcessClass `%s'\n", clazz->name->data); )
+	if (makeMethods(clazz, kclazz, einfo) == false) {
+		return (false);
+	}
+	if (makeFields(clazz, kclazz, einfo) == false) {
+		return (false);
+	}
+	return (true);
+}
+
+bool
+gcjProcessClassConstants(struct Hjava_lang_Class* kclazz, void *gcjClass, 
+	struct _errorInfo *einfo)
+{
+	java::lang::Class *clazz = (java::lang::Class*)gcjClass;
+
+DBG(GCJ, dprintf("GCJ: ProcessClassConstants `%s'\n", clazz->name->data); )
 
 	/* from libjava/java/lang/natClassLoader.cc: _Jv_PrepareCompiledClass */
 	_Jv_Constants *pool = &clazz->constants;
@@ -542,14 +583,45 @@ DBG(GCJ, dprintf("GCJ: ProcessClass `%s'\n", clazz->name->data); )
 			    	(int)pool->tags[index]);
 		}
 	}
-	if (makeMethods(clazz, kclazz, einfo) == false) {
-		return (false);
-	}
-	if (makeFields(clazz, kclazz, einfo) == false) {
-		return (false);
-	}
 	return (true);
 }
+
+/*
+ * Given a pointer as passed in libgcj's exception matcher, return
+ * the kaffe class against which we should match.
+ */
+struct Hjava_lang_Class *
+gcjFindMatchClass(void *minfo, struct _errorInfo *einfo)
+{
+	/* libgcj's exception.cc says:
+
+	     // The match_info is either a (java::lang::Class*) or
+	     // match_info is one more than a (Utf8Const*).
+
+	    And then they code in ugly GNU style:
+
+	      if (sizeof(void*) != sizeof(size_t))
+		abort();
+
+	      size_t mi = (size_t) match_info;
+	      if ((mi & 1) != 0)
+		match_info = _Jv_FindClass ((Utf8Const*) (mi - 1), NULL);
+	      if (! _Jv_IsInstanceOf ((jobject) info->value,
+				      (jclass) match_info))
+		return NULL;
+	 */
+
+	/* is it the class's utf8 name */
+	if ((((int)minfo) & 1) != 0) {
+		_Jv_Utf8Const *utf8 = (_Jv_Utf8Const *)((int)minfo - 1);
+		return (gcjFindClassByUtf8Name(utf8->data, einfo));
+	}
+
+
+	/* else it's a pointer to the class itself */
+	return (kenvFindClassByAddress2(minfo, einfo));
+}
+
 
 /*
  * Initialise kaffe surrogate type for primitive gcj classes.
@@ -607,10 +679,32 @@ gcjInitPrimitiveClasses(void)
 	KCLASS(short)
 	KCLASS(void)
 #undef KCLASS
-	/* check that these flag values are the same still */
+	/* check that these flag values are still the same */
 	assert (FIELD_UNRESOLVED_FLAG == _Jv_FIELD_UNRESOLVED_FLAG);
 	assert (FIELD_CONSTANT_VALUE == _Jv_FIELD_CONSTANT_VALUE);
 }
 
+/* 
+ * Find a primitive classes name.
+ */
+static char *
+findPrimitiveClass(void *symbol)
+{
+#define I(type) 				\
+	if (symbol == &_Jv_##type##Class) {	\
+		return (#type);			\
+	} 
+
+	I(int) else
+	I(long) else
+	I(boolean) else
+	I(char) else
+	I(float) else
+	I(double) else
+	I(byte) else
+	I(short) else
+	I(void) else { return (0); }
+#undef I
+}
 
 #endif /* HAVE_GCJ_SUPPORT */
