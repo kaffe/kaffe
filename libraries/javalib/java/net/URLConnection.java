@@ -160,10 +160,6 @@ public abstract class URLConnection
    */
   protected URL url;
 
-  /**
-   * The list of request properties for this connection
-   */
-  private final Hashtable req_props;
 
   /**
    * Creates a URL connection to a given URL. A real connection is not made.
@@ -179,7 +175,6 @@ public abstract class URLConnection
     this.url = url;
     allowUserInteraction = defaultAllowUserInteraction;
     useCaches = defaultUseCaches;
-    req_props = new Hashtable();
   }
 
   /**
@@ -298,15 +293,8 @@ public abstract class URLConnection
    */
   public String getHeaderField(String name)
   {
-    for (int i = 0; ; i++)
-      {
-        String key = getHeaderFieldKey(i);
-        if (key == null)
-          return(null);
-
-        if (key.toLowerCase().equals(name.toLowerCase()))
-          return(getHeaderField(i));
-      }
+    // Subclasses for specific protocols override this.
+    return null;
   }
 
   /**
@@ -746,7 +734,8 @@ public abstract class URLConnection
     if (key == null)
       throw new NullPointerException ("key is null");
     
-    req_props.put (key.toLowerCase(), value);
+    // Do nothing unless overridden by subclasses that support setting
+    // header fields in the request.
   }
 
   /**
@@ -772,10 +761,8 @@ public abstract class URLConnection
     if (key == null)
       throw new NullPointerException ("key is null");
     
-    if (getRequestProperty (key) == null)
-      {
-        setRequestProperty (key, value);
-      }
+    // Do nothing unless overridden by subclasses that support adding
+    // header fields in the request.
   }
 
   /**
@@ -795,7 +782,9 @@ public abstract class URLConnection
     if (connected)
       throw new IllegalStateException ("Already connected");
 
-    return((String)req_props.get(key.toLowerCase()));
+    // Overridden by subclasses that support reading header fields from the
+    // request.
+    return null;
   }
 
   /**
@@ -812,7 +801,9 @@ public abstract class URLConnection
     if (connected)
       throw new IllegalStateException ("Already connected");
 
-    return Collections.unmodifiableMap(req_props);
+    // Overridden by subclasses that support reading header fields from the
+    // request.
+    return Collections.EMPTY_MAP;
   }
 
   /**
@@ -823,9 +814,10 @@ public abstract class URLConnection
    * @param key The request property name the default is being set for
    * @param value The value to set the default to
    *
-   * @deprecated 1.3 The method setRequestProperty should be used instead
+   * @deprecated 1.3 The method setRequestProperty should be used instead.
+   * This method does nothing now.
    *
-   * @see URLConnectionr#setRequestProperty(String key, String value)
+   * @see URLConnection#setRequestProperty(String key, String value)
    */
   public static void setDefaultRequestProperty (String key, String value)
   {
@@ -841,11 +833,12 @@ public abstract class URLConnection
    *
    * @return The value of the default property or null if not available
    * 
-   * @deprecated 1.3 The method getRequestProperty should be used instead
+   * @deprecated 1.3 The method getRequestProperty should be used instead.
+   * This method does nothing now.
    *
    * @see URLConnection#getRequestProperty(String key)
    */
-  public static String getDefaultRequestProperty (String key)
+  public static String getDefaultRequestProperty(String key)
   {
     // This method does nothing since JDK 1.3.
     return null;

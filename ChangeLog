@@ -1,4 +1,16 @@
 2003-12-31  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javlaib/java/io/ObjectStreamClass.java,
+	libraries/javalib/gnu/java/net/protocol/http/Connection.java,
+	libraries/javalib/java/net/URLConnection.java:
+	Synchronized with Classpath.
+
+	* libraries/javalib/gnu/java/net/protocol/file/Handler.java:
+	Taken from GCJ. Complexity greatly reduced and fix many mauve failures.
+
+	* 
+	
+2003-12-31  Guilhem Lavaux <guilhem@kaffe.org>
 	
 	* libraries/javalib/java/io/File.java: Merged case insensitivity
 	from classpath.

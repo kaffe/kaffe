@@ -244,51 +244,52 @@ public final class CollationElementIterator
       {
 	String key, key_old;
 
-	try
-	  {
-	    Object object = null;
-	    int p = 1;
-	    
-	    // IMPROVE: use a TreeMap with a prefix-ordering rule.
-	    key_old = key = null;
-	    do
-	      {
-		if (object != null)
-		  key_old = key;
-		key = work_text.substring (idx, idx+p);
-		object = collator.prefix_tree.get (key);
-		p++;
-	      }
-	    while (idx+p <= work_text.length());
-
-	    if (object == null)
-	      key = key_old;
+	Object object = null;
+	int p = 1;
 	
-	    RuleBasedCollator.CollationElement prefix =
-	      (RuleBasedCollator.CollationElement)collator.prefix_tree.get (key);
-
-	    if (prefix.expansion != null)
-	      {
-		work_text = prefix.expansion + work_text.substring (idx+prefix.char_seq.length());
-		idx = 0;
-		v.add (prefix);
-	      }
-	    else
-	      {
-		if (!prefix.ignore)
-		  v.add (prefix);
-		idx += prefix.char_seq.length ();
-	      }
-	  }
-	catch (NullPointerException _)
+	// IMPROVE: use a TreeMap with a prefix-ordering rule.
+	key_old = key = null;
+	do
 	  {
-	    RuleBasedCollator.CollationElement e = collator.getDefaultElement(work_text.charAt (idx));
+	    if (object != null)
+	      key_old = key;
+	    key = work_text.substring (idx, idx+p);
+	    object = collator.prefix_tree.get (key);
+	    p++;
+	  }
+	while (idx+p <= work_text.length());
+	
+	if (object == null)
+	  key = key_old;
+	
+	RuleBasedCollator.CollationElement prefix =
+	  (RuleBasedCollator.CollationElement) collator.prefix_tree.get (key);
+	
+	if (prefix == null)
+	  {
+	    RuleBasedCollator.CollationElement e =
+	      collator.getDefaultElement(work_text.charAt (idx));
 	    
 	    v.add (e);
 	    idx++;
+	    continue;
+	  }
+
+	if (prefix.expansion != null)
+	  {
+	    work_text = prefix.expansion
+	      + work_text.substring (idx+prefix.char_seq.length());
+	    idx = 0;
+	    v.add (prefix);
+	  }
+	else
+	  {
+	    if (!prefix.ignore)
+	      v.add (prefix);
+	    idx += prefix.char_seq.length();
 	  }
       }
-
+    
     text_decomposition = v.toArray();
   }
 
@@ -301,17 +302,17 @@ public final class CollationElementIterator
    */
   public void setText(CharacterIterator ci)
   {
-    StringBuffer sb = new StringBuffer ("");
+    StringBuffer sb = new StringBuffer("");
 
     // For now assume we read from the beginning of the string.
-    char c = ci.first ();
+    char c = ci.first();
     while (c != CharacterIterator.DONE)
       {
-        sb.append (c);
-        c = ci.next ();
+        sb.append(c);
+        c = ci.next();
       }
 
-    setText (sb.toString ());
+    setText(sb.toString());
   }
 
   /**
@@ -338,12 +339,12 @@ public final class CollationElementIterator
   public void setOffset(int offset)
   {
     if (offset < 0)
-      throw new IllegalArgumentException ("Negative offset: " + offset);
+      throw new IllegalArgumentException("Negative offset: " + offset);
 
-    if ((text.length () > 0) && (offset > 0))
-      throw new IllegalArgumentException ("Offset too large: " + offset);
-    else if (offset > (text.length () - 1))
-      throw new IllegalArgumentException ("Offset too large: " + offset);
+    if ((text.length() > 0) && (offset > 0))
+      throw new IllegalArgumentException("Offset too large: " + offset);
+    else if (offset > (text.length() - 1))
+      throw new IllegalArgumentException("Offset too large: " + offset);
 
     textIndex = 0;
     for (int i=0;i<text_decomposition.length;i++)
