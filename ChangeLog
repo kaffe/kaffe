@@ -1,5 +1,17 @@
 2004-12-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/Component.java,
+	libraries/javalib/java/awt/geom/Rectangle2D.java:
+        Resynced with GNU Classpath.
+
+	2004-12-06  David Gilbert <david.gilbert@object-refinery.com>
+
+        * java/awt/Component.java,
+        java/awt/geom/Rectangle2D.java:
+        Javadoc fixes.
+
+2004-12-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/io/BufferedInputStream.java:
         Resynced with GNU Classpath.
 
