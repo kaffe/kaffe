@@ -1,5 +1,9 @@
 Thu Aug 15 14:35:16 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
+	* kaffe/kaffevm/jit/machine.h: fixed compilation error.
+
+Thu Aug 15 14:35:16 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
 	* libraries/javalib/rebuildLib.in: removed the 32 MB cap on memory
 	utilisation during compilation of class libraries as it prevented
 	kaffe from compiling its class libraries on
