@@ -105,17 +105,6 @@ void unhandledException(struct Hjava_lang_Throwable *eobj) NONRETURNING;
 
 extern void initExceptions(void);
 
-static inline bool vmExcept_isJNIFrame(VmExceptHandler* eh) __UNUSED__;
-static inline bool vmExcept_JNIContains(VmExceptHandler* eh, uintp fp) __UNUSED__;
-static inline void vmExcept_setJNIFrame(VmExceptHandler* eh, uintp fp) __UNUSED__;
-static inline struct _methods* vmExcept_getMeth(VmExceptHandler* eh) __UNUSED__;
-static inline void vmExcept_setMeth(VmExceptHandler* eh, struct _methods* m) __UNUSED__;
-static inline void vmExcept_setSyncObj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj) __UNUSED__;
-static inline struct Hjava_lang_Object* vmExcept_getSyncObj(VmExceptHandler* eh) __UNUSED__;
-static inline void vmExcept_setPC(volatile VmExceptHandler* eh, u4 pc) __UNUSED__;
-static inline u4 vmExcept_getPC(const VmExceptHandler* eh) __UNUSED__;
-static inline void vmExcept_jumpToHandler(VmExceptHandler* frame) __UNUSED__ NONRETURNING;
-
 static inline bool
 vmExcept_isJNIFrame(VmExceptHandler* eh)
 {

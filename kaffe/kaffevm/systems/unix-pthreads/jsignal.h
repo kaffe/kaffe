@@ -43,6 +43,4 @@ void unblockAsyncSignals(void);
 void blockAsyncSignals(void);
 void unblockAndCheckSignal(int sig);
 
-void detectStackBoundaries(jthread_t jtid, int mainThreadStackSize);
-
 #endif /* UNIXJTHREAD_SIGNAL_H */

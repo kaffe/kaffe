@@ -131,7 +131,10 @@ JNIEXPORT jstring JNICALL
 Java_gnu_classpath_VMSystemProperties_getKaffeLibraryPath (JNIEnv *env,
                                                            jclass klass __attribute__((__unused__)))
 {
-  return (*env)->NewStringUTF(env, getLibraryPath());
+  const char * path;
+
+  path = getLibraryPath();
+  return (*env)->NewStringUTF(env, path);
 }
 
 JNIEXPORT jstring JNICALL

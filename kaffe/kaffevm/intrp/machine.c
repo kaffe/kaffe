@@ -52,7 +52,7 @@
 /*
  * Define information about this engine.
  */
-char* engine_name = "Interpreter";
+const char* engine_name = "Interpreter";
 
 #define	define_insn(code)	break;					\
 				case code:				\
@@ -79,7 +79,12 @@ char* engine_name = "Interpreter";
 /* For JIT3 compatibility */
 #define check_array_store(a,b)		softcall_checkarraystore(a,b)
 #define explicit_check_null(x,obj,y)	EXPLICIT_CHECK_NULL(x,obj,y)
+
+#if defined(KAFFE_VMDEBUG)
+#define check_null(x,obj,y)		EXPLICIT_CHECK_NULL(x,obj,y)
+#else
 #define check_null(x,obj,y)		CHECK_NULL(x,obj,y)
+#endif
 #define check_div(x,obj,y)
 #define check_div_long(x,obj,y)
 
@@ -161,7 +166,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	{
 	    int32 *p = (int32 *) &lcl[meth->localsz + meth->stacksz];
 	    while (p-- > (int32*)lcl)
-		*p = 0x00c0ffee;
+		*p = UNINITIALIZED_STACK_SLOT;
 	}
 #endif
 

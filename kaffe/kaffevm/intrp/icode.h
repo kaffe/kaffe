@@ -15,6 +15,10 @@
 #include "slots.h"
 #include "soft.h"
 
+#if defined(KAFFE_VMDEBUG)
+static const int32 UNINITIALIZED_STACK_SLOT = 0x00c0ffee;
+#endif
+
 #define	move_long_const(t, c)			(t)[0].v.tlong = (c)
 #define	add_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong + (f2)[0].v.tlong
 #define	sub_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong - (f2)[0].v.tlong
@@ -319,6 +323,23 @@ static inline void check_array_index(const slots* array_slot,
 {
 	const jint array_index = index_slot->v.tint;
 	const void* array_reference = array_slot->v.taddr;
+
+#if defined(KAFFE_VMDEBUG)
+	/* Make sure that array reference is valid.
+	 * Check for NULL first. 
+	 *
+	 * The check only works in debug mode, as on most 
+	 * platforms we rely on the MMU to detect NULL.
+	 */
+	assert(array_reference != NULL);
+	/* Then check if array_reference 
+	 * comes from an uninitialized stack slot.
+	 *
+	 * The check only works in debug mode, as then the 
+	 * stack is filled with 0xc0ffee.
+	 */
+	assert(array_reference != (void *) UNINITIALIZED_STACK_SLOT);
+#endif
 
 	if (array_index < 0 ||
 	    array_index >= ARRAY_SIZE(array_reference))

@@ -1,3 +1,26 @@
+2005-02-05  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/exception.h: Removed explicit
+	prototypes for the inline functions.
+
+	* kaffe/kaffevm/external.h: Added missing include.
+
+	* kaffe/kaffevm/intrp/icode.h (UNINITIALIZED_STACK_SLOT):
+	New contant (available for debug code).
+	(check_array_index) Added additional asserts in debug 
+	mode.
+
+	* kaffe/kaffevm/intrp/machine.c (engine_name): Made const.
+	(check_null) Use EXPLICIT_CHECK_NULL in debug mode.
+	(virtualMachine) Use UNINITIALIZED_STACK_SLOT.
+
+	* kaffe/kaffevm/systems/unix-pthreads/jsignal.h
+	(detectStackBoundaries) : Removed redundant prototype.
+
+	* libraries/clib/native/gnu_classpath_VMSystemProperties.c
+	(Java_gnu_classpath_VMSystemProperties_getKaffeLibraryPath):
+	Simplified.
+
 2005-02-04  Jim Huang  <jserv@kaffe.org>
 
 	* FAQ/FAQ.awt:

@@ -12,6 +12,7 @@
 #ifndef __external_h
 #define __external_h
 
+#include "java_lang_ClassLoader.h"
 #include "gtypes.h"
 
 #define	MAXSTUBLEN	1024
