@@ -3,6 +3,32 @@
  * writer.close() flushing the internal buffer on encoder(already fixed)
  * Calendar.getInstance().get(YEAR) returning non-zero
 
-* Make threading model runtime selectable.
-* Figure out deadlock issues with System.gc() on smp(finalexc, ClassGC,
-  GCTest all fail on smp).
+* Architectural changes:
+ * Make threading model runtime selectable.
+ * Make runtime engine runtime selectable
+ * Make gc backend runtime selectable
+
+* Nasty bugs:
+ * Figure out deadlock issues with System.gc() on smp(finalexc, ClassGC,
+   GCTest all fail on smp).
+
+* Merging work:
+  * From GNU Classpath:
+    java.util.zip, java.lang.ref, java.lang.reflect, java.lang
+  * gcjwebplugin
+  * verifier from gcj (rob gonzalez)
+
+* Build system: (dalibor)
+  * Explicit support to use an installed javac/jikes/gcjx/kjc for bootstrap
+  * Build java libs first, then run kaffeh on them to generate the
+  native headers, and then build the rest of kaffe. That should get rid of 
+  Klasses.jar.bootstrap.
+  * Make make dist and make distclean work without hickups.
+  * Fix GNU Make dependencies.
+  * Non-recursive build, single Makefile.am for kaffe.
+
+* Pending patches (dalibor)
+  * Gerrit Haase's Cygwin patches 
+  * L4 port from Ronald Aigner ?
+  * Whatever got dropped on the list
+  * Regular resyncing with GNU Classpath, gjdoc.
