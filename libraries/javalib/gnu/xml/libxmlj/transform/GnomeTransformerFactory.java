@@ -158,6 +158,12 @@ public class GnomeTransformerFactory
             DOMResult.FEATURE.equals (name));
   }
 
+  public void setFeature(String name, boolean value)
+    throws TransformerConfigurationException
+  {
+    throw new TransformerConfigurationException(name);
+  }
+
   /**
    *  Returns a new instance of class {@link Transformer} for a
    *  null souce.

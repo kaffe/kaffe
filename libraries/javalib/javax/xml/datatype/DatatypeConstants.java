@@ -1,6 +1,6 @@
 /*
  * DatatypeConstants.java
- * Copyright (C) 2004 Chris Burdess
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -42,6 +42,8 @@ import javax.xml.namespace.QName;
 
 /**
  * Basic data type constants.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  * @since 1.3
  */
 public final class DatatypeConstants
@@ -153,12 +155,12 @@ public final class DatatypeConstants
   /**
    * Comparison result.
    */
-  public static final int INDETERMINATE = -2;
+  public static final int INDETERMINATE = 2;
   
   /**
    * Comparison result.
    */
-  public static final int FIELD_UNDEFINED = -3;
+  public static final int FIELD_UNDEFINED = -2147483648;
 
   /**
    * Constant that represents the years field.

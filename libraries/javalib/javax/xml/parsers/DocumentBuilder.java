@@ -1,7 +1,6 @@
 /*
  * DocumentBuilder.java
- * Copyright (C) 2001 Andrew Selkirk
- * Copyright (C) 2001 The Free Software Foundation
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -39,159 +38,143 @@
 
 package javax.xml.parsers;
 
-// Imports
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
-// import java.net.*;
 import javax.xml.validation.Schema;
-import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
+import org.w3c.dom.DOMImplementation;
 import org.xml.sax.InputSource;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-
 /**
- * Uses an XML parser to construct a DOM document.
- * @author	Andrew Selkirk, David Brownell
- * @version	1.2
+ * Convenience class for parsing an XML document into a W3C DOM object
+ * graph.
+ * Instances of this class are <em>not</em> guaranteed to be thread safe.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public abstract class DocumentBuilder
 {
-  /** Only subclasses may use the constructor. */
-  protected DocumentBuilder() { }
 
-
-  //-------------------------------------------------------------
-  // Methods ----------------------------------------------------
-  //-------------------------------------------------------------
-
-  public abstract DOMImplementation getDOMImplementation ();
-
-  public abstract boolean isNamespaceAware();
-
-  public abstract boolean isValidating();
-
-  public abstract Document newDocument();
-
-  // we don't demand jdk 1.2 File.toURL() in the runtime
-  // keep in sync with gnu.xml.util.Resolver
-  // and javax.xml.transform.stream.StreamSource
-  static String fileToURL (File f)
-    throws IOException
+  protected DocumentBuilder()
   {
-    String	temp;
-
-    // FIXME: getAbsolutePath() seems buggy; I'm seeing components
-    // like "/foo/../" which are clearly not "absolute"
-    // and should have been resolved with the filesystem.
-
-    // Substituting "/" would be wrong, "foo" may have been
-    // symlinked ... the URL code will make that change
-    // later, so that things can get _really_ broken!
-
-    temp = f.getAbsolutePath ();
-
-    if (File.separatorChar != '/')
-      temp = temp.replace (File.separatorChar, '/');
-    if (!temp.startsWith ("/"))
-      temp = "/" + temp;
-    if (!temp.endsWith ("/") && f.isDirectory ())
-      temp = temp + "/";
-    return "file:" + temp;
   }
 
   /**
-   * Constructs an InputSource from the file, and invokes parse ().
-   * The InputSource includes the URI for the file.
-   * @param file the file to parse
-   * @return the DOM representation of the xml document
-   * @exception IOException 
-   * @exception SAXException if parse errors occur
-   * @exception IllegalArgumentException if the file is null
+   * Parse the specified input stream and return a DOM Document.
+   * Prefer the version of this method that specifies a system ID, in order
+   * to resolve external references correctly.
+   * @param is an XML input stream
+   * @exception IllegalArgumentException if the input stream is null
    */
-  public Document parse (File file) 
+  public Document parse(InputStream is) 
     throws SAXException, IOException
   {
-    if (file==null)
+    if (is == null)
       {
-        throw new IllegalArgumentException("File si 'null'");
+        throw new IllegalArgumentException("input stream is null");
       }
-    InputSource	source;
-
-    source = new InputSource (fileToURL (file));
-    source.setByteStream (new FileInputStream(file));
-    return parse (source);
+    return parse(new InputSource(is));
   }
 
   /**
-   * 
-   * @exception IllegalArgumentException if InputSource is null
+   * Parse the specified input stream and return a DOM Document.
+   * @param is an XML input stream
+   * @param systemId the system ID of the XML document
+   * @exception IllegalArgumentException if the input stream is null
    */
-  public abstract Document parse(InputSource source) 
-    throws SAXException, IOException;
-
-  /**
-   * Avoid using this call; provide the system ID wherever possible.
-   * System IDs are essential when parsers resolve relative URIs,
-   * or provide diagnostics.
-   * @exception IllegalArgumentException if InputStream is null
-   */
-  public Document parse(InputStream stream) 
+  public Document parse(InputStream is, String systemId) 
     throws SAXException, IOException
   {
-    if (stream==null)
+    if (is == null)
       {
-        throw new IllegalArgumentException("InputStream si 'null'");
+        throw new IllegalArgumentException("input stream is null");
       }
-    return parse(new InputSource(stream));
-  } // parse()
-
-  /**
-   * 
-   * @exception IllegalArgumentException if InputStream is null
-   */
-  public Document parse(InputStream stream, String systemID) 
-    throws SAXException, IOException
-  {
-
-    if (stream==null)
-      {
-        throw new IllegalArgumentException("InputStream si 'null'");
-      }
-    // Variables
-    InputSource	source;
-
-    // Create Source
-    source = new InputSource(stream);
-    source.setSystemId(systemID);
-
-    // Parse Input Source
+    InputSource  source = new InputSource(is);
+    source.setSystemId(systemId);
     return parse(source);
-
-  } // parse()
+  }
 
   /**
-   * 
+   * Parse the content of the specified URI and return a DOM Document.
+   * @param uri an XML system ID
    * @exception IllegalArgumentException if the URI is null
    */
   public Document parse(String uri) 
     throws SAXException, IOException
   {
-    if (uri==null)
+    if (uri == null)
       {
-        throw new IllegalArgumentException("URI si 'null'");
+        throw new IllegalArgumentException("URI is null");
       }
     return parse(new InputSource(uri));
-  } // parse()
+  }
 
-  public abstract void setEntityResolver(EntityResolver resolver);
+  /**
+   * Parse the specified file and return a DOM Document.
+   * @param f the XML file
+   * @exception IllegalArgumentException if the file is null
+   */
+  public Document parse(File f) 
+    throws SAXException, IOException
+  {
+    if (f == null)
+      {
+        throw new IllegalArgumentException("file is null");
+      }
+    InputSource  source = new InputSource(new FileInputStream(f));
+    source.setSystemId(f.toURL().toString());
+    return parse(source);
+  }
 
-  public abstract void setErrorHandler(ErrorHandler handler);
+  /**
+   * Parse the specified input source and return a DOM Document.
+   * @param is the input source
+   * @exception IllegalArgumentException if the input source is null
+   */
+  public abstract Document parse(InputSource source) 
+    throws SAXException, IOException;
+
+  /**
+   * Indicates whether this document builder is XML Namespace aware.
+   */
+  public abstract boolean isNamespaceAware();
+
+  /**
+   * Indicates whether this document builder will validate its input.
+   */
+  public abstract boolean isValidating();
+
+  /**
+   * Sets the SAX entity resolver callback used to resolve external entities
+   * in the XML document(s) to parse.
+   * @param er an entity resolver
+   */
+  public abstract void setEntityResolver(EntityResolver er);
+
+  /**
+   * Sets the SAX error handler callback used to report parsing errors.
+   * @param eh the error handler
+   */
+  public abstract void setErrorHandler(ErrorHandler eh);
+
+  /**
+   * Creates a new, empty DOM Document.
+   * To create a document with a root element and optional doctype, use the
+   * <code>DOMImplementation</code> instead.
+   * @see org.w3c.dom.DOMImplementation#createDocument
+   */
+  public abstract Document newDocument();
+
+  /**
+   * Returns the DOM implementation.
+   */
+  public abstract DOMImplementation getDOMImplementation();
 
   // -- JAXP 1.3 methods --
   

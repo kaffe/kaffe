@@ -1,5 +1,5 @@
 /*
- * ParserConfigurationException.java
+ * VariableReference.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -36,32 +36,38 @@
  * exception statement from your version. 
  */
 
-package javax.xml.parsers;
+package gnu.xml.xpath;
 
-/**
- * An exception occurred during configuration of the XML parser.
- * 
- * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- */
-public class ParserConfigurationException
-  extends Exception
+import javax.xml.namespace.QName;
+import javax.xml.xpath.XPathVariableResolver;
+import org.w3c.dom.Node;
+
+class VariableReference
+  extends Expr
 {
 
-  /**
-   * Constructor with no detail message.
-   */
-  public ParserConfigurationException()
+  final XPathVariableResolver resolver;
+  final String name;
+
+  VariableReference(XPathVariableResolver resolver, String name)
   {
-    super();
+    this.resolver = resolver;
+    this.name = name;
   }
 
-  /**
-   * Constructor with the specified detail message.
-   * @param msg the detail message
-   */
-  public ParserConfigurationException(String msg)
+  public Object evaluate(Node node)
   {
-    super(msg);
+    if (resolver != null)
+      {
+        QName qname = QName.valueOf(name);
+        return resolver.resolveVariable(qname);
+      }
+    throw new IllegalStateException("no variable resolver");
   }
 
+  public String toString()
+  {
+    return "#" + name;
+  }
+  
 }

@@ -45,11 +45,11 @@ AC_ARG_ENABLE(xslttest,
     XSLT_CFLAGS=`$XSLT_CONFIG $xslt_config_args --cflags`
     XSLT_LIBS=`$XSLT_CONFIG $xslt_config_args --libs`
     xslt_config_major_version=`$XSLT_CONFIG $xslt_config_args --version | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+           sed 's/\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\)/\1/'`
     xslt_config_minor_version=`$XSLT_CONFIG $xslt_config_args --version | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+           sed 's/\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\)/\2/'`
     xslt_config_micro_version=`$XSLT_CONFIG $xslt_config_args --version | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+           sed 's/\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\)/\3/'`
     if test "x$enable_xslttest" = "xyes" ; then
       ac_save_CFLAGS="$CFLAGS"
       ac_save_LIBS="$LIBS"

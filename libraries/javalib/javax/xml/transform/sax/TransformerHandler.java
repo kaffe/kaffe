@@ -1,7 +1,6 @@
 /*
  * TransformerHandler.java
- * Copyright (C) 2001 Andrew Selkirk
- * Copyright (C) 2001 The Free Software Foundation
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -36,39 +35,43 @@
  * obliged to do so.  If you do not wish to do so, delete this
  * exception statement from your version. 
  */
+
 package javax.xml.transform.sax;
 
+import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
 import org.xml.sax.ext.LexicalHandler;
-import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
-
 
 /**
- * Transforms SAX input events to a Result, according to some
- * stylesheet.  Note the expectation that XSLT transforms will
- * discard most DTD declarations (DeclHandler is not supported).
+ * A content handler that transforms SAX events into a result tree.
  *
- * @author	Andrew Selkirk, David Brownell
- * @version	1.0
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public interface TransformerHandler
   extends ContentHandler, LexicalHandler, DTDHandler
 {
   
   /**
-   * Assigns the result of the transform.
+   * Sets the result sink to be used as the output of the transformation.
+   * @exception IllegalArgumentException if the result is not a valid target
    */
   public void setResult(Result result) 
     throws IllegalArgumentException;
 
+  /**
+   * Sets the system ID relative to which URLs will be resolved.
+   */
   public void setSystemId(String systemID);
 
+  /**
+   * Returns the system ID relative to which URLs will be resolved.
+   */
   public String getSystemId();
 
   /**
-   * Returns the associated transformer, for use in setting
+   * Returns the transformer associated with this handler in order to set
    * parameters and output properties.
    */
   public Transformer getTransformer();

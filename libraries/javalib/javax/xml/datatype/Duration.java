@@ -1,6 +1,6 @@
 /*
  * Duration.java
- * Copyright (C) 2004 Chris Burdess
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -47,6 +47,8 @@ import javax.xml.namespace.QName;
 
 /**
  * An immutable time space as specified in XML Schema 1.0.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  * @since 1.3
  */
 public abstract class Duration

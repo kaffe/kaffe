@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2001 Andrew Selkirk
+ * DOMSource.java
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -34,76 +35,85 @@
  * obliged to do so.  If you do not wish to do so, delete this
  * exception statement from your version. 
  */
+
 package javax.xml.transform.dom;
 
-// Imports
-import org.w3c.dom.Node;
 import javax.xml.transform.Source;
+import org.w3c.dom.Node;
 
 /**
- * DOM Source
- * @author	Andrew Selkirk
- * @version	1.0
+ * An XML source specified as a W3C DOM node context.
+ * 
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class DOMSource
   implements Source
 {
 
-  //-------------------------------------------------------------
-  // Variables --------------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Factory feature indicating that DOM sources are supported.
+   */
   public static final String FEATURE =
     "http://javax.xml.transform.dom.DOMSource/feature";
 
-  private Node	node 	= null;
-  String	baseID	= null;
+  private Node node;
+  private String systemId;
 
-
-  //-------------------------------------------------------------
-  // Initialization ---------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Default constructor.
+   */
   public DOMSource()
   {
-  } // DOMSource()
+    this(null, null);
+  }
 
+  /**
+   * Constructor with a context node.
+   */
   public DOMSource(Node node)
   {
-    this.node = node;
-  } // DOMSource()
+    this(node, null);
+  }
 
-  public DOMSource(Node node, String systemID)
+  /**
+   * Constructor with a context node and system ID.
+   */
+  public DOMSource(Node node, String systemId)
   {
     this.node = node;
-    this.baseID = systemID;
-  } // DOMSource()
+    this.systemId = systemId;
+  }
 
-
-  //-------------------------------------------------------------
-  // Methods ----------------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Sets the context node.
+   */
   public void setNode(Node node)
   {
     this.node = node;
-  } // setNode()
+  }
 
+  /**
+   * Returns the context node.
+   */
   public Node getNode()
   {
     return node;
-  } // getNode()
+  }
 
-  public void setSystemId(String systemID)
+  /**
+   * Sets the base URI to use as the context for resolving entities.
+   */
+  public void setSystemId(String systemId)
   {
-    baseID = systemID;
-  } // setSystemId()
+    this.systemId = systemId;
+  }
 
+  /**
+   * Returns the base URI to use as the context for resolving entities.
+   */
   public String getSystemId()
   {
-    return baseID;
-  } // getSystemId()
+    return systemId;
+  }
 
-
-} // DOMSource
-
+}

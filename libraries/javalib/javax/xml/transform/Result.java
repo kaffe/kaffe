@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2001 Andrew Selkirk
+ * Result.java
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -37,32 +38,36 @@
 package javax.xml.transform;
 
 /**
- * Result
- * @author	Andrew Selkirk
- * @version	1.0
+ * The result of an XSL transformation.
+ * 
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public interface Result
 {
 
-  //-------------------------------------------------------------
-  // Constants --------------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Constant for the processing instruction sent when the result disables
+   * output escaping.
+   */
   public static final String PI_DISABLE_OUTPUT_ESCAPING =
     "javax.xml.transform.disable-output-escaping";
 
+  /**
+   * Constant for the processing instruction sent when the result enables
+   * output escaping.
+   */
   public static final String PI_ENABLE_OUTPUT_ESCAPING =
-    "javax.xml.transform.disable-output-escaping";
+    "javax.xml.transform.enable-output-escaping";
 
+  /**
+   * Sets the XML system ID for this result.
+   * @param systemId the system ID URI
+   */
+  public void setSystemId(String systemId);
 
-  //-------------------------------------------------------------
-  // Interface: Result ------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Returns the system ID for this result.
+   */
   public String getSystemId();
 
-  public void setSystemId(String systemID);
-
-
-} // Result
-
+}

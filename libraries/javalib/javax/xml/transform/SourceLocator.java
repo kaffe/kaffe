@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2001 Andrew Selkirk
+ * SourceLocator.java
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -37,27 +38,34 @@
 package javax.xml.transform;
 
 /**
- * JAXP/transform analogue of SAX Locator.
- * @see org.xml.sax.Locator
- * @author	Andrew Selkirk
- * @version	1.0
+ * The location in an XML resource at which an event occurred.
+ * Tis is equivalent to the SAX Locator.
+ * 
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public interface SourceLocator
 {
 
-  //-------------------------------------------------------------
-  // Interface: SourceLocator -----------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Returns the XML public ID for the document.
+   */
   public String getPublicId();
 
+  /**
+   * Returns the XML system ID for the document.
+   */
   public String getSystemId();
 
+  /**
+   * Returns the line number at which the event occurred.
+   * @return the line number, or -1 if not available
+   */
   public int getLineNumber();
 
+  /**
+   * Returns the column number at which the event occurred.
+   * @return the column number, or -1 if not available
+   */
   public int getColumnNumber();
 
-
-} // SourceLocator
-
-
+}

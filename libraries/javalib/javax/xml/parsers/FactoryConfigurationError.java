@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2001 Andrew Selkirk
+ * FactoryConfigurationError.java
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -38,62 +39,76 @@
 package javax.xml.parsers;
 
 /**
- * FactoryConfigurationError
- * @author	Andrew Selkirk
- * @version	1.0
+ * An error occurred during configuration of the parser factory.
+ * 
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class FactoryConfigurationError
   extends Error
 {
 
-  //-------------------------------------------------------------
-  // Variables --------------------------------------------------
-  //-------------------------------------------------------------
+  /**
+   * The underlying cause of this exception, if any.
+   */
+  private Exception  exception;
 
-  private Exception	exception	= null;
-
-
-  //-------------------------------------------------------------
-  // Initialization ---------------------------------------------
-  //-------------------------------------------------------------
+  /**
+   * Constructor with no detail message.
+   */
   public FactoryConfigurationError()
   {
     super();
-  } // FactoryConfigurationError()
+  }
 
+  /**
+   * Constructor with the specified detail message.
+   * @param msg the detail message
+   */
   public FactoryConfigurationError(String msg)
   {
     super(msg);
-  } // FactoryConfigurationError()
+  }
 
-  public FactoryConfigurationError(Exception ex)
+  /**
+   * Constructor with the specified underlying cause.
+   * @param e the underlying cause of this exception
+   */
+  public FactoryConfigurationError(Exception e)
   {
-    super();
-    exception = ex;
-  } // FactoryConfigurationError()
+    super(e);
+    exception = e;
+  }
 
-  public FactoryConfigurationError(Exception ex, String msg)
+  /**
+   * Constructor with the specified underlying cause and detail message.
+   * @param e the underlying cause of this exception
+   * @param msg the detail message
+   */
+  public FactoryConfigurationError(Exception e, String msg)
   {
-    super(msg);
-    exception = ex;
-  } // FactoryConfigurationError()
+    super(msg, e);
+    exception = e;
+  }
 
-
-  //-------------------------------------------------------------
-  // Methods ----------------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Returns the message for this error, if any.
+   */
   public String getMessage()
   {
-    return super.getMessage();
-  } // getMessage()
+    String message = super.getMessage();
+    if (message == null && exception != null)
+      {
+        message = exception.getMessage();
+      }
+    return message;
+  }
 
+  /**
+   * Returns the underlying cause of this exception, if any.
+   */
   public Exception getException()
   {
     return exception;
-  } // getException()
+  }
 
-
-} // FactoryConfigurationError
-
-
+}

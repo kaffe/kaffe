@@ -1,6 +1,6 @@
 /*
  * XMLConstants.java
- * Copyright (C) 2004 Chris Burdess
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -40,6 +40,8 @@ package javax.xml;
 
 /**
  * Repository for well-known XML constants.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  * @since 1.3
  */
 public final class XMLConstants
@@ -61,7 +63,8 @@ public final class XMLConstants
    * The XML Namespace URI.
    * @see http://www.w3.org/TR/REC-xml-names/#ns-qualnames
    */
-  public static final String XML_NS_URI = "http://www.w3.org/XML/1998/namespace";
+  public static final String XML_NS_URI =
+	 	"http://www.w3.org/XML/1998/namespace";
 
   /**
    * The XML Namespace prefix.
@@ -73,7 +76,8 @@ public final class XMLConstants
    * The XML Namespace declaration URI.
    * @see http://www.w3.org/TR/REC-xml-names/#ns-qualnames
    */
-  public static final String XMLNS_ATTRIBUTE_NS_URI = "http://www.w3.org/2000/xmlns/";
+  public static final String XMLNS_ATTRIBUTE_NS_URI =
+	 	"http://www.w3.org/2000/xmlns/";
 
   /**
    * The XML Namespace declaration attribute.
@@ -85,19 +89,22 @@ public final class XMLConstants
    * The XML Schema (XSD) namespace URI.
    * @see http://www.w3.org/TR/xmlschema-1/#Instance_Document_Constructions
    */
-  public static final String W3C_XML_SCHEMA_NS_URI = "http://www.w3.org/2001/XMLSchema";
+  public static final String W3C_XML_SCHEMA_NS_URI =
+	 	"http://www.w3.org/2001/XMLSchema";
 
   /**
    * The XML Schema Instance (XSI) namespace URI.
    * @see http://www.w3.org/TR/xmlschema-1/#Instance_Document_Constructions
    */
-  public static final String W3C_XML_SCHEMA_INSTANCE_NS_URI = "http://www.w3.org/2001/XMLSchema-instance";
+  public static final String W3C_XML_SCHEMA_INSTANCE_NS_URI =
+	 	"http://www.w3.org/2001/XMLSchema-instance";
 
   /**
    * The XPath 2.0 datatypes namespace URI.
    * @see http://www.w3.org/TR/xpath-datamodel
    */
-  public static final String W3C_XPATH_DATATYPE_NS_URI = "http://www.w3.org/2003/11/xpath-datatypes";
+  public static final String W3C_XPATH_DATATYPE_NS_URI =
+	 	"http://www.w3.org/2003/11/xpath-datatypes";
 
   /**
    * The XML DTD namespace URI.
@@ -108,11 +115,13 @@ public final class XMLConstants
    * The RELAX NG Namespace URI.
    * @see http://relaxng.org/spec-20011203.html
    */
-  public static final String RELAXNG_NS_URI = "http://relaxng.org/ns/structure/1.0";
+  public static final String RELAXNG_NS_URI =
+	 	"http://relaxng.org/ns/structure/1.0";
 
   /**
    * DOM feature for secure processing.
    */
-  public static final String FEATURE_SECURE_PROCESSING = "TODO";
+  public static final String FEATURE_SECURE_PROCESSING =
+	 	"http://javax.xml.XMLConstants/feature/secure-processing";
   
 }

@@ -1,6 +1,6 @@
 /*
  * XPathFactoryConfigurationException.java
- * Copyright (C) 2004 Chris Burdess
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -40,6 +40,8 @@ package javax.xml.xpath;
 
 /**
  * A configuration exception in an XPath factory environment.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  * @since 1.3
  */
 public class XPathFactoryConfigurationException

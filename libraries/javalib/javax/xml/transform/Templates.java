@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2001 Andrew Selkirk
+ * Tmplates.java
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -34,28 +35,34 @@
  * obliged to do so.  If you do not wish to do so, delete this
  * exception statement from your version. 
  */
+
 package javax.xml.transform;
 
-// Imports
 import java.util.Properties;
 
 /**
- * Encapsulates a pre-parsed (reusable) XSLT transform.
- * @author	Andrew Selkirk
- * @version	1.0
+ * A compiled, reusable XSL transformation.
+ * Implementations of this class are guaranteed to be thread safe.
+ * 
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public interface Templates
 {
 
-  //-------------------------------------------------------------
-  // Interface: Templates ---------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Creates a new transformer based on this transformation.
+   */
   public Transformer newTransformer()
     throws TransformerConfigurationException;
 
+  /**
+   * Returns the static properties for the <code>xsl:output</code>
+   * instruction. Missing properties are defaulted according the
+   * <a href='http://www.w3.org/TR/xslt#output'>XSLT Recommendation, section
+   * 16</a>: <code>getProperty(String)</code> returns all properties
+   * including defaulted ones, and <code>get(Object)</code> returns only the
+   * properties explicitly set in the stylesheet.
+   */
   public Properties getOutputProperties();
 
-
-} // Templates
-
+}

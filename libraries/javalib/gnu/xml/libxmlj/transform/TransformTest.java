@@ -74,14 +74,22 @@ public class TransformTest
 			"gnu.xml.libxmlj.transform.GnomeTransformerFactory");
 
     // Read arguments
-    if (args.length != 3)
+    if (args.length < 1)
       {
 	System.err.println ("Usage: java " + TransformTest.class.getName ()
 			    + " <stylesheet> <source> <result>");
       }
     Source xsltSource = new StreamSource (args[0]);
-    Source source = new StreamSource (args[1]);
-    Result target = new StreamResult (args[2]);
+    Source source = new StreamSource (System.in);
+    Result target = new StreamResult (System.out);
+    if (args.length > 1)
+      {
+        source = new StreamSource (args[1]);
+        if (args.length > 2)
+          {
+            target = new StreamResult (args[2]);
+          }
+      }
 
     // Prepare stylesheet
     TransformerFactory transformerFactory = TransformerFactory.newInstance ();

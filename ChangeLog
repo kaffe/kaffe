@@ -1,5 +1,121 @@
 2004-10-30  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/xml/xpath/VariableReference.java,
+	libraries/javalib/gnu/xml/xpath/XPathFactoryImpl.java,
+	libraries/javalib/gnu/xml/xpath/XPathImpl.java:
+	New files taken from GNU JAXP.
+
+	* m4/libxslt.m4: Updated to match the version in GNU JAXP.
+
+	* configure.ac:
+	Updated the minimum libxml2 and libxslt requirements.
+
+	* configure,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regerated.
+
+	* libraries/clib/libxmlj/xmlj_transform.c,
+	libraries/clib/libxmlj/xmlj_util.c,
+	libraries/clib/libxmlj/xmlj_util.h,
+	libraries/javalib/gnu/xml/libxmlj/RawData.java,
+	libraries/javalib/gnu/xml/libxmlj/RawData32.java,
+	libraries/javalib/gnu/xml/libxmlj/RawData64.java,
+	libraries/javalib/gnu/xml/libxmlj/transform/GnomeTransformer.java,
+	libraries/javalib/gnu/xml/libxmlj/transform/GnomeTransformerFactory.java,
+	libraries/javalib/gnu/xml/libxmlj/transform/TransformTest.java,
+	libraries/javalib/gnu/xml/libxmlj/util/XMLJ.java,
+	libraries/javalib/gnu/xml/util/SAXNullTransformerFactory.java,
+	libraries/javalib/gnu/xml/xpath/Expr.java,
+	libraries/javalib/gnu/xml/xpath/FunctionCall.java,
+	libraries/javalib/gnu/xml/xpath/XPathParser.java,
+	libraries/javalib/gnu/xml/xpath/XPathParser.y,
+	libraries/javalib/javax/xml/XMLConstants.java,
+	libraries/javalib/javax/xml/datatype/DatatypeConfigurationException.java,
+	libraries/javalib/javax/xml/datatype/DatatypeConstants.java,
+	libraries/javalib/javax/xml/datatype/DatatypeFactory.java,
+	libraries/javalib/javax/xml/datatype/Duration.java,
+	libraries/javalib/javax/xml/datatype/XMLGregorianCalendar.java,
+	libraries/javalib/javax/xml/namespace/NamespaceContext.java,
+	libraries/javalib/javax/xml/namespace/QName.java,
+	libraries/javalib/javax/xml/parsers/ClassStuff.java,
+	libraries/javalib/javax/xml/parsers/DocumentBuilder.java,
+	libraries/javalib/javax/xml/parsers/DocumentBuilderFactory.java,
+	libraries/javalib/javax/xml/parsers/FactoryConfigurationError.java,
+	libraries/javalib/javax/xml/parsers/ParserConfigurationException.java,
+	libraries/javalib/javax/xml/parsers/SAXParser.java,
+	libraries/javalib/javax/xml/parsers/SAXParserFactory.java,
+	libraries/javalib/javax/xml/transform/ClassStuff.java,
+	libraries/javalib/javax/xml/transform/ErrorListener.java,
+	libraries/javalib/javax/xml/transform/OutputKeys.java,
+	libraries/javalib/javax/xml/transform/Result.java,
+	libraries/javalib/javax/xml/transform/Source.java,
+	libraries/javalib/javax/xml/transform/SourceLocator.java,
+	libraries/javalib/javax/xml/transform/Templates.java,
+	libraries/javalib/javax/xml/transform/Transformer.java,
+	libraries/javalib/javax/xml/transform/TransformerConfigurationException.java,
+	libraries/javalib/javax/xml/transform/TransformerException.java,
+	libraries/javalib/javax/xml/transform/TransformerFactory.java,
+	libraries/javalib/javax/xml/transform/TransformerFactoryConfigurationError.java,
+	libraries/javalib/javax/xml/transform/URIResolver.java,
+	libraries/javalib/javax/xml/transform/dom/DOMLocator.java,
+	libraries/javalib/javax/xml/transform/dom/DOMResult.java,
+	libraries/javalib/javax/xml/transform/dom/DOMSource.java,
+	libraries/javalib/javax/xml/transform/sax/SAXResult.java,
+	libraries/javalib/javax/xml/transform/sax/SAXSource.java,
+	libraries/javalib/javax/xml/transform/sax/SAXTransformerFactory.java,
+	libraries/javalib/javax/xml/transform/sax/TemplatesHandler.java,
+	libraries/javalib/javax/xml/transform/sax/TransformerHandler.java,
+	libraries/javalib/javax/xml/transform/stream/StreamResult.java,
+	libraries/javalib/javax/xml/transform/stream/StreamSource.java,
+	libraries/javalib/javax/xml/validation/Schema.java,
+	libraries/javalib/javax/xml/validation/SchemaFactory.java,
+	libraries/javalib/javax/xml/validation/TypeInfoProvider.java,
+	libraries/javalib/javax/xml/validation/Validator.java,
+	libraries/javalib/javax/xml/validation/ValidatorHandler.java,
+	libraries/javalib/javax/xml/xpath/XPathConstants.java,
+	libraries/javalib/javax/xml/xpath/XPathException.java,
+	libraries/javalib/javax/xml/xpath/XPathExpression.java,
+	libraries/javalib/javax/xml/xpath/XPathExpressionException.java,
+	libraries/javalib/javax/xml/xpath/XPathFactory.java,
+	libraries/javalib/javax/xml/xpath/XPathFactoryConfigurationException.java,
+	libraries/javalib/javax/xml/xpath/XPathFunction.java,
+	libraries/javalib/javax/xml/xpath/XPathFunctionException.java,
+	libraries/javalib/javax/xml/xpath/XPathFunctionResolver.java:
+	Resynced with GNU JAXP.
+
+	2004-10-27  Chris Burdess       <dog@gnu.org>
+
+        * parsers, transform, dom, sax, stream: API rewritten from
+        scratch to satisfy copyright assignment.
+
+	2004-10-28  Chris Burdess  <dog@gnu.org>
+
+        * xpath: Implemented XPathFactory.newInstance(); added missing
+        imports in GNU implementation.
+
+	2004-10-27  Chris Burdess  <dog@gnu.org>
+
+        * xpath: Added JAXP XPath implementation. Variable references and
+        function calls now use JAXP resolver callback interfaces.
+
+	2004-10-06  Chris Burdess <dog@gnu.org>
+
+        * RawData.java, RawData32.java, RawData64.java: Added copyright.
+
+	2004-10-25  Chris Burdess <dog@gnu.org>
+
+        * xmlj_transform.c: Experimental code to load external entities
+        (xsl:import, xsl:include, and document()) from Java URL.
+        * configure.ac: Minimum version of libxslt is 1.1.11.
+
+	2004-10-08  Chris Burdess <dog@gnu.org>
+
+        * xmlj_util.c: String caching only by setting macro.
+
+2004-10-30  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/inet/comsat/ComsatClient.java,
 	libraries/javalib/gnu/inet/comsat/ComsatInfo.java,
 	libraries/javalib/gnu/inet/finger/FingerConnection.java,

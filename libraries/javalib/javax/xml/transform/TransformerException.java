@@ -1,7 +1,6 @@
 /*
  * TransformerException.java
- * Copyright (C) 2001 Andrew Selkirk
- * Copyright (C) 2001 The Free Software Foundation
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -38,87 +37,135 @@
  */
 package javax.xml.transform;
 
-// Imports
-import java.io.*;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
 /**
- * Encapsulates a problem exposed during a transformation.
- * @author	Andrew Selkirk, David Brownell
- * @version	1.0
+ * An exception occurred during the transformation process.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class TransformerException
   extends Exception
 {
 
-  //-------------------------------------------------------------
-  // Variables --------------------------------------------------
-  //-------------------------------------------------------------
+  private  SourceLocator  locator;
+  private Throwable  cause;
 
-  private	SourceLocator	locator			= null;
-  private Throwable	containedException	= null;
-  private boolean		causeKnown;
-
-
-  //-------------------------------------------------------------
-  // Initialization ---------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Constructor with a detail message.
+   */
   public TransformerException(String msg)
   {
-    super(msg);
+    this(msg, null, null);
   }
 
+  /**
+   * Constructor with an underlying cause.
+   */
   public TransformerException(Throwable cause)
   {
-    super();
-    initCause (cause);
+    this(null, null, cause);
   }
 
+  /**
+   * Constructor with a detail message and underlying cause.
+   */
   public TransformerException(String msg, Throwable cause)
   {
-    super(msg);
-    initCause (cause);
+    this(msg, null, cause);
   }
 
+  /**
+   * Constructor with a detail message and locator.
+   */
   public TransformerException(String msg, SourceLocator locator)
   {
-    super(msg);
-    setLocator (locator);
+    this(msg, locator, null);
   }
 
+  /**
+   * Constructor with detail message, locator and underlying cause.
+   */
   public TransformerException(String msg, SourceLocator locator, 
                               Throwable cause)
   {
     super(msg);
-    setLocator (locator);
-    initCause (cause);
+    this.locator = locator;
+    if (cause != null)
+      {
+        initCause(cause);
+      }
   }
 
-
-  //-------------------------------------------------------------
-  // Methods ----------------------------------------------------
-  //-------------------------------------------------------------
-
   /**
-   * Returns the root cause of this exception,
-   * or null if none is known.
+   * Returns a locator indicating where the error occurred.
    */
-  public Throwable getCause()
+  public SourceLocator getLocator()
   {
-    return containedException;
+    return locator;
   }
 
   /**
-   * Synonym for {@link #getCause}.
+   * Sets the locator indicating where the error occurred.
+   */
+  public void setLocator(SourceLocator location)
+  {
+    locator = location;
+  }
+
+  /**
+   * Returns the underlying cause of this exception.
    */
   public Throwable getException()
   {
-    return containedException;
+    return cause;
   }
 
   /**
-   * Returns a readable version of the locator info, or null
-   * if there is no locator.
+   * Returns the underlying cause of this exception.
+   */
+  public Throwable getCause()
+  {
+    return cause;
+  }
+
+  /**
+   * Initializes the root cause of this exception.
+   * This method may be called only once, and will be called by the
+   * constructor if a non-null cause is specified.
+   * Really phenomenally poor API design.
+   * @param cause the underlying cause
+   * @exception IllegalArgumentException if this exception is passed as the
+   * argument
+   * @exception IllegalStateException if a cause has already been
+   * initialized
+   */
+  public Throwable initCause(Throwable cause)
+  {
+    if (this.cause != null)
+      {
+        throw new IllegalStateException();
+      }
+    if (cause == this)
+      {
+        throw new IllegalArgumentException();
+      }
+    this.cause = cause;
+    return this;
+  }
+
+  /**
+   * Returns the exception message with location information appended.
+   */
+  public String getMessageAndLocation()
+  {
+    return (locator == null) ? getMessage() :
+      getMessage() + ": " + getLocationAsString();
+  }
+
+  /**
+   * Returns the location information as a string.
    */
   public String getLocationAsString()
   {
@@ -126,99 +173,69 @@ public class TransformerException
       {
         return null;
       }
-
-    StringBuffer	retval = new StringBuffer ();
-
-    if (locator.getPublicId () != null)
-    {
-      retval.append ("public='");
-      retval.append (locator.getPublicId ());
-      retval.append ("' ");
-    }
-    if (locator.getSystemId () != null)
-    {
-      retval.append ("uri='");
-      retval.append (locator.getSystemId ());
-      retval.append ("' ");
-    }
-    if (locator.getLineNumber () != -1)
-    {
-      retval.append ("line=");
-      retval.append (locator.getLineNumber ());
-      retval.append (" ");
-    }
-    if (locator.getColumnNumber () != -1)
-    {
-      retval.append ("column=");
-      retval.append (locator.getColumnNumber ());
-      //retval.append (" ");
-    }
-    return retval.toString ();
-  }
-
-  public SourceLocator getLocator()
-  {
-    return locator;
-  }
-
-  /**
-   * Returns this exception's message, with readable location
-   * information appended if it is available.
-   */
-  public String getMessageAndLocation()
-  {
-    if (locator == null)
+    String publicId = locator.getPublicId();
+    String systemId = locator.getSystemId();
+    int lineNumber = locator.getLineNumber();
+    int columnNumber = locator.getColumnNumber();
+    StringBuffer buffer = new StringBuffer ();
+    if (publicId != null)
       {
-        return getMessage ();
+        buffer.append ("publicId=");
+        buffer.append (publicId);
       }
-    return getMessage () + ": " + getLocationAsString ();
-  }
-
-  /**
-   * Records the root cause of this exception; may be
-   * called only once, normally during initialization.
-   */
-  public synchronized Throwable initCause(Throwable cause)
-  {
-    if (cause == this)
+    if (systemId != null)
       {
-        throw new IllegalArgumentException ();
+        if (buffer.length() > 0)
+          {
+            buffer.append(' ');
+          }
+        buffer.append ("systemId=");
+        buffer.append (systemId);
       }
-    if (containedException != null)
+    if (lineNumber != -1)
       {
-        throw new IllegalStateException ();
+        if (buffer.length() > 0)
+          {
+            buffer.append(' ');
+          }
+        buffer.append ("lineNumber=");
+        buffer.append (lineNumber);
       }
-    containedException = cause;
-    causeKnown = true;
-    // FIXME: spec implies "this" may be the right value; another bug?
-    return cause;
+    if (columnNumber != -1)
+      {
+        if (buffer.length() > 0)
+          {
+            buffer.append(' ');
+          }
+        buffer.append ("columnNumber=");
+        buffer.append (columnNumber);
+      }
+    return buffer.toString();
   }
 
   public void printStackTrace()
   {
-    printStackTrace(System.out);// shouldn't it be System.err?
+    printStackTrace(System.out);
   }
 
-  public void printStackTrace(PrintStream stream)
+  public void printStackTrace(PrintStream s)
   {
-    PrintWriter out = new PrintWriter(
-                                      new OutputStreamWriter(stream));
-    printStackTrace(out);
-    out.flush ();
+    super.printStackTrace(s);
+    if (cause != null)
+      {
+        s.print("caused by ");
+        cause.printStackTrace(s);
+      }
   }
 
-  public void printStackTrace(PrintWriter writer)
+  public void printStackTrace(PrintWriter s)
   {
-    if (containedException != null)
-    {
-      containedException.printStackTrace(writer);
-    }
-    super.printStackTrace(writer);
-  }
-
-  public void setLocator (SourceLocator location)
-  {
-    locator = location;
+    super.printStackTrace(s);
+    if (cause != null)
+      {
+        s.print("caused by ");
+        cause.printStackTrace(s);
+      }
   }
 
 }

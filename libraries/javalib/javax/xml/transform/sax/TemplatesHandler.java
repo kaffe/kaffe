@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2001 Andrew Selkirk
+ * TemplatesHandler.java
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -34,31 +35,35 @@
  * obliged to do so.  If you do not wish to do so, delete this
  * exception statement from your version. 
  */
+
 package javax.xml.transform.sax;
 
-// Imports
-import org.xml.sax.ContentHandler;
 import javax.xml.transform.Templates;
+import org.xml.sax.ContentHandler;
 
 /**
- * Handler used to create pre-parsed XSLT transforms.
- * @author	Andrew Selkirk
- * @version	1.0
+ * A content handler that processes SAX parse events into a compiled
+ * transformation template.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public interface TemplatesHandler
   extends ContentHandler
 {
 
-  //-------------------------------------------------------------
-  // Interface: TemplatesHandler --------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Returns the templates object created by the parsing of the SAX events.
+   */
   public Templates getTemplates();
 
-  public void setSystemId(String systemID);
+  /**
+   * Sets the system ID for the templates object created by this processor.
+   */
+  public void setSystemId(String systemId);
 
+  /**
+   * Returns the system ID for the templates object created by this processor.
+   */
   public String getSystemId();
 
-
-} // TemplatesHandler
-
+}

@@ -1,7 +1,6 @@
 /*
  * StreamResult.java
- * Copyright (C) 2001 Andrew Selkirk
- * Copyright (C) 2001 The Free Software Foundation
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -36,110 +35,140 @@
  * obliged to do so.  If you do not wish to do so, delete this
  * exception statement from your version. 
  */
+
 package javax.xml.transform.stream;
 
-import java.io.OutputStream;
-import java.io.Writer;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Writer;
 import javax.xml.transform.Result;
 
-
 /**
- * Stream Result
- * @author	Andrew Selkirk, David Brownell
- * @version	1.0
+ * Specifies a stream to which to write the transformation result.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class StreamResult
   implements Result
 {
 
-  //-------------------------------------------------------------
-  // Variables --------------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Factory feature indicating that stream results are supported.
+   */
   public static final String FEATURE =
     "http://javax.xml.transform.stream.StreamResult/feature";
 
-  private String		systemId	= null;
-  private OutputStream	outputStream	= null;
-  private Writer		writer		= null;
+  private String systemId;
+  private OutputStream outputStream;
+  private Writer writer;
 
-
-  //-------------------------------------------------------------
-  // Initialization ---------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Default constructor.
+   */
   public StreamResult()
   {
   }
 
+  /**
+   * Constructor with an output stream.
+   */
   public StreamResult(OutputStream stream)
   {
     this.outputStream = stream;
   }
 
+  /**
+   * Constructor with a writer.
+   * Prefer to use an output stream rather than a writer, so that the
+   * output encoding can be controlled by transformation properties.
+   */
   public StreamResult(Writer writer)
   {
     this.writer = writer;
   }
 
+  /**
+   * Constructor with a system ID.
+   */
   public StreamResult(String systemID)
   {
     this.systemId = systemID;
   }
 
+  /**
+   * Constructor with a system ID specified as a File object.
+   */
   public StreamResult(File file)
   {
-    setSystemId (file);
+    setSystemId(file);
   }
 
+  /**
+   * Sets the target output stream.
+   */
+  public void setOutputStream(OutputStream outputStream)
+  {
+    this.outputStream = outputStream;
+  }
 
-  //-------------------------------------------------------------
-  // Methods ----------------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Returns the target output stream.
+   */
   public OutputStream getOutputStream()
   {
     return outputStream;
   }
 
-  public String getSystemId()
-  {
-    return systemId;
-  }
-
-  public Writer getWriter()
-  {
-    return writer;
-  }
-
-  public void setOutputStream(OutputStream stream)
-  {
-    this.outputStream = stream;
-  }
-
+  /**
+   * Sets the target writer.
+   * Prefer to use an output stream rather than a writer, so that the
+   * output encoding can be controlled by transformation properties.
+   */
   public void setWriter(Writer writer)
   {
     this.writer = writer;
   }
 
-  public void setSystemId(File file)
+  /**
+   * Returns the target writer.
+   */
+  public Writer getWriter()
   {
-    try
-      {
-        this.systemId = StreamSource.fileToURL (file).toString ();
-      }
-    catch (IOException e)
-      {
-        // can't happen
-        throw new RuntimeException (e.getMessage ());
-      }
+    return writer;
   }
 
+  /**
+   * Sets the system ID.
+   * If neither the out stream nor the writer have been specified, the
+   * system ID will be treated as a URL for writing to.
+   */
   public void setSystemId(String systemID)
   {
     this.systemId = systemID;
+  }
+
+  /**
+   * Sets the system ID from a File reference.
+   */
+  public void setSystemId(File f)
+  {
+    try
+      {
+        systemId = f.toURL().toString();
+      }
+    catch (IOException e)
+      {
+        throw new RuntimeException(e.getMessage(), e);
+      }
+  }
+
+  /**
+   * Returns the system ID.
+   */
+  public String getSystemId()
+  {
+    return systemId;
   }
 
 }

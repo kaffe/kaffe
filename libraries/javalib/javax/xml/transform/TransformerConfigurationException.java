@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2001 Andrew Selkirk
+ * TransformerConfigurationException.java
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -34,47 +35,70 @@
  * obliged to do so.  If you do not wish to do so, delete this
  * exception statement from your version. 
  */
+
 package javax.xml.transform;
 
 /**
- * TransformerConfigurationException
- * @author	Andrew Selkirk
- * @version	1.0
+ * An exception occurred during configuration of the transformer.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class TransformerConfigurationException extends TransformerException {
+public class TransformerConfigurationException
+  extends TransformerException
+{
 
-  protected SourceLocator locator = null;
+  private SourceLocator locator;
   
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
-
-	public TransformerConfigurationException() {
-		super((String)null);
-	} // TransformerConfigurationException()
-
-	public TransformerConfigurationException(String msg) {
-		super(msg);
-	} // TransformerConfigurationException()
-
-	public TransformerConfigurationException(Throwable ex) {
-		super(ex);
-	} // TransformerConfigurationException()
-
-	public TransformerConfigurationException(String msg, Throwable ex) {
-		super(msg, ex);
-	} // TransformerConfigurationException()
-
-  public TransformerConfigurationException(String msg, SourceLocator locator) {
-    super(msg);
-    this.locator = locator;
+  /**
+   * Constructor with no detail message.
+   */
+  public TransformerConfigurationException()
+  {
+    this(null, null, null);
   }
 
-  public TransformerConfigurationException(String msg, SourceLocator locator, Throwable ex) {
-    super(msg, ex);
+  /**
+   * Constructor with a detail message.
+   */
+  public TransformerConfigurationException(String msg)
+  {
+    this(msg, null, null);
+  }
+
+  /**
+   * Constructor with underlying cause.
+   */
+  public TransformerConfigurationException(Throwable e)
+  {
+    this(null, null, e);
+  }
+
+  /**
+   * Constructor with detail message and underlyinmg cause.
+   */
+  public TransformerConfigurationException(String msg, Throwable e)
+  {
+    this(msg, null, e);
+  }
+
+  /**
+   * Constructor with detail message and locator.
+   */
+  public TransformerConfigurationException(String message,
+                                            SourceLocator locator)
+  {
+    this(message, locator, null);
+  }
+
+  /**
+   * Constructor with detail message, locator and underlying cause.
+   */
+  public TransformerConfigurationException(String message,
+                                           SourceLocator locator,
+                                           Throwable e)
+  {
+    super(message, e);
     this.locator = locator;
   }  
 
-} // TranformerConfigurationException
-
-
+}

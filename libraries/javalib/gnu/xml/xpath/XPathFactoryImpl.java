@@ -1,5 +1,5 @@
 /*
- * ParserConfigurationException.java
+ * XPathFactoryImpl.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -36,32 +36,56 @@
  * exception statement from your version. 
  */
 
-package javax.xml.parsers;
+package gnu.xml.xpath;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPathFactoryConfigurationException;
+import javax.xml.xpath.XPathFunctionResolver;
+import javax.xml.xpath.XPathVariableResolver;
 
 /**
- * An exception occurred during configuration of the XML parser.
- * 
+ * GNU XPath factory implementation.
+ *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class ParserConfigurationException
-  extends Exception
+public class XPathFactoryImpl
+  extends XPathFactory
 {
 
-  /**
-   * Constructor with no detail message.
-   */
-  public ParserConfigurationException()
+  XPathVariableResolver variableResolver;
+  XPathFunctionResolver functionResolver;
+
+  public boolean isObjectModelSupported(String objectModel)
   {
-    super();
+    return XPathFactory.DEFAULT_OBJECT_MODEL_URI.equals(objectModel);
   }
 
-  /**
-   * Constructor with the specified detail message.
-   * @param msg the detail message
-   */
-  public ParserConfigurationException(String msg)
+  public void setFeature(String name, boolean value)
+    throws XPathFactoryConfigurationException
   {
-    super(msg);
+    throw new XPathFactoryConfigurationException(name);
   }
 
+  public boolean getFeature(String name)
+    throws XPathFactoryConfigurationException
+  {
+    throw new XPathFactoryConfigurationException(name);
+  }
+
+  public void setXPathVariableResolver(XPathVariableResolver resolver)
+  {
+    variableResolver = resolver;
+  }
+
+  public void setXPathFunctionResolver(XPathFunctionResolver resolver)
+  {
+    functionResolver = resolver;
+  }
+
+  public XPath newXPath()
+  {
+    return new XPathImpl(variableResolver, functionResolver);
+  }
+  
 }

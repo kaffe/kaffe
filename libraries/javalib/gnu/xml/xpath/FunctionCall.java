@@ -41,6 +41,10 @@ package gnu.xml.xpath;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.namespace.QName;
+import javax.xml.xpath.XPathFunction;
+import javax.xml.xpath.XPathFunctionException;
+import javax.xml.xpath.XPathFunctionResolver;
 import org.w3c.dom.Node;
 
 /**
@@ -52,16 +56,18 @@ class FunctionCall
 extends Expr
 {
 
+  final XPathFunctionResolver resolver;
   final String name;
   final List args;
 
-  FunctionCall (String name)
+  FunctionCall (XPathFunctionResolver resolver, String name)
   {
-    this (name, Collections.EMPTY_LIST);
+    this (resolver, name, Collections.EMPTY_LIST);
   }
 
-  FunctionCall (String name, List args)
+  FunctionCall (XPathFunctionResolver resolver, String name, List args)
   {
+    this.resolver = resolver;
     this.name = name;
     this.args = args;
   }
@@ -420,6 +426,23 @@ extends Expr
               {
                 double n = ((Double) val).doubleValue ();
                 return new Double (_round (context, n));
+              }
+          }
+      }
+    if (resolver != null)
+      {
+        QName qname = QName.valueOf(name);
+        XPathFunction function = resolver.resolveFunction(qname, args.size());
+        if (function != null)
+          {
+            try
+              {
+                return function.evaluate(args);
+              }
+            catch (XPathFunctionException e)
+              {
+                throw new RuntimeException("Error executing XPath function",
+                                           e);
               }
           }
       }

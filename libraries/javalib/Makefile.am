@@ -1503,6 +1503,9 @@ gnu_xml_xpath_SRCS = \
 	gnu/xml/xpath/Step.java \
 	gnu/xml/xpath/Test.java \
 	gnu/xml/xpath/UnionExpr.java \
+	gnu/xml/xpath/VariableReference.java \
+	gnu/xml/xpath/XPathFactoryImpl.java \
+	gnu/xml/xpath/XPathImpl.java \
 	gnu/xml/xpath/XPathParser.java \
 	gnu/xml/xpath/XPathTokenizer.java
 java_applet_SRCS = \
@@ -3525,7 +3528,6 @@ javax_xml_namespace_SRCS = \
 	javax/xml/namespace/NamespaceContext.java \
 	javax/xml/namespace/QName.java
 javax_xml_parsers_SRCS = \
-	javax/xml/parsers/ClassStuff.java \
 	javax/xml/parsers/DocumentBuilder.java \
 	javax/xml/parsers/DocumentBuilderFactory.java \
 	javax/xml/parsers/FactoryConfigurationError.java \
@@ -3533,7 +3535,6 @@ javax_xml_parsers_SRCS = \
 	javax/xml/parsers/SAXParser.java \
 	javax/xml/parsers/SAXParserFactory.java
 javax_xml_transform_SRCS = \
-	javax/xml/transform/ClassStuff.java \
 	javax/xml/transform/ErrorListener.java \
 	javax/xml/transform/OutputKeys.java \
 	javax/xml/transform/Result.java \

@@ -1,7 +1,6 @@
 /*
  * TransformerFactory.java
- * Copyright (C) 2001 Andrew Selkirk
- * Copyright (C) 2001 The Free Software Foundation
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -36,40 +35,163 @@
  * obliged to do so.  If you do not wish to do so, delete this
  * exception statement from your version. 
  */
+
 package javax.xml.transform;
 
-// Imports
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.File;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Abstract class extended by implementations.
+ * Factory for obtaining transformation contexts.
  *
- * @author	Andrew Selkirk, David Brownell
- * @version	1.0
+ * @author <a href='mailro:dog@gnu.org'>Chris Burdess</a>
  */
 public abstract class TransformerFactory
 {
 
-  /** Constructor, for use by subclasses. */
   protected TransformerFactory()
   {
   }
 
-
-  //-------------------------------------------------------------
-  // Methods ----------------------------------------------------
-  //-------------------------------------------------------------
+  /**
+   * Creates a new factory instance.
+   * The implementation class to load is the first found in the following
+   * locations:
+   * <ol>
+   * <li>the <code>javax.xml.transform.TransformerFactory</code> system
+   * property</li>
+   * <li>the above named property value in the
+   * <code><i>$JAVA_HOME</i>/lib/jaxp.properties</code> file</li>
+   * <li>the class name specified in the
+   * <code>META-INF/services/javax.xml.parsers.DocumentBuilderFactory</code>
+   * system resource</li>
+   * <li>the default factory class</li>
+   * </ol>
+   */
+  public static TransformerFactory newInstance() 
+    throws TransformerFactoryConfigurationError
+  {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    if (loader == null)
+      {
+        loader = TransformerFactory.class.getClassLoader();
+      }
+    String className = null;
+    int count = 0;
+    do
+      {
+        className = getFactoryClassName(loader, count);
+        if (className != null)
+          {
+            try
+              {
+                Class t = (loader != null) ? loader.loadClass(className) :
+                  Class.forName(className);
+                return (TransformerFactory) t.newInstance();
+              }
+            catch (ClassNotFoundException e)
+              {
+                className = null;
+              }
+            catch (Exception e)
+              { 
+                throw new TransformerFactoryConfigurationError(e,
+                    "error instantiating class " + className);
+              } 
+          }
+      }
+    while (className == null && count < 3);
+    return new gnu.xml.libxmlj.transform.GnomeTransformerFactory();
+  }
+  
+  private static String getFactoryClassName(ClassLoader loader, int attempt)
+  {
+    final String propertyName = "javax.xml.transform.TransformerFactory";
+    switch (attempt)
+      {
+        case 0:
+          return System.getProperty(propertyName);
+        case 1:
+          try
+            {
+              File file = new File(System.getProperty("java.home"));
+              file = new File(file, "lib");
+              file = new File(file, "jaxp.properties");
+              InputStream in = new FileInputStream(file);
+              Properties props = new Properties();
+              props.load(in);
+              in.close();
+              return props.getProperty(propertyName);
+            }
+          catch (IOException e)
+            {
+              return null;
+            }
+        case 2: 
+          try
+            {
+              String serviceKey = "/META-INF/services/" + propertyName;
+              InputStream in = (loader != null) ?
+                loader.getResourceAsStream(serviceKey) :
+                TransformerFactory.class.getResourceAsStream(serviceKey);
+              if (in != null)
+                {
+                  BufferedReader r =
+                    new BufferedReader(new InputStreamReader(in));
+                  String ret = r.readLine();
+                  r.close();
+                  return ret;
+                }
+            }
+          catch (IOException e)
+            {
+            }
+          return null;
+        default:
+          return null;
+      }
+  }
+  
+  /**
+   * Creates a new transformer using the specified stylesheet.
+   * @param source the source of an <a href='http://www.w3.org/TR/xslt'>XSLT
+   * stylesheet</a> specifying the transformation to apply
+   */
+  public abstract Transformer newTransformer(Source source) 
+    throws TransformerConfigurationException;
 
   /**
-   * Returns an object encapsulating the &lt;?xml-stylesheet&nbsp;?&gt;
-   * processing instruction from the document that matches the
-   * specified criteria.
+   * Creates a new transformer that applies the identity transform.
+   */
+  public abstract Transformer newTransformer() 
+    throws TransformerConfigurationException;
+
+  /**
+   * Creates a new compiled transformation using the specified stylesheet.
+   * @param source the source of an <a href='http://www.w3.org/TR/xslt'>XSLT
+   * stylesheet</a> specifying the transformation to apply
+   */
+  public abstract Templates newTemplates(Source source) 
+    throws TransformerConfigurationException;
+
+  /**
+   * Returns a source object representing the XML resource specified by the
+   * <a href='http://www.w3.org/TR/xml-stylesheet/'>xml-stylesheet</a>
+   * processing instruction and matching the given criteria.
+   * Note that if multiple stylesheets are selected, the source represents a
+   * stylesheet composed of a list of imports.
+   * @param source the source XML document
+   * @param media the media attribute to match, or <code>null</code> to match
+   * the preferred templates
+   * @param title the title attribute to match, or <code>null</code> to match
+   * any
+   * @param charset the charset attribute to match, or <code>null</code> to
+   * match any
    */
   public abstract Source getAssociatedStylesheet(Source source, 
                                                  String media,
@@ -77,83 +199,78 @@ public abstract class TransformerFactory
                                                  String charset) 
     throws TransformerConfigurationException;
 
-  /** Returns an implementation-specific attribute */
-  public abstract Object getAttribute(String name) 
-    throws IllegalArgumentException;
-
-  /** Returns the ErrorListener used when parsing stylesheets. */
-  public abstract ErrorListener getErrorListener();
+  /**
+   * Set the resolver callback to be used by transformers obtained from
+   * this factory.
+   */
+  public abstract void setURIResolver(URIResolver resolver);
 
   /**
-   * Exposes capabilities of the underlying implementation.
-   * Examples include SAXSource.FEATURE and DOMResult.FEATURE.
+   * Returns the resolver callback to be used by transformers obtained from
+   * this factory.
+   */
+  public abstract URIResolver getURIResolver();
+
+  /**
+   * Sets a feature of transformers and templates obtained from this
+   * factory.
+   * Feature names are fully qualified URIs, and may depend on the factory
+   * implementation.
+   * @param name the name of the feature
+   * @param value the feature state
+   * @exception TransformerConfigurationException if the feature is
+   * unsupported
+   */
+  public abstract void setFeature(String name, boolean value)
+    throws TransformerConfigurationException;
+
+  /**
+   * Returns the state of a feature in the factory implementation.
+   * Feature names are fully qualified URIs, and may depend on the factory
+   * implementation. JAXP also predefines several features, including the
+   * constants in {@link javax.xml.XMLConstants} and
+   * <ul>
+   * <li>{@link javax.xml.transform.dom.DOMSource#FEATURE}</li>
+   * <li>{@link javax.xml.transform.dom.DOMResult#FEATURE}</li>
+   * <li>{@link javax.xml.transform.sax.SAXSource#FEATURE}</li>
+   * <li>{@link javax.xml.transform.sax.SAXResult#FEATURE}</li>
+   * <li>{@link javax.xml.transform.sax.SAXTransformerFactory#FEATURE}</li>
+   * <li>{@link javax.xml.transform.sax.SAXTransformerFactory#FEATURE_XMLFILTER}</li>
+   * <li>{@link javax.xml.transform.stream.StreamSource#FEATURE}</li>
+   * <li>{@link javax.xml.transform.stream.StreamResult#FEATURE}</li>
+   * </ul>
+   * The latter expose various capabilities of the factory implementation.
    */
   public abstract boolean getFeature(String name);
 
-  /** Returns the URIResolver used when parsing stylesheets. */
-  public abstract URIResolver getURIResolver();
-
-
   /**
-   * Returns a new TransformerFactory.  The name of this class
-   * is found by checking, in order:
-   * the <em>javax.xml.transform.TransformerFactory</em>
-   *	system property,
-   * <em>$JAVA_HOME/lib/jaxp.properties</em> for the key with
-   *	that same name,
-   * JAR files in the class path with a <em>META-INF/services</em>
-   *	file with that same name,
-   * else the compiled-in platform default.
+   * Set a named attribute on the underlying implementation.
+   * @param name the attribute name
+   * @param value the value to assign
+   * @exception IllegalArgumentException if the attribute is not supported
    */
-  public static TransformerFactory newInstance() 
-    throws TransformerFactoryConfigurationError
-  {
-    try
-      {
-        return (TransformerFactory) ClassStuff.createFactory (
-                                                            "javax.xml.transform.TransformerFactory",
-                                                            "gnu.xml.libxmlj.transform.GnomeTransformerFactory"
-                                                            // "gnu.xml.util.SAXNullTransformerFactory"
-                                                            // "org.apache.xalan.processor.TransformerFactoryImpl"
-                                                           );
-      }
-    catch (ClassCastException e)
-      {
-        throw new TransformerFactoryConfigurationError(e);
-      }
-  }
-
-
-  /**
-   * Returns a pre-compiled stylesheet.
-   * @param stylesheet XSLT stylesheet specifying transform
-   */
-  public abstract Templates newTemplates (Source stylesheet) 
-    throws TransformerConfigurationException;
-
-  /**
-   * Returns a transformer that performs the null transform.
-   */
-  public abstract Transformer newTransformer() 
-    throws TransformerConfigurationException;
-
-  /**
-   * Returns a transformer making a specified transform.
-   * @param stylesheet XSLT stylesheet specifying transform
-   */
-  public abstract Transformer newTransformer (Source stylesheet) 
-    throws TransformerConfigurationException;
-
-
-  /** Assigns an implementation-specific attribute */
   public abstract void setAttribute(String name, Object value)
     throws IllegalArgumentException;
 
-  /** Assigns the ErrorListener used when parsing stylesheets. */
+  /**
+   * Retrieve the specified named attribute value.
+   * @param name the attribute name
+   * @exception IllegalArgumentException if the attribute is not supported
+   */
+  public abstract Object getAttribute(String name) 
+    throws IllegalArgumentException;
+
+  /**
+   * Sets the callback to be used by transformers obtained from this factory
+   * to report transformation errors.
+   */
   public abstract void setErrorListener(ErrorListener listener) 
     throws IllegalArgumentException;
 
-  /** Assigns the URIResolver used when parsing stylesheets. */
-  public abstract void setURIResolver(URIResolver resolver);
+  /**
+   * Returns the callback to be used by transformers obtained from this
+   * factory to report transformation errors.
+   */
+  public abstract ErrorListener getErrorListener();
 
 }

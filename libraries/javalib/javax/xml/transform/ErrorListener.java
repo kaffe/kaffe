@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2001 Andrew Selkirk
+ * ErrorListener.java
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -37,27 +38,30 @@
 package javax.xml.transform;
 
 /**
- * JAXP/Transform analogue of SAX ErrorHandler, using
- * {@link TransformerException} classes.
- * @author	Andrew Selkirk
- * @version	1.0
+ * Error reporting callback handler.
+ * Equivalent to the SAX ErrorHandler.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public interface ErrorListener
 {
 
-  //-------------------------------------------------------------
-  // Interface: ErrorListener -----------------------------------
-  //-------------------------------------------------------------
-
-  public void error(TransformerException exception)
-    throws TransformerException;
-
-  public void fatalError(TransformerException exception)
-    throws TransformerException;
-
+  /**
+   * Reports a warning condition.
+   */
   public void warning(TransformerException exception)
     throws TransformerException;
 
+  /**
+   * Reports a recoverable error.
+   */
+  public void error(TransformerException exception)
+    throws TransformerException;
 
-} // ErrorListener
+  /**
+   * Reports a fatal error.
+   */
+  public void fatalError(TransformerException exception)
+    throws TransformerException;
 
+}

@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import javax.xml.xpath.XPathFunctionResolver;
+import javax.xml.xpath.XPathVariableResolver;
 import org.w3c.dom.Node;
 
 /**
@@ -53,15 +55,8 @@ import org.w3c.dom.Node;
 public class XPathParser
 {
 
-  /**
-   * Map of variable bindings.
-   */
-  Map bindings;
-
-  public void setBindings (Map bindings)
-  {
-    this.bindings = bindings;
-  }
+  XPathVariableResolver variableResolver;
+  XPathFunctionResolver functionResolver;
 
 %}
 
@@ -314,11 +309,11 @@ primary_expr:
 function_call:
   function_name LP RP
     {
-      $$ = new FunctionCall ((String) $1);
+      $$ = new FunctionCall (functionResolver, (String) $1);
     }
   | function_name LP argument_list RP
     {
-      $$ = new FunctionCall ((String) $1, (List) $3);
+      $$ = new FunctionCall (functionResolver, (String) $1, (List) $3);
     }
   ;
 
@@ -501,8 +496,7 @@ function_name:
 variable_reference:
   DOLLAR qname
     {
-      Object value = bindings.get ((String) $2);
-      $$ = new Constant (value);
+      $$ = new VariableReference (variableResolver, (String) $2);
     }
   ;
 

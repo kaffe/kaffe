@@ -1876,9 +1876,10 @@ AC_ARG_ENABLE([libxmlj],
 
 if test x"$enable_libxmlj" = x"yes" ; then
   if test x"$with_threads" = x"unix-pthreads" ; then
-    AM_PATH_XML2([2.5.1],[CFLAGS="${CFLAGS}"] [CPPFLAGS="${CPPFLAGS}"] [LIBS="${XML_LIBS} ${LIBS}"] ,
+    AM_PATH_XML2([2.6.8],[CFLAGS="${CFLAGS}"] [CPPFLAGS="${CPPFLAGS}"] [LIBS="${XML_LIBS} ${LIBS}"] ,
       AC_MSG_ERROR([unable to locate libxml.]))
-    AM_PATH_XSLT([1.0.24],[CFLAGS="${XSLT_CFLAGS} ${CFLAGS}"] [CPPFLAGS="${XSLT_CFLAGS} ${CPPFLAGS}"] [LIBS="${XSLT_LIBS} ${LIBS}"] ,
+    AM_PATH_XSLT([1.1.11],[CFLAGS="${XSLT_CFLAGS} ${CFLAGS}"] [CPPFLAGS="${XSLT_CFLAGS} ${CPPFLAGS}"] 
+[LIBS="${XSLT_LIBS} ${LIBS}"] ,
       AC_MSG_ERROR([unable to locate libxslt.]))
     LIBXMLJ_LIB="\$(top_builddir)/libraries/clib/libxmlj/libxmlj.la"
   else

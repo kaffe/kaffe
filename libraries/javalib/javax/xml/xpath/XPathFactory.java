@@ -1,6 +1,6 @@
 /*
  * XPathFactory.java
- * Copyright (C) 2004 Chris Burdess
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -38,8 +38,18 @@
 
 package javax.xml.xpath;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.util.Properties;
+
 /**
  * Factory for creating XPath environments.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  * @since 1.3
  */
 public abstract class XPathFactory
@@ -48,7 +58,8 @@ public abstract class XPathFactory
   /**
    * The default property name according to the JAXP specification.
    */
-  public static final String DEFAULT_PROPERTY_NAME = "XPath";
+  public static final String DEFAULT_PROPERTY_NAME =
+	 	"javax.xml.xpath.XPathFactory";
 
   /**
    * The default object model URI.
@@ -77,13 +88,108 @@ public abstract class XPathFactory
 
   /**
    * Returns a new factory for the given object model URI.
+   * The implementation class to load is the first found in the following
+   * locations that advertises support for the given model URI:
+   * <ol>
+   * <li>the <code>javax.xml.xpath.XPathFactory</code> system property</li>
+   * <li>the above named property value in the
+   * <code><i>$JAVA_HOME</i>/lib/jaxp.properties</code> file</li>
+   * <li>the class name specified in the
+   * <code>META-INF/services/javax.xml.xpath.XPathFactory</code> system
+   * resource</li>
+   * <li>the default factory class</li>
+   * </ol>
    * @param uri the object model URI
    */
   public static final XPathFactory newInstance(String uri)
     throws XPathFactoryConfigurationException
   {
-    // TODO
-    throw new UnsupportedOperationException();
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    if (loader == null)
+      {
+        loader = XPathFactory.class.getClassLoader();
+      }
+    String className = null;
+    int count = 0;
+    do
+      {
+        className = getFactoryClassName(loader, count);
+        if (className != null)
+          {
+            try
+              {
+                Class t = (loader != null) ? loader.loadClass(className) :
+                  Class.forName(className);
+                XPathFactory ret = (XPathFactory) t.newInstance();
+                if (ret.isObjectModelSupported(uri))
+                  {
+                    return ret;
+                  }
+                className = null;
+              }
+            catch (ClassNotFoundException e)
+              {
+                className = null;
+              }
+            catch (Exception e)
+              {
+                throw new XPathFactoryConfigurationException(e);
+              }
+          }
+      }
+    while (className == null && count < 4);
+    String msg = "no factories with support for " + uri;
+    throw new XPathFactoryConfigurationException(msg);
+  }
+
+  private static String getFactoryClassName(ClassLoader loader, int attempt)
+  {
+    final String propertyName = DEFAULT_PROPERTY_NAME;
+    switch (attempt)
+      {
+        case 0:
+          return System.getProperty(propertyName);
+        case 1:
+          try
+            {
+              File file = new File(System.getProperty("java.home"));
+              file = new File(file, "lib");
+              file = new File(file, "jaxp.properties");
+              InputStream in = new FileInputStream(file);
+              Properties props = new Properties();
+              props.load(in);
+              in.close();
+              return props.getProperty(propertyName);
+            }
+          catch (IOException e)
+            {
+              return null;
+            }
+        case 2:
+          try
+            {
+              String serviceKey = "/META-INF/services/" + propertyName;
+              InputStream in = (loader != null) ?
+                loader.getResourceAsStream(serviceKey) :
+                XPathFactory.class.getResourceAsStream(serviceKey);
+              if (in != null)
+                {
+                  BufferedReader r =
+                    new BufferedReader(new InputStreamReader(in));
+                  String ret = r.readLine();
+                  r.close();
+                  return ret;
+                }
+            }
+          catch (IOException e)
+            {
+            }
+          return null;
+        case 3:
+          return "gnu.xml.xpath.XPathFactoryImpl";
+        default:
+          return null;
+      }
   }
 
   /**

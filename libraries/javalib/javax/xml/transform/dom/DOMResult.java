@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2001 Andrew Selkirk
+ * DOMResult.java
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -34,25 +35,27 @@
  * obliged to do so.  If you do not wish to do so, delete this
  * exception statement from your version. 
  */
+
 package javax.xml.transform.dom;
 
-// Imports
-import org.w3c.dom.Node;
 import javax.xml.transform.Result;
+import org.w3c.dom.Node;
 
 /**
- * DOM Result
- * @author	Andrew Selkirk
- * @version	1.0
+ * Output result specified as a W3C DOM object graph.
+ * The result tree may be appended to an existing tree.
+ * If no target node is specified, the result tree will be made available by
+ * the {@link #getNode} method after the transformation.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class DOMResult
   implements Result
 {
 
-  //-------------------------------------------------------------
-  // Variables --------------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Factory feature indicating that DOM results are supported.
+   */
   public static final String FEATURE =
     "http://javax.xml.transform.dom.DOMResult/feature";
 
@@ -60,35 +63,43 @@ public class DOMResult
   private Node nextSibling;
   private String systemId;
 
-
-  //-------------------------------------------------------------
-  // Initialization ---------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Default constructor.
+   */
   public DOMResult()
   {
     this(null, null, null);
-  } // DOMResult()
+  }
 
+  /**
+   * Constructor with the node to append to.
+   */
   public DOMResult(Node node)
   {
     this(node, null, null);
-  } // DOMResult()
+  }
 
   /**
+   * Constructor with the node to append to and the child node before which
+   * the result should be appended.
    * @since 1.3
    */
   public DOMResult(Node node, Node nextSibling)
   {
     this(node, nextSibling, null);
-  } // DOMResult()
+  }
   
+  /**
+   * Constructor with the node to append to and the system ID.
+   */
   public DOMResult(Node node, String systemID)
   {
     this(node, null, systemID);
-  } // DOMResult()
+  }
   
   /**
+   * Constructor with the node to append to, the child node before which
+   * the result should be appended, and the system ID.
    * @since 1.3
    */
   public DOMResult(Node node, Node nextSibling, String systemID)
@@ -96,24 +107,28 @@ public class DOMResult
     this.node = node;
     this.nextSibling = nextSibling;
     this.systemId = systemID;
-  } // DOMResult()
+  }
 
-
-  //-------------------------------------------------------------
-  // Methods ----------------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Sets the node to which the result tree will be appended.
+   * @param node the node
+   */
   public void setNode(Node node)
   {
     this.node = node;
-  } // setNode()
+  }
 
+  /**
+   * Returns the node to which the result tree is to be appended,
+   * or the result tree after transformation if no node was previously set.
+   */
   public Node getNode()
   {
     return node;
-  } // getNode()
+  }
 
   /**
+   * Sets the child node before which the result nodes will be inserted.
    * @since 1.3
    */
   public void setNextSibling(Node nextSibling)
@@ -122,6 +137,7 @@ public class DOMResult
   }
 
   /**
+   * Returns the child node before which the result nodes will be inserted.
    * @since 1.3
    */
   public Node getNextSibling()
@@ -129,16 +145,20 @@ public class DOMResult
     return nextSibling;
   }
 
-  public void setSystemId(String systemID)
+  /**
+   * Sets the system ID used to resolve external entities.
+   */
+  public void setSystemId(String systemId)
   {
-    this.systemId = systemID;
-  } // systemID()
+    this.systemId = systemId;
+  }
 
+  /**
+   * Returns the system ID used to resolve external entities.
+   */
   public String getSystemId()
   {
     return systemId;
-  } // getSystemId()
+  }
 
-
-} // DOMResult
-
+}

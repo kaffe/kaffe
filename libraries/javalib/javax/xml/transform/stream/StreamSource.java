@@ -1,7 +1,6 @@
 /*
  * StreamSource.java
- * Copyright (C) 2001 Andrew Selkirk
- * Copyright (C) 2001 The Free Software Foundation
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -36,167 +35,177 @@
  * obliged to do so.  If you do not wish to do so, delete this
  * exception statement from your version. 
  */
+
 package javax.xml.transform.stream;
 
-import java.io.InputStream;
-import java.io.Reader;
 import java.io.File;
+import java.io.InputStream;
 import java.io.IOException;
+import java.io.Reader;
 import javax.xml.transform.Source;
 
-
 /**
- * Stream Source
- * @author	Andrew Selkirk
- * @version	1.0
+ * Specifies a stream from which to read the source XML data.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class StreamSource
   implements Source
 {
 
-  //-------------------------------------------------------------
-  // Variables --------------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Factory feature indicating that stream sources are supported.
+   */
   public static final String FEATURE =
     "http://javax.xml.transform.stream.StreamSource/feature";
 
-  private String		publicId	= null;
-  private String		systemId	= null;
-  private InputStream	inputStream	= null;
-  private Reader		reader		= null;
+  private String publicId;
+  private String systemId;
+  private InputStream inputStream;
+  private Reader reader;
 
-
-  //-------------------------------------------------------------
-  // Initialization ---------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Default constructor.
+   */
   public StreamSource()
   {
   }
 
-  public StreamSource(File file)
-  {
-    setSystemId (file);
-  }
-
+  /**
+   * Constructor with an input stream.
+   */
   public StreamSource(InputStream stream)
   {
     this.inputStream = stream;
   }
 
-  public StreamSource(InputStream stream, String systemID)
+  /**
+   * Constructor with an input stream and system ID.
+   */
+  public StreamSource(InputStream stream, String systemId)
   {
     this.inputStream = stream;
-    this.systemId = systemID;
+    this.systemId = systemId;
   }
 
+  /**
+   * Constructor with a reader.
+   * Prefer an input stream to a reader, so that the parser can use the
+   * character encoding specified in the XML.
+   */
   public StreamSource(Reader reader)
   {
     this.reader = reader;
   }
 
-  public StreamSource(Reader reader, String systemID)
+  /**
+   * Constructor with a reader and system ID.
+   * Prefer an input stream to a reader, so that the parser can use the
+   * character encoding specified in the XML.
+   */
+  public StreamSource(Reader reader, String systemId)
   {
     this.reader = reader;
-    this.systemId = systemID;
+    this.systemId = systemId;
   }
 
-  public StreamSource(String systemID)
+  /**
+   * Constructor with a system ID.
+   */
+  public StreamSource(String systemId)
   {
-    this.systemId = systemID;
+    this.systemId = systemId;
   }
 
-
-  //-------------------------------------------------------------
-  // Methods ----------------------------------------------------
-  //-------------------------------------------------------------
-
-  public InputStream getInputStream()
+  /**
+   * Constructor with a system ID specified as a File reference.
+   */
+  public StreamSource(File file)
   {
-    return inputStream;
+    setSystemId(file);
   }
 
-  public String getPublicId()
-  {
-    return publicId;
-  }
-
-  public Reader getReader()
-  {
-    return reader;
-  }
-
-  public String getSystemId()
-  {
-    return systemId;
-  }
-
-
+  /**
+   * Sets the source input stream.
+   */
   public void setInputStream(InputStream stream)
   {
     this.inputStream = stream;
   }
 
-  public void setPublicId(String publicID)
+  /**
+   * Returns the source input stream.
+   */
+  public InputStream getInputStream()
   {
-    this.publicId = publicID;
+    return inputStream;
   }
 
+  /**
+   * Sets the source reader.
+   * Prefer an input stream to a reader, so that the parser can use the
+   * character encoding specified in the XML.
+   */
   public void setReader(Reader reader)
   {
     this.reader = reader;
   }
 
-  public void setSystemId(File file)
+  /**
+   * Returns the source reader.
+   */
+  public Reader getReader()
+  {
+    return reader;
+  }
+
+  /**
+   * Sets the public ID for this source.
+   */
+  public void setPublicId(String publicId)
+  {
+    this.publicId = publicId;
+  }
+
+  /**
+   * Returns the public ID for this source.
+   */
+  public String getPublicId()
+  {
+    return publicId;
+  }
+
+  /**
+   * Sets the system ID for this source.
+   * If the input stream and reader are absent, the system ID will be used
+   * as a readable URL to locate the source data.
+   */
+  public void setSystemId(String systemId)
+  {
+    this.systemId = systemId;
+  }
+
+  /**
+   * Returns the system ID for this source.
+   */
+  public String getSystemId()
+  {
+    return systemId;
+  }
+
+  /**
+   * Sets the system ID using a File reference.
+   */
+  public void setSystemId(File f)
   {
     try
       {
-        this.systemId = fileToURL (file).toString ();
+        this.systemId = f.toURL().toString();
       }
     catch (IOException e)
       {
-        // can't happen
-        throw new RuntimeException (e.getMessage ());
+        throw new RuntimeException(e.getMessage(), e);
       }
   }
 
-  public void setSystemId(String systemID)
-  {
-    this.systemId = systemID;
-  }
-
-  // we don't demand jdk 1.2 File.toURL() in the runtime
-  // keep in sync with gnu.xml.util.Resolver
-  // and javax.xml.parsers.DocumentBuilder
-  static String fileToURL (File f)
-    throws IOException
-  {
-    String	temp;
-    
-    // FIXME: getAbsolutePath() seems buggy; I'm seeing components
-    // like "/foo/../" which are clearly not "absolute"
-    // and should have been resolved with the filesystem.
-    
-    // Substituting "/" would be wrong, "foo" may have been
-    // symlinked ... the URL code will make that change
-    // later, so that things can get _really_ broken!
-    
-    temp = f.getAbsolutePath ();
-    
-    if (File.separatorChar != '/')
-      {
-        temp = temp.replace (File.separatorChar, '/');
-      }
-    if (!temp.startsWith ("/"))
-      {
-        temp = "/" + temp;
-      }
-    if (!temp.endsWith ("/") && f.isDirectory ())
-      {
-        temp = temp + "/";
-      }
-    return "file:" + temp;
-  }
-  
 }

@@ -54,4 +54,6 @@ void * xmljAsPointer (JNIEnv *env, jobject field);
 
 jobject xmljAsField (JNIEnv *env, void * ptr);
 
+JNIEnv * xmljGetJNIEnv (void);
+
 #endif /* !defined XMLJ_UTIL_H */

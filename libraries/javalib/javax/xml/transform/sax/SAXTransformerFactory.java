@@ -1,7 +1,6 @@
 /*
  * SAXTransformerFactory.java
- * Copyright (C) 2001 Andrew Selkirk
- * Copyright (C) 2001 The Free Software Foundation
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -36,118 +35,85 @@
  * obliged to do so.  If you do not wish to do so, delete this
  * exception statement from your version. 
  */
+
 package javax.xml.transform.sax;
 
-// Imports
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLFilter;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLFilter;
 
 /**
- * A TransformerFactory that supports several separate modes for
- * working with SAX inputs and outputs.  Those modes include: <ul>
+ * Specialized transformer factory with support for SAX-specific factory
+ * methods.
+ * This factory provides SAX content handlers that can create transformation
+ * templates and transformers.
  *
- * <li> Pipeline Stage, pushing events through {@link TransformerHandler}
- *	objects used as SAX handlers, and passing the transformed data
- *	through a {@link SAXResult} encapsulating SAX ContentHandler and
- *	LexicalHandler objects;
- * <li> Pipeline Termination, like a normal pipeline stage but using some
- *	other kind of {@link Result} to store transformed data rather than
- *	passing it to another stage;
- * <li> Event producer, an {@link XMLFilter} object taking data from a URI
- *	or from a SAX {@link InputSource} input object and delivering it
- *	to a SAX ContentHandler;
- * <li>	Transformer objects produced by this factory will usually be able
- *	to accept {@link SAXSource} objects as inputs, and the XMLReader
- *	object in such a source could be an XMLFilter.
- * </ul>
- *
- * <p>Transformer objects produced by this factory will of course be
- * able to perform {@link Transformer#transform Transformer.transform()}
- * operations to map XML text into other text.
- *
- * <p>The factory also supports creating Templates objects.
- * 
- * @author	Andrew Selkirk, David Brownell
- * @version	1.0
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public abstract class SAXTransformerFactory extends TransformerFactory
 {
-	/**
-	 * Used with <em>TransformerFactory.getFeature()</em> to determine
-	 * whether the transformers it produces extend this class.
-	 */
-	public static final String FEATURE =
-		"http://javax.xml.transform.sax.SAXTransformerFactory/feature";
 
-	/**
-	 * Used with <em>TransformerFactory.getFeature()</em> to determine
-	 * whether <em>newXMLFilter()</em> methods are supported.
-	 */
-	public static final String FEATURE_XMLFILTER =
-		"http://javax.xml.transform.sax.SAXTransformerFactory/feature/xmlfilter";
+  /**
+   * Factory feature indicating that the factory can be cast to this class.
+   */
+  public static final String FEATURE =
+    "http://javax.xml.transform.sax.SAXTransformerFactory/feature";
 
+  /**
+   * Factory feature indicating that this factory can create new XMLFilters.
+   */
+  public static final String FEATURE_XMLFILTER =
+    "http://javax.xml.transform.sax.SAXTransformerFactory/feature/xmlfilter";
 
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
+  protected SAXTransformerFactory()
+  {
+  }
 
-	/** Constructor, for use with subclasses */
-	protected SAXTransformerFactory() {
-	}
+  /**
+   * Returns a content handler that can process SAX events into a result,
+   * using the specified transformation.
+   * @param src the source stylesheet
+   */
+  public abstract TransformerHandler newTransformerHandler(Source src)
+    throws TransformerConfigurationException;
 
+  /**
+   * Returns a content handler that can process SAX events into a result,
+   * using the specified transformation.
+   * @param templates the compiled stylesheet
+   */
+  public abstract TransformerHandler newTransformerHandler(Templates templates)
+    throws TransformerConfigurationException;
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * Returns a content handler that can process SAX events into a result,
+   * using the identity transform.
+   */
+  public abstract TransformerHandler newTransformerHandler()
+    throws TransformerConfigurationException;
 
-	/**
-	 * Returns a SAX event consumer sending its inputs to some Result
-	 * after transforming them according to a stylesheet.
-	 */
-	public abstract TransformerHandler
-	newTransformerHandler (Source stylesheet)
-		throws TransformerConfigurationException;
+  /**
+   * Returns a content handler that can process SAX events into a
+   * transformation template.
+   */
+  public abstract TemplatesHandler newTemplatesHandler()
+    throws TransformerConfigurationException;
 
-	/**
-	 * Returns a SAX event consumer sending its inputs to some Result
-	 * after transforming them according to a pre-parsed stylesheet.
-	 */
-	public abstract TransformerHandler
-	newTransformerHandler (Templates stylesheet)
-		throws TransformerConfigurationException;
+  /**
+   * Creates an XML filter for the specified source.
+   */
+  public abstract XMLFilter newXMLFilter(Source src)
+    throws TransformerConfigurationException;
 
-	/**
-	 * Returns a SAX event consumer sending its inputs to some Result
-	 * without transforming them (null transformation).
-	 */
-	public abstract TransformerHandler newTransformerHandler()
-		throws TransformerConfigurationException;
-
-	/**
-	 * Returns a SAX parser that transforms XML data according 
-	 * to a stylesheet before reporting SAX events.
-	 */
-	public abstract XMLFilter newXMLFilter (Source stylesheet)
-		throws TransformerConfigurationException;
-
-	/**
-	 * Returns a SAX parser that transforms XML data according 
-	 * to a pre-parsed stylesheet before reporting SAX events.
-	 */
-	public abstract XMLFilter newXMLFilter (Templates stylesheet)
-		throws TransformerConfigurationException;
-
-	/**
-	 * Returns a SAX event consumer collecting its inputs into
-	 * a pre-parsed stylesheet.
-	 */
-	public abstract TemplatesHandler newTemplatesHandler()
-		throws TransformerConfigurationException;
+  /**
+   * Creates an XML filter for the specified compiled stylesheet.
+   */
+  public abstract XMLFilter newXMLFilter(Templates templates)
+    throws TransformerConfigurationException;
 
 }

@@ -1,6 +1,6 @@
 /*
  * TypeInfoProvider.java
- * Copyright (C) 2004 Chris Burdess
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -43,6 +43,8 @@ import org.w3c.dom.TypeInfo;
 /**
  * Provides access to the PSVI type info supplied by
  * <code>ValidatorHandler</code>.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  * @since 1.3
  */
 public abstract class TypeInfoProvider

@@ -100,6 +100,13 @@ void
 xmljTransformToSAX (JNIEnv *env, jobject transformer, xmlDocPtr source,
                     jobject callback);
 
+xmlDocPtr
+xmljDocLoader (const xmlChar *uri, xmlDictPtr dict, int options,
+               void *ctxt, xsltLoadType type);
+
+/* HACK: store stylesheet URL as context for resolving URIs in xmljDocLoader */
+static jstring stylesheetURL = NULL;
+
 /*
  * --------------------------------------------------------------------------
  * 
@@ -232,7 +239,9 @@ xmljDocumentFunction (xmlXPathParserContextPtr ctxt, int nargs)
 
       xmlXPathFreeObject (obj);
       if (obj2 != NULL)
-	xmlXPathFreeObject (obj2);
+        {
+          xmlXPathFreeObject (obj2);
+        }
       valuePush (ctxt, ret);
       return;
     }
@@ -587,6 +596,66 @@ xmljTransformToSAX (JNIEnv *env, jobject transformer, xmlDocPtr source,
     }
 }
 
+xmlDocPtr
+xmljDocLoader (const xmlChar *uri, xmlDictPtr dict, int options,
+               void *ctxt, xsltLoadType type)
+{
+  JNIEnv *env;
+  jclass xmljClass;
+  jclass inputStreamClass;
+  jmethodID getInputStream;
+  jmethodID getDetectBuffer;
+  jstring systemId;
+  jobject inputStream;
+  jbyteArray detectBuffer;
+
+  fprintf(stderr,"xmljDocLoader:2\n");
+  fflush(stdout);
+  env = xmljGetJNIEnv ();
+  if (!env)
+    {
+      return NULL;
+    }
+  xmljClass = (*env)->FindClass (env, "gnu/xml/libxmlj/util/XMLJ");
+  if (!xmljClass)
+    {
+      return NULL;
+    }
+  getInputStream =
+    (*env)->GetMethodID (env, xmljClass, "getInputStream",
+                         "(Ljava/lang/String;Ljava/lang/String;)Lgnu/xml/libxmlj/util/NamedInputStream;");
+  if (!getInputStream)
+    {
+      return NULL;
+    }
+  systemId = xmljNewString (env, uri);
+  inputStream = (*env)->CallStaticObjectMethod (env, xmljClass, getInputStream,
+                                                stylesheetURL, systemId);
+  if (!inputStream)
+    {
+      return NULL;
+    }
+  inputStreamClass = (*env)->GetObjectClass (env, inputStream);
+  if (!inputStreamClass)
+    {
+      return NULL;
+    }
+  getDetectBuffer = (*env)->GetMethodID (env, inputStreamClass,
+                                         "getDetectBuffer", "()[B");
+  if (!getDetectBuffer)
+    {
+      return NULL;
+    }
+  detectBuffer = (*env)->CallObjectMethod (env, inputStream, getDetectBuffer);
+  if (!detectBuffer)
+    {
+      return NULL;
+    }
+  return xmljParseDocument (env, NULL, inputStream, detectBuffer,
+                            NULL, systemId, stylesheetURL,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 2);
+}
+
 /* GnomeTransformer.newStylesheet */
 JNIEXPORT jobject JNICALL
 Java_gnu_xml_libxmlj_transform_GnomeTransformer_newStylesheet (JNIEnv *env,
@@ -595,6 +664,8 @@ Java_gnu_xml_libxmlj_transform_GnomeTransformer_newStylesheet (JNIEnv *env,
   xsltStylesheetPtr stylesheet;
   jobject ret;
 
+  stylesheetURL = NULL;
+  xsltSetLoaderFunc (xmljDocLoader);
   stylesheet = xsltNewStylesheet ();
   xmljSetOutputProperties (env, self, stylesheet);
   ret = xmljAsField (env, stylesheet);
@@ -625,12 +696,15 @@ Java_gnu_xml_libxmlj_transform_GnomeTransformer_newStylesheetFromStream
     {
       return NULL;
     }
+  stylesheetURL = systemId;
+  xsltSetLoaderFunc (xmljDocLoader);
   stylesheet = xsltParseStylesheetDoc (doc);
   if (stylesheet == NULL)
     {
       xmljThrowException (env,
                           "javax/xml/transform/TransformerConfigurationException",
                           "Error parsing XSLT stylesheet");
+      return NULL;
     }
   xmljSetOutputProperties (env, self, stylesheet);
   ret =  xmljAsField (env, stylesheet);
@@ -657,6 +731,8 @@ Java_gnu_xml_libxmlj_transform_GnomeTransformer_newStylesheetFromDoc
     {
       return NULL;
     }
+  stylesheetURL = xmljNewString (env, doc->URL);
+  xsltSetLoaderFunc (xmljDocLoader);
   stylesheet = xsltParseStylesheetDoc (doc);
   if (stylesheet == NULL)
     {

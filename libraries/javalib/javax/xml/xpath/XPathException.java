@@ -1,6 +1,6 @@
 /*
  * XPathException.java
- * Copyright (C) 2004 Chris Burdess
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -43,6 +43,8 @@ import java.io.PrintWriter;
 
 /**
  * A generic XPath exception.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  * @since 1.3
  */
 public class XPathException

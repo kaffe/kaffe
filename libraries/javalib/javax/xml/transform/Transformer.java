@@ -1,7 +1,6 @@
 /*
  * Transformer.java
- * Copyright (C) 2001 Andrew Selkirk
- * Copyright (C) 2001 The Free Software Foundation
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -36,129 +35,131 @@
  * obliged to do so.  If you do not wish to do so, delete this
  * exception statement from your version. 
  */
+
 package javax.xml.transform;
 
-// Imports
 import java.util.Properties;
 
 /**
- * Apply a transformation from a source, populating a result.
- * Transformers may be reused, but not concurrently.
+ * An XSL transformation.
+ * Instances of this class may be reused, but the same instance may not be
+ * used concurrently by different threads.
  *
- * @author	Andrew Selkirk, David Brownell
- * @version	1.0
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public abstract class Transformer
 {
 
-  //-------------------------------------------------------------
-  // Initialization ---------------------------------------------
-  //-------------------------------------------------------------
-
-  /** Default constructor, for use only by subclasses. */
   protected Transformer()
   {
-  } // Transformer()
-
-
-  //-------------------------------------------------------------
-  // Methods ----------------------------------------------------
-  //-------------------------------------------------------------
+  }
 
   /**
-   * Clears all parameter settings.
-   * @see #setParameter
+   * Transforms the source XML to a result tree.
+   * @param xmlSource the XML source
+   * @param outputTarget the result of the transformation
+   */
+  public abstract void transform(Source xmlSource, Result outputTarget) 
+    throws TransformerException;
+  
+  /**
+   * Sets a parameter value for the transformation.
+   * Parameters may be referenced in the XSLT stylesheet.
+   * @param name the parameter name (an XML Name, or a namespace-prefixed
+   * XML Name of the form <code>{<i>namespaceURI</i>}<i>localName</i></code>
+   * @param value the value to assign
+   */
+  public abstract void setParameter(String name, Object value);
+
+  /**
+   * Returns the specified parameter value.
+   * @param name the parameter name (an XML Name, or a namespace-prefixed
+   * XML Name of the form <code>{<i>namespaceURI</i>}<i>localName</i></code>
+   */
+  public abstract Object getParameter(String name);
+
+  /**
+   * Clears all parameter values.
    */
   public abstract void clearParameters();
 
-  /** Returns the error handler used as documents are transformed. */
-  public abstract ErrorListener getErrorListener();
+  /**
+   * Sets the callback used to resolve entities referenced by
+   * <code>xsl:include</code>, <code>xsl:import</code>, or the XPath
+   * <code>document()</code> function.
+   */
+  public abstract void setURIResolver(URIResolver resolver);
 
   /**
-   * Returns a copy of the transformer's non-default output properties.
-   * That is, properties set in the stylesheet or through
-   * methods on this class are not set.
-   * @see OutputKeys
-   * @see #setOutputProperties
+   * Returns the callback used to resolve entities referenced by
+   * <code>xsl:include</code>, <code>xsl:import</code>, or the XPath
+   * <code>document()</code> function.
+   */
+  public abstract URIResolver getURIResolver();
+
+  /**
+   * Sets the output properties for the transformation, overriding any
+   * properties defined in the stylesheet.
+   * The format of property keys is as in the
+   * {@link #setOutputProperty(java.lang.String,java.lang.String)} method.
+   * @param oformat a set of output properties, or null to reset all the
+   * properties to their default values
+   */
+  public abstract void setOutputProperties(Properties oformat) 
+    throws IllegalArgumentException;
+
+  /**
+   * Returns a copy of the output properties for the transformation.
+   * Missing properties are defaulted according the
+   * <a href='http://www.w3.org/TR/xslt#output'>XSLT Recommendation, section
+   * 16</a>: <code>getProperty(String)</code> returns all properties
+   * including defaulted ones, and <code>get(Object)</code> returns only the
+   * properties explicitly set in the stylesheet.
    */
   public abstract Properties getOutputProperties();
 
   /**
-   * Returns the value of a property applying to this transform.
-   * Values returned by this method are only those that have
-   * been set explicitly.
-   * @see OutputKeys
-   * @see #setOutputProperty
-   */
-  public abstract String getOutputProperty(String name) 
-    throws IllegalArgumentException;
-
-  /**
-   * Returns the value of a parameter passed to this transform.
-   * These are primarily for use access within transformations
-   * and extensions.
-   * @see #setParameter
-   */
-  public abstract Object getParameter(String name);
-
-  /** Returns the resolver applied to documents being transformed. */
-  public abstract URIResolver getURIResolver();
-
-  /** Assigns the error handler used as documents are transformed. */
-  public abstract void setErrorListener(ErrorListener listener) 
-    throws IllegalArgumentException;
-  /**
-   * Assigns a set of output properties, as if made by multiple
-   * calls to {@link #setOutputProperty}.
-   * @see OutputKeys
-   * @param outputformat set of properties, or null to reset all
-   *	properties to their default values
-   */
-  public abstract void setOutputProperties(Properties outputformat) 
-    throws IllegalArgumentException;
-
-  /**
-   * Assigns the value of a transformation property, affecting
-   * generation of output (mostly text syntax).  Parameters include
-   * those defined by the xslt:output element.  Default settings may
-   * be explicitly overridden.
-   * @see OutputKeys
-   * @see #getOutputProperty
-   * @see #setOutputProperties
-   * @param name an XML name, or a namespace-scoped XML name
-   *	encoded as <em>{uri}localName</em>.
-   * @param value associated with the name
+   * Sets an output property for the transformation, overriding any property
+   * of the same name defined in the stylesheet.
+   * @param name the property name (an XML Name, or a namespace-prefixed
+   * XML Name of the form <code>{<i>namespaceURI</i>}<i>localName</i></code>
+   * @param value the string value of the property
+   * @exception IllegalArgumentException if the property is not supported
    */
   public abstract void setOutputProperty(String name, String value) 
     throws IllegalArgumentException;
 
   /**
-   * Assigns the value of a parameter passed to this transform.
-   * These are primarily for use access within transformations
-   * and extensions.
-   * @see #getParameter
-   * @see #clearParameters
-   * @param name an XML name, or a namespace-scoped XML name
-   *	encoded as <em>{uri}localName</em>.
-   * @param value associated with the name
+   * Returns the value of an output property for the transformation.
+   * Only explicit properties set programmatically or defined in the
+   * stylesheet, not defaulted properties, are returned by this method.
+   * @param name the property name (an XML Name, or a namespace-prefixed
+   * XML Name of the form <code>{<i>namespaceURI</i>}<i>localName</i></code>
+   * @exception IllegalArgumentException if the property is not supported
    */
-  public abstract void setParameter(String name, Object value);
+  public abstract String getOutputProperty(String name) 
+    throws IllegalArgumentException;
 
-  /** Assigns the resolver applied to documents being transformed. */
-  public abstract void setURIResolver(URIResolver resolver);
-
-  /** Apply the appropriate transformation */
-  public abstract void transform(Source source, Result result) 
-    throws TransformerException;
+  /**
+   * Sets the callback used to report errors during the transformation.
+   *  @exception IllegalArgumentException if the listener is null
+   */
+  public abstract void setErrorListener(ErrorListener listener)
+    throws IllegalArgumentException;
+  
+  /**
+   * Returns the callback used to report errors during the transformation.
+   */
+  public abstract ErrorListener getErrorListener();
 
   // -- JAXP 1.3 methods --
 
   /**
    * Reset this Transformer to its original configuration.
+   * @since 1.3
    */
   public void reset()
   {
   }
 
-} // Transformer
-
+}

@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2001 Andrew Selkirk
+ * DOMLocator.java
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -34,28 +35,24 @@
  * obliged to do so.  If you do not wish to do so, delete this
  * exception statement from your version. 
  */
+
 package javax.xml.transform.dom;
 
-// Imports
-import org.w3c.dom.Node;
 import javax.xml.transform.SourceLocator;
+import org.w3c.dom.Node;
 
 /**
- * DOM Locator
- * @author	Andrew Selkirk
- * @version	1.0
+ * Locator for reporting a location in a W3C DOM object graph.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public interface DOMLocator
   extends SourceLocator
 {
 
-  //-------------------------------------------------------------
-  // Interface: DOMLocator --------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Returns the node on which the event originated.
+   */
   public Node getOriginatingNode();
 
-
-} // DOMLocator
-
-
+}

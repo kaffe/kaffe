@@ -1,7 +1,6 @@
 /*
  * TransformerFactoryConfigurationError.java
- * Copyright (C) 2001 Andrew Selkirk
- * Copyright (C) 2001 The Free Software Foundation
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -39,55 +38,66 @@
 package javax.xml.transform;
 
 /**
- * Reports a {@link TransformerFactory} configuration error.
- * @author	Andrew Selkirk, David Brownell
- * @version	1.0
+ * An error occurred during configuration of the transformer factory.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class TransformerFactoryConfigurationError
   extends Error
 {
-  private Exception	exception	= null;
+  
+  private final Exception  exception;
 
-
-  //-------------------------------------------------------------
-  // Initialization ---------------------------------------------
-  //-------------------------------------------------------------
-
-  public TransformerFactoryConfigurationError ()
+  /**
+   * Constructor with no detail message.
+   */
+  public TransformerFactoryConfigurationError()
   {
+    this(null, null);
   }
 
-  public TransformerFactoryConfigurationError (Exception e)
+  /**
+   * Constructor with a detail message.
+   */
+  public TransformerFactoryConfigurationError(String msg)
   {
+    this(null, msg);
+  }
+
+  /**
+   * Constructor with an underlying cause.
+   */
+  public TransformerFactoryConfigurationError(Exception e)
+  {
+    this(e, null);
+  }
+
+  /**
+   * Constructor with an underlying cause and detail message.
+   */
+  public TransformerFactoryConfigurationError(Exception e, String msg)
+  {
+    super(msg);
     exception = e;
   }
 
-  public TransformerFactoryConfigurationError (Exception e, String msg)
+  /**
+   * Returns the detail message.
+   */
+  public String getMessage()
   {
-    super (msg);
-    exception = e;
-  }
-
-  public TransformerFactoryConfigurationError (String msg)
-  {
-    super (msg);
-  }
-
-
-  //-------------------------------------------------------------
-  // Methods ----------------------------------------------------
-  //-------------------------------------------------------------
-
-  public String getMessage ()
-  {
-    if (super.getMessage () == null && exception != null)
+    String message = super.getMessage();
+    if (message == null && exception != null)
       {
-        return exception.getMessage ();
+        message = exception.getMessage();
       }
-    return super.getMessage ();
+    return message;
   }
 
-  public Exception getException ()
+  /**
+   * Returns the underlying cause.
+   */
+  public Exception getException()
   {
     return exception;
   }

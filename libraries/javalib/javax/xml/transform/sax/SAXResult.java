@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2001 Andrew Selkirk
+ * SAXResult.java
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -34,80 +35,99 @@
  * obliged to do so.  If you do not wish to do so, delete this
  * exception statement from your version. 
  */
+
 package javax.xml.transform.sax;
 
-// Imports
+import javax.xml.transform.Result;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ext.LexicalHandler;
-import javax.xml.transform.Result;
 
 /**
- * Collects the result of a SAX transform.
- * @author	Andrew Selkirk, David Brownell
- * @version	1.0
+ * Specifies SAX handlers to be used as a result sink during a
+ * transformation.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class SAXResult implements Result
 {
   
   /**
-   * Used with <em>TransformerFactory.getFeature()</em> to determine
-   * whether the transformers it produces support SAXResult objects
-   * as outputs.
+   * Factory feature indicating that SAX results are supported.
    */
   public static final String FEATURE =
     "http://javax.xml.transform.sax.SAXResult/feature";
 
-  private ContentHandler	handler		= null;
-  private LexicalHandler	lexhandler	= null;
-  private String		systemId	= null;
+  private ContentHandler handler;
+  private LexicalHandler lexicalHandler;
+  private String systemId;
 
-
-  //-------------------------------------------------------------
-  // Initialization ---------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Default constructor.
+   */
   public SAXResult()
   {
-  } // SAXResult()
+  }
 
+  /**
+   * Constructor specifying a content handler.
+   */
   public SAXResult(ContentHandler handler)
   {
     this.handler = handler;
-  } // SAXResult()
-
-
-  //-------------------------------------------------------------
-  // Methods ----------------------------------------------------
-  //-------------------------------------------------------------
-
-  public ContentHandler getHandler()
-  {
-    return handler;
   }
 
-  public String getSystemId()
-  {
-    return systemId;
-  }
-
-  public LexicalHandler getLexicalHandler()
-  {
-    return lexhandler;
-  }
-
+  /**
+   * Sets the content handler to which result document events will be
+   * propagated.
+   */
   public void setHandler(ContentHandler handler)
   {
     this.handler = handler;
   }
 
-  public void setSystemId(String systemID)
+  /**
+   * Returns the content handler to which result document events will be
+   * propagated.
+   */
+  public ContentHandler getHandler()
   {
-    this.systemId = systemID;
+    return handler;
   }
 
-  public void setLexicalHandler(LexicalHandler lexHandler)
+  /**
+   * Sets the lexical handler to which lexical events will be propagated.
+   * If a lexical handler is not set, the transformer should attempt to cast
+   * the content handler to a lexical handler.
+   */
+  public void setLexicalHandler(LexicalHandler handler)
   {
-    this.lexhandler = lexHandler;
+    lexicalHandler = handler;
   }
   
+  /**
+   * Returns the lexical handler to which lexical events will be propagated.
+   * If a lexical handler is not set, the transformer should attempt to cast
+   * the content handler to a lexical handler.
+   */
+  public LexicalHandler getLexicalHandler()
+  {
+    return lexicalHandler;
+  }
+
+  /**
+   * Sets the system ID which this result represents.
+   */
+  public void setSystemId(String systemId)
+  {
+    this.systemId = systemId;
+  }
+
+  /**
+   * Returns the system ID which this result represnts.
+   */
+  public String getSystemId()
+  {
+    return systemId;
+  }
+
 }

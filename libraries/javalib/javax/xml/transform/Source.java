@@ -1,7 +1,6 @@
 /*
  * Source.java
- * Copyright (C) 2001 Andrew Selkirk
- * Copyright (C) 2001 The Free Software Foundation
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -39,34 +38,24 @@
 package javax.xml.transform;
 
 /**
- * Identifies the URI for either a transformation (XSLT stylesheet)
- * or an input to a transformation (XML document to be transformed).
+ * An XML input source.
+ * This is equivalent to a SAX InputSource.
  *
- * @author	Andrew Selkirk, David Brownell
- * @version	1.0
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public interface Source
 {
 
-  //-------------------------------------------------------------
-  // Interface: Source ------------------------------------------
-  //-------------------------------------------------------------
+  /**
+   * Sets the XML system ID for this source.
+   * This can be used to resolve external entities in the source.
+   * @param systemID the system ID URI
+   */
+  public void setSystemId(String systemId);
 
   /**
-   * Returns the URI for this source.  Some sources may not need URIs,
-   * for example ones provided as an input stream, but such URIs
-   * are important for resolving relative URIs and for providing
-   * usable diagnostics.
+   * Returns the system ID for this source.
    */
   public String getSystemId();
 
-  /**
-   * Associates a URI with this source.
-   *
-   * @param systemID the URI
-   */
-  public void setSystemId(String systemID);
-
-
-} // Source
-
+}

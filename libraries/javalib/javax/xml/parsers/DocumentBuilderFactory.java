@@ -1,7 +1,6 @@
 /*
  * DocumentBuilderFactory.java
- * Copyright (C) 2001 Andrew Selkirk
- * Copyright (C) 2001 The Free Software Foundation
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -39,150 +38,275 @@
 
 package javax.xml.parsers;
 
-// Imports
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.File;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.Properties;
 import javax.xml.validation.Schema;
-import org.w3c.dom.*;
-import org.xml.sax.*;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 
 /**
- * DocumentBuilderFactory is used to resolve the problem that the
- * W3C DOM APIs don't include portable bootstrapping.
+ * Factory for obtaining document builders.
+ * Instances of this class are <em>not</em> guaranteed to be thread safe.
  *
- * @author	Andrew Selkirk, David Brownell
- * @version	1.2
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public abstract class DocumentBuilderFactory
 {
 
-  //-------------------------------------------------------------
-  // Variables --------------------------------------------------
-  //-------------------------------------------------------------
-
-  private static final	String defaultPropName	= 
-    "javax.xml.parsers.DocumentBuilderFactory";
-
-  private 		boolean validating	= false;
-  private 		boolean namespaceAware	= false;
-  private 		boolean whitespace	= false;
-  private 		boolean expandEntityRef	= false;
-  private 		boolean ignoreComments	= false;
-  private 		boolean coalescing	= false;
-
+  private boolean namespaceAware;
+  private boolean validating;
+  private boolean ignoringElementContentWhitespace;
+  private boolean expandEntityReferences = true;
+  private boolean ignoringComments;
+  private boolean coalescing;
   private Schema schema;
   private boolean xIncludeAware;
 
-  //-------------------------------------------------------------
-  // Initialization ---------------------------------------------
-  //-------------------------------------------------------------
-
   protected DocumentBuilderFactory()
   {
-  } // DocumentBuilderFactory()
-
-
-  //-------------------------------------------------------------
-  // Methods ----------------------------------------------------
-  //-------------------------------------------------------------
+  }
 
   /**
-   * @exception IllegalArgumentException if implementation doesn't recognize the attribute
-   */
-  public abstract Object getAttribute(String name) 
-    throws IllegalArgumentException;
-
-  public boolean isCoalescing()
-  {
-    return coalescing;
-  } // isCoalescing()
-
-  public boolean isExpandEntityReferences()
-  {
-    return expandEntityRef;
-  } // isExpandEntityReferences()
-
-  public boolean isIgnoringComments()
-  {
-    return ignoreComments;
-  } // isIgnoringComments()
-
-  public boolean isIgnoringElementContentWhitespace()
-  {
-    return whitespace;
-  } // isIgnoringElementContentWhitespace()
-
-  public boolean isNamespaceAware()
-  {
-    return namespaceAware;
-  } // isNamespaceAware()
-
-  public boolean isValidating()
-  {
-    return validating;
-  } // isValidating()
-
-  public abstract DocumentBuilder newDocumentBuilder()
-    throws ParserConfigurationException;
-
-  /**
-   * @exception FactoryConfigurationError if the implementation is not available
+   * Creates a new factory instance.
+   * The implementation class to load is the first found in the following
+   * locations:
+   * <ol>
+   * <li>the <code>javax.xml.parsers.DocumentBuilderFactory</code> system
+   * property</li>
+   * <li>the above named property value in the
+   * <code><i>$JAVA_HOME</i>/lib/jaxp.properties</code> file</li>
+   * <li>the class name specified in the
+   * <code>META-INF/services/javax.xml.parsers.DocumentBuilderFactory</code>
+   * system resource</li>
+   * <li>the default factory class</li>
+   * </ol>
    */
   public static DocumentBuilderFactory newInstance()
   {
-    try
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    if (loader == null)
       {
-        return (DocumentBuilderFactory)
-          ClassStuff.createFactory (
-                                    defaultPropName, 
-                                    "gnu.xml.dom.JAXPFactory");
+        loader = DocumentBuilderFactory.class.getClassLoader();
       }
-    catch (ClassCastException e)
+    String className = null;
+    int count = 0;
+    do
       {
-        throw new FactoryConfigurationError (e,
-                                             "Factory class is the wrong type");
+        className = getFactoryClassName(loader, count);
+        if (className != null)
+          {
+            try
+              {
+                Class t = (loader != null) ? loader.loadClass(className) :
+                  Class.forName(className);
+                return (DocumentBuilderFactory) t.newInstance();
+              }
+            catch (ClassNotFoundException e)
+              {
+                className = null;
+              }
+            catch (Exception e)
+              {
+                throw new FactoryConfigurationError(e,
+                    "error instantiating class " + className);
+              } 
+          }
+      }
+    while (className == null && count < 3);
+    return new gnu.xml.dom.JAXPFactory();
+  }
+  
+  private static String getFactoryClassName(ClassLoader loader, int attempt)
+  {
+    final String propertyName = "javax.xml.parsers.DocumentBuilderFactory";
+    switch (attempt)
+      {
+        case 0:
+          return System.getProperty(propertyName);
+        case 1:
+          try
+            {
+              File file = new File(System.getProperty("java.home"));
+              file = new File(file, "lib");
+              file = new File(file, "jaxp.properties");
+              InputStream in = new FileInputStream(file);
+              Properties props = new Properties();
+              props.load(in);
+              in.close();
+              return props.getProperty(propertyName);
+            }
+          catch (IOException e)
+            {
+              return null;
+            }
+        case 2: 
+          try
+            {
+              String serviceKey = "/META-INF/services/" + propertyName;
+              InputStream in = (loader != null) ?
+                loader.getResourceAsStream(serviceKey) :
+                DocumentBuilderFactory.class.getResourceAsStream(serviceKey);
+              if (in != null)
+                {
+                  BufferedReader r =
+                    new BufferedReader(new InputStreamReader(in));
+                  String ret = r.readLine();
+                  r.close();
+                  return ret;
+                }
+            }
+          catch (IOException e)
+            {
+            }
+          return null;
+        default:
+          return null;
       }
   }
 
   /**
-   * @exception IllegalArgumentException if implementation doesn't recognize the attribute
+   * Creates a new document builder instance using the currently specified
+   * factory configuration.
+   * @exception ParserConfigurationException if the specified configuration
+   * is not supported
+   */
+  public abstract DocumentBuilder newDocumentBuilder()
+    throws ParserConfigurationException;
+
+  /**
+   * Sets whether document builders obtained from this factory will be XML
+   * Namespace aware.
+   */
+  public void setNamespaceAware(boolean awareness)
+  {
+    namespaceAware = awareness;
+  }
+
+  /**
+   * Sets whether document builders obtained from this factory will validate
+   * their input.
+   */
+  public void setValidating(boolean validating)
+  {
+    this.validating = validating;
+  }
+
+  /**
+   * Sets whether document builders obtained from this factory will
+   * eliminate whitespace within elements that have an element-only content
+   * model.
+   */
+  public void setIgnoringElementContentWhitespace(boolean whitespace)
+  {
+    ignoringElementContentWhitespace = whitespace;
+  }
+
+  /**
+   * Sets whether document builders obtained from this factory will expand
+   * entity reference nodes.
+   */
+  public void setExpandEntityReferences(boolean expandEntityRef)
+  {
+    expandEntityReferences = expandEntityRef;
+  }
+
+  /**
+   * Sets whether document builders obtained from this factory will discard
+   * comment nodes.
+   */
+  public void setIgnoringComments(boolean ignoreComments)
+  {
+    ignoringComments = ignoreComments;
+  }
+
+  /**
+   * Sets whether document builders obtained from this factory will convert
+   * CDATA sections to text nodes and normalize adjacent text nodes into a
+   * single text node.
+   */
+  public void setCoalescing(boolean coalescing)
+  {
+    this.coalescing = coalescing;
+  }
+
+  /**
+   * Indicates whether document builders obtained from this factory will be
+   * XML Namespace aware.
+   */
+  public boolean isNamespaceAware()
+  {
+    return namespaceAware;
+  }
+
+  /**
+   * Indicates whether document builders obtained from this factory will
+   * validate their input.
+   */
+  public boolean isValidating()
+  {
+    return validating;
+  }
+
+  /**
+   * Indicates whether document builders obtained from this factory will
+   * eliminate whitespace within elements that have an element-only content
+   * model.
+   */
+  public boolean isIgnoringElementContentWhitespace()
+  {
+    return ignoringElementContentWhitespace;
+  }
+
+  /**
+   * Indicates whether document builders obtained from this factory will
+   * expand entity reference nodes.
+   */
+  public boolean isExpandEntityReferences()
+  {
+    return expandEntityReferences;
+  }
+
+  /**
+   * Indicates whether document builders obtained from this factory will
+   * discard comment nodes.
+   */
+  public boolean isIgnoringComments()
+  {
+    return ignoringComments;
+  }
+
+  /**
+   * Indicates whether document builders obtained from this factory will
+   * convert CDATA sections to text nodes and normalize adjacent text nodes
+   * into a single text node.
+   */
+  public boolean isCoalescing()
+  {
+    return coalescing;
+  }
+
+  /**
+   * Set the named attribute on the underlying implementation.
+   * @param name the name of the attribute
+   * @param value the new value
+   * @exception IllegalArgumentException if the attribute is not recognized
    */
   public abstract void setAttribute(String name, Object value) 
     throws IllegalArgumentException;
 
-  public void setCoalescing(boolean value)
-  {
-    coalescing = value;
-  } // setCoalescing()
-
-  public void setExpandEntityReferences(boolean value)
-  {
-    expandEntityRef = value;
-  } // setExpandEntityReferences()
-
-  public void setIgnoringComments(boolean value)
-  {
-    ignoreComments = value;
-  } // setIgnoringComments()
-
-  public void setIgnoringElementContentWhitespace(boolean value)
-  {
-    whitespace = value;
-  } // setIgnoringElementContentWhitespace()
-
-  public void setNamespaceAware(boolean value)
-  {
-    namespaceAware = value;
-  } // setNamespaceAware()
-
-  public void setValidating(boolean value)
-  {
-    validating = value;
-  } // setValidating()
+  /**
+   * Retrieves the named attribute value from the underlying implementation.
+   * @param name the name of the attribute
+   * @exception IllegalArgumentException if the attribute is not recognized
+   */
+  public abstract Object getAttribute(String name) 
+    throws IllegalArgumentException;
 
   // -- JAXP 1.3 methods --
 
@@ -204,11 +328,20 @@ public abstract class DocumentBuilderFactory
     this.schema = schema;
   }
 
+  /**
+   * Indicates whether parsers obtained from this factory will be XInclude
+   * aware.
+   * @since 1.3
+   */
   public boolean isXIncludeAware()
   {
     return xIncludeAware;
   }
 
+  /**
+   * Sets whether parsers obtained from this factory will be XInclude aware.
+   * @since 1.3
+   */
   public void setXIncludeAware(boolean state)
   {
     xIncludeAware = state;

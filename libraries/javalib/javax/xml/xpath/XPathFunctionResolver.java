@@ -1,6 +1,6 @@
 /*
  * XPathFunctionResolver.java
- * Copyright (C) 2004 Chris Burdess
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -42,6 +42,8 @@ import javax.xml.namespace.QName;
 
 /**
  * Interface providing the means to access XPath extension functions.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  * @since 1.3
  */
 public interface XPathFunctionResolver

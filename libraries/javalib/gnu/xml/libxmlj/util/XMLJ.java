@@ -172,6 +172,16 @@ public final class XMLJ
   }
 
   /**
+   * Convenience method for xmljDocLoader
+   */
+  static NamedInputStream getInputStream (String base, String url)
+    throws IOException
+  {
+    URL u = (base == null) ? new URL (url) : new URL (new URL (base), url);
+    return getInputStream (u);
+  }
+
+  /**
    * Returns an output stream for the specified transformer result.
    */
   public static OutputStream getOutputStream (Result result)

@@ -1,7 +1,6 @@
 /*
  * SAXSource.java
- * Copyright (C) 2001 Andrew Selkirk
- * Copyright (C) 2001 The Free Software Foundation
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -36,152 +35,164 @@
  * obliged to do so.  If you do not wish to do so, delete this
  * exception statement from your version. 
  */
+
 package javax.xml.transform.sax;
 
-import org.xml.sax.XMLReader;
-import org.xml.sax.InputSource;
+import java.io.InputStream;
+import java.io.Reader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 /**
- * Acts as a holder for "pull style" inputs to an XSLT transform.
- * SAX based transforms can support a second style of inputs,
- * driving by a {@link TransformerHandler} as output of some
- * other SAX processing pipeline. stage.
+ * Specifies a SAX XML source. This is a tuple of input source and SAX
+ * parser.
  *
- * @see SAXTransformerFactory#newTransformerHandler
- * 
- * @author	Andrew Selkirk, David Brownell
- * @version	1.0
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class SAXSource
   implements Source
 {
+
   /**
-   * Used with <em>TransformerFactory.getFeature()</em> to determine
-   * whether the transformers it produces support SAXSource objects
-   * (possibly without URIs) as inputs.
+   * Factory feature indicating that SAX sources are supported.
    */
   public static final String FEATURE =
     "http://javax.xml.transform.sax.SAXSource/feature";
 
-  private XMLReader	reader		= null;
-  private InputSource	inputSource	= null;
+  private XMLReader  xmlReader;
+  private InputSource  inputSource;
 
-
-  //-------------------------------------------------------------
-  // Initialization ---------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Default constructor.
+   */
   public SAXSource()
   {
-  } // SAXSource()
+  }
 
-  public SAXSource(XMLReader reader, InputSource source)
+  /**
+   * Constructor with a SAX parser and input source.
+   */
+  public SAXSource(XMLReader reader, InputSource inputSource)
   {
-    this.reader = reader;
-    this.inputSource = source;
-  } // SAXSource()
+    xmlReader = reader;
+    this.inputSource = inputSource;
+  }
 
-  public SAXSource(InputSource source)
+  /**
+   * Constructor with an input source.
+   * The SAX parser will be instantiated by the transformer.
+   */
+  public SAXSource(InputSource inputSource)
   {
-    this.inputSource = source;
-  } // SAXSource()
+    this.inputSource = inputSource;
+  }
 
-
-  //-------------------------------------------------------------
-  // Methods ----------------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Sets the SAX parser to be used by this source.
+   * If null, the transformer will instantiate its own parser.
+   */
   public void setXMLReader(XMLReader reader)
   {
-    this.reader = reader;
-  } // setXMLReader()
+    xmlReader = reader;
+  }
 
+  /**
+   * Returns the SAX parser to be used by this source.
+   * If null, the transformer will instantiate its own parser.
+   */
   public XMLReader getXMLReader()
   {
-    return reader;
-  } // getXMLReader()
+    return xmlReader;
+  }
 
-  public void setInputSource(InputSource source)
+  /**
+   * Sets the input source to parse.
+   */
+  public void setInputSource(InputSource inputSource)
   {
-    this.inputSource = source;
-  } // setInputSource()
+    this.inputSource = inputSource;
+  }
 
+  /**
+   * Returns the input source to parse.
+   */
   public InputSource getInputSource()
   {
     return inputSource;
-  } // inputSource()
+  }
 
-  public void setSystemId(String systemID)
+  /**
+   * Sets the system ID for this source.
+   */
+  public void setSystemId(String systemId)
   {
     if (inputSource != null)
       {
-        inputSource.setSystemId(systemID);
+        inputSource.setSystemId(systemId);
       }
-  } // setSystemId()
+  }
 
+  /**
+   * Returns the system ID for this source.
+   */
   public String getSystemId()
   {
     if (inputSource != null)
       {
         return inputSource.getSystemId();
-      } // if
+      }
     return null;
-  } // getSystemId()
+  }
 
   /**
-   * Creates a SAX input source from its argument.
-   * Understands StreamSource and System ID based input sources,
-   * and insists on finding either a system ID (URI) or some kind
-   * of input stream (character or byte).
-   *
-   * @param in TRAX style input source
-   * @return SAX input source, or null if one could not be
-   *	created.
+   * Converts a source into a SAX input source.
+   * This method can use a StreamSource or the system ID.
+   * @return an input source or null
    */
-  public static InputSource sourceToInputSource (Source in)
+  public static InputSource sourceToInputSource(Source source)
   {
-    InputSource	retval;
-    boolean	ok = false;
-
-    if (in instanceof SAXSource)
+    InputSource in = null;
+    if (source instanceof SAXSource)
       {
-        return ((SAXSource) in).inputSource;
+        in = ((SAXSource) source).getInputSource();
       }
-
-    if (in.getSystemId () != null)
+    else if (source instanceof StreamSource)
       {
-        retval = new InputSource (in.getSystemId ());
-        ok = true;
-      }
-    else
-      {
-        retval = new InputSource ();
-      }
-
-    if (in instanceof StreamSource)
-      {
-        StreamSource	ss = (StreamSource) in;
-        
-        if (ss.getReader () != null)
+        StreamSource streamSource = (StreamSource) source;
+        InputStream inputStream = streamSource.getInputStream();
+        if (inputStream != null)
           {
-            retval.setCharacterStream (ss.getReader ());
-            ok = true;
+            in = new InputSource(inputStream);
           }
-        else if (ss.getInputStream () != null)
+        else
           {
-            retval.setByteStream (ss.getInputStream ());
-            ok = true;
+            Reader reader = streamSource.getReader();
+            if (reader != null)
+              {
+                in = new InputSource(reader);
+              }
           }
-        if (ss.getPublicId () != null)
+        String publicId = streamSource.getPublicId();
+        if (publicId != null && in != null)
           {
-            retval.setPublicId (ss.getPublicId ());
+            in.setPublicId(publicId);
           }
       }
-    
-    return ok ? retval : null;
+    String systemId = source.getSystemId();
+    if (systemId != null)
+      {
+        if (in == null)
+          {
+            in = new InputSource(systemId);
+          }
+        else
+          {
+            in.setSystemId(systemId);
+          }
+      }
+    return in;
   }
 
 }

@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2001 Andrew Selkirk
+ * URIResolver.java
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -37,20 +38,22 @@
 package javax.xml.transform;
 
 /**
- * URIResolver
- * @author	Andrew Selkirk
- * @version	1.0
+ * Callback that can resolve a URI into source XML for transformation.
+ * Equivalent to the SAX EntityResolver.
+ * 
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public interface URIResolver
 {
 
-  //-------------------------------------------------------------
-  // Interface: URIResolver -------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Resolves an <code>xsl:include</code>, <code>xsl:import</code>, or
+   * XPath <code>document()</code> function.
+   * @param href the URI to resolve (relative or absolute)
+   * @param base the base URI relative to which the URI is to be resolved
+   * @return a source, or null if the resource could not be found
+   */
   public Source resolve(String href, String base)
     throws TransformerException;
 
-
-} // URIResolver
-
+}

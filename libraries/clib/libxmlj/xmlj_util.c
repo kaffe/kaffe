@@ -204,7 +204,8 @@ jmethodID xmljGetMethodID (JNIEnv *env,
   return ret;
 }
 
-void * xmljAsPointer (JNIEnv *env, jobject ptr)
+void *
+xmljAsPointer (JNIEnv *env, jobject ptr)
 {
   jclass cls;
   jfieldID field;
@@ -220,7 +221,8 @@ void * xmljAsPointer (JNIEnv *env, jobject ptr)
 #endif
 }
 
-jobject xmljAsField (JNIEnv *env, void * ptr)
+jobject
+xmljAsField (JNIEnv *env, void * ptr)
 {
   jclass cls;
   jmethodID method;
@@ -234,5 +236,55 @@ jobject xmljAsField (JNIEnv *env, void * ptr)
   method = (*env)->GetMethodID (env, cls, "<init>", "(I)V");
   return (*env)->NewObject (env, cls, method, (jint) ptr);
 #endif
+}
+
+JNIEnv *
+xmljGetJNIEnv ()
+{
+  JavaVM **jvms;
+  jsize *jvm_count;
+  JavaVM *jvm;
+  JNIEnv **envs;
+  JNIEnv *env;
+
+  jvms = (JavaVM **) malloc (sizeof (JavaVM *));
+  if (!jvms)
+    {
+      return NULL;
+    }
+  jvm_count = (jsize *) malloc (sizeof (jsize));
+  if (!jvm_count)
+    {
+      free (jvms);
+      return NULL;
+    }
+  if (JNI_GetCreatedJavaVMs (jvms, 1, jvm_count))
+    {
+      free (jvms);
+      free (jvm_count);
+      return NULL;
+    }
+  jvm = *jvms;
+  envs = (JNIEnv **) malloc (sizeof (JNIEnv *));
+  if (!envs)
+    {
+      free (jvms);
+      free (jvm_count);
+      return NULL;
+    }
+  (*jvm)->AttachCurrentThread (jvm, (void **) envs, NULL);
+  (*jvm)->GetEnv (jvm, (void **) envs, JNI_VERSION_1_2);
+  if (envs)
+    {
+      env = *envs;
+      free (envs);
+    }
+  else
+    {
+      env = NULL;
+    }
+  free (jvms);
+  free (jvm_count);
+  return env;
 }
 

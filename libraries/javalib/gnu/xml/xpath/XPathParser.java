@@ -45,6 +45,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import javax.xml.xpath.XPathFunctionResolver;
+import javax.xml.xpath.XPathVariableResolver;
 import org.w3c.dom.Node;
 
 /**
@@ -55,17 +57,10 @@ import org.w3c.dom.Node;
 public class XPathParser
 {
 
-  /**
-   * Map of variable bindings.
-   */
-  Map bindings;
+  XPathVariableResolver variableResolver;
+  XPathFunctionResolver functionResolver;
 
-  public void setBindings (Map bindings)
-  {
-    this.bindings = bindings;
-  }
-
-					// line 69 "-"
+					// line 64 "-"
 // %token constants
 
   public static final int LITERAL = 257;
@@ -334,19 +329,19 @@ public class XPathParser
         yyVal = yyDefault(yyV > yyTop ? null : yyVals[yyV]);
         switch (yyN) {
 case 4:
-					// line 135 "XPathParser.y"
+					// line 130 "XPathParser.y"
   {
       yyVal = new Root ();
     }
   break;
 case 5:
-					// line 139 "XPathParser.y"
+					// line 134 "XPathParser.y"
   {
       yyVal = new Step (new Root (), (Expr) yyVals[0+yyTop]);
     }
   break;
 case 6:
-					// line 143 "XPathParser.y"
+					// line 138 "XPathParser.y"
   {
       Test nt = new NodeTypeTest ((short) 0);
       Selector s = new Selector (Selector.DESCENDANT_OR_SELF,
@@ -356,13 +351,13 @@ case 6:
     }
   break;
 case 8:
-					// line 155 "XPathParser.y"
+					// line 150 "XPathParser.y"
   {
       yyVal = new Step ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop]);
     }
   break;
 case 9:
-					// line 159 "XPathParser.y"
+					// line 154 "XPathParser.y"
   {
       Test nt = new NodeTypeTest ((short) 0);
       Selector s = new Selector (Selector.DESCENDANT_OR_SELF,
@@ -372,37 +367,37 @@ case 9:
     }
   break;
 case 10:
-					// line 170 "XPathParser.y"
+					// line 165 "XPathParser.y"
   {
       yyVal = new Selector (Selector.CHILD, (List) yyVals[0+yyTop]);
     }
   break;
 case 11:
-					// line 174 "XPathParser.y"
+					// line 169 "XPathParser.y"
   {
       yyVal = new Selector (Selector.ATTRIBUTE, (List) yyVals[0+yyTop]);
     }
   break;
 case 12:
-					// line 178 "XPathParser.y"
+					// line 173 "XPathParser.y"
   {
       yyVal = new Selector (((Integer) yyVals[-2+yyTop]).intValue (), (List) yyVals[0+yyTop]);
     }
   break;
 case 13:
-					// line 182 "XPathParser.y"
+					// line 177 "XPathParser.y"
   {
       yyVal = new Selector (Selector.SELF, Collections.EMPTY_LIST);
     }
   break;
 case 14:
-					// line 186 "XPathParser.y"
+					// line 181 "XPathParser.y"
   {
       yyVal = new Selector (Selector.PARENT, Collections.EMPTY_LIST);
     }
   break;
 case 15:
-					// line 193 "XPathParser.y"
+					// line 188 "XPathParser.y"
   {
       List list = new ArrayList ();
       list.add (yyVals[0+yyTop]);
@@ -410,7 +405,7 @@ case 15:
     }
   break;
 case 16:
-					// line 199 "XPathParser.y"
+					// line 194 "XPathParser.y"
   {
       List list = (List) yyVals[-1+yyTop];
       list.add (yyVals[0+yyTop]);
@@ -418,133 +413,133 @@ case 16:
     }
   break;
 case 17:
-					// line 223 "XPathParser.y"
+					// line 218 "XPathParser.y"
   {
       yyVal = new Integer(Selector.ANCESTOR);
     }
   break;
 case 18:
-					// line 227 "XPathParser.y"
+					// line 222 "XPathParser.y"
   {
       yyVal = new Integer(Selector.ANCESTOR_OR_SELF);
     }
   break;
 case 19:
-					// line 231 "XPathParser.y"
+					// line 226 "XPathParser.y"
   {
       yyVal = new Integer(Selector.ATTRIBUTE);
     }
   break;
 case 20:
-					// line 235 "XPathParser.y"
+					// line 230 "XPathParser.y"
   {
       yyVal = new Integer(Selector.CHILD);
     }
   break;
 case 21:
-					// line 239 "XPathParser.y"
+					// line 234 "XPathParser.y"
   {
       yyVal = new Integer(Selector.DESCENDANT);
     }
   break;
 case 22:
-					// line 243 "XPathParser.y"
+					// line 238 "XPathParser.y"
   {
       yyVal = new Integer(Selector.DESCENDANT_OR_SELF);
     }
   break;
 case 23:
-					// line 247 "XPathParser.y"
+					// line 242 "XPathParser.y"
   {
       yyVal = new Integer(Selector.FOLLOWING);
     }
   break;
 case 24:
-					// line 251 "XPathParser.y"
+					// line 246 "XPathParser.y"
   {
       yyVal = new Integer(Selector.FOLLOWING_SIBLING);
     }
   break;
 case 25:
-					// line 255 "XPathParser.y"
+					// line 250 "XPathParser.y"
   {
       yyVal = new Integer(Selector.NAMESPACE);
     }
   break;
 case 26:
-					// line 259 "XPathParser.y"
+					// line 254 "XPathParser.y"
   {
       yyVal = new Integer(Selector.PARENT);
     }
   break;
 case 27:
-					// line 263 "XPathParser.y"
+					// line 258 "XPathParser.y"
   {
       yyVal = new Integer(Selector.PRECEDING);
     }
   break;
 case 28:
-					// line 267 "XPathParser.y"
+					// line 262 "XPathParser.y"
   {
       yyVal = new Integer(Selector.PRECEDING_SIBLING);
     }
   break;
 case 29:
-					// line 271 "XPathParser.y"
+					// line 266 "XPathParser.y"
   {
       yyVal = new Integer(Selector.SELF);
     }
   break;
 case 31:
-					// line 280 "XPathParser.y"
+					// line 275 "XPathParser.y"
   {
       yyVal = new NodeTypeTest (Node.PROCESSING_INSTRUCTION_NODE, (String) yyVals[-1+yyTop]);
     }
   break;
 case 32:
-					// line 285 "XPathParser.y"
+					// line 280 "XPathParser.y"
   {
       yyVal = new NodeTypeTest (((Short) yyVals[-1+yyTop]).shortValue ());
     }
   break;
 case 33:
-					// line 292 "XPathParser.y"
+					// line 287 "XPathParser.y"
   {
       yyVal = new ExpressionTest ((Expr) yyVals[-1+yyTop]);
     }
   break;
 case 35:
-					// line 300 "XPathParser.y"
+					// line 295 "XPathParser.y"
   {
       yyVal = new ParenthesizedExpr ((Expr) yyVals[-1+yyTop]);
     }
   break;
 case 36:
-					// line 304 "XPathParser.y"
+					// line 299 "XPathParser.y"
   {
       yyVal = new Constant (yyVals[0+yyTop]);
     }
   break;
 case 37:
-					// line 308 "XPathParser.y"
+					// line 303 "XPathParser.y"
   {
       yyVal = new Constant (yyVals[0+yyTop]);
     }
   break;
 case 39:
-					// line 316 "XPathParser.y"
+					// line 311 "XPathParser.y"
   {
-      yyVal = new FunctionCall ((String) yyVals[-2+yyTop]);
+      yyVal = new FunctionCall (functionResolver, (String) yyVals[-2+yyTop]);
     }
   break;
 case 40:
-					// line 320 "XPathParser.y"
+					// line 315 "XPathParser.y"
   {
-      yyVal = new FunctionCall ((String) yyVals[-3+yyTop], (List) yyVals[-1+yyTop]);
+      yyVal = new FunctionCall (functionResolver, (String) yyVals[-3+yyTop], (List) yyVals[-1+yyTop]);
     }
   break;
 case 41:
-					// line 327 "XPathParser.y"
+					// line 322 "XPathParser.y"
   {
       List list = new ArrayList ();
       list.add (yyVals[0+yyTop]);
@@ -552,7 +547,7 @@ case 41:
     }
   break;
 case 42:
-					// line 333 "XPathParser.y"
+					// line 328 "XPathParser.y"
   {
       List list = (List) yyVals[0+yyTop];
       list.add (0, yyVals[-2+yyTop]);
@@ -560,19 +555,19 @@ case 42:
     }
   break;
 case 44:
-					// line 343 "XPathParser.y"
+					// line 338 "XPathParser.y"
   {
       yyVal = new UnionExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop]);
     }
   break;
 case 47:
-					// line 352 "XPathParser.y"
+					// line 347 "XPathParser.y"
   {
       yyVal = new Step ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop]);
     }
   break;
 case 48:
-					// line 356 "XPathParser.y"
+					// line 351 "XPathParser.y"
   {
       Test nt = new NodeTypeTest ((short) 0);
       Selector s = new Selector (Selector.DESCENDANT_OR_SELF,
@@ -582,7 +577,7 @@ case 48:
     }
   break;
 case 50:
-					// line 368 "XPathParser.y"
+					// line 363 "XPathParser.y"
   {
       Test test = (Test) yyVals[0+yyTop];
       Selector s = new Selector (Selector.SELF,
@@ -591,169 +586,168 @@ case 50:
     }
   break;
 case 52:
-					// line 379 "XPathParser.y"
+					// line 374 "XPathParser.y"
   {
       yyVal = new OrExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop]);
     }
   break;
 case 54:
-					// line 387 "XPathParser.y"
+					// line 382 "XPathParser.y"
   {
       yyVal = new AndExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop]);
     }
   break;
 case 56:
-					// line 395 "XPathParser.y"
+					// line 390 "XPathParser.y"
   {
       yyVal = new EqualityExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], false);
     }
   break;
 case 57:
-					// line 399 "XPathParser.y"
+					// line 394 "XPathParser.y"
   {
       yyVal = new EqualityExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], true);
     }
   break;
 case 59:
-					// line 407 "XPathParser.y"
+					// line 402 "XPathParser.y"
   {
       yyVal = new RelationalExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], true, false);
     }
   break;
 case 60:
-					// line 411 "XPathParser.y"
+					// line 406 "XPathParser.y"
   {
       yyVal = new RelationalExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], false, false);
     }
   break;
 case 61:
-					// line 415 "XPathParser.y"
+					// line 410 "XPathParser.y"
   {
       yyVal = new RelationalExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], true, true);
     }
   break;
 case 62:
-					// line 419 "XPathParser.y"
+					// line 414 "XPathParser.y"
   {
       yyVal = new RelationalExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], false, true);
     }
   break;
 case 64:
-					// line 427 "XPathParser.y"
+					// line 422 "XPathParser.y"
   {
       yyVal = new ArithmeticExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], ArithmeticExpr.ADD);
     }
   break;
 case 65:
-					// line 431 "XPathParser.y"
+					// line 426 "XPathParser.y"
   {
       yyVal = new ArithmeticExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], ArithmeticExpr.SUBTRACT);
     }
   break;
 case 67:
-					// line 439 "XPathParser.y"
+					// line 434 "XPathParser.y"
   {
       yyVal = new ArithmeticExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], ArithmeticExpr.MULTIPLY);
     }
   break;
 case 68:
-					// line 443 "XPathParser.y"
+					// line 438 "XPathParser.y"
   {
       yyVal = new ArithmeticExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], ArithmeticExpr.DIVIDE);
     }
   break;
 case 69:
-					// line 447 "XPathParser.y"
+					// line 442 "XPathParser.y"
   {
       yyVal = new ArithmeticExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], ArithmeticExpr.MODULO);
     }
   break;
 case 71:
-					// line 455 "XPathParser.y"
+					// line 450 "XPathParser.y"
   {
       yyVal = new NegativeExpr ((Expr) yyVals[0+yyTop]);
     }
   break;
 case 72:
-					// line 462 "XPathParser.y"
+					// line 457 "XPathParser.y"
   {
       yyVal = new Double ((String) yyVals[0+yyTop] + ".0");
     }
   break;
 case 73:
-					// line 466 "XPathParser.y"
+					// line 461 "XPathParser.y"
   {
       yyVal = new Double ((String) yyVals[-1+yyTop] + ".0");
     }
   break;
 case 74:
-					// line 470 "XPathParser.y"
+					// line 465 "XPathParser.y"
   {
       yyVal = new Double ((String) yyVals[-2+yyTop] + "." + (String) yyVals[0+yyTop]);
     }
   break;
 case 75:
-					// line 474 "XPathParser.y"
+					// line 469 "XPathParser.y"
   {
       yyVal = new Double ("0." + (String) yyVals[0+yyTop]);
     }
   break;
 case 77:
-					// line 503 "XPathParser.y"
+					// line 498 "XPathParser.y"
   {
-      Object value = bindings.get ((String) yyVals[0+yyTop]);
-      yyVal = new Constant (value);
+      yyVal = new VariableReference (variableResolver, (String) yyVals[0+yyTop]);
     }
   break;
 case 78:
-					// line 511 "XPathParser.y"
+					// line 505 "XPathParser.y"
   {
       yyVal = new NameTest (null, true, true);
     }
   break;
 case 79:
-					// line 515 "XPathParser.y"
+					// line 509 "XPathParser.y"
   {
       yyVal = new NameTest ((String) yyVals[-2+yyTop], true, false);
     }
   break;
 case 80:
-					// line 519 "XPathParser.y"
+					// line 513 "XPathParser.y"
   {
       yyVal = new NameTest ((String) yyVals[0+yyTop], false, false);
     }
   break;
 case 82:
-					// line 527 "XPathParser.y"
+					// line 521 "XPathParser.y"
   {
       yyVal = (String) yyVals[-2+yyTop] + ':' + (String) yyVals[0+yyTop];
     }
   break;
 case 83:
-					// line 534 "XPathParser.y"
+					// line 528 "XPathParser.y"
   {
       yyVal = new Short (Node.COMMENT_NODE);
     }
   break;
 case 84:
-					// line 538 "XPathParser.y"
+					// line 532 "XPathParser.y"
   {
       yyVal = new Short (Node.TEXT_NODE);
     }
   break;
 case 85:
-					// line 542 "XPathParser.y"
+					// line 536 "XPathParser.y"
   {
       yyVal = new Short (Node.PROCESSING_INSTRUCTION_NODE);
     }
   break;
 case 86:
-					// line 546 "XPathParser.y"
+					// line 540 "XPathParser.y"
   {
       yyVal = new Short ((short) 0);
     }
   break;
-					// line 757 "-"
+					// line 751 "-"
         }
         yyTop -= YyLenClass.yyLen[yyN];
         yyState = yyStates[yyTop];
@@ -1227,7 +1221,7 @@ case 86:
   } /* End of class YyNameClass */
 
 
-					// line 552 "XPathParser.y"
+					// line 546 "XPathParser.y"
 
 }
-					// line 1232 "-"
+					// line 1226 "-"

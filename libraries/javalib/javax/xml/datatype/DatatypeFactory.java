@@ -1,6 +1,6 @@
 /*
  * DatatypeFactory.java
- * Copyright (C) 2004 Chris Burdess
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -45,6 +45,8 @@ import java.util.GregorianCalendar;
 /**
  * Factory class to create new datatype objects mapping XML to and from Java
  * objects.
+ *
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  * @since 1.3
  */
 public abstract class DatatypeFactory

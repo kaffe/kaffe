@@ -38,16 +38,26 @@
 
 package gnu.xml.xpath;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * An XPath expression.
@@ -56,7 +66,102 @@ import org.w3c.dom.NodeList;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public abstract class Expr
+  implements XPathExpression
 {
+
+  public Object evaluate(Object item, QName returnType)
+    throws XPathExpressionException
+  {
+    Object ret = null;
+    Node context = null;
+    if (item instanceof Node)
+      {
+        context = (Node) item;
+        ret = evaluate(context);
+        if (XPathConstants.STRING == returnType &&
+            !(ret instanceof String))
+          {
+            ret = _string(context, ret);
+          }
+        else if (XPathConstants.NUMBER == returnType &&
+                 !(ret instanceof Double))
+          {
+            ret = new Double(_number(context, ret));
+          }
+        else if (XPathConstants.BOOLEAN == returnType &&
+                 !(ret instanceof Boolean))
+          {
+            ret = _boolean(context, ret) ? Boolean.TRUE : Boolean.FALSE;
+          }
+        else if (XPathConstants.NODE == returnType)
+          {
+            if (ret instanceof Collection)
+              {
+                Collection ns = (Collection) ret;
+                switch (ns.size())
+                  {
+                  case 0:
+                    ret = null;
+                    break;
+                  case 1:
+                    ret = (Node) ns.iterator().next();
+                    break;
+                  default:
+                    throw new XPathExpressionException("multiple nodes in node-set");
+                  }
+              }
+            else if (ret != null)
+              {
+                throw new XPathExpressionException("return value is not a node-set");
+              }
+          }
+        else if (XPathConstants.NODESET == returnType)
+          {
+            if (ret != null && !(ret instanceof Collection))
+              {
+                throw new XPathExpressionException("return value is not a node-set");
+              }
+          }
+      }
+    return ret;
+  }
+
+  public String evaluate(Object item)
+    throws XPathExpressionException
+  {
+    return (String) evaluate(item, XPathConstants.STRING); 
+  }
+
+  public Object evaluate(InputSource source, QName returnType)
+    throws XPathExpressionException
+  {
+    try
+      {
+        DocumentBuilderFactory factory =
+          DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(source);
+        return evaluate(doc, returnType);
+      }
+    catch (ParserConfigurationException e)
+      {
+        throw new XPathExpressionException(e); 
+      }
+    catch (SAXException e)
+      {
+        throw new XPathExpressionException(e); 
+      }
+    catch (IOException e)
+      {
+        throw new XPathExpressionException(e); 
+      }
+  }
+
+  public String evaluate(InputSource source)
+    throws XPathExpressionException
+  {
+    return (String) evaluate(source, XPathConstants.STRING);
+  }
 
   public abstract Object evaluate (Node context);
   

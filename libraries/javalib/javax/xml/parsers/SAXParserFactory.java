@@ -1,7 +1,6 @@
 /*
  * SAXParserFactory.java
- * Copyright (C) 2001 Andrew Selkirk
- * Copyright (C) 2001 The Free Software Foundation
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
  *
@@ -39,144 +38,197 @@
 
 package javax.xml.parsers;
 
-// Imports
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.File;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.Properties;
 import javax.xml.validation.Schema;
-import org.w3c.dom.*;
-import org.xml.sax.*;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 
 /**
- * SAXParserFactory is used to bootstrap JAXP wrappers for
- * SAX parsers.
+ * Factory for obtaining SAX parsers.
+ * Instances of this class are <em>not</em> guaranteed to be thread safe.
  *
- * <para> Note that the JAXP 1.1 spec does not specify how
- * the <em>isValidating()</em> or <em>isNamespaceAware()</em>
- * flags relate to the SAX2 feature flags controlling those
- * same features.
- *
- * @author	Andrew Selkirk, David Brownell
- * @version	1.0
+ * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-
 public abstract class SAXParserFactory
 {
 
-  //-------------------------------------------------------------
-  // Variables --------------------------------------------------
-  //-------------------------------------------------------------
-
-  private static final	String defaultPropName	=
-    "javax.xml.parsers.SAXParserFactory";
-
-  private 		boolean validating	= false;
-  private 		boolean namespaceAware	= false;
-
+  private boolean validating;
+  private boolean namespaceAware;
   private Schema schema;
   private boolean xIncludeAware;
 
-  //-------------------------------------------------------------
-  // Initialization ---------------------------------------------
-  //-------------------------------------------------------------
-
   protected SAXParserFactory()
   {
-  } // SAXParserFactory()
+  }
 
-
-  //-------------------------------------------------------------
-  // Methods ----------------------------------------------------
-  //-------------------------------------------------------------
-
+  /**
+   * Creates a new factory instance.
+   * The implementation class to load is the first found in the following
+   * locations:
+   * <ol>
+   * <li>the <code>javax.xml.parsers.SAXParserFactory</code> system
+   * property</li>
+   * <li>the above named property value in the
+   * <code><i>$JAVA_HOME</i>/lib/jaxp.properties</code> file</li>
+   * <li>the class name specified in the
+   * <code>META-INF/services/javax.xml.parsers.SAXParserFactory</code>
+   * system resource</li>
+   * <li>the default factory class</li>
+   * </ol>
+   */
   public static SAXParserFactory newInstance()
+    throws FactoryConfigurationError
   {
-    try
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    if (loader == null)
       {
-        return (SAXParserFactory)
-          ClassStuff.createFactory (
-                                    defaultPropName, 
-                                    "gnu.xml.aelfred2.JAXPFactory");
+        loader = SAXParserFactory.class.getClassLoader();
       }
-    catch (ClassCastException e)
+    String className = null;
+    int count = 0;
+    do
       {
-        throw new FactoryConfigurationError (e,
-                                             "Factory class is the wrong type");
+        className = getFactoryClassName(loader, count);
+        if (className != null)
+          {
+            try
+              {
+                Class t = (loader != null) ? loader.loadClass(className) :
+                  Class.forName(className);
+                return (SAXParserFactory) t.newInstance();
+              }
+            catch (ClassNotFoundException e)
+              {
+                className = null;
+              }
+            catch (Exception e)
+              {
+                throw new FactoryConfigurationError(e,
+                     "error instantiating class " + className);
+              }
+          }
+      }
+    while (className == null && count < 3);
+    return new gnu.xml.aelfred2.JAXPFactory();
+  }
+
+  private static String getFactoryClassName(ClassLoader loader, int attempt)
+  {
+    final String propertyName = "javax.xml.parsers.SAXParserFactory";
+    switch (attempt)
+      {
+        case 0:
+          return System.getProperty(propertyName);
+        case 1:
+          try
+            {
+              File file = new File(System.getProperty("java.home"));
+              file = new File(file, "lib");
+              file = new File(file, "jaxp.properties");
+              InputStream in = new FileInputStream(file);
+              Properties props = new Properties();
+              props.load(in);
+              in.close();
+              return props.getProperty(propertyName);
+            }
+          catch (IOException e)
+            {
+              return null;
+            }
+        case 2:
+          try
+            {
+              String serviceKey = "/META-INF/services/" + propertyName;
+              InputStream in = (loader != null) ?
+                 loader.getResourceAsStream(serviceKey) :
+                SAXParserFactory.class.getResourceAsStream(serviceKey);
+              if (in != null)
+                {
+                  BufferedReader r =
+                     new BufferedReader(new InputStreamReader(in));
+                  String ret = r.readLine();
+                  r.close();
+                  return ret;
+                }
+            }
+          catch (IOException e)
+            {
+            }
+          return null;
+        default:
+          return null;
       }
   }
 
   /**
-   * Returns a new instance of a SAXParser using the platform
-   * default implementation and the currently specified factory
-   * feature flag settings.
-   *
-   * @exception ParserConfigurationException
-   *	when the parameter combination is not supported
-   * @exception SAXNotRecognizedException
-   *	if one of the specified SAX2 feature flags is not recognized
-   * @exception SAXNotSupportedException
-   *	if one of the specified SAX2 feature flags values can
-   *	not be set, perhaps because of sequencing requirements
-   *	(which could be met by using SAX2 directly)
+   * Creates a new parser instance using the currently specified factory
+   * configuration.
+   * @exception ParserConfigurationException if the specified configuration
+   * is not supported
    */
   public abstract SAXParser newSAXParser()
     throws ParserConfigurationException, SAXException;
 
-  public void setNamespaceAware(boolean value)
+  /**
+   * Sets whether parsers obtained from this factory will be XML Namespace
+   * aware.
+   */
+  public void setNamespaceAware(boolean awareness)
   {
-    namespaceAware = value;
-  } // setNamespaceAware()
+    namespaceAware = awareness;
+  }
 
-  public void setValidating(boolean value)
+  /**
+   * Sets whether parsers obtained from this factory will validate their
+   * input.
+   */
+  public void setValidating(boolean validating)
   {
-    validating = value;
-  } // setValidating()
+    this.validating = validating;
+  }
 
+  /**
+   * Indicates whether parsers obtained from this factory will be XML
+   * Namespace aware.
+   */
   public boolean isNamespaceAware()
   {
     return namespaceAware;
-  } // isNamespaceAware()
+  }
 
+  /**
+   * Indicates whether parsers obtained from this factory will validate
+   * their input.
+   */
   public boolean isValidating()
   {
     return validating;
-  } // isValidating()
+  }
 
   /**
-   * Establishes a factory parameter corresponding to the
-   * specified feature flag.
-   *
-   * @param name identifies the feature flag
-   * @param value specifies the desired flag value
-   *
-   * @exception SAXNotRecognizedException
-   *	if the specified SAX2 feature flag is not recognized
-   * @exception SAXNotSupportedException
-   *	if the specified SAX2 feature flag values can not be set,
-   *	perhaps because of sequencing requirements (which could
-   *	be met by using SAX2 directly)
+   * Sets the specified feature for SAX2 parsers obtained from this factory.
+   * @param name the feature name
+   * @param value the featurevalue
    */
-  public abstract void setFeature (String name, boolean value) 
-    throws	ParserConfigurationException, SAXNotRecognizedException, 
-  SAXNotSupportedException;
+  public abstract void setFeature(String name, boolean value) 
+    throws ParserConfigurationException, SAXNotRecognizedException, 
+           SAXNotSupportedException;
 
   /**
-   * Retrieves a current factory feature flag setting.
-   *
-   * @param name identifies the feature flag
-   *
-   * @exception SAXNotRecognizedException
-   *	if the specified SAX2 feature flag is not recognized
-   * @exception SAXNotSupportedException
-   *	if the specified SAX2 feature flag values can not be
-   *	accessed before parsing begins.
+   * Returns the specified feature for SAX2 parsers obtained from this
+   * factory.
+   * @param name the feature name
    */
-  public abstract boolean getFeature (String name) 
-    throws	ParserConfigurationException, SAXNotRecognizedException, 
-  SAXNotSupportedException;
+  public abstract boolean getFeature(String name) 
+    throws ParserConfigurationException, SAXNotRecognizedException, 
+           SAXNotSupportedException;
 
   // -- JAXP 1.3 methods --
 
@@ -200,15 +252,23 @@ public abstract class SAXParserFactory
     this.schema = schema;
   }
 
+  /**
+   * Indicates whether parsers obtained from this factory will be XInclude
+   * aware.
+   * @since 1.3
+   */
   public boolean isXIncludeAware()
   {
     return xIncludeAware;
   }
 
+  /**
+   * Sets whether parsers obtained from this factory will be XInclude aware.
+   * @since 1.3
+   */
   public void setXIncludeAware(boolean state)
   {
     xIncludeAware = state;
   }
 
-} // SAXParserFactory
-
+}
