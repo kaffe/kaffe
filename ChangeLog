@@ -1,5 +1,21 @@
 2004-06-27  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/arm/linux/sigcontextinfo.h:
+	Fixed compilation problems with not matching
+	sigcontext and k_sigcontext structs.
+
+	* config/arm/sysdepCallMethod.h:
+	(sysdepCallMethod) Removed bogus clobbered 
+	constraints. Fixes build with gcc 3.4.0.
+
+	* config/arm/linux/armsigctx.h,
+	config/arm/linux/kernel-features.h:
+	Removed.
+
+	Reported by: Fabien Renaud <renaud@nentec.de>
+
+2004-06-27  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/mem/gc-mem.c:
 	Added includes for mprotect on NetBSD 1.5.x.
 

@@ -17,32 +17,21 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
    02111-1307 USA.  */
 
-#include "armsigctx.h"
-#include "kernel-features.h"
-
-#define SIGCONTEXT int _a2, int _a3, int _a4, union k_sigcontext
+#define SIGCONTEXT int _a2, int _a3, int _a4, struct sigcontext
 #define SIGCONTEXT_EXTRA_ARGS _a2, _a3, _a4,
 
 /* The sigcontext structure changed between 2.0 and 2.1 kernels.  On any
    modern system we should be able to assume that the "new" format will be
    in use.  */
-#if __LINUX_KERNEL_VERSION > 131328
 
-#define GET_PC(ctx)	((void *) ctx.v21.arm_pc)
-#define GET_FRAME(ctx)	ADVANCE_STACK_FRAME ((void *) ctx.v21.arm_fp)
-#define GET_STACK(ctx)	((void *) ctx.v21.arm_sp)
+/* Kaffe supports just the new format. If you are stuck on an arm where you
+   get compile errors, post an e-mail to the mailing list, and we'll try
+   to come up with a configure test top automatically detect such beasts.
+*/
 
-#else
-
-#define GET_PC(ctx)	((void *)((ctx.v20.magic == SIGCONTEXT_2_0_MAGIC) ? \
-			 ctx.v20.reg.ARM_pc : ctx.v21.arm_pc))
-#define GET_FRAME(ctx)	\
-	ADVANCE_STACK_FRAME((void *)((ctx.v20.magic == SIGCONTEXT_2_0_MAGIC) ? \
-			 ctx.v20.reg.ARM_fp : ctx.v21.arm_fp))
-#define GET_STACK(ctx)	((void *)((ctx.v20.magic == SIGCONTEXT_2_0_MAGIC) ? \
-			 ctx.v20.reg.ARM_sp : ctx.v21.arm_sp))
-
-#endif
+#define GET_PC(ctx)	((void *) ctx.arm_pc)
+#define GET_FRAME(ctx)	ADVANCE_STACK_FRAME ((void *) ctx.arm_fp)
+#define GET_STACK(ctx)	((void *) ctx.arm_sp)
 
 #define ADVANCE_STACK_FRAME(frm)	\
 			((struct layout *)frm - 1)

@@ -63,7 +63,7 @@ static inline void sysdepCallMethod(callMethodInfo *call) {
                   : "=r" (r0), "=r" (r1), "=f" (f0)
                   : "r" (call->function),
                     "0" (r0), "1" (r1), "r" (r2), "r" (r3)
-                  : "ip", "rfp", "sl", "fp", "lr");
+                  : "ip", "lr");
     switch (call->rettype)
     {
     case 'V':
