@@ -1,5 +1,11 @@
 2004-12-12  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/jni/jni-string.c, kaffe/kaffevm/jni/jni_funcs.h:
+	  Remove const declaration from 3rd parameter of
+	  KaffeJNI_ReleaseStringUTFChars.
+
+2004-12-12  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/kaffevm/utf8const.c, kaffe/kaffevm/jni/jni-string.c,
 	  kaffe/kaffevm/systems/unix-pthreads/syscalls.c,
 	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c:

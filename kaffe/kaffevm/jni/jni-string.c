@@ -174,7 +174,7 @@ KaffeJNI_GetStringUTFChars(JNIEnv* env, jstring data, jbool* copy)
 }
 
 void
-KaffeJNI_ReleaseStringUTFChars(JNIEnv* env UNUSED, jstring data UNUSED, const jbyte* chars)
+KaffeJNI_ReleaseStringUTFChars(JNIEnv* env UNUSED, jstring data UNUSED, jbyte* chars)
 {
   BEGIN_EXCEPTION_HANDLING_VOID();
 
