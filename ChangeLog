@@ -15,7 +15,7 @@ Fri Dec 18 08:45:05 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
 	* kaffe/kaffevm/readClassConfig.h: avoid allocating zero-length
 	Method arrays.
 	* kaffe/kaffevm/mem/gc-incremental.c: detect attempts to allocate
-	zero-sized objects.
+	zero-sized objects.  Fix for marking trampolines in walkMethod.
 
 Fri Dec 18 08:43:05 1998  Leigh Stoller  <stoller@cs.utah.edu>
 
