@@ -72,7 +72,8 @@ import javax.swing.text.SimpleAttributeSet;
  * </p>
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class Parser
+public class Parser 
+  implements DTDConstants
 {
   /**
    * The document template description that will be used to parse the documents.

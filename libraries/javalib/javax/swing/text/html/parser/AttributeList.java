@@ -43,6 +43,7 @@ import gnu.javax.swing.text.html.parser.support.gnuStringIntMapper;
 import java.io.Serializable;
 
 import java.util.Vector;
+import java.util.Enumeration;
 
 /**
  * <p>
@@ -250,9 +251,9 @@ public class AttributeList
   /**
    * Get the allowed values of this attribute.
    */
-  public Vector getValues()
+  public Enumeration getValues()
   {
-    return values;
+    return values.elements();
   }
 
   /**

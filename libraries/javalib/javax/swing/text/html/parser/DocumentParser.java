@@ -38,8 +38,14 @@ exception statement from your version. */
 
 package javax.swing.text.html.parser;
 
+import gnu.javax.swing.text.html.parser.htmlAttributeSet;
+import gnu.javax.swing.text.html.parser.support.Parser;
+
 import java.io.IOException;
 import java.io.Reader;
+
+import javax.swing.text.BadLocationException;
+import javax.swing.text.html.HTMLEditorKit;
 
 /**
  * <p>A simple error-tolerant HTML parser that uses a DTD document
@@ -71,34 +77,135 @@ public class DocumentParser
   implements DTDConstants
 {
   /**
+   * The enclosed working parser class.
+   */
+  private class gnuParser
+    extends gnu.javax.swing.text.html.parser.support.Parser
+  {
+    private gnuParser(DTD d)
+    {
+      super(d);
+    }
+
+    protected final void handleComment(char[] comment)
+    {
+      parser.handleComment(comment);
+      callBack.handleComment(comment, hTag.where.startPosition);
+    }
+
+    protected final void handleEmptyTag(TagElement tag)
+      throws javax.swing.text.ChangedCharSetException
+    {
+      parser.handleEmptyTag(tag);
+      callBack.handleSimpleTag(tag.getHTMLTag(), getAttributes(),
+                               hTag.where.startPosition
+                              );
+    }
+
+    protected final void handleEndTag(TagElement tag)
+    {
+      parser.handleEndTag(tag);
+      callBack.handleEndTag(tag.getHTMLTag(), hTag.where.startPosition);
+    }
+
+    protected final void handleError(int line, String message)
+    {
+      parser.handleError(line, message);
+      callBack.handleError(message, hTag.where.startPosition);
+    }
+
+    protected final void handleStartTag(TagElement tag)
+    {
+      parser.handleStartTag(tag);
+      htmlAttributeSet attributes = gnu.getAttributes();
+
+      if (tag.fictional())
+        attributes.addAttribute(HTMLEditorKit.ParserCallback.IMPLIED,
+                                Boolean.TRUE
+                               );
+
+      callBack.handleStartTag(tag.getHTMLTag(), attributes,
+                              hTag.where.startPosition
+                             );
+    }
+
+    protected final void handleText(char[] text)
+    {
+      parser.handleText(text);
+      callBack.handleText(text, hTag.where.startPosition);
+    }
+
+    DTD getDTD()
+    {
+      return dtd;
+    }
+  }
+
+  /**
+   * This field is used to access the identically named
+   * methods of the outer class.
+   */
+  private DocumentParser parser = this;
+
+  /**
+   * The callback.
+   */
+  private HTMLEditorKit.ParserCallback callBack;
+
+  /**
+   * The reference to the working class of HTML parser that is
+   * actually used to parse the document.
+   */
+  private gnuParser gnu;
+
+  /**
    * Creates a new parser that uses the given DTD to access data on the
    * possible tokens, arguments and syntax. There is no single - step way
    * to get a default DTD; you must either refer to the implementation -
    * specific packages, write your own DTD or obtain the working instance
    * of parser in other way, for example, by calling
    * {@link javax.swing.text.html.HTMLEditorKit#getParser() }.
-   * @param a_dtd A DTD to use.
+   * @param a_dtd a DTD to use.
    */
   public DocumentParser(DTD a_dtd)
   {
     super(a_dtd);
+    gnu = new gnuParser(a_dtd);
   }
 
   /**
-   * Parse the HTML text, calling various methods in response to the
-   * occurence of the corresponding HTML constructions.
-   * @param reader The reader to read the source HTML from.
-   * @throws IOException If the reader throws one.
+   * Parses the HTML document, calling methods of the provided
+   * callback. This method must be multithread - safe.
+   * @param reader The reader to read the HTML document from
+   * @param callback The callback that is notifyed about the presence
+   * of HTML elements in the document.
+   * @param ignoreCharSet If thrue, any charset changes during parsing
+   * are ignored.
+   * @throws java.io.IOException
    */
-  public synchronized void parse(Reader reader)
-                          throws IOException
+  public void parse(Reader reader, HTMLEditorKit.ParserCallback a_callback,
+                    boolean ignoreCharSet
+                   )
+             throws IOException
   {
-    super.parse(reader);
+    callBack = a_callback;
+    gnu.parse(reader);
+
+    callBack.handleEndOfLineString(gnu.getEndOfLineSequence());
+    try
+      {
+        callBack.flush();
+      }
+    catch (BadLocationException ex)
+      {
+        // Convert this into the supported type of exception.
+        throw new IOException(ex.getMessage());
+      }
   }
 
   /**
    * Handle HTML comment. The default method returns without action.
-   * @param comment The comment being handled
+   * @param comment the comment being handled
    */
   protected void handleComment(char[] comment)
   {
@@ -108,7 +215,7 @@ public class DocumentParser
    * Handle the tag with no content, like &lt;br&gt;. The method is
    * called for the elements that, in accordance with the current DTD,
    * has an empty content.
-   * @param tag The tag being handled.
+   * @param tag the tag being handled.
    * @throws javax.swing.text.ChangedCharSetException
    */
   protected void handleEmptyTag(TagElement tag)
@@ -143,7 +250,7 @@ public class DocumentParser
 
   /**
    * Handle the text section.
-   * @param text A section text.
+   * @param text a section text.
    */
   protected void handleText(char[] text)
   {
