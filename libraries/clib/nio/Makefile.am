@@ -12,7 +12,7 @@ libnio_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \
 	-release $(PACKAGE_VERSION) \
-	-export-symbols-regex "^([Jj]ava|kaffe)_"
+	-export-symbols-regex "^([Jj]ava|kaffe|gnu)_"
 
 libnio_la_SOURCES = \
 	DirectByteBufferImpl.c \
