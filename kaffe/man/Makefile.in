@@ -19,7 +19,7 @@ all:
 clean:
 
 distclean:
-		rm -f Makefile .depend
+		rm -f Makefile kaffe.1 .depend
 
 install:
 		test -d $(INSTROOT)$(mandir) || $(MKDIR) $(INSTROOT)$(mandir)
