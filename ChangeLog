@@ -1,3 +1,15 @@
+2003-03-13 Tim Stack <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/jit3/icode.c: Fix div_int_const_optimize so it
+	works with negative numerators.
+
+	* test/regression/NegativeDivideConst.java: Added to test negative
+	numerators divided by a power of two constant.
+
+	* test/regression/Makefile.am: Add NegativeDivideConst.java
+
+	Reported by: Benja Fallenstein <b.fallenstein@gmx.de>
+
 2003-03-09 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/clib/awt/qt/Makefile.am:
