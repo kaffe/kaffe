@@ -1,8 +1,8 @@
 /*
- * kaffe.def
- * Kaffe instruction definitions.
+ * kaffe-jit.def
+ * Kaffe instruction definitions for JIT3.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
