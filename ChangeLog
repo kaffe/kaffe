@@ -1,3 +1,13 @@
+Thu Jul 15 16:32:12 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/util/HashMap.java: implement/replace
+	* libraries/javalib/java/util/HashSet.java: new file
+	* libraries/javalib/java/util/AbstractMap.java: new file
+	* libraries/javalib/java/util/Collections.java: throw NotImplemented
+	exceptions in unimplemented routines instead of returning null
+	* libraries/javalib/java/util/Map.java: whitespace adjustment
+	* libraries/extensions/javalib/Makefile.{am,in}: add AbstractMap.java
+
 Tue Jul 13 17:36:51 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/AbstractList.java: use new
