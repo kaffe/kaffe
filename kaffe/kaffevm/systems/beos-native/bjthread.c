@@ -88,7 +88,7 @@ extern _IMPEXP_KERNEL void       release_spinlock(spinlock*);
  * BeOS' interrupt management routines pass a cpu_status between them.
  * Will allocating it statically here work for multiprocessors?
  */
-// static cpu_status my_cpu_status;
+/* static cpu_status my_cpu_status; */
 
 /* this is where the cookies are kept */
 per_thread_info_t*	per_thread_info;

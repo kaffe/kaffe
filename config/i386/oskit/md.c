@@ -54,7 +54,7 @@ oskit_kaffe_clean_cmdline(int *pargc, char ***pargv)
 		strcmp(*argv, "-f"))
 			argv++;
 
-	// eradicate them
+	/* eradicate them */
 	while (*argv && **argv) {
 		(*pargc)--;
 		*argv++ = 0;
