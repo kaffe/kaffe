@@ -10,37 +10,90 @@
 
 package kaffe.lang;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.lang.ClassLoader;
-import java.lang.String;
 import java.lang.ClassNotFoundException;
+import java.lang.String;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.StringTokenizer;
+import java.util.Vector;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 public class SystemClassLoader extends ClassLoader {
 
-private static ClassLoader singleton = new SystemClassLoader();
+private static final ClassLoader singleton = new SystemClassLoader();
+
+private SystemClassLoader() {
+	super(null);		// this line is not really necessary!
+}
 
 public static ClassLoader getClassLoader() {
 	return (singleton);
 }
 
-public URL getResource(String name) {
-	return (getSystemResource(name));
-}
+/*
+ * Search through the CLASSPATH directories and ZIP files to find
+ * the named resource (which may appear more than once). Make sure
+ * it really exists in each place before adding it.
+ */
+public Enumeration findResources(String name) throws IOException {
+	String fileSep = System.getProperties().getProperty("file.separator");
+	String pathSep = System.getProperties().getProperty("path.separator");
+	String classpath = System.getProperties().getProperty("java.class.path");
+	StringTokenizer t = new StringTokenizer(classpath, pathSep);
+	Vector v = new Vector();
 
-public InputStream getResourceAsStream(String name) {
-	return (getSystemResourceAsStream(name));
-}
+	while (t.hasMoreTokens()) {
+		File file = new File(t.nextToken());
 
-protected Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
-	Class cls = findLoadedClass(name);
-	if (cls == null) {
-		cls = findSystemClass(name);
+		if (!file.exists()) {
+			continue;
+		}
+		if (file.isDirectory()) {
+			file = new File(file, name);
+			if (file.isFile()) {
+				try {
+				    v.addElement(new URL("file", "", file.toString()));
+				} catch (MalformedURLException e) {
+				}
+			}
+			continue;
+		}
+		if (file.isFile()) {
+			ZipFile zip = null;
+			try {
+				zip = new ZipFile(file);
+				ZipEntry entry = zip.getEntry(name);
+				if (entry != null && !entry.isDirectory()) {
+				    URL ju = new URL("jar:file:"
+					+ file + "!/" + entry.getName());
+				    v.addElement(ju);
+				}
+			} catch (IOException e) {
+			} finally {
+				if (zip != null) {
+					try {
+						zip.close();
+					} catch (IOException e) {
+					}
+				}
+			}
+		}
 	}
-	if (resolve) {
-		resolveClass(cls);
-	}
-	return (cls);
+	return v.elements();
 }
 
+protected Class findClass(String name) throws ClassNotFoundException {
+	return findClass0(name);
 }
+
+private native Class findClass0(String name) throws ClassNotFoundException;
+
+}
+

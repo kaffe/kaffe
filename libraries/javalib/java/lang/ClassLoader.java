@@ -10,23 +10,31 @@
 
 package java.lang;
 
-import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.NoSuchElementException;
+import java.util.Vector;
+import kaffe.lang.SystemClassLoader;
 
 public abstract class ClassLoader {
 
 /**
  * To prevent any classes from being gc'd before we are gc'd, we keep them
  * in this hashtable.  The contents of this table correspond to entries
- * in the VM-internal class entry pool.
+ * in the VM-internal class entry pool.  This table only contains classes
+ * for which we are the defining loader (ie, not classes for which we are
+ * merely the initiating loader).
  */
-private Hashtable loadedClasses = new Hashtable();
-private ClassLoader parent;
+private final Hashtable loadedClasses = new Hashtable();
+private ProtectionDomain defaultProtectionDomain;
+private final ClassLoader parent;
 
 protected ClassLoader() {
 	this(getSystemClassLoader());
@@ -37,8 +45,72 @@ protected ClassLoader(ClassLoader parent) {
 	this.parent = parent;
 }
 
-protected final Class defineClass(String name, byte data[], int offset, int length) throws ClassFormatError {
-	Class clazz = defineClass0(name, data, offset, length);
+public Class loadClass(String name) throws ClassNotFoundException {
+	return (loadClass(name, false));
+}
+
+protected Class loadClass(String name, boolean resolve)
+		throws ClassNotFoundException {
+	Class c;
+
+	// Search for class...
+	search: {
+		// First, see if already loaded by this class
+		if ((c = findLoadedClass(name)) != null) {
+			break search;
+		}
+
+		// Second, try the parent class loader
+		try {
+			if (parent != null) {
+				c = parent.loadClass(name, resolve);
+			} else if (this != getSystemClassLoader()) {
+				c = getSystemClassLoader()
+					.loadClass(name, resolve);
+			}
+			break search;
+		} catch (ClassNotFoundException e) { }
+
+		// Third, try findClass()
+		if ((c = findClass(name)) == null) {
+			throw new ClassNotFoundException(name);
+		}
+	}
+
+	// Now, optionally resolve the class
+	if (resolve) {
+		resolveClass(c);
+	}
+	return (c);
+}
+
+protected Class findClass(String name) throws ClassNotFoundException {
+	throw new ClassNotFoundException(name);
+}
+
+/**
+ * @deprecated
+ */
+protected final Class defineClass(byte data[], int off, int len)
+		throws ClassFormatError {
+	return (defineClass(null, data, off, len));
+}
+
+protected final Class defineClass(String name, byte data[], int off, int len)
+		throws ClassFormatError {
+	if (defaultProtectionDomain == null) {
+		// XXX FIXME..
+		defaultProtectionDomain = new ProtectionDomain(null, null);
+	}
+	return defineClass(name, data, off, len, defaultProtectionDomain);
+}
+
+protected final Class defineClass(String name, byte data[], int off,
+		int len, ProtectionDomain pd) throws ClassFormatError {
+	if (off < 0 || len < 0 || off + len > data.length) {
+		throw new IndexOutOfBoundsException();
+	}
+	Class clazz = defineClass0(name, data, off, len);
 	if (name != null) {
 		loadedClasses.put(name, clazz);
 	}
@@ -48,124 +120,123 @@ protected final Class defineClass(String name, byte data[], int offset, int leng
 	return (clazz);
 }
 
-/**
- * @deprecated
- */
-protected final Class defineClass(byte data[], int offset, int length) throws ClassFormatError {
-	return (defineClass(null, data, offset, length));
-}
-
-protected final Class findLoadedClass(String name) {
-	return (findLoadedClass0(name));
-}
-
-protected final Class findSystemClass(String name) throws ClassNotFoundException {
-	return (findSystemClass0(name));
-}
-
-public URL getResource(String name) {
-	return (null);	// Default implementation just returns null
-}
-
-public InputStream getResourceAsStream(String name) {
-	return (null); // Default implementation just returns null
-}
-
-public static URL getSystemResource(String name) {
-	try {
-		return (new URL("system", "", 0, name));
-	}
-	catch (MalformedURLException _) {
-		return (null);
-	}
-}
-
-public static InputStream getSystemResourceAsStream(String name) {
-	byte[] data = getSystemResourceAsBytes0(name);
-	if (data == null) {
-		return (null);
-	}
-	else {
-		return (new ByteArrayInputStream(data));
-	}
-}
-
-public Class loadClass(String name) throws ClassNotFoundException {
-	return (loadClass(name, true));
-}
-
-protected Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
-	Class cls = findLoadedClass(name);
-	if (cls == null) {
-		try {
-			if (parent != null) {
-				cls = parent.loadClass(name, resolve);
-			}
-			else {
-				cls = findSystemClass(name);
-			}
-		}
-		catch (ClassNotFoundException _) {
-			cls = findLocalClass(name);
-		}
-	}
-	if (resolve) {
-		resolveClass(cls);
-	}
-	return (cls);
-}
-
-protected void checkPackageAccess(String name) throws SecurityException {
-}
-
-protected Class findLocalClass(String name) throws ClassNotFoundException {
-	throw new ClassNotFoundException(name);
-}
-
 protected final void resolveClass(Class c) {
 	resolveClass0(c);
 }
 
-protected final void setSigners(Class cl, Object signers[]) {
-	// Signer's are not currently supported.
+protected final Class findSystemClass(String name)
+		throws ClassNotFoundException {
+	return getSystemClassLoader().findClass(name);
 }
 
 public final ClassLoader getParent() {
-	return (parent);
+	return parent;
+}
+
+protected final void setSigners(Class cl, Object signers[]) {
+	throw new kaffe.util.NotImplemented(getClass().getName()
+		+ ".setSigners()");
+}
+
+protected final Class findLoadedClass(String name) {
+	return findLoadedClass0(name);
+}
+
+public URL getResource(String name) {
+	try {
+		return (URL)getResources(name).nextElement();
+	} catch (IOException e) {
+	} catch (NoSuchElementException e) {
+	}
+	return null;
 }
 
 public final Enumeration getResources(String name) throws IOException {
-	throw new kaffe.util.NotImplemented(ClassLoader.class.getName() + ".getResources(String)");
+	Vector v = new Vector();
+	ClassLoader p;
+
+	if (parent != null) {
+		p = parent;
+	} else if (this != getSystemClassLoader()) {
+		p = getSystemClassLoader();
+	} else {
+		p = null;
+	}
+	if (p != null) {
+		for (Enumeration e = p.getResources(name);
+		    e.hasMoreElements(); )
+			v.addElement(e.nextElement());
+	}
+	for (Enumeration e = findResources(name); e.hasMoreElements(); )
+		v.addElement(e.nextElement());
+	return v.elements();
 }
 
+public Enumeration findResources(String name) throws IOException {
+	return new Vector().elements();		// ie, an empty Enumeration
+}
+
+protected URL findResource(String name) {
+	try {
+		return (URL)findResources(name).nextElement();
+	} catch (IOException e) {
+	} catch (NoSuchElementException e) {
+	}
+	return null;
+}
+
+public static URL getSystemResource(String name) {
+	return getSystemClassLoader().getResource(name);
+}
 
 public static Enumeration getSystemResources(String name) throws IOException {
-	throw new kaffe.util.NotImplemented(ClassLoader.class.getName() + ".getSystemResources(String)");
+	return getSystemClassLoader().getResources(name);
+}
+
+public InputStream getResourceAsStream(String name) {
+	URL url = getResource(name);
+
+	if (url != null) {
+		try {
+			return url.openStream();
+		} catch (IOException e) {
+		}
+	}
+	return null;
+}
+
+public static InputStream getSystemResourceAsStream(String name) {
+	return getSystemClassLoader().getResourceAsStream(name);
 }
 
 public static ClassLoader getSystemClassLoader() {
-	return (null);
+	return SystemClassLoader.getClassLoader();
 }
 
-protected Package definePackage(String name, String specTitle, String specVersion, String specVendor, String implTitle, String implVersion, String implVendor, URL sealBase) throws IllegalArgumentException {
-	throw new kaffe.util.NotImplemented(ClassLoader.class.getName() + ".definePackage(String,String,String,String,String,String,String,URL");
+protected Package definePackage(String name, String specTitle,
+	String specVersion, String specVendor, String implTitle,
+	String implVersion, String implVendor, URL sealBase)
+		throws IllegalArgumentException {
+	throw new kaffe.util.NotImplemented(getClass().getName()
+		+ ".definePackage()");
 }
 
 protected Package getPackage(String name) {
-	throw new kaffe.util.NotImplemented(ClassLoader.class.getName() + ".getPackage(String)");
+	throw new kaffe.util.NotImplemented(getClass().getName()
+		+ ".getPackage()");
 }
 
 protected Package[] getPackages() {
-	throw new kaffe.util.NotImplemented(ClassLoader.class.getName() + ".getPackages()");
+	throw new kaffe.util.NotImplemented(getClass().getName()
+		+ ".getPackages()");
 }
 
-native private Class defineClass0(String name, byte data[], int offset, int length);
-native private Class findSystemClass0(String name);
-native private Class findLoadedClass0(String name);
-native private void resolveClass0(Class cls);
-/**
- *  This is not part of the public interface.
- */
-native public static byte[] getSystemResourceAsBytes0(String name);
+protected String findLibrary(String libname) {
+	return null;
+}
+
+private native Class defineClass0(String name, byte data[], int off, int len);
+private native Class findLoadedClass0(String name);
+private native void resolveClass0(Class cls);
 
 }

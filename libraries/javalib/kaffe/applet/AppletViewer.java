@@ -171,7 +171,7 @@ public static class AppletClassLoader extends ClassLoader
                         }
                 }
                 catch (ClassNotFoundException _) {
-                        cls = findLocalClass(name);
+                        cls = findClass(name);
                 }
         }
         if (resolve) {
@@ -180,7 +180,7 @@ public static class AppletClassLoader extends ClassLoader
         return (cls);
     }
 
-    public Class findLocalClass(String name) throws ClassNotFoundException {
+    public Class findClass(String name) throws ClassNotFoundException {
 	InputStream in = null;
 	String cname = name.replace('.', '/') + ".class";
 	if (debug)
