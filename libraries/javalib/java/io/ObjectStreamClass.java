@@ -850,11 +850,11 @@ outer:
     {
 	return (Externalizable)constructor.newInstance(null);
     }
-    catch(Throwable t)
+    catch(Exception x)
     {
 	throw (InvalidClassException)
 	    new InvalidClassException(clazz.getName(),
-		     "Unable to instantiate").initCause(t);
+		     "Unable to instantiate").initCause(x);
     }
   }
 

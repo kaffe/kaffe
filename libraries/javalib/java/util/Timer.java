@@ -343,6 +343,10 @@ public class Timer
 		{
 		  task.run();
 		}
+              catch (ThreadDeath death)
+                {
+                  throw death;
+                }
 	      catch (Throwable t)
 		{		
 		  /* ignore all errors */

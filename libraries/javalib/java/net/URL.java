@@ -901,6 +901,10 @@ public final class URL implements Serializable
 		Class c = Class.forName(clsName, true, systemClassLoader);
 		ph = (URLStreamHandler) c.newInstance();
 	      }
+            catch (ThreadDeath death)
+              {
+                throw death;
+              }
 	    catch (Throwable t) { /* ignored */ }
 	  }
 	 while (ph == null && pkgPrefix.hasMoreTokens());
