@@ -40,6 +40,7 @@ package javax.swing.plaf.metal;
 
 import javax.swing.UIDefaults;
 import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicLookAndFeel;
 
 public class MetalLookAndFeel extends BasicLookAndFeel
@@ -142,6 +143,11 @@ public class MetalLookAndFeel extends BasicLookAndFeel
     return theme.getControlTextColor();
   }
 
+  public static FontUIResource getControlTextFont()
+  {
+    return theme.getControlTextFont();
+  }
+
   public static ColorUIResource getDesktopColor()
   {
     return theme.getDesktopColor();
@@ -192,6 +198,11 @@ public class MetalLookAndFeel extends BasicLookAndFeel
     return theme.getMenuSelectedForeground();
   }
 
+  public static FontUIResource getMenuTextFont()
+  {
+    return theme.getMenuTextFont();
+  }
+
   public static ColorUIResource getPrimaryControl()
   {
     return theme.getPrimaryControl();
@@ -227,9 +238,19 @@ public class MetalLookAndFeel extends BasicLookAndFeel
     return theme.getSeparatorForeground();
   }
 
+  public static FontUIResource getSubTextFont()
+  {
+    return theme.getSubTextFont();
+  }
+
   public static ColorUIResource getSystemTextColor()
   {
     return theme.getSystemTextColor();
+  }
+
+  public static FontUIResource getSystemTextFont()
+  {
+    return theme.getSystemTextFont();
   }
 
   public static ColorUIResource getTextHighlightColor()
@@ -240,6 +261,11 @@ public class MetalLookAndFeel extends BasicLookAndFeel
   public static ColorUIResource getUserTextColor()
   {
     return theme.getUserTextColor();
+  }
+
+  public static FontUIResource getUserTextFont()
+  {
+    return theme.getUserTextFont();
   }
 
   public static ColorUIResource getWhite()
@@ -255,6 +281,11 @@ public class MetalLookAndFeel extends BasicLookAndFeel
   public static ColorUIResource getWindowTitleBackground()
   {
     return theme.getWindowTitleBackground();
+  }
+
+  public static FontUIResource getWindowTitleFont()
+  {
+    return theme.getWindowTitleFont();
   }
 
   public static ColorUIResource getWindowTitleForeground()
