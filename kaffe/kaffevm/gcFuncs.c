@@ -121,7 +121,8 @@ DBG(CLASSGC,
 			}
 #endif
                         utf8ConstRelease(m->name);
-                        utf8ConstRelease(m->signature);
+                        utf8ConstRelease(METHOD_SIG(m));
+                        KFREE(METHOD_PSIG(m));
                         KFREE(m->lines);
                         KFREE(m->declared_exceptions);
                         KFREE(m->exception_table);

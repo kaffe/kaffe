@@ -276,7 +276,7 @@ native(Method* m, errorInfo *einfo)
 
 DBG(LIBTOOL,	
 	dprintf("Method = %s.%s%s\n", m->class->name->data, 
-		m->name->data, m->signature->data);
+		m->name->data, METHOD_SIGD(m));
 	dprintf("Native stub = '%s'\n", stub);
     )
 
@@ -296,13 +296,13 @@ DBG(LIBTOOL,
 
 DBG(LIBTOOL,
 	dprintf("Failed to locate native function:\n\t%s.%s%s\n",
-		m->class->name->data, m->name->data, m->signature->data);
+		m->class->name->data, m->name->data, METHOD_SIGD(m));
     )
 	SET_METHOD_NATIVECODE(m, (void*)error_stub);
 
 	postExceptionMessage(einfo, JAVA_LANG(UnsatisfiedLinkError),
 		"Failed to locate native function:\t%s.%s%s",
-		m->class->name->data, m->name->data, m->signature->data);
+		m->class->name->data, m->name->data, METHOD_SIGD(m));
 	return (false);
 }
 

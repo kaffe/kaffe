@@ -58,7 +58,7 @@ typedef struct _exceptionFrame {
 	 * in local variables to not get the translator lock.  */	\
 	maxLocal = einfo.method->localsz;				\
 	maxStack = einfo.method->stacksz;				\
-	str = einfo.method->signature->data;				\
+	str = METHOD_SIGD(einfo.method);				\
 	maxArgs = sizeofSig(&str, false);				\
 	maxTemp = MAXTEMPS - 1;						\
 	/* NB: we assume that the JIT will have				\

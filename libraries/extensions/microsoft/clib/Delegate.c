@@ -23,17 +23,14 @@ static
 Hjava_lang_Class*
 makeReturn(Method* meth)
 {
-	const char* sig;
 	errorInfo info;
 	Hjava_lang_Class* clazz;
 
-	/* Skip to end of signature to find return type */
-	sig = strchr(meth->signature->data, ')') + 1;
-
-	clazz = classFromSig(&sig, meth->class->loader, &info);
+	clazz = getClassFromSignature(METHOD_RET_TYPE(meth), meth->class->loader, &info);
 	if (clazz == 0) {
 		throwError(&info);
 	}
+	
 	return (clazz);
 }
 
@@ -43,34 +40,19 @@ HArrayOfObject*
 makeParameters(Method* meth)
 {
 	int i;
-	int len;
-	const char* sig;
 	HArrayOfObject* array;
-	Hjava_lang_Class* clazz;
 	errorInfo info;
+	Hjava_lang_Class* clazz;
 
-	sig = meth->signature->data;
-	len = 0;
-	for (sig++; *sig != ')'; sig++, len++) {
-		while (*sig == '[') {
-			sig++;
-		}
-		if (*sig == 'L') {
-			while (*sig != ';') {
-				sig++;
-			}
-		}
-	}
-
-	array = (HArrayOfObject*)AllocObjectArray(len, "Ljava/lang/Class;");
-	sig = meth->signature->data + 1;	/* Skip leading '(' */
-	for (i = 0; i < len; i++) {
-		clazz = classFromSig(&sig, meth->class->loader, &info);
+	array = (HArrayOfObject*)AllocObjectArray(METHOD_NARGS(meth), "Ljava/lang/Class;");
+	for (i = 0; i < METHOD_NARGS(meth); ++i) {
+		clazz = getClassFromSignature(METHOD_ARG_TYPE(meth, i),
+					      meth->class->loader, &info);
 		if (clazz == 0) {
 			throwError(&info);
 		}
 		unhand_array(array)->body[i] = &clazz->head;
-	}
+	}		
 
         return (array);
 }

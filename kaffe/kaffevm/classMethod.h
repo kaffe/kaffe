@@ -137,9 +137,18 @@ typedef struct _classEntry {
         struct _iLock*          lock;
 } classEntry;
 
+typedef struct _parsed_signature {
+	Utf8Const*		signature;
+	u2			nargs;
+	u2			ret_and_args[1]; /* index into signature */
+	/* ret_and_args[0]: return value
+	   ret_and_args[1]: first argument
+	   etc */
+} parsed_signature_t;
+
 typedef struct _methods {
 	Utf8Const*		name;
-	Utf8Const*		signature;
+	parsed_signature_t*	parsed_sig;
 	accessFlags		accflags;
 	short			idx;	/* Index into class->dtable */
 	u2			stacksz;
@@ -167,6 +176,19 @@ typedef struct _methods {
 	int			callsCount;
 #endif
 } methods;
+
+#define PSIG_UTF8(sig)		((sig)->signature)
+#define PSIG_DATA(sig)		(PSIG_UTF8((sig))->data)
+#define PSIG_RET(sig)		((sig)->ret_and_args[0])
+#define PSIG_NARGS(sig)		(sig->nargs)
+#define PSIG_ARG(sig,n)		((sig)->ret_and_args[1+n])
+
+#define METHOD_PSIG(M)		((M)->parsed_sig)
+#define METHOD_SIG(M)		(PSIG_UTF8(METHOD_PSIG((M))))
+#define METHOD_SIGD(M)		(PSIG_DATA(METHOD_PSIG((M))))
+#define METHOD_RET_TYPE(M)	(METHOD_SIGD((M))+PSIG_RET(METHOD_PSIG((M))))
+#define METHOD_NARGS(M)		(PSIG_NARGS(METHOD_PSIG((M))))
+#define METHOD_ARG_TYPE(M,N)    (METHOD_SIGD((M))+PSIG_ARG(METHOD_PSIG((M)),(N)))
 
 #define	METHOD_BYTECODE_LEN(M)	((M)->c.bcode.codelen)
 #define	METHOD_BYTECODE_CODE(M)	((M)->c.bcode.code)
@@ -298,7 +320,7 @@ void			loadStaticClass(Hjava_lang_Class**, const char*);
 Hjava_lang_Class*	setupClass(Hjava_lang_Class*, constIndex,
 				   constIndex, u2, Hjava_lang_ClassLoader*);
 bool 			addSourceFile(Hjava_lang_Class* c, int idx, errorInfo*);
-Method*			addMethod(Hjava_lang_Class*, struct _method_info*);
+Method*			addMethod(Hjava_lang_Class*, struct _method_info*, errorInfo*);
 Method*			addExceptionMethod(Hjava_lang_Class*, Utf8Const*, Utf8Const*);
 void 			addMethodCode(Method*, struct _Code*);
 Field*        		addField(Hjava_lang_Class*, struct _field_info*);
@@ -321,11 +343,16 @@ Field*			lookupClassField(Hjava_lang_Class*, Utf8Const*, bool, errorInfo *einfo)
 Hjava_lang_Class*	getClass(constIndex, Hjava_lang_Class*, errorInfo *einfo);
 
 void			countInsAndOuts(const char*, short*, short*, char*);
-int			sizeofSig(const char**, bool);
+int			sizeofSigChar(char, bool);
 int			sizeofSigItem(const char**, bool);
+int			sizeofSig(const char**, bool);
+int			sizeofSigMethod(Method *, bool);
+int			sizeofSigClass(Hjava_lang_Class*, bool);
 void			establishMethod(Method*);
 Hjava_lang_Class*	classFromSig(const char**, Hjava_lang_ClassLoader*, errorInfo*);
 Hjava_lang_Class*	getClassFromSignature(const char*, Hjava_lang_ClassLoader*, errorInfo*);
+int			countArgsInSignature(const char *);
+parsed_signature_t*	parseSignature(Utf8Const *, errorInfo*);
 
 void			finishFields(Hjava_lang_Class*);
 Method*			findMethodFromPC(uintp);

@@ -185,7 +185,7 @@ __mipsInitJit(Method* meth)
 {
 	int i;
 	int a;
-	const char* sig;
+	int j;
 
 	a = maxArgs;
 #if defined(STACK_LIMIT)
@@ -205,26 +205,14 @@ __mipsInitJit(Method* meth)
 		a++;
 	}
 
-	sig = meth->signature->data;
-	for (sig++; *sig != ')'; sig++) {
-		char ch = *sig;
+	for (j = 0; j < METHOD_NARGS(meth); ++j)) {
+		char ch = *METHOD_ARG_TYPE(meth, j);
 		if (ch == 'D' || ch == 'J') {
 			a += a % 2;
 			argMap[i++] = a++;
 			argMap[i++] = a++;
 		}
 		else {
-			if (ch == '[') {
-				while (*sig == '[') {
-					sig++;
-				}
-				if (*sig == 'L') {
-					sig = strchr(sig, ';');
-				}
-			}
-			else if (ch == 'L') {
-				sig = strchr(sig, ';');
-			}
 			argMap[i++] = a++;
 		}
 	}

@@ -86,13 +86,13 @@
 /*
  * Read in a method.
  */
-#define	READMETHOD(fp, this)						\
+#define	READMETHOD(fp, this, einfo)					\
 	do {								\
 		method_info m;						\
 		readu2(&m.access_flags, fp);				\
 		readu2(&m.name_index, fp);				\
 		readu2(&m.signature_index, fp);				\
-		methodThis = addMethod(this, &m);			\
+		methodThis = addMethod(this, &m, einfo);		\
 	} while(0)
 
 /*

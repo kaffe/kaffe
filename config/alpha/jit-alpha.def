@@ -656,7 +656,6 @@ define_insn(prologue, prologue_xxC)
 	int l;
 	int sl;
 	int aspill;
-	const char *sig;
 	label* L;
 	Method* meth;
 	int rsa_size;
@@ -667,7 +666,7 @@ define_insn(prologue, prologue_xxC)
 #ifdef DEBUG
 	if (jit_debug) {
 		printf("\n%s.%s %s\n", meth->class->name->data,
-			meth->name->data, meth->signature->data);
+			meth->name->data, METHOD_SIGD(meth));
 	}
 #endif
 
@@ -919,7 +918,6 @@ define_insn(prologue, prologue_xxC)
 	aspill = (maxArgs < 6 ? maxArgs : 6);
 
 	/* Assign arguments, locals and temps to slots from $fp */
-	sig = meth->signature->data;
 	for (r = 0; r < l; r++) {
 		if (r >= maxArgs) {
 		        /* locals and temps */
@@ -945,19 +943,10 @@ define_insn(prologue, prologue_xxC)
 	}
 	sl = r;
 
-	sig = meth->signature->data;
-	for (; *++sig != ')' && r < 6; r++, sl++) {
-		switch (*sig) {
-		case '[':
-			while (*++sig == '[')
-				continue;
-			if (*sig == 'L') {
-				sig = strchr(sig, ';');
-			}
-			forceRegister(&localinfo[sl], REG_a0+r, Rref);
-			break;
+	for (l = 0; l < METHOD_NARGS(meth) && r < 6; l++, r++, sl++) {
+		switch (*METHOD_ARG_TYPE(meth, l)) {
 		case 'L':
-			sig = strchr(sig, ';');
+		case '[':
 			forceRegister(&localinfo[sl], REG_a0+r, Rref);
 			break;
 		case 'B':

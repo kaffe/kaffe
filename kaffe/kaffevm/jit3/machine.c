@@ -132,7 +132,6 @@ translate(Method* xmeth, errorInfo* einfo)
 	SlotInfo* tmp;
 	SlotInfo* tmp2;
 	SlotInfo* mtable;
-	const char* str;
 
 	bytecode* base;
 	uint32 len;
@@ -195,8 +194,10 @@ DBG( vm_jit_translate, ("callinfo = 0x%x\n", &cinfo));
 
 	maxLocal = xmeth->localsz;
 	maxStack = xmeth->stacksz;
-        str = xmeth->signature->data;
-        maxArgs = sizeofSig(&str, false);
+        maxArgs = sizeofSigMethod(xmeth, false);
+	if (maxArgs == -1) {
+		goto done2;
+	}
 	if (xmeth->accflags & ACC_STATIC) {
 		isStatic = 1;
 	}
@@ -206,7 +207,7 @@ DBG( vm_jit_translate, ("callinfo = 0x%x\n", &cinfo));
 	}
 
 SUSE(
-	printf("Method: %s.%s%s\n", CLASS_CNAME(xmeth->class), xmeth->name->data, makeStrFromSignature(xmeth->sig));
+	printf("Method: %s.%s%s\n", CLASS_CNAME(xmeth->class), xmeth->name->data, METHOD_SIGD(xmeth));
 	for (i = 0; i < maxLocal; i++) {
 		printf(" L%d: %2d", i, codeInfo->localuse[i].use);
 	}
@@ -330,7 +331,8 @@ done:;
 
 DBG( vm_jit_translate, ("Translating %s.%s%s (%s) %p\n",
 						xmeth->class->name->data,
-						xmeth->name->data, makeStrFromSignature(xmeth->sig),
+						xmeth->name->data,
+						METHOD_SIGD(xmeth),
 						isStatic ? "static" : "normal", METHOD_NATIVECODE(xmeth)));
 
 	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
@@ -338,7 +340,7 @@ DBG( vm_jit_translate, ("Translating %s.%s%s (%s) %p\n",
 		jitStats.time += (int)(tme - tms);
 		printf("<JIT: %s.%s%s time %dms (%dms) @ %p (%p)>\n",
 		       CLASS_CNAME(xmeth->class),
-		       xmeth->name->data, xmeth->signature->data,
+		       xmeth->name->data, METHOD_SIGD(xmeth),
 		       (int)(tme - tms), jitStats.time,
 		       METHOD_NATIVECODE(xmeth), xmeth);
 	}

@@ -1115,7 +1115,7 @@ define_insn(prologue, prologue_xxC)
 #ifdef DEBUG
 	if (jit_debug) {
 		printf("\n%s.%s %s\n", meth->class->name->data,
-			meth->name->data, meth->signature->data);
+			meth->name->data, METHOD_SIGD(meth));
 	}
 #endif
 

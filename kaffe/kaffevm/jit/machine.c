@@ -179,7 +179,6 @@ translate(Method* meth, errorInfo *einfo)
 	SlotInfo* tmp;
 	SlotInfo* tmp2;
 	SlotInfo* mtable;
-	const char* str;
 
 	bytecode* base;
 	int len;
@@ -207,7 +206,7 @@ translate(Method* meth, errorInfo *einfo)
 	 * hasn't been done by someone else once we get it.
 	 */
 	if (METHOD_TRANSLATED(meth)) {
-		goto done2;
+		goto done3;
 	}
 
 	if (Kaffe_JavaVMArgs[0].enableVerboseJIT) {
@@ -216,31 +215,31 @@ translate(Method* meth, errorInfo *einfo)
 
 DBG(MOREJIT,
 	dprintf("asked to translate = %s.%s(%s)\n", 
-	    meth->class->name->data, meth->name->data, meth->signature->data);	
+	    meth->class->name->data, meth->name->data, METHOD_SIGD(meth));	
     )
 
 	/* If this code block is native, then just set it up and return */
 	if ((meth->accflags & ACC_NATIVE) != 0) {
 		success = native(meth, einfo);
 		if (success == false) {
-			goto done2;
+			goto done3;
 		}
 		KAFFEJIT_TO_NATIVE(meth);
 		/* Note that this is a real function not a trampoline.  */
 		if (meth->c.ncode.ncode_end == 0)
 			meth->c.ncode.ncode_end = METHOD_NATIVECODE(meth);
-		goto done2;
+		goto done3;
 	}
 
 	/* Scan the code and determine the basic blocks */
 	success = verifyMethod(meth, &codeInfo, einfo);
 	if (success == false) {
-		goto done2;
+		goto done3;
 	}
 
 DBG(MOREJIT,
 	dprintf("successfully verified = %s.%s(%s)\n", 
-	    meth->class->name->data, meth->name->data, meth->signature->data);	
+	    meth->class->name->data, meth->name->data, METHOD_SIGD(meth));	
     )
 
 	/* Only one in the translator at once. */
@@ -268,7 +267,7 @@ DBG(MOREJIT,
 	if (jitting) {
 		dprintf("but still jitting = %s.%s(%s)\n", 
 			jitting->class->name->data, jitting->name->data, 
-			jitting->signature->data);	
+			METHOD_SIGD(jitting));	
 	}
     )
 	/* start modifying global variables now */
@@ -277,8 +276,10 @@ DBG(MOREJIT,
 
 	maxLocal = meth->localsz;
 	maxStack = meth->stacksz;
-	str = meth->signature->data;
-        maxArgs = sizeofSig(&str, false);
+        maxArgs = sizeofSigMethod(meth, false);
+	if (maxArgs == -1) {
+		goto done2;
+	}
 
 	if (meth->accflags & ACC_STATIC) {
 		isStatic = 1;
@@ -389,7 +390,7 @@ done:
 
 DBG(JIT,
 	dprintf("Translated %s.%s%s (%s) %p\n", meth->class->name->data, 
-		meth->name->data, meth->signature->data, 
+		meth->name->data, METHOD_SIGD(meth), 
 		isStatic ? "static" : "normal", meth->ncode);	
     )
 
@@ -398,7 +399,7 @@ DBG(JIT,
 		jitStats.time += (tme - tms);
 		printf("<JIT: %s.%s%s time %dms (%dms) @ %p>\n",
 		       CLASS_CNAME(meth->class),
-		       meth->name->data, meth->signature->data,
+		       meth->name->data, METHOD_SIGD(meth),
 		       (int)(tme - tms), jitStats.time,
 		       METHOD_NATIVECODE(meth));
 	}
@@ -412,10 +413,11 @@ done1:
 		globalMethod = 0;
 	}
 #endif
+done2:
 	jitting = 0;	/* DEBUG */
 	stopTiming(&jit_time);
 	leaveTranslator();
-done2:
+done3:
 	unlockMutex(&meth->class->head);
 	return (success);
 }
@@ -911,7 +913,7 @@ profilerClassStat(Hjava_lang_Class *clazz, void *param)
 
 				meth->class->name->data,
 				meth->name->data,
-				meth->signature->data
+				METHOD_SIGD(meth)
 		       );
 
 	}

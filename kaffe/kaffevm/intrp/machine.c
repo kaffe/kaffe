@@ -80,7 +80,6 @@ virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retva
 	Hjava_lang_Object* volatile mobj;
 	vmException mjbuf;
 	accessFlags methaccflags;
-	const char* str;
 
 	slots* volatile lcl;
 	slots* volatile sp;
@@ -112,12 +111,12 @@ virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retva
 		}
 	}
 
-CDBG(	dprintf("Call: %s.%s%s.\n", meth->class->name->data, meth->name->data, meth->signature->data); )
+CDBG(	dprintf("Call: %s.%s%s.\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth)); )
 
 	/* If this is native, then call the real function */
 	methaccflags = meth->accflags;
 	if (methaccflags & ACC_NATIVE) {
-NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name->data, meth->signature->data); )
+NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth)); )
 		if (methaccflags & ACC_STATIC) {
 			callMethodA(meth, meth, 0, (jvalue*)arg, (jvalue*)retval, 1);
 		}
@@ -168,8 +167,11 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	}
 
 	/* Calculate number of arguments */
-	str = meth->signature->data;
-	idx = sizeofSig(&str, false) + (methaccflags & ACC_STATIC ? 0 : 1);
+	idx = sizeofSigMethod(meth, false);
+	if (idx == -1) {
+		throwError(&einfo);
+	}
+	idx += (methaccflags & ACC_STATIC ? 0 : 1);
 
 	/* Copy in the arguments */
 	sp = lcl;
@@ -207,7 +209,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 		unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)mjbuf.prev;
 	}
 
-RDBG(	dprintf("Returning from method %s%s.\n", meth->name->data, meth->signature->data); )
+RDBG(	dprintf("Returning from method %s%s.\n", meth->name->data, METHOD_SIGD(meth)); )
 }
 
 void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *retval, volatile vmException *mjbuf, Hjava_lang_Thread *tid) {

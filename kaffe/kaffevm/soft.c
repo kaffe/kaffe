@@ -255,14 +255,14 @@ notfound:
 	if (ifclass == ObjectClass) {
 		Method* objm = CLASS_METHODS(ifclass) + idx;
 		
-		meth = findMethod(cls, objm->name, objm->signature, &info);
+		meth = findMethod(cls, objm->name, METHOD_SIG(objm), &info);
 		if (meth == 0) {
 			throwError(&info);
 		}
 		return (METHOD_NATIVECODE(meth));
 	}
 	meth = CLASS_METHODS(ifclass) + idx;
-	soft_nosuchmethod(cls, meth->name, meth->signature);
+	soft_nosuchmethod(cls, meth->name, METHOD_SIG(meth));
 	return (0);
 }
 
@@ -566,7 +566,7 @@ soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL)
 	}
 #endif
 
-TDBG(	fprintf(stderr, "Calling %s:%s%s @ 0x%x\n", meth->class->name->data, meth->name->data, meth->signature->data, METHOD_NATIVECODE(meth));	)
+TDBG(	fprintf(stderr, "Calling %s:%s%s @ 0x%x\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth), METHOD_NATIVECODE(meth));	)
 
 	return (METHOD_NATIVECODE(meth));
 }
@@ -922,7 +922,7 @@ soft_cvtfi(jfloat v)
 	}
 	/* If too small return smallest int */
 	if (v < -2147483648.0) {
-		return (-2147483648);
+		return (-2147483647-1);
 	}
 	/* If too big return biggest int */
 	else if (v > 2147483647) {
@@ -951,7 +951,7 @@ soft_cvtdi(jdouble v)
 	}
 	/* If too small return smallest int */
 	if (v < -2147483648.0) {
-		return (-2147483648);
+		return (-2147483647-1);
 	}
 	/* If too big return biggest int */
 	else if (v > 2147483647) {

@@ -274,8 +274,8 @@ void
 callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 	    int promoted)
 {
-	const char* sig;
 	int i;
+	int j;
 	int s;
 	/* XXX call.callsize and call.calltype arrays are statically sized 
 	   and are not checked for running out of bounds */
@@ -286,7 +286,6 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 	if (ret == 0) {
 		ret = &tmp;
 	}
-	sig = meth->signature->data;
 	i = 0;
 	s = 0;
 
@@ -341,10 +340,9 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 		args--; /* because args[i] would be off by one */
 	}
 
-	sig++;	/* Skip leading '(' */
-	for (; *sig != ')'; i++, sig++) {
-		call.calltype[i] = *sig;
-		switch (*sig) {
+	for (j = 0; j < METHOD_NARGS(meth); i++, j++) {
+		call.calltype[i] = *METHOD_ARG_TYPE(meth, j);
+		switch (call.calltype[i]) {
 		case 'Z':
 			if (promoted) goto use_int;
 			call.callsize[i] = 1;
@@ -396,33 +394,18 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 			call.callsize[i] = 0;
 #endif
 			break;
-
 		case '[':
-			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
-			call.calltype[i] = 'L';	/* Looks like an object */
-			in[i] = args[i];
-			while (*sig == '[') {
-				sig++;
-			}
-			if (*sig == 'L') {
-				while (*sig != ';') {
-					sig++;
-				}
-			}
-			break;
+			call.calltype[i] = 'L';
+			/* fall through */
 		case 'L':
 			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 			in[i] = args[i];
-			while (*sig != ';') {
-				sig++;
-			}
 			break;
 		default:
 			ABORT();
 		}
 		s += call.callsize[i];
 	}
-	sig++;	/* Skip trailing ')' */
 
 #if defined(STACK_LIMIT)
 	call.calltype[i] = 'L';
@@ -433,18 +416,24 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 #endif
 
 	/* Return info */
-	call.rettype = *sig;
-	if (*sig == 'L' || *sig == '[') {
+	call.rettype = *METHOD_RET_TYPE(meth);
+	switch (call.rettype) {
+	case '[':
+		call.rettype = 'L';
+		/* fall through */
+	case 'L':
 		call.retsize = PTR_TYPE_SIZE / SIZEOF_INT;
-	}
-	else if (*sig == 'V') {
+		break;
+	case 'V':
 		call.retsize = 0;
-	}
-	else if (*sig == 'D' || *sig == 'J') {
+		break;
+	case 'D':
+	case 'J':
 		call.retsize = 2;
-	}
-	else {
+		break;
+	default:
 		call.retsize = 1;
+		break;
 	}
 
 	/* Call info and arguments */
@@ -507,9 +496,10 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 void
 callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 {
-	const char* sig;
+  /* const char* sig; FIXME */
 	int i;
 	int s;
+	int j;
 	/* XXX call.callsize and call.calltype arrays are statically sized 
 	   and are not checked for running out of bounds */
 	callMethodInfo call;
@@ -519,7 +509,6 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	if (ret == 0) {
 		ret = &tmp;
 	}
-	sig = meth->signature->data;
 	i = 0;
 	s = 0;
 
@@ -567,10 +556,9 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		i++;
 	}
 
-	sig++;	/* Skip leading '(' */
-	for (; *sig != ')'; i++, sig++) {
-		call.calltype[i] = *sig;
-		switch (*sig) {
+	for (j = 0; j < METHOD_NARGS(meth); i++, j++) {
+		call.calltype[i] = *METHOD_ARG_TYPE(meth, j);
+		switch (call.calltype[i]) {
 		case 'I':
 		case 'Z':
 		case 'S':
@@ -604,31 +592,17 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 #endif
 			break;
 		case '[':
-			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
-			call.calltype[i] = 'L';	/* Looks like an object */
-			in[i].l = va_arg(args, jref);
-			while (*sig == '[') {
-				sig++;
-			}
-			if (*sig == 'L') {
-				while (*sig != ';') {
-					sig++;
-				}
-			}
-			break;
+			call.calltype[i] = 'L';
+			/* fall through */
 		case 'L':
 			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
 			in[i].l = va_arg(args, jref);
-			while (*sig != ';') {
-				sig++;
-			}
 			break;
 		default:
 			ABORT();
 		}
 		s += call.callsize[i];
 	}
-	sig++;	/* Skip trailing ')' */
 
 #if defined(STACK_LIMIT)
 	call.calltype[i] = 'L';
@@ -639,18 +613,24 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 #endif
 
 	/* Return info */
-	call.rettype = *sig;
-	if (*sig == 'L' || *sig == '[') {
+	call.rettype = *METHOD_RET_TYPE(meth);
+	switch (call.rettype) {
+	case '[':
+		call.rettype = 'L';
+		/* fall through */
+	case 'L':
 		call.retsize = PTR_TYPE_SIZE / SIZEOF_INT;
-	}
-	else if (*sig == 'V') {
+		break;
+	case 'V':
 		call.retsize = 0;
-	}
-	else if (*sig == 'D' || *sig == 'J') {
+		break;
+	case 'D':
+	case 'J':
 		call.retsize = 2;
-	}
-	else {
+		break;
+	default:
 		call.retsize = 1;
+		break;
 	}
 
 	/* Call info and arguments */

@@ -3446,7 +3446,7 @@ Kaffe_RegisterNatives(JNIEnv* env, jclass cls, const JNINativeMethod* methods, j
 	for (j = 0; j < nmethods; j++) {
 		for (i = 0; i < nmeth; i++) {
 			if (strcmp(meth[i].name->data, methods[j].name) == 0 &&
-			    strcmp(meth[i].signature->data, methods[j].signature) == 0 &&
+			    strcmp(METHOD_SIGD(&meth[i]), methods[j].signature) == 0 &&
 			    (meth[i].accflags & ACC_NATIVE) != 0) {
 				Kaffe_JNI_wrapper(&meth[i], methods[j].fnPtr); 
 				goto found;
@@ -3593,9 +3593,6 @@ void
 Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 {
 	errorInfo info;
-	char buf[100];
-	int i;
-	const char* str;
 	int count;
 	nativeCodeInfo ncode;
 	SlotInfo* tmp;
@@ -3604,38 +3601,9 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	int an;
 	int iLockRoot;
 
-	/* Convert the signature into a simple string of types, and
-	 * count the size of the arguments too.
-	 */
-	str = xmeth->signature->data;
-	if (METHOD_IS_STATIC(xmeth)) {
-		isStatic = 1;
-		count = 0;
-	}
-	else {
-		isStatic = 0;
-		count = 1;
-	}
-
-	str++;		/* Skip leading '(' */
-	for (i = 0; *str != ')'; i++) {
-		buf[i] = *str;
-		count++;
-		if (*str == 'D' || *str == 'J') {
-			count++;
-		}
-		if (*str == '[') {
-			while (*str == '[') {
-				str++;
-			}
-		}
-		if (*str == 'L') {
-			while (*str != ';') {
-				str++;
-			}
-		}
-		str++;
-	}
+	isStatic = METHOD_IS_STATIC(xmeth);
+	count = sizeofSigMethod(xmeth, false);
+	count += 1 - isStatic;
 
 	/* Construct a wrapper to call the JNI method with the correct
 	 * arguments.
@@ -3680,19 +3648,18 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 				call_soft(addJNIref);
 				popargs();
 			}
-			j = i;
+			j = METHOD_NARGS(xmeth);
 			jcount = count;
 			while (j > 0) {
 				j--;
-				jcount--;
-				if (buf[j] == '[' || buf[j] == 'L') {
+				jcount -= sizeofSigChar(*METHOD_ARG_TYPE(xmeth, j));
+				switch (*METHOD_ARG_TYPE(xmeth, j)) {
+				case 'L':
+				case '[':
 					pusharg_ref(local(jcount), 0);
 					end_sub_block();
 					call_soft(addJNIref);
 					popargs();
-				}
-				if (buf[j] == 'J' || buf[j] == 'D') {
-					jcount--;
 				}
 			}
 			start_sub_block();
@@ -3735,10 +3702,10 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	}
 
 	/* Push the specified arguments */
-	for (j = 0; j < i; j++) {
-		switch (buf[j]) {
-		case '[':
+	for (j = 0; j < METHOD_NARGS(xmeth); j++) {
+		switch (*METHOD_ARG_TYPE(xmeth, j)) {
 		case 'L':
+		case '[':
 			pusharg_ref(local(an), count);
 			break;
 		case 'I':
@@ -3778,12 +3745,12 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	}
 	an = maxArgs;
 
-	for (j = i - 1; j >= 0; j--) {
+	for (j = METHOD_NARGS(xmeth); --j >= 0; ) {
 		count--;
 		an--;
-		switch (buf[j]) {
-		case '[':
+		switch (*METHOD_ARG_TYPE(xmeth, j)) {
 		case 'L':
+		case '[':
 			pusharg_ref(local(an), count);
 			break;
 		case 'I':
@@ -3837,9 +3804,9 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	start_sub_block();
 
 	/* Determine return type */
-	switch (str[1]) {
-	case '[':
+	switch (*METHOD_RET_TYPE(xmeth)) {
 	case 'L':
+	case '[':
 		slot_alloctmp(tmp);
 		return_ref(tmp);
 		/* Remove synchronisation if necessary */
@@ -4113,7 +4080,7 @@ Kaffe_JNI_native(Method* meth)
 	if (func == NULL) {
 		/* Try the long signatures */
 		strcat(name, "__");
-		strcatJNI(name, meth->signature->data);
+		strcatJNI(name, METHOD_SIGD(meth));
 		func = loadNativeLibrarySym(name);
 		if (func == 0) {
 			return (JNI_FALSE);

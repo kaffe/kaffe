@@ -1,3 +1,52 @@
+1999-10-11  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
+
+	* Pre-parse method signatures into array of indices into the
+	signature string.
+	* kaffe/kaffevm/classMethod.h (parsed_signature_t): New type.
+	(_methods): Replace signature with parsed_sig.
+	(METHOD_PSIG, METHOD_SIG, METHOD_SIGD): New macros.
+	(METHOD_RET_TYPE, METHOD_NARGS, METHOD_ARG_TYPE): Likewise.
+	(PSIG_UTF8, PSIG_DATA, PSIG_RET, PSIG_NARGS, PSIG_ARG): Likewise.
+	(sizeofSigMethod, sizeofSigClass, sizeofSigChar): New functions.
+	(countArgsInSignature, parseSignature): Likewise.
+	(addMethod): Add errorInfo argument.
+	* kaffe/kaffevm/readClass.c (addMethod): Likewise.  Test result.
+	* kaffe/kaffevm/readClassConfig.h (READMETHOD): Likewise.
+	* kaffe/kaffeh/readClassConfig.h (READMETHOD): Likewise.
+	* kaffe/kaffevm/classMethod.c (addMethod): Likewise.  Parse sig.
+	(sizeofSigChar): New function.
+	(sizeofSigItem): Use sizeofSigChar.
+	(sizeofSigClass, sizeofSigMethod): Implement.
+	(countArgsInSignature, parseSignature): Likewise.
+	* kaffe/kaffevm/gcFuncs.h (destroyClass): Release parsed sig.
+	* kaffe/kaffevm/code-analyse.c (verifyMethod): Use parsed sig.
+	* config/alpha/jit-alpha.def (prologue): Likewise.
+	* config/mips/jit3-mips.def (prologue): Likewise.
+	* config/mips/mips.c (__mipsInitJit): Likewise.
+	* kaffe/kaffevm/jni.c (Kaffe_wrapper): Likewise.
+	* kaffe/kaffevm/support.c (callMethodA, callMethodV): Likewise.
+	* kaffe/kaffevm/intrp/machine.c (virtualMachine): Likewise.
+	* kaffe/kaffevm/jit/machine.c (translate): Likewise.
+	* kaffe/kaffevm/jit3/machine.c (translate): Likewise.
+	* libraries/clib/native/Class.c (makeParameters): Likewise.
+	(makeReturn, checkParameters): Likewise.
+	* libraries/extensions/microsoft/clib/Delegate.c (makeReturn,
+	makeParameters): Likewise.
+	* libraries/clib/native/Method.c (invoke): Likewise.  Verify
+	classes of object-type arguments.
+	* config/alpha/jit.h (FRAMEOBJECT): Use METHOD_SIGD, METHOD_SIG.
+	* config/arm/jit.h (FRAMEOBJECT): Likewise.
+	* config/m68k/jit-m68k.def (prologue): Likewise.
+	* kaffe/kaffevm/external.c (native): Likewise.
+	* kaffe/kaffevm/lookup.c (findMethodLocal): Likewise.
+	* libraries/clib/native/ObjectStreamClassImpl.c (newSerialObject):
+	Likewise.  Compare utf8constants when looking for a constructor.
+	(getMethodDesc): Likewise.
+	* libraries/clib/native/RMIHashes.c (getMethodHash): Likewise.
+	(getInterfaceHash): Likewise.
+	* kaffe/kaffevm/soft.c (soft_lookupmethod): Likewise.
+	(soft_cvtfi, soft_cvtdi): Avoid unsigned overflow.
+	
 1999-10-09  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
 	* config/i386/common.h (COMPARE_AND_EXCHANGE): Avoid fixed

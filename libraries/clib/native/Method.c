@@ -18,6 +18,7 @@
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/itypes.h"
 #include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/soft.h"
 #include "../../../kaffe/kaffevm/exception.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
 #include "java_lang_reflect_Method.h"
@@ -56,13 +57,13 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 	jint slot;
 	jvalue args[255]; /* should this be allocated dynamically? */
 	jvalue ret;
-	Hjava_lang_Class* a;
+	Hjava_lang_Class *a, *t;
 	Hjava_lang_Object** body;
 	int i;
 	int j;
 	int len;
-	const char* sig;
 	char rettype;
+	errorInfo info;
 
 	/* Bit of a hack this */
 	Hjava_lang_Object* obj = (Hjava_lang_Object*)_obj;
@@ -78,7 +79,6 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 	 */
 	/* XXX use JNI here XXX */
 	if (clazz->state < CSTATE_USABLE) {
-		errorInfo info;
 		if (processClass(clazz, CSTATE_COMPLETE, &info) == false) {
 			throwError(&info);
 		}
@@ -94,23 +94,32 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 	meth = &clazz->methods[slot];
 
 	len = argobj ? obj_length(argobj) : 0;
+
+	if (len != METHOD_NARGS(meth)) {
+		SignalError("java.lang.IllegalArgumentException", "wrong number of arguments");
+	}
+
 	body = argobj ? OBJARRAY_DATA(argobj) : 0;
-	for (sig = meth->signature->data + 1, i = j = 0;
-	     *sig != ')' && i < len; ++sig, ++i, ++j) {
+	for (i = j = 0; i < len; ++i, ++j) {
+		t = getClassFromSignature(METHOD_ARG_TYPE(meth, i),
+					  meth->class->loader, &info);
+		if (t == 0) {
+			throwError(&info);
+		}
 		a = body[i] ? OBJECT_CLASS(body[i]) : 0;
-		switch (*sig) {
+		if (CLASS_IS_PRIMITIVE(t)) switch (CLASS_PRIM_SIG(t)) {
 		case 'Z':
 			if (a == javaLangBooleanClass) {
 				args[j].z = unhand((Hjava_lang_Boolean*)body[i])->value;
 			} else {
-				SignalError("java.lang.IllegalArgumentException", "");
+				SignalError("java.lang.IllegalArgumentException", "expecting boolean value");
 			}
 			break;
 		case 'B':
 			if (a == javaLangByteClass) {
 				args[j].b = unhand((Hjava_lang_Byte*)body[i])->value;
 			} else {
-				SignalError("java.lang.IllegalArgumentException", "");
+				SignalError("java.lang.IllegalArgumentException", "expecting byte value");
 			}
 			break;
 		case 'C':
@@ -120,7 +129,7 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 			else if (a == javaLangByteClass) {
 				args[j].c = unhand((Hjava_lang_Byte*)body[i])->value;
 			} else {
-				SignalError("java.lang.IllegalArgumentException", "");
+				SignalError("java.lang.IllegalArgumentException", "expecting character value");
 			}
 			break;
 		case 'S':
@@ -130,7 +139,7 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 			else if (a == javaLangByteClass) {
 				args[j].s = unhand((Hjava_lang_Byte*)body[i])->value;
 			} else {
-				SignalError("java.lang.IllegalArgumentException", "");
+				SignalError("java.lang.IllegalArgumentException", "expecting short value");
 			}
 			break;
 		case 'I':
@@ -146,7 +155,7 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 			else if (a == javaLangByteClass) {
 				args[j].i = unhand((Hjava_lang_Byte*)body[i])->value;
 			} else {
-				SignalError("java.lang.IllegalArgumentException", "");
+				SignalError("java.lang.IllegalArgumentException", "expecting int value");
 			}
 			break;
 		case 'J':
@@ -165,7 +174,7 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 			else if (a == javaLangByteClass) {
 				args[j].j = unhand((Hjava_lang_Byte*)body[i])->value;
 			} else {
-				SignalError("java.lang.IllegalArgumentException", "");
+				SignalError("java.lang.IllegalArgumentException", "expecting long value");
 			}
 			++j;
 			break;
@@ -188,7 +197,7 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 			else if (a == javaLangByteClass) {
 				args[j].f = unhand((Hjava_lang_Byte*)body[i])->value;
 			} else {
-				SignalError("java.lang.IllegalArgumentException", "");
+				SignalError("java.lang.IllegalArgumentException", "expecting float value");
 			}
 			break;
 		case 'D':
@@ -213,29 +222,21 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 			else if (a == javaLangByteClass) {
 				args[j].d = unhand((Hjava_lang_Byte*)body[i])->value;
 			} else {
-				SignalError("java.lang.IllegalArgumentException", "");
+				SignalError("java.lang.IllegalArgumentException", "expecting double value");
 			}
 			++j;
 			break;
-		case '[':
-			while (*++sig == '[')
-				;
-			if (*sig == 'L')
-				/* fall through */
-		case 'L':
-			while (*++sig != ';')
-				;
-			args[j].l = body[i];
-			break;
 		default:
 			ABORT();
+		} else if (body[i] == 0 ||
+			   instanceof(t, OBJECT_CLASS(body[i]))) {
+			args[j].l = body[i];
+		} else {
+			SignalError("java.lang.IllegalArgumentException", "incompatible object types");
 		}
 	}
-	if (*sig != ')' || i < len) {
-		SignalError("java.lang.IllegalArgumentException", "");
-	}
 
-	rettype = *++sig;
+	rettype = *METHOD_RET_TYPE(meth);
 
 	/* Select which method to really call, and call it */
 	if (METHOD_IS_STATIC(meth)) {	/* static method */
@@ -255,9 +256,8 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 		case 'B': ret.b = CallStaticTypeMethodA(Byte); break;
 		case 'Z': ret.z = CallStaticTypeMethodA(Boolean); break;
 		case 'C': ret.c = CallStaticTypeMethodA(Char); break;
-		case 'L': 
+		case 'L':
 		case '[': ret.l = CallStaticTypeMethodA(Object); break;
-
 #undef CallStaticTypeMethodA
 		default:
 			ABORT();
@@ -268,7 +268,6 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 		 * This if applies if we are called from Constructor.newInstance
 		 */
 		ret.l = (*env)->NewObjectA(env, clazz, meth, args);
-
 		/* override return type parsed from signature */
 		rettype = 'L';
 	}

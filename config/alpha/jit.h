@@ -45,7 +45,7 @@ extern alpha_jit_info_t alpha_jit_info;
 	/* rebuild alpha_slot2argoffset[0] as in jit-alpha.def */	\
 	const char *str;						\
 	int maxArgs, aspill;						\
-	str = einfo.method->signature->data;				\
+	str = METHOD_SIGD(einfo.method);				\
 	maxArgs = sizeofSig(&str, false);				\
 	aspill = (maxArgs < 6 ? maxArgs : 6);				\
 	obj = ((Hjava_lang_Object**)(f))[-(aspill-0)];			\

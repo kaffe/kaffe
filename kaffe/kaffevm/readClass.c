@@ -180,7 +180,10 @@ DBG(	dprintf("methods_count=%d\n", methods_count);		)
 #endif
 	for (i = 0; i < methods_count; i++) {
 #ifdef READMETHOD
-		READMETHOD(fp, this);
+		READMETHOD(fp, this, einfo);
+		if (methodThis == NULL) {
+			return (false);
+		}
 #else
 		fseek(fp, 6, SEEK_CUR);
 #endif

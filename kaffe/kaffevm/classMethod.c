@@ -605,7 +605,7 @@ addSourceFile(Hjava_lang_Class* c, int idx, errorInfo *einfo)
 }
 
 Method*
-addMethod(Hjava_lang_Class* c, method_info* m)
+addMethod(Hjava_lang_Class* c, method_info* m, errorInfo *einfo)
 {
 	constIndex nc;
 	constIndex sc;
@@ -641,12 +641,15 @@ DBG(RESERROR,	dprintf("addMethod: no signature name.\n");	)
 #endif
 
 DBG(CLASSFILE,
-	dprintf("Adding method %s:%s%s (%x)\n", c->name->data, WORD2UTF(pool->data[nc])->data, WORD2UTF(pool->data[sc])->data, m->access_flags);	
+	dprintf("Adding method %s:%s%s (%x)\n", c->name->data, name->data, signature->data, m->access_flags);	
     )
 
 	mt = &CLASS_METHODS(c)[CLASS_NMETHODS(c)];
 	utf8ConstAssign(mt->name, name);
-	utf8ConstAssign(mt->signature, signature);
+	METHOD_PSIG(mt) = parseSignature(signature, einfo);
+	if (METHOD_PSIG(mt) == NULL) {
+		return NULL;
+	}
 	mt->class = c;
 	mt->accflags = m->access_flags;
 	mt->c.bcode.code = 0;
@@ -1369,8 +1372,8 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 			Method* mt = CLASS_METHODS(super);
 			for (; --j >= 0;  ++mt) {
 				if (utf8ConstEqual (mt->name, meth->name)
-				    && utf8ConstEqual (mt->signature,
-							meth->signature)) {
+				    && utf8ConstEqual (METHOD_SIG(mt),
+							METHOD_SIG(meth))) {
 					meth->idx = mt->idx;
 					goto foundmatch;
 				}
@@ -1498,8 +1501,8 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 				for (; --k >= 0;  ++mt) {
 					if (utf8ConstEqual (mt->name, 
 							     meth->name)
-					    && utf8ConstEqual (mt->signature,
-							meth->signature)) 
+					    && utf8ConstEqual (METHOD_SIG(mt),
+							METHOD_SIG(meth))) 
 					{
 						idx = mt->idx;
 						goto found;
@@ -1739,7 +1742,75 @@ countInsAndOuts(const char* str, short* ins, short* outs, char* outtype)
 }
 
 /*
- * Calculate size of data item based on signature.
+ * Calculate size (in words) of a signature item.
+ */
+int
+sizeofSigChar(char ch, bool want_wide_refs)
+{
+	switch (ch) {
+	case 'V':
+		return 0;
+	case 'I':
+	case 'Z':
+	case 'S':
+	case 'B':
+	case 'C':
+	case 'F':
+		return 1;
+		break;
+	case 'D':
+	case 'J':
+		return 2;
+		break;
+	case '[':
+	case 'L':
+		return want_wide_refs ? sizeof(void*) / sizeof(int32) : 1;
+	}
+
+	return -1;
+}
+
+/*
+ * Calculate size (in words) of a signature item and move *strp so
+ * that it points to the next element of the signature
+ */
+int
+sizeofSigItem(const char** strp, bool want_wide_refs)
+{
+	int count;
+	const char* str;
+
+	for (str = *strp; ; str++) {
+		count = sizeofSigChar(*str, want_wide_refs);
+		if (count == -1) {
+			switch (*str) {
+			case '(':
+				continue;
+			case 0:
+			case ')':
+				break;
+			default:
+				count = -1;	/* avoid compiler warning */
+				ABORT();
+			}
+		} else {
+			while (*str == '[')
+				++str;
+			if (*str == 'L') {
+				while (*str != ';') {
+					str++;
+				}
+			}
+		}
+
+		*strp = str + 1;
+		return (count);
+	}
+}
+
+/*
+ * Calculate size of data item based on signature and move *strp so
+ * that it points to the next element of the signature.
  */
 int
 sizeofSig(const char** strp, bool want_wide_refs)
@@ -1758,65 +1829,78 @@ sizeofSig(const char** strp, bool want_wide_refs)
 }
 
 /*
- * Calculate size (in words) of a signature item.
+ * Calculate size (in words) of a Class.
  */
 int
-sizeofSigItem(const char** strp, bool want_wide_refs)
+sizeofSigClass(Hjava_lang_Class* clazz, bool want_wide_refs)
+{
+	return sizeofSigChar(CLASS_IS_PRIMITIVE(clazz)
+			     ? CLASS_PRIM_SIG(clazz)
+			     : 'L', want_wide_refs);
+}
+
+/*
+ * Calculate size (in words) of the signature of a Method.
+ */
+int
+sizeofSigMethod(Method *meth, bool want_wide_refs)
+{
+	int i = 0, args = METHOD_NARGS(meth), size = 0;
+
+	while (i < args) {
+		size += sizeofSigChar(*METHOD_ARG_TYPE(meth, i),
+				      want_wide_refs);
+		++i;
+	}
+
+	return (size);
+}
+
+/*
+ * Count the number of arguments in a signature.
+ */
+int
+countArgsInSignature(const char *signature)
+{
+	int nargs = 0;
+
+	while (sizeofSigItem(&signature, false) != -1) {
+		++nargs;
+	}
+
+	return (nargs);
+}
+
+/*
+ * Parse a method signature and return an array of pointers to classes.
+ */
+parsed_signature_t*
+parseSignature(Utf8Const *signature, errorInfo *einfo)
 {
 	int count;
-	const char* str;
+	parsed_signature_t *sig;
+	const char *sig_iter;
+	int nargs;
 
-	for (str = *strp; ; str++) {
-		switch (*str) {
-		case '(':
-			continue;
-		case 0:
-		case ')':
-			count = -1;
-			break;
-		case 'V':
-			count = 0;
-			break;
-		case 'I':
-		case 'Z':
-		case 'S':
-		case 'B':
-		case 'C':
-		case 'F':
-			count = 1;
-			break;
-		case 'D':
-		case 'J':
-			count = 2;
-			break;
-		case '[':
-			count = want_wide_refs ? sizeof(void*) / sizeof(int32) : 1;
-			arrayofarray:
-			str++;
-			if (*str == 'L') {
-				while (*str != ';') {
-					str++;
-				}
-			}
-			else if (*str == '[') {
-				goto arrayofarray;
-			}
-			break;
-		case 'L':
-			count = want_wide_refs ? sizeof(void*) / sizeof(int32) : 1;
-			/* Skip to end of reference */
-			while (*str != ';') {
-				str++;
-			}
-			break;
-		default:
-			count = 0;	/* avoid compiler warning */
-			ABORT();
-		}
-
-		*strp = str + 1;
-		return (count);
+	nargs = countArgsInSignature(signature->data);
+	sig = (parsed_signature_t*)gc_malloc(sizeof(*sig) +
+					     nargs * sizeof(sig->ret_and_args[0]), GC_ALLOC_FIXED);
+	if (sig == NULL) {
+		postOutOfMemory(einfo);
+		return (NULL);
 	}
+	PSIG_UTF8(sig) = signature;
+	PSIG_NARGS(sig) = nargs;
+	
+	sig_iter = signature->data+1; /* skip '(' */
+	for (count = 0; count < nargs; ++count) {
+		PSIG_ARG(sig, count) = sig_iter - signature->data;
+		sizeofSigItem(&sig_iter, false);
+	}
+	++sig_iter; /* skip `)' */
+	PSIG_RET(sig) = sig_iter - signature->data;
+
+	return sig;
 }
 
 /*

@@ -62,7 +62,7 @@ verifyMethod(Method* meth, codeinfo **pcodeinfo, errorInfo *einfo)
 	int32 idx;
 	int32 sp;
 	int32 lcl;
-	const char* sig;
+	int count;
 	perPCInfo* bhead;
 	perPCInfo* btail;
 	perPCInfo* bcurr;
@@ -268,31 +268,13 @@ DBG(CODEANALYSE,
 		LOCALINIT(0, TOBJ);
 		idx++;
 	}
-	sig = meth->signature->data;
-	assert(sig[0] == '(');
-	sig++;
-	while (sig[0] != ')') {
-		switch (sig[0]) {
+
+	for (count = 0; count < METHOD_NARGS(meth); ++count) {
+		switch (*METHOD_ARG_TYPE(meth, count)) {
+		case 'L':
 		case '[':
 			LOCALINIT(idx, TOBJ);
 			idx += 1;
-			while (sig[0] == '[') {
-				sig++;
-			}
-			if (sig[0] == 'L') {
-				while (sig[0] != ';') {
-					sig++;
-				}
-			}
-			sig++;
-			break;
-		case 'L':
-			LOCALINIT(idx, TOBJ);
-			idx += 1;
-			while (sig[0] != ';') {
-				sig++;
-			}
-			sig++;
 			break;
 		case 'I':
 		case 'Z':
@@ -301,24 +283,20 @@ DBG(CODEANALYSE,
 		case 'C':
 			LOCALINIT(idx, TINT);
 			idx += 1;
-			sig++;
 			break;
 		case 'J':
 			LOCALINIT(idx, TLONG);
 			LOCALINIT(idx+1, TVOID);
 			idx += 2;
-			sig++;
 			break;
 		case 'F':
 			LOCALINIT(idx, TFLOAT);
 			idx += 1;
-			sig++;
 			break;
 		case 'D':
 			LOCALINIT(idx, TDOUBLE);
 			LOCALINIT(idx+1, TVOID);
 			idx += 2;
-			sig++;
 			break;
 		default:
 			assert("Signature character unknown" == 0);
@@ -351,7 +329,7 @@ DBG(CODEANALYSE,
 #if VDBG(1) - 1 == 0
 	for (bcurr = bhead; bcurr != NULL; bcurr = bcurr->nextBB) {
 		if ((bcurr->flags & FLAG_DONEVERIFY) == 0) {
-			VDBG(dprintf("%s.%s%s pc %d bcurr->flags 0x%04x\n", meth->class->name->data, meth->name->data, meth->signature->data, bcurr - codeInfo->perPC, bcurr->flags);)
+			VDBG(dprintf("%s.%s%s pc %d bcurr->flags 0x%04x\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth), bcurr - codeInfo->perPC, bcurr->flags);)
 		}
 	}
 #endif

@@ -389,29 +389,14 @@ HArrayOfObject*
 makeParameters(Method* meth)
 {
 	int i;
-	int len;
-	const char* sig;
 	HArrayOfObject* array;
-	Hjava_lang_Class* clazz;
 	errorInfo info;
+	Hjava_lang_Class* clazz;
 
-	sig = meth->signature->data;
-	len = 0;
-	for (sig++; *sig != ')'; sig++, len++) {
-		while (*sig == '[') {
-			sig++;
-		}
-		if (*sig == 'L') {
-			while (*sig != ';') {
-				sig++;
-			}
-		}
-	}
-
-	array = (HArrayOfObject*)AllocObjectArray(len, "Ljava/lang/Class;");
-	sig = meth->signature->data + 1;	/* Skip leading '(' */
-	for (i = 0; i < len; i++) {
-		clazz = classFromSig(&sig, meth->class->loader, &info);
+	array = (HArrayOfObject*)AllocObjectArray(METHOD_NARGS(meth), "Ljava/lang/Class;");
+	for (i = 0; i < METHOD_NARGS(meth); ++i) {
+		clazz = getClassFromSignature(METHOD_ARG_TYPE(meth, i),
+					      meth->class->loader, &info);
 		if (clazz == 0) {
 			throwError(&info);
 		}
@@ -425,14 +410,10 @@ static
 Hjava_lang_Class*
 makeReturn(Method* meth)
 {
-	const char* sig;
 	errorInfo info;
 	Hjava_lang_Class* clazz;
 
-	/* Skip to end of signature to find return type */
-	sig = strchr(meth->signature->data, ')') + 1;
-
-	clazz = classFromSig(&sig, meth->class->loader, &info);
+	clazz = getClassFromSignature(METHOD_RET_TYPE(meth), meth->class->loader, &info);
 	if (clazz == 0) {
 		throwError(&info);
 	}
@@ -740,39 +721,35 @@ static
 int
 checkParameters(Method* mth, HArrayOfObject* argtypes)
 {
-	const char *sig = mth->signature->data;
-	int   i;
+	int i;
+	errorInfo info;
 
 	/* The JDK doc says and experimentation shows that a null second 
 	 * parameter to all get(Declared){Method|Constructor} functions
 	 * is treated like passing an empty array "new Class [] {}"
 	 */
-	if ((argtypes == NULL) && sig[0] == '(' && sig[1] == ')') {
+	if ((argtypes == NULL) && METHOD_NARGS(mth) == 0) {
 		return (1);
 	}
 
-	sig++;	/* skip leading '(' */
+	if (ARRAY_SIZE(argtypes) != METHOD_NARGS(mth)) {
+		return (0);
+	}
+
 	for (i = 0; i < ARRAY_SIZE(argtypes); i++) {
 		Hjava_lang_Class* sigclass;
-		errorInfo info;
-
-		/* signature was too short or type doesn't match */
-		if (*sig == 0) {
-			return (0);
-		}
-
-		/* NB: if classFromSig fails, we pretend we don't care. */
-		sigclass = classFromSig(&sig, mth->class->loader, &info);
+		sigclass = getClassFromSignature(METHOD_ARG_TYPE(mth, i), mth->class->loader, &info);
 		if (sigclass == 0) {
 			discardErrorInfo(&info);
+			return 0;
 		}
-		if (sigclass != 
+		if (sigclass !=
 			(struct Hjava_lang_Class *)OBJARRAY_DATA(argtypes)[i]) {
 			return (0);
 		}
 	}
-	/* return false if signature was too long */
-	return ((*sig == ')' ? 1 : 0));
+
+	return (1);
 }
 
 Hjava_lang_reflect_Method*

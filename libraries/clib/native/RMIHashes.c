@@ -40,12 +40,12 @@ kaffe_rmi_server_RMIHashes_getMethodHash(struct Hjava_lang_reflect_Method* meth)
 	 * into '.' as we do for serialization.  Why be consistent eh?
 	 * - TIM 9/24/99
 	 */
-	len += strlen(m->signature->data);
+	len += strlen(METHOD_SIGD(m));
 
 	len = htons(len);
 	SHA1Update(&c, (char*)&len, sizeof(len));
 	SHA1Update(&c, m->name->data, strlen(m->name->data));
-	SHA1Update(&c, m->signature->data, strlen(m->signature->data));
+	SHA1Update(&c, METHOD_SIGD(m), strlen(METHOD_SIGD(m)));
 
 	SHA1Final(md, &c);
 
@@ -147,7 +147,7 @@ kaffe_rmi_server_RMIHashes_getInterfaceHash(struct Hjava_lang_Class* clazz)
 			continue;
 		}
 		addUTFtoSHA(&c, m->name->data);
-		addUTFtoSHA(&c, m->signature->data);
+		addUTFtoSHA(&c, METHOD_SIGD(m));
 
 		if (m->ndeclared_exceptions == 0) {
 			continue;

@@ -256,7 +256,7 @@ findMethodLocal(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature)
 	 */
 	n = CLASS_NMETHODS(class);
 	for (mptr = CLASS_METHODS(class); --n >= 0; ++mptr) {
-		if (utf8ConstEqual (name, mptr->name) && utf8ConstEqual (signature, mptr->signature)) {
+		if (utf8ConstEqual (name, mptr->name) && utf8ConstEqual (signature, METHOD_SIG(mptr))) {
 			if ((mptr->accflags & ACC_ABSTRACT) != 0) {
 				SET_METHOD_NATIVECODE(mptr, (void*)throwAbstractMethodError);
 				mptr->accflags |= ACC_NATIVE;

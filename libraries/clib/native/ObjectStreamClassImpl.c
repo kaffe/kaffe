@@ -428,7 +428,7 @@ static
 char*
 getMethodDesc(Method* mth)
 {
-	return (pathname2ClassnameCopy(mth->signature->data));
+	return (pathname2ClassnameCopy(METHOD_SIGD(mth)));
 }
 
 /*
@@ -618,7 +618,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 			/* skip private methods, constructors, and
 			 * <clinit> again.  Do not include <clinit> twice 
 			 */
-			if (((mth->accflags & (ACC_CONSTRUCTOR|ACC_PRIVATE)) != 0) || (utf8ConstEqual(mth->name, init_name) && utf8ConstEqual(mth->signature, void_signature))) { 
+			if (((mth->accflags & (ACC_CONSTRUCTOR|ACC_PRIVATE)) != 0) || (utf8ConstEqual(mth->name, init_name) && utf8ConstEqual(METHOD_SIG(mth), void_signature))) { 
 				base[i].name = 0;
 			}
 			else {
@@ -712,7 +712,7 @@ newSerialObject(Hjava_lang_Class* clazz, Hjava_lang_Object* obj)
 
 	n = CLASS_NMETHODS(clazz);
 	for (mptr = CLASS_METHODS(clazz); --n >= 0; ++mptr) {
-		if (strcmp(mptr->name->data, "<init>") == 0 && strcmp(mptr->signature->data, "()V") != 0) {
+		if (utf8ConstEqual(mptr->name, init_name) && !utf8ConstEqual(METHOD_SIG(mptr), void_signature)) {
 			/* XXX !!! */
 			return ((Hjava_lang_Object*)Kaffe_NewObject(0, clazz, (jmethodID)mptr, obj));
 		}
