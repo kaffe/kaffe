@@ -1,3 +1,17 @@
+What's New since Kaffe OpenVM 1.0.5
+-----------------------------------
+
+* Port to i386 GNU Hurd.
+
+* Port i386 hardware profiler from JIT engine to JIT3 engine.
+
+* GCJ Integration.
+
+* New version of KJC.
+
+* Lots of bug fixes.
+
+
 What's New in Kaffe OpenVM 1.0.5
 --------------------------------
 
