@@ -15,9 +15,6 @@ Treat it as an TODO list.   This file is divided in three sections.
 MISSING AND/OR BROKEN FEATURES
 ---------------------------------------------------------------------------
 
-* reflection: when reporting fields of a class, kaffe wrongly does not include
-  public static final fields of the interfaces that this class implements.
-
 * File.getCanonicalPath() is not properly implemented.
   This needs a native implementation.
 
