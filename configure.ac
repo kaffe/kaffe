@@ -409,7 +409,7 @@ AM_CONDITIONAL(USE_JIT, test x"$with_engine" != x"intrp")
 ENGINE_NAME="$with_engine"
 AC_SUBST(ENGINE_NAME)
 
-AC_SUBST_FILE(engine_frag)dnl
+AC_SUBST_FILE(engine_frag)
 engine_frag=$srcdir/kaffe/kaffevm/$with_engine/Makefile.frag
 
 dnl =========================================================================
@@ -420,10 +420,14 @@ AC_ARG_ENABLE([debug],
 	      AS_HELP_STRING([--enable-debug],
 			     [Enable run-time debugging machinery @<:@default=yes@:>@]))
 
+AC_MSG_CHECKING([whether to enable run-time debugging machinery])
+
 case "$enable_debug" in
 no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
 *) CPPFLAGS="$CPPFLAGS -DKAFFE_VMDEBUG";;
 esac
+
+AC_MSG_RESULT($enable_debug)
 
 dnl =========================================================================
 dnl Allow user to specify a bcel.jar file for class file testing.
@@ -435,8 +439,12 @@ AC_ARG_WITH([bcel],
   [ BCEL_JAR="$withval" ],
   [ BCEL_JAR="" ])
 
+AC_MSG_CHECKING([whether to use BCEL for additional regression tests])
+
 AC_SUBST(BCEL_JAR)
 AM_CONDITIONAL(HAVE_BCEL, test x"$BCEL_JAR" != x"")
+
+AC_MSG_RESULT($with_bcel)
 
 dnl =========================================================================
 dnl Allow activation of jvmpi
@@ -444,8 +452,8 @@ dnl -------------------------------------------------------------------------
 
 AC_ARG_ENABLE([jvmpi],
               AS_HELP_STRING([--enable-jvmpi],
-                             [Enable JVMPI @<:@default=no@:>@]))
-
+                             [Enable JVMPI @<:@default=no@:>@]),
+[
 case "$enable_jvmpi" in
 no) ;;
 *) if test "x$NOSIGCONTEXT" = "xtrue"; then
@@ -454,8 +462,14 @@ no) ;;
 	AC_DEFINE(ENABLE_JVMPI, 1, [JVM Profiling Interface])
    fi;;
 esac
+],
+	[enable_jvmpi="no"])
+
+AC_MSG_CHECKING([whether to enable JVMPI support])
 
 AM_CONDITIONAL(ENABLE_JVMPI, test x"$enable_jvmpi" != x"no")
+
+AC_MSG_RESULT($enable_jvmpi)
 
 dnl =========================================================================
 dnl Allow user to specify a dnsjava.jar file for class file testing.

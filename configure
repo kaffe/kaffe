@@ -26234,6 +26234,7 @@ fi
 ENGINE_NAME="$with_engine"
 
 
+
 engine_frag=$srcdir/kaffe/kaffevm/$with_engine/Makefile.frag
 
 
@@ -26243,10 +26244,16 @@ if test "${enable_debug+set}" = set; then
 
 fi;
 
+echo "$as_me:$LINENO: checking whether to enable run-time debugging machinery" >&5
+echo $ECHO_N "checking whether to enable run-time debugging machinery... $ECHO_C" >&6
+
 case "$enable_debug" in
 no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
 *) CPPFLAGS="$CPPFLAGS -DKAFFE_VMDEBUG";;
 esac
+
+echo "$as_me:$LINENO: result: $enable_debug" >&5
+echo "${ECHO_T}$enable_debug" >&6
 
 
 
@@ -26257,6 +26264,9 @@ if test "${with_bcel+set}" = set; then
 else
    BCEL_JAR=""
 fi;
+
+echo "$as_me:$LINENO: checking whether to use BCEL for additional regression tests" >&5
+echo $ECHO_N "checking whether to use BCEL for additional regression tests... $ECHO_C" >&6
 
 
 
@@ -26270,12 +26280,13 @@ else
 fi
 
 
+echo "$as_me:$LINENO: result: $with_bcel" >&5
+echo "${ECHO_T}$with_bcel" >&6
+
 
 # Check whether --enable-jvmpi or --disable-jvmpi was given.
 if test "${enable_jvmpi+set}" = set; then
   enableval="$enable_jvmpi"
-
-fi;
 
 case "$enable_jvmpi" in
 no) ;;
@@ -26290,6 +26301,13 @@ _ACEOF
    fi;;
 esac
 
+else
+  enable_jvmpi="no"
+fi;
+
+echo "$as_me:$LINENO: checking whether to enable JVMPI support" >&5
+echo $ECHO_N "checking whether to enable JVMPI support... $ECHO_C" >&6
+
 
 
 if test x"$enable_jvmpi" != x"no"; then
@@ -26300,6 +26318,9 @@ else
   ENABLE_JVMPI_FALSE=
 fi
 
+
+echo "$as_me:$LINENO: result: $enable_jvmpi" >&5
+echo "${ECHO_T}$enable_jvmpi" >&6
 
 
 
