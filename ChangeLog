@@ -1,3 +1,8 @@
+2004-02-26  Michael Koch  <konqueror@gmx.de>
+
+	* libraries/javalib/gnu/java/nio/DatagramChannelImpl.java:
+	Fixed problem with channels.DGKaboom example from Java NIO book.
+
 2004-02-26  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* java/io/ObjectInputStream.java
