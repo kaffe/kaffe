@@ -11,22 +11,19 @@
 package java.beans;
 
 import java.awt.Image;
+import java.awt.Toolkit;
+import java.net.URL;
 
 public class SimpleBeanInfo implements BeanInfo {
 
-  protected BeanDescriptor bean = null;
-  protected PropertyDescriptor[] properties = null;
-  protected MethodDescriptor[] methods = null;
-  protected EventSetDescriptor[] events = null;
-
   public BeanDescriptor getBeanDescriptor()
   {
-    return (bean);
+    return (null);
   }
 
   public EventSetDescriptor[] getEventSetDescriptors()
   {
-    return (events);
+    return (null);
   }
 
   public int getDefaultEventIndex()
@@ -36,7 +33,7 @@ public class SimpleBeanInfo implements BeanInfo {
 
   public PropertyDescriptor[] getPropertyDescriptors()
   {
-    return (properties);
+    return (null);
   }
 
   public int getDefaultPropertyIndex()
@@ -46,7 +43,7 @@ public class SimpleBeanInfo implements BeanInfo {
 
   public MethodDescriptor[] getMethodDescriptors()
   {
-    return (methods);
+    return (null);
   }
 
   public BeanInfo[] getAdditionalBeanInfo()
@@ -61,8 +58,12 @@ public class SimpleBeanInfo implements BeanInfo {
 
   public Image loadImage(String resourceName)
   {
-    //NOT YET IMPLEMENTED
-    return (null);
+    URL nm = this.getClass().getResource(resourceName);
+    if (nm == null) {
+      return (null);
+    }
+    Image img = Toolkit.getDefaultToolkit().getImage(nm);
+    return (img);
   }
-    
+
 }

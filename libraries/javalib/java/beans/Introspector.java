@@ -15,14 +15,13 @@ import java.util.TooManyListenersException;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public class Introspector
-{
-	private static String[] beansearch = { "kaffe.beans.infos" };
+public class Introspector {
+
+private static String[] beansearch = { "kaffe.beans.infos" };
 
 private Introspector() {}
     
-public static String decapitalize(String name)
-	{
+public static String decapitalize(String name) {
 	if (name.length() > 2 && Character.isUpperCase(name.charAt(0)) && Character.isUpperCase(name.charAt(1))) {
 		return (name);
 	}
@@ -34,20 +33,14 @@ public static String decapitalize(String name)
 	}
 }
 
-public static BeanInfo getBeanInfo(Class beanClass) throws IntrospectionException
-{
+public static BeanInfo getBeanInfo(Class beanClass) throws IntrospectionException {
 	return (getBeanInfo(beanClass, null));
 }
 
-public static BeanInfo getBeanInfo(Class beanClass, Class stopClass) throws IntrospectionException
-{
+public static BeanInfo getBeanInfo(Class beanClass, Class stopClass) throws IntrospectionException {
 	BeanInfo bean = loadBeanInfo(beanClass);
-	if (bean != null) {
-		return (bean);
-	}
 
-	// Okay, we must introspect
-
+	// Okay, we must now introspect to fill in the blanks.
 	if (stopClass != null) {
 		stopClass = stopClass.getSuperclass();
 	}
@@ -55,18 +48,45 @@ public static BeanInfo getBeanInfo(Class beanClass, Class stopClass) throws Intr
 		throw new IntrospectionException("Illegal stop class");
 	}
 
-	GenericBeanInfo gbean = new GenericBeanInfo(new BeanDescriptor(beanClass), getProperties(beanClass, stopClass), getMethods(beanClass, stopClass), getListeners(beanClass, stopClass));
+	BeanDescriptor desc = null;
+	PropertyDescriptor[] props = null;
+	MethodDescriptor[] meths = null;
+	EventSetDescriptor[] events = null;
+	int dprops = -1;
+	int devents = -1;
 
-	return ((BeanInfo)gbean);
+	// If we found a bean info, use as much of that as there is.
+	if (bean != null) {
+		desc = bean.getBeanDescriptor();
+		props = bean.getPropertyDescriptors();
+		meths = bean.getMethodDescriptors();
+		events = bean.getEventSetDescriptors();
+		dprops = bean.getDefaultPropertyIndex();
+		devents = bean.getDefaultEventIndex();
+	}
+
+	// Introspect the rest.
+	if (desc == null) {
+		desc = new BeanDescriptor(beanClass);
+	}
+	if (props == null) {
+		props = getProperties(beanClass, stopClass);
+	}
+	if (meths == null) {
+		meths = getMethods(beanClass, stopClass);
+	}
+	if (events == null) {
+		events = getListeners(beanClass, stopClass);
+	}
+
+	return (new GenericBeanInfo(desc, props, meths, events, devents, dprops, bean));
 }
 
-public static String[] getBeanInfoSearchPath()
-	{
+public static String[] getBeanInfoSearchPath() {
 	return (beansearch);
 }
 
-private static EventSetDescriptor[] getListeners(Class startClass, Class stopClass) throws IntrospectionException
-{
+private static EventSetDescriptor[] getListeners(Class startClass, Class stopClass) throws IntrospectionException {
 	Hashtable addMethods = new Hashtable();
 	Hashtable removeMethods = new Hashtable();
 	Hashtable keys = new Hashtable();
@@ -119,7 +139,7 @@ private static EventSetDescriptor[] getListeners(Class startClass, Class stopCla
 						}
 					}
 					catch (IllegalAccessException _) {
-					}
+				}
 					catch (InstantiationException _) {
 					}
 				}
@@ -130,8 +150,7 @@ private static EventSetDescriptor[] getListeners(Class startClass, Class stopCla
 	return (props);
 }
 
-private static MethodDescriptor[] getMethods(Class startClass, Class stopClass) throws IntrospectionException
-{
+private static MethodDescriptor[] getMethods(Class startClass, Class stopClass) throws IntrospectionException {
 	Hashtable hash = new Hashtable();
 
 	for (Class cls = startClass; cls != stopClass; cls = cls.getSuperclass()) {
@@ -158,8 +177,7 @@ private static MethodDescriptor[] getMethods(Class startClass, Class stopClass) 
 	return (methdesc);
 }
 
-private static PropertyDescriptor[] getProperties(Class startClass, Class stopClass) throws IntrospectionException
-{
+private static PropertyDescriptor[] getProperties(Class startClass, Class stopClass) throws IntrospectionException {
 	Hashtable setMethods = new Hashtable();
 	Hashtable getMethods = new Hashtable();
 	Hashtable setIdxMethods = new Hashtable();
@@ -250,8 +268,7 @@ private static PropertyDescriptor[] getProperties(Class startClass, Class stopCl
 	return (props);
 }
 
-private static BeanInfo loadBeanInfo(Class beanClass)
-	{
+private static BeanInfo loadBeanInfo(Class beanClass) {
 	String bname = beanClass.getName();
 
 	// First try to load bean info from package.
@@ -295,8 +312,8 @@ private static BeanInfo loadNamedBean(String bname) {
 	return (null);
 }
 
-public static void setBeanInfoSearchPath(String path[])
-	{
+public static void setBeanInfoSearchPath(String path[]) {
 	beansearch = path;
 }
+
 }

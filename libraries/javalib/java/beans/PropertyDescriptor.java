@@ -39,11 +39,11 @@ public PropertyDescriptor(String propertyName, Class beanClass, String getterNam
 	Method meths[] = beanClass.getMethods();
 	for (int i = 0; i < meths.length; i++) {
 		String mname = meths[i].getName();
-		if (getterName.equals(mname)) {
+		if (getterName != null && getterName.equals(mname)) {
 			getter = meths[i];
 			rettype = getter.getReturnType();
 		}
-		else if (setterName.equals(mname)) {
+		else if (setterName != null && setterName.equals(mname)) {
 			setter = meths[i];
 			rettype = setter.getReturnType();
 		}
