@@ -285,8 +285,8 @@
 /* Thread.stop() knows how to back out of java frames, so we do not
  * want to disable stop here
  */
-#define	softcall_monitorenter(o)		lockJavaMutex((o)[0].v.taddr)
-#define	softcall_monitorexit(o)			unlockJavaMutex((o)[0].v.taddr)
+#define	softcall_monitorenter(o)		lockObject((o)[0].v.taddr)
+#define	softcall_monitorexit(o)			unlockObject((o)[0].v.taddr)
 
 #define	softcall_multianewarray(r, z, s, t)	(r)->v.taddr = soft_multianewarray(t, z, s)
 

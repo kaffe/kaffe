@@ -30,9 +30,6 @@ struct _iLock;
 #define	signalStaticCond(THING)		_signalCond((THING))
 #define	broadcastStaticCond(THING)	_broadcastCond((THING))
 
-#define lockJavaMutex           _lockMutex
-#define unlockJavaMutex         _unlockMutex
-
 struct Hjava_lang_Thread;
 struct Hjava_lang_Object;
 

@@ -186,7 +186,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 			mobj = (Hjava_lang_Object*)lcl[0].v.taddr;
 		}
 		/* this lock is safe for Thread.stop() */
-		lockJavaMutex(mobj);
+		lockObject(mobj);
 		/* We must store the object on which we synchronized in
 		 * the mjbuf chain or else the exception handler routine
 		 * won't find it.
@@ -201,7 +201,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
  end:
 	/* Unsync. if required */
 	if (mobj != 0) {
-		unlockJavaMutex(mobj);
+		unlockObject(mobj);
 	}       
 	if (tid != NULL && unhand(tid)->PrivateInfo != 0) {
 		unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)mjbuf.prev;
