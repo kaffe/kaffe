@@ -399,7 +399,6 @@ SRCDIRS = com gnu java javax kaffe org
 KAFFELIBRARYPATH = $(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/:$(top_builddir)/libraries/clib/nio/:$(top_builddir)/libraries/clib/security/:$(top_builddir)/libraries/clib/classpath/
 BOOTCLASSPATH = $(LIBDIR):$(srcdir)/Klasses.jar.bootstrap
 JAR = BOOTCLASSPATH=$(BOOTCLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) kaffe.tools.jar.Jar
-LD_LIBRARY_PATH = $(top_builddir)/libraries/clib/classpath/
 jrelib_DATA = \
 	rt.jar \
 	logging.properties
@@ -5780,7 +5779,7 @@ $(srcdir)/Klasses.jar.bootstrap: bootstrap.classlist
 build-classes Klasses: rt.jar
 
 all-am: rebuildLib
-export JIKES top_builddir LIBDIR srcdir LD_LIBRARY_PATH
+export JIKES top_builddir LIBDIR srcdir
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

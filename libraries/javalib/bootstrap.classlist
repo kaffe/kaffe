@@ -222,6 +222,7 @@ java/util/Collections$SynchronizedIterator.class
 java/util/Collections$SynchronizedList.class
 java/util/Collections$SynchronizedMap.class
 java/util/Collections$SynchronizedSet.class
+java/util/Currency.class
 java/util/Comparator.class
 java/util/ConcurrentModificationException.class
 java/util/Date.class

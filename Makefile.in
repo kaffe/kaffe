@@ -974,7 +974,9 @@ BUILD_ENVIRONMENT-make: Makefile
 	echo BOOTCLASSPATH=\$${BOOTCLASSPATH}\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/rt.jar\''$(PATHSEP)'\'$(DNSJAVA_JAR)\'$(JAVAX_CRYPTO_JAR)\''$(PATHSEP)'\; export BOOTCLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' > BUILD_ENVIRONMENT.new; \
 	echo CLASSPATH=.\''$(PATHSEP)'\'\$${GNU_CRYPTO_JAR}\''$(PATHSEP)'\'\$${JAVAX_SECURITY_JAR}\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/kjc.jar\''$(PATHSEP)'\'$(BCEL_JAR)\''$(PATHSEP)'\'$(GNU_CRYPTO_JAR)\''$(PATHSEP)'\'$(JAVAX_SECURITY_JAR)\; export CLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' >> BUILD_ENVIRONMENT.new; \
 	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}`for f in $(JAVA_LIBS); do echo "$$f" | sed 's%/[^/]*$$%%'; done | (tr '\012' ' '; echo) | sed -e 's/ $$//' -e "s/ /\'$(PATHSEP)\'/g"`\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT.new; \
-	echo JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT.new
+	echo JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT.new; \
+	echo LD_LIBRARY_PATH=$(top_builddir)/libraries/clib/classpath/.libs\; export LD_LIBRARY_PATH; \
+	echo DYLD_LIBRARY_PATH=$(top_builddir)/libraries/clib/classpath/.libs\; export DYLD_LIBRARY_PATH
 	rm -f BUILD_ENVIRONMENT
 	mv BUILD_ENVIRONMENT.new BUILD_ENVIRONMENT
 

@@ -1,3 +1,17 @@
+2005-01-09  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* Makefile.am
+	(BUILD_ENVIRONMENT): Add classpath to (DY)LD_LIBRARY_PATH.
+
+	* libraries/javalib/Makefile.am.in: Do not build LD_LIBRARY_PATH.
+
+	* Makefile.in, libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in: Regenerated.
+
+	* libraries/javalib/bootstrap.classlist: Added java.util.Currency.
+
+	* libraries/javalib/Klasses.jar.bootstrap: Regenerated.
+
 2005-01-09  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/beans/GenericBeanInfo.java:
@@ -49,7 +63,7 @@
 	libraries/javalib/java/lang/Integer.java,
 	libraries/javalib/java/lang/Long.java,
 	libraries/javalib/java/lang/Short.java:
-	Replaced by implemenation from GNU Classpath.
+	Replaced by implementation from GNU Classpath.
 
 	* test/regression/ProcessClassInst.java,
 	test/regression/ProcessClassStop.java:
