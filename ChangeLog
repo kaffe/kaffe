@@ -1,3 +1,31 @@
+2003-09-22  Dalibor Topic <robilad@kaffe.org>
+
+	* developers/patch-libtool-ltdl-memory-header-warning.diff:
+	New file.
+
+	* Makefile.am:
+	(EXTRA_DIST) Added
+	developers/patch-libtool-ltdl-memory-header-warning.diff.
+
+	* Makefile.in:
+	Regenerated.
+
+	* developers/autogen.sh:
+	Updated to apply
+	developers/patch-libtool-ltdl-memory-header-warning.diff.
+
+	* libltdl/ltdl.c:
+	Regenerated.
+
+	* libraries/extensions/sound/common/Makefile.am:
+	(AM_CPPFLAGS, noinst_SOURCES, noinst_HEADERS) Removed, since no
+	sources are being built, thus Automake left the files out of the
+	distribution.
+	(EXTRA_DIST) Put the sources in here.
+
+	* libraries/extensions/sound/common/Makefile.in:
+	Regenerated.
+	
 2003-09-21  Dalibor Topic <robilad@kaffe.org>
 
 	Fix for libtool problems with sound libraries.

@@ -6,12 +6,8 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-AM_CPPFLAGS = -I$(top_builddir)/include
-
-noinst_SOURCES = \
-	common.c
-
-noinst_HEADERS = \
+EXTRA_DIST = \
+	common.c \
 	common.h \
 	debug.h \
 	HandleFieldHandler.h

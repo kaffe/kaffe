@@ -352,6 +352,7 @@ EXTRA_DIST = \
 	developers/patch-libtool-openbsd.diff \
 	developers/patch-libtool-realloc.diff \
 	developers/patch-libtool-amiga-max-command-line-length.diff \
+	developers/patch-libtool-ltdl-memory-header-warning.diff \
 	developers/rpm-kaffe.spec \
 	developers/sp_offset.c \
 	developers/unicode.pl \
