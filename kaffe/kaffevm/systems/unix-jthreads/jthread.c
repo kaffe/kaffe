@@ -1473,8 +1473,10 @@ jthreadedFileDescriptor(int fd)
 	int pid = getpid();
 
 	/* Make non-blocking */
-	if ((r = fcntl(fd, F_GETFL, 0)) < 0)
+	if ((r = fcntl(fd, F_GETFL, 0)) < 0) {
+		perror("F_GETFL");
 		return (r);
+	}
 
 	/*
 	 * Apparently, this can fail, for instance when we stdout is 
@@ -1490,25 +1492,45 @@ jthreadedFileDescriptor(int fd)
 
 #if defined(FIOSSAIOSTAT)
 	/* on hpux */
-	if ((r = ioctl(fd, FIOSSAIOSTAT, &on)) < 0)
-		return (r);
-
+	r = ioctl(fd, FIOSSAIOSTAT, &on);
+	if (r < 0 && errno != ENOTTY) {
+		/* Defines ENOTTY to be an acceptable error */
+		perror("FIOSSAIOSTAT");
+ 		return (r);
+	}
 #elif defined(FIOASYNC)
 	/* 
 	 * On some systems, this will not work if a terminal fd is redirected.
-	 * (Solaris sets errno to ENXIO in this case.
+	 * (Solaris sets errno to ENXIO in this case.)
 	 */
-	ioctl(fd, FIOASYNC, &on);
+	r = ioctl(fd, FIOASYNC, &on);
+	if (r < 0 && errno != ENXIO) {
+		/* Defines ENXIO to be an acceptable error */
+		perror("FIOASYNC");
+		return (r);
+        }
 #endif
 
 #if !(defined(O_ASYNC) || defined(FIOASYNC) ||  \
       defined(FASYNC) || defined(FIOSSAIOSTAT))
 #error	Could not put socket in async mode
 #endif
-#if defined(F_SETOWN)
+
+
 	/* Allow socket to signal this process when new data is available */
+#if defined(FIOSSAIOOWN)
+	/* on hpux */
+	r = ioctl(fd, FIOSSAIOOWN, &pid);
+        if (r == -1 && errno != ENOTTY) {
+		perror("Error doing FIOSSAIOWN");
+	}
+	
+#elif defined(F_SETOWN)
 	/* On some systems, this will flag an error if fd is not a socket */
-	fcntl(fd, F_SETOWN, pid);
+	r = fcntl(fd, F_SETOWN, pid);
+	if (r < 0) {
+		DBG(JTHREAD, perror("F_SETOWN"); )
+	}
 #endif
 	return (fd);
 }
