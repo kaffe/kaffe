@@ -424,7 +424,7 @@ mostlyclean distclean maintainer-clean
 
 
 clean-local:
-	-rm -rf $(LIBDIR)
+	-rm -rf $(LIBDIR) $(CLASSFILE)
 
 .PHONY: new-classes
 new-classes: $(top_srcdir)/developers/update-class-list

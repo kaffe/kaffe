@@ -905,7 +905,7 @@ EXTRA_DIST = $(jrelib_DATA) $(toolslib_DATA) $(Klasses_jar_SRCS) \
 LIBDIR = lib
 
 clean-local:
-	-rm -rf $(LIBDIR)
+	-rm -rf $(LIBDIR) $(CLASSFILE)
 
 .PHONY: new-classes
 new-classes: $(top_srcdir)/developers/update-class-list
