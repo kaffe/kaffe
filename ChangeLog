@@ -1,3 +1,8 @@
+Wed Feb  3 05:46:52 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* ltdl.c (lt_dlopenext): tmp would be trashed if shlib_ext was
+	longer than 3 characters
+
 Wed Feb  3 05:42:11 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/clib/native/Runtime.c (LIBRARYSUFFIX): default to

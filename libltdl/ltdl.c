@@ -1245,8 +1245,9 @@ lt_dlopenext (filename)
 			last_error = memory_error;
 			return 0;
 		}
-	}
-	tmp[len] = '\0';
+		strcpy(tmp, filename);
+	} else
+		tmp[len] = '\0';
 	strcat(tmp, shlib_ext);
 	handle = lt_dlopen(tmp);
 	if (handle) {
