@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
 import java.util.TooManyListenersException;
 
 /*
@@ -229,30 +228,23 @@ private static PropertyDescriptor[] getProperties(Class startClass, Class stopCl
 	}
 
 	// Now look through set/get methods and create desciptors.
-	Vector temp = new Vector();
+	PropertyDescriptor props[] = new PropertyDescriptor[keys.size()];
 
 	Enumeration k = keys.elements();
-	while (k.hasMoreElements()) {
+	for (int i = 0; i < props.length; i++) {
 		String key = (String)k.nextElement();
 		Method set = (Method)setMethods.get(key);
 		Method get = (Method)getMethods.get(key);
 		Method setidx = (Method)setIdxMethods.get(key);
 		Method getidx = (Method)getIdxMethods.get(key);
-		// include only editable properties here for which both
-		// a get and set method exists
-		if (set == null || get == null) {
-			continue;
-		}
 		if (setidx == null && getidx == null) {
-			temp.addElement(new PropertyDescriptor(decapitalize(key), get, set));
+			props[i] = new PropertyDescriptor(decapitalize(key), get, set);
 		}
 		else {
-			temp.addElement(new IndexedPropertyDescriptor(decapitalize(key), get, set, getidx, setidx));
+			props[i] = new IndexedPropertyDescriptor(decapitalize(key), get, set, getidx, setidx);
 		}
 	}
 
-	PropertyDescriptor[] props = new PropertyDescriptor[temp.size()];
-	temp.copyInto(props);
 	return (props);
 }
 
