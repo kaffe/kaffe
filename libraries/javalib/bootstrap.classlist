@@ -13,7 +13,6 @@ java/io/DataOutputStream.class
 java/io/EOFException.class
 java/io/File.class
 java/io/File$DeleteFileHelper.class
-java/io/File$DeleteOnExitHook.class
 java/io/FileDescriptor.class
 java/io/FileInputStream.class
 java/io/FileNotFoundException.class
@@ -246,7 +245,6 @@ java/net/DatagramPacket.class
 java/net/InetAddress.class
 java/net/InetSocketAddress.class
 java/net/NetworkInterface.class
-java/net/NetworkInterfaceImpl.class
 java/net/PlainDatagramSocketImpl.class
 java/net/PlainSocketImpl.class
 java/net/SocketAddress.class

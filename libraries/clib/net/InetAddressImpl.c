@@ -130,8 +130,9 @@ java_net_InetAddress_getHostByName(struct Hjava_lang_String* jStr)
   int iLockRoot;
   errorInfo einfo;
   char *name;
-	
+
   name = checkPtr(stringJava2C(jStr));
+	
   memset(&hints, 0, sizeof(hints));
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_protocol = IPPROTO_TCP;

@@ -1,3 +1,28 @@
+2003-09-05  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/net/InetSocketAddress.java:
+	Imported from classpath + fix.
+	(toString, equals) use hostname instead of addr if addr is null
+
+	* libraries/javalib/java/net/InetAddress.java:
+	(<clinit>) initialize ANY_IF with "" if it can't retrieve it from
+	the system.
+	(getInaddrAny) same thing for the returned any address.
+
+	* libraries/clib/net/NetworkInterfaceImpl.c:
+	(java_net_NetworkInterface_getRealNetworkInterfaces) builds a
+	hashtable as was previously done in kaffe.
+
+	* libraries/javalib/java/net/NetworkInterface.java:
+	(getRealNetworkInterface) return a Hashtable instead of a Vector
+	(getByName, getByInetAddress, getNetworkInterfaces) Use a hashtable
+	instead of a vector for the return value of getRealNetworkInterface.
+
+	* libraries/javalib/bootstrap.classlist: Deleted File$DeleteExitHook
+	and NetworkInterfaceImpl.
+
+	* libraries/javalib/Klasses.jar.bootstrap: regenerated.
+
 2003-09-05  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/clib/math/BigInteger.c:

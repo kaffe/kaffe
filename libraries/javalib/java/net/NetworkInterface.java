@@ -40,6 +40,7 @@ package java.net;
 import gnu.classpath.Configuration;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.Hashtable;
 
 /**
  * This class models a network interface on the host computer.  A network
@@ -72,7 +73,7 @@ public final class NetworkInterface
     this.inetAddresses.add (address);
   }
 
-  private native static Vector getRealNetworkInterfaces ()
+  private native static Hashtable getRealNetworkInterfaces ()
     throws SocketException;
 
   /**
@@ -142,7 +143,7 @@ public final class NetworkInterface
   public static NetworkInterface getByName (String name)
     throws SocketException
   {
-    Vector networkInterfaces = getRealNetworkInterfaces ();
+    Hashtable networkInterfaces = getRealNetworkInterfaces ();
 
     for (Enumeration e = networkInterfaces.elements ();
          e.hasMoreElements (); )
@@ -167,7 +168,7 @@ public final class NetworkInterface
   public static NetworkInterface getByInetAddress (InetAddress addr)
     throws SocketException
   {
-    Vector networkInterfaces = getRealNetworkInterfaces ();
+    Hashtable networkInterfaces = getRealNetworkInterfaces ();
     
     for (Enumeration interfaces = networkInterfaces.elements ();
          interfaces.hasMoreElements (); )
@@ -194,7 +195,7 @@ public final class NetworkInterface
   public static Enumeration getNetworkInterfaces ()
     throws SocketException
   {
-    Vector networkInterfaces = getRealNetworkInterfaces ();
+    Hashtable networkInterfaces = getRealNetworkInterfaces ();
 
     Enumeration tmp = networkInterfaces.elements ();
 

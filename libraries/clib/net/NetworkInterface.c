@@ -21,7 +21,6 @@
 #include "config-hacks.h"
 #include <native.h>
 #include "java_net_NetworkInterface.h"
-#include "java_util_Vector.h"
 #include "nets.h"
 #include <arpa/inet.h>
 #include <jsyscall.h>
@@ -120,15 +119,15 @@ getInetAddress(struct ifaddrs *ifa)
   return( retval );
 }
 
-struct Hjava_util_Vector*
+struct Hjava_util_Hashtable*
 java_net_NetworkInterface_getRealNetworkInterfaces(void)
 {
-  struct Hjava_util_Vector* vector;
+  struct Hjava_util_Hashtable* hashtable;
   struct ifaddrs* addrs;
   struct ifaddrs* ifa; 
 
-  vector =
-    (struct Hjava_util_Vector*)execute_java_constructor("java/util/Vector", 0, 0, "()V");
+  hashtable =
+    (struct Hjava_util_Hashtable*)execute_java_constructor("java/util/Hashtable", 0, 0, "()V");
   
   ifa = addrs = detectInterfaces();
   while (ifa != NULL)
@@ -140,15 +139,21 @@ java_net_NetworkInterface_getRealNetworkInterfaces(void)
       addr = getInetAddress(ifa);
 
       if (addr != NULL)
-	do_execute_java_method
-	  (vector, "add", "(Ljava/lang/Object;)Z", 0, 0,
-	   execute_java_constructor("java/net/NetworkInterface", 0, 0,
+	{
+	  if (do_execute_java_method(hashtable, "get", "(Ljava/lang/Object;)Ljava/lang/Object;",
+				     0, 0, iface_name).l == NULL)
+	    {
+	      do_execute_java_method
+		(hashtable, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", 0, 0,
+		 iface_name,
+		 execute_java_constructor("java/net/NetworkInterface", 0, 0,
 		   "(Ljava/lang/String;Ljava/net/InetAddress;)V",
 		    iface_name, addr));
-      
+	    }
+	}
       ifa = ifa->ifa_next;
     }
 
   freeInterfaces(addrs);
-  return vector;
+  return hashtable;
 }

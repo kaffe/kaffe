@@ -155,7 +155,7 @@ public class InetAddress implements Serializable
       {
         // Hmmm, make one up and hope that it works.
         byte[]zeros = { 0, 0, 0, 0 };
-        ANY_IF = new InetAddress (zeros);
+        ANY_IF = new InetAddress (zeros, "");
       }
 
     byte[] loopback_bits = new byte[] { 127, 0, 0, 1};
@@ -262,7 +262,7 @@ public class InetAddress implements Serializable
     if (inaddr_any == null)
       {
         byte[]tmp = lookupInaddrAny ();
-        inaddr_any = new InetAddress (tmp);
+        inaddr_any = new InetAddress (tmp, "");
       }
 
     return (inaddr_any);
