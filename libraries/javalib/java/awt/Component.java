@@ -4505,7 +4505,7 @@ p   * <li>the set of backward traversal keys
    *
    * @return an AWT 1.0 event representing e
    */
-  private Event translateEvent (AWTEvent e)
+  static Event translateEvent (AWTEvent e)
   {
     Component target = (Component) e.getSource ();
     Event translated = null;

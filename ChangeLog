@@ -1,5 +1,85 @@
 2004-09-12  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/MenuComponent.java,
+	libraries/javalib/java/awt/Component.java,
+	libraries/javalib/java/awt/MenuBar.java,
+	libraries/javalib/java/awt/MenuComponent.java:
+	Resynced with GNU Classpath.
+
+	2004-09-11  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        * java/awt/MenuComponent.java
+        (newEventsOnly): added additional serialization
+        comment
+
+	2004-09-11  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        * java/awt/Component.java
+        (translateEvent): made static with package access
+        rather than private
+        * java/awt/MenuBar.java
+        Added documentation
+        (getAccessibleContext()): implemented
+        (AccessibleAWTMenuBar): new class
+        (AccessibleAWTMenuBar()): new constructor
+        (getAccessibleRole()): implemented
+        * java/awt/MenuComponent.java
+        (accessibleContext, newEventsOnly, nameExplicitlySet,
+        focusHandler): new variables
+        (setName(String)): adding setting of nameExplicitlySet
+        (dispatchEventImpl(java.awt.AWTEvent)): converts 1.1 events
+        to 1.0
+        (processEvent): added focus handling for accessible component
+        (getAccessibleContext()): implemented
+        (AccessibleAWTMenuComponent): new class
+        (AccessibleAWTMenuComponent()): new constructor
+        (addAccessibleSelection(int)): stub for subclasses
+        (addFocusListener(java.awt.event.FocusListener)): implemented
+        (clearAccessibleSelection()): stub for subclasses
+        (contains(java.awt.Point)): implemented against getBounds()
+        (getAccessibleAt(java.awt.Point)): stub for subclasses
+        (getAccessibleChild(int)): stub for subclasses
+        (getAccessibleChildrenCount()): stub for subclasses
+        (getAccessibleComponent()): implemented
+        (getAccessibleDescription()): implemented
+        (getAccessibleIndexInParent()): implemented
+        (getAccessibleName()): implemented
+        (getAccessibleParent()): implemented
+        (getAccessibleRole()): implemented
+        (getAccessibleSelection()): implemented
+        (getAccessibleSelection(int)): stub for subclasses
+        (getAccessibleSelectionCount()): stub for subclasses
+        (getAccessibleStateSet()): implemented
+        (getBackground()): implemented
+        (getBounds()): stub for subclasses
+        (getCursor()): implemented
+        (getFont()): implemented
+        (getFontMetrics(java.awt.Font)): implemented
+        (getForeground()): implemented
+        (getLocale()): implemented
+        (getLocation()): implemented against getBounds()
+        (getLocationOnScreen()): stub for subclasses
+        (getSize()): implemented against getBounds()
+        (isAccessibleChildSelected(int)): stub for subclasses
+        (isEnabled()): stub for subclasses
+        (isFocusTraversable()): stub for subclasses
+        (isShowing()): stub for subclasses
+        (isVisible()): stub for subclasses
+        (removeAccessibleSelection(int)): stub for subclasses
+        (removeFocusListener(java.awt.event.FocusListener)): implemented
+        (selectAllAccessibleSelection()): implemented against addAccessibleSelection(int)
+        (setBackground(java.awt.Color)): stub for subclasses
+        (setBounds(java.awt.Rectangle)): stub for subclasses
+        (setCursor(java.awt.Cursor)): stub for subclasses
+        (setEnabled(boolean)): stub for subclasses
+        (setFont(java.awt.Font)): implemented
+        (setForeground(java.awt.Color)): stub for subclasses
+        (setLocation(java.awt.Point)): implemented against setBounds()
+        (setSize(java.awt.Dimension)): implemented against setBounds()
+        (setVisible(boolean)): stub for subclasses
+
+2004-09-12  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGlyphVector.c,
 	libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphics.java,
 	libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphics2D.java,
