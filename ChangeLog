@@ -1,3 +1,90 @@
+2003-05-15 Tim Stack <stack@cs.utah.edu>
+
+	* Makefile.am:
+	Add DNSJAVA_JAR to the BUILD_ENVIRONMENT.
+
+	* configure.in:
+	Add --with-dnsjava option that lets the user specify a dnsjava Jar
+	file from www.xbill.org/dnsjava.
+
+	* FAQ/FAQ.dns:
+	Explanation of DNS stuff in kaffe.
+
+	* include/Arrays.h:
+	Add more unhand_*_array() macros.
+
+	* include/Makefile.am:
+	Add java_net_NativeInetAddressImpl.h and
+	java_net_NetworkInterfaceImpl.h.
+
+	* include/errors.h:
+	Add JAVA_NET() macro.
+	
+	* libraries/clib/net/InetAddressImpl.c: 
+	Rewrite to use getaddrinfo()/getnameinfo() and support the new
+	InetAddressImpl API.
+
+	* libraries/clib/net/Makefile.am:
+	Change NetworkInterface.c to NetworkInterfaceImpl.c.
+
+	* libraries/clib/net/NetworkInterface.c:
+	Renamed to NetworkInterfaceImpl.c.
+	
+	* libraries/clib/net/NetworkInterfaceImpl.c:
+	Name change and add support for IPv6 addresses.
+
+	* libraries/javalib/Makefile.am:
+	Add support for pure java DNS.  Add Inet4Address/Inet6Address from
+	classpath.  Add NetworkInterfaceImpl.java.
+
+	* libraries/javalib/bootstrap.classlist:
+	Add java/net/NativeInetAddressImpl.class and
+	java/net/NetworkInterfaceImpl.class.
+
+	* libraries/javalib/essential.files,
+	libraries/javalib/profiles/alltatonce/all.files,
+	libraries/javalib/profiles/default/core.files:
+	Add java/net/NativeInetAddressImpl.java.
+	
+	* libraries/javalib/rebuildLib.in:
+	Test for zero arguments and exit with zero.  Use the
+	BUILD_ENVIRONMENT for jikes too.
+
+	* libraries/javalib/java/lang/IllegalArgumentException.java:  
+	Add exception chaining.
+
+	* libraries/javalib/java/net/DNSJavaInetAddressImpl.java:
+	InetAddressImpl that uses dnsjava from xbill.org.
+
+	* libraries/javalib/java/net/Inet4Address.java,
+	libraries/javalib/java/net/Inet6Address.java:
+	Merged from GNU classpath and fixed.
+
+	* libraries/javalib/java/net/InetAddress.java:
+	Add support for IPv6 addresses and multiple implementations.
+
+	* libraries/javalib/java/net/InetAddressImpl.java:
+	Changes to support IPv6 and multiple implementations.
+
+	* libraries/javalib/java/net/NativeInetAddressImpl.java:
+	Default native InetAddressImpl.
+
+	* libraries/javalib/java/net/NetworkInterface.java:
+	Move implementation details to NetworkInterfaceImpl.java and
+	detection is now done on every call instead of once at startup.
+
+	* libraries/javalib/java/net/NetworkInterfaceImpl.java:
+	Implementation details for NetworkInterface.java.
+
+	* libraries/javalib/java/net/UnknownHostException.java:
+	Add exception chaining.
+
+	* test/regression/InetAddressTest.java:
+	Simple test for InetAddresses.
+
+	* test/regression/Makefile.am:
+	Add InetAddressTest.java.
+
 2003-05-15 Dalibor Topic <robilad@yahoo.com>
 	
         * libtool.m4:
