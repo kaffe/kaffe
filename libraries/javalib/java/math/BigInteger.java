@@ -93,7 +93,9 @@ public BigInteger(String val, int radix) {
 	if ((radix < Character.MIN_RADIX) || (radix > Character.MAX_RADIX)) {
 	    throw new NumberFormatException("Bad radix: " + radix);
 	}
-	assignString0(val, radix);
+	if (assignString0(val, radix) == -1) {
+	  throw new NumberFormatException("Bad format: val = " + val + ", radix = " + radix);
+	}
 }
 
 public BigInteger(String val) {
@@ -620,7 +622,7 @@ private native void init0();
 private native void finalize0();
 
 private native void assignBytes0(int s, byte[] m);
-private native void assignString0(String v, int i);
+private native int assignString0(String v, int i);
 private native void assignLong0(long v);
 
 private native void add0(BigInteger s1, BigInteger s2);

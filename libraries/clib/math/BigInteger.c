@@ -122,7 +122,17 @@ Java_java_math_BigInteger_assignBytes0(JNIEnv* env, jobject r, jint sign, jbyteA
 	}
 }
 
-void
+/** 
+ * Parse a string with given radix and assign its value to a BigInteger object.
+ * 
+ * @param env JNI environment
+ * @param r this BigInteger object
+ * @param val Java string value to assign
+ * @param radix radix of string value
+ * 
+ * @return 0 if the string can be parsed and assigned. If anything fails, return -1.
+ */
+jint
 Java_java_math_BigInteger_assignString0(JNIEnv* env, jobject r, jstring val, jint radix)
 {
 	mpz_ptr res;
@@ -135,11 +145,8 @@ Java_java_math_BigInteger_assignString0(JNIEnv* env, jobject r, jstring val, jin
 	rc = mpz_set_str(res, (char*)str, (int)radix);
 
 	(*env)->ReleaseStringUTFChars(env, val, str);
-	if (rc == -1) {
-		jclass nfexc = (*env)->FindClass(env, 
-			"java.lang.NumberFormatException");
-		(*env)->ThrowNew(env, nfexc, "Bad format");
-	}
+
+	return rc;
 }
 
 void
