@@ -3,5 +3,4 @@
 #
 Khost_cpu=powerpc
 Khost_os=aix
-CPPFLAGS="-DAIX -Dunix"
-CFLAGS="-g -fsigned-char -mpowerpc"
+CFLAGS="$CFLAGS -fsigned-char -mpowerpc"
