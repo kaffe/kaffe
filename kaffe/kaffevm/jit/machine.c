@@ -206,7 +206,8 @@ translate(Method* meth, errorInfo *einfo)
 	}
 
 DBG(MOREJIT,
-	dprintf("callinfo = 0x%x\n", &cinfo);	
+	dprintf("asked to translate = %s.%s(%s)\n", 
+	    meth->class->name->data, meth->name->data, meth->signature->data);	
     )
 
 	/* If this code block is native, then just set it up and return */
@@ -227,9 +228,21 @@ DBG(MOREJIT,
 		goto done2;
 	}
 
+DBG(MOREJIT,
+	dprintf("successfully verified = %s.%s(%s)\n", 
+	    meth->class->name->data, meth->name->data, meth->signature->data);	
+    )
+
 	/* Only one in the translator at once. */
 	lockStaticMutex(&translatorlock);
 
+DBG(MOREJIT,
+	if (jitting) {
+		dprintf("but still jitting = %s.%s(%s)\n", 
+			jitting->class->name->data, jitting->name->data, 
+			jitting->signature->data);	
+	}
+    )
 	/* start modifying global variables now */
 	assert(jitting == 0 || !!!"reentered jitter");	/* DEBUG */
 	jitting = meth;					/* DEBUG */
