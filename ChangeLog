@@ -1,3 +1,8 @@
+2004-03-30  Peter Naulls <peter@chocky.org>
+
+	* config/config.alias:
+	Fixed detection of XScale.
+
 2004-03-30  Dalibor Topic <robilad@kaffe.org>
 
 	* kaffe/kaffevm/jni.c:
