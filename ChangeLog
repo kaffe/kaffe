@@ -1,9 +1,51 @@
+2001-03-06  Archie Cobbs <archie@dellroad.org>
+	
+	* java/util/zip/DeflateOutputStream.java (write): Throw
+	IndexOutOfBoundsException when parameters are nutty.
+	Fix PR#756.
+
+2001-03-06  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/javalib/java/io/PipedReader.java (read): Don't set
+	length to null.  Close PR#762.
+
+2001-03-04  Edouard G. Parmelan  <egp@free.fr>
+
+	* config/powerpc/callmethod_ppc.h (sysdepCallMethod_ppc): Fix
+	float parameters as stack arguments.
+
+	* config/powerpc/common.h (COMPARE_AND_EXCHANGE): Add assembly version.
+	
+	* config/config-mem.h: Fix test for HAVE_DECLARED_SWAB.
+
+	* config/m68k/common.h (COMPARE_AND_EXCHANGE): Add assembly
+	version, not tested.
+
+	* config/arm/common.h, config/sparc/common.h
+	(ATOMIC_EXCHANGE): Import definitions from TVT.
+
+	* config/mips/jit.h: Add #error if ABI is not o32.
+
+	* config/alpha/common.h, config/mips/common.h
+	(COMPARE_AND_EXCHANGE): Use mb or sync instrunction to be SMP safe.
+
 2001-02-23  Edouard G. Parmelan  <egp@free.fr>
+
+	* config/config-std.h: include time.h.  Close PR#758.
+	Reported by Adam J. Richter <adam@yggdrasil.com>.
+
+	* configure.in: check header file time.h.
+
+	* configure, config/config.h.in: regen.
+
+	* config/sparc/netbsd1/md.h (SP_OFFSET): Define it to 2.
+	Reported by Michael Rauch <mrauch@fs.tum.de> in PR#745.
 
 	* config/sparc/jit.h (FIXUP_TRAMPOLINE_DECL): meth and where are
 	locals variables in soft_fixup_tampoline() and therefor can't be
-	uses as parameters name.  Close PR#753.
-	Submited by Delarue Christophe <cdelarue@bigfoot.com>
+	uses as parameters name.  Close PR#745, PR#751 and PR#753.
+	Reported by Michael Rauch <mrauch@fs.tum.de>.
+	Reported by Delarue Christophe <cdelarue@bigfoot.com>.
 	
 2001-02-11  Edouard G. Parmelan  <egp@free.fr>
 
