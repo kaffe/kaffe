@@ -1,3 +1,9 @@
+2003-08-29  Jim Pick  <jim@kaffe.org>
+
+	* kaffe/kaffe/main.c:
+	Add support for -Xbootclasspath/p: option.  Lazily not implementing
+	-Xbootclasspath: and -Xbootclasspath/a: for now.
+
 2003-08-28  Herve Roussain <Herve.Roussain@univ-ubs.fr>
 
 	* kaffe/scripts/rmic.in:

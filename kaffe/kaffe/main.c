@@ -394,6 +394,31 @@ options(char** argv)
 			/* set the new classpath */
 			vmargs.classpath = newcpath;
 		}
+		else if (strncmp(argv[i], "-Xbootclasspath/p:", (j=18)) == 0) {
+			char	*newbootcpath;
+			int      bootcpathlength;
+
+			bootcpathlength = strlen(&argv[i][j])
+				+ strlen(path_separator)
+				+ ((vmargs.bootClasspath != NULL) ?
+					strlen(vmargs.bootClasspath) : 0)
+				+ 1;
+
+			/* Get longer buffer FIXME:  free the old one */
+			if ((newbootcpath = malloc(bootcpathlength)) == NULL) {
+				fprintf(stderr,  "Error: out of memory.\n");
+				exit(1);
+			}
+
+			/* Construct new boot classpath */
+			strcpy(newbootcpath, &argv[i][j]);
+			strcat(newbootcpath, path_separator);
+			if( vmargs.bootClasspath != 0 )
+			  	strcat(newbootcpath, vmargs.bootClasspath);
+
+			/* set the new boot classpath */
+			vmargs.bootClasspath = newbootcpath;
+		}
 		else if ((strncmp(argv[i], "-ss", (j=3)) == 0) 
 			 || (strncmp(argv[i], "-Xss", (j=4)) == 0)) {
 			if (argv[i][j] == 0) {
