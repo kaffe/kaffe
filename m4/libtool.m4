@@ -6188,7 +6188,7 @@ if test -n "$libltdl_cv_sys_search_path"; then
       sys_search_path="$sys_search_path$PATH_SEPARATOR$dir"
     fi
   done
-  AC_DEFINE_UNQUOTED(LTDL_SYSSEARCHPATH, "$sys_search_path",
+  AC_DEFINE_UNQUOTED(LTDL_SYSSEARCHPATH, ["$sys_search_path"],
     [Define to the system default library search path.])
 fi
 ])# AC_LTDL_SYSSEARCHPATH

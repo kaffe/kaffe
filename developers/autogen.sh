@@ -113,6 +113,7 @@ find . -type f -name 'Makefile.in' | xargs rm -f
 
 # Now regenerate autotools
 libtoolize --automake --ltdl --copy --force
+patch -p0 < developers/patch-libtool-quote-sys_search_path.diff
 patch -p0 < developers/patch-libtool-use-internal-argz_create_sep.diff
 cp libltdl/acinclude.m4 m4/libtool.m4
 
