@@ -10,10 +10,11 @@
 
 package java.util.zip;
 
-import java.io.OutputStream;
 import java.io.IOException;
-import java.util.Vector;
+import java.io.OutputStream;
 import java.util.Enumeration;
+import java.util.Vector;
+import kaffe.util.UTF8;
 
 // Reference: ftp://ftp.uu.net/pub/archiving/zip/doc/appnote-970311-iz.zip
 
@@ -145,23 +146,26 @@ public void closeEntry() throws IOException
 	curr = null;
 }
 
-public void finish() throws IOException
-{
+public void finish() throws IOException {
+	byte[] ch = new byte[CEN_RECSZ];
+	int count = 0;
+	int size = 0;
+
 	if (dir == null) {
 		return;
 	}
 
 	closeEntry();
 
-	// Write the directory.
-	byte[] ch = new byte[CEN_RECSZ];
-	Enumeration e = dir.elements();
-	int count = 0;
-	int size = 0;
-	while (e.hasMoreElements()) {
-
+	// Write the central directory
+	for (Enumeration e = dir.elements(); e.hasMoreElements(); ) {
 		ZipEntry ze = (ZipEntry)e.nextElement();
 
+		// Convert name to UTF-8 binary
+		byte[] nameBuf = (ze.name != null) ?
+		    UTF8.encode(ze.name) : new byte[0];
+
+		// Write central directory entry
 		put32(ch, CEN_SIGNATURE, (int)CEN_HEADSIG);
 		int zipver = (ze.method == STORED ? ZIPVER_1_0 : ZIPVER_2_0);
 		put16(ch, CEN_VERSIONMADE, zipver);
@@ -172,8 +176,7 @@ public void finish() throws IOException
 		put32(ch, CEN_CRC, (int)ze.crc);
 		put32(ch, CEN_COMPRESSEDSIZE, (int)ze.csize);
 		put32(ch, CEN_UNCOMPRESSEDSIZE, (int)ze.size);
-		put16(ch, CEN_FILENAMELEN, ze.name == null ?
-			0 : ze.name.length());
+		put16(ch, CEN_FILENAMELEN, nameBuf.length);
 		put16(ch, CEN_EXTRAFIELDLEN, ze.extra == null ?
 			0 : ze.extra.length);
 		put16(ch, CEN_FILECOMMENTLEN, ze.comment == null ?
@@ -185,10 +188,10 @@ public void finish() throws IOException
 
 		strm.write(ch);
 
-		byte[] buf = new byte[ze.name.length()];
-		ze.name.getBytes(0, ze.name.length(), buf, 0);
-		strm.write(buf);
+		// Write name
+		strm.write(nameBuf);
 
+		// Write any extra stuff
 		int extra_length = 0;
 		if (ze.extra != null) {
 		    strm.write(ze.extra);
