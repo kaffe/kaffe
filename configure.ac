@@ -1351,13 +1351,6 @@ AC_CHECK_MEMBERS([struct sockaddr_in6.sin6_flowinfo, struct sockaddr_in6.sin6_sc
 #endif
 ])
 
-dnl some Solaris systems don't have a tm_zone member in struct tm.
-AC_CHECK_MEMBERS([struct tm.tm_zone],,,[
-#if defined(HAVE_TIME_H)
-#include <time.h>
-#endif
-])
-
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
 AC_CHECK_FUNCS([remainder remainderf fmod fmodf drem])

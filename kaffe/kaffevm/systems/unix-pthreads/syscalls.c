@@ -468,7 +468,7 @@ jthreadedAccept(int fd, struct sockaddr* addr, int* len,
 		int timeout, int* out)
 {
 	/* absolute time at which time out is reached */
-#if defined(SO_RCVTIMEO)
+#if defined(SO_RCVTIMEO) && !defined(__FreeBSD__)
 	int ret;
 	struct timeval old_tv;
 	struct timeval new_tv;
@@ -478,10 +478,13 @@ jthreadedAccept(int fd, struct sockaddr* addr, int* len,
 	/* Guessed according to the former behaviour of jthreadedAccept
 	 * Even if it is wrong
 	 */
-	if (timeout == NOTIMEOUT)
-		new_tv.tv_usec = 0;
-	else
-		new_tv.tv_usec = timeout*1000;
+	if (timeout == NOTIMEOUT) {
+	  new_tv.tv_sec = 0;
+	  new_tv.tv_usec = 0;
+	} else {
+	  new_tv.tv_sec = timeout / 1000;
+	  new_tv.tv_usec = (timeout % 1000) * 1000;
+	}
 	ret = setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &new_tv, sizeof(new_tv));
         if (!ret) {
 		ret = accept (fd, addr, len);

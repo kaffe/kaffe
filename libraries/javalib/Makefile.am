@@ -2907,7 +2907,7 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	if test "$(PROFILE)" = default; then \
-		$(SHELL) $(rebuildLib) @$(srcdir)/all.files; \
+		$(SHELL) $(rebuildLib) @all.files; \
 	else \
 		$(SHELL) $(rebuildLib) @$(PROFILE); \
 	fi
