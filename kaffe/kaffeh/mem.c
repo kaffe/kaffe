@@ -16,6 +16,7 @@
 #include "gtypes.h"
 #include "gc.h"
 #include "debug.h"
+#include "errors.h"
 
 struct _Collector;
 struct _errorInfo;
@@ -28,7 +29,6 @@ static void* gcMalloc(struct _Collector*, size_t, gc_alloc_type_t);
 static void* gcRealloc(struct _Collector*, void*, size_t, gc_alloc_type_t);
 static void  gcFree(struct _Collector*, void*);
 
-extern void postExceptionMessage(struct _errorInfo *e, const char *name, const char *msgfmt, ...) PRINTFFORMAT(3,4);
 /*
  * We use a very simple 'fake' garbage collector interface
  */
@@ -49,6 +49,14 @@ struct GarbageCollectorInterface_Ops GC_Ops = {
 	NULL,
 	NULL,
 	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL
 };
 
 struct _Collector c = { & GC_Ops }, *main_collector = &c;
