@@ -1,3 +1,10 @@
+2004-06-28  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/arm/sysdepCallMethod.h:
+	(sydepCallMethod) Replaced assembler code used
+	for floats and doubles with C code to fix 
+	compile problems on xscale.	
+
 2004-06-27  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/arm/linux/sigcontextinfo.h:

@@ -70,11 +70,11 @@ static inline void sysdepCallMethod(callMethodInfo *call) {
       break;
 
     case 'D':
-      asm volatile ("stfd %1,%0" : "=m" (call->ret->d) : "f" (f0));
+      call->ret->d = (double) f0;
       break;
 
     case 'F':
-      asm volatile ("stfs %1,%0" : "=m" (call->ret->f) : "f" (f0));
+      call->ret->f = (float) f0;
       break;
  
     case 'J':
