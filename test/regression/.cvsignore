@@ -1,2 +1,8 @@
+Makefile
+TestScript
+frozen_serial
+ziptest1.zip
+ziptest2.zip
 .cvsignore
 *.class
+*.out

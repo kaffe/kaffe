@@ -164,6 +164,7 @@ EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow) \
 	LoaderTest_Loader1.java \
 	LoaderTest_Loader2.java
 
-CLEANFILES = *.class *.fail *.out core *.core ExceptionTest
+CLEANFILES = *.class *.fail *.out core *.core ExceptionTest ziptest1.zip \
+	ziptest2.zip frozen_serial
 
 check-TESTS: clean TestScript
