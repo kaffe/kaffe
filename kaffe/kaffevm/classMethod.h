@@ -83,6 +83,12 @@ struct Hjava_lang_Class {
 	short			interface_len;
 	short			total_interface_len;
 	Hjava_lang_ClassLoader*	loader;
+
+	/* A bitmap describing the layout of instances of that class.
+	   It contains CLASS_FSIZE/ALIGNMENTVOIDP bits.
+	   The MSB corresponds to the dtable field.
+	 */
+	int			*gc_layout;
 	char			state;
 };
 
@@ -203,10 +209,10 @@ struct _classFile;
 /* Number of static fields. */
 #define CLASS_NSFIELDS(CLASS) ((CLASS)->nsfields)
 
-/* Size of a class fields (not counting header), in words. */
+/* Size of a class fields (including header), in words. */
 #define CLASS_WFSIZE(CLASS)   ((CLASS)->bfsize / sizeof(jint))
 
-/* Size of a class's fields (not counting header), in bytes. */
+/* Size of a class's fields (including header), in bytes. */
 #define CLASS_FSIZE(CLASS)    ((CLASS)->bfsize)
 
 #define OBJECT_CLASS(OBJ)     ((OBJ)->dtable->class)

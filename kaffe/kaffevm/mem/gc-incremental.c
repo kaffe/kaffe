@@ -8,13 +8,10 @@
  * of this file. 
  */
 
-#define	DBG(s)
-#define	FDBG(s)
-#define	FTDBG(s)
-#define	ADBG(s)
 #define	STATS
 
 #include "config.h"
+#include "debug.h"
 #include "config-std.h"
 #include "config-mem.h"
 #include "gtypes.h"
@@ -167,6 +164,7 @@ extern Hjava_lang_Class* ThreadClass;
 
 static void startGC(void);
 static void finishGC(void);
+static void markObjectDontCheck(gc_unit *unit, gc_block *info, int idx);
 
 /*
  * Initalise the Garbage Collection system.
@@ -225,6 +223,12 @@ markObject(void* mem)
 	/* It is a real object ... */
 
 	found:;
+	markObjectDontCheck(unit, info, idx);
+}
+
+static void
+markObjectDontCheck(gc_unit *unit, gc_block *info, int idx)
+{
 	/* If object's been traced before, don't do it again */
 	if (GC_GET_COLOUR(info, idx) != GC_COLOUR_WHITE) {
 		return;
@@ -245,8 +249,9 @@ walkConservative(void* base, uint32 size)
 {
 	int8* mem;
 
-DBG(	printf("walkConservative: %x-%x\n", base, base+size);
-	fflush(stdout);							)
+DBG(GCWALK,	
+	dprintf("walkConservative: %x-%x\n", base, base+size);
+    )
 
 	gcStats.markedobj += 1;
 
@@ -269,14 +274,72 @@ void
 walkObject(void* base, uint32 size)
 {
 	Hjava_lang_Object *obj = (Hjava_lang_Object*)base;
-	walkConservative(base, size);
+	Hjava_lang_Class *clazz;
+	int *layout;
+	int8* mem;
+	int i, l, nbits;
 
-	/* Special magic to handle thread objects */
 	/* 
 	 * Note that there is a window after the object is allocated but
-	 * before dtable is set.
+	 * before dtable is set.  In this case, we don't have to walk anything.
 	 */
-	if ((obj->dtable != 0) && soft_instanceof(ThreadClass, obj)) {
+	if (obj->dtable == 0)
+		return;
+
+	/* retrieve the layout of this object from its class */
+	clazz = obj->dtable->class;
+	layout = clazz->gc_layout;
+	nbits = CLASS_FSIZE(clazz)/ALIGNMENTOF_VOIDP;
+
+DBG(GCWALK,
+	dprintf("walkObject `%s' ", CLASS_CNAME(clazz));
+	BITMAP_DUMP(layout, nbits)
+	dprintf(" (nbits=%d) %x-%x\n", nbits, base, base+size);
+    )
+
+	assert(CLASS_FSIZE(clazz) > 0);
+	assert(size > 0);
+
+	gcStats.markedobj += 1;
+	gcStats.markedmem += size;
+
+	mem = (int8 *)base;
+
+	/* optimize this! */
+	while (nbits > 0) {
+		/* get next integer from bitmap */
+		l = *layout++;
+		i = 0;
+		while (i < BITMAP_BPI) {
+			/* skip the rest if no refs left */
+			if (l == 0) {	
+				mem += (BITMAP_BPI - i) * ALIGNMENTOF_VOIDP;
+				break;
+			}
+
+			if (l < 0) {
+				void *p = *(void **)mem;
+				/* we know this pointer points to gc'ed memory
+				 * there is no need to check - go ahead and 
+				 * mark it.  Note that p may or may not point
+				 * to a "real" Java object.
+				 */
+				if (p) {
+					gc_unit *unit = UTOUNIT(p);
+					gc_block *info = GCMEM2BLOCK(unit);
+					int idx = GCMEM2IDX(info, unit);
+					markObjectDontCheck(unit, info, idx);
+				}
+			}
+			i++;
+			l <<= 1;
+			mem += ALIGNMENTOF_VOIDP;
+		}
+		nbits -= BITMAP_BPI;
+	}
+
+	/* Special magic to handle thread objects */
+	if (soft_instanceof(ThreadClass, obj)) {
 		(*Kaffe_ThreadInterface.GcWalkThread)((Hjava_lang_Thread*)base);
 	}
 }
@@ -555,8 +618,6 @@ finishGC(void)
 		unit = gclists[mustfree].cnext;
 		info = GCMEM2BLOCK(unit);
 		UREMOVELIST(unit);
-FDBG(		printf("freeObject %p size %d\n", info, info->size);
-		fflush(stdout);					)
 		gcStats.freedmem += GCBLOCKSIZE(info);
 		gcStats.freedobj += 1;
 		OBJECTSTATSREMOVE(unit);
@@ -564,7 +625,7 @@ FDBG(		printf("freeObject %p size %d\n", info, info->size);
 	}
 
 
-FTDBG(	printf("Freed %d objects of %dK\n", gcStats.freedobj,
+DBG(GCSTAT,	dprintf("Freed %d objects of %dK\n", gcStats.freedobj,
 		gcStats.freedmem/1024);					)
 
 	/* If there's stuff to be finalised then we'd better do it */
@@ -694,7 +755,6 @@ gcMalloc(size_t size, int fidx)
 	if (unit == 0) {
 		throwOutOfMemory();
 	}
-ADBG(	printf("gcMalloc: 0x%x (%d)\n", unit, size);			)
 
 	info = GCMEM2BLOCK(unit);
 	i = GCMEM2IDX(info, unit);

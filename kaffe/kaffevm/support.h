@@ -123,4 +123,28 @@ extern struct Hjava_lang_String* Utf8Const2JavaString(struct _strconst*);
 extern void kprintf(FILE*, const char*, ...);
 extern int addClasspath(char*);
 
+/*
+ * Macros to manipulate bit arrays.  
+ */
+#define BITMAP_BPI	(sizeof(int) * 8)
+
+/* create a new bitmap for b bits */
+#define BITMAP_NEW(b)	\
+    (int *)gc_calloc_fixed(((b) + BITMAP_BPI - 1)/BITMAP_BPI, sizeof(int))
+
+/* set nth bit, counting from MSB to the right */
+#define BITMAP_SET(m, n) \
+    (m[(n) / BITMAP_BPI] |= (1 << (BITMAP_BPI - 1 - (n) % BITMAP_BPI)))
+
+/* copy nbits from bitmap src to bitmap dst */
+#define BITMAP_COPY(dst, src, nbits) \
+    memcpy(dst, src, ((nbits + BITMAP_BPI - 1)/BITMAP_BPI) * sizeof(int))
+
+/* dump a bitmap for debugging */
+#define BITMAP_DUMP(m, N) { int n; \
+    for (n = 0; n < N; n++) \
+	if (m[(n) / BITMAP_BPI] &  \
+		(1 << (BITMAP_BPI - 1 - (n) % BITMAP_BPI))) \
+	    dprintf("1"); else dprintf("0"); }
+
 #endif

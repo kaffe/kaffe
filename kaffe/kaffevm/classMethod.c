@@ -9,13 +9,8 @@
  * of this file. 
  */
 
-#define SDBG(s)
-#define	CDBG(s)
-#define	MDBG(s)
-#define	FDBG(s)
-#define	LDBG(s)
-
 #include "config.h"
+#include "debug.h"
 #include "config-std.h"
 #include "config-mem.h"
 #include "gtypes.h"
@@ -136,7 +131,11 @@ processClass(Hjava_lang_Class* class, int tostate)
 		if (class->superclass) {
 			class->superclass = getClass((uintp)class->superclass, class);
 			processClass(class->superclass, CSTATE_LINKED);
+			/* copy field size and gc layout from superclass.
+			 * Later, this class's fields are resolved and added.
+			 */
 			CLASS_FSIZE(class) = CLASS_FSIZE(class->superclass);
+			class->gc_layout = class->superclass->gc_layout;
 		}
 
 		/* Load all the implemented interfaces. */
@@ -239,7 +238,7 @@ processClass(Hjava_lang_Class* class, int tostate)
 
 		SET_CLASS_STATE(CSTATE_DOING_INIT);
 
-SDBG(		dprintf("Initialising %s static %d\n", class->name->data,
+DBG(STATICINIT, dprintf("Initialising %s static %d\n", class->name->data,
 			CLASS_FSIZE(class)); 	)
 		meth = findMethodLocal(class, init_name, void_signature);
 		if (meth != NULL) {
@@ -266,7 +265,7 @@ setupClass(Hjava_lang_Class* cl, constIndex c, constIndex s, u2 flags, Hjava_lan
 
 	/* Find the name of the class */
 	if (pool->tags[c] != CONSTANT_Class) {
-CDBG(		printf("setupClass: not a class.\n");			)
+DBG(RESERROR,	dprintf("setupClass: not a class.\n");			)
 		return (0);
 	}
 
@@ -345,12 +344,12 @@ addMethod(Hjava_lang_Class* c, method_info* m)
 
 	nc = m->name_index;
 	if (pool->tags[nc] != CONSTANT_Utf8) {
-MDBG(		printf("addMethod: no method name.\n");			)
+DBG(RESERROR,	dprintf("addMethod: no method name.\n");		)
 		return (0);
 	}
 	sc = m->signature_index;
 	if (pool->tags[sc] != CONSTANT_Utf8) {
-MDBG(		printf("addMethod: no signature name.\n");		)
+DBG(RESERROR,	dprintf("addMethod: no signature name.\n");	)
 		return (0);
 	}
 	name = WORD2UTF (pool->data[nc]);
@@ -364,7 +363,9 @@ MDBG(		printf("addMethod: no signature name.\n");		)
 	}
 #endif
 
-MDBG(	printf("Adding method %s:%s%s (%x)\n", c->name->data, WORD2UTF(pool->data[nc])->data, WORD2UTF(pool->data[sc])->data, m->access_flags);	)
+DBG(CLASSFILE,
+	dprintf("Adding method %s:%s%s (%x)\n", c->name->data, WORD2UTF(pool->data[nc])->data, WORD2UTF(pool->data[sc])->data, m->access_flags);	
+    )
 
 	mt = &c->methods[c->nmethods++];
 	mt->name = name;
@@ -399,7 +400,7 @@ addField(Hjava_lang_Class* c, field_info* f)
 
 	nc = f->name_index;
 	if (pool->tags[nc] != CONSTANT_Utf8) {
-FDBG(		printf("addField: no field name.\n");			)
+DBG(RESERROR,	dprintf("addField: no field name.\n");			)
 		return (0);
 	}
 
@@ -412,11 +413,14 @@ FDBG(		printf("addField: no field name.\n");			)
 	}
 	ft = &CLASS_FIELDS(c)[index];
 
-FDBG(	printf("Adding field %s:%s\n", c->name, pool->data[nc].v.tstr);	)
+DBG(CLASSFILE,	
+	dprintf("Adding field %s:%s\n", 
+		c->name->data, WORD2UTF(pool->data[nc])->data);
+    )
 
 	sc = f->signature_index;
 	if (pool->tags[sc] != CONSTANT_Utf8) {
-FDBG(		printf("addField: no signature name.\n");		)
+DBG(RESERROR,	dprintf("addField: no signature name.\n");		)
 		return (0);
 	}
 	ft->name = WORD2UTF(pool->data[nc]);
@@ -509,14 +513,18 @@ loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 	if (loader != NULL) {
 		Hjava_lang_String* str;
 
-LDBG(		printf("classLoader: loading %s\n", name->data); )
+DBG(VMCLASSLOADER,		
+		dprintf("classLoader: loading %s\n", name->data); 
+    )
 		str = makeReplaceJavaStringFromUtf8(name->data, name->length, '/', '.');
 		clazz = (Hjava_lang_Class*)do_execute_java_method((Hjava_lang_Object*)loader, "loadClass", "(Ljava/lang/String;Z)Ljava/lang/Class;", 0, false, str, true).l;
 		if (clazz == NULL) {
 			throwException(ClassNotFoundException(name->data));
 		}
 		clazz->centry = centry;
-LDBG(		printf("classLoader: done\n");			)
+DBG(VMCLASSLOADER,		
+		dprintf("classLoader: done\n");			
+    )
 	} 
 
 	/* Lock centry before setting centry->class */
@@ -628,19 +636,23 @@ resolveObjectFields(Hjava_lang_Class* class)
 	int fsize;
 	int align;
 	Field* fld;
-	int n;
+	int nbits, n;
 	int offset;
+	int maxalign;
+	int oldoffset;
+	int *map;
 
 	/* Find start of new fields in this object.  If start is zero, we must
 	 * allow for the object headers.
 	 */
 	offset = CLASS_FSIZE(class);
+	oldoffset = offset;	/* remember initial offset */
 	if (offset == 0) {
 		offset = sizeof(Hjava_lang_Object);
 	}
 
 	/* Find the largest alignment in this class */
-	align = 1;
+	maxalign = 1;
 	fld = CLASS_IFIELDS(class);
 	n = CLASS_NIFIELDS(class);
 	for (; --n >= 0; fld++) {
@@ -650,13 +662,13 @@ resolveObjectFields(Hjava_lang_Class* class)
 		/* If field is bigger than biggest alignment, change
 		 * biggest alignment
 		 */
-		if (fsize > align) {
-			align = fsize;
+		if (fsize > maxalign) {
+			maxalign = fsize;
 		}
 	}
 
 	/* Align start of this class's data */
-	offset = ((offset + align - 1) / align) * align;
+	offset = ((offset + maxalign - 1) / maxalign) * maxalign;
 
 	/* Now work out where to put each field */
 	fld = CLASS_IFIELDS(class);
@@ -671,6 +683,70 @@ resolveObjectFields(Hjava_lang_Class* class)
 	}
 
 	CLASS_FSIZE(class) = offset;
+
+	/* recall old offset */
+	offset = oldoffset;
+
+	/* Now that we know how big that object is going to be, create
+	 * a bitmap to help the gc scan the object.  The first part is
+	 * inherited from the superclass.
+	 */
+	map = BITMAP_NEW(CLASS_FSIZE(class)/ALIGNMENTOF_VOIDP);
+	if (offset > 0) {
+		nbits = offset/ALIGNMENTOF_VOIDP;
+		BITMAP_COPY(map, class->gc_layout, nbits);
+	} else {
+		/* For now, assume we don't have to scan the header of 
+		 * the object: This will be different once class gc 
+		 * is implemented!
+		 */
+		offset = sizeof(Hjava_lang_Object);
+		nbits = offset/ALIGNMENTOF_VOIDP;
+	}
+	class->gc_layout = map;
+
+	/* Find and align start of object */
+	offset = ((offset + maxalign - 1) / maxalign) * maxalign;
+	nbits = offset/ALIGNMENTOF_VOIDP;
+
+DBG(GCPRECISE, 
+	dprintf("GCLayout for %s:\n", class->name->data);	
+    )
+
+	/* Now work out the gc layout */
+	fld = CLASS_IFIELDS(class);
+	n = CLASS_NIFIELDS(class);
+	for (; --n >= 0; fld++) {
+		fsize = FIELD_SIZE(fld);
+		/* Align field */
+		align = ALIGNMENT_OF_SIZE(fsize);
+		offset += (align - (offset % align)) % align;
+		nbits = offset/ALIGNMENTOF_VOIDP;
+
+		/* paranoia */
+		assert(FIELD_OFFSET(fld) == offset);
+
+		/* Set bit if this field is a reference type, except if 
+		 * it's a kaffe.util.Ptr (PTRCLASS).  */
+		if (!FIELD_RESOLVED(fld)) {
+			Utf8Const *sig = (Utf8Const*)FIELD_TYPE(fld);
+			if ((sig->data[0] == 'L' || sig->data[0] == '[') &&
+			    strcmp(sig->data, PTRCLASSSIG)) {
+				BITMAP_SET(map, nbits);
+			}
+		} else {
+			if (FIELD_ISREF(fld) && 
+			    strcmp(FIELD_TYPE(fld)->name->data, PTRCLASS)) {
+				BITMAP_SET(map, nbits);
+			}
+		}
+DBG(GCPRECISE,
+		dprintf(" offset=%3d nbits=%2d ", offset, nbits);
+		BITMAP_DUMP(map, nbits+1)
+		dprintf(" fsize=%3d (%s)\n", fsize, fld->name->data);
+    )
+		offset += fsize;
+	}
 }
 
 /*
@@ -1037,7 +1113,10 @@ lookupClassField(Hjava_lang_Class* clp, Utf8Const* name, bool isStatic)
 		}
 		fptr++;
 	}
-FDBG(	printf("Class:field lookup failed %s:%s\n", c, f);		)
+DBG(RESERROR,
+	dprintf("Class:field lookup failed %s:%s\n", 
+		clp->name->data, name->data);
+    )
 	return (0);
 }
 

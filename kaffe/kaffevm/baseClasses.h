@@ -31,6 +31,9 @@
 
 #define	OBJECTCLASSSIG	"Ljava/lang/Object;"
 
+#define	PTRCLASS	"kaffe/util/Ptr"
+#define	PTRCLASSSIG	"Lkaffe/util/Ptr;"
+
 void initBaseClasses(void);
 void initialiseKaffe(void);
 
