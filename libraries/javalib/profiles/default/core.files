@@ -13,8 +13,14 @@ gnu/java/security/der/DERValue.java
 gnu/java/security/der/DERWriter.java
 gnu/java/security/Engine.java
 gnu/java/security/OID.java
+gnu/java/security/PolicyFile.java
 gnu/java/security/provider/DefaultPolicy.java
 gnu/java/security/x509/X500DistinguishedName.java
+gnu/java/text/BaseBreakIterator.java
+gnu/java/text/LineBreakIterator.java
+gnu/java/text/WordBreakIterator.java
+gnu/java/text/CharacterBreakIterator.java
+gnu/java/text/SentenceBreakIterator.java
 java/io/CharArrayReader.java
 java/io/CharArrayWriter.java
 java/io/CharConversionException.java
@@ -249,6 +255,7 @@ java/util/zip/DeflaterOutputStream.java
 java/util/zip/GZIPInputStream.java
 java/util/zip/GZIPOutputStream.java
 java/util/zip/ZipOutputStream.java
+javax/security/auth/x500/X500Principal.java
 kaffe/io/AccessibleBAOStream.java
 kaffe/io/ByteToChar8859_1.java
 kaffe/io/ByteToCharSHIFT_JIS.java
@@ -291,9 +298,4 @@ kaffe/util/SupportDisabled.java
 kaffe/util/TimerClient.java
 kaffe/util/Timer.java
 kaffe/util/VectorSnapshot.java
-gnu/java/text/BaseBreakIterator.java
-gnu/java/text/LineBreakIterator.java
-gnu/java/text/WordBreakIterator.java
-gnu/java/text/CharacterBreakIterator.java
-gnu/java/text/SentenceBreakIterator.java
 

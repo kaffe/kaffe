@@ -140,6 +140,7 @@ Klasses_jar_SRCS = \
 	$(javax_net_ssl_SRCS) \
 	$(javax_rmi_SRCS) \
 	$(javax_rmi_CORBA_SRCS) \
+	$(javax_security_auth_x500_SRCS) \
 	$(javax_security_cert_SRCS) \
 	$(javax_sound_midi_SRCS) \
 	$(javax_sound_midi_spi_SRCS) \
@@ -486,7 +487,8 @@ gnu_java_rmi_server_SRCS = \
 	gnu/java/rmi/server/UnicastServerRef.java
 gnu_java_security_SRCS = \
 	gnu/java/security/Engine.java \
-	gnu/java/security/OID.java
+	gnu/java/security/OID.java \
+	gnu/java/security/PolicyFile.java
 gnu_java_security_der_SRCS = \
 	gnu/java/security/der/BitString.java \
 	gnu/java/security/der/DEREncodingException.java \
@@ -1882,6 +1884,8 @@ javax_rmi_CORBA_SRCS = \
 	javax/rmi/CORBA/UtilDelegate.java \
 	javax/rmi/CORBA/Util.java \
 	javax/rmi/CORBA/ValueHandler.java
+javax_security_auth_x500_SRCS = \
+	javax/security/auth/x500/X500Principal.java
 javax_security_cert_SRCS = \
 	javax/security/cert/CertificateEncodingException.java \
 	javax/security/cert/CertificateException.java \

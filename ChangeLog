@@ -1,5 +1,29 @@
 2004-01-23  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/security/PermissionCollection.java,
+	libraries/javalib/java/security/Permissions.java,
+	libraries/javalib/java/security/ProtectionDomain.java,
+	libraries/javalib/java/security/cert/X509Certificate.java:
+	Replaced by implementations from GNU Classpath.
+
+	* libraries/javalib/profiles/default/core.files,
+	libraries/javalib/profiles/allatonce/all.files:
+	Updated.
+
+	* libraries/javalib/javax/security/auth/x500/X500Principal.java:
+	New file from GNU Classpath.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+
+2004-01-23  Casey Marshall <rsdio@metastatic.org>
+
+	* libraries/javalib/gnu/java/security/PolicyFile.java:
+	New file.
+
+2004-01-23  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/jit3/labels.c:
 	(linkLabels) Removed unused code. Fixed gcc 3.3.2 
 	warning.
