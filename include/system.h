@@ -26,7 +26,7 @@
 #define	kaffe_specification_version	"1.2"
 #define	kaffe_specification_vendor	"Sun Microsystems Inc."
 #define	kaffe_specification_name	"Java Platform API Specification"
-#define	kaffe_class_version		"46"
+#define	kaffe_class_version		"46.0"
 
 #if defined(unix) || defined(__BEOS__)
 #define	file_separator		"/"
