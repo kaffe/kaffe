@@ -49,23 +49,13 @@ public void printStackTrace()
 
 public void printStackTrace(PrintStream s)
 	{
-	if (message != null) {
-		s.println(this.getClass().getName() + ": " + message);
-	}
-	else {
-		s.println(this.getClass().getName());
-	}
+	s.println(this.toString());
 	printStackTrace0(s);
 }
 
 public void printStackTrace(PrintWriter s)
 	{
-	if (message != null) {
-		s.println(this.getClass().getName() + ": " + message);
-	}
-	else {
-		s.println(this.getClass().getName());
-	}
+	s.println(this.toString());
 	printStackTrace0(s);
 }
 
@@ -73,6 +63,11 @@ native private void printStackTrace0(Object s);
 
 public String toString()
 	{
-	return (this.getClass().getName() + ": " + message);
+	if (message != null) {
+		return (this.getClass().getName() + ": " + message);
+	}
+	else {
+		return (this.getClass().getName());
+	}
 }
 }
