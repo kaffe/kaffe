@@ -1,3 +1,8 @@
+1999-05-25  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/javalib/Makefile.am (CLEAN): Wipe out LIBDIR.
+	* libraries/javalib/Makefile.in: Rebuilt.
+
 Sun May 23 12:52:28 1999  Ted Stockwell <tws@rims.com>
 
 	* libraries/javalib/java/io/FileDescriptor.java: initialize fd to

@@ -933,7 +933,7 @@ mostlyclean-am:  mostlyclean-generic
 
 mostlyclean: mostlyclean-am
 
-clean-am:  clean-generic mostlyclean-am
+clean-am:  clean-generic mostlyclean-am clean-local
 
 clean: clean-am
 
@@ -956,8 +956,8 @@ installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
-clean-hook:
-	rm -rf $(LIBDIR)
+clean-local:
+	-rm -rf $(LIBDIR)
 
 .PHONY: new-classes
 new-classes: $(top_srcdir)/developers/update-class-list

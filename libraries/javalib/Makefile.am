@@ -649,8 +649,8 @@ EXTRA_DIST = $(class_DATA) $(Klasses_jar_SRCS) \
 
 LIBDIR = lib
 
-clean-hook:
-	rm -rf $(LIBDIR)
+clean-local:
+	-rm -rf $(LIBDIR)
 
 .PHONY: new-classes
 new-classes: $(top_srcdir)/developers/update-class-list
