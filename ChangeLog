@@ -1,5 +1,16 @@
 2004-12-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/util/Currency.java:
+	Resynced with GNU Classpath.
+
+	2004-12-19  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        * java/util/Currency.java
+        New implementation of this class so as to
+        use iso4271.properties.
+
+2004-12-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/JComboBox.java,
 	libraries/javalib/javax/swing/DefaultComboBoxModel.java,
 	libraries/javalib/javax/swing/plaf/basic/BasicComboBoxUI.java:
