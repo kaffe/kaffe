@@ -20,11 +20,17 @@ import kaffe.io.CharToByteConverter;
 
 final public class String implements Serializable, Comparable {
 
+	/**
+	 * Maximum slop (extra unused chars in the char[]) that
+	 * will be accepted in a StringBuffer -> String conversion.
+	 */
+	private static final int STRINGBUFFER_SLOP = 32;
+
 	// Note: value, offset, and count are not private, because
 	// StringBuffer uses them for faster access
-	char[] value;
-	int offset;
-	int count;
+	char[] value;		// really "final"
+	int offset;		// really "final"
+	int count;		// really "final"
 	int hash;
 	boolean interned;
 
@@ -51,12 +57,18 @@ public String(String other) {
 }
 
 public String (StringBuffer sb) {
-
-	// mark this StringBuffer so that it knows we are using it
-	sb.isStringized = true; 
-
-	count = sb.used;
-	value = sb.buffer;
+	synchronized (sb) {
+		if (sb.buffer.length > sb.used + STRINGBUFFER_SLOP) {
+			value = new char[sb.used];
+			count = sb.used;
+			System.arraycopy(sb.buffer, 0, value, 0, count);
+		}
+		else {
+			value = sb.buffer;
+			count = sb.used;
+			sb.isStringized = true;
+		}
+	}
 }
 
 public String( byte[] bytes) {
