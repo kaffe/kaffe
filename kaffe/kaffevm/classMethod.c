@@ -14,6 +14,7 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include "config-hacks.h"
+#include "defs.h"
 #include "gtypes.h"
 #include "slots.h"
 #include "access.h"

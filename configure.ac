@@ -867,20 +867,6 @@ AC_CHECK_SIZEOF(void *,0)
 AC_TYPE_OFF_T
 AC_TYPE_PID_T
 
-dnl =========================================================================
-dnl Checks for alignments
-dnl -------------------------------------------------------------------------
-
-AC_CACHE_CHECK(alignment of void*, ac_cv_alignmentof_voidp,
-AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>
-main() { struct { char c; void *p; } t; FILE *f;
-  if ((char*) &t.c != (char*) &t)  exit (1);
-  f=fopen ("conftestdata", "w");
-  if (! f)                         exit (1);
-  fprintf (f, "%d", ((char*) &t.p)-((char*) &t));
-  fclose(f); exit (0); }]])],[ac_cv_alignmentof_voidp=`cat conftestdata`],[AC_MSG_ERROR(Unexpected result)],[ac_cv_alignmentof_voidp=$ac_cv_sizeof_void_p]))
-AC_DEFINE_UNQUOTED(ALIGNMENTOF_VOIDP,$ac_cv_alignmentof_voidp, [How are pointers aligned])
-
 dnl -------------------------------------------------------------------------
 
 AC_TYPE_SIGNAL

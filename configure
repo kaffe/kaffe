@@ -31998,62 +31998,6 @@ fi
 
 
 
-echo "$as_me:$LINENO: checking alignment of void*" >&5
-echo $ECHO_N "checking alignment of void*... $ECHO_C" >&6
-if test "${ac_cv_alignmentof_voidp+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test "$cross_compiling" = yes; then
-  ac_cv_alignmentof_voidp=$ac_cv_sizeof_void_p
-else
-  cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <stdio.h>
-main() { struct { char c; void *p; } t; FILE *f;
-  if ((char*) &t.c != (char*) &t)  exit (1);
-  f=fopen ("conftestdata", "w");
-  if (! f)                         exit (1);
-  fprintf (f, "%d", ((char*) &t.p)-((char*) &t));
-  fclose(f); exit (0); }
-_ACEOF
-rm -f conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && { ac_try='./conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_alignmentof_voidp=`cat conftestdata`
-else
-  echo "$as_me: program exited with status $ac_status" >&5
-echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-( exit $ac_status )
-{ { echo "$as_me:$LINENO: error: Unexpected result" >&5
-echo "$as_me: error: Unexpected result" >&2;}
-   { (exit 1); exit 1; }; }
-fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
-fi
-fi
-echo "$as_me:$LINENO: result: $ac_cv_alignmentof_voidp" >&5
-echo "${ECHO_T}$ac_cv_alignmentof_voidp" >&6
-
-cat >>confdefs.h <<_ACEOF
-#define ALIGNMENTOF_VOIDP $ac_cv_alignmentof_voidp
-_ACEOF
-
-
-
 echo "$as_me:$LINENO: checking return type of signal handlers" >&5
 echo $ECHO_N "checking return type of signal handlers... $ECHO_C" >&6
 if test "${ac_cv_type_signal+set}" = set; then

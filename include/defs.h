@@ -65,4 +65,10 @@
 #define NULL (void *)0
 #endif
 
+/* define alignment of 'void *' */
+#ifndef ALIGNMENTOF_VOIDP
+typedef struct { char c; void *p; } alignmentof_voidp_helper;
+#define ALIGNMENTOF_VOIDP (offsetof(alignmentof_voidp_helper, p))
+#endif
+
 #endif /* __defs_h */

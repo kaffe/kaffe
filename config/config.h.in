@@ -1,8 +1,5 @@
 /* config/config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* How are pointers aligned */
-#undef ALIGNMENTOF_VOIDP
-
 /* Define the version we're compiling for */
 #undef ARCHOS
 

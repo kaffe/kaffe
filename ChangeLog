@@ -1,3 +1,14 @@
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Removed ALIGNMENTOF_VOIDP check.
+
+	* include/defs.h (ALIGNMENTOF_VOIDP): Define portably.
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c,
+	kaffe/kaffevm/classMethod.c,
+	kaffe/kaffevm/gcFuncs.c: 
+	Include defs.h.
+
 2005-03-13  Jim Huang  <jserv@kaffe.org>
 
 	* kaffe/kaffevm/locks.c:
