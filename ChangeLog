@@ -1,3 +1,13 @@
+2004-09-28  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/net/URL.java:
+	Resynced with GNU Classpath.
+	
+	2004-09-24  David Daney  <ddaney@avtrex.com>
+
+	* java/net/URL.java (URL): Copy userInfo from context.
+	(getUserInfo): Return cached userInfo if present.
+	
 2004-09-26  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkFramePeer.c,

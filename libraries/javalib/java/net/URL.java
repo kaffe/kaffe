@@ -407,6 +407,7 @@ public final class URL implements Serializable
 	    host = context.host;
 	    port = context.port;
 	    file = context.file;
+            userInfo = context.userInfo;
 	    if (file == null || file.length() == 0)
 	      file = "/";
 	    authority = context.authority;
@@ -421,6 +422,7 @@ public final class URL implements Serializable
 	host = context.host;
 	port = context.port;
 	file = context.file;
+        userInfo = context.userInfo;
 	if (file == null || file.length() == 0)
 	  file = "/";
 	authority = context.authority;
@@ -622,6 +624,8 @@ public final class URL implements Serializable
    */
   public String getUserInfo()
   {
+    if (userInfo != null)
+      return userInfo;
     int at = (host == null) ? -1 : host.indexOf('@');
     return at < 0 ? null : host.substring(0, at);
   }
