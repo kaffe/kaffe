@@ -39,7 +39,7 @@ final public static ResourceBundle getBundle(String baseName, Locale locale) thr
 		bundle = (ResourceBundle) val;
 	}
 	else {
-	  bundle = getBundleWithLocale(baseName, locale);
+		bundle = getBundleWithLocale(baseName, locale);
 	
 		/* It would appear that if we fail to load a resource bundle for
 		 * a given locale, we just load the default one instead.
@@ -148,9 +148,11 @@ final public Object getObject(String key) throws MissingResourceException {
 }
 
 final private static ResourceBundle getSpecificBundle(String baseName) throws MissingResourceException {
-	baseName = baseName.replace('.', '/');
+	// baseName = baseName.replace('.', '/');
+	ClassLoader loader = DummyClassLoader.getCurrentClassLoader();
 	try {
-		Class cls = Class.forName(baseName);
+		// Class cls = Class.forName(baseName);
+		Class cls = loader.loadClass(baseName);
 		/* 
 		 * Only call newInstance if the cast to resource bundle 
 		 * will indeed succeed.
@@ -164,7 +166,7 @@ final private static ResourceBundle getSpecificBundle(String baseName) throws Mi
 
 	// Okay, failed to load bundle - so attempt to load properties as bundle.
 	InputStream strm;
-	strm = DummyClassLoader.getCurrentClassLoader().getResourceAsStream(baseName + ".properties");
+	strm = loader.getResourceAsStream(baseName.replace('.', '/') + ".properties");
 	if (strm != null) {
 		try {
 			return (new PropertyResourceBundle(strm));

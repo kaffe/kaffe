@@ -24,8 +24,8 @@ public class HashMap extends AbstractMap
 		implements Map, Cloneable, Serializable {
 	private static final int DEFAULT_CAPACITY = 11;
 	private static final float DEFAULT_LOADFACTOR = 0.75f;
-	private float loadFactor;
-	private Entry[] table;
+	float loadFactor;
+	Entry[] table;
 	private int modCount;
 	private int size;
 

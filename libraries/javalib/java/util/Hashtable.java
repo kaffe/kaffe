@@ -16,6 +16,9 @@
 package java.util;
 
 import java.io.Serializable;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class Hashtable extends Dictionary
 		implements Map, Cloneable, Serializable {
@@ -23,6 +26,9 @@ public class Hashtable extends Dictionary
 	private static final int DEFAULT_CAPACITY = 11;
 	private static final float DEFAULT_LOADFACTOR = 0.75f;
 	private HashMap map;
+
+	/* We need to keep these values for serialization */
+	private float loadFactor;
 
 	public Hashtable() {
 		this(DEFAULT_CAPACITY, DEFAULT_LOADFACTOR);
@@ -34,6 +40,7 @@ public class Hashtable extends Dictionary
 
 	public Hashtable(int initialCapacity, float loadFactor) {
 		map = new HashMap(initialCapacity, loadFactor);
+		this.loadFactor = loadFactor;
 	}
 
 	public Hashtable(Map t) {
@@ -146,5 +153,61 @@ public class Hashtable extends Dictionary
 	public synchronized int hashCode() {
 		return map.hashCode();
 	}
-}
 
+	/* Serialization ---------------------------------------- */
+
+	class DefaultSerialization {
+
+	private float loadFactor;
+	private int threshold;
+
+	private void readDefaultObject() {
+		map = new HashMap((int)(threshold / loadFactor), loadFactor);
+	}
+
+	private void writeDefaultObject() {
+		loadFactor = map.loadFactor;
+		threshold = (int)(map.table.length * loadFactor);
+	}
+
+	}
+
+	/**
+	* read this hashtable from a stream
+	*/
+	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+		// read all default fields
+		stream.defaultReadObject();
+
+		// create buckets
+		stream.readInt();	// Capacity - ignore.
+		int size = stream.readInt();
+
+		// Read entries
+		for (int i = 0; i < size; i++) {
+			Object k = stream.readObject();
+			Object o = stream.readObject();
+			map.put(k, o);
+		}
+	}
+
+	/**
+	* write this hashtable into a stream
+	*/
+	private void writeObject(java.io.ObjectOutputStream stream) throws IOException {
+		// write all default fields
+		stream.defaultWriteObject();
+
+		// remember how many buckets there were
+		stream.writeInt(map.table.length);
+		stream.writeInt(map.size());
+
+		Iterator i = map.entrySet().iterator();
+		while(i.hasNext()) {
+			Map.Entry e = (Map.Entry)i.next();
+			stream.writeObject(e.getKey());
+			stream.writeObject(e.getValue());
+		}
+	}
+
+}
