@@ -1,3 +1,7 @@
+2003-09-01  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* test/regression/DeleteFile.java: added missing test case.
+
 2003-08-31  Timothy S. Stack <stack@cs.utah.edu>
 
 	* kaffe/kaffevm/access.c:
