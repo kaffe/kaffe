@@ -207,7 +207,7 @@ native(Method* m, errorInfo *einfo)
 	char* ptr;
 	int i;
 	void* func;
-	char *errmask = "Failed to locate native function:\n\t%s.%s%s\n";
+	char *errmask = "Failed to locate native function:\t%s.%s%s";
 
 	/* Construct the stub name */
 	strcpy(stub, STUB_PREFIX);
