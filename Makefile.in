@@ -429,7 +429,7 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
 depend:
-	@echo `make depend' is no longer needed
+	@echo \`make depend\' is no longer needed
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

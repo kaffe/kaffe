@@ -27,4 +27,4 @@ EXTRA_DIST = license.terms WHATSNEW \
 	FAQ/FAQ.win32
 
 depend:
-	@echo `make depend' is no longer needed
+	@echo \`make depend\' is no longer needed
