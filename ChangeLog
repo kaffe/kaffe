@@ -1,8 +1,20 @@
+Tue Aug 18 15:24:32 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
+
+	* libraries/javalib/java/io/ObjectInputStream.java: avoid unwanted
+	sign extension in readLong().
+
+Tue Aug 18 15:19:44 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in (ac_cv_underscore_c_names): no need to run the
+	test; linking is enough, and allows it to run even when cross
+	compiling
+
 Tue Aug 18 14:03:54 1998  Archie Cobbs  <archie@whistle.com>
 
 	* libraries/clib/Makefile.in: make sure we don't recurse unless we
 	have a Makefile.  This works now whether or not object and source
 	tree are separate.
+	* kaffe/kaffevm/jni.c: added missing return values.
 
 Mon Aug 10 19:58:36 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
