@@ -18,5 +18,5 @@ public interface Cloneable {
 	 * This is our sanity check to guard against people using the
 	 * wrong jar file.
 	 */
-        int KAFFE_VERSION = 106;
+        int KAFFE_VERSION = 107;
 }
