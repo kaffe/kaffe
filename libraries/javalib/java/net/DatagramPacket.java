@@ -53,12 +53,7 @@ public DatagramPacket(byte ibuf[], int ilength, InetAddress iaddr, int iport) {
 }
 
 public synchronized InetAddress getAddress() {
-	if (port == -1) {
-		return (null);
-	}
-	else {
-		return (address);
-	}
+	return (address);
 }
 
 public synchronized byte[] getData() {
