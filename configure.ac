@@ -544,14 +544,21 @@ dnl -------------------------------------------------------------------------
 
 AC_ARG_ENABLE([xdebugging],
               AS_HELP_STRING([--enable-xdebugging],
-                             [Enable debugging symbol generation for jitted code]))
-
+                             [Enable debugging symbol generation for jitted code.
+			     It is disabled by default.]),
+[
 case "$enable_xdebugging" in
 no) ;;
 *) need_libxprof=yes; CPPFLAGS="$CPPFLAGS -DKAFFE_XDEBUGGING"; JAVAC_FLAGS="-g $JAVAC_FLAGS";;
 esac
+],
+[
+$enable_xdebugging="no"
+])
 
+AC_MSG_CHECKING([whether to enable debugging symbol generation for jitted code])
 AC_SUBST(JAVAC_FLAGS)
+AC_MSG_RESULT($enable_xdebugging)
 
 dnl =========================================================================
 dnl Allow generation feedback data
