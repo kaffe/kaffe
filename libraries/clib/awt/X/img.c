@@ -231,29 +231,6 @@ needsFullAlpha ( Toolkit* X, Image *img, double threshold )
   return 0;
 }
 
-static void
-countAlphas ( Image *img, int* noAlpha, int* partAlpha, int* fullAlpha )
-{
-  int i, j, a;
-
-  if ( !img->alpha ) return;
-
-  for ( i=0; i<img->height; i++ ) {
-	for ( j=0; j<img->width; j++ ) {
-	  a = GetAlpha( img->alpha, j, i);
-	  if ( a == 0 ) {
-		(*noAlpha)++;
-	  }
-	  else if ( a == 0xff ) {
-		(*fullAlpha)++;
-	  }
-	  else {
-		(*partAlpha)++;
-	  }
-	}
-  }
-}
-
 /*
  * A full alpha image channel is way slower than using a mask bitmap (= 0 / 0xff alpha).
  * This function provides a simple alpha-to-mask translation
