@@ -239,7 +239,7 @@ define_insn(LLOAD)
 	idx = (uint8)getpc(0);
 	trace_jcode (("lload %d\n", idx));
 
-	check_local_long(idx+1);
+	check_local_long(idx);
 
 	push(2);
 	move_long(stack_long(0), local_long(idx));
@@ -269,7 +269,7 @@ define_insn(DLOAD)
 	idx = (uint8)getpc(0);
 	trace_jcode (("dload %d\n", idx));
 
-	check_local_double(idx+1);
+	check_local_double(idx);
 
 	push(2);
 	move_double(stack_double(0), local_double(idx));
@@ -316,7 +316,7 @@ define_insn_alias(LLOAD_3)
 	 */
 	trace_jcode (("lload %d\n", getopcode() - LLOAD_0));
 
-	check_local_long((getopcode() - LLOAD_0)+1);
+	check_local_long((getopcode() - LLOAD_0));
 
 	push(2);
 	move_long(stack_long(0), local_long(getopcode() - LLOAD_0));
@@ -348,7 +348,7 @@ define_insn_alias(DLOAD_3)
 	 */
 	trace_jcode (("dload %d\n", getopcode() - DLOAD_0));
 
-	check_local_double((getopcode() - DLOAD_0)+1);
+	check_local_double((getopcode() - DLOAD_0));
 
 	push(2);
 	move_double(stack_double(0), local_double(getopcode() - DLOAD_0));
@@ -3194,7 +3194,7 @@ define_insn(WIDE)
 		idx = (uint16)((getpc(0) << 8) | getpc(1));
 		trace_jcode (("wide lload %d\n", idx));
                 
-		check_local_long(idx+1);
+		check_local_long(idx);
 
 		push(2);
 		move_long(stack_long(0), local_long(idx));
@@ -3208,7 +3208,7 @@ define_insn(WIDE)
 		idx = (uint16)((getpc(0) << 8) | getpc(1));
 		trace_jcode (("wide dload %d\n", idx));
                 
-		check_local_double(idx+1);
+		check_local_double(idx);
 
 		push(2);
 		move_double(stack_double(0), local_double(idx));
@@ -3396,3 +3396,9 @@ define_insn(BREAKPOINT)
 
 	softcall_breakpoint();
 }
+
+/*
+ * Local variables:
+ * mode: c
+ * End:
+ */
