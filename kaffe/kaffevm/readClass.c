@@ -180,8 +180,8 @@ DBG(	dprintf("methods_count=%d\n", methods_count);		)
 #endif
 	for (i = 0; i < methods_count; i++) {
 #ifdef READMETHOD
-		READMETHOD(fp, this, einfo);
-		if (methodThis == NULL) {
+		READMETHOD(methodThis, fp, this, einfo);
+		if (READMETHOD_FAILED(methodThis)) {
 			return (false);
 		}
 #else

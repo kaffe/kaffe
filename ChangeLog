@@ -1,3 +1,12 @@
+Thu Oct 14 03:55:36 1999  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
+
+	* kaffe/kaffevm/readClass.c (readMethods): Pass methodThis
+	explicitly to READMETHOD.  Test READMETHOD_FAILED.
+	* kaffe/kaffevm/readClassConfig.h (READMETHOD): Add methodThis.
+	(READMETHOD_FAILED): New macro.
+	* kaffe/kaffeh/readClassConfig.h (READMETHOD): Add dummy argument.
+	(READMETHOD_FAILED): Dummy macro, always successful.
+
 Wed Oct 13 16:51:46 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/extensions/tools/javalib/kaffe/tools/jar/Jar.java:

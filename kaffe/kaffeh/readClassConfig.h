@@ -31,7 +31,9 @@ void readMethod(classFile* fp, Hjava_lang_Class* this, constants* cpool);
 #define	READFIELD(f, t)		readField(f, t, constant_pool)
 #define	READFIELD_ATTRIBUTE(f,t)
 #define	READFIELD_END(c)	readFieldEnd()
-#define	READMETHOD(f, t, e)	readMethod(f, t, constant_pool)
+#define	READMETHOD(m, f, t, e)	readMethod(f, t, constant_pool)
+#define READMETHOD_FAILED(m)	0
+
 
 extern constants* constant_pool;
 
