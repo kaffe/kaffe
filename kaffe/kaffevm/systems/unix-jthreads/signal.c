@@ -31,7 +31,7 @@
 #define	EXCEPTIONFRAMEPTR	&frame
 #endif /* TRANSLATOR */
 
-static void nullException(EXCEPTIONPROTO);
+static void nullException(SIGNAL_ARGS(sig, sc));
 static void floatingException(EXCEPTIONPROTO);
 
 static exchandler_t nullHandler;
@@ -346,6 +346,11 @@ blockAsyncSignals(void)
 static JTHREAD_JMPBUF outOfLoop;
 static void *stackPointer;
 
+/*
+ * This function intends to create a stack overflow error so we can evaluate
+ * the stack boundaries. Unfortunately, gcc optimizes it here. This is the
+ * purpose of the dummy variable a.
+ */
 static void 
 infiniteLoop()
 {
@@ -354,6 +359,11 @@ infiniteLoop()
   a = 0;
 }
 
+/*
+ * This function is called by the system when we go beyond stack boundaries
+ * in infiniteLoop. We get the stack address using the stack pointer register
+ * and then go back in detectStackBoundaries() using the old stack.
+ */
 static void
 stackOverflowDetector(SIGNAL_ARGS(sig, sc))
 {
@@ -377,6 +387,10 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 
 #if defined(STACK_POINTER) && defined(SA_ONSTACK) && defined(HAVE_SIGALTSTACK)
 
+	/*
+	 * Signals has to have their own stack so we can solve
+	 * stack problems.
+	 */
 	newstack.ss_size = THREADSTACKSIZE;
 	newstack.ss_flags = 0;
 	newstack.ss_sp = KMALLOC(newstack.ss_size);
@@ -392,6 +406,11 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 	if (JTHREAD_SETJMP(outOfLoop) == 0)
 	  infiniteLoop();
 
+	/* Here we have detected one the boundary of the stack.
+	 * If stack grows up then it is the upper boundary. In the other
+	 * case we have the lower boundary. As we know the stack size we
+	 * may guess the other boundary.
+	 */
 #if defined(STACK_GROWS_UP)
 	jtid->stackEnd = stackPointer;
 	jtid->stackBase = (char *)jtid->stackEnd - mainThreadStackSize;

@@ -1,6 +1,22 @@
+2004-04-23  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-jthreads/signal.c
+	(nullException): Fixed the prototype.
+
 2004-04-22  Ito kazumitsu <kaz@maczuka.gcd.org>
         * kaffe/kaffevm/locks.c
 	slowUnlockMutex(): Reverted.
+
+2004-04-22  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/clib/nio/FileChannelImpl.c: Cleaned up error reporting.
+
+	* libraries/javalib/gnu/java/net/protocol/file/Handler.java:
+	Cleaned up comments.
+
+	* libraries/javalib/java/util/SimpleTimeZone.java
+	(setStartRule): New versions of the method. Some code has still
+	to be implemented.
 
 2004-04-22  Guilhem Lavaux <guilhem@kaffe.org>
 
