@@ -27,10 +27,12 @@ import java.lang.reflect.Modifier;
 public class FieldDocImpl extends MemberDocImpl implements FieldDoc, Cloneable {
 
    private FieldDocImpl(ClassDoc containingClass,
-		       PackageDoc containingPackage) {
+                        PackageDoc containingPackage,
+                        SourcePosition position) {
 
       super(containingClass,
-	    containingPackage);
+	    containingPackage,
+            position);
    }
 
    public static Collection createFromSource(ClassDoc containingClass,
@@ -44,7 +46,8 @@ public class FieldDocImpl extends MemberDocImpl implements FieldDoc, Cloneable {
       Debug.log(9,"Parsing FieldDoc '"+s+"'");
 
       FieldDocImpl fd=new FieldDocImpl(containingClass,
-				       containingPackage);
+				       containingPackage,
+                                       DocImpl.getPosition(containingClass, source, startIndex));
 
       int ndx=fd.parseModifiers(source, startIndex, endIndex);
 
@@ -110,13 +113,8 @@ public class FieldDocImpl extends MemberDocImpl implements FieldDoc, Cloneable {
       for (Iterator it = fieldDefComponents.iterator(); it.hasNext(); ) {
 	 String fieldDef = (String) it.next();
 
-	 /*
-      for (StringTokenizer st=new StringTokenizer(definition, ","); st.hasMoreTokens(); ) {
-	 String fieldDef=st.nextToken();
-	 */
 	 int endx=fieldDef.indexOf('=');
 	 if (endx>=0) fieldDef=fieldDef.substring(0,endx);
-	 //definition=definition.trim();
 	 Debug.log(9,"  Field Definition: '"+fieldDef+"'");
 	 
 	 try {
@@ -128,16 +126,8 @@ public class FieldDocImpl extends MemberDocImpl implements FieldDoc, Cloneable {
 	       dimSuffix=fieldDef.charAt(fieldDef.length()-1)+dimSuffix;
 	       fieldDef=fieldDef.substring(0,fieldDef.length()-1);
 	    }
-	    /*
-	    if (dimSuffix.length()>0) {
-	       fieldDoc.setType((TypeImpl)fieldDoc.getType().clone());
-	       fieldDoc.getType().addDim(dimSuffix);
-	    }
-	    */
 
 	    fieldDoc.setTypeName(fieldDoc.getTypeName()+dimSuffix);
-
-	    //System.err.println("typeName='"+fieldDoc.getTypeName()+"'");
 
 	    fieldDoc.setName(fieldDef.trim());
 	    rcList.add(fieldDoc);
@@ -150,7 +140,6 @@ public class FieldDocImpl extends MemberDocImpl implements FieldDoc, Cloneable {
       return rcList;
    }
 
-   // Is this Doc item a class. 
    public boolean isField() {
       return true;
    } 

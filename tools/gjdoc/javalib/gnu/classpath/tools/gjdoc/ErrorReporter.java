@@ -31,6 +31,8 @@ import java.lang.reflect.*;
  */
 public class ErrorReporter implements DocErrorReporter {
 
+   private PrintStream out;
+
    /**
     *  Keeps track of the number of errors occured
     *  during generation.
@@ -53,29 +55,34 @@ public class ErrorReporter implements DocErrorReporter {
     */
    private boolean noWarn = false;
 
+   public ErrorReporter()
+   {
+      this.out = System.err;
+   }
+
    // Print error message, increment error count. 
    public void printError(java.lang.String msg) {
-      System.err.println("ERROR: "+msg);
+      out.println("ERROR: "+msg);
       ++errorCount;
    }
 
    // Print error message, increment error count. 
    public void printFatal(java.lang.String msg) {
-      System.err.println("FATAL: "+msg);
+      out.println("FATAL: "+msg);
       System.exit(10);
    }
 
    // Print a message. 
    public void printNotice(java.lang.String msg) {
       if (!quiet) {
-	 System.err.println(msg);
+	 out.println(msg);
       }
    }
    
    // Print warning message, increment warning count. 
    public void printWarning(java.lang.String msg) {
       if (!noWarn) {
-	 System.err.println("WARNING: "+msg);
+	 out.println("WARNING: "+msg);
 	 ++warningCount;;
       }
    }
@@ -88,5 +95,10 @@ public class ErrorReporter implements DocErrorReporter {
       return warningCount;
    }
 
-   
+   /**
+    *  Specify whether notices should be printed.
+    */
+   public void setQuiet(boolean quiet) {
+      this.quiet = quiet;
+   }
 }

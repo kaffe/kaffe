@@ -22,17 +22,27 @@ package gnu.classpath.tools.gjdoc;
 
 import com.sun.javadoc.*;
 import java.util.*;
+import java.io.File;
 
-class PackageDocImpl extends DocImpl implements PackageDoc {
+class PackageDocImpl extends DocImpl implements GjdocPackageDoc {
 
    private String packageName;
+   private File   packageDirectory;
+
    private List   allClassesList      = new ArrayList();
    private List   ordinaryClassesList = new ArrayList();
    private List   exceptionsList      = new ArrayList();
    private List   interfacesList      = new ArrayList();
-   private List   errorsList          = new ArrayList();
-   
+   private List   errorsList          = new ArrayList();   
+
+   private ClassDoc[] allClasses;
+   private ClassDoc[] ordinaryClasses;
+   private ClassDoc[] exceptions;
+   private ClassDoc[] interfaces;
+   private ClassDoc[] errors;
+
    PackageDocImpl(String packageName) {
+      super(null);
       this.packageName=packageName;
    }
 
@@ -83,12 +93,55 @@ class PackageDocImpl extends DocImpl implements PackageDoc {
       return packageName; 
    }
 
-   public ClassDoc[] allClasses()      { return (ClassDoc[])allClassesList.toArray(new ClassDoc[0]); }
-   public ClassDoc[] ordinaryClasses() { return (ClassDoc[])ordinaryClassesList.toArray(new ClassDoc[0]); }
-   public ClassDoc[] exceptions()      { return (ClassDoc[])exceptionsList.toArray(new ClassDoc[0]); }
-   public ClassDoc[] interfaces()      { return (ClassDoc[])interfacesList.toArray(new ClassDoc[0]); }
-   public ClassDoc[] errors()          { return (ClassDoc[])errorsList.toArray(new ClassDoc[0]); }
-   public ClassDoc   findClass(String name) { 
+   public ClassDoc[] allClasses() 
+   { 
+      if (null == this.allClasses) {
+         this.allClasses = toClassDocArray(allClassesList);
+      }
+      return this.allClasses;
+   }
+
+   public ClassDoc[] ordinaryClasses() 
+   { 
+      if (null == this.ordinaryClasses) {
+         this.ordinaryClasses = toClassDocArray(ordinaryClassesList);
+      }
+      return this.ordinaryClasses;
+   }
+
+
+   public ClassDoc[] exceptions() 
+   { 
+      if (null == this.exceptions) {
+         this.exceptions = toClassDocArray(exceptionsList);
+      }
+      return this.exceptions;
+   }
+
+   public ClassDoc[] interfaces() 
+   { 
+      if (null == this.interfaces) {
+         this.interfaces = toClassDocArray(interfacesList);
+      }
+      return this.interfaces;
+   }
+
+   public ClassDoc[] errors() 
+   { 
+      if (null == this.errors) {
+         this.errors = toClassDocArray(errorsList);
+      }
+      return this.errors;
+   }
+
+   private ClassDoc[] toClassDocArray(List classDocList)
+   {
+      ClassDoc[] result = (ClassDoc[])classDocList.toArray(new ClassDoc[classDocList.size()]);
+      Arrays.sort(result);
+      return result;
+   }
+
+   public ClassDoc findClass(String name) { 
       return Main.getRootDoc().classNamed(packageName+"."+name);
    }
 
@@ -126,5 +179,19 @@ class PackageDocImpl extends DocImpl implements PackageDoc {
 	 return name().compareTo(((PackageDocImpl)o).name());
       else
 	 return 0;
+   }
+
+   /**
+    *  Sets the directory containing this package's source files.
+    */
+   public void setPackageDirectory(File packageDirectory) {
+      this.packageDirectory = packageDirectory;
+   }
+
+   /**
+    *  Gets the directory containing this package's source files.
+    */
+   public File packageDirectory() {
+      return this.packageDirectory;
    }
 }

@@ -25,7 +25,7 @@ import java.util.*;
 import java.io.*;
 import java.lang.reflect.*;
 
-public class RootDocImpl extends DocImpl implements RootDoc {
+public class RootDocImpl extends DocImpl implements GjdocRootDoc {
 
    private ErrorReporter reporter = new ErrorReporter();
 
@@ -116,6 +116,8 @@ public class RootDocImpl extends DocImpl implements RootDoc {
 
    private List sourcePath;
 
+   private String sourceEncoding;
+
    //--------------------------------------------------------------------------
    //
    // Implementation of RootDoc interface
@@ -199,11 +201,10 @@ public class RootDocImpl extends DocImpl implements RootDoc {
 
       File javaLangSources = findSourceFile("java/lang");
       if (null!=javaLangSources) {
-	 parser.processSourceDir(javaLangSources);
+	 parser.processSourceDir(javaLangSources, sourceEncoding);
       }
       else {
 
-	 printNotice("For now, please make sure that you include the core source directory\nin -sourcepath");
 	 Debug.log(1, "Sourcepath is "+sourcePath);
 
 	 // Core docs not included in source-path: 
@@ -220,7 +221,7 @@ public class RootDocImpl extends DocImpl implements RootDoc {
 	 printNotice("Loading classes for package "+specifiedPackageName+"...");
 	 File sourceDir = findSourceFile(specifiedPackageName.replace('.',File.separatorChar));
 	 if (null!=sourceDir) {
-	    parser.processSourceDir(sourceDir);
+	    parser.processSourceDir(sourceDir, sourceEncoding);
 	 }
 	 else {
 	    printError("Package '"+specifiedPackageName+"' not found.");
@@ -235,7 +236,7 @@ public class RootDocImpl extends DocImpl implements RootDoc {
 	 printNotice("Loading class "+specifiedClassName+" ...");
 	 File sourceFile = findSourceFile(specifiedClassName.replace('.',File.separatorChar)+".java");
 	 if (null!=sourceFile) {
-	    parser.processSourceFile(sourceFile, true);
+	    parser.processSourceFile(sourceFile, true, sourceEncoding);
 	 }
 	 else {
 	    printError("Class '"+specifiedClassName+"' not found.");
@@ -249,6 +250,8 @@ public class RootDocImpl extends DocImpl implements RootDoc {
       //--- Load all classes implicitly referenced by explicitly specified classes.
 
       loadScheduledClasses(parser);
+
+      resolveComments();
 
       //--- Resolve pending references in all ClassDocImpls
 
@@ -274,9 +277,14 @@ public class RootDocImpl extends DocImpl implements RootDoc {
       for (Iterator it = specifiedClassNames.iterator(); it.hasNext(); ) {
 	 String specifiedClassName = (String)it.next();
 	 ClassDocImpl specifiedClassDoc = (ClassDocImpl)classDocMap.get(specifiedClassName);
-	 specifiedClassDoc.setIsIncluded(true);
-	 specifiedClassesList.add(specifiedClassDoc);
-	 classesList.add(specifiedClassDoc);
+         if (null == specifiedClassDoc) {
+            printWarning("No documentation found for class " +specifiedClassName + " - wrong filename?");
+         }
+         else {
+            specifiedClassDoc.setIsIncluded(true);
+            specifiedClassesList.add(specifiedClassDoc);
+            classesList.add(specifiedClassDoc);
+         }
       }
       this.specifiedClasses=(ClassDocImpl[])specifiedClassesList.toArray(new ClassDocImpl[0]);
 
@@ -287,13 +295,23 @@ public class RootDocImpl extends DocImpl implements RootDoc {
 	 String specifiedPackageName = (String)it.next();
 	 PackageDoc specifiedPackageDoc = (PackageDoc)packageDocMap.get(specifiedPackageName);
 	 if (null!=specifiedPackageDoc) {
+            //System.err.println("include package " + specifiedPackageName);
+
 	    ((PackageDocImpl)specifiedPackageDoc).setIsIncluded(true);
 	    specifiedPackageList.add(specifiedPackageDoc);
 
 	    ClassDoc[] packageClassDocs=specifiedPackageDoc.allClasses();
 	    for (int i=0; i<packageClassDocs.length; ++i) {
 	       ClassDocImpl specifiedPackageClassDoc=(ClassDocImpl)packageClassDocs[i];
+            
 	       specifiedPackageClassDoc.setIsIncluded(true);
+
+               /*
+               if (specifiedPackageClassDoc.isIncluded()) {
+                  System.err.println("include class " + specifiedPackageClassDoc.name() + " (" + specifiedPackageClassDoc + "@" + specifiedPackageClassDoc.hashCode() + ")");
+               }
+               */
+
 	       classesList.add(specifiedPackageClassDoc);
 	    }
 	 }
@@ -321,6 +339,7 @@ public class RootDocImpl extends DocImpl implements RootDoc {
       //--- Create array with all loaded classes
 
       this.classes=(ClassDocImpl[])classesList.toArray(new ClassDocImpl[0]);
+      Arrays.sort(this.classes);
 
       //--- Close comment cache
 
@@ -334,7 +353,10 @@ public class RootDocImpl extends DocImpl implements RootDoc {
    public long writeRawComment(String rawComment) {
       try {
 	 long pos=rawCommentCache.getFilePointer();
-	 rawCommentCache.writeUTF(rawComment);
+	 //rawCommentCache.writeUTF(rawComment);
+         byte[] bytes = rawComment.getBytes("utf-8");
+         rawCommentCache.writeInt(bytes.length);
+         rawCommentCache.write(bytes);
 	 return pos;
       }
       catch (IOException e) {
@@ -346,7 +368,11 @@ public class RootDocImpl extends DocImpl implements RootDoc {
    public String readRawComment(long pos) {
       try {
 	 rawCommentCache.seek(pos);
-	 return rawCommentCache.readUTF();
+         int sz = rawCommentCache.readInt();
+         byte[] bytes = new byte[sz];
+         rawCommentCache.read(bytes);
+         return new String(bytes, "utf-8");
+	 //return rawCommentCache.readUTF();
       }
       catch (IOException e) {
 	 printFatal("Cannot read from comment cache: "+e.getMessage());
@@ -370,44 +396,20 @@ public class RootDocImpl extends DocImpl implements RootDoc {
       if (null==rc) {
 	 rc=new PackageDocImpl(packageName);
 	 if (specifiedPackageNames.contains(packageName)) {
-	    File packageDocFile=findSourceFile(packageName.replace('.',File.separatorChar)+File.separatorChar+"package.html");
-	    if (null!=packageDocFile) {
+            String packageDirectoryName = packageName.replace('.', File.separatorChar);
+            File packageDirectory = findSourceFile(packageDirectoryName);
+	    File packageDocFile = new File(packageDirectory, "package.html");
+            rc.setPackageDirectory(packageDirectory);
+	    if (null!=packageDocFile && packageDocFile.exists()) {
 	       try {
-		  long packageDocSize=packageDocFile.length();
-		  char[] packageDocBuf=new char[(int)(packageDocSize)];
-		  FileReader fr=new FileReader(packageDocFile);
-		  int index = 0;
-		  int i = fr.read(packageDocBuf, index, (int)packageDocSize);
-		  while (i > 0) {
-		     index += i;
-		     packageDocSize -= i;
-		     i = fr.read(packageDocBuf, index, (int)packageDocSize);
-		  }
-		  fr.close();
-
-		  // We only need the part between the begin and end body tag.
-		  String html = new String(packageDocBuf);
-		  int start = html.indexOf("<body");
-		  if (start == -1)
-		     start = html.indexOf("<BODY");
-		  int end = html.indexOf("</body>");
-		  if (end == -1)
-		     end = html.indexOf("</BODY>");
-		  if (start != -1 && end != -1) {
-		     // Start is end of body tag.
-		     start = html.indexOf('>', start) + 1;
-		     if (start != -1 && start < end)
-			html = html.substring(start, end);
-		  }
-
-		  rc.setRawCommentText(html.trim());
+                  rc.setRawCommentText(readHtmlBody(packageDocFile));
 	       }
 	       catch (IOException e) {
 		  printWarning("Error while reading documentation for package "+packageName+": "+e.getMessage());
 	       }
 	    }
 	    else {
-	       printWarning("No description found for package "+packageName);
+	       printNotice("No description found for package "+packageName);
 	    }
 	 }
 	 addPackageDoc(rc);
@@ -562,7 +564,7 @@ public class RootDocImpl extends DocImpl implements RootDoc {
 
 	 File file=findScheduledClassFile(scheduledClassName, scheduledClassContext);
 	 if (file!=null) {
-	    parser.processSourceFile(file, false);
+	    parser.processSourceFile(file, false, sourceEncoding);
 	 }
 	 else {
 	    // It might be an inner class of one of the outer/super classes.
@@ -704,6 +706,10 @@ public class RootDocImpl extends DocImpl implements RootDoc {
       specifiedClassNames.add(className);
    }
 
+   public boolean hasSpecifiedPackagesOrClasses() {
+      return !specifiedClassNames.isEmpty() || !specifiedPackageNames.isEmpty();
+   }
+
    public void setOptions(String[][] customOptionArr) {
       this.customOptionArr = customOptionArr;
    }
@@ -714,5 +720,63 @@ public class RootDocImpl extends DocImpl implements RootDoc {
 
    public void finalize() throws Throwable {
       super.finalize();
+   }
+
+   public void flush()
+   {
+      rawCommentCache = null;
+      customOptionArr = null;
+      specifiedClassNames = null;
+      specifiedPackageNames = null;
+      classesList = null;
+      classDocMap = null;
+      packageDocMap = null;
+      classes = null;
+      specifiedClasses = null;
+      specifiedPackages = null;
+      scheduledClasses = null;
+      sourcePath = null;
+   }
+
+   public void setSourceEncoding(String sourceEncoding)
+   {
+      this.sourceEncoding = sourceEncoding;
+   }
+
+   public RootDocImpl()
+   {
+      super(null);
+   }
+
+   public static String readHtmlBody(File file) 
+      throws IOException
+   {
+      FileReader fr=new FileReader(file);
+      long size = file.length();
+      char[] packageDocBuf=new char[(int)(size)];
+      int index = 0;
+      int i = fr.read(packageDocBuf, index, (int)size);
+      while (i > 0) {
+         index += i;
+         size -= i;
+         i = fr.read(packageDocBuf, index, (int)size);
+      }
+      fr.close();
+
+      // We only need the part between the begin and end body tag.
+      String html = new String(packageDocBuf);
+      int start = html.indexOf("<body");
+      if (start == -1)
+         start = html.indexOf("<BODY");
+      int end = html.indexOf("</body>");
+      if (end == -1)
+         end = html.indexOf("</BODY>");
+      if (start != -1 && end != -1) {
+         // Start is end of body tag.
+         start = html.indexOf('>', start) + 1;
+         if (start != -1 && start < end)
+            html = html.substring(start, end);
+      }
+      return html.trim();
    }
 }

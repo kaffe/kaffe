@@ -27,10 +27,12 @@ import com.sun.javadoc.*;
 public class ExecutableMemberDocImpl extends MemberDocImpl implements ExecutableMemberDoc {
 
    protected ExecutableMemberDocImpl(ClassDoc containingClass,
-				     PackageDoc containingPackage) {
+				     PackageDoc containingPackage,
+                                     SourcePosition position) {
       
       super(containingClass,
-	    containingPackage);
+	    containingPackage,
+            position);
    }
 
    protected boolean processModifier(String word) {
@@ -104,20 +106,23 @@ public class ExecutableMemberDocImpl extends MemberDocImpl implements Executable
 
       ExecutableMemberDocImpl rc;
 
+      SourcePosition position = DocImpl.getPosition(containingClass, source, startIndex);
+
       if (methodName.equals(((ClassDocImpl)containingClass).getClassName())) {
 	 
 	 // Constructor
 
 	 rc=new ConstructorDocImpl(containingClass,
-				   containingPackage);
+				   containingPackage,
+                                   position);
       }
       else {
 
 	 // Normal method
 
 	 rc=new MethodDocImpl(containingClass,
-			      containingPackage);
-	 
+			      containingPackage,
+                              position);
       }
       
       //System.err.println("Parsing '"+new String(source, startIndex, endIndex-startIndex)+"'");

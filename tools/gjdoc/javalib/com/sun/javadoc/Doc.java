@@ -231,5 +231,17 @@ isOrdinaryClass();
 public abstract boolean
 isIncluded();
 
+/*************************************************************************/
+
+/**
+  * This method returns the location of the item within the Java
+  * source code.
+  *
+  * @return an object describing the file, line and column where this
+  * item is defined.
+  */
+public abstract SourcePosition
+position();
+
 } // interface Doc
 

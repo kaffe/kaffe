@@ -1,4 +1,4 @@
-/* gnu.classpath.tools.doclets.xmldoclet.FixHTML
+/* gnu.classpath.tools.doclets.xmldoclet.HtmlRepairer.java
    Copyright (C) 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -117,6 +117,11 @@ public final class HtmlRepairer {
 	 // got something like '</a/>' which is invalid.
 	 // suppose a close tag was intended.
 	 tag = tag.substring(0, tag.length()-1);
+      }
+
+      if (tag.length() < 1) {
+         printWarning("Deleting broken tag");
+         return;
       }
 
       String tagName = tag.substring(isEndTag?1:0, isAtomTag?tag.length()-1:tag.length());
@@ -387,7 +392,8 @@ public final class HtmlRepairer {
 
       StringBuffer buf = new StringBuffer();
       char[] textAsChars = text.toCharArray();
-
+      
+   outer_loop:
       for (int i=0, ilim=textAsChars.length+1; i<ilim; ++i) {
 	 int c;
 
@@ -454,6 +460,39 @@ public final class HtmlRepairer {
 	       state = STATE_INITIAL;
 	       continue;
 	    }
+            else {
+               // peek forward and see whether this is a valid entity.
+               if ('#'==c) {
+                  buf.append("&");
+                  buf.append((char)c);
+                  state = STATE_INITIAL;
+                  continue outer_loop;
+               }
+               else if (Character.isLetter((char)c)) {
+                  for (int i2=i+1; i2<ilim-1; i2++) {
+                     if (';' == textAsChars[i2]) {
+                        buf.append("&");
+                        buf.append((char)c);
+                        state = STATE_INITIAL;
+                        continue outer_loop;
+                     }
+                     else if (!Character.isLetter((char)c)
+                              && !Character.isDigit((char)c)
+                              && ".-_:".indexOf((char)c) < 0
+                              //&& !isCombiningChar(c)  // FIXME
+                              //&& !isExtender(c)       // FIXME
+                              ) {
+                        break;
+                     }
+                  }
+                  // not a valid entity declaration; assume &amp;
+               }
+               buf.append("&amp;");
+               buf.append((char)c);
+               state = STATE_INITIAL;                  
+            }
+
+            /*
 	    else if ('#'==c || Character.isLetter((char)c)) {
 	       buf.append("&");
 	       buf.append((char)c);
@@ -464,6 +503,7 @@ public final class HtmlRepairer {
 	       buf.append((char)c);
 	       state = STATE_INITIAL;	       
 	    }
+            */
 	    break;
 	    
 	 case STATE_TAG_START:
@@ -563,17 +603,28 @@ public final class HtmlRepairer {
    }
 
    private String getContext() {
-      StringBuffer rc = new StringBuffer();
-      rc.append(contextClass.qualifiedTypeName());
-      if (null != contextMember) {
-	 rc.append("."+contextMember.toString());
+      if (null != contextClass) {
+         StringBuffer rc = new StringBuffer();
+         rc.append(contextClass.qualifiedTypeName());
+         if (null != contextMember) {
+            rc.append("."+contextMember.toString());
+         }
+         return rc.toString();
       }
-      return rc.toString();
+      else {
+         return null;
+      }
    }
 
    private void printWarning(String msg) {
       if (null != warningReporter && !noWarn) {
-	 warningReporter.printWarning("In "+getContext()+": "+msg);
+         String context = getContext();
+         if (null != context) {
+            warningReporter.printWarning("In "+getContext()+": "+msg);
+         }
+         else {
+            warningReporter.printWarning("In overview page: "+msg);
+         }
       }
    }
 

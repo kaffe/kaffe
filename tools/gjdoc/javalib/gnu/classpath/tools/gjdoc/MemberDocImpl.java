@@ -29,10 +29,12 @@ public abstract class MemberDocImpl extends ProgramElementDocImpl implements Mem
    protected Type   type;
 
    public MemberDocImpl(ClassDoc containingClass,
-			PackageDoc containingPackage) {
+			PackageDoc containingPackage,
+                        SourcePosition position) {
 
       super(containingClass,
-	    containingPackage);
+	    containingPackage,
+            position);
    }
 
    public String qualifiedName() {

@@ -30,6 +30,8 @@
   xmlns:html="http://www.w3.org/TR/REC-html40"
   xmlns="http://www.gnu.org/software/cp-tools/gjdocxslfiles">
 
+  <xsl:include href="../gjdoc_common.xsl"/>
+
   <xsl:output method="xml"
     encoding="utf-8"
     indent="no"/>
@@ -64,18 +66,53 @@
         <sheet><xsl:text>allclasses.xsl</xsl:text></sheet>
         <comment><xsl:text>HTML All Classes file</xsl:text></comment>
       </outputfile>
-      
-      <outputfile>
-        <name><xsl:text>allpackages.html</xsl:text></name>
-        <sheet><xsl:text>allpackages.xsl</xsl:text></sheet>
-        <comment><xsl:text>HTML All Packages file</xsl:text></comment>
-      </outputfile>
 
-      <outputfile>
-        <name><xsl:text>fulltree.html</xsl:text></name>
-        <sheet><xsl:text>fulltree.xsl</xsl:text></sheet>
-        <comment><xsl:text>HTML Tree file</xsl:text></comment>
-      </outputfile>
+      <xsl:if test="count(gjdoc:rootdoc/gjdoc:packagedoc) > 1">
+        <outputfile>
+          <name><xsl:text>allpackages.html</xsl:text></name>
+          <sheet><xsl:text>allpackages.xsl</xsl:text></sheet>
+          <comment><xsl:text>HTML All Packages file</xsl:text></comment>
+        </outputfile>
+      </xsl:if>
+
+      <xsl:if test="not($gjdoc.option.notree)">
+        <outputfile>
+          <name><xsl:text>fulltree.html</xsl:text></name>
+          <sheet><xsl:text>fulltree.xsl</xsl:text></sheet>
+          <comment><xsl:text>HTML Tree file</xsl:text></comment>
+        </outputfile>
+      </xsl:if>
+
+      <xsl:if test="not($gjdoc.option.noindex)">
+        <xsl:choose>
+          <xsl:when test="$gjdoc.option.splitindex">
+            
+            <outputfile>
+              <name><xsl:text>alphaindex.html</xsl:text></name>
+              <info/>
+              <sheet><xsl:text>alphaindex_chunked.xsl</xsl:text></sheet>
+              <comment><xsl:text>HTML Alphabetical Index (Overview)</xsl:text></comment>
+            </outputfile>
+
+            <xsl:for-each select="document('alphaindex.xml',/)/gjdoc:alphaindex/gjdoc:category">
+              <outputfile>
+                <name><xsl:value-of select="concat('alphaindex_', @letter, '.html')"/></name>
+                <info><xsl:value-of select="@letter"/></info>
+                <sheet><xsl:text>alphaindex_chunked.xsl</xsl:text></sheet>
+                <comment><xsl:value-of select="concat('HTML Alphabetical Index (Letter ', @letter, ')')"/></comment>
+              </outputfile>
+            </xsl:for-each>
+
+          </xsl:when>
+          <xsl:otherwise>
+            <outputfile>
+              <name><xsl:text>alphaindex.html</xsl:text></name>
+              <sheet><xsl:text>alphaindex.xsl</xsl:text></sheet>
+              <comment><xsl:text>HTML Alphabetical Index</xsl:text></comment>
+            </outputfile>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:if>
 
       <xsl:for-each select="gjdoc:rootdoc/gjdoc:packagedoc">
         <outputfile>
@@ -91,12 +128,14 @@
           <comment><xsl:text>HTML Class list for package </xsl:text><xsl:value-of select="@name"/></comment>
         </outputfile>
 
-        <outputfile>
-          <name><xsl:value-of select="concat(translate(@name,'.','/'),'/package-tree.html')"/></name>
-          <info><xsl:value-of select="@name"/></info>
-          <sheet><xsl:text>fulltree.xsl</xsl:text></sheet>
-          <comment><xsl:text>HTML Hierarchy for package </xsl:text><xsl:value-of select="@name"/></comment>
-        </outputfile>
+        <xsl:if test="not($gjdoc.option.notree)">
+          <outputfile>
+            <name><xsl:value-of select="concat(translate(@name,'.','/'),'/package-tree.html')"/></name>
+            <info><xsl:value-of select="@name"/></info>
+            <sheet><xsl:text>fulltree.xsl</xsl:text></sheet>
+            <comment><xsl:text>HTML Hierarchy for package </xsl:text><xsl:value-of select="@name"/></comment>
+          </outputfile>          
+        </xsl:if>
       </xsl:for-each>
 
       <xsl:for-each select="gjdoc:rootdoc/gjdoc:classdoc">
@@ -107,13 +146,92 @@
           <sheet><xsl:text>classdoc.xsl</xsl:text></sheet>
           <comment><xsl:text>HTML Documentation for </xsl:text><xsl:value-of select="@qualifiedtypename"/></comment>
         </outputfile>
+        
+        <xsl:if test="$gjdoc.option.linksource">
+          <outputfile>
+            <name><xsl:text>src-html/</xsl:text><xsl:value-of select="concat(translate(gjdoc:containingPackage/@name,'.','/'),'/',@name,'.html')"/></name>
+            <info><xsl:value-of select="@qualifiedtypename"/></info>
+            <sheet><xsl:text>classdoc-source.xsl</xsl:text></sheet>
+            <comment><xsl:text>HTML Source for </xsl:text><xsl:value-of select="@qualifiedtypename"/></comment>
+          </outputfile>
+        </xsl:if>
+
+        <xsl:if test="$gjdoc.option.uses">
+          <outputfile>
+            <name><xsl:text>class-use/</xsl:text><xsl:value-of select="concat(translate(gjdoc:containingPackage/@name,'.','/'),'/',@name,'.html')"/></name>
+            <info><xsl:value-of select="@qualifiedtypename"/></info>
+            <sheet><xsl:text>classdoc-uses.xsl</xsl:text></sheet>
+            <comment><xsl:text>usage information for </xsl:text><xsl:value-of select="@qualifiedtypename"/></comment>
+          </outputfile>
+        </xsl:if>
+
       </xsl:for-each>
 
+      <xsl:choose>
+        <xsl:when test="$gjdoc.option.stylesheetfile">
+          <outputfile>
+            <name><xsl:text>user.css</xsl:text></name>
+              <source><xsl:value-of select="$gjdoc.option.stylesheetfile"/></source>
+            <comment><xsl:text>user-supplied CSS stylesheet</xsl:text></comment>
+          </outputfile>      
+        </xsl:when>
+        <xsl:otherwise>
+          <outputfile>
+            <name><xsl:text>gjdochtml.css</xsl:text></name>
+            <source><xsl:text>res/gjdochtml.css</xsl:text></source>
+            <comment><xsl:text>CSS base stylesheet</xsl:text></comment>
+          </outputfile>      
+          <outputfile>
+            <name><xsl:text>gjdochtml-clean.css</xsl:text></name>
+            <source><xsl:text>res/gjdochtml-clean.css</xsl:text></source>
+            <comment><xsl:text>CSS stylesheet 'Clean'</xsl:text></comment>
+          </outputfile>      
+          <outputfile>
+            <name><xsl:text>gjdochtml-sclara.css</xsl:text></name>
+            <source><xsl:text>res/gjdochtml-sclara.css</xsl:text></source>
+            <comment><xsl:text>CSS stylesheet 'Santa Clara'</xsl:text></comment>
+          </outputfile>      
+          <outputfile>
+            <name><xsl:text>gjdochtml-fixed.css</xsl:text></name>
+            <source><xsl:text>res/gjdochtml-fixed.css</xsl:text></source>
+            <comment><xsl:text>CSS stylesheet 'Fixed'</xsl:text></comment>
+          </outputfile>      
+        </xsl:otherwise>
+      </xsl:choose>
+
       <outputfile>
-        <name><xsl:text>gjdochtml.css</xsl:text></name>
-        <source><xsl:text>res/gjdochtml.css</xsl:text></source>
-        <comment><xsl:text>CSS Stylesheet</xsl:text></comment>
-      </outputfile>      
+        <name><xsl:text>gjdoc.js</xsl:text></name>
+        <source><xsl:text>res/gjdoc.js</xsl:text></source>
+        <comment><xsl:text>JavaScript helper file</xsl:text></comment>
+      </outputfile>
+
+      <xsl:if test="not($gjdoc.option.nohelp)">
+        <outputfile>
+          <name><xsl:text>help.html</xsl:text></name>
+          <sheet><xsl:text>help.xsl</xsl:text></sheet>
+          <comment><xsl:text>help file</xsl:text></comment>
+        </outputfile>
+      </xsl:if>
+
+      <outputfile>
+        <name><xsl:text>about.html</xsl:text></name>
+        <sheet><xsl:text>about.xsl</xsl:text></sheet>
+        <comment><xsl:text>about file</xsl:text></comment>
+      </outputfile>
+
+      <xsl:if test="not($gjdoc.option.nodeprecatedlist)">
+        <outputfile>
+          <name><xsl:text>deprecated.html</xsl:text></name>
+          <sheet><xsl:text>deprecated.xsl</xsl:text></sheet>
+          <comment><xsl:text>deprecated list</xsl:text></comment>
+        </outputfile>
+      </xsl:if>
+
+      <outputfile>
+        <name><xsl:text>serialized.html</xsl:text></name>
+        <sheet><xsl:text>serialized.xsl</xsl:text></sheet>
+        <comment><xsl:text>serialization information</xsl:text></comment>
+      </outputfile>
 
     </gjdocoutput>
   </xsl:template>

@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -49,6 +50,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.URIResolver;
 
+import javax.xml.transform.dom.DOMResult;
+
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -58,19 +61,41 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import org.xml.sax.SAXException;
 
+import gnu.classpath.tools.IOToolkit;
 import gnu.classpath.tools.doclets.xmldoclet.Driver;
 
 import com.sun.javadoc.DocErrorReporter;
 
 public class DocTranslet implements ErrorListener {
 
+   private static class DocErrorReporterOutputStream
+      extends OutputStream
+   {
+      private ByteArrayOutputStream out = new ByteArrayOutputStream();
+      private DocErrorReporter reporter;
+
+      public DocErrorReporterOutputStream(DocErrorReporter reporter) {
+         this.reporter = reporter;
+      }
+
+      public void write(int ch) {
+         out.write(ch);
+         if (ch == 10) {
+            reporter.printNotice(out.toString());
+            out.reset();
+         }
+      }
+   }
+
    private String mainResourceFilename;
    private ClassLoader classLoader;
    private Map transformerMap = new java.util.HashMap(); //WeakHashMap();
+   private DocTransletOptions options;
    
    protected DocTranslet(String mainResourceFilename,
                          ClassLoader classLoader)
@@ -109,6 +134,8 @@ public class DocTranslet implements ErrorListener {
                      DocErrorReporter reporter)
       throws DocTransletException {
 
+      PrintStream err = System.err;
+
       try{
          URL mainResourceURL = classLoader == null ?
 	     ClassLoader.getSystemResource(mainResourceFilename):
@@ -118,8 +145,30 @@ public class DocTranslet implements ErrorListener {
             throw new DocTransletException("Cannot find resource '" + mainResourceFilename + "'");
          }
 
+         
+         Map parameters = new HashMap();
+         parameters.put("gjdoc.xmldoclet.version", Driver.XMLDOCLET_VERSION);
+
+         parameters.put("gjdoc.option.nonavbar", xsltBoolean(options.nonavbar));
+         parameters.put("gjdoc.option.noindex", xsltBoolean(options.noindex));
+         parameters.put("gjdoc.option.notree", xsltBoolean(options.notree));
+         parameters.put("gjdoc.option.nocomment", xsltBoolean(options.nocomment));
+         parameters.put("gjdoc.option.nohelp", xsltBoolean(options.nohelp));
+         parameters.put("gjdoc.option.splitindex", xsltBoolean(options.splitindex));
+         parameters.put("gjdoc.option.linksource", xsltBoolean(options.linksource));
+         parameters.put("gjdoc.option.nodeprecatedlist", xsltBoolean(options.nodeprecatedlist));
+         parameters.put("gjdoc.option.uses", xsltBoolean(options.uses));
+         parameters.put("gjdoc.option.windowtitle", options.windowtitle);
+         parameters.put("gjdoc.option.helpfile", options.helpfile);
+         parameters.put("gjdoc.option.stylesheetfile", options.stylesheetfile);
+         parameters.put("gjdoc.option.header", options.header);
+         parameters.put("gjdoc.option.footer", options.footer);
+         parameters.put("gjdoc.option.bottom", options.bottom);
+         parameters.put("gjdoc.option.doctitle", options.doctitle);
+
          List outputFileList = getOutputFileList(mainResourceURL,
-                                                 xmlSourceDirectory);
+                                                 xmlSourceDirectory,
+                                                 parameters);
 
          reporter.printNotice("Running DocTranslet...");
             
@@ -147,12 +196,32 @@ public class DocTranslet implements ErrorListener {
                throw new DocTransletException("Target directory " + packageTargetDir + " does not exist and cannot be created.");
             }
 
+            if (options.linksource) {
+               File sourceTargetDirectory = new File(targetDirectory, "src-html");
+               File sourceTargetFile = new File(sourceTargetDirectory, fileInfo.getName());
+               File sourcePackageTargetDir = getParentFile(sourceTargetFile);
+
+               if (!sourcePackageTargetDir.exists() && !sourcePackageTargetDir.mkdirs()) {
+                  throw new DocTransletException("Target directory " + packageTargetDir + " does not exist and cannot be created.");
+               }
+            }
+
+            if (options.uses) {
+               File usesTargetDirectory = new File(targetDirectory, "class-use");
+               File usesTargetFile = new File(usesTargetDirectory, fileInfo.getName());
+               File usesPackageTargetDir = getParentFile(usesTargetFile);
+
+               if (!usesPackageTargetDir.exists() && !usesPackageTargetDir.mkdirs()) {
+                  throw new DocTransletException("Target directory " + packageTargetDir + " does not exist and cannot be created.");
+               }
+            }
+
             if (null != fileInfo.getSource()) {
             
                reporter.printNotice("Copying " + fileInfo.getComment() + "...");
                InputStream in = new URL(mainResourceURL, fileInfo.getSource()).openStream();
                FileOutputStream out = new FileOutputStream(targetFile.getAbsolutePath());
-               copyStream(in, out);
+               IOToolkit.copyStream(in, out);
                in.close();
                out.close();
             }
@@ -169,15 +238,14 @@ public class DocTranslet implements ErrorListener {
 
                StreamSource in = new StreamSource(new File(xmlSourceDirectory, "index.xml").getAbsolutePath());
                URL resource = new URL(mainResourceURL, fileInfo.getSheet());
-               if (null == resource) {
-                  throw new DocTransletException("Couldn't perform XSLT transformation: stylesheet not found '" + resource + "'");
-               }
+
+
                StreamSource xsltSource = new StreamSource(resource.toExternalForm());
-         
-               Map parameters = new HashMap();
-               parameters.put("gjdoc.outputfile.info", fileInfo.getInfo());
+
+               if (null != fileInfo.getInfo()) {
+                  parameters.put("gjdoc.outputfile.info", fileInfo.getInfo());
+               }
                parameters.put("gjdoc.pathtoroot", pathToRoot);
-               parameters.put("gjdoc.xmldoclet.version", Driver.XMLDOCLET_VERSION);
 
                Transformer transformer;
                transformer = (Transformer)transformerMap.get(xsltSource.getSystemId());
@@ -188,16 +256,20 @@ public class DocTranslet implements ErrorListener {
                   }
                }
 
-               transformer.setErrorListener(this);
-
-
                transformer.clearParameters();
                for (Iterator pit = parameters.keySet().iterator(); pit.hasNext(); ) {
                   String key = (String)pit.next();
                   String value = (String)parameters.get(key);
                   transformer.setParameter(key, value);
                }
+
+               transformer.setErrorListener(this);
+               DocErrorReporterOutputStream errorReporterOut
+                  = new DocErrorReporterOutputStream(reporter);
+               System.setErr(new PrintStream(errorReporterOut));
+
                transformer.transform(in, out);
+               errorReporterOut.flush();
             }
          }
       }
@@ -213,9 +285,12 @@ public class DocTranslet implements ErrorListener {
       catch (IOException e) {
 	 throw new DocTransletException(e);
       }
+      finally {
+         System.setErr(err);
+      }
    }
 
-   private List getOutputFileList(URL resource, File xmlSourceDirectory) 
+   private List getOutputFileList(URL resource, File xmlSourceDirectory, Map parameters) 
       throws DocTransletException {
 
       try {
@@ -223,42 +298,52 @@ public class DocTranslet implements ErrorListener {
 
 	 OutputStream out = new ByteArrayOutputStream();
 
+         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+         Document document = documentBuilder.newDocument();
+         DOMResult domResult = new DOMResult(document);         
          {
             StreamSource source = new StreamSource(resource.toExternalForm());
-
+            
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = (Transformer)transformerFactory.newTransformer(source);
-	 
+            
+            transformer.clearParameters();
+            for (Iterator pit = parameters.keySet().iterator(); pit.hasNext(); ) {
+               String key = (String)pit.next();
+               String value = (String)parameters.get(key);
+               transformer.setParameter(key, value);
+            }
+            
             transformer.transform(new StreamSource(new File(xmlSourceDirectory, 
                                                             "index.xml").getAbsolutePath()), 
-                                  new StreamResult(out));
+                                  domResult);
          }
 
-         {
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            documentBuilderFactory.setValidating(false);
-
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            Document document = documentBuilder.parse(new ByteArrayInputStream(((ByteArrayOutputStream)out).toByteArray()));
-	 
+         {	 
             NodeList nodeList = document.getElementsByTagName("outputfile");
             result = new ArrayList(nodeList.getLength());
 
             for (int i=0; i<nodeList.getLength(); ++i) {
                Element elem = (Element)nodeList.item(i);
-               String name    = elem.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
+               String name    = getTextContent(elem.getElementsByTagName("name").item(0));
                String source  
                   = (null != elem.getElementsByTagName("source").item(0))
-                  ? elem.getElementsByTagName("source").item(0).getFirstChild().getNodeValue()
+                  ? getTextContent(elem.getElementsByTagName("source").item(0))
                   : null;
                String sheet
                   = (null != elem.getElementsByTagName("sheet").item(0))
-                  ? elem.getElementsByTagName("sheet").item(0).getFirstChild().getNodeValue()
+                  ? getTextContent(elem.getElementsByTagName("sheet").item(0))
                   : null;
-               String comment = elem.getElementsByTagName("comment").item(0).getFirstChild().getNodeValue();
+               String comment = getTextContent(elem.getElementsByTagName("comment").item(0));
                String info    = null;
                if (elem.getElementsByTagName("info").getLength() > 0) {
-                  info = elem.getElementsByTagName("info").item(0).getFirstChild().getNodeValue();
+                  if (null != elem.getElementsByTagName("info").item(0).getFirstChild()) {
+                     info = getTextContent(elem.getElementsByTagName("info").item(0));
+                  }
+                  else {
+                     info = "";
+                  }
                }
                result.add(new OutputFileInfo(name, source, sheet, comment, info));
             }
@@ -274,13 +359,28 @@ public class DocTranslet implements ErrorListener {
       catch (ParserConfigurationException e) {
 	 throw new DocTransletException(e);
       }
-      catch (SAXException e) {
-	 throw new DocTransletException(e);
-      }
-      catch (IOException e) {
-	 throw new DocTransletException(e);
-      }
    }
+
+   private String getTextContent(Node elem)
+   {
+      StringBuffer result = new StringBuffer();
+      NodeList children = elem.getChildNodes();
+      for (int i=0; i<children.getLength(); ++i) {
+         Node item = children.item(i);
+         if (null != item) {
+            String value = item.getNodeValue();
+            if (null != value) {
+               result.append(value);
+            }
+         }
+      }
+      return result.toString();
+   }
+
+   public void setOptions(DocTransletOptions options) {
+      this.options = options;
+   }
+
 
    public static DocTranslet fromClasspath(String resourceName) 
       throws DocTransletConfigurationException {
@@ -319,15 +419,8 @@ public class DocTranslet implements ErrorListener {
       }
    }
 
-   private static void copyStream(InputStream in, OutputStream out)
-      throws IOException {
-
-      byte[] buf = new byte[256];
-      int nread;
-
-      while ((nread = in.read(buf)) >= 0) {
-         out.write(buf, 0, nread);
-      }
+   private static String xsltBoolean(boolean b) {
+      return b ? "1" : "";
    }
 
   public void error (TransformerException exception)
@@ -347,5 +440,4 @@ public class DocTranslet implements ErrorListener {
 
      System.err.println("WWW: " + exception.getMessage());
   }
-
 }

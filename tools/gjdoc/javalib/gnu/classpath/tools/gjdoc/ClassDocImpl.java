@@ -26,6 +26,7 @@ import java.io.*;
 
 public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, WritableType {
 
+   private ClassDoc baseClassDoc;
    private ClassDoc[] importedClasses;
    private PackageDoc[] importedPackages;
    private boolean definesSerializableFields;
@@ -37,17 +38,23 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
 		       PackageDoc containingPackage,
 		       int accessLevel,
 		       boolean isFinal,
-		       boolean isStatic) {
-      super(containingClass, containingPackage, accessLevel, isFinal, isStatic);
+		       boolean isStatic,
+                       SourcePosition position) {
+      super(containingClass, containingPackage, accessLevel, isFinal, isStatic,
+            position);
+      this.baseClassDoc = this;
    }
 
    public ClassDocImpl(ClassDoc containingClass,
 		       PackageDoc containingPackage,
 		       ClassDoc[] importedClasses,
-		       PackageDoc[] importedPackages) {
-      super(containingClass, containingPackage);
+		       PackageDoc[] importedPackages,
+                       SourcePosition position) {
+      super(containingClass, containingPackage,
+            position);
       this.importedClasses=importedClasses;
       this.importedPackages=importedPackages;
+      this.baseClassDoc = this;
    }   
 
    // Return constructors in class. 
@@ -176,10 +183,12 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
       for (ClassDoc cdi=this; cdi!=null; cdi=(ClassDoc)cdi.superclass()) {
 	 if (cdi instanceof ClassDocImpl) {
 	    ClassDoc[] cdiInterfaces=(ClassDoc[])cdi.interfaces();
-	    for (int i=0; i<cdiInterfaces.length; ++i) {
-	       if (cdiInterfaces[i].qualifiedName().equals(name))
-		  return true;
-	    }
+            if (null != cdiInterfaces) {
+               for (int i=0; i<cdiInterfaces.length; ++i) {
+                  if (cdiInterfaces[i].qualifiedName().equals(name))
+                     return true;
+               }
+            }
 	 }
 	 else {
 	    //throw new RuntimeException("implementsInterface(\""+name+"\") failed: Not a ClassDocImpl:"+cdi);
@@ -232,7 +241,7 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
    public String typeName() { return name(); }
    
    public String qualifiedTypeName() { 
-      return (containingPackage()!=null)?(containingPackage().name()+"."+name()):(name()); 
+      return (containingPackage()!=null && containingPackage()!=PackageDocImpl.DEFAULT_PACKAGE)?(containingPackage().name()+"."+name()):(name()); 
    }
 
    public String qualifiedName() { return qualifiedTypeName(); }
@@ -253,7 +262,9 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
       ClassDocImpl rc=new ClassDocImpl(containingClass,
 				       containingPackage,
 				       importedClasses,
-				       importedPackages);
+				       importedPackages,
+                                       null);
+      rc.setPosition(ClassDocImpl.getPosition(rc, source, startIndex));
       List implementedInterfaces = new ArrayList();
       
       String word="";
@@ -448,61 +459,67 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
 	    }
 	 }
 
-	 for (int i=0; i<interfaces.length; ++i) {
-	    if (interfaces[i] instanceof ClassDocProxy) {
-	       //Debug.log(9,"class "+qualifiedName()+" implements "+interfaces[i].qualifiedName());
-	       String className=interfaces[i].qualifiedName();
-	       ClassDoc realClassDoc=findClass(className);
-	       if (realClassDoc==null) {
-		  /*
-		  if (Main.recursiveClasses) {
-		     throw new ParseException("In class '"+qualifiedName()+"': class '"+className+"' not found.");
-		  }
-		  */
-	       }
-	       else {
-		  //Debug.log(9,"found class '"+className+"': "+interfaces[i]);
-		  interfaces[i]=realClassDoc;
-	       }
-	    }
-	 }
+         if (null != interfaces) {
+            for (int i=0; i<interfaces.length; ++i) {
+               if (interfaces[i] instanceof ClassDocProxy) {
+                  //Debug.log(9,"class "+qualifiedName()+" implements "+interfaces[i].qualifiedName());
+                  String className=interfaces[i].qualifiedName();
+                  ClassDoc realClassDoc=findClass(className);
+                  if (realClassDoc==null) {
+                     /*
+                       if (Main.recursiveClasses) {
+                       throw new ParseException("In class '"+qualifiedName()+"': class '"+className+"' not found.");
+                       }
+                     */
+                  }
+                  else {
+                     //Debug.log(9,"found class '"+className+"': "+interfaces[i]);
+                     interfaces[i]=realClassDoc;
+                  }
+               }
+            }
+         }
 
-	 if (fields==null) {
-	    System.err.println("null fields in "+qualifiedName());
-	 }
+	 if (fields!=null) {
+            for (int i=0; i<fields.length; ++i) {
+               ((FieldDocImpl)fields[i]).resolve();
+               if (fields[i].name().equals("serialPersistentField")) {
+                  serialPersistentField=new FieldDoc[]{fields[i]};
+                  definesSerializableFields=true;
+               }
+            }
+         }
 
-	 for (int i=0; i<fields.length; ++i) {
-	    ((FieldDocImpl)fields[i]).resolve();
-	    if (fields[i].name().equals("serialPersistentField")) {
-	       serialPersistentField=new FieldDoc[]{fields[i]};
-	       definesSerializableFields=true;
-	    }
-	 }
+         if (methods!=null) {
+            for (int i=0; i<methods.length; ++i) {
+               ((MethodDocImpl)methods[i]).resolve();
+            }
+         }
 
-	 for (int i=0; i<methods.length; ++i) {
-	    ((MethodDocImpl)methods[i]).resolve();
-	 }
-
-	 for (int i=0; i<constructors.length; ++i) {
-	    ((ConstructorDocImpl)constructors[i]).resolve();
-	 }
+         if (constructors!=null) {
+            for (int i=0; i<constructors.length; ++i) {
+               ((ConstructorDocImpl)constructors[i]).resolve();
+            }
+         }
 
 	 List isSerMethodList=new ArrayList();
 
-	 for (Iterator it=maybeSerMethodList.iterator(); it.hasNext(); ) {
-	    MethodDocImpl method=(MethodDocImpl)it.next();
-	    method.resolve();
+         if (null != maybeSerMethodList) {
+            for (Iterator it=maybeSerMethodList.iterator(); it.hasNext(); ) {
+               MethodDocImpl method=(MethodDocImpl)it.next();
+               method.resolve();
 
-	    if (((method.name().equals("readObject")
-		 && method.signature().equals("(java.io.ObjectInputStream)"))
-		|| (method.name().equals("writeObject")
-		    && method.signature().equals("(java.io.ObjectOutputStream)")))) {
+               if (((method.name().equals("readObject")
+                     && method.signature().equals("(java.io.ObjectInputStream)"))
+                    || (method.name().equals("writeObject")
+                        && method.signature().equals("(java.io.ObjectOutputStream)")))) {
 
-	       isSerMethodList.add(method);
-	    }
- 	 }
-	 this.serializationMethods=(MethodDoc[])isSerMethodList.toArray(new MethodDoc[0]);
-	 maybeSerMethodList=null;
+                  isSerMethodList.add(method);
+               }
+            }
+            this.serializationMethods=(MethodDoc[])isSerMethodList.toArray(new MethodDoc[0]);
+            maybeSerMethodList=null;
+         }
       }
    }
 
@@ -519,17 +536,26 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
 
       super.resolveComments();
 
-      for (int i=0; i<fields.length; ++i) {
-	 ((FieldDocImpl)fields[i]).resolveComments();
+      if (null != fields) {
+         for (int i=0; i<fields.length; ++i) {
+            ((FieldDocImpl)fields[i]).resolveComments();
+         }
       }
-      for (int i=0; i<serializableFields.length; ++i) {
-	 ((FieldDocImpl)serializableFields[i]).resolveComments();
+
+      if (null != serializableFields) {
+         for (int i=0; i<serializableFields.length; ++i) {
+            ((FieldDocImpl)serializableFields[i]).resolveComments();
+         }
       }
-      for (int i=0; i<methods.length; ++i) {
-	 ((MethodDocImpl)methods[i]).resolveComments();
+      if (null != methods) {
+         for (int i=0; i<methods.length; ++i) {
+            ((MethodDocImpl)methods[i]).resolveComments();
+         }
       }
-      for (int i=0; i<constructors.length; ++i) {
-	 ((ConstructorDocImpl)constructors[i]).resolveComments();
+      if (null != constructors) {
+         for (int i=0; i<constructors.length; ++i) {
+            ((ConstructorDocImpl)constructors[i]).resolveComments();
+         }
       }
 
       resolveTags();
@@ -550,10 +576,6 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
 
    private ClassDoc superclass;
 
-   public int compareTo(Object o) {
-      return name().toUpperCase().compareTo(((Doc)o).name().toUpperCase());
-   }
-
    // Is this Doc item a class. 
    public boolean isClass() {
       return !isInterface;
@@ -561,7 +583,12 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
 
    // return true if this Doc is include in the active set. 
    public boolean isIncluded() {
-      return isIncluded; // && Main.getRootDoc().includeAccessLevel(accessLevel);
+      if (this == baseClassDoc) {
+         return isIncluded; // && Main.getRootDoc().includeAccessLevel(accessLevel);
+      }
+      else {
+         return baseClassDoc.isIncluded();
+      }
    } 
 
    void setIsIncluded(boolean b) {
@@ -592,9 +619,14 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
       ClassDoc classDoc = findClass(typeName);
       if (null!=classDoc) {
 	 try {
-	    Type rc = (Type) ((WritableType)classDoc).clone();
-	    ((WritableType)rc).setDimension(dim);
-	    return rc;
+            if (classDoc.dimension().equals(dim)) {
+               return classDoc;
+            }
+            else {
+               Type rc = (Type) ((WritableType)classDoc).clone();
+               ((WritableType)rc).setDimension(dim);
+               return rc;
+            }
 	 }
 	 catch (CloneNotSupportedException e) {
 	    throw new ParseException(e.toString());
@@ -604,9 +636,14 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
       Type type = (Type)typeMap.get(typeName+dim);
       if (null!=type) {
 	 try {
-	    Type rc = (Type) ((WritableType)type).clone();
-	    ((WritableType)rc).setDimension(dim);
-	    return rc;
+            if (type.dimension().equals(dim)) {
+               return type;
+            }
+            else {
+               Type rc = (Type) ((WritableType)type).clone();
+               ((WritableType)rc).setDimension(dim);
+               return rc;
+            }
 	 }
 	 catch (CloneNotSupportedException e) {
 	    throw new ParseException(e.toString());
@@ -655,6 +692,10 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
       return false;
    }
 
+   public boolean isOrdinaryClass() {
+      return !isException() && !isError() && !isInterface();
+   }
+
    public void setIsInterface(boolean b) {
       this.isInterface=b;
    }
@@ -686,32 +727,70 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
       int ndx=nameAndSignature.indexOf('(');
       if (ndx<=0)
 	 return null;
-      else
+      else {
+         String fullSignature = resolveSignature(nameAndSignature.substring(ndx));
 	 return findConstructor(nameAndSignature.substring(0,ndx),
-			   nameAndSignature.substring(ndx));
+                                fullSignature);
+      }
    }
 
    public ConstructorDoc findConstructor(String name, String signature) {
-      for (int i=0; i<constructors.length; ++i) {
-	 if (constructors[i].name().equals(name) && constructors[i].signature().equals(signature))
-	    return constructors[i];
+      if (null != constructors) {
+         for (int i=0; i<constructors.length; ++i) {
+            if (constructors[i].name().equals(name) && constructors[i].signature().equals(signature))
+               return constructors[i];
+         }
       }
       return null;
    }
 
    public MethodDoc findMethod(String nameAndSignature) {
       int ndx=nameAndSignature.indexOf('(');
-      if (ndx<=0)
+      if (ndx<=0) {
 	 return null;
-      else
-	 return findMethod(nameAndSignature.substring(0,ndx),
-			   nameAndSignature.substring(ndx));
+      }
+      else {
+         String name = nameAndSignature.substring(0,ndx);
+         String fullSignature = resolveSignature(nameAndSignature.substring(ndx));
+	 return findMethod(name, fullSignature);
+      }
+   }
+
+   private String resolveSignature(String signature) 
+   {
+      signature = signature.substring(1, signature.length() - 1);
+      StringTokenizer st = new StringTokenizer(signature, ",");
+      StringBuffer fullSignature = new StringBuffer("(");
+      while (st.hasMoreTokens()) {
+         String type = st.nextToken().trim();
+         int ndx = type.length();
+         while (ndx > 0 && type.charAt(ndx - 1) == '[' || type.charAt(ndx - 1) == ']') {
+            -- ndx;
+         }
+         String dim = type.substring(ndx);
+         type = type.substring(0, ndx);
+         ClassDoc typeClass = findClass(type);
+         if (fullSignature.length() > 1) {
+            fullSignature.append(",");
+         }
+         if (null != typeClass) {
+            fullSignature.append(typeClass.qualifiedName());
+         }
+         else {
+            fullSignature.append(type);
+         }
+         fullSignature.append(dim);
+      }
+      fullSignature.append(')');
+      return fullSignature.toString();
    }
 
    public MethodDoc findMethod(String name, String signature) {
-      for (int i=0; i<methods.length; ++i) {
-	 if (methods[i].name().equals(name) && methods[i].signature().equals(signature))
-	    return methods[i];
+      if (null != methods) {
+         for (int i=0; i<methods.length; ++i) {
+            if (methods[i].name().equals(name) && methods[i].signature().equals(signature))
+               return methods[i];
+         }
       }
       return null;
    }
@@ -733,8 +812,24 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc, Wri
    }
 
    public Object clone() throws CloneNotSupportedException {
-      return super.clone();
+      ClassDocImpl result = (ClassDocImpl)super.clone();
+      result.baseClassDoc = baseClassDoc;
+      return result;
    }
 
+   public int superHashCode()
+   {
+      return super.hashCode();
+   }
+
+   public int hashCode()
+   {
+      return qualifiedTypeName().hashCode();
+   }
+
+   public ClassDoc getBaseClassDoc()
+   {
+      return baseClassDoc;
+   }
 }
 

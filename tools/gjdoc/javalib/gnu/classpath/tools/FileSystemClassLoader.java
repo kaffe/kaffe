@@ -1,5 +1,5 @@
-/* gnu.classpath.tools.doclets.xmldoclet.FileSystemClassLoader
-   Copyright (C) 2001 Free Software Foundation, Inc.
+/* gnu.classpath.tools.FileSystemClassLoader
+   Copyright (C) 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -18,7 +18,7 @@ along with GNU Classpath; see the file COPYING.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA. */
 
-package gnu.classpath.tools.doclets.xmldoclet;
+package gnu.classpath.tools;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,10 +33,20 @@ import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+/**
+ *  A <code>ClassLoader</code> implementation which looks for classes
+ *  on the local filesystem given a standard search path.
+ */
 public class FileSystemClassLoader extends ClassLoader {
 
    private File[] pathComponents;
 
+   /**
+    *  Initialize the class loader with a normal path string. The path
+    *  string should contain path components separated by {@link
+    *  File.pathSeparator}. Each path component should either denote a
+    *  directory or a .jar or .zip file.
+    */
    public FileSystemClassLoader(String path)
    {
       List components = new ArrayList();
@@ -48,6 +58,11 @@ public class FileSystemClassLoader extends ClassLoader {
       this.pathComponents = (File[])components.toArray(componentArray);
    }
 
+   /**
+    *  Initialize the class loader with an array of path
+    *  components. Each path component should either denote a
+    *  directory or a .jar or .zip file.
+    */
    public FileSystemClassLoader(File[] pathComponents)
    {
       this.pathComponents = pathComponents;

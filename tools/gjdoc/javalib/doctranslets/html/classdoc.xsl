@@ -34,6 +34,8 @@
 
   <xsl:output method="html"
     encoding="utf-8"
+    doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"
+    doctype-system="http://www.w3.org/TR/html4/loose.dtd"
     indent="no"/>
 
   <xsl:strip-space elements="*"/>
@@ -42,19 +44,37 @@
     <xsl:call-template name="output_link_tag"/>
   </xsl:template>
 
+  <xsl:template mode="pre" match="*">
+    <xsl:choose>
+      <xsl:when test="'pre'=local-name(.)">
+        <xsl:apply-templates mode="pre"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy-of select="."/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template mode="pre" match="text()[position()=last()]">
+    <xsl:call-template name="strip_trailing_ws">
+      <xsl:with-param name="p_content" select="."/>
+    </xsl:call-template>
+  </xsl:template>
+
   <xsl:template name="strip_trailing_ws">
     <xsl:param name="p_content"/>
+
     <xsl:if test="normalize-space($p_content)!=''">
       <xsl:choose>
         <xsl:when test="normalize-space(substring($p_content, string-length($p_content), 1))=''">
           <xsl:call-template name="strip_trailing_ws">
             <xsl:with-param name="p_content">
-              <xsl:value-of select="substring($p_content, 0, string-length($p_content)-1)"/>
+              <xsl:value-of select="substring($p_content, 1, string-length($p_content)-1)"/>
             </xsl:with-param>
           </xsl:call-template>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:value-of select="$p_content"/>
+          <xsl:copy-of select="$p_content"/>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:if>
@@ -69,11 +89,7 @@
       </xsl:for-each>
       <xsl:choose>
         <xsl:when test="name()='pre'">
-          <xsl:call-template name="strip_trailing_ws">
-            <xsl:with-param name="p_content">
-              <xsl:apply-templates/>
-            </xsl:with-param>
-          </xsl:call-template>
+          <xsl:apply-templates select="." mode="pre"/>
         </xsl:when>
         <xsl:otherwise>
           <xsl:apply-templates/>
@@ -101,16 +117,14 @@
     
     <html>
       <head>
+        <xsl:call-template name="output_title">
+          <xsl:with-param name="p_pagetitle" select="@name"/>
+        </xsl:call-template>
         <xsl:call-template name="include_common"/>
-        <title>
-          <xsl:if test="document('index.xml',/)/gjdoc:rootdoc/gjdoc:title">
-            <xsl:value-of select="document('index.xml',/)/gjdoc:rootdoc/gjdoc:title"/>
-            <xsl:text> - </xsl:text>
-          </xsl:if>
-          <xsl:value-of select="@name"/>
-        </title>
       </head>
-      <body class="classdoc" onload="top.document.title=document.title;">
+      <body class="classdoc" onload="top.contentPageLoaded(document.title);">
+
+        <div class="pagebody">
 
         <xsl:call-template name="classdoc_header"/>
         <xsl:call-template name="classdoc_all_field_summary">
@@ -156,9 +170,23 @@
             <xsl:call-template name="classdoc_method_details"/>
           </xsl:for-each>
         </xsl:if>
+
+        <!-- Bottom Navigation Bar -->
+        <xsl:call-template name="output_navbar">
+          <xsl:with-param name="p_show_frames" select="1"/>
+          <xsl:with-param name="p_show_noframes" select="1"/>
+          <xsl:with-param name="p_show_package" select="1"/>
+          <xsl:with-param name="p_show_package_tree" select="1"/>
+          <xsl:with-param name="p_show_full_tree" select="1"/>
+          <xsl:with-param name="p_show_index" select="1"/>
+          <xsl:with-param name="p_show_help" select="1"/> 
+          <xsl:with-param name="p_top" select="0"/> 
+          <xsl:with-param name="p_show_source" select="concat($gjdoc.pathtoroot, 'src-html/', translate(gjdoc:containingPackage/@name, '.', '/'), '/', @name, '.html')"/>
+          <xsl:with-param name="p_show_use" select="concat($gjdoc.pathtoroot, 'class-use/', translate(gjdoc:containingPackage/@name, '.', '/'), '/', @name, '.html')"/>
+          <xsl:with-param name="p_curr_class" select="1"/>
+        </xsl:call-template>
         
-        <xsl:call-template name="output_copyright_footer"/>
-        
+        </div>
       </body>
     </html>
   </xsl:template>
@@ -167,24 +195,28 @@
   
   <xsl:template name="classdoc_header">
     
-    <div class="header">
-      <span class="navi-button">&#8658;&#160;<a href="{concat($gjdoc.pathtoroot, 'index.html')}" target="_top">Index&#160;(Frames)</a></span>&#160;|&#160;
-      <span class="navi-button">&#8658;&#160;<a href="{concat($gjdoc.pathtoroot, 'index_noframes.html')}" target="_top">Index&#160;(No&#160;Frames)</a></span>&#160;|&#160;
-      <span class="navi-button">&#8658;&#160;<a href="package-summary.html">Package</a></span>&#160;|&#160;
-      <span class="navi-button">&#8658;&#160;<a href="package-tree.html">Package&#160;Tree</a></span>&#160;|&#160;
-      <span class="navi-button">&#8658;&#160;<a href="{concat($gjdoc.pathtoroot, 'fulltree.html')}">Full Tree</a></span>&#160;
-    </div>
+    <!-- Top Navigation Bar -->
+    <xsl:call-template name="output_navbar">
+      <xsl:with-param name="p_show_frames" select="1"/>
+      <xsl:with-param name="p_show_noframes" select="1"/>
+      <xsl:with-param name="p_show_package" select="1"/>
+      <xsl:with-param name="p_show_package_tree" select="1"/>
+      <xsl:with-param name="p_show_full_tree" select="1"/>
+      <xsl:with-param name="p_show_index" select="1"/>
+      <xsl:with-param name="p_show_help" select="1"/> 
+      <xsl:with-param name="p_top" select="1"/> 
+      <xsl:with-param name="p_show_source" select="concat($gjdoc.pathtoroot, 'src-html/', translate(gjdoc:containingPackage/@name, '.', '/'), '/', @name, '.html')"/>
+      <xsl:with-param name="p_show_use" select="concat($gjdoc.pathtoroot, 'class-use/', translate(gjdoc:containingPackage/@name, '.', '/'), '/', @name, '.html')"/>
+      <xsl:with-param name="p_curr_class" select="1"/>
+    </xsl:call-template>
 
     <div class="classdoc-head">
 
-      <div class="classdoc-head-inner">
-
-        <b class="classdoc-head-packagename">
+        <div class="classdoc-head-packagename classdoc-subtitle">
           <xsl:value-of select="gjdoc:containingPackage/@name"/>
-        </b>
-        <br/>
+        </div>
     
-        <h1 class="classdoc-head-classname">
+        <h1 class="classdoc-head-classname classdoc-title">
           <xsl:choose>
             <xsl:when test="gjdoc:isInterface">
               <xsl:text>Interface </xsl:text>
@@ -196,8 +228,6 @@
           <xsl:value-of select="@name"/>
         </h1>
 
-      </div>
-
     </div>
 
     <xsl:if test="gjdoc:isClass">
@@ -208,7 +238,7 @@
       <xsl:variable name="v_qualifiedtypename" select="attribute::qualifiedtypename"/>
       <b>Enclosing Class:</b><br/>
       <xsl:call-template name="link_to_class">
-        <xsl:with-param name="p_name" select="gjdoc:containingClass/@name"/>
+        <xsl:with-param name="p_name" select="gjdoc:containingClass/@typename"/>
         <xsl:with-param name="p_qualifiedname" select="gjdoc:containingClass/@qualifiedtypename"/>
       </xsl:call-template>
     </xsl:if>
@@ -311,7 +341,8 @@
           <xsl:text>class </xsl:text>
         </xsl:otherwise>
       </xsl:choose>
-      <b><xsl:value-of select="@name"/></b><br/>
+
+      <xsl:call-template name="link_to_class_source"/><br/>
     
       <!-- 'extends Number' -->
       
@@ -361,8 +392,6 @@
       </div>
     </xsl:if>
 
-    <xsl:call-template name="output_since_tags"/>
-    <xsl:call-template name="output_author_tags"/>
     <xsl:call-template name="output_see_tags"/>
     <xsl:call-template name="output_taglet_tags"/>
 
@@ -370,66 +399,44 @@
 
   <xsl:template name="output_taglet_tags">
 
-    <xsl:for-each select="gjdoc:tags/gjdoc:tagletText">
-      <xsl:copy-of select="."/>
+    <xsl:for-each select="gjdoc:tags/gjdoc:tag">
+      <xsl:choose>
+        <xsl:when test="@name='@deprecated'">
+          <div class="classdoc-tag-section-header">
+            <xsl:value-of select="'Deprecated:'"/>
+          </div>
+          <dl class="classdoc-list">
+            <xsl:for-each select="gjdoc:inlineTags">
+              <xsl:apply-templates/>
+            </xsl:for-each>
+          </dl>
+        </xsl:when>
+        <xsl:when test="@taglet-generated">
+          <xsl:copy-of select="./*"/>
+        </xsl:when>
+      </xsl:choose>
     </xsl:for-each>
     
-  </xsl:template>
-
-  <xsl:template name="output_since_tags">
-
-    <xsl:if test="gjdoc:tags/gjdoc:tag[@kind='@since']">
-      <div class="classdoc-tag-section-header">Since:</div> 
-      <dl class="classdoc-list">
-        <dt><xsl:value-of select="gjdoc:tags/gjdoc:tag[@kind='@since']" disable-output-escaping="yes"/></dt>
-      </dl>
-    </xsl:if>
-
-  </xsl:template>
-
-  <xsl:template name="output_author_tags">
-
-    <xsl:if test="gjdoc:tags/gjdoc:tag[@kind='@author']">
-      <div class="classdoc-tag-section-header">
-        <xsl:choose>
-          <xsl:when test="gjdoc:tags/gjdoc:tag[@kind='@author'][position()=2]">
-            <xsl:text>Authors:</xsl:text>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:text>Author:</xsl:text>
-          </xsl:otherwise>
-        </xsl:choose>
-      </div>
-
-      <dl class="classdoc-list">
-        <xsl:for-each select="gjdoc:tags/gjdoc:tag[@kind='@author']">
-          <dt><xsl:copy-of select="./text()"/></dt>
-        </xsl:for-each>
-      </dl>
-    </xsl:if>
-
   </xsl:template>
 
   <!-- Output summary of all fields in this class -->
 
   <xsl:template name="classdoc_all_field_summary">
 
-    <xsl:if test="gjdoc:fielddoc">    
-      <h1 class="classdoc-header">Field Summary</h1>
+    <xsl:if test=".//gjdoc:fielddoc">    
     
-      <table border="1" cellspacing="0" width="100%" class="classdoc-table">
+      <table border="1" cellspacing="0" class="classdoc-table">
+        <tr><td class="section-header" colspan="2"><div class="section-header">Field Summary</div></td></tr>
         <xsl:for-each select="gjdoc:fielddoc">
           <xsl:sort select="@name" order="ascending"/>
           <xsl:call-template name="classdoc_field_summary_tr"/>  
         </xsl:for-each>
       </table>
-    </xsl:if>
 
-    <xsl:variable name="v_superclass" select="gjdoc:superclass/@qualifiedtypename"/>
-    
-    <xsl:for-each select="/gjdoc:rootdoc/gjdoc:classdoc[attribute::qualifiedtypename=$v_superclass]">
-      <xsl:call-template name="output_superclass_fields"/>
-    </xsl:for-each>
+      <xsl:for-each select="gjdoc:superclass">
+        <xsl:call-template name="output_superclass_fields"/>
+      </xsl:for-each>
+    </xsl:if>
 
   </xsl:template>
  
@@ -437,24 +444,19 @@
   
   <xsl:template name="classdoc_all_method_summary">
     
-    <xsl:if test="gjdoc:methoddoc">
-      <h1 class="classdoc-header">Method Summary</h1>
-    
-      <table border="1" cellspacing="0" width="100%" class="classdoc-table">
+    <xsl:if test=".//gjdoc:methoddoc">
+      <table border="1" cellspacing="0" class="classdoc-table">
+        <tr><td class="section-header" colspan="2"><div class="section-header">Method Summary</div></td></tr>
         <xsl:for-each select="gjdoc:methoddoc">
           <xsl:sort select="@name" order="ascending"/>
           <xsl:call-template name="classdoc_method_summary_tr"/>  
         </xsl:for-each>
       </table>
-    </xsl:if>
 
-    <xsl:variable name="v_superclass">
-      <xsl:value-of select="gjdoc:superclass/@qualifiedtypename"/>
-    </xsl:variable>
-    
-    <xsl:for-each select="/gjdoc:rootdoc/gjdoc:classdoc[attribute::qualifiedtypename=$v_superclass]">
-      <xsl:call-template name="output_superclass_methods"/>
-    </xsl:for-each>
+      <xsl:for-each select="gjdoc:superclass">
+        <xsl:call-template name="output_superclass_methods"/>
+      </xsl:for-each>
+    </xsl:if>
     
   </xsl:template>
   
@@ -462,10 +464,13 @@
   
   <xsl:template name="classdoc_all_constructor_summary">
     
-    <xsl:if test="gjdoc:constructordoc">
+    <xsl:if test=".//gjdoc:constructordoc">
+      <!--
       <h1 class="classdoc-header">Constructor Summary</h1>
+-->
     
-      <table border="1" cellspacing="0" width="100%" class="classdoc-table">
+      <table class="classdoc-table">
+        <tr><td class="section-header" colspan="2"><div class="section-header">Constructor Summary</div></td></tr>
         <xsl:for-each select="gjdoc:constructordoc">
           <xsl:sort select="@name" order="ascending"/>
           <xsl:call-template name="classdoc_method_summary_tr"/>  
@@ -479,12 +484,12 @@
   
   <xsl:template name="classdoc_field_summary_tr">
     
-    <tr>
+    <tr valign="top">
 
       <!-- Left table cell: Modifiers and Return Type  -->
       
-      <td width="1%" align="right" valign="top" class="no-border-r">
-        <p class="prototype-type">
+      <td valign="top" class="member-summary field modifiers">
+        <code class="member-summary field modifiers">
           <xsl:call-template name="output_modifiers_summary"/>
           <xsl:call-template name="link_to_class">
             <xsl:with-param name="p_name">
@@ -495,23 +500,23 @@
             </xsl:with-param>
           </xsl:call-template>
           <xsl:value-of select="gjdoc:type/@dimension"/>
-        </p>
+        </code>
       </td>
 
       <!-- Right table cell: name and short description  -->
       
-      <td align="left" valign="top" class="with-border">
+      <td class="member-summary field name">
         <!-- Method signature -->
         
         <!-- Link to field definition -->
           
-        <p class="prototype">
-          <a href="{concat('#',@name)}"><xsl:value-of select="@name"/></a>
-        </p>
+        <code class="member-summary field name">
+          <a href="{concat('#',@name)}" class="field name"><xsl:value-of select="@name"/></a>
+        </code>
 
         <!-- Brief description of field -->
         
-        <blockquote class="classdoc-summary-comment">
+        <blockquote class="member-summary field comment">
           <xsl:for-each select="gjdoc:firstSentenceTags/node()">
             <xsl:value-of select="." disable-output-escaping="yes"/>
           </xsl:for-each>
@@ -568,13 +573,13 @@
   
   <xsl:template name="classdoc_method_summary_tr">
     
-    <tr>
+    <tr valign="top">
       
       <!-- Left table cell: Modifiers and Return Type  -->
       
       <xsl:if test="gjdoc:isMethod">
-        <td width="1%" align="right" valign="top" class="no-border-r">
-          <p class="prototype-type">
+        <td valign="top" class="member-summary method modifiers">
+          <code class="member-summary method modifiers">
             <xsl:call-template name="output_modifiers_summary"/>
             <xsl:text> </xsl:text>
             <xsl:call-template name="link_to_class">
@@ -582,39 +587,39 @@
               <xsl:with-param name="p_name" select="gjdoc:returns/@typename"/>
             </xsl:call-template>
             <xsl:value-of select="gjdoc:returns/@dimension"/>
-          </p>
+          </code>
         </td>
       </xsl:if>
       
       <!-- Right table cell: signature and short description  -->
       
-      <td align="left" valign="top" class="with-border">
+      <td align="left" valign="top" class="member-summary method name">
         
         <!-- Method signature -->
         
-        <p class="prototype">
+        <code class="member-summary method signature">
           
           <!-- Link to method definition -->
           
-          <a href="{concat('#',@name,gjdoc:signature/@full)}"><xsl:value-of select="@name"/></a>
+          <a href="{concat('#',@name,gjdoc:signature/@full)}" class="member-summary method name"><xsl:value-of select="@name"/></a>
           
           <!-- Parameter List -->
           
           <xsl:text>(</xsl:text>
           <xsl:call-template name="list_parameters"/>
           <xsl:text>)</xsl:text>
-        </p>
+        </code>
         
         <!-- Brief description of Method -->
         
-        <blockquote class="classdoc-summary-comment">
+        <blockquote class="member-summary method comment">
           <xsl:choose>
-            <xsl:when test="gjdoc:tags/gjdoc:tag[kind='@deprecated']">
-              <b>Deprecated.</b>
+            <xsl:when test="gjdoc:tags/gjdoc:tag[@kind='@deprecated']">
               <i>
-              <xsl:for-each select="gjdoc:tags/gjdoc:tag[kind='@deprecated']/node()">
-                <xsl:value-of disable-output-escaping="yes" select="."/>
-              </xsl:for-each>
+                <b>Deprecated. </b>
+                <xsl:for-each select="gjdoc:tags/gjdoc:tag[@kind='@deprecated']/gjdoc:firstSentenceTags">
+                  <xsl:apply-templates/>
+                </xsl:for-each>
               </i>
             </xsl:when>
             <xsl:otherwise>
@@ -661,13 +666,12 @@
           <span class="prototype-name">
             <xsl:value-of select="@name"/>
           </span>
-          <xsl:variable name="param_position">
-            <xsl:value-of select="position()"/>
-          </xsl:variable>
-          <xsl:if test="../gjdoc:tags/gjdoc:tag[attribute::kind='@param'][position()=$param_position]">
+          <xsl:variable name="param_position" select="position()"/>
+
+          <xsl:if test="../gjdoc:tags/gjdoc:tag[attribute::kind='@param' and position()=$param_position]">
             <xsl:text> - </xsl:text>
-            <xsl:for-each select="../gjdoc:tags/gjdoc:tag[attribute::kind='@param'][position()=$param_position]/gjdoc:inlineTags/node()">
-              <xsl:value-of select="." disable-output-escaping="yes"/>
+            <xsl:for-each select="../gjdoc:tags/gjdoc:tag[attribute::kind='@param' and position()=$param_position]/gjdoc:inlineTags/node()">
+              <xsl:copy-of select="."/>
             </xsl:for-each>
           </xsl:if>
         </dt>
@@ -675,119 +679,9 @@
     </dl>
   </xsl:template>
 
-  <xsl:template name="get_qualified_type">
-    <xsl:param name="p_typename"/>
-    <xsl:variable name="v_plaintype">
-      <xsl:choose>
-        <xsl:when test="contains($p_typename,'[')">
-          <xsl:value-of select="normalize-space(substring-before($p_typename, '['))"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="$p_typename"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-    <xsl:variable name="v_containingpackage">
-      <xsl:value-of select="ancestor-or-self::gjdoc:classdoc/gjdoc:containingPackage/attribute::name"/>
-    </xsl:variable>
-    <xsl:choose>
-      <xsl:when test="document('index.xml', /)/gjdoc:rootdoc/gjdoc:classdoc[attribute::name=$v_plaintype]/gjdoc:containingPackage[attribute::name=$v_containingpackage]">
-        <xsl:value-of select="$v_containingpackage"/>
-        <xsl:text>.</xsl:text>
-      </xsl:when>
-      <xsl:when test="document('index.xml', /)/gjdoc:rootdoc/gjdoc:classdoc[attribute::name=$v_plaintype]/gjdoc:containingPackage[attribute::name='java.lang']">
-        <xsl:text>java.lang.</xsl:text>
-      </xsl:when>
-    </xsl:choose>
-    <xsl:value-of select="$p_typename"/>
-  </xsl:template>
-
-  <xsl:template name="resolve_parameter_list">
-    <xsl:param name="p_anchor"/>
-    <xsl:variable name="v_parameter">
-      <xsl:value-of select="normalize-space(substring-before($p_anchor, ','))"/>
-    </xsl:variable>
-    <xsl:variable name="v_remainder">
-      <xsl:value-of select="normalize-space(substring-after($p_anchor, ','))"/>
-    </xsl:variable>
-    <xsl:call-template name="get_qualified_type">
-      <xsl:with-param name="p_typename">
-        <xsl:choose>
-          <xsl:when test="string-length($v_remainder)>0">
-            <xsl:value-of select="$v_parameter"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="$p_anchor"/>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:with-param>
-    </xsl:call-template>
-
-    <xsl:if test="string-length($v_remainder)>0">
-      <xsl:text>,</xsl:text>
-      <xsl:call-template name="resolve_parameter_list">
-        <xsl:with-param name="p_anchor">
-          <xsl:value-of select="$v_remainder"/>
-        </xsl:with-param>
-      </xsl:call-template>
-    </xsl:if>
-  </xsl:template>
-
-  <xsl:template name="output_link_tag">
-    <xsl:variable name="v_see">
-      <xsl:choose>
-        <xsl:when test="contains(., '(')">
-          <xsl:value-of select="normalize-space(substring-before(., '('))"/>
-          <xsl:text>(</xsl:text>
-          <xsl:call-template name="resolve_parameter_list">
-            <xsl:with-param name="p_anchor">
-              <xsl:value-of select="normalize-space(substring-before(substring-after(., '('), ')'))"/>
-            </xsl:with-param>
-          </xsl:call-template>
-          <xsl:text>)</xsl:text>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="."/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-    <xsl:variable name="v_class">
-      <xsl:choose>
-        <xsl:when test="contains(., '#')">
-          <xsl:value-of select="normalize-space(substring-before(., '#'))"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="normalize-space(.)"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-    <xsl:variable name="v_anchor" select="normalize-space(substring-after(., '#'))"/>
-    <xsl:variable name="v_seeanchor">
-      <xsl:if test="contains($v_see, '#')">
-        <xsl:value-of select="concat('#', normalize-space(substring-after($v_see, '#')))"/>
-      </xsl:if>
-    </xsl:variable>
-    <xsl:variable name="v_classname" select="document('index.xml', /)/gjdoc:rootdoc/gjdoc:classdoc[attribute::name=$v_class]/attribute::qualifiedtypename"/>
-    <xsl:variable name="v_classnamefq" select="document('index.xml', /)/gjdoc:rootdoc/gjdoc:classdoc[attribute::qualifiedtypename=$v_class]/attribute::qualifiedtypename"/>
-    <xsl:choose>
-      <xsl:when test="starts-with(., '#')">
-        <a href="{translate($v_see,' ','')}"><xsl:value-of select="$v_anchor"/></a>
-      </xsl:when>
-      <xsl:when test="$v_classname">
-        <a href="{translate(concat($gjdoc.pathtoroot, translate($v_classname, '.', '/'), '.html', $v_seeanchor),' ','')}"><xsl:value-of select="translate($v_see,'#','.')"/></a>
-      </xsl:when>
-      <xsl:when test="$v_classnamefq">
-        <a href="{translate(concat($gjdoc.pathtoroot, translate($v_classnamefq, '.', '/'), '.html', $v_seeanchor),' ','')}"><xsl:value-of select="translate($v_see,'#','.')"/></a>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:value-of select="translate(., '#', '.')" disable-output-escaping="yes"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
   <xsl:template name="output_see_tags">
     <xsl:if test="gjdoc:tags/gjdoc:tag[attribute::kind='@see']">
-      <div class="classdoc-tag-section-header">See Also:</div>
+      <div class="classdoc-tag-section-header"><b>See Also:</b></div>
 
       <dl class="classdoc-list">
         <xsl:for-each select="gjdoc:tags/gjdoc:tag[attribute::kind='@see']">
@@ -808,19 +702,20 @@
   
   <xsl:template name="classdoc_field_details">
 
-    <a name="{@name}"/>
+    <a name="{@name}" class="classdoc"> </a>
+    <div class="before-details"> </div>
 
     <h3><xsl:value-of select="@name"/></h3>
     
-    <p class="prototype">
+    <p class="prototype"><code>
       <xsl:value-of select="gjdoc:access/@scope"/>
       <xsl:text> </xsl:text>
       <xsl:call-template name="output_modifiers"/>
       <xsl:value-of select="gjdoc:type/@typename"/>
       <xsl:value-of select="gjdoc:type/@dimension"/>
       <xsl:text> </xsl:text>
-      <b><xsl:value-of select="@name"/></b>
-    </p>
+      <xsl:call-template name="link_to_member_source"/>
+    </code></p>
 
     <p/>
     
@@ -836,8 +731,7 @@
       
     <p/>
 
-    <xsl:call-template name="output_since_tags"/>
-    <xsl:call-template name="output_author_tags"/>
+    <xsl:call-template name="output_taglet_tags"/>
 
     <!-- See Also -->
 
@@ -854,21 +748,22 @@
   
   <xsl:template name="classdoc_method_details">
 
-    <a name="{concat(@name,gjdoc:signature/@full)}"/>
+    <a name="{concat(@name,gjdoc:signature/@full)}" class="classdoc"> </a>
+    <div class="before-details"> </div>
     
     <h3><xsl:value-of select="@name"/></h3>
     
-    <p class="prototype">
+    <p class="prototype"><code>
       <xsl:value-of select="gjdoc:access/@scope"/>
       <xsl:text> </xsl:text>
       <xsl:call-template name="output_modifiers"/>
       <xsl:value-of select="gjdoc:returns/@typename"/><xsl:value-of select="gjdoc:returns/@dimension"/>
       <xsl:text> </xsl:text>
-      <b><xsl:value-of select="@name"/></b>
+      <xsl:call-template name="link_to_member_source"/>
       <xsl:text>(</xsl:text>
       <xsl:call-template name="list_parameters"/>
       <xsl:text>)</xsl:text>
-    </p>    
+    </code></p>    
     
     <!-- Full comment text -->
     
@@ -882,16 +777,15 @@
 
     <p/>
 
-    <xsl:call-template name="output_since_tags"/>
-    <xsl:call-template name="output_author_tags"/>
+    <xsl:call-template name="output_taglet_tags"/>
     
     <xsl:if test="gjdoc:parameter">
-      <div class="classdoc-tag-section-header">Parameters:</div>
+      <div class="classdoc-tag-section-header"><b>Parameters:</b></div>
       <xsl:call-template name="list_parameter_details"/>
     </xsl:if>
     
     <xsl:if test="gjdoc:tags/gjdoc:tag[attribute::kind='@return']">
-      <div class="classdoc-tag-section-header">Returns:</div>
+      <div class="classdoc-tag-section-header"><b>Returns:</b></div>
       <dl class="classdoc-list">
         <dt>
           <xsl:for-each select="gjdoc:tags/gjdoc:tag[attribute::kind='@return']">
@@ -902,7 +796,7 @@
     </xsl:if>
     
     <xsl:if test="gjdoc:tags/gjdoc:tag[attribute::kind='@throws']">
-      <div class="classdoc-tag-section-header">Throws:</div>
+      <div class="classdoc-tag-section-header"><b>Throws:</b></div>
       <dl class="classdoc-list">
         <xsl:for-each select="gjdoc:tags/gjdoc:tag[attribute::kind='@throws']">
           <dt>
@@ -918,7 +812,7 @@
             </code>
             <xsl:text> - </xsl:text>
             <xsl:for-each select="gjdoc:inlineTags/node()">
-              <xsl:value-of select="." disable-output-escaping="yes"/>
+              <xsl:copy-of select="."/>
             </xsl:for-each>
           </dt>
         </xsl:for-each>
@@ -1132,6 +1026,45 @@
         </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="output_superclass_methods">
+    <xsl:if test="gjdoc:methoddoc">
+      <table class="classdoc-table">
+        <tr>
+          <td class="sub-section-header">
+            <div class="sub-section-header">Methods inherited from class <xsl:value-of select="@qualifiedtypename"/></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="member-summary super method">
+            <xsl:for-each select="gjdoc:methoddoc">
+              <code class="member-summary super method"><a href="{concat($gjdoc.pathtoroot, translate(../gjdoc:containingPackage/@name, '.', '/'), '/', ../@typename, '.html#', @name, gjdoc:signature/@full)}" class="member-summary super method"><xsl:value-of select="@name"/></a><xsl:if test="position() != last()">, </xsl:if></code>
+            </xsl:for-each>
+          </td>
+        </tr>
+      </table>
+    </xsl:if>
+  </xsl:template>
+
+
+  <xsl:template name="output_superclass_fields">
+    <xsl:if test="gjdoc:fielddoc">
+      <table class="classdoc-table">
+        <tr>
+          <td class="sub-section-header">
+            <div class="sub-section-header">Fields inherited from class <xsl:value-of select="@qualifiedtypename"/></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="member-summary super field">
+            <xsl:for-each select="gjdoc:fielddoc">
+              <code class="member-summary super field"><a href="{concat($gjdoc.pathtoroot, translate(../gjdoc:containingPackage/@name, '.', '/'), '/', ../@typename, '.html#', @name)}" class="member-summary super field"><xsl:value-of select="@name"/></a><xsl:if test="position() != last()">, </xsl:if></code>
+            </xsl:for-each>
+          </td>
+        </tr>
+      </table>
+    </xsl:if>
   </xsl:template>
 
 </xsl:stylesheet>

@@ -41,7 +41,7 @@ public class TypeImpl implements Type, WritableType {
    public ClassDoc asClassDoc() {
 
       if (this instanceof ClassDoc)
-	 return (ClassDoc)this;
+	 return ((ClassDocImpl)(ClassDoc)this).getBaseClassDoc();
       else
 	 return null;
    }

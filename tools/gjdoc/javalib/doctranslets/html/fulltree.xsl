@@ -96,7 +96,7 @@
         </xsl:choose>
       </xsl:variable>
       <xsl:if test="string-length($v_is_used)>0">
-        <li>
+        <li class="tree">
           <xsl:call-template name="output_tree_recursive">
             <xsl:with-param name="p_level"><xsl:value-of select="$p_level+1"/></xsl:with-param>
           </xsl:call-template>
@@ -134,31 +134,29 @@
 
     <html>
       <head>
-        <title>
-          <xsl:value-of select="concat(/gjdoc:rootdoc/gjdoc:title, ' - Full Tree')"/>
-        </title>
+        <xsl:call-template name="output_title">
+          <xsl:with-param name="p_pagetitle" select="'Full Tree'"/>
+        </xsl:call-template>
         <xsl:call-template name="include_common"/>
       </head>
-      <body class="classdoc" onload="top.document.title=document.title;">
+      <body class="classdoc" onload="top.contentPageLoaded(document.title);">
+        <div class="pagebody">
 
-        <div class="header">
-          <span class="navi-button">&#8658;&#160;<a href="{concat($gjdoc.pathtoroot, 'index.html')}" target="_top">Index&#160;(Frames)</a></span>&#160;|&#160;
-          <span class="navi-button">&#8658;&#160;<a href="{concat($gjdoc.pathtoroot, 'index_noframes.html')}" target="_top">Index&#160;(No&#160;Frames)</a></span>&#160;|&#160;
-          <xsl:choose>
-            <xsl:when test="string-length($gjdoc.outputfile.info)=0">
-              <span class="navi-button">&#8658;&#160;Package</span>&#160;|&#160;
-              <span class="navi-button">&#8658;&#160;Package&#160;Tree</span>&#160;|&#160;
-              <span class="navi-button">&#8658;&#160;Full Tree</span>&#160;
-            </xsl:when>
-            <xsl:otherwise>
-              <span class="navi-button">&#8658;&#160;<a href="package-summary.html">Package</a></span>&#160;|&#160;
-              <span class="navi-button">&#8658;&#160;Package&#160;Tree</span>&#160;|&#160;
-              <span class="navi-button">&#8658;&#160;<a href="{concat($gjdoc.pathtoroot, 'fulltree.html')}">Full Tree</a></span>&#160;              
-            </xsl:otherwise>
-          </xsl:choose>
-        </div>
+        <!-- Top Navigation Bar -->
+        <xsl:call-template name="output_navbar">
+          <xsl:with-param name="p_show_frames" select="1"/>
+          <xsl:with-param name="p_show_noframes" select="1"/>
+          <xsl:with-param name="p_show_package" select="string-length($gjdoc.outputfile.info)&gt;0"/>
+          <xsl:with-param name="p_show_package_tree" select="0"/>
+          <xsl:with-param name="p_curr_package_tree" select="string-length($gjdoc.outputfile.info)&gt;0"/>
+          <xsl:with-param name="p_show_full_tree" select="string-length($gjdoc.outputfile.info)&gt;0"/>
+          <xsl:with-param name="p_curr_full_tree" select="string-length($gjdoc.outputfile.info)&lt;=0"/>
+          <xsl:with-param name="p_show_index" select="1"/>
+          <xsl:with-param name="p_show_help" select="1"/>
+          <xsl:with-param name="p_top" select="1"/> 
+        </xsl:call-template>
 
-        <h1 class="classdoc-header">
+        <h1 class="classdoc-title">
           <xsl:choose>
             <xsl:when test="string-length($gjdoc.outputfile.info)=0">
               Full Class Tree
@@ -174,14 +172,28 @@
         </h1>
 
         <xsl:for-each select="/gjdoc:rootdoc/gjdoc:classdoc[@qualifiedtypename='java.lang.Object']">
-          <ul>
-            <li>
+          <ul class="tree">
+            <li class="tree">
               <xsl:call-template name="output_tree_recursive"/>
             </li>
           </ul>
         </xsl:for-each>
 
-        <xsl:call-template name="output_copyright_footer"/>
+
+        <!-- Bottom Navigation Bar -->
+        <xsl:call-template name="output_navbar">
+          <xsl:with-param name="p_show_frames" select="1"/>
+          <xsl:with-param name="p_show_noframes" select="1"/>
+          <xsl:with-param name="p_show_package" select="string-length($gjdoc.outputfile.info)&lt;=0"/>
+          <xsl:with-param name="p_show_package_tree" select="0"/>
+          <xsl:with-param name="p_curr_package_tree" select="string-length($gjdoc.outputfile.info)&gt;0"/>
+          <xsl:with-param name="p_show_full_tree" select="string-length($gjdoc.outputfile.info)&gt;0"/>
+          <xsl:with-param name="p_curr_full_tree" select="string-length($gjdoc.outputfile.info)&lt;=0"/>
+          <xsl:with-param name="p_show_index" select="1"/>
+          <xsl:with-param name="p_show_help" select="1"/>
+          <xsl:with-param name="p_top" select="0"/> 
+        </xsl:call-template>
+        </div>
       </body>
     </html>
     

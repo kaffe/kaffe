@@ -35,4 +35,5 @@ public class TextTagImpl extends AbstractTagImpl implements Tag {
 
    public String toString() { return "TextTagImpl{text=" + text + "}"; }
 
+   public String getText() { return text; }
 }

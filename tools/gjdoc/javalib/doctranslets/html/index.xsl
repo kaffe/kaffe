@@ -43,20 +43,24 @@
 
   <xsl:template match="/">
     <html>
-        <xsl:if test="/gjdoc:rootdoc/gjdoc:title">
-          <head>
-            <title>
-              <xsl:value-of select="/gjdoc:rootdoc/gjdoc:title"/>
-            </title>
-          </head>
-        </xsl:if>
-        <frameset cols="25%,75%">
-          <frameset rows="25%,75%">
-            <frame src="allpackages.html" name="packages"/>
+      <head>
+        <xsl:call-template name="include_common"/>
+      </head>
+      <frameset cols="20%,80%">
+        <xsl:choose>
+          <xsl:when test="count(/gjdoc:rootdoc/gjdoc:packagedoc) > 1">
+            <frameset rows="25%,75%">
+              <frame src="allpackages.html" name="packages"/>
+              <frame src="allclasses.html" name="classes"/>
+            </frameset>
+            <frame src="index_noframes.html" name="content"/>
+          </xsl:when>
+          <xsl:otherwise>
             <frame src="allclasses.html" name="classes"/>
-          </frameset>
-          <frame src="index_noframes.html" name="content"/>
-        </frameset>
-      </html>
+            <frame src="{concat(translate(/gjdoc:rootdoc/gjdoc:packagedoc[position()=1]/@name, '.', '/'), '/package-summary.html')}" name="content"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </frameset>
+    </html>
   </xsl:template>
 </xsl:stylesheet>

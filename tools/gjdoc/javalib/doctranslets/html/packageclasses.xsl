@@ -39,7 +39,7 @@
   <xsl:strip-space elements="*"/>
 
   <xsl:template name="add_link_to_class">
-    <a href="{concat(@name, '.html')}" target="content">
+    <a href="{concat(@name, '.html')}" target="content" class="menu packageclasses">
       <xsl:choose>
         <xsl:when test="gjdoc:isInterface">
           <i><xsl:value-of select="@name"/></i>
@@ -60,8 +60,8 @@
         </title>
         <xsl:call-template name="include_common"/>
       </head>
-      <body>
-        <h3><a href="package-summary.html" target="content"><xsl:value-of select="$gjdoc.outputfile.info"/></a></h3>
+      <body onload="secondaryPageLoaded('classes');" class="menu packageclasses">
+        <h3 class="menu-title"><a href="package-summary.html" target="content"><xsl:value-of select="$gjdoc.outputfile.info"/></a></h3>
         <xsl:for-each select="/gjdoc:rootdoc/gjdoc:classdoc[gjdoc:containingPackage/@name=$gjdoc.outputfile.info and not(child::gjdoc:isError or child::gjdoc:isException)]">
           <xsl:sort select="@name" order="ascending"/>
           <xsl:call-template name="add_link_to_class"/>

@@ -238,7 +238,7 @@ import com.sun.javadoc.*;
 	 // Ignore superfluous semicoli after class definition
 	 if (endIndex-startIndex<=1) return endIndex;
 
-	 if (parser.ctx==null) throw new Error("ARGH! ctx==null! '"+new String(source,startIndex,endIndex-startIndex)+"'");
+	 //assert (parser.ctx!=null);
 	 Collection fields=FieldDocImpl.createFromSource(parser.ctx.classDoc, 
 							 parser.ctx.classDoc.containingPackage(), 
 							 source, startIndex, endIndex);
@@ -288,6 +288,8 @@ import com.sun.javadoc.*;
 	 if (parser.addComments)
 	    execDoc.setRawCommentText(parser.getLastComment());
 
+	 parser.setLastComment(null);
+
 	 if (execDoc.isIncluded()) {
 
 	    if (execDoc.isMethod()) {
@@ -304,7 +306,6 @@ import com.sun.javadoc.*;
 	    parser.ctx.maybeSerMethodList.add(execDoc);
 	 }
 
-	 parser.setLastComment(null);
 	 return endIndex;
       }
 
@@ -415,6 +416,23 @@ import com.sun.javadoc.*;
 	 boolean isClass=false;
 	 for (; index<source.length && !isClass; ++index) {
 	    switch (source[index]) {
+            case '/':  // possible comment
+               if (index<source.length-1) {
+                  char c = source[index+1];
+                  if ('/' == c) {
+                     index += 2;
+                     while (index<source.length && source[index]!=10) {
+                        ++ index;
+                     }
+                  }
+                  else if ('*' == c) {
+                     index += 3;
+                     while (index<source.length && (source[index-1] != '*' || source[index]!='/')) {
+                        ++ index;
+                     }
+                  }
+               }
+               break;
 	    case '=':  // field
 	    case ';':  // field
 	    case '(':  // function
@@ -425,7 +443,7 @@ import com.sun.javadoc.*;
 	    }
 	    if (isClass) break;
 	 }
-	 if (!isClass || index==source.length)
+	 if (!isClass || index>=source.length)
 	    return -1;
 
 	 return index+1;
@@ -436,9 +454,9 @@ import com.sun.javadoc.*;
 	 parser.classOpened(source, startIndex, endIndex);
 	 if (parser.addComments)
 	    parser.ctx.classDoc.setRawCommentText(parser.getLastComment());
+	 parser.setLastComment(null);
 
 	 int rc=parser.parse(source, endIndex, parser.classLevelComponents);
-	 parser.setLastComment(null);
 	 return rc;
       }
 
@@ -504,9 +522,16 @@ public class Parser {
 
    private static final int READ_BUFFER_SIZE = 512;
 
-   static char[] loadFile(File file) throws IOException {
-      StringWriter writer=new StringWriter();
-      FileReader reader=new FileReader(file);
+   static char[] loadFile(File file, String encoding) throws IOException {
+      StringWriter writer = new StringWriter();
+      FileInputStream in = new FileInputStream(file);
+      Reader reader;
+      if (null != encoding) {
+         reader = new InputStreamReader(in, encoding);
+      }
+      else {
+         reader = new InputStreamReader(in);
+      }
       char[] buffer = new char[READ_BUFFER_SIZE];
       int nread;
       while ((nread=reader.read(buffer))>=0) {
@@ -553,7 +578,7 @@ public class Parser {
 
    static Set processedFiles = new HashSet();
 
-   void processSourceFile(File file, boolean addComments) throws IOException, ParseException {
+   void processSourceFile(File file, boolean addComments, String encoding) throws IOException, ParseException {
 
       this.addComments=addComments;
 
@@ -571,7 +596,7 @@ public class Parser {
      
       currentLine = 1;
 
-      char[] source = loadFile(file);
+      char[] source = loadFile(file, encoding);
       parse(source, 0, sourceLevelComponents);
 
       ClassDoc[] importedClasses=(ClassDoc[])importedClassesList.toArray(new ClassDoc[0]);
@@ -630,13 +655,13 @@ public class Parser {
       return rc;
    }
 
-   public void processSourceDir(File dir) throws IOException, ParseException {
+   public void processSourceDir(File dir, String encoding) throws IOException, ParseException {
       Debug.log(9,"Processing "+dir.getParentFile().getName()+"."+dir.getName());
       File[] files=dir.listFiles();
       if (null!=files) {
 	 for (int i=0; i<files.length; ++i) {
 	    if (files[i].getName().toLowerCase().endsWith(".java")) {
-	       processSourceFile(files[i], true);
+	       processSourceFile(files[i], true, encoding);
 	    }
 	 }
       }
@@ -722,7 +747,7 @@ public class Parser {
    }
    
    String lastComment = null;
-   PackageDocImpl currentPackage = null;
+   PackageDocImpl currentPackage = PackageDocImpl.DEFAULT_PACKAGE;
    ClassDocImpl currentClass = null;
    List ordinaryClassesList  = new ArrayList();
    List allClassesList       = new ArrayList();

@@ -91,6 +91,11 @@ public class SeeTagImpl extends AbstractTagImpl implements SeeTag {
 	 referencedClassName="";
 	 referencedClass=contextClass;
       }
+
+      if (referencedClass==null) {
+         referencedClass = Main.getRootDoc().classNamed("java.lang." + referencedFqName);
+      }
+
       if (referencedClass!=null && !referencedClass.isIncluded()) referencedClass=null;
 
       if (referencedClass!=null) {

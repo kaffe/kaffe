@@ -46,11 +46,12 @@
           </title>
           <xsl:call-template name="include_common"/>
         </head>
-        <body>
-          <h3>All Classes</h3>
+        <body onload="secondaryPageLoaded('classes');" class="menu allclasses">
+          <h3 class="menu-title">All Classes</h3>
           <xsl:for-each select="gjdoc:rootdoc/gjdoc:classdoc/@name">
             <xsl:sort select="." order="ascending"/>
-            <a href="{concat(translate(../gjdoc:containingPackage/@name,'.','/'), '/', ../@name, '.html')}" target="content">
+            <xsl:variable name="v_url" select="concat(translate(../gjdoc:containingPackage/@name,'.','/'), '/', ../@name, '.html')"/>
+            <a href="{$v_url}" target="content" class="menu allclasses">
               <xsl:value-of select="."/>
             </a>
             <br/>

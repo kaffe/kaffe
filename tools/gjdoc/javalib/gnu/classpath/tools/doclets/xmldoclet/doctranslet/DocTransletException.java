@@ -26,11 +26,21 @@ public class DocTransletException extends Exception {
       super(msg);
    }
 
+   private void initCauseDynamic(Throwable cause)
+   {
+      try {
+         getClass().getMethod("initCause", new Class[]{Throwable.class}).invoke(this, new Object[] { cause });
+      }
+      catch (Exception ignore) {
+      }
+   }
+
    public DocTransletException(String msg, Throwable cause) {
-      super(msg, cause);
+      super(msg);
+      initCauseDynamic(cause);
    }
 
    public DocTransletException(Throwable cause) {
-      super(cause);
-   }
+      initCauseDynamic(cause);
+  }
 }

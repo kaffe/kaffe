@@ -26,10 +26,12 @@ import com.sun.javadoc.*;
 public class ConstructorDocImpl extends ExecutableMemberDocImpl implements ConstructorDoc {
 
    public ConstructorDocImpl(ClassDoc containingClass,
-			     PackageDoc containingPackage) {
+			     PackageDoc containingPackage,
+                             SourcePosition position) {
       
       super(containingClass,
-	    containingPackage);
+	    containingPackage,
+            position);
    }
 
    // Is this Doc item a constructor. 

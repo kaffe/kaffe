@@ -21,6 +21,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package gnu.classpath.tools.doclets.xmldoclet;
 
 import com.sun.javadoc.*;
+import java.io.IOException;
 
 /**
  *  A Doclet which retrieves all information presented by the Doclet
@@ -51,7 +52,9 @@ public class Driver1_4 extends Driver {
    }
    */
 
-   protected void outputClassDoc(ClassDoc classDoc) {
+   protected void outputClassDoc(ClassDoc classDoc) 
+      throws IOException 
+   {
       super.outputClassDoc(classDoc);
       //outputSourcePosition(level, doc.position());
    }

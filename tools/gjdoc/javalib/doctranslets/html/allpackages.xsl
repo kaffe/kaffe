@@ -51,8 +51,8 @@
         </title>
         <xsl:call-template name="include_common"/>
       </head>
-      <body>
-        <h3>
+      <body class="menu allpackages">
+        <h3 class="menu-title">
           <a href="index_noframes.html" target="content">
             <xsl:choose>
               <xsl:when test="document('index.xml',/)/gjdoc:rootdoc/gjdoc:title">
@@ -64,10 +64,10 @@
             </xsl:choose>
           </a>
         </h3>
-        <a href="allclasses.html" target="classes">All Classes</a><br/><br/>
+        <a href="allclasses.html" target="classes" class="menu allpackages">All Classes</a><br/><br/>
         <xsl:for-each select="gjdoc:rootdoc/gjdoc:specifiedpackage/@name">
           <xsl:sort select="." order="ascending"/>
-          <a href="{concat(translate(., '.','/'), '/classes.html')}" target="classes">
+          <a href="{concat(translate(., '.','/'), '/classes.html')}" target="classes" class="menu allpackages">
             <xsl:value-of select="."/>
           </a>
           <br/>

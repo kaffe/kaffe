@@ -23,6 +23,8 @@ package gnu.classpath.tools.gjdoc;
 import com.sun.javadoc.*;
 import java.util.*;
 import java.text.*;
+import java.io.File;
+import javax.swing.text.Segment;
 
 /**
  *  Represents the least common denominator of all Javadoc
@@ -34,6 +36,7 @@ public abstract class DocImpl implements Doc {
    protected static Tag[] linkTagEmptyArr = new LinkTagImpl[0];
    protected static Tag[] paramTagEmptyArr = new ParamTagImpl[0];
    protected static Tag[] throwsTagEmptyArr = new ThrowsTagImpl[0];
+   protected SourcePosition position;
 
    // Return the text of the comment for this doc item. 
    public String commentText() {
@@ -50,8 +53,8 @@ public abstract class DocImpl implements Doc {
    }
 
    // Compares this Object with the specified Object for order. 
-   public int compareTo(java.lang.Object obj) {
-      return 0;
+   public int compareTo(java.lang.Object o) {
+      return Main.getInstance().getCollator().compare(name(), ((Doc)o).name());
    } 
 
    // Return the first sentence of the comment as tags. 
@@ -146,11 +149,26 @@ public abstract class DocImpl implements Doc {
    } 
 
    public void resolveComments() {
+      
       if (rawDocumentation!=null && tagMap.isEmpty()) {
-	 this.tagMap=parseCommentTags(rawDocumentation.toCharArray(),
-				      3,
-				      rawDocumentation.length()-2,
-				      getContextClass());
+         char[] charArray = rawDocumentation.toCharArray();
+         int length = rawDocumentation.length();
+         int startOffset = 0;
+         int endOffset = 0;
+         if (charArray[0] == '/' 
+             && charArray[1] == '*' 
+             && charArray[2] == '*'
+             && charArray[length - 2] == '*'
+             && charArray[length - 1] == '/') {
+
+            startOffset = 3;
+            endOffset = 2;
+         }
+
+         this.tagMap=parseCommentTags(charArray,
+                                      startOffset,
+                                      length - endOffset,
+                                      getContextClass());
 
 	 rawDocOffset=Main.getRootDoc().writeRawComment(rawDocumentation);
 	 rawDocumentation=null;
@@ -160,19 +178,16 @@ public abstract class DocImpl implements Doc {
    }
 
    public static int skipHtmlWhitespace(char[] buffer, int startIndex) {
-      boolean inTag=false;
-      for (int index=startIndex; index<buffer.length; ++index) {
-	 char c=buffer[index];
-	 if (inTag) {
-	    if (c=='>') inTag=false;
-	 }
-	 else {
-	    if (c=='<') inTag=true;
-	    else if (!Parser.isWhitespace(c))
-	       return index;
-	 }
+      while (startIndex < buffer.length) {
+	 char c=buffer[startIndex];
+         if (!Parser.isWhitespace(c)) {
+            break;
+         }
+         else {
+            ++ startIndex;
+         }
       }
-      return buffer.length;
+      return startIndex;
    }
    
    /**
@@ -191,17 +206,30 @@ public abstract class DocImpl implements Doc {
    private static int findEndOfSentence(char[] text, int startIndex,
 		   			int endIndex)
    {
-      while (startIndex < endIndex)
-	{
-	  if (text[startIndex] == '.'
-	    && (startIndex+1 == endIndex
-		|| Character.isWhitespace(text[startIndex+1])
-		|| isHTMLBreakTag(text, startIndex+1, endIndex)))
-	    return startIndex;
-
+      if (Main.getInstance().isUseBreakIterator()) {
+         Segment segment = new Segment(text, startIndex, endIndex - startIndex);
+         BreakIterator breakIterator = BreakIterator.getSentenceInstance(Main.getInstance().getLocale());
+         breakIterator.setText(segment);
+         int result = breakIterator.next();
+         if (BreakIterator.DONE == result) {
+            return endIndex;
+         }
+         else {
+            return result;
+         }
+      }
+      else {
+         while (startIndex < endIndex) {
+            if (text[startIndex] == '.'
+                && (startIndex+1 == endIndex
+                    || Character.isWhitespace(text[startIndex+1])
+                    || isHTMLBreakTag(text, startIndex+1, endIndex)))
+               return startIndex;
+            
 	    startIndex++;
-	}
-      return endIndex;
+         }
+         return endIndex;
+      }
    }
 
    /**
@@ -407,7 +435,14 @@ public abstract class DocImpl implements Doc {
 	    break;
 
 	 case STATE_INLINEPARAM:
-	    if (!(c==EOL || Parser.isWhitespace(c))) {
+	    if (c=='}') {
+               // tag without value
+	       paramName=buf.toString();
+	       addTag(tags, paramName, "", i<firstSentenceEnd, contextClass);
+               state=prevState;
+               buf.setLength(0);
+            }
+	    else if (!(c==EOL || Parser.isWhitespace(c))) {
 	       buf.append(c);
 	    }
 	    else if (c=='\n') {
@@ -443,7 +478,7 @@ public abstract class DocImpl implements Doc {
 	    }
 	    else if (c==EOL || c=='}') {
 	       paramValue=buf.toString();
-	       addTag(tags, "link", paramValue, i<firstSentenceEnd, contextClass);
+	       addTag(tags, paramName, paramValue, i<firstSentenceEnd, contextClass);
 	       state=prevState;
 	       buf.setLength(0);
 	    }
@@ -515,6 +550,7 @@ public abstract class DocImpl implements Doc {
 	       paramValue=buf.toString();
 	       addTag(tags, "text", paramValue, i<firstSentenceEnd, contextClass);
 	       ++i;
+               buf.setLength(0);
 	       state=STATE_INLINEPARAM;
 	    }
 	    else {
@@ -597,7 +633,24 @@ public abstract class DocImpl implements Doc {
       if (name.equals("text") || name.equals("link")) {
 	 ((List)tags.get("inline")).add(tag);
 	 if (isFirstSentence) {
-	    ((List)tags.get("first")).add(tag);	 
+            if (name.equals("text")) {
+               String txt = ((TextTagImpl)tag).getText();
+               Tag newTag;
+               if (txt.startsWith("<p>")) {
+                  newTag = new TextTagImpl(txt.substring(3));
+               }
+               else if (txt.endsWith("</p>")) {
+                  newTag = new TextTagImpl(txt.substring(0, txt.length() - 4));
+               }
+               else {
+                  newTag = tag;
+               }
+               ((List)tags.get("first")).add(newTag);
+               
+            }
+            else {
+               ((List)tags.get("first")).add(tag);
+            }
 	 }
       }
 
@@ -631,6 +684,7 @@ public abstract class DocImpl implements Doc {
 
    protected Map tagMap = new HashMap();
 
+   public Map getTagMap() { return tagMap; }
 
    protected void resolveTags() {
 
@@ -643,6 +697,59 @@ public abstract class DocImpl implements Doc {
       for (int i=0; i<inlineTags.length; ++i) {
 	 ((AbstractTagImpl)inlineTags[i]).resolve();
       }
+   }
+
+   private static File getFile(ClassDoc classDoc) {
+      return new File(((GjdocPackageDoc)classDoc.containingPackage()).packageDirectory(),
+                      classDoc.name() + ".java");
+   }
+
+   public static SourcePosition getPosition(ClassDoc classDoc)
+   {
+      return new SourcePositionImpl(getFile(classDoc), 0, 0);
+   }
+
+   public static SourcePosition getPosition(ClassDoc classDoc, char[] source, int startIndex)
+   {
+      int column = 0;
+      int line = 0;
+      for (int i=0; i<startIndex; ++i) {
+         if (10 == source[i]) {
+            ++ line;
+            column = 0;
+         }
+         else if (13 != source[i]) {
+            ++ column;
+         }
+      }
+      while (true) {
+         ClassDoc containingClassDoc = classDoc.containingClass();
+         if (null != containingClassDoc) {
+            classDoc = containingClassDoc;
+         }
+         else {
+            break;
+         }
+      }
+
+      File file = getFile(classDoc);
+      
+      return new SourcePositionImpl(file, line + 1, column + 1);
+   }
+
+   public SourcePosition position()
+   {
+      return this.position;
+   }
+
+   public DocImpl(SourcePosition position)
+   {
+      this.position = position;
+   }
+
+   public void setPosition(SourcePosition position)
+   {
+      this.position = position;
    }
 }
 

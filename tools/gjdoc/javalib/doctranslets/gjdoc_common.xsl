@@ -35,4 +35,20 @@
   <xsl:param name="gjdoc.pathtoroot" select="''"/>
   <xsl:param name="gjdoc.xmldoclet.version" select="''"/>
   <xsl:param name="gjdoc.allowimages" select="0"/>
+  <xsl:param name="gjdoc.option.nonavbar" select="''"/>
+  <xsl:param name="gjdoc.option.noindex" select="''"/>
+  <xsl:param name="gjdoc.option.notree" select="''"/>
+  <xsl:param name="gjdoc.option.nohelp" select="''"/>
+  <xsl:param name="gjdoc.option.nocomment" select="''"/>
+  <xsl:param name="gjdoc.option.splitindex" select="''"/>
+  <xsl:param name="gjdoc.option.linksource" select="''"/>
+  <xsl:param name="gjdoc.option.windowtitle" select="''"/>
+  <xsl:param name="gjdoc.option.helpfile" select="''"/>
+  <xsl:param name="gjdoc.option.stylesheetfile" select="''"/>
+  <xsl:param name="gjdoc.option.header" select="''"/>
+  <xsl:param name="gjdoc.option.footer" select="''"/>
+  <xsl:param name="gjdoc.option.bottom" select="''"/>
+  <xsl:param name="gjdoc.option.doctitle" select="''"/>
+  <xsl:param name="gjdoc.option.nodeprecatedlist" select="''"/>
+  <xsl:param name="gjdoc.option.uses" select="''"/>
 </xsl:stylesheet>

@@ -108,6 +108,7 @@ public class ClassDocProxy implements ClassDoc, WritableType {
    public boolean isMethod() { return false; } 
    public boolean isOrdinaryClass() { return false; } 
    public String name() { return name; } 
+   public SourcePosition position() { return null; }
    public SeeTag[] seeTags() { return new SeeTag[0]; } 
    public void setRawCommentText(java.lang.String rawDocumentation) {} 
    public Tag[] tags() { return new Tag[0]; } 

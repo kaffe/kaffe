@@ -34,16 +34,42 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.Locale;
+import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 import gnu.classpath.tools.gjdoc.TemporaryStore;
+import gnu.classpath.tools.gjdoc.GjdocPackageDoc;
+
+import gnu.classpath.tools.doclets.PackageGroup;
+import gnu.classpath.tools.doclets.PackageMatcher;
+import gnu.classpath.tools.doclets.InvalidPackageWildcardException;
 
 import gnu.classpath.tools.doclets.xmldoclet.doctranslet.DocTranslet;
+import gnu.classpath.tools.doclets.xmldoclet.doctranslet.DocTransletOptions;
+
+import gnu.classpath.tools.taglets.AuthorTaglet;
+import gnu.classpath.tools.taglets.VersionTaglet;
+import gnu.classpath.tools.taglets.SinceTaglet;
+import gnu.classpath.tools.taglets.DeprecatedTaglet;
+import gnu.classpath.tools.taglets.GenericTaglet;
+import gnu.classpath.tools.doclets.StandardTaglet;
+
+import gnu.classpath.tools.java2xhtml.Java2xhtml;
+
+import gnu.classpath.tools.IOToolkit;
+import gnu.classpath.tools.FileSystemClassLoader;
 
 /**
  *  A Doclet which retrieves all information presented by the Doclet
@@ -64,21 +90,6 @@ public class Driver {
       public void printNotice(String ignore) {}
    }
 
-   /**
-    *  Used for writing error messages to <code>System.err</code>.
-    */
-   private static class BackupErrorReporter implements DocErrorReporter {
-      public void printError(String msg) { 
-         System.err.println("ERROR: " + msg); 
-      }
-      public void printWarning(String msg) {
-         System.err.println("WARNING: " + msg); 
-      }
-      public void printNotice(String msg) {
-         System.err.println(msg); 
-      }
-   }
-
    /*
     *  Taglet context constants.
     */
@@ -88,12 +99,6 @@ public class Driver {
    private static final int CONTEXT_OVERVIEW     = 4;
    private static final int CONTEXT_PACKAGE      = 5;
    private static final int CONTEXT_TYPE         = 6;
-
-   /**
-    *  Errors and warnings will be printed using this after
-    *  <code>rootDoc</code> has been garbage collected.
-    */
-   private DocErrorReporter reporter = new BackupErrorReporter();
 
    /**
     *  All XML output will go to this stream.
@@ -190,6 +195,17 @@ public class Driver {
     private File workingDirectory;
 
    /**
+    *  Whether to deep-copy the doc-files subdirectory.
+    */
+    private boolean docFilesSubdirsEnabled = false;
+
+   /**
+    *  Which direct subdirectories of the doc-files directories to exclude.
+    *  Set of String.
+    */
+    private Set excludeDocFilesSubDirs = new HashSet();
+
+   /**
     *  Stores the Doclet API RootDoc we are operating on.
     */
    private RootDoc rootDoc;
@@ -206,27 +222,48 @@ public class Driver {
    private String tagletPath = null;
 
    /**
-    * The current class that is being processed.
-    * Set in outputClassDoc().
+    *  The current class that is being processed.
+    *  Set in outputClassDoc().
     */
    private ClassDoc currentClass;
 
    /**
-    * The current member that is being processed.
-    * Set in outputMemberDoc().
+    *  The current member that is being processed.
+    *  Set in outputMemberDoc().
     */
    private MemberDoc currentMember;
 
    /**
-    * The current constructor/method that is being processed.
-    * Set in outputExecutableMemberDoc().
+    *  The current constructor/method that is being processed.
+    *  Set in outputExecutableMemberDoc().
     */
    private ExecutableMemberDoc currentExecMember;
 
    /**
-    * Mapping from tag type to Taglet.
+    *  Mapping from tag type to Taglet for user Taglets specified on
+    *  the command line.
     */
    private Map tagletMap = new LinkedHashMap();
+
+   /**
+    *  Keeps track of the tags mentioned by the user during option
+    *  processiong so that an error can be emitted if a tag is
+    *  mentioned more than once.
+    */
+   private List mentionedTags = new LinkedList();
+
+   /**
+    *  Stores options to be passed to the DocTranslet.
+    */
+   private DocTransletOptions docTransletOptions = new DocTransletOptions();   
+
+   /**
+    *  Stores the package groups specified in the user
+    *  options. Contains objects of type PackageGroup.
+    */
+   private List packageGroups = new LinkedList();
+
+   private HtmlRepairer htmlRepairer;
 
    public static boolean start(TemporaryStore _rootDocWrapper) {
       return new Driver().instanceStart((RootDoc)_rootDocWrapper.getAndClear());
@@ -258,9 +295,19 @@ public class Driver {
    }
 
    protected void outputType(int level, String tag, Type type, boolean atomic) {
-      println(level, "<"+tagPrefix+":"+tag+" typename=\""+type.typeName()+"\""+
+
+      boolean isIncluded = false;
+      ClassDoc typeAsClassDoc = type.asClassDoc();
+      String packageName = null;
+      if (null != typeAsClassDoc) {
+         isIncluded = typeAsClassDoc.isIncluded();
+         packageName = typeAsClassDoc.containingPackage().name();
+      }
+      println(level, "<"+tagPrefix+":"+tag + " typename=\""+type.typeName()+"\""+
 	      " qualifiedtypename=\""+type.qualifiedTypeName()+"\""
 	      +(type.dimension().length()==0?"":" dimension=\""+type.dimension()+"\"")
+              +(isIncluded?" isIncluded=\"true\"" : "")
+              +((null != packageName)?" package=\"" + packageName + "\"" : "")
 	      +(atomic?"/":"")+">");
    }
 
@@ -334,16 +381,18 @@ public class Driver {
    protected void outputSuperInterfacesRec(int level, ClassDoc classDoc) {
       if (null!=classDoc) {
 	 ClassDoc[] interfaces = classDoc.interfaces();
-	 for (int i=0, ilim=interfaces.length; i<ilim; ++i) {
-	    outputType(level, "superimplements", interfaces[i]);
-	 }
+         if (null != interfaces) {
+            for (int i=0, ilim=interfaces.length; i<ilim; ++i) {
+               outputType(level, "superimplements", interfaces[i]);
+            }
+         }
 	 outputSuperInterfacesRec(level, classDoc.superclass());
       }
    }
 
    protected void outputClassDocSummary(ClassDoc classDoc) {
       println();
-      printOpenTag(1, "classdoc name=\""+classDoc.name()+"\" qualifiedtypename=\""+classDoc.qualifiedName()+"\"");
+      printOpenTag(1, "classdoc name=\""+classDoc.name()+"\" qualifiedtypename=\""+classDoc.qualifiedName()+"\" isIncluded=\"true\"");
       if (null!=classDoc.superclass()) {
 	 outputType(2, "superclass", classDoc.superclass());
       }
@@ -364,6 +413,9 @@ public class Driver {
       if (classDoc.isInterface()) {
          printAtomTag(2, "isInterface");
       }
+      if (classDoc.isOrdinaryClass()) {
+         printAtomTag(2, "isOrdinaryClass");
+      }
 
       printCloseTag(1, "classdoc");
    }
@@ -375,6 +427,9 @@ public class Driver {
 	 printOpenTag(2, "firstSentenceTags", false);
 	 outputTags(3, packageDoc.firstSentenceTags(), true, CONTEXT_PACKAGE);
 	 printCloseTag(0, "firstSentenceTags");
+	 printOpenTag(2, "inlineTags", false);
+	 outputTags(3, packageDoc.inlineTags(), true, CONTEXT_PACKAGE);
+	 printCloseTag(0, "inlineTags");
       }
 
       if (packageDoc.tags().length > 0) {
@@ -390,11 +445,7 @@ public class Driver {
       }
 
       ClassDoc[] allClasses = (ClassDoc[]) packageDoc.allClasses().clone();
-      Arrays.sort(allClasses, new Comparator() {
-	    public int compare(Object o1, Object o2) {
-	       return ((ClassDoc)o1).name().compareTo(((ClassDoc)o2).name());
-	    }
-	 });
+      Arrays.sort(allClasses);
 
       if (false) {
 	 for (int i = 0, ilim = allClasses.length; i < ilim; ++ i) {
@@ -405,16 +456,12 @@ public class Driver {
       printCloseTag(1, "packagedoc");
    }
 
-   protected void outputClassDoc(ClassDoc classDoc) {
+   protected void outputClassDoc(ClassDoc classDoc) throws IOException {
 
       currentClass = classDoc;
 
       println();
       printOpenTag(1, "classdoc xmlns=\"http://www.w3.org/TR/REC-html40\" xmlns:"+tagPrefix+"=\"http://www.gnu.org/software/cp-tools/gjdocxml\" name=\""+classDoc.name()+"\" qualifiedtypename=\""+classDoc.qualifiedName()+"\"");
-
-      if (null!=classDoc.superclass()) {
-	 outputType(2, "superclass", classDoc.superclass());
-      }
 
       ClassDoc[] interfaces = classDoc.interfaces();
       for (int i=0, ilim=interfaces.length; i<ilim; ++i) {
@@ -429,8 +476,9 @@ public class Driver {
 	 printAtomTag(2, "isSerializable");
       if (classDoc.isExternalizable())
 	 printAtomTag(2, "isExternalizable");
-      if (classDoc.definesSerializableFields())
+      if (classDoc.definesSerializableFields()) {
 	 printAtomTag(2, "definesSerializableFields");
+      }
 
       ConstructorDoc[] constructors = classDoc.constructors();
       for (int i=0, ilim=constructors.length; i<ilim; ++i) {
@@ -447,11 +495,85 @@ public class Driver {
 	 outputFieldDoc(2, fields[i]);
       }
 
+      if (classDoc.serializableFields().length > 0) {
+	 printOpenTag(2, "serializableFields");
+
+         FieldDoc[] sfields = classDoc.serializableFields();
+         for (int i=0, ilim=sfields.length; i<ilim; ++i) {
+            outputFieldDoc(2, sfields[i]);
+         }
+	 printCloseTag(2, "serializableFields");
+      }
+
+      Java2xhtml java2xhtml = new Java2xhtml();
+      Properties properties = new Properties();
+      properties.setProperty("isCodeSnippet", "true");
+      properties.setProperty("hasLineNumbers", "true");
+      java2xhtml.setProperties(properties);
+
+      if (null == classDoc.containingClass() && docTransletOptions.linksource) {
+         printOpenTag(2, "source");
+         StringWriter sourceBuffer = new StringWriter();
+         File sourceFile = new File(((GjdocPackageDoc)classDoc.containingPackage()).packageDirectory(),
+                                    classDoc.name() + ".java");
+         FileReader sourceReader = new FileReader(sourceFile);
+         IOToolkit.copyStream(sourceReader, sourceBuffer);
+         print(java2xhtml.makeHTML(sourceBuffer.getBuffer(), sourceFile.getName()));
+         printCloseTag(2, "source");      
+      }
+
+      ClassDoc superclassDoc = classDoc.superclass();
+      while (superclassDoc != null) {
+	 outputType(2, "superclass", superclassDoc, false);
+
+         // FIXME: remove the following after adjusting the XSLT sheets:
+         printAtomTag(3, "containingPackage name=\"" + superclassDoc.containingPackage().name() + "\"");
+
+         MethodDoc[] superMethods = superclassDoc.methods();
+         if (null != superMethods) {
+            for (int i=0, ilim=superMethods.length; i<ilim; ++i) {
+               printAtomTag(3, "methoddoc name=\"" + superMethods[i].name() + "\" signature=\"" + superMethods[i].signature() + "\"");
+            }
+         }
+         
+         FieldDoc[] superFields = superclassDoc.fields();
+         if (null != superFields) {
+            for (int i=0, ilim=superFields.length; i<ilim; ++i) {
+               printAtomTag(3, "fielddoc name=\"" + superFields[i].name() + "\"");
+            }
+         }
+         printCloseTag(2, "superclass");
+         
+         superclassDoc = superclassDoc.superclass();
+      }
+
+      outputUsage(classDoc, 2);
+
       printCloseTag(1, "classdoc");
 
       currentClass = null;
       currentMember = null;
       currentExecMember = null;
+   }
+
+   protected int outputHeritageOpen(int level, ClassDoc classDoc) {
+
+      ClassDoc superClassDoc = classDoc.superclass();
+      if (null != superClassDoc) {
+         level = outputHeritageOpen(level, superClassDoc);
+         ++ level;
+      }
+      outputType(level, "heritage", classDoc, false);
+      return level;
+   }
+
+   protected void outputHeritageClose(int level, ClassDoc classDoc) {
+
+      ClassDoc superClassDoc = classDoc.superclass();
+      if (null != superClassDoc) {
+         outputHeritageClose(level + 1, superClassDoc);
+      }
+      printCloseTag(level, "heritage");
    }
 
    protected void outputDocBody(int level, Doc doc) {
@@ -460,6 +582,17 @@ public class Driver {
 
       if (doc.isClass()) {
 	 printAtomTag(level, "isClass");
+
+         ClassDoc classDoc = (ClassDoc)doc;
+         ClassDoc[] classes = rootDoc.classes();
+         for (int i=0, ilim=classes.length; i<ilim; ++i) {
+            if (classes[i].superclass() == classDoc) {
+               outputType(level, "extended-by", classes[i]);
+            }
+         }
+
+         outputHeritageOpen(level, classDoc);
+         outputHeritageClose(level, classDoc);
       }
       if (doc.isConstructor()) {
 	 printAtomTag(level, "isConstructor");
@@ -480,6 +613,23 @@ public class Driver {
       }
       if (doc.isInterface()) {
 	 printAtomTag(level, "isInterface");
+
+         ClassDoc classDoc = (ClassDoc)doc;
+         ClassDoc[] classes = rootDoc.classes();
+         for (int i=0, ilim=classes.length; i<ilim; ++i) {
+            ClassDoc[] implementedInterfaces = classes[i].interfaces();
+            for (int j=0; j<implementedInterfaces.length; ++j) {
+               if (implementedInterfaces[j] == classDoc) {
+                  if (classDoc.isInterface()) {
+                        outputType(level, "subinterface", classes[i]);
+                  }
+                  else {
+                     outputType(level, "implemented-by", classes[i]);
+                  }
+                  break;
+               }
+            }
+         }
       }
       if (doc.isMethod()) {
 	 printAtomTag(level, "isMethod");
@@ -503,7 +653,7 @@ public class Driver {
 
       if (doc.tags().length > 0) {
 	 printOpenTag(level, "tags");
-	 outputTags(level+1, doc.tags(), true, context);
+         outputTaglets(level+1, doc.tags(), true, context);
 	 printCloseTag(level, "tags");
       }
 
@@ -511,6 +661,11 @@ public class Driver {
 	 printOpenTag(level, "seeTags");
 	 outputTags(level+1, doc.seeTags(), true, context);
 	 printCloseTag(level, "seeTags");
+      }
+
+      SourcePosition position = doc.position();
+      if (null != position) {
+	 printAtomTag(level, "position file=\"" + position.file().getAbsolutePath() + "\" line=\"" + position.line() + "\" column=\"" + position.column() + "\"");
       }
    }
 
@@ -540,113 +695,110 @@ public class Driver {
 
    protected void outputTags(int level, Tag[] tags, boolean descend, int context) {
 
-      HtmlRepairer htmlRepairer = new HtmlRepairer(rootDoc, noHTMLWarn, noEmailWarn,
-						   currentClass, currentMember);
+      for (int i=0; i<tags.length; ++i) {
+         outputTag(tags[i], level, descend, context, i == tags.length-1);
+      }
+   }
 
-      for (int i=0, ilim=tags.length; i<ilim; ++i) {
-	 Tag tag = tags[i];
-	 if (!"Text".equals(tag.name())) {
-	    printOpenTag(0 /* don't introduce additional whitespace */, 
-			 "tag kind=\""+tag.kind()+"\" name=\""+tag.name()+"\"", false);
-	 }
-	 if (tag instanceof ThrowsTag) {
-	    ThrowsTag throwsTag = (ThrowsTag)tag;
-	    if (null!=throwsTag.exception()) {
-	       outputType(level+1, "exception", throwsTag.exception());
-	    }
-	    else {
-	       StringBuffer sb = new StringBuffer("In ThrowsTag: Exception ");
-	       sb.append(throwsTag.exceptionName());
-	       sb.append(" not found in ");
-	       if (currentExecMember instanceof MethodDoc) {
-		   MethodDoc m = (MethodDoc)currentExecMember;
-		   sb.append(m.returnType().typeName());
-		   sb.append(m.returnType().dimension());
-		   sb.append(' ');
-	       }
-	       sb.append(currentClass.qualifiedName());
-	       sb.append('.');
-	       sb.append(currentExecMember.name());
-	       sb.append('(');
-	       Parameter[] params = currentExecMember.parameters();
-	       for (int j=0; j < params.length; j++) {
-		   sb.append(params[j].type().typeName());
-		   sb.append(params[j].type().dimension());
-		   sb.append(' ');
-		   sb.append(params[j].name());
-		   if (j != params.length-1)
-			sb.append(", ");
-	       }
-	       sb.append(')');
-	       printWarning(sb.toString());
+   protected void outputTag(Tag tag, int level, boolean descend, int context, boolean lastTag) {
 
-	       printAtomTag(level+1, "exception typename=\""+throwsTag.exceptionName()+"\"");
-	    }
-	 }
-	 else if (tag instanceof ParamTag) {
-	    ParamTag paramTag = (ParamTag)tag;
-	    printAtomTag(level+1, "parameter name=\""+paramTag.parameterName()+"\"");
-	 }
-
-	 if (null != tag.text()) {
-	    //printOpenTag(level+1, "text", false);
-	    if (fixHTML) {
-	       print(htmlRepairer.getWellformedHTML(tag.text()));
-	       print(htmlRepairer.terminateText());
-	    }
-	    else {
-	       print("<![CDATA["+cdata(tag.text())+"]]>");
-	    }
-	    //printCloseTag(0 /* don't introduce additional whitespace */, "text");
-	 }
-	 else {
-	    printWarning("Tag got null text: "+tag);
-	 }
-
-	 if (descend && ("@throws".equals(tag.name()) || "@param".equals(tag.name()))) {
-	    if (tag.firstSentenceTags().length>0) {
-	       printOpenTag(level+1, "firstSentenceTags", false);
-	       outputTags(level+2, tag.firstSentenceTags(), false, context);
-	       printCloseTag(0, "firstSentenceTags");
-	    }
-	    
-	    if (tag.inlineTags().length>0) {
-	       printOpenTag(level+1, "inlineTags", false);
-	       outputTags(level+2, tag.firstSentenceTags(), false, context);
-	       printCloseTag(0, "inlineTags");
-	    }
-	 }
-
-	 if (fixHTML && i == ilim - 1) {
-	    String terminateText = htmlRepairer.terminateText();
-	    if (null != terminateText && terminateText.length() > 0) {
-	       print(terminateText);
-	    }
-	 }
-
-	 if (!"Text".equals(tag.name())) {
-
-            Taglet inlineTaglet = (Taglet)tagletMap.get(tag.name().substring(1));
-            if (null != inlineTaglet && inlineTaglet.isInlineTag()) {
-	       printOpenTag(0, "inlineTagletText", false);
-               print(inlineTaglet.toString(tag));
-	       printCloseTag(0, "inlineTagletText");
+      if (!"Text".equals(tag.name())) {
+         printOpenTag(0 /* don't introduce additional whitespace */, 
+                      "tag kind=\""+tag.kind()+"\" name=\""+tag.name()+"\"", false);
+      }
+      if (tag instanceof ThrowsTag) {
+         ThrowsTag throwsTag = (ThrowsTag)tag;
+         if (null!=throwsTag.exception()) {
+            outputType(level+1, "exception", throwsTag.exception());
+         }
+         else {
+            StringBuffer sb = new StringBuffer("Exception ");
+            sb.append(throwsTag.exceptionName());
+            sb.append(" not found in ");
+            if (currentExecMember instanceof MethodDoc) {
+               MethodDoc m = (MethodDoc)currentExecMember;
+               sb.append(m.returnType().typeName());
+               sb.append(m.returnType().dimension());
+               sb.append(' ');
             }
+            sb.append(currentClass.qualifiedName());
+            sb.append('.');
+            sb.append(currentExecMember.name());
+            sb.append('(');
+            Parameter[] params = currentExecMember.parameters();
+            for (int j=0; j < params.length; j++) {
+               sb.append(params[j].type().typeName());
+               sb.append(params[j].type().dimension());
+               sb.append(' ');
+               sb.append(params[j].name());
+               if (j != params.length-1)
+                  sb.append(", ");
+            }
+            sb.append(')');
+            printWarning(sb.toString());
 
-	    printCloseTag(0, "tag", false);
-	 }
+            printAtomTag(level+1, "exception typename=\""+throwsTag.exceptionName()+"\"");
+         }
+      }
+      else if (tag instanceof ParamTag) {
+         ParamTag paramTag = (ParamTag)tag;
+         printAtomTag(level+1, "parameter name=\""+paramTag.parameterName()+"\"");
       }
 
-      outputTagletText(tags, context, htmlRepairer);
-   }
-   
-   void outputTagletText(Tag[] tags, int context, HtmlRepairer htmlRepairer) {
+      if (null != tag.text()) {
+         //printOpenTag(level+1, "text", false);
+         if (fixHTML) {
+            print(htmlRepairer.getWellformedHTML(tag.text()));
+         }
+         else {
+            print("<![CDATA["+cdata(tag.text())+"]]>");
+         }
+         //printCloseTag(0 /* don't introduce additional whitespace */, "text");
+      }
+      else {
+         printWarning("Tag got null text: "+tag);
+      }
 
+      if ((descend && ("@throws".equals(tag.name()) || "@param".equals(tag.name()))) || "@deprecated".equals(tag.name())) {
+         if (tag.firstSentenceTags().length>0) {
+            printOpenTag(level+1, "firstSentenceTags", false);
+            outputTags(level+2, tag.firstSentenceTags(), false, context);
+            printCloseTag(0, "firstSentenceTags");
+         }
+	    
+         if (tag.inlineTags().length>0) {
+            printOpenTag(level+1, "inlineTags", false);
+            outputTags(level+2, tag.firstSentenceTags(), false, context);
+            printCloseTag(0, "inlineTags");
+         }
+      }
+
+      if (fixHTML && lastTag) {
+         String terminateText = htmlRepairer.terminateText();
+         if (null != terminateText && terminateText.length() > 0) {
+            print(terminateText);
+         }
+      }
+
+      if (!"Text".equals(tag.name())) {
+
+         Taglet inlineTaglet = (Taglet)tagletMap.get(tag.name().substring(1));
+         if (null != inlineTaglet && inlineTaglet.isInlineTag()) {
+            printOpenTag(0, "inlineTagletText", false);
+            print(inlineTaglet.toString(tag));
+            printCloseTag(0, "inlineTagletText");
+         }
+
+         printCloseTag(0, "tag", false);
+      }
+   }
+
+   void outputTaglets(int level, Tag[] tags, boolean descend, int context) 
+   {
       for (Iterator it = tagletMap.keySet().iterator(); it.hasNext(); ) {
          String tagName = (String)it.next();
          Object o = tagletMap.get(tagName);
          Taglet taglet = (Taglet)o;
-         List tagsOfThisType = new ArrayList();
 
          if (!taglet.isInlineTag()
              && ((context != CONTEXT_CONSTRUCTOR || taglet.inConstructor())
@@ -656,31 +808,39 @@ public class Driver {
                  || (context != CONTEXT_PACKAGE || taglet.inPackage())
                  || (context != CONTEXT_TYPE || taglet.inType()))) {
             
+            List tagsOfThisType = new ArrayList();
             for (int i=0, ilim=tags.length; i<ilim; ++i) {
                if (tags[i].name().substring(1).equals(tagName)) {
                   tagsOfThisType.add(tags[i]);
                }
             }
+
             if (!tagsOfThisType.isEmpty()) {
-               printOpenTag(0, "tagletText tagName=\"" + tagName + "\"");
                Tag[] tagletTags = (Tag[])tagsOfThisType.toArray(new Tag[tagsOfThisType.size()]);
-               String tagletString = getTagletForName(tagName).toString(tagletTags);
-               if (fixHTML) {
-                  print(htmlRepairer.getWellformedHTML(tagletString));
-                  print(htmlRepairer.terminateText());
+               if (taglet instanceof StandardTaglet) {
+                  Iterator tagIterator = tagsOfThisType.iterator();
+                  while (tagIterator.hasNext()) {
+                     Tag tag = (Tag)tagIterator.next();
+                     outputTag(tag, level, descend, context, !tagIterator.hasNext());
+                  }
                }
                else {
-                  print("<![CDATA["+cdata(tagletString)+"]]>");
+                  String tagletString = taglet.toString(tagletTags);
+                  if (null != tagletString) {
+                     printOpenTag(0, "tag name=\"" + tagName + "\" taglet-generated=\"true\"");
+                     if (fixHTML) {
+                        print(htmlRepairer.getWellformedHTML(tagletString));
+                        print(htmlRepairer.terminateText());
+                     }
+                     else {
+                        print("<![CDATA["+cdata(tagletString)+"]]>");
+                     }
+                     printCloseTag(0, "tag", false);
+                  }
                }
-               printCloseTag(0, "tagletText", false);
             }
          }
       }
-   }
-   
-
-   protected Taglet getTagletForName(String name) {
-      return (Taglet)tagletMap.get(name);
    }
 
    /**
@@ -690,8 +850,24 @@ public class Driver {
 
       this.rootDoc = _rootDoc;
       _rootDoc = null;
-      
+
       boolean xmlOnly = false;
+
+      // Set the default Taglet order
+
+      registerTaglet(new VersionTaglet());
+      registerTaglet(new AuthorTaglet());
+      registerTaglet(new SinceTaglet());
+      registerTaglet(new StandardTaglet("deprecated"));
+      registerTaglet(new StandardTaglet("see"));
+      registerTaglet(new StandardTaglet("param"));
+
+      // Set the built-in Taglet filter
+
+      AuthorTaglet.setTagletEnabled(false);
+      VersionTaglet.setTagletEnabled(false);
+      SinceTaglet.setTagletEnabled(true);
+      DeprecatedTaglet.setTagletEnabled(true);
 
       try {
 	 {
@@ -714,7 +890,7 @@ public class Driver {
 		     targetDirectory = new File(option[1]);
 		  }
 		  if (null != targetContext) {
-		     targetContext.setTargetDirectory(new File(option[1]));
+		     targetContext.setTargetDirectory(targetDirectory);
 		  }
 	       }
 
@@ -840,8 +1016,13 @@ public class Driver {
                         printError("Taglet class '" + option[1] + "' found, but register method isn't public static, or is abstract..");
                      }
                      else {
-                        registerTagletMethod.invoke(null, new Object[] { tagletMap });
+                        Map tempMap = new HashMap();
+                        registerTagletMethod.invoke(null, new Object[] { tempMap });
                         tagletLoaded = true;
+                        String name = (String)tempMap.keySet().iterator().next();
+                        Taglet taglet = (Taglet)tempMap.get(name);
+                        tagletMap.put(name, taglet);
+                        mentionedTags.add(taglet);
                      }
                   }
                   catch (NoSuchMethodException e) {
@@ -866,7 +1047,220 @@ public class Driver {
                      return false;
                   }
                }
+	       else if ("-author".equals(optionTag)) {
+                  AuthorTaglet.setTagletEnabled(true);
+               }
+	       else if ("-version".equals(optionTag)) {
+                  VersionTaglet.setTagletEnabled(true);
+               }
+	       else if ("-nosince".equals(optionTag)) {
+                  SinceTaglet.setTagletEnabled(false);
+               }
+	       else if ("-nodeprecated".equals(optionTag)) {
+                  DeprecatedTaglet.setTagletEnabled(false);
+               }
+	       else if ("-authormail".equals(optionTag)) {
+                  
+		  if ("no-replace".equalsIgnoreCase(option[1])) {
+                     AuthorTaglet.setEmailReplacementType(AuthorTaglet.EmailReplacement.NO_REPLACEMENT);
+                  }
+		  else if ("mailto-name".equalsIgnoreCase(option[1])) {
+                     AuthorTaglet.setEmailReplacementType(AuthorTaglet.EmailReplacement.MAILTO_NAME);
+                  }
+		  else if ("name-mailto-address".equalsIgnoreCase(option[1])) {
+                     AuthorTaglet.setEmailReplacementType(AuthorTaglet.EmailReplacement.NAME_MAILTO_ADDRESS);
+                  }
+		  else if ("name-mangled-address".equalsIgnoreCase(option[1])) {
+                     AuthorTaglet.setEmailReplacementType(AuthorTaglet.EmailReplacement.NAME_MANGLED_ADDRESS);
+                  }
+                  else {
+                     printError("Invalid value for option '-authortag-email'. Allowed values are:"
+                                + " no-replace, mailto-name, name-mailto-address, name-mangled-address.");
+                     return false;
+                  }
+	       }
+	       else if ("-mailmangledot".equals(optionTag)) {
+                  AuthorTaglet.setDotReplacement(option[1]);
+               }
+	       else if ("-mailmangleat".equals(optionTag)) {
+                  AuthorTaglet.setAtReplacement(option[1]);
+               }
+	       else if ("-docfilessubdirs".equals(optionTag)) {
+                  docFilesSubdirsEnabled = true;
+               }
+	       else if ("-excludedocfilessubdir".equals(optionTag)) {
+                  StringTokenizer st = new StringTokenizer(option[1]);
+                  while (st.hasMoreTokens()) {
+                     excludeDocFilesSubDirs.add(st.nextToken());
+                  }
+               }
+	       else if ("-nonavbar".equals(optionTag)) {
+                  docTransletOptions.nonavbar = true;
+               }
+	       else if ("-noindex".equals(optionTag)) {
+                  docTransletOptions.noindex = true;
+               }
+	       else if ("-notree".equals(optionTag)) {
+                  docTransletOptions.notree = true;
+               }
+	       else if ("-nocomment".equals(optionTag)) {
+                  docTransletOptions.nocomment = true;
+               }
+	       else if ("-nohelp".equals(optionTag)) {
+                  docTransletOptions.nohelp = true;
+               }
+	       else if ("-splitindex".equals(optionTag)) {
+                  docTransletOptions.splitindex = true;
+               }
+	       else if ("-linksource".equals(optionTag)) {
+                  docTransletOptions.linksource = true;
+               }
+	       else if ("-windowtitle".equals(optionTag)) {
+                  docTransletOptions.windowtitle = option[1];
+               }
+	       else if ("-helpfile".equals(optionTag)) {
+                  docTransletOptions.helpfile = new File(option[1]).toURL().toString();
+               }
+	       else if ("-stylesheetfile".equals(optionTag)) {
+                  docTransletOptions.stylesheetfile = new File(option[1]).toURL().toString();
+               }
+	       else if ("-header".equals(optionTag)) {
+                  docTransletOptions.header = option[1];
+               }
+	       else if ("-footer".equals(optionTag)) {
+                  docTransletOptions.footer = option[1];
+               }
+	       else if ("-bottom".equals(optionTag)) {
+                  docTransletOptions.bottom = option[1];
+               }
+	       else if ("-doctitle".equals(optionTag)) {
+                  docTransletOptions.doctitle = option[1];
+               }
+	       else if ("-nodeprecatedlist".equals(optionTag)) {
+                  docTransletOptions.nodeprecatedlist = true;
+               }
+	       else if ("-uses".equals(optionTag)) {
+                  docTransletOptions.uses = true;
+               }
+	       else if ("-group".equals(optionTag)) {
+                  if (!processGroupOption(option[1], option[2])) {
+                     printError("Invalid package wildcard list in -group option \"" + option[1] + "\" " + option[2]);
+                     return false;
+                  }
+               }
+	       else if ("-tag".equals(optionTag)) {
+                  String tagSpec = option[1];
+                  boolean validTagSpec = false;
+                  int ndx1 = tagSpec.indexOf(':');
+                  if (ndx1 < 0) {
+                     Taglet taglet = (Taglet)tagletMap.get(tagSpec);
+                     if (null == taglet) {
+                        printError("There is no standard tag '" + tagSpec + "'.");
+                     }
+                     else {
+                        if (mentionedTags.contains(taglet)) {
+                           printError("Tag '" + tagSpec + "' has been added or moved before.");
+                        }
+                        else {
+                           mentionedTags.add(taglet);
+                           
+                           // re-append taglet
+                           tagletMap.remove(tagSpec);
+                           tagletMap.put(tagSpec, taglet);
+                        }
+                     }
+                  }
+                  else {
+                     int ndx2 = tagSpec.indexOf(':', ndx1 + 1);
+                     if (ndx2 > ndx1 && ndx2 < tagSpec.length() - 1) {
+                        String tagName = tagSpec.substring(0, ndx1);
+                        String tagHead = null;
+                        if (tagSpec.charAt(ndx2 + 1) == '\"') {
+                           if (tagSpec.charAt(tagSpec.length() - 1) == '\"') {
+                              tagHead = tagSpec.substring(ndx2 + 2, tagSpec.length() - 1);
+                              validTagSpec = true;
+                           }
+                        }
+                        else {
+                           tagHead = tagSpec.substring(ndx2 + 1);
+                           validTagSpec = true;
+                        }
+
+                        boolean tagScopeOverview = false;
+                        boolean tagScopePackages = false;
+                        boolean tagScopeTypes = false;
+                        boolean tagScopeConstructors = false;
+                        boolean tagScopeMethods = false;
+                        boolean tagScopeFields = false;
+                        boolean tagDisabled = false;
+                        
+                     tag_option_loop:
+                        for (int n=ndx1+1; n<ndx2; ++n) {
+                           switch (tagSpec.charAt(n)) {
+                           case 'X': 
+                              tagDisabled = true;
+                              break;
+                           case 'a':
+                              tagScopeOverview = true;
+                              tagScopePackages = true;
+                              tagScopeTypes = true;
+                              tagScopeConstructors = true;
+                              tagScopeMethods = true;
+                              tagScopeFields = true;
+                              break;
+                           case 'o':
+                              tagScopeOverview = true;
+                              break;
+                           case 'p':
+                              tagScopePackages = true;
+                              break;
+                           case 't':
+                              tagScopeTypes = true;
+                              break;
+                           case 'c':
+                              tagScopeConstructors = true;
+                              break;
+                           case 'm':
+                              tagScopeMethods = true;
+                              break;
+                           case 'f':
+                              tagScopeFields = true;
+                              break;
+                           default:
+                              validTagSpec = false;
+                              break tag_option_loop;
+                           }
+                        }
+                        
+                        if (validTagSpec) {
+                           GenericTaglet taglet
+                              = new GenericTaglet(tagName,
+                                                  tagHead,
+                                                  tagScopeOverview,
+                                                  tagScopePackages,
+                                                  tagScopeTypes,
+                                                  tagScopeConstructors,
+                                                  tagScopeMethods,
+                                                  tagScopeFields);
+                           taglet.setTagletEnabled(!tagDisabled);
+                           taglet.register(tagletMap);
+                           mentionedTags.add(taglet);
+                        }
+                     }
+                  }
+                  if (!validTagSpec) {
+                     printError("Value for option -tag must be in format \"<tagname>:Xaoptcmf:<taghead>\".");
+                  }
+               }
 	    }
+
+            // Use current directory if target directory hasn't been set.
+            if (null == targetDirectory) {
+               targetDirectory = new File(System.getProperty("user.dir"));
+            }
+            if (null != targetContext) {
+               targetContext.setTargetDirectory(targetDirectory);
+            }
 
 	    // It is illegal to specify targets AND -xmlonly.
 
@@ -920,6 +1314,74 @@ public class Driver {
 	       xmlTargetDirectory = xmlTempDirectory;
 	    }
 
+            // Create target directory if necessary
+
+            if (!targetDirectory.exists()) {
+               printNotice("Creating destination directory: \""
+                           + targetDirectory + "\"");
+               if (!targetDirectory.mkdirs()) {
+                  printError("Failed to create destination directory \""
+                             + targetDirectory + "\"");
+                  return false;
+               }
+            }
+
+            // Check for deprecation
+
+            boolean hasDeprecatedClasses = false;
+            boolean hasDeprecatedInterfaces = false;
+            boolean hasDeprecatedExceptions = false;
+            boolean hasDeprecatedErrors = false;
+            boolean hasDeprecatedMethods = false;
+            boolean hasDeprecatedFields = false;
+
+            {
+               ClassDoc[] classes = rootDoc.classes();
+               for (int i = 0, ilim = classes.length; i < ilim; ++ i) {
+                  ClassDoc c = classes[i];
+                  Tag[] deprecatedTags = c.tags("deprecated");
+                  if (null != deprecatedTags && 0 != deprecatedTags.length) {
+                     if (c.isInterface()) {
+                        hasDeprecatedInterfaces = true;
+                     }
+                     else if (c.isException()) {
+                        hasDeprecatedExceptions = true;
+                     }
+                     else if (c.isError()) {
+                        hasDeprecatedErrors = true;
+                     }
+                     else /*if (c.isOrdinaryClass())*/ {
+                        hasDeprecatedClasses = true;
+                     }
+                  }
+                  
+                  MethodDoc[] methods = c.methods();
+                  for (int j = 0, jlim = methods.length; j < jlim; ++ j) {
+                     MethodDoc m = methods[j];
+                     deprecatedTags = m.tags("deprecated");
+                     if (null != deprecatedTags && 0 != deprecatedTags.length) {
+                        hasDeprecatedMethods = true;
+                     }
+                  }
+                  
+                  FieldDoc[] fields = c.fields();
+                  for (int j = 0, jlim = fields.length; j < jlim; ++ j) {
+                     FieldDoc f = fields[j];
+                     deprecatedTags = f.tags("deprecated");
+                     if (null != deprecatedTags && 0 != deprecatedTags.length) {
+                        hasDeprecatedFields = true;
+                     }
+                  }
+               }
+            }
+
+            htmlRepairer = new HtmlRepairer(rootDoc, noHTMLWarn, noEmailWarn,
+                                            currentClass, currentMember);
+
+            collectUsage();
+
+            // Begin XML generation
+
 	    printNotice("Writing XML Index file...");
 
 	    // Assign output stream
@@ -932,6 +1394,21 @@ public class Driver {
 	    println("<!DOCTYPE gjdoc SYSTEM \"dtd/gjdoc.dtd\">");
 	    println();
 	    printOpenTag(0, "rootdoc xmlns=\"http://www.w3.org/TR/REC-html40\" xmlns:gjdoc=\"http://www.gnu.org/software/cp-tools/gjdocxml\"");
+
+	    println();
+	    println(1, "<!-- Tags from overview page, if available -->");
+
+            if (rootDoc.firstSentenceTags().length > 0) {
+               printOpenTag(2, "firstSentenceTags", false);
+               outputTags(3, rootDoc.firstSentenceTags(), true, CONTEXT_PACKAGE);
+               printCloseTag(0, "firstSentenceTags");
+            }
+
+            if (rootDoc.inlineTags().length > 0) {
+               printOpenTag(2, "inlineTags");
+               outputTags(3, rootDoc.inlineTags(), true, CONTEXT_PACKAGE);
+               printCloseTag(2, "inlineTags");
+            }
 	 
 	    if (null != bottomNote) {
 	       printOpenTag(1, "bottomnote");
@@ -949,6 +1426,12 @@ public class Driver {
 	    println(2, DateFormat.getDateInstance(DateFormat.LONG, Locale.US).format(new java.util.Date()));
 	    printCloseTag(1, "created");
 
+            if (hasDeprecatedClasses) printAtomTag(1, "hasDeprecatedClasses");
+            if (hasDeprecatedInterfaces) printAtomTag(1, "hasDeprecatedInterfaces");
+            if (hasDeprecatedExceptions) printAtomTag(1, "hasDeprecatedExceptions");
+            if (hasDeprecatedErrors) printAtomTag(1, "hasDeprecatedErrors");
+            if (hasDeprecatedMethods) printAtomTag(1, "hasDeprecatedMethods");
+            if (hasDeprecatedFields) printAtomTag(1, "hasDeprecatedFields");
 
 	    // Output summary of all classes specified on command line
 
@@ -971,7 +1454,34 @@ public class Driver {
 	       printAtomTag(1, "specifiedpackage name=\""+sp.name()+"\"");
 	    }
 	    specifiedPackages = null;
-	 
+
+	    // Output package group information specified on the
+	    // command line
+
+	    println();
+	    println(1, "<!-- Package groups specified by user on command line -->");
+            {
+               Iterator packageGroupIt = packageGroups.iterator();
+               while (packageGroupIt.hasNext()) {
+                  PackageGroup packageGroup = (PackageGroup)packageGroupIt.next();
+                  SortedSet groupedPackages = packageGroup.getPackages();
+                  if (groupedPackages.isEmpty()) {
+                     printWarning("Package group named '" 
+                                  + packageGroup.getName() + "' didn't match any packages.");
+                  }
+                  else {
+                     printOpenTag(1, "packagegroup name=\"" + packageGroup.getName() + "\"");
+                     Iterator groupedPackageIt = groupedPackages.iterator();
+                     while (groupedPackageIt.hasNext()) {
+                        PackageDoc groupedPackageDoc = (PackageDoc)groupedPackageIt.next();
+                        printAtomTag(2, "package name=\"" + groupedPackageDoc.name() + "\"");
+                     }
+                     printCloseTag(1, "packagegroup");
+                  }
+               }
+               packageGroups = null;
+            }
+
 	    // Output information on all packages for which documentation
 	    // has been made available via the Doclet API
 
@@ -1006,6 +1516,9 @@ public class Driver {
 
 	    closeTargetFile();
 
+            createIndexByName();
+
+
 
 	    // Output information on all classes for which documentation
 	    // has been made available via the Doclet API
@@ -1013,10 +1526,20 @@ public class Driver {
 	    println();
 	    println(1, "<!-- Documentation for all classes -->");
 	    ClassDoc[] classes = rootDoc.classes();
+            String prevPackageName = null;
 	    for (int i = 0, ilim = classes.length; i < ilim; ++ i) {
 	       ClassDoc c = classes[i];
 
-	       printNotice("Writing XML information for "+c.qualifiedName()+"...");
+               if (isVerbose()) {
+                  printNotice("Writing XML information for "+c.qualifiedName()+"...");
+               }
+               else {
+                  String packageName = c.containingPackage().name();
+                  if (null == prevPackageName || !packageName.equals(prevPackageName)) {
+                     printNotice("Writing XML information for "+packageName+"...");
+                     prevPackageName = packageName;
+                  }
+               }
 	       
 	       setTargetFile(c.qualifiedName().replace('/','.')+".xml");
 	       
@@ -1032,8 +1555,12 @@ public class Driver {
 	 
          // Copy DTD files to temporary directory
          
+         // FIXME: try to solve this via jar: URLs. but this will
+         // probably break libxmlj compatibility (?)
+         
          String[] resources = new String[] {
             "gjdoc.dtd",
+            "gjdoc-alphaindex.dtd",
             "dbcentx.mod",
             "ent/iso-amsa.ent",
             "ent/iso-amsb.ent",
@@ -1059,7 +1586,8 @@ public class Driver {
          File tempDtdDirectory = new File(xmlTargetDirectory, "dtd");
          File tempDtdEntDirectory = new File(tempDtdDirectory, "ent");
 
-         if (tempDtdDirectory.mkdir() && tempDtdEntDirectory.mkdir()) {
+         if ((tempDtdDirectory.exists() || tempDtdDirectory.mkdir())
+             && (tempDtdEntDirectory.exists() || tempDtdEntDirectory.mkdir())) {
             for (int i = 0; i < resources.length; ++ i) {
                copyResourceToFile("/dtd/" + resources[i], 
                                   new File(tempDtdDirectory, resources[i]));
@@ -1070,16 +1598,28 @@ public class Driver {
             return false;
          }
 
+         // Copy package data-dir directory
+
+         {
+            PackageDoc[] packages = rootDoc.specifiedPackages();
+            for (int i=0, ilim=packages.length; i<ilim; ++i) {
+               PackageDoc c = packages[i];
+               if (c instanceof GjdocPackageDoc) {
+                  copyPackageDataDir((GjdocPackageDoc)c);
+               }
+            }
+         }
+
 	 // All information has been output. Apply stylesheet if given.
 
 	 gnu.classpath.tools.gjdoc.Main.releaseRootDoc();
-	 this.rootDoc = null;
+         
 	 this.currentClass = null;
 	 this.currentMember = null;
 	 this.currentExecMember = null;
 	 
-	 System.gc();
-	 
+	 System.gc();	 
+
 	 // From this point we are only operating on files, so we don't
 	 // need this anymore and can free up some memory
 
@@ -1089,11 +1629,15 @@ public class Driver {
 
 	    // We have XSLT postprocessing, run DocTranslet.
 
-            DocTranslet docTranslet = DocTranslet.fromClasspath("/doctranslets/html/gjdoc.xsl");
+            //DocTranslet docTranslet = DocTranslet.fromClasspath("/doctranslets/html/gjdoc.xsl");
+            
+            //docTranslet.setOptions(docTransletOptions);
+
+            target.getDocTranslet().setOptions(docTransletOptions);
 
             target.getDocTranslet().apply(xmlTargetDirectory, 
                                           target.getTargetDirectory(), 
-                                          reporter);
+                                          rootDoc);
 	 }
 
 	 // Done
@@ -1112,6 +1656,16 @@ public class Driver {
 
 	 e.printStackTrace();
 	 printError(e.toString());
+
+         Throwable rootCause = e.getCause();
+         if (null != rootCause) {
+            while (null != rootCause.getCause()) {
+               rootCause = rootCause.getCause();
+            }
+            System.err.println("Root cause:");
+            rootCause.printStackTrace();
+         }
+
 	 return false;
       }
       finally {
@@ -1277,6 +1831,32 @@ public class Driver {
       else if ("-title".equals(option)) return 2;
       else if ("-tagletpath".equals(option)) return 2;
       else if ("-taglet".equals(option)) return 2;
+      else if ("-authormail".equals(option)) return 2;
+      else if ("-mailmangledot".equals(option)) return 2;
+      else if ("-mailmangleat".equals(option)) return 2;
+      else if ("-noindex".equals(option)) return 1;
+      else if ("-nocomment".equals(option)) return 1;
+      else if ("-notree".equals(option)) return 1;
+      else if ("-nohelp".equals(option)) return 1;
+      else if ("-nonavbar".equals(option)) return 1;
+      else if ("-splitindex".equals(option)) return 1;
+      else if ("-author".equals(option)) return 1;
+      else if ("-version".equals(option)) return 1;
+      else if ("-nosince".equals(option)) return 1;
+      else if ("-nodeprecated".equals(option)) return 1;
+      else if ("-linksource".equals(option)) return 1;
+      else if ("-windowtitle".equals(option)) return 2;
+      else if ("-helpfile".equals(option)) return 2;
+      else if ("-stylesheetfile".equals(option)) return 2;
+      else if ("-tag".equals(option)) return 2;
+      else if ("-header".equals(option)) return 2;
+      else if ("-footer".equals(option)) return 2;
+      else if ("-bottom".equals(option)) return 2;
+      else if ("-doctitle".equals(option)) return 2;
+      else if ("-nodeprecatedlist".equals(option)) return 1;
+      else if ("-uses".equals(option)) return 1;
+      else if ("-group".equals(option)) return 3;
+
       else return -1;
    }
 
@@ -1383,11 +1963,6 @@ public class Driver {
       if (null != rootDoc) {
 	 rootDoc.printError(error);
       }
-      /*
-      else if (null != reporter) {
-	 reporter.printError(error);
-      }
-      */
       else {
 	 System.err.println("ERROR: "+error);
       }
@@ -1397,11 +1972,6 @@ public class Driver {
       if (null != rootDoc) {
 	 rootDoc.printWarning(warning);
       }
-      /*
-      else if (null != reporter) {
-	 reporter.printWarning(warning);
-      }
-      */
       else {
 	 System.err.println("WARNING: "+warning);
       }
@@ -1411,13 +1981,451 @@ public class Driver {
       if (null != rootDoc) {
 	 rootDoc.printNotice(notice);
       }
-      /*
-      else if (null != reporter) {
-	 reporter.printNotice(notice);
-      }
-      */
       else {
 	 System.err.println(notice);
       }
+   }
+
+   /**
+    *  Copy the contents of the input directory to the output
+    *  directory. The output directory must exist.
+    */
+   private void copyPackageDataDir(GjdocPackageDoc packageDoc) throws IOException {
+      File docFilesSourceDirectory
+         = new File(packageDoc.packageDirectory(), "doc-files");
+      File docFilesTargetDirectory
+         = new File(this.targetDirectory, 
+                    packageDoc.name().replace('.', File.separatorChar));
+      if (docFilesSourceDirectory.exists()) {
+         printNotice("Copying files from " + docFilesSourceDirectory);
+         copyDirectory(docFilesSourceDirectory, docFilesTargetDirectory,
+                       docFilesSubdirsEnabled,
+                       excludeDocFilesSubDirs);
+      }
+   }
+
+   /**
+    *  Recursively copy the contents of the input directory to the
+    *  output directory. The output directory must exist.
+    */
+   private static void copyDirectory(File sourceDir, File targetDir, 
+                                     boolean recursive,
+                                     Set excludeDirs) throws IOException {
+      if (!targetDir.exists() && !targetDir.mkdirs()) {
+         throw new IOException("Cannot create directory " + targetDir);
+      }
+
+      File[] sourceFiles = sourceDir.listFiles();
+      for (int i=0; i<sourceFiles.length; ++i) {
+         if (sourceFiles[i].isDirectory()) {
+            if (recursive && (null == excludeDirs 
+                              || !excludeDirs.contains(sourceFiles[i].getName()))) {
+               File targetSubDir = new File(targetDir, 
+                                            sourceFiles[i].getName());
+               if (targetSubDir.exists() || targetSubDir.mkdir()) {
+                  copyDirectory(sourceFiles[i], targetSubDir, recursive, null);
+               }
+               else {
+                  throw new IOException("Cannot create directory " + targetSubDir);
+               }
+            }
+         }
+         else {
+            copyFile(sourceFiles[i], new File(targetDir, sourceFiles[i].getName()));
+         }
+      }
+   }
+
+   /**
+    *  Copy the contents of the input file to the output file. The
+    *  output file's parent directory must exist.
+    */
+   private static void copyFile(File sourceFile, File targetFile) throws IOException {
+
+      InputStream in = new FileInputStream(sourceFile);
+      OutputStream out = new FileOutputStream(targetFile);
+      int nread;
+      byte[] buf = new byte[512];
+      while ((nread = in.read(buf)) >= 0) {
+         out.write(buf, 0, nread);
+      }
+      in.close();
+      out.close();
+   }
+
+   private void createIndexByName() throws IOException {
+      // Create index
+
+      // Collect index
+            
+      Map indexMap = new TreeMap(new Comparator() {
+            public int compare(Object o1, Object o2) {
+               return o1.toString().toLowerCase().compareTo(o2.toString().toLowerCase());
+            }
+         });
+
+      // Add packages to index
+
+      PackageDoc[] packages = rootDoc.specifiedPackages();
+      for (int i=0, ilim=packages.length; i<ilim; ++i) {
+         PackageDoc c = packages[i];
+         indexMap.put(c.name(), c);
+      }
+
+      // Add classes, fields and methods to index
+
+      ClassDoc[] sumclasses = rootDoc.classes();
+      for (int i=0, ilim=sumclasses.length; i<ilim; ++i) {
+         ClassDoc c = sumclasses[i];
+         if (null == c.containingClass()) {
+            indexMap.put(c.name(), c);
+         }
+         else {
+            indexMap.put(c.name().substring(c.containingClass().name().length() + 1), c);
+         }
+         FieldDoc[] fields = c.fields();
+         for (int j=0, jlim=fields.length; j<jlim; ++j) {
+            indexMap.put(fields[j].name(), fields[j]);
+         }
+         MethodDoc[] methods = c.methods();
+         for (int j=0, jlim=methods.length; j<jlim; ++j) {
+            MethodDoc method = methods[j];
+            StringBuffer signature = new StringBuffer();
+            signature.append(method.name());
+            signature.append('(');
+            Parameter[] parameters = method.parameters();
+            for (int k=0, klim=parameters.length; k<klim; ++k) {
+               if (k > 0) {
+                  signature.append(", ");
+               }
+               signature.append(parameters[k].typeName());
+            }
+            signature.append(')');
+            indexMap.put(signature.toString(), method);
+         }
+      }
+
+      // Assign output stream
+
+      setTargetFile("alphaindex.xml");
+
+      // Output XML document header
+
+      println(0, "<?xml version=\"1.0\"?>");
+      println("<!DOCTYPE gjdoc SYSTEM \"dtd/gjdoc-alphaindex.dtd\">");
+      println();
+      printOpenTag(0, "alphaindex xmlns=\"http://www.w3.org/TR/REC-html40\" xmlns:gjdoc=\"http://www.gnu.org/software/cp-tools/gjdocxml\"");
+      
+      Iterator it = indexMap.keySet().iterator();
+
+      char previousCategoryLetter = '\0';
+      boolean categoryOpen = false;
+
+      while (it.hasNext()) {
+         String key = (String)it.next();
+         Doc entry = (Doc)indexMap.get(key);
+
+         char firstChar = Character.toUpperCase(key.charAt(0));
+         if (firstChar != previousCategoryLetter) {
+            if (categoryOpen) {
+               printCloseTag(1, "category");
+            }
+            printOpenTag(1, "category letter=\"" + firstChar + "\"");
+            categoryOpen = true;
+            previousCategoryLetter = firstChar;
+         }
+
+         printOpenTag(2, "entry name=\"" + key + "\"");
+         if (entry instanceof PackageDoc) {
+            printAtomTag(3, "isPackage");
+         }
+         else if (entry instanceof ClassDoc) {
+            printAtomTag(3, "isClass");
+            ClassDoc centry = (ClassDoc)entry;
+            currentClass = centry;
+            printAtomTag(3, "containingPackage name=\"" + centry.containingPackage().name() + "\"");
+            if (null != centry.containingClass()) {
+               printAtomTag(3, "containingClass name=\"" + centry.containingClass().name() + "\"");
+            }
+            if (centry.isInterface()) {
+               printAtomTag(3, "isInterface");
+            }
+            if (centry.isException()) {
+               printAtomTag(3, "isException");
+            }
+            if (centry.isError()) {
+               printAtomTag(3, "isError");
+            }
+            if (centry.isOrdinaryClass()) {
+               printAtomTag(3, "isOrdinaryClass");
+            }
+         }
+         else if (entry instanceof ProgramElementDoc) {
+            ProgramElementDoc pentry = (ProgramElementDoc)entry;
+            currentClass = pentry.containingClass();
+            printAtomTag(3, "containingPackage name=\"" + pentry.containingPackage().name() + "\"");
+            printAtomTag(3, "containingClass name=\"" + pentry.containingClass().name() + "\"");
+            if (pentry.isMethod()) {
+               printAtomTag(3, "isMethod");
+               ExecutableMemberDoc mentry = (ExecutableMemberDoc)pentry;
+               printAtomTag(3, "signature full=\""+mentry.signature()+"\" flat=\""+mentry.flatSignature()+"\"");
+               printAtomTag(3, "method name=\"" + mentry.name() + "\"");
+            }
+            if (pentry.isField()) {
+               printAtomTag(3, "isField");
+            }
+         }
+
+         Tag[] tags = entry.firstSentenceTags();
+         for (int i=0, ilim=tags.length; i<ilim; ++i) {
+            Tag tag = tags[i];
+            if (tag.firstSentenceTags().length>0) {
+               printOpenTag(3, "firstSentenceTags", false);
+               outputTags(4, tag.firstSentenceTags(), false, CONTEXT_TYPE);
+               printCloseTag(3, "firstSentenceTags");
+            }
+         }
+
+
+         printCloseTag(2, "entry");
+      }
+
+      if (categoryOpen) {
+         printCloseTag(1, "category");
+      }
+
+      printCloseTag(0, "alphaindex");
+
+      closeTargetFile();
+   }
+
+   private static class UsageType
+   {
+      public static final UsageType CLASS_DERIVED_FROM = new UsageType("class-derived-from");
+      public static final UsageType FIELD_OF_TYPE = new UsageType("field-of-type");
+      public static final UsageType METHOD_WITH_RETURN_TYPE = new UsageType("method-with-return-type");
+      public static final UsageType METHOD_WITH_PARAMETER_TYPE = new UsageType("method-with-parameter-type");
+      public static final UsageType METHOD_WITH_THROWN_TYPE = new UsageType("method-with-thrown-type");
+      public static final UsageType CONSTRUCTOR_WITH_PARAMETER_TYPE = new UsageType("constructor-with-parameter-type");
+      public static final UsageType CONSTRUCTOR_WITH_THROWN_TYPE = new UsageType("constructor-with-thrown-type");
+      private String id;
+
+      private UsageType(String id)
+      {
+         this.id = id;
+      }
+
+      public String toString() { 
+         return "UsageType{id=" + id + "}"; 
+      }
+
+      public String getId() {
+         return id;
+      }
+   }
+
+   /**
+    *  ClassDoc -> (PackageDoc -> (UsageType -> (Set of Doc)))
+    */
+   private Map usedClassToPackagesMap = new HashMap();
+
+   private void addUsedBy(ClassDoc usedClass, UsageType usageType, Doc user, PackageDoc userPackage)
+   {
+      Map packageToUsageTypeMap = (Map)usedClassToPackagesMap.get(usedClass);
+      if (null == packageToUsageTypeMap) {
+         packageToUsageTypeMap = new HashMap();
+         usedClassToPackagesMap.put(usedClass, packageToUsageTypeMap);
+      }
+
+      Map usageTypeToUsersMap = (Map)packageToUsageTypeMap.get(userPackage);
+      if (null == usageTypeToUsersMap) {
+         usageTypeToUsersMap = new HashMap();
+         packageToUsageTypeMap.put(userPackage, usageTypeToUsersMap);
+      }
+
+      Set userSet = (Set)usageTypeToUsersMap.get(usageType);
+      if (null == userSet) {
+         userSet = new TreeSet(); // FIXME: we need the collator from Main here
+         usageTypeToUsersMap.put(usageType, userSet);
+      }
+      userSet.add(user);
+   }
+
+   /**
+    *  Create the cross reference database.
+    */
+   private void collectUsage() {
+
+      ClassDoc[] classes = rootDoc.classes();
+      for (int i = 0, ilim = classes.length; i < ilim; ++ i) {
+         ClassDoc clazz = classes[i];
+
+         // classes derived from
+         for (ClassDoc superclass = clazz.superclass(); superclass != null; 
+              superclass = superclass.superclass()) {
+            addUsedBy(superclass, UsageType.CLASS_DERIVED_FROM, clazz, clazz.containingPackage());
+         }
+
+         FieldDoc[] fields = clazz.fields();
+         for (int j = 0, jlim = fields.length; j < jlim; ++ j) {
+            FieldDoc field = fields[j];
+
+            // fields of type                  
+            ClassDoc fieldType = field.type().asClassDoc();
+            if (null != fieldType) {
+               addUsedBy(fieldType, UsageType.FIELD_OF_TYPE, 
+                         field, clazz.containingPackage());
+            }
+         }
+
+         MethodDoc[] methods = clazz.methods();
+         for (int j = 0, jlim = methods.length; j < jlim; ++ j) {
+            MethodDoc method = methods[j];
+
+            // methods with return type
+
+            ClassDoc returnType = method.returnType().asClassDoc();
+            if (null != returnType) {
+               addUsedBy(returnType, UsageType.METHOD_WITH_RETURN_TYPE, 
+                         method, clazz.containingPackage());
+            }
+            Parameter[] parameters = method.parameters();
+            for (int k=0; k<parameters.length; ++k) {
+
+               // methods with parameter type
+
+               Parameter parameter = parameters[k];
+               ClassDoc parameterType = parameter.type().asClassDoc();
+               if (null != parameterType) {
+                  addUsedBy(parameterType, UsageType.METHOD_WITH_PARAMETER_TYPE, 
+                            method, clazz.containingPackage());
+               }
+            }
+
+            // methods which throw
+
+            ClassDoc[] thrownExceptions = method.thrownExceptions();
+            for (int k = 0, klim = thrownExceptions.length; k < klim; ++ k) {
+               ClassDoc thrownException = thrownExceptions[k];
+               addUsedBy(thrownException, UsageType.METHOD_WITH_THROWN_TYPE, 
+                         method, clazz.containingPackage());
+            }
+         }
+                  
+         ConstructorDoc[] constructors = clazz.constructors();
+         for (int j = 0, jlim = constructors.length; j < jlim; ++ j) {
+
+            ConstructorDoc constructor = constructors[j];
+
+            Parameter[] parameters = constructor.parameters();
+            for (int k = 0, klim = parameters.length; k < klim; ++ k) {
+
+               // constructors with parameter type
+                     
+               Parameter parameter = parameters[k];
+               ClassDoc parameterType = parameter.type().asClassDoc();
+               if (null != parameterType) {
+                  addUsedBy(parameterType, UsageType.CONSTRUCTOR_WITH_PARAMETER_TYPE, 
+                            constructor, clazz.containingPackage());
+               }
+            }
+
+            // constructors which throw
+
+            ClassDoc[] thrownExceptions = constructor.thrownExceptions();
+            for (int k = 0, klim = thrownExceptions.length; k < klim; ++ k) {
+               ClassDoc thrownException = thrownExceptions[k];
+               addUsedBy(thrownException, UsageType.CONSTRUCTOR_WITH_THROWN_TYPE, 
+                         constructor, clazz.containingPackage());
+            }
+         }
+      }
+   }
+
+   private void outputUsage(ClassDoc clazz, int level) {
+
+      Map packageToUsageTypeMap = (Map)usedClassToPackagesMap.get(clazz);
+      if (null != packageToUsageTypeMap) {
+         printOpenTag(level, "references");
+
+         Iterator packagesIterator = packageToUsageTypeMap.keySet().iterator();
+
+         while (packagesIterator.hasNext()) {
+            PackageDoc packageDoc = (PackageDoc)packagesIterator.next();
+            printOpenTag(level + 1, "referencing-package name=\"" + packageDoc.name() + "\"");
+            Map usageTypeToUsersMap = (Map)packageToUsageTypeMap.get(packageDoc);
+            Iterator usageTypeIterator = usageTypeToUsersMap.keySet().iterator();
+            while (usageTypeIterator.hasNext()) {
+               UsageType usageType = (UsageType)usageTypeIterator.next();
+               printOpenTag(level + 2, "usage-type id=\"" + usageType.getId() + "\"");
+               Set users = (Set)usageTypeToUsersMap.get(usageType);
+               Iterator userIterator = users.iterator();
+               while (userIterator.hasNext()) {
+                  Doc user = (Doc)userIterator.next();
+                  if (user instanceof ClassDoc) {
+                     printAtomTag(level + 3, "user"
+                                  + " class=\"" + ((ClassDoc)user).name() + "\"");
+                  }
+                  else if (user instanceof FieldDoc) {
+                     FieldDoc fieldDoc = (FieldDoc)user;
+                     printAtomTag(level + 3, "user"
+                                  + " class=\"" + fieldDoc.containingClass().name() + "\""
+                                  + " field=\"" + fieldDoc.name() + "\"");
+                  }
+                  else if (user instanceof MethodDoc) {
+                     MethodDoc methodDoc = (MethodDoc)user;
+                     printAtomTag(level + 3, "user"
+                                  + " class=\"" + methodDoc.containingClass().name() + "\""
+                                  + " method=\"" + methodDoc.name() + "\""
+                                  + " signature=\"" + methodDoc.signature() + "\""
+                                  + " flatSignature=\"" + methodDoc.flatSignature() + "\"");
+                  }
+                  else if (user instanceof ConstructorDoc) {
+                     ConstructorDoc constructorDoc = (ConstructorDoc)user;
+                     printAtomTag(level + 3, "user"
+                                  + " class=\"" + constructorDoc.containingClass().name() + "\""
+                                  + " signature=\"" + constructorDoc.signature() + "\""
+                                  + " flatSignature=\"" + constructorDoc.flatSignature() + "\"");
+                  }
+               }
+               printCloseTag(level +2, "usage-type");
+            }
+            printCloseTag(level + 1, "referencing-package");
+         }
+
+         printCloseTag(level, "references");
+      }
+   }
+
+   private boolean processGroupOption(String groupName, String colonSeparatedPackageList)
+   {
+      try {
+         PackageMatcher packageMatcher = new PackageMatcher();
+
+         StringTokenizer tokenizer = new StringTokenizer(colonSeparatedPackageList, ":");
+         while (tokenizer.hasMoreTokens()) {
+            String packageWildcard = tokenizer.nextToken();
+            packageMatcher.addWildcard(packageWildcard);
+         }
+
+         SortedSet groupPackages = packageMatcher.match(rootDoc.specifiedPackages());
+
+         packageGroups.add(new PackageGroup(groupName, groupPackages));
+
+         return true;
+      }
+      catch (InvalidPackageWildcardException e) {
+         return false;
+      }
+   }
+
+   private void registerTaglet(Taglet taglet)
+   {
+      tagletMap.put(taglet.getName(), taglet);
+   }
+
+   private boolean isVerbose()
+   {
+      return false;
    }
 }

@@ -39,11 +39,15 @@ public abstract class ProgramElementDocImpl extends DocImpl implements ProgramEl
 
    private static final String[] accessModifiers = { "public ", "protected ", "private ", "" };
 
-   public ProgramElementDocImpl(ClassDoc containingClass, PackageDoc containingPackage) {
+   public ProgramElementDocImpl(ClassDoc containingClass, 
+                                PackageDoc containingPackage,
+                                SourcePosition position) {
+      super(position);
       this.containingClass=containingClass;
       this.containingPackage=containingPackage;
    }   
-   public ProgramElementDocImpl(ClassDoc containingClass) {
+   public ProgramElementDocImpl(ClassDoc containingClass, SourcePosition position) {
+      super(position);
       this.containingClass=containingClass;
       this.containingPackage=containingClass.containingPackage();
    }   
@@ -51,7 +55,9 @@ public abstract class ProgramElementDocImpl extends DocImpl implements ProgramEl
 				PackageDoc containingPackage,
 				int accessLevel,
 				boolean isFinal,
-				boolean isStatic) {
+				boolean isStatic,
+                                SourcePosition position) {
+      super(position);
       this.containingClass=containingClass;
       this.containingPackage=containingPackage;
       this.accessLevel=accessLevel;
