@@ -263,6 +263,9 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 		 * This if applies if we are called from Constructor.newInstance
 		 */
 		ret.l = (*env)->NewObjectA(env, clazz, meth, args);
+
+		/* override return type parsed from signature */
+		rettype = 'L';
 	}
 	else {			/* nonstatic method */
 		switch (rettype) {
