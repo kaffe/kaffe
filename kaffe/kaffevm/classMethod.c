@@ -57,9 +57,6 @@ static Hjava_lang_Class* SerialInterface[1];
 
 extern gcFuncs gcClassObject;
 
-#if 0
-extern Hjava_lang_Class* findClass(Hjava_lang_Class*, Utf8Const*);
-#endif
 extern void findClass(classEntry*);
 extern void verify2(Hjava_lang_Class*);
 extern void verify3(Hjava_lang_Class*);
@@ -499,45 +496,63 @@ Hjava_lang_Class*
 loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 {
 	classEntry* centry;
+	Hjava_lang_Class* clazz;
 
         centry = lookupClassEntry(name, loader);
 	if (centry->class != NULL) {
 		goto found;
 	}
 
-	/* Failed to find class, so must now load it */
-	lockMutex(centry);
-
-	/* Check again in case someone else did it */
-	if (centry->class != NULL) {
-		unlockMutex(centry);
-		goto found;
-	}
-
+	/* 
+	 * Failed to find class, so must now load it.
+	 *
+	 * If we use a class loader, we must call out to Java code.
+	 * That means we cannot lock centry.  This is okay, however,
+	 * since the only way the Java code can get ahold of a class
+	 * object is by calling findSystemClass, which calls loadClass
+	 * with loader==NULL or by doing a defineClass, which locks centry.
+	 */
 	if (loader != NULL) {
 		Hjava_lang_String* str;
 
 LDBG(		printf("classLoader: loading %s\n", name->data); )
 		str = makeReplaceJavaStringFromUtf8(name->data, name->length, '/', '.');
-		centry->class = (Hjava_lang_Class*)do_execute_java_method((Hjava_lang_Object*)loader, "loadClass", "(Ljava/lang/String;Z)Ljava/lang/Class;", 0, false, str, true).l;
-		centry->class->centry = centry;
+		clazz = (Hjava_lang_Class*)do_execute_java_method((Hjava_lang_Object*)loader, "loadClass", "(Ljava/lang/String;Z)Ljava/lang/Class;", 0, false, str, true).l;
+		if (clazz == NULL) {
+			throwException(ClassNotFoundException(name->data));
+		}
+		clazz->centry = centry;
 LDBG(		printf("classLoader: done\n");			)
-	}
-	else {
-#if 0
-		centry->class = findClass(NULL, name);
-#endif
-		findClass(centry);
+	} 
+
+	/* Lock centry before setting centry->class */
+	lockMutex(centry);
+
+	/* Check again in case someone else did it */
+	if (centry->class == NULL) {
+
+		if (loader == NULL) {
+			/* findClass will set centry->class if it finds it */
+			findClass(centry);
+			clazz = centry->class;
+		} else {
+			centry->class = clazz;
+		}
+
+		/* We process the class while we're holding the centry lock 
+		 * so that other threads will find a processed class if 
+		 * centry->class is not null.
+		 */
+		if (clazz != NULL)
+			processClass(clazz, CSTATE_LINKED);
 	}
 
-	/* Release lock now class has been entered */
+	/* Release lock now class has been entered and processed */
 	unlockMutex(centry);
 
-	if (centry->class == NULL) {
+	if (clazz == NULL) {
 		throwException(ClassNotFoundException(name->data));
 	}
-
-	processClass(centry->class, CSTATE_LINKED);
 
 	found:;
 	return (centry->class);
