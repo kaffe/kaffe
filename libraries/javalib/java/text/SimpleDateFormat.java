@@ -122,7 +122,7 @@ public StringBuffer format(Date date, StringBuffer buf, FieldPosition pos) {
 			}
 			break;
 		case 'M':
-			val = calendar.get(Calendar.MONTH);
+			val = calendar.get(Calendar.MONTH) + 1;
 			if (plen < 3) {
 				if (val < 10 && plen == 2) {
 					buf.append('0');
