@@ -1,3 +1,9 @@
+Mon Jul 24 18:32:41 MDT 2000  Godmar Back <gback@cs.utah.edu>
+
+    	* libraries/javalib/kaffe/util/UNIXTimeZone.java: close()
+	FileInputStreams to avoid possible problem with large number 
+	of fds.
+
 Mon Jul 24 14:00:00 PDT 2000  Tim Wilkinson <tim@transvirtual.com>
 
         * Version 1.0.6 of Kaffe OpenVM released.
