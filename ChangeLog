@@ -1,4 +1,14 @@
-2004-03-19  Dalibor Topic <robilad@kaffe.org>
+2004-03-21  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2004-03-19  David Jee  <djee@redhat.com>
+
+        * java/awt/GridBagLayout.java
+        (calcCellSizes): Rows or columns with zero sizes should still be
+        considered for extra space distribution.
+
+2004-03-21  Dalibor Topic <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
 
