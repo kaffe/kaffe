@@ -99,7 +99,7 @@ class Third {
 
 /* Expected Output:
 A Segv java.lang.NullPointerException
-B First java.lang.ExceptionInInitializerError: [exception was java.lang.NullPointerException]
+B First java.lang.ExceptionInInitializerError
 C Second java.lang.NoClassDefFoundError: DontExist
 D Third java.lang.NoClassDefFoundError: DontExist
 E Segv java.lang.NullPointerException

@@ -1,5 +1,58 @@
 2003-08-04 Dalibor Topic <robilad@kaffe.org>
 
+	Merged most of GNU Classpath's exceptions, errors and 
+	interfaces from java.lang .
+
+	* libraries/javalib/java/lang/AbstractMethodError.java,
+	libraries/javalib/java/lang/ArithmeticException.java,
+	libraries/javalib/java/lang/ArrayIndexOutOfBoundsException.java,
+	libraries/javalib/java/lang/ArrayStoreException.java,
+	libraries/javalib/java/lang/ClassCastException.java,
+	libraries/javalib/java/lang/ClassCircularityError.java,
+	libraries/javalib/java/lang/ClassFormatError.java,
+	libraries/javalib/java/lang/CloneNotSupportedException.java,
+	libraries/javalib/java/lang/Comparable.java,
+	libraries/javalib/java/lang/Exception.java,
+	libraries/javalib/java/lang/ExceptionInInitializerError.java,
+	libraries/javalib/java/lang/IllegalAccessError.java,
+	libraries/javalib/java/lang/IllegalAccessException.java,
+	libraries/javalib/java/lang/IllegalArgumentException.java,
+	libraries/javalib/java/lang/IllegalMonitorStateException.java,
+	libraries/javalib/java/lang/IllegalStateException.java,
+	libraries/javalib/java/lang/IllegalThreadStateException.java,
+	libraries/javalib/java/lang/IncompatibleClassChangeError.java,
+	libraries/javalib/java/lang/IndexOutOfBoundsException.java,
+	libraries/javalib/java/lang/InstantiationError.java,
+	libraries/javalib/java/lang/InstantiationException.java,
+	libraries/javalib/java/lang/InternalError.java,
+	libraries/javalib/java/lang/InterruptedException.java,
+	libraries/javalib/java/lang/LinkageError.java,
+	libraries/javalib/java/lang/NegativeArraySizeException.java,
+	libraries/javalib/java/lang/NoClassDefFoundError.java,
+	libraries/javalib/java/lang/NoSuchFieldError.java,
+	libraries/javalib/java/lang/NoSuchFieldException.java,
+	libraries/javalib/java/lang/NoSuchMethodError.java,
+	libraries/javalib/java/lang/NoSuchMethodException.java,
+	libraries/javalib/java/lang/NullPointerException.java,
+	libraries/javalib/java/lang/NumberFormatException.java,
+	libraries/javalib/java/lang/OutOfMemoryError.java,
+	libraries/javalib/java/lang/Runnable.java,
+	libraries/javalib/java/lang/RuntimeException.java,
+	libraries/javalib/java/lang/SecurityException.java,
+	libraries/javalib/java/lang/StackOverflowError.java,
+	libraries/javalib/java/lang/StringIndexOutOfBoundsException.java,
+	libraries/javalib/java/lang/UnknownError.java,
+	libraries/javalib/java/lang/UnsatisfiedLinkError.java,
+	libraries/javalib/java/lang/UnsupportedOperationException.java,
+	libraries/javalib/java/lang/VerifyError.java,
+	libraries/javalib/java/lang/VirtualMachineError.java:
+	Merged in from GNU Classpath.	
+
+	* test/regression/ProcessClassTest.java:
+	Adapted expected result to Classpath's implementation.
+
+2003-08-04 Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/net/Inet4Address.java:
 	(fromString) use initCause to set cause exception.
 
