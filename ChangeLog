@@ -1,5 +1,13 @@
 2005-02-16  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h (jthread_extract_stack): 
+	Deinlined.
+	
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c (jthread_extract_stack): 
+	Moved over here.
+
+2005-02-16  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU Classpath.
 
 	2005-02-15  Mark Wielaard  <mark@klomp.org>

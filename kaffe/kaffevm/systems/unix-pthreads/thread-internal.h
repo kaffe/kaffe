@@ -222,22 +222,7 @@ bool jthread_stackcheck(int left)
  *
  * Needed by the garbage collector.
  */
-static inline
-bool jthread_extract_stack(jthread_t tid, void** from, unsigned* len)
-{
-  if (tid->active == 0) {
-    return false;
-  }
-  assert(tid->suspendState == SS_SUSPENDED);
-#if defined(STACK_GROWS_UP)
-  *from = tid->stackMin;
-  *len = (uintp)tid->stackCur - (uintp)tid->stackMin;
-#else
-  *from = tid->stackCur;
-  *len = (uintp)tid->stackMax - (uintp)tid->stackCur;
-#endif
-  return true;
-}
+bool jthread_extract_stack(jthread_t tid, void** from, unsigned* len);
 
 /**
  * Returns the upper bound of the stack of the calling thread.

@@ -1656,3 +1656,31 @@ int KaffePThread_getSuspendSignal(void)
 {
   return sigSuspend;
 }
+
+/**
+ * Extract the range of the stack that's in use.
+ * 
+ * @param tid the thread whose stack is to be examined
+ * @param from storage for the address of the start address
+ * @param len storage for the size of the used range
+ *
+ * @return true if successful, otherwise false
+ *
+ * Needed by the garbage collector.
+ */
+
+bool jthread_extract_stack(jthread_t tid, void** from, unsigned* len)
+{
+  if (tid->active == 0) {
+    return false;
+  }
+  assert(tid->suspendState == SS_SUSPENDED);
+#if defined(STACK_GROWS_UP)
+  *from = tid->stackMin;
+  *len = (uintp)tid->stackCur - (uintp)tid->stackMin;
+#else
+  *from = tid->stackCur;
+  *len = (uintp)tid->stackMax - (uintp)tid->stackCur;
+#endif
+  return true;
+}
