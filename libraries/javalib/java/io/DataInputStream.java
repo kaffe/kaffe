@@ -148,6 +148,10 @@ public final String readUTF() throws IOException {
 	return UTF8.decode(this, readUnsignedShort());
 }
 
+public static final String readUTF(DataInput in) throws IOException {
+	return UTF8.decode(in, in.readUnsignedShort());
+}
+
 public final int readUnsignedByte() throws IOException {
 	return readByte() & 0xff;
 }
