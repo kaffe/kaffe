@@ -11,6 +11,9 @@ extern "C" {
 /* Header for class java_lang_Thread */
 
 typedef struct Classjava_lang_Thread {
+#define java_lang_Thread_MIN_PRIORITY 1
+#define java_lang_Thread_NORM_PRIORITY 5
+#define java_lang_Thread_MAX_PRIORITY 10
   HArrayOfChar* name;
   jint priority;
   struct Hjava_lang_Thread* threadQ;
@@ -23,24 +26,18 @@ typedef struct Classjava_lang_Thread {
   struct Hkaffe_util_Ptr* exceptObj;
   struct Hkaffe_util_Ptr* jnireferences;
   jbool dying;
-#define java_lang_Thread_MIN_PRIORITY 1
-#define java_lang_Thread_NORM_PRIORITY 5
-#define java_lang_Thread_MAX_PRIORITY 10
 } Classjava_lang_Thread;
 HandleTo(java_lang_Thread);
 
+extern jint java_lang_Thread_countStackFrames(struct Hjava_lang_Thread*);
 extern struct Hjava_lang_Thread* java_lang_Thread_currentThread(void);
 extern void java_lang_Thread_yield(void);
-extern void java_lang_Thread_sleep(jlong);
-extern void java_lang_Thread_start(struct Hjava_lang_Thread*);
-extern jbool java_lang_Thread_isInterrupted(struct Hjava_lang_Thread*, jbool);
 extern jbool java_lang_Thread_isAlive(struct Hjava_lang_Thread*);
-extern jint java_lang_Thread_countStackFrames(struct Hjava_lang_Thread*);
+extern void java_lang_Thread_start(struct Hjava_lang_Thread*);
 extern void java_lang_Thread_setPriority0(struct Hjava_lang_Thread*, jint);
-extern void java_lang_Thread_stop0(struct Hjava_lang_Thread*, struct Hjava_lang_Object*);
-extern void java_lang_Thread_suspend0(struct Hjava_lang_Thread*);
-extern void java_lang_Thread_resume0(struct Hjava_lang_Thread*);
+extern void java_lang_Thread_sleep0(jlong);
 extern void java_lang_Thread_interrupt0(struct Hjava_lang_Thread*);
+extern void java_lang_Thread_destroy0(struct Hjava_lang_Thread*);
 
 #ifdef __cplusplus
 }

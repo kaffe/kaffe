@@ -14,6 +14,8 @@ INSTALL=	@INSTALL@
 INSTALL_DATA=	@INSTALL_DATA@
 MKDIR=		@MKDIR@
 
+KAFFEH=		kaffeh
+
 SHELL=		/bin/sh
 
 BUILT_INCLUDEFILES= \
@@ -50,6 +52,9 @@ install:
 		done
 
 derived-files:
+		$(KAFFEH) java/lang/Thread
+		$(KAFFEH) java/lang/ThreadGroup
+		$(KAFFEH) java/lang/Throwable
 
 depend:
 

@@ -12,12 +12,12 @@ extern "C" {
 
 typedef struct Classjava_lang_Throwable {
   struct Hjava_lang_Object* backtrace;
-  struct Hjava_lang_String* detailMessage;
+  struct Hjava_lang_String* message;
 } Classjava_lang_Throwable;
 HandleTo(java_lang_Throwable);
 
-extern void java_lang_Throwable_printStackTrace0(struct Hjava_lang_Throwable*, struct Hjava_lang_Object*);
 extern struct Hjava_lang_Throwable* java_lang_Throwable_fillInStackTrace(struct Hjava_lang_Throwable*);
+extern void java_lang_Throwable_printStackTrace0(struct Hjava_lang_Throwable*, struct Hjava_lang_Object*);
 
 #ifdef __cplusplus
 }
