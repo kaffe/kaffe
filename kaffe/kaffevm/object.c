@@ -97,6 +97,24 @@ DBG(NEWOBJECT,
 }
 
 /*
+ * Try to load kaffe.util.Ptr.  Ignore errors and keep trying until it
+ * works.
+ */
+static Hjava_lang_Class *
+ptrClass()
+{
+	static Hjava_lang_Class *r = 0;
+	
+	if (!r) {
+		errorInfo einfo;
+		
+		r = lookupClass(PTRCLASS, &einfo);
+		if (!r) discardErrorInfo(&einfo);
+	}
+	return r;
+}
+
+/*
  * Allocate a new array, of whatever types.
  */
 Hjava_lang_Object*
@@ -105,7 +123,7 @@ newArray(Hjava_lang_Class* elclass, int count)
 	Hjava_lang_Class* class;
 	Hjava_lang_Object* obj;
 
-	if (CLASS_IS_PRIMITIVE(elclass)) {
+	if (CLASS_IS_PRIMITIVE(elclass) || elclass == ptrClass()) {
 		obj = gc_malloc((TYPE_SIZE(elclass) * count) + ARRAY_DATA_OFFSET, GC_ALLOC_PRIMARRAY);
 	}
 	else {
