@@ -106,11 +106,25 @@ public final class Currency
   private transient String currencySymbol;
   
   /**
-   * A cache of <code>Currency</code> instances to
-   * ensure the singleton nature of this class.  The key
-   * is the locale of the currency.
+   * A cached map of country codes
+   * instances to international currency code
+   * <code>String</code>s.  Seperating this
+   * from the <code>Currency</code> instances
+   * ensures we have a common lookup between
+   * the two <code>getInstance()</code> methods.
    *
    * @see #getInstance(java.util.Locale)
+   * @serial ignored.
+   */
+  private static transient Map countryMap;
+
+  /**
+   * A cache of <code>Currency</code> instances to
+   * ensure the singleton nature of this class.  The key
+   * is the international currency code.
+   *
+   * @see #getInstance(java.util.Locale)
+   * @see #getInstance(java.lang.String) 
    * @see #readResolve()
    * @serial ignored.
    */
@@ -121,6 +135,8 @@ public final class Currency
    */
   static
   {
+    /* Create a hash map for the locale mappings */
+    countryMap = new HashMap();
     /* Create a hash map for the cache */
     cache = new HashMap();
     /* Create the properties object */
@@ -250,30 +266,37 @@ public final class Currency
      */
     Currency newCurrency;
 
-    if (locale == null || locale.getCountry() == null)
+    String country = locale.getCountry();
+    if (locale == null || country == null)
       {
 	throw new
 	  NullPointerException("The locale or its country is null.");
       }
     /* Attempt to get the currency from the cache */
-    newCurrency = (Currency) cache.get(locale);
-    if (newCurrency == null)
+    String code = (String) countryMap.get(country);
+    if (code == null)
       {
         /* Create the currency for this locale */
-        newCurrency = new Currency (locale);
+        newCurrency = new Currency(locale);
         /* 
          * If the currency code is null, then creation failed
          * and we return null.
          */
-        if (newCurrency.getCurrencyCode() == null)
+	code = newCurrency.getCurrencyCode();
+        if (code == null)
           {
             return null;
           }
         else 
           {
             /* Cache it */
-            cache.put(locale, newCurrency);
+            countryMap.put(country, code);
+	    cache.put(code, newCurrency);
           }
+      }
+    else
+      {
+	newCurrency = (Currency) cache.get(code);
       }
     /* Return the instance */
     return newCurrency;
@@ -300,31 +323,39 @@ public final class Currency
       {
         throw new NullPointerException("The supplied currency code is null.");
       }
-    /* Get all locales */
-    allLocales = Locale.getAvailableLocales();
-    /* Loop through each locale, looking for the code */
-    for (int i = 0;i < allLocales.length; i++)
+    Currency newCurrency = (Currency) cache.get(currencyCode);
+    if (newCurrency == null)
       {
-	try
+	/* Get all locales */
+	allLocales = Locale.getAvailableLocales();
+	/* Loop through each locale, looking for the code */
+	for (int i = 0;i < allLocales.length; i++)
 	  {
-	    Currency testCurrency = getInstance (allLocales[i]);
-	    if (testCurrency != null &&
-		testCurrency.getCurrencyCode().equals(currencyCode))
+	    try
 	      {
-		return testCurrency;
+		Currency testCurrency = getInstance (allLocales[i]);
+		if (testCurrency != null &&
+		    testCurrency.getCurrencyCode().equals(currencyCode))
+		  {
+		    return testCurrency;
+		  }
+	      }
+	    catch (IllegalArgumentException exception)
+	      {
+		/* Ignore locales without valid countries */
 	      }
 	  }
-	catch (IllegalArgumentException exception)
-	  {
-	    /* Ignore locales without valid countries */
-	  }
+	/* 
+	 * If we get this far, the code is not supported by any of
+	 * our locales.
+	 */
+	throw new IllegalArgumentException("The currency code, " + currencyCode +
+					   ", is not supported.");
       }
-    /* 
-     * If we get this far, the code is not supported by any of
-     * our locales.
-     */
-    throw new IllegalArgumentException("The currency code, " + currencyCode +
-                                       ", is not supported.");
+    else
+      {
+	return newCurrency;
+      }
   }
 
   /**
