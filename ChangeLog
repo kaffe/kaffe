@@ -1,3 +1,25 @@
+Thu Sep 23 11:04:08 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/kaffe/jar/ExecJarName.java: display inside
+	exception when we get an InvocationTargetException 
+	* libraries/javalib/kaffe/jar/ExecJarName.java: minor tweak
+	* libraries/javalib/java/util/List.java,
+	libraries/javalib/java/util/ListIterator.java,
+	libraries/javalib/java/util/Set.java: remove redundant declarations
+	* libraries/javalib/java/util/Collections.java: implement
+	synchronizedXX() methods
+	* libraries/javalib/java/util/Hashtable.java: restore non fail-fast
+	behavior of keys() and elements() methods.
+	* libraries/javalib/java/util/Vector.java: add missing constructor
+	* libraries/javalib/Klasses.jar: regen
+
+Wed Sep 22 16:27:26 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* test/regression/Bean.java: sort output
+	* libraries/javalib/java/util/HashMap.java: extract rehash() function
+	* libraries/javalib/java/util/Hashtable.java: reimplement in terms
+	of HashMap to work around a bug ("Inconsistent Hashtable")
+
 Tue Sep 21 11:40:36 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/lang/ClassLoader.java: fix bug in loadClass()
