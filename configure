@@ -17193,52 +17193,252 @@ CCLD=${CCLD:-'$(CC)'}
 
 
 
-ac_cv_sys_global_symbol_pipe=${ac_cv_sys_global_symbol_pipe-`sed -n '/^global_symbol_pipe=/ s//echo /p' libtool | ${CONFIG_SHELL-/bin/sh}`}
+
+
+
+# Check for command to grab the raw symbol name followed by C symbol from nm.
+echo "$as_me:$LINENO: checking command to parse $NM output from $compiler object" >&5
+echo $ECHO_N "checking command to parse $NM output from $compiler object... $ECHO_C" >&6
+if test "${lt_cv_sys_global_symbol_pipe+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+
+# These are sane defaults that work on at least a few old systems.
+# [They come from Ultrix.  What could be older than Ultrix?!! ;)]
+
+# Character class describing NM global symbol codes.
+symcode='[BCDEGRST]'
+
+# Regexp to match symbols that can be accessed directly from C.
+sympat='\([_A-Za-z][_A-Za-z0-9]*\)'
+
+# Transform the above into a raw symbol and a C symbol.
+symxfrm='\1 \2\3 \3'
+
+# Transform an extracted symbol line into a proper C declaration
+lt_cv_sys_global_symbol_to_cdecl="sed -n -e 's/^. .* \(.*\)$/extern int \1;/p'"
+
+# Transform an extracted symbol line into symbol name and symbol address
+lt_cv_sys_global_symbol_to_c_name_address="sed -n -e 's/^: \([^ ]*\) $/  {\\\"\1\\\", (lt_ptr) 0},/p' -e 's/^$symcode \([^ ]*\) \([^ ]*\)$/  {\"\2\", (lt_ptr) \&\2},/p'"
+
+# Define system-specific variables.
+case $host_os in
+aix*)
+  symcode='[BCDT]'
+  ;;
+cygwin* | mingw* | pw32*)
+  symcode='[ABCDGISTW]'
+  ;;
+hpux*) # Its linker distinguishes data from code symbols
+  if test "$host_cpu" = ia64; then
+    symcode='[ABCDEGRST]'
+  fi
+  lt_cv_sys_global_symbol_to_cdecl="sed -n -e 's/^T .* \(.*\)$/extern int \1();/p' -e 's/^$symcode* .* \(.*\)$/extern char \1;/p'"
+  lt_cv_sys_global_symbol_to_c_name_address="sed -n -e 's/^: \([^ ]*\) $/  {\\\"\1\\\", (lt_ptr) 0},/p' -e 's/^$symcode* \([^ ]*\) \([^ ]*\)$/  {\"\2\", (lt_ptr) \&\2},/p'"
+  ;;
+irix* | nonstopux*)
+  symcode='[BCDEGRST]'
+  ;;
+osf*)
+  symcode='[BCDEGQRST]'
+  ;;
+solaris* | sysv5*)
+  symcode='[BDT]'
+  ;;
+sysv4)
+  symcode='[DFNSTU]'
+  ;;
+esac
+
+# Handle CRLF in mingw tool chain
+opt_cr=
+case $build_os in
+mingw*)
+  opt_cr=`echo 'x\{0,1\}' | tr x '\015'` # option cr in regexp
+  ;;
+esac
+
+# If we're using GNU nm, then use its standard symbol codes.
+case `$NM -V 2>&1` in
+*GNU* | *'with BFD'*)
+  symcode='[ABCDGISTW]' ;;
+esac
+
+# Try without a prefix undercore, then with it.
+for ac_symprfx in "" "_"; do
+
+  # Write the raw and C identifiers.
+  lt_cv_sys_global_symbol_pipe="sed -n -e 's/^.*[ 	]\($symcode$symcode*\)[ 	][ 	]*\($ac_symprfx\)$sympat$opt_cr$/$symxfrm/p'"
+
+  # Check to see that the pipe works correctly.
+  pipe_works=no
+
+  rm -f conftest*
+  cat > conftest.$ac_ext <<EOF
+#ifdef __cplusplus
+extern "C" {
+#endif
+char nm_test_var;
+void nm_test_func(){}
+#ifdef __cplusplus
+}
+#endif
+int main(){nm_test_var='a';nm_test_func();return(0);}
+EOF
+
+  if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; then
+    # Now try to grab the symbols.
+    nlist=conftest.nm
+    if { (eval echo "$as_me:$LINENO: \"$NM conftest.$ac_objext \| $lt_cv_sys_global_symbol_pipe \> $nlist\"") >&5
+  (eval $NM conftest.$ac_objext \| $lt_cv_sys_global_symbol_pipe \> $nlist) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && test -s "$nlist"; then
+      # Try sorting and uniquifying the output.
+      if sort "$nlist" | uniq > "$nlist"T; then
+	mv -f "$nlist"T "$nlist"
+      else
+	rm -f "$nlist"T
+      fi
+
+      # Make sure that we snagged all the symbols we need.
+      if grep ' nm_test_var$' "$nlist" >/dev/null; then
+	if grep ' nm_test_func$' "$nlist" >/dev/null; then
+	  cat <<EOF > conftest.$ac_ext
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+EOF
+	  # Now generate the symbol file.
+	  eval "$lt_cv_sys_global_symbol_to_cdecl"' < "$nlist" | grep -v main >> conftest.$ac_ext'
+
+	  cat <<EOF >> conftest.$ac_ext
+#if defined (__STDC__) && __STDC__
+# define lt_ptr_t void *
+#else
+# define lt_ptr_t char *
+# define const
+#endif
+
+/* The mapping between symbol names and symbols. */
+const struct {
+  const char *name;
+  lt_ptr_t address;
+}
+lt_preloaded_symbols[] =
+{
+EOF
+	  sed "s/^$symcode$symcode* \(.*\) \(.*\)$/  {\"\2\", (lt_ptr_t) \&\2},/" < "$nlist" | grep -v main >> conftest.$ac_ext
+	  cat <<\EOF >> conftest.$ac_ext
+  {0, (lt_ptr_t) 0}
+};
+
+#ifdef __cplusplus
+}
+#endif
+EOF
+	  # Now try linking the two files.
+	  mv conftest.$ac_objext conftstm.$ac_objext
+	  lt_save_LIBS="$LIBS"
+	  lt_save_CFLAGS="$CFLAGS"
+	  LIBS="conftstm.$ac_objext"
+	  CFLAGS="$CFLAGS$lt_prog_compiler_no_builtin_flag"
+	  if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && test -s conftest${ac_exeext}; then
+	    pipe_works=yes
+	  fi
+	  LIBS="$lt_save_LIBS"
+	  CFLAGS="$lt_save_CFLAGS"
+	else
+	  echo "cannot find nm_test_func in $nlist" >&5
+	fi
+      else
+	echo "cannot find nm_test_var in $nlist" >&5
+      fi
+    else
+      echo "cannot run $lt_cv_sys_global_symbol_pipe" >&5
+    fi
+  else
+    echo "$progname: failed program was:" >&5
+    cat conftest.$ac_ext >&5
+  fi
+  rm -f conftest* conftst*
+
+  # Do not use the global_symbol_pipe unless it works.
+  if test "$pipe_works" = yes; then
+    break
+  else
+    lt_cv_sys_global_symbol_pipe=
+  fi
+done
+
+fi
+
+if test -z "$lt_cv_sys_global_symbol_pipe"; then
+  lt_cv_sys_global_symbol_to_cdecl=
+fi
+if test -z "$lt_cv_sys_global_symbol_pipe$lt_cv_sys_global_symbol_to_cdecl"; then
+  echo "$as_me:$LINENO: result: failed" >&5
+echo "${ECHO_T}failed" >&6
+else
+  echo "$as_me:$LINENO: result: ok" >&5
+echo "${ECHO_T}ok" >&6
+fi
+
+
 echo "$as_me:$LINENO: checking for _ prefix in compiled symbols" >&5
 echo $ECHO_N "checking for _ prefix in compiled symbols... $ECHO_C" >&6
 if test "${ac_cv_sys_symbol_underscore+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_cv_sys_symbol_underscore=no
-cat > conftest.$ac_ext <<EOF
+  cat > conftest.$ac_ext <<EOF
 void nm_test_func(){}
 int main(){nm_test_func;return 0;}
 EOF
-if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; then
-  # Now try to grab the symbols.
-  ac_nlist=conftest.nm
-  if { (eval echo "$as_me:$LINENO: \"$NM conftest.$ac_objext \| $ac_cv_sys_global_symbol_pipe \> $ac_nlist\"") >&5
-  (eval $NM conftest.$ac_objext \| $ac_cv_sys_global_symbol_pipe \> $ac_nlist) 2>&5
+    # Now try to grab the symbols.
+    ac_nlist=conftest.nm
+    if { (eval echo "$as_me:$LINENO: \"$NM conftest.$ac_objext \| $lt_cv_sys_global_symbol_pipe \> $ac_nlist\"") >&5
+  (eval $NM conftest.$ac_objext \| $lt_cv_sys_global_symbol_pipe \> $ac_nlist) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); } && test -s "$ac_nlist"; then
-    # See whether the symbols have a leading underscore.
-    if egrep '^. _nm_test_func' "$ac_nlist" >/dev/null; then
-      ac_cv_sys_symbol_underscore=yes
-    else
-      if egrep '^. nm_test_func ' "$ac_nlist" >/dev/null; then
-	:
+      # See whether the symbols have a leading underscore.
+      if grep '^. _nm_test_func' "$ac_nlist" >/dev/null; then
+        ac_cv_sys_symbol_underscore=yes
       else
-	echo "configure: cannot find nm_test_func in $ac_nlist" >&5
+        if grep '^. nm_test_func ' "$ac_nlist" >/dev/null; then
+	  :
+        else
+	  echo "configure: cannot find nm_test_func in $ac_nlist" >&5
+        fi
       fi
+    else
+      echo "configure: cannot run $lt_cv_sys_global_symbol_pipe" >&5
     fi
   else
-    echo "configure: cannot run $ac_cv_sys_global_symbol_pipe" >&5
+    echo "configure: failed program was:" >&5
+    cat conftest.c >&5
   fi
-else
-  echo "configure: failed program was:" >&5
-  cat conftest.c >&5
-fi
-rm -rf conftest*
+  rm -rf conftest*
 
 fi
-
 echo "$as_me:$LINENO: result: $ac_cv_sys_symbol_underscore" >&5
 echo "${ECHO_T}$ac_cv_sys_symbol_underscore" >&6
+
 
 if test x"$ac_cv_sys_symbol_underscore" = x"yes"; then
 

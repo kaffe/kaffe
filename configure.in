@@ -146,39 +146,8 @@ dnl =========================================================================
 dnl Do we need underscore?
 dnl -------------------------------------------------------------------------
 
-ac_cv_sys_global_symbol_pipe=${ac_cv_sys_global_symbol_pipe-`sed -n '/^global_symbol_pipe=/ s//echo /p' libtool | ${CONFIG_SHELL-/bin/sh}`}
-dnl copied from libltdl/configure.in
-AC_MSG_CHECKING([for _ prefix in compiled symbols])
-AC_CACHE_VAL(ac_cv_sys_symbol_underscore,
-[ac_cv_sys_symbol_underscore=no
-cat > conftest.$ac_ext <<EOF
-void nm_test_func(){}
-int main(){nm_test_func;return 0;}
-EOF
-if AC_TRY_EVAL(ac_compile); then
-  # Now try to grab the symbols.
-  ac_nlist=conftest.nm
-  if AC_TRY_EVAL(NM conftest.$ac_objext \| $ac_cv_sys_global_symbol_pipe \> $ac_nlist) && test -s "$ac_nlist"; then
-    # See whether the symbols have a leading underscore.
-    if egrep '^. _nm_test_func' "$ac_nlist" >/dev/null; then
-      ac_cv_sys_symbol_underscore=yes
-    else
-      if egrep '^. nm_test_func ' "$ac_nlist" >/dev/null; then
-	:
-      else
-	echo "configure: cannot find nm_test_func in $ac_nlist" >&AS_MESSAGE_LOG_FD()
-      fi
-    fi
-  else
-    echo "configure: cannot run $ac_cv_sys_global_symbol_pipe" >&AS_MESSAGE_LOG_FD()
-  fi
-else
-  echo "configure: failed program was:" >&AS_MESSAGE_LOG_FD()
-  cat conftest.c >&AS_MESSAGE_LOG_FD()
-fi
-rm -rf conftest*
-])
-AC_MSG_RESULT($ac_cv_sys_symbol_underscore)
+AC_LIBTOOL_SYS_GLOBAL_SYMBOL_PIPE
+AC_LTDL_SYMBOL_USCORE
 
 if test x"$ac_cv_sys_symbol_underscore" = x"yes"; then
     AC_DEFINE(HAVE_UNDERSCORED_C_NAMES, 1, [Define if C symbol names start with underscore])
