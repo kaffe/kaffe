@@ -14,7 +14,6 @@ import java.io.FileDescriptor;
 import java.lang.Thread;
 import java.lang.Class;
 import java.net.InetAddress;
-import kaffe.util.Deprecated;
 
 abstract public class SecurityManager {
 
@@ -141,12 +140,30 @@ public void checkWrite(String file) {
 	throw new SecurityException();
 }
 
+/**
+ * @deprecated, Deprecated in 1.2
+ */
 protected int classDepth(String name) {
-	throw new Deprecated();
+	Class[] classes = getClassContext();
+	for (int i = 0; i < classes.length; i++) {
+		if (name.equals(classes[i].getName()) == true) {
+			return (i);
+		}
+	}
+	return (-1);
 }
 
+/**
+ * @deprecated, Deprecated in 1.2
+ */
 protected int classLoaderDepth() {
-	throw new Deprecated();
+	Class[] classes = getClassContext();
+	for (int i = 0; i < classes.length; i++) {
+		if (ClassLoader.class.isAssignableFrom(classes[i])) {
+			return (i);
+		}
+	}
+	return (-1);
 }
 
 protected Class currentLoadedClass() {
@@ -159,8 +176,11 @@ protected Class currentLoadedClass() {
 	return (null);
 }
 
+/**
+ * @deprecated, Deprecated in 1.2
+ */
 public boolean getInCheck() {
-	throw new Deprecated();
+	return (false);
 }
 
 public Object getSecurityContext() {
@@ -171,12 +191,28 @@ public ThreadGroup getThreadGroup() {
 	return (Thread.currentThread().getThreadGroup());
 }
 
+/**
+ * @deprecated, Deprecated in 1.2
+ */
 protected boolean inClass(String name) {
-	throw new Deprecated();
+	if (classDepth(name) == -1) {
+		return (false);
+	}
+	else {
+		return (true);
+	}
 }
 
+/**
+ * @deprecated, Deprecated in 1.2
+ */
 protected boolean inClassLoader() {
-	throw new Deprecated();
+	if (classLoaderDepth() == -1) {
+		return (false);
+	}
+	else {
+		return (true);
+	}
 }
 
 protected Class[] getClassContext() {

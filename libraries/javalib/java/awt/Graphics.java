@@ -268,6 +268,13 @@ public Rectangle getClipBounds() {
 	return clip;
 }
 
+/**
+ * @deprecated, use getClipBounds()
+ */
+public Rectangle getClipRect() {
+	return (getClipBounds());
+}
+
 static Graphics getClippedGraphics ( Component c, int xClip, int yClip, int wClip, int hClip, boolean blank ) {
 	Container   p;
 	int         xOff = 0, yOff = 0;
