@@ -101,6 +101,7 @@ public class CLTestJLock extends ClassLoader
     }
 }
 
+// sources: CLTestConc_run.java
 /* Expected Output:
 Success.
 */

@@ -114,6 +114,7 @@ public class CLTestFindLoaded extends ClassLoader
     }
 }
 
+// sources: CLTestConc_run.java
 /* Expected Output:
 Success.
 Success.

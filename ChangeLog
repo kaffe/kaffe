@@ -32,6 +32,10 @@ Thu Oct 14 16:59:56 PDT 1999  Archie Cobbs <archie@whistle.com>
 	"should never happen" happens, don't be shy, throw an Error
 	* libraries/javalib/java/util/TreeMap.java: revert to previous version
 	* libraries/javalib/Klasses.jar: regen
+	* test/regression/CLTestConc.java,
+	test/regression/CLTestFindLoaded.java,
+	test/regression/CLTestJLock.java, test/regression/CLTestLie.java,
+	test/regression/TestScript.in: add ability to compile extra sources
 
 Thu Oct 14 04:04:00 1999  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 

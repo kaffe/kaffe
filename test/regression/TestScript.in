@@ -85,7 +85,16 @@ runtest()
 	error=0
 	basename=`mybasename "$1" | sed 's/\.java$//'`
 	RESULT=$basename.fail
-	compile ${1+"$@"}
+	JAVA_SRCS="${1+"$@"}"
+	if grep '// sources:' < "$1" > /dev/null; then
+	    EXTRA_SRCS=`sed 's/\/\/ sources://p;d' < "$1"`
+	    for SRC in $EXTRA_SRCS; do
+		SRC=`dirname ${1+"$@"}`/$SRC
+		JAVA_SRCS="$JAVA_SRCS $SRC"
+	    done
+	fi
+	$VERBOSE JAVA_SRCS="$JAVA_SRCS"
+	compile $JAVA_SRCS
 	if grep '// [Ss]kip [Rr]un' < "$1" > /dev/null; then
 	    error=0
 	elif test $error = 0 ; then
