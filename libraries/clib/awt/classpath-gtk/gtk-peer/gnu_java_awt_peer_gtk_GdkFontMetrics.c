@@ -42,7 +42,7 @@ exception statement from your version. */
 #include <gdk/gdkx.h>
 
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkFontMetrics_getPeerFontMetrics
-   (JNIEnv *env, jclass clazz, jobject java_font, jdoubleArray java_metrics)
+   (JNIEnv *env, jclass clazz __attribute__ ((unused)), jobject java_font, jdoubleArray java_metrics)
 {
   struct peerfont *pfont = NULL;
   jdouble *native_metrics = NULL;
@@ -75,7 +75,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkFontMetrics_getPeerFontMetr
 }
 
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkFontMetrics_getPeerTextMetrics
-   (JNIEnv *env, jclass clazz, jobject java_font, jstring str, jdoubleArray java_metrics)
+   (JNIEnv *env, jclass clazz __attribute__ ((unused)), jobject java_font, jstring str, jdoubleArray java_metrics)
 {
   struct peerfont *pfont = NULL;
   const char *cstr = NULL;
