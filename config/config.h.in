@@ -147,6 +147,9 @@
 /* Do we have png.h */
 #undef	HAVE_PNG_H
 
+/* Do we have gmp.h */
+#undef	HAVE_GMP_H
+
 /* Do we have strerror */
 #undef	HAVE_STRERROR
 
