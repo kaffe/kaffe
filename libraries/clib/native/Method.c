@@ -46,8 +46,8 @@ java_lang_reflect_Method_getModifiers(struct Hjava_lang_reflect_Method* this)
 	return (clazz->methods[slot].accflags & ACC_MASK);
 }
 
-struct Hjava_lang_Object*
-java_lang_reflect_Method_invoke(struct Hjava_lang_reflect_Method* this, struct Hjava_lang_Object* obj, HArrayOfObject* argobj)
+jobject
+Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, jarray _argobj)
 {
 	Hjava_lang_Class* clazz;
 	Hjava_lang_Object* robj;
@@ -60,16 +60,13 @@ java_lang_reflect_Method_invoke(struct Hjava_lang_reflect_Method* this, struct H
 	int i;
 	int j;
 	int len;
-	char* sig, rettype;
-	/* 
-	 * Obtain a JNIEnv pointer.
-	 * XXX This assumes we know the details of the JNI implementation.
-	 */
-	extern struct JNIEnv_ Kaffe_JNIEnv;
-	JNIEnv *env = (JNIEnv *)&Kaffe_JNIEnv;
+	char* sig;
+	char rettype;
 
-	/* this will (intentionally) break when we have a def of jthrowable */
-	typedef jobject jthrowable;
+	/* Bit of a hack this */
+	Hjava_lang_Object* obj = (Hjava_lang_Object*)_obj;
+	Hjava_lang_reflect_Method* this = (Hjava_lang_reflect_Method*)_this;
+	HArrayOfObject* argobj = (HArrayOfObject*)_argobj;
 	jthrowable targetexc;
 
 	clazz = unhand(this)->clazz;
@@ -229,8 +226,9 @@ java_lang_reflect_Method_invoke(struct Hjava_lang_reflect_Method* this, struct H
 			ABORT();
 		}
 	}
-	if (*sig != ')' || i < len)
+	if (*sig != ')' || i < len) {
 		SignalError("java.lang.IllegalArgumentException", "");
+	}
 
 	rettype = *++sig;
 
@@ -259,7 +257,8 @@ java_lang_reflect_Method_invoke(struct Hjava_lang_reflect_Method* this, struct H
 		default:
 			ABORT();
 		}
-	} else {			/* nonstatic method */
+	}
+	else {			/* nonstatic method */
 		switch (rettype) {
 
 		/* Why Call<Type>MethodA and not CallNonvirtual<Type>MethodA?
@@ -295,7 +294,8 @@ java_lang_reflect_Method_invoke(struct Hjava_lang_reflect_Method* this, struct H
 	 * exception is placed in an InvocationTargetException and thrown 
 	 * in turn to the caller of invoke. 
 	 */
-	if ((targetexc = (*env)->ExceptionOccurred(env)) != 0) {
+	targetexc = (*env)->ExceptionOccurred(env);
+	if (targetexc != 0) {
 		Hjava_lang_Object* obj;
 
 		(*env)->ExceptionClear(env);
@@ -342,5 +342,5 @@ java_lang_reflect_Method_invoke(struct Hjava_lang_reflect_Method* this, struct H
 		ABORT();
 	}
 
-	return (robj);
+	return ((jobject)robj);
 }

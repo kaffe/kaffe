@@ -58,7 +58,7 @@ struct JNINativeInterface {
 	void*	reserved7;
 	jint	(*Throw)			(JNIEnv*, jobject);
 	jint	(*ThrowNew)			(JNIEnv*, jclass, const char*);
-	jobject	(*ExceptionOccurred)		(JNIEnv*);
+	jthrowable (*ExceptionOccurred)		(JNIEnv*);
 	void	(*ExceptionDescribe)		(JNIEnv*);
 	void	(*ExceptionClear)		(JNIEnv*);
 	void	(*FatalError)			(JNIEnv*, const char*);

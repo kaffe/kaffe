@@ -52,6 +52,7 @@ typedef	jref		jobject;
 typedef	jref		jclass;
 typedef	jref		jstring;
 typedef	jref		jarray;
+typedef	jref		jthrowable;
 
 union jvalue {
 	jboolean	z;
