@@ -108,7 +108,7 @@ jthreadedStat(const char* path, struct stat *sb)
 	int rc = 0;
 
 	jthread_spinon(0);
-	if (stat(path, sb) == -1) {
+	if (lstat(path, sb) == -1) {
 		rc = errno;
 	}
 	jthread_spinoff(0);

@@ -1,5 +1,11 @@
 2004-12-19  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/systems/unix-jthreads/syscalls.c,
+	  kaffe/kaffevm/systems/unix-pthreads/syscalls.c:
+	  s/stat/lstat/, to fix symlink deletion.
+
+2004-12-19  Adam Heath  <doogie@brainfood.com>
+
 	* include/errors.h, kaffe/kaffevm/external.c, kaffe/kaffevm/findInJar.c,
 	  kaffe/kaffevm/gcFuncs.c, kaffe/kaffevm/hashtab.c,
 	  kaffe/kaffevm/inflate.c, kaffe/kaffevm/itypes.c, kaffe/kaffevm/jar.c,

@@ -233,7 +233,7 @@ jthreadedStat(const char* path, struct stat *sb)
 {
 	int rc = 0;
 
-	if (stat(path, sb) == -1) {
+	if (lstat(path, sb) == -1) {
 		rc = errno;
 	}
 	return (rc);
