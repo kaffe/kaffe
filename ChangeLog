@@ -1,5 +1,10 @@
 2004-12-12  Adam Heath  <doogie@brainfood.com>
 
+	* libraries/javalib/javax/swing/tree/DefaultTreeCellEditor.java:
+	  Fix type in javadoc for the EditorContainer method.
+
+2004-12-12  Adam Heath  <doogie@brainfood.com>
+
 	* libraries/clib/classpath/jcl.c:
 	  In JCL_ThrowException, use fputs instead of fprintf.  Fixes
 	  a gcc waring, using a non-constant format string.
