@@ -72,6 +72,8 @@ struct GarbageCollectorInterface_Ops {
 	void	(*markAddress)(Collector *, const void* addr);
 	void	(*markObject)(Collector *, const void* obj);
 	uint32	(*getObjectSize)(Collector *, const void* obj);
+	const char* (*getObjectDescription)(Collector *, const void* obj);
+	int	(*getObjectIndex)(Collector *, const void* obj);
 
 	void	(*walkMemory)(Collector *, void *addr);
 	void	(*walkConservative)(Collector *, 
@@ -111,6 +113,10 @@ Collector* createGC(void (*_walkRootSet)(Collector*));
     ((G)->ops->markObject)((Collector*)(G), (addr))
 #define GC_getObjectSize(G, obj)	\
     ((G)->ops->getObjectSize)((Collector*)(G), (obj))
+#define GC_getObjectDescription(G, obj)	\
+    ((G)->ops->getObjectDescription)((Collector*)(G), (obj))
+#define GC_getObjectIndex(G, obj)	\
+    ((G)->ops->getObjectIndex)((Collector*)(G), (obj))
 #define GC_walkMemory(G, addr)	\
     ((G)->ops->walkMemory)((Collector*)(G), (addr))
 #define GC_walkConservative(G, addr, len)		\
@@ -136,5 +142,6 @@ extern Collector* main_collector;
 #define	invokeFinalizer()   GC_invokeFinalizer(main_collector)
 
 #include "gcRefs.h"
+extern char* describeObject(const void* mem);
 
 #endif

@@ -245,6 +245,22 @@ gcGetObjectSize(Collector* gcif, const void* mem)
 	return (GCBLOCKSIZE(GCMEM2BLOCK(UTOUNIT(mem))));
 }
 
+static
+int
+gcGetObjectIndex(Collector* gcif, const void* mem)
+{
+	gc_unit* unit = UTOUNIT(mem);
+	gc_block* info = GCMEM2BLOCK(unit);
+        return (GC_GET_FUNCS(info, GCMEM2IDX(info, unit)));
+}
+
+static
+const char*
+gcGetObjectDescription(Collector* gcif, const void* mem)
+{
+	return (gcFunctions[gcGetObjectIndex(gcif, mem)].description);
+}
+
 /*
  * Walk a bit of memory.
  */
@@ -914,6 +930,8 @@ static struct GarbageCollectorInterface_Ops GC_Ops = {
 	gcMarkAddress,
 	gcMarkObject,
 	gcGetObjectSize,
+	gcGetObjectDescription,
+	gcGetObjectIndex,
 	gcWalkMemory,
 	gcWalkConservative,
 	gcRegisterFixedTypeByIndex,

@@ -6,7 +6,7 @@ public class ExecTest
                 {
                         try
                         {
-				String[] args = { "/bin/ls" };
+				String[] args = { "/bin/echo", "Hello World" };
                                 Runtime myRuntime = Runtime.getRuntime ();
                                 Process myProcess = myRuntime.exec ( args );
                                 try { myProcess.waitFor (); }

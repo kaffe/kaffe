@@ -489,6 +489,7 @@ onDeadlock(void)
 	dumpLocks();
 	dumpThreads();
 	fprintf(stderr, "Deadlock: all threads blocked on internal events\n");
+	fflush(stderr);
 	ABORT();
 }
 

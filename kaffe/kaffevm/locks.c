@@ -15,10 +15,12 @@
 #include "object.h"
 #include "classMethod.h"
 #include "baseClasses.h"
+#include "thread.h"
 #include "jthread.h"
 #include "locks.h"
 #include "errors.h"
 #include "exception.h"
+#include "gc.h"
 #include "md.h"
 
 /* Note:
@@ -50,7 +52,8 @@ dumpLock(iLock *lk)
 	if (lk->ref == -1) {
 		fprintf(stderr, "%s ", (char*)lk->address);
 	} else {
-		fprintf(stderr, "lock@%p ", lk->address);
+		fprintf(stderr, "lock@%p %s ", lk->address, 
+			describeObject(lk->address));
 	}
 	fprintf(stderr, "held by `%s'\n .hd=%-9p .ct=%d .mx=%-9p .cv=%-9p\n",
 		(lk->holder != 0) ? nameNativeThread(lk->holder) : "noone",

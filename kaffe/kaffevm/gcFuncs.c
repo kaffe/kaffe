@@ -417,6 +417,46 @@ finalizeObject(Collector* collector, void* ob)
         callMethodA(final, METHOD_INDIRECTMETHOD(final), obj, 0, 0);
 } 
 
+/*
+ * Print a description of an object at a given address.
+ * Single-threaded.
+ */
+char*
+describeObject(const void* mem)
+{
+	static char buf[256];		/* BIG XXX */
+	Hjava_lang_Class* clazz;
+
+	int idx = GC_getObjectIndex(main_collector, mem);
+	switch (idx) {
+	case GC_ALLOC_JAVASTRING:
+		sprintf(buf, "java.lang.String `%s'", 
+			stringJava2C((Hjava_lang_String*)mem));
+		break;
+
+	case GC_ALLOC_CLASSOBJECT:
+		clazz = (Hjava_lang_Class*)mem;
+		sprintf(buf, "java.lang.Class `%s'", clazz->name ? 
+			CLASS_CNAME(clazz) : "name unknown");
+		break;
+
+	case GC_ALLOC_NORMALOBJECT:
+	case GC_ALLOC_FINALIZEOBJECT:
+	case GC_ALLOC_REFARRAY:
+	case GC_ALLOC_PRIMARRAY:
+		clazz = (Hjava_lang_Class*)
+			((Hjava_lang_Object*)mem)->dtable->class;
+		sprintf(buf, "%s", CLASS_CNAME(clazz));
+		break;
+		
+	/* add more? */
+		
+	default:
+		return ((char*)GC_getObjectDescription(main_collector, mem));
+	}
+	return (buf);
+}
+
 Collector*
 initCollector(void)
 {
