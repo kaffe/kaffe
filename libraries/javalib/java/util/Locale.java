@@ -59,7 +59,7 @@ static {
 // Avoid recursion with String.toLowerCase() that use Locale
 private static String toLowerCase(String str) {
 	char buf[] = str.toCharArray();
-	for (int pos=0; pos < count; pos++)
+	for (int pos=0; pos < buf.length; pos++)
 		buf[pos] = Character.toLowerCase(buf[pos]);
 	return new String(buf);
 }
@@ -67,7 +67,7 @@ private static String toLowerCase(String str) {
 // Avoid recursion with String.toUpperCase() that use Locale
 private static String toUpperCase(String str) {
 	char buf[] = str.toCharArray();
-	for (int pos=0; pos < count; pos++)
+	for (int pos=0; pos < buf.length; pos++)
 		buf[pos] = Character.toUpperCase(buf[pos]);
 	return new String(buf);
 }
