@@ -1039,7 +1039,6 @@ kaffe/kaffevm/gcj/Makefile \
 kaffe/kaffevm/systems/Makefile \
 kaffe/kaffevm/systems/unix-jthreads/Makefile \
 kaffe/kaffevm/systems/oskit-pthreads/Makefile \
-kaffe/kaffevm/systems/linux-threads/Makefile \
 kaffe/kaffevm/systems/beos-native/Makefile \
 kaffe/kaffevm/systems/unix-pthreads/Makefile \
 kaffe/kaffe/Makefile \

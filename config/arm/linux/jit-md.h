@@ -81,4 +81,9 @@
 	(f).retfp = (c).reg.ARM_fp;					\
 	(f).retpc = (c).reg.ARM_pc;
 
+/* This one is for debian - pity they're not the same */
+#undef	EXCEPTIONFRAME
+#define	EXCEPTIONFRAME(f, c)						\
+	(f).retfp = (c).arm_fp;					\
+	(f).retpc = (c).arm_pc;
 #endif

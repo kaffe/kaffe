@@ -16,7 +16,7 @@
 package java.util;
 
 public class Observable {
-	private final List observers;
+	private final ArrayList observers;
 	private boolean changed;
 
 	public Observable() {
@@ -41,7 +41,9 @@ public class Observable {
 
 	public synchronized void notifyObservers(Object arg) {
 		if (changed) {
-			for (Iterator i = observers.listIterator();
+			// Need to clone list to avoid any concurrent
+			// modification exceptions.
+			for (Iterator i = ((ArrayList)(observers.clone())).listIterator();
 			    i.hasNext(); ) {
 				((Observer)i.next()).update(this, arg);
 			}

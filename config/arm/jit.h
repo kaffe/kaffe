@@ -44,6 +44,8 @@ typedef struct _exceptionFrame {
 /* Extract the PC from the given frame */
 #define PCFRAME(f)                                                      \
         ((uintp)((f)->retpc - 4))
+#define FPFRAME(f)							\
+	((uintp)((f)->retfp))
 
 /* Get the first exception frame from a subroutine call */
 #define FIRSTFRAME(f, o)                                                \
@@ -71,12 +73,12 @@ typedef struct _exceptionFrame {
 	
 /* Call the relevant exception handler (rewinding the stack as
    necessary). */
-#define CALL_KAFFE_EXCEPTION(frame, info, object)			\
+#define CALL_KAFFE_EXCEPTION(frame, handler, object)			\
 	asm volatile ("							\n\
 		mov r0, %0						\n\
 		mov fp, %2						\n\
 		mov pc, %1						\n\
-	" : : "r" (object), "r" (info.handler), "r" (frame->retfp) : "r0")
+	" : : "r" (object), "r" (handler), "r" (frame) : "r0")
 
 /**/
 /* Method dispatch.  */
