@@ -82,11 +82,6 @@ public class Socket
   private SocketImpl impl;
 
   /**
-   * True if socket implementation was created by calling their create() method.
-   */
-  private boolean implCreated;
-
-  /**
    * True if the socket is bound.
    */
   private boolean bound;
@@ -312,19 +307,6 @@ public class Socket
   SocketImpl getImpl()
     throws SocketException
   {
-    try
-      {
-	if (!implCreated)
-	  {
-	    impl.create(true);
-	    implCreated = true;
-	  }
-      }
-    catch (IOException e)
-      {
-	throw new SocketException(e.getMessage());
-      }
-
     return impl;
   }
 
@@ -358,6 +340,7 @@ public class Socket
     // bind to address/port
     try
       {
+        getImpl().create (true);
         getImpl().bind (tmp.getAddress(), tmp.getPort());
 	bound = true;
       }

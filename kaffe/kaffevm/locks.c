@@ -220,7 +220,7 @@ DBG(SLOWLOCKS,
 	lk = getHeavyLock(lkp, heavyLock);
 
 	/* Only the lock holder can be doing an unlock */
-	if (!jthread_on_current_stack(lk->holder)) {
+	if ((lk->holder != NULL) && (!jthread_on_current_stack(lk->holder))) {
 		putHeavyLock(lkp, lk);
 		jthread_enable_stop();
 		throwException(IllegalMonitorStateException);
