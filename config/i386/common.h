@@ -88,12 +88,11 @@ typedef int64	profiler_click_t;
 	({ \
 		char ret; \
 		asm volatile(" \
-			movl %3,%%eax \n\
-			movl %2,%%edi \n\
 			lock \n\
-			cmpxchgl %%edi,%1 \n\
+			cmpxchgl %2,%1 \n\
 			sete %0" \
-		  : "=q" (ret) : "m" (*(A)), "r" (N), "r" (O) : "eax", "edi", "cc", "memory" ); \
+		  : "=q" (ret), "=m" (*(A)) \
+		  : "r" (N), "a" (O), "1" (*(A)) : "cc" ); \
 		(ret); \
 	})
 

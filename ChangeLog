@@ -1,3 +1,8 @@
+1999-10-09  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
+
+	* config/i386/common.h (COMPARE_AND_EXCHANGE): Avoid fixed
+	registers as much as possible.
+
 Sat Oct  9 13:09:23 PDT 1999 Transvirtual Technologies <info@transvirtual.com>
 
 	* Added support for serilized CharToByte and ByteToChar converts
