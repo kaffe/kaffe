@@ -1,3 +1,9 @@
+Thu Nov  7 19:23:28 CET 2002 Oskar Sandberg <oskar@freenetproject.org>
+
+	* libraries/javalib/java/net/Socket.java:
+	(Socket) implemented missing constructors.
+	(connect) new private initialization method.
+
 Thu Nov  7 19:01:07 CET 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* test/regression/InnerTest.java: Changed output again, as it

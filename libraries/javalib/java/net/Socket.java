@@ -22,44 +22,53 @@ private static SocketImplFactory factory = new DefaultSocketImplFactory();
 SocketImpl impl;
 
 public Socket(InetAddress address, int port) throws IOException {
-	this(address, port, true);
+    this(address, port, true);
 }
 
 public Socket(String host, int port) throws UnknownHostException, IOException {
-	this(InetAddress.getByName(host), port, true);
+    this(InetAddress.getByName(host), port, true);
 }
 
 public Socket(InetAddress address, int port, InetAddress localAddr, int localPort) throws IOException {
-    throw new kaffe.util.NotImplemented();
+    if (localAddr == null)
+        throw new NullPointerException();
+    connect(address, port, true, localAddr, localPort);
 }
     
 public Socket(String host, int port, InetAddress localAddr, int localPort) throws IOException {
-    throw new kaffe.util.NotImplemented();
+    this(InetAddress.getByName(host), port, localAddr, localPort);
 }
 
 /**
  * @deprecated.
  */
 public Socket(String host, int port, boolean stream) throws IOException {
-	this(InetAddress.getByName(host), port, stream);
+    this(InetAddress.getByName(host), port, stream);
 }
 
 /**
  * @deprecated.
  */
 public Socket(InetAddress address, int port, boolean stream) throws IOException {
-	impl = factory.createSocketImpl();
-	try {
-		impl.create(stream);
-		impl.connect(address, port);
-	} catch (IOException ioe) {
-		try {
-			impl.close();
-		}
-		catch (IOException _) {
-		}
-		throw ioe;
-	}
+    connect(address, port, stream, null, 0);
+}
+
+private void connect(InetAddress address, int port, boolean stream,
+                     InetAddress localAddr, int localPort) throws IOException {
+    impl = factory.createSocketImpl();
+    try {
+        impl.create(stream);
+        if (localAddr != null)
+            impl.bind(localAddr, localPort);
+        impl.connect(address, port);
+    } catch (IOException ioe) {
+        try {
+            impl.close();
+        }
+        catch (IOException _) {
+        }
+        throw ioe;
+    }
 }
 
 protected Socket(SocketImpl simpl) throws SocketException {
@@ -96,7 +105,7 @@ public int getPort() {
 
 public InetAddress getLocalAddress() {
 	try {
-		return (InetAddress)impl.getOption(SocketOptions.SO_BINDADDR); 
+            return (InetAddress)impl.getOption(SocketOptions.SO_BINDADDR); 
 	} catch (SocketException e) { }
 	try {
 		return InetAddress.getByName("0.0.0.0");
