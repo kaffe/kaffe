@@ -1,3 +1,11 @@
+Tue Jan 26 00:04:27 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/*, kaffe/kaffevm/{mem|jit|intr}/*,
+	kaffe/kaffevm/system/unix-jthreads/internal.c: removed
+	kaffe/kaffevm/system/unix-jthreads/signal.c: new file.
+	+ Replaced old Kaffe_ThreadInterface with jthread_ interface, step 1
+	+ Moved signal specifics from exception to unix-jthreads.
+
 Mon Jan 25 12:25:05 1999  Maxim Kizub <max@immsp.kiev.ua>
 
 	* libraries/clib/native/Float.c, Array.c, Field.c, Method.c:
