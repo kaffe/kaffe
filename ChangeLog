@@ -1,3 +1,8 @@
+2000-10-24  Edouard G. Parmelan  <egp@free.fr>
+
+	* kaffe/kaffevm/locks.h: Fix include header for thread
+	implementation and unix-pthreads
+
 Wed Oct 11 10:20:07 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* kaffe/kaffevm/mem/gc-incremental.c (gcRealloc): Take the
