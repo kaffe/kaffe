@@ -1,6 +1,7 @@
 // Locator2.java - extended Locator
 // http://www.saxproject.org
 // Public Domain: no warranty.
+// $Id: Locator2.java,v 1.3 2004/12/16 00:09:58 robilad Exp $
 
 package org.xml.sax.ext;
 
@@ -37,12 +38,9 @@ public interface Locator2 extends Locator
      * <em>&lt;?xml&nbsp;version='...'&nbsp;...?&gt;</em> declaration,
      * or be defaulted by the parser.
      *
-     * <p> At this writing, only one version ("1.0") is defined, but it
-     * seems likely that a new version will be defined which has slightly
-     * different rules about which characters are legal in XML names.
-     *
      * @return Identifier for the XML version being used to interpret
-     *	the entity's text.
+     * the entity's text, or null if that information is not yet
+     * available in the current parsing state.
      */
     public String getXMLVersion ();
 
@@ -69,8 +67,9 @@ public interface Locator2 extends Locator
      * and comparisons should be case-insensitive.
      *
      * @return Name of the character encoding being used to interpret
-     *	the entity's text, or null if this was not provided for a
-     *	character stream passed through an InputSource.
+     * * the entity's text, or null if this was not provided for a *
+     * character stream passed through an InputSource or is otherwise
+     * not yet available in the current parsing state.
      */
     public String getEncoding ();
 }

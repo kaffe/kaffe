@@ -1,3 +1,50 @@
+2004-12-16  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/org/xml/sax/AttributeList.java,
+	libraries/javalib/org/xml/sax/Attributes.java,
+	libraries/javalib/org/xml/sax/ContentHandler.java,
+	libraries/javalib/org/xml/sax/DTDHandler.java,
+	libraries/javalib/org/xml/sax/DocumentHandler.java,
+	libraries/javalib/org/xml/sax/EntityResolver.java,
+	libraries/javalib/org/xml/sax/ErrorHandler.java,
+	libraries/javalib/org/xml/sax/HandlerBase.java,
+	libraries/javalib/org/xml/sax/InputSource.java,
+	libraries/javalib/org/xml/sax/Locator.java,
+	libraries/javalib/org/xml/sax/Parser.java,
+	libraries/javalib/org/xml/sax/SAXException.java,
+	libraries/javalib/org/xml/sax/SAXNotRecognizedException.java,
+	libraries/javalib/org/xml/sax/SAXNotSupportedException.java,
+	libraries/javalib/org/xml/sax/SAXParseException.java,
+	libraries/javalib/org/xml/sax/XMLFilter.java,
+	libraries/javalib/org/xml/sax/XMLReader.java,
+	libraries/javalib/org/xml/sax/package.html,
+	libraries/javalib/org/xml/sax/ext/Attributes2.java,
+	libraries/javalib/org/xml/sax/ext/Attributes2Impl.java,
+	libraries/javalib/org/xml/sax/ext/DeclHandler.java,
+	libraries/javalib/org/xml/sax/ext/DefaultHandler2.java,
+	libraries/javalib/org/xml/sax/ext/EntityResolver2.java,
+	libraries/javalib/org/xml/sax/ext/LexicalHandler.java,
+	libraries/javalib/org/xml/sax/ext/Locator2.java,
+	libraries/javalib/org/xml/sax/ext/Locator2Impl.java,
+	libraries/javalib/org/xml/sax/ext/package.html,
+	libraries/javalib/org/xml/sax/helpers/AttributeListImpl.java,
+	libraries/javalib/org/xml/sax/helpers/AttributesImpl.java,
+	libraries/javalib/org/xml/sax/helpers/DefaultHandler.java,
+	libraries/javalib/org/xml/sax/helpers/LocatorImpl.java,
+	libraries/javalib/org/xml/sax/helpers/NamespaceSupport.java,
+	libraries/javalib/org/xml/sax/helpers/NewInstance.java,
+	libraries/javalib/org/xml/sax/helpers/ParserAdapter.java,
+	libraries/javalib/org/xml/sax/helpers/ParserFactory.java,
+	libraries/javalib/org/xml/sax/helpers/XMLFilterImpl.java,
+	libraries/javalib/org/xml/sax/helpers/XMLReaderAdapter.java,
+	libraries/javalib/org/xml/sax/helpers/XMLReaderFactory.java,
+	libraries/javalib/org/xml/sax/helpers/package.html:
+	Resynced with GNU JAXP.
+
+	004-12-10  Chris Burdess       <dog@gnu.org>
+
+        * org/xml/sax: Updated version of SAX API to sax2r3 final.
+
 2004-12-15  Michael Koch  <konqueror@gmx.de>
 
 	* libraries/javalib/javax/swing/JComponent.java

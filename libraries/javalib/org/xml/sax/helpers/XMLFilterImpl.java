@@ -2,6 +2,7 @@
 // http://www.saxproject.org
 // Written by David Megginson
 // NO WARRANTY!  This class is in the Public Domain.
+// $Id: XMLFilterImpl.java,v 1.5 2004/12/16 00:09:59 robilad Exp $
 
 package org.xml.sax.helpers;
 
@@ -252,7 +253,7 @@ public class XMLFilterImpl
     /**
      * Set the DTD event handler.
      *
-     * @param resolver The new DTD handler.
+     * @param handler the new DTD handler
      */
     public void setDTDHandler (DTDHandler handler)
     {
@@ -274,7 +275,7 @@ public class XMLFilterImpl
     /**
      * Set the content event handler.
      *
-     * @param resolver The new content handler.
+     * @param handler the new content handler
      */
     public void setContentHandler (ContentHandler handler)
     {
@@ -296,7 +297,7 @@ public class XMLFilterImpl
     /**
      * Set the error event handler.
      *
-     * @param handle The new error handler.
+     * @param handler the new error handler
      */
     public void setErrorHandler (ErrorHandler handler)
     {

@@ -1,6 +1,7 @@
 // SAX exception class.
 // http://www.saxproject.org
 // No warranty; no copyright -- use this as you will.
+// $Id: SAXParseException.java,v 1.3 2004/12/16 00:09:58 robilad Exp $
 
 package org.xml.sax;
 
@@ -103,9 +104,9 @@ public class SAXParseException extends SAXException {
      *
      *
      * @param message The error or warning message.
-     * @param publicId The public identifer of the entity that generated
+     * @param publicId The public identifier of the entity that generated
      *                 the error or warning.
-     * @param systemId The system identifer of the entity that generated
+     * @param systemId The system identifier of the entity that generated
      *                 the error or warning.
      * @param lineNumber The line number of the end of the text that
      *                   caused the error or warning.
@@ -134,9 +135,9 @@ public class SAXParseException extends SAXException {
      *
      * @param message The error or warning message, or null to use
      *                the message from the embedded exception.
-     * @param publicId The public identifer of the entity that generated
+     * @param publicId The public identifier of the entity that generated
      *                 the error or warning.
-     * @param systemId The system identifer of the entity that generated
+     * @param systemId The system identifier of the entity that generated
      *                 the error or warning.
      * @param lineNumber The line number of the end of the text that
      *                   caused the error or warning.
@@ -229,7 +230,6 @@ public class SAXParseException extends SAXException {
     {
 	return this.columnNumber;
     }
-    
     
     
     //////////////////////////////////////////////////////////////////////

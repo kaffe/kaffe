@@ -1,6 +1,7 @@
 // SAX error handler.
 // http://www.saxproject.org
 // No warranty; no copyright -- use this as you will.
+// $Id: ErrorHandler.java,v 1.3 2004/12/16 00:09:58 robilad Exp $
 
 package org.xml.sax;
 
@@ -23,20 +24,25 @@ package org.xml.sax;
  * through this interface.</p>
  *
  * <p><strong>WARNING:</strong> If an application does <em>not</em>
- * register an ErrorHandler, XML parsing errors will go unreported
- * and bizarre behaviour may result.</p>
+ * register an ErrorHandler, XML parsing errors will go unreported,
+ * except that <em>SAXParseException</em>s will be thrown for fatal errors.
+ * In order to detect validity errors, an ErrorHandler that does something
+ * with {@link #error error()} calls must be registered.</p>
  *
  * <p>For XML processing errors, a SAX driver must use this interface 
- * instead of throwing an exception: it is up to the application 
+ * in preference to throwing an exception: it is up to the application 
  * to decide whether to throw an exception for different types of 
  * errors and warnings.  Note, however, that there is no requirement that 
- * the parser continue to provide useful information after a call to 
- * {@link #fatalError fatalError} (in other words, a SAX driver class 
- * could catch an exception and report a fatalError).</p>
+ * the parser continue to report additional errors after a call to 
+ * {@link #fatalError fatalError}.  In other words, a SAX driver class 
+ * may throw an exception after reporting any fatalError.
+ * Also parsers may throw appropriate exceptions for non-XML errors.
+ * For example, {@link XMLReader#parse XMLReader.parse()} would throw
+ * an IOException for errors accessing entities or the document.</p>
  *
  * @since SAX 1.0
  * @author David Megginson
- * @version 2.0.1 (sax2r2)
+ * @version 2.0.1+ (sax2r3pre1)
  * @see org.xml.sax.XMLReader#setErrorHandler
  * @see org.xml.sax.SAXParseException 
  */
@@ -47,8 +53,9 @@ public interface ErrorHandler {
      * Receive notification of a warning.
      *
      * <p>SAX parsers will use this method to report conditions that
-     * are not errors or fatal errors as defined by the XML 1.0
-     * recommendation.  The default behaviour is to take no action.</p>
+     * are not errors or fatal errors as defined by the XML
+     * recommendation.  The default behaviour is to take no
+     * action.</p>
      *
      * <p>The SAX parser must continue to provide normal parsing events
      * after invoking this method: it should still be possible for the
@@ -76,12 +83,12 @@ public interface ErrorHandler {
      * validity constraint.  The default behaviour is to take no
      * action.</p>
      *
-     * <p>The SAX parser must continue to provide normal parsing events
-     * after invoking this method: it should still be possible for the
-     * application to process the document through to the end.  If the
-     * application cannot do so, then the parser should report a fatal
-     * error even if the XML 1.0 recommendation does not require it to
-     * do so.</p>
+     * <p>The SAX parser must continue to provide normal parsing
+     * events after invoking this method: it should still be possible
+     * for the application to process the document through to the end.
+     * If the application cannot do so, then the parser should report
+     * a fatal error even if the XML recommendation does not require
+     * it to do so.</p>
      *
      * <p>Filters may use this method to report other, non-XML errors
      * as well.</p>
@@ -99,6 +106,14 @@ public interface ErrorHandler {
     /**
      * Receive notification of a non-recoverable error.
      *
+     * <p><strong>There is an apparent contradiction between the
+     * documentation for this method and the documentation for {@link
+     * org.xml.sax.ContentHandler#endDocument}.  Until this ambiguity
+     * is resolved in a future major release, clients should make no
+     * assumptions about whether endDocument() will or will not be
+     * invoked when the parser has reported a fatalError() or thrown
+     * an exception.</strong></p>
+     *
      * <p>This corresponds to the definition of "fatal error" in
      * section 1.2 of the W3C XML 1.0 Recommendation.  For example, a
      * parser would use this callback to report the violation of a
@@ -106,7 +121,7 @@ public interface ErrorHandler {
      *
      * <p>The application must assume that the document is unusable
      * after the parser has invoked this method, and should continue
-     * (if at all) only for the sake of collecting addition error
+     * (if at all) only for the sake of collecting additional error
      * messages: in fact, SAX parsers are free to stop reporting any
      * other events once this method has been invoked.</p>
      *

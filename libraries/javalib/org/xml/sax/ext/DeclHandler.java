@@ -1,6 +1,7 @@
 // DeclHandler.java - Optional handler for DTD declaration events.
 // http://www.saxproject.org
 // Public Domain: no warranty.
+// $Id: DeclHandler.java,v 1.3 2004/12/16 00:09:58 robilad Exp $
 
 package org.xml.sax.ext;
 
@@ -124,11 +125,14 @@ public interface DeclHandler
      * <p>Only the effective (first) declaration for each entity
      * will be reported.</p>
      *
+     * <p>If the system identifier is a URL, the parser must resolve it
+     * fully before passing it to the application.</p>
+     *
      * @param name The name of the entity.  If it is a parameter
      *        entity, the name will begin with '%'.
-     * @param publicId The declared public identifier of the entity, or
-     *        null if none was declared.
-     * @param systemId The declared system identifier of the entity.
+     * @param publicId The entity's public identifier, or null if none
+     *        was given.
+     * @param systemId The entity's system identifier.
      * @exception SAXException The application may raise an exception.
      * @see #internalEntityDecl
      * @see org.xml.sax.DTDHandler#unparsedEntityDecl

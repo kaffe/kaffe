@@ -1,6 +1,7 @@
 // SAX default handler base class.
 // http://www.saxproject.org
 // No warranty; no copyright -- use this as you will.
+// $Id: HandlerBase.java,v 1.3 2004/12/16 00:09:58 robilad Exp $
 
 package org.xml.sax;
 
@@ -212,8 +213,7 @@ public class HandlerBase
      * each element (such as finalising a tree node or writing
      * output to a file).</p>
      *
-     * @param name The element type name.
-     * @param attributes The specified or defaulted attributes.
+     * @param name the element name
      * @exception org.xml.sax.SAXException Any SAX exception, possibly
      *            wrapping another exception.
      * @see org.xml.sax.DocumentHandler#endElement

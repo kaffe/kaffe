@@ -2,6 +2,7 @@
 // http://www.saxproject.org
 // Written by David Megginson
 // NO WARRANTY!  This class is in the public domain.
+// $Id: DefaultHandler.java,v 1.5 2004/12/16 00:09:59 robilad Exp $
 
 package org.xml.sax.helpers;
 
@@ -260,7 +261,7 @@ public class DefaultHandler
      *        performed.
      * @param qName The qualified name (with prefix), or the
      *        empty string if qualified names are not available.
-     * @param atts The attributes attached to the element.  If
+     * @param attributes The attributes attached to the element.  If
      *        there are no attributes, it shall be an empty
      *        Attributes object.
      * @exception org.xml.sax.SAXException Any SAX exception, possibly

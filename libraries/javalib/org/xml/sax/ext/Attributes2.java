@@ -1,6 +1,7 @@
 // Attributes2.java - extended Attributes
 // http://www.saxproject.org
 // Public Domain: no warranty.
+// $Id: Attributes2.java,v 1.4 2004/12/16 00:09:58 robilad Exp $
 
 package org.xml.sax.ext;
 
@@ -24,33 +25,68 @@ import org.xml.sax.Attributes;
  * <p> XMLReader implementations are not required to support this
  * information, and it is not part of core-only SAX2 distributions.</p>
  *
+ * <p>Note that if an attribute was defaulted (<em>!isSpecified()</em>)
+ * it will of necessity also have been declared (<em>isDeclared()</em>)
+ * in the DTD.
+ * Similarly if an attribute's type is anything except CDATA, then it
+ * must have been declared.
+ * </p>
+ *
  * @since SAX 2.0 (extensions 1.1 alpha)
  * @author David Brownell
  * @version TBS
  */
 public interface Attributes2 extends Attributes
 {
-
-
-    /** @return false unless the attribute was declared in the DTD.
-     * @throws java.lang.ArrayIndexOutOfBoundsException
-     *   When the supplied index does not identify an attribute.
-     */    
+    /**
+     * Returns false unless the attribute was declared in the DTD.
+     * This helps distinguish two kinds of attributes that SAX reports
+     * as CDATA:  ones that were declared (and hence are usually valid),
+     * and those that were not (and which are never valid).
+     *
+     * @param index The attribute index (zero-based).
+     * @return true if the attribute was declared in the DTD,
+     *		false otherwise.
+     * @exception java.lang.ArrayIndexOutOfBoundsException When the
+     *            supplied index does not identify an attribute.
+     */
     public boolean isDeclared (int index);
 
-    /** @return false unless the attribute was declared in the DTD.
-     * @throws java.lang.IllegalArgumentException
-     *   When the supplied names do not identify an attribute.
+    /**
+     * Returns false unless the attribute was declared in the DTD.
+     * This helps distinguish two kinds of attributes that SAX reports
+     * as CDATA:  ones that were declared (and hence are usually valid),
+     * and those that were not (and which are never valid).
+     *
+     * @param qName The XML qualified (prefixed) name.
+     * @return true if the attribute was declared in the DTD,
+     *		false otherwise.
+     * @exception java.lang.IllegalArgumentException When the
+     *            supplied name does not identify an attribute.
      */
-    public boolean isDeclared (java.lang.String qName);
+    public boolean isDeclared (String qName);
 
-    /** @return false unless the attribute was declared in the DTD.
-     * @throws java.lang.IllegalArgumentException
-     *   When the supplied names do not identify an attribute.
+    /**
+     * Returns false unless the attribute was declared in the DTD.
+     * This helps distinguish two kinds of attributes that SAX reports
+     * as CDATA:  ones that were declared (and hence are usually valid),
+     * and those that were not (and which are never valid).
+     *
+     * <p>Remember that since DTDs do not "understand" namespaces, the
+     * namespace URI associated with an attribute may not have come from
+     * the DTD.  The declaration will have applied to the attribute's
+     * <em>qName</em>.
+     *
+     * @param uri The Namespace URI, or the empty string if
+     *        the name has no Namespace URI.
+     * @param localName The attribute's local name.
+     * @return true if the attribute was declared in the DTD,
+     *		false otherwise.
+     * @exception java.lang.IllegalArgumentException When the
+     *            supplied names do not identify an attribute.
      */
-    public boolean isDeclared (java.lang.String uri, java.lang.String localName);
+    public boolean isDeclared (String uri, String localName);
 
-    
     /**
      * Returns true unless the attribute value was provided
      * by DTD defaulting.
@@ -67,6 +103,11 @@ public interface Attributes2 extends Attributes
      * Returns true unless the attribute value was provided
      * by DTD defaulting.
      *
+     * <p>Remember that since DTDs do not "understand" namespaces, the
+     * namespace URI associated with an attribute may not have come from
+     * the DTD.  The declaration will have applied to the attribute's
+     * <em>qName</em>.
+     *
      * @param uri The Namespace URI, or the empty string if
      *        the name has no Namespace URI.
      * @param localName The attribute's local name.
@@ -81,7 +122,7 @@ public interface Attributes2 extends Attributes
      * Returns true unless the attribute value was provided
      * by DTD defaulting.
      *
-     * @param qName The XML 1.0 qualified name.
+     * @param qName The XML qualified (prefixed) name.
      * @return true if the value was found in the XML text,
      *		false if the value was provided by DTD defaulting.
      * @exception java.lang.IllegalArgumentException When the

@@ -1,6 +1,7 @@
 // DefaultHandler2.java - extended DefaultHandler
 // http://www.saxproject.org
 // Public Domain: no warranty.
+// $Id: DefaultHandler2.java,v 1.5 2004/12/16 00:09:58 robilad Exp $
 
 package org.xml.sax.ext;
 

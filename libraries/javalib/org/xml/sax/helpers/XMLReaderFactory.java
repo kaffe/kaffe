@@ -3,6 +3,7 @@
 // Written by David Megginson
 // and by David Brownell
 // NO WARRANTY!  This class is in the Public Domain.
+// $Id: XMLReaderFactory.java,v 1.6 2004/12/16 00:09:59 robilad Exp $
 
 package org.xml.sax.helpers;
 import java.io.BufferedReader;
@@ -136,8 +137,9 @@ final public class XMLReaderFactory
 	if (className == null) {
 // BEGIN DISTRIBUTION-SPECIFIC
 
-	    // use the non-validating one
-	    className = "gnu.xml.aelfred2.SAXDriver";
+	    // EXAMPLE:
+	    // className = "com.example.sax.XmlReader";
+	    // or a $JAVA_HOME/jre/lib/*properties setting...
 
 // END DISTRIBUTION-SPECIFIC
 	}

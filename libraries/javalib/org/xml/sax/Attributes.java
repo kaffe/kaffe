@@ -2,6 +2,7 @@
 // http://www.saxproject.org
 // Written by David Megginson
 // NO WARRANTY!  This class is in the public domain.
+// $Id: Attributes.java,v 1.3 2004/12/16 00:09:58 robilad Exp $
 
 package org.xml.sax;
 
@@ -31,18 +32,25 @@ package org.xml.sax;
  * the <code>http://xml.org/sax/features/namespace-prefixes</code> 
  * feature is set to <var>true</var> (it is <var>false</var> by 
  * default).
- * Because SAX2 conforms to the "Namespaces in XML" specification,
- * it does not give namespace declaration attributes a namespace URI.
- * Some other W3C specifications are in conflict with that, expecting
- * these declarations to be in a namespace.
- * Handler code may need to resolve that conflict.
+ * Because SAX2 conforms to the original "Namespaces in XML"
+ * recommendation, it normally does not
+ * give namespace declaration attributes a namespace URI.
  * </p>
  *
- * <p>If the namespace-prefixes feature (see above) is <var>false</var>, 
- * access by qualified name may not be available; if the 
- * <code>http://xml.org/sax/features/namespaces</code>
- * feature is <var>false</var>, access by Namespace-qualified names 
- * may not be available.</p>
+ * <p>Some SAX2 parsers may support using an optional feature flag
+ * (<code>http://xml.org/sax/features/xmlns-uris</code>) to request
+ * that those attributes be given URIs, conforming to a later
+ * backwards-incompatible revision of that recommendation.  (The
+ * attribute's "local name" will be the prefix, or "xmlns" when
+ * defining a default element namespace.)  For portability, handler
+ * code should always resolve that conflict, rather than requiring
+ * parsers that can change the setting of that feature flag.  </p>
+ *
+ * <p>If the namespace-prefixes feature (see above) is
+ * <var>false</var>, access by qualified name may not be available; if
+ * the <code>http://xml.org/sax/features/namespaces</code> feature is
+ * <var>false</var>, access by Namespace-qualified names may not be
+ * available.</p>
  *
  * <p>This interface replaces the now-deprecated SAX1 {@link
  * org.xml.sax.AttributeList AttributeList} interface, which does not 
@@ -108,10 +116,10 @@ public interface Attributes
 
 
     /**
-     * Look up an attribute's XML 1.0 qualified name by index.
+     * Look up an attribute's XML qualified (prefixed) name by index.
      *
      * @param index The attribute index (zero-based).
-     * @return The XML 1.0 qualified name, or the empty string
+     * @return The XML qualified name, or the empty string
      *         if none is available, or null if the index
      *         is out of range.
      * @see #getLength
@@ -128,7 +136,7 @@ public interface Attributes
      *
      * <p>If the parser has not read a declaration for the attribute,
      * or if the parser does not report attribute types, then it must
-     * return the value "CDATA" as stated in the XML 1.0 Recommentation
+     * return the value "CDATA" as stated in the XML 1.0 Recommendation
      * (clause 3.3.3, "Attribute-Value Normalization").</p>
      *
      * <p>For an enumerated attribute that is not a notation, the
@@ -177,7 +185,7 @@ public interface Attributes
 
 
     /**
-     * Look up the index of an attribute by XML 1.0 qualified name.
+     * Look up the index of an attribute by XML qualified (prefixed) name.
      *
      * @param qName The qualified (prefixed) name.
      * @return The index of the attribute, or -1 if it does not
@@ -203,12 +211,12 @@ public interface Attributes
 
 
     /**
-     * Look up an attribute's type by XML 1.0 qualified name.
+     * Look up an attribute's type by XML qualified (prefixed) name.
      *
      * <p>See {@link #getType(int) getType(int)} for a description
      * of the possible types.</p>
      *
-     * @param qName The XML 1.0 qualified name.
+     * @param qName The XML qualified name.
      * @return The attribute type as a string, or null if the
      *         attribute is not in the list or if qualified names
      *         are not available.
@@ -232,12 +240,12 @@ public interface Attributes
 
 
     /**
-     * Look up an attribute's value by XML 1.0 qualified name.
+     * Look up an attribute's value by XML qualified (prefixed) name.
      *
      * <p>See {@link #getValue(int) getValue(int)} for a description
      * of the possible values.</p>
      *
-     * @param qName The XML 1.0 qualified name.
+     * @param qName The XML qualified name.
      * @return The attribute value as a string, or null if the
      *         attribute is not in the list or if qualified names
      *         are not available.
