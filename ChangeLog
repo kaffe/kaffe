@@ -1,3 +1,18 @@
+Sat Aug 26 16:52:06 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
+
+	* kaffe/kaffevm/debug.c:
+	fprintf(stderr, ...) is highly problematic:  In unix-jthreads, the
+	standard ports are non-blocking, so fprintf can get a short write
+	at any time and put stderr into a bad state.
+
+	We don't want to make the standard ports blocking (not even in
+	debug mode).  Instead, dprintf does its own buffering, and polls
+	fd 2 until a message is completely written.  
+
+	dprintf is now defined regardless of the value of DEBUG, and all
+	occurrences of fprintf should really be fixed.  (As a side effect,
+	enabling debug flags after startup is more effective.)
+
 Sat Aug 26 16:41:19 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* kaffe/kaffevm/mem/gc-incremental.h, kaffe/kaffevm/mem/gc-mem.h 
