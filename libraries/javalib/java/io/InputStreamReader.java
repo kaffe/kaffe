@@ -147,26 +147,29 @@ public class InputStreamReader extends Reader
    * Creates an InputStreamReader that uses a decoder of the given
    * charset to decode the bytes in the InputStream into
    * characters.
+   * @since 1.4
    */
-  public InputStreamReader(InputStream in, Charset charset) {
+  public InputStreamReader(InputStream in, Charset charset)
+  {
     /* FIXME: InputStream is wrapped in Channel which is read by a
      * Reader-implementation for channels. However to fix this we
      * need to completely move to NIO-style character
      * encoding/decoding.
      */
-    this.in = Channels.newReader(Channels.newChannel(in), charset.newDecoder(), -1);
-    
+    this.in = Channels.newReader(Channels.newChannel(in), charset.newDecoder(),
+				 -1);
     encoding = charset.name();
   }
 
   /**
    * Creates an InputStreamReader that uses the given charset decoder
    * to decode the bytes in the InputStream into characters.
+   * @since 1.4
    */
-  public InputStreamReader(InputStream in, CharsetDecoder decoder) {
+  public InputStreamReader(InputStream in, CharsetDecoder decoder)
+  {
     // FIXME: see {@link InputStreamReader(InputStream, Charset)
     this.in = Channels.newReader(Channels.newChannel(in), decoder, -1);
-    
     encoding = decoder.charset().name();
   }
   
