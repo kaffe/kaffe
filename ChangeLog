@@ -2,6 +2,17 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-10  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/text/Collator.java (getInstance(Locale)):
+        Added default collation pattern to handle case when resource
+        is missing and throw InternalError instead of returning null
+        should parsing fail.
+
+2005-02-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-09  Mark Wielaard  <mark@klomp.org>
 
         * gnu/java/net/protocol/jar/Connection.java (getJarFile):
