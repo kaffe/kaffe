@@ -1,3 +1,40 @@
+Mon Feb 14 16:08:48 CET 2000  Moses DeJong <dejong@cs.umn.edu>
+
+	* libraries/extensions/tools/javalib/kaffe/tools/jar/Jar.java: Changed
+	CRC calculation on uncompressed Zip entries so that the entry stream
+	does not need to be read twice.
+
+	* libraries/javalib/java/util/zip/InflaterInputStream.java: Changed
+	call to read() in the skip() method so that an array of 1 byte is not
+	allocated each time through the loop.
+
+	* libraries/javalib/java/util/zip/ZipInputStream.java: Added reading of
+	DATA header of a compressed entry when the closeEntry() method is
+	invoked.  Changed the way ZipEntry fields are set so an error will be
+	generated when an invalid ZipEntry field is read from a Zip stream.
+
+	* libraries/javalib/java/util/zip/ZipOutputStream.java: Changed writing
+	of DATA header so that it is only done when a compressed entry is
+	written.  This is needed because Sun's jar utility will puke if a DATA
+	header is found after an uncompressed entry.  Changed setting of the
+	"flag" bits of a ZipEntry so that it is only done when writing a
+	compressed entry.  Changed the "zip version" field so that it is 10 for
+	uncompressed entries and 20 for compressed entries.  The "extra" field
+	was not getting written after "name" field, so that was added.  Changed
+	writing of the "compressed size" and "uncompressed size" fields so that
+	they are written before or after the data is written to the stream,
+	depending on the compression flag.  These changes were all needed so
+	that Kaffe will exactly match the binary output of Sun's
+	ZipOutputStream class.
+
+	* libraries/javalib/java/util/zip/ZipEntry.java: Fixed bug in the
+	computeDosTime() and encodeDosTime() methods. These methods assumed a
+	24 hour clock but a 12 hour clock was actually being used.
+
+	* test/regression/DosTimeVerify.java test/regression/ZipVerify.java
+	test/regression/Makefile.am test/regression/Makefile.in: new testcases.
+
+
 Sat Feb 12 16:36:00 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* configure, configure.in, config/config.h.in: detect chdir()
@@ -21,7 +58,7 @@ Fri Feb 11 17:26:23 CET 2000  Pavel Roskin  <pavel_roskin@geocities.com>
         DEBUG is defined.
 
 Fri Feb 11 12:07:40 CET 2000  Edouard G. Parmelan  <egp@free.fr>
-	
+
 	* configure.in: detect gmp with mpz_get_d() in place of mpz_add().
 	* configure: regen
 
@@ -39,7 +76,7 @@ Thu Feb 10 16:57:04 MST 2000  Pavel Roskin <pavel_roskin@geocities.com>
 
 Thu Feb 10 13:14:07 MST 2000  Jason Baker  <jbaker@cs.utah.edu>
 
-	* libraries/clib/management/Debug.c (Java_kaffe_management_Debug_enableStats): 
+	* libraries/clib/management/Debug.c (Java_kaffe_management_Debug_enableStats):
 	fix spelling of name, fix code, and handle systems not configured
 	for stats
 	* kaffe/kaffevm/stats.c: install atexit function from
@@ -126,17 +163,17 @@ Fri Jan 28 16:13:53 MST 2000  Jason Baker  <jbaker@cs.utah.edu>
 	libraries/clib/management/Debug.c,
 	libraries/javalib/kaffe/management/Debug.java:
 	Three overlapping changes:
-	
+
 	New class kaffe.management.Debug to Kaffe's control informational
 	messages and debug output.  Debug.enable("list") does not cause kaffe
 	to exit, instead dbgSetMaskStr returns a success indicator, if
 	dbgSetMaskStr fails from main(), kaffe exits.
-	
+
 	-vmdebug GCSTAT counts reachable objects by class
-	
+
 	jit temporaries are allocated with a new index, GC_ALLOC_JITTEMP,
 	rather than GC_ALLOC_FIXED
-		
+
 Mon Jan 24 17:55:18 PST 2000  Derek L Davies <ddavies@world.std.com>
 
 	* include/jni.h, kaffe/kaffevm/jni.c: add missing JNI method GetEnv()
@@ -274,7 +311,7 @@ Sun Jan  9 16:37:34 CET 2000  Edouard G. Parmelan  <egp@free.fr>
 
 	* WHATSNEW: Some news since release 1.0.5.
 
-Sun Jan  9 16:25:38 CET 2000  Igor Khavkine  <i_khavki@alcor.concordia.ca> 
+Sun Jan  9 16:25:38 CET 2000  Igor Khavkine  <i_khavki@alcor.concordia.ca>
 
 	* config/config.alias: Add alias for GNU Hurd.
 	* config/i386/gnu/config.frag config/i386/gnu/jit-md.h
@@ -303,7 +340,7 @@ Sun Jan  9 02:50:29 CET 2000  Edouard G. Parmelan  <egp@free.fr>
 	setDosTime().
 	* libraries/javalib/java/util/zip/ZipInputStream.java (getNextEntry):
 	Use setDosTime() to set time entry.
-	
+
 	* libraries/javalib/java/util/jar/Manifest.java (read): handler file
 	without empty last line.
 
@@ -316,7 +353,7 @@ Thu Jan  6 14:19:49 PST 2000  Patrick Tullmann <tullmann@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/classMethod.h,
 	kaffe/kaffevm/lookup.c: Fix race condition in
-	classMethod.c:resolveStrings(), and cleanup class locking with 
+	classMethod.c:resolveStrings(), and cleanup class locking with
 	an explicit lockClass() macro.
 	* test/regression/ClassDeadLock.java: new test
 	* test/regression/Makefile.am: add new test
@@ -348,7 +385,7 @@ Tue Jan  4 15:54:07 PST 2000  Frohwalt Egerer <froh@iconsult.com>
 	libraries/javalib/java/awt/win32/NativeComponent.java,
 	libraries/javalib/java/awt/win32/NativeContainer.java,
 	libraries/javalib/java/awt/win32/ScrollPane.java: change
-	'paintBorder' to 'kaffePaintBorder' to avoid conflict with Swing 
+	'paintBorder' to 'kaffePaintBorder' to avoid conflict with Swing
 	* configure.in: add test for <utime.h>
 	* Makefile.in, aclocal.m4, configure, config/config.h.in,
 	libraries/javalib/Klasses.jar: regen
@@ -380,7 +417,7 @@ Tue Dec 28 10:14:16 CET 1999  Edouard G. Parmelan  <egp@free.fr>
 	(Khost_os, Khost_cpu): Renamed from host_os and host_cpu.
 	* config/config.alias, config/*/config.frag: Likewise.
 	* configure, */Makefile.in: Rebuilt.
-	
+
 Mon Dec 13 23:06:59 CET 1999  Edouard G. Parmelan  <egp@free.fr>
 
 	* test/regression/Makefile.am: exclude Overflow.java when gcj
@@ -423,7 +460,7 @@ Mon Dec  6 16:14:50 CET 1999  Edouard G. Parmelan  <egp@free.fr>
 
 	* configure.in: call AC_PROG_CXX when gcj is not disabled and define
 	automake conditional HAVE_GCJ_SUPPORT.
-	
+
 	* kaffe/kaffevm/Makefile.am kaffe/kaffevm/gcj/Makefile.am: use automake
 	conditional HAVE_GCJ_SUPPORT to enclose build/link of libgcj.la.
 
@@ -437,7 +474,7 @@ Sun Dec  5 02:44:43 CET 1999  Edouard G. Parmelan  <egp@free.fr>
 	kaffe/kaffevm/jit3/machine.h kaffe/kaffevm/jit3/machine.c: port i386
 	hardware profiler from JIT to JIT3.
 
-	* FAQ/FAQ.profiler: Add comments for porting to other arch. 
+	* FAQ/FAQ.profiler: Add comments for porting to other arch.
 
 	* config/i386/jit-i386.def: fix warning in debug output.
 	* kaffe/kaffevm/jit/machine.c: output profile results to "prof.out".
@@ -526,7 +563,7 @@ Wed Oct 27 16:22:10 PDT 1999	Tim Wilkinson <tim@transvirtual.com>
 
 Fri Oct 22 12:07:49 1999  Godmar Back  <gback@cs.utah.edu>
 
-	* In kaffe/kaffevm:        
+	* In kaffe/kaffevm:
 		classMethod.c classMethod.h classPool.c gcFuncs.c soft.c
 		soft.h intrp/icode.h jit/icode.c jit3/icode.c
 	did interface dispatch in constant time.
