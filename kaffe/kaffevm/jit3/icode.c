@@ -4,8 +4,8 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #include "config.h"
@@ -272,7 +272,7 @@ epilogue(Method* meth)
 #if defined(TRACE_METHOD_END)
 	if (Kaffe_JavaVMArgs[0].enableVerboseCall != 0) {
                 begin_func_sync();
-                call_soft(soft_end); 
+                call_soft(soft_end);
                 popargs();
                 end_func_sync();
         }
@@ -285,7 +285,7 @@ void
 ret(void)
 {
 	label *l;
-	
+
 	l = newLabel();
 	l->at = 0;
 	l->to = 0;
@@ -296,7 +296,7 @@ ret(void)
 	branch (l, ba);
 }
 
- 
+
 /* ----------------------------------------------------------------------- */
 /* Conditional monitor management.					   */
 /*									   */
@@ -466,7 +466,7 @@ _end_basic_block(void)
 	_slot_const_const(0, (jword)createSpillMask(), SR_BASIC, doSpill, Tnull);
 }
 
-void 
+void
 _syncRegisters(uintp stk, uintp temp)
 {
 	_slot_const_const(0, (jword)createSpillMask(), SR_SYNC, doSpill, Tnull);
@@ -2036,7 +2036,7 @@ lshr_int_const(SlotInfo* dst, SlotInfo* src, jint val)
 void
 lshr_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
-#if defined(HAVE_lshr_int_const) 
+#if defined(HAVE_lshr_int_const)
 	if (slot_type(src2) == Tconst) {
 		lshr_int_const(dst, src, slot_value(src2).i);
 	}
@@ -3646,27 +3646,14 @@ return_long(SlotInfo* dst)
 }
 #endif
 
-#if defined(HAVE_FLOATING_POINT_STACK)
-static void
-floating_point_stack_mark_used(sequence *s) 
-{
-    (void)s;
-}
-#endif
-
 void
 return_float(SlotInfo* dst)
 {
 #if defined(HAVE_return_float)
 	slot_slot_slot(dst, 0, 0, HAVE_return_float, Tnull);
 #if defined(HAVE_FLOATING_POINT_STACK)
-	{
-		/* make slot as used do not be removed */
-		SlotInfo* tmp;
-		slot_alloctmp(tmp);
-		slot_slot_const(tmp, dst, 0, floating_point_stack_mark_used, Tload);
-		slot_freetmp(tmp);
-	}
+	begin_sync();
+	end_sync();
 #endif
 #elif defined(HAVE_NO_FLOATING_POINT)
 	return_int(dst);
@@ -3681,13 +3668,8 @@ return_double(SlotInfo* dst)
 #if defined(HAVE_return_double)
 	lslot_lslot_lslot(dst, 0, 0, HAVE_return_double, Tnull);
 #if defined(HAVE_FLOATING_POINT_STACK)
-	{
-		/* make slot as used do not be removed */
-		SlotInfo* tmp;
-		slot_alloc2tmp(tmp);
-		lslot_lslot_const(tmp, dst, 0, floating_point_stack_mark_used, Tload);
-		slot_free2tmp(tmp);
-	}
+	begin_sync();
+	end_sync();
 #endif
 #elif defined(HAVE_NO_FLOATING_POINT)
 	return_long(dst);
@@ -4418,7 +4400,7 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 /* Soft calls.								   */
 /*									   */
 
-#if 0 
+#if 0
 void
 /* Custom edition */ softcall_lookupmethod(SlotInfo* dst, Method* meth, SlotInfo* obj)
 {
@@ -4936,7 +4918,7 @@ softcall_trace(Method* meth)
 {
 #if defined(HAVE_get_arg_ptr)
         SlotInfo* tmp;
- 
+
         slot_alloctmp(tmp);
         get_arg_ptr(tmp);
 	begin_func_sync();
