@@ -1,5 +1,10 @@
 2003-09-29  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/util/zip/GZIPInputStream.java:
+	Replaced by implementation from GNU Classpath.
+	
+2003-09-29  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/util/zip/InflaterInputStream.java:
 	Replaced by implementation from GNU Classpath.
 
