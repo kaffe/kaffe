@@ -1,3 +1,36 @@
+1999-09-10  Edouard G. Parmelan <Edouard.Parmelan@quadratec.fr>
+
+	* config/{arm,i386,m68k,mips,sparc}/jit.h config/m68k/openbsd2/jit.h
+	(FRAMEOBJECT): Add `obj' and `einfo' parameters and fix `f' to be the
+	framepointer, as new JIT3 does.  (arm) recode generic FRAMEOBJECT to
+	avoid translator lock.
+	* kaffe/kaffevm/exception.c: (error2Throwable) Don't create a new
+	ExceptionInInitializerError if it's already one.
+	(dispatchException) Add new parameters to FRAMEOBJECT macro.
+	* config/i386/jit3-{i386.def,icode.h} test/regression/DoubleNeg.java
+	test/regression/Makefile.{am,in}:  Back port neg_float() and
+	neg_double(), create a new test-case for d = 0.0, -d.
+	* config/m68k/{a-ux,amigaos,linux}/md.c: Removes check of variable
+	KAFFE_JIT_DEBUG, it's already done in debug.c.
+	* kaffe/kaffevm/intrp/machine.c: Removes globalMethod, it's for JIT.
+	* kaffe/kaffevm/jit/machine.c (finishInsSequence): cast codebase to
+	unsigned long to avoid warning on 64 build (Alpha).
+	* kaffe/kaffevm/jit/registers.h: Defines dummy Rsubint to be JIT3
+	compatible.
+	* kaffe/kaffevm/mem/gc-mem.h: Add missing prototypes.
+	* kaffe/kaffevm/jit3/icode.c libraries/clib/awt/X/toolkit.h: Fix some
+	warnings.
+	* include/jsyscall.h kaffe/kaffevm/systems/unix-jthreads/jthread.{c,h}
+	kaffe/kaffevm/systems/unix-jthreads/syscalls.c
+	libraries/clib/io/AudioPlayer.c libraries/clib/net/PlainSocketImpl.c
+	libraries/clib/net/PlainDatagramSocketImpl.c: Changes address-len
+	to be an int pointer and not a size_t pointer as regular socket
+	functions.  Rationalizes int/size_t/ssize_t usage.
+	* test/regression/SoInterrupt.java: Add a watchdog thread and
+	verbose mode.
+	* developers/rpm-kaffe.spec: Add Vendor and Url entry, simplify
+	install and changes configure call to match debian rules process.
+
 1999-09-09  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/jit/machine.h (initInsnSequence): Added `meth'
