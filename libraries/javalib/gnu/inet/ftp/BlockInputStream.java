@@ -1,5 +1,5 @@
 /*
- * $Id: BlockInputStream.java,v 1.5 2004/10/04 19:33:56 robilad Exp $
+ * $Id: BlockInputStream.java,v 1.6 2004/10/30 12:14:12 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -18,11 +18,22 @@
  * along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * 
- * As a special exception, if you link this library with other files to
- * produce an executable, this library does not by itself cause the
- * resulting executable to be covered by the GNU General Public License.
- * This exception does not however invalidate any other reasons why the
- * executable file might be covered by the GNU General Public License.
+ * Linking this library statically or dynamically with other modules is
+ * making a combined work based on this library.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole
+ * combination.
+ *
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this library with independent modules to produce an
+ * executable, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting executable under
+ * terms of your choice, provided that you also meet, for each linked
+ * independent module, the terms and conditions of the license of that
+ * module.  An independent module is a module which is not derived from
+ * or based on this library.  If you modify this library, you may extend
+ * this exception to your version of the library, but you are not
+ * obliged to do so.  If you do not wish to do so, delete this
+ * exception statement from your version.
  */
 
 package gnu.inet.ftp;
@@ -35,7 +46,7 @@ import java.io.IOException;
  * A DTP input stream that implements the FTP block transfer mode.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.5 $ $Date: 2004/10/04 19:33:56 $
+ * @version $Revision: 1.6 $ $Date: 2004/10/30 12:14:12 $
  */
 class BlockInputStream extends DTPInputStream
 {
