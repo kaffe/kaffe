@@ -1,3 +1,8 @@
+Sun Jun 02 19:29:22 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	* libraries/javalib/java/lang/Cloneable.java: Bumped version
+	number.
+
 Sun Jun  2 09:12:37 PDT 2002  Jim Pick  <jim@kaffe.org>
 
 	* RELEASE-NOTES: New file used for documenting release-specific
