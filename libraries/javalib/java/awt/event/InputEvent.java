@@ -36,6 +36,69 @@ public class InputEvent
 	public static final int BUTTON3_MASK = META_MASK;
 	public static final int BUTTON3_DOWN_MASK = 4096;
 
+	/* This method returns a String representation of the 
+	 * modifiers.
+	 */
+	static String getModifiersAsString(final int modifiers) {
+		/* Start with an empty string */
+		String s = "";
+
+		/* Check all the bits in the mask */
+		if ((modifiers & SHIFT_MASK) != 0) {
+			s += ",Shift";
+		}
+		if ((modifiers & SHIFT_DOWN_MASK) != 0) {
+			s += ",Shift Down";
+		}
+		if ((modifiers & CTRL_MASK) != 0) {
+			s += ",Ctrl";
+		}
+		if ((modifiers & CTRL_DOWN_MASK) != 0) {
+			s += ",Ctrl Down";
+		}
+		if ((modifiers & META_MASK) != 0) {
+			s += ",Meta";
+		}
+		if ((modifiers & META_DOWN_MASK) != 0) {
+			s += ",Meta Down";
+		}
+		if ((modifiers & ALT_MASK) != 0) {
+			s += ",Alt";
+		}
+		if ((modifiers & ALT_DOWN_MASK) != 0) {
+			s += ",Alt Down";
+		}
+		if ((modifiers & ALT_GRAPH_MASK) != 0) {
+			s += ",Alt Graph";
+		}
+		if ((modifiers & ALT_GRAPH_DOWN_MASK) != 0) {
+			s += ",Alt Graph Down";
+		}
+		if ((modifiers & BUTTON1_MASK) != 0) {
+			s += ",Button1";
+		}
+		if ((modifiers & BUTTON1_DOWN_MASK) != 0) {
+			s += ",Button1 Down";
+		}
+		if ((modifiers & BUTTON2_MASK) != 0) {
+			s += ",Button2";
+		}
+		if ((modifiers & BUTTON2_DOWN_MASK) != 0) {
+			s += ",Button2 Down";
+		}
+		if ((modifiers & BUTTON3_MASK) != 0) {
+			s += ",Button3";
+		}
+		if ((modifiers & BUTTON3_DOWN_MASK) != 0) {
+			s += ",Button3 Down";
+		}
+		
+		/* if s is still empty, return the empty String.
+		 * Otherwise, cut off the leading ',' .
+		 */
+		return s.equals("") ? s : s.substring(1);
+	}
+
 InputEvent ( Component src, int evtId ) {
   super( src, evtId);
 }

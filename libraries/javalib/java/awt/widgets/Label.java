@@ -15,9 +15,19 @@ public class Label
   extends Component
 {
 	private static final long serialVersionUID = 3094126758329070636L;
+
 	final public static int LEFT = 0;
 	final public static int CENTER = 1;
 	final public static int RIGHT = 2;
+
+	private static final String [] ALIGNMENTS = {
+		"left",
+		"center",
+		"right",
+	};
+
+	private static int counter;
+
 	int align;
 	String label;
 	boolean hasBorder;
@@ -36,6 +46,7 @@ public Label( String label, int align) {
 	setFont(Defaults.LabelFont);
 	setText(label != null ? label : "");
 	setAlignment(align);
+	setName("label" + counter++);
 }
 
 public int getAlignment() {
@@ -89,7 +100,9 @@ public void paint( Graphics g) {
 }
 
 protected String paramString() {
-	return ( super.paramString() + ",Label: " + label);
+	return ( super.paramString()
+		 + ",align=" + ALIGNMENTS[getAlignment()]
+		 + ",text=" + getText());
 }
 
 /**

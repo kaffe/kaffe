@@ -22,6 +22,8 @@ public class Button
   implements ShortcutConsumer
 {
 	final private static long serialVersionUID = -8774683716313001058L;
+	private static int counter;
+
 	String label;
 	ActionListener aListener;
 	String aCmd;
@@ -45,6 +47,7 @@ public Button ( String label) {
 	setBackground( Defaults.BtnClr);
 	setForeground( Defaults.BtnTxtClr);
 	setLabel( label);
+	setName("button" + counter++);
 }
 
 public void addActionListener ( ActionListener a) {
@@ -178,7 +181,8 @@ public void paint ( Graphics g) {
 }
 
 protected String paramString() {
-	return (super.paramString() + ",Label: " + label);
+	return (super.paramString()
+		+ ",label=" + getLabel());
 }
 
 public Dimension preferredSize () {

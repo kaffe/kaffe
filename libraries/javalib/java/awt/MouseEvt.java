@@ -87,20 +87,27 @@ static Component computeMouseTarget ( Container toplevel, int x, int y ) {
 				// IS_MOUSE_AWARE is a uggly construct to sum up the nice little chain of discriminants:
 				//     !disabled && (mouseListener || motionListener || mouseEventMask || motionEventMask || oldEvents)
 				// We assume here that disabled comps don't emit events
-				if ( (c.flags & Component.IS_MOUSE_AWARE) != 0 ){
-					tgt = c;
-					xMouseTgt = xm;
-					yMouseTgt = ym;
-				}
+
+				// If it's a container, reset loop for new
+				// container and continue.
 				if ( c instanceof Container ){
-					cntr = (Container) c;
+					// reset loop for new container
+					tgt = cntr = (Container) c;					
 					x = u;
 					y = v;
 					i = 0;
+
 					continue;
 				}
 				else {
-					return tgt;
+					// Else it's a leaf of the component tree,
+					// so it gets the event, whether it cn handle
+					// it, or not.
+					tgt = c;
+					xMouseTgt = xm;
+					yMouseTgt = ym;
+
+					break;
 				}
 			}
 		}

@@ -183,7 +183,9 @@ public void paint ( Graphics g ) {
 }
 
 protected String paramString() {
-	return super.paramString() + (isResizable() ? ",resizable" : ",fixed") + ",title=" + getTitle();
+	return super.paramString()
+		+ ",title=" + getTitle() 
+		+ (isResizable() ? ",resizable" : ",fixed");
 }
 
 /**

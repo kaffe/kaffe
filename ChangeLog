@@ -1,3 +1,33 @@
+2003-02-19 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/awt/Frame.java:
+	(paramString) rearranged to match JDK 1.4 output better.
+	
+        * libraries/javalib/java/awt/MouseEvt.java:
+	(computeMouseTarget) implemented JDK 1.1 style event source
+	propagation.
+	
+        * libraries/javalib/java/awt/event/InputEvent.java
+	(getModifiersAsString) new package visible method.
+	
+        * libraries/javalib/java/awt/event/MouseEvent.java:
+	(MOUSE_EVENTS) new field.
+	(paramString) simplified and modified to match JDK 1.4 output
+	better.
+	
+        * libraries/javalib/java/awt/widgets/Button.java:
+	(counter) new field.
+	(Button) set widget name.
+	(paramString) modified to match JDK 1.4 output better.
+	
+        * libraries/javalib/java/awt/widgets/Label.java:
+	(ALIGNMENTS) new field.
+	(counter) new field.
+	(Label) set widget name.
+	(paramString) modified to match JDK 1.4 output better.	
+	
+	Reported by: David Turner <novalis@fsf.org>
+	
 2003-02-18 Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/support.c:
@@ -4326,7 +4356,8 @@ Mon Jul 15 10:26:12 CEST 2002 2002 Dalibor Topic <robilad@yahoo.com>
 	This fixes a bug with repainting of containers.
 	See http://www.kaffe.org/pipermail/kaffe/2002-July/008521.html
 	for more details.
-	Reported by David Turner  novalis@novalis.org
+	
+	Reported by: David Turner  <novalis@novalis.org>
 
 Mon Jul 15 01:37:05 CEST 2002 2002 Dalibor Topic <robilad@yahoo.com>
 

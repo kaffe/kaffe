@@ -30,6 +30,17 @@ public class MouseEvent
 	final public static int MOUSE_ENTERED = MOUSE_FIRST + 4;
 	final public static int MOUSE_EXITED = MOUSE_FIRST + 5;
 	final public static int MOUSE_DRAGGED = MOUSE_FIRST + 6;
+
+	private static final String [] MOUSE_EVENTS = {
+		"MOUSE_CLICKED",
+		"MOUSE_PRESSED",
+		"MOUSE_RELEASED",
+		"MOUSE_MOVED",
+		"MOUSE_ENTERED",
+		"MOUSE_EXITED",
+		"MOUSE_DRAGGED",
+	};
+
 	private static final long serialVersionUID = -991214153494842848L;
 
 public MouseEvent ( Component src, int evtId, long time, int modifiers,
@@ -79,20 +90,10 @@ public boolean isPopupTrigger() {
 }
 
 public String paramString() {
-	String s;
-
-	switch ( id ) {
-	case MOUSE_PRESSED:		s = "MOUSE_PRESSED";		break;
-	case MOUSE_RELEASED:	s = "MOUSE_RELEASED";		break;
-	case MOUSE_CLICKED:		s = "MOUSE_CLICKED";		break;
-	case MOUSE_ENTERED:		s = "MOUSE_ENTERED";		break;
-	case MOUSE_EXITED:		s = "MOUSE_EXITED";		  break;
-	case MOUSE_MOVED:		  s = "MOUSE_MOVED";		  break;
-	case MOUSE_DRAGGED:		s = "MOUSE_DRAGGED";		break;
-	default:		          s = "unknown type";
-	}
-	return s + ",(" + x + "," + y + ")" + ",mods=" + modifiers + ",clickCount="
-     	     + clickCount;
+	return MOUSE_EVENTS[getID() - MOUSE_FIRST]
+		+ ",(" + getX() + "," + getY() + ")"
+		+ ",modifiers=" + InputEvent.getModifiersAsString(getModifiers()) 
+		+ ",clickCount=" + getClickCount();
 }
 
 public void translatePoint ( int x, int y ) {
