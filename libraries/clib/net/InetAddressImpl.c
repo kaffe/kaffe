@@ -21,6 +21,9 @@
 #include "InetAddress.h"
 #include "InetAddressImpl.h"
 #include "nets.h"
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 #define	HOSTNMSZ	80
 
