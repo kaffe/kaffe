@@ -1159,6 +1159,7 @@ start_this_sucker_on_a_new_frame(void)
 	}
 
 	/* all threads start with interrupts turned off */
+	blockInts = 1;
 	intsRestore();
 	currentJThread->func(currentJThread->jlThread);
 	jthread_exit(); 
