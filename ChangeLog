@@ -1,5 +1,11 @@
 Fri Aug  7 16:14:05 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
+	* kaffe/kaffeh/support.c: fixed bug where `void' return type was
+	omitted in JNI declarations.
+
+	* libraries/javalib/java/net/Socket.java: made default constructor
+	protected, added Socket(SockImpl) constructor
+
 	* libraries/javalib/java/net/ServerSocket.java: implemented 
 	constructor ServerSocket(int, int, InetAddress).
 
