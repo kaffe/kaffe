@@ -17,6 +17,7 @@
 #include <native.h>
 #include "java_lang_Integer.h"
 #include "java_io_FileDescriptor.h"
+#include "java_io_InterruptedIOException.h"
 #include "java_net_DatagramPacket.h"
 #include "java_net_NetworkInterface.h"
 #include "java_net_SocketAddress.h"
@@ -29,6 +30,7 @@
 #include <jsyscall.h>
 #include "../../../kaffe/kaffevm/debug.h"
 #include "../../../kaffe/kaffevm/itypes.h"
+#include "../../../kaffe/kaffevm/exception.h"
 
 /*
  * Supported socket options
@@ -241,9 +243,12 @@ java_net_PlainDatagramSocketImpl_receive(struct Hjava_net_PlainDatagramSocketImp
 	int alen = sizeof(addr);
 	HArrayOfByte *array_address;
 	int i;
+	int to_read, offset;
 
 	assert(this != NULL);
-	assert(pkt != NULL);
+	if (pkt == NULL || unhand(pkt)->buffer == NULL)
+		SignalError("java.lang.NullPointerException", "null datagram packet");
+	assert(unhand(pkt)->length <= unhand(unhand(pkt)->buffer)->length);
 
 DBG(NATIVENET,
 	dprintf("datagram_receive(%p, %p [%d bytes])\n",
@@ -254,25 +259,39 @@ DBG(NATIVENET,
 	addr.sin_port = htons(unhand(this)->localPort);
 
 	/* XXX should assert (unhand(pkt)->length <= unhand_array(unhand(pkt)->buf)->length), no? */
-
-	rc = KRECVFROM(unhand(unhand(this)->fd)->nativeFd,
-		&(unhand_array(unhand(pkt)->buffer)->body)[unhand(pkt)->offset],
-		unhand(pkt)->length, 0, (struct sockaddr*)&addr,
-		&alen, unhand(this)->timeout, &r);
-	switch( rc )
-	{
-	case 0:
-		break;
-	case ETIMEDOUT:
-		SignalError("java.net.SocketTimeoutException", SYS_ERROR(rc));
-		break;
-	case EINTR:
-		SignalError("java.io.InterruptedIOException", SYS_ERROR(rc));
-		break;
-	default:
-		SignalError("java.net.SocketException", SYS_ERROR(rc));
-		break;
-	}
+        offset = unhand(pkt)->offset; 
+	to_read = unhand(pkt)->length;
+        do { 
+	        rc = KRECVFROM(unhand(unhand(this)->fd)->nativeFd,
+			       &(unhand_array(unhand(pkt)->buffer)->body)[offset],
+			       to_read, 0, (struct sockaddr*)&addr,
+			       &alen, unhand(this)->timeout, &r);
+		switch( rc )
+		{
+		case 0:
+		        break;
+		case ETIMEDOUT: {
+		        struct Hjava_io_InterruptedIOException* except;
+		  
+			except = (struct Hjava_io_InterruptedIOException *)
+			  execute_java_constructor(
+						   "java.net.SocketTimeoutException", 0, 0,
+						   "([Ljava/lang/String;)V",
+						   checkPtr(stringC2Java("Read timed out")));
+			except->bytesTransferred = offset-unhand(pkt)->offset;
+			
+			throwException((struct Hjava_lang_Throwable*)except);
+			break;
+		}
+		case EINTR:
+		        break;
+		default:
+		        SignalError("java.net.SocketException", SYS_ERROR(rc));
+			break;
+		}
+		to_read -= r;
+		offset += r;
+	} while (rc == EINTR);
 
 	unhand(pkt)->length = r;
 	unhand(pkt)->port = ntohs(addr.sin_port);

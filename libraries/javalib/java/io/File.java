@@ -42,6 +42,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import gnu.classpath.Configuration;
 import gnu.java.io.PlatformHelper;
+import java.util.LinkedList;
+import java.util.Iterator;
 
 /* Written using "Java Class Libraries", 2nd edition, ISBN 0-201-31002-3
  * "The Java Language Specification", ISBN 0-201-63451-1
@@ -1241,6 +1243,37 @@ public class File implements Serializable, Comparable
       s.checkRead (path);
   }
 
+  static class DeleteFileHelper extends Thread
+  {
+    LinkedList filesToDelete = new LinkedList();
+
+    public DeleteFileHelper()
+    {
+      Runtime.getRuntime().addShutdownHook (this);
+    }
+    
+    public void run()
+    {
+      Iterator fileIterator = filesToDelete.iterator();
+
+      while (fileIterator.hasNext())
+	{
+	  String path = (String)fileIterator.next();
+	  try
+	    {
+	      File f = new File(path);
+
+	      f.delete();
+	    }
+	  catch (Throwable _)
+	    {
+	    }
+	}
+    }
+  }
+
+  private static DeleteFileHelper deleteHelper = new DeleteFileHelper();
+
   /** 
    * Calling this method requests that the file represented by this object
    * be deleted when the virtual machine exits.  Note that this request cannot
@@ -1258,11 +1291,8 @@ public class File implements Serializable, Comparable
     if (sm != null)
       sm.checkDelete(path);
 
-    // Sounds like we need to do some VM specific stuff here. We could delete
-    // the file in finalize() and set FinalizeOnExit to true, but delete on
-    // finalize != delete on exit and we should not be setting up system
-    // parameters without the user's knowledge.
-    // FIXME: ********IMPLEMENT ME!!!!!!***************
+    deleteHelper.filesToDelete.add (getAbsolutePath());
+    
     return;
   }
 

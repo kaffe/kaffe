@@ -383,7 +383,8 @@ TEST_MISC = \
 
 TEST_REFLECTION = \
 	ReflectInvoke.java \
-	InvTarExcTest.java 
+	InvTarExcTest.java \
+	DeleteFile.java
 
 
 TEST_CLASS_LOADING = \

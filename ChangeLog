@@ -1,3 +1,36 @@
+2003-08-31  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c:
+	(jthreadedFSync) added.
+	(Kaffe_SystemCallInterface) added jthreadedFSync.
+
+	* libraries/clib/net/PlainDatagramSocketImpl.c:
+	(java_net_PlainDatagramSocketImpl_receive) check if pkt is NULL
+	and throw NullPointerException if it is the case.
+	Changed the way EINTR is handled (it must be ignored).
+	ETIMEDOUT throws a better exception with bytesTransferred set to
+	the right value.
+	
+	* libraries/clib/net/PlainSocketImpl.c:
+	(java_net_PlainSocketImpl_receive) see above for the changed behaviour.
+	(java_net_PlainSocketImpl_accept) EINTR is now ignored.
+
+	* libraries/clib/io/File.c:
+	(java_io_File_listInternal) check whether the pointer is null.
+
+	* libraries/clib/io/FileDescriptor.c:
+	(getFileSize) don't return an error if there isn't.
+
+	* include/Makefile.am:
+	(NOINSTALL_DERIVED_HDRS) added java_io_InterruptedIOException.h
+
+	* test/regression/SoInterrupt.java: removed. This test was a
+	non-sense from the beginning to the end.
+
+	* test/regression/Makefile.am: removed SoInterrupt.java
+
+	* test/regression/Makefile.in: regenerated.
+
 2003-08-30  Timothy S. Stack <stack@cs.utah.edu>
 
 	* include/jni.h, include/jvmpi.h:

@@ -272,7 +272,7 @@ HArrayOfObject* java_io_File_listInternal(struct Hjava_io_File* this,
     mentry = dirlist;
     dirlist = mentry->next;
     unhand_array(array)->body[i] =
-      (Hjava_lang_Object*)stringC2Java(mentry->name);
+      (Hjava_lang_Object*)checkPtr(stringC2Java(mentry->name));
     /* if allocation fails, continue freeing mentries in
        this loop. */
     oom |= !unhand_array(array)->body[i];

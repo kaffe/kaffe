@@ -249,6 +249,17 @@ jthreadedFTruncate(int fd, off_t new_size)
 }
 
 static int
+jthreadedFSync(int fd)
+{
+	int rc = 0;
+	
+	if (fsync(fd) == -1) {
+		rc = errno;
+	}
+	return (rc);
+}
+
+static int
 jthreadedMkdir(const char *path, int mode)
 {
 	int rc = 0;
@@ -880,6 +891,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
         jthreadedFStat,
         jthreadedStat,
         jthreadedFTruncate,
+        jthreadedFSync,
         jthreadedMkdir,
         jthreadedRmdir,
         jthreadedRename,

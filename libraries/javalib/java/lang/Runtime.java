@@ -240,13 +240,21 @@ private boolean runShutdownHooks() {
        hook_enum = shutdownHooks.elements();
        while (hook_enum.hasMoreElements()) {
 	       Thread hook = (Thread)hook_enum.nextElement();
+	       boolean join_interrupted = false;
 
 	       /* XXX Should this timeout? */
-	       try {
-		       hook.join();
-	       } catch (Exception e) {
-		       e.printStackTrace();
+	       do
+	       {
+		       join_interrupted = false;
+		       try {
+			       hook.join();
+		       } catch (InterruptedException _) {
+			       join_interrupted = true;
+		       } catch (Exception e) {
+			       e.printStackTrace();
+		       }
 	       }
+	       while (join_interrupted);
        }
        return true;
 }

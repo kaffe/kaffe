@@ -97,7 +97,7 @@ getInetAddress(struct ifaddrs *ifa)
 			&((struct sockaddr_in *)sa)->sin_addr,
 			addr,
 			NII_MAX_ADDRESS_SIZE);
-	      address_string = stringC2Java(addr);
+	      address_string = checkPtr(stringC2Java(addr));
 	      break;
 #if defined(AF_INET6)
 	    case AF_INET6:
@@ -105,7 +105,7 @@ getInetAddress(struct ifaddrs *ifa)
 			&((struct sockaddr_in6 *)sa)->sin6_addr,
 			addr,
 			NII_MAX_ADDRESS_SIZE);
-	      address_string = stringC2Java(addr);
+	      address_string = checkPtr(stringC2Java(addr));
 #endif
 	    default:
 	      /* XXX What to do? */
@@ -133,7 +133,7 @@ java_net_NetworkInterface_getRealNetworkInterfaces(void)
   while (ifa != NULL)
     {
       struct Hjava_lang_String* iface_name =
-	stringC2Java(ifa->ifa_name);
+	checkPtr(stringC2Java(ifa->ifa_name));
       struct Hjava_net_InetAddress* addr;
       
       addr = getInetAddress(ifa);

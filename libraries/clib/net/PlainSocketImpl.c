@@ -20,12 +20,14 @@
 #include "java_net_InetAddress.h"
 #include "java_net_PlainSocketImpl.h"
 #include "java_net_SocketOptions.h"
+#include "java_io_InterruptedIOException.h"
 #include "nets.h"
 #include <jsyscall.h>
 #include <jthread.h>
 #include "../../../kaffe/kaffevm/debug.h"
 #include "../../../kaffe/kaffevm/object.h"
 #include "../../../kaffe/kaffevm/itypes.h"
+#include "../../../kaffe/kaffevm/exception.h"
 
 #include "dummyin6.h"
 
@@ -313,11 +315,10 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 	    )
 
 	alen = sizeof(addr);
-	rc = KACCEPT(unhand(unhand(this)->fd)->nativeFd, (struct sockaddr*)&addr, &alen, unhand(this)->timeout, &r);
-	if (rc == EINTR) {
-		SignalError("java.io.InterruptedIOException", 
-			    "Accept was interrupted");
-	}
+	do {
+	        rc = KACCEPT(unhand(unhand(this)->fd)->nativeFd,
+			     (struct sockaddr*)&addr, &alen, unhand(this)->timeout, &r);
+	} while (rc == EINTR);
 	if (rc == ETIMEDOUT) {
 	        SignalError("java.net.SocketTimeoutException",
 			    "Accept timed out");
@@ -562,6 +563,7 @@ java_net_PlainSocketImpl_socketRead(struct Hjava_net_PlainSocketImpl* this, HArr
         ssize_t r;
 	int rc;
 	int fd;
+	int total_read;
 
 	DBG(NATIVENET,
 	    dprintf("socket_read(%p, %p, %d, %d)\n", 
@@ -573,24 +575,32 @@ java_net_PlainSocketImpl_socketRead(struct Hjava_net_PlainSocketImpl* this, HArr
 		SignalError("java.io.IOException", "fd invalid"); 
 	}
 
-        rc = KSOCKREAD(fd, &unhand_array(buf)->body[offset], len, unhand(this)->timeout, &r);
-	if (rc == EINTR || rc == ETIMEDOUT) {
-		SignalError("java.io.InterruptedIOException", 
-			    "Read was interrupted");
-	}
-	if (rc == ETIMEDOUT) {
-	        SignalError("java.net.SocketTimeoutException",
-			    "Read timed out");
-	}
-        if (rc) {
-                SignalError("java.io.IOException", SYS_ERROR(rc));
-        }
-        else if (r == 0 && len > 0) {
-                return (-1);    /* EOF */
-        }
-        else {
-                return (r);
-        }
+	total_read = 0;
+	r = 0;
+	do {
+	         rc = KSOCKREAD(fd, &unhand_array(buf)->body[offset], len, unhand(this)->timeout, &r);
+
+		 if (rc == ETIMEDOUT) {
+		         struct Hjava_io_InterruptedIOException* except;
+
+			 except = (struct Hjava_io_InterruptedIOException *)
+			   execute_java_constructor(
+						    "java.net.SocketTimeoutException", 0, 0,
+						    "(Ljava/lang/String;)V",
+						    checkPtr(stringC2Java("Read was interrupted")));
+			 except->bytesTransferred = r;
+	      
+			 throwException((struct Hjava_lang_Throwable*)except);
+		 } else if (rc != EINTR && rc != 0) {
+		   SignalError("java.io.IOException", SYS_ERROR(rc));
+		 } else if (rc == 0 && r == 0 && len > 0) {
+		   return (-1);
+		 }
+		 offset += r;
+		 len -= r;
+		 total_read += r;
+	} while (rc == EINTR);
+	return (total_read);
 }
 
 void

@@ -274,7 +274,7 @@ static int getFileSize(int fd, off_t *fileSize)
 
   if (rc == 0 && S_ISREG(statbuf.st_mode)) {
     *fileSize = statbuf.st_size;
-  }
+  } else
   if (rc == 0)
   {
     rc = EINVAL;

@@ -149,7 +149,8 @@ TEST_MISC = \
 
 TEST_REFLECTION = \
 	ReflectInvoke.java \
-	InvTarExcTest.java 
+	InvTarExcTest.java \
+	DeleteFile.java
 
 ## tests for ClassLoader
 TEST_CLASS_LOADING = \
@@ -205,7 +206,6 @@ TEST_ZIP = \
 ## Test interrupting I/O
 ## This is kind of tricky, and Sun doesn't support it.
 TEST_INTERRUPTING_IO = \
-	SoInterrupt.java \
 	sysdepCallMethod.java 
 
 ## This one is skipped unless you --enable-debug.

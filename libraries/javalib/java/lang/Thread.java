@@ -240,7 +240,7 @@ public void interrupt() {
 		}
 	}
 	else {
-		/* Can't to it in java - so ask the system to try */
+		/* Can't do it in java - so ask the system to try */
 		interrupt0();
 	}
 }
