@@ -1,3 +1,41 @@
+Wed Jul 21 18:49:06 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* configure.in: add security subdir and check for libmd
+	* configure, config/config.h.in, */Makefile.in: regen
+	* kaffe/scripts/kaffe.in: define KAFFEHOME if not already
+	* libraries/clib/native/sha-1.c, libraries/clib/native/sha-1.h:
+	relocated to kaffe/kaffevm
+	* libraries/clib/native/ObjectStreamClassImpl.c,
+	libraries/clib/native/Makefile.am: adjust for move of sha-1.[ch]
+	* kaffe/kaffevm/sha-1.c, kaffe/kaffevm/sha-1.h: new location
+	* kaffe/kaffevm/Makefile.am: add sha-1.c and sha-1.h
+	* libraries/clib/Makefile.am: add new security subdirectory
+	* libraries/clib/security/Makefile.am,
+	libraries/clib/security/digest.c: new files
+	* libraries/javalib/Makefile.am: add new classes
+	* libraries/javalib/Klasses.jar: regen
+	* libraries/javalib/java/lang/NullSecurityManager.java,
+	libraries/javalib/java/lang/SecurityManager.java:
+	add checkPermission() methods
+	* libraries/javalib/java/util/AbstractMapEntry.java: new file
+	* libraries/javalib/java/util/HashMap.java: use AbstractMapEntry class
+	* libraries/javalib/java/util/Hashtable.java: implement entrySet(),
+	keySet(), and values() (partially, they're read-only for now)
+	* New files libraries/javalib/java/lang:
+	    java/lang/RuntimePermission.java
+	* New files libraries/javalib/java/security:
+	    AccessControlContext.java AccessControlException.java
+	    AccessController.java BasicPermission.java DigestException.java
+	    DigestInputStream.java DigestOutputStream.java
+	    GeneralSecurityException.java Guard.java GuardedObject.java
+	    MessageDigest.java MessageDigestSpi.java
+	    NoSuchAlgorithmException.java NoSuchProviderException.java
+	    Permission.java PrivilegedAction.java
+	    PrivilegedActionException.java PrivilegedExceptionAction.java
+	    Provider.java Security.java SecurityPermission.java
+	* New files libraries/javalib/kaffe/security/provider:
+	    Kaffe.java MD2.java MD4.java MD5.java SHA.java UpdateDigest.java
+
 Tue Jul 20 12:17:49 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* aclocal.m4, configure, config/config.h.in, */Makefile.in: regenerate
