@@ -48,13 +48,6 @@ Wed Mar 25 16:40:00 1999  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 Wed Mar 25 16:40:00 1999  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
-	* config/m68k/common.h: sysdepCallMethod for linux.
-	Jit support for linux comes back.
-	* config/m68k/linux/config.frag: eliminate the use of -O
-	flag to evading jit bug.
-
-Wed Mar 25 16:40:00 1999  Kiyo Inaba <inaba@src.ricoh.co.jp>
-
 	* config/m68k/linux/md.h: define SP_OFFSET.
 	* config/alpha/jit.h, config/m68k/jit.h, config/m68k/openbsd2/jit.h
 	remove obsolete macros as THREAD_CTX, RETURN_INT, etc.
