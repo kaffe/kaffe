@@ -114,14 +114,13 @@ registerSignalHandler(int sig, void* handler, int isAsync)
 	 * Define sa_mask to include the signals to block when
 	 * running handler.
 	 */
-	if (isAsync)
-	{
+	if (isAsync) {
 		sigemptyset(&newact.sa_mask);
-	sigaddset(&newact.sa_mask, SIGIO);
-	sigaddset(&newact.sa_mask, SIGALRM);
-	sigaddset(&newact.sa_mask, SIGCHLD);
+		sigaddset(&newact.sa_mask, SIGIO);
+		sigaddset(&newact.sa_mask, SIGALRM);
+		sigaddset(&newact.sa_mask, SIGCHLD);
 #if defined(SIGVTALRM)
-	sigaddset(&newact.sa_mask, SIGVTALRM);
+		sigaddset(&newact.sa_mask, SIGVTALRM);
 #endif
 	}
 	

@@ -1342,8 +1342,7 @@ DBG(JTHREAD,
 	}
 
 	/* Remove thread from live list so it can be garbaged */
-	for (ntid = &liveThreads; *ntid != 0; ntid = &(*ntid)->nextlive) 
-	{
+	for (ntid = &liveThreads; *ntid != 0; ntid = &(*ntid)->nextlive) {
 		if (currentJThread == (*ntid)) {
 			(*ntid) = currentJThread->nextlive;
 			found = 1;
@@ -1354,6 +1353,10 @@ DBG(JTHREAD,
 	assert(found || !!!"Attempt to exit a thread twice");
 
 	jmutex_unlock(&threadLock);
+	/* we disable interrupts while we go out to prevent a reschedule
+	 * in killThread()
+	 */
+	intsDisable();
 
 	/* If we only have daemons left, then we should exit. */
 	if (talive == tdaemon) {
