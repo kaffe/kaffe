@@ -1,5 +1,12 @@
 2004-04-03  Adam Heath <doogie@debian.org>
 
+        * scripts/sort-warnings.pl:
+	  * For each file, include the count of warnings.
+	  * No longer print Param: when there are no params.
+	  * When there are no params, print Line: with no blank lines.
+
+2004-04-03  Adam Heath <doogie@debian.org>
+
 	* config/i386/jit3-i386.def, kaffe/kaffevm/jit3/funcs.c:
 	  Fix 641 'use of compound as lvalue is deprecated' warnings.
 

@@ -108,7 +108,7 @@ print( STDERR "\t$type\t\t" );
 		my ( $file, $line, ) = ( shift( @matches ), shift( @matches ) );
 		$file =~ s,(?:(?:\.\./)+|/tmp/topic/)(include|kaffe|libraries|config)/,$1/,;
 		next if ( $file =~ m,^/, );
-		push( @{ $errors{ $type }{ $file }{ $line } }, [ @matches ] );
+		push( @{ $errors{ $type }{ $file }{ $line } }, [ grep( { defined( $_ ) } @matches ) ] );
 		$allfiles{ $file } = 1;
 		$error_counts{ $type }++;
 		$count++;
@@ -125,15 +125,20 @@ foreach my $type ( sort( { $error_counts{ $b } <=> $error_counts{ $a } } keys( %
 	my $h1 = $errors{ $type };
 	print( "Type: $type\nCount: $error_counts{ $type }\n" );
 	foreach my $file ( sort( keys( %$h1 ) ) ) {
-		print( "\tFile: $file\n" );
+		my @text = ();
+		my $file_warning_count = 0;
 		my $h2 = $h1->{ $file };
 		foreach my $line ( sort( { $a <=> $b } keys( %$h2 ) ) ) {
 			my $params = $h2->{ $line };
 			foreach my $param ( @$params ) {
-				print( "\t\tLine: $line\n" );
-				print( "\t\tParams: " . join( ',', grep( { defined( $_ ) } @$param ) ) . "\n\n" ) if ( @$params );
+				my $text .= "\t\tLine: $line\n";
+				$text .= "\t\tParams: " . join( ',', @$param ) . "\n" if ( @$param );
+				push( @text, $text );
+				$file_warning_count++;
 			}
 		}
+		print( "\tFile: $file ($file_warning_count)\n" );
+		print( join( "", @text ) . "\n" );
 	}
 }
 print( $text );
