@@ -1,3 +1,10 @@
+2004-07-26  Dalibor Topic  <robilad@kaffe.org>
+
+	* test/regression/BeanBug.java: Adapted expected output
+	for Classpath's AWT.
+
+	Reported by: Guilhem Lavaux <guilhem@kaffe.org>
+	
 2004-07-25  Dalibor Topic  <robilad@kaffe.org>
 
         * include/Makefile.am
