@@ -298,6 +298,8 @@ void softcall_nosuchmethod(struct Hjava_lang_Class*, Utf8Const*, Utf8Const*);
 void softcall_newarray_const(SlotInfo*, int, int);
 void softcall_anewarray_const(SlotInfo*, int, struct Hjava_lang_Class*);
 void softcall_trace(Method*);
+void softcall_enter_method(SlotInfo*, Method*);
+void softcall_exit_method(Method*);
 
 void build_call_frame(Utf8Const*, SlotInfo*, int);
 void load_globals(bool);

@@ -36,6 +36,7 @@
 #include "itypes.h"
 #include "machine.h"
 #include "fp.h"
+#include "jvmpi_kaffe.h"
 
 /*
  * soft_new
@@ -1096,4 +1097,43 @@ void
 soft_trace(Method* meth, void* args)
 {
     dprintf("soft_trace: %s.%s%s\n", CLASS_CNAME(meth->class), meth->name->data, METHOD_SIGD(meth));
+}
+
+void
+soft_enter_method(Hjava_lang_Object *obj, Method *meth)
+{
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_METHOD_ENTRY) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_METHOD_ENTRY;
+		ev.u.method.method_id = meth;
+		jvmpiPostEvent(&ev);
+	}
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_METHOD_ENTRY2) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_METHOD_ENTRY2;
+		ev.u.method_entry2.method_id = meth;
+		ev.u.method_entry2.obj_id = obj;
+		jvmpiPostEvent(&ev);
+	}
+#endif
+}
+
+void
+soft_exit_method(Method *meth)
+{
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_METHOD_EXIT) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_METHOD_EXIT;
+		ev.u.method.method_id = meth;
+		jvmpiPostEvent(&ev);
+	}
+#endif
 }

@@ -3624,6 +3624,14 @@ Kaffe_GetEnv(JavaVM* vm, void** penv, jint interface_id)
 		(*penv) = (JVMDI_Interface_1*)&Kaffe_JVMDIEnv;
 		return (JNI_OK);
 #endif
+
+#if defined(ENABLE_JVMPI)
+	case JVMPI_VERSION_1:
+	case JVMPI_VERSION_1_1:
+		(*penv) = jvmpiCreateInterface(interface_id);
+		return (JNI_OK);
+#endif
+		
 	default:
 		return (JNI_EVERSION);
 	}
@@ -3703,9 +3711,9 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 		xmeth->callsCount = 0;
 		xmeth->totalClicks = 0;
 		xmeth->totalChildrenClicks = 0;
-		globalMethod = xmeth;
 	}
 #endif
+	globalMethod = xmeth;
 
 	maxArgs = maxLocal = count; /* make sure args are spilled if needed */
 	maxStack = 0;
@@ -3981,6 +3989,10 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 		}
 		if (use_JNI)
 			call_soft(finishJNIcall);
+#if defined(ENABLE_JVMPI)
+		softcall_exit_method(globalMethod);
+#endif
+		ret();
 		break;
 	}
 
@@ -4012,9 +4024,9 @@ done:
 
 		profiler_get_clicks(end);
 		xmeth->jitClicks = end - xmeth->jitClicks;
-		globalMethod = 0;
 	}
 #endif
+	globalMethod = 0;
 
 	leaveTranslator();
 #if defined(KAFFE_FEEDBACK)

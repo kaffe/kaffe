@@ -428,10 +428,10 @@ jlong jthread_get_usage(jthread_t jt)
 		jlong ct;
 		
 		getrusage(RUSAGE_SELF, &ru);
-		ct = ((jlong)ru.ru_utime.tv_sec * 1000)
-			+ ((jlong)ru.ru_utime.tv_usec / (jlong)1000);
-		ct += ((jlong)ru.ru_stime.tv_sec * 1000)
-			+ ((jlong)ru.ru_stime.tv_usec / (jlong)1000);
+		ct = ((jlong)ru.ru_utime.tv_sec * 1000000)
+			+ ((jlong)ru.ru_utime.tv_usec);
+		ct += ((jlong)ru.ru_stime.tv_sec * 1000000)
+			+ ((jlong)ru.ru_stime.tv_usec);
 
 		retval = jt->totalUsed + (ct - jt->startUsed);
 	}
@@ -465,6 +465,18 @@ static inline
 int jthread_on_condvar(jthread_t jt)
 {
 	return( jt->flags & THREAD_FLAGS_WAIT_CONDVAR );
+}
+
+static inline
+void jthread_clear_run(jthread_t jt)
+{
+	jt->startUsed = 0;
+}
+
+static inline
+int jthread_has_run(jthread_t jt)
+{
+	return( jt->startUsed != 0 );
 }
 
 #endif

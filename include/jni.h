@@ -582,9 +582,8 @@ extern jint	JNI_GetCreatedJavaVMs(JavaVM**, jsize, jsize*);
 
 #define JNI_VERSION_1_1		0x00010001
 #define JNI_VERSION_1_2		0x00010002
-#define JVMPI_VERSION_1 	0x10010000
-#define JVMPI_VERSION_1_1	0x10010001
-#define JVMPI_VERSION_1_2	0x10010002
+#define JVMPI_VERSION_1 	0x10000001
+#define JVMPI_VERSION_1_1	0x10000002
 
 #if defined(__cplusplus)
 }

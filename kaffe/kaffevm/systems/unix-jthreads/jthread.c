@@ -1841,13 +1841,12 @@ reschedule(void)
 					jlong ct;
 
 					getrusage(RUSAGE_SELF, &ru);
-					ct = ((jlong)ru.ru_utime.tv_sec * 1000)
-						+ ((jlong)ru.ru_utime.tv_usec /
-						   (jlong)1000);
+					ct = ((jlong)ru.ru_utime.tv_sec *
+					      1000000)
+						+ ((jlong)ru.ru_utime.tv_usec);
 					ct += ((jlong)ru.ru_stime.tv_sec *
-					       1000)
-						+ ((jlong)ru.ru_stime.tv_usec /
-						   (jlong)1000);
+					       1000000)
+						+ ((jlong)ru.ru_stime.tv_usec);
 
 					lastThread->totalUsed +=
 						(ct - lastThread->startUsed);

@@ -375,6 +375,10 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 			DISPATCH_EXCEPTION(frame->fp, handler, eobj); /* doesn't return */
 		}
 
+#if defined(ENABLE_JVMPI)
+		soft_exit_method(frame->meth);
+#endif
+
 		/* If not here, exit monitor if synchronised. */
 		if (frame->meth->accflags & ACC_SYNCHRONISED) {
 			locks_internal_slowUnlockMutexIfHeld(&obj->lock, (void *)frame->fp, 0);

@@ -206,9 +206,9 @@ DBG(MOREJIT,
 		xmeth->callsCount = 0;
 		xmeth->totalClicks = 0;
 		xmeth->totalChildrenClicks = 0;
-		globalMethod = xmeth;
 	}
 #endif
+	globalMethod = xmeth;
 
 	codeInfo = mycodeInfo;
 
@@ -384,9 +384,9 @@ done:;
 
 		profiler_get_clicks(end);
 		xmeth->jitClicks = end - xmeth->jitClicks;
-		globalMethod = 0;
 	}
 #endif
+	globalMethod = 0;
 
 DBG(MOREJIT,
     dprintf("Translating %s.%s%s (%s) %p\n",

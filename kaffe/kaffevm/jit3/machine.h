@@ -140,10 +140,8 @@ extern iStaticLock	translatorlock;
 
 extern jitflags willcatch;
 extern struct codeinfo* codeInfo;
-#if defined(KAFFE_PROFILER)
 extern int profFlag;
 extern Method* globalMethod;
-#endif
 
 /**
  * Encapsulate information about the native code of a method.

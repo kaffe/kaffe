@@ -2168,6 +2168,9 @@ define_insn(RETURN)
 	trace_jcode (("return\n"));
 
 	monitor_exit();
+#if defined(ENABLE_JVMPI)
+	softcall_exit_method(globalMethod);
+#endif
 	ret();
 }
 

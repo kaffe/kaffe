@@ -177,7 +177,7 @@ static void jvmpiDisableGC(void)
 
 static jint jvmpiEnableEvent(jint event_type, void *arg)
 {
-	jint retval;
+	jint retval = JVMPI_NOT_AVAILABLE;
 	
 	switch( event_type )
 	{
@@ -187,8 +187,13 @@ static jint jvmpiEnableEvent(jint event_type, void *arg)
 		retval = JVMPI_NOT_AVAILABLE;
 		break;
 	default:
-		BITMAP_SET(jvmpi_data.jk_EventMask, event_type);
-		retval = JVMPI_SUCCESS;
+		{
+			BITMAP_SET(jvmpi_data.jk_EventMask, event_type);
+			retval = JVMPI_SUCCESS;
+
+			assert(BITMAP_ISSET(jvmpi_data.jk_EventMask,
+					    event_type));
+		}
 		break;
 	}
 	return( retval );
@@ -230,7 +235,7 @@ static void jvmpiGetCallTrace(JVMPI_CallTrace *trace, jint depth)
 			JVMPI_CallFrame *cf;
 			Method *meth;
 
-			if( (meth = stacktraceFindMethod(&sti[lpc])) == NULL )
+			if( (meth = sti[lpc].meth) == NULL )
 				continue;
 			
 			cf = &trace->frames[trace->num_frames];
@@ -408,11 +413,11 @@ static void jvmpiRawMonitorNotifyAll(JVMPI_RawMonitor lock_id)
 	jcondvar_broadcast(&lock_id->cv, &lock_id->mux);
 }
 
-static void jvmpiRawMonitorWait(JVMPI_RawMonitor lock_id)
+static void jvmpiRawMonitorWait(JVMPI_RawMonitor lock_id, jlong ms)
 {
 	assert(lock_id != NULL);
 	
-	jcondvar_wait(&lock_id->cv, &lock_id->mux, 0);
+	jcondvar_wait(&lock_id->cv, &lock_id->mux, ms);
 }
 
 static jint jvmpiRequestEvent(jint event_type, void *arg)
@@ -468,7 +473,10 @@ static void jvmpiSetThreadLocalStorage(JNIEnv *env_id, void *ptr)
 
 static void jvmpiSuspendThread(JNIEnv *env_id)
 {
-	jthread_from_data((threadData *)env_id, &jvmpi_data);
+	jthread_t jt;
+
+	jt = jthread_from_data((threadData *)env_id, &jvmpi_data);
+	jthread_clear_run(jt);
 }
 
 static void jvmpiSuspendThreadList(jint reqCount, JNIEnv **reqList, jint *results)
@@ -489,9 +497,14 @@ static void jvmpiSuspendThreadList(jint reqCount, JNIEnv **reqList, jint *result
 
 static jboolean jvmpiThreadHasRun(JNIEnv *env)
 {
-	jboolean retval = JNI_TRUE;
+	jboolean retval = JNI_FALSE;
+	jthread_t jt;
 
-	/* XXX */
+	if( (jt = jthread_from_data((threadData *)env, &jvmpi_data)) != NULL )
+	{
+		retval = jthread_has_run(jt);
+		jthread_resume(jt, &jvmpi_data);
+	}
 	return( retval );
 }
 
@@ -508,7 +521,7 @@ static jobjectID jvmpijobject2jobjectID(jobject j)
 jvmpi_kaffe_t jvmpi_data = {
 	{ 0 },
 	{
-		JVMPI_VERSION_1_2,
+		JVMPI_VERSION_1_1,
 		
 		NULL,
 		

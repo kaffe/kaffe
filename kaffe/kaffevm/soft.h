@@ -94,5 +94,7 @@ jint instanceof_array(struct Hjava_lang_Class*, struct Hjava_lang_Class*);
 void	soft_debug1(void*, void*, void*);
 void	soft_debug2(void*, void*, void*);
 void	soft_trace(Method*, void*);
+void	soft_enter_method(struct Hjava_lang_Object *obj, Method *meth);
+void	soft_exit_method(Method *meth);
 
 #endif

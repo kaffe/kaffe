@@ -33,6 +33,7 @@
 #include "fileSections.h"
 #include "feedback.h"
 #include "methodCache.h"
+#include "external.h"
 
 #if defined(KAFFE_PROFILER)
 extern int profFlag;
@@ -47,6 +48,7 @@ JavaVMInitArgs vmargs;
 JNIEnv* env;
 JavaVM* vm;
 static int isJar = 0;
+static char *jvm_onload;
 
 static int options(char**);
 static void usage(void);
@@ -146,6 +148,46 @@ main(int argc, char* argv[])
 
 	/* Initialise */
 	JNI_CreateJavaVM(&vm, &env, &vmargs);
+
+	/* Handle the '-Xrun' argument. */
+	if( jvm_onload != NULL )
+	{
+		char *libpath, *libargs;
+		char errbuf[512];
+		int index;
+
+		/* XXX Pull findLibrary() from the JanosVM. */
+		libpath = &jvm_onload[2];
+		libpath[0] = 'l';
+		libpath[1] = 'i';
+		libpath[2] = 'b';
+
+		if( (libargs = strchr(jvm_onload, ':')) != NULL )
+		{
+			*libargs = '\0';
+			libargs += 1;
+		}
+		
+		index = loadNativeLibrary(libpath, errbuf, sizeof(errbuf));
+		if( index > 0 )
+		{
+			jint (*onload_func)(JavaVM *jvm, char *, void *);
+
+			if( (onload_func =
+			     loadNativeLibrarySym("JVM_OnLoad")) != NULL )
+			{
+				(void)onload_func(vm, libargs, NULL);
+			}
+		}
+		else
+		{
+			fprintf(stderr,
+				"Unable to load %s: %s\n",
+				libpath,
+				errbuf);
+			exit(1);
+		}
+	}
 
 	return (main2(env, argv, farg, argc));
 }
@@ -506,6 +548,9 @@ options(char** argv)
                 else if (strcmp(argv[i], "-jar") == 0) {
                         isJar = 1;
                 }
+		else if (strncmp(argv[i], "-Xrun", 5) == 0) {
+			jvm_onload = argv[i];
+		}
 #if defined(KAFFE_PROFILER)
 		else if (strcmp(argv[i], "-prof") == 0) {
 			profFlag = 1;

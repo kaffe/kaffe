@@ -228,6 +228,20 @@ prologue(Method* meth)
 	/* Emit prologue code */
 	slot_const_const(0, (jword)l, (jword)meth, HAVE_prologue, Tnull);
         slot_const_const(0, (jword)createSpillMask(), SR_START, doReload, Tnull);
+	
+#if defined(ENABLE_JVMPI)
+	{
+		SlotInfo *tmp;
+
+		slot_alloctmp(tmp);
+		if( METHOD_IS_STATIC(meth) )
+			move_ref_const(tmp, NULL);
+		else
+			move_ref(tmp, local(0));
+		softcall_enter_method(tmp, meth);
+		slot_freetmp(tmp);
+	}
+#endif
 }
 
 void
@@ -280,7 +294,7 @@ void
 epilogue(Method* meth)
 {
 	label* l;
-
+	
 	l = newLabel();
 	l->type = Lnull;	/* Lnegframe|Labsolute|Lgeneral */
 	l->at = 0;
@@ -3769,6 +3783,10 @@ return_double(SlotInfo* dst)
 void
 returnarg_int(SlotInfo* src)
 {
+#if defined(ENABLE_JVMPI)
+	softcall_exit_method(globalMethod);
+#endif
+
 	slot_slot_slot(0, 0, src, HAVE_returnarg_int, Tcopy);
 }
 #endif
@@ -3777,6 +3795,10 @@ returnarg_int(SlotInfo* src)
 void
 returnarg_ref(SlotInfo* src)
 {
+#if defined(ENABLE_JVMPI)
+	softcall_exit_method(globalMethod);
+#endif
+
 	slot_slot_slot(0, 0, src, HAVE_returnarg_ref, Tcopy);
 }
 #endif
@@ -3785,6 +3807,10 @@ returnarg_ref(SlotInfo* src)
 void
 returnarg_long(SlotInfo* src)
 {
+#if defined(ENABLE_JVMPI)
+	softcall_exit_method(globalMethod);
+#endif
+
 	lslot_lslot_lslot(0, 0, src, HAVE_returnarg_long, Tcopy);
 }
 #endif
@@ -3792,6 +3818,10 @@ returnarg_long(SlotInfo* src)
 void
 returnarg_float(SlotInfo* src)
 {
+#if defined(ENABLE_JVMPI)
+	softcall_exit_method(globalMethod);
+#endif
+
 #if defined(HAVE_returnarg_float)
 	slot_slot_slot(0, 0, src, HAVE_returnarg_float, Tcopy);
 #elif defined(HAVE_NO_FLOATING_POINT)
@@ -3804,6 +3834,10 @@ returnarg_float(SlotInfo* src)
 void
 returnarg_double(SlotInfo* src)
 {
+#if defined(ENABLE_JVMPI)
+	softcall_exit_method(globalMethod);
+#endif
+
 #if defined(HAVE_returnarg_double)
 	lslot_lslot_lslot(0, 0, src, HAVE_returnarg_double, Tcopy);
 #elif defined(HAVE_NO_FLOATING_POINT)
@@ -5063,6 +5097,36 @@ softcall_trace(Method* meth)
 	popargs();
 	end_func_sync();
 #endif
+}
+
+void
+softcall_enter_method(SlotInfo *obj, Method* meth)
+{
+	begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
+	pusharg_ref(obj, 0);
+        pusharg_ref_const(meth, 1);
+#else
+        pusharg_ref_const(meth, 1);
+	pusharg_ref(obj, 0);
+#endif
+	call_soft(soft_enter_method);
+	popargs();
+	end_func_sync();
+}
+
+void
+softcall_exit_method(Method* meth)
+{
+	begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
+	pusharg_ref_const(meth, 0);
+#else
+	pusharg_ref_const(meth, 0);
+#endif
+	call_soft(soft_exit_method);
+	popargs();
+	end_func_sync();
 }
 
 #if defined(GC_INCREMENTAL)

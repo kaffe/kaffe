@@ -1,5 +1,51 @@
 2003-08-30  Timothy S. Stack <stack@cs.utah.edu>
 
+	* include/jni.h, include/jvmpi.h:
+	Change constant values to match the Sun versions so binaries are
+	compatible.
+
+	* kaffe/jvmpi/jvmpi_kaffe.c:
+	Update for change to stack trace stuff.  Add missing param in
+	jvmpiRawMonitorWait.  Implement jvmpiSuspendThread and
+	jvmpiThreadHasRun.
+
+	* kaffe/kaffe/main.c:
+	Add -Xrun command line argument.
+
+	* kaffe/kaffevm/classMethod.c:
+	Move up class load event so partially loaded classes aren't
+	missing from profiles.
+
+	* kaffe/kaffevm/exception.c:
+	Call soft_exit_method() when walking up the stack.
+
+	* kaffe/kaffevm/jni.c:
+	Add JVMPI stuff to GetEnv.  Call softcall_exit_method() when a
+	void method returns.
+
+	* kaffe/kaffevm/kaffe.def:
+	Call softcall_exit_method() when a void method returns.
+
+	* kaffe/kaffevm/soft.h, kaffe/kaffevm/soft.c:
+	Add soft_enter_method/soft_exit_method to call JVMPI stuff at
+	method entry/exit.
+
+	* kaffe/kaffevm/jit3/codeproto.h, 
+	kaffe/kaffevm/jit3/icode.c:
+	Add softcall_enter_method/softcall_exit_method to call JVMPI stuff
+	at method entry/exit.
+
+	* kaffe/kaffevm/jit3/machine.h,
+	kaffe/kaffevm/jit3/machine.c:
+	Always turn on globalMethod variable, not just when
+	--with-profiling is on...  Its also needed by JVMPI.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.h,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	Fix CPU usage computation.
+
+2003-08-30  Timothy S. Stack <stack@cs.utah.edu>
+
 	* libraries/clib/io/FileDescriptor.c:
 	Use '#ifdef's around O_SYNC/O_DSYNC since they are not defined on
 	FreeBSD.
