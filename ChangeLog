@@ -1,6 +1,7 @@
 Tue May  4 12:10:46 PDT 1999  Godmar Back  <gback@cs.utah.edu>
 
-	* kaffe/kaffevm/constants.c: fix for race condition in class gc
+	* kaffe/kaffevm/constants.c, kaffe/kaffevm/classMethod.c: 
+	fix for race condition in class gc
 
 Sun May  2 22:27:09 1999  Edouard Parmelan <Edouard.Parmelan@quadratec.fr>
 

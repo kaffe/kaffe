@@ -89,6 +89,7 @@ processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 	int i;
 	int j;
 	int k;
+	int totalilen;
 	Method* meth;
 	Hjava_lang_Class* nclass;
 	Hjava_lang_Class** newifaces;
@@ -218,10 +219,10 @@ retry:
 			}
 			j += class->interfaces[i]->total_interface_len;
 		}
-		class->total_interface_len = j;
+		totalilen = j;
 
 		/* We build a list of *all* interfaces this class can use */
-		if (class->interface_len != class->total_interface_len) {
+		if (class->interface_len != j) {
 			newifaces = (Hjava_lang_Class**)gc_malloc(sizeof(Hjava_lang_Class**) * j, GC_ALLOC_INTERFACE);
 			for (i = 0; i < class->interface_len; i++) {
 				newifaces[i] = class->interfaces[i];
@@ -244,6 +245,10 @@ retry:
 			}
 			class->interfaces = newifaces;
 		}
+		/* don't set total_interface_len before interfaces to avoid
+		 * having walkClass attempting to walk interfaces
+		 */
+		class->total_interface_len = totalilen;
 
 		resolveObjectFields(class);
 		resolveStaticFields(class);
@@ -636,7 +641,7 @@ DBG(RESERROR,	dprintf("addField: no field name.\n");			)
 
 	--CLASS_FSIZE(c);
 	if (f->access_flags & ACC_STATIC) {
-		index = CLASS_NSFIELDS(c)++;
+		index = CLASS_NSFIELDS(c);
 	}
 	else {
 		index = CLASS_FSIZE(c) + CLASS_NSFIELDS(c);
@@ -665,10 +670,10 @@ DBG(RESERROR,	dprintf("addField: no signature name.\n");		)
 		 * Between now and then, we add a reference to it.
 		 */
 		Utf8Const *ftype = CLASS_CONST_UTF8(c, sc);
+		ft->accflags |= FIELD_UNRESOLVED_FLAG;
 		FIELD_TYPE(ft) = (Hjava_lang_Class*)ftype;
 		utf8ConstAddRef(ftype);
 		FIELD_SIZE(ft) = PTR_TYPE_SIZE;
-		ft->accflags |= FIELD_UNRESOLVED_FLAG;
 	}
 	else {
 		/* NB: since this class is primitive, getClassFromSignature
@@ -679,6 +684,9 @@ DBG(RESERROR,	dprintf("addField: no signature name.\n");		)
 	}
 
 	CLASS_NFIELDS(c)++;
+	if (f->access_flags & ACC_STATIC) {
+		CLASS_NSFIELDS(c)++;
+	}
 	return (ft);
 }
 
