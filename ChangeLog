@@ -2,6 +2,23 @@
 
 	Resynced with GNU Classpath.
 
+	2005-01-02  Archie Cobbs  <archie@dellroad.org>
+
+	* vm/reference/java/lang/VMThread.java (sleep()): revert behavior
+	of sleep(0,0) to previous, where we check for InterruptedException.
+
+	2004-12-31  Archie Cobbs  <archie@dellroad.org>
+
+	* java/lang/Thread.java (sleep(long,int)): Only do argument
+	checking and push implementation to VMThread.sleep().
+	* vm/reference/java/lang/VMThread.java (join): Prevent ms overflow.
+	(sleep): Provide default implementation using Object.wait() and
+	Thread.yield().
+	
+2005-01-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2004-12-31  Michael Koch  <konqueror@gmx.de>
 
 	* javax/swing/JComponent.java

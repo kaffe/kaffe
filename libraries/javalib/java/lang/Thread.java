@@ -803,19 +803,13 @@ public class Thread implements Runnable
    */
   public static void sleep(long ms, int ns) throws InterruptedException
   {
+
+    // Check parameters
     if (ms < 0 || ns < 0 || ns > 999999)
       throw new IllegalArgumentException();
 
-    if (ns > 0 && ms == 0)
-      {
-	ms = 1;
-	ns = 0;
-      }
-
-    if (ms > 0)
-      VMThread.sleep(ms, ns);
-    else if (interrupted())
-      throw new InterruptedException();
+    // Really sleep
+    VMThread.sleep(ms, ns);
   }
 
   /**
