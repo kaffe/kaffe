@@ -1,3 +1,9 @@
+2003-06-12 Florian La Roche <laroche@redhat.com>
+
+	* config/s390/linux/md.h:
+	(SIGNAL_ARGS, SIGNAL_CONTEXT_POINTER, GET_SIGNAL_CONTEXT_POINTER,
+	SIGNAL_PC) defined for s390-linux.
+
 2003-06-12 Dalibor Topic <robilad@yahoo.com>
 
 	Compilation fixes for s390-linux.
