@@ -8,6 +8,9 @@
  * of this file.
  */
 
+#include <errno.h>
+#include <limits.h>
+
 #include "config.h"
 #include "config-std.h"
 #include "config-signal.h"
@@ -47,8 +50,6 @@ static char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', '
  * typedefs & defines
  */
 
-#include <limits.h>
-
 /*
  * This is the configurable section. Note that SCHED_FIFO is the only
  * schedule policy which conforms to the "old" Java thread model (with
@@ -57,11 +58,8 @@ static char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', '
  */
 #define SCHEDULE_POLICY     SCHED_OTHER
 
-/* our upper create limit, to ensure we don't blow the system */
-#define MAX_SYS_THREADS     PTHREAD_THREADS_MAX - 1
-
 /* our upper limit for cached threads (0 = no caching at all) */
-#define MAX_CACHED_THREADS  MAX_SYS_THREADS - 3
+#define MAX_CACHED_THREADS 0
 
 /*
  * Now it starts to get hackish - we have to pick some signals
@@ -699,11 +697,7 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
 	TUNLOCK( cur); /* ---------------------------------------------------- tLock */
   }
   else {
-	if ( nSysThreads++ > MAX_SYS_THREADS ){
-	  // bail out, we exceeded our physical thread limit
-	  DBG( JTHREAD, dprintf( "too many threads (%d)\n", nSysThreads))
-	  return (0);
-	}
+	int creation_succeeded;
 
 	nt = thread_malloc( sizeof(struct _jthread) );
 
@@ -740,7 +734,29 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
 	 * we otherwise might have a invalid tid in the activeList. The new thread
 	 * in turn doesn't need the lock until it exits
 	 */
-	pthread_create( &nt->tid, &nt->attr, tRun, nt);
+	creation_succeeded = pthread_create( &nt->tid, &nt->attr, tRun, nt);
+
+	/* If the creation of the new thread failed for some reason,
+	 * print the reason, clean up and bail out.
+	 */
+	if (creation_succeeded != 0) {
+	  switch(creation_succeeded) {
+	  case EAGAIN: 
+	    DBG( JTHREAD, dprintf( "too many threads (%d)\n", nSysThreads));
+	    break;
+	  case EINVAL:
+	    DBG( JTHREAD, dprintf( "invalid value for nt.attr\n"));
+	    break;
+	  case EPERM:
+	    DBG( JTHREAD, dprintf( "no permission to set scheduling\n"));
+	    break;
+	  }
+
+	  sem_destroy( &nt->sem);
+	  TUNLOCK( cur);
+	  thread_free(nt);
+	  return 0;
+	}
 
 	/* wait until the thread specific data has been set, and the new thread
 	 * is in a suspendable state */

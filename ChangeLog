@@ -1,5 +1,16 @@
 2004-05-31  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	Include errno.h. Moved system includes to top.
+	(MAX_SYS_THREADS) Removed, since Solaris 9 is only limited by
+	system ressources, so compilation breaks there.
+	(MAX_CACHED_THREADS) Disable caching for now to make debugging
+	and fixing pthreads simpler.
+	(jthread_create) Check pthreat_create for failure, and clean up
+	accordingly.
+
+2004-05-31  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/m68k/jit3-m68k.def:
 	fixed WOUT and LOUT calls to use jit3 syntax.
 
