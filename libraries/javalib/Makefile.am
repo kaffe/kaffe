@@ -160,6 +160,7 @@ Klasses_jar_SRCS = \
 	$(gnu_regexp_SRCS) \
 	$(gnu_xml_aelfred2_SRCS) \
 	$(gnu_xml_dom_SRCS) \
+	$(gnu_xml_dom_html2_SRCS) \
 	$(gnu_xml_dom_ls_SRCS) \
 	$(gnu_xml_libxmlj_dom_SRCS) \
 	$(gnu_xml_libxmlj_sax_SRCS) \
@@ -1746,6 +1747,18 @@ gnu_xml_dom_SRCS = \
 	gnu/xml/dom/ImplementationList.java \
 	gnu/xml/dom/ImplementationSource.java \
 	gnu/xml/dom/JAXPFactory.java
+gnu_xml_dom_html2_SRCS = \
+	gnu/xml/dom/html2/DomHTMLAnchorElement.java \
+	gnu/xml/dom/html2/DomHTMLAppletElement.java \
+	gnu/xml/dom/html2/DomHTMLAreaElement.java \
+	gnu/xml/dom/html2/DomHTMLBRElement.java \
+	gnu/xml/dom/html2/DomHTMLBaseElement.java \
+	gnu/xml/dom/html2/DomHTMLBaseFontElement.java \
+	gnu/xml/dom/html2/DomHTMLBodyElement.java \
+	gnu/xml/dom/html2/DomHTMLButtonElement.java \
+	gnu/xml/dom/html2/DomHTMLCollection.java \
+	gnu/xml/dom/html2/DomHTMLDocument.java \
+	gnu/xml/dom/html2/DomHTMLElement.java
 gnu_xml_dom_ls_SRCS = \
 	gnu/xml/dom/ls/DomLSException.java \
 	gnu/xml/dom/ls/DomLSInput.java \

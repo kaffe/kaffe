@@ -2,6 +2,24 @@
 
 	Resynced with GNU Classpath.
 
+	2005-03-09  Chris Burdess  <dog@gnu.org>
+
+        * gnu/xml/dom/html2/DomHTMLAnchorElement.java,
+        gnu/xml/dom/html2/DomHTMLAppletElement.java,
+        gnu/xml/dom/html2/DomHTMLAreaElement.java,
+        gnu/xml/dom/html2/DomHTMLBaseElement.java,
+        gnu/xml/dom/html2/DomHTMLBaseFontElement.java,
+        gnu/xml/dom/html2/DomHTMLBodyElement.java,
+        gnu/xml/dom/html2/DomHTMLBRElement.java,
+        gnu/xml/dom/html2/DomHTMLButtonElement.java,
+        gnu/xml/dom/html2/DomHTMLCollection.java,
+        gnu/xml/dom/html2/DomHTMLDocument.java,
+        gnu/xml/dom/html2/DomHTMLElement.java: New files.
+
+2005-03-11 Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-03-09  Sven de Marothy  <sven@physto.se>
 
         * java/util/Calendar.java
