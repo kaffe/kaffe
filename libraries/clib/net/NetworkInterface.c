@@ -113,9 +113,10 @@ getInetAddress(struct ifaddrs *ifa)
 	    }
 	}
     }
-  retval = (struct Hjava_net_InetAddress *)do_execute_java_class_method
-    ("java/net/InetAddress", 0, "getByName", "(Ljava/lang/String;)Ljava/net/InetAddress;",
-     address_string).l;
+  if (address_string)
+    retval = (struct Hjava_net_InetAddress *)do_execute_java_class_method
+      ("java/net/InetAddress", 0, "getByName", "(Ljava/lang/String;)Ljava/net/InetAddress;",
+       address_string).l;
   return( retval );
 }
 

@@ -1,5 +1,11 @@
 2003-09-01  Jim Pick  <jim@kaffe.org>
 
+	* libraries/clib/net/NetworkInterface.c:
+	Really ignore non-IPv4/IPv6 interfaces (fixes NetworkInterfaceTest
+	regression test).
+
+2003-09-01  Jim Pick  <jim@kaffe.org>
+
 	* kaffe/kaffevm/jni.c:
 	Change casts to avoid "type punning" warnings in gcc 3.x.
 
