@@ -38,7 +38,14 @@ typedef struct _strconst Utf8Const;
 typedef struct Hjava_lang_Class Hjava_lang_Class;
 #endif
 
-#include <java_lang_Object.h>
+struct _dispatchTable;
+struct _iLock;
+
+typedef struct Hjava_lang_Object {
+	struct _dispatchTable*  dtable;
+	struct _iLock*		lock;
+	/* Data follows on immediately */
+} Hjava_lang_Object;
 
 /* Turn a handle into the real thing */
 #define	unhand(o)	(o)
