@@ -54,7 +54,8 @@ private String escape(String str) {
 }
 
 public String getProperty(String key) {
-	Object propSearch=get(key);
+	// use hashtable's get here in case some subclass overrides get
+	Object propSearch=super.get(key);
 
 	if (propSearch==null) { /* Not found */
 		if (defaults!=null) return defaults.getProperty(key); else return null;

@@ -1,3 +1,8 @@
+Wed Nov 11 13:34:57 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
+
+	* libraries/javalib/java/util/Properties.java: have getProperty
+	use super.get.
+
 Tue Nov 10 22:40:39 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in (nativedir): install run-time (dlopened) libraries
