@@ -4,6 +4,8 @@ Mon Apr  5 16:50:53 PDT 1999  Archie Cobbs <archie@whistle.com>
 	* libraries/javalib/kaffe/net/www/protocol/ftp/Handler.java,
 	FtpURLConnection.java: add (unimplemented) FTP URL support
 	* libraries/javalib/Makefile.am,in: add new java files
+	* libraries/javalib/java/lang/Float.java, Double.java: add
+	missing parseDouble() and parseFloat() methods
 
 Sun Apr  4 19:02:17 PDT 1999  Archie Cobbs <archie@whistle.com>
 
