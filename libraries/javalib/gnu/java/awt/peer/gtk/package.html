@@ -1,5 +1,6 @@
-/* GtkLabelPeer.java -- Implements LabelPeer with GTK
-   Copyright (C) 1998, 1999, 2005  Free Software Foundation, Inc.
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!-- package.html - describes classes in gnu.java.awt.peer.gtk package.
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -33,52 +34,13 @@ module.  An independent module is a module which is not derived from
 or based on this library.  If you modify this library, you may extend
 this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
-exception statement from your version. */
+exception statement from your version. -->
 
+<html>
+<head><title>GNU Classpath - gnu.java.awt.peer.gtk</title></head>
 
-package gnu.java.awt.peer.gtk;
+<body>
+<p>This package implements the GTK peer for java.awt.</p>
 
-import java.awt.Label;
-import java.awt.peer.LabelPeer;
-
-public class GtkLabelPeer extends GtkComponentPeer
-    implements LabelPeer
-{
-  native void create (String text, float alignment);
-  native void gtkWidgetModifyFont (String name, int style, int size);
-  native void nativeSetAlignment (float alignment);
-
-  public native void setText(String text);
-  native void setNativeBounds (int x, int y, int width, int height);
-
-  void create ()
-  {
-    Label label = (Label) awtComponent;
-    create (label.getText (), getGtkAlignment (label.getAlignment ()));
-  }
-
-  public GtkLabelPeer (Label l)
-  {
-    super (l);
-  }
-
-  public void setAlignment (int alignment)
-  {
-    nativeSetAlignment (getGtkAlignment (alignment));
-  }
-
-  float getGtkAlignment (int alignment)
-  {
-    switch (alignment)
-      {
-      case Label.LEFT:
-	return 0.0f;
-      case Label.CENTER:
-	return 0.5f;
-      case Label.RIGHT:
-	return 1.0f;
-      }
-
-    return 0.0f;
-  }
-}
+</body>
+</html>

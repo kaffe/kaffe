@@ -4,6 +4,41 @@
 	
 	2005-02-16  Michael Koch  <konqueror@gmx.de>
 
+	* gnu/java/awt/peer/gtk/GThreadNativeMethodRunner.java,
+	gnu/java/awt/peer/gtk/GdkFontPeer.java,
+	gnu/java/awt/peer/gtk/GdkGlyphVector.java,
+	gnu/java/awt/peer/gtk/GdkGraphics.java,
+	gnu/java/awt/peer/gtk/GdkGraphics2D.java,
+	gnu/java/awt/peer/gtk/GdkGraphicsConfiguration.java,
+	gnu/java/awt/peer/gtk/GdkGraphicsEnvironment.java,
+	gnu/java/awt/peer/gtk/GdkPixbufDecoder.java,
+	gnu/java/awt/peer/gtk/GdkRobotPeer.java,
+	gnu/java/awt/peer/gtk/GdkScreenGraphicsDevice.java,
+	gnu/java/awt/peer/gtk/GdkTextLayout.java,
+	gnu/java/awt/peer/gtk/GtkCheckboxMenuItemPeer.java,
+	gnu/java/awt/peer/gtk/GtkChoicePeer.java,
+	gnu/java/awt/peer/gtk/GtkClipboard.java,
+	gnu/java/awt/peer/gtk/GtkComponentPeer.java,
+	gnu/java/awt/peer/gtk/GtkFileDialogPeer.java,
+	gnu/java/awt/peer/gtk/GtkFontPeer.java,
+	gnu/java/awt/peer/gtk/GtkLabelPeer.java,
+	gnu/java/awt/peer/gtk/GtkMenuBarPeer.java,
+	gnu/java/awt/peer/gtk/GtkMenuItemPeer.java,
+	gnu/java/awt/peer/gtk/GtkMenuPeer.java,
+	gnu/java/awt/peer/gtk/GtkScrollPanePeer.java,
+	gnu/java/awt/peer/gtk/GtkScrollbarPeer.java,
+	gnu/java/awt/peer/gtk/GtkToolkit.java,
+	gnu/java/awt/peer/gtk/GtkWindowPeer.java:
+	Made checkstyle clean.
+	* gnu/java/awt/peer/gtk/package.html:
+	New file.
+
+2005-02-19  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2005-02-16  Michael Koch  <konqueror@gmx.de>
+
 	* javax/xml/XMLConstants.java,
 	javax/xml/datatype/DatatypeConfigurationException.java,
 	javax/xml/datatype/DatatypeConstants.java,

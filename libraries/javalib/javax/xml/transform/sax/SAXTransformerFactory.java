@@ -1,5 +1,5 @@
 /* SAXTransformerFactory.java -- 
-   Copyright (C) 2004 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -49,7 +49,7 @@ import org.xml.sax.XMLFilter;
  * This factory provides SAX content handlers that can create transformation
  * templates and transformers.
  *
- * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
+ * @author (a href='mailto:dog@gnu.org'>Chris Burdess</a)
  */
 public abstract class SAXTransformerFactory extends TransformerFactory
 {
