@@ -17,7 +17,7 @@ package java.io;
 public class PipedInputStream
   extends InputStream
 {
-	private PipedOutputStream src = null;
+	PipedOutputStream src = null;
 	final protected static int PIPE_SIZE = 512;
 	protected byte[] pipe = new byte[PIPE_SIZE];
 	protected int out = 0;
@@ -42,8 +42,10 @@ public void connect(PipedOutputStream src) throws IOException {
 	if (this.src != null) {
 		throw new IOException("already connected");
 	}
-	src.connect(this);
 	this.src = src;
+	if (src.sink == null) {
+		src.connect(this);
+	}
 	closed = false;
 }
 

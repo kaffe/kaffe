@@ -13,7 +13,7 @@ package java.io;
 public class PipedOutputStream
   extends OutputStream
 {
-	private PipedInputStream sink = null;
+	PipedInputStream sink = null;
 
 public PipedOutputStream() {
 }
@@ -33,7 +33,9 @@ public void connect(PipedInputStream snk) throws IOException {
 		throw new IOException("already connected");
 	}
 	sink = snk;
-	sink.connect(this);
+	if (snk.src == null) {
+		sink.connect(this);
+	}
 }
 
 public void write(byte b[], int off, int len) throws IOException {

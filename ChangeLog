@@ -1,3 +1,8 @@
+Thu Mar 18 16:16:11 1999  YAMAGUCHI Yuji <yamag@distribution.co.jp>
+
+	* libraries/javalib/java/io/PipedOutputStream.java, 
+	PipedInputStream.java: avoid already connected errors
+
 Thu Mar 18 11:29:12 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* test/regression/HelloWorldApp.class.save, test/awt/Unico/Unico.jar,
