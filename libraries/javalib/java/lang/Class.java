@@ -204,7 +204,8 @@ public Method getDeclaredMethod(String name, Class parameterTypes[]) throws NoSu
 	SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkMemberAccess(this, Member.DECLARED);
-	return (getMethod0(name, parameterTypes, true));
+
+	return lookupMethod(name, parameterTypes, true);
 }
 
 public Method[] getDeclaredMethods() throws SecurityException
@@ -264,7 +265,7 @@ public Method getMethod(String name, Class parameterTypes[]) throws NoSuchMethod
 		sm.checkMemberAccess(this, Member.PUBLIC );
 	if( name.equals("<init>") || name.equals("<clinit>") )
 		throw new NoSuchMethodException();
-	return (getMethod0(name, parameterTypes, false));
+	return (lookupMethod(name, parameterTypes, false));
 }
 
 native private Method getMethod0(String name, Class[] args, boolean declared);
@@ -369,6 +370,46 @@ native public boolean isInstance(Object obj);
 native public boolean isInterface();
 
 native public boolean isPrimitive();
+
+
+/**
+ * Lookup a method.
+ *
+ * Internal helper method used to combine common method lookup operations into a single method.
+ *
+ * @param name method name
+ * @param parameterTypes method's list of parameters
+ * @param declared true if the method is supposed to be declared in this class
+ * @return the method, if it can be found.
+ * @exception NoSuchMethodException if no method can be found
+ * @exception SecurityException if access to the method is denied
+ */
+private Method lookupMethod (String name, Class [] parameterTypes, boolean declared) throws NoSuchMethodException, SecurityException {
+
+  Method meth = getMethod0(name, parameterTypes, declared);
+
+  if (meth == null) {
+    StringBuffer buf = new StringBuffer("In class ");
+    buf.append(getName())
+      .append(" there is no method ")
+      .append(name)
+      .append(" (");
+	  
+    /* write parameter types */
+    for (int i = 0; i < parameterTypes.length; ++i) {
+      buf.append(parameterTypes[i].getName());
+      if (i < parameterTypes.length - 1) {
+	buf.append(", ");
+      }
+    }
+
+    buf.append(')');
+
+    throw new NoSuchMethodException(buf.toString());
+  }
+
+  return meth;
+}
 
 public Object newInstance() throws InstantiationException, IllegalAccessException {
     if (Modifier.isAbstract(getModifiers()) || isInterface() || isPrimitive()) {

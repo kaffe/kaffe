@@ -782,6 +782,16 @@ findMatchingMethod(struct Hjava_lang_Class* clas,
 	return (0);
 }
 
+/** 
+ * looks up a declared method.
+ * 
+ * @param this class where to start looking
+ * @param name name of method we're looking for
+ * @param arr parameter types of the method
+ * @param declared true if the method is supposed to be declared in this class
+ * 
+ * @return a method, if it can be found. NULL otherwise.
+ */
 Hjava_lang_reflect_Method*
 java_lang_Class_getMethod0(struct Hjava_lang_Class* this, struct Hjava_lang_String* name, HArrayOfObject* arr, jboolean declared)
 {
@@ -813,12 +823,7 @@ java_lang_Class_getMethod0(struct Hjava_lang_Class* this, struct Hjava_lang_Stri
 		}
 	}
 
-	/* like SignalError, except that the name of the class that is
-	 * not found becomes the error message
-	 */
-	throwException((struct Hjava_lang_Throwable*)execute_java_constructor(
-		"java.lang.NoSuchMethodException", 0, 0,
-		"(Ljava/lang/String;)V", name));
+	return NULL;
 }
 
 struct Hjava_lang_reflect_Constructor*
