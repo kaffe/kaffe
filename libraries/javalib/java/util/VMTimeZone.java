@@ -117,7 +117,6 @@ final class VMTimeZone
     if (zone == null)
       {
 	tzid = getSystemTimeZoneId();
-	System.err.println("tzid: " + tzid);
 	if (tzid != null && !tzid.equals(""))
 	  zone = TimeZone.getDefaultTimeZone(tzid);
       }
