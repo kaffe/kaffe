@@ -1,3 +1,8 @@
+Thu Jan  7 01:40:40 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/clib/native/Runtime.c: fixed typo pointed out by
+	Aaron Place <beavis@ihug.co.nz>
+
 Wed Jan  6 15:50:32 1999  Jason Baker  <jbaker@cs.utah.edu>
 
 	* kaffe/kaffevm/mem/gc-block-hash.[ch]: removed from CVS repos.
