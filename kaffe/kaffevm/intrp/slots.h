@@ -38,6 +38,7 @@
 #define local_double		local_long
 
 #define	slot_alloctmp(s)	/* Does nothing for interpreter */
+#define	slot_freetmp(s)		/* Does nothing for interpreter */
 #define	slot_nowriteback(s)	/* Does nothing for interpreter */
 #define	slot_nowriteback2(s)	/* Does nothing for interpreter */
 

@@ -16,6 +16,8 @@
 #define	define_insn(code)	break;					\
 				case code :
 #define	define_insn_alias(code)	case code :
+#define	define_wide_insn(code)	break;					\
+				case code :
 
 /* Stack */
 #define	push(_i)		stackno -= (_i)
@@ -31,6 +33,15 @@
 
 /* -------------------------------------------------------------------- */
 /* Methods */
+
+#define	get_method_info_noerror(idx) \
+	getMethodSignatureClass(idx, meth->class, true, 0, &cinfo, einfo)
+
+#define get_special_method_info_noerror(idx) \
+	getMethodSignatureClass(idx, meth->class, true, 1, &cinfo, einfo)
+
+#define	get_interface_method_info_noerror(idx) \
+	getMethodSignatureClass(idx, meth->class, true, 2, &cinfo, einfo)
 
 #define	get_method_info(idx)  \
   if (getMethodSignatureClass(idx, meth->class, true, 0, &cinfo, einfo) \
@@ -49,6 +60,7 @@
 #define	method_idx()	(cinfo.method->idx)
 #define method_method()	(cinfo.method)
 #define method_class()  (cinfo.class)
+#define method_classname()  (cinfo.cname)
 #define	get_dispatch_table(mtable)				\
 			move_ref_const(mtable, cinfo.class->dtable)
 
@@ -70,10 +82,17 @@
   }
 
 #define field_class()		(finfo.class)
+#define field_field()		(finfo.field)
+#define field_name()		(finfo.name)
+#define field_classname()	(finfo.cname)
+#define field_sig()		(finfo.signature)
 #define field_statics()		(finfo.class->static_data)
 
 /* -------------------------------------------------------------------- */
 /* Classes */
+
+#define	get_class_info_noerror(IDX) \
+	crinfo = getClass((IDX), meth->class, einfo)
 
 #define	get_class_info(IDX)	\
   crinfo = getClass((IDX), meth->class, einfo); \
@@ -82,6 +101,7 @@
   }
 
 #define	class_object()		(crinfo)
+#define class_name(IDX)		(WORD2UTF(meth->class->constants.data[IDX]))
 
 /* -------------------------------------------------------------------- */
 /* Objects */

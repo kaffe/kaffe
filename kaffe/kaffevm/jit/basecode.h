@@ -74,6 +74,9 @@ enum {
 /* For JIT3 compatibility */
 #define	begin_func_sync()	prepare_function_call()
 #define	end_func_sync()		fixup_function_call()
+#define begin_sync()		end_sub_block()
+#define end_sync()
+
 
 /* -------------------------------------------------------------------- */
 /* Conditional monitors */

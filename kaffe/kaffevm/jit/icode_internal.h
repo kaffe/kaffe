@@ -42,5 +42,8 @@ extern void store_offset_short(SlotInfo*, jint, SlotInfo*);
 
 extern void move_string_const(SlotInfo*, void*);
 extern void build_call_frame(Utf8Const*, SlotInfo*, int);
+extern void softcall_nosuchclass(Utf8Const*);
 extern void softcall_nosuchmethod(Hjava_lang_Class*, Utf8Const*, Utf8Const*);
+extern void softcall_nosuchfield(Utf8Const*, Utf8Const*);
+
 

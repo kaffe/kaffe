@@ -55,6 +55,9 @@ char* engine_version = KVER;
 				IDBG( dprintf("%03d: %s\n", pc, #code); )
 #define	define_insn_alias(code)	case code:				\
 				IDBG( dprintf("%03d: %s\n", pc, #code); )
+#define	define_wide_insn(code)	break;					\
+				case code:				\
+				IDBG( dprintf("%03d: %s\n", pc, #code); )
 
 #define EXPLICIT_CHECK_NULL(_i, _s, _n)                       \
       cbranch_ref_const_ne((_s), 0, reference_label(_i, _n)); \
@@ -68,6 +71,15 @@ char* engine_version = KVER;
 #else
 #define CHECK_NULL(_i, _s, _n)
 #endif
+
+/* For JIT3 compatibility */
+#define check_array_store(a,b)		softcall_checkarraystore(a,b)
+#define explicit_check_null(x,obj,y)	EXPLICIT_CHECK_NULL(x,obj,y)
+#define check_null(x,obj,y)		CHECK_NULL(x,obj,y)
+#define check_div(x,obj,y)
+#define check_div_long(x,obj,y)
+#define pop_slot(src,len)
+
 
 #if defined(KAFFE_PROFILER)
 int profFlag;			 /* flag to control profiling */
@@ -98,6 +110,8 @@ virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retva
 		/* implement stack overflow check */
 		needOnStack = &unhand(tid)->needOnStack;
 
+		//		dprintf ("needOnStack [%p] %p -> %d\n", &needOnStack, needOnStack, *needOnStack);
+		
 		if (jthread_stackcheck(*needOnStack) == false) {
 			overflow = (Hjava_lang_Throwable*)
 				unhand(tid)->stackOverflowError;
@@ -219,7 +233,7 @@ void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *r
 
 	/* Misc machine variables */
 	jlong lcc;
-	jlong tmpl;
+	jvalue tmpl;
 	slots tmp[1];
 	slots tmp2[1];
 	slots mtable[1];

@@ -138,7 +138,7 @@ void prologue(Method*);
 void mon_enter(Method*, SlotInfo*);
 void mon_exit(Method*, SlotInfo*);
 void epilogue(void);
-void breakpoint(void);
+void softcall_breakpoint(void);
 
 void load_int(SlotInfo*, SlotInfo*);
 void load_ref(SlotInfo*, SlotInfo*);

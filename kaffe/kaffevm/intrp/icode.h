@@ -158,6 +158,10 @@
 #define	end_function()				/* Not needed for interpreter */
 #define	start_sub_block()			/* Not needed for interpreter */
 #define	end_sub_block()				/* Not needed for interpreter */
+#define	begin_func_sync()			/* Not needed for interpreter */
+#define	end_func_sync()				/* Not needed for interpreter */
+#define	begin_sync()				/* Not needed for interpreter */
+#define	end_sync()				/* Not needed for interpreter */
 
 #define	set_label(i, l)				label_##i##l:
 #define	reference_code_label(l)			npc = (l)
@@ -173,7 +177,7 @@
 						 ((uint8*)(f)->v.taddr)[3])
 #define	load_code_ref				load_key
 
-#define	breakpoint()				ABORT()
+#define	softcall_breakpoint()			ABORT()
 
 #define	move_double(t, f)			(t)[0].v.tdouble = (f)[0].v.tdouble
 #define	move_double_const(t, c)			(t)[0].v.tdouble = (c)
@@ -288,11 +292,14 @@
 #define	softcall_monitorenter(o)		lockObject((o)[0].v.taddr)
 #define	softcall_monitorexit(o)			unlockObject((o)[0].v.taddr)
 
-#define	softcall_multianewarray(r, z, s, t)	(r)->v.taddr = soft_multianewarray(t, z, s)
+#define	softcall_multianewarray(r, z, s, t)	(r)->v.taddr = soft_multianewarray(t, z, s); \
+						pop((z) - 1)
 
 #define	softcall_badarrayindex()		soft_badarrayindex()
 #define	softcall_nullpointer()			soft_nullpointer()
 #define	softcall_nosuchmethod(c,n,s)		soft_nosuchmethod(c,n,s)
+#define	softcall_nosuchfield(c,n)		soft_nosuchfield(c,n)
+#define	softcall_nosuchclass(c)			soft_nosuchclass(c)
 
 #define	softcall_checkarraystore(a, o)		soft_checkarraystore((a)[0].v.taddr, (o)[0].v.taddr)
 #define	softcall_addreference(f, t)		soft_addreference((f)[0].v.taddr, (t)[0].v.taddr)
