@@ -2,6 +2,21 @@
 
         Resynced with GNU Classpath.
 
+	2004-01-09  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/geom/PathIterator.java
+        (WIND_EVEN_ODD): Removed redundant modifiers.
+        (WIND_NON_ZERO): Likewise.
+        (SEG_MOVETO): Likewise.
+        (SEG_LINETO): Likewise.
+        (SEG_QUADTO): Likewise.
+        (SEG_CUBICTO): Likewise.
+        (SEG_CLOSE): Likewise.
+
+2004-01-09  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2004-01-06  Sascha Brawer  <brawer@dandelis.ch>
 
         * javax/swing/event/EventListenerList.java (toString): Implemented.
