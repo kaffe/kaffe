@@ -21,6 +21,17 @@
 #undef	SP_OFFSET
 #define	SP_OFFSET	2
 
+/*
+ * FreeBSD does not save the floating point registers in the signal
+ * context, so we must do it ourselves.
+ */
+/* Size of buffer in bytes */
+#define	SAVED_FP_SIZE	108		
+#define	SAVE_FP(fdata)			\
+	asm("fsave %0": :"m"(*fdata))
+#define	LOAD_FP(fdata)			\
+	asm("frstor %0": :"m"(*fdata))
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif

@@ -102,6 +102,9 @@ typedef struct _jthread {
 	 */
 	void*				jlThread;
 	jmp_buf				env;
+#if defined(SAVED_FP_SIZE)
+	char				fpstate[SAVED_FP_SIZE];
+#endif
 	/* 
 	 * note that this causes gdb under Solaris to crash when trying to
 	 * print a struct jthread

@@ -923,6 +923,9 @@ DBG(JTHREAD,
 		/* NOT REACHED */
 	} 
 
+#if defined(SAVE_FP)
+	SAVE_FP(jtid->fpstate);
+#endif
 	/* set up context for new thread */
 	oldstack = GET_SP(jtid->env);
 
@@ -1146,50 +1149,58 @@ reschedule(void)
 
 	for (;;) {
 	        for (i = max_priority; i >= min_priority; i--) {
-			if (threadQhead[i] != 0) {
-				if (threadQhead[i] != currentJThread) {
-					lastThread = currentJThread;
-					currentJThread = threadQhead[i];
+			if (threadQhead[i] == 0) 
+			    continue;
+
+			if (threadQhead[i] != currentJThread) {
+				lastThread = currentJThread;
+				currentJThread = threadQhead[i];
 
 DBG(JTHREADDETAIL,
-	dprintf("switch from %p to %p\n", lastThread, currentJThread); )
+dprintf("switch from %p to %p\n", lastThread, currentJThread); )
 
-					if (setjmp(lastThread->env) == 0) {
-					    lastThread->restorePoint = 
-						GET_SP(lastThread->env);
-					    longjmp(currentJThread->env, 1);
-					}
-
-					/* Alarm signal may be blocked - if so
-					 * unblock it. - XXX
-					 */
-					if (alarmBlocked == true) {
-						alarmBlocked = false;
-						sigemptyset(&nsig);
-						sigaddset(&nsig, SIGALRM);
-						sigaddset(&nsig, SIGVTALRM);
-						sigaddset(&nsig, SIGIO);
-						sigprocmask(SIG_UNBLOCK, 
-							&nsig, 0);
-					}
-
-					/* Restore ints */
-					blockInts = b;
-
-					assert(currentJThread == lastThread);
-
-					/* I might be dying */
-					if ((currentJThread->flags & 
-						THREAD_FLAGS_KILLED) != 0 && 
-					    (currentJThread->flags & 
-						THREAD_FLAGS_DONTSTOP) == 0 &&
-					    blockInts == 1) 
-						die();
+				/* save and restore floating point state */
+#if defined(SAVE_FP)
+				SAVE_FP(lastThread->fpstate);
+#endif
+				if (setjmp(lastThread->env) == 0) {
+				    lastThread->restorePoint = 
+					GET_SP(lastThread->env);
+				    longjmp(currentJThread->env, 1);
 				}
-				/* Now kill the schedule */
-				needReschedule = false;
-				return;
+
+#if defined(LOAD_FP)
+				LOAD_FP(currentJThread->fpstate);
+#endif
+				/* Alarm signal may be blocked - if so
+				 * unblock it. - XXX
+				 */
+				if (alarmBlocked == true) {
+					alarmBlocked = false;
+					sigemptyset(&nsig);
+					sigaddset(&nsig, SIGALRM);
+					sigaddset(&nsig, SIGVTALRM);
+					sigaddset(&nsig, SIGIO);
+					sigprocmask(SIG_UNBLOCK, 
+						&nsig, 0);
+				}
+
+				/* Restore ints */
+				blockInts = b;
+
+				assert(currentJThread == lastThread);
+
+				/* I might be dying */
+				if ((currentJThread->flags & 
+					THREAD_FLAGS_KILLED) != 0 && 
+				    (currentJThread->flags & 
+					THREAD_FLAGS_DONTSTOP) == 0 &&
+				    blockInts == 1) 
+					die();
 			}
+			/* Now kill the schedule */
+			needReschedule = false;
+			return;
 		}
 
 		if (DBGEXPR(DETECTDEADLOCK, true, false) &&
