@@ -14,16 +14,16 @@
 
 #if !defined(KAFFEH)
 
-extern void*	__malloc(size_t);
-extern void	__free(void*);
+extern void*	jmalloc(size_t);
+extern void	jfree(void*);
 
 #undef malloc
 #undef calloc
 #undef free
 
-#define	malloc(A)	__malloc(A)
-#define	calloc(A, B)	__malloc((A)*(B))
-#define	free(A)		__free(A)
+#define	malloc(A)	jmalloc(A)
+#define	calloc(A, B)	jmalloc((A)*(B))
+#define	free(A)		jfree(A)
 
 #endif
 

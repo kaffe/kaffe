@@ -13,13 +13,13 @@
 #include "mem/gc-incremental.c"
 
 void*
-__malloc(size_t sz)
+jmalloc(size_t sz)
 {
 	return ((*Kaffe_GarbageCollectorInterface._malloc)(sz, GC_ALLOC_FIXED));
 }
 
 void
-__free(void* mem)
+jfree(void* mem)
 {
 	(*Kaffe_GarbageCollectorInterface._free)(mem);
 }
