@@ -1,6 +1,13 @@
 2004-02-12  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+        (cleanupInVerifyMethod): New static inline function.
+        (CLEANUP) Removed.
+        Replaced use of CLEANUP by cleanupInVerifyMethod.
+
+2004-02-12  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
 	(IS_PRIMITIVE_ARRAY): Removed unused macro.
 
 2004-02-12  Dalibor Topic <robilad@kaffe.org>

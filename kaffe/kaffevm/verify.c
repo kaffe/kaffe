@@ -1210,6 +1210,30 @@ verify3(Hjava_lang_Class* class, errorInfo *einfo)
 	return success;
 }
 
+	
+/**************************************************************************************************
+ * Memory Management Macros
+ **************************************************************************************************/
+/* to make sure we don't forget to unalloc anything...
+ * should be called during ANY EXIT FROM verifyMethod
+ */
+static inline
+void
+cleanupInVerifyMethod(uint32* status, SigStack* sigs, UninitializedType* uninits, uint32* numBlocks, BlockInfo ** blocks)
+{
+	DBG(VERIFY3, dprintf("    cleaning up..."); );
+	KFREE(status);
+	if (blocks != NULL) {
+		while (numBlocks > 0) {
+			freeBlock(blocks[--(*numBlocks)]);
+		}
+		KFREE(blocks);
+	}
+        freeSigStack(sigs);
+        freeUninits(uninits);
+        DBG(VERIFY3, dprintf(" done\n"); );
+}
+
 /*
  * Controls the verification of a single method.  It allocates most of the memory needed for
  * verification (when encountering JSRs, more memory will need to be allocated later),
@@ -1233,26 +1257,6 @@ verifyMethod(errorInfo *einfo, Method* method)
 	uint32      numBlocks = 0;
 	BlockInfo** blocks    = NULL;
 	
-	
-	/**************************************************************************************************
-	 * Memory Management Macros
-	 **************************************************************************************************/
-	/* to make sure we don't forget to unalloc anything...
-	 * should be called during ANY EXIT FROM THIS METHOD
-	 */
-#define CLEANUP \
-	DBG(VERIFY3, dprintf("    cleaning up..."); ); \
-	KFREE(status); \
-        if (blocks != NULL) { \
-		while (numBlocks > 0) { \
-			freeBlock(blocks[--numBlocks]); \
-		} \
-		KFREE(blocks); \
-	} \
-        freeSigStack(sigs); \
-        freeUninits(uninits); \
-        DBG(VERIFY3, dprintf(" done\n"); )
-	
 #define FAIL \
         DBG(VERIFY3, dprintf("    Verify Method 3b: %s.%s%s: FAILED\n", \
 			     CLASS_CNAME(method->class), METHOD_NAMED(method), METHOD_SIGD(method)); ); \
@@ -1260,7 +1264,7 @@ verifyMethod(errorInfo *einfo, Method* method)
 		DBG(VERIFY3, dprintf("      DBG ERROR: should have raised an exception\n"); ); \
 		postException(einfo, JAVA_LANG(VerifyError)); \
 	} \
-        CLEANUP; \
+        cleanupInVerifyMethod(status, sigs, uninits, &numBlocks, blocks); \
         return(false)
 	
 	
@@ -1308,13 +1312,12 @@ verifyMethod(errorInfo *einfo, Method* method)
 		FAIL;
 	}
 	
-	CLEANUP;
+	cleanupInVerifyMethod(status, sigs, uninits, &numBlocks, blocks);
 	DBG(VERIFY3, dprintf("    Verify Method 3b: done\n"); );
 	return(true);
 	
 
 #undef FAIL
-#undef CLEANUP
 }
 
 
