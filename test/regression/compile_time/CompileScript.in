@@ -14,4 +14,4 @@
 test -z "@JIKES@" || : ${JIKES="@JIKES@ -nowarn"}
 : ${JAVAC=${JIKES-"env CLASSPATH=$CLASSPATH $JAVA -noverify at.dms.kjc.Main"}" -classpath \"$CLASSPATH\""}
 
-exec $JAVAC -classpath $CLASSPATH -d . $1
+exec $JAVAC -classpath $CLASSPATH -d . $*

@@ -1,3 +1,15 @@
+2004-01-25  Jim Pick  <jim@kaffe.org>
+
+	* test/regression/compile_time/CompileScript.in: Make the script
+	accepts many parameters.
+
+	* test/regression/compile_time/Makefile.am,
+	test/regression/compile_time/VarInit.java,
+	test/regression/compile_time/VarInit2.java:
+	Added a new compilation test for KJC.
+
+	* test/regression/compile_time/Makefile.in: Regenerated.
+
 2004-01-24  Jim Pick  <jim@kaffe.org>
 
 	* libraries/javalib/essential.files:

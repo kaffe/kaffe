@@ -21,7 +21,9 @@ CLASS_FILES = \
 	a/PublicToPackage.class \
 	a/PublicToProtected.class \
 	PublicToPrivate.class \
-	StaticToInst.class
+	StaticToInst.class \
+	VarInit.class \
+	VarInit2.class
 
 SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
@@ -61,6 +63,9 @@ PublicToPrivate.class: PublicToPrivate.java
 StaticToInst.class: StaticToInst.java
 	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/StaticToInst.java
 
+VarInit.class VarInit2.class: VarInit.java VarInit2.java
+	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/VarInit.java $(srcdir)/VarInit2.java
+
 all-am: CompileScript $(CLASS_FILES)
 
 check-am: all-am
@@ -78,4 +83,6 @@ EXTRA_DIST = \
 	a/PublicToPackage.java \
 	a/PublicToProtected.java \
 	PublicToPrivate.java \
-	StaticToInst.java
+	StaticToInst.java \
+	VarInit.java \
+	VarInit2.java
