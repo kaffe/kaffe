@@ -308,8 +308,8 @@ rebuild-jni-hdrs: stamp-kaffeh $(KLASSES_JAR)
 ## but if it does not change, do not touch it
 	@set -e; for f in $(HDRS); do \
 	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
-	  echo "$(KAFFEH) -jni -classpath $(KLASSES_JAR):$(top_builddir)/libraries/javalib/lib -o $$f $$class"; \
-	  $(KAFFEH) -jni -classpath $(KLASSES_JAR):$(top_builddir)/libraries/javalib/lib -o stamp-h1$$f $$class; \
+	  echo "$(KAFFEH) -jni -classpath $(KLASSES_JAR):$(top_builddir)/libraries/javalib/lib::$(top_builddir)/libraries/javalib/rt.jar -o $$f $$class"; \
+	  $(KAFFEH) -jni -classpath $(KLASSES_JAR):$(top_builddir)/libraries/javalib/lib::$(top_builddir)/libraries/javalib/rt.jar -o stamp-h1$$f $$class; \
 	  if test -f $$f && cmp $$f stamp-h1$$f >/dev/null; then \
 	    echo "$$f is already up-to-date"; \
 	    rm -f stamp-h1$$f; \
