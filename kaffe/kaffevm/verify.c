@@ -2661,6 +2661,22 @@ opstackWPopBlind(BlockInfo* block)
 }
 
 /*
+ * Helper function for opstack access in verifyBasicBlock.
+ * pop _N things off the stack off the stack.
+ */
+static inline
+void
+opstackPopNBlind(BlockInfo* block,
+		 unsigned int n)
+{
+	unsigned int i;
+
+	for (i = 0; i < n; ++i) {
+		opstackPopBlind(block);
+	}
+}
+
+/*
  * Helper function for error reporting in OPSTACK_PEEK_T_BLIND macro in verifyBasicBlock.
  */
 static inline
@@ -2819,18 +2835,10 @@ verifyBasicBlock(errorInfo* einfo,
 #define OPSTACK_WPOP_T(_TINFO) \
         OPSTACK_WPEEK_T(_TINFO); \
 	opstackWPopBlind(block)
-        
-
-	
-	/* pop _N things off the stack off the stack */
-#define OPSTACK_POP_N_BLIND(_N) \
-	for (n = 0; n < _N; n++) { \
-		opstackPopBlind(block); \
-	}
 	
 #define OPSTACK_POP_N(_N) \
         ENSURE_OPSTACK_SIZE(_N); \
-	OPSTACK_POP_N_BLIND(_N)
+	opstackPopNBlind(block, _N)
 	
 	
 	
@@ -3224,7 +3232,7 @@ verifyBasicBlock(errorInfo* einfo,
 				return verifyErrorInVerifyBasicBlock(einfo, method, this, "attempting to store incompatible type in array");
 			}
 			
-			OPSTACK_POP_N_BLIND(3);
+			opstackPopNBlind(block, 3);
 			break;
 
 #define ARRAY_STORE(_T, _ARRT) \
