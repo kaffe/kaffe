@@ -37,7 +37,6 @@
 
 #define	CLASSHASHSZ	256	/* Must be a power of two */
 static iLock classHashLock;
-static bool chlinit = false;
 static classEntry* classEntryPool[CLASSHASHSZ];
 
 #if 0
@@ -89,7 +88,6 @@ processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 	Method* meth;
 	Hjava_lang_Class* nclass;
 	Hjava_lang_Class** newifaces;
-	static bool init;
 	static iLock classLock;
 	bool success = true;	/* optimistic */
 #ifdef DEBUG
@@ -102,8 +100,7 @@ processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 	}
 
 	/* Initialise class lock */
-	if (init == false) {
-		init = true;
+	if (!staticLockIsInitialized(&classLock)) {
 		initStaticLock(&classLock);
 	}
 
@@ -1495,8 +1492,7 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 	classEntry* entry;
 	classEntry** entryp;
 
-        if (chlinit == false) {
-		chlinit = true;
+        if (!staticLockIsInitialized(&classHashLock)) {
 		initStaticLock(&classHashLock);
         }
 

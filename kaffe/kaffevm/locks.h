@@ -22,6 +22,7 @@
 #define	holdMutex			_holdMutex
 
 #define	initStaticLock(THING)		__initLock((THING), #THING)
+#define staticLockIsInitialized(THING)	((THING)->ref == -1)
 #define	lockStaticMutex(THING)		__lockMutex((THING))
 #define	unlockStaticMutex(THING)	__unlockMutex((THING))
 #define	waitStaticCond(THING, TIME)	__waitCond((THING), (TIME))

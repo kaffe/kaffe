@@ -80,6 +80,7 @@ define_insn(unimplemented, unimplemented)
 define_insn(nop, nop)
 {
 	OUT = 0x90;
+	debug(("nop\n"));
 }
 
 /* --------------------------------------------------------------------- */

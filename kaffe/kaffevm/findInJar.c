@@ -166,13 +166,11 @@ findInJar(char* cname, errorInfo *einfo)
 	int j;
 	jarEntry* entry;
 	static iLock jarlock;
-	static bool init = false;
 	classpathEntry* ptr;
 	int i;
 
 	/* Initialise on first use */
-	if (init == false) {
-		init = true;
+	if (!staticLockIsInitialized(&jarlock)) {
 		initStaticLock(&jarlock);
 	}
 

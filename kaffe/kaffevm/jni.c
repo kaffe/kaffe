@@ -3528,6 +3528,7 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	/* Construct a wrapper to call the JNI method with the correct
 	 * arguments.
 	 */
+	enterTranslator();
 	maxArgs = maxLocal = count; /* make sure args are spilled if needed */
 	initInsnSequence(0, count, 0);
 	start_basic_block();
@@ -3712,6 +3713,7 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	installMethodCode(0, xmeth, &ncode);
 
 	xmeth->accflags |= ACC_JNI;
+	leaveTranslator();
 }
 #endif
 #if defined(INTERPRETER)

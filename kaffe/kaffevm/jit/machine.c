@@ -50,6 +50,7 @@
 char* engine_name = "Just-in-time";
 char* engine_version = KVER;
 
+iLock translatorlock;		/* lock to protect the variables below */
 int stackno;
 int maxStack;
 int maxLocal;
@@ -183,14 +184,7 @@ translate(Method* meth, errorInfo *einfo)
 	int64 tms = 0;
 	int64 tme;
 
-	static iLock translatorlock;
-	static bool init = false;
 	static Method* jitting = 0;	/* DEBUG */
-
-	if (init == false) {
-		init = true;
-		initStaticLock(&translatorlock);
-	}
 
 	/* lock class to protect the method */
 	lockMutex(meth->class);
@@ -234,7 +228,7 @@ DBG(MOREJIT,
     )
 
 	/* Only one in the translator at once. */
-	lockStaticMutex(&translatorlock);
+	enterTranslator();
 
 DBG(MOREJIT,
 	if (jitting) {
@@ -368,7 +362,7 @@ DBG(JIT,
 	}
 
 	jitting = 0;	/* DEBUG */
-	unlockStaticMutex(&translatorlock);
+	leaveTranslator();
 done2:
 	unlockMutex(meth->class);
 	return (success);
@@ -380,6 +374,11 @@ done2:
 void
 finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code)
 {
+#if defined(CALLTARGET_ALIGNMENT)
+	int align = CALLTARGET_ALIGNMENT;
+#else
+	int align = 0;
+#endif
 	uint32 constlen;
 	nativecode* methblock;
 	nativecode* codebase;
@@ -389,8 +388,13 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code)
 
 	/* Okay, put this into malloc'ed memory */
 	constlen = nConst * sizeof(union _constpoolval);
-	methblock = gc_malloc(constlen + CODEPC, GC_ALLOC_JITCODE);
+	methblock = gc_malloc(constlen + CODEPC + align, GC_ALLOC_JITCODE);
 	codebase = methblock + constlen;
+	/* pad entry point if necessary */
+	if ((unsigned int)codebase % align != 0) {
+		int pad = (align - (unsigned int)codebase % align);
+		codebase = (void*)codebase + pad;
+	}
 	memcpy(codebase, codeblock, CODEPC);
 	gc_free(codeblock);
 
@@ -509,7 +513,18 @@ generateInsnSequence(codeinfo* codeInfo)
 void
 startInsn(sequence* s, codeinfo* codeInfo)
 {
-	SET_INSNPC(const_int(2), CODEPC);
+	int pc = const_int(2);
+
+#if defined(JUMPTARGET_ALIGNMENT)
+	/* align branch target if desired */
+	if (IS_JUMPFLOW(pc) || IS_STARTOFEXCEPTION(pc)) {
+		while (CODEPC % JUMPTARGET_ALIGNMENT != 0) {	
+			extern void nop(sequence*);
+			nop(s);
+		}
+	}
+#endif
+	SET_INSNPC(pc, CODEPC);
 }
 
 /*
