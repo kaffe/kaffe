@@ -171,7 +171,7 @@ public boolean equalsIgnoreCase ( String other ) {
 
 	// this is probably another native candidate, calling two methods
 	// for each char comparison seems to be too expensive
-	if ( count == other.count) {
+	if (other != null && count == other.count) {
 		for ( i=offset, j=other.offset, n=offset+count; i<n; i++, j++ ) {
 			if ( value[i] != other.value[j] ) {
 				if ( Character.toUpperCase( value[i]) != Character.toUpperCase( other.value[j]) )
