@@ -1,5 +1,24 @@
 2004-08-14  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/nio/CharBuffer.java,
+	libraries/javalib/java/nio/DoubleBuffer.java,
+	libraries/javalib/java/nio/FloatBuffer.java,
+	libraries/javalib/java/nio/IntBuffer.java,
+	libraries/javalib/java/nio/LongBuffer.java,
+	libraries/javalib/java/nio/ShortBuffer.java:
+	Resynced with GNU Classpath.
+
+	2004-08-13  Tom Tromey  <tromey@redhat.com>
+
+        * java/nio/CharBuffer.java (put): Fix typo.
+        * java/nio/DoubleBuffer.java (put): Fix typo.
+        * java/nio/FloatBuffer.java (put): Fix typo.
+        * java/nio/IntBuffer.java (put): Fix typo.
+        * java/nio/LongBuffer.java (put): Fix typo.
+        * java/nio/ShortBuffer.java (put): Fix typo.
+
+2004-08-14  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/nio/ByteBuffer.java:
 	Resynced with GNU Classpath.
 
