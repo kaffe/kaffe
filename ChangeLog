@@ -1,5 +1,14 @@
 2003-08-16  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* libraries/gnu/java/text/BaseBreakIterator.java,
+	libraries/gnu/java/text/CharacterBreakIterator.java,
+	libraries/gnu/java/text/LineBreakIterator.java,
+	libraries/gnu/java/text/SentenceBreakIterator.java,
+	libraries/gnu/java/text/WordBreakIterator.java:
+	Added some missing files.
+
+2003-08-16  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* java/text/Annotation.java,
 	java/text/AttributedCharacterIterator.java,
 	java/text/AttributedStringIterator.java,
@@ -54,6 +63,10 @@
 	* include/Makefile.am:
 	(NOINSTALL_DERIVED_HDRS) added java_util_TimeZone.h
 
+	* libraries/javalib/kaffe/text/: Removed.
+
+	* libaries/javalib/profiles/allatonce/all.files: Regenerated from
+	default. (Hope it is the way of making it)
 
 	* libraries/javalib/Makefile.am.in: added properties file in
 	gnu/java/locale and updated bundle packaging.
