@@ -11,10 +11,8 @@ native_LTLIBRARIES = libsecurity.la
 SECURITY_SRCS =	\
 		digest.c
 
-# XXX                                                               XXX
-# XXX     Need to create install directory ${prefix}/lib/security   XXX
-# XXX     and install java.security into it ...                     XXX
-# XXX                                                               XXX
+securitydir = $(pkglibdir)/security
+security_DATA = java.security
 
 libsecurity_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
 libsecurity_la_LIBADD = $(SECURITY_LIBS)
