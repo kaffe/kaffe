@@ -14,13 +14,6 @@
 #include <sched.h>
 #include <asm/unistd.h>
 
-/* If VM_EXEC is not defined, use definition from 
- * linux/mm.h.
- */
-#if !defined(VM_EXEC)
-long VM_EXEC =       0x00000004;
-#endif /* !defined(VM_EXEC) */
-
 void            
 init_md(void)
 {       
@@ -32,12 +25,13 @@ init_md(void)
 /**
  * Shamelessly stolen from parrot... ([perl]/parrot/jit/arm/jit_emit.h arm_sync_d_i_cache)
  *
- * r2 should be zero for 2.4 (but it's ignored) so passing VM_EXEC (needed for 2.6) should be okay.
+ * r2 should be zero for 2.4 (but it's ignored) so passing VM_EXEC (needed
+ * for 2.6) should be okay.
  */
 void flush_dcache(void *start, void *end) {
   __asm __volatile ("mov r0, %0\n"
 		    "mov r1, %1\n"
-		    "mov r2, #VM_EXEC\n"
+		    "mov r2, #4\n"		/* this is VM_EXEC from linux/mm.h, needed for Kernel 2.6 */
 		    "swi " __sys1(__ARM_NR_cacheflush) "\n"
 		    : /* no return value */
 		    : "r" ((long)start), "r" ((long)end)
