@@ -1,3 +1,59 @@
+2003-09-28  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/gnu/java/net/PlainDatagramSocketImpl.java,
+	libraries/javalib/gnu/java/net/PlainSocketImpl.java,
+	libraries/javalib/gnu/java/net/SocketInputStream.java,
+	libraries/javalib/gnu/java/net/SocketOutputStream.java,
+	Moved implementation dependent NET classes to gnu/java/net as
+	requested by new NET classes from GNU Classpath.
+	(PlainSocketImpl.getNativeFD) Added and also a field called native_fd.
+	(PlainDatagramSocketImpl.getNativeFD) Added and also a field called
+	native_fd.
+
+	* libraries/javalib/gnu/java/nio/DatagramChannelImpl.java,
+	libraries/javalib/gnu/java/nio/DatagramChannelSelectionKey.java,
+	libraries/javalib/gnu/java/nio/FileLockImpl.java,
+	libraries/javalib/gnu/java/nio/NIOConstants.java,
+	libraries/javalib/gnu/java/nio/NIODatagramSocket.java,
+	libraries/javalib/gnu/java/nio/NIOSocket.java,
+	libraries/javalib/gnu/java/nio/SelectionKeyImpl.java,
+	libraries/javalib/gnu/java/nio/SelectorImpl.java,
+	libraries/javalib/gnu/java/nio/SocketChannelImpl.java,
+	libraries/javalib/gnu/java/nio/SocketChannelSelectionKey.java,
+	libraries/javalib/java/nio/ByteBufferImpl.java,
+	libraries/javalib/java/nio/DirectByteBufferImpl.java,
+	libraries/javalib/java/nio/MappedByteBufferImpl.java,
+	libraries/javalib/java/nio/channels/FileChannelImpl.java:
+	Merged new NIO classes from GNU Classpath.
+
+	* libraries/javalib/java/net/DatagramSocket.java,
+	libraries/javalib/java/net/PlainDatagramSocketImpl.java,
+	libraries/javalib/java/net/PlainSocketImpl.java,
+	libraries/javalib/java/net/ServerSocket.java,
+	libraries/javalib/java/net/Socket.java,
+	libraries/javalib/java/net/SocketInputStream.java,
+	libraries/javalib/java/net/SocketOutputStream.java,
+	libraries/clib/net/PlainDatagramSocketImpl.c,
+	libraries/clib/net/PlainSocketImpl.c:
+	Updated NET classes from GNU Classpath. Native implementation must
+	initialize the new field called native_fd.
+	
+	* include/Makefile.am:
+	(NOINSTALL_DERIVED_HDRS) Changed java_net_PlainDatagramSocketImpl.h,
+	java_net_PlainSocketImpl.h into
+	gnu_java_net_PlainDatagramSocketImpl.h and
+	gnu_java_net_PlainSocketImpl.h.
+	
+	* include/Makefile.in, libraries/javalib/Klasses.jar.bootstrap,
+	libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	regenerated.
+
+	* libraries/javalib/bootstrap.classlist,
+	libraries/javalib/essential.files: updated to reflect the
+	new NIO and NET classes.
+	
+	* libraries/javalib/kjc.jar: Updated.
+
 2003-09-28  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/mem/gc-incremental.c:

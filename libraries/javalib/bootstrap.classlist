@@ -241,13 +241,13 @@ java/text/ChoiceFormat.class
 # errors.  That hasn't been tested.
 
 # Needed for kaffeh run when building vm and native libs
+gnu/java/net/PlainDatagramSocketImpl.class
+gnu/java/net/PlainSocketImpl.class
 java/io/RandomAccessFile.class
 java/net/DatagramPacket.class
 java/net/InetAddress.class
 java/net/InetSocketAddress.class
 java/net/NetworkInterface.class
-java/net/PlainDatagramSocketImpl.class
-java/net/PlainSocketImpl.class
 java/net/SocketAddress.class
 java/net/SocketImpl.class
 java/net/SocketOptions.class

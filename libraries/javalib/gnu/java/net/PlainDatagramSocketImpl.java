@@ -8,10 +8,11 @@
  * of this file.
  */
 
-package java.net;
+package gnu.java.net;
 
 import java.io.IOException;
 import java.io.FileDescriptor;
+import java.net.*;
 
 /* XXX: This class should not be public!
  * It's public right now cause it's accessed from kaffe.net.
@@ -20,6 +21,7 @@ public class PlainDatagramSocketImpl
   extends DatagramSocketImpl {
 
 private int timeout;
+private int native_fd;
 
 static {
 	System.loadLibrary("net");
@@ -28,6 +30,11 @@ static {
 public PlainDatagramSocketImpl() {
 	timeout = -1; // = NOTIMEOUT
 	fd = new FileDescriptor();
+	native_fd = -1;
+}
+
+public int getNativeFD() {
+	return native_fd;
 }
 
 protected void create() throws SocketException {

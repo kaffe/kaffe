@@ -35,8 +35,10 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.net;
 
+import gnu.java.net.PlainDatagramSocketImpl;
 import java.io.IOException;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.IllegalBlockingModeException;
@@ -71,12 +73,6 @@ public class DatagramSocket
    * This is the implementation object used by this socket.
    */
   DatagramSocketImpl impl;
-
-  /**
-   * The unique DatagramChannel object associated with this datagram socket,
-   * or null.
-   */
-  DatagramChannel ch;
 
   /**
    * This is the address we are "connected" to
@@ -157,8 +153,21 @@ public class DatagramSocket
     if (s != null)
       s.checkListen(port);
 
-    // Why is there no factory for this?
-    impl = new PlainDatagramSocketImpl();
+    String propVal = System.getProperty("impl.prefix");
+    if (propVal == null || propVal.equals(""))
+      impl = new PlainDatagramSocketImpl();
+    else
+      try
+	{
+          impl = (DatagramSocketImpl) Class.forName
+            ("java.net." + propVal + "DatagramSocketImpl").newInstance();
+	}
+      catch (Exception e)
+	{
+	  System.err.println("Could not instantiate class: java.net." +
+	    propVal + "DatagramSocketImpl");
+	  impl = new PlainDatagramSocketImpl();
+	}
     impl.create();
 
     if (laddr == null)
@@ -253,29 +262,28 @@ public class DatagramSocket
    */
   public InetAddress getLocalAddress()
   {
-    if (impl == null)
+    if (impl == null
+	|| closed)
       return null;
-
-    // FIXME: According to libgcj, checkConnect() is supposed to be called
-    // before performing this operation.  Problems: 1) We don't have the
-    // addr until after we do it, so we do a post check.  2). The docs I
-    // see don't require this in the Socket case, only DatagramSocket, but
-    // we'll assume they mean both.
-
+    
     InetAddress localAddr;
     
     try
       {
 	localAddr = (InetAddress) impl.getOption (SocketOptions.SO_BINDADDR);
+
+	SecurityManager s = System.getSecurityManager();
+	if (s != null)
+	  s.checkConnect (localAddr.getHostName(), -1);
+      }
+    catch (SecurityException e)
+      {
+	localAddr = InetAddress.ANY_IF;
       }
     catch (SocketException e)
       {
         return null;
       }
-    
-    SecurityManager sm = System.getSecurityManager();
-    if (sm != null)
-      sm.checkConnect(localAddr.getHostName(), getLocalPort());
 
     return localAddr;
   }
@@ -505,7 +513,8 @@ public class DatagramSocket
       throw new IOException (
         "Socket connected to a multicast address my not receive");
 
-    if (ch != null && !ch.isBlocking ())
+    if (getChannel() != null
+        && !getChannel().isBlocking ())
       throw new IllegalBlockingModeException ();
 
     impl.receive(p);
@@ -554,7 +563,8 @@ public class DatagramSocket
     // FIXME: if this is a subclass of MulticastSocket,
     // use getTimeToLive for TTL val.
 
-    if (ch != null && !ch.isBlocking ())
+    if (getChannel() != null
+        && !getChannel().isBlocking ())
       throw new IllegalBlockingModeException ();
 
     impl.send(p);
@@ -604,7 +614,7 @@ public class DatagramSocket
    */
   public DatagramChannel getChannel()
   {
-    return ch;
+    return null;
   }
 
   /**

@@ -8,12 +8,13 @@
  * of this file.
  */
 
-package java.net;
+package gnu.java.net;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.FileDescriptor;
+import java.net.*;
 
 /* XXX: This class should not be public!
  * It's public right now cause it's accessed from kaffe.net.
@@ -27,6 +28,7 @@ protected int timeout;
 private boolean closed;
 private boolean blocking;
 private boolean connecting;
+private int native_fd;
 
 static {
 	System.loadLibrary("net");
@@ -35,10 +37,17 @@ static {
 public PlainSocketImpl() {
         timeout = -1; // As defined in jsyscall.h
 	blocking = true;
+	native_fd = -1;
 	fd = new FileDescriptor();
 }
 
+public int getNativeFD() {
+	return native_fd;
+}
+
 protected void accept(SocketImpl s) throws IOException {
+	if (!(s instanceof PlainSocketImpl))
+	  throw new IllegalArgumentException("Kaffe only supports PlainSocketImpl in accept.");
 	socketAccept(s);
 }
 

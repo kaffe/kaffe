@@ -18,7 +18,7 @@
 #include "java_lang_Integer.h"
 #include "java_net_SocketImpl.h"
 #include "java_net_InetAddress.h"
-#include "java_net_PlainSocketImpl.h"
+#include "gnu_java_net_PlainSocketImpl.h"
 #include "java_net_SocketOptions.h"
 #include "java_io_InterruptedIOException.h"
 #include "nets.h"
@@ -108,7 +108,7 @@ ip2str(jint addr)
  * Create a stream or datagram socket.
  */
 void
-java_net_PlainSocketImpl_socketCreate(struct Hjava_net_PlainSocketImpl* this, jbool stream)
+gnu_java_net_PlainSocketImpl_socketCreate(struct Hgnu_java_net_PlainSocketImpl* this, jbool stream)
 {
 	int fd;
 	int type;
@@ -137,15 +137,16 @@ java_net_PlainSocketImpl_socketCreate(struct Hjava_net_PlainSocketImpl* this, jb
 	    )
 
 	unhand(unhand(this)->fd)->nativeFd = fd;
+	unhand(this)->native_fd = fd;
 }
 
 /*
  * Connect the socket to someone.
  */
 void
-java_net_PlainSocketImpl_socketConnect(struct Hjava_net_PlainSocketImpl* this,
-				       struct Hjava_net_InetAddress* daddr, 
-				       jint dport, jint timeout)
+gnu_java_net_PlainSocketImpl_socketConnect(struct Hgnu_java_net_PlainSocketImpl* this,
+					   struct Hjava_net_InetAddress* daddr, 
+					   jint dport, jint timeout)
 {
 	int fd;
 	int r;
@@ -206,9 +207,9 @@ java_net_PlainSocketImpl_socketConnect(struct Hjava_net_PlainSocketImpl* this,
  * Bind this socket to an address.
  */
 void
-java_net_PlainSocketImpl_socketBind(struct Hjava_net_PlainSocketImpl* this,
-				    struct Hjava_net_InetAddress* laddr, 
-				    jint lport)
+gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* this,
+					struct Hjava_net_InetAddress* laddr, 
+					jint lport)
 {
 	int r;
 	struct sockaddr_in addr;
@@ -270,7 +271,7 @@ java_net_PlainSocketImpl_socketBind(struct Hjava_net_PlainSocketImpl* this,
  * Turn this socket into a listener.
  */
 void
-java_net_PlainSocketImpl_socketListen(struct Hjava_net_PlainSocketImpl* this, jint count)
+gnu_java_net_PlainSocketImpl_socketListen(struct Hgnu_java_net_PlainSocketImpl* this, jint count)
 {
 	int r;
 
@@ -288,7 +289,7 @@ java_net_PlainSocketImpl_socketListen(struct Hjava_net_PlainSocketImpl* this, ji
  * Accept a connection.
  */
 void
-java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, struct Hjava_net_SocketImpl* sock)
+gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* this, struct Hjava_net_SocketImpl* sock)
 {
 	int r;
 	int rc;
@@ -327,6 +328,7 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}
 	unhand(unhand(sock)->fd)->nativeFd = r;
+	unhand((struct Hgnu_java_net_PlainSocketImpl *)sock)->native_fd = r;
 
 	/* Enter information into socket object */
 	alen = sizeof(addr);
@@ -377,7 +379,7 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
  * Return how many bytes can be read without blocking.
  */
 jint
-java_net_PlainSocketImpl_socketAvailable(struct Hjava_net_PlainSocketImpl* this)
+gnu_java_net_PlainSocketImpl_socketAvailable(struct Hgnu_java_net_PlainSocketImpl* this)
 {
 	int r;
 	jint len;
@@ -429,7 +431,7 @@ java_net_PlainSocketImpl_socketAvailable(struct Hjava_net_PlainSocketImpl* this)
  * Close this socket.
  */
 void
-java_net_PlainSocketImpl_socketClose(struct Hjava_net_PlainSocketImpl* this)
+gnu_java_net_PlainSocketImpl_socketClose(struct Hgnu_java_net_PlainSocketImpl* this)
 {
 	int r;
 
@@ -447,9 +449,9 @@ java_net_PlainSocketImpl_socketClose(struct Hjava_net_PlainSocketImpl* this)
 }
 
 void
-java_net_PlainSocketImpl_socketSetOption(struct Hjava_net_PlainSocketImpl* this,
-					 jint opt, 
-					 struct Hjava_lang_Object* arg)
+gnu_java_net_PlainSocketImpl_socketSetOption(struct Hgnu_java_net_PlainSocketImpl* this,
+					     jint opt, 
+					     struct Hjava_lang_Object* arg)
 {
 	int k, r, v;
 
@@ -505,7 +507,7 @@ java_net_PlainSocketImpl_socketSetOption(struct Hjava_net_PlainSocketImpl* this,
 }
 
 jint
-java_net_PlainSocketImpl_socketGetOption(struct Hjava_net_PlainSocketImpl* this, jint opt)
+gnu_java_net_PlainSocketImpl_socketGetOption(struct Hgnu_java_net_PlainSocketImpl* this, jint opt)
 {
 	struct sockaddr_in addr;
 	int alen = sizeof(addr);
@@ -558,7 +560,7 @@ java_net_PlainSocketImpl_socketGetOption(struct Hjava_net_PlainSocketImpl* this,
 }
 
 jint
-java_net_PlainSocketImpl_socketRead(struct Hjava_net_PlainSocketImpl* this, HArrayOfByte* buf, jint offset, jint len)
+gnu_java_net_PlainSocketImpl_socketRead(struct Hgnu_java_net_PlainSocketImpl* this, HArrayOfByte* buf, jint offset, jint len)
 {
         ssize_t r;
 	int rc;
@@ -604,7 +606,7 @@ java_net_PlainSocketImpl_socketRead(struct Hjava_net_PlainSocketImpl* this, HArr
 }
 
 void
-java_net_PlainSocketImpl_socketWrite(struct Hjava_net_PlainSocketImpl* this, HArrayOfByte* buf, jint offset, jint len)
+gnu_java_net_PlainSocketImpl_socketWrite(struct Hgnu_java_net_PlainSocketImpl* this, HArrayOfByte* buf, jint offset, jint len)
 {
 	int r;
 	int fd;
@@ -632,7 +634,7 @@ java_net_PlainSocketImpl_socketWrite(struct Hjava_net_PlainSocketImpl* this, HAr
 }
 
 void
-java_net_PlainSocketImpl_setBlocking(struct Hjava_net_PlainSocketImpl* this, jbool blocking)
+gnu_java_net_PlainSocketImpl_setBlocking(struct Hgnu_java_net_PlainSocketImpl* this, jbool blocking)
 {
 	if (blocking == unhand(this)->blocking)
 		return;
@@ -642,7 +644,7 @@ java_net_PlainSocketImpl_setBlocking(struct Hjava_net_PlainSocketImpl* this, jbo
 }
 
 void
-java_net_PlainSocketImpl_waitForConnection(struct Hjava_net_PlainSocketImpl* this)
+gnu_java_net_PlainSocketImpl_waitForConnection(struct Hgnu_java_net_PlainSocketImpl* this)
 {
 	fd_set w;
 	int fd = (int)unhand(unhand(this)->fd)->nativeFd;

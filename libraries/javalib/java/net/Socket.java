@@ -1,5 +1,5 @@
 /* Socket.java -- Client socket implementation
-   Copyright (C) 1998, 1999, 2000, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000, 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,8 +35,10 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.net;
 
+import gnu.java.net.PlainSocketImpl;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -84,8 +86,6 @@ public class Socket
 
   private boolean inputShutdown = false;
   private boolean outputShutdown = false;
-
-  SocketChannel ch; // this field must have been set if created by SocketChannel
 
   private boolean closed = false;
 
@@ -296,15 +296,6 @@ public class Socket
     // that default.  JDK 1.2 doc infers not to do a bind.
   }
 
-  /*
-   * This method may only be used by java.nio.channels.ServerSocketChannel.accept and
-   * java.nio.channels.SocketChannel.open.
-   */
-  void setChannel (SocketChannel ch)
-  {
-    this.ch = ch;
-  }
-
   /**
    * Binds the socket to the givent local address/port
    *
@@ -399,7 +390,8 @@ public class Socket
     if (! (endpoint instanceof InetSocketAddress))
       throw new IllegalArgumentException ("Address type not supported");
 
-    if (ch != null && !ch.isBlocking ())
+    if (getChannel() != null
+        && !getChannel().isBlocking ())
       throw new IllegalBlockingModeException ();
   
     if (!isBound ())
@@ -880,8 +872,8 @@ public class Socket
     if (impl != null)
       impl.close();
 
-    if (ch != null)
-      ch.close();
+    if (getChannel() != null)
+      getChannel().close();
     
     closed = true;
   }
@@ -968,7 +960,7 @@ public class Socket
    */
   public SocketChannel getChannel()
   {
-    return ch;
+    return null;
   }
 
   /**

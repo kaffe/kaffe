@@ -290,6 +290,7 @@ Klasses_jar_SRCS = \
 	$(gnu_java_lang_SRCS) \
 	$(gnu_java_lang_reflect_SRCS) \
 	$(gnu_java_locale_SRCS) \
+	$(gnu_java_net_SRCS) \
 	$(gnu_java_nio_SRCS) \
 	$(gnu_java_nio_charset_SRCS) \
 	$(gnu_java_rmi_SRCS) \
@@ -610,14 +611,26 @@ gnu_java_locale_SRCS = \
 	gnu/java/locale/LocaleInformation_zh_SG.java \
 	gnu/java/locale/LocaleInformation_zh_TW.java
 
+gnu_java_net_SRCS = \
+	gnu/java/net/PlainDatagramSocketImpl.java \
+	gnu/java/net/PlainSocketImpl.java \
+	gnu/java/net/SocketInputStream.java \
+	gnu/java/net/SocketOutputStream.java
+
 gnu_java_nio_SRCS = \
 	gnu/java/nio/DatagramChannelImpl.java \
+	gnu/java/nio/DatagramChannelSelectionKey.java \
+	gnu/java/nio/FileLockImpl.java \
+	gnu/java/nio/NIOConstants.java \
+	gnu/java/nio/NIODatagramSocket.java \
+	gnu/java/nio/NIOSocket.java \
 	gnu/java/nio/PipeImpl.java \
 	gnu/java/nio/SelectionKeyImpl.java \
 	gnu/java/nio/SelectorImpl.java \
 	gnu/java/nio/SelectorProviderImpl.java \
 	gnu/java/nio/ServerSocketChannelImpl.java \
-	gnu/java/nio/SocketChannelImpl.java
+	gnu/java/nio/SocketChannelImpl.java \
+	gnu/java/nio/SocketChannelSelectionKey.java
 
 gnu_java_nio_charset_SRCS = \
 	gnu/java/nio/charset/ISO_8859_1.java \
@@ -1425,8 +1438,6 @@ java_net_SRCS = \
 	java/net/NetworkInterface.java \
 	java/net/NoRouteToHostException.java \
 	java/net/PasswordAuthentication.java \
-	java/net/PlainDatagramSocketImpl.java \
-	java/net/PlainSocketImpl.java \
 	java/net/PortUnreachableException.java \
 	java/net/ProtocolException.java \
 	java/net/ServerSocket.java \
@@ -1434,10 +1445,8 @@ java_net_SRCS = \
 	java/net/SocketException.java \
 	java/net/SocketImplFactory.java \
 	java/net/SocketImpl.java \
-	java/net/SocketInputStream.java \
 	java/net/Socket.java \
 	java/net/SocketOptions.java \
-	java/net/SocketOutputStream.java \
 	java/net/SocketPermission.java \
 	java/net/SocketTimeoutException.java \
 	java/net/UnknownHostException.java \
@@ -1456,6 +1465,7 @@ java_nio_SRCS = \
 	java/nio/Buffer.java \
 	java/nio/BufferOverflowException.java \
 	java/nio/BufferUnderflowException.java \
+	java/nio/ByteBufferHelper.java \
 	java/nio/ByteBufferImpl.java \
 	java/nio/ByteBuffer.java \
 	java/nio/ByteOrder.java \

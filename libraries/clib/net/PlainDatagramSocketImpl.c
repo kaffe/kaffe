@@ -21,7 +21,7 @@
 #include "java_net_DatagramPacket.h"
 #include "java_net_NetworkInterface.h"
 #include "java_net_SocketAddress.h"
-#include "java_net_PlainDatagramSocketImpl.h"
+#include "gnu_java_net_PlainDatagramSocketImpl.h"
 #include "java_net_InetSocketAddress.h"
 #include "java_net_InetAddress.h"
 #include "java_net_SocketOptions.h"
@@ -90,7 +90,7 @@ ip2str(jint addr)
  * Create a datagram socket.
  */
 void
-java_net_PlainDatagramSocketImpl_datagramSocketCreate(struct Hjava_net_PlainDatagramSocketImpl* this)
+gnu_java_net_PlainDatagramSocketImpl_datagramSocketCreate(struct Hgnu_java_net_PlainDatagramSocketImpl* this)
 {
 	int fd;
 	int rc;
@@ -105,6 +105,7 @@ DBG(NATIVENET,
 		SignalError("java.net.SocketException", SYS_ERROR(rc));
 	}
 	unhand(unhand(this)->fd)->nativeFd = fd;
+	unhand(this)->native_fd = fd;
 
 DBG(NATIVENET,
 	dprintf("datagram_create(%p) -> fd=%d\n", this, fd);
@@ -124,7 +125,7 @@ DBG(NATIVENET,
  * Bind a port to the socket.
  */
 void
-java_net_PlainDatagramSocketImpl_bind(struct Hjava_net_PlainDatagramSocketImpl* this, jint port, struct Hjava_net_InetAddress* laddr)
+gnu_java_net_PlainDatagramSocketImpl_bind(struct Hgnu_java_net_PlainDatagramSocketImpl* this, jint port, struct Hjava_net_InetAddress* laddr)
 {
 	int r;
 	struct sockaddr_in addr;
@@ -176,7 +177,7 @@ DBG(NATIVENET,
 }
 
 void
-java_net_PlainDatagramSocketImpl_send(struct Hjava_net_PlainDatagramSocketImpl* this, struct Hjava_net_DatagramPacket* pkt)
+gnu_java_net_PlainDatagramSocketImpl_send(struct Hgnu_java_net_PlainDatagramSocketImpl* this, struct Hjava_net_DatagramPacket* pkt)
 {
 	int rc;
 	ssize_t bsent;
@@ -215,7 +216,7 @@ DBG(NATIVENET,
 }
 
 jint
-java_net_PlainDatagramSocketImpl_peek(struct Hjava_net_PlainDatagramSocketImpl* this, struct Hjava_net_InetAddress* addr)
+gnu_java_net_PlainDatagramSocketImpl_peek(struct Hgnu_java_net_PlainDatagramSocketImpl* this, struct Hjava_net_InetAddress* addr)
 {
 	ssize_t r;
 	int rc;
@@ -235,7 +236,7 @@ java_net_PlainDatagramSocketImpl_peek(struct Hjava_net_PlainDatagramSocketImpl* 
 }
 
 void
-java_net_PlainDatagramSocketImpl_receive(struct Hjava_net_PlainDatagramSocketImpl* this, struct Hjava_net_DatagramPacket* pkt)
+gnu_java_net_PlainDatagramSocketImpl_receive(struct Hgnu_java_net_PlainDatagramSocketImpl* this, struct Hjava_net_DatagramPacket* pkt)
 {
 	ssize_t r;
 	int rc;
@@ -319,7 +320,7 @@ DBG(NATIVENET,
  * Close the socket.
  */
 void
-java_net_PlainDatagramSocketImpl_datagramSocketClose(struct Hjava_net_PlainDatagramSocketImpl* this)
+gnu_java_net_PlainDatagramSocketImpl_datagramSocketClose(struct Hgnu_java_net_PlainDatagramSocketImpl* this)
 {
 	int r;
 
@@ -338,7 +339,7 @@ DBG(NATIVENET,
 
 
 void
-java_net_PlainDatagramSocketImpl_socketSetOption(struct Hjava_net_PlainDatagramSocketImpl* this, jint opt, struct Hjava_lang_Object* arg)
+gnu_java_net_PlainDatagramSocketImpl_socketSetOption(struct Hgnu_java_net_PlainDatagramSocketImpl* this, jint opt, struct Hjava_lang_Object* arg)
 {
 	struct Hjava_net_InetAddress* addrp;
 	int k, v, r;
@@ -394,7 +395,7 @@ java_net_PlainDatagramSocketImpl_socketSetOption(struct Hjava_net_PlainDatagramS
 }
 
 jint
-java_net_PlainDatagramSocketImpl_socketGetOption(struct Hjava_net_PlainDatagramSocketImpl* this, jint opt)
+gnu_java_net_PlainDatagramSocketImpl_socketGetOption(struct Hgnu_java_net_PlainDatagramSocketImpl* this, jint opt)
 {
 	int k, r, v;
 	int vsize = sizeof(v);
@@ -447,7 +448,7 @@ java_net_PlainDatagramSocketImpl_socketGetOption(struct Hjava_net_PlainDatagramS
  * Join multicast group
  */
 void
-java_net_PlainDatagramSocketImpl_join(struct Hjava_net_PlainDatagramSocketImpl* this, struct Hjava_net_InetAddress* laddr)
+gnu_java_net_PlainDatagramSocketImpl_join(struct Hgnu_java_net_PlainDatagramSocketImpl* this, struct Hjava_net_InetAddress* laddr)
 {
 #if defined(IP_ADD_MEMBERSHIP)
 	int r;
@@ -471,7 +472,7 @@ java_net_PlainDatagramSocketImpl_join(struct Hjava_net_PlainDatagramSocketImpl* 
  * leave multicast group
  */
 void
-java_net_PlainDatagramSocketImpl_leave(struct Hjava_net_PlainDatagramSocketImpl* this, struct Hjava_net_InetAddress* laddr)
+gnu_java_net_PlainDatagramSocketImpl_leave(struct Hgnu_java_net_PlainDatagramSocketImpl* this, struct Hjava_net_InetAddress* laddr)
 {
 #if defined(IP_DROP_MEMBERSHIP)
 	int r;
@@ -495,7 +496,7 @@ java_net_PlainDatagramSocketImpl_leave(struct Hjava_net_PlainDatagramSocketImpl*
  * Join multicast group
  */
 void
-java_net_PlainDatagramSocketImpl_joinGroup(struct Hjava_net_PlainDatagramSocketImpl* this, struct Hjava_net_SocketAddress *jsa, struct Hjava_net_NetworkInterface *jni)
+gnu_java_net_PlainDatagramSocketImpl_joinGroup(struct Hgnu_java_net_PlainDatagramSocketImpl* this, struct Hjava_net_SocketAddress *jsa, struct Hjava_net_NetworkInterface *jni)
 {
 #if defined(IP_ADD_MEMBERSHIP)
 	struct Hjava_net_InetSocketAddress *jisa;
@@ -536,7 +537,7 @@ java_net_PlainDatagramSocketImpl_joinGroup(struct Hjava_net_PlainDatagramSocketI
  * Leave multicast group
  */
 void
-java_net_PlainDatagramSocketImpl_leaveGroup(struct Hjava_net_PlainDatagramSocketImpl* this, struct Hjava_net_SocketAddress *jsa, struct Hjava_net_NetworkInterface *jni)
+gnu_java_net_PlainDatagramSocketImpl_leaveGroup(struct Hgnu_java_net_PlainDatagramSocketImpl* this, struct Hjava_net_SocketAddress *jsa, struct Hjava_net_NetworkInterface *jni)
 {
 #if defined(IP_ADD_MEMBERSHIP)
 	struct Hjava_net_InetSocketAddress *jisa;
@@ -577,7 +578,7 @@ java_net_PlainDatagramSocketImpl_leaveGroup(struct Hjava_net_PlainDatagramSocket
  * set multicast-TTL
  */
 void
-java_net_PlainDatagramSocketImpl_setTTL(struct Hjava_net_PlainDatagramSocketImpl* this, jbool ttl)
+gnu_java_net_PlainDatagramSocketImpl_setTTL(struct Hgnu_java_net_PlainDatagramSocketImpl* this, jbool ttl)
 {
 #if defined(IP_MULTICAST_TTL)
 	int r;
@@ -598,7 +599,7 @@ java_net_PlainDatagramSocketImpl_setTTL(struct Hjava_net_PlainDatagramSocketImpl
  * get multicast-TTL
  */
 jbyte
-java_net_PlainDatagramSocketImpl_getTTL(struct Hjava_net_PlainDatagramSocketImpl* this)
+gnu_java_net_PlainDatagramSocketImpl_getTTL(struct Hgnu_java_net_PlainDatagramSocketImpl* this)
 {
 #if defined(IP_MULTICAST_TTL)
 	unsigned char v;

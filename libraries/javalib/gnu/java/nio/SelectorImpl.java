@@ -1,5 +1,5 @@
 /* SelectorImpl.java -- 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -37,6 +37,7 @@ exception statement from your version. */
 
 package gnu.java.nio;
 
+import java.io.IOException;
 import java.nio.channels.ClosedSelectorException;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
@@ -44,155 +45,232 @@ import java.nio.channels.Selector;
 import java.nio.channels.spi.AbstractSelectableChannel;
 import java.nio.channels.spi.AbstractSelector;
 import java.nio.channels.spi.SelectorProvider;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 public class SelectorImpl extends AbstractSelector
 {
-  boolean closed = false;
-  Set keys, selected, canceled;
+  private Set keys;
+  private Set selected;
 
   public SelectorImpl (SelectorProvider provider)
   {
     super (provider);
+    
+    keys = new HashSet ();
+    selected = new HashSet ();
   }
 
-  public Set keys ()
+  protected void finalize() throws Throwable
   {
-    return keys;
+    close();
+  }
+
+  protected final void implCloseSelector()
+    throws IOException
+  {
+    // FIXME: We surely need to do more here.
+    wakeup();
+  }
+
+  public final Set keys()
+  {
+    return Collections.unmodifiableSet (keys);
   }
     
-  public int selectNow ()
+  public final int selectNow()
+    throws IOException
   {
     return select (1);
   }
 
-  public int select ()
+  public final int select()
+    throws IOException
   {
-    return select (Long.MAX_VALUE);
+    return select (-1);
   }
 
-//   private static native int java_do_select(int[] read, int[] write,
-//                                            int[] except, long timeout);
+  // A timeout value of -1 means block forever.
+  private static native int implSelect (int[] read, int[] write,
+                                        int[] except, long timeout);
 
-  private static int java_do_select (int[] read, int[] write,
-                                     int[] except, long timeout)
+  private final int[] getFDsAsArray (int ops)
   {
-    return 0;
+    int[] result;
+    int counter = 0;
+    Iterator it = keys.iterator ();
+
+    // Count the number of file descriptors needed
+    while (it.hasNext ())
+      {
+        SelectionKeyImpl key = (SelectionKeyImpl) it.next ();
+
+        if ((key.interestOps () & ops) != 0)
+          {
+            counter++;
+          }
+      }
+
+    result = new int[counter];
+
+    counter = 0;
+    it = keys.iterator ();
+
+    // Fill the array with the file descriptors
+    while (it.hasNext ())
+      {
+        SelectionKeyImpl key = (SelectionKeyImpl) it.next ();
+
+        if ((key.interestOps () & ops) != 0)
+          {
+            result[counter] = key.getNativeFD();
+            counter++;
+          }
+      }
+
+    return result;
   }
 
   public int select (long timeout)
   {
-    if (closed)
-      {
-        throw new ClosedSelectorException ();
-      }
+    if (!isOpen())
+      throw new ClosedSelectorException ();
 
     if (keys == null)
 	    {
         return 0;
 	    }
 
-    int[] read = new int[keys.size ()];
-    int[] write = new int[keys.size ()];
-    int[] except = new int[keys.size ()];
-    int i = 0;
+    deregisterCancelledKeys();
+
+    // Set only keys with the needed interest ops into the arrays.
+    int[] read = getFDsAsArray (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT);
+    int[] write = getFDsAsArray (SelectionKey.OP_WRITE | SelectionKey.OP_CONNECT);
+    int[] except = new int [0]; // FIXME: We dont need to check this yet
+    int anzahl = read.length + write.length + except.length;
+
+    // Call the native select() on all file descriptors.
+    begin();
+    int result = implSelect (read, write, except, timeout);
+    end();
+
     Iterator it = keys.iterator ();
 
     while (it.hasNext ())
-	    {
-        SelectionKeyImpl k = (SelectionKeyImpl) it.next ();
-        read[i] = k.fd;
-        write[i] = k.fd;
-        except[i] = k.fd;
-        i++;
-	    }
+      {
+        int ops = 0;
+        SelectionKeyImpl key = (SelectionKeyImpl) it.next ();
 
-    int ret = java_do_select (read, write, except, timeout);
-
-    i = 0;
-    it = keys.iterator ();
-
-    while (it.hasNext ())
-	    {
-        SelectionKeyImpl k = (SelectionKeyImpl) it.next ();
-
-        if (read[i] != -1 ||
-            write[i] != -1 ||
-            except[i] != -1)
+        // If key is already selected retrieve old ready ops.
+        if (selected.contains (key))
           {
-            add_selected (k);
+            ops = key.readyOps ();
           }
 
-        i++;
-	    }
+        // Set new ready read/accept ops
+        for (int i = 0; i < read.length; i++)
+          {
+            if (key.getNativeFD() == read[i])
+              {
+                if (key.channel () instanceof ServerSocketChannelImpl)
+                  {
+                    ops = ops | SelectionKey.OP_ACCEPT;
+                  }
+                else
+                  {
+                    ops = ops | SelectionKey.OP_READ;
+                  }
+              }
+          }
 
-    return ret;
+        // Set new ready write ops
+        for (int i = 0; i < write.length; i++)
+          {
+            if (key.getNativeFD() == write[i])
+              {
+                ops = ops | SelectionKey.OP_WRITE;
+                
+//                 if (key.channel ().isConnected ())
+//                   {
+//                     ops = ops | SelectionKey.OP_WRITE;
+//                   }
+//                 else
+//                   {
+//                     ops = ops | SelectionKey.OP_CONNECT;
+//                   }
+             }
+          }
+
+        // FIXME: We dont handle exceptional file descriptors yet.
+
+        // If key is not yet selected add it.
+        if (!selected.contains (key))
+          {
+            selected.add (key);
+          }
+
+        // Set new ready ops
+        key.readyOps (key.interestOps () & ops);
+      }
+
+    deregisterCancelledKeys();
+    return result;
   }
     
-  public Set selectedKeys ()
+  public final Set selectedKeys()
   {
     return selected;
   }
 
-  public Selector wakeup ()
+  public final Selector wakeup()
   {
     return null;
   }
 
-  public void add (SelectionKeyImpl k)
+  private final void deregisterCancelledKeys()
   {
-    if (keys == null)
-	    keys = new HashSet ();
+    Iterator it = cancelledKeys().iterator();
 
-    keys.add (k);
+    while (it.hasNext ())
+      {
+        keys.remove ((SelectionKeyImpl) it.next ());
+        it.remove ();
+      }
   }
 
-  void add_selected (SelectionKeyImpl k)
-  {
-    if (selected == null)
-	    selected = new HashSet ();
-
-    selected.add(k);
-  }
-
-  protected void implCloseSelector ()
-  {
-    closed = true;
-  }
-    
   protected SelectionKey register (SelectableChannel ch, int ops, Object att)
   {
     return register ((AbstractSelectableChannel) ch, ops, att);
   }
 
-  protected SelectionKey register (AbstractSelectableChannel ch, int ops,
-                                   Object att)
+  protected final SelectionKey register (AbstractSelectableChannel ch, int ops,
+                                         Object att)
   {
     SelectionKeyImpl result;
     
     if (ch instanceof SocketChannelImpl)
       {
         SocketChannelImpl sc = (SocketChannelImpl) ch;
-        result = new SelectionKeyImpl (ch, this, 0); // FIXME: last argument
+        result = new SocketChannelSelectionKey (ch, this); // FIXME: last argument
       }
     else if (ch instanceof DatagramChannelImpl)
       {
         DatagramChannelImpl dc = (DatagramChannelImpl) ch;
-        result = new SelectionKeyImpl (ch, this, 0); // FIXME: last argument
+        result = new DatagramChannelSelectionKey (ch, this); // FIXME: last argument
       }
     else if (ch instanceof ServerSocketChannelImpl)
       {
         ServerSocketChannelImpl ssc = (ServerSocketChannelImpl) ch;
-        result = new SelectionKeyImpl (ch, this, 0); // FIXME: last argument
+        result = new SocketChannelSelectionKey (ch, this); // FIXME: last argument
       }
     else
       {
         throw new InternalError ("No known channel type");
       }
 
-    add (result);
+    keys.add (result);
     result.interestOps (ops);
     result.attach (att);
     return result;

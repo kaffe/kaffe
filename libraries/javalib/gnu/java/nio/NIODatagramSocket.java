@@ -1,5 +1,5 @@
-/* SelectionKeyImpl.java -- 
-   Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+/* NIODatagramSocket.java -- 
+   Copyright (C) 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,70 +35,37 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package gnu.java.nio;
 
-import java.nio.channels.CancelledKeyException;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.spi.AbstractSelectionKey;
+import gnu.java.net.PlainDatagramSocketImpl;
+import java.io.IOException;
+import java.net.DatagramSocket;
+import java.nio.channels.DatagramChannel;
 
-public abstract class SelectionKeyImpl extends AbstractSelectionKey
+/**
+ * @author Michael Koch
+ */
+public final class NIODatagramSocket extends DatagramSocket
 {
-  private int readyOps;
-  private int interestOps;
-  private SelectorImpl impl;
-  SelectableChannel ch;
-
-  public SelectionKeyImpl (SelectableChannel ch, SelectorImpl impl)
+  private PlainDatagramSocketImpl impl;
+  private DatagramChannelImpl channel;
+    
+  public NIODatagramSocket (PlainDatagramSocketImpl impl,
+                            DatagramChannelImpl channel)
   {
-    this.ch  = ch;
+    super (impl);
     this.impl = impl;
+    this.channel = channel;
   }
 
-  public SelectableChannel channel ()
-  {
-    return ch;
-  }
-
-  public int readyOps ()
-  {
-    if (!isValid())
-      throw new CancelledKeyException();
-    
-    return readyOps;
-  }
-
-  public SelectionKey readyOps (int ops)
-  {
-    if (!isValid())
-      throw new CancelledKeyException();
-    
-    readyOps = ops;
-    return this;
-  }
-
-  public int interestOps ()
-  {
-    if (!isValid())
-      throw new CancelledKeyException();
-    
-    return interestOps;    
-  }
-
-  public SelectionKey interestOps (int ops)
-  {
-    if (!isValid())
-      throw new CancelledKeyException();
-    
-    interestOps = ops;
-    return this;
-  }
-    
-  public Selector selector ()
+  public final PlainDatagramSocketImpl getImpl()
   {
     return impl;
   }
 
-  public abstract int getNativeFD();
+  public final DatagramChannel getChannel()
+  {
+    return channel;
+  }
 }

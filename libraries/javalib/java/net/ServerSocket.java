@@ -1,5 +1,5 @@
 /* ServerSocket.java -- Class for implementing server side sockets
-   Copyright (C) 1998, 1999, 2000, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000, 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,8 +35,10 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.net;
 
+import gnu.java.net.PlainSocketImpl;
 import java.io.IOException;
 import java.nio.channels.IllegalBlockingModeException;
 import java.nio.channels.ServerSocketChannel;
@@ -70,12 +72,6 @@ public class ServerSocket
    * class are redirected
    */
   private SocketImpl impl;
-
-  /**
-   * ServerSocketChannel of this ServerSocket. This channel only exists
-   * when the socket is created by ServerSocketChannel.open().
-   */
-  private ServerSocketChannel ch;
 
   private boolean closed = false;
   
@@ -156,14 +152,6 @@ public class ServerSocket
 
     // bind/listen socket
     bind (new InetSocketAddress (bindAddr, port), backlog);
-  }
-
-  /*
-   * This method may only be used by java.nio.channels.ServerSocketChannel.open.
-   */
-  void setChannel (ServerSocketChannel ch)
-  {
-    this.ch = ch;
   }
 
   /**
@@ -316,7 +304,8 @@ public class ServerSocket
   protected final void implAccept (Socket s)
     throws IOException
   {
-    if (ch != null && !ch.isBlocking())
+    if (getChannel() != null
+        && !getChannel().isBlocking())
       throw new IllegalBlockingModeException();
 	    
     impl.accept(s.impl);
@@ -332,8 +321,8 @@ public class ServerSocket
     if (impl != null)
       impl.close ();
 
-    if (ch != null)
-      ch.close ();
+    if (getChannel() != null)
+      getChannel().close ();
     
     closed = true;
   }
@@ -349,7 +338,7 @@ public class ServerSocket
    */
   public ServerSocketChannel getChannel()
   {
-    return ch;
+    return null;
   }
 
   /**

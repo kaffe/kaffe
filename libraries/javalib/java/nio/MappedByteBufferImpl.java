@@ -58,6 +58,15 @@ public class MappedByteBufferImpl extends MappedByteBuffer
     limit ((int) si);
   }
 
+  public MappedByteBufferImpl (FileChannelImpl ch, int offset, int capacity, int limit, int position, int mark, boolean readOnly)
+  {
+    super (capacity, limit, position, mark);
+
+    this.ch = ch;
+    this.array_offset = offset;
+    this.readOnly = readOnly;
+  }
+  
   public boolean isReadOnly ()
   {
     return readOnly;
@@ -102,7 +111,16 @@ public class MappedByteBufferImpl extends MappedByteBuffer
 
   public ByteBuffer compact ()
   {
-    throw new Error ("Not implemented");
+    int copied = 0;
+    
+    while (remaining () > 0)
+      {
+	put (copied, get ());
+	copied++;
+      }
+
+    position (copied);
+    return this;
   }
 
   public boolean isDirect ()
@@ -155,123 +173,123 @@ public class MappedByteBufferImpl extends MappedByteBuffer
     return new DoubleViewBufferImpl (this, position (), remaining(), remaining (), 0, -1, isReadOnly ());
   }
 
-  public char getChar ()
+  public final char getChar()
   {
-    throw new Error ("Not implemented");
+    return ByteBufferHelper.getChar (this);
+  }
+  
+  public final ByteBuffer putChar (char value)
+  {
+    return ByteBufferHelper.putChar (this, value);
+  }
+  
+  public final char getChar (int index)
+  {
+    return ByteBufferHelper.getChar (this, index);
+  }
+  
+  public final ByteBuffer putChar (int index, char value)
+  {
+    return ByteBufferHelper.putChar (this, index, value);
   }
 
-  public char getChar (int index)
+  public final short getShort()
   {
-    throw new Error ("Not implemented");
+    return ByteBufferHelper.getShort (this);
+  }
+  
+  public final ByteBuffer putShort (short value)
+  {
+    return ByteBufferHelper.putShort (this, value);
+  }
+  
+  public final short getShort (int index)
+  {
+    return ByteBufferHelper.getShort (this, index);
+  }
+  
+  public final ByteBuffer putShort (int index, short value)
+  {
+    return ByteBufferHelper.putShort (this, index, value);
   }
 
-  public ByteBuffer putChar (char value)
+  public final int getInt()
   {
-    throw new Error ("Not implemented");
+    return ByteBufferHelper.getInt (this);
+  }
+  
+  public final ByteBuffer putInt (int value)
+  {
+    return ByteBufferHelper.putInt (this, value);
+  }
+  
+  public final int getInt (int index)
+  {
+    return ByteBufferHelper.getInt (this, index);
+  }
+  
+  public final ByteBuffer putInt (int index, int value)
+  {
+    return ByteBufferHelper.putInt (this, index, value);
   }
 
-  public ByteBuffer putChar (int index, char value)
+  public final long getLong()
   {
-    throw new Error ("Not implemented");
+    return ByteBufferHelper.getLong (this);
+  }
+  
+  public final ByteBuffer putLong (long value)
+  {
+    return ByteBufferHelper.putLong (this, value);
+  }
+  
+  public final long getLong (int index)
+  {
+    return ByteBufferHelper.getLong (this, index);
+  }
+  
+  public final ByteBuffer putLong (int index, long value)
+  {
+    return ByteBufferHelper.putLong (this, index, value);
   }
 
-  public double getDouble ()
+  public final float getFloat()
   {
-    throw new Error ("Not implemented");
+    return ByteBufferHelper.getFloat (this);
+  }
+  
+  public final ByteBuffer putFloat (float value)
+  {
+    return ByteBufferHelper.putFloat (this, value);
+  }
+  
+  public final float getFloat (int index)
+  {
+    return ByteBufferHelper.getFloat (this, index);
   }
 
-  public double getDouble (int index)
+  public final ByteBuffer putFloat (int index, float value)
   {
-    throw new Error ("Not implemented");
+    return ByteBufferHelper.putFloat (this, index, value);
   }
 
-  public ByteBuffer putDouble (double value)
+  public final double getDouble()
   {
-    throw new Error ("Not implemented");
+    return ByteBufferHelper.getDouble (this);
   }
 
-  public ByteBuffer putDouble (int index, double value)
+  public final ByteBuffer putDouble (double value)
   {
-    throw new Error ("Not implemented");
+    return ByteBufferHelper.putDouble (this, value);
   }
-
-  public float getFloat ()
+  
+  public final double getDouble (int index)
   {
-    throw new Error ("Not implemented");
+    return ByteBufferHelper.getDouble (this, index);
   }
-
-  public float getFloat (int index)
+  
+  public final ByteBuffer putDouble (int index, double value)
   {
-    throw new Error ("Not implemented");
-  }
-
-  public ByteBuffer putFloat (float value)
-  {
-    throw new Error ("Not implemented");
-  }
-
-  public ByteBuffer putFloat (int index, float value)
-  {
-    throw new Error ("Not implemented");
-  }
-
-  public int getInt ()
-  {
-    throw new Error ("Not implemented");
-  }
-
-  public int getInt (int index)
-  {
-    throw new Error ("Not implemented");
-  }
-
-  public ByteBuffer putInt (int value)
-  {
-    throw new Error ("Not implemented");
-  }
-
-  public ByteBuffer putInt (int index, int value)
-  {
-    throw new Error ("Not implemented");
-  }
-
-  public long getLong ()
-  {
-    throw new Error ("Not implemented");
-  }
-
-  public long getLong (int index)
-  {
-    throw new Error ("Not implemented");
-  }
-
-  public ByteBuffer putLong (long value)
-  {
-    throw new Error ("Not implemented");
-  }
-
-  public ByteBuffer putLong (int index, long value)
-  {
-    throw new Error ("Not implemented");
-  }
-
-  public short getShort ()
-  {
-    throw new Error ("Not implemented");
-  }
-
-  public short getShort (int index)
-  {
-    throw new Error ("Not implemented");
-  }
-
-  public ByteBuffer putShort (short value)
-  {
-    throw new Error ("Not implemented");
-  }
-
-  public ByteBuffer putShort (int index, short value)
-  {
-    throw new Error ("Not implemented");
+    return ByteBufferHelper.putDouble (this, index, value);
   }
 }

@@ -1,5 +1,5 @@
-/* SelectionKeyImpl.java -- 
-   Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+/* FileChannelImpl.java -- 
+   Copyright (C) 2002 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,70 +35,42 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package gnu.java.nio;
 
-import java.nio.channels.CancelledKeyException;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.spi.AbstractSelectionKey;
+import java.io.FileDescriptor;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 
-public abstract class SelectionKeyImpl extends AbstractSelectionKey
+/**
+ * @author Michael Koch
+ * @since 1.4
+ */
+public class FileLockImpl extends FileLock
 {
-  private int readyOps;
-  private int interestOps;
-  private SelectorImpl impl;
-  SelectableChannel ch;
-
-  public SelectionKeyImpl (SelectableChannel ch, SelectorImpl impl)
+  private FileDescriptor fd;
+  private boolean released;
+  
+  public FileLockImpl (FileDescriptor fd, FileChannel channel, long position,
+                       long size, boolean shared)
   {
-    this.ch  = ch;
-    this.impl = impl;
+    super (channel, position, size, shared);
+    this.fd = fd;
+    this.released = false;
+  }
+  
+  public boolean isValid ()
+  {
+    return (released
+            || !channel ().isOpen ());
   }
 
-  public SelectableChannel channel ()
-  {
-    return ch;
-  }
+  private native void releaseImpl () throws IOException;
 
-  public int readyOps ()
+  public synchronized void release () throws IOException
   {
-    if (!isValid())
-      throw new CancelledKeyException();
-    
-    return readyOps;
+    releaseImpl ();
+    released = true;
   }
-
-  public SelectionKey readyOps (int ops)
-  {
-    if (!isValid())
-      throw new CancelledKeyException();
-    
-    readyOps = ops;
-    return this;
-  }
-
-  public int interestOps ()
-  {
-    if (!isValid())
-      throw new CancelledKeyException();
-    
-    return interestOps;    
-  }
-
-  public SelectionKey interestOps (int ops)
-  {
-    if (!isValid())
-      throw new CancelledKeyException();
-    
-    interestOps = ops;
-    return this;
-  }
-    
-  public Selector selector ()
-  {
-    return impl;
-  }
-
-  public abstract int getNativeFD();
 }
