@@ -1,5 +1,5 @@
 #! /bin/sh
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-exec @bindir@/@kaffe_TRANSF@ sun.tools.javap.JavaP ${1+"$@"}
+exec @bindir@/@kaffe_TRANSF@ kaffe.tools.javap.JavaP ${1+"$@"}
 
