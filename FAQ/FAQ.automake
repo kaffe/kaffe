@@ -21,7 +21,9 @@ AM_CPPFLAGS.  Prefer the latter for preprocessor definitions such as
 
 - using automake means editing Makefile.am instead of Makefile.in, and
 that it will take care of rebuilding autoconf/automake-related files
-whenever they become out-of-date.
+whenever they become out-of-date, but only if you
+--enable-maintainer-mode at configure time.  If not, you'll have to
+run aclocal, automake, autoconf and autoheader -l config by yourself.
 
 - you also have to specify which files should go in a distribution
 (make dist): they should either be listed as sources to some binary or

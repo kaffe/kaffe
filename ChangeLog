@@ -1,3 +1,10 @@
+Wed Jan 13 05:06:50 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in, libltdl/configure.in: replace autoconf/automake
+	version checking with AM_MAINTAINER_MODE
+	* */aclocal.m4, */configure, */Makefile.in: regen
+	* FAQ/FAQ.automake: note about --enable-maintainer-mode
+
 Wed Jan 13 03:48:28 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* config/sparc/common.h (sysdepCallMethod): don't try to use the

@@ -94,6 +94,7 @@ KVMLIBFLAGS = @KVMLIBFLAGS@
 LD = @LD@
 LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
+MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MAKE_KAFFEH_FOR_HOST = @MAKE_KAFFEH_FOR_HOST@
 MATH_LIBS = @MATH_LIBS@
@@ -139,7 +140,7 @@ TAR = tar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
-$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu config/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
@@ -157,7 +158,7 @@ stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	  && CONFIG_FILES= CONFIG_HEADERS=config/config.h \
 	     $(SHELL) ./config.status
 	@echo timestamp > stamp-h1 2> /dev/null
-$(srcdir)/config.h.in: $(srcdir)/stamp-h1.in
+$(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@$(srcdir)/stamp-h1.in
 	@if test ! -f $@; then \
 		rm -f $(srcdir)/stamp-h1.in; \
 		$(MAKE) $(srcdir)/stamp-h1.in; \

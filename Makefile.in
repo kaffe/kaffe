@@ -94,6 +94,7 @@ KVMLIBFLAGS = @KVMLIBFLAGS@
 LD = @LD@
 LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
+MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MAKE_KAFFEH_FOR_HOST = @MAKE_KAFFEH_FOR_HOST@
 MATH_LIBS = @MATH_LIBS@
@@ -137,19 +138,19 @@ TAR = tar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
-$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
-$(ACLOCAL_M4):  configure.in  acinclude.m4
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ configure.in  acinclude.m4
 	cd $(srcdir) && $(ACLOCAL)
 
 config.status: $(srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	$(SHELL) ./config.status --recheck
-$(srcdir)/configure: $(srcdir)/configure.in $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
+$(srcdir)/configure: @MAINTAINER_MODE_TRUE@$(srcdir)/configure.in $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
 	cd $(srcdir) && $(AUTOCONF)
 
 config/config.h: config/stamp-h1
@@ -162,7 +163,7 @@ config/stamp-h1: $(srcdir)/config/config.h.in $(top_builddir)/config.status
 	  && CONFIG_FILES= CONFIG_HEADERS=config/config.h \
 	     $(SHELL) ./config.status
 	@echo timestamp > config/stamp-h1 2> /dev/null
-$(srcdir)/config/config.h.in: $(srcdir)/config/stamp-h1.in
+$(srcdir)/config/config.h.in: @MAINTAINER_MODE_TRUE@$(srcdir)/config/stamp-h1.in
 	@if test ! -f $@; then \
 		rm -f $(srcdir)/config/stamp-h1.in; \
 		$(MAKE) $(srcdir)/config/stamp-h1.in; \
@@ -181,7 +182,7 @@ include/stamp-h2: $(srcdir)/include/jtypes.h.in $(top_builddir)/config.status
 	  && CONFIG_FILES= CONFIG_HEADERS=include/jtypes.h \
 	     $(SHELL) ./config.status
 	@echo timestamp > include/stamp-h2 2> /dev/null
-$(srcdir)/include/jtypes.h.in: $(srcdir)/include/stamp-h2.in
+$(srcdir)/include/jtypes.h.in: @MAINTAINER_MODE_TRUE@$(srcdir)/include/stamp-h2.in
 	@if test ! -f $@; then \
 		rm -f $(srcdir)/include/stamp-h2.in; \
 		$(MAKE) $(srcdir)/include/stamp-h2.in; \
