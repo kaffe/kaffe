@@ -190,6 +190,8 @@ struct _errorInfo;
 extern jboolean initInsnSequence(Method *meth, int codesize, int localsz, int stacksz, struct _errorInfo *einfo);
 extern jboolean finishInsnSequence(void*, nativeCodeInfo*, struct _errorInfo*);
 extern void     installMethodCode(void*, Method*, nativeCodeInfo*);
+#define HAVE_FAKE_CALLS 1
+void initFakeCalls(void);
 extern struct _label_* newFakeCall(void*, uintp);
 extern void 	doSpill(struct _sequence*);
 extern void 	doReload(struct _sequence*);

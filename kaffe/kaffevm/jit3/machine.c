@@ -171,7 +171,6 @@ translate(Method* xmeth, errorInfo* einfo)
 	fieldInfo finfo;
 	Hjava_lang_Class* crinfo;
 	codeinfo* mycodeInfo;
-	jitCodeHeader *jch;
 
 	nativeCodeInfo ncode;
 
@@ -185,7 +184,6 @@ translate(Method* xmeth, errorInfo* einfo)
 
 	lockClass(xmeth->class);
 
-	jch = xmeth->c.ncode.ncode_start;
 	if (METHOD_TRANSLATED(xmeth)) {
 		goto done3;
 	}

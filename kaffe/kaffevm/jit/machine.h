@@ -140,6 +140,14 @@
 struct _methods;
 bool translate(struct _methods*, errorInfo*);
 
+typedef struct _jitCodeHeader {
+	unsigned long flags;
+	Method *method;
+	void *pool;
+	nativecode *code_start;
+	size_t code_len;
+} jitCodeHeader;
+
 typedef struct _nativeCodeInfo {
 	void*	mem;
 	int	memlen;

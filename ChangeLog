@@ -1,5 +1,20 @@
 2004-12-21  Timothy S. Stack  <stack@cs.utah.edu>
 
+	* kaffe/kaffevm/jit/machine.h, kaffe/kaffevm/jit/machine.c:
+	Add jitCodeHeader support.
+
+	* kaffe/kaffevm/jit/native-wrapper.c:
+	Put ifdef guards around the initFakeCalls call since it isn't
+	available in jit1.
+
+	* kaffe/kaffevm/jit3/machine.c:
+	Remove dead code.
+
+	* kaffe/kaffevm/jit3/machine.h:
+	Add initFakeCalls proto and HAVE_FAKE_CALLS define.
+	
+2004-12-21  Timothy S. Stack  <stack@cs.utah.edu>
+
 	* kaffe/kaffevm/external.c:
 	Fix a typo.
 	

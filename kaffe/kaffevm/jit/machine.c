@@ -451,8 +451,8 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	int exc_len = 0;
 #endif
 	uint32 constlen;
+	jitCodeHeader *jch;
 	nativecode* methblock;
-	nativecode* codebase;
 
 	/* Emit pending instructions */
 	generateInsnSequence(codeInfo);
@@ -460,35 +460,41 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	/* Okay, put this into malloc'ed memory */
 	constlen = nConst * sizeof(union _constpoolval);
 	/* Allocate some padding to align codebase if so desired 
-	 */  
-	methblock = gc_malloc(exc_len + constlen + CODEPC + (align ? (align - ALIGNMENT_OF_SIZE(sizeof(jdouble))) : 0), KGC_ALLOC_JITCODE);
+	 */
+	methblock = gc_malloc(sizeof(jitCodeHeader) + exc_len + constlen + CODEPC + (align ? (align - ALIGNMENT_OF_SIZE(sizeof(jdouble))) : 0), KGC_ALLOC_JITCODE);
 	if (methblock == 0) {
 		postOutOfMemory(einfo);
 		return (false);
 	}
-	codebase = methblock + exc_len + constlen;
+	jch = (jitCodeHeader *)methblock;
+	jch->pool = (void *)((char *)(jch + 1)) + exc_len;
+	jch->code_start = ((char *)jch->pool) + constlen;
+	jch->code_len = CODEPC;
 	/* align entry point if so desired */
-	if (align != 0 && (unsigned long)codebase % align != 0) {
-		int pad = (align - (unsigned long)codebase % align);
-		assert(pad <= align - ALIGNMENT_OF_SIZE(sizeof(jdouble)));	
-		codebase = (char*)codebase + pad;
+	if (align != 0 && (unsigned long)jch->code_start % align != 0) {
+		int pad = (align - (unsigned long)jch->code_start % align);
+		
+		assert(pad <= align - ALIGNMENT_OF_SIZE(sizeof(jdouble)));
+		
+		jch->code_start = (char*)jch->code_start + pad;
 	}
-	memcpy(codebase, codeblock, CODEPC);
+	memcpy(jch->code_start, codeblock, CODEPC);
 	addToCounter(&jitcodeblock, "jitmem-codeblock", 1,
 		-(jlong)GCSIZEOF(codeblock));
 	KFREE(codeblock);
 
 	/* Establish any code constants */
-	establishConstants(methblock + exc_len);
+	establishConstants(jch->pool);
 
 	/* Link it */
-	linkLabels(codeInfo, (uintp)codebase);
+	linkLabels(codeInfo, (uintp)jch->code_start);
 
 	/* Note info on the compiled code for later installation */
 	code->mem = methblock;
 	code->memlen = exc_len + constlen + CODEPC;
-	code->code = codebase;
+	code->code = jch->code_start;
 	code->codelen = CODEPC;
+	
 	return (true);
 }
 
@@ -518,6 +524,7 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 {
 	int i;
 	jexceptionEntry* e;
+	jitCodeHeader *jch;
 	void *tramp;
 
 	/* Work out new estimate of code per bytecode */
@@ -537,6 +544,9 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 	meth->c.ncode.ncode_start = code->mem;
 	meth->c.ncode.ncode_end = (char*)code->code + code->codelen;
 
+	jch = (jitCodeHeader *)code->mem;
+	jch->method = meth;
+	
 	/* Flush code out of cache */
 	FLUSH_DCACHE(METHOD_NATIVECODE(meth), meth->c.ncode.ncode_end);
 
