@@ -1,3 +1,7 @@
+Thu Jul 23 23:12:09 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* libraries/javalib/java/util/Hashtable.java: added serialization.
+
 Thu Jul 23 18:47:57 1998  Brian Burton <brian@burton-computer.com>
 
 	* libraries/javalib/java/io/RandomAccessFile.java: use call 
