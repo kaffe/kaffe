@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 1999 The University of Utah. All rights reserved.
+ * Copyright (c) 1998, 1999, 2000 The University of Utah. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -61,7 +61,7 @@ static struct debug_opts
 	/* XXX Clean these names up, re-order them and make them consistent. */
 #define D(name, str) { #name, DBG_ ## name, str }
 	D(NONE, "Nothing"),
-	D(VMLOCKS,  "Mutex lock/unlock operations called by VM"),
+	D(SLOWLOCKS,  "Heavy lock/unlock operations"),
 	D(VMCONDS,  "Show condition variable operations called by VM"),
 	D(NEWINSTR, "Show softnew_ instructions (NEW, NEWARRAY, ANEWARRAY)"),
 	D(VMTHREAD, "Show some java.lang.Thread operations called by VM"),
@@ -71,6 +71,7 @@ static struct debug_opts
 	D(EXCEPTION, "Debug exceptions, don't catch traps"),
 	D(STACKTRACE, "Debug stack trace inspection"),
 	D(INIT,     "Show initialization steps."),
+	D(INITCLASSPATH,     "Show classpath initialization."),
 	D(BREAKONEXIT, "Cause an exception before exiting. (Useful under GDB)"),
 	D(GCPRIM,   "Debug gc_primitive_*"),
 	D(GCALLOC,   "Debug gc_heap_alloc*"),
@@ -93,9 +94,10 @@ static struct debug_opts
 	D(INT_RETURN, "Show return from function. (interpreter)"),
 	D(INT_VMCALL, "Show call to virtualMachine. (interpreter)"),
 	D(INT_CHECKS, "Show various checks. (interpreter)"),
-	D(ELOOKUP, "Debug exception lookup"),
-	D(FLOOKUP, "Debug field lookup"),
-	D(MLOOKUP, "Debug method lookup"),
+	D(ELOOKUP, "Debug exception lookup."),
+	D(FLOOKUP, "Debug field lookup."),
+	D(MLOOKUP, "Debug method lookup."),
+	D(CLASSLOOKUP, "Debug class lookup."),
 	D(JIT, 	"Debug JIT compiler--show emitted instructions."),
 	D(MOREJIT, 	"Debug JIT compiler--show callinfo."),
 	D(NOGC,	"Turn garbage collection off."),
@@ -129,7 +131,7 @@ static struct debug_opts
 
 	{ "gcj", DBG_GCJ|DBG_GCJMORE,
 			"Debug GCJ support in detailed" },
-	{ "thread", DBG_JTHREAD|DBG_VMLOCKS|DBG_VMCONDS, 
+	{ "thread", DBG_JTHREAD|DBG_SLOWLOCKS|DBG_VMCONDS, 
 			"Thread operations and locking operations" },
 
 	{ "intrp", DBG_INT_NATIVE|DBG_INT_RETURN|DBG_INT_VMCALL, 

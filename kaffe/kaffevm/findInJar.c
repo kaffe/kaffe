@@ -9,11 +9,6 @@
  * of this file. 
  */
 
-#define	FDBG(s)
-#define ZDBG(s)
-#define	PDBG(s)
-#define	CDBG(s)
-
 #include "config.h"
 #include "debug.h"
 #include "config-std.h"
@@ -106,7 +101,8 @@ DBG(GCJ,	dprintf(__FUNCTION__": adding class %s to pool@%p\n",
 	assert(centry->class == 0);
 
 	/* Look for the class */
-CDBG(	dprintf("Scanning for class %s\n", cname);		)
+DBG(CLASSLOOKUP,
+	dprintf("Scanning for class %s\n", cname);		)
 
 	buf = checkPtr(KMALLOC(strlen(cname) + 8));
 	sprintf(buf, "%s.class", cname);
@@ -178,7 +174,8 @@ findClassInJar(char* cname, errorInfo *einfo)
 	int iLockRoot;
 
 	/* Look for the class */
-CDBG(	dprintf("Scanning for element %s\n", cname);		)
+DBG(CLASSLOOKUP,
+	dprintf("Scanning for element %s\n", cname);		)
 
 	/* One into the jar at once */
 	lockStaticMutex(&jarlock);
@@ -187,7 +184,7 @@ CDBG(	dprintf("Scanning for element %s\n", cname);		)
 		hand.type = ptr->type;
 		switch (ptr->type) {
 		case CP_ZIPFILE:
-ZDBG(			dprintf("Opening JAR file %s for %s\n", ptr->path, cname); )
+DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); )
 			if (ptr->u.jar == 0) {
 				ptr->u.jar = openJarFile(ptr->path);
 				if (ptr->u.jar == 0) {
@@ -224,7 +221,7 @@ ZDBG(			dprintf("Opening JAR file %s for %s\n", ptr->path, cname); )
 			    + strlen(file_separator) + strlen(cname) + 1));
 			sprintf(buf, "%s%s%s",
 			    ptr->path, file_separator, cname);
-FDBG(			dprintf("Opening java file %s for %s\n", buf, cname); )
+DBG(CLASSLOOKUP,	dprintf("Opening java file %s for %s\n", buf, cname); )
 			rc = KOPEN(buf, O_RDONLY|O_BINARY, 0, &fp);
 			KFREE(buf);
 			/* if we can't open the file, we keep looking */
@@ -359,7 +356,8 @@ makeClasspath(char* cp)
 {
 	char* end;
 
-PDBG(	dprintf("initClasspath(): '%s'\n", cp);				)
+DBG(INITCLASSPATH,
+    	dprintf("initClasspath(): '%s'\n", cp); )
 
 	for (;;) {
 		/* FIXME: requires path_separator to have length 1 */
@@ -447,7 +445,8 @@ insertClasspath(const char* cp, int prepend)
 	classpathEntry* ptr;
 	classpathEntry* lptr;
 
-PDBG(	dprintf("insertClasspath(): '%s' %spend\n", cp, prepend ? "pre" : "ap");)
+DBG(INITCLASSPATH,
+	dprintf("insertClasspath(): '%s' %spend\n", cp, prepend ? "pre" : "ap"); )
 
 	lptr = 0;
 	for (ptr = classpath; ptr != 0; ptr = ptr->next) {

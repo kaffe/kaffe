@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 1999 The University of Utah. All rights reserved.
+ * Copyright (c) 1998, 1999, 2000 The University of Utah. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -41,7 +41,7 @@
 /* Debug Masks: (1 bit per option) */
 # define DBG_BIT(x) (((jlong)1)<<x)
 # define DBG_NONE		(0)
-# define DBG_VMLOCKS            DBG_BIT(0)
+# define DBG_SLOWLOCKS          DBG_BIT(0)
 # define DBG_VMCONDS		DBG_BIT(1)
 # define DBG_NEWINSTR		DBG_BIT(2)
 # define DBG_VMTHREAD		DBG_BIT(3) 
@@ -101,6 +101,8 @@
 # define DBG_SLACKANAL		DBG_BIT(52) 
 # define DBG_GCJ		DBG_BIT(53) 
 # define DBG_GCJMORE		DBG_BIT(54) 
+# define DBG_INITCLASSPATH      DBG_BIT(55)
+# define DBG_CLASSLOOKUP        DBG_BIT(56)
 
 # define DBG_ALL		((jlong)(-1))
 # define DBG_ANY                DBG_ALL
