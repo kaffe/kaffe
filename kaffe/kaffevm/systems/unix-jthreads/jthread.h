@@ -99,7 +99,7 @@ typedef struct _jthread {
 	 * used to hold the current Java thread
 	 */
 	void*				jlThread;
-	sigjmp_buf			env;
+	JTHREAD_JMPBUF			env;
 #if defined(SAVED_FP_SIZE)
 	char				fpstate[SAVED_FP_SIZE];
 #endif

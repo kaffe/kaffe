@@ -207,7 +207,7 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 			if (res == true) {
 				unhand(ct)->needOnStack = STACK_HIGH;
 				frame->pc = einfo.handler;
-				siglongjmp(frame->jbuf, 1);
+				JTHREAD_LONGJMP(frame->jbuf, 1);
 			}
 
 

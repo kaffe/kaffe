@@ -158,7 +158,7 @@ initNative(void)
 			return;
 		}
 	}
-	fprintf(stderr, "Failed to locate native library in path:\n");
+	fprintf(stderr, "Failed to locate native library \"%s\" in path:\n", NATIVELIBRARY);
 	fprintf(stderr, "\t%s\n", libraryPath);
 	fprintf(stderr, "Aborting.\n");
 	fflush(stderr);

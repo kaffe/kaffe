@@ -1157,7 +1157,7 @@ DBG(JTHREAD,
 	 *
 	 * To be safe, we immediately call a new function.
 	 */
-        if (sigsetjmp(jtid->env, false)) {
+        if (JTHREAD_SETJMP(jtid->env)) {
 		/* new thread */
 		start_this_sucker_on_a_new_frame();
 		assert(!"Never!");
@@ -1412,10 +1412,10 @@ dprintf("switch from %p to %p\n", lastThread, currentJThread); )
 #if defined(CONTEXT_SWITCH)
 				CONTEXT_SWITCH(lastThread, currentJThread);
 #else
-				if (sigsetjmp(lastThread->env, false) == 0) {
+				if (JTHREAD_SETJMP(lastThread->env) == 0) {
 				    lastThread->restorePoint = 
 					GET_SP(lastThread->env);
-				    siglongjmp(currentJThread->env, 1);
+				    JTHREAD_LONGJMP(currentJThread->env, 1);
 				}
 #endif
 #if defined(LOAD_FP)

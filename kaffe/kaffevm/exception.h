@@ -36,7 +36,7 @@ typedef struct _jexception {
 
 typedef struct _vmException {
 	struct _vmException*		prev;
-	sigjmp_buf			jbuf;
+	JTHREAD_JMPBUF			jbuf;
 	struct _methods*		meth;
 	u4				pc;
 	struct Hjava_lang_Object*	mobj;
