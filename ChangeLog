@@ -1,3 +1,9 @@
+2003-08-12  Rob Gonzalez <rob@kaffe.org>
+
+	* test/regression/TestScript.in
+	Made $JAVA dependent upon $KAFFEHOME to ensure that the
+	correct kaffe binary is used during make check.
+
 2003-08-12  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/clib/native/RMIHashes.c: copied back

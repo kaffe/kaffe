@@ -10,15 +10,15 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-: ${JAVA=kaffe} ${SRCDIR=@srcdir@} ${PATHSEP='@PATHSEP@'}
+KAFFEHOME="@prefix@"
+export KAFFEHOME
+
+: ${JAVA=$KAFFEHOME/bin/kaffe} ${SRCDIR=@srcdir@} ${PATHSEP='@PATHSEP@'}
 # If you want to use jikes as default compiler for the regression tests uncomment the line below.
 #test -z "@JIKES@" || : ${JIKES="@JIKES@ -nowarn"}
 : ${JAVAC=${JIKES-"$JAVA at.dms.kjc.Main"}" -classpath \".$PATHSEP$SRCDIR$PATHSEP$CLASSPATH\""}
 overallerror=0
 error=0
-
-KAFFEHOME="@prefix@"
-export KAFFEHOME
 
 if test -n "${VERBOSE+set}"; then
   VERBOSE=echo
