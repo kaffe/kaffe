@@ -106,7 +106,7 @@ Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz, jstring name )
   XInitThreads();
 #endif
 
-  DBG( awt, ("synchronize X\n"));
+  DBG( AWT, printf("synchronize X\n"));
   DBG_ACTION(awt, XSynchronize( X->dsp, True));
 
   X->nWindows = 47;

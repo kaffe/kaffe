@@ -35,8 +35,6 @@ void forwardFocus ( int cmd, Window wnd );  /* from wnd.c */
 
 int nextEvent ( JNIEnv* env, jclass clazz, Toolkit *X, int blockIt )
 {
-  int stat;
-
   if ( X->preFetched )
 	return 1;
 
@@ -68,9 +66,13 @@ int nextEvent ( JNIEnv* env, jclass clazz, Toolkit *X, int blockIt )
 		 * XNextEvent, here. The only thing done outside the Toolkit lock should be
 		 * to check availability of X input
 		 */
-		do {
-		  UNBLOCK_EXECUTE( clazz, (stat =select( ConnectionNumber(X->dsp)+1, &X->rfds, NULL,NULL,NULL)));
-		}  while ( stat != 1 );
+		{
+		  int stat;
+
+		  do {
+		    UNBLOCK_EXECUTE( clazz, (stat =select( ConnectionNumber(X->dsp)+1, &X->rfds, NULL,NULL,NULL)));
+		  }  while ( stat != 1 );
+		}
 #endif
 
 		/*
@@ -669,11 +671,13 @@ jobject
 Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz )
 {
   jclass Component;
+#if !defined(USE_POLLING_AWT)
   unsigned long mask;
   XSetWindowAttributes attrs;
+#endif
 
   if ( ComponentEvent != NULL ){
-	DBG( awt_evt, ("evtInit called twice\n"));
+	DBG( AWT_EVT, printf("evtInit called twice\n"));
 	return NULL;
   }
 
@@ -804,7 +808,7 @@ Java_java_awt_Toolkit_evtWakeup ( JNIEnv* env, jclass clazz )
 {
   XEvent event;
 
-  DBG( awt_evt, ("evtWakeup\n"));
+  DBG( AWT_EVT, printf("evtWakeup\n"));
   DBG_ACTION( awt, XSynchronize( X->dsp, False));
 
   event.xclient.type = ClientMessage; 
