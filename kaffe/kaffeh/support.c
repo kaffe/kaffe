@@ -51,7 +51,7 @@ extern char* translateSig(char*, char**, int*);
 extern char* translateSigType(char*, char*);
 
 static int objectDepth = -1;
-static int argpos = 0;
+static int outputField = 1;
 
 struct _Collector;
 static void* gcMalloc(struct _Collector*, size_t, int);
@@ -162,8 +162,6 @@ binary_open(const char *file, int mode, int perm, int *out) {
 void
 initInclude(void)
 {
-	argpos = 0;
-
 	if (include == 0) {
 		return;
 	}
@@ -185,8 +183,6 @@ initInclude(void)
 void
 startInclude(void)
 {
-	argpos = 0;
-
 	if (include == 0) {
 		return;
 	}
@@ -194,8 +190,15 @@ startInclude(void)
 	fprintf(include, "\n");
 	fprintf(include, "/* Header for class %s */\n", className);
 	fprintf(include, "\n");
-	fprintf(include, "typedef struct H%s {\n", className);
-	fprintf(include, "  Hjava_lang_Object base;\n");
+	if ((strcmp (className, "java_lang_Object") == 0) ||
+	    (strcmp (className, "java_lang_Class") == 0)) {
+		outputField = 0;
+	}
+	else {
+		outputField = 1;
+		fprintf(include, "typedef struct H%s {\n", className);
+		fprintf(include, "  Hjava_lang_Object base;\n");
+	}
 }
 
 /*
@@ -280,12 +283,9 @@ readFieldEnd(void)
 	}
 
 	if (objectDepth == 0) {
-#if 0
-		if (argpos == 0) {
-			fprintf(include, "\tint __DUMMY__;\n");
+		if (outputField) {
+			fprintf(include, "} H%s;\n\n", className);
 		}
-#endif
-		fprintf(include, "} H%s;\n\n", className);
 	}
 }
 
@@ -362,8 +362,7 @@ readField(classFile* fp, Hjava_lang_Class* this, constants* cpool)
 				fprintf(include, "#define %s_%s %s\n", className, (char*)cpool->data[f.name_index], cval);
 			}
 		}
-		else {
-			argpos += argsize;
+		else if (outputField) {
 			fprintf(include, "  %s %s;\n", arg, (char*)cpool->data[f.name_index]);
 		}
 FDBG(		printf("Field: %s %s\n", arg, (char*)cpool->data[f.name_index]);			)
