@@ -18,6 +18,7 @@
 #include "gtypes.h"
 #include "jsignal.h"
 #include "md.h"
+#include "stackTrace-impl.h"
 
 #if defined(INTERPRETER)
 #define	DEFINEFRAME()		/* Does nothing */

@@ -1,5 +1,21 @@
 2004-03-08  Dalibor Topic <robilad@kaffe.org>
 
+	* config/m68k/linux/md.h:
+	Added missing include. Fixes a bug in Debian's BTS:
+	#227744: kaffe FTBFS on buildd for m68k
+
+	* config/mips/jit3-mips.def:
+	(debug) Use definition from i386. Fixes a bug in Debian build
+	for mipsel.
+
+	* kaffe/kaffevm/jit/machine.c:
+	(getEngine) Add missing prototype.
+
+	* kaffe/kaffevm/systems/unix-pthreads/signal.c:
+	Added missing include to fix a compiler warning.
+
+2004-03-08  Dalibor Topic <robilad@kaffe.org>
+
        * verify-block.c,
        verify-type.c:
        Include "debug.h"

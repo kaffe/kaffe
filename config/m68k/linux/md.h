@@ -14,6 +14,7 @@
 
 #include "m68k/common.h"
 #include "m68k/threads.h"
+#include "support.h"
 
 /*
  * Redefine stack pointer offset.

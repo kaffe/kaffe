@@ -46,6 +46,7 @@
 #include "thread.h"
 #include "jthread.h"
 #include "stats.h"
+#include "support.h"
 
 /*
  * Define information about this engine.
@@ -904,7 +905,7 @@ checkCaughtExceptions(Method* meth, int pc)
  * return what engine we're using
  */
 char* 
-getEngine()
+getEngine(void)
 {
 	return "kaffe.jit";
 }
