@@ -227,6 +227,9 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 	return (0);
 }
 
+/*
+ * Destroy this process
+ */
 void 
 Java_kaffe_lang_UNIXProcess_destroy(JNIEnv* env, jobject proc)
 {
@@ -254,3 +257,17 @@ Java_kaffe_lang_UNIXProcess_execWait(JNIEnv* env, jobject process)
 	KWAITPID((*env)->GetIntField(env, process, pid), &status, 0, &npid);
 	return (status);
 }
+
+/*
+ * Send a process a signal
+ */
+void
+Java_kaffe_lang_UNIXProcess_sendSignal0(JNIEnv *e, jclass c, jint pid, jint sig)
+{
+#if defined(HAVE_KILL)
+	KKILL(pid, sig);
+#else
+	unimp("kill() not provided");
+#endif
+}
+
