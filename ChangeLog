@@ -1,3 +1,8 @@
+2003-09-18  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/java/io/File.java:
+	(toURI) corrected the @auther.
+
 2003-09-18  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* config/arm/linux/md.h, config/arm/linux/jit-md.h: Implemented

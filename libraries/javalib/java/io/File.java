@@ -887,7 +887,7 @@ public class File implements Serializable, Comparable
 
   /**
    * @since 1.4
-   * @author Ito Kazumitsu
+   * @author Dalibor Topic
    */
   public URI toURI() {
     try
