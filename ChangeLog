@@ -1,5 +1,12 @@
 2003-09-14  Dalibor Topic <robilad@kaffe.org>
 
+	* developers/mauve-results.sh:
+	Added a call to autoreconf to make build mauve's configure
+	script. Added missing '$' to dereference JTIDY_CPATH. Improved
+	documentation.
+	
+2003-09-14  Dalibor Topic <robilad@kaffe.org>
+
 	* test/regression/compile_time/Makefile.am:
 	Don't use GNU make extensions to avoid build problems on platforms
 	using a BSD make.
