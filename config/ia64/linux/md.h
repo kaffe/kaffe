@@ -1,0 +1,57 @@
+/*
+ * ia64/linux/md.h
+ * Linux IA-64 configuration information.
+ *
+ * Copyright (c) 2001
+ *	MandrakeSoft.  All rights reserved.
+ *
+ * Copyright (c) 2001
+ *	Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ */
+
+#ifndef __ia64_linux_md_h
+#define __ia64_linux_md_h
+
+#include <setjmp.h>
+#include "ia64/common.h"
+#include "ia64/threads.h"
+
+/* Linux requires a little initialisation */
+extern void init_md(void);
+#define	INIT_MD() init_md()
+
+extern int IA64_context_save(jmp_buf env);
+extern void IA64_context_restore(jmp_buf env, int val);
+
+#if 0
+#undef JTHREAD_SETJMP
+#define JTHREAD_SETJMP(env)			IA64_context_save((env))
+#undef JTHREAD_LONGJMP
+#define JTHREAD_LONGJMP(env, val)		IA64_context_restore((env), (val))
+#endif
+
+#define SIGNAL_ARGS(sig, scp)			int sig, siginfo_t *sip, struct sigcontext *scp
+#define SIGNAL_CONTEXT_POINTER(scp)		struct sigcontext *scp
+#define GET_SIGNAL_CONTEXT_POINTER(sc)		(sc)
+#define SIGNAL_PC(scp)				((scp)->sc_ip & ~0x3ULL)
+
+#ifdef HAVE_IA64INTRIN_H
+
+#include <ia64intrin.h>
+#undef COMPARE_AND_EXCHANGE
+#define COMPARE_AND_EXCHANGE(A, O, N) \
+	__sync_bool_compare_and_swap((A), (O), (N))
+
+#else
+
+#include <asm/atomic.h>
+#undef COMPARE_AND_EXCHANGE
+#define COMPARE_AND_EXCHANGE(A, O, N) \
+	(cmpxchg((A), (O), (N)) == (O))
+		
+#endif /* HAVE_IA64INTRIN_H */
+
+#endif
