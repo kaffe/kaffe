@@ -26,7 +26,7 @@ makeReturn(Method* meth)
 	errorInfo info;
 	Hjava_lang_Class* clazz;
 
-	clazz = getClassFromSignature(METHOD_RET_TYPE(meth), meth->class->loader, &info);
+	clazz = getClassFromSignaturePart(METHOD_RET_TYPE(meth), meth->class->loader, &info);
 	if (clazz == 0) {
 		throwError(&info);
 	}
@@ -46,7 +46,7 @@ makeParameters(Method* meth)
 
 	array = (HArrayOfObject*)AllocObjectArray(METHOD_NARGS(meth), "Ljava/lang/Class;");
 	for (i = 0; i < METHOD_NARGS(meth); ++i) {
-		clazz = getClassFromSignature(METHOD_ARG_TYPE(meth, i),
+		clazz = getClassFromSignaturePart(METHOD_ARG_TYPE(meth, i),
 					      meth->class->loader, &info);
 		if (clazz == 0) {
 			throwError(&info);
