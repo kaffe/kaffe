@@ -62,9 +62,9 @@ public int read() throws IOException {
 	}
 
 	/*
-	 * we're reading plain data and are still working on a long 
+	 * we're reading plain data and are still working on a long
 	 * block that required multiple reads with our short buffer
-	 */ 
+	 */
 	if (leftinblock > 0) {
 		int size = buffer.length;
 		if (size > leftinblock) {
@@ -89,8 +89,8 @@ public int read() throws IOException {
 		return (read());	// tail recursive call
 
 	case ObjectStreamConstants.TC_BLOCKDATALONG:
-		/* The doc says: 
-		 * long following tag indicates number of bytes 
+		/* The doc says:
+		 * long following tag indicates number of bytes
 		 * but what they actually write is an int following the tag.
 		 */
 		int v1 = 0;
@@ -166,6 +166,10 @@ public Object readObject() throws OptionalDataException, ClassNotFoundException,
 		currObject = getArray();
 		break;
 
+	case ObjectStreamConstants.TC_CLASS:
+		currObject = getClassOnly();
+		break;
+
 	case ObjectStreamConstants.TC_RESET:
 		resetObjectReferences();
 		return (readObject());
@@ -236,6 +240,26 @@ private Object getObject() throws StreamCorruptedException, OptionalDataExceptio
 	try {
 		ObjectStreamClassImpl cls = (ObjectStreamClassImpl)parent.readObject();
 		Object obj = cls.getObject(parent, this);
+		return (obj);
+	}
+	catch (InvalidClassException ice) {
+		throw ice;
+	}
+	catch (ClassNotFoundException e1) {
+		throw new StreamCorruptedException("error getting object: " + e1);
+	}
+	catch (IOException e2) {
+		throw new StreamCorruptedException("error getting object: " + e2);
+	}
+	catch (ClassCastException e3) {
+		throw new StreamCorruptedException("error getting object: " + e3);
+	}
+}
+
+private Object getClassOnly() throws StreamCorruptedException, OptionalDataException, InvalidClassException {
+	try {
+		Object obj = (ObjectStreamClassImpl)parent.readObject();
+		makeObjectReference(obj);
 		return (obj);
 	}
 	catch (InvalidClassException ice) {
