@@ -159,6 +159,7 @@ public class ThreadStop
 		
 		msg("Test 1: Stop a thread that's blocked on itself");
 		target = new ThreadStop_BlockThread();
+		msg(" Is thread alive before starting? " + target.isAlive());
 		target.start();
 
 		sleep(500);
@@ -254,6 +255,7 @@ public class ThreadStop
 // javac flags: -nowarn
 /* Expected Output:
 Test 1: Stop a thread that's blocked on itself
+ Is thread alive before starting? false
 Target (BlockThread) running...
  Locked ...
  Success. Target is dead.
