@@ -15,6 +15,8 @@
  */
 
 #include "jthread.h"
+#include "jsignal.h"
+
 
 /* Flags used for threading I/O calls */
 #define TH_READ                         0
@@ -29,7 +31,7 @@
 
 /* thread flags */
 #define THREAD_FLAGS_GENERAL            0
-#define THREAD_FLAGS_NOSTACKALLOC       1
+#define THREAD_FLAGS_NOSTACKALLOC       1   /* this flag is not used anymore */
 #define THREAD_FLAGS_KILLED             2
 #define THREAD_FLAGS_ALARM              4
 #define THREAD_FLAGS_EXITING        	8
@@ -94,14 +96,10 @@ static jthread* readQ[FD_SETSIZE];	/* threads blocked on read */
 static jthread* writeQ[FD_SETSIZE];	/* threads blocked on write */
 static jmutex threadLock;	/* static lock to protect liveThreads etc. */
 
-/* from old version, it is not clear that this is still important 
- * see comments near use
- */
-static int alarmBlocked;
-
 static int sigPending;		/* flags that says whether a intr is pending */
 static int pendingSig[NSIG];	/* array that says which intrs are pending */
 static int sigPipe[2];		/* a pipe to ensure we don't lose our wakeup */
+static int bytesInPipe;		/* total number of bytes written to pipe */
 static int wouldlosewakeup;	/* a flag that says whether we're past the
 				   point where we check for pending signals 
 				   before sleeping in select() */
@@ -139,6 +137,8 @@ static void restore_fds(void);
 static void restore_fds_and_exit(void);
 static void die(void);
 static int jthreadedFileDescriptor(int fd);
+static void intsDisable(void);
+static void intsRestore(void);
 
 /*
  * macros to set and extract stack pointer from jmp_buf
@@ -175,8 +175,10 @@ static int jthreadedFileDescriptor(int fd);
 
 /*============================================================================
  *
- * Functions related to run and alarm queue manipulation
+ * Functions related to interrupt handling
+ *
  */
+
 /*
  * yield to another thread
  */
@@ -243,6 +245,334 @@ removeFromAlarmQ(jthread* jtid)
 		}
 	}
 }
+
+/*
+ * check whether interrupts are disabled
+ */
+int
+intsDisabled(void)
+{
+        return (blockInts > 0);
+}
+
+/*
+ * disable interrupts
+ *
+ * Instead of blocking signals, we increment a counter.
+ * If a signal comes in while the counter is non-zero, we set a pending flag
+ * and mark the signal as pending.
+ *
+ * intsDisable may be invoked recursively. (is that really a good idea? - gb)
+ */
+static inline void 
+intsDisable(void)
+{
+        blockInts++;
+}
+
+static inline void
+processSignals(void)
+{
+	int i;
+	for (i = 1; i < NSIG; i++) {
+		if (pendingSig[i])
+			handleInterrupt(i);
+		pendingSig[i] = 0;
+	}
+	sigPending = 0;
+}
+
+/*
+ * restore interrupts
+ *
+ * If interrupts are about to be reenabled, execute the handlers for all
+ * signals that are pending.
+ */
+static inline void
+intsRestore(void)
+{ 
+        /* DEBUG */
+        assert(blockInts >= 1);
+
+        if (blockInts == 1) {   
+                if (sigPending)
+			processSignals();
+ 
+		/* reschedule if necessary */
+                if (needReschedule == true)
+                        reschedule(); 
+        }
+        blockInts--;
+}
+
+/*
+ * Prevent all other threads from running.
+ * In this uniprocessor implementation, this is simple.
+ */
+void 
+jthread_suspendall(void)
+{
+        intsDisable();
+}
+
+/*
+ * Reallow other threads.
+ * In this uniprocessor implementation, this is simple.
+ */
+void 
+jthread_unsuspendall(void)
+{
+        intsRestore();
+}  
+
+/*
+ * Handle an asynchronous signal (i.e. a software interrupt).
+ *
+ * This is the handler given to registerAsyncSignalHandler().
+ *
+ * It is guaranteed that all asynchronous signals are delayed when
+ * this handler begins execution (see registerAsyncSignalHandler()).
+ * There are two ways for the asynchronous signals to get unblocked:
+ * (1) return from the function.  The OS will unblock them.  (2)
+ * explicitly unblock the signals.  We must do this before performing
+ * a thread context switch as the target thread should (obviously) not
+ * be running with all signals blocked.
+ */
+static void
+interrupt(int sig)
+{
+	/*
+	 * If ints are blocked, this might indicate an inconsistent state of
+	 * one of the thread queues (either alarmList or threadQhead/tail).
+	 *
+	 * Record this interrupt as pending so that the forthcoming
+	 * intsRestore() (the intsRestore() in the interrupted thread)
+	 * will handle it.  Then return from the signal handler.
+	 */
+	if (intsDisabled()) {
+		char c;
+		pendingSig[sig] = 1;
+		sigPending = 1;
+		/*
+		 * There is a race condition in handleIO() between
+		 * zeroing blockints and going into select().
+		 * sigPipe+wouldlosewakeup is the hack that avoids
+		 * that race condition.  See handleIO().
+		 *
+		 * If we would lose the wakeup because we're about to go to
+		 * sleep in select(), write into the sigPipe to ensure select
+		 * returns.
+		 */
+		if (wouldlosewakeup) {
+			write(sigPipe[1], &c, 1);
+			bytesInPipe++;
+			wouldlosewakeup = 0;
+		}
+
+		/*
+		 * On some systems, signal handlers are a one-shot deal.
+		 * Re-install the signal handler for those systems.
+		 */
+		restoreAsyncSignalHandler(sig, interrupt);
+
+		/*
+		 * Returning from the signal handler should restore
+		 * all signal state (if the OS is not broken).
+		 */
+		return;
+	}
+
+	/*
+	 * The interrupted code was not in a critical section,
+	 * so we enter a critical section now.  Note that we
+	 * will *not* be interrupted between the blockInts
+	 * check above and the intsDisable() below because
+	 * the signal mask delays all asynchronous signals.
+	 */
+
+	intsDisable();
+
+	/* Re-enable signal if necessary */
+        restoreAsyncSignalHandler(sig, interrupt);
+
+	/*
+	 * Restore the signal state.  This means unblock all
+	 * asynchronous signals.  We can now context switch to another
+	 * thread as the signal state for the Kaffe process is clear
+	 * in the eyes of the OS.  Any asynchronous signals that come
+	 * in because we just unblocked them will discover that
+	 * blockInts > 0, and flag their arrival in the pendingSig[]
+	 * array.
+	 */
+	unblockAsyncSignals();
+
+	/*
+	 * Handle the signal.  Since we're handling the signal, might
+	 * as well clear its pending indicator, just for kicks.
+	 */
+	pendingSig[sig] = 0;
+	handleInterrupt(sig);
+
+	/*
+	 * Leave the critical section.  This may or may not cause a
+	 * reschedule.  (Depends on the side-effects of
+	 * handleInterrupt()).
+	 */
+	intsRestore();
+}
+
+/*
+ * handle a SIGVTALRM alarm.
+ *
+ * If preemption is disabled, we have the current thread so that it is
+ * scheduled in a round-robin fashion with its peers who have the same
+ * priority.
+ */
+static void 
+handleVtAlarm(void)
+{
+	static int c;
+
+	if (preemptive) {
+		internalYield();
+	}
+
+	/*
+	 * This is kind of ugly: some fds won't send us SIGIO.
+	 * Example: the pseudo-tty driver in FreeBSD won't send a signal
+	 * if we blocked on a write because the output buffer was full, and
+	 * the output buffer became empty again.
+	 *
+	 * So we check periodically, every 0.2 seconds virtual time.
+	 */
+	if (++c % 20 == 0)
+		handleIO(false);
+}
+
+/*
+ * handle a SIGALRM alarm.
+ */
+static void 
+alarmException(void)
+{
+	jthread* jtid;
+	jlong time;
+
+	/* Wake all the threads which need waking */
+	time = currentTime();
+	while (alarmList != 0 && alarmList->time <= time) {
+		/* Restart thread - this will tidy up the alarm and blocked
+		 * queues.
+		 */
+		jtid = alarmList;
+		alarmList = alarmList->nextalarm;
+		resumeThread(jtid);
+	}
+
+	/* Restart alarm */
+	if (alarmList != 0) {
+		MALARM(alarmList->time - time);
+	}
+}
+
+/*
+ * print thread flags in pretty form.
+ */
+static char*
+printflags(unsigned i)
+{
+	static char b[256];	/* plenty */
+	struct {
+		int flagvalue;
+		char *flagname;
+	} flags[] = {
+	    { THREAD_FLAGS_GENERAL, "GENERAL" },
+	    { THREAD_FLAGS_NOSTACKALLOC, "NOSTACKALLOC" },
+	    { THREAD_FLAGS_KILLED, "KILLED" },
+	    { THREAD_FLAGS_ALARM, "ALARM" },
+	    { THREAD_FLAGS_EXITING, "EXITING" },
+	    { THREAD_FLAGS_DONTSTOP, "DONTSTOP" },
+	    { THREAD_FLAGS_DYING, "DYING" },
+	    { THREAD_FLAGS_BLOCKEDEXTERNAL, "BLOCKEDEXTERNAL" },
+	    { 0, NULL }
+	}, *f = flags;
+
+	b[0] = '\0';
+	while (f->flagname) {
+		if (i & f->flagvalue) {
+			strcat(b, f->flagname);
+			strcat(b, " ");
+		}
+		f++;
+	}
+	return b;
+}
+
+/* 
+ * dump information about a thread to stderr
+ */
+void
+jthread_dumpthreadinfo(jthread_t tid)
+{
+	fprintf(stderr, "tid %p, status %s flags %s\n", tid, 
+		tid->status == THREAD_SUSPENDED ? "SUSPENDED" :
+		tid->status == THREAD_RUNNING ? "RUNNING" :
+		tid->status == THREAD_DEAD ? "DEAD" : "UNKNOWN!!!", 
+		printflags(tid->flags));
+	if (tid->blockqueue != NULL) {
+		jthread *t;
+		fprintf(stderr, " blockqueue %p (%p->", tid->blockqueue,
+							t = *tid->blockqueue);
+		while (t && t->nextQ) {
+			t = t->nextQ; 
+			fprintf(stderr, "%p->", t);
+		}
+		fprintf(stderr, "|) ");
+	}
+}
+
+/*
+ * handle an interrupt.
+ * 
+ * this function is either invoked from within a signal handler, or as the
+ * result of intsRestore.
+ */
+static void 
+handleInterrupt(int sig)
+{
+	switch(sig) {
+	case SIGALRM:
+		alarmException();
+		break;
+
+	case SIGUSR1:
+		ondeadlock();
+		break;
+
+#if defined(SIGVTALRM)
+	case SIGVTALRM:
+		handleVtAlarm();
+		break;
+#endif
+
+	case SIGCHLD:
+		childDeath();
+		break;
+
+	case SIGIO:
+		handleIO(false);
+		break;
+
+	default:
+		printf("unknown signal %d\n", sig);
+		exit(-1);
+	}
+}
+
+/*============================================================================
+ *
+ * Functions related to run queue manipulation
+ */
 
 
 /*
@@ -412,278 +742,6 @@ DBG(JTHREAD,
 }
 
 
-/*============================================================================
- *
- * Functions related to interrupt handling
- *
- */
-
-/*
- * check whether interrupts are disabled
- */
-int
-intsDisabled(void)
-{       
-        return blockInts > 0;           
-}       
-
-/*
- * disable interrupts
- *
- * Instead of blocking signals, we increment a counter.
- * If a signal comes in while the counter is non-zero, we set a pending flag
- * and mark the signal as pending.
- *
- * intsDisable may be invoked recursively. (is that really a good idea? - gb)
- */
-void 
-intsDisable(void)
-{
-        blockInts++;
-}
-
-static void
-processSignals(void)
-{
-	int i;
-	for (i = 1; i < NSIG; i++) {
-		if (pendingSig[i])
-			handleInterrupt(i);
-		pendingSig[i] = 0;
-	}
-	sigPending = 0;
-}
-
-/*
- * restore interrupts
- *
- * If interrupts are about to be reenabled, execute the handlers for all
- * signals that are pending.
- */
-void
-intsRestore(void)
-{ 
-        /* DEBUG */
-        assert(blockInts >= 1);
-
-        if (blockInts == 1) {   
-                if (sigPending)
-			processSignals();
- 
-		/* reschedule if necessary */
-                if (needReschedule == true)
-                        reschedule(); 
-        }
-        blockInts--;
-}
-
-/*
- * Handle a signal/interrupt.
- *
- * This is the handler given to catchSignal.
- */
-static void
-interrupt(int sig)
-{
-        static int withchild = false;
-
-        /* This bizzare bit of code handles the SYSV machines which re-throw 
-	 * SIGCHLD when you reset the handler.  It also works for those that 
-	 * don't.
-         * Perhaps there's a way to detect this in the configuration process?
-         */
-        if (sig == SIGCHLD) {
-		if (withchild == true) {
-			return;
-		}
-		withchild = true;
-	}
-	/* Re-enable signal - necessary for SysV */
-        catchSignal(sig, interrupt);
-	withchild = false;
-
-	/*
-	 * If ints are blocked, this might indicate an inconsistent state of
-	 * one of the thread queues (either alarmList or threadQhead/tail).
-	 * We better don't touch one of them in this case and come back later.
-	 */
-	if (blockInts > 0) {
-		char c;
-		pendingSig[sig] = 1;
-		sigPending = 1;
-		/* if we would lose the wakeup because we're about to go to
-		 * sleep in select(), write into the sigPipe to ensure select
-		 * returns.
-		 */
-		if (wouldlosewakeup) {
-			write(sigPipe[1], &c, 1);
-			wouldlosewakeup = 0;
-		}
-		return;
-	}
-	intsDisable();
-
-	pendingSig[sig] = 0;
-	handleInterrupt(sig);
-
-	/*
-	 * The next bit is rather tricky.  If we don't reschedule then things
-	 * are fine, we exit this handler and everything continues correctly.
-	 * On the otherhand, if we do reschedule, we will schedule the new
-	 * thread with alarms blocked which is wrong.  However, we cannot
-	 * unblock them here incase we have just set an alarm which goes
-	 * off before the reschedule takes place (and we enter this routine
-	 * recusively which isn't good).  So, we set a flag indicating alarms
-	 * are blocked, and allow the rescheduler to unblock the alarm signal
-	 * after the context switch has been made.  At this point it's safe.
-	 */
-	alarmBlocked = true;
-	intsRestore();
-	alarmBlocked = false;
-}
-
-/*
- * handle a SIGVTALRM alarm.
- *
- * If preemption is disabled, we have the current thread so that it is
- * scheduled in a round-robin fashion with its peers who have the same
- * priority.
- */
-static void 
-handleVtAlarm(void)
-{
-	static int c;
-
-	if (preemptive)
-		internalYield();
-
-	/*
-	 * This is kind of ugly: some fds won't send us SIGIO.
-	 * Example: the pseudo-tty driver in FreeBSD won't send a signal
-	 * if we blocked on a write because the output buffer was full, and
-	 * the output buffer became empty again.
-	 *
-	 * So we check periodically, every 0.2 seconds virtual time.
-	 */
-	if (++c % 20 == 0)
-		handleIO(false);
-}
-
-/*
- * handle a SIGALRM alarm.
- */
-static void 
-alarmException(void)
-{
-	jthread* jtid;
-	jlong time;
-
-	/* Wake all the threads which need waking */
-	time = currentTime();
-	while (alarmList != 0 && alarmList->time <= time) {
-		/* Restart thread - this will tidy up the alarm and blocked
-		 * queues.
-		 */
-		jtid = alarmList;
-		alarmList = alarmList->nextalarm;
-		resumeThread(jtid);
-	}
-
-	/* Restart alarm */
-	if (alarmList != 0) {
-		MALARM(alarmList->time - time);
-	}
-}
-
-/*
- * print thread flags in pretty form.
- */
-static char*
-printflags(unsigned i)
-{
-	static char b[256];	/* plenty */
-	struct {
-		int flagvalue;
-		char *flagname;
-	} flags[] = {
-	    { THREAD_FLAGS_GENERAL, "GENERAL" },
-	    { THREAD_FLAGS_NOSTACKALLOC, "NOSTACKALLOC" },
-	    { THREAD_FLAGS_KILLED, "KILLED" },
-	    { THREAD_FLAGS_ALARM, "ALARM" },
-	    { THREAD_FLAGS_EXITING, "EXITING" },
-	    { THREAD_FLAGS_DONTSTOP, "DONTSTOP" },
-	    { THREAD_FLAGS_DYING, "DYING" },
-	    { THREAD_FLAGS_BLOCKEDEXTERNAL, "BLOCKEDEXTERNAL" },
-	    { 0, NULL }
-	}, *f = flags;
-
-	b[0] = '\0';
-	while (f->flagname) {
-		if (i & f->flagvalue) {
-			strcat(b, f->flagname);
-			strcat(b, " ");
-		}
-		f++;
-	}
-	return b;
-}
-
-/* 
- * dump information about a thread to stderr
- */
-void
-jthread_dumpthreadinfo(jthread_t tid)
-{
-	fprintf(stderr, "tid %p, status %s flags %s\n", tid, 
-		tid->status == THREAD_SUSPENDED ? "SUSPENDED" :
-		tid->status == THREAD_RUNNING ? "RUNNING" :
-		tid->status == THREAD_DEAD ? "DEAD" : "UNKNOWN!!!", 
-		printflags(tid->flags));
-	if (tid->blockqueue != NULL) {
-		jthread *t;
-		fprintf(stderr, " blockqueue %p (%p->", tid->blockqueue,
-							t = *tid->blockqueue);
-		while (t && t->nextQ) {
-			t = t->nextQ; 
-			fprintf(stderr, "%p->", t);
-		}
-		fprintf(stderr, "|) ");
-	}
-}
-
-/*
- * handle an interrupt.
- * 
- * this function is either invoked from within a signal handler, or as the
- * result of intsRestore.
- */
-static void 
-handleInterrupt(int sig)
-{
-	switch(sig) {
-	case SIGALRM:
-		alarmException();
-		break;
-
-#if defined(SIGVTALRM)
-	case SIGVTALRM:
-		handleVtAlarm();
-		break;
-#endif
-
-	case SIGCHLD:
-		childDeath();
-		break;
-
-	case SIGIO:
-		handleIO(false);
-		break;
-
-	default:
-		printf("unknown signal %d\n", sig);
-		exit(-1);
-	}
-}
 
 /*============================================================================
  *
@@ -816,7 +874,7 @@ jthread_init(int pre,
 	 * So we'll just ignore it and keep running.  Note that this will
 	 * detach us from the session too.
 	 */
-	catchSignal(SIGHUP, SIG_IGN);
+	ignoreSignal(SIGHUP);
 
 	/* 
 	 * If debugging is not enabled, set stdin, stdout, and stderr in 
@@ -833,18 +891,21 @@ jthread_init(int pre,
 	 * mode.  So by default, when debugging, we want stdio be synchronous.
 	 * To override this, give the ASYNCSTDIO flag.
 	 */
-	if (DBGEXPR(ANY, DBGEXPR(ASYNCSTDIO, true, false), true))
-		for (i = 0; i < 3; i++)
-			if (i != jthreadedFileDescriptor(i))
+	if (DBGEXPR(ANY, DBGEXPR(ASYNCSTDIO, true, false), true)) {
+		for (i = 0; i < 3; i++) {
+			if (i != jthreadedFileDescriptor(i)) {
 				return 0;
+			}
+		}
+	}
 
 	/*
 	 * On some systems, it is essential that we put the fds back
 	 * in their non-blocking state
 	 */
 	atexit(restore_fds);
-	catchSignal(SIGINT, restore_fds_and_exit);
-	catchSignal(SIGTERM, restore_fds_and_exit);
+	registerTerminalSignal(SIGINT, restore_fds_and_exit);
+	registerTerminalSignal(SIGTERM, restore_fds_and_exit);
 
 	preemptive = pre;
 	max_priority = maxpr;
@@ -858,22 +919,25 @@ jthread_init(int pre,
 	threadQtail = allocator((maxpr + 1) * sizeof (jthread *));
 
 #if defined(SIGVTALRM)
-	catchSignal(SIGVTALRM, interrupt);
+	registerAsyncSignalHandler(SIGVTALRM, interrupt);
 #endif
-	catchSignal(SIGALRM, interrupt);
-	catchSignal(SIGIO, interrupt);
-        catchSignal(SIGCHLD, interrupt);
+	registerAsyncSignalHandler(SIGALRM, interrupt);
+	registerAsyncSignalHandler(SIGIO, interrupt);
+        registerAsyncSignalHandler(SIGCHLD, interrupt);
+        registerAsyncSignalHandler(SIGUSR1, interrupt);
 
 	/* create the helper pipe for lost wakeup problem */
-	if (pipe(sigPipe) != 0)
+	if (pipe(sigPipe) != 0) {
 		return (0);
+	}
 	if (maxFd == -1) {
 		maxFd = sigPipe[0] > sigPipe[1] ? sigPipe[0] : sigPipe[1];
 	}
 
 	jtid = newThreadCtx(0);
-	if (!jtid)
+	if (!jtid) {
 		return (0);
+	}
 
         jtid->priority = mainthreadpr;
         jtid->status = THREAD_SUSPENDED;
@@ -904,6 +968,7 @@ jthread_init(int pre,
 	/* Because of the handleVtAlarm hack (poll every 20 SIGVTALRMs) 
 	 * we turn on the delivery of SIGVTALRM even if no actual time
 	 * slicing is possible because only one Java thread is running.
+	 * XXX We should be smarter about that.
 	 */
 	activate_time_slicing();
         return jtid;
@@ -972,8 +1037,9 @@ static void
 start_this_sucker_on_a_new_frame(void)
 {
 	/* I might be dying already */
-	if ((currentJThread->flags & THREAD_FLAGS_KILLED) != 0)
+	if ((currentJThread->flags & THREAD_FLAGS_KILLED) != 0) {
 		die();
+	}
 
 	/* all threads start with interrupts turned off */
 	intsRestore();
@@ -1024,7 +1090,7 @@ DBG(JTHREAD,
 	 *
 	 * To be safe, we immediately call a new function.
 	 */
-        if (setjmp(jtid->env)) {
+        if (sigsetjmp(jtid->env, false)) {
 		/* new thread */
 		start_this_sucker_on_a_new_frame();
 		assert(!"Never!");
@@ -1254,7 +1320,6 @@ reschedule(void)
 	int i;
 	jthread* lastThread;
 	int b;
-	sigset_t nsig;
 
 	/* A reschedule in a non-blocked context is half way to hell */
 	assert(intsDisabled());
@@ -1280,29 +1345,15 @@ dprintf("switch from %p to %p\n", lastThread, currentJThread); )
 #if defined(CONTEXT_SWITCH)
 				CONTEXT_SWITCH(lastThread, currentJThread);
 #else
-				if (setjmp(lastThread->env) == 0) {
+				if (sigsetjmp(lastThread->env, false) == 0) {
 				    lastThread->restorePoint = 
 					GET_SP(lastThread->env);
-				    longjmp(currentJThread->env, 1);
+				    siglongjmp(currentJThread->env, 1);
 				}
 #endif
 #if defined(LOAD_FP)
 				LOAD_FP(currentJThread->fpstate);
 #endif
-				/* Alarm signal may be blocked - if so
-				 * unblock it. - XXX
-				 */
-				if (alarmBlocked == true) {
-					alarmBlocked = false;
-					sigemptyset(&nsig);
-					sigaddset(&nsig, SIGALRM);
-#if defined(SIGVTALRM)
-					sigaddset(&nsig, SIGVTALRM);
-#endif
-					sigaddset(&nsig, SIGIO);
-					sigprocmask(SIG_UNBLOCK, 
-						&nsig, 0);
-				}
 
 				/* Restore ints */
 				blockInts = b;
@@ -1386,21 +1437,34 @@ DBG(JTHREADDETAIL,
 retry:
 	if (sleep) {
 		b = blockInts;
+		/* NB: BEGIN unprotected region */
 		blockInts = 0;
 		FD_SET(sigPipe[0], &rd);
 	}
 	r = select(maxFd+1, &rd, &wr, 0, sleep ? 0 : &zero);
 
-	/* drain helper pipe if a byte was written */
-	if (r > 0 && FD_ISSET(sigPipe[0], &rd)) {
-		char c;
-		read(sigPipe[0], &c, 1);
-	}
-
 	if (sleep) {
 		blockInts = b;
-		if (sigPending)
+		/* NB: END unprotected region */
+
+		/* drain helper pipe if a byte was written */
+		if (r > 0 && FD_ISSET(sigPipe[0], &rd)) {
+			char c;
+
+			/* NB: since "rd" is a thread-local variable, it can 
+			 * still say that we should read from the pipe when 
+			 * in fact another thread has already read from it.
+			 * That's why we count how many bytes go in and out.
+			 */
+			if (bytesInPipe > 0) {
+				read(sigPipe[0], &c, 1);
+				bytesInPipe--;
+			}
+		}
+
+		if (sigPending) {
 			processSignals();
+		}
 	}
 	if ((r < 0 && errno == EINTR) && !sleep) 
 		goto retry;
@@ -1874,6 +1938,7 @@ DBG(JTHREAD,
 
 	intsDisable();
 	for (;;) {
+		wouldlosewakeup = 1;
 		npid = waitpid(wpid, status, options|WNOHANG);
 		if (npid > 0) {
 			break;
@@ -1965,7 +2030,7 @@ DBG(JTHREAD,
 
 		/* set all signals back to their default state */
 		for (i = 0; i < NSIG; i++) {
-			catchSignal(i, SIG_DFL);
+			clearSignal(i);
 		}
 
 		/* now reenable interrupts */

@@ -126,7 +126,7 @@ typedef signed long long	jlong;
 #define true		1
 #define false		0
 
-#define catchSignal(s, h)	signal(s, h)
+#define catchSignal(s, h)	signal(s, h)  /* XXX use sigaction()? */
 
 static jlong currentTime()
 {

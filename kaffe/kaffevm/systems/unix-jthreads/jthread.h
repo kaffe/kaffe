@@ -99,7 +99,7 @@ typedef struct _jthread {
 	 * used to hold the current Java thread
 	 */
 	void*				jlThread;
-	jmp_buf				env;
+	sigjmp_buf			env;
 #if defined(SAVED_FP_SIZE)
 	char				fpstate[SAVED_FP_SIZE];
 #endif
@@ -267,8 +267,6 @@ void jthread_enable_stop(void);
  * functions to disable and restore interrupts
  * These are *not* part of the public interface.
  */
-void 	intsDisable(void);
-void 	intsRestore(void);
 #define	INTS_DISABLED()		intsDisabled()
 int 	intsDisabled(void);
 
@@ -276,21 +274,13 @@ int 	intsDisabled(void);
  * Prevent all other threads from running.
  * In this uniprocessor implementation, this is simple.
  */
-static inline 
-void jthread_suspendall(void)
-{
-	intsDisable();
-}
+void jthread_suspendall(void);
 
 /*
  * Reallow other threads.
  * In this uniprocessor implementation, this is simple.
  */
-static inline 
-void jthread_unsuspendall(void)
-{
-	intsRestore();
-}
+void jthread_unsuspendall(void);
 
 /*
  * Print info about a given jthread to stderr
@@ -337,16 +327,14 @@ void jcondvar_broadcast(jcondvar *cv, jmutex *lock);
 static inline
 void jthread_spinon(void *arg)
 {
-	intsDisable();
+	jthread_suspendall();
 }
 
 /* ARGSUSED */
 static inline
 void jthread_spinoff(void *arg)
 {
-	intsRestore();
+	jthread_unsuspendall();
 }
-
-extern void catchSignal(int, void*);
 
 #endif
