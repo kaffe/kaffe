@@ -18,7 +18,7 @@ lib_LTLIBRARIES = libkaffexprof.la
 
 libkaffexprof_la_LDFLAGS = \
 	-export-dynamic \
-	-release $(KVER)
+	-release $(PACKAGE_VERSION)
 
 libkaffexprof_la_DEPENDENCIES = \
 	$(LIBLTDL)

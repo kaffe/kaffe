@@ -21,10 +21,10 @@
  * build process, it will use Kaffe's constants and config options.
  * This should make it machine-independent or at least aid in porting it.
  *
- * We use the preprocessor constant "KVER" to determine whether that is
+ * We use the preprocessor constant "HAVE_CONFIG_H" to determine whether that is
  * the case or not.
  */
-#if defined(KVER)
+#if defined(HAVE_CONFIG_H)
 
 /*======== 	begin of definitions that apply to Kaffe 	     ========*/
 
@@ -55,7 +55,7 @@
 
 /*======== 	end of definitions that apply to Kaffe 	     	     ========*/
 
-#else	/* !KVER */
+#else	/* !PACKAGE_VERSION */
 
 /*
  * all definitions for compilation under plain UNIX are in this file
@@ -64,7 +64,7 @@
 
 /*======== end of definitions that apply to plain UNIX only ========*/
 
-#endif  /* !KVER */
+#endif  /* !PACKAGE_VERSION */
 
 #include "jqueue.h"
 #include "lock-impl.h"

@@ -174,7 +174,6 @@ KAFFE_ARCHOS = @KAFFE_ARCHOS@
 KAFFE_LIBS = @KAFFE_LIBS@
 KLIBFLAGS = @KLIBFLAGS@
 KPREFIX = @KPREFIX@
-KVER = @KVER@
 KVMBINFLAGS = @KVMBINFLAGS@
 KVMLIBFLAGS = @KVMLIBFLAGS@
 LDFLAGS = @LDFLAGS@
@@ -301,7 +300,10 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/kaffevm -I$(top_builddir)/include
 lib_LTLIBRARIES = libkaffejvmpi.la
-libkaffejvmpi_la_LDFLAGS = -export-dynamic -release $(KVER)
+libkaffejvmpi_la_LDFLAGS = \
+	-export-dynamic \
+	-release $(PACKAGE_PERSION)
+
 libkaffejvmpi_la_DEPENDENCIES = \
 	$(LIBLTDL) \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la

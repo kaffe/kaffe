@@ -54,9 +54,6 @@ x/*)
 esac
 AC_SUBST(abssrcdir)
 
-dnl Setup version number.
-KVER=$VERSION
-
 dnl =========================================================================
 dnl Allow specification of header-file and library directories
 dnl -------------------------------------------------------------------------
@@ -543,11 +540,9 @@ dnl =========================================================================
 dnl Make the necessary substitutions
 dnl -------------------------------------------------------------------------
 
-AC_SUBST(KVER)
 AC_SUBST(JAVA_LIBS)
 AC_SUBST(with_engine)
 AC_SUBST(THREAD_SYSTEM)
-AC_DEFINE_UNQUOTED(KAFFEVERSION, "$KVER", [Kaffe version number])
 if test x"$program_prefix" = x"NONE" ; then
 	KPREFIX=""
 else
@@ -1656,7 +1651,7 @@ AC_SUBST(kaffeh_TRANSF)
 AC_SUBST(kaffebin_TRANSF)
 
 dnl These are not to be used during configuration, only during build.
-CPPFLAGS="-DKVER='\"\$(KVER)\"' -I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
+CPPFLAGS="-I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
 LIBS="$LIBS $LTLIBS"
 
 dnl Avoid GNU Make $(filter-out -pg,@CFLAGS@) in kaffe/xprof/Makefile.am

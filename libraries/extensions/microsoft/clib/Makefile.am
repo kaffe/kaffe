@@ -13,7 +13,7 @@ native_LTLIBRARIES = libmicrosoft.la
 libmicrosoft_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \
-	-release $(KVER) \
+	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
 libmicrosoft_la_SOURCES = Delegate.c

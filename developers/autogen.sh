@@ -110,7 +110,7 @@ cp libltdl/acinclude.m4 m4/libtool.m4
 
 aclocal -I m4 
 autoheader -Wall
-automake --add-missing --copy -Wall || true  # ignore warnings
+automake --add-missing --force-missing --copy -Wall || true  # ignore warnings
 autoconf -Wall
 
 (
@@ -124,7 +124,7 @@ autoconf -Wall
  # Need to regenerate things because patching
  # screws up timestamps
  aclocal -I .
- automake --add-missing --copy -Wall
+ automake --add-missing --force-missing --copy -Wall
  touch config-h.in
  autoconf -Wall
  patch < ../developers/patch-config.sub-superh.diff

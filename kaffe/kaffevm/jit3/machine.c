@@ -58,7 +58,6 @@
 #include "jvmpi_kaffe.h"
 
 char* engine_name = "Just-in-time v3";
-char* engine_version = KAFFEVERSION;
 
 /**
  * top of the operand stack. localsz <= stackno < localsz+stacksz

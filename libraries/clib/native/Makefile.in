@@ -216,7 +216,6 @@ KAFFE_ARCHOS = @KAFFE_ARCHOS@
 KAFFE_LIBS = @KAFFE_LIBS@
 KLIBFLAGS = @KLIBFLAGS@
 KPREFIX = @KPREFIX@
-KVER = @KVER@
 KVMBINFLAGS = @KVMBINFLAGS@
 KVMLIBFLAGS = @KVMLIBFLAGS@
 LDFLAGS = @LDFLAGS@
@@ -389,7 +388,7 @@ UTIL_SRCS = \
 libnative_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \
-	-release $(KVER) \
+	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
 libnative_la_LIBADD = $(M_LIBS) $(LTLIBICONV)

@@ -12,7 +12,7 @@ native_LTLIBRARIES = libio.la
 libio_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \
-	-release $(KVER) \
+	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
 libio_la_SOURCES = \

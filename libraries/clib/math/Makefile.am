@@ -13,7 +13,7 @@ native_LTLIBRARIES = libmath.la
 libmath_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \
-	-release $(KVER) \
+	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
 libmath_la_LIBADD = $(MATH_LIBS) $(M_LIBS)

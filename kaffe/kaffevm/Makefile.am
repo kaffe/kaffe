@@ -37,7 +37,7 @@ endif
 libkaffevm_la_LDFLAGS = \
 	$(KVMLIBFLAGS) \
 	-export-dynamic \
-	-release $(KVER)
+	-release $(PACKAGE_VERSION)
 
 libkaffevm_la_DEPENDENCIES = \
 	$(LIBLTDL) \

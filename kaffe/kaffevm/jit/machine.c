@@ -51,7 +51,6 @@
  * Define information about this engine.
  */
 char* engine_name = "Just-in-time";
-char* engine_version = KVER;
 
 iStaticLock	translatorlock;		/* lock to protect the variables below */
 int stackno;

@@ -1,7 +1,7 @@
 # Alsa files for Tritonus javax.sound implementation
 #
-# Copyright (c) 2002, 2003
-#	Dalibor Topic <robilad@yahoo.com>
+# Copyright (c) 2002, 2003, 2004
+#	Dalibor Topic <robilad@kaffe.org>
 #
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
@@ -13,7 +13,7 @@ native_LTLIBRARIES = libtritonusalsa.la
 libtritonusalsa_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \
-	-release $(KVER) \
+	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|org)_"
 
 libtritonusalsa_la_LIBADD = -lasound

@@ -14,7 +14,7 @@ AM_CPPFLAGS = -I$(top_builddir)/include
 libawt_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \
-	-release $(KVER) \
+	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
 libawt_la_LIBADD = $(AWT_LIBS)

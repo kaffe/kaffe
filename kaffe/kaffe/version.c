@@ -17,7 +17,6 @@
 #include "version-info.h" /* generated at compile time */
 
 extern char* engine_name;	/* defined in the engine's library */
-extern char* engine_version;	/* defined in the engine's library */
 
 /* Must not be initialized in place, because stderr is not always a
  * compile-time constant. */
@@ -40,7 +39,7 @@ printShortVersion(void)
 	fprintf(versionfd, "with ABSOLUTELY NO WARRANTY.\n\n");
 
 	fprintf(versionfd, "Engine: %s   Version: %s   Java Version: %s\n",
-		engine_name, engine_version, JAVA_VERSION_STRING);
+		engine_name, PACKAGE_VERSION, JAVA_VERSION_STRING);
 }
 
 void

@@ -39,9 +39,6 @@
 extern int profFlag;
 #endif
 
-extern char* engine_name;
-extern char* engine_version;
-
 #include "jni.h"
 
 JavaVMInitArgs vmargs;

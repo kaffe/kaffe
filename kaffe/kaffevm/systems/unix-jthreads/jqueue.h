@@ -8,7 +8,7 @@
 #ifndef _jqueue_h
 #define _jqueue_h
 
-#if defined(KVER)
+#if defined(HAVE_CONFIG_H)
 #include "debug.h"
 #include "config.h"
 #include "config-std.h"

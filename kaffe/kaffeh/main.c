@@ -213,7 +213,7 @@ options(char** argv)
 			dprintf("Kaffeh Stub Generator\n");
 			dprintf("Copyright (c) 1996, 1997\nTransvirtual Technologies, Inc.  All rights reserved\n");
 
-			dprintf("Version: %s\n", KVER);
+			dprintf("Version: %s\n", PACKAGE_VERSION);
 			exit(0);
 		}
 		else if (strcmp(argv[i], "-base") == 0) {

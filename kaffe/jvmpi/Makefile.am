@@ -3,7 +3,10 @@ AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$
 
 lib_LTLIBRARIES = libkaffejvmpi.la
 
-libkaffejvmpi_la_LDFLAGS = -export-dynamic -release $(KVER)
+libkaffejvmpi_la_LDFLAGS = \
+	-export-dynamic \
+	-release $(PACKAGE_PERSION)
+
 libkaffejvmpi_la_DEPENDENCIES = \
 	$(LIBLTDL) \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la

@@ -20,7 +20,7 @@
 #define	kaffe_vm_specification_version	"1.0"
 #define	kaffe_vm_specification_vendor	"Sun Microsystems Inc."
 #define	kaffe_vm_specification_name	"Java Virtual Machine Specification"
-#define	kaffe_vm_version		KAFFEVERSION
+#define	kaffe_vm_version		PACKAGE_VERSION
 #define	kaffe_vm_vendor			kaffe_vendor
 #define	kaffe_vm_name			"Kaffe"
 #define	kaffe_specification_version	"1.2"

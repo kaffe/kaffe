@@ -605,9 +605,6 @@
 /* Define to 1 if `in6addr_loopback' is declared by <netinet/in.h> */
 #undef IN6ADDR_LOOPBACK_DECLARED
 
-/* Kaffe version number */
-#undef KAFFEVERSION
-
 /* Define if signal handlers must be reset upon delivery */
 #undef KAFFE_SIGNAL_ONE_SHOT
 

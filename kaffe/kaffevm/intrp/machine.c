@@ -48,7 +48,6 @@
  * Define information about this engine.
  */
 char* engine_name = "Interpreter";
-char* engine_version = KVER;
 
 #define	define_insn(code)	break;					\
 				case code:				\

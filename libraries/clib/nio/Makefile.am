@@ -11,7 +11,7 @@ native_LTLIBRARIES = libnio.la
 libnio_la_LDFLAGS = \
 	$(KLIBFLAGS) \
 	-module \
-	-release $(KVER) \
+	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
 libnio_la_SOURCES = \
