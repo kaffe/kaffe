@@ -1,3 +1,7 @@
+Tue Feb 29 14:08:27 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/exception.c: avoid empty string exception messages
+
 Mon Feb 28 21:29:32 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* include/jni.h kaffe/kaffeh/support.c kaffe/kaffevm/jni.c
