@@ -878,7 +878,7 @@ String[] breakLines( String str) {
 		}
 	}
 
-	if ( i0 < n ){
+	if ( i0 <= n ){
 		v.addElement( new String( cbuf, i0, i-i0));
 	}
 	
