@@ -380,7 +380,9 @@ changequote([,])dnl
 for ac_symprfx in "" "_"; do
 
   # Write the raw and C identifiers.
-  ac_cv_sys_global_symbol_pipe="sed -n -e 's/^.* $ac_symcode $ac_symprfx$ac_sympat$/$ac_symxfrm/p'"
+  # Unlike in ltconfig.in, we need $ac_symprfx before $ac_symxfrm here,
+  # otherwise AM_SYS_SYMBOL_UNDERSCORE will always be false
+  ac_cv_sys_global_symbol_pipe="sed -n -e 's/^.* $ac_symcode $ac_symprfx$ac_sympat$/$ac_symprfx$ac_symxfrm/p'"
 
   # Check to see that the pipe works correctly.
   ac_pipe_works=no
@@ -486,6 +488,11 @@ EOF
 
   # Do not use the global_symbol_pipe unless it works.
   if test "$ac_pipe_works" = yes; then
+    if test x"$ac_symprfx" = x"_"; then
+      ac_cv_sys_symbol_underscore=yes
+    else
+      ac_cv_sys_symbol_underscore=no
+    fi
     break
   else
     ac_cv_sys_global_symbol_pipe=

@@ -1,3 +1,9 @@
+Mon Jan 11 04:17:09 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* acinclude.m4, libltdl/acinclude.m4: updated from libtool.m4
+	* aclocal.m4, libltdl/aclocal.m4: regen
+	* configure, libltdl/configure: regen
+
 Mon Jan 11 03:17:45 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* acconfig.h: moved into config
