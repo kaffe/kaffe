@@ -530,7 +530,8 @@ initInsnSequence(int codesize, int localsz, int stacksz)
 		codeblock_size = ALLOCCODEBLOCKSZ;
 	}
 	codeblock = KMALLOC(codeblock_size + CODEBLOCKREDZONE);
-	addToCounter(&jitcodeblock, "jitmem-codeblock", 1, GCSIZEOF(codeblock));
+	addToCounter(&jitcodeblock, "jitmem-codeblock", 1,
+		     (jlong)GCSIZEOF(codeblock));
 	CODEPC = 0;
 }
 
@@ -552,7 +553,7 @@ generateInsnSequence(codeinfo* codeInfo)
 				    -(jlong)GCSIZEOF(codeblock));
 			codeblock = KREALLOC(codeblock, codeblock_size + CODEBLOCKREDZONE);
 			addToCounter(&jitcodeblock, "jitmem-codeblock", 0,
-				    -GCSIZEOF(codeblock));
+				     (jlong)GCSIZEOF(codeblock));
 		}
 
 		/* Generate sequences */

@@ -1,3 +1,9 @@
+1999-05-27  Patrick A Tullmann  <tullmann@cs.utah.edu>
+
+	* kaffe/kaffevm/jit/machine.c (initInsnSequence): Cast size of
+	codeblock to jlong.
+	(generateInsnSequence): Add to jitcodeblock after realloc.
+
 1999-05-27  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* acinclude.m4, ltconfig, ltmain.sh: Update from libtool 1.3.2,
