@@ -16,11 +16,11 @@ Why use Kaffe?
 Because Kaffe is distributed under the terms of the GNU Public License
 which means the source code is free for you to download, modify and use.
 
-What sytems does Kaffe support?
+What systems does Kaffe support?
 -------------------------------
 
 Most of the porting issues of Kaffe are in the virtual machine itself
-(after all the rests in Java an inheriently portable) so we may not
+(after all the rests in Java an inherently portable) so we may not
 support all the platforms you might want, but we support an amazing number
 and we'll add more as we can.  Take a look at the list below to see if
 Kaffe will run on your system ('J' means 'just-in-time' while 'I' means
@@ -63,8 +63,8 @@ Who can use Kaffe?
 ------------------
 
 Kaffe OpenVM is distributed under the GPL (GNU Public License).  Please
-read the license to make sure its okay to use it in your circumstances.  If
-not, you can always contact us at Transvirtual and ask them about alternatives.
+read the license to make sure it's okay to use it in your circumstances.  If
+not, you can always contact us at Transvirtual and ask about alternatives.
 
 Where do I find new copies of Kaffe?
 ------------------------------------
@@ -73,10 +73,10 @@ Kaffe is available from various sites.  The primary site is:
 
         ftp://ftp.transvirtual.com/pub/kaffe/
 
-What about a web side?
+What about a web site?
 ----------------------
 
-News about the "Open Source" Kaffe distribution can aways be found at:
+News about the "Open Source" Kaffe distribution can always be found at:
 
 	http://www.transvirtual.com/
 
@@ -84,7 +84,7 @@ And mailing lists?
 ------------------
 
 A couple of mailing lists are available for information and discussion of
-the Kaffe project.  There lists are:
+the Kaffe project.  These lists are:
   
         kaffe@transvirtual.com                      - General discussions
         kaffe-announce@transvirtual.com             - Announcements
@@ -99,7 +99,7 @@ to either:
         kaffe-request@transvirtual.com
         kaffe-announce-request@transvirtual.com
   
-depending what you are interested in.
+depending on what you are interested in.
 
 How do I compile kaffe?
 -----------------------
@@ -119,7 +119,7 @@ By default, the system will install into the /usr/local hierarchy as per
 the standard GNU coding rules.  This can be changed using the --prefix
 option to configure.  To install the binaries type "make install".
 
-To avoid comflicts with Javasoft's products Kaffe can be reconfigured in a
+To avoid conflicts with Javasoft's products, Kaffe can be reconfigured in a
 number of ways:
 
 1. Use the --program-prefix configure option to prepend a string to all
@@ -140,10 +140,10 @@ directories.
 
 Compilation and installation is as per the UNIX system.
 
-There have been problems reported with this port dues to Window's inability
-to seperate two files which have different capitalisations (eg. it things
+There have been problems reported with this port due to Window's inability
+to separate two files which have different capitalisations (eg. it thinks
 System.h is the same as system.h).  No one has submitted any usable patches
-for this problem as yet.
+for this problem yet.
 
 Running Kaffe
 =============
@@ -160,7 +160,7 @@ a /bin/sh environment setup.  This may help you to figure out what to
 set to what if you alter the standard installation point.
 
 Note that you don't have to setup the CLASSPATH - if you do then that's
-find, but if you don't Kaffe will cosntruct a classpath from the Jar and Zip
+fine, but if you don't Kaffe will construct a classpath from the Jar and Zip
 files it finds in the standard places (the default would be to include all
 files in /usr/local/share/kaffe).
 
