@@ -16,17 +16,6 @@
 #include "object.h"
 #include "support.h"
 
-#ifndef inline
-# define inline
-#endif
-
-inline int
-mipsCountFrames (void** pc, void** sp)
-{
-  printf ("Count frames from $pc=%p $sp=%p\n", pc, sp);
-  return 2;
-}
-
 #if _MIPS_SIM == _MIPS_SIM_NABI32
 void
 mipsN32CallMethod (callMethodInfo *CALL)
@@ -202,3 +191,88 @@ mipsN32CallMethod (callMethodInfo *CALL)
   }
 }
 #endif /* _MIPS_SIM == _MIPS_SIM_NABI32 */
+
+#if _MIPS_SIM == _MIPS_SIM_ABI32
+void
+mips32CallMethod (callMethodInfo *CALL)
+{
+    register int	iret	__asm__("$2");
+    register int64	jret	__asm__("$2");
+    register float	fret	__asm__("$f0");
+    register double	dret	__asm__("$f0");
+
+    register int	i0	__asm__("$4");
+    register int	i1	__asm__("$5");
+    register int	i2	__asm__("$6");
+    register int	i3	__asm__("$7");
+
+    register int*	sp	__asm__("sp");
+    register int*	gp	__asm__("gp");
+    register int*	ra	__asm__("ra");
+    register int64	(*t9)(void) __asm__("$25");
+    int* curr_sp = sp;
+    int* curr_gp = gp;
+    int* curr_ra = ra;
+
+    {
+      int nrargs = (CALL)->nrargs;
+      uintp *argframe = __builtin_alloca((nrargs > 4 ? nrargs : 4) * sizeof(int64));
+      int argidx;
+      int idx = 0;
+
+      for (argidx = 0; argidx < nrargs; ++argidx) {
+	switch ((CALL)->callsize[argidx]) {
+	case 2:
+	  if ((idx & 1) != 0) {	/* Align */
+	    idx += 1;
+	  }
+	  *(jlong*)&argframe[idx] = (CALL)->args[argidx].j;
+	  idx += 2;
+	  break;
+	case 1:
+	  *(jint*)&argframe[idx] = (CALL)->args[argidx].i;
+	  idx += 1;
+	  break;
+	default:
+	  break;
+	}
+      }
+
+      i0 = argframe[0];
+      i1 = argframe[1];
+      i2 = argframe[2];
+      i3 = argframe[3];
+
+      sp = argframe;
+
+      asm ("" : : "r" (i0), "r" (i1), "r" (i2), "r" (i3));
+
+      (*(t9 = (CALL)->function))();
+
+      asm ("lw $31,%0" : : "m" (curr_ra));
+      asm ("lw $gp,%0" : : "m" (curr_gp));
+      asm ("lw $sp,%0" : : "m" (curr_sp));
+
+      if ((CALL)->retsize != 0) {
+	switch((CALL)->retsize) {
+	case 2:
+	  if ((CALL)->rettype == 'D')
+	    (CALL)->ret->d = dret;
+	  else {
+	    (CALL)->ret->j = jret;
+	  }
+	  break;
+	case 1:
+	  if ((CALL)->rettype == 'F')
+	    (CALL)->ret->f = fret;
+	  else
+	    (CALL)->ret->i = iret;
+	  break;
+	default:
+	  ABORT();
+	  break;
+	}
+      }
+    }
+}
+#endif /* _MIPS_SIM == _MIPS_SIM_ABI32 */

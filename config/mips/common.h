@@ -16,6 +16,8 @@
 
 #if _MIPS_SIM == _MIPS_SIM_NABI32
 #define sysdepCallMethod(CALL) mipsN32CallMethod(CALL)
+#elif _MIPS_SIM == _MIPS_SIM_ABI32
+#define sysdepCallMethod(CALL) mips32CallMethod(CALL)
 #endif /* _MIPS_SIM == _MIPS_SIM_NABI32 */
 
 #endif

@@ -24,11 +24,6 @@
  * This is the offset into the setjmp buffer where the stack pointer is
  * stored.  This may be different with different OSes.
  */
-/*
- * Stack offset.
- * This is the offset into the setjmp buffer where the stack pointer is
- * stored.  This may be different with different OSes.
- */
 #if (_MIPS_SIM == _MIPS_SIM_ABI32)
 #define SP_OFFSET               2
 #define FP_OFFSET               13
