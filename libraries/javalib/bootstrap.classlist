@@ -226,6 +226,7 @@ java/util/zip/ZipFile.class
 kaffe/io/ByteToCharConverter.class
 kaffe/io/ByteToCharDefault.class
 kaffe/io/ByteToCharIconv.class
+kaffe/io/ByteToChar8859_1.class
 kaffe/io/CharToByteConverter.class
 kaffe/io/CharToByteDefault.class
 kaffe/io/CharToByteIconv.class
