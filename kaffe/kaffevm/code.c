@@ -155,10 +155,10 @@ addLineNumbers(Method* m, uint32 len UNUSED, classFile* fp, errorInfo *info)
 					     JAVA_LANG(ClassFormatError),
 					     "%s "
 					     "(Method \"%s\" has invalid pc, "
-					     "%d, for line number %d)",
+					     "%ld, for line number %d)",
 					     CLASS_CNAME(m->class),
 					     m->name->data,
-					     lines->entry[i].start_pc,
+					     (long)lines->entry[i].start_pc,
 					     lines->entry[i].line_nr);
 			return false;
 		}
