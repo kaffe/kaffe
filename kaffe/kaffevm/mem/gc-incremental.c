@@ -157,6 +157,7 @@ struct _gcStats gcStats;
 
 static void startGC(Collector *gcif);
 static void finishGC(Collector *gcif);
+static void startFinalizer(void);
 static void markObjectDontCheck(gc_unit *unit, gc_block *info, int idx);
 
 /* Return true if gc_unit is pointer to an allocated object */
@@ -438,6 +439,8 @@ DBG(GCSTAT,
 
 		unlockStaticMutex(&gc_lock);
 
+		startFinalizer();
+
 		if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0) {
 			/* print out all the info you ever wanted to know */
 			fprintf(stderr, 
@@ -521,7 +524,6 @@ finishGC(Collector *gcif)
 	gc_unit* unit;
 	gc_block* info;
 	int idx;
-	int iLockRoot;
 
 	/* There shouldn't be any grey objects at this point */
 	assert(gclists[grey].cnext == &gclists[grey]);
@@ -614,9 +616,25 @@ finishGC(Collector *gcif)
 		gc_heap_free(unit);
 	}
 	stopTiming(&sweep_time);
+}
 
+static
+void
+startFinalizer(void)
+{
+	int iLockRoot;
+	int start;
+
+        start = 0;
+
+	lockStaticMutex(&gc_lock);
 	/* If there's stuff to be finalised then we'd better do it */
 	if (gclists[finalise].cnext != &gclists[finalise]) {
+		start = 1;
+	}
+	unlockStaticMutex(&gc_lock);
+
+	if (start != 0 && finalRunning == false) {
 		lockStaticMutex(&finman);
 		finalRunning = true;
 		signalStaticCond(&finman);

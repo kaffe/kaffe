@@ -32,39 +32,12 @@ java_lang_Thread_yield0(void)
 }
 
 /*
- * Put current thread to sleep for a time.
- */
-void
-java_lang_Thread_sleep0(jlong time)
-{
-	sleepThread(time);
-}
-
-/*
  * Start this thread running.
  */
 void
 java_lang_Thread_start(struct Hjava_lang_Thread* this)
 {
 	startThread(this);
-}
-
-/*
- * Is this thread alive?
- */
-jbool
-java_lang_Thread_isAlive(struct Hjava_lang_Thread* this)
-{
-	return (aliveThread(this));
-}
-
-/*
- * Number of stack.  One for the moment.
- */
-jint
-java_lang_Thread_countStackFrames(struct Hjava_lang_Thread* this)
-{
-	return (framesThread(this));
 }
 
 /*
@@ -82,15 +55,7 @@ java_lang_Thread_setPriority0(struct Hjava_lang_Thread* this, jint prio)
 void
 java_lang_Thread_stop0(struct Hjava_lang_Thread* this, struct Hjava_lang_Object* obj)
 {
-	/* According to the JDK doc, an attempt to call stop with a null
-	 * exception results in a null pointer exception in the current
-	 * thread.
-	 */
-	if (obj == 0) {
-		SignalError("java.lang.NullPointerException", "");
-	} else {
-		stopThread(this, obj);
-	}
+	stopThread(this, obj);
 }
 
 void

@@ -73,6 +73,7 @@ typedef struct {
 	void*	mux;
 	void*	cv;
 	int	count;
+	void*	thd;
 } sem2posixLock;
 
 #if 0
@@ -95,6 +96,13 @@ typedef struct LockInterface {
 
 EXTERN_C LockInterface Kaffe_LockInterface;
 
+#endif
+
+#if !defined(KAFFEH)
+/*
+ * Inject the LockInterface implementation header.
+ */
+#include "lock-impl.h"
 #endif
 
 #endif

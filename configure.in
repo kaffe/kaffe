@@ -550,6 +550,11 @@ AC_CHECK_LIBRARY(z,deflate,ZIP_LIBS)
 ZIP_LIBS="$CTLIBS $ZIP_LIBS"
 AC_SUBST(ZIP_LIBS)
 
+dnl Check for thread libraries
+if test x$with_threads = xunix-pthreads ; then
+	AC_CHECK_LIBRARY(pthread,pthread_create,VM_LIBS)
+fi
+
 dnl Checks for libraries for X related libraries.
 AC_PATH_XTRA
 if test x"$no_x" = x"yes"; then
@@ -1007,7 +1012,7 @@ kaffe/kaffevm/systems/unix-jthreads/Makefile \
 kaffe/kaffevm/systems/oskit-pthreads/Makefile \
 kaffe/kaffevm/systems/linux-threads/Makefile \
 kaffe/kaffevm/systems/beos-native/Makefile \
-kaffe/kaffevm/systems/unix-pthread/Makefile \
+kaffe/kaffevm/systems/unix-pthreads/Makefile \
 kaffe/kaffe/Makefile \
 kaffe/kaffeh/Makefile \
 kaffe/man/Makefile \

@@ -1,3 +1,12 @@
+Fri Sep 17 16:08:22 PDT 1999	Tim Wilkinson	<tim@transvirtual.com>
+
+	* Added pthreads implementation so provide real kernel threading
+	  under GLIBC (LinuxThreads).
+
+	  NB. You must have the very latest GLIBC 2.1.2 prerelease for this
+	  code to work correctly - they fixed a number of signal related bugs
+	  which are relevant.
+
 Thu Sep 16 20:42:31 PDT 1999	Tim Wilkinson	<tim@transvirtual.com>
 
 	* Integrated new fast locking scheme.

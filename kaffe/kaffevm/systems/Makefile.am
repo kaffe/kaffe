@@ -7,6 +7,6 @@
 # of this file. 
 
 SUBDIRS = $(THREAD_SYSTEM)
-DIST_SUBDIRS = unix-jthreads unix-pthread oskit-pthreads linux-threads beos-native
+DIST_SUBDIRS = unix-jthreads unix-pthreads oskit-pthreads linux-threads beos-native
 
 include $(top_srcdir)/include/distclean-hack

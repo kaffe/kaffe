@@ -977,10 +977,9 @@ static void deactivate_time_slicing(void) { }
 /*
  * Initialize the threading system. 
  */
-jthread * 
+void
 jthread_init(int pre,
-	int maxpr, int minpr, int mainthreadpr, 
-	size_t mainThreadStackSize,
+	int maxpr, int minpr,
 	void *(*_allocator)(size_t), 
 	void (*_deallocator)(void*),
 	void (*_destructor1)(void*),
@@ -1023,7 +1022,7 @@ jthread_init(int pre,
 	if (DBGEXPR(ANY, DBGEXPR(ASYNCSTDIO, true, false), true)) {
 		for (i = 0; i < 3; i++) {
 			if (i != jthreadedFileDescriptor(i)) {
-				return (0);
+				return;
 			}
 		}
 	}
@@ -1049,7 +1048,7 @@ jthread_init(int pre,
 
 	/* create the helper pipe for lost wakeup problem */
 	if (pipe(sigPipe) != 0) {
-		return (0);
+		return;
 	}
 	if (maxFd == -1) {
 		maxFd = sigPipe[0] > sigPipe[1] ? sigPipe[0] : sigPipe[1];
@@ -1057,16 +1056,44 @@ jthread_init(int pre,
 
 	jtid = newThreadCtx(0);
 	if (!jtid) {
-		return (0);
+		return;
 	}
 
-        jtid->priority = mainthreadpr;
+	/* Fake up some stack bounds until we get the real ones later - we're
+	 * the only thread running so this isn't a problem.
+	 */
+	jtid->stackBase = 0;
+	jtid->stackEnd = 0xFFFFFFFF;
+#if defined(STACK_GROWS_UP)
+        jtid->restorePoint = jtid->stackEnd;
+#else
+        jtid->restorePoint = jtid->stackBase;
+#endif
+        jtid->priority = maxpr;
         jtid->status = THREAD_SUSPENDED;
         jtid->flags = THREAD_FLAGS_NOSTACKALLOC;
         jtid->func = (void (*)(void*))jthread_init;
         jtid->nextlive = liveThreads;
         jtid->time = 0;
         liveThreads = jtid;
+
+        talive++;
+        currentJThread = jtid;
+        resumeThread(jtid);
+	/* Because of the handleVtAlarm hack (poll every 20 SIGVTALRMs) 
+	 * we turn on the delivery of SIGVTALRM even if no actual time
+	 * slicing is possible because only one Java thread is running.
+	 * XXX We should be smarter about that.
+	 */
+	activate_time_slicing();
+}
+
+jthread_t
+jthread_createfirst(size_t mainThreadStackSize, unsigned char prio, void* jlThread)
+{
+        jthread *jtid; 
+
+	jtid = currentJThread;
 
 	/*
 	 * Note: the stackBase and stackEnd values are used for two purposes:
@@ -1083,16 +1110,12 @@ jthread_init(int pre,
         jtid->stackBase = jtid->stackEnd - mainThreadStackSize;
         jtid->restorePoint = jtid->stackBase;
 #endif
-        talive++;
-        currentJThread = jtid;
-        resumeThread(jtid);
-	/* Because of the handleVtAlarm hack (poll every 20 SIGVTALRMs) 
-	 * we turn on the delivery of SIGVTALRM even if no actual time
-	 * slicing is possible because only one Java thread is running.
-	 * XXX We should be smarter about that.
-	 */
-	activate_time_slicing();
-        return jtid;
+
+	jtid->jlThread = jlThread;
+
+	jthread_setpriority(jtid, prio);
+
+	return (jtid);
 }
 
 /*
@@ -1829,6 +1852,8 @@ jbool
 jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 {
 	jthread *current = jthread_current();
+	jbool r;
+
 	intsDisable();
 
 	/* give up mutex */
@@ -1850,7 +1875,7 @@ jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 #endif
 
 	/* wait to be signaled */
-	suspendOnQThread(current, cv, timeout);
+	r = suspendOnQThread(current, cv, timeout);
 	/* reacquire mutex */
 	while (lock->holder != NULL) {
 		suspendOnQThread(current, &lock->waiting, NOTIMEOUT);
@@ -1858,7 +1883,7 @@ jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 	lock->holder = current;
 	intsRestore();
 
-	return (false);
+	return (r);
 }
 
 void

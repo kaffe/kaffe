@@ -49,8 +49,6 @@ static int threadStackSize;	/* native stack size */
 /* referenced by native/Runtime.c */
 jbool runFinalizerOnExit;	/* should we run finalizers? */
 
-extern jboolean usingPosixLocks;
-
 Hjava_lang_Class* ThreadClass;
 Hjava_lang_Class* ThreadGroupClass;
 Hjava_lang_ThreadGroup* standardGroup;
@@ -59,6 +57,23 @@ static void firstStartThread(void*);
 static void createInitialThread(const char*);
 static void runfinalizer(void);
 static iLock* thread_start_lock;
+
+/*
+ * How do I get memory?
+ */
+static
+void *
+thread_malloc(size_t s)
+{
+	return gc_malloc(s, GC_ALLOC_THREADCTX);
+}
+
+static
+void
+thread_free(void *p)
+{
+	gc_free(p);
+}
 
 /*
  * Initialise threads.
@@ -122,6 +137,19 @@ createThread(Hjava_lang_Thread* tid, void* func, size_t stacksize,
 	return 1;
 }
 
+static
+void
+initThreadLock(Hjava_lang_Thread* tid)
+{
+#if defined(SETUP_POSIX_LOCKS)
+	sem2posixLock* lk;
+
+	unhand(tid)->sem = thread_malloc(sizeof(sem2posixLock));
+	lk = (sem2posixLock*)unhand(tid)->sem;
+	SETUP_POSIX_LOCKS(lk);
+#endif
+}
+
 /*
  * Start a new thread running.
  */
@@ -131,20 +159,14 @@ startThread(Hjava_lang_Thread* tid)
 	int success;
 	struct _errorInfo info;
 	int iLockRoot;
-	sem2posixLock* lk;
 
-	if (usingPosixLocks == true) {
-		unhand(tid)->sem = jmalloc(sizeof(sem2posixLock));
-		lk = (sem2posixLock*)unhand(tid)->sem;
-		lk->mux = thread_malloc(sizeof(jmutex));
-		lk->cv = thread_malloc(sizeof(jcondvar));
-		jmutex_initialise(lk->mux);
-		jcondvar_initialise(lk->cv);
-	}
+	initThreadLock(tid);
 	
+#if 0
 	if (aliveThread(tid) == true) {
 		throwException(IllegalThreadStateException);
 	}
+#endif
 
 	/* Hold the start lock while the thread is created.
 	 * This lock prevents the new thread from running until we're
@@ -231,7 +253,6 @@ void
 createInitialThread(const char* nm)
 {
 	Hjava_lang_Thread* tid;
-	sem2posixLock* lk;
 
 	/* Allocate a thread to be the main thread */
 	tid = (Hjava_lang_Thread*)newObject(ThreadClass);
@@ -245,18 +266,12 @@ createInitialThread(const char* nm)
 	unhand(tid)->interrupting = 0;
 	unhand(tid)->target = 0;
 	unhand(tid)->group = standardGroup;
-	if (usingPosixLocks == true) {
-		unhand(tid)->sem = jmalloc(sizeof(sem2posixLock));
-		lk = (sem2posixLock*)unhand(tid)->sem;
-		lk->mux = thread_malloc(sizeof(jmutex));
-		lk->cv = thread_malloc(sizeof(jcondvar));
-		jmutex_initialise(lk->mux);
-		jcondvar_initialise(lk->cv);
-	}
+
+	initThreadLock(tid);
 
 	jthread_atexit(runfinalizer);
 	/* set Java thread associated with main thread */
-	SET_COOKIE(tid);
+	mainthread = jthread_createfirst(MAINSTACKSIZE, java_lang_Thread_NORM_PRIORITY, tid);
 	unhand(tid)->PrivateInfo = mainthread;
 	unhand(tid)->stackOverflowError = 
 		(Hjava_lang_Throwable*)StackOverflowError;
@@ -273,9 +288,13 @@ static
 void
 startSpecialThread(void* arg)
 {
-	Hjava_lang_Thread* tid = (Hjava_lang_Thread*)arg;
-	void (*func)(void *) = (void*)tid->target;
-	void *argument = (void*)tid->group;
+	Hjava_lang_Thread* tid;
+	void (*func)(void *);
+	void *argument;
+
+	tid  = getCurrentThread();
+	func = (void*)tid->target;
+	argument = (void*)tid->group;
 	tid->target = 0;
 	tid->group = 0;
 	func(argument);
@@ -295,7 +314,6 @@ createDaemon(void* func, const char* nm, void *arg, int prio,
 	     size_t stacksize, struct _errorInfo *einfo)
 {
 	Hjava_lang_Thread* tid;
-	sem2posixLock* lk;
 
 DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 
@@ -316,15 +334,8 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	)
 	unhand(tid)->target = (void*)func;
 	unhand(tid)->group = (void*)arg;
 
-	if (usingPosixLocks == true) {
-		unhand(tid)->sem = jmalloc(sizeof(sem2posixLock));
-		lk = (sem2posixLock*)unhand(tid)->sem;
-		lk->mux = thread_malloc(sizeof(jmutex));
-		lk->cv = thread_malloc(sizeof(jcondvar));
-		jmutex_initialise(lk->mux);
-		jcondvar_initialise(lk->cv);
-	}
-  
+	initThreadLock(tid);
+
 	if (!createThread(tid, startSpecialThread, stacksize, einfo)) {
 		return 0;
 	}
@@ -439,6 +450,7 @@ exitThread(void)
 	jthread_exit();
 }
 
+#if 0
 /*
  * Put a thread to sleep.
  */
@@ -473,6 +485,7 @@ framesThread(Hjava_lang_Thread* tid)
 {
 	return (jthread_frames((jthread_t)unhand(tid)->PrivateInfo));
 }
+#endif
 
 /*
  * Get the current Java thread.
@@ -480,7 +493,7 @@ framesThread(Hjava_lang_Thread* tid)
 Hjava_lang_Thread*
 getCurrentThread(void)
 {
-	return (GET_COOKIE());
+	return (jthread_getcookie(jthread_current()));
 }
 
 /*
@@ -531,21 +544,6 @@ static void
 throwDeath(void)
 {
 	throwException(ThreadDeath);
-}
-
-/*
- * How do I get memory?
- */
-static void *
-thread_malloc(size_t s)
-{
-	return gc_malloc(s, GC_ALLOC_THREADCTX);
-}
-
-static void
-thread_free(void *p)
-{
-	gc_free(p);
 }
 
 static
@@ -611,16 +609,13 @@ initNativeThreads(int nativestacksize)
 	 * catch stack overflow exceptions thrown by the main thread.
 	 */
 	threadStackSize = nativestacksize;
-	mainthread = (struct Hkaffe_util_Ptr*)jthread_init(
+	jthread_init(
 		DBGEXPR(JTHREADNOPREEMPT, false, true),
 		java_lang_Thread_MAX_PRIORITY+1,
 		java_lang_Thread_MIN_PRIORITY,
-		java_lang_Thread_NORM_PRIORITY,
-		MAINSTACKSIZE,
 		thread_malloc,
 		thread_free,
 		broadcastDeath,
 		throwDeath,
 		onDeadlock);
-	assert(mainthread);
 }

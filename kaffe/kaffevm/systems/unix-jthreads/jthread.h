@@ -114,8 +114,6 @@ typedef struct _jthread {
 	double				align[0];
 } jthread, *jthread_t;
 
-#define GET_COOKIE()	(jthread_current()->jlThread)
-#define SET_COOKIE(x)	(jthread_current()->jlThread = (void*)(x))
 extern jthread_t currentJThread;
 
 /****************************************************************************
@@ -127,18 +125,24 @@ extern jthread_t currentJThread;
 /* 
  * initialize the threading system
  */
-jthread_t 
+void 
 jthread_init(
 	int preemptive,			/* preemptive scheduling */
 	int maxpr, 			/* maximum priority */
 	int minpr, 			/* minimum priority */
-	int mainthreadpr,		/* priority of current (main) thread */
-	size_t mainThreadStackSize,	/* assumed main stack size */
         void *(*_allocator)(size_t),	/* memory allocator */
 	void (*_deallocator)(void*),	/* memory deallocator */
 	void (*_destructor1)(void*),	/* called when a thread exits */ 
 	void (*_onstop)(void), 		/* called when a thread is stopped */
 	void (*_ondeadlock)(void)); 	/* called when we detect deadlock */
+
+/*
+ * Create the first thread - actually bind the first thread to the java
+ * context.
+ */
+jthread_t
+jthread_createfirst(size_t mainThreadStackSize,
+	unsigned char prio, void* jlThread);
 
 /*
  * create a thread with a given priority

@@ -53,18 +53,9 @@
 extern iLock* gc_lock;
 static iLock _gc_lock;
 
-jboolean usingPosixLocks = false;
-
 static iLock* freeLocks;
 static jboolean _SemGet(void*, jlong);
 static void _SemPut(void*);
-
-#define	SEMGET		_SemGet
-#define	SEMPUT		_SemPut
-#define	LOCK(L)		jmutex_lock((L)->mux)
-#define	UNLOCK(L)	jmutex_unlock((L)->mux)
-#define	SIGNAL(L)	jcondvar_signal((L)->cv, (L)->mux)
-#define	WAIT(L,T)	jcondvar_wait((L)->cv, (L)->mux, (T))
 
 /*
  * Initialise the locking system.
@@ -72,13 +63,6 @@ static void _SemPut(void*);
 void
 initLocking(void)
 {
-#if 0
-	if (Kaffe_LockInterface.semget == 0) {
-		Kaffe_LockInterface.semget = _SemGet;
-		Kaffe_LockInterface.semput = _SemPut;
-	}
-#endif
-	usingPosixLocks = true;
 }
 
 #if defined(DEBUG)
@@ -456,6 +440,7 @@ dumpLocks(void)
  *
  ******************************************************************************/
 
+#if defined(SETUP_POSIX_LOCKS)
 static
 jboolean
 _SemGet(void* sem, jlong timeout)
@@ -490,3 +475,4 @@ _SemPut(void* sem)
 	SIGNAL(lk);
 	UNLOCK(lk);
 }
+#endif
