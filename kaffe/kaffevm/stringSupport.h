@@ -67,10 +67,6 @@ extern Hjava_lang_String* utf8Const2Java(const Utf8Const*);
 extern Hjava_lang_String* utf8Const2JavaReplace(const Utf8Const *,
 				jchar, jchar);
 
-/* Remove a Utf8Const from the intern table. This should only be called
-   by the garbage collector finalization routine. */
-extern void		  utf8ConstDestroy(const Utf8Const*);
-
 /* Return the length of the corresponding Unicode string */
 extern int		  utf8ConstUniLength(const Utf8Const*);
 
