@@ -1,5 +1,15 @@
 2004-08-14  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/Rectangle.java:
+	Resynced with GNU Classpath.
+
+	2004-08-14  Mark Wielaard  <mark@klomp.org>
+
+        * java/lang/Rectangle.java (intersects): Check r.width and r.height
+        first.
+
+2004-08-14  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/nio/CharBuffer.java,
 	libraries/javalib/java/nio/DoubleBuffer.java,
 	libraries/javalib/java/nio/FloatBuffer.java,
