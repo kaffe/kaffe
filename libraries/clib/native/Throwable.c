@@ -29,6 +29,7 @@ void
 java_lang_VMThrowable_fillInStackTrace(struct Hjava_lang_VMThrowable* o)
 {
 	unhand(o)->backtrace = buildStackTrace(0);
+	assert(unhand(o)->backtrace != NULL);
 }
 
 /*

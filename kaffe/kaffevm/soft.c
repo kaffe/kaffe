@@ -241,6 +241,10 @@ soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, in
 	register int i;
 	register short* implementors;
 
+	if (obj == NULL) {
+		soft_nullpointer();
+	}
+
 	cls = OBJECT_CLASS(obj);
 	implementors = ifclass->implementors;
 	i = cls->impl_index;
