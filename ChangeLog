@@ -1,3 +1,10 @@
+2004-10-11  Dalibor Topic <robilad@kaffe.org>
+
+	* THIRDPARTY: Added notice for inet_pton and inet_ntop
+	replacement functions.
+
+	Reported by:  Gerrit P. Haase <freeweb@nyckelpiga.de>
+
 2004-10-09  Noa Resare  <noa@resare.com>
 
 	* libraries/javalib/java/lang/String.java:

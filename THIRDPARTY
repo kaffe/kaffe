@@ -297,7 +297,7 @@ getaddrinfo() and getnameinfo() implementations for traditional IPv4
 systems available at http://www.sra.co.jp/people/m-kasahr/getaddrinfo/ 
 under the following GPL-compatible BSD like license:
 
-Redistribution and use in source and binary forms, with or without
+"Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
 are met:
 1. Redistributions of source code must retain the above copyright
@@ -322,6 +322,78 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 At the time of writing, Kaffe uses getaddrinfo 1.6.1.
+
+* Replacement functions for inet_ntop and inet_pton.
+
+These functions came from ircii available at 
+http://www.eterna.com.au/ircii/ which is licensed 
+under a BSD-type license without an advertisment clause.
+
+"/*
+ * Copyright (c) 1990 Michael Sandrof.
+ * Copyright (c) 1991, 1992 Troy Rollo.
+ * Copyright (c) 1992-2004 Matthew R. Green.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+
+One module of the source code, scandir.c is copyright (c) 1983
+by the Regents of the University of California, with modifications
+by various contributors.  All rights are reserved by the
+University of California.  
+
+One module of the source code, stringlist.c, is
+Copyright (c) 1994, 1999 The NetBSD Foundation, Inc.
+
+One module of the source code, stringlist.h, is
+Copyright (c) 1994 Christos Zoulas
+
+Two modules of the source code, get{addr,name}info.c, are
+Copyright (C) 1995, 1996, 1997, and 1998 WIDE Project.
+
+Two modules of the source code, inet_{ntop,pton}.c are
+Copyright (c) 1996 by Internet Software Consortium."
+
+The inet_ntop.c and inet_pton.c have the following permissive BSD-type
+license without an advertisement clause:
+
+"/* Copyright (c) 1996 by Internet Software Consortium.
+ *
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM DISCLAIMS
+ * ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL INTERNET SOFTWARE
+ * CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
+ * DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+ * PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
+ * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
+ * SOFTWARE.
+ */"
 
 * Alpha, ARM, ia64, M68k, MIPS, S390 and SPARC atomic compare_and_swap, 
   Linux sigcontextinfo
