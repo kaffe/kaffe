@@ -347,6 +347,13 @@ public abstract class Calendar implements Serializable, Cloneable
   private int minimalDaysInFirstWeek;
 
   /**
+   * Is set to true if DST_OFFSET is explicitly set. In that case
+   * it's value overrides the value computed from the current
+   * time and the timezone. 
+   */
+  private boolean explicitDSTOffset = false;
+
+  /**
    * The version of the serialized data on the stream. 
    * <dl><dt>0 or not present</dt>
    * <dd> JDK 1.1.5 or later.</dd>
@@ -650,10 +657,12 @@ public abstract class Calendar implements Serializable, Cloneable
       case HOUR:
 	isSet[HOUR_OF_DAY] = false;
 	break;
+      case DST_OFFSET:
+        explicitDSTOffset = true;
       }
 
     // May have crossed over a DST boundary.
-    if (field != DST_OFFSET && field != ZONE_OFFSET)
+    if (!explicitDSTOffset && (field != DST_OFFSET && field != ZONE_OFFSET))
       isSet[DST_OFFSET] = false;
   }
 
@@ -676,7 +685,8 @@ public abstract class Calendar implements Serializable, Cloneable
     isSet[DAY_OF_WEEK] = false;
     isSet[DAY_OF_WEEK_IN_MONTH] = false;
 
-    isSet[DST_OFFSET] = false;  // May have crossed a DST boundary.
+    if (!explicitDSTOffset)
+      isSet[DST_OFFSET] = false;  // May have crossed a DST boundary.
   }
 
   /**
