@@ -51,3 +51,16 @@ Treat it as an TODO list.
 * Object serialization and RMI are broken.
   Class UID are not computed.
 
+* When making test in the test dir, GCTest.java is flagged as failing
+  because output gets on one line:
+    [13]:  Success[43]:  Success[11]:  Success
+  Investigate whether a println("text") is supposed to be atomic or not;
+  if so, added needed synchronized statements.
+
+* Automatically generate the external_wrappers.h files in native, net, 
+  math, and zip with a sed script or equivalent.  This might require moving 
+  TestNative.c elsewhere.
+
+* Under Linux, EXTRA_CFLAGS=-DDEBUG doesn't compile because dprintf is defined
+  in stdio.h. --> Solution:  rename dprintf to kaffe_dprintf.
+
