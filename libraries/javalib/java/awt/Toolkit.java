@@ -17,6 +17,7 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.util.Properties;
 
+import kaffe.awt.DoNothingPeer;
 import kaffe.util.Ptr;
 import kaffe.util.log.LogClient;
 import kaffe.util.log.LogStream;
@@ -95,8 +96,7 @@ public class Toolkit
 	static EventDispatchThread eventThread;
 	static NativeClipboard clipboard;
 	static ColorModel colorModel;
-	static LightweightPeer lightweightPeer = new LightweightPeer() {};
-	static WindowPeer windowPeer = new WindowPeer() {};
+	static WindowPeer windowPeer = new DoNothingPeer();
 	static FlushThread flushThread;
 	static NativeCollector collectorThread;
 	static int flags;
@@ -175,13 +175,6 @@ public Image createImage ( byte[] imageData ) {
 
 public Image createImage ( byte[] imagedata, int imageoffset, int imagelength ) {
 	return new Image( imagedata, imageoffset, imagelength);
-}
-
-ComponentPeer createLightweight ( Component c ) {
-	// WARNING! this is just a dummy to enable checks like
-	// "..getPeer() != null.. or ..peer instanceof LightweightPeer..
-  // see createWindow()
-	return lightweightPeer;
 }
 
 static void createNative ( Component c ) {

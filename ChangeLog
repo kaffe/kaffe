@@ -1,3 +1,30 @@
+2004-05-21  Dalibor Topic  <robilad@kaffe.org>
+
+        * libraries/javalib/kaffe/awt/DoNothingPeer.java:
+	New file.
+
+        * libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in:
+	Regenerated.
+
+        * libraries/javalib/java/awt/Component.java:
+	(getPeer) Use DUMMY_PEER.
+	(DUMMY_PEER) New constant.
+	
+        * libraries/javalib/java/awt/Toolkit.java:
+	(lightweightPeer) Removed.
+	(createLightweight) Removed.
+	(windowPeer) Use a DoNothingPeer instance.
+
+        * libraries/javalib/java/awt/peer/ComponentPeer.java,
+        libraries/javalib/java/awt/peer/LightweightPeer.java,
+        libraries/javalib/java/awt/peer/WindowPeer.java:
+	Replaced by implementation s from GNU Classpath.
+
+        * libraries/javalib/profiles/allatonce/all.files,
+        libraries/javalib/profiles/default/coreawt.files:
+	Added kaffe/awt/DoNothingPeer.java.
+
 2004-05-20  Dalibor Topic  <robilad@kaffe.org>
 
 	*libraries/javalib/java/awt/peer/ActionEvent.java:

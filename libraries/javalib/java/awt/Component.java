@@ -25,6 +25,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Locale;
 
+import kaffe.awt.DoNothingPeer;
 import kaffe.util.Ptr;
 
 /**
@@ -523,7 +524,7 @@ public Container getParent() {
 public ComponentPeer getPeer() {
 	// this is just a dummy, i.e. we share a single object that can be used
 	// ONLY to "(getPeer() != null)" check if we already passed addNotify()
-	return ((flags & IS_ADD_NOTIFIED) != 0) ? Toolkit.lightweightPeer : null;
+	return ((flags & IS_ADD_NOTIFIED) != 0) ? DUMMY_PEER : null;
 }
 
 public Dimension getPreferredSize() {
@@ -1843,4 +1844,9 @@ public void validate () {
 		flags |= IS_VALID;
 	}
 }
+
+  /**
+   * Dummy lightweight peer singleton.
+   */
+  private static final DoNothingPeer DUMMY_PEER = new DoNothingPeer ();
 }

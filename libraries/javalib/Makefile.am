@@ -2240,6 +2240,7 @@ kaffe_applet_SRCS = \
 	kaffe/applet/AppletViewer.java \
 	kaffe/applet/AudioPlayer.java
 kaffe_awt_SRCS = \
+	kaffe/awt/DoNothingPeer.java \
 	kaffe/awt/ExportTransferable.java \
 	kaffe/awt/FlavorConverter.java \
 	kaffe/awt/FocusHook.java \
