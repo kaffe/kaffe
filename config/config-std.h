@@ -47,4 +47,9 @@
 #define	__NORETURN__
 #endif
 
+/* SunOS has on_exit only */
+#if !defined(HAVE_ATEXIT) && defined(HAVE_ON_EXIT)
+#define atexit(x)       on_exit(x, 0)
+#endif
+
 #endif
