@@ -19,6 +19,7 @@
 #include "../../../kaffe/kaffevm/itypes.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/soft.h"
+#include "../../../kaffe/kaffevm/stackTrace.h"
 #include "InputStream.h"
 #include "PrintStream.h"
 #include "System.h"
@@ -35,13 +36,47 @@ struct Hjava_lang_Class*
 java_lang_Class_forName(struct Hjava_lang_String* str)
 {
 	Hjava_lang_Class* clazz;
+	Hjava_lang_Class* loadedclass;
+	Hjava_lang_ClassLoader* loader;
 	char buf[MAXNAMELEN];
+	int depth;
 
 	/* Get string and convert '.' to '/' */
 	javaString2CString(str, buf, sizeof(buf));
 	classname2pathname(buf, buf);
 
-	clazz = loadClass(makeUtf8Const (buf, strlen(buf)), 0);
+	/*
+	 * If the calling method is in a class that was loaded by a class
+	 * loader, use that class loader to find the class corresponding to
+	 * the name.  Otherwise, use the system class loader.
+	 */
+	loadedclass = getClassWithLoader(&depth);
+	loader = (depth == 0) ? loadedclass->loader : NULL;
+
+	/*
+	 * Note the following oddity: 
+	 * 
+	 * It is apparently perfectly legal to call forName for array types,
+	 * such as "[Ljava.lang.String;" or "[B".  
+	 * However, it is wrong to call Class.forName("Ljava.lang.String;")
+	 *
+	 * This situation is similar to the constant pool resolution.  We
+	 * therefore do the same thing as in getClass in kaffevm/lookup.c,
+	 * that is, use either loadArray or loadClass depending on the name.
+	 *
+	 * This is somewhat described in Section 5.1.3 of the VM 
+	 * Specification, titled "Array Classes".  This section seems to 
+	 * imply that we must avoid to ask a class loader to resolve such
+	 * array names (those starting with an [), and this is what calling
+	 * loadArray does.
+	 */
+	clazz = ((buf[0] == '[') ? loadArray : loadClass)
+			(makeUtf8Const (buf, strlen(buf)), loader);
+
+	/* if we got here, either clazz must be valid or a 
+	 * ClassNotFoundException was thrown
+	 */
+	assert(clazz != 0);
 	processClass(clazz, CSTATE_OK);
 
 	return (clazz);
