@@ -749,14 +749,18 @@ public class InetAddress implements Serializable
 
     for (int i = 0; i < iplist.length; i++)
       {
-        if (iplist[i].length != 4)
+	if (iplist[i].length != 4 && iplist[i].length != 16)
           throw new UnknownHostException (hostname);
 
         // Don't store the hostname in order to force resolution of the
         // canonical names of these ip's when the user asks for the hostname
         // But do specify the host alias so if the IP returned won't
         // reverse lookup we don't throw an exception.
-        addresses[i] = new InetAddress (iplist[i], null, hostname);
+	// If the length is equal to 16 this is an IPv6 address.
+	if (iplist[i].length == 16)
+	  addresses[i] = new Inet6Address (iplist[i], hostname);
+	else
+	  addresses[i] = new InetAddress (iplist[i], null, hostname);
       }
 
     addToCache (hostname, addresses);
