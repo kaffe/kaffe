@@ -1,6 +1,15 @@
 2004-05-18  Dalibor Topic  <robilad@kaffe.org>
 
-	* libraries/javalib/ java/util/SimpleTimeZone.java:
+	* libraries/javalib/java/io/Writer.java:
+	Resynced with GNU Classpath.
+
+	2004-05-17  Mark Wielaard  <mark@klomp.org>
+
+	* java/io/Writer.java (Writer(Object)): Fixed API doc.
+
+2004-05-18  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/SimpleTimeZone.java:
 	Resynced with GNU Classpath.
 	
 	2004-05-07  Jerry Quinn  <jlquinn@optonline.net>
