@@ -43,6 +43,14 @@ if test -d "$KAFFE_OLD_NATIVE_LIBRARY_DIR"; then
 fi
 export KAFFELIBRARYPATH
 
+# Slurp in system and user specific scripts
+if [ -f "@datadir@/kaffe/kafferc" ]; then
+    . @datadir@/kaffe/kafferc
+fi
+if [ -f "${HOME}/.kafferc" ]; then
+    . "${HOME}/.kafferc"
+fi
+
 if test x"${KAFFE_DEBUG+set}"x != x"set"x; then
     exec $KAFFE_BINDIR/Kaffe ${1+"$@"}
 else

@@ -13,6 +13,8 @@ Tue Dec  8 23:53:51 1998  Archie Cobbs <archie@whistle.com>
 
 	* test/regression/ModuloTest.java: add test for the 64 bit
 	negative modulo bug noticed in FreeBSD
+	* Slurp in @datadir@/share/kafferc and ${HOME}/.kafferc
+	* Update neglected kaffe(1) man page.
 
 Tue Dec  8 13:48:02 1998  Raffaele Sena <raff@aromatic.com>
 

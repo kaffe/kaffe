@@ -788,6 +788,7 @@ AC_SUBST(nativedir)
 
 dnl A few extra files to process.
 output="$make_output \
+kaffe/man/kaffe.1 \
 libraries/javalib/rebuildLib \
 kaffe/scripts/install-jar \
 kaffe/scripts/kaffe \

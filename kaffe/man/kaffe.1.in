@@ -1,0 +1,143 @@
+.\" kaffe(1) manpage. Copyright: identical to that of kaffe itself,
+.\" as documented under the COPYING section below.
+.\" Contributed to the Kaffe project by Ray Dassen <jdassen@wi.LeidenUniv.nl>
+.\"
+.TH KAFFE 1 "December 1998" "Kaffe version 1.0b3" "Kaffe project"
+.SH NAME 
+kaffe \- a virtual machine to execute Java(tm) bytecode
+.SH SYNOPSIS
+.BI "kaffe [\-help]"
+.BI "[\-version]"
+.BI "[\-ss" " size" "]"
+.BI "[\-ms" " size" "]"
+.BI "[\-mx" " size" "]"
+.BI "[\-classpath" " path" "]"
+.BI "[\-noverify]"
+.BI "[\-D" "property" "=" "value" "]"
+.BI "[\-v]"
+.BI "[\-verbosegc]"
+.BI "[\-verbosejit]"
+.BI "[\-verbosemem]"
+.BI "[\-jar]"
+.BI "[\-vmdebug" " flag{,flag}" "]"
+.BI " classname"
+.SH DESCRIPTION
+.B kaffe 
+executes 
+.I classfile
+containing Java bytecode, either as a pure bytecode interpreter, or by
+doing "just-in-time" code conversion from the abstract code to the host
+machine's native code.
+.SH OPTIONS
+.TP
+.B "\-help" 
+Give a short usage message.
+.TP
+.B "\-version"
+Print the version number.
+.TP
+.B "\-ss size"
+Set the maximum stack size to 
+.I size
+.TP
+.B "\-mx size"
+Set the maximum heap size to 
+.I size
+.TP
+.B "\-ms size"
+Set the initial heap size to 
+.I size
+.TP
+.B "\-classpath path"
+Set the path which is searched for compiled classes, e.g.
+@datadir@/kaffe
+.TP
+.B "\-noverify"
+Do not verify any bytecode.
+.TP
+.B "\-Dproperty=value"
+Set a property to a given value.
+.TP
+.B "\-jar"
+Executable is a JAR file.
+.TP
+.B "\-v"
+Enable verbose output.
+.TP
+.B "\-verbosegc"
+Print message during garbage collection.
+.TP
+.B "\-verbosemem"
+Print detailed memory allocation statistics.
+.TP
+.B "\-verbosejit"
+Print message during JIT code generation.
+.TP
+.B "\-vmdebug" "flag{,flag}"
+Enable VM debugging. Set ``\-vmdebug list'' for a list.
+.SH CLASS
+.TP
+.I classname
+Java class name to invoke.  Note that this is
+.B not
+the filename.
+.SH ENVIRONMENT
+.TP
+.B CLASSPATH
+A colon-separated list of directories in which to search for 
+.B .class
+files.
+.TP
+.B KAFFEHOME
+Base directory of kaffe installation.
+.TP
+.B LD_LIBRARY_PATH
+A colon-separated list of directories in which to search for libraries.
+See
+.BR ld.so (1)
+for details. This needs to be set if Kaffe's shared libraries are
+installed in a location not part of the dynamic loader's default search
+path.
+.SH FILES
+.TP
+.B "/usr/local/share/kaffe/kafferc"
+System-wide shell script read by kaffe script (optional).
+.TP
+.B "${HOME}/.kafferc"
+Per-user shell script read by kaffe script (optional).
+.SH DIAGNOSTICS
+Not documented yet.
+.SH NOTES
+Java is a registered trademark of Sun Microsystems, Inc.
+
+Kaffe is available from various sites, the primary one being
+.RI < http://www.transvirtual.com> .
+
+There are several mailing lists for Kaffe:
+.TP 
+.I kaffe@rufus.w3.org
+General Kaffe discussions
+.TP
+.I kaffe\-announce@rufus.w3.org
+Kaffe related announcements
+.LP
+To subscribe to these lists send a message containing the word "subscribe"
+to
+.IR <listname>\-request@rufus.w3.org
+.SH BUGS
+See the file FAQ.Known-Bugs for an updated list.
+.SH AUTHOR
+Kaffe was originally written by Tim Wilkinson <tim@transvirtual.com>, 1996.
+Many others contributed to the Kaffe project. They are listed in the
+source distribution's
+.I NOTES/THANKS
+and 
+.I NOTES/HELPERS
+files.
+.SH COPYING
+Kaffe is distributed under the GNU GPL. For full details, see the file
+.I license.terms
+in the source distribution for full details.
+.SH SEE ALSO
+.I Guavac, the GNU Java compiler\c
+, David Engberg
