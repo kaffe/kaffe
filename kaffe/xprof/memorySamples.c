@@ -13,6 +13,8 @@
  * University of Utah, http://www.cs.utah.edu/flux/
  */
 
+#if defined(KAFFE_XPROFILER)
+
 #include <stdlib.h>
 #include <string.h>
 #include <jtypes.h>
@@ -148,7 +150,7 @@ int observeMemory(struct memory_samples *ms, char *addr, int size)
 			else
 			{
 				void *samples;
-				
+
 				if( (samples = KREALLOC(ms->ms_samples,
 							((addr + size) -
 							 ms->ms_low) /
@@ -184,7 +186,7 @@ int observeMemory(struct memory_samples *ms, char *addr, int size)
 
 		ms->ms_low = min(ms->ms_low, addr);
 		ms->ms_high = max(ms->ms_high, ALIGN_ADDR(addr + size));
-		
+
 		/*
 		 * If the starting address doesn't fall directly on the
 		 * boundary between leaves then we need to adjust `size' to
@@ -201,7 +203,7 @@ int observeMemory(struct memory_samples *ms, char *addr, int size)
 		while( (size > 0) && retval )
 		{
 			int lpc;
-			
+
 			/* Process the address to get the branch indexes */
 			for( lpc = 0; lpc < SAMPLE_BRANCH_LEVELS; lpc++ )
 			{
@@ -401,3 +403,5 @@ void printMemorySamples(FILE *file, struct memory_samples *ms)
 {
 	walkMemorySamples(ms, 0, file, printBinsWalker);
 }
+
+#endif /* KAFFE_XPROFILER */
