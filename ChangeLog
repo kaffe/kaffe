@@ -1,3 +1,8 @@
+Fri Jun  2 10:15:55 PDT 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/kaffe/util/UNIXTimeZone.java: speed up reading
+	timezone files by using a BufferedInputStream
+
 Fri Jun 02 10:19:13 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* kaffe/kaffevm/code-analyse.c (verifyBasicBlock):
