@@ -27,6 +27,17 @@ public class NullInvoke {
 	}
     }
 
+    public static class InvokeFinalVirtual {
+	public final String getName() {
+	    return "InvokeFinalVirtual";
+	}
+
+	public void printName(final InvokeFinalVirtual obj) {
+	    String s = obj.getName();	// invokespecial with null
+	    System.out.println(s);
+	}
+    }
+
     public static interface Interface {
 	public String getName();
     }
@@ -62,6 +73,14 @@ public class NullInvoke {
 	}
 
 	try {
+	    new InvokeFinalVirtual().printName(null);
+	    System.out.println ("FAIL");
+	}
+	catch (NullPointerException npe) {
+	    System.out.println ("PASS");
+	}
+
+	try {
 	    new InvokeInterface().printName(null);
 	    System.out.println ("FAIL");
 	}
@@ -72,6 +91,7 @@ public class NullInvoke {
 }
 
 /* Expected Output:
+PASS
 PASS
 PASS
 PASS

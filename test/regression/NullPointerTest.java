@@ -10,13 +10,6 @@ public class NullPointerTest {
 
     public static void main(String[] args) {
 	  System.out.println(tryfinally() + s);
-	  try {
-		// Note: String.concat("") will not dereference 'this'
-		((String)null).concat("");
-	  	System.out.println("FAILED!");
-	  } catch (NullPointerException e) {
-	  	System.out.println("This is good too");
-	  }
     }
 
     public static String tryfinally() {
@@ -46,5 +39,4 @@ public class NullPointerTest {
 
 /* Expected Output:
 This is Perfect
-This is good too
 */

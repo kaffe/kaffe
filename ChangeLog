@@ -1,3 +1,9 @@
+Thu Jun 22 15:47:03 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
+
+	* test/regression/{NullPointerTest.java,NullInvoke.java}: move
+	Archie's test out of NullPointerTest and into NullInvoke.  Remove
+	dependency on String.concat()'s implementation.
+
 Thu Jun 22 12:54:00 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/beans/Introspector.java: fix bugs in
