@@ -2,6 +2,19 @@
 
         (On Release 1.1.4 Branch)
 
+	* Makefile.am:
+	Copy docs to "make dist" tarball.
+
+	* test/regression/compiler/CompileScript.in:
+	Temporarily disable.
+
+	* Makefile.in:
+	Regenerated.
+
+2004-02-18  Jim Pick  <jim@kaffe.org>
+
+        (On Release 1.1.4 Branch)
+
 	* configure.in:
 	Bump version number.
 

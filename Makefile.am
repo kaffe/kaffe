@@ -154,6 +154,7 @@ dist-hook:
 	 make && \
 	 cp libraries/javalib/rt.jar ../$(distdir)/libraries/javalib/rt-precompiled.jar \
 	)
+	cp -Rf docs $(distdir)
 
 # Build HTML docs (requires maven and maven-sddocbook-plugin)
 docs-docbook-html:
