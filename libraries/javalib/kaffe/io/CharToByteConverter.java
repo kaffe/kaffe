@@ -23,6 +23,7 @@ abstract public class CharToByteConverter
 	private static String encodingDefault;
 	private static Hashtable cache = new Hashtable();
 	private static Class noConverter = Object.class;
+	private static Class useIconv = CharToByteIconv.class;
 
 static {
 	// see explanation in ByteToCharConverter
@@ -85,22 +86,25 @@ private static CharToByteConverter getConverterInternal(String enc)
 	if (cls == noConverter) {
 		return (null);
 	}
+	else if (cls == useIconv) {
+		try {
+			return (new CharToByteIconv (ConverterAlias.alias(enc)));
+		}
+		catch (UnsupportedEncodingException _) {
+			return (null);
+		}
+	}
 	try {
 		if (cls == null) {
 			String realenc = ConverterAlias.alias(enc);
-			// Check whether realenc has a character that
-			// cannot be used for class names but may appear
-			// in encoding names.  As far as I know, such
-			// characters include: '-'.
-			for (int i = 0; i < realenc.length(); i++) {
-				if (realenc.charAt(i) == '-') {
-					try {
-						return (new CharToByteIconv (realenc));
-					}
-					catch (UnsupportedEncodingException _) {
-						cache.put(enc, noConverter);
-						return (null);
-					}
+			if (ConverterAlias.shouldUseIconv(realenc)) {
+				try {
+					cache.put(enc, useIconv);
+					return (new CharToByteIconv (realenc));
+				}
+				catch (UnsupportedEncodingException _) {
+					cache.put(enc, noConverter);
+					return (null);
 				}
 			}
 			realenc = encodingRoot + ".CharToByte" + realenc;

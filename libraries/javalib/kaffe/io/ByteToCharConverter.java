@@ -23,6 +23,7 @@ abstract public class ByteToCharConverter
 	private static String encodingDefault;
 	private static Hashtable cache = new Hashtable();
 	private static Class noConverter = Object.class;
+	private static Class useIconv = ByteToCharIconv.class;
 	protected byte[] buf;
 	protected int blen;
 
@@ -107,22 +108,25 @@ private static ByteToCharConverter getConverterInternal ( String enc ) {
 	if (cls == noConverter) {
 		return (null);
 	}
+	else if (cls == useIconv) {
+		try {
+			return (new ByteToCharIconv (ConverterAlias.alias(enc)));
+		}
+		catch (UnsupportedEncodingException _) {
+			return (null);
+		}
+	}
 	try {
 		if (cls == null) {
 			String realenc = ConverterAlias.alias(enc);
-			// Check whether realenc has a character that
-			// cannot be used for class names but may appear
-			// in encoding names.  As far as I know, such
-			// characters include: '-'.
-			for (int i = 0; i < realenc.length(); i++) {
-				if (realenc.charAt(i) == '-') {
-					try {
-						return (new ByteToCharIconv (realenc));
-					}
-					catch (UnsupportedEncodingException _) {
-						cache.put(enc, noConverter);
-						return (null);
-					}
+			if (ConverterAlias.shouldUseIconv(realenc)) {
+				try {
+					cache.put(enc, useIconv);
+					return (new ByteToCharIconv (realenc));
+				}
+				catch (UnsupportedEncodingException _) {
+					cache.put(enc, noConverter);
+					return (null);
 				}
 			}
 			realenc = encodingRoot + ".ByteToChar" + realenc;

@@ -252,10 +252,12 @@ java/util/zip/ZipOutputStream.java
 kaffe/io/AccessibleBAOStream.java
 kaffe/io/ByteToChar8859_1.java
 kaffe/io/ByteToCharSHIFT_JIS.java
+kaffe/io/ByteToCharMS932.java
 kaffe/io/ByteToCharHashBased.java
 kaffe/io/ByteToCharUTF8.java
 kaffe/io/CharToByte8859_1.java
 kaffe/io/CharToByteSHIFT_JIS.java
+kaffe/io/CharToByteMS932.java
 kaffe/io/CharToByteHashBased.java
 kaffe/io/CharToByteUTF8.java
 kaffe/io/CircularBuffer.java

@@ -1,3 +1,26 @@
+2004-01-06  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/kaffe/io/ConverterAlias.java:
+	Added new Hashtable useIconv.  
+	Added new method shouldUseIconv(String name).
+
+	* libraries/javalib/kaffe/io/ByteToCharConverter.java,
+	libraries/javalib/kaffe/io/CharToByteConverter.java:
+	Use ConverterAlias.shouldUseIconv(name) to decide wheter to
+	use iconv.
+
+	* libraries/javalib/kaffe/io/ByteToCharMS932.java,
+	libraries/javalib/kaffe/io/CharToByteMS932.java:
+	New files.
+
+	* libraries/javalib/profiles/allatonce/all.files,
+	libraries/javalib/profiles/default/core.files:
+	Added kaffe/io/ByteToCharMS932.java and kaffe/io/CharToByteMS932.java.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+
 2004-01-04  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/javalib/profiles/allatonce/all.files,

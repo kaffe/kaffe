@@ -19,6 +19,7 @@ import java.util.Hashtable;
  */
 public class ConverterAlias {
     private static final Hashtable alias = new Hashtable();
+    private static final Hashtable useIconv = new Hashtable();
 
     // All aliases should be upper case
     static {
@@ -114,6 +115,7 @@ public class ConverterAlias {
 	alias.put("EUC_JP",             "EUC-JP");
 	alias.put("EUCJIS",             "EUC-JP");
 	alias.put("CSEUCPKDFMTJAPANESE","EUC-JP");
+	useIconv.put("EUC-JP", "Y");
 
 	alias.put("US-ASCII",		"ASCII");
 	alias.put("ANSI_X3.4-1968",	"ASCII");
@@ -127,7 +129,9 @@ public class ConverterAlias {
 	alias.put("CPASCII",	        "ASCII");
 
 	alias.put("UNICODEBIGUNMARKED",	"UTF-16BE");
+	useIconv.put("UTF-16BE", "Y");
 	alias.put("UNICODELITTLEUNMARKED",	"UTF-16LE");
+	useIconv.put("UTF-16LE", "Y");
 
 	/* add more here */
     }
@@ -142,5 +146,18 @@ public class ConverterAlias {
 	name = name.toUpperCase();
 	String alternate = (String)alias.get(name);
 	return alternate != null ? alternate : name;
+    }
+
+    /**
+     * Check whether iconv should be used for the conversion.
+     *
+     * @param name of the encoding.
+     * @return true if iconv should be used for the conversion,
+     * false otherwise.
+     */
+    static boolean shouldUseIconv(String name) {
+	name = name.toUpperCase();
+	Object obj = useIconv.get(name);
+	return obj != null ? true : false;
     }
 }
