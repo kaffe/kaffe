@@ -374,6 +374,27 @@ getMethodDesc(Method* mth)
 	return (str);
 }
 
+static
+char*
+getInterfaceName(Hjava_lang_Class* cls)
+{
+	const char* orig;
+	char* str;
+	int i;
+
+	orig = cls->name->data;
+	str = KMALLOC(strlen(orig) + 1);
+	for (i = strlen(orig); i >= 0; i--) {
+		if (orig[i] == '/') {
+			str[i] = '.';
+		}
+		else {
+			str[i] = orig[i];
+		}
+	}
+	return (str);
+}
+
 jlong
 kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 {
@@ -418,11 +439,17 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 
 	if (cls->interface_len > 0) {
 		for (i = cls->interface_len-1; i >= 0; i--) {
-			base[i].name = cls->interfaces[i]->name->data;
+			base[i].name = getInterfaceName(cls->interfaces[i]);
 			base[i].modifier = -1;
 			base[i].desc = 0;
 		}
 		addToSHA(&c, base, cls->interface_len);
+
+		/* Free all the interface name strings */
+		i = cls->interface_len;
+		for (i--; i >= 0; i--) {
+			KFREE((char*)base[i].name);
+		}
 	}
 
 	/* Each field (sorted) -> */
