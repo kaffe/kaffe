@@ -5,8 +5,7 @@ Sun May 16 15:22:39 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 Sun May 16 14:30:20 PDT 1999  Patrick A Tullmann  <tullmann@cs.utah.edu>
 
-	* configure.in: be verbose about static/shared libraries,
-	add check for ctime() and localtime() (for timezone check).
+	* configure.in: be verbose about static/shared libraries.
 	* kaffe/kaffevm/debug.c,kaffe/kaffevm/debug.h: add NATIVENET
 	flag for debugging network accesses.
 	* kaffe/kaffevm/lookup.c: add more printf for the MLOOKUP

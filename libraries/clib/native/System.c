@@ -281,7 +281,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 
 	/* Figure out the local time zone; fallback to GMT if we can't */
 	tzone = "GMT";
-#if defined(HAVE_CTIME) && defined(HAVE_LOCALTIME)
+#if defined(HAVE_TM_ZONE)
 	{
 		const time_t now = time(NULL);
 
