@@ -386,7 +386,7 @@ public byte[] toByteArray() {
 	divisor.setbit0(divisor, 32); // prepare to shift right
 	int sign = cmp0(this, ZERO);
 	if (sign < 0) {
-		sub0(copy, ONE); // adjust two's complement
+		copy.sub0(copy, ONE); // adjust two's complement
 	}
 	int i = ret.length; // we know it's >= 1
 	while (i > 4) {
@@ -395,7 +395,7 @@ public byte[] toByteArray() {
 		ret[--i] = (byte)(num>>8);
 		ret[--i] = (byte)(num>>16);
 		ret[--i] = (byte)(num>>24);
-		div0(copy, divisor);
+		copy.div0(copy, divisor);
 	}
 	{
 		int num = copy.toInt0();
