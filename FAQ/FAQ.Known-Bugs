@@ -6,41 +6,13 @@ Treat it as an TODO list.
      getSoTimeout() 
      setSoTimeout(int) 	are not implemented.
 
-* Win32/Cygnus stuff:
-
-    Pavel Roskin writes:
-
-    Can anybody explain me why the configuration files for cygwin are placed in
-    config/i386/win32/cygnus, 4 levels below of the distibution root? All other
-    configurations are placed 3 levels below, for example config/parisc/hpux or
-    config/alpha/linux. I think, files from config/i386/win32/cygnus should be
-    moved to config/i386/win32 while directory config/i386/win32/cygnus should
-    be removed.
-    It could be also useful to get latest config.sub and config.guess from
-    ftp://alpha.gnu.org/gnu/libtool-1.2b.tar.gz. IMHO it is better to use
-    official sources and do all non-official system name canonicalization (if
-    somebody still needs it) in configure.in or somewhere else.
-
-    Stan Bailes writes:
-
-    I found that with cygwin b19, the stuff in config.guess doesn't work,
-    and that the final case should be something like:
-
-	i*86:CYGWIN32*:*:*)
-	    echo i386-unknown-win32/cygnus
-	    exit 0 ;;
-
-* Automatically generate the external_wrappers.h files in native, net, 
-  math, and zip with a sed script or equivalent.  This might require moving 
-  TestNative.c elsewhere.
-
 * Thread.interrupt() is not implemented properly.
 
 * Add some architecture-specific stack pointer alignment macro.  Currently,
   alignment is sizeof (jlong); apparently, some architectures require more
   specific alignments.
 
-*  Kaffe fails to work for several people under SunOS 4.1.3.  The error
+* Kaffe fails to work for several people under SunOS 4.1.3.  The error
   message seems to be "Can not find native library in path".  This problem
   is unclear: either a problem in the kaffe script that use @libdir@ and set 
   LD_LIBRARY_PATH (less likely), or a problem in the dynamic linking 
@@ -53,7 +25,9 @@ Treat it as an TODO list.
   that simply putting in Sun's will not fix that: in order to allow 
   interoperability, Sun would have to publish how the serialize objects
   such as hashtable.  According to Tim, Sun at some point promised to do
-  that; it hasn't happened, though.
+  that; it hasn't happened, though.  
+  Note that some of our classes currently report Sun's serialVersionUIDs,
+  even though they're incompatible.
 
 * Object serialization is buggy.  For the JKernel, the system goes in an
   infinite loop.  When we use Sun's java.io.* classes, it will work fine,
@@ -68,4 +42,12 @@ Treat it as an TODO list.
   the native functions used for java.math.BigInteger.  Hence, it might work
   to use Sun's  java/math/*.class files (or append classes.zip to the
   CLASSPATH after Klasses.jar)
+
+* There are problems with String.intern().  Specifically, if a string
+  is scheduled for finalization, and another string with the same value
+  is interned, the latter won't be interned after the first one uninterned
+  itself in the finalizer.
+
+* If an exception, such as NoSuchField or NoSuchMethod is thrown in the 
+  verifier, the system bails.
 
