@@ -1,4 +1,5 @@
-AC_INIT(kaffe)
+AC_INIT
+AC_CONFIG_SRCDIR([kaffe])
 AM_INIT_AUTOMAKE(kaffe, 1.1.x-cvs)
 
 AC_PREFIX_DEFAULT(/usr/local/kaffe)
@@ -165,15 +166,15 @@ if AC_TRY_EVAL(ac_compile); then
       if egrep '^. nm_test_func ' "$ac_nlist" >/dev/null; then
 	:
       else
-	echo "configure: cannot find nm_test_func in $ac_nlist" >&AC_FD_CC
+	echo "configure: cannot find nm_test_func in $ac_nlist" >&AS_MESSAGE_LOG_FD()
       fi
     fi
   else
-    echo "configure: cannot run $ac_cv_sys_global_symbol_pipe" >&AC_FD_CC
+    echo "configure: cannot run $ac_cv_sys_global_symbol_pipe" >&AS_MESSAGE_LOG_FD()
   fi
 else
-  echo "configure: failed program was:" >&AC_FD_CC
-  cat conftest.c >&AC_FD_CC
+  echo "configure: failed program was:" >&AS_MESSAGE_LOG_FD()
+  cat conftest.c >&AS_MESSAGE_LOG_FD()
 fi
 rm -rf conftest*
 ])
@@ -548,15 +549,13 @@ dnl Checks for alignments
 dnl -------------------------------------------------------------------------
 
 AC_CACHE_CHECK(alignment of void*, ac_cv_alignmentof_voidp,
-AC_TRY_RUN([#include <stdio.h>
+AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>
 main() { struct { char c; void *p; } t; FILE *f;
   if ((char*) &t.c != (char*) &t)  exit (1);
   f=fopen ("conftestdata", "w");
   if (! f)                         exit (1);
   fprintf (f, "%d", ((char*) &t.p)-((char*) &t));
-  fclose(f); exit (0); }],
-ac_cv_alignmentof_voidp=`cat conftestdata`, AC_MSG_ERROR([Unexpected result]),
-ac_cv_alignmentof_voidp=$ac_cv_sizeof_voidp))
+  fclose(f); exit (0); }]])],[ac_cv_alignmentof_voidp=`cat conftestdata`],[AC_MSG_ERROR(Unexpected result)],[ac_cv_alignmentof_voidp=$ac_cv_sizeof_voidp]))
 AC_DEFINE_UNQUOTED(ALIGNMENTOF_VOIDP,$ac_cv_alignmentof_voidp, [How are pointers aligned])
 
 dnl -------------------------------------------------------------------------
@@ -565,7 +564,7 @@ AC_TYPE_SIGNAL
 
 AC_CACHE_CHECK([whether signal handlers are one-shot],
 	kaffe_cv_signal_one_shot, [ dnl
-	AC_TRY_RUN([
+	AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <signal.h>
 int counter = 0;
 RETSIGTYPE hup_handler () { ++counter; }
@@ -580,8 +579,7 @@ int main() {
     exit(1); /* signal was not delivered, seems to be one-shot */
   exit(0);
 }
-], kaffe_cv_signal_one_shot=no, kaffe_cv_signal_one_shot=yes,
-	kaffe_cv_signal_one_shot=cross)
+]])],[kaffe_cv_signal_one_shot=no],[kaffe_cv_signal_one_shot=yes],[kaffe_cv_signal_one_shot=cross])
 ])
 if test x"$kaffe_cv_signal_one_shot" != x"no"; then
   AC_DEFINE(KAFFE_SIGNAL_ONE_SHOT, 1, [Define if signal handlers must be reset upon delivery])
@@ -710,12 +708,11 @@ else
   AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBS)
   AC_CACHE_CHECK([for a usable version of gif_lib.h],
     kaffe_cv_gif_lib_version, [dnl
-	AC_TRY_COMPILE([
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <gif_lib.h>
-], [
+]], [[
 	((GifFileType *)0)->UserData;
-], [kaffe_cv_gif_lib_version=yes],
-   [kaffe_cv_gif_lib_version=no])])
+]])],[kaffe_cv_gif_lib_version=yes],[kaffe_cv_gif_lib_version=no])])
   if test x"$kaffe_cv_gif_lib_version" = x"yes"; then
     AC_DEFINE(HAVE_GIF_LIB_H, 1, [Do we have the right version of libungif])
     AC_CHECK_LIBRARY(ungif,DGifOpen,GIF_LIBS)
@@ -845,11 +842,10 @@ if test "x$enable_gcj" = "xyes"; then
   popdef([AC_MSG_ERROR])
 
   if test "x$have_recent_gcc" = xyes; then
-    AC_LANG_SAVE
-    AC_LANG_CPLUSPLUS
+    AC_LANG_PUSH([C++])
     AC_CHECK_HEADER([java/lang/Class.h],
       [have_libgcj_headers=yes], [have_libgcj_headers=no])
-    AC_LANG_RESTORE
+    AC_LANG_POP([])
 
     if test "x$have_libgcj_headers" = xyes; then
       enable_gcj=yes
@@ -937,10 +933,8 @@ dnl -------------------------------------------------------------------------
 
 AC_CACHE_CHECK([for struct sigcontext],
   ac_cv_struct_sigcontext,
-[AC_TRY_COMPILE([#include <asm/signal.h>
-#include <asm/sigcontext.h>], 
-[struct sigcontext t;],
-  ac_cv_struct_sigcontext=yes, ac_cv_struct_sigcontext=no)])
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <asm/signal.h>
+#include <asm/sigcontext.h>]], [[struct sigcontext t;]])],[ac_cv_struct_sigcontext=yes],[ac_cv_struct_sigcontext=no])])
 if test $ac_cv_struct_sigcontext = yes; then
   AC_DEFINE(HAVE_STRUCT_SIGCONTEXT, 1, [Do we have sigcontext])
 fi
@@ -951,16 +945,12 @@ dnl we must check which are mutually incompatible.
 
 AC_CACHE_CHECK([for struct sigcontext_struct (without asm/sigcontext.h)],
   ac_cv_struct_sigcontext_struct,
-[AC_TRY_COMPILE([#include <asm/signal.h>],
-[struct sigcontext_struct t;],
-  ac_cv_struct_sigcontext_struct=yes, ac_cv_struct_sigcontext_struct=no)])
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <asm/signal.h>]], [[struct sigcontext_struct t;]])],[ac_cv_struct_sigcontext_struct=yes],[ac_cv_struct_sigcontext_struct=no])])
 
 AC_CACHE_CHECK([for struct sigcontext_struct (with asm/sigcontext.h)],
   ac_cv_struct_sigcontext_struct_with,
-[AC_TRY_COMPILE([#include <asm/signal.h>
-#include <asm/sigcontext.h>], 
-[struct sigcontext_struct t;],
-  ac_cv_struct_sigcontext_struct_with=yes, ac_cv_struct_sigcontext_struct_with=no)])
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <asm/signal.h>
+#include <asm/sigcontext.h>]], [[struct sigcontext_struct t;]])],[ac_cv_struct_sigcontext_struct_with=yes],[ac_cv_struct_sigcontext_struct_with=no])])
 
 if test $ac_cv_struct_sigcontext_struct = yes -o $ac_cv_struct_sigcontext_struct_with = yes; then
   AC_DEFINE(HAVE_STRUCT_SIGCONTEXT_STRUCT, 1, [Do we have sigcontext_struct])
@@ -1000,7 +990,7 @@ LIBS="$KSAVE_LIBS"
 dnl Test whether LONG_MIN / -1l crashes
 AC_CACHE_CHECK([whether long division is broken],
   ac_cv_long_division_broken, [dnl
-    AC_TRY_RUN([
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <limits.h>
 #define T long
 #ifndef LONG_MIN
@@ -1009,8 +999,7 @@ AC_CACHE_CHECK([whether long division is broken],
 T foo(T i, T j);
 int main() { return foo(LONG_MIN, -1l) && 1; }
 T foo(T i, T j) { return i / j; }
-], ac_cv_long_division_broken=no, ac_cv_long_division_broken=yes,
-   ac_cv_long_division_broken=cross)])
+]])],[ac_cv_long_division_broken=no],[ac_cv_long_division_broken=yes],[ac_cv_long_division_broken=cross])])
 if test x"$ac_cv_long_division_broken" = x"yes"; then
   AC_DEFINE(LONG_DIVISION_BROKEN, 1, [Define if LONG_MIN / -1l produces an arithmetic exception])
 fi
@@ -1018,7 +1007,7 @@ fi
 dnl Test whether LONG_MIN % -1l crashes
 AC_CACHE_CHECK([whether long modulo is broken],
   ac_cv_long_modulo_broken, [dnl
-    AC_TRY_RUN([
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <limits.h>
 #define T long
 #ifndef LONG_MIN
@@ -1027,8 +1016,7 @@ AC_CACHE_CHECK([whether long modulo is broken],
 T foo(T i, T j);
 int main() { return foo(LONG_MIN, -1l) && 1; }
 T foo(T i, T j) { return i % j; }
-], ac_cv_long_modulo_broken=no, ac_cv_long_modulo_broken=yes,
-   ac_cv_long_modulo_broken=cross)])
+]])],[ac_cv_long_modulo_broken=no],[ac_cv_long_modulo_broken=yes],[ac_cv_long_modulo_broken=cross])])
 if test x"$ac_cv_long_modulo_broken" = x"yes"; then
   AC_DEFINE(LONG_MODULO_BROKEN, 1, [Define if LONG_MIN % -1l produces an arithmetic exception])
 fi
@@ -1036,7 +1024,7 @@ fi
 dnl Test whether LONG_LONG_MIN % -1ll crashes
 AC_CACHE_CHECK([whether long long modulo is broken],
   ac_cv_long_long_modulo_broken, [dnl
-    AC_TRY_RUN([
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <limits.h>
 #define T long long
 #ifndef LONG_LONG_MIN
@@ -1045,8 +1033,7 @@ AC_CACHE_CHECK([whether long long modulo is broken],
 T foo(T i, T j);
 int main() { return foo(LONG_LONG_MIN, -1ll) && 1; }
 T foo(T i, T j) { return i % j; }
-], ac_cv_long_long_modulo_broken=no, ac_cv_long_long_modulo_broken=yes,
-   ac_cv_long_long_modulo_broken=cross)])
+]])],[ac_cv_long_long_modulo_broken=no],[ac_cv_long_long_modulo_broken=yes],[ac_cv_long_long_modulo_broken=cross])])
 if test x"$ac_cv_long_long_modulo_broken" = x"yes"; then
   AC_DEFINE(LONG_LONG_MODULO_BROKEN, 1, [Define if LONG_LONG_MIN % -1ll produces an arithmetic exception])
 fi
@@ -1054,7 +1041,7 @@ fi
 dnl Test whether strtod("-0.0") is broken
 AC_CACHE_CHECK([whether strtod(\"-0.0\") is broken],
   ac_cv_strtod_m0_broken, [dnl
-    AC_TRY_RUN([
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdlib.h>
 /* definition DOUBLE_ORDER_OPPOSITE from config/config-hacks.h */
 #if defined(__arm__)
@@ -1099,8 +1086,7 @@ int main()
 #endif
     if ((d.j >> 63) & 1) return 0; else return 1;
 }
-], ac_cv_strtod_m0_broken=no, ac_cv_strtod_m0_broken=yes,
-   ac_cv_strtod_m0_broken=cross)])
+]])],[ac_cv_strtod_m0_broken=no],[ac_cv_strtod_m0_broken=yes],[ac_cv_strtod_m0_broken=cross])])
 if test x"$ac_cv_strtod_m0_broken" = x"yes"; then
   AC_DEFINE(STRTOD_m0_BROKEN, 1, [Define if strtod(\"-0.0\") is broken])
 fi
@@ -1118,8 +1104,7 @@ AC_CHECK_FUNCS([atexit on_exit vsnprintf snprintf])
 if test x"$Khost_cpu" = x"alpha" ; then
   AC_CACHE_CHECK([for alpha support of amask instruction],
     ac_cv_alpha_asm_amask,
-  [AC_TRY_COMPILE(, [ long r; __asm__("amask 1,%0" : "=r"(r)); return !r; ],
-    ac_cv_alpha_asm_amask=yes, ac_cv_alpha_asm_amask=no)
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[ long r; __asm__("amask 1,%0" : "=r"(r)); return !r; ]])],[ac_cv_alpha_asm_amask=yes],[ac_cv_alpha_asm_amask=no])
   ])
   if test x"$ac_cv_alpha_asm_amask" = x"yes" ; then
     AC_DEFINE(HAVE_ALPHA_ASM_AMASK, 1, [Do we have amask instruction on alpha])
@@ -1134,7 +1119,7 @@ dnl -------------------------------------------------------------------------
 
 AC_CACHE_CHECK([for declaration of select],
   ac_cv_declared_select,
-[AC_TRY_COMPILE([
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -1144,8 +1129,7 @@ AC_CACHE_CHECK([for declaration of select],
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
-], [ void *foo = select; ],
-  ac_cv_declared_select=yes, ac_cv_declared_select=no)
+]], [[ void *foo = select; ]])],[ac_cv_declared_select=yes],[ac_cv_declared_select=no])
 ])
 if test x"$ac_cv_declared_select" = x"yes"; then
   AC_DEFINE(HAVE_DECLARED_SELECT, 1, [Is function select declared])
@@ -1157,7 +1141,7 @@ dnl -------------------------------------------------------------------------
 
 AC_CACHE_CHECK([for declaration of swab],
   ac_cv_declared_swab,
-[AC_TRY_COMPILE([
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -1167,8 +1151,7 @@ AC_CACHE_CHECK([for declaration of swab],
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-], [ void *foo = swab; ],
-  ac_cv_declared_swab=yes, ac_cv_declared_swab=no)
+]], [[ void *foo = swab; ]])],[ac_cv_declared_swab=yes],[ac_cv_declared_swab=no])
 ])
 if test x"$ac_cv_declared_swab" = x"yes"; then
   AC_DEFINE(HAVE_DECLARED_SWAB, 1, [Is function swab declared])
@@ -1542,8 +1525,8 @@ AC_SUBST(CFLAGS_WITHOUT_PG)
 
 
 AC_CONFIG_SUBDIRS(libltdl)
-AM_CONFIG_HEADER(config/config.h include/jtypes.h)
-AC_OUTPUT([Makefile \
+AC_CONFIG_HEADERS([config/config.h include/jtypes.h])
+AC_CONFIG_FILES([Makefile \
 config/Makefile \
 include/Makefile \
 replace/Makefile \
@@ -1619,3 +1602,4 @@ test/internal/Makefile \
 test/regression/Makefile \
 test/regression/TestScript \
 ])
+AC_OUTPUT

@@ -9,7 +9,7 @@
 ##
 ## ( cd libraries/javalib && ../../developers/update-class-list )
 aclocal -I .
-autoheader -l config
-automake --add-missing --verbose
-autoconf
+autoheader -Wall
+automake --add-missing --copy -Wall
+autoconf -Wall
 

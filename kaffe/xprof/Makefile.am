@@ -44,4 +44,4 @@ noinst_HEADERS = \
 	sectionFile.h \
 	xprofiler.h
 
-CFLAGS = @CFLAGS_WITHOUT_PG@
+AM_CFLAGS = @CFLAGS_WITHOUT_PG@

@@ -10,7 +10,7 @@ AUTOMAKE_OPTIONS = foreign 1.3e
 
 SUBDIRS = . config include replace libltdl libraries/clib libraries/extensions kaffe libraries/javalib test
 
-DIST_SUBDIRS = . config include libltdl kaffe libraries test
+DIST_SUBDIRS = . config include replace libltdl kaffe libraries test
 
 EXTRA_DIST = \
 	ChangeLog.1 \
@@ -30,12 +30,15 @@ EXTRA_DIST = \
 	FAQ/FAQ.coding-style \
 	FAQ/FAQ.debugging \
 	FAQ/FAQ.depend \
+	FAQ/FAQ.dmalloc \
+	FAQ/FAQ.embedded \
 	FAQ/FAQ.feedback \
 	FAQ/FAQ.gcblock \
 	FAQ/FAQ.gcj \
 	FAQ/FAQ.gcstrategy \
 	FAQ/FAQ.hotjava \
 	FAQ/FAQ.install-root \
+	FAQ/FAQ.jit3 \
 	FAQ/FAQ.jsignal \
 	FAQ/FAQ.kjc \
 	FAQ/FAQ.libffi \
@@ -45,8 +48,10 @@ EXTRA_DIST = \
 	FAQ/FAQ.nativemethods \
 	FAQ/FAQ.ncr \
 	FAQ/FAQ.profiler \
+	FAQ/FAQ.ps2linux \
 	FAQ/FAQ.pthreads \
 	FAQ/FAQ.requiredlibraries \
+	FAQ/FAQ.sound \
 	FAQ/FAQ.staticnative \
 	FAQ/FAQ.timing \
 	FAQ/FAQ.unicode \
