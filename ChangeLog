@@ -1,3 +1,30 @@
+2003-12-12  Dalibor Topic <robilad@kaffe.org>
+
+	* config/m68k/sysdepCallMethod.h: New file.
+
+	* config/Makefile.am:
+	((EXTRA_DIST) Added config/m68k/sysdepCallMethod.h.
+
+	* aclocal.m4,
+	config/Makefile.in:
+	Regenerated.
+
+	* config/m68k/common.h:
+	(sysdepCallMethod) Moved into its own file,
+        config/m68k/sysdepCallMethod.h.
+	(sysdepCallMethod)[USE_ASM] Deleted.
+
+	* config/m68k/a-ux/md.h,
+	config/m68k/amigaos/md.h,
+	config/m68k/netbsd1/md.h,
+	config/m68k/nextstep3/md.h,
+	config/m68k/openbsd2/md.h,
+	config/m68k/sunos4/md.h:
+	Include config/m68k/sysdepCallMethod.h.
+	
+	* config/m68k/linux/md.h:
+	(sysdepCallMethod) Converted macro to inline function.
+
 2003-12-12  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/kaffe/io/CharToByteEUC_JP.java,

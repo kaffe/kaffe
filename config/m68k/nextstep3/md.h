@@ -18,6 +18,7 @@
 #define __m68k_nextstep3_md_h
 
 #include "m68k/threads.h"
+#include "m68k/sysdepCallMethod.h"
 
 /*
  * Stack offset.

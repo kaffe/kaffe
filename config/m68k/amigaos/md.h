@@ -19,6 +19,7 @@
 
 #include "m68k/threads.h"
 #include "m68k/common.h"
+#include "m68k/sysdepCallMethod.h"
 
 /*	Define Stack Offset
 */

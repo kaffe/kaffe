@@ -210,6 +210,7 @@ EXTRA_DIST = \
 	m68k/sunos4/config.frag \
 	m68k/sunos4/md.c \
 	m68k/sunos4/md.h \
+	m68k/sysdepCallMethod.h \
 	m68k/threads.h \
 	m68k/trampolines.c \
 	mips/common.h \

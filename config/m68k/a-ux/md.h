@@ -13,6 +13,7 @@
 #define __m68k_netbsd_md_h
 
 #include "m68k/threads.h"
+#include "m68k/sysdepCallMethod.h"
 
 /*
  * Stack offset.
