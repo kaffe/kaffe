@@ -1,5 +1,11 @@
 2004-07-07  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* WHATNEW: Added some news line.
+
+	* libraries/javalib/kjc.jar: Regenerated.
+
+2004-07-07  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* include/jni.h: Reverted the definition of JNI_CreateJavaVM to
 	Classpath's one.
 

@@ -12,6 +12,8 @@ executable (fr, zh_TW).
 * Resynced with latest GNU Classpath, GNU JAXP.
 * Compiler warning fixes.
 * Verifier moved to its own directory.
+* JNI upgrades to 1.2
+* KJC fixes.
 
 What's New in Kaffe 1.1.3
 ------------------------------------------------------
