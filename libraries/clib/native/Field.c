@@ -380,7 +380,7 @@ java_lang_reflect_Field_setByte(struct Hjava_lang_reflect_Field* this, struct Hj
                 *(jint*)base = (jint)val;
 	}
         else if ( fld->type == longClass ) {
-                *(jlong*)base == (jlong)val;
+                *(jlong*)base = (jlong)val;
 	}
         else if ( fld->type == floatClass ) {
                 *(jfloat*)base = (jfloat)val;
@@ -415,7 +415,7 @@ java_lang_reflect_Field_setChar(struct Hjava_lang_reflect_Field* this, struct Hj
                 *(jint*)base = (jint)val;
 	}
         else if ( fld->type == longClass ) {
-                *(jlong*)base == (jlong)val;
+                *(jlong*)base = (jlong)val;
 	}
         else if ( fld->type == floatClass ) {
                 *(jfloat*)base = (jfloat)val;
@@ -450,7 +450,7 @@ java_lang_reflect_Field_setShort(struct Hjava_lang_reflect_Field* this, struct H
                 *(jint*)base = (jint)val;
 	}
         else if ( fld->type == longClass ) {
-                *(jlong*)base == (jlong)val;
+                *(jlong*)base = (jlong)val;
 	}
         else if ( fld->type == floatClass ) {
                 *(jfloat*)base = (jfloat)val;
@@ -482,7 +482,7 @@ java_lang_reflect_Field_setInt(struct Hjava_lang_reflect_Field* this, struct Hja
                 *(jint*)base = val;
 	}
         else if ( fld->type == longClass ) {
-                *(jlong*)base == (jlong)val;
+                *(jlong*)base = (jlong)val;
 	}
         else if ( fld->type == floatClass ) {
                 *(jfloat*)base = (jfloat)val;
@@ -511,13 +511,13 @@ java_lang_reflect_Field_setLong(struct Hjava_lang_reflect_Field* this, struct Hj
         }
 
         if ( fld->type == longClass ) {
-                *(jlong*)base == val;
+                *(jlong*)base = val;
 	}
         else if ( fld->type == floatClass ) {
                 *(jfloat*)base = (jfloat)val;
 	}
         else if ( fld->type == doubleClass ) {
-                *(jdouble*)base =(jdouble)val;
+                *(jdouble*)base = (jdouble)val;
 	}
         else {
                 SignalError("java.lang.IllegalArgumentException", "");
@@ -620,6 +620,6 @@ java_lang_reflect_Field_set(Hjava_lang_reflect_Field* this, struct Hjava_lang_Ob
 		java_lang_reflect_Field_setDouble(this, obj, unhand(((Hjava_lang_Double *)val))->value );
 	}
 	else {
-		SignalError("java.lang.IllegalArgumentException", base);
+		SignalError("java.lang.IllegalArgumentException", "can't assign object to a primitive type");
         }
 }
