@@ -1,3 +1,12 @@
+Fri Jul  3 18:33:44 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* libraries/clib/native/Class.c: don't report java.io.Serializable
+	  for arrays
+	* libraries/clib/native/ObjectStreamClass.c: fixes to primitive
+	  classes, include static fields in ObjectStreamField arrays
+	* libraries/clib/native/ObjectInputStream.c: fixes to loadClass0
+	  kaffe/kaffevm/classMethod.c: set array flags and interfaces right.
+
 Wed Jul  1 19:20:23 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* libraries/clib/native/Class.c: implemented makeExceptions
