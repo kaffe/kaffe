@@ -455,21 +455,13 @@ public class ObjectInputStream extends InputStream
 	if (type_code == 'L' || type_code == '[')
 	{
 	  class_name = (String)readObject ();
-	  /* We need to fully resolve only when an object is concerned.
-	   * in the other case just use TypeSignature
-	   */
-	  if (class_name.charAt(0) == 'L')
-	    of = new ObjectStreamField (field_name,
-		       resolveClass(class_name.substring(1,
-				       class_name.length()-1)));
-	  else
-	    of = new ObjectStreamField (field_name, class_name);
 	}
 	else
 	{
 	  class_name = String.valueOf (type_code);
-	  of = new ObjectStreamField (field_name, class_name);
-	}
+        }
+	
+        of = new ObjectStreamField (field_name, class_name, currentLoader());
 	
 	fields[i] = of;
       }
@@ -592,22 +584,16 @@ public class ObjectInputStream extends InputStream
   protected Class resolveClass (ObjectStreamClass osc)
     throws ClassNotFoundException, IOException
   {
-    return resolveClass (osc.getName ());
+    return Class.forName (osc.getName(), true, currentLoader()); 
   }
 
-  private Class resolveClass (String class_name)
-	      throws ClassNotFoundException, IOException
+  private ClassLoader currentLoader ()
   {
     SecurityManager sm = System.getSecurityManager ();
     if (sm == null)
       sm = new SecurityManager () {};
 
-    ClassLoader cl = currentClassLoader (sm);
-
-    if (cl == null)
-      return Class.forName (class_name);
-    else
-      return cl.loadClass (class_name);
+    return currentClassLoader (sm);
   }
 
   /* Lookup a class stored in the local hashtable. If it is not

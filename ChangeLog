@@ -1,5 +1,26 @@
 2003-08-22  Helmer Kraemer  <hkraemer@freenet.de>
 
+	* gnu/java/lang/reflect/TypeSignature.java:
+	(getClassForEncoding) added new method that accepts a class loader
+	and uses it to load and link the requested class.
+	
+	* java/io/ObjectInputStream.java:
+	(readClassDescriptor) Field types are passed as signatures, not
+	class names. That means it's not such a good idea to pass them
+	to Class.forName directly. 
+	(resolveClass) use Class.forName with given class loader. removed
+	resolveClass(String).
+	(currentLoader) new helper method.
+	
+	* java/io/ObjectStreamField.java:
+	(ObjectStreamField) new constructor that accepts a class loader
+	parameter and uses it load the requested type.
+
+	* java/rmi/server/RMIClassLoader.java:
+	(loadClass) link classes that get loaded, otherwise kaffe crashes.
+	
+2003-08-22  Helmer Kraemer  <hkraemer@freenet.de>
+
 	* kaffe/kaffevm/mem/gc-mem.c:
 	(gc_heap_free) properly free empty primitive blocks
 

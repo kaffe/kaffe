@@ -150,6 +150,12 @@ public class TypeSignature
   public static Class getClassForEncoding(String type_code, boolean descriptor)
     throws ClassNotFoundException
   {
+    return getClassForEncoding(type_code, descriptor, null);
+  }
+
+  public static Class getClassForEncoding(String type_code, boolean descriptor, ClassLoader loader)
+    throws ClassNotFoundException
+  {
     if (descriptor)
       {
         switch (type_code.charAt(0))
@@ -181,7 +187,7 @@ public class TypeSignature
           case '[':
           }
       }
-    return Class.forName(type_code.replace('/', '.'));
+    return Class.forName(type_code.replace('/', '.'), true, loader);
   }
 
   /**

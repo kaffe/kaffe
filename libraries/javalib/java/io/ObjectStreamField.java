@@ -84,6 +84,19 @@ public class ObjectStreamField implements Comparable
         type = Object.class; //FIXME: ???
       }
   }
+
+  ObjectStreamField (String name, String typename, ClassLoader loader){
+    this.name = name;
+    this.typename = typename;
+    try
+      {
+        type = TypeSignature.getClassForEncoding(typename, true, loader);
+      }
+    catch(ClassNotFoundException e)
+      {
+        type = Object.class; // ALSO FIXME 
+      }
+  }
   
   public String getName ()
   {

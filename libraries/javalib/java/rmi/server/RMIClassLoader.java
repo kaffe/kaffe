@@ -210,7 +210,7 @@ public class RMIClassLoader
     //try context class loader first
     try
       {
-      c = loader.loadClass(name);
+      c = Class.forName(name, true, loader);
 
       return c;
       }
@@ -235,7 +235,7 @@ public class RMIClassLoader
                                        ") at codebase (" + codebases + ")");
       }
       
-    return loader.loadClass(name);
+    return Class.forName(name, true, loader);
     }
 
     /**
