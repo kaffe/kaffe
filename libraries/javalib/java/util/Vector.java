@@ -37,8 +37,8 @@ exception statement from your version. */
 
 
 package java.util;
-import java.lang.reflect.Array;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 
 /**
  * The <code>Vector</code> classes implements growable arrays of Objects.

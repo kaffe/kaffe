@@ -36,9 +36,10 @@ exception statement from your version. */
 
 package java.awt.image;
 
+import gnu.java.awt.BitMaskExtent;
+
 import java.awt.Point;
 import java.awt.color.ColorSpace;
-import gnu.java.awt.BitMaskExtent;
 
 /**
  * @author Rolf W. Rasmussen <rolfwr@ii.uib.no>

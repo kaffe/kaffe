@@ -24,20 +24,20 @@
 
 package	org.tritonus.core;
 
-import	java.util.Iterator;
-import	java.util.Set;
+import java.util.Iterator;
+import java.util.Set;
 
-import	javax.sound.midi.MidiDevice;
-import	javax.sound.midi.Sequencer;
-import	javax.sound.midi.Synthesizer;
-import	javax.sound.midi.spi.MidiDeviceProvider;
-import	javax.sound.midi.spi.MidiFileReader;
-import	javax.sound.midi.spi.MidiFileWriter;
-import	javax.sound.midi.spi.SoundbankReader;
+import javax.sound.midi.MidiDevice;
+import javax.sound.midi.Sequencer;
+import javax.sound.midi.Synthesizer;
+import javax.sound.midi.spi.MidiDeviceProvider;
+import javax.sound.midi.spi.MidiFileReader;
+import javax.sound.midi.spi.MidiFileWriter;
+import javax.sound.midi.spi.SoundbankReader;
 
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.ArraySet;
-import	org.tritonus.core.TInit.ProviderRegistrationAction;
+import org.tritonus.core.TInit.ProviderRegistrationAction;
+import org.tritonus.share.ArraySet;
+import org.tritonus.share.TDebug;
 
 
 /** TODO:

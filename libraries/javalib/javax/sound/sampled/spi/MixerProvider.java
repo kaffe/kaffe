@@ -26,7 +26,7 @@
 package	javax.sound.sampled.spi;
 
 
-import	javax.sound.sampled.Mixer;
+import javax.sound.sampled.Mixer;
 
 
 

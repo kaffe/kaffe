@@ -38,8 +38,9 @@ exception statement from your version. */
 
 package javax.accessibility;
 
-import java.awt.Rectangle;
 import java.awt.Point;
+import java.awt.Rectangle;
+
 import javax.swing.text.AttributeSet;
 
 /**

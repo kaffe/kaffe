@@ -39,11 +39,11 @@ exception statement from your version. */
 package java.net;
 
 import java.io.IOException;
+import java.security.cert.Certificate;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.security.cert.Certificate;
 
 /**
  * This abstract class represents a common superclass for implementations

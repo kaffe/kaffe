@@ -37,13 +37,13 @@ exception statement from your version. */
 
 package java.rmi.activation;
 
-import java.rmi.server.RemoteServer;
+import java.rmi.MarshalledObject;
+import java.rmi.NoSuchObjectException;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
-import java.rmi.RemoteException;
-import java.rmi.Remote;
-import java.rmi.NoSuchObjectException;
-import java.rmi.MarshalledObject;
+import java.rmi.server.RemoteServer;
 
 public abstract class Activatable
 	extends RemoteServer {

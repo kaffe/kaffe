@@ -42,9 +42,9 @@ exception statement from your version.
 
 package java.util.logging;
 
-import java.util.ResourceBundle;
-import java.util.MissingResourceException;
 import java.util.List;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * A Logger is used for logging information about events. Usually, there

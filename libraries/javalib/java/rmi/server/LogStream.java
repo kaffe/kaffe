@@ -37,9 +37,8 @@ exception statement from your version. */
 
 package java.rmi.server;
 
-import java.io.PrintStream;
 import java.io.OutputStream;
-import java.io.IOException;
+import java.io.PrintStream;
 
 /**
  * @deprecated

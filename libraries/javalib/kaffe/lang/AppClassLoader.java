@@ -17,17 +17,15 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.SecureClassLoader;
 import java.security.CodeSource;
 import java.security.cert.Certificate;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.jar.JarFile;
 import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
 
 /**
  * ClassLoader used to load application classes from the CLASSPATH.

@@ -30,9 +30,9 @@ package	org.tritonus.share.sampled.mixer;
 
 
 
-import	javax.sound.sampled.BooleanControl;
+import javax.sound.sampled.BooleanControl;
 
-import	org.tritonus.share.TDebug;
+import org.tritonus.share.TDebug;
 
 
 

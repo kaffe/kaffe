@@ -37,11 +37,11 @@ exception statement from your version. */
 
 package java.rmi.server;
 
-import java.lang.reflect.Method;
 import java.io.Externalizable;
+import java.io.ObjectOutput;
+import java.lang.reflect.Method;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.io.ObjectOutput;
 
 public interface RemoteRef extends Externalizable
 {

@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package javax.naming;
 
-import java.lang.Exception;
  
 public class TimeLimitExceededException extends LimitExceededException
 {

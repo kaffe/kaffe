@@ -26,7 +26,10 @@
 
 package gnu.xml.pipeline;
 
-import org.xml.sax.*;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.DTDHandler;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXNotRecognizedException;
 
 
 /**

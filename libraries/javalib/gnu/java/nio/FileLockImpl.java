@@ -38,11 +38,12 @@ exception statement from your version. */
 
 package gnu.java.nio;
 
+import gnu.classpath.Configuration;
+
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
-import gnu.classpath.Configuration;
 
 /**
  * @author Michael Koch

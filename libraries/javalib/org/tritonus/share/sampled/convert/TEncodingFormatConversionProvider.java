@@ -26,14 +26,13 @@
 package	org.tritonus.share.sampled.convert;
 
 
-import	java.util.Collection;
-import	java.util.Iterator;
+import java.util.Collection;
+import java.util.Iterator;
 
-import	javax.sound.sampled.AudioFormat;
-import	javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.AudioFormat;
 
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.ArraySet;
+import org.tritonus.share.ArraySet;
+import org.tritonus.share.TDebug;
 
 
 // this class depends on handling of AudioSystem.NOT_SPECIFIED in AudioFormat.matches()

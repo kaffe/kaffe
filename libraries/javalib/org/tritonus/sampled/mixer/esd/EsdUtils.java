@@ -26,12 +26,9 @@
 package	org.tritonus.sampled.mixer.esd;
 
 
-import	java.io.IOException;
+import javax.sound.sampled.AudioFormat;
 
-import	javax.sound.sampled.AudioFormat;
-
-import	org.tritonus.share.TDebug;
-import	org.tritonus.lowlevel.esd.Esd;
+import org.tritonus.lowlevel.esd.Esd;
 
 
 

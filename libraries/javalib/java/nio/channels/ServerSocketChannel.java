@@ -38,10 +38,10 @@ exception statement from your version. */
 
 package java.nio.channels;
 
-import java.nio.channels.spi.AbstractSelectableChannel;
-import java.nio.channels.spi.SelectorProvider;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.nio.channels.spi.AbstractSelectableChannel;
+import java.nio.channels.spi.SelectorProvider;
 
 /**
  * @author Michael Koch

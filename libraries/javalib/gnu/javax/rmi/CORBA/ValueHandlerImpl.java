@@ -38,10 +38,10 @@ exception statement from your version. */
 
 package gnu.javax.rmi.CORBA;
 
-import java.io.*;
-//import org.omg.CORBA.portable.InputStream;
-//import org.omg.CORBA.portable.OutputStream;
-//import org.omg.SendingContext.RunTime;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+
 import javax.rmi.CORBA.ValueHandler;
 
 public class ValueHandlerImpl

@@ -38,15 +38,15 @@ exception statement from your version. */
 
 package java.lang.reflect;
 
-import java.io.Serializable;
-import java.security.ProtectionDomain;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
 import gnu.classpath.Configuration;
 import gnu.java.lang.reflect.TypeSignature;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class allows you to dynamically create an instance of any (or

@@ -25,7 +25,7 @@
 
 package	org.tritonus.share.midi;
 
-import	javax.sound.midi.MidiFileFormat;
+import javax.sound.midi.MidiFileFormat;
 
 
 

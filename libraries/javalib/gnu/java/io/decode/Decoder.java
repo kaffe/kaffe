@@ -38,10 +38,10 @@ exception statement from your version. */
 
 package gnu.java.io.decode;
 
+import java.io.CharConversionException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.IOException;
-import java.io.CharConversionException;
 
 /**
   * This class is the base class for decoding bytes into character. 

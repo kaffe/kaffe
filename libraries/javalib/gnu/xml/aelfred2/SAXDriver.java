@@ -47,21 +47,36 @@
 
 package gnu.xml.aelfred2;
 
-import java.io.*;
-
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Stack;
-
-// maintaining 1.1 compatibility for now ... more portable, PJava, etc
-// Iterator, Hashmap and ArrayList ought to be faster
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Vector;
 
-import org.xml.sax.*;
-import org.xml.sax.ext.*;
+import org.xml.sax.AttributeList;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.DTDHandler;
+import org.xml.sax.DocumentHandler;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import org.xml.sax.Parser;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.ext.Attributes2;
+import org.xml.sax.ext.DeclHandler;
+import org.xml.sax.ext.DefaultHandler2;
+import org.xml.sax.ext.EntityResolver2;
+import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.NamespaceSupport;
 
 

@@ -1,8 +1,14 @@
 package java.awt;
 
+import java.awt.AWTEvent;
+import java.awt.AWTEventMulticaster;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.TextComponent;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import kaffe.util.Ptr;
 
 /**
  * class TextField -

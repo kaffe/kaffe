@@ -13,7 +13,11 @@
 
 package kaffe.tools.jar;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class XPFileWriter extends FileWriter {
 

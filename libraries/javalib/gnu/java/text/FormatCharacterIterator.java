@@ -38,13 +38,14 @@ exception statement from your version. */
 package gnu.java.text;
 
 import gnu.classpath.Configuration;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Vector;
-import java.util.Iterator;
+
 import java.text.AttributedCharacterIterator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * This class should not be put public and it is only intended to the

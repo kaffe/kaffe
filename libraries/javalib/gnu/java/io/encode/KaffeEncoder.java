@@ -10,10 +10,11 @@
 
 package gnu.java.io.encode;
 
-import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.CharConversionException;
 import java.io.IOException;
-import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+
 import kaffe.io.CharToByteConverter;
 
 /**

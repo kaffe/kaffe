@@ -39,6 +39,9 @@
 
 package java.io;
 
+import gnu.java.io.NullOutputStream;
+import gnu.java.lang.reflect.TypeSignature;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -50,13 +53,10 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedAction;
-import java.security.Security;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Vector;
-import gnu.java.io.NullOutputStream;
-import gnu.java.lang.reflect.TypeSignature;
 //import gnu.java.security.provider.Gnu;
 
 

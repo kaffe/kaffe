@@ -28,12 +28,13 @@ package gnu.xml.pipeline;
 
 import java.io.IOException;
 
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.sax.*;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
 
-import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 

@@ -14,14 +14,13 @@
 
 package java.security.cert;
 
-import java.io.Serializable;
 import java.io.ObjectStreamException;
-
+import java.io.Serializable;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.SignatureException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchProviderException;
-import java.security.NoSuchAlgorithmException;
 
 public abstract class Certificate
     implements Serializable

@@ -51,8 +51,9 @@ exception statement from your version. */
 
 package java.lang;
 
-import java.util.Random;
 import gnu.classpath.Configuration;
+
+import java.util.Random;
 
 /**
  * Helper class containing useful mathematical functions and constants.

@@ -26,7 +26,8 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Document;
 
 
 /**

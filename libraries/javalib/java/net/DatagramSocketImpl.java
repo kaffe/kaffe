@@ -39,8 +39,8 @@ exception statement from your version. */
 
 package java.net;
 
-import java.io.IOException;
 import java.io.FileDescriptor;
+import java.io.IOException;
 
 /**
  * This abstract class models a datagram socket implementation.  An

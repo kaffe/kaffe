@@ -10,8 +10,9 @@
 
 package kaffe.io;
 
-import kaffe.util.IntegerIntegerHashtable;
 import java.io.Serializable;
+
+import kaffe.util.IntegerIntegerHashtable;
 
 public class CharToByteHashBased
 	extends CharToByteConverter implements Serializable {

@@ -39,11 +39,11 @@ exception statement from your version. */
 
 package java.util;
 
-import java.lang.reflect.Array;
-import java.io.Serializable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.lang.reflect.Array;
 
 /**
  * An array-backed implementation of the List interface.  This implements

@@ -37,8 +37,8 @@ exception statement from your version. */
 
 package javax.naming;
 
-import java.util.Enumeration;
 import java.io.Serializable;
+import java.util.Enumeration;
 
 /**
  * Interface descriping a name build up from different components.

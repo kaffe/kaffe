@@ -23,7 +23,6 @@
 package org.tritonus.share.sampled.convert;
 
 import java.io.InputStream;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

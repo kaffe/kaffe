@@ -26,15 +26,14 @@
 package	org.tritonus.sampled.convert;
 
 
-import	java.util.HashSet;
-import	java.util.Set;
+import java.util.HashSet;
+import java.util.Set;
 
-import	javax.sound.sampled.AudioFormat;
-import	javax.sound.sampled.AudioInputStream;
-import	javax.sound.sampled.AudioSystem;
-import	javax.sound.sampled.spi.FormatConversionProvider;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 
-import	org.tritonus.share.sampled.convert.TFormatConversionProvider;
+import org.tritonus.share.sampled.convert.TFormatConversionProvider;
 
 
 // Name suggested by Florian: MetaFormatConversionProvider

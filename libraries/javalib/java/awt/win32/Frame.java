@@ -1,8 +1,15 @@
 package java.awt;
 
-import java.awt.event.*;
-import java.util.Enumeration;
-import kaffe.util.Ptr;
+import java.awt.AWTEvent;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.MenuBar;
+import java.awt.MenuComponent;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 
 /**
  * Frame - 

@@ -1,5 +1,9 @@
 package java.awt;
 
+import java.awt.AWTEvent;
+import java.awt.Component;
+import java.awt.Toolkit;
+
 
 /**
  * WMEvent - 

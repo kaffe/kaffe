@@ -25,8 +25,8 @@
 
 package	javax.sound.midi;
 
-import	java.util.Iterator;
-import	java.util.Vector;
+import java.util.Iterator;
+import java.util.Vector;
 
 
 // TODO: some synchronization now obsolete? (after change from ArrayList to Vector)

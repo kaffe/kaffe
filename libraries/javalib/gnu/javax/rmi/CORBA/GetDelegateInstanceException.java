@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package gnu.javax.rmi.CORBA;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
 
 public class GetDelegateInstanceException
   extends Exception

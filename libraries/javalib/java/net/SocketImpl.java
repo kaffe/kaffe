@@ -40,8 +40,8 @@ exception statement from your version. */
 package java.net;
 
 import java.io.FileDescriptor;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 /* Written using on-line Java Platform 1.2 API Specification.

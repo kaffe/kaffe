@@ -26,22 +26,18 @@
 package	org.tritonus.sampled.mixer.esd;
 
 
-import	java.io.IOException;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.TargetDataLine;
 
-import	javax.sound.sampled.AudioSystem;
-import	javax.sound.sampled.AudioFormat;
-import	javax.sound.sampled.DataLine;
-import	javax.sound.sampled.FloatControl;
-import	javax.sound.sampled.LineUnavailableException;
-import	javax.sound.sampled.TargetDataLine;
-import	javax.sound.sampled.Mixer;
-
-import	org.tritonus.share.TDebug;
-import	org.tritonus.lowlevel.esd.Esd;
-import	org.tritonus.lowlevel.esd.EsdRecordingStream;
-import	org.tritonus.share.sampled.TConversionTool;
-import	org.tritonus.share.sampled.mixer.TMixer;
-import	org.tritonus.share.sampled.mixer.TBaseDataLine;
+import org.tritonus.lowlevel.esd.Esd;
+import org.tritonus.lowlevel.esd.EsdRecordingStream;
+import org.tritonus.share.TDebug;
+import org.tritonus.share.sampled.TConversionTool;
+import org.tritonus.share.sampled.mixer.TBaseDataLine;
+import org.tritonus.share.sampled.mixer.TMixer;
 
 
 

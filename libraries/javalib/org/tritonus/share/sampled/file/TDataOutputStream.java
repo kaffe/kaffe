@@ -26,9 +26,8 @@
 package	org.tritonus.share.sampled.file;
 
 
-import	java.io.DataOutput;
-import	java.io.IOException;
-import	java.io.InputStream;
+import java.io.DataOutput;
+import java.io.IOException;
 
 
 /**

@@ -27,9 +27,9 @@
 package	org.tritonus.share.sampled.file;
 
 
-import	java.io.IOException;
-import	java.io.OutputStream;
-import	java.io.DataOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * A TDataOutputStream that does not allow seeking.

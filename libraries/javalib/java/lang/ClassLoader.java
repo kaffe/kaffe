@@ -16,13 +16,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Vector;
+
 import kaffe.lang.AppClassLoader;
 import kaffe.lang.PrimordialClassLoader;
 

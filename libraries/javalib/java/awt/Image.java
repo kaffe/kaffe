@@ -1,21 +1,14 @@
 package java.awt;
 
-import java.awt.image.ColorModel;
-import java.awt.image.DirectColorModel;
-import java.awt.image.ImageConsumer;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
-import java.awt.image.IndexColorModel;
 import java.awt.image.MemoryImageSource;
 import java.io.File;
-import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
-import kaffe.awt.JavaColorModel;
-import kaffe.io.AccessibleBAOStream;
+
 import kaffe.util.Ptr;
 import kaffe.util.VectorSnapshot;
 

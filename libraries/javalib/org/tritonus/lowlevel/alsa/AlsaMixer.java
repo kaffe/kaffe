@@ -22,10 +22,7 @@
 
 package	org.tritonus.lowlevel.alsa;
 
-import	java.util.ArrayList;
-import	java.util.List;
-
-import	org.tritonus.share.TDebug;
+import org.tritonus.share.TDebug;
 
 
 

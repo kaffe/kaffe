@@ -40,7 +40,6 @@ version.  */
 package javax.net.ssl;
 
 import java.lang.reflect.InvocationTargetException;
-
 import java.security.AccessController;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;

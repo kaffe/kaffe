@@ -3,6 +3,7 @@ package java.awt.image;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.util.Hashtable;
+
 import kaffe.awt.JavaColorModel;
 
 public class PixelGrabber

@@ -39,11 +39,12 @@ exception statement from your version. */
 package java.net;
 
 import gnu.java.net.URLParseError;
-import java.io.InputStream;
+
 import java.io.IOException;
-import java.io.Serializable;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 

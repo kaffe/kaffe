@@ -25,22 +25,11 @@
 package	org.tritonus.share.sampled;
 
 
-import	java.io.File;
-import	java.io.FileOutputStream;
-import	java.io.InputStream;
-import	java.io.IOException;
-import	java.io.OutputStream;
-import	java.util.Collection;
-import	java.util.Iterator;
+import java.util.Iterator;
 
-import	javax.sound.sampled.AudioSystem;
-import	javax.sound.sampled.AudioFormat;
-import	javax.sound.sampled.AudioFileFormat;
-import	javax.sound.sampled.AudioInputStream;
-import	javax.sound.sampled.spi.AudioFileWriter;
-
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.sampled.TConversionTool;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 
 
 

@@ -15,8 +15,8 @@
 
 package java.security;
 
-import java.io.IOException;
 import java.io.FilterOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
 public class DigestOutputStream extends FilterOutputStream {

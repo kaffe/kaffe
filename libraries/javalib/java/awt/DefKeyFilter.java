@@ -1,6 +1,7 @@
 package java.awt;
 
 import java.awt.event.KeyEvent;
+
 import kaffe.awt.KeyHook;
 
 class DefKeyFilter

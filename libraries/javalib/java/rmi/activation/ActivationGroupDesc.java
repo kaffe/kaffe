@@ -38,8 +38,8 @@ exception statement from your version. */
 package java.rmi.activation;
 
 import java.io.Serializable;
-import java.util.Properties;
 import java.rmi.MarshalledObject;
+import java.util.Properties;
 
 public final class ActivationGroupDesc implements Serializable
 {

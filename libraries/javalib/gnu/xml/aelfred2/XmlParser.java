@@ -50,16 +50,13 @@ package gnu.xml.aelfred2;
 import java.io.BufferedInputStream;
 import java.io.CharConversionException;
 import java.io.EOFException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.IOException;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
-
-// maintaining 1.1 compatibility for now ...
-// Iterator and Hashmap ought to be faster
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Stack;

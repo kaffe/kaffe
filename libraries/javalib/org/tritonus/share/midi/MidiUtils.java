@@ -26,11 +26,11 @@
 package	org.tritonus.share.midi;
 
 
-import	java.io.ByteArrayOutputStream;
-import	java.io.IOException;
-import	java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
-import	org.tritonus.share.TDebug;
+import org.tritonus.share.TDebug;
 
 
 

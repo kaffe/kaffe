@@ -26,15 +26,22 @@
 
 package gnu.xml.pipeline;
 
-import java.io.*;
-import java.net.*;
-
-import org.xml.sax.*;
-import org.xml.sax.ext.*;
-import org.xml.sax.helpers.XMLReaderFactory;
-
 import gnu.xml.util.Resolver;
 import gnu.xml.util.XMLWriter;
+
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URL;
+import java.net.URLConnection;
+
+import org.xml.sax.DTDHandler;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 
 /**

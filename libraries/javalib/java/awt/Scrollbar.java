@@ -5,6 +5,7 @@ import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+
 import kaffe.util.Timer;
 import kaffe.util.TimerClient;
 

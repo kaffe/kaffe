@@ -1,6 +1,18 @@
 package java.awt;
 
-import java.awt.ImageNativeProducer;
+import java.awt.AWTError;
+import java.awt.AWTEvent;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Frame;
+import java.awt.Image;
+import java.awt.MenuComponent;
+import java.awt.MenuItem;
+import java.awt.PSPrintJob;
+import java.awt.PrintJob;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.InputEvent;
@@ -11,12 +23,10 @@ import java.awt.peer.ComponentPeer;
 import java.awt.peer.LightweightPeer;
 import java.awt.peer.WindowPeer;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.Properties;
-import kaffe.io.NullOutputStream;
+
 import kaffe.util.Ptr;
 import kaffe.util.log.LogClient;
 import kaffe.util.log.LogStream;

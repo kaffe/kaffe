@@ -22,8 +22,8 @@
 
 package	javax.sound.midi;
 
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.midi.MidiUtils;
+import org.tritonus.share.TDebug;
+import org.tritonus.share.midi.MidiUtils;
 
 
 

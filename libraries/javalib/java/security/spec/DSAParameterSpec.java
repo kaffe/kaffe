@@ -15,7 +15,6 @@
 package java.security.spec;
 
 import java.math.BigInteger;
-
 import java.security.interfaces.DSAParams;
 
 public class DSAParameterSpec

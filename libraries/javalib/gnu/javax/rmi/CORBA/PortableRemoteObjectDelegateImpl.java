@@ -38,10 +38,13 @@ exception statement from your version. */
 
 package gnu.javax.rmi.CORBA;
 
-import java.rmi.*;
-import java.rmi.server.*;
-import gnu.javax.rmi.*;
-import javax.rmi.CORBA.*;
+import gnu.javax.rmi.PortableServer;
+
+import java.rmi.NoSuchObjectException;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+import javax.rmi.CORBA.PortableRemoteObjectDelegate;
 
 public class PortableRemoteObjectDelegateImpl
   implements PortableRemoteObjectDelegate

@@ -39,8 +39,8 @@ exception statement from your version. */
 
 package java.net;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.security.Permission;
 

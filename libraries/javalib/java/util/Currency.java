@@ -37,8 +37,6 @@ exception statement from your version. */
 package java.util;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
-import java.util.Locale;
 import java.text.NumberFormat;
 
 public final class Currency implements Serializable

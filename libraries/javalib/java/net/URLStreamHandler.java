@@ -38,8 +38,8 @@ exception statement from your version. */
 
 package java.net;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 
 /*
  * Written using on-line Java Platform 1.2 API Specification, as well

@@ -16,6 +16,7 @@ import java.io.EOFException;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import kaffe.util.UTF8;
 
 class ProcessInputStream extends FilterInputStream implements DataInput {

@@ -26,24 +26,24 @@
 package	org.tritonus.share.sampled.mixer;
 
 
-import	java.util.ArrayList;
-import	java.util.Collection;
-import	java.util.Iterator;
-import	java.util.Set;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
 
-import	javax.sound.sampled.AudioFormat;
-import	javax.sound.sampled.Clip;
-import	javax.sound.sampled.DataLine;
-import	javax.sound.sampled.Line;
-import	javax.sound.sampled.LineUnavailableException;
-import	javax.sound.sampled.Mixer;
-import	javax.sound.sampled.Port;
-import	javax.sound.sampled.SourceDataLine;
-import	javax.sound.sampled.TargetDataLine;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.Mixer;
+import javax.sound.sampled.Port;
+import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.TargetDataLine;
 
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.sampled.AudioFormats;
-import	org.tritonus.share.ArraySet;
+import org.tritonus.share.ArraySet;
+import org.tritonus.share.TDebug;
+import org.tritonus.share.sampled.AudioFormats;
 
 
 

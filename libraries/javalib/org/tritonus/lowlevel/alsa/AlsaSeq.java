@@ -25,10 +25,9 @@
 package	org.tritonus.lowlevel.alsa;
 
 
-import	java.lang.UnsupportedOperationException;
-import	java.util.Iterator;
+import java.util.Iterator;
 
-import	org.tritonus.share.TDebug;
+import org.tritonus.share.TDebug;
 
 
 

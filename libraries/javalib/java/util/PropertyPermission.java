@@ -38,13 +38,13 @@ exception statement from your version. */
 
 package java.util;
 
-import java.security.Permission;
-import java.security.BasicPermission;
-import java.security.PermissionCollection;
-import java.io.ObjectStreamField;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.IOException;
+import java.io.ObjectStreamField;
+import java.security.BasicPermission;
+import java.security.Permission;
+import java.security.PermissionCollection;
 
 /**
  * This class represents the permission to access and modify a property.<br>

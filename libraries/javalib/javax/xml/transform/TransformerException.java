@@ -1,5 +1,5 @@
 /*
- * $Id: TransformerException.java,v 1.3 2003/12/02 21:38:02 dalibor Exp $
+ * $Id: TransformerException.java,v 1.4 2004/03/22 11:25:27 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * Copyright (C) 2001 David Brownell
  * 
@@ -28,7 +28,9 @@
 package javax.xml.transform;
 
 // Imports
-import java.io.*;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
 /**
  * Encapsulates a problem exposed during a transformation.

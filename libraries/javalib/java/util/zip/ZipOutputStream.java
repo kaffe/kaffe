@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Vector;
+
 import kaffe.util.UTF8;
 
 // Reference: ftp://ftp.uu.net/pub/archiving/zip/doc/appnote-970311-iz.zip

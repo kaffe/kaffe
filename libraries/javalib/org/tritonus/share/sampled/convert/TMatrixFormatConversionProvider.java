@@ -26,20 +26,16 @@
 package	org.tritonus.share.sampled.convert;
 
 
-import	java.util.Collection;
-import	java.util.List;
-import	java.util.Map;
-import	java.util.Set;
-import	java.util.HashMap;
-import	java.util.ArrayList;
-import	java.util.Iterator;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import	javax.sound.sampled.AudioFormat;
-import	javax.sound.sampled.AudioInputStream;
-import	javax.sound.sampled.spi.FormatConversionProvider;
+import javax.sound.sampled.AudioFormat;
 
-import	org.tritonus.share.sampled.AudioFormats;
-import	org.tritonus.share.ArraySet;
+import org.tritonus.share.ArraySet;
+import org.tritonus.share.sampled.AudioFormats;
 
 /**
  * Base class for arbitrary formatConversionProviders.

@@ -38,13 +38,13 @@ exception statement from your version. */
 
 package java.text;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Currency;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.io.ObjectInputStream;
-import java.io.IOException;
 
 /**
  * This class is a container for the symbols used by 

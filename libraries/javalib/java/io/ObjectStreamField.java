@@ -38,9 +38,10 @@ exception statement from your version. */
 
 package java.io;
 
+import gnu.java.lang.reflect.TypeSignature;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import gnu.java.lang.reflect.TypeSignature;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 

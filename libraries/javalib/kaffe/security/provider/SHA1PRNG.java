@@ -17,11 +17,11 @@
 
 package kaffe.security.provider;
 
-import kaffe.security.Randomness;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandomSpi;
+
+import kaffe.security.Randomness;
 
 /**
  * SHA-1 based pseudo-random number generator.

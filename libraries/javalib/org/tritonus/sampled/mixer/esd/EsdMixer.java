@@ -26,28 +26,23 @@
 package	org.tritonus.sampled.mixer.esd;
 
 
-import	java.util.Arrays;
-import	java.util.HashMap;
-import	java.util.Map;
-import	java.util.HashSet;
-import	java.util.Set;
-import	java.util.Iterator;
+import java.util.Arrays;
 
-import	javax.sound.sampled.AudioFormat;
-import	javax.sound.sampled.AudioSystem;
-import	javax.sound.sampled.Clip;
-import	javax.sound.sampled.DataLine;
-import	javax.sound.sampled.SourceDataLine;
-import	javax.sound.sampled.TargetDataLine;
-import	javax.sound.sampled.LineUnavailableException;
-import	javax.sound.sampled.Line;
-import	javax.sound.sampled.Mixer;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.Mixer;
+import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.TargetDataLine;
 
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.sampled.mixer.TMixer;
-import	org.tritonus.share.sampled.mixer.TMixerInfo;
-import	org.tritonus.share.sampled.mixer.TSoftClip;
-import	org.tritonus.share.GlobalInfo;
+import org.tritonus.share.GlobalInfo;
+import org.tritonus.share.TDebug;
+import org.tritonus.share.sampled.mixer.TMixer;
+import org.tritonus.share.sampled.mixer.TMixerInfo;
+import org.tritonus.share.sampled.mixer.TSoftClip;
 
 
 

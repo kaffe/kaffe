@@ -37,13 +37,10 @@ exception statement from your version. */
 
 package java.rmi.server;
 
-import java.io.Serializable;
-import java.io.DataOutput;
 import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
-import java.util.Random;
-import java.lang.Thread;
-import java.lang.InterruptedException;
+import java.io.Serializable;
 
 public final class UID
 	implements Serializable {

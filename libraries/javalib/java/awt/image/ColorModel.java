@@ -37,10 +37,11 @@ exception statement from your version. */
 
 package java.awt.image;
 
+import gnu.java.awt.Buffers;
+
 import java.awt.Point;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
-import gnu.java.awt.Buffers;
 
 /**
  * A color model operates with colors in several formats:

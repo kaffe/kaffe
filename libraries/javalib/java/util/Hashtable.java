@@ -39,9 +39,9 @@ exception statement from your version. */
 package java.util;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 // NOTE: This implementation is very similar to that of HashMap. If you fix
 // a bug in here, chances are you should make a similar change to the HashMap

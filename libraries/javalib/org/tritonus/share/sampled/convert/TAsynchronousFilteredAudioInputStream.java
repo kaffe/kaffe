@@ -26,14 +26,13 @@
 package	org.tritonus.share.sampled.convert;
 
 
-import	java.io.ByteArrayInputStream;
-import	java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
-import	javax.sound.sampled.AudioFormat;
-import	javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioFormat;
 
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.TCircularBuffer;
+import org.tritonus.share.TCircularBuffer;
+import org.tritonus.share.TDebug;
 
 
 /** Base class for asynchronus converters.

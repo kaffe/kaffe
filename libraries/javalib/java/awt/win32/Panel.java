@@ -1,6 +1,8 @@
 package java.awt;
 
-import kaffe.util.Ptr;
+import java.awt.FlowLayout;
+import java.awt.LayoutManager;
+import java.awt.Toolkit;
 
 /**
  *

@@ -26,9 +26,9 @@
 package	org.tritonus.share.sampled.file;
 
 
-import	java.io.IOException;
+import java.io.IOException;
 
-import	javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioFormat;
 
 
 

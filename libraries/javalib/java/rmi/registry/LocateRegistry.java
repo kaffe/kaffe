@@ -37,19 +37,16 @@ exception statement from your version. */
 
 package java.rmi.registry;
 
-import java.io.IOException;
+import gnu.java.rmi.registry.RegistryImpl;
+import gnu.java.rmi.registry.RegistryImpl_Stub;
+import gnu.java.rmi.server.UnicastRef;
+
 import java.rmi.RemoteException;
+import java.rmi.server.ObjID;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.RMISocketFactory;
 import java.rmi.server.RemoteRef;
-import java.rmi.server.ObjID;
-import java.net.Socket;
-
-import gnu.java.rmi.server.UnicastRef;
-import gnu.java.rmi.server.UnicastServerRef;
-import gnu.java.rmi.registry.RegistryImpl;
-import gnu.java.rmi.registry.RegistryImpl_Stub;
 
 public final class LocateRegistry {
 

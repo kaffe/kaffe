@@ -39,6 +39,7 @@ exception statement from your version. */
 package gnu.java.net.protocol.jar;
 
 import gnu.java.net.URLParseError;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;

@@ -40,6 +40,7 @@ package java.net;
 
 import gnu.classpath.Configuration;
 import gnu.java.net.InetAddressImpl;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

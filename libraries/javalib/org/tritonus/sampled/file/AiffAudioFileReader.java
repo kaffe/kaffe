@@ -27,21 +27,19 @@
 package	org.tritonus.sampled.file;
 
 
-import	java.io.DataInputStream;
-import	java.io.File;
-import	java.io.InputStream;
-import	java.io.IOException;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
-import	javax.sound.sampled.AudioFormat;
-import	javax.sound.sampled.AudioFileFormat;
-import	javax.sound.sampled.AudioInputStream;
-import	javax.sound.sampled.AudioSystem;
-import	javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
-import	org.tritonus.share.sampled.file.TAudioFileFormat;
-import	org.tritonus.share.sampled.file.TAudioFileReader;
-import	org.tritonus.share.sampled.Encodings;
-import	org.tritonus.share.TDebug;
+import org.tritonus.share.TDebug;
+import org.tritonus.share.sampled.Encodings;
+import org.tritonus.share.sampled.file.TAudioFileFormat;
+import org.tritonus.share.sampled.file.TAudioFileReader;
 
 
 /** Class for reading AIFF and AIFF-C files.

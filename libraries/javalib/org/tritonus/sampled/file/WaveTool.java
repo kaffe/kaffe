@@ -26,10 +26,10 @@
 package	org.tritonus.sampled.file;
 
 
-import	javax.sound.sampled.AudioSystem;
-import	javax.sound.sampled.AudioFormat;
-import	javax.sound.sampled.AudioFileFormat;
-import	org.tritonus.share.sampled.Encodings;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+
+import org.tritonus.share.sampled.Encodings;
 
 /**
  * Common constants and methods for handling wave files.

@@ -26,7 +26,7 @@
 package	org.tritonus.share.sampled.mixer;
 
 
-import	javax.sound.sampled.CompoundControl;
+import javax.sound.sampled.CompoundControl;
 
 
 

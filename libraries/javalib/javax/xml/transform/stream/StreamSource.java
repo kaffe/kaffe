@@ -1,5 +1,5 @@
 /*
- * $Id: StreamSource.java,v 1.2 2003/12/02 21:38:05 dalibor Exp $
+ * $Id: StreamSource.java,v 1.3 2004/03/22 11:25:29 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * Copyright (C) 2001 David Brownell
  * 
@@ -27,10 +27,11 @@
  */
 package javax.xml.transform.stream;
 
-import java.io.InputStream;
-import java.io.Reader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+
 import javax.xml.transform.Source;
 
 

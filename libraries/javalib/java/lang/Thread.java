@@ -10,9 +10,9 @@
 
 package java.lang;
 
+import java.security.AccessController;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.security.AccessController;
 
 public class Thread
   implements Runnable {

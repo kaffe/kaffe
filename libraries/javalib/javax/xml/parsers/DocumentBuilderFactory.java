@@ -1,5 +1,5 @@
 /*
- * $Id: DocumentBuilderFactory.java,v 1.3 2003/12/02 21:38:01 dalibor Exp $
+ * $Id: DocumentBuilderFactory.java,v 1.4 2004/03/22 11:25:27 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * Copyright (C) 2001 David Brownell
  * 
@@ -29,21 +29,13 @@
 package javax.xml.parsers;
 
 // Imports
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.Properties;
-import org.w3c.dom.*;
-import org.xml.sax.*;
 
 /**
  * DocumentBuilderFactory is used to resolve the problem that the
  * W3C DOM APIs don't include portable bootstrapping.
  *
  * @author	Andrew Selkirk, David Brownell
- * @version	$Id: DocumentBuilderFactory.java,v 1.3 2003/12/02 21:38:01 dalibor Exp $
+ * @version	$Id: DocumentBuilderFactory.java,v 1.4 2004/03/22 11:25:27 dalibor Exp $
  */
 public abstract class DocumentBuilderFactory {
 

@@ -26,26 +26,24 @@
 package	org.tritonus.share.sampled.file;
 
 
-import	java.io.File;
-import	java.io.FileOutputStream;
-import	java.io.InputStream;
-import	java.io.IOException;
-import	java.io.OutputStream;
-import	java.util.Collection;
-import	java.util.Iterator;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Collection;
+import java.util.Iterator;
 
-import	javax.sound.sampled.AudioFormat;
-import	javax.sound.sampled.AudioFileFormat;
-import	javax.sound.sampled.AudioInputStream;
-import	javax.sound.sampled.AudioSystem;
-import	javax.sound.sampled.spi.AudioFileWriter;
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.spi.AudioFileWriter;
 
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.sampled.AudioFormats;
-import	org.tritonus.share.sampled.AudioUtils;
-import	org.tritonus.share.sampled.TConversionTool;
-import	org.tritonus.share.sampled.Encodings;
-import	org.tritonus.share.ArraySet;
+import org.tritonus.share.ArraySet;
+import org.tritonus.share.TDebug;
+import org.tritonus.share.sampled.AudioFormats;
+import org.tritonus.share.sampled.AudioUtils;
+import org.tritonus.share.sampled.Encodings;
+import org.tritonus.share.sampled.TConversionTool;
 
 /**
  * Common base class for implementing classes of AudioFileWriter.

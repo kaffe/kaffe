@@ -22,17 +22,10 @@
 
 package	org.tritonus.share.sampled;
 
-import	java.util.ArrayList;
-import	java.util.Iterator;
-import	java.util.Random;
+import java.util.ArrayList;
+import java.util.Random;
 
-import	javax.sound.sampled.AudioSystem;
-import	javax.sound.sampled.AudioFormat;
-import	javax.sound.sampled.AudioFileFormat;
-import	javax.sound.sampled.AudioInputStream;
-import	javax.sound.sampled.spi.AudioFileWriter;
-
-import	org.tritonus.share.TDebug;
+import javax.sound.sampled.AudioFormat;
 
 /**
  * A class for small buffers of samples in linear, 32-bit

@@ -12,6 +12,7 @@
 package kaffe.io;
 
 import java.io.UnsupportedEncodingException;
+
 import kaffe.util.Ptr;
 
 public class ByteToCharIconv extends ByteToCharConverter {

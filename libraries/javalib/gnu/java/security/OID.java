@@ -38,14 +38,12 @@ exception statement from your version. */
 
 package gnu.java.security;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.IOException;
-
-import java.util.StringTokenizer;
-
 import gnu.java.security.der.DEREncodingException;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.StringTokenizer;
 
 /**
  * This immutable class represents an object identifier, or OID.

@@ -37,9 +37,9 @@ exception statement from your version. */
 
 package java.util.zip;
 
-import java.io.InputStream;
-import java.io.IOException;
 import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * This filter stream is used to decompress a "GZIP" format stream. 

@@ -26,7 +26,6 @@
 package	org.tritonus.lowlevel.esd;
 
 
-import	java.io.IOException;
 
 
 public class EsdSample

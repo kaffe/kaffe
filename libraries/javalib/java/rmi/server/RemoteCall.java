@@ -37,10 +37,9 @@ exception statement from your version. */
 
 package java.rmi.server;
 
-import java.lang.Exception;
 import java.io.IOException;
-import java.io.ObjectOutput;
 import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.StreamCorruptedException;
 
 /**

@@ -1,5 +1,7 @@
 package java.awt;
 
+import java.awt.Toolkit;
+
 
 /**
  * Canvas - 

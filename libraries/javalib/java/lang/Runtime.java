@@ -11,14 +11,13 @@
 package java.lang;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.FileNotFoundException;
-
+import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.Enumeration;
 
 import kaffe.lang.ThreadStack;
 

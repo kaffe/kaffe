@@ -38,16 +38,18 @@ exception statement from your version. */
 
 package gnu.javax.rmi.CORBA;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.RMIClassLoader;
-import java.net.MalformedURLException;
-import java.io.*;
-//import org.omg.CORBA.ORB;
-//import org.omg.CORBA.SystemException;
-//import org.omg.CORBA.portable.InputStream;
-//import org.omg.CORBA.portable.OutputStream;
-import javax.rmi.CORBA.*;
+
+import javax.rmi.CORBA.Stub;
+import javax.rmi.CORBA.SystemException;
+import javax.rmi.CORBA.Tie;
+import javax.rmi.CORBA.UtilDelegate;
+import javax.rmi.CORBA.ValueHandler;
 
 public class UtilDelegateImpl
   implements UtilDelegate

@@ -26,9 +26,12 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.*;
-import org.w3c.dom.events.*;
-import org.w3c.dom.views.AbstractView;		// used by UIEvent
+import org.w3c.dom.Node;
+import org.w3c.dom.events.Event;
+import org.w3c.dom.events.EventTarget;
+import org.w3c.dom.events.MutationEvent;
+import org.w3c.dom.events.UIEvent;
+import org.w3c.dom.views.AbstractView;
 
 
 /**

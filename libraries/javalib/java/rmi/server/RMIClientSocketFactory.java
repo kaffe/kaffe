@@ -37,8 +37,8 @@ exception statement from your version. */
 
 package java.rmi.server;
 
-import java.net.Socket;
 import java.io.IOException;
+import java.net.Socket;
 
 public interface RMIClientSocketFactory
 {

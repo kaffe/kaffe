@@ -1,5 +1,5 @@
 /*
- * $Id: ActiveModeDTP.java,v 1.1 2004/01/10 23:34:30 dalibor Exp $
+ * $Id: ActiveModeDTP.java,v 1.2 2004/03/22 11:24:07 dalibor Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -27,8 +27,8 @@
 
 package gnu.inet.ftp;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -40,7 +40,7 @@ import java.net.Socket;
  * connection. It converts the socket input into a file stream for reading.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/01/10 23:34:30 $
+ * @version $Revision: 1.2 $ $Date: 2004/03/22 11:24:07 $
  */
 final class ActiveModeDTP implements DTP, Runnable
 {

@@ -1,6 +1,11 @@
 package java.awt;
 
-import java.awt.event.KeyEvent;
+import java.awt.MenuComponent;
+import java.awt.MenuContainer;
+import java.awt.MenuItem;
+import java.awt.MenuShortcut;
+import java.awt.PopupMenu;
+import java.awt.Toolkit;
 import java.util.Vector;
 
 /**

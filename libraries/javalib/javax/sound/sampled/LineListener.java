@@ -25,7 +25,7 @@
 
 package	javax.sound.sampled;
 
-import	java.util.EventListener;
+import java.util.EventListener;
 
 
 

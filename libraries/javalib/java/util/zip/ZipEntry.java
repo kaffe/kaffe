@@ -10,8 +10,8 @@
 
 package java.util.zip;
 
-import java.util.Date;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class ZipEntry implements Cloneable, ZipConstants {

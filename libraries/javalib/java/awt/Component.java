@@ -24,7 +24,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Locale;
-import java.util.Vector;
+
 import kaffe.util.Ptr;
 
 /**

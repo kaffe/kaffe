@@ -26,7 +26,7 @@
 package	javax.sound.midi.spi;
 
 
-import	javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiDevice;
 
 
 

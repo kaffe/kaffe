@@ -38,17 +38,17 @@ exception statement from your version. */
 
 package java.io;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.security.PrivilegedAction;
-import java.security.AccessController;
-import java.util.Hashtable;
-
+import gnu.classpath.Configuration;
 import gnu.java.io.ObjectIdentityWrapper;
 import gnu.java.lang.reflect.TypeSignature;
-import gnu.classpath.Configuration;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.Hashtable;
 
 /**
  * An <code>ObjectOutputStream</code> can be used to write objects

@@ -25,9 +25,9 @@
 
 package	org.tritonus.share.sampled;
 
-import	javax.sound.sampled.AudioFileFormat;
-import	org.tritonus.share.StringHashedSet;
-import	org.tritonus.share.TDebug;
+import javax.sound.sampled.AudioFileFormat;
+
+import org.tritonus.share.StringHashedSet;
 
 /**
  * This class is a proposal for generic handling of audio file format types.

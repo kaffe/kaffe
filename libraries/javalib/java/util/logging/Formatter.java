@@ -43,8 +43,8 @@ exception statement from your version.
 
 package java.util.logging;
 
-import java.util.ResourceBundle;
 import java.text.MessageFormat;
+import java.util.ResourceBundle;
 
 /**
  * A <code>Formatter</code> supports handlers by localizing

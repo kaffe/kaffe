@@ -26,14 +26,13 @@
 package	javax.sound.midi.spi;
 
 
-import	java.io.File;
-import	java.io.InputStream;
-import	java.io.IOException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
-import	java.net.URL;
-
-import	javax.sound.midi.Soundbank;
-import	javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.Soundbank;
 
 
 

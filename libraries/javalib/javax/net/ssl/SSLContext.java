@@ -40,7 +40,6 @@ version.  */
 package javax.net.ssl;
 
 import java.lang.reflect.InvocationTargetException;
-
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;

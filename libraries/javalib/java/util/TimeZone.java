@@ -38,8 +38,9 @@ exception statement from your version. */
 
 
 package java.util;
-import java.text.DateFormatSymbols;
 import gnu.classpath.Configuration;
+
+import java.text.DateFormatSymbols;
 
 /**
  * This class represents a time zone offset and handles daylight savings.

@@ -1,5 +1,10 @@
 package java.awt;
 
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.TextComponent;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 
 /**

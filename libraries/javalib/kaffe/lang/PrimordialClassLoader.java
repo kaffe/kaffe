@@ -11,11 +11,10 @@
 package kaffe.lang;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.ProtectionDomain;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Map;
@@ -23,9 +22,6 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.jar.JarFile;
-import java.util.jar.Attributes;
-import java.security.ProtectionDomain;
 
 /**
  * Java-level access to the primordial class loader.

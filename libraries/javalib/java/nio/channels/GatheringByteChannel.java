@@ -37,8 +37,8 @@ exception statement from your version. */
 
 package java.nio.channels;
 
-import java.nio.ByteBuffer;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public interface GatheringByteChannel
   extends WritableByteChannel

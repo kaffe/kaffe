@@ -38,16 +38,14 @@ exception statement from your version. */
 
 package javax.rmi.CORBA;
 
+import gnu.javax.rmi.CORBA.DelegateFactory;
+import gnu.javax.rmi.CORBA.GetDelegateInstanceException;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.rmi.RemoteException;
-//import org.omg.CORBA.ORB;
-//import org.omg.CORBA_2_3.portable.ObjectImpl;
-//import org.omg.CORBA.portable.ObjectImpl;
-import gnu.javax.rmi.CORBA.DelegateFactory;
-import gnu.javax.rmi.CORBA.GetDelegateInstanceException;
 
 public abstract class Stub extends ObjectImpl
   implements Serializable

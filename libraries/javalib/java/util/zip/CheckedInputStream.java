@@ -38,8 +38,8 @@ exception statement from your version. */
 package java.util.zip;
 
 import java.io.FilterInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /* Written using on-line Java Platform 1.2 API Specification
  * and JCL book.

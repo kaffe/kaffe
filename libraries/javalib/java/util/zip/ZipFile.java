@@ -10,12 +10,13 @@
 
 package java.util.zip;
 
-import java.io.File;
-import java.io.InputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Vector;
+
 import kaffe.util.Ptr;
 
 public class ZipFile implements ZipConstants {

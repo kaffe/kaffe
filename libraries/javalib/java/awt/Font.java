@@ -1,10 +1,11 @@
 package java.awt;
 
-import java.awt.font.GlyphVector;
 import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
 import java.awt.peer.FontPeer;
 import java.io.Serializable;
 import java.text.CharacterIterator;
+
 import kaffe.util.Ptr;
 
 /**

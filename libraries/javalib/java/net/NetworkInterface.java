@@ -38,9 +38,10 @@ exception statement from your version. */
 package java.net;
 
 import gnu.classpath.Configuration;
+
 import java.util.Enumeration;
-import java.util.Vector;
 import java.util.Hashtable;
+import java.util.Vector;
 
 /**
  * This class models a network interface on the host computer.  A network

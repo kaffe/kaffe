@@ -26,9 +26,9 @@
 package	org.tritonus.share;
 
 
-import	java.util.ArrayList;
-import	java.util.Collection;
-import	java.util.Set;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Set;
 
 
 

@@ -37,10 +37,10 @@ exception statement from your version. */
 
 package java.rmi.activation;
 
-import java.rmi.server.UnicastRemoteObject;
-import java.rmi.RemoteException;
-import java.rmi.Remote;
 import java.rmi.MarshalledObject;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
 public abstract class ActivationGroup
 	extends UnicastRemoteObject

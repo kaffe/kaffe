@@ -38,7 +38,6 @@ exception statement from your version. */
 package java.rmi.dgc;
 
 import java.io.Serializable;
-import java.rmi.dgc.VMID;
 
 public final class Lease
 	implements Serializable {

@@ -42,10 +42,9 @@ exception statement from your version.
 
 package java.util.logging;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ResourceBundle;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 
 /**
  * An <code>XMLFormatter</code> formats LogRecords into

@@ -14,6 +14,7 @@ package kaffe.util.log;
 
 import java.io.OutputStream;
 import java.util.Vector;
+
 import kaffe.util.DoubleLinkedObject;
 
 public class LogStream

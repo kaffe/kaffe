@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package javax.naming;
 
-import java.io.Serializable;
 
 /**
  * @author Tom Tromey <tromey@redhat.com>

@@ -13,10 +13,10 @@
 
 package kaffe.tools.jar;
 
-import java.io.FileReader;
-import java.io.FileNotFoundException;
 import java.io.File;
 import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 public class XPFileReader extends FileReader {
 

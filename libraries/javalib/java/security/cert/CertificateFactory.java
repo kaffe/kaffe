@@ -38,18 +38,16 @@ exception statement from your version. */
 
 package java.security.cert;
 
+import gnu.java.security.Engine;
+
+import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Provider;
 import java.security.Security;
-
-import java.io.InputStream;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import gnu.java.security.Engine;
 
 /**
  * This class implements the CertificateFactory class interface used to

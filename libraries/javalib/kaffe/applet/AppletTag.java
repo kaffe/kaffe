@@ -11,13 +11,13 @@ package kaffe.applet;
  */
 
 import java.awt.Dimension;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StreamTokenizer;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Hashtable;
 import java.util.Vector;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 public class AppletTag {
     private Hashtable paramDict = new Hashtable();

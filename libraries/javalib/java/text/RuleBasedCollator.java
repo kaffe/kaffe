@@ -37,7 +37,6 @@ exception statement from your version. */
 
 package java.text;
 
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Vector;

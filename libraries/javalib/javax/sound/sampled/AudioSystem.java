@@ -23,27 +23,26 @@
 package	javax.sound.sampled;
 
 
-import	java.io.BufferedInputStream;
-import	java.io.File;
-import	java.io.InputStream;
-import	java.io.IOException;
-import	java.io.OutputStream;
-import	java.net.URL;
-import	java.util.Arrays;
-import	java.util.Collection;
-import	java.util.ArrayList;
-import	java.util.HashSet;
-import	java.util.Set;
-import	java.util.Iterator;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
-import	javax.sound.sampled.spi.AudioFileReader;
-import	javax.sound.sampled.spi.AudioFileWriter;
-import	javax.sound.sampled.spi.FormatConversionProvider;
-import	javax.sound.sampled.spi.MixerProvider;
+import javax.sound.sampled.spi.AudioFileReader;
+import javax.sound.sampled.spi.AudioFileWriter;
+import javax.sound.sampled.spi.FormatConversionProvider;
+import javax.sound.sampled.spi.MixerProvider;
 
-import	org.tritonus.core.TAudioConfig;
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.ArraySet;
+import org.tritonus.core.TAudioConfig;
+import org.tritonus.share.ArraySet;
+import org.tritonus.share.TDebug;
 
 
 public class AudioSystem

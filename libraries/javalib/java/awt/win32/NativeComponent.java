@@ -1,7 +1,16 @@
 package java.awt;
 
-import java.awt.event.*;
-import java.awt.peer.ComponentPeer;
+import java.awt.AWTError;
+import java.awt.AWTEvent;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+
 import kaffe.util.Ptr;
 
 /**

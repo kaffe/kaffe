@@ -39,14 +39,13 @@ exception statement from your version. */
 package javax.naming;
 
 import java.applet.Applet;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
+
 import javax.naming.spi.NamingManager;
 
 public class InitialContext implements Context

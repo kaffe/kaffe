@@ -22,9 +22,9 @@
 
 package	org.tritonus.share;
 
-import	java.io.PrintStream;
-import  java.util.StringTokenizer;
-import  java.security.AccessControlException;
+import java.io.PrintStream;
+import java.security.AccessControlException;
+import java.util.StringTokenizer;
 
 
 

@@ -39,6 +39,7 @@ exception statement from your version. */
 package javax.sql;
 
 import java.sql.SQLException;
+
 import javax.transaction.xa.XAResource;
 
 /**

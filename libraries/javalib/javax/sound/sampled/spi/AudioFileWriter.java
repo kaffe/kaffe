@@ -26,13 +26,12 @@
 package	javax.sound.sampled.spi;
 
 
-import	java.io.File;
-import	java.io.InputStream;
-import	java.io.IOException;
-import	java.io.OutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 
-import	javax.sound.sampled.AudioFileFormat;
-import	javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioInputStream;
 
 
 

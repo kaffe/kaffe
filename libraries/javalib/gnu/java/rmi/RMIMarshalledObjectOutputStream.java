@@ -38,16 +38,12 @@ exception statement from your version. */
 
 package gnu.java.rmi;
 
-import java.io.OutputStream;
-import java.io.ObjectOutputStream;
+import gnu.java.rmi.server.RMIObjectOutputStream;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.rmi.Remote;
-import java.rmi.server.ObjID;
-import java.rmi.server.RemoteStub;
-
-import gnu.java.rmi.server.RMIObjectOutputStream;
-import gnu.java.rmi.server.UnicastServerRef;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 
 /**
  * This class is only for java.rmi.MarshalledObject to serialize object and 

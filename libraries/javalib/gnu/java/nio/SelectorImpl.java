@@ -37,6 +37,8 @@ exception statement from your version. */
 
 package gnu.java.nio;
 
+import gnu.classpath.Configuration;
+
 import java.io.IOException;
 import java.nio.channels.ClosedSelectorException;
 import java.nio.channels.SelectableChannel;
@@ -49,7 +51,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import gnu.classpath.Configuration;
 
 public class SelectorImpl extends AbstractSelector
 {

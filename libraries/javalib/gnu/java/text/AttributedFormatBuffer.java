@@ -36,11 +36,9 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 package gnu.java.text;
 
+import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.lang.StringBuffer;
-import java.util.Iterator;
-import java.text.AttributedCharacterIterator;
 
 public class AttributedFormatBuffer implements FormatBuffer
 {

@@ -1,8 +1,16 @@
 package java.awt;
 
+import java.awt.AWTEvent;
+import java.awt.AWTEventMulticaster;
+import java.awt.ItemSelectable;
+import java.awt.Menu;
+import java.awt.MenuItem;
+import java.awt.MenuShortcut;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+
 import kaffe.util.Ptr;
 
 /**

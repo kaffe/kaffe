@@ -37,22 +37,18 @@ exception statement from your version. */
 
 package gnu.java.rmi.server;
 
-import java.io.DataInputStream;
+import gnu.java.rmi.dgc.DGCImpl;
+
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.Hashtable;
-import java.net.UnknownHostException;
-import java.rmi.Remote;
-import java.rmi.server.ObjID;
-import java.rmi.server.UnicastRemoteObject;
-import java.rmi.server.UID;
-import java.rmi.server.RemoteRef;
-import java.rmi.RemoteException;
 import java.rmi.NoSuchObjectException;
-import gnu.java.rmi.dgc.DGCImpl;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.server.ObjID;
+import java.rmi.server.UID;
+import java.util.Hashtable;
 
 public class UnicastServer
 	implements ProtocolConstants {

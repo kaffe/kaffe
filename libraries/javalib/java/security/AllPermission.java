@@ -37,9 +37,10 @@ exception statement from your version. */
 
 package java.security;
 
-import java.util.Enumeration;
-import java.util.Collections;
 import gnu.java.util.EmptyEnumeration;
+
+import java.util.Collections;
+import java.util.Enumeration;
 
 /**
  * This class is a permission that implies all other permissions.  Granting

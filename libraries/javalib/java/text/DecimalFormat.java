@@ -37,18 +37,16 @@ exception statement from your version. */
 
 package java.text;
 
-import java.util.Currency;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-import gnu.java.text.FormatCharacterIterator;
-import gnu.java.text.FormatBuffer;
 import gnu.java.text.AttributedFormatBuffer;
+import gnu.java.text.FormatBuffer;
+import gnu.java.text.FormatCharacterIterator;
 import gnu.java.text.StringFormatBuffer;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.Currency;
+import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * @author Tom Tromey <tromey@cygnus.com>

@@ -46,14 +46,14 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.Collections;
-import java.util.Properties;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.StringTokenizer;
-import java.lang.ref.WeakReference;
 
 /**
  * The <code>LogManager</code> maintains a hierarchical namespace

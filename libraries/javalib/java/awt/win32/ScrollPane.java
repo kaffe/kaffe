@@ -1,9 +1,16 @@
 package java.awt;
 
+import java.awt.AWTError;
+import java.awt.Adjustable;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.LayoutManager;
+import java.awt.Point;
+import java.awt.Scrollbar;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 
 /**
  * ScrollPane - widget for scrolling a child component

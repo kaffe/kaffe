@@ -41,7 +41,6 @@ package java.security.cert;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-
 import java.util.Set;
 
 /**

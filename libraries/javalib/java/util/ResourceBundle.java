@@ -12,6 +12,7 @@ package java.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+
 import kaffe.lang.ThreadStack;
 
 public abstract class ResourceBundle {

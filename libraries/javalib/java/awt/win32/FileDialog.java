@@ -1,6 +1,8 @@
 package java.awt;
 
-import kaffe.util.Ptr;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.FilenameFilter;
 

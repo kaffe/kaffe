@@ -12,8 +12,8 @@
 
 package org.w3c.dom.traversal;
 
-import org.w3c.dom.Node;
 import org.w3c.dom.DOMException;
+import org.w3c.dom.Node;
 
 /**
  * <code>TreeWalker</code> objects are used to navigate a document tree or 

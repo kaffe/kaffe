@@ -37,8 +37,8 @@ exception statement from your version. */
 
 package java.util.jar;
 
-import java.io.OutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 

@@ -37,11 +37,11 @@ exception statement from your version. */
 
 package java.rmi;
 
-import java.io.Serializable;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import gnu.java.rmi.RMIMarshalledObjectInputStream;
 import gnu.java.rmi.RMIMarshalledObjectOutputStream;
+
+import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
 
 /**
  * FIXME - doc missing

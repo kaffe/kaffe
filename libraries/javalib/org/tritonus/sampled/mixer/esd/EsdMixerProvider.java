@@ -26,12 +26,9 @@
 package	org.tritonus.sampled.mixer.esd;
 
 
-import	javax.sound.sampled.Mixer;
-import	javax.sound.sampled.spi.MixerProvider;
-
-import	org.tritonus.lowlevel.esd.Esd;
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.sampled.mixer.TMixerProvider;
+import org.tritonus.lowlevel.esd.Esd;
+import org.tritonus.share.TDebug;
+import org.tritonus.share.sampled.mixer.TMixerProvider;
 
 
 

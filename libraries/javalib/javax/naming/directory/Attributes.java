@@ -39,8 +39,7 @@ exception statement from your version. */
 package javax.naming.directory;
 
 import java.io.Serializable;
-import javax.naming.Context;
-import javax.naming.Name;
+
 import javax.naming.NamingEnumeration;
 
 /**

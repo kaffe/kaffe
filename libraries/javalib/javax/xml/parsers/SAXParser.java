@@ -1,5 +1,5 @@
 /*
- * $Id: SAXParser.java,v 1.3 2003/12/02 21:38:01 dalibor Exp $
+ * $Id: SAXParser.java,v 1.4 2004/03/22 11:25:27 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * Copyright (C) 2001 David Brownell
  * 
@@ -29,11 +29,18 @@
 package javax.xml.parsers;
 
 // Imports
-import java.io.*;
-import java.net.*;
-import org.w3c.dom.*;
-import org.xml.sax.*;
-import org.xml.sax.helpers.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.xml.sax.HandlerBase;
+import org.xml.sax.InputSource;
+import org.xml.sax.Parser;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Wraps a SAX2 (or SAX1) parser.

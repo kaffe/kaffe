@@ -40,8 +40,8 @@ package javax.naming;
 
 import java.io.Serializable;
 import java.util.Enumeration;
-import java.util.Properties;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.Vector;
 
 /**

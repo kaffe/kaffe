@@ -1,9 +1,9 @@
 package java.awt.event;
 
 import java.awt.AWTEvent;
+import java.awt.Checkbox;
 import java.awt.Event;
 import java.awt.ItemSelectable;
-import java.awt.Checkbox;
 import java.awt.List;
 
 /**

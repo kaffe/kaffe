@@ -10,9 +10,15 @@
 
 package gnu.java.net;
 
-import java.io.IOException;
 import java.io.FileDescriptor;
-import java.net.*;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocketImpl;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 /* XXX: This class should not be public!
  * It's public right now cause it's accessed from kaffe.net.

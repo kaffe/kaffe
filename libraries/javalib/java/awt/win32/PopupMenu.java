@@ -1,5 +1,9 @@
 package java.awt;
 
+import java.awt.Component;
+import java.awt.Menu;
+import java.awt.Toolkit;
+
 
 /**
  * class PopupMenu -

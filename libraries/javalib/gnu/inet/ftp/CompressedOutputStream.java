@@ -1,5 +1,5 @@
 /*
- * $Id: CompressedOutputStream.java,v 1.1 2004/01/10 23:34:31 dalibor Exp $
+ * $Id: CompressedOutputStream.java,v 1.2 2004/03/22 11:24:07 dalibor Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -27,7 +27,6 @@
 
 package gnu.inet.ftp;
 
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -35,7 +34,7 @@ import java.io.OutputStream;
  * A DTP output stream that implements the FTP compressed transfer mode.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/01/10 23:34:31 $
+ * @version $Revision: 1.2 $ $Date: 2004/03/22 11:24:07 $
  */
 class CompressedOutputStream extends DTPOutputStream
 {

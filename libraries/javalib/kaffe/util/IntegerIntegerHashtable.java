@@ -10,9 +10,9 @@
 
 package kaffe.util;
 
-import java.io.Serializable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.Serializable;
 
 /**
  * A simple hashtable using +ints as keys.

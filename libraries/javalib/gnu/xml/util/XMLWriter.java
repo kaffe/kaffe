@@ -34,9 +34,16 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Stack;
 
-import org.xml.sax.*;
-import org.xml.sax.ext.*;
-import org.xml.sax.helpers.*;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.DTDHandler;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.ext.DeclHandler;
+import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.helpers.LocatorImpl;
 
 
 /**

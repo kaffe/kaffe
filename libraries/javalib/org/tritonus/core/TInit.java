@@ -26,7 +26,6 @@ package	org.tritonus.core;
 
 import java.util.Iterator;
 
-import org.tritonus.core.Service;
 import org.tritonus.share.TDebug;
 
 

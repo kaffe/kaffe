@@ -1,5 +1,5 @@
 /*
- * $Id: DocumentBuilder.java,v 1.3 2003/12/02 21:38:01 dalibor Exp $
+ * $Id: DocumentBuilder.java,v 1.4 2004/03/22 11:25:27 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * Copyright (C) 2001 David Brownell
  * 
@@ -31,12 +31,11 @@ package javax.xml.parsers;
 // Imports
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.IOException;
-// import java.net.*;
+import java.io.InputStream;
+
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -46,7 +45,7 @@ import org.xml.sax.SAXException;
 /**
  * Uses an XML parser to construct a DOM document.
  * @author	Andrew Selkirk, David Brownell
- * @version	$Id: DocumentBuilder.java,v 1.3 2003/12/02 21:38:01 dalibor Exp $
+ * @version	$Id: DocumentBuilder.java,v 1.4 2004/03/22 11:25:27 dalibor Exp $
  */
 public abstract class DocumentBuilder
 {

@@ -38,12 +38,13 @@ exception statement from your version. */
 
 package java.text;
 
+import gnu.java.text.FormatCharacterIterator;
+
+import java.io.InvalidObjectException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Vector;
-import java.io.InvalidObjectException;
-import java.util.HashMap;
-import gnu.java.text.FormatCharacterIterator;
 
 /**
  * @author Tom Tromey <tromey@cygnus.com>

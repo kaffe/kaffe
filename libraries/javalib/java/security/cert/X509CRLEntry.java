@@ -14,9 +14,8 @@
 
 package java.security.cert;
 
-import java.util.Date;
-
 import java.math.BigInteger;
+import java.util.Date;
 
 public abstract class X509CRLEntry
     implements X509Extension

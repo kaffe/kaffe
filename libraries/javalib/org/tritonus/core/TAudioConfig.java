@@ -26,19 +26,17 @@
 package	org.tritonus.core;
 
 
-import	java.util.Set;
-import	java.util.Iterator;
+import java.util.Iterator;
+import java.util.Set;
 
-import	javax.sound.sampled.Mixer;
+import javax.sound.sampled.Mixer;
+import javax.sound.sampled.spi.AudioFileReader;
+import javax.sound.sampled.spi.AudioFileWriter;
+import javax.sound.sampled.spi.FormatConversionProvider;
+import javax.sound.sampled.spi.MixerProvider;
 
-import	javax.sound.sampled.spi.AudioFileWriter;
-import	javax.sound.sampled.spi.AudioFileReader;
-import	javax.sound.sampled.spi.FormatConversionProvider;
-import	javax.sound.sampled.spi.MixerProvider;
-
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.ArraySet;
-import	org.tritonus.core.TInit.ProviderRegistrationAction;
+import org.tritonus.core.TInit.ProviderRegistrationAction;
+import org.tritonus.share.ArraySet;
 
 
 /** TODO:

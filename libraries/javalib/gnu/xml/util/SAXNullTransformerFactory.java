@@ -26,6 +26,11 @@
 
 package gnu.xml.util;
 
+import gnu.xml.dom.Consumer;
+import gnu.xml.dom.DomDocument;
+import gnu.xml.pipeline.DomConsumer;
+import gnu.xml.pipeline.EventFilter;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -34,19 +39,33 @@ import java.net.URLConnection;
 import java.util.Hashtable;
 import java.util.Properties;
 
-import gnu.xml.dom.Consumer;
-import gnu.xml.dom.DomDocument;
-import gnu.xml.pipeline.DomConsumer;
-import gnu.xml.pipeline.EventFilter;
+import javax.xml.transform.ErrorListener;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.SourceLocator;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.URIResolver;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TemplatesHandler;
+import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.sax.*;
-import javax.xml.transform.stream.*;
-
-import org.xml.sax.*;
-import org.xml.sax.helpers.XMLReaderFactory;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLFilter;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.LocatorImpl;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 
 /**

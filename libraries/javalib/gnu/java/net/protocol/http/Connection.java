@@ -38,12 +38,14 @@ exception statement from your version. */
 
 package gnu.java.net.protocol.http;
 
+import gnu.java.net.HeaderFieldHelper;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -51,11 +53,9 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.Socket;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import gnu.java.net.HeaderFieldHelper;
 
 /**
  * This subclass of java.net.URLConnection models a URLConnection via

@@ -38,15 +38,15 @@ exception statement from your version. */
 
 package gnu.java.io;
 
+import gnu.java.io.decode.Decoder;
+import gnu.java.io.decode.KaffeDecoder;
+import gnu.java.io.encode.Encoder;
+import gnu.java.io.encode.KaffeEncoder;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Hashtable;
-import gnu.java.io.decode.*;
-import gnu.java.io.encode.*;
-
-
-import java.io.FileOutputStream;
 
 // gnu.java.io.EncodingManager that works with kaffe
 

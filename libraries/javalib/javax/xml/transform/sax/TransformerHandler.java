@@ -1,5 +1,5 @@
 /*
- * $Id: TransformerHandler.java,v 1.2 2003/12/02 21:38:04 dalibor Exp $
+ * $Id: TransformerHandler.java,v 1.3 2004/03/22 11:25:29 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * Copyright (C) 2001 David Brownell
  * 
@@ -27,11 +27,12 @@
  */
 package javax.xml.transform.sax;
 
+import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
 import org.xml.sax.ext.LexicalHandler;
-import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
 
 
 /**

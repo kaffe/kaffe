@@ -26,12 +26,12 @@
 package	javax.sound.sampled;
 
 
-import	java.util.List;
-import	java.util.Arrays;
-import	java.util.Iterator;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.sampled.AudioFormats;
+import org.tritonus.share.TDebug;
+import org.tritonus.share.sampled.AudioFormats;
 
 
 

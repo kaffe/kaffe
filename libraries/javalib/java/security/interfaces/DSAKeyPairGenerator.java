@@ -37,8 +37,8 @@ exception statement from your version. */
 
 package java.security.interfaces;
 
-import java.security.SecureRandom;
 import java.security.InvalidParameterException;
+import java.security.SecureRandom;
 
 /**
  * This interface contains methods for intializing a Digital Signature

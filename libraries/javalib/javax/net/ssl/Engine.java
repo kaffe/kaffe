@@ -40,7 +40,6 @@ package javax.net.ssl;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 

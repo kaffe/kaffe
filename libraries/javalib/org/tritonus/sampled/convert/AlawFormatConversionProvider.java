@@ -26,18 +26,17 @@
 package	org.tritonus.sampled.convert;
 
 
-import	java.util.Arrays;
+import java.util.Arrays;
 
-import	javax.sound.sampled.AudioSystem;
-import	javax.sound.sampled.AudioFormat;
-import	javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.sampled.AudioFormats;
-import	org.tritonus.share.sampled.TConversionTool;
-import	org.tritonus.share.sampled.Encodings;
-import	org.tritonus.share.sampled.convert.TEncodingFormatConversionProvider;
-import	org.tritonus.share.sampled.convert.TSynchronousFilteredAudioInputStream;
+import org.tritonus.share.sampled.AudioFormats;
+import org.tritonus.share.sampled.Encodings;
+import org.tritonus.share.sampled.TConversionTool;
+import org.tritonus.share.sampled.convert.TEncodingFormatConversionProvider;
+import org.tritonus.share.sampled.convert.TSynchronousFilteredAudioInputStream;
 
 /**
  * This provider (currently) supports these conversions:

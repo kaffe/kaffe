@@ -13,6 +13,7 @@
 package java.awt;
 
 import java.util.Hashtable;
+
 import kaffe.util.Ptr;
 
 public class FontMetrics

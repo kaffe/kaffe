@@ -38,7 +38,9 @@ exception statement from your version. */
 
 package java.nio.channels;
 
-import java.io.EOFException;
+import gnu.classpath.Configuration;
+import gnu.classpath.RawData;
+
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -47,8 +49,6 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.MappedByteBufferImpl;
-import gnu.classpath.Configuration;
-import gnu.classpath.RawData;
 
 /**
  * This file is not user visible !

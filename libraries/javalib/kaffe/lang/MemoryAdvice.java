@@ -10,8 +10,8 @@
 
 package kaffe.lang;
 
-import java.util.Vector;
 import java.util.Enumeration;
+import java.util.Vector;
 
 public class MemoryAdvice implements Runnable {
 

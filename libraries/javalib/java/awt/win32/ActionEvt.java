@@ -1,6 +1,9 @@
 package java.awt;
 
-import java.awt.event.ActionEvent;
+import java.awt.AWTEvent;
+import java.awt.Component;
+import java.awt.MenuItem;
+import java.awt.Toolkit;
 
 /**
  * class ActionEvt -

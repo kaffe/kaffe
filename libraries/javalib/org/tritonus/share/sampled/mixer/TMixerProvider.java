@@ -24,18 +24,18 @@
 package	org.tritonus.share.sampled.mixer;
 
 
-import	java.util.ArrayList;
-import	java.util.HashMap;
-import	java.util.HashSet;
-import	java.util.Iterator;
-import	java.util.List;
-import	java.util.Map;
-import	java.util.Set;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import	javax.sound.sampled.Mixer;
-import	javax.sound.sampled.spi.MixerProvider;
+import javax.sound.sampled.Mixer;
+import javax.sound.sampled.spi.MixerProvider;
 
-import	org.tritonus.share.TDebug;
+import org.tritonus.share.TDebug;
 
 
 

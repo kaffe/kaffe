@@ -1,5 +1,9 @@
 package java.awt;
 
+import java.awt.AWTEvent;
+import java.awt.AWTEventMulticaster;
+import java.awt.Cursor;
+import java.awt.Toolkit;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 

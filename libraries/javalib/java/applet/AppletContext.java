@@ -10,8 +10,8 @@
 
 package java.applet;
 
-import java.net.URL;
 import java.awt.Image;
+import java.net.URL;
 import java.util.Enumeration;
 
 public interface AppletContext {

@@ -15,9 +15,9 @@
 
 package java.security;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.FilterInputStream;
 
 public class DigestInputStream extends FilterInputStream {
 	protected MessageDigest digest;

@@ -14,15 +14,13 @@
 
 package java.security;
 
-import java.util.Date;
-import java.util.Enumeration;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.util.Date;
+import java.util.Enumeration;
 
 public class KeyStore
 {

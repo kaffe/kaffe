@@ -39,8 +39,8 @@ exception statement from your version. */
 
 package java.util;
 
-import java.lang.ref.WeakReference;
 import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
 
 /**
  * A weak hash map has only weak references to the key. This means that it

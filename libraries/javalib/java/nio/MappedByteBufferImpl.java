@@ -38,9 +38,10 @@ exception statement from your version. */
 
 package java.nio;
 
+import gnu.classpath.RawData;
+
 import java.io.IOException;
 import java.nio.channels.FileChannelImpl;
-import gnu.classpath.RawData;
 
 public class MappedByteBufferImpl extends MappedByteBuffer
 {

@@ -39,14 +39,15 @@ exception statement from your version. */
 
 package java.io;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URI;
 import gnu.classpath.Configuration;
 import gnu.java.io.PlatformHelper;
-import java.util.LinkedList;
+
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 /* Written using "Java Class Libraries", 2nd edition, ISBN 0-201-31002-3
  * "The Java Language Specification", ISBN 0-201-63451-1

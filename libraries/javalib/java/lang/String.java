@@ -16,7 +16,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+
 import kaffe.io.ByteToCharConverter;
 import kaffe.io.CharToByteConverter;
 

@@ -1,6 +1,7 @@
 package java.awt;
 
 import java.awt.image.ImageObserver;
+
 import kaffe.util.Ptr;
 
 /**

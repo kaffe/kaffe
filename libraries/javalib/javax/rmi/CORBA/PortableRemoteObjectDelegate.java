@@ -38,7 +38,9 @@ exception statement from your version. */
 
 package javax.rmi.CORBA;
 
-import java.rmi.*;
+import java.rmi.NoSuchObjectException;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  * A delegate is a singleton class that support delegation for method

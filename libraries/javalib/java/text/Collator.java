@@ -38,10 +38,10 @@ exception statement from your version. */
 
 package java.text;
 
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.Comparator;
 
 /**
  * This class is the abstract superclass of classes which perform 

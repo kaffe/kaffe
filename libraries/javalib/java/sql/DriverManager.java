@@ -41,8 +41,8 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.util.Vector;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
   * This class manages the JDBC drivers in the system. It maintains a

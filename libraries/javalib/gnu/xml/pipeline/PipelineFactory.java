@@ -34,8 +34,10 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Constructor;
 import java.util.StringTokenizer;
 
-import org.xml.sax.*;
-import org.xml.sax.ext.*;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.DTDHandler;
+import org.xml.sax.ext.DeclHandler;
+import org.xml.sax.ext.LexicalHandler;
 
 
 /**

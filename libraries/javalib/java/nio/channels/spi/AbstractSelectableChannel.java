@@ -43,7 +43,6 @@ import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.ListIterator;
 
 public abstract class AbstractSelectableChannel extends SelectableChannel

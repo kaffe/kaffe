@@ -25,14 +25,12 @@
 
 package	org.tritonus.share.sampled;
 
-import	java.util.ArrayList;
-import	java.util.Collection;
-import	java.util.Iterator;
+import java.util.Collection;
+import java.util.Iterator;
 
-import	javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioFormat;
 
-import	org.tritonus.share.ArraySet;
-import	org.tritonus.share.sampled.AudioFormats;
+import org.tritonus.share.ArraySet;
 
 /**
  * A set where the elements are uniquely referenced by

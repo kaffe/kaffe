@@ -25,10 +25,10 @@
 
 package	javax.sound.sampled;
 
-import	java.util.Collection;
-import	java.util.Arrays;
+import java.util.Arrays;
+import java.util.Collection;
 
-import	org.tritonus.share.TDebug;
+import org.tritonus.share.TDebug;
 
 
 

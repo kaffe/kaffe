@@ -12,8 +12,8 @@
 
 package org.w3c.dom.css;
 
-import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.DOMException;
+import org.w3c.dom.DOMImplementation;
 
 /**
  *  This interface allows the DOM user to create a <code>CSSStyleSheet</code> 

@@ -1,5 +1,5 @@
 /*
- * $Id: SAXTransformerFactory.java,v 1.2 2003/12/02 21:38:04 dalibor Exp $
+ * $Id: SAXTransformerFactory.java,v 1.3 2004/03/22 11:25:29 dalibor Exp $
  * Copyright (C) 2001 Andrew Selkirk
  * Copyright (C) 2001 David Brownell
  * 
@@ -28,14 +28,12 @@
 package javax.xml.transform.sax;
 
 // Imports
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLFilter;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+
+import org.xml.sax.XMLFilter;
 
 /**
  * A TransformerFactory that supports several separate modes for

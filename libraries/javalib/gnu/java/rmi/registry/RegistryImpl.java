@@ -37,21 +37,22 @@ exception statement from your version. */
 
 package gnu.java.rmi.registry;
 
-import java.rmi.registry.Registry;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.RemoteException;
-import java.rmi.NotBoundException;
+import gnu.java.rmi.server.UnicastServerRef;
+
 import java.rmi.AccessException;
 import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
-import java.rmi.server.UnicastRemoteObject;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.ObjID;
-import java.util.Hashtable;
-import java.util.Enumeration;
-import java.rmi.server.RMISocketFactory;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
-import gnu.java.rmi.server.UnicastServerRef;
+import java.rmi.server.RMISocketFactory;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 public class RegistryImpl
 	extends UnicastRemoteObject implements Registry {

@@ -13,6 +13,7 @@
 package java.awt.datatransfer;
 
 import java.io.StringReader;
+
 import kaffe.awt.ExportTransferable;
 import kaffe.awt.FlavorConverter;
 import kaffe.awt.SerializerConverter;

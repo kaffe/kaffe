@@ -38,8 +38,8 @@ exception statement from your version. */
 package java.security;
 
 import java.io.Serializable;
-import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.NoSuchElementException;
 
 /**

@@ -19,9 +19,9 @@
  */
 
 package gnu.regexp;
-import java.io.Reader;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
 
 // TODO: move(x) shouldn't rely on calling next() x times
 

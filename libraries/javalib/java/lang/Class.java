@@ -12,7 +12,6 @@
 package java.lang;
 
 import java.io.InputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -23,9 +22,10 @@ import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.Vector;
-import kaffe.lang.ThreadStack;
+
 import kaffe.lang.PackageHelper;
 import kaffe.lang.PrimordialClassLoader;
+import kaffe.lang.ThreadStack;
 
 public final class Class implements Serializable {
 

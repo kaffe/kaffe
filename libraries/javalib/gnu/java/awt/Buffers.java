@@ -36,7 +36,10 @@ exception statement from your version. */
 
 package gnu.java.awt;
 
-import java.awt.image.*;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
+import java.awt.image.DataBufferUShort;
 
 /** 
  * Utility class for creating and accessing data buffers of arbitrary

@@ -22,29 +22,26 @@
 
 package	org.tritonus.midi.file;
 
-import	java.io.FileInputStream;
-import	java.io.InputStream;
-import	java.io.DataInputStream;
-import	java.io.BufferedInputStream;
-import	java.io.IOException;
-import	java.io.EOFException;
-import	java.io.File;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
-import	java.net.URL;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MetaMessage;
+import javax.sound.midi.MidiEvent;
+import javax.sound.midi.MidiFileFormat;
+import javax.sound.midi.MidiMessage;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.ShortMessage;
+import javax.sound.midi.SysexMessage;
+import javax.sound.midi.Track;
+import javax.sound.midi.spi.MidiFileReader;
 
-import	javax.sound.midi.InvalidMidiDataException;
-import	javax.sound.midi.MetaMessage;
-import	javax.sound.midi.MidiFileFormat;
-import	javax.sound.midi.MidiEvent;
-import	javax.sound.midi.MidiMessage;
-import	javax.sound.midi.Sequence;
-import	javax.sound.midi.ShortMessage;
-import	javax.sound.midi.SysexMessage;
-import	javax.sound.midi.Track;
-import	javax.sound.midi.spi.MidiFileReader;
-
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.midi.TMidiFileFormat;
+import org.tritonus.share.TDebug;
+import org.tritonus.share.midi.TMidiFileFormat;
 
 
 

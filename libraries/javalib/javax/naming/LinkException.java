@@ -38,7 +38,6 @@ exception statement from your version. */
  
 package javax.naming;
 
-import java.lang.Exception;
  
 /**
  * @author Warren Levy <warrenl@redhat.com>

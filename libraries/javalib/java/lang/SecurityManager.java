@@ -10,12 +10,12 @@
 
 package java.lang;
 
-import kaffe.lang.ThreadStack;
-
-import java.util.PropertyPermission;
 import java.io.FileDescriptor;
 import java.net.InetAddress;
 import java.security.Permission;
+import java.util.PropertyPermission;
+
+import kaffe.lang.ThreadStack;
 
 public class SecurityManager {
 

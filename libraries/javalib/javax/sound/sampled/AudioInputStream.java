@@ -26,11 +26,11 @@
 package	javax.sound.sampled;
 
 
-import	java.io.InputStream;
-import	java.io.IOException;
+import java.io.IOException;
+import java.io.InputStream;
 
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.sampled.AudioUtils;
+import org.tritonus.share.TDebug;
+import org.tritonus.share.sampled.AudioUtils;
 
 
 

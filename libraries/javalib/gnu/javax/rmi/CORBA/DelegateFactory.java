@@ -39,7 +39,6 @@ exception statement from your version. */
 package gnu.javax.rmi.CORBA;
 
 import java.util.HashMap;
-import javax.rmi.CORBA.Util;
 
 public class DelegateFactory
 {

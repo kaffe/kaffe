@@ -1,8 +1,14 @@
 package java.awt;
 
-import java.awt.event.ActionEvent;
+import java.awt.Menu;
+import java.awt.MenuComponent;
+import java.awt.MenuContainer;
+import java.awt.MenuItem;
+import java.awt.MenuShortcut;
+import java.awt.Toolkit;
 import java.util.Enumeration;
 import java.util.Vector;
+
 import kaffe.util.Ptr;
 
 /**

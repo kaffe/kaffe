@@ -10,8 +10,8 @@
 
 package kaffe.util.zip;
 
-import java.util.zip.Inflater;
 import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 
 public class SwitchInflater extends Inflater {
 

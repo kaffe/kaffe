@@ -40,11 +40,12 @@ exception statement from your version. */
 package java.net;
 
 import gnu.java.net.PlainSocketImpl;
-import java.io.InputStream;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.SocketChannel;
 import java.nio.channels.IllegalBlockingModeException;
+import java.nio.channels.SocketChannel;
 
 /* Written using on-line Java Platform 1.2 API Specification.
  * Status:  I believe all methods are implemented.

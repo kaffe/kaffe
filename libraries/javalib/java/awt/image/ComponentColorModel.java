@@ -37,9 +37,10 @@ exception statement from your version. */
 
 package java.awt.image;
 
+import gnu.java.awt.Buffers;
+
 import java.awt.Point;
 import java.awt.color.ColorSpace;
-import gnu.java.awt.Buffers;
 
 public class ComponentColorModel extends ColorModel
 {

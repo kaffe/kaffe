@@ -38,12 +38,11 @@ exception statement from your version. */
 
 package java.rmi.server;
 
-import java.rmi.RemoteException;
-import java.rmi.Remote;
-import java.rmi.server.RemoteRef;
-import java.rmi.NoSuchObjectException;
 import gnu.java.rmi.server.UnicastServerRef;
-import gnu.java.rmi.server.UnicastServer;
+
+import java.rmi.NoSuchObjectException;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 public class UnicastRemoteObject
 	extends RemoteServer {

@@ -26,7 +26,7 @@
 package	org.tritonus.midi.device.alsa;
 
 
-import	javax.sound.midi.Receiver;
+import javax.sound.midi.Receiver;
 
 
 

@@ -39,22 +39,21 @@ exception statement from your version. */
 
 package java.text;
 
+import gnu.java.text.AttributedFormatBuffer;
+import gnu.java.text.FormatBuffer;
+import gnu.java.text.FormatCharacterIterator;
+import gnu.java.text.StringFormatBuffer;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.TimeZone;
 import java.util.SimpleTimeZone;
-import java.util.Vector;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-import gnu.java.text.FormatCharacterIterator;
-import gnu.java.text.FormatBuffer;
-import gnu.java.text.AttributedFormatBuffer;
-import gnu.java.text.StringFormatBuffer;
+import java.util.TimeZone;
 
 /**
  * SimpleDateFormat provides convenient methods for parsing and formatting

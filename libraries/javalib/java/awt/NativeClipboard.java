@@ -15,6 +15,7 @@ package java.awt;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
+
 import kaffe.awt.ExportTransferable;
 import kaffe.util.Ptr;
 

@@ -42,10 +42,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-
 import java.util.StringTokenizer;
-
-import java.util.prefs.*;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 /**
  * Writes and exports preferences nodes to files

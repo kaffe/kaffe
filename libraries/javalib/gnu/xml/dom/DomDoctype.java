@@ -26,9 +26,13 @@
 
 package gnu.xml.dom;
 
-import org.w3c.dom.*;
-
 import java.util.Hashtable;
+
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.DocumentType;
+import org.w3c.dom.Entity;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Notation;
 
 
 /**

@@ -1,5 +1,5 @@
 /*
- * $Id: DTPInputStream.java,v 1.1 2004/01/10 23:34:31 dalibor Exp $
+ * $Id: DTPInputStream.java,v 1.2 2004/03/22 11:24:07 dalibor Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -28,14 +28,14 @@
 package gnu.inet.ftp;
 
 import java.io.FilterInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * An input stream that notifies a DTP on completion.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/01/10 23:34:31 $
+ * @version $Revision: 1.2 $ $Date: 2004/03/22 11:24:07 $
  */
 abstract class DTPInputStream extends FilterInputStream
 {

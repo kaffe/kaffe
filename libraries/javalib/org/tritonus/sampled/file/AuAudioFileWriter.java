@@ -27,18 +27,16 @@
 package	org.tritonus.sampled.file;
 
 
-import	java.io.IOException;
-import	java.util.Arrays;
+import java.io.IOException;
+import java.util.Arrays;
 
-import	javax.sound.sampled.AudioFileFormat;
-import	javax.sound.sampled.AudioFormat;
-import	javax.sound.sampled.AudioInputStream;
-import	javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
 
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.sampled.file.AudioOutputStream;
-import	org.tritonus.share.sampled.file.TAudioFileWriter;
-import	org.tritonus.share.sampled.file.TDataOutputStream;
+import org.tritonus.share.sampled.file.AudioOutputStream;
+import org.tritonus.share.sampled.file.TAudioFileWriter;
+import org.tritonus.share.sampled.file.TDataOutputStream;
 
 
 /**

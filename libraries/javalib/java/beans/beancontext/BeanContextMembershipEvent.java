@@ -38,8 +38,8 @@ exception statement from your version. */
 
 package java.beans.beancontext;
 
-import java.util.Collection;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 
 /**

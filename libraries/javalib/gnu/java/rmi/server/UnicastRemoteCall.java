@@ -37,21 +37,18 @@ exception statement from your version. */
 
 package gnu.java.rmi.server;
 
-import java.lang.Exception;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutput;
 import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.StreamCorruptedException;
-import java.rmi.server.RemoteCall;
-import java.rmi.RemoteException;
 import java.rmi.MarshalException;
+import java.rmi.RemoteException;
 import java.rmi.UnmarshalException;
-import java.rmi.server.UID;
 import java.rmi.server.ObjID;
-import java.rmi.server.RemoteObject;
-
+import java.rmi.server.RemoteCall;
+import java.rmi.server.UID;
 import java.util.Vector;
 
 public class UnicastRemoteCall

@@ -10,12 +10,13 @@
 
 package java.math;
 
-import java.util.Random;
-import kaffe.util.Ptr;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
-import java.io.IOException;
+import java.util.Random;
+
+import kaffe.util.Ptr;
 
 public class BigInteger extends Number implements Comparable {
 

@@ -4,6 +4,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.peer.ComponentPeer;
+
 import kaffe.util.Ptr;
 
 /**

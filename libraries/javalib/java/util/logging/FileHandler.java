@@ -41,9 +41,9 @@ exception statement from your version.
 
 package java.util.logging;
 
-import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * A <code>FileHandler</code> publishes log records to a set of log

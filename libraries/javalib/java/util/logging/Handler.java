@@ -43,7 +43,6 @@ exception statement from your version.
 package java.util.logging;
 
 import java.io.UnsupportedEncodingException;
-import java.security.AccessController;
 
 /**
  * A <code>Handler</code> publishes <code>LogRecords</code> to

@@ -42,8 +42,8 @@ exception statement from your version.
 
 package java.util.logging;
 
-import java.util.Date;
 import java.text.DateFormat;
+import java.util.Date;
 
 /**
  * A <code>SimpleFormatter</code> formats log records into

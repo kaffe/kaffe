@@ -39,8 +39,8 @@ package java.rmi;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 public final class Naming {
 

@@ -26,7 +26,7 @@
 package	org.tritonus.lowlevel.alsa;
 
 
-import	org.tritonus.share.TDebug;
+import org.tritonus.share.TDebug;
 
 
 /**	Common ALSA functions.

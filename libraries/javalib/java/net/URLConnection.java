@@ -38,8 +38,8 @@ exception statement from your version. */
 
 package java.net;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.AllPermission;
 import java.security.Permission;
@@ -47,7 +47,6 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Map;
 

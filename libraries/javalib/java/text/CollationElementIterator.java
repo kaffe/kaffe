@@ -39,9 +39,6 @@ exception statement from your version. */
 package java.text;
 
 import java.util.Vector;
-import java.util.NoSuchElementException;
-import java.util.Map;
-import java.util.SortedMap;
 
 /* Written using "Java Class Libraries", 2nd edition, plus online
  * API docs for JDK 1.2 from http://www.javasoft.com.

@@ -12,6 +12,7 @@ package gnu.java.io.decode;
 
 import java.io.IOException;
 import java.io.InputStream;
+
 import kaffe.io.ByteToCharConverter;
 
 /**

@@ -26,10 +26,10 @@
 package	javax.sound.sampled.spi;
 
 
-import	javax.sound.sampled.AudioFormat;
-import	javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 
-import	org.tritonus.share.TDebug;
+import org.tritonus.share.TDebug;
 
 
 

@@ -38,8 +38,9 @@ exception statement from your version. */
 
 package java.lang;
 
-import java.io.Serializable;
 import gnu.java.lang.CharData;
+
+import java.io.Serializable;
 
 /**
  * Wrapper class for the primitive char data type.  In addition, this class

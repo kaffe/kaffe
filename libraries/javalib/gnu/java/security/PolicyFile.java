@@ -37,23 +37,19 @@ exception statement from your version. */
 package gnu.java.security;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
-
 import java.lang.reflect.Constructor;
-import java.net.URL;
 import java.net.MalformedURLException;
-
+import java.net.URL;
 import java.security.AccessController;
 import java.security.CodeSource;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.Permission;
-import java.security.Permissions;
 import java.security.PermissionCollection;
+import java.security.Permissions;
 import java.security.Policy;
 import java.security.Principal;
 import java.security.PrivilegedActionException;
@@ -62,7 +58,6 @@ import java.security.Security;
 import java.security.UnresolvedPermission;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
-
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;

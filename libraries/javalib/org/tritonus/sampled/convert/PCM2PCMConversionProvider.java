@@ -24,21 +24,21 @@
 
 package	org.tritonus.sampled.convert;
 
-import	java.util.Arrays;
-import	java.util.Iterator;
+import java.util.Arrays;
+import java.util.Iterator;
 
-import	javax.sound.sampled.AudioSystem;
-import	javax.sound.sampled.AudioFormat;
-import	javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.sampled.AudioFormats;
-import	org.tritonus.share.sampled.TConversionTool;
-import	org.tritonus.share.sampled.FloatSampleBuffer;
-import	org.tritonus.share.sampled.Encodings;
-import	org.tritonus.share.sampled.convert.TSimpleFormatConversionProvider;
-import	org.tritonus.share.sampled.convert.TSynchronousFilteredAudioInputStream;
-import	org.tritonus.share.ArraySet;
+import org.tritonus.share.ArraySet;
+import org.tritonus.share.TDebug;
+import org.tritonus.share.sampled.AudioFormats;
+import org.tritonus.share.sampled.Encodings;
+import org.tritonus.share.sampled.FloatSampleBuffer;
+import org.tritonus.share.sampled.TConversionTool;
+import org.tritonus.share.sampled.convert.TSimpleFormatConversionProvider;
+import org.tritonus.share.sampled.convert.TSynchronousFilteredAudioInputStream;
 
 /**
  * This provider supports these PCM conversions (<--> meaning both directions):

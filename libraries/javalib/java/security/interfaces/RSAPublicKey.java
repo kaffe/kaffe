@@ -37,8 +37,8 @@ exception statement from your version. */
 
 package java.security.interfaces;
 
-import java.security.PublicKey;
 import java.math.BigInteger;
+import java.security.PublicKey;
 
 /**
  * This interface provides access to information about an RSA public key.

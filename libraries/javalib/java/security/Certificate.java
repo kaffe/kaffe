@@ -38,9 +38,9 @@ exception statement from your version. */
 
 package java.security;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
 
 /**
  * This interface models a digital certificate which verifies the

@@ -26,26 +26,21 @@
 package	org.tritonus.midi.device.alsa;
 
 
-import	java.util.ArrayList;
-import	java.util.Iterator;
-import	java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
-import	javax.sound.midi.MidiChannel;
-import	javax.sound.midi.MidiDevice;
-import	javax.sound.midi.MidiEvent;
-import	javax.sound.midi.MidiMessage;
-import	javax.sound.midi.MidiUnavailableException;
-import	javax.sound.midi.Receiver;
-import	javax.sound.midi.Transmitter;
-import	javax.sound.midi.Synthesizer;
-import	javax.sound.midi.Instrument;
-import	javax.sound.midi.Soundbank;
-import	javax.sound.midi.VoiceStatus;
-import	javax.sound.midi.Patch;
+import javax.sound.midi.Instrument;
+import javax.sound.midi.MidiChannel;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Patch;
+import javax.sound.midi.Receiver;
+import javax.sound.midi.Soundbank;
+import javax.sound.midi.Synthesizer;
+import javax.sound.midi.VoiceStatus;
 
-import	org.tritonus.share.GlobalInfo;
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.midi.TMidiDevice;
+import org.tritonus.share.GlobalInfo;
+import org.tritonus.share.TDebug;
+import org.tritonus.share.midi.TMidiDevice;
 
 
 

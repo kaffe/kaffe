@@ -24,13 +24,13 @@
 package	org.tritonus.share.sampled.file;
 
 
-import	java.io.IOException;
-import	java.util.Collection;
+import java.io.IOException;
+import java.util.Collection;
 
-import	javax.sound.sampled.AudioFileFormat;
-import	javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
 
-import	org.tritonus.share.TDebug;
+import org.tritonus.share.TDebug;
 
 
 

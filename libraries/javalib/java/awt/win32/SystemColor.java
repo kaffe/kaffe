@@ -12,6 +12,9 @@
 
 package java.awt;
 
+import java.awt.Color;
+import java.awt.Toolkit;
+
 
 final public class SystemColor
   extends Color

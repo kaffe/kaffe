@@ -23,29 +23,24 @@
 package	javax.sound.midi;
 
 
-import	java.io.File;
-import	java.io.InputStream;
-import	java.io.IOException;
-import	java.io.OutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
-import	java.net.URL;
+import javax.sound.midi.spi.MidiDeviceProvider;
+import javax.sound.midi.spi.MidiFileReader;
+import javax.sound.midi.spi.MidiFileWriter;
 
-import	java.util.ArrayList;
-import	java.util.Arrays;
-import	java.util.List;
-import	java.util.Set;
-import	java.util.Iterator;
-
-import	javax.sound.midi.InvalidMidiDataException;
-
-import	javax.sound.midi.spi.MidiDeviceProvider;
-import	javax.sound.midi.spi.MidiFileReader;
-import	javax.sound.midi.spi.MidiFileWriter;
-import	javax.sound.midi.spi.SoundbankReader;
-
-import	org.tritonus.core.TMidiConfig;
-import	org.tritonus.share.TDebug;
-import	org.tritonus.share.ArraySet;
+import org.tritonus.core.TMidiConfig;
+import org.tritonus.share.ArraySet;
+import org.tritonus.share.TDebug;
 
 
 

@@ -37,7 +37,8 @@ exception statement from your version. */
 
 package gnu.java.util.prefs;
 
-import java.util.prefs.*;
+import java.util.prefs.Preferences;
+import java.util.prefs.PreferencesFactory;
 
 /**
  * Memory based PreferencesFactory usefull for testing.

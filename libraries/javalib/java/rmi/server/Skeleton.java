@@ -38,7 +38,6 @@ exception statement from your version. */
 package java.rmi.server;
 
 import java.rmi.Remote;
-import java.rmi.server.RemoteCall;
 
 /**
  * @deprecated

@@ -1,8 +1,19 @@
 package java.awt;
 
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.Toolkit;
 import java.awt.image.ImageObserver;
+
 import kaffe.util.Ptr;
 
 /**

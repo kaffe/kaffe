@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package java.io;
 
-import java.lang.reflect.Method;
 
 final class VMObjectStreamClass
 {
