@@ -48,7 +48,7 @@ public class ZipInputStream extends InflaterInputStream
       case (int)LOCSIG:		// another entry
 	break;
       default:				// unexpected
-	throw new IOException("Bogus signature: 0x" + Integer.toHexString(sig));
+	return null;
       }
 
       // Read remainder of local header

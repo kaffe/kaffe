@@ -314,18 +314,20 @@ public class NamingManager
       icfb = builder;
   }
 
-  public static Context getContinuationContext (CannotProceedException cpe)
+  public static Context getContinuationContext (CannotProceedException ex)
     throws NamingException
   {
-    Hashtable env = cpe.getEnvironment ();
+    Hashtable env = ex.getEnvironment ();
     if (env != null)
-      env.put (CPE, cpe);
+      env.put (CPE, ex);
 
     // It is really unclear to me if this is right.
     try
       {
-	Object obj = getObjectInstance (null, cpe.getAltName (),
-					cpe.getAltNameCtx (), env);
+	Object obj = getObjectInstance (ex.getResolvedObj(),
+					ex.getAltName (),
+					ex.getAltNameCtx (), 
+					env);
 	if (obj != null)
 	  return (Context) obj;
       }
@@ -333,7 +335,10 @@ public class NamingManager
       {
       }
 
-    throw cpe;
+    // fix stack trace for re-thrown exception (message confusing otherwise)
+    ex.fillInStackTrace();
+
+    throw ex;
   }
 
   public static Object getStateToBind (Object obj, Name name,

@@ -1,5 +1,29 @@
 2003-10-24  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/util/zip/ZipInputStream.java:
+	(getNextEntry) don't throw an IOException if ZipInputStream
+	is invalid. Instead return null, like JDK 1.4.2 does.
+
+	Reported by: Markus Maier <mle@neze.de>
+
+	* javax/naming/InitialContext.java (lookup(Name)): When a
+        CannotProceedException is thrown use the ContinuationContext.
+        (lookup(String)): Likewise.
+        (close): Clear myProps and defaultInitCtx.
+
+	Patch by: Mark Wielaard <mark@klomp.org>,
+	          Julian Dolby <dolby@us.ibm.com>
+
+	Taken from GNU Classpath web patch submission form.
+
+	* libraries/javalib/javax/naming/spi/NamingManager.java:
+	(getContinuationContext) Improved readability. Fixed stack 
+	trace for re-thrown exception.
+
+	Patch by: Julian Dolby <dolby@us.ibm.com>
+
+2003-10-24  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/beans/IntrospectionIncubator.java:
 	(addMethod) Add public static methods.
 
