@@ -12,10 +12,20 @@
 #ifndef __system_h
 #define __system_h
 
-#define	kaffe_version		KAFFEVERSION
-#define	kaffe_vendor		"Transvirtual Technologies, Inc."
-#define	kaffe_vendor_url	"http://www.transvirtual.com"
-#define	kaffe_class_version	"1"
+#define	kaffe_version			KAFFEVERSION
+#define	kaffe_vendor			"Transvirtual Technologies, Inc."
+#define	kaffe_vendor_url		"http://www.transvirtual.com"
+
+#define	kaffe_vm_specification_version	"??"
+#define	kaffe_vm_specification_vendor	"??"
+#define	kaffe_vm_specification_name	"??"
+#define	kaffe_vm_version		kaffe_version
+#define	kaffe_vm_vendor			kaffe_vendor
+#define	kaffe_vm_name			"kaffe"
+#define	kaffe_specification_version	"??"
+#define	kaffe_specification_vendor	"??"
+#define	kaffe_specification_name	"??"
+#define	kaffe_class_version		"46"
 
 #if defined(unix) || defined(__BEOS__)
 #define	file_separator		"/"
