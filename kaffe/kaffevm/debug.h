@@ -117,7 +117,7 @@
  * Define the type in both debug and non-debug versions.
  */
 #if SIZEOF_LONG >= 8
-typedef long int        debugmask_t
+typedef long int        debugmask_t;
 #elif SIZEOF___INT64 == 8
 typedef __int64         debugmask_t;
 #elif SIZEOF_LONG_LONG >= 8
