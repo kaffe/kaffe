@@ -1,3 +1,8 @@
+Fri Oct 15 10:47:54 PDT 1999  Patrick A Tullmann  <tullmann@cs.utah.edu>
+
+        * libraries/clib/net/PlainDatagramSocketImpl.c: add NATIVENET
+	debugging support.
+
 Fri Oct 15 10:29:10 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/clib/awt/X/toolkit.h, configure.in: added check for
