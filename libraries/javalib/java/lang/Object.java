@@ -43,7 +43,7 @@ final public void wait() throws InterruptedException {
 final public void wait(long timeout, int nanos) throws InterruptedException {
 	/* Ignore nanos, except avoid clipping a non-zero quantity to zero */
 	if (nanos < 0 || nanos > 999999) {
-		throw new IllegalArgumentException("nanos out or range");
+		throw new IllegalArgumentException("nanos out of range");
 	}
 	if (timeout == 0 && nanos > 0) {
 		timeout++;
