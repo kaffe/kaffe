@@ -72,7 +72,7 @@ virtualMachine(methods* meth, slots* volatile arg, slots* retval, Hjava_lang_Thr
 	Hjava_lang_Object* volatile mobj;
 	vmException mjbuf;
 	accessFlags methaccflags;
-	char* str;
+	const char* str;
 
 	/* If these can be kept in registers then things will go much
 	 * better.
