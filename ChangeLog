@@ -1,5 +1,10 @@
 2004-04-24  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* config/powerpc/darwin/md.h: Implemented SIGNAL_ARGS,
+	SIGNAL_CONTEXT_POINTER, GET_SIGNAL_CONTEXT_POINTER, STACK_POINTER.
+
+2004-04-24  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* libraries/javalib/gnu/java/net/protocol/file/Handler.java, 
 	libraries/javalib/java/net/URL.java:
 	Resynced with GNU Classpath.

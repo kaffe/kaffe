@@ -21,4 +21,14 @@
 #undef SP_OFFSET
 #define SP_OFFSET	0
 
+#if defined(SA_SIGINFO)
+#define SIGNAL_ARGS(sig, sc) int sig, siginfo_t *sc
+#define SIGNAL_CONTEXT_POINTER(scp) siginfo_t *scp
+#define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)
+#define SIGNAL_PC(scp) 0
+#define STACK_POINTER(scp) ((scp)->si_addr)
+#else
+#warning Some exceptions may not work properly.
+#endif
+
 #endif
