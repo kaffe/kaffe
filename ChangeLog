@@ -1,5 +1,10 @@
 2005-02-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Use a single AC_CHECK_HEADERS macro
+	to reduce the bloat in the configure script.
+
+2005-02-08  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/scripts/javac.in,
 	kaffe/scripts/javakey.in,
 	kaffe/scripts/jdb.in,

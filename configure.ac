@@ -998,60 +998,62 @@ dnl Checks for header files.
 dnl -------------------------------------------------------------------------
 
 AC_HEADER_STDC
-AC_CHECK_HEADERS([stdarg.h])
-AC_CHECK_HEADERS([alloca.h])
+
+AC_CHECK_HEADERS([stdarg.h \
+alloca.h \
+bsd/libc.h \
+dlfcn.h \
+fcntl.h \
+features.h \
+gmp.h \
+iconv.h \
+jpeglib.h \
+kernel/OS.h \
+limits.h \
+mach-o/rld.h \
+malloc.h \
+memory.h \
+mips/cachectl.h \
+netdb.h \
+netinet/in.h \
+netinet/in_systm.h \
+netinet/tcp.h \
+png.h \
+poll.h \
+pwd.h \
+sgidefs.h \
+sigcontext.h \
+signal.h \
+stdlib.h \
+string.h \
+sys/cachectl.h \
+sys/filio.h \
+sys/ioctl.h \
+sys/mman.h \
+sys/param.h \
+sys/poll.h \
+sys/select.h \
+sys/socket.h \
+sys/stat.h \
+sys/time.h \
+sys/types.h \
+sys/utsname.h \
+sys/sysctl.h \
+sys/param.h \
+sys/signal.h \
+syslog.h \
+time.h \
+unistd.h \
+utime.h \
+wintypes.h \
+wtypes.h \
+zlib.h])
+
 dnl GNU/Linux sigcontext headers
 AC_CHECK_HEADERS([asm/sigcontext.h])
 AC_CHECK_HEADERS([asm/signal.h], [], [], [
 #include <linux/types.h>
 ])
-AC_CHECK_HEADERS([bsd/libc.h])
-AC_CHECK_HEADERS([dlfcn.h])
-AC_CHECK_HEADERS([fcntl.h])
-AC_CHECK_HEADERS([features.h])
-AC_CHECK_HEADERS([gmp.h])
-AC_CHECK_HEADERS([iconv.h])
-AC_CHECK_HEADERS([jpeglib.h])
-AC_CHECK_HEADERS([kernel/OS.h])
-AC_CHECK_HEADERS([limits.h])
-AC_CHECK_HEADERS([mach-o/rld.h])
-AC_CHECK_HEADERS([malloc.h])
-AC_CHECK_HEADERS([memory.h])
-AC_CHECK_HEADERS([mips/cachectl.h])
-AC_CHECK_HEADERS([netdb.h])
-AC_CHECK_HEADERS([netinet/in.h])
-AC_CHECK_HEADERS([netinet/in_systm.h])
-AC_CHECK_HEADERS([netinet/tcp.h])
-AC_CHECK_HEADERS([png.h])
-AC_CHECK_HEADERS([poll.h])
-AC_CHECK_HEADERS([pwd.h])
-AC_CHECK_HEADERS([sgidefs.h])
-AC_CHECK_HEADERS([sigcontext.h])
-AC_CHECK_HEADERS([signal.h])
-AC_CHECK_HEADERS([stdlib.h])
-AC_CHECK_HEADERS([string.h])
-AC_CHECK_HEADERS([sys/cachectl.h])
-AC_CHECK_HEADERS([sys/filio.h])
-AC_CHECK_HEADERS([sys/ioctl.h])
-AC_CHECK_HEADERS([sys/mman.h])
-AC_CHECK_HEADERS([sys/param.h])
-AC_CHECK_HEADERS([sys/poll.h])
-AC_CHECK_HEADERS([sys/select.h])
-AC_CHECK_HEADERS([sys/socket.h])
-AC_CHECK_HEADERS([sys/stat.h])
-AC_CHECK_HEADERS([sys/time.h])
-AC_CHECK_HEADERS([sys/types.h])
-AC_CHECK_HEADERS([sys/utsname.h])
-AC_CHECK_HEADERS([sys/sysctl.h])
-AC_CHECK_HEADERS([sys/param.h])
-AC_CHECK_HEADERS([sys/signal.h])
-AC_CHECK_HEADERS([syslog.h])
-AC_CHECK_HEADERS([time.h])
-AC_CHECK_HEADERS([unistd.h])
-AC_CHECK_HEADERS([utime.h])
-AC_CHECK_HEADERS([wintypes.h])
-AC_CHECK_HEADERS([wtypes.h])
-AC_CHECK_HEADERS([zlib.h])
 
 dnl needed for ia64
 AC_CHECK_HEADERS([ia64intrin.h])
