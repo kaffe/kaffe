@@ -1,3 +1,8 @@
+2005-01-05  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthread_exit): Fix for a deadlock which can occur on process exit.
+
 2005-01-04  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c,

@@ -1033,8 +1033,15 @@ jthread_exit ( void )
 		if ( t != cur ) {
 		  /* Mark the thread as to be killed. */
 		  t->status = THREAD_KILL;
-		  /* Send an interrupt event to the remote thread. */
-		  jthread_interrupt(t);
+		  /* Send an interrupt event to the remote thread.
+		   * We try to restrain ourself from using pthread_cancel
+		   * as it seems to cause deadlocks on some pthread
+		   * implementations.
+		   */
+		  if (t->blockState & (BS_CV|BS_CV_TO))
+		     jthread_interrupt(t);
+		  else
+		     pthread_cancel(t->tid);
 		}
 	  }
 
