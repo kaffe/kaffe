@@ -464,7 +464,12 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 
 	setupSigAltStack();
 
-	registerSignalHandler(SIGSEGV, stackOverflowDetector, false);
+#if defined(SIGSEGV)
+	registerSyncSignalHandler(SIGSEGV, stackOverflowDetector);
+#endif
+#if defined(SIGBUS)
+	registerSyncSignalHandler(SIGBUS, stackOverflowDetector);
+#endif
 	
 	if (JTHREAD_SETJMP(outOfLoop) == 0)
 	{
