@@ -45,7 +45,6 @@ package java.awt.image;
  */
 public final class BandedSampleModel extends ComponentSampleModel
 {
-  private int scanlineStride;
   private int[] bitMasks;
   private int[] bitOffsets;
   private int[] sampleSize;
