@@ -2,6 +2,17 @@
 
         Resynced with GNU Classpath
 
+	2004-02-06  Mohan Embar  <gnustuff@thisiscool.com>
+
+        * java/io/BufferedReader.java (sbuf): New field.
+        (readLine): Use String.valueOf instead of new String() as per
+        Per Bothner's suggestion. Use instance sbuf field instead of a
+        local StringBuffer instance.
+
+2004-02-24  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath
+
 	2004-02-05  Olga Rodimina <rodimina@redhat.com>
 
         * java/awt/geom/AffineTransform.java:
