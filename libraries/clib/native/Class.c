@@ -123,7 +123,7 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 			 * classname, we use the pathname as the message
 			 * of the exception  (FIXME?)
 			 */
-			if (!strcmp(einfo.mess, buf)) {
+			if (buf[0] == '[' || !strcmp(einfo.mess, buf)) {
 				SET_LANG_EXCEPTION_MESSAGE(&einfo, 
 					ClassNotFoundException, einfo.mess)
 			}
