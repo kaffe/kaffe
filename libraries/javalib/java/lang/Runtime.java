@@ -47,7 +47,7 @@ public Process exec(String command, String envp[]) throws IOException {
 	String cmdarray[]=new String[count];
 
 	for (int pos=0; pos<count; pos++) {
-		cmdarray[pos++]=tokenizer.nextToken();
+		cmdarray[pos]=tokenizer.nextToken();
 	}
 
 	return exec(cmdarray, envp);
