@@ -66,7 +66,7 @@ for f in rt.jar comm.jar pjava.jar servlet.jar tools.jar microsoft.jar kjc.jar r
     CLASSPATH="$CLASSPATH$PATHSEP$KAFFE_LIBDIR/$f"
   fi
   if test -f "$KAFFE_JRELIBDIR/$f"; then
-    CLASSPATH="$CLASSPATH$PATHSEP$KAFFE_JRELIBDIR/$f"
+    CLASSPATH="$KAFFE_JRELIBDIR/$f$PATHSEP$CLASSPATH"
   fi
 done
 case "$DIRSEP" in /) ;;

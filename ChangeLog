@@ -1,3 +1,8 @@
+2003-04-18 Daniel Bonniot <Daniel.Bonniot@inria.fr>
+
+	* kaffe/scripts/kaffe.in:
+        Always prepend kaffe's own rt.jar to CLASSPATH.
+
 2003-04-17 Tim Stack <stack@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.c:
