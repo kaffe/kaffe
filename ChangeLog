@@ -4,6 +4,19 @@
 	
 	2005-01-11  Michael Koch  <konqueror@gmx.de>
 
+	* java/awt/Robot.java,
+	java/awt/Scrollbar.java,
+	java/awt/print/PrinterJob.java,
+	javax/swing/JTable.java,
+	javax/swing/text/AbstractDocument.java:
+	Reworked import statements.
+	
+2005-01-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2005-01-11  Michael Koch  <konqueror@gmx.de>
+
 	* java/beans/XMLDecoder.java: Reworked imports, fixed class javadoc.
 	* java/io/File.java,
 	java/net/Inet4Address.java,

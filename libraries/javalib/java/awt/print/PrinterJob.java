@@ -1,5 +1,5 @@
 /* PrinterJob.java -- This job is the printer control class
-   Copyright (C) 1999, 2004  Free Software Foundation, Inc.
+   Copyright (C) 1999, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,10 +38,7 @@ exception statement from your version. */
 
 package java.awt.print;
 
-import javax.print.DocFlavor;
 import javax.print.PrintService;
-import javax.print.PrintServiceLookup;
-//import javax.print.StreamPrintServiceFactory;
 import javax.print.attribute.PrintRequestAttributeSet;
 
 /**
@@ -61,7 +58,7 @@ public abstract class PrinterJob
    */
   public static PrinterJob getPrinterJob()
   {
-  // FIXME: Need to fix this to load a default implementation instance.
+    // FIXME: Need to fix this to load a default implementation instance.
     return null;
   }
 

@@ -1,5 +1,5 @@
 /* Robot.java -- a native input event generator
-   Copyright (C) 2004 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,10 +38,11 @@ exception statement from your version. */
 
 package java.awt;
 
+import gnu.java.awt.ClasspathToolkit;
+
 import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.awt.peer.RobotPeer;
-import gnu.java.awt.ClasspathToolkit;
 
 /**
  * The Robot class is used to simulate user interaction with graphical
