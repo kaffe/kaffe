@@ -14,24 +14,56 @@ import java.io.IOException;
  */
 public class DatagramSocket
 {
-	private int localPort;
 	private DatagramSocketImpl impl;
+	static Class DatagramSocketImplClass;
 
 static {
 	System.loadLibrary("net");
+	/* set the socket implementation class to use by default */
+	DatagramSocketImplClass = PlainDatagramSocketImpl.class;
+}
+
+/**
+ * Create an unbound datagram socket with a user-specified datagram socket
+ * implementation.  Note that the subclass is responsible for setting up 
+ * the supplied implementation.
+ *
+ * This constructor is not part of Sun's API or implementation.  However,
+ * it follows the model used in java.net.Socket.  Sun's Rosanna Lee has 
+ * promised to revisit the issue in JDK 1.3.  For more information, see <a 
+ * href="http://developer.javasoft.com/developer/bugParade/bugs/4027637.html">
+ * here</a>.  Once 1.3 is published, we will change this class to obey the
+ * yet to be defined model of using user-supplied DatagramSocketImpls.
+ *
+ * @author Godmar Back <gback@cs.utah.edu>
+ */
+protected DatagramSocket(DatagramSocketImpl impl) throws SocketException {
+	this.impl = impl;
 }
 
 public DatagramSocket() throws SocketException {
-	this(0);
+	this(0, null);
 }
 
 public DatagramSocket(int port) throws SocketException {
+	this(port, null);
+}
+
+public DatagramSocket(int port, InetAddress bindAddr) throws SocketException {
 	System.getSecurityManager().checkListen(port);
 
-	impl = new PlainDatagramSocketImpl();
+	try {
+	    impl = (DatagramSocketImpl)DatagramSocketImplClass.newInstance();
+	} catch (Exception e) {
+	    // transform failure into SocketException
+	    throw new SocketException(
+		"Couldn't create DatagramSocketImpl from class " +
+		DatagramSocketImplClass.getName() + ":" + e);
+	}
 	impl.create();
-	localPort=port;
-	impl.bind(localPort, InetAddress.anyLocalAddress);
+	if (bindAddr == null)
+	    bindAddr = InetAddress.anyLocalAddress;
+	impl.bind(port, bindAddr);
 }
 
 public synchronized void close() {
@@ -67,7 +99,7 @@ protected synchronized void finalize() {
 }
 
 public int getLocalPort() {
-	return localPort;
+	return impl.getLocalPort();
 }
 
 public InetAddress getLocalAddress() {
