@@ -1,5 +1,15 @@
 2004-01-19  Dalibor Topic <robilad@kaffe.org>
 
+	* include/Makefile.am
+	[USE_COMPAT_IFADDRS]: Ignore errors from LN_S.
+
+	* include/Makefile.in:
+	Regenerated.
+
+	Reported by: Riccardo Mottola <zuse@libero.it>
+
+2004-01-19  Dalibor Topic <robilad@kaffe.org>
+
 	* Makefile.am:
 	(DIST_SUBDIRS) Added po.
 
