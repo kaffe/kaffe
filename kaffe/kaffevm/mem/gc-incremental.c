@@ -121,39 +121,10 @@ void walkMemory(void*);
 
 static void walkNull(void*, uint32);
 static void walkClass(void*, uint32);
-static void walkFields(Field*, int);
 static void walkMethods(Method*, int);
 static void walkObject(void*, uint32);
 static void walkRefArray(void*, uint32);
 #define walkPrimArray walkNull
-
-#ifdef DEBUG
-/*
- * if we are debugging, provide a bunch of fake finalizers whose only
- * purpose it is to tell us when things are about to be freed
- */
-#define F(WHAT) 				\
-static void destroy##WHAT(void *p) {		\
-DBG(FINALIZE,					\
-    dprintf("destroy%s %p\n", #WHAT, p);	\
-   )						\
-}
-
-F(Dispatch)
-F(Bytecode)
-F(Jitcode)
-F(Static)
-F(Etable)
-
-#else /* Without debugging, don't bother to run these: */
-     
-#define destroyDispatch		0
-#define destroyBytecode		0
-#define destroyJitcode		0
-#define destroyStatic		0
-#define destroyEtable		0
-
-#endif	/* DEBUG */
 
 /* Standard GC function sets */
 static gcFuncs gcFunctions[] = {
@@ -164,13 +135,13 @@ static gcFuncs gcFunctions[] = {
   { walkRefArray,     GC_OBJECT_NORMAL, 0 },  		   /* REFARRAY */
   { walkClass,        GC_OBJECT_NORMAL, destroyClass },    /* CLASSOBJECT */
   { walkObject,       finalizeObject,   0 },   		   /* FINALIZEOBJECT */
-  { walkNull,	      GC_OBJECT_NORMAL, destroyStatic },   /* STATICDATA */
-  { walkNull,	      GC_OBJECT_NORMAL, destroyBytecode }, /* BYTECODE */
-  { walkConservative, GC_OBJECT_NORMAL, destroyDispatch }, /* DISPATCHTABLE */
-  { walkConservative, GC_OBJECT_NORMAL, destroyEtable },   /* EXCEPTIONTABLE */
-  { walkConservative, GC_OBJECT_NORMAL, destroyJitcode },  /* JITCODE */
-  { walkConservative, GC_OBJECT_NORMAL, 0 },		   /* CONSTANT */
+  { walkNull,	      GC_OBJECT_FIXED,  0 }, 		   /* BYTECODE */
+  { walkNull, 	      GC_OBJECT_FIXED,  0 },   		   /* EXCEPTIONTABLE */
+  { walkNull,         GC_OBJECT_FIXED,  0 },  		   /* JITCODE */
+  { walkNull,	      GC_OBJECT_FIXED,  0 },   		   /* STATICDATA */
+  { walkNull, 	      GC_OBJECT_FIXED,  0 },		   /* CONSTANT */
   { walkNull,	      GC_OBJECT_FIXED,  0 },  		   /* FIXED */
+  { walkNull, 	      GC_OBJECT_FIXED,  0 }, 		   /* DISPATCHTABLE */
   { walkNull, 	      GC_OBJECT_FIXED,  0 },		   /* METHOD */
   { walkNull, 	      GC_OBJECT_FIXED,  0 },		   /* FIELD */
   { walkNull,	      GC_OBJECT_FIXED,  0 },		   /* UTF8CONST */
@@ -287,8 +258,9 @@ DBG(GCWALK,
 	if (size > 0) {
 		for (mem = ((int8*)base) + (size & -ALIGNMENTOF_VOIDP) - sizeof(void*); (void*)mem >= base; mem -= ALIGNMENTOF_VOIDP) {
 			void *p = *(void **)mem;
-			if (p)
+			if (p) {
 				markObject(p);
+			}
 		}
 	}
 }
@@ -405,14 +377,6 @@ walkMemory(void* mem)
 	(*gcFunctions[GC_GET_FUNCS(info, idx)].walk)(mem, GCBLOCKSIZE(info));
 }
 
-#define MARK_IFNONZERO(f, field) /* should be just MARK_OBJECT_PRECISE(f->field) */ \
-do {                                  \
-  void *mem = f->field;               \
-  if (mem) {                          \
-	  markObject(mem);            \
-  }                                   \
-} while(0)
-
 /*
  * Walk the methods of a class.
  */
@@ -422,34 +386,40 @@ walkMethods(Method* m, int nm)
 {
 	RECORD_MARKED(1, nm * sizeof(Method))		
 	while (nm-- > 0) {
-		/* This is either a block of memory for native or bytecode */
-		MARK_IFNONZERO(m, c.bcode.code);/* aka c.ncode.ncode_start */
+#if defined(TRANSLATOR)
+		/* walk the block of jitted code conservatively.
+		 * Is this really needed? 
+		 * XXX: this breaks encapsulation */
+		if (METHOD_TRANSLATED(m) && (m->accflags & ACC_NATIVE) == 0) {
+			void *mem = m->c.ncode.ncode_start;
+			if (mem != 0) {
+				uint32 len;
+				len = GCBLOCKSIZE(GCMEM2BLOCK(UTOUNIT(mem)));
+				walkConservative(mem, len);
+			}
+		}
+#endif
 		MARK_OBJECT_PRECISE(m->class);
-		MARK_IFNONZERO(m, exception_table);
+
+		/* walk exception table in order to keep resolved catch types
+		   alive */
+		if (m->exception_table != 0) {
+			jexceptionEntry* eptr = &m->exception_table->entry[0];
+			int i;
+
+			for (i = 0; i < m->exception_table->length; i++) {
+				Hjava_lang_Class* c = eptr[i].catch_type;
+				if (c != 0 && c != UNRESOLVABLE_CATCHTYPE) {
+					MARK_OBJECT_PRECISE(c);
+				}
+			}
+		}
 
 		/* NB: need to mark ncode only if it points to a trampoline */
 		if(!METHOD_TRANSLATED(m) && (m->ncode != 0)) {
-			markObject(m->ncode);
+			markObject(m->ncode);		/* XXX */
 		}
 		m++;
-	}
-}
-
-/*
- * Walk the fields of a class.
- */
-static
-void
-walkFields(Field* fld, int nf)
-{
-	RECORD_MARKED(1, nf * sizeof(Field))
-	while (nf-- > 0) {
-		if (FIELD_RESOLVED(fld)) {
-			MARK_OBJECT_PRECISE(fld->type);
-		} /* else it's an Utf8Const which is not subject to gc */
-
-		markObject(*(void**)&fld->info); /* XXX: should be MARK_OBJECT_PRECISE */
-		fld++;
 	}
 }
 
@@ -463,6 +433,8 @@ walkClass(void* base, uint32 size)
 	Hjava_lang_Class* class;
 	Field* fld;
 	int n;
+	constants* pool;
+	int idx;
 
 	RECORD_MARKED(1, size)
 
@@ -471,12 +443,41 @@ walkClass(void* base, uint32 size)
 	if (class->state >= CSTATE_PREPARED) {
 		MARK_OBJECT_PRECISE(class->superclass);
 	}
-	MARK_IFNONZERO(class, constants.data);
-	if (CLASS_FIELDS(class) != 0) {
-		walkFields(CLASS_FIELDS(class), CLASS_NFIELDS(class));
+
+	/* walk constant pool - only resolved classes and strings count */
+	pool = CLASS_CONSTANTS(class);
+	for (idx = 0; idx < pool->size; idx++) {
+		switch (pool->tags[idx]) {
+		case CONSTANT_ResolvedClass:
+			MARK_OBJECT_PRECISE(CLASS_CLASS(idx, pool));
+			break;
+		case CONSTANT_ResolvedString:
+			MARK_OBJECT_PRECISE((void*)pool->data[idx]);
+			break;
+		}
 	}
-	if (!CLASS_IS_PRIMITIVE(class)) {
-		MARK_IFNONZERO(class, dtable);
+
+	/* walk fields */
+	if (CLASS_FIELDS(class) != 0) {
+		RECORD_MARKED(1, CLASS_NFIELDS(class) * sizeof(Field));
+
+		/* walk all fields to keep their types alive */
+		fld = CLASS_FIELDS(class);
+		for (n = 0; n < CLASS_NFIELDS(class); n++) {
+			if (FIELD_RESOLVED(fld)) {
+				MARK_OBJECT_PRECISE(fld->type);
+			} /* else it's an Utf8Const that is not subject to gc */
+			fld++;
+		}
+
+		/* walk static fields that contain references */
+		fld = CLASS_SFIELDS(class);
+		for (n = 0; n < CLASS_NSFIELDS(class); n++) {
+			if (FIELD_RESOLVED(fld) && FIELD_ISREF(fld)) {
+				MARK_OBJECT_PRECISE(*(void**)FIELD_ADDRESS(fld));
+			}
+			fld++;
+		}
 	}
 
 	/* The interface table for array classes points to static memory,

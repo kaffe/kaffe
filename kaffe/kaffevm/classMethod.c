@@ -446,6 +446,7 @@ DBG(STATICINIT,
 		 * loose it now.
 		 */
 		METHOD_NATIVECODE(meth) = 0;
+		KFREE(meth->c.ncode.ncode_start);
 		meth->c.ncode.ncode_start = 0;
 		meth->c.ncode.ncode_end = 0;
 	}
@@ -1113,6 +1114,7 @@ allocStaticFields(Hjava_lang_Class* class)
 
 	/* Allocate memory required */
 	mem = gc_malloc(offset, GC_ALLOC_STATICDATA);
+	CLASS_STATICDATA(class) = mem;
 
 	/* Rewalk the fields, pointing them at the relevant memory and/or
 	 * setting any constant values.
@@ -1301,11 +1303,11 @@ buildDispatchTable(Hjava_lang_Class* class)
 	 * The itable maps the indices for each interface method to the
 	 * index in the dispatch table that corresponds to this interface
 	 * method.  If a class does not implement an interface it declared,
-	 * of if it attempts to implement it with improper methods, the second 
+	 * or if it attempts to implement it with improper methods, the second 
 	 * table will have a -1 index.  This will cause a NoSuchMethodError
 	 * to be thrown later, in soft_lookupmethod.
 	 */
-	/* don't bother if we don't implement interfaces */
+	/* don't bother if we don't implement any interfaces */
 	if (class->total_interface_len == 0) {
 		return;
 	}
@@ -1859,6 +1861,8 @@ DBG(CLASSGC,
                         utf8ConstRelease(m->signature);
                         KFREE(m->lines);
                         KFREE(m->declared_exceptions);
+                        KFREE(m->exception_table);
+                        KFREE(m->c.bcode.code);	 /* aka c.ncode.ncode_start */
 			m++;
                 }
                 KFREE(CLASS_METHODS(clazz));
@@ -1874,8 +1878,14 @@ DBG(CLASSGC,
 			break;
 		}
 	}
+	/* free constant pool */
+	if (pool->data != 0) {
+		KFREE(pool->data);
+	}
 
         /* free various other fixed things */
+        KFREE(CLASS_STATICDATA(clazz));
+        KFREE(clazz->dtable);
         KFREE(clazz->if2itable);
         KFREE(clazz->itable2dtable);
         KFREE(clazz->gc_layout);

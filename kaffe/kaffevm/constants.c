@@ -52,7 +52,6 @@ RDBG(	printf("constant_pool_count=%d\n", info->size);	)
 	/* Allocate space for tags and data */
 	pool = gc_malloc((sizeof(ConstSlot) + sizeof(u1)) * info->size, GC_ALLOC_CONSTANT);
 	tags = (u1*)&pool[info->size];
-	GC_WRITE(this, pool);
 	info->data = pool;
 	info->tags = tags;
 

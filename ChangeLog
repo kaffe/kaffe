@@ -9,7 +9,7 @@ Sun Jan  3 15:22:22 1999  Godmar Back  <gback@cs.utah.edu>
 	kaffe/kaffevm/gc.h, kaffe/kaffevm/kaffe.def,
 	kaffe/kaffevm/readClassConfig.h, kaffe/kaffevm/support.h
 	kaffe/kaffevm/utf8const.c, kaffe/kaffevm/mem/gc-incremental.[ch]
-	kaffe/kaffevm/mem/gc-mem.h:
+	kaffe/kaffevm/mem/gc-mem.h, kaffe/kaffevm/jit/machine.c:
 	- adapted class garbage collection to properly work with Archie's 
 	  utf8 reference counting.
 	- reintroduced utf8 allocation type for statistical purposes.
@@ -20,6 +20,7 @@ Sun Jan  3 15:22:22 1999  Godmar Back  <gback@cs.utah.edu>
 	- walk fields and methods of a class from within walkClass.
 	- converted more elements of classes, methods, and fields to be 
 	  either explicitly freed or at least precisely walked.
+	  Only jitcode is still walked conservatively.
 
 Sun Jan  3 11:51:52 1999  Archie Cobbs <archie@whistle.com>
 

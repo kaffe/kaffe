@@ -431,8 +431,11 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 	bytecode_processed += meth->c.bcode.codelen;
 	codeperbytecode = code_generated / bytecode_processed;
 
-	GC_WRITE(meth, code->mem);
 	SET_METHOD_NATIVECODE(meth, code->code);
+	/* Free bytecode before replacing it with native code */
+	if (meth->c.bcode.code != 0) {
+		KFREE(meth->c.bcode.code);
+	}
 	meth->c.ncode.ncode_start = code->mem;
 	meth->c.ncode.ncode_end = code->code + code->codelen;
 

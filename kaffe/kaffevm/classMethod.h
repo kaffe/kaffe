@@ -99,6 +99,9 @@ struct Hjava_lang_Class {
 	signed char		state;
 	void*			processingThread;
 	Method*			finalizer;
+
+	/* array containing static data */
+	void*			static_data;
 };
 
 #ifndef __DEFINED_CLASS
@@ -205,6 +208,9 @@ struct _classFile;
 
 /* An array containing all the static Fields. */
 #define CLASS_SFIELDS(CLASS)  ((CLASS)->fields)
+
+/* The static data of this class */
+#define CLASS_STATICDATA(CLASS)  ((CLASS)->static_data)
 
 /* An array containing all the instance (non-static) Fields. */
 #define CLASS_IFIELDS(CL)     (&(CL)->fields[CLASS_NSFIELDS(CL)])
