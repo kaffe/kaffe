@@ -1,3 +1,11 @@
+Mon Jul  6 17:43:04 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* kaffe/kaffevm/thread.[ch];locks.c;baseClasses.c:
+	  kaffe/kaffevm/systems/unix-[jthreads|internals]/*:
+	  added initialise function to threading interface to remove
+	  bogus assumptions from initialization process.  Changed
+	  locks.c to properly handle the case where currentNative==0.
+
 Sun Jul  5 15:05:25 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* libraries/clib/native/Class.c: do not report superclass for
