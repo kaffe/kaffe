@@ -33,7 +33,7 @@ if [ "$JIKES" = "" ] ; then
 	if [ -z "$JAVAC" ]; then
 		JAVAC="$JAVA at.dms.kjc.Main"
 	fi
-	CPATH="-classpath $LIBDIR${CPATH+:$CPATH}"
+	CPATH="-classpath $LIBDIR${CPATH+'@PATHSEP@'$CPATH}"
 else
 	JAVAC="$JIKES"
 	# CPATH is not needed for jikes

@@ -1,3 +1,8 @@
+Sat Oct 16 23:17:38 1999  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
+
+	* libraries/javalib/rebuildLib.in (CPATH): Use PATHSEP as
+	separator.
+
 Sat Oct 16 04:58:46 1999  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
 	* libltdl/ltdl.c (lt_dlopen): Do not search paths when the
