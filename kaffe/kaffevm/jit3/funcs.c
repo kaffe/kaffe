@@ -12,7 +12,6 @@
 #include "gtypes.h"
 #include "seq.h"
 #include "slots.h"
-#include "md.h"
 #include "registers.h"
 #include "labels.h"
 #include "basecode.h"

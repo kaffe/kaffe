@@ -145,6 +145,14 @@ extern int profFlag;
 extern Method* globalMethod;
 #endif
 
+/**
+ * Encapsulate information about the native code of a method.
+ *
+ * @field mem address of the memory allocated for the code
+ * @field memlen size of the memory
+ * @field code address of the executable code of the method
+ * @field codelen size of the executable code.
+ */
 typedef struct _nativeCodeInfo {
 	void*   mem;
 	int     memlen;

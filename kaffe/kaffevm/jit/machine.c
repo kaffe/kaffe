@@ -431,6 +431,10 @@ done3:
 	return (success);
 }
 
+#ifndef ALIGNMENT_OF_SIZE
+#define ALIGNMENT_OF_SIZE(S)	(S)
+#endif
+
 /*
  * Generate the code.
  */
@@ -457,10 +461,8 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	/* Okay, put this into malloc'ed memory */
 	constlen = nConst * sizeof(union _constpoolval);
 	/* Allocate some padding to align codebase if so desired 
-	 * NB: we assume the allocator returns at least 8-byte aligned 
-	 * addresses.   XXX: this should really be gc_memalign
 	 */  
-	methblock = gc_malloc(exc_len + constlen + CODEPC + (align ? (align - 8) : 0), GC_ALLOC_JITCODE);
+	methblock = gc_malloc(exc_len + constlen + CODEPC + (align ? (align - ALIGNMENT_OF_SIZE(sizeof(jdouble))) : 0), GC_ALLOC_JITCODE);
 	if (methblock == 0) {
 		postOutOfMemory(einfo);
 		return (false);
@@ -469,8 +471,7 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	/* align entry point if so desired */
 	if (align != 0 && (unsigned long)codebase % align != 0) {
 		int pad = (align - (unsigned long)codebase % align);
-		/* assert the allocator indeed returned 8 bytes aligned addrs */
-		assert(pad <= align - 8);	
+		assert(pad <= align - ALIGNMENT_OF_SIZE(sizeof(jdouble)));	
 		codebase = (char*)codebase + pad;
 	}
 	memcpy(codebase, codeblock, CODEPC);
@@ -492,6 +493,21 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	return (true);
 }
 
+static int
+getInsnPC(int pc, codeinfo* codeInfo, nativeCodeInfo* code) 
+{
+	int maxPC = codeInfo->codelen;
+
+	for (;pc<maxPC;pc++) {
+		int insn = INSNPC(pc);
+		if (insn!=-1) {
+			return insn;
+		}
+	}
+
+	return code->codelen;
+}
+ 
 /*
  * Install the compiled code in the method.
  */
@@ -545,20 +561,10 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 			 * If this happens, we simply find the next bytecode
 			 * instruction that has a native pc and use it instead.
 			 */
-			int npc, epc;
 			e = &meth->exception_table->entry[i];
-
-			epc = e->start_pc;
-			for (npc = INSNPC(epc); npc == -1; npc = INSNPC(++epc));
-			e->start_pc = npc + (uintp)code->code;
-
-			epc = e->end_pc;
-			for (npc = INSNPC(epc); npc == -1; npc = INSNPC(++epc));
-			e->end_pc = npc + (uintp)code->code;
-
-			epc = e->handler_pc;
-			for (npc = INSNPC(epc); npc == -1; npc = INSNPC(++epc));
-			e->handler_pc = npc + (uintp)code->code;
+			e->start_pc = getInsnPC(e->start_pc, codeInfo, code) + (uintp)code->code;
+			e->end_pc = getInsnPC(e->end_pc, codeInfo, code) + (uintp)code->code;
+			e->handler_pc = getInsnPC(e->handler_pc, codeInfo, code) + (uintp)code->code;
 			assert(e->start_pc <= e->end_pc);
 		}
 	}
@@ -566,7 +572,7 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 	/* Translate line numbers table */
 	if (meth->lines != 0) {
 		for (i = 0; i < meth->lines->length; i++) {
-			meth->lines->entry[i].start_pc = INSNPC(meth->lines->entry[i].start_pc) + (uintp)code->code;
+			meth->lines->entry[i].start_pc = getInsnPC(meth->lines->entry[i].start_pc, codeInfo, code) + (uintp)code->code;
 		}
 	}
 }

@@ -465,21 +465,23 @@ finishInsnSequence(void* dummy, nativeCodeInfo* code, errorInfo* einfo)
 /*
  * Get the instruction offset corresponding to the given PC.
  * If the PC doesn't point at the start of a valid instruction,
- * look forward until we find one.
+ * look forward until we find one. If we reach the end of the
+ * method, we return code->codelen
  */
 static
 int
-getInsnPC(int pc)
+getInsnPC(int pc, codeinfo* codeInfo, nativeCodeInfo *code)
 {
 	int res;
+	int maxPc = codeInfo->codelen;
 
-	for (;;) {
+	for (;pc<maxPc;pc++) {
 		res = INSNPC(pc);
 		if (res != -1) {
 			return (res);
 		}
-		pc++;
 	}
+	return code->codelen;
 }
 
 /*
@@ -565,9 +567,10 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 	if (meth->exception_table != 0) {
 		for (i = 0; i < meth->exception_table->length; i++) {
 			e = &meth->exception_table->entry[i];
-			e->start_pc = getInsnPC(e->start_pc) + (uintp)code->code;
-			e->end_pc = getInsnPC(e->end_pc) + (uintp)code->code;
-			e->handler_pc = getInsnPC(e->handler_pc) + (uintp)code->code;
+			e->start_pc = getInsnPC(e->start_pc, codeInfo, code) + (uintp)code->code;
+			e->end_pc = getInsnPC(e->end_pc, codeInfo, code) + (uintp)code->code;
+			e->handler_pc = getInsnPC(e->handler_pc, codeInfo, code) + (uintp)code->code;
+			assert (e->start_pc <= e->end_pc);
 		}
 	}
 
@@ -589,7 +592,7 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 		}
 #endif
 		for (i = 0; i < meth->lines->length; i++) {
-			meth->lines->entry[i].start_pc = getInsnPC(meth->lines->entry[i].start_pc) + (uintp)code->code;
+			meth->lines->entry[i].start_pc = getInsnPC(meth->lines->entry[i].start_pc, codeInfo, code) + (uintp)code->code;
 #if defined(KAFFE_XDEBUGGING)
 			if( df )
 			{

@@ -1,3 +1,16 @@
+2003-06-23  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/jit/machine.c
+	(finishInsnSequence): adapted to modified alignment of gc heap
+	(getInsnPC): new method
+	(installMethodCode): use getInsnPC to translate exception table
+	and line number table entries; corrected handling of exception
+	table entries that cover the last instruction of a method
+
+	* kaffe/kaffevm/jit3/machine.c
+	(getInsnPC, installMethodCode): properly deal with exception table
+	entries that cover the last instruction of a method
+	
 2003-06-22  Dalibor Topic <robilad@yahoo.com>
 
 	* gwqt.m4:
