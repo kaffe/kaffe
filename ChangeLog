@@ -1,5 +1,19 @@
 2004-11-11  Dalibor Topic  <robilad@kaffe.org>
 
+	*  libraries/javalib/java/util/GregorianCalendar.java,
+	libraries/javalib/java/util/Vector.java,
+	libraries/javalib/java/io/PrintStream.java:
+        Resynced with GNU Classpath.
+
+	2004-11-08  Tom Tromey  <tromey@redhat.com>
+
+        * java/util/GregorianCalendar.java: Removed unused imports.
+        * java/util/Vector.java: Removed unused import.
+
+        * java/io/PrintStream.java (ForwardStream): New constructor.
+
+2004-11-11  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/beans/IntrospectionIncubator.java:
         Resynced with GNU Classpath.
 

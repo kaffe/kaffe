@@ -87,6 +87,11 @@ public class PrintStream extends FilterOutputStream
    */
   private class ForwardStream extends OutputStream
   {
+    // This is package-private to avoid a trampoline constructor.
+    ForwardStream ()
+    {
+    }
+
     public void close () throws IOException
     {
       out.close ();
