@@ -1949,7 +1949,7 @@ jthreadedFileDescriptor(int fd)
 /*
  * clear non-blocking flag for a file descriptor
  */
-int 
+void
 jthreadRestoreFD(int fd)
 {
 	/* clear nonblocking flag */

@@ -317,7 +317,7 @@ int jthreadedForkExec(char **argv, char **arge, int ioes[4], int *);
 
 /* restore an fd, i.e., put it in blocking state without async I/O */
 #define JTHREAD_RESTORE_FD
-int jthreadRestoreFD(int fd);
+void jthreadRestoreFD(int fd);
 
 /* 
  * Locking API
