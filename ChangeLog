@@ -1,3 +1,11 @@
+1999-06-25  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/jit/registers.c (fastSlotRegister): If register is 
+	for writing, disable nowriteback.
+	* test/regression/LongNeg.java: New test by Edouard Parmelan.
+	* test/regression/Makefile.am: Ditto.
+	* test/regression/Makefile.in: Regen.
+
 Thu Jun 24 10:27:38 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
 
 	* kaffe/kaffevm/locks.h: new locking macros

@@ -21,6 +21,7 @@ TESTS = \
 	DoublePrint.java \
 	DoubleComp.java \
 	ModuloTest.java \
+	LongNeg.java \
 ## Test strings
 	Str.java \
 	Str2.java \

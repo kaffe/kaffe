@@ -256,6 +256,10 @@ fastSlotRegister(SlotInfo* slot, int type, int use)
 	slot->modified |= use;
 	regi->used = ++usecnt;
 
+	if ((use & rwrite)) {
+		slot->modified &= ~rnowriteback;
+	}
+
 	/* If register is destroyed by reading, then destroy it */
 	if ((use & rread) && (regi->flags & enable_readonce)) {
 		register_invalidate(slot->regno);
