@@ -1,5 +1,10 @@
 2004-12-13  Adam Heath  <doogie@brainfood.com>
 
+	* configure, configure.ac, scripts/GCCWarning.pm:
+	  Add more warnings from gcc 3.4.
+
+2004-12-13  Adam Heath  <doogie@brainfood.com>
+
 	* scripts/sort-warnings.pl:
 	  Add bash and nm to the list of programs to exclude from the
 	  list.  Also exclude the libtool msg about extracting symbols.

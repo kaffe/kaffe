@@ -65,12 +65,12 @@ example, warn if `int malloc()' is cast to `anything *'" );
 declaration.  This warning is issued even if the definition itself
 provides a prototype.  The aim is to detect global functions that
 fail to be declared in header files." );
-	register_warning( '-Wmissing-prototypes', qr/no previous prototype for `([^']+)'$/m ),
+	register_warning( '-Wmissing-prototypes', qr/no previous prototype for [`']([^']+)'$/m ),
 	#--
 	register_description( '-Wredundant-decls', "Warn if anything is declared more than once in the same scope,
 even in cases where multiple declaration is valid and changes
 nothing." );
-	register_warning( '-Wredundant-decls', qr/redundant redeclaration of `([^']+)' in same scope\n${GCCWarning::prefix_regex}previous declaration of `[^']+'$/m ),
+	register_warning( '-Wredundant-decls', qr/redundant redeclaration of [`']([^']+)'(?: in same scope)?\n${GCCWarning::prefix_regex}previous(?: implicit)? declaration of [`'][^']+'(?: was here)?$/m ),
 	#--
 	register_description( '-Winline', "Warn if a function can not be inlined and it was declared as
 inline." );
@@ -82,7 +82,7 @@ inline." );
 	register_warning( '-Wimplicit-func-decl', qr/implicit declaration of function `([^']+)'$/m ),
 	register_warning( '-Wunused-parameter', qr/unused parameter `([^']+)'$/m ),
 	register_warning( '-Wunused-variable', qr/unused variable `([^']+)'$/m ),
-	register_warning( '-Wshadow', qr/declaration of `([^']+)' shadows a global declaration\n${GCCWarning::prefix_regex}shadowed declaration is here$/m ),
+	register_warning( '-Wshadow', qr/declaration of [`']([^']+)' shadows a global declaration\n${GCCWarning::prefix_regex}shadowed declaration is here$/m ),
 	register_warning( '-Wshadow', qr/declaration of `([^']+)' shadows a previous local\n${GCCWarning::prefix_regex}shadowed declaration is here$/m ),
 	register_warning( '-Wpointer-arith', qr/pointer of type `([^']+)' used in arithmetic$/m ),
 	register_warning( '-Wpointer-arith', qr/pointer of type `([^']+)' used in subtraction$/m ),
@@ -119,7 +119,12 @@ inline." );
 	register_warning( 'traditional', qr/passing arg (\d+) of (?:`([^']+)'|(pointer to function)) from incompatible pointer type$/m ),
 	register_warning( 'deprecated-lvalue', qr/use of (compound|conditional|cast) expressions as lvalues is deprecated$/m ),
 	register_warning( 'foo', qr/`([^']+)' declared inside parameter list$/m ),
+	register_warning( 'foo', qr/"([^"]+)" declared inside parameter list(?:\n${GCCWarning::prefix_regex}its scope is only this definition or declaration, which is probably not what you want)?$/m ),
 	register_warning( 'foo', qr/(assignment|initialization) from incompatible pointer type$/m ),
 	register_warning( 'foo', qr/integer constant is too large for "([^"]+)" type$/m ),
+
+	register_warning( '-Wold-style-definition', qr/old-style parameter declaration$/m ),
+	register_warning( '-Wswitch-default', qr/switch missing default case$/m ),
+	register_warning( '-Wswitch-enum', qr/enumeration value `([^']+)' not handled in switch$/m ),
 }
 1;
