@@ -31,6 +31,9 @@ public DatagramSocket(int port) throws SocketException {
 }
 
 public DatagramSocket(int port, InetAddress bindAddr) throws SocketException {
+	if (port < 0 || port > 65535) {
+		throw new IllegalArgumentException();
+	}
 	SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkListen(port);
@@ -111,6 +114,7 @@ public InetAddress getLocalAddress() {
 public synchronized void receive(DatagramPacket p) throws IOException {
 	synchronized (p) {
 		while (true) {
+			p.prime();
 			impl.receive(p);
 			if (this.address == null) {
 				SecurityManager sm = System.getSecurityManager();
@@ -133,7 +137,7 @@ public void send(DatagramPacket p) throws IOException  {
 			    || p.getPort() == -1) {
 				throw new IOException("no destination");
 			}
-			checkRemote(p.getAddress(), p.getPort());
+			//checkRemote(p.getAddress(), p.getPort());
 		} else if (p.getAddress() == null) {
 			p.setAddress(this.address);
 			p.setPort(this.port);

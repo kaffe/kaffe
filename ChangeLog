@@ -1,3 +1,30 @@
+Thu Mar 21 22:25:16 PST 2002  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/net/DatagramPacket.java:
+	(offset) new field.
+	(DEFAULT_PORT) removed constant.
+	(DEFAULT_RECEIVE_PORT), (MAX_PORT), (MIN_LENGTH), (MIN_OFFSET),
+	(MIN_PORT) added constant.
+	(DatagramPacket) All receive constructors use a common
+	constructor, all send constructors use another one. Removed
+	premature setting of address for receive constructors. Added
+	new construcutor.
+	(getOffset) new method.
+	(prime) new method. used by DatagramSocket.
+	(setData) added a new version to handle offsets. all setData
+	methods use a common version to do the work.
+	(setLength) updated parameter check to take care of offset.
+	(setPort) use named constants for limits. Added exception message.
+
+	Patch based on and includes work by Tim Stack <stack@cs.utah.edu>.
+	
+	* libraries/javalib/java/net/DatagramSocket.java:
+	(DatagramSocket) throw an exception if port is illegal.
+	(receive) prime the packet to avoid modifying the
+	immutable address. don't check remote.
+
+	Patch by Tim Stack <stack@cs.utah.edu>.
+	
 Tue Mar 19 21:40:47 PST 2002  Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/net/MulticastSocket.java:
