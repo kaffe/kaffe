@@ -124,6 +124,26 @@ So far, you have the following choices:
 
   More information on Qt is available from http://www.trolltech.com.
 
+* --with-kaffe-nanox-awt
+
+  a Nano-X based AWT backend. It uses famous Nano-X library provided
+  by Nano-X Window System (formly known as MicroWindows, the project 
+  has been renamed to The Nano-X Window System, due to conflicts with 
+  the Windows trademark registered by Microsoft.)
+
+  The latest version of Nano-X we developed with is 0.9.0, and it 
+  should be API-compatible with earlier versions.
+
+  The initial Nano-X based AWT backend was written by Exor International 
+  Inc. and Sinby Corporatin in 2001, and we have reviewed their design
+  and implementation to merge in.
+
+  To enable Nano-X based AWT backend, you should also pass the extra
+  two options to configure script, --with-nanox-includes and 
+  --with-nanox-library, to specify the the corresponding Nano-X.
+
+  See http://www.microwindows.org/ for informations on Nano-X.
+
 Troubleshooting
 ---------------
 
@@ -229,11 +249,6 @@ Available at http://web.media.mit.edu/~lifton/proj/E-book/technical/ .
 
 See this post for more information:
 http://www.kaffe.org/pipermail/kaffe/2002-December/028462.html .
-
-* nano-X
-
-Available at
-http://www.sinby.com/en/developer/VirtualMachine/nano-X.html .
 
 If you are interested in merging them in, contact the Kaffe Mailing
 List on kaffe@kaffe.org.

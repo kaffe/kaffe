@@ -5,9 +5,14 @@ What's New in Kaffe 1.1.5
 ------------------------------------------------------
 
 * Resynced with latest GNU Classpath.
-* GNU Classpath's implementation of Swing has been merged.
 * Added GNU EmbbededWindow extension from GNU Classpath.
   * gcjwebplugin is known to work with the extension.
+* New AWT implementations representation.
+  * GNU Classpath's implementation of AWT/Swing has 
+    been merged.
+  * New Nano-X AWT backend.
+  * Dynamic switch among existing AWT implementations 
+    via command line options.
 * Better stack pointer / stack size handling.
 * JNI direct invocation fixes.
 * Verifier moved to its own directory.
@@ -15,15 +20,16 @@ What's New in Kaffe 1.1.5
 * New experimental Boehm-Weiser garbage collector.
 * Merged in JIT3 for powerpc from JanosVM.
 * Implemented weak references in the VM.
-* New Nano X AWT backend.
 * KJC temporarily replaced by jikes.
 * DNSJava, Jessie, JZLib and gjdoc merged in.
 * Added some internationalization support to kaffe's
-executable (fr, zh_TW).
+  executable (fr, zh_TW).
 * Compiler warning fixes.
 * Tested in Ch environment.
 * Fixes for NetBSD, OpenBSD, FreeBSD, Darwin.
 * New ports to FreeBSD on x86-64 and Darwin on x86.
+* Some successes: Resin2, JSDL, SwingWT, gcjwebplugin, 
+  ME4SE, MicroEmulator, VNCj, LwVCL, DirectFB kawt.
 
 What's New in Kaffe 1.1.3
 ------------------------------------------------------
