@@ -1,3 +1,8 @@
+Thu Aug 12 15:11:31 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/intrp/machine.c: add profFlag definition
+	in order to fix build failure when configured with "intrp"
+
 Thu Aug 12 14:50:12 PDT 1999 Edouard G. Parmelan <Edouard.Parmelan@quadratec.fr>
 
 	* kaffe/kaffe/kaffevm/gcFuncs.c: fix bug in class GC
