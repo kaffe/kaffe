@@ -1,6 +1,7 @@
 #! /bin/sh
 
 # by Alexandre Oliva <oliva@dcc.unicamp.br>
+# updated by Edouard G. Parmelan <egp@free.fr>
 
 # This script can be used to update the list of class files to
 # compiled into Klasses.jar and included in the Kaffe distribution.
@@ -17,24 +18,50 @@ else
     exit 1
 fi
 
-trap 'rm -f classlist pkglist macrodef; exit 1' 1 2 15
+trap 'rm -f classlist omit_filter pkglist macrodef; exit 1' 1 2 15
 
-echo WARNING: Omitting java/awt/win32 package from the list of packages
+omitted_packages="\
+java/awt/win32 \
+"
+
+echo WARNING: Omitting $omitted_packages packages from the list of packages
 find $SRCDIRS -name \*.java -print | sort > classlist
 
-sed 's,/[^/]*$,,' < classlist | uniq | grep -v java/awt/win32 > pkglist
+
+for pkg in $omitted_packages; do
+  echo "$pkg"
+done | sed 's,/,\\/,g;s,^,/^,;s,$,$/d,' > omit_filter
+
+sed 's,/[^/]*$,,' < classlist | uniq | sed -f omit_filter > pkglist
 
 {
-  sed 's,^,	$(,;s,$,_SRCS) \\,;$s, \\$,,;s,/,_,g' < pkglist
+  sed 's,^,	$(,;s,$,_SRCS) \\,;$s, \\$,,;s,[-/],_,g' < pkglist
 
   while read pkg; do
-    echo "${pkg}_SRCS = \\" | sed 's,/,_,g'
+    echo "${pkg}_SRCS = \\" | sed 's,[-/],_,g'
+    grep "^${pkg}/[^/]*$" < classlist | sed 's/^/	/;s/$/ \\/;$s/ \\$//'
+  done < pkglist
+} > macrodef
+
+
+for pkg in $omitted_packages; do
+  echo "$pkg"
+done | sed 's,/,\\/,g;s,^,/^,;s,$,$/p,' > omit_filter
+
+sed 's,/[^/]*$,,' < classlist | uniq | sed -n -f omit_filter > pkglist
+
+{
+  echo "OMITTED_PACKAGES_SRCS = \\"
+  sed 's,^,	$(,;s,$,_SRCS) \\,;$s, \\$,,;s,[-/],_,g' < pkglist
+
+  while read pkg; do
+    echo "${pkg}_SRCS = \\" | sed 's,[-/],_,g'
     grep "^${pkg}/[^/]*$" < classlist | sed 's/^/	/;s/$/ \\/;$s/ \\$//'
   done < pkglist
   echo
-} > macrodef
+} >> macrodef
 
-rm -f classlist pkglist
+rm -f classlist omit_filter pkglist
 
 sed '
 /^'"$classSRCS"'/ {
