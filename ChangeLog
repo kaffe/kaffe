@@ -1,3 +1,55 @@
+2004-06-21  Dalibor Topic  <robilad@kaffe.org>
+
+	Moved verifier to its own module.
+
+	* kaffe/kaffevm/verify-block.c,
+	kaffe/kaffevm/verify-block.h,
+	kaffe/kaffevm/verify-debug.c,
+	kaffe/kaffevm/verify-debug.h,
+	kaffe/kaffevm/verify-errors.h,
+	kaffe/kaffevm/verify-sigstack.c,
+	kaffe/kaffevm/verify-sigstack.h,
+	kaffe/kaffevm/verify-type.c,
+	kaffe/kaffevm/verify-type.h,
+	kaffe/kaffevm/verify-uninit.c,
+	kaffe/kaffevm/verify-uninit.h,
+	kaffe/kaffevm/verify.c,
+	kaffe/kaffevm/verify.h,
+	kaffe/kaffevm/verify2.c:
+	Removed. Moved over to own module in verifier.
+
+	* kaffe/kaffevm/verifier/verify-block.c,
+	kaffe/kaffevm/verifier/verify-block.h,
+	kaffe/kaffevm/verifier/verify-debug.c,
+	kaffe/kaffevm/verifier/verify-debug.h,
+	kaffe/kaffevm/verifier/verify-errors.h,
+	kaffe/kaffevm/verifier/verify-sigstack.c,
+	kaffe/kaffevm/verifier/verify-sigstack.h,
+	kaffe/kaffevm/verifier/verify-type.c,
+	kaffe/kaffevm/verifier/verify-type.h,
+	kaffe/kaffevm/verifier/verify-uninit.c,
+	kaffe/kaffevm/verifier/verify-uninit.h,
+	kaffe/kaffevm/verifier/verify.c,
+	kaffe/kaffevm/verifier/verify.h,
+	kaffe/kaffevm/verifier/verify2.c,
+	kaffe/kaffevm/verifier/Makefile.am,
+	kaffe/kaffevm/verifier/Makefile.in:
+	New files.
+
+        * configure.ac:
+	Output kaffe/kaffevm/verifier/Makefile.
+
+        * configure,
+        kaffe/kaffevm/Makefile.in:
+	Regenerated.
+
+        * kaffe/kaffevm/Makefile.am:
+	(SUBDIRS, DIST_SUBDIRS) Added verifier.
+	(AM_CPPFLAGS) Added verifier directory.
+	(libkaffevm_la_DEPENDENCIES) Added verifier library.
+
+	Reported by: Rob Gonzalez <rob@kaffe.org>
+
 2004-06-17  Julian Scheid  <julian@sektor37.de>
 
 	* configure.ac,	

@@ -1,13 +1,16 @@
-# Makefile.in for kaffevm - a Java(tm) compatible virtual machine.
+# Makefile.am for kaffevm - a Java(tm) compatible virtual machine.
 #
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
+# Copyright (c) 2004
+#	Kaffe.org contributors, see ChangeLogs for details.  All rights reserved.
+#
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = $(ENGINE_NAME) systems gcj
-DIST_SUBDIRS = intrp jit jit3 systems gcj
+SUBDIRS = $(ENGINE_NAME) systems gcj verifier
+DIST_SUBDIRS = intrp jit jit3 systems gcj verifier
 
 EXTRA_DIST = \
 	kaffe.def \
@@ -20,7 +23,15 @@ EXTRA_DIST = \
 	systems/win32/winthread.h
 
 @engine_frag@
-AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/jvmpi -I$(top_srcdir)/kaffe/xprof -I$(top_builddir)/include
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
+	$(ENGINE_INCLUDES) \
+	-I$(top_srcdir)/libltdl \
+	$(ENGINE_DEFS) \
+	-I$(top_srcdir)/kaffe/jvmpi \
+	-I$(top_srcdir)/kaffe/xprof \
+	-I$(top_builddir)/include \
+	-I$(top_srcdir)/kaffe/kaffevm/verifier
 
 native_LTLIBRARIES = libkaffevm.la
 
@@ -43,7 +54,8 @@ libkaffevm_la_DEPENDENCIES = \
 	$(LIBLTDL) \
 	$(ENGINE_NAME)/libengine.la \
 	$(libgcj) \
-	systems/$(THREAD_SYSTEM)/libkthread.la
+	systems/$(THREAD_SYSTEM)/libkthread.la \
+	verifier/libkaffeverifier.la
 
 libkaffevm_la_LIBADD = \
 	$(libkaffevm_la_DEPENDENCIES) \
@@ -93,13 +105,6 @@ libkaffevm_la_SOURCES = \
 	utf8const.c \
 	gcFuncs.c \
 	gcRefs.c \
-	verify.c \
-	verify2.c \
-	verify-block.c \
-	verify-debug.c \
-	verify-sigstack.c \
-	verify-type.c \
-	verify-uninit.c \
 	../../binreloc/prefix.c
 
 noinst_HEADERS = \
@@ -142,13 +147,6 @@ noinst_HEADERS = \
 	thread.h \
 	threadData.h \
 	utf8const.h \
-	verify.h \
-	verify-block.h \
-	verify-debug.h \
-	verify-sigstack.h \
-	verify-type.h \
-	verify-uninit.h \
-	verify-errors.h \
 	../../binreloc/prefix.h
 
 gc-mem.c: stamp-h01
