@@ -1,5 +1,17 @@
 2004-12-22  Dalibor Topic  <robilad@kaffe.org>
 
+        * m4/ac_prog_antlr.m4:
+	Fixed detection of ANTLR when antlr.jar is on CLASSPATH
+	but not among the directories looked at.
+
+        * configure,
+        libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in,
+        libraries/javalib/rebuildLib.in:
+	Regenerated.
+	
+2004-12-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* m4/ac_prog_antlr.m4,
 	m4/ac_prog_java.m4,
 	m4/ac_prog_java_works.m4,

@@ -38,6 +38,7 @@ if [ -z "${JIKES:-}" ] ; then
 		VERBOSE=-v
 	fi
 	BOOTCLASSPATH=${srcdir}/Klasses.jar.bootstrap:$BOOTCLASSPATH; export BOOTCLASSPATH
+	CPATH="${CPATH+-classpath $CLASSPATH:$BOOTCLASSPATH}"
 else
 	test -f ${top_builddir}/BUILD_ENVIRONMENT && . ${top_builddir}/BUILD_ENVIRONMENT
 	CLASSPATH=${CLASSPATH}:${LIBDIR}
@@ -48,5 +49,5 @@ fi
 
 cd $srcdir
 
-echo "Compiling classes from " ${1+"$@"} " using " $JAVAC $JAVAC_FLAGS
+echo "Compiling classes from " ${1+"$@"} " using " $JAVAC $VERBOSE $JAVAC_FLAGS -d $LIBDIR $CPATH
 $JAVAC $VERBOSE $JAVAC_FLAGS -d $LIBDIR $CPATH ${1+"$@"}

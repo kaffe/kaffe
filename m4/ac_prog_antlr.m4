@@ -2,6 +2,8 @@ AC_DEFUN([AC_PROG_ANTLR],[
   AC_REQUIRE([AC_PROG_JAVA])dnl
   AC_MSG_CHECKING([for antlr $1.$2.$3 or better])
   for antlr_lib_home in `ls -d /usr/local/share/antlr* 2> /dev/null` /usr/share/java; do
+	CLASSPATH=""
+	BOOTCLASSPATH=""
         antlr_version_str=`$JAVA -classpath "$antlr_lib_home/antlr.jar" antlr.Tool 2>&1 | head -n 1 | sed '/.*Version */!d; s///;q'`
 	if test "$antlr_version_str"; then
               antlr_version_regex='s/\([[[:digit:]]]\+\)\.\([[[:digit:]]]\+\)\.\([[[:digit:]]]\+\).*$/'
