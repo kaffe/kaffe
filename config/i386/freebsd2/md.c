@@ -2,7 +2,9 @@
  * i386/freebsd2/md.c
  * FreeBSD i386 specific functions.
  *
- * 
+ * Copyright(c) 2004 The Kaffe.org's developers.
+ *
+ * Some parts are imported from the boehm-gc.
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
@@ -18,17 +20,17 @@ void *mdGetStackBase(void)
 {
     int control_name[2] =
       { CTL_KERN, KERN_USRSTACK};
-    ptr_t stackbase;
-    size_t len = sizeof(ptr_t);
+    void *stackbase;
+    size_t len = sizeof(void *);
     
-    if (sysctl(nm, 2, &base, &len, NULL, 0))
+    if (sysctl(control_name, 2, &stackbase, &len, NULL, 0))
       {
 	fprintf(stderr, 
 		"Kaffe VM has not been able to retrieve the pointer to the stack base\n"
 		"Aborting...\n");
 	exit(1);
       }
-   return base;
+   return stackbase;
 }
 
 #endif

@@ -1,5 +1,10 @@
 2004-05-09 Guilhem Lavaux <guilhem@kaffe.org>
 
+	* config/i386/freebsd2/md.c: Fixed compilation and copyright
+	advertising.
+
+2004-05-09 Guilhem Lavaux <guilhem@kaffe.org>
+
 	* ChangeLog: Fixed ChangeLog entry.
 
 	* config/i386/freebsd2/md.c, config/i386/freebsd2/md.h:
