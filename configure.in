@@ -627,22 +627,16 @@ if test "$cross_compiling" = yes; then
   if test x"${ac_cv_c_char_unsigned}" != x"set"; then
     AC_MSG_WARN([when cross compiling, you may want to set ac_cv_c_char_unsigned to yes or no])
   fi
-  dnl force user to set BUILD_CC
-  if test x"${BUILD_CC+set}" != x"set" &&
-     test x"${ac_cv_BUILD_CC}" != x"set"; then
-    AC_MSG_ERROR([when cross compiling, BUILD_CC should be set to the local C compiler])
+  AC_PATH_PROG(KAFFEH_FOR_BUILD, kaffeh)
+  if test -n "${KAFFEH_FOR_BUILD}"; then
+    AC_MSG_ERROR([cross builds require a locally-executable pre-installed kaffeh])
   fi
-  ac_cv_BUILD_CC="${BUILD_CC-${ac_cv_BUILD_CC}}"
-  BUILD_CC="$ac_cv_BUILD_CC"
-  KAFFEH_FOR_BUILD="\$(top_builddir)/kaffe/kaffeh-build/kaffeh\$(EXEEXT)"
-  MAKE_KAFFEH_FOR_BUILD="cd \$(top_builddir)/kaffe/kaffeh && \$(MAKE) kaffeh-build"
+  MAKE_KAFFEH_FOR_BUILD=":"
 else
-  BUILD_CC="$CC" dnl just in case
   KAFFEH_FOR_BUILD="\$(top_builddir)/kaffe/kaffeh/kaffeh\$(EXEEXT)"
   MAKE_KAFFEH_FOR_BUILD="cd \$(top_builddir)/kaffe/kaffeh && \$(MAKE)"
 fi
 
-AC_SUBST(BUILD_CC)
 AC_SUBST(KAFFEH_FOR_BUILD)
 AC_SUBST(MAKE_KAFFEH_FOR_BUILD)
 

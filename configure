@@ -6653,19 +6653,49 @@ if test "$cross_compiling" = yes; then
   if test x"${ac_cv_c_char_unsigned}" != x"set"; then
     echo "configure: warning: when cross compiling, you may want to set ac_cv_c_char_unsigned to yes or no" 1>&2
   fi
-    if test x"${BUILD_CC+set}" != x"set" &&
-     test x"${ac_cv_BUILD_CC}" != x"set"; then
-    { echo "configure: error: when cross compiling, BUILD_CC should be set to the local C compiler" 1>&2; exit 1; }
-  fi
-  ac_cv_BUILD_CC="${BUILD_CC-${ac_cv_BUILD_CC}}"
-  BUILD_CC="$ac_cv_BUILD_CC"
-  KAFFEH_FOR_BUILD="\$(top_builddir)/kaffe/kaffeh-build/kaffeh\$(EXEEXT)"
-  MAKE_KAFFEH_FOR_BUILD="cd \$(top_builddir)/kaffe/kaffeh && \$(MAKE) kaffeh-build"
+  # Extract the first word of "kaffeh", so it can be a program name with args.
+set dummy kaffeh; ac_word=$2
+echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+echo "configure:6660: checking for $ac_word" >&5
+if eval "test \"`echo '$''{'ac_cv_path_KAFFEH_FOR_BUILD'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
 else
-  BUILD_CC="$CC"   KAFFEH_FOR_BUILD="\$(top_builddir)/kaffe/kaffeh/kaffeh\$(EXEEXT)"
-  MAKE_KAFFEH_FOR_BUILD="cd \$(top_builddir)/kaffe/kaffeh && \$(MAKE)"
+  case "$KAFFEH_FOR_BUILD" in
+  /*)
+  ac_cv_path_KAFFEH_FOR_BUILD="$KAFFEH_FOR_BUILD" # Let the user override the test with a path.
+  ;;
+  ?:/*)			 
+  ac_cv_path_KAFFEH_FOR_BUILD="$KAFFEH_FOR_BUILD" # Let the user override the test with a dos path.
+  ;;
+  *)
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+  ac_dummy="$PATH"
+  for ac_dir in $ac_dummy; do 
+    test -z "$ac_dir" && ac_dir=.
+    if test -f $ac_dir/$ac_word; then
+      ac_cv_path_KAFFEH_FOR_BUILD="$ac_dir/$ac_word"
+      break
+    fi
+  done
+  IFS="$ac_save_ifs"
+  ;;
+esac
+fi
+KAFFEH_FOR_BUILD="$ac_cv_path_KAFFEH_FOR_BUILD"
+if test -n "$KAFFEH_FOR_BUILD"; then
+  echo "$ac_t""$KAFFEH_FOR_BUILD" 1>&6
+else
+  echo "$ac_t""no" 1>&6
 fi
 
+  if test -n "${KAFFEH_FOR_BUILD}"; then
+    { echo "configure: error: cross builds require a locally-executable pre-installed kaffeh" 1>&2; exit 1; }
+  fi
+  MAKE_KAFFEH_FOR_BUILD=":"
+else
+  KAFFEH_FOR_BUILD="\$(top_builddir)/kaffe/kaffeh/kaffeh\$(EXEEXT)"
+  MAKE_KAFFEH_FOR_BUILD="cd \$(top_builddir)/kaffe/kaffeh && \$(MAKE)"
+fi
 
 
 
@@ -6688,7 +6718,7 @@ EOF
 
 
 echo $ac_n "checking how to run the C preprocessor""... $ac_c" 1>&6
-echo "configure:6692: checking how to run the C preprocessor" >&5
+echo "configure:6722: checking how to run the C preprocessor" >&5
 # On Suns, sometimes $CPP names a directory.
 if test -n "$CPP" && test -d "$CPP"; then
   CPP=
@@ -6703,13 +6733,13 @@ else
   # On the NeXT, cc -E runs the code through the compiler's parser,
   # not just through cpp.
   cat > conftest.$ac_ext <<EOF
-#line 6707 "configure"
+#line 6737 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:6713: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:6743: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -6720,13 +6750,13 @@ else
   rm -rf conftest*
   CPP="${CC-cc} -E -traditional-cpp"
   cat > conftest.$ac_ext <<EOF
-#line 6724 "configure"
+#line 6754 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:6730: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:6760: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -6737,13 +6767,13 @@ else
   rm -rf conftest*
   CPP="${CC-cc} -nologo -E"
   cat > conftest.$ac_ext <<EOF
-#line 6741 "configure"
+#line 6771 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:6747: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:6777: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -6769,7 +6799,7 @@ echo "$ac_t""$CPP" 1>&6
 
 
 echo $ac_n "checking for path separator""... $ac_c" 1>&6
-echo "configure:6773: checking for path separator" >&5
+echo "configure:6803: checking for path separator" >&5
 if eval "test \"`echo '$''{'ac_cv_kaffe_pathsep'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6786,7 +6816,7 @@ PATHSEP=$ac_cv_kaffe_pathsep
 
 
 echo $ac_n "checking for directory separator""... $ac_c" 1>&6
-echo "configure:6790: checking for directory separator" >&5
+echo "configure:6820: checking for directory separator" >&5
 if eval "test \"`echo '$''{'ac_cv_kaffe_dirsep'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -7070,7 +7100,6 @@ s%@AWT_DIR@%$AWT_DIR%g
 s%@DLOPEN_JAVA_LIBS@%$DLOPEN_JAVA_LIBS%g
 s%@KLIBFLAGS@%$KLIBFLAGS%g
 s%@KVMLIBFLAGS@%$KVMLIBFLAGS%g
-s%@BUILD_CC@%$BUILD_CC%g
 s%@KAFFEH_FOR_BUILD@%$KAFFEH_FOR_BUILD%g
 s%@MAKE_KAFFEH_FOR_BUILD@%$MAKE_KAFFEH_FOR_BUILD%g
 s%@nativedir@%$nativedir%g

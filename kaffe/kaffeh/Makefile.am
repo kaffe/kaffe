@@ -20,11 +20,3 @@ kaffeh_LDADD = $(KAFFE_LIBS)
 
 $(GEN_SRCS):
 	$(SHELL) $(REGEN_FORWARD) $(srcdir)/../kaffevm/$@ $@
-
-all: $(KAFFEH_build)
-
-.PHONY: kaffeh-build
-kaffeh-build:
-	@test -d ../kaffeh-build || mkdir ../kaffeh-build
-	cd ../kaffeh-build && $(MAKE) -f ../kaffeh/Makefile kaffeh \
-		"CC=$(BUILD_CC)" "srcdir=$(srcdir)/../kaffeh"

@@ -70,7 +70,6 @@ host_triplet = @host@
 AS = @AS@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
-BUILD_CC = @BUILD_CC@
 CC = @CC@
 CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
 CONFIG_MD_H = @CONFIG_MD_H@
@@ -404,14 +403,6 @@ mostlyclean distclean maintainer-clean
 
 $(GEN_SRCS):
 	$(SHELL) $(REGEN_FORWARD) $(srcdir)/../kaffevm/$@ $@
-
-all: $(KAFFEH_build)
-
-.PHONY: kaffeh-build
-kaffeh-build:
-	@test -d ../kaffeh-build || mkdir ../kaffeh-build
-	cd ../kaffeh-build && $(MAKE) -f ../kaffeh/Makefile kaffeh \
-		"CC=$(BUILD_CC)" "srcdir=$(srcdir)/../kaffeh"
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
