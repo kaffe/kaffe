@@ -1,4 +1,9 @@
 2004-06-26  Rob Gonzalez <rob@kaffe.org>
+	* kaffe/kaffevm/external.c
+	(Kaffe_JNI*) renamed to KaffeVM_JNI*
+	(Kaffe_KNI*) renamed to KaffeVM_KNI*
+
+2004-06-26  Rob Gonzalez <rob@kaffe.org>
 	* kaffe/kaffevm/verify*.[ch]
 	More refactoring, code cleaning up, etc.
 	Error methods removed and simplified.

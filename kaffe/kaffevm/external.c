@@ -419,12 +419,12 @@ DBG(NATIVELIB,
 	func = loadNativeLibrarySym(stub);
 	if (func != 0) {
 		/* Fill it in */
-		Kaffe_KNI_wrapper(m, func);
+		KaffeVM_KNI_wrapper(m, func);
 		return (true);
 	}
 
 	/* Try to locate the nature function using the JNI interface */
-        if (Kaffe_JNI_native(m)) {
+        if (KaffeVM_JNI_native(m)) {
                 return (true);
         }
 
