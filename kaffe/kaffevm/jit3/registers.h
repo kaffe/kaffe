@@ -128,6 +128,9 @@ void	spillAndUpdate(SlotData*, jboolean);
 
 #define	calleeSave(R)		(reginfo[R].flags & Rnosaveoncall)
 
+/* Is a slot already in a register? */
+#define	inRegister(i)		(seq_slot(s,i)->regno != NOREG)
+
 extern void initGlobalRegisters(int);
 extern void setGlobalRegister(int);
 
