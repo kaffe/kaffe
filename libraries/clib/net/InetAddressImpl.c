@@ -487,6 +487,7 @@ java_net_InetAddress_getHostByAddr(HArrayOfByte *addr)
   return( retval );
 #else
   struct Hjava_lang_String *retval = 0;
+#define MAX_IPV6_STRING_SIZE 128
   char ipaddr[MAX_IPV6_STRING_SIZE];
   struct hostent* ent;
   int family, rc = 0;
