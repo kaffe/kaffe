@@ -1,3 +1,13 @@
+2004-11-11  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* configure, config/config.h.in: Regenerated.
+
+	* configure.ac: Check for pthread_yield, sched_yield and sched.h.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h
+	(jthread_yield): Use sched_yield instead of pthread_yield if it has
+	not been found and nothing if sched_yield has not been found.
+	
 2004-11-11  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/io/File.java:

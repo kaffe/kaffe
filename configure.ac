@@ -1245,8 +1245,10 @@ AM_ICONV
 AC_CHECK_FUNCS([sched_get_priority_max])
 AC_CHECK_FUNCS([sched_get_priority_min])
 
-# pthread_attr_setschedpolicy in not implemented on NetBSD <= 1.6
-AC_CHECK_FUNCS([pthread_attr_setschedpolicy])
+dnl pthread_attr_setschedpolicy in not implemented on NetBSD <= 1.6
+dnl pthread_yield is not implemented on any systems.
+AC_CHECK_FUNCS([pthread_attr_setschedpolicy pthread_yield sched_yield])
+AC_CHECK_HEADERS(sched.h)
 
 dnl getifaddrs replacement for linux
 AC_REPLACE_FUNCS([getifaddrs])
