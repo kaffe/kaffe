@@ -348,12 +348,29 @@ makeReturn(Method* meth)
 	return (classFromSig(&sig, meth->class->loader));
 }
 
+/*
+ * create an array of types for the checked exceptions that this method 
+ * declared to throw.  These are stored in the declared_exception table
+ * as indices into the constant pool.
+ *
+ * We do not bother to cache the resolved types here.
+ */
 static
 HArrayOfObject*
 makeExceptions(Method* meth)
 {
-	/* FIXME XXX */
-	return ((HArrayOfObject*)AllocObjectArray(0, "Ljava/lang/Class;"));
+	int nr;
+	int i;
+	HArrayOfObject* array;
+	Hjava_lang_Class** ptr;
+
+	nr = meth->ndeclared_exceptions;
+	array = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class;");
+	ptr = (Hjava_lang_Class**)&unhand(array)->body[0];
+	for (i = 0; i < nr; i++) {
+		*ptr++ = getClass(meth->declared_exceptions[i], meth->class);
+	}
+	return (array);
 }
 
 static
