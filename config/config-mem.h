@@ -49,7 +49,7 @@ void bcopy(void*, void*, size_t);
 /*
 extern void swab(const void *from, void *to, size_t n);
 */
-extern void swab(const void *from, void *to, int n);
+extern void swab(const void *from, void *to, ssize_t n);
 #endif
 
 #endif

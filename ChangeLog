@@ -1,3 +1,13 @@
+2002-12-04 Dalibor Topic <robilad@yahoo.com>
+
+	* config/config-mem.h: changed prototype for swab to use ssize_t
+	as in the Open Group Base Specification. Still works on Linux
+	with X based AWT and Qt based AWT. The problem is that gcc can't
+	see the swab declaration in <unistd.h> while g++ can, for some
+	reason. So g++ bails out with an error message about a bad
+	redeclaration of swab. I hope this works on FreeBSD as well, as
+	my last swab change broke the nightly builds.
+
 2002-12-03 Dalibor Topic <robilad@yahoo.com>
 
 	Added Aelfred2 XML parser from GNU jaxp. Added
