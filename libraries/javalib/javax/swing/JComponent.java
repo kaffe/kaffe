@@ -72,6 +72,7 @@ import java.util.Locale;
 
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleKeyBinding;
 import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleStateSet;
 import javax.swing.border.Border;
@@ -133,6 +134,9 @@ public abstract class JComponent extends Container implements Serializable
     public String getAccessibleDescription() { return null; }
     public AccessibleRole getAccessibleRole() { return null; }
     protected String getBorderTitle(Border value0) { return null; }
+    public String getToolTipText() { return null; }
+    public String getTitledBorderText() { return null; }
+    public AccessibleKeyBinding getAccessibleKeyBinding() { return null; }
   }
 
   /** 
@@ -323,6 +327,8 @@ public abstract class JComponent extends Container implements Serializable
   private InputMap inputMap_whenAncestorOfFocused;
   private InputMap inputMap_whenInFocusedWindow;
   private ActionMap actionMap;
+  /** @since 1.3 */
+  private boolean verifyInputWhenFocusTarget;
   private InputVerifier inputVerifier;
 
   private TransferHandler transferHandler;
@@ -2229,5 +2235,27 @@ public abstract class JComponent extends Container implements Serializable
     InputVerifier oldVerifier = inputVerifier;
     inputVerifier = verifier;
     firePropertyChange("inputVerifier", oldVerifier, verifier);
+  }
+
+  /**
+   * @since 1.3
+   */
+  public boolean getVerifyInputWhenFocusTarget()
+  {
+    return verifyInputWhenFocusTarget;
+  }
+
+  /**
+   * @since 1.3
+   */
+  public void setVerifyInputWhenFocusTarget(boolean verifyInputWhenFocusTarget)
+  {
+    if (this.verifyInputWhenFocusTarget == verifyInputWhenFocusTarget)
+      return;
+
+    this.verifyInputWhenFocusTarget = verifyInputWhenFocusTarget;
+    firePropertyChange("verifyInputWhenFocusTarget",
+		       ! verifyInputWhenFocusTarget,
+		       verifyInputWhenFocusTarget);
   }
 }

@@ -1,3 +1,17 @@
+2005-01-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2004-12-31  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JComponent.java
+	(getToolTipText): New method.
+	(getTitledBorderText): Likewise.
+	(getAccessibleKeyBinding): Likewise.
+	(getVerifyInputWhenFocusTarget): Likewise.
+	(setVerifyInputWhenFocusTarget): Likewise.
+	(verifyInputWhenFocusTarget): New instance field.
+	
 2005-01-06  Dalibor Topic  <topic@mpiat2305>
 
 	* test/internal/Makefile.am (jitBasic_LDADD): Added LTLIBINTL
