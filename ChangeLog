@@ -1,3 +1,28 @@
+2004-03-25  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/lang/reflect/Field.java
+	(setChar, setByte, setShort, setInt, setLong, setFloat, setDouble,
+	set): Splitted methods in two parts to be able to set final fields
+	using a native call.
+
+	* libraries/javalib/java/io/ObjectStreamField.java
+	(setCharField, setByteField, setShortField, setLongField,
+	setFloatField, setDoubleField, setObjectField): Call native methods.
+	(setCharNative, setByteNative, setShortNative, setLongNative,
+	setFloatNative, setDoubleNative, setObjectNative): New native calls.
+	(ObjectStreamField): Deserialize final fields.
+
+	* libraries/clib/native/ObjectInputStream: Updated copyright
+	advertisement.
+
+	* libraries/clib/native/ObjectStreamField.c: New file.
+
+	* include/Makefile.am: Added java_io_ObjectStreamField.h
+
+	* include/Makefile.in: Regenerated.
+
+	* libraries/javalib/Klasses.jar.bootstrap: Regenerated.
+
 2004-03-25  Dalibor Topic <robilad@kaffe.org>
 
         * config/i386/jit3-i386.def,

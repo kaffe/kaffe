@@ -217,33 +217,31 @@ public short getShort(Object obj) throws IllegalArgumentException, IllegalAccess
 	}
 }
 
-public void set(Object obj, Object value) throws IllegalArgumentException, IllegalAccessException {
-	checkFinal();
-
+private void setInternal(Object obj, Object value) throws IllegalArgumentException, IllegalAccessException {
 	if (type.isPrimitive()) {
 		if (value instanceof Boolean) {
-			setBoolean(obj, ((Boolean)value).booleanValue());
+			setBooleanInternal(obj, ((Boolean)value).booleanValue());
 		}
 		else if (value instanceof Byte) {
-			setByte(obj, ((Byte)value).byteValue());
+			setByteInternal(obj, ((Byte)value).byteValue());
 		}
 		else if (value instanceof Short) {
-			setShort(obj, ((Short)value).shortValue());
+			setShortInternal(obj, ((Short)value).shortValue());
 		}
 		else if (value instanceof Character) {
-			setChar(obj, ((Character)value).charValue());
+			setCharInternal(obj, ((Character)value).charValue());
 		}
 		else if (value instanceof Integer) {
-			setInt(obj, ((Integer)value).intValue());
+			setIntInternal(obj, ((Integer)value).intValue());
 		}
 		else if (value instanceof Long) {
-			setLong(obj, ((Long)value).longValue());
+			setLongInternal(obj, ((Long)value).longValue());
 		}
 		else if (value instanceof Float) {
-			setFloat(obj, ((Float)value).floatValue());
+			setFloatInternal(obj, ((Float)value).floatValue());
 		}
 		else {
-			setDouble(obj, ((Double)value).doubleValue());
+			setDoubleInternal(obj, ((Double)value).doubleValue());
 		}
 	}
 	else {
@@ -255,7 +253,12 @@ public void set(Object obj, Object value) throws IllegalArgumentException, Illeg
 	}
 }
 
-public void setBoolean(Object obj, boolean z) throws IllegalArgumentException, IllegalAccessException {
+public void set(Object obj, Object value) throws IllegalArgumentException, IllegalAccessException {
+	checkFinal();
+	setInternal(obj, value);
+}
+
+public void setBooleanInternal(Object obj, boolean z) throws IllegalArgumentException, IllegalAccessException {
 	if (type == Boolean.TYPE) {
 		setBoolean0(obj, z);
 	}
@@ -264,7 +267,12 @@ public void setBoolean(Object obj, boolean z) throws IllegalArgumentException, I
 	}
 }
 
-public void setByte(Object obj, byte b) throws IllegalArgumentException, IllegalAccessException {
+public void setBoolean(Object obj, boolean z) throws IllegalArgumentException, IllegalAccessException {
+        checkFinal();
+	setBooleanInternal(obj, z);
+}
+
+public void setByteInternal(Object obj, byte b) throws IllegalArgumentException, IllegalAccessException {
 	if (type == Byte.TYPE) {
 		setByte0(obj, b);
 	}
@@ -288,7 +296,12 @@ public void setByte(Object obj, byte b) throws IllegalArgumentException, Illegal
 	}
 }
 
-public void setChar(Object obj, char c) throws IllegalArgumentException, IllegalAccessException {
+public void setByte(Object obj, byte b) throws IllegalArgumentException, IllegalAccessException {
+        checkFinal();
+	setByteInternal(obj, b);
+}
+
+public void setCharInternal(Object obj, char c) throws IllegalArgumentException, IllegalAccessException {
 	if (type == Character.TYPE) {
 		setChar0(obj, c);
 	}
@@ -309,7 +322,12 @@ public void setChar(Object obj, char c) throws IllegalArgumentException, Illegal
 	}
 }
 
-public void setDouble(Object obj, double d) throws IllegalArgumentException, IllegalAccessException {
+public void setChar(Object obj, char c) throws IllegalArgumentException, IllegalAccessException {
+        checkFinal();
+	setCharInternal(obj, c);
+}
+
+public void setDoubleInternal(Object obj, double d) throws IllegalArgumentException, IllegalAccessException {
 	if (type == Double.TYPE) {
 		setDouble0(obj, d);
 	}
@@ -318,7 +336,12 @@ public void setDouble(Object obj, double d) throws IllegalArgumentException, Ill
 	}
 }
 
-public void setFloat(Object obj, float f) throws IllegalArgumentException, IllegalAccessException {
+public void setDouble(Object obj, double d) throws IllegalArgumentException, IllegalAccessException {
+        checkFinal();
+	setDoubleInternal(obj, d);
+}
+
+public void setFloatInternal(Object obj, float f) throws IllegalArgumentException, IllegalAccessException {
 	if (type == Float.TYPE) {
 		setFloat0(obj, f);
 	}
@@ -330,8 +353,13 @@ public void setFloat(Object obj, float f) throws IllegalArgumentException, Illeg
 	}
 }
 
-public void setInt(Object obj, int i) throws IllegalArgumentException, IllegalAccessException {
-	if (type == Integer.TYPE) {
+public void setFloat(Object obj, float f) throws IllegalArgumentException, IllegalAccessException {
+        checkFinal();
+	setFloatInternal(obj, f);
+}
+
+public void setIntInternal(Object obj, int i) throws IllegalArgumentException, IllegalAccessException {
+        if (type == Integer.TYPE) {
 		setInt0(obj, i);
 	}
 	else if (type == Long.TYPE) {
@@ -348,8 +376,13 @@ public void setInt(Object obj, int i) throws IllegalArgumentException, IllegalAc
 	}
 }
 
-public void setLong(Object obj, long l) throws IllegalArgumentException, IllegalAccessException {
-	if (type == Long.TYPE) {
+public void setInt(Object obj, int i) throws IllegalArgumentException, IllegalAccessException {
+        checkFinal();
+	setIntInternal(obj, i);
+}
+
+public void setLongInternal(Object obj, long l) throws IllegalArgumentException, IllegalAccessException {
+        if (type == Long.TYPE) {
 		setLong0(obj, l);
 	}
 	else if (type == Float.TYPE) {
@@ -363,7 +396,13 @@ public void setLong(Object obj, long l) throws IllegalArgumentException, Illegal
 	}
 }
 
-public void setShort(Object obj, short s) throws IllegalArgumentException, IllegalAccessException {
+public void setLong(Object obj, long l) throws IllegalArgumentException, IllegalAccessException {
+        checkFinal();
+	setLongInternal(obj, l);
+}
+
+public void setShortInternal(Object obj, short s) throws IllegalArgumentException, IllegalAccessException {
+        checkFinal();
 	if (type == Short.TYPE) {
 		setShort0(obj, s);
 	}
@@ -384,30 +423,35 @@ public void setShort(Object obj, short s) throws IllegalArgumentException, Illeg
 	}
 }
 
+public void setShort(Object obj, short s) throws IllegalArgumentException, IllegalAccessException {
+        checkFinal();
+	setShortInternal(obj, s);
+}
+
 public Class getDeclaringClass()
-	{
+{
 	return (clazz);
 }
 
 native public int getModifiers();
 
 public String getName()
-	{
+{
 	return (name);
 }
 
 public Class getType()
-	{
+{
 	return (type);
 }
 
 public int hashCode()
-	{
+{
 	return (clazz.getName().hashCode() ^ name.hashCode());
 }
 
 public String toString()
-	{
+{
 	StringBuffer str = new StringBuffer();
 	int mod = getModifiers();
 

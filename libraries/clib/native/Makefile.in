@@ -73,7 +73,8 @@ am__DEPENDENCIES_1 =
 libnative_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 am__objects_1 = ByteToCharDefault.lo ByteToCharIconv.lo \
-	CharToByteDefault.lo CharToByteIconv.lo ObjectInputStream.lo
+	CharToByteDefault.lo CharToByteIconv.lo ObjectInputStream.lo \
+	ObjectStreamField.lo
 am__objects_2 = Class.lo ClassLoader.lo Compiler.lo Double.lo Float.lo \
 	Math.lo MemoryAdvice.lo NativeLibrary.lo Object.lo \
 	PrimordialClassLoader.lo Runtime.lo String.lo System.lo \
@@ -105,6 +106,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/NativeLibrary.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Object.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ObjectInputStream.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ObjectStreamField.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/PrimordialClassLoader.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Runtime.Plo ./$(DEPDIR)/String.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/System.Plo ./$(DEPDIR)/TestNative.Plo \
@@ -362,7 +364,8 @@ IO_SRCS = \
 		ByteToCharIconv.c \
 		CharToByteDefault.c \
 		CharToByteIconv.c \
-		ObjectInputStream.c
+		ObjectInputStream.c \
+		ObjectStreamField.c
 
 LANG_SRCS = \
 		Class.c \
@@ -498,6 +501,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NativeLibrary.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Object.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ObjectInputStream.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ObjectStreamField.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrimordialClassLoader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Runtime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/String.Plo@am__quote@

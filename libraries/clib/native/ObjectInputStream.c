@@ -1,5 +1,10 @@
 /*
- * Copyright (C) 2003, 2004 Kaffe Team.
+ * ObjectInputStream.c
+ * 
+ * Copyright (C) 2003, 2004 Kaffe.org's team. 
+ *
+ * See "licence.terms" for information on usage and redistribution 
+ * of this file.
  */
 #include "config.h"
 #include "config-std.h"
