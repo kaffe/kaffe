@@ -190,10 +190,7 @@ public static String copyValueOf( char data[]) {
 }
 
 public static String copyValueOf(char data[], int offset, int count) {
-	if (offset < 0 || offset >= data.length) {
-		throw new IndexOutOfBoundsException();
-	}
-	if (count < 0 || offset + count > data.length) {
+	if (offset < 0 || count < 0 || offset + count > data.length) {
 		throw new IndexOutOfBoundsException();
 	}
 	char buf[]=new char[count];
