@@ -1,3 +1,9 @@
+Fri Jun 26 20:06:02 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* libraries/clib/native/Method.c:
+	  libraries/clib/native/Constructor.c: fixed Constructor.newInstance
+	and Method.invoke so that the proper JNI function is used.
+
 Wed Jun 17 11:25:56 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* kaffe/kaffevm/code-analyse.c: fixed race condition where verifier 
