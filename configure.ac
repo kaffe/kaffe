@@ -116,7 +116,11 @@ AX_CFLAGS_GCC_OPTION([-Wunreachable-code])
 AX_CFLAGS_GCC_OPTION([-Winline])
 AX_CFLAGS_GCC_OPTION([-Wlong-long])
 AX_CFLAGS_GCC_OPTION([-Wdisabled-optimization])
-
+GCC_ATTRIBUTE_CONST
+GCC_ATTRIBUTE_NORETURN
+GCC_ATTRIBUTE_UNUSED
+GCC_ATTRIBUTE_FORMAT
+	 
 if test "$GCC" != "yes"; then
 	AC_MSG_ERROR([Kaffe can only build with GCC])
 fi

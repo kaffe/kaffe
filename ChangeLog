@@ -1,3 +1,10 @@
+2004-03-29  Adam Heath <doogie@debian.org>
+
+	* configure.ac:
+	Enabled checking of __attribute__ inc onfigure.
+
+	* m4/gcc_attribute.m4: New file.
+
 2004-03-27  Patrick Cernko <pcernko@mpi-sb.mpg.de>
 
 	* kaffe/kaffevm/kaffe.def:
