@@ -1,6 +1,7 @@
 Wed Sep 29 13:04:11 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/Observable.java: rewrite
+	* libraries/javalib/java/util/ArrayList.java: add optimization
 
 Tue Sep 28 10:31:56 PDT 1999  Archie Cobbs <archie@whistle.com>
 
