@@ -130,6 +130,7 @@
 typedef struct {
 	bool ANY;
         bool BADARRAYINDEX;
+        bool NULLPOINTER;
 } jitflags;
 
 #include "locks.h"

@@ -1,3 +1,8 @@
+2003-11-02  Jim Pick <jim@kaffe.org>
+
+	* kaffe/kaffevm/jit3/machine.h:
+	Add NULLPOINTER to jitflags to fix compile.
+
 2003-11-02  Timothy S. Stack <stack@cs.utah.edu>
 
 	* kaffe/kaffevm/jit3/machine.c:
