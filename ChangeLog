@@ -1,3 +1,20 @@
+2004-09-10  Dalibor Topic  <topic@mpiat2313>
+
+	* libraries/javalib/java/lang/System.java (getenv): Implemented
+	by adapting the implementation from GNU Classpath.
+	(getenv0): New native method.
+
+	* libraries/clib/native/System.c (java_lang_System_getenv0): 
+	New method. Adapted from GNU Classpath.
+
+	2004-08-28  Mark Wielaard  <mark@klomp.org>
+
+        * java/lang/System.java (getenv): Do security checks and call
+        VMSystem.getenv().
+        * vm/reference/java/lang/VMSystem.java (getenv): New static native
+        method.
+        * native/jni/java-lang/java_lang_VMSystem.c (getenv): New function.
+
 2004-09-09  Noa Resare  <noa@resare.com>
 
 	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c:

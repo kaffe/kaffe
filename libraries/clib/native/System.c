@@ -160,6 +160,25 @@ initProxyProperties (struct Hjava_util_Properties *prop)
 	KFREE(start);
 }
 
+
+/* Adapted from GNU Classpath */
+void
+java_lang_System_getenv0(struct Hjava_lang_String *str) 
+{
+  const char *cname;
+  const char *envname;
+
+  cname = checkPtr(stringJava2C(str));
+  if (cname == NULL)
+    return NULL;
+
+  envname = getenv(cname);
+  if (envname == NULL)
+    return NULL;
+
+  return stringC2Java(envname);
+}
+
 /*
  * Initialise system properties to their defaults.
  */

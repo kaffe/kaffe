@@ -103,9 +103,16 @@ public static SecurityManager getSecurityManager() {
 	return Runtime.securityManager;
 }
 
+/* Adapted from GNU Classpath */
 public static String getenv(String name) {
-	throw new Error("System.getenv no longer supported");
+    if (name == null)
+      throw new NullPointerException();
+    SecurityManager sm = Runtime.securityManager; // Be thread-safe.
+    if (sm != null)
+      sm.checkPermission(new RuntimePermission("getenv." + name));
+    return getenv0(name);
 }
+native private static String getenv0(String name);
 
 native public static int identityHashCode(Object x);
 
