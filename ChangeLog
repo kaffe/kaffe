@@ -1,6 +1,20 @@
 2005-01-13  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+
+	2005-01-11  Chris Burdess  <dog@gnu.org>
+
+	* gnu/java/net/protocol/http/HTTPConnection.java: Use correct form of
+	Host header when using a non-default port number.
+
+	2005-01-11  Chris Burdess  <dog@gnu.org>
+
+	* javax/net/ssl/HttpsURLConnection.java: Do not request SSLv3
+	provider during class initialization.
+	
+2005-01-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 	
 	2005-01-11  Michael Koch  <konqueror@gmx.de>
 

@@ -369,7 +369,15 @@ public class HTTPConnection
         path = "/";
       }
     Request ret = new Request(this, method, path);
-    ret.setHeader("Host", hostname);
+    if ((secure && port != HTTPS_PORT) ||
+        (!secure && port != HTTP_PORT))
+      {
+        ret.setHeader("Host", hostname + ":" + port);
+      }
+    else
+      {
+        ret.setHeader("Host", hostname);
+      }
     ret.setHeader("User-Agent", userAgent);
     ret.setHeader("Connection", "keep-alive");
     ret.setHeader("Accept-Encoding",
