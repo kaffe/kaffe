@@ -76,37 +76,42 @@ public int nextToken() throws IOException {
 
 private int nextTokenType() throws IOException {
 	int chr = chrRead();
-	if (EOLSignificant && chr=='\n') {
-		ttype = TT_EOL;
-	}
-	else if (chr=='/' && (CComments || CPlusPlusComments)) {
+	if (chr=='/' && (CComments || CPlusPlusComments)) {
 		/* Check for C/C++ comments */
 		int next = chrRead();
 		if (next == '/' && (CPlusPlusComments)) {
 			/* C++ comment */
 			skipLine();
 
-			ttype = nextTokenType();
+			nextTokenType();
+			return (ttype);
 		}
 		else if (next == '*' && (CComments)) {
 			/* C comments */
 			skipCComment();
 
-			ttype = nextTokenType();
+			nextTokenType();
+			return (ttype);
 		}
 		else {
 			pushIn.unread(next);
 		}
 	}
+	if (chr=='\n' && EOLSignificant) {
+		ttype = TT_EOL;
+	}
 	else if (lookup[chr].isWhitespace) {
 		/* Skip whitespace and return nextTokenType */
 		while (lookup[chr].isWhitespace) {
 			chr = chrRead();
+			if (EOLSignificant && chr=='\n') {
+				break;
+			}	
 		}
 
 		/* For next time */
 		pushIn.unread(chr);
-		ttype = nextTokenType();
+		nextTokenType();
 	}
 	else if (lookup[chr].isNumeric) {
 		/* Parse the number and return */
@@ -197,7 +202,7 @@ private int nextTokenType() throws IOException {
 		/* skip comment and return nextTokenType() */
 		skipLine();
 
-		ttype = nextTokenType();    
+		nextTokenType();    
 	}
 	else {
 		/* Just return it as a token */
@@ -287,6 +292,10 @@ private void skipLine() throws IOException {
 		chr=chrRead();
 	}
 	while (chr!='\n');
+
+	if (EOLSignificant) {
+		pushIn.unread(chr);
+	}
 }
 
 public void slashSlashComments(boolean flag) {

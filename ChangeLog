@@ -1,3 +1,15 @@
+Wed Nov 18 18:14:05 1998  Luciane Lamour Ferreira <972311@dcc.unicamp.br>, Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/javalib/java/io/StreamTokenizer.java (skipLine): unread
+	newline back if it is significant;
+	(nextTokenType): remove assignment to ttype when a recursive
+	invocation has already taken care of this
+	(nextTokenType): handle cases in which `/' is not a comment
+	character
+	(nextTokenType): do not skip newline as whitespace if it is
+	significant
+	* libraries/javalib/Klasses.jar: regen
+
 Mon Nov 16 17:36:49 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/awt/ScrollPane.java: make sure we don't 
