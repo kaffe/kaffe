@@ -18,7 +18,7 @@ set -e
 
 if [ "$1" != "--override" ]; then
 
-WANTED_AUTOMAKE_VERS="1.7.5"
+WANTED_AUTOMAKE_VERS="1.7.6"
 WANTED_AUTOCONF_VERS="2.57"
 WANTED_LIBTOOL_VERS="1.5"
 

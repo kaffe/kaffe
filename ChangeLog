@@ -1,3 +1,31 @@
+2003-07-17  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/kjc.jar:
+	Rebuilt with Guilhem's patch applied.
+
+	* developers/patch-kjc-variable-propagation:
+	Fix KJC's problem raised by ShutdownHookTest.
+	Add a system so that when you add a monitor variable 
+	the update of the position of all variables are back-propagated
+	to all children block context created before the call. Before that,
+	only the variables of the parent blocks have been updated.
+
+	Patch by: Guilhem Lavaux <guilhem.lavaux@free.fr>
+
+	* Makefile.am:
+	(EXTRA_DIST) added developers/patch-kjc-variable-propagation
+
+	* FAQ/FAQ.automake, developers/autogen.sh:
+	Upped the required version of automake to 1.7.6.
+
+	* developers/patch-libtool-amiga-max-command-line-length.diff: 
+	updated patch status information. Reformatted information
+	blurb to follow style of other patches.
+
+	* test/regression/Makefile.am:
+	(TEST_MISC) removed the absent 
+	test/regression/TestMessageFormat.java.
+
 2003-07-15  Guilhem Lavaux <guilhem.lavaux@free.fr>
 
 	* libraries/clib/awt/X/img.c:

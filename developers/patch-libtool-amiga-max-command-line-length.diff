@@ -1,6 +1,8 @@
-This patch should be fowarded upstream.
+More info on this patch:
 
-See http://www.kaffe.org/pipermail/kaffe/2003-June/042605.html for more information.
+	http://www.kaffe.org/pipermail/kaffe/2003-June/042605.html
+
+This patch has been merged in upstream in libtool.
 
 Index: libltdl/acinclude.m4
 ===================================================================
