@@ -1,3 +1,73 @@
+2001-08-28  Edouard G. Parmelan  <egp@free.fr>
+
+	* config/powerpc/netbsd1/config.frag: handle --with-setjmp=glibc
+	and --with-setjmp=sigsetjmp to select alternative implementation
+	of setjmp()/longjmp() functions.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c: Fix buffer
+	overflow when filling the table of possible thread priority
+	values.
+	Reported by Giuseppe Guerrini <guerrini@cnisrl.it> and others.
+
+	* libraries/javalib/java/lang/StringBuffer.java (insert): Update
+	used count with inserted length, not buffer length.
+	Reported by David Reiss <davidr42@optonline.net>.
+
+	* libraries/javalib/kaffe/io/ConverterAlias.java: Add EUC-JP aliases.
+	Patch by Takashi Okamoto <toraneko@kun.ne.jp>.
+
+	* libraries/javalib/java/util/LinkedList.java (add): call
+	this.addLast() to avoid infinite recursion with
+	org.jdom.PartialList.
+	Reported by Takashi Okamoto <toraneko@kun.ne.jp>.
+
+	* libraries/javalib/kaffe/io/ObjectInputStreamImpl.java: Handle
+	TC_CLASS.
+	Patch by Jukka Santala <jsantala@tml.hut.fi>.
+
+	* libraries/javalib/java/awt/AWTEvent.java,
+	libraries/javalib/java/awt/Window.java,
+	libraries/javalib/java/awt/win32/Window.java,
+	libraries/javalib/java/io/File.java,
+	libraries/javalib/java/io/FileInputStream.java,
+	libraries/javalib/java/io/FileOutputStream.java,
+	libraries/javalib/java/io/RandomAccessFile.java,
+	libraries/javalib/java/lang/Class.java,
+	libraries/javalib/java/lang/ClassLoader.java,
+	libraries/javalib/java/lang/Runtime.java,
+	libraries/javalib/java/lang/SecurityManager.java,
+	libraries/javalib/java/lang/System.java,
+	libraries/javalib/java/lang/Thread.java,
+	libraries/javalib/java/lang/ThreadGroup.java,
+	libraries/javalib/java/net/DatagramSocket.java,
+	libraries/javalib/java/net/InetAddress.java,
+	libraries/javalib/java/net/ServerSocket.java,
+	libraries/javalib/java/net/URL.java,
+	libraries/javalib/java/security/Permission.java,
+	libraries/javalib/java/security/Provider.java,
+	libraries/javalib/java/security/SecureClassLoader.java,
+	libraries/javalib/java/security/Security.java: get ride of
+	NullSecurityManager.
+	Patch by Jukka Santala <jsantala@tml.hut.fi>.
+
+	* libraries/javalib/java/lang/NullSecurityManager.java: removed.
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	remove NullSecuritymanager.
+
+	* kaffe/kaffevm/findInJar.c: Partially handle Manifest Class-Path
+	attribute of Jar files.
+	Patch by Carlos Valiente <yo@virutass.net>.
+
+	* FAQ/FAQ.kjc: How to upgrade KJC into Kaffe.
+
+	* Makefile.am, Makefile.in (EXTRA_DIST): Add file FAQ/FAQ.kjc.
+
+	* libraries/javalib/kjc.jar: updated with kjc-suite-1.5B-bin.jar.
+
+	* libraries/javalib/Klasses.jar: rebuilt with kjc-1.5B on
+	GNU/Linux PowerPC.
+
 2001-08-19  Edouard G. Parmelan  <egp@free.fr>
 
 	* kaffe/kaffe/main.c (main): Handle new environment variable
