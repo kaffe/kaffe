@@ -409,6 +409,7 @@ Image* createImage ( int width, int height);
 void createXMaskImage ( Toolkit* X, Image* img );
 void createXImage ( Toolkit* X, Image* img );
 void createAlphaImage ( Toolkit* X, Image* img );
+int needsFullAlpha ( Toolkit* X, Image *img, double threshold );
 void initScaledImage ( Toolkit* X, Image *tgt, Image *src,
 					   int dx0, int dy0, int dx1, int dy1,
 					   int sx0, int sy0, int sx1, int sy1 );

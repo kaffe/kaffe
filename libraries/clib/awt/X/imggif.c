@@ -20,15 +20,15 @@
 #endif
 
 
-static int iOffset[] = { 0, 4, 2, 1 };
-static int iJumps[] = { 8, 8, 4, 2 };
-
-
 /**************************************************************************************
  * internal functions
  */
 
 #if defined(INCLUDE_GIF)
+
+static int iOffset[] = { 0, 4, 2, 1 };
+static int iJumps[] = { 8, 8, 4, 2 };
+
 void
 writeRow ( Image* img, GifPixelType* rowBuf, GifColorType* cm, int row )
 {
