@@ -1,3 +1,8 @@
+2000-01-14  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
+
+	* test/regression/TestScript.in (KAFFEHOME): Ensure that, if
+	LC_ALL or LANG are set, that they are set to C.
+
 Thu Jan 13 16:11:04 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/text/StringCharacterIterator.java:

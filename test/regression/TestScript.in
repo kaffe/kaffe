@@ -4,7 +4,7 @@
 # be built up as we add more test and so, hopefully, avoid re-releasing
 # bugs which have been fixed.
 #
-# Copyright (c) 1996, 1997, 1998, 1999
+# Copyright (c) 1996-2000
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 
@@ -23,6 +23,14 @@ if test -n "${VERBOSE+set}"; then
   VERBOSE=echo
 else
   VERBOSE=:
+fi
+
+# Don't let these variables mess up the order of `sort'
+if test -n "${LC_ALL+set}"; then
+  LC_ALL=C; export LC_ALL
+fi
+if test -n "${LANG+set}"; then
+  LANG=C; export LANG
 fi
 
 $VERBOSE $0 ${1+"$@"}
