@@ -1,5 +1,5 @@
-/* Handler.java --
-   Copyright (C) 2004 Free Software Foundation, Inc.
+/* DTPInputStream.java --
+   Copyright (C) 2003, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,37 +36,52 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.java.net.protocol.http;
+package gnu.java.net.protocol.ftp;
 
+import java.io.FilterInputStream;
+import java.io.InputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
 
 /**
- * An HTTP URL stream handler.
+ * An input stream that notifies a DTP on completion.
  *
  * @author Chris Burdess (dog@gnu.org)
  */
-public class Handler
-  extends URLStreamHandler
+abstract class DTPInputStream
+  extends FilterInputStream
 {
 
+  DTP dtp;
+  boolean transferComplete;
+
   /**
-   * Returns the default HTTP port (80).
+   * Constructor.
+   * @param dtp the controlling data transfer process
+   * @param in the underlying socket stream
    */
-  protected int getDefaultPort()
+  DTPInputStream (DTP dtp, InputStream in)
   {
-    return HTTPConnection.HTTP_PORT;
+    super(in);
+    this.dtp = dtp;
+    transferComplete = false;
   }
 
   /**
-   * Returns an HTTPURLConnection for the given URL.
+   * Marks this input stream complete.
+   * This is called by the DTP.
    */
-  public URLConnection openConnection(URL url)
+  void setTransferComplete(boolean flag)
+  {
+    transferComplete = flag;
+  }
+  
+  /**
+   * Notifies the controlling DTP that this stream has completed transfer.
+   */
+  public void close()
     throws IOException
   {
-    return new HTTPURLConnection(url);
+    dtp.transferComplete();
   }
 
 }

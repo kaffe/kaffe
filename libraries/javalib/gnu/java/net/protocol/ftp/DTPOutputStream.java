@@ -1,5 +1,5 @@
-/* Handler.java --
-   Copyright (C) 2004 Free Software Foundation, Inc.
+/* DTPOutputStream.java --
+   Copyright (C) 2003, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,38 +36,50 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.java.net.protocol.http;
+package gnu.java.net.protocol.ftp;
 
+import java.io.FilterOutputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
+import java.io.OutputStream;
 
 /**
- * An HTTP URL stream handler.
+ * An output stream that notifies a DTP on end of stream.
  *
  * @author Chris Burdess (dog@gnu.org)
  */
-public class Handler
-  extends URLStreamHandler
+abstract class DTPOutputStream extends FilterOutputStream
 {
 
-  /**
-   * Returns the default HTTP port (80).
-   */
-  protected int getDefaultPort()
-  {
-    return HTTPConnection.HTTP_PORT;
-  }
+  DTP dtp;
+  boolean transferComplete;
 
   /**
-   * Returns an HTTPURLConnection for the given URL.
+   * Constructor.
+   * @param dtp the controlling data transfer process
+   * @param out the socket output stream
    */
-  public URLConnection openConnection(URL url)
-    throws IOException
-  {
-    return new HTTPURLConnection(url);
-  }
+  DTPOutputStream (DTP dtp, OutputStream out)
+    {
+      super (out);
+      this.dtp = dtp;
+      transferComplete = false;
+    }
+
+  /**
+   * Tells this stream whether transfer has completed or not.
+   * @param flag true if the process has completed, false otherwise
+   */
+  void setTransferComplete (boolean flag)
+    {
+      transferComplete = flag;
+    }
+
+  /**
+   * Notifies the controlling DTP that this stream has been terminated.
+   */
+  public void close () throws IOException
+    {
+      dtp.transferComplete ();
+    }
 
 }
-

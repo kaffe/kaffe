@@ -445,10 +445,7 @@ Klasses_jar_SRCS = \
 	$(gnu_getopt_SRCS) \
 	$(gnu_inet_comsat_SRCS) \
 	$(gnu_inet_finger_SRCS) \
-	$(gnu_inet_ftp_SRCS) \
 	$(gnu_inet_gopher_SRCS) \
-	$(gnu_inet_http_SRCS) \
-	$(gnu_inet_http_event_SRCS) \
 	$(gnu_inet_https_SRCS) \
 	$(gnu_inet_imap_SRCS) \
 	$(gnu_inet_ldap_SRCS) \
@@ -472,7 +469,9 @@ Klasses_jar_SRCS = \
 	$(gnu_java_math_SRCS) \
 	$(gnu_java_net_SRCS) \
 	$(gnu_java_net_protocol_file_SRCS) \
+	$(gnu_java_net_protocol_ftp_SRCS) \
 	$(gnu_java_net_protocol_http_SRCS) \
+	$(gnu_java_net_protocol_http_event_SRCS) \
 	$(gnu_java_net_protocol_jar_SRCS) \
 	$(gnu_java_nio_SRCS) \
 	$(gnu_java_nio_channels_SRCS) \
@@ -1221,24 +1220,6 @@ gnu_inet_finger_SRCS = \
 	gnu/inet/finger/FingerURLConnection.java \
 	gnu/inet/finger/Handler.java
 
-gnu_inet_ftp_SRCS = \
-	gnu/inet/ftp/ActiveModeDTP.java \
-	gnu/inet/ftp/BlockInputStream.java \
-	gnu/inet/ftp/BlockOutputStream.java \
-	gnu/inet/ftp/CompressedInputStream.java \
-	gnu/inet/ftp/CompressedOutputStream.java \
-	gnu/inet/ftp/DTP.java \
-	gnu/inet/ftp/DTPInputStream.java \
-	gnu/inet/ftp/DTPOutputStream.java \
-	gnu/inet/ftp/FTPConnection.java \
-	gnu/inet/ftp/FTPException.java \
-	gnu/inet/ftp/FTPResponse.java \
-	gnu/inet/ftp/FTPURLConnection.java \
-	gnu/inet/ftp/Handler.java \
-	gnu/inet/ftp/PassiveModeDTP.java \
-	gnu/inet/ftp/StreamInputStream.java \
-	gnu/inet/ftp/StreamOutputStream.java
-
 gnu_inet_gopher_SRCS = \
 	gnu/inet/gopher/DirectoryEntry.java \
 	gnu/inet/gopher/DirectoryListing.java \
@@ -1246,32 +1227,6 @@ gnu_inet_gopher_SRCS = \
 	gnu/inet/gopher/GopherContentHandler.java \
 	gnu/inet/gopher/GopherURLConnection.java \
 	gnu/inet/gopher/Handler.java
-
-gnu_inet_http_SRCS = \
-	gnu/inet/http/Authenticator.java \
-	gnu/inet/http/ByteArrayRequestBodyWriter.java \
-	gnu/inet/http/ByteArrayResponseBodyReader.java \
-	gnu/inet/http/ChunkedInputStream.java \
-	gnu/inet/http/Cookie.java \
-	gnu/inet/http/CookieManager.java \
-	gnu/inet/http/Credentials.java \
-	gnu/inet/http/HTTPConnection.java \
-	gnu/inet/http/HTTPDateFormat.java \
-	gnu/inet/http/HTTPURLConnection.java \
-	gnu/inet/http/Handler.java \
-	gnu/inet/http/Headers.java \
-	gnu/inet/http/Request.java \
-	gnu/inet/http/RequestBodyWriter.java \
-	gnu/inet/http/Response.java \
-	gnu/inet/http/ResponseBodyReader.java \
-	gnu/inet/http/ResponseHeaderHandler.java \
-	gnu/inet/http/SimpleCookieManager.java
-
-gnu_inet_http_event_SRCS = \
-	gnu/inet/http/event/ConnectionEvent.java \
-	gnu/inet/http/event/ConnectionListener.java \
-	gnu/inet/http/event/RequestEvent.java \
-	gnu/inet/http/event/RequestListener.java
 
 gnu_inet_https_SRCS = \
 	gnu/inet/https/Handler.java
@@ -1622,9 +1577,16 @@ gnu_java_math_SRCS = \
 	gnu/java/math/MPN.java
 
 gnu_java_net_SRCS = \
+	gnu/java/net/BASE64.java \
+	gnu/java/net/CRLFInputStream.java \
+	gnu/java/net/CRLFOutputStream.java \
 	gnu/java/net/DNSJavaInetAddressImpl.java \
+	gnu/java/net/EmptyX509TrustManager.java \
+	gnu/java/net/GetLocalHostAction.java \
+	gnu/java/net/GetSystemPropertyAction.java \
 	gnu/java/net/HeaderFieldHelper.java \
 	gnu/java/net/InetAddressImpl.java \
+	gnu/java/net/LineInputStream.java \
 	gnu/java/net/PlainDatagramSocketImpl.java \
 	gnu/java/net/PlainSocketImpl.java \
 	gnu/java/net/SysInetAddressImpl.java \
@@ -1634,9 +1596,49 @@ gnu_java_net_protocol_file_SRCS = \
 	gnu/java/net/protocol/file/Connection.java \
 	gnu/java/net/protocol/file/Handler.java
 
+gnu_java_net_protocol_ftp_SRCS = \
+	gnu/java/net/protocol/ftp/ActiveModeDTP.java \
+	gnu/java/net/protocol/ftp/BlockInputStream.java \
+	gnu/java/net/protocol/ftp/BlockOutputStream.java \
+	gnu/java/net/protocol/ftp/CompressedInputStream.java \
+	gnu/java/net/protocol/ftp/CompressedOutputStream.java \
+	gnu/java/net/protocol/ftp/DTP.java \
+	gnu/java/net/protocol/ftp/DTPInputStream.java \
+	gnu/java/net/protocol/ftp/DTPOutputStream.java \
+	gnu/java/net/protocol/ftp/FTPConnection.java \
+	gnu/java/net/protocol/ftp/FTPException.java \
+	gnu/java/net/protocol/ftp/FTPResponse.java \
+	gnu/java/net/protocol/ftp/FTPURLConnection.java \
+	gnu/java/net/protocol/ftp/Handler.java \
+	gnu/java/net/protocol/ftp/PassiveModeDTP.java \
+	gnu/java/net/protocol/ftp/StreamInputStream.java \
+	gnu/java/net/protocol/ftp/StreamOutputStream.java
+
 gnu_java_net_protocol_http_SRCS = \
-	gnu/java/net/protocol/http/Connection.java \
-	gnu/java/net/protocol/http/Handler.java
+	gnu/java/net/protocol/http/Authenticator.java \
+	gnu/java/net/protocol/http/ByteArrayRequestBodyWriter.java \
+	gnu/java/net/protocol/http/ByteArrayResponseBodyReader.java \
+	gnu/java/net/protocol/http/ChunkedInputStream.java \
+	gnu/java/net/protocol/http/Cookie.java \
+	gnu/java/net/protocol/http/CookieManager.java \
+	gnu/java/net/protocol/http/Credentials.java \
+	gnu/java/net/protocol/http/HTTPConnection.java \
+	gnu/java/net/protocol/http/HTTPDateFormat.java \
+	gnu/java/net/protocol/http/HTTPURLConnection.java \
+	gnu/java/net/protocol/http/Handler.java \
+	gnu/java/net/protocol/http/Headers.java \
+	gnu/java/net/protocol/http/Request.java \
+	gnu/java/net/protocol/http/RequestBodyWriter.java \
+	gnu/java/net/protocol/http/Response.java \
+	gnu/java/net/protocol/http/ResponseBodyReader.java \
+	gnu/java/net/protocol/http/ResponseHeaderHandler.java \
+	gnu/java/net/protocol/http/SimpleCookieManager.java
+
+gnu_java_net_protocol_http_event_SRCS = \
+	gnu/java/net/protocol/http/event/ConnectionEvent.java \
+	gnu/java/net/protocol/http/event/ConnectionListener.java \
+	gnu/java/net/protocol/http/event/RequestEvent.java \
+	gnu/java/net/protocol/http/event/RequestListener.java
 
 gnu_java_net_protocol_jar_SRCS = \
 	gnu/java/net/protocol/jar/Connection.java \

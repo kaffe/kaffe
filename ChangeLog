@@ -1,5 +1,164 @@
 2004-12-03  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/awt/classpath-gtk/classpath/Makefile.in,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/gnu/inet/ftp/ActiveModeDTP.java,
+	libraries/javalib/gnu/inet/ftp/BlockInputStream.java,
+	libraries/javalib/gnu/inet/ftp/BlockOutputStream.java,
+	libraries/javalib/gnu/inet/ftp/CompressedInputStream.java,
+	libraries/javalib/gnu/inet/ftp/CompressedOutputStream.java,
+	libraries/javalib/gnu/inet/ftp/DTP.java,
+	libraries/javalib/gnu/inet/ftp/DTPInputStream.java,
+	libraries/javalib/gnu/inet/ftp/DTPOutputStream.java,
+	libraries/javalib/gnu/inet/ftp/FTPConnection.java,
+	libraries/javalib/gnu/inet/ftp/FTPException.java,
+	libraries/javalib/gnu/inet/ftp/FTPResponse.java,
+	libraries/javalib/gnu/inet/ftp/FTPURLConnection.java,
+	libraries/javalib/gnu/inet/ftp/Handler.java,
+	libraries/javalib/gnu/inet/ftp/PassiveModeDTP.java,
+	libraries/javalib/gnu/inet/ftp/StreamInputStream.java,
+	libraries/javalib/gnu/inet/ftp/StreamOutputStream.java,
+	libraries/javalib/gnu/inet/ftp/package.html:
+	Removed due to inetlib's ftp handler being merged into GNU Classpath.
+
+        * libraries/javalib/gnu/inet/http/Authenticator.java,
+        libraries/javalib/gnu/inet/http/ByteArrayRequestBodyWriter.java,
+        libraries/javalib/gnu/inet/http/ByteArrayResponseBodyReader.java,
+        libraries/javalib/gnu/inet/http/ChunkedInputStream.java,
+        libraries/javalib/gnu/inet/http/Cookie.java,
+        libraries/javalib/gnu/inet/http/CookieManager.java,
+        libraries/javalib/gnu/inet/http/Credentials.java,
+        libraries/javalib/gnu/inet/http/HTTPConnection.java,
+        libraries/javalib/gnu/inet/http/HTTPDateFormat.java,
+        libraries/javalib/gnu/inet/http/HTTPURLConnection.java,
+        libraries/javalib/gnu/inet/http/Handler.java,
+        libraries/javalib/gnu/inet/http/Headers.java,
+        libraries/javalib/gnu/inet/http/Request.java,
+        libraries/javalib/gnu/inet/http/RequestBodyWriter.java,
+        libraries/javalib/gnu/inet/http/Response.java,
+        libraries/javalib/gnu/inet/http/ResponseBodyReader.java,
+        libraries/javalib/gnu/inet/http/ResponseHeaderHandler.java,
+        libraries/javalib/gnu/inet/http/SimpleCookieManager.java,
+        libraries/javalib/gnu/inet/http/package.html,
+        libraries/javalib/gnu/inet/http/event/ConnectionEvent.java,
+        libraries/javalib/gnu/inet/http/event/ConnectionListener.java,
+        libraries/javalib/gnu/inet/http/event/RequestEvent.java,
+        libraries/javalib/gnu/inet/http/event/RequestListener.java:
+        Removed due to inetlib's http handler being merged into GNU Classpath.
+
+        * libraries/javalib/gnu/inet/https/Handler.java:
+	Use GNU Classpath's merged in http handler.
+
+        * libraries/javalib/gnu/java/net/BASE64.java,
+        libraries/javalib/gnu/java/net/CRLFInputStream.java,
+        libraries/javalib/gnu/java/net/CRLFOutputStream.java,
+        libraries/javalib/gnu/java/net/EmptyX509TrustManager.java,
+        libraries/javalib/gnu/java/net/GetLocalHostAction.java,
+        libraries/javalib/gnu/java/net/GetSystemPropertyAction.java,
+        libraries/javalib/gnu/java/net/LineInputStream.java,
+	libraries/javalib/gnu/java/net/protocol/ftp/ActiveModeDTP.java,
+	libraries/javalib/gnu/java/net/protocol/ftp/BlockInputStream.java,
+	libraries/javalib/gnu/java/net/protocol/ftp/BlockOutputStream.java,
+	libraries/javalib/gnu/java/net/protocol/ftp/CompressedInputStream.java,
+	libraries/javalib/gnu/java/net/protocol/ftp/CompressedOutputStream.java,
+	libraries/javalib/gnu/java/net/protocol/ftp/DTP.java,
+	libraries/javalib/gnu/java/net/protocol/ftp/DTPInputStream.java,
+	libraries/javalib/gnu/java/net/protocol/ftp/DTPOutputStream.java,
+	libraries/javalib/gnu/java/net/protocol/ftp/FTPConnection.java,
+	libraries/javalib/gnu/java/net/protocol/ftp/FTPException.java,
+	libraries/javalib/gnu/java/net/protocol/ftp/FTPResponse.java,
+	libraries/javalib/gnu/java/net/protocol/ftp/FTPURLConnection.java,
+	libraries/javalib/gnu/java/net/protocol/ftp/Handler.java,
+	libraries/javalib/gnu/java/net/protocol/ftp/PassiveModeDTP.java,
+	libraries/javalib/gnu/java/net/protocol/ftp/StreamInputStream.java,
+	libraries/javalib/gnu/java/net/protocol/ftp/StreamOutputStream.java:
+        libraries/javalib/gnu/java/net/protocol/http/Authenticator.java,
+        libraries/javalib/gnu/java/net/protocol/http/ByteArrayRequestBodyWriter.java,
+        libraries/javalib/gnu/java/net/protocol/http/ByteArrayResponseBodyReader.java,
+        libraries/javalib/gnu/java/net/protocol/http/ChunkedInputStream.java,
+        libraries/javalib/gnu/java/net/protocol/http/Connection.java,
+        libraries/javalib/gnu/java/net/protocol/http/Cookie.java,
+        libraries/javalib/gnu/java/net/protocol/http/CookieManager.java,
+        libraries/javalib/gnu/java/net/protocol/http/Credentials.java,
+        libraries/javalib/gnu/java/net/protocol/http/HTTPConnection.java,
+        libraries/javalib/gnu/java/net/protocol/http/HTTPDateFormat.java,
+        libraries/javalib/gnu/java/net/protocol/http/HTTPURLConnection.java,
+        libraries/javalib/gnu/java/net/protocol/http/Handler.java,
+        libraries/javalib/gnu/java/net/protocol/http/Headers.java,
+        libraries/javalib/gnu/java/net/protocol/http/Request.java,
+        libraries/javalib/gnu/java/net/protocol/http/RequestBodyWriter.java,
+        libraries/javalib/gnu/java/net/protocol/http/Response.java,
+        libraries/javalib/gnu/java/net/protocol/http/ResponseBodyReader.java,
+        libraries/javalib/gnu/java/net/protocol/http/ResponseHeaderHandler.java,
+        libraries/javalib/gnu/java/net/protocol/http/SimpleCookieManager.java,
+        libraries/javalib/gnu/java/net/protocol/http/event/ConnectionEvent.java,
+        libraries/javalib/gnu/java/net/protocol/http/event/ConnectionListener.java,
+        libraries/javalib/gnu/java/net/protocol/http/event/RequestEvent.java,
+        libraries/javalib/gnu/java/net/protocol/http/event/RequestListener.java,
+	Resynced with GNU Classpath.
+
+	2004-11-30  Michael Koch  <konqueror@gmx.de>
+
+	* gnu/java/net/BASE64.java,
+	gnu/java/net/CRLFInputStream.java,
+	gnu/java/net/CRLFOutputStream.java,
+	gnu/java/net/EmptyX509TrustManager.java,
+	gnu/java/net/GetLocalHostAction.java,
+	gnu/java/net/GetSystemPropertyAction.java,
+	gnu/java/net/LineInputStream.java,
+	gnu/java/net/protocol/http/Authenticator.java,
+	gnu/java/net/protocol/http/ByteArrayRequestBodyWriter.java,
+	gnu/java/net/protocol/http/ByteArrayResponseBodyReader.java,
+	gnu/java/net/protocol/http/ChunkedInputStream.java,
+	gnu/java/net/protocol/http/Cookie.java,
+	gnu/java/net/protocol/http/CookieManager.java,
+	gnu/java/net/protocol/http/Credentials.java,
+	gnu/java/net/protocol/http/HTTPConnection.java,
+	gnu/java/net/protocol/http/HTTPDateFormat.java,
+	gnu/java/net/protocol/http/HTTPURLConnection.java,
+	gnu/java/net/protocol/http/Headers.java,
+	gnu/java/net/protocol/http/Request.java,
+	gnu/java/net/protocol/http/RequestBodyWriter.java,
+	gnu/java/net/protocol/http/Response.java,
+	gnu/java/net/protocol/http/ResponseBodyReader.java,
+	gnu/java/net/protocol/http/ResponseHeaderHandler.java,
+	gnu/java/net/protocol/http/SimpleCookieManager.java,
+	gnu/java/net/protocol/http/event/ConnectionEvent.java,
+	gnu/java/net/protocol/http/event/ConnectionListener.java,
+	gnu/java/net/protocol/http/event/RequestEvent.java,
+	gnu/java/net/protocol/http/event/RequestListener.java:
+	New files
+	* gnu/java/net/protocol/http/Connection.java:
+	gnu/java/net/protocol/http/TODO: Removed
+	* gnu/java/net/protocol/http/Handler.java: Updated.
+	Merged HTTP protocol implementation from GNU inetlib.
+
+	2004-11-30  Michael Koch  <konqueror@gmx.de>
+
+	* gnu/java/net/protocol/ftp/ActiveModeDTP.java,
+	gnu/java/net/protocol/ftp/BlockInputStream.java,
+	gnu/java/net/protocol/ftp/BlockOutputStream.java,
+	gnu/java/net/protocol/ftp/CompressedInputStream.java,
+	gnu/java/net/protocol/ftp/CompressedOutputStream.java,
+	gnu/java/net/protocol/ftp/DTP.java,
+	gnu/java/net/protocol/ftp/DTPInputStream.java,
+	gnu/java/net/protocol/ftp/DTPOutputStream.java,
+	gnu/java/net/protocol/ftp/FTPConnection.java,
+	gnu/java/net/protocol/ftp/FTPException.java,
+	gnu/java/net/protocol/ftp/FTPResponse.java,
+	gnu/java/net/protocol/ftp/FTPURLConnection.java,
+	gnu/java/net/protocol/ftp/Handler.java,
+	gnu/java/net/protocol/ftp/PassiveModeDTP.java,
+	gnu/java/net/protocol/ftp/StreamInputStream.java,
+	gnu/java/net/protocol/ftp/StreamOutputStream.java:
+	New files. Merged from GNU inetlib.
+
+2004-12-03  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/tree/DefaultMutableTreeNode.java,
 	libraries/javalib/javax/swing/tree/MutableTreeNode.java:
         Resynced with GNU Classpath.

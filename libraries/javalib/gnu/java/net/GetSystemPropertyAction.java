@@ -1,5 +1,5 @@
-/* Handler.java --
-   Copyright (C) 2004 Free Software Foundation, Inc.
+/* GetSystemPropertyAction.java --
+   Copyright (C) 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,38 +36,32 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.java.net.protocol.http;
+package gnu.java.net;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
+import java.security.PrivilegedAction;
 
 /**
- * An HTTP URL stream handler.
+ * Privileged action for retrieving system properties.
  *
  * @author Chris Burdess (dog@gnu.org)
  */
-public class Handler
-  extends URLStreamHandler
+public class GetSystemPropertyAction
+  implements PrivilegedAction
 {
+  final String name;
 
   /**
-   * Returns the default HTTP port (80).
+   * Constructor.
+   * @param name the the name of the system property to retrieve
    */
-  protected int getDefaultPort()
+  public GetSystemPropertyAction(String name)
   {
-    return HTTPConnection.HTTP_PORT;
+    this.name = name;
   }
 
-  /**
-   * Returns an HTTPURLConnection for the given URL.
-   */
-  public URLConnection openConnection(URL url)
-    throws IOException
+  public Object run()
   {
-    return new HTTPURLConnection(url);
+    return System.getProperty(name);
   }
-
 }
 

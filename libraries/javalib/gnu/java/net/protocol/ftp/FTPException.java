@@ -1,5 +1,5 @@
-/* Handler.java --
-   Copyright (C) 2004 Free Software Foundation, Inc.
+/* FTPException.java --
+   Copyright (C) 2003. 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,37 +36,40 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.java.net.protocol.http;
+package gnu.java.net.protocol.ftp;
 
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
 
 /**
- * An HTTP URL stream handler.
+ * An FTP control exception.
  *
  * @author Chris Burdess (dog@gnu.org)
  */
-public class Handler
-  extends URLStreamHandler
+public class FTPException
+  extends IOException
 {
 
   /**
-   * Returns the default HTTP port (80).
+   * The response that provoked this exception.
    */
-  protected int getDefaultPort()
-  {
-    return HTTPConnection.HTTP_PORT;
-  }
+  protected final FTPResponse response;
 
   /**
-   * Returns an HTTPURLConnection for the given URL.
+   * Constructs a new FTP exception.
+   * @param response the response that provoked this exception
    */
-  public URLConnection openConnection(URL url)
-    throws IOException
+  public FTPException(FTPResponse response)
   {
-    return new HTTPURLConnection(url);
+    super(response.getMessage());
+    this.response = response;
+  }
+  
+  /**
+   * Returns the response that provoked this exception.
+   */
+  public FTPResponse getResponse()
+  {
+    return response;
   }
 
 }

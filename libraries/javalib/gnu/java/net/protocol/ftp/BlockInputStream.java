@@ -1,5 +1,5 @@
-/* Handler.java --
-   Copyright (C) 2004 Free Software Foundation, Inc.
+/* BlockInputStream.java --
+   Copyright (C) 2003, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,37 +36,115 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.java.net.protocol.http;
+package gnu.java.net.protocol.ftp;
 
+import java.io.FilterInputStream;
+import java.io.InputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
 
 /**
- * An HTTP URL stream handler.
+ * A DTP input stream that implements the FTP block transfer mode.
  *
  * @author Chris Burdess (dog@gnu.org)
  */
-public class Handler
-  extends URLStreamHandler
+class BlockInputStream
+  extends DTPInputStream
 {
 
-  /**
-   * Returns the default HTTP port (80).
-   */
-  protected int getDefaultPort()
+  static final int EOF = 64;
+
+  int descriptor;
+  int max = -1;
+  int count = -1;
+
+  BlockInputStream(DTP dtp, InputStream in)
   {
-    return HTTPConnection.HTTP_PORT;
+    super(dtp, in);
+  }
+
+  public int read()
+    throws IOException
+  {
+    if (transferComplete)
+      {
+        return -1;
+      }
+    if (count == -1)
+      {
+        readHeader();
+      }
+    if (max < 1)
+      {
+        close();
+        return -1;
+      }
+    int c = in.read();
+    if (c == -1)
+      {
+        dtp.transferComplete();
+      }
+    count++;
+    if (count >= max)
+      {
+        count = -1;
+        if (descriptor == EOF)
+          {
+            close();
+          }
+      }
+    return c;
+  }
+
+  public int read(byte[] buf)
+    throws IOException
+  {
+    return read(buf, 0, buf.length);
+  }
+
+  public int read(byte[] buf, int off, int len)
+    throws IOException
+  {
+    if (transferComplete)
+      {
+        return -1;
+      }
+    if (count == -1)
+      {
+        readHeader();
+      }
+    if (max < 1)
+      {
+        close();
+        return -1;
+      }
+    int l = in.read(buf, off, len);
+    if (l == -1)
+      {
+        dtp.transferComplete();
+      }
+    count += l;
+    if (count >= max)
+      {
+        count = -1;
+        if (descriptor == EOF)
+          {
+            close();
+          }
+      }
+    return l;
   }
 
   /**
-   * Returns an HTTPURLConnection for the given URL.
+   * Reads the block header.
    */
-  public URLConnection openConnection(URL url)
+  void readHeader()
     throws IOException
   {
-    return new HTTPURLConnection(url);
+    descriptor = in.read();
+    int max_hi = in.read();
+    int max_lo = in.read();
+    max = (max_hi << 8) | max_lo;
+    count = 0;
   }
 
 }

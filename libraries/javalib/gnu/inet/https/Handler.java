@@ -1,5 +1,5 @@
 /*
- * $Id: Handler.java,v 1.4 2004/10/30 12:14:15 robilad Exp $
+ * $Id: Handler.java,v 1.5 2004/12/03 17:44:35 robilad Exp $
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -43,14 +43,14 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
-import gnu.inet.http.HTTPConnection;
-import gnu.inet.http.HTTPURLConnection;
+import gnu.java.net.protocol.http.HTTPConnection;
+import gnu.java.net.protocol.http.HTTPURLConnection;
 
 /**
  * An HTTPS URL stream handler.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.4 $ $Date: 2004/10/30 12:14:15 $
+ * @version $Revision: 1.5 $ $Date: 2004/12/03 17:44:35 $
  */
 public class Handler extends URLStreamHandler
 {

@@ -1,5 +1,5 @@
-/* Handler.java --
-   Copyright (C) 2004 Free Software Foundation, Inc.
+/* DTP.java --
+   Copyright (C) 2003, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,38 +36,57 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.java.net.protocol.http;
+package gnu.java.net.protocol.ftp;
 
+import java.io.InputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
+import java.io.OutputStream;
 
 /**
- * An HTTP URL stream handler.
+ * An FTP data transfer process.
  *
  * @author Chris Burdess (dog@gnu.org)
  */
-public class Handler
-  extends URLStreamHandler
+interface DTP
 {
 
   /**
-   * Returns the default HTTP port (80).
+   * Returns an input stream from which a remote file can be read.
    */
-  protected int getDefaultPort()
-  {
-    return HTTPConnection.HTTP_PORT;
-  }
+  InputStream getInputStream()
+    throws IOException;
 
   /**
-   * Returns an HTTPURLConnection for the given URL.
+   * Returns an output stream to which a local file can be written for
+   * upload.
    */
-  public URLConnection openConnection(URL url)
-    throws IOException
-  {
-    return new HTTPURLConnection(url);
-  }
+  OutputStream getOutputStream()
+    throws IOException;
+
+  /**
+   * Sets the transfer mode to be used with this DTP.
+   */
+  void setTransferMode(int mode);
+
+  /**
+   * Marks this DTP completed.
+   * When the current transfer has finished, any resources will be released.
+   */
+  void complete();
+
+  /**
+   * Aborts any current transfer and releases all resources held by this
+   * DTP.
+   * @return true if a transfer was interrupted, false otherwise
+   */
+  boolean abort();
+
+  /**
+   * Used to notify the DTP that its current transfer is complete.
+   * This occurs either when end-of-stream is reached or a 226 response is
+   * received.
+   */
+  void transferComplete();
 
 }
 

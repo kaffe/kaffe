@@ -1,5 +1,5 @@
-/* Handler.java --
-   Copyright (C) 2004 Free Software Foundation, Inc.
+/* BlockOutputStream.java --
+   Copyright (C) 2003, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,37 +36,76 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.java.net.protocol.http;
+package gnu.java.net.protocol.ftp;
 
+import java.io.FilterOutputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
+import java.io.OutputStream;
 
 /**
- * An HTTP URL stream handler.
+ * A DTP output stream that implements the FTP block transfer mode.
  *
  * @author Chris Burdess (dog@gnu.org)
  */
-public class Handler
-  extends URLStreamHandler
+class BlockOutputStream
+  extends DTPOutputStream
 {
 
-  /**
-   * Returns the default HTTP port (80).
-   */
-  protected int getDefaultPort()
+  static final byte RECORD = -128;      // 0x80
+  static final byte EOF = 64;   // 0x40
+
+  BlockOutputStream(DTP dtp, OutputStream out)
   {
-    return HTTPConnection.HTTP_PORT;
+    super(dtp, out);
   }
 
-  /**
-   * Returns an HTTPURLConnection for the given URL.
-   */
-  public URLConnection openConnection(URL url)
+  public void write(int c)
     throws IOException
   {
-    return new HTTPURLConnection(url);
+    if (transferComplete)
+      {
+        return;
+      }
+    byte[] buf = new byte[]
+      {
+        RECORD,                 /* record descriptor */
+        0x00, 0x01,             /* one byte */
+        (byte) c                /* the byte */
+      };
+    out.write(buf, 0, 4);
+  }
+
+  public void write(byte[] b)
+    throws IOException
+  {
+    write(b, 0, b.length);
+  }
+
+  public void write(byte[] b, int off, int len)
+    throws IOException
+  {
+    if (transferComplete)
+      {
+        return;
+      }
+    byte[] buf = new byte[len + 3];
+    buf[0] = RECORD;            /* record descriptor */
+    buf[1] = (byte) ((len & 0x00ff) >> 8);      /* high byte of bytecount */
+    buf[2] = (byte) (len & 0xff00);     /* low byte of bytecount */
+    System.arraycopy(b, off, buf, 3, len);
+    out.write(buf, 0, len);
+  }
+
+  public void close()
+    throws IOException
+  {
+    byte[] buf = new byte[]
+      {
+        EOF,                    /* eof descriptor */
+        0x00, 0x00              /* no bytes */
+      };
+    out.write(buf, 0, 3);
+    super.close();
   }
 
 }

@@ -1,5 +1,5 @@
-/* Handler.java --
-   Copyright (C) 2004 Free Software Foundation, Inc.
+/* FTPResponse.java --
+   Copyright (C) 2003, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,37 +36,76 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.java.net.protocol.http;
-
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
+package gnu.java.net.protocol.ftp;
 
 /**
- * An HTTP URL stream handler.
+ * An FTP control response.
  *
  * @author Chris Burdess (dog@gnu.org)
  */
-public class Handler
-  extends URLStreamHandler
+public final class FTPResponse
 {
 
   /**
-   * Returns the default HTTP port (80).
+   * The 3-digit status code.
    */
-  protected int getDefaultPort()
+  protected final int code;
+
+  /**
+   * The human-readable message.
+   */
+  protected final String message;
+
+  /**
+   * Multiline data, if present.
+   */
+  protected final String data;
+
+  /**
+   * Constructs a new FTP response.
+   * @param code the status code
+   * @param message the message
+   */
+  public FTPResponse(int code, String message)
   {
-    return HTTPConnection.HTTP_PORT;
+    this(code, message, null);
   }
 
   /**
-   * Returns an HTTPURLConnection for the given URL.
+   * Constructs a new multiline FTP response.
+   * @param code the status code
+   * @param message the message
+   * @param data multiline data
    */
-  public URLConnection openConnection(URL url)
-    throws IOException
+  public FTPResponse(int code, String message, String data)
   {
-    return new HTTPURLConnection(url);
+    this.code = code;
+    this.message = message;
+    this.data = data;
+  }
+
+  /**
+   * Returns the 3-digit status code.
+   */
+  public int getCode()
+  {
+    return code;
+  }
+
+  /**
+   * Returns the human-readable message.
+   */
+  public String getMessage()
+  {
+    return message;
+  }
+
+  /**
+   * Returns the multiline data, or null if there was no such data.
+   */
+  public String getData()
+  {
+    return data;
   }
 
 }
