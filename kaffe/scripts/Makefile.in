@@ -33,9 +33,9 @@ all:
 clean:
 
 distclean:
-		rm -f Makefile .depend install-jar
+		rm -f Makefile .depend $(PSCRIPTFILES)
 
-install:	install-pizza install-sun install-jar @suncompatible@
+install:	install-pizza install-sun install-jars @suncompatible@
 
 install-sun:
 		test -d $(bindir) || $(MKDIR) $(bindir)
@@ -56,7 +56,7 @@ install-compat:
 			$(INSTALL_SCRIPT) $(srcdir)/compat/$$i $(bindir)/$(KPREFIX)$$i$(SCREXT)  ;\
 		done
 
-install-jar:
+install-jars:
 		for i in $(PSCRIPTFILES) ;\
 		do \
 			$(INSTALL_SCRIPT) $$i $(bindir)/$(KPREFIX)$$i ;\
