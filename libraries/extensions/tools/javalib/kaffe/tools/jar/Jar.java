@@ -3,7 +3,7 @@
    Use this class to create .zip and .jar files in Java.
    It should work as a drop in replacement for the JDK's jar program.
 
-   Copyright : Moses DeJong, dejong@cs.umn.edu, 1998.
+   Copyright : Moses DeJong, dejong@cs.umn.edu, 1998, 2000.
    Source code licensed under the GPL.
    You can get a copy of the license from www.gnu.org.
 
@@ -1018,17 +1018,27 @@ public class Jar {
 	    }
 	}
 
-	// Should not be a directory
+	// Make sure the entryname ends with a '/' if it is a directory
 
-	if (entryfile.isDirectory()) {
-	    throw new Error("internal error");
+	boolean entryfile_isDirectory = entryfile.isDirectory();
+
+	if (entryfile_isDirectory) {
+	    if (entryname.length() == 0) {
+		// Something is very wrong here.
+		throw new RuntimeException("entryname was empty");
+	    }
+	    
+	    if (entryname.charAt( entryname.length() - 1 ) != '/') {
+		entryname = entryname + '/';
+	    }
 	}
 
 	ZipEntry ze = new ZipEntry(entryname);
-	long entryfile_length = entryfile.length();
+	long entryfile_length = (entryfile_isDirectory ? 0 : entryfile.length());
 
-	// Set some entry attributes
-	if (compression) {
+	// Set some entry attributes, take care to make sure that
+	// directory entries are always saved with no compression
+	if (compression && !entryfile_isDirectory) {
 	    ze.setMethod(ZipEntry.DEFLATED); // compressed entry
 	} else {
 	    ze.setMethod(ZipEntry.STORED);   // uncompressed entry
@@ -1044,40 +1054,67 @@ public class Jar {
 	    vout.print("(in=" + entryfile_length + ") ");
 	}
 
-	// Write file into the archive, compressing if so requested
-	if (debug) {
-	    System.out.println("opening input file \"" + entryfile + "\"");
-	}
+	if (!entryfile_isDirectory) {
 
-	InputStream in = new XPFileInputStream(entryfile);
+	    // Write file into the archive, compressing if so requested
+	    if (debug) {
+		System.out.println("opening input file \"" + entryfile + "\"");
+	    }
 
-	// This is part of the ugly workaround for a design flaw
-	// in the JDK zip API, for uncompressed entries we
-	// are forced to calculate a CRC for the input stream
-	CRC32 crc = null;
+	    InputStream in = new XPFileInputStream(entryfile);
+
+	    // This is part of the ugly workaround for a design flaw
+	    // in the JDK zip API, for uncompressed entries we
+	    // are forced to calculate a CRC for the input stream
+	    CRC32 crc = null;
 	    
-	if (! compression) {
-	    crc = new CRC32();
-	    in = new CheckedInputStream(in,crc);
-	}
+	    if (! compression) {
+		crc = new CRC32();
+		in = new CheckedInputStream(in,crc);
+	    }
 
-	try {
-	    readwriteStreams(in, zos);
-	} finally {
-	    in.close();
-	}
+	    try {
+		readwriteStreams(in, zos);
+	    } finally {
+		in.close();
+	    }
 
-	// ZIP design flaw workaround
+	    // ZIP design flaw workaround
 	    
-	if (! compression) {
-	    ze.setCrc(crc.getValue());
+	    if (! compression) {
+		ze.setCrc(crc.getValue());
+	    }
 	}
 
-	// finish writing the entry to the stream
+	// finish writing the entry to the zip stream
 	// this lets us access the compressed size
 	// attribute of the current ZipEntry
 
 	zos.closeEntry();
+
+
+	// TEMP CHECK!
+	// If we are writing a directory entry then double
+	// check that we did not actually write any bytes to
+	// the stream. IF we did then something is wrong.
+
+	if (entryfile_isDirectory) {
+	    long tmp;
+
+	    tmp = ze.getSize();
+	    if (tmp != 0) {
+		throw new RuntimeException(
+		    "ZipEntry.getSize() for directory was " + tmp +
+		    " it should have been 0");
+	    }
+	    
+	    tmp = ze.getCompressedSize();
+	    if (tmp != 0) {
+		throw new RuntimeException(
+		    "ZipEntry.getCompressedSize() for directory was " + tmp +
+		    " it should have been 0");
+	    }
+	}
 
 	if (verbose) {
 
@@ -1116,7 +1153,7 @@ public class Jar {
 				       (float) unsize) * -100.0F );
 	    }
 
-	    if (compression && unsize != csize) {
+	    if (compression && !entryfile_isDirectory) {
 		vout.print("(deflated " + percent + "%)");
 	    } else {
 		vout.print("(stored " + percent + "%)");
@@ -1145,6 +1182,8 @@ public class Jar {
 	    System.out.println("entrydirname is \"" + entrydirname + "\"");
 	}
 
+	// add the directory entry to the zip file
+	addEntry(zos, entrydirname, entryfile);
 
 	// list all the files in the directory
 	String[] files = entryfile.list();
