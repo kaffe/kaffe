@@ -1,3 +1,45 @@
+2003-10-27  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/clib/nio, libraries/clib/nio/Makefile.am,
+	libraries/clib/nio/Makefile.in: New native library for NIO
+
+	* libraries/clib/nio/SelectorImpl.c,
+	libraries/clib/nio/NIOServerSocket.c,
+	libraries/clib/nio/DirectByteBufferImpl.c:
+	Native implementation for selectors and a
+	method call to pass through access verifier.
+
+	* libraries/clib/net/InetAddressImpl.c: partly moved native functions
+	from java/net/InetAddress to gnu/java/net/InetAddressImpl.
+
+	* configure.in: Build Makefile in libraries/clib/nio
+
+	* include/Makefile.am: Added gnu_java_net_SysInetAddressImpl.h,
+	gnu_java_nio_SelectorImpl.h.
+
+	* libraries/javalib/java/net/InetAddress.java,
+	libraries/javalib/java/net/Inet4Address.java,
+	libraries/javalib/java/net/Inet6Address.java,
+	libraries/javalib/gnu/java/net/InetAddressImpl.java,
+	libraries/javalib/gnu/java/net/SysInetAddressImpl.java:
+	Merged the new Classpath's implementation in. Added submitted patch
+	to make DNS calls modular.
+
+	* libraries/clib/net/PlainDatagramSocketImpl.c:
+	(bind, send, receive) IPV6 compatible, upgraded to latest
+	classpath.
+
+	* libraries/javalib/gnu/java/net/PlainSocketImpl.c:
+	(socketBind, socketAccept, socketConnect) IPV6 compatible, upgraded
+	to latest classpath.
+	
+	* libraries/javalib/bootstrap.classlist:
+	Added new NIO and NET classes required by kaffeh to build includes
+	(SysInetAddressImpl, SelectorImpl, InetAddressImpl).
+
+	* configure, Makefile.in, include/Makefile.in,
+	libraries/javalib/Klasses.jar.bootstrap: Regenerated
+
 2003-10-27  Motoyuki Kasahara <m-kasahr@sra.co.jp>
 
 	* configure.in:
@@ -51,7 +93,7 @@
 
 2003-10-25  Dalibor Topic <robilad@kaffe.org>
 
-	* FAQ/FAQ.automake: Recommend autmake 1.7.8.
+	* FAQ/FAQ.automake: Recommend automake 1.7.8.
 
 	* developers/autogen.sh: Upgraded to automake 1.7.8.
 

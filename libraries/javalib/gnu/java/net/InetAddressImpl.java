@@ -1,5 +1,5 @@
-/* FileChannelImpl.java -- 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* InetAddressImpl.java -- Class to model an Internet address implementation
+   Copyright (C) 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -7,7 +7,7 @@ GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
-
+ 
 GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -34,53 +34,35 @@ or based on this library.  If you modify this library, you may extend
 this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
+package gnu.java.net;
 
-
-package gnu.java.nio;
-
-import java.io.FileDescriptor;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
-import gnu.classpath.Configuration;
+import java.net.UnknownHostException;
 
 /**
- * @author Michael Koch
- * @since 1.4
+ * This interface precises the shape of the implementation of an InetAddress.
+ * This interface can be used to build new way to resolve host names. This
+ * can be useful when system dns resolution is failing in a way or another.
+ *
+ * @author Guilhem Lavaux
  */
-public class FileLockImpl extends FileLock
-{
-  static
-  {
-    // load the shared library needed for native methods.
-    if (Configuration.INIT_LOAD_LIBRARY)
-      {
-        System.loadLibrary ("nio");
-      }
-  }
-  
-  private FileDescriptor fd;
-  private boolean released;
-  
-  public FileLockImpl (FileDescriptor fd, FileChannel channel, long position,
-                       long size, boolean shared)
-  {
-    super (channel, position, size, shared);
-    this.fd = fd;
-    this.released = false;
-  }
-  
-  public boolean isValid ()
-  {
-    return (released
-            || !channel ().isOpen ());
-  }
+public interface InetAddressImpl {
+  /**
+   * This method returns the hostname for a given IP address.  It will
+   * throw an UnknownHostException if the hostname cannot be determined.
+   *
+   * @param ip The IP address as a int array
+   * 
+   * @return The hostname
+   *
+   * @exception UnknownHostException If the reverse lookup fails
+   */
+  public String getHostByAddr (byte[] ip)
+    throws UnknownHostException;
 
-  private native void releaseImpl () throws IOException;
-
-  public synchronized void release () throws IOException
-  {
-    releaseImpl ();
-    released = true;
-  }
+  /**
+   * Returns a list of all IP addresses for a given hostname.  Will throw
+   * an UnknownHostException if the hostname cannot be resolved.
+   */
+  public byte[][] getHostByName (String hostname)
+    throws UnknownHostException;
 }

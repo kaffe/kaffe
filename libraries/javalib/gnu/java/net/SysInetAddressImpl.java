@@ -1,5 +1,6 @@
-/* FileChannelImpl.java -- 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* SysInetAddressImpl.java -- Internet address implementation using
+   system solvers.
+   Copyright (C) 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -7,7 +8,7 @@ GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
-
+ 
 GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -34,53 +35,16 @@ or based on this library.  If you modify this library, you may extend
 this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
+package gnu.java.net;
 
+import java.net.UnknownHostException;
 
-package gnu.java.nio;
-
-import java.io.FileDescriptor;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
-import gnu.classpath.Configuration;
-
-/**
- * @author Michael Koch
- * @since 1.4
- */
-public class FileLockImpl extends FileLock
+/* This class is just a forward to native implementation. */
+public class SysInetAddressImpl implements InetAddressImpl
 {
-  static
-  {
-    // load the shared library needed for native methods.
-    if (Configuration.INIT_LOAD_LIBRARY)
-      {
-        System.loadLibrary ("nio");
-      }
-  }
-  
-  private FileDescriptor fd;
-  private boolean released;
-  
-  public FileLockImpl (FileDescriptor fd, FileChannel channel, long position,
-                       long size, boolean shared)
-  {
-    super (channel, position, size, shared);
-    this.fd = fd;
-    this.released = false;
-  }
-  
-  public boolean isValid ()
-  {
-    return (released
-            || !channel ().isOpen ());
-  }
+  public native String getHostByAddr (byte[] ip)
+    throws UnknownHostException;
 
-  private native void releaseImpl () throws IOException;
-
-  public synchronized void release () throws IOException
-  {
-    releaseImpl ();
-    released = true;
-  }
+  public native byte[][] getHostByName (String hostname)
+    throws UnknownHostException;
 }

@@ -3,6 +3,8 @@
  *
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
+ * Copyright (c) 2003
+ *       Kaffe's team.
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
@@ -28,6 +30,7 @@
 #include "java_util_Vector.h"
 #include "nets.h"
 #include <jsyscall.h>
+#include "Arrays.h"
 #include "../../../kaffe/kaffevm/debug.h"
 #include "../../../kaffe/kaffevm/itypes.h"
 #include "../../../kaffe/kaffevm/exception.h"
@@ -82,10 +85,30 @@ ip2str(jint addr)
 	sprintf(addrbuf, "%u.%u.%u.%u", top, tmid, bmid, bottom);
 	return addrbuf;
 }
+
+/* Generate a string for an inet6 addr (in host form). */
+static char *
+ip62str(struct in6_addr *addr) 
+{
+	static char addrbuf[255];
+	int i, count;
+
+	for (count=0,i=0;i<16;i++) {
+	    char *format;
+	    
+	    if (i == 0 && addr->in6_u.u6_addr8[i] != 0)
+	      format = "%x";
+	    else if (addr->in6_u.u6_addr8[i] != 0)
+	      format = "%x:";
+	    else if (i != 0)
+	      format = ":";
+	    else
+	      format = "";
+	    count += sprintf(&addrbuf[count], format, addr->in6_u.u6_addr8[i]);
+	}
+	return addrbuf;
+}
 #endif /* KAFFE_VMDEBUG */
-
-
-
 /*
  * Create a datagram socket.
  */
@@ -122,28 +145,49 @@ DBG(NATIVENET,
 }
 
 /*
- * Bind a port to the socket.
+ * Bind a port to the socket (IPV4 version).
  */
 void
-gnu_java_net_PlainDatagramSocketImpl_bind(struct Hgnu_java_net_PlainDatagramSocketImpl* this, jint port, struct Hjava_net_InetAddress* laddr)
+gnu_java_net_PlainDatagramSocketImpl_bind(struct Hgnu_java_net_PlainDatagramSocketImpl* this, jint port,
+					  struct Hjava_net_InetAddress* laddr)
 {
 	int r;
-	struct sockaddr_in addr;
+	KaffeSocketAddr addr;
 	int alen;
 	const int fd = unhand(unhand(this)->fd)->nativeFd;
 
-DBG(NATIVENET,
-	dprintf("datagram_bind(%p, %s, %d)\n", 
-		this, ip2str(unhand(laddr)->address), port);
-)
-
 	memset(&addr, 0, sizeof(addr));
+	if (obj_length(unhand(laddr)->addr) == 4) {
 #if defined(BSD44)
-	addr.sin_len = sizeof(addr);
+		addr.addr4.sin_len = sizeof(addr.addr4);
 #endif
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(port);
-	addr.sin_addr.s_addr = htonl(unhand(laddr)->address);
+		addr.addr4.sin_family = AF_INET;
+		addr.addr4.sin_port = htons(port);
+		memcpy(&addr.addr4.sin_addr, unhand_byte_array(unhand(laddr)->addr),
+		       sizeof(addr.addr4.sin_addr));
+
+DBG(NATIVENET,
+	dprintf("datagram_bind4(%p, %s, %d)\n", 
+		this, ip2str(addr.addr4.sin_addr.s_addr), port);
+)
+#if defined(HAVE_STRUCT_SOCKADDR_IN6)
+	} else if (obj_length(unhand(laddr)->addr) == 16) {
+#if defined(BSD44)
+		addr.addr6.sin6_len = sizeof(addr.addr6);
+#endif
+		addr.addr6.sin6_family = AF_INET6;
+		addr.addr6.sin6_port = htons(port);
+		memcpy(&addr.addr6.sin6_addr, unhand_byte_array(unhand(laddr)->addr),
+		       sizeof(addr.addr6.sin6_addr));
+
+DBG(NATIVENET,
+	dprintf("datagram_bind6(%p, %s, %d)\n", 
+		this, ip62str(&addr.addr6.sin6_addr), port);
+)		
+#endif
+	} else {
+		SignalError("java.net.SocketException", "Unsupported address family");
+	}
 
 	r = KBIND(fd, (struct sockaddr*)&addr, sizeof(addr));
 	switch( r )
@@ -166,13 +210,13 @@ DBG(NATIVENET,
 		if (r) {
 			SignalError("java.net.SocketException", SYS_ERROR(r));
 		}
-		port = ntohs(addr.sin_port);
+		port = ntohs(addr.addr4.sin_port);
 	}
 	unhand(this)->localPort = port;
 
 DBG(NATIVENET,
 	dprintf("  datagram_bind(%p, %s, -) -> (localPort: %d)\n",
-		this, ip2str(unhand(laddr)->address), port);
+		this, ip2str(addr.addr4.sin_addr.s_addr), port);
 )
 }
 
@@ -181,30 +225,52 @@ gnu_java_net_PlainDatagramSocketImpl_send(struct Hgnu_java_net_PlainDatagramSock
 {
 	int rc;
 	ssize_t bsent;
-	struct sockaddr_in addr;
-
+	KaffeSocketAddr addr;
+	
 DBG(NATIVENET,
 	dprintf("datagram_send(%p, %p [%d bytes])\n",
 		this, pkt, unhand(pkt)->length);
 )
 
-	memset(&addr, 0, sizeof(addr));
+        memset(&addr, 0, sizeof(addr));
+        if (obj_length(unhand(unhand(pkt)->address)->addr) == 4) {
 #if defined(BSD44)
-	addr.sin_len = sizeof(addr);
+	    addr.addr4.sin_len = sizeof(addr.addr4);
 #endif
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(unhand(pkt)->port);
-	addr.sin_addr.s_addr = htonl(unhand(unhand(pkt)->address)->address);
-
+	    addr.addr4.sin_family = AF_INET;
+	    addr.addr4.sin_port = htons(unhand(pkt)->port);
+	    memcpy(&addr.addr4.sin_addr.s_addr, unhand_byte_array(unhand(unhand(pkt)->address)->addr),
+		   4);
 DBG(NATIVENET,
 	dprintf("  datagram_send() to %s:%d\n",
-		ip2str(unhand(unhand(pkt)->address)->address),
+		ip2str(ntohl(addr.addr4.sin_addr.s_addr)),
 		unhand(pkt)->port);
 )
 
+#if defined(HAVE_STRUCT_SOCKADDR_IN6)
+	} else if (obj_length(unhand(unhand(pkt)->address)->addr) == 16) {
+#if defined(BSD44)
+	    addr.addr6.sin6_len = sizeof(addr.addr6);
+#endif
+	    addr.addr6.sin6_family = AF_INET6;
+	    addr.addr6.sin6_port = htons(unhand(pkt)->port);
+	    memcpy(&addr.addr6.sin6_addr, unhand_byte_array(unhand(unhand(pkt)->address)->addr),
+		   sizeof(addr.addr6.sin6_addr));
+	    
+DBG(NATIVENET,
+	dprintf("  datagram_send() to %s / %d\n",
+		ip62str(&addr.addr6.sin6_addr),
+		unhand(pkt)->port);
+)
+#endif
+
+        } else {
+	    SignalError("java.net.SocketException", "Unsupported packet internet address");
+	}
+
 	rc = KSENDTO(unhand(unhand(this)->fd)->nativeFd,
 		unhand_array(unhand(pkt)->buffer)->body, unhand(pkt)->length,
-		0, (struct sockaddr*)&addr, sizeof(addr), &bsent);
+		0, (struct sockaddr *)&addr, sizeof(addr), &bsent);
 
 DBG(NATIVENET,
 	dprintf("  datagram_send() -> rc=%d bsent=%ld\n", rc, (long) bsent);
@@ -220,7 +286,7 @@ gnu_java_net_PlainDatagramSocketImpl_peek(struct Hgnu_java_net_PlainDatagramSock
 {
 	ssize_t r;
 	int rc;
-	struct sockaddr_in saddr;
+	KaffeSocketAddr saddr;
 	int alen = sizeof(saddr);
 
 	rc = KRECVFROM(unhand(unhand(this)->fd)->nativeFd,
@@ -230,8 +296,15 @@ gnu_java_net_PlainDatagramSocketImpl_peek(struct Hgnu_java_net_PlainDatagramSock
 		SignalError("java.net.SocketException", SYS_ERROR(rc));
 	}
 
-	unhand(addr)->address = ntohl(saddr.sin_addr.s_addr);
-
+	if (saddr.addr4.sin_family == AF_INET) {
+	    memcpy(unhand_byte_array(unhand(addr)->addr), &saddr.addr4.sin_addr, sizeof(saddr.addr4.sin_addr));
+#if defined(HAVE_STRUCT_SOCKADDR_IN6)
+	} else if (saddr.addr6.sin6_family == AF_INET6) {
+	    memcpy(unhand_byte_array(unhand(addr)->addr), &saddr.addr6.sin6_addr, sizeof(saddr.addr6.sin6_addr));
+#endif
+	} else {
+	    SignalError("java.net.SocketException", "Unsupported address family");
+	}
 	return ((jint)r);
 }
 
@@ -240,10 +313,9 @@ gnu_java_net_PlainDatagramSocketImpl_receive(struct Hgnu_java_net_PlainDatagramS
 {
 	ssize_t r;
 	int rc;
-	struct sockaddr_in addr;
+	KaffeSocketAddr addr;
 	int alen = sizeof(addr);
 	HArrayOfByte *array_address;
-	int i;
 	int to_read, offset;
 
 	assert(this != NULL);
@@ -257,7 +329,7 @@ DBG(NATIVENET,
 )
 
 	/* Which port am I receiving from */
-	addr.sin_port = htons(unhand(this)->localPort);
+	addr.addr4.sin_port = htons(unhand(this)->localPort);
 
 	/* XXX should assert (unhand(pkt)->length <= unhand_array(unhand(pkt)->buf)->length), no? */
         offset = unhand(pkt)->offset; 
@@ -295,15 +367,29 @@ DBG(NATIVENET,
 	} while (rc == EINTR);
 
 	unhand(pkt)->length = r;
-	unhand(pkt)->port = ntohs(addr.sin_port);
-	
-	array_address = (HArrayOfByte*)AllocArray(4, TYPE_Byte);
-	for (i=0;i<4;i++)
-	  unhand_array(array_address)->body[i] = (ntohl(addr.sin_addr.s_addr) >> (8*i)) & 0xFF;
-	unhand(pkt)->address = (struct Hjava_net_InetAddress*)
-	  execute_java_constructor("java/net/InetAddress", 0, 0, "([B)V",
-				   array_address);
-	unhand(unhand(pkt)->address)->address = ntohl(addr.sin_addr.s_addr);
+	unhand(pkt)->port = ntohs(addr.addr4.sin_port);
+
+	if (addr.addr4.sin_family == AF_INET) {
+		array_address = (HArrayOfByte*)AllocArray(sizeof(addr.addr4.sin_addr), TYPE_Byte);
+		memcpy(unhand_byte_array(array_address), &addr.addr4.sin_addr, sizeof(addr.addr4.sin_addr));
+		
+		unhand(pkt)->address = (struct Hjava_net_InetAddress*)
+			execute_java_constructor("java/net/InetAddress", 0, 0, "([B)V",
+						 array_address);
+#if defined(HAVE_STRUCT_SOCKADDR_IN6)
+	} else if (addr.addr6.sin6_family == AF_INET6) {
+		array_address = (HArrayOfByte*)AllocArray(sizeof(addr.addr6.sin6_addr), TYPE_Byte);
+		memcpy(unhand_byte_array(array_address), &addr.addr6.sin6_addr, sizeof(addr.addr6.sin6_addr));
+		
+		unhand(pkt)->address = (struct Hjava_net_InetAddress*)
+			execute_java_constructor("java/net/Inet6Address", 0, 0, "([BLjava/lang/String;)V",
+						 array_address);
+#endif
+		
+	} else {
+		SignalError("java.net.SocketException", "Unsupported address family");
+	}
+
 	/* zero out hostname to overwrite old name which does not match
 	 * the new address from which the packet came.
 	 */
@@ -311,8 +397,8 @@ DBG(NATIVENET,
 
 DBG(NATIVENET,
 	dprintf("  datagram_receive(%p, %p) -> from %s:%d; brecv=%ld\n",
-		this, pkt, ip2str(ntohl(addr.sin_addr.s_addr)),
-		ntohs(addr.sin_port), (long) r);
+		this, pkt, ip2str(ntohl(addr.addr4.sin_addr.s_addr)),
+		ntohs(addr.addr4.sin_port), (long) r);
 )
 }
 

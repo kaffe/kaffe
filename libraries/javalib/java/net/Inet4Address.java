@@ -35,13 +35,11 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.net;
 
-import java.io.IOException;
 import java.io.ObjectStreamException;
-
-import java.util.StringTokenizer;
-import java.util.NoSuchElementException;
+import java.util.Arrays;
 
 /**
  * @author Michael Koch
@@ -61,59 +59,6 @@ public final class Inet4Address extends InetAddress
   static final long serialVersionUID = 7615067291688066509L;
 
   /**
-   * Convert a string formatted as an IPv4 address into a byte array.
-   *
-   * @param address The address to convert.
-   * @return A byte array containing the converted address.
-   * @throws IllegalArgumentException if the address string does not represent
-   * a properly formatted address.
-   */
-  static byte[] fromString(String address)
-    throws IllegalArgumentException
-  {
-    StringTokenizer st = new StringTokenizer(address, ".");
-    byte retval[] = new byte[4];
-    
-    try
-    {
-      int lpc;
-      
-      for( lpc = 0; lpc < retval.length; lpc++ )
-      {
-	int number;
-
-	number = Integer.parseInt(st.nextToken());
-	if( (number < 0) || (number > 255) )
-	{
-	  throw new IllegalArgumentException("IP address component out of "
-					     + "range: "
-					     + number);
-	}
-	retval[lpc] = (byte)number;
-      }
-      if( st.hasMoreTokens() )
-      {
-	  throw new IllegalArgumentException(
-		"Extraneous data after IP address: "
-		+ address);
-      }
-    }
-    catch(NoSuchElementException e)
-    {
-      IllegalArgumentException ex = new IllegalArgumentException();
-      ex.initCause(e);
-      throw ex;
-    }
-    catch(NumberFormatException e)
-    {
-      IllegalArgumentException ex = new IllegalArgumentException();
-      ex.initCause(e);
-      throw ex;
-    }
-    return retval;
-  }
-
-  /**
    * needed for serialization
    */
   private Object writeReplace () throws ObjectStreamException
@@ -127,7 +72,7 @@ public final class Inet4Address extends InetAddress
    * @param addr The IP address
    * @param host The Hostname
    */
-  protected Inet4Address(byte[] addr, String host)
+  Inet4Address(byte[] addr, String host)
   {
     super (addr, host);
   }
@@ -157,7 +102,9 @@ public final class Inet4Address extends InetAddress
    */
   public boolean isAnyLocalAddress ()
   {
-    return super.address == 0;
+    byte[] anylocal = { 0, 0, 0, 0 };
+    
+    return Arrays.equals(addr, anylocal);
   }
 
   /**
@@ -261,7 +208,7 @@ public final class Inet4Address extends InetAddress
    */
   public byte[] getAddress ()
   {
-    return (byte[])addr.clone();
+    return addr;
   }
   
   /**
@@ -302,5 +249,28 @@ public final class Inet4Address extends InetAddress
       hash = (hash << 8) | (addr [i] & 0xFF);
     
     return hash;
+  }
+ 
+  /**
+   * Compare the current Inet4Address instance with obj
+   * 
+   * @param obj Object to compare with
+   */
+  public boolean equals (Object obj)
+  {
+    if (obj == null || ! (obj instanceof InetAddress))
+      return false;
+    
+    byte[] addr1 = addr;
+    byte[] addr2 = ((InetAddress) obj).addr;
+    
+    if (addr1.length != addr2.length)
+      return false;
+    
+    for (int i = addr1.length;  --i >= 0; )
+      if (addr1 [i] != addr2 [i])
+        return false;
+    
+    return true;
   }
 } // class Inet4Address

@@ -243,11 +243,13 @@ java/text/ChoiceFormat.class
 # Needed for kaffeh run when building vm and native libs
 gnu/java/net/PlainDatagramSocketImpl.class
 gnu/java/net/PlainSocketImpl.class
+gnu/java/net/SysInetAddressImpl.class
 java/io/RandomAccessFile.class
 java/net/DatagramPacket.class
 java/net/InetAddress.class
 java/net/InetSocketAddress.class
 java/net/NetworkInterface.class
+java/net/ServerSocket.class
 java/net/SocketAddress.class
 java/net/SocketImpl.class
 java/net/SocketOptions.class
@@ -276,6 +278,13 @@ java/lang/Process.class
 kaffe/security/provider/UpdateDigest.class
 java/security/MessageDigest.class
 java/security/MessageDigestSpi.class
+gnu/java/nio/SelectorImpl.class
+gnu/java/nio/NIOServerSocket.class
+java/nio/channels/spi/AbstractSelector.class
+java/nio/channels/Selector.class
+java/nio/DirectByteBufferImpl.class
+java/nio/ByteBuffer.class
+java/nio/Buffer.class
 
 # needed for tritonus
 org/tritonus/lowlevel/esd/Esd.class

@@ -13,4 +13,4 @@ else
   MAYBE_NATIVE_MATH = math
 endif
 
-SUBDIRS = native io net zip $(MAYBE_NATIVE_MATH) security management awt
+SUBDIRS = native io nio net zip $(MAYBE_NATIVE_MATH) security management awt

@@ -95,11 +95,35 @@ ip2str(jint addr)
 {
 	static char addrbuf[16];
 
+	addr = ntohl(addr);
 	sprintf(addrbuf, "%u.%u.%u.%u",
 	  (addr >> 24) & 0xff,
 	  (addr >> 16) & 0xff,
 	  (addr >>  8) & 0xff,
 	  (addr      ) & 0xff);
+	return addrbuf;
+}
+
+/* Generate a string for an inet6 addr (in host form). */
+static char *
+ip62str(struct in6_addr *addr) 
+{
+	static char addrbuf[255];
+	int i, count;
+
+	for (count=0,i=0;i<16;i++) {
+	    char *format;
+	    
+	    if (i == 0 && addr->in6_u.u6_addr8[i] != 0)
+	      format = "%x";
+	    else if (addr->in6_u.u6_addr8[i] != 0)
+	      format = "%x:";
+	    else if (i != 0)
+	      format = ":";
+	    else
+	      format = "";
+	    count += sprintf(&addrbuf[count], format, addr->in6_u.u6_addr8[i]);
+	}
 	return addrbuf;
 }
 #endif /* KAFFE_VMDEBUG */
@@ -150,21 +174,37 @@ gnu_java_net_PlainSocketImpl_socketConnect(struct Hgnu_java_net_PlainSocketImpl*
 {
 	int fd;
 	int r;
-	struct sockaddr_in addr;
+	KaffeSocketAddr addr;
 	int alen;
+
+	memset(&addr, 0, sizeof(addr));
+	if (obj_length(unhand(daddr)->addr) == 4) {
+#if defined(BSD44)
+		addr.addr4.sin_len = sizeof(addr.addr4);
+#endif
+		addr.addr4.sin_family = AF_INET;
+		addr.addr4.sin_port = htons(dport);
+		memcpy(&addr.addr4.sin_addr, 
+		       unhand_byte_array(unhand(daddr)->addr), sizeof(addr.addr4.sin_addr));
+#if defined(HAVE_STRUCT_SOCKADDR_IN6)
+	} else if (obj_length(unhand(daddr)->addr) == 16) {
+
+#if defined(BSD44)
+		addr.addr6.sin6_len = sizeof(addr.addr6);
+#endif
+		addr.addr6.sin6_family = AF_INET6;
+		addr.addr6.sin6_port = htons(dport);
+		memcpy(&addr.addr6.sin6_addr, 
+		       unhand_byte_array(unhand(daddr)->addr), sizeof(addr.addr6.sin6_addr));
+#endif
+	} else {
+		SignalError("java.net.SocketException", "Unsupported address family");
+	}
 
 	DBG(NATIVENET,
 	    dprintf("socketConnect(%p, %s, %d, %d)\n", 
-		    this, ip2str(unhand(daddr)->address), dport, timeout);
+		    this, ip2str(addr.addr4.sin_addr.s_addr), dport, timeout);
 	    )
-
-	memset(&addr, 0, sizeof(addr));
-#if defined(BSD44)
-	addr.sin_len = sizeof(addr);
-#endif
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(dport);
-	addr.sin_addr.s_addr = htonl(unhand(daddr)->address);
 
 	fd = (int)unhand(unhand(this)->fd)->nativeFd;
 	r = KCONNECT(fd, (struct sockaddr*)&addr, sizeof(addr), timeout);
@@ -193,14 +233,14 @@ gnu_java_net_PlainSocketImpl_socketConnect(struct Hgnu_java_net_PlainSocketImpl*
 
 	DBG(NATIVENET,
 	    dprintf("socketConnect(%p, %s, %d) -> (lport: %d)\n",
-		    this, ip2str(unhand(daddr)->address), dport,
-		    ntohs(addr.sin_port)
+		    this, ip2str(addr.addr4.sin_addr.s_addr), dport,
+		    ntohs(addr.addr4.sin_port)
 		    );
 	    )
 
 	unhand(this)->address = daddr;
 	unhand(this)->port = dport;
-	unhand(this)->localport = ntohs(addr.sin_port);
+	unhand(this)->localport = ntohs(addr.addr4.sin_port);
 }
 
 /*
@@ -212,7 +252,7 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 					jint lport)
 {
 	int r;
-	struct sockaddr_in addr;
+	KaffeSocketAddr addr;
 	int fd;
 	int on = 1;
 	int alen;
@@ -223,13 +263,38 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 	    )
 
 	memset(&addr, 0, sizeof(addr));
+	if (obj_length(unhand(laddr)->addr) == 4) {
 #if defined(BSD44)
-	addr.sin_len = sizeof(addr);
+		addr.addr4.sin_len = sizeof(addr.addr4);
 #endif
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(lport);
-	addr.sin_addr.s_addr = htonl(unhand(laddr)->address);
+		addr.addr4.sin_family = AF_INET;
+		addr.addr4.sin_port = htons(lport);
+		memcpy(&addr.addr4.sin_addr, 
+		       unhand_byte_array(unhand(laddr)->addr), sizeof(addr.addr4.sin_addr));
 
+		DBG(NATIVENET,
+		    dprintf("socketBind(%p, %s, -) -> (lport: %d)\n", this,
+			    ip2str(addr.addr4.sin_addr.s_addr), lport);
+		    );
+#if defined(HAVE_STRUCT_SOCKADDR_IN6)
+	} else if (obj_length(unhand(laddr)->addr) == 16) {
+
+#if defined(BSD44)
+		addr.addr6.sin6_len = sizeof(addr.addr6);
+#endif
+		addr.addr6.sin6_family = AF_INET6;
+		addr.addr6.sin6_port = htons(lport);
+		memcpy(&addr.addr6.sin6_addr, 
+		       unhand_byte_array(unhand(laddr)->addr), sizeof(addr.addr6.sin6_addr));
+
+		DBG(NATIVENET,
+		    dprintf("socketBind(%p, %s, -) -> (lport: %d)\n", this,
+			    ip62str(&addr.addr6.sin6_addr), lport);
+		    );
+#endif
+	} else {
+		SignalError("java.net.SocketException", "Unsupported address family");
+	}
 	fd = (int)unhand(unhand(this)->fd)->nativeFd;
 
 	/* Allow rebinding to socket - ignore errors */
@@ -257,14 +322,9 @@ gnu_java_net_PlainSocketImpl_socketBind(struct Hgnu_java_net_PlainSocketImpl* th
 		if (r) {
 			SignalError("java.io.IOException", SYS_ERROR(r));
 		}
-		lport = ntohs(addr.sin_port);
+		lport = ntohs(addr.addr4.sin_port);
 	}
 	unhand(this)->localport = lport;
-
-	DBG(NATIVENET,
-	    dprintf("socketBind(%p, %s, -) -> (lport: %d)\n", this,
-		    ip2str(unhand(laddr)->address), lport);
-	    );
 }
 
 /*
@@ -305,14 +365,14 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(unhand(sock)->localport);
 	/* I guess the next line is too much as unhand(sock)->address is not supposed
-	 * to be initilized.
+	 * to be initialized.
 	 * addr.sin_addr.s_addr = htonl(unhand(unhand(sock)->address)->address);
 	 */
 	addr.sin_addr.s_addr = INADDR_ANY;
 
 	DBG(NATIVENET,
 	    dprintf("socketAccept(%p, localport=%d, addr=%s)\n", 
-		    this, ntohs(addr.sin_port), ip2str(ntohl(addr.sin_addr.s_addr)));
+		    this, ntohs(addr.sin_port), ip2str(addr.sin_addr.s_addr));
 	    )
 
 	alen = sizeof(addr);
@@ -371,7 +431,7 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 
 	DBG(NATIVENET,
 	    dprintf("socketAccept(%p, localport=-, addr=-) -> (sock: %p; addr: %s; port:%d)\n", 
-		    this, sock, ip2str(ntohl(addr.sin_addr.s_addr)), ntohs(addr.sin_port));
+		    this, sock, ip2str(addr.sin_addr.s_addr), ntohs(addr.sin_port));
 	    )
 }
 

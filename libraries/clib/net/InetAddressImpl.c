@@ -21,6 +21,7 @@
 #include "../../../kaffe/kaffevm/stringSupport.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "java_net_InetAddress.h"
+#include "gnu_java_net_SysInetAddressImpl.h"
 #include "nets.h"
 #include "jsyscall.h"
 
@@ -88,7 +89,7 @@ java_net_InetAddress_lookupInaddrAny(void)
     }
   else
     throwError(&einfo);
-	
+
   return addr;
 }
 
@@ -96,7 +97,7 @@ java_net_InetAddress_lookupInaddrAny(void)
  * Get localhost name.
  */
 struct Hjava_lang_String*
-java_net_InetAddress_getLocalHostName(void)
+java_net_InetAddress_getLocalHostname(void)
 {
   static char hostname[HOSTNMSZ] = "localhost";
   static iStaticLock	hostLock;
@@ -121,7 +122,9 @@ static iStaticLock	nsLock;
  * Convert a hostname to an array of host addresses.
  */
 HArrayOfArray*
-java_net_InetAddress_getHostByName(struct Hjava_lang_String* jStr)
+gnu_java_net_SysInetAddressImpl_getHostByName(
+		struct Hgnu_java_net_SysInetAddressImpl *this,
+		struct Hjava_lang_String* jStr)
 {
 #if defined(HAVE_GETADDRINFO)
   int index = 0, count = 0, retryCount = 5, rc;
@@ -349,7 +352,9 @@ java_net_InetAddress_getHostByName(struct Hjava_lang_String* jStr)
  * Convert a network order address into the hostname.
  */
 struct Hjava_lang_String*
-java_net_InetAddress_getHostByAddr(HArrayOfByte *addr)
+gnu_java_net_SysInetAddressImpl_getHostByAddr(
+		struct Hgnu_java_net_SysInetAddressImpl *this,
+		HArrayOfByte *addr)
 {
 #if defined(HAVE_GETADDRINFO)
   struct Hjava_lang_String *retval = 0;

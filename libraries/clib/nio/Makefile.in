@@ -14,12 +14,9 @@
 
 @SET_MAKE@
 
-# Library support
+# New IO subsystem (NIO) support for Java libraries
 #
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
-# Copyright (c) 2003
-#	Mark Wielaard <mark@klomp.org>
+# Copyright (c) 2003 Kaffe's team
 #
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
@@ -30,7 +27,7 @@ VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-top_builddir = ..
+top_builddir = ../../..
 
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = @INSTALL@
@@ -249,221 +246,128 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
-KLASSES_JAR = $(top_srcdir)/libraries/javalib/Klasses.jar.bootstrap
+AM_CPPFLAGS = -I$(top_builddir)/include
+native_LTLIBRARIES = libnio.la
 
-EXTRA_DIST = distclean-hack \
-		stamp-h2.in
-
-
-
-# INSTALL_ means: these headers get installed,
-# NOINSTALL_ means: they don't get installed.
-# _DERIVED_ means: these headers are derived (using
-# kaffeh, from Klasses.jar.bootstrap). 
-# _JNI_DERIVED_ means: these headers are derived using kaffeh
-# from Klasses.jar.bootstrap *and* the -jni option is
-# set, resulting in JNI-ish method names.
-#
-# So if your class uses JNI to call its native methods
-# (like tritonus), then it goes into the JNI set,
-# otherwise it goes into the other one.
-#
-# In libraries/javalib, Klasses.jar.bootstrap contains
-# beside classes necesary for kjc to run, also all the
-# classes necessary to generate headers from. They are
-# at the end of bootstrap.classlist.
-INSTALL_DERIVED_HDRS = 
-
-NOINSTALL_DERIVED_HDRS = \
-	java_lang_Object.h \
-	java_lang_String.h \
-	java_lang_StackTraceElement.h \
-	java_lang_Thread.h \
-	java_lang_ThreadGroup.h \
-	java_lang_Throwable.h \
-	java_lang_VMThrowable.h \
-	java_lang_SecurityManager.h \
-	java_io_File.h \
-	java_io_FileDescriptor.h \
-	java_io_FileInputStream.h \
-	java_io_FileOutputStream.h \
-	java_io_InputStream.h \
-	java_io_InterruptedIOException.h \
-	java_io_ObjectInputStream.h \
-	java_io_PrintStream.h \
-	java_io_RandomAccessFile.h \
-	java_lang_Boolean.h \
-	java_lang_Byte.h \
-	java_lang_Character.h \
-	java_lang_Class.h \
-	java_lang_ClassLoader.h \
-	java_lang_Cloneable.h \
-	java_lang_Compiler.h \
-	java_lang_Double.h \
-	java_lang_Float.h \
-	java_lang_Integer.h \
-	java_lang_Long.h \
-	java_lang_Math.h \
-	java_lang_NativeLibrary.h \
-	java_lang_Runtime.h \
-	java_lang_Short.h \
-	java_lang_System.h \
-	java_lang_reflect_Array.h \
-	java_lang_reflect_Constructor.h \
-	java_lang_reflect_Field.h \
-	java_lang_reflect_Method.h \
-	java_net_DatagramPacket.h \
-	java_net_InetAddress.h \
-	java_net_InetSocketAddress.h \
-	java_net_NetworkInterface.h \
-	gnu_java_net_PlainDatagramSocketImpl.h \
-	gnu_java_net_PlainSocketImpl.h \
-	gnu_java_net_SysInetAddressImpl.h \
-	java_net_SocketAddress.h \
-	java_net_SocketImpl.h \
-	java_net_SocketOptions.h \
-	java_text_DateFormat.h \
-	java_util_Arrays.h \
-	java_util_Comparator.h \
-	java_util_TimeZone.h \
-	java_util_Vector.h \
-	java_util_zip_Adler32.h \
-	java_util_zip_CRC32.h \
-	java_util_zip_Deflater.h \
-	java_util_zip_Inflater.h \
-	java_util_zip_ZipEntry.h \
-	java_util_zip_ZipFile.h \
-	kaffe_applet_AudioPlayer.h \
-	kaffe_lang_PrimordialClassLoader.h \
-	kaffe_lang_ThreadStack.h \
-	kaffe_management_Classpath.h \
-	java_nio_DirectByteBufferImpl.h \
-	gnu_java_nio_SelectorImpl.h
+libnio_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
+libnio_la_SOURCES = \
+	DirectByteBufferImpl.c \
+	SelectorImpl.c \
+	NIOServerSocket.c
 
 
-DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
-
-INSTALL_JNI_DERIVED_HDRS = 
-
-NOINSTALL_JNI_DERIVED_HDRS = \
-	java_math_BigInteger.h \
-	kaffe_io_ByteToCharDefault.h \
-	kaffe_io_ByteToCharIconv.h \
-	kaffe_io_CharToByteDefault.h \
-	kaffe_io_CharToByteIconv.h \
-	kaffe_lang_MemoryAdvice.h \
-	kaffe_lang_UNIXProcess.h \
-	kaffe_management_JIT.h \
-	kaffe_management_Debug.h \
-	kaffe_management_XProfiler.h \
-	kaffe_security_provider_MD2.h \
-	kaffe_security_provider_MD4.h \
-	kaffe_security_provider_MD5.h \
-	kaffe_security_provider_SHA.h \
-	org_tritonus_lowlevel_esd_Esd.h \
-	org_tritonus_lowlevel_esd_EsdRecordingStream.h \
-	org_tritonus_lowlevel_esd_EsdSample.h \
-	org_tritonus_lowlevel_esd_EsdStream.h \
-	org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaCtl.h \
-	org_tritonus_lowlevel_alsa_Alsa.h \
-	org_tritonus_lowlevel_alsa_AlsaMixerElement.h \
-	org_tritonus_lowlevel_alsa_AlsaMixer.h \
-	org_tritonus_lowlevel_alsa_AlsaPcmHWParamsFormatMask.h \
-	org_tritonus_lowlevel_alsa_AlsaPcmHWParams.h \
-	org_tritonus_lowlevel_alsa_AlsaPcm.h \
-	org_tritonus_lowlevel_alsa_AlsaPcmSWParams.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqClientInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqEvent.h \
-	org_tritonus_lowlevel_alsa_AlsaSeq.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqPortInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqPortSubscribe.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueStatus.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueTempo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueTimer.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqRemoveEvents.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqSystemInfo.h
-
-
-JNI_DERIVED_HDRS = $(INSTALL_JNI_DERIVED_HDRS) $(NOINSTALL_JNI_DERIVED_HDRS)
-@USE_COMPAT_IFADDRS_FALSE@ifaddrs_compat = #
-
-@USE_COMPAT_IFADDRS_TRUE@ifaddrs_compat = ifaddrs.h
-
-nodist_noinst_HEADERS = \
-	$(NOINSTALL_DERIVED_HDRS) \
-	$(NOINSTALL_JNI_DERIVED_HDRS)
-
-
-noinst_HEADERS = \
-	ifaddrs_compat.h \
-	$(ifaddrs_compat) \
-	defs.h \
-	dummyin6.h \
-	files.h \
-	getaddrinfo.h \
-	nets.h \
-	system.h \
-	Arrays.h \
-	errors.h \
-	jsyscall.h \
-	native.h 
-
-
-include_HEADERS = \
-	jni.h \
-	jni_cpp.h \
-	jvmpi.h 
-
-
-nodist_pkginclude_HEADERS = \
-	$(INSTALL_DERIVED_HDRS) \
-	$(INSTALL_JNI_DERIVED_HDRS)
-
-
-pkginclude_HEADERS = \
-	java_lang_Object.h \
-	java_lang_String.h \
-	java_lang_StackTraceElement.h \
-	java_lang_Thread.h \
-	java_lang_ThreadGroup.h \
-	java_lang_Throwable.h \
-	java_lang_VMThrowable.h \
-	kaffe/jmalloc.h \
-	kaffe/jtypes.h 
-
-
-CLEANFILES = $(DERIVED_HDRS) $(JNI_DERIVED_HDRS) stamp-kaffeh
-
-DISTCLEANFILES = \
-	$(DERIVED_HDRS) \
-	$(JNI_DERIVED_HDRS) \
-	kaffe/jtypes.h \
-	stamp-h0all \
-	stamp-h1all
-
-subdir = include
+CLEANFILES = so_locations
+subdir = libraries/clib/nio
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
-DIST_SOURCES =
-HEADERS = $(include_HEADERS) $(nodist_noinst_HEADERS) \
-	$(nodist_pkginclude_HEADERS) $(noinst_HEADERS) \
-	$(pkginclude_HEADERS)
+LTLIBRARIES = $(native_LTLIBRARIES)
 
-DIST_COMMON = $(include_HEADERS) $(noinst_HEADERS) \
-	$(pkginclude_HEADERS) $(srcdir)/Makefile.in Makefile.am
+libnio_la_LIBADD =
+am_libnio_la_OBJECTS = DirectByteBufferImpl.lo SelectorImpl.lo \
+	NIOServerSocket.lo
+libnio_la_OBJECTS = $(am_libnio_la_OBJECTS)
+
+DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
+depcomp = $(SHELL) $(top_srcdir)/depcomp
+am__depfiles_maybe = depfiles
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/DirectByteBufferImpl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/NIOServerSocket.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/SelectorImpl.Plo
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
+	$(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+DIST_SOURCES = $(libnio_la_SOURCES)
+DIST_COMMON = $(srcdir)/Makefile.in Makefile.am
+SOURCES = $(libnio_la_SOURCES)
+
 all: all-am
 
 .SUFFIXES:
+.SUFFIXES: .c .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  include/Makefile
+	  $(AUTOMAKE) --gnu  libraries/clib/nio/Makefile
 Makefile: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
+nativeLTLIBRARIES_INSTALL = $(INSTALL)
+install-nativeLTLIBRARIES: $(native_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(nativedir)
+	@list='$(native_LTLIBRARIES)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    f="`echo $$p | sed -e 's|^.*/||'`"; \
+	    echo " $(LIBTOOL) --mode=install $(nativeLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) $$p $(DESTDIR)$(nativedir)/$$f"; \
+	    $(LIBTOOL) --mode=install $(nativeLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) $$p $(DESTDIR)$(nativedir)/$$f; \
+	  else :; fi; \
+	done
+
+uninstall-nativeLTLIBRARIES:
+	@$(NORMAL_UNINSTALL)
+	@list='$(native_LTLIBRARIES)'; for p in $$list; do \
+	    p="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " $(LIBTOOL) --mode=uninstall rm -f $(DESTDIR)$(nativedir)/$$p"; \
+	  $(LIBTOOL) --mode=uninstall rm -f $(DESTDIR)$(nativedir)/$$p; \
+	done
+
+clean-nativeLTLIBRARIES:
+	-test -z "$(native_LTLIBRARIES)" || rm -f $(native_LTLIBRARIES)
+	@list='$(native_LTLIBRARIES)'; for p in $$list; do \
+	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
+	  test "$$dir" = "$$p" && dir=.; \
+	  echo "rm -f \"$${dir}/so_locations\""; \
+	  rm -f "$${dir}/so_locations"; \
+	done
+libnio.la: $(libnio_la_OBJECTS) $(libnio_la_DEPENDENCIES) 
+	$(LINK) -rpath $(nativedir) $(libnio_la_LDFLAGS) $(libnio_la_OBJECTS) $(libnio_la_LIBADD) $(LIBS)
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT) core *.core
+
+distclean-compile:
+	-rm -f *.tab.c
+
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DirectByteBufferImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NIOServerSocket.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SelectorImpl.Plo@am__quote@
+
+.c.o:
+@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(COMPILE) -c `test -f '$<' || echo '$(srcdir)/'`$<
+
+.c.obj:
+@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o $@ `if test -f '$<'; then $(CYGPATH_W) '$<'; else $(CYGPATH_W) '$(srcdir)/$<'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(COMPILE) -c `if test -f '$<'; then $(CYGPATH_W) '$<'; else $(CYGPATH_W) '$(srcdir)/$<'; fi`
+
+.c.lo:
+@am__fastdepCC_TRUE@	if $(LTCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Plo"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -474,60 +378,6 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
-includeHEADERS_INSTALL = $(INSTALL_HEADER)
-install-includeHEADERS: $(include_HEADERS)
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(includedir)
-	@list='$(include_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " $(includeHEADERS_INSTALL) $$d$$p $(DESTDIR)$(includedir)/$$f"; \
-	  $(includeHEADERS_INSTALL) $$d$$p $(DESTDIR)$(includedir)/$$f; \
-	done
-
-uninstall-includeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(include_HEADERS)'; for p in $$list; do \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " rm -f $(DESTDIR)$(includedir)/$$f"; \
-	  rm -f $(DESTDIR)$(includedir)/$$f; \
-	done
-nodist_pkgincludeHEADERS_INSTALL = $(INSTALL_HEADER)
-install-nodist_pkgincludeHEADERS: $(nodist_pkginclude_HEADERS)
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(pkgincludedir)
-	@list='$(nodist_pkginclude_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " $(nodist_pkgincludeHEADERS_INSTALL) $$d$$p $(DESTDIR)$(pkgincludedir)/$$f"; \
-	  $(nodist_pkgincludeHEADERS_INSTALL) $$d$$p $(DESTDIR)$(pkgincludedir)/$$f; \
-	done
-
-uninstall-nodist_pkgincludeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(nodist_pkginclude_HEADERS)'; for p in $$list; do \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " rm -f $(DESTDIR)$(pkgincludedir)/$$f"; \
-	  rm -f $(DESTDIR)$(pkgincludedir)/$$f; \
-	done
-pkgincludeHEADERS_INSTALL = $(INSTALL_HEADER)
-install-pkgincludeHEADERS: $(pkginclude_HEADERS)
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(pkgincludedir)
-	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " $(pkgincludeHEADERS_INSTALL) $$d$$p $(DESTDIR)$(pkgincludedir)/$$f"; \
-	  $(pkgincludeHEADERS_INSTALL) $$d$$p $(DESTDIR)$(pkgincludedir)/$$f; \
-	done
-
-uninstall-pkgincludeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " rm -f $(DESTDIR)$(pkgincludedir)/$$f"; \
-	  rm -f $(DESTDIR)$(pkgincludedir)/$$f; \
-	done
 
 ETAGS = etags
 ETAGSFLAGS =
@@ -584,11 +434,10 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
-top_distdir = ..
+top_distdir = ../../..
 distdir = $(top_distdir)/$(PACKAGE)-$(VERSION)
 
 distdir: $(DISTFILES)
-	$(mkinstalldirs) $(distdir)/kaffe
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -615,15 +464,12 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
-	$(MAKE) $(AM_MAKEFLAGS) \
-	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
-	  dist-hook
 check-am: all-am
 check: check-am
-all-am: Makefile $(HEADERS)
+all-am: Makefile $(LTLIBRARIES)
 
 installdirs:
-	$(mkinstalldirs) $(DESTDIR)$(includedir) $(DESTDIR)$(pkgincludedir) $(DESTDIR)$(pkgincludedir)
+	$(mkinstalldirs) $(DESTDIR)$(nativedir)
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -645,19 +491,20 @@ clean-generic:
 
 distclean-generic:
 	-rm -f $(CONFIG_CLEAN_FILES)
-	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-generic clean-libtool clean-nativeLTLIBRARIES \
+	mostlyclean-am
 
 distclean: distclean-am
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-libtool \
-	distclean-tags
+distclean-am: clean-am distclean-compile distclean-generic \
+	distclean-libtool distclean-tags
 
 dvi: dvi-am
 
@@ -667,8 +514,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-includeHEADERS install-nodist_pkgincludeHEADERS \
-	install-pkgincludeHEADERS
+install-data-am: install-nativeLTLIBRARIES
 
 install-exec-am:
 
@@ -679,12 +525,14 @@ install-man:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-generic mostlyclean-libtool
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool
 
 pdf: pdf-am
 
@@ -694,72 +542,21 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-includeHEADERS uninstall-info-am \
-	uninstall-nodist_pkgincludeHEADERS uninstall-pkgincludeHEADERS
+uninstall-am: uninstall-info-am uninstall-nativeLTLIBRARIES
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool ctags distclean distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am info \
-	info-am install install-am install-data install-data-am \
-	install-exec install-exec-am install-includeHEADERS \
-	install-info install-info-am install-man \
-	install-nodist_pkgincludeHEADERS install-pkgincludeHEADERS \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
+	clean-libtool clean-nativeLTLIBRARIES ctags distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am info info-am install \
+	install-am install-data install-data-am install-exec \
+	install-exec-am install-info install-info-am install-man \
+	install-nativeLTLIBRARIES install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-includeHEADERS \
-	uninstall-info-am uninstall-nodist_pkgincludeHEADERS \
-	uninstall-pkgincludeHEADERS
+	tags uninstall uninstall-am uninstall-info-am \
+	uninstall-nativeLTLIBRARIES
 
-@USE_COMPAT_IFADDRS_TRUE@ifaddrs.h: ifaddrs_compat.h
-@USE_COMPAT_IFADDRS_TRUE@	$(LN_S) $< $@
-
-stamp-kaffeh:
-	@test -x $(KAFFEH) || ($(MAKE_KAFFEH))
-	@echo timestamp > $@
-
-$(DERIVED_HDRS): stamp-h0all
-	@if test -f $@; then :; else \
-	  rm -f stamp-h0all; $(MAKE) DERIVED_HDRS=$@ stamp-h0all; \
-	fi
-
-stamp-h0all: stamp-kaffeh $(KLASSES_JAR)
-	@set -e; for f in $(DERIVED_HDRS); do \
-	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
-	  echo "$(KAFFEH) -classpath $(KLASSES_JAR) -o $$f $$class"; \
-	  $(KAFFEH) -classpath $(KLASSES_JAR) -o stamp-h0$$f $$class; \
-	  if test -f $$f && cmp $$f stamp-h0$$f >/dev/null; then \
-	    echo "$$f is already up-to-date"; \
-	    rm -f stamp-h0$$f; \
-	  else \
-	    rm -f $$f; mv stamp-h0$$f $$f; \
-	  fi; \
-	done
-	@echo timestamp > $@
-
-$(JNI_DERIVED_HDRS): stamp-h1all
-	@if test -f $@; then :; else \
-	  rm -f stamp-h1all; $(MAKE) JNI_DERIVED_HDRS=$@ stamp-h1all; \
-	fi
-
-stamp-h1all: stamp-kaffeh $(KLASSES_JAR)
-	@set -e; for f in $(JNI_DERIVED_HDRS); do \
-	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
-	  echo "$(KAFFEH) -jni -classpath $(KLASSES_JAR) -o $$f $$class"; \
-	  $(KAFFEH) -jni -classpath $(KLASSES_JAR) -o stamp-h1$$f $$class; \
-	  if test -f $$f && cmp $$f stamp-h1$$f >/dev/null; then \
-	    echo "$$f is already up-to-date"; \
-	    rm -f stamp-h1$$f; \
-	  else \
-	    rm -f $$f; mv stamp-h1$$f $$f; \
-	  fi; \
-	done
-	@echo timestamp > $@
-
-dist-hook:
-	@for file in $(DISTCLEANFILES); do \
-	  rm -f $(distdir)/$$file; \
-	done
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -58,7 +58,7 @@ public class SelectorImpl extends AbstractSelector
     // load the shared library needed for native methods.
     if (Configuration.INIT_LOAD_LIBRARY)
       {
-        System.loadLibrary ("javanio");
+        System.loadLibrary ("nio");
       }
   }
   

@@ -77,6 +77,7 @@ NOINSTALL_DERIVED_HDRS = \
 	java_net_NetworkInterface.h \
 	gnu_java_net_PlainDatagramSocketImpl.h \
 	gnu_java_net_PlainSocketImpl.h \
+	gnu_java_net_SysInetAddressImpl.h \
 	java_net_SocketAddress.h \
 	java_net_SocketImpl.h \
 	java_net_SocketOptions.h \
@@ -94,7 +95,9 @@ NOINSTALL_DERIVED_HDRS = \
 	kaffe_applet_AudioPlayer.h \
 	kaffe_lang_PrimordialClassLoader.h \
 	kaffe_lang_ThreadStack.h \
-	kaffe_management_Classpath.h
+	kaffe_management_Classpath.h \
+	java_nio_DirectByteBufferImpl.h \
+	gnu_java_nio_SelectorImpl.h
 
 DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
 

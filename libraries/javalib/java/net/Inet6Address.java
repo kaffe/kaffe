@@ -35,9 +35,10 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.net;
 
-import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * @author Michael Koch
@@ -54,24 +55,6 @@ public final class Inet6Address extends InetAddress
 {
   static final long serialVersionUID = 6880410070516793377L;
 
-  private static final byte ANY_LOCAL[] = { 0, 0, 0, 0, 0, 0, 0, 0,
-					    0, 0, 0, 0, 0, 0, 0, 0 };
-
-  private static final byte LOOPBACK[] = { 0, 0, 0, 0, 0, 0, 0, 0,
-					   0, 0, 0, 0, 0, 0, 0, 1 };
-
-  private static boolean compareAddresses(byte a1[], byte a2[])
-  {
-    boolean retval = true;
-    int lpc;
-    
-    for( lpc = 0; lpc < a1.length && retval; lpc++ )
-    {
-      retval = (a1[lpc] == a2[lpc]);
-    }
-    return retval;
-  }
-  
   /**
    * Needed for serialization
    */
@@ -83,7 +66,7 @@ public final class Inet6Address extends InetAddress
    * @param addr The IP address
    * @param host The hostname
    */
-  protected Inet6Address (byte[] addr, String host)
+  Inet6Address (byte[] addr, String host)
   {
     super (addr, host);
     this.ipaddress = addr;
@@ -106,7 +89,10 @@ public final class Inet6Address extends InetAddress
    */
   public boolean isAnyLocalAddress ()
   {
-    return compareAddresses(this.ipaddress, ANY_LOCAL);
+    byte[] anylocal = { 0, 0, 0, 0, 0, 0, 0, 0,
+	                0, 0, 0, 0, 0, 0, 0, 0 };
+    
+    return Arrays.equals(ipaddress, anylocal);
   }
 	  
   /**
@@ -116,7 +102,10 @@ public final class Inet6Address extends InetAddress
    */
   public boolean isLoopbackAddress ()
   {
-    return compareAddresses(this.ipaddress, LOOPBACK);
+    byte[] loopback = { 0, 0, 0, 0, 0, 0, 0, 0,
+	                0, 0, 0, 0, 0, 0, 0, 1 };
+    
+    return Arrays.equals(ipaddress, loopback);
   }
 
   /**
@@ -260,7 +249,7 @@ public final class Inet6Address extends InetAddress
     Inet6Address tmp = (Inet6Address) obj;
 
     return super.equals (tmp)
-      && compareAddresses(this.ipaddress, tmp.ipaddress);
+           && this.ipaddress == tmp.ipaddress;
   }
   
   /**
