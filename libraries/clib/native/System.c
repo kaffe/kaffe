@@ -159,6 +159,8 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	 * java.vendor.url      Java vendor URL
 	 * java.home            Java installation directory
 	 *
+	 * java.io.tmpdir	Default directory for temporary files
+	 *
 	 * java.vm.specification.version
 	 *			Java Virtual Machine specification version
 	 * java.vm.specification.vendor
@@ -206,6 +208,12 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	setProperty(p, "java.vendor.url", kaffe_vendor_url);
 	setProperty(p, "java.vendor.url.bug", kaffe_vendor_url_bug);
 	setProperty(p, "java.compiler", getEngine());
+
+#if defined(__WIN32__)
+	setProperty(p, "java.io.tmpdir", "C:\\TEMP");
+#else
+	setProperty(p, "java.io.tmpdir", "/tmp");	/* XXX or /var/tmp?? */
+#endif
 
 	setProperty(p, "java.vm.specification.version",
 		  kaffe_vm_specification_version);
