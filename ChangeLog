@@ -1,3 +1,7 @@
+Mon Dec  6 17:42:57 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/net/URLDecoder.java: act like JDK
+
 Mon Dec  6 16:14:50 CET 1999  Edouard G. Parmelan  <egp@free.fr>
 
 	* configure.in: call AC_PROG_CXX when gcj is not disabled and define
