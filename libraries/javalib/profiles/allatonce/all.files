@@ -226,7 +226,6 @@ gnu/java/security/der/DER.java
 gnu/java/security/der/DERReader.java
 gnu/java/security/der/DERValue.java
 gnu/java/security/der/DERWriter.java
-gnu/java/security/Engine.java
 gnu/java/security/OID.java
 gnu/java/security/PolicyFile.java
 gnu/java/security/provider/DefaultPolicy.java
@@ -814,8 +813,6 @@ java/security/AlgorithmParametersSpi.java
 java/security/cert/CertificateEncodingException.java
 java/security/cert/CertificateException.java
 java/security/cert/CertificateExpiredException.java
-java/security/cert/CertificateFactory.java
-java/security/cert/CertificateFactorySpi.java
 java/security/cert/Certificate.java
 java/security/cert/CertificateNotYetValidException.java
 java/security/cert/CertificateParsingException.java
@@ -823,7 +820,6 @@ java/security/cert/CertPathBuilderException.java
 java/security/cert/CertPathBuilder.java
 java/security/cert/CertPathBuilderResult.java
 java/security/cert/CertPathBuilderSpi.java
-java/security/cert/CertPath.java
 java/security/cert/CertPathParameters.java
 java/security/cert/CertPathValidatorException.java
 java/security/cert/CertPathValidator.java
@@ -835,8 +831,6 @@ java/security/cert/CertStore.java
 java/security/cert/CertStoreParameters.java
 java/security/cert/CertStoreSpi.java
 java/security/cert/CollectionCertStoreParameters.java
-java/security/cert/CRLException.java
-java/security/cert/CRL.java
 java/security/cert/CRLSelector.java
 java/security/cert/LDAPCertStoreParameters.java
 java/security/cert/PKIXBuilderParameters.java

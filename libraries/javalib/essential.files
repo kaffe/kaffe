@@ -42,6 +42,7 @@ gnu/java/nio/ServerSocketChannelImpl.java
 gnu/java/nio/ServerSocketChannelSelectionKey.java
 gnu/java/nio/SocketChannelImpl.java
 gnu/java/nio/SocketChannelSelectionKey.java
+gnu/java/security/Engine.java
 gnu/java/security/provider/DefaultPolicy.java
 gnu/regexp/CharIndexed.java
 gnu/regexp/CharIndexedCharArray.java
@@ -367,7 +368,12 @@ java/security/NoSuchProviderException.java
 java/security/NoSuchAlgorithmException.java
 java/security/cert/Certificate.java
 java/security/cert/CertificateException.java
+java/security/cert/CertificateFactory.java
+java/security/cert/CertificateFactorySpi.java
 java/security/cert/CertificateEncodingException.java
+java/security/cert/CertPath.java
+java/security/cert/CRL.java
+java/security/cert/CRLException.java
 java/text/AttributedCharacterIterator.java
 java/text/CharacterIterator.java
 java/text/ChoiceFormat.java
