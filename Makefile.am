@@ -1,0 +1,113 @@
+# Top-level Makefile for Kaffe OpenVM.
+#
+# Copyright (c) 1996, 1997, 1998, 1999
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+AUTOMAKE_OPTIONS = foreign 1.3e
+
+SUBDIRS = . config include libltdl libraries kaffe test
+
+EXTRA_DIST = \
+	ChangeLog.1 \
+	ChangeLog.2 \
+	ChangeLog.3 \
+	WHATSNEW \
+	license.terms \
+	license-lesser.terms \
+	FAQ/FAQ.BeOS \
+	FAQ/FAQ.Known-Bugs \
+	FAQ/FAQ.amigaos \
+	FAQ/FAQ.automake \
+	FAQ/FAQ.awt \
+	FAQ/FAQ.class-states \
+	FAQ/FAQ.classlibrary-compile \
+	FAQ/FAQ.coding-style \
+	FAQ/FAQ.debugging \
+	FAQ/FAQ.depend \
+	FAQ/FAQ.feedback \
+	FAQ/FAQ.gcblock \
+	FAQ/FAQ.gcj \
+	FAQ/FAQ.gcstrategy \
+	FAQ/FAQ.hotjava \
+	FAQ/FAQ.install-root \
+	FAQ/FAQ.jsignal \
+	FAQ/FAQ.kjc \
+	FAQ/FAQ.libffi \
+	FAQ/FAQ.libtool \
+	FAQ/FAQ.linux \
+	FAQ/FAQ.locks \
+	FAQ/FAQ.nativemethods \
+	FAQ/FAQ.ncr \
+	FAQ/FAQ.profiler \
+	FAQ/FAQ.pthreads \
+	FAQ/FAQ.requiredlibraries \
+	FAQ/FAQ.staticnative \
+	FAQ/FAQ.timing \
+	FAQ/FAQ.unicode \
+	FAQ/FAQ.win32 \
+	FAQ/FAQ.xdebugging \
+	FAQ/FAQ.xprofiler \
+	compat-include/ansidecl.h \
+	compat-include/eh-common.h \
+	compat-include/frame.h \
+	compat-include/gansidecl.h \
+	developers/Encode.java \
+	developers/EncodeEUC_JP.java \
+	developers/FullTest.sh \
+	developers/GCJ.note.1 \
+	developers/JavaClass.pm \
+	developers/README \
+	developers/README.unicode \
+	developers/README.EUC_JP \
+	developers/alignment_of_size.c \
+	developers/autogen.sh \
+	developers/createLdScript.pl \
+	developers/dumpClass.pl \
+	developers/gdbinit \
+	developers/fixup.c \
+	developers/geteh_from_libgcc2 \
+	developers/glibc-2.1.1-signal.patch \
+	developers/mangleNative.pl \
+	developers/rpm-kaffe.spec \
+	developers/sp_offset.c \
+	developers/unicode.pl \
+	developers/update-class-list \
+	developers/utf8munge.pl
+
+CLEANFILES = BUILD_ENVIRONMENT
+
+depend:
+	@echo \`make depend\' is no longer needed
+
+noinst_SCRIPTS = libtool BUILD_ENVIRONMENT
+
+libtool: $(LIBTOOL_DEPS)
+	$(SHELL) ./config.status --recheck
+
+BUILD_ENVIRONMENT: Makefile
+	$(MAKE) top_srcdir=`cd $(top_srcdir) >/dev/null; pwd` \
+		top_builddir=`cd $(top_builddir) >/dev/null; pwd` \
+		"DEBUG_ENV=$(DEBUG_ENV)" BUILD_ENVIRONMENT-make
+
+BUILD_ENVIRONMENT-make: Makefile
+	echo CLASSPATH=\$${CLASSPATH-.}\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/Klasses.jar\''$(PATHSEP)'\'$(top_srcdir)/libraries/javalib/kjc.jar\; export CLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' > BUILD_ENVIRONMENT.new; \
+	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}`for f in $(JAVA_LIBS); do echo "$$f" | sed 's%/[^/]*$$%%'; done | (tr '\012' ' '; echo) | sed -e 's/ $$//' -e "s/ /\'$(PATHSEP)\'/g"`\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT.new; \
+	echo JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT.new
+	rm -f BUILD_ENVIRONMENT
+	mv BUILD_ENVIRONMENT.new BUILD_ENVIRONMENT
+
+CLASSDIRS = libraries/javalib
+
+.PHONY: Klasses new-classes compile-classes jar-classes build-classes
+Klasses new-classes compile-classes jar-classes build-classes:
+	@if test "$(CLASSDIRS)" = all; then \
+	   $(MAKE) CLASSDIRS="`echo libraries/javalib \
+				    libraries/extensions/*/javalib`" $@; \
+	else \
+	  for f in $(CLASSDIRS); do \
+	    (cd $$f && $(MAKE) $@); \
+	  done; \
+	fi
