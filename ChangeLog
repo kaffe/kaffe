@@ -1,5 +1,17 @@
 2004-03-19  Dalibor Topic <robilad@kaffe.org>
 
+	* replace/Makefile.am:
+	Made libreplace a real shared library to hopefully
+	fix systems where handling on covenience libraries
+	seems to be broken.
+
+	* replace/Makefile.in,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+
+2004-03-19  Dalibor Topic <robilad@kaffe.org>
+
 	* include/jsyscall.h:
 	Added missing includes.
 
