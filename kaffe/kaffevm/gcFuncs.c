@@ -247,19 +247,20 @@ void
 walkMethods(Collector* collector, void *gc_info, Method* m, int nm)
 {
         while (nm-- > 0) {
-	        int index;
+	        int objIndex;
 
                 KGC_markObject(collector, gc_info, m->class);
 		
-		index = KGC_getObjectIndex(collector, m->ncode);
-		if (index == KGC_ALLOC_JITCODE || index == KGC_ALLOC_TRAMPOLINE)
+		objIndex = KGC_getObjectIndex(collector, m->ncode);
+		if (objIndex == KGC_ALLOC_JITCODE 
+                    || objIndex == KGC_ALLOC_TRAMPOLINE)
 		  KGC_markObject(collector, gc_info, m->ncode);
 		
-		index = KGC_getObjectIndex(collector, m->c.bcode.code);
-		if (index == KGC_ALLOC_JITCODE || index == KGC_ALLOC_TRAMPOLINE ||
-		    index == KGC_ALLOC_BYTECODE)
+		objIndex = KGC_getObjectIndex(collector, m->c.bcode.code);
+		if (objIndex == KGC_ALLOC_JITCODE 
+                    || objIndex == KGC_ALLOC_TRAMPOLINE 
+                    || objIndex == KGC_ALLOC_BYTECODE)
 		  KGC_markObject(collector, gc_info, m->c.bcode.code);
-		
 
                 /* walk exception table in order to keep resolved catch types
                    alive */
@@ -316,14 +317,15 @@ DBG(GCPRECISE,
 	    for (idx = 1; idx < len; idx++)
 	      {
 		void *method = class->itable2dtable[idx];
-		int index;
+		int objIndex;
 		
 		if (method == (void*)-1)
 		  continue;
 		
-		index = KGC_getObjectIndex(collector, method);
+		objIndex = KGC_getObjectIndex(collector, method);
 		
-		if (index == KGC_ALLOC_JITCODE || index == KGC_ALLOC_TRAMPOLINE)
+		if (objIndex == KGC_ALLOC_JITCODE 
+                    || objIndex == KGC_ALLOC_TRAMPOLINE)
 		  KGC_markObject(collector, gc_info, method);
 	      }
 	  }
@@ -347,10 +349,11 @@ DBG(GCPRECISE,
 	  for (idx = 0; idx < class->msize; idx++)
 	    {
 	      void *method = class->vtable->method[idx];
-	      int index = KGC_getObjectIndex(collector, method);
+	      int objIndex = KGC_getObjectIndex(collector, method);
 
-	      if (index == KGC_ALLOC_JITCODE || index == KGC_ALLOC_TRAMPOLINE ||
-		  index == KGC_ALLOC_BYTECODE)
+	      if (objIndex == KGC_ALLOC_JITCODE 
+                  || objIndex == KGC_ALLOC_TRAMPOLINE 
+                  || objIndex == KGC_ALLOC_BYTECODE)
 		KGC_markObject(collector, gc_info, method);
 	    }
 
