@@ -1,3 +1,8 @@
+1999-04-22  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in: Check for DGifOpen in libungif.
+	* configure: Regen.
+
 1999-04-20  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* FAQ/FAQ.requiredlibraries: Completed.

@@ -4630,8 +4630,8 @@ fi
 PNG_LIBS=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
 LIBS="$KSAVE_LIBS"
 
-  echo $ac_n "checking for gif_lib.h""... $ac_c" 1>&6
-echo "configure:4635: checking for gif_lib.h" >&5
+  echo $ac_n "checking for a usable version of gif_lib.h""... $ac_c" 1>&6
+echo "configure:4635: checking for a usable version of gif_lib.h" >&5
 if eval "test \"`echo '$''{'kaffe_cv_gif_lib_version'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -4654,7 +4654,7 @@ else
   echo "configure: failed program was:" >&5
   cat conftest.$ac_ext >&5
   rm -rf conftest*
-  kaffe_cv_gif_lib_version="no, not found or bad version"
+  kaffe_cv_gif_lib_version=no
 fi
 rm -f conftest*
 fi
@@ -4667,9 +4667,9 @@ EOF
 
     KSAVE_LIBS="$LIBS"
 LIBS="$GIF_LIBS $KSAVE_LIBS"
-echo $ac_n "checking for DGifOpenFileHandle in -lungif""... $ac_c" 1>&6
-echo "configure:4672: checking for DGifOpenFileHandle in -lungif" >&5
-ac_lib_var=`echo ungif'_'DGifOpenFileHandle | sed 'y%./+-%__p_%'`
+echo $ac_n "checking for DGifOpen in -lungif""... $ac_c" 1>&6
+echo "configure:4672: checking for DGifOpen in -lungif" >&5
+ac_lib_var=`echo ungif'_'DGifOpen | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -4681,10 +4681,10 @@ cat > conftest.$ac_ext <<EOF
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char DGifOpenFileHandle();
+char DGifOpen();
 
 int main() {
-DGifOpenFileHandle()
+DGifOpen()
 ; return 0; }
 EOF
 if { (eval echo configure:4691: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
