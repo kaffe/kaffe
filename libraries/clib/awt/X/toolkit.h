@@ -11,9 +11,9 @@
 #ifndef __toolkit_h
 #define __toolkit_h
 
+#include <stdlib.h>
 #include <X11/Xlib.h>
 #include <jni.h>
-#include <stdlib.h>
 
 
 /*******************************************************************************
