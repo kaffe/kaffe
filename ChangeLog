@@ -1,3 +1,35 @@
+Sat Sep 09 11:49:51 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
+
+	* kaffe/kaffe/main.c, kaffe/kaffeh/constants.c
+	kaffe/kaffeh/kaffeh-support.h, kaffe/kaffeh/main.c,
+	kaffe/kaffeh/support.c, kaffe/kaffevm/baseClasses.c,
+	kaffe/kaffevm/classMethod.c, kaffe/kaffevm/classPool.c,
+	kaffe/kaffevm/debug.c, kaffe/kaffevm/exception.c,
+	kaffe/kaffevm/external.c, kaffe/kaffevm/findInJar.c,
+	kaffe/kaffevm/gcFuncs.c, kaffe/kaffevm/inflate.c,
+	kaffe/kaffevm/itypes.c, kaffe/kaffevm/methodCache.c,
+	kaffe/kaffevm/readClass.c, kaffe/kaffevm/soft.c,
+	kaffe/kaffevm/stackTrace.c, kaffe/kaffevm/stats.c,
+	kaffe/kaffevm/thread.c, kaffe/kaffevm/gcj/eh.c,
+	kaffe/kaffevm/gcj/gcj-except.c, kaffe/kaffevm/gcj/gcj-glue.c,
+	kaffe/kaffevm/intrp/machine.c, kaffe/kaffevm/jit/machine.c,
+	kaffe/kaffevm/mem/gc-mem.c,
+	kaffe/kaffevm/systems/beos-native/bjthread.c,
+	kaffe/kaffevm/systems/oskit-pthreads/pjthread.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+	kaffe/kaffevm/systems/unix-jthreads/signal.c,
+	kaffe/xprof/feedback.c, kaffe/xprof/sectionFile.c,
+	libraries/clib/management/JIT.c, libraries/clib/native/System.c:
+
+	On 8-26, I wrote that "all references to fprintf should be fixed,"
+	meaning that someone should go through and fix them.  That
+	statement could easily be intrepretted as meaning that, to the best
+	of my knowledge, all references to fprintf have been fixed.  To
+	end any confusion, I have fixed all such references.
+
+	kaffeh defines dprintf in terms of vfprintf, and uses dprintf
+	rather than calling fprintf directly.  
+
 Sat Sep 09 11:43:32 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* kaffe/kaffevm/mem/gc-incremental.c: In markObjectDontCheck,
