@@ -30,14 +30,14 @@
 #include "stringSupport.h"
 
 static gcList gclists[5];
-static int mustfree = 4;		/* temporary list */
-static int white = 3;
-static int grey = 2;
-static int black = 1;
-static int finalise = 0;
+static const int mustfree = 4;		/* temporary list */
+static const int white = 3;
+static const int grey = 2;
+static const int black = 1;
+static const int finalise = 0;
 
-static int gcRunning = 0;
-static bool finalRunning = false;
+static volatile int gcRunning = 0;
+static volatile bool finalRunning = false;
 static timespent gc_time;
 static timespent sweep_time;
 

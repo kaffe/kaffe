@@ -64,7 +64,7 @@ main(int argc, char* argv[])
 
 	JNI_GetDefaultJavaVMInitArgs(&vmargs);
 
-	lt_dlpreopen_default();
+	lt_dlpreopen_default(NULL);
 
 	cp = getenv(CLASSPATH1);
 	if (cp == 0) {
