@@ -31,10 +31,13 @@
 #include <memory.h>
 #endif
 
-#if defined(HAVE_MMAP)
+#if defined(HAVE_SYS_TYPES_H)
 #include <sys/types.h>
+#endif /* defined(HAVE_SYS_TYPES_H) */
+
+#if defined(HAVE_SYS_MMAN_H)
 #include <sys/mman.h>
-#endif
+#endif /* defined(HAVE_SYS_MMAN_H) */
 
 #if !defined(HAVE_MEMCPY)
 void bcopy(void*, void*, size_t);
