@@ -7,6 +7,9 @@
 #
 # We prepend kaffe's lib directory to LD_LIBRARY_PATH.
 #
+# KAFFELIBRARYPATH is defined to kaffe's native lib directory
+# (lib/kaffe) if not set.
+#
 # The effective CLASSPATH is made up of four parts, which 
 # are composed in the following order:
 #
@@ -24,11 +27,21 @@ prefix="@prefix@"
 exec_prefix="@exec_prefix@"
 : ${KAFFE_BINDIR="@bindir@"}
 : ${KAFFE_CLASSDIR="@datadir@/kaffe"}
+: ${KAFFE_NATIVE_LIBRARY_DIR="@nativedir@"}
+: ${KAFFE_OLD_NATIVE_LIBRARY_DIR="$KAFFE_CLASSDIR/lib/@KAFFE_ARCHOS@"}
 : ${KAFFE_LIB="@libdir@"}
-CLASSPATH="${CLASSPATH-.}:$KAFFE_CLASSDIR/Klasses.jar:$KAFFE_CLASSDIR/pizza.jar"`test -f $KAFFE_CLASSDIR/classes.zip && echo ":$KAFFE_CLASSDIR/classes.zip"`
+CLASSPATH="${CLASSPATH-.}:$KAFFE_CLASSDIR/Klasses.jar:$KAFFE_CLASSDIR/pizza.jar"
+if test -f "$KAFFE_CLASSDIR/classes.zip"; then
+  CLASSPATH="$CLASSPATH:$KAFFE_CLASSDIR/classes.zip"
+fi
 export CLASSPATH
 LD_LIBRARY_PATH="$KAFFE_LIB"${LD_LIBRARY_PATH+":$LD_LIBRARY_PATH"}
 export LD_LIBRARY_PATH
+KAFFELIBRARYPATH="$KAFFE_NATIVE_LIBRARY_DIR"${KAFFELIBRARYPATH+":$KAFFELIBRARYPATH"}":${LD_LIBRARY_PATH}"
+if test -d "$KAFFE_OLD_NATIVE_LIBRARY_DIR"; then
+  KAFFELIBRARYPATH="$KAFFELIBRARYPATH:$KAFFE_OLD_NATIVE_LIBRARY_DIR"
+fi
+export KAFFELIBRARYPATH
 
 if test x"${KAFFE_DEBUG+set}"x != x"set"x; then
     exec $KAFFE_BINDIR/Kaffe ${1+"$@"}

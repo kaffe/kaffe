@@ -82,7 +82,6 @@ initNative(void)
 #if !defined(NO_SHARED_LIBRARIES)
 	char lib[MAXLIBPATH];
 	char* lpath;
-	char* home;
 	char* nptr;
 	char* ptr;
 	int len;
@@ -91,31 +90,18 @@ initNative(void)
 	if (lpath == 0) {
 		lpath = getenv(LIBRARYPATH);
 	}
-	home = (char*)Kaffe_JavaVMArgs[0].classhome;
 
 	len = 0;
 	if (lpath != 0) {
 		len += strlen(lpath);
 	}
-	if (home != 0) {
-		len += strlen(home);
-	}
 
 	/*
-	 * Build a library path from the given library path and one
-	 * constructed from the kaffe home + system type.
+	 * Build a library path from the given library path.
 	 */
-	libraryPath = gc_malloc_fixed(len + strlen(ARCHOS) + 7);
+	libraryPath = gc_malloc_fixed(len+1);
 	if (lpath != 0) {
 		strcat(libraryPath, lpath);
-		if (home != 0) {
-			strcat(libraryPath, ":");
-		}
-	}
-	if (home != 0) {
-		strcat(libraryPath, home);
-		strcat(libraryPath, "/lib/");
-		strcat(libraryPath, ARCHOS);
 	}
 
 	LIBRARYINIT();

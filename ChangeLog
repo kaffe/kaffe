@@ -1,3 +1,18 @@
+Tue Nov 10 22:40:39 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in (nativedir): install run-time (dlopened) libraries
+ 	in $libdir/kaffe, not within $share/lib
+	(ENVIRONMENT) set KAFFELIBRARYPATH too
+	(ARCHOS) AC_SUBST it as KAFFE_ARCHOS
+	* kaffe/kaffevm/external.c (initNative): do not add
+	KAFFEHOME/lib/ARCHOS; rely on JavaVM.librarypath and
+	LIBRARYPATH environment variable only
+	* kaffe/scripts/kaffe.in (KAFFELIBRARYPATH): set it to
+	concatenation of nativedir, any value it may hold, the contents of 
+	LD_LIBRARY_PATH and nativedir in its original location within
+	KAFFEHOME, for backward compatibility; main.c will try this
+	variable before LD_LIBRARY_PATH
+
 Wed Oct 28 22:58:20 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/support.c: fix execute_constructor_v to not look in 
@@ -852,3 +867,9 @@ Tue Jul 14 00:00:00 1998  Transvirtual Technologies     <info@transvirtual.com>
 
         * Version 1.0-b1 of Kaffe OpenVM released.
           The first complete Kaffe release, including all Java libraries.
+
+See ChangeLog.1 for earlier changes.
+
+Local Variables:
+add-log-time-format: current-time-string
+End:

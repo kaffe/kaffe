@@ -294,7 +294,9 @@ else
 fi
 AC_SUBST(KPREFIX)
 AC_SUBST(INSTROOT)
-AC_DEFINE_UNQUOTED(ARCHOS, "$host_cpu-$host_os")
+KAFFE_ARCHOS="$host_cpu-$host_os"
+AC_DEFINE_UNQUOTED(ARCHOS, "$KAFFE_ARCHOS")
+AC_SUBST(KAFFE_ARCHOS)
 
 dnl =========================================================================
 
@@ -731,7 +733,7 @@ dnl -------------------------------------------------------------------------
 # We do this hear to because we need prefixes set.
 test "x$prefix" = xNONE && prefix=$ac_default_prefix
 test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
-nativedir=$datadir/kaffe/lib/$host_cpu-$host_os
+nativedir=$libdir/kaffe
 AC_SUBST(nativedir)
 
 dnl A few extra files to process.
@@ -789,13 +791,15 @@ dnl -------------------------------------------------------------------------
 
 libdir=`eval echo $libdir` ; libdir=`eval echo $libdir`
 bindir=`eval echo $bindir` ; bindir=`eval echo $bindir`
-datadir=`eval echo $datadir`
+datadir=`eval echo $datadir`; nativedir=`eval echo $nativedir`
 
 cp /dev/null ENVIRONMENT
 if test "$dynamic_libraries" = "yes" ; then
 	echo LD_LIBRARY_PATH=$libdir:\$LD_LIBRARY_PATH >> ENVIRONMENT
+	echo KAFFELIBRARYPATH=$nativedir:\$LD_LIBRARY_PATH >> ENVIRONMENT
+	echo export LD_LIBRARY_PATH KAFFELIBRARYPATH >> ENVIRONMENT
 fi
 echo PATH=$bindir:\$PATH >> ENVIRONMENT
-echo export LD_LIBRARY_PATH PATH >> ENVIRONMENT
+echo export PATH >> ENVIRONMENT
 
 dnl -------------------------------------------------------------------------
