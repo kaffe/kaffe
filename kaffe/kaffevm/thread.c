@@ -57,7 +57,6 @@ jbool deadlockDetection = 1;	/* abort if we detect deadlock */
 Hjava_lang_Class* ThreadClass;
 Hjava_lang_Class* VMThreadClass;
 Hjava_lang_Class* ThreadGroupClass;
-Hjava_lang_ThreadGroup* standardGroup;
 
 static void firstStartThread(void*);
 static void runfinalizer(void);
@@ -131,13 +130,6 @@ initThreads(void)
 	assert(VMThreadClass != 0);
 	ThreadGroupClass = lookupClass(THREADGROUPCLASS, NULL, &info);
 	assert(ThreadGroupClass != 0);
-
-	/* Create base group */
-	standardGroup = (struct Hjava_lang_ThreadGroup*)
-	  execute_java_constructor(NULL, NULL,
-				   ThreadGroupClass, "()V");
-
-	assert(standardGroup != 0);
 
 	/* Allocate a thread to be the main thread */
 	attachFakedThreadInstance("main", false);
@@ -236,6 +228,7 @@ void
 attachFakedThreadInstance(const char* nm, int isDaemon)
 {
 	Hjava_lang_Thread* tid;
+	int i;
 
 	DBG(VMTHREAD, dprintf("attachFakedThreadInstance(%s)\n", nm); )
 
@@ -247,7 +240,23 @@ attachFakedThreadInstance(const char* nm, int isDaemon)
 	assert(unhand(tid)->name != NULL);
 	unhand(tid)->priority = java_lang_Thread_NORM_PRIORITY;
 	unhand(tid)->daemon = isDaemon;
-	unhand(tid)->group = standardGroup;
+
+	/* use root group for this thread:
+	 * loop over all static fields of java.lang.ThreadGroup ...
+	 */
+	for (i=0; i<CLASS_NSFIELDS(ThreadGroupClass); i++)
+	{
+		Field* f = &CLASS_SFIELDS(ThreadGroupClass)[i];
+
+		/* ... and if it's a field called root, take it */
+		if (!strcmp (f->name->data, "root"))
+		{
+			unhand(tid)->group = * (jref *)FIELD_ADDRESS(f);
+		}
+	}
+	/* finally complain if we did not find the field */
+	assert(unhand(tid)->group != NULL);
+
 	unhand(tid)->runnable = NULL;
 	unhand(tid)->vmThread = (Hjava_lang_VMThread *)
 	  execute_java_constructor(NULL, NULL,
