@@ -5,6 +5,8 @@
 	work as expected now (tested against Ant). CSTATE_PREPARED is
 	sufficient for implementors.
 
+	* WHATSNEW: Updated NEWS entry.
+
 2004-12-27  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/alpha/jit-alpha.def,
