@@ -192,7 +192,9 @@ startThread(Hjava_lang_Thread* tid)
 void
 interruptThread(Hjava_lang_Thread* tid)
 {
-	jthread_interrupt((jthread_t)unhand(tid)->PrivateInfo);
+	if ((jthread_t)unhand(tid)->PrivateInfo) {
+		jthread_interrupt((jthread_t)unhand(tid)->PrivateInfo);
+	}
 }
 
 /*
