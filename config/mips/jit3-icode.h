@@ -132,12 +132,13 @@
 #define	HAVE_build_key			set_word_xxC
 #define	HAVE_build_code_ref		set_wordpc_xxC
 
-#define	HAVE_cvt_int_double		cvtid_RRx
-#define	HAVE_cvt_float_int		cvtfi_RRx
-#define	HAVE_cvt_double_int		cvtdi_RRx
-#define	HAVE_cvt_int_float		cvtif_RRx
-#define	HAVE_cvt_float_double		cvtfd_RRx
-#define	HAVE_cvt_double_float		cvtdf_RRx
+#undef	HAVE_cvt_int_double		cvtid_RRx
+#undef	HAVE_cvt_int_float		cvtif_RRx
+/* MIPS cannot handle the NaN conditions so we do these by hand */
+#undef	HAVE_cvt_double_float
+#undef	HAVE_cvt_float_double
+#undef	HAVE_cvt_float_int
+#undef	HAVE_cvt_double_int
 
 /*
  * These are sometimes optional (if long operators are defined)

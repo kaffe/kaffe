@@ -1392,8 +1392,13 @@ define_insn(cvt_float_int, cvtfi_RRx) {
 	r = rreg_float(2);
 	w = wreg_float(0);
 
+#if 1
+	finsn_RRR(_FCVT_W, SINGLE_FORMAT, w, r, 0, COP1);
+	debug(("	cvt.w.s	%s,%s\n", fregname(w), fregname(r)));
+#else
 	finsn_RRR(_FFLOOR_W, SINGLE_FORMAT, w, r, 0, COP1);
 	debug(("	floor.w.s	%s,%s\n", fregname(w), fregname(r)));
+#endif
 }
 
 define_insn(cvt_double_int, cvtdi_RRx) {
@@ -1406,8 +1411,13 @@ define_insn(cvt_double_int, cvtdi_RRx) {
 	r = rreg_double(2);
 	w = wreg_float(0);
 
+#if 1
+	finsn_RRR(_FCVT_W, DOUBLE_FORMAT, w, r, 0, COP1);
+	debug(("	cvt.w.d	%s,%s\n", fregname(w), fregname(r)));
+#else
 	finsn_RRR(_FFLOOR_W, DOUBLE_FORMAT, w, r, 0, COP1);
 	debug(("	floor.w.d	%s,%s\n", fregname(w), fregname(r)));
+#endif
 }
 
 define_insn(cvt_float_double, cvtfd_RRx) {

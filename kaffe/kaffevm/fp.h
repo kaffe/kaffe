@@ -33,6 +33,12 @@
 #define DISNAN(b)	(((b) & DEXPMASK) == DEXPMASK && ((b) & DMANMASK) != 0)
 #define FISNAN(b)	(((b) & FEXPMASK) == FEXPMASK && ((b) & FMANMASK) != 0)
 
+extern jfloat	floatAdd(jfloat v1, jfloat v2);
+extern jdouble	doubleAdd(jdouble v1, jdouble v2);
+extern jfloat	floatSubtract(jfloat v1, jfloat v2);
+extern jdouble	doubleSubtract(jdouble v1, jdouble v2);
+extern jfloat	floatMultiply(jfloat v1, jfloat v2);
+extern jdouble	doubleMultiply(jdouble v1, jdouble v2);
 extern jfloat	floatDivide(jfloat v1, jfloat v2);
 extern jdouble	doubleDivide(jdouble v1, jdouble v2);
 

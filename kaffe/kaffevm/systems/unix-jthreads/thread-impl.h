@@ -13,4 +13,6 @@
 
 #define UNIX_JTHREADS
 
+#include "jthread.h"
+
 #endif /* __thread_impl_h */

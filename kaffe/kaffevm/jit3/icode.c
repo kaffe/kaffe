@@ -1023,21 +1023,47 @@ add_long_const(SlotInfo* dst, SlotInfo* src, jlong val)
 }
 #endif
 
-#if defined(HAVE_add_float)
 void
 add_float(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
+#if defined(HAVE_add_float)
 	slot_slot_slot(dst, src, src2, HAVE_add_float, Tcomplex);
-}
+#else
+	begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
+	pusharg_float(src, 0);
+	pusharg_float(src2, 1);
+#else
+	pusharg_float(src2, 1);
+	pusharg_float(src, 0);
 #endif
+	call_soft(soft_fadd);
+	popargs();
+	end_func_sync();
+	return_float(dst);
+#endif
+}
 
-#if defined(HAVE_add_double)
 void
 add_double(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
+#if defined(HAVE_add_double)
 	lslot_lslot_lslot(dst, src, src2, HAVE_add_double, Tcomplex);
-}
+#else
+	begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
+	pusharg_double(src, 0);
+	pusharg_double(src2, pusharg_long_idx_inc);
+#else
+	pusharg_double(src2, pusharg_long_idx_inc);
+	pusharg_double(src, 0);
 #endif
+	call_soft(soft_faddl);
+	popargs();
+	end_func_sync();
+	return_double(dst);
+#endif
+}
 
 #if defined(HAVE_sbc_int)
 void
@@ -1121,21 +1147,47 @@ sub_long_const(SlotInfo* dst, SlotInfo* src, jlong val)
 }
 #endif
 
-#if defined(HAVE_sub_float)
 void
 sub_float(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
+#if defined(HAVE_sub_float)
 	slot_slot_slot(dst, src, src2, HAVE_sub_float, Tcomplex);
-}
+#else
+	begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
+	pusharg_float(src, 0);
+	pusharg_float(src2, 1);
+#else
+	pusharg_float(src2, 1);
+	pusharg_float(src, 0);
 #endif
+	call_soft(soft_fsub);
+	popargs();
+	end_func_sync();
+	return_float(dst);
+#endif
+}
 
-#if defined(HAVE_sub_double)
 void
 sub_double(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
+#if defined(HAVE_sub_double)
 	lslot_lslot_lslot(dst, src, src2, HAVE_sub_double, Tcomplex);
-}
+#else
+	begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
+	pusharg_double(src, 0);
+	pusharg_double(src2, pusharg_long_idx_inc);
+#else
+	pusharg_double(src2, pusharg_long_idx_inc);
+	pusharg_double(src, 0);
 #endif
+	call_soft(soft_fsubl);
+	popargs();
+	end_func_sync();
+	return_double(dst);
+#endif
+}
 
 int
 mul_int_const_optimize(SlotInfo* dst, SlotInfo* src, jint val)
@@ -1254,21 +1306,47 @@ mul_long_const(SlotInfo* dst, SlotInfo* src, jlong val)
 }
 #endif
 
-#if defined(HAVE_mul_float)
 void
 mul_float(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
+#if defined(HAVE_mul_float)
 	slot_slot_slot(dst, src, src2, HAVE_mul_float, Tcomplex);
-}
+#else
+	begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
+	pusharg_float(src, 0);
+	pusharg_float(src2, 1);
+#else
+	pusharg_float(src2, 1);
+	pusharg_float(src, 0);
 #endif
+	call_soft(soft_fmul);
+	popargs();
+	end_func_sync();
+	return_float(dst);
+#endif
+}
 
-#if defined(HAVE_mul_double)
 void
 mul_double(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
+#if defined(HAVE_mul_double)
 	lslot_lslot_lslot(dst, src, src2, HAVE_mul_double, Tcomplex);
-}
+#else
+	begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
+	pusharg_double(src, 0);
+	pusharg_double(src2, pusharg_long_idx_inc);
+#else
+	pusharg_double(src2, pusharg_long_idx_inc);
+	pusharg_double(src, 0);
 #endif
+	call_soft(soft_fmull);
+	popargs();
+	end_func_sync();
+	return_double(dst);
+#endif
+}
 
 int
 div_int_const_optimize(SlotInfo* dst, SlotInfo* src, jint val)

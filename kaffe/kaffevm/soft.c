@@ -630,7 +630,13 @@ jint
 soft_fcmpg(jfloat v1, jfloat v2)
 {
         jint ret;
-	if ((!isinf(v1) && isnan(v1)) || (!isinf(v2) && isnan(v2))) {
+	jint v1bits;
+	jint v2bits;
+
+	v1bits = floatToInt(v1);
+	v2bits = floatToInt(v2);
+
+        if (FISNAN(v1bits) || FISNAN(v2bits)) {
 		ret = 1;
 	}
         else if (v1 > v2) {
@@ -652,7 +658,13 @@ jint
 soft_fcmpl(jfloat v1, jfloat v2)
 {
         jint ret;
-	if ((!isinf(v1) && isnan(v1)) || (!isinf(v2) && isnan(v2))) {
+	jint v1bits;
+	jint v2bits;
+
+	v1bits = floatToInt(v1);
+	v2bits = floatToInt(v2);
+
+        if (FISNAN(v1bits) || FISNAN(v2bits)) {
 		ret = -1;
 	}
         else if (v1 > v2) {
@@ -683,6 +695,43 @@ jlong
 soft_lrem(jlong v1, jlong v2)
 {
 	return (v1 % v2);
+}
+
+jfloat
+soft_fadd(jfloat v1, jfloat v2)
+{
+	return floatAdd(v1, v2);
+}
+
+jdouble
+soft_faddl(jdouble v1, jdouble v2)
+{
+	return doubleAdd(v1, v2);
+}
+
+jfloat
+soft_fsub(jfloat v1, jfloat v2)
+{
+	return floatSubtract(v1, v2);
+}
+
+jdouble
+soft_fsubl(jdouble v1, jdouble v2)
+{
+	return doubleSubtract(v1, v2);
+}
+
+
+jfloat
+soft_fmul(jfloat v1, jfloat v2)
+{
+	return floatMultiply(v1, v2);
+}
+
+jdouble
+soft_fmull(jdouble v1, jdouble v2)
+{
+	return doubleMultiply(v1, v2);
 }
 
 jfloat
@@ -798,13 +847,29 @@ soft_cvtld(jlong v)
 jdouble
 soft_cvtfd(jfloat v)
 {
-	return ((jdouble)v);
+	jint vbits;
+
+	vbits = floatToInt(v);
+        if (FISNAN(vbits)) {
+		return (longToDouble(DNANBITS));
+	}
+	else {
+		return ((jdouble)v);
+	}
 }
 
 jfloat
 soft_cvtdf(jdouble v)
 {
-	return ((jfloat)v);
+	jlong vbits;
+
+	vbits = doubleToLong(v);
+        if (DISNAN(vbits)) {
+		return (intToFloat(FNANBITS));
+	}
+	else {
+		return ((jfloat)v);
+	}
 }
 
 /*
@@ -837,22 +902,58 @@ soft_cvtdl(jdouble v)
 jint
 soft_cvtfi(jfloat v)
 {
+        jint vbits;
+
+	vbits = floatToInt(v);
+        if (FISNAN(vbits)) {
+		return (0);
+	}
+
 	if (v < 0.0) {
-		return ((jint)ceil(v));
+		v = ceil(v);
 	}
 	else {
-		return ((jint)floor(v));
+		v = floor(v);
+	}
+	/* If too small return smallest int */
+	if (v < -2147483648.0) {
+		return (-2147483648);
+	}
+	/* If too big return biggest int */
+	else if (v > 2147483647) {
+		return (2147483647);
+	}
+	else {
+		return ((jint)v);
 	}
 }
 
 jint
 soft_cvtdi(jdouble v)
 {
+        jlong vbits;
+
+	vbits = doubleToLong(v);
+        if (DISNAN(vbits)) {
+		return (0);
+	}
+
 	if (v < 0.0) {
-		return ((jint)ceil(v));
+		v = ceil(v);
 	}
 	else {
-		return ((jint)floor(v));
+		v = floor(v);
+	}
+	/* If too small return smallest int */
+	if (v < -2147483648.0) {
+		return (-2147483648);
+	}
+	/* If too big return biggest int */
+	else if (v > 2147483647) {
+		return (2147483647);
+	}
+	else {
+		return ((jint)v);
 	}
 }
 
