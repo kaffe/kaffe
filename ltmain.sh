@@ -625,6 +625,7 @@ compiler."
     ltlibs=
     module=no
     objs=
+    preload=no
     prev=
     prevarg=
     release=
@@ -668,6 +669,12 @@ compiler."
 
 	case "$prev" in
 	dlfiles|dlprefiles)
+	  if test "$preload" = no; then
+	    # Add the symbol object into the linking commands.
+	    compile_command="$compile_command @SYMFILE@"
+	    finalize_command="$finalize_command @SYMFILE@"
+	    preload=yes
+	  fi
 	  case "$arg" in
 	  *.la | *.lo) ;;  # We handle these cases below.
 	  *)
@@ -748,10 +755,12 @@ compiler."
 	  else
 	    arg=
 	  fi
-
-	  # Add the symbol object into the linking commands.
-	  compile_command="$compile_command @SYMFILE@"
-	  finalize_command="$finalize_command @SYMFILE@"
+	  if test "$preload" = no; then
+	    # Add the symbol object into the linking commands.
+	    compile_command="$compile_command @SYMFILE@"
+	    finalize_command="$finalize_command @SYMFILE@"
+	    preload=yes
+	  fi
 	fi
 	;;
 
@@ -939,10 +948,10 @@ compiler."
 	if test -n "$dependency_libs"; then
 	  # Extract -R from dependency_libs
 	  temp_deplibs=
-	  for dep in $dependency_libs; do
-	    case "$dep" in
-	    -R*) xrpath="$xrpath "`echo "X$dep" | $Xsed -e 's/^-R//'`;;
-	    *) temp_deplibs="$temp_deplibs $dep";;
+	  for deplib in $dependency_libs; do
+	    case "$deplib" in
+	    -R*) xrpath="$xrpath "`echo "X$deplib" | $Xsed -e 's/^-R//'`;;
+	    *) temp_deplibs="$temp_deplibs $deplib";;
 	    esac
 	  done
 	  dependency_libs="$temp_deplibs"
@@ -1922,7 +1931,7 @@ extern \"C\" {
 #endif
 
 /* Prevent the only kind of declaration conflicts we can make. */
-#define dld_preloaded_symbols some_other_symbol
+#define lt_preloaded_symbols some_other_symbol
 
 /* External symbol declarations for the compiler. */\
 "
@@ -1955,7 +1964,7 @@ extern \"C\" {
 
 	    $echo >> "$output_objdir/$dlsyms" "\
 
-#undef dld_preloaded_symbols
+#undef lt_preloaded_symbols
 
 #if defined (__STDC__) && __STDC__
 # define lt_ptr_t void *
@@ -1964,11 +1973,11 @@ extern \"C\" {
 #endif
 
 /* The mapping between symbol names and symbols. */
-struct {
-  char *name;
+const struct {
+  const char *name;
   lt_ptr_t address;
 }
-dld_preloaded_symbols[] =
+lt_preloaded_symbols[] =
 {\
 "
 
@@ -2016,7 +2025,7 @@ dld_preloaded_symbols[] =
 	esac
       else
 	# We keep going just in case the user didn't refer to
-	# dld_preloaded_symbols.  The linker will fail if global_symbol_pipe
+	# lt_preloaded_symbols.  The linker will fail if global_symbol_pipe
 	# really was required.
 	if test -n "$dlfiles$dlprefiles"; then
 	  $echo "$modename: not configured to extract global symbols from dlpreopened files" 1>&2
@@ -3182,11 +3191,15 @@ a program from several object files.
 The following components of LINK-COMMAND are treated specially:
 
   -all-static       do not do any dynamic linking at all
+  -avoid-versioning do not add a version suffix if possible
   -dlopen FILE      \`-dlpreopen' FILE if it cannot be dlopened at runtime
-  -dlpreopen FILE   link in FILE and add its symbols to dld_preloaded_symbols
+  -dlpreopen FILE   link in FILE and add its symbols to lt_preloaded_symbols
   -export-dynamic   allow symbols from OUTPUT-FILE to be resolved with dlsym(3)
+  -export-symbols SYMFILE
+		    try to export only the symbols listed in SYMFILE
   -LLIBDIR          search LIBDIR for required installed libraries
   -lNAME            OUTPUT-FILE requires the installed library libNAME
+  -module           build a library that can dlopened
   -no-undefined     declare that a library does not refer to external symbols
   -o OUTPUT-FILE    create OUTPUT-FILE from the specified objects
   -release RELEASE  specify package release information

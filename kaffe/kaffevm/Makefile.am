@@ -10,6 +10,7 @@ SUBDIRS = $(ENGINE_NAME) systems
 DIST_SUBDIRS = intrp jit systems
 
 EXTRA_DIST = \
+	kaffe.def \
 	mem/gc-incremental.c \
 	mem/gc-incremental.h \
 	mem/gc-mem.c \

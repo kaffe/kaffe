@@ -63,12 +63,14 @@ static const char *symbol_error = "symbol not found";
 static const char *memory_error = "not enough memory";
 static const char *invalid_handle_error = "invalid handle";
 static const char *buffer_overflow_error = "internal buffer overflow";
-static const char *shutdown_error = "libraries already shutdown";
+static const char *shutdown_error = "library already shutdown";
 
-static const char *last_error;
+static const char *last_error = 0;
+static const char *usr_search_path = 0;
 
 typedef struct lt_dltype_t {
 	struct lt_dltype_t *next;
+	const char *sym_prefix;	/* prefix for symbols */
 	int (*mod_init) __P((void));
 	int (*mod_exit) __P((void));
 	int (*lib_open) __P((lt_dlhandle handle, const char *filename));
@@ -250,8 +252,13 @@ dl_sym (handle, symbol)
 
 static
 lt_dltype_t
-dl = { LT_DLTYPE_TOP, dl_init, dl_exit,
+#ifdef NEED_USCORE
+dl = { LT_DLTYPE_TOP, "_", dl_init, dl_exit,
        dl_open, dl_close, dl_sym };
+#else
+dl = { LT_DLTYPE_TOP, 0, dl_init, dl_exit,
+       dl_open, dl_close, dl_sym };
+#endif
 
 #undef LT_DLTYPE_TOP
 #define LT_DLTYPE_TOP &dl
@@ -299,7 +306,7 @@ dl = { LT_DLTYPE_TOP, dl_init, dl_exit,
 #define	BIND_RESTRICTED	0
 #endif	/* BIND_RESTRICTED */
 
-#define	OPT_BIND_FLAGS	(BIND_IMMEDIATE | BIND_NONFATAL | BIND_VERBOSE | DYNAMIC_PATH)
+#define	LTDL_BIND_FLAGS	(BIND_IMMEDIATE | BIND_NONFATAL | BIND_VERBOSE | DYNAMIC_PATH)
 
 static int
 shl_init ()
@@ -318,8 +325,7 @@ shl_open (handle, filename)
 	lt_dlhandle handle;
 	const char *filename;
 {
-	handle->handle = shl_load (filename, OPT_BIND_FLAGS, 0L);
-	/* the hp-docs say we should better abort() if errno==ENOSYM ;( */
+	handle->handle = shl_load(filename, LTDL_BIND_FLAGS, 0L);
 	if (!handle->handle) {
 		last_error = unknown_error;
 		return 1;
@@ -345,7 +351,7 @@ shl_sym (handle, symbol)
 {
 	lt_ptr_t address;
 
-	if (shl_findsym ((shl_t) (handle->handle), symbol, TYPE_UNDEFINED, 
+	if (shl_findsym((shl_t) (handle->handle), symbol, TYPE_UNDEFINED, 
 	    &address) != 0 || !(handle->handle) || !address) {
 		last_error = unknown_error;
 		return 0;
@@ -355,7 +361,7 @@ shl_sym (handle, symbol)
 
 static
 lt_dltype_t
-shl = { LT_DLTYPE_TOP, shl_init, shl_exit,
+shl = { LT_DLTYPE_TOP, 0, shl_init, shl_exit,
 	shl_open, shl_close, shl_sym };
 
 #undef LT_DLTYPE_TOP
@@ -423,7 +429,7 @@ dld_sym (handle, symbol)
 
 static
 lt_dltype_t
-dld = { LT_DLTYPE_TOP, dld_init, dld_exit,
+dld = { LT_DLTYPE_TOP, 0, dld_init, dld_exit,
 	dld_open, dld_close, dld_sym };
 
 #undef LT_DLTYPE_TOP
@@ -487,7 +493,7 @@ wll_sym (handle, symbol)
 
 static
 lt_dltype_t
-wll = { LT_DLTYPE_TOP, wll_init, wll_exit,
+wll = { LT_DLTYPE_TOP, 0, wll_init, wll_exit,
 	wll_open, wll_close, wll_sym };
 
 #undef LT_DLTYPE_TOP
@@ -497,25 +503,27 @@ wll = { LT_DLTYPE_TOP, wll_init, wll_exit,
 
 #if HAVE_DLPREOPEN
 
-/* emulate dynamic linking using dld_preloaded_symbols */
+/* emulate dynamic linking using preloaded_symbols */
 
 typedef struct lt_dlsymlists_t {
 	struct lt_dlsymlists_t *next;
-	lt_dlsymlist	*syms;
+	const lt_dlsymlist *syms;
 } lt_dlsymlists_t;
 
+static const lt_dlsymlist *default_preloaded_symbols = 0;
 static lt_dlsymlists_t *preloaded_symbols = 0;
 
 static int
-dldpre_init ()
+presym_init ()
 {
-	/* Don't nullify preloaded_symbols here, it would prevent one
-	   from calling lt_dlpreload_default() before lt_dlinit() */
+	preloaded_symbols = 0;
+	if (default_preloaded_symbols)
+		return lt_dlpreopen(default_preloaded_symbols);
 	return 0;
 }
 
 static void
-dldpre_free_symlists ()
+presym_free_symlists ()
 {
 	lt_dlsymlists_t	*lists = preloaded_symbols;
 	
@@ -529,16 +537,15 @@ dldpre_free_symlists ()
 }
 
 static int
-dldpre_exit ()
+presym_exit ()
 {
-	/* Don't reset preloaded_symbols here; adding/removing symbols
-           should be unrelated with init/exit */
+	presym_free_symlists();
 	return 0;
 }
 
 static int
-dldpre_add_symlist (preloaded)
-	lt_dlsymlist *preloaded;
+presym_add_symlist (preloaded)
+	const lt_dlsymlist *preloaded;
 {
 	lt_dlsymlists_t *tmp;
 	lt_dlsymlists_t *lists = preloaded_symbols;
@@ -569,7 +576,7 @@ dldpre_add_symlist (preloaded)
 }
 
 static int
-dldpre_open (handle, filename)
+presym_open (handle, filename)
 	lt_dlhandle handle;
 	const char *filename;
 {
@@ -584,12 +591,12 @@ dldpre_open (handle, filename)
 		return 1;
 	}
 	while (lists) {
-		lt_dlsymlist *syms = lists->syms;
+		const lt_dlsymlist *syms = lists->syms;
 	
 		while (syms->name) {
 			if (!syms->address &&
 			    strcmp(syms->name, filename) == 0) {
-				handle->handle = syms;
+				handle->handle = (lt_ptr_t) syms;
 				return 0;
 			}
 			syms++;
@@ -601,23 +608,19 @@ dldpre_open (handle, filename)
 }
 
 static int
-dldpre_close (handle)
+presym_close (handle)
 	lt_dlhandle handle;
 {
 	return 0;
 }
 
 static lt_ptr_t
-dldpre_sym (handle, symbol)
+presym_sym (handle, symbol)
 	lt_dlhandle handle;
 	const char *symbol;
 {
 	lt_dlsymlist *syms = (lt_dlsymlist*)(handle->handle);
 
-#if NEED_USCORE
-	/* lt_dlsym will have prepended a `_', but we don't need it */
-	symbol++;
-#endif
 	syms++;
 	while (syms->address) {
 		if (syms->address && strcmp(syms->name, symbol) == 0)
@@ -630,11 +633,11 @@ dldpre_sym (handle, symbol)
 
 static
 lt_dltype_t
-dldpre = { LT_DLTYPE_TOP, dldpre_init, dldpre_exit,
-	   dldpre_open, dldpre_close, dldpre_sym };
+presym = { LT_DLTYPE_TOP, 0, presym_init, presym_exit,
+	   presym_open, presym_close, presym_sym };
 
 #undef LT_DLTYPE_TOP
-#define LT_DLTYPE_TOP &dldpre
+#define LT_DLTYPE_TOP &presym
 
 #endif
 
@@ -676,15 +679,30 @@ lt_dlinit ()
 
 int
 lt_dlpreopen (preloaded)
-	lt_dlsymlist *preloaded;
+	const lt_dlsymlist *preloaded;
 {
 #if HAVE_DLPREOPEN
 	if (preloaded)
-		return dldpre_add_symlist(preloaded);
+		return presym_add_symlist(preloaded);
 	else {
-		dldpre_free_symlists();
+		presym_free_symlists();
+		if (default_preloaded_symbols)
+			return lt_dlpreopen(default_preloaded_symbols);
 		return 0;
 	}
+#else
+	last_error = dlpreopen_not_supported_error;
+	return 1;
+#endif
+}
+
+int
+lt_dlpreopen_default (preloaded)
+	const lt_dlsymlist *preloaded;
+{
+#if HAVE_DLPREOPEN
+	default_preloaded_symbols = preloaded;
+	return 0;
 #else
 	last_error = dlpreopen_not_supported_error;
 	return 1;
@@ -832,10 +850,7 @@ find_library (handle, filename, have_dir, basename, search_path)
 	char	dir[FILENAME_MAX], fullname[FILENAME_MAX];
 	const char *p, *next;
 	
-	if (tryall_dlopen(handle, filename) == 0)
-		return 0; 
-			
-	if (have_dir && !search_path) {
+	if (have_dir || !search_path) {
 		last_error = file_not_found_error;
 		return 1;
 	}
@@ -895,11 +910,7 @@ find_file (filename, basename, have_dir, search_path)
 	const char *p, *next;
 	FILE	*file;
 	
-	file = fopen(filename, READTEXT_MODE);
-	if (file)
-		return file;
-			
-	if (have_dir && !search_path) {
+	if (have_dir || !search_path) {
 		last_error = file_not_found_error;
 		return 0;
 	}
@@ -966,7 +977,7 @@ lt_dlopen (filename)
 	char	dir[FILENAME_MAX];
 	const char *basename, *ext, *search_path;
 #ifdef LTDL_SHLIBPATH_VAR
-	const char *alt_search_path;
+	const char *sys_search_path;
 #endif
 	const char *saved_error = last_error;
 	
@@ -983,7 +994,7 @@ lt_dlopen (filename)
 	dir[basename - filename] = '\0';
 	search_path = getenv("LTDL_LIBRARY_PATH"); /* get the search path */
 #ifdef LTDL_SHLIBPATH_VAR
-	alt_search_path = getenv(LTDL_SHLIBPATH_VAR);
+	sys_search_path = getenv(LTDL_SHLIBPATH_VAR);
 #endif
 	/* check whether we open a libtool module (.la extension) */
 	ext = strrchr(basename, '.');
@@ -1013,11 +1024,17 @@ lt_dlopen (filename)
 			last_error = memory_error;
 			return 0;
 		}
-		file = find_file(filename, *dir, basename, search_path);
+		file = fopen(filename, READTEXT_MODE);
+		if (!file)
+			file = find_file(filename, *dir, basename,
+					 usr_search_path);
+		if (!file)
+			file = find_file(filename, *dir, basename,
+					 search_path);
 #ifdef LTDL_SHLIBPATH_VAR
 		if (!file)
 			file = find_file(filename, *dir, basename,
-					 alt_search_path);
+					 sys_search_path);
 #endif
 		if (!file) {
 			free(name);
@@ -1080,11 +1097,14 @@ lt_dlopen (filename)
 			last_error = memory_error;
 			return 0;
 		}
-		if (find_library(&handle, filename, *dir,
-				basename, search_path)
+		if (tryall_dlopen(&handle, filename)
+		    && find_library(&handle, filename, *dir,
+				    basename, usr_search_path)
+		    && find_library(&handle, filename, *dir,
+				    basename, search_path)
 #ifdef LTDL_SHLIBPATH_VAR
 		    && find_library(&handle, filename, *dir,
-				    basename, alt_search_path)
+				    basename, sys_search_path)
 #endif
 			) {
 			free(handle);
@@ -1139,8 +1159,7 @@ lt_dlclose (handle)
 #define LT_SYMBOL_LENGTH	256
 
 #undef LT_SYMBOL_OVERHEAD
-/* This accounts for the initial underscore, the _LTX_ separator */
-/* and the string terminator */
+/* This accounts for the _LTX_ separator and the string terminator */
 #define LT_SYMBOL_OVERHEAD	7
 
 lt_ptr_t
@@ -1148,7 +1167,7 @@ lt_dlsym (handle, symbol)
 	lt_dlhandle handle;
 	const char *symbol;
 {
-	int	lensym, lenhand;
+	int	lensym;
 	char	lsym[LT_SYMBOL_LENGTH];
 	char	*sym;
 	lt_ptr_t address;
@@ -1157,28 +1176,30 @@ lt_dlsym (handle, symbol)
 		last_error = invalid_handle_error;
 		return 0;
 	}
+	if (!symbol) {
+		last_error = symbol_error;
+		return 0;
+	}
 	lensym = strlen(symbol);
+	if (handle->type->sym_prefix)
+		lensym += strlen(handle->type->sym_prefix);
 	if (handle->name)
-		lenhand = strlen(handle->name);
-	else
-		lenhand = 0;
-	if (lensym + lenhand + LT_SYMBOL_OVERHEAD < LT_SYMBOL_LENGTH)
+		lensym += strlen(handle->name);
+	if (lensym + LT_SYMBOL_OVERHEAD < LT_SYMBOL_LENGTH)
 		sym = lsym;
 	else
-		sym = malloc(lensym + lenhand + LT_SYMBOL_OVERHEAD);
+		sym = malloc(lensym + LT_SYMBOL_OVERHEAD);
 	if (!sym) {
 		last_error = buffer_overflow_error;
 		return 0;
 	}
 	if (handle->name) {
 		/* this is a libtool module */
-#ifdef NEED_USCORE
-		/* prefix symbol with leading underscore */
-		strcpy(sym, "_");
-		strcat(sym, handle->name);
-#else
-		strcpy(sym, handle->name);
-#endif
+		if (handle->type->sym_prefix) {
+			strcpy(sym, handle->type->sym_prefix);
+			strcat(sym, handle->name);
+		} else 
+			strcpy(sym, handle->name);
 		strcat(sym, "_LTX_");
 		strcat(sym, symbol);
 		/* try "modulename_LTX_symbol" */
@@ -1190,14 +1211,12 @@ lt_dlsym (handle, symbol)
 		}
 	}
 	/* otherwise try "symbol" */
-#ifdef NEED_USCORE
-	/* prefix symbol with leading underscore */
-	strcpy(sym, "_");
-	strcat(sym, symbol);
+	if (handle->type->sym_prefix) {
+		strcpy(sym, handle->type->sym_prefix);
+		strcat(sym, handle->name);
+	} else 
+		strcpy(sym, handle->name);
 	address = handle->type->find_sym(handle, sym);
-#else
-	address = handle->type->find_sym(handle, symbol);
-#endif
 	if (sym != lsym)
 		free(sym);
 	return address;
@@ -1210,4 +1229,14 @@ lt_dlerror ()
 	
 	last_error = 0;
 	return error;
+}
+
+const char *
+lt_dlsearchpath (search_path)
+	const char *search_path;
+{
+	const char *old_path = usr_search_path;
+	
+	usr_search_path = search_path;
+	return old_path;
 }

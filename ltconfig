@@ -46,6 +46,16 @@ else
   exec "$SHELL" "$0" --no-reexec ${1+"$@"}
 fi
 
+# Find the correct PATH separator.  Usually this is `:', but
+# DJGPP uses `;' like DOS.
+if test "X${PATH_SEPARATOR+set}" != "Xset"; then
+  UNAME=${UNAME-`uname 2>/dev/null`}
+  case X$UNAME in
+    *-DOS) PATH_SEPARATOR=';' ;;
+    *)     PATH_SEPARATOR=':' ;;
+  esac
+fi
+
 # The HP-UX ksh and POSIX shell print the target directory to stdout
 # if CDPATH is set.
 if test "${CDPATH+set}" = set; then CDPATH=; export CDPATH; fi
@@ -70,7 +80,7 @@ if test "X`($echo '\t') 2>/dev/null`" != 'X\t' ||
   #
   # So, first we look for a working echo in the user's PATH.
 
-  IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}:"
+  IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR}"
   for dir in $PATH /usr/ucb; do
     if test -f $dir/echo &&
        test "X`($dir/echo '\t') 2>/dev/null`" = 'X\t' &&
@@ -434,7 +444,7 @@ if test "${RANLIB+set}" != "set"; then
   result=no
 
   echo $ac_n "checking for ranlib... $ac_c" 1>&6
-  IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}:"
+  IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR}"
   for dir in $PATH; do
     test -z "$dir" && dir=.
     if test -f $dir/ranlib; then
@@ -462,7 +472,7 @@ if test "$with_gcc" != yes || test -z "$CC"; then
   # If CC is not set, then try to find GCC or a usable CC.
   if test -z "$CC"; then
     echo $ac_n "checking for gcc... $ac_c" 1>&6
-    IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}:"
+    IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR}"
     for dir in $PATH; do
       IFS="$save_ifs"
       test -z "$dir" && dir=.
@@ -483,7 +493,7 @@ if test "$with_gcc" != yes || test -z "$CC"; then
   # Not "gcc", so try "cc", rejecting "/usr/ucb/cc".
   if test -z "$CC"; then
     echo $ac_n "checking for cc... $ac_c" 1>&6
-    IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}:"
+    IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR}"
     cc_rejected=no
     for dir in $PATH; do
       test -z "$dir" && dir=.
@@ -527,7 +537,7 @@ if test "$with_gcc" != yes || test -z "$CC"; then
   # Now see if the compiler is really GCC.
   with_gcc=no
   echo $ac_n "checking whether we are using GNU C... $ac_c" 1>&6
-  echo "$progname:530: checking whether we are using GNU C" >&5
+  echo "$progname:540: checking whether we are using GNU C" >&5
 
   $rm conftest.c
   cat > conftest.c <<EOF
@@ -535,7 +545,7 @@ if test "$with_gcc" != yes || test -z "$CC"; then
   yes;
 #endif
 EOF
-  if { ac_try='${CC-cc} -E conftest.c'; { (eval echo $progname:538: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
+  if { ac_try='${CC-cc} -E conftest.c'; { (eval echo $progname:548: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
     with_gcc=yes
   fi
   $rm conftest.c
@@ -549,8 +559,8 @@ compiler="$2"
 echo $ac_n "checking for object suffix... $ac_c" 1>&6
 $rm conftest*
 echo 'int i = 1;' > conftest.c
-echo "$progname:552: checking for object suffix" >& 5
-if { (eval echo $progname:553: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; }; then
+echo "$progname:562: checking for object suffix" >& 5
+if { (eval echo $progname:563: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; }; then
   # Append any warnings to the config.log.
   cat conftest.err 1>&5
 
@@ -671,8 +681,8 @@ if test -n "$pic_flag"; then
   echo "int some_variable = 0;" > conftest.c
   save_CFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS $pic_flag -DPIC"
-  echo "$progname:674: checking if $compiler PIC flag $pic_flag works" >&5
-  if { (eval echo $progname:675: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.$objext; then
+  echo "$progname:684: checking if $compiler PIC flag $pic_flag works" >&5
+  if { (eval echo $progname:685: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.$objext; then
     # Append any warnings to the config.log.
     cat conftest.err 1>&5
 
@@ -706,8 +716,8 @@ $rm conftest*
 echo "int some_variable = 0;" > conftest.c
 save_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -c -o conftest2.o"
-echo "$progname:709: checking if $compiler supports -c -o file.o" >&5
-if { (eval echo $progname:710: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest2.o; then
+echo "$progname:719: checking if $compiler supports -c -o file.o" >&5
+if { (eval echo $progname:720: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest2.o; then
 
   # The compiler can only warn and ignore the option if not recognized
   # So say no if there are warnings
@@ -734,8 +744,8 @@ if test x"$compiler_c_o" = x"yes"; then
   echo "int some_variable = 0;" > conftest.c
   save_CFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS -c -o conftest.lo"
-  echo "$progname:737: checking if $compiler supports -c -o file.lo" >&5
-if { (eval echo $progname:738: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.lo; then
+  echo "$progname:747: checking if $compiler supports -c -o file.lo" >&5
+if { (eval echo $progname:748: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.lo; then
 
     # The compiler can only warn and ignore the option if not recognized
     # So say no if there are warnings
@@ -786,8 +796,8 @@ if test "$with_gcc" = yes; then
   echo "int some_variable = 0;" > conftest.c
   save_CFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS -fno-rtti -fno-exceptions -c conftest.c"
-  echo "$progname:789: checking if $compiler supports -fno-rtti -fno-exceptions" >&5
-  if { (eval echo $progname:790: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.o; then
+  echo "$progname:799: checking if $compiler supports -fno-rtti -fno-exceptions" >&5
+  if { (eval echo $progname:800: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.o; then
 
     # The compiler can only warn and ignore the option if not recognized
     # So say no if there are warnings
@@ -830,8 +840,8 @@ $rm conftest*
 echo 'main(){return(0);}' > conftest.c
 save_LDFLAGS="$LDFLAGS"
 LDFLAGS="$LDFLAGS $link_static_flag"
-echo "$progname:833: checking if $compiler static flag $link_static_flag works" >&5
-if { (eval echo $progname:834: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
+echo "$progname:843: checking if $compiler static flag $link_static_flag works" >&5
+if { (eval echo $progname:844: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
   echo "$ac_t$link_static_flag" 1>&6
 else
   echo "$ac_t"none 1>&6
@@ -863,7 +873,7 @@ if test -z "$LD"; then
   if test "$with_gcc" = yes; then
     # Check if gcc -print-prog-name=ld gives a path.
     echo $ac_n "checking for ld used by GCC... $ac_c" 1>&6
-    echo "$progname:866: checking for ld used by GCC" >&5
+    echo "$progname:876: checking for ld used by GCC" >&5
     ac_prog=`($CC -print-prog-name=ld) 2>&5`
     case "$ac_prog" in
     # Accept absolute paths.
@@ -917,14 +927,14 @@ if test -z "$LD"; then
     esac
   elif test "$with_gnu_ld" = yes; then
     echo $ac_n "checking for GNU ld... $ac_c" 1>&6
-    echo "$progname:920: checking for GNU ld" >&5
+    echo "$progname:930: checking for GNU ld" >&5
   else
     echo $ac_n "checking for non-GNU ld""... $ac_c" 1>&6
-    echo "$progname:923: checking for non-GNU ld" >&5
+    echo "$progname:933: checking for non-GNU ld" >&5
   fi
 
   if test -z "$LD"; then
-    IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
+    IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR}"
     for ac_dir in $PATH; do
       test -z "$ac_dir" && ac_dir=.
       if test -f "$ac_dir/$ac_prog"; then
@@ -1331,7 +1341,7 @@ if test -z "$NM"; then
   case "$NM" in
   /* | [A-Za-z]:[/\\]*) ;; # Let the user override the test with a path.
   *)
-    IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
+    IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR}"
     for ac_dir in $PATH /usr/ucb /usr/ccs/bin /bin; do
       test -z "$ac_dir" && ac_dir=.
       if test -f $ac_dir/nm; then
@@ -1420,11 +1430,11 @@ void nm_test_func(){}
 main(){nm_test_var='a';nm_test_func();return(0);}
 EOF
 
-  echo "$progname:1423: checking if global_symbol_pipe works" >&5
-  if { (eval echo $progname:1424: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; } && test -s conftest.$objext; then
+  echo "$progname:1433: checking if global_symbol_pipe works" >&5
+  if { (eval echo $progname:1434: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; } && test -s conftest.$objext; then
     # Now try to grab the symbols.
     nlist=conftest.nm
-    if { echo "$progname:1427: eval \"$NM conftest.$objext | $global_symbol_pipe > $nlist\"" >&5; eval "$NM conftest.$objext | $global_symbol_pipe > $nlist 2>&5"; } && test -s "$nlist"; then
+    if { echo "$progname:1437: eval \"$NM conftest.$objext | $global_symbol_pipe > $nlist\"" >&5; eval "$NM conftest.$objext | $global_symbol_pipe > $nlist 2>&5"; } && test -s "$nlist"; then
 
       # Try sorting and uniquifying the output.
       if sort "$nlist" | uniq > "$nlist"T; then
@@ -1475,7 +1485,7 @@ EOF
 	  save_CFLAGS="$CFLAGS"
 	  LIBS="conftestm.$objext"
 	  CFLAGS="$CFLAGS$no_builtin_flag"
-	  if { (eval echo $progname:1478: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
+	  if { (eval echo $progname:1488: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
 	    pipe_works=yes
 	  else
 	    echo "$progname: failed program was:" >&5

@@ -113,6 +113,7 @@ THREAD_SYSTEM = @THREAD_SYSTEM@
 USE_SYMBOL_UNDERSCORE = @USE_SYMBOL_UNDERSCORE@
 VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
+ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
 classdir = @classdir@
 host_cpu = @host_cpu@
@@ -128,7 +129,6 @@ EXTRA_DIST =  	$(class_DATA) 	java/applet/Applet.java 	java/applet/AppletContext
 
 
 LIBDIR = lib
-ZIP = zip
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
 CONFIG_CLEAN_FILES =  rebuildLib

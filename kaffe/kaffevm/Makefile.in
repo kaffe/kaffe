@@ -109,6 +109,7 @@ THREAD_SYSTEM = @THREAD_SYSTEM@
 USE_SYMBOL_UNDERSCORE = @USE_SYMBOL_UNDERSCORE@
 VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
+ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
 classdir = @classdir@
 host_cpu = @host_cpu@
@@ -119,7 +120,7 @@ with_engine = @with_engine@
 SUBDIRS = $(ENGINE_NAME) systems
 DIST_SUBDIRS = intrp jit systems
 
-EXTRA_DIST =  	mem/gc-incremental.c 	mem/gc-incremental.h 	mem/gc-mem.c 	mem/gc-mem.h
+EXTRA_DIST =  	kaffe.def 	mem/gc-incremental.c 	mem/gc-incremental.h 	mem/gc-mem.c 	mem/gc-mem.h
 
 
 INCLUDES = $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS)

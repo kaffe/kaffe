@@ -69,21 +69,23 @@ typedef	lt_ptr_t lt_dlhandle;
 #endif
 
 typedef struct {
-	char *name;
+	const char *name;
 	lt_ptr_t address;
 } lt_dlsymlist;
 
 __BEGIN_DECLS
 _LTDLL_EXTERN int lt_dlinit __P((void));
-_LTDLL_EXTERN int lt_dlpreopen __P((lt_dlsymlist *preloaded));
+_LTDLL_EXTERN int lt_dlpreopen __P((const lt_dlsymlist *preloaded));
+_LTDLL_EXTERN int lt_dlpreopen_default __P((const lt_dlsymlist *preloaded));
 _LTDLL_EXTERN int lt_dlexit __P((void));
 _LTDLL_EXTERN lt_dlhandle lt_dlopen __P((const char *filename));
 _LTDLL_EXTERN int lt_dlclose __P((lt_dlhandle handle));
 _LTDLL_EXTERN lt_ptr_t lt_dlsym __P((lt_dlhandle handle, const char *name));
 _LTDLL_EXTERN const char *lt_dlerror __P((void));
+_LTDLL_EXTERN const char *lt_dlsearchpath __P((const char *search_path));
 
-extern lt_dlsymlist dld_preloaded_symbols[];
-#define lt_dlpreopen_default() (lt_dlpreopen(dld_preloaded_symbols))
+extern const lt_dlsymlist lt_preloaded_symbols[];
+
 __END_DECLS
 
 #endif /* !_LTDL_H_ */
