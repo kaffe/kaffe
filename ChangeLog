@@ -1,3 +1,16 @@
+Mon May  6 01:23:06 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* libraries/javalib/java/lang/reflect/Array.java,
+	libraries/javalib/java/lang/reflect/Constructor.java,
+	libraries/javalib/java/lang/reflect/Field.java,
+	libraries/javalib/java/lang/reflect/Method.java,
+	libraries/clib/native/Array.c,
+	libraries/clib/native/Constructor.c,
+	libraries/clib/native/Field.c,
+	libraries/clib/native/Method.c: merged java.lang.reflect with
+	pockelinux kaffe.
+	* test/regression/InvTarExcTest.java: adapted to the merge.
+	* libraries/javalib/Klasses.jar: rebult using kaffe's kjc.
+
 Mon May  6 01:07:14 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	* libraries/javalib/java/lang/Character.java
 	(CharacterProperties getResource) scan classpath ourself instead

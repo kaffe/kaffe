@@ -18,6 +18,7 @@ public final class Method
     implements Member
 {
 
+static private final Object[] nullArgs = new Object[0];
 private Class clazz;
 private int slot;
 private String name;
@@ -25,7 +26,25 @@ private Class returnType;
 private Class[] parameterTypes;
 private Class[] exceptionTypes;
 
+static {
+	init0();
+}
+
+native private static void init0();
+
 private Method() {
+}
+
+/* used by Constructor.newInstance */
+Method(Class clazz, int slot, String name, Class returnType,
+       Class [] parameterTypes, Class [] exceptionTypes)
+{
+	this.clazz = clazz;
+	this.slot = slot;
+	this.name = name;
+	this.returnType = returnType;
+	this.parameterTypes = parameterTypes;
+	this.exceptionTypes = exceptionTypes;
 }
 
 public boolean equals(Object obj) {
@@ -87,7 +106,11 @@ public Object invoke(Object obj, Object args[])
 	IllegalArgumentException,
 	InvocationTargetException {
 
-	if (obj == null && !Modifier.isStatic(getModifiers())) {
+	if (args == null) {
+		args = nullArgs;
+	}
+
+	if (obj == null && !"<init>".equals(name) && !Modifier.isStatic(getModifiers())) {
 		throw new NullPointerException("Null object pointer");
 	}
 
@@ -95,15 +118,148 @@ public Object invoke(Object obj, Object args[])
 		throw new IllegalArgumentException("Object type doesn't match method's class");
 	}
 
-	int len = (args == null ? 0 : args.length);
-	if (len != getParameterTypes().length) {
+	if (args.length != getParameterTypes().length) {
 		throw new IllegalArgumentException("wrong number of arguments");
 	}
 
-	return invoke0(obj, args);
+	/* Process arguments to get them 'correct' */
+	for (int i = 0; i < args.length; i++) {
+		Class pt = parameterTypes[i];
+		Object arg = args[i];
+		if (arg == null || pt.isAssignableFrom(arg.getClass())) {
+			/* Arg okay */
+		}
+		else if (pt.isPrimitive()) {
+			/* Might need fixup */
+			if (pt == Boolean.TYPE) {
+				if (arg instanceof Boolean) {
+				}
+				else {
+					throw new IllegalAccessException();
+				}
+			}
+			else if (pt == Byte.TYPE) {
+				if (arg instanceof Byte) {
+				}
+				else {
+					throw new IllegalAccessException();
+				}
+			}
+			else if (pt == Short.TYPE) {
+				if (arg instanceof Short) {
+				}
+				else if (arg instanceof Byte) {
+					args[i] = new Short((short)((Byte)arg).byteValue());
+				}
+				else {
+					throw new IllegalAccessException();
+				}
+			}
+			else if (pt == Character.TYPE) {
+				if (arg instanceof Character) {
+				}
+				else if (arg instanceof Byte) {
+					args[i] = new Character((char)((Byte)arg).byteValue());
+				}
+				else {
+					throw new IllegalAccessException();
+				}
+			}
+			else if (pt == Integer.TYPE) {
+				if (arg instanceof Integer) {
+				}
+				else if (arg instanceof Short) {
+					args[i] = new Integer((int)((Short)arg).shortValue());
+				}
+				else if (arg instanceof Character) {
+					args[i] = new Integer((int)((Character)arg).charValue());
+				}
+				else if (arg instanceof Byte) {
+					args[i] = new Integer((int)((Byte)arg).byteValue());
+				}
+				else {
+					throw new IllegalAccessException();
+				}
+			}
+			else if (pt == Long.TYPE) {
+				if (arg instanceof Long) {
+				}
+				if (arg instanceof Integer) {
+					args[i] = new Long((long)((Integer)arg).intValue());
+				}
+				else if (arg instanceof Short) {
+					args[i] = new Long((long)((Short)arg).shortValue());
+				}
+				else if (arg instanceof Character) {
+					args[i] = new Long((long)((Character)arg).charValue());
+				}
+				else if (arg instanceof Byte) {
+					args[i] = new Long((long)((Byte)arg).byteValue());
+				}
+				else {
+					throw new IllegalAccessException();
+				}
+			}
+			else if (pt == Float.TYPE) {
+				if (arg instanceof Float) {
+				}
+				else if (arg instanceof Long) {
+					args[i] = new Float((float)((Long)arg).longValue());
+				}
+				if (arg instanceof Integer) {
+					args[i] = new Float((float)((Integer)arg).intValue());
+				}
+				else if (arg instanceof Short) {
+					args[i] = new Float((float)((Short)arg).shortValue());
+				}
+				else if (arg instanceof Character) {
+					args[i] = new Float((float)((Character)arg).charValue());
+				}
+				else if (arg instanceof Byte) {
+					args[i] = new Float((float)((Byte)arg).byteValue());
+				}
+				else {
+					throw new IllegalAccessException();
+				}
+			}
+			else if (pt == Double.TYPE) {
+				if (arg instanceof Float) {
+				}
+				else if (arg instanceof Float) {
+					args[i] = new Double((double)((Float)arg).floatValue());
+				}
+				else if (arg instanceof Long) {
+					args[i] = new Double((double)((Long)arg).longValue());
+				}
+				if (arg instanceof Integer) {
+					args[i] = new Double((double)((Integer)arg).intValue());
+				}
+				else if (arg instanceof Short) {
+					args[i] = new Double((double)((Short)arg).shortValue());
+				}
+				else if (arg instanceof Character) {
+					args[i] = new Double((double)((Character)arg).charValue());
+				}
+				else if (arg instanceof Byte) {
+					args[i] = new Double((double)((Byte)arg).byteValue());
+				}
+				else {
+					throw new IllegalAccessException();
+				}
+			}
+			else {
+				throw new Error("cannot happen");
+			}
+		}
+		else {
+			throw new IllegalAccessException("incompatible argument");
+		}
+	}
+
+	return (invoke0(obj, args));
 }
 
-native public Object invoke0(Object obj, Object args[]) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+native Object invoke0(Object obj, Object args[]) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 
 public String toString() {
 	StringBuffer str = new StringBuffer();

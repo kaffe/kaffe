@@ -34,6 +34,67 @@
 #include "jni.h"
 #include "defs.h"
 
+static jclass Zclass;
+static jclass Bclass;
+static jclass Sclass;
+static jclass Cclass;
+static jclass Iclass;
+static jclass Jclass;
+static jclass Fclass;
+static jclass Dclass;
+static jfieldID Zvalue;
+static jfieldID Bvalue;
+static jfieldID Svalue;
+static jfieldID Cvalue;
+static jfieldID Ivalue;
+static jfieldID Jvalue;
+static jfieldID Fvalue;
+static jfieldID Dvalue;
+static jmethodID Zmeth;
+static jmethodID Bmeth;
+static jmethodID Smeth;
+static jmethodID Cmeth;
+static jmethodID Imeth;
+static jmethodID Jmeth;
+static jmethodID Fmeth;
+static jmethodID Dmeth;
+
+void
+Java_java_lang_reflect_Method_init0(JNIEnv* env, jclass clazz)
+{
+	Zclass = (*env)->FindClass(env, "java.lang.Boolean");
+	Zvalue = (*env)->GetFieldID(env, Zclass, "value", "Z");
+	Zmeth = (*env)->GetMethodID(env, Zclass, "<init>", "(Z)V");
+
+	Bclass = (*env)->FindClass(env, "java.lang.Byte");
+	Bvalue = (*env)->GetFieldID(env, Bclass, "value", "B");
+	Bmeth = (*env)->GetMethodID(env, Bclass, "<init>", "(B)V");
+
+	Sclass = (*env)->FindClass(env, "java.lang.Short");
+	Svalue = (*env)->GetFieldID(env, Sclass, "value", "S");
+	Smeth = (*env)->GetMethodID(env, Sclass, "<init>", "(S)V");
+
+	Cclass = (*env)->FindClass(env, "java.lang.Character");
+	Cvalue = (*env)->GetFieldID(env, Cclass, "value", "C");
+	Cmeth = (*env)->GetMethodID(env, Cclass, "<init>", "(C)V");
+
+	Iclass = (*env)->FindClass(env, "java.lang.Integer");
+	Ivalue = (*env)->GetFieldID(env, Iclass, "value", "I");
+	Imeth = (*env)->GetMethodID(env, Iclass, "<init>", "(I)V");
+
+	Jclass = (*env)->FindClass(env, "java.lang.Long");
+	Jvalue = (*env)->GetFieldID(env, Jclass, "value", "J");
+	Jmeth = (*env)->GetMethodID(env, Jclass, "<init>", "(J)V");
+
+	Fclass = (*env)->FindClass(env, "java.lang.Float");
+	Fvalue = (*env)->GetFieldID(env, Fclass, "value", "F");
+	Fmeth = (*env)->GetMethodID(env, Fclass, "<init>", "(F)V");
+
+	Dclass = (*env)->FindClass(env, "java.lang.Double");
+	Dvalue = (*env)->GetFieldID(env, Dclass, "value", "D");
+	Dmeth = (*env)->GetMethodID(env, Dclass, "<init>", "(D)V");
+}
+
 jint
 java_lang_reflect_Method_getModifiers(struct Hjava_lang_reflect_Method* this)
 {
@@ -61,16 +122,15 @@ jobject
 Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, jobjectArray _argobj)
 {
 	Hjava_lang_Class* clazz;
-	Hjava_lang_Object* robj;
+	jarray paramtypes;
+	jobject arg;
+	jclass argc;
 	Method* meth;
 	jint slot;
 	jvalue args[255]; /* should this be allocated dynamically? */
 	jvalue ret;
-	Hjava_lang_Class *a, *t;
-	Hjava_lang_Object** body;
-	int i;
-	int j;
 	int len;
+	int i;
 	char rettype;
 	errorInfo info;
 
@@ -81,6 +141,7 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 	jthrowable targetexc;
 
 	clazz = unhand(this)->clazz;
+	paramtypes = unhand(this)->parameterTypes;
 
 	/* 
 	 * A method invocation via reflection is a first active use, so
@@ -100,146 +161,44 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 	/* Note: we assume here that `meth' is identical to the jmethodID which
 	 * would be returned by JNIEnv::GetMethodID for this method.
 	 */
-	meth = &clazz->methods[slot];
+	meth = &CLASS_METHODS(clazz)[slot];
 	len = argobj ? obj_length(argobj) : 0;
-	body = argobj ? OBJARRAY_DATA(argobj) : 0;
-	for (i = j = 0; i < len; ++i, ++j) {
-		t = getClassFromSignaturePart(METHOD_ARG_TYPE(meth, i),
-					  meth->class->loader, &info);
-		if (t == 0) {
-			throwError(&info);
-		}
-		a = body[i] ? OBJECT_CLASS(body[i]) : 0;
-		if (CLASS_IS_PRIMITIVE(t)) switch (CLASS_PRIM_SIG(t)) {
-		case 'Z':
-			if (a == javaLangBooleanClass) {
-				args[j].z = unhand((Hjava_lang_Boolean*)body[i])->value;
-			} else {
-				SignalError("java.lang.IllegalArgumentException", "expecting boolean value");
-			}
-			break;
-		case 'B':
-			if (a == javaLangByteClass) {
-				args[j].b = unhand((Hjava_lang_Byte*)body[i])->value;
-			} else {
-				SignalError("java.lang.IllegalArgumentException", "expecting byte value");
-			}
-			break;
-		case 'C':
-			if (a == javaLangCharacterClass) {
-				args[j].c = unhand((Hjava_lang_Character*)body[i])->value;
-			}
-			else if (a == javaLangByteClass) {
-				args[j].c = unhand((Hjava_lang_Byte*)body[i])->value;
-			} else {
-				SignalError("java.lang.IllegalArgumentException", "expecting character value");
-			}
-			break;
-		case 'S':
-			if (a == javaLangShortClass) {
-				args[j].s = unhand((Hjava_lang_Short*)body[i])->value;
-			}
-			else if (a == javaLangByteClass) {
-				args[j].s = unhand((Hjava_lang_Byte*)body[i])->value;
-			} else {
-				SignalError("java.lang.IllegalArgumentException", "expecting short value");
-			}
-			break;
-		case 'I':
-			if (a == javaLangIntegerClass) {
-				args[j].i = unhand((Hjava_lang_Integer*)body[i])->value;
-			}
-			else if (a == javaLangCharacterClass) {
-				args[j].i = unhand((Hjava_lang_Character*)body[i])->value;
-			}
-			else if (a == javaLangShortClass) {
-				args[j].i = unhand((Hjava_lang_Short*)body[i])->value;
-			}
-			else if (a == javaLangByteClass) {
-				args[j].i = unhand((Hjava_lang_Byte*)body[i])->value;
-			} else {
-				SignalError("java.lang.IllegalArgumentException", "expecting int value");
-			}
-			break;
-		case 'J':
-			if (a == javaLangLongClass) {
-				args[j].j = unhand((Hjava_lang_Long*)body[i])->value;
-			}
-			else if (a == javaLangIntegerClass) {
-				args[j].j = unhand((Hjava_lang_Integer*)body[i])->value;
-			}
-			else if (a == javaLangCharacterClass) {
-				args[j].j = unhand((Hjava_lang_Character*)body[i])->value;
-			}
-			else if (a == javaLangShortClass) {
-				args[j].j = unhand((Hjava_lang_Short*)body[i])->value;
-			}
-			else if (a == javaLangByteClass) {
-				args[j].j = unhand((Hjava_lang_Byte*)body[i])->value;
-			} else {
-				SignalError("java.lang.IllegalArgumentException", "expecting long value");
-			}
-			++j;
-			break;
-		case 'F':
-			if (a == javaLangFloatClass) {
-				args[j].f = unhand((Hjava_lang_Float*)body[i])->value;
-			}
-			else if (a == javaLangLongClass) {
-				args[j].f = unhand((Hjava_lang_Long*)body[i])->value;
-			}
-			else if (a == javaLangIntegerClass) {
-				args[j].f = unhand((Hjava_lang_Integer*)body[i])->value;
-			}
-			else if (a == javaLangCharacterClass) {
-				args[j].f = unhand((Hjava_lang_Character*)body[i])->value;
-			}
-			else if (a == javaLangShortClass) {
-				args[j].f = unhand((Hjava_lang_Short*)body[i])->value;
-			}
-			else if (a == javaLangByteClass) {
-				args[j].f = unhand((Hjava_lang_Byte*)body[i])->value;
-			} else {
-				SignalError("java.lang.IllegalArgumentException", "expecting float value");
-			}
-			break;
-		case 'D':
-			if (a == javaLangDoubleClass) {
-				args[j].d = unhand((Hjava_lang_Double*)body[i])->value;
-			}
-			else if (a == javaLangFloatClass) {
-				args[j].d = unhand((Hjava_lang_Float*)body[i])->value;
-			}
-			else if (a == javaLangLongClass) {
-				args[j].d = unhand((Hjava_lang_Long*)body[i])->value;
-			}
-			else if (a == javaLangIntegerClass) {
-				args[j].d = unhand((Hjava_lang_Integer*)body[i])->value;
-			}
-			else if (a == javaLangCharacterClass) {
-				args[j].d = unhand((Hjava_lang_Character*)body[i])->value;
-			}
-			else if (a == javaLangShortClass) {
-				args[j].d = unhand((Hjava_lang_Short*)body[i])->value;
-			}
-			else if (a == javaLangByteClass) {
-				args[j].d = unhand((Hjava_lang_Byte*)body[i])->value;
-			} else {
-				SignalError("java.lang.IllegalArgumentException", "expecting double value");
-			}
-			++j;
-			break;
-		default:
-			ABORT();
-		} else if (body[i] == 0 ||
-			   instanceof(t, OBJECT_CLASS(body[i]))) {
-			args[j].l = body[i];
-		} else {
-			SignalError("java.lang.IllegalArgumentException", "incompatible object types");
-		}
-	}
 
 	rettype = *METHOD_RET_TYPE(meth);
+
+	for (i = len - 1; i >= 0; i--) {
+		arg = (*env)->GetObjectArrayElement(env, argobj, i);
+		argc = (*env)->GetObjectArrayElement(env, paramtypes, i);
+		if (!CLASS_IS_PRIMITIVE((Hjava_lang_Class*)argc)) {
+			args[i].l = arg;
+		}
+		else switch (CLASS_PRIM_SIG((Hjava_lang_Class*)argc)) {
+		case 'I':
+			args[i].i = (*env)->GetIntField(env, arg, Ivalue);
+			break;
+		case 'Z':
+			args[i].z = (*env)->GetBooleanField(env, arg, Zvalue);
+			break;
+		case 'S':
+			args[i].s = (*env)->GetShortField(env, arg, Svalue);
+			break;
+		case 'B':
+			args[i].b = (*env)->GetByteField(env, arg, Bvalue);
+			break;
+		case 'C':
+			args[i].c = (*env)->GetCharField(env, arg, Cvalue);
+			break;
+		case 'F':
+			args[i].f = (*env)->GetFloatField(env, arg, Fvalue);
+			break;
+		case 'D':
+			args[i].d = (*env)->GetDoubleField(env, arg, Dvalue);
+			break;
+		case 'J':
+			args[i].j = (*env)->GetLongField(env, arg, Jvalue);
+			break;
+		}
+	}
 
 	/* Select which method to really call, and call it */
 	if (METHOD_IS_STATIC(meth)) {	/* static method */
@@ -266,7 +225,7 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 			ABORT();
 		}
 	}
-	else if (meth->accflags & ACC_CONSTRUCTOR) { /* a constructor */
+	else if (METHOD_IS_CONSTRUCTOR(meth)) { /* a constructor */
 		/*
 		 * This if applies if we are called from Constructor.newInstance
 		 */
@@ -321,43 +280,35 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 		throwException(e);
 		assert(!"Not here");
 	}
-
-	switch (rettype) {
-	case 'V':
-		robj = 0;
-		break;
-	case 'J':
-		robj = execute_java_constructor(0, 0, javaLangLongClass, "(J)V", ret.j);
-		break;
-	case 'F':
-		robj = execute_java_constructor(0, 0, javaLangFloatClass, "(F)V", ret.f);
-		break;
-	case 'D':
-		robj = execute_java_constructor(0, 0, javaLangDoubleClass, "(D)V", ret.d);
-		break;
+	else switch (rettype) {
 	case 'I':
-		robj = execute_java_constructor(0, 0, javaLangIntegerClass, "(I)V", ret.i);
-		break;
-	case 'S':
-		robj = execute_java_constructor(0, 0, javaLangShortClass, "(S)V", ret.s);
-		break;
-	case 'B':
-		robj = execute_java_constructor(0, 0, javaLangByteClass, "(B)V", ret.b);
+		return ((*env)->NewObject(env, Iclass, Imeth, ret.i));
 		break;
 	case 'Z':
-		robj = execute_java_constructor(0, 0, javaLangBooleanClass, "(Z)V", ret.z);
+		return ((*env)->NewObject(env, Zclass, Zmeth, ret.z));
+		break;
+	case 'S':
+		return ((*env)->NewObject(env, Sclass, Smeth, ret.s));
+		break;
+	case 'B':
+		return ((*env)->NewObject(env, Bclass, Bmeth, ret.b));
 		break;
 	case 'C':
-		robj = execute_java_constructor(0, 0, javaLangCharacterClass, "(C)V", ret.c);
+		return ((*env)->NewObject(env, Cclass, Cmeth, ret.c));
+		break;
+	case 'F':
+		return ((*env)->NewObject(env, Fclass, Fmeth, ret.f));
+		break;
+	case 'D':
+		return ((*env)->NewObject(env, Dclass, Dmeth, ret.d));
+		break;
+	case 'J':
+		return ((*env)->NewObject(env, Jclass, Jmeth, ret.j));
 		break;
 	case 'L':
 	case '[':
-		robj = ret.l;
-		break;
-	default:
-		robj = 0;	/* avoid compiler warning */
-		ABORT();
+		return (ret.l);
 	}
 
-	return ((jobject)robj);
+	return (0);
 }

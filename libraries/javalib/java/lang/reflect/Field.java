@@ -43,26 +43,334 @@ public boolean equals(Object obj)
 	return (false);
 }
 
-native public Object get(Object obj) throws IllegalArgumentException, IllegalAccessException;
+public Object get(Object obj) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Double.TYPE) {
+		return (new Double(getDouble0(obj)));
+	}
+	else if (type == Float.TYPE) {
+		return (new Float(getFloat0(obj)));
+	}
+	else if (type == Long.TYPE) {
+		return (new Long(getLong0(obj)));
+	}
+	else if (type == Integer.TYPE) {
+		return (new Integer(getInt0(obj)));
+	}
+	else if (type == Short.TYPE) {
+		return (new Short(getShort0(obj)));
+	}
+	else if (type == Byte.TYPE) {
+		return (new Byte(getByte0(obj)));
+	}
+	else if (type == Character.TYPE) {
+		return (new Character(getChar0(obj)));
+	}
+	else {
+		return (getObject0(obj));
+	}
+}
 
-native public boolean getBoolean(Object obj) throws IllegalArgumentException, IllegalAccessException;
+public boolean getBoolean(Object obj) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Boolean.TYPE) {
+		return (getBoolean0(obj));
+	}
+	else {
+		throw new IllegalArgumentException();
+	}
+}
 
-native public byte getByte(Object obj) throws IllegalArgumentException, IllegalAccessException;
+public byte getByte(Object obj) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Byte.TYPE) {
+		return (getByte0(obj));
+	}
+	else {
+		throw new IllegalArgumentException();
+	}
+}
 
-native public char getChar(Object obj) throws IllegalArgumentException, IllegalAccessException;
+public char getChar(Object obj) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Character.TYPE) {
+		return (getChar0(obj));
+	}
+	else {
+		throw new IllegalArgumentException();
+	}
+}
+
+public double getDouble(Object obj) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Double.TYPE) {
+		return (getDouble0(obj));
+	}
+	else if (type == Float.TYPE) {
+		return ((double)getFloat0(obj));
+	}
+	else if (type == Long.TYPE) {
+		return ((double)getLong0(obj));
+	}
+	else if (type == Integer.TYPE) {
+		return ((double)getInt0(obj));
+	}
+	else if (type == Short.TYPE) {
+		return ((double)getShort0(obj));
+	}
+	else if (type == Byte.TYPE) {
+		return ((double)getByte0(obj));
+	}
+	else if (type == Character.TYPE) {
+		return ((double)getChar0(obj));
+	}
+	else {
+		throw new IllegalArgumentException();
+	}
+}
+
+public float getFloat(Object obj) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Float.TYPE) {
+		return (getFloat0(obj));
+	}
+	else if (type == Long.TYPE) {
+		return ((float)getLong0(obj));
+	}
+	else if (type == Integer.TYPE) {
+		return ((float)getInt0(obj));
+	}
+	else if (type == Short.TYPE) {
+		return ((float)getShort0(obj));
+	}
+	else if (type == Byte.TYPE) {
+		return ((float)getByte0(obj));
+	}
+	else if (type == Character.TYPE) {
+		return ((float)getChar0(obj));
+	}
+	else {
+		throw new IllegalArgumentException();
+	}
+}
+
+public int getInt(Object obj) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Integer.TYPE) {
+		return (getInt0(obj));
+	}
+	else if (type == Short.TYPE) {
+		return ((int)getShort0(obj));
+	}
+	else if (type == Byte.TYPE) {
+		return ((int)getByte0(obj));
+	}
+	else if (type == Character.TYPE) {
+		return ((int)getChar0(obj));
+	}
+	else {
+		throw new IllegalArgumentException();
+	}
+}
+
+public long getLong(Object obj) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Long.TYPE) {
+		return (getLong0(obj));
+	}
+	else if (type == Integer.TYPE) {
+		return ((long)getInt0(obj));
+	}
+	else if (type == Short.TYPE) {
+		return ((long)getShort0(obj));
+	}
+	else if (type == Byte.TYPE) {
+		return ((long)getByte0(obj));
+	}
+	else if (type == Character.TYPE) {
+		return ((long)getChar0(obj));
+	}
+	else {
+		throw new IllegalArgumentException();
+	}
+}
+
+public short getShort(Object obj) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Short.TYPE) {
+		return (getShort0(obj));
+	}
+	else if (type == Integer.TYPE) {
+		return ((short)getInt0(obj));
+	}
+	else if (type == Long.TYPE) {
+		return ((short)getLong0(obj));
+	}
+	else if (type == Float.TYPE) {
+		return ((short)getFloat0(obj));
+	}
+	else if (type == Double.TYPE) {
+		return ((short)getDouble0(obj));
+	}
+	else {
+		throw new IllegalArgumentException();
+	}
+}
+
+public void set(Object obj, Object value) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Boolean.TYPE) {
+		setBoolean0(obj, ((Boolean)value).booleanValue());
+	}
+	else if (type == Byte.TYPE) {
+		setByte0(obj, ((Byte)value).byteValue());
+	}
+	else if (type == Short.TYPE) {
+		setShort0(obj, ((Short)value).shortValue());
+	}
+	else if (type == Character.TYPE) {
+		setChar0(obj, ((Character)value).charValue());
+	}
+	else if (type == Integer.TYPE) {
+		setInt0(obj, ((Integer)value).intValue());
+	}
+	else if (type == Long.TYPE) {
+		setLong0(obj, ((Long)value).longValue());
+	}
+	else if (type == Float.TYPE) {
+		setFloat0(obj, ((Float)value).floatValue());
+	}
+	else if (type == Double.TYPE) {
+		setDouble0(obj, ((Double)value).doubleValue());
+	}
+	else {
+		setObject0(obj, value);
+	}
+}
+
+public void setBoolean(Object obj, boolean z) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Boolean.TYPE) {
+		setBoolean0(obj, z);
+	}
+	else {
+		throw new IllegalArgumentException();
+	}
+}
+
+public void setByte(Object obj, byte b) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Byte.TYPE) {
+		setByte0(obj, b);
+	}
+	else if (type == Short.TYPE) {
+		setShort0(obj, (short)b);
+	}
+	else if (type == Integer.TYPE) {
+		setInt0(obj, (int)b);
+	}
+	else if (type == Long.TYPE) {
+		setLong0(obj, (long)b);
+	}
+	else if (type == Float.TYPE) {
+		setFloat0(obj, (float)b);
+	}
+	else if (type == Double.TYPE) {
+		setDouble0(obj, (double)b);
+	}
+	else {
+		throw new IllegalArgumentException();
+	}
+}
+
+public void setChar(Object obj, char c) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Character.TYPE) {
+		setChar0(obj, c);
+	}
+	else if (type == Integer.TYPE) {
+		setInt0(obj, (int)c);
+	}
+	else if (type == Long.TYPE) {
+		setLong0(obj, (long)c);
+	}
+	else if (type == Float.TYPE) {
+		setFloat0(obj, (float)c);
+	}
+	else if (type == Double.TYPE) {
+		setDouble0(obj, (double)c);
+	}
+	else {
+		throw new IllegalArgumentException();
+	}
+}
+
+public void setDouble(Object obj, double d) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Double.TYPE) {
+		setDouble0(obj, d);
+	}
+	else {
+		throw new IllegalArgumentException();
+	}
+}
+
+public void setFloat(Object obj, float f) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Float.TYPE) {
+		setFloat0(obj, f);
+	}
+	else if (type == Double.TYPE) {
+		setDouble0(obj, (double)f);
+	}
+	else {
+		throw new IllegalArgumentException();
+	}
+}
+
+public void setInt(Object obj, int i) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Integer.TYPE) {
+		setInt0(obj, i);
+	}
+	else if (type == Long.TYPE) {
+		setLong0(obj, (long)i);
+	}
+	else if (type == Float.TYPE) {
+		setFloat0(obj, (float)i);
+	}
+	else if (type == Double.TYPE) {
+		setDouble0(obj, (double)i);
+	}
+	else {
+		throw new IllegalArgumentException();
+	}
+}
+
+public void setLong(Object obj, long l) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Long.TYPE) {
+		setLong0(obj, l);
+	}
+	else if (type == Float.TYPE) {
+		setFloat0(obj, (float)l);
+	}
+	else if (type == Double.TYPE) {
+		setDouble0(obj, (double)l);
+	}
+	else {
+		throw new IllegalArgumentException();
+	}
+}
+
+public void setShort(Object obj, short s) throws IllegalArgumentException, IllegalAccessException {
+	if (type == Short.TYPE) {
+		setShort0(obj, s);
+	}
+	else if (type == Integer.TYPE) {
+		setInt0(obj, (int)s);
+	}
+	else if (type == Long.TYPE) {
+		setLong0(obj, (long)s);
+	}
+	else if (type == Float.TYPE) {
+		setFloat0(obj, (float)s);
+	}
+	else if (type == Double.TYPE) {
+		setDouble0(obj, (double)s);
+	}
+	else {
+		throw new IllegalArgumentException();
+	}
+}
 
 public Class getDeclaringClass()
 	{
 	return (clazz);
 }
-
-native public double getDouble(Object obj) throws IllegalArgumentException, IllegalAccessException;
-
-native public float getFloat(Object obj) throws IllegalArgumentException, IllegalAccessException;
-
-native public int getInt(Object obj) throws IllegalArgumentException, IllegalAccessException;
-
-native public long getLong(Object obj) throws IllegalArgumentException, IllegalAccessException;
 
 native public int getModifiers();
 
@@ -70,8 +378,6 @@ public String getName()
 	{
 	return (name);
 }
-
-native public short getShort(Object obj) throws IllegalArgumentException, IllegalAccessException;
 
 public Class getType()
 	{
@@ -82,24 +388,6 @@ public int hashCode()
 	{
 	return (clazz.getName().hashCode() ^ name.hashCode());
 }
-
-native public void set(Object obj, Object value) throws IllegalArgumentException, IllegalAccessException;
-
-native public void setBoolean(Object obj, boolean z) throws IllegalArgumentException, IllegalAccessException;
-
-native public void setByte(Object obj, byte b) throws IllegalArgumentException, IllegalAccessException;
-
-native public void setChar(Object obj, char c) throws IllegalArgumentException, IllegalAccessException;
-
-native public void setDouble(Object obj, double d) throws IllegalArgumentException, IllegalAccessException;
-
-native public void setFloat(Object obj, float f) throws IllegalArgumentException, IllegalAccessException;
-
-native public void setInt(Object obj, int i) throws IllegalArgumentException, IllegalAccessException;
-
-native public void setLong(Object obj, long l) throws IllegalArgumentException, IllegalAccessException;
-
-native public void setShort(Object obj, short s) throws IllegalArgumentException, IllegalAccessException;
 
 public String toString()
 	{
@@ -124,4 +412,24 @@ public String toString()
 
 	return (str.toString());
 }
+
+native private boolean getBoolean0(Object obj);
+native private byte getByte0(Object obj);
+native private char getChar0(Object obj);
+native private short getShort0(Object obj);
+native private int getInt0(Object obj);
+native private long getLong0(Object obj);
+native private float getFloat0(Object obj);
+native private double getDouble0(Object obj);
+native private Object getObject0(Object obj);
+
+native private void setBoolean0(Object obj, boolean v);
+native private void setByte0(Object obj, byte v);
+native private void setChar0(Object obj, char v);
+native private void setShort0(Object obj, short v);
+native private void setInt0(Object obj, int v);
+native private void setLong0(Object obj, long v);
+native private void setFloat0(Object obj, float v);
+native private void setDouble0(Object obj, double v);
+native private void setObject0(Object obj, Object v);
 }

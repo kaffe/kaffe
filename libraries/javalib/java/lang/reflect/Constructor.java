@@ -80,7 +80,15 @@ public int hashCode()
 	return (clazz.getName().hashCode());
 }
 
-native public Object newInstance(Object initargs[]) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+public Object newInstance(Object initargs[]) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	Method meth = new Method(clazz,
+				 slot,
+				 "<init>",
+				 clazz,
+				 parameterTypes,
+				 exceptionTypes);
+	return (meth.invoke(null, initargs));
+}
 
 public String toString()
 	{
