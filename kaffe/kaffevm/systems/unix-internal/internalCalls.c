@@ -186,11 +186,7 @@ static int
 threadedOpen(const char *name, int flags, int mode)
 {
 	/* Cygnus NT requires this */
-	int fd = open(name, 
-#if defined(O_BINARY)
-		O_BINARY |
-#endif
-		flags, mode);
+	int fd = open(name, flags|O_BINARY, mode);
 }
 
 SystemCallInterface Kaffe_SystemCallInterface = {

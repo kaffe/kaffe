@@ -1522,11 +1522,7 @@ jthreadedOpen(const char* path, int flags, int mode)
 	int fd;
 
 	/* Cygnus WinNT requires this */
-	fd = open(path, 
-#if defined(O_BINARY)
-		O_BINARY |
-#endif
-		flags, mode);
+	fd = open(path, flags|O_BINARY, mode);
 	return (jthreadedFileDescriptor(fd));
 }
 
