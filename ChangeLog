@@ -2,6 +2,15 @@
 
         Resynced with GNU Classpath.
 
+	2004-01-06  Per Bothner  <per@bothner.com>
+
+        * java/util/Date.java (parse):  Fix a number of problems.
+        (skipParens):  Remove no-longer-needed method.
+
+2004-01-09  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+
 	2004-01-08  Michael Koch  <konqueror@gmx.de>
 
         * java/nio/channels/spi/AbstractSelectableChannel.java
