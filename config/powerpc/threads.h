@@ -12,7 +12,7 @@
 #ifndef __powerpc_threads_h
 #define __powerpc_threads_h
 
-#define	THREADSTACKSIZE		(128 * 1024)
+#define	THREADSTACKSIZE		(256 * 1024)
 
 /*
  * Stack offset.
