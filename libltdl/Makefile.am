@@ -1,5 +1,5 @@
-# A brief demonstration of using Automake with Libtool. -*-Makefile-*-
-#
+## Process this file with automake to produce Makefile.in
+
 AUTOMAKE_OPTIONS = no-dependencies foreign
 
 if INSTALL_LTDL

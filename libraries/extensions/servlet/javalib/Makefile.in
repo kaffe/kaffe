@@ -37,7 +37,7 @@ pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
 
-top_builddir = ../../..
+top_builddir = ../../../..
 
 ACLOCAL = @ACLOCAL@
 AUTOCONF = @AUTOCONF@
@@ -117,24 +117,65 @@ kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
 
-# Sun-compatibility scripts
 #
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
+# servlet extension library component.
 #
-# See the file "license.terms" for information on usage and redistribution 
-# of this file. 
+# Copyright (c) 1999
+#      Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file.
+#
+# Class libraries are not currently part of the integrate Make cycle.
+#
 
 
-@SUN_COMPAT_TRUE@bin_SCRIPTS = \
-@SUN_COMPAT_TRUE@appletviewer java javac javadoc
+CLASSFILE = servlet.jar
+SRCDIRS = javax
+
+class_DATA = $(CLASSFILE)
+
+servlet_jar_SRCS = \
+	$(javax_servlet_SRCS) \
+	$(javax_servlet_http_SRCS)
+
+javax_servlet_SRCS = \
+	javax/servlet/GenericServlet.java \
+	javax/servlet/Servlet.java \
+	javax/servlet/ServletConfig.java \
+	javax/servlet/ServletContext.java \
+	javax/servlet/ServletException.java \
+	javax/servlet/ServletInputStream.java \
+	javax/servlet/ServletOutputStream.java \
+	javax/servlet/ServletRequest.java \
+	javax/servlet/ServletResponse.java \
+	javax/servlet/SingleThreadModel.java \
+	javax/servlet/UnavailableException.java
+
+javax_servlet_http_SRCS = \
+	javax/servlet/http/Cookie.java \
+	javax/servlet/http/HttpServlet.java \
+	javax/servlet/http/HttpServletRequest.java \
+	javax/servlet/http/HttpServletResponse.java \
+	javax/servlet/http/HttpSession.java \
+	javax/servlet/http/HttpSessionBindingEvent.java \
+	javax/servlet/http/HttpSessionBindingListener.java \
+	javax/servlet/http/HttpSessionContext.java \
+	javax/servlet/http/HttpUtils.java
+
+
+EXTRA_DIST = $(class_DATA) $(servlet_jar_SRCS)
+
+LIBDIR = lib
+
+rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
+Klasses_jar = $(top_srcdir)/libraries/javalib/Klasses.jar
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_HEADER = ../../../config/config.h ../../../include/jtypes.h
-CONFIG_CLEAN_FILES =  java javac appletviewer javadoc
-SCRIPTS =  $(bin_SCRIPTS)
+CONFIG_HEADER = ../../../../config/config.h ../../../../include/jtypes.h
+CONFIG_CLEAN_FILES = 
+DATA =  $(class_DATA)
 
-DIST_COMMON =  Makefile.am Makefile.in appletviewer.in java.in javac.in \
-javadoc.in
+DIST_COMMON =  $(class_DATA) Makefile.am Makefile.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -143,40 +184,29 @@ GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu kaffe/scripts/compat/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu libraries/extensions/servlet/javalib/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
-java: $(top_builddir)/config.status java.in
-	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
-javac: $(top_builddir)/config.status javac.in
-	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
-appletviewer: $(top_builddir)/config.status appletviewer.in
-	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
-javadoc: $(top_builddir)/config.status javadoc.in
-	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
-install-binSCRIPTS: $(bin_SCRIPTS)
+install-classDATA: $(class_DATA)
 	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(bindir)
-	@list='$(bin_SCRIPTS)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    echo " $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`"; \
-	    $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
-	  else if test -f $(srcdir)/$$p; then \
-	    echo " $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`"; \
-	    $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
-	  else :; fi; fi; \
+	$(mkinstalldirs) $(DESTDIR)$(classdir)
+	@list='$(class_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d= ; else d="$(srcdir)/"; fi; \
+	  f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(classdir)/$$f"; \
+	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(classdir)/$$f; \
 	done
 
-uninstall-binSCRIPTS:
+uninstall-classDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(bin_SCRIPTS)'; for p in $$list; do \
-	  file="`echo $$p|sed '$(transform)'`"; \
-	  echo " rm -f $(DESTDIR)$(bindir)/$$file"; \
-	  rm -f $(DESTDIR)$(bindir)/$$file; \
+	@list='$(class_DATA)'; for p in $$list; do \
+	  f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " rm -f $(DESTDIR)$(classdir)/$$f"; \
+	  rm -f $(DESTDIR)$(classdir)/$$f; \
 	done
 tags: TAGS
 TAGS:
@@ -184,14 +214,15 @@ TAGS:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = kaffe/scripts/compat
+subdir = libraries/extensions/servlet/javalib
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu kaffe/scripts/compat/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu libraries/extensions/servlet/javalib/Makefile
+	$(mkinstalldirs) $(distdir)/javax/servlet $(distdir)/javax/servlet/http
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -210,23 +241,23 @@ check-am: all-am
 check: check-am
 installcheck-am:
 installcheck: installcheck-am
-install-exec-am: install-binSCRIPTS
+install-exec-am:
 install-exec: install-exec-am
 
-install-data-am:
+install-data-am: install-classDATA
 install-data: install-data-am
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-am
-uninstall-am: uninstall-binSCRIPTS
+uninstall-am: uninstall-classDATA
 uninstall: uninstall-am
-all-am: Makefile $(SCRIPTS)
+all-am: Makefile $(DATA)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) INSTALL_STRIP_FLAG=-s install
 installdirs:
-	$(mkinstalldirs)  $(DESTDIR)$(bindir)
+	$(mkinstalldirs)  $(DESTDIR)$(classdir)
 
 
 mostlyclean-generic:
@@ -257,13 +288,36 @@ maintainer-clean-am:  maintainer-clean-generic distclean-am
 
 maintainer-clean: maintainer-clean-am
 
-.PHONY: uninstall-binSCRIPTS install-binSCRIPTS tags distdir info-am \
-info dvi-am dvi check check-am installcheck-am installcheck \
-install-exec-am install-exec install-data-am install-data install-am \
-install uninstall-am uninstall all-redirect all-am all install-strip \
+.PHONY: uninstall-classDATA install-classDATA tags distdir info-am info \
+dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
+install-exec install-data-am install-data install-am install \
+uninstall-am uninstall all-redirect all-am all install-strip \
 installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
+
+clean-hook:
+	rm -rf $(LIBDIR)
+
+.PHONY: new-classes
+new-classes: $(top_srcdir)/developers/update-class-list
+	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
+
+.PHONY: compile-classes classes
+compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(servlet_jar_SRCS)
+	@echo $(SHELL) $(rebuildLib)
+	@CPATH=$(Klasses_jar) $(SHELL) $(rebuildLib) $(servlet_jar_SRCS)
+	@echo timestamp > $(LIBDIR)/stamp
+
+.PHONY: jar-classes
+jar-classes $(LIBDIR)/servlet.jar: $(LIBDIR)/stamp
+	rm -f $(LIBDIR)/$(CLASSFILE)
+	(cd $(LIBDIR) && $(ZIP) -r $(CLASSFILE) $(SRCDIRS))
+
+.PHONY: build-classes Klasses
+build-classes Klasses: $(LIBDIR)/$(CLASSFILE)
+	rm -f $(srcdir)/$(CLASSFILE)
+	cp $(LIBDIR)/$(CLASSFILE) $(srcdir)/$(CLASSFILE)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

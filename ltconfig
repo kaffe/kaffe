@@ -2,7 +2,7 @@
 
 # ltconfig - Create a system-specific libtool.
 # Copyright (C) 1996-1999 Free Software Foundation, Inc.
-# Gordon Matzigkeit <gord@gnu.ai.mit.edu>, 1996
+# Originally by Gordon Matzigkeit <gord@gnu.ai.mit.edu>, 1996
 #
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -163,8 +163,8 @@ progname=`$echo "X$0" | $Xsed -e 's%^.*/%%'`
 # Constants:
 PROGRAM=ltconfig
 PACKAGE=libtool
-VERSION=1.2f
-TIMESTAMP=" (1.385 1999/03/15 17:24:54)"
+VERSION=1.2g
+TIMESTAMP=" (1.385.2.62 1999/04/07 19:35:46)"
 ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.c 1>&5'
 ac_link='${CC-cc} -o conftest $CFLAGS $CPPFLAGS $LDFLAGS conftest.c $LIBS 1>&5'
 rm="rm -f"
@@ -894,9 +894,9 @@ $rm conftest*
 if test -z "$LN_S"; then
   # Check to see if we can use ln -s, or we need hard links.
   echo $ac_n "checking whether ln -s works... $ac_c" 1>&6
-  $rm conftestdata
-  if ln -s X conftestdata 2>/dev/null; then
-    $rm conftestdata
+  $rm conftest.dat
+  if ln -s X conftest.dat 2>/dev/null; then
+    $rm conftest.dat
     LN_S="ln -s"
   else
     LN_S=ln
@@ -918,7 +918,7 @@ if test -z "$LD"; then
     ac_prog=`($CC -print-prog-name=ld) 2>&5`
     case "$ac_prog" in
     # Accept absolute paths.
-    /* | [A-Za-z]:[\\/]*)
+    [\\/]* | [A-Za-z]:[\\/]*)
       re_direlt='/[^/][^/]*/\.\./'
       # Canonicalize the path of ld
       ac_prog=`echo $ac_prog| sed 's%\\\\%/%g'`
@@ -1015,7 +1015,12 @@ include_expsyms=
 # it will be wrapped by ` (' and `)$', so one must not match beginning or
 # end of line.  Example: `a|bc|.*d.*' will exclude the symbols `a' and `bc',
 # as well as any symbol that contains `d'.
-exclude_expsyms=
+exclude_expsyms="_GLOBAL_OFFSET_TABLE_"
+# Although _GLOBAL_OFFSET_TABLE_ is a valid symbol C name, most a.out
+# platforms (ab)use it in PIC code, but their linkers get confused if
+# the symbol is explicitly referenced.  Since portable code cannot
+# rely on this symbol name, it's probably fine to never include it in
+# preloaded symbol tables.
 
 case "$host_os" in
 cygwin* | mingw*)
@@ -1025,10 +1030,6 @@ cygwin* | mingw*)
   if test "$with_gcc" != yes; then
     with_gnu_ld=no
   fi
-  ;;
-
-freebsd2* | sunos4*)
-  exclude_expsyms="_GLOBAL_OFFSET_TABLE_"
   ;;
 
 esac
@@ -1058,14 +1059,14 @@ EOF
     archive_cmds='$rm $objdir/a2ixlibrary.data~$echo "#define NAME $libname" > $objdir/a2ixlibrary.data~$echo "#define LIBRARY_ID 1" >> $objdir/a2ixlibrary.data~$echo "#define VERSION $major" >> $objdir/a2ixlibrary.data~$echo "#define REVISION $revision" >> $objdir/a2ixlibrary.data~$AR cru $lib $libobjs~$RANLIB $lib~(cd $objdir && a2ixlibrary -32)'
     hardcode_libdir_flag_spec='-L$libdir'
     hardcode_minus_L=yes
-    ;;
 
-  sunos4*)
-    archive_cmds='$LD -assert pure-text -Bstatic -o $lib $libobjs $deplibs $linkopts'
-    wlarc=
-    hardcode_direct=yes
-    hardcode_minus_L=yes
-    hardcode_shlibpath_var=no
+    # Samuel A. Falvo II <kc5tja@dolphin.openprojects.net> reports
+    # that the semantics of dynamic libraries on AmigaOS, at least up
+    # to version 4, is to share data among multiple programs linked
+    # with the same dynamic library.  Since this doesn't match the
+    # behavior of shared libraries on other platforms, we can use
+    # them.
+    ld_shlibs=no
     ;;
 
   beos*)
@@ -1087,7 +1088,7 @@ EOF
     # then regenerate the def file from the symbol export list, so that
     # the compiled dll only exports the symbol export list.
     export_symbols_cmds='rm -f $objdir/$soname-ltdll.c~
-      sed -e "/^# \/\* ltdll.c starts here \*\//,/^# \/\* ltdll.c ends here \*\// { s/^# //; p; }" -e d < $0 > $objdir/$soname-ltdll.c~
+      sed -e "/^# \/\* ltdll\.c starts here \*\//,/^# \/\* ltdll.c ends here \*\// { s/^# //; p; }" -e d < $0 > $objdir/$soname-ltdll.c~
       (cd $objdir && $CC -c $soname-ltdll.c)~
       $DLLTOOL --export-all --exclude-symbols DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --output-def $objdir/$soname-def  $objdir/$soname-ltdll.$objext $libobjs~
       sed -e "1,/EXPORTS/d" -e "s/ @ [0-9]* ; *//" < $objdir/$soname-def > $export_symbols'
@@ -1095,7 +1096,7 @@ EOF
     archive_expsym_cmds='echo EXPORTS > $objdir/$soname-def~
       _lt_hint=1;
       for symbol in `cat $export_symbols`; do
-        echo "	\$symbol @ \$_lt_hint ; " >> $objdir/$soname-def;
+	echo "	\$symbol @ \$_lt_hint ; " >> $objdir/$soname-def;
 	_lt_hint=`expr 1 + \$_lt_hint`;
       done~
       $CC -Wl,--base-file,$objdir/$soname-base -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts~
@@ -1105,6 +1106,23 @@ EOF
       $CC $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts'
 
       old_archive_from_new_cmds='$DLLTOOL --as=$AS --dllname $soname --def $objdir/$soname-def --output-lib $objdir/$libname.a'
+    ;;
+
+  netbsd*)
+    if $LD --help 2>&1 | egrep ': supported targets:.* elf' > /dev/null; then
+      archive_cmds='$CC -shared $libobjs $deplibs $linkopts ${wl}-soname $wl$soname -o $lib'
+      archive_expsym_cmds='$CC -shared $libobjs $deplibs $linkopts ${wl}-soname $wl$soname ${wl}-retain-symbols-file $wl$export_symbols -o $lib'
+    else
+      archive_cmds='$LD -Bshareable $libobjs $deplibs $linkopts -o $lib'
+      # can we support soname and/or expsyms with a.out? -oliva
+    fi
+    ;;
+
+  sunos4*)
+    archive_cmds='$LD -assert pure-text -Bshareable -o $lib $libobjs $deplibs $linkopts'
+    wlarc=
+    hardcode_direct=yes
+    hardcode_shlibpath_var=no
     ;;
 
   *)
@@ -1142,15 +1160,24 @@ else
 
   aix4*)
     allow_undefined_flag=
+    hardcode_libdir_flag_spec='${wl}-b ${wl}nolibpath ${wl}-b ${wl}libpath:$libdir:/usr/lib:/lib'
+    hardcode_libdir_separator=':'
     if test "$with_gcc" = yes; then
-      if strings `${CC} -print-prog-name=collect2` | \
-	 grep resolve_lib_name >/dev/null
+      collect2name=`${CC} -print-prog-name=collect2`
+      if test -f "$collect2name" && \
+	 strings "$collect2name" | grep resolve_lib_name >/dev/null
       then
 	# We have reworked collect2
 	hardcode_direct=yes
       else
 	# We have old collect2
 	hardcode_direct=unsupported
+	# It fails to find uninstalled libraries when the uninstalled
+	# path is not listed in the libpath.  Setting hardcode_minus_L
+	# to unsupported forces relinking
+	hardcode_minus_L=yes
+	hardcode_libdir_flag_spec='-L$libdir'
+	hardcode_libdir_separator=
       fi
       archive_cmds='$CC -shared ${wl}-bnoentry -o $objdir/$soname $libobjs $deplibs $linkopts'
     else
@@ -1158,18 +1185,14 @@ else
       archive_expsym_cmds='$CC -o $objdir/$soname $libobjs $deplibs $linkopts ${wl}-bE:$export_symbols ${wl}-bM:SRE ${wl}-bnoentry'
       hardcode_direct=yes
     fi
-    hardcode_minus_L=yes
-    # Though LIBPATH variable hardcodes shlibpath into executable,
-    # it doesn't affect searching for -l* libraries; this confuses
-    # tests in mdemo.
-    hardcode_shlibpath_var=unsupported
-    hardcode_libdir_flag_spec='-L$libdir'
    ;;
 
   amigaos*)
     archive_cmds='$rm $objdir/a2ixlibrary.data~$echo "#define NAME $libname" > $objdir/a2ixlibrary.data~$echo "#define LIBRARY_ID 1" >> $objdir/a2ixlibrary.data~$echo "#define VERSION $major" >> $objdir/a2ixlibrary.data~$echo "#define REVISION $revision" >> $objdir/a2ixlibrary.data~$AR cru $lib $libobjs~$RANLIB $lib~(cd $objdir && a2ixlibrary -32)'
     hardcode_libdir_flag_spec='-L$libdir'
     hardcode_minus_L=yes
+    # see comment about different semantics on the GNU ld section
+    ld_shlibs=no
     ;;
 
   cygwin* | mingw*)
@@ -1192,7 +1215,6 @@ else
 
   freebsd1*)
     ld_shlibs=no
-    can_build_shared=no
     ;;
 
   # FreeBSD 2.2.[012] allows us to include c++rt0.o to get C++ constructor
@@ -1203,7 +1225,6 @@ else
     archive_cmds='$LD -Bshareable -o $lib $libobjs $deplibs $linkopts /usr/lib/c++rt0.o'
     hardcode_libdir_flag_spec='-R$libdir'
     hardcode_direct=yes
-    hardcode_minus_L=no # verified on 2.2.6
     hardcode_shlibpath_var=no
     ;;
 
@@ -1220,23 +1241,22 @@ else
     archive_cmds='$CC -shared -o $lib $libobjs $deplibs $linkopts'
     hardcode_libdir_flag_spec='-R$libdir'
     hardcode_direct=yes
-    hardcode_minus_L=no
     hardcode_shlibpath_var=no
     ;;
 
   hpux9*)
-    archive_cmds='$rm $objdir/$soname~$LD -b +s +b $install_libdir -o $objdir/$soname $libobjs $deplibs $linkopts~test $objdir/$soname = $lib || mv $objdir/$soname $lib'
-    hardcode_libdir_flag_spec='${wl}+b ${wl}$libdir'
+    archive_cmds='$rm $objdir/$soname~$LD -b +b $install_libdir -o $objdir/$soname $libobjs $deplibs $linkopts~test $objdir/$soname = $lib || mv $objdir/$soname $lib'
+    hardcode_libdir_flag_spec='${wl}+s ${wl}+b ${wl}$libdir'
+    hardcode_libdir_separator=:
     hardcode_direct=yes
-    hardcode_minus_L=yes
     export_dynamic_flag_spec='${wl}-E'
     ;;
 
   hpux10* | hpux11*)
-    archive_cmds='$LD -b +h $soname +s +b $install_libdir -o $lib $libobjs $deplibs $linkopts'
-    hardcode_libdir_flag_spec='${wl}+b ${wl}$libdir'
+    archive_cmds='$LD -b +h $soname +b $install_libdir -o $lib $libobjs $deplibs $linkopts'
+    hardcode_libdir_flag_spec='${wl}+s ${wl}+b ${wl}$libdir'
+    hardcode_libdir_separator=:
     hardcode_direct=yes
-    hardcode_minus_L=yes
     export_dynamic_flag_spec='${wl}-E'
     ;;
 
@@ -1305,13 +1325,7 @@ else
     ;;
 
   sunos4*)
-    # Why do we need -Bstatic?  To avoid inter-library dependencies, maybe...
-    if test "$with_gcc" = yes; then
-      # Use -fPIC here because libgcc is multilibbed
-      archive_cmds='$CC -shared ${wl}-Bstatic -fPIC -o $lib $libobjs $deplibs $linkopts'
-    else
-      archive_cmds='$LD -assert pure-text -Bstatic -o $lib $libobjs $deplibs $linkopts'
-    fi
+    archive_cmds='$LD -assert pure-text -Bstatic -o $lib $libobjs $deplibs $linkopts'
     hardcode_libdir_flag_spec='-L$libdir'
     hardcode_direct=yes
     hardcode_minus_L=yes
@@ -1320,8 +1334,6 @@ else
 
   sysv4.3*)
     archive_cmds='$LD -G -h $soname -o $lib $libobjs $deplibs $linkopts'
-    hardcode_direct=no
-    hardcode_minus_L=no
     hardcode_shlibpath_var=no
     export_dynamic_flag_spec='-Bexport'
     ;;
@@ -1329,31 +1341,27 @@ else
   uts4*)
     archive_cmds='$LD -G -h $soname -o $lib $libobjs $deplibs $linkopts'
     hardcode_libdir_flag_spec='-L$libdir'
-    hardcode_direct=no
-    hardcode_minus_L=no
     hardcode_shlibpath_var=no
     ;;
 
   dgux*)
     archive_cmds='$LD -G -h $soname -o $lib $libobjs $deplibs $linkopts'
     hardcode_libdir_flag_spec='-L$libdir'
-    hardcode_direct=no
-    hardcode_minus_L=no
     hardcode_shlibpath_var=no
     ;;
 
   *)
     ld_shlibs=no
-    can_build_shared=no
     ;;
   esac
 fi
 echo "$ac_t$ld_shlibs" 1>&6
+test "$ld_shlibs" = no && can_build_shared=no
 
 if test -z "$NM"; then
   echo $ac_n "checking for BSD-compatible nm... $ac_c" 1>&6
   case "$NM" in
-  /* | [A-Za-z]:[/\\]*) ;; # Let the user override the test with a path.
+  [\\/]* | [A-Za-z]:[\\/]*) ;; # Let the user override the test with a path.
   *)
     IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR}"
     for ac_dir in $PATH /usr/ucb /usr/ccs/bin /bin; do
@@ -1444,11 +1452,11 @@ void nm_test_func(){}
 main(){nm_test_var='a';nm_test_func();return(0);}
 EOF
 
-  echo "$progname:1447: checking if global_symbol_pipe works" >&5
-  if { (eval echo $progname:1448: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; } && test -s conftest.$objext; then
+  echo "$progname:1455: checking if global_symbol_pipe works" >&5
+  if { (eval echo $progname:1456: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; } && test -s conftest.$objext; then
     # Now try to grab the symbols.
     nlist=conftest.nm
-    if { echo "$progname:1451: eval \"$NM conftest.$objext | $global_symbol_pipe > $nlist\"" >&5; eval "$NM conftest.$objext | $global_symbol_pipe > $nlist 2>&5"; } && test -s "$nlist"; then
+    if { echo "$progname:1459: eval \"$NM conftest.$objext | $global_symbol_pipe > $nlist\"" >&5; eval "$NM conftest.$objext | $global_symbol_pipe > $nlist 2>&5"; } && test -s "$nlist"; then
 
       # Try sorting and uniquifying the output.
       if sort "$nlist" | uniq > "$nlist"T; then
@@ -1495,12 +1503,12 @@ EOF
 #endif
 EOF
 	  # Now try linking the two files.
-	  mv conftest.$objext conftestm.$objext
+	  mv conftest.$objext conftstm.$objext
 	  save_LIBS="$LIBS"
 	  save_CFLAGS="$CFLAGS"
-	  LIBS="conftestm.$objext"
+	  LIBS="conftstm.$objext"
 	  CFLAGS="$CFLAGS$no_builtin_flag"
-	  if { (eval echo $progname:1503: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
+	  if { (eval echo $progname:1511: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
 	    pipe_works=yes
 	  else
 	    echo "$progname: failed program was:" >&5
@@ -1520,7 +1528,7 @@ EOF
     echo "$progname: failed program was:" >&5
     cat conftest.c >&5
   fi
-  $rm conftest*
+  $rm conftest* conftst*
 
   # Do not use the global_symbol_pipe unless it works.
   if test "$pipe_works" = yes; then
@@ -1529,7 +1537,11 @@ EOF
     global_symbol_pipe=
   fi
 done
-echo "$ac_t$pipe_works" 1>&6
+if test "$pipe_works" = yes; then
+  echo "${ac_t}ok" 1>&6
+else
+  echo "${ac_t}failed" 1>&6
+fi
 
 if test -z "$global_symbol_pipe"; then
   global_symbol_to_cdecl=
@@ -1542,10 +1554,12 @@ if test -n "$hardcode_libdir_flag_spec" || \
    test -n "$runpath_var"; then
 
   # We can hardcode non-existant directories.
-  if test "$hardcode_direct" != no && \
-     test "$hardcode_minus_L" != no && \
-     test "$hardcode_shlibpath_var" != no; then
-
+  if test "$hardcode_direct" != no &&
+     # If the only mechanism to avoid hardcoding is shlibpath_var, we
+     # have to relink, otherwise we might link with an installed library
+     # when we should be linking with a yet-to-be-installed one
+     ## test "$hardcode_shlibpath_var" != no &&
+     test "$hardcode_minus_L" != no; then
     # Linking always hardcodes the temporary library directory.
     hardcode_action=relink
   else
@@ -1628,13 +1642,16 @@ beos*)
   library_names_spec='${libname}.so'
   dynamic_linker="$host_os ld.so"
   shlibpath_var=LIBRARY_PATH
+  lt_cv_dlopen="load_add_on"
+  lt_cv_dlopen_libs=
+  lt_cv_dlopen_self=yes
   ;;
 
 bsdi4*)
   version_type=linux
   library_names_spec='${libname}.so$major ${libname}.so'
   soname_spec='${libname}.so'
-  finish_cmds='PATH="$PATH:/sbin" ldconfig $libdir'
+  finish_cmds='PATH="\$PATH:/sbin" ldconfig $libdir'
   shlibpath_var=LD_LIBRARY_PATH
   deplibs_check_method='file_magic ELF 32-bit LSB shared object'
   file_magic_cmd=/usr/bin/file
@@ -1659,6 +1676,8 @@ cygwin* | mingw*)
   need_lib_prefix=no
   # FIXME: first we should search . and the directory the executable is in
   shlibpath_var=PATH
+  lt_cv_dlopen="LoadLibrary"
+  lt_cv_dlopen_libs=
   ;;
 
 freebsd1*)
@@ -1683,7 +1702,7 @@ freebsd*)
       need_version=yes
       ;;
   esac
-  finish_cmds='PATH="$PATH:/sbin" OBJFORMAT="'"$objformat"'" ldconfig -m $libdir'
+  finish_cmds='PATH="\$PATH:/sbin" OBJFORMAT="'"$objformat"'" ldconfig -m $libdir'
   shlibpath_var=LD_LIBRARY_PATH
   ;;
 
@@ -1701,6 +1720,7 @@ hpux9* | hpux10* | hpux11*)
   need_lib_prefix=no
   need_version=no
   shlibpath_var=SHLIB_PATH
+  shlibpath_overrides_runpath=yes # +s before +b in hardcode_libdir_flag_spec
   library_names_spec='${libname}${release}.sl$versuffix ${libname}${release}.sl$major $libname.sl'
   soname_spec='${libname}${release}.sl$major'
   # HP-UX runs *really* slowly unless shared libraries are mode 555.
@@ -1755,7 +1775,7 @@ linux-gnu*)
   need_version=no
   library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major $libname.so'
   soname_spec='${libname}${release}.so$major'
-  finish_cmds='PATH="$PATH:/sbin" ldconfig -n $libdir'
+  finish_cmds='PATH="\$PATH:/sbin" ldconfig -n $libdir'
   shlibpath_var=LD_LIBRARY_PATH
   shlibpath_overrides_runpath=no
   deplibs_check_method='file_magic ELF [0-9][0-9]*-bit [LM]SB (shared object|dynamic lib )'
@@ -1777,7 +1797,7 @@ netbsd*)
   version_type=sunos
   if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
     library_names_spec='${libname}${release}.so$versuffix ${libname}.so$versuffix'
-    finish_cmds='PATH="$PATH:/sbin" ldconfig -m $libdir'
+    finish_cmds='PATH="\$PATH:/sbin" ldconfig -m $libdir'
     dynamic_linker='NetBSD (a.out) ld.so'
   else
     library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major ${libname}${release}.so ${libname}.so'
@@ -1974,12 +1994,12 @@ else
 if eval "test \"`echo '$''{'lt_cv_dlopen'+set}'`\" != set"; then
   lt_cv_dlopen=no lt_cv_dlopen_libs=
 echo $ac_n "checking for dlopen""... $ac_c" 1>&6
-echo "$progname:1977: checking for dlopen" >&5
+echo "$progname:1997: checking for dlopen" >&5
 if eval "test \"`echo '$''{'ac_cv_func_dlopen'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 1982 "ltconfig"
+#line 2002 "ltconfig"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char dlopen(); below.  */
 #include <assert.h>
@@ -2001,7 +2021,7 @@ dlopen();
 
 ; return 0; }
 EOF
-if { (eval echo $progname:2004: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo $progname:2024: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_dlopen=yes"
 else
@@ -2019,7 +2039,7 @@ if eval "test \"`echo '$ac_cv_func_'dlopen`\" = yes"; then
 else
   echo "$ac_t""no" 1>&6
 echo $ac_n "checking for dlopen in -ldl""... $ac_c" 1>&6
-echo "$progname:2022: checking for dlopen in -ldl" >&5
+echo "$progname:2042: checking for dlopen in -ldl" >&5
 ac_lib_var=`echo dl'_'dlopen | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -2027,7 +2047,7 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-ldl  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 2030 "ltconfig"
+#line 2050 "ltconfig"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
@@ -2037,7 +2057,7 @@ int main() {
 dlopen()
 ; return 0; }
 EOF
-if { (eval echo $progname:2040: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo $progname:2060: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -2056,7 +2076,7 @@ if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
 else
   echo "$ac_t""no" 1>&6
 echo $ac_n "checking for dld_link in -ldld""... $ac_c" 1>&6
-echo "$progname:2059: checking for dld_link in -ldld" >&5
+echo "$progname:2079: checking for dld_link in -ldld" >&5
 ac_lib_var=`echo dld'_'dld_link | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -2064,7 +2084,7 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-ldld  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 2067 "ltconfig"
+#line 2087 "ltconfig"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
@@ -2074,7 +2094,7 @@ int main() {
 dld_link()
 ; return 0; }
 EOF
-if { (eval echo $progname:2077: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo $progname:2097: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -2093,12 +2113,12 @@ if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
 else
   echo "$ac_t""no" 1>&6
 echo $ac_n "checking for shl_load""... $ac_c" 1>&6
-echo "$progname:2096: checking for shl_load" >&5
+echo "$progname:2116: checking for shl_load" >&5
 if eval "test \"`echo '$''{'ac_cv_func_shl_load'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2101 "ltconfig"
+#line 2121 "ltconfig"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char shl_load(); below.  */
 #include <assert.h>
@@ -2120,7 +2140,7 @@ shl_load();
 
 ; return 0; }
 EOF
-if { (eval echo $progname:2123: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo $progname:2143: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_shl_load=yes"
 else
@@ -2137,54 +2157,6 @@ if eval "test \"`echo '$ac_cv_func_'shl_load`\" = yes"; then
   lt_cv_dlopen="shl_load"
 else
   echo "$ac_t""no" 1>&6
-echo $ac_n "checking for LoadLibrary""... $ac_c" 1>&6
-echo "$progname:2141: checking for LoadLibrary" >&5
-if eval "test \"`echo '$''{'ac_cv_func_LoadLibrary'+set}'`\" = set"; then
-  echo $ac_n "(cached) $ac_c" 1>&6
-else
-  cat > conftest.$ac_ext <<EOF
-#line 2146 "ltconfig"
-/* System header to define __stub macros and hopefully few prototypes,
-    which can conflict with char LoadLibrary(); below.  */
-#include <assert.h>
-/* Override any gcc2 internal prototype to avoid an error.  */
-/* We use char because int might match the return type of a gcc2
-    builtin and then its argument prototype would still apply.  */
-char LoadLibrary();
-
-int main() {
-
-/* The GNU C library defines this for functions which it implements
-    to always fail with ENOSYS.  Some functions are actually named
-    something starting with __ and the normal name is an alias.  */
-#if defined (__stub_LoadLibrary) || defined (__stub___LoadLibrary)
-choke me
-#else
-LoadLibrary();
-#endif
-
-; return 0; }
-EOF
-if { (eval echo $progname:2168: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
-  rm -rf conftest*
-  eval "ac_cv_func_LoadLibrary=yes"
-else
-  echo "$progname: failed program was:" >&5
-  cat conftest.$ac_ext >&5
-  rm -rf conftest*
-  eval "ac_cv_func_LoadLibrary=no"
-fi
-rm -f conftest*
-fi
-
-if eval "test \"`echo '$ac_cv_func_'LoadLibrary`\" = yes"; then
-  echo "$ac_t""yes" 1>&6
-  lt_cv_dlopen="LoadLibrary"
-else
-  echo "$ac_t""no" 1>&6
-fi
-
-      
 fi
 
     
@@ -2207,17 +2179,17 @@ fi
 for ac_hdr in dlfcn.h; do
 ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
 echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
-echo "$progname:2210: checking for $ac_hdr" >&5
+echo "$progname:2182: checking for $ac_hdr" >&5
 if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2215 "ltconfig"
+#line 2187 "ltconfig"
 #include <$ac_hdr>
 int fnord = 0;
 EOF
 ac_try="$ac_compile conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo $progname:2220: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo $progname:2192: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   rm -rf conftest*
@@ -2245,7 +2217,7 @@ done
     LIBS="$lt_cv_dlopen_libs $LIBS"
 
   echo $ac_n "checking whether a program can dlopen itself""... $ac_c" 1>&6
-echo "$progname:2248: checking whether a program can dlopen itself" >&5
+echo "$progname:2220: checking whether a program can dlopen itself" >&5
 if test "${lt_cv_dlopen_self+set}" = set; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2253,7 +2225,7 @@ else
     lt_cv_dlopen_self=cross
   else
     cat > conftest.c <<EOF
-#line 2256 "ltconfig"
+#line 2228 "ltconfig"
 
 #if HAVE_DLFCN_H
 #include <dlfcn.h>
@@ -2299,7 +2271,7 @@ main() { void *self, *ptr1, *ptr2; self=dlopen(0,LTDL_GLOBAL|LTDL_LAZY_OR_NOW);
 	       if(ptr1 || ptr2) exit(0); } exit(1); } 
 
 EOF
-if { (eval echo $progname:2302: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest && (./conftest; exit) 2>/dev/null
+if { (eval echo $progname:2274: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest && (./conftest; exit) 2>/dev/null
 then
   lt_cv_dlopen_self=yes
 else
@@ -2318,7 +2290,7 @@ echo "$ac_t""$lt_cv_dlopen_self" 1>&6
   if test "$lt_cv_dlopen_self" = yes; then
     LDFLAGS="$LDFLAGS $link_static_flag"
   echo $ac_n "checking whether a statically linked program can dlopen itself""... $ac_c" 1>&6
-echo "$progname:2321: checking whether a statically linked program can dlopen itself" >&5
+echo "$progname:2293: checking whether a statically linked program can dlopen itself" >&5
 if test "${lt_cv_dlopen_self_static+set}" = set; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2326,7 +2298,7 @@ else
     lt_cv_dlopen_self_static=cross
   else
     cat > conftest.c <<EOF
-#line 2329 "ltconfig"
+#line 2301 "ltconfig"
 
 #if HAVE_DLFCN_H
 #include <dlfcn.h>
@@ -2372,7 +2344,7 @@ main() { void *self, *ptr1, *ptr2; self=dlopen(0,LTDL_GLOBAL|LTDL_LAZY_OR_NOW);
     if(ptr1 || ptr2) exit(0); } exit(1); } 
 
 EOF
-if { (eval echo $progname:2375: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest && (./conftest; exit) 2>/dev/null
+if { (eval echo $progname:2347: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest && (./conftest; exit) 2>/dev/null
 then
   lt_cv_dlopen_self_static=yes
 else
@@ -2587,7 +2559,7 @@ libext="$libext"
 # Additional compiler flags for building library objects.
 pic_flag=$pic_flag
 
-# Does compiler simultaneously support -c and -o options
+# Does compiler simultaneously support -c and -o options?
 compiler_c_o=$compiler_c_o
 
 # Can we write directly to a .lo ?
@@ -2657,7 +2629,7 @@ postuninstall_cmds=$postuninstall_cmds
 # Method to check whether dependent libraries are shared objects.
 deplibs_check_method=$deplibs_check_method
 
-# Command to use when deplibs_check_method == file_magic
+# Command to use when deplibs_check_method == file_magic.
 file_magic_cmd=$file_magic_cmd
 
 # Flag that allows shared libraries with undefined symbols to be built.
@@ -2718,16 +2690,16 @@ sys_lib_dlsearch_path_spec=$sys_lib_dlsearch_path_spec
 # Fix the shell variable \$srcfile for the compiler.
 fix_srcfile_path="$fix_srcfile_path"
 
-# Set to yes if exported symbols are required
+# Set to yes if exported symbols are required.
 always_export_symbols=$always_export_symbols
 
-# The command to extract exported symbols
+# The commands to list exported symbols.
 export_symbols_cmds=$export_symbols_cmds
 
-# Symbols that should not be listed in the preloaded symbols
+# Symbols that should not be listed in the preloaded symbols.
 exclude_expsyms=$exclude_expsyms
 
-# Symbols that must always be exported
+# Symbols that must always be exported.
 include_expsyms=$include_expsyms
 
 EOF

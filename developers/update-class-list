@@ -7,17 +7,19 @@
 # Whenever you add or remove a file, run this script from within
 # kaffe-src/libraries/javalib
 
-if test -f Makefile.am && grep "^Klasses_jar_SRCS" < Makefile.am > /dev/null
-then :
+if test -f Makefile.am &&
+   classfile=`sed -n '/^CLASSFILE *= */ s///p' < Makefile.am` &&
+   SRCDIRS=`sed -n '/^SRCDIRS *= */ s///p' < Makefile.am` &&
+   classSRCS=`echo "$classfile" | sed 's/\./_/g;s/$/_SRCS/'` &&
+   grep "^$classSRCS *=" < Makefile.am > /dev/null; then :
 else
-    echo update-class-list must be run from within directory libraries/javalib >&2
-    echo of the Kaffe source tree >&2
+    echo update-class-list must be run from within a javalib directory >&2
     exit 1
 fi
 
 trap 'rm -f classlist pkglist macrodef; exit 1' 1 2 15
 
-find java kaffe -name \*.java -print | sort > classlist
+find $SRCDIRS -name \*.java -print | sort > classlist
 
 sed 's,/[^/]*$,,' < classlist | uniq > pkglist
 
@@ -34,11 +36,11 @@ sed 's,/[^/]*$,,' < classlist | uniq > pkglist
 rm -f classlist pkglist
 
 sed '
-/^Klasses_jar_SRCS/ {
+/^'"$classSRCS"'/ {
     p
     r macrodef
 }
-/^Klasses_jar_SRCS/,/^$/ d
+/^'"$classSRCS"'/,/^$/ d
 ' < Makefile.am > Makefile.am.new
 
 rm -f macrodef Makefile.am.bak
@@ -46,9 +48,6 @@ rm -f macrodef Makefile.am.bak
 mv Makefile.am Makefile.am.bak
 mv Makefile.am.new Makefile.am
 
-rm -f Makefile.am.bak
-
-cd ../..
-automake libraries/javalib/Makefile
+# rm -f Makefile.am.bak
 
 exit 0

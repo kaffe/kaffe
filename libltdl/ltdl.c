@@ -8,6 +8,11 @@ modify it under the terms of the GNU Library General Public
 License as published by the Free Software Foundation; either
 version 2 of the License, or (at your option) any later version.
 
+As a special exception to the GNU Library General Public License,
+if you distribute this file as part of a program that uses GNU libtool
+to create libraries and programs, you may include it under the same
+distribution terms that you use for the rest of that program.
+
 This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -76,12 +81,16 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define LTDL_SYMBOL_OVERHEAD	5
 
 static const char objdir[] = LTDL_OBJDIR;
+#ifdef	LTDL_SHLIB_EXT
 static const char shlib_ext[] = LTDL_SHLIB_EXT;
+#endif
 
 static const char unknown_error[] = "unknown error";
 static const char dlopen_not_supported_error[] = "dlopen support not available";
 static const char file_not_found_error[] = "file not found";
 static const char no_symbols_error[] = "no symbols defined";
+static const char cannot_open_error[] = "can't open the module";
+static const char cannot_close_error[] = "can't close the module";
 static const char symbol_error[] = "symbol not found";
 static const char memory_error[] = "not enough memory";
 static const char invalid_handle_error[] = "invalid handle";
@@ -204,10 +213,6 @@ strrchr(str, ch)
 # include <dlfcn.h>
 #endif
 
-#if ! HAVE_DLERROR	/* not all platforms have dlerror() */
-#define	dlerror()	unknown_error
-#endif
-
 #ifdef RTLD_GLOBAL
 # define LTDL_GLOBAL	RTLD_GLOBAL
 #else
@@ -259,7 +264,11 @@ dl_open (handle, filename)
 {
 	handle->handle = dlopen(filename, LTDL_GLOBAL | LTDL_LAZY_OR_NOW);
 	if (!handle->handle) {
+#if HAVE_DLERROR
 		last_error = dlerror();
+#else
+		last_error = cannot_open_error;
+#endif
 		return 1;
 	}
 	return 0;
@@ -270,7 +279,11 @@ dl_close (handle)
 	lt_dlhandle handle;
 {
 	if (dlclose(handle->handle) != 0) {
+#if HAVE_DLERROR
 		last_error = dlerror();
+#else
+		last_error = cannot_close_error;
+#endif
 		return 1;
 	}
 	return 0;
@@ -284,7 +297,11 @@ dl_sym (handle, symbol)
 	lt_ptr_t address = dlsym(handle->handle, symbol);
 	
 	if (!address)
+#if HAVE_DLERROR
 		last_error = dlerror();
+#else
+		last_error = symbol_error;
+#endif
 	return address;
 }
 
@@ -365,7 +382,7 @@ shl_open (handle, filename)
 {
 	handle->handle = shl_load(filename, LTDL_BIND_FLAGS, 0L);
 	if (!handle->handle) {
-		last_error = unknown_error;
+		last_error = cannot_open_error;
 		return 1;
 	}
 	return 0;
@@ -376,7 +393,7 @@ shl_close (handle)
 	lt_dlhandle handle;
 {
 	if (shl_unload((shl_t) (handle->handle)) != 0) {
-		last_error = unknown_error;
+		last_error = cannot_close_error;
 		return 1;
 	}
 	return 0;
@@ -391,7 +408,7 @@ shl_sym (handle, symbol)
 
 	if (shl_findsym((shl_t) (handle->handle), symbol, TYPE_UNDEFINED,
 	    &address) != 0 || !(handle->handle) || !address) {
-		last_error = unknown_error;
+		last_error = symbol_error;
 		return 0;
 	}
 	return address;
@@ -438,7 +455,7 @@ dld_open (handle, filename)
 		return 1;
 	}
 	if (dld_link(filename) != 0) {
-		last_error = unknown_error;
+		last_error = cannot_open_error;
 		lt_dlfree(handle->handle);
 		return 1;
 	}
@@ -450,7 +467,7 @@ dld_close (handle)
 	lt_dlhandle handle;
 {
 	if (dld_unlink_by_file((char*)(handle->handle), 1) != 0) {
-		last_error = unknown_error;
+		last_error = cannot_close_error;
 		return 1;
 	}
 	lt_dlfree(handle->filename);
@@ -465,7 +482,7 @@ dld_sym (handle, symbol)
 	lt_ptr_t address = dld_get_func(symbol);
 	
 	if (!address)
-		last_error = unknown_error;
+		last_error = symbol_error;
 	return address;
 }
 
@@ -504,7 +521,7 @@ wll_open (handle, filename)
 {
 	handle->handle = LoadLibrary(filename);
 	if (!handle->handle) {
-		last_error = unknown_error;
+		last_error = cannot_open_error;
 		return 1;
 	}
 	return 0;
@@ -515,7 +532,7 @@ wll_close (handle)
 	lt_dlhandle handle;
 {
 	if (FreeLibrary(handle->handle) != 0) {
-		last_error = unknown_error;
+		last_error = cannot_close_error;
 		return 1;
 	}
 	return 0;
@@ -529,7 +546,7 @@ wll_sym (handle, symbol)
 	lt_ptr_t address = GetProcAddress(handle->handle, symbol);
 	
 	if (!address)
-		last_error = unknown_error;
+		last_error = symbol_error;
 	return address;
 }
 
@@ -540,6 +557,84 @@ wll = { LTDL_TYPE_TOP, 0, wll_init, wll_exit,
 
 #undef LTDL_TYPE_TOP
 #define LTDL_TYPE_TOP &wll
+
+#endif
+
+#ifdef __BEOS__
+
+/* dynamic linking for BeOS */
+
+#include <kernel/image.h>
+
+static int
+bedl_init ()
+{
+	return 0;
+}
+
+static int
+bedl_exit ()
+{
+	return 0;
+}
+
+static int
+bedl_open (handle, filename)
+	lt_dlhandle handle;
+	const char *filename;
+{
+	image_id image = 0;
+	
+	if (filename) {
+		image = load_add_on(filename);
+	} else {
+		image_info info; 
+		int32 cookie = 0; 
+		if (get_next_image_info(0, &cookie, &info) == B_OK)
+			image = load_add_on(info.name);
+	}
+	if (image <= 0) {
+		last_error = cannot_open_error;
+		return 1;
+	}
+	handle->handle = (void*) image;
+	return 0;
+}
+
+static int
+bedl_close (handle)
+	lt_dlhandle handle;
+{
+	if (unload_add_on((image_id)handle->handle) != B_OK) {
+		last_error = cannot_close_error;
+		return 1;
+	}
+	return 0;
+}
+
+static lt_ptr_t
+bedl_sym (handle, symbol)
+	lt_dlhandle handle;
+	const char *symbol;
+{
+	lt_ptr_t address = 0;
+	image_id image = (image_id)handle->handle;
+   
+	if (get_image_symbol(image, symbol, B_SYMBOL_TYPE_ANY,
+		&address) != B_OK) {
+		last_error = symbol_error;
+		return 0;
+	}
+	return address;
+}
+
+static
+lt_dltype_t
+bedl = { LTDL_TYPE_TOP, 0, bedl_init, bedl_exit,
+	bedl_open, bedl_close, bedl_sym };
+
+#undef LTDL_TYPE_TOP
+#define LTDL_TYPE_TOP &bedl
 
 #endif
 
@@ -1440,11 +1535,12 @@ lt_dladdsearchdir (search_dir)
 	} else {
 		char	*new_search_path = (char*)
 			lt_dlmalloc(strlen(user_search_path) + 
-				strlen(search_dir) + 1);
+				strlen(search_dir) + 2); /* ':' + '\0' == 2 */
 		if (!new_search_path) {
 			last_error = memory_error;
 			return 1;
 		}
+		strcpy(new_search_path, user_search_path);
 		strcat(new_search_path, ":");
 		strcat(new_search_path, search_dir);
 		lt_dlfree(user_search_path);

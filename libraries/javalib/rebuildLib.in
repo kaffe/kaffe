@@ -1,24 +1,33 @@
-#!/bin/sh
+#! /bin/sh
 #
 # rebuildLib - rebuild everything in one sweep
 #              (without using any pre-compiled classes)
 #
-# Copyright (c) 1998
+# Copyright (c) 1998, 1999
 #      Transvirtual Technologies, Inc.  All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file.
 #
 
-SRCDIR=@srcdir@
-LIBDIR=`pwd`/lib
+SRCDIR=${srcdir-`sed -n '/^srcdir *= */ s///p' < Makefile`}
+LIBDIR=${LIBDIR-`sed -n '/^LIBDIR *= */ s///p' < Makefile`}
+LIBDIR=${LIBDIR-lib}
+TOPBLD=${top_builddir-`sed -n '/^top_builddir *= */ s///p' < Makefile`}
+
 JIKES=@JIKES@
+
+rm -rf $LIBDIR
+mkdir $LIBDIR
+LIBDIR=`cd $LIBDIR && pwd`
 
 if [ "$JIKES" = "" ] ; then
 	if [ -z "$JAVA" ]; then
 # use this if you have the memory
 # this should not cause any gc and is fastest.
-		JAVA="kaffe -ms64M -mx64M"
+		test -f ${TOPBLD}/BUILD_ENVIRONMENT &&
+		. ${TOPBLD}/BUILD_ENVIRONMENT
+		JAVA="$JAVA -ms64M -mx64M"
 # else use this.  ca. 36M seems to be the minimum at this point.
 # note that kaffe doesn't always throw out-of-memory exception may just 
 # silently deadlock if it runs out of memory.
@@ -27,14 +36,11 @@ if [ "$JIKES" = "" ] ; then
 	if [ -z "$JAVAC" ]; then
 		JAVAC="$JAVA pizza.compiler.Main"
 	fi
-	CPATH="$LIBDIR"
+	CPATH="$LIBDIR${CPATH+:$CPATH}"
 else
 	JAVAC="$JIKES"
-	CPATH="$LIBDIR:Klasses.jar"
+	CPATH="$LIBDIR${CPATH+:$CPATH}:Klasses.jar"
 fi
-
-rm -rf lib
-mkdir lib
 
 cd $SRCDIR
 

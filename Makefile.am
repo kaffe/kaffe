@@ -60,6 +60,15 @@ BUILD_ENVIRONMENT-make: Makefile
 	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}`for f in $(JAVA_LIBS); do echo "$$f" | sed 's%/[^/]*$$%%'; done | (tr '\012' '$(PATHSEP)'; echo) | sed s/.$$//`\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT; \
 	echo JAVA=$(top_builddir)/kaffe/kaffe/Kaffe$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT
 
+CLASSDIRS = libraries/javalib
+
 .PHONY: Klasses new-classes compile-classes jar-classes build-classes
 Klasses new-classes compile-classes jar-classes build-classes:
-	cd libraries/javalib && $(MAKE) $@
+	@if test "$(CLASSDIRS)" = all; then \
+	   $(MAKE) CLASSDIRS="`echo libraries/javalib \
+				    libraries/extensions/*/javalib`" $@; \
+	else \
+	  for f in $(CLASSDIRS); do \
+	    (cd $$f && $(MAKE) $@); \
+	  done; \
+	fi

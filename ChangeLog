@@ -1,3 +1,20 @@
+Wed Apr  7 18:57:18 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* aclocal.m4, ltconfig, ltmain, libltdl/*: Updated from libtool.
+	* libraries/Makefile.am (SUBDIRS): Added extensions.
+	* libraries/extensions/Makefile.am: New file.
+	* libraries/extensions/*/Makefile.am: Likewise.
+	* libraries/extensions/*/javalib/Makefile.am: Likewise.
+	* libraries/extensions/*/javalib/*.jar: Likewise.
+	* configure.in: Added extensions Makefiles.
+	* kaffe/scripts/kaffe.in (CLASSPATH): Added new jar files.
+	* Makefile.am (CLASSDIRS): New variable; can be set to `all' to
+	build all extensions jar files in addition to Klasses.jar.
+	* developers/update-class-list: Make it usable for extensions.
+	* libraries/javalib/rebuildLib.in: Likewise.
+	* libraries/javalib/Makefile.am: Use the new generic interface.
+	* acinclude.m4, configure, */Makefile.in: Rebuilt.
+
 Tue Apr  6 15:26:25 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/clib/io/FileOutputStream.c, io/RandomAccessFile.c,

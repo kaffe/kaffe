@@ -806,17 +806,25 @@ LDFLAGS="$LDFLAGS $LTLDFLAGS"
 AC_CONFIG_SUBDIRS(libltdl)
 AM_CONFIG_HEADER(config/config.h include/jtypes.h)
 AC_OUTPUT(Makefile \
-config/Makefile include/Makefile kaffe/Makefile 
-libraries/Makefile kaffe/kaffevm/Makefile \
-kaffe/kaffevm/intrp/Makefile kaffe/kaffevm/jit/Makefile kaffe/kaffevm/gcj/Makefile \
+config/Makefile \
+include/Makefile \
+kaffe/Makefile \
+libraries/Makefile \
+kaffe/kaffevm/Makefile \
+kaffe/kaffevm/intrp/Makefile \
+kaffe/kaffevm/jit/Makefile \
+kaffe/kaffevm/gcj/Makefile \
 kaffe/kaffevm/systems/Makefile \
 kaffe/kaffevm/systems/unix-jthreads/Makefile \
 kaffe/kaffevm/systems/oskit-pthreads/Makefile \
 kaffe/kaffevm/systems/linux-threads/Makefile \
 kaffe/kaffevm/systems/beos-native/Makefile \
-kaffe/kaffe/Makefile kaffe/kaffeh/Makefile \
-kaffe/man/Makefile kaffe/scripts/Makefile \
-kaffe/scripts/bat/Makefile kaffe/scripts/compat/Makefile \
+kaffe/kaffe/Makefile \
+kaffe/kaffeh/Makefile \
+kaffe/man/Makefile \
+kaffe/scripts/Makefile \
+kaffe/scripts/bat/Makefile \
+kaffe/scripts/compat/Makefile \
 libraries/javalib/Makefile \
 libraries/clib/Makefile \
 libraries/clib/native/Makefile \
@@ -827,6 +835,13 @@ libraries/clib/math/Makefile \
 libraries/clib/management/Makefile \
 libraries/clib/awt/Makefile \
 libraries/clib/awt/X/Makefile \
+libraries/extensions/Makefile \
+libraries/extensions/comm/Makefile \
+libraries/extensions/comm/javalib/Makefile \
+libraries/extensions/pjava/Makefile \
+libraries/extensions/pjava/javalib/Makefile \
+libraries/extensions/servlet/Makefile \
+libraries/extensions/servlet/javalib/Makefile \
 kaffe/man/kaffe.1 \
 libraries/javalib/rebuildLib \
 kaffe/scripts/install-jar \

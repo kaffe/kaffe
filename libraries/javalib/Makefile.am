@@ -7,10 +7,11 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file.
 #
-# Class library's are not currently part of the integrate Make cycle.
+# Class libraries are not currently part of the integrate Make cycle.
 #
 
 CLASSFILE = Klasses.jar
+SRCDIRS = java kaffe
 
 class_DATA = $(CLASSFILE) pizza.jar
 
@@ -44,8 +45,8 @@ Klasses_jar_SRCS = \
 	$(kaffe_net_SRCS) \
 	$(kaffe_net_www_protocol_SRCS) \
 	$(kaffe_net_www_protocol_file_SRCS) \
-	$(kaffe_net_www_protocol_http_SRCS) \
 	$(kaffe_net_www_protocol_ftp_SRCS) \
+	$(kaffe_net_www_protocol_http_SRCS) \
 	$(kaffe_net_www_protocol_system_SRCS) \
 	$(kaffe_text_collator_SRCS) \
 	$(kaffe_text_dateformat_SRCS) \
@@ -572,21 +573,21 @@ kaffe_io_SRCS = \
 	kaffe/io/ClassLoaderObjectInputStream.java \
 	kaffe/io/ConverterAlias.java \
 	kaffe/io/DefaultSerializationFactory.java \
+	kaffe/io/NullOutputStream.java \
 	kaffe/io/ObjectInputStreamImpl.java \
 	kaffe/io/ObjectOutputStreamImpl.java \
 	kaffe/io/ObjectStreamClassImpl.java \
 	kaffe/io/SerializationFactory.java \
-	kaffe/io/TmpFile.java \
-	kaffe/io/NullOutputStream.java
+	kaffe/io/TmpFile.java
 kaffe_jar_SRCS = \
 	kaffe/jar/ExecJar.java \
 	kaffe/jar/ExecJarName.java
 kaffe_lang_SRCS = \
+	kaffe/lang/DummyClassLoader.java \
 	kaffe/lang/MemoryAdvice.java \
 	kaffe/lang/MemoryAdviceCallback.java \
 	kaffe/lang/SystemClassLoader.java \
-	kaffe/lang/UNIXProcess.java \
-	kaffe/lang/DummyClassLoader.java
+	kaffe/lang/UNIXProcess.java
 kaffe_management_SRCS = \
 	kaffe/management/Classpath.java
 kaffe_net_SRCS = \
@@ -601,12 +602,12 @@ kaffe_net_www_protocol_SRCS = \
 kaffe_net_www_protocol_file_SRCS = \
 	kaffe/net/www/protocol/file/FileURLConnection.java \
 	kaffe/net/www/protocol/file/Handler.java
+kaffe_net_www_protocol_ftp_SRCS = \
+	kaffe/net/www/protocol/ftp/FtpURLConnection.java \
+	kaffe/net/www/protocol/ftp/Handler.java
 kaffe_net_www_protocol_http_SRCS = \
 	kaffe/net/www/protocol/http/Handler.java \
 	kaffe/net/www/protocol/http/HttpURLConnection.java
-kaffe_net_www_protocol_ftp_SRCS = \
-	kaffe/net/www/protocol/ftp/Handler.java \
-	kaffe/net/www/protocol/ftp/FtpURLConnection.java
 kaffe_net_www_protocol_system_SRCS = \
 	kaffe/net/www/protocol/system/Handler.java \
 	kaffe/net/www/protocol/system/SystemURLConnection.java
@@ -649,23 +650,25 @@ clean-hook:
 	rm -rf $(LIBDIR)
 
 .PHONY: new-classes
-new-classes: $(srcdir)/../../developers/update-class-list
-	cd $(srcdir) && $(SHELL) ../../developers/update-class-list
+new-classes: $(top_srcdir)/developers/update-class-list
+	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
+
+rebuildLib = ./rebuildLib
 
 .PHONY: compile-classes classes
 ## classes is provided for backward compatibility; use compile-classes
-compile-classes $(LIBDIR)/stamp classes: rebuildLib $(Klasses_jar_SRCS)
-	echo $(SHELL) ./rebuildLib
-	@$(SHELL) ./rebuildLib $(Klasses_jar_SRCS)
+compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
+	@echo $(SHELL) $(rebuildLib)
+	@$(SHELL) $(rebuildLib) $(Klasses_jar_SRCS)
 	@echo timestamp > $(LIBDIR)/stamp
 
 .PHONY: jar-classes
 jar-classes $(LIBDIR)/Klasses.jar: $(LIBDIR)/stamp
 	rm -f $(LIBDIR)/$(CLASSFILE)
 	cp $(srcdir)/kaffe/lang/unicode.idx $(srcdir)/kaffe/lang/unicode.tbl $(LIBDIR)/kaffe/lang
-	(cd $(LIBDIR) && $(ZIP) -r $(CLASSFILE) java kaffe)
+	(cd $(LIBDIR) && $(ZIP) -r $(CLASSFILE) $(SRCDIRS))
 
 .PHONY: build-classes Klasses
-build-classes Klasses: $(LIBDIR)/Klasses.jar
+build-classes Klasses: $(LIBDIR)/$(CLASSFILE)
 	rm -f $(srcdir)/$(CLASSFILE)
 	cp $(LIBDIR)/$(CLASSFILE) $(srcdir)/$(CLASSFILE)

@@ -8,6 +8,11 @@ modify it under the terms of the GNU Library General Public
 License as published by the Free Software Foundation; either
 version 2 of the License, or (at your option) any later version.
 
+As a special exception to the GNU Library General Public License,
+if you distribute this file as part of a program that uses GNU libtool
+to create libraries and programs, you may include it under the same
+distribution terms that you use for the rest of that program.
+
 This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
