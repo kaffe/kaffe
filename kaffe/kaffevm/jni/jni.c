@@ -61,7 +61,7 @@ KaffeJNI_addJNIref(jref obj)
 	table = THREAD_DATA()->jnireferences;
 
 	if (table->used == table->frameSize) {
-	  Kaffe_FatalError(NULL, "No more room for local references");
+	  Kaffe_FatalError(THREAD_DATA()->jniEnv, "No more room for local references");
 	}
 
 	idx = table->next;
@@ -105,7 +105,7 @@ static void NONRETURNING
 Kaffe_FatalError(JNIEnv* env UNUSED, const char* mess)
 {
 	kprintf(stderr, "FATAL ERROR: %s\n", mess);
-	exit(1);
+	exit(-1);
 }
 
 static void
@@ -181,14 +181,6 @@ Kaffe_NewGlobalRef(JNIEnv* env, jref obj)
 }
 
 static jint
-KaffeJNI_EnsureLocalCapacity(JNIEnv* env UNUSED, jint capacity)
-{
-  BEGIN_EXCEPTION_HANDLING(-1);
-
-  END_EXCEPTION_HANDLING();
-}
-
-static jint
 KaffeJNI_PushLocalFrame(JNIEnv* env UNUSED, jint capacity)
 {
   jnirefs *table;
@@ -218,6 +210,22 @@ KaffeJNI_PushLocalFrame(JNIEnv* env UNUSED, jint capacity)
   END_EXCEPTION_HANDLING();
   
   return 0;
+}
+
+static jint
+KaffeJNI_EnsureLocalCapacity(JNIEnv* env, jint capacity)
+{
+  jint ret;
+
+  BEGIN_EXCEPTION_HANDLING(-1);
+
+  if (thread_data->jnireferences->used+capacity > 
+      thread_data->jnireferences->frameSize)
+    ret = KaffeJNI_PushLocalFrame(env, capacity);
+
+  END_EXCEPTION_HANDLING();
+
+  return ret;
 }
 
 static jobject
@@ -404,7 +412,8 @@ Kaffe_ExceptionOccurred(JNIEnv* env UNUSED)
 
 	obj = thread_data->exceptObj;
 
-	ADD_REF(obj);
+	if (obj != NULL)
+	  ADD_REF(obj);
 	END_EXCEPTION_HANDLING();
 	return (obj);
 }

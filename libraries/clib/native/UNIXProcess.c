@@ -139,6 +139,7 @@ Java_kaffe_lang_UNIXProcess_forkAndExec
 	  strcpy(argv[i], argichars);
 	}
       (*env)->ReleaseStringUTFChars(env, argi, argichars);
+      (*env)->DeleteLocalRef(env, argi);
 
       if (!argv[i])
 	{
@@ -177,6 +178,7 @@ Java_kaffe_lang_UNIXProcess_forkAndExec
 	  strcpy(arge[i], envichars);
 	}
       (*env)->ReleaseStringUTFChars(env, envi, envichars);
+      (*env)->DeleteLocalRef(env, envi);
       if (!arge[i])
 	{
 	  errorInfo info;

@@ -326,6 +326,7 @@ checkException(void)
 	/* Display exception stack trace */
 	if ((e = (*global_env)->ExceptionOccurred(global_env)) == NULL)
 		return (0);
+	(*global_env)->DeleteLocalRef(global_env, e);
 	(*global_env)->ExceptionDescribe(global_env);
 	(*global_env)->ExceptionClear(global_env);
 
