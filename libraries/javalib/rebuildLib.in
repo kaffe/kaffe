@@ -19,7 +19,7 @@ LIBDIR=${LIBDIR-lib}
 TOPBLD=${top_builddir-`sed -n '/^top_builddir *= */ s///p' < Makefile`}
 
 # We now rebuild the class library using kjc and Klasses.jar.bootstrap 
-JIKES=@JIKES@
+JIKES="@JIKES@"
 : ${JAVAC_FLAGS=@JAVAC_FLAGS@}
 # JIKES=
 
