@@ -133,7 +133,7 @@ TESTS =  	HelloWorldApp.class.save 	HelloWorldApp.java 	TestIntLong.java 	TestFl
 
 EXTRA_DIST = $(TESTS)
 
-CLEANFILES = *.class *.fail *.out core *.core
+CLEANFILES = *.class *.fail *.out core *.core ExceptionTest
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
 CONFIG_CLEAN_FILES =  TestScript

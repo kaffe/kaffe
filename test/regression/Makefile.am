@@ -108,6 +108,6 @@ TESTS = \
 
 EXTRA_DIST = $(TESTS)
 
-CLEANFILES = *.class *.fail *.out core *.core
+CLEANFILES = *.class *.fail *.out core *.core ExceptionTest
 
 check-TESTS: clean TestScript
