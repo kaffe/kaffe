@@ -520,6 +520,18 @@ public class DefaultListSelectionModel implements Cloneable,
    *
    * @param firstIndex The low index of the changed range
    * @param lastIndex The high index of the changed range
+   */
+  protected void fireValueChanged(int firstIndex, int lastIndex)
+  {
+    fireValueChanged(firstIndex, lastIndex, getValueIsAdjusting());
+  }
+  
+  /**
+   * Fires a {@link ListSelectionEvent} to all the listeners of type {@link
+   * ListSelectionListener} registered with this selection model.
+   *
+   * @param firstIndex The low index of the changed range
+   * @param lastIndex The high index of the changed range
    * @param isAdjusting Whether this change is part of a seqence of adjustments
    * made to the selection, such as during interactive scrolling
    */

@@ -12,6 +12,15 @@
 
 	2004-12-31  Michael Koch  <konqueror@gmx.de>
 
+	* javax/swing/DefaultListSelectionModel.java
+	(fireValueChanged): New method.
+	
+2005-01-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2004-12-31  Michael Koch  <konqueror@gmx.de>
+
 	* javax/swing/JRootPane.java
 	(setMenuBar): Added @deprecated tag.
 	(getMenuBar): Likewise.
