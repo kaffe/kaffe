@@ -427,14 +427,26 @@ describeObject(const void* mem)
 {
 	static char buf[256];		/* BIG XXX */
 	Hjava_lang_Class* clazz;
-	char *c;
+	Hjava_lang_String* str;
+	Hjava_lang_Object* obj;
+	char* c;
+	jchar* jc;
+	int l;
 
 	int idx = GC_getObjectIndex(main_collector, mem);
 	switch (idx) {
 	case GC_ALLOC_JAVASTRING:
-		sprintf(buf, "java.lang.String `%s'", 
-			c = stringJava2C((Hjava_lang_String*)mem));
-		KFREE(c);
+
+		str = (Hjava_lang_String*)mem;
+		strcpy(buf, "java.lang.String `");
+		c = buf + strlen(buf);
+		jc = unhand(str)->value ? STRING_DATA(str) : 0;
+		l = STRING_SIZE(str);
+		while (jc && l-- > 0 && c < buf + sizeof(buf) - 2) {
+			*c++ = (char)*jc++;
+		}
+		*c++ = '\'';
+		*c = 0;
 		break;
 
 	case GC_ALLOC_CLASSOBJECT:
@@ -447,9 +459,14 @@ describeObject(const void* mem)
 	case GC_ALLOC_FINALIZEOBJECT:
 	case GC_ALLOC_REFARRAY:
 	case GC_ALLOC_PRIMARRAY:
-		clazz = (Hjava_lang_Class*)
-			((Hjava_lang_Object*)mem)->dtable->class;
-		sprintf(buf, "%s", CLASS_CNAME(clazz));
+		obj = (Hjava_lang_Object*)mem;
+		if (obj->dtable != 0) {
+			clazz = obj->dtable->class;
+			sprintf(buf, "%s", CLASS_CNAME(clazz));
+		} else {
+			sprintf(buf, "newly born %s",
+				GC_getObjectDescription(main_collector, mem));
+		}
 		break;
 		
 	/* add more? */
