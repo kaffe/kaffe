@@ -113,8 +113,6 @@ public int getHeaderFieldInt(String name, int def) {
 	}
 	catch (NumberFormatException _) {
 	}
-	catch (NullPointerException _) {
-	}
 	return (def);
 }
 
