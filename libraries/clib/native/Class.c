@@ -37,34 +37,17 @@ extern Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
  * Convert string name to class object.
  */
 struct Hjava_lang_Class*
-java_lang_Class_forName(struct Hjava_lang_String* str)
+java_lang_Class_forName(struct Hjava_lang_String* str, jbool doinit,
+	Hjava_lang_ClassLoader* loader)
 {
 	errorInfo einfo;
 	Hjava_lang_Class* clazz;
-	Hjava_lang_ClassLoader* loader;
 	Utf8Const *utf8buf;
 	char buf[MAXNAMELEN];
-        stackTraceInfo* info;
-        int i;
 
 	/* Get string and convert '.' to '/' */
 	stringJava2CBuf(str, buf, sizeof(buf));
 	classname2pathname(buf, buf);
-
-	/*
-	 * If the calling method is in a class that was loaded by a class
-	 * loader, use that class loader to find the class corresponding to
-	 * the name.  Otherwise, use the system class loader.
-	 */
-	loader = 0;
-        info = (stackTraceInfo*)buildStackTrace(0);
-        for (i = 0; info[i].meth != ENDOFSTACK; i++) {
-		info[i].meth = stacktraceFindMethod(&info[i]);
-                if (info[i].meth != 0 && info[i].meth->class != 0) {
-                	loader = info[i].meth->class->loader;
-			break;
-                }
-        }
 
 	/*
 	 * Note the following oddity: 
@@ -148,38 +131,43 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 	utf8ConstRelease(utf8buf);
 
 	/*
-	 * Note:
-	 * The JDK documentation says: "...this method attempts to locate, 
-	 * load and link the class."
-	 * 
-	 * At some point, there was some uncertainty about whether forName
-	 * would initialize the class.  Sun has clarified this as follows:
-	 * JLS 20.3.8 should state that a call to 
-	 * java.lang.Class.forName("X") causes the class named "X" to be 
-	 * initialized.
-	 *
-	 * We should note that JDK1.2 has a method 
-	 * forName(String, boolean, ClassLoader) where the boolean says whether
-	 * the class should be initialized.  forName("X") is identical to
-	 * forName("X", true, null) in that model.
-	 *
 	 * loadClass returns the class in state CSTATE_LINKED.
-	 * Processing to CSTATE_OK will initialize the class, resolve
+	 *
+	 * Processing to CSTATE_COMPLETE will initialize the class, resolve
 	 * its constants and run its static initializers.
 	 *
-	 * We are somewhat inconsistent here.  The following list lists
-	 * the functions that return or process Class objects to or for
-	 * the user, and the state in which the class is afterwards:
-	 *
-	 *	ClassLoader_defineClass0: 	returns CSTATE_PREPARED
-	 * 	ClassLoader_resolveClass0:	returns CSTATE_LINKED
-	 * 	ClassLoader_findSystemClass0:	returns CSTATE_LINKED
-	 * 	Class_forName:			returns CSTATE_COMPLETE
+	 * The option to load a class via forName without initializing it
+	 * was introduced in 1.2, presumably for the convenience of
+	 * programs such as stub compilers.
 	 */
-	if (processClass(clazz, CSTATE_COMPLETE, &einfo) == false) {
+	if (doinit && processClass(clazz, CSTATE_COMPLETE, &einfo) == false) {
 		throwError(&einfo);
 	}
 	return (clazz);
+}
+
+struct Hjava_lang_Class*
+java_lang_Class_forName0(struct Hjava_lang_String* str)
+{
+        int i;
+	Hjava_lang_ClassLoader* loader;
+	stackTraceInfo* info;
+
+        /*
+         * If the calling method is in a class that was loaded by a class
+         * loader, use that class loader to find the class corresponding to
+         * the name.  Otherwise, use the system class loader.
+         */
+        loader = 0;
+        info = (stackTraceInfo*)buildStackTrace(0);
+        for (i = 0; info[i].meth != ENDOFSTACK; i++) {
+                info[i].meth = stacktraceFindMethod(&info[i]);
+                if (info[i].meth != 0 && info[i].meth->class != 0) {
+                        loader = info[i].meth->class->loader;
+                        break;
+                }
+        }
+	return (java_lang_Class_forName(str, true, loader));
 }
 
 /*

@@ -25,7 +25,15 @@ private static final long serialVersionUID = 3206093459760846163L;
 
 private Class() { /* this class is not instantiable by the general public */ }
 
-native public static Class forName(String className) throws ClassNotFoundException;
+// NB: kaffeh does not support mangling of overloaded native methods
+// yet, pending resolution of bug #65
+native public static Class forName0(String className) throws ClassNotFoundException;
+
+public static Class forName(String className) throws ClassNotFoundException {
+	return (forName0(className));
+}
+
+native public static Class forName(String className, boolean initialize, ClassLoader loader) throws ClassNotFoundException;
 
 private String fullResourceName(String name) {
 	if (name.charAt(0) != '/') {
