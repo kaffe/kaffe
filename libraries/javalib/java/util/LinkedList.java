@@ -249,7 +249,7 @@ public class LinkedList extends AbstractSequentialList
 		try {
 			clone = (LinkedList)super.clone();
 		} catch (CloneNotSupportedException e) {
-			return null;			// should never happen
+			throw new Error();
 		}
 		clone.clear();
 		for (Iterator i = iterator(); i.hasNext(); ) {

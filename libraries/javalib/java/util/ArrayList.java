@@ -131,7 +131,7 @@ public class ArrayList extends AbstractList
 		try {
 			clone = (ArrayList)super.clone();
 		} catch (CloneNotSupportedException e) {
-			return null;			// should never happen
+			throw new Error();
 		}
 		clone.a = new Object[len];
 		System.arraycopy(a, off, clone.a, 0, len);

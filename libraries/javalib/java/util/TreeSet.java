@@ -130,7 +130,7 @@ public class TreeSet extends AbstractSet
 		try {
 			clone = (TreeSet)super.clone();
 		} catch (CloneNotSupportedException e) {
-			return null;		// should never happen
+			throw new Error();
 		}
 		if (map instanceof TreeMap) {
 			clone.map = (SortedMap)((TreeMap)map).clone();
