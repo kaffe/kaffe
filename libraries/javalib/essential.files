@@ -79,6 +79,7 @@ java/io/FileInputStream.java
 java/io/FilenameFilter.java
 java/io/FileNotFoundException.java
 java/io/FileOutputStream.java
+java/io/FilePermission.java
 java/io/FilterInputStream.java
 java/io/FilterOutputStream.java
 java/io/FilterReader.java
@@ -214,7 +215,9 @@ java/net/InetAddress.java
 java/net/Inet4Address.java
 java/net/Inet6Address.java
 java/net/InetSocketAddress.java
+java/net/JarURLConnection.java
 java/net/MalformedURLException.java
+java/net/MimeTypeMapper.java
 java/net/NetPermission.java
 java/net/NetworkInterface.java
 java/net/ProtocolException.java

@@ -18,7 +18,6 @@ gnu/java/security/x509/X500DistinguishedName.java
 java/io/CharArrayReader.java
 java/io/CharArrayWriter.java
 java/io/CharConversionException.java
-java/io/FilePermission.java
 java/io/FileReader.java
 java/io/FileWriter.java
 java/io/FilterWriter.java
@@ -61,8 +60,6 @@ java/net/BindException.java
 java/net/ConnectException.java
 java/net/HttpURLConnection.java
 java/net/InetSocketAddress.java
-java/net/JarURLConnection.java
-java/net/MimeTypeMapper.java
 java/net/MulticastSocket.java
 java/net/NetworkInterface.java
 java/net/NoRouteToHostException.java
