@@ -132,8 +132,8 @@ public class Attributes implements Cloneable, Map
     
     /**
      * General main attribute -
-     * (relative) URLs of the libraries/classpaths that the Classes in
-     * this jar file depend on.
+     * (relative) file paths of the libraries/classpaths that the Classes in
+     * this jar file depend on. Paths are separated by spaces.
      */
     public static final Name CLASS_PATH = new Name("Class-Path");
 
