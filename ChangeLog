@@ -1,3 +1,9 @@
+2005-03-20  Jeff Bailey  <jbailey@raspberryginger.com>
+
+	* kaffe/kaffevm/jit/Makefile.am,
+	kaffe/kaffevm/jit3/Makefile.am:
+	(AM_CCASFLAGS): Add the defs, and the includes.
+
 2005-03-16  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Check for tramploines.S instead of trampolines.c.

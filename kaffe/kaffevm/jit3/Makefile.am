@@ -19,7 +19,9 @@ AM_CPPFLAGS = \
 	-I$(top_builddir)/include
 
 AM_CCASFLAGS = \
-	-I$(top_builddir)/config
+	$(DEFS) \
+	$(DEFAULT_INCLUDES) \
+	$(INCLUDES)
 
 noinst_LTLIBRARIES = libengine.la
 
