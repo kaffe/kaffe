@@ -9,4 +9,6 @@ jaxp.files
 sound.files
 jsse.files
 inet.files
+imageio.files
+print.files
 

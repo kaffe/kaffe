@@ -133,6 +133,10 @@ Klasses_jar_SRCS = \
 	$(java_util_regex_SRCS) \
 	$(java_util_zip_SRCS) \
 	$(javax_accessibility_SRCS) \
+	$(javax_imageio_SRCS) \
+	$(javax_imageio_event_SRCS) \
+	$(javax_imageio_spi_SRCS) \
+	$(javax_imageio_stream_SRCS) \
 	$(javax_naming_SRCS) \
 	$(javax_naming_directory_SRCS) \
 	$(javax_naming_event_SRCS) \
@@ -140,6 +144,10 @@ Klasses_jar_SRCS = \
 	$(javax_naming_spi_SRCS) \
 	$(javax_net_SRCS) \
 	$(javax_net_ssl_SRCS) \
+	$(javax_print_SRCS) \
+	$(javax_print_attribute_SRCS) \
+	$(javax_print_attribute_standard_SRCS) \
+	$(javax_print_event_SRCS) \
 	$(javax_rmi_SRCS) \
 	$(javax_rmi_CORBA_SRCS) \
 	$(javax_security_auth_x500_SRCS) \
@@ -202,7 +210,9 @@ Klasses_jar_SRCS = \
 	$(org_xml_sax_helpers_SRCS)
 gnu_classpath_SRCS = \
 	gnu/classpath/Configuration.java \
-	gnu/classpath/RawData.java
+	gnu/classpath/RawData.java \
+	gnu/classpath/ServiceFactory.java \
+	gnu/classpath/ServiceProviderLoadingAction.java
 gnu_inet_ftp_SRCS = \
 	gnu/inet/ftp/ActiveModeDTP.java \
 	gnu/inet/ftp/BlockInputStream.java \
@@ -1761,6 +1771,29 @@ javax_accessibility_SRCS = \
 	javax/accessibility/AccessibleTableModelChange.java \
 	javax/accessibility/AccessibleText.java \
 	javax/accessibility/AccessibleValue.java
+javax_imageio_SRCS = \
+	javax/imageio/IIOException.java \
+	javax/imageio/ImageReader.java \
+	javax/imageio/ImageTranscoder.java \
+	javax/imageio/ImageWriter.java
+javax_imageio_event_SRCS = \
+	javax/imageio/event/IIOReadProgressListener.java \
+	javax/imageio/event/IIOReadUpdateListener.java \
+	javax/imageio/event/IIOReadWarningListener.java \
+	javax/imageio/event/IIOWriteProgressListener.java \
+	javax/imageio/event/IIOWriteWarningListener.java
+javax_imageio_spi_SRCS = \
+	javax/imageio/spi/IIOServiceProvider.java \
+	javax/imageio/spi/ImageInputStreamSpi.java \
+	javax/imageio/spi/ImageOutputStreamSpi.java \
+	javax/imageio/spi/ImageReaderWriterSpi.java \
+	javax/imageio/spi/ImageTranscoderSpi.java \
+	javax/imageio/spi/RegisterableService.java \
+	javax/imageio/spi/ServiceRegistry.java
+javax_imageio_stream_SRCS = \
+	javax/imageio/stream/IIOByteBuffer.java \
+	javax/imageio/stream/ImageInputStream.java \
+	javax/imageio/stream/ImageOutputStream.java
 javax_naming_SRCS = \
 	javax/naming/AuthenticationException.java \
 	javax/naming/AuthenticationNotSupportedException.java \
@@ -1891,6 +1924,122 @@ javax_net_ssl_SRCS = \
 	javax/net/ssl/TrustManager.java \
 	javax/net/ssl/X509KeyManager.java \
 	javax/net/ssl/X509TrustManager.java
+javax_print_SRCS = \
+	javax/print/AttributeException.java \
+	javax/print/CancelablePrintJob.java \
+	javax/print/DocFlavor.java \
+	javax/print/Doc.java \
+	javax/print/DocPrintJob.java \
+	javax/print/FlavorException.java \
+	javax/print/MultiDoc.java \
+	javax/print/MultiDocPrintJob.java \
+	javax/print/MultiDocPrintService.java \
+	javax/print/PrintException.java \
+	javax/print/PrintService.java \
+	javax/print/PrintServiceLookup.java \
+	javax/print/ServiceUIFactory.java \
+	javax/print/StreamPrintService.java \
+	javax/print/URIException.java
+javax_print_attribute_SRCS = \
+	javax/print/attribute/Attribute.java \
+	javax/print/attribute/AttributeSet.java \
+	javax/print/attribute/AttributeSetUtilities.java \
+	javax/print/attribute/DateTimeSyntax.java \
+	javax/print/attribute/DocAttribute.java \
+	javax/print/attribute/DocAttributeSet.java \
+	javax/print/attribute/EnumSyntax.java \
+	javax/print/attribute/HashAttributeSet.java \
+	javax/print/attribute/HashDocAttributeSet.java \
+	javax/print/attribute/HashPrintJobAttributeSet.java \
+	javax/print/attribute/HashPrintRequestAttributeSet.java \
+	javax/print/attribute/HashPrintServiceAttributeSet.java \
+	javax/print/attribute/IntegerSyntax.java \
+	javax/print/attribute/PrintJobAttribute.java \
+	javax/print/attribute/PrintJobAttributeSet.java \
+	javax/print/attribute/PrintRequestAttribute.java \
+	javax/print/attribute/PrintRequestAttributeSet.java \
+	javax/print/attribute/PrintServiceAttribute.java \
+	javax/print/attribute/PrintServiceAttributeSet.java \
+	javax/print/attribute/ResolutionSyntax.java \
+	javax/print/attribute/SetOfIntegerSyntax.java \
+	javax/print/attribute/Size2DSyntax.java \
+	javax/print/attribute/SupportedValuesAttribute.java \
+	javax/print/attribute/TextSyntax.java \
+	javax/print/attribute/UnmodifiableSetException.java \
+	javax/print/attribute/URISyntax.java
+javax_print_attribute_standard_SRCS = \
+	javax/print/attribute/standard/ColorSupported.java \
+	javax/print/attribute/standard/Compression.java \
+	javax/print/attribute/standard/Copies.java \
+	javax/print/attribute/standard/CopiesSupported.java \
+	javax/print/attribute/standard/DateTimeAtCompleted.java \
+	javax/print/attribute/standard/DateTimeAtCreation.java \
+	javax/print/attribute/standard/DateTimeAtProcessing.java \
+	javax/print/attribute/standard/DocumentName.java \
+	javax/print/attribute/standard/Fidelity.java \
+	javax/print/attribute/standard/Finishings.java \
+	javax/print/attribute/standard/JobHoldUntil.java \
+	javax/print/attribute/standard/JobImpressionsCompleted.java \
+	javax/print/attribute/standard/JobImpressions.java \
+	javax/print/attribute/standard/JobImpressionsSupported.java \
+	javax/print/attribute/standard/JobKOctets.java \
+	javax/print/attribute/standard/JobKOctetsProcessed.java \
+	javax/print/attribute/standard/JobKOctetsSupported.java \
+	javax/print/attribute/standard/JobMediaSheetsCompleted.java \
+	javax/print/attribute/standard/JobMediaSheets.java \
+	javax/print/attribute/standard/JobMediaSheetsSupported.java \
+	javax/print/attribute/standard/JobMessageFromOperator.java \
+	javax/print/attribute/standard/JobName.java \
+	javax/print/attribute/standard/JobOriginatingUserName.java \
+	javax/print/attribute/standard/JobPriority.java \
+	javax/print/attribute/standard/JobPrioritySupported.java \
+	javax/print/attribute/standard/JobSheets.java \
+	javax/print/attribute/standard/JobState.java \
+	javax/print/attribute/standard/JobStateReason.java \
+	javax/print/attribute/standard/JobStateReasons.java \
+	javax/print/attribute/standard/Media.java \
+	javax/print/attribute/standard/MediaSizeName.java \
+	javax/print/attribute/standard/MultipleDocumentHandling.java \
+	javax/print/attribute/standard/NumberOfDocuments.java \
+	javax/print/attribute/standard/NumberOfInterveningJobs.java \
+	javax/print/attribute/standard/NumberUp.java \
+	javax/print/attribute/standard/NumberUpSupported.java \
+	javax/print/attribute/standard/OrientationRequested.java \
+	javax/print/attribute/standard/OutputDeviceAssigned.java \
+	javax/print/attribute/standard/PageRanges.java \
+	javax/print/attribute/standard/PagesPerMinuteColor.java \
+	javax/print/attribute/standard/PagesPerMinute.java \
+	javax/print/attribute/standard/PDLOverrideSupported.java \
+	javax/print/attribute/standard/PresentationDirection.java \
+	javax/print/attribute/standard/PrinterInfo.java \
+	javax/print/attribute/standard/PrinterIsAcceptingJobs.java \
+	javax/print/attribute/standard/PrinterLocation.java \
+	javax/print/attribute/standard/PrinterMakeAndModel.java \
+	javax/print/attribute/standard/PrinterMessageFromOperator.java \
+	javax/print/attribute/standard/PrinterMoreInfo.java \
+	javax/print/attribute/standard/PrinterMoreInfoManufacturer.java \
+	javax/print/attribute/standard/PrinterName.java \
+	javax/print/attribute/standard/PrinterResolution.java \
+	javax/print/attribute/standard/PrinterState.java \
+	javax/print/attribute/standard/PrinterStateReason.java \
+	javax/print/attribute/standard/PrinterStateReasons.java \
+	javax/print/attribute/standard/PrinterURI.java \
+	javax/print/attribute/standard/PrintQuality.java \
+	javax/print/attribute/standard/QueuedJobCount.java \
+	javax/print/attribute/standard/ReferenceUriSchemesSupported.java \
+	javax/print/attribute/standard/RequestingUserName.java \
+	javax/print/attribute/standard/Severity.java \
+	javax/print/attribute/standard/SheetCollate.java \
+	javax/print/attribute/standard/Sides.java
+javax_print_event_SRCS = \
+	javax/print/event/PrintEvent.java \
+	javax/print/event/PrintJobAdapter.java \
+	javax/print/event/PrintJobAttributeEvent.java \
+	javax/print/event/PrintJobAttributeListener.java \
+	javax/print/event/PrintJobEvent.java \
+	javax/print/event/PrintJobListener.java \
+	javax/print/event/PrintServiceAttributeEvent.java \
+	javax/print/event/PrintServiceAttributeListener.java
 javax_rmi_SRCS = \
 	javax/rmi/BAD_OPERATION.java \
 	javax/rmi/ORB.java \
