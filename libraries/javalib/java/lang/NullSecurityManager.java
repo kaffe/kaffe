@@ -15,9 +15,9 @@ import java.lang.Thread;
 import java.lang.Class;
 import java.lang.SecurityManager;
 import java.net.InetAddress;
+import java.security.Permission;
 
-class NullSecurityManager 
-  extends SecurityManager {
+class NullSecurityManager extends SecurityManager {
 
 NullSecurityManager() {
 }
@@ -71,6 +71,12 @@ public void checkPackageAccess(String pkg) {
 }
 
 public void checkPackageDefinition(String pkg) {
+}
+
+public void checkPermission(Permission perm) {
+}
+
+public void checkPermission(Permission perm, Object context) {
 }
 
 public void checkPrintJobAccess() {

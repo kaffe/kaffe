@@ -14,10 +14,16 @@ import java.io.FileDescriptor;
 import java.lang.Thread;
 import java.lang.Class;
 import java.net.InetAddress;
+import java.security.Permission;
 
-abstract public class SecurityManager {
+public abstract class SecurityManager {
 
-protected SecurityManager() {
+public SecurityManager() {
+	SecurityManager current = System.getSecurityManager();
+	if (current != null) {
+		current.checkPermission(
+			new RuntimePermission("createSecurityManager"));
+	}
 }
 
 public void checkAccept(String host, int port) {
@@ -85,6 +91,14 @@ public void checkPackageAccess(String pkg) {
 }
 
 public void checkPackageDefinition(String pkg) {
+	throw new SecurityException();
+}
+
+public void checkPermission(Permission perm) {
+	throw new SecurityException();
+}
+
+public void checkPermission(Permission perm, Object context) {
 	throw new SecurityException();
 }
 
