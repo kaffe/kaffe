@@ -694,7 +694,8 @@ public class SimpleTimeZone extends TimeZone
 	boolean afterStart = ! isBefore(year, month, day, dayOfWeek, millis,
 	                                startMode, startMonth, startDay,
 	                                startDayOfWeek, startTime);
-	boolean beforeEnd = isBefore(year, month, day, dayOfWeek, millis,
+	boolean beforeEnd = isBefore(year, month, day, dayOfWeek,
+				     millis + dstSavings,
 	                             endMode, endMonth, endDay, endDayOfWeek,
 	                             endTime);
 

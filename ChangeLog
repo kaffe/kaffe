@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-20  Mark Wielaard  <mark@klomp.org>
+
+        * java/util/SimpleTimeZone.java (getOffset): Calculate beforeEnd by
+        taking dstSavings into account.
+
+2005-02-20  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-20  Rutger Ovidius  <ovidr@users.sourceforge.net>
 
         * gnu/java/security/provider/Gnu.java (Gnu): Add SHA-160 alias.
