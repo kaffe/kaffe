@@ -1392,3 +1392,32 @@ void jthread_relaxstack(int yes)
 #endif
     }
 }
+
+/**
+ * Test whether an address is on the stack of the calling thread.
+ *
+ * @param p the address to check
+ *
+ * @return true if address is on the stack
+ *
+ * Needed for locking and for exception handling.
+ */
+bool jthread_on_current_stack(void* p)
+{
+  jthread_t nt = jthread_current();
+
+DBG(JTHREADDETAIL, dprintf("on current stack: base=%p size=%ld bp=%p",
+                        nt->stackMin,
+                        (long)((char *)nt->stackMax - (char *)nt->stackMin),
+                        p); )
+
+  if (nt == 0 || (p > nt->stackMin && p < nt->stackMax)) {
+DBG(JTHREADDETAIL, dprintf(" yes\n"); )
+        return (true);
+  }
+  else {
+DBG(JTHREADDETAIL, dprintf(" no\n"); )
+        return (false);
+  }
+}
+

@@ -1,5 +1,14 @@
 2004-10-12  Dalibor Topic <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h
+	(jthread_on_current_stack): De-inlined to fix compiler
+	warnings.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthread_on_current_stack): Moved over here.
+
+2004-10-12  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/jar.c (initJarEntry, getCentralDirCount,
 	getDataJarFile, openJarFile): Cast second parameter of
 	jarSeek to off_t to fix warnings on platforms with 

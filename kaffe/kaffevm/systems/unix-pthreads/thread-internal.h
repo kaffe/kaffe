@@ -185,25 +185,7 @@ threadData *jthread_get_data(jthread_t tid)
  *
  * Needed for locking and for exception handling.
  */
-static inline
-bool jthread_on_current_stack(void* p)
-{
-  jthread_t nt = jthread_current();
-	  
-DBG(JTHREADDETAIL, dprintf("on current stack: base=%p size=%ld bp=%p",
-			nt->stackMin,
-		       	(long)((char *)nt->stackMax - (char *)nt->stackMin),
-			p); )
-
-  if (nt == 0 || (p > nt->stackMin && p < nt->stackMax)) {
-DBG(JTHREADDETAIL, dprintf(" yes\n"); )
-	return (true);
-  }
-  else {
-DBG(JTHREADDETAIL, dprintf(" no\n"); )
-	return (false);
-  }
-}
+bool jthread_on_current_stack(void* p);
 
 /**
  * Check for room on stack.
