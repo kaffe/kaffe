@@ -117,20 +117,23 @@ private static int getDefaultPort(String protocol)
 {
 	int port;
 
-	if (protocol == "ftp") {
+	if (protocol.equals("ftp")) {
 		port = 21;
 	}
-	else if (protocol == "telnet") {
+	else if (protocol.equals("telnet")) {
 		port = 23;
 	}
-	else if (protocol == "gopher") {
+	else if (protocol.equals("gopher")) {
 		port = 70;
 	}
-	else if (protocol == "http") {
+	else if (protocol.equals("http")) {
 		port = 80;
 	}
-	else if (protocol == "news") {
+	else if (protocol.equals("news")) {
 		port = 119;
+	}
+	else if (protocol.equals("smtp")) {
+		port = 25;
 	}
 	else {
 		port = 0;

@@ -2,6 +2,8 @@ Wed Sep  2 18:04:36 1998  Archie Cobbs <archie@whistle.com>
 
 	* libraries/clib/awt/X/img.c: fix bug in countAlphas()
 	* libraries/clib/awt/X/{img,gra}.c: eliminate compiler warnings
+	* libraries/javalib/java/net/InetAddress.java,
+	libraries/javalib/java/net/URL.java: don't compare strings with ==
 	* Klasses.jar: regenerate derived file
 
 Wed Sep  2 16:44:09 PDT 1998	Tim Wilkinson <tim@transvirtual.com>

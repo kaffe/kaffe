@@ -100,7 +100,7 @@ public static synchronized InetAddress[] getAllByName(String host) throws Unknow
 
 public static synchronized InetAddress getByName(String host) throws UnknownHostException
 {
-	if (host == null || host == "") {
+	if (host == null || host.length() == 0) {
 		return (localAddress);
 	}
 	else {
