@@ -1,5 +1,11 @@
 2005-01-26  Dalibor Topic  <robilad@kaffe.org>
 
+        * java/text/DecimalFormatSymbols.java: Resynced with GNU Classpath.
+
+	Reported by:  Mark Wielaard  <mark@klomp.org>
+
+2005-01-26  Dalibor Topic  <robilad@kaffe.org>
+
         Resynced with GNU Classpath.
 
 	2005-01-25  Ito Kazumitsu  <kaz@maczuka.gcd.org>
