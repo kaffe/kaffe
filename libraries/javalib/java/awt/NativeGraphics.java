@@ -1,10 +1,4 @@
-package java.awt;
-
-import java.awt.image.ImageObserver;
-
-import kaffe.util.Ptr;
-
-/**
+/*
  * NativeGraphics - concrete, hidden implementation of abstract Graphics
  *
  * The approach of using an abstract Graphics with a concrete NativeGraphics
@@ -26,11 +20,20 @@ import kaffe.util.Ptr;
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2004
+ * 	The Kaffe.org's developers. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  *
  * @author P.C.Mehlitz
  */
+
+package java.awt;
+
+import java.awt.image.ImageObserver;
+import kaffe.util.Ptr;
+
 class NativeGraphics
   extends Graphics
 {
@@ -43,7 +46,9 @@ class NativeGraphics
 	int xClip;
 	int yClip;
 	int wClip;
+	int wClipDefault;
 	int hClip;
+	int hClipDefault;
 	Color xClr;
 /*
  * this field can be used to link a Graphics object to a non-native
@@ -389,9 +394,13 @@ public Shape getClip (){
 	return (getClipRect());
 }
 
-public Rectangle getClipBounds() {
-	// Another return object which is modified by Swing, causing more garbage <sigh>
-	return (new Rectangle( xClip, yClip, wClip, hClip));
+public Rectangle getClipBounds(Rectangle rect) {
+	rect.x = xClip;
+	rect.y = yClip;
+	rect.width = wClip;
+	rect.height = hClip;
+
+	return rect;
 }
 
 int getClipHeight () {
@@ -545,7 +554,9 @@ static NativeGraphics getGraphics ( Object target, Ptr tgtData, int tgtType,
 	g.xClip  = xClip;
 	g.yClip  = yClip;
 	g.wClip  = wClip;
+	g.wClipDefault = wClip;
 	g.hClip = hClip;
+	g.hClipDefault = hClip;
 	g.font     = fnt;
 	g.fgClr    = fg;
 	g.bgClr    = bg;
@@ -627,8 +638,14 @@ void setBackColor ( Color clr ){
 }
 
 public void setClip ( Shape clip ){
-	Rectangle r = clip.getBounds();
-	setClip( r.x, r.y, r.width, r.height);
+	if ( clip != null ) {
+		Rectangle r = clip.getBounds();
+		setClip( r.x, r.y, r.width, r.height);
+	} else if ( target != null) {
+		setClip( 0, 0, target.width, target.height );
+	} else {
+		setClip( 0, 0, wClipDefault, hClipDefault );
+	}
 }
 
 public void setClip ( int x, int y, int width, int height ) {

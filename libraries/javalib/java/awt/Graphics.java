@@ -1,8 +1,4 @@
-package java.awt;
-
-import java.awt.image.ImageObserver;
-
-/**
+/*
  * Graphics - abstract draw object
  *
  * Note that this had to be changed into an abstract class with *some*
@@ -12,11 +8,19 @@ import java.awt.image.ImageObserver;
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2004
+ *	The Kaffe.org's developers. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  *
  * @author P.C.Mehlitz
  */
+
+package java.awt;
+
+import java.awt.image.ImageObserver;
+
 abstract public class Graphics
 {
 protected Graphics () {
@@ -171,7 +175,12 @@ Color getBackColor () {
 
 abstract public Shape getClip ();
 
-abstract public Rectangle getClipBounds();
+public Rectangle getClipBounds() {
+	// Another return object which is modified by Swing, causing more garbage
+	return (getClipBounds(new Rectangle()));
+}
+
+abstract public Rectangle getClipBounds(Rectangle rect);
 
 int getClipHeight () {
 	// this is only here to be resolved in concrete subclasses

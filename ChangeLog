@@ -1,3 +1,23 @@
+2004-07-07  Jim Huang <jserv@kaffe.org>
+
+ 	* libraries/javalib/java/awt/Graphics.java:
+ 	* libraries/javalib/java/awt/Image.java:
+ 	* libraries/javalib/java/awt/NativeGraphics.java:
+ 	* libraries/javalib/java/awt/PSGraphics.java:
+ 	Adapt the AWT clipping fixing patch from 
+ 	Benja Fallenstein <b.fallenstein@gmx.de>.
+ 	Update the copyright notice.
+ 
+ 	* libraries/javalib/java/awt/event/MouseEvent.java
+ 	(MouseEvent)
+ 	(getButton):
+ 	Adapt the Java 1.4 features to java.awt.event.MouseEvent
+ 	patch from Benja Fallenstein <b.fallenstein@gmx.de>.
+ 	This only affects MouseEvent via making the old 
+ 	constructor do the work of figuring out which button 
+ 	it is from the modifiers list.
+ 	Update the copyright notice.
+ 
 2004-07-07  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* WHATNEW: Added some news line.

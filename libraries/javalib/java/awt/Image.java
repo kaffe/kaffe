@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 1998
+ *    Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * Copyright (c) 2004
+ *	The Kaffe.org's developers. See ChangeLog for details.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ *
+ * @author P.C.Mehlitz
+ */
+
 package java.awt;
 
 import java.awt.image.ImageObserver;
@@ -12,15 +25,6 @@ import java.util.Vector;
 import kaffe.util.Ptr;
 import kaffe.util.VectorSnapshot;
 
-/**
- * Copyright (c) 1998
- *    Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- *
- * @author P.C.Mehlitz
- */
 public class Image
 {
 	Ptr nativeData;
@@ -268,7 +272,6 @@ static Image getUnknownImage (){
 }
 
 public synchronized int getWidth ( ImageObserver observer ) {
-	System.err.println("getWidth()="+width + " producer="+producer);
 	if ( (flags & ImageObserver.WIDTH) != 0 ) {
 		return (width);
 	}
@@ -353,8 +356,6 @@ synchronized void stateChange(int flags, int x, int y, int w, int h) {
 	ImageObserver obs;
 
 	this.flags |= flags;
-
-	System.err.println("producer="+producer + " flags="+this.flags);
 
 	if (observers == null) {
 		return;

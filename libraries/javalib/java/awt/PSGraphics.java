@@ -1,3 +1,18 @@
+/*
+ * class PSGraphics - a PrintGraphics PostScript implementation
+ *
+ * Copyright (c) 1998
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * Copyright (c) 2004
+ *	The Kaffe.org's developers. See ChangeLog for details.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ *
+ * @author J.Mehlitz
+ */
+
 package java.awt;
 
 import java.awt.image.ColorModel;
@@ -9,17 +24,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Hashtable;
 
-/**
- * class PSGraphics - a PrintGraphics PostScript implementation
- *
- * Copyright (c) 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- *
- * @author J.Mehlitz
- */
 public class PSGraphics
   extends Graphics
   implements PrintGraphics
@@ -276,7 +280,11 @@ public Shape getClip (){
 }
 
 public Rectangle getClipBounds() {
-	return null;
+        return null;
+}
+
+public Rectangle getClipBounds(Rectangle rect) {
+        return rect;
 }
 
 public Color getColor() {
