@@ -2544,6 +2544,10 @@ define_insn(INVOKEVIRTUAL)
 		pop(method_nargs() + 1);
 		METHOD_RETURN_VALUE();
 	}
+	else if (method_class()->accflags & ACC_INTERFACE) {
+		softcall_incompatibleclasschange(method_classname(),
+						 method_name());
+	}
 	else {
 		int is_virtual = method_method()->idx >= 0;
 		if (is_virtual) {
@@ -2627,6 +2631,10 @@ define_insn(INVOKESPECIAL)
 		low = method_returntype();
 		pop(method_nargs() + 1);
 		METHOD_RETURN_VALUE();
+	}
+	else if (method_class()->accflags & ACC_INTERFACE) {
+		softcall_incompatibleclasschange(method_classname(),
+						 method_name());
 	}
 	else {
 		idx = method_nargs();
@@ -2729,6 +2737,10 @@ define_insn(INVOKEINTERFACE)
 		low = method_returntype();
 		pop((uint8)getpc(2));
 		METHOD_RETURN_VALUE();
+	}
+	else if (!(method_class()->accflags & ACC_INTERFACE)) {
+		softcall_incompatibleclasschange(method_classname(),
+						 method_name());
 	}
 	else {
 		idx = (uint8)getpc(2) - 1;

@@ -39,6 +39,9 @@
 #include "lerrno.h"
 #include "support.h"		/* XXX: for currentTime */
 #include "md.h"
+#include "threadData.h"
+
+#include <sys/resource.h>
 
 #define  NOTIMEOUT                       0
 #if defined (HAVE_SYS_POLL_H) || defined(HAVE_POLL_H)
@@ -66,30 +69,49 @@
 
 #include "lock-impl.h"
 
+/* thread status */
+#define THREAD_SUSPENDED                0
+#define THREAD_RUNNING                  1
+#define THREAD_DEAD                     2
+
+/* thread flags */
+#define THREAD_FLAGS_GENERAL            0
+#define THREAD_FLAGS_NOSTACKALLOC       1   /* this flag is not used anymore */
+#define THREAD_FLAGS_KILLED             2
+#define THREAD_FLAGS_ALARM              4
+#define THREAD_FLAGS_EXITING        	8
+#define THREAD_FLAGS_DONTSTOP        	16
+#define THREAD_FLAGS_DYING        	32
+#define THREAD_FLAGS_BLOCKEDEXTERNAL	64
+#define THREAD_FLAGS_INTERRUPTED	128
+#define THREAD_FLAGS_WAIT_MUTEX		256
+#define THREAD_FLAGS_WAIT_CONDVAR	512
+
 /*
  * This is our internal structure representing the "native" threads.
  * This used to be called "ctx".
  */
 typedef struct _jthread {
+	threadData			localData;
 	unsigned char			status;
 	unsigned char			priority;
 	void*				restorePoint;
 	void*				stackBase;
 	void*				stackEnd;
+	void*				suspender;
+	unsigned int			suspendCount;
 	jlong				time;
+	jlong				startUsed;
+	jlong				totalUsed;
 	struct _jthread*		nextQ;
 	struct _jthread*		nextlive;
 	struct _jthread*		nextalarm;
 	struct _jthread**		blockqueue;
-	unsigned char			flags;
+	unsigned long			flags;
 	void				(*func)(void *);
 	int				daemon;
 	int				stopCounter;
 
-	/* this one is simply thread specific data, or a cookie -
-	 * used to hold the current Java thread
-	 */
-	void*				jlThread;
 	JTHREAD_JMPBUF			env;
 #if defined(SAVED_FP_SIZE)
 	char				fpstate[SAVED_FP_SIZE];
@@ -342,10 +364,10 @@ void jthread_dumpthreadinfo(jthread_t tid);
 /*
  * return thread-specific data for a given jthread
  */
-static inline void*
-jthread_getcookie(jthread_t tid) 
+static inline threadData*
+jthread_get_data(jthread_t tid) 
 {
-	return (tid->jlThread);
+	return (&tid->localData);
 }
 
 /*
@@ -383,6 +405,61 @@ static inline
 void jthread_spinoff(void *arg)
 {
 	jthread_unsuspendall();
+}
+
+void jthread_suspend(jthread_t jt, void *suspender);
+void jthread_resume(jthread_t jt, void *suspender);
+
+jthread_t jthread_from_data(threadData *td, void *suspender);
+
+static inline
+jlong jthread_get_usage(jthread_t jt)
+{
+	jlong retval;
+	
+	if( jt == jthread_current() )
+	{
+		struct rusage ru;
+		jlong ct;
+		
+		getrusage(RUSAGE_SELF, &ru);
+		ct = ((jlong)ru.ru_utime.tv_sec * 1000)
+			+ ((jlong)ru.ru_utime.tv_usec / (jlong)1000);
+		ct += ((jlong)ru.ru_stime.tv_sec * 1000)
+			+ ((jlong)ru.ru_stime.tv_usec / (jlong)1000);
+
+		retval = jt->totalUsed + (ct - jt->startUsed);
+	}
+	else
+	{
+		retval = jt->totalUsed;
+	}
+	retval *= 1000; /* Convert to nanos */
+	return( retval );
+}
+
+static inline
+int jthread_get_status(jthread_t jt)
+{
+	return( jt->status );
+}
+
+static inline
+int jthread_is_interrupted(jthread_t jt)
+{
+	return( jt->flags & THREAD_FLAGS_INTERRUPTED );
+}
+
+static inline
+int jthread_on_mutex(jthread_t jt)
+{
+	return( jt->flags & THREAD_FLAGS_WAIT_MUTEX );
+}
+
+static inline
+int jthread_on_condvar(jthread_t jt)
+{
+	return( jt->flags & THREAD_FLAGS_WAIT_CONDVAR );
 }
 
 #endif

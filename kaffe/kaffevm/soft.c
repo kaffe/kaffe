@@ -536,6 +536,18 @@ soft_nosuchfield(Utf8Const* c, Utf8Const* n)
 }
 
 /*
+ * soft_incompatibleclasschange.
+ */
+void
+soft_incompatibleclasschange(Utf8Const *c, Utf8Const* n)
+{
+	char buf[256];
+
+	sprintf(buf, "%.100s.%.100s", c->data, n->data);
+	throwException(IncompatibleClassChangeError(buf));
+}
+
+/*
  * soft_initialise_class.
  */
 void

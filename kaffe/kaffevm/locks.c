@@ -23,6 +23,7 @@
 #include "jthread.h"
 #include "debug.h"
 #include "gc.h"
+#include "jvmpi_kaffe.h"
 
 /*
  * If we don't have an atomic compare and exchange defined then make
@@ -475,12 +476,42 @@ unlockObject(Hjava_lang_Object* obj)
 void
 slowLockObject(Hjava_lang_Object* obj, void* where)
 {
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_CONTENDED_ENTER) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_MONITOR_CONTENDED_ENTER;
+		ev.u.monitor.object = obj;
+		jvmpiPostEvent(&ev);
+	}
+#endif
 	slowLockMutex(&obj->lock, where, 0);
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_CONTENDED_ENTERED) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_MONITOR_CONTENDED_ENTERED;
+		ev.u.monitor.object = obj;
+		jvmpiPostEvent(&ev);
+	}
+#endif
 }
 
 void
 slowUnlockObject(Hjava_lang_Object* obj, void* where)
 {
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_CONTENDED_EXIT) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_MONITOR_CONTENDED_EXIT;
+		ev.u.monitor.object = obj;
+		jvmpiPostEvent(&ev);
+	}
+#endif
 	slowUnlockMutex(&obj->lock, where, 0);
 }
 

@@ -41,6 +41,7 @@ extern void jmutex_destroy(jmutex *lock);
 extern void jcondvar_initialise(jcondvar *cv);
 extern jboolean jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout);
 extern void jcondvar_signal(jcondvar *cv, jmutex *lock);
+extern void jcondvar_broadcast(jcondvar *cv, jmutex *lock);
 extern void jcondvar_destroy(jcondvar *lock);
 
 #endif /* __lock_impl_h */

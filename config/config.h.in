@@ -9,6 +9,9 @@
 /* Define default KAFFEHOME */
 #undef DEFAULT_KAFFEHOME
 
+/* JVM Profiling Interface */
+#undef ENABLE_JVMPI
+
 /* Define to 1 if you have the `alarm' function. */
 #undef HAVE_ALARM
 

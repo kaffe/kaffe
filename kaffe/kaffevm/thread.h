@@ -53,6 +53,8 @@ extern	jbool deadlockDetection;
 
 #define THREAD_NATIVE()         ((void*)jthread_current())
 
+#define THREAD_JNIENV()         (&jthread_get_data(jthread_current())->jniEnv)
+
 #if !defined(KAFFEH)
 /*
  * Inject the ThreadInterface implementation header.

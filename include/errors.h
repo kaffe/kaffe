@@ -90,7 +90,7 @@ extern void dumpErrorInfo(errorInfo *);
 #define OutOfMemoryError NEW_LANG_EXCEPTION(OutOfMemoryError)
 #define UnsatisfiedLinkError NEW_LANG_EXCEPTION(UnsatisfiedLinkError)
 #define VirtualMachineError NEW_LANG_EXCEPTION(VirtualMachineError)
-#define IncompatibleClassChangeError NEW_LANG_EXCEPTION(IncompatibleClassChangeError)
+#define IncompatibleClassChangeError(M) NEW_LANG_EXCEPTION_MESSAGE(IncompatibleClassChangeError, M)
 #define IllegalAccessError NEW_LANG_EXCEPTION(IllegalAccessError)
 #define NegativeArraySizeException NEW_LANG_EXCEPTION(NegativeArraySizeException)
 #define ClassCastException(M) NEW_LANG_EXCEPTION_MESSAGE(ClassCastException, M)

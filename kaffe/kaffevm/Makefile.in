@@ -86,6 +86,8 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ENABLE_JVMPI_FALSE = @ENABLE_JVMPI_FALSE@
+ENABLE_JVMPI_TRUE = @ENABLE_JVMPI_TRUE@
 ENABLE_XPROF_FALSE = @ENABLE_XPROF_FALSE@
 ENABLE_XPROF_TRUE = @ENABLE_XPROF_TRUE@
 ENGINE_NAME = @ENGINE_NAME@
@@ -252,7 +254,7 @@ EXTRA_DIST = \
 	systems/win32/winthread.c \
 	systems/win32/winthread.h
 
-AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/xprof
+AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/jvmpi -I$(top_srcdir)/kaffe/xprof
 
 native_LTLIBRARIES = libkaffevm.la
 

@@ -15,6 +15,7 @@
 #include <semaphore.h>
 
 #include "gtypes.h"
+#include "threadData.h"
 
 #if !defined(STACKREDZONE)
 #define STACKREDZONE    8192
@@ -41,12 +42,10 @@ typedef enum {
  * enumeration, and inter-thread suspend)
  */
 typedef struct _nativeThread {
+  threadData            data;
   /* these are our links to the native pthread implementation */
   pthread_t             tid;
   pthread_attr_t        attr;
-
-  /* this is our Java Thread object */
-  void			*jlThread;
 
   /* wether this is a daemon thread */
   int			daemon;
@@ -146,9 +145,9 @@ void jthread_dumpthreadinfo(jthread_t tid)
  * @return the java.lang.Thread instance.
  */
 static inline
-void* jthread_getcookie(jthread_t tid)
+threadData *jthread_get_data(jthread_t tid)
 {
-        return (tid->jlThread);
+        return (&tid->data);
 }
 
 /**

@@ -27,6 +27,8 @@
 #include "stats.h"
 #include "classMethod.h"
 
+#include "jvmpi_kaffe.h"
+
 /* Avoid recursively allocating OutOfMemoryError */
 #define OOM_ALLOCATING		((void *) -1)
 
@@ -53,6 +55,7 @@ static const int black = 1;
 static const int finalise = 0;
 
 static int gc_init = 0;
+static volatile int gcDisabled = 0;
 static volatile int gcRunning = 0;
 static volatile bool finalRunning = false;
 static void (*walkRootSet)(Collector*);
@@ -643,6 +646,16 @@ startGC(Collector *gcif)
 	gcStats.markedobj = 0;
 	gcStats.markedmem = 0;
 
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_GC_START) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_GC_START;
+		jvmpiPostEvent(&ev);
+	}
+#endif
+	
 	/* disable the mutator to protect colour lists */
 	STOPWORLD();
 
@@ -698,6 +711,17 @@ finishGC(Collector *gcif)
 		gcStats.freedobj += 1;
 		UAPPENDLIST(gclists[mustfree], unit);
 		OBJECTSTATSREMOVE(unit);
+
+#if defined(ENABLE_JVMPI)
+		if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_OBJECT_FREE) )
+		{
+			JVMPI_Event ev;
+
+			ev.event_type = JVMPI_EVENT_OBJECT_FREE;
+			ev.u.obj_free.obj_id = UTOMEM(unit);
+			jvmpiPostEvent(&ev);
+		}
+#endif
 	}
 
 	/* 
@@ -733,6 +757,19 @@ finishGC(Collector *gcif)
 	 * per-thread timing it's a reasonable thing to do.
 	 */
 	stopTiming(&gc_time);
+
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_GC_FINISH) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_GC_FINISH;
+		ev.u.gc_info.used_objects = (jlong)gcStats.markedobj;
+		ev.u.gc_info.used_object_space = (jlong)gcStats.markedmem;
+		ev.u.gc_info.total_object_space = (jlong)gcStats.totalmem;
+		jvmpiPostEvent(&ev);
+	}
+#endif
 
 	/* 
 	 * Now that all lists that the mutator manipulates are in a
@@ -845,6 +882,30 @@ finaliserMan(void* arg)
 	}
 }
 
+static
+void
+gcEnableGC(Collector* gcif)
+{
+	int iLockRoot;
+
+	lockStaticMutex(&gcman);
+	gcDisabled -= 1;
+	if( gcDisabled == 0 )
+		broadcastStaticCond(&gcman);
+	unlockStaticMutex(&gcman);
+}
+
+static
+void
+gcDisableGC(Collector* gcif)
+{
+	int iLockRoot;
+
+	lockStaticMutex(&gcman);
+	gcDisabled += 1;
+	unlockStaticMutex(&gcman);
+}
+
 /*
  * Explicity invoke the garbage collector and wait for it to complete.
  */
@@ -857,7 +918,8 @@ gcInvokeGC(Collector* gcif, int mustgc)
 	lockStaticMutex(&gcman);
 	if (gcRunning == 0) {
 		gcRunning = mustgc ? 2 : 1;
-		signalStaticCond(&gcman);
+		if (!gcDisabled)
+			signalStaticCond(&gcman);
 	}
 	unlockStaticMutex(&gcman);
 
@@ -1314,7 +1376,9 @@ static struct GarbageCollectorInterface_Ops GC_Ops = {
 	gcWalkConservative,
 	gcRegisterFixedTypeByIndex,
 	gcRegisterGcTypeByIndex,
-	gcThrowOOM
+	gcThrowOOM,
+	gcEnableGC,
+	gcDisableGC,
 };
 
 /*

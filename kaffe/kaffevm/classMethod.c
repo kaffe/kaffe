@@ -44,6 +44,7 @@
 #include "methodCache.h"
 #include "gcj/gcj.h"
 #include "xprofiler.h"
+#include "jvmpi_kaffe.h"
 
 #if 0
 #define	METHOD_TRUE_NCODE(METH)			(METH)->c.ncode.ncode_start
@@ -54,8 +55,6 @@
 
 /* interfaces supported by arrays */
 static Hjava_lang_Class* arr_interfaces[2];
-
-extern JNIEnv Kaffe_JNIEnv;
 
 extern bool verify2(Hjava_lang_Class*, errorInfo*);
 extern bool verify3(Hjava_lang_Class*, errorInfo*);
@@ -464,7 +463,7 @@ retry:
 	}
 
 	DO_CLASS_STATE(CSTATE_COMPLETE) {
-		JNIEnv *env = &Kaffe_JNIEnv;
+		JNIEnv *env = THREAD_JNIENV();
 		jthrowable exc = 0;
 		JavaVM *vms[1];
 		jsize jniworking;
@@ -553,6 +552,55 @@ DBG(STATICINIT,
 			SET_CLASS_STATE(CSTATE_FAILED);
 		} else {
 			SET_CLASS_STATE(CSTATE_COMPLETE);
+
+#if defined(ENABLE_JVMPI)
+			if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_CLASS_LOAD) )
+			{
+				JVMPI_Method *jvmpi_methods;
+				JVMPI_Field *jvmpi_fields;
+				JVMPI_Event ev;
+				int lpc;
+
+				jvmpi_methods = alloca(sizeof(JVMPI_Method) *
+						       class->nmethods);
+				for( lpc = 0; lpc < class->nmethods; lpc++ )
+				{
+					jvmpiConvertMethod(
+						&jvmpi_methods[lpc],
+						&class->methods[lpc]);
+				}
+				jvmpi_fields = alloca(sizeof(JVMPI_Field) *
+						      (class->nsfields +
+						       class->nfields));
+				for( lpc = 0;
+				     lpc < (class->nsfields + class->nfields);
+				     lpc++ )
+				{
+					jvmpiConvertField(
+						&jvmpi_fields[lpc],
+						&class->fields[lpc]);
+				}
+				ev.event_type = JVMPI_EVENT_CLASS_LOAD;
+				ev.u.class_load.class_name =
+					class->name->data;
+				ev.u.class_load.source_name =
+					class->sourcefile;
+				ev.u.class_load.num_interfaces =
+					class->interface_len;
+				ev.u.class_load.num_methods =
+					class->nmethods;
+				ev.u.class_load.methods = jvmpi_methods;
+				ev.u.class_load.num_static_fields =
+					class->nsfields;
+				ev.u.class_load.statics = &jvmpi_fields[0];
+				ev.u.class_load.num_instance_fields =
+					class->nfields;
+				ev.u.class_load.instances =
+					&jvmpi_fields[class->nsfields];
+				ev.u.class_load.class_id = class;
+				jvmpiPostEvent(&ev);
+			}
+#endif
 		}
 
 		/* Since we'll never run this again we might as well
@@ -1149,19 +1197,17 @@ DBG(RESERROR,	dprintf("addField: no signature name.\n");		)
 		return (0);
 	}
 	utf8ConstAssign(ft->name, WORD2UTF(pool->data[nc]));
+	utf8ConstAssign(ft->signature, CLASS_CONST_UTF8(c, sc));
 	ft->accflags = access_flags;
 
-	sig = CLASS_CONST_UTF8(c, sc)->data;
+	sig = ft->signature->data;
 	if (sig[0] == 'L' || sig[0] == '[') {
 		/* This `type' field is used to hold a utf8Const describing
 		 * the type of the field.  This utf8Const will be replaced
 		 * with a pointer to an actual class type in resolveFieldType
 		 * Between now and then, we add a reference to it.
 		 */
-		Utf8Const *ftype = CLASS_CONST_UTF8(c, sc);
 		ft->accflags |= FIELD_UNRESOLVED_FLAG;
-		FIELD_TYPE(ft) = (Hjava_lang_Class*)ftype;
-		utf8ConstAddRef(ftype);
 		FIELD_SIZE(ft) = PTR_TYPE_SIZE;
 	}
 	else {
@@ -1260,7 +1306,7 @@ Hjava_lang_Class *userLoadClass(classEntry *ce,
 				errorInfo *einfo)
 {
 	Hjava_lang_Class *retval = NULL;
-	JNIEnv *env = &Kaffe_JNIEnv;
+	JNIEnv *env = THREAD_JNIENV();
 	Hjava_lang_String *jname;
 	jthrowable excpending;
 	jmethodID meth;
@@ -1558,13 +1604,13 @@ resolveFieldType(Field *fld, Hjava_lang_Class* this, errorInfo *einfo)
 		unlockClass(this);
 		return (FIELD_TYPE(fld));
 	}
-	name = ((Utf8Const*)fld->type)->data;
+	name = fld->signature->data;
 
-	clas = getClassFromSignature(name, this->loader, einfo);
-
-	utf8ConstRelease((Utf8Const*)fld->type);
-	FIELD_TYPE(fld) = clas;
-	fld->accflags &= ~FIELD_UNRESOLVED_FLAG;
+	if( (clas = getClassFromSignature(name, this->loader, einfo)) )
+	{
+		FIELD_TYPE(fld) = clas;
+		fld->accflags &= ~FIELD_UNRESOLVED_FLAG;
+	}
 	unlockClass(this);
 
 	return (clas);
@@ -1682,7 +1728,7 @@ DBG(GCPRECISE,
 		/* Set bit if this field is a reference type, except if
 		 * it's a kaffe.util.Ptr (PTRCLASS).  */
 		if (!FIELD_RESOLVED(fld)) {
-			Utf8Const *sig = (Utf8Const*)FIELD_TYPE(fld);
+			Utf8Const *sig = fld->signature;
 			if ((sig->data[0] == 'L' || sig->data[0] == '[') &&
 			    strcmp(sig->data, PTRCLASSSIG)) {
 				BITMAP_SET(map, nbits);

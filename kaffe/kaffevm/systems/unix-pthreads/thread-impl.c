@@ -25,18 +25,18 @@ static char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', '
 
 #define TMSG_SHORT(_msg,_nt)     \
    dprintf(_msg" %p [tid:%4ld, java:%p]\n", \
-    _nt, _nt->tid, _nt->jlThread)
+    _nt, _nt->tid, _nt->data.jlThread)
 
 #define TMSG_LONG(_msg,_nt)      \
    dprintf(_msg" %p [tid:%4ld, java:%p], stack [%p..%p..%p], state: %c%c%c\n",         \
-        _nt, _nt->tid, _nt->jlThread, _nt->stackMin, _nt->stackCur, _nt->stackMax,  \
+        _nt, _nt->tid, _nt->data.jlThread, _nt->stackMin, _nt->stackCur, _nt->stackMax,  \
         stat_act[_nt->active], stat_susp[_nt->suspendState], stat_block[_nt->blockState])
 
 #define CHECK_CURRENT_THREAD(_nt)                                          \
   if ( ((uintp) &_nt < (uintp) _nt->stackMin) ||           \
        ((uintp) &_nt > (uintp) _nt->stackMax) ) {          \
     printf( "?? inconsistent current thread: %x [tid: %d, java: %x]\n",    \
-                    _nt, _nt->tid, _nt->jlThread);                                   \
+                    _nt, _nt->tid, _nt->data.jlThread);                                   \
     tDump();                                                               \
   }
 
@@ -193,7 +193,7 @@ tDumpList ( jthread_t cur, jthread_t list )
 		"stack: [%p..%p..%p]\n",
 		i, a1, a2, a3,
 		stat_act[t->active], stat_susp[t->suspendState], stat_block[t->blockState],
-		t, t->tid, t->jlThread,
+		t, t->tid, t->data.jlThread,
 		t->stackMin, t->stackCur, t->stackMax);
   }
 }
@@ -441,7 +441,7 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThrea
   pthread_attr_init( &nt->attr);
 
   nt->tid    = pthread_self();
-  nt->jlThread = jlThread;
+  nt->data.jlThread = jlThread;
   nt->suspendState = 0;
   nt->active = 1;
   nt->func   = NULL;
@@ -527,7 +527,7 @@ void* tRun ( void* p )
 
 	/* Now call our thread function, which happens to be firstStartThread(),
 	 * which will call TExit before it returns */
-	cur->func(cur->jlThread);
+	cur->func(cur->data.jlThread);
 
 	DBG( JTHREAD, TMSG_LONG( "exiting user func of: ", cur))
 
@@ -544,7 +544,7 @@ void* tRun ( void* p )
 	}
 
 	/* unlink Java and native thread */
-	cur->jlThread = 0;
+	cur->data.jlThread = 0;
 	cur->suspendState = 0;
 
 	/* link into cache list (if still within limit) */
@@ -640,7 +640,7 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
 	nt->next = activeThreads;
 	activeThreads = nt;
 
-	nt->jlThread = jlThread;
+	nt->data.jlThread = jlThread;
 	nt->daemon = daemon;
 	nt->func = func;
 	nt->stackCur = 0;
@@ -669,7 +669,7 @@ jthread_create ( unsigned char pri, void* func, int daemon, void* jlThread, size
 	pthread_attr_setschedpolicy( &nt->attr, SCHEDULE_POLICY);
 	pthread_attr_setstacksize( &nt->attr, threadStackSize);
 
-	nt->jlThread       = jlThread;
+	nt->data.jlThread       = jlThread;
 	nt->func         = func;
 	nt->suspendState = 0;
 	nt->stackMin     = 0;
@@ -858,7 +858,7 @@ jthread_setpriority (jthread_t cur, jint prio)
 	sp.sched_priority = priorities[prio];
 
 	DBG( JTHREAD, dprintf("set priority: %p [tid: %4ld, java: %p) to %d (%d)\n",
-			      cur, cur->tid, cur->jlThread, prio, priorities[prio]))
+			      cur, cur->tid, cur->data.jlThread, prio, priorities[prio]))
 	pthread_setschedparam( cur->tid, SCHEDULE_POLICY, &sp);
   }
 }
@@ -951,7 +951,7 @@ jthread_suspendall (void)
   TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
 
   DBG( JTHREAD, dprintf("enter crit section[%d] from: %p [tid:%4ld, java:%p)\n",
-			critSection, cur, cur->tid, cur->jlThread))
+			critSection, cur, cur->tid, cur->data.jlThread))
 
   if ( ++critSection == 1 ){
 	//nSuspends = 0;
@@ -1080,7 +1080,7 @@ jthread_walkLiveThreads (void(*func)(void*))
   DBG( JTHREAD, dprintf("start walking threads\n"))
 
   for ( t = activeThreads; t != NULL; t = t->next) {
-	func(t->jlThread);
+	func(t->data.jlThread);
   }
 
   DBG( JTHREAD, dprintf("end walking threads\n"))

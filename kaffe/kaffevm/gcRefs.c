@@ -112,7 +112,7 @@ TwalkThread(Collector* collector, Hjava_lang_Thread* tid)
          * we hence don't have valid sp information.  In addition, there's
          * absolutely no reason why we should walk it at all.
          */
-        if (jtid == 0 || tid == jthread_getcookie((void*)jthread_current())) {
+        if (jtid == 0 || tid == jthread_get_data((void*)jthread_current())->jlThread) {
 DBG(JTHREAD,
                 dprintf("%p NOT walking jtid %p\n", jthread_current(), jtid);
     )   

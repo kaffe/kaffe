@@ -306,8 +306,7 @@ typedef struct _dispatchTable {
 
 typedef struct _fields {
 	Utf8Const*		name;
-	/* The type of the field, if FIELD_RESOLVED.
-	   If !FIELD_RESOLVED:  The fields's signature as a (Utf8Const*). */
+	Utf8Const*		signature;
 	Hjava_lang_Class*	type;
 	accessFlags		accflags;
 	u2			bsize;		/* in bytes */

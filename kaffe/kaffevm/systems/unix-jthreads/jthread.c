@@ -25,22 +25,6 @@
 #define TH_ACCEPT                       TH_READ
 #define TH_CONNECT                      TH_WRITE
 
-/* thread status */
-#define THREAD_SUSPENDED                0
-#define THREAD_RUNNING                  1
-#define THREAD_DEAD                     2
-
-/* thread flags */
-#define THREAD_FLAGS_GENERAL            0
-#define THREAD_FLAGS_NOSTACKALLOC       1   /* this flag is not used anymore */
-#define THREAD_FLAGS_KILLED             2
-#define THREAD_FLAGS_ALARM              4
-#define THREAD_FLAGS_EXITING        	8
-#define THREAD_FLAGS_DONTSTOP        	16
-#define THREAD_FLAGS_DYING        	32
-#define THREAD_FLAGS_BLOCKEDEXTERNAL	64
-#define THREAD_FLAGS_INTERRUPTED	128
-
 /*
  * If option DETECTDEADLOCK is given, detect deadlocks.  
  * A deadlock is defined as a situation where no thread is runnable and 
@@ -362,7 +346,7 @@ intsRestore(void)
         /* KAFFE_VMDEBUG */
         assert(blockInts >= 1);
 
-        if (blockInts == 1) {   
+        if (blockInts == 1) {
                 if (sigPending) {
 			processSignals();
 		}
@@ -411,6 +395,11 @@ jthread_unsuspendall(void)
 static void
 interrupt(SIGNAL_ARGS(sig, sc))
 {
+	if( currentJThread->status != THREAD_SUSPENDED )
+	{
+		EXCEPTIONFRAME(jthread_current()->localData.topFrame, sc);
+	}
+	
 	/*
 	 * If ints are blocked, this might indicate an inconsistent state of
 	 * one of the thread queues (either alarmList or threadQhead/tail).
@@ -744,7 +733,10 @@ DBG(JTHREAD,	dprintf("resumeThread %p\n", jtid);	)
 		jtid->status = THREAD_RUNNING;
 
 		/* Place thread on the end of its queue */
-		if (threadQhead[jtid->priority] == 0) {
+		if (jtid->suspender != NULL) {
+			/* Need to wait for the suspender to resume them. */
+		}
+		else if (threadQhead[jtid->priority] == 0) {
 			threadQhead[jtid->priority] = jtid;
 			threadQtail[jtid->priority] = jtid;
 			if (jtid->priority > currentJThread->priority) {
@@ -776,11 +768,12 @@ suspendOnQThread(jthread* jtid, jthread** queue, jlong timeout)
 DBG(JTHREAD,	dprintf("suspendOnQThread %p %p (%qd) bI %d\n", 
 	jtid, queue, timeout, blockInts); )
 
-	assert(intsDisabled());
+	assert(intsDisabled()); 
 
 	if (jtid->status != THREAD_SUSPENDED) {
 		jtid->status = THREAD_SUSPENDED;
 
+		FIRSTFRAME(currentJThread->localData.topFrame, 0);
 		last = 0;
 		for (ntid = &threadQhead[jtid->priority]; 
 			*ntid != 0; 
@@ -839,7 +832,7 @@ killThread(jthread *tid)
 	 * such as notifying on the object 
 	 */
 	if (destructor1)
-		(*destructor1)(tid->jlThread);
+		(*destructor1)(tid->localData.jlThread);
 
 DBG(JTHREAD,	
 	dprintf("killThread %p kills %p\n", currentJThread, tid); )
@@ -950,7 +943,7 @@ jthread_walkLiveThreads(void (*func)(void *jlThread))
         jthread* tid;
 
         for (tid = liveThreads; tid != NULL; tid = tid->nextlive) {
-                func(tid->jlThread);
+                func(tid->localData.jlThread);
         }
 }
 
@@ -978,6 +971,80 @@ int
 jthread_frames(jthread *thrd)
 {
         return (0);
+}
+
+void jthread_suspend(jthread_t jt, void *suspender)
+{
+	assert(jt != jthread_current());
+	
+	intsDisable();
+	if( jt->suspender == suspender )
+	{
+		jt->suspendCount += 1;
+	}
+	else
+	{
+		assert(jt->suspender == NULL);
+		
+		jt->suspender = suspender;
+		if( jt->status != THREAD_SUSPENDED )
+		{
+			suspendOnQThread(jt, NULL, NOTIMEOUT);
+			jt->status = THREAD_RUNNING;
+			jt->suspendCount = 1;
+		}
+	}
+	intsRestore();
+}
+
+void jthread_resume(jthread_t jt, void *suspender)
+{
+	if( jt != currentJThread )
+	{
+		intsDisable();
+		if( jt->suspender == suspender )
+		{
+			assert(jt->suspendCount > 0);
+			
+			jt->suspendCount -= 1;
+			if( jt->suspendCount == 0 )
+			{
+				if( jt->status == THREAD_RUNNING )
+				{
+					jt->status = THREAD_SUSPENDED;
+				}
+				resumeThread(jt);
+			}
+		}
+		intsRestore();
+	}
+}
+
+jthread_t jthread_from_data(threadData *td, void *suspender)
+{
+	jthread_t retval = NULL;
+
+	intsDisable();
+	{
+		jthread_t curr;
+		
+		for( curr = liveThreads;
+		     (curr != NULL) && (retval == NULL);
+		     curr = curr->nextlive)
+		{
+			if( &curr->localData == td )
+			{
+				if( curr != currentJThread )
+				{
+					jthread_suspend(curr, suspender);
+				}
+				retval = curr;
+			}
+		}
+	}
+	intsRestore();
+	
+	return( retval );
 }
 
 /*============================================================================
@@ -1161,7 +1228,7 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char prio, void* jlThre
         jtid->restorePoint = jtid->stackBase;
 #endif
 
-	jtid->jlThread = jlThread;
+	jtid->localData.jlThread = jlThread;
 
 	jthread_setpriority(jtid, prio);
 
@@ -1263,7 +1330,7 @@ start_this_sucker_on_a_new_frame(void)
 
 	intsRestore();
 	assert(currentJThread->stopCounter == 0);
-	currentJThread->func(currentJThread->jlThread);
+	currentJThread->func(currentJThread->localData.jlThread);
 	jthread_exit(); 
 }
 
@@ -1303,7 +1370,7 @@ jthread_create(unsigned char pri, void (*func)(void *), int daemon,
 		return 0;
 	}
         jtid->priority = pri;
-        jtid->jlThread = jlThread;
+        jtid->localData.jlThread = jlThread;
         jtid->status = THREAD_SUSPENDED;
         jtid->flags = THREAD_FLAGS_GENERAL;
 
@@ -1632,6 +1699,23 @@ reschedule(void)
 				lastThread = currentJThread;
 				currentJThread = threadQhead[i];
 
+				{
+					struct rusage ru;
+					jlong ct;
+
+					getrusage(RUSAGE_SELF, &ru);
+					ct = ((jlong)ru.ru_utime.tv_sec * 1000)
+						+ ((jlong)ru.ru_utime.tv_usec /
+						   (jlong)1000);
+					ct += ((jlong)ru.ru_stime.tv_sec *
+					       1000)
+						+ ((jlong)ru.ru_stime.tv_usec /
+						   (jlong)1000);
+
+					lastThread->totalUsed +=
+						(ct - lastThread->startUsed);
+					currentJThread->startUsed = ct;
+				}
 DBG(JTHREADDETAIL,
 dprintf("switch from %p to %p\n", lastThread, currentJThread); )
 
@@ -1939,8 +2023,10 @@ void
 jmutex_lock(jmutex *lock)
 {
 	intsDisable();
+	jthread_current()->flags |= THREAD_FLAGS_WAIT_MUTEX;
 	while (lock->holder != NULL)
 		suspendOnQThread(jthread_current(), &lock->waiting, NOTIMEOUT);
+	jthread_current()->flags &= ~THREAD_FLAGS_WAIT_MUTEX;
 
 	lock->holder = jthread_current();			
 	intsRestore();
@@ -2002,11 +2088,15 @@ jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 #endif
 
 	/* wait to be signaled */
+	current->flags |= THREAD_FLAGS_WAIT_CONDVAR;
 	r = suspendOnQThread(current, cv, timeout);
+	current->flags &= ~THREAD_FLAGS_WAIT_CONDVAR;
 	/* reacquire mutex */
+	current->flags |= THREAD_FLAGS_WAIT_MUTEX;
 	while (lock->holder != NULL) {
 		suspendOnQThread(current, &lock->waiting, NOTIMEOUT);
 	}
+	current->flags &= ~THREAD_FLAGS_WAIT_MUTEX;
 	lock->holder = current;
 	intsRestore();
 

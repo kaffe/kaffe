@@ -34,11 +34,14 @@
 #include "gc.h"
 #include "jni.h"
 #include "md.h"
+#include "jvmpi_kaffe.h"
 
 /* If not otherwise specified, assume at least 1MB for main thread */
 #ifndef MAINSTACKSIZE
 #define MAINSTACKSIZE (1024*1024)
 #endif
+		
+extern struct JNINativeInterface Kaffe_JNINativeInterface;
 
 /* 
  * store the native thread for the main thread here 
@@ -117,6 +120,7 @@ initThreads(void)
 	DBG(INIT, dprintf("initThreads() done\n"); )
 }
 
+
 static int
 createThread(Hjava_lang_Thread* tid, void* func, size_t stacksize,
 	     struct _errorInfo *einfo)
@@ -134,7 +138,8 @@ createThread(Hjava_lang_Thread* tid, void* func, size_t stacksize,
 		postOutOfMemory(einfo);
 		return 0;
 	}
-		
+
+	jthread_get_data(nativethread)->jniEnv = &Kaffe_JNINativeInterface;
 	unhand(tid)->PrivateInfo = nativethread;
 	/* preallocate a stack overflow error for this thread in case it 
 	 * runs out 
@@ -253,6 +258,7 @@ createInitialThread(const char* nm)
 	jthread_atexit(runfinalizer);
 	/* set Java thread associated with main thread */
 	mainthread = jthread_createfirst(MAINSTACKSIZE, java_lang_Thread_NORM_PRIORITY, tid);
+	jthread_get_data(mainthread)->jniEnv = &Kaffe_JNINativeInterface;
 	unhand(tid)->PrivateInfo = (struct Hkaffe_util_Ptr*)mainthread;
 	unhand(tid)->stackOverflowError = 
 		(Hjava_lang_Throwable*)StackOverflowError;
@@ -342,8 +348,7 @@ static
 void
 firstStartThread(void* arg)
 {
-	extern JNIEnv Kaffe_JNIEnv;
-	JNIEnv *env = &Kaffe_JNIEnv;
+	JNIEnv *env = THREAD_JNIENV();
 	Hjava_lang_Thread* tid;
 	jmethodID runmethod;
 	jthrowable eobj;
@@ -358,6 +363,25 @@ firstStartThread(void* arg)
 	unlockStaticMutex(&thread_start_lock);
 
 	tid  = getCurrentThread();
+
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_THREAD_START) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_THREAD_START;
+		ev.u.thread_start.thread_name = // XXX stringJava2C(tid->name);
+		ev.u.thread_start.group_name = stringJava2C(tid->group->name);
+		ev.u.thread_start.parent_name = NULL;
+			// XXX stringJava2C(tid->parent->name);
+		ev.u.thread_start.thread_id = tid;
+		ev.u.thread_start.thread_env_id = THREAD_JNIENV();
+		jvmpiPostEvent(&ev);
+		KFREE(ev.u.thread_start.parent_name);
+		KFREE(ev.u.thread_start.group_name);
+		KFREE(ev.u.thread_start.thread_name);
+	}
+#endif
 
 DBG(VMTHREAD,	
 	dprintf("firstStartThread %p\n", tid);		
@@ -446,6 +470,16 @@ DBG(VMTHREAD,
 	dprintf("exitThread %p\n", getCurrentThread());		
     )
 
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_THREAD_END) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_THREAD_END;
+		jvmpiPostEvent(&ev);
+	}
+#endif
+
         do_execute_java_method(getCurrentThread(), "finish", "()V", 0, 0);
 
 	/* Destroy this thread's heavy lock */
@@ -503,7 +537,7 @@ getCurrentThread(void)
 {
 	Hjava_lang_Thread* tid;
 	
-	tid = jthread_getcookie(jthread_current());
+	tid = jthread_get_data(jthread_current())->jlThread;
 
 #ifdef JIT3
 	assert(tid);
@@ -576,6 +610,16 @@ runfinalizer(void)
 	if (runFinalizerOnExit) {
 		invokeFinalizer();
 	}
+
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_JVM_SHUT_DOWN) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_JVM_SHUT_DOWN;
+		jvmpiPostEvent(&ev);
+	}
+#endif
 }
 
 /*
@@ -604,7 +648,7 @@ char*
 nameNativeThread(void* native)
 {
 	return nameThread((Hjava_lang_Thread*)
-		jthread_getcookie((jthread_t)native));
+		jthread_get_data((jthread_t)native)->jlThread);
 }
 
 /*

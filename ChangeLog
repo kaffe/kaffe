@@ -1,3 +1,127 @@
+2003-07-26 Timothy S. Stack <stack@cs.utah.edu>
+
+	* configure.in: 
+	Add JVMPI stuff (--enable-jvmpi, makefile, etc...)
+
+	* include/Makefile.am:
+	Add jvmpi.h to the list of include_HEADERS.
+
+	* include/errors.h:
+	Make IncompatibleClassChangeError take a message parameter.
+
+	* include/jni.h:
+	Add JVMPI defines.
+
+	* include/jvmpi.h:
+	Added
+
+	* kaffe/Makefile.am:
+	Added jvmpi subdir.
+
+	* kaffe/jvmpi/Makefile.am,
+	kaffe/jvmpi/jvmpi_kaffe.c,
+	kaffe/jvmpi/jvmpi_kaffe.h:
+	Added to implement jvmpi stuff.
+
+	* kaffe/kaffe/Makefile.am:
+	Add jvmpi to list of includes and add jvmpi library.
+
+	* kaffe/kaffevm/Makefile.am:
+	Add jvmpi to list of includes.
+
+	* kaffe/kaffevm/classMethod.h:
+	Make a slot for a field's signature in struct_fields.
+
+	* kaffe/kaffevm/classMethod.c:
+	Add jvmpi events.  Fields now have a separate slot for their
+	signature instead of combining it with FIELD_TYPE().  Use
+	per-thread JNIEnv.
+
+	* kaffe/kaffevm/exception.c:
+	Remove requirement that nextFrame must be called on stack produced
+	from the current thread.
+
+	* kaffe/kaffevm/gc.h:
+	Add function pointers for enabling/disabling gc.
+
+	* kaffe/kaffevm/gcFuncs.c:
+	Add jvmpi events.  Handle separate slot for signature in fields.
+	Use per-thread JNIEnv.
+
+	* kaffe/kaffevm/gcRefs.c:
+	jthread_getcookie() -> jthread_get_data().
+
+	* kaffe/kaffevm/jni.c:
+	Add JVMPI events.  JNIEnv pointers are now per-thread.
+
+	* kaffe/kaffevm/kaffe.def:
+	Make sure invokevirtual/invokespecial are not called on interface
+	classes.
+
+	* kaffe/kaffevm/locks.c:
+	Add JVMPI events.
+
+	* kaffe/kaffevm/object.c:
+	Add JVMPI events.
+
+	* kaffe/kaffevm/soft.[ch]:
+	Add soft_incompatibleclasschange function for throwing
+	IncompatibleClassChangeErrors.
+
+	* kaffe/kaffevm/support.h:
+	Add BITMAP_BYTE_SIZE, BITMAP_CLEAR, and BITMAP_ISSET macros.
+
+	* kaffe/kaffevm/thread.c:
+	JNIEnv pointers are now per-thread.  jthread_getcookie() ->
+	jthread_get_data().  Added JVMPI events.
+
+	* kaffe/kaffevm/thread.h:
+	Added THREAD_JNIENV() macro for getting the JNIEnv pointer for the
+	current thread.
+
+	* kaffe/kaffevm/threadData.h:
+	Added to hold per-thread data.
+
+	* kaffe/kaffevm/jit3/Makefile.am:
+	Added jvmpi to the list of includes.
+
+	* kaffe/kaffevm/jit3/codeproto.h,
+	kaffe/kaffevm/jit3/icode.c:
+	Added softcall_incompatibleclasschange().
+
+	* kaffe/kaffevm/jit3/machine.c:
+	Added JVMPI events.
+
+	* kaffe/kaffevm/mem/gc-incremental.c:
+	Added JVMPI events and functions for enabling/disabling the GC.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.h:
+	The jthread_getcookie() macro has been changed to
+	jthread_get_data() which returns the threadData structure defined
+	in the main kaffe code body.  Added resource usage statistics and
+	other functions for reflecting on a threads state.  Added ability
+	to suspend/resume threads (experimental).
+
+	* kaffe/kaffevm/systems/unix-jthreads/lock-impl.h:
+	Added missing jcondvar_broadcast() proto.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	Update for jthread_getcookie() -> jthread_get_data() change.
+
+	* libraries/clib/native/Makefile.am:
+	Added jvmpi to list of includes.
+
+	* libraries/clib/native/Object.c:
+	Added JVMPI events.
+
+	* libraries/clib/native/ObjectStreamClassImpl.c:
+	Update for signature change in field structs.
+
+	* test/internal/Makefile.am:
+	Add jvmpi to the list of includes and libraries.
+
 2003-07-20 Fabio.di.Fabio <abel@lmib.org>
 
 	* libraries/kaffe/appletAppletTag.java:

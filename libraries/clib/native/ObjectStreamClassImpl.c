@@ -473,7 +473,7 @@ getFieldDesc(Field* fld)
 
 	if (!FIELD_RESOLVED(fld)) {
 		/* This is like so: Ljava/lang/String; */
-		orig = ((Utf8Const*)(void*)fld->type)->data;
+		orig = fld->signature->data;
 		str = KMALLOC(strlen(orig) + 1);
 		return (str ? strcpy(str, orig) : 0);
 	}

@@ -165,7 +165,7 @@ noinst_HEADERS = \
 	nets.h \
 	system.h
 
-include_HEADERS = jni.h
+include_HEADERS = jni.h jvmpi.h
 
 nodist_pkginclude_HEADERS = \
 	$(INSTALL_DERIVED_HDRS) \

@@ -86,6 +86,8 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ENABLE_JVMPI_FALSE = @ENABLE_JVMPI_FALSE@
+ENABLE_JVMPI_TRUE = @ENABLE_JVMPI_TRUE@
 ENABLE_XPROF_FALSE = @ENABLE_XPROF_FALSE@
 ENABLE_XPROF_TRUE = @ENABLE_XPROF_TRUE@
 ENGINE_NAME = @ENGINE_NAME@
@@ -243,14 +245,17 @@ jrebin_PROGRAMS = kaffe-bin
 @NEED_LIBXPROF_FALSE@libxprof = #
 
 @NEED_LIBXPROF_TRUE@libxprof = ../xprof/libkaffexprof.la
+@ENABLE_JVMPI_FALSE@libjvmpi = #
+
+@ENABLE_JVMPI_TRUE@libjvmpi = ../jvmpi/libkaffejvmpi.la
 
 AM_CPPFLAGS = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
-	-I$(top_srcdir)/kaffe/xprof
+	-I$(top_srcdir)/kaffe/jvmpi -I$(top_srcdir)/kaffe/xprof
 
 
 kaffe_bin_SOURCES = main.c version.c version.h
 
-LIBKAFFEVM = ../kaffevm/libkaffevm.la $(libxprof)
+LIBKAFFEVM = ../kaffevm/libkaffevm.la $(libjvmpi) $(libxprof)
 
 kaffe_bin_LDFLAGS = $(KVMBINFLAGS) -export-dynamic
 kaffe_bin_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS) @LIBLTDL@

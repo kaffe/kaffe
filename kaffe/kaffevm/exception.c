@@ -288,7 +288,7 @@ nextFrame(void* fm)
 
         nfm = (exceptionFrame*)NEXTFRAME((exceptionFrame*)fm);
         /* Note: this should obsolete the FRAMEOKAY macro */
-        if (nfm && jthread_on_current_stack((void *)SPFRAME(nfm))) {
+        if (nfm) {
                 return (nfm);
         }
         else {

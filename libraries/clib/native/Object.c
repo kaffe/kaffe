@@ -20,6 +20,8 @@
 #include "../../../kaffe/kaffevm/soft.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
 #include "java_lang_Object.h"
+#include "thread.h"
+#include "jvmpi_kaffe.h"
 
 /*
  * Generate object hash code.
@@ -93,5 +95,41 @@ java_lang_Object_clone(struct Hjava_lang_Object* o)
 void
 java_lang_Object_wait0(struct Hjava_lang_Object* o, jlong timeout)
 {
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_WAIT) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_MONITOR_WAIT;
+		if( o == getCurrentThread()->sleeper )
+		{
+			ev.u.monitor_wait.object = NULL;
+		}
+		else
+		{
+			ev.u.monitor_wait.object = o;
+		}
+		ev.u.monitor_wait.timeout = timeout;
+		jvmpiPostEvent(&ev);
+	}
+#endif
 	waitCond(o, timeout);
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_WAIT) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_MONITOR_WAIT;
+		if( o == getCurrentThread()->sleeper )
+		{
+			ev.u.monitor_wait.object = NULL;
+		}
+		else
+		{
+			ev.u.monitor_wait.object = o;
+		}
+		ev.u.monitor_wait.timeout = timeout;
+		jvmpiPostEvent(&ev);
+	}
+#endif
 }

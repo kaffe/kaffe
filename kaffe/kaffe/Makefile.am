@@ -14,12 +14,18 @@ else
 libxprof = #
 endif
 
+if ENABLE_JVMPI
+libjvmpi = ../jvmpi/libkaffejvmpi.la
+else
+libjvmpi = #
+endif
+
 AM_CPPFLAGS = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
-	-I$(top_srcdir)/kaffe/xprof
+	-I$(top_srcdir)/kaffe/jvmpi -I$(top_srcdir)/kaffe/xprof
 
 kaffe_bin_SOURCES = main.c version.c version.h
 
-LIBKAFFEVM = ../kaffevm/libkaffevm.la $(libxprof)
+LIBKAFFEVM = ../kaffevm/libkaffevm.la $(libjvmpi) $(libxprof)
 
 kaffe_bin_LDFLAGS = $(KVMBINFLAGS) -export-dynamic
 kaffe_bin_LDADD = $(DLOPEN_JAVA_LIBS) $(LIBKAFFEVM) $(KAFFE_LIBS) @LIBLTDL@

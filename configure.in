@@ -226,6 +226,8 @@ if test x"${with_engine+set}" != x"set" ; then
 	with_engine="jit"
 fi
 
+dnl =========================================================================
+
 dnl -------------------------------------------------------------------------
 dnl Check for JIT support and add in the necessary configuration files
 dnl -------------------------------------------------------------------------
@@ -303,6 +305,20 @@ case "$enable_debug" in
 no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
 *) CPPFLAGS="$CPPFLAGS -DKAFFE_VMDEBUG";;
 esac
+
+dnl =========================================================================
+dnl Allow activation of jvmpi
+dnl -------------------------------------------------------------------------
+
+AC_ARG_ENABLE(debug,[  --enable-jvmpi          Enable JVMPI @<:@default=no@:>@]
+  --disable-jvmpi         Disable JVMPI])
+case "$enable_jvmpi" in
+"") ;;
+no) ;;
+*) AC_DEFINE(ENABLE_JVMPI, 1, [JVM Profiling Interface]);;
+esac
+
+AM_CONDITIONAL(ENABLE_JVMPI, test x"$enable_jvmpi" = x"yes")
 
 dnl =========================================================================
 dnl Allow user to specify a dnsjava.jar file for class file testing.
@@ -1549,6 +1565,7 @@ AC_CONFIG_FILES([include/Makefile])
 AC_CONFIG_FILES([replace/Makefile])
 AC_CONFIG_FILES([kaffe/Makefile])
 AC_CONFIG_FILES([libraries/Makefile])
+AC_CONFIG_FILES([kaffe/jvmpi/Makefile])
 AC_CONFIG_FILES([kaffe/kaffevm/Makefile])
 AC_CONFIG_FILES([kaffe/kaffevm/intrp/Makefile])
 AC_CONFIG_FILES([kaffe/kaffevm/jit/Makefile])

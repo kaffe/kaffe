@@ -8,6 +8,8 @@
 
 native_LTLIBRARIES = libnative.la
 
+AM_CPPFLAGS = -I$(top_srcdir)/kaffe/jvmpi
+
 IO_SRCS = \
 		ByteToCharDefault.c \
 		ByteToCharIconv.c \

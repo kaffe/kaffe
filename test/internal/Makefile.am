@@ -33,10 +33,11 @@ AM_CPPFLAGS = -I$(top_srcdir)/kaffe \
 	$(ENGINE_INCLUDES) \
 	-I../../kaffe/kaffevm \
 	$(ENGINE_DEFS) \
-	 -I$(top_srcdir)/kaffe/kaffevm
+	-I$(top_srcdir)/kaffe/kaffevm \
+	-I$(top_srcdir)/kaffe/jvmpi
 
 LIBNATIVE = $(top_builddir)/libraries/clib/native/libnative.la
-LIBKAFFEVM = ../../kaffe/kaffevm/libkaffevm.la
+LIBKAFFEVM = ../../kaffe/kaffevm/libkaffevm.la ../../kaffe/jvmpi/libkaffejvmpi.la
 
 jitBasic_LDFLAGS = -export-dynamic
 jitBasic_LDADD = "-dlopen" $(LIBNATIVE) $(LIBKAFFEVM) $(libxprof) @LIBLTDL@

@@ -30,6 +30,7 @@
 #include "external.h"
 #include "gc.h"
 #include "thread.h"
+#include "jvmpi_kaffe.h"
 
 Hjava_lang_Object*
 newObjectChecked(Hjava_lang_Class* class, errorInfo *info)
@@ -43,6 +44,22 @@ newObjectChecked(Hjava_lang_Class* class, errorInfo *info)
 	} else {
 	    /* Fill in object information */
 	    obj->dtable = class->dtable;
+
+#if defined(ENABLE_JVMPI)
+	    if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_OBJECT_ALLOC) )
+	    {
+		    JVMPI_Event ev;
+		    
+		    ev.event_type = JVMPI_EVENT_OBJECT_ALLOC;
+		    ev.u.obj_alloc.arena_id = -1;
+		    ev.u.obj_alloc.class_id = class;
+		    ev.u.obj_alloc.is_array = JVMPI_NORMAL_OBJECT;
+		    ev.u.obj_alloc.size = CLASS_FSIZE(class);
+		    ev.u.obj_alloc.obj_id = obj;
+		    jvmpiPostEvent(&ev);
+	    }
+#endif
+	    
 	}
 DBG(NEWOBJECT,
 	dprintf("newObject %p class %s\n", obj,

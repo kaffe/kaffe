@@ -47,6 +47,7 @@
 #include "machine.h"
 #include "feedback.h"
 #endif
+#include "jvmpi_kaffe.h"
 
 /*
  * Define the version of JNI we support.
@@ -163,7 +164,6 @@ getMethodFunc (Method* meth, Hjava_lang_Object *obj)
 extern struct JNINativeInterface Kaffe_JNINativeInterface;
 extern JavaVMInitArgs Kaffe_JavaVMInitArgs;
 extern JavaVM Kaffe_JavaVM;
-extern struct JNIEnv_ Kaffe_JNIEnv;
 
 static void Kaffe_JNI_wrapper(Method*, void*);
 #if defined(TRANSLATOR)
@@ -211,8 +211,19 @@ JNI_CreateJavaVM(JavaVM** vm, JNIEnv** env, JavaVMInitArgs* args)
 
 	/* Return the VM and JNI we're using */
 	*vm = &Kaffe_JavaVM;
-	*env = (JNIEnv*)&Kaffe_JNIEnv;
+	*env = THREAD_JNIENV();
 	Kaffe_NumVM++;
+
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_JVM_INIT_DONE) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_JVM_INIT_DONE;
+		jvmpiPostEvent(&ev);
+	}
+#endif
+	
 	return (0);
 }
 
@@ -243,6 +254,16 @@ Kaffe_FatalError(JNIEnv* env, const char* mess)
 static void
 Kaffe_DeleteGlobalRef(JNIEnv* env, jref obj)
 {
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_JNI_GLOBALREF_FREE) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_JNI_GLOBALREF_FREE;
+		ev.u.jni_globalref_free.ref_id = obj;
+		jvmpiPostEvent(&ev);
+	}
+#endif
 	gc_rm_ref(obj);
 }
 
@@ -293,6 +314,17 @@ Kaffe_NewGlobalRef(JNIEnv* env, jref obj)
 		postOutOfMemory(&info);
 		postError(env, &info);
 	}
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_JNI_GLOBALREF_ALLOC) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_JNI_GLOBALREF_ALLOC;
+		ev.u.jni_globalref_alloc.obj_id = obj;
+		ev.u.jni_globalref_alloc.ref_id = obj;
+		jvmpiPostEvent(&ev);
+	}
+#endif
 	END_EXCEPTION_HANDLING();
 	return obj;
 }
@@ -3549,7 +3581,7 @@ Kaffe_DestroyJavaVM(JavaVM* vm)
 static jint
 Kaffe_AttachCurrentThread(JavaVM* vm, JNIEnv** env, ThreadAttachArgs* args)
 {
-	(*env) = (JNIEnv*)&Kaffe_JNIEnv;
+	*env = NULL;
 	return (0);
 }
 
@@ -3564,25 +3596,27 @@ static jint
 Kaffe_GetEnv(JavaVM* vm, void** penv, jint interface_id)
 {
 	JavaVM* currentVM;
+	JNIEnv *je;
 
 	/* In the event of any error condition, we side effect the argument
 	   pointer as well as return an error code */
 	(*penv) = NULL;
 
+	je = THREAD_JNIENV();
 	/* Insure that the current thread is associated with the
 	   given VM. This gets the JavaVM to which the current thread
 	   is attached.  I *think* this is a good way to do this. */
-	Kaffe_GetJavaVM((JNIEnv*)&Kaffe_JNIEnv, &currentVM);
-	if (!Kaffe_IsSameObject((JNIEnv*)&Kaffe_JNIEnv, currentVM, vm))
+	Kaffe_GetJavaVM(je, &currentVM);
+	if (!Kaffe_IsSameObject(je, currentVM, vm))
 		return (JNI_EDETACHED);
 
 	/* Is the requested version of the interface known? */
 	switch (interface_id) {
 	case JNI_VERSION_1_1:
-		(*penv) = (JNIEnv*)&Kaffe_JNIEnv;
+		(*penv) = je;
 		return (JNI_OK);
 	case JNI_VERSION_1_2:
-		(*penv) = (JNIEnv*)&Kaffe_JNIEnv;
+		(*penv) = je;
 		return (JNI_OK);
 #if 0
 	case JVMDI_VERSION_1:
@@ -3728,7 +3762,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 
 	if (use_JNI) {
 		/* Push the JNI info */
-		pusharg_ref_const((void*)&Kaffe_JNIEnv, 0);
+		pusharg_ref_const((void*)THREAD_JNIENV(), 0);
 
 		/* If static, push the class, else push the object */
 		if (METHOD_IS_STATIC(xmeth)) {
@@ -3838,7 +3872,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 		}
 
 		/* Push the JNI info */
-		pusharg_ref_const((void*)&Kaffe_JNIEnv, 0);
+		pusharg_ref_const((void*)THREAD_JNIENV(), 0);
 	}
 	else {
 		/* If static, nothing, else push the object */
@@ -4375,13 +4409,6 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	NULL,
 	NULL,
 
-};
-
-/*
- * Setup the Kaffe JNI environment.
- */
-struct JNIEnv_ Kaffe_JNIEnv = {
-	&Kaffe_JNINativeInterface,
 };
 
 /*

@@ -137,13 +137,24 @@ extern int prependClasspath(const char*);
  */
 #define BITMAP_BPI	(sizeof(int) * 8)
 
+/* compute the number of bytes needed to hold 'b' bits. */
+#define BITMAP_BYTE_SIZE(b) (((b) + BITMAP_BPI - 1) / BITMAP_BPI)
+
 /* create a new bitmap for b bits */
 #define BITMAP_NEW(b)	\
-    (int *)KCALLOC(((b) + BITMAP_BPI - 1)/BITMAP_BPI, sizeof(int))
+    (int *)KCALLOC(BITMAP_BYTE_SIZE(b), sizeof(int))
 
 /* set nth bit, counting from MSB to the right */
 #define BITMAP_SET(m, n) \
     (m[(n) / BITMAP_BPI] |= (1 << (BITMAP_BPI - 1 - (n) % BITMAP_BPI)))
+
+/* clear the nth bit, counting from MSB to the right */
+#define BITMAP_CLEAR(m, n) \
+    (m[(n) / BITMAP_BPI] &= ~(1 << (BITMAP_BPI - 1 - (n) % BITMAP_BPI)))
+
+/* test nth bit, counting from MSB to the right */
+#define BITMAP_ISSET(m, n) \
+    (m[(n) / BITMAP_BPI] & (1 << (BITMAP_BPI - 1 - (n) % BITMAP_BPI)))
 
 /* copy nbits from bitmap src to bitmap dst */
 #define BITMAP_COPY(dst, src, nbits) \

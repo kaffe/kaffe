@@ -102,6 +102,9 @@ struct GarbageCollectorInterface_Ops {
 			destroy_func_t destroy, const char
 					 *description);
 	struct Hjava_lang_Throwable *(*throwOOM)(Collector *);
+
+	void 	(*enableGC)(Collector *);
+	void 	(*disableGC)(Collector *);
 };
 
 Collector* createGC(void (*_walkRootSet)(Collector*));
@@ -154,7 +157,11 @@ static inline void GC_markObject(void *g, void *addr)
 #define GC_registerGcTypeByIndex(G, idx, walk, final, destroy, desc)	\
     ((G)->ops->registerGcTypeByIndex)((Collector*)(G), 	     \
 				(idx), (walk), (final), (destroy), (desc))
-					
+#define GC_enableGC(G)		\
+    ((G)->ops->enableGC)((Collector*)(G));
+#define GC_disableGC(G)		\
+    ((G)->ops->disableGC)((Collector*)(G));
+
 /*
  * Compatibility macros to access GC functions
  */
@@ -170,6 +177,9 @@ extern Collector* main_collector;
 #define	invokeFinalizer()   GC_invokeFinalizer(main_collector)
 
 #define gc_throwOOM()	    GC_throwOOM(main_collector)
+
+#define gc_enableGC()	    GC_enableGC(main_collector)
+#define gc_disableGC()	    GC_disableGC(main_collector)
 
 #include "gcRefs.h"
 extern char* describeObject(const void* mem);

@@ -44,6 +44,7 @@
 #include "thread.h"
 #include "gcRefs.h"
 #include "methodCache.h"
+#include "jvmpi_kaffe.h"
 
 /*****************************************************************************
  * Class-related functions
@@ -65,7 +66,7 @@ DBG(CLASSGC,
         dprintf("destroying class %s @ %p\n",
 		clazz->name ? clazz->name->data : "newborn", c);
    )
-	assert(!CLASS_IS_PRIMITIVE(clazz));
+	assert(!CLASS_IS_PRIMITIVE(clazz)); 
 
 	/* NB: Make sure that we don't unload fully loaded classes without
 	 * classloaders.  This is wrong and indicate of a bug.
@@ -75,6 +76,17 @@ DBG(CLASSGC,
 	 * state, and the discarded class objects destroyed.
 	 */
 	assert(clazz->state != CSTATE_COMPLETE || clazz->loader != 0);
+
+#if defined(ENABLE_JVMPI)
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_CLASS_UNLOAD) )
+	{
+		JVMPI_Event ev;
+
+		ev.event_type = JVMPI_EVENT_CLASS_UNLOAD;
+		ev.u.class_unload.class_id = c;
+		jvmpiPostEvent(&ev);
+	}
+#endif
 
 	if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0 && clazz->name) {
 		dprintf("<GC: unloading class `%s'>\n",
@@ -88,9 +100,7 @@ DBG(CLASSGC,
                         utf8ConstRelease(f->name);
                         /* if the field was never resolved, we must release the
                          * Utf8Const to which its type field points */
-                        if (!FIELD_RESOLVED(f)) {
-                                utf8ConstRelease((Utf8Const*)FIELD_TYPE(f));
-                        }
+			utf8ConstRelease(f->signature);
 			f++;
                 }
                 KFREE(CLASS_FIELDS(clazz));
@@ -114,6 +124,17 @@ DBG(CLASSGC,
 #endif
 #if defined(JIT3)
 					makeMethodInactive(m);
+#endif
+#if defined(ENABLE_JVMPI)
+					if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_COMPILED_METHOD_UNLOAD)  )
+					{
+						JVMPI_Event ev;
+
+						ev.event_type = JVMPI_EVENT_COMPILED_METHOD_UNLOAD;
+						ev.u.compiled_method_unload.
+							method_id = m;
+						jvmpiPostEvent(&ev);
+					}
 #endif
 				}
 #endif
@@ -493,8 +514,7 @@ void
 /* ARGSUSED */
 finalizeObject(Collector* collector, void* ob)
 {
-	extern JNIEnv Kaffe_JNIEnv;
-	JNIEnv *env = &Kaffe_JNIEnv;
+	JNIEnv *env = THREAD_JNIENV();
 	Hjava_lang_Class* objclass;
         Hjava_lang_Object* obj = (Hjava_lang_Object*)ob;
 	Method* final;
