@@ -244,7 +244,7 @@ with_engine = @with_engine@
 
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir)
 noinst_LTLIBRARIES = libreplace.la
-libreplace_la_SOURCES = getifaddrs.c
+libreplace_la_SOURCES = getifaddrs.c inet_pton.c inet_ntop.c
 
 #libreplace_la_LIBADD = @LTLIBOBJS@
 EXTRA_DIST = ifaddrs_linux.c
@@ -258,13 +258,14 @@ LTLIBRARIES = $(noinst_LTLIBRARIES)
 
 libreplace_la_LDFLAGS =
 libreplace_la_LIBADD =
-am_libreplace_la_OBJECTS = getifaddrs.lo
+am_libreplace_la_OBJECTS = getifaddrs.lo inet_pton.lo inet_ntop.lo
 libreplace_la_OBJECTS = $(am_libreplace_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/getifaddrs.Plo
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/getifaddrs.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/inet_ntop.Plo ./$(DEPDIR)/inet_pton.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -303,6 +304,8 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getifaddrs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inet_ntop.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inet_pton.Plo@am__quote@
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)

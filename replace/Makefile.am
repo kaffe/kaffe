@@ -12,7 +12,7 @@
 
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir)
 noinst_LTLIBRARIES = libreplace.la
-libreplace_la_SOURCES = getifaddrs.c
+libreplace_la_SOURCES = getifaddrs.c inet_pton.c inet_ntop.c
 #libreplace_la_LIBADD = @LTLIBOBJS@
 
 EXTRA_DIST = ifaddrs_linux.c

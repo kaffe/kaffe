@@ -1,5 +1,22 @@
 2003-06-12 Dalibor Topic <robilad@yahoo.com>
 
+	* configure.in: check for inet_ntop and inet_pton.
+
+	* config/config.h.in, configure,
+	kaffe/scripts/Makefile.in,
+	kaffe/scripts/compat/Makefile.in,
+	libltdl/config-h.in,
+	replace/Makefile.in:
+	regenerated.
+
+	* replace/Makefile.am:
+	(libreplace_la_SORCES) Add inet_ntop.c and inet_pton.c.
+
+	* replace/inet_ntop.c, replace/inet_pton.c:
+	new files, taken from ircii, distributed under a BSD type license.
+
+2003-06-12 Dalibor Topic <robilad@yahoo.com>
+
 	* libraries/clib/io/File.c:
 	(java_io_File_createNewFile0) Always create file in binary mode.
 

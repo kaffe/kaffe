@@ -963,9 +963,13 @@ AC_CHECK_FUNCS([getaddrinfo])
 AM_ICONV
 LIBS="$LIBS $LIBICONV"
 
-AC_REPLACE_FUNCS(getifaddrs)
+AC_REPLACE_FUNCS([getifaddrs])
 AC_CHECK_HEADERS(ifaddrs.h,use_compat_ifaddrs="no",use_compat_ifaddrs="yes")
 AM_CONDITIONAL(USE_COMPAT_IFADDRS, test "$use_compat_ifaddrs" = "yes")
+
+AC_REPLACE_FUNCS([inet_ntop])
+AC_REPLACE_FUNCS([inet_pton])
+AC_CHECK_HEADERS([arpa/nameser.h])
 
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
