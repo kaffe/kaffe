@@ -1,4 +1,9 @@
 2004-12-09  Adam Heath  <doogie@brainfood.com>
+	* scripts/sort-warnings.pl, scripts/LogWarning.pm,
+	  scripts/JikesWarning.pm, scripts/GCCWarning.pm:
+	  Rewritten to be a 'bit' more modular.
+
+2004-12-09  Adam Heath  <doogie@brainfood.com>
 
 	* scripts/sort-warnings.pl: Several new warnings detected, including
 	  some from jikes.
