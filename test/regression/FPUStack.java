@@ -1,5 +1,5 @@
 /**
- * Test case for PR#601 and PR#620.
+ * Test case for PR#601, PR#620 and PR#737.
  *
  * On ix86, FPU register is a stack.
  * When a FPU return value is ignored, JIT _must_ remove the result from the
@@ -144,6 +144,48 @@ public class FPUStack {
 	System.out.println ("[2] Q.fread() " + Q.fread());
     }
 
+    
+    public static double dstore(double a) {
+	// Test case for PR#737
+	// Author: Stas Sergeev <stas.orel@mailcity.com>
+	double x0;
+	double deltaX = 1.0;
+	double deltaY = 1.0;
+	double eps = 0.01;
+
+        x0 = a - eps;
+        deltaX = 2 * eps;
+        return deltaX;
+    }
+
+    public static void dstore_test() {
+	System.out.println("dstore_test()");
+	for (int i = 0; i < 5; i++) {
+	    System.out.println(dstore(0));
+	}
+    }
+
+
+    public static float fstore(float a) {
+	// Test case for PR#737
+	// Author: Stas Sergeev <stas.orel@mailcity.com>
+	float x0;
+	float deltaX = 1.0f;
+	float deltaY = 1.0f;
+	float eps = 0.01f;
+
+        x0 = a - eps;
+        deltaX = 2 * eps;
+        return deltaX;
+    }
+
+    public static void fstore_test() {
+	System.out.println("fstore_test()");
+	for (int i = 0; i < 5; i++) {
+	    System.out.println(fstore(0));
+	}
+    }
+
 
     public static void main (String[] args) {
 	test_good();
@@ -173,6 +215,9 @@ public class FPUStack {
 	ftest_bad_inline();
 	ftest_bad_inline();
 	ftest_bad_inline();
+
+	dstore_test();
+	fstore_test();
     }
 }
 
@@ -281,4 +326,16 @@ ftest_bad_inline()
 ftest_bad_inline()
 [1] Q.fread() 0.0
 [2] Q.fread() 0.0
+dstore_test()
+0.02
+0.02
+0.02
+0.02
+0.02
+fstore_test()
+0.02
+0.02
+0.02
+0.02
+0.02
 */
