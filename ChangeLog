@@ -1,3 +1,15 @@
+Fri May 21 10:06:50 1999  Ted Stockwell <tws@rims.com>
+
+	* config/i386/bsdi/md.[ch]: Fixes for BSDI 2.1's threading.  
+	* config/config-setjmp.h: Don't redefine THREAD_*JMP macros if 
+	md.h already defines them.
+
+Fri May 21 10:06:24 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/gcFuncs.c: ignore exceptions in finalizers
+	as Ted Stockwell points out.
+	test/regression/finalexc.java: test for that.
+
 1999-05-19  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in (LIBS, *_LIBS): My 1999-04-23 change did break some

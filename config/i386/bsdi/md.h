@@ -25,4 +25,30 @@
 #include "jit-md.h"
 #endif
 
+
+/*
+        layout of i386_jump_buf.
+	Note that sp must be in the 3rd position to be compatible with 
+	native bsdi jump buffer.
+                unsigned long Ebp;
+                unsigned long Edi;
+                unsigned long Esp;
+                unsigned long Esi;
+                unsigned long Ebx;
+                unsigned long Eip;
+                unsigned long Edx;
+*/
+typedef long i386_jmp_buf[7];
+int i386_setjmp(i386_jmp_buf buf);
+int i386_longjmp(i386_jmp_buf buf, int rc);
+
+#undef JTHREAD_SETJMP
+#define JTHREAD_SETJMP(buf)       i386_setjmp((buf))
+#undef JTHREAD_LONGJMP
+#define JTHREAD_LONGJMP(buf, val) i386_longjmp((buf), (val))
+#undef JTHREAD_JMPBUF
+#define JTHREAD_JMPBUF            i386_jmp_buf
+
+
 #endif
+

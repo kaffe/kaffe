@@ -27,7 +27,10 @@
  */
 
 #if 1
+#ifndef JTHREAD_SETJMP
 #define JTHREAD_SETJMP(buf)		setjmp((buf))
+#endif
+#ifndef JTHREAD_LONGJMP
 #if defined(__FreeBSD__) && defined(__i386__)
 /* XXX Check for a corrupted jump buffer before jumping there. This version for
    XXX FreeBSD/i386 checks the stack pointer and PC counter. This is a temp
@@ -40,13 +43,25 @@
 #else
 #define JTHREAD_LONGJMP(buf, val)	longjmp((buf), (val))
 #endif
+#endif /* !defined(JTHREAD_LONGJMP) */
+
+#ifndef JTHREAD_JMPBUF
 #define JTHREAD_JMPBUF			jmp_buf
+#endif
 
 #else
 
+#ifndef JTHREAD_SETJMP
 #define JTHREAD_SETJMP(buf)		sigsetjmp((buf), 0)
+#endif
+
+#ifndef JTHREAD_LONGJMP
 #define JTHREAD_LONGJMP(buf, val)	siglongjmp((buf), (val))
+#endif
+
+#ifndef JTHREAD_JMPBUF
 #define JTHREAD_JMPBUF			sigjmp_buf
+#endif
 
 #endif
 
