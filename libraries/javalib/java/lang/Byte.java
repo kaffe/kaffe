@@ -79,6 +79,11 @@ public byte byteValue()
 	return (val);
 }
 
+public short shortValue()
+       {
+       return ((short)val);
+}
+
 public int intValue()
 	{
 	return ((int)val);
