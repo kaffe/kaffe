@@ -1,5 +1,23 @@
 2003-12-19  Dalibor Topic <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
+	(jthread_current, jthread_on_current_stack, 
+	jthread_stackcheck, jthread_relaxstack, 
+	jthread_stacklimit, jthread_spinon, 
+	jthread_spinoff, jthread_get_usage): New functions, deinlined
+	from kaffe/kaffevm/systems/unix-jthreads/jthread.h.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.h
+	(jthread_current, jthread_on_current_stack,
+        jthread_stackcheck, jthread_relaxstack,
+        jthread_stacklimit, jthread_spinon,
+        jthread_spinoff, jthread_get_usage): Replaced inline functions
+	by prototype declarations, and moved implementations over to
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c to fix build 
+	problems on Cygwin.
+
+2003-12-19  Dalibor Topic <robilad@kaffe.org>
+
 	* include/nets.h
 	[!HAVE_INET_NTOP]: Added prototype for inet_ntop.
 	[!HAVE_INET_PTON]: Added prototype for inet_pton.

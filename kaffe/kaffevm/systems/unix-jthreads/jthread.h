@@ -207,11 +207,7 @@ void 	jthread_sleep(jlong time);
 /* 
  * return the current thread 
  */
-static inline jthread_t
-jthread_current(void) 
-{ 
-	return currentJThread; 
-}
+jthread_t jthread_current(void);
 
 /* 
  * count the number of stack frames - unimplemented 
@@ -241,83 +237,19 @@ void 	jthread_exit(void) __NORETURN__;
 /*
  * determine whether a location is on the stack of the current thread
  */
-static inline int
-jthread_on_current_stack(void *bp)      
-{
-        int rc = bp >= currentJThread->stackBase && bp < currentJThread->stackEnd;
-
-DBG(JTHREADDETAIL,
-	dprintf("on current stack: base=%p size=%ld bp=%p %s\n",
-		currentJThread->stackBase,
-		(long)((char *) currentJThread->stackEnd - (char *) currentJThread->stackBase),
-		bp,
-		(rc ? "yes" : "no"));
-    )
-
-        return rc;
-}
+int     jthread_on_current_stack(void *bp);
 
 /* 
  * Check for room on stack.
  */
-static inline int     
-jthread_stackcheck(int left)
-{
-	int rc;
-#if defined(STACK_GROWS_UP)
-        rc = jthread_on_current_stack((char*)&rc + left);
-#else
-        rc = jthread_on_current_stack((char*)&rc - left);
-#endif
-	return (rc);
-}
+int     jthread_stackcheck(int left);
 
 /*
  * Get the current stack limit.
  */
+void jthread_relaxstack(int yes);
 
-#define	REDZONE	1024
-
-static inline void
-jthread_relaxstack(int yes)
-{
-	if( yes )
-	{
-#if defined(STACK_GROWS_UP)
-		uintp end = (uintp) currentJThread->stackEnd;
-		end += REDZONE;
-		currentJThread->stackEnd = (void *) end;
-#else
-		uintp base = (uintp) currentJThread->stackBase;
-		base -= REDZONE;
-		currentJThread->stackBase = (void *) base;
-#endif
-	}
-	else
-	{
-#if defined(STACK_GROWS_UP)
-		uintp end = (uintp) currentJThread->stackEnd;
-		end -= REDZONE;
-		currentJThread->stackEnd = (void *) end;
-#else
-		uintp base = (uintp) currentJThread->stackBase;
-		base += REDZONE;
-		currentJThread->stackBase = (void *) base;
-#endif
-	}
-}
-
-static
-inline
-void*
-jthread_stacklimit(void)
-{
-#if defined(STACK_GROWS_UP)
-        return (void*)((uintp)currentJThread->stackEnd - REDZONE);
-#else
-        return (void*)((uintp)currentJThread->stackBase + REDZONE);
-#endif
-}
+void* jthread_stacklimit(void);
 
 /*
  * determine the "interesting" stack range a conservative gc must walk
@@ -396,52 +328,17 @@ void jthread_set_blocking(int fd, int blocking);
 #define JTHREAD_RESTORE_FD
 void jthreadRestoreFD(int fd);
 
-
 /* Spinlocks: simple since we're uniprocessor */
-/* ARGSUSED */
-static inline
-void jthread_spinon(void *arg)
-{
-	jthread_suspendall();
-}
+void jthread_spinon(void *arg);
 
-/* ARGSUSED */
-static inline
-void jthread_spinoff(void *arg)
-{
-	jthread_unsuspendall();
-}
+void jthread_spinoff(void *arg);
 
 void jthread_suspend(jthread_t jt, void *suspender);
 void jthread_resume(jthread_t jt, void *suspender);
 
 jthread_t jthread_from_data(threadData *td, void *suspender);
 
-static inline
-jlong jthread_get_usage(jthread_t jt)
-{
-	jlong retval;
-	
-	if( jt == jthread_current() )
-	{
-		struct rusage ru;
-		jlong ct;
-		
-		getrusage(RUSAGE_SELF, &ru);
-		ct = ((jlong)ru.ru_utime.tv_sec * 1000000)
-			+ ((jlong)ru.ru_utime.tv_usec);
-		ct += ((jlong)ru.ru_stime.tv_sec * 1000000)
-			+ ((jlong)ru.ru_stime.tv_usec);
-
-		retval = jt->totalUsed + (ct - jt->startUsed);
-	}
-	else
-	{
-		retval = jt->totalUsed;
-	}
-	retval *= 1000; /* Convert to nanos */
-	return( retval );
-}
+jlong jthread_get_usage(jthread_t jt);
 
 static inline
 int jthread_get_status(jthread_t jt)
