@@ -36,14 +36,30 @@ TRAMPOLINE_FUNCTION()
 #define C_FUNC_NAME(FUNC) #FUNC
 #endif
 
+#if defined(__ELF__)
+
 asm (
         START_ASM_FUNC() C_FUNC_NAME(m68k_do_fixup_trampoline) "\n"
 C_FUNC_NAME(m68k_do_fixup_trampoline) ":
         jbsr    " C_FUNC_NAME(soft_fixup_trampoline) "
-	addqw	#4,%/sp
-	movel	%/d0,%/a0
-        jmp     %/a0@"
+	addqw	#4,%sp
+	movel	%d0,%a0
+        jmp     %a0@"
         END_ASM_FUNC()
 );
+
+#else
+
+asm (
+        START_ASM_FUNC() C_FUNC_NAME(m68k_do_fixup_trampoline) "\n"
+C_FUNC_NAME(m68k_do_fixup_trampoline) ":
+        jbsr    " C_FUNC_NAME(soft_fixup_trampoline) "
+        addqw   #4,sp
+        movel   d0,a0
+        jmp     a0@"
+        END_ASM_FUNC()
+);
+
+#endif
 
 #endif
