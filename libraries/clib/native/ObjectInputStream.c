@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003 Kaffe Team.
+ * Copyright (C) 2003, 2004 Kaffe Team.
  */
 #include "config.h"
 #include "config-std.h"
@@ -12,6 +12,7 @@
 #include "../../../kaffe/kaffevm/exception.h"
 #include "../../../kaffe/kaffevm/lookup.h"
 #include "../../../kaffe/kaffevm/soft.h"
+#include "../../../kaffe/kaffevm/support.h"
 
 struct Hjava_lang_ClassLoader*
 java_io_ObjectInputStream_currentClassLoader(

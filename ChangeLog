@@ -1,3 +1,8 @@
+2004-02-10  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/clib/native/ObjectInputStream.c:
+	Include support.h to avoid compiler warning.
+	
 2004-02-09  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/java/io/ObjectInputStream.java
