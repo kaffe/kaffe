@@ -1,5 +1,31 @@
 2004-12-10  Dalibor Topic  <robilad@kaffe.org>
 
+	* THIRDPARTY:
+	Added notice for org.ietf.jgss.
+
+	* libraries/javalib/org/ietf/jgss/ChannelBinding.java,
+	libraries/javalib/org/ietf/jgss/GSSContext.java,
+	libraries/javalib/org/ietf/jgss/GSSCredential.java,
+	libraries/javalib/org/ietf/jgss/GSSException.java,
+	libraries/javalib/org/ietf/jgss/GSSManager.java,
+	libraries/javalib/org/ietf/jgss/GSSName.java,
+	libraries/javalib/org/ietf/jgss/MessageProp.java,
+	libraries/javalib/org/ietf/jgss/Oid.java:
+	Resynced with GNU Classpath.
+
+	2004-12-07  Mark Wielaard  <mark@klomp.org>
+
+        * LICENSE: Add text about org.ietf.jgss documentation.
+        * org/ietf/jgss/ChannelBinding.java: Merge top two comment blocks.
+        * org/ietf/jgss/GSSCredential.java: Likewise.
+        * org/ietf/jgss/GSSException.java: Likewise.
+        * org/ietf/jgss/GSSManager.java: Likewise.
+        * org/ietf/jgss/GSSName.java: Likewise.
+        * org/ietf/jgss/MessageProp.java: Likewise.
+        * org/ietf/jgss/Oid.java: Likewise.
+
+2004-12-10  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/io/FileDescriptor.java:
         Resynced with GNU Classpath.
 
