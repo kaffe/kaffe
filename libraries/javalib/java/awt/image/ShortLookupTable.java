@@ -107,7 +107,7 @@ public class ShortLookupTable extends LookupTable
    * translation arrays.
    *
    * @param src Component values of a pixel.
-   * @param dest Destination array for values, or null.
+   * @param dst Destination array for values, or null.
    * @return Translated values for the pixel.
    */
   public int[] lookupPixel(int[] src, int[] dst)
@@ -140,7 +140,7 @@ public class ShortLookupTable extends LookupTable
    * translation arrays.
    *
    * @param src Component values of a pixel.
-   * @param dest Destination array for values, or null.
+   * @param dst Destination array for values, or null.
    * @return Translated values for the pixel.
    */
   public short[] lookupPixel(short[] src, short[] dst)

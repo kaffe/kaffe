@@ -130,7 +130,7 @@ List()
   * Initializes a new instance of <code>List</code> with the specified
   * number of visible lines and multi-select disabled.
   *
-  * @param lines The number of visible lines in the list.
+  * @param rows The number of visible rows in the list.
   *
   * @exception HeadlessException If GraphicsEnvironment.isHeadless() is true.
   */
@@ -146,7 +146,7 @@ List(int rows)
   * Initializes a new instance of <code>List</code> with the specified
   * number of lines and the specified multi-select setting.
   *
-  * @param lines The number of visible lines in the list.
+  * @param rows The number of visible rows in the list.
   * @param multipleMode <code>true</code> if multiple lines can be selected
   * simultaneously, <code>false</code> otherwise.
   *

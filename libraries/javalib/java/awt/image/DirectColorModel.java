@@ -58,7 +58,7 @@ public class DirectColorModel extends PackedColorModel
    * most likely order of alpha, red, green, blue from the most significant
    * byte to the least significant byte.
    * 
-   * @param bits the number of bits wide used for bit size of pixel values
+   * @param pixelBits the number of bits wide used for bit size of pixel values
    * @param rmask the bits describing the red component of a pixel
    * @param gmask the bits describing the green component of a pixel
    * @param bmask the bits describing the blue component of a pixel 
@@ -79,7 +79,7 @@ public class DirectColorModel extends PackedColorModel
    * most likely order of red, green, blue from the most significant
    * byte to the least significant byte.
    * 
-   * @param bits the number of bits wide used for bit size of pixel values
+   * @param pixelBits the number of bits wide used for bit size of pixel values
    * @param rmask the bits describing the red component of a pixel
    * @param gmask the bits describing the green component of a pixel
    * @param bmask the bits describing the blue component of a pixel 

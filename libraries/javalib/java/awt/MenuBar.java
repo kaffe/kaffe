@@ -131,7 +131,7 @@ getHelpMenu()
 /**
   * Sets the help menu for this menu bar.
   *
-  * @param helpMenu The new help menu for this menu bar.
+  * @param menu The new help menu for this menu bar.
   */
 public synchronized void
 setHelpMenu(Menu menu)
@@ -253,6 +253,8 @@ countMenus()
 
 /**
   * Returns the menu at the specified index.
+  *
+  * @param index the index of the menu
   *
   * @return The requested menu.
   *

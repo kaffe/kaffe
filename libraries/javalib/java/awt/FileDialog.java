@@ -261,7 +261,7 @@ setFile(String file)
 /**
   * Returns the filename filter being used by this dialog.
   *
-  * @param The filename filter being used by this dialog.
+  * @return The filename filter being used by this dialog.
   */
 public FilenameFilter
 getFilenameFilter()

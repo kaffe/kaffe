@@ -87,7 +87,11 @@ public class ByteLookupTable extends LookupTable
     this.data = new byte[][] {data};
   }
 
-  /** Return the lookup tables. */
+  /**
+   * Return the lookup tables.
+   *
+   * @return the tables
+   */
   public final byte[][] getTable()
   {
     return data;
@@ -107,7 +111,7 @@ public class ByteLookupTable extends LookupTable
    * translation arrays.
    *
    * @param src Component values of a pixel.
-   * @param dest Destination array for values, or null.
+   * @param dst Destination array for values, or null.
    * @return Translated values for the pixel.
    */
   public int[] lookupPixel(int[] src, int[] dst)
@@ -140,7 +144,7 @@ public class ByteLookupTable extends LookupTable
    * translation arrays.
    *
    * @param src Component values of a pixel.
-   * @param dest Destination array for values, or null.
+   * @param dst Destination array for values, or null.
    * @return Translated values for the pixel.
    */
   public byte[] lookupPixel(byte[] src, byte[] dst)

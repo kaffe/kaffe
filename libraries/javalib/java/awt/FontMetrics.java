@@ -440,7 +440,7 @@ public LineMetrics getLineMetrics(char[] chars, int begin,
  * FontRenderContext with a null transform, not anti-aliased and not
  * using fractional metrics.
  *
- * @param rc The string to calculate metrics from.
+ * @param ci An iterator over the string to calculate metrics from.
  * @param begin Index of first character in <code>text</code> to measure.
  * @param limit Index of last character in <code>text</code> to measure.
  * @param g The Graphics object that will be used.
@@ -460,7 +460,4 @@ public LineMetrics getLineMetrics(CharacterIterator ci, int begin,
     rc = gRC;
   return font.getLineMetrics(ci, begin, limit, rc);
 }
-
-} // class FontMetrics 
-
-
+}

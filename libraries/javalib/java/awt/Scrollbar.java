@@ -365,7 +365,7 @@ getVisible()
   * Sets the width of the scrollbar's thumb, in units relative to the
   * maximum and minimum value of the scrollbar.
   *
-  * @param visibileAmount The new visible amount value of the scrollbar.
+  * @param visibleAmount The new visible amount value of the scrollbar.
   */
 public void
 setVisibleAmount(int visibleAmount)

@@ -328,7 +328,6 @@ getRepresentationClassFromMime(String mimeString, ClassLoader classLoader)
  *
  * @param mimeType The MIME type for this flavor.
  * @param humanPresentableName The display name of this flavor.
- * @param classLoader The class loader for finding classes.
  *
  * @exception IllegalArgumentException If the representation class
  * specified cannot be loaded.
@@ -555,7 +554,7 @@ isMimeTypeSerializedObject()
  * Tests whether or not this flavor has a representation class of
  * <code>java.io.InputStream</code>.
  *
- * @param <code>true</code> if the representation class of this flavor
+ * @return <code>true</code> if the representation class of this flavor
  * is <code>java.io.InputStream</code>, <code>false</code> otherwise.
  */
 public boolean
@@ -570,7 +569,7 @@ isRepresentationClassInputStream()
  * Tests whether the representation class for this flavor is
  * serializable.
  *
- * @param <code>true</code> if the representation class is serializable,
+ * @return <code>true</code> if the representation class is serializable,
  * <code>false</code> otherwise.
  */
 public boolean

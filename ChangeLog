@@ -1,5 +1,77 @@
 2004-11-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/BasicStroke.java,
+	libraries/javalib/java/awt/Button.java,
+	libraries/javalib/java/awt/Canvas.java,
+	libraries/javalib/java/awt/CheckboxMenuItem.java,
+	libraries/javalib/java/awt/Container.java,
+	libraries/javalib/java/awt/EventQueue.java,
+	libraries/javalib/java/awt/FileDialog.java,
+	libraries/javalib/java/awt/FlowLayout.java,
+	libraries/javalib/java/awt/FontMetrics.java,
+	libraries/javalib/java/awt/Graphics.java,
+	libraries/javalib/java/awt/GridLayout.java,
+	libraries/javalib/java/awt/KeyboardFocusManager.java,
+	libraries/javalib/java/awt/Label.java,
+	libraries/javalib/java/awt/LayoutManager2.java,
+	libraries/javalib/java/awt/List.java,
+	libraries/javalib/java/awt/MenuBar.java,
+	libraries/javalib/java/awt/Scrollbar.java,
+	libraries/javalib/java/awt/Toolkit.java,
+	libraries/javalib/java/awt/Window.java,
+	libraries/javalib/java/awt/datatransfer/DataFlavor.java,
+	libraries/javalib/java/awt/datatransfer/FlavorTable.java,
+	libraries/javalib/java/awt/event/ActionListener.java,
+	libraries/javalib/java/awt/event/HierarchyBoundsAdapter.java,
+	libraries/javalib/java/awt/geom/Arc2D.java,
+	libraries/javalib/java/awt/geom/Rectangle2D.java,
+	libraries/javalib/java/awt/geom/RectangularShape.java,
+	libraries/javalib/java/awt/im/spi/InputMethod.java,
+	libraries/javalib/java/awt/image/ByteLookupTable.java,
+	libraries/javalib/java/awt/image/ColorModel.java,
+	libraries/javalib/java/awt/image/DirectColorModel.java,
+	libraries/javalib/java/awt/image/ShortLookupTable.java,
+	libraries/javalib/java/awt/print/Book.java:
+	Resynced with GNU Classpath.
+
+	2004-11-16  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/BasicStroke.java,
+        java/awt/Button.java,
+        java/awt/Canvas.java,
+        java/awt/CheckboxMenuItem.java,
+        java/awt/Container.java,
+        java/awt/EventQueue.java,
+        java/awt/FileDialog.java,
+        java/awt/FlowLayout.java,
+        java/awt/FontMetrics.java,
+        java/awt/Graphics.java,
+        java/awt/GridLayout.java,
+        java/awt/KeyboardFocusManager.java,
+        java/awt/Label.java,
+        java/awt/LayoutManager2.java,
+        java/awt/List.java,
+        java/awt/MenuBar.java,
+        java/awt/Scrollbar.java,
+        java/awt/Toolkit.java,
+        java/awt/Window.java,
+        java/awt/datatransfer/DataFlavor.java,
+        java/awt/datatransfer/FlavorTable.java,
+        java/awt/event/ActionListener.java,
+        java/awt/event/HierarchyBoundsAdapter.java,
+        java/awt/geom/Arc2D.java,
+        java/awt/geom/Rectangle2D.java,
+        java/awt/geom/RectangularShape.java,
+        java/awt/im/spi/InputMethod.java,
+        java/awt/image/ByteLookupTable.java,
+        java/awt/image/ColorModel.java,
+        java/awt/image/DirectColorModel.java,
+        java/awt/image/ShortLookupTable.java,
+        java/awt/print/Book.java:
+        Fixed javadocs and method argument names all over.
+
+2004-11-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/locale/LocaleInformation_de.java:
         Resynced with GNU Classpath.
 

@@ -244,7 +244,7 @@ addNotify()
 /**
   * Returns a parameter string useful for debugging.
   *
-  * @param A debugging string.
+  * @return A debugging string.
   */
 protected String
 paramString()

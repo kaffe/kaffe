@@ -68,8 +68,12 @@ public class FlowLayout implements LayoutManager, Serializable
   // Serialization constant
   private static final long serialVersionUID = -7262534875583282631L;
 
-  /** Add a new component to the layout.  This particular implementation
+  /**
+   * Add a new component to the layout.  This particular implementation
    * does nothing.
+   *
+   * @param name the name
+   * @param comp the component 
    */
   public void addLayoutComponent (String name, Component comp)
   {

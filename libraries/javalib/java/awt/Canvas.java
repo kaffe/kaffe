@@ -119,6 +119,8 @@ public class Canvas
    * Repaints the canvas window.  This method should be overridden by 
    * a subclass to do something useful, as this method simply paints
    * the window with the background color.
+   *
+   * @param gfx the <code>Graphics</code> to use for painting
    */
   public void paint(Graphics gfx)
   {
@@ -130,7 +132,6 @@ public class Canvas
     Dimension size = getSize();
     gfx.fillRect(0, 0, size.width, size.height);
   }
-
 
   /**
    * This class provides accessibility support for the canvas.

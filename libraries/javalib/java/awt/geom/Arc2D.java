@@ -1152,7 +1152,7 @@ public abstract class Arc2D extends RectangularShape
     /**
      * Sets the extent angle of the arc.
      *
-     * @param start the new extent angle
+     * @param extent the new extent angle
      */
     public void setAngleExtent(double extent)
     {
@@ -1371,7 +1371,7 @@ public abstract class Arc2D extends RectangularShape
     /**
      * Sets the extent angle of the arc.
      *
-     * @param start the new extent angle
+     * @param extent the new extent angle
      */
     public void setAngleExtent(double extent)
     {

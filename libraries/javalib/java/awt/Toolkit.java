@@ -371,8 +371,8 @@ public abstract class Toolkit
    * should override this method and provide real system colors for the
    * native GUI platform.
    *
-   * @param colors The array to copy the system colors into.
-   *               It must be at least 26 elements.
+   * @param systemColors The array to copy the system colors into.
+   * It must be at least 26 elements.
    *
    * @exception HeadlessException If GraphicsEnvironment.isHeadless() is true.
    *

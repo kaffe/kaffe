@@ -215,6 +215,13 @@ removeActionListener(ActionListener listener)
   action_listeners = AWTEventMulticaster.remove(action_listeners, listener);
 }
 
+  /**
+   * Returns all added <code>ActionListener</code> objects.
+   *
+   * @return an array of listeners
+   *
+   * @since 1.4
+   */
   public synchronized ActionListener[] getActionListeners()
   {
     return (ActionListener[])
@@ -222,10 +229,15 @@ removeActionListener(ActionListener listener)
                                        ActionListener.class);
   }
 
-/** Returns all registered EventListers of the given listenerType. 
+/**
+ * Returns all registered EventListers of the given listenerType. 
  * listenerType must be a subclass of EventListener, or a 
  * ClassClassException is thrown.
  *
+ * @param listenerType the listener type to return
+ *
+ * @return an array of listeners
+ * 
  * @exception ClassCastException If listenerType doesn't specify a class or
  * interface that implements @see java.util.EventListener.
  *

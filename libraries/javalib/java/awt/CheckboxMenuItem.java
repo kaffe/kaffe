@@ -174,7 +174,7 @@ setState(boolean state)
   * Returns an array of length 1 with the menu item label for this object
   * if the state is on.  Otherwise <code>null</code> is returned.
   *
-  * @param An array with this menu item's label if it has a state of on,
+  * @return An array with this menu item's label if it has a state of on,
   * or <code>null</code> otherwise.
   */
 public Object[]

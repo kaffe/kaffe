@@ -62,7 +62,7 @@ public class GridLayout implements LayoutManager, Serializable
   /** Add a new component to the layout.  This particular implementation
    * does nothing.
    * @param name The name of the component to add.
-   * @param component The component to add.
+   * @param comp The component to add.
    */
   public void addLayoutComponent (String name, Component comp)
   {

@@ -142,7 +142,7 @@ public class Window extends Container implements Accessible
    * Initializes a new instance of <code>Window</code> with the specified
    * parent.  The window will initially be invisible.
    *
-   * @param parent The owning <code>Frame</code> of this window.
+   * @param owner The owning <code>Frame</code> of this window.
    *
    * @exception IllegalArgumentException If the owner's GraphicsConfiguration
    * is not from a screen device, or if owner is null; this exception is always
@@ -605,7 +605,7 @@ public class Window extends Container implements Accessible
    * <code>processWindowEvent()</code> is called to process the event,
    * otherwise the superclass version of this method is invoked.
    *
-   * @param event The event to process.
+   * @param evt The event to process.
    */
   protected void processEvent(AWTEvent evt)
   {
@@ -621,7 +621,7 @@ public class Window extends Container implements Accessible
    * invoked if it is enabled via <code>enableEvents()</code> or if
    * a listener has been added.
    *
-   * @param event The event to process.
+   * @param evt The event to process.
    */
   protected void processWindowEvent(WindowEvent evt)
   {
@@ -711,7 +711,7 @@ public class Window extends Container implements Accessible
   /**
    * Post a Java 1.0 event to the event queue.
    *
-   * @param event The event to post.
+   * @param e The event to post.
    *
    * @deprecated
    */

@@ -1244,7 +1244,7 @@ public abstract class KeyboardFocusManager
    * to the default component of the specified container.
    * Nothing happens for non-focus cycle root containers. 
    * 
-   * @param comp the component used as part of the focus traversal.
+   * @param cont the container used as part of the focus traversal.
    */ 
   public abstract void downFocusCycle(Container cont);
 
