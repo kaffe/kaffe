@@ -258,10 +258,10 @@ LANG_SRCS = \
 		PrimordialClassLoader.c \
 		RMIHashes.c \
 		Runtime.c \
-		SecurityManager.c \
 		String.c \
 		System.c \
 		Thread.c \
+		ThreadStack.c \
 		Throwable.c \
 		UNIXProcess.c \
 		ZipFile.c
@@ -306,7 +306,7 @@ am__objects_1 = ByteToCharDefault.lo ByteToCharIconv.lo \
 am__objects_2 = Application.lo Class.lo ClassLoader.lo Compiler.lo \
 	Double.lo Float.lo Math.lo MemoryAdvice.lo NativeLibrary.lo \
 	Object.lo PrimordialClassLoader.lo RMIHashes.lo Runtime.lo \
-	SecurityManager.lo String.lo System.lo Thread.lo Throwable.lo \
+	String.lo System.lo Thread.lo ThreadStack.lo Throwable.lo \
 	UNIXProcess.lo ZipFile.lo
 am__objects_3 = Array.lo Constructor.lo Field.lo Method.lo
 am__objects_4 = DateFormat.lo
@@ -338,9 +338,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/ObjectStreamClassImpl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/PrimordialClassLoader.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/RMIHashes.Plo ./$(DEPDIR)/Runtime.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/SecurityManager.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/String.Plo ./$(DEPDIR)/System.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/TestNative.Plo ./$(DEPDIR)/Thread.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ThreadStack.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Throwable.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/UNIXProcess.Plo ./$(DEPDIR)/ZipFile.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
@@ -423,11 +423,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrimordialClassLoader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RMIHashes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Runtime.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SecurityManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/String.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/System.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestNative.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Thread.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ThreadStack.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Throwable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UNIXProcess.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ZipFile.Plo@am__quote@
