@@ -315,20 +315,11 @@ protected void finalize() throws Throwable {
 	super.finalize();
 }
 
-private void writeObject(ObjectOutputStream s) throws IOException {
-	s.writeInt(-1);
-	s.writeInt(-1);
-	s.writeInt(-2);
-	s.writeInt(getLowestSetBit());
-	s.writeInt(signum());
-	s.writeObject(toByteArray());	/* not implemented right now */
-}
-
 /**
- * deserialize this object
+ * inner class for Sun compatible default serialization
  */
-private void readObject(ObjectInputStream s)
-                 throws IOException, ClassNotFoundException {
+class DefaultSerialization {
+
     	/* serialized form is
 	 * int bitCount
 	 *
@@ -368,28 +359,29 @@ private void readObject(ObjectInputStream s)
 	 *   or 1 for positive.  Note that the BigInteger zero must have a 
 	 *   signum of 0. This is necessary to ensures that there is exactly 
 	 *   one representation for each BigInteger value.
-	 *
-	 * NB: the order has magnitude last cause it's an object 
 	 */
 
-	/* 
-	 * I don't know whether that's the right way to do it 
-	 */
-	System.out.println("jmb: readObject called, this is experimental");
-	int bitCount = s.readInt();	// ignored, not implemented
-	int bitLength = s.readInt();	// ignored, not implemented
-	int firstNonzeroByteNum = s.readInt();	// ignored, can be recomputed?
-	int lowestSetBit = s.readInt();	// ignored, can be recomputed?
-	int signum = s.readInt();
+	private int bitCount;
+	private int bitLength;
+	private int firstNonzeroByteNum;
+	private int lowestSetBit;
+	private int signum;
+	private byte [] magnitude;
 
-	// magnitude is an object and hence last
-	byte[] magnitude = (byte[])s.readObject();
+	private void readDefaultObject() {
+		BigInteger.this.init0();
+		BigInteger.this.assignBytes0(signum, magnitude);
+	}
 
-	init0();	/* I think this is needed because the serialization 
-			 * won't invoke the constructor
-			 */
-	assignBytes0(signum, magnitude);
-	System.out.println("jmb: " + toString());
+	private void writeDefaultObject() {
+		bitCount = -1;
+		bitLength = -1;
+		firstNonzeroByteNum = -2;
+		lowestSetBit = BigInteger.this.getLowestSetBit();
+		signum = BigInteger.this.signum();
+		/* XXX not implemented */
+		magnitude = BigInteger.this.toByteArray();   
+	}
 }
 
 private native void init0();
