@@ -335,6 +335,12 @@ public synchronized void remove ( String item) {
 	items.removeElement( item);
 }
 
+public synchronized void remove ( int index ) {
+	if (index >= 0 && index < items.size()) {
+		items.removeElementAt( index);
+	}
+}
+
 public synchronized void removeAll () {
 	items.removeAllElements();
 }
