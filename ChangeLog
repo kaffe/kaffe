@@ -1,6 +1,20 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/verifier/verify-type.c
+	(TINTARR): Made static. 
+	(getTINTARR) Added.
+
+	* kaffe/kaffevm/verifier/verify-type.h: 
+	(TINTARR) Removed prototype.
+	(getTINTARR) Added prototype.
+
+	* kaffe/kaffevm/verifier/verify-debug.c,
+	kaffe/kaffevm/verifier/verify-block.c:
+	Replaced use of TINTARR by getTINTARR.
+	
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/verifier/verify-type.c
 	(TLONGARR): Made static. 
 	(getTLONGARR) Added.
 

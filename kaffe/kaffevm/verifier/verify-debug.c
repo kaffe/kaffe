@@ -468,7 +468,7 @@ printType(const Type* t)
 		else if (type == TSHORTARR->data.class) {
 			dprintf("TSHORTARR");
 		}
-		else if (type == TINTARR->data.class) {
+		else if (type == getTINTARR()->data.class) {
 			dprintf("TINTARR");
 		}
 		else if (type == getTLONGARR()->data.class) {

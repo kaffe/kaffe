@@ -102,7 +102,12 @@ Type* TSHORTARR = &verify_SHORTARR;
 
 static const char* INTARR_SIG = "[I";
 static Type  verify_INTARR;
-Type* TINTARR = &verify_INTARR;
+static Type* TINTARR = &verify_INTARR;
+
+Type* getTINTARR(void)
+{
+  return TINTARR;
+}
 
 static const char* LONGARR_SIG = "[J";
 static Type  verify_LONGARR;

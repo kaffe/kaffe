@@ -109,7 +109,7 @@ extern Type* TCHARARR;
 extern Type* TBYTEARR;
 extern Type* TBOOLARR;
 extern Type* TSHORTARR;
-extern Type* TINTARR;
+extern Type* getTINTARR(void);
 extern Type* getTLONGARR(void);
 extern Type* getTFLOATARR(void);
 extern Type* getTDOUBLEARR(void);

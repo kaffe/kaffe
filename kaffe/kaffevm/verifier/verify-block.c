@@ -726,7 +726,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			case TYPE_Double:  OPSTACK_PUSH(getTDOUBLEARR()); break;
 			case TYPE_Byte:    OPSTACK_PUSH(TBYTEARR);   break;
 			case TYPE_Short:   OPSTACK_PUSH(TSHORTARR);  break;
-			case TYPE_Int:     OPSTACK_PUSH(TINTARR);    break;
+			case TYPE_Int:     OPSTACK_PUSH(getTINTARR());    break;
 			case TYPE_Long:    OPSTACK_PUSH(getTLONGARR());   break;
 			default: return verifyError(v, "newarray of unknown type");
 			}
@@ -781,7 +781,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			DBG(VERIFY3, dprintf("%sarray type: ", indent); printType(type); dprintf("\n"); );
 			break;
 			
-		case IALOAD: ARRAY_LOAD(TINT,   TINTARR);   break;
+		case IALOAD: ARRAY_LOAD(TINT,   getTINTARR());   break;
 		case FALOAD: ARRAY_LOAD(TFLOAT, getTFLOATARR()); break;
 		case CALOAD: ARRAY_LOAD(TINT,   TCHARARR);  break;
 		case SALOAD: ARRAY_LOAD(TINT,   TSHORTARR); break;
@@ -866,7 +866,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 			
 			
-		case IASTORE: ARRAY_STORE(TINT,   TINTARR);   break;
+		case IASTORE: ARRAY_STORE(TINT,   getTINTARR());   break;
 		case FASTORE: ARRAY_STORE(TFLOAT, getTFLOATARR()); break;
 		case CASTORE: ARRAY_STORE(TINT,   TCHARARR);  break;
 		case SASTORE: ARRAY_STORE(TINT,   TSHORTARR); break;
