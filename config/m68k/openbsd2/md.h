@@ -68,7 +68,7 @@
 	  "a" ((CALL)->callsize),				  \
 	  "a" ((CALL)->function)				  \
 	: "d0", "d1", "fp0", "cc", "memory");			  \
-	asm volatile (						\n\
+	asm volatile (						\
 	"	cmpb	#2,%0					\n"\
 	"	bne	5f					\n"\
 	"	cmpb	#0x44,%1				\n"\
