@@ -99,7 +99,6 @@ KPREFIX = @KPREFIX@
 KVER = @KVER@
 KVMBINFLAGS = @KVMBINFLAGS@
 KVMLIBFLAGS = @KVMLIBFLAGS@
-Kaffe_TRANSF = @Kaffe_TRANSF@
 LIBLTDL = @LIBLTDL@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
@@ -128,6 +127,7 @@ jrebindir = @jrebindir@
 jredir = @jredir@
 jrelibdir = @jrelibdir@
 kaffe_TRANSF = @kaffe_TRANSF@
+kaffebin_TRANSF = @kaffebin_TRANSF@
 nativedir = @nativedir@
 securitydir = @securitydir@
 toolslibdir = @toolslibdir@
@@ -143,7 +143,7 @@ DISTCLEANFILES = $(GEN_SRCS)
 
 kaffeh_SOURCES = $(GEN_SRCS) sigs.c support.c main.c mem.c
 
-noinst_HEADERS = kaffeh-support.h 	java_lang_ClassLoader.h 	java_lang_Object.h
+noinst_HEADERS = kaffeh-support.h 	java_lang_ClassLoader.h 	java_lang_Object.h 	java_lang_String.h
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h

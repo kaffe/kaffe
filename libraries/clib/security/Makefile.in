@@ -99,7 +99,6 @@ KPREFIX = @KPREFIX@
 KVER = @KVER@
 KVMBINFLAGS = @KVMBINFLAGS@
 KVMLIBFLAGS = @KVMLIBFLAGS@
-Kaffe_TRANSF = @Kaffe_TRANSF@
 LIBLTDL = @LIBLTDL@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
@@ -128,6 +127,7 @@ jrebindir = @jrebindir@
 jredir = @jredir@
 jrelibdir = @jrelibdir@
 kaffe_TRANSF = @kaffe_TRANSF@
+kaffebin_TRANSF = @kaffebin_TRANSF@
 nativedir = @nativedir@
 securitydir = @securitydir@
 toolslibdir = @toolslibdir@
@@ -135,7 +135,7 @@ with_engine = @with_engine@
 
 native_LTLIBRARIES = libsecurity.la
 
-EXTRA_DIST =  		kaffe_md5.h
+EXTRA_DIST =  		kaffe_md5.h 		java.security
 
 
 SECURITY_SRCS =  		digest.c 		kaffe_md5.c
