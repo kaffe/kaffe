@@ -108,7 +108,7 @@ public class BasicTableUI
     {      
       int y0 = table.getLocation().y;
       int nrows = table.getRowCount();
-      Dimension gap = table.getInterCellSpacing();
+      Dimension gap = table.getIntercellSpacing();
       int height = table.getRowHeight() + (gap == null ? 0 : gap.height);
       int y = p.y;
       for (int i = 0; i < nrows; ++i)
@@ -124,7 +124,7 @@ public class BasicTableUI
     {
       int x0 = table.getLocation().x;
       int ncols = table.getColumnCount();
-      Dimension gap = table.getInterCellSpacing();
+      Dimension gap = table.getIntercellSpacing();
       TableColumnModel cols = table.getColumnModel();      
       int x = p.x;
       for (int i = 0; i < ncols; ++i)
@@ -294,7 +294,7 @@ public class BasicTableUI
     int x = x0;
     int y = y0;
 
-    Dimension gap = table.getInterCellSpacing();
+    Dimension gap = table.getIntercellSpacing();
     int ymax = clip.y + clip.height;
     int xmax = clip.x + clip.width;
 

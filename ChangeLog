@@ -1,5 +1,12 @@
 2004-12-16  Michael Koch  <konqueror@gmx.de>
 
+	* libraries/javalib/javax/swing/JTable.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTableHeaderUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTableUI.java:
+	Use fixed get/setIntercellSpacing() methods.
+
+2004-12-16  Michael Koch  <konqueror@gmx.de>
+
 	* libraries/javalib/javax/swing/JTable.java
 	(getIntercellSpacing): Fixed typo in method name.
 	(setIntercellSpacing): Likewise.

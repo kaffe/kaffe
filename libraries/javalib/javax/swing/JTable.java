@@ -410,7 +410,7 @@ public class JTable extends JComponent
     this.preferredScrollableViewportSize = new Dimension(450,400);
     this.showHorizontalLines = true;
     this.showVerticalLines = true;
-    setInterCellSpacing(new Dimension(1,1));
+    setIntercellSpacing(new Dimension(1,1));
     setTableHeader(new JTableHeader(columnModel));
     updateUI();
   }
