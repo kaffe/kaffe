@@ -15,11 +15,6 @@
 void
 init_md(void)
 {
-#if defined(TRANSLATOR)
-	extern int jit_debug;
-	if (getenv("KAFFE_JIT_DEBUG"))
-		jit_debug = 1;
-#endif
 #if defined(M_MMAP_MAX) && defined(HAVE_MALLOPT)
 	mallopt(M_MMAP_MAX, 0);
 #endif

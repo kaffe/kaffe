@@ -13,8 +13,5 @@
 void
 init_md(void)
 {
-	extern int jit_debug;
-	if (getenv("KAFFE_JIT_DEBUG"))
-		jit_debug = 1;
 }
 #endif

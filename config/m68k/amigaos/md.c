@@ -34,10 +34,5 @@ struct Task *AmigaThisTask = NULL;
  */
 void md_init (void)
 {
-#ifdef TRANSLATOR
-    extern int jit_debug;
-    if (getenv ("KAFFE_JIT_DEBUG"))
-      jit_debug = 1;
-#endif
     AmigaThisTask = FindTask (NULL);
 }
