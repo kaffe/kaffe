@@ -207,6 +207,22 @@ public String[] list(FilenameFilter filter) {
 	return (result);
 }
 
+public File[] listFiles() {
+	return listFiles(null);
+}
+
+public File[] listFiles(FilenameFilter filter) {
+	String[] names = list(filter);
+	if (names == null) {
+		return null;
+	}
+	File[] files = new File[names.length];
+	for (int idx = 0; idx < names.length; idx++) {
+		files[idx] = new File(this, names[idx]);
+	}
+	return files;
+}
+
 native private String[] list0();
 
 public boolean mkdir() {
