@@ -39,6 +39,7 @@ package java.rmi.server;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
+import gnu.java.rmi.server.RMIIncomingThread;
 
 public abstract class RemoteServer
 	extends RemoteObject {
@@ -54,7 +55,14 @@ protected RemoteServer(RemoteRef ref) {
 }
 
 public static String getClientHost() throws ServerNotActiveException {
-	throw new Error("Not implemented");
+	Thread currThread = Thread.currentThread();
+	if (currThread instanceof RMIIncomingThread) {
+		RMIIncomingThread incomingThread = (RMIIncomingThread) currThread;
+		return incomingThread.getClientHost();
+	} else {
+		throw new ServerNotActiveException(
+			"Unknown client host - current thread not instance of 'RMIIncomingThread'");
+	}
 }
 
 public static void setLog(OutputStream out) {
