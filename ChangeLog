@@ -1,15 +1,10 @@
+
 2005-01-07  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
 	
 	2005-01-04  Tom Tromey  <tromey@redhat.com>
 
-	* vm/reference/java/lang/VMProcess.java (VMProcess): Constructor
-	now package-private.
-	(processThread, workList, reapedPid, reapedExitValue, state, cmd,
-	env, dir, exception, pid, stdin, stdout, stderr, exitValue): Now
-	package-private.
-	(nativeSpawn, nativeReap): Likewise.
 	* vm/reference/java/lang/VMThread.java (currentThread): Reordered
 	modifiers.
 	* vm/reference/java/security/VMAccessController.java

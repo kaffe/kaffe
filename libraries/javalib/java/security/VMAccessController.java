@@ -1,5 +1,5 @@
 /* VMAccessController.java -- VM-specific access controller methods.
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ final class VMAccessController
    * And we return this all-permissive context to ensure that privileged
    * methods called from getContext succeed.
    */
-  private final static AccessControlContext DEFAULT_CONTEXT;
+  private static final AccessControlContext DEFAULT_CONTEXT;
   static
   {
     CodeSource source = new CodeSource(null, null);
