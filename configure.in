@@ -983,7 +983,7 @@ AC_CACHE_CHECK([whether long modulo is broken],
 # define LONG_MIN ((((unsigned T)(~(T)0))>>1)+1)
 #endif
 T foo(T i, T j);
-int main() { return foo(LONG_MIN, -1l) && 1; }
+int main() { return foo(LONG_MIN, -1l) == 0; }
 T foo(T i, T j) { return i % j; }
 ]])],[ac_cv_long_modulo_broken=no],[ac_cv_long_modulo_broken=yes],[ac_cv_long_modulo_broken=cross])])
 if test x"$ac_cv_long_modulo_broken" = x"yes"; then
@@ -1000,7 +1000,7 @@ AC_CACHE_CHECK([whether long long modulo is broken],
 # define LONG_LONG_MIN ((((unsigned T)(~(T)0))>>1)+1)
 #endif
 T foo(T i, T j);
-int main() { return foo(LONG_LONG_MIN, -1ll) && 1; }
+int main() { return foo(LONG_LONG_MIN, -1ll) == 0; }
 T foo(T i, T j) { return i % j; }
 ]])],[ac_cv_long_long_modulo_broken=no],[ac_cv_long_long_modulo_broken=yes],[ac_cv_long_long_modulo_broken=cross])])
 if test x"$ac_cv_long_long_modulo_broken" = x"yes"; then

@@ -28350,7 +28350,7 @@ cat >>conftest.$ac_ext <<_ACEOF
 # define LONG_MIN ((((unsigned T)(~(T)0))>>1)+1)
 #endif
 T foo(T i, T j);
-int main() { return foo(LONG_MIN, -1l) && 1; }
+int main() { return foo(LONG_MIN, -1l) == 0; }
 T foo(T i, T j) { return i % j; }
 
 _ACEOF
@@ -28409,7 +28409,7 @@ cat >>conftest.$ac_ext <<_ACEOF
 # define LONG_LONG_MIN ((((unsigned T)(~(T)0))>>1)+1)
 #endif
 T foo(T i, T j);
-int main() { return foo(LONG_LONG_MIN, -1ll) && 1; }
+int main() { return foo(LONG_LONG_MIN, -1ll) == 0; }
 T foo(T i, T j) { return i % j; }
 
 _ACEOF
