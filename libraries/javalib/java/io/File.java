@@ -151,7 +151,9 @@ public int compareTo(File that) {
 
 // XXX some filesystems are case-insensitive
 public boolean equals(Object that) {
-	return (that instanceof File) ? path.equals(((File)that).path) : false;
+	if (that == null || !that.getClass().equals(getClass()))
+		return false;
+	return path.equals(((File)that).path);
 }
 
 public boolean exists() {
