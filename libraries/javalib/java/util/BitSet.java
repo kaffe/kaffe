@@ -15,7 +15,7 @@ import java.lang.String;
 import java.lang.System;
 import java.io.Serializable;
 
-final public class BitSet
+public class BitSet
     implements Cloneable, Serializable
 {
     private static final long serialVersionUID = 7997698588986878753L;

@@ -65,7 +65,7 @@ public int read ( char cbuf[], int off, int len ) throws IOException {
 	}
 }
 
-public boolean ready()
+public boolean ready() throws IOException
 	{
 	return (true);
 }

@@ -45,7 +45,7 @@ public void close() throws IOException {
 	out.close();
 }
 
-protected final boolean enableReplaceObject(boolean enable) throws SecurityException {
+protected boolean enableReplaceObject(boolean enable) throws SecurityException {
 	boolean old = enableReplace;
 	enableReplace = enable;
 	return (old);
@@ -135,7 +135,7 @@ public final void writeObject(Object obj) throws IOException {
 	out.writeObject(obj);
 }
 
-public final void defaultWriteObject() throws IOException {
+public void defaultWriteObject() throws IOException {
 	if (currentObject == null || currentStreamClass == null) {
                 throw new NotActiveException();
         }

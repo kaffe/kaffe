@@ -62,7 +62,7 @@ public class StringWriter extends Writer {
     // Does nothing.
   }
 
-  public void close()
+  public void close() throws IOException
   {
     // Does nothing.
   }

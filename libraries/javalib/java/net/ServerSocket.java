@@ -87,7 +87,7 @@ public int getLocalPort() {
 	return (impl.getLocalPort());
 }
 
-public synchronized int getSoTimeout() throws SocketException {
+public synchronized int getSoTimeout() throws IOException {
 	return ((Integer) impl.getOption(SocketOptions.SO_TIMEOUT)).intValue();
 }
 

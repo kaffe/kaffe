@@ -35,7 +35,7 @@ static {
 	ONE = new BigInteger(1L);
 }
 
-public BigInteger(byte val[]) throws NumberFormatException {
+public BigInteger(byte val[]) {
 	this();
 	if (val.length == 0)
 		throw new NumberFormatException("val.length == 0");
@@ -51,7 +51,7 @@ public BigInteger(byte val[]) throws NumberFormatException {
 	}
 }
 
-public BigInteger(int signum, byte magnitude[]) throws NumberFormatException {
+public BigInteger(int signum, byte magnitude[]) {
 	this();
 	switch (signum) {
 	case -1:
@@ -68,21 +68,20 @@ public BigInteger(int signum, byte magnitude[]) throws NumberFormatException {
 	}
 }
 
-public BigInteger(String val, int radix) throws NumberFormatException {
+public BigInteger(String val, int radix) {
 	this();
 	assignString0(val, radix);
 }
 
-public BigInteger(String val) throws NumberFormatException {
+public BigInteger(String val) {
 	this(val, 10);
 }
 
-public BigInteger(int numBits, Random rndSrc) throws IllegalArgumentException {
+public BigInteger(int numBits, Random rndSrc) {
         this(1, randBytes(numBits, rndSrc));
 }
 
-private static byte[] randBytes(int numBits, Random rndSrc)
-    throws IllegalArgumentException {
+private static byte[] randBytes(int numBits, Random rndSrc) {
 	if (numBits < 0)
 		throw new IllegalArgumentException("numBits < 0");
 	int extra = numBits % 8;
@@ -145,7 +144,7 @@ public static BigInteger valueOf(long val) {
 	return (new BigInteger(val));
 }
 
-public BigInteger add(BigInteger val) throws ArithmeticException {
+public BigInteger add(BigInteger val) {
 	BigInteger r = new BigInteger();
 	r.add0(this, val);
 	return (r);
@@ -163,26 +162,26 @@ public BigInteger multiply(BigInteger val) {
 	return (r);
 }
 
-public BigInteger divide(BigInteger val) throws ArithmeticException {
+public BigInteger divide(BigInteger val) {
 	BigInteger r = new BigInteger();
 	r.div0(this, val);
 	return (r);
 }
 
-public BigInteger remainder(BigInteger val) throws ArithmeticException {
+public BigInteger remainder(BigInteger val) {
 	BigInteger r = new BigInteger();
 	r.rem0(this, val);
 	return (r);
 }
 
-public BigInteger[] divideAndRemainder(BigInteger val) throws ArithmeticException {
+public BigInteger[] divideAndRemainder(BigInteger val) {
 	BigInteger q = new BigInteger();
 	BigInteger r = new BigInteger();
 	divrem0(q, r, this, val);
 	return (new BigInteger[]{ q, r });
 }
 
-public BigInteger pow(int exponent) throws ArithmeticException {
+public BigInteger pow(int exponent) {
 	BigInteger r = new BigInteger();
 	r.pow0(this, exponent);
 	return (r);
@@ -222,7 +221,7 @@ public BigInteger modPow(BigInteger exponent, BigInteger mod) {
 	return (r);
 }
 
-public BigInteger modInverse(BigInteger mod) throws ArithmeticException {
+public BigInteger modInverse(BigInteger mod) {
 	BigInteger r = new BigInteger();
 	r.modinv0(this, mod);
 	return (r);
@@ -273,7 +272,7 @@ public BigInteger andNot(BigInteger val) {
 	return (r);
 }
 
-public boolean testBit(int n) throws ArithmeticException {
+public boolean testBit(int n) {
 	BigInteger b = new BigInteger();
 	b.setbit0(this, n);
 	if (cmp0(b, this) == 0) {
@@ -284,19 +283,19 @@ public boolean testBit(int n) throws ArithmeticException {
 	}
 }
 
-public BigInteger setBit(int n) throws ArithmeticException {
+public BigInteger setBit(int n) {
 	BigInteger r = new BigInteger();
 	r.setbit0(this, n);
 	return (r);
 }
 
-public BigInteger clearBit(int n) throws ArithmeticException {
+public BigInteger clearBit(int n) {
 	BigInteger r = new BigInteger();
 	r.clrbit0(this, n);
 	return (r);
 }
 
-public BigInteger flipBit(int n) throws ArithmeticException {
+public BigInteger flipBit(int n) {
 	BigInteger r = new BigInteger();
 	r.setbit0(r, n);
 	r.xor0(r, this);

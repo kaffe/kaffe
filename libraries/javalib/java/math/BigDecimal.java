@@ -22,11 +22,11 @@ public static final int ROUND_HALF_DOWN = 6;
 public static final int ROUND_HALF_EVEN = 7;
 public static final int ROUND_UNNECESSARY = 8;
 
-public BigDecimal(String val) throws NumberFormatException {
+public BigDecimal(String val) {
 	throw new kaffe.util.NotImplemented();
 }
 
-public BigDecimal(double val) throws NumberFormatException {
+public BigDecimal(double val) {
 	throw new kaffe.util.NotImplemented();
 }
 
@@ -34,11 +34,11 @@ public BigDecimal(BigInteger val) {
 	throw new kaffe.util.NotImplemented();
 }
 
-public BigDecimal(BigInteger val, int scale) throws NumberFormatException {
+public BigDecimal(BigInteger val, int scale) {
 	throw new kaffe.util.NotImplemented();
 }
 
-public static BigDecimal valueOf(long val, int scale) throws NumberFormatException {
+public static BigDecimal valueOf(long val, int scale) {
 	throw new kaffe.util.NotImplemented();
 }
 
@@ -58,11 +58,11 @@ public BigDecimal multiply(BigDecimal val) {
 	throw new kaffe.util.NotImplemented();
 }
 
-public BigDecimal divide(BigDecimal val, int scale, int roundingMode) throws ArithmeticException, IllegalArgumentException {
+public BigDecimal divide(BigDecimal val, int scale, int roundingMode) {
 	throw new kaffe.util.NotImplemented();
 }
 
-public BigDecimal divide(BigDecimal val, int roundingMode) throws ArithmeticException, IllegalArgumentException {
+public BigDecimal divide(BigDecimal val, int roundingMode) {
 	throw new kaffe.util.NotImplemented();
 }
 
@@ -82,11 +82,11 @@ public int scale() {
 	throw new kaffe.util.NotImplemented();
 }
 
-public BigDecimal setScale(int scale, int roundingMode) throws ArithmeticException, IllegalArgumentException {
+public BigDecimal setScale(int scale, int roundingMode) {
 	throw new kaffe.util.NotImplemented();
 }
 
-public BigDecimal setScale(int scale) throws ArithmeticException, IllegalArgumentException {
+public BigDecimal setScale(int scale) {
 	throw new kaffe.util.NotImplemented();
 }
 

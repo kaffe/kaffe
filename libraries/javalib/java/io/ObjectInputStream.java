@@ -51,7 +51,7 @@ public void close() throws IOException
 	in.close();
 }
 
-protected final boolean enableResolveObject(boolean enable) throws SecurityException
+protected boolean enableResolveObject(boolean enable) throws SecurityException
 {
 	boolean old = enableResolve;
 	enableResolve = enable;
@@ -180,7 +180,7 @@ public final Object readObject() throws OptionalDataException, ClassNotFoundExce
 	return (obj);
 }
 
-public final void defaultReadObject() throws IOException, ClassNotFoundException, NotActiveException
+public void defaultReadObject() throws IOException, ClassNotFoundException, NotActiveException
 {
 	if (currentObject == null || currentStreamClass == null) {
 		throw new NotActiveException();

@@ -37,7 +37,7 @@ protected ClassLoader(ClassLoader parent) {
 	this.parent = parent;
 }
 
-final protected Class defineClass(String name, byte data[], int offset, int length) {
+final protected Class defineClass(String name, byte data[], int offset, int length) throws ClassFormatError {
 	Class clazz =defineClass0(name, data, offset, length);
 	if (name != null) {
 		loadedClasses.put(name, clazz);
@@ -50,7 +50,7 @@ final protected Class defineClass(String name, byte data[], int offset, int leng
 /**
  * @deprecated
  */
-final protected Class defineClass(byte data[], int offset, int length) {
+final protected Class defineClass(byte data[], int offset, int length) throws ClassFormatError {
 	return (defineClass(null, data, offset, length));
 }
 
@@ -70,7 +70,7 @@ public InputStream getResourceAsStream(String name) {
 	return (null); // Default implementation just returns null
 }
 
-final public static URL getSystemResource(String name) {
+public static URL getSystemResource(String name) {
 	try {
 		return (new URL("system", "", 0, name));
 	}
@@ -79,7 +79,7 @@ final public static URL getSystemResource(String name) {
 	}
 }
 
-public static final InputStream getSystemResourceAsStream(String name) {
+public static InputStream getSystemResourceAsStream(String name) {
 	byte[] data = getSystemResourceAsBytes0(name);
 	return (data != null) ? new ByteArrayInputStream(data) : null;
 }
