@@ -75,7 +75,7 @@ Java_kaffe_io_ByteToCharIconv_convert (JNIEnv* env, jobject _this,
 #if defined(HAVE_ICONV)
     jboolean	isCopy;
     jbyte	*jb = (*env)->GetByteArrayElements(env, fromBytes, &isCopy);
-    const char	*icv_in = (char*) (jb + fromPos);
+    char	*icv_in = (char*) (jb + fromPos);
     size_t	icv_inlen = fromLen;
     jchar	*jc  = (*env)->GetCharArrayElements(env, toChars, &isCopy);
     char	*icv_out = (char *) (jc + toPos);

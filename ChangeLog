@@ -1,3 +1,13 @@
+2004-03-12  Riccardo Mottola <zuse@libero.it>
+
+	* config/m68k/jit-m68k.def:
+	(debug) Don't use %l since CODEPC is not a long in jit.
+
+	* libraries/clib/native/ByteToCharIconv.c,
+	libraries/clib/native/CharToByteIconv.c:
+	Removed const from icv_in declaration to fix compiler
+	warning on m68k-linux.
+
 2004-03-11  Dalibor Topic <robilad@kaffe.org>
 
 	* config/arm/common.h

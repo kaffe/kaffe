@@ -63,7 +63,7 @@ static const char * const rnames[] = {
 
 #ifdef KAFFE_VMDEBUG
 int jit_debug = 0;
-#define	debug(x)	(jit_debug ? printf("%lx:\t", CODEPC), printf x : 0)
+#define	debug(x)	(jit_debug ? printf("%dx:\t", CODEPC), printf x : 0)
 #else
 #define	debug(x)	((void)0)
 #endif
