@@ -216,23 +216,35 @@ strrchr(str, ch)
 #define	dlerror()	unknown_error
 #endif
 
-#if RTLD_GLOBAL
+#ifdef RTLD_GLOBAL
 # define LTDL_GLOBAL	RTLD_GLOBAL
 #else
-# if DL_GLOBAL
+# ifdef DL_GLOBAL
 #  define LTDL_GLOBAL	DL_GLOBAL
 # else
 #  define LTDL_GLOBAL	0
 # endif
 #endif
 
-#if RTLD_NOW
-# define LTDL_NOW	RTLD_NOW
-#else
-# if DL_NOW
-#  define LTDL_NOW	DL_NOW
+/* We may have to define LTDL_LAZY_OR_NOW in the command line if we
+   find out it does not work in some platform. */
+#ifndef LTDL_LAZY_OR_NOW
+# ifdef RTLD_LAZY
+#  define LTDL_LAZY_OR_NOW	RTLD_LAZY
 # else
-#  define LTDL_NOW	0
+#  ifdef DL_LAZY
+#   define LTDL_LAZY_OR_NOW	DL_LAZY
+#  else
+#   ifdef RTLD_NOW
+#    define LTDL_LAZY_OR_NOW	RTLD_NOW
+#   else
+#    ifdef DL_NOW
+#     define LTDL_LAZY_OR_NOW	DL_NOW
+#    else
+#     define LTDL_LAZY_OR_NOW	0
+#    endif
+#   endif
+#  endif
 # endif
 #endif
 
@@ -253,7 +265,7 @@ dl_open (handle, filename)
 	lt_dlhandle handle;
 	const char *filename;
 {
-	handle->handle = dlopen(filename, LTDL_GLOBAL | LTDL_NOW);
+	handle->handle = dlopen(filename, LTDL_GLOBAL | LTDL_LAZY_OR_NOW);
 	if (!handle->handle) {
 		last_error = dlerror();
 		return 1;
