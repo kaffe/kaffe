@@ -233,6 +233,7 @@ java/util/PropertyPermission.java
 java/util/PropertyPermissionCollection.java
 java/util/PropertyResourceBundle.java
 java/util/Random.java
+java/util/RandomAccess.java
 java/util/regex/Matcher.java
 java/util/regex/Pattern.java
 java/util/regex/PatternSyntaxException.java
