@@ -1,3 +1,7 @@
+Mon Feb 15 20:50:41 1999  Moses DeJong <dejong@cs.umn.edu>
+
+	* libraries/javalib/java/util/Map.java: added Map.remove
+
 Sun Feb 14 01:37:04 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* test/regression/TestScript.in (run): print messages about where

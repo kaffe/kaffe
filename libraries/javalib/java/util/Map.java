@@ -10,9 +10,9 @@
 
 package java.util;
 
-public abstract interface Map {
+public interface Map {
 
-public abstract static interface Entry {
+public static interface Entry {
 
 public Object getKey();
 public Object getValue();
@@ -31,9 +31,10 @@ public Object put(Object key, Object value);
 public void putAll(Map m);
 public void clear();
 public Set keySet();
-public Collection values();
 public Set entrySet();
+public Collection values();
 public boolean equals(Object o);
 public int hashCode();
+public Object remove(Object o);
 
 }
