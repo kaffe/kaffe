@@ -13,6 +13,14 @@
  *            Tim Wilkinson <tim@transvirtual.com>
  */
 
+/*
+ * Note: this file get included only when jthreads are used outside
+ *       the context of the virtual machine. 
+ *
+ *       The virtual machines uses definitions from the config directory
+ *	 for the specific processor.	
+ */
+
 #ifndef __config_jthreads_h
 #define __config_jthreads_h
 
@@ -94,6 +102,11 @@ typedef int sigset_t;
 #elif defined(arm32) && defined(__NetBSD__)
 
 #define SP_OFFSET		23
+
+#elif defined(arm) && defined(linux)
+
+#define SP_OFFSET		20
+#define FP_OFFSET		19
 
 #else
 #error Your system was not yet tested
