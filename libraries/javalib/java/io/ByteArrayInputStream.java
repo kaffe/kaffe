@@ -38,9 +38,12 @@ public synchronized int available()
 	return (count-pos);
 }
 
-public void mark(int markpos)
+public void mark(int readaheadlimit)
 	{
-	mark = markpos;
+	// ignore readaheadlimit because no matter how many bytes are
+	// read, we can always resupply them since we read from a finite
+	// buffer
+	mark = pos;
 }
 
 public boolean markSupported()
