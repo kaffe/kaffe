@@ -123,6 +123,7 @@ static void walkFields(void*, uint32);
 static void walkMethods(void*, uint32);
 static void walkObject(void*, uint32);
 static void walkRefArray(void*, uint32);
+#define walkPrimArray walkNull
 
 #ifdef DEBUG
 /*
@@ -152,58 +153,43 @@ F(Jitcode)
 F(Staticdata)
 F(Etable)
 
+#else /* Without debugging, don't bother to run these: */
+     
+#define finalizeClass           GC_OBJECT_NORMAL
+#define finalizeMethod		GC_OBJECT_NORMAL
+#define finalizeField		GC_OBJECT_NORMAL
+#define finalizeDispatch	GC_OBJECT_NORMAL
+#define finalizeBytecode	GC_OBJECT_NORMAL
+#define finalizeJitcode		GC_OBJECT_NORMAL
+#define finalizeStaticdata	GC_OBJECT_NORMAL
+#define finalizeEtable		GC_OBJECT_NORMAL
+
+#endif	/* DEBUG */
+
 /* Standard GC function sets */
 static gcFuncs gcFunctions[] = {
 	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_NORMAL */
 	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_NOWALK */
 	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_FIXED */
 	{ walkObject,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_NORMALOBJECT */
-	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_PRIMARRAY */
+	{ walkPrimArray,    GC_OBJECT_NORMAL },	/* GC_ALLOC_PRIMARRAY */
 	{ walkRefArray,     GC_OBJECT_NORMAL },	/* GC_ALLOC_REFARRAY */
 	{ walkClass,        finalizeClass    },	/* GC_ALLOC_CLASSOBJECT */
 	{ walkObject,       finalizeObject   },	/* GC_ALLOC_FINALIZEOBJECT */
-	{ walkMethods, 	    finalizeMethod },	/* GC_ALLOC_METHOD */
-	{ walkFields, 	    finalizeField },	/* GC_ALLOC_FIELD */
+	{ walkMethods, 	    finalizeMethod   },	/* GC_ALLOC_METHOD */
+	{ walkFields, 	    finalizeField    },	/* GC_ALLOC_FIELD */
 	{ walkNull,	    finalizeStaticdata },/* GC_ALLOC_STATICDATA */
 	{ walkConservative, finalizeDispatch },	/* GC_ALLOC_DISPATCHTABLE */
 	{ walkNull,	    finalizeBytecode },	/* GC_ALLOC_BYTECODE */
-	{ walkConservative, finalizeEtable },	/* GC_ALLOC_EXCEPTIONTABLE */
+	{ walkConservative, finalizeEtable   },	/* GC_ALLOC_EXCEPTIONTABLE */
 	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_CONSTANT */
 	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_UTF8CONST */
 	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_INTERFACE */
-	{ walkConservative, finalizeJitcode },	/* GC_ALLOC_JITCODE */
+	{ walkConservative, finalizeJitcode  },	/* GC_ALLOC_JITCODE */
 	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_LOCK */
 	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_THREADCTX */
 	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_REF */
 };
-#else 	/* no DEBUG, this is for real */
-
-/* Standard GC function sets */
-static gcFuncs gcFunctions[] = {
-	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_NORMAL */
-	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_NOWALK */
-	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_FIXED */
-	{ walkObject,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_NORMALOBJECT */
-	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_PRIMARRAY */
-	{ walkRefArray,     GC_OBJECT_NORMAL },	/* GC_ALLOC_REFARRAY */
-	{ walkClass,        GC_OBJECT_NORMAL },	/* GC_ALLOC_CLASSOBJECT */
-	{ walkObject,       finalizeObject   },	/* GC_ALLOC_FINALIZEOBJECT */
-	{ walkMethods, 	    GC_OBJECT_NORMAL },	/* GC_ALLOC_METHOD */
-	{ walkFields, 	    GC_OBJECT_NORMAL },	/* GC_ALLOC_FIELD */
-	{ walkNull,	    GC_OBJECT_NORMAL }, /* GC_ALLOC_STATICDATA */
-	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_DISPATCHTABLE */
-	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_BYTECODE */
-	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_EXCEPTIONTABLE */
-	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_CONSTANT */
-	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_UTF8CONST */
-	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_INTERFACE */
-	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_JITCODE */
-	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_LOCK */
-	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_THREADCTX */
-	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_REF */
-};
-
-#endif	/* DEBUG */
 
 #define	REFOBJALLOCSZ	128
 #define	REFOBJHASHSZ	128
@@ -269,6 +255,16 @@ markObject(void* mem)
 	}
 }
 
+#define MARK_OBJECT(obj) do { \
+  void *objp = obj; \
+  if (objp) { \
+    gc_unit *unit = UTOUNIT(objp); \
+    gc_block *info = GCMEM2BLOCK(unit); \
+    int idx = GCMEM2IDX(info, unit); \
+    markObjectDontCheck(unit, info, idx); \
+  } \
+} while (0)
+
 static void
 markObjectDontCheck(gc_unit *unit, gc_block *info, int idx)
 {
@@ -327,8 +323,6 @@ walkObject(void* base, uint32 size)
 	if (obj->dtable == 0)
 		return;
 
-	markObject(obj->dtable->class);
-
 	/* retrieve the layout of this object from its class */
 	clazz = obj->dtable->class;
 	layout = clazz->gc_layout;
@@ -360,18 +354,12 @@ DBG(GCWALK,
 			}
 
 			if (l < 0) {
-				void *p = *(void **)mem;
 				/* we know this pointer points to gc'ed memory
 				 * there is no need to check - go ahead and 
 				 * mark it.  Note that p may or may not point
 				 * to a "real" Java object.
 				 */
-				if (p) {
-					gc_unit *unit = UTOUNIT(p);
-					gc_block *info = GCMEM2BLOCK(unit);
-					int idx = GCMEM2IDX(info, unit);
-					markObjectDontCheck(unit, info, idx);
-				}
+				MARK_OBJECT(*(void **)mem);
 			}
 			i++;
 			l <<= 1;
@@ -419,10 +407,13 @@ walkMemory(void* mem)
 	(*gcFunctions[GC_GET_FUNCS(info, idx)].walk)(mem, GCBLOCKSIZE(info));
 }
 
-#define MARK_IFNONZERO(f, field)  	\
-	if (f->field != 0) {	  	\
-		markObject(f->field);	\
-	}
+#define MARK_IFNONZERO(f, field) /* should be just MARK_OBJECT(f->field) */ \
+do {                                  \
+  void *mem = f->field;               \
+  if (mem) {                          \
+	  markObject(mem);            \
+  }                                   \
+} while(0)
 
 /*
  * Walk the methods of a class.
@@ -432,18 +423,23 @@ void
 walkMethods(void* base, uint32 size)
 {
 	Method* m = (Method*)base;
-	int nm = size/sizeof(Method);
+	int nm;
+
+	if (!m->class) {
+		return;
+	}
+	nm = CLASS_NMETHODS(m->class);
 
 	RECORD_MARKED(1, size)		
 	while (nm-- > 0) {
-		MARK_IFNONZERO(m, name)
-		MARK_IFNONZERO(m, signature)
+		MARK_IFNONZERO(m, name);
+		MARK_IFNONZERO(m, signature);
 		/* This is either a block of memory for native or bytecode */
-		MARK_IFNONZERO(m, c.bcode.code)	/* aka c.ncode.ncode_start */
-		MARK_IFNONZERO(m, class)
-		MARK_IFNONZERO(m, lines)
-		MARK_IFNONZERO(m, exception_table)
-		MARK_IFNONZERO(m, declared_exceptions)
+		MARK_IFNONZERO(m, c.bcode.code);/* aka c.ncode.ncode_start */
+		MARK_IFNONZERO(m, class);
+		MARK_IFNONZERO(m, lines);
+		MARK_IFNONZERO(m, exception_table);
+		MARK_IFNONZERO(m, declared_exceptions);
 		/* NB: don't need to mark ncode cause it does not point to
 		 * any allocated object.  
 		 */
@@ -463,9 +459,9 @@ walkFields(void* base, uint32 size)
 
 	RECORD_MARKED(1, size)
 	while (nf-- > 0) {
-		MARK_IFNONZERO(fld, name)
-		MARK_IFNONZERO(fld, type)
-		markObject(*(void**)&fld->info);
+		MARK_IFNONZERO(fld, name);
+		MARK_IFNONZERO(fld, type);
+		markObject(*(void**)&fld->info); /* should be MARK_OBJECT */
 		fld++;
 	}
 }
@@ -485,19 +481,21 @@ walkClass(void* base, uint32 size)
 
 	class = (Hjava_lang_Class*)base;
 
-	MARK_IFNONZERO(class, name)
+	MARK_IFNONZERO(class, name);
 	if (class->state >= CSTATE_PREPARED) {
-		MARK_IFNONZERO(class, superclass)
+		MARK_IFNONZERO(class, superclass);
 	}
-	MARK_IFNONZERO(class, constants.data)
-	MARK_IFNONZERO(class, methods)
-	MARK_IFNONZERO(class, fields)
+	MARK_IFNONZERO(class, constants.data);
+	MARK_IFNONZERO(class, methods);
+	MARK_IFNONZERO(class, fields);
 	if (!CLASS_IS_PRIMITIVE(class)) {
-		MARK_IFNONZERO(class, dtable)
+		MARK_IFNONZERO(class, dtable);
 	}
-	MARK_IFNONZERO(class, interfaces)
-	MARK_IFNONZERO(class, loader)
-	MARK_IFNONZERO(class, gc_layout)
+	if (!CLASS_IS_ARRAY(class)) {
+		MARK_IFNONZERO(class, interfaces);
+	}
+	MARK_IFNONZERO(class, loader);
+	MARK_IFNONZERO(class, gc_layout);
 
 	/* Walk the static data elements */
 	if (class->state >= CSTATE_DOING_PREPARE) {
@@ -505,7 +503,7 @@ walkClass(void* base, uint32 size)
         	n = CLASS_NSFIELDS(class);
         	for (; --n >= 0; fld++) {
 			if (FIELD_ISREF(fld)) {
-				markObject(*(void**)FIELD_ADDRESS(fld));
+				MARK_OBJECT(*(void**)FIELD_ADDRESS(fld));
 			}
         	}
 	}
@@ -525,15 +523,11 @@ walkRefArray(void* base, uint32 size)
 	RECORD_MARKED(1, size)
 
 	arr = (Hjava_lang_Object*)base;
-	if (arr->dtable != 0) {
-		markObject(arr->dtable->class);
-	}
+
 	ptr = OBJARRAY_DATA(arr);
 	for (i = ARRAY_SIZE(arr); --i>= 0; ) {
 		Hjava_lang_Object* el = *ptr++;
-		if (el != NULL) {
-			markObject(el);
-		}
+		MARK_OBJECT(el);
 	}
 }
 
@@ -626,7 +620,7 @@ startGC(void)
 	/* Walk the referenced objects */
 	for (i = 0; i < REFOBJHASHSZ; i++) {
 		for (robj = refObjects.hash[i]; robj != 0; robj = robj->next) {
-			markObject(robj->mem);
+			MARK_OBJECT(robj->mem);
 		}
 	}
 
@@ -634,7 +628,7 @@ startGC(void)
 	for (unit = gclists[finalise].cnext;
 	     unit != &gclists[finalise]; unit = nunit) {
 		nunit = unit->cnext;
-		markObject(UTOMEM(unit));
+		MARK_OBJECT(UTOMEM(unit));
 	}
 
 	/* Walk the thread objects */

@@ -1,3 +1,15 @@
+Fri Dec 18 01:29:10 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/mem/gc-incremental.c (walkPrimArray): defined to 
+	walkNull
+	(gcFunctions): unify it into a single list; use finalizeClass for
+	interfaces too; use walkPrimArray (i.e., walkNull) for arrays of
+	primitive types
+	(MARK_OBJECT): new macro to ease calling markObjectDontCheck
+	(walkObject, walkRefArray): don't bother to mark the class; the
+	ClassLoader does already; call MARK_OBJECT where appropriate,
+	except where it introduces crashes: race conditions?
+
 Thu Dec 17 13:53:38 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
 
 	* config/*/*/md.h:  declared init_md to avoid -Wall warnings.
