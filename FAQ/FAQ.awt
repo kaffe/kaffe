@@ -1,46 +1,79 @@
 FAQ for the AWT
 ===============
 
-1.0.2 Event Model
------------------
+AWT Implementations
+-------------------
 
-We do support the old 1.0.2 event model - it should work as defined by Sun.
+Since Kaffe 1.1.5, we have successfully merged the peerful AWT implementation
+based on GTK+ from GNU Classpath, and the old one, peerless lightweight AWT,
+is renamed as kaffe-awt. The so-called peerful AWT implementation intends to
+map Java AWT peers into the corresponding widget set of specific environment,
+and that is GTK+ for the case of current GNU Classpath development. In other
+side, the original peerless kaffe-awt is lightweight, which means that it
+only makes use few necessary dependencies for basic requirements, such as 
+window creation, drawing operation, color allocation, etc. You could find
+that peerless AWT implementations look alike among different backends, while
+the peerful AWT implementations differ a lot. Jim Huang prepares a compre-
+hensive comparisons of existing AWT implementations as the following
+screenshot:
+  http://www.kaffe.org/~jserv/awt-implementations.png
 
-1.0.2 Deprecated methods
-------------------------
+Selection among different AWT implementations in Kaffe is very easy, just
+use "kaffe -help" to dump help message. For example pass -Xkaffe-xlib-awt 
+to force KaffeVM to use Xlib-based AWT backend, while GNU Classpath's AWT
+is selected by default.
 
-We do support all deprecated methods - they should work as defined by Sun.
+GNU Classpath AWT implementation
+--------------------------------
 
-Swing
------
+GNU Classpath AWT implementation is enabled in default build process, but
+the original peerless AWT ones are turned off. We attempt to merge AWT/Swing
+implementation from recent GNU Classpath cvs repository. To build this, make
+sure if GTK+ 2.4 and its development packages are available. Optionally, you
+might need Cairo Graphics framework (http://www.cairographics.org/) to enable
+the new Graphics2D implementation, which is reported to let many complex AWT
+and Swing applications, such as JFreeChart, run well. Tell configure script
+with --enable-gtk-cairo to enable new Graphics2D.
+
+GNU Classpath AWT is very excellent to meet the specifications of Sun JDK,
+and you can look into the latest comparison from [Results of comparison 
+between jdk14 and classpath]:
+  http://www.kaffe.org/~stuart/japi/htmlout/h-jdk14-classpath.html
+
+
+Peeless AWT implementations
+---------------------------
+
+[= 1.0.2 Event Model / Deprecated methods =]
+
+We do support the old 1.0.2 event model and all 1.0.2 deprecated methods,
+
+[= Swing =]
 
 We completely support Swing. The version that works best with kaffe is
-JFC 1.1 with SWING 1.1.1, available from
-http://java.sun.com/products/jfc/download.html. Later versions may or
-may not run. Patches to get them to run are welcome. It would be in
-general preferable to help out GNU Classpath to implement SWING,
-though.
+the JFC 1.1 with Swing 1.1.1, which is labeled as EOL (End-Of-Life), and
+you might have to browse Sun's web page to seek for archive download:
+  http://java.sun.com/products/archive/index.html
+
+Note: Later versions may or may not run. Patches to get them to run are 
+welcome. It would be in general preferable to help out GNU Classpath to 
+implement SWING, though.
 
 Whatever Sun may tell you about Swing being 100% pure Java - just don't
 believe them.  Swing make a number of assumptions about the underlying AWT
 implementation and makes calls to a number of "banned" methods - oh and it
 makes extensive use of deprecates.
 
-Selecting an AWT implementation
--------------------------------
+[= Selecting an peerless AWT implementation =]
 
-There are different AWT backends for Kaffe. You can configure it to
-use a specific one, by using the --with-awt option of the configure
-script.
+Currently, the peerless AWT implementations are disabled in default build,
+and you have to pass --with-kaffe-x-awt to configure script. Also, there 
+are different peerless AWT backends for Kaffe. You can configure it to
+use a specific one, by using the --with-awt option of the configure script.
 
-Currently you have the choice between:
+So far, you have the following choices:
 
-* --with-awt=no
-
-  no support for AWT needed. This option is useful in embedded
-  environments.
-
-* --with-awt=X
+* --with-kaffe-x-awt
 
   an X lib based AWT backend. It is the default AWT backend if the X
   Windows system is detected by the configure script.
@@ -50,7 +83,7 @@ Currently you have the choice between:
 
   See http://www.x.org for information on X Windows.
 
-* --with-awt=qt
+* --with-kaffe-qt-awt
 
   a Qt based AWT backend. It uses Trolltech's cross-platform graphical
   library. It works with Qt 3 and Qt 2, Qt/Embedded or Qt/X11 version. 
@@ -214,11 +247,6 @@ If you want to contribute to kaffe's AWT developement, you could
 
   Document the workings of kaffe's AWT to make life easier for porters
   and mergers.
-
-* Clean up Qt-based AWT implementation
-
-  There is a lot of commented and ifdef-ed out code, which would need
-  someone to review it and remove the cruft.
 
 * Refactor current AWT implementation
 

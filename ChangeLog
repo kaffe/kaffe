@@ -1,3 +1,9 @@
+2005-02-04  Jim Huang  <jserv@kaffe.org>
+
+	* FAQ/FAQ.awt:
+	Update FAQ of current AWT implementations to adapt the
+	peerful GTK+-based AWT/Swing merged from GNU Classpath.
+
 2005-02-04  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/intrp/icode.h (check_array_index):
