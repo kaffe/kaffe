@@ -53,6 +53,15 @@ const uint8 insnLen[256] = {
 
 static void mergeFrame(int, int, frameElement*, Method*);
 static bool verifyBasicBlock(Method*, int32);
+/*
+ * Note that verifyMethod and tidyVerifyMethod must be atomic since 
+ * they both rely on codeInfo.  Therefore, we grab the vlock in verifyMethod
+ * and release it in tidyVerifyMethod.
+ *
+ * Note that technically, vlock is only needed for the interpreter since
+ * the translator has an supersetting translator lock.
+ */
+static iLock vlock;
 
 void
 verifyMethod(Method* meth)
@@ -70,7 +79,6 @@ verifyMethod(Method* meth)
 	bool rerun;
 	bool failed;
 	bool wide;
-        static iLock vlock;
 	static bool init = false;
 
 	/* Initialise on first use */
@@ -84,10 +92,13 @@ verifyMethod(Method* meth)
 	/* We don't need to do this twice */
 	meth->accflags |= ACC_VERIFIED;
 
+CDBG(	dprintf("verifyMethod: %s.%s, codeInfo = 0x%x\n", 
+	meth->class->name->data, meth->name->data, codeInfo);)
+
+	assert (codeInfo == 0 && " Attempt to reenter verifier!");
 	codeInfo = gc_malloc_fixed(sizeof(codeinfo) + (meth->c.bcode.codelen * sizeof(perPCInfo)));
 
-CDBG(	printf("codeInfo = 0x%x\n", codeInfo);				)
-DBG(	printf("%s.%s%s\n", meth->class->name, meth->pair->s1, meth->pair->s2);)
+CDBG(	dprintf(__FUNCTION__"codeInfo = 0x%x\n", codeInfo);		)
 
 	/* Allocate code info. block */
 	codeInfo->localsz = meth->localsz;
@@ -314,8 +325,6 @@ DBG(	printf("%s.%s%s\n", meth->class->name, meth->pair->s1, meth->pair->s2);)
 	for (bcurr = bhead; bcurr != NULL; bcurr = bcurr->nextBB) {
 		assert((bcurr->flags & FLAG_DONEVERIFY) != 0);
 	}
-
-	unlockStaticMutex(&vlock);
 }
 
 static
@@ -1922,5 +1931,7 @@ tidyVerifyMethod(void)
 	}
 	gc_free(codeInfo);
 	codeInfo = 0;
+	/* now it's safe to unlock the verifier */
+	unlockStaticMutex(&vlock);
 }
 
