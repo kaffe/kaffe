@@ -1,5 +1,13 @@
 2004-06-04  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* config/m68k/linux/md.h,
+	config/powerpc/linux/md.h: Implemented mdGetStackSize().
+
+	* config/i386/linux/md.h: Cleaned up as soft limits are always
+	the lower bound in the Linux kernel.
+
+2004-06-04  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* po/fr.po, po/kaffe.pot: New files.
 
 	* po/LINGUAS: Added fr.

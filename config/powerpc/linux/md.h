@@ -28,4 +28,21 @@ extern void init_md(void);
 #define SIGNAL_ARGS(sig, sc) int sig
 #undef HAVE_SIGALTSTACK
 
+#if defined(HAVE_GETRLIMIT)
+#define KAFFEMD_STACKSIZE
+
+static inline rlim_t mdGetStackSize(void)
+{
+  struct rlimit rl;
+
+  // The soft limit is always the lower limit.
+  // Use it by default.
+  if (getrlimit(RLIMIT_STACK, &rl) < 0)
+    return 0;
+  else
+    return rl.rlim_cur;
+}
+#endif
+
+
 #endif
