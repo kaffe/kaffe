@@ -206,7 +206,7 @@ dnl =========================================================================
 dnl Allow selection of a specific execution engine
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(engine,[  --with-engine=ENGINE    Force use given execution engine (intrp or jit)])
+AC_ARG_WITH(engine,[  --with-engine=ENGINE    Force use given execution engine (intrp, jit, or jit3)])
 
 dnl Translate 'interpreter' to 'intrp'
 if test x"$with_engine" = x"interpreter" ; then
@@ -223,38 +223,59 @@ dnl -------------------------------------------------------------------------
 dnl Check for JIT support and add in the necessary configuration files
 dnl -------------------------------------------------------------------------
 
-if test -f $srcdir/config/$host_cpu/$host_os/${with_engine}-md.h ; then
-    if sed 1q < $srcdir/config/$host_cpu/$host_os/${with_engine}-md.h | \
-       fgrep "Needs update, do not use" > /dev/null 2>&1 && \
-       test "x$want_engine" = x; then
-	HAVE_CONFIG_JIT_MD_H=0
-	with_engine="intrp"
-	jitsupport=
-    else
-	HAVE_CONFIG_JIT_MD_H=1
-	CONFIG_JIT_MD_H="\$(top_srcdir)/config/$host_cpu/$host_os/$with_engine-md.h"
-	AC_SUBST(CONFIG_JIT_MD_H)
-	KAFFEVM_JIT_DEF="\$(top_srcdir)/config/$host_cpu/$with_engine-$host_cpu.def"
-	AC_SUBST(KAFFEVM_JIT_DEF)
-	KAFFEVM_ICODE_H="\$(top_srcdir)/config/$host_cpu/$with_engine-icode.h"
-	AC_SUBST(KAFFEVM_ICODE_H)
-	
-	jitsupport=yes
-    fi
+dnl This function determines if our configuration supports the given engine
+SupportEngine()
+{
+	if test x"$1" = x"intrp" ; then
+		return 0
+	fi
+	if test -f $srcdir/config/$host_cpu/$host_os/${1}-md.h ; then
+	    if sed 1q < $srcdir/config/$host_cpu/$host_os/${with_engine}-md.h \
+	      | fgrep -q "Needs update, do not use" ; then
+		    return 1
+	    else
+		    return 0
+	    fi
+	else
+	    return 1
+	fi
+}
+
+dnl If they request a specific engine, we must support it or else fail
+dnl Otherwise, pick the most preferable supported engine. Note that
+dnl the "intrp" engine is always supported, so we can't fail there.
+
+if test x"${want_engine}" != x""; then
+	if !SupportEngine "${want_engine}"; then
+		AC_MSG_ERROR(Configuration $host_cpu-$host_os does not support the $want_engine engine)
+	fi
+	with_engine="${want_engine}"
 else
-	HAVE_CONFIG_JIT_MD_H=0
-	with_engine="intrp"
-	jitsupport=
+	for engine in jit3 jit intrp; do
+		if SupportEngine "${engine}"; then
+			with_engine="${engine}"
+			break;
+		fi
+	done
 fi
+
+if test x"$with_engine" != x"intrp" ; then
+    HAVE_CONFIG_JIT_MD_H=1
+    CONFIG_JIT_MD_H="\$(top_srcdir)/config/$host_cpu/$host_os/$with_engine-md.h"
+    AC_SUBST(CONFIG_JIT_MD_H)
+    KAFFEVM_JIT_DEF="\$(top_srcdir)/config/$host_cpu/$with_engine-$host_cpu.def"
+    AC_SUBST(KAFFEVM_JIT_DEF)
+    KAFFEVM_ICODE_H="\$(top_srcdir)/config/$host_cpu/$with_engine-icode.h"
+    AC_SUBST(KAFFEVM_ICODE_H)
+else
+    HAVE_CONFIG_JIT_MD_H=0
+fi
+
 AC_SUBST(HAVE_CONFIG_JIT_MD_H)
 
-dnl Make sure we support jit mode if requested.
-if test "$jitsupport" = "" && test x"$want_engine" != x"" && test x"$want_engine" != x"intrp" ; then
-	AC_MSG_ERROR(Configuration $host_cpu-$host_os does not support $want_engine mode)
-fi
 AC_MSG_CHECKING(execution engine)
 AC_MSG_RESULT($with_engine)
-AM_CONDITIONAL(USE_JIT, test x"$with_engine" = x"jit")
+AM_CONDITIONAL(USE_JIT, test x"$with_engine" != x"intrp")
 
 ENGINE_NAME="$with_engine"
 AC_SUBST(ENGINE_NAME)
