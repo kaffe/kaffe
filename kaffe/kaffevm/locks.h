@@ -14,7 +14,7 @@
 #define __locks_h
 
 #ifndef KAFFEH
-#include "jthread.h"
+#include "thread-impl.h"
 #endif
 
 #include "md.h"
