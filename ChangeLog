@@ -1,3 +1,17 @@
+2004-03-24  Dalibor Topic <robilad@kaffe.org>
+
+	* config/alpha/atomicity.h:
+	New file, taken from GNU libc 2.3.2.
+
+	* config/alpha/common.h:
+	Include config/alpha/atomicity.h.
+
+	* config/Makefile.am:
+	(EXTRA_DIST) Added config/alpha/atomicity.h.
+
+	* config/Makefile.in:
+	Regenerated.
+
 2004-03-23  Dalibor Topic <robilad@kaffe.org>
 
 	* kaffe/kaffevm/support.h:

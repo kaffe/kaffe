@@ -337,6 +337,7 @@ EXTRA_DIST = \
 	regen-forward \
 	stamp-h1.in \
 	alpha/alpha.c \
+	alpha/atomicity.h \
 	alpha/callKaffeException.h \
 	alpha/common.h \
 	alpha/jit-alpha.def \
