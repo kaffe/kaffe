@@ -17,6 +17,7 @@
 #include "../../../kaffe/kaffevm/exception.h"
 #include "java_lang_reflect_Method.h"
 #include <native.h>
+/* #include "kaffe_rmi_server_RMIHashes.h" */
 #include "sha-1.h"
 
 extern char* pathname2ClassnameCopy(const char*);
