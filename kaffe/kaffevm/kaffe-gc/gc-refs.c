@@ -187,14 +187,26 @@ KaffeGC_rmWeakRef(Collector *collector, void* mem, void** refobj)
 	  {
 	    if (obj->allRefs[i] == refobj)
 	      {
-		void ***newRefs;
+		void ***newRefs, ***oldrefs;
+		unsigned int rnum = obj->ref - 1;
 		
-		obj->ref--;
-		newRefs = (void ***)KGC_malloc(collector, sizeof(void ***)*obj->ref, KGC_ALLOC_REF);
-		memcpy(newRefs, obj->allRefs, i*sizeof(void ***));
-		memcpy(&newRefs[i], &obj->allRefs[i+1], obj->ref*sizeof(void ***));
-		KGC_free(collector, obj->allRefs);
+		if (rnum != 0)
+		{
+  		  unlockStaticMutex(&weakRefLock);
+		  newRefs = (void ***)KGC_malloc(collector, sizeof(void ***)*rnum, KGC_ALLOC_REF);
+  		  lockStaticMutex(&weakRefLock);
+
+		  memcpy(newRefs, obj->allRefs, i*sizeof(void ***));
+		  memcpy(&newRefs[i], &obj->allRefs[i+1], (rnum-i)*sizeof(void ***));
+		} else
+	          newRefs = NULL;
+		obj->ref = rnum;
+		oldrefs = obj->allRefs;
 		obj->allRefs = newRefs;
+
+  		unlockStaticMutex(&weakRefLock);
+		KGC_free(collector, oldrefs);
+  		lockStaticMutex(&weakRefLock);
 		break;
 	      }
 	  }
@@ -205,7 +217,9 @@ KaffeGC_rmWeakRef(Collector *collector, void* mem, void** refobj)
 	  }
 	if (obj->ref == 0) {
 	  *objp = obj->next;
+	  unlockStaticMutex(&weakRefLock);
 	  KGC_free(collector, obj);
+	  lockStaticMutex(&weakRefLock);
 	}
 	unlockStaticMutex(&weakRefLock);
 	return true;
@@ -316,13 +330,11 @@ DBG(GCWALK,
     );
 
   /* Walk the referenced objects */
-  lockStaticMutex(&strongRefLock); 
   for (i = 0; i < REFOBJHASHSZ; i++) {
     for (robj = strongRefObjects.hash[i]; robj != 0; robj = robj->next) {
       KGC_markObject(collector, NULL, robj->mem);
     }
   }
-  unlockStaticMutex(&strongRefLock);
  
 DBG(GCWALK,
     dprintf("Walking live threads...\n");

@@ -1,3 +1,13 @@
+2005-03-12  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* FAQ/FAQ.locks: Updated to match new lock algorithm.
+
+	* kaffe/kaffevm/kaffe-gc/gc-refs.c
+	(KaffeGC_rmWeakRef): Reworked memory allocation and lock sequence
+	to prevent dead locks while collecting/finalizing.
+	(KaffeGC_walkRefs): Do not lock here as all threads are stopped
+	and this may deadlock.
+	
 2005-03-11  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/gnu/java/nio/channels/FileChannelImpl.java

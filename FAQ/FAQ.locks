@@ -53,9 +53,10 @@ VM-internal object locks
 
 There are two flavors of VM-internal locking interfaces.  One for
 dynamic locks (left column) and one for static locks (right column).
-Dynamic locks are used to protect VM-internal dynamic structures
+Dynamic locks are generally used to protect VM-internal dynamic structures
 (e.g., classes).  Static locks are generally global locks (e.g., the
-gc lock or finalizer lock).
+gc lock or finalizer lock) or locks that need a specific out-of-order
+initialization.
 
 The VM must use its own internal locks for most internal state, to
 avoid race conditions with arbitrary Java code that uses object locks.
@@ -79,17 +80,13 @@ must be a pointer to a struct with a "lock" field.  The lock field
 must be an iLock pointer.  The static interfaces take a pointer to a
 iLock pointer.  
 
-Lastly, both static and non-static mutex functions assume an implicit
-"iLockRoot" automatic(*) variable exists on the current stack frame.
-(*) i.e., it must not be static nor global, otherwise its whole
-purpose, which is of speeding up locking by means of using stack
-information, would be defeated.  There is an implicit restriction in
-the use of lock/unlock: they must occur in the same stack frame.
-There is a way around this restriction, but if don't know what it is,
-you probably shouldn't try it.
-
-XXX How many of the internal locks really need to be recursive?
-
+To avoid the use of building heavy locks you must only lock once. If
+you exceed that limit a heavy lock is allocated and kept in memory
+until the lock is destroyed. The new implementation(*) heavy lock is
+actually not that slow as it must only acquire the heavy lock by
+putting a 1 into some field and then increment the lock counter when
+called recursively.
+(*) As of 2005-03-11
 
 Threading System Synchronization Primitives
 ===========================================
@@ -155,48 +152,51 @@ Kaffe Fast Locking
 ==================
 
 Kaffe has a fast locking scheme that minimizes the cost of uncontended
-locks.  The fast locking scheme is implemented between VM-internal
+locks and non recursive locks. The fast locking scheme is implemented between VM-internal
 locking layer and the threading system's locking primitives.  The
 basic idea is that a "heavy" lock is not allocated unless there is
-some contention for it.  Additionally, another trick is used to avoid
-maintaining extraneous state for recursive locks.  The Kaffe Fast
-Locking scheme takes advantage of several observations.  First, all
-lockable objects have a pointer to a heavy lock, in case one is needed
-for the object.  Second, all pointers to heap-allocated objects in
+some contention for it.  Note that once an heavy lock has been
+allocated the lock remains heavy until it is destroyed. The
+implementation takes into account one observation: all pointers to heap-allocated objects in
 Kaffe are at least 4-byte aligned, thus making the bottom two bits of
-every pointer available.  Third, if a recursive lock is re-acquired by
-the same thread, it is necessairly acquired in a more recent stack
-frame (i.e., the frame in which the lock was originally acquired is
-still on the stack).  The recursion optimization can be considered
-separately from the fast lock acquistion.
+every pointer available. However, we cannot rely on the stack frame to
+see recursive locks as some (un)locking may happen at different
+level. For example, JNI requires that we have JNI_MonitorEnter and
+JNI_MonitorExit: those two functions are called by an external library
+to (un)lock an object however it is absolutely not guaranteed that the
+stack pointer will be the same for the two calls. So recursion cannot
+be fully optimized.
 
-Here is some weak pseudo-code to explain the algorithm.
+Here is some weak pseudo-code to explain the heavy lock algorithm.
 
 if lock field is NULL
-	set lock field to current thread's "id".
-else 
-	/* lock field is a pointer */
-	if lock field bottom bit is set
-		/* lock field points to a heavy lock */
-		...
-	else
-		/* lock field points to some thread's "id" */
-		allocate a heavy lock and 
-		set the lock field to address of heavy lock
+	set lock field to current thread's "id"
+else
+	/* we are going to acquire an heavy lock */
+	if lock field bottom bit is not set
+		/* This is a thin lock */
+		if it is a static lock
+		   try to acquire the heavy lock
+		       success => initialize it and put it in the lock
+		       		   field
+		       failure => exit the outer if to "a".
+		else it is not a static lock
+		   /* It is a dynamic lock and we must allocate the
+		    * heavy */
+		   Allocate and initialize a new heavy lock
+		   try to put it in the lock field
+		endif
+	endif
+a:
 
-This must all be done atomically.  Kaffe gets around this requirement
-by chaining atomic compare-and-swap operations and by swapping the
-magic value LOCKINPROGRESS into the field.  The common case requires a
-single atomic compare and swap.
+		/* lock field is an heavy lock */
+		b: try to acquire the heavy lock
+		   if it fails wait a semaphore event
+		   loop to "b".
 
-The "id" is where the recursive lock optimization comes in.  The id is
-actually the address of a local stack slot in the function that
-invoked "lockMutex".  This is used to decide if a thread owns a lock
-(if the address doesn't fall on its stack, then the thread cannot own
-the lock) and is used to optimize recursive locks (if the address is
-on the current thread's stack, then it must be from a previous stack
-frame).  This is why the iLock variable must be allocated as an
-automatic variable on the stack frame.
+
+When the heavy lock is released the algorithm increase the semaphore
+counter to wake up a potentially locked thread.
 
 Jason Baker <jbaker@cs.utah.edu>
 Jun 29, 1999
@@ -204,3 +204,5 @@ updated by Alexandre Oliva <oliva@lsd.ic.unicamp.br>
 Sept 18, 1999
 updated by Patrick Tullmann <tullmann@cs.utah.edu>
 Mar 17, 2000
+updated by Guilhem Lavaux <guilhem@kaffe.org>
+Mar 3, 2005
