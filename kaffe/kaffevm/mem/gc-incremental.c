@@ -61,6 +61,11 @@ static counter gcgcablemem;
 static counter gcfixedmem;
 #endif /* KAFFE_STATS */
 
+/* Is this pointer within our managed heap? */
+#define IS_A_HEAP_POINTER(from) \
+        ((uintp) (from) >= gc_heap_base && \
+	 (uintp) (from) < gc_heap_base + gc_heap_range)
+
 static void *reserve;
 static void *outOfMem;
 static void *outOfMem_allocator;
@@ -284,6 +289,52 @@ gcGetObjectIndex(Collector* gcif, const void* mem)
 	} else {
 		return (GC_GET_FUNCS(info, GCMEM2IDX(info, unit)));
 	}
+}
+
+/*
+ * Given a pointer within an object, find the base of the object.
+ * This works for both gcable and fixed object types.
+ *
+ * This method uses many details of the allocator implementation.
+ * Specifically, it relies on the contiguous layout of block infos
+ * and the way GCMEM2BLOCK and GCMEM2IDX are implemented.
+ */
+static
+void*
+gcGetObjectBase(Collector *gcif, const void* mem)
+{
+	int idx;
+	gc_block* info;
+
+	/* quickly reject pointers that are not part of this heap */
+	if (!IS_A_HEAP_POINTER(mem)) {
+		return (0);
+	}
+
+	info = GCMEM2BLOCK(mem);
+	if (!info->inuse) {
+		/* go down block list to find out whether we were hitting
+		 * in a large object
+		 */
+		while (!info->inuse && (uintp)info > (uintp)gc_block_base) {
+			info--;
+		}
+		/* must be a large block, hence nr must be 1 */
+		if (!info->inuse || info->nr != 1) {
+			return (0);
+		}
+	}
+
+	idx = GCMEM2IDX(info, mem);
+
+	/* report fixed objects as well */
+	if (idx < info->nr && 
+	    ((GC_GET_COLOUR(info, idx) & GC_COLOUR_INUSE) || 
+	     (GC_GET_COLOUR(info, idx) & GC_COLOUR_FIXED))) 
+	{
+	    	return (UTOMEM(GCBLOCK2MEM(info, idx)));
+	}
+	return (0);
 }
 
 static
@@ -1062,6 +1113,7 @@ static struct GarbageCollectorInterface_Ops GC_Ops = {
 	gcGetObjectSize,
 	gcGetObjectDescription,
 	gcGetObjectIndex,
+	gcGetObjectBase,
 	gcWalkMemory,
 	gcWalkConservative,
 	gcRegisterFixedTypeByIndex,
