@@ -402,6 +402,7 @@ installed_properties = \
 
 jrelib_DATA = \
 	rt.jar \
+	tools.jar \
 	$(installed_properties)
 
 Klasses_jar_SRCS = \
@@ -5720,11 +5721,12 @@ EXTRA_DIST = \
 LIBDIR = lib
 rebuildLib = ./rebuildLib
 JAR_CMD1 = (cd $(srcdir) && $(ZIP) -q -r $(CURDIR)/$@.new META-INF)
-JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(SRCDIRS))
+JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(SRCDIRS) -x gnu/bytecode/*.class -x gnu/classpath/tools/javap/*.class)
 JAR_CMD3 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_regexp_message_bundles))
 JAR_CMD4 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(serialized_converters))
 JAR_CMD5 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_getopt_message_bundles))
 JAR_CMD6 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(classpath_resources))
+JAR_CMD7 = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new gnu/bytecode gnu/classpath/tools/javap)
 all: all-recursive
 
 .SUFFIXES:
@@ -6099,6 +6101,13 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 @USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD5)
 @USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD6)
 @USE_PRECOMPILED_RT_JAR_FALSE@	mv $@.new $@
+
+# Put gnu.bytecode into tools.jar to avoid problems
+# with applications using their own version of it.
+tools.jar: $(LIBDIR)/stamp $(gnu_bytecode_SRCS)
+	rm -f tools.jar
+	$(JAR_CMD7)
+	mv $@.new $@
 
 .PHONY: build-classes Klasses
 build-classes Klasses: rt.jar

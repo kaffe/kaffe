@@ -1,5 +1,23 @@
 2005-03-31  Dalibor Topic  <robilad@kaffe.org>
 
+	Moved gnu.bytecode into tools.jar to fix problems
+	with nice's bootstrap.
+
+	Reported by:  Daniel Bonniot  <bonniot@users.sourceforge.net>
+
+	* kaffe/scripts/javap.in: Add tools.jar to classpath.
+
+	* kaffe/scripts/kaffe.in: Don't add tools.jar to BOOTCLASSPATH.
+
+	* libraries/javalib/Makefile.am.in: (jrelib_DATA) Added tools.jar.
+	(JAR_CMD2) Don't add gnu.bytecode and gnu.classpath.tools.javap
+	to rt.jar.
+	(JAR_CMD7) Put gnu.bytecode and gnu.classpath.tools.javap into
+	tools.jar.
+	(tools.jar) New target.
+
+2005-03-31  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/arm/linux/md.c: Added missing arm/jit.h include.
 
 	Reported by:  gian paolo ciceri <gp.ciceri@acm.org>
