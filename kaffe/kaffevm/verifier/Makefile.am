@@ -32,6 +32,8 @@ libkaffeverifier_la_SOURCES = \
 	verify.c \
 	verify.h \
 	verify2.c \
+	verify3a.c \
+	verify3b.c \
 	verify-block.c \
 	verify-block.h \
 	verify-debug.c \

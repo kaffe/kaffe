@@ -74,7 +74,8 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 libkaffeverifier_la_LIBADD =
-am_libkaffeverifier_la_OBJECTS = verify.lo verify2.lo verify-block.lo \
+am_libkaffeverifier_la_OBJECTS = verify.lo verify2.lo \
+	verify3a.lo verify3b.lo verify-block.lo \
 	verify-debug.lo verify-sigstack.lo verify-type.lo \
 	verify-uninit.lo
 libkaffeverifier_la_OBJECTS = $(am_libkaffeverifier_la_OBJECTS)
@@ -86,7 +87,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/verify-sigstack.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/verify-type.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/verify-uninit.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/verify.Plo ./$(DEPDIR)/verify2.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/verify.Plo ./$(DEPDIR)/verify2.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/verify3a.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/verify3b.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
@@ -368,6 +371,8 @@ libkaffeverifier_la_SOURCES = \
 	verify.c \
 	verify.h \
 	verify2.c \
+	verify3a.c \
+	verify3b.c \
 	verify-block.c \
 	verify-block.h \
 	verify-debug.c \
@@ -456,6 +461,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify-uninit.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify3a.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/verify3b.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

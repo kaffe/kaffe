@@ -28,36 +28,4 @@ verifyError(Verifier* v, const char* msg) {
 	return false;
 }
 
-
-/*
- * Helper function for error reporting in BRANCH_IN_BOUNDS macro in verifyMethod3a.
- */
-static inline
-bool
-branchInBoundsErrorInVerifyMethod3a(Verifier* v,
-				    uint32 codelen,
-				    uint32 n)
-{
-	DBG(VERIFY3, dprintf("ERROR: branch to (%d) out of bound (%d) \n", n, codelen); );
-	return verifyError(v, "branch out of method code");
-}
-
-/*
- * Helper function for error reporting in CHECK_LOCAL_INDEX macro in verifyMethod3a.
- */
-static inline
-bool
-checkLocalIndexErrorInVerifyMethod3a(Verifier* v,
-				     uint32 pc,
-				     unsigned char* code,
-				     uint32 n)
-{
-	DBG(VERIFY3,
-	    dprintf("ERROR:  pc = %d, instruction = ", pc);
-	    printInstruction(code[pc]);
-	    dprintf(", localsz = %d, localindex = %d\n", v->method->localsz, n);
-	    );
-	return verifyError(v, "attempting to access a local variable beyond local array");
-}
-
 #endif

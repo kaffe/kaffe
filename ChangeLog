@@ -1,4 +1,34 @@
 2004-07-01  Rob Gonzalez <rob@kaffe.org>
+	* kaffe/kaffevm/verifier/verify3a.c
+	* kaffe/kaffevm/verifier/verify3b.c
+	Added to break up verify.c into passes 3a and 3b.
+
+	* kaffe/kaffevm/verifier/verify-errors.h
+	Verify pass 3a error methods moved to verify3a.c
+
+	* kaffe/kaffevm/verifier/verify-block.c
+	(verifyBasicBlock) Moved in from verify.c.
+
+	* kaffe/kaffevm/verifier/verify.h
+	Method and variable prototypes formerly declared
+	"static" in verify.c moved here for use in the new
+	newly partitioned verifier sections.
+
+	* kaffe/kaffevm/verifier/verify.c
+	(verifyMethod3a) moved to verify3a.c
+	(verifyMethod3b) moved to verify3b.c
+	(mergeBasicBlocks) moved to verfiy3b.c
+	(verifyBasicBlock) moved to verify-block.c
+
+	Some error helper methods moved along with the
+	methods they helped.
+
+	* kaffe/kaffevm/verifier/Makefile.am
+	* kaffe/kaffevm/verifier/Makefile.in
+	Regenerated (i.e. fixed by hand because I don't
+	have automake 1.8.5).
+
+2004-07-01  Rob Gonzalez <rob@kaffe.org>
 	* kaffe/kaffevm/verifier/verify-types.c
 	An extra ';' removed that was causing older gcc's trouble.
 
