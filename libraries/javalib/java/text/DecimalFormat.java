@@ -40,6 +40,8 @@ package java.text;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.HashMap;
+import java.util.Vector;
 import java.io.ObjectInputStream;
 import java.io.IOException;
 
@@ -406,9 +408,29 @@ public class DecimalFormat extends NumberFormat
 	    && useExponentialNotation == dup.useExponentialNotation);
   }
 
-  public StringBuffer format (double number, StringBuffer dest,
-			      FieldPosition fieldPos)
+  private final void addAttribute(Vector ranges, Vector attributes,
+				  int new_range, Format.Field new_attribute)
   {
+    HashMap map;
+
+    if (new_attribute != null)
+      {
+	map = new HashMap();
+	map.put(new_attribute, new_attribute);
+	attributes.add(map);
+      }
+    else
+      attributes.add(null);
+
+    ranges.add(new Integer(new_range));
+  }
+
+  protected StringBuffer formatInternal (double number, StringBuffer dest,
+					 FieldPosition fieldPos, Vector ranges,
+					 Vector attributes)
+  {
+    boolean set_attributes = (ranges != null && attributes != null);
+   
     // A very special case.
     if (Double.isNaN(number))
       {
@@ -432,6 +454,14 @@ public class DecimalFormat extends NumberFormat
 	else
 	  {
 	    dest.append(symbols.getMinusSign());
+	    if (set_attributes)
+	      {
+		addAttribute(ranges, attributes, dest.length(),
+			     NumberFormat.Field.SIGN);
+		addAttribute(ranges, attributes, 
+			     dest.length()+positivePrefix.length(),
+			     null);
+	      }
 	    dest.append(positivePrefix);
 	  }
 	number = - number;
@@ -477,12 +507,23 @@ public class DecimalFormat extends NumberFormat
 
 	    // Append group separator if required.
 	    if (groupingUsed && count > 0 && groupingSize != 0 && count % groupingSize == 0)
-	      dest.insert(index, symbols.getGroupingSeparator());
+	      {
+		if (set_attributes)
+		  {
+		    addAttribute(ranges, attributes, dest.length(),
+				 NumberFormat.Field.INTEGER);
+		    addAttribute(ranges, attributes, dest.length()+1,
+				 NumberFormat.Field.GROUPING_SEPARATOR);
+		  }
 
+		dest.insert(index, symbols.getGroupingSeparator());
+	      }
 	    dest.insert(index, (char) (symbols.getZeroDigit() + dig));
 
 	    ++count;
 	  }
+	if (set_attributes)
+	  addAttribute(ranges, attributes, dest.length(), NumberFormat.Field.INTEGER); 
 
 	integerEndIndex = dest.length();
 
@@ -525,6 +566,15 @@ public class DecimalFormat extends NumberFormat
 	    || total_digits > 0)
 	  {
 	    dest.insert(decimal_index, symbols.getDecimalSeparator());
+	    
+	    if (set_attributes)
+	      {
+		addAttribute(ranges, attributes, decimal_index + 1,
+			     NumberFormat.Field.DECIMAL_SEPARATOR);
+		addAttribute(ranges, attributes, dest.length(),
+			     NumberFormat.Field.FRACTION);
+	      }
+	    
 	    if (fieldPos != null && 
 		(fieldPos.getField() == FRACTION_FIELD ||
 		 fieldPos.getFieldAttribute() == NumberFormat.Field.FRACTION))
@@ -538,10 +588,17 @@ public class DecimalFormat extends NumberFormat
 	if (useExponentialNotation)
 	  {
 	    dest.append(symbols.getExponential());
+	    if (set_attributes)
+	      addAttribute(ranges, attributes, dest.length(),
+			   NumberFormat.Field.EXPONENT_SYMBOL);
+	    
 	    if (exponent < 0)
 	      {
 		dest.append (symbols.getMinusSign ());
 		exponent = - exponent;
+		if (set_attributes)
+		  addAttribute(ranges, attributes, dest.length(),
+			       NumberFormat.Field.EXPONENT_SIGN);
 	      }
 	    index = dest.length();
 	    for (count = 0;
@@ -551,7 +608,11 @@ public class DecimalFormat extends NumberFormat
 		long dig = exponent % 10;
 		exponent /= 10;
 		dest.insert(index, (char) (symbols.getZeroDigit() + dig));
+
 	      }
+	    if (set_attributes)
+	      addAttribute(ranges, attributes, dest.length(),
+			   NumberFormat.Field.EXPONENT);
 	  }
       }
 
@@ -567,6 +628,40 @@ public class DecimalFormat extends NumberFormat
 		? negativeSuffix
 		: positiveSuffix);
     return dest;
+  }
+
+  public StringBuffer format (double number, StringBuffer dest,
+			      FieldPosition fieldPos)
+  {
+    return formatInternal (number, dest, fieldPos, null, null);
+  }
+
+  public AttributedCharacterIterator formatToCharacterIterator (Object value)
+  {
+    Vector ranges = new Vector();
+    Vector attributes = new Vector();
+    StringBuffer sbuf = new StringBuffer();
+    
+    if (value instanceof Number)
+      formatInternal(((Number) value).doubleValue(), sbuf, null, ranges, attributes);
+    else
+      throw new IllegalArgumentException 
+	("Cannot format given Object as a Number");
+
+    int[] int_ranges = new int[ranges.size()];
+    HashMap[] array_attributes = new HashMap[ranges.size()];
+    
+    for (int i=0;i<int_ranges.length;i++)
+      int_ranges[i] = ((Integer)ranges.elementAt(i)).intValue();
+
+    System.arraycopy(attributes.toArray(), 0, array_attributes, 0, array_attributes.length);
+
+    /*
+     * TODO: Reparse buffer to find the position of currency, percent, permille.
+     * As current classpath implementation preformat prefixes and suffixes we are
+     * not able to place attributes just when symbols arrive. 
+     */
+    return new FormatCharacterIterator (sbuf.toString(), int_ranges, array_attributes);
   }
 
   public StringBuffer format (long number, StringBuffer dest,

@@ -8,6 +8,24 @@
 	
 2003-08-26  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* libraries/javalib/java/text/DecimalFormat.java:
+	(formatToCharacterAttribute) new method.
+	(formatInternal) renamed from format(double) and added attributes
+	handling
+	(addAttribute) added a final method to add attributes in vectors
+	(format(double)) use formatInternal
+
+	* libraries/javalib/java/text/NumberFormat.java,
+	libraries/javalib/java/text/MessageFormat.java,
+	libraries/javalib/java/text/DateFormat.java,
+	libraries/javalib/java/text/DecimalFormat.java:
+	Added serialVersionUID to Field subclasses.
+
+	* libraries/javalib/java/text/RuleBasedCollator.java:
+	Removed an extra unused state of CollationElement.
+
+2003-08-26  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* libraries/javalib/java/text/SimpleDateFormat.java:
 	(formatWithAttribute) Added a if branch condition when we are not
 	setting attributes for an iterator.

@@ -90,6 +90,8 @@ public abstract class DateFormat extends Format implements Cloneable
 
   public static class Field extends Format.Field
   {
+    static final long serialVersionUID = 7441350119349544720L;
+    
     private int calendarField;
 
     public static final DateFormat.Field ERA = new Field("era", Calendar.ERA);

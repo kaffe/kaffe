@@ -196,8 +196,7 @@ public class RuleBasedCollator extends Collator
     static final int RESET = 4;
     static final int IGNORE = 5;
     static final int INVERSE_SECONDARY = 6;
-    static final int NEW_SEQUENCE = 7; /* For expansion */
-
+    
     int comparisonType;
     String textElement;
     int hashText;

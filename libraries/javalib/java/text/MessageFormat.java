@@ -149,6 +149,8 @@ public class MessageFormat extends Format
 
   public static class Field extends Format.Field
   {
+    static final long serialVersionUID = 7899943957617360810L;
+
     /**
      * This is the attribute set for all characters produced
      * by MessageFormat during a formatting.

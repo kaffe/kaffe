@@ -82,6 +82,8 @@ public abstract class NumberFormat extends Format implements Cloneable
 
   public static class Field extends Format.Field
   {
+    static final long serialVersionUID = 7494728892700160890L;
+
     /**
      * Attribute set to all characters containing digits of the integer
      * part.

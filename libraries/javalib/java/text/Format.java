@@ -67,6 +67,8 @@ public abstract class Format implements Serializable, Cloneable
 
   public static class Field extends AttributedCharacterIterator.Attribute
   {
+    static final long serialVersionUID = 276966692217360283L;
+   
     public Field(String name)
     {
       super(name);
