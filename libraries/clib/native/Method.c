@@ -29,6 +29,7 @@
 #include "Float.h"
 #include "Double.h"
 #include <native.h>
+#include "jni.h"
 #include "defs.h"
 
 jint
@@ -59,14 +60,26 @@ java_lang_reflect_Method_invoke(struct Hjava_lang_reflect_Method* this, struct H
 	int i;
 	int j;
 	int len;
-	char* sig;
-	void* code;
+	char* sig, rettype;
+	/* 
+	 * Obtain a JNIEnv pointer.
+	 * XXX This assumes we know the details of the JNI implementation.
+	 */
+	extern struct JNIEnv_ Kaffe_JNIEnv;
+	JNIEnv *env = (JNIEnv *)&Kaffe_JNIEnv;
+
+	/* this will (intentionally) break when we have a def of jthrowable */
+	typedef jobject jthrowable;
+	jthrowable targetexc;
 
 	clazz = unhand(this)->clazz;
 	slot = unhand(this)->slot;
 
 	assert(slot < clazz->nmethods);
 
+	/* Note: we assume here that `meth' is identical to the jmethodID which
+	 * would be returned by JNIEnv::GetMethodID for this method.
+	 */
 	meth = &clazz->methods[slot];
 
 	len = argobj ? obj_length(argobj) : 0;
@@ -77,34 +90,34 @@ java_lang_reflect_Method_invoke(struct Hjava_lang_reflect_Method* this, struct H
 		switch (*sig) {
 		case 'Z':
 			if (a == javaLangBooleanClass) {
-				args[j].i = unhand((Hjava_lang_Boolean*)body[i])->value;
+				args[j].z = unhand((Hjava_lang_Boolean*)body[i])->value;
 			} else {
 				SignalError("java.lang.IllegalArgumentException", "");
 			}
 			break;
 		case 'B':
 			if (a == javaLangByteClass) {
-				args[j].i = unhand((Hjava_lang_Byte*)body[i])->value;
+				args[j].b = unhand((Hjava_lang_Byte*)body[i])->value;
 			} else {
 				SignalError("java.lang.IllegalArgumentException", "");
 			}
 			break;
 		case 'C':
 			if (a == javaLangCharacterClass) {
-				args[j].i = unhand((Hjava_lang_Character*)body[i])->value;
+				args[j].c = unhand((Hjava_lang_Character*)body[i])->value;
 			}
 			else if (a == javaLangByteClass) {
-				args[j].i = unhand((Hjava_lang_Byte*)body[i])->value;
+				args[j].c = unhand((Hjava_lang_Byte*)body[i])->value;
 			} else {
 				SignalError("java.lang.IllegalArgumentException", "");
 			}
 			break;
 		case 'S':
 			if (a == javaLangShortClass) {
-				args[j].i = unhand((Hjava_lang_Short*)body[i])->value;
+				args[j].s = unhand((Hjava_lang_Short*)body[i])->value;
 			}
 			else if (a == javaLangByteClass) {
-				args[j].i = unhand((Hjava_lang_Byte*)body[i])->value;
+				args[j].s = unhand((Hjava_lang_Byte*)body[i])->value;
 			} else {
 				SignalError("java.lang.IllegalArgumentException", "");
 			}
@@ -210,16 +223,81 @@ java_lang_reflect_Method_invoke(struct Hjava_lang_reflect_Method* this, struct H
 	if (*sig != ')' || i < len)
 		SignalError("java.lang.IllegalArgumentException", "");
 
-	/* Select which method to really call, and call it */
-	if (METHOD_IS_STATIC(meth)) {
-		code = METHOD_INDIRECTMETHOD(meth);
-	}
-	else {
-		code = obj->dtable->method[meth->idx];
-	}
-	callMethodA(meth, code, obj, args, &ret);
+	rettype = *++sig;
 
-	switch (*++sig) {
+	/* Select which method to really call, and call it */
+	if (METHOD_IS_STATIC(meth)) {	/* static method */
+
+		switch (rettype) {
+
+		/* invoke proper method via JNI CallStatic<Type>MethodA */
+#define CallStaticTypeMethodA(type) \
+	(*env)->CallStatic##type##MethodA(env, clazz, meth, args)
+
+		case 'V': CallStaticTypeMethodA(Void); break;
+		case 'J': ret.j = CallStaticTypeMethodA(Long); break;
+		case 'F': ret.f = CallStaticTypeMethodA(Float); break;
+		case 'D': ret.d = CallStaticTypeMethodA(Double); break;
+		case 'I': ret.j = CallStaticTypeMethodA(Int); break;
+		case 'S': ret.s = CallStaticTypeMethodA(Short); break;
+		case 'B': ret.b = CallStaticTypeMethodA(Byte); break;
+		case 'Z': ret.z = CallStaticTypeMethodA(Boolean); break;
+		case 'C': ret.c = CallStaticTypeMethodA(Char); break;
+		case 'L': 
+		case '[': ret.l = CallStaticTypeMethodA(Object); break;
+
+#undef CallStaticTypeMethodA
+		default:
+			ABORT();
+		}
+	} else {			/* nonstatic method */
+		switch (rettype) {
+
+		/* Why Call<Type>MethodA and not CallNonvirtual<Type>MethodA?
+		 *
+		 * Because the spec says:
+		 * If the underlying method is an instance method, it is 
+		 * invoked using dynamic method lookup as documented in The 
+		 * Java Language Specification, section 15.11.4.4; in 
+		 * particular, overriding based on the runtime type of the 
+		 * target object will occur. 
+		 */
+#define CallTypeMethodA(type) \
+	(*env)->Call##type##MethodA(env, obj, meth, args)
+
+		case 'V': CallTypeMethodA(Void); break;
+		case 'J': ret.j = CallTypeMethodA(Long); break;
+		case 'F': ret.f = CallTypeMethodA(Float); break;
+		case 'D': ret.d = CallTypeMethodA(Double); break;
+		case 'I': ret.i = CallTypeMethodA(Int); break;
+		case 'S': ret.s = CallTypeMethodA(Short); break;
+		case 'B': ret.b = CallTypeMethodA(Byte); break;
+		case 'Z': ret.z = CallTypeMethodA(Boolean); break;
+		case 'C': ret.c = CallTypeMethodA(Char); break;
+		case 'L': 
+		case '[': ret.l = CallTypeMethodA(Object); break;
+#undef CallTypeMethodA
+		default:
+			ABORT();
+		}
+	}
+
+	/* If the method completes abruptly by throwing an exception, the 
+	 * exception is placed in an InvocationTargetException and thrown 
+	 * in turn to the caller of invoke. 
+	 */
+	if ((targetexc = (*env)->ExceptionOccurred(env)) != 0) {
+		Hjava_lang_Object* obj;
+
+		(*env)->ExceptionClear(env);
+		obj = execute_java_constructor(
+			"java.lang.reflect.InvocationTargetException", 0, 
+			"(Ljava/lang/Throwable;)V", targetexc);
+		throwException(obj);
+		assert(!"Not here");
+	}
+
+	switch (rettype) {
 	case 'V':
 		robj = 0;
 		break;
@@ -236,16 +314,16 @@ java_lang_reflect_Method_invoke(struct Hjava_lang_reflect_Method* this, struct H
 		robj = execute_java_constructor(0, javaLangIntegerClass, "(I)V", ret.i);
 		break;
 	case 'S':
-		robj = execute_java_constructor(0, javaLangShortClass, "(S)V", ret.i);
+		robj = execute_java_constructor(0, javaLangShortClass, "(S)V", ret.s);
 		break;
 	case 'B':
-		robj = execute_java_constructor(0, javaLangByteClass, "(B)V", ret.i);
+		robj = execute_java_constructor(0, javaLangByteClass, "(B)V", ret.b);
 		break;
 	case 'Z':
-		robj = execute_java_constructor(0, javaLangBooleanClass, "(Z)V", ret.i);
+		robj = execute_java_constructor(0, javaLangBooleanClass, "(Z)V", ret.z);
 		break;
 	case 'C':
-		robj = execute_java_constructor(0, javaLangCharacterClass, "(C)V", ret.i);
+		robj = execute_java_constructor(0, javaLangCharacterClass, "(C)V", ret.c);
 		break;
 	case 'L':
 	case '[':
