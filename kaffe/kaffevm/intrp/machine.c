@@ -67,40 +67,25 @@ char* engine_version = KVER;
 #define CHECK_NULL(_i, _s, _n)
 #endif
 
+void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *retval, volatile vmException *mjbuf, Hjava_lang_Thread *tid);
+
 void
-virtualMachine(methods* meth, slots* volatile arg, slots* retval, Hjava_lang_Thread* tid)
+virtualMachine(methods* meth, slots* volatile arg, slots* volatile retval, Hjava_lang_Thread* volatile tid)
 {
+	methods *volatile const vmeth = meth;
 	Hjava_lang_Object* volatile mobj;
 	vmException mjbuf;
 	accessFlags methaccflags;
 	const char* str;
 
-	/* If these can be kept in registers then things will go much
-	 * better.
-	 */
-	register bytecode* code;
-	register slots* lcl;
-	register slots* sp;
-	register uintp pc;
-	register uintp volatile npc;
+	slots* volatile lcl;
+	slots* volatile sp;
+	uintp volatile npc;
 
-	/* Misc machine variables */
-	jlong lcc;
-	jlong tmpl;
-	slots tmp[1];
-	slots tmp2[1];
-	slots mtable[1];
-
-	/* Variables used directly in the machine */
 	int32 idx;
 	jint low;
-	jint high;
 
-	/* Call, field and creation information */
-	callInfo cinfo;
-	fieldInfo finfo;
 	errorInfo einfo;
-	Hjava_lang_Class* crinfo;
 	Hjava_lang_Throwable* overflow;
 	jint *needOnStack;
 
@@ -152,7 +137,6 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	lcl = alloca(sizeof(slots) * (meth->localsz + meth->stacksz));
 
 	mobj = 0;
-	pc = 0;
 	npc = 0;
 
 	/* If we have any exception handlers we must prepare to catch them.
@@ -168,12 +152,14 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 
 	if (meth->exception_table != 0) {
 		if (JTHREAD_SETJMP(mjbuf.jbuf) != 0) {
+			meth = vmeth;
 			unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)&mjbuf;
 			npc = mjbuf.pc;
 			sp = &lcl[meth->localsz];
 			sp->v.taddr = (void*)unhand(tid)->exceptObj;
 			unhand(tid)->exceptObj = 0;
-			goto restart;
+			runVirtualMachine(meth, lcl, sp, npc, retval, &mjbuf, tid);
+			goto end;
 		}
 	}
 
@@ -205,26 +191,9 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 
 	sp = &lcl[meth->localsz - 1];
 
-	restart:
-	code = (bytecode*)meth->c.bcode.code;
+	runVirtualMachine(meth, lcl, sp, npc, retval, &mjbuf, tid);
 
-	/* Finally we get to actually execute the machine */
-	for (;;) {
-		assert(npc < meth->c.bcode.codelen);
-		pc = npc;
-		mjbuf.pc = pc;
-		npc = pc + insnLen[code[pc]];
-
-		switch (code[pc]) {
-		default:
-			fprintf(stderr, "Unknown bytecode %d\n", code[pc]);
-			throwException(NEW_LANG_EXCEPTION(VerifyError));
-			break;
-#include "kaffe.def"
-		}
-	}
-	end:
-
+ end:
 	/* Unsync. if required */
 	if (mobj != 0) {
 		unlockMutex(mobj);
@@ -235,6 +204,47 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 
 RDBG(	dprintf("Returning from method %s%s.\n", meth->name->data, meth->signature->data); )
 }
+
+void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *retval, volatile vmException *mjbuf, Hjava_lang_Thread *tid) {
+	bytecode *code = (bytecode*)meth->c.bcode.code;
+
+	/* Misc machine variables */
+	jlong lcc;
+	jlong tmpl;
+	slots tmp[1];
+	slots tmp2[1];
+	slots mtable[1];
+
+	/* Variables used directly in the machine */
+	int32 idx;
+	jint low;
+	jint high;
+
+	/* Call, field and creation information */
+	callInfo cinfo;
+	fieldInfo finfo;
+	Hjava_lang_Class* crinfo;
+	errorInfo einfo;
+
+	/* Finally we get to actually execute the machine */
+	for (;;) {
+		register uintp pc = npc;
+
+		assert(npc < meth->c.bcode.codelen);
+		mjbuf->pc = pc;
+		npc = pc + insnLen[code[pc]];
+
+		switch (code[pc]) {
+		default:
+			fprintf(stderr, "Unknown bytecode %d\n", code[pc]);
+			throwException(NEW_LANG_EXCEPTION(VerifyError));
+			break;
+#include "kaffe.def"
+		}
+	}
+ end:
+	return;
+}    
 
 /*
  * say what engine we're using

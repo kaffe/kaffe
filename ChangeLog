@@ -1,3 +1,13 @@
+1999-04-16  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/intrp/machine.c (virtualMachine): Move the VM loop 
+	into a separate function, runVirtualMachine(), that won't be
+	affected by potential register problems related with setjmp, that
+	remains in virtualMachine().  This has reduced the number of
+	volatile variables referenced within the VM loop to zero, which
+	should probably speed things up, at the cost a some additional
+	stack space.  This has fixed almost all problems in sparc/intrp.
+
 1999-04-15  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* config/alpha/sysdepCallMethod.h (sysdepCallMethod):
