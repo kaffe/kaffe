@@ -40,7 +40,7 @@ package java.net;
 import gnu.classpath.Configuration;
 import java.util.Enumeration;
 import java.util.Vector;
-
+import java.util.*;
 
 /**
  * This class models a network interface on the host computer.  A network
@@ -143,7 +143,7 @@ public final class NetworkInterface
   public static NetworkInterface getByName(String name)
     throws SocketException
   {
-    Vector networkInterfaces = getRealNetworkInterfaces();
+    Vector networkInterfaces = getNetworkInterfaces();
 
     for (Enumeration e = networkInterfaces.elements(); e.hasMoreElements();)
       {
@@ -168,7 +168,7 @@ public final class NetworkInterface
   public static NetworkInterface getByInetAddress(InetAddress addr)
     throws SocketException
   {
-    Vector networkInterfaces = getRealNetworkInterfaces();
+    Vector networkInterfaces = getNetworkInterfaces();
 
     for (Enumeration interfaces = networkInterfaces.elements();
          interfaces.hasMoreElements();)
@@ -186,6 +186,41 @@ public final class NetworkInterface
     throw new SocketException("no network interface is bound to such an IP address");
   }
 
+  static private Collection condense(Collection interfaces) 
+  {
+    final Map condensed = new HashMap();
+
+    final Iterator interfs = interfaces.iterator();
+    while (interfs.hasNext()) {
+
+      final NetworkInterface face = (NetworkInterface) interfs.next();
+      final String name = face.getName();
+      
+      if (condensed.containsKey(name))
+	{
+	  final NetworkInterface conface = (NetworkInterface) condensed.get(name);
+	  if (!conface.inetAddresses.containsAll(face.inetAddresses))
+	    {
+	      final Iterator faceAddresses = face.inetAddresses.iterator();
+	      while (faceAddresses.hasNext())
+		{
+		  final InetAddress faceAddress = (InetAddress) faceAddresses.next();
+		  if (!conface.inetAddresses.contains(faceAddress))
+		    {
+		      conface.inetAddresses.add(faceAddress);
+		    }
+		}
+	    }
+	}
+      else
+	{
+	  condensed.put(name, face);
+	}
+    }
+
+    return condensed.values();
+  }
+
   /**
    *  Return an <code>Enumeration</code> of all available network interfaces
    *
@@ -198,7 +233,9 @@ public final class NetworkInterface
     if (networkInterfaces.isEmpty())
       return null;
 
-    return networkInterfaces.elements();
+    Collection condensed = condense(networkInterfaces);
+
+    return Collections.enumeration(condensed);
   }
 
   /**
