@@ -136,7 +136,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
                             -1, -1,
                             image.getWidth (observer),
                             image.getHeight (observer));
-
+    
     return status;
   }
 

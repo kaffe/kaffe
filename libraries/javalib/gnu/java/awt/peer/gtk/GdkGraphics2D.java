@@ -523,8 +523,8 @@ public class GdkGraphics2D extends Graphics2D
         return true;
       }
     else
-      {
-      
+      {      
+
         // In this case, xform is an AffineTransform that transforms bounding
         // box of the specified image from image space to user space. However
         // when we pass this transform to cairo, cairo will use this transform

@@ -181,7 +181,7 @@ public class BasicTableHeaderUI
       }
 
   }
-
+  
   public Dimension getPreferredSize(JComponent c)
   {
     TableColumnModel cmod = header.getColumnModel();
