@@ -143,9 +143,7 @@ public final class NetworkInterface
   public static NetworkInterface getByName(String name)
     throws SocketException
   {
-    Vector networkInterfaces = getNetworkInterfaces();
-
-    for (Enumeration e = networkInterfaces.elements(); e.hasMoreElements();)
+    for (Enumeration e = getNetworkInterfaces(); e.hasMoreElements();)
       {
 	NetworkInterface tmp = (NetworkInterface) e.nextElement();
 
@@ -168,9 +166,7 @@ public final class NetworkInterface
   public static NetworkInterface getByInetAddress(InetAddress addr)
     throws SocketException
   {
-    Vector networkInterfaces = getNetworkInterfaces();
-
-    for (Enumeration interfaces = networkInterfaces.elements();
+    for (Enumeration interfaces = getNetworkInterfaces();
          interfaces.hasMoreElements();)
       {
 	NetworkInterface tmp = (NetworkInterface) interfaces.nextElement();
