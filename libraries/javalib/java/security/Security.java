@@ -27,27 +27,29 @@ import java.util.Vector;
 
 public final class Security {
 	private static final String PROV_PREFIX = "security.provider.";
+	private static final String DEF_PROV = "kaffe.security.provider.Kaffe";
 	private static final Properties props = new Properties();
 	private static final Vector providers = new Vector();
 
-	// Read in master security properties from "java.security" file
 	static {
-	  readProps: {
 
-		// Read in java.security file properties
-		File file = new File(
-		    System.getProperties().getProperty("java.home")
-			+ "/lib/kaffe/security/java.security");
-		if (!file.exists()) {
-			break readProps;
-		}
-		try {
-			props.load(new BufferedInputStream(
-			    new FileInputStream(file)));
-		} catch (FileNotFoundException e) {
-			break readProps;
-		} catch (IOException e) {
-			break readProps;
+		// Set default security provider if none specified
+		props.put(PROV_PREFIX + "1", DEF_PROV);
+
+		// Read in master security properties from "java.security" file
+		readProps: {
+			File file = new File(
+			    System.getProperties().getProperty("java.home")
+				+ "/lib/kaffe/security/java.security");
+			if (file.exists()) {
+				try {
+					props.load(
+					    new BufferedInputStream(
+					    new FileInputStream(file)));
+				} catch (FileNotFoundException e) {
+				} catch (IOException e) {
+				}
+			}
 		}
 
 		// Install configured security providers
@@ -75,7 +77,6 @@ public final class Security {
 		}
 
 		// Should also read Policy stuff here...
-	    }
 	}
 
 	// This class is not instantiable
