@@ -150,10 +150,8 @@ SCRIPTFILES_SUN = \
 PSCRIPTFILES = install-jar kaffe
 
 bin_SCRIPTS = $(SCRIPTFILES_PIZZA) $(SCRIPTFILES_SUN) \
-	$(SCRIPTFILES_COMPAT) $(PSCRIPTFILES) report-kaffe-bug
+	$(SCRIPTFILES_COMPAT) $(PSCRIPTFILES)
 
-
-EXTRA_DIST = report-kaffe-bug
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
 CONFIG_CLEAN_FILES =  install-jar kaffe javac javakey jar javap jdb \
