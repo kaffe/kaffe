@@ -60,13 +60,6 @@ extern uintp Kaffe_JNI_eend;
 extern void Kaffe_JNIExceptionHandler(void);
 
 extern void Tspinoffall(void);
-/*
- * say how many bytes need to be left on the stack when entering a function
- * call.  When throwing a StackOverflowException, this variable is set to
- * STACK_LOW to have enough space to create the StackOverflowError --- if
- * the error is caught, we set it back to STACK_HIGH.
- */
-int needOnStack;
 
 /*
  * Throw an internal exception.
@@ -190,7 +183,7 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 
 			/* If handler found, call it */
 			if (res == true) {
-				needOnStack = STACK_HIGH;
+				unhand(ct)->needOnStack = STACK_HIGH;
 				frame->pc = einfo.handler;
 				longjmp(frame->jbuf, 1);
 			}
@@ -235,6 +228,7 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 			/* Handler found - dispatch exception */
 			if (einfo.handler != 0) {
 				unhand(ct)->exceptObj = 0;
+				unhand(ct)->needOnStack = STACK_HIGH;
 				CALL_KAFFE_EXCEPTION(frame, einfo, eobj);
 			}
 

@@ -39,6 +39,9 @@ public class Object {
   }
 
   public final void wait(long timeout) throws InterruptedException {
+    if (Thread.interrupted()) {
+      throw new InterruptedException();
+    }
     wait0(timeout);
     if (Thread.interrupted()) {
       throw new InterruptedException();

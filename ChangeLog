@@ -1,3 +1,16 @@
+Sun Dec  6 22:52:10 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* include/java_lang_Thread.h, libraries/javalib/java/lang/Thread.java,
+	kaffe/kaffevm/{jit|intr}/machine.c kaffe/kaffevm/exception.[ch]:
+	test/regression/Overflow.java:
+	implement stack overflow error properly.  JIT part was submitted 
+	by Edouard.
+	* kaffe/kaffevm/thread.[ch], libraries/clib/native/Thread.c,
+	kaffe/kaffevm/systems/unix-jthreads/internal.c, jthread.c
+	libraries/javalib/java/lang/Object.java: implemented Thread.interrupt().
+	test/regression/ThreadInterrupt.java: new test for Thread.interrupt()
+	kaffe/kaffevm/systems/unix-internal/internal.c: added stub.
+
 Fri Dec  4 13:51:58 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/beans/Introspector.java:

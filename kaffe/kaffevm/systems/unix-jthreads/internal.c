@@ -151,6 +151,7 @@ TcreateFirst(Hjava_lang_Thread* tid)
 	 */
 	unhand(tid)->stackOverflowError = 
 		(Hjava_lang_Throwable*)StackOverflowError;
+	unhand(tid)->needOnStack = STACK_HIGH;
 }
 
 static
@@ -171,6 +172,7 @@ Tcreate(Hjava_lang_Thread* tid, void* func)
 	   runs out */
 	unhand(tid)->stackOverflowError = 
 		(Hjava_lang_Throwable*)StackOverflowError;
+	unhand(tid)->needOnStack = STACK_HIGH;
 }
 
 static  
@@ -189,6 +191,13 @@ void
 Tstop(Hjava_lang_Thread* tid)
 {       
 	jthread_stop((jthread_t)unhand(tid)->PrivateInfo);
+}       
+
+static          
+void            
+Tinterrupt(Hjava_lang_Thread* tid)
+{       
+	jthread_interrupt((jthread_t)unhand(tid)->PrivateInfo);
 }       
 
 static  
@@ -419,6 +428,7 @@ ThreadInterface Kaffe_ThreadInterface = {
         jthread_yield,
         Tprio, 
         Tstop, 
+        Tinterrupt, 
         jthread_exit,
         Talive,
         Tframes,

@@ -33,6 +33,7 @@ public class Thread implements Runnable {
   private kaffe.util.Ptr exceptObj;
   private kaffe.util.Ptr jnireferences;
   private Throwable stackOverflowError;
+  private int needOnStack;
   private boolean dying;
   private Hashtable threadLocals;
   private Object suspendResume;

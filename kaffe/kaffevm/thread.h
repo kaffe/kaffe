@@ -39,6 +39,7 @@ jint	framesThread(Hjava_lang_Thread*);
 void	setPriorityThread(Hjava_lang_Thread*, jint);
 void	startThread(Hjava_lang_Thread*);
 void	stopThread(Hjava_lang_Thread*, Hjava_lang_Object*);
+void	interruptThread(Hjava_lang_Thread*);
 void	finalizeThread(Hjava_lang_Thread*);
 Hjava_lang_Thread* getCurrentThread(void);
 
@@ -51,6 +52,7 @@ typedef struct ThreadInterface {
 	void			(*yield)(void);
 	void			(*setPriority)(Hjava_lang_Thread*, jint);
 	void			(*stop)(Hjava_lang_Thread*);
+	void			(*interrupt)(Hjava_lang_Thread*);
 	void			(*exit)(void) __NORETURN__;
 	bool			(*alive)(Hjava_lang_Thread*);
 	jint			(*frames)(Hjava_lang_Thread*);

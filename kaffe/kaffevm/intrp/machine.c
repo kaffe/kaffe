@@ -101,17 +101,22 @@ virtualMachine(methods* meth, slots* volatile arg, slots* retval, Hjava_lang_Thr
 	errorInfo einfo;
 	Hjava_lang_Class* crinfo;
 	Hjava_lang_Throwable* overflow;
+	jint *needOnStack;
 
-	/* implement stack overflow check */
-	overflow = (*Kaffe_ThreadInterface.checkStack)(needOnStack);
-	if (overflow != 0) {
-		if (needOnStack == STACK_LOW) {
-			fprintf(stderr, 
-				"Panic: unhandled StackOverflowError()\n");
-			ABORT();
+	if (tid != 0)  {
+		/* implement stack overflow check */
+		needOnStack = &unhand(tid)->needOnStack;
+
+		overflow = (*Kaffe_ThreadInterface.checkStack)(*needOnStack);
+		if (overflow != 0) {
+			if (*needOnStack == STACK_LOW) {
+				fprintf(stderr, 
+				    "Panic: unhandled StackOverflowError()\n");
+				ABORT();
+			}
+			*needOnStack = STACK_LOW;
+			throwException(overflow);
 		}
-		needOnStack = STACK_LOW;
-		throwException(overflow);
 	}
 
 CDBG(	dprintf("Call: %s.%s%s.\n", meth->class->name->data, meth->name->data, meth->signature->data); )

@@ -112,6 +112,15 @@ startThread(Hjava_lang_Thread* tid)
 }
 
 /*
+ * Interrupt a thread
+ */
+void
+interruptThread(Hjava_lang_Thread* tid)
+{
+	(*Kaffe_ThreadInterface.interrupt)(tid);
+}
+
+/*
  * Stop a thread from running and terminate it.
  */
 void

@@ -828,6 +828,13 @@ Tprio(Hjava_lang_Thread* tid, jint prio)
 
 static
 void
+Tinterrupt(Hjava_lang_Thread* tid)
+{
+	/* not implemented in this threading system */
+}
+
+static
+void
 Tstop(Hjava_lang_Thread* tid)
 {
 	TCTX(tid)->flags |= THREAD_FLAGS_KILLED;
@@ -1103,6 +1110,7 @@ ThreadInterface Kaffe_ThreadInterface = {
 	Tyield,
 	Tprio,
 	Tstop,
+	Tinterrupt,
 	Texit,
 	Talive,
 	Tframes,

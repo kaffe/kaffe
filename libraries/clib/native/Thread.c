@@ -105,14 +105,8 @@ java_lang_Thread_resume0(struct Hjava_lang_Thread* this)
 	unlockMutex(this);
 }
 
-jbool
-java_lang_Thread_isInterrupted(struct Hjava_lang_Thread* this, jbool val)
-{
-	unimp("java.lang.Thread:isInterrupted unimplemented");
-}
-
 void
 java_lang_Thread_interrupt0(struct Hjava_lang_Thread* this)
 {
-	unimp("java.lang.Thread:interrupt0 unimplemented");
+	interruptThread(this);
 }

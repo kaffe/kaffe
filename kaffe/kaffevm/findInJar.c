@@ -81,7 +81,6 @@ findClass(classEntry* centry, errorInfo *einfo)
 	classFile hand;
 	char* cname;
 	Hjava_lang_Class* class = 0;
-	bool success = true;
 
 	cname = centry->name->data;
 

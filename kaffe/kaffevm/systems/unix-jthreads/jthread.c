@@ -961,7 +961,9 @@ jthread_enable_stop(void)
 void
 jthread_interrupt(jthread *jtid)
 {
-	resumeThread(jtid);	/* XXX */
+	if (jtid != currentJThread) {
+		resumeThread(jtid);
+	}
 }
 
 static void 

@@ -322,6 +322,13 @@ run 97
 run 98
 run 99"
 
+runtest ThreadInterrupt "Success 0a.
+Success 0b.
+Success 1.
+Success 2.
+Success 3.
+Success 4."
+
 runtest ReflectInterfaces 'null
 all methods
 public abstract void ReflectInterfaces$If2.if2MethodNP()

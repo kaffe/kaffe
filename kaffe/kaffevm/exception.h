@@ -57,8 +57,14 @@ extern void catchSignal(int, void*);
 #define SIG_T   void*
 #endif
 
+/*
+ * Values for Thread.needOnStack.  This variable
+ * says how many bytes need to be left on the stack when entering a function
+ * call.  When throwing a StackOverflowException, this variable is set to
+ * STACK_LOW to have enough space to create the StackOverflowError --- if
+ * the error is caught, we set it back to STACK_HIGH.
+ */
 #define STACK_HIGH      (8*1024)
 #define STACK_LOW       256
-extern int needOnStack;		/* # of bytes needed on stack */
 
 #endif

@@ -42,6 +42,7 @@
 #include "external.h"
 #include "soft.h"
 #include "jni.h"
+#include "thread.h"
 
 /*
  * Define information about this engine.
@@ -116,6 +117,41 @@ void	endSubBlock(sequence*);
 void	startSubBlock(sequence*);
 void	cancelNoWriteback(void);
 jlong	currentTime(void);
+
+/*
+ * By default, we comply with the Java spec and turn stack overflow checks
+ * on.  Note that this involves a noticeable performance penalty.  If you
+ * feel adventurous, undef this.
+ */
+#define CHECK_STACKOVERFLOW
+
+#if defined(CHECK_STACKOVERFLOW)
+
+static void 
+checkStackOverflow(void)
+{
+	Hjava_lang_Throwable* overflow;
+	Hjava_lang_Thread* current = (*Kaffe_ThreadInterface.currentJava)();
+	jint *needOnStack;
+
+	if (current == 0) {
+		return;
+	}
+
+	needOnStack = &unhand(current)->needOnStack;
+	overflow = (*Kaffe_ThreadInterface.checkStack)(*needOnStack);
+
+	if (overflow != 0) {
+		if (*needOnStack == STACK_LOW) {
+			fprintf(stderr, 
+				"Panic: unhandled StackOverflowError()\n");
+			ABORT();
+		}
+		*needOnStack = STACK_LOW;
+		throwException(overflow);
+	}
+}
+#endif /* CHECK_STACKOVERFLOW */
 
 /*
  * Translate a method into native code.
@@ -212,6 +248,11 @@ DBG(MOREJIT,
 
 	start_basic_block();
 	start_function();
+
+#if defined(CHECK_STACKOVERFLOW)
+	call_soft(checkStackOverflow);
+#endif
+
 	monitor_enter();
 	if (IS_STARTOFBASICBLOCK(0)) {
 		end_basic_block();

@@ -26,6 +26,7 @@ typedef struct Classjava_lang_Thread {
   struct Hkaffe_util_Ptr* exceptObj;
   struct Hkaffe_util_Ptr* jnireferences;
   struct Hjava_lang_Throwable* stackOverflowError;
+  jint needOnStack;
   jbool dying;
   struct Hjava_util_Hashtable* threadLocals;
   struct Hjava_lang_Object* suspendResume;
