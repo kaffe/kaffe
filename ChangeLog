@@ -3,7 +3,8 @@ Tue Jun 29 17:34:27 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
 	* developers/gdbinit: update gcmem2block for current gc layout
 	* kaffe/kaffevm/classMethod.c: More messages for malloc failures
 	during init.
-	* kaffe/kaffevm/code-analyse.c: Maintain verified flag after malloc failure
+	* kaffe/kaffevm/code-analyse.c: Maintain verified flag after
+	malloc failure
 	* kaffe/kaffevm/jni.c: jni monitorenter can use lockJavaMutex, since
 	jni catches all exceptions.
 	* kaffe/kaffevm/utf8const.c: Fix KMALLOC checks
@@ -19,10 +20,16 @@ Tue Jun 29 12:40:28 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
 	* kaffe/kaffevm/jar.c: Not only was it not calling closeJarFile,
 	but it was not properly maintaining the jarmem stats
 
-
 Tue Jun 29 12:19:19 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
 
 	* Added File FAQ/FAQ.locks 
+
+Tue Jun 29 11:29:28 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/lang/{Double,Float}.java: make
+	equals() method just compare bit patterns
+	* kaffe/kaffevm/jar.c: remove extraneous #undef HAVE_MMAP
+	and simplify read_checked() macro
 
 Mon Jun 28 17:39:43 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
 
