@@ -122,6 +122,7 @@ const char *constpoolTypeNames[] = {
 	"label",
 };
 
+#if defined(NDEBUG) || !defined(KAFFE_VMDEBUG)
 static void
 printConstant(FILE *file, constpool *cp)
 {
@@ -155,6 +156,7 @@ printConstant(FILE *file, constpool *cp)
 		break;
 	}
 }
+#endif /* defined(NDEBUG) || !defined(KAFFE_VMDEBUG) */
 
 void
 establishConstants(void *at)
