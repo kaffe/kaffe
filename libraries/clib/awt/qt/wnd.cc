@@ -121,7 +121,7 @@ getCursor ( jint jCursor )
 void Java_java_awt_Toolkit_wndSetTitle(JNIEnv* env, jclass clazz,
   void* wnd, jstring jTitle )
 {
-  DBG(AWT, qqDebug("wndSetTitle\n"));
+  DBG(AWT_WND, qqDebug("wndSetTitle\n"));
   if ( jTitle ) {
     char *buf = java2CString( env, X, jTitle);
     ((QWidget*)wnd)->setCaption(QString(buf));
@@ -132,11 +132,11 @@ void Java_java_awt_Toolkit_wndSetTitle(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_wndSetResizable(JNIEnv* env, jclass clazz,
   void* wnd, jboolean isResizable, int x, int y, int width, int height)
 {
-  DBG(AWT, qqDebug("wndSetResizable\n"));
+  DBG(AWT_WND, qqDebug("wndSetResizable\n"));
   int min_width, max_width;
   int min_height, max_height;
 
-  DBG(AWT, qqDebug("setResizable: %p, %d, %d,%d,%d,%d\n",
+  DBG(AWT_WND, qqDebug("setResizable: %p, %d, %d,%d,%d,%d\n",
     wnd, isResizable, x, y, width, height));
 
   if ( !isResizable ) {
@@ -186,9 +186,9 @@ void* Java_java_awt_Toolkit_wndCreateFrame(JNIEnv* env, jclass clazz,
   jstring jTitle, jint x, jint y, jint width, jint height,
   jint jCursor, jint clrBack, jboolean isResizable)
 {
-  DBG(AWT, qqDebug("wndCreateFrame\n"));
+  DBG(AWT_WND, qqDebug("wndCreateFrame\n"));
   QFrame *mw = new QFrame();
-  DBG(AWT, qqDebug("createFrame( %p, %d,%d,%d,%d,..) -> %p\n", 
+  DBG(AWT_WND, qqDebug("createFrame( %p, %d,%d,%d,%d,..) -> %p\n", 
     jTitle, x, y, width, height, mw));
 
   if ( width <= 0 )  width = 1;
@@ -206,7 +206,7 @@ void* Java_java_awt_Toolkit_wndCreateFrame(JNIEnv* env, jclass clazz,
   Java_java_awt_Toolkit_wndSetTitle(env, clazz, (void*)mw, jTitle);
 
   int idx = registerSource( X, (QWidget*)mw, 0, WND_FRAME);
-  DBG(AWT, qqDebug("registerSource: mw=%p idx=%d\n",mw,idx));
+  DBG(AWT_WND, qqDebug("registerSource: mw=%p idx=%d\n",mw,idx));
   return (void*)mw;
 }
 
@@ -215,7 +215,7 @@ void* Java_java_awt_Toolkit_wndCreateWindow(JNIEnv* env, jclass clazz,
   void* owner, jint x, jint y, jint width, jint height,
   jint jCursor, jint clrBack )
 {
-  DBG(AWT, qqDebug("wndCreateWindow\n"));
+  DBG(AWT_WND, qqDebug("wndCreateWindow\n"));
 
   QFrame* mw = new QFrame((QWidget*)owner);
   mw->setFrameStyle(QFrame::Panel|QFrame::Raised);
@@ -224,7 +224,7 @@ void* Java_java_awt_Toolkit_wndCreateWindow(JNIEnv* env, jclass clazz,
   y = p.y();
   // Owner
 
-  DBG(AWT, qqDebug("createWindow( %p, %d,%d,%d,%d,..) -> %p\n", 
+  DBG(AWT_WND, qqDebug("createWindow( %p, %d,%d,%d,%d,..) -> %p\n", 
           owner,x,y,width,height, mw));
 
   if ( width <= 0 )  width = 1;
@@ -237,7 +237,7 @@ void* Java_java_awt_Toolkit_wndCreateWindow(JNIEnv* env, jclass clazz,
   mw->setBackgroundColor(QCOLOR(clrBack));
 
   int idx = registerSource( X, (QWidget*)mw, (QWidget*)owner, WND_WINDOW);
-  DBG(AWT, qqDebug("registerSource: mw=%p idx=%d\n",mw,idx));
+  DBG(AWT_WND, qqDebug("registerSource: mw=%p idx=%d\n",mw,idx));
   return (void*)mw;
 }
 
@@ -251,7 +251,7 @@ void* Java_java_awt_Toolkit_wndCreateDialog(JNIEnv* env, jclass clazz,
     (Window)owner, jTitle, x, y, width, height,
     jCursor, clrBack, isResizable); */
 
-  DBG(AWT, qqDebug("wndCreateDialog\n"));
+  DBG(AWT_WND, qqDebug("wndCreateDialog\n"));
   QFrame* mw = new QFrame();
   mw->setFrameStyle(QFrame::Panel|QFrame::Raised);
   QPoint p = mw->mapToParent(mw->mapFromGlobal(QPoint(x,y)));
@@ -260,7 +260,7 @@ void* Java_java_awt_Toolkit_wndCreateDialog(JNIEnv* env, jclass clazz,
 
   // Owner
 
-  DBG(AWT, qqDebug("createDialog( %p,%p, %d,%d,%d,%d,..) -> %p\n", 
+  DBG(AWT_WND, qqDebug("createDialog( %p,%p, %d,%d,%d,%d,..) -> %p\n", 
     owner, jTitle, x, y, width, height, mw));
 
   if ( width <= 0 )  width = 1;
@@ -278,7 +278,7 @@ void* Java_java_awt_Toolkit_wndCreateDialog(JNIEnv* env, jclass clazz,
   Java_java_awt_Toolkit_wndSetTitle(env, clazz, (void*)mw, jTitle);
 
   int idx = registerSource( X, (QWidget*)mw, (QWidget*)owner, WND_DIALOG);
-  DBG(AWT, qqDebug("registerSource: mw=%p idx=%d\n",mw,idx));
+  DBG(AWT_WND, qqDebug("registerSource: mw=%p idx=%d\n",mw,idx));
   return (void*)mw;
 }
 
@@ -288,7 +288,7 @@ void Java_java_awt_Toolkit_wndDestroyWindow(JNIEnv* env, jclass clazz,
 {
   int i = getSourceIdx( X, wnd);
 
-  DBG(AWT, qqDebug("destroy window: %p (%d)\n", wnd, i));
+  DBG(AWT_WND, qqDebug("destroy window: %p (%d)\n", wnd, i));
 
   if ( (i >= 0) && !(X->windows[i].flags & WND_DESTROYED) ) {
     if ( wnd == X->focusFwd ) {
@@ -322,7 +322,7 @@ void Java_java_awt_Toolkit_wndRequestFocus(JNIEnv* env, jclass clazz,
 {
   int i = getSourceIdx( X, wnd);
 
-  DBG(AWT, qqDebug("request focus: %lx (%d)\n", wnd, i));
+  DBG(AWT_WND, qqDebug("request focus: %lx (%d)\n", wnd, i));
 
   if ( (i < 0) || (X->windows[i].flags & WND_DESTROYED) )
     return;
@@ -373,7 +373,7 @@ Java_java_awt_Toolkit_wndSetDialogInsets ( JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_wndSetBounds(JNIEnv* env, jclass clazz, void* wnd,
   jint x, jint y, jint width, jint height, jboolean isResizable)
 {
-  DBG(AWT, qqDebug("setBounds: %p %d,%d,%d,%d\n", wnd, x, y,
+  DBG(AWT_WND, qqDebug("setBounds: %p %d,%d,%d,%d\n", wnd, x, y,
     width, height));
 
   if(width < 0) width = 1;
@@ -397,7 +397,7 @@ void Java_java_awt_Toolkit_wndSetBounds(JNIEnv* env, jclass clazz, void* wnd,
 void Java_java_awt_Toolkit_wndRepaint(JNIEnv* env, jclass clazz, void* wnd,
   jint x, jint y, jint width, jint height )
 {
-  DBG(AWT, qqDebug("wndRepaint: %lx %d,%d,%d,%d\n", wnd, x, y, width, height));
+  DBG(AWT_WND, qqDebug("wndRepaint: %lx %d,%d,%d,%d\n", wnd, x, y, width, height));
 
   ((QWidget*)wnd)->repaint(x, y, width, height);  // or use update?
 }
@@ -414,7 +414,7 @@ void Java_java_awt_Toolkit_wndSetVisible(JNIEnv* env, jclass clazz,
   int     i = getSourceIdx( X, wnd);
   void*  owner;
 
-  DBG(AWT, qqDebug("setVisible: %lx (%d) %d\n", wnd, i, showIt));
+  DBG(AWT_WND, qqDebug("setVisible: %lx (%d) %d\n", wnd, i, showIt));
 
   if ( (i < 0) || (X->windows[i].flags & WND_DESTROYED) )
     return;
@@ -448,14 +448,14 @@ void Java_java_awt_Toolkit_wndSetVisible(JNIEnv* env, jclass clazz,
 
 void Java_java_awt_Toolkit_wndToBack(JNIEnv* env, jclass clazz, void* wnd)
 {
-  DBG(AWT, qqDebug("toBack: %p\n", wnd));
+  DBG(AWT_WND, qqDebug("toBack: %p\n", wnd));
   ((QWidget*)wnd)->lower();
 }
 
 
 void Java_java_awt_Toolkit_wndToFront(JNIEnv* env, jclass clazz, void* wnd)
 {
-  DBG(AWT, qqDebug("toFront: %p\n", wnd));
+  DBG(AWT_WND, qqDebug("toFront: %p\n", wnd));
   ((QWidget*)wnd)->raise();
 }
 
@@ -463,6 +463,6 @@ void Java_java_awt_Toolkit_wndToFront(JNIEnv* env, jclass clazz, void* wnd)
 void Java_java_awt_Toolkit_wndSetCursor(JNIEnv* env, jclass clazz,
   void* wnd, jint jCursor)
 {
-  DBG(AWT, qqDebug("setCursor: %lx, %d\n", (QWidget *)wnd, jCursor));
+  DBG(AWT_WND, qqDebug("setCursor: %lx, %d\n", (QWidget *)wnd, jCursor));
   ((QWidget*)wnd)->setCursor(QCursor( getCursor(jCursor)));
 }

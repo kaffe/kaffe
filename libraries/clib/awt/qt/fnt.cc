@@ -20,80 +20,45 @@
  * Font support
  */
 
-/*
- * this is our ultima ratio in case everything else fails, at least this
- * one should be.
- */
-#ifdef QPE
-char* backupFont = "unifont";
-#else
-char* backupFont = "fixed";
-#endif
-
-/*
- * these are (hopefully) the most usual font weight names, ordered
- * in our preferred lookup sequence (from PLAIN to BOLD)
- */
-char* weight[] = { "medium", "normal", "regular", "thin", "light",
-                   "black", "demibold", "heavy", "extrabold", "extrablack", "bold" };
-#define NWEIGHT 11
-
-/*
- * these are finally the size offsets we want to try
- */
-int dsize[] = { 0, 10, -10, 20, -20, 30, -30, 40, -40 };
-#define NDSIZE 9
-
-/*
- * Our font lookup strategy is like this: every mapping that can be known
- * a priori goes into java.awt.Defaults, everything that might be specified
- * at runtime (sizes, slant, weight) has to be handled here. In detail:
- * 
- * (1) foundry, family, encoding and everything EXCEPT of weight,slant,size
- *     are specified in java.awt.Defaults FontSpec strings, which are used
- *     as simple C format specifications
- * (2) since both BOLD and ITALIC map to more than one attribute value
- *     (e.g. ITALIC-> "o", "i"), and many fonts are not available in all
- *     sizes, we have to make up a sequence of alternate specs to search
- * (3) the search first tries to vary sizes, then weights, then slants
- * (4) in case all of this fails, it directly tries the font spec
- * (5) if this fails, too, it backs up to what is supposed to be a safe
- *     standard font (fix size)
- *
- * Once again - we don't try to deduce Qt font family names from the Java 
- * names, that's in java.awt.Defaults, and Defaults is meant to be the 
- * thing which adapts the AWT to your Qt installation/preferences. Don't 
- * lament, modify it!
- */
-
 void*
 Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec,
                                     jint style, jint size )
 {
   int  i, j, k, i0, i1, j0, j1, di, dj;
   char buf[160];
-  char *spec = java2CString( env, X, jSpec);
+  char *spec = (char *) env->GetStringChars(jSpec,NULL);
   QFont *qf;
-  int weight=QFont::Normal;
-  bool italic=FALSE;
+  int weight = QFont::Normal;
+  bool italic = FALSE;
 
-  DBG(AWT, qqDebug("fntInitFont...%s\n",spec));
+  DBG(AWT_FNT, qDebug("fntInitFont...%s\n",spec));
 
-  if ( style & 0x1 ) { /* we have a Font.BOLD request */
-    //i0 = NWEIGHT - 1; i1 = -1; di = -1;
+  /*
+   * Use values from the java.awt.Font class
+   */
+  static int boldValue = -1;
+  static int italicValue = -1;
+
+  /* 
+   * Symbolic lookups are expensive, cache the values
+   */
+  if (boldValue < 0 || italicValue < 0) {
+    jfieldID fieldID;
+    jclass theClass;
+
+    theClass = env->FindClass("java.awt.Font");
+    fieldID = env->GetStaticFieldID(theClass, "BOLD", "I");
+    boldValue = env->GetStaticIntField(theClass, fieldID);
+
+    fieldID = env->GetStaticFieldID(theClass, "ITALIC", "I");
+    italicValue = env->GetStaticIntField(theClass, fieldID);
+  }
+
+  if (style & boldValue)
     weight = QFont::Bold;
-  }
-  else {
-    //i0 = 0; i1 = NWEIGHT; di = 1;
-  }
-
-  if ( style & 0x2 ) { /* we have a Font.ITALIC request */
-    //j0 = NSLANT - 1; j1 = -1; dj = -1;
+  if (style & italicValue)
     italic = TRUE;
-  }
-  else {
-    //j0 = 0; j1 = NSLANT; dj = 1;
-  }
+
   qf = new QFont(spec, size, weight, italic);
   return (void*) qf;
 }
@@ -140,7 +105,7 @@ Java_java_awt_Toolkit_fntGetFixedWidth ( JNIEnv* env, jclass clazz, QFont* fs )
 
   QFontMetrics fm((QFont)(*fs));
   int w =  ((fm.minRightBearing() - fm.minLeftBearing()) == fm.maxWidth()) ? fm.maxWidth() : 0;
-  DBG(AWT, qqDebug("fntGetFixedWidth %d\n",w));
+  DBG(AWT_FNT, qqDebug("fntGetFixedWidth %d\n", w));
   return w;
 }
 
@@ -148,7 +113,7 @@ jint
 Java_java_awt_Toolkit_fntGetHeight ( JNIEnv* env, jclass clazz, QFont* fs )
 {
   QFontMetrics fm((QFont)(*fs));
-  return fm.ascent() + fm.descent() +1;
+  return fm.ascent() + fm.descent() + 1;
 }
 
 jint
@@ -182,7 +147,7 @@ Java_java_awt_Toolkit_fntGetMaxDescent ( JNIEnv* env, jclass clazz, QFont* fs )
 jboolean
 Java_java_awt_Toolkit_fntIsWideFont ( JNIEnv* env, jclass clazz, QFont* fs )
 {
-  DBG(AWT, qqDebug("fntIsWideFont\n"));
+  DBG(AWT_FNT, qqDebug("fntIsWideFont\n"));
   return 0;
   // XXX: like: (fs->min_byte1 | fs->max_byte1);
 }
@@ -205,7 +170,7 @@ Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, QFont* fs )
   for( i=0;i<n;i++)
   jw[i] = fm.width(QChar((char)i));
   env->ReleaseIntArrayElements( widths, jw, 0);
-  DBG(AWT, qqDebug("fntGetWidths %d\n",fm.maxWidth()));
+  DBG(AWT_FNT, qqDebug("fntGetWidths %d\n",fm.maxWidth()));
   return widths;
 }
 
@@ -219,12 +184,13 @@ Java_java_awt_Toolkit_fntBytesWidth ( JNIEnv* env, jclass clazz,
   int       n = env->GetArrayLength( jBytes);
   int       w;
   QFontMetrics fm((QFont)(*fs));
-  if ( off+len > n ) len = n - off;
+  if ( off  + len > n ) 
+    len = n - off;
   QByteArray a;
-  a.setRawData(jb+off,len);
+  a.setRawData(jb + off, len);
   w = fm.width(QString(a),len);
   env->ReleaseByteArrayElements( jBytes, jb, JNI_ABORT);
-  DBG(AWT, qqDebug("fntBytesWidth %s %d\n",jb+off, w));
+  DBG(AWT_FNT, qqDebug("fntBytesWidth %s %d\n",jb + off, w));
   return w;
 }
 
@@ -235,7 +201,7 @@ Java_java_awt_Toolkit_fntCharWidth ( JNIEnv* env, jclass clazz, QFont* fs, jchar
   jChar = (jChar << 8) | (jChar >> 8);
 #endif
   QFontMetrics fm((QFont)(*fs));
-  DBG(AWT, qqDebug("fntCharWidth...\n"));
+  DBG(AWT_FNT, qqDebug("fntCharWidth...\n"));
 
   return fm.width(QChar((ushort)jChar));
 }
@@ -247,60 +213,47 @@ Java_java_awt_Toolkit_fntCharsWidth ( JNIEnv* env, jclass clazz,
   jboolean  isCopy;
   jchar    *jc = env->GetCharArrayElements( jChars, &isCopy);
   int      n = env->GetArrayLength( jChars);
-  ushort *b;
-  QChar  *unicode;
   int      w;
-  QFontMetrics fm((QFont)(*fs));
-  DBG(AWT, qqDebug("fntCharsWidth...\n"));
+  QFontMetrics *fm = new QFontMetrics((QFont) (*fs));
+  DBG(AWT_FNT, qDebug("fntCharsWidth...\n"));
 
-  if ( off+len > n ) len = n - off;
+  if ( off+len > n ) 
+    len = n - off;
 
-#ifndef WORDS_BIGENDIAN
-  n = sizeof(ushort)*len;
-  b = (ushort*) getBuffer( X,n);
-  swab( (jc+off), b, n);
-#else
-  b = (ushort *) (jc + off);
-#endif
-  int i;
-  unicode = new QChar[len];
-  for(i=0;i<len;i++)
-    unicode[i] = QChar((ushort)*(b+i));
+/* XXX: Unicode
+  ushort *b = (ushort *) (jc + off);
+  QChar *unicode = new QChar[len];
+  for (int i = 0; i < len; i++)
+    unicode[i] = QChar((ushort) *(b + i));
+ */
 
-  w = fm.width(QString(jchar2CString(X,jc+off,len)));
+  w = fm->width(QString((new QByteArray())->assign((char*) jc + off, len)));
   env->ReleaseCharArrayElements( jChars, jc, JNI_ABORT);
-  DBG(AWT, qqDebug("fntCharsWidth %s %d\n",jchar2CString(X,jc+off,len),w));
+  delete fm;
   return w;
 }
 
+// XXX: implement
 jint
 Java_java_awt_Toolkit_fntStringWidth ( JNIEnv* env, jclass clazz, QFont* fs, jstring jStr )
 {
   jboolean isCopy;
-  const jchar    *jc = env->GetStringChars( jStr, &isCopy);
-  int      len = env->GetStringLength( jStr);
-  int      w, n;
-  ushort *b;
-  QChar  *unicode;
-  QFontMetrics fm((QFont)(*fs));
+  const jchar *jc = env->GetStringChars(jStr, &isCopy);
+  int len = env->GetStringLength(jStr);
+  if (len <= 0)
+    return 0;
 
+  int w;
+/* XXX: Unicode
+  ushort *b = (ushort*) jc;
+  QChar  *unicode = new QChar[len];
+ */
+  QFontMetrics *fm = new QFontMetrics((QFont) (*fs));
+  w = fm->boundingRect(QString(jchar2CString(X,jc,len))).width();
 
-#ifndef WORDS_BIGENDIAN
-  n = sizeof(ushort)*len;
-  b = (ushort*) getBuffer( X, n);
-  swab( jc, b, n);
-#else
-  b= (ushort*) jc;
-#endif
-  int i;
-  unicode = new QChar[len];
-  for(i=0;i<len;i++)
-    unicode[i] = QChar((ushort)*(b+i));
-
-  w = fm.width(QString(jchar2CString(X,jc,len)));
-
-  DBG(AWT, qqDebug("fntStringWidth %s %d\n",jchar2CString(X,jc,len),w));
+  DBG(AWT_FNT, qDebug("fntStringWidth %s %d\n",jchar2CString(X,jc,len),w));
   env->ReleaseStringChars( jStr, jc);
+  delete fm;
   return w;
 }
 

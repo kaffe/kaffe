@@ -1,3 +1,17 @@
+2004-07-14  Jim Huang  <jserv@kaffe.org>
+
+	* FAQ/FAQ.awt:
+	Update usage of Qt AWT backend.
+
+	* libraries/clib/awt/qt/clr.cc,
+	libraries/clib/awt/qt/evt.cc,
+	libraries/clib/awt/qt/fnt.cc,
+	libraries/clib/awt/qt/gra.cc,
+	libraries/clib/awt/qt/wnd.cc:
+	Definite AWT debugging classification.
+	Update font initialization and font metrics information.
+	Color model support improvement.
+	
 2004-07-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/arm/jit-arm.def:

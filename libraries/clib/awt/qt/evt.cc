@@ -93,7 +93,7 @@ EventDispatcher::EventDispatcher(QWidget *parent, const char *name) {
 }
 
 bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
-  DBG(AWT, qqDebug("event type=%d widget=%p\n", e->type(), o));
+  DBG(AWT_EVT, qqDebug("event type=%d widget=%p\n", e->type(), o));
   QEvent* newEvent = NULL;
   EventPacket* packet = NULL;
   bool processed = false;
@@ -116,7 +116,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
     }
 
     case QEvent::Show: {
-      DBG(AWT, qqDebug("Event Show: srcIdx=%d\n", X->srcIdx));
+      DBG(AWT_EVT, qqDebug("Event Show: srcIdx=%d\n", X->srcIdx));
 
 #if (QT_VERSION < 300)
       newEvent = (QEvent*) new QShowEvent(true);
@@ -130,7 +130,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
     }
     
     case QEvent::Hide: {
-      DBG(AWT, qqDebug("Event Hid: srcIdx=%d\n", X->srcIdx));
+      DBG(AWT_EVT, qqDebug("Event Hid: srcIdx=%d\n", X->srcIdx));
 
 #if (QT_VERSION < 300)
       newEvent = (QEvent*) new QHideEvent(true);
@@ -145,7 +145,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
     
     case QEvent::FocusIn:
     case QEvent::FocusOut: {
-      DBG(AWT, qqDebug("Event Focus: srcIdx=%d\n", X->srcIdx));
+      DBG(AWT_EVT, qqDebug("Event Focus: srcIdx=%d\n", X->srcIdx));
       QFocusEvent* tmpFocusEvent = (QFocusEvent*)e;
       newEvent = (QEvent*) new QFocusEvent(tmpFocusEvent->type());
       ((QFocusEvent*)newEvent)->setReason(tmpFocusEvent->reason());
@@ -155,7 +155,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
 
     case QEvent::KeyPress:
     case QEvent::KeyRelease: {
-      DBG(AWT, qqDebug("Event Key: srcIdx=%d\n", X->srcIdx));
+      DBG(AWT_EVT, qqDebug("Event Key: srcIdx=%d\n", X->srcIdx));
       QKeyEvent* tmpKeyEvent = (QKeyEvent*)e;
       newEvent = (QEvent*) new QKeyEvent(tmpKeyEvent->type(),tmpKeyEvent->key(),
 	tmpKeyEvent->ascii(), tmpKeyEvent->state(), tmpKeyEvent->text(),
@@ -167,7 +167,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
     case QEvent::MouseButtonPress:
     case QEvent::MouseButtonRelease:
     case QEvent::MouseMove: {
-      DBG(AWT, qqDebug("Event MouseButton: srcIdx=%d\n", X->srcIdx));
+      DBG(AWT_EVT, qqDebug("Event MouseButton: srcIdx=%d\n", X->srcIdx));
       QMouseEvent* tmpMouseEvent = (QMouseEvent*)e;
       newEvent = (QEvent*) new QMouseEvent(tmpMouseEvent->type(),
         tmpMouseEvent->pos(), tmpMouseEvent->button(),
@@ -176,7 +176,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
       break;
     }
     case QEvent::Paint: {
-      DBG(AWT, qqDebug("Event Paint: srcIdx=%d\n", X->srcIdx));
+      DBG(AWT_EVT, qqDebug("Event Paint: srcIdx=%d\n", X->srcIdx));
       QPaintEvent* tmpPaintEvent = (QPaintEvent*)e;
       newEvent = (QEvent*) new QPaintEvent(tmpPaintEvent->rect(),
         tmpPaintEvent->erased());
@@ -184,7 +184,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
       break;
     }
     case QEvent::Move: {
-      DBG(AWT, qqDebug("Event Move: srcIdx=%d\n", X->srcIdx));
+      DBG(AWT_EVT, qqDebug("Event Move: srcIdx=%d\n", X->srcIdx));
       QPoint data(((QWidget*)o)->width(), ((QWidget*)o)->height());
       QMoveEvent* tmpMoveEvent = (QMoveEvent*)e;
       // Hide width/height in oldPos of newEvent
@@ -194,7 +194,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
       break;
     }
     case QEvent::Resize: {
-      DBG(AWT, qqDebug("Event Resize: srcIdx=%d\n", X->srcIdx));
+      DBG(AWT_EVT, qqDebug("Event Resize: srcIdx=%d\n", X->srcIdx));
       QSize data(((QWidget*)o)->x(), ((QWidget*)o)->y());
       QResizeEvent* tmpResizeEvent = (QResizeEvent*)e;
       // Hide x/y in oldSize of newEvent
@@ -283,15 +283,15 @@ jobject Java_java_awt_Toolkit_evtInit(JNIEnv* env, jclass clazz)
 {
   jclass Component;
 
-  DBG(AWT, qqDebug("evtInit\n"));
+  DBG(AWT_EVT, qqDebug("evtInit\n"));
 
   if ( ComponentEvent != NULL ){
-    DBG(AWT, qqDebug("evtInit called twice\n"));
+    DBG(AWT_EVT, qqDebug("evtInit called twice\n"));
     return NULL;
   }
 
   if(qapp == NULL) {
-    DBG(AWT, qqDebug("evtInit: qapp not initialized!\n"));
+    DBG(AWT_EVT, qqDebug("evtInit: qapp not initialized!\n"));
   }
 
   eventDispatcher = new EventDispatcher();
@@ -362,7 +362,7 @@ jobject processEvent(JNIEnv* env, Toolkit* X, QEvent* event, int index)
       
 
     case QEvent::Destroy: {
-      DBG(AWT, qqDebug("processing Destroy: SrcIdx=%d\n", index));
+      DBG(AWT_EVT, qqDebug("processing Destroy: SrcIdx=%d\n", index));
       /*
        * We should get this just for windows which have been destroyed from an
        * external client, since removeNotify() calls evtUnregisterSource() (i.e.
@@ -376,13 +376,13 @@ jobject processEvent(JNIEnv* env, Toolkit* X, QEvent* event, int index)
     }
     
     case QEvent::Reparent: {
-      DBG(AWT, qqDebug("processing Reparent: SrcIdx=%d\n", index));
+      DBG(AWT_EVT, qqDebug("processing Reparent: SrcIdx=%d\n", index));
       return NULL;
     }
 
     case QEvent::FocusIn:
     case QEvent::FocusOut: {
-      DBG(AWT, qqDebug("processing %s: SrcIdx=%d\n",(event->type() == QEvent::FocusIn)?"FocusIn":"FocusOut",index));
+      DBG(AWT_EVT, qqDebug("processing %s: SrcIdx=%d\n",(event->type() == QEvent::FocusIn)?"FocusIn":"FocusOut",index));
       int evtId;
       int et = event->type();
       if ( et == QEvent::FocusIn ) {
@@ -404,7 +404,7 @@ jobject processEvent(JNIEnv* env, Toolkit* X, QEvent* event, int index)
 
     case QEvent::KeyPress:
     case QEvent::KeyRelease: { 
-      DBG(AWT, qqDebug("processing %s: SrcIdx=%d\n",(event->type() == QEvent::KeyPress)?"KeyPress":"KeyRelease",index));
+      DBG(AWT_EVT, qqDebug("processing %s: SrcIdx=%d\n",(event->type() == QEvent::KeyPress)?"KeyPress":"KeyRelease",index));
       QKeyEvent *keyEvent = (QKeyEvent*)event;
       int             n, keyCode, keyChar, mod;
       
@@ -441,7 +441,7 @@ jobject processEvent(JNIEnv* env, Toolkit* X, QEvent* event, int index)
       int evtId = (((QEvent*)keyEvent)->type() == QEvent::KeyPress)? KEY_PRESSED : KEY_RELEASED;
       mod = keyMod(keyEvent->state());
       
-      DBG(AWT, qqDebug("KeyEvent: idx=%d keyCode=%d keyChar=%c mod=%d\n", index, keyCode,keyChar,mod));
+      DBG(AWT_EVT, qqDebug("KeyEvent: idx=%d keyCode=%d keyChar=%c mod=%d\n", index, keyCode,keyChar,mod));
 
       return env->CallStaticObjectMethod( KeyEvent, getKeyEvent,
                                           index, evtId, keyCode, keyChar, mod);
@@ -449,7 +449,7 @@ jobject processEvent(JNIEnv* env, Toolkit* X, QEvent* event, int index)
     }
     
     case QEvent::MouseButtonPress: {
-      DBG(AWT, qqDebug("processing MouseButtonPress Event SrcIdx=%d\n", index));
+      DBG(AWT_EVT, qqDebug("processing MouseButtonPress Event SrcIdx=%d\n", index));
       QMouseEvent* mouseEvent = (QMouseEvent*)event;
       // check the diff between event.xbutton.button and QMouseEvent::button()
       if (checkSource( X, index) ){
@@ -464,7 +464,7 @@ jobject processEvent(JNIEnv* env, Toolkit* X, QEvent* event, int index)
         mouseEvent->x(), mouseEvent->y());
     }
     case QEvent::MouseButtonRelease: {
-      DBG(AWT, qqDebug("processing MouseButtonRelease Event SrcIdx=%d\n", index));
+      DBG(AWT_EVT, qqDebug("processing MouseButtonRelease Event SrcIdx=%d\n", index));
       QMouseEvent* mouseEvent = (QMouseEvent*)event;
       // check the diff between event.xbutton.button and QMouseEvent::button()
       return env->CallStaticObjectMethod(MouseEvent, getMouseEvent,
@@ -472,21 +472,21 @@ jobject processEvent(JNIEnv* env, Toolkit* X, QEvent* event, int index)
         mouseEvent->x(), mouseEvent->y());
     }
     case QEvent::MouseMove: {
-      DBG(AWT, qqDebug("processing MouseMove Event SrcIdx=%d\n", index));
+      DBG(AWT_EVT, qqDebug("processing MouseMove Event SrcIdx=%d\n", index));
       QMouseEvent* mouseEvent = (QMouseEvent*)event;
       return env->CallStaticObjectMethod(MouseEvent, getMouseEvent,
         index, MOUSE_MOVED, 0,
         mouseEvent->x(), mouseEvent->y());
     }
     case QEvent::Paint: {
-      DBG(AWT, qqDebug("processing Paint Event SrcIdx=%d\n", index));
+      DBG(AWT_EVT, qqDebug("processing Paint Event SrcIdx=%d\n", index));
       QPaintEvent* paintEvent = (QPaintEvent*)event;
       QRect rect=paintEvent->rect();
       return env->CallStaticObjectMethod(PaintEvent, getPaintEvent,
         index, UPDATE, rect.x(), rect.y(), rect.width(), rect.height());
     }
     case QEvent::Move: {
-      DBG(AWT, qqDebug("processing Move Event SrcIdx=%d\n", index));
+      DBG(AWT_EVT, qqDebug("processing Move Event SrcIdx=%d\n", index));
       QMoveEvent* moveEvent = (QMoveEvent*)event;
       QPoint pos, data;
       pos = moveEvent->pos();
@@ -495,7 +495,7 @@ jobject processEvent(JNIEnv* env, Toolkit* X, QEvent* event, int index)
         index, COMPONENT_RESIZED, pos.x(), pos.y(), data.x(), data.y());
     }
     case QEvent::Resize: {
-      DBG(AWT, qqDebug("processing Resize Event SrcIdx=%d\n", index));
+      DBG(AWT_EVT, qqDebug("processing Resize Event SrcIdx=%d\n", index));
       QResizeEvent* resizeEvent = (QResizeEvent*)event;
       QSize size, data;
       size = resizeEvent->size();
@@ -515,7 +515,7 @@ jobject Java_java_awt_Toolkit_evtGetNextEvent(JNIEnv* env, jclass clazz)
   QEvent *event;
   int index;
 
-  DBG(AWT, qqDebug("getNextEvent..\n"));
+  DBG(AWT_EVT, qqDebug("getNextEvent..\n"));
   pollJavaClipboard(env);
 
   if (g_event_queue.count()) {
@@ -539,7 +539,7 @@ Java_java_awt_Toolkit_evtPeekEvent ( JNIEnv* env, jclass clazz )
 {
   jobject jEvt = NULL;
 
-  DBG(AWT, qqDebug("peekEvent..\n"));
+  DBG(AWT_EVT, qqDebug("peekEvent..\n"));
 #if 0
   if ( nextEvent( env, clazz, X, False) && ((getSourceIdx( X, (void*)X->event.xany.window) >= 0)) ) {
 	if ( (jEvt = (processEvent[X->event.xany.type])( env, X)) )
@@ -582,7 +582,7 @@ Java_java_awt_Toolkit_evtPeekEventId ( JNIEnv* env, jclass clazz, jint id )
  */
 void Java_java_awt_Toolkit_evtWakeup(JNIEnv* env, jclass clazz)
 {
-  DBG(AWT, qqDebug("evtWakeup\n"));
+  DBG(AWT_EVT, qqDebug("evtWakeup\n"));
 }
 
 /*
@@ -604,7 +604,7 @@ jint Java_java_awt_Toolkit_evtRegisterSource(JNIEnv* env, jclass clazz,
    */
   int i = getSourceIdx( X, wnd);
 
-  DBG(AWT, qqDebug("registerSource( %p) -> %d\n", wnd, i));
+  DBG(AWT_EVT, qqDebug("registerSource( %p) -> %d\n", wnd, i));
 
   return i;
 }
@@ -624,7 +624,7 @@ jint Java_java_awt_Toolkit_evtUnregisterSource(JNIEnv* env, jclass clazz,
   if ( X->lastWindow == wnd )
 	X->lastWindow = 0;
 
-  DBG(AWT, qqDebug("unregisterSource( %p) -> %d\n", wnd, i));
+  DBG(AWT_EVT, qqDebug("unregisterSource( %p) -> %d\n", wnd, i));
 
   return i;
 }

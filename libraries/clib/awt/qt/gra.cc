@@ -33,7 +33,7 @@ void* Java_java_awt_Toolkit_graInitGraphics(JNIEnv* env, jclass clazz,
 {
   QPaintDevice*       drw;
 
-  DBG(AWT, qqDebug("initGraphics: gr %p (tgt %p, type=%d) xo %d,yo %d  %d,%d - %d,%d  %p %x %x\n",
+  DBG(AWT_GRA, qqDebug("initGraphics: gr %p (tgt %p, type=%d) xo %d,yo %d  %d,%d - %d,%d  %p %x %x\n",
     gr, tgt,tgtType, xOff,yOff, xClip,yClip,wClip,hClip, fnt,fg,bg));
 
   if ( tgt ) {
@@ -43,11 +43,11 @@ void* Java_java_awt_Toolkit_graInitGraphics(JNIEnv* env, jclass clazz,
         break;          /* Window   */
       case 1:
         drw = (QPixmap*)(((Image*)tgt)->qpm);
-        DBG(AWT, qqDebug("tgt = IMAGE drw=%p\n",drw));
+        DBG(AWT_GRA, qqDebug("tgt = IMAGE drw=%p\n",drw));
         break;     /* Image    */
       case 2:
         drw = ((Graphics*)tgt)->drw;
-        DBG(AWT, qqDebug("tgt = GRAPHICS\n"));
+        DBG(AWT_GRA, qqDebug("tgt = GRAPHICS\n"));
         break;  /* Graphics */
       default:
         qFatal("illegal Graphics target: %d\n", tgtType);
@@ -69,7 +69,7 @@ void* Java_java_awt_Toolkit_graInitGraphics(JNIEnv* env, jclass clazz,
   }
 
   gr->painter = new QPainter(drw);
-  DBG(AWT, qqDebug("painter=%x\n", gr->painter));
+  DBG(AWT_GRA, qqDebug("painter=%x\n", gr->painter));
 
   gr->painter->setPen(QCOLOR(fg));
   gr->painter->setBrush(QCOLOR(fg));
@@ -102,7 +102,7 @@ void* Java_java_awt_Toolkit_graInitGraphics(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graFreeGraphics(JNIEnv* env, jclass clazz,
   Graphics* gr)
 {
-  DBG(AWT, qqDebug("freeGraphics: %p\n", gr));
+  DBG(AWT_GRA, qqDebug("freeGraphics: %p\n", gr));
 
   if(gr->painter)
     delete gr->painter;
@@ -114,7 +114,7 @@ void Java_java_awt_Toolkit_graCopyArea(JNIEnv* env, jclass clazz,
   Graphics* gr, jint x, jint y, jint width, jint height,
   jint xDelta, jint yDelta )
 {
-  DBG(AWT, qqDebug("copyArea: %p, %d,%d-%d,%d  %d,%d\n", gr, x,y,width,height, xDelta,yDelta));
+  DBG(AWT_GRA, qqDebug("copyArea: %p, %d,%d-%d,%d  %d,%d\n", gr, x,y,width,height, xDelta,yDelta));
 
   /* some X servers act alleric on that (careless bitblt, again) */
   if ( (width < 0) || (height < 0) )
@@ -127,7 +127,7 @@ void Java_java_awt_Toolkit_graCopyArea(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graClearRect(JNIEnv* env, jclass clazz,
   Graphics* gr, jint x, jint y, jint width, jint height)
 {
-  DBG(AWT, qqDebug("clearRect: %p, %d,%d-%d,%d\n", gr, x,y,width,height));
+  DBG(AWT_GRA, qqDebug("clearRect: %p, %d,%d-%d,%d\n", gr, x,y,width,height));
 
   QPainter *painter = (QPainter*)gr->painter;
   painter->fillRect(x + gr->x0, y + gr->y0, width, height, QCOLOR(gr->bg));
@@ -149,7 +149,7 @@ Java_java_awt_Toolkit_graDrawBytes ( JNIEnv* env, jclass clazz,
   jb = env->GetByteArrayElements( jBytes, &isCopy);
   jbo = jb + offset;
 
-  DBG(AWT, qqDebug("drawBytes: %p, %p,%d,%d  \"%s\"  %d,%d\n", gr,
+  DBG(AWT_GRA, qqDebug("drawBytes: %p, %p,%d,%d  \"%s\"  %d,%d\n", gr,
 				 jBytes,offset,len, jb, x,y));
 
   if ( offset+len > n )
@@ -180,7 +180,7 @@ Java_java_awt_Toolkit_graDrawChars ( JNIEnv* env, jclass clazz,
   jc = env->GetCharArrayElements( jChars, &isCopy);
   jco = jc + offset;
 
-  DBG(AWT, qqDebug("drawChars: %p, %p,%d,%d  \"%s\"  %d,%d\n", gr, jChars,offset,len,
+  DBG(AWT_GRA, qqDebug("drawChars: %p, %p,%d,%d  \"%s\"  %d,%d\n", gr, jChars,offset,len,
 				 jchar2CString(X,jco,len), x,y));
 
   if ( offset+len > n )
@@ -212,7 +212,7 @@ void Java_java_awt_Toolkit_graDrawString(JNIEnv* env, jclass clazz,
   if ( !str ) return;
 
   cstr = java2CString(env, X, str);
-  DBG(AWT, qqDebug("drawString: %p  \"%s\"  %d,%d\n", gr, cstr, x,y));
+  DBG(AWT_GRA, qqDebug("drawString: %p  \"%s\"  %d,%d\n", gr, cstr, x,y));
   painter = (QPainter*)gr->painter;
 
   QString qstr(cstr);
@@ -495,7 +495,7 @@ void Java_java_awt_Toolkit_graSetClip(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graSetColor(JNIEnv* env, jclass clazz,
   Graphics* gr, jint clr)
 {
-  DBG(AWT, qqDebug("setColor: gr=%p, clr=%x, painter=%x\n", gr, clr,
+  DBG(AWT_GRA, qqDebug("setColor: gr=%p, clr=%x, painter=%x\n", gr, clr,
     gr->painter));
 
   gr->fg = clr;

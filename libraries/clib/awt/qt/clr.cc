@@ -54,8 +54,7 @@ jint Java_java_awt_Toolkit_clrGetPixelValue(JNIEnv* env, jclass clazz,
   if ( !X->colorMode )
 	initColorMapping( env, clazz, X);
 
-  // uint pixel = QColor(JRED(rgb), JGREEN(rgb), JBLUE(rgb)).pixel();
-  // AWT_DBG(qqDebug("clrGetPixelValue: %8x -> %x (%d)\n", rgb, pixel, pixel));
+  DBG(AWT_CLR, qqDebug("clrGetPixelValue: %8x -> %x\n", rgb, (uint) QColor(JRED(rgb), JGREEN(rgb), JBLUE(rgb)).pixel()));
 
   return rgb;
 }
@@ -113,23 +112,20 @@ jobject Java_java_awt_Toolkit_clrGetColorModel(JNIEnv* env, jclass clazz)
   jobject    cm = 0;
   jclass     cmClazz;
   jmethodID  cmCtorId;
-//  QColor color;
-
+  QColor color;  
 
   if ( !X->colorMode )
 	initColorMapping( env, clazz, X);
 
-//  if(color.numBitPlanes()>8) {
-    cmClazz = env->FindClass( "java/awt/image/DirectColorModel");
-    cmCtorId = env->GetMethodID( cmClazz, "<init>", "(IIIII)V");
-    cm = env->NewObject( cmClazz, cmCtorId, 24,
-         0xff0000, 0x00ff00, 0x0000ff, 0);
-//  } else {
-//    cmClazz = env->FindClass( "java/awt/IndexColorModel");
-//    cmCtorId = env->GetMethodID( cmClazz, "<init>", "(I[II)V");
-//    //rgbs = env->NewIntArray( 256, 0);
-//    //cm = env->NewObject( cmClazz, cmCtorId, 8, rgbs, 0);
-//  }
+  if (color.numBitPlanes() > 8) {
+    cmClazz = env->FindClass("java/awt/image/DirectColorModel");
+    cmCtorId = env->GetMethodID(cmClazz, "<init>", "(IIIII)V");
+    cm = env->NewObject(cmClazz, cmCtorId, 24, 0xff0000, 0x00ff00, 0x0000ff, 0);
+  } else {
+    cmClazz = env->FindClass("java/awt/IndexColorModel");
+    cmCtorId = env->GetMethodID(cmClazz, "<init>", "(I[II)V");
+    cm = env->NewObject(cmClazz, cmCtorId, 8, env->NewIntArray(256), 0);
+  }
 
   return cm;
 }
