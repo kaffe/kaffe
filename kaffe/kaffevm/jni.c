@@ -383,7 +383,7 @@ Kaffe_NewObjectV(JNIEnv* env, jclass cls, jmethodID meth, va_list args)
 
 	clazz = (Hjava_lang_Class*)cls;
 
-	if (CLASS_IS_INTERFACE(clazz) || CLASS_IS_ABSTRACT(clazz)) {
+	if (CLASS_IS_INTERFACE(clazz) || CLASS_IS_ABSTRACT(clazz) || !METHOD_IS_CONSTRUCTOR(m)) {
 		throwException(InstantiationException(clazz->name->data));
 	}
 	obj = newObject(clazz);
@@ -423,7 +423,7 @@ Kaffe_NewObjectA(JNIEnv* env, jclass cls, jmethodID meth, jvalue* args)
 
 	clazz = (Hjava_lang_Class*)cls;
 
-	if (CLASS_IS_INTERFACE(clazz) || CLASS_IS_ABSTRACT(clazz)) {
+	if (CLASS_IS_INTERFACE(clazz) || CLASS_IS_ABSTRACT(clazz) || !METHOD_IS_CONSTRUCTOR(m)) {
 		throwException(InstantiationException(clazz->name->data));
 	}
 	obj = newObject(clazz);
