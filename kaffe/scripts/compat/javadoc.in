@@ -1,6 +1,5 @@
 #! /bin/sh
-# We use Pizza rather than Sun's
+# Script to run Sun's documenter
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-exec @bindir@/@kaffe_TRANSF@ pizza.compiler.Main -pizzadoc ${1+"$@"}
-
+exec @bindir@/@kaffe_TRANSF@ sun.tools.javadoc.Main ${1+"$@"}

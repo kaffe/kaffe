@@ -1065,9 +1065,8 @@ kaffe/scripts/javakey \
 kaffe/scripts/jar \
 kaffe/scripts/javap \
 kaffe/scripts/jdb \
-kaffe/scripts/pizza \
+kaffe/scripts/kjc \
 kaffe/scripts/javadoc \
-kaffe/scripts/pizzadoc \
 kaffe/scripts/appletviewer \
 kaffe/scripts/rmic \
 kaffe/scripts/rmiregistry \

@@ -133,8 +133,8 @@ with_engine = @with_engine@
 
 DIST_SUBDIRS = bat compat
 
-SCRIPTFILES_PIZZA = \
-		pizza pizzadoc
+SCRIPTFILES_KJC = \
+		kjc
 
 
 SCRIPTFILES_SUN = \
@@ -150,21 +150,19 @@ SCRIPTFILES_SUN = \
 
 PSCRIPTFILES = install-jar kaffe
 
-bin_SCRIPTS = $(SCRIPTFILES_PIZZA) $(SCRIPTFILES_SUN) \
+bin_SCRIPTS = $(SCRIPTFILES_KJC) $(SCRIPTFILES_SUN) \
 	$(SCRIPTFILES_COMPAT) $(PSCRIPTFILES)
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
-CONFIG_CLEAN_FILES =  install-jar kaffe javac javakey jar javap jdb \
-pizza javadoc pizzadoc appletviewer rmic rmiregistry serialver \
-native2ascii
+CONFIG_CLEAN_FILES =  install-jar kaffe javac javakey jar javap jdb kjc \
+javadoc appletviewer rmic rmiregistry serialver native2ascii
 SCRIPTS =  $(bin_SCRIPTS)
 
 DIST_SOURCES = 
 DIST_COMMON =  Makefile.am Makefile.in appletviewer.in install-jar.in \
-jar.in javac.in javadoc.in javakey.in javap.in jdb.in kaffe.in \
-native2ascii.in pizza.in pizzadoc.in rmic.in rmiregistry.in \
-serialver.in
+jar.in javac.in javadoc.in javakey.in javap.in jdb.in kaffe.in kjc.in \
+native2ascii.in rmic.in rmiregistry.in serialver.in
 
 
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -193,11 +191,9 @@ javap: $(top_builddir)/config.status javap.in
 	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 jdb: $(top_builddir)/config.status jdb.in
 	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
-pizza: $(top_builddir)/config.status pizza.in
+kjc: $(top_builddir)/config.status kjc.in
 	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 javadoc: $(top_builddir)/config.status javadoc.in
-	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
-pizzadoc: $(top_builddir)/config.status pizzadoc.in
 	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 appletviewer: $(top_builddir)/config.status appletviewer.in
 	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status

@@ -13,7 +13,7 @@
 CLASSFILE = Klasses.jar
 SRCDIRS = java kaffe
 
-class_DATA = $(CLASSFILE) pizza.jar
+class_DATA = $(CLASSFILE) kjc.jar
 
 Klasses_jar_SRCS = \
 	$(java_applet_SRCS) \

@@ -6,16 +6,20 @@ Cd to your build directory (the same as the source directory if you
 did ./configure), then cd to libraries/javalib.
 
 Type "make Klasses".
+
 This will build the java libraries, put them in a Klasses.jar file
 and overwrite the version in your source tree.  Type "make install"
 to install the jar file in your target prefix.
 
-If you have added or removed files from the javalib tree, you may have
-to run "make new-classes" first.  This will update Makefile.am, but
-not Makefile.in nor Makefile.  In order to update these other files,
-for the changes to take effect, you'll need automake 1.4 or newer, and
-you'll have to configure with --enable-maintainer-mode or run automake
-by hand.
+If you have added or removed files from the javalib tree, you will have
+to update Makefile.am, Makefile.in and Makefile. Do this as follows:
+
+    $ cd ../..
+    $ sh developers/autogen.sh
+    $ ./configure
+
+You'll need automake 1.4 or newer, and you'll have to configure
+with --enable-maintainer-mode or run automake by hand.
 
 If you want to rebuild not only Klasses.jar, but also the jar-files of
 Kaffe extensions, type "make CLASSDIRS=all Klasses".
@@ -23,12 +27,15 @@ Kaffe extensions, type "make CLASSDIRS=all Klasses".
 What compilers are known to work?
 ---------------------------------
 
-As of 4/1/99, the pizza in Kaffe's pizza.jar should work, 
-as well as Sun's 1.1.5 javac (according to Peter).
+The preferred compiler is jikes. If jikes is detected it will automatically
+be used. The URL for jikes is:
 
-jikes Version 0.47 also works, and is quite speedy.
-jikes is available from http://www.ibm.com/research/jikes
+  http://www10.software.ibm.com/developerworks/opensource/jikes/
 
-Sun's 1.1.7 or 1.2 javac does not work. (Somebody wants to file
-a bug report with them?)
+The included compiler, kjc, also works. kjc is part of the Kopi project:
+
+  http://www.dms.at/kopi/kjc.html
+
+No known version of Sun's javac compiler (up through JDK 1.2) will compile
+Kaffe's classes, due to bugs that Sun has yet to fix.
 

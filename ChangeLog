@@ -1,3 +1,31 @@
+Wed Oct 13 11:07:40 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* Makefile.am, Makefile.in, configure, configure.in,
+	FAQ/FAQ.classlibrary-compile, FAQ/FAQ.gcstrategy,
+	config/i386/oskit/kaffe_classpath, kaffe/scripts/Makefile.am,
+	kaffe/scripts/Makefile.in, kaffe/scripts/kaffe.in,
+	kaffe/scripts/compat/javac.in, kaffe/scripts/compat/javadoc.in,
+	libraries/clib/native/System.c,
+	libraries/extensions/tools/javalib/Makefile.am,
+	libraries/extensions/tools/javalib/Makefile.in,
+	libraries/extensions/tools/javalib/tools.jar,
+	libraries/javalib/Makefile.am, libraries/javalib/Makefile.in,
+	libraries/javalib/rebuildLib.in, test/regression/TestCasts.java,
+	test/regression/TestScript.in: switch from pizza to kjc compiler
+	* libraries/extensions/tools/javalib/kaffe/tools/compiler/
+	Compiler_kjc.java, libraries/javalib/kjc.jar, kaffe/scripts/kjc.in:
+	new files
+	* libraries/extensions/tools/javalib/kaffe/tools/compiler/
+	Compiler_pizza.java, kaffe/scripts/pizza.in, kaffe/scripts/pizzadoc.in,
+	libraries/javalib/pizza.jar: removed files
+	* libraries/clib/security/Makefile.am,
+	libraries/clib/security/Makefile.in, libraries/clib/security/digest.c:
+	fix build problem under FreeBSD by renaming "md5.h"
+	* libraries/clib/security/md5.c, libraries/clib/security/md5.h:
+	removed (renamed)
+	* libraries/clib/security/kaffe_md5.c,
+	libraries/clib/security/kaffe_md5.h: added (renamed)
+
 Tue Oct 12 23:02:29 1999  Godmar Back  <gback@cs.utah.edu>
 
 	*  kaffe/kaffevm/methodCache.c, kaffe/kaffevm/methodCache.h,

@@ -312,7 +312,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	/* Define the default java compiler - this should be configured
 	 * somehow.
 	 */
-	setProperty(p, "kaffe.compiler", "pizza");
+	setProperty(p, "kaffe.compiler", "kjc");
 
 	/* Now process user defined properties */
 	for (prop = userProperties; prop != 0; prop = prop->next) {

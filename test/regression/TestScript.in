@@ -12,7 +12,7 @@
 
 : ${JAVA=kaffe} ${SRCDIR=@srcdir@} ${PATHSEP='@PATHSEP@'}
 test -z "@JIKES@" || : ${JIKES="@JIKES@ -nowarn"}
-: ${JAVAC=${JIKES-"$JAVA pizza.compiler.Main"}" -classpath \".$PATHSEP$SRCDIR$PATHSEP$SRCDIR/../../libraries/javalib/Klasses.jar$PATHSEP$CLASSPATH\""}
+: ${JAVAC=${JIKES-"$JAVA at.dms.kjc.Main"}" -classpath \".$PATHSEP$SRCDIR$PATHSEP$SRCDIR/../../libraries/javalib/Klasses.jar$PATHSEP$CLASSPATH\""}
 overallerror=0
 error=0
 

@@ -23,7 +23,7 @@ kaffe_tools_compiler_SRCS = \
 	kaffe/tools/compiler/Compiler.java \
 	kaffe/tools/compiler/Compiler_default.java \
 	kaffe/tools/compiler/Compiler_jikes.java \
-	kaffe/tools/compiler/Compiler_pizza.java
+	kaffe/tools/compiler/Compiler_kjc.java
 kaffe_tools_jar_SRCS = \
 	kaffe/tools/jar/Jar.java \
 	kaffe/tools/jar/XPFile.java \

@@ -13,14 +13,16 @@ package kaffe.tools.compiler;
 import kaffe.lang.Application;
 import kaffe.lang.ApplicationException;
 
-public class Compiler_pizza
-	extends Compiler {
+public class Compiler_kjc extends Compiler {
 
 public boolean compile(String name) {
 	Application app;
 	try {
-		app = new Application("pizza.compiler.Main", new String[]
-			{ "-classpath", System.getProperty("java.class.path", "."), name });
+		app = new Application("at.dms.kjc.Main",
+			new String[] {
+				"-classpath",
+				System.getProperty("java.class.path", "."),
+				name });
 	}
 	catch (ApplicationException _) {
 		return (false);

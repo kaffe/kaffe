@@ -48,7 +48,7 @@ This means that kaffe won't ever invoke the garbage collector until it
 uses more memory than the initial heap size specified using the -ms switch!
 
 Therefore, increasing the initial heap size using -ms will make short-lived
-applications, such as pizza, run faster.  Garbage collection can be avoided 
+applications, such as kjc, run faster.  Garbage collection can be avoided 
 if an application does not allocate more memory than the initial heap size
 during its lifetime.
 

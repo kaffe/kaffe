@@ -1,5 +1,5 @@
 #! /bin/sh
-# We use kjc compiler rather than Sun's.
+# Script to run kjc Java compiler
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 exec @bindir@/@kaffe_TRANSF@ at.dms.kjc.Main ${1+"$@"}

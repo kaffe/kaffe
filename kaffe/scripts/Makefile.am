@@ -8,8 +8,8 @@
 
 DIST_SUBDIRS = bat compat
 
-SCRIPTFILES_PIZZA=\
-		pizza pizzadoc
+SCRIPTFILES_KJC=\
+		kjc
 
 SCRIPTFILES_SUN=\
 		jar javakey javap jdb \
@@ -24,7 +24,7 @@ endif
 
 PSCRIPTFILES=	install-jar kaffe
 
-bin_SCRIPTS = $(SCRIPTFILES_PIZZA) $(SCRIPTFILES_SUN) \
+bin_SCRIPTS = $(SCRIPTFILES_KJC) $(SCRIPTFILES_SUN) \
 	$(SCRIPTFILES_COMPAT) $(PSCRIPTFILES)
 
 include $(top_srcdir)/include/distclean-hack

@@ -99,7 +99,6 @@ public class TestCasts
 	    }
     }
 
-    // pizza can't grok `int[].class' :-(
     static final Class intArray = new int[0].getClass();
 
     public static final Object objs[] = 

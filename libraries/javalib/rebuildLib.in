@@ -28,14 +28,10 @@ if [ "$JIKES" = "" ] ; then
 # this should not cause any gc and is fastest.
 		test -f ${TOPBLD}/BUILD_ENVIRONMENT &&
 		. ${TOPBLD}/BUILD_ENVIRONMENT
-		JAVA="$JAVA -ms64M -mx64M"
-# else use this.  ca. 36M seems to be the minimum at this point.
-# note that kaffe doesn't always throw out-of-memory exception may just 
-# silently deadlock if it runs out of memory.
-#		JAVA="kaffe -ms40M -mx40M"
+		JAVA="$JAVA -ms32M -mx1024M"
 	fi
 	if [ -z "$JAVAC" ]; then
-		JAVAC="$JAVA pizza.compiler.Main"
+		JAVAC="$JAVA at.dms.kjc.Main"
 	fi
 	CPATH="-classpath $LIBDIR${CPATH+:$CPATH}"
 else
