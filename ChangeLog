@@ -1,3 +1,14 @@
+2005-01-15  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-01-15  Mark Wielaard  <mark@klomp.org>
+
+	Reported by Martin Platter <motse@complang.tuwien.ac.at>
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c
+	(Java_gnu_java_awt_peer_gtk_GtkFileDialogPeer_nativeSetFile):
+	Correct method signature of gtkSetFilename.
+	
 2005-01-16  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/kaffe-gc/gc-mem.c
