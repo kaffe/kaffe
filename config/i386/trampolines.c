@@ -65,7 +65,7 @@ C_FUNC_NAME(__kaffe_i386_gcj_fixup) ":
 int 
 arch_is_trampoline_frame(void *pc) 
 {
-	extern void (*f)() asm(C_FUNC_NAME(i386_do_fixup_trampoline));
+	extern void (*f)(void) asm(C_FUNC_NAME(i386_do_fixup_trampoline));
 	return ((char*)pc == ((char*)&f + 4));
 }
 #endif
