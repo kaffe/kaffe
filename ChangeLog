@@ -1,6 +1,8 @@
 Sat Dec 19 14:36:27 1998  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/gtypes.h: remove unused "utf8str" typedef
+	* kaffe/kaffevm/string.c, configure[.in], config/config.h.in:
+	don't need to detect or add strdup(), it's not used anywhere
 
 Sat Dec 19 12:12:22 1998  Godmar Back  <gback@cs.utah.edu>
 

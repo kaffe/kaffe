@@ -531,20 +531,3 @@ makeJavaCharArray(char* cs, int len)
 	return (obj);
 }
 
-#if !defined(HAVE_STRDUP)
-/*
- * Some systems don't support strdup.
- */
-char*
-strdup(char* str)
-{
-	char* s;
-
-	if (str == NULL) {
-		return (NULL);
-	}
-	s = KMALLOC(strlen(str) + 1);
-	strcpy(s, str);
-	return (s);
-}
-#endif

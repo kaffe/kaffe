@@ -228,9 +228,6 @@
 /* Do we have strtod */
 #undef	HAVE_STRTOD
 
-/* Do we have strdup */
-#undef	HAVE_STRDUP
-
 /* Do we have vsnprintf */
 #undef	HAVE_VSNPRINTF
 
