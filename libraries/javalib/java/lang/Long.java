@@ -139,15 +139,15 @@ public static long parseLong(String s, int radix) {
 }
 
 public static String toBinaryString ( long i ) {
-	return toUnsignedString(i, 2);
+	return toUnsignedString(i, 1);
 }
 
 public static String toHexString ( long i ) {
-	return toUnsignedString(i, 16);
+	return toUnsignedString(i, 4);
 }
 
 public static String toOctalString ( long i ) {
-	return toUnsignedString(i, 8);
+	return toUnsignedString(i, 3);
 }
 
 public String toString() {
