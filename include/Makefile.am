@@ -67,7 +67,7 @@ noinst_HEADERS = $(NOINSTALL_DERIVED_HDRS) \
 	nets.h \
 	system.h
 
-include_HEADERS = $(INSTALL_DERIVED_HDRS) \
+pkginclude_HEADERS = $(INSTALL_DERIVED_HDRS) \
 	jtypes.h \
 	native.h \
 	jmalloc.h \
