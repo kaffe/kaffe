@@ -1,7 +1,22 @@
 Release Notes for 1.0.7
 =======================
 
-This is a placeholder for the RELEASE-NOTES file that will be shipped
-with every production release.  It will contain a list of tested
-ports, and known problems with the release.
+This release has been tested on the following platforms:
+
+* i386 / Linux (Debian unstable)
+
+  Reported by: Jim Pick
+  Configuration: Default (jit3)
+
+  Compiles, all "make check" tests pass. (RC1)
+
+* PowerPC / Linux (YellowDog Linux 2.2)
+
+  Reported by: Carlos Valiente
+  Configuration: --with-engine=intrp
+
+  Compiles, all "make check" tests pass. (RC1)
+
+  ** However ** , I'm not able to run any of the sample AWT applications
+  under test/awt
 
