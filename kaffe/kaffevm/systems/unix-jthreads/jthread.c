@@ -1653,7 +1653,9 @@ jthreadedRead(int fd, void* buf, size_t len)
 	intsDisable();
 	for (;;) {
 		r = read(fd, buf, len);
-		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR))
+		/* Note that EWOULDBLOCK != EAGAIN on HP/UX */
+		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR || 
+			errno ==EAGAIN))
 			break;
 
 		blockOnFile(fd, TH_READ);
