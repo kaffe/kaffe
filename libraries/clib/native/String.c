@@ -16,13 +16,13 @@ extern Hjava_lang_String* internJavaString(Hjava_lang_String*);
 extern void uninternJavaString(Hjava_lang_String*);
 
 Hjava_lang_String*
-java_lang_String_intern(Hjava_lang_String* str)
+java_lang_String_intern0(Hjava_lang_String* str)
 {
 	return (internJavaString(str));
 }
 
 void
-java_lang_String_unintern(Hjava_lang_String* str)
+java_lang_String_unintern0(Hjava_lang_String* str)
 {
 	uninternJavaString(str);
 }
