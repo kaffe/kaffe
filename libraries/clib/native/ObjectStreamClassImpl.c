@@ -437,7 +437,11 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 
 	/* Name of each interface (sorted): UTF */
 
-	if (cls->interface_len > 0) {
+	/* Don't include the interfaces that arrays implement because Sun
+	 * apparently doesn't include them either.  
+	 * This is like Class.getInterfaces()
+	 */
+	if (!CLASS_IS_ARRAY(cls) && cls->interface_len > 0) {
 		for (i = cls->interface_len-1; i >= 0; i--) {
 			base[i].name = getInterfaceName(cls->interfaces[i]);
 			base[i].modifier = -1;
