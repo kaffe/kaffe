@@ -1,5 +1,11 @@
 2004-03-25  Dalibor Topic <robilad@kaffe.org>
 
+	* include/jsyscall.h:
+	Include header files with the required types instead of
+	declaring them as structs.
+
+2004-03-25  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/gtypes.h:
 	Allocate sizeof(int32) bytes for the data part of a
 	Utf8String to avoid warning about padding the struct.

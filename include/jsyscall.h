@@ -14,19 +14,33 @@
 
 #include "config.h"
 
+#if defined(HAVE_NETDB_H)
+#include <netdb.h>
+#endif /* defined(HAVE_NETDB_H) */
+
 #if defined(HAVE_STDLIB_H)
 #include <stdlib.h>
 #endif /* HAVE_STDLIB_H */
 
+#if defined (HAVE_SYS_SOCKET_H)
+#include <sys/socket.h>
+#endif /* defined (HAVE_SYS_SOCKET_H) */
+
+#if defined(HAVE_SYS_STAT_H)
+#include <sys/stat.h>
+#endif /* defined(HAVE_SYS_STAT_H) */
+
+#if defined(HAVE_SYS_TIME_H)
+#include <sys/time.h>
+#endif /* defined(HAVE_SYS_TIME_H) */
+
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif /* defined(HAVE_SYS_TYPES_H) */
+
 #if defined(HAVE_UNISTD_H)
 #include <unistd.h>
 #endif /* HAVE_UNISTD_H */
-
-struct sockaddr;
-struct timeval;
-struct fd_set;
-struct stat;
-struct hostent;
 
 /*
  * Thread-safe variants of several POSIXy calls.
