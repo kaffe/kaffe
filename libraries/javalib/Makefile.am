@@ -49,6 +49,7 @@ Klasses_jar_SRCS = \
 	$(kaffe_net_www_protocol_file_SRCS) \
 	$(kaffe_net_www_protocol_ftp_SRCS) \
 	$(kaffe_net_www_protocol_http_SRCS) \
+	$(kaffe_net_www_protocol_jar_SRCS) \
 	$(kaffe_net_www_protocol_system_SRCS) \
 	$(kaffe_security_provider_SRCS) \
 	$(kaffe_text_collator_SRCS) \
@@ -420,8 +421,10 @@ java_net_SRCS = \
 	java/net/HttpURLConnection.java \
 	java/net/InetAddress.java \
 	java/net/InetAddressImpl.java \
+	java/net/JarURLConnection.java \
 	java/net/MalformedURLException.java \
 	java/net/MulticastSocket.java \
+	java/net/NetPermission.java \
 	java/net/NoRouteToHostException.java \
 	java/net/PlainDatagramSocketImpl.java \
 	java/net/PlainSocketImpl.java \
@@ -437,6 +440,7 @@ java_net_SRCS = \
 	java/net/URL.java \
 	java/net/URLClassLoader.java \
 	java/net/URLConnection.java \
+	java/net/URLDecoder.java \
 	java/net/URLEncoder.java \
 	java/net/URLStreamHandler.java \
 	java/net/URLStreamHandlerFactory.java \
@@ -463,6 +467,7 @@ java_security_SRCS = \
 	java/security/PrivilegedAction.java \
 	java/security/PrivilegedActionException.java \
 	java/security/PrivilegedExceptionAction.java \
+	java/security/ProtectionDomain.java \
 	java/security/Provider.java \
 	java/security/SecureClassLoader.java \
 	java/security/Security.java \
@@ -564,6 +569,10 @@ java_util_SRCS = \
 	java/util/Vector.java
 java_util_jar_SRCS = \
 	java/util/jar/Attributes.java \
+	java/util/jar/JarEntry.java \
+	java/util/jar/JarException.java \
+	java/util/jar/JarFile.java \
+	java/util/jar/JarInputStream.java \
 	java/util/jar/JarOutputStream.java \
 	java/util/jar/Manifest.java
 java_util_mime_SRCS = \
@@ -590,8 +599,8 @@ java_util_zip_SRCS = \
 	java/util/zip/ZipInputStream.java \
 	java/util/zip/ZipOutputStream.java
 kaffe_applet_SRCS = \
-	kaffe/applet/AppletViewer.java \
 	kaffe/applet/AppletTag.java \
+	kaffe/applet/AppletViewer.java \
 	kaffe/applet/AudioPlayer.java
 kaffe_awt_SRCS = \
 	kaffe/awt/ExportTransferable.java \
@@ -670,6 +679,9 @@ kaffe_net_www_protocol_ftp_SRCS = \
 kaffe_net_www_protocol_http_SRCS = \
 	kaffe/net/www/protocol/http/Handler.java \
 	kaffe/net/www/protocol/http/HttpURLConnection.java
+kaffe_net_www_protocol_jar_SRCS = \
+	kaffe/net/www/protocol/jar/Handler.java \
+	kaffe/net/www/protocol/jar/JarURLConnection.java
 kaffe_net_www_protocol_system_SRCS = \
 	kaffe/net/www/protocol/system/Handler.java \
 	kaffe/net/www/protocol/system/SystemURLConnection.java
@@ -696,6 +708,7 @@ kaffe_util_SRCS = \
 	kaffe/util/Deprecated.java \
 	kaffe/util/DoubleLinkedObject.java \
 	kaffe/util/IdentityHashtable.java \
+	kaffe/util/IntegerHashtable.java \
 	kaffe/util/NotImplemented.java \
 	kaffe/util/NotImplementedReport.java \
 	kaffe/util/Ptr.java \
