@@ -83,11 +83,11 @@ DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
 			countInsAndOuts(sig->data, &call->in, &call->out, &call->rettype);
 			return (false);
 		}
-		assert(class->state >= CSTATE_LINKED);
+		assert(class->state >= CSTATE_DOING_LINK);
 
                 if (isSpecial == 1) {
-                        if (!utf8ConstEqual(name, constructor_name) && class !=
- this && instanceof(class, this)) {
+                        if (!utf8ConstEqual(name, constructor_name) &&
+			    class != this && instanceof(class, this)) {
                                 class = this->superclass;
                         }
                 }

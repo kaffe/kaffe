@@ -1,5 +1,14 @@
 2003-08-14  Rob Gonzalez <rob@kaffe.org>
 
+	* kaffe/kaffe/lookup.c
+	(getMethodSignatureClass) change
+	assert(class->state >= CSTATE_LINKED);
+	to
+	assert(class->state >= CSTATE_DOING_LINK);
+	so that getMethodSignatureClass() can be used in verifier testing.
+
+2003-08-14  Rob Gonzalez <rob@kaffe.org>
+
 	* kaffe/kaffevm/verify.c
 	(checkMethodCall) receiver->tinfo & TINFO_UNINIT_SUPER changed
 	to receiver->tinfo == TINFO_UNINIT_SUPER, which is correct.
