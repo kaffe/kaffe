@@ -54,7 +54,17 @@ abstract protected void create(boolean stream) throws IOException;
 abstract protected void listen(int backlog) throws IOException;
 abstract protected OutputStream getOutputStream() throws IOException;
 abstract protected InputStream getInputStream() throws IOException;
-abstract protected void write(byte[] buf, int offset, int len) throws IOException;
-abstract protected int read(byte[] buf, int offset, int len) throws IOException;
+
+/**
+ * Difficult to know why Sun didn't do it this way, but it causes problems
+ * if these two are abstract as they should be.
+ */
+protected void write(byte[] buf, int offset, int len) throws IOException {
+	throw new Error("must be define by a real socket implementation");
+}
+
+protected int read(byte[] buf, int offset, int len) throws IOException {
+	throw new Error("must be define by a real socket implementation");
+}
 
 }

@@ -55,6 +55,10 @@ public Socket(InetAddress address, int port, boolean stream) throws IOException 
 	impl.connect(address, port);
 }
 
+protected Socket(SocketImpl simpl) throws SocketException {
+	impl = simpl;
+}
+
 protected Socket() {
 	impl = factory.createSocketImpl();
 }

@@ -25,6 +25,22 @@ public class ObjectOutputStream
   implements ObjectOutput, ObjectStreamConstants
 {
 
+static public abstract class PutField {
+
+abstract public void put(String fname, boolean fvalue);
+abstract public void put(String fname, byte fvalue);
+abstract public void put(String fname, char fvalue);
+abstract public void put(String fname, short fvalue);
+abstract public void put(String fname, int fvalue);
+abstract public void put(String fname, long fvalue);
+abstract public void put(String fname, float fvalue);
+abstract public void put(String fname, double fvalue);
+abstract public void put(String fname, Object fvalue);
+
+abstract public void write(ObjectOutput out) throws IOException;
+
+}
+
 private ObjectOutputStreamImpl out;
 private boolean enableReplace = false;
 
@@ -140,6 +156,14 @@ public void defaultWriteObject() throws IOException {
                 throw new NotActiveException();
         }
 	out.defaultWriteObject(currentObject, currentStreamClass);
+}
+
+public ObjectOutputStream.PutField putFields() throws IOException {
+	throw new kaffe.util.NotImplemented();
+}
+
+public void writeFields() throws IOException {
+	throw new kaffe.util.NotImplemented();
 }
 
 }

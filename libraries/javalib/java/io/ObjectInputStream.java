@@ -29,6 +29,22 @@ public class ObjectInputStream
   implements ObjectInput, ObjectStreamConstants
 {
 
+static public abstract class GetField {
+
+abstract public boolean defaulted(String fname) throws IOException, IllegalArgumentException;
+abstract public boolean get(String fname, boolean defvalue) throws IOException, IllegalArgumentException;
+abstract public byte get(String fname, byte defvalue) throws IOException, IllegalArgumentException;
+abstract public char get(String fname, char defvalue) throws IOException, IllegalArgumentException;
+abstract public short get(String fname, short defvalue) throws IOException, IllegalArgumentException;
+abstract public int get(String fname, int defvalue) throws IOException, IllegalArgumentException;
+abstract public float get(String fname, float defvalue) throws IOException, IllegalArgumentException;
+abstract public long get(String fname, long defvalue) throws IOException, IllegalArgumentException;
+abstract public double get(String fname, double defvalue) throws IOException, IllegalArgumentException;
+abstract public Object get(String fname, Object defvalue) throws IOException, IllegalArgumentException;
+abstract public ObjectStreamClass getObjectStreamClass();
+
+}
+
 private ObjectInputStreamImpl in;
 private boolean enableResolve = false;
 
@@ -186,6 +202,10 @@ public void defaultReadObject() throws IOException, ClassNotFoundException, NotA
 		throw new NotActiveException();
 	}
 	in.defaultReadObject(currentObject, currentStreamClass);
+}
+
+public ObjectInputStream.GetField readFields() throws IOException, ClassNotFoundException, NotActiveException {
+	throw new kaffe.util.NotImplemented();
 }
 
 }
