@@ -556,6 +556,7 @@ EXTRA_DIST = \
         superh/linux/config.frag \
         superh/linux/md.c \
         superh/linux/md.h \
+	superh/sysdepCallMethod.h \
         superh/threads.h \
         superh/trampolines.c
 

@@ -5,6 +5,9 @@
  * Copyright (c) 2001
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2003
+ *	Kaffe.org contributors. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
@@ -12,7 +15,8 @@
 #ifndef __superh_linux_md_h
 #define __superh_linux_md_h
  
-#include "superh/common.h"
+#include "superh/common.h
+#include "superh/sysdepCallMethod.h"
 #include "superh/threads.h"
 
 #if defined(TRANSLATOR)
