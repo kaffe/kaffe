@@ -129,14 +129,14 @@
          } /* if ((CALL)->callsize[argidx] != 0) */                     \
       } /* for(; argidx < (CALL)->nrargs; ++argidx) */                  \
     }                                                                   \
-    asm ("                                                            \n\
-     ld    0,0(,%2)                           # Load fpr args         \n\
-     ld    2,8(,%2)                           #    into regs 0-2.     \n\
-     lm    2,6,0(%1)                          # Load gpr args into 2-6\n\
-     basr 14,%0                               # Call the routine.     \n\
-     stm   2,3,0(%1)                          # Save int result.      \n\
-     std   0,0(,%2)                           # Save float result.    \n\
-     "                                                                  \
+    asm (" \n"								\
+"     ld    0,0(,%2)                        # Load fpr args         \n"	\
+"     ld    2,8(,%2)                        #    into regs 0-2.     \n"	\
+"     lm    2,6,0(%1)                       # Load gpr args into 2-6\n"	\
+"     basr 14,%0                            # Call the routine.     \n"	\
+"     stm   2,3,0(%1)                       # Save int result.      \n"	\
+"     std   0,0(,%2)                        # Save float result.    \n"	\
+"     "                                                                 \
         :                                     /* sets these          */ \
         : "ra" ((CALL)->function),            /* uses these          */ \
           "ra" (gpr_args),                                              \
@@ -200,16 +200,16 @@ typedef int64  profiler_click_t;
 #define COMPARE_AND_EXCHANGE(A,O,N)                                     \
    ({                                                                   \
       char ret;                                                         \
-      asm volatile("                                                  \n\
-         # gcc will invoke us with *A in %1, O in %3 and N in %2      \n\
-         cs %3,%2,0(%1) # compare O to A and exchange A and N if      \n\
-                        # equal, else load O from A                   \n\
-         je 1f          # branch if equal                             \n\
-         la %0,0        # compare did not match                       \n\
-         j  2f          # skip                                        \n\
-      1: la %0,1        # compare matched                             \n\
-      2:                                                              \n\
-         "                                                              \
+      asm volatile(" \n"						\
+"         # gcc will invoke us with *A in %1, O in %3 and N in %2 \n"	\
+"         cs %3,%2,0(%1) # compare O to A and exchange A and N if \n"	\
+"                        # equal, else load O from A \n"		\
+"         je 1f          # branch if equal \n"				\
+"         la %0,0        # compare did not match \n"			\
+"         j  2f          # skip  \n"					\
+"      1: la %0,1        # compare matched \n"				\
+"      2: \n"								\
+"         "                                                             \
         : "=r&" (ret),                                 /* sets these */ \
           "+r" (A)                                                      \
         : "r" (N),                                     /* uses these */ \
