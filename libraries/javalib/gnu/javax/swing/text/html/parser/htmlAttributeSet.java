@@ -82,18 +82,18 @@ public class htmlAttributeSet
   public Enumeration getAttributeNames()
   {
     // Replace the string keys by HTML.attribute, where applicable
-    final Enumeration enum = super.getAttributeNames();
+    final Enumeration enumeration = super.getAttributeNames();
 
     return new Enumeration()
       {
         public boolean hasMoreElements()
         {
-          return enum.hasMoreElements();
+          return enumeration.hasMoreElements();
         }
 
         public Object nextElement()
         {
-          Object key = enum.nextElement();
+          Object key = enumeration.nextElement();
           HTML.Attribute hKey = HTML.getAttributeKey((String) key);
           if (hKey != null)
             return hKey;

@@ -431,11 +431,11 @@ public abstract class htmlValidator
        )
       return;
 
-    Enumeration enum = parameters.getAttributeNames();
+    Enumeration enumeration = parameters.getAttributeNames();
 
-    while (enum.hasMoreElements())
+    while (enumeration.hasMoreElements())
       {
-        validateAttribute(tag, parameters, enum);
+        validateAttribute(tag, parameters, enumeration);
       }
 
     // Check for missing required values.
@@ -480,12 +480,12 @@ public abstract class htmlValidator
   }
 
   private void validateAttribute(TagElement tag, htmlAttributeSet parameters,
-                                 Enumeration enum
+                                 Enumeration enumeration
                                 )
   {
     Object foundAttribute;
     AttributeList dtdAttribute;
-    foundAttribute = enum.nextElement();
+    foundAttribute = enumeration.nextElement();
     dtdAttribute = tag.getElement().getAttribute(foundAttribute.toString());
     if (dtdAttribute == null)
       {

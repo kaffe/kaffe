@@ -2,6 +2,21 @@
 
 	Resynced with GNU Classpath.
 
+	2005-03-18  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        * gnu/javax/swing/text/html/parser/htmlAttributeSet.java:
+        (getAttributeNames()): Replaced 'enum' with 'enumeration'.
+        * gnu/javax/swing/text/html/parser/htmlValidator.java:
+        (validateParameters(TagElement,htmlAttributeSet)):
+        Replaced 'enum' with 'enumeration'.
+        (validateAttribute(TagElement,htmlAttributeSet,
+                           Enumeration,Enumeration)):
+        Likewise.
+
+2005-03-21  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-03-18  Audrius Meskauskas  <audriusa@bluewin.ch>
 
         * javax/swing/text/html/parser/Entity.java (getType): New method.
