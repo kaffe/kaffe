@@ -739,6 +739,21 @@ fi
 dnl -------------------------------------------------------------------------
 
 dnl =========================================================================
+dnl Check for reg structure in sigcontext
+dnl -------------------------------------------------------------------------
+
+AC_CACHE_CHECK([for reg structure in sigcontext],
+  ac_cv_struct_reg_sigcontext,
+[AC_TRY_COMPILE([#include <asm/signal.h>
+#include <asm/sigcontext.h>
+struct sigcontext ctx;],
+[ void *foo = &ctx.reg; ],
+  ac_cv_struct_reg_sigcontext=yes; AC_DEFINE(HAVE_REG_SIGCONTEXT, 1, [Is function swab declared]), ac_cv_struct_reg_sigcontext=no)
+])
+
+dnl -------------------------------------------------------------------------
+
+dnl =========================================================================
 dnl Checks for library functions.
 dnl -------------------------------------------------------------------------
 

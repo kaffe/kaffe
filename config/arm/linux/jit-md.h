@@ -77,15 +77,15 @@
 #endif
 
 /* Get the first exception frame from a signal handler */
+#if defined(HAVE_REG_SIGCONTEXT)
 #define	EXCEPTIONFRAME(f, c)						\
 	(f).retfp = (c).reg.ARM_fp;					\
 	(f).retpc = (c).reg.ARM_pc;
 
-#if 0
-/* This one is for debian - pity they're not the same */
-#undef	EXCEPTIONFRAME
+#else
+/* This one is for Debian */
 #define	EXCEPTIONFRAME(f, c)						\
-	(f).retfp = (c).arm_fp;					\
+	(f).retfp = (c).arm_fp;						\
 	(f).retpc = (c).arm_pc;
 #endif
 
