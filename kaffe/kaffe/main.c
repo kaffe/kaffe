@@ -331,6 +331,9 @@ options(char** argv)
 		else if (strcmp(argv[i], "-verbosegc") == 0) {
 			vmargs.enableVerboseGC = 1;
 		}
+		else if (strcmp(argv[i], "-noclassgc") == 0) {
+			vmargs.enableClassGC = 0;
+		}
 		else if (strcmp(argv[i], "-verbosejit") == 0) {
 			vmargs.enableVerboseJIT = 1;
 		}
@@ -413,6 +416,7 @@ usage(void)
 	fprintf(stderr, "	-noverify		Do not verify any bytecode\n");
 	fprintf(stderr, "	-D<property>=<value>	Set a property\n");
 	fprintf(stderr, "	-verbosegc		Print message during garbage collection\n");
+	fprintf(stderr, "	-noclassgc		Disable class garbage collection\n");
 	fprintf(stderr, "	-v, -verbose		Be verbose\n");
 	fprintf(stderr, "	-verbosejit		Print message during JIT code generation\n");
 	fprintf(stderr, "	-verbosemem		Print detailed memory allocation statistics\n");

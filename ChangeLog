@@ -1,3 +1,9 @@
+Thu Apr  1 23:03:51 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffe/main.c, kaffe/kaffevm/classMethod.c,
+	kaffe/kaffevm/debug.[ch], kaffe/kaffevm/gcFuncs.c,
+	kaffe/kaffevm/jni.c, kaffe/kaffevm/object.c: implemented -noclassgc
+
 Thu Apr  1 18:54:24 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/io/OptionalDataException.java: made 

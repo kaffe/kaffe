@@ -81,8 +81,8 @@ newClass(void)
 
 	cls = gc_malloc(sizeof(Hjava_lang_Class), GC_ALLOC_CLASSOBJECT);
 
-	if (DBGEXPR(NOCLASSGC, true, false)) {
-		/* Turn off class gc */
+	/* Turn off class gc */
+	if (Kaffe_JavaVMArgs[0].enableClassGC == 0) {
 		gc_add_ref(cls);
 	}
 

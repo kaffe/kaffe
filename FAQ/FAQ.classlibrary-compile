@@ -7,20 +7,18 @@ did ./configure), then cd to libraries/javalib.
 
 Type "make Klasses".
 This will build the java libraries, put them in a Klasses.jar file
-and overwrite the version in your source tree.  Type make install
+and overwrite the version in your source tree.  Type "make install"
 to install the jar file in your target prefix.
 
-Why doesn't it work for me?
----------------------------
+What compilers are known to work?
+---------------------------------
 
-Because at this point only two compilers can compile them.
+As of 4/1/99, the pizza in Kaffe's pizza.jar should work, 
+as well as Sun's 1.1.5 javac (according to Peter).
 
-They are jikes Version 0.47 and according to Peter javac from JDK 1.1.5
-
-The following compilers are known not to work:
-
-    all versions of pizza and gjc
-    javac from JDK 2
-    javac from JDK 1.1.7
-
+jikes Version 0.47 also works, and is quite speedy.
 jikes is available from http://www.ibm.com/research/jikes
+
+Sun's 1.1.7 or 1.2 javac does not work. (Somebody wants to file
+a bug report with them?)
+

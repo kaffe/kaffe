@@ -105,7 +105,6 @@ static struct debug_opts
 	D(LOCKCONTENTION,"Show when a lock is contended."),
 	D(CODEANALYSE, "Debug code analysis/verification."),
 	D(CLASSGC, 	"Debug class garbage collection."),
-	D(NOCLASSGC, 	"Disable class garbage collection."),
 	D(NEWOBJECT, 	"Show when new objects are allocated."),
 	D(FINALIZE, 	"Debug finalization."),
 	D(LIBTOOL, 	"Debug libtool stuff."),

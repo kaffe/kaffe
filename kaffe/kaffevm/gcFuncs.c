@@ -63,6 +63,10 @@ destroyClass(Collector *collector, void* c)
 DBG(CLASSGC,
         dprintf("destroying class %s @ %p\n", clazz->name->data, c);
    )
+	if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0) {
+		fprintf(stderr, "<GC: unloading class `%s'>\n", 
+			CLASS_CNAME(clazz));
+	}
 
 	assert(!CLASS_IS_PRIMITIVE(clazz));
 

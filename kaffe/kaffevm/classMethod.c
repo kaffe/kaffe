@@ -1901,13 +1901,13 @@ removeClassEntries(Hjava_lang_ClassLoader* loader)
 			totalent++;
 			entry = *entryp;
 			if (entry->loader == loader) {
-				if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0 &&
-				    entry->class != 0) 
-				{
-					fprintf(stderr, 
-						"<GC: unloading class `%s'>\n",
-						entry->name->data);
-				}
+				/*
+				 * If class gc is turned off, no classloader 
+				 * should ever be finalized because they're all 
+				 * kept alive by their respective classes.
+				 */
+				assert(entry->class == 0 || 
+					Kaffe_JavaVMArgs[0].enableClassGC != 0);
 DBG(CLASSGC,
 				dprintf("removing %s l=%p/c=%p\n", 
 				    entry->name->data, loader, entry->class);

@@ -4143,7 +4143,7 @@ JavaVMInitArgs Kaffe_JavaVMInitArgs = {
 	(void*)&vfprintf,/* Vprintf */
 	(void*)&exit,	/* Exit */
 	(void*)&abort,	/* Abort */
-	0,		/* Enable class GC */
+	1,		/* Enable class GC */
 	0,		/* Enable verbose GC */
 	1,		/* Disable async GC */
 	0,		/* Enable verbose class loading */
