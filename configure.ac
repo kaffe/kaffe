@@ -436,9 +436,12 @@ dnl -------------------------------------------------------------------------
 
 AC_ARG_WITH([bcel],
               AS_HELP_STRING([--with-bcel=<jar>],
-			     [Use the specified Bytecode Engineering Jar file.]),
+			     [Use the specified Bytecode Engineering Jar file. It is not used by default.]),
   [ BCEL_JAR="$withval" ],
-  [ BCEL_JAR="" ])
+  [ 
+BCEL_JAR="" 
+with_bcel="no"
+])
 
 AC_MSG_CHECKING([whether to use BCEL for additional regression tests])
 

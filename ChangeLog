@@ -1,5 +1,11 @@
 2004-05-15  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Improved description for BCEL.
+
+	* configure: Regenerated.
+
+2004-05-15  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Improved descriptions for debugging and JVMPI
 	switches.
 
