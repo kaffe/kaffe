@@ -44,8 +44,10 @@ private DriverManager() {}
     
 public static synchronized Connection getConnection(String url, String user, String password) throws SQLException {
 	Properties p = new Properties();
-	p.put("user", user);
-	p.put("password", password);
+	if (user != null)
+		p.put("user", user);
+	if (password != null)
+		p.put("password", password);
 	return (getConnection(url, p));
 }
 
