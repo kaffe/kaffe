@@ -167,9 +167,6 @@ static void die();
 /*============================================================================
  *
  * Functions related to run and alarm queue manipulation
- *
- * note that the functions with 'i' in their name assume that the caller
- * has interrupts disabled.
  */
 /*
  * yield to another thread
@@ -243,8 +240,7 @@ removeFromAlarmQ(jthread* jtid)
  * Resume a thread running.
  * This routine has to be called only from locations which ensure
  * run / block queue consistency. There is no check for illegal resume
- * conditions (like explicitly resuming an IO blocked thread). There also
- * is no update of any blocking queue. Both has to be done by the caller
+ * conditions (like explicitly resuming an IO blocked thread). 
  */
 static void
 resumeThread(jthread* jtid)
@@ -359,6 +355,7 @@ static void
 killThread(jthread *tid)
 {
 	jthread	**ntid;
+	jthread* last;
 
 	intsDisable();
 
@@ -375,14 +372,20 @@ DBG(JTHREAD,
 
 		/* Get thread off runq (if it needs it) */
 		if (tid->status == THREAD_RUNNING) {
-			for (ntid = &threadQhead[tid->priority]; 
+			int pri = tid->priority;
+			last = 0;
+
+			for (ntid = &threadQhead[pri]; 
 				*ntid != 0; 
 				ntid = &(*ntid)->nextQ) 
 			{
 				if (*ntid == tid) {
 					*ntid = tid->nextQ;
+					if (*ntid == 0)
+						threadQtail[pri] = last;	
 					break;
 				}
+				last = *ntid;
 			}
 		}
 
@@ -719,17 +722,27 @@ jthread_init(int pre,
 {
         jthread *jtid; 
 	struct itimerval tm;
+	int i;
 
-	/* set stdin, stdout, and stderr in async mode */
-	if (0 != jthreadedFileDescriptor(0))
-		return 0;
-
-	if (1 != jthreadedFileDescriptor(1))
-		return 0;
-
-	/* for debugging, leave stderr in blocking mode */
-	if (DBGEXPR(ANY, false, true) && 2 != jthreadedFileDescriptor(2))
-		return 0;
+	/* 
+	 * If debugging is not enabled, set stdin, stdout, and stderr in 
+	 * async mode.
+	 *
+	 * If debugging is enabled and ASYNCSTDIO is not given, do not
+	 * put them in async mode.
+	 *
+	 * If debugging is enabled and ASYNCSTDIO is given, put them in
+	 * async mode (as if debug weren't enabled.)
+	 *
+	 * This is useful because large amounts of fprintfs might be
+	 * not be seen if the underlying terminal is put in asynchronous
+	 * mode.  So by default, when debugging, we want stdio be synchronous.
+	 * To override this, give the ASYNCSTDIO flag.
+	 */
+	if (DBGEXPR(ANY, DBGEXPR(ASYNCSTDIO, true, false), true))
+		for (i = 0; i < 3; i++)
+			if (i != jthreadedFileDescriptor(i))
+				return 0;
 
 	/*
 	 * On some systems, it is essential that we put the fds back
@@ -1245,6 +1258,7 @@ DBG(JTHREADDETAIL,
 			needReschedule = true;
 			for (tid = readQ[i]; tid != 0; tid = ntid) {
 				ntid = tid->nextQ;
+				tid->blockqueue = 0;
 				resumeThread(tid);
 			}
 			readQ[i] = 0;
@@ -1254,6 +1268,7 @@ DBG(JTHREADDETAIL,
 			needReschedule = true;
 			for (tid = writeQ[i]; tid != 0; tid = ntid) {
 				ntid = tid->nextQ;
+				tid->blockqueue = 0;
 				resumeThread(tid);
 			}
 			writeQ[i] = 0;
@@ -1327,6 +1342,7 @@ jmutex_unlock(jmutex *lock)
 		tid = lock->waiting;
 		lock->waiting = tid->nextQ;
 		assert(tid->status != THREAD_RUNNING);
+		tid->blockqueue = 0;
 		resumeThread(tid);
 	}
 	intsRestore();
@@ -1351,6 +1367,7 @@ jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 		tid = lock->waiting;
 		lock->waiting = tid->nextQ;
 		assert(tid->status != THREAD_RUNNING);
+		tid->blockqueue = 0;
 		resumeThread(tid);
 	}
 	/* wait to be signaled */
@@ -1419,14 +1436,17 @@ jthreadedFileDescriptor(int fd)
 	if ((r = fcntl(fd, F_GETFL, 0)) < 0)
 		return (r);
 
-	if ((r = fcntl(fd, F_SETFL, r | O_NONBLOCK 
+	/*
+	 * Apparently, this can fail, for instance when we stdout is 
+	 * redirected to /dev/null. (On FreeBSD)
+	 */
+	fcntl(fd, F_SETFL, r | O_NONBLOCK 
 #if defined(O_ASYNC)
 		| O_ASYNC
 #elif defined(FASYNC)
 		| FASYNC
 #endif
-		)) < 0)
-		return (r);
+		);
 
 #if defined(FIOSSAIOSTAT)
 	/* on hpux */
@@ -1445,7 +1465,6 @@ jthreadedFileDescriptor(int fd)
       defined(FASYNC) || defined(FIOSSAIOSTAT))
 #error	Could not put socket in async mode
 #endif
-
 #if defined(F_SETOWN)
 	/* Allow socket to signal this process when new data is available */
 	/* On some systems, this will flag an error if fd is not a socket */
