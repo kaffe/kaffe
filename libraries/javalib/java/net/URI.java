@@ -60,7 +60,7 @@ public final class URI
    * This expression doesn't parse IPv6 addresses.
    */
   private static final String URI_REGEXP =
-    "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?";
+    "^(([^:/?#]+):)?((//([^/?#]*))?([^?#]*)(\\?([^#]*))?)?(#(.*))?";
 
   /**
    * Index of scheme component in parsed URI.
@@ -68,24 +68,29 @@ public final class URI
   private static final int SCHEME_GROUP = 2;
 
   /**
+   * Index of scheme-specific-part in parsed URI.
+   */
+  private static final int SCHEME_SPEC_PART_GROUP = 3;
+
+  /**
    * Index of authority component in parsed URI.
    */
-  private static final int AUTHORITY_GROUP = 4;
+  private static final int AUTHORITY_GROUP = 5;
 
   /**
    * Index of path component in parsed URI.
    */
-  private static final int PATH_GROUP = 5;
+  private static final int PATH_GROUP = 6;
 
   /**
    * Index of query component in parsed URI.
    */
-  private static final int QUERY_GROUP = 7;
+  private static final int QUERY_GROUP = 8;
 
   /**
    * Index of fragment component in parsed URI.
    */
-  private static final int FRAGMENT_GROUP = 9;
+  private static final int FRAGMENT_GROUP = 10;
 
   String string;  
   private String scheme;
@@ -127,6 +132,7 @@ public final class URI
     Matcher matcher = pattern.matcher(str);
     if (matcher.matches()) {
       scheme = getURIGroup(matcher, SCHEME_GROUP);
+      schemeSpecificPart = getURIGroup(matcher, SCHEME_SPEC_PART_GROUP); 
       authority = getURIGroup(matcher, AUTHORITY_GROUP);
       path = getURIGroup(matcher, PATH_GROUP);
       query = getURIGroup(matcher, QUERY_GROUP);
@@ -369,7 +375,44 @@ public final class URI
    */
   public URI resolve (URI uri)
   { 
-    return null;
+    if (uri.isAbsolute()) return uri;
+    if (uri.isOpaque()) return uri;
+    String scheme = uri.getScheme();
+    String schemeSpecificPart = uri.getSchemeSpecificPart();
+    String authority = uri.getAuthority();
+    String path = uri.getPath();
+    String query = uri.getQuery();
+    String fragment = uri.getFragment();
+
+    try {
+        if (fragment != null &&
+            path != null && path.equals("") &&
+            scheme == null && authority == null && query == null) {
+
+            return new URI(this.scheme, this.schemeSpecificPart, fragment);
+
+        }
+
+        if (authority == null) {
+            authority = this.authority;
+            if (path == null) path = "";
+            if (!(path.startsWith("/"))) {
+                StringBuffer basepath = new StringBuffer(this.path);
+                int i = this.path.lastIndexOf('/');
+                if (i >= 0) {
+                    basepath.delete(i+1, basepath.length());
+                }
+                basepath.append(path);
+                path = basepath.toString();
+                //  We must normalize the path here.
+                //  Normalization process omitted.
+            }
+        }
+        return new URI(this.scheme, authority, path, query, fragment);
+    }
+    catch (URISyntaxException e) {
+        return null;
+    }
   }
 
   /**
@@ -386,7 +429,7 @@ public final class URI
   public URI resolve (String str)
     throws IllegalArgumentException
   {
-    return null;
+    return resolve(create(str));
   }
 
   /**
@@ -429,7 +472,7 @@ public final class URI
    */
   public boolean isAbsolute ()
   {
-    return false;
+    return (scheme != null);
   }
 
   /**
@@ -437,7 +480,8 @@ public final class URI
    */
   public boolean isOpaque ()
   {
-    return false;
+    return ((scheme != null) &&
+           !(schemeSpecificPart.startsWith("/")));
   }
 
   /**
@@ -446,7 +490,7 @@ public final class URI
    */
   public String getRawSchemeSpecificPart ()
   {
-    return null;
+    return schemeSpecificPart;
   }
 
   /**
@@ -454,7 +498,8 @@ public final class URI
    */
   public String getSchemeSpecificPart ()
   {
-    return null;
+    // FIXME: unimplemented.
+    return schemeSpecificPart;
   }
 
   /**
@@ -470,7 +515,8 @@ public final class URI
    */
   public String getAuthority ()
   {
-    return null;
+    // FIXME: unimplemented.
+    return authority;
   }
 
   /**
@@ -486,7 +532,8 @@ public final class URI
    */
   public String getUserInfo ()
   {
-    return null;
+    // FIXME: unimplemented.
+    return userInfo;
   }
 
   /**
@@ -518,7 +565,8 @@ public final class URI
    */
   public String getPath ()
   {
-    return null;
+    // FIXME: unimplemented.
+    return path;
   }
 
   /**
@@ -534,7 +582,8 @@ public final class URI
    */
   public String getQuery ()
   {
-    return null;
+    // FIXME: unimplemented.
+    return query;
   }
 
   /**
@@ -550,7 +599,8 @@ public final class URI
    */
   public String getFragment ()
   {
-    return null;
+    // FIXME: unimplemented.
+    return fragment;
   }
 
   /**

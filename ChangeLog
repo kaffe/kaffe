@@ -1,5 +1,25 @@
 2003-05-07 Dalibor Topic <robilad@yahoo.com>
 
+	* test/regression/FileTest.java:
+	Removed broken test.
+	
+2003-05-07 Ito Kazumitsu <ito.kazumitsu@hitachi-cable.co.jp>
+
+	* libraries/javalib/java/net/URI.java:
+	(URI_REGEXP) updated to contain scheme specific part.
+	(SCHEME_SPEC_PART_GROUP) new constant.
+	(AUTHORITY_GROUP, PATH_GROUP, QUERY_GROUP, FRAGMENT_GROUP) updated
+	to make room for SCHEME_SPEC_PART_GROUP.
+	(parseURI) parse scheme specific part.
+	(resolve, isAbsolute, isOpaque, getRawSchemeSpecificPart,
+	getSchemeSpecificPart, getAuthority, getUserInfo, getPath,
+	getQuery, getFragment) implemented.
+
+	* libraries/javalib/java/io/File.java:
+	(File) implemented URI constructor.
+	
+2003-05-07 Dalibor Topic <robilad@yahoo.com>
+
 	developers/autogen.sh,
 	configure.in:
 

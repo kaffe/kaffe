@@ -22,16 +22,12 @@ public class FileTest {
 	File g6 = new File((String)null,"NotExist2"); exists(g6);
 
         try {
-        File b1 = new File(null); exists(b1);
-        } catch (NullPointerException e) {System.out.println("caught 1");}
-
-        try {
         File b2 = new File("/", null); exists(b2);
-        } catch (NullPointerException e) {System.out.println("caught 2");}
+        } catch (NullPointerException e) {System.out.println("caught 1");}
 
 	try {
 	File b3 = new File((File)null,"NotExist2"); exists(b3);
-        } catch (NullPointerException e) {System.out.println("caught 3");}
+        } catch (NullPointerException e) {System.out.println("caught 2");}
 
     }
 }
@@ -47,7 +43,6 @@ File "/file2" does not exist
 File "file2" does not exist
 caught 1
 caught 2
-caught 3
 
 
 JDK 1.2 output
@@ -59,7 +54,6 @@ File "" does not exist
 File "/file2" does not exist
 File "file2" does not exist
 caught 1
-caught 2
 File "file2" does not exist
 
 
@@ -74,6 +68,5 @@ File "" does not exist
 File "/NotExist2" does not exist
 File "NotExist2" does not exist
 caught 1
-caught 2
 File "NotExist2" does not exist
 */

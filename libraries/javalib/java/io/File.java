@@ -68,6 +68,16 @@ public File(String path) {
 	this.path = path;
 }
 
+public File(URI uri) {
+	if (uri == null) {
+		throw new NullPointerException();
+	}
+	this.path = uri.getPath();
+	if (this.path == null) {
+		throw new IllegalArgumentException();
+	}
+}
+
 public boolean canRead() {
 	checkReadAccess();
 
