@@ -497,14 +497,14 @@ public class JScrollPane
                       || vsb.getMaximum() != vs.height
                       || vsb.getValue() != vr.y
                       || vsb.getVisibleAmount() != vr.height))
-                vsb.setValue(vr.y, vr.height, 0, vs.height);
+                vsb.setValues(vr.y, vr.height, 0, vs.height);
 
               if (hsb != null
                   && (hsb.getMinimum() != 0
                       || hsb.getMaximum() != vs.width
                       || hsb.getValue() != vr.width
                       || hsb.getVisibleAmount() != vr.height))
-                hsb.setValue(vr.x, vr.width, 0, vs.width);
+                hsb.setValues(vr.x, vr.width, 0, vs.width);
             }
           else
             {

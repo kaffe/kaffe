@@ -468,7 +468,7 @@ public class JTree extends JComponent
    * @return <code>true</code> if the root element is visible,
    * <code>false</code> otherwise
    */
-  public boolean isRootVisbile()
+  public boolean isRootVisible()
   {
     return rootVisible;
   }
