@@ -1,3 +1,7 @@
+2000-06-13  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/javalib/java/net/URL.java: Add serialization functions.
+
 Sat Jun 10 14:09:48 MDT 2000  Tim Stack  <stack@cs.utah.edu>
 
 	* kaffe/kaffevm/classPool.c: bug when freeing classes (some would
