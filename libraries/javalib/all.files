@@ -419,6 +419,8 @@ gnu/crypto/util/SimpleList.java
 gnu/crypto/util/Util.java
 gnu/getopt/Getopt.java
 gnu/getopt/LongOpt.java
+gnu/inet/comsat/ComsatClient.java
+gnu/inet/comsat/ComsatInfo.java
 gnu/inet/finger/FingerConnection.java
 gnu/inet/finger/FingerURLConnection.java
 gnu/inet/finger/Handler.java

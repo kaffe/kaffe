@@ -1,5 +1,5 @@
 /*
- * $Id: ChunkedInputStream.java,v 1.3 2004/10/04 19:33:58 robilad Exp $
+ * $Id: ChunkedInputStream.java,v 1.4 2004/10/10 17:57:41 robilad Exp $
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -141,6 +141,12 @@ extends FilterInputStream
             // Read CRLF
             int c1 = in.read ();
             int c2 = in.read ();
+            if (c1 == -1 && c2 == -1)
+              {
+                // EOF before CRLF: bad, but ignore
+                eof = true;
+                return -1;
+              }
             if (c1 != 0x0d || c2 != 0x0a)
               {
                 throw new ProtocolException ("expecting CRLF: " + c1 + "," + c2);

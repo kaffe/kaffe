@@ -101,6 +101,7 @@ Klasses_jar_SRCS = \
 	$(gnu_crypto_tool_keytool_SRCS) \
 	$(gnu_crypto_util_SRCS) \
 	$(gnu_getopt_SRCS) \
+	$(gnu_inet_comsat_SRCS) \
 	$(gnu_inet_finger_SRCS) \
 	$(gnu_inet_ftp_SRCS) \
 	$(gnu_inet_gopher_SRCS) \
@@ -784,6 +785,9 @@ gnu_crypto_util_SRCS = \
 gnu_getopt_SRCS = \
 	gnu/getopt/Getopt.java \
 	gnu/getopt/LongOpt.java
+gnu_inet_comsat_SRCS = \
+	gnu/inet/comsat/ComsatClient.java \
+	gnu/inet/comsat/ComsatInfo.java
 gnu_inet_finger_SRCS = \
 	gnu/inet/finger/FingerConnection.java \
 	gnu/inet/finger/FingerURLConnection.java \

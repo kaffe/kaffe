@@ -1,5 +1,5 @@
 /*
- * $Id: FTPConnection.java,v 1.5 2004/10/04 19:33:56 robilad Exp $
+ * $Id: FTPConnection.java,v 1.6 2004/10/10 17:57:38 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -38,10 +38,18 @@ import java.net.InetSocketAddress;
 import java.net.ProtocolException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+
 import gnu.inet.util.CRLFInputStream;
+import gnu.inet.util.CRLFOutputStream;
+import gnu.inet.util.EmptyX509TrustManager;
 import gnu.inet.util.LineInputStream;
 
 /**
@@ -54,7 +62,7 @@ import gnu.inet.util.LineInputStream;
  * </ul>
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.5 $ $Date: 2004/10/04 19:33:56 $
+ * @version $Revision: 1.6 $ $Date: 2004/10/10 17:57:38 $
  */
 public class FTPConnection
 {
@@ -105,6 +113,12 @@ public class FTPConnection
   protected static final String STAT = "STAT";
   protected static final String HELP = "HELP";
   protected static final String NOOP = "NOOP";
+  
+  protected static final String AUTH = "AUTH";
+  protected static final String PBSZ = "PBSZ";
+  protected static final String PROT = "PROT";
+  protected static final String CCC = "CCC";
+  protected static final String TLS = "TLS";
 
   public static final int TYPE_ASCII = 1;
   public static final int TYPE_EBCDIC = 2;
@@ -120,7 +134,6 @@ public class FTPConnection
 
   // -- Telnet constants --
   private static final String US_ASCII = "US-ASCII";
-  private static final byte[] CRLF = { 0x0d, 0x0a };
 
   /**
    * The socket used to communicate with the server.
@@ -135,7 +148,7 @@ public class FTPConnection
   /**
    * The socket output stream.
    */
-  protected OutputStream out;
+  protected CRLFOutputStream out;
 
   /**
    * The timeout when attempting to connect a socket.
@@ -239,7 +252,8 @@ public class FTPConnection
     in = new CRLFInputStream (in);
     this.in = new LineInputStream (in);
     OutputStream out = socket.getOutputStream ();
-    this.out = new BufferedOutputStream (out);
+    out = new BufferedOutputStream (out);
+    this.out = new CRLFOutputStream (out);
     
     // Read greeting
     FTPResponse response = getResponse ();
@@ -291,6 +305,109 @@ public class FTPConnection
         return false;
       default:
         throw new FTPException (response);
+      }
+  }
+
+  /**
+   * Negotiates TLS over the current connection.
+   * See IETF draft-murray-auth-ftp-ssl-15.txt for details.
+   * @param confidential whether to provide confidentiality for the
+   * connection
+   */
+  public boolean starttls (boolean confidential)
+    throws IOException
+  {
+    return starttls (confidential, new EmptyX509TrustManager ());
+  }
+  
+  /**
+   * Negotiates TLS over the current connection.
+   * See IETF draft-murray-auth-ftp-ssl-15.txt for details.
+   * @param confidential whether to provide confidentiality for the
+   * connection
+   * @param tm the trust manager used to validate the server certificate.
+   */
+  public boolean starttls (boolean confidential, TrustManager tm)
+    throws IOException
+  {
+    try
+      {
+        // Use SSLSocketFactory to negotiate a TLS session and wrap the
+        // current socket.
+        SSLContext context = SSLContext.getInstance ("TLS");
+        // We don't require strong validation of the server certificate
+        TrustManager[] trust = new TrustManager[] { tm };
+        context.init (null, trust, null);
+        SSLSocketFactory factory = context.getSocketFactory ();
+        
+        send (AUTH + ' ' + TLS);
+        FTPResponse response = getResponse ();
+        switch (response.getCode ())
+          {
+          case 500:
+          case 502:
+          case 504:
+          case 534:
+          case 431:
+            return false;
+          case 234:
+            break;
+          default:
+            throw new FTPException (response);
+          }
+        
+        String hostname = socket.getInetAddress ().getHostName ();
+        int port = socket.getPort ();
+        SSLSocket ss =
+          (SSLSocket) factory.createSocket (socket, hostname, port, true);
+        String[] protocols = { "TLSv1", "SSLv3" };
+        ss.setEnabledProtocols (protocols);
+        ss.setUseClientMode (true);
+        ss.startHandshake ();
+
+        // PBSZ:PROT sequence
+        send (PBSZ + ' ' + Integer.MAX_VALUE);
+        response = getResponse ();
+        switch (response.getCode ())
+          {
+          case 501: // syntax error
+          case 503: // not authenticated
+            return false;
+          case 200:
+            break;
+          default:
+            throw new FTPException (response);
+          }
+        send (PROT + ' ' + (confidential ? 'P' : 'C'));
+        response = getResponse ();
+        switch (response.getCode ())
+          {
+          case 503: // not authenticated
+          case 504: // invalid level
+          case 536: // level not supported
+            return false;
+          case 200:
+            break;
+          default:
+            throw new FTPException (response);
+          }
+        
+        if (confidential)
+          {
+            // Set up streams
+            InputStream in = ss.getInputStream ();
+            in = new BufferedInputStream (in);
+            in = new CRLFInputStream (in);
+            this.in = new LineInputStream (in);
+            OutputStream out = ss.getOutputStream ();
+            out = new BufferedOutputStream (out);
+            this.out = new CRLFOutputStream (out);
+          }
+        return true;
+      }
+    catch (GeneralSecurityException e)
+      {
+        return false;
       }
   }
   
@@ -1104,7 +1221,7 @@ public class FTPConnection
   {
     byte[] data = cmd.getBytes (US_ASCII);
     out.write (data);
-    out.write (CRLF);
+    out.writeln ();
     out.flush ();
   }
 
