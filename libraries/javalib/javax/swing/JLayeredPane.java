@@ -89,7 +89,7 @@ import javax.accessibility.Accessible;
  * <p><b>Note:</b> the layer numbering order is the <em>reverse</em> of the
  * component indexing and position order</p>
  *
- * @author Graydon Hoare <graydon@redhat.com>
+ * @author Graydon Hoare (graydon@redhat.com)
  */
 public class JLayeredPane extends JComponent implements Accessible
 {
@@ -122,7 +122,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * @return the layer the component is currently assigned to, in this container.
    * @throws IllegalArgumentException if the component is not a child of this container.
    */
-
   protected Integer getLayer (Component c)
   {
     if (! componentToLayer.containsKey (c))
@@ -144,7 +143,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * @throws IllegalArgumentException if layer does not refer to an active layer
    * in this container.
    */
-
   protected int[] layerToRange (Integer layer)
   {
     int[] ret = new int[2];
@@ -175,7 +173,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * @param layer the layer number to increment.
    * @see #incrLayer()
    */
-
   protected void incrLayer(Integer layer)
   {
     int sz = 1;
@@ -190,7 +187,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * @param layer the layer number to decrement.
    * @see #decrLayer()
    */
-
   protected void decrLayer(Integer layer)
   {
     int sz = 0;
@@ -206,7 +202,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * @return the least layer number.
    * @see #lowestLayer()
    */
-
   public int highestLayer()
   {
     if (layers.size() == 0)
@@ -221,7 +216,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * @return the least layer number.
    * @see #highestLayer()
    */
-    
   public int lowestLayer()
   {
     if (layers.size() == 0)
@@ -240,7 +234,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * this container.
    * @see #moveToBack()
    */
-
   public void moveToFront(Component c)
   {
     setPosition (c, 0);
@@ -260,7 +253,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * this container.
    * @see #moveToFront()
    */
-
   public void moveToBack(Component c)
   {
     setPosition (c, -1);
@@ -276,7 +268,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * this container.
    * @see #setPosition()
    */
-    
   public int getPosition(Component c)
   {
     Integer layer = getLayer (c);
@@ -304,33 +295,32 @@ public class JLayeredPane extends JComponent implements Accessible
    * this container.
    * @see #getPosition()
    */
-
   public void setPosition(Component c, int position)
   {
     Integer layer = getLayer (c);
     int[] range = layerToRange (layer);
     if (range[0] == range[1])
-	    throw new IllegalArgumentException ();
+      throw new IllegalArgumentException ();
 
     int top = range[0];
     int bot = range[1];
     if (position == -1)
-	    position = (bot - top) - 1;
+      position = (bot - top) - 1;
     int targ = Math.min(top + position, bot-1);
     int curr = -1;
 
     Component[] comps = getComponents();
     for (int i = top; i < bot; ++i)
-	    {
+      {
         if (comps[i] == c)
           {
             curr = i;
             break;
           }
-	    }
+      }
     if (curr == -1)
-	    // should have found it
-	    throw new IllegalArgumentException ();
+      // should have found it
+      throw new IllegalArgumentException();
 
     super.swapComponents (curr, targ);
     revalidate();
@@ -345,7 +335,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * @param layer the layer to return components from.
    * @return the components in the layer.
    */
-
   public Component[] getComponentsInLayer(int layer)
   {
     int[] range = layerToRange (getObjectForLayer (layer));
@@ -369,7 +358,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * @param layer the layer count components in.
    * @return the number of components in the layer.
    */
-
   public int getComponentCountInLayer(int layer)
   {
     int[] range = layerToRange (getObjectForLayer (layer));
@@ -383,7 +371,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * Return a hashtable mapping child components of this container to
    * Integer objects representing the component's layer assignments.
    */
-
   protected Hashtable getComponentToLayer()
   {
     return componentToLayer;
@@ -400,7 +387,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * @throws IllegalArgumentException if the component is not a child of
    * this container.
    */
-
   public int getIndexOf(Component c) 
   {
     Integer layer = getLayer (c);
@@ -423,7 +409,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * @param layer the layer number as an int.
    * @return the layer number as an Integer, possibly shared.
    */
-
   protected Integer getObjectForLayer(int layer)
   {
     switch (layer)
@@ -462,7 +447,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * @param position the position in the layer at which to insert a component.
    * @return the index at which to insert the component.
    */
-    
   protected int insertIndexForLayer(int layer, int position)
   {
 
@@ -488,7 +472,6 @@ public class JLayeredPane extends JComponent implements Accessible
    *
    * @param index the index of the child component to remove.
    */
-    
   public void remove (int index)
   {
     Component c = getComponent (index);
@@ -506,7 +489,6 @@ public class JLayeredPane extends JComponent implements Accessible
    *
    * @param comp the child to remove.
    */
-	
   public void remove (Component comp)
   {
     remove (getIndexOf (comp));
@@ -523,7 +505,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * @param c the component to set the layer property for.
    * @param layer the layer number to assign to the component.
    */
-
   public void setLayer(Component c, int layer)
   {
     componentToLayer.put (c, getObjectForLayer (layer));
@@ -536,7 +517,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * @param layer the layer number to assign to the component.
    * @param position the position number to assign to the component.
    */
-
   public void setLayer(Component c,
                        int layer,
                        int position)
@@ -558,7 +538,6 @@ public class JLayeredPane extends JComponent implements Accessible
    * @param layerConstraint an integer specifying the layer to add the component to.
    * @param index an ignored parameter, for compatibility.
    */
-
   protected void addImpl(Component comp, Object layerConstraint, int index) 
   {        	
     Integer layer;
