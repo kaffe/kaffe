@@ -382,11 +382,10 @@ final class VMThread
      * because some other thread may be active.  So don't expect real-time
      * performance.
      *
-     * @param ms the number of milliseconds to sleep, or 0 for forever
+     * @param ms the number of milliseconds to sleep. Will be at least 1.
      * @param ns the number of extra nanoseconds to sleep (0-999999)
-     * @throws InterruptedException if the Thread is interrupted; it's
-     *         <i>interrupted status</i> will be cleared
-     * @throws IllegalArgumentException if ns is invalid
+     * @throws InterruptedException if the Thread is (or was) interrupted;
+     *         it's <i>interrupted status</i> will be cleared
      */
     static native void sleep(long ms, int ns) throws InterruptedException;
 

@@ -82,10 +82,6 @@ void java_lang_VMThread_sleep(jlong timeout, UNUSED jint ns)
 {
   jthread_t	cur = KTHREAD(current)();
 
-  /* Temporary hack waiting for the Classpath merge. */
-  if (timeout == 0)
-    return;
-
   if(KTHREAD(interrupted)(cur))
     {
       throwException(InterruptedException);

@@ -1,3 +1,19 @@
+2005-01-06  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/native/Thread.c (java_lang_VMThread_sleep): 
+	Removed Guilhem's hack since the sleep patch has been merged in
+	from GNU Classpath.
+
+2005-01-05  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2004-12-30  Mark Wielaard  <mark@klomp.org>
+
+	* java/lang/Thread.java (sleep): Update documentation. Make sure
+	VMThread.sleep() is never called with zero arguments.
+	* vm/reference/java/lang/VMThread.java (sleep): Update documentation.
+
 2005-01-05  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
