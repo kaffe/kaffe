@@ -1,3 +1,43 @@
+2004-12-21  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/javax/swing/JComboBox.java,
+	libraries/javalib/javax/swing/DefaultComboBoxModel.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicComboBoxUI.java:
+	Resynced with GNU Classpath.
+
+	2004-12-18  Robert Schuster <thebohemian@gmx.net>
+
+        * javax/swing/JComboBox.java
+        added support for no item being selected
+        (JComboBox): select first or nothing depending on element
+        count
+        (setModel): cleaned up unneeded "this." usage, added more
+        docs, made exception behavior match that of the JDK
+        (setLighWeightPopupEnabled): removed unneeded "this." usage
+        (setEditable): dito
+        (setMaximumRowCount): dito
+        (setRenderer): dito
+        (setPrototypeDisplayValue): dito
+        (getSelectedItem): simplified, added more user doc
+        (setSelectedIndex): corrected exception behavior, added more user
+        doc
+        (getSelectedIndex): fixed hardcoded dependency on DefaultComboBoxModel
+         (see bug #11255), added performance warning to user doc
+        (addItem): fixed exception behavior, added user doc
+        (insertItemAt): dito
+        (removeItem): dito
+        (removeItemAt): dito
+        (removeAll): fixed exception behavior, added user doc, added support
+        for model not being instance of DefaultComboBoxModel (see bug #11255)
+        (getSelectedItemObjects): simplified
+        (getItemCount): fixed dependency on DefaultComboBoxModel (see bug #11255)
+        (getItemAt): fixed dependency on MutableComboBoxModel (see bug #11255)
+        * javax/swing/DefaultComboBoxModel.java:
+        (setSelectedItem): updates selected item only if new
+        value is null or known (match JDK behavior)
+        * javax/swing/plaf/basic/BasicComboBoxUI.java:
+        (paintCurrentValue): renders "" if no item is selected
+
 2004-12-20  Adam Heath  <doogie@brainfood.com>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
