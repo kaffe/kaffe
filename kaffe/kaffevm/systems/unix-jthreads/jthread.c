@@ -1107,8 +1107,7 @@ DBG(JTHREAD,
 		for (tid = liveThreads; tid != 0; tid = tid->nextlive) {
 		    killThread(tid);
 		}
-		/* Am I suppose to close things down nicely ?? */
-		exit(0);
+		EXIT(0);
 	} else {
 		for (;;) {
 			killThread(currentJThread);
@@ -1498,7 +1497,7 @@ restore_fds_and_exit()
 	/* technically, we should restore the original handler and rethrow
 	 * the signal.
 	 */
-	exit(-1);		/* XXX */
+	EXIT(-1);		/* XXX */
 }
 
 /*
