@@ -193,7 +193,10 @@ loadNativeLibrary(char* lib)
         LIBRARYLOAD(libHandle[i].desc, lib);
 
 	if (libHandle[i].desc == 0) {
-		printf("Library load failed: %s\n", LIBRARYERROR());
+		if (access(lib, R_OK) == 0) {
+			/* If the file doesn't exist, ignore the error */
+			printf("Library load failed: %s\n", LIBRARYERROR());
+		}
 		return (0);
 	}
 

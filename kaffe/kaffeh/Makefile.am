@@ -14,5 +14,7 @@ GEN_SRCS = inflate.c jar.c utf8const.c readClass.c
 
 kaffeh_SOURCES = $(GEN_SRCS) constants.c sigs.c support.c main.c
 
+noinst_HEADERS = constants.h file.h kaffeh-support.h readClassConfig.h
+
 $(GEN_SRCS):
 	$(SHELL) $(REGEN_FORWARD) $(srcdir)/../kaffevm/$@ $@

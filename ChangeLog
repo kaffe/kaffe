@@ -1,3 +1,12 @@
+Wed Jan 13 20:17:36 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffeh/Makefile.am (noinst_HEADERS): header files wre not
+	included in the distribution
+	* kaffe/kaffeh/Makefile.in: regen
+
+	* kaffe/kaffevm/external.c: ignore errors if libtool archive file
+ 	is not found
+
 Wed Jan 13 19:06:34 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* FAQ/FAQ.libtool: --disable-shared works now
