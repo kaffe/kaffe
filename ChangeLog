@@ -1,3 +1,9 @@
+2003-06-07 Mark Wielaard <mark@klomp.org>
+
+	* libraries/javalib/java/io/BufferedInputStream.java:
+	(_read) don't block on underlying InputStream if nothing is
+	available for reading.
+
 2003-06-06  Jim Pick  <jim@kaffe.org>
 
 	* developers/autogen.sh:

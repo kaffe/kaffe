@@ -103,8 +103,8 @@ private int _read(byte b[], int off, int len) throws IOException {
 	}
 
 	int total = 0;
-	while (len > 0) {
 
+	do {
 		// If buffer fully consumed, invalidate mark & reset buffer
 		if (pos == buf.length) {
 			pos = count = 0;
@@ -138,7 +138,8 @@ private int _read(byte b[], int off, int len) throws IOException {
 		pos += nread;
 		off += nread;
 		len -= nread;
-	}
+	} while (len > 0 && available() > 0);
+
 	return total;
 }
 
