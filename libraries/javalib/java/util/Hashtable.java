@@ -27,6 +27,8 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
 
   private static final int DEFAULTCAPACITY = 101;
   private static final float DEFAULTLOADFACTOR = (float)0.75;
+  private static final Object removed = new Object();
+  private static final Object free = null;
 
   /* This is what Sun's JDK1.1 "serialver java.util.Hashtable" spits out */
   private static final long serialVersionUID = 1421746759512286392L;
@@ -66,7 +68,7 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
     Vector vector = new Vector(numberOfKeys);
 
     for (int pos = keys.length-1; pos >= 0; pos--) {
-      if (keys[pos] != null) {
+      if (keys[pos] != free && keys[pos] != removed) {
 	vector.addElement(keys[pos]);
       }
     }
@@ -79,7 +81,7 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
     Vector vector = new Vector(numberOfKeys);
 
     for (int pos = elements.length-1; pos >= 0; pos--) {
-      if (keys[pos] != null) {
+      if (keys[pos] != free && keys[pos] != removed) {
 	vector.addElement(elements[pos]);
       }
     }
@@ -113,7 +115,7 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
       if (key.equals(mkey)) {
 	return (elements[i]);
       }
-      if (mkey == null) {
+      if (mkey == free) {
 	return (null);
       }
     }
@@ -122,7 +124,7 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
       if (key.equals(mkey)) {
 	return (elements[i]);
       }
-      if (mkey == null) {
+      if (mkey == free) {
 	return (null);
       }
     }
@@ -142,7 +144,7 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
 
     /* Go through adding all the data to the new data */
     for (int pos = oldKeys.length-1; pos >= 0; pos--) {
-      if (keys[pos] != null) {
+      if (keys[pos] != free && keys[pos] != removed) {
 	put(keys[pos], elements[pos]);
       }
     }
@@ -162,7 +164,7 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
 	elements[i] = value;
 	return (oldElement);
       }
-      if (mkey == null) {
+      if (mkey == free || mkey == removed) {
 	keys[i] = key;
 	elements[i] = value;
 	numberOfKeys++;
@@ -176,7 +178,7 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
 	elements[i] = value;
 	return (oldElement);
       }
-      if (mkey == null) {
+      if (mkey == free || mkey == removed) {
 	keys[i] = key;
 	elements[i] = value;
 	numberOfKeys++;
@@ -195,12 +197,12 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
       Object mkey = keys[i];
       if (key.equals(mkey)) {
 	Object oldElement = elements[i];
-	elements[i] = null;
-	keys[i] = null;
+	elements[i] = removed;
+	keys[i] = removed;
 	numberOfKeys--;
 	return (oldElement);
       }
-      if (mkey == null) {
+      if (mkey == free) {
 	return (null);
       }
     }
@@ -208,12 +210,12 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
       Object mkey = keys[i];
       if (key.equals(mkey)) {
 	Object oldElement = elements[i];
-	elements[i] = null;
-	keys[i] = null;
+	elements[i] = removed;
+	keys[i] = removed;
 	numberOfKeys--;
 	return (oldElement);
       }
-      if (mkey == null) {
+      if (mkey == free) {
 	return (null);
       }
     }
@@ -222,8 +224,8 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
   
   public synchronized void clear() {
     for (int pos = keys.length; pos >= 0; pos--) {
-      keys[pos] = null;
-      elements[pos] = null;
+      keys[pos] = free;
+      elements[pos] = free;
     }
     numberOfKeys = 0;
   }
@@ -254,7 +256,7 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
 
     /* copy our entries in new hashtable */ 
     for (int pos = keys.length-1; pos >= 0; pos--) {
-      if (keys[pos] != null) {
+      if (keys[pos] != free || keys[pos] != removed) {
 	result.put(keys[pos], elements[pos]);
       }
     }
@@ -305,7 +307,7 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
     stream.writeInt(keys.length);
 
     for (int pos = 0; pos < keys.length; pos++) {
-      if (keys[pos] != null) {
+      if (keys[pos] != free && keys[pos] != removed) {
 	stream.writeObject(keys[pos]);
 	stream.writeObject(elements[pos]);
       }
@@ -319,14 +321,14 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
     result.append('{');
     int pos = 0;
     for (; pos < keys.length; pos++) {
-      if (keys[pos] != null) {
+      if (keys[pos] != free && keys[pos] != removed) {
 	result.append(keys[pos]);
 	result.append("=");
 	result.append(elements[pos]);
       }
     }
     for (; pos < keys.length; pos++) {
-      if (keys[pos] != null) {
+      if (keys[pos] != free && keys[pos] != removed) {
 	result.append(", ");
 	result.append(keys[pos]);
 	result.append("=");
