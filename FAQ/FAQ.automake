@@ -2,16 +2,22 @@
 IMPORTANT NOTE:
 
 - in order to modify the Makefiles and configure.in, you need rather
-recent versions of autoconf and automake.  autoconf 2.13 (just
+recent versions of autoconf and automake: autoconf 2.13 (just
 released) and automake 1.4 (to be released soon, currently available
-via CVS) should be fine.  automake is known to be unreliable with
-perl4 in certain circumstances, which means you need perl5 as well.
+via CVS; a working snapshot is available at
+http://www.dcc.unicamp.br/~oliva/snapshots/kaffe/automake-1.3e.tar.gz).
+automake is supposed to work with perl4, but it apparently doesn't,
+which means you probably need perl5 as well.
 
 **************************************************************************
 
 Kaffe has adopted GNU automake to ease the maintenance of Makefiles.
 Changes were mostly straightforward, and nothing really important has
 changed in the build environment.  I could list a few changes here:
+
+- EXTRA_CFLAGS is no longer used; you can now use AM_CFLAGS and
+AM_CPPFLAGS.  Prefer the latter for preprocessor definitions such as
+-DDEBUG.
 
 - using automake means editing Makefile.am instead of Makefile.in, and
 that it will take care of rebuilding autoconf/automake-related files

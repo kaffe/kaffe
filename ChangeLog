@@ -1,3 +1,9 @@
+Sun Jan 10 20:13:34 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* FAQ/FAQ.automake: note about the snapshot of automake 1.3e I've
+ 	just taken and the uselessness of EXTRA_CFLAGS, now AM_CFLAGS and
+ 	AM_CPPFLAGS
+
 Sun Jan 10 19:55:07 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* ltconfig, ltmain.sh: updated from libtool
