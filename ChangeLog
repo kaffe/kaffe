@@ -1,6 +1,12 @@
 2005-01-06  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+
+	2005-01-02  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/java/beans/decoder/DummyHandler.java: Add return statements for
+	failing methods.
+	* gnu/java/beans/decoder/DummyContext.java: Likewise.
 	
 	2005-01-02  Robert Schuster  <theBohemian@gmx.net>
 
