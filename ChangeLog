@@ -1,3 +1,9 @@
+Tue Jan 26 23:21:00 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/gcFuncs.c, kaffe/kaffevm/gcRefs.c
+	kaffe/kaffevm/mem/gc-incremental.c: added verbose heap walk
+	when debugging.  Use -vmdebug GCWALK to activate it.
+
 Tue Jan 26 18:39:21 1999  Jongwon Kim <freefish@netsgo.com>
 
 	* kaffe/kaffevm/inflate.c: finally fixed memory leak after
