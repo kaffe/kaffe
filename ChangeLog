@@ -6,6 +6,14 @@
 
 2004-06-07  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* config/arm/linux/sigcontextinfo.h: Changed bits/armsigctx.h to
+	armsigctx.h.
+
+	* config/arm/linux/armsigctx.h, config/arm/linux/kernel-features.h:
+	New files.
+
+2004-06-07  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* configure.ac: Check for setrlimit. Fixed typo.
 
 	* FAQ/FAQ.kaffemd: Updated with new macros.

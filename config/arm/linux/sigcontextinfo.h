@@ -17,7 +17,7 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
    02111-1307 USA.  */
 
-#include <bits/armsigctx.h>
+#include "armsigctx.h"
 #include "kernel-features.h"
 
 #define SIGCONTEXT int _a2, int _a3, int _a4, union k_sigcontext

@@ -268,6 +268,7 @@ static Image getUnknownImage (){
 }
 
 public synchronized int getWidth ( ImageObserver observer ) {
+	System.err.println("getWidth()="+width + " producer="+producer);
 	if ( (flags & ImageObserver.WIDTH) != 0 ) {
 		return (width);
 	}
@@ -352,6 +353,8 @@ synchronized void stateChange(int flags, int x, int y, int w, int h) {
 	ImageObserver obs;
 
 	this.flags |= flags;
+
+	System.err.println("producer="+producer + " flags="+this.flags);
 
 	if (observers == null) {
 		return;

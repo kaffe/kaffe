@@ -154,10 +154,12 @@ public void setFullBufferUpdates( boolean fullbuffers) {
 }
 
 public void startProduction( ImageConsumer ic) {
+	System.err.println("start production " + this);
 	addConsumer(ic);
 	initializeConsumer(ic);
 	transferPels(ic, 0, 0, width, height);
 	terminateConsumer(ic);
+	System.err.println("end production");
 }
 
 private void terminateConsumer(ImageConsumer ic) {
