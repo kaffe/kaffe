@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-04  Michael Koch  <konqueror@gmx.de>
+
+        * javax/swing/SortingFocusTraversalPolicy.java
+        (getSortedCycle): Fixed initialization of set.
+
+2005-02-05  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-03  Robert Schuster  <thebohemian@gmx.net>
 
         * gnu/java/nio/charset/ISO_8859_1.java,
