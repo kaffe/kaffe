@@ -1,3 +1,25 @@
+2003-04-10 Dalibor Topic <robilad@yahoo.com>
+	
+	* libraries/javalib/java/sql/Array.java,
+        libraries/javalib/java/sql/Blob.java,
+        libraries/javalib/java/sql/CallableStatement.java,
+        libraries/javalib/java/sql/Clob.java,
+        libraries/javalib/java/sql/Connection.java,
+        libraries/javalib/java/sql/DataTruncation.java,
+        libraries/javalib/java/sql/DatabaseMetaData.java,
+        libraries/javalib/java/sql/Driver.java,
+        libraries/javalib/java/sql/DriverPropertyInfo.java,
+        libraries/javalib/java/sql/PreparedStatement.java,
+        libraries/javalib/java/sql/ResultSet.java,
+        libraries/javalib/java/sql/ResultSetMetaData.java,
+        libraries/javalib/java/sql/SQLException.java,
+        libraries/javalib/java/sql/SQLWarning.java,
+        libraries/javalib/java/sql/Statement.java,
+        libraries/javalib/java/sql/Types.java:
+	replaced by the more up to date implementation from GNU Classpath.
+
+	Reported by: Ito Kazumitsu <ito.kazumitsu@hitachi-cable.co.jp>
+	
 2003-04-10 Tony Wyatt <wyattaw@optushome.com.au>
 
 	* config/m68k/amigaos/md-c.diff:
