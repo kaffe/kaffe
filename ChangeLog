@@ -1,3 +1,7 @@
+Wed Apr  7 23:29:49 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* configure, aclocal.m4, */Makefile.in: repair auto* damage
+
 Wed Apr  7 18:43:47 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/clib/native/System.c: adjust "os.version" property
