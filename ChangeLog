@@ -1,5 +1,15 @@
 2004-10-15  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/java/nio/charset/UTF_16Encoder.java:
+        Resynced with GNU Classpath.
+
+	2004-10-15  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/nio/charset/UTF_16Encoder.java
+        (UTF_16Encoder): Fixed maxBytesPerChar handling.
+
+2004-10-15  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/lang/Object.java,
 	libraries/javalib/java/lang/Thread.java,
 	libraries/javalib/java/lang/ThreadLocal.java:
