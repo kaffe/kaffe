@@ -276,7 +276,15 @@ public String[] list(FilenameFilter filter) {
 }
 
 public File[] listFiles() {
-	return listFiles(null);
+	return listFiles((FilenameFilter)null);
+}
+
+public File[] listFiles(final FileFilter filter) {
+	return listFiles(new FilenameFilter() {
+	  public boolean accept(File dir, String name) {
+	    return filter.accept(new File(dir, name));
+	  }
+	});
 }
 
 public File[] listFiles(FilenameFilter filter) {
