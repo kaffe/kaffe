@@ -1,4 +1,5 @@
 /* config-h.in.  Generated from configure.ac by autoheader.  */
+/* Touched to update timestamp */
 
 /* Define to 1 if you have the `argz_append' function. */
 #undef HAVE_ARGZ_APPEND

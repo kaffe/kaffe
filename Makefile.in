@@ -569,6 +569,9 @@ distdir: $(DISTFILES)
 	      || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
+	  dist-hook
 	-find $(distdir) -type d ! -perm -777 -exec chmod a+rwx {} \; -o \
 	  ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
 	  ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
@@ -765,6 +768,16 @@ Klasses new-classes compile-classes jar-classes build-classes:
 	    (cd $$f && $(MAKE) $@); \
 	  done; \
 	fi
+
+# Build rt-precompiled.jar and add it to dist
+dist-hook:
+	rm -rf build-dist
+	mkdir build-dist
+	(cd build-dist && \
+	 ../$(distdir)/configure --with-extensions=comm,microsoft,pjava,servlet,sound && \
+	 make && \
+	 cp libraries/javalib/rt.jar ../$(distdir)/libraries/javalib/rt-precompiled.jar \
+	)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

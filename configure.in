@@ -1399,7 +1399,15 @@ dnl -----------------------------------------------------------------------
 AC_ARG_WITH(rt_jar, [  --with-rt-jar=ABS.PATH	use precompiled kaffe class library])
 
 case "$with_rt_jar" in
-"" | "no" )
+"")
+	if test -f $abssrcdir/libraries/javalib/rt-precompiled.jar; then
+		use_rt_jar=true
+		PATH_TO_RT_JAR=$abssrcdir/libraries/javalib/rt-precompiled.jar
+	else
+		use_rt_jar=false
+	fi 
+	;;
+"no" )
 	use_rt_jar=false
 	;;
 "yes")

@@ -1,3 +1,33 @@
+2003-06-08 Jim Pick  <jim@kaffe.org>
+
+	* Makefile.am:
+	New dist-hook target to build rt-precompiled.jar during
+	"make dist".
+
+	* libraries/javalib/Makefile.am.in:
+	Small fix for installing precompiled rt.jar.
+
+	* configure.in:
+	If rt-precompiled.jar exists, default to using
+	--with-rt-jar=libraries/javalib/rt-precompiled.jar.
+	So our distributed tarball will default to using
+	the precompiled version of rt.jar instead of
+	regenerating it.  Passing --with-rt-jar=no to
+	configure will still recompile the rt.jar.
+
+	* developers/autogen.sh,
+	libltdl/config-h.in:
+	Touch libltdl/config-h.in so timestamps are
+	set right.
+
+	* Makefile.in,
+	configure,
+	kaffe/scripts/Makefile.in,
+	kaffe/scripts/compat/Makefile.in,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+
 2003-06-08 Dalibor Topic <robilad@yahoo.com>
 
 	* kaffe/scripts/kaffe.in:

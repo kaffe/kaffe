@@ -114,8 +114,11 @@ patch < developers/patch-config.sub-superh.diff
 
 (
  cd libltdl
+ # Need to regenerate things because patching
+ # screws up timestamps
  aclocal -I .
  automake --add-missing --copy -Wall
+ touch config-h.in
  autoconf -Wall
  patch < ../developers/patch-config.sub-superh.diff
 )

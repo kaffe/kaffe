@@ -138,3 +138,13 @@ Klasses new-classes compile-classes jar-classes build-classes:
 	    (cd $$f && $(MAKE) $@); \
 	  done; \
 	fi
+
+# Build rt-precompiled.jar and add it to dist
+dist-hook:
+	rm -rf build-dist
+	mkdir build-dist
+	(cd build-dist && \
+	 ../$(distdir)/configure --with-extensions=comm,microsoft,pjava,servlet,sound && \
+	 make && \
+	 cp libraries/javalib/rt.jar ../$(distdir)/libraries/javalib/rt-precompiled.jar \
+	)

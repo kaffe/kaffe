@@ -209,7 +209,7 @@ endif
 .PHONY: jar-classes
 if USE_PRECOMPILED_RT_JAR
 jar-classes rt.jar:
-	cp $(PATH_TO_RT_JAR) .
+	cp $(PATH_TO_RT_JAR) rt.jar
 else
 jar-classes rt.jar: $(LIBDIR)/stamp
 	if [ ! -d $(LIBDIR)/kaffe ] ; then \
