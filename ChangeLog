@@ -1,5 +1,15 @@
 2003-08-14  Rob Gonzalez <rob@kaffe.org>
 
+	* kaffe/kaffe/jni.c
+	(Kaffe_JavaVMInitArgs) default verifyMode set to noverify until
+	verifier multiple inheritence is implemented and circulation
+	errors are fixed.
+
+	You can still use kaffe with verification by passing the
+	-verifyremote or -verify flags to it.
+
+2003-08-14  Rob Gonzalez <rob@kaffe.org>
+
 	* kaffe/kaffe/lookup.c
 	(getMethodSignatureClass) change
 	assert(class->state >= CSTATE_LINKED);
