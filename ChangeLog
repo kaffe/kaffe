@@ -1,5 +1,13 @@
 2004-12-19  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c,
+	  kaffe/kaffevm/systems/unix-pthreads/signal.c,
+	  kaffe/kaffevm/systems/unix-pthreads/syscalls.c,
+	  kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	  Sparse NULL-constant fixes.
+
+2004-12-19  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/kaffevm/locks.c, kaffe/kaffevm/lookup.c,
 	  kaffe/kaffevm/object.c, kaffe/kaffevm/readClass.c,
 	  kaffe/kaffevm/reflect.c, kaffe/kaffevm/soft.c,

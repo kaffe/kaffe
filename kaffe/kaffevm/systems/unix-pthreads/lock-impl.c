@@ -50,7 +50,7 @@ clearBlockState(jthread_t cur, unsigned int newState)
    * This is needed for Darwin's pthreads.
    */
   if (cur->status == THREAD_KILL)
-    pthread_exit(0);
+    pthread_exit(NULL);
 }
 
 void
@@ -103,7 +103,7 @@ jcondvar_wait ( jcondvar* cv, jmutex *mux, jlong timeout )
   else
     {
       /* timeout is in millisecs, timeval in microsecs, and timespec in nanosecs */
-      gettimeofday( &now, 0);
+      gettimeofday( &now, NULL);
       abst.tv_sec = now.tv_sec + (timeout / 1000);
       if( abst.tv_sec < now.tv_sec )
 	{
