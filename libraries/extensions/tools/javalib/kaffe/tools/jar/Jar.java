@@ -15,13 +15,12 @@
 
 package kaffe.tools.jar;
 
-import kaffe.io.*;
-
 import java.io.*;
+import java.security.*;
 import java.util.*;
-import java.util.zip.*;
 import java.util.jar.*;
-
+import java.util.zip.*;
+import kaffe.io.*;
 
 public class Jar {
 
@@ -159,7 +158,7 @@ public class Jar {
 		    printUsage();
 		    exit(1);
 		}
-		
+
 		archive = argv[options_index++];
 		break;
 
@@ -179,7 +178,7 @@ public class Jar {
 		break;
 
 	    case 'M': // Do not create a Manifest file in the archive
-		
+
 		if (manifest != null) {
 		    printUsage();
 		    exit(1);
@@ -214,9 +213,9 @@ public class Jar {
 			printUsage();
 			exit(1);
 		    }
-		    
+
 		    i++;
-		    
+
 		    if (dir_changes == null) {
 			dir_changes = new String[files.length]; 
 		    }
@@ -252,7 +251,7 @@ public class Jar {
 
 
 	// Check to make sure the mode is compatible with the arguments
-	
+
 	switch (mode) {
 	case 'c':
 	    // When creating we must have at least on file argument
@@ -264,7 +263,7 @@ public class Jar {
 	    }
 
 	    break;
-	    
+
 	case 't':
 	    // Listing an archive can have 0 file arguments.
 
@@ -275,7 +274,7 @@ public class Jar {
 		printUsage();
 		exit(1);  
 	    }
-	    
+
 	    // If archive file name is given then make sure it exists
 
 	    if (archive != null) {
@@ -288,7 +287,7 @@ public class Jar {
 	    }
 
 	    break;
-	    
+
 	case 'x':
 	    // Extract from archive can have 0 file arguments.
 
@@ -304,7 +303,7 @@ public class Jar {
 	    }
 
 	    break;
-	    
+
 	case 'u':
 	    // Update of archive requires files to update
 	    // Update without an archive makes no sense.
@@ -325,7 +324,7 @@ public class Jar {
 	    }
 
 	    break;
-	    
+
 	default:
 	    System.out.println("One of the options -{ctxu} must be specified!");
 	    printUsage();
@@ -414,10 +413,6 @@ public class Jar {
 
     }
 
-
-
-
-
     // Create a table that will map argument file names to
     // fully qualified file names.
 
@@ -425,7 +420,7 @@ public class Jar {
     {
 
 	//final boolean debug = true;
-	
+
 	if (debug) {
 	    System.out.println("entered Jar.createFileLookupTable()");
 	    System.out.flush();
@@ -442,7 +437,7 @@ public class Jar {
 	File parent = null;
 	File tmp;
 
-	
+
 	// File existence requirements for each mode
 	// 'u': Files must exist.
 	// 'x': None
@@ -452,11 +447,11 @@ public class Jar {
 	boolean requireExistence = (mode == 'u' || mode == 'c');
 
 	boolean existenceError = false;
-	
+
 	absolute_files = new String[files.length];
 
 	for (int i = 0; i < files.length ; i++) {
-	    
+
 	    // At this point, make sure that any Windows
 	    // Style \ chars in the relative file names are
 	    // replaced with unix style / chars so that matching
@@ -473,11 +468,11 @@ public class Jar {
 	    // combine it with the -C argument
 
 	    tmp = new XPFile(files[i]);
-	    
+
 	    if (! tmp.isAbsolute()) {
 		tmp = new XPFile(parent,files[i]);
 	    }
-	    
+
 	    if (tmp.isAbsolute()) {
 		// Find and remove the first '/' in the short name
 		String name = files[i];
@@ -529,7 +524,7 @@ public class Jar {
 		    throw new RuntimeException("absolute file " +
 			          canon + " had no '/' chars in it");
 		}
-		
+
 		// gaurd against the case where / is at the end of the string
 		if ((index + 1) < canon.length()) {
 		    files[i] = canon.substring(index + 1);
@@ -542,13 +537,13 @@ public class Jar {
 
 		System.out.println("absolute_name is \"" +
 				   absolute_name + "\"");
-		
+
 		System.out.println("exists() is \"" + tmp.exists() + "\"");
-		
+
 		System.out.println("isDirectory() is \"" +
 				      tmp.isDirectory() + "\"");
 	    }
-	 
+
 	    if (requireExistence && tmp.exists() == false) {
 		existenceError = true;
 		// Non existant file error message
@@ -562,7 +557,7 @@ public class Jar {
 	if (existenceError) {
 	    // The JDK's jar will print each bad file name before
 	    // exiting so we do that too
-	    
+
 	    if (debug) {
 		System.out.println("calling exit() because of existence error");
 	    }
@@ -588,19 +583,19 @@ public class Jar {
 
 	ZipInputStream zin;
 	ZipEntry       entry;
-		
+
 	//final boolean debug = true;
 
 	if (debug) {
 	    System.out.println("opening archive \"" + archive + "\"");
 	}
-	
+
 	if (archive == null) {
 	    zin = new ZipInputStream(System.in);
 	} else {
 	    zin = new ZipInputStream(new XPFileInputStream(archive));
 	}
-	
+
 	try {
 	    while ((entry = zin.getNextEntry()) != null) { 
 		// close entry right after we open it so that
@@ -612,7 +607,7 @@ public class Jar {
 		// see if the current ZipEntry's name equals 
 		// the file we want to extract. If equal then
 		// print the name of the file to stdout.
-		
+
 		String entry_name = entry.getName();
 		boolean match = (shortnames == null);
 
@@ -634,7 +629,7 @@ public class Jar {
 			System.out.println("found match for \"" +
 					   entry_name + "\"");
 		    }
-		    
+
 		    if (verbose) {
 			// FORMAT for verbose jar output.
 			// 10 Wed Feb 10 01:42:40 CST 1999 data.txt
@@ -646,7 +641,7 @@ public class Jar {
 			int width = 6;
 
 			String info = String.valueOf(entry.getSize());
-						
+
 			if (info.length() > width) {
 			    vout.print(info);
 			} else {
@@ -661,7 +656,7 @@ public class Jar {
 			vout.print(' ');
 
 			Date date = new Date(entry.getTime());
-			
+
 			vout.print(date);
 
 			vout.print(' ');
@@ -687,25 +682,25 @@ public class Jar {
     {
 	ZipInputStream zin;
 	ZipEntry       entry;
-		
+
 	//final boolean debug = true;
 
 	if (debug) {
 	    System.out.println("opening archive \"" + archive + "\"");
 	}
-	
+
 	if (archive == null) {
 	    zin = new ZipInputStream(System.in);
 	} else {
 	    zin = new ZipInputStream(new XPFileInputStream(archive));
 	}
-	
+
 	try {
 	    while ((entry = zin.getNextEntry()) != null) { 
 		// see if the current ZipEntry's name equals 
 		// the file we want to extract. If equal then
 		// print the name of the file to stdout.
-		
+
 		String entry_name = entry.getName();
 		boolean match = (shortnames == null);
 		String longname = entry_name;
@@ -729,7 +724,7 @@ public class Jar {
 			System.out.println("found match for \"" +
 					   entry_name + "\"");
 		    }
-		    
+
 		    if (verbose) {
 			// FORMAT for verbose jar output.
 			// Actually, there is a bug in the JDK jar
@@ -746,14 +741,14 @@ public class Jar {
 		        //   created: META-INF/
 			// extracted: META-INF/MANIFEST.MF
 
-			
+
 			// print in at least 10 char wide field
 			// with right justification.
-			
+
 			int width = 10;
-			
+
 			String info;
-			
+
 			if (entry.isDirectory()) {
 			    info = "created";
 			} else {
@@ -763,7 +758,7 @@ public class Jar {
 				info = "inflated";
 			    }
 			}
-			
+
 			if (info.length() > width) {
 			    vout.print(info);
 			} else {
@@ -773,18 +768,18 @@ public class Jar {
 			    }
 			    vout.print(info);
 			}
-			
-			
+
+
 			vout.print(':');
 			vout.print(' ');
-			
+
 			vout.println(entry_name);
-			
+
 		    }
 
 		    // Now Extract the entry.
 
-   
+
 		    if (entry.isDirectory()) {
 			// If the entry is a directory then
 			// we can just create that directory
@@ -797,20 +792,20 @@ public class Jar {
 
 			continue;
 		    }
-		    
+
 
 		    // If it is in a directory that does
 		    // not exist we will need to create it.
-		    
+
 		    ensureParentsExist(longname);
 
 		    if (debug) {
 			System.out.println("opening output file \"" +
 					   longname + "\"");
 		    }
-		    
+
 		    XPFileOutputStream fos = new XPFileOutputStream(longname);
-		    
+
 		    try {
 			readwriteStreams(zin, fos);
 		    } finally {
@@ -855,7 +850,7 @@ public class Jar {
 	    vout = System.err;
 	} else {	    
 	    // FIXME : test buffering (do we need it, would it help?)
-	    
+
 	    //out = new BufferedOutputStream(new XPFileOutputStream(archive));
 
 	    out = new XPFileOutputStream(archive);
@@ -866,17 +861,13 @@ public class Jar {
 
 	try {
 
-
 	// If there is a manifest file that needs to be added to the jar
 	// then we need to create it
-	
-
-	// FIXME : manifest in jar file is disabled!
 
 	if (create_manifest) {
 	    // generic type so that it will work in JDK1.1 with -M option
 	    Manifest jar_manifest;
-	    
+
 	    if (manifest == null) {
 		// Use default manifest
 
@@ -890,18 +881,72 @@ public class Jar {
 		    manifest_in =
 		        new BufferedInputStream(
 			    new XPFileInputStream(manifest) );
-		    
+
 		    jar_manifest = new Manifest(manifest_in);
-		    
+
 		} finally {
 		    if (manifest_in != null)
 			manifest_in.close();
 		}
 	    }
 
+	    // Set manifest version
+	    Attributes mainAttr = jar_manifest.getMainAttributes();
+	    mainAttr.put(Attributes.Name.MANIFEST_VERSION, "1.0");
+
+	    // Checksum all files
+	    for (int i=0; i < longnames.length ; i++) {
+		String[] algs = new String[] { "MD5", "SHA" };
+	    	XPFile infile = new XPFile(longnames[i]);
+		String name = shortnames[i];
+
+		// Skip directories
+		if (!infile.isFile()) {
+		    continue;
+		}
+
+		// Set up attributes for this file
+		Attributes attr = jar_manifest.getAttributes(name);
+		if (attr == null) {
+		    attr = new Attributes();
+		    jar_manifest.getEntries().put(name, attr);
+		}
+		attr.putValue("Name", name);
+
+		// Compute hash values
+		StringBuffer alglist = new StringBuffer();
+		for (int j = 0; j < algs.length; j++) {
+		    DigestInputStream dis;
+		    try {
+			dis = new DigestInputStream(
+			    new BufferedInputStream(
+			      new XPFileInputStream(infile)),
+			    MessageDigest.getInstance(algs[j]));
+		    } catch (NoSuchAlgorithmException e) {
+			continue;
+		    }
+		    byte[] buf = new byte[1024];
+		    while (dis.read(buf, 0, buf.length) != -1);
+		    byte[] digest = dis.getMessageDigest().digest();
+		    attr.putValue(algs[j] + "-Digest", "[base64 goes here]");
+		    if (alglist.length() != 0) {
+			alglist.append(' ');
+		    }
+		    alglist.append(algs[j]);
+		}
+		if (alglist.length() > 0) {
+		    attr.putValue("Digest-Algorithms", alglist.toString());
+		}
+	    }
+
+	    if (debug) {
+		System.out.println("------BEGIN Manifest contents");
+		jar_manifest.write(System.out);
+		System.out.println("------END Manifest contents");
+	    }
+
 	    jos = new JarOutputStream(out, jar_manifest);
 
-	    
 	    if (verbose) {
 		// added manifest		
 		vout.println("added manifest");
@@ -920,7 +965,7 @@ public class Jar {
 	for (int i=0; i < shortnames.length ; i++) {
 
 	    XPFile infile = new XPFile(longnames[i]);
-	    
+
 	    if (infile.isFile()) {
 		// add a regular file to the archive
 		addEntry(jos, shortnames[i], infile);
@@ -929,8 +974,8 @@ public class Jar {
 		addEntryDir(jos, shortnames[i], infile);
 	    }
 	}
-	
-	
+
+
 	} finally {
 	    if (jos != null)
 		jos.close();
@@ -938,13 +983,10 @@ public class Jar {
 		out.close();	    
 	}
     }
-    
-    
-    
-    
+
     // This is a helper method that adds a single entry to an archive
     // the entry can be a file or a directory.
-    
+
     void addEntry(ZipOutputStream zos, String entryname, XPFile entryfile)
     	throws IOException
     {
@@ -957,15 +999,15 @@ public class Jar {
 	if (archive != null) {
 	    XPFile tmp1 = new XPFile(new XPFile(archive).getCanonicalPath());
 	    XPFile tmp2 = new XPFile(entryfile.getCanonicalPath());
-		
+
 	    if (debug) {
 		System.out.println("archive file is " + archive);
 		System.out.println("entry file is " + entryfile);
-	
+
 		System.out.println("archiveC file is " + tmp1);
 		System.out.println("entryC file is " + tmp2);
 	    }
-	    
+
 	    if (tmp1.equals(tmp2)) {
 		if (debug) {
 		    System.out.println("avoided adding the archive file");
@@ -974,128 +1016,62 @@ public class Jar {
 	    }
 	}
 
-	// Make sure the entryname ends with a / if it is a directory
+	// Should not be a directory
 
 	if (entryfile.isDirectory()) {
-	    // Make sure the entryname ends with a /
-	    // if it is a directory
-	    	    
-	    if (entryname.length() == 0) {
-		// Something is very wrong here.
-		throw new RuntimeException("entryname was empty");
-	    }
-	    
-	    if (entryname.charAt( entryname.length() - 1 ) != '/') {
-		entryname = entryname + '/';
-	    }
+	    throw new Error("internal error");
 	}
-	
 
 	ZipEntry ze = new ZipEntry(entryname);
+	long entryfile_length = entryfile.length();
 
-	long entryfile_length;
-
-	// directory entries have a length of 0
-	if (entryfile.isDirectory()) {
-	    entryfile_length = 0;
-	} else {
-	    entryfile_length = entryfile.length();
-	}
-
+	// Set some file attributes
 	if (compression) {
 	    ze.setMethod(ZipEntry.DEFLATED); // compressed entry
 	} else {
 	    ze.setMethod(ZipEntry.STORED);   // uncompressed entry
+	    ze.setSize(entryfile_length);
 
-	    ze.setSize( entryfile_length );
-
-	    ze.setCrc( 0 ); // ?? HACK!
-	}
-	
-	zos.putNextEntry(ze);
-	
-	
-	if (debug) {
-	    if (! entryfile.isDirectory()) {
-		System.out.println("opening input file \"" +
-			       entryfile + "\"");
-	    }
-	}
-	
-	if (verbose) {
-	    // adding: file1 (in=16) (out=18) (deflated -12%)
-	    
-	    vout.print("adding: " + entryname + " ");
-	    vout.print("(in=" + entryfile_length + ") ");
-	}
-
-	
-	// directory entries have a length of 0
-	
-	if (! entryfile.isDirectory()) {
-	    
+	    // Calculate the CRC for this file if uncompressed
+	    CRC32 crc = new CRC32();
 	    InputStream in = new XPFileInputStream(entryfile);
-	    
-	    // This is part of the ugly workaround for a design flaw
-	    // in the JDK zip API, for uncompressed entries we
-	    // are forced to calculate a CRC for the input stream
-	    CRC32 crc = null;
-	    
-	    if (! compression) {
-		crc = new CRC32();
-		in = new CheckedInputStream(in,crc);
-	    }
-
 	    try {
-		readwriteStreams(in, zos);
+		CheckedInputStream c = new CheckedInputStream(in, crc);
+		readwriteStreams(c, new OutputStream() {
+		    public void write(int b) {
+		    }
+		    public void write(byte[] buf, int off, int len) {
+		    }
+		});
 	    } finally {
 		in.close();
 	    }
-
-	    // ZIP design flaw workaround
-	    
-	    if (! compression) {
-		ze.setCrc(crc.getValue());
-	    }  
-	}	
-
-
-	// finish writing the entry to the stream
-	// this also lets us access the compressed size
-	// attribute of the current ZipEntry
-	
-	zos.closeEntry();
-	
-
-
-	// TEMP CHECK!
-	// If we are writing a directory entry then double
-	// check that we did not actually write any bytes to
-	// the stream. IF we did then something is wrong.
-
-	if (entryfile.isDirectory()) {
-	    long tmp;
-
-	    tmp = ze.getSize();
-	    if (tmp != 0) {
-		throw new RuntimeException(
-		    "ZipEntry.getSize() for directory was " + tmp +
-		    " it should have been 0");
-	    }
-	    
-	    tmp = ze.getCompressedSize();
-	    if (tmp != 0) {
-		throw new RuntimeException(
-		    "ZipEntry.getCompressedSize() for directory was " + tmp +
-		    " it should have been 0");
-	    }
+	    ze.setCrc(crc.getValue());
 	}
 
+	// Compress file and write it into the archive
+	if (debug) {
+	    System.out.println("opening input file \"" + entryfile + "\"");
+	}
+	zos.putNextEntry(ze);
+	if (verbose) {
+	    // adding: file1 (in=16) (out=18) (deflated -12%)
+	    vout.print("adding: " + entryname + " ");
+	    vout.print("(in=" + entryfile_length + ") ");
+	}
+	InputStream in = new XPFileInputStream(entryfile);
+	try {
+	    readwriteStreams(in, zos);
+	} finally {
+	    in.close();
+	}
+
+	zos.closeEntry();
 
 	if (verbose) {
-	    
+
 	    // Find compressed size of entry adter it has been added
-	    
+
 	    long unsize = ze.getSize();
 	    long csize = ze.getCompressedSize();
 
@@ -1103,19 +1079,14 @@ public class Jar {
 	    // if (unsize  > 0xffffffL) 
 	    // unsize += 0x80;  unsize >>= 8;
 	    // csize += 0x80; csize >>= 8;
-	    
+
 	    if (debug) {
 		System.out.println("uncompressed size was " + unsize + " " +
 				   "compressed size was " + csize);
 	    }
 
-	    if (entryfile.isDirectory()) {
-		unsize = 0;
-		csize = 0;
-	    }
-	    
 	    vout.print("(out=" + csize + ") ");
-	    
+
 	    int percent;
 
 	    if (unsize == csize) {
@@ -1144,11 +1115,9 @@ public class Jar {
 	}
     }
 
-
-
     // Recursively add directory entries to an archive. This includes
     // both directories and the files located in those directories.
-    
+
     void addEntryDir(ZipOutputStream zos, String entrydirname, XPFile entryfile)
 	throws IOException
     {
@@ -1161,17 +1130,13 @@ public class Jar {
 	if (debug) {
 	    System.out.println("finding files in the directory \"" +
 			       entryfile.getPath() + "\"");
-	    
+
 	    System.out.println("entrydirname is \"" + entrydirname + "\"");
 	}
 
-	
-	// add the directory entry to the zip file
-	addEntry(zos, entrydirname, entryfile);
 
 	// list all the files in the directory
 	String[] files = entryfile.list();
-	
 
 	for (int i=0; i < files.length ; i++) {
 	    String fname = files[i];
@@ -1182,13 +1147,13 @@ public class Jar {
 	    if (debug) {
 		System.out.println("files[" + i + "] is \"" +
 				   fname + "\"");
-		
+
 		System.out.println(relname + " is a " +
 				   (absfile.isFile() ? "File" : "Directory"));
 
 		System.out.println("relname is \"" + relname + "\"");
 	    }
-	    
+
 	    if (absfile.isFile()) {
 		addEntry(zos, relname, absfile);
 	    } else {
@@ -1213,13 +1178,13 @@ public class Jar {
 	    System.out.println("read/write buffer size is " +
 			       buffer.length + " bytes");
 	}
-	
+
 	while ((numRead = in.read(buffer,0,buffer.length)) != -1) {
 	    if (debug) {
 		System.out.println("read " + numRead +
 				   " bytes, writing ...");
 	    }
-	    
+
 	    out.write(buffer,0,numRead);
 	}	
     }
@@ -1233,12 +1198,12 @@ public class Jar {
     void ensureParentsExist(String name) {
 
 	//final boolean debug = true;
-	
+
 	if (debug) {	      
 	    System.out.println("making sure parent directory for \"" +
 			       name + "\" exists");
 	}
-	
+
 	File file = new XPFile(name);
 	String parentString = file.getParent();
 
@@ -1265,7 +1230,7 @@ public class Jar {
 	System.out.println("compression is \"" + compression + "\"");
 	System.out.println("verbose is \"" + verbose + "\"");
 	System.out.println("mode is \"" + mode + "\"");
-	
+
 
 	if (files == null) {
 	    System.out.println("no files");
@@ -1277,7 +1242,7 @@ public class Jar {
 	    }
 	}
 
-	    
+
 	if (dir_changes == null) {
 	    System.out.println("no dir changes");
 	} else {
@@ -1321,7 +1286,7 @@ public class Jar {
     // If no manifest should be added to an archive this is false
 
     boolean create_manifest = true;
-    
+
 
     // The file name of the archive, null if none was given with -f
 
@@ -1332,14 +1297,14 @@ public class Jar {
 
     String[] files;
     String[] absolute_files;
-    
+
     // non null directory change name, cd is done at i'th index in files
 
     String[] dir_changes;
 
 
     // True if we are in verbose output mode
-    
+
     boolean verbose = false;
 
 
@@ -1359,7 +1324,7 @@ public class Jar {
     // Size of read write buffers we will use
 
     final int bufferSize = 8 * 1024;
-    
+
     // The actual read write buffer
 
     final byte[] buffer = new byte[bufferSize];
