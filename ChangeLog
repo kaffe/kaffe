@@ -1,3 +1,73 @@
+2004-12-03  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/awt/classpath-gtk/classpath/.cvsignore,
+	libraries/clib/awt/classpath-gtk/classpath/Makefile.am,
+	libraries/clib/awt/classpath-gtk/classpath/Makefile.in,
+	libraries/clib/awt/classpath-gtk/classpath/jcl.c,
+	libraries/clib/awt/classpath-gtk/classpath/jcl.h,
+	libraries/clib/awt/classpath-gtk/classpath/jnilink.c,
+	libraries/clib/awt/classpath-gtk/classpath/jnilink.h,
+	libraries/clib/awt/classpath-gtk/classpath/native_state.c,
+	libraries/clib/awt/classpath-gtk/classpath/native_state.h,
+	libraries/clib/awt/classpath-gtk/classpath/primlib.c,
+	libraries/clib/awt/classpath-gtk/classpath/primlib.h:
+	Removed.
+
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkImagePainter.c,	
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphics.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkComponentPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkFramePeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkImage.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkImagePainter.java,
+	libraries/javalib/java/applet/Applet.java,
+	libraries/javalib/java/awt/Component.java,
+	libraries/javalib/java/awt/image/MemoryImageSource.java:
+	Resynced with GNU Classpath.
+	
+	2004-12-01  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GdkGraphics.java (drawImage variants):
+        Update image observer.
+        * gnu/java/awt/peer/gtk/GtkComponentPeer.java (createImage):
+        Start image production.
+        * gnu/java/awt/peer/gtk/GtkFramePeer.java (setMenuBar): Protect
+        against negative menu bar widths.
+        (setBounds): Likewise.
+        (postConfigureEvent): Likewise.
+        * gnu/java/awt/peer/gtk/GtkImage.java (imageComplete): Don't
+        remove consumer unless only a single frame has completed.
+        * gnu/java/awt/peer/gtk/GtkImagePainter.java (GtkImagePainter):
+        Add observer parameter.
+        (setPixels): Update image observer.
+        (imageComplete): Likewise.
+        * java/applet/Applet.java (width): New field.
+        (height): Likewise.
+        (setStub): Set size if width or height field has been set.
+        (resize): If stub is null save width and height values.
+        * java/awt/Component.java (reshape): Protect against null
+        parent.
+        * java/awt/image/MemoryImageSource.java
+        (MemoryImageSource(int,int,ColorModel,byte[],int,int)):
+        Document.
+        (MemoryImageSource(int,int,ColorModel,int[],int,int)):
+        Likewise.
+        (MemoryImageSource(int,int,ColorModel,byte[],int,int,Hashtable)):
+        Reference pixel array directly, rather than creating a local
+        copy.
+        (MemoryImageSource(int,int,ColorModel,int[],int,int,Hashtable)):
+        Likewise.
+        (newPixels(int,int,int,int)): Fix for loop and array copy
+        bounds.
+        (newPixels(int,int,int,int,boolean)): Likewise.
+        (startProduction): If animated call imageComplete with
+        SINGLEFRAME.
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c: Uncomment
+        gdk_flush lines.
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImagePainter.c
+        (drawPixels): Return if g is null or g->drawable is not a gdk
+        drawable.
+
 2004-12-03  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/javalib/java/io/ObjectInputStream.java

@@ -148,6 +148,12 @@ Java_gnu_java_awt_peer_gtk_GtkImagePainter_drawPixels
 
   gdk_threads_enter ();
 
+  if (!g || !GDK_IS_DRAWABLE (g->drawable))
+    {
+      gdk_threads_leave ();
+      return;
+    }
+
   gdk_draw_rgb_image (g->drawable,
 		      g->gc,
 		      x + g->x_offset, 

@@ -127,15 +127,6 @@ public class GdkGraphics extends Graphics
     return new GdkGraphics (this);
   }
 
-//    public Graphics create (int x, int y, int width, int height)
-//    {
-//      GdkGraphics g = new GdkGraphics (this);
-//      g.translate (x, y);
-//      g.clipRect (0, 0, width, height);
-
-//      return g;
-//    }
-  
   native public void dispose ();
 
   native void copyPixmap (Graphics g, int x, int y, int width, int height);
@@ -152,13 +143,20 @@ public class GdkGraphics extends Graphics
 
     if (img instanceof GtkOffScreenImage)
       {
+        int width = img.getWidth (null);
+        int height = img.getHeight (null);
 	copyPixmap (img.getGraphics (), 
-		    x, y, img.getWidth (null), img.getHeight (null));
+		    x, y, width, height);
+        // FIXME: need to differentiate between SOMEBITS and FRAMEBITS.
+        if (observer != null)
+          observer.imageUpdate (img,
+                                ImageObserver.FRAMEBITS,
+                                x, y, width, height);
 	return true;
       }
 
     GtkImage image = (GtkImage) img;
-    new GtkImagePainter (image, this, x, y, -1, -1, bgcolor);
+    new GtkImagePainter (image, this, x, y, -1, -1, bgcolor, observer);
     return image.isLoaded ();
   }
 
@@ -191,11 +189,16 @@ public class GdkGraphics extends Graphics
         copyAndScalePixmap (img.getGraphics (), false, false,
                             0, 0, img.getWidth (null), img.getHeight (null), 
                             x, y, width, height);
+        // FIXME: need to differentiate between SOMEBITS and FRAMEBITS.
+        if (observer != null)
+          observer.imageUpdate (img,
+                                ImageObserver.FRAMEBITS,
+                                x, y, width, height);
         return true;
       }
 
     GtkImage image = (GtkImage) img;
-    new GtkImagePainter (image, this, x, y, width, height, bgcolor);
+    new GtkImagePainter (image, this, x, y, width, height, bgcolor, observer);
     return image.isLoaded ();
   }
 
@@ -275,12 +278,18 @@ public class GdkGraphics extends Graphics
         copyAndScalePixmap (img.getGraphics (), x_flip, y_flip,
                             sx_start, sy_start, s_width, s_height, 
                             dx_start, dy_start, d_width, d_height);
+
+        // FIXME: need to differentiate between SOMEBITS and FRAMEBITS.
+        if (observer != null)
+          observer.imageUpdate (img,
+                                ImageObserver.FRAMEBITS,
+                                dx_start, dy_start, d_width, d_height);
         return true;
       }
 
     GtkImage image = (GtkImage) img;
     new GtkImagePainter (image, this, dx1, dy1, dx2, dy2, 
-			 sx1, sy1, sx2, sy2, bgcolor);
+			 sx1, sy1, sx2, sy2, bgcolor, observer);
     return image.isLoaded ();
   }
 

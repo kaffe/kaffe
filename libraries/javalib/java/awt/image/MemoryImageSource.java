@@ -52,8 +52,16 @@ public class MemoryImageSource implements ImageProducer
     private Vector consumers = new Vector();
 
     /**
-       Constructs an ImageProducer from memory
-    */
+     * Construct an image producer that reads image data from a byte
+     * array.
+     *
+     * @param w width of image
+     * @param h height of image
+     * @param cm the color model used to represent pixel values
+     * @param pix a byte array of pixel values
+     * @param off the offset into the array at which the first pixel is stored
+     * @param scan the number of array elements that represents a single pixel row
+     */
     public MemoryImageSource(int w, int h, ColorModel cm,
 			     byte pix[], int off, int scan)
     {
@@ -73,12 +81,19 @@ public class MemoryImageSource implements ImageProducer
 	scansize = scan;
 	this.props = props;
 	int max = (( scansize > width ) ? scansize : width );
-	pixelb = new byte[ max  * height ];
-	System.arraycopy( pix, 0, pixelb, 0, max * height );
+	pixelb = pix;
     }
     /**
-       Constructs an ImageProducer from memory
-    */
+     * Construct an image producer that reads image data from an
+     * integer array.
+     *
+     * @param w width of image
+     * @param h height of image
+     * @param cm the color model used to represent pixel values
+     * @param pix an integer array of pixel values
+     * @param off the offset into the array at which the first pixel is stored
+     * @param scan the number of array elements that represents a single pixel row
+     */
     public MemoryImageSource(int w, int h, ColorModel cm,
 			     int pix[], int off, int scan)
     {
@@ -99,8 +114,7 @@ public class MemoryImageSource implements ImageProducer
 	scansize = scan;
 	this.props = props;
 	int max = (( scansize > width ) ? scansize : width );
-	pixeli = new int[ max  * height ];
-	System.arraycopy( pix, 0, pixeli, 0, max * height );
+	pixeli = pix;
     }
     /**
        Constructs an ImageProducer from memory using the default RGB ColorModel
@@ -165,7 +179,10 @@ public class MemoryImageSource implements ImageProducer
 	for(int i = 0; i < list.size(); i++) {
 	    ic = (ImageConsumer) list.elementAt(i);
 	    sendPicture( ic );
-	    ic.imageComplete( ImageConsumer.STATICIMAGEDONE );
+            if (animated)
+              ic.imageComplete( ImageConsumer.SINGLEFRAME );
+            else
+              ic.imageComplete( ImageConsumer.STATICIMAGEDONE );
 	}	
     }
 
@@ -215,7 +232,7 @@ public class MemoryImageSource implements ImageProducer
 			ic = (ImageConsumer) list.elementAt(i);
 			sendPicture( ic );
 			ic.imageComplete( ImageConsumer.SINGLEFRAME );
-		}	
+		    }	
 	    }
     }
 
@@ -259,13 +276,14 @@ public class MemoryImageSource implements ImageProducer
 			    }
 			    if( pixeli != null ) {
 				int[] pixelbuf = new int[w * h];
-				for (int row = y; row < h; row++)
-				    System.arraycopy(pixeli, row * scansize + x + offset, pixelbuf, row * w, w);
+				for (int row = y; row < y + h; row++)
+				    System.arraycopy(pixeli, row * scansize + x + offset, pixelbuf, 0, w * h);
 				ic.setPixels( x, y, w, h, cm, pixelbuf, 0, w );
 			    } else {
 				byte[] pixelbuf = new byte[w * h];
-				for (int row = y; row < h; row++)
-				    System.arraycopy(pixelb, row * scansize + x + offset, pixelbuf, row * w, w);
+				for (int row = y; row < y + h; row++)
+                                  System.arraycopy(pixelb, row * scansize + x + offset, pixelbuf, 0, w * h);
+
 				ic.setPixels( x, y, w, h, cm, pixelbuf, 0, w );
 			    }
 			    ic.imageComplete( ImageConsumer.SINGLEFRAME );
@@ -304,13 +322,13 @@ public class MemoryImageSource implements ImageProducer
 			    }
 			    if( pixeli != null ) {
 				int[] pixelbuf = new int[w * h];
-				for (int row = y; row < h; row++)
-				    System.arraycopy(pixeli, row * scansize + x + offset, pixelbuf, row * w, w);
+				for (int row = y; row < y + h; row++)
+				    System.arraycopy(pixeli, row * scansize + x + offset, pixelbuf, 0, w * h);
 				ic.setPixels( x, y, w, h, cm, pixelbuf, 0, w );
 			    } else {
 				byte[] pixelbuf = new byte[w * h];
-				for (int row = y; row < h; row++)
-				    System.arraycopy(pixelb, row * scansize + x + offset, pixelbuf, row * w, w);
+				for (int row = y; row < y + h; row++)
+				    System.arraycopy(pixelb, row * scansize + x + offset, pixelbuf, 0, w * h);
 				ic.setPixels( x, y, w, h, cm, pixelbuf, 0, w );
 			    }
 			    if( framenotify == true )

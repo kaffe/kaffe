@@ -150,6 +150,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_dispose
 {
   struct graphics *g;
 
+  
   g = (struct graphics *) NSA_DEL_PTR (env, obj);
 
   if (!g) return;		/* dispose has been called more than once */
@@ -222,7 +223,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_drawString
   pango_layout_iter_free (iter);
   pango_layout_set_text (pfont->layout, "", -1);
 
-  /* gdk_flush (); */
+  gdk_flush ();
   gdk_threads_leave ();
 
   (*env)->ReleaseStringUTFChars (env, str, cstr);
@@ -240,7 +241,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_drawLine
   gdk_draw_line (g->drawable, g->gc, 
 		 x + g->x_offset, y + g->y_offset, 
 		 x2 + g->x_offset, y2 + g->y_offset);
-  /* gdk_flush (); */
+  gdk_flush ();
   gdk_threads_leave ();
 }
 
@@ -256,7 +257,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_fillRect
 
   gdk_draw_rectangle (g->drawable, g->gc, TRUE, 
 		      x + g->x_offset, y + g->y_offset, width, height);
-  /* gdk_flush (); */
+  gdk_flush ();
   gdk_threads_leave ();
 }
 
@@ -271,7 +272,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_drawRect
   gdk_threads_enter ();
   gdk_draw_rectangle (g->drawable, g->gc, FALSE, 
 		      x + g->x_offset, y + g->y_offset, width, height);
-  /* gdk_flush (); */
+  gdk_flush ();
   gdk_threads_leave ();
 }
 
@@ -291,7 +292,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_copyArea
 			(GdkWindow *)g->drawable,
 			x + g->x_offset, y + g->y_offset,
 			width, height);
-  /* gdk_flush (); */
+  gdk_flush ();
   gdk_threads_leave ();
 }
 
@@ -312,7 +313,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_copyPixmap
 			(GdkWindow *)g2->drawable,
 			0 + g2->x_offset, 0 + g2->y_offset, 
 			width, height);
-  /* gdk_flush (); */
+  gdk_flush ();
   gdk_threads_leave ();
 }
 
@@ -503,7 +504,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_drawArc
   gdk_draw_arc (g->drawable, g->gc, FALSE, 
 		x + g->x_offset, y + g->y_offset, 
 		width, height, angle1 << 6, angle2 << 6);
-  /* gdk_flush (); */
+  gdk_flush ();
   gdk_threads_leave ();
 }  
 
@@ -548,7 +549,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_drawPolyline
 
   gdk_threads_enter ();
   gdk_draw_lines (g->drawable, g->gc, points, npoints);
-  /* gdk_flush (); */
+  gdk_flush ();
   gdk_threads_leave ();
 
   g_free (points);
@@ -573,7 +574,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_drawPolygon
 
   gdk_threads_enter ();
   gdk_draw_lines (g->drawable, g->gc, points, npoints);
-  /* gdk_flush (); */
+  gdk_flush ();
   gdk_threads_leave ();
 
   g_free (points);
@@ -592,7 +593,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_fillPolygon
 			     g->x_offset, g->y_offset);
   gdk_threads_enter ();
   gdk_draw_polygon (g->drawable, g->gc, TRUE, points, npoints);
-  /* gdk_flush (); */
+  gdk_flush ();
   gdk_threads_leave ();
 
   g_free (points);
@@ -611,7 +612,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_fillArc
   gdk_draw_arc (g->drawable, g->gc, TRUE, 
 		x + g->x_offset, y + g->y_offset, 
 		width, height, angle1 << 6, angle2 << 6);
-  /* gdk_flush (); */
+  gdk_flush ();
   gdk_threads_leave ();
 }  
 
@@ -627,7 +628,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_drawOval
   gdk_draw_arc (g->drawable, g->gc, FALSE, 
 		x + g->x_offset, y + g->y_offset, 
 		width, height, 0, 23040);
-  /* gdk_flush (); */
+  gdk_flush ();
   gdk_threads_leave ();
 }  
 
@@ -643,7 +644,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_fillOval
   gdk_draw_arc (g->drawable, g->gc, TRUE, 
 		x + g->x_offset, y + g->y_offset, 
 		width, height, 0, 23040);
-  /* gdk_flush (); */
+  gdk_flush ();
   gdk_threads_leave ();
 }
 

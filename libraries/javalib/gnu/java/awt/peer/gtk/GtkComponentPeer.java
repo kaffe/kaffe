@@ -200,9 +200,11 @@ public class GtkComponentPeer extends GtkGenericPeer
     return i.checkImage ();
   }
 
-  public Image createImage (ImageProducer producer)
+  public Image createImage (ImageProducer producer) 
   {
-    return new GtkImage (producer, null);
+    GtkImage image = new GtkImage (producer, null);
+    producer.startProduction (image);
+    return image;
   }
 
   public Image createImage (int width, int height)
@@ -390,8 +392,8 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   public void requestFocus ()
   {
-    gtkWidgetRequestFocus ();
-    postFocusEvent (FocusEvent.FOCUS_GAINED, false);
+    gtkWidgetRequestFocus();
+    postFocusEvent(FocusEvent.FOCUS_GAINED, false);
   }
 
   public void reshape (int x, int y, int width, int height) 

@@ -1380,7 +1380,7 @@ public abstract class Component
             shouldRepaintSelf = parentBounds.intersects(newBounds);
           }
 
-        if (shouldRepaintParent)
+        if (shouldRepaintParent && parent != null)
           parent.repaint(oldx, oldy, oldwidth, oldheight);
         if (shouldRepaintSelf)
           repaint();
