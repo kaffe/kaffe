@@ -629,6 +629,7 @@ compiler."
     prevarg=
     release=
     rpath=
+    xrpath=
     perm_rpath=
     temp_rpath=
     vinfo=
@@ -691,6 +692,11 @@ compiler."
 	  ;;
 	rpath)
 	  rpath="$rpath $arg"
+	  prev=
+	  continue
+	  ;;
+	xrpath)
+	  xrpath="$xrpath $arg"
 	  prev=
 	  continue
 	  ;;
@@ -818,6 +824,16 @@ compiler."
 	continue
 	;;
 
+      -R)
+	prev=xrpath
+	continue
+	;;
+
+      -R*)
+        xrpath="$xrpath "`echo "X$arg" | $Xsed -e 's/^-R//'`
+	continue
+	;;
+
       -static)
 	# If we have no pic_flag, then this is the same as -all-static.
 	if test -z "$pic_flag" && test -n "$link_static_flag"; then
@@ -918,6 +934,18 @@ compiler."
 	  else
 	    dir="$dir/$objdir"
 	  fi
+	fi
+
+	if test -n "$dependency_libs"; then
+	  # Extract -R from dependency_libs
+	  temp_deplibs=
+	  for arg in $dependency_libs; do
+	    case "$arg" in
+	    -R*) xrpath="$xrpath "`echo "X$arg" | $Xsed -e 's/^-R//'`;;
+	    *) temp_deplibs="$temp_deplibs $arg";;
+	    esac
+	  done
+	  dependency_libs="$temp_deplibs"
 	fi
 
 	if test -z "$libdir"; then
@@ -1170,6 +1198,10 @@ compiler."
 	$echo "$modename: warning: \`-rpath' is ignored for archives" 1>&2
       fi
 
+      if test -n "$xrpath"; then
+	$echo "$modename: warning: \`-R' is ignored for archives" 1>&2
+      fi
+
       if test -n "$vinfo"; then
 	$echo "$modename: warning: \`-version-info' is ignored for archives" 1>&2
       fi
@@ -1209,6 +1241,14 @@ compiler."
 	fi
 	;;
       esac
+
+      if test -n "$xrpath"; then
+        temp_xrpath=
+        for libdir in $xrpath; do
+	  temp_xrpath="$temp_xrpath -R$libdir"
+	done
+	deplibs="$temp_xrpath $deplibs"
+      fi
 
       output_objdir=`$echo "X$output" | $Xsed -e 's%/[^/]*$%%'`
       if test "X$output_objdir" = "X$output"; then
@@ -1694,6 +1734,10 @@ EOF
 	$echo "$modename: warning: \`-rpath' is ignored for objects" 1>&2
       fi
 
+      if test -n "$xrpath"; then
+	$echo "$modename: warning: \`-R' is ignored for objects" 1>&2
+      fi
+
       if test -n "$vinfo"; then
 	$echo "$modename: warning: \`-version-info' is ignored for objects" 1>&2
       fi
@@ -1777,9 +1821,9 @@ EOF
 	$echo "$modename: warning: \`-release' is ignored for programs" 1>&2
       fi
 
-      if test -n "$rpath"; then
+      if test -n "$rpath$xrpath"; then
 	# If the user specified any rpath flags, then add them.
-	for libdir in $rpath; do
+	for libdir in $rpath $xrpath; do
 	  if test -n "$hardcode_libdir_flag_spec"; then
 	    if test -n "$hardcode_libdir_separator"; then
 	      if test -z "$hardcode_libdirs"; then
@@ -1971,7 +2015,9 @@ dld_preloaded_symbols[] =
 	# We keep going just in case the user didn't refer to
 	# dld_preloaded_symbols.  The linker will fail if global_symbol_pipe
 	# really was required.
-	$echo "$modename: not configured to extract global symbols from dlpreopened files" 1>&2
+	if test -n "$dlfiles$dlprefiles"; then
+	  $echo "$modename: not configured to extract global symbols from dlpreopened files" 1>&2
+	fi
 
 	# Nullify the symbol file.
 	compile_command=`$echo "X$compile_command" | $Xsed -e "s% @SYMFILE@%%"`
@@ -2754,10 +2800,10 @@ libdir='$install_libdir'\
       echo "   $libdir"
     done
     echo
-    echo "To link against installed libraries in a given directory, LIBDIR,"
-    echo "you must use the \`-LLIBDIR' flag during linking."
-    echo
-    echo " You will also need to do at least one of the following:"
+    echo "If you ever happen to want to link against installed libraries"
+    echo "in a given directory, LIBDIR, you must either use libtool, and"
+    echo "specify the full pathname of the library, or use \`-LLIBDIR'"
+    echo "flag during linking and do at least one of the following:"
     if test -n "$shlibpath_var"; then
       echo "   - add LIBDIR to the \`$shlibpath_var' environment variable"
       echo "     during execution"
@@ -3142,6 +3188,7 @@ The following components of LINK-COMMAND are treated specially:
   -o OUTPUT-FILE    create OUTPUT-FILE from the specified objects
   -release RELEASE  specify package release information
   -rpath LIBDIR     the created library will eventually be installed in LIBDIR
+  -R[ ]LIBDIR       add LIBDIR to the runtime path of programs and libraries
   -static           do not do any dynamic linking of libtool libraries
   -version-info CURRENT[:REVISION[:AGE]]
 		    specify library version info [each variable defaults to 0]
@@ -3152,8 +3199,9 @@ Every other argument is treated as a filename.  Files ending in \`.la' are
 treated as uninstalled libtool libraries, other files are standard or library
 object files.
 
-If the OUTPUT-FILE ends in \`.la', then a libtool library is created, only
-library objects (\`.lo' files) may be specified, and \`-rpath' is required.
+If the OUTPUT-FILE ends in \`.la', then a libtool library is created,
+only library objects (\`.lo' files) may be specified, and \`-rpath' is
+required, except when creating a convenience library.
 
 If OUTPUT-FILE ends in \`.a' or \`.lib', then a standard library is created
 using \`ar' and \`ranlib', or on Windows using \`lib'.

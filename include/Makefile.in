@@ -156,8 +156,7 @@ stamp-h2: $(srcdir)/jtypes.h.in $(top_builddir)/config.status
 	cd $(top_builddir) \
 	  && CONFIG_FILES= CONFIG_HEADERS=include/jtypes.h \
 	     $(SHELL) ./config.status
-	@(date || ls -l jtypes.h || echo timestamp) \
-		> stamp-h2 2> /dev/null
+	@echo timestamp > stamp-h2 2> /dev/null
 $(srcdir)/jtypes.h.in: $(srcdir)/stamp-h2.in
 	@if test ! -f $@; then \
 		rm -f $(srcdir)/stamp-h2.in; \
@@ -165,8 +164,7 @@ $(srcdir)/jtypes.h.in: $(srcdir)/stamp-h2.in
 	else :; fi
 $(srcdir)/stamp-h2.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOHEADER)
-	@(date || ls -l $(srcdir)/jtypes.h.in || echo timestamp) \
-		> $(srcdir)/stamp-h2.in 2> /dev/null
+	@echo timestamp > $(srcdir)/stamp-h2.in 2> /dev/null
 
 mostlyclean-hdr:
 
@@ -238,7 +236,7 @@ distdir: $(DISTFILES)
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
-	    || cp -p $$d/$$file $(distdir)/$$file; \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
 info-am:

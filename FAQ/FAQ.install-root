@@ -27,25 +27,18 @@ this does two things:
 Setting an install root affects step #2 only -- not step #1.
 
 To set the install root directory to /tmp/kaffe-build, for example,
-add the "--with-installroot=/tmp/kaffe-build" argument to configure:
+add the "DESTDIR=/tmp/kaffe-build" argument to `make install':
 
-  $ ./configure --prefix=/usr/local --with-installroot=/tmp/kaffe-build
+  $ ./configure --prefix=/usr/local
   $ make
-  $ make install
+  $ make install DESTDIR=/tmp/kaffe-build
 
-If you do the above steps, then kaffe will still expect to live
-in /usr/local, but "make install" will install everything under
-/tmp/kaffe-build/usr/local instead of just /usr/local.
+If you do the above steps, then kaffe will still expect to live in
+/usr/local, but "make install" will install everything under
+/tmp/kaffe-build/usr/local instead of just /usr/local.  Note, however,
+that this may break libtool shared libraries on some platforms.
 
 Then you can tar up the /tmp/kaffe-build directory, take it to your
 target machine and install it, etc.
 
-Under FreeBSD, the variable $DESTDIR usually indicates the install
-root directory, so you might do this to insure that it gets used
-consistently with kaffe:
-
-  $ ./configure --prefix=/usr/local --with-installroot=$DESTDIR
-  $ make
-  $ make install
-
--Archie Cobbs <archie@whistle.com>
+-Archie Cobbs <archie@whistle.com>,  Alexandre Oliva <oliva@dcc.unicamp.br>

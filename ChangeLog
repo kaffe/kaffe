@@ -1,3 +1,14 @@
+Mon Jan 11 20:33:51 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* FAQ/FAQ.install-root: document that we now use DESTDIR
+	* FAQ/FAQ.automake: new snapshot
+	* */Makefile.in: rebuilt with new snapshot
+	* config/stamp-h1.in, include/stamp-h2.in: no longer contain
+	timestamps, to avoid CVS conflicts
+	* ltmain.sh: updated from libtool, to support -R
+	* configure.in (AWT_LIBS, X_LIBS): don't transform -R to -rpath
+	* configure: regen
+
 Mon Jan 11 14:24:48 1999  Archie Cobbs <archie@whistle.com>
 
 	* test/regresssion/TestScript{Thread}.in: jikes needs

@@ -365,7 +365,6 @@ dnl -------------------------------------------------------------------------
 
 dnl Checks for standard libraries
 
-AC_CHECK_LIB(c,printf)
 AC_CHECK_LIB(mw,_mwvalidcheckl)
 AC_CHECK_LIB(m,sin)
 
@@ -410,8 +409,6 @@ AC_PATH_XTRA
 if test x"$no_x" = x"yes"; then
   AWT_LIBS=
 else
-  AC_CHECK_LIBRARY(ipc,shmat,X_EXTRA_LIBS)
-
   OLIBS=$LIBS
   LIBS="$ZIP_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
   AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBS)
@@ -429,9 +426,7 @@ else
   fi
   dnl -R in X_PRE_LIBS should only be replaced with -rpath here,
   dnl otherwise configure tests that don't use libtool will fail
-  AWT_LIBS="$JPEG_LIBS $PNG_LIBS $GIF_LIBS"`dnl
-	echo " $X_LIBS" | sed 's/ -R */ -rpath /g' dnl
-	`" $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
+  AWT_LIBS="$JPEG_LIBS $PNG_LIBS $GIF_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
   AC_SUBST(AWT_LIBS)
 fi
 

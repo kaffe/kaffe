@@ -161,8 +161,7 @@ config/stamp-h1: $(srcdir)/config/config.h.in $(top_builddir)/config.status
 	cd $(top_builddir) \
 	  && CONFIG_FILES= CONFIG_HEADERS=config/config.h \
 	     $(SHELL) ./config.status
-	@(date || ls -l config/config.h || echo timestamp) \
-		> config/stamp-h1 2> /dev/null
+	@echo timestamp > config/stamp-h1 2> /dev/null
 $(srcdir)/config/config.h.in: $(srcdir)/config/stamp-h1.in
 	@if test ! -f $@; then \
 		rm -f $(srcdir)/config/stamp-h1.in; \
@@ -170,8 +169,7 @@ $(srcdir)/config/config.h.in: $(srcdir)/config/stamp-h1.in
 	else :; fi
 $(srcdir)/config/stamp-h1.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOHEADER)
-	@(date || ls -l $(srcdir)/config/config.h.in || echo timestamp) \
-		> $(srcdir)/config/stamp-h1.in 2> /dev/null
+	@echo timestamp > $(srcdir)/config/stamp-h1.in 2> /dev/null
 
 include/jtypes.h: include/stamp-h2
 	@if test ! -f $@; then \
@@ -182,8 +180,7 @@ include/stamp-h2: $(srcdir)/include/jtypes.h.in $(top_builddir)/config.status
 	cd $(top_builddir) \
 	  && CONFIG_FILES= CONFIG_HEADERS=include/jtypes.h \
 	     $(SHELL) ./config.status
-	@(date || ls -l include/jtypes.h || echo timestamp) \
-		> include/stamp-h2 2> /dev/null
+	@echo timestamp > include/stamp-h2 2> /dev/null
 $(srcdir)/include/jtypes.h.in: $(srcdir)/include/stamp-h2.in
 	@if test ! -f $@; then \
 		rm -f $(srcdir)/include/stamp-h2.in; \
@@ -191,8 +188,7 @@ $(srcdir)/include/jtypes.h.in: $(srcdir)/include/stamp-h2.in
 	else :; fi
 $(srcdir)/include/stamp-h2.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOHEADER)
-	@(date || ls -l $(srcdir)/include/jtypes.h.in || echo timestamp) \
-		> $(srcdir)/include/stamp-h2.in 2> /dev/null
+	@echo timestamp > $(srcdir)/include/stamp-h2.in 2> /dev/null
 
 mostlyclean-hdr:
 
@@ -343,7 +339,7 @@ distdir: $(DISTFILES)
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
-	    || cp -p $$d/$$file $(distdir)/$$file; \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
 	for subdir in $(SUBDIRS); do \

@@ -156,8 +156,7 @@ stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	cd $(top_builddir) \
 	  && CONFIG_FILES= CONFIG_HEADERS=config/config.h \
 	     $(SHELL) ./config.status
-	@(date || ls -l config.h || echo timestamp) \
-		> stamp-h1 2> /dev/null
+	@echo timestamp > stamp-h1 2> /dev/null
 $(srcdir)/config.h.in: $(srcdir)/stamp-h1.in
 	@if test ! -f $@; then \
 		rm -f $(srcdir)/stamp-h1.in; \
@@ -165,8 +164,7 @@ $(srcdir)/config.h.in: $(srcdir)/stamp-h1.in
 	else :; fi
 $(srcdir)/stamp-h1.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) acconfig.h
 	cd $(top_srcdir) && $(AUTOHEADER)
-	@(date || ls -l $(srcdir)/config.h.in || echo timestamp) \
-		> $(srcdir)/stamp-h1.in 2> /dev/null
+	@echo timestamp > $(srcdir)/stamp-h1.in 2> /dev/null
 
 mostlyclean-hdr:
 
@@ -246,7 +244,7 @@ distdir: $(DISTFILES)
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
-	    || cp -p $$d/$$file $(distdir)/$$file; \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
 info-am:

@@ -5,7 +5,7 @@ IMPORTANT NOTE:
 recent versions of autoconf and automake: autoconf 2.13 (just
 released) and automake 1.4 (to be released soon, currently available
 via CVS; a working snapshot is available at
-http://www.dcc.unicamp.br/~oliva/snapshots/kaffe/automake-1.3e.tar.gz).
+http://www.dcc.unicamp.br/~oliva/snapshots/kaffe/automake-1.4.tar.gz).
 automake is supposed to work with perl4, but it apparently doesn't,
 which means you probably need perl5 as well.
 

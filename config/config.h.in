@@ -370,9 +370,6 @@
 /* Define if you have the <zlib.h> header file.  */
 #undef HAVE_ZLIB_H
 
-/* Define if you have the c library (-lc).  */
-#undef HAVE_LIBC
-
 /* Define if you have the gcc library (-lgcc).  */
 #undef HAVE_LIBGCC
 
@@ -381,9 +378,6 @@
 
 /* Define if you have the gmp library (-lgmp).  */
 #undef HAVE_LIBGMP
-
-/* Define if you have the ipc library (-lipc).  */
-#undef HAVE_LIBIPC
 
 /* Define if you have the jpeg library (-ljpeg).  */
 #undef HAVE_LIBJPEG
