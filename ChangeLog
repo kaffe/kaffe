@@ -3,6 +3,9 @@ Sun Jul 19 19:54:21 1998  Archie Cobbs  <archie@whistle.com>
 	* kaffe/kaffevm/jni.c: fixed problem where JNI would signal
 	  out of bound if last array element was included.
 
+	* kaffe/kaffevm/jar.c: fixed problem with incorrectly locating
+	  file data inside JAR/ZIP files.  See cvs log entry for more expl.
+
 Sun Jul 19 19:31:07 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.h: fixed race 
