@@ -80,4 +80,9 @@ static inline rlim_t mdGetStackSize(void)
 }
 #endif
 
+#if defined(HAVE_SYS_SYSCTL_H)
+#define KAFFEMD_STACKBASE
+extern void *mdGetStackBase(void);
+#endif
+
 #endif

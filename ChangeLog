@@ -1,4 +1,15 @@
-2004-05-07  Guilhem Lavaux <guilhem@kaffe.org>
+2004-05-09 Guilhem Lavaux <guilhem@kaffe.org>
+
+	* ChangeLog: Fixed ChangeLog entry.
+
+	* config/i386/freebsd2/md.c, config/i386/freebsd2/md.h:
+	(mdGetStackBase) Use an alternate way to discover the stack base.
+
+	* configure.ac: Added a new header to check: sys/sysctl.h
+
+	* configure, config/config.h.in: Regenerated.
+
+2004-05-09 Guilhem Lavaux <guilhem@kaffe.org>
 
 	* config/i386/linux/md.c, config/i386/linux/md.h:
 	New machine dependent function mdGetStackBase(). KAFFEMD_STACKBASE
