@@ -141,7 +141,15 @@ SRCDIRS = kaffe
 class_DATA = $(CLASSFILE)
 
 tools_jar_SRCS = \
-	$(kaffe_tools_jar_SRCS)
+	$(kaffe_tools_compiler_SRCS) \
+	$(kaffe_tools_jar_SRCS) \
+	$(kaffe_tools_serialver_SRCS)
+
+kaffe_tools_compiler_SRCS = \
+	kaffe/tools/compiler/Compiler.java \
+	kaffe/tools/compiler/Compiler_default.java \
+	kaffe/tools/compiler/Compiler_jikes.java \
+	kaffe/tools/compiler/Compiler_pizza.java
 
 kaffe_tools_jar_SRCS = \
 	kaffe/tools/jar/Jar.java \
@@ -150,6 +158,9 @@ kaffe_tools_jar_SRCS = \
 	kaffe/tools/jar/XPFileOutputStream.java \
 	kaffe/tools/jar/XPFileReader.java \
 	kaffe/tools/jar/XPFileWriter.java
+
+kaffe_tools_serialver_SRCS = \
+	kaffe/tools/serialver/SerialVer.java
 
 
 EXTRA_DIST = $(class_DATA) $(tools_jar_SRCS)
@@ -206,7 +217,8 @@ distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 subdir = libraries/extensions/tools/javalib
 
 distdir: $(DISTFILES)
-	$(mkinstalldirs) $(distdir)/kaffe/tools/jar
+	$(mkinstalldirs) $(distdir)/kaffe/tools/compiler \
+	   $(distdir)/kaffe/tools/jar $(distdir)/kaffe/tools/serialver
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \

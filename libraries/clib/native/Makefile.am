@@ -23,6 +23,7 @@ LANG_SRCS = \
 		Math.c \
 		MemoryAdvice.c \
 		Object.c \
+		RMIHashes.c \
 		Runtime.c \
 		SecurityManager.c \
 		String.c \

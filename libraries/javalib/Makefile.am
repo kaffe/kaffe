@@ -709,6 +709,7 @@ kaffe_util_SRCS = \
 	kaffe/util/DoubleLinkedObject.java \
 	kaffe/util/IdentityHashtable.java \
 	kaffe/util/IntegerHashtable.java \
+	kaffe/util/LongHashtable.java \
 	kaffe/util/NotImplemented.java \
 	kaffe/util/NotImplementedReport.java \
 	kaffe/util/Ptr.java \

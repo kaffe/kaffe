@@ -40,7 +40,7 @@ private ObjectInputStream parent;
 class Input extends InputStream {
 
 private InputStream in;
-int    leftinblock;
+int leftinblock;
 
 Input(InputStream in) {
         this.in = in;

@@ -19,11 +19,14 @@ import java.lang.ClassNotFoundException;
 import java.lang.Thread;
 import java.lang.InterruptedException;
 import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.ClassLoader;
 import java.util.Vector;
 import java.util.Enumeration;
 import java.io.File;
 import java.io.InputStream;
+import java.io.FilterInputStream;
+import java.io.PrintStream;
 import java.net.URL;
 import kaffe.lang.ApplicationException;
 import kaffe.lang.ApplicationResource;
@@ -35,6 +38,10 @@ private String[] arguments;
 private Vector resources;
 private ResourceReader reader;
 private ApplicationResource initResource;
+private Thread tid;
+private Throwable exception;
+private int exitcode;
+private static boolean sysio;
 
 /**
  * create and start an application
@@ -94,10 +101,12 @@ public Application(String cname, String[] args, ApplicationResource res, Resourc
 		runMethod = clazz.getMethod("main", new Class[]{ args.getClass() });
 		arguments = args;
 
-		Thread tid = new Thread(null, this, cname);
+		tid = new Thread(null, this, cname);
 		if (res != null) {
-			add(this.initResource = res);
+			this.initResource = res;
+			add(res);
 		}
+		setupSystemIO();
 		tid.start();
 	}
 	catch (NoSuchMethodException e) {
@@ -115,8 +124,15 @@ public void run() {
 		runMethod.invoke(null, new Object[]{ arguments });
 	}
 	catch (Throwable e) {
-		/* We catch everything and just report it */
-		e.printStackTrace();
+		if (e instanceof InvocationTargetException) {
+			e = ((InvocationTargetException)e).getTargetException();
+		}
+		if (!(e instanceof ThreadDeath)) {
+			/* We catch everything and just report it */
+			e.printStackTrace();
+			exception = e;
+			exitcode = 1;
+		}
 	}
 
 	// if the application didn't add any other resources (threads or 
@@ -140,7 +156,7 @@ public static Application getApplication() {
 	Class[] classes = classStack0();
 	for (int i = 0; i < classes.length; i++) {
 		ClassLoader loader = classes[i].getClassLoader();
-//		System.out.println("Class: " + classes[i].toString() + ", loader: " + loader);
+		//System.out.println("Class: " + classes[i].toString() + ", loader: " + loader);
 		if (loader instanceof Application) {
 			return ((Application)loader);
 		}
@@ -189,6 +205,20 @@ public synchronized void remove(ApplicationResource res) {
 	}
 }
 
+private static synchronized void setupSystemIO() {
+	if (sysio == true) {
+		return;
+	}
+	try {
+		System.setIn(new FilterInputStream(System.in){ public void close() { } });
+		System.setOut(new PrintStream(System.out){ public void close() { flush(); } });
+		System.setErr(new PrintStream(System.err){ public void close() { flush(); } });
+		sysio = true;
+	}
+	catch (SecurityException _) {
+	}
+}
+
 /**
  * Terminate an application.  Terminate the threads then tidy any pending
  * resources.
@@ -198,9 +228,24 @@ public static boolean exit(int status) {
 	if (app == null) {
 		return (false);		// returning false causes VM to exit
 	}
+	app.exitcode = status;
 	app.freeAllResources();
 	return (true);
 }
+
+public int waitFor() throws InterruptedException {
+	tid.join();
+	return (exitcode);
+}
+
+public Throwable exitException() {
+	return (exception);
+}
+
+public int exitValue() {
+	return (exitcode);
+}
+
 
 /*************************************************************************/
 
@@ -228,11 +273,24 @@ public Class loadClass(String name, boolean resolve) throws ClassNotFoundExcepti
 
 	cls = findLoadedClass(name);	// already loaded
 	if (cls == null) {
-		try {
-			// try to load it via primordial classpath
-			cls = findSystemClass(name);	
-		} catch (ClassNotFoundException e) {
-		} catch (NoClassDefFoundError e) {
+		if (name.startsWith("java.") || name.startsWith("kaffe.")) {
+			try {
+				// try to load it via primordial classpath
+				cls = findSystemClass(name);	
+			} catch (ClassNotFoundException e) {
+			} catch (NoClassDefFoundError e) {
+			}
+		}
+		else {
+			try {
+				String newname = name.replace('.', '/') + ".class";
+				InputStream in = getSystemResourceAsStream(newname);
+				byte[] data = new byte[in.available()];
+				in.read(data);
+				in.close();
+				cls = defineClass(null, data, 0, data.length);
+			} catch (Exception e) {
+			}
 		}
 	}
 

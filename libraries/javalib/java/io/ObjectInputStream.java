@@ -55,6 +55,7 @@ public ObjectInputStream(InputStream inp) throws IOException, StreamCorruptedExc
 {
 	in = ObjectStreamClass.factory.newObjectInputStreamImpl(inp, this);
 	readStreamHeader();
+	in.enableBuffering(true);
 }
 
 public int available() throws IOException

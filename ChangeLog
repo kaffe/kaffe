@@ -1,3 +1,18 @@
+Sat Oct  9 12:45:02 PDT 1999 Transvirtual Technologies <info@transvirtual.com>
+
+	* Added RMI implementation.
+	  Current status:
+		JDK 1.1 and JDK 1.2 stub/skeletons supported.
+		JDK 1.1 and JDK 1.2 RMIC stub generator supported.
+		Simple registry supported.
+		DGC not-implemented (and request quietly ignored).
+		JDK 1.2 Activations not currently supported.
+	* Added generic kaffe.tools.compiler.Compiler interface to provide
+	  standard handle on available java compiler (regardless of what the
+	  compiler is).
+	* Added serialver utility.
+	* Various serialization fixes required for RMI operation.
+
 Fri Oct  8 12:24:39 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/soft.c: soft_lookupmethod:  handle the case where

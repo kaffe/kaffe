@@ -71,7 +71,6 @@ public void getObjectWithoutSuper(Object obj, ObjectInputStream in, ObjectInputS
 	}
 
         try {
-
                 if ((method & ObjectStreamConstants.SC_EXTERNALIZABLE) != 0)
  {
                         ((Externalizable)obj).readExternal(in);
@@ -81,9 +80,7 @@ public void getObjectWithoutSuper(Object obj, ObjectInputStream in, ObjectInputS
 			boolean restore = impl.enableBuffering(true);
                         invokeObjectReader0(obj, in);
 			impl.enableBuffering(restore);
-			if (impl.readByte() != ObjectStreamConstants.TC_ENDBLOCKDATA) {
-				throw new StreamCorruptedException("missing endblockdata");
-			}
+			getEndOfDataBlock(in, impl);
                 }
                 else if ((method & ObjectStreamConstants.SC_SERIALIZABLE) !=
  0) {
@@ -105,15 +102,25 @@ public void getObjectWithoutSuper(Object obj, ObjectInputStream in, ObjectInputS
         }
 }
 
+private void getEndOfDataBlock(ObjectInputStream in, ObjectInputStreamImpl impl) throws StreamCorruptedException {
+	try {
+		if (impl.readByte() == ObjectStreamConstants.TC_ENDBLOCKDATA) {
+			return;
+		}
+	}
+	catch (IOException _) {
+	}
+	throw new StreamCorruptedException("failed to read endblockdata");
+}
+
 public Object getClass(ObjectInputStream in, ObjectInputStreamImpl impl) throws StreamCorruptedException, OptionalDataException {
         try {
 //System.out.println("Getting class");
                 Object obj = allocateNewObject();
 		impl.makeObjectReference(obj);
 		invokeObjectReader0(obj, in);
-		if (impl.readByte() != ObjectStreamConstants.TC_ENDBLOCKDATA) {
-			throw new StreamCorruptedException("missing endblockdata");
-                }
+		// Get any class annotation
+		getEndOfDataBlock(in, impl);
 		// Get the superclass stream.
 //System.out.println("Getting superclass");
 		((ObjectStreamClassImpl)obj).superstream = (ObjectStreamClassImpl)in.readObject();
@@ -215,7 +222,6 @@ public void putObject(Object obj, ObjectOutputStream out, ObjectOutputStreamImpl
 }
 
 public void putObjectWithoutSuper(Object obj, ObjectOutputStream out, ObjectOutputStreamImpl impl) throws IOException {
-
 	// Put the data in our superclasses first (if they're serializable)
 	if (superstream != null) {
 		superstream.putObjectWithoutSuper(obj, out, impl);
@@ -244,6 +250,7 @@ public void putObjectWithoutSuper(Object obj, ObjectOutputStream out, ObjectOutp
 public void putClass(Object obj, ObjectOutputStream out, ObjectOutputStreamImpl impl) throws IOException {
 	impl.makeObjectReference(obj);
 	invokeObjectWriter0(obj, out);
+	out.annotateClassInternal(((ObjectStreamClassImpl)obj).clazz);
 	impl.writeByte(ObjectStreamConstants.TC_ENDBLOCKDATA);
 }
 
@@ -364,6 +371,7 @@ private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundE
 
 	// Resolve the class
 	clazz = in.resolveClassInternal(this);
+
 	// Check for matching serial version UIDs
 	long localUID = getSerialVersionUID0(clazz);
 	if (serialVersionUID != localUID) {

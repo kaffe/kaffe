@@ -39,7 +39,7 @@ fi
 export KAFFEHOME
 
 CLASSPATH="${CLASSPATH-.}"
-for f in Klasses.jar comm.jar pjava.jar servlet.jar tools.jar microsoft.jar pizza.jar; do
+for f in Klasses.jar comm.jar pjava.jar servlet.jar tools.jar microsoft.jar pizza.jar rmi.jar; do
   if test -f "$KAFFE_CLASSDIR/$f"; then
     CLASSPATH="$CLASSPATH$PATHSEP$KAFFE_CLASSDIR/$f"
   fi

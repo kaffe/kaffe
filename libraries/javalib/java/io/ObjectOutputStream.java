@@ -50,10 +50,18 @@ private ObjectStreamClass currentStreamClass;
 public ObjectOutputStream(OutputStream ot) throws IOException {
 	out = ObjectStreamClass.factory.newObjectOutputStreamImpl(ot, this);
 	writeStreamHeader();
+	out.enableBuffering(true);
 }
 
 protected void annotateClass(Class cl) throws IOException {
 	// Does nothing.
+}
+
+/**
+ * Not part of public interface - something of a HACK
+ */
+final public void annotateClassInternal(Class cl) throws IOException {
+	annotateClass(cl);
 }
 
 public void close() throws IOException {

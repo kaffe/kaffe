@@ -1042,6 +1042,8 @@ libraries/extensions/tools/javalib/Makefile \
 libraries/extensions/microsoft/Makefile \
 libraries/extensions/microsoft/javalib/Makefile \
 libraries/extensions/microsoft/clib/Makefile \
+libraries/extensions/rmi/Makefile \
+libraries/extensions/rmi/javalib/Makefile \
 kaffe/man/kaffe.1 \
 libraries/javalib/rebuildLib \
 kaffe/scripts/install-jar \

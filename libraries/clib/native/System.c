@@ -309,6 +309,11 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	setProperty(p, "file.encoding.pkg", "kaffe.io");
 	setProperty(p, "file.encoding", "Default");
 
+	/* Define the default java compiler - this should be configured
+	 * somehow.
+	 */
+	setProperty(p, "kaffe.compiler", "pizza");
+
 	/* Now process user defined properties */
 	for (prop = userProperties; prop != 0; prop = prop->next) {
 		setProperty(p, prop->key, prop->value);

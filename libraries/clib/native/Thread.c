@@ -69,3 +69,12 @@ java_lang_Thread_finalize0(struct Hjava_lang_Thread* this)
 {
 	finalizeThread(this);
 }
+
+/*
+ * Destroy a thread (it had better be myself!!)
+ */
+void
+java_lang_Thread_destroy0(struct Hjava_lang_Thread* this)
+{
+	exitThread();
+}

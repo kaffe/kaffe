@@ -373,7 +373,7 @@ addToSHA(SHA1_CTX* c, uidItem* base, int len)
  * a newly allocated one in dot form pkg.subpkg.name.
  * Caller must free using KFREE.
  */
-static char*
+char*
 pathname2ClassnameCopy(const char *orig)
 {
 	char* str;
@@ -662,13 +662,12 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 jbool
 kaffe_io_ObjectStreamClassImpl_hasWriteObject(struct Hjava_lang_Class* clazz)
 {
-	for (; clazz != 0; clazz = clazz->superclass) {
-		Method* mptr = findMethodLocal(clazz, writeObjectName, ObjectOutputStreamSig);
-		if (mptr != 0) {
-			return (true);
-		}
+	if (findMethodLocal(clazz, writeObjectName, ObjectOutputStreamSig)) {
+		return (true);
 	}
-	return (false);
+	else {
+		return (false);
+	}
 }
 
 static

@@ -17,12 +17,11 @@ import java.io.ObjectStreamConstants;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.io.NotSerializableException;
+import java.io.ByteArrayOutputStream;
 import kaffe.io.ObjectStreamClassImpl;
 import kaffe.util.IdentityHashtable;
 
 public class ObjectOutputStreamImpl extends DataOutputStream {
-
-private static ObjectStreamClassImpl classDesc = new ObjectStreamClassImpl();
 
 private boolean buffering = false;
 
@@ -31,40 +30,37 @@ private ObjectOutputStream parent;
 private int nextKey = 0x007e0000;
 private IdentityHashtable objectReferences = new IdentityHashtable();
 
-/*
- * XXX this is wrong.
- *
- * It does not handle the case of "write(new byte[2000]);"
- * The problem is that the stream is not put in buffering mode by default.
- * However, the BLOCKDATA token preceding plain data is only written if
- * buffering is set.  See flush()
- */
 class Output extends OutputStream {
 
 private OutputStream out;
-private byte[] buffer = new byte[255];
-private int pos = 0;
+private ByteArrayOutputStream buffer = new ByteArrayOutputStream(255);
 
 Output(OutputStream out) {
 	this.out = out;
 }
 
 public void write(int byteVal) throws IOException {
-	buffer[pos] = (byte)byteVal;
-	pos++;
-	if (pos == buffer.length) {
-		flush();
-	}
+	buffer.write(byteVal);
 }
 
 public void flush() throws IOException {
-	if (pos > 0) {
+	int size = buffer.size();
+	if (size > 0) {
 		if (buffering) {
-			out.write(ObjectStreamConstants.TC_BLOCKDATA);
-			out.write(pos);
+			if (size < 256) {
+				out.write(ObjectStreamConstants.TC_BLOCKDATA);
+				out.write(size);
+			}
+			else {
+				out.write(ObjectStreamConstants.TC_BLOCKDATALONG);
+				out.write((size >> 24) & 0xFF);
+				out.write((size >> 16) & 0xFF);
+				out.write((size >>  8) & 0xFF);
+				out.write((size      ) & 0xFF);
+			}
 		}
-		out.write(buffer, 0, pos);
-		pos = 0;
+		buffer.writeTo(out);
+		buffer.reset();
 	}
 }
 
