@@ -654,7 +654,7 @@ define_insn(DASTORE)
 	/* Check we are within the array bounds */
 	check_array_index(rstack(3), rstack(2));
 
-	store_offset_scaled_long(stack(3), stack(2), object_array_offset, stack_double(0));
+	store_offset_scaled_double(stack(3), stack(2), object_array_offset, stack_double(0));
 
 	pop(4);
 }
