@@ -1,5 +1,28 @@
 2004-10-11  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/io/DataInputStream.java,
+	libraries/javalib/java/io/DataOutputStream.java,
+	libraries/javalib/java/io/InputStreamReader.java,
+	libraries/javalib/java/io/ObjectInputStream.java,
+	libraries/javalib/java/io/ObjectOutputStream.java:
+	Resynced with GNU Classpath.
+
+	2004-10-11  Michael Koch  <konqueror@gmx.de>
+
+        * java/io/DataInputStream.java
+        (readUTF): Reorder modifiers.
+        * java/io/DataOutputStream.java
+        (writeUTF): Likewise.
+        * java/io/ObjectInputStream.java
+        (GetField): Likewise.
+        * java/io/ObjectOutputStream.java
+        (PutField): Likewise.
+        (BUFFER_SIZE): Likewise.
+        * java/io/InputStreamReader.java:
+        Merged file header.
+
+2004-10-11  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/nio/ByteBufferHelper.java:
 	Resynced with GNU Classpath.
 

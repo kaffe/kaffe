@@ -327,8 +327,11 @@ public class ObjectInputStream extends InputStream
 		      if(dump) dumpElement("ENDBLOCKDATA? ");
 		      try
 			{
-			  // FIXME: XXX: This try block is to catch EOF which is
-			  // thrown for some objects.  That indicates a bug in the logic.
+			  // FIXME: XXX: This try block is to
+			  // catch EOF which is thrown for some
+			  // objects.  That indicates a bug in
+			  // the logic.
+
 			  if (this.realInputStream.readByte() != TC_ENDBLOCKDATA)
 			    throw new IOException
 			      ("No end of block data seen for class with readObject (ObjectInputStream) method.");
@@ -1102,7 +1105,7 @@ public class ObjectInputStream extends InputStream
    *
    * XXX: finish up comments
    */
-  public static abstract class GetField
+  public abstract static class GetField
   {
     public abstract ObjectStreamClass getObjectStreamClass();
 
@@ -1847,7 +1850,7 @@ public class ObjectInputStream extends InputStream
   private Hashtable classLookupTable;
   private GetField prereadFields;
 
-  private static boolean dump = false && Configuration.DEBUG;
+  private static boolean dump;
 
   // The nesting depth for debugging output
   private int depth = 0;
