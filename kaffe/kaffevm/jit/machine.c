@@ -226,12 +226,6 @@ DBG(MOREJIT,
 	}
 
 	/* start modifying global variables now */
-	if (jitting) {
-	    extern void dumpThreads(void);
-	    extern void dumpLocks(void);
-	    dumpThreads();
-	    dumpLocks();
-	}
 	assert(jitting == 0 || !!!"reentered jitter");	/* DEBUG */
 	jitting = meth;					/* DEBUG */
 
