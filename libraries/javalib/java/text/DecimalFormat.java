@@ -685,6 +685,9 @@ public class DecimalFormat extends NumberFormat
     int integerBeginIndex = dest.length();
     int index = dest.length();
     int count = 0;
+
+    /* Handle percentages, etc. */
+    number *= multiplier;
     while (count < maximumIntegerDigits
 	   && (number > 0 || count < minimumIntegerDigits))
       {

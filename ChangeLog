@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 	
+	2004-12-29  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/text/DecimalFormat.java
+	(format(long,StringBuffer,FieldPosition)): multiply
+	number by multiplier before formatting.
+
+2005-01-05  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2004-12-29  Michael Koch  <konqueror@gmx.de>
 
 	* java/nio/DirectByteBufferImpl.java
