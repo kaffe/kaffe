@@ -3716,6 +3716,7 @@ javax_swing_text_SRCS = \
 	javax/swing/text/DefaultCaret.java \
 	javax/swing/text/DefaultEditorKit.java \
 	javax/swing/text/DefaultHighlighter.java \
+	javax/swing/text/DefaultStyledDocument.java \
 	javax/swing/text/Document.java \
 	javax/swing/text/DocumentFilter.java \
 	javax/swing/text/EditorKit.java \
