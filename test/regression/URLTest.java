@@ -62,7 +62,7 @@ class URLTest {
     new TestCase(
 	null,
 	"foo/bar",
-	"java.net.MalformedURLException: no protocol"
+	"java.net.MalformedURLException: no protocol: foo/bar"
     ),
 
     new TestCase(
@@ -116,19 +116,19 @@ class URLTest {
     new TestCase(
 	null,
 	"foo/bar",
-	"java.net.MalformedURLException: no protocol"
+	"java.net.MalformedURLException: no protocol: foo/bar"
     ),
 
     new TestCase(
 	null,
 	"http://www.kaffe.org:99999/foo/bar",
-	"java.net.MalformedURLException: bad port: 99999"
+	"http://www.kaffe.org:99999/foo/bar"
     ),
 
     new TestCase(
 	null,
 	"jar:abc!/eat/me",
-	"java.net.MalformedURLException: invalid inner URL: no protocol"
+	"java.net.MalformedURLException: invalid inner URL: no protocol: abc"
     ),
 
   };
