@@ -1,3 +1,7 @@
+Sun Feb  7 13:31:23 1999  Moses DeJong <dejong@cs.umn.edu>
+
+	* README: fix typo
+
 Sun Feb  7 00:24:20 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/systems/unix-jthreads/signal.c,
