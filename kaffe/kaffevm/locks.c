@@ -11,6 +11,8 @@
 
 #define	DBG(s)
 #define	FDBG(s)
+#define	WDBG(s)	
+#define THREAD_JAVA()	getCurrentThread()
 
 #include "config.h"
 #include "config-std.h"
@@ -106,7 +108,7 @@ getLock(void* address)
 /*
  * Free a lock if no longer in use.
  */
-void
+static void
 freeLock(iLock* lk)
 {
 	struct lockList* lockHead;
@@ -117,6 +119,9 @@ freeLock(iLock* lk)
 	/* If lock no longer in use, release it for reallocation */
 	lk->ref--;
 	if (lk->ref == 0) {
+		if (lk->count != 0)
+		    printf("lk=%p addr=%p count is %d\n", lk, 
+			lk->address, lk->count);
 		assert(lk->count == 0);
 		assert(lk->holder == NULL);
 FDBG(		printf("Freeing lock for 0x%x\n", lk->address);		)
@@ -216,18 +221,13 @@ inline
 int
 __waitCond(iLock* lk, jlong timeout)
 {
-	int count;
-
-DBG(	printf("Wait 0x%x on 0x%x\n", THREAD_JAVA(), lk);	)
+WDBG(	printf("Wait 0x%x on 0x%x\n", THREAD_JAVA(), lk);	)
 
 	if (lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
 		throwException(IllegalMonitorStateException);
 	}
 
-	count = lk->count;
-	lk->count = 0;
 	(*Kaffe_LockInterface.wait)(lk, timeout);
-	lk->count = count;
 	return (0);
 }
 
@@ -258,7 +258,7 @@ inline
 void
 __signalCond(iLock* lk)
 {
-DBG(	printf("Signal 0x%x on 0x%x\n", THREAD_JAVA(), lk);)
+WDBG(	printf("Signal 0x%x on 0x%x\n", THREAD_JAVA(), lk);)
 
 	if (lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
 		throwException(IllegalMonitorStateException);
@@ -275,7 +275,7 @@ _signalCond(void* addr)
 {
 	iLock* lk;
 
-DBG(	printf("Signal 0x%x on 0x%x\n", THREAD_JAVA(), addr);)
+WDBG(	printf("Signal 0x%x on 0x%x\n", THREAD_JAVA(), addr);)
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;
@@ -292,7 +292,7 @@ inline
 void
 __broadcastCond(iLock* lk)
 {
-DBG(	printf("Broadcast 0x%x on 0x%x 0x%x\n", THREAD_JAVA(), lk);	)
+WDBG(	printf("Broadcast 0x%x on 0x%x 0x%x\n", THREAD_JAVA(), lk);	)
 
 	if (lk->holder != (*Kaffe_ThreadInterface.currentNative)()) {
 		throwException(IllegalMonitorStateException);
@@ -306,7 +306,7 @@ _broadcastCond(void* addr)
 {
 	iLock* lk;
 
-DBG(	printf("Broadcast 0x%x on 0x%x 0x%x\n", THREAD_JAVA(), addr);	)
+WDBG(	printf("Broadcast 0x%x on 0x%x 0x%x\n", THREAD_JAVA(), addr);	)
 
 #if defined(USE_LOCK_CACHE)
 	lk = ((Hjava_lang_Object*)addr)->lock;

@@ -992,9 +992,12 @@ static
 void
 Lwait(iLock* lk, jlong timeout)
 {
+	int count;
 	Hjava_lang_Thread* tid;
 
 	Tspinon(0);
+	count = lk->count;
+	lk->count = 0;
 	lk->holder = NULL;
 	if (lk->mux != NULL) {
 		tid = lk->mux;
@@ -1007,6 +1010,7 @@ Lwait(iLock* lk, jlong timeout)
 		suspendOnQThread(currentThread, (Hjava_lang_Thread**)&lk->mux, NOTIMEOUT);
 	}
 	lk->holder = currentThread;
+	lk->count = count;
 	Tspinoff(0);
 }
 
