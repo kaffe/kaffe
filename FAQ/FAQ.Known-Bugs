@@ -67,3 +67,8 @@ Treat it as an TODO list.
 
 * Kaffe does not currently provide its own implementation of RMI.
 
+* java.math.* is missing.  However, clib/math/BigInteger.c still contains
+  the native functions used for java.math.BigInteger.  Hence, it might work
+  to use Sun's  java/math/*.class files (or append classes.zip to the
+  CLASSPATH after Klasses.jar)
+
