@@ -156,15 +156,7 @@ public String getAbsolutePath() {
 		return getPath();
 	}
 	else {
-		String path = getPath();
-		String userDir = System.getProperty("user.dir");
-		if (path.equals(".")) {
-			return userDir;
-		}
-		if (path.startsWith("." + separatorChar)) {
-			path = path.substring(2);
-		}
-		return userDir + separatorChar + path;
+		return System.getProperty("user.dir") + separatorChar + getPath();
 	}
 }
 
