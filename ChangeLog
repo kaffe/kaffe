@@ -1,3 +1,17 @@
+Tue Dec 15 23:16:40 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/lookup.[ch], kaffe/kaffevm/exception.[ch]:
+	moved findExceptionBlockInMethod and findExceptionInMethod from
+	lookup.c to exception.c and made it static.
+	Patched bug where unresolved catch classes caused recursive
+	exceptions.
+	* test/regression/ExceptionTestClassLoader.java, ExceptionTest.java,
+	ExceptionTestClassLoader2.java:  tests adopted from Ben Reed 
+	<breed@almaden.ibm.com> for this and the bug were pending exceptions
+	weren't stored when loadClass was called.
+	* config/arm/netbsd1/config.frag: removed hardcoding of threading
+	system since jthreads seems to work now.
+
 Tue Dec 15 22:13:46 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/scripts/kaffe.in (KAFFE_DEBUG): find `GDB' or `GNU gdb'
@@ -13,6 +27,7 @@ Tue Dec 15 14:11:32 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/classMethod.h: made state signed char cause we
 	use -1 as a value.
+	* test/regression/HashtableTest1.java: a test for a recent hashtable fix
 
 Tue Dec 15 01:22:27 1998  Godmar Back  <gback@cs.utah.edu>
 

@@ -19,6 +19,8 @@ struct Hjava_lang_Object;
 struct _methods;
 struct _errorInfo;
 
+#define UNRESOLVABLE_CATCHTYPE	((Hjava_lang_Class*)-1)
+
 typedef struct _jexceptionEntry {
 	uintp				start_pc;
 	uintp				end_pc;

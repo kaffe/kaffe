@@ -42,7 +42,4 @@ Hjava_lang_Class* getClass(constIndex, Hjava_lang_Class*, errorInfo*);
 Method* findMethod(Hjava_lang_Class*, Utf8Const*, Utf8Const*, errorInfo*);
 Method* findMethodLocal(Hjava_lang_Class*, Utf8Const*, Utf8Const*);
 
-void	findExceptionInMethod(uintp, Hjava_lang_Class*, exceptionInfo*);
-bool	findExceptionBlockInMethod(uintp, Hjava_lang_Class*, Method*, exceptionInfo*);
-
 #endif

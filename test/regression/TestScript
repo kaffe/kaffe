@@ -543,6 +543,18 @@ runtest CLTestLie "Success."
 runtest CLTestFindLoaded "Success.
 Success."
 
+compile ExceptionTest
+runtest ExceptionTestClassLoader "Success 1.
+Success 2.
+Success 3.
+Success 4.
+Success 5."
+
+runtest ExceptionTestClassLoader2 "Success 1.
+Success 2.
+Success 3.
+Success 4."
+
 # end of CLTest tests
 
 #
@@ -758,6 +770,8 @@ Success."
 runtest TestUnlock "Success."
 
 runtest MarkResetTest "Success."
+
+runtest HashtableTest1 "Success."
 
 # All done okay
 exit $overallerror

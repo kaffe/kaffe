@@ -45,6 +45,7 @@
 #define	DEFINEFRAME()		exceptionFrame frame
 #define	DISPATCHFRAME(e)	dispatchException((Hjava_lang_Throwable*)(e), &frame)
 #define	EXCEPTIONFRAMEPTR	&frame
+static void findExceptionInMethod(uintp, Hjava_lang_Class*, exceptionInfo*);
 #endif
 #define	GETNEXTFRAME(F)		((*Kaffe_ThreadInterface.nextFrame)(F))
 
@@ -60,6 +61,7 @@ extern uintp Kaffe_JNI_eend;
 extern void Kaffe_JNIExceptionHandler(void);
 
 extern void Tspinoffall(void);
+static bool findExceptionBlockInMethod(uintp, Hjava_lang_Class*, Method*, exceptionInfo*);
 
 /*
  * Throw an internal exception.
@@ -142,6 +144,9 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 	/* Release the interrupts (in case they were held when this
 	 * happened - and hope this doesn't break anything).
 	 * XXX - breaks the thread abstraction model !!!
+	 *
+	 * NB: I think we should put an assertion !intsDisabled() in here
+	 * instead. - gback
 	 */
 	Tspinoffall();
 
@@ -345,4 +350,101 @@ catchSignal(int sig, void* handler)
 	sigemptyset(&nsig);
 	sigaddset(&nsig, sig);
 	sigprocmask(SIG_UNBLOCK, &nsig, 0);
+}
+
+#if defined(TRANSLATOR)
+/*
+ * Find exception in method.
+ */
+static void
+findExceptionInMethod(uintp pc, Hjava_lang_Class* class, exceptionInfo* info)
+{
+	Method* ptr;
+
+	info->handler = 0;
+	info->class = 0;
+	info->method = 0;
+
+	ptr = findMethodFromPC(pc);
+	if (ptr != 0) {
+		if (findExceptionBlockInMethod(pc, class, ptr, info) == true) {
+			return;
+		}
+	}
+DBG(ELOOKUP,	dprintf("Exception not found.\n");			)
+}
+#endif
+
+/*
+ * Look for exception block in method.
+ * Returns true if there is an exception handler, false otherwise.
+ */
+static bool
+findExceptionBlockInMethod(uintp pc, Hjava_lang_Class* class, Method* ptr, exceptionInfo* info)
+{
+	jexceptionEntry* eptr;
+	Hjava_lang_Class* cptr;
+	int i;
+
+	/* Stash method & class */
+	info->method = ptr;
+	info->class = ptr->class;
+
+	eptr = &ptr->exception_table->entry[0];
+
+	/* Right method - look for exception */
+	if (ptr->exception_table == 0) {
+		return (false);
+	}
+DBG(ELOOKUP,	
+	dprintf("Nr of exceptions = %d\n", ptr->exception_table->length); )
+
+	for (i = 0; i < ptr->exception_table->length; i++) {
+		uintp start_pc = eptr[i].start_pc;
+		uintp end_pc = eptr[i].end_pc;
+		uintp handler_pc = eptr[i].handler_pc;
+
+DBG(ELOOKUP,	dprintf("Exceptions %x (%x-%x)\n", pc, start_pc, end_pc); )
+		if (pc < start_pc || pc > end_pc) {
+			continue;
+		}
+DBG(ELOOKUP,	dprintf("Found exception 0x%x\n", handler_pc); )
+
+		/* Found exception - is it right type */
+		if (eptr[i].catch_idx == 0) {
+			info->handler = handler_pc;
+			return (true);
+		}
+		/* Did I try to resolve that catch type before */
+		if (eptr[i].catch_type == UNRESOLVABLE_CATCHTYPE) {
+			return (false);
+		}
+		/* Resolve catch class if necessary */
+		if (eptr[i].catch_type == NULL) {
+			errorInfo info;
+			eptr[i].catch_type = getClass(eptr[i].catch_idx, ptr->class, &info);
+			/* 
+			 * If we could not resolve the catch class, then we
+			 * must a) record that fact to guard against possible
+			 * recursive attempts to load it and b) throw the error 
+			 * resulting from that failure and forget about the 
+			 * current exception.
+			 */
+			if (eptr[i].catch_type == NULL) {
+DBG(ELOOKUP|DBG_RESERROR,
+				dprintf("Couldn't resolve catch class\n");
+    )
+				eptr[i].catch_type = UNRESOLVABLE_CATCHTYPE;
+				throwError(&info);
+				return (false);
+			}
+		}
+                for (cptr = class; cptr != 0; cptr = cptr->superclass) {
+                        if (cptr == eptr[i].catch_type) {
+                                info->handler = handler_pc;
+                                return (true);
+                        }
+                }
+	}
+	return (false);
 }
