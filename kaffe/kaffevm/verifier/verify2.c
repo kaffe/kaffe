@@ -36,23 +36,18 @@ static
 bool
 checkField(Field *field, errorInfo *einfo)
 {
-	bool retval = true;
-	char *reason;
-
-	if( (reason = checkAccessFlags(CLASS_IS_INTERFACE(field->clazz) ?
-				       ACC_TYPE_INTERFACE_FIELD :
-				       ACC_TYPE_FIELD,
-				       field->accflags)) != NULL )
-	{
+	char *reason = checkAccessFlags(CLASS_IS_INTERFACE(field->clazz) ? ACC_TYPE_INTERFACE_FIELD : ACC_TYPE_FIELD,
+					field->accflags);
+	if (reason) {
 		postExceptionMessage(einfo,
 				     JAVA_LANG(ClassFormatError),
 				     "(class: %s, field: %s) %s",
 				     CLASS_CNAME(field->clazz),
 				     field->name->data,
 				     reason);
-		retval = false;
+		return false;
 	}
-	return( retval );
+	return true;
 }
 
 /* perhaps this should go in classMethod.[ch]... */

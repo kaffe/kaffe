@@ -25,19 +25,22 @@
  */
 typedef struct Verifier
 {
+	/* error object needed in all methods */
+	errorInfo* einfo;
+	
 	/* the method being verified */
 	Hjava_lang_Class* class; /* not const because classloader may need it */
 	const Method* method;
 	
 	/* information about the basic blocks */
-	uint32              numBlocks;
-	uint32*             status;
-	struct  BlockInfo** blocks;
+	uint32             numBlocks;
+	uint32*            status;
+	struct BlockInfo** blocks;
 	
 	/* memory allocated for type checking */
-	struct SigStack*           sigs;
-	struct UninitializedType*  uninits;
-	struct SupertypeSet*       supertypes;
+	struct SigStack*          sigs;
+	struct UninitializedType* uninits;
+	struct SupertypeSet*      supertypes;
 } Verifier;
 
 

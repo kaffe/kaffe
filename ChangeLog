@@ -1,3 +1,11 @@
+2004-06-26  Rob Gonzalez <rob@kaffe.org>
+	* kaffe/kaffevm/verify*.[ch]
+	More refactoring, code cleaning up, etc.
+	Error methods removed and simplified.
+
+	* kaffe/kaffevm/verify-type.c
+	Fixed compilation bug with gcc-2.95 (hopefully)
+
 2004-06-26  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/jni/jni.c, kaffe/kaffevm/jni/jni_i.h:

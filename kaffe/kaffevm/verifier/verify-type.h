@@ -85,7 +85,7 @@ typedef struct Type
 #define TINFO_CLASS        16
 #define TINFO_UNINIT       32
 #define TINFO_UNINIT_SUPER 96
-#define TINFO_SUPERTYPES    128
+#define TINFO_SUPERTYPES   128
 
 #define IS_ADDRESS(_TINFO) ((_TINFO)->tinfo & TINFO_ADDR)
 #define IS_PRIMITIVE_TYPE(_TINFO) ((_TINFO)->tinfo & TINFO_PRIMITIVE)
@@ -116,25 +116,35 @@ extern Type* TDOUBLEARR;
 extern Type* TSTRING;
 
 extern void initVerifierPrimTypes(void);
-extern bool isNull(const Type * tinfo);
-extern bool isWide(const Type * tinfo);
 
-extern bool isReference(const Type* type);
-extern bool isArray(const Type* type);
-extern bool sameRefType(Type* t1, Type* t2);
-extern bool sameType(Type* t1, Type* t2);
-extern void resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type);
+extern bool isNull(const Type * t);
+extern bool isWide(const Type * t);
 
-extern bool mergeTypes(errorInfo*, Hjava_lang_Class* this,
-		       Type* t1, Type* t2);
+extern bool isReference(const Type* t);
+extern bool isArray(const Type* t);
+
+extern bool sameRefType(Type* t1,
+			Type* t2);
+extern bool sameType(Type* t1,
+		     Type* t2);
+extern void resolveType(struct Verifier* v,
+			Type *t);
+
+extern bool mergeTypes(struct Verifier* v,
+		       Type* t1,
+		       Type* t2);
 extern Hjava_lang_Class*  getCommonSuperclass(Hjava_lang_Class* t1,
 					      Hjava_lang_Class* t2);
 
-extern bool typecheck(errorInfo*, struct Verifier* v, Type* t1, Type* t2);
+extern bool typecheck(struct Verifier* v,
+		      Type* t1,
+		      Type* t2);
 
 
 /* for dealing with the supertype lists */
-extern void mergeSupersets(SupertypeSet* supertypes, Type* t1, Type* t2);
+extern void mergeSupersets(SupertypeSet* supertypes,
+			   Type* t1,
+			   Type* t2);
 extern void freeSupertypes(SupertypeSet* supertypes);
 
 

@@ -43,18 +43,18 @@ static Type  _WIDE;
 Type* TWIDE = &_WIDE;
 
 bool
-isWide(const Type * tinfo)
+isWide(const Type * t)
 {
-	return (tinfo->data.class == TWIDE->data.class);
+	return (t->data.class == TWIDE->data.class);
 }
 
 static Type  verify_NULL;
 Type* TNULL = &verify_NULL;
 
 bool
-isNull(const Type * tinfo)
+isNull(const Type * t)
 {
-	return (tinfo->data.class == TNULL->data.class);
+	return (t->data.class == TNULL->data.class);
 }
 
 static const char* OBJECT_SIG  = "Ljava/lang/Object;";
@@ -172,13 +172,13 @@ initVerifierPrimTypes(void)
  *  resolve it to be a pointer to an actual Class object in memory.
  */
 void
-resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type)
+resolveType(Verifier* v, Type *t)
 {
 	const char* sig;
 	char* tmp = NULL;
 
-	if (type->tinfo & TINFO_NAME) {
-		sig = type->data.sig;
+	if (t->tinfo & TINFO_NAME) {
+		sig = t->data.sig;
 		
 		if (*sig != '[') {
 			tmp = checkPtr(gc_malloc((strlen(sig) + 3) * sizeof(char), GC_ALLOC_VERIFIER));
@@ -186,16 +186,16 @@ resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type)
 			sig = tmp;
 		}
 		
-		type->tinfo = TINFO_CLASS;
-		type->data.class = getClassFromSignature(sig, this->loader, einfo);
+		t->tinfo = TINFO_CLASS;
+		t->data.class = getClassFromSignature(sig, v->class->loader, v->einfo);
 		
 		if (tmp) {
 			gc_free(tmp);
 		}
 	}
-	else if (type->tinfo & TINFO_SIG) {
-		type->tinfo = TINFO_CLASS;
-		type->data.class = getClassFromSignature(type->data.sig, this->loader, einfo);
+	else if (t->tinfo & TINFO_SIG) {
+		t->tinfo = TINFO_CLASS;
+		t->data.class = getClassFromSignature(t->data.sig, v->class->loader, v->einfo);
 	}
 }
 
@@ -243,8 +243,7 @@ freeSupertypes(SupertypeSet* supertypes)
  * @return whether an actual merger was made (i.e. they two types given were not the same type)
  */
 bool
-mergeTypes(errorInfo* einfo, Hjava_lang_Class* this,
-	   Type* t1, Type* t2)
+mergeTypes(Verifier* v, Type* t1, Type* t2)
 {
 	if (IS_ADDRESS(t1) || IS_ADDRESS(t2)) {
 	        /* if one of the types is TADDR, the other one must also be TADDR */
@@ -276,8 +275,8 @@ mergeTypes(errorInfo* einfo, Hjava_lang_Class* this,
 	
 	
 	/* must resolve them to go on */
-	resolveType(einfo, this, t1);
-	resolveType(einfo, this, t2);
+	resolveType(v, t1);
+	resolveType(v, t2);
 	if ((t1->tinfo & TINFO_CLASS && t1->data.class == NULL) ||
 	    (t2->tinfo & TINFO_CLASS && t2->data.class == NULL)) {
 		return false;
@@ -314,12 +313,14 @@ mergeTypes(errorInfo* einfo, Hjava_lang_Class* this,
 	 *   1) both are classes
 	 *   2) 
 		 *  1) both are classes
-		/* TODO: create supertypes here */
+		 * TODO: create supertypes here */
+	{
 		Hjava_lang_Class *tmp = t2->data.class;
 		
 		t2->data.class = getCommonSuperclass(t1->data.class, t2->data.class);
 		
 		return tmp != t2->data.class;
+	}
 }
 
 
@@ -353,13 +354,13 @@ getCommonSuperclass(Hjava_lang_Class* t1, Hjava_lang_Class* t2)
  *    returns whether the type is a reference type
  */
 bool
-isReference(const Type* type)
+isReference(const Type* t)
 {
-	return (type->tinfo & TINFO_NAME ||
-		type->tinfo & TINFO_SIG ||
-		type->tinfo & TINFO_CLASS ||
-		type->tinfo & TINFO_UNINIT ||
-		type->tinfo & TINFO_SUPERTYPES);
+	return (t->tinfo & TINFO_NAME ||
+		t->tinfo & TINFO_SIG ||
+		t->tinfo & TINFO_CLASS ||
+		t->tinfo & TINFO_UNINIT ||
+		t->tinfo & TINFO_SUPERTYPES);
 }
 
 /*
@@ -367,25 +368,25 @@ isReference(const Type* type)
  *     returns whether the Type is an array Type
  */
 bool
-isArray(const Type* type)
+isArray(const Type* t)
 {
-	if (!isReference(type)) {
+	if (!isReference(t)) {
 		return false;
 	}
-	else if (type->tinfo & TINFO_NAME || type->tinfo & TINFO_SIG) {
-		return (*(type->data.sig) == '[');
+	else if (t->tinfo & TINFO_NAME || t->tinfo & TINFO_SIG) {
+		return (*(t->data.sig) == '[');
 	}
-	else if (type->tinfo & TINFO_SUPERTYPES) {
+	else if (t->tinfo & TINFO_SUPERTYPES) {
 		/* if one of the supertypes is an array, it follows that
 		 * all supertypes in the list must be arrays
 		 */
-		return ((*CLASS_CNAME(type->data.supertypes->list[0])) == '[');
+		return ((*CLASS_CNAME(t->data.supertypes->list[0])) == '[');
 	}
-	else if (type->tinfo != TINFO_CLASS) {
+	else if (t->tinfo != TINFO_CLASS) {
 		return false;
 	}
 	else {
-		return (*(CLASS_CNAME(type->data.class)) == '[');
+		return (*(CLASS_CNAME(t->data.class)) == '[');
 	}
 }
 
@@ -419,6 +420,9 @@ sameType(Type* t1, Type* t2)
 	case TINFO_SUPERTYPES:
 		/* if we're unsure as to what type t1 might be, then
 		 * we have to perform a merge
+		 * TODO: compare the supertype lists.  since we're merging
+		 * them in the order of the type hirearchy, then we simply
+		 * traverse each list until we get to a pair that doesn't match.
 		 */
 		return false;
 		
@@ -554,7 +558,7 @@ sameRefType(Type* t1, Type* t2)
  * @return whether t2 can be a t1.
  */
 bool
-typecheck(errorInfo* einfo, Verifier* v, Type* t1, Type* t2)
+typecheck(Verifier* v, Type* t1, Type* t2)
 {
 	DBG(VERIFY3, dprintf("%stypechecking ", indent); printType(t1); dprintf("  vs.  "); printType(t2); dprintf("\n"); );
 	
@@ -581,12 +585,12 @@ typecheck(errorInfo* einfo, Verifier* v, Type* t1, Type* t2)
 	}
 	
 	
-	resolveType(einfo, v->class, t1);
+	resolveType(v, t1);
 	if (t1->data.class == NULL) {
 		return false;
 	}
 
-	resolveType(einfo, v->class, t2);
+	resolveType(v, t2);
 	if (t2->data.class == NULL) {
 		return false;
 	}

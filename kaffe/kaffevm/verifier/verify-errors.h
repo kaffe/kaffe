@@ -13,52 +13,51 @@
 #define _VERIFY_ERRORS_H
 
 /*
- * Helper function for error reporting in verifyMethod3a.
+ * General verification error method.
+ * Returns false to allow statements such as:
+ *   return verifyError(...);
  */
 static inline
-void
-verifyErrorInVerifyMethod3a(errorInfo* einfo,
-			    const Verifier* v,
-			    const char * msg)
-{
-	if (einfo->type == 0) {
-		postExceptionMessage(einfo, JAVA_LANG(VerifyError),
+bool
+verifyError(Verifier* v, const char* msg) {
+	if (v->einfo->type == 0) {
+		postExceptionMessage(v->einfo, JAVA_LANG(VerifyError),
 				     "in method \"%s.%s\": %s",
 				     CLASS_CNAME(v->method->class), METHOD_NAMED(v->method), msg);
 	}
+	return false;
 }
+
 
 /*
  * Helper function for error reporting in BRANCH_IN_BOUNDS macro in verifyMethod3a.
  */
 static inline
-void
-branchInBoundsErrorInVerifyMethod3a(errorInfo* einfo,
-				    const Verifier* v,
+bool
+branchInBoundsErrorInVerifyMethod3a(Verifier* v,
 				    uint32 codelen,
 				    uint32 n)
 {
-  DBG(VERIFY3, dprintf("ERROR: branch to (%d) out of bound (%d) \n", n, codelen); );
-  verifyErrorInVerifyMethod3a(einfo, v, "branch out of method code");
+	DBG(VERIFY3, dprintf("ERROR: branch to (%d) out of bound (%d) \n", n, codelen); );
+	return verifyError(v, "branch out of method code");
 }
 
 /*
  * Helper function for error reporting in CHECK_LOCAL_INDEX macro in verifyMethod3a.
  */
 static inline
-void
-checkLocalIndexErrorInVerifyMethod3a(errorInfo* einfo,
-				     const Verifier* v,
+bool
+checkLocalIndexErrorInVerifyMethod3a(Verifier* v,
 				     uint32 pc,
 				     unsigned char* code,
 				     uint32 n)
 {
-  DBG(VERIFY3,
-      dprintf("ERROR:  pc = %d, instruction = ", pc);
-      printInstruction(code[pc]);
-      dprintf(", localsz = %d, localindex = %d\n", v->method->localsz, n);
-      );
-  verifyErrorInVerifyMethod3a(einfo, v, "attempting to access a local variable beyond local array");
+	DBG(VERIFY3,
+	    dprintf("ERROR:  pc = %d, instruction = ", pc);
+	    printInstruction(code[pc]);
+	    dprintf(", localsz = %d, localindex = %d\n", v->method->localsz, n);
+	    );
+	return verifyError(v, "attempting to access a local variable beyond local array");
 }
 
 #endif
