@@ -127,7 +127,7 @@ $(DERIVED_HDRS): stamp-h0all
 stamp-h0all: stamp-kaffeh $(KLASSES_JAR)
 ## Then, generate each header file,
 ## but if it does not change, do not touch it
-	@for f in $(DERIVED_HDRS); do \
+	@set -e; for f in $(DERIVED_HDRS); do \
 	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
 	  echo "$(KAFFEH) -classpath $(KLASSES_JAR) -o $$f $$class"; \
 	  $(KAFFEH) -classpath $(KLASSES_JAR) -o stamp-h0$$f $$class; \
@@ -149,7 +149,7 @@ $(JNI_DERIVED_HDRS): stamp-h1all
 stamp-h1all: stamp-kaffeh $(KLASSES_JAR)
 ## Then, generate each header file,
 ## but if it does not change, do not touch it
-	@for f in $(JNI_DERIVED_HDRS); do \
+	@set -e; for f in $(JNI_DERIVED_HDRS); do \
 	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
 	  echo "$(KAFFEH) -jni -classpath $(KLASSES_JAR) -o $$f $$class"; \
 	  $(KAFFEH) -jni -classpath $(KLASSES_JAR) -o stamp-h1$$f $$class; \
