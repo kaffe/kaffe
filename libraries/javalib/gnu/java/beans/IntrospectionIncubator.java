@@ -1,5 +1,5 @@
 /* gnu.java.beans.IntrospectionIncubator
-   Copyright (C) 1998 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -57,10 +57,14 @@ import java.util.Vector;
 
 /**
  ** IntrospectionIncubator takes in a bunch of Methods, and
- ** Introspects only those Methods you give it.
+ ** Introspects only those Methods you give it. 
+ ** 
+ ** Non-public are silently discarded but it allows static method
+ ** because they are valid in <code>MethodDescriptor</code>
+ ** instances.
  **
  ** @author John Keiser
- ** @version 1.1.0, 30 Jul 1998
+ ** @author Robert Schuster
  ** @see gnu.java.beans.ExplicitBeanInfo
  ** @see java.beans.BeanInfo
  **/
@@ -86,7 +90,14 @@ public class IntrospectionIncubator {
 			boolean isVoid = retType.equals(java.lang.Void.TYPE);
 			Class methodClass = method.getDeclaringClass();
 			if(propertyStopClass == null || (propertyStopClass.isAssignableFrom(methodClass) && !propertyStopClass.equals(methodClass))) {
-				if(name.startsWith("is")
+				/* At this point a method may be regarded as a property's read or write method if its name
+				 * starts with "is", "get" or "set". However, if a method is static it cannot be part
+				 * of a property.
+				 */
+				if(Modifier.isStatic(method.getModifiers())) {
+					// files method as other because it is static
+					otherMethods.addElement(method);
+				} else if(name.startsWith("is")
 				   && retType.equals(java.lang.Boolean.TYPE)
 				   && params.length == 0) {
 					addToPropertyHash(name,method,IS);
@@ -290,7 +301,6 @@ public class IntrospectionIncubator {
 		methods[funcType] = method;
 	}
 
-
 	void addToListenerHash(String name, Method method, int funcType) {
 		String newName;
 		Class type;
@@ -318,6 +328,16 @@ public class IntrospectionIncubator {
 		methods[funcType] = method;
 	}
 
+	/** Transforms a part of a method name into its corresponding
+	 * property name. E.g. "Value" becomes "value".
+	 * 
+	 * Implementation notes:
+	 * If "" is the argument, it is returned without changes.
+	 * If <code>null</code> is the argument, <code>null</code> is returned.
+	 * 
+	 * @param name Part of a method name.
+	 * @return Corresponding property name.
+	 */
 	static String capitalize(String name) {
 		try {
 			if(Character.isUpperCase(name.charAt(0))) {
@@ -335,6 +355,14 @@ public class IntrospectionIncubator {
 	}
 }
 
+/** This class is a hashmap key that consists of a <code>Class</code> and a
+ * <code>String</code> element.
+ * 
+ * It is used to combine a property's or event's type with its name.
+ * 
+ * @author John Keiser
+ * @author Robert Schuster
+ */ 
 class DoubleKey {
 	Class type;
 	String name;
