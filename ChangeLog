@@ -1,3 +1,8 @@
+Wed Jan  5 12:51:02 PST 2000  Dalibor Topic <dtopic@socs.uts.edu.au>
+
+	* libraries/javalib/java/io/StreamTokenizer.java: fix several
+	bugs and make behavior more consistent with JDK
+
 Tue Jan  4 16:20:27 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/clib/io/FileOutputStream.c: add array bounds check
