@@ -90,6 +90,7 @@ java/io/InterruptedIOException.java
 java/io/InvalidClassException.java
 java/io/InvalidObjectException.java
 java/io/IOException.java
+java/io/LineNumberReader.java
 java/io/NotActiveException.java
 java/io/NotSerializableException.java
 java/io/ObjectInput.java

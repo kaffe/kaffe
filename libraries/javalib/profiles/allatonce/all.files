@@ -311,7 +311,6 @@ java/io/FileReader.java
 java/io/FileWriter.java
 java/io/FilterWriter.java
 java/io/LineNumberInputStream.java
-java/io/LineNumberReader.java
 java/io/PipedInputStream.java
 java/io/PipedOutputStream.java
 java/io/PipedReader.java
