@@ -7,7 +7,7 @@
 # of this file. 
 
 SUBDIRS = $(ENGINE_NAME) systems gcj
-DIST_SUBDIRS = intrp jit systems gcj
+DIST_SUBDIRS = intrp jit jit3 systems gcj
 
 EXTRA_DIST = \
 	kaffe.def \
