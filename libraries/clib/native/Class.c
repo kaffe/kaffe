@@ -22,6 +22,8 @@
 #include "../../../kaffe/kaffevm/errors.h"
 #include "../../../kaffe/kaffevm/soft.h"
 #include "../../../kaffe/kaffevm/stackTrace.h"
+#include "../../../kaffe/kaffevm/baseClasses.h"
+#include "../../../kaffe/kaffevm/lookup.h"
 #include "java_io_InputStream.h"
 #include "java_io_PrintStream.h"
 #include "java_lang_System.h"
@@ -152,6 +154,19 @@ java_lang_Class_forName0(struct Hjava_lang_String* str)
         int i;
 	Hjava_lang_ClassLoader* loader;
 	stackTraceInfo* info;
+	static Method * cfnmeth;
+
+	if (!cfnmeth) {
+		Utf8Const *fname = utf8ConstNew("forName", -1);
+		Utf8Const *fsig = utf8ConstNew("(Ljava/lang/String;)Ljava/lang/Class;", -1);
+		cfnmeth = findMethodLocal(ClassClass, fname, fsig);
+		utf8ConstRelease(fname);
+		utf8ConstRelease(fsig);
+	}
+
+	if (cfnmeth == 0) {
+		abort();
+	}
 
         /*
          * If the calling method is in a class that was loaded by a class
@@ -162,6 +177,13 @@ java_lang_Class_forName0(struct Hjava_lang_String* str)
         info = (stackTraceInfo*)buildStackTrace(0);
         for (i = 0; info[i].meth != ENDOFSTACK; i++) {
                 info[i].meth = stacktraceFindMethod(&info[i]);
+		/* skip java.lang.Class.forName(String) cause that's
+		 * who called us
+		 */
+		if (info[i].meth == cfnmeth) {
+			continue;
+		}
+
                 if (info[i].meth != 0 && info[i].meth->class != 0) {
                         loader = info[i].meth->class->loader;
                         break;

@@ -1,5 +1,9 @@
 Wed May 26 14:59:03 1999  Godmar Back  <gback@cs.utah.edu>
 
+	* libraries/clib/native/Class.c: backported kaffeos fix for 
+	Class.forName0: ignore system loader associated with the
+	calling Class.forName method when guessing the loader context.
+
 	* kaffe/kaffevm/classMethod.c: look for fields in superclasses too,
 	see discussion on mailing list.
 
