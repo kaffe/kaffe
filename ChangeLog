@@ -2,6 +2,17 @@
 
 	Resynced with GNU Classpath.
 
+	2004-01-08  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/nio/DatagramChannelImpl.java
+        (blocking): Removed.
+        (DatagramChannelImpl): Call configureBlocking().
+        (implConfigureBlocking): Don't initialize blocking.
+
+2004-01-08  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2003-10-09  Michael Koch  <konqueror@gmx.de>
 
         * gnu/java/net/PlainSocketImpl.java: Added classes SocketInputStream
