@@ -205,11 +205,12 @@ public class BasicListUI extends ListUI
      */
     public void mousePressed(MouseEvent event)
     {
-      int row = BasicListUI.this.convertYToRow(event.getY());
-      if (row == -1)
+      Point click = event.getPoint();
+      int index = BasicListUI.this.locationToIndex(list, click);
+      if (index == -1)
         return;
 
-      BasicListUI.this.list.setSelectedIndex(row);
+      BasicListUI.this.list.setSelectedIndex(index);
     }
 
     /**
@@ -381,9 +382,11 @@ public class BasicListUI extends ListUI
 
     int lo = Math.min(index1, index2);
     int hi = Math.max(index1, index2);
-    Rectangle lobounds = new Rectangle(0, convertRowToY(lo), cellWidth,
+    Point loLoc = indexToLocation(list, lo);
+    Point hiLoc = indexToLocation(list, hi);
+    Rectangle lobounds = new Rectangle(loLoc.x, loLoc.y, cellWidth,
                                        getRowHeight(lo));
-    Rectangle hibounds = new Rectangle(0, convertRowToY(hi), cellWidth,
+    Rectangle hibounds = new Rectangle(hiLoc.x, hiLoc.y, cellWidth,
                                        getRowHeight(hi));
 
     return lobounds.union(hibounds);
@@ -459,8 +462,11 @@ public class BasicListUI extends ListUI
                                                                     false);
             Dimension dim = flyweight.getPreferredSize();
             cellHeights[i] = dim.height;
+            // compute average cell height (little hack here)
+            cellHeight = (cellHeight * i + cellHeights[i]) / (i + 1);
             cellWidth = Math.max(cellWidth, dim.width);
-            cellWidth = Math.max(cellWidth, list.getSize().width);
+            if (list.getLayoutOrientation() == JList.VERTICAL)
+                cellWidth = Math.max(cellWidth, list.getSize().width);
           }
       }
     else
@@ -716,13 +722,123 @@ public class BasicListUI extends ListUI
       }
   }
 
+  /**
+   * Computes the index of a list cell given a point within the list.
+   *
+   * @param list the list which on which the computation is based on
+   * @param location the coordinates
+   *
+   * @return the index of the list item that is located at the given
+   *         coordinates or <code>null</code> if the location is invalid
+   */
   public int locationToIndex(JList list, Point location)
   {
-    return convertYToRow(location.y);
+    int layoutOrientation = list.getLayoutOrientation();
+    int index = -1;
+    switch (layoutOrientation)
+      {
+      case JList.VERTICAL:
+        index = convertYToRow(location.y);
+        break;
+      case JList.HORIZONTAL_WRAP:
+        // determine visible rows and cells per row
+        int visibleRows = list.getVisibleRowCount();
+        int cellsPerRow = -1;
+        int numberOfItems = list.getModel().getSize();
+        Dimension listDim = list.getSize();
+        if (visibleRows <= 0)
+          {
+            try
+              {
+                cellsPerRow = listDim.width / cellWidth;
+              }
+            catch (ArithmeticException ex)
+              {
+                cellsPerRow = 1;
+              }
+          }
+        else
+          {
+            cellsPerRow = numberOfItems / visibleRows + 1;
+          }
+
+        // determine index for the given location
+        int cellsPerColumn = numberOfItems / cellsPerRow + 1;
+        int gridX = Math.min(location.x / cellWidth, cellsPerRow - 1);
+        int gridY = Math.min(location.y / cellHeight, cellsPerColumn);
+        index = gridX + gridY * cellsPerRow;
+        break;
+      case JList.VERTICAL_WRAP:
+        // determine visible rows and cells per column
+        int visibleRows2 = list.getVisibleRowCount();
+        if (visibleRows2 <= 0)
+          {
+            Dimension listDim2 = list.getSize();
+            visibleRows2 = listDim2.height / cellHeight;
+          }
+        int numberOfItems2 = list.getModel().getSize();
+        int cellsPerRow2 = numberOfItems2 / visibleRows2 + 1;
+
+        Dimension listDim2 = list.getSize();
+        int gridX2 = Math.min(location.x / cellWidth, cellsPerRow2 - 1);
+        int gridY2 = Math.min(location.y / cellHeight, visibleRows2);
+        index = gridY2 + gridX2 * visibleRows2;
+        break;
+      }
+    return index;
   }
 
   public Point indexToLocation(JList list, int index)
   {
-    return new Point(0, convertRowToY(index));
+    int layoutOrientation = list.getLayoutOrientation();
+    Point loc = null;
+    switch (layoutOrientation)
+      {
+      case JList.VERTICAL:
+        loc = new Point(0, convertRowToY(index));
+        break;
+      case JList.HORIZONTAL_WRAP:
+        // determine visible rows and cells per row
+        int visibleRows = list.getVisibleRowCount();
+        int numberOfCellsPerRow = -1;
+        if (visibleRows <= 0)
+          {
+            Dimension listDim = list.getSize();
+            numberOfCellsPerRow = Math.max(listDim.width / cellWidth, 1);
+          }
+        else
+          {
+            int numberOfItems = list.getModel().getSize();
+            numberOfCellsPerRow = numberOfItems / visibleRows + 1;
+          }
+        // compute coordinates inside the grid
+        int gridX = index % numberOfCellsPerRow;
+        int gridY = index / numberOfCellsPerRow;
+        int locX = gridX * cellWidth;
+        int locY = gridY * cellHeight;
+        loc = new Point(locX, locY);
+        break;
+      case JList.VERTICAL_WRAP:
+        // determine visible rows and cells per column
+        int visibleRows2 = list.getVisibleRowCount();
+        if (visibleRows2 <= 0)
+          {
+            Dimension listDim2 = list.getSize();
+            visibleRows2 = listDim2.height / cellHeight;
+          }
+        // compute coordinates inside the grid
+        if (visibleRows2 > 0)
+          {
+            int gridY2 = index % visibleRows2;
+            int gridX2 = index / visibleRows2;
+            int locX2 = gridX2 * cellWidth;
+            int locY2 = gridY2 * cellHeight;
+            loc = new Point(locX2, locY2);
+          }
+        else
+          loc = new Point(0, convertRowToY(index));
+        break;
+      }
+    return loc;
   }
 }
