@@ -287,7 +287,7 @@ inflate_fixed(inflateInfo* pG)
     if ((i = huft_build(pG, l, 288, 257, cplens, cplext,
                         &pG->fixed_tl, &pG->fixed_bl)) != 0)
     {
-      pG->fixed_tl = 0;
+      pG->fixed_tl = NULL;
       return i;
     }
 
@@ -299,7 +299,7 @@ inflate_fixed(inflateInfo* pG)
                         &pG->fixed_td, &pG->fixed_bd)) > 1)
     {
       huft_free(pG->fixed_tl);
-      pG->fixed_tl = 0;
+      pG->fixed_tl = NULL;
       return i;
     }
   }
@@ -363,7 +363,7 @@ inflate_dynamic(inflateInfo* pG)
 
   /* build decoding table for trees--single level, 7 bit lookup */
   bl = 7;
-  i = huft_build(pG, ll, 19, 19, 0, 0, &tl, &bl);
+  i = huft_build(pG, ll, 19, 19, NULL, NULL, &tl, &bl);
   if (bl == 0)                        /* no bit lengths */
     i = 1;
   if (i)
@@ -526,16 +526,16 @@ inflate_new(void)
 
 	info = gc_malloc(sizeof(inflateInfo), KGC_ALLOC_FIXED);
 	if (!info) {
-		return 0;
+		return NULL;
 	}
-	info->fixed_tl = 0;
-	info->fixed_td = 0;
+	info->fixed_tl = NULL;
+	info->fixed_td = NULL;
 	info->fixed_bl = 0;
 	info->fixed_bd = 0;
 	info->slide = gc_malloc(WSIZE, KGC_ALLOC_FIXED);
 	if (!info->slide){
 		gc_free(info);
-		return 0;
+		return NULL;
 	}
 
 	return (info);
@@ -614,7 +614,7 @@ inflate_free(inflateInfo* pG)
     if (pG->fixed_tl != 0) {
       huft_free(pG->fixed_td);
       huft_free(pG->fixed_tl);
-      pG->fixed_td = pG->fixed_tl = 0;
+      pG->fixed_td = pG->fixed_tl = NULL;
     }
     gc_free(pG->slide);
     gc_free(pG);
@@ -664,7 +664,7 @@ huft_build(inflateInfo* pG, unsigned* b, unsigned n, unsigned s, uint16* d, uint
   } while (--i);
   if (c[0] == n)                /* null input--all zero length codes */
   {
-    *t = 0;
+    *t = NULL;
     *m = 0;
     return 0;
   }
@@ -717,8 +717,8 @@ huft_build(inflateInfo* pG, unsigned* b, unsigned n, unsigned s, uint16* d, uint
   p = v;                        /* grab values in bit order */
   h = -1;                       /* no tables yet--level -1 */
   w = l[-1] = 0;                /* no bits decoded yet */
-  u[0] = 0;   /* just to keep compilers happy */
-  q = 0;      /* ditto */
+  u[0] = NULL;   /* just to keep compilers happy */
+  q = NULL;      /* ditto */
   z = 0;                        /* ditto */
 
   /* go through the bit lengths (k already is bits in shortest code) */
@@ -761,7 +761,7 @@ huft_build(inflateInfo* pG, unsigned* b, unsigned n, unsigned s, uint16* d, uint
         }
         pG->hufts += z + 1;         /* track memory usage */
         *t = q + 1;             /* link to list for huft_free() */
-        *(t = &(q->v.t)) = 0;
+        *(t = &(q->v.t)) = NULL;
         u[h] = ++q;             /* table starts after link */
 
         /* connect to last table, if there is one */

@@ -377,9 +377,9 @@ SCHK(			sanityCheck();				)
 
 	assert(maxTemp < MAXTEMPS);
 
-	if( finishInsnSequence(0, &ncode, einfo) )
+	if( finishInsnSequence(NULL, &ncode, einfo) )
 	{
-		installMethodCode(0, xmeth, &ncode);
+		installMethodCode(NULL, xmeth, &ncode);
 	}
 	else
 	{
@@ -401,7 +401,7 @@ done:;
 		xmeth->jitClicks = end - xmeth->jitClicks;
 	}
 #endif
-	globalMethod = 0;
+	globalMethod = NULL;
 
 DBG(MOREJIT,
     dprintf("Translating %s.%s%s (%s) %p\n",

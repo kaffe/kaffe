@@ -105,12 +105,12 @@ static unsigned int hashName(const char *name)
  */
 static jarFile *findJarFile(char *name)
 {
-	jarFile *curr, **prev, *retval = 0;
+	jarFile *curr, **prev, *retval = NULL;
 #if !defined(KAFFEH)
 	int iLockRoot;
 #endif
 
-	assert(name != 0);
+	assert(name != NULL);
 	
 	lockStaticMutex(&jarCache.lock);
 	curr = jarCache.files;
@@ -118,7 +118,7 @@ static jarFile *findJarFile(char *name)
 	while( curr && !retval )
 	{
 		assert(curr != NULL);
-		assert(curr->fileName != 0);
+		assert(curr->fileName != NULL);
 		
 		if( !strcmp(curr->fileName, name) )
 		{
@@ -153,7 +153,7 @@ static void collectEntryTable(jarFile *jf)
 		addToCounter(&jarmem, "vmmem-jar files",
 			     1, -(jlong)GCSIZEOF(jf->table));
 		gc_free(jf->table);
-		jf->table = 0;
+		jf->table = NULL;
 	}
 }
 
@@ -162,7 +162,7 @@ static void collectEntryTable(jarFile *jf)
  */
 static void collectJarFile(jarFile *jf)
 {
-	assert(jf != 0);
+	assert(jf != NULL);
 	assert(jf->users == 0);
 	assert(!(jf->flags & JFF_CACHED));
 	
@@ -197,7 +197,7 @@ static void collectJarFile(jarFile *jf)
  */
 static jarFile *cacheJarFile(jarFile *jf)
 {
-	jarFile *curr, **prev, **lru = 0, *dead_jar = 0, *retval = jf;
+	jarFile *curr, **prev, **lru = NULL, *dead_jar = NULL, *retval = jf;
 	int already_cached = 0;
 #if !defined(KAFFEH)
 	int iLockRoot;
@@ -323,7 +323,7 @@ static void removeJarFile(jarFile *jf)
 	int iLockRoot;
 #endif
 
-	assert(jf != 0);
+	assert(jf != NULL);
 
 	/* Make sure its actually in the cache. */
 	if( jf->flags & JFF_CACHED )
@@ -335,14 +335,14 @@ static void removeJarFile(jarFile *jf)
 			/* Find `jf' on the list and... */
 			while( curr != jf )
 			{
-				assert(curr != 0);
+				assert(curr != NULL);
 				
 				prev = &curr->next;
 				curr = curr->next;
 			}
 			/* unlink it */
 			*prev = curr->next;
-			jf->next = 0;
+			jf->next = NULL;
 			jf->flags &= ~JFF_CACHED;
 			jarCache.count--;
 		}
@@ -712,7 +712,7 @@ static int initJarEntry(jarFile *jf, jarEntry *je, char **name_strings)
 
 		/* Instantiate the header */
 		jarInstantiate(jf, (uint8 *)&cdr, instantiateCentralDir);
-		je->next = 0;
+		je->next = NULL;
 		/* Allocate space for our name */
 		(*name_strings) -= cdr.fileNameLength + 1;
 		je->fileName = *name_strings;
@@ -727,7 +727,7 @@ static int initJarEntry(jarFile *jf, jarEntry *je, char **name_strings)
 		if( (read_size = jarRead(jf,
 					 (uint8*) je->fileName,
 					 cdr.fileNameLength,
-					 0)) >= 0 )
+					 NULL)) >= 0 )
 		{
 			/* Make sure its terminated */
 			je->fileName[cdr.fileNameLength] = 0;
@@ -885,12 +885,12 @@ static int readJarEntries(jarFile *jf)
 static uint8 *inflateJarData(jarFile *jf, jarEntry *je,
 			     jarLocalHeader *lh, uint8 *buf)
 {
-	uint8 *retval = 0;
+	uint8 *retval = NULL;
 
-	assert(jf != 0);
-	assert(je != 0);
-	assert(lh != 0);
-	assert(buf != 0);
+	assert(jf != NULL);
+	assert(je != NULL);
+	assert(lh != NULL);
+	assert(buf != NULL);
 	
 	switch( je->compressionMethod )
 	{
@@ -919,7 +919,7 @@ static uint8 *inflateJarData(jarFile *jf, jarEntry *je,
 			{
 				jf->error = JAR_ERROR_DECOMPRESSION_FAILED;
 				gc_free(retval);
-				retval = 0;
+				retval = NULL;
 			}
 		}
 		else
@@ -938,7 +938,7 @@ static uint8 *inflateJarData(jarFile *jf, jarEntry *je,
 
 uint8 *getDataJarFile(jarFile *jf, jarEntry *je)
 {
-	uint8 *buf = 0, *retval = 0;
+	uint8 *buf = NULL, *retval = NULL;
 	jarLocalHeader lh;
 #if !defined(KAFFEH)
 	int iLockRoot;
@@ -963,10 +963,10 @@ uint8 *getDataJarFile(jarFile *jf, jarEntry *je)
 		if( (buf = (uint8 *)gc_malloc(je->compressedSize,
 					      KGC_ALLOC_JAR)) )
 		{
-			if( jarRead(jf, buf, je->compressedSize, 0) < 0 )
+			if( jarRead(jf, buf, je->compressedSize, NULL) < 0 )
 			{
 				gc_free(buf);
-				buf = 0;
+				buf = NULL;
 				jf->error = JAR_ERROR_IO;
 			}
 		}
@@ -991,10 +991,10 @@ uint8 *getDataJarFile(jarFile *jf, jarEntry *je)
  */
 static jarFile *delayedOpenJarFile(jarFile *jf)
 {
-	jarFile *retval = 0;
+	jarFile *retval = NULL;
 	int fd, rc;
 
-	assert(jf != 0);
+	assert(jf != NULL);
 
 	/* Open the file and check for a different modified time */
 	if( !(rc = KOPEN(jf->fileName, O_RDONLY|O_BINARY, 0, &fd)) )
@@ -1049,9 +1049,9 @@ static jarFile *delayedOpenJarFile(jarFile *jf)
 
 jarFile *openJarFile(char *name)
 {
-	jarFile *retval = 0;
+	jarFile *retval = NULL;
 
-	assert(name != 0);
+	assert(name != NULL);
 	
 	/* Look for it in the cache first */
 	if( (retval = findJarFile(name)) )
@@ -1083,9 +1083,9 @@ jarFile *openJarFile(char *name)
 		retval->users = 1;
 		retval->lastModified = 0;
 		retval->count = 0;
-		retval->error = 0;
+		retval->error = NULL;
 		retval->fd = -1;
-		retval->table = 0;
+		retval->table = NULL;
 		retval->tableSize = 0;
 #ifdef HAVE_MMAP
  		retval->data = MAP_FAILED;
@@ -1174,7 +1174,7 @@ jarFile *openJarFile(char *name)
 			/* Something went wrong, cleanup our mess */
 			retval->users = 0;
 			collectJarFile(retval);
-			retval = 0;
+			retval = NULL;
 		}
 	}
 
@@ -1236,7 +1236,7 @@ void closeJarFile(jarFile *jf)
 
 jarEntry *lookupJarFile(jarFile *jf, char *entry_name)
 {
-	jarEntry *retval = 0;
+	jarEntry *retval = NULL;
 
 	assert(jf != 0);
 	assert(entry_name != 0);

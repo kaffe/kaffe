@@ -27,7 +27,7 @@ define_insn(ACONST_NULL)
 	trace_jcode (("aconst 0\n"));
 
 	push(1);
-	move_ref_const(stack(0), 0);
+	move_ref_const(stack(0), NULL);
 }
 
 define_insn(ICONST_M1)
@@ -2725,7 +2725,7 @@ define_insn(INVOKEVIRTUAL)
 		}
 #ifdef TRANSLATOR
 		else {
-			tmp = 0;	/* for compiler warning */
+			tmp = NULL;	/* for compiler warning */
 		}
 #endif
 
@@ -2941,7 +2941,7 @@ define_insn(INVOKESTATIC)
 		else
 		{
 			/* Push arguments */
-			build_call_frame(method_sig(), 0, idx);
+			build_call_frame(method_sig(), NULL, idx);
 			
 			pop(idx);
 			begin_func_sync();
@@ -3405,7 +3405,7 @@ define_insn(IFNULL)
 	slot_nowriteback(stack(0));
 	begin_sync();
 
-	cbranch_ref_const_eq(rstack(0), 0, reference_code_label(pc+idx));
+	cbranch_ref_const_eq(rstack(0), NULL, reference_code_label(pc+idx));
 	pop(1);
 
 	end_sync();
@@ -3423,7 +3423,7 @@ define_insn(IFNONNULL)
 
 	begin_sync();
 
-	cbranch_ref_const_ne(rstack(0), 0, reference_code_label(pc+idx));
+	cbranch_ref_const_ne(rstack(0), NULL, reference_code_label(pc+idx));
 	pop(1);
 
 	end_sync();

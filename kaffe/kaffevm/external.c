@@ -381,7 +381,7 @@ DBG(NATIVELIB,
 		KaffeLib_Unload(lib->desc);
 		unblockAsyncSignals();
 		KFREE(lib->name);
-		lib->desc = 0;
+		lib->desc = NULL;
 	}
 }
 

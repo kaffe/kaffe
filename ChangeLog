@@ -1,5 +1,15 @@
 2004-12-19  Adam Heath  <doogie@brainfood.com>
 
+	* include/errors.h, kaffe/kaffevm/external.c, kaffe/kaffevm/findInJar.c,
+	  kaffe/kaffevm/gcFuncs.c, kaffe/kaffevm/hashtab.c,
+	  kaffe/kaffevm/inflate.c, kaffe/kaffevm/itypes.c, kaffe/kaffevm/jar.c,
+	  kaffe/kaffevm/kaffe.def, kaffe/kaffevm/jit/methodcalls.c,
+	  kaffe/kaffevm/jit/native-wrapper.c, kaffe/kaffevm/jit3/funcs.c,
+	  kaffe/kaffevm/jit3/labels.c, kaffe/kaffevm/jit3/machine.c:
+	  Sparse NULL-constant fixes.
+
+2004-12-19  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/kaffevm/kaffe-gc/gc-incremental.c:
 	  Few more gcc warning fixes.
 

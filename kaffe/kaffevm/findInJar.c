@@ -82,7 +82,7 @@ findClass(classEntry* centry, errorInfo *einfo)
 	char *buf;
 	classFile hand;
 	const char* cname;
-	Hjava_lang_Class* class = 0;
+	Hjava_lang_Class* class = NULL;
 
 	cname = centry->name->data;
 
@@ -127,7 +127,7 @@ DBG(CLASSLOOKUP,
 				     JAVA_LANG(ClassNotFoundException),
 				     "%s",
 				     centry->name->data);
-		return (0);
+		return (NULL);
 	}
 
 	switch (hand.type) {
@@ -137,7 +137,7 @@ DBG(CLASSLOOKUP,
 		if (class == 0) {
 			postOutOfMemory(einfo);
 			KFREE(hand.base);
-			return (0);
+			return (NULL);
 		}
 
 		utf8ConstAssign(class->name, centry->name);
@@ -169,7 +169,7 @@ DBG(CLASSLOOKUP,
 		dprintf("Cannot find essential class '%s' in class library ... aborting.\n", cname);
 		ABORT();
 	}
-	return (0);
+	return (NULL);
 }
 
 /*
@@ -519,7 +519,7 @@ DBG(INITCLASSPATH,
 	if (*cp == '\0')
 		return (0);
 
-	lptr = 0;
+	lptr = NULL;
 	for (ptr = classpath; ptr != 0; ptr = ptr->next) {
 		if (strcmp(ptr->path, cp) == 0) {
 			/* Already in */
@@ -543,7 +543,7 @@ DBG(INITCLASSPATH,
 		classpath = ptr;
 	}
 	else {
-		ptr->next = 0;
+		ptr->next = NULL;
 		lptr->next = ptr;
 	}
 	return(1);
@@ -621,12 +621,12 @@ getManifestMainAttribute(jarFile* file, char* attrName)
 	/* Locate manifest entry in jar */
 	mf = lookupJarFile(file, "META-INF/MANIFEST.MF");
 	if (mf == 0)
-		return (0);
+		return (NULL);
 
 	/* Read it */
 	mfdata = getDataJarFile(file, mf);
 	if (mfdata == 0)
-		return (0);
+		return (NULL);
 
 	/* Look for the desired entry */
 	attrEntry = mfdata;
@@ -661,7 +661,7 @@ getManifestMainAttribute(jarFile* file, char* attrName)
 		}
 	}
 	KFREE(mfdata);
-	return (0);
+	return (NULL);
 }
 
 
@@ -704,7 +704,7 @@ handleManifestClassPath (classpathEntry *ptr)
 		/* Insert manifest classpath entries */
 
 		newEntry = KMALLOC(sizeof(classpathEntry));
-		newEntry->u.jar = 0;
+		newEntry->u.jar = NULL;
 
 		/* Manifest classpath entries can be either absolute or
 		   relative to the location of the jar file. */
@@ -798,5 +798,5 @@ discoverClassHome(void)
    }
 #endif
    
-   return 0;
+   return NULL;
 }

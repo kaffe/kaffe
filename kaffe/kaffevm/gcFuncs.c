@@ -109,7 +109,7 @@ DBG(CLASSGC,
         if (!CLASS_IS_ARRAY(clazz) && CLASS_METHODS(clazz) != 0) {
                 Method *m = CLASS_METHODS(clazz);
                 for (i = 0; i < CLASS_NMETHODS(clazz); i++) {
-			void *ncode = 0;
+			void *ncode = NULL;
 
 			if (!CLASS_IS_INTERFACE(clazz))
 			{
@@ -547,7 +547,7 @@ describeObject(const void* mem)
 		str = (Hjava_lang_String*)mem;
 		strcpy(buf, "java.lang.String `");
 		c = buf + strlen(buf);
-		jc = unhand(str)->value ? STRING_DATA(str) : 0;
+		jc = unhand(str)->value ? STRING_DATA(str) : NULL;
 		l = STRING_SIZE(str);
 		while (jc && l-- > 0 && c < buf + sizeof(buf) - 2) {
 			*c++ = (char)*jc++;
@@ -595,22 +595,22 @@ initCollector(void)
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_JAVASTRING,
 	    stringWalk, KGC_OBJECT_NORMAL, stringDestroy, "j.l.String");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_NOWALK,
-	    0, KGC_OBJECT_NORMAL, 0, "other-nowalk");
+	    NULL, KGC_OBJECT_NORMAL, NULL, "other-nowalk");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_NORMALOBJECT,
-	    walkObject, KGC_OBJECT_NORMAL, 0, "obj-no-final");
+	    walkObject, KGC_OBJECT_NORMAL, NULL, "obj-no-final");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_PRIMARRAY,
-	    0, KGC_OBJECT_NORMAL, 0, "prim-arrays");
+	    NULL, KGC_OBJECT_NORMAL, NULL, "prim-arrays");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_REFARRAY,
-	    walkRefArray, KGC_OBJECT_NORMAL, 0, "ref-arrays");
+	    walkRefArray, KGC_OBJECT_NORMAL, NULL, "ref-arrays");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_CLASSOBJECT,
 	    walkClass, KGC_OBJECT_NORMAL, destroyClass, "j.l.Class");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_FINALIZEOBJECT,
-	    walkObject, finalizeObject, 0, "obj-final");
+	    walkObject, finalizeObject, NULL, "obj-final");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_JAVALOADER,
 	    walkLoader, finalizeObject, destroyClassLoader,
 	    "j.l.ClassLoader");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_THREADCTX, 
-	    0, KGC_OBJECT_NORMAL, 0, "thread-ctxts");
+	    NULL, KGC_OBJECT_NORMAL, NULL, "thread-ctxts");
 
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_STATIC_THREADDATA, "thread-data");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_BYTECODE, "java-bytecode");

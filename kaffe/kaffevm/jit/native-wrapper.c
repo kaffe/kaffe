@@ -41,7 +41,7 @@ startJNIcall(void)
 	thread_data->jnireferences = table;
 #endif
 	/* No pending exception when we enter JNI routine */
-	thread_data->exceptObj = 0;
+	thread_data->exceptObj = NULL;
 	return( &thread_data->jniEnv ); 
 }
 
@@ -62,7 +62,7 @@ finishJNIcall(void)
 	/* If we have a pending exception, throw it */
 	eobj = thread_data->exceptObj;
 	if (eobj != 0) {
-		thread_data->exceptObj = 0;
+		thread_data->exceptObj = NULL;
 		throwExternalException(eobj);
 	}
 }
@@ -77,7 +77,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	errorInfo info;
 	int count;
 	nativeCodeInfo ncode;
-	SlotInfo* tmp = 0;
+	SlotInfo* tmp = NULL;
 	bool success = true;
 	int j;
 	int an;
@@ -397,13 +397,13 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	 * only needed if we have labels referring to bytecode.  This is
 	 * not the case here.
 	 */
-	success = finishInsnSequence(0, &ncode, &info);
+	success = finishInsnSequence(NULL, &ncode, &info);
 	if (!success) {
 		goto done;
 	}
 
 	assert(xmeth->exception_table == 0);
-	installMethodCode(0, xmeth, &ncode);
+	installMethodCode(NULL, xmeth, &ncode);
 
 	if (use_JNI)
 		xmeth->accflags |= ACC_JNI;
@@ -420,7 +420,7 @@ done:
 		xmeth->jitClicks = end - xmeth->jitClicks;
 	}
 #endif
-	globalMethod = 0;
+	globalMethod = NULL;
 
 	leaveTranslator();
 #if defined(KAFFE_FEEDBACK)

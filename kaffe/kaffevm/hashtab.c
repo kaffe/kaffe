@@ -59,7 +59,7 @@ hashInit(hashfunc_t hash, compfunc_t comp, allocfunc_t alloc, freefunc_t dealloc
 		tab = alloc(sizeof(*tab));
 	}
 	if (tab == 0) {
-		return (0);
+		return (NULL);
 	}
 	tab->hash = hash;
 	tab->comp = comp;
@@ -108,7 +108,7 @@ hashAdd(hashtab_t tab, const void *ptr)
 	if (NEED_RESIZE(tab)) {
 		if (hashResize(tab) == 0) {
 			/* XXX OutOfMemoryError? */
-			return (0);
+			return (NULL);
 		}
 	}
 	i = hashFindSlot(tab, ptr);
@@ -237,7 +237,7 @@ hashResize(hashtab_t tab)
 	}
 
 	if (newList == NULL) {
-		return (0);
+		return (NULL);
 	}
 
 	/* Rehash old list contents into new list */

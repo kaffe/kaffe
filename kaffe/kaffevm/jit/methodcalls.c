@@ -162,7 +162,7 @@ engine_buildTrampoline (Method *meth, void **where, errorInfo *einfo)
 		tramp = (methodTrampoline*)gc_malloc(sizeof(methodTrampoline), KGC_ALLOC_TRAMPOLINE);
 		if (tramp == 0) {
 			postOutOfMemory(einfo);
-			return (0);
+			return (NULL);
 		}
 		FILL_IN_TRAMPOLINE(tramp, meth, where);
 

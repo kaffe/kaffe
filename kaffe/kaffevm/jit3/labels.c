@@ -88,7 +88,7 @@ resetLabels(void)
 
 label *getLastEpilogueLabel(void)
 {
-	label* l, *retval = 0;
+	label* l, *retval = NULL;
 
 	for (l = firstLabel; l != currLabel; l = l->next) {
 		if ((l->type & Ltomask) == Lepilogue) {
@@ -260,11 +260,11 @@ newLabel(void)
 label*
 getInternalLabel(label **lptr, uintp _pc)
 {
-	label *curr, *retval = 0;
+	label *curr, *retval = NULL;
 
-	assert(lptr != 0);
+	assert(lptr != NULL);
 	
-	if( *lptr == 0 )
+	if( *lptr == NULL )
 	{
 		/* Start at the head of the list. */
 		*lptr = firstLabel;

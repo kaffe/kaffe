@@ -42,7 +42,7 @@ uintp CODEPC;
 static
 void printCodeLabels(void)
 {
-	label *il, *curr = 0;
+	label *il, *curr = NULL;
 
 	while( (il = getInternalLabel(&curr, CODEPC)) )
 	{

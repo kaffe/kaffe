@@ -73,19 +73,19 @@ extern void dumpErrorInfo(errorInfo *);
 
 #define NEW_LANG_EXCEPTION(NAME) \
   ((struct Hjava_lang_Throwable*)execute_java_constructor("java.lang." #NAME, \
-	0, 0, "()V"))
+	NULL, NULL, "()V"))
 
 #define NEW_LANG_EXCEPTION_MESSAGE(NAME, MESS) \
   ((struct Hjava_lang_Throwable*)execute_java_constructor("java.lang." #NAME, \
-	0, 0, "(Ljava/lang/String;)V", stringC2Java(MESS)))
+	NULL, NULL, "(Ljava/lang/String;)V", stringC2Java(MESS)))
 
 #define NEW_IO_EXCEPTION(NAME) \
   ((struct Hjava_lang_Throwable*)execute_java_constructor("java.io." #NAME, \
-	0, 0, "()V"))
+	NULL, NULL, "()V"))
 
 #define NEW_IO_EXCEPTION_MESSAGE(NAME, MESS) \
   ((struct Hjava_lang_Throwable*)*/execute_java_constructor("java.io." #NAME, \
-	0, 0, "(Ljava/lang/String;)V", stringC2Java(MESS)))
+	NULL, NULL, "(Ljava/lang/String;)V", stringC2Java(MESS)))
 
 #define NoClassDefFoundError(M) NEW_LANG_EXCEPTION_MESSAGE(NoClassDefFoundError, M)
 #define NoSuchMethodError(M) NEW_LANG_EXCEPTION_MESSAGE(NoSuchMethodError, M)

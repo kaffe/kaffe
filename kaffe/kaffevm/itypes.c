@@ -72,7 +72,7 @@ initPrimClass(Hjava_lang_Class** class, const char* name, char sig, int len)
 	assert(strlen(name) <= 8);
 	sprintf(entryName, ";%s", name);
 	uname = utf8ConstNew(entryName, -1);
-	centry = lookupClassEntry(uname, 0, &info);
+	centry = lookupClassEntry(uname, NULL, &info);
 	utf8ConstRelease(uname);
 
 	if (centry == 0) {
@@ -183,7 +183,7 @@ classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo
 		utf8 = utf8ConstNew(start, end - start);
 		if (!utf8) {
 			postOutOfMemory(einfo);
-			return (0);
+			return (NULL);
 		}
 		cl = loadClass(utf8, loader, einfo);
 		utf8ConstRelease(utf8);
@@ -209,7 +209,7 @@ getClassFromSignature(const char* sig, Hjava_lang_ClassLoader* loader, errorInfo
 	Hjava_lang_Class *cls = classFromSig(&sig, loader, einfo);
 
 	/* name must consume all characters in string */
-	if (cls != 0 && *sig == 0) {
+	if (cls != NULL && *sig == NULL) {
 		return (cls);
 	}
 	/* 
@@ -218,7 +218,7 @@ getClassFromSignature(const char* sig, Hjava_lang_ClassLoader* loader, errorInfo
 	 * Class.forName()
 	 */
 	postExceptionMessage(einfo, JAVA_LANG(NoClassDefFoundError), "%s", sig0);
-	return (0);
+	return (NULL);
 }
 
 /*
