@@ -1,3 +1,10 @@
+
+2003-06-11 Helmer Kraemer <hkraemer@freenet.de>
+
+	* libraries/javalib/java/lang/System.java,
+	libraries/clib/native/System.c:
+	revert to the native implementation of arraycopy
+
 2003-06-08 Jim Pick  <jim@kaffe.org>
 
 	* Makefile.am:

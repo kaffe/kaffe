@@ -32,6 +32,7 @@
 #include "../../../kaffe/kaffevm/external.h"
 #include "../../../kaffe/kaffevm/soft.h"
 #include "../../../kaffe/kaffevm/debug.h"
+#include "../../../kaffe/kaffevm/exception.h"
 #include "../../../include/system.h"
 #include "defs.h"
 #include "java_io_InputStream.h"
@@ -437,3 +438,87 @@ java_lang_System_debugE(struct Hjava_lang_Throwable *t)
 	printStackTrace(t, 0, 1);
 }
 
+void
+java_lang_System_arraycopy(struct Hjava_lang_Object* src, jint srcpos,
+			   struct Hjava_lang_Object* dst, jint dstpos,
+			   jint len) {
+	char* in; 	 
+	char* out; 	 
+	int elemsz; 	 
+	Hjava_lang_Class* sclass; 	 
+	Hjava_lang_Class* dclass;
+
+	if (src==0 || dst==0) {
+		throwException (NullPointerException);
+	}
+
+	if (len == 0) { 	 
+		return; 	 
+	} 	 
+
+	sclass = OBJECT_CLASS(src); 	 
+	dclass = OBJECT_CLASS(dst);
+
+	/* Must be arrays */ 	 
+	if (!CLASS_IS_ARRAY(sclass) || !CLASS_IS_ARRAY(dclass)) { 	 
+		throwException (ArrayStoreException);
+	} 	 
+
+	/* Make sure we'll keep in the array boundaries */ 	 
+	if ((srcpos < 0 || srcpos + len > ARRAY_SIZE(src)) || 	 
+	    (dstpos < 0 || dstpos + len > ARRAY_SIZE(dst)) || 	 
+	    (len < 0)) { 	 
+		throwException (ArrayIndexOutOfBoundsException);
+	}
+
+	sclass = CLASS_ELEMENT_TYPE(sclass); 	 
+	dclass = CLASS_ELEMENT_TYPE(dclass); 	 
+	elemsz = TYPE_SIZE(sclass); 	 
+
+	len *= elemsz; 	 
+	srcpos *= elemsz; 	 
+	dstpos *= elemsz; 	 
+
+	in = &((char*)ARRAY_DATA(src))[srcpos]; 	 
+	out = &((char*)ARRAY_DATA(dst))[dstpos];
+
+	if (sclass == dclass) { 	 
+#if defined(HAVE_MEMMOVE) 	 
+		memmove((void*)out, (void*)in, len); 	 
+#else 	 
+		/* Do it ourself */ 	 
+#if defined(HAVE_MEMCPY) 	 
+		if (src != dst) { 	 
+			memcpy((void*)out, (void*)in, len); 	 
+		} else 	 
+#endif 	 
+		if (out < in) { 	 
+			/* Copy forwards */ 	 
+			for (; len > 0; len--) { 	 
+				*out++ = *in++; 	 
+			} 	 
+		} else { 	 
+			/* Copy backwards */ 	 
+			out += len; 	 
+			in += len; 	 
+			for (; len > 0; len--) { 	 
+				*--out = *--in; 	 
+			} 	 
+		} 	 
+#endif 	 
+	} else {
+		if (CLASS_IS_PRIMITIVE(sclass) || CLASS_IS_PRIMITIVE(dclass)) {
+			throwException (ArrayStoreException);
+		}
+
+		for (; len > 0; len -= sizeof(Hjava_lang_Object*)) { 	 
+			Hjava_lang_Object* val = *(Hjava_lang_Object**)in; 	 
+			if (val != 0 && !instanceof(dclass, OBJECT_CLASS(val))) { 	 
+				throwException (ArrayStoreException);
+			} 	 
+			*(Hjava_lang_Object**)out = val; 	 
+			in += sizeof(Hjava_lang_Object*); 	 
+			out += sizeof(Hjava_lang_Object*); 	 
+		}    
+	}
+}
