@@ -37,6 +37,10 @@ public boolean remove(Object o) {
   throw new UnsupportedOperationException();
 }
 
+public Object remove(int index) {
+  throw new UnsupportedOperationException();
+}
+
 public int indexOf(Object o) {
   ListIterator it = listIterator();
   int idx = 0;
@@ -103,7 +107,9 @@ public boolean equals(Object o) {
   ListIterator mlist = listIterator();
   ListIterator olist = other.listIterator();
   while (mlist.hasNext()) {
-    if (mlist.next() != olist.next()) {
+    final Object o1 = mlist.next();
+    final Object o2 = olist.next();
+    if (!(o1 == null ? o2 == null : o1.equals(o2))) {
       return (false);
     }
   }
@@ -112,10 +118,9 @@ public boolean equals(Object o) {
 
 public int hashCode() {
   int hashCode = 1;
-  Iterator i = iterator();
-  while (i.hasNext()) {
-      Object obj = i.next();
-      hashCode = 31*hashCode + (obj==null ? 0 : obj.hashCode());
+  for (Iterator i = iterator(); i.hasNext(); ) {
+    final Object obj = i.next();
+    hashCode = 31*hashCode + (obj==null ? 0 : obj.hashCode());
   }
   return hashCode;
 }
