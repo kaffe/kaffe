@@ -38,7 +38,6 @@ struct Hjava_lang_Class*
 java_lang_Class_forName(struct Hjava_lang_String* str)
 {
 	Hjava_lang_Class* clazz;
-	Hjava_lang_Class* loadedclass;
 	Hjava_lang_ClassLoader* loader;
 	char buf[MAXNAMELEN];
         stackTraceInfo* info;

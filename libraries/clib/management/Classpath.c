@@ -14,8 +14,6 @@
 #include "../../../kaffe/kaffevm/gtypes.h"
 #include "../../../kaffe/kaffevm/support.h"
 
-extern int addClasspath(char*);
-
 /*
  * Add a JAR/ZIP to the classpath.
  */
