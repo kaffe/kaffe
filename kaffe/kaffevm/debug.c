@@ -37,6 +37,7 @@
 
 void dbgSetMask(debugmask_t m) { }
 int dbgSetMaskStr(const char *s) { return 0; }
+int kaffe_dprintf(const char *fmt, ...){ return 0; }
 
 #else /* Actually define the functions */
 /* --- Debugging is enabled --- */

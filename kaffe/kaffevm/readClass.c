@@ -13,6 +13,7 @@
 #include "config-std.h"
 #include "config-io.h"
 #include "config-mem.h"
+#include "debug.h"
 #include "gtypes.h"
 #include "file.h"
 #include "access.h"
