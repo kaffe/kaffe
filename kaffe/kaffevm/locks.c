@@ -78,7 +78,7 @@ dumpLock(iLock *lk)
 					    nameNativeThread(blocked[i]), 
 					    (i < nblocked - 1) ? ' ' : '\n');
 			}
-			KFREE(blocked);	   /* use thread deallocator here */
+			/* free(blocked); */
 		} else {
 			fprintf(stderr, "\n");
 		}
