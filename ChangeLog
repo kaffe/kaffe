@@ -1,3 +1,8 @@
+2005-03-08  Jim Huang  <jserv@kaffe.org>
+
+	* WHATSNEW:
+	Add Xlib AWT i18n support and Eclipse success.
+
 2005-03-03  Dalibor Topic  <robilad@kaffe.org>
 
         * kaffe/scripts/native2ascii.in: 

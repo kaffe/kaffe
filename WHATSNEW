@@ -7,10 +7,12 @@ What's New in Kaffe 1.1.5
 * Resynced with latest GNU Classpath.
 * Added GNU EmbbededWindow extension from GNU Classpath.
   * gcjwebplugin is known to work with the extension.
-* New AWT implementations representation.
+* Improved AWT implementations.
   * GNU Classpath's implementation of AWT/Swing has 
     been merged.
   * New Nano-X AWT backend.
+  * Xlib AWT backend supports xi18n wide-character
+    display.
   * Dynamic switch among existing AWT implementations 
     via command line options.
 * Better stack pointer / stack size handling.
@@ -29,7 +31,8 @@ What's New in Kaffe 1.1.5
 * Fixes for NetBSD, OpenBSD, FreeBSD, Darwin.
 * New ports to FreeBSD on x86-64 and Darwin on x86.
 * Some successes: Resin2, JSDL, SwingWT, gcjwebplugin, 
-  ME4SE, MicroEmulator, VNCj, LwVCL, DirectFB kawt.
+  ME4SE, MicroEmulator, VNCj, LwVCL, DirectFB kawt,
+  Eclipse 3.0.1
 
 What's New in Kaffe 1.1.3
 ------------------------------------------------------
