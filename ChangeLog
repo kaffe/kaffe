@@ -1,3 +1,50 @@
+2001-04-18  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/javalib/java/lang/reflect/Array.java,
+	libraries/javalib/java/lang/reflect/Constructor.java,
+	libraries/javalib/java/lang/reflect/Field.java,
+	libraries/javalib/java/lang/reflect/InvocationTargetException.java,
+	libraries/javalib/java/lang/reflect/Member.java,
+	libraries/javalib/java/lang/reflect/Method.java,
+	libraries/javalib/java/lang/reflect/Modifier.java: dump to JDK 1.3 Spec.
+	
+	* java/lang/reflect/AccessibleObject.java,
+	java/lang/reflect/InvocationHandler.java,
+	java/lang/reflect/Proxy.java,
+	java/lang/reflect/ReflectPermission.java,
+	java/lang/reflect/UndeclaredThrowableException.java: new classes
+	in JDK 1.3 Spec.
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	regen.
+
+	* test/regression/InvTarExcTest.java: Updated expected output.
+	
+2001-04-17  Archie Cobbs <archie@dellroad.org>
+
+	* test/regression/Reflect.java: Update expected output to Reflect
+	reality (new method in java.lang.System).
+	
+2001-04-12  Archie Cobbs <archie@dellroad.org>
+
+	* libraries/javalib/java/util/Properties.java: load(InputStream)
+	goes into an infinite loop if end of file appears before '\n'.
+	Reported by Ito Kazumitsu <ito.kazumitsu@hitachi-cable.co.jp>.
+
+	* libraries/javalib/java/lang/System.java: Add missing JDK1.2 method
+	setProperty() and fix setProperties() when argument is null.
+	Reported by Takashi Okamoto <toraneko@kun.ne.jp>.
+
+2001-04-10  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/javalib/java/awt/GridLayout.java: Avoid divide by zero
+	in layoutContainer() when Container does not have child.
+	Submitted by Kero van Gelder <kero@d4050.upc-d.chello.nl>.
+
+	* libraries/javalib/java/awt/Color.java: Add constructor rgba from
+	TVT.
+	Reported by Takashi Okamoto <toraneko@kun.ne.jp>.
+
 Mon Apr 02 16:41:59 MDT 2001  Jason Baker  <jbaker@cs.utah.edu>
 
 	* test/regression/MarkResetTest.java:
@@ -18,10 +65,50 @@ Mon Apr 02 16:41:59 MDT 2001  Jason Baker  <jbaker@cs.utah.edu>
 	* kaffe/kaffevm/support.c (do_execute_java_method_v): Don't fail
 	on already-resolved static calls.
 
+2001-03-27  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/clib/native/ObjectStreamClassImpl.c
+	(kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0): Lookup only
+	_local_ field serialVersionUID.
+	(kaffe_io_ObjectStreamClassImpl_allocateNewObject): Invoke first
+	not serialized superclass <init>() constructor.  This is the TVT
+	solution of PR#89.  It cancel my 2000-06-15 fix.  Reject private
+	<init>() constructor.
+	(kaffe_io_ObjectStreamClassImpl_invokeSuperclassInitV): removed,
+	cancel my 2000-06-15 fix.
+	(kaffe_io_ObjectStreamClassImpl_hasWriteObject0): new name of
+	hasWriteObject method as in TVT implementation.
+
+	* libraries/javalib/kaffe/io/ObjectStreamClassImpl.java
+	(getObjectWithoutSuper): cancle my 2000-06-15 fix.
+	(invokeSuperclassInitV): removed, cancel my 2000-06-15 fix.
+	(hasWriteObject): Add Java method.
+	(hasWriteObject0): Old native hasWriteObject method, made it
+	private as in TVT implementation.
+
+	* test/regression/Makefile.am, test/regression/Makefile.in,
+	test/regression/SerialUID.java: new testcase, output is JDK1.1
+	compatible, see JDC Bug 4431318.
+
+	* test/regression/TestSerializable2.java: Fix exception output. 
+
+2001-03-14  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/javalib/java/lang/StringBuffer.java (setLength): avoid
+	OutOfMemroryError.
+	Reported by Takashi Okamoto <toraneko@kun.ne.jp>
+
 Tue Mar 13 16:31:25 MST 2001  Jason Baker  <jbaker@cs.utah.edu>
 
 	* kaffe/kaffevm/code.c (addCheckedExceptions): 
 	ignore empty Exceptions attributes
+
+2001-03-12  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/javalib/java/lang/ThreadGroup.java (enumerate): Honor
+	recurse parameter and count active threads only.
+	Close PR#729 and PR#730.
+	Reported by Philippe Bernadat <bernadat@hpl.hp.com>
 
 2001-03-11  Edouard G. Parmelan  <egp@free.fr>
 
