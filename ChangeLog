@@ -1,3 +1,15 @@
+2004-07-08  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* Makefile.am (kaffe-build-order): new target invoking make in the
+	different directories
+	(clean-local): new target so make clean works again
+
+	* tools/gjdoc/javalib/Makefile.am (clean-hook): renamed to clean-local
+
+	* Makefile.in, tools/gjdoc/javalib/Makefile.in: regenerated
+
+	Reported by:  Fabien Renaud  <renaud@nentec.de>
+
 2004-07-08  Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
 
 	* config/x86_64//linux/md.h (SIGNAL_ARGS, SIGNAL_CONTEXT_POINTER):

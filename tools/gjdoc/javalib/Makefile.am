@@ -153,7 +153,7 @@ endif
 
 LIBDIR = lib
 
-clean-hook:
+clean-local:
 	rm -rf $(LIBDIR)
 
 .PHONY: new-classes

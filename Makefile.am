@@ -205,42 +205,32 @@ DIRECTORIES_AFTER_RTJAR += libraries/clib/sound
 endif
 endif
 
-all-local:
+.PHONY: kaffe-build-order
+
+kaffe-build-order:
 	@list="$(DIRECTORIES_BEFORE_RTJAR)"; for subdir in $$list; do \
-		$(MAKE) -C $$subdir all || exit $$? ; \
+		$(MAKE) -C $$subdir $(KAFFE_BUILD_TARGET) || exit $$? ; \
 	done; \
-	$(MAKE) -C libraries/javalib all || exit $$? ; \
+	$(MAKE) -C libraries/javalib $(KAFFE_BUILD_TARGET) || exit $$? ; \
 	list="$(DIRECTORIES_AFTER_RTJAR)"; for subdir in $$list; do \
-		$(MAKE) -C $$subdir all || exit $$? ; \
-	done ; \
+		$(MAKE) -C $$subdir $(KAFFE_BUILD_TARGET) || exit $$? ; \
+	done ;
+
+all-local: KAFFE_BUILD_TARGET = all
+all-local: kaffe-build-order
 	$(MAKE) -C kaffe/kaffe final-executable
 
-install-exec-hook:
-	@list="$(DIRECTORIES_BEFORE_RTJAR)"; for subdir in $$list; do \
-		$(MAKE) -C $$subdir install-exec || exit $$? ; \
-	done; \
-	$(MAKE) -C libraries/javalib install-exec || exit $$? ; \
-	list="$(DIRECTORIES_AFTER_RTJAR)"; for subdir in $$list; do \
-		$(MAKE) -C $$subdir install-exec || exit $$? ; \
-	done 
+install-exec-hook: KAFFE_BUILD_TARGET = install-exec
+install-exec-hook: kaffe-build-order
 
-install-data-hook:
-	@list="$(DIRECTORIES_BEFORE_RTJAR)"; for subdir in $$list; do \
-		$(MAKE) -C $$subdir install-data || exit $$? ; \
-	done; \
-	$(MAKE) -C libraries/javalib install-data || exit $$? ; \
-	list="$(DIRECTORIES_AFTER_RTJAR)"; for subdir in $$list; do \
-		$(MAKE) -C $$subdir install-data || exit $$? ; \
-	done 
+install-data-hook: KAFFE_BUILD_TARGET = install-data
+install-data-hook: kaffe-build-order
 
-uninstall-hook:
-	@list="$(DIRECTORIES_BEFORE_RTJAR)"; for subdir in $$list; do \
-		$(MAKE) -C $$subdir uninstall || exit $$? ; \
-	done; \
-	$(MAKE) -C libraries/javalib uninstall || exit $$? ; \
-	list="$(DIRECTORIES_AFTER_RTJAR)"; for subdir in $$list; do \
-		$(MAKE) -C $$subdir uninstall || exit $$? ; \
-	done 
+uninstall-hook: KAFFE_BUILD_TARGET = uninstall
+uninstall-hook: kaffe-build-order
+
+clean-local: KAFFE_BUILD_TARGET = clean
+clean-local: kaffe-build-order
 
 check-local:
 	$(MAKE) -C test check
