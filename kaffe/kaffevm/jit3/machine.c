@@ -505,14 +505,16 @@ static
 int
 getInsnPC(int pc, codeinfo* codeInfo, nativeCodeInfo *code)
 {
-	int res;
 	int maxPc = codeInfo->codelen;
 
-	for (;pc<maxPc;pc++) {
-		res = INSNPC(pc);
-		if (res != -1) {
-			return (res);
+	while (pc < maxPc) {
+		if (IS_STARTOFINSTRUCTION(pc)) {
+			int res = INSNPC(pc);
+			if (res != -1) {
+				return (res);
+			}
 		}
+		pc ++;
 	}
 	return code->codelen;
 }
@@ -610,17 +612,7 @@ installMethodCode(void* ignore UNUSED, Method* meth, nativeCodeInfo* code)
 			e->start_pc = getInsnPC(e->start_pc, codeInfo, code) + (uintp)code->code;
 			e->end_pc = getInsnPC(e->end_pc, codeInfo, code) + (uintp)code->code;
 			e->handler_pc = getInsnPC(e->handler_pc, codeInfo, code) + (uintp)code->code;
-			if (e->start_pc >= e->end_pc)
-			  fprintf(stderr, 
-				 "WARNING Bad bytecode! Illegal exception table entry:"
-				 " start_pc=%d is not lower than end_pc=%d in method %s.%s(%s)\n"
-				 "See Java Virtual Machine Specification 2nd Edition $4.7.3 for details.\n"
-				 "Please report this bug to the developers of the application you're running on kaffe.\n"
-				 "A simple fix might be to use another java compiler to build the application.\n",
-				 e->start_pc, e->end_pc,
-				 CLASS_CNAME(meth->class),
-				 meth->name->data,
-				 METHOD_SIGD(meth));
+			assert (e->start_pc <= e->end_pc);
 		}
 	}
 

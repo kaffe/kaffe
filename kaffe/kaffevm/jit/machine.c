@@ -493,11 +493,14 @@ getInsnPC(int pc, codeinfo* codeInfo, nativeCodeInfo* code)
 {
 	int maxPC = codeInfo->codelen;
 
-	for (;pc<maxPC;pc++) {
-		int insn = INSNPC(pc);
-		if (insn!=-1) {
-			return insn;
+	while (pc < maxPC) {
+		if (IS_STARTOFINSTRUCTION(pc)) {
+			int insn = INSNPC(pc);
+			if (insn!=-1) {
+				return insn;
+			}
 		}
+		pc++;
 	}
 
 	return code->codelen;
