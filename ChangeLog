@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-22  Roman Kennke <roman@ontographics.com>
+
+        * javax/swing/plaf/basic/BasicLookAndFeel.java
+        (initComponentDefaults): Fixed Button left and right margin
+
+2005-02-23  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-22  Thomas Fitzsimmons  <fitzsim@redhat.com>
 
         * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkEvents.c
