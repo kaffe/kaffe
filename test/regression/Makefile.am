@@ -10,6 +10,12 @@ SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(
 
 TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT) $(SHELL) TestScript
 
+if HAVE_GCJ_SUPPORT
+TEST_Overflow = #
+else
+TEST_Overflow = Overflow.java
+endif
+
 TESTS = \
 ## Simple health check
 	HelloWorldApp.class.save \
@@ -100,7 +106,7 @@ TESTS = \
 	FindSystemClass.java \
 	ProcessClassLockTest.java \
 	DoubleBug.java \
-	Overflow.java \
+	$(TEST_Overflow) \
 	TestUnlock.java \
 	MarkResetTest.java \
 	HashtableTest1.java \
