@@ -1,3 +1,8 @@
+2005-03-24  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/sparc/atomic-sparc32.h: Removed glibc specific tags
+	that broke build on sparc.
+
 2005-03-23  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/classpath/Makefile.am: Added classpath_jawt.h
