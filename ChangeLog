@@ -1,3 +1,22 @@
+2000-12-27  Edouard G. Parmelan  <egp@free.fr>
+
+	* test/regression/FPUStack.java: Add test for PR#737.
+	
+	* config/i386/jit.h, config/i386/jit3-i386.def,
+	config/i386/jit3-icode.h, kaffe/kaffevm/jit3/icode.c,
+	kaffe/kaffevm/jit3/machine.c, kaffe/kaffevm/jit3/registers.c,
+	kaffe/kaffevm/jit3/registers.h, kaffe/kaffevm/jit3/slots.c,
+	config/i386/jit-i386.def, config/i386/jit-icode.h,
+	kaffe/kaffevm/jit/machine.c, kaffe/kaffevm/jit/registers.c,
+	kaffe/kaffevm/jit/registers.h, kaffe/kaffevm/intrp/machine.c,
+	kaffe/kaffevm/kaffe.def: Rewrote framework to deals with forced
+	registers and stack register, it is in fact covered by readonce
+	register.  Remove slot_kill_forced()/kill_forced_register() and
+	pop_arg()/pop_slot().  Add kill_readonce_register() and
+	slot_kill_readonce().  Mark return_float() and return_double()
+	sequences as use if HAVE_FLOATING_POINT_STACK.
+	Close PR#737 (and close PR#601 and PR#620 for JIT2).
+	
 2000-12-26  Edouard G. Parmelan  <egp@free.fr>
 
 	* libraries/clib/math/BigInteger.c (toInt0): Use mpz_get_ui().
