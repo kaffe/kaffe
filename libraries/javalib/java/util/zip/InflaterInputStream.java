@@ -109,14 +109,13 @@ public class InflaterInputStream extends FilterInputStream
   public InflaterInputStream(InputStream in, Inflater inf, int size) 
   {
     super(in);
-    this.len = 0;
 
     if (in == null)
-      throw new NullPointerException ("in may not be null");
+      throw new NullPointerException("in may not be null");
     if (inf == null)
-      throw new NullPointerException ("inf may not be null");
+      throw new NullPointerException("inf may not be null");
     if (size < 0)
-      throw new IllegalArgumentException ("size may not be negative");
+      throw new IllegalArgumentException("size may not be negative");
     
     this.inf = inf;
     this.buf = new byte [size];
@@ -130,6 +129,8 @@ public class InflaterInputStream extends FilterInputStream
   {
     // According to the JDK 1.2 docs, this should only ever return 0
     // or 1 and should not be relied upon by Java programs.
+    if (inf == null)
+      throw new IOException("stream closed");
     return inf.finished() ? 0 : 1;
   }
 
@@ -150,7 +151,7 @@ public class InflaterInputStream extends FilterInputStream
   {
     if (in == null)
       throw new ZipException ("InflaterInputStream is closed");
-
+    
     len = in.read(buf, 0, buf.length);
 
     if (len < 0)
@@ -183,15 +184,14 @@ public class InflaterInputStream extends FilterInputStream
    */
   public int read(byte[] b, int off, int len) throws IOException
   {
-    if (in == null)
-      throw new ZipException ("InflaterInputStream is closed");
-
+    if (inf == null)
+      throw new IOException("stream closed");
     if (len == 0)
       return 0;
 
+    int count = 0;
     for (;;)
       {
-	int count;
 	
 	try
 	  {
@@ -222,27 +222,28 @@ public class InflaterInputStream extends FilterInputStream
    */
   public long skip(long n) throws IOException
   {
+    if (inf == null)
+      throw new IOException("stream closed");
     if (n < 0)
-      throw new IllegalArgumentException("Argument must be positive");
+      throw new IllegalArgumentException();
 
     if (n == 0)
       return 0;
 
-    // Implementation copied from InputStream
-    // Throw away n bytes by reading them into a temp byte[].
-    // Limit the temp array to 2Kb so we don't grab too much memory.
-    final int buflen = n > 2048 ? 2048 : (int) n;
+    int buflen = (int) Math.min(n, 2048);
     byte[] tmpbuf = new byte[buflen];
-    final long origN = n;
 
+    long skipped = 0L;
     while (n > 0L)
       {
-	int numread = read(tmpbuf, 0, n > buflen ? buflen : (int) n);
+	int numread = read(tmpbuf, 0, buflen);
 	if (numread <= 0)
 	  break;
 	n -= numread;
+	skipped += numread;
+	buflen = (int) Math.min(n, 2048);
       }
 
-    return origN - n;
+    return skipped;
  }
 }
