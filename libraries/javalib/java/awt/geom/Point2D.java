@@ -52,7 +52,7 @@ public abstract class Point2D implements Cloneable
   /**
    * The default constructor.
    *
-   * @see Point
+   * @see java.awt.Point
    * @see Point2D.Float
    * @see Point2D.Double
    */

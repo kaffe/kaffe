@@ -92,10 +92,9 @@ public class DefaultFocusTraversalPolicy
 	&& comp.enabled)
       {
 	if (comp.isFocusTraversableOverridden != 0
-	    && comp.isFocusTraversable ())
+	    && (comp.isFocusTraversable () || comp.isFocusable()))
 	  return true;
-	else
-	  {
+        
 	    if (!(comp instanceof Canvas
 		  || comp instanceof Panel
 		  || comp instanceof Label
@@ -105,7 +104,6 @@ public class DefaultFocusTraversalPolicy
 		  || comp.isLightweight ()))
 	      return true;
 	  }
-      }
     return false;
   }
 }

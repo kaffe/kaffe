@@ -54,12 +54,25 @@ public final class DataBufferUShort extends DataBuffer
   private short[] data;
   private short[][] bankData;
   
+  /**
+   * Creates a new data buffer with a single data bank containing the 
+   * specified number of <code>short</code> elements.
+   * 
+   * @param size the number of elements in the data bank.
+   */
   public DataBufferUShort(int size)
   {
     super(TYPE_USHORT, size);
     data = new short[size];
   }
 
+  /**
+   * Creates a new data buffer with the specified number of data banks, 
+   * each containing the specified number of <code>short</code> elements.
+   * 
+   * @param size the number of elements in the data bank.
+   * @param numBanks the number of data banks.
+   */
   public DataBufferUShort(int size, int numBanks)
   {
     super(TYPE_USHORT, size, numBanks);
@@ -67,18 +80,41 @@ public final class DataBufferUShort extends DataBuffer
     data = bankData[0];
   }
 
+  /**
+   * Creates a new data buffer backed by the specified data bank.
+   * 
+   * @param dataArray the data bank.
+   * @param size the number of elements in the data bank.
+   */
   public DataBufferUShort(short[] dataArray, int size)
   {
     super(TYPE_USHORT, size);
     data = dataArray;
   }
     
+  /**
+   * Creates a new data buffer backed by the specified data bank, with
+   * the specified offset to the first element.
+   * 
+   * @param dataArray the data bank.
+   * @param size the number of elements in the data bank.
+   * @param offset the offset to the first element in the array.
+   */
   public DataBufferUShort(short[] dataArray, int size, int offset)
   {
     super(TYPE_USHORT, size, 1, offset);
     data = dataArray;
   }
 
+  /**
+   * Creates a new data buffer backed by the specified data banks.
+   * 
+   * @param dataArray the data banks.
+   * @param size the number of elements in the data bank.
+   * 
+   * @throws NullPointerException if <code>dataArray</code> is 
+   *         <code>null</code>.
+   */
   public DataBufferUShort(short[][] dataArray, int size)
   {
     super(TYPE_USHORT, size, dataArray.length);
@@ -86,6 +122,17 @@ public final class DataBufferUShort extends DataBuffer
     data = bankData[0];
   }
 
+  /**
+   * Creates a new data buffer backed by the specified data banks, with
+   * the specified offsets to the first element in each bank.
+   * 
+   * @param dataArray the data banks.
+   * @param size the number of elements in the data bank.
+   * @param offsets the offsets to the first element in each data bank.
+   * 
+   * @throws NullPointerException if <code>dataArray</code> is 
+   *         <code>null</code>.
+   */
   public DataBufferUShort(short[][] dataArray, int size, int[] offsets)
   {
     super(TYPE_USHORT, size, dataArray.length, offsets);
@@ -93,37 +140,87 @@ public final class DataBufferUShort extends DataBuffer
     data = bankData[0];
   }
 
+  /**
+   * Returns the first data bank.
+   * 
+   * @return The first data bank.
+   */
   public short[] getData()
   {
     return data;
   }
     
+  /**
+   * Returns a data bank.
+   * 
+   * @param bank the bank index.
+   * @return A data bank.
+   */
   public short[] getData(int bank)
   {
     return bankData[bank];
   }
     
+  /**
+   * Returns the array underlying this <code>DataBuffer</code>.
+   * 
+   * @return The data banks.
+   */
   public short[][] getBankData()
   {
     return bankData;
   }
   
+  /**
+   * Returns an element from the first data bank.  The offset (specified in
+   * the constructor) is added to <code>i</code> before accessing the 
+   * underlying data array.
+   * 
+   * @param i the element index.
+   * @return The element.
+   */
   public int getElem(int i)
   {
     return data[i+offset] & 0xffff; // get unsigned short as int
   }
 
+  /**
+   * Returns an element from a particular data bank.  The offset (specified in
+   * the constructor) is added to <code>i</code> before accessing the 
+   * underlying data array.
+   * 
+   * @param bank the bank index.
+   * @param i the element index.
+   * @return The element.
+   */
   public int getElem(int bank, int i)
   {
     // get unsigned short as int
     return bankData[bank][i+offsets[bank]] & 0xffff;
   }
 
+  /**
+   * Sets an element in the first data bank.  The offset (specified in the
+   * constructor) is added to <code>i</code> before updating the underlying
+   * data array.
+   * 
+   * @param i the element index.
+   * @param val the new element value.
+   */
   public void setElem(int i, int val)
   {
     data[i+offset] = (short) val;
   }
 
+  /**
+   * Sets an element in a particular data bank.  The offset (specified in the
+   * constructor) is added to <code>i</code> before updating the underlying
+   * data array.
+   * 
+   * @param bank the data bank index.
+   * @param i the element index.
+   * @param val the new element value.
+   */
   public void setElem(int bank, int i, int val)
   {
     bankData[bank][i+offsets[bank]] = (short) val;

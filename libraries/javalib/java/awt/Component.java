@@ -58,6 +58,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.PaintEvent;
+import java.awt.event.WindowEvent;
 import java.awt.im.InputContext;
 import java.awt.im.InputMethodRequests;
 import java.awt.image.BufferStrategy;
@@ -3432,7 +3433,7 @@ public abstract class Component
    */
   public boolean isFocusTraversable()
   {
-    return enabled && visible && (peer == null || peer.isFocusTraversable());
+    return enabled && visible && (peer == null || isLightweight() || peer.isFocusTraversable());
   }
 
   /**
@@ -3447,7 +3448,11 @@ public abstract class Component
   }
 
   /**
-   * Specify whether this component can receive focus.
+   * Specify whether this component can receive focus. This method also
+   * sets the {@link #isFocusTraversableOverridden} field to 1, which
+   * appears to be the undocumented way {@link
+   * DefaultFocusTraversalPolicy#accept()} determines whether to respect
+   * the {@link #isFocusable()} method of the component.
    *
    * @param focusable the new focusable status
    * @since 1.4
@@ -3456,6 +3461,7 @@ public abstract class Component
   {
     firePropertyChange("focusable", this.focusable, focusable);
     this.focusable = focusable;
+    this.isFocusTraversableOverridden = 1;
   }
 
   /**
@@ -3714,7 +3720,7 @@ public abstract class Component
             Window toplevel = (Window) parent;
             if (toplevel.isFocusableWindow ())
               {
-                if (peer != null)
+                if (peer != null && !isLightweight())
                   // This call will cause a FOCUS_GAINED event to be
                   // posted to the system event queue if the native
                   // windowing system grants the focus request.
@@ -3800,7 +3806,7 @@ public abstract class Component
             Window toplevel = (Window) parent;
             if (toplevel.isFocusableWindow ())
               {
-                if (peer != null)
+                if (peer != null && !isLightweight())
                   // This call will cause a FOCUS_GAINED event to be
                   // posted to the system event queue if the native
                   // windowing system grants the focus request.
@@ -3921,6 +3927,7 @@ public abstract class Component
                 if (focusedWindow == toplevel)
                   {
                     if (peer != null
+                        && !isLightweight()
                         && !(this instanceof Window))
                       // This call will cause a FOCUS_GAINED event to be
                       // posted to the system event queue if the native
@@ -4690,6 +4697,7 @@ p   * <li>the set of backward traversal keys
    *
    * @param e the event to dispatch
    */
+
   void dispatchEventImpl (AWTEvent e)
   {
     Event oldEvent = translateEvent (e);
@@ -4698,7 +4706,30 @@ p   * <li>the set of backward traversal keys
       postEvent (oldEvent);
 
     if (eventTypeEnabled (e.id))
+      {
+        // the trick we use to communicate between dispatch and redispatch
+        // is to have KeyboardFocusManager.redispatch synchronize on the
+        // object itself. we then do not redispatch to KeyboardFocusManager
+        // if we are already holding the lock.
+        if (! Thread.holdsLock(e))
+          {
+            switch (e.id)
+              {
+              case WindowEvent.WINDOW_GAINED_FOCUS:
+              case WindowEvent.WINDOW_LOST_FOCUS:
+              case KeyEvent.KEY_PRESSED:
+              case KeyEvent.KEY_RELEASED:
+              case KeyEvent.KEY_TYPED:
+              case FocusEvent.FOCUS_GAINED:
+              case FocusEvent.FOCUS_LOST:
+                if (KeyboardFocusManager
+                    .getCurrentKeyboardFocusManager()
+                    .dispatchEvent(e))
+                    return;
+              }
+          }
       processEvent (e);
+  }
   }
 
   /**

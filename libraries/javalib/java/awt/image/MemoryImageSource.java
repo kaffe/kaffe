@@ -166,9 +166,9 @@ public class MemoryImageSource implements ImageProducer
 	Vector list = (Vector) consumers.clone();
 	for(int i = 0; i < list.size(); i++) {
 	    ic = (ImageConsumer) list.elementAt(i);
-		sendPicture( ic );
+	    sendPicture( ic );
 	    ic.imageComplete( ImageConsumer.STATICIMAGEDONE );
-	    }	
+	}	
     }
 
     /**
@@ -217,7 +217,7 @@ public class MemoryImageSource implements ImageProducer
 			ic = (ImageConsumer) list.elementAt(i);
 			sendPicture( ic );
 			ic.imageComplete( ImageConsumer.SINGLEFRAME );
-		    }	
+		}	
 	    }
     }
 

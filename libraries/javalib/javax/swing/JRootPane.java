@@ -63,7 +63,9 @@ public class JRootPane extends JComponent
   //  The class used to obtain the accessible role for this object.
   protected static class AccessibleJRootPane
   {
-    /** DOCUMENT ME! */
+    /**
+     * For compatability with Sun's JDK
+     */
     private static final long serialVersionUID = 1082432482784468088L;
 
     /**

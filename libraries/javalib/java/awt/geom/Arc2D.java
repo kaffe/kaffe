@@ -569,40 +569,83 @@ public abstract class Arc2D extends RectangularShape
         || contains(x + w, y + h))
       return true;
 
-    double mx = getX() + getWidth() / 2;
-    double my = getY() + getHeight() / 2;
-    double x1 = mx
-                + getWidth() * Math.cos(Math.toRadians(getAngleStart())) / 2;
-    double y1 = my
-                - getHeight() * Math.sin(Math.toRadians(getAngleStart())) / 2;
-    double x2 = mx
-                + getWidth() * Math.cos(Math.toRadians(getAngleStart()
-                                                       + extent)) / 2;
-    double y2 = my
-                - getHeight() * Math.sin(Math.toRadians(getAngleStart()
-                                                        + extent)) / 2;
+    Rectangle2D rect = new Rectangle2D.Double(x, y, w, h);
+
+    double a = getWidth() / 2.0;
+    double b = getHeight() / 2.0;
+
+    double mx = getX() + a;
+    double my = getY() + b;
+    double x1 = mx + a * Math.cos(Math.toRadians(getAngleStart()));
+    double y1 = my - b * Math.sin(Math.toRadians(getAngleStart()));
+    double x2 = mx + a * Math.cos(Math.toRadians(getAngleStart() + extent));
+    double y2 = my - b * Math.sin(Math.toRadians(getAngleStart() + extent));
+
     if (getArcType() != CHORD)
       {
 	// check intersections against the pie radii
-	if (Line2D.linesIntersect(mx, my, x1, y1, x, y, x + w, y)
-	    || Line2D.linesIntersect(mx, my, x1, y1, x + w, y, x + w, y + h)
-	    || Line2D.linesIntersect(mx, my, x1, y1, x, y, x, y + h)
-	    || Line2D.linesIntersect(mx, my, x1, y1, x, y + h, x + w, y + h))
+	if (rect.intersectsLine(mx, my, x1, y1))
 	  return true;
-
-	if (Line2D.linesIntersect(mx, my, x2, y2, x, y, x + w, y)
-	    || Line2D.linesIntersect(mx, my, x2, y2, x + w, y, x + w, y + h)
-	    || Line2D.linesIntersect(mx, my, x2, y2, x, y, x, y + h)
-	    || Line2D.linesIntersect(mx, my, x2, y2, x, y + h, x + w, y + h))
+	if (rect.intersectsLine(mx, my, x2, y2))
 	  return true;
       }
-    else if (Line2D.linesIntersect(x1, y1, x2, y2, x, y, x + w, y)
-             || Line2D.linesIntersect(x1, y1, x2, y2, x + w, y, x + w, y + h)
-             || Line2D.linesIntersect(x1, y1, x2, y2, x, y, x, y + h)
-             || Line2D.linesIntersect(x1, y1, x2, y2, x, y + h, x + w, y + h))
+    else// check the chord
+    if (rect.intersectsLine(x1, y1, x2, y2))
       return true;
 
-    if ((new Rectangle2D.Double(x, y, w, h)).contains(x1, y1))
+    // Check the Arc segment against the four edges
+    double dx;
+
+    // Check the Arc segment against the four edges
+    double dy;
+    dy = y - my;
+    dx = a * Math.sqrt(1 - ((dy * dy) / (b * b)));
+    if (! java.lang.Double.isNaN(dx))
+      {
+	if (mx + dx >= x && mx + dx <= x + w
+	    && containsAngle(Math.toDegrees(Math.atan2(-dy, dx))))
+	  return true;
+	if (mx - dx >= x && mx - dx <= x + w
+	    && containsAngle(Math.toDegrees(Math.atan2(-dy, -dx))))
+	  return true;
+      }
+    dy = (y + h) - my;
+    dx = a * Math.sqrt(1 - ((dy * dy) / (b * b)));
+    if (! java.lang.Double.isNaN(dx))
+      {
+	if (mx + dx >= x && mx + dx <= x + w
+	    && containsAngle(Math.toDegrees(Math.atan2(-dy, dx))))
+	  return true;
+	if (mx - dx >= x && mx - dx <= x + w
+	    && containsAngle(Math.toDegrees(Math.atan2(-dy, -dx))))
+	  return true;
+      }
+    dx = x - mx;
+    dy = b * Math.sqrt(1 - ((dx * dx) / (a * a)));
+    if (! java.lang.Double.isNaN(dy))
+      {
+	if (my + dy >= y && my + dy <= y + h
+	    && containsAngle(Math.toDegrees(Math.atan2(-dy, dx))))
+	  return true;
+	if (my - dy >= y && my - dy <= y + h
+	    && containsAngle(Math.toDegrees(Math.atan2(dy, dx))))
+	  return true;
+      }
+
+    dx = (x + w) - mx;
+    dy = b * Math.sqrt(1 - ((dx * dx) / (a * a)));
+    if (! java.lang.Double.isNaN(dy))
+      {
+	if (my + dy >= y && my + dy <= y + h
+	    && containsAngle(Math.toDegrees(Math.atan2(-dy, dx))))
+	  return true;
+	if (my - dy >= y && my - dy <= y + h
+	    && containsAngle(Math.toDegrees(Math.atan2(dy, dx))))
+	  return true;
+      }
+
+    // Check whether the arc is contained within the box
+    if (rect.contains(mx, my))
       return true;
 
     return false;
@@ -627,37 +670,27 @@ public abstract class Arc2D extends RectangularShape
         && contains(x + w, y + h)))
       return false;
 
-    double mx = getX() + getWidth() / 2;
-    double my = getY() + getHeight() / 2;
-    double x1 = mx
-                + getWidth() * Math.cos(Math.toRadians(getAngleStart())) / 2;
-    double y1 = my
-                - getHeight() * Math.sin(Math.toRadians(getAngleStart())) / 2;
-    double x2 = mx
-                + getWidth() * Math.cos(Math.toRadians(getAngleStart()
-                                                       + extent)) / 2;
-    double y2 = my
-                - getHeight() * Math.sin(Math.toRadians(getAngleStart()
-                                                        + extent)) / 2;
+    Rectangle2D rect = new Rectangle2D.Double(x, y, w, h);
+
+    double a = getWidth() / 2.0;
+    double b = getHeight() / 2.0;
+
+    double mx = getX() + a;
+    double my = getY() + b;
+    double x1 = mx + a * Math.cos(Math.toRadians(getAngleStart()));
+    double y1 = my - b * Math.sin(Math.toRadians(getAngleStart()));
+    double x2 = mx + a * Math.cos(Math.toRadians(getAngleStart() + extent));
+    double y2 = my - b * Math.sin(Math.toRadians(getAngleStart() + extent));
     if (getArcType() != CHORD)
       {
 	// check intersections against the pie radii
-	if (Line2D.linesIntersect(mx, my, x1, y1, x, y, x + w, y)
-	    || Line2D.linesIntersect(mx, my, x1, y1, x + w, y, x + w, y + h)
-	    || Line2D.linesIntersect(mx, my, x1, y1, x, y, x, y + h)
-	    || Line2D.linesIntersect(mx, my, x1, y1, x, y + h, x + w, y + h))
+	if (rect.intersectsLine(mx, my, x1, y1))
 	  return false;
 
-	if (Line2D.linesIntersect(mx, my, x2, y2, x, y, x + w, y)
-	    || Line2D.linesIntersect(mx, my, x2, y2, x + w, y, x + w, y + h)
-	    || Line2D.linesIntersect(mx, my, x2, y2, x, y, x, y + h)
-	    || Line2D.linesIntersect(mx, my, x2, y2, x, y + h, x + w, y + h))
+	if (rect.intersectsLine(mx, my, x2, y2))
 	  return false;
       }
-    else if (Line2D.linesIntersect(x1, y1, x2, y2, x, y, x + w, y)
-             || Line2D.linesIntersect(x1, y1, x2, y2, x + w, y, x + w, y + h)
-             || Line2D.linesIntersect(x1, y1, x2, y2, x, y, x, y + h)
-             || Line2D.linesIntersect(x1, y1, x2, y2, x, y + h, x + w, y + h))
+    else if (rect.intersectsLine(x1, y1, x2, y2))
       return false;
     return true;
   }

@@ -1,5 +1,5 @@
-/* plain.java -- Content Handler for text/plain type
-   Copyright (C) 1998 Free Software Foundation, Inc.
+/* TabSet.java --
+   Copyright (C) 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -7,7 +7,7 @@ GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
- 
+
 GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -35,55 +35,68 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+package javax.swing.text;
 
-package gnu.java.net.content.text;
+import java.io.Serializable;
 
-import java.net.ContentHandler;
-import java.net.URLConnection;
-import java.io.IOException;
-
-/**
-  * This class is the ContentHandler for the text/plain MIME type.  It
-  * simply returns an InputStream object of the text being read.
-  *
-  * @version 0.1
-  *
-  * @author Aaron M. Renn (arenn@urbanophile.com)
-  */
-public class plain extends ContentHandler
+public class TabSet implements Serializable
 {
+  TabStop[] tabs;
 
-/*************************************************************************/
+  public TabSet(TabStop[] t) 
+  {
+    tabs = t;
+  }
+ 
+  public TabStop getTab(int i) 
+  {
+    return tabs[i];
+  }
 
-/*
- * Constructors
- */
+  public TabStop getTabAfter(float location) 
+  {
+    int idx = getTabIndexAfter(location);
+    if (idx == -1)
+      return null;
+    else
+      return tabs[idx];        
+  }
 
-/**
-  * Default do nothing constructor
-  */
-public
-plain()
-{
-  ; 
+  public int getTabCount() 
+  {
+    return tabs.length;
+  }
+
+  public int getTabIndex(TabStop tab) 
+  {
+    for (int i = 0; i < tabs.length; ++i)
+      if (tabs[i] == tab)
+        return i;
+    return -1;
+  }
+
+  public int getTabIndexAfter(float location) 
+  {
+    int idx = -1;
+    for (int i = 0; i < tabs.length; ++i)
+      {
+        if (location < tabs[i].getPosition())
+          idx = i;
+      }
+    return idx;
+  }
+
+  public String toString()
+  {
+    StringBuffer sb = new StringBuffer();
+    sb.append("[");
+    for (int i = 0; i < tabs.length; ++i)
+      {
+        if (i != 0)
+          sb.append(" - ");
+        sb.append(tabs[i].toString());
+      }
+    sb.append("]");
+    return sb.toString();
+  }
 }
-
-/*************************************************************************/
-
-/**
-  * Returns an InputStream as the content for this object
-  *
-  * @param url_con The URLConnection to get the content of
-  *
-  * @return An InputStream for that connection
-  *
-  * @exception IOException If an error occurs
-  */
-public Object
-getContent(URLConnection url_con) throws IOException
-{
-  return(url_con.getInputStream());
-}
-
-} // class plain
-

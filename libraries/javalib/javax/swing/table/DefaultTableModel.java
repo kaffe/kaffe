@@ -50,11 +50,6 @@ public class DefaultTableModel extends AbstractTableModel
   implements Serializable
 {
   static final long serialVersionUID = 6680042567037222321L;
-
-	//-------------------------------------------------------------
-	// Variables --------------------------------------------------
-	//-------------------------------------------------------------
-
 	/**
 	 * dataVector
 	 */
@@ -65,228 +60,216 @@ public class DefaultTableModel extends AbstractTableModel
 	 */
 	protected Vector columnIdentifiers;
 
-
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
-
 	/**
 	 * Constructor DefaultTableModel
 	 */
-	public DefaultTableModel() {
+  public DefaultTableModel() 
+  {
 		this(0, 0);
-	} // DefaultTableModel()
+  }
 
 	/**
 	 * Constructor DefaultTableModel
 	 * @param value0 TODO
 	 * @param value1 TODO
 	 */
-	public DefaultTableModel(int numRows, int numColumns) {
-
-		// Variables
-		int		columnIndex;
-		Vector		defaultNames;
-
-		// Create Column Names
-		defaultNames = new Vector();
-		for (columnIndex = 0; columnIndex < numColumns; columnIndex++) {
-			defaultNames.addElement(super.getColumnName(columnIndex));
-		} // for
-
-		// Setup Data
-//		setDataVector(defaultNames, numRows);
-
-	} // DefaultTableModel()
+  public DefaultTableModel(int numRows, int numColumns) 
+  {
+    Vector defaultNames = new Vector(numColumns);
+    Vector data = new Vector(numRows);
+    for (int i = 0; i < numColumns; i++) 
+      {
+        defaultNames.add(super.getColumnName(i));
+        Vector tmp = new Vector(numColumns);
+        tmp.setSize(numColumns);
+        data.add(tmp);
+      }          
+    setDataVector(defaultNames, data);
+  }
 
 	/**
 	 * Constructor DefaultTableModel
 	 * @param value0 TODO
 	 * @param value1 TODO
 	 */
-	public DefaultTableModel(Vector columnNames, int numRows) {
+  public DefaultTableModel(Vector columnNames, int numRows) 
+  {
+    Vector data = new Vector();
+    int numColumns = 0;
 
-		// Variables
-		Vector		data;
-		Vector		rowData;
-		int		rowIndex;
-		int		numColumns;
-
-		// Create Data
-		data = new Vector();
-		if (columnNames == null) {
-			numColumns = 0;
-		} else {
+    if (columnNames != null)
 			numColumns = columnNames.size();
-		} // if
-		for (rowIndex = 0; rowIndex < numRows; rowIndex++) {
-			rowData = new Vector();
-			rowData.setSize(numColumns);
-			data.addElement(rowData);
-		} // for
 
-		// Setup Data
+    while (0 < numRows--) 
+      {
+        Vector rowData = new Vector();
+        rowData.setSize(numColumns);
+        data.add(rowData);
+      }
 		setDataVector(data, columnNames);
-
-	} // DefaultTableModel()
+  }
 
 	/**
 	 * Constructor DefaultTableModel
 	 * @param value0 TODO
 	 * @param value1 TODO
 	 */
-	public DefaultTableModel(Object[] columnNames, int numRows) {
+  public DefaultTableModel(Object[] columnNames, int numRows) 
+  {
 		this(convertToVector(columnNames), numRows);
-	} // DefaultTableModel()
+  }
 
 	/**
 	 * Constructor DefaultTableModel
 	 * @param value0 TODO
 	 * @param value1 TODO
 	 */
-	public DefaultTableModel(Vector data, Vector columnNames) {
+  public DefaultTableModel(Vector data, Vector columnNames) 
+  {
 		setDataVector(data, columnNames);
-	} // DefaultTableModel()
+  }
 
 	/**
 	 * Constructor DefaultTableModel
 	 * @param value0 TODO
 	 * @param value1 TODO
 	 */
-	public DefaultTableModel(Object[][] data, Object[] columnNames) {
+  public DefaultTableModel(Object[][] data, Object[] columnNames) 
+  {
 		this(convertToVector(data), convertToVector(columnNames));
-	} // DefaultTableModel()
-
-
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  }
 
 	/**
 	 * getDataVector
 	 * @returns Vector
 	 */
-	public Vector getDataVector() {
+  public Vector getDataVector() 
+  {
 		return dataVector;
-	} // getDataVector()
+  }
 
 	/**
 	 * setDataVector
 	 * @param value0 TODO
 	 * @param value1 TODO
 	 */
-	public void setDataVector(Vector data, Vector columnNames) {
-
-		// Variables
-		int	rowIndex;
-		int	numRows;
-		int	numColumns;
-		Vector	columnVector;
-
-		// Set Data
+  public void setDataVector(Vector data, Vector columnNames) 
+  {
 		dataVector = data;
 		columnIdentifiers = columnNames;
-
-		// Check Data
-		numRows = data.size();
-		numColumns = columnNames.size();
-		for (rowIndex = 0; rowIndex < numRows; rowIndex++) {
-			columnVector = (Vector) dataVector.get(rowIndex);
-			columnVector.setSize(numColumns);
-		} // for
-
-	} // setDataVector()
+    for (int r = 0; r < data.size(); r++) {
+      ((Vector) dataVector.get(r)).setSize(columnNames.size());
+    }          
+  }
 
 	/**
 	 * setDataVector
 	 * @param value0 TODO
 	 * @param value1 TODO
 	 */
-	public void setDataVector(Object[][] data, Object[] columnNames) {
-		setDataVector(convertToVector(data), convertToVector(columnNames));
-	} // setDataVector()
+  public void setDataVector(Object[][] data, Object[] columnNames) 
+  {
+    setDataVector(convertToVector(data), 
+                  convertToVector(columnNames));
+  }
 
 	/**
 	 * newDataAvailable
 	 * @param value0 TODO
 	 */
-	public void newDataAvailable(TableModelEvent event) {
+  public void newDataAvailable(TableModelEvent event) 
+  {
 		fireTableChanged(event);
-	} // newDataAvailable()
+  }
 
 	/**
 	 * newRowsAdded
 	 * @param value0 TODO
 	 */
-	public void newRowsAdded(TableModelEvent event) {
-		// TODO
-	} // newRowsAdded()
+  public void newRowsAdded(TableModelEvent event) 
+  {
+    fireTableChanged(event);
+  }
 
 	/**
 	 * rowsRemoved
 	 * @param value0 TODO
 	 */
-	public void rowsRemoved(TableModelEvent event) {
+  public void rowsRemoved(TableModelEvent event) 
+  {
 		fireTableChanged(event);
-	} // rowsRemoved()
+  }
 
 	/**
 	 * setColumnIdentifiers
 	 * @param value0 TODO
 	 */
-	public void setColumnIdentifiers(Vector columnIdentifiers) {
+  public void setColumnIdentifiers(Vector columnIdentifiers) 
+  {
 		this.columnIdentifiers = columnIdentifiers;
 		setColumnCount(columnIdentifiers.size());
-	} // setColumnIdentifiers()
+  }
 
 	/**
 	 * setColumnIdentifiers
 	 * @param value0 TODO
 	 */
-	public void setColumnIdentifiers(Object[] columnIdentifiers) {
+  public void setColumnIdentifiers(Object[] columnIdentifiers) 
+  {
 		setColumnIdentifiers(convertToVector(columnIdentifiers));
-	} // setColumnIdentifiers()
+  }
 
 	/**
 	 * setNumRows
 	 * @param value0 TODO
 	 */
-	public void setNumRows(int numRows) {
+  public void setNumRows(int numRows) 
+  {
 		setRowCount(numRows);
-	} // setNumRows()
+  }
 
 	/**
 	 * setRowCount
 	 * @param value0 TODO
 	 */
-	public void setRowCount(int rowCount) {
-		// TODO
-	} // setRowCount()
+  public void setRowCount(int rowCount) 
+  {
+    dataVector.setSize(rowCount);
+    fireTableDataChanged();
+  }
 
 	/**
 	 * setColumnCount
 	 * @param value0 TODO
 	 */
-	public void setColumnCount(int columnCount) {
-		// TODO
-	} // setColumnCount()
+  public void setColumnCount(int columnCount) 
+  {
+    for (int i = 0; i < dataVector.size(); ++i)
+      {
+        ((Vector) dataVector.get(i)).setSize(columnCount);
+      }
+    columnIdentifiers.setSize(columnCount);
+    fireTableDataChanged();
+  }
 
 	/**
 	 * addColumn
 	 * @param value0 TODO
 	 */
-	public void addColumn(Object columnName) {
-		addColumn(columnName, new Vector(dataVector.size()));
-	} // addColumn()
+  public void addColumn(Object columnName) 
+  {
+    addColumn(columnName, (Object[]) null);
+  }
 
 	/**
 	 * addColumn
 	 * @param value0 TODO
 	 * @param value1 TODO
 	 */
-	public void addColumn(Object columnName, Vector columnData) {
-		// TODO
-	} // addColumn()
+  public void addColumn(Object columnName, Vector columnData) 
+  {
+    addColumn(columnName, columnData == null ? null : columnData.toArray());
+  }
 
 	/**
 	 * addColumn
@@ -294,16 +277,22 @@ public class DefaultTableModel extends AbstractTableModel
 	 * @param value1 TODO
 	 */
 	public void addColumn(Object columnName, Object[] columnData) {
-		// TODO
-	} // addColumn()
+    for (int i = 0; i < dataVector.size(); ++i)
+      {
+        ((Vector) dataVector.get(i)).add(columnData == null ? null : columnData[i]);
+      }
+    columnIdentifiers.add(columnName);
+    fireTableDataChanged();
+  }
 
 	/**
 	 * addRow
 	 * @param value0 TODO
 	 */
 	public void addRow(Vector rowData) {
-		// TODO
-	} // addRow()
+    dataVector.add(rowData);
+    fireTableDataChanged();
+  }
 
 	/**
 	 * addRow
@@ -311,7 +300,7 @@ public class DefaultTableModel extends AbstractTableModel
 	 */
 	public void addRow(Object[] rowData) {
 		addRow(convertToVector(rowData));
-	} // addRow()
+  }
 
 	/**
 	 * insertRow
@@ -320,7 +309,8 @@ public class DefaultTableModel extends AbstractTableModel
 	 */
 	public void insertRow(int row, Vector rowData) {
 		dataVector.add(row, rowData);
-	} // insertRow()
+    fireTableDataChanged();
+  }
 
 	/**
 	 * insertRow
@@ -329,7 +319,7 @@ public class DefaultTableModel extends AbstractTableModel
 	 */
 	public void insertRow(int row, Object[] rowData) {
 		insertRow(row, convertToVector(rowData));
-	} // insertRow()
+  }
 
 	/**
 	 * moveRow
@@ -338,18 +328,12 @@ public class DefaultTableModel extends AbstractTableModel
 	 * @param value2 TODO
 	 */
 	public void moveRow(int startIndex, int endIndex, int toIndex) {
-
-		// Variables
-		int		index;
-		Vector	vector;
-
-		// Move Rows
-		for (index = 0; index < (endIndex - startIndex); index++) {
-			vector = (Vector) dataVector.remove(startIndex);
+    for (int index = 0; index < (endIndex - startIndex); index++) {
+      Vector vector = (Vector) dataVector.remove(startIndex);
 			dataVector.add(toIndex, vector);
-		} // for
-
-	} // moveRow()
+    }
+    fireTableDataChanged();
+  }
 
 	/**
 	 * removeRow
@@ -357,7 +341,8 @@ public class DefaultTableModel extends AbstractTableModel
 	 */
 	public void removeRow(int row) {
 		dataVector.remove(row);
-	} // removeRow()
+    fireTableDataChanged();
+  }
 
 	/**
 	 * getRowCount
@@ -365,7 +350,7 @@ public class DefaultTableModel extends AbstractTableModel
 	 */
 	public int getRowCount() {
 		return dataVector.size();
-	} // getRowCount()
+  }
 
 	/**
 	 * getColumnCount
@@ -373,7 +358,7 @@ public class DefaultTableModel extends AbstractTableModel
 	 */
 	public int getColumnCount() {
 		return columnIdentifiers.size();
-	} // getColumnCount()
+  }
 
 	/**
 	 * getColumnName
@@ -381,16 +366,14 @@ public class DefaultTableModel extends AbstractTableModel
 	 * @returns String
 	 */
 	public String getColumnName(int column) {
-
 		// Check for Column
 		if (columnIdentifiers == null || column >= getColumnCount()) {
 			return super.getColumnName(column);
-		} // if
+    }
 
 		// Return Column name
 		return (String) columnIdentifiers.get(column);
-
-	} // getColumnName()
+  }
 
 	/**
 	 * isCellEditable
@@ -400,7 +383,7 @@ public class DefaultTableModel extends AbstractTableModel
 	 */
 	public boolean isCellEditable(int row, int column) {
 		return true;
-	} // isCellEditable()
+  }
 
 	/**
 	 * getValueAt
@@ -409,17 +392,8 @@ public class DefaultTableModel extends AbstractTableModel
 	 * @returns Object
 	 */
 	public Object getValueAt(int row, int column) {
-
-		// Variables
-		Vector	rowVector;
-
-		// Get Row Vector
-		rowVector = (Vector) dataVector.get(row);
-
-		// Get Data
-		return rowVector.get(column);
-
-	} // getValueAt()
+    return ((Vector) dataVector.get(row)).get(column);
+  }
 
 	/**
 	 * setValueAt
@@ -428,18 +402,9 @@ public class DefaultTableModel extends AbstractTableModel
 	 * @param value2 TODO
 	 */
 	public void setValueAt(Object value, int row, int column) {
-
-		// Variables
-		Vector	rowVector;
-
-		// Get Row Vector
-		rowVector = (Vector) dataVector.get(row);
-
-		// Set Data
-		rowVector.remove(column);
-		rowVector.add(column, value);
-
-	} // setValueAt()
+    ((Vector) dataVector.get(row)).set(column, value);
+    fireTableDataChanged();
+  }
 
 	/**
 	 * convertToVector
@@ -447,26 +412,13 @@ public class DefaultTableModel extends AbstractTableModel
 	 * @returns Vector
 	 */
 	protected static Vector convertToVector(Object[] data) {
-
-		// Variables
-		int	index;
-		Vector	vector;
-
-		// Check for null
-		if (data == null) {
+    if (data == null)
 			return null;
-		} // if
-
-		// Process
-		vector = new Vector();
-		for (index = 0; index < data.length; index++) {
-			vector.add(data[index]);
-		} // for: index
-
-		// Return new Vector
+    Vector vector = new Vector(data.length);
+    for (int i = 0; i < data.length; i++) 
+      vector.add(data[i]);
 		return vector;
-
-	} // convertToVector()
+  }
 
 	/**
 	 * convertToVector
@@ -474,21 +426,11 @@ public class DefaultTableModel extends AbstractTableModel
 	 * @returns Vector
 	 */
 	protected static Vector convertToVector(Object[][] data) {
-
-		// Variables
-		int	index;
-		Vector	vector;
-
-		// Process
-		vector = new Vector();
-		for (index = 0; index < data.length; index++) {
-			vector.add(convertToVector(data[index]));
-		} // for: index
-
-		// Return new Vector
+    if (data == null)
+      return null;
+    Vector vector = new Vector(data.length);
+    for (int i = 0; i < data.length; i++)
+      vector.add(convertToVector(data[i]));
 		return vector;
-
-	} // convertToVector()
-
-
-} // DefaultTableModel
+  }
+}

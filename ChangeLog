@@ -1,3 +1,837 @@
+2004-09-12  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGlyphVector.c,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphics.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphics2D.java,
+	libraries/javalib/gnu/java/net/content/text/plain.java,
+	libraries/javalib/gnu/java/net/protocol/file/Connection.java,
+	libraries/javalib/java/awt/AWTEventMulticaster.java,
+	libraries/javalib/java/awt/Adjustable.java,
+	libraries/javalib/java/awt/Canvas.java,
+	libraries/javalib/java/awt/Color.java,
+	libraries/javalib/java/awt/Component.java,
+	libraries/javalib/java/awt/Container.java,
+	libraries/javalib/java/awt/DefaultFocusTraversalPolicy.java,
+	libraries/javalib/java/awt/DefaultKeyboardFocusManager.java,
+	libraries/javalib/java/awt/FontMetrics.java,
+	libraries/javalib/java/awt/KeyboardFocusManager.java,
+	libraries/javalib/java/awt/Label.java,
+	libraries/javalib/java/awt/Point.java,
+	libraries/javalib/java/awt/Polygon.java,
+	libraries/javalib/java/awt/Rectangle.java,
+	libraries/javalib/java/awt/Shape.java,
+	libraries/javalib/java/awt/SystemColor.java,
+	libraries/javalib/java/awt/dnd/package.html,
+	libraries/javalib/java/awt/geom/Arc2D.java,
+	libraries/javalib/java/awt/geom/Area.java,
+	libraries/javalib/java/awt/geom/CubicCurve2D.java,
+	libraries/javalib/java/awt/geom/Ellipse2D.java,
+	libraries/javalib/java/awt/geom/GeneralPath.java,
+	libraries/javalib/java/awt/geom/PathIterator.java,
+	libraries/javalib/java/awt/geom/Point2D.java,
+	libraries/javalib/java/awt/geom/QuadCurve2D.java,
+	libraries/javalib/java/awt/geom/Rectangle2D.java,
+	libraries/javalib/java/awt/geom/RoundRectangle2D.java,
+	libraries/javalib/java/awt/image/DataBuffer.java,
+	libraries/javalib/java/awt/image/DataBufferByte.java,
+	libraries/javalib/java/awt/image/DataBufferDouble.java,
+	libraries/javalib/java/awt/image/DataBufferFloat.java,
+	libraries/javalib/java/awt/image/DataBufferInt.java,
+	libraries/javalib/java/awt/image/DataBufferShort.java,
+	libraries/javalib/java/awt/image/DataBufferUShort.java,
+	libraries/javalib/java/awt/image/DirectColorModel.java,
+	libraries/javalib/java/awt/image/MemoryImageSource.java,
+	libraries/javalib/java/awt/image/RGBImageFilter.java,
+	libraries/javalib/java/io/DeleteFileHelper.java,
+	libraries/javalib/java/io/ObjectInputStream.java,
+	libraries/javalib/java/lang/Comparable.java,
+	libraries/javalib/java/net/Inet4Address.java,
+	libraries/javalib/java/net/URLConnection.java,
+	libraries/javalib/java/text/Format.java,
+	libraries/javalib/java/util/Arrays.java,
+	libraries/javalib/javax/rmi/CORBA/Stub.java,
+	libraries/javalib/javax/security/auth/PrivateCredentialPermission.java,
+	libraries/javalib/javax/swing/AbstractButton.java,
+	libraries/javalib/javax/swing/ActionMap.java,
+	libraries/javalib/javax/swing/Box.java,
+	libraries/javalib/javax/swing/ButtonGroup.java,
+	libraries/javalib/javax/swing/ComboBoxEditor.java,
+	libraries/javalib/javax/swing/ComboBoxModel.java,
+	libraries/javalib/javax/swing/DefaultButtonModel.java,
+	libraries/javalib/javax/swing/DefaultComboBoxModel.java,
+	libraries/javalib/javax/swing/DefaultListCellRenderer.java,
+	libraries/javalib/javax/swing/InputMap.java,
+	libraries/javalib/javax/swing/JColorChooser.java,
+	libraries/javalib/javax/swing/JComboBox.java,
+	libraries/javalib/javax/swing/JComponent.java,
+	libraries/javalib/javax/swing/JLabel.java,
+	libraries/javalib/javax/swing/JList.java,
+	libraries/javalib/javax/swing/JMenu.java,
+	libraries/javalib/javax/swing/JPopupMenu.java,
+	libraries/javalib/javax/swing/JRadioButton.java,
+	libraries/javalib/javax/swing/JRootPane.java,
+	libraries/javalib/javax/swing/JScrollPane.java,
+	libraries/javalib/javax/swing/JSpinner.java,
+	libraries/javalib/javax/swing/JTabbedPane.java,
+	libraries/javalib/javax/swing/JTable.java,
+	libraries/javalib/javax/swing/JTextArea.java,
+	libraries/javalib/javax/swing/JTextField.java,
+	libraries/javalib/javax/swing/JToggleButton.java,
+	libraries/javalib/javax/swing/JViewport.java,
+	libraries/javalib/javax/swing/KeyStroke.java,
+	libraries/javalib/javax/swing/MutableComboBoxModel.java,
+	libraries/javalib/javax/swing/ScrollPaneLayout.java,
+	libraries/javalib/javax/swing/SpinnerListModel.java,
+	libraries/javalib/javax/swing/SpinnerNumberModel.java,
+	libraries/javalib/javax/swing/SwingUtilities.java,
+	libraries/javalib/javax/swing/Timer.java,
+	libraries/javalib/javax/swing/ToolTipManager.java,
+	libraries/javalib/javax/swing/TransferHandler.java,
+	libraries/javalib/javax/swing/colorchooser/AbstractColorChooserPanel.java,
+	libraries/javalib/javax/swing/colorchooser/ColorChooserComponentFactory.java,
+	libraries/javalib/javax/swing/colorchooser/DefaultColorSelectionModel.java,
+	libraries/javalib/javax/swing/colorchooser/DefaultHSBChooserPanel.java,
+	libraries/javalib/javax/swing/colorchooser/DefaultPreviewPanel.java,
+	libraries/javalib/javax/swing/colorchooser/DefaultRGBChooserPanel.java,
+	libraries/javalib/javax/swing/colorchooser/DefaultSwatchChooserPanel.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicArrowButton.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicButtonListener.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicButtonUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicColorChooserUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicComboBoxEditor.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicComboBoxRenderer.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicComboBoxUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicComboPopup.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicFormattedTextFieldUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicGraphicsUtils.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicLookAndFeel.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicPasswordFieldUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicPopupMenuUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicSliderUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicSpinnerUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTableHeaderUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTableUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTextAreaUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicTextUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicToggleButtonUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicToolBarUI.java,
+	libraries/javalib/javax/swing/plaf/basic/ComboPopup.java,
+	libraries/javalib/javax/swing/table/DefaultTableCellRenderer.java,
+	libraries/javalib/javax/swing/table/DefaultTableColumnModel.java,
+	libraries/javalib/javax/swing/table/DefaultTableModel.java,
+	libraries/javalib/javax/swing/table/JTableHeader.java,
+	libraries/javalib/javax/swing/table/TableColumnModel.java,
+	libraries/javalib/javax/swing/table/TableModel.java,
+	libraries/javalib/javax/swing/text/AbstractDocument.java,
+	libraries/javalib/javax/swing/text/AttributeSet.java,
+	libraries/javalib/javax/swing/text/DefaultCaret.java,
+	libraries/javalib/javax/swing/text/DefaultEditorKit.java,
+	libraries/javalib/javax/swing/text/DefaultHighlighter.java,
+	libraries/javalib/javax/swing/text/FieldView.java,
+	libraries/javalib/javax/swing/text/JTextComponent.java,
+	libraries/javalib/javax/swing/text/PlainView.java,
+	libraries/javalib/javax/swing/text/Segment.java,
+	libraries/javalib/javax/swing/text/SimpleAttributeSet.java,
+	libraries/javalib/javax/swing/text/StyleConstants.java,
+	libraries/javalib/javax/swing/text/StyleContext.java,
+	libraries/javalib/javax/swing/text/TabSet.java,
+	libraries/javalib/javax/swing/text/TabStop.java,
+	libraries/javalib/javax/swing/text/TextAction.java,
+	libraries/javalib/javax/swing/text/Utilities.java,
+	libraries/javalib/javax/swing/text/View.java,
+	libraries/javalib/org/ietf/jgss/GSSException.java:
+	Resynced with GNU Classpath.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	2004-09-10  Bryce McKinlay  <mckinlay@redhat.com>
+
+	* gnu/java/net/protocol/file/Connection.java
+	(dateFormat): New static field.
+	(getHeaderField): Implemented.
+
+	2004-09-10  Michael Koch  <konqueror@gmx.de>
+
+	* gnu/java/net/protocol/file/Connection.java
+	(exists): Removed.
+	(isDirectory): Likewise.
+	(getListing): Likewise.
+
+	2004-09-09  Mark Wielaard  <mark@klomp.org>
+
+	Fixes bug #8991.
+	* java/net/URLConnection.java (getContent): Add support for
+	explicit mime types. Call getInputStream() if no handler found.
+	* gnu/java/net/content/text/plain.java: Removed
+
+	2004-09-09  Casey Marshall  <csm@gnu.org>
+
+	* java/io/ObjectInputStream.java (callReadMethod): re-throw
+	`ClassNotFoundException'.
+
+	2004-09-09  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/SystemColor.java: Fix @link doc entries.
+
+	2004-09-09  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/image/DataBuffer.java: Update API documentation.
+	* java/awt/image/DataBufferByte.java: Likewise.
+	* java/awt/image/DataBufferDouble.java: Likewise.
+	* java/awt/image/DataBufferFloat.java: Likewise.
+	* java/awt/image/DataBufferInt.java: Likewise.
+	* java/awt/image/DataBufferShort.java: Likewise.
+	* java/awt/image/DataBufferUShort.java: Likewise.
+
+	2004-09-09  Michael Koch  <konqueror@gmx.de>
+
+	* gnu/java/net/protocol/file/Connection.java
+	(lineSeparator): Made non-final.
+	(static): Removed.
+	(connect): Initialize lineSeparator lazily. Use ByteArrayInputStream
+	instead of StringBufferInputStream.
+
+	2004-09-09  Michael Koch  <konqueror@gmx.de>
+
+	* gnu/java/net/protocol/file/Connection.java
+	(connect): Handle file is a directory case.
+
+	2004-09-08  Sven de Marothy  <sven@physto.se>
+	
+	Patch from David Gilbert <david.gilbert@object-refinery.com>:
+	* java/awt/AWTEventMulticaster.java:
+	Fix a big number of documentation errors.
+	* java/awt/Adjustable.java
+	* java/awt/Point.java
+	* java/awt/Polygon.java
+	* java/awt/Rectangle.java
+	* java/awt/Shape.java
+	* java/awt/geom/Area.java
+	* java/awt/geom/Ellipse2D.java
+	* java/awt/geom/PathIterator.java 
+	* java/awt/geom/Point2D.java
+	* java/awt/geom/Rectangle2D.java 
+	* java/lang/Comparable.java
+	* java/util/Arrays.java:
+	Likewise. Thank you David!
+
+	2004-09-07  Sven de Marothy  <sven@physto.se>
+
+	* java/awt/geom/Arc2D.java:
+	(intersects): Fix: Now checks the arc segment.
+	(contains): Cleaned up.
+
+	* java/awt/geom/Area.java:
+	(isRectangular): Should return true on an empty path.
+	(equals): Check for null.
+	(rayIntersects): Fix insideness-test
+
+	* java/awt/geom/CubicCurve2D.java:
+	Fix insideness-test to comply with the correct behavior on edges
+	* java/awt/geom/GeneralPath.java:
+	Likewise
+	* java/awt/geom/QuadCurve2D.java:
+	Likewise
+	
+	2004-09-07  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/util/TimeZone.java
+	(getDefaultTimeZone): Fixed test to distinguish between hours and
+	minutes in specified timezone.
+
+	2004-09-06  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/awt/Canvas.java
+	(AccessibleAWTCanvas): added serialization UID
+	* java/awt/Label.java
+	(AccessibleAWTLabel): added serialization UID
+	* java/net/Inet4Address.java
+	(Inet4Address): added comment to serialization UID
+	* java/text/Format.java
+	(Format): added comment to serialization UID
+	* javax/rmi/CORBA/Stub.java
+	(Stub): added serialization UID
+	* javax/security/auth/PrivateCredentialPermission.java
+	(PrivateCredentialPermission): added serialization UID
+	* javax/swing/JRootPane.java
+	(AccessibleJRootPane): added comment to existing UID
+	* javax/swing/JSpinner.java
+	(DefaultEditor): added serialization UID
+	(NumberEditor): added serialization UID
+	* javax/swing/SpinnerListModel.java
+	(SpinnerListModel): added serialization UID
+	* javax/swing/SpinnerNumberModel.java
+	(SpinnerNumberModel): added serialization UID
+	* javax/swing/text/html/HTML.java
+	(UnknownTag): added serialization UID
+	* org/ietf/jgss/GSSException.java
+	(GSSException): added serialization UID
+	
+	2004-09-06  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/lang/Runtime.java
+	(load): Added link security check.
+	(loadLib): Changed link security check to read check.
+	(loadLibrary): Added link security check and throw if ClassLoader
+	supplied library doesn't exist.
+
+	2004-09-05  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* javax/swing/AbstractButton.java
+	Fixed a typo.
+	* javax/swing/JToggleButton.java
+	Added missing documentation.
+	(AccessibleJToggleButton): new inner class
+	(AccessibleJToggleButton()): new constructor
+	(getAccessibleRole()): new method
+	(itemStateChanged(ItemEvent)): new method
+	(JToggleButton(Icon, boolean)): new constructor
+	(getAccessibleContext()): implemented
+	(updateUI()): style cleanup
+	* javax/swing/JRadioButton.java
+	Added missing documentation.
+	(AccessibleJRadioButton): new inner class
+	(AccessibleJRadioButton()): new constructor
+	(getAccessibleRole()): new method
+	(JRadioButton(Icon, boolean)): new constructor
+	(JRadioButton(String, boolean)): new constructor
+	(JRadioButton(String, Icon, boolean)): new constructor
+	(getAccessibleContext()): implemented
+	(updateUI()): new method
+
+	2004-09-05  Mark Wielaard  <mark@klomp.org>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGlyphVector.c
+	(setChars): Only call pango_itemize() when vec->glyphitems != NULL.
+	Only call pango_shape() when gi->glyphs->num_glyphs > 0.
+
+	2004-09-05  Mark Wielaard  <mark@klomp.org>
+	
+	* gnu/java/awt/peer/gtk/GdkGraphics.java (setColor): Use
+	Color.BLACK if c == null, don't create new Color object each time.
+	* gnu/java/awt/peer/gtk/GdkGraphics2D.java (comp): New private
+	field.
+	(setColor): Use Color.BLACK when argument null.
+	(setComposite): Set this.comp field.
+	(getComposite): Return this.comp, or AlphaComposite.SrcOver when null.
+	(DrawState.comp): New private field.
+	(DrawState.save): Save Composite.
+	(DrawState.restore): Restore comp field.
+	* java/awt/FontMetrics.java (gRC): New static final private field.
+	(getLineMetrics(String, Graphics)): New method.
+	(getLineMetrics(String, int, int, Graphics)): Likewise.
+	(getLineMetrics(char[], int, int, Graphics)): Likewise.
+	(getLineMetrics(CharacterIterator, int, int, Graphics)): Likewise.
+	* javax/swing/JMenu.java (JMenu(String, boolean)): Ignore tearoff
+	argument. PR SWING/17294.
+	* javax/swing/plaf/basic/BasicGraphicsUtils.java (): Always use
+	the fall-back code since none of the TextArea methods are really
+	implemented now. PR SWING/17296.
+	* jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGlyphVector.c
+	(GdkGlyphVector_setChars): Replace assert() with if block when
+	pango_itemize() returns null. PR AWT/17295.
+	(GdkGlyphVector_allInkExtents): Likewise when vec->glyphitems is null.
+	
+	2004-09-05  Olga Rodimina  <rodimina@redhat.com>
+
+	* javax/swing/ComboBoxEditor.java: Added javadocs.
+	* javax/swing/ComboBoxModel.java: Likewise.
+	* javax/swing/DefaultComboBoxModel.java: Implemented.
+	* javax/swing/DefaultListCellRenderer.java: Added javadocs
+	and ran through jalopy to fix formatting style.
+	(getListCellRendererComponent): Use appropriate border
+	if renderer has focus and use noFocusBorder when it doesn't.
+	* javax/swing/JComboBox.java: Implemented.
+	* javax/swing/JList.java:
+	(locationToIndex): New Method. Implemented.
+	(indexToLocation): New Method.
+	* javax/swing/JPopupMenu.java: 
+	(visible): New field.
+	(isVisible): Changed to use new field above.
+	(setVisible): Likewise.
+	* javax/swing/MutableComboBoxModel.java: Added javadocs.
+	* javax/swing/plaf/basic/BasicArrowButton.java: 
+	(shadow): Changed default color to Color.gray.
+	* javax/swing/plaf/basic/BasicComboBoxUI.java: New File.
+	UI delegate for JComboBox.
+	* javax/swing/plaf/basic/BasicComboPopup.java: New File.
+	Popup menu containing list of JComboBox's items.
+	* javax/swing/plaf/basic/BasicComboBoxEditor.java: New File.
+	* javax/swing/plaf/basic/BasicComboBoxRenderer.java: New File.
+	* javax/swing/plaf/basic/BasicComboBoxUI.java: New File.
+	* javax/swing/plaf/basic/BasicComboPopup.java: New File.
+	* javax/swing/plaf/basic/BasicPopupMenuUI.java:
+	(popupMenuWillBecomeVisible): Set selected path to the first
+	element only if it is of type MenuElement. Also fix formatting
+	style.
+	* javax/swing/plaf/basic/ComboPopup.java: Added javadocs and missing
+	methods signatures.
+
+	2004-09-04  Tom Tromey  <tromey@redhat.com>
+
+	* java/awt/dnd/package.html: Fixed typo.
+
+	2004-09-04  Graydon Hoare  <graydon@redhat.com>
+
+	* javax/swing/Box.java: Fix setting of layout in ctor.
+	* javax/swing/JScrollPane.java: Scroll headers as well.
+	* javax/swing/JTable.java: Reimplement.
+	* javax/swing/JViewPort.java: Only add non-null children.
+	* javax/swing/ScrollPaneLayout.java: Correct header calculations.
+	* javax/swing/Timer.java: Fix stopping null waker.
+	* javax/swing/plaf/basic/BasicTableHeaderUI.java: New file.
+	* javax/swing/plaf/basic/BasicTableUI.java: New file.
+	* javax/swing/table/DefaultTableCellRenderer.java: Configure.
+	* javax/swing/table/DefaultTableColumnModel.java: Flesh out.
+	* javax/swing/table/DefaultTableModel.java: Clean up.
+	* javax/swing/table/JTableHeader.java: Implement.
+
+	2004-09-04  Graydon Hoare  <graydon@redhat.com>
+
+	* javax/swing/DefaultButtonModel.java:
+	Skip group notification when no group is set.
+
+	2004-09-04  Graydon Hoare  <graydon@redhat.com>
+
+	* javax/swing/JComponent.java
+	(resetKeyboardActions): Add null checks.
+
+	2004-09-04  Graydon Hoare  <graydon@redhat.com>
+
+        * javax/swing/JColorChooser.java:
+        Make a couple inner classes static, for jikes.
+
+	2004-09-04  Kim Ho  <kho@redhat.com>
+
+        * java/awt/Color.java: Fix documentation.
+        (RGBtoHSB): Use floats for conversions.
+        * javax/swing/ButtonGroup.java: Run Jalopy.
+        (setSelected): Reimplement.
+        * javax/swing/DefaultButtonModel.java: Run Jalopy.
+        (changeState): Let ButtonGroup know that the button 
+        is changing state.
+        * javax/swing/JColorChooser.java: Implement.
+        * javax/swing/JLabel.java: Run Jalopy.
+        * javax/swing/JSpinner.java: Run Jalopy.
+        (setValue): New method.
+        * javax/swing/JTabbedPane.java: Run Jalopy.
+        (removeTabAt): Call correct remove method.
+        * javax/swing/SpinnerNumberModel.java: Run Jalopy.
+        (getPreviousValue): Compare minimum value.
+        * javax/swing/Timer.java: Run Jalopy.
+        (run): Comment out println.
+        * javax/swing/ToolTipManager.java:
+        (mouseMoved): Get new tooltip text for location.
+        * javax/swing/colorchooser/AbstractColorChooserPanel.java:
+        Jalopy and Javadoc.
+        * javax/swing/colorchooser/ColorChooserComponentFactory.java:
+        Implement.
+        * javax/swing/colorchooser/DefaultColorSelectionModel.java:
+        Run Jalopy.
+        (setSelectedColor): Fire ChangeEvent.
+        * javax/swing/colorchooser/DefaultHSBChooserPanel.java:
+        New file. Implement.
+        * javax/swing/colorchooser/DefaultPreviewPanel.java:
+        Ditto.
+        * javax/swing/colorchooser/DefaultRGBChooserPanel.java:
+        Ditto.
+        * javax/swing/colorchooser/DefaultSwatchChooserPanel.java:
+        Ditto.
+        * javax/swing/plaf/basic/BasicArrowButton.java:
+        (getArrow): Fix size of upward pointing button.
+        * javax/swing/plaf/basic/BasicColorChooserUI.java:
+        Implement.
+        * javax/swing/plaf/basic/BasicSliderUI.java:
+        (getWidthOfWidestLabel): Use preferred dimensions.
+        (getHeightOfTallestLabel): Ditto.
+        * javax/swing/plaf/basic/BasicSpinnerUI.java:
+        Run Jalopy.
+        (mousePressed): Disable changes to spinner if it is not enabled.
+
+	2004-09-04  Tom Tromey  <tromey@redhat.com>
+
+	* java/io/DeleteFileHelper.java (DeleteFileHelper): No longer
+	public.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JTextArea.java
+	(lineWrap): Renamed from "wrapping".
+	(wrapStyleWord): NEw field.
+	(getLineWrap): Re-edited javadoc comment.
+	(setLineWrap): Likewise.
+	(getWrapStyleWord): New method.
+	(setWrapStyleWord): Likewise.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/plaf/basic/BasicTextAreaUI.java
+	(create): New method.
+	* javax/swing/text/DefaultHighlighter.java
+	(DefaultHighlightPainter.debugRect): Removed.
+	* javax/swing/text/StyleContext.java
+	(DEFAULT_STYLE): New field.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Add keybindings for selection.backward and
+	selection-forward for text components.
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(paintSafely): Paint highlight only when something is actually
+	selected.
+	* javax/swing/text/DefaultCaret.java
+	(handleHighlight): New method.
+	(setSelectionVisible): Don't do anything when nothing changes.
+	Handle highlight.
+	(moveDot): Reimplemented. Handle highlight.
+	(setDot): Set mark too. Handle highlight.
+	(getSelectionPainter): New method.
+	* javax/swing/text/DefaultEditorKit.java
+	(defaultActions): Added new actions for text selection.
+	* javax/swing/text/DefaultHighlighter.java
+	(DefaultHighlightPainter): New inner class.
+	(DefaultPainter): New field.
+	(paint): Implemented.
+	* javax/swing/text/PlainView.java
+	(paint): Don't draw background here again.
+	* javax/swing/text/Utilities.java
+	(getTabbedTextWidth): Use width of ' ' instead of 'm' for tabsize.
+	(drawTabbedText): Likewise.
+
+	2004-09-04  Graydon Hoare  <graydon@redhat.com>
+
+	* java/awt/Component.java
+	(isFocusTraversable): Predicate on isLightweight()
+	(setFocusable): Set isFocusTraversableOverridden.
+	(requestFocus): Predicate peer dispatch on !isLightweight()
+	(requestFocusInWindow): Likewise.
+	(dispatchEventImpl): Coordinate with KeyboardFocusManager.
+	* java/awt/Container.java
+	(dispatchEventImpl): Predicate on event mask.
+	(LightweightDispatcher): Remove focus machinery.
+	* java/awt/DefaultFocusTraversalPolicy.java
+	(accept): Expand predicate to include isFocusable().
+	* java/awt/DefaultKeyboardFocusManager.java:
+	Globally change c.dispatchEvent(e) to redispatchEvent(c,e)
+	* java/awt/KeyboardFocusManager.java
+	(redispatchEvent): Synchronize on event to prevent feedback.
+	* javax/swing/AbstractButton.java
+	(ButtonFocusListener): Remove class.
+	(init): Set focusPainted, focusable.
+	* javax/swing/ActionMap.java (get): Check parent for null.
+	* javax/swing/InputMap.java (get): Likewise.
+	* javax/swing/JComponent.java
+	(inputMap_whenFocused): New InputMap.
+	(inputMap_whenAncestorOfFocused): Likewise.
+	(inputMap_whenInFocusedWindow): Likewise.
+	(getActionForKeyStroke): Rewrite.
+	(getConditionForKeystroke): Likewise.
+	(ActionListenerProxy): New private class.
+	(setInputMap): Implement.
+	(getInputMap): Likewise.
+	(setActionMap): Likewise.
+	(getActionMap): Likewise.
+	(processComponentKeyEvent): New empty method.
+	(processKeyEvent): Implement.
+	(processKeyBinding): Likewise.
+	(resetKeyboardActions): Rewrite.
+	* javax/swing/KeyStroke.java: Rewrite.
+	* javax/swing/SwingUtilities.java
+	(notifyAction): Implement.
+	(replaceUIActionMap): Likewise.
+	(replaceUIInputMap): Likewise.
+	* javax/swing/plaf/basic/BasicButtonListener.java
+	(focusGained): Implement.
+	(focusLost): Repaint if focusPainted().
+	(installKeyboardActions): Install pressed / released actions.
+	(uninstallKeyboardActions): Implement.
+	* javax/swing/plaf/basic/BasicButtonUI.java
+	(focusColor): New field.
+	(installDefaults): Load focus color, install input map.
+	(installKeyboardActions): Implement.
+	(uninstallKeyboardActions): Likewise.
+	(paintFocus): Rewrite.
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(Button.focus): New default, midPurple.
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(kit): Make static.
+	(installUI): Get doc from kit, load defaults.
+	(getKeymapName): Implement.
+	(createKeymap): Likewise.
+	(installKeyboardActions): Likewise.
+	(getInputMap): Likewise.
+	(getActionMap): Likewise.
+	(createActionMap): Likewise.
+	* javax/swing/text/AbstractDocument.java
+	(getStartPosition): Implement.
+	(getEndPosition): Likewise.
+	* javax/swing/text/DefaultEditorKit.java
+	(CopyAction): New class.
+	(CutAction): Likewise.
+	(DefaultKeyTypedAction): Likewise.
+	(InsertBreakAction): Likewise.
+	(InsertContentAction): Likewise.
+	(InsertTabAction): Likewise.
+	(PasteAction): Likewise.
+	(defaultActions): New static table.
+	(createCaret): Implement.
+	(getActions): Likewise.
+	* javax/swing/text/JTextComponent.java
+	(KeymapWrapper): New private class.
+	(KeymapActionMap): Likewise.
+	(DefaultKeymap): New class.
+	(keymaps): New static table.
+	(keymap): New field.
+	(getKeymap): Implement.
+	(removeKeymap): Likewise.
+	(addKeymap): Likewise.
+	(setKeymap): Likewise.
+	(loadKeymap): Likewise.
+	(getActions): Likewise.
+	(margin): New field.
+	(JTextComponent): Build and install default keymap.
+	* javax/swing/text/TextAction.java
+	(textAction): Call super properly.
+	(getTextComponent): Implement.
+	* javax/swing/text/Utilities.java
+	(drawTabbedText): Adjust position by ascent.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(RottView.modelToView): New method.
+	(UpdateHandler): Renamed from EventHandler.
+	(updateHandler): Renamed from eventHandler.
+	(modelToView): Implemented.
+	* javax/swing/text/AbstractDocument.java
+	(BranchElement.getElement): Return null for non-existing indeces.
+	(BranchElement.getElementIndex): Return 0 in some corner cases.
+	* javax/swing/text/FieldView.java
+	(modelToView): New method.
+	* javax/swing/text/PlainView.java
+	(modelToView): Made public.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/text/AbstractDocument.java
+	(createBranchElement): Use new constructor of BranchElement.
+	(createLeafElement): Renamed arguments.
+	(getRootElements): Implemented.
+	(BranchElement.start): Removed.
+	(BranchElement.end): Likewise.
+	(BranchElement.BranchElement): Fixed arguments.
+	(BranchElement.getEndOffset): Reimplemented.
+	(BranchElement.getStartOffset): Likewis.
+	* javax/swing/text/DefaultCaret.java
+	(paint): Draw simple vertical line as caret instead of a rectangle.
+	* javax/swing/text/JTextComponent.java
+	(setText): Use doc directly.
+	* javax/swing/text/PlainView.java
+	(nextTabStop): Implemented.
+	* javax/swing/text/Utilities.java
+	(drawTabbedText): nextTabStop() returns an absolute x position.
+	(getTabbedTextWidth): Likewise.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/text/PlainView.java
+	(selectedColor): New field.
+	(unselectedColor): Likewise.
+	(font): Likewise.
+	(updateMetrics): New method.
+	(lineToRect): Likewise.
+	(modelToView): Likewise.
+	(drawSelectedText): Use color from JTextComponent ad draw with
+	Utilities class.
+	(drawUnselectedText): Likewise.
+	(paint): Initialize helper fields.
+	* javax/swing/text/View.java
+	(getChildAllocation): New method.
+	(getViewIndex): Likewise.
+	(getToolTipText): Likewise.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/text/Utilities.java
+	(drawTabbedText): Reimplemented.
+	(getTabbedTextWidth): Likewise.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(installDefaults): Install caret and highlighter.
+	(modelToView): Use Bias.Forward when calling sibling.
+	* javax/swing/text/AbstractDocument.java
+	(ElementEdit): Implements DocumentEvent.ElementChange.
+	(ElementEdit.ElementEdit): New method.
+	(ElementEdit.getChildrenAdded): Likewise.
+	(ElementEdit.getChildrenRemoved): Likewise.
+	(ElementEdit.getElement): Likewise.
+	(ElementEdit.getIndex): Likewise.
+	* javax/swing/text/DefaultCaret.java
+	(color): Removed.
+	(textComponent): Renamed from parent, made private.
+	(selectionVisible): Renamed from vis_sel, made private.
+	(blinkRate): Renamed from blink, made private.
+	(magicCaretPosition): Renamed from magic, made private.
+	(visible): Renamed from vis, made private.
+	(dot): Made private.
+	(mark): Likewise.
+	(deinstall): Remove as MouseMotionListener.
+	(install): Initialize textComponent first. Add as 
+	MouseMotionListener.
+	(paint): Reimplemented.
+	* javax/swing/text/JTextComponent.java
+	(setCaret): Deinstall old caret, install new one and fire property
+	change after setting property.
+	(setHighlighter): Deinstall old highlighter, install new one and fire
+	property change after setting property.
+	(setCaretColor): Fire property change after setting property.
+	(setDisabledTextColor): Likewise.
+	(setSelectedTextColor): Likewise.
+	(setSelectionColor): Likewise.
+	(modelToView): New method.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/text/AbstractDocument.java
+	(getText): Simplified.
+	* javax/swing/text/Segment.java
+	(current): New field.
+	(current): Reimplemented.
+	(first): Likewise.
+	(getIndex): Likewise.
+	(last): Likewise.
+	(next): Likewise.
+	(previous): Likewise.
+	(setIndex): Likewise.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/plaf/basic/BasicButtonUI.java
+	(defaultTextIconGap): Made protected.
+	(defaultTextShiftOffset): Likewise.
+	(textShiftOffset): New field.
+	(clearTextShiftOffset): New method.
+	(getTextShiftOffset): Likewise.
+	(setTextShiftOffset): Likewise.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(installUI): Add eventHandler as property listener.
+	(uninstallUI): remove eventHandler as propert listener.
+	(installDefaults): Added comment.
+	(installListeners): Likewise.
+	(installKeyboardActions): Likewise.
+	(uninstallDefaults): Likewise.
+	(uninstallListeners): Likewise.
+	(uninstallKeyboardActions): Likewise.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/text/AbstractDocument.java:
+	Fixed some typos in comments.
+	(insertString): Reimplemented.
+	(remove): Likewise.
+	(replace): New method.
+	(children): Dont use fully qualified class name.
+	(DefaultDocumentEvent.offset): Renamed from off.
+	(DefaultDocumentEvent.length): Renamed from len.
+	(DefaultDocumentEvent.type): New field.
+	(DefaultDocumentEvent.DefaultDocumentEvent): New constructor.
+	(DefaultDocumentEvent.getType): Implemented.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(RootView.textComponent): Removed.
+	(RootView.RootView): Don't initialize textComponent.
+	(RootView.getViewFactory): New method.
+	(EventHandler): New inner class.
+	(rootView): Initialize at instance creation.
+	(eventHandler): New field.
+	(installUI): Don't create view hierarchy directly,
+	call modelChanged() instead.
+	(modelChanged): New method.
+	* javax/swing/text/JTextComponent.java
+	(setDocument): Fire property change event.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(RootView.paint): Removed debug output.
+	(paintSafely): Draw highlighter before text.
+	(paintBackground): Use background color of text component.
+	* javax/swing/plaf/basic/BasicToggleButtonUI.java:
+	Reformatted.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/plaf/basic/BasicToolBarUI.java
+	(BasicToolBarUI): Fixed arguments for constructor.
+	(createUI): Fixed creation of object.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/text/TabSet.java
+	(TabSet): Implements java.io.Serializable.
+	* javax/swing/text/TabStop.java
+	(TabStop): Implements java.io.Serializable.
+	(TabStop): Made public.
+
+	2004-09-04  Graydon Hoare  <graydon@redhat.com>
+
+	* javax/swing/text/SimpleAttributeSet.java: New file.
+	* javax/swing/text/StyleConstants.java: New file.
+	* javax/swing/text/StyleContext.java: New file.
+	* javax/swing/text/TabSet.java: New file.
+	* javax/swing/text/TabStop.java: New file.
+	* javax/swing/text/AbstactDocument.java:
+	(AbstractElement): Implement attribute support.
+	* javax/swing/text/AttributeSet.java
+	(NameAttribute): New static field.
+	(ResolveAttribute): New static field.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JComponent.java
+	(setUI): Fire PropertyChange.
+	* javax/swing/JLabel.java
+	(text): Renamed from labelText.
+	(horizontalAlignment): New default vlaue.
+	(icon): Renamed from activeIcon.
+	(displayedMnemonic): Renamed from mnemonicKey, added default value.
+	(displayedMnemonicIndex): Renamed from underlineChar.
+	(setDisplayedMnemonic): Reimplemented.
+	* javax/swing/JRadioButton.java
+	(JRadioButton): New constructors.
+	* javax/swing/JTextField.java
+	(JTextField): Throw exception if colums < 0, initialitialz
+	this.columns directly and initialize document with text 
+	conditionally.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/plaf/basic/BasicFormattedTextFieldUI.java,
+	javax/swing/plaf/basic/BasicPasswordFieldUI.java,
+	javax/swing/plaf/basic/BasicTextAreaUI.java: New files.
+	* javax/swing/text/FieldView.java
+	(paint): Just call super method for now.
+
+	2004-09-04  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/TransferHandler.java,
+	javax/swing/plaf/basic/ComboPopup.java: New files
+
+	2004-09-04  Roman Kennke  <roman@ontographics.com>
+
+	* javax/swing/text/Utilities.java: New file.
+	
 2004-09-12  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* configure.ac: Fixed a typo for SO_RCVTIMEO.

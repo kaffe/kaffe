@@ -368,7 +368,7 @@ public abstract class Rectangle2D extends RectangularShape
    *
    * @param r the rectangle to add to this rectangle
    * @throws NullPointerException if r is null
-   * @see #union(Rectangle2D)
+   * @see #union(Rectangle2D, Rectangle2D, Rectangle2D)
    */
   public void add(Rectangle2D r)
   {

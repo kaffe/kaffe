@@ -39,14 +39,27 @@ package javax.swing;
 
 /**
  * SpinnerNumberModel
- * @author	Ka-Hing Cheung
- * @version	1.0
+ *
+ * @author Ka-Hing Cheung
+ * @version 1.0
  */
 public class SpinnerNumberModel extends AbstractSpinnerModel
 {
+  /**
+   * For compatability with Sun's JDK
+   */
+  private static final long serialVersionUID = 7279176385485777821L;
+
+  /** DOCUMENT ME! */
   private Number value;
+
+  /** DOCUMENT ME! */
   private Comparable minimum;
+
+  /** DOCUMENT ME! */
   private Comparable maximum;
+
+  /** DOCUMENT ME! */
   private Number stepSize;
 
   /**
@@ -65,8 +78,6 @@ public class SpinnerNumberModel extends AbstractSpinnerModel
    * @param minimum the minimum value
    * @param maximum the maximum value
    * @param stepSize the step size
-   * @throws IllegalArgumentException if minimum &lt;= value &lt;= maximum does not
-   *                                  hold
    */
   public SpinnerNumberModel(double value, double minimum, double maximum,
                             double stepSize)
@@ -82,8 +93,6 @@ public class SpinnerNumberModel extends AbstractSpinnerModel
    * @param minimum the minimum value
    * @param maximum the maximum value
    * @param stepSize the step size
-   * @throws IllegalArgumentException if minimum &lt;= value &lt;= maximum does not
-   *                                  hold
    */
   public SpinnerNumberModel(int value, int minimum, int maximum, int stepSize)
   {
@@ -99,48 +108,47 @@ public class SpinnerNumberModel extends AbstractSpinnerModel
    * @param minimum the minimum value, if null there's no minimum
    * @param maximum the maximum value, if null there's no maximum
    * @param stepSize the step size
-   * @throws IllegalArgumentException if minimum &lt;= value &lt;= maximum does not
-   *                                  hold
+   *
+   * @throws IllegalArgumentException if minimum &lt;= value &lt;= maximum
+   *         does not hold
    */
-  public SpinnerNumberModel(Number value, Comparable minimum, 
+  public SpinnerNumberModel(Number value, Comparable minimum,
                             Comparable maximum, Number stepSize)
   {
-    if(stepSize == null)
+    if (stepSize == null)
       throw new IllegalArgumentException("stepSize may not be null");
-    if(value == null)
+    if (value == null)
       throw new IllegalArgumentException("value may not be null");
-    if(minimum != null)
+    if (minimum != null)
       {
-	if(minimum.compareTo(value) > 0)
-	 throw new IllegalArgumentException("minimum is not <= value");
+	if (minimum.compareTo(value) > 0)
+	  throw new IllegalArgumentException("minimum is not <= value");
       }
     else
-      {
-	minimum = new Comparable() 
+      minimum = new Comparable()
 	  {
 	    public int compareTo(Object obj)
 	    {
 	      return -1;
 	    }
 	  };
-      }
-    
-    if(maximum != null)
+
+
+    if (maximum != null)
       {
-	if(maximum.compareTo(value) < 0)
+	if (maximum.compareTo(value) < 0)
 	  throw new IllegalArgumentException("maximum is not >= value");
       }
     else
-      {
-	maximum = new Comparable() 
+      maximum = new Comparable()
 	  {
 	    public int compareTo(Object obj)
 	    {
 	      return 1;
 	    }
 	  };
-      }
-    
+
+
     this.value = value;
     this.stepSize = stepSize;
     this.minimum = minimum;
@@ -151,12 +159,13 @@ public class SpinnerNumberModel extends AbstractSpinnerModel
    * Sets the new value and fire a change event
    *
    * @param value the new value
-   * @throws IllegalArgumentException if minimum &lt;= value &lt;= maximum does not
-   *                                  hold
+   *
+   * @throws IllegalArgumentException if minimum &lt;= value &lt;= maximum
+   *         does not hold
    */
   public void setValue(Object value)
   {
-    if(! (value instanceof Number))
+    if (! (value instanceof Number))
       throw new IllegalArgumentException("value must be a Number");
 
     this.value = (Number) value;
@@ -183,37 +192,25 @@ public class SpinnerNumberModel extends AbstractSpinnerModel
   {
     Number num;
 
-    if(value instanceof Double)
-      {
-        num = new Double(value.doubleValue() + stepSize.doubleValue());
-      }
-    else if(value instanceof Float)
-      {
-        num = new Double(value.floatValue() + stepSize.floatValue());
-      }
-    else if(value instanceof Long)
-      {
-        num = new Long(value.longValue() + stepSize.longValue());
-      }
-    else if(value instanceof Integer)
-      {
-        num = new Integer(value.intValue() + stepSize.intValue());
-      }
-    else if(value instanceof Short)
-      {
-        num = new Short((short) (value.shortValue() + stepSize.shortValue()));
-      }
+    if (value instanceof Double)
+      num = new Double(value.doubleValue() + stepSize.doubleValue());
+    else if (value instanceof Float)
+      num = new Double(value.floatValue() + stepSize.floatValue());
+    else if (value instanceof Long)
+      num = new Long(value.longValue() + stepSize.longValue());
+    else if (value instanceof Integer)
+      num = new Integer(value.intValue() + stepSize.intValue());
+    else if (value instanceof Short)
+      num = new Short((short) (value.shortValue() + stepSize.shortValue()));
     else
-      {
-        num = new Byte((byte) (value.byteValue() + stepSize.byteValue()));
-      }
+      num = new Byte((byte) (value.byteValue() + stepSize.byteValue()));
 
     return maximum.compareTo(num) >= 0 ? num : null;
   }
 
   /**
-   * Gets the previous value without changing the current value, or null if the
-   * current value is minimum.
+   * Gets the previous value without changing the current value, or null if
+   * the current value is minimum.
    *
    * @return the previous value
    */
@@ -221,34 +218,27 @@ public class SpinnerNumberModel extends AbstractSpinnerModel
   {
     Number num;
 
-    if(value instanceof Double)
-      {
-        num = new Double(value.doubleValue() - stepSize.doubleValue());
-      }
-    else if(value instanceof Float)
-      {
-        num = new Double(value.floatValue() - stepSize.floatValue());
-      }
-    else if(value instanceof Long)
-      {
-        num = new Long(value.longValue() - stepSize.longValue());
-      }
-    else if(value instanceof Integer)
-      {
-        num = new Integer(value.intValue() - stepSize.intValue());
-      }
-    else if(value instanceof Short)
-      {
-        num = new Short((short) (value.shortValue() - stepSize.shortValue()));
-      }
+    if (value instanceof Double)
+      num = new Double(value.doubleValue() - stepSize.doubleValue());
+    else if (value instanceof Float)
+      num = new Double(value.floatValue() - stepSize.floatValue());
+    else if (value instanceof Long)
+      num = new Long(value.longValue() - stepSize.longValue());
+    else if (value instanceof Integer)
+      num = new Integer(value.intValue() - stepSize.intValue());
+    else if (value instanceof Short)
+      num = new Short((short) (value.shortValue() - stepSize.shortValue()));
     else
-      {
-        num = new Byte((byte) (value.byteValue() - stepSize.byteValue()));
-      }
+      num = new Byte((byte) (value.byteValue() - stepSize.byteValue()));
 
-    return maximum.compareTo(num) >= 0 ? num : null;
+    return minimum.compareTo(num) <= 0 ? num : null;
   }
 
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
   public Number getNumber()
   {
     return value;

@@ -103,12 +103,14 @@ public class JTextArea extends JTextComponent
   /**
    * Whether line wrapping is enabled or not.
    */
-  private boolean wrapping;
+  private boolean lineWrap;
 
   /**
    * The number of characters equal to a tab within the text.
    */
   private int tabSize = 8;
+
+  private boolean wrapStyleWord;
 
   /**
    * Creates a new <code>JTextArea</code> object.
@@ -221,7 +223,7 @@ public class JTextArea extends JTextComponent
    */
   public boolean getScrollableTracksViewportWidth()
   {
-    return wrapping ? true : super.getScrollableTracksViewportWidth();
+    return lineWrap ? true : super.getScrollableTracksViewportWidth();
   }
 
   /**
@@ -287,28 +289,57 @@ public class JTextArea extends JTextComponent
   /**
    * Checks whether line wrapping is enabled.
    *
-   * @return true if line wrapping is enabled, false otherwise
+   * @return <code>true</code> if line wrapping is enabled,
+   * <code>false</code> otherwise
    */
   public boolean getLineWrap()
   {
-    return wrapping;
+    return lineWrap;
   }
 
   /**
    * Enables/disables line wrapping.
    *
-   * @param wrapping true to enable line wrapping, false otherwise
+   * @param wrapping <code>true</code> to enable line wrapping,
+   * <code>false</code> otherwise
    */
   public void setLineWrap(boolean flag)
   {
-    if (wrapping == flag)
+    if (lineWrap == flag)
       return;
 
-    boolean oldValue = wrapping;
-    wrapping = flag;
-    firePropertyChange("lineWrap", oldValue, wrapping);
+    boolean oldValue = lineWrap;
+    lineWrap = flag;
+    firePropertyChange("lineWrap", oldValue, lineWrap);
   }
 
+  /**
+   * Checks whether word style wrapping is enabled.
+   *
+   * @return <code>true</code> if word style wrapping is enabled,
+   * <code>false</code> otherwise
+   */
+  public boolean getWrapStyleWord()
+  {
+    return wrapStyleWord;
+  }
+  
+  /**
+   * Enables/Disables word style wrapping.
+   *
+   * @param flag <code>true</code> to enable word style wrapping,
+   * <code>false</code> otherwise
+   */
+  public void setWrapStyleWord(boolean flag)
+  {
+    if (wrapStyleWord == flag)
+      return;
+    
+    boolean oldValue = wrapStyleWord;
+    wrapStyleWord = flag;
+    firePropertyChange("wrapStyleWord", oldValue, wrapStyleWord);
+  }
+  
   /**
    * Returns the number of characters used for a tab.
    * This defaults to 8.

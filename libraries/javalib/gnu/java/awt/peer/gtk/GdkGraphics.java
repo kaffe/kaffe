@@ -396,7 +396,7 @@ public class GdkGraphics extends Graphics
   public void setColor (Color c)
   {
     if (c == null)
-      color = new Color (0, 0, 0);
+      color = Color.BLACK;
     else
       color = c;
 

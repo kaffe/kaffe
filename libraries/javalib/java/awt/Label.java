@@ -259,6 +259,11 @@ protected class AccessibleAWTLabel
   extends AccessibleAWTComponent
 {
   /**
+   * For compatability with Sun's JDK 1.4.2 rev. 5
+   */
+  private static final long serialVersionUID = -3568967560160480438L;
+
+  /**
    * Constructor for the accessible label.
    */
   public AccessibleAWTLabel()

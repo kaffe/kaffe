@@ -1,5 +1,5 @@
 /* gdkglyphvector.c
-   Copyright (C) 2003 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004 Free Software Foundation, Inc.
    
    This file is part of GNU Classpath.
    
@@ -273,49 +273,58 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkGlyphVector_setChars
   
   pango_context_set_font_description (vec->ctx, vec->desc);
 
-  items = pango_itemize (vec->ctx, str, 0, len, attrs, NULL);
-  g_assert (items != NULL);
-  
-  /*
-    step 2: for each item:
-    - shape the item into a glyphstring
-    - store the (item, glyphstring) pair in the vec->glyphitems list
-  */
-  
   if (vec->glyphitems != NULL)
+    items = pango_itemize (vec->ctx, str, 0, len, attrs, NULL);
+  if (items != NULL)
     {
-      free_glyphitems (vec->glyphitems);
-      vec->glyphitems = NULL;
+      
+      /*
+	step 2: for each item:
+	- shape the item into a glyphstring
+	- store the (item, glyphstring) pair in the vec->glyphitems list
+      */
+      
+      if (vec->glyphitems != NULL)
+	{
+	  free_glyphitems (vec->glyphitems);
+	  vec->glyphitems = NULL;
+	}
+      
+      for (item = g_list_first (items);
+	   item != NULL;
+	   item = g_list_next (item))
+	{
+	  g_assert (item->data != NULL);
+	  
+	  gi = NULL;
+	  gi = g_malloc0 (sizeof(PangoGlyphItem));
+	  g_assert (gi != NULL);
+	  
+	  gi->item = (PangoItem *)item->data;
+	  gi->glyphs = pango_glyph_string_new ();
+	  g_assert (gi->glyphs != NULL);
+	  
+	  if (gi->glyphs->num_glyphs > 0)
+	    {
+	      pango_shape (str + gi->item->offset, 
+			   gi->item->length, 
+			   &(gi->item->analysis), 
+			   gi->glyphs);
+	      
+	      vec->glyphitems = g_list_append (vec->glyphitems, gi);
+	    }
+	}
+      
+      /* 
+	 ownership of each item has been transferred to glyphitems, 
+	 but the list should be freed.
+      */
+      
+      g_list_free (items);
     }
 
-  for (item = g_list_first (items); item != NULL; item = g_list_next (item))
-    {
-      g_assert (item->data != NULL);
-
-      gi = NULL;
-      gi = g_malloc0 (sizeof(PangoGlyphItem));
-      g_assert (gi != NULL);
-
-      gi->item = (PangoItem *)item->data;
-      gi->glyphs = pango_glyph_string_new ();
-      g_assert (gi->glyphs != NULL);
-
-      pango_shape (str + gi->item->offset, 
-		   gi->item->length, 
-		   &(gi->item->analysis), 
-		   gi->glyphs);
-
-      vec->glyphitems = g_list_append (vec->glyphitems, gi);
-    }
-
-  /* 
-     ownership of each item has been transferred to glyphitems, 
-     but the list should be freed.
-  */
-
-  g_list_free (items);
   pango_attr_list_unref (attrs);
-
+      
   (*env)->ReleaseStringUTFChars (env, chars, str);
   gdk_threads_leave ();
 }
@@ -436,33 +445,36 @@ JNIEXPORT jdoubleArray JNICALL Java_gnu_java_awt_peer_gtk_GdkGlyphVector_allInkE
   g_assert (self != NULL);
   vec = (struct glyphvec *)NSA_GET_GV_PTR (env, self);
   g_assert (vec != NULL);
-  g_assert (vec->glyphitems != NULL);
-
-  pointsize = pango_font_description_get_size (vec->desc);
-  pointsize /= (double) PANGO_SCALE;
-
-  for (i = g_list_first (vec->glyphitems); i != NULL; i = g_list_next (i))
+  if (vec->glyphitems != NULL)
     {
-      g_assert (i->data != NULL);
-      gi = (PangoGlyphItem *)i->data;
-      g_assert (gi->glyphs != NULL);
-
-      face = pango_ft2_font_get_face (gi->item->analysis.font);
-      assume_pointsize_and_identity_transform (pointsize, face);
+      pointsize = pango_font_description_get_size (vec->desc);
+      pointsize /= (double) PANGO_SCALE;
       
-      for (j = 0; j < gi->glyphs->num_glyphs; ++j)
+      for (i = g_list_first (vec->glyphitems); i != NULL; i = g_list_next (i))
 	{
-	  FT_Load_Glyph (face, gi->glyphs->glyphs[j].glyph, FT_LOAD_DEFAULT);
-	  /* FIXME: this needs to change for vertical layouts */
-	  tmp.x = x + DOUBLE_FROM_26_6 (face->glyph->metrics.horiBearingX);
-	  tmp.y = y + DOUBLE_FROM_26_6 (face->glyph->metrics.horiBearingY);
-	  tmp.width = DOUBLE_FROM_26_6 (face->glyph->metrics.width);
-	  tmp.height = DOUBLE_FROM_26_6 (face->glyph->metrics.height);
-	  union_rects (&rect, &tmp);
-	  x += DOUBLE_FROM_26_6 (face->glyph->advance.x);
-	  y += DOUBLE_FROM_26_6 (face->glyph->advance.y);
-	}
-    }      
+	  g_assert (i->data != NULL);
+	  gi = (PangoGlyphItem *)i->data;
+	  g_assert (gi->glyphs != NULL);
+	  
+	  face = pango_ft2_font_get_face (gi->item->analysis.font);
+	  assume_pointsize_and_identity_transform (pointsize, face);
+	  
+	  for (j = 0; j < gi->glyphs->num_glyphs; ++j)
+	    {
+	      FT_Load_Glyph (face,
+			     gi->glyphs->glyphs[j].glyph,
+			     FT_LOAD_DEFAULT);
+	      /* FIXME: this needs to change for vertical layouts */
+	      tmp.x = x + DOUBLE_FROM_26_6 (face->glyph->metrics.horiBearingX);
+	      tmp.y = y + DOUBLE_FROM_26_6 (face->glyph->metrics.horiBearingY);
+	      tmp.width = DOUBLE_FROM_26_6 (face->glyph->metrics.width);
+	      tmp.height = DOUBLE_FROM_26_6 (face->glyph->metrics.height);
+	      union_rects (&rect, &tmp);
+	      x += DOUBLE_FROM_26_6 (face->glyph->advance.x);
+	      y += DOUBLE_FROM_26_6 (face->glyph->advance.y);
+	    }
+	}      
+    }
 
   ret = rect_to_array (env, &rect);
   gdk_threads_leave ();

@@ -57,6 +57,9 @@ public interface AttributeSet
   {
   }
   
+  static Object NameAttribute = StyleConstants.NameAttribute;
+  static Object ResolveAttribute = StyleConstants.ResolveAttribute;
+
   boolean containsAttribute(Object name, Object value);
   boolean containsAttributes(AttributeSet attributes);
   AttributeSet copyAttributes();

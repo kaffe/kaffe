@@ -138,9 +138,15 @@ public class JTextField extends JTextComponent
    */
   public JTextField(Document doc, String text, int columns)
   {
+    if (columns < 0)
+      throw new IllegalArgumentException();
+    
+    this.columns = columns;
+    
     setDocument(doc == null ? createDefaultModel() : doc);
+
+    if (text != null)
     setText(text);
-    setColumns(columns);
   }
 
   /**

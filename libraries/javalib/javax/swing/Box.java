@@ -178,7 +178,7 @@ public class Box extends JComponent implements Accessible
    */
   public Box(int axis)
   {
-    setLayout(new BoxLayout(this, axis));	
+    super.setLayout(new BoxLayout(this, axis));	
   }
   
   /**

@@ -71,9 +71,9 @@ public class SpinnerListModel
     implements Serializable
 {
     /**
-     * FIXME: SpinnerListModel needs same serial version as JDK
+     * For compatability with Sun's JDK
      */
-    // private static final long serialVersionUID = L;
+    private static final long serialVersionUID = 3358804052191994516L;
 
     /**
      * The backing list for this model.

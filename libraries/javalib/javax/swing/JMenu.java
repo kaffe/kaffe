@@ -140,7 +140,8 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
    */
   public JMenu(String text, boolean tearoff)
   {
-    throw new Error("not implemented");
+    // FIXME: tearoff not implemented
+    this(text);
   }
 
   private void writeObject(ObjectOutputStream stream) throws IOException

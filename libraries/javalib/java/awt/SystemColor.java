@@ -72,7 +72,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the desktop color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #desktop
    */
@@ -80,7 +80,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the active caption color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #activeCaption
    */
@@ -88,7 +88,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the active caption text color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #activeCaptionText
    */
@@ -96,7 +96,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the active caption border color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #activeCaptionBorder
    */
@@ -104,7 +104,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the inactive caption color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #inactiveCaption
    */
@@ -112,7 +112,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the inactive caption text color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #inactiveCaptionText
    */
@@ -120,7 +120,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the inactive caption border color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #inactiveCaptionBorder
    */
@@ -128,7 +128,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the window background color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #window
    */
@@ -136,7 +136,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the window border color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #windowBorder
    */
@@ -144,7 +144,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the window text color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #windowText
    */
@@ -152,7 +152,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the menu background color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #menu
    */
@@ -160,7 +160,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the menu text color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #menuText
    */
@@ -168,7 +168,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the text background color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #text
    */
@@ -176,7 +176,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the text foreground color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #textText
   */
@@ -184,7 +184,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the highlighted text background color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #textHighlight
    */
@@ -192,7 +192,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the highlighted text foreground color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #textHighlightText
    */
@@ -200,7 +200,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the inactive text foreground color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #textInactiveText
    */
@@ -208,7 +208,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the control background color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #control
    */
@@ -216,7 +216,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the control text color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #controlText
    */
@@ -224,7 +224,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the highlighted control background color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #controlHighlight
    */
@@ -232,7 +232,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the lightly highlighted control background color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #controlLtHighlight
    */
@@ -240,7 +240,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the shadowed control background color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #controlShadow
    */
@@ -248,7 +248,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the darkly shadowed control background color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #controlDkShadow
    */
@@ -256,7 +256,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the scrollbar background color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #scrollbar
    */
@@ -264,7 +264,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the info background color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #info
    */
@@ -272,7 +272,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * Array index of the info text color.  Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    *
    * @see #infoText
    */
@@ -280,7 +280,7 @@ public final class SystemColor extends Color implements Serializable
 
   /**
    * The number of system colors. Used by
-   * {@link Toolkit#loadSystemColors()}.
+   * {@link Toolkit#loadSystemColors(int[])}.
    */
   public static final int NUM_COLORS = 26;
 

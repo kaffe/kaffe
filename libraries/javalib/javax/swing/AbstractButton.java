@@ -300,7 +300,7 @@ public abstract class AbstractButton extends JComponent
   public static final String VERTICAL_TEXT_POSITION_CHANGED_PROPERTY = "verticalTextPosition";
 
     /**
-   * A Java Accessibility extension of the AbstractButton.
+     * A Java Accessibility extension of the AbstractButton.
      */
   protected abstract class AccessibleAbstractButton
     extends JComponent.AccessibleJComponent implements AccessibleAction, AccessibleValue,
@@ -444,34 +444,6 @@ public abstract class AbstractButton extends JComponent
     }
 
   /**
-   * Helper class used to subscribe to FocusEvents received by the button.
-   */
-  private class ButtonFocusListener implements FocusListener
-    {
-    /**
-     * Possibly repaint the model in response to loss of focus.
-     *
-     * @param event The loss-of-focus event
-     */
-    public void focusLost(FocusEvent event)
-        {
-      if (AbstractButton.this.isFocusPainted())
-        AbstractButton.this.repaint();
-    }
-
-    /**
-     * Possibly repaint the button in response to acquisition of focus.
-     *
-     * @param event The gained-focus event
-     */
-    public void focusGained(FocusEvent event)
-    {
-      if (AbstractButton.this.isFocusPainted())
-        AbstractButton.this.repaint();
-    }
-  }
-
-  /**
    * Creates a new AbstractButton object.
    */
   public AbstractButton()
@@ -552,12 +524,12 @@ public abstract class AbstractButton extends JComponent
     borderPainted = true;
     contentAreaFilled = true;
 
-    iconTextGap = 4;
+    focusPainted = true;
+    setFocusable(true);
 
     setAlignmentX(LEFT_ALIGNMENT);
     setAlignmentY(CENTER_ALIGNMENT);
 
-    addFocusListener(new ButtonFocusListener());
     setDisplayedMnemonicIndex(-1);    
  }
  

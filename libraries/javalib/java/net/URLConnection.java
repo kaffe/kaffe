@@ -404,23 +404,31 @@ public abstract class URLConnection
   }
 
   /**
-   * This method returns the content of the document pointed to by the URL
-   * as an Object.  The type of object depends on the MIME type of the
-   * object and particular content hander loaded.  Most text type content
-   * handlers will return a subclass of InputStream.  Images usually return
-   * a class that implements ImageProducer.  There is not guarantee what
-   * type of object will be returned, however.
-   * <p>
-   * This class first determines the MIME type of the content, then creates
-   * a ContentHandler object to process the input.  If the ContentHandlerFactory
-   * is set, then that object is called to load a content handler, otherwise
-   * a class called gnu.java.net.content.&lt;content_type&gt; is tried.
-   * The default class will also be used if the content handler factory returns
-   * a null content handler.
+   * This method returns the content of the document pointed to by the
+   * URL as an Object.  The type of object depends on the MIME type of
+   * the object and particular content hander loaded.  Most text type
+   * content handlers will return a subclass of
+   * <code>InputStream</code>.  Images usually return a class that
+   * implements <code>ImageProducer<code>.  There is not guarantee
+   * what type of object will be returned, however.
+
+<p>
+
+   * This class first determines the MIME type of the content, then
+   * creates a ContentHandler object to process the input.  If the
+   * <code>ContentHandlerFactory</code> is set, then that object is
+   * called to load a content handler, otherwise a class called
+   * gnu.java.net.content.&lt;content_type&gt; is tried.  If this
+   * handler does not exist, the method will simple return the
+   * <code>InputStream</code> returned by
+   * <code>getInputStream()</code>.  Note that the default
+   * implementation of <code>getInputStream()</code> throws a
+   * <code>UnknownServiceException</code> so subclasses are encouraged
+   * to override this method.
    *
-   * @exception IOException If an error occurs
+   * @exception IOException If an error with the connection occurs.
    * @exception UnknownServiceException If the protocol does not support the
-   * content type
+   * content type at all.
    */
   public Object getContent() throws IOException
   {
@@ -439,16 +447,22 @@ public abstract class URLConnection
     // Then try our default class
     try
       {
-	Class cls =
-	  Class.forName("gnu.java.net.content." + type.replace('/', '.'));
+	String typeClass = type.replace('/', '.');
+	
+	// deal with "Content-Type: text/html; charset=ISO-8859-1"
+	int parameterBegin = typeClass.indexOf(';');
+	if (parameterBegin >= 1)
+	  typeClass = typeClass.substring(0, parameterBegin);
+
+	Class cls = Class.forName("gnu.java.net.content." + typeClass);
 
 	Object obj = cls.newInstance();
 
-	if (! (obj instanceof ContentHandler))
-	  throw new UnknownServiceException(type);
-
-	ch = (ContentHandler) obj;
-	return ch.getContent(this);
+	if (obj instanceof ContentHandler)
+	  {
+	    ch = (ContentHandler) obj;
+	    return ch.getContent(this);
+	  }
       }
     catch (ClassNotFoundException e)
       {
@@ -460,7 +474,7 @@ public abstract class URLConnection
       {
       }
 
-    throw new UnknownServiceException(type);
+    return getInputStream();
   }
 
   /**

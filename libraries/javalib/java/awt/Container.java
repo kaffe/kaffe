@@ -1505,7 +1505,8 @@ public class Container extends Component
   void dispatchEventImpl(AWTEvent e)
   {
     // Give lightweight dispatcher a chance to handle it.
-    if (dispatcher != null 
+    if (eventTypeEnabled (e.id)
+        && dispatcher != null 
         && dispatcher.handleEvent (e))
       return;
 
@@ -1586,7 +1587,6 @@ public class Container extends Component
                   {
                     if (dispatcher == null)
                       dispatcher = new LightweightDispatcher (this);
-                    dispatcher.enableEvents (component[i].eventMask);
                   }	
 	  
 
@@ -1831,7 +1831,6 @@ class LightweightDispatcher implements Serializable
 {
   private static final long serialVersionUID = 5184291520170872969L;
   private Container nativeContainer;
-  private Component focus;
   private Cursor nativeCursor;
   private long eventMask;
   
@@ -1843,11 +1842,6 @@ class LightweightDispatcher implements Serializable
   LightweightDispatcher(Container c)
   {
     nativeContainer = c;
-  }
-
-  void enableEvents(long l)
-  {
-    eventMask |= l;
   }
 
   void acquireComponentForMouseEvent(MouseEvent me)
@@ -1949,9 +1943,6 @@ class LightweightDispatcher implements Serializable
 
   boolean handleEvent(AWTEvent e)
   {
-    if ((eventMask & e.getID()) == 0)
-      return false;
-
     if (e instanceof MouseEvent)
       {
         MouseEvent me = (MouseEvent) e;
@@ -1988,10 +1979,6 @@ class LightweightDispatcher implements Serializable
               if (newEvt.isConsumed())
                 e.consume();
           }
-      }
-    else if (e instanceof KeyEvent && focus != null)
-      {
-        focus.processKeyEvent((KeyEvent) e);
       }
     
     return e.isConsumed();

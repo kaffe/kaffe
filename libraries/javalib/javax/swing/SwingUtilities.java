@@ -51,9 +51,13 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
+import javax.swing.plaf.ActionMapUIResource;
+import javax.swing.plaf.InputMapUIResource;
 
 
 /**
@@ -910,5 +914,104 @@ public class SwingUtilities implements SwingConstants
     {
       return true;
     }
+  }
+
+  public static boolean notifyAction(Action action,
+                                     KeyStroke ks,
+                                     KeyEvent event,
+                                     Object sender,
+                                     int modifiers)
+  {
+    if (action != null && action.isEnabled())
+      {
+        String name = (String) action.getValue(Action.ACTION_COMMAND_KEY);
+        if (name == null
+            && event.getKeyChar() != KeyEvent.CHAR_UNDEFINED)
+          name = new String(new char[] {event.getKeyChar()});
+        action.actionPerformed(new ActionEvent(sender,
+                                               ActionEvent.ACTION_PERFORMED,
+                                               name, modifiers));
+        return true;
+      }
+    return false;
+  }
+
+  /**
+   * <p>Change the shared, UI-managed {@link ActionMap} for a given
+   * component. ActionMaps are arranged in a hierarchy, in order to
+   * encourage sharing of common actions between components. The hierarchy
+   * unfortunately places UI-managed ActionMaps at the <em>end</em> of the
+   * parent-pointer chain, as illustrated:</p>
+   *
+   * <pre>
+   *  [{@link javax.swing.JComponent#getActionMap()}] 
+   *          --&gt; [{@link javax.swing.ActionMap}] 
+   *     parent --&gt; [{@link javax.swing.text.KeymapActionMap}] 
+   *       parent --&gt; [{@link javax.swing.plaf.ActionMapUIResource}]
+   * </pre>
+   *
+   * <p>Our goal with this method is to replace the first ActionMap along
+   * this chain which is an instance of {@link ActionMapUIResource}, since
+   * these are the ActionMaps which are supposed to be shared between
+   * components.</p>
+   *
+   * <p>If the provided ActionMap is <code>null</code>, we interpret the
+   * call as a request to remove the UI-managed ActionMap from the
+   * component's ActionMap parent chain.</p>
+   */
+  public static void replaceUIActionMap(JComponent component, 
+                                        ActionMap uiActionMap)
+  {
+    ActionMap child = component.getActionMap();
+    if (child == null)
+      component.setActionMap(uiActionMap);
+    else
+      {
+        while(child.getParent() != null
+              && !(child.getParent() instanceof ActionMapUIResource))
+          child = child.getParent();
+        if (child != null)
+          child.setParent(uiActionMap);
+      }
+  }
+
+  /**
+   * <p>Change the shared, UI-managed {@link InputMap} for a given
+   * component. InputMaps are arranged in a hierarchy, in order to
+   * encourage sharing of common input mappings between components. The
+   * hierarchy unfortunately places UI-managed InputMaps at the
+   * <em>end</em> of the parent-pointer chain, as illustrated:</p>
+   *
+   * <pre>
+   *  [{@link javax.swing.JComponent#getInputMap()}] 
+   *          --&gt; [{@link javax.swing.InputMap}] 
+   *     parent --&gt; [{@link javax.swing.text.KeymapWrapper}] 
+   *       parent --&gt; [{@link javax.swing.plaf.InputMapUIResource}]
+   * </pre>
+   *
+   * <p>Our goal with this method is to replace the first InputMap along
+   * this chain which is an instance of {@link InputMapUIResource}, since
+   * these are the InputMaps which are supposed to be shared between
+   * components.</p>
+   *
+   * <p>If the provided InputMap is <code>null</code>, we interpret the
+   * call as a request to remove the UI-managed InputMap from the
+   * component's InputMap parent chain.</p>
+   */
+  public static void replaceUIInputMap(JComponent component, 
+                                       int condition, 
+                                       InputMap uiInputMap)
+  {
+    InputMap child = component.getInputMap(condition);
+    if (child == null)
+      component.setInputMap(condition, uiInputMap);
+    else
+      {
+        while(child.getParent() != null
+              && !(child.getParent() instanceof InputMapUIResource))
+          child = child.getParent();
+        if (child != null)
+          child.setParent(uiInputMap);
+      }
   }
 }

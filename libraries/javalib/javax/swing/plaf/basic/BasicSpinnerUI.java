@@ -44,8 +44,8 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JButton;
@@ -54,19 +54,25 @@ import javax.swing.JSpinner;
 import javax.swing.Timer;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
-import javax.swing.plaf.SpinnerUI;
 import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.SpinnerUI;
+
 
 /**
- * @since 1.4
- * @see javax.swing.JSpinner
+ * DOCUMENT ME!
+ *
  * @author Ka-Hing Cheung
+ *
+ * @see javax.swing.JSpinner
+ * @since 1.4
  */
 public class BasicSpinnerUI extends SpinnerUI
 {
   /**
-   * Creates a new <code>ComponentUI</code> for the specified 
+   * Creates a new <code>ComponentUI</code> for the specified
    * <code>JComponent</code>
+   *
+   * @param c DOCUMENT ME!
    *
    * @return a ComponentUI
    */
@@ -76,10 +82,11 @@ public class BasicSpinnerUI extends SpinnerUI
   }
 
   /**
-   * Creates an editor component. Really, it just returns 
+   * Creates an editor component. Really, it just returns
    * <code>JSpinner.getEditor()</code>
    *
    * @return a JComponent as an editor
+   *
    * @see javax.swing.JSpinner#getEditor
    */
   protected JComponent createEditor()
@@ -88,13 +95,14 @@ public class BasicSpinnerUI extends SpinnerUI
   }
 
   /**
-   * Creates a <code>LayoutManager</code> that layouts the sub components.
-   * The subcomponents are identifies by the constraint "Next", "Previous" and
+   * Creates a <code>LayoutManager</code> that layouts the sub components. The
+   * subcomponents are identifies by the constraint "Next", "Previous" and
    * "Editor"
    *
    * @return a LayoutManager
+   *
    * @see java.awt.LayoutManager
-   */  
+   */
   protected LayoutManager createLayout()
   {
     return new DefaultLayoutManager();
@@ -123,26 +131,27 @@ public class BasicSpinnerUI extends SpinnerUI
   }
 
   /**
-   * Creates the <code>PropertyChangeListener</code> that will be attached
-   * by <code>installListeners</code>. It should watch for the "editor"
+   * Creates the <code>PropertyChangeListener</code> that will be attached by
+   * <code>installListeners</code>. It should watch for the "editor"
    * property, when it's changed, replace the old editor with the new one,
    * probably by calling <code>replaceEditor</code>
    *
    * @return a PropertyChangeListener
+   *
    * @see #replaceEditor
-   */  
+   */
   protected PropertyChangeListener createPropertyChangeListener()
   {
     return new PropertyChangeListener()
       {
-        public void propertyChange(PropertyChangeEvent evt)
-        {
-          if("editor".equals(evt.getPropertyName()))
-            {
-              BasicSpinnerUI.this.replaceEditor((JComponent)evt.getOldValue(),
-                                                (JComponent)evt.getNewValue());
-            }
-        }
+	public void propertyChange(PropertyChangeEvent evt)
+	{
+	  // FIXME: Add check for enabled property change. Need to
+	  // disable the buttons.
+	  if ("editor".equals(evt.getPropertyName()))
+	    BasicSpinnerUI.this.replaceEditor((JComponent) evt.getOldValue(),
+	                                      (JComponent) evt.getNewValue());
+	}
       };
   }
 
@@ -153,7 +162,7 @@ public class BasicSpinnerUI extends SpinnerUI
    *
    * @see #javax.swing.UIManager#getLookAndFeelDefaults
    * @see #createLayout
-   * @see #installUI 
+   * @see #installUI
    */
   protected void installDefaults()
   {
@@ -166,7 +175,7 @@ public class BasicSpinnerUI extends SpinnerUI
     spinner.setBackground(defaults.getColor("Spinner.background"));
     spinner.setFont(defaults.getFont("Spinner.font"));
     spinner.setBorder(defaults.getBorder("Spinner.border"));
-    */    
+    */
     spinner.setLayout(createLayout());
   }
 
@@ -189,37 +198,38 @@ public class BasicSpinnerUI extends SpinnerUI
   protected void installNextButtonListeners(Component c)
   {
     c.addMouseListener(new MouseAdapter()
-      {
-        public void mousePressed(MouseEvent evt)
         {
-          increment();
-          timer.setInitialDelay(500);
-          timer.start();
-        }
+	  public void mousePressed(MouseEvent evt)
+	  {
+	    if (! spinner.isEnabled())
+	      return;
+	    increment();
+	    timer.setInitialDelay(500);
+	    timer.start();
+	  }
 
-        public void mouseReleased(MouseEvent evt)
-        {
-          timer.stop();
-        }
+	  public void mouseReleased(MouseEvent evt)
+	  {
+	    timer.stop();
+	  }
 
-        void increment()
-        {
-          Object next = BasicSpinnerUI.this.spinner.getNextValue();
-          if(next != null)
-            {
-              BasicSpinnerUI.this.spinner.getModel().setValue(next);
-            }
-        }
+	  void increment()
+	  {
+	    Object next = BasicSpinnerUI.this.spinner.getNextValue();
+	    if (next != null)
+	      BasicSpinnerUI.this.spinner.getModel().setValue(next);
+	  }
 
-        volatile boolean mouseDown = false;
-        Timer timer = new Timer(50, new ActionListener()
-          {
-            public void actionPerformed(ActionEvent event)
-            {
-              increment();
-            }
-          });
-      });
+	  volatile boolean mouseDown = false;
+	  Timer timer = new Timer(50,
+	                          new ActionListener()
+	      {
+		public void actionPerformed(ActionEvent event)
+		{
+		  increment();
+		}
+	      });
+        });
   }
 
   /*
@@ -228,44 +238,46 @@ public class BasicSpinnerUI extends SpinnerUI
   protected void installPreviousButtonListeners(Component c)
   {
     c.addMouseListener(new MouseAdapter()
-      {
-        public void mousePressed(MouseEvent evt)
         {
-          decrement();
-          timer.setInitialDelay(500);
-          timer.start();
-        }
+	  public void mousePressed(MouseEvent evt)
+	  {
+	    if (! spinner.isEnabled())
+	      return;
+	    decrement();
+	    timer.setInitialDelay(500);
+	    timer.start();
+	  }
 
-        public void mouseReleased(MouseEvent evt)
-        {
-          timer.stop();
-        }
+	  public void mouseReleased(MouseEvent evt)
+	  {
+	    timer.stop();
+	  }
 
-        void decrement()
-        {
-          Object prev = BasicSpinnerUI.this.spinner.getPreviousValue();
-          if(prev != null)
-            {
-              BasicSpinnerUI.this.spinner.getModel().setValue(prev);
-            }
-        }
+	  void decrement()
+	  {
+	    Object prev = BasicSpinnerUI.this.spinner.getPreviousValue();
+	    if (prev != null)
+	      BasicSpinnerUI.this.spinner.getModel().setValue(prev);
+	  }
 
-        volatile boolean mouseDown = false;
-        Timer timer = new Timer(50, new ActionListener()
-          {
-            public void actionPerformed(ActionEvent event)
-            {
-              decrement();
-            }
-          });
-      });
+	  volatile boolean mouseDown = false;
+	  Timer timer = new Timer(50,
+	                          new ActionListener()
+	      {
+		public void actionPerformed(ActionEvent event)
+		{
+		  decrement();
+		}
+	      });
+        });
   }
 
   /**
-   * Install this UI to the <code>JComponent</code>, which in reality,
-   * is a <code>JSpinner</code>. Calls <code>installDefaults</code>,
-   * <code>installListeners</code>, and also adds the buttons and
-   * editor.
+   * Install this UI to the <code>JComponent</code>, which in reality, is a
+   * <code>JSpinner</code>. Calls <code>installDefaults</code>,
+   * <code>installListeners</code>, and also adds the buttons and editor.
+   *
+   * @param c DOCUMENT ME!
    *
    * @see #installDefaults
    * @see #installListeners
@@ -277,13 +289,13 @@ public class BasicSpinnerUI extends SpinnerUI
   {
     super.installUI(c);
 
-    spinner = (JSpinner)c;
+    spinner = (JSpinner) c;
 
     installDefaults();
     installListeners();
 
-    Component next = createNextButton(),
-      previous = createPreviousButton();
+    Component next = createNextButton();
+    Component previous = createPreviousButton();
 
     installNextButtonListeners(next);
     installPreviousButtonListeners(previous);
@@ -320,13 +332,15 @@ public class BasicSpinnerUI extends SpinnerUI
    */
   protected void uninstallListeners()
   {
-    spinner.removePropertyChangeListener(listener);    
+    spinner.removePropertyChangeListener(listener);
   }
 
   /**
    * Called when the current L&F is replaced with another one, should call
-   * <code>uninstallDefaults</code> and <code>uninstallListeners</code> as well
-   * as remove the next/previous buttons and the editor
+   * <code>uninstallDefaults</code> and <code>uninstallListeners</code> as
+   * well as remove the next/previous buttons and the editor
+   *
+   * @param c DOCUMENT ME!
    */
   public void uninstallUI(JComponent c)
   {
@@ -337,172 +351,222 @@ public class BasicSpinnerUI extends SpinnerUI
     c.removeAll();
   }
 
-  /**
-   * The spinner for this UI
-   */
+  /** The spinner for this UI */
   protected JSpinner spinner;
+
+  /** DOCUMENT ME! */
   private PropertyChangeListener listener = createPropertyChangeListener();
 
+  /**
+   * DOCUMENT ME!
+   */
   private class DefaultLayoutManager implements LayoutManager
   {
+    /**
+     * DOCUMENT ME!
+     *
+     * @param parent DOCUMENT ME!
+     */
     public void layoutContainer(Container parent)
     {
-
-      synchronized(parent.getTreeLock())
+      synchronized (parent.getTreeLock())
         {
-          Insets i = parent.getInsets();
-          boolean l2r = parent.getComponentOrientation().isLeftToRight();
-          /*
-            --------------    --------------
-            |        | n |    | n |        |
-            |   e    | - | or | - |   e    |
-            |        | p |    | p |        |
-            --------------    --------------
-          */
+	  Insets i = parent.getInsets();
+	  boolean l2r = parent.getComponentOrientation().isLeftToRight();
+	  /*
+	    --------------    --------------
+	    |        | n |    | n |        |
+	    |   e    | - | or | - |   e    |
+	    |        | p |    | p |        |
+	    --------------    --------------
+	  */
+	  Dimension e = minSize(editor);
+	  Dimension n = minSize(next);
+	  Dimension p = minSize(previous);
+	  Dimension s = spinner.getPreferredSize();
 
-          Dimension e = minSize(editor);
-          Dimension n = minSize(next);
-          Dimension p = minSize(previous);
-          Dimension s = spinner.getPreferredSize();
+	  int x = l2r ? i.left : i.right;
+	  int y = i.top;
+	  int w = Math.max(p.width, n.width);
+	  int h = Math.max(p.height, n.height);
+	  h = Math.max(h, e.height / 2);
+	  int e_width = s.width - w;
 
-          int x = l2r ? i.left : i.right, y = i.top;
-          int w = Math.max(p.width, n.width);
-          int h = Math.max(p.height, n.height);
-          h = Math.max(h, e.height / 2);
-          int e_width = s.width - w;
+	  if (l2r)
+	    {
+	      setBounds(editor, x, y + (s.height - e.height) / 2, e_width,
+	                e.height);
+	      x += e_width;
 
-          if(l2r)
-            {
-              setBounds(editor, x, y + (s.height - e.height) / 2, e_width, 
-                        e.height);
-              x += e_width;
+	      setBounds(next, x, y, w, h);
+	      y += h;
 
-              setBounds(next, x, y, w, h);
-              y += h;
+	      setBounds(previous, x, y, w, h);
+	    }
+	  else
+	    {
+	      setBounds(next, x, y + (s.height - e.height) / 2, w, h);
+	      y += h;
 
-              setBounds(previous, x, y, w, h);
-            }
-          else
-            {
-              setBounds(next, x, y + (s.height - e.height) / 2, w, h);
-              y += h;
+	      setBounds(previous, x, y, w, h);
+	      x += w;
+	      y -= h;
 
-              setBounds(previous, x, y, w, h);
-              x += w;
-              y -= h;
-
-              setBounds(editor, x, y, e_width, e.height);
-            }
+	      setBounds(editor, x, y, e_width, e.height);
+	    }
         }
     }
 
+    /**
+     * DOCUMENT ME!
+     *
+     * @param parent DOCUMENT ME!
+     *
+     * @return DOCUMENT ME!
+     */
     public Dimension minimumLayoutSize(Container parent)
     {
       Dimension d = new Dimension();
 
-      if(editor != null) 
+      if (editor != null)
         {
-          Dimension tmp = editor.getMinimumSize();
-          d.width += tmp.width;
-          d.height = tmp.height;
+	  Dimension tmp = editor.getMinimumSize();
+	  d.width += tmp.width;
+	  d.height = tmp.height;
         }
 
       int nextWidth = 0;
       int previousWidth = 0;
       int otherHeight = 0;
 
-      if(next != null)
+      if (next != null)
         {
-          Dimension tmp = next.getMinimumSize();
-          nextWidth = tmp.width;
-          otherHeight += tmp.height;
+	  Dimension tmp = next.getMinimumSize();
+	  nextWidth = tmp.width;
+	  otherHeight += tmp.height;
         }
-      if(previous != null)
+      if (previous != null)
         {
-          Dimension tmp = previous.getMinimumSize();
-          previousWidth = tmp.width;
-          otherHeight += tmp.height;
+	  Dimension tmp = previous.getMinimumSize();
+	  previousWidth = tmp.width;
+	  otherHeight += tmp.height;
         }
 
       d.height = Math.max(d.height, otherHeight);
       d.width += Math.max(nextWidth, previousWidth);
 
-
       return d;
     }
 
+    /**
+     * DOCUMENT ME!
+     *
+     * @param parent DOCUMENT ME!
+     *
+     * @return DOCUMENT ME!
+     */
     public Dimension preferredLayoutSize(Container parent)
     {
       Dimension d = new Dimension();
 
-      if(editor != null) 
+      if (editor != null)
         {
-          Dimension tmp = editor.getPreferredSize();
-          d.width += Math.max(tmp.width, 40);
-          d.height = tmp.height;
+	  Dimension tmp = editor.getPreferredSize();
+	  d.width += Math.max(tmp.width, 40);
+	  d.height = tmp.height;
         }
 
       int nextWidth = 0;
       int previousWidth = 0;
       int otherHeight = 0;
 
-      if(next != null)
+      if (next != null)
         {
-          Dimension tmp = next.getPreferredSize();
-          nextWidth = tmp.width;
-          otherHeight += tmp.height;
+	  Dimension tmp = next.getPreferredSize();
+	  nextWidth = tmp.width;
+	  otherHeight += tmp.height;
         }
-      if(previous != null)
+      if (previous != null)
         {
-          Dimension tmp = previous.getPreferredSize();
-          previousWidth = tmp.width;
-          otherHeight += tmp.height;
+	  Dimension tmp = previous.getPreferredSize();
+	  previousWidth = tmp.width;
+	  otherHeight += tmp.height;
         }
 
       d.height = Math.max(d.height, otherHeight);
       d.width += Math.max(nextWidth, previousWidth);
 
-
       return d;
     }
 
-    public void removeLayoutComponent(Component child) 
+    /**
+     * DOCUMENT ME!
+     *
+     * @param child DOCUMENT ME!
+     */
+    public void removeLayoutComponent(Component child)
     {
-      if(child == editor)
-        editor = null;
-      else if(child == next)
-        next = null;
-      else if(previous == child)
-        previous = null;
+      if (child == editor)
+	editor = null;
+      else if (child == next)
+	next = null;
+      else if (previous == child)
+	previous = null;
     }
 
+    /**
+     * DOCUMENT ME!
+     *
+     * @param name DOCUMENT ME!
+     * @param child DOCUMENT ME!
+     */
     public void addLayoutComponent(String name, Component child)
     {
-      if("Editor".equals(name))
-        editor = child;
-      else if("Next".equals(name))
-        next = child;
-      else if("Previous".equals(name))
-        previous = child;
+      if ("Editor".equals(name))
+	editor = child;
+      else if ("Next".equals(name))
+	next = child;
+      else if ("Previous".equals(name))
+	previous = child;
     }
 
+    /**
+     * DOCUMENT ME!
+     *
+     * @param c DOCUMENT ME!
+     *
+     * @return DOCUMENT ME!
+     */
     private Dimension minSize(Component c)
     {
-      if(c == null)
-        return new Dimension();
+      if (c == null)
+	return new Dimension();
       else
-        return c.getMinimumSize();
+	return c.getMinimumSize();
     }
 
+    /**
+     * DOCUMENT ME!
+     *
+     * @param c DOCUMENT ME!
+     * @param x DOCUMENT ME!
+     * @param y DOCUMENT ME!
+     * @param w DOCUMENT ME!
+     * @param h DOCUMENT ME!
+     */
     private void setBounds(Component c, int x, int y, int w, int h)
     {
-      if(c != null)
-        c.setBounds(x, y, w, h);
+      if (c != null)
+	c.setBounds(x, y, w, h);
     }
 
+    /** DOCUMENT ME! */
     private Component editor;
+
+    /** DOCUMENT ME! */
     private Component next;
+
+    /** DOCUMENT ME! */
     private Component previous;
   }
-
 }

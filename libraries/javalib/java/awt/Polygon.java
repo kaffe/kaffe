@@ -684,7 +684,7 @@ public class Polygon implements Shape, Serializable
    * path iterator is not either.
    *
    * @param transform an optional transform to apply to the iterator
-   * @param double the maximum distance for deviation from the real boundary
+   * @param flatness the maximum distance for deviation from the real boundary
    * @return a new iterator over the boundary
    * @since 1.2
    */

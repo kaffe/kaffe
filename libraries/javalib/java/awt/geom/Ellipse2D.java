@@ -101,6 +101,9 @@ public abstract class Ellipse2D extends RectangularShape
    * Note: An ellipse cannot be represented exactly in PathIterator
    * segments, the outline is thefore approximated with cubic
    * Bezier segments.
+   * 
+   * @param at an optional transform.
+   * @return A path iterator.
    */
   public PathIterator getPathIterator(AffineTransform at)
   {
@@ -139,6 +142,10 @@ public abstract class Ellipse2D extends RectangularShape
     return false;
   }
 
+  /**
+   * An {@link Ellipse2D} that stores its coordinates using <code>double</code>
+   * primitives.
+   */
   public static class Double extends Ellipse2D
   {
     /**
@@ -162,7 +169,7 @@ public abstract class Ellipse2D extends RectangularShape
     public double y;
 
     /**
-     * Creates a new Ellipse2D with an upper-right coordinate of (0,0)
+     * Creates a new Ellipse2D with an upper-left coordinate of (0,0)
      * and a zero size.
      */
     public Double()
@@ -172,11 +179,10 @@ public abstract class Ellipse2D extends RectangularShape
     /**
      * Creates a new Ellipse2D within a given rectangle
      * using double-precision coordinates.<P>
-     * @param x - x coordinate of the upper-right of the bounding rectangle
-     * @param y - y coordinate of the upper-right of the bounding rectangle
+     * @param x - x coordinate of the upper-left of the bounding rectangle
+     * @param y - y coordinate of the upper-left of the bounding rectangle
      * @param w - width of the ellipse
      * @param h - height of the ellipse
-     *
      */
     public Double(double x, double y, double w, double h)
     {
@@ -188,6 +194,7 @@ public abstract class Ellipse2D extends RectangularShape
 
     /**
      * Returns the bounding-box of the ellipse.
+     * @return The bounding box.
      */
     public Rectangle2D getBounds2D()
     {
@@ -196,6 +203,7 @@ public abstract class Ellipse2D extends RectangularShape
 
     /**
      * Returns the height of the ellipse.
+     * @return The height of the ellipse.
      */
     public double getHeight()
     {
@@ -204,6 +212,7 @@ public abstract class Ellipse2D extends RectangularShape
 
     /**
      * Returns the width of the ellipse.
+     * @return The width of the ellipse.
      */
     public double getWidth()
     {
@@ -213,6 +222,7 @@ public abstract class Ellipse2D extends RectangularShape
     /**
      * Returns x coordinate of the upper-left corner of
      * the ellipse's bounding-box.
+     * @return The x coordinate.
      */
     public double getX()
     {
@@ -222,6 +232,7 @@ public abstract class Ellipse2D extends RectangularShape
     /**
      * Returns y coordinate of the upper-left corner of
      * the ellipse's bounding-box.
+     * @return The y coordinate.
      */
     public double getY()
     {
@@ -229,7 +240,10 @@ public abstract class Ellipse2D extends RectangularShape
     }
 
     /**
-     * Returns true if the ellipse encloses any area.
+     * Returns <code>true</code> if the ellipse encloses no area, and
+     * <code>false</code> otherwise.
+     * 
+     * @return A boolean.
      */
     public boolean isEmpty()
     {
@@ -239,8 +253,8 @@ public abstract class Ellipse2D extends RectangularShape
     /**
      * Sets the geometry of the ellipse's bounding box.<P>
      *
-     * @param x - x coordinate of the upper-right of the bounding rectangle
-     * @param y - y coordinate of the upper-right of the bounding rectangle
+     * @param x - x coordinate of the upper-left of the bounding rectangle
+     * @param y - y coordinate of the upper-left of the bounding rectangle
      * @param w - width of the ellipse
      * @param h - height of the ellipse
      */
@@ -253,6 +267,10 @@ public abstract class Ellipse2D extends RectangularShape
     }
   } // class Double
 
+  /**
+   * An {@link Ellipse2D} that stores its coordinates using <code>float</code>
+   * primitives.
+   */
   public static class Float extends Ellipse2D
   {
     /**
@@ -276,7 +294,7 @@ public abstract class Ellipse2D extends RectangularShape
     public float y;
 
     /**
-     * Creates a new Ellipse2D with an upper-right coordinate of (0,0)
+     * Creates a new Ellipse2D with an upper-left coordinate of (0,0)
      * and a zero size.
      */
     public Float()
@@ -286,8 +304,8 @@ public abstract class Ellipse2D extends RectangularShape
     /**
      * Creates a new Ellipse2D within a given rectangle
      * using floating-point precision.<P>
-     * @param x - x coordinate of the upper-right of the bounding rectangle
-     * @param y - y coordinate of the upper-right of the bounding rectangle
+     * @param x - x coordinate of the upper-left of the bounding rectangle
+     * @param y - y coordinate of the upper-left of the bounding rectangle
      * @param w - width of the ellipse
      * @param h - height of the ellipse
      *
@@ -302,6 +320,7 @@ public abstract class Ellipse2D extends RectangularShape
 
     /**
      * Returns the bounding-box of the ellipse.
+     * @return The bounding box.
      */
     public Rectangle2D getBounds2D()
     {
@@ -310,6 +329,7 @@ public abstract class Ellipse2D extends RectangularShape
 
     /**
      * Returns the height of the ellipse.
+     * @return The height of the ellipse.
      */
     public double getHeight()
     {
@@ -318,6 +338,7 @@ public abstract class Ellipse2D extends RectangularShape
 
     /**
      * Returns the width of the ellipse.
+     * @return The width of the ellipse.
      */
     public double getWidth()
     {
@@ -327,6 +348,7 @@ public abstract class Ellipse2D extends RectangularShape
     /**
      * Returns x coordinate of the upper-left corner of
      * the ellipse's bounding-box.
+     * @return The x coordinate.
      */
     public double getX()
     {
@@ -336,6 +358,7 @@ public abstract class Ellipse2D extends RectangularShape
     /**
      * Returns y coordinate of the upper-left corner of
      * the ellipse's bounding-box.
+     * @return The y coordinate.
      */
     public double getY()
     {
@@ -343,7 +366,10 @@ public abstract class Ellipse2D extends RectangularShape
     }
 
     /**
-     * Returns true if the ellipse encloses any area.
+     * Returns <code>true</code> if the ellipse encloses no area, and
+     * <code>false</code> otherwise.
+     * 
+     * @return A boolean.
      */
     public boolean isEmpty()
     {
@@ -353,8 +379,8 @@ public abstract class Ellipse2D extends RectangularShape
     /**
      * Sets the geometry of the ellipse's bounding box.<P>
      *
-     * @param x - x coordinate of the upper-right of the bounding rectangle
-     * @param y - y coordinate of the upper-right of the bounding rectangle
+     * @param x - x coordinate of the upper-left of the bounding rectangle
+     * @param y - y coordinate of the upper-left of the bounding rectangle
      * @param w - width of the ellipse
      * @param h - height of the ellipse
      */
@@ -371,8 +397,8 @@ public abstract class Ellipse2D extends RectangularShape
      *
      * Note: This leads to a loss of precision.<P>
      *
-     * @param x - x coordinate of the upper-right of the bounding rectangle
-     * @param y - y coordinate of the upper-right of the bounding rectangle
+     * @param x - x coordinate of the upper-left of the bounding rectangle
+     * @param y - y coordinate of the upper-left of the bounding rectangle
      * @param w - width of the ellipse
      * @param h - height of the ellipse
      */

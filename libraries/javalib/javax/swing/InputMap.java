@@ -89,7 +89,7 @@ public class InputMap
   {
     Object result = inputMap.get(keystroke);
 
-    if (result == null)
+    if (result == null && parent != null)
       result = parent.get(keystroke);
     return result;
   }

@@ -37,6 +37,7 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.InputEvent;
@@ -46,6 +47,7 @@ import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonModel;
 import javax.swing.JComponent;
@@ -64,6 +66,12 @@ public class BasicButtonListener
   }
   public void focusGained(FocusEvent e) 
   {    
+    if (e.getSource() instanceof AbstractButton)
+      {
+        AbstractButton button = (AbstractButton) e.getSource();
+        if (button.isFocusPainted())
+          button.repaint();   
+      }
   }
 
   public void focusLost(FocusEvent e)
@@ -73,13 +81,43 @@ public class BasicButtonListener
         AbstractButton button = (AbstractButton) e.getSource();
         ButtonModel model = button.getModel();
         model.setArmed(false);
+
+        if (button.isFocusPainted())
+          button.repaint();   
       }
   }
   public void installKeyboardActions(JComponent c)
   {
+    c.getActionMap().put("pressed", 
+                         new AbstractAction() 
+                         {
+                           public void actionPerformed(ActionEvent e)          
+                           {
+                             AbstractButton button = (AbstractButton) e.getSource();
+                             ButtonModel model = button.getModel();
+                             // It is important that these transitions happen in this order.
+                             model.setArmed(true);
+                             model.setPressed(true);
+                           }
+                         });
+    
+    c.getActionMap().put("released", 
+                         new AbstractAction() 
+                         {
+                           public void actionPerformed(ActionEvent e)          
+                           {
+                             AbstractButton button = (AbstractButton) e.getSource();
+                             ButtonModel model = button.getModel();
+                             // It is important that these transitions happen in this order.
+                             model.setPressed(false);
+                             model.setArmed(false);
+                           }
+                       });    
   }
   public void uninstallKeyboardActions(JComponent c)
   {
+    c.getActionMap().put("pressed", null);
+    c.getActionMap().put("released", null);
   }
   public void stateChanged(ChangeEvent e)
   {

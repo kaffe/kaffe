@@ -157,10 +157,8 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
 
   /**
    * This method creates a new BasicToolBarUI object for the given JToolBar.
-   *
-   * @param b The JToolBar to represent with this UI.
    */
-  public BasicToolBarUI(JToolBar b)
+  public BasicToolBarUI()
   {
     super();
   }
@@ -353,7 +351,7 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
    */
   public static ComponentUI createUI(JComponent c)
   {
-    return new BasicToolBarUI((JToolBar) c);
+    return new BasicToolBarUI();
   }
 
   /**

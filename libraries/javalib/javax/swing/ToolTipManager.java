@@ -460,6 +460,8 @@ public class ToolTipManager extends MouseAdapter implements MouseMotionListener
   public void mouseMoved(MouseEvent event)
   {
     currentPoint = event.getPoint();
+    if (currentTip != null)
+      currentTip.setTipText(((JComponent) currentComponent).getToolTipText(event));
     if (enterTimer.isRunning())
       enterTimer.restart();
   }

@@ -136,6 +136,10 @@ public class Canvas
   protected class AccessibleAWTCanvas
     extends AccessibleAWTComponent
   {
+    /**
+     * For compatability with Sun's JDK
+     */
+    private static final long serialVersionUID = -6325592262103146699L;
 
     /**
      * Constructor for the accessible canvas.

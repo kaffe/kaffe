@@ -750,7 +750,6 @@ gnu/java/net/PlainDatagramSocketImpl.java
 gnu/java/net/PlainSocketImpl.java
 gnu/java/net/SysInetAddressImpl.java
 gnu/java/net/URLParseError.java
-gnu/java/net/content/text/plain.java
 gnu/java/net/protocol/file/Connection.java
 gnu/java/net/protocol/file/Handler.java
 gnu/java/net/protocol/http/Connection.java
@@ -2598,6 +2597,7 @@ javax/swing/SwingConstants.java
 javax/swing/SwingUtilities.java
 javax/swing/Timer.java
 javax/swing/ToolTipManager.java
+javax/swing/TransferHandler.java
 javax/swing/UIDefaults.java
 javax/swing/UIManager.java
 javax/swing/UnsupportedLookAndFeelException.java
@@ -2617,6 +2617,10 @@ javax/swing/colorchooser/AbstractColorChooserPanel.java
 javax/swing/colorchooser/ColorChooserComponentFactory.java
 javax/swing/colorchooser/ColorSelectionModel.java
 javax/swing/colorchooser/DefaultColorSelectionModel.java
+javax/swing/colorchooser/DefaultHSBChooserPanel.java
+javax/swing/colorchooser/DefaultPreviewPanel.java
+javax/swing/colorchooser/DefaultRGBChooserPanel.java
+javax/swing/colorchooser/DefaultSwatchChooserPanel.java
 javax/swing/event/AncestorEvent.java
 javax/swing/event/AncestorListener.java
 javax/swing/event/CaretEvent.java
@@ -2710,8 +2714,14 @@ javax/swing/plaf/basic/BasicButtonListener.java
 javax/swing/plaf/basic/BasicButtonUI.java
 javax/swing/plaf/basic/BasicCheckBoxMenuItemUI.java
 javax/swing/plaf/basic/BasicCheckBoxUI.java
+javax/swing/plaf/basic/BasicColorChooserUI.java
+javax/swing/plaf/basic/BasicComboBoxEditor.java
+javax/swing/plaf/basic/BasicComboBoxRenderer.java
+javax/swing/plaf/basic/BasicComboBoxUI.java
+javax/swing/plaf/basic/BasicComboPopup.java
 javax/swing/plaf/basic/BasicDesktopIconUI.java
 javax/swing/plaf/basic/BasicDesktopPaneUI.java
+javax/swing/plaf/basic/BasicFormattedTextFieldUI.java
 javax/swing/plaf/basic/BasicGraphicsUtils.java
 javax/swing/plaf/basic/BasicIconFactory.java
 javax/swing/plaf/basic/BasicInternalFrameTitlePane.java
@@ -2724,6 +2734,7 @@ javax/swing/plaf/basic/BasicMenuItemUI.java
 javax/swing/plaf/basic/BasicMenuUI.java
 javax/swing/plaf/basic/BasicOptionPaneUI.java
 javax/swing/plaf/basic/BasicPanelUI.java
+javax/swing/plaf/basic/BasicPasswordFieldUI.java
 javax/swing/plaf/basic/BasicPopupMenuSeparatorUI.java
 javax/swing/plaf/basic/BasicPopupMenuUI.java
 javax/swing/plaf/basic/BasicProgressBarUI.java
@@ -2738,6 +2749,9 @@ javax/swing/plaf/basic/BasicSpinnerUI.java
 javax/swing/plaf/basic/BasicSplitPaneDivider.java
 javax/swing/plaf/basic/BasicSplitPaneUI.java
 javax/swing/plaf/basic/BasicTabbedPaneUI.java
+javax/swing/plaf/basic/BasicTableHeaderUI.java
+javax/swing/plaf/basic/BasicTableUI.java
+javax/swing/plaf/basic/BasicTextAreaUI.java
 javax/swing/plaf/basic/BasicTextFieldUI.java
 javax/swing/plaf/basic/BasicTextUI.java
 javax/swing/plaf/basic/BasicToggleButtonUI.java
@@ -2746,6 +2760,7 @@ javax/swing/plaf/basic/BasicToolBarUI.java
 javax/swing/plaf/basic/BasicToolTipUI.java
 javax/swing/plaf/basic/BasicTreeUI.java
 javax/swing/plaf/basic/BasicViewportUI.java
+javax/swing/plaf/basic/ComboPopup.java
 javax/swing/plaf/metal/MetalLookAndFeel.java
 javax/swing/table/AbstractTableModel.java
 javax/swing/table/DefaultTableCellRenderer.java
@@ -2781,12 +2796,18 @@ javax/swing/text/PlainDocument.java
 javax/swing/text/PlainView.java
 javax/swing/text/Position.java
 javax/swing/text/Segment.java
+javax/swing/text/SimpleAttributeSet.java
 javax/swing/text/Style.java
+javax/swing/text/StyleConstants.java
+javax/swing/text/StyleContext.java
 javax/swing/text/StyledDocument.java
 javax/swing/text/StyledEditorKit.java
 javax/swing/text/TabExpander.java
+javax/swing/text/TabSet.java
+javax/swing/text/TabStop.java
 javax/swing/text/TabableView.java
 javax/swing/text/TextAction.java
+javax/swing/text/Utilities.java
 javax/swing/text/View.java
 javax/swing/text/ViewFactory.java
 javax/swing/text/html/HTML.java

@@ -124,6 +124,10 @@ public class Area implements Shape, Cloneable
    * of non-self-intersecting subpaths, and any inner paths which
    * are found redundant in accordance with the Shape's winding rule
    * will not be included.
+   * 
+   * @param s  the shape (<code>null</code> not permitted).
+   * 
+   * @throws NullPointerException if <code>s</code> is <code>null</code>.
    */
   public Area(Shape s)
   {
@@ -261,7 +265,8 @@ public class Area implements Shape, Cloneable
 
   /**
    * Performs a subtraction operation on this Area.<BR>
-   * @param area - the area to be subtracted from this area.
+   * @param area the area to be subtracted from this area.
+   * @throws NullPointerException if <code>area</code> is <code>null</code>.
    */
   public void subtract(Area area)
   {
@@ -357,6 +362,7 @@ public class Area implements Shape, Cloneable
   /**
    * Performs an intersection operation on this Area.<BR>
    * @param area - the area to be intersected with this area.
+   * @throws NullPointerException if <code>area</code> is <code>null</code>.
    */
   public void intersect(Area area)
   {
@@ -448,6 +454,7 @@ public class Area implements Shape, Cloneable
   /**
    * Performs an exclusive-or operation on this Area.<BR>
    * @param area - the area to be XORed with this area.
+   * @throws NullPointerException if <code>area</code> is <code>null</code>.
    */
   public void exclusiveOr(Area area)
   {
@@ -584,6 +591,9 @@ public class Area implements Shape, Cloneable
    */
   public boolean isRectangular()
   {
+    if (isEmpty())
+      return true;
+
     if (holes.size() != 0 || solids.size() != 1)
       return false;
 
@@ -663,6 +673,8 @@ public class Area implements Shape, Cloneable
   /**
    * Returns the bounds of this object in Rectangle format.
    * Please note that this may lead to loss of precision.
+   * 
+   * @return The bounds.
    * @see #getBounds2D()
    */
   public Rectangle getBounds()
@@ -695,11 +707,17 @@ public class Area implements Shape, Cloneable
 
   /**
    * Compares two Areas.
-   *
-   * @return true if the areas are equal. False otherwise.
+   * 
+   * @param area  the area to compare against this area (<code>null</code>
+   *              permitted).
+   * @return <code>true</code> if the areas are equal, and <code>false</code>
+   *         otherwise.
    */
   public boolean equals(Area area)
   {
+    if (area == null)
+      return false;
+
     if (! getBounds2D().equals(area.getBounds2D()))
       return false;
 
@@ -736,7 +754,9 @@ public class Area implements Shape, Cloneable
   }
 
   /**
-   * Transforms this area by the AffineTransform at
+   * Transforms this area by the AffineTransform at.
+   * 
+   * @param at  the transform.
    */
   public void transform(AffineTransform at)
   {
@@ -755,8 +775,10 @@ public class Area implements Shape, Cloneable
 
   /**
    * Returns a new Area equal to this one, transformed
-   * by the AffineTransform at
+   * by the AffineTransform at.
+   * @param at  the transform.
    * @return the transformed area
+   * @throws NullPointerException if <code>at</code> is <code>null</code>.
    */
   public Area createTransformedArea(AffineTransform at)
   {
@@ -768,6 +790,8 @@ public class Area implements Shape, Cloneable
   /**
    * Determines if the point (x,y) is contained within this Area.
    *
+   * @param x the x-coordinate of the point.
+   * @param y the y-coordinate of the point.
    * @return true if the point is contained, false otherwise.
    */
   public boolean contains(double x, double y)
@@ -787,7 +811,10 @@ public class Area implements Shape, Cloneable
   /**
    * Determines if the Point2D p is contained within this Area.
    *
-   * @return true if the point is contained, false otherwise.
+   * @param p the point.
+   * @return <code>true</code> if the point is contained, <code>false</code> 
+   *         otherwise.
+   * @throws NullPointerException if <code>p</code> is <code>null</code>.
    */
   public boolean contains(Point2D p)
   {
@@ -801,7 +828,12 @@ public class Area implements Shape, Cloneable
    *
    * This method should always produce the correct results, unlike for other
    * classes in geom.
-   * @return true if the rectangle is considered contained
+   * 
+   * @param x the x-coordinate of the rectangle.
+   * @param y the y-coordinate of the rectangle.
+   * @param w the width of the the rectangle.
+   * @param h the height of the rectangle.
+   * @return <code>true</code> if the rectangle is considered contained
    */
   public boolean contains(double x, double y, double w, double h)
   {
@@ -853,7 +885,7 @@ public class Area implements Shape, Cloneable
     Rectangle2D r = new Rectangle2D.Double(x, y, w, h);
     for (int path = 0; path < holes.size(); path++)
       if (! ((Segment) holes.elementAt(path)).isSegmentOutside(r))
-	return false;
+        return false;
 
     return true;
   }
@@ -864,7 +896,11 @@ public class Area implements Shape, Cloneable
    *
    * This method should always produce the correct results, unlike for other
    * classes in geom.
-   * @return true if the rectangle is considered contained
+   * 
+   * @param r the rectangle.
+   * @return <code>true</code> if the rectangle is considered contained
+   * 
+   * @throws NullPointerException if <code>r</code> is <code>null</code>.
    */
   public boolean contains(Rectangle2D r)
   {
@@ -874,7 +910,13 @@ public class Area implements Shape, Cloneable
   /**
    * Determines if the rectangle specified by (x,y) as the upper-left
    * and with width w and height h intersects any part of this Area.
-   * @return true if the rectangle intersects the area, false otherwise.
+   * 
+   * @param x  the x-coordinate for the rectangle.
+   * @param y  the y-coordinate for the rectangle.
+   * @param w  the width of the rectangle.
+   * @param h  the height of the rectangle.
+   * @return <code>true</code> if the rectangle intersects the area, 
+   *         <code>false</code> otherwise.
    */
   public boolean intersects(double x, double y, double w, double h)
   {
@@ -919,7 +961,7 @@ public class Area implements Shape, Cloneable
       }
 
     // Non-intersecting, Is any point inside?
-    if (contains(x, y))
+    if (contains(x + w * 0.5, y + h * 0.5))
       return true;
 
     // What if the rectangle encloses the whole shape?
@@ -932,7 +974,11 @@ public class Area implements Shape, Cloneable
   /**
    * Determines if the Rectangle2D specified by r intersects any
    * part of this Area.
-   * @return true if the rectangle intersects the area, false otherwise.
+   * @param r  the rectangle to test intersection with (<code>null</code>
+   *           not permitted).
+   * @return <code>true</code> if the rectangle intersects the area, 
+   *         <code>false</code> otherwise.
+   * @throws NullPointerException if <code>r</code> is <code>null</code>.
    */
   public boolean intersects(Rectangle2D r)
   {
@@ -942,23 +988,30 @@ public class Area implements Shape, Cloneable
   /**
    * Returns a PathIterator object defining the contour of this Area,
    * transformed by at.
+   * 
+   * @param at  the transform.
+   * @return A path iterator.
    */
   public PathIterator getPathIterator(AffineTransform at)
   {
     return (new AreaIterator(at));
   }
 
-  //---------------------------------------------------------------------
-  // Non-public methods and classes 
-
   /**
    * Returns a flattened PathIterator object defining the contour of this
    * Area, transformed by at and with a defined flatness.
+   * 
+   * @param at  the transform.
+   * @param flatness the flatness.
+   * @return A path iterator.
    */
   public PathIterator getPathIterator(AffineTransform at, double flatness)
   {
     return new FlatteningPathIterator(getPathIterator(at), flatness);
   }
+
+  //---------------------------------------------------------------------
+  // Non-public methods and classes 
 
   /**
    * Private pathiterator object.
@@ -2515,12 +2568,13 @@ public class Area implements Shape, Cloneable
 	return 0;
 
       if (y0 == 0.0)
-	y0 += EPSILON;
+	y0 -= EPSILON;
 
       if (y1 == 0.0)
-	y1 += EPSILON;
+	y1 -= EPSILON;
 
-      if (Line2D.linesIntersect(x0, y0, x1, y1, 0.0, 0.0, Double.MAX_VALUE, 0.0))
+      if (Line2D.linesIntersect(x0, y0, x1, y1, 
+				EPSILON, 0.0, Double.MAX_VALUE, 0.0))
 	return 1;
       return 0;
     }
@@ -2727,9 +2781,9 @@ public class Area implements Shape, Cloneable
       if ((x0 > 0.0 || x1 > 0.0 || x2 > 0.0) && (y0 * y1 <= 0 || y1 * y2 <= 0))
         {
 	  if (y0 == 0.0)
-	    y0 += EPSILON;
+	    y0 -= EPSILON;
 	  if (y2 == 0.0)
-	    y2 += EPSILON;
+	    y2 -= EPSILON;
 
 	  r[0] = y0;
 	  r[1] = 2 * (y1 - y0);
@@ -3139,9 +3193,9 @@ public class Area implements Shape, Cloneable
           && (y0 * y1 <= 0 || y1 * y2 <= 0 || y2 * y3 <= 0))
         {
 	  if (y0 == 0.0)
-	    y0 += EPSILON;
+	    y0 -= EPSILON;
 	  if (y3 == 0.0)
-	    y3 += EPSILON;
+	    y3 -= EPSILON;
 
 	  r[0] = y0;
 	  r[1] = 3 * (y1 - y0);

@@ -85,6 +85,8 @@ public class GdkGraphics2D extends Graphics2D
   private RenderingHints hints;
   private BufferedImage bimage;
 
+  private Composite comp;
+
   private Stack stateStack;
   
   native private void initState (GtkComponentPeer component);
@@ -268,6 +270,7 @@ public class GdkGraphics2D extends Graphics2D
 	private Shape clip;
 	private AffineTransform transform;
 	private Font font;  
+	private Composite comp;
 	DrawState (GdkGraphics2D g)
 	{
 	    this.paint = g.paint;
@@ -278,6 +281,7 @@ public class GdkGraphics2D extends Graphics2D
 	    if (g.transform != null)
 		this.transform = (AffineTransform) g.transform.clone();
 	    this.font = g.font;
+	    this.comp = g.comp;
 	}
 	public void restore(GdkGraphics2D g)
 	{
@@ -288,6 +292,7 @@ public class GdkGraphics2D extends Graphics2D
 	    g.clip = this.clip;
 	    g.transform = this.transform;
 	    g.font = this.font;
+	    g.comp = this.comp;
 	}
     }
     
@@ -771,6 +776,9 @@ public class GdkGraphics2D extends Graphics2D
 
   public void setColor (Color c)
   {
+    if (c == null)
+      c = Color.BLACK;
+    
     fg = c;
     paint = c;
     cairoSetRGBColor (fg.getRed() / 255.0, 
@@ -1259,6 +1267,8 @@ public class GdkGraphics2D extends Graphics2D
 
   public void setComposite(Composite comp)
   {
+    this.comp = comp;
+
     if (comp instanceof AlphaComposite)
       {
         AlphaComposite a = (AlphaComposite) comp;
@@ -1345,7 +1355,10 @@ public class GdkGraphics2D extends Graphics2D
 
   public Composite getComposite()
   {
-    throw new java.lang.UnsupportedOperationException ();
+    if (comp == null)
+      return AlphaComposite.SrcOver;
+    else
+      return comp;
   }
 
   public FontRenderContext getFontRenderContext ()

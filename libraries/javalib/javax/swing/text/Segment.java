@@ -39,11 +39,11 @@ package javax.swing.text;
 
 import java.text.CharacterIterator;
 
-
 public class Segment
   implements Cloneable, CharacterIterator
 {
   private boolean partialReturn;
+  private int current;
   
   public char[] array;
   public int count;
@@ -74,13 +74,20 @@ public class Segment
 
   public char current()
   {
-    return array[getIndex()];
+    if (count == 0
+	|| current >= getEndIndex())
+      return DONE;
+    
+    return array[current];
   }
 
   public char first()
   {
-    offset = getBeginIndex();
-    return array[offset];
+    if (count == 0)
+      return DONE;
+
+    current = getBeginIndex();
+    return array[current];
   }
 
   public int getBeginIndex()
@@ -95,31 +102,55 @@ public class Segment
 
   public int getIndex()
   {
-    return offset;
+    return current;
   }
 
   public char last()
   {
-    offset = getEndIndex() - 1;
-    return array[offset];
+    if (count == 0)
+      return DONE;
+    
+    current = getEndIndex() - 1;
+    return array[current];
   }
 
   public char next()
   {
-    offset++;
-    return array[offset];
+    if (count == 0)
+      return DONE;
+
+    if ((current + 1) >= getEndIndex())
+      {
+	current = getEndIndex();
+	return DONE;
+      }
+    
+    current++;
+    return array[current];
   }
 
   public char previous()
   {
-    offset--;
-    return array[offset];
+    if (count == 0
+	|| current == getBeginIndex())
+      return DONE;
+    
+    current--;
+    return array[current];
   }
 
   public char setIndex(int position)
   {
-    offset = position;
-    return array[offset];
+    if (position < getBeginIndex()
+	|| position > getEndIndex())
+      throw new IllegalArgumentException();
+
+    current = position;
+
+    if (position == getEndIndex())
+      return DONE;
+    
+    return array[current];
   }
 
   public String toString()

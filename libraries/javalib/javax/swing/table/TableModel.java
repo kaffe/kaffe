@@ -46,65 +46,65 @@ import javax.swing.event.TableModelListener;
  */
 public interface TableModel
 {
-	/**
-	 * getRowCount
+  /**
+   * getRowCount
    * @return row count
-	 */
-	int getRowCount();
+   */
+  int getRowCount();
 
-	/**
-	 * getColumnCount
+  /**
+   * getColumnCount
    * @return column count
-	 */
-	int getColumnCount();
+   */
+  int getColumnCount();
 
-	/**
-	 * getColumnName
-	 * @param columnIndex Column index
+  /**
+   * getColumnName
+   * @param columnIndex Column index
    * @return Column name
-	 */
-	String getColumnName(int columnIndex);
+   */
+  String getColumnName(int columnIndex);
 
-	/**
-	 * getColumnClass
-	 * @param columnIndex Column index
+  /**
+   * getColumnClass
+   * @param columnIndex Column index
    * @return Column class
-	 */
-	Class getColumnClass(int columnIndex);
+   */
+  Class getColumnClass(int columnIndex);
 
-	/**
-	 * isCellEditable
-	 * @param rowIndex Row index
-	 * @param columnIndex Column index
+  /**
+   * isCellEditable
+   * @param rowIndex Row index
+   * @param columnIndex Column index
    * @return true if editable, false otherwise
-	 */
-	boolean isCellEditable(int rowIndex, int columnIndex);
+   */
+  boolean isCellEditable(int rowIndex, int columnIndex);
 
-	/**
-	 * getValueAt
-	 * @param rowIndex Row index
-	 * @param columnIndex Column index
+  /**
+   * getValueAt
+   * @param rowIndex Row index
+   * @param columnIndex Column index
    * @return Value at specified indices
-	 */
-	Object getValueAt(int rowIndex, int columnIndex);
+   */
+  Object getValueAt(int rowIndex, int columnIndex);
 
-	/**
-	 * setValueAt
-	 * @param aValue Value to set
-	 * @param rowIndex Row index
-	 * @param columnIndex Column index
-	 */
-	void setValueAt(Object aValue, int rowIndex, int columnIndex);
+  /**
+   * setValueAt
+   * @param aValue Value to set
+   * @param rowIndex Row index
+   * @param columnIndex Column index
+   */
+  void setValueAt(Object aValue, int rowIndex, int columnIndex);
 
-	/**
-	 * addTableModelListener
-	 * @param listener TableModelListener
-	 */
-	void addTableModelListener(TableModelListener listener);
+  /**
+   * addTableModelListener
+   * @param listener TableModelListener
+   */
+  void addTableModelListener(TableModelListener listener);
 
-	/**
-	 * removeTableModelListener
-	 * @param listener TableModelListener
-	 */
-	void removeTableModelListener(TableModelListener listener);
+  /**
+   * removeTableModelListener
+   * @param listener TableModelListener
+   */
+  void removeTableModelListener(TableModelListener listener);
 }

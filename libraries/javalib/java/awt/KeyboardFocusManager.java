@@ -1098,8 +1098,11 @@ public abstract class KeyboardFocusManager
    */
   public final void redispatchEvent (Component target, AWTEvent e)
   {
+    synchronized (e)
+      {
     e.setSource (target);
-    dispatchEvent (e);
+        target.dispatchEvent (e);
+      }
   }
 
   /**

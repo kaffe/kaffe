@@ -50,6 +50,11 @@ import java.rmi.RemoteException;
 public abstract class Stub extends ObjectImpl
   implements Serializable
 {
+  /**
+   * For compatability with Sun's JDK 1.4.2 rev. 5
+   */
+  private static final long serialVersionUID = 1087775603798577179L;
+
   private transient StubDelegate delegate;
                 
   protected Stub()
