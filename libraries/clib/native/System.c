@@ -340,7 +340,7 @@ Java_java_lang_System_setOut0(JNIEnv *env, jclass system, jobject stream)
  * Set the error stream.
  */
 void
-Java_java_lang_System_setErr0(JNIEnv *env, jclass SystemClass, struct Hjava_io_PrintStream* stream)
+Java_java_lang_System_setErr0(JNIEnv *env, jclass system, struct Hjava_io_PrintStream* stream)
 {
 	jfieldID err = (*env)->GetStaticFieldID(env, system, 
 					"err", "Ljava/io/PrintStream;");

@@ -1,3 +1,8 @@
+1999-05-29  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/clib/native/System.c (Java_java_lang_System_setErr0):
+	Rename SystemClass argument to system, as in the body.
+
 1999-05-27  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in: Add `.' between `0' and `b4'.
