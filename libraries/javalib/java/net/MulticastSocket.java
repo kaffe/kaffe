@@ -22,8 +22,13 @@ public MulticastSocket() throws IOException {
 }
 
 public MulticastSocket(int port) throws IOException {
-	super(port, InetAddress.getByName("224.0.0.0"));
+	super(port, null);
 	iface = InetAddress.getLocalHost();
+}
+
+protected void init(int port, InetAddress bindAddr) throws SocketException {
+	impl.setOption(SocketOptions.SO_REUSEADDR, new Boolean(true));
+	super.init(port, bindAddr);
 }
 
 public InetAddress getInterface() throws SocketException {
