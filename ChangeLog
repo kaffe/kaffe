@@ -1,3 +1,14 @@
+2003-08-26  Bernhard Rosenkraenzer <bero@arklinux.org>
+
+	* gwqt.m4:
+	If both qt and qt-mt are installed, kaffe uses qt
+	unconditionally. Preferring qt-mt is preferrable because
+	that's what KDE uses and therefore it's usually in memory [I
+	assume that people who want --with-awt=qt are mostly KDE users]
+
+	* configure:
+	Regenerated.
+	
 2003-08-26  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/clib/awt/qt/Makefile.am:

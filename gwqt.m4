@@ -93,19 +93,19 @@ case "${host}" in
             fi
         fi
 
-        if test "x`ls $QTDIR/lib/libqt.* 2> /dev/null`" != x ; then
-            QT_LIB="-lqt"
-            QT_IS_MT="no"
-        elif test "x`ls $QTDIR/lib/libqt-mt.* 2> /dev/null`" != x ; then
+        if test "x`ls $QTDIR/lib/libqt-mt.* 2> /dev/null`" != x ; then
             QT_LIB="-lqt-mt"
             QT_IS_MT="yes"
-        elif test "x`ls $QTDIR/lib/libqte.* 2> /dev/null`" != x ; then
-            QT_LIB="-lqte"
+        elif test "x`ls $QTDIR/lib/libqt.* 2> /dev/null`" != x ; then
+            QT_LIB="-lqt"
             QT_IS_MT="no"
-            QT_IS_EMBEDDED="yes"
         elif test "x`ls $QTDIR/lib/libqte-mt.* 2> /dev/null`" != x ; then
             QT_LIB="-lqte-mt"
             QT_IS_MT="yes"
+            QT_IS_EMBEDDED="yes"
+        elif test "x`ls $QTDIR/lib/libqte.* 2> /dev/null`" != x ; then
+            QT_LIB="-lqte"
+            QT_IS_MT="no"
             QT_IS_EMBEDDED="yes"
         fi
         ;;
