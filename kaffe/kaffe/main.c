@@ -88,6 +88,10 @@ main(int argc, char* argv[])
 	int farg;
 	const char* cp;
 
+#if defined(MAIN_MD)
+	MAIN_MD;
+#endif
+
 #if defined(HAVE_LC_MESSAGES)
 	setlocale(LC_MESSAGES, "");
 	setlocale(LC_CTYPE, "");

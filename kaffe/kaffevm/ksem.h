@@ -20,11 +20,6 @@
  */
 struct Ksem;
 
-extern void ksemInit(struct Ksem* sem);
-extern void ksemPut(struct Ksem* sem);
-extern jboolean ksemGet(struct Ksem* sem, jlong timeout);
-extern void ksemDestroy(struct Ksem* sem);
-
 /*
  * Include the system locking layer interface.  See if it gives us
  * Ksem's or jmutex/jcondvar's (see FAQ.locks).
@@ -44,6 +39,11 @@ extern void ksemDestroy(struct Ksem* sem);
  */
 #ifndef THREAD_SYSTEM_HAS_KSEM
 
+ extern void ksemInit(struct Ksem* sem);
+ extern void ksemPut(struct Ksem* sem);
+ extern jboolean ksemGet(struct Ksem* sem, jlong timeout);
+ extern void ksemDestroy(struct Ksem* sem);
+
 /*
  * Present POSIX mutex+condvar as a binary semaphore.
  */
@@ -52,6 +52,5 @@ typedef struct Ksem {
 	jcondvar	cv;
 	int		count;
 } Ksem;
-
 #endif /* !defined(JTHREAD_HAS_KSEM) */
 #endif /* kaffevm_ksem_h */

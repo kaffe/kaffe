@@ -10,6 +10,8 @@
 
 #include "ksem.h"
 
+#ifndef THREAD_SYSTEM_HAS_KSEM
+
 /*
  * Initialize the just-allocated Ksem.  This function is only invoked
  * by the threading system when a new thread is allocated.
@@ -86,3 +88,5 @@ ksemDestroy(Ksem* sem)
 	jmutex_destroy(&(sem->mux));
 	jcondvar_destroy(&(sem->cv));
 }
+
+#endif
