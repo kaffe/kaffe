@@ -138,16 +138,32 @@ public static long parseLong(String s, int radix) {
 	}			
 }
 
+private static String toUnsignedString(long i, int bits) {
+	if (i == 0) {
+		return ("0");
+	}
+
+	StringBuffer buf = new StringBuffer();
+	long radix = 1 << bits, mask = radix-1;
+	while (i != 0) {
+		char digit = Character.forDigit((int)(i & mask), (int)radix);
+		i >>>= bits;
+		buf.append(digit);
+	}
+	buf.reverse();
+	return (buf.toString());
+}
+
 public static String toBinaryString ( long i ) {
-	return toString(i, 2);
+	return toUnsignedString(i, 1);
 }
 
 public static String toHexString ( long i ) {
-	return toString(i, 16);
+	return toUnsignedString(i, 4);
 }
 
 public static String toOctalString ( long i ) {
-	return toString(i, 8);
+	return toUnsignedString(i, 3);
 }
 
 public String toString() {

@@ -145,16 +145,32 @@ public static int parseInt(String s, int radix) throws NumberFormatException
 	}
 }
 
+private static String toUnsignedString(int i, int bits) {
+	if (i == 0) {
+		return ("0");
+	}
+
+	StringBuffer buf = new StringBuffer();
+	int radix = 1 << bits, mask = radix-1;
+	while (i != 0) {
+		char digit = Character.forDigit(i & mask, radix);
+		i >>>= bits;
+		buf.append(digit);
+	}
+	buf.reverse();
+	return (buf.toString());
+}
+
 public static String toBinaryString(int i) {
-	return toString(i, 2);
+	return toUnsignedString(i, 1);
 }
 
 public static String toHexString(int i) {
-	return toString(i, 16);
+	return toUnsignedString(i, 4);
 }
 
 public static String toOctalString(int i) {
-	return toString(i, 8);
+	return toUnsignedString(i, 3);
 }
 
 public String toString()
