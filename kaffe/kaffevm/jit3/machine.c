@@ -1376,7 +1376,9 @@ initFakeCalls(void)
 	lastFake = &firstFake;
 }
 
-fakeCall *findFakeCall(void *func)
+static
+fakeCall *
+findFakeCall(void *func)
 {
 	fakeCall *fc, *retval = 0;
 
