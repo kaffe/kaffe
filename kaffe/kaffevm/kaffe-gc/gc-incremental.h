@@ -93,8 +93,8 @@ typedef	gc_unit			gcList;
 
 #define UREMOVELIST(OBJ)	(OBJ)->cprev->cnext = (OBJ)->cnext; \
 				(OBJ)->cnext->cprev = (OBJ)->cprev; \
-				(OBJ)->cprev = 0; \
-				(OBJ)->cnext = 0
+				(OBJ)->cprev = NULL; \
+				(OBJ)->cnext = NULL
 
 #define	UTOMEM(OBJ)		((void*)(((gc_unit*)(uintp)(OBJ))+1))
 #define	UTOUNIT(OBJ)		(((gc_unit*)(uintp)(OBJ))-1)

@@ -208,7 +208,7 @@ static void
 gcRegisterFixedTypeByIndex(Collector* gcif UNUSED, 
 	gc_alloc_type_t idx, const char *description)
 {
-	registerTypeByIndex(idx, 0, KGC_OBJECT_FIXED, 0, description);
+	registerTypeByIndex(idx, NULL, KGC_OBJECT_FIXED, NULL, description);
 }
 
 /*
@@ -389,7 +389,7 @@ gcGetObjectBase(Collector *gcif UNUSED, void* mem)
 
 	/* quickly reject pointers that are not part of this heap */
 	if (!IS_A_HEAP_POINTER(mem)) {
-		return (0);
+		return (NULL);
 	}
 
 	lockStaticMutex(&gc_lock);
@@ -412,7 +412,7 @@ gcGetObjectBase(Collector *gcif UNUSED, void* mem)
 		return mem;
 	}
 	unlockStaticMutex(&gc_lock);
-	return (0);
+	return (NULL);
 }
 
 static
@@ -577,7 +577,7 @@ DBG(GCSTAT,
 		}
 
 		lockStaticMutex(&gc_lock);
-		DBG(GCSTAT, walkClassPool(gcClearCounts, 0));
+		DBG(GCSTAT, walkClassPool(gcClearCounts, NULL));
 		    
 		startGC(gcif);
 
@@ -619,7 +619,7 @@ DBG(GCSTAT,
 		    dprintf("%-7s %s\n", "-------",
 			    "-----------------------------------"
 			    "-----------------------------------");
-		    walkClassPool(gcDumpCounts, 0));
+		    walkClassPool(gcDumpCounts, NULL));
 		    
 		unlockStaticMutex(&gc_lock);
 
@@ -1042,7 +1042,7 @@ gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
 
 	lockStaticMutex(&gc_lock);
 
-	for (unit=0; unit==0;) {
+	for (unit=NULL; unit==NULL;) {
 		times++;
 		unit = gc_heap_malloc(size);
 	
@@ -1080,7 +1080,7 @@ gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
 				}
 				/* Guess we've really run out */
 				unlockStaticMutex(&gc_lock);
-				return (0);
+				return (NULL);
 			}
 		}
 	}
@@ -1153,7 +1153,7 @@ gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
 	    && outOfMem_allocator == KTHREAD(current)()) { 
 		outOfMem = OOM_ALLOCATING;
 		outOfMem = OutOfMemoryError; /* implicit allocation */
-		outOfMem_allocator = 0;
+		outOfMem_allocator = NULL;
 		gc_add_ref(outOfMem);
 	}
 	return (mem);
@@ -1163,7 +1163,7 @@ static
 struct Hjava_lang_Throwable *
 gcThrowOOM(Collector *gcif UNUSED)
 {
-	Hjava_lang_Throwable *ret = 0;
+	Hjava_lang_Throwable *ret = NULL;
 	int reffed;
 	int iLockRoot;
 
@@ -1174,21 +1174,21 @@ gcThrowOOM(Collector *gcif UNUSED)
 	lockStaticMutex(&gc_lock);
 	ret = outOfMem;
 	reffed = outOfMem != 0;
-	outOfMem = 0;
+	outOfMem = NULL;
 	/* We try allocating reserved pages before we allocate the
 	 * outOfMemory error.  We can use some or all of the reserved
 	 * pages to actually grab an error.
 	 */
 	if (reserve) {
 		gc_primitive_free(reserve);
-		reserve = 0;
+		reserve = NULL;
 		if (!ret || ret == OOM_ALLOCATING) {
 			unlockStaticMutex(&gc_lock);
 			ret = OutOfMemoryError; /* implicit allocation */
 			lockStaticMutex(&gc_lock);
 		}
 	}
-	if (ret == OOM_ALLOCATING || ret == 0) {
+	if (ret == OOM_ALLOCATING || ret == NULL) {
 		/* die now */
 		unlockStaticMutex(&gc_lock);
 		dprintf(
@@ -1231,7 +1231,7 @@ gcRealloc(Collector* gcif, void* mem, size_t size, gc_alloc_type_t fidx)
 
 	/* Can only handled fixed objects at the moment */
 	assert(KGC_GET_COLOUR(info, idx) == KGC_COLOUR_FIXED);
-	info = 0;
+	info = NULL;
 	unlockStaticMutex(&gc_lock);
 
 	/* If we'll fit into the current space, just send it back */
@@ -1259,7 +1259,7 @@ gcFree(Collector* gcif UNUSED, void* mem)
 	gc_unit* unit;
 	int iLockRoot;
 
-	if (mem != 0) {
+	if (mem != NULL) {
 		lockStaticMutex(&gc_lock);
 		unit = UTOUNIT(mem);
 		info = gc_mem2block(unit);
@@ -1451,8 +1451,8 @@ gcGetName(UNUSED Collector *gcif)
  */
 static struct GarbageCollectorInterface_Ops KGC_Ops = {
 	gcGetName,		/* reserved */
-	0,		/* reserved */
-	0,		/* reserved */
+	NULL,		/* reserved */
+	NULL,		/* reserved */
 	gcMalloc,
 	gcRealloc,
 	gcFree,

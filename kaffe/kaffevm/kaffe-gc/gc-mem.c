@@ -68,7 +68,7 @@ typedef struct {
 static gc_freelist freelist[NR_FREELISTS+1]
 #ifdef PREDEFINED_NUMBER_OF_TILES
 	= {
-#define	S(sz)	{ 0, sz }
+#define	S(sz)	{ NULL, sz }
 	S(16),
 	S(24),
 	S(32),
@@ -350,7 +350,7 @@ void*
 gc_heap_malloc(size_t sz)
 {
 	size_t lnr;
-	gc_freeobj* mem = 0;
+	gc_freeobj* mem = NULL;
 	gc_block** mptr;
 	gc_block* blk;
 	size_t nsz;
@@ -549,7 +549,7 @@ gc_small_block(size_t sz)
 
 	info = gc_primitive_alloc(gc_pgsize);
 	if (info == 0) {
-		return (0);
+		return (NULL);
 	}
 
 	/* Calculate number of objects in this block */
@@ -573,7 +573,7 @@ gc_small_block(size_t sz)
 		KGC_SET_COLOUR(info, i, KGC_COLOUR_FREE);
 		KGC_SET_STATE(info, i, KGC_STATE_NORMAL);
 	}
-	GCBLOCK2FREE(info, nr-1)->next = 0;
+	GCBLOCK2FREE(info, nr-1)->next = NULL;
 	KGC_SET_COLOUR(info, nr-1, KGC_COLOUR_FREE);
 	KGC_SET_STATE(info, nr-1, KGC_STATE_NORMAL);
 	info->free = GCBLOCK2FREE(info, 0);
@@ -603,7 +603,7 @@ gc_large_block(size_t sz)
 
 	info = gc_primitive_alloc(msz);
 	if (info == 0) {
-		return (0);
+		return (NULL);
 	}
 
 	/* number of pages allocated for block */
@@ -620,11 +620,11 @@ gc_large_block(size_t sz)
 	info->funcs = (uint8*)GCBLOCK2BASE(info);
 	info->state = (uint8*)(info->funcs + 1);
 	info->data = (uint8*)ROUNDUPALIGN(info->state + 1);
-	info->free = 0;
+	info->free = NULL;
 
 	DBG(GCDIAG, memset(info->data, 0, sz));
 
-	GCBLOCK2FREE(info, 0)->next = 0;
+	GCBLOCK2FREE(info, 0)->next = NULL;
 
 	/* now initialize the other blocks that were allocated */
 	while (--block_count > 0) {
@@ -635,7 +635,7 @@ gc_large_block(size_t sz)
 		info[block_count].funcs = info[0].funcs;
 		info[block_count].state = info[0].state;
 		info[block_count].data  = info[0].data;
-		info[block_count].free  = 0;
+		info[block_count].free  = NULL;
 	}
 
 	/*
@@ -858,7 +858,7 @@ DBG(GCPRIM,	dprintf("gc_primitive_alloc: 0x%x bytes from freelist @ %p\n", best_
 DBG(GCPRIM,	dprintf("gc_primitive_alloc: no suitable block found!\n"); );
 
 	/* Nothing found on free list */
-	return (0);
+	return (NULL);
 }
 
 /*
@@ -948,7 +948,7 @@ gc_primitive_free(gc_block* mem)
 gc_block *
 gc_primitive_reserve(void)
 {
-	gc_block *r = 0;
+	gc_block *r = NULL;
 	size_t size = 4 * gc_pgsize;
 	
 	while (size >= gc_pgsize && !(r = gc_primitive_alloc(size))) {
@@ -982,7 +982,7 @@ pagealloc(size_t size)
 		int missed;
 		ptr = sbrk((intptr_t)size);
 		if (ptr == (void*)-1) {
-			ptr = 0;
+			ptr = NULL;
 			break;
 		}
 		if ((uintp)ptr % gc_pgsize == 0) {
@@ -1068,7 +1068,7 @@ gc_block_alloc(size_t size)
 		nblocks = (gc_heap_limit+gc_pgsize-1)>>gc_pgbits;
 
 		gc_block_base = malloc(nblocks * sizeof(gc_block));
-		if (!gc_block_base) return 0;
+		if (!gc_block_base) return NULL;
 		memset(gc_block_base, 0, nblocks * sizeof(gc_block));
 	}
 
@@ -1076,7 +1076,7 @@ gc_block_alloc(size_t size)
 	heap_addr = pagealloc(size);
 	DBG(GCSYSALLOC, dprintf(" => %p\n", (void *) heap_addr));
 
-	if (!heap_addr) return 0;
+	if (!heap_addr) return NULL;
 	
 	if (!gc_heap_base) {
 		gc_heap_base = heap_addr;
@@ -1114,7 +1114,7 @@ gc_block_alloc(size_t size)
 		    dprintf("growing block array from %d to %d elements\n",
 			    onb, nblocks));
 
-		KTHREAD(spinon)(0);
+		KTHREAD(spinon)(NULL);
 		gc_block_base = realloc(old_blocks,
 						nblocks * sizeof(gc_block));
 		if (!gc_block_base) {
@@ -1122,8 +1122,8 @@ gc_block_alloc(size_t size)
 			pagefree(heap_addr, size);
 			gc_block_base = old_blocks;
 			nblocks = onb;
-			KTHREAD(spinoff)(0);
-			return 0;
+			KTHREAD(spinoff)(NULL);
+			return NULL;
 		}
 
 		/* If the array's address has changed, we have to fix
@@ -1159,7 +1159,7 @@ gc_block_alloc(size_t size)
 				R(freelist[i].list);
 #undef R
 		}
-		KTHREAD(spinoff)(0);
+		KTHREAD(spinoff)(NULL);
 		stopTiming(&growtime);
 	}
 	n_live += size_pg;
@@ -1202,7 +1202,7 @@ gc_heap_grow(size_t sz)
 
 	if (gc_heap_total == gc_heap_limit) {
 		unlockStaticMutex(&gc_heap_lock);
-		return (0);
+		return (NULL);
 	} else if (gc_heap_total + sz > gc_heap_limit) {
 		/* take as much memory as we can */
 		sz = gc_heap_limit - gc_heap_total;
@@ -1218,9 +1218,9 @@ gc_heap_grow(size_t sz)
 	DBG(GCSYSALLOC,
 	    dprintf("gc_system_alloc: %ld byte at %p\n", (long) sz, blk); );
 
-	if (blk == 0) {
+	if (blk == NULL) {
 		unlockStaticMutex(&gc_heap_lock);
-		return (0);
+		return (NULL);
 	}
 
 	gc_heap_total += sz;
