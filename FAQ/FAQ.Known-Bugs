@@ -4,6 +4,11 @@ Treat it as an TODO list.
 * java/net/ServerSocket.<init>(IILjava/net/InetAddress;)V
   is not implemented.  Should be easy and quick to fix.
 
+* UDP sockets are broken:
+  Failed to locate native function:
+	java/net/DatagramSocket.datagramSocketCreate()V
+  This requires converting DatagramSocket.java to use PlainDatagramSocketImpl.
+
 * javap java.lang.ThreadGroup outputs 'NUL' characters when used with
   Klasses.jar.
 
