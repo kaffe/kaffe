@@ -86,7 +86,6 @@ noinst_HEADERS = \
 	code.h \
 	constants.h \
 	debug.h \
-	errors.h \
 	exception.h \
 	external.h \
 	file.h \
