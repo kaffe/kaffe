@@ -10,7 +10,7 @@ package java.lang;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-final public class StringBuffer
+public final class StringBuffer implements java.io.Serializable
 {
 	private char[] buffer;
 	private int used;
@@ -57,8 +57,7 @@ public synchronized StringBuffer append(char c)
 	if ( used + 1 > buffer.length ) {
 		ensureCapacity(used+1);
 	}
-	buffer[used] = c;
-	used++;
+	buffer[used++] = c;
 
 	return (this);
 }
@@ -235,7 +234,7 @@ public synchronized void setLength(int newLength) {
 		else {
 			/* Pad buffer */
 			for (int pos = used; pos < newLength; pos++) {
-				buffer[pos]='\u0000';
+				buffer[pos] = (char) 0;
 			}
 		}
 	}

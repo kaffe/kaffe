@@ -275,6 +275,7 @@ public synchronized void remove(ThreadGroup group) {
  * @deprecated
  */
 final public synchronized void resume() {
+	checkAccess();
 	for (int i = 0; i < threads.length; i++) {
 		if (threads[i] != null) {
 			threads[i].resume();
@@ -303,6 +304,7 @@ final public synchronized void setMaxPriority(int pri) {
  * @deprecated
  */
 final public synchronized void stop() {
+	checkAccess();
 	for (int i = 0; i < threads.length; i++) {
 		if (threads[i] != null) {
 			threads[i].stop();
@@ -319,6 +321,7 @@ final public synchronized void stop() {
  * @deprecated
  */
 final public synchronized void suspend() {
+	checkAccess();
 	for (int i = 0; i < threads.length; i++) {
 		if (threads[i] != null) {
 			threads[i].suspend();

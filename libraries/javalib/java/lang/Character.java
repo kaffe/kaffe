@@ -14,7 +14,7 @@
 
 package java.lang;
 
-public final class Character extends Object {
+public final class Character implements java.io.Serializable {
 
   public static final int MIN_RADIX = 2;
   public static final int MAX_RADIX = 36;
@@ -70,12 +70,9 @@ public final class Character extends Object {
 
   public boolean equals(Object obj)
   {
-    if (obj instanceof Character) {
-      return (charValue() == ((Character)obj).charValue());
-    }
-    else {
-      return (false);
-    }    
+    return (obj != null)
+      && (obj instanceof Character)
+      && (((Character) obj).value == this.value);
   }
 
   public String toString()
@@ -83,6 +80,9 @@ public final class Character extends Object {
     return (String.valueOf(value));
   }
 
+  /**
+   * @deprecated Replaced by isWhitespace(char).
+   */
   public static boolean isSpace(char ch)
   {
     return (isWhitespace(ch));
@@ -93,11 +93,17 @@ public final class Character extends Object {
     return (isLetter(ch) || isDigit(ch));
   }
   
+  /**
+   * @deprecated Replaced by isJavaIdentifierStart(char).
+   */
   public static boolean isJavaLetter(char ch)
   {
     return (isJavaIdentifierStart(ch));
   }
   
+  /**
+   * @deprecated Replaced by isJavaIdentifierPart(char).
+   */
   public static boolean isJavaLetterOrDigit(char ch)
   {
     return (isJavaIdentifierPart(ch));
@@ -110,20 +116,12 @@ public final class Character extends Object {
   
   public static char toTitleCase(char ch)
   {
-    if (ch == 0x01C6) {
-      return (0x01C6);
-    }
-    else if (ch == 0x01C9) {
-      return (0x01C8);
-    }
-    else if (ch == 0x01CC) {
-      return (0x01CB);
-    }
-    else if (ch == 0x01F3) {
-      return (0x01F2);
-    }
-    else {
-      return (ch);
+    switch (ch) {
+      case 0x01C6: return 0x01C5;
+      case 0x01C9: return 0x01C8;
+      case 0x01CC: return 0x01CB;
+      case 0x01F3: return 0x01F2;
+      default:     return ch;
     }
   }
 
@@ -135,8 +133,8 @@ public final class Character extends Object {
    *   Its value is in the range 0xF900 <= ch <= 0xFA2D.  <br>
    */
   public static boolean isDefined(char ch) {
-	if (0x3040 <= ch && ch <= 0x9FA5 ||
-	    0xF900 <= ch && ch <= 0xFA2D) {
+	if (   (0x3040 <= ch && ch <= 0x9FA5)
+	    || (0xF900 <= ch && ch <= 0xFA2D)) {
 		return (true);
 	}
 	/* FIXME: we do not check for entry in Unicode attribute table.
@@ -183,11 +181,7 @@ public final class Character extends Object {
 
   public static char toLowerCase(char ch)
   {
-    char result=ch;
-
-    if (isUpperCase(ch)) result=(char )(((int )ch)+32);
-
-    return result;
+    return isUpperCase(ch) ? (char) ((int) ch + 32) : ch;
   }
 
   public static char toUpperCase(char ch)
@@ -213,12 +207,7 @@ public final class Character extends Object {
       val = ((int)toLowerCase(ch)) - ((int)'a') + 10;
     }
 
-    if (val < radix) {
-      return (val);
-    }
-    else {
-      return (-1);
-    }
+    return (val < radix) ? val : -1;
   }
 
   public static char forDigit(int digit, int radix)
@@ -246,13 +235,8 @@ public final class Character extends Object {
 
   public static boolean isISOControl(char ch)
   {
-    if ((ch >= 0x0000 && ch <= 0x001F) ||
-        (ch >= 0x007F && ch <= 0x009F)) {
-      return (true);
-    }
-    else {
-      return (false);
-    }
+    return (ch >= 0x0000 && ch <= 0x001F)
+	|| (ch >= 0x007F && ch <= 0x009F);
   }
 
   public static boolean isJavaIdentifierPart(char ch)

@@ -22,35 +22,35 @@ public final class Float extends Number {
   public static final Class TYPE = Class.getPrimitiveClass("float");
   
   public Float(float value) {
-    this.value=value;
+    this.value = value;
   }
   
   public Float(double value) {
-    this((float )value);
+    this.value = (float) value;
   }
   
   public Float(String s) throws NumberFormatException {
-    this(Float.valueOf(s).floatValue());
+    this.value = valueOf(s).value;
   }
   
   public boolean equals(Object obj) {
     if ((obj!=null) && (obj instanceof Float)) {
 
-      int leftBits=floatToIntBits(this.floatValue());
-      int rightBits=floatToIntBits(((Float )obj).floatValue());
-      int nanBits=floatToIntBits(NaN);
-      int posBits=floatToIntBits(POSITIVE_INFINITY);
-      int negBits=floatToIntBits(NEGATIVE_INFINITY);
+      final int leftBits=floatToIntBits(this.value);
+      final int rightBits=floatToIntBits(((Float )obj).value);
+      final int posBits=floatToIntBits(POSITIVE_INFINITY);
+      final int negBits=floatToIntBits(NEGATIVE_INFINITY);
 
-      if ((this.isNaN()==true) && (((Float )obj).isNaN()==true)) {
+      if (this.isNaN() && ((Float )obj).isNaN()) {
         return true;
       }
 
-      if (((leftBits==posBits) && (rightBits==negBits)) || ((leftBits==posBits) && (rightBits==negBits))) {
+      if (((leftBits == posBits) && (rightBits == posBits))
+	  || ((leftBits == negBits) && (rightBits == negBits))) {
 	return true;
       }
     
-      return (leftBits==rightBits);
+      return (leftBits == rightBits);
     }
     else {
       return false;
@@ -89,19 +89,20 @@ public final class Float extends Number {
   public static native Float valueOf(String s) throws NumberFormatException;
   
   public static boolean isNaN(float v) {
-    /* See class Double */
-    return (v!=v);
+    /* A NaN is the only number which doesn't equal itself */
+    return (v != v);
   }
   
   public boolean isNaN() {
-    return isNaN(this.floatValue());
+    return isNaN(value);
   }
   
   public static boolean isInfinite(float v) {
-    return (floatToIntBits(v)==floatToIntBits(POSITIVE_INFINITY)) || (floatToIntBits(v)==floatToIntBits(NEGATIVE_INFINITY));
+    return (floatToIntBits(v)==floatToIntBits(POSITIVE_INFINITY))
+	|| (floatToIntBits(v)==floatToIntBits(NEGATIVE_INFINITY));
   }
   
   public boolean isInfinite() {
-    return isInfinite(this.floatValue());
+    return isInfinite(value);
   }
 }

@@ -200,24 +200,14 @@ public ThreadGroup getThreadGroup() {
  * @deprecated, Deprecated in 1.2
  */
 protected boolean inClass(String name) {
-	if (classDepth(name) == -1) {
-		return (false);
-	}
-	else {
-		return (true);
-	}
+	return (classDepth(name) != -1);
 }
 
 /**
  * @deprecated, Deprecated in 1.2
  */
 protected boolean inClassLoader() {
-	if (classLoaderDepth() == -1) {
-		return (false);
-	}
-	else {
-		return (true);
-	}
+	return (classLoaderDepth() != -1);
 }
 
 protected Class[] getClassContext() {

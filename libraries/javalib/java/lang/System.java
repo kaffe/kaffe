@@ -69,6 +69,8 @@ public static Properties getProperties() {
 }
 
 public static String getProperty(String key) {
+	checkPropertyAccess();
+
 	return getProperty(key, null);
 }
 

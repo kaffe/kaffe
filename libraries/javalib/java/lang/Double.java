@@ -26,11 +26,11 @@ public final class Double extends Number {
   public static native double longBitsToDouble(long bits);
   
   public Double(double value) {
-    this.value=value;
+    this.value = value;
   }
 
   public Double(String s) throws NumberFormatException {
-    this(Double.valueOf(s).doubleValue());
+    this.value = valueOf(s).value;
   }
 
   public double doubleValue() {
@@ -38,7 +38,7 @@ public final class Double extends Number {
   }
 
   public String toString() {
-    return Double.toString(doubleValue());
+    return toString(value);
   }
 
   public boolean equals(Object obj) {
@@ -46,9 +46,8 @@ public final class Double extends Number {
       Double that=(Double )obj;
       if ((this.isNaN()==true) && (that.isNaN()==true)) return true;
     
-      double left, right;
-      left=this.doubleValue();
-      right=that.doubleValue();
+      double left = this.value;
+      double right = that.value;
 
       if ((left==+0.0) && (right==-0.0)) return false;
       if ((left==-0.0) && (right==+0.0)) return false;
@@ -67,7 +66,7 @@ public final class Double extends Number {
 
   public int hashCode()
   {
-    return (this.intValue());
+    return ((int)value);
   }
   
   public int intValue()
@@ -76,24 +75,24 @@ public final class Double extends Number {
   }
   
   public boolean isInfinite() {
-    return ((doubleValue()==POSITIVE_INFINITY) || (doubleValue()==NEGATIVE_INFINITY));		
+    return ((value == POSITIVE_INFINITY) || (value == NEGATIVE_INFINITY));
   }
   
   public static boolean isInfinite(double v) {
-    return ((v==POSITIVE_INFINITY) || (v==NEGATIVE_INFINITY));
+    return ((v == POSITIVE_INFINITY) || (v == NEGATIVE_INFINITY));
   }
   
   public boolean isNaN() {
-    return Double.isNaN(value);
+    return isNaN(value);
   }
   
   public static boolean isNaN(double v) {
-    /* A tricky little problem solved here.. NaN does equal NaN ever, so how do you test for NaN...
-       Simple: It the only number (well not a number!) which doesn't equal itself! */
-    return (v!=v);
+    /* A NaN is the only number which doesn't equal itself */
+    return (v != v);
   }
 
   public long longValue() {
-    return (long )value;
+    return (long) value;
   }
 }
+

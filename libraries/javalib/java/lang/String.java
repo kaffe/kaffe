@@ -21,6 +21,8 @@ import kaffe.io.ByteToCharConverter;
 import kaffe.io.CharToByteConverter;
 
 final public class String implements Serializable {
+// Note: value, offset, and count are not private, because
+// StringBuffer uses them for faster access
 	char[] value;
 	int offset;
 	int count;
@@ -34,8 +36,8 @@ public String() {
 	value = new char[0];
 }
 
-public String( String other) {
-	this( other.toCharArray());
+public String(String other) {
+	this(other.value, other.offset, other.count);
 }
 
 public String (StringBuffer sb) {
@@ -160,16 +162,16 @@ public boolean equals ( Object anObject) {
 		return (false);
 	}
 
-	String other = (String)anObject;
-	if (count != other.count) {
+	final String other = (String)anObject;
+	if (this.count != other.count) {
 		return (false);
 	}
 
-	int i = offset;
+	int i = this.offset;
 	int j = other.offset;
-	int n = offset + count;
+	final int n = this.offset + this.count;
 	for (; i < n; i++, j++) {
-		if (value[i] != other.value[j] ) {
+		if (this.value[i] != other.value[j] ) {
 			return (false);
 		}
 	}
@@ -177,13 +179,13 @@ public boolean equals ( Object anObject) {
 }
 
 public boolean equalsIgnoreCase (String other) {
-	if (other == null || count != other.count) {
+	if (other == null || this.count != other.count) {
 		return (false);
 	}
 
-	int i = offset;
+	int i = this.offset;
 	int j = other.offset;
-	int n = offset + count;
+	final int n = this.offset + this.count;
 
 	for (; i < n; i++, j++ ) {
 		if (value[i] != other.value[j] && Character.toUpperCase(value[i]) != Character.toUpperCase(other.value[j])) {
@@ -466,10 +468,7 @@ public String trim() {
 }
 
 public static String valueOf( Object obj) {
-	if (obj==null) {
-		return "null";
-	}
-	return obj.toString();
+	return (obj == null) ? "null" : obj.toString();
 }
 
 public static String valueOf( boolean b) {
@@ -477,9 +476,7 @@ public static String valueOf( boolean b) {
 }
 
 public static String valueOf( char c) {
-	char ca[] = new char[1];
-	ca[0] = c;
-	return new String( ca);
+	return new String(new char[] { c });
 }
 
 public static String valueOf(char data[]) {
@@ -491,28 +488,23 @@ public static String valueOf( char data[], int offset, int count) {
 }
 
 public static String valueOf( double d) {
-	return ( new Double(d)).toString();
+	return Double.toString(d);
 }
 
 public static String valueOf( float f) {
-	return ( new Float(f)).toString();
+	return Float.toString(f);
 }
 
 public static String valueOf( int i) {
-	return ( new Integer(i)).toString();
+	return Integer.toString(i);
 }
 
 public static String valueOf( long l) {
-	return ( new Long(l)).toString();
+	return Long.toString(l);
 }
 
 final public String intern() {
-	if (interned == false) {
-		return (intern0(this));
-	}
-	else {
-		return (this);
-	}
+	return interned ? this : intern0(this);
 }
 
 final native static public synchronized String intern0(String str);

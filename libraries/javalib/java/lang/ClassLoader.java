@@ -81,12 +81,7 @@ final public static URL getSystemResource(String name) {
 
 public static final InputStream getSystemResourceAsStream(String name) {
 	byte[] data = getSystemResourceAsBytes0(name);
-	if (data == null) {
-		return (null);
-	}
-	else {
-		return (new ByteArrayInputStream(data));
-	}
+	return (data != null) ? new ByteArrayInputStream(data) : null;
 }
 
 public Class loadClass(String name) throws ClassNotFoundException {

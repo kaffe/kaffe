@@ -23,12 +23,12 @@ final public class Integer
 
 public Integer(String s) throws NumberFormatException
 {
-	this(parseInt(s));
+	this.value = parseInt(s);
 }
 
 public Integer(int value)
 {
-	this.value=value;
+	this.value = value;
 }
 
 public static Integer decode(String nm) throws NumberFormatException
@@ -68,12 +68,9 @@ public double doubleValue() {
 }
 
 public boolean equals(Object obj) {
-	if ((obj!=null) && (obj instanceof Integer)) {
-		return (this.intValue()==((Integer )obj).intValue());
-	}
-	else {
-		return false;
-	}
+	return (obj != null) &&
+		(obj instanceof Integer) &&
+		(((Integer)obj).value == this.value);
 }
 
 public float floatValue() {
@@ -110,8 +107,7 @@ public int hashCode() {
 	return this.intValue();
 }
 
-public int intValue()
-	{
+public int intValue() {
 	return value;
 }
 
@@ -129,17 +125,14 @@ public static int parseInt(String s, int radix) throws NumberFormatException
 	if (s==null || s.length()<=0) throw new NumberFormatException();
 
 	/* Check for negativity */
-	if (s.charAt(0)=='-')
-		{
-		return parseInt(s.substring(1), radix)*-1;
+	if (s.charAt(0)=='-') {
+		return -parseInt(s.substring(1), radix);
 	}
-	else
-		{
+	else {
 		int result=0;
 		int position;
 
-		for (position=0; position<s.length(); position++)
-			{
+		for (position=0; position<s.length(); position++) {
 			int digit=Character.digit(s.charAt(position), radix);
 			if (digit==-1) throw new NumberFormatException();
 
@@ -163,7 +156,7 @@ public static String toOctalString(int i) {
 }
 
 public String toString() {
-	return toString(this.intValue());		
+	return toString(this.value);
 }
 
 public static String toString(int i) {
@@ -180,10 +173,7 @@ public static String toString(int i, int radix) {
 	}
 
 	StringBuffer buf = new StringBuffer();
-	int sign = 1;
-	if (i < 0) {
-		sign = -1;
-	}
+	int sign = (i < 0) ? -1 : 1;
 	while (i != 0) {
 		char digit = Character.forDigit(Math.abs(i % radix), radix);
 		i = i / radix;

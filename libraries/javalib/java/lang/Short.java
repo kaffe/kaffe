@@ -30,22 +30,10 @@ public Short(short value)
 
 public static Short decode(String nm) throws NumberFormatException
 {
-	short val;
-
-	if (nm.startsWith("0x")) {
-		val = parseShort(nm.substring(2), 16);
-	}
-	else if (nm.startsWith("#")) {
-		val = parseShort(nm.substring(1), 16);
-	}
-	else if (nm.startsWith("0")) {
-		val = parseShort(nm.substring(1), 8);
-	}
-	else {
-		val = parseShort(nm.substring(1), 10);
-	}
-
-	return (new Short(val));
+	int val = Integer.decode(nm).intValue();
+	if (val < MIN_VALUE || val > MAX_VALUE)
+	    throw new NumberFormatException();
+	return new Short((short) val);
 }
 
 public double doubleValue()
@@ -86,7 +74,10 @@ public static short parseShort(String s) throws NumberFormatException
 
 public static short parseShort(String s, int radix) throws NumberFormatException
 {
-	return ((short)Integer.parseInt(s, radix));
+	int val = Integer.parseInt(s, radix);
+	if (val < MIN_VALUE || val > MAX_VALUE)
+		throw new NumberFormatException();
+	return (short)val;
 }
 
 public String toString()

@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import kaffe.lang.SystemClassLoader;
 
-final public class Class implements Serializable {
+public final class Class implements Serializable {
 
 native public static Class forName(String className) throws ClassNotFoundException;
 
@@ -231,10 +231,6 @@ native public Object newInstance() throws InstantiationException, IllegalAccessE
  * toString() 
  */
 public String toString() {
-	if (isInterface()) {
-		return ("interface " + getName());
-	} else {
-		return ("class " + getName());
-	}
+	return (isInterface() ? "interface " : "class ") + getName();
 }
 }

@@ -1,6 +1,4 @@
 package java.lang;
-import java.io.Serializable;
-
 
 /*
  * Java core library component.
@@ -11,7 +9,7 @@ import java.io.Serializable;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-abstract public class Number implements Serializable 
+abstract public class Number implements java.io.Serializable
 {
 	/* This is what Sun's JDK1.1 "serialver java.lang.Number" spits out */
 	private static final long serialVersionUID = -8742448824652078965L;

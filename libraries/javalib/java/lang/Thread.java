@@ -89,12 +89,7 @@ public Thread(ThreadGroup group, Runnable target, String name) {
 
 	int tprio = parent.getPriority();
 	int gprio = this.group.getMaxPriority();
-	if (tprio < gprio) {
-		setPriority0(tprio);
-	}
-	else {
-		setPriority0(gprio);
-	}
+	setPriority0(tprio < gprio ? tprio : gprio);
 
 	setDaemon(parent.isDaemon());
 }
@@ -129,8 +124,7 @@ public void destroy() {
 native private void destroy0();
 
 public static void dumpStack() {
-	Throwable t = new Throwable();
-	t.printStackTrace();
+	new Throwable().printStackTrace();
 }
 
 public static int enumerate(Thread tarray[]) {
@@ -182,6 +176,7 @@ Hashtable getThreadLocals() {
 }
 
 public void interrupt() {
+	checkAccess();
 	interrupting = true;
 	interrupt0();
 }
@@ -233,6 +228,7 @@ final public synchronized void join(long millis, int nanos) throws InterruptedEx
  * @deprecated
  */
 final public void resume() {
+	checkAccess();
 	if (suspendResume != null) {
 		synchronized (suspendResume) {
 			suspendResume.notifyAll();
@@ -247,10 +243,12 @@ public void run() {
 }
 
 final public void setDaemon(boolean on) {
+	checkAccess();
 	daemon = on;
 }
 
 final public void setName(String name) {
+	checkAccess();
 	this.name = name.toCharArray();
 }
 
@@ -296,6 +294,7 @@ final public void stop() {
  * @deprecated
  */
 final public synchronized void stop(Throwable o) {
+	checkAccess();
 	stop0(o);
 }
 
@@ -305,6 +304,7 @@ native private void stop0(Object o);
  * @deprecated
  */
 final public void suspend() {
+	checkAccess();
 	if (suspendResume == null) {
 		suspendResume = new Object();
 	}

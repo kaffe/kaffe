@@ -20,7 +20,7 @@ final public class Long
 	public static final Class TYPE = Class.getPrimitiveClass("long");
 
 public Long(String s) throws NumberFormatException {
-	this(valueOf(s).longValue());
+	this.value = valueOf(s).value;
 }
 
 public Long(long value) {
@@ -32,12 +32,9 @@ public double doubleValue() {
 }
 
 public boolean equals(Object obj) {
-	if ((obj!=null) && (obj instanceof Long)) {
-		return (this.longValue()==((Long )obj).longValue());
-	}
-	else {
-		return false;
-	}
+	return (obj != null) &&
+		(obj instanceof Long) &&
+		(((Long)obj).value == this.value);
 }
 
 public float floatValue() {
@@ -49,9 +46,7 @@ public static Long getLong(String nm) {
 }
 
 public static Long getLong(String nm, Long val) {
-	String arg;
-
-	if (val==null) arg=null; else arg=val.toString();
+	String arg = (val != null) ? val.toString() : null;
 
 	String property=System.getProperty(nm, arg);
 	if (property==null) return val;
@@ -89,7 +84,7 @@ public static Long getLong(String nm, Long val) {
 			try {
 				return Long.valueOf(toParse, radixToParse);
 			}
-			catch (NumberFormatException e1) {
+			catch (NumberFormatException e) {
 				return val;
 			}
 		}
@@ -121,7 +116,7 @@ public static long parseLong(String s, int radix) {
 
 	/* Check for negativity */
 	if (s.charAt(0)=='-') {
-		return parseLong(s.substring(1))*-1;
+		return -parseLong(s.substring(1));
 	}
 	else {
 		long result=0;
@@ -151,7 +146,7 @@ public static String toOctalString ( long i ) {
 }
 
 public String toString() {
-	return toString(this.longValue());
+	return toString(this.value);
 }
 
 public static String toString(long i) {
@@ -168,10 +163,7 @@ public static String toString(long i, int radix) {
 	}
 
 	StringBuffer buf = new StringBuffer();
-	int sign = 1;
-	if (i < 0) {
-		sign = -1;
-	}
+	int sign = (i < 0) ? -1 : 1;
 	while (i != 0) {
 		char digit = Character.forDigit(Math.abs((int)(i % radix)), radix);
 		i = i / (long)radix;
