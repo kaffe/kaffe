@@ -2,6 +2,8 @@ Sun Dec 20 17:19:12 1998  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/man/kaffe.1.in: need to substitute @prefix@
 	* test/regression/TestScript: fix problem compiling ClassGC
+	* kaffe/kaffevm/classMethod.c: Edouard's fix for static
+	methods of interfaces. Makes javap work again.
 
 Sun Dec 20 10:34:21 1998  Godmar Back  <gback@cs.utah.edu>
 

@@ -1309,7 +1309,7 @@ buildDispatchTable(Hjava_lang_Class* class)
 	j = 0;
 	for (i = 0; i < class->total_interface_len; i++) {
 		class->if2itable[i] = j;
-		j += CLASS_NMETHODS(class->interfaces[i]);
+		j += class->interfaces[i]->msize;
 	}
 	if (j == 0) {	/* this means only pseudo interfaces without methods
 			 * are implemented, such as Serializable or Cloneable
@@ -1396,21 +1396,27 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class)
 	int i;
 
 	meth = CLASS_METHODS(class);
+	class->msize = 0;
 
 	/* enumerate indices and store them in meth->idx */
 	for (i = 0; i < CLASS_NMETHODS(class); i++, meth++) {
-		meth->idx = i;
+		if (meth->accflags & ACC_STATIC) {
+			meth->idx = -1;
 #if defined(TRANSLATOR)
-		/* Handle <clinit> */
-		if (equalUtf8Consts(meth->name, init_name) && 
-			METHOD_NEEDS_TRAMPOLINE(meth)) 
-		{
-			methodTrampoline* tramp = (methodTrampoline*)gc_malloc(sizeof(methodTrampoline), GC_ALLOC_DISPATCHTABLE);
-			FILL_IN_TRAMPOLINE(tramp, meth);
-			METHOD_NATIVECODE(meth) = (nativecode*)tramp;
-			FLUSH_DCACHE(tramp, tramp+1);
-		}
+			/* Handle <clinit> */
+			if (equalUtf8Consts(meth->name, init_name) && 
+				METHOD_NEEDS_TRAMPOLINE(meth)) 
+			{
+				methodTrampoline* tramp = (methodTrampoline*)gc_malloc(sizeof(methodTrampoline), GC_ALLOC_DISPATCHTABLE);
+				FILL_IN_TRAMPOLINE(tramp, meth);
+				METHOD_NATIVECODE(meth) = (nativecode*)tramp;
+				FLUSH_DCACHE(tramp, tramp+1);
+			}
 #endif
+		}
+		else {
+			meth->idx = class->msize++;
+		}
 	}
 	return;
 
