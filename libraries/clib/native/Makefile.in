@@ -138,25 +138,26 @@ IO_SRCS = \
 
 
 LANG_SRCS = \
-		ClassLoader.c \
+		Application.c \
+		ByteToCharDefault.c \
+		CharToByteDefault.c \
 		Class.c \
+		ClassLoader.c \
 		Compiler.c \
 		Double.c \
 		Float.c \
 		Math.c \
+		MemoryAdvice.c \
 		Object.c \
 		Runtime.c \
 		SecurityManager.c \
 		String.c \
 		System.c \
+		SystemClassLoader.c \
 		Thread.c \
 		Throwable.c \
 		UNIXProcess.c \
-		CharToByteDefault.c \
-		ByteToCharDefault.c \
-		ZipFile.c \
-		MemoryAdvice.c \
-		Application.c
+		ZipFile.c
 
 
 REFLECT_SRCS = \
@@ -198,12 +199,12 @@ X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 libnative_la_DEPENDENCIES = 
-am_libnative_la_OBJECTS =  ObjectStreamClassImpl.lo ClassLoader.lo \
-Class.lo Compiler.lo Double.lo Float.lo Math.lo Object.lo Runtime.lo \
-SecurityManager.lo String.lo System.lo Thread.lo Throwable.lo \
-UNIXProcess.lo CharToByteDefault.lo ByteToCharDefault.lo ZipFile.lo \
-MemoryAdvice.lo Application.lo Array.lo Constructor.lo Field.lo \
-Method.lo DateFormat.lo TestNative.lo Arrays.lo
+am_libnative_la_OBJECTS =  ObjectStreamClassImpl.lo Application.lo \
+ByteToCharDefault.lo CharToByteDefault.lo Class.lo ClassLoader.lo \
+Compiler.lo Double.lo Float.lo Math.lo MemoryAdvice.lo Object.lo \
+Runtime.lo SecurityManager.lo String.lo System.lo SystemClassLoader.lo \
+Thread.lo Throwable.lo UNIXProcess.lo ZipFile.lo Array.lo \
+Constructor.lo Field.lo Method.lo DateFormat.lo TestNative.lo Arrays.lo
 libnative_la_OBJECTS =  $(am_libnative_la_OBJECTS)
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -227,8 +228,9 @@ $(DEPDIR)/Field.Plo $(DEPDIR)/Float.Plo $(DEPDIR)/Math.Plo \
 $(DEPDIR)/MemoryAdvice.Plo $(DEPDIR)/Method.Plo $(DEPDIR)/Object.Plo \
 $(DEPDIR)/ObjectStreamClassImpl.Plo $(DEPDIR)/Runtime.Plo \
 $(DEPDIR)/SecurityManager.Plo $(DEPDIR)/String.Plo $(DEPDIR)/System.Plo \
-$(DEPDIR)/TestNative.Plo $(DEPDIR)/Thread.Plo $(DEPDIR)/Throwable.Plo \
-$(DEPDIR)/UNIXProcess.Plo $(DEPDIR)/ZipFile.Plo
+$(DEPDIR)/SystemClassLoader.Plo $(DEPDIR)/TestNative.Plo \
+$(DEPDIR)/Thread.Plo $(DEPDIR)/Throwable.Plo $(DEPDIR)/UNIXProcess.Plo \
+$(DEPDIR)/ZipFile.Plo
 SOURCES = $(libnative_la_SOURCES)
 OBJECTS = $(am_libnative_la_OBJECTS)
 
@@ -289,25 +291,26 @@ distclean-libtool:
 
 maintainer-clean-libtool:
 ObjectStreamClassImpl.lo:
-ClassLoader.lo:
+Application.lo:
+ByteToCharDefault.lo:
+CharToByteDefault.lo:
 Class.lo:
+ClassLoader.lo:
 Compiler.lo:
 Double.lo:
 Float.lo:
 Math.lo:
+MemoryAdvice.lo:
 Object.lo:
 Runtime.lo:
 SecurityManager.lo:
 String.lo:
 System.lo:
+SystemClassLoader.lo:
 Thread.lo:
 Throwable.lo:
 UNIXProcess.lo:
-CharToByteDefault.lo:
-ByteToCharDefault.lo:
 ZipFile.lo:
-MemoryAdvice.lo:
-Application.lo:
 Array.lo:
 Constructor.lo:
 Field.lo:
@@ -386,6 +389,7 @@ distdir: $(DISTFILES)
 @AMDEP@include $(DEPDIR)/SecurityManager.Plo
 @AMDEP@include $(DEPDIR)/String.Plo
 @AMDEP@include $(DEPDIR)/System.Plo
+@AMDEP@include $(DEPDIR)/SystemClassLoader.Plo
 @AMDEP@include $(DEPDIR)/TestNative.Plo
 @AMDEP@include $(DEPDIR)/Thread.Plo
 @AMDEP@include $(DEPDIR)/Throwable.Plo

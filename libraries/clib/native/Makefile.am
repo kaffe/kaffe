@@ -12,25 +12,26 @@ IO_SRCS = \
 		ObjectStreamClassImpl.c
 
 LANG_SRCS = \
-		ClassLoader.c \
+		Application.c \
+		ByteToCharDefault.c \
+		CharToByteDefault.c \
 		Class.c \
+		ClassLoader.c \
 		Compiler.c \
 		Double.c \
 		Float.c \
 		Math.c \
+		MemoryAdvice.c \
 		Object.c \
 		Runtime.c \
 		SecurityManager.c \
 		String.c \
 		System.c \
+		SystemClassLoader.c \
 		Thread.c \
 		Throwable.c \
 		UNIXProcess.c \
-		CharToByteDefault.c \
-		ByteToCharDefault.c \
-		ZipFile.c \
-		MemoryAdvice.c \
-		Application.c
+		ZipFile.c
 
 REFLECT_SRCS = \
 		Array.c \
