@@ -34,7 +34,7 @@
 void	initThreads(void);
 void    initNativeThreads(int nativestacksize);
 void	yieldThread(void);
-void	exitThread(void);
+void	exitThread(void) NONRETURNING;
 void	setPriorityThread(Hjava_lang_VMThread*, jint);
 void	startThread(Hjava_lang_VMThread*);
 void	stopThread(Hjava_lang_VMThread*, Hjava_lang_Object*);

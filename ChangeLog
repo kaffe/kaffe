@@ -1,5 +1,10 @@
 2004-12-12  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/thread.c, kaffe/kaffevm/thread.h:
+	  Make firstStartThread and exitThread NONRETURNING.
+
+2004-12-12  Adam Heath  <doogie@brainfood.com>
+
 	* libraries/javalib/javax/swing/tree/DefaultTreeCellEditor.java:
 	  Fix type in javadoc for the EditorContainer method.
 
