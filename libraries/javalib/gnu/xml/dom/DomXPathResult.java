@@ -198,8 +198,29 @@ implements XPathResult
 
   public String toString ()
   {
-    return getClass ().getName () + "[type=" + type + ",value=" +
+    return getClass ().getName () + "[type=" + typeName (type) + ",value=" +
       value + ']';
+  }
+
+  private String typeName (short type)
+  {
+    switch (type)
+      {
+      case XPathResult.BOOLEAN_TYPE:
+        return "BOOLEAN_TYPE";
+      case XPathResult.NUMBER_TYPE:
+        return "NUMBER_TYPE";
+      case XPathResult.STRING_TYPE:
+        return "STRING_TYPE";
+      case XPathResult.FIRST_ORDERED_NODE_TYPE:
+        return "FIRST_ORDERED_NODE_TYPE";
+      case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
+        return "UNORDERED_NODE_ITERATOR_TYPE";
+      case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
+        return "UNORDERED_NODE_SNAPSHOT_TYPE";
+      default:
+        return "(unknown)";
+      }
   }
 
 }

@@ -86,7 +86,6 @@ implements XPathExpression
         throw new XPathException (XPathException.INVALID_EXPRESSION_ERR,
                                   e.getMessage ());
       }
-    System.out.println("expression="+this.expression);
   }
 
   public Object evaluate (Node contextNode, short type, Object result)
@@ -128,6 +127,11 @@ implements XPathExpression
         throw new XPathException (XPathException.TYPE_ERR, null);
       }
     return new DomXPathResult (val, type);
+  }
+
+  public String toString ()
+  {
+    return getClass ().getName () + "[expression=" + expression + "]";
   }
   
 }

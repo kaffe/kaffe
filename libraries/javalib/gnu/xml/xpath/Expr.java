@@ -68,8 +68,9 @@ public abstract class Expr
    */
   final double _last (Node context)
   {
-    int ret = context.hasChildNodes () ? 0 :
-      context.getChildNodes ().getLength ();
+    Node parent = context.getParentNode ();
+    int ret = (parent == null || !parent.hasChildNodes ()) ? 0 :
+      parent.getChildNodes ().getLength ();
     if (ret > 0)
       {
         ret++;
@@ -127,7 +128,8 @@ public abstract class Expr
       }
     else
       {
-        Document doc = context.getOwnerDocument ();
+        Document doc = (context instanceof Document) ? (Document) context :
+          context.getOwnerDocument ();
         String string = _string (context, object);
         StringTokenizer st = new StringTokenizer (string, " \t\r\n");
         while (st.hasMoreTokens ())
@@ -155,7 +157,8 @@ public abstract class Expr
       {
         return context.getLocalName ();
       }
-    Document doc = context.getOwnerDocument ();
+    Document doc = (context instanceof Document) ? (Document) context :
+      context.getOwnerDocument ();
     Node node = firstNode (doc, nodeSet);
     return (node == null ) ? null : node.getLocalName ();
   }
@@ -174,7 +177,8 @@ public abstract class Expr
       {
         return context.getNamespaceURI ();
       }
-    Document doc = context.getOwnerDocument ();
+    Document doc = (context instanceof Document) ? (Document) context :
+      context.getOwnerDocument ();
     Node node = firstNode (doc, nodeSet);
     return (node == null ) ? null : node.getNamespaceURI ();
   }
@@ -201,7 +205,8 @@ public abstract class Expr
       {
         return context.getNodeName ();
       }
-    Document doc = context.getOwnerDocument ();
+    Document doc = (context instanceof Document) ? (Document) context :
+      context.getOwnerDocument ();
     Node node = firstNode (doc, nodeSet);
     return (node == null ) ? null : node.getNodeName ();
   }
@@ -266,7 +271,8 @@ public abstract class Expr
           {
             return "";
           }
-        Document doc = context.getOwnerDocument ();
+        Document doc = (context instanceof Document) ? (Document) context : 
+          context.getOwnerDocument ();
         Node node = firstNode (doc, nodeSet);
         return (node == null) ? "" : stringValue (node);
       }

@@ -1,3 +1,32 @@
+2004-10-20  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/gnu/xml/xpath/XPathParser.y:
+	New file taken from GNU JAXP.
+
+	* libraries/javalib/gnu/xml/dom/DomXPathExpression.java,
+	libraries/javalib/gnu/xml/dom/DomXPathResult.java,
+	libraries/javalib/gnu/xml/xpath/Expr.java,
+	libraries/javalib/gnu/xml/xpath/FunctionCall.java,
+	libraries/javalib/gnu/xml/xpath/Index.java,
+	libraries/javalib/gnu/xml/xpath/NameTest.java,
+	libraries/javalib/gnu/xml/xpath/XPathParser.java,
+	libraries/javalib/gnu/xml/xpath/XPathTokenizer.java:
+	Resynced with GNU JAXP.
+
+	2004-10-18  Chris Burdess  <dog@gnu.org>
+
+        * xpath: Number parsing fixes.
+
+	2004-10-17  Chris Burdess  <dog@gnu.org>
+
+        * xpath: XPath function calls.
+
+	2004-10-18  Dalibor Topic  <robilad@kaffe.org>
+
+       * sources/gnu/xml/xpath/Index.java: Added missing include.
+          (toString) Convert left and right hand side to strings
+          explicitely.
+
 2004-10-20  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/gc.h

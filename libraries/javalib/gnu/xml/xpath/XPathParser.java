@@ -496,55 +496,55 @@ case 29:
     }
   break;
 case 31:
-					// line 279 "XPathParser.y"
-  {
-      yyVal = new NodeTypeTest (((Short) yyVals[-2+yyTop]).shortValue ());
-    }
-  break;
-case 32:
-					// line 283 "XPathParser.y"
+					// line 280 "XPathParser.y"
   {
       yyVal = new NodeTypeTest (Node.PROCESSING_INSTRUCTION_NODE, (String) yyVals[-1+yyTop]);
     }
   break;
+case 32:
+					// line 285 "XPathParser.y"
+  {
+      yyVal = new NodeTypeTest (((Short) yyVals[-1+yyTop]).shortValue ());
+    }
+  break;
 case 33:
-					// line 290 "XPathParser.y"
+					// line 292 "XPathParser.y"
   {
       yyVal = new ExpressionTest ((Expr) yyVals[-1+yyTop]);
     }
   break;
 case 35:
-					// line 298 "XPathParser.y"
+					// line 300 "XPathParser.y"
   {
       yyVal = new ParenthesizedExpr ((Expr) yyVals[-1+yyTop]);
     }
   break;
 case 36:
-					// line 302 "XPathParser.y"
+					// line 304 "XPathParser.y"
   {
       yyVal = new Constant (yyVals[0+yyTop]);
     }
   break;
 case 37:
-					// line 306 "XPathParser.y"
+					// line 308 "XPathParser.y"
   {
       yyVal = new Constant (yyVals[0+yyTop]);
     }
   break;
 case 39:
-					// line 314 "XPathParser.y"
+					// line 316 "XPathParser.y"
   {
       yyVal = new FunctionCall ((String) yyVals[-2+yyTop]);
     }
   break;
 case 40:
-					// line 318 "XPathParser.y"
+					// line 320 "XPathParser.y"
   {
       yyVal = new FunctionCall ((String) yyVals[-3+yyTop], (List) yyVals[-1+yyTop]);
     }
   break;
 case 41:
-					// line 325 "XPathParser.y"
+					// line 327 "XPathParser.y"
   {
       List list = new ArrayList ();
       list.add (yyVals[0+yyTop]);
@@ -552,7 +552,7 @@ case 41:
     }
   break;
 case 42:
-					// line 331 "XPathParser.y"
+					// line 333 "XPathParser.y"
   {
       List list = (List) yyVals[0+yyTop];
       list.add (0, yyVals[-2+yyTop]);
@@ -560,19 +560,19 @@ case 42:
     }
   break;
 case 44:
-					// line 341 "XPathParser.y"
+					// line 343 "XPathParser.y"
   {
       yyVal = new UnionExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop]);
     }
   break;
 case 47:
-					// line 350 "XPathParser.y"
+					// line 352 "XPathParser.y"
   {
       yyVal = new Step ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop]);
     }
   break;
 case 48:
-					// line 354 "XPathParser.y"
+					// line 356 "XPathParser.y"
   {
       Test nt = new NodeTypeTest ((short) 0);
       Selector s = new Selector (Selector.DESCENDANT_OR_SELF,
@@ -582,7 +582,7 @@ case 48:
     }
   break;
 case 50:
-					// line 366 "XPathParser.y"
+					// line 368 "XPathParser.y"
   {
       Test test = (Test) yyVals[0+yyTop];
       Selector s = new Selector (Selector.SELF,
@@ -591,164 +591,164 @@ case 50:
     }
   break;
 case 52:
-					// line 377 "XPathParser.y"
+					// line 379 "XPathParser.y"
   {
       yyVal = new OrExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop]);
     }
   break;
 case 54:
-					// line 385 "XPathParser.y"
+					// line 387 "XPathParser.y"
   {
       yyVal = new AndExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop]);
     }
   break;
 case 56:
-					// line 393 "XPathParser.y"
+					// line 395 "XPathParser.y"
   {
       yyVal = new EqualityExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], false);
     }
   break;
 case 57:
-					// line 397 "XPathParser.y"
+					// line 399 "XPathParser.y"
   {
       yyVal = new EqualityExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], true);
     }
   break;
 case 59:
-					// line 405 "XPathParser.y"
+					// line 407 "XPathParser.y"
   {
       yyVal = new RelationalExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], true, false);
     }
   break;
 case 60:
-					// line 409 "XPathParser.y"
+					// line 411 "XPathParser.y"
   {
       yyVal = new RelationalExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], false, false);
     }
   break;
 case 61:
-					// line 413 "XPathParser.y"
+					// line 415 "XPathParser.y"
   {
       yyVal = new RelationalExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], true, true);
     }
   break;
 case 62:
-					// line 417 "XPathParser.y"
+					// line 419 "XPathParser.y"
   {
       yyVal = new RelationalExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], false, true);
     }
   break;
 case 64:
-					// line 425 "XPathParser.y"
+					// line 427 "XPathParser.y"
   {
       yyVal = new ArithmeticExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], ArithmeticExpr.ADD);
     }
   break;
 case 65:
-					// line 429 "XPathParser.y"
+					// line 431 "XPathParser.y"
   {
       yyVal = new ArithmeticExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], ArithmeticExpr.SUBTRACT);
     }
   break;
 case 67:
-					// line 437 "XPathParser.y"
+					// line 439 "XPathParser.y"
   {
       yyVal = new ArithmeticExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], ArithmeticExpr.MULTIPLY);
     }
   break;
 case 68:
-					// line 441 "XPathParser.y"
+					// line 443 "XPathParser.y"
   {
       yyVal = new ArithmeticExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], ArithmeticExpr.DIVIDE);
     }
   break;
 case 69:
-					// line 445 "XPathParser.y"
+					// line 447 "XPathParser.y"
   {
       yyVal = new ArithmeticExpr ((Expr) yyVals[-2+yyTop], (Expr) yyVals[0+yyTop], ArithmeticExpr.MODULO);
     }
   break;
 case 71:
-					// line 453 "XPathParser.y"
+					// line 455 "XPathParser.y"
   {
       yyVal = new NegativeExpr ((Expr) yyVals[0+yyTop]);
     }
   break;
 case 72:
-					// line 480 "XPathParser.y"
+					// line 462 "XPathParser.y"
   {
-      yyVal = new Integer ((String) yyVals[0+yyTop]);
+      yyVal = new Double ((String) yyVals[0+yyTop] + ".0");
     }
   break;
 case 73:
-					// line 484 "XPathParser.y"
+					// line 466 "XPathParser.y"
   {
-      yyVal = new Double ((String) yyVals[-1+yyTop]);
+      yyVal = new Double ((String) yyVals[-1+yyTop] + ".0");
     }
   break;
 case 74:
-					// line 488 "XPathParser.y"
+					// line 470 "XPathParser.y"
   {
-      yyVal = new Double ((String) yyVals[-2+yyTop] + '.' + (String) yyVals[0+yyTop]);
+      yyVal = new Double ((String) yyVals[-2+yyTop] + "." + (String) yyVals[0+yyTop]);
     }
   break;
 case 75:
-					// line 492 "XPathParser.y"
+					// line 474 "XPathParser.y"
   {
-      yyVal = new Double ('0' + '.' + (String) yyVals[0+yyTop]);
+      yyVal = new Double ("0." + (String) yyVals[0+yyTop]);
     }
   break;
 case 77:
-					// line 540 "XPathParser.y"
+					// line 503 "XPathParser.y"
   {
       Object value = bindings.get ((String) yyVals[0+yyTop]);
       yyVal = new Constant (value);
     }
   break;
 case 78:
-					// line 548 "XPathParser.y"
+					// line 511 "XPathParser.y"
   {
       yyVal = new NameTest (null, true, true);
     }
   break;
 case 79:
-					// line 552 "XPathParser.y"
+					// line 515 "XPathParser.y"
   {
       yyVal = new NameTest ((String) yyVals[-2+yyTop], true, false);
     }
   break;
 case 80:
-					// line 556 "XPathParser.y"
+					// line 519 "XPathParser.y"
   {
       yyVal = new NameTest ((String) yyVals[0+yyTop], false, false);
     }
   break;
 case 82:
-					// line 564 "XPathParser.y"
+					// line 527 "XPathParser.y"
   {
       yyVal = (String) yyVals[-2+yyTop] + ':' + (String) yyVals[0+yyTop];
     }
   break;
 case 83:
-					// line 571 "XPathParser.y"
+					// line 534 "XPathParser.y"
   {
       yyVal = new Short (Node.COMMENT_NODE);
     }
   break;
 case 84:
-					// line 575 "XPathParser.y"
+					// line 538 "XPathParser.y"
   {
       yyVal = new Short (Node.TEXT_NODE);
     }
   break;
 case 85:
-					// line 579 "XPathParser.y"
+					// line 542 "XPathParser.y"
   {
       yyVal = new Short (Node.PROCESSING_INSTRUCTION_NODE);
     }
   break;
 case 86:
-					// line 583 "XPathParser.y"
+					// line 546 "XPathParser.y"
   {
       yyVal = new Short ((short) 0);
     }
@@ -804,7 +804,7 @@ case 86:
           1,    1,    1,    1,    2,    2,    1,    3,    3,    1,
           2,    3,    1,    1,    1,    2,    1,    1,    1,    1,
           1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-          3,    4,    3,    1,    3,    1,    1,    1,    3,    4,
+          3,    2,    3,    1,    3,    1,    1,    1,    3,    4,
           1,    3,    1,    3,    1,    1,    3,    3,    1,    2,
           1,    3,    1,    3,    1,    3,    3,    1,    3,    3,
           3,    3,    1,    3,    3,    1,    3,    3,    3,    1,
@@ -823,20 +823,20 @@ case 86:
          49,   34,   37,   38,    0,    0,   43,    0,    0,    0,
           0,    0,    0,   66,    0,    0,    0,    0,   13,    0,
          80,    0,   71,    0,    0,   77,   75,    0,    0,    0,
-          0,    0,   16,    0,    0,    0,    0,    0,    0,   50,
+          0,    0,   16,    0,   32,    0,    0,    0,    0,   50,
           0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-          0,    0,   74,   82,   79,   35,    0,    0,    0,    8,
-          9,    0,    0,   31,   39,    0,    0,   44,    0,    0,
-          0,    0,    0,    0,    0,    0,    0,    0,    0,   67,
-         68,   69,   32,   33,    0,   40,   42,
+          0,    0,   74,   82,   79,   35,    0,   31,    0,    8,
+          9,    0,    0,   39,    0,    0,   44,    0,    0,    0,
+          0,    0,    0,    0,    0,    0,    0,    0,   67,   68,
+         69,   33,    0,   40,   42,
     };
   } /* End of class YyDefRedClass */
 
   protected static final class YyDgotoClass {
 
-    public static final short yyDgoto [] = {           106,
+    public static final short yyDgoto [] = {           105,
          31,   32,   33,   34,   35,   36,   37,   38,   73,   39,
-         40,   41,   42,   43,   44,   45,  107,   46,   47,   48,
+         40,   41,   42,   43,   44,   45,  106,   46,   47,   48,
          49,   50,   51,   52,   53,   54,   55,
     };
   } /* End of class YyDgotoClass */
@@ -846,17 +846,17 @@ case 86:
     public static final short yySindex [] = {          -97,
           0, -271, -267,  -97, -239, -239,  -97, -199,    0, -236,
        -222,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-          0,    0,    0,    0,    0,    0, -221,    0,    0,    0,
-       -257,    0, -241,    0,    0, -205, -213,    0,    0, -201,
+          0,    0,    0,    0,    0,    0, -218,    0,    0,    0,
+       -257,    0, -241,    0,    0, -205, -221,    0,    0, -194,
           0,    0,    0,    0, -190, -185,    0, -238, -211, -234,
        -255, -209, -275,    0,    0, -169, -250, -168,    0, -241,
-          0, -241,    0, -205, -187,    0,    0, -163,  -97, -239,
-       -239,  -97,    0, -199, -166, -151,  -43, -239, -239,    0,
+          0, -241,    0, -205, -187,    0,    0, -167,  -97, -239,
+       -239,  -97,    0, -199,    0, -151,  -43, -239, -239,    0,
         -97,  -97,  -97,  -97,  -97,  -97,  -97,  -97,  -97,  -97,
-        -97,  -97,    0,    0,    0,    0, -162, -165, -211,    0,
-          0, -164, -205,    0,    0, -159, -161,    0, -241, -241,
-       -234, -255, -255, -209, -209, -209, -209, -275, -275,    0,
-          0,    0,    0,    0,  -97,    0,    0,
+        -97,  -97,    0,    0,    0,    0, -164,    0, -211,    0,
+          0, -166, -205,    0, -165, -163,    0, -241, -241, -234,
+       -255, -255, -209, -209, -209, -209, -275, -275,    0,    0,
+          0,    0,  -97,    0,    0,
     };
   } /* End of class YySindexClass */
 
@@ -865,7 +865,7 @@ case 86:
     public static final short yyRindex [] = {            0,
           0,   58,    1,    0,  420,    0,    0,    0,    0,    0,
         129,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-          0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+          0,    0,    0,    0,    0,    0, -161,    0,    0,    0,
          40,    0,  237,    0,    0,  168,    0,    0,    0,    0,
           0,    0,    0,    0,    0,  459,    0,  277,  557,  544,
         656,  561,  474,    0,   19,   75,    0,    0,    0,  295,
@@ -873,18 +873,18 @@ case 86:
           0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
           0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
           0,    0,    0,    0,    0,    0,    0,    0,  686,    0,
-          0,    0,  222,    0,    0, -150,    0,    0,  351,  405,
-        553,  665,  697,  577,  600,  617,  639,  513,  528,    0,
-          0,    0,    0,    0,    0,    0,    0,
+          0,    0,  222,    0, -156,    0,    0,  351,  405,  553,
+        665,  697,  577,  600,  617,  639,  513,  528,    0,    0,
+          0,    0,    0,    0,    0,
     };
   } /* End of class YyRindexClass */
 
   protected static final class YyGindexClass {
 
     public static final short yyGindex [] = {            7,
-          0,    0,    8,    0,    3,   -3,    0,    0,   50,    0,
-          0,    0,    0,    0,    0,    0,  -13,    0,   36,    0,
-         48,   37,   -1,  -54,    2,   -7,   -2,
+          0,    0,    8,    0,    3,   -3,    0,    0,   48,    0,
+          0,    0,    0,    0,    0,    0,  -12,    0,   35,    0,
+         44,   36,   -1,  -54,    2,   -7,   -2,
     };
   } /* End of class YyGindexClass */
 
@@ -893,16 +893,16 @@ case 86:
     public static final short yyTable [] = {            63,
          81,   90,   61,   61,   64,   61,   30,   66,   94,   56,
          58,   57,   60,   62,   84,   85,   86,   87,   80,    3,
-         91,   92,   65,   72,   70,   71,   95,   78,   79,  114,
-        115,  116,  117,   82,   83,   67,    8,    9,   68,    1,
+         91,   92,   65,   72,   70,   71,   95,   78,   79,  113,
+        114,  115,  116,   82,   83,   67,    8,    9,   68,    1,
          69,   59,   12,   13,   14,   15,   16,   17,   18,   19,
-         20,   21,   22,   23,   24,   25,   72,   72,   75,    3,
-         26,   27,   28,   29,   88,   89,   74,   61,   61,   76,
+         20,   21,   22,   23,   24,   25,   72,   72,   74,    3,
+         26,   27,   28,   29,   88,   89,   75,   61,   61,   76,
         103,   61,  100,  101,   73,   61,   61,    9,  102,   77,
-        112,  113,  120,  121,  122,  109,  110,   81,   93,  118,
-        119,   97,   96,   98,  104,  123,   94,   80,  124,  126,
-         26,   27,   28,   29,  125,    1,    2,    3,    4,  105,
-         41,  127,  108,   81,    5,    6,   99,  111,    0,    0,
+        111,  112,  119,  120,  121,  108,  109,   81,   93,  117,
+        118,   97,   96,   98,   94,   80,  122,  124,  123,   85,
+         26,   27,   28,   29,   41,    1,    2,    3,    4,  104,
+        125,  107,   99,   81,    5,    6,  110,    0,    0,    0,
           0,    0,    0,    7,    8,    9,   10,    0,   13,   11,
          12,   13,   14,   15,   16,   17,   18,   19,   20,   21,
          22,   23,   24,   25,    0,    0,    0,    0,   26,   27,
@@ -1000,15 +1000,15 @@ case 86:
           0,  277,    5,    6,    8,    8,    0,   10,  259,  281,
           4,  279,    5,    6,  270,  271,  272,  273,    0,  259,
         296,  297,  259,  262,  266,  267,  277,  266,  267,   84,
-         85,   86,   87,  268,  269,  258,  276,  277,  260,    0,
+         85,   86,   87,  268,  269,  258,  276,  277,  257,    0,
         298,  281,  282,  283,  284,  285,  286,  287,  288,  289,
-        290,  291,  292,  293,  294,  295,  262,    0,  260,  259,
-        300,  301,  302,  303,  274,  275,  280,   70,   71,  260,
+        290,  291,  292,  293,  294,  295,  262,    0,  280,  259,
+        300,  301,  302,  303,  274,  275,  261,   70,   71,  260,
          74,   74,   70,   71,    0,   78,   79,  277,   72,  265,
          82,   83,   90,   91,   92,   78,   79,  299,  258,   88,
-         89,  279,  261,  257,  261,  261,  259,   48,  263,  261,
-        300,  301,  302,  303,  264,  257,  258,  259,  260,  261,
-        261,  125,   77,    0,  266,  267,   69,   81,   -1,   -1,
+         89,  279,  261,  261,  259,   48,  263,  261,  264,  261,
+        300,  301,  302,  303,  261,  257,  258,  259,  260,  261,
+        123,   77,   69,    0,  266,  267,   81,   -1,   -1,   -1,
          -1,   -1,   -1,  275,  276,  277,  278,   -1,    0,  281,
         282,  283,  284,  285,  286,  287,  288,  289,  290,  291,
         292,  293,  294,  295,   -1,   -1,   -1,   -1,  300,  301,
@@ -1135,8 +1135,8 @@ case 86:
 //t    "axis_name : PRECEDING_SIBLING",
 //t    "axis_name : SELF",
 //t    "node_test : name_test",
-//t    "node_test : node_type LP RP",
-//t    "node_test : PROCESSING_INSTRUCTION LP LITERAL RP",
+//t    "node_test : PROCESSING_INSTRUCTION LITERAL RP",
+//t    "node_test : node_type RP",
 //t    "predicate : LB expr RB",
 //t    "primary_expr : variable_reference",
 //t    "primary_expr : LP expr RP",
@@ -1227,7 +1227,7 @@ case 86:
   } /* End of class YyNameClass */
 
 
-					// line 593 "XPathParser.y"
+					// line 552 "XPathParser.y"
 
 }
 					// line 1232 "-"

@@ -45,6 +45,11 @@ import java.io.StringReader;
 import java.util.Map;
 import java.util.TreeMap;
 
+/*import antlr.Token;
+import antlr.TokenStream;
+import antlr.TokenStreamException;
+import antlr.TokenStreamIOException;*/
+
 /**
  * XPath 1.0 expression tokenizer.
  * 
@@ -52,24 +57,38 @@ import java.util.TreeMap;
  */
 public class XPathTokenizer
 implements XPathParser.yyInput
+//implements TokenStream
 {
 
-  static class Token
+  static class XPathToken
+  //extends Token
   {
 
     int type;
-    Object val;
+    String val;
 
-    Token (int type)
+    XPathToken (int type)
     {
       this (type, null);
     }
 
-    Token (int type, Object val)
+    XPathToken (int type, String val)
     {
+      //super (type);
       this.type = type;
       this.val = val;
     }
+
+    public String getText ()
+    {
+      return val;
+    }
+
+    public String toString ()
+    {
+      return val;
+    }
+    
   }
 
   static final Map keywords = new TreeMap ();
@@ -99,7 +118,7 @@ implements XPathParser.yyInput
   }
 
   Reader in;
-  Token token;
+  XPathToken token;
 
   public XPathTokenizer (String expr)
   {
@@ -110,6 +129,28 @@ implements XPathParser.yyInput
   {
     this.in = in.markSupported () ? in : new BufferedReader (in);
   }
+
+  /* Begin ANTLR specific *
+
+  public Token nextToken ()
+    throws TokenStreamException
+  {
+    try
+      {
+        if (!advance ())
+          {
+            throw new TokenStreamException ("eof");
+          }
+        token ();
+        return token;
+      }
+    catch (IOException e)
+      {
+        throw new TokenStreamIOException (e);
+      }
+  }
+  
+  * End ANTLR specific */
 
   public boolean advance ()
     throws IOException
@@ -129,50 +170,50 @@ implements XPathParser.yyInput
         token = consume_literal (c);
         break;
       case 0x28: // (
-        token = new Token (XPathParser.LP);
+        token = new XPathToken (XPathParser.LP);
         break;
       case 0x29: // )
-        token = new Token (XPathParser.RP);
+        token = new XPathToken (XPathParser.RP);
         break;
       case 0x5b: // [
-        token = new Token (XPathParser.LB);
+        token = new XPathToken (XPathParser.LB);
         break;
       case 0x5d: // ]
-        token = new Token (XPathParser.RB);
+        token = new XPathToken (XPathParser.RB);
         break;
       case 0x2c: // ,
-        token = new Token (XPathParser.COMMA);
+        token = new XPathToken (XPathParser.COMMA);
         break;
       case 0x7c: // |
-        token = new Token (XPathParser.PIPE);
+        token = new XPathToken (XPathParser.PIPE);
         break;
       case 0x2f: // /
         in.mark (1);
         int d1 = in.read ();
         if (d1 == 0x2f)
           {
-            token = new Token (XPathParser.DOUBLE_SLASH);
+            token = new XPathToken (XPathParser.DOUBLE_SLASH);
           }
         else
           {
             in.reset ();
-            token = new Token (XPathParser.SLASH);
+            token = new XPathToken (XPathParser.SLASH);
           }
         break;
       case 0x3d: // =
-        token = new Token (XPathParser.EQ);
+        token = new XPathToken (XPathParser.EQ);
         break;
       case 0x21: // !
         in.mark (1);
         int d2 = in.read ();
         if (d2 == 0x3d) // =
           {
-            token = new Token (XPathParser.NE);
+            token = new XPathToken (XPathParser.NE);
           }
         else
           {
             in.reset ();
-            token = new Token (XPathParser.yyErrorCode);
+            token = new XPathToken (XPathParser.yyErrorCode);
           }
         break;
       case 0x3e: // >
@@ -180,12 +221,12 @@ implements XPathParser.yyInput
         int d3 = in.read ();
         if (d3 == 0x3d) // =
           {
-            token = new Token (XPathParser.GTE);
+            token = new XPathToken (XPathParser.GTE);
           }
         else
           {
             in.reset ();
-            token = new Token (XPathParser.GT);
+            token = new XPathToken (XPathParser.GT);
           }
         break;
       case 0x3c: // <
@@ -193,40 +234,40 @@ implements XPathParser.yyInput
         int d4 = in.read ();
         if (d4 == 0x3d) // =
           {
-            token = new Token (XPathParser.LTE);
+            token = new XPathToken (XPathParser.LTE);
           }
         else
           {
             in.reset ();
-            token = new Token (XPathParser.LT);
+            token = new XPathToken (XPathParser.LT);
           }
         break;
       case 0x2b: // +
-        token = new Token (XPathParser.PLUS);
+        token = new XPathToken (XPathParser.PLUS);
         break;
       case 0x2d: // -
-        token = new Token (XPathParser.MINUS);
+        token = new XPathToken (XPathParser.MINUS);
         break;
       case 0x40: // @
-        token = new Token (XPathParser.AT);
+        token = new XPathToken (XPathParser.AT);
         break;
       case 0x2a: // *
-        token = new Token (XPathParser.STAR);
+        token = new XPathToken (XPathParser.STAR);
         break;
       case 0x24: // $
-        token = new Token (XPathParser.DOLLAR);
+        token = new XPathToken (XPathParser.DOLLAR);
         break;
       case 0x3a: // :
         in.mark (1);
         int d5 = in.read ();
         if (d5 == 0x3a)
           {
-            token = new Token (XPathParser.DOUBLE_COLON);
+            token = new XPathToken (XPathParser.DOUBLE_COLON);
           }
         else
           {
             in.reset ();
-            token = new Token (XPathParser.COLON);
+            token = new XPathToken (XPathParser.COLON);
           }
         break;
       case 0x2e: // .
@@ -234,12 +275,12 @@ implements XPathParser.yyInput
         int d6 = in.read ();
         if (d6 == 0x2e)
           {
-            token = new Token (XPathParser.DOUBLE_DOT);
+            token = new XPathToken (XPathParser.DOUBLE_DOT);
           }
         else
           {
             in.reset ();
-            token = new Token (XPathParser.DOT);
+            token = new XPathToken (XPathParser.DOT);
           }
         break;
       default:
@@ -253,7 +294,7 @@ implements XPathParser.yyInput
           }
         else
           {
-            token = new Token (XPathParser.yyErrorCode);
+            token = new XPathToken (XPathParser.yyErrorCode);
           }
       }
     return true;
@@ -269,7 +310,7 @@ implements XPathParser.yyInput
     return token.val;
   }
 
-  Token consume_literal (int delimiter)
+  XPathToken consume_literal (int delimiter)
     throws IOException
   {
     StringBuffer buf = new StringBuffer ();
@@ -278,11 +319,11 @@ implements XPathParser.yyInput
         int c = in.read ();
         if (c == -1)
           {
-            return new Token (XPathParser.yyErrorCode);
+            return new XPathToken (XPathParser.yyErrorCode);
           }
         else if (c == delimiter)
           {
-            return new Token (XPathParser.LITERAL, buf.toString ());
+            return new XPathToken (XPathParser.LITERAL, buf.toString ());
           }
         else
           {
@@ -291,7 +332,7 @@ implements XPathParser.yyInput
       }
   }
 
-  Token consume_digits (int c)
+  XPathToken consume_digits (int c)
     throws IOException
   {
     StringBuffer buf = new StringBuffer ();
@@ -307,12 +348,12 @@ implements XPathParser.yyInput
         else
           {
             in.reset ();
-            return new Token (XPathParser.DIGITS, buf.toString ());
+            return new XPathToken (XPathParser.DIGITS, buf.toString ());
           }
       }
   }
 
-  Token consume_name (int c)
+  XPathToken consume_name (int c)
     throws IOException
   {
     StringBuffer buf = new StringBuffer ();
@@ -332,11 +373,27 @@ implements XPathParser.yyInput
             Integer keyword = (Integer) keywords.get (name);
             if (keyword == null)
               {
-                return new Token (XPathParser.NAME, name);
+                return new XPathToken (XPathParser.NAME, name);
               }
             else
               {
-                return new Token (keyword.intValue ());
+                int val = keyword.intValue ();
+                switch (val)
+                  {
+                  case XPathParser.NODE:
+                  case XPathParser.COMMENT:
+                  case XPathParser.TEXT:
+                  case XPathParser.PROCESSING_INSTRUCTION:
+                    // Consume subsequent (
+                    in.mark (1);
+                    c = in.read ();
+                    if (c != 0x28)
+                      {
+                        in.reset ();
+                        return new XPathToken (XPathParser.NAME, name);
+                      }
+                  }
+                return new XPathToken (val);
               }
           }
       }
