@@ -894,7 +894,7 @@ profilerClassStat(Hjava_lang_Class *clazz, void *param)
 		if (meth->callsCount == 0)
 			continue;
 
-		fprintf(stderr, "%d\t%g\t%g\t%g\t%s.%s%s\n",
+		fprintf(stderr, "%10d %10.6g %10.6g %10.6g %s.%s%s\n",
 				meth->callsCount,
 				(click_multiplier * ((double)meth->totalClicks)) / click_divisor,
 				(click_multiplier * ((double)meth->totalChildrenClicks)) / click_divisor,
