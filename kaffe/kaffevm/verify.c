@@ -2014,7 +2014,6 @@ verifyMethod3a(errorInfo* einfo,
 #undef GET_WIDX
 #undef CHECK_POOL_IDX
 #undef ENSURE_NON_WIDE
-#undef VERIFY_ERROR
 }
 
 
@@ -2492,6 +2491,24 @@ verifyErrorInVerifyBasicBlock(errorInfo* einfo,
 }
 
 /*
+ * Helper function for error reporting in ENSURE_LOCAL_TYPE macro in verifyBasicBlock.
+ */
+static inline
+bool
+ensureLocalTypeErrorInVerifyBasicBlock(errorInfo* einfo,
+				       const Method* method,
+				       BlockInfo* block,
+				       Hjava_lang_Class* this,
+				       unsigned int n)
+{
+	if (block->locals[n].data.class == TUNSTABLE->data.class) {
+		return verifyErrorInVerifyBasicBlock(einfo, method, this, "attempt to access an unstable local variable");
+	} else {
+		return verifyErrorInVerifyBasicBlock(einfo, method, this, "attempt to access a local variable not of the correct type");
+	}
+}
+
+/*
  * verifyBasicBlock()
  *   Simulates execution of a basic block by modifying its simulated operand stack and local variable array.
  */
@@ -2547,11 +2564,7 @@ verifyBasicBlock(errorInfo* einfo,
 	/* checks whether the specified local variable is of the specified type. */
 #define ENSURE_LOCAL_TYPE(_N, _TINFO) \
 	if (!typecheck(einfo, this, (_TINFO), &block->locals[_N])) { \
-		if (block->locals[_N].data.class == TUNSTABLE->data.class) { \
-			return verifyErrorInVerifyBasicBlock(einfo, method, this, "attempt to access an unstable local variable"); \
-		} else { \
-			return verifyErrorInVerifyBasicBlock(einfo, method, this, "attempt to access a local variable not of the correct type"); \
-		} \
+		return ensureLocalTypeErrorInVerifyBasicBlock(einfo, method, block, this, _N); \
 	} 
 	
 	/* only use with TLONG and TDOUBLE */

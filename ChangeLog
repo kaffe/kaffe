@@ -1,6 +1,13 @@
 2004-02-15  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+        (ensureLocalTypeErrorInVerifyBasicBlock): New static inline function.
+        (ENSURE_LOCAL_TYPE) Use ensureLocalTypeErrorInVerifyBasicBlock.
+	Removed unnecessary undef for VERIFY_ERROR.
+
+2004-02-15  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
         (verifyErrorInVerifyBasicBlock): New static inline function.
         (VERIFY_ERROR) Removed.
         Replaced use of VERIFY_ERROR by verifyErrorInVerifyBasicBlock.
