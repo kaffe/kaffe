@@ -111,7 +111,9 @@ public URL(String protocol, String host, String file) throws MalformedURLExcepti
 }
 
 public URL(String protocol, String host, int port, String file) throws MalformedURLException {
-	if (protocol == null || host == null || file == null) {
+	if (protocol == null
+	    || (host == null && !protocol.equals("file"))
+	    || file == null) {
 		throw new NullPointerException();
 	}
 	this.protocol = protocol;
