@@ -24,6 +24,7 @@
 #include "../../../kaffe/kaffevm/stringSupport.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
 #include "../../../kaffe/kaffevm/exception.h"
+#include "kaffe_lang_SystemClassLoader.h"
 #include <native.h>
 #include "defs.h"
 
@@ -31,7 +32,7 @@
  * Load a system class.
  */
 struct Hjava_lang_Class*
-kaffe_lang_SystemClassLoader_findClass0(Hjava_lang_ClassLoader* this, Hjava_lang_String* str)
+kaffe_lang_SystemClassLoader_findClass0(Hkaffe_lang_SystemClassLoader* this, Hjava_lang_String* str)
 {
 	errorInfo info;
 	Hjava_lang_Class *clazz = 0;
