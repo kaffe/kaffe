@@ -201,9 +201,12 @@ public final StringBuffer format(Object args[], StringBuffer buf, FieldPosition 
 }
 
 public final StringBuffer format(Object arg, StringBuffer append, FieldPosition ignore) {
-	Object[] args = new Object[1];
-	args[0] = arg;
-	return (format(args, append, ignore));
+	if (arg instanceof Object[]) {
+		return (format((Object[])arg, append, ignore));
+	}
+	else {
+		return (format(new Object[]{ arg }, append, ignore));
+	}
 }
 
 public Format[] getFormats() {
