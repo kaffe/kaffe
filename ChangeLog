@@ -1,5 +1,7 @@
 Mon Dec  7 17:13:01 1998  Godmar Back  <gback@cs.utah.edu>
 
+	* libraries/javalib/java/lang/Boolean.java: have hashCode return
+	the value mauve thinks is right.
 	* libraries/javalib/java/lang/String.java: fixes for indexOf and
 	lastIndexOf so that mauve's string tests pass.
 

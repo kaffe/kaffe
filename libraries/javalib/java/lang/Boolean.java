@@ -54,7 +54,7 @@ public static boolean getBoolean(String name)
 
 public int hashCode()
 	{
-	return (value ? 42 : 14);
+	return (value ? 1231 : 1237);
 }
 
 public String toString()
