@@ -21,6 +21,9 @@ EXTRA_DIST = \
 	ChangeLog.3 \
 	ChangeLog.4 \
 	ChangeLog.5 \
+	ChangeLog.6 \
+	ChangeLog.7 \
+	ChangeLog.8 \
 	THIRDPARTY \
 	WHATSNEW \
 	RELEASE-NOTES \
