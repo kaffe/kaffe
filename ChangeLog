@@ -1,3 +1,11 @@
+Mon Mar 18 19:37:10 PST 2002  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/util/HashMap.java:
+	(getTableLength) new method.
+	* libraries/javalib/java/util/Hashtable.java:
+	(writeDefaultObject) Use getTableLength instead of accesing
+	table directly. (writeObject) same.
+
 Sat Mar 16 09:45:43 PST 2002  Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/clib/native/Class.c:
