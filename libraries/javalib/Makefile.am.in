@@ -188,9 +188,9 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	if test "$(PROFILE)" = default; then \
-		$(SHELL) $(rebuildLib) @all.files `CDPATH=: && cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
+		$(SHELL) $(rebuildLib) @all.files `cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
 	else \
-		$(SHELL) $(rebuildLib) @$(PROFILE) `CDPATH=: && cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
+		$(SHELL) $(rebuildLib) @$(PROFILE) `cd $(LIBDIR) && pwd`/../gnu/classpath/Configuration.java; \
 	fi
 	echo timestamp > $(LIBDIR)/stamp
 
