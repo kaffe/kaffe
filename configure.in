@@ -992,7 +992,10 @@ AC_TYPE_IN_PORT_T
 AC_DECL_H_ERRNO
 AC_STRUCT_ADDRINFO
 
+saved_LIBS="$LIBS"
+LIBS="$LIBS $NET_LIBS"
 AC_CHECK_FUNCS([getaddrinfo getnameinfo])
+LIBS="$saved_LIBS"
 if test "$ac_cv_func_getaddrinfo$ac_cv_func_getnameinfo" != yesyes ; then
    AC_LIBOBJ(getaddrinfo)
 fi

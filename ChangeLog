@@ -1,3 +1,14 @@
+2003-10-27  Motoyuki Kasahara <m-kasahr@sra.co.jp>
+
+	* configure.in:
+	Add $NET_LIBS to $LIBS before checking for 
+	getaddrinfo and getnameinfo, to fix configure
+	failing to link to the functions, and wrongly 
+	assuming they don't exist on sparc-solaris 2.9.
+
+	* configure:
+	Regenerated.
+
 2003-10-27  Timothy S. Stack <stack@cs.utah.edu>
 
 	* libraries/javalib/java/security/SecureRandom.java:
