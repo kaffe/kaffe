@@ -64,7 +64,6 @@ EXTRA_DIST = \
 	ia64/linux/config.frag \
 	ia64/linux/md.c \
 	ia64/linux/md.h \
-	ia64/linux/xprofile-md.h \
 	ia64/threads.h \
 	ia64/sysdepCallMethod.h \
 	i386/beos/config.frag \
@@ -106,6 +105,7 @@ EXTRA_DIST = \
 	i386/linux/jit3-md.h \
 	i386/linux/md.c \
 	i386/linux/md.h \
+	i386/linux/xprofile-md.h \
 	i386/netbsd1/config.frag \
 	i386/netbsd1/jit-md.h \
 	i386/netbsd1/jit3-md.h \
