@@ -65,17 +65,17 @@ public String(String other) {
 
 public String(StringBuffer sb) {
 	synchronized (sb) {
-		if (sb.buffer.length > sb.used + STRINGBUFFER_SLOP) {
-			value = new char[sb.used];
+		if (sb.value.length > sb.count + STRINGBUFFER_SLOP) {
+			value = new char[sb.count];
 			offset = 0;
-			count = sb.used;
-			System.arraycopy(sb.buffer, 0, value, 0, count);
+			count = sb.count;
+			sb.getChars(0, count, value, 0);
 		}
 		else {
-			value = sb.buffer;
+			value = sb.value;
 			offset = 0;
-			count = sb.used;
-			sb.isStringized = true;
+			count = sb.count;
+			sb.shared = true;
 		}
 	}
 }

@@ -64,12 +64,21 @@ java_lang_Runtime_freeMemory(struct Hjava_lang_Runtime* this)
 }
 
 /*
+ * Maximally available memory.
+ */
+jlong
+java_lang_Runtime_maxMemory(struct Hjava_lang_Runtime* this)
+{
+	return (gc_heap_limit);
+}
+
+/*
  * Total memory.
  */
 jlong
 java_lang_Runtime_totalMemory(struct Hjava_lang_Runtime* this)
 {
-	return (gc_heap_limit);
+	return (gc_heap_total);
 }
 
 /*

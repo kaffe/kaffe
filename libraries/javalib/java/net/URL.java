@@ -231,6 +231,19 @@ public String getRef() {
 	return (ref);
 }
 
+  /* taken from GNU Classpath */
+  /**
+   * Returns the user information of the URL. This is the part of the host
+   * name before the '@'.
+   *
+   * @return the user at a particular host or null when no user defined.
+   */
+  public String getUserInfo ()
+  {
+    int at = (host == null) ? -1 : host.indexOf('@');
+    return at < 0 ? null : host.substring(0, at);
+  }
+
 public int hashCode() {
 	return (protocol.hashCode() ^ host.hashCode() ^ file.hashCode());
 }

@@ -186,6 +186,8 @@ void load(String filename, ClassLoader loader) {
 	}
 }
 
+native public long maxMemory();
+
 int getMemoryAdvice() {
 	return (advice.getColor());
 }
