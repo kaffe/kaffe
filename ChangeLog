@@ -1,3 +1,8 @@
+Mon Jan 25 12:23:28 1999  Moses DeJong <dejong@cs.umn.edu>
+
+	* libraries/javalib/java/lang/Character.java: fix several
+	methods that were out of spec; use 0x1234 instead of '\u1234'
+
 Mon Jan 25 10:01:59 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/gcRefs.c: new file for gc ref management

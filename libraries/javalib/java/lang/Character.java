@@ -18,8 +18,8 @@ public final class Character extends Object {
 
   public static final int MIN_RADIX = 2;
   public static final int MAX_RADIX = 36;
-  public static final char MIN_VALUE = '\u0000';
-  public static final char MAX_VALUE = '\uffff';
+  public static final char MIN_VALUE = 0x0000;
+  public static final char MAX_VALUE = 0xffff;
   public static final int UNASSIGNED = 0;
   public static final int UPPERCASE_LETTER = 1;
   public static final int LOWERCASE_LETTER = 2;
@@ -90,7 +90,7 @@ public final class Character extends Object {
 
   public static boolean isLetterOrDigit(char ch)
   {
-    return (isJavaIdentifierPart(ch));
+    return (isLetter(ch) || isDigit(ch));
   }
   
   public static boolean isJavaLetter(char ch)
@@ -131,12 +131,12 @@ public final class Character extends Object {
    * Determines if a character has a defined meaning in Unicode. 
    * A character is defined if at least one of the following is true:  <br>
    *   It has an entry in the Unicode attribute table.  <br>
-   *   Its value is in the range '\u3040' <= ch <= '\u9FA5'.  <br>
-   *   Its value is in the range '\uF900' <= ch <= '\uFA2D'.  <br>
+   *   Its value is in the range 0x3040 <= ch <= 0x9FA5.  <br>
+   *   Its value is in the range 0xF900 <= ch <= 0xFA2D.  <br>
    */
   public static boolean isDefined(char ch) {
-	if ('\u3040' <= ch && ch <= '\u9FA5' ||
-	    '\uF900' <= ch && ch <= '\uFA2D') {
+	if (0x3040 <= ch && ch <= 0x9FA5 ||
+	    0xF900 <= ch && ch <= 0xFA2D) {
 		return (true);
 	}
 	/* FIXME: we do not check for entry in Unicode attribute table.
@@ -147,13 +147,13 @@ public final class Character extends Object {
 
   public static boolean isIdentifierIgnorable(char ch)
   {
-    if ((ch >= '\u0000' && ch <= '\u0008') ||
-        (ch >= '\u000E' && ch <= '\u001B') ||
-        (ch >= '\u007F' && ch <= '\u009F') ||
-        (ch >= '\u200C' && ch <= '\u200F') ||
-        (ch >= '\u202A' && ch <= '\u202E') ||
-        (ch >= '\u206A' && ch <= '\u206F') ||
-        (ch == '\uFEFF')) {
+    if ((ch >= 0x0000 && ch <= 0x0008) ||
+        (ch >= 0x000E && ch <= 0x001B) ||
+        (ch >= 0x007F && ch <= 0x009F) ||
+        (ch >= 0x200C && ch <= 0x200F) ||
+        (ch >= 0x202A && ch <= 0x202E) ||
+        (ch >= 0x206A && ch <= 0x206F) ||
+        (ch == 0xFEFF)) {
       return (true);
     }
     else {
@@ -223,8 +223,8 @@ public final class Character extends Object {
 
   public static char forDigit(int digit, int radix)
   {
-    if ((radix<MIN_RADIX) || (radix>MAX_RADIX)) return '\u0000';
-    if (digit>radix) return '\u0000';
+    if ((radix<MIN_RADIX) || (radix>MAX_RADIX)) return 0x0000;
+    if (digit>radix) return 0x0000;
 
     if (digit<10) {
       return (char )(((int )'0')+digit);
@@ -246,8 +246,8 @@ public final class Character extends Object {
 
   public static boolean isISOControl(char ch)
   {
-    if ((ch >= '\u0000' && ch <= '\u001F') ||
-        (ch >= '\u007F' && ch <= '\u009F')) {
+    if ((ch >= 0x0000 && ch <= 0x001F) ||
+        (ch >= 0x007F && ch <= 0x009F)) {
       return (true);
     }
     else {
@@ -257,7 +257,11 @@ public final class Character extends Object {
 
   public static boolean isJavaIdentifierPart(char ch)
   {
-    return (isLetter(ch) || ch == '$' || ch == '_' || isDigit(ch));
+      return ((ch >= 0x0000 && ch <= 0x0008) ||
+	(ch >= 0x000e && ch <= 0x001b) ||
+	(ch >= 0x007f && ch <= 0x009f) ||
+	ch == '$' || ch == '_' ||
+        isLetter(ch) || isDigit(ch));
   }
 
   public static boolean isJavaIdentifierStart(char ch)
@@ -267,36 +271,24 @@ public final class Character extends Object {
 
   public static boolean isSpaceChar(char ch)
   {
-    if (ch == 0x0009 || ch == 0x000a || ch == 0x0000c || ch == 0x000d || ch == 0x0020) {
-      return (true);
-    }
-    else {
-      return (false);
-    }
+      return (ch == ' ');
   }
 
   public static boolean isUnicodeIdentifierPart(char ch)
   {
-    return (isJavaIdentifierPart(ch));
+      return (ch != '$' && (isLetter(ch) || isJavaIdentifierPart(ch)));
   }
 
   public static boolean isUnicodeIdentifierStart(char ch)
   {
-    return (isJavaIdentifierStart(ch));
+      return (isLetter(ch));
   }
 
   public static boolean isWhitespace(char ch)
   {
-    if (ch == 0x0009 || ch == 0x000A || ch == 0x000B || ch == 0x000C || ch == 0x000D || ch == 0x001C || ch == 0x001D || ch == 0x001F) {
-      return (true);
-    }
-    else if (ch == ' ') {
-      return (true);
-    }
-    else {
-      return (false);
-    }
+    return((ch == ' ')
+	|| (ch >= 0x0009 && ch <= 0x000d)
+	|| (ch >= 0x001c && ch <= 0x001f) );
   }
-
 }
 
