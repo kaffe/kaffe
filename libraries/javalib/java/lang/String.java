@@ -136,10 +136,6 @@ public String(byte ascii[], int hibyte) {
         value = EncodingManager.getDecoder(encoding)
           .convertToChars(data, offset, count);
       }
-    catch (UnsupportedEncodingException uee)
-      {
-        throw new Error(uee);
-      }
     catch (CharConversionException cce)
       {
         throw new Error(cce);
