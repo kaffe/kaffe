@@ -1,3 +1,8 @@
+Fri Feb 26 09:14:24 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/java/util/Vector.java: synchronize remove,
+	pointed out by Chris <jacobi@parc.xerox.com>
+
 Wed Feb 24 23:46:58 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* config/alpha/common.h (sysdepCallMethod): rewrite so as to build 
