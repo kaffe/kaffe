@@ -14,7 +14,7 @@
 
 package java.util;
 
-// This class is used by the AbstractList and LinkedListIterator classes
+// This class is used internally by this package
 class AbstractListIterator implements ListIterator {
 	protected final AbstractList list;
 	protected int lastIndex = -1;
