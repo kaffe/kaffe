@@ -2704,6 +2704,7 @@ javax/print/attribute/PrintServiceAttributeSet.java
 javax/print/attribute/ResolutionSyntax.java
 javax/print/attribute/SetOfIntegerSyntax.java
 javax/print/attribute/Size2DSyntax.java
+javax/print/attribute/standard/Chromaticity.java
 javax/print/attribute/standard/ColorSupported.java
 javax/print/attribute/standard/Compression.java
 javax/print/attribute/standard/Copies.java
@@ -2711,6 +2712,7 @@ javax/print/attribute/standard/CopiesSupported.java
 javax/print/attribute/standard/DateTimeAtCompleted.java
 javax/print/attribute/standard/DateTimeAtCreation.java
 javax/print/attribute/standard/DateTimeAtProcessing.java
+javax/print/attribute/standard/Destination.java
 javax/print/attribute/standard/DocumentName.java
 javax/print/attribute/standard/Fidelity.java
 javax/print/attribute/standard/Finishings.java
