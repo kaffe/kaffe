@@ -104,13 +104,37 @@ extern struct Hjava_lang_Thread* garbageman;
 static int totalslack;
 static int totalsmallobjs;
 
-static
-void printslack(void)
+static void 
+printslack(void)
 {
 	printf("allocated %d small objects, total slack %d, slack/per "
 		"object %8.2f\n", 
 		totalsmallobjs, totalslack, totalslack/(double)totalsmallobjs);
 }
+
+/*
+ * check whether the heap is still in a consistent state
+ */
+void
+gc_heap_check(void)
+{
+	int i; 
+
+	for (i = 0; i < NR_FREELISTS; i++) {
+		gc_block* blk = freelist[i].list;
+		if (blk == 0 || blk == 0xffffffff) {
+			continue;
+		} else {
+			gc_freeobj* mem = blk->free;
+
+			while (mem) {
+				ASSERT_ONBLOCK(mem, blk);
+				mem = mem->next;
+			}
+		}
+	}
+}
+
 #endif /* DEBUG */
 
 /*
@@ -266,6 +290,10 @@ DBG(SLACKANAL,
 	rerun:;
 	times++;
 
+DBG(GCDIAG, 
+	gc_heap_check();
+    )
+
 	if (GC_SMALL_OBJECT(sz)) {
 
 		/* Translate size to object free list */
@@ -399,6 +427,7 @@ gc_heap_free(void* mem)
 	idx = GCMEM2IDX(info, mem);
 
 	DBG(GCDIAG,
+	    gc_heap_check();
 	    assert(info->magic == GC_MAGIC);
 	    assert(GC_GET_COLOUR(info, idx) != GC_COLOUR_FREE));
 
