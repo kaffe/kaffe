@@ -125,7 +125,7 @@ public class LinkedList extends AbstractSequentialList
 	}
 
 	public boolean add(Object o) {
-		addLast(o);
+		this.addLast(o);
 		return true;
 	}
 
@@ -196,7 +196,7 @@ public class LinkedList extends AbstractSequentialList
 
 	public void add(int index, Object element) {
 		if (index == length) {
-			addLast(element);
+			this.addLast(element);
 			return;
 		}
 		Elem after = findIndex(index);
