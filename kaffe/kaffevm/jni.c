@@ -3430,7 +3430,7 @@ Kaffe_AttachCurrentThread(JavaVM* vm, JNIEnv** env, ThreadAttachArgs* args)
 jint
 Kaffe_DetachCurrentThread(JavaVM* vm)
 {
-	stopThread((*Kaffe_ThreadInterface.currentJava)(), 0);
+	exitThread();	/* XXX this is wrong */
 	return (0);
 }
 
@@ -3699,9 +3699,14 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	if (tmpslot > maxTemp) {
 		maxTemp = tmpslot;
 	}
-	finishInsnSequence(&ncode);
+	/* The codeinfo argument is only used in linkLabel, and it is 
+	 * only needed if we have labels referring to bytecode.  This is
+	 * not the case here.
+	 */
+	finishInsnSequence(0, &ncode);
 
-	installMethodCode(xmeth, &ncode);
+	assert(xmeth->exception_table == 0);
+	installMethodCode(0, xmeth, &ncode);
 
 	xmeth->accflags |= ACC_JNI;
 }

@@ -23,7 +23,7 @@ char*
 translateSig(char* str, char** nstr, int* argp)
 {
 	int j;
-	int arg;
+	int arg = 0;
 	int k;
 
 	switch (*str++) {

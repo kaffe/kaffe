@@ -44,7 +44,7 @@ resetLabels(void)
  * fragment into the program.
  */
 void
-linkLabels(uintp codebase)
+linkLabels(codeinfo *codeInfo, uintp codebase)
 {
 	long dest = 0;
 	int* place;

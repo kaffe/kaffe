@@ -18,7 +18,7 @@
  */
 typedef struct _errorInfo {
 	char *classname;		/* name of exception class */
-	char *mess;
+	void *mess;			/* accompanying data, usually msg */
 } errorInfo;
 
 #include "classMethod.h"

@@ -127,25 +127,20 @@ void
 stopThread(Hjava_lang_Thread* tid, Hjava_lang_Object* obj)
 {
 	if ((*Kaffe_ThreadInterface.currentJava)() == tid) {
-		SignalError("java.lang.ThreadDeath", "");
+		/*
+		dprintf("STOPPING myself native %p\n", 
+			(*Kaffe_ThreadInterface.currentNative)());
+		dumpLocks();
+		*/
+		throwException((Hjava_lang_Throwable*)obj);
 	}
 	else {
-#ifdef LET_TIM_DECIDE_IF_HE_REALLY_WANTS_THAT
-		/* Stop the thread - and wait for it to terminate */
-		lockMutex(tid);
-		(*Kaffe_ThreadInterface.stop)(tid);
-		waitCond(tid, 0);
-		unlockMutex(tid);
-#else
-		/* 
-		 * Waiting for the thread to exit could cause a deadlock,
-		 * especially if the thread to be terminated waits to reacquire
-		 * a lock before it can exit.
-		 * See the ThreadStop example (ThreadStop_BlockThread)
-		 * It's also not necessary - or is it? What's the rationale?
+		/*
+		 * Note that we deviate from the spec here in that the target 
+		 * thread won't throw the exception `obj', but it will 
+		 * construct a new ThreadDeath exception when it dies.
 		 */
 		(*Kaffe_ThreadInterface.stop)(tid);
-#endif
 	}
 }
 
@@ -259,11 +254,19 @@ DBG(VMTHREAD,	dprintf("firstStartThread %x\n", tid);		)
 	 * don't do this again while in the handler.
 	 */
 	if (eobj != 0 && unhand(tid)->dying == false) {
+		jobject group = unhand(tid)->group;
+		jclass groupclass = (*env)->GetObjectClass(env, group);
+		jmethodID uncaughtmeth = 
+			(*env)->GetMethodID(env, groupclass,
+				"uncaughtException",
+				"(Ljava/lang/Thread;Ljava/lang/Throwable;)V");
+
 		unhand(tid)->dying = true;
-		do_execute_java_method(unhand(tid)->group, 
-			"uncaughtException", 
-			"(Ljava/lang/Thread;Ljava/lang/Throwable;)V",
-			 0, 0, tid, eobj);
+		(*env)->CallVoidMethod(env, group, uncaughtmeth, tid, eobj);
+		/* exceptions thrown in `uncaughtException' are 
+		 * silently ignored says the JLS.
+		 */
+		(*env)->ExceptionClear(env);
 	}
 	exitThread();
 }

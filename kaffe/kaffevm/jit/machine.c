@@ -108,7 +108,7 @@ struct {
 
 extern int enable_readonce;
 
-static void generateInsnSequence(void);
+static void generateInsnSequence(codeinfo* codeInfo);
 static void checkCaughtExceptions(Method* meth, int pc);
 
 void	endBlock(sequence*);
@@ -178,6 +178,7 @@ translate(Method* meth, errorInfo *einfo)
 	bool success = true;
 
 	nativeCodeInfo ncode;
+	codeinfo* codeInfo;
 
 	int64 tms = 0;
 	int64 tme;
@@ -235,7 +236,7 @@ DBG(MOREJIT,
 	len = meth->c.bcode.codelen;
 
 	/* Scan the code and determine the basic blocks */
-	success = verifyMethod(meth, einfo);
+	success = verifyMethod(meth, &codeInfo, einfo);
 	if (success == false) {
 		goto done;
 	}
@@ -315,18 +316,18 @@ DBG(JIT,	dprintf("pc = %d, npc = %d\n", pc, npc);	)
 			stackno = STACKPOINTER(npc);
 		}
 
-		generateInsnSequence();
+		generateInsnSequence(codeInfo);
 	}
 
 	finish_function();
 
 	assert(maxTemp < MAXTEMPS);
 
-	finishInsnSequence(&ncode);
-	installMethodCode(meth, &ncode);
+	finishInsnSequence(codeInfo, &ncode);
+	installMethodCode(codeInfo, meth, &ncode);
 
 done:
-	tidyVerifyMethod();
+	tidyVerifyMethod(codeInfo);
 
 DBG(JIT,
 	dprintf("Translated %s.%s%s (%s) %p\n", meth->class->name->data, 
@@ -354,14 +355,14 @@ done2:
  * Generate the code.
  */
 void
-finishInsnSequence(nativeCodeInfo* code)
+finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code)
 {
 	uint32 constlen;
 	nativecode* methblock;
 	nativecode* codebase;
 
 	/* Emit pending instructions */
-	generateInsnSequence();
+	generateInsnSequence(codeInfo);
 
 	/* Okay, put this into malloc'ed memory */
 	constlen = nConst * sizeof(union _constpoolval);
@@ -374,7 +375,7 @@ finishInsnSequence(nativeCodeInfo* code)
 	establishConstants(methblock);
 
 	/* Link it */
-	linkLabels((uintp)codebase);
+	linkLabels(codeInfo, (uintp)codebase);
 
 	/* Note info on the compiled code for later installation */
 	code->mem = methblock;
@@ -387,7 +388,7 @@ finishInsnSequence(nativeCodeInfo* code)
  * Install the compiled code in the method.
  */
 void
-installMethodCode(Method* meth, nativeCodeInfo* code)
+installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 {
 	int i;
 	jexceptionEntry* e;
@@ -459,7 +460,7 @@ initInsnSequence(int codesize, int localsz, int stacksz)
  */
 static
 void
-generateInsnSequence(void)
+generateInsnSequence(codeinfo* codeInfo)
 {
 	sequence* t;
 
@@ -472,7 +473,7 @@ generateInsnSequence(void)
 		}
 
 		/* Generate sequences */
-		(*(t->func))(t);
+		(*(void (*)(sequence*, codeinfo*))(t->func))(t, codeInfo);
 	}
 
 	/* Reset */
@@ -483,7 +484,7 @@ generateInsnSequence(void)
  * Start a new instruction.
  */
 void
-startInsn(sequence* s)
+startInsn(sequence* s, codeinfo* codeInfo)
 {
 	SET_INSNPC(const_int(2), CODEPC);
 }

@@ -72,4 +72,7 @@ typedef struct LockInterface {
 
 extern LockInterface Kaffe_LockInterface;
 
+#ifdef DEBUG
+extern void dumpLocks(void);
+#endif
 #endif

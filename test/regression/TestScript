@@ -39,11 +39,27 @@ compile()
 	rm -f $RESULT $CHECK
 }
 
+compile_deprecated()
+{
+	echo ERROR > $RESULT
+	$JAVAC -nowarn -d $DESTDIR $1.java > $RESULT 2>&1
+	if test "`cat $RESULT | grep -v warning`" != ""; then
+		echo "error compiling"
+		cat $RESULT
+		error=1
+	fi
+	rm -f $RESULT $CHECK
+}
+
 run()
 {
 	echo "$2" > $CHECK
 	echo ERROR > $RESULT
-	(cd $DESTDIR ; $JAVA $1 > $RESULT 2>&1)
+	if test "x$3" = "xsort"; then
+	    (cd $DESTDIR ; $JAVA $1 2>&1 | sort > $RESULT)
+	else
+	    (cd $DESTDIR ; $JAVA $1 > $RESULT 2>&1)
+	fi
 	if cmp -s $RESULT $CHECK ; then
 		:
 	else
@@ -57,13 +73,22 @@ run()
 	rm -f $RESULT $CHECK
 }
 
+#
+# third arg:
+# 	deprecated:	use -nowarn
+#	sort:		sort output
+#
 runtest()
 {
 	error=0
 	echo -n "$1 ... " 1>&2
-	compile $1
+	if test "x$3" = "xdeprecated"; then
+	    compile_deprecated $1
+	else
+	    compile $1
+	fi
 	if test $error = 0 ; then
-		run $1 "$2"
+		run $1 "$2" $3
 	fi
 	if test $error = 0 ; then
 		echo "passed" 1>&2
@@ -341,6 +366,9 @@ Success 3.
 Success 4.
 Success 5."
 
+runtest UncaughtException "Success 1.
+Success 3."
+
 runtest ReflectInterfaces 'null
 all methods
 public abstract void ReflectInterfaces$If2.if2MethodNP()
@@ -361,6 +389,7 @@ false
 true"
 
 runtest NullPointerTest "This is Perfect"
+runtest LostFrame "PASS"
 runtest ConstructorTest "Success."
 
 runtest burford "Starting burford...
@@ -483,12 +512,10 @@ java.lang.reflect.InvocationTargetException
 Target is: throwing inner exception"
 
 #
-# simple test for ClassLoader
+# tests for ClassLoader
 # this test must be compiled with 'nowarn' because it uses a
 # deprecated API (defineClass with 3 params)
 #
-OLDJAVAC=$JAVAC
-JAVAC="$OLDJAVAC -nowarn"
 
 # compile the example class
 compile Hello
@@ -502,28 +529,16 @@ Trying file with wrong name
 Wrong name
 Now second load attempt for a
 Duplicate name
-Done."
+Done." deprecated
 
-# restore JAVAC
-JAVAC=$OLDJAVAC
+compile CLTestConc_run
+runtest CLTestConc "Success." deprecated
 
-# end of CLTest test
+# end of CLTest tests
 
 #
 # these tests must have their output sorted, because they're multi-threaded.
-# we do this by temporarily replacing JAVA with a routine that invokes
-# $JAVA, but pipes the output through sort
 #
-
-# save old JAVA
-OLDJAVA=$JAVA
-
-run_and_sort()
-{
-	$OLDJAVA $@ | sort
-}
-
-JAVA=run_and_sort
 
 runtest GCTest "[0]:  Success
 [10]:  Success
@@ -569,7 +584,7 @@ runtest GCTest "[0]:  Success
 [6]:  Success
 [7]:  Success
 [8]:  Success
-[9]:  Success"
+[9]:  Success" sort
 
 # end of GCTest test
 
@@ -654,10 +669,7 @@ yy I2	ITL: set by yy at k == 1
 yy I3	 TL:  TL initial changed by yy at k == 0 changed by yy at k == 1 changed by yy at k == 2
 yy I3	 TL:  TL initial changed by yy at k == 0 changed by yy at k == 1 changed by yy at k == 2
 yy I3	ITL: null
-yy I3	ITL: null"
-
-# restore JAVA
-JAVA=$OLDJAVA
+yy I3	ITL: null" sort
 
 #
 # simple test for java.util.BitSet
@@ -726,6 +738,8 @@ valid floating-point number PASS"
 
 runtest Overflow "Success.
 Success."
+
+runtest TestUnlock "Success."
 
 # All done okay
 exit $overallerror

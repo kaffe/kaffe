@@ -79,19 +79,25 @@ throwException(Hjava_lang_Throwable* eobj)
 void 
 throwError(errorInfo* einfo)
 {
+	Hjava_lang_Throwable *err;
+
 	/* special case this, message is actually a throwable here */
 	if (!strcmp(einfo->classname, 
-		"java.lang.ExceptionInInitializerError")) 
+		    "java.lang.ExceptionInInitializerError")) 
 	{
-		throwException((Hjava_lang_Throwable*)
-			execute_java_constructor(einfo->classname, 
-			    0, "(Ljava/lang/Throwable;)V", einfo->mess));
+		err = (Hjava_lang_Throwable*)execute_java_constructor(
+			    einfo->classname, 
+			    0, "(Ljava/lang/Throwable;)V", einfo->mess);
+	} else 
+	if (!strcmp(einfo->classname, "java.lang.RethrowException")) {
+		err = (Hjava_lang_Throwable*)einfo->mess;
 	} else {
-		throwException((Hjava_lang_Throwable*)
-			execute_java_constructor(einfo->classname, 
+		err = (Hjava_lang_Throwable*)execute_java_constructor(
+			    einfo->classname, 
 			    0, "(Ljava/lang/String;)V",
-			    makeJavaString(einfo->mess, strlen(einfo->mess))));
+			    makeJavaString(einfo->mess, strlen(einfo->mess)));
 	}
+	throwException(err);
 }
 
 /*
@@ -157,14 +163,8 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 		for (frame = (vmException*)unhand(ct)->exceptPtr; frame != 0; frame = frame->prev) {
 
 			if (frame->meth == (Method*)1) {
-                                /* Don't allow JNI to catch thread death
-                                 * exceptions.  Might be bad but its going
-                                 * 1.2 anyway.
-                                 */
-                                if (strcmp(cname, THREADDEATHCLASS) != 0) {
-                                        unhand(ct)->exceptPtr = (struct Hkaffe_util_Ptr*)frame;
-                                        Kaffe_JNIExceptionHandler();
-                                }
+				unhand(ct)->exceptPtr = (struct Hkaffe_util_Ptr*)frame;
+				Kaffe_JNIExceptionHandler();
 			}
 
 			/* Look for handler */
@@ -205,13 +205,7 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 			findExceptionInMethod(PCFRAME(frame), class, &einfo);
 
                         if (einfo.method == 0 && PCFRAME(frame) >= Kaffe_JNI_estart && PCFRAME(frame) < Kaffe_JNI_eend) {
-                                /* Don't allow JNI to catch thread death
-                                 * exceptions.  Might be bad but its going
-                                 * 1.2 anyway.
-                                 */
-                                if (strcmp(cname, THREADDEATHCLASS) != 0) {
-                                        Kaffe_JNIExceptionHandler();
-                                }
+				Kaffe_JNIExceptionHandler();
                         }
 
 			/* Find the sync. object */

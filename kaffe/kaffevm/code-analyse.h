@@ -140,13 +140,13 @@ typedef struct codeinfo {
 
 #define	FRAMEMERGE(PC, SP)					\
 	SET_STACKPOINTER(PC, SP);				\
-	mergeFrame(PC, SP, activeFrame, meth);			\
+	mergeFrame(codeInfo, PC, SP, activeFrame, meth);	\
         if (!IS_DONEVERIFY(PC)) {				\
                 SET_NEEDVERIFY(PC);				\
         }
 
 #define	FRAMEMERGE_LOCALS(PC)					\
-	mergeFrame(PC, meth->localsz+meth->stacksz, activeFrame, meth); \
+	mergeFrame(codeInfo, PC, meth->localsz+meth->stacksz, activeFrame, meth); \
         if (!IS_DONEVERIFY(PC)) {				\
                 SET_NEEDVERIFY(PC);				\
         }
@@ -216,10 +216,9 @@ typedef struct codeinfo {
 #define	LOCALIN(L, T)			LOCAL_CHECKTYPE(L, T);
 
 struct _methods;
-bool verifyMethod(struct _methods*, errorInfo*);
-void tidyVerifyMethod(void);
+bool verifyMethod(struct _methods*, codeinfo**, errorInfo*);
+void tidyVerifyMethod(codeinfo*);
 
-extern codeinfo* codeInfo;
 extern const uint8 insnLen[];
 
 #endif

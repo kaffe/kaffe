@@ -100,6 +100,7 @@ static struct debug_opts
 	D(RESERROR,	"Show error in class file resolution."),
 	D(VMCLASSLOADER,"Announce when VM calls class loaders.."),
 	D(LOCKCONTENTION,"Show when a lock is contended."),
+	D(CODEANALYSE, "Debug code analysis/verification."),
 
 	/* you can define combinations too */
 	{ "lookup", DBG_MLOOKUP|DBG_ELOOKUP|DBG_FLOOKUP, 

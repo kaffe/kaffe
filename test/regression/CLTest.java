@@ -45,10 +45,11 @@ public class CLTest extends ClassLoader
 
     /*
      * load class using 3 parameter interface
+     * This is deprecated, but we still want to test it
      */
     Class doit3(byte [] cb) throws Exception
     {
-	return defineClass(null, cb, 0, cb.length);
+	return defineClass(cb, 0, cb.length);
     }
 
     public static void main(String []av) throws Exception

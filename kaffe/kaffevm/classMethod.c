@@ -50,6 +50,7 @@ static classEntry* classEntryPool[CLASSHASHSZ];
 /* interfaces supported by arrays */
 static Hjava_lang_Class* arr_interfaces[2];
 
+extern JNIEnv Kaffe_JNIEnv;
 extern gcFuncs gcClassObject;
 
 extern bool verify2(Hjava_lang_Class*, errorInfo*);
@@ -338,7 +339,6 @@ retry:
 	}
 
 	DO_CLASS_STATE(CSTATE_COMPLETE) {
-		extern JNIEnv Kaffe_JNIEnv;
 		JNIEnv *env = &Kaffe_JNIEnv;
 		jthrowable exc = 0;
 		JavaVM *vms[1];
@@ -404,7 +404,7 @@ DBG(STATICINIT,
 		if (exc != 0) {
 			/* this is special-cased in throwError */
 			SET_LANG_EXCEPTION_MESSAGE(einfo,
-				ExceptionInInitializerError, (char*)exc)
+				ExceptionInInitializerError, exc)
 			/*
 			 * we return false here because COMPLETE fails
 			 */
@@ -699,63 +699,98 @@ loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 	 * races between threads.
 	 */
 	if (centry->class != NULL) {
+		clazz = centry->class;
 		goto found;
 	}
 
 	/* 
 	 * Failed to find class, so must now load it.
-	 *
-	 * If we use a class loader, we must call out to Java code.
-	 * That means we cannot lock centry.  This is okay, however,
-	 * since the only way the Java code can get ahold of a class
-	 * object is by calling findSystemClass, which calls loadClass
-	 * with loader==NULL or by doing a defineClass, which locks centry.
+	 * We send at most one thread to load a class. 
 	 */
-	if (loader != NULL) {
-		Hjava_lang_String* str;
-
-DBG(VMCLASSLOADER,		
-		dprintf("classLoader: loading %s\n", name->data); 
-    )
-		str = makeReplaceJavaStringFromUtf8(name->data, name->length, '/', '.');
-		/*
-		 * We must invoke loadClassVM here to ensure that we return.
-		 */
-		clazz = (Hjava_lang_Class*)do_execute_java_method((Hjava_lang_Object*)loader, "loadClassVM", "(Ljava/lang/String;Z)Ljava/lang/Class;", 0, false, str, true).l;
-		if (clazz == NULL) {
-			SET_LANG_EXCEPTION_MESSAGE(einfo, 
-				ClassNotFoundException, name->data)
-			return (NULL);
-		}
-		clazz->centry = centry;
-DBG(VMCLASSLOADER,		
-		dprintf("classLoader: done\n");			
-    )
-	} 
-
-	/* Lock centry before setting centry->class */
 	lockMutex(centry);
 
 	/* Check again in case someone else did it */
 	if (centry->class == NULL) {
 
-		if (loader == NULL) {
-			clazz = findClass(centry, einfo);
-		} 
-		centry->class = clazz;
+		if (loader != NULL) {
+			Hjava_lang_String* str;
+			JNIEnv *env = &Kaffe_JNIEnv;
+			jmethodID meth;
+			jthrowable excobj;
 
-		if (clazz == NULL) {
-DBG(RESERROR,
-			dprintf("NoClassDefFoundError: `%s'\n", name->data);
+DBG(VMCLASSLOADER,		
+			dprintf("classLoader: loading %s\n", name->data); 
     )
-			SET_LANG_EXCEPTION_MESSAGE(einfo, 
-				NoClassDefFoundError, name->data)
+			str = makeReplaceJavaStringFromUtf8(name->data, 
+							    name->length, 
+							    '/', '.');
+			/*
+			 * We use JNI here so that all exceptions are caught
+			 * and we'll always return.
+			 */
+			meth = (*env)->GetMethodID(env,
+				    (*env)->GetObjectClass(env, loader),
+				    "loadClass",
+				    "(Ljava/lang/String;Z)Ljava/lang/Class;");
+			assert(meth != 0);
+
+			clazz = (Hjava_lang_Class*)
+				(*env)->CallObjectMethod(env, loader, meth, 
+							str, true);
+
+			/*
+			 * check whether an exception occurred
+			 */
+			excobj = (*env)->ExceptionOccurred(env);
+			(*env)->ExceptionClear(env);
+			if (excobj != 0) {
+DBG(VMCLASSLOADER,		
+				dprintf("exception!\n");			
+    )
+				SET_LANG_EXCEPTION_MESSAGE(einfo, 
+					RethrowException, excobj)
+				clazz = NULL;
+			} else
+			if (clazz == NULL) {
+DBG(VMCLASSLOADER,		
+				dprintf("clazz == NULL!\n");			
+    )
+				SET_LANG_EXCEPTION_MESSAGE(einfo, 
+					ClassNotFoundException, name->data)
+			} else {
+				clazz->centry = centry;
+			}
+			/* XXX: should we check the name here? */
+DBG(VMCLASSLOADER,		
+			dprintf("classLoader: done %p\n", clazz);			
+    )
+			/* NB: it is possible for a thread to both return
+			 * null from loadClass, yet actually have succeeded
+			 * in adding the class.  For this reason, we MUST not
+			 * overwrite centry->class here.  Other threads might
+			 * in fact use the class this thread created.
+			 */
+		} else {
+			/* no classloader, use findClass */
+			clazz = findClass(centry, einfo);
+
+			if (clazz == NULL) {
+DBG(RESERROR,
+				dprintf("NoClassDefFoundError: `%s'\n", 
+					name->data);
+    )
+				SET_LANG_EXCEPTION_MESSAGE(einfo, 
+					NoClassDefFoundError, name->data)
+			}
+			centry->class = clazz;
 		}
+
 	} else {
+		/* get the result from some other thread */
 		clazz = centry->class;
 	}
 
-	/* Release lock now class has been entered and processed */
+	/* Release lock now class has been entered */
 	unlockMutex(centry);
 
 	if (clazz == NULL) {
@@ -770,8 +805,6 @@ DBG(RESERROR,
 	 * of processClass.
 	 */
 found:;
-	clazz = centry->class;
-
 	if (clazz->state < CSTATE_LINKED) {
 		if (processClass(clazz, CSTATE_LINKED, einfo) == false)  {
 			return (NULL);
@@ -821,7 +854,7 @@ loadStaticClass(Hjava_lang_Class** class, char* name)
 
 bad:
 	fprintf(stderr, "Couldn't find or load essential class `%s' %s %s\n", 
-			name, info.classname, info.mess);
+			name, info.classname, (char*)info.mess);
 	ABORT();
 }
 
@@ -1289,7 +1322,8 @@ resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
 			pool->tags[idx] = CONSTANT_ResolvedString;
 			break;
 
-#if 0
+#undef EAGER_LOADING
+#ifdef EAGER_LOADING
 		/* This code removed:
 		 * There seems to be no need to be so eager in loading
 		 * referenced classes.
@@ -1304,6 +1338,9 @@ resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
 		}
 	}
 
+#ifdef EAGER_LOADING
+done:
+#endif
 	unlockMutex(class->centry);
 	return (success);
 }

@@ -82,7 +82,15 @@ java_lang_Thread_setPriority0(struct Hjava_lang_Thread* this, jint prio)
 void
 java_lang_Thread_stop0(struct Hjava_lang_Thread* this, struct Hjava_lang_Object* obj)
 {
-	stopThread(this, obj);
+	/* According to the JDK doc, an attempt to call stop with a null
+	 * exception results in a null pointer exception in the current
+	 * thread.
+	 */
+	if (obj == 0) {
+		SignalError("java.lang.NullPointerException", "");
+	} else {
+		stopThread(this, obj);
+	}
 }
 
 /*

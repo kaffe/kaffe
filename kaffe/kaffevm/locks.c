@@ -47,11 +47,11 @@ static void
 dumpLock(iLock *lk)
 {
 	if (lk->ref == -1) {
-		dprintf("%s ", lk->address);
+		dprintf("%-20s ", lk->address);
 	} else {
 		dprintf("lk@ad=%p ", lk->address);
 	}
-	dprintf(".hd=%p .ct=%d .mx=%p .cv=%p\n",
+	dprintf(".hd=%9p .ct=%d .mx=%9p .cv=%9p\n",
 		lk->holder, lk->count, lk->mux, lk->cv);
 }
 

@@ -47,7 +47,8 @@ typedef struct _label_ {
 
 #define	ALLOCLABELNR	1024
 
-void linkLabels(uintp);
+struct codeinfo;
+void linkLabels(struct codeinfo*, uintp);
 label* newLabel(void);
 void resetLabels(void);
 

@@ -8,11 +8,11 @@
  * of this file. 
  */
 
-#define	CDBG(s)
-#define	DBG(s)
+#define	IDBG(s)
 #define	VDBG(s)
 
 #include "config.h"
+#include "debug.h"
 #include "config-std.h"
 #include "gtypes.h"
 #include "bytecode.h"
@@ -26,10 +26,9 @@
 #include "icode.h"
 #include "itypes.h"
 #include "locks.h"
+#include "thread.h"
 #include "md.h"
 #include "gc.h"
-
-codeinfo* codeInfo;
 
 const uint8 insnLen[256] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
@@ -50,20 +49,11 @@ const uint8 insnLen[256] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
 };
 
-static void mergeFrame(int, int, frameElement*, Method*);
-static bool verifyBasicBlock(Method*, int32, errorInfo*);
-/*
- * Note that verifyMethod and tidyVerifyMethod must be atomic since 
- * they both rely on codeInfo.  Therefore, we grab the vlock in verifyMethod
- * and release it in tidyVerifyMethod.
- *
- * Note that technically, vlock is only needed for the interpreter since
- * the translator has an supersetting translator lock.
- */
-static iLock vlock;
+static void mergeFrame(codeinfo*, int, int, frameElement*, Method*);
+static bool verifyBasicBlock(codeinfo*, Method*, int32, errorInfo*);
 
 bool
-verifyMethod(Method* meth, errorInfo *einfo)
+verifyMethod(Method* meth, codeinfo **pcodeinfo, errorInfo *einfo)
 {
 	int32 pc;
 	int32 tabpc;
@@ -77,26 +67,21 @@ verifyMethod(Method* meth, errorInfo *einfo)
 	bool rerun;
 	bool failed;
 	bool wide;
-	static bool init = false;
-
-	/* Initialise on first use */
-	if (init == false) {
-		init = true;
-		initStaticLock(&vlock);
-	}
-
-	lockStaticMutex(&vlock);
+	codeinfo *codeInfo;
 
 	/* We don't need to do this twice */
 	meth->accflags |= ACC_VERIFIED;
 
-CDBG(	fprintf(stderr, "verifyMethod: %s.%s, codeInfo = %p\n", 
-	meth->class->name->data, meth->name->data, codeInfo);)
-
-	assert (codeInfo == 0 && " Attempt to reenter verifier!");
+DBG(CODEANALYSE,
+	dprintf(__FUNCTION__ " %p: %s.%s\n", THREAD_NATIVE(), 
+		meth->class->name->data, meth->name->data);
+    )
 	codeInfo = gc_malloc_fixed(sizeof(codeinfo) + (meth->c.bcode.codelen * sizeof(perPCInfo)));
+	*pcodeinfo = codeInfo;
 
-CDBG(	fprintf(stderr, __FUNCTION__"codeInfo = %p\n", codeInfo);		)
+DBG(CODEANALYSE,
+	dprintf(__FUNCTION__" %p: codeInfo = %p\n", THREAD_NATIVE(), codeInfo);	
+    )
 
 	/* Allocate code info. block */
 	codeInfo->localsz = meth->localsz;
@@ -322,7 +307,8 @@ CDBG(	fprintf(stderr, __FUNCTION__"codeInfo = %p\n", codeInfo);		)
 		for (bcurr = bhead; bcurr != NULL; bcurr = bcurr->nextBB) {
 			pc = bcurr - codeInfo->perPC;
 			if (IS_NEEDVERIFY(pc)) {
-				failed = verifyBasicBlock(meth, pc, einfo);
+				failed = verifyBasicBlock(codeInfo, meth, 
+							    pc, einfo);
 
 				if (failed) {
 					return (false);
@@ -348,7 +334,7 @@ CDBG(	fprintf(stderr, __FUNCTION__"codeInfo = %p\n", codeInfo);		)
 
 static
 bool
-verifyBasicBlock(Method* meth, int32 pc, errorInfo *einfo)
+verifyBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 {
 	int32 tabpc;
 	int32 idx;
@@ -407,7 +393,7 @@ verifyBasicBlock(Method* meth, int32 pc, errorInfo *einfo)
 		lclw = WORD(pc+1);
 		lclww = DWORD(pc+1);
 
-DBG(		printf("%d: %d\n", pc, INSN(pc));		)
+IDBG(		printf("%d: %d\n", pc, INSN(pc));		)
 
 		switch (INSN(pc)) {
 		case NOP:
@@ -1928,7 +1914,7 @@ done:
  */
 static
 void
-mergeFrame(int pc, int sp, frameElement* from, Method* meth)
+mergeFrame(codeinfo* codeInfo, int pc, int sp, frameElement* from, Method* meth)
 {
 	int m;
 	frameElement* to;
@@ -1967,7 +1953,7 @@ mergeFrame(int pc, int sp, frameElement* from, Method* meth)
  * Tidy up after verfication data has been finished with.
  */
 void
-tidyVerifyMethod(void)
+tidyVerifyMethod(codeinfo *codeInfo)
 {
 	int pc;
 
@@ -1978,8 +1964,9 @@ tidyVerifyMethod(void)
 		}
 	}
 	gc_free(codeInfo);
-	codeInfo = 0;
-	/* now it's safe to unlock the verifier */
-	unlockStaticMutex(&vlock);
+DBG(CODEANALYSE,
+	dprintf(__FUNCTION__" %p: clearing codeInfo %p\n", 
+		THREAD_NATIVE(), codeInfo);
+    )
 }
 

@@ -76,6 +76,7 @@
 # define DBG_GCWALK		DBG_BIT(36)
 # define DBG_GCDIAG		DBG_BIT(37)
 # define DBG_LOCKCONTENTION	DBG_BIT(38)
+# define DBG_CODEANALYSE	DBG_BIT(39)
 
 /* let's reserve 50-63 for temporary uses */
 # define DBG_SLACKANAL		DBG_BIT(50) 

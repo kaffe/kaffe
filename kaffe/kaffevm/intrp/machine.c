@@ -136,8 +136,9 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 
 	/* Verify method if required */
 	if ((methaccflags & ACC_VERIFIED) == 0) {
-		bool success = verifyMethod(meth, &einfo);
-		tidyVerifyMethod();
+		codeinfo* codeInfo;
+		bool success = verifyMethod(meth, &codeInfo, &einfo);
+		tidyVerifyMethod(codeInfo);
 		if (success == false) {
 			throwError(&einfo);
 		}
@@ -160,7 +161,8 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 		mjbuf.prev = (vmException*)unhand(tid)->exceptPtr;
 		unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)&mjbuf;
 	}
-	if (meth->exception_table != 0 || (methaccflags & ACC_SYNCHRONISED)) {
+
+	if (meth->exception_table != 0) {
 		if (setjmp(mjbuf.jbuf) != 0) {
 			unhand(tid)->exceptPtr = (struct Hkaffe_util_Ptr*)&mjbuf;
 			npc = mjbuf.pc;
@@ -190,6 +192,11 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 			mobj = (Hjava_lang_Object*)lcl[0].v.taddr;
 		}
 		lockMutex(mobj);
+		/* We must store the object on which we synchronized in
+		 * the mjbuf chain or else the exception handler routine
+		 * won't find it.
+		 */
+		mjbuf.mobj = mobj;
 	}       
 
 	sp = &lcl[meth->localsz - 1];

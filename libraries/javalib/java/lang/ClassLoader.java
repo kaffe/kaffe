@@ -162,17 +162,4 @@ native private void resolveClass0(Class cls);
  */
 native public static byte[] getSystemResourceAsBytes0(String name);
 
-/**
- * The VM will always call loadClassVM, and never loadClass directly
- * because otherwise an exception might go uncaught.
- * This is for the desktop system only.
- */
-private Class loadClassVM(String name, boolean resolve) {
-	Class clazz = null;
-	try {
-		clazz = loadClass(name, resolve);
-	} catch (Throwable _) { }
-	return clazz;
-}
-
 }

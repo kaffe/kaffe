@@ -110,9 +110,10 @@ typedef struct _nativeCodeInfo {
 	int	codelen;
 } nativeCodeInfo;
 
+struct codeinfo;
 void initInsnSequence(int, int, int);
-void finishInsnSequence(nativeCodeInfo*);
-void installMethodCode(Method*, nativeCodeInfo*);
+void finishInsnSequence(struct codeinfo*, nativeCodeInfo*);
+void installMethodCode(struct codeinfo*, Method*, nativeCodeInfo*);
 
 typedef struct {
         bool BADARRAYINDEX;

@@ -627,7 +627,7 @@ printflags(unsigned i)
 	return b;
 }
 
-static void
+void
 dumpThreads(void)
 {
         jthread* tid;
@@ -642,8 +642,9 @@ dumpThreads(void)
 		if (tid->blockqueue != NULL) {
 			jthread *t;
 			dprintf(" blockqueue %p (%p->", tid->blockqueue,
-			    *tid->blockqueue);
-			for (t = (*tid->blockqueue)->nextQ; t; t = t->nextQ) {
+							t = *tid->blockqueue);
+			while (t && t->nextQ) {
+				t = t->nextQ; 
 				dprintf("%p->", t);
 			}
 			dprintf("|) ");
@@ -1526,6 +1527,12 @@ jcondvar_wait(jcondvar *cv, jmutex *lock, jlong timeout)
 		tid->blockqueue = 0;
 		resumeThread(tid);
 	}
+
+	/* a limited wait should not cause us to cry deadlock */
+	if (DBGEXPR(DETECTDEADLOCK, timeout != 0, false)) {
+		BLOCKED_ON_EXTERNAL(currentJThread);
+	}
+
 	/* wait to be signaled */
 	suspendOnQThread(current, cv, timeout);
 	/* reacquire mutex */
