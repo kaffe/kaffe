@@ -1,3 +1,8 @@
+2004-12-07  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libltdl/install-sh:
+	Made it executable (chmod +x).
+
 2004-12-06  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/javax/xml/transform/TransformerFactory.java:
