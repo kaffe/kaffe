@@ -45,6 +45,7 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 	int rc;
 	jclass ioexc_class = (*env)->FindClass(env, "java.io.IOException");
 	jclass proc_class;
+	jfieldID pidField;
 	/* the names given to the stream in Java */
 	const char *fd_names[] = { "stdin_fd", 
 				  "stdout_fd", 
@@ -203,6 +204,10 @@ Java_kaffe_lang_UNIXProcess_forkAndExec(JNIEnv* env, jobject proc, jarray args, 
 
 	/* get kaffe.lang.UNIXProcess class */
 	proc_class = (*env)->GetObjectClass(env, proc);
+
+	/* Save PID */
+	pidField = (*env)->GetFieldID(env, proc_class, "pid", "I");
+	(*env)->SetIntField(env, proc, pidField, pid);
 
 	/*
 	 * Note: even though it is likely that `pfd_field' and `fd_field'
