@@ -725,7 +725,7 @@ DBG(JTHREAD,		dprintf("Re-resuming 0x%x\n", jtid); )
  * Suspend a thread on a queue.
  * Return true if thread was interrupted.
  */
-int
+static int
 suspendOnQThread(jthread* jtid, jthread** queue, jlong timeout)
 {
 	int rc = false;
@@ -2358,6 +2358,7 @@ jthreadedWaitpid(int wpid, int* status, int options, int *outpid)
 {
 #if defined(HAVE_WAITPID)
 	int npid;
+	int ret = 0;
 
 DBG(JTHREAD,
 	dprintf("waitpid %d current=%p\n", wpid, currentJThread); )
@@ -2371,11 +2372,16 @@ DBG(JTHREAD,
 			*outpid = npid;
 			break;
 		}
+		if ((npid == -1) && (errno == ECHILD)) {
+			/* child does not exist */
+			ret = -1;
+			break;
+		}
 		BLOCKED_ON_EXTERNAL(currentJThread);
 		suspendOnQThread(currentJThread, &waitForList, NOTIMEOUT);
 	}
 	intsRestore();
-	return (0);
+	return (ret);
 #else
 	return (EOPNOTSUPPORT);
 #endif
