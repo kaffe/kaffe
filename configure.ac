@@ -687,7 +687,7 @@ if test x"${GC_NAME}" = x"boehm-gc"; then
 			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_HPUX_THREADS"
 			;;
 		linux*)
-			if test x"$ac_cv_gnu_library_version" "!=" x"no"; then
+			if test x"$ac_cv_gnu_library_version" -ne x"no"; then
 			   if test "$ac_cv_gnu_library_version" -le "2002"; then
 				BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_LINUX_THREADS"
 			   fi
@@ -699,6 +699,9 @@ if test x"${GC_NAME}" = x"boehm-gc"; then
 		*)
 			AC_MSG_ERROR(Threads support for $Khost_os unavailable in the boehm-gc. Please use the standard kaffe's gc.)
 	esac
+
+	ac_configure_args="$ac_configure_args --enable-libgc-convenience"
+	AC_CONFIG_SUBDIRS([kaffe/kaffevm/boehm-gc/boehm])
 fi
 
 AC_SUBST(BOEHMGC_SPECIFIC_FLAGS)

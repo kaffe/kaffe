@@ -23,6 +23,7 @@ typedef struct _gcMark {
 } gcMark;
 
 typedef struct {
+	uint32 magic;
 	uint8 memtype;
 	size_t memsize;
 } MemDescriptor;

@@ -4,8 +4,6 @@
      && !defined(GC_IRIX_THREADS) && !defined(GC_WIN32_THREADS) \
      && !defined(GC_DARWIN_THREADS) && !defined(GC_AIX_THREADS)
 
-#include <stdio.h>
-
 #include <signal.h>
 #include <semaphore.h>
 #include <errno.h>
@@ -97,7 +95,7 @@ word GC_stop_count;	/* Incremented at the beginning of GC_stop_world. */
 #      define SIG_THR_RESTART SIGRTMIN + 5
 #    endif
 #  else
-#   define SIG_THR_RESTART SIGUSR2
+#   define SIG_THR_RESTART SIGXCPU
 #  endif
 #endif
 

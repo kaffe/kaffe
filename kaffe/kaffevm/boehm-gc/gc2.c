@@ -32,8 +32,6 @@
 #include "gc-kaffe.h"
 #include "gc2.h"
 
-extern void *GC_kaffe_malloc(size_t s);
-
 /*
  * This record describes an allocation type.
  */
@@ -64,6 +62,8 @@ typedef struct
 } BoehmGarbageCollector;
 
 static BoehmGarbageCollector boehm_gc;
+
+#define MAGIC_GC 0xcaffe130
 
 static inline void
 clearAndAddDescriptor(void *mem, MemDescriptor *desc)
@@ -139,6 +139,8 @@ finalizeObject(void* ob, UNUSED void* descriptor)
 {
   MemDescriptor *desc = (MemDescriptor *)ob;
   gcFuncs *f = &gcFunctions[desc->memtype];
+
+  assert(desc->magic == MAGIC_GC);
   
   if (f->final != KGC_OBJECT_NORMAL && f->final != NULL)
     f->final(&boehm_gc.collector, ALIGN_FORWARD(ob));
@@ -284,6 +286,8 @@ KaffeGC_realloc(Collector *gcif, void* mem, size_t sz, gc_alloc_type_t type)
   new_ptr = GC_realloc ( ALIGN_BACKWARD(mem), (size_t)SYSTEM_SIZE(sz));
   if (new_ptr) {
     MemDescriptor *desc = (MemDescriptor *)new_ptr;
+    
+    assert(desc->magic == MAGIC_GC);
     if (sz > desc->memsize) {
       memset((void *)((uintp)new_ptr + SYSTEM_SIZE(desc->memsize)), 0, sz-desc->memsize);
     }
@@ -299,10 +303,13 @@ KaffeGC_realloc(Collector *gcif, void* mem, size_t sz, gc_alloc_type_t type)
 static void
 KaffeGC_free(Collector *gcif UNUSED, void* mem)
 {
+  MemDescriptor *desc = (MemDescriptor *)ALIGN_BACKWARD(mem);
+
   if (mem == NULL)
     return;
 
-  GC_free(ALIGN_BACKWARD(mem));
+  assert(desc->magic == MAGIC_GC);
+  GC_free(desc);
 }
 
 static void*
@@ -316,6 +323,7 @@ KaffeGC_malloc(Collector *gcif UNUSED, size_t sz, gc_alloc_type_t type)
 
   desc.memtype = type;
   desc.memsize = sz;
+  desc.magic = MAGIC_GC;
   // Allocate memory
   if (gcFunctions[type].final == KGC_OBJECT_FIXED)
     {
@@ -360,6 +368,7 @@ KaffeGC_GetObjectSize(Collector *gcif UNUSED, const void* mem)
   if (desc == NULL)
     return 0;
 
+  assert(desc->magic == MAGIC_GC);
   return desc->memsize;
 }
 
@@ -384,7 +393,10 @@ KaffeGC_GetObjectIndex(Collector *gcif UNUSED, const void *mem)
   MemDescriptor *desc = (MemDescriptor *)GC_base((void *)(uintp)mem);
 
   if (desc != NULL)
+  {
+    assert(desc->magic == MAGIC_GC);
     return desc->memtype;
+  }
   else
     return -1;
 }
@@ -451,6 +463,13 @@ onObjectMarking(GC_word *addr, struct GC_ms_entry * mark_stack_ptr,
   int type = desc->memtype;
   gcMark info_mark;
   walk_func_t walkf;
+  
+  /* Temporary hack. If the magic bytes are not there it means the descriptor has not
+   * been initialized. The Boehm-Weiser GC should not call the function but it actually happens
+   * we just silently ignore the problem. :(
+   */
+  if (desc->magic != MAGIC_GC)
+    return mark_stack_ptr;
   
   info_mark.mark_current = mark_stack_ptr;
   info_mark.mark_limit = mark_stack_limit;

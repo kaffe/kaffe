@@ -99,9 +99,9 @@ DCL_LOCK_STATE;
 
 void GC_kaffe_init(GC_mark_proc proc)
 {
-  GC_kaffe_freelist = (ptr_t *)GC_new_free_list_inner();
+  GC_kaffe_freelist = (ptr_t *)GC_new_free_list();
   GC_kaffe_proc = GC_new_proc(proc);
   GC_kaffe_kind = GC_new_kind(GC_kaffe_freelist,
-			      GC_MAKE_PROC(GC_kaffe_proc, 1),
+			      GC_MAKE_PROC(GC_kaffe_proc, 0),
 			      FALSE, TRUE);
 }

@@ -22,8 +22,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-
-SOURCES = $(libkaffegc_la_SOURCES) $(if_mach_SOURCES)
+SOURCES = $(libkaffegc_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -47,7 +46,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = if_mach$(EXEEXT)
 subdir = kaffe/kaffevm/boehm-gc
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -84,20 +82,9 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
-libkaffegc_la_LIBADD =
-am_libkaffegc_la_OBJECTS = gc2.lo gc-refs.lo gc-kaffe.lo allchblk.lo \
-	alloc.lo blacklst.lo checksums.lo dbg_mlc.lo dyn_load.lo \
-	finalize.lo gcj_mlc.lo headers.lo aix_irix_threads.lo \
-	win32_threads.lo solaris_pthreads.lo solaris_threads.lo \
-	pthread_support.lo pthread_stop_world.lo malloc.lo mallocx.lo \
-	mark.lo mark_rts.lo misc.lo new_hblk.lo obj_map.lo os_dep.lo \
-	pcr_interface.lo ptr_chck.lo real_malloc.lo reclaim.lo \
-	stubborn.lo typd_mlc.lo mach_dep.lo
+libkaffegc_la_DEPENDENCIES = boehm/libgc.la
+am_libkaffegc_la_OBJECTS = gc2.lo gc-refs.lo gc-kaffe.lo
 libkaffegc_la_OBJECTS = $(am_libkaffegc_la_OBJECTS)
-PROGRAMS = $(noinst_PROGRAMS)
-am_if_mach_OBJECTS = if_mach.$(OBJEXT)
-if_mach_OBJECTS = $(am_if_mach_OBJECTS)
-if_mach_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
@@ -108,10 +95,17 @@ LTCOMPILE = $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) \
 	$(AM_CFLAGS) $(CFLAGS)
 LINK = $(LIBTOOL) --mode=link --tag=CC $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libkaffegc_la_SOURCES) $(if_mach_SOURCES)
-DIST_SOURCES = $(libkaffegc_la_SOURCES) $(if_mach_SOURCES)
+SOURCES = $(libkaffegc_la_SOURCES)
+DIST_SOURCES = $(libkaffegc_la_SOURCES)
+RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
+	html-recursive info-recursive install-data-recursive \
+	install-exec-recursive install-info-recursive \
+	install-recursive installcheck-recursive installdirs-recursive \
+	pdf-recursive ps-recursive uninstall-info-recursive \
+	uninstall-recursive
 ETAGS = etags
 CTAGS = ctags
+DIST_SUBDIRS = $(SUBDIRS)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
@@ -375,6 +369,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
+SUBDIRS = boehm
 AM_CPPFLAGS = \
         -I$(top_srcdir)/include \
         -I$(top_builddir)/config \
@@ -386,57 +381,24 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/boehm-gc/boehm/include \
 	$(BOEHMGC_SPECIFIC_FLAGS)
 
-if_mach_SOURCES = boehm/if_mach.c
 native_LTLIBRARIES = libkaffegc.la
 libkaffegc_la_LDFLAGS = \
 	$(KVMLIBFLAGS) \
 	-export-dynamic \
 	-release $(PACKAGE_VERSION)
 
+libkaffegc_la_LIBADD = \
+	boehm/libgc.la
+
 libkaffegc_la_SOURCES = \
 	gc2.c \
 	gc-refs.c \
 	gc-refs.h \
 	gc-kaffe.c \
-	gc-kaffe.h \
-	boehm/allchblk.c boehm/alloc.c boehm/blacklst.c boehm/checksums.c \
-	boehm/dbg_mlc.c boehm/dyn_load.c boehm/finalize.c \
-	boehm/include/private/gcconfig.h \
-	boehm/include/gc.h \
-	boehm/include/gc_alloc.h \
-	boehm/include/gc_cpp.h \
-	boehm/include/private/gc_hdrs.h \
-	boehm/include/private/gc_priv.h \
-	boehm/include/gc_typed.h \
-	boehm/gcj_mlc.c \
-	boehm/headers.c \
-	boehm/aix_irix_threads.c \
-	boehm/win32_threads.c \
-	boehm/solaris_pthreads.c \
-	boehm/solaris_threads.c \
-	boehm/pthread_support.c \
-	boehm/pthread_stop_world.c \
-	boehm/malloc.c \
-	boehm/mallocx.c \
-	boehm/mark.c \
-	boehm/mark_rts.c \
-	boehm/misc.c \
-	boehm/new_hblk.c \
-	boehm/obj_map.c \
-	boehm/os_dep.c \
-	boehm/pcr_interface.c \
-	boehm/ptr_chck.c \
-	boehm/real_malloc.c \
-	boehm/reclaim.c \
-	boehm/stubborn.c \
-	boehm/typd_mlc.c \
-	boehm/mach_dep.c \
-	boehm/version.h \
-	boehm/include/private/solaris_threads.h \
-	boehm/include/weakpointer.h
+	gc-kaffe.h
 
 EXTRA_DIST = boehm
-all: all-am
+all: all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
@@ -499,56 +461,15 @@ clean-nativeLTLIBRARIES:
 libkaffegc.la: $(libkaffegc_la_OBJECTS) $(libkaffegc_la_DEPENDENCIES) 
 	$(LINK) -rpath $(nativedir) $(libkaffegc_la_LDFLAGS) $(libkaffegc_la_OBJECTS) $(libkaffegc_la_LIBADD) $(LIBS)
 
-clean-noinstPROGRAMS:
-	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
-	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
-	  echo " rm -f $$p $$f"; \
-	  rm -f $$p $$f ; \
-	done
-if_mach$(EXEEXT): $(if_mach_OBJECTS) $(if_mach_DEPENDENCIES) 
-	@rm -f if_mach$(EXEEXT)
-	$(LINK) $(if_mach_LDFLAGS) $(if_mach_OBJECTS) $(if_mach_LDADD) $(LIBS)
-
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/aix_irix_threads.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/allchblk.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/alloc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/blacklst.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/checksums.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbg_mlc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dyn_load.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/finalize.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-kaffe.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-refs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc2.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gcj_mlc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/headers.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/if_mach.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mach_dep.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/malloc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mallocx.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mark.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mark_rts.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/misc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/new_hblk.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/obj_map.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/os_dep.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcr_interface.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pthread_stop_world.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pthread_support.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ptr_chck.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/real_malloc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reclaim.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/solaris_pthreads.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/solaris_threads.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stubborn.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/typd_mlc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/win32_threads.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -571,230 +492,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-allchblk.lo: boehm/allchblk.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT allchblk.lo -MD -MP -MF "$(DEPDIR)/allchblk.Tpo" -c -o allchblk.lo `test -f 'boehm/allchblk.c' || echo '$(srcdir)/'`boehm/allchblk.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/allchblk.Tpo" "$(DEPDIR)/allchblk.Plo"; else rm -f "$(DEPDIR)/allchblk.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/allchblk.c' object='allchblk.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o allchblk.lo `test -f 'boehm/allchblk.c' || echo '$(srcdir)/'`boehm/allchblk.c
-
-alloc.lo: boehm/alloc.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT alloc.lo -MD -MP -MF "$(DEPDIR)/alloc.Tpo" -c -o alloc.lo `test -f 'boehm/alloc.c' || echo '$(srcdir)/'`boehm/alloc.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/alloc.Tpo" "$(DEPDIR)/alloc.Plo"; else rm -f "$(DEPDIR)/alloc.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/alloc.c' object='alloc.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o alloc.lo `test -f 'boehm/alloc.c' || echo '$(srcdir)/'`boehm/alloc.c
-
-blacklst.lo: boehm/blacklst.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT blacklst.lo -MD -MP -MF "$(DEPDIR)/blacklst.Tpo" -c -o blacklst.lo `test -f 'boehm/blacklst.c' || echo '$(srcdir)/'`boehm/blacklst.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/blacklst.Tpo" "$(DEPDIR)/blacklst.Plo"; else rm -f "$(DEPDIR)/blacklst.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/blacklst.c' object='blacklst.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o blacklst.lo `test -f 'boehm/blacklst.c' || echo '$(srcdir)/'`boehm/blacklst.c
-
-checksums.lo: boehm/checksums.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT checksums.lo -MD -MP -MF "$(DEPDIR)/checksums.Tpo" -c -o checksums.lo `test -f 'boehm/checksums.c' || echo '$(srcdir)/'`boehm/checksums.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/checksums.Tpo" "$(DEPDIR)/checksums.Plo"; else rm -f "$(DEPDIR)/checksums.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/checksums.c' object='checksums.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o checksums.lo `test -f 'boehm/checksums.c' || echo '$(srcdir)/'`boehm/checksums.c
-
-dbg_mlc.lo: boehm/dbg_mlc.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dbg_mlc.lo -MD -MP -MF "$(DEPDIR)/dbg_mlc.Tpo" -c -o dbg_mlc.lo `test -f 'boehm/dbg_mlc.c' || echo '$(srcdir)/'`boehm/dbg_mlc.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/dbg_mlc.Tpo" "$(DEPDIR)/dbg_mlc.Plo"; else rm -f "$(DEPDIR)/dbg_mlc.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/dbg_mlc.c' object='dbg_mlc.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dbg_mlc.lo `test -f 'boehm/dbg_mlc.c' || echo '$(srcdir)/'`boehm/dbg_mlc.c
-
-dyn_load.lo: boehm/dyn_load.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dyn_load.lo -MD -MP -MF "$(DEPDIR)/dyn_load.Tpo" -c -o dyn_load.lo `test -f 'boehm/dyn_load.c' || echo '$(srcdir)/'`boehm/dyn_load.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/dyn_load.Tpo" "$(DEPDIR)/dyn_load.Plo"; else rm -f "$(DEPDIR)/dyn_load.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/dyn_load.c' object='dyn_load.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dyn_load.lo `test -f 'boehm/dyn_load.c' || echo '$(srcdir)/'`boehm/dyn_load.c
-
-finalize.lo: boehm/finalize.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT finalize.lo -MD -MP -MF "$(DEPDIR)/finalize.Tpo" -c -o finalize.lo `test -f 'boehm/finalize.c' || echo '$(srcdir)/'`boehm/finalize.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/finalize.Tpo" "$(DEPDIR)/finalize.Plo"; else rm -f "$(DEPDIR)/finalize.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/finalize.c' object='finalize.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o finalize.lo `test -f 'boehm/finalize.c' || echo '$(srcdir)/'`boehm/finalize.c
-
-gcj_mlc.lo: boehm/gcj_mlc.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gcj_mlc.lo -MD -MP -MF "$(DEPDIR)/gcj_mlc.Tpo" -c -o gcj_mlc.lo `test -f 'boehm/gcj_mlc.c' || echo '$(srcdir)/'`boehm/gcj_mlc.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/gcj_mlc.Tpo" "$(DEPDIR)/gcj_mlc.Plo"; else rm -f "$(DEPDIR)/gcj_mlc.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/gcj_mlc.c' object='gcj_mlc.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gcj_mlc.lo `test -f 'boehm/gcj_mlc.c' || echo '$(srcdir)/'`boehm/gcj_mlc.c
-
-headers.lo: boehm/headers.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT headers.lo -MD -MP -MF "$(DEPDIR)/headers.Tpo" -c -o headers.lo `test -f 'boehm/headers.c' || echo '$(srcdir)/'`boehm/headers.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/headers.Tpo" "$(DEPDIR)/headers.Plo"; else rm -f "$(DEPDIR)/headers.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/headers.c' object='headers.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o headers.lo `test -f 'boehm/headers.c' || echo '$(srcdir)/'`boehm/headers.c
-
-aix_irix_threads.lo: boehm/aix_irix_threads.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT aix_irix_threads.lo -MD -MP -MF "$(DEPDIR)/aix_irix_threads.Tpo" -c -o aix_irix_threads.lo `test -f 'boehm/aix_irix_threads.c' || echo '$(srcdir)/'`boehm/aix_irix_threads.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/aix_irix_threads.Tpo" "$(DEPDIR)/aix_irix_threads.Plo"; else rm -f "$(DEPDIR)/aix_irix_threads.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/aix_irix_threads.c' object='aix_irix_threads.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o aix_irix_threads.lo `test -f 'boehm/aix_irix_threads.c' || echo '$(srcdir)/'`boehm/aix_irix_threads.c
-
-win32_threads.lo: boehm/win32_threads.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT win32_threads.lo -MD -MP -MF "$(DEPDIR)/win32_threads.Tpo" -c -o win32_threads.lo `test -f 'boehm/win32_threads.c' || echo '$(srcdir)/'`boehm/win32_threads.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/win32_threads.Tpo" "$(DEPDIR)/win32_threads.Plo"; else rm -f "$(DEPDIR)/win32_threads.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/win32_threads.c' object='win32_threads.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o win32_threads.lo `test -f 'boehm/win32_threads.c' || echo '$(srcdir)/'`boehm/win32_threads.c
-
-solaris_pthreads.lo: boehm/solaris_pthreads.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT solaris_pthreads.lo -MD -MP -MF "$(DEPDIR)/solaris_pthreads.Tpo" -c -o solaris_pthreads.lo `test -f 'boehm/solaris_pthreads.c' || echo '$(srcdir)/'`boehm/solaris_pthreads.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/solaris_pthreads.Tpo" "$(DEPDIR)/solaris_pthreads.Plo"; else rm -f "$(DEPDIR)/solaris_pthreads.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/solaris_pthreads.c' object='solaris_pthreads.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o solaris_pthreads.lo `test -f 'boehm/solaris_pthreads.c' || echo '$(srcdir)/'`boehm/solaris_pthreads.c
-
-solaris_threads.lo: boehm/solaris_threads.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT solaris_threads.lo -MD -MP -MF "$(DEPDIR)/solaris_threads.Tpo" -c -o solaris_threads.lo `test -f 'boehm/solaris_threads.c' || echo '$(srcdir)/'`boehm/solaris_threads.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/solaris_threads.Tpo" "$(DEPDIR)/solaris_threads.Plo"; else rm -f "$(DEPDIR)/solaris_threads.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/solaris_threads.c' object='solaris_threads.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o solaris_threads.lo `test -f 'boehm/solaris_threads.c' || echo '$(srcdir)/'`boehm/solaris_threads.c
-
-pthread_support.lo: boehm/pthread_support.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT pthread_support.lo -MD -MP -MF "$(DEPDIR)/pthread_support.Tpo" -c -o pthread_support.lo `test -f 'boehm/pthread_support.c' || echo '$(srcdir)/'`boehm/pthread_support.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/pthread_support.Tpo" "$(DEPDIR)/pthread_support.Plo"; else rm -f "$(DEPDIR)/pthread_support.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/pthread_support.c' object='pthread_support.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o pthread_support.lo `test -f 'boehm/pthread_support.c' || echo '$(srcdir)/'`boehm/pthread_support.c
-
-pthread_stop_world.lo: boehm/pthread_stop_world.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT pthread_stop_world.lo -MD -MP -MF "$(DEPDIR)/pthread_stop_world.Tpo" -c -o pthread_stop_world.lo `test -f 'boehm/pthread_stop_world.c' || echo '$(srcdir)/'`boehm/pthread_stop_world.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/pthread_stop_world.Tpo" "$(DEPDIR)/pthread_stop_world.Plo"; else rm -f "$(DEPDIR)/pthread_stop_world.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/pthread_stop_world.c' object='pthread_stop_world.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o pthread_stop_world.lo `test -f 'boehm/pthread_stop_world.c' || echo '$(srcdir)/'`boehm/pthread_stop_world.c
-
-malloc.lo: boehm/malloc.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT malloc.lo -MD -MP -MF "$(DEPDIR)/malloc.Tpo" -c -o malloc.lo `test -f 'boehm/malloc.c' || echo '$(srcdir)/'`boehm/malloc.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/malloc.Tpo" "$(DEPDIR)/malloc.Plo"; else rm -f "$(DEPDIR)/malloc.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/malloc.c' object='malloc.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o malloc.lo `test -f 'boehm/malloc.c' || echo '$(srcdir)/'`boehm/malloc.c
-
-mallocx.lo: boehm/mallocx.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT mallocx.lo -MD -MP -MF "$(DEPDIR)/mallocx.Tpo" -c -o mallocx.lo `test -f 'boehm/mallocx.c' || echo '$(srcdir)/'`boehm/mallocx.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/mallocx.Tpo" "$(DEPDIR)/mallocx.Plo"; else rm -f "$(DEPDIR)/mallocx.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/mallocx.c' object='mallocx.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o mallocx.lo `test -f 'boehm/mallocx.c' || echo '$(srcdir)/'`boehm/mallocx.c
-
-mark.lo: boehm/mark.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT mark.lo -MD -MP -MF "$(DEPDIR)/mark.Tpo" -c -o mark.lo `test -f 'boehm/mark.c' || echo '$(srcdir)/'`boehm/mark.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/mark.Tpo" "$(DEPDIR)/mark.Plo"; else rm -f "$(DEPDIR)/mark.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/mark.c' object='mark.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o mark.lo `test -f 'boehm/mark.c' || echo '$(srcdir)/'`boehm/mark.c
-
-mark_rts.lo: boehm/mark_rts.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT mark_rts.lo -MD -MP -MF "$(DEPDIR)/mark_rts.Tpo" -c -o mark_rts.lo `test -f 'boehm/mark_rts.c' || echo '$(srcdir)/'`boehm/mark_rts.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/mark_rts.Tpo" "$(DEPDIR)/mark_rts.Plo"; else rm -f "$(DEPDIR)/mark_rts.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/mark_rts.c' object='mark_rts.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o mark_rts.lo `test -f 'boehm/mark_rts.c' || echo '$(srcdir)/'`boehm/mark_rts.c
-
-misc.lo: boehm/misc.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT misc.lo -MD -MP -MF "$(DEPDIR)/misc.Tpo" -c -o misc.lo `test -f 'boehm/misc.c' || echo '$(srcdir)/'`boehm/misc.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/misc.Tpo" "$(DEPDIR)/misc.Plo"; else rm -f "$(DEPDIR)/misc.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/misc.c' object='misc.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o misc.lo `test -f 'boehm/misc.c' || echo '$(srcdir)/'`boehm/misc.c
-
-new_hblk.lo: boehm/new_hblk.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT new_hblk.lo -MD -MP -MF "$(DEPDIR)/new_hblk.Tpo" -c -o new_hblk.lo `test -f 'boehm/new_hblk.c' || echo '$(srcdir)/'`boehm/new_hblk.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/new_hblk.Tpo" "$(DEPDIR)/new_hblk.Plo"; else rm -f "$(DEPDIR)/new_hblk.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/new_hblk.c' object='new_hblk.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o new_hblk.lo `test -f 'boehm/new_hblk.c' || echo '$(srcdir)/'`boehm/new_hblk.c
-
-obj_map.lo: boehm/obj_map.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT obj_map.lo -MD -MP -MF "$(DEPDIR)/obj_map.Tpo" -c -o obj_map.lo `test -f 'boehm/obj_map.c' || echo '$(srcdir)/'`boehm/obj_map.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/obj_map.Tpo" "$(DEPDIR)/obj_map.Plo"; else rm -f "$(DEPDIR)/obj_map.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/obj_map.c' object='obj_map.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o obj_map.lo `test -f 'boehm/obj_map.c' || echo '$(srcdir)/'`boehm/obj_map.c
-
-os_dep.lo: boehm/os_dep.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT os_dep.lo -MD -MP -MF "$(DEPDIR)/os_dep.Tpo" -c -o os_dep.lo `test -f 'boehm/os_dep.c' || echo '$(srcdir)/'`boehm/os_dep.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/os_dep.Tpo" "$(DEPDIR)/os_dep.Plo"; else rm -f "$(DEPDIR)/os_dep.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/os_dep.c' object='os_dep.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o os_dep.lo `test -f 'boehm/os_dep.c' || echo '$(srcdir)/'`boehm/os_dep.c
-
-pcr_interface.lo: boehm/pcr_interface.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT pcr_interface.lo -MD -MP -MF "$(DEPDIR)/pcr_interface.Tpo" -c -o pcr_interface.lo `test -f 'boehm/pcr_interface.c' || echo '$(srcdir)/'`boehm/pcr_interface.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/pcr_interface.Tpo" "$(DEPDIR)/pcr_interface.Plo"; else rm -f "$(DEPDIR)/pcr_interface.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/pcr_interface.c' object='pcr_interface.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o pcr_interface.lo `test -f 'boehm/pcr_interface.c' || echo '$(srcdir)/'`boehm/pcr_interface.c
-
-ptr_chck.lo: boehm/ptr_chck.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ptr_chck.lo -MD -MP -MF "$(DEPDIR)/ptr_chck.Tpo" -c -o ptr_chck.lo `test -f 'boehm/ptr_chck.c' || echo '$(srcdir)/'`boehm/ptr_chck.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/ptr_chck.Tpo" "$(DEPDIR)/ptr_chck.Plo"; else rm -f "$(DEPDIR)/ptr_chck.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/ptr_chck.c' object='ptr_chck.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ptr_chck.lo `test -f 'boehm/ptr_chck.c' || echo '$(srcdir)/'`boehm/ptr_chck.c
-
-real_malloc.lo: boehm/real_malloc.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT real_malloc.lo -MD -MP -MF "$(DEPDIR)/real_malloc.Tpo" -c -o real_malloc.lo `test -f 'boehm/real_malloc.c' || echo '$(srcdir)/'`boehm/real_malloc.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/real_malloc.Tpo" "$(DEPDIR)/real_malloc.Plo"; else rm -f "$(DEPDIR)/real_malloc.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/real_malloc.c' object='real_malloc.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o real_malloc.lo `test -f 'boehm/real_malloc.c' || echo '$(srcdir)/'`boehm/real_malloc.c
-
-reclaim.lo: boehm/reclaim.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reclaim.lo -MD -MP -MF "$(DEPDIR)/reclaim.Tpo" -c -o reclaim.lo `test -f 'boehm/reclaim.c' || echo '$(srcdir)/'`boehm/reclaim.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reclaim.Tpo" "$(DEPDIR)/reclaim.Plo"; else rm -f "$(DEPDIR)/reclaim.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/reclaim.c' object='reclaim.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reclaim.lo `test -f 'boehm/reclaim.c' || echo '$(srcdir)/'`boehm/reclaim.c
-
-stubborn.lo: boehm/stubborn.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT stubborn.lo -MD -MP -MF "$(DEPDIR)/stubborn.Tpo" -c -o stubborn.lo `test -f 'boehm/stubborn.c' || echo '$(srcdir)/'`boehm/stubborn.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/stubborn.Tpo" "$(DEPDIR)/stubborn.Plo"; else rm -f "$(DEPDIR)/stubborn.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/stubborn.c' object='stubborn.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o stubborn.lo `test -f 'boehm/stubborn.c' || echo '$(srcdir)/'`boehm/stubborn.c
-
-typd_mlc.lo: boehm/typd_mlc.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT typd_mlc.lo -MD -MP -MF "$(DEPDIR)/typd_mlc.Tpo" -c -o typd_mlc.lo `test -f 'boehm/typd_mlc.c' || echo '$(srcdir)/'`boehm/typd_mlc.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/typd_mlc.Tpo" "$(DEPDIR)/typd_mlc.Plo"; else rm -f "$(DEPDIR)/typd_mlc.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/typd_mlc.c' object='typd_mlc.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o typd_mlc.lo `test -f 'boehm/typd_mlc.c' || echo '$(srcdir)/'`boehm/typd_mlc.c
-
-mach_dep.lo: boehm/mach_dep.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT mach_dep.lo -MD -MP -MF "$(DEPDIR)/mach_dep.Tpo" -c -o mach_dep.lo `test -f 'boehm/mach_dep.c' || echo '$(srcdir)/'`boehm/mach_dep.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/mach_dep.Tpo" "$(DEPDIR)/mach_dep.Plo"; else rm -f "$(DEPDIR)/mach_dep.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/mach_dep.c' object='mach_dep.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o mach_dep.lo `test -f 'boehm/mach_dep.c' || echo '$(srcdir)/'`boehm/mach_dep.c
-
-if_mach.o: boehm/if_mach.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT if_mach.o -MD -MP -MF "$(DEPDIR)/if_mach.Tpo" -c -o if_mach.o `test -f 'boehm/if_mach.c' || echo '$(srcdir)/'`boehm/if_mach.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/if_mach.Tpo" "$(DEPDIR)/if_mach.Po"; else rm -f "$(DEPDIR)/if_mach.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/if_mach.c' object='if_mach.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o if_mach.o `test -f 'boehm/if_mach.c' || echo '$(srcdir)/'`boehm/if_mach.c
-
-if_mach.obj: boehm/if_mach.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT if_mach.obj -MD -MP -MF "$(DEPDIR)/if_mach.Tpo" -c -o if_mach.obj `if test -f 'boehm/if_mach.c'; then $(CYGPATH_W) 'boehm/if_mach.c'; else $(CYGPATH_W) '$(srcdir)/boehm/if_mach.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/if_mach.Tpo" "$(DEPDIR)/if_mach.Po"; else rm -f "$(DEPDIR)/if_mach.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm/if_mach.c' object='if_mach.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o if_mach.obj `if test -f 'boehm/if_mach.c'; then $(CYGPATH_W) 'boehm/if_mach.c'; else $(CYGPATH_W) '$(srcdir)/boehm/if_mach.c'; fi`
-
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -804,6 +501,65 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
+
+# This directory's subdirectories are mostly independent; you can cd
+# into them and run `make' without going through this Makefile.
+# To change the values of `make' variables: instead of editing Makefiles,
+# (1) if the variable is set in `config.status', edit `config.status'
+#     (which will cause the Makefiles to be regenerated when you run `make');
+# (2) otherwise, pass the desired values on the `make' command line.
+$(RECURSIVE_TARGETS):
+	@set fnord $$MAKEFLAGS; amf=$$2; \
+	dot_seen=no; \
+	target=`echo $@ | sed s/-recursive//`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    dot_seen=yes; \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done; \
+	if test "$$dot_seen" = "no"; then \
+	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
+	fi; test -z "$$fail"
+
+mostlyclean-recursive clean-recursive distclean-recursive \
+maintainer-clean-recursive:
+	@set fnord $$MAKEFLAGS; amf=$$2; \
+	dot_seen=no; \
+	case "$@" in \
+	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
+	  *) list='$(SUBDIRS)' ;; \
+	esac; \
+	rev=''; for subdir in $$list; do \
+	  if test "$$subdir" = "."; then :; else \
+	    rev="$$subdir $$rev"; \
+	  fi; \
+	done; \
+	rev="$$rev ."; \
+	target=`echo $@ | sed s/-recursive//`; \
+	for subdir in $$rev; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done && test -z "$$fail"
+tags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
+	done
+ctags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) ctags); \
+	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -815,10 +571,23 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	mkid -fID $$unique
 tags: TAGS
 
-TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
+	if ($(ETAGS) --etags-include --version) >/dev/null 2>&1; then \
+	  include_option=--etags-include; \
+	  empty_fix=.; \
+	else \
+	  include_option=--include; \
+	  empty_fix=; \
+	fi; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    test ! -f $$subdir/TAGS || \
+	      tags="$$tags $$include_option=$$here/$$subdir/TAGS"; \
+	  fi; \
+	done; \
 	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
@@ -831,7 +600,7 @@ TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 	    $$tags $$unique; \
 	fi
 ctags: CTAGS
-CTAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+CTAGS: ctags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
@@ -880,22 +649,38 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
+	list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    test -d "$(distdir)/$$subdir" \
+	    || $(mkdir_p) "$(distdir)/$$subdir" \
+	    || exit 1; \
+	    distdir=`$(am__cd) $(distdir) && pwd`; \
+	    top_distdir=`$(am__cd) $(top_distdir) && pwd`; \
+	    (cd $$subdir && \
+	      $(MAKE) $(AM_MAKEFLAGS) \
+	        top_distdir="$$top_distdir" \
+	        distdir="$$distdir/$$subdir" \
+	        distdir) \
+	      || exit 1; \
+	  fi; \
+	done
 check-am: all-am
-check: check-am
-all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
-installdirs:
+check: check-recursive
+all-am: Makefile $(LTLIBRARIES)
+installdirs: installdirs-recursive
+installdirs-am:
 	for dir in "$(DESTDIR)$(nativedir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
-install: install-am
-install-exec: install-exec-am
-install-data: install-data-am
-uninstall: uninstall-am
+install: install-recursive
+install-exec: install-exec-recursive
+install-data: install-data-recursive
+uninstall: uninstall-recursive
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-installcheck: installcheck-am
+installcheck: installcheck-recursive
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
 	  install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
@@ -911,24 +696,24 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean: clean-am
+clean: clean-recursive
 
 clean-am: clean-generic clean-libtool clean-nativeLTLIBRARIES \
-	clean-noinstPROGRAMS mostlyclean-am
+	mostlyclean-am
 
-distclean: distclean-am
+distclean: distclean-recursive
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
 
-dvi: dvi-am
+dvi: dvi-recursive
 
 dvi-am:
 
-html: html-am
+html: html-recursive
 
-info: info-am
+info: info-recursive
 
 info-am:
 
@@ -936,43 +721,47 @@ install-data-am: install-nativeLTLIBRARIES
 
 install-exec-am:
 
-install-info: install-info-am
+install-info: install-info-recursive
 
 install-man:
 
 installcheck-am:
 
-maintainer-clean: maintainer-clean-am
+maintainer-clean: maintainer-clean-recursive
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
-mostlyclean: mostlyclean-am
+mostlyclean: mostlyclean-recursive
 
 mostlyclean-am: mostlyclean-compile mostlyclean-generic \
 	mostlyclean-libtool
 
-pdf: pdf-am
+pdf: pdf-recursive
 
 pdf-am:
 
-ps: ps-am
+ps: ps-recursive
 
 ps-am:
 
 uninstall-am: uninstall-info-am uninstall-nativeLTLIBRARIES
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-nativeLTLIBRARIES clean-noinstPROGRAMS \
-	ctags distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
+uninstall-info: uninstall-info-recursive
+
+.PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am check check-am \
+	clean clean-generic clean-libtool clean-nativeLTLIBRARIES \
+	clean-recursive ctags ctags-recursive distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-recursive distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-data \
 	install-data-am install-exec install-exec-am install-info \
 	install-info-am install-man install-nativeLTLIBRARIES \
 	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	installdirs-am maintainer-clean maintainer-clean-generic \
+	maintainer-clean-recursive mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool mostlyclean-recursive \
+	pdf pdf-am ps ps-am tags tags-recursive uninstall uninstall-am \
 	uninstall-info-am uninstall-nativeLTLIBRARIES
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

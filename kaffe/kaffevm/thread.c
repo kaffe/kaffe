@@ -660,7 +660,7 @@ initNativeThreads(int nativestacksize)
 	    fprintf(stderr, "WARNING: Impossible to retrieve the real stack size\n");
 	    fprintf(stderr, "WARNING: You may experience deadlocks\n");
 	  }
-	else if (stackSize == KAFFEMD_STACK_INFINITE || stackSize > threadStackSize)
+	else if (stackSize == KAFFEMD_STACK_INFINITE || stackSize >= threadStackSize)
 	  {
 	    mdSetStackSize(threadStackSize);
 	    /* Last chance. We check whether the size has really been updated. */

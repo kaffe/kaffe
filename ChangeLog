@@ -1,3 +1,59 @@
+2004-08-24  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* configure.ac: Configure boehm subdir. Append
+	--enable-libgc-convenience to configure arguments.
+
+	* developers/autogen.sh: Regenerated kaffe/kaffevm/boehm-gc/boehm
+	too.
+
+	* kaffe/kaffevm/boehm-gc/Makefile.am: Use boehm/libgc.la instead
+	of specifying all source files.
+	
+	* kaffe/kaffevm/boehm-gc/gc-kaffe.c
+	(GC_kaffe_init): Use GC_new_free_list and set the secondary
+	argument to 0.
+
+	* kaffe/kaffevm/boehm-gc/gc2.c,
+	kaffe/kaffevm/boehm-gc/gc2.h: Added a magic number to allocated
+	block to check the accuracy of the allocator.
+
+	* kaffe/kaffevm/boehm-gc/boehm/Makefile.am: Added convenience
+	  support.
+
+	* kaffe/kaffevm/boehm-gc/boehm/Makefile.direct,
+	kaffe/kaffevm/boehm-gc/boehm/Makefile.dj,
+	kaffe/kaffevm/boehm-gc/boehm/NT_MAKEFILE,
+	kaffe/kaffevm/boehm-gc/boehm/NT_STATIC_THREADS_MAKEFILE,
+	kaffe/kaffevm/boehm-gc/boehm/README.QUICK,
+	kaffe/kaffevm/boehm-gc/boehm/alpha_mach_dep.S
+	kaffe/kaffevm/boehm-gc/boehm/config.guess
+	kaffe/kaffevm/boehm-gc/boehm/config.sub
+	kaffe/kaffevm/boehm-gc/boehm/configure
+	kaffe/kaffevm/boehm-gc/boehm/configure.in
+	kaffe/kaffevm/boehm-gc/boehm/install-sh
+	kaffe/kaffevm/boehm-gc/boehm/libtool.m4
+	kaffe/kaffevm/boehm-gc/boehm/ltmain.sh
+	kaffe/kaffevm/boehm-gc/boehm/mips_sgi_mach_dep.s
+	kaffe/kaffevm/boehm-gc/boehm/missing
+	kaffe/kaffevm/boehm-gc/boehm/mkinstalldirs
+	kaffe/kaffevm/boehm-gc/boehm/pthread_stop_world.c
+	kaffe/kaffevm/boehm-gc/boehm/doc/Makefile.am
+	kaffe/kaffevm/boehm-gc/boehm/doc/gc.man:
+	Updated files. We match gc6.3 exactly now. The upgrading process
+	is just a "copy file".
+	
+	* kaffe/kaffevm/boehm-gc/boehm/configure.ac: Upgraded boehm-gc's
+	configure to autoconf 2.59.
+
+	* configure, kaffe/kaffevm/boehm-gc/Makefile.in,
+	kaffe/kaffevm/boehm-gc/boehm/configure,
+	kaffe/kaffevm/boehm-gc/boehm/Makefile.in,
+	kaffe/kaffevm/boehm-gc/boehm/doc/Makefile.in,
+	kaffe/kaffevm/boehm-gc/boehm/include/Makefile.in,
+
+	* kaffe/kaffevm/thread.c
+	(initNativeThread): The stack size may be equal to the one we want.
+	
 2004-08-24  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Check for semaphore.h.
