@@ -1,3 +1,8 @@
+Sat Jan  9 08:19:58 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* FAQ/FAQ.automake: tip to avoid having to update
+	autoconf/automake
+
 Sat Jan  9 07:33:26 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/Makefile.am (libkaffevm_la_SOURCES): gc-block.c no 

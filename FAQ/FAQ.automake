@@ -39,6 +39,15 @@ officially released).  automake is supposed to work with perl4, but
 some people have reported problems with it.  I'm not sure they have
 already been fixed.
 
+  If you don't have recent versions of autoconf/automake and you don't
+feel like installing newer ones, your first build should be:
+
+gmake AUTOCONF="./missing autoconf" AUTOMAKE="./missing automake" \
+      ACLOCAL="./missing aclocal" AUTOHEADER="./missing autoheader"
+
+so that all autoconf/automake-related files that seem to be
+out-of-date are simply touched, instead of rebuilt.
+
 - I added a new flag, --with-staticvm, to make only the VM library
 static.  --with-includes and --with-libraries were also introduced, to 
 allow the user to specify a list of directories to search for
