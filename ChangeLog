@@ -1,3 +1,22 @@
+2003-12-14  Guilhem Lavaux <guilhem@kaffe.org>,
+	Everton da Silva Marques <everton@lab.ipaccess.diveo.net.br>
+
+	* libraries/clib/net/PlainDatagramSocket.c:
+	(gnu_java_net_PlainDatagramSocketImpl_join,
+	gnu_java_net_PlainDatagramSocketImpl_leave,
+	gnu_java_net_PlainDatagramSocketImpl_joinGroup,
+	gnu_java_net_PlainDatagramSocketImpl_leaveGroup)
+	Use the last setup network interface for the multicast socket
+	if there is no explicit mention of it in the parameters.
+	Changes suggested by Everton da Silva Marques 
+	<everton@lab.ipaccess.diveo.net.br>.
+
+	* libraries/javalib/java/io/ObjectInputStream.java,
+	libraries/javalib/java/io/ObjectOutputStream.java,
+	libraries/javalib/java/io/ObjectStreamClass.java,
+	libraries/javalib/java/io/ObjectStreamField.java:
+	Upgraded to classpath's version.
+
 2003-12-13  Dalibor Topic <robilad@kaffe.org>
 
 	* config/s390/sysdepCallMethod.h: New file.

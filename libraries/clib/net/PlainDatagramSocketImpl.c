@@ -531,11 +531,17 @@ gnu_java_net_PlainDatagramSocketImpl_join(struct Hgnu_java_net_PlainDatagramSock
 #if defined(IP_ADD_MEMBERSHIP)
 	int r;
 	struct ip_mreq ipm;
-
+	int iface_addr;
+	
+	memset(&ipm, 0, sizeof(ipm));
 	memcpy(&ipm.imr_multiaddr, unhand_byte_array(unhand(laddr)->addr),
 	       sizeof(ipm.imr_multiaddr));
-	ipm.imr_interface.s_addr = htonl(INADDR_ANY);
-
+	
+        iface_addr =
+	  gnu_java_net_PlainDatagramSocketImpl_socketGetOption(this, 
+	    java_net_SocketOptions_IP_MULTICAST_IF);
+	ipm.imr_interface.s_addr = htonl(iface_addr);
+	
 DBG(NATIVENET,
 	dprintf("datagram_join (%p, %p) => %s\n",
 		this, laddr, ip2str(ipm.imr_interface.s_addr));
@@ -561,10 +567,16 @@ gnu_java_net_PlainDatagramSocketImpl_leave(struct Hgnu_java_net_PlainDatagramSoc
 #if defined(IP_DROP_MEMBERSHIP)
 	int r;
 	struct ip_mreq ipm;
+	int iface_addr;
 
+	memset(&ipm, 0, sizeof(ipm));
 	memcpy(&ipm.imr_multiaddr, unhand_byte_array(unhand(laddr)->addr),
 	       sizeof(ipm.imr_multiaddr));
-	ipm.imr_interface.s_addr = htonl(INADDR_ANY);
+
+        iface_addr = 
+	  gnu_java_net_PlainDatagramSocketImpl_socketGetOption(this, 
+	    java_net_SocketOptions_IP_MULTICAST_IF);
+	ipm.imr_interface.s_addr = htonl(iface_addr);
 
 DBG(NATIVENET,
 	dprintf("datagram_leave (%p, %p) => %s\n",
@@ -594,7 +606,8 @@ gnu_java_net_PlainDatagramSocketImpl_joinGroup(struct Hgnu_java_net_PlainDatagra
 	int r;
 
 	jisa = (struct Hjava_net_InetSocketAddress *)jsa;
-	
+
+	memset(&ipm, 0, sizeof(ipm));
 	memcpy(&ipm.imr_multiaddr,
 	       unhand_byte_array(unhand(unhand(jisa)->addr)->addr),
 	       sizeof(ipm.imr_multiaddr));
@@ -614,7 +627,9 @@ DBG(NATIVENET,
 	}
 	else
 	{
-	  ipm.imr_interface.s_addr = htonl(INADDR_ANY);
+	  ipm.imr_interface.s_addr =
+	    gnu_java_net_PlainDatagramSocketImpl_socketGetOption(this, 
+	      java_net_SocketOptions_IP_MULTICAST_IF);
 	}
 
 	r = KSETSOCKOPT(unhand(unhand(this)->fd)->nativeFd,
@@ -643,7 +658,8 @@ gnu_java_net_PlainDatagramSocketImpl_leaveGroup(struct Hgnu_java_net_PlainDatagr
 	int r;
 
 	jisa = (struct Hjava_net_InetSocketAddress *)jsa;
-	
+
+	memset(&ipm, 0, sizeof(ipm));
 	memcpy(&ipm.imr_multiaddr,
 	       unhand_byte_array(unhand(unhand(jisa)->addr)->addr),
 	       sizeof(ipm.imr_multiaddr));
@@ -658,7 +674,9 @@ gnu_java_net_PlainDatagramSocketImpl_leaveGroup(struct Hgnu_java_net_PlainDatagr
 	}
 	else
 	{
-		ipm.imr_interface.s_addr = htonl(INADDR_ANY);
+	  ipm.imr_interface.s_addr =
+	    gnu_java_net_PlainDatagramSocketImpl_socketGetOption(this, 
+	      java_net_SocketOptions_IP_MULTICAST_IF);
 	}
 
 	r = KSETSOCKOPT(unhand(unhand(this)->fd)->nativeFd,

@@ -47,7 +47,6 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Vector;
 
-
 import gnu.java.io.ObjectIdentityWrapper;
 import gnu.java.lang.reflect.TypeSignature;
 import java.lang.reflect.Field;
@@ -99,11 +98,11 @@ public class ObjectInputStream extends InputStream
     this.blockDataInput = new DataInputStream (this);
     this.realInputStream = new DataInputStream (in);
     this.nextOID = baseWireHandle;
-    this.objectLookupTable = new Hashtable ();
-    this.validators = new Vector ();
+    this.objectLookupTable = new Hashtable();
+    this.validators = new Vector();
     this.classLookupTable = new Hashtable();
     setBlockDataMode (true);
-    readStreamHeader ();
+    readStreamHeader();
   }
 
 
@@ -204,7 +203,7 @@ public class ObjectInputStream extends InputStream
 	      Class cl = resolveProxyClass(intfs);
 	      setBlockDataMode(oldmode);
 	      
-	      ObjectStreamClass osc = lookupClass(cl);
+	      ObjectStreamClass osc = lookupClass (cl);
 	      assignNewHandle (osc);
 	      
 	      if (!is_consumed)
@@ -418,53 +417,62 @@ public class ObjectInputStream extends InputStream
     return ret_val;
   }
 
+  /**
+   * This method reads a class descriptor from the real input stream
+   * and use these data to create a new instance of ObjectStreamClass.
+   * Fields are sorted and ordered for the real read which occurs for
+   * each instance of the described class. Be aware that if you call that
+   * method you must ensure that the stream is synchronized, in the other
+   * case it may be completely desynchronized.
+   *
+   * @return A new instance of ObjectStreamClass containing the freshly
+   * created descriptor.
+   * @throws ClassNotFoundException if the required class to build the
+   * descriptor has not been found in the system.
+   * @throws IOException An input/output error occured.
+   * @throws InvalidClassException If there was a compatibility problem
+   * between the class present in the system and the serialized class.
+   */
   protected ObjectStreamClass readClassDescriptor ()
     throws ClassNotFoundException, IOException
   {
+    dumpElement ("CLASSDESC NAME=");
     String name = this.realInputStream.readUTF ();
+    dumpElement (name + "; UID=");
     long uid = this.realInputStream.readLong ();
+    dumpElement (Long.toHexString(uid) + "; FLAGS=");
     byte flags = this.realInputStream.readByte ();
+    dumpElement (Integer.toHexString(flags) + "; FIELD COUNT=");
     short field_count = this.realInputStream.readShort ();
+    dumpElementln (Short.toString(field_count));
     ObjectStreamField[] fields = new ObjectStreamField[field_count];
     ObjectStreamClass osc = new ObjectStreamClass (name, uid,
                                                    flags, fields);
     assignNewHandle (osc);
-
-    dumpElementln("CLASSDESC NAME=" + name + "; UID=" + Long.toHexString(uid)
-		  + "; FLAGS=" + Integer.toHexString(flags) + "; FIELD COUNT="
-		  + field_count);
-    
-    int real_count = 0;
+	      
+    int real_count;
     for (int i=0; i < field_count; i++)
       {
+	dumpElement ("  TYPE CODE=");
 	char type_code = (char)this.realInputStream.readByte ();
+	dumpElement (type_code + "; FIELD NAME=");
 	String field_name = this.realInputStream.readUTF ();
+	dumpElementln (field_name);
 	String class_name;
-
-	dumpElementln ("  TYPE CODE=" + type_code + "; FIELD NAME=" + field_name);
-
-        ObjectStreamField of;
 	
-	// There're many cases you can't get java.lang.Class from
-	// typename if your context class loader can't load it,
-	// then use typename to construct the field
-	// GL => No. You lose the capability to access the class loader.
-	// Type resolution must be done here. If it is an object we
-	// create the class just here if it is something else we delegate
-	// to TypeSignature.
+	// If the type code is an array or an object we must
+	// decode a String here. In the other case we convert
+	// the type code and pass it to ObjectStreamField.
+	// Type codes are decoded by gnu.java.lang.reflect.TypeSignature.
 	if (type_code == 'L' || type_code == '[')
-	{
 	  class_name = (String)readObject ();
-	}
 	else
-	{
 	  class_name = String.valueOf (type_code);
-        }
-	
-        of = new ObjectStreamField (field_name, class_name, currentLoader());
-	
-	fields[i] = of;
+
+	fields[i] =
+	  new ObjectStreamField (field_name, class_name, currentLoader());
       }
+
 
     /* Now that fields have been read we may resolve the class
      * (and read annotation if needed). */
@@ -489,7 +497,7 @@ public class ObjectInputStream extends InputStream
       }
 
     boolean oldmode = setBlockDataMode (true);
-    osc.setClass (clazz, lookupClass(clazz.getSuperclass()));
+    osc.setClass (clazz, lookupClass (clazz.getSuperclass()));
     classLookupTable.put (clazz, osc);
     setBlockDataMode (oldmode);
 	      
@@ -519,10 +527,13 @@ public class ObjectInputStream extends InputStream
     throws ClassNotFoundException, IOException, NotActiveException
   {
     if (this.currentObject == null || this.currentObjectStreamClass == null)
-      throw new NotActiveException ("defaultReadObject called by non-active class and/or object");
+      throw new NotActiveException ("defaultReadObject called by non-active"
+				    + " class and/or object");
 
     if (fieldsAlreadyRead)
-      throw new NotActiveException ("defaultReadObject called but fields already read from stream (by defaultReadObject or readFields)");
+      throw new NotActiveException ("defaultReadObject called but fields "
+				    + "already read from stream (by "
+				    + "defaultReadObject or readFields)");
 
     boolean oldmode = setBlockDataMode(false);
     readFields (this.currentObject, this.currentObjectStreamClass);
@@ -555,10 +566,12 @@ public class ObjectInputStream extends InputStream
     throws InvalidObjectException, NotActiveException
   {
     if (this.currentObject == null || this.currentObjectStreamClass == null)
-      throw new NotActiveException ("registerValidation called by non-active class and/or object");
+      throw new NotActiveException ("registerValidation called by non-active "
+				    +"class and/or object");
 
     if (validator == null)
-      throw new InvalidObjectException ("attempt to add a null ObjectInputValidation object");
+      throw new InvalidObjectException ("attempt to add a null "
+					+"ObjectInputValidation object");
 
     this.validators.addElement (new ValidatorAndPriority (validator,
 							  priority));
@@ -587,19 +600,33 @@ public class ObjectInputStream extends InputStream
     return Class.forName (osc.getName(), true, currentLoader()); 
   }
 
+  /**
+   * This method invokes the method currentClassLoader for the
+   * current security manager (or build an empty one if it is not
+   * present).
+   *
+   * @return The most recent non-system ClassLoader on the execution stack.
+   * @see java.lang.SecurityManager#currentClassLoader()
+   */
   private ClassLoader currentLoader ()
   {
     SecurityManager sm = System.getSecurityManager ();
     if (sm == null)
       sm = new SecurityManager () {};
-
+ 
     return currentClassLoader (sm);
   }
 
-  /* Lookup a class stored in the local hashtable. If it is not
+  /**
+   * Lookup a class stored in the local hashtable. If it is not
    * use the global lookup function in ObjectStreamClass to build
    * the ObjectStreamClass. This method is requested according to
    * the behaviour detected in the JDK by Kaffe's team.
+   *
+   * @param clazz Class to lookup in the hash table or for which
+   * we must build a descriptor. 
+   * @return A valid instance of ObjectStreamClass corresponding
+   * to the specified class.
    */
   private ObjectStreamClass lookupClass (Class clazz)
   {
@@ -612,10 +639,17 @@ public class ObjectInputStream extends InputStream
       return oclazz;
   }
 
-  /* Reconstruct class hierarchy the same way
-   * ObjectStreamClass.getObjectStreamClasses does but using
-   * lookupClass instead of ObjectStreamClass.lookup. This
-   * dup is necessary localize the lookup table. :(
+  /**
+   * Reconstruct class hierarchy the same way
+   * {@link java.io.ObjectStreamClass.getObjectStreamClasses(java.lang.Class)} does
+   * but using lookupClass instead of ObjectStreamClass.lookup. This
+   * dup is necessary localize the lookup table. Hopefully some future
+   * rewritings will be able to prevent this.
+   *
+   * @param clazz This is the class for which we want the hierarchy.
+   *
+   * @return An array of valid {@link java.io.ObjectStreamClass} instances which
+   * represent the class hierarchy for clazz.
    */
   private ObjectStreamClass[] inputGetObjectStreamClasses (Class clazz)
   {
@@ -1002,6 +1036,19 @@ public class ObjectInputStream extends InputStream
       throws IOException, IllegalArgumentException;
   }
 
+  /**
+   * This method should be called by a method called 'readObject' in the
+   * deserializing class (if present). It cannot (and should not)be called
+   * outside of it. Its goal is to read all fields in the real input stream
+   * and keep them accessible through the {@link #GetField} class. Calling
+   * this method will not alterate the deserializing object.
+   *
+   * @return A valid freshly created 'GetField' instance to get access to
+   * the deserialized stream.
+   * @throws IOException An input/output exception occured. 
+   * @throws ClassNotFoundException 
+   * @throws NotActiveException
+   */
   public GetField readFields ()
     throws IOException, ClassNotFoundException, NotActiveException
   {
@@ -1010,9 +1057,10 @@ public class ObjectInputStream extends InputStream
 
     if (prereadFields != null)
       return prereadFields;
-    
+
     if (fieldsAlreadyRead)
-      throw new NotActiveException ("readFields called but fields already read from stream (by defaultReadObject or readFields)");
+      throw new NotActiveException ("readFields called but fields already read from"
+				    + " stream (by defaultReadObject or readFields)");
 
     final ObjectStreamClass clazz = this.currentObjectStreamClass;
     final byte[] prim_field_data = new byte[clazz.primFieldSize];
@@ -1026,7 +1074,7 @@ public class ObjectInputStream extends InputStream
     for (int i = 0; i < objs.length; ++ i)
       objs[i] = readObject ();
     setBlockDataMode (oldmode);
-    
+
     prereadFields = new GetField ()
       {
 	public ObjectStreamClass getObjectStreamClass ()
@@ -1038,26 +1086,26 @@ public class ObjectInputStream extends InputStream
 	  throws IOException, IllegalArgumentException
 	{
 	  ObjectStreamField f = clazz.getField (name);
-
+	  
 	  /* First if we have a serialized field use the descriptor */
 	  if (f != null)
-	  {
-	    /* It is in serialPersistentFields but setClass tells us
-	     * it should not be set. This value is defaulted.
-	     */
-	    if (f.isPersistent() && !f.isToSet())
-	      return true;
-	    
-	    return false;
-	  }
+	    {
+	      /* It is in serialPersistentFields but setClass tells us
+	       * it should not be set. This value is defaulted.
+	       */
+	      if (f.isPersistent() && !f.isToSet())
+		return true;
+	      
+	      return false;
+	    }
 
 	  /* This is not a serialized field. There should be
 	   * a default value only if the field really exists.
 	   */
 	  try
-	  {
-	    return (clazz.forClass().getDeclaredField (name) != null);
-	  }
+	    {
+	      return (clazz.forClass().getDeclaredField (name) != null);
+	    }
 	  catch (NoSuchFieldException e)
 	    {
 	      throw new IllegalArgumentException (e.getMessage());
@@ -1209,18 +1257,15 @@ public class ObjectInputStream extends InputStream
 	    {
 	      try
 		{
-		  Class field_type = field.getType ();
+		  Class field_type = field.getType();
 		  
 		  if (type == field_type ||
-		      (type == null && ! field_type.isPrimitive ()))
+		      (type == null && !field_type.isPrimitive()))
 		    {
 		      /* See defaulted */
-		      /*if (field.isPersistent() && !field.isToSet())
-			return null;*/
-		      
 		      return field;
 		    }
-		 
+	 
 		  illegal = true;
 		  throw new IllegalArgumentException ("Field requested is of type "
 						      + field_type.getName ()
@@ -1229,7 +1274,13 @@ public class ObjectInputStream extends InputStream
 							 "Object" : type.getName ()));
 		}
 	      catch (NullPointerException _)
-		{}
+		{
+		  /* Here we catch NullPointerException, because it may
+		     only come from the call 'field.getType()'. If field
+		     is null, we have to return null and classpath ethic
+		     say we must try to avoid 'if (xxx == null)'.
+		  */
+		}
 	      catch (IllegalArgumentException e)
 		{
 		  throw e;
@@ -1247,13 +1298,14 @@ public class ObjectInputStream extends InputStream
 	      /* We do not want to modify transient fields. They should
 	       * be left to 0.
 	       */
-	      try {
-		Field f = clazz.forClass().getDeclaredField (name);
-		if (Modifier.isTransient(f.getModifiers()))
-		  throw new IllegalArgumentException("no such field (non transient) " + name);
-		if (field == null && f.getType() != type)
-		  throw new IllegalArgumentException ("Invalid requested type for field " + name);
-	      }
+	      try
+		{
+		  Field f = clazz.forClass().getDeclaredField (name);
+		  if (Modifier.isTransient(f.getModifiers()))
+		    throw new IllegalArgumentException("no such field (non transient) " + name);
+		  if (field == null && f.getType() != type)
+		    throw new IllegalArgumentException ("Invalid requested type for field " + name);
+		}
 	      catch (NoSuchFieldException e)
 		{
 		  if (field == null)
@@ -1264,8 +1316,8 @@ public class ObjectInputStream extends InputStream
 	}
       };
 
-      fieldsAlreadyRead = true;
-      return prereadFields;
+    fieldsAlreadyRead = true;
+    return prereadFields;
   }
 
   /**
@@ -1303,7 +1355,12 @@ public class ObjectInputStream extends InputStream
     throw new IOException ("Subclass of ObjectInputStream must implement readObjectOverride");
   }
 
-  // assigns the next availible handle to OBJ
+  /**
+   * Assigns the next available handle to <code>obj</code>.
+   *
+   * @param obj The object for which we want a new handle.
+   * @return A valid handle for the specified object.
+   */
   private int assignNewHandle (Object obj)
   {
     this.objectLookupTable.put (new Integer (this.nextOID),
@@ -1370,8 +1427,7 @@ public class ObjectInputStream extends InputStream
       }
     else
       {
-	throw new EOFException ("Attempt to read primitive data, but no data block is active. Marker is 0x" +
-				Integer.toHexString((int)marker));
+	throw new EOFException ("Attempt to read primitive data, but no data block is active.");
       }
 
     if (this.blockData.length < this.blockDataBytes)
@@ -1516,9 +1572,9 @@ public class ObjectInputStream extends InputStream
 	    default_initialize = true;
 	    set_value = false;
 	  }
-
+	
 	if (!stream_field.isToSet()) 
-	    set_value = false;
+	  set_value = false;
 
 	try
 	  {
@@ -1658,16 +1714,33 @@ public class ObjectInputStream extends InputStream
       }
   }
 
-  // this native method is used to get access to the protected method
-  // of the same name in SecurityManger
+  /**
+   * This native method is used to get access to the protected method
+   * of the same name in SecurityManger.
+   *
+   * @param sm SecurityManager instance which should be called.
+   * @return The current class loader in the calling stack.
+   */
   private static native ClassLoader currentClassLoader (SecurityManager sm);
 
+  /**
+   * This method tries to access a precise field called in the
+   * specified class. Before accessing the field, it tries to
+   * gain control on this field. If the field is either declared as 
+   * not persistent or transient then it returns null
+   * immediately.
+   *
+   * @param klass Class to get the field from.
+   * @param name Name of the field to access.
+   * @return Field instance representing the requested field.
+   * @throws NoSuchFieldException if the field does not exist.
+   */
   private Field getField (Class klass, String name)
     throws java.lang.NoSuchFieldException
   {
     final Field f = klass.getDeclaredField(name);
     ObjectStreamField sf = lookupClass (klass).getField(name);
-
+    
     AccessController.doPrivileged(new PrivilegedAction()
       {
 	public Object run()
@@ -1705,7 +1778,6 @@ public class ObjectInputStream extends InputStream
   private void callReadMethod (Object obj, ObjectStreamClass osc) throws IOException
   {
     Class klass = osc.forClass();
-
     try
       {
 	Class classArgs[] = {ObjectInputStream.class};
@@ -1719,13 +1791,13 @@ public class ObjectInputStream extends InputStream
       }
     catch (InvocationTargetException x)
       {
-	/* Rethrow if possible. */
+        /* Rethrow if possible. */
 	Throwable exception = x.getTargetException();
 	if (exception instanceof RuntimeException)
 	  throw (RuntimeException) exception;
 	if (exception instanceof IOException)
 	  throw (IOException) exception;
-	
+
 	throw new IOException ("Exception thrown from readObject() on " +
 			       klass + ": " + exception.getClass().getName());
       }
@@ -1741,8 +1813,19 @@ public class ObjectInputStream extends InputStream
 
   private native void callConstructor (Class clazz, Object obj);
 
+  /**
+   * This method writes a "boolean" value <code>val</code> in the specified field
+   * of the instance <code>obj</code> of the type <code>klass</code>.
+   *
+   * @param obj Instance to setup.
+   * @param klass Class type of the specified instance.
+   * @param field_name Name of the field in the specified class type.
+   * @param val The boolean value to write into the field.
+   * @throws InvalidClassException if the specified field has not the required type.
+   * @throws IOException if there is no field of that name in the specified class.
+   */
   private void setBooleanField (Object obj, Class klass, String field_name,
-				boolean val) throws IOException
+				boolean val) throws IOException, InvalidClassException
   {
     try
       {
@@ -1755,11 +1838,22 @@ public class ObjectInputStream extends InputStream
       }
     catch (Exception _)
       {
-      }
+      }    
   }
 
+  /**
+   * This method writes a "byte" value <code>val</code> in the specified field
+   * of the instance <code>obj</code> of the type <code>klass</code>.
+   *
+   * @param obj Instance to setup.
+   * @param klass Class type of the specified instance.
+   * @param field_name Name of the field in the specified class type.
+   * @param val The byte value to write into the field.
+   * @throws InvalidClassException if the specified field has not the required type.
+   * @throws IOException if there is no field of that name in the specified class.
+   */
   private void setByteField (Object obj, Class klass, String field_name,
-			     byte val) throws IOException
+			     byte val) throws IOException, InvalidClassException
   {
     try
       {
@@ -1772,11 +1866,22 @@ public class ObjectInputStream extends InputStream
       }
     catch (Exception _)
       {
-      }
+      }    
   }
 
+  /**
+   * This method writes a "character" value <code>val</code> in the specified field
+   * of the instance <code>obj</code> of the type <code>klass</code>.
+   *
+   * @param obj Instance to setup.
+   * @param klass Class type of the specified instance.
+   * @param field_name Name of the field in the specified class type.
+   * @param val The character value to write into the field.
+   * @throws InvalidClassException if the specified field has not the required type.
+   * @throws IOException if there is no field of that name in the specified class.
+   */
   private void setCharField (Object obj, Class klass, String field_name,
-			     char val) throws IOException
+			     char val) throws IOException, InvalidClassException
   {
     try
       {
@@ -1789,11 +1894,22 @@ public class ObjectInputStream extends InputStream
       }
     catch (Exception _)
       {
-      }
+      }    
   }
 
+  /**
+   * This method writes a "double" value <code>val</code> in the specified field
+   * of the instance <code>obj</code> of the type <code>klass</code>.
+   *
+   * @param obj Instance to setup.
+   * @param klass Class type of the specified instance.
+   * @param field_name Name of the field in the specified class type.
+   * @param val The double value to write into the field.
+   * @throws InvalidClassException if the specified field has not the required type.
+   * @throws IOException if there is no field of that name in the specified class.
+   */
   private void setDoubleField (Object obj, Class klass, String field_name,
-			       double val) throws IOException
+			       double val) throws IOException, InvalidClassException
   {
     try
       {
@@ -1806,11 +1922,22 @@ public class ObjectInputStream extends InputStream
       }
     catch (Exception _)
       {
-      }
+      }    
   }
 
+  /**
+   * This method writes a "float" value <code>val</code> in the specified field
+   * of the instance <code>obj</code> of the type <code>klass</code>.
+   *
+   * @param obj Instance to setup.
+   * @param klass Class type of the specified instance.
+   * @param field_name Name of the field in the specified class type.
+   * @param val The float value to write into the field.
+   * @throws InvalidClassException if the specified field has not the required type.
+   * @throws IOException if there is no field of that name in the specified class.
+   */
   private void setFloatField (Object obj, Class klass, String field_name,
-			      float val) throws IOException
+			      float val) throws IOException, InvalidClassException
   {
     try
       {
@@ -1826,8 +1953,19 @@ public class ObjectInputStream extends InputStream
       }    
   }
 
+  /**
+   * This method writes an "integer" value <code>val</code> in the specified field
+   * of the instance <code>obj</code> of the type <code>klass</code>.
+   *
+   * @param obj Instance to setup.
+   * @param klass Class type of the specified instance.
+   * @param field_name Name of the field in the specified class type.
+   * @param val The integer value to write into the field.
+   * @throws InvalidClassException if the specified field has not the required type.
+   * @throws IOException if there is no field of that name in the specified class.
+   */
   private void setIntField (Object obj, Class klass, String field_name,
-			    int val) throws IOException
+			    int val) throws IOException, InvalidClassException
   {
     try
       {
@@ -1843,9 +1981,19 @@ public class ObjectInputStream extends InputStream
       }    
   }
 
-
+  /**
+   * This method writes the long value <code>val</code> in the specified field
+   * of the instance <code>obj</code> of the type <code>klass</code>.
+   *
+   * @param obj Instance to setup.
+   * @param klass Class type of the specified instance.
+   * @param field_name Name of the field in the specified class type.
+   * @param val The long value to write into the field.
+   * @throws InvalidClassException if the specified field has not the required type.
+   * @throws IOException if there is no field of that name in the specified class.
+   */
   private void setLongField (Object obj, Class klass, String field_name,
-			     long val) throws IOException
+			     long val) throws IOException, InvalidClassException
   {
     try
       {
@@ -1861,9 +2009,19 @@ public class ObjectInputStream extends InputStream
       }    
   }
 
-
+  /**
+   * This method writes a "short" value <code>val</code> in the specified field
+   * of the instance <code>obj</code> of the type <code>klass</code>.
+   *
+   * @param obj Instance to setup.
+   * @param klass Class type of the specified instance.
+   * @param field_name Name of the field in the specified class type.
+   * @param val The short value to write into the field.
+   * @throws InvalidClassException if the specified field has not the required type.
+   * @throws IOException if there is no field of that name in the specified class.
+   */
   private void setShortField (Object obj, Class klass, String field_name,
-			      short val) throws IOException
+			      short val) throws IOException, InvalidClassException
   {
     try
       {
@@ -1879,19 +2037,29 @@ public class ObjectInputStream extends InputStream
       }    
   }
 
-
+  /**
+   * This method writes an "object" value <code>val</code> in the specified field
+   * of the instance <code>obj</code> of the type <code>klass</code>.
+   *
+   * @param obj Instance to setup.
+   * @param klass Class type of the specified instance.
+   * @param field_name Name of the field in the specified class type.
+   * @param val The "object" value to write into the field.
+   * @throws InvalidClassException if the specified field has not the required type.
+   * @throws IOException if there is no field of that name in the specified class.
+   */
   private void setObjectField (Object obj, Class klass, String field_name,
-			       String type_code, Object val) throws IOException
+			       String type_code, Object val) throws IOException, InvalidClassException
   {
     try
       {
-	Field f = getField (klass, field_name);
+ 	Field f = getField (klass, field_name);
 	ObjectStreamField of = new ObjectStreamField(field_name, f.getType());
-
+	
 	if (of.getTypeString() == null ||
 	    !of.getTypeString().equals(type_code))
           throw new InvalidClassException("incompatible field type for " + klass.getName() + "." + field_name);
-	f.set (obj, val);
+ 	f.set (obj, val);
       }
     catch (InvalidClassException e)
       {

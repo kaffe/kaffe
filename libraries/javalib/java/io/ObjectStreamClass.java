@@ -203,15 +203,15 @@ public class ObjectStreamClass implements Serializable
   boolean hasReadMethod ()
   {
       try
-	{
+      {
 	  Class[] readObjectParams = { ObjectInputStream.class };
 	  forClass ().getDeclaredMethod ("readObject", readObjectParams);
 	  return true;
-	}
+      }
       catch (NoSuchMethodException e)
-	{
+      {
 	  return false;
-	}
+      }
   }
 
 
@@ -248,8 +248,6 @@ public class ObjectStreamClass implements Serializable
   static ObjectStreamClass[] getObjectStreamClasses (Class clazz)
   {
     ObjectStreamClass osc = ObjectStreamClass.lookup (clazz);
-
-    ObjectStreamClass[] ret_val;
 
     if (osc == null)
       return new ObjectStreamClass[0];
@@ -293,6 +291,17 @@ public class ObjectStreamClass implements Serializable
     this.fields = fields;
   }
 
+  /**
+   * This method builds the internal description corresponding to a Java Class.
+   * As the constructor only assign a name to the current ObjectStreamClass instance,
+   * that method sets the serial UID, chose the fields which will be serialized,
+   * and compute the position of the fields in the serialized stream.
+   *
+   * @param cl The Java class which is used as a reference for building the descriptor.
+   * @param superClass The descriptor of the super class for this class descriptor.
+   * @throws InvalidClassException if an incompatibility between computed UID and
+   * already set UID is found.
+   */
   void setClass (Class cl, ObjectStreamClass superClass) throws InvalidClassException
   {
     this.clazz = cl;
@@ -472,19 +481,18 @@ public class ObjectStreamClass implements Serializable
       flags |= ObjectStreamConstants.SC_SERIALIZABLE;
 
     try
-      {
-	Method writeMethod = cl.getDeclaredMethod ("writeObject",
-						   writeMethodArgTypes);
-	int modifiers = writeMethod.getModifiers ();
-	
-	if (writeMethod.getReturnType () == Void.TYPE
-	    && Modifier.isPrivate (modifiers)
-	    && !Modifier.isStatic (modifiers))
-	  flags |= ObjectStreamConstants.SC_WRITE_METHOD;
-      }
+    {
+      Method writeMethod = cl.getDeclaredMethod ("writeObject",
+						 writeMethodArgTypes);
+      int modifiers = writeMethod.getModifiers ();
+
+      if (writeMethod.getReturnType () == Void.TYPE
+	  && Modifier.isPrivate (modifiers)
+	  && !Modifier.isStatic (modifiers))
+	flags |= ObjectStreamConstants.SC_WRITE_METHOD;
+    }
     catch (NoSuchMethodException oh_well)
-      {
-      }
+    {}
   }
 
 
@@ -499,14 +507,25 @@ public class ObjectStreamClass implements Serializable
     }
 
     try
+    {
+      Field serialPersistentFields
+	= cl.getDeclaredField ("serialPersistentFields");
+      serialPersistentFields.setAccessible(true);
+      int modifiers = serialPersistentFields.getModifiers ();
+
+      if (Modifier.isStatic (modifiers)
+	  && Modifier.isFinal (modifiers)
+	  && Modifier.isPrivate (modifiers))
       {
 	fields = getSerialPersistentFields (cl);
-	if (fields != null) {
-	  Arrays.sort (fields);
-	  calculateOffsets ();
-	  return;
-	}
+	if (fields != null)
+	  {
+	    Arrays.sort (fields);
+	    calculateOffsets ();
+	    return;
+	  }
       }
+    }
     catch (NoSuchFieldException ignore)
       {}
     catch (IllegalAccessException ignore)
@@ -546,172 +565,180 @@ public class ObjectStreamClass implements Serializable
   private long getClassUID (Class cl)
   {
     try
-      {
-	// Use getDeclaredField rather than getField, since serialVersionUID
-	// may not be public AND we only want the serialVersionUID of this
-	// class, not a superclass or interface.
-	Field suid = cl.getDeclaredField ("serialVersionUID");
-	suid.setAccessible(true);
-	int modifiers = suid.getModifiers ();
-	
-	if (Modifier.isStatic (modifiers)
-	    && Modifier.isFinal (modifiers)
-	    && suid.getType() == Long.TYPE)
-	  return suid.getLong (null);
-      }
+    {
+      // Use getDeclaredField rather than getField, since serialVersionUID
+      // may not be public AND we only want the serialVersionUID of this
+      // class, not a superclass or interface.
+      Field suid = cl.getDeclaredField ("serialVersionUID");
+      suid.setAccessible(true);
+      int modifiers = suid.getModifiers ();
+
+      if (Modifier.isStatic (modifiers)
+	  && Modifier.isFinal (modifiers)
+	  && suid.getType() == Long.TYPE)
+	return suid.getLong (null);
+    }
     catch (NoSuchFieldException ignore)
-      {}
+    {}
     catch (IllegalAccessException ignore)
-      {}
-    
+    {}
+
     // cl didn't define serialVersionUID, so we have to compute it
     try
-      {
-	MessageDigest md;
-	try 
-	  {
-	    md = MessageDigest.getInstance ("SHA");
-	  }
-	catch (NoSuchAlgorithmException e)
-	  {
-	    // If a provider already provides SHA, use it; otherwise, use this.
-	    //	  Gnu gnuProvider = new Gnu();
-	    //	  Security.addProvider(gnuProvider);
-	    //	  md = MessageDigest.getInstance ("SHA");
-	    throw e;
-	  }
-	
-	DigestOutputStream digest_out =
-	  new DigestOutputStream (nullOutputStream, md);
-	DataOutputStream data_out = new DataOutputStream (digest_out);
-	
-	data_out.writeUTF (cl.getName ());
-	
-	int modifiers = cl.getModifiers ();
-	// just look at interesting bits
-	modifiers = modifiers & (Modifier.ABSTRACT | Modifier.FINAL
-				 | Modifier.INTERFACE | Modifier.PUBLIC);
-	data_out.writeInt (modifiers);
-	
-	// Pretend that an array has no interfaces, because when array
-	// serialization was defined (JDK 1.1), arrays didn't have it.
-	if (! cl.isArray ())
+    {
+      MessageDigest md;
+      try 
+	{
+	  md = MessageDigest.getInstance ("SHA");
+	}
+      catch (NoSuchAlgorithmException e)
+	{
+	  // If a provider already provides SHA, use it; otherwise, use this.
+	  //	  Gnu gnuProvider = new Gnu();
+	  //Security.addProvider(gnuProvider);
+	  //md = MessageDigest.getInstance ("SHA");
+	  throw e;
+	}
+
+      DigestOutputStream digest_out =
+	new DigestOutputStream (nullOutputStream, md);
+      DataOutputStream data_out = new DataOutputStream (digest_out);
+
+      data_out.writeUTF (cl.getName ());
+
+      int modifiers = cl.getModifiers ();
+      // just look at interesting bits
+      modifiers = modifiers & (Modifier.ABSTRACT | Modifier.FINAL
+  				| Modifier.INTERFACE | Modifier.PUBLIC);
+      data_out.writeInt (modifiers);
+
+      // Pretend that an array has no interfaces, because when array
+      // serialization was defined (JDK 1.1), arrays didn't have it.
+      if (! cl.isArray ())
 	{
 	  Class[] interfaces = cl.getInterfaces ();
 	  Arrays.sort (interfaces, interfaceComparator);
 	  for (int i=0; i < interfaces.length; i++)
 	    data_out.writeUTF (interfaces[i].getName ());
 	}
-	
-	Field field;
-	Field[] fields = cl.getDeclaredFields ();
-	Arrays.sort (fields, memberComparator);
-	for (int i=0; i < fields.length; i++)
-	{
-	  field = fields[i];
-	  modifiers = field.getModifiers ();
-	  if (Modifier.isPrivate (modifiers)
-	      && (Modifier.isStatic (modifiers)
-		  || Modifier.isTransient (modifiers)))
-	    continue;
-	  
-	  data_out.writeUTF (field.getName ());
-	  data_out.writeInt (modifiers);
-	  data_out.writeUTF (TypeSignature.getEncodingOfClass (field.getType ()));
-	}
-	
-	// write class initializer method if present
-	if (VMObjectStreamClass.hasClassInitializer (cl))
-	{
-	  data_out.writeUTF ("<clinit>");
-	  data_out.writeInt (Modifier.STATIC);
-	  data_out.writeUTF ("()V");
-	}
-	
-	Constructor constructor;
-	Constructor[] constructors = cl.getDeclaredConstructors ();
-	Arrays.sort (constructors, memberComparator);
-	for (int i=0; i < constructors.length; i++)
-	{
-	  constructor = constructors[i];
-	  modifiers = constructor.getModifiers ();
-	  if (Modifier.isPrivate (modifiers))
-	    continue;
-	  
-	  data_out.writeUTF ("<init>");
-	  data_out.writeInt (modifiers);
-	  
-	  // the replacement of '/' with '.' was needed to make computed
-	  // SUID's agree with those computed by JDK
-	  data_out.writeUTF (
-	    TypeSignature.getEncodingOfConstructor (constructor).replace ('/','.'));
-	}
 
-	Method method;
-	Method[] methods = cl.getDeclaredMethods ();
-	Arrays.sort (methods, memberComparator);
-	for (int i=0; i < methods.length; i++)
-	{
-	  method = methods[i];
-	  modifiers = method.getModifiers ();
-	  if (Modifier.isPrivate (modifiers))
-	    continue;
-	  
-	  data_out.writeUTF (method.getName ());
-	  data_out.writeInt (modifiers);
-	  
-	  // the replacement of '/' with '.' was needed to make computed
-	  // SUID's agree with those computed by JDK
-	  data_out.writeUTF (
-	    TypeSignature.getEncodingOfMethod (method).replace ('/', '.'));
-	}
+      Field field;
+      Field[] fields = cl.getDeclaredFields ();
+      Arrays.sort (fields, memberComparator);
+      for (int i=0; i < fields.length; i++)
+      {
+	field = fields[i];
+	modifiers = field.getModifiers ();
+	if (Modifier.isPrivate (modifiers)
+	    && (Modifier.isStatic (modifiers)
+		 || Modifier.isTransient (modifiers)))
+	  continue;
 
-	data_out.close ();
-	byte[] sha = md.digest ();
-	long result = 0;
-	int len = sha.length < 8 ? sha.length : 8;
-	for (int i=0; i < len; i++)
-	  result += (long)(sha[i] & 0xFF) << (8 * i);
-	
-	return result;
+	data_out.writeUTF (field.getName ());
+	data_out.writeInt (modifiers);
+	data_out.writeUTF (TypeSignature.getEncodingOfClass (field.getType ()));
       }
+
+      // write class initializer method if present
+      if (VMObjectStreamClass.hasClassInitializer (cl))
+      {
+	data_out.writeUTF ("<clinit>");
+	data_out.writeInt (Modifier.STATIC);
+	data_out.writeUTF ("()V");
+      }
+
+      Constructor constructor;
+      Constructor[] constructors = cl.getDeclaredConstructors ();
+      Arrays.sort (constructors, memberComparator);
+      for (int i=0; i < constructors.length; i++)
+      {
+	constructor = constructors[i];
+	modifiers = constructor.getModifiers ();
+	if (Modifier.isPrivate (modifiers))
+	  continue;
+
+	data_out.writeUTF ("<init>");
+	data_out.writeInt (modifiers);
+
+	// the replacement of '/' with '.' was needed to make computed
+	// SUID's agree with those computed by JDK
+	data_out.writeUTF (
+	  TypeSignature.getEncodingOfConstructor (constructor).replace ('/','.'));
+      }
+
+      Method method;
+      Method[] methods = cl.getDeclaredMethods ();
+      Arrays.sort (methods, memberComparator);
+      for (int i=0; i < methods.length; i++)
+      {
+	method = methods[i];
+	modifiers = method.getModifiers ();
+	if (Modifier.isPrivate (modifiers))
+	  continue;
+
+	data_out.writeUTF (method.getName ());
+	data_out.writeInt (modifiers);
+
+	// the replacement of '/' with '.' was needed to make computed
+	// SUID's agree with those computed by JDK
+	data_out.writeUTF (
+	  TypeSignature.getEncodingOfMethod (method).replace ('/', '.'));
+      }
+
+      data_out.close ();
+      byte[] sha = md.digest ();
+      long result = 0;
+      int len = sha.length < 8 ? sha.length : 8;
+      for (int i=0; i < len; i++)
+	result += (long)(sha[i] & 0xFF) << (8 * i);
+
+      return result;
+    }
     catch (NoSuchAlgorithmException e)
-      {
-	throw new RuntimeException ("The SHA algorithm was not found to use in computing the Serial Version UID for class "
-				    + cl.getName (), e);
-      }
+    {
+      throw new RuntimeException ("The SHA algorithm was not found to use in computing the Serial Version UID for class "
+				  + cl.getName (), e);
+    }
     catch (IOException ioe)
-      {
-	throw new RuntimeException (ioe);
-      }
+    {
+      throw new RuntimeException (ioe);
+    }
   }
 
-  // Returns the value of CLAZZ's private static final field named
-  // `serialPersistentFields'.
-  private ObjectStreamField[] getSerialPersistentFields (Class clazz) throws NoSuchFieldException, IllegalAccessException
+  /**
+   *  Returns the value of CLAZZ's private static final field named
+   * `serialPersistentFields'. It performs some sanity checks before
+   * returning the real array. Besides, the returned array is a clean
+   * copy of the original. So it can be modified.
+   *
+   * @param clazz Class to retrieve 'serialPersistentFields' from.
+   * @return The content of 'serialPersistentFields'.
+   */
+  private ObjectStreamField[] getSerialPersistentFields (Class clazz) 
+    throws NoSuchFieldException, IllegalAccessException
   {
     ObjectStreamField[] fieldsArray = null;
     ObjectStreamField[] o;
+
     // Use getDeclaredField rather than getField for the same reason
     // as above in getDefinedSUID.
-
     Field f = clazz.getDeclaredField ("serialPersistentFields");
     f.setAccessible(true);
 
     int modifiers = f.getModifiers();
     if (!(Modifier.isStatic (modifiers) &&
-	Modifier.isFinal (modifiers) &&
-	Modifier.isPrivate (modifiers)))
+       Modifier.isFinal (modifiers) &&
+       Modifier.isPrivate (modifiers)))
       return null;
     
     o = (ObjectStreamField[])f.get (null);
-
+    
     if (o == null)
       return null;
-    
+
     fieldsArray = new ObjectStreamField[ o.length ];
     System.arraycopy(o, 0, fieldsArray, 0, o.length);
-
+    
     return fieldsArray;
   }
 

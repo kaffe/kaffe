@@ -989,8 +989,9 @@ public class ObjectOutputStream extends OutputStream
 	  ObjectStreamField field = getField (name);
 
 	  if (value != null &&
-	      ! field.getType ().isAssignableFrom (value.getClass ()))
-	    throw new IllegalArgumentException ();
+	      ! field.getType ().isAssignableFrom (value.getClass ()))	    
+	    throw new IllegalArgumentException ("Class " + value.getClass() +
+						" cannot be cast to " + field.getType());
 	  objs[field.getOffset ()] = value;
 	}
 
