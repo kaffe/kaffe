@@ -721,7 +721,7 @@ FAIL
 java.io.IOException: Stream closed
 Test15
 FAIL
-java.lang.ArrayIndexOutOfBoundsException
+java.lang.ArrayIndexOutOfBoundsException: Array index out of range: -5
 Test16
 -1
 PASS

@@ -19,6 +19,7 @@ StringBufferInputStream("foobar\r\nxbarfoo\rx");
         }
 }
 
+// skip run
 /* Expected Output:
 foobar
 120

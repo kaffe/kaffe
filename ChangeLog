@@ -1,3 +1,56 @@
+2003-11-02  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/io/BufferedInputStream.java,
+	libraries/javalib/java/io/BufferedOutputStream.java,
+	libraries/javalib/java/io/BufferedReader.java, 
+	libraries/javalib/java/io/BufferedWriter.java,
+	libraries/javalib/java/io/CharArrayReader.java,
+	libraries/javalib/java/io/CharArrayWriter.java,
+	libraries/javalib/java/io/DataInput.java,
+	libraries/javalib/java/io/DataInputStream.java,
+	libraries/javalib/java/io/DataOutput.java,
+	libraries/javalib/java/io/DataOutputStream.java,
+	libraries/javalib/java/io/FileFilter.java,
+	libraries/javalib/java/io/FilenameFilter.java,
+	libraries/javalib/java/io/FilterInputStream.java,
+	libraries/javalib/java/io/FilterOutputStream.java,
+	libraries/javalib/java/io/FilterReader.java,
+	libraries/javalib/java/io/FilterWriter.java,
+	libraries/javalib/java/io/InterruptedIOException.java,
+	libraries/javalib/java/io/InvalidClassException.java,
+	libraries/javalib/java/io/LineNumberInputStream.java,
+	libraries/javalib/java/io/LineNumberReader.java,
+	libraries/javalib/java/io/OptionalDataException.java,
+	libraries/javalib/java/io/PrintStream.java,
+	libraries/javalib/java/io/PrintWriter.java,
+	libraries/javalib/java/io/PushbackInputStream.java,
+	libraries/javalib/java/io/PushbackReader.java,
+	libraries/javalib/java/io/Reader.java,
+	libraries/javalib/java/io/SequenceInputStream.java,
+	libraries/javalib/java/io/StreamTokenizer.java,
+	libraries/javalib/java/io/WriteAbortedException.java,
+	libraries/javalib/java/io/Writer.java:
+
+	Imported classes from GNU Classpath. These classes have
+	been fixed to pass Kaffe's regression tests.
+	
+	* libraries/javalib/java/net/DatagramSocket.java:
+	(bind) When address is null, it should bind to an available
+	port.
+	
+	* libraries/javalib/java/util/zip/ZipOutputStream.java:
+	(deflate) Don't call super.write because it may cause
+	an infinite loop with the new classpath's implementation.
+	
+	* test/regression/BufferedReaderTest.java,
+	test/regression/CharArrayReaderTest.java,
+	test/regression/InputStreamTest.java,
+	test/regression/LineNumberReaderTest.java,
+	test/regression/ReaderTest.java:
+
+	Adapted the output of the classes (Exceptions precise
+	output) to match the current implementation.
+	
 2003-10-31  Helmer Kraemer <hkraemer@freenet.de>
 	    Dalibor Topic <robilad@kaffe.org>
 

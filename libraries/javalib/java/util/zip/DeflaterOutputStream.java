@@ -48,7 +48,7 @@ public void close() throws IOException {
 protected void deflate() throws IOException {
 	do {
 		int r = def.deflate(buf, 0, buf.length);
-		super.write(buf, 0, r);
+		out.write(buf, 0, r);
 	} while (!def.needsInput());
 }
 

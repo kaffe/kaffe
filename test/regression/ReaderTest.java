@@ -45,8 +45,8 @@ public class ReaderTest {
 }
 
 /* Expected Output:
-java.io.IOException: mark() not supported
-java.io.IOException: reset() not supported
+java.io.IOException: mark not supported
+java.io.IOException: reset not supported
 false
 java.io.IOException: enough
 */

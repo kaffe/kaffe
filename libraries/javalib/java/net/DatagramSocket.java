@@ -579,7 +579,8 @@ public class DatagramSocket
   /**
    * Binds the socket to the given socket address.
    *
-   * @param address The socket address to bind to.
+   * @param address The socket address to bind to. If address is null, bind
+   * will take an ephemeral port and a valid local address to bind the socket.
    *
    * @exception SocketException If an error occurs.
    * @exception SecurityException If a security manager exists and
@@ -591,6 +592,9 @@ public class DatagramSocket
   public void bind (SocketAddress address)
     throws SocketException
   {
+    if (address == null)
+      address = new InetSocketAddress (InetAddress.ANY_IF, 0);
+    
     if (! (address instanceof InetSocketAddress))
       throw new IllegalArgumentException ();
 

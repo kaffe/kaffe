@@ -324,7 +324,7 @@ public void setMethod(int m)
 public synchronized void write(byte[] buf, int off, int len) throws IOException
 {
 	super.write(buf, off, len);
-	crc.update(buf, off, len);
+       	crc.update(buf, off, len);
 }
 
 private void put16(byte[] zheader, int pos, int val) {

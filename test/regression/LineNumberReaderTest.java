@@ -897,19 +897,18 @@ public class LineNumberReaderTest {
   }
 
 }
-// Results from IBM JRE 1.3
 /* Expected Output:
 class LineNumberReader_Test1 failed
 java.lang.NullPointerException
 class LineNumberReader_Test2 failed
-java.lang.IllegalArgumentException: Buffer size <= 0
+java.lang.IllegalArgumentException: Buffer size is negative
 class LineNumberReader_Test3 failed
-java.lang.IllegalArgumentException: Buffer size <= 0
+java.lang.IllegalArgumentException: Buffer size is negative
 0
 class LineNumberReader_Test4 succeeded
 class LineNumberReader_Test5 succeeded
 class LineNumberReader_Test6 failed
-java.lang.IllegalArgumentException: Read-ahead limit < 0
+java.lang.IllegalArgumentException: Read-ahead limit is negative
 class LineNumberReader_Test7 failed
 java.lang.NullPointerException
 class LineNumberReader_Test8 failed
@@ -998,7 +997,7 @@ class LineNumberReader_Test28 succeeded
 2
 class LineNumberReader_Test29 succeeded
 class LineNumberReader_Test30 failed
-java.io.IOException: Stream not marked
+java.io.IOException: mark never set or invalidated
 0
 0
 class LineNumberReader_Test31 succeeded

@@ -540,12 +540,12 @@ public class BufferedReaderTest {
 /* Expected Output:
 count = 8192
 count = 8192
-java.lang.IllegalArgumentException: Read-ahead limit < 0
+java.lang.IllegalArgumentException: Read-ahead limit is negative
 123
 4567
 4567
 java.lang.NullPointerException
-java.lang.IllegalArgumentException: Buffer size <= 0
+java.lang.IllegalArgumentException: Buffer size is negative
 1
 java.io.IOException: Stream closed
 java.io.IOException: Stream closed
@@ -558,14 +558,14 @@ java.io.IOException: Stream closed
 5
 java.lang.IllegalArgumentException: skip value is negative
 Reset unmarked
-java.io.IOException: Stream not marked
+java.io.IOException: mark never set or invalidated
 Reset invalidated
 65
 66
-java.io.IOException: Mark invalid
+java.io.IOException: mark never set or invalidated
 Skipping over marked buffer
 69
-java.io.IOException: Mark invalid
+java.io.IOException: mark never set or invalidated
 Reset invalidated
 65
 66
