@@ -11,6 +11,9 @@
                 
 #include "config.h"
 #include "md.h"
+#if defined(TRANSLATOR)
+#include "arm/jit.h"
+#endif
 #include <malloc.h>
 #include <sched.h>
 #include <asm/unistd.h>
