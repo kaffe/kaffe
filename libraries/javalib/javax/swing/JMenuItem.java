@@ -590,6 +590,18 @@ public class JMenuItem extends AbstractButton implements Accessible,
   }
 
   /**
+   * Returns all added MenuDragMouseListener objects.
+   *
+   * @return an array of listeners
+   *
+   * @since 1.4
+   */
+  public MenuDragMouseListener[] getMenuDragMouseListeners()
+  {
+    return (MenuDragMouseListener[]) listenerList.getListeners(MenuDragMouseListener.class);
+  }
+
+  /**
    * Adds an MenuKeyListener to this menu item.  This listener will be
    * invoked when MenuKeyEvents will be fired by this menu item.
    *
@@ -608,6 +620,18 @@ public class JMenuItem extends AbstractButton implements Accessible,
   public void removeMenuKeyListener(MenuKeyListener listener)
   {
     listenerList.remove(MenuKeyListener.class, listener);
+  }
+
+  /**
+   * Returns all added MenuKeyListener objects.
+   *
+   * @return an array of listeners
+   *
+   * @since 1.4
+   */
+  public MenuKeyListener[] getMenuKeyListeners()
+  {
+    return (MenuKeyListener[]) listenerList.getListeners(MenuKeyListener.class);
   }
 
   /**
