@@ -109,6 +109,7 @@ typedef struct _methodTrampoline {
 	unsigned int loadlr	__attribute__((packed));
 	unsigned int branch	__attribute__((packed));
 	struct _methods* meth	__attribute__((packed));
+	void** where		__attribute__((packed));
 	void** trampaddr	__attribute__((packed));
 } methodTrampoline;
 
@@ -119,19 +120,21 @@ extern void arm_do_fixup_trampoline(void);
 //        0xE59FF000 = ldr pc, [pc, #0]
 // NB:    0xE59FF004 = ldr pc, [pc, #4]
 
-#define FILL_IN_TRAMPOLINE(T,M)			\
+#define FILL_IN_TRAMPOLINE(T,M,W)		\
 	do {					\
 	  (T)->loadlr = 0xE1A0c00F; 		\
 	  (T)->branch = 0xE59FF000; 		\
 	  (T)->meth = (M);			\
+	  (T)->where = (W);			\
 	  (T)->trampaddr = (void**)arm_do_fixup_trampoline; \
 	} while(0)
 
-/* _pmeth will be $ip from FILL_IN_TRAMPOLINE */
-#define FIXUP_TRAMPOLINE_DECL   Method** _pmeth
+/* _data will be $ip from FILL_IN_TRAMPOLINE, passed in $r0 */
+#define FIXUP_TRAMPOLINE_DECL   void** _data
 
 /* The actual method to fix up is then *_pmeth */
-#define FIXUP_TRAMPOLINE_INIT   (meth = *_pmeth)
+#define FIXUP_TRAMPOLINE_INIT   (meth = (Method*)_data[0], \
+				 where = (void**)_data[1])
 
 /**/
 /* Register management information. */
