@@ -465,15 +465,10 @@ soft_stackoverflow(void)
 void            
 soft_nosuchmethod(Hjava_lang_Class* c, Utf8Const* n, Utf8Const* s)
 {
-	Hjava_lang_Throwable *e;
-	char *buf;
+	char buf[256];
 
-	buf = checkPtr(KMALLOC(strlen(CLASS_CNAME(c)
-	    + strlen(n->data) + strlen(s->data) + 2)));
-	sprintf(buf, "%s.%s%s", CLASS_CNAME(c), n->data, s->data);
-	e = NoSuchMethodError(buf);
-	KFREE(buf);
-	throwException(e);
+	sprintf(buf, "%.80s.%.80s%.80s", CLASS_CNAME(c), n->data, s->data);
+	throwException(NoSuchMethodError(buf));
 }
 
 /*
@@ -482,14 +477,10 @@ soft_nosuchmethod(Hjava_lang_Class* c, Utf8Const* n, Utf8Const* s)
 void
 soft_nosuchfield(Utf8Const* c, Utf8Const* n)
 {
-	Hjava_lang_Throwable *e;
-	char *buf;
+	char buf[256];
 
-	buf = checkPtr(KMALLOC(strlen(c->data) + strlen(n->data) + 2));
-	sprintf(buf, "%s.%s", c->data, n->data);
-	e = NoSuchFieldError(buf);
-	KFREE(buf);
-	throwException(e);
+	sprintf(buf, "%.100s.%.100s", c->data, n->data);
+	throwException(NoSuchFieldError(buf));
 }
 
 /*
