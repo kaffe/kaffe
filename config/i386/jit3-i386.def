@@ -190,6 +190,11 @@ arch_get_frame_description(int framesize,
         frame_desc[i].offset = CFA_SAVED_OFFSET;
         i++;
 
+	if (framesize == -1) {		/* -1 indicates trampoline frame */
+		*n = i;
+		return;
+	}
+
         /* NB: since CFA is pointing at caller's ret pc + 4,
          * subtracting CFA_OFFSET + framesize points at the last
          * slot.  The callee-saved registers are stored one word
