@@ -1,5 +1,5 @@
 /* DSAPublicKey.java -- A Digital Signature Algorithm private key
-   Copyright (C) 1998, 2000 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2000, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
