@@ -210,11 +210,13 @@ public class RandomAccessFile implements DataOutput, DataInput
    */
   public void setLength (long newLen) throws IOException
   {
+    // FIXME: Extending a file should probably be done by one method call.
+
     // FileChannel.truncate() can only shrink a file.
     // To expand it we need to seek forward and write at least one byte.
     if (newLen < length())
       ch.truncate (newLen);
-    else
+    else if (newLen > length())
       {
 	long pos = getFilePointer();
 	seek(newLen - 1);
