@@ -1673,6 +1673,7 @@ java_awt_im_spi_SRCS = \
 java_awt_image_SRCS = \
 	java/awt/image/AffineTransformOp.java \
 	java/awt/image/AreaAveragingScaleFilter.java \
+	java/awt/image/BandedSampleModel.java \
 	java/awt/image/BufferStrategy.java \
 	java/awt/image/BufferedImage.java \
 	java/awt/image/BufferedImageOp.java \

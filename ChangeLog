@@ -5,6 +5,145 @@
 
 2004-09-28  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/image/BandedSampleModel.java:
+	New file, taken from GNU Classpath.
+	
+	* libraries/javalib/java/awt/image/ColorModel.java,
+	libraries/javalib/java/awt/image/ComponentColorModel.java,
+	libraries/javalib/java/awt/image/IndexColorModel.java,
+	libraries/javalib/javax/swing/JFrame.java,
+	libraries/javalib/javax/swing/JRadioButton.java,
+	libraries/javalib/javax/swing/JRootPane.java,
+	libraries/javalib/javax/swing/JSpinner.java,
+	libraries/javalib/javax/swing/JTextArea.java,
+	libraries/javalib/javax/swing/JTextField.java,
+	libraries/javalib/javax/swing/SpinnerNumberModel.java,
+	libraries/javalib/javax/swing/SpringLayout.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicArrowButton.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicScrollBarUI.java,
+	libraries/javalib/javax/swing/plaf/basic/BasicSplitPaneDivider.java,
+	libraries/javalib/javax/swing/table/DefaultTableColumnModel.java,
+	libraries/javalib/javax/swing/table/JTableHeader.java,
+	libraries/javalib/javax/swing/text/DefaultHighlighter.java,
+	libraries/javalib/javax/swing/text/DocumentFilter.java,
+	libraries/javalib/javax/swing/text/JTextComponent.java,
+	libraries/javalib/javax/swing/text/NavigationFilter.java:
+	Resynced with GNU Classpath.
+
+	2004-09-27  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/SpinnerNumberModel.java
+	(SpinnerNumberModel): Implements java.io.Serializable.
+
+	2004-09-27  Jerry Quinn  <jlquinn@optonline.net>
+
+	* java/awt/image/BandedSampleModel.java: Implement.
+	* java/awt/image/ColorModel.java (getDataElement,
+	getDataElements): Document since 1.4.
+	* java/awt/image/ComponentColorModel.java (ComponentColorModel):
+	Implement missing 1.4 constructor.
+	* java/awt/image/IndexColorModel.java (IndexColorModel): Implement
+	missing constructor.
+
+	2004-09-27  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JFrame.java,
+	javax/swing/JRadioButton.java,
+	javax/swing/JRootPane.java,
+	javax/swing/JTextField.java,
+	javax/swing/SpinnerNumberModel.java,
+	javax/swing/plaf/basic/BasicArrowButton.java,
+	javax/swing/plaf/basic/BasicScrollBarUI.java,
+	javax/swing/plaf/basic/BasicSplitPaneDivider.java,
+	javax/swing/table/DefaultTableColumnModel.java,
+	javax/swing/table/JTableHeader.java,
+	javax/swing/text/DocumentFilter.java,
+	javax/swing/text/JTextComponent.java,
+	javax/swing/text/NavigationFilter.java:
+	Whitespace cleanup.
+
+	2004-09-27  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JTextArea.java
+	(getColumnWidth): New method.
+	(getLineCount): Likewise.
+	(getLineStartOffset): Likewise.
+	(getLineEndOffset): Likewise.
+	(getLineOfOffset): Likewise.
+	(getRowHeight): Likewise.
+	(replaceRange): Likewise.
+	(insert): Reformatted.
+
+	2004-09-27  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JSpinner.java:
+	Some Re-formatting.
+	(spinner): New field.
+	(DefaultEditor): New method.
+	(getSpinner): Likewise.
+	(NumberEdito): Likewise.
+	(getModel): Likewise.
+	(setModel): Likewise.
+
+	2004-09-26  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JTextField.java
+	(scrollOffset): new field.
+	(getScrollOffset): New method.
+	(setScrollOffset): Likewise.
+	(getColumnWidth): Likewise.
+	(action): New field.
+	(actionCommand): Likewise.
+	(actionPropertyChangeListener): Likewise.
+	(setHorizontalAlignment): Abort soon if new value == old value. Fire
+	event before repainting.
+	(postActionEvent): New method.
+	(getAction): Likewise.
+	(setAction): Likewise.
+	(getActionCommand): Likewise.
+	(setActionCommand): Likewise.
+	(createActionPropertyChangeListener): Likewise.
+	(configurePropertiesFromAction): Likewise.
+
+	2004-09-26  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/text/JTextComponent.java
+	(dragEnabled): New field.
+	(getSelectedText): New method.
+	(getDragEnabled): Likewise.
+	(setDragEnabled): Likewise.
+	(replaceSelection): Reimplemented.
+
+	2004-09-26  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JRootPane.java
+	(NONE): New static field.
+	(FRAME): Likewise.
+	(PLAIN_DIALOG): Likewise.
+	(INFORMATION_DIALOG): Likewise.
+	(ERROR_DIALOG): Likewise.
+	(COLOR_CHOOSER_DIALOG): Likewise.
+	(FILE_CHOOSER_DIALOG): Likewise.
+	(QUESTION_DIALOG): Likewise.
+	(WARNING_DIALOG): Likewise.
+	(defaultButton): New field.
+	(getDefaultButton): New method.
+	(setDefaultButton): Likewise.
+
+	2004-09-26  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/text/DefaultHighlighter.java
+	(drawsLayeredHighlights): New field.
+	(getDrawsLayeredHighlights): New method.
+	(setDrawsLayeredHighlights): Likewise.
+
+	2004-09-26  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/SpringLayout.java
+	(Constraints): May not be final.
+
+2004-09-28  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/lang/Throwable.java:
 	Resynced with GNU Classpath.
 	

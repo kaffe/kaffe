@@ -97,35 +97,34 @@ public class BasicArrowButton extends JButton implements SwingConstants
     {
       public Insets getBorderInsets(Component c)
       {
-       return new Insets(2, 2, 2, 2);
+	return new Insets(2, 2, 2, 2);
       }
 
       public boolean isBorderOpaque()
       {
-       return true;
+	return true;
       }
 
       public void paintBorder(Component c, Graphics g, int x, int y, int w,
                               int h)
       {
-       System.out.println("PAINTING BORDER");
-       Color saved = g.getColor();
-       g.setColor(highlight);
+	Color saved = g.getColor();
+	g.setColor(highlight);
 
-       g.drawLine(x + 1, y + 1, x + w - 1, y + 1);
-       g.drawLine(x + 1, y + 1, x + 1, y + h - 1);
+	g.drawLine(x + 1, y + 1, x + w - 1, y + 1);
+	g.drawLine(x + 1, y + 1, x + 1, y + h - 1);
 
-       g.setColor(shadow);
+	g.setColor(shadow);
 
-       g.drawLine(x + 1, y + h - 1, x + w - 1, y + h - 1);
-       g.drawLine(x + w - 1, y + 1, x + w - 1, y + h - 1);
+	g.drawLine(x + 1, y + h - 1, x + w - 1, y + h - 1);
+	g.drawLine(x + w - 1, y + 1, x + w - 1, y + h - 1);
 
-       g.setColor(darkShadow);
+	g.setColor(darkShadow);
 
-       g.drawLine(x, y + h, x + w, y + h);
-       g.drawLine(x + w, y, x + w, y + h);
+	g.drawLine(x, y + h, x + w, y + h);
+	g.drawLine(x + w, y, x + w, y + h);
 
-       g.setColor(saved);
+	g.setColor(saved);
       }
     };
 
@@ -261,18 +260,18 @@ public class BasicArrowButton extends JButton implements SwingConstants
     switch (direction)
       {
       case NORTH:
-       arrow = upIcon;
+	arrow = upIcon;
 	break;
       case SOUTH:
-       arrow = downIcon;
+	arrow = downIcon;
 	break;
       case EAST:
       case RIGHT:
-       arrow = rightIcon;
+	arrow = rightIcon;
 	break;
       case WEST:
       case LEFT:
-       arrow = leftIcon;
+	arrow = leftIcon;
 	break;
       }
 
@@ -286,59 +285,59 @@ public class BasicArrowButton extends JButton implements SwingConstants
 
     if (size != defaultSize)
       {
-       float scale = size * 1f / defaultSize;
-       for (int i = 0; i < 3; i++)
-         {
-           xPoints[i] *= scale;
-           yPoints[i] *= scale;
-         }
+	float scale = size * 1f / defaultSize;
+	for (int i = 0; i < 3; i++)
+	  {
+	    xPoints[i] *= scale;
+	    yPoints[i] *= scale;
+	  }
       }
     g.translate(x, y);
 
     switch (direction)
       {
       case NORTH:
-       x1 = xPoints[0] + 2;
-       y1 = yPoints[0];
-       y2 = y1;
-       x2 = xPoints[2] - 1;
-       break;
+	x1 = xPoints[0] + 2;
+	y1 = yPoints[0];
+	y2 = y1;
+	x2 = xPoints[2] - 1;
+	break;
       case SOUTH:
-       x1 = xPoints[1];
-       y1 = yPoints[1] + 1;
-       x2 = xPoints[2] - 1;
-       y2 = yPoints[2];
-       break;
+	x1 = xPoints[1];
+	y1 = yPoints[1] + 1;
+	x2 = xPoints[2] - 1;
+	y2 = yPoints[2];
+	break;
       case LEFT:
       case WEST:
-       x1 = xPoints[0] + 1;
-       y1 = yPoints[0] + 1;
-       x2 = x1;
-       y2 = yPoints[2] + 1;
-       break;
+	x1 = xPoints[0] + 1;
+	y1 = yPoints[0] + 1;
+	x2 = x1;
+	y2 = yPoints[2] + 1;
+	break;
       case RIGHT:
       case EAST:
-       x1 = xPoints[2];
-       y1 = yPoints[2] + 1;
-       x2 = xPoints[1] - 1;
-       y2 = yPoints[1] + 1;
-       break;
+	x1 = xPoints[2];
+	y1 = yPoints[2] + 1;
+	x2 = xPoints[1] - 1;
+	y2 = yPoints[1] + 1;
+	break;
       }
     Color saved = g.getColor();
 
     if (isEnabled)
       {
-       g.setColor(Color.DARK_GRAY);
+	g.setColor(Color.DARK_GRAY);
 
-       if (arrow != null)
-         g.fillPolygon(xPoints, yPoints, 3);
+	if (arrow != null)
+	  g.fillPolygon(xPoints, yPoints, 3);
       }
     else
       {
-       g.setColor(Color.GRAY);
-       g.fillPolygon(xPoints, yPoints, 3);
-       g.setColor(Color.WHITE);
-       g.drawLine(x1, y1, x2, y2);
+	g.setColor(Color.GRAY);
+	g.fillPolygon(xPoints, yPoints, 3);
+	g.setColor(Color.WHITE);
+	g.drawLine(x1, y1, x2, y2);
       }
     g.setColor(saved);
     g.translate(-x, -y);

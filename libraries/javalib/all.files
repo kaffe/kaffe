@@ -1239,6 +1239,7 @@ java/awt/im/spi/InputMethodContext.java
 java/awt/im/spi/InputMethodDescriptor.java
 java/awt/image/AffineTransformOp.java
 java/awt/image/AreaAveragingScaleFilter.java
+java/awt/image/BandedSampleModel.java
 java/awt/image/BufferStrategy.java
 java/awt/image/BufferedImage.java
 java/awt/image/BufferedImageOp.java

@@ -168,11 +168,22 @@ public class DefaultHighlighter extends LayeredHighlighter
   
   private JTextComponent textComponent;
   private Vector highlights = new Vector();
+  private boolean drawsLayeredHighlights = true;
   
   public DefaultHighlighter()
   {
   }
 
+  public boolean getDrawsLayeredHighlights()
+  {
+    return drawsLayeredHighlights;
+  }
+
+  public void setDrawsLayeredHighlights(boolean newValue)
+  {
+    drawsLayeredHighlights = newValue;
+  }
+  
   private void checkPositions(int p0, int p1)
     throws BadLocationException
   {

@@ -557,7 +557,7 @@ public abstract class JTextComponent extends JComponent
   
   public static final String DEFAULT_KEYMAP = "default";
   public static final String FOCUS_ACCELERATOR_KEY = "focusAcceleratorKey";
-
+  
   private static Hashtable keymaps = new Hashtable();
   private Keymap keymap;
   
@@ -800,6 +800,7 @@ public abstract class JTextComponent extends JComponent
   private Color selectionColor;
   private boolean editable;
   private Insets margin;
+  private boolean dragEnabled;
 
   /**
    * Creates a new <code>JTextComponent</code> instance.
@@ -918,6 +919,26 @@ public abstract class JTextComponent extends JComponent
     throws BadLocationException
   {
     return getDocument().getText(offset, length);
+  }
+
+  /**
+   * Retrieves the currently selected text in this text document.
+   *
+   * @return the selected text
+   *
+   * @exception NullPointerException if the underlaying document is null
+   */
+  public String getSelectedText()
+  {
+    try
+      {
+	return doc.getText(getSelectionStart(), getSelectionEnd());
+      }
+    catch (BadLocationException e)
+      {
+	// This should never happen.
+	return null;
+      }
   }
 
   /**
@@ -1225,12 +1246,18 @@ public abstract class JTextComponent extends JComponent
 
     try
       {
+	int start = getSelectionStart();
+	int end = getSelectionEnd();
+	
 	// Remove selected text.
 	if (dot != mark)
-	  doc.remove(Math.min(dot, mark), Math.max(dot, mark));
+	  doc.remove(start, end - start);
 
 	// Insert new text.
-	doc.insertString(Math.min(dot, mark), content, null);
+	doc.insertString(start, content, null);
+
+	// Set dot to new position.
+	setCaretPosition(start + content.length());
       }
     catch (BadLocationException e)
       {
@@ -1332,5 +1359,15 @@ public abstract class JTextComponent extends JComponent
   public Rectangle modelToView(int position) throws BadLocationException
   {
     return getUI().modelToView(this, position);
+  }
+
+  public boolean getDragEnabled()
+  {
+    return dragEnabled;
+  }
+
+  public void setDragEnabled(boolean enabled)
+  {
+    dragEnabled = enabled;
   }
 }

@@ -46,6 +46,7 @@ import java.io.Serializable;
  * @version 1.0
  */
 public class SpinnerNumberModel extends AbstractSpinnerModel
+  implements Serializable
 {
   /**
    * For compatability with Sun's JDK
@@ -259,8 +260,8 @@ public class SpinnerNumberModel extends AbstractSpinnerModel
   {
     if (minimum != newMinimum)
       {
-       minimum = newMinimum;
-       fireStateChanged();
+	minimum = newMinimum;
+	fireStateChanged();
       }
   }
 
@@ -273,8 +274,8 @@ public class SpinnerNumberModel extends AbstractSpinnerModel
   {
     if (maximum != newMaximum)
       {
-       maximum = newMaximum;
-       fireStateChanged();
+	maximum = newMaximum;
+	fireStateChanged();
       }
   }
 
@@ -290,8 +291,8 @@ public class SpinnerNumberModel extends AbstractSpinnerModel
 
     if (stepSize != newStepSize)
       {
-       stepSize = newStepSize;
-       fireStateChanged();
+	stepSize = newStepSize;
+	fireStateChanged();
       }
   }
 }

@@ -118,7 +118,7 @@ public class JTableHeader extends JComponent
       }
       
       public String getAccessibleDescription()
-  {
+      {
         throw new Error("not implemented");
       }
       
@@ -128,9 +128,9 @@ public class JTableHeader extends JComponent
       }
       
       public String getAccessibleName()
-    {
+      {
         throw new Error("not implemented");
-    }
+      }
       
       public AccessibleRole getAccessibleRole()
       {

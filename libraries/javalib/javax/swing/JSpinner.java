@@ -113,26 +113,40 @@ public class JSpinner extends JComponent
                                                               PropertyChangeListener,
                                                               LayoutManager
   {
+    private JSpinner spinner;
+    
     /**
      * For compatability with Sun's JDK 1.4.2 rev. 5
      */
     private static final long serialVersionUID = -5317788736173368172L;
 
     /**
-     * Creates a new DefaultEditor object.
+     * Creates a new <code>DefaultEditor</code> object.
      *
-     * @param spinner DOCUMENT ME!
+     * @param spinner the <code>JSpinner</code> associated with this editor
      */
     public DefaultEditor(JSpinner spinner)
     {
+      this.spinner = spinner;
+      
       spinner.addChangeListener(this);
-    } /* TODO */
+    }
+
+    /**
+     * Returns the <code>JSpinner</code> object for this editor.
+     */
+    public JSpinner getSpinner()
+    {
+      return spinner;
+    }
+    
     /**
      * DOCUMENT ME!
      */
     public void commitEdit()
     {
     } /* TODO */
+
     /**
      * DOCUMENT ME!
      *
@@ -152,6 +166,7 @@ public class JSpinner extends JComponent
     {
       return null;
     } /* TODO */
+    
     /**
      * DOCUMENT ME!
      *
@@ -160,6 +175,7 @@ public class JSpinner extends JComponent
     public void layoutContainer(Container parent)
     {
     } /* TODO */
+    
     /**
      * DOCUMENT ME!
      *
@@ -171,6 +187,7 @@ public class JSpinner extends JComponent
     {
       return null;
     } /* TODO */
+    
     /**
      * DOCUMENT ME!
      *
@@ -182,22 +199,25 @@ public class JSpinner extends JComponent
     {
       return null;
     } /* TODO */
+    
     /**
      * DOCUMENT ME!
      *
-     * @param evt DOCUMENT ME!
+     * @param event DOCUMENT ME!
      */
-    public void propertyChange(PropertyChangeEvent evt)
+    public void propertyChange(PropertyChangeEvent event)
     {
     } /* TODO */
+    
     /**
      * DOCUMENT ME!
      *
-     * @param evt DOCUMENT ME!
+     * @param event DOCUMENT ME!
      */
-    public void stateChanged(ChangeEvent evt)
+    public void stateChanged(ChangeEvent event)
     {
     } /* TODO */
+    
     /* no-ops */
     public void removeLayoutComponent(Component child)
     {
@@ -235,6 +255,16 @@ public class JSpinner extends JComponent
     }
 
     /**
+     * Creates a new NumberEditor object.
+     *
+     * @param spinner DOCUMENT ME!
+     */
+    public NumberEditor(JSpinner spinner, String decimalFormatPattern)
+    {
+      super(spinner);
+    }
+
+    /**
      * DOCUMENT ME!
      *
      * @return DOCUMENT ME!
@@ -242,6 +272,11 @@ public class JSpinner extends JComponent
     public DecimalFormat getFormat()
     {
       return null;
+    }
+
+    public SpinnerNumberModel getModel()
+    {
+      return (SpinnerNumberModel) getSpinner().getModel();
     }
   }
 
@@ -344,6 +379,29 @@ public class JSpinner extends JComponent
   public SpinnerModel getModel()
   {
     return model;
+  }
+
+  /**
+   * Sets a new underlying model.
+   *
+   * @param newModel the new model to set
+   *
+   * @exception IllegalArgumentException if newModel is <code>null</code>
+   */
+  public void setModel(SpinnerModel newModel)
+  {
+    if (newModel == null)
+      throw new IllegalArgumentException();
+    
+    if (model == newModel)
+      return;
+
+    SpinnerModel oldModel = model;
+    model = newModel;
+    firePropertyChange("model", oldModel, newModel);
+
+    if (editor == null)
+      setEditor(createEditor(model));
   }
 
   /**

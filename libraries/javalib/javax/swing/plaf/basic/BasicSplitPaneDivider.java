@@ -164,23 +164,23 @@ public class BasicSplitPaneDivider extends Container
     {
       public Insets getBorderInsets(Component c)
       {
-       return new Insets(2, 2, 2, 2);
+	return new Insets(2, 2, 2, 2);
       }
 
       public boolean isBorderOpaque()
       {
-       return false;
+	return false;
       }
 
       public void paintBorder(Component c, Graphics g, int x, int y,
                               int width, int height)
       {
-       Color saved = g.getColor();
-       g.setColor(Color.BLACK);
+	Color saved = g.getColor();
+	g.setColor(Color.BLACK);
 
-       g.drawRect(x + 2, y + 2, width - 4, height - 4);
+	g.drawRect(x + 2, y + 2, width - 4, height - 4);
 
-       g.setColor(saved);
+	g.setColor(saved);
       }
     };
 

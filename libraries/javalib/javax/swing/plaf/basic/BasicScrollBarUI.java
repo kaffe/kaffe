@@ -154,10 +154,10 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
 	  decrButton.removeMouseListener(buttonListener);
 	  incrButton = createIncreaseButton(scrollbar.getOrientation());
 	  decrButton = createDecreaseButton(scrollbar.getOrientation());
-         incrButton.addMouseListener(buttonListener);
-         decrButton.addMouseListener(buttonListener);
-         calculatePreferredSize();
-         layoutContainer(scrollbar);
+	  incrButton.addMouseListener(buttonListener);
+	  decrButton.addMouseListener(buttonListener);
+	  calculatePreferredSize();
+	  layoutContainer(scrollbar);
         }
       layoutContainer(scrollbar);
       scrollbar.repaint();
@@ -231,7 +231,7 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
 	  // Only need to check it if it's block scrolling
 	  // We only block scroll if the click occurs
 	  // in the track.
-         if (! trackListener.shouldScroll(direction))
+	  if (! trackListener.shouldScroll(direction))
 	    {
 	      trackHighlight = NO_HIGHLIGHT;
 	      scrollbar.repaint();
@@ -273,13 +273,13 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
       currentMouseY = e.getY();
       if (scrollbar.getValueIsAdjusting())
         {
-         int value;
-         if (scrollbar.getOrientation() == SwingConstants.HORIZONTAL)
-           value = valueForXPosition(currentMouseX) - offset;
-         else
-           value = valueForYPosition(currentMouseY) - offset;
+	  int value;
+	  if (scrollbar.getOrientation() == SwingConstants.HORIZONTAL)
+	    value = valueForXPosition(currentMouseX) - offset;
+	  else
+	    value = valueForYPosition(currentMouseY) - offset;
 
-         scrollbar.setValue(value);
+	  scrollbar.setValue(value);
         }
     }
 
@@ -356,7 +356,7 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
       scrollTimer.stop();
 
       if (scrollbar.getValueIsAdjusting())
-       scrollbar.setValueIsAdjusting(false);
+	scrollbar.setValueIsAdjusting(false);
       scrollbar.repaint();
     }
 
@@ -372,14 +372,14 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
     {
       int value;
       if (scrollbar.getOrientation() == HORIZONTAL)
-       value = valueForXPosition(currentMouseX);
+	value = valueForXPosition(currentMouseX);
       else
-       value = valueForYPosition(currentMouseY);
+	value = valueForYPosition(currentMouseY);
 
       if (direction == POSITIVE_SCROLL)
-       return (value > scrollbar.getValue());
+	return (value > scrollbar.getValue());
       else
-       return (value < scrollbar.getValue());
+	return (value < scrollbar.getValue());
     }
   }
 
@@ -518,10 +518,10 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
                                         : SwingConstants.SOUTH);
     else
       {
-       if (orientation == SwingConstants.HORIZONTAL)
-         ((BasicArrowButton) incrButton).setDirection(SwingConstants.EAST);
-       else
-         ((BasicArrowButton) incrButton).setDirection(SwingConstants.SOUTH);
+	if (orientation == SwingConstants.HORIZONTAL)
+	  ((BasicArrowButton) incrButton).setDirection(SwingConstants.EAST);
+	else
+	  ((BasicArrowButton) incrButton).setDirection(SwingConstants.SOUTH);
       }
     return incrButton;
   }
@@ -542,10 +542,10 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
                                         : SwingConstants.NORTH);
     else
       {
-       if (orientation == SwingConstants.HORIZONTAL)
-         ((BasicArrowButton) decrButton).setDirection(SwingConstants.WEST);
-       else
-         ((BasicArrowButton) decrButton).setDirection(SwingConstants.NORTH);
+	if (orientation == SwingConstants.HORIZONTAL)
+	  ((BasicArrowButton) decrButton).setDirection(SwingConstants.WEST);
+	else
+	  ((BasicArrowButton) decrButton).setDirection(SwingConstants.NORTH);
       }
     return decrButton;
   }
@@ -725,19 +725,19 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
     // System.err.println(this + ".getThumbBounds()");
     if (max == min)
       {
-       thumbRect.x = trackRect.x;
-       thumbRect.y = trackRect.y;
-       if (scrollbar.getOrientation() == HORIZONTAL)
-         {
-           thumbRect.width = getMinimumThumbSize().width;
-           thumbRect.height = trackRect.height;
-         }
-       else
-         {
-           thumbRect.width = trackRect.width;
-           thumbRect.height = getMinimumThumbSize().height;
-         }
-       return thumbRect;
+	thumbRect.x = trackRect.x;
+	thumbRect.y = trackRect.y;
+	if (scrollbar.getOrientation() == HORIZONTAL)
+	  {
+	    thumbRect.width = getMinimumThumbSize().width;
+	    thumbRect.height = trackRect.height;
+	  }
+	else
+	  {
+	    thumbRect.width = trackRect.width;
+	    thumbRect.height = getMinimumThumbSize().height;
+	  }
+	return thumbRect;
       }
 
     if (scrollbar.getOrientation() == HORIZONTAL)
@@ -752,7 +752,7 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
     else
       {
 	thumbRect.x = trackRect.x;
-       thumbRect.y = trackRect.y + value * trackRect.height / (max - min);
+	thumbRect.y = trackRect.y + value * trackRect.height / (max - min);
 
 	thumbRect.width = trackRect.width;
 	thumbRect.height = extent * trackRect.height / (max - min);
@@ -874,7 +874,7 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
 	configureScrollBarColors();
 
 	calculatePreferredSize();
-       layoutContainer(scrollbar);
+	layoutContainer(scrollbar);
       }
   }
 

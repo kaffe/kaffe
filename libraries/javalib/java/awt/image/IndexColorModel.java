@@ -38,7 +38,29 @@ exception statement from your version. */
 
 package java.awt.image;
 
+import java.awt.color.ColorSpace;
+import java.math.BigInteger;
+
 /**
+ * Color model similar to pseudo visual in X11.
+ *
+ * This color model maps linear pixel values to actual RGB and alpha colors.
+ * Thus, pixel values are indexes into the color map.  Each color component is
+ * an 8-bit unsigned value.
+ *
+ * The IndexColorModel supports a map of valid pixels, allowing the
+ * representation of holes in the the color map.  The valid map is represented
+ * as a BigInteger where each bit indicates the validity of the map entry with
+ * the same index.
+ * 
+ * Colors can have alpha components for transparency support.  If alpha
+ * component values aren't given, color values are opaque.  The model also
+ * supports a reserved pixel value to represent completely transparent colors,
+ * no matter what the actual color component values are.
+ *
+ * IndexColorModel supports anywhere from 1 to 16 bit index values.  The
+ * allowed transfer types are DataBuffer.TYPE_BYTE and DataBuffer.TYPE_USHORT.
+ *
  * @author C. Brian Jones (cbj@gnu.org) 
  */
 public class IndexColorModel extends ColorModel
@@ -47,6 +69,7 @@ public class IndexColorModel extends ColorModel
   private boolean opaque;
   private int trans = -1;
   private int[] rgb;
+  private BigInteger validBits = new BigInteger("0");
 
   /**
    * Each array much contain <code>size</code> elements.  For each 
@@ -127,6 +150,10 @@ public class IndexColorModel extends ColorModel
                       | (blues[i] & 0xff));
           }
       }
+
+    // Generate a bigint with 1's for every pixel
+    validBits.setBit(size);
+    validBits.subtract(new BigInteger("1"));
   }
 
   /**
@@ -167,6 +194,79 @@ public class IndexColorModel extends ColorModel
     map_size = size;
     opaque = !hasAlpha;
     this.trans = trans;
+    // Generate a bigint with 1's for every pixel
+    validBits.setBit(size);
+    validBits.subtract(new BigInteger("1"));
+  }
+
+  /**
+   * Each array much contain <code>size</code> elements.  For each 
+   * array, the i-th color is described by reds[i], greens[i], 
+   * blues[i], alphas[i], unless alphas is not specified, then all the 
+   * colors are opaque except for the transparent color. 
+   *
+   * @param bits the number of bits needed to represent <code>size</code> colors
+   * @param size the number of colors in the color map
+   * @param cmap packed color components
+   * @param start the offset of the first color component in <code>cmap</code>
+   * @param hasAlpha <code>cmap</code> has alpha values
+   * @param trans the index of the transparent color
+   * @param transferType DataBuffer.TYPE_BYTE or DataBuffer.TYPE_USHORT
+   */
+  public IndexColorModel (int bits, int size, byte[] cmap, int start, 
+                          boolean hasAlpha, int trans, int transferType)
+  {
+    super(bits * 4, // total bits, sRGB, four channels
+	  nArray(bits, 4), // bits for each channel
+	  ColorSpace.getInstance(ColorSpace.CS_sRGB), // sRGB
+	  true, // has alpha
+	  false, // not premultiplied
+	  TRANSLUCENT, transferType);
+    if (transferType != DataBuffer.TYPE_BYTE
+        && transferType != DataBuffer.TYPE_USHORT)
+      throw new IllegalArgumentException();
+    map_size = size;
+    opaque = !hasAlpha;
+    this.trans = trans;
+    // Generate a bigint with 1's for every pixel
+    validBits.setBit(size);
+    validBits.subtract(new BigInteger("1"));
+  }
+
+  /**
+   * Construct an IndexColorModel using a colormap with holes.
+   * 
+   * The IndexColorModel is built from the array of ints defining the
+   * colormap.  Each element contains red, green, blue, and alpha
+   * components.    The ColorSpace is sRGB.  The transparency value is
+   * automatically determined.
+   * 
+   * This constructor permits indicating which colormap entries are valid,
+   * using the validBits argument.  Each entry in cmap is valid if the
+   * corresponding bit in validBits is set.  
+   * 
+   * @param bits the number of bits needed to represent <code>size</code> colors
+   * @param size the number of colors in the color map
+   * @param cmap packed color components
+   * @param start the offset of the first color component in <code>cmap</code>
+   * @param transferType DataBuffer.TYPE_BYTE or DataBuffer.TYPE_USHORT
+   */
+  public IndexColorModel (int bits, int size, int[] cmap, int start, 
+                          int transferType, BigInteger validBits)
+  {
+    super(bits * 4, // total bits, sRGB, four channels
+	  nArray(bits, 4), // bits for each channel
+	  ColorSpace.getInstance(ColorSpace.CS_sRGB), // sRGB
+	  true, // has alpha
+	  false, // not premultiplied
+	  TRANSLUCENT, transferType);
+    if (transferType != DataBuffer.TYPE_BYTE
+        && transferType != DataBuffer.TYPE_USHORT)
+      throw new IllegalArgumentException();
+    map_size = size;
+    opaque = false;
+    this.trans = -1;
+    this.validBits = validBits;
   }
 
   public final int getMapSize ()
@@ -279,11 +379,79 @@ public class IndexColorModel extends ColorModel
     return 0;
   }
     
-  //pixel_bits is number of bits to be in generated mask
+  /**
+   * Get the RGB color values of all pixels in the map using the default
+   * RGB color model. 
+   *
+   * @param rgb The destination array.
+   */
+  public final void getRGBs (int[] rgb)
+  {
+    System.arraycopy(this.rgb, 0, rgb, 0, map_size);
+  }
+    
+   //pixel_bits is number of bits to be in generated mask
   private int generateMask (int offset)
   {
     return (((2 << pixel_bits ) - 1) << (pixel_bits * offset));
   }
 
+  /** Return true if pixel is valid, false otherwise. */
+  public boolean isValid(int pixel)
+  {
+    return validBits.testBit(pixel);
+  }
+  
+  /** Return true if all pixels are valid, false otherwise. */
+  public boolean isValid()
+  {
+    // Generate a bigint with 1's for every pixel
+    BigInteger allbits = new BigInteger("0");
+    allbits.setBit(map_size);
+    allbits.subtract(new BigInteger("1"));
+    return allbits.equals(validBits);
+  }
+  
+  /** 
+   * Returns a BigInteger where each bit represents an entry in the color
+   * model.  If the bit is on, the entry is valid.
+   */
+  public BigInteger getValidPixels()
+  {
+    return validBits;
+  }
+  
+  /**
+   * Construct a BufferedImage with rgb pixel values from a Raster.
+   * 
+   * Constructs a new BufferedImage in which each pixel is an RGBA int from
+   * a Raster with index-valued pixels.  If this model has no alpha component
+   * or transparent pixel, the type of the new BufferedImage is TYPE_INT_RGB.
+   * Otherwise the type is TYPE_INT_ARGB.  If forceARGB is true, the type is
+   * forced to be TYPE_INT_ARGB no matter what.
+   * 
+   * @param raster The source of pixel values.
+   * @param forceARGB True if type must be TYPE_INT_ARGB.
+   * @return New BufferedImage with RBGA int pixel values.
+   */
+  public BufferedImage convertToIntDiscrete(Raster raster, boolean forceARGB)
+  {
+    int type = forceARGB ? BufferedImage.TYPE_INT_ARGB
+      : ((opaque && trans == -1) ? BufferedImage.TYPE_INT_RGB :
+	 BufferedImage.TYPE_INT_ARGB); 
+
+    // FIXME: assuming that raster has only 1 band since pixels are supposed
+    // to be int indexes.
+    // FIXME: it would likely be more efficient to fetch a complete array,
+    // but it would take much more memory.
+    // FIXME: I'm not sure if transparent pixels or alpha values need special
+    // handling here.
+    BufferedImage im = new BufferedImage(raster.width, raster.height, type);
+    for (int x = raster.minX; x < raster.width + raster.minX; x++)
+      for (int y = raster.minY; y < raster.height + raster.minY; y++)
+        im.setRGB(x, y, rgb[raster.getSample(x, y, 0)]);
+
+    return im;
+  }
 }
 

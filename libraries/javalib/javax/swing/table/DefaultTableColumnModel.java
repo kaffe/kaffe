@@ -204,7 +204,7 @@ public class DefaultTableColumnModel
    * @return int
    */
   public int getColumnIndexAtX(int x)
-  {
+  {    
     for (int i = 0; i < tableColumns.size(); ++i)
       {
         int w = ((TableColumn)tableColumns.get(i)).getWidth();
@@ -311,7 +311,7 @@ public class DefaultTableColumnModel
   {
     return (TableColumnModelListener[])
       listenerList.getListeners(TableColumnModelListener.class);
-  }      
+  }	  
 
   /**
    * fireColumnAdded

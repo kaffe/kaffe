@@ -68,7 +68,6 @@ import javax.swing.plaf.ButtonUI;
  */
 public class JRadioButton extends JToggleButton
 {
-
   /**
    * Compatible with Sun's JDK.
    */
@@ -110,7 +109,7 @@ public class JRadioButton extends JToggleButton
   {
     this(null, null, false);
   }
-  
+    
   /**
    * Constructs a radio button using the labelling, state
    * and icon specified by the supplied action.
@@ -122,7 +121,7 @@ public class JRadioButton extends JToggleButton
     this();
     setAction(a);
   }
-  
+
   /**
    * Constructs an unselected radio button with the supplied icon
    * and no text.
@@ -142,9 +141,9 @@ public class JRadioButton extends JToggleButton
    *        selected state.  Otherwise, the button is unselected.
    */
   public JRadioButton(Icon icon, boolean selected)
-  {
+  { 
     this(null, icon, selected);
-  }
+  }    
   
   /**
    * Constructs an unselected radio button using the supplied text
@@ -156,7 +155,7 @@ public class JRadioButton extends JToggleButton
   {
     this(text, null, false);
   }
-  
+
   /**
    * Constructs a radio button with the supplied text and state.
    *
@@ -168,7 +167,7 @@ public class JRadioButton extends JToggleButton
   {
     this(text, null, selected);
   }
-  
+      
   /**
    * Constructs an unselected radio button with the supplied text
    * and icon.
@@ -195,7 +194,7 @@ public class JRadioButton extends JToggleButton
     borderPainted = false;
     contentAreaFilled = false;
   }
-  
+      
   /**
    * Returns the accessible context for this <code>JRadioButton</code>,
    * in the form of an instance of <code>AccessibleJRadioButton</code>.

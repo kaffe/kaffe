@@ -218,27 +218,27 @@ public class JFrame extends Frame
       {
       case WindowEvent.WINDOW_CLOSING:
         {
-         switch (close_action)
+	  switch (close_action)
 	    {
-           case EXIT_ON_CLOSE:
-             {
-               System.exit(0);
-               break;
-             }
-           case DISPOSE_ON_CLOSE:
-             {
-               dispose();
-               break;
-             }
-           case HIDE_ON_CLOSE:
-             {
-               setVisible(false);
+	    case EXIT_ON_CLOSE:
+	      {
+		System.exit(0);
 		break;
-             }
-           case DO_NOTHING_ON_CLOSE:
-             break;
+	      }
+	    case DISPOSE_ON_CLOSE:
+	      {
+		dispose();
+		break;
+	      }
+	    case HIDE_ON_CLOSE:
+	      {
+		setVisible(false);
+		break;
+	      }
+	    case DO_NOTHING_ON_CLOSE:
+	      break;
 	    }
-         break;
+	  break;
         }
       case WindowEvent.WINDOW_CLOSED:
       case WindowEvent.WINDOW_OPENED:
@@ -246,7 +246,7 @@ public class JFrame extends Frame
       case WindowEvent.WINDOW_DEICONIFIED:
       case WindowEvent.WINDOW_ACTIVATED:
       case WindowEvent.WINDOW_DEACTIVATED:
-       break;
+	break;
       }
   }
 

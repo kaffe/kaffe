@@ -91,7 +91,7 @@ public class SpringLayout implements LayoutManager2
    *
    * @author Roman Kennke (roman@ontographics.com)
    */
-  public final static class Constraints
+  public static class Constraints
   {
 
     // The constraints for each edge, and width and height.

@@ -1,4 +1,5 @@
-/* Copyright (C) 1999, 2000, 2002, 2003  Free Software Foundation
+/* ColorModel.java --
+   Copyright (C) 1999, 2000, 2002, 2003, 2004  Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -37,11 +38,12 @@ exception statement from your version. */
 
 package java.awt.image;
 
-import java.util.Arrays;
+import gnu.java.awt.Buffers;
+
 import java.awt.Point;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
-import gnu.java.awt.Buffers;
+import java.util.Arrays;
 
 /**
  * A color model operates with colors in several formats:
@@ -76,8 +78,8 @@ import gnu.java.awt.Buffers;
  *
  * </ul>
  *
- * @author Rolf W. Rasmussen <rolfwr@ii.uib.no>
- * @author C. Brian Jones <cbj@gnu.org>
+ * @author Rolf W. Rasmussen (rolfwr@ii.uib.no)
+ * @author C. Brian Jones (cbj@gnu.org)
  */
 public abstract class ColorModel implements Transparency
 {
@@ -542,6 +544,7 @@ public abstract class ColorModel implements Transparency
    * @param offset Position of the first value of the pixel in components.
    *
    * @return pixel value encoded according to the color model.
+   * @since 1.4
    */
   public int getDataElement (float[] components, int offset)
   {
@@ -581,6 +584,7 @@ public abstract class ColorModel implements Transparency
    * @return pixel value encoded according to the color model.
    * @throws ArrayIndexOutOfBounds
    * @throws ClassCastException
+   * @since 1.4
    */
   public Object getDataElements(float[] components, int offset, Object obj)
   {

@@ -58,13 +58,13 @@ public class NavigationFilter
   }
 
   public void moveDot(NavigationFilter.FilterBypass fb, int dot,
-                     Position.Bias bias)
+		      Position.Bias bias)
   {
     fb.moveDot(dot, bias);
   }
 
   public void setDot(NavigationFilter.FilterBypass fb, int dot,
-                    Position.Bias bias)
+		     Position.Bias bias)
   {
     fb.setDot(dot, bias);
   }

@@ -38,8 +38,10 @@ exception statement from your version. */
 package javax.swing;
 
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
 
@@ -369,6 +371,59 @@ public class JTextArea extends JTextComponent
     firePropertyChange("tabSize", oldValue, tabSize);
   }
 
+  protected int getColumnWidth()
+  {
+    FontMetrics metrics = getToolkit().getFontMetrics(getFont());
+    return metrics.charWidth('m');
+  }
+
+  public int getLineCount()
+  {
+    return getDocument().getDefaultRootElement().getElementCount();
+  }
+
+  public int getLineStartOffset(int line)
+     throws BadLocationException
+  {
+    int lineCount = getLineCount();
+    
+    if (line < 0 || line > lineCount)
+      throw new BadLocationException("Non-existing line number", line);
+
+    Element lineElem = getDocument().getDefaultRootElement().getElement(line);
+    return lineElem.getStartOffset();
+  }
+
+  public int getLineEndOffset(int line)
+     throws BadLocationException
+  {
+    int lineCount = getLineCount();
+    
+    if (line < 0 || line > lineCount)
+      throw new BadLocationException("Non-existing line number", line);
+
+    Element lineElem = getDocument().getDefaultRootElement().getElement(line);
+    return lineElem.getEndOffset();
+  }
+
+  public int getLineOfOffset(int offset)
+    throws BadLocationException
+  {
+    Document doc = getDocument();
+
+    if (offset < doc.getStartPosition().getOffset()
+	|| offset >= doc.getEndPosition().getOffset())
+      throw new BadLocationException("offset outside of document", offset);
+
+    return doc.getDefaultRootElement().getElementIndex(offset);
+  }
+
+  protected int getRowHeight()
+  {
+    FontMetrics metrics = getToolkit().getFontMetrics(getFont());
+    return metrics.getHeight();
+  }
+
   /**
    * Inserts the supplied text at the specified position.  Nothing
    * happens in the case that the model or the supplied string is null
@@ -376,30 +431,49 @@ public class JTextArea extends JTextComponent
    *
    * @param string The string of text to insert.
    * @param position The position at which to insert the supplied text.
-   * @throws IllegalArgumentException if the position is < 0 or greater
-   *         than the length of the current text.
+   * @throws IllegalArgumentException if the position is &lt; 0 or greater
+   * than the length of the current text.
    */
   public void insert(String string, int position)
   {
-      Document document;
+    // Retrieve the document model.
+    Document doc = getDocument();
       
-      /* Retrieve the document model */
-      document = getDocument();
-      /* Check the model and string for validity */
-      if (document == null || string == null || string.length() == 0)
-	  {
-	      return; /* Do nothing */
-	  }
-      /* Insert the text into the model */
-      try
-	  {
-	      document.insertString(position, string, null);
-	  }
-      catch (BadLocationException exception)
-	  {
-	      throw new IllegalArgumentException("The supplied position, " +
-						 position + ", was invalid.");
-	  }
+    // Check the model and string for validity.
+    if (doc == null
+	|| string == null
+	|| string.length() == 0)
+      return;
+
+    // Insert the text into the model.
+    try
+      {
+	doc.insertString(position, string, null);
+      }
+    catch (BadLocationException e)
+      {
+	throw new IllegalArgumentException("The supplied position, "
+					   + position + ", was invalid.");
+      }
   }
 
+  public void replaceRange(String text, int start, int end)
+  {
+    Document doc = getDocument();
+    
+    if (start > end
+	|| start < doc.getStartPosition().getOffset()
+	|| end >= doc.getEndPosition().getOffset())
+      throw new IllegalArgumentException();
+
+    try
+      {
+	doc.remove(start, end);
+	doc.insertString(start, text, null);
+      }
+    catch (BadLocationException e)
+      {
+	// This cannot happen as we check offset above.
+      }
+  }
 }
