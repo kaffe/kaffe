@@ -234,17 +234,17 @@ public class TreeMap extends AbstractMap
 	}
 
 	public SortedMap subMap(Object fromKey, Object toKey) {
-		throw new kaffe.util.NotImplemented(Collections.class.getName()
+		throw new kaffe.util.NotImplemented(getClass().getName()
 		    + ".subMap()");
 	}
 
 	public SortedMap headMap(Object toKey) {
-		throw new kaffe.util.NotImplemented(Collections.class.getName()
+		throw new kaffe.util.NotImplemented(getClass().getName()
 		    + ".headMap()");
 	}
 
 	public SortedMap tailMap(Object fromKey) {
-		throw new kaffe.util.NotImplemented(Collections.class.getName()
+		throw new kaffe.util.NotImplemented(getClass().getName()
 		    + ".tailMap()");
 	}
 
