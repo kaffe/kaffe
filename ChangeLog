@@ -1,3 +1,22 @@
+Thu Dec 17 13:53:38 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
+
+	* config/*/*/md.h:  declared init_md to avoid -Wall warnings.
+	libraries/clib/awt/X/*.c:  more -Wall fixes.
+	* libraries/javalib/java/util/Vector.java: implemented toArray.
+
+Thu Dec 17 13:22:59 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/clib/native/ClassLoader.c: removed INTERNUTF8 defines and
+	fixed memory leak in findSystemClass.
+	* kaffe/kaffevm/code-analyse.c: replaced gc_free with KFREE for
+	consistency.
+	* kaffe/kaffevm/classMethod.c: don't free arr_name in lookupArray.
+	* kaffe/kaffevm/mem/gc-mem.c, kaffe/kaffevm/mem/gc-incremental.h: 
+	removed call/declaration of objectStatsPrint and made it static.
+	* kaffe/kaffevm/mem/gc-incremental.c: introduced RECORD_MARKED
+	macro for keeping statistics on how many objects we mark.
+	Complain if VM attempts to explicitly free non-fixed objects.
+
 Wed Dec 16 10:52:18 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/util/Random.java: implemented according 
