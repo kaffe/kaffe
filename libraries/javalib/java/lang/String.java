@@ -268,6 +268,9 @@ public int indexOf( String str, int sIdx) {
 	if ( str.count > count-sIdx )
 		return -1;
 
+	if ( str.count == 0 )
+		return sIdx;
+
 	for ( ; it<value.length; it++){
 		if ( value[it] == str.value[ic] ){
 			if (++ma == str.count)
@@ -330,6 +333,9 @@ public int lastIndexOf( String str, int eIdx) {
 	if (it >= offset+count) {       // clip index
 		it = offset+count-1;
 	}
+
+	if (str.count == 0)
+		return eIdx;
 
 	for ( ; it>=offset; it--) {
 		if ( value[it] == str.value[ic] ) {
