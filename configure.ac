@@ -154,6 +154,7 @@ AC_PROG_CXX
 dnl Find the machine type and setup the relevant links
 AC_CANONICAL_HOST
 AC_EXEEXT
+AC_SYS_LARGEFILE
 
 dnl =========================================================================
 dnl By default we use dynamic libraries for everything

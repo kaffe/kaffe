@@ -1,5 +1,15 @@
 2004-08-23  Dalibor Topic  <robilad@kaffe.org>
 
+	Fixed debian bug #159162
+
+	* configure.ac: Added support for large files.
+
+	* configure: Regenerated.
+
+	Reported by: Matthew Toseland <mtoseland@blueyonder.co.uk>
+
+2004-08-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* include/Makefile.am: Fixed JNI header generation 
 	with precompiled rt.jar.
 
