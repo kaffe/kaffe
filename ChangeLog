@@ -1,3 +1,27 @@
+Mon Apr 15 20:00:56 CEST 2002 Tim Stack  <stack@cs.utah.edu>
+	* libraries/clib/net/PlainDatagramSocketImpl.c:
+	added SO_REUSEPORT support. Improved error reporting.
+	* libraries/clib/net/PlainSocketImpl.c:
+	Improved error reporting.
+	* libraries/javalib/java/net/MulticastSocket.java:
+	add support for SO_REUSEPORT.
+	* libraries/javalib/java/net/SocketOptions.java:
+	add SO_REUSEPORT.
+	* libraries/javalib/java/lang/NativeLibrary.java:
+	(NativeLibrary) throw FileNotFoundException if library can not be
+	found. Do not save the index if system class loader is null.
+	(getLibraryNames) changed access to package.
+	(getLibPrefix) same.
+	(getLibSuffix) same.
+	(linkLibrary) throw FileNotFoundException.
+	* libraries/javalib/java/lang/Runtime.java:
+	adapted for changes in NativeLibrary.
+	* libraries/clib/native/NativeLibrary.c:
+	(java_lang_NativeLibrary_linkLibrary) improved error reporting.
+	* libraries/clib/native/ByteToCharIconv.c,
+	libraries/clib/native/CharToByteIconv.c:
+	fix gcc3 warnings.	
+
 Mon Apr 15 12:44:11 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	* libraries/javalib/java/net/MulticastSocket.java:
 	(checkMulticastAddress) new method.

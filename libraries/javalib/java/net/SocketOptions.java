@@ -23,6 +23,7 @@ int SO_LINGER 		= 0x0080;
 int SO_TIMEOUT 		= 0x1006;
 int SO_SNDBUF 		= 0x1001;
 int SO_RCVBUF 		= 0x1002;
+int SO_REUSEPORT	= 0x8001;
 
 void setOption(int option, Object data) throws SocketException;
 Object getOption(int option) throws SocketException;

@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.FileNotFoundException;
+
 import java.util.StringTokenizer;
 
 public class Runtime
@@ -140,6 +142,7 @@ void loadLibrary(String libname, ClassLoader loader) {
 		try {
 			new NativeLibrary(names[i], loader);
 			return;
+		} catch (FileNotFoundException e) {
 		} catch (UnsatisfiedLinkError e) {
 			errmsg = e.getMessage();
 		}
@@ -155,7 +158,12 @@ void load(String filename, ClassLoader loader) {
 	SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkLink(filename);
-	new NativeLibrary(filename, loader);
+	try {
+		new NativeLibrary(filename, loader);
+	}
+	catch (FileNotFoundException e) {
+		throw new UnsatisfiedLinkError(filename + ": not found");
+	}
 }
 
 int getMemoryAdvice() {

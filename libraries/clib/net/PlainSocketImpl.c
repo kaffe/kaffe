@@ -211,8 +211,18 @@ java_net_PlainSocketImpl_socketBind(struct Hjava_net_PlainSocketImpl* this,
 	/* Allow rebinding to socket - ignore errors */
 	(void)KSETSOCKOPT(fd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
 	r = KBIND(fd, (struct sockaddr*)&addr, sizeof(addr));
-	if (r) {
-		SignalError("java.io.IOException", SYS_ERROR(r));
+	switch( r )
+	{
+	case 0:
+		break;
+	case EADDRNOTAVAIL:
+	case EADDRINUSE:
+	case EACCES:
+		SignalError("java.net.BindException", SYS_ERROR(r));
+		break;
+	default:
+		SignalError("java.net.SocketException", SYS_ERROR(r));
+		break;
 	}
 
 	/* Enter information into socket object */

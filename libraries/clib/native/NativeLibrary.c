@@ -61,14 +61,26 @@ java_lang_NativeLibrary_linkLibrary(struct Hjava_lang_String *jpath)
 	char path[MAXPATHLEN];
 	char errbuf[128];
 	errorInfo einfo;
-	int index;
+	int index = -1;
 
 	stringJava2CBuf(jpath, path, sizeof(path));
 	if ((index = loadNativeLibrary(path, errbuf, sizeof(errbuf))) < 0) {
-		postExceptionMessage(&einfo, 
-		    JAVA_LANG(UnsatisfiedLinkError), "%s", errbuf);
-		throwError(&einfo);
+ 		if( strstr(errbuf, "ile not found") ) {
+ 			postExceptionMessage(&einfo,
+ 					     JAVA_IO(FileNotFoundException),
+ 					     "%s",
+ 					     path);
+ 		} else {
+			postExceptionMessage(&einfo, 
+					     JAVA_LANG(UnsatisfiedLinkError),
+					     "%s",
+					     errbuf);
+			throwError(&einfo);
+		}
 	}
+ 	if( index == -1 )
+ 		throwError(&einfo);
+
 	return index;
 }
 

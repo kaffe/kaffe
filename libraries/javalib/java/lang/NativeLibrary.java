@@ -16,6 +16,8 @@
 package java.lang;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+
 import java.util.StringTokenizer;
 
 /**
@@ -25,14 +27,28 @@ class NativeLibrary {
 
 	private int libIndex = -1;	// handle for native library
 
-	public NativeLibrary(String path, ClassLoader loader) {
+	NativeLibrary(String path, ClassLoader loader)
+		throws FileNotFoundException {
+		loader = ClassLoader.getSystemClassLoader();
 		if (loader == null)
-			loader = ClassLoader.getSystemClassLoader();
-		libIndex = linkLibrary(path);	// possible exception here
-		loader.addNativeLibrary(this);
+		{
+			// possible exception here
+			/*
+			 * No need to save the index since the root class
+			 * loader isn't going away so we won't ever unlink
+			 * the library.
+			 */
+			linkLibrary(path);
+		}
+		else
+		{
+			// possible exception here
+			libIndex = linkLibrary(path);
+			loader.addNativeLibrary(this);
+		}
 	}
 
-	public static String[] getLibraryNames(String libname) {
+	static String[] getLibraryNames(String libname) {
 		StringTokenizer t = new StringTokenizer(
 		    System.getProperty("java.library.path"),
 		    new String(new char[] { File.pathSeparatorChar }));
@@ -50,10 +66,19 @@ class NativeLibrary {
 		super.finalize();
 	}
 
-	private static native synchronized int linkLibrary(String path);
+	private static native synchronized int linkLibrary(String path)
+		throws FileNotFoundException;
+	
 	private static native synchronized void unlinkLibrary(int index);
 
-	public static native String getLibPrefix();
-	public static native String getLibSuffix();
+	/**
+	 * @return The configured native library prefix (e.g. lib)
+	 */
+	static native String getLibPrefix();
+
+	/**
+	 * @return The configured native library suffix (e.g. .so)
+	 */
+	static native String getLibSuffix();
 }
 
