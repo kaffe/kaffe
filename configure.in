@@ -22,7 +22,7 @@ dnl =========================================================================
 dnl Force use of static libraries
 dnl -------------------------------------------------------------------------
 
-AC_ARG_ENABLE(staticlib,  --enable-staticlib        Force the use of static libraries rather than shared,dynamic_libraries=no)
+AC_ARG_ENABLE(staticlib,[  --enable-staticlib        Force the use of static libraries rather than shared],dynamic_libraries=no)
 
 changequote(<<, >>)dnl
 
@@ -128,7 +128,7 @@ dnl =========================================================================
 dnl Allow selection of a specific execution engine
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(engine, --with-engine={intrp|jit} Force use of a specific execution engine)
+AC_ARG_WITH(engine,[  --with-engine={intrp|jit} Force use of a specific execution engine])
 
 dnl Translate 'interpreter' to 'intrp'
 if test "$with_engine" = "interpreter" ; then
@@ -175,7 +175,7 @@ dnl =========================================================================
 dnl Use the new internal threading system "jthreads"
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(threads, --with-threads={unix-internal|unix-jthreads} define which threading system to use)
+AC_ARG_WITH(threads,[  --with-threads={unix-internal|unix-jthreads} define which threading system to use])
 AC_MSG_CHECKING(thread system)
 if test "$with_threads" = "" ; then
 	with_threads=unix-internal

@@ -12,11 +12,11 @@ ac_help=
 ac_default_prefix=/usr/local
 # Any additions from configure.in:
 ac_help="$ac_help
---enable-staticlib        Force the use of static libraries rather than shared"
+  --enable-staticlib        Force the use of static libraries rather than shared"
 ac_help="$ac_help
---with-engine={intrp|jit} Force use of a specific execution engine"
+  --with-engine={intrp|jit} Force use of a specific execution engine"
 ac_help="$ac_help
---with-threads={unix-internal|unix-jthreads} define which threading system to use"
+  --with-threads={unix-internal|unix-jthreads} define which threading system to use"
 ac_help="$ac_help
   --with-x                use the X Window System"
 
