@@ -1,5 +1,10 @@
 2004-06-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* THIRDPARTY: Documented s390 compare and swap,
+	sigcontextinfo.h and BinReloc.
+
+2004-06-22  Dalibor Topic  <robilad@kaffe.org>
+
         * config/Makefile.am
 	(EXTRA_DIST): Added s390/atomicity32.h and
 	s390/atomicity64.h.
