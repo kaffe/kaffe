@@ -17,6 +17,7 @@
 #include "../../../kaffe/kaffevm/object.h"
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/itypes.h"
+#include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/exception.h"
 #include "../../../kaffe/kaffevm/errors.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
