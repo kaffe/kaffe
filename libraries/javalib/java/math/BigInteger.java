@@ -315,10 +315,13 @@ protected void finalize() throws Throwable {
 	super.finalize();
 }
 
-/** XXX implement writeObject according to serial form, see below */
-private void writeObject(ObjectOutputStream s) throws IOException
-{
-	throw new kaffe.util.NotImplemented();
+private void writeObject(ObjectOutputStream s) throws IOException {
+	s.writeInt(-1);
+	s.writeInt(-1);
+	s.writeInt(-2);
+	s.writeInt(getLowestSetBit());
+	s.writeInt(signum());
+	s.writeObject(toByteArray());	/* not implemented right now */
 }
 
 /**
