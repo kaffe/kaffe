@@ -39,6 +39,7 @@ exception statement from your version. */
 #include "gtkpeer.h"
 #include "gnu_java_awt_peer_gtk_GtkMainThread.h"
 #include "gthread-jni.h"
+#include <locale.h>
 
 #ifdef JVM_SUN
   struct state_table *native_state_table;
@@ -123,6 +124,7 @@ Java_gnu_java_awt_peer_gtk_GtkMainThread_gtkInit (JNIEnv *env, jclass clazz,
   gdk_threads_init();
 
   gtk_init (&argc, &argv);
+  setlocale(LC_NUMERIC, "C");
 
   gdk_rgb_init ();
   gtk_widget_set_default_colormap (gdk_rgb_get_cmap ());
