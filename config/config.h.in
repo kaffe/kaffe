@@ -356,6 +356,9 @@
 /* Enable MIPS II instructions */
 #undef HAVE_MIPSII_INSTRUCTIONS
 
+/* Define to 1 if you have the <mips/cachectl.h> header file. */
+#undef HAVE_MIPS_CACHECTL_H
+
 /* Define to 1 if you have the `mkdir' function. */
 #undef HAVE_MKDIR
 
@@ -526,6 +529,9 @@
 
 /* Define to 1 if you have the <syslog.h> header file. */
 #undef HAVE_SYSLOG_H
+
+/* Define to 1 if you have the <sys/cachectl.h> header file. */
+#undef HAVE_SYS_CACHECTL_H
 
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */

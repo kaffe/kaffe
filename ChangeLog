@@ -1,5 +1,18 @@
 2004-07-03  Dalibor Topic  <robilad@kaffe.org>
 
+        * configure.ac:
+	Added checks for <sys/cachectl.h> and <mips/cachectl.h>
+	headers.
+
+        * configure,
+        config/config.h.in:
+	Regenerated.
+
+        * config/mips/jit.h:
+	Chec for presence of header files instead of the OS.
+
+2004-07-03  Dalibor Topic  <robilad@kaffe.org>
+
         * config/ia64/atomicity.h:
 	New file, taken from glibc 2.3.2.
 

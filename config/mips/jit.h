@@ -286,11 +286,14 @@ extern void __mipsInitJit(struct _methods*);
 #define KAFFEJIT_TO_NATIVE(_m)
 
 /* On the mips we need to flush the data cache after generating new code */
-#if defined(__NetBSD__)
+#if defined(HAVE_MIPS_CACHECTL_H)
 #include <mips/cachectl.h>
-#else
+#endif /* defined(HAVE_MIPS_CACHECTL_H) */
+
+#if defined(HAVE_SYS_CACHECTL_H)
 #include <sys/cachectl.h>
-#endif
+#endif /* defined(HAVE_SYS_CACHECTL_H) */
+
 #define	FLUSH_DCACHE(_start,_end) cacheflush((_start), (uintp)(_end) - (uintp)(_start), BCACHE)
 
 /* Argument register mapping */
