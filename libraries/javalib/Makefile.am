@@ -47,6 +47,8 @@ endif
 
 Klasses_jar_SRCS = \
 	$(gnu_classpath_SRCS) \
+	$(gnu_inet_ftp_SRCS) \
+	$(gnu_inet_util_SRCS) \
 	$(gnu_java_awt_SRCS) \
 	$(gnu_java_beans_SRCS) \
 	$(gnu_java_beans_editors_SRCS) \
@@ -195,6 +197,26 @@ Klasses_jar_SRCS = \
 gnu_classpath_SRCS = \
 	gnu/classpath/Configuration.java \
 	gnu/classpath/RawData.java
+gnu_inet_ftp_SRCS = \
+	gnu/inet/ftp/ActiveModeDTP.java \
+	gnu/inet/ftp/BlockInputStream.java \
+	gnu/inet/ftp/BlockOutputStream.java \
+	gnu/inet/ftp/CompressedInputStream.java \
+	gnu/inet/ftp/CompressedOutputStream.java \
+	gnu/inet/ftp/DTPInputStream.java \
+	gnu/inet/ftp/DTP.java \
+	gnu/inet/ftp/DTPOutputStream.java \
+	gnu/inet/ftp/FTPConnection.java \
+	gnu/inet/ftp/FTPException.java \
+	gnu/inet/ftp/FTPResponse.java \
+	gnu/inet/ftp/FTPURLConnection.java \
+	gnu/inet/ftp/FTPURLStreamHandler.java \
+	gnu/inet/ftp/PassiveModeDTP.java \
+	gnu/inet/ftp/StreamInputStream.java \
+	gnu/inet/ftp/StreamOutputStream.java
+gnu_inet_util_SRCS = \
+	gnu/inet/util/CRLFInputStream.java \
+	gnu/inet/util/LineInputStream.java
 gnu_java_awt_SRCS = \
 	gnu/java/awt/BitMaskExtent.java \
 	gnu/java/awt/Buffers.java \
@@ -2230,6 +2252,7 @@ org_tritonus_share_sampled_SRCS = \
 	org/tritonus/share/sampled/TVolumeUtils.java
 org_tritonus_share_sampled_convert_SRCS = \
 	org/tritonus/share/sampled/convert/TAsynchronousFilteredAudioInputStream.java \
+	org/tritonus/share/sampled/convert/TAudioInputStream.java \
 	org/tritonus/share/sampled/convert/TEncodingFormatConversionProvider.java \
 	org/tritonus/share/sampled/convert/TFormatConversionProvider.java \
 	org/tritonus/share/sampled/convert/TMatrixFormatConversionProvider.java \

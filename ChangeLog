@@ -1,3 +1,45 @@
+2004-01-11  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with Tritonus.org.
+
+        * libraries/javalib/org/tritonus/share/sampled/convert/TAudioInputStream.java:
+	New file from Tritonus.
+
+        * libraries/javalib/profiles/default/sound.files:
+	Added org/tritonus/share/sampled/convert/TAudioInputStream.java.
+
+	Merged in FTP Handler from GNU Inetlib, licensed under GPL + linking exception.
+
+        libraries/javalib/gnu/inet/ftp/ActiveModeDTP.java,
+        libraries/javalib/gnu/inet/ftp/BlockInputStream.java,
+        libraries/javalib/gnu/inet/ftp/BlockOutputStream.java,
+        libraries/javalib/gnu/inet/ftp/CompressedInputStream.java,
+        libraries/javalib/gnu/inet/ftp/CompressedOutputStream.java,
+        libraries/javalib/gnu/inet/ftp/DTP.java,
+        libraries/javalib/gnu/inet/ftp/DTPInputStream.java,
+        libraries/javalib/gnu/inet/ftp/DTPOutputStream.java,
+        libraries/javalib/gnu/inet/ftp/FTPConnection.java,
+        libraries/javalib/gnu/inet/ftp/FTPException.java,
+        libraries/javalib/gnu/inet/ftp/FTPResponse.java,
+        libraries/javalib/gnu/inet/ftp/FTPURLConnection.java,
+        libraries/javalib/gnu/inet/ftp/FTPURLStreamHandler.java,
+        libraries/javalib/gnu/inet/ftp/PassiveModeDTP.java,
+        libraries/javalib/gnu/inet/ftp/StreamInputStream.java,
+        libraries/javalib/gnu/inet/ftp/StreamOutputStream.java,
+        libraries/javalib/gnu/inet/util/CRLFInputStream.java,
+        libraries/javalib/gnu/inet/util/LineInputStream.java,
+        libraries/javalib/profiles/default/inet.files:
+	New files.
+
+	* libraries/javalib/profiles/default/profile:
+	Added inet.files.
+
+ 	* libltdl/config-h.in,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/profiles/allatonce/all.files,
+	Regenerated.
+
 2004-01-10  Dalibor Topic <robilad@kaffe.org>
 
         Resynced with Tritonus.org.

@@ -8,3 +8,5 @@ xml.files
 jaxp.files
 sound.files
 jsse.files
+inet.files
+
