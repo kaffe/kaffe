@@ -1,3 +1,8 @@
+2004-08-31	jrandom <jrandom@i2p.net>
+
+	* kaffe/kaffevm/systems/unix-jthreads/signal.c:
+	(nullException): Removed obsolete Kaffe-GC dependency on FreeBSD.
+
 2004-08-31  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/locks.c
