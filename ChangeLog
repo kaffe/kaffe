@@ -1,5 +1,15 @@
 2004-01-12  Dalibor Topic <robilad@kaffe.org>
 
+	* configure.in:
+	Moved AC_CONFIG_* entries before AM_INIT.
+
+	Reported by: Jim Pick <jim@kaffe.org>
+
+	* configure:
+	Regenerated.
+
+2004-01-12  Dalibor Topic <robilad@kaffe.org>
+
         * configure.in:
 	(AC_CONFIG_AUX_DIR) Set special directory for 
 	Automake scripts to clean up the top source dir.
