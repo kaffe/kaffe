@@ -148,7 +148,6 @@
 	* test/internal/Makefile.am:
 	Add jvmpi to the list of includes and libraries.
 
->>>>>>> 1.1472
 2003-07-20 Fabio.di.Fabio <abel@lmib.org>
 
 	* libraries/kaffe/appletAppletTag.java:
