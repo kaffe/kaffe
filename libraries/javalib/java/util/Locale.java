@@ -47,7 +47,29 @@ final public class Locale
 static {
 	String dlang = System.getProperty("user.language", "en");
 	String dcntry = System.getProperty("user.region", "US");
-	defaultLocale = new Locale(dlang, dcntry);
+	String dvar = "";
+	int pos = dcntry.indexOf('_');
+	if (pos != -1) {
+		dvar = dcntry.substring(pos + 1);
+		dcntry = dcntry.substring(pos);
+	}
+	defaultLocale = new Locale(dlang, dcntry, dvar);
+}
+
+// Avoid recursion with String.toLowerCase() that use Locale
+private static String toLowerCase(String str) {
+	char buf[] = str.toCharArray();
+	for (int pos=0; pos < count; pos++)
+		buf[pos] = Character.toLowerCase(buf[pos]);
+	return new String(buf);
+}
+
+// Avoid recursion with String.toUpperCase() that use Locale
+private static String toUpperCase(String str) {
+	char buf[] = str.toCharArray();
+	for (int pos=0; pos < count; pos++)
+		buf[pos] = Character.toUpperCase(buf[pos]);
+	return new String(buf);
 }
 
 public Locale(String language, String country) {
@@ -55,23 +77,11 @@ public Locale(String language, String country) {
 }
 
 public Locale(String language, String country, String variant) {
-/*
-	lang = (language != null) ? language : "";
-	cntry = (country != null) ? country : "";
-	var = (variant != null) ? variant : "";
-*/
+	lang = (language != null) ? toLowerCase(language) : "";
+	cntry = (country != null) ? toUpperCase(country) : "";
+	var = (variant != null) ? toUpperCase(variant) : "";
 
-	if ( (language != null) && (language.length() > 0) ){
-		lang = language;
-	}
-	if ( (country != null) && (country.length() > 0) ){
-		cntry = country;
-	}
-	if ( (variant != null) && (variant.length() > 0) ){
-		var = variant;
-	}
-
-	hashcode = super.hashCode();
+	hashcode = lang.hashCode() ^ cntry.hashCode() ^ var.hashCode();
 }
 
 public Object clone() {
@@ -164,19 +174,22 @@ public static synchronized void setDefault(Locale newLocale) {
 
 final public String toString() {
 	StringBuffer buf = new StringBuffer();
-	boolean hasLang = (lang != null) && (lang.length() > 0);
-	boolean hasCntry = (cntry != null) && (cntry.length() > 0);
-	boolean hasVar = (var != null) && (var.length() > 0);
+	boolean hasLang = lang.length() > 0;
+	boolean hasCntry = cntry.length() > 0;
+	boolean hasVar = var.length() > 0;
 
-	if ( hasLang ) {
+	if (hasLang) {
 		buf.append(lang);
 	}
-	if ( hasCntry ) {
-		buf.append( '_');
+	if (hasCntry) {
+		buf.append('_');
 		buf.append(cntry);
 	}
-	if ( hasVar) {
-		buf.append( '_');
+	else if (hasLang && hasVar) {
+		buf.append('_');
+	}
+	if (hasVar && (hasLang || hasCntry)) {
+		buf.append('_');
 		buf.append(var);
 	}
 
