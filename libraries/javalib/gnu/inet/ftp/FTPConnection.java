@@ -1,5 +1,5 @@
 /*
- * $Id: FTPConnection.java,v 1.3 2004/07/25 22:46:18 dalibor Exp $
+ * $Id: FTPConnection.java,v 1.5 2004/10/04 19:33:56 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.BindException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ProtocolException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -53,7 +54,7 @@ import gnu.inet.util.LineInputStream;
  * </ul>
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.3 $ $Date: 2004/07/25 22:46:18 $
+ * @version $Revision: 1.5 $ $Date: 2004/10/04 19:33:56 $
  */
 public class FTPConnection
 {
@@ -137,6 +138,16 @@ public class FTPConnection
   protected OutputStream out;
 
   /**
+   * The timeout when attempting to connect a socket.
+   */
+  protected int connectionTimeout;
+
+  /**
+   * The read timeout on sockets.
+   */
+  protected int timeout;
+
+  /**
    * If true, print debugging information.
    */
   protected boolean debug;
@@ -172,10 +183,10 @@ public class FTPConnection
    */
   public FTPConnection (String hostname)
     throws UnknownHostException, IOException
-    {
-      this (hostname, -1, -1, -1, false);
-    }
-
+  {
+    this (hostname, -1, 0, 0, false);
+  }
+  
   /**
    * Creates a new connection to the server.
    * @param hostname the hostname of the server to connect to
@@ -183,9 +194,9 @@ public class FTPConnection
    */
   public FTPConnection (String hostname, int port)
     throws UnknownHostException, IOException
-    {
-      this (hostname, port, -1, -1, false);
-    }
+  {
+    this (hostname, port, 0, 0, false);
+  }
 
   /**
    * Creates a new connection to the server.
@@ -198,38 +209,48 @@ public class FTPConnection
   public FTPConnection (String hostname, int port,
                         int connectionTimeout, int timeout, boolean debug)
     throws UnknownHostException, IOException
-    {
-      this.debug = debug;
-      if (port <= 0)
-        {
-          port = FTP_PORT;
-        }
-
-      // Set up socket
-      // TODO connection timeout
-      socket = new Socket (hostname, port);
-      if (timeout > 0)
-        {
-          socket.setSoTimeout (timeout);
-        }
-      
-      InputStream in = socket.getInputStream ();
-      in = new BufferedInputStream (in);
-      in = new CRLFInputStream (in);
-      this.in = new LineInputStream (in);
-      OutputStream out = socket.getOutputStream ();
-      this.out = new BufferedOutputStream (out);
-
-      // Read greeting
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 220:                  // hello
-          break;
-        default:
-          throw new FTPException (response);
-        }
-    }
+  {
+    this.connectionTimeout = connectionTimeout;
+    this.timeout = timeout;
+    this.debug = debug;
+    if (port <= 0)
+      {
+        port = FTP_PORT;
+      }
+    
+    // Set up socket
+    socket = new Socket ();
+    InetSocketAddress address = new InetSocketAddress (hostname, port);
+    if (connectionTimeout > 0)
+      {
+        socket.connect (address, connectionTimeout);
+      }
+    else
+      {
+        socket.connect (address);
+      }
+    if (timeout > 0)
+      {
+        socket.setSoTimeout (timeout);
+      }
+    
+    InputStream in = socket.getInputStream ();
+    in = new BufferedInputStream (in);
+    in = new CRLFInputStream (in);
+    this.in = new LineInputStream (in);
+    OutputStream out = socket.getOutputStream ();
+    this.out = new BufferedOutputStream (out);
+    
+    // Read greeting
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 220:                  // hello
+        break;
+      default:
+        throw new FTPException (response);
+      }
+  }
   
   /**
    * Authenticate using the specified username and password.
@@ -241,450 +262,462 @@ public class FTPConnection
    */
   public boolean authenticate (String username, String password)
     throws IOException
-    {
-      String cmd = USER + ' ' + username;
-      send (cmd);
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 230:                  // User logged in
-          return true;
-        case 331:                 // User name okay, need password
-          break;
-        case 332:                 // Need account for login
-        case 530:                 // No such user
-          return false;
-        default:
-          throw new FTPException (response);
-        }
-      cmd = PASS + ' ' + password;
-      send (cmd);
-      response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 230:                  // User logged in
-        case 202:                  // Superfluous
-          return true;
-        case 332:                  // Need account for login
-        case 530:                  // Bad password
-          return false;
-        default:
-          throw new FTPException (response);
-        }
-    }
-
+  {
+    String cmd = USER + ' ' + username;
+    send (cmd);
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 230:                  // User logged in
+        return true;
+      case 331:                 // User name okay, need password
+        break;
+      case 332:                 // Need account for login
+      case 530:                 // No such user
+        return false;
+      default:
+        throw new FTPException (response);
+      }
+    cmd = PASS + ' ' + password;
+    send (cmd);
+    response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 230:                  // User logged in
+      case 202:                  // Superfluous
+        return true;
+      case 332:                  // Need account for login
+      case 530:                  // Bad password
+        return false;
+      default:
+        throw new FTPException (response);
+      }
+  }
+  
   /**
    * Changes directory to the specified path.
    * @param path an absolute or relative pathname
    * @return true on success, false if the specified path does not exist
    */
-  public boolean changeWorkingDirectory (String path) throws IOException
-    {
-      String cmd = CWD + ' ' + path;
-      send (cmd);
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 250:
-          return true;
-        case 550:
-          return false;
-        default:
-          throw new FTPException (response);
-        }
-    }
-
+  public boolean changeWorkingDirectory (String path)
+    throws IOException
+  {
+    String cmd = CWD + ' ' + path;
+    send (cmd);
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 250:
+        return true;
+      case 550:
+        return false;
+      default:
+        throw new FTPException (response);
+      }
+  }
+  
   /**
    * Changes directory to the parent of the current working directory.
    * @return true on success, false otherwise
    */
-  public boolean changeToParentDirectory () throws IOException
-    {
-      send (CDUP);
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 250:
-          return true;
-        case 550:
-          return false;
-        default:
-          throw new FTPException (response);
-        }
-    }
+  public boolean changeToParentDirectory ()
+    throws IOException
+  {
+    send (CDUP);
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 250:
+        return true;
+      case 550:
+        return false;
+      default:
+        throw new FTPException (response);
+      }
+  }
 
   /**
    * Terminates an authenticated login.
    * If file transfer is in progress, it remains active for result response
    * only.
    */
-  public void reinitialize () throws IOException
-    {
-      send (REIN);
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 220:
-          if (dtp != null)
-            {
-              dtp.complete ();
-              dtp = null;
-            }
-          break;
-        default:
-          throw new FTPException (response);
-        }
-    }
+  public void reinitialize ()
+    throws IOException
+  {
+    send (REIN);
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 220:
+        if (dtp != null)
+          {
+            dtp.complete ();
+            dtp = null;
+          }
+        break;
+      default:
+        throw new FTPException (response);
+      }
+  }
 
   /**
    * Terminates the control connection.
    * The file transfer connection remains open for result response only.
    * This connection is invalid and no further commands may be issued.
    */
-  public void logout () throws IOException
-    {
-      send (QUIT);
-      try
-        {
-          getResponse ();            // not required
-        }
-      catch (IOException e)
-        {
-        }
-      if (dtp != null)
-        {
-          dtp.complete ();
-          dtp = null;
-        }
-      try
-        {
-          socket.close ();
-        }
-      catch (IOException e)
-        {
-        }
-    }
-
+  public void logout ()
+    throws IOException
+  {
+    send (QUIT);
+    try
+      {
+        getResponse ();            // not required
+      }
+    catch (IOException e)
+      {
+      }
+    if (dtp != null)
+      {
+        dtp.complete ();
+        dtp = null;
+      }
+    try
+      {
+        socket.close ();
+      }
+    catch (IOException e)
+      {
+      }
+  }
+  
   /**
    * Initialise the data transfer process.
    */
-  protected void initialiseDTP () throws IOException
-    {
-      if (dtp != null)
-        {
-          dtp.complete ();
-          dtp = null;
-        }
-
-      InetAddress localhost = socket.getLocalAddress ();
-      if (passive)
-        {
-          send (PASV);
-          FTPResponse response = getResponse ();
-          switch (response.getCode ())
-            {
-            case 227:
-              String message = response.getMessage ();
-              try
-                {
-                  int start = message.indexOf (',');
-                  char c = message.charAt (start - 1);
-                  while (c >= 0x30 && c <= 0x39)
-                    {
-                      c = message.charAt ((--start) - 1);
-                    }
-                  int mid1 = start;
-                  for (int i = 0; i < 4; i++)
-                    {
-                      mid1 = message.indexOf (',', mid1 + 1);
-                    }
-                  int mid2 = message.indexOf (',', mid1 + 1);
-                  if (mid1 == -1 || mid2 < mid1)
-                    {
-                      throw new ProtocolException ("Malformed 227: " +
-                                                   message);
-                    }
-                  int end = mid2;
-                  c = message.charAt (end + 1);
-                  while (c >= 0x30 && c <= 0x39)
-                    {
-                      c = message.charAt((++end) + 1);
-                    }
-
-                  String address =
-                    message.substring (start, mid1).replace (',', '.');
-                  int port_hi =
-                    Integer.parseInt (message.substring (mid1 + 1, mid2));
-                  int port_lo =
-                    Integer.parseInt (message.substring (mid2 + 1, end + 1));
-                  int port = (port_hi << 8) | port_lo;
-
-                  /*System.out.println ("Entering passive mode: " + address +
-                                      ":" + port);*/
-                  dtp = new PassiveModeDTP (address, port, localhost);
-                  break;
-                }
-              catch (ArrayIndexOutOfBoundsException e)
-                {
-                  throw new ProtocolException (e.getMessage () + ": " +
-                                               message);
-                }
-              catch (NumberFormatException e)
-                {
-                  throw new ProtocolException (e.getMessage () + ": " +
-                                               message);
-                }
-            default:
-              throw new FTPException (response);
-            }
-        }
-      else
-        {
-          // Get the local port
-          int port = socket.getLocalPort () + 1;
-          int tries = 0;
-          // Bind the active mode DTP
-          while (dtp == null)
-            {
-              try
-                {
-                  dtp = new ActiveModeDTP (localhost, port);
-                  /*System.out.println ("Listening on: " + port);*/
-                }
-              catch (BindException e)
-                {
-                  port++;
-                  tries++;
-                  if (tries > 9)
-                    {
-                      throw e;
-                    }
-                }
-            }
-
-          // Send PORT command
-          StringBuffer buf = new StringBuffer (PORT);
-          buf.append (' ');
-          // Construct the address/port string form
-          byte[] address = localhost.getAddress ();
-          for (int i = 0; i < address.length; i++)
-            {
-              int a = (int) address[i];
-              if (a < 0)
-                {
-                  a += 0x100;
-                }
-              buf.append (a);
-              buf.append (',');
-            }
-          int port_hi = (port & 0xff00) >> 8;
-          int port_lo = (port & 0x00ff);
-          buf.append (port_hi);
-          buf.append (',');
-          buf.append (port_lo);
-          send (buf.toString ());
-          // Get response
-          FTPResponse response = getResponse ();
-          switch (response.getCode ())
-            {
-            case 200:                // OK
-              break;
-            default:
-              dtp.abort ();
-              dtp = null;
-              throw new FTPException (response);
-            }
-        }
-      dtp.setTransferMode (transferMode);
-    }
-
+  protected void initialiseDTP ()
+    throws IOException
+  {
+    if (dtp != null)
+      {
+        dtp.complete ();
+        dtp = null;
+      }
+    
+    InetAddress localhost = socket.getLocalAddress ();
+    if (passive)
+      {
+        send (PASV);
+        FTPResponse response = getResponse ();
+        switch (response.getCode ())
+          {
+          case 227:
+            String message = response.getMessage ();
+            try
+              {
+                int start = message.indexOf (',');
+                char c = message.charAt (start - 1);
+                while (c >= 0x30 && c <= 0x39)
+                  {
+                    c = message.charAt ((--start) - 1);
+                  }
+                int mid1 = start;
+                for (int i = 0; i < 4; i++)
+                  {
+                    mid1 = message.indexOf (',', mid1 + 1);
+                  }
+                int mid2 = message.indexOf (',', mid1 + 1);
+                if (mid1 == -1 || mid2 < mid1)
+                  {
+                    throw new ProtocolException ("Malformed 227: " +
+                                                 message);
+                  }
+                int end = mid2;
+                c = message.charAt (end + 1);
+                while (c >= 0x30 && c <= 0x39)
+                  {
+                    c = message.charAt((++end) + 1);
+                  }
+                
+                String address =
+                  message.substring (start, mid1).replace (',', '.');
+                int port_hi =
+                  Integer.parseInt (message.substring (mid1 + 1, mid2));
+                int port_lo =
+                  Integer.parseInt (message.substring (mid2 + 1, end + 1));
+                int port = (port_hi << 8) | port_lo;
+                
+                /*System.out.println ("Entering passive mode: " + address +
+                  ":" + port);*/
+                dtp = new PassiveModeDTP (address, port, localhost,
+                                          connectionTimeout, timeout);
+                break;
+              }
+            catch (ArrayIndexOutOfBoundsException e)
+              {
+                throw new ProtocolException (e.getMessage () + ": " +
+                                             message);
+              }
+            catch (NumberFormatException e)
+              {
+                throw new ProtocolException (e.getMessage () + ": " +
+                                             message);
+              }
+          default:
+            throw new FTPException (response);
+          }
+      }
+    else
+      {
+        // Get the local port
+        int port = socket.getLocalPort () + 1;
+        int tries = 0;
+        // Bind the active mode DTP
+        while (dtp == null)
+          {
+            try
+              {
+                dtp = new ActiveModeDTP (localhost, port,
+                                         connectionTimeout, timeout);
+                /*System.out.println ("Listening on: " + port);*/
+              }
+            catch (BindException e)
+              {
+                port++;
+                tries++;
+                if (tries > 9)
+                  {
+                    throw e;
+                  }
+              }
+          }
+        
+        // Send PORT command
+        StringBuffer buf = new StringBuffer (PORT);
+        buf.append (' ');
+        // Construct the address/port string form
+        byte[] address = localhost.getAddress ();
+        for (int i = 0; i < address.length; i++)
+          {
+            int a = (int) address[i];
+            if (a < 0)
+              {
+                a += 0x100;
+              }
+            buf.append (a);
+            buf.append (',');
+          }
+        int port_hi = (port & 0xff00) >> 8;
+        int port_lo = (port & 0x00ff);
+        buf.append (port_hi);
+        buf.append (',');
+        buf.append (port_lo);
+        send (buf.toString ());
+        // Get response
+        FTPResponse response = getResponse ();
+        switch (response.getCode ())
+          {
+          case 200:                // OK
+            break;
+          default:
+            dtp.abort ();
+            dtp = null;
+            throw new FTPException (response);
+          }
+      }
+    dtp.setTransferMode (transferMode);
+  }
+  
   /**
    * Set passive mode.
    * @param flag true if we should use passive mode, false otherwise
    */
-  public void setPassive (boolean flag) throws IOException
-    {
-      if (passive != flag)
-        {
-          passive = flag;
-          initialiseDTP ();
-        }
-    }
-
+  public void setPassive (boolean flag)
+    throws IOException
+  {
+    if (passive != flag)
+      {
+        passive = flag;
+        initialiseDTP ();
+      }
+  }
+  
   /**
    * Returns the current representation type of the transfer data.
    * @return TYPE_ASCII, TYPE_EBCDIC, or TYPE_BINARY
    */
   public int getRepresentationType ()
-    {
-      return representationType;
-    }
+  {
+    return representationType;
+  }
 
   /**
    * Sets the desired representation type of the transfer data.
    * @param type TYPE_ASCII, TYPE_EBCDIC, or TYPE_BINARY
    */
-  public void setRepresentationType (int type) throws IOException
-    {
-      StringBuffer buf = new StringBuffer (TYPE);
-      buf.append(' ');
-      switch (type)
-        {
-        case TYPE_ASCII:
-          buf.append ('A');
-          break;
-        case TYPE_EBCDIC:
-          buf.append ('E');
-          break;
-        case TYPE_BINARY:
-          buf.append ('I');
-          break;
-        default:
-          throw new IllegalArgumentException (Integer.toString (type));
-        }
-      //buf.append (' ');
-      //buf.append ('N');
-      send (buf.toString ());
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 200:
-          representationType = type;
-          break;
-        default:
-          throw new FTPException (response);
-        }
-    }
+  public void setRepresentationType (int type)
+    throws IOException
+  {
+    StringBuffer buf = new StringBuffer (TYPE);
+    buf.append(' ');
+    switch (type)
+      {
+      case TYPE_ASCII:
+        buf.append ('A');
+        break;
+      case TYPE_EBCDIC:
+        buf.append ('E');
+        break;
+      case TYPE_BINARY:
+        buf.append ('I');
+        break;
+      default:
+        throw new IllegalArgumentException (Integer.toString (type));
+      }
+    //buf.append (' ');
+    //buf.append ('N');
+    send (buf.toString ());
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 200:
+        representationType = type;
+        break;
+      default:
+        throw new FTPException (response);
+      }
+  }
 
   /**
    * Returns the current file structure type.
    * @return STRUCTURE_FILE, STRUCTURE_RECORD, or STRUCTURE_PAGE
    */
   public int getFileStructure ()
-    {
-      return fileStructure;
-    }
+  {
+    return fileStructure;
+  }
 
   /**
    * Sets the desired file structure type.
    * @param structure STRUCTURE_FILE, STRUCTURE_RECORD, or STRUCTURE_PAGE
    */
-  public void setFileStructure (int structure) throws IOException
-    {
-      StringBuffer buf = new StringBuffer (STRU);
-      buf.append (' ');
-      switch (structure)
-        {
-        case STRUCTURE_FILE:
-          buf.append ('F');
-          break;
-        case STRUCTURE_RECORD:
-          buf.append ('R');
-          break;
-        case STRUCTURE_PAGE:
-          buf.append ('P');
-          break;
-        default:
-          throw new IllegalArgumentException (Integer.toString (structure));
-        }
-      send (buf.toString ());
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 200:
-          fileStructure = structure;
-          break;
-        default:
-          throw new FTPException (response);
-        }
-    }
+  public void setFileStructure (int structure)
+    throws IOException
+  {
+    StringBuffer buf = new StringBuffer (STRU);
+    buf.append (' ');
+    switch (structure)
+      {
+      case STRUCTURE_FILE:
+        buf.append ('F');
+        break;
+      case STRUCTURE_RECORD:
+        buf.append ('R');
+        break;
+      case STRUCTURE_PAGE:
+        buf.append ('P');
+        break;
+      default:
+        throw new IllegalArgumentException (Integer.toString (structure));
+      }
+    send (buf.toString ());
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 200:
+        fileStructure = structure;
+        break;
+      default:
+        throw new FTPException (response);
+      }
+  }
 
   /**
    * Returns the current transfer mode.
    * @return MODE_STREAM, MODE_BLOCK, or MODE_COMPRESSED
    */
   public int getTransferMode ()
-    {
-      return transferMode;
-    }
+  {
+    return transferMode;
+  }
 
   /**
    * Sets the desired transfer mode.
    * @param mode MODE_STREAM, MODE_BLOCK, or MODE_COMPRESSED
    */
-  public void setTransferMode (int mode) throws IOException
-    {
-      StringBuffer buf = new StringBuffer (MODE);
-      buf.append (' ');
-      switch (mode)
-        {
-        case MODE_STREAM:
-          buf.append ('S');
-          break;
-        case MODE_BLOCK:
-          buf.append ('B');
-          break;
-        case MODE_COMPRESSED:
-          buf.append ('C');
-          break;
-        default:
-          throw new IllegalArgumentException (Integer.toString (mode));
-        }
-      send (buf.toString ());
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 200:
-          transferMode = mode;
-          if (dtp != null)
-            {
-              dtp.setTransferMode (mode);
-            }
-          break;
-        default:
-          throw new FTPException (response);
-        }
-    }
-
+  public void setTransferMode (int mode)
+    throws IOException
+  {
+    StringBuffer buf = new StringBuffer (MODE);
+    buf.append (' ');
+    switch (mode)
+      {
+      case MODE_STREAM:
+        buf.append ('S');
+        break;
+      case MODE_BLOCK:
+        buf.append ('B');
+        break;
+      case MODE_COMPRESSED:
+        buf.append ('C');
+        break;
+      default:
+        throw new IllegalArgumentException (Integer.toString (mode));
+      }
+    send (buf.toString ());
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 200:
+        transferMode = mode;
+        if (dtp != null)
+          {
+            dtp.setTransferMode (mode);
+          }
+        break;
+      default:
+        throw new FTPException (response);
+      }
+  }
+  
   /**
    * Retrieves the specified file.
    * @param filename the filename of the file to retrieve
    * @return an InputStream containing the file content
    */
-  public InputStream retrieve (String filename) throws IOException
-    {
-      if (dtp == null || transferMode == MODE_STREAM)
-        {
-          initialiseDTP ();
-        }
-      /*
-         int size = -1;
-         String cmd = SIZE + ' ' + filename;
-         send (cmd);
-         FTPResponse response = getResponse ();
-         switch (response.getCode ())
-         {
-         case 213:
-         size = Integer.parseInt (response.getMessage ());
-         break;
-         case 550: // File not found
-         default:
-         throw new FTPException (response);
-         }
-       */
-      String cmd = RETR + ' ' + filename;
-      send (cmd);
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 125:                  // Data connection already open; transfer starting
-        case 150:                  // File status okay; about to open data connection
-          return dtp.getInputStream ();
-        default:
-          throw new FTPException (response);
-        }
-    }
-
+  public InputStream retrieve (String filename)
+    throws IOException
+  {
+    if (dtp == null || transferMode == MODE_STREAM)
+      {
+        initialiseDTP ();
+      }
+    /*
+       int size = -1;
+       String cmd = SIZE + ' ' + filename;
+       send (cmd);
+       FTPResponse response = getResponse ();
+       switch (response.getCode ())
+       {
+       case 213:
+       size = Integer.parseInt (response.getMessage ());
+       break;
+       case 550: // File not found
+       default:
+       throw new FTPException (response);
+       }
+     */
+    String cmd = RETR + ' ' + filename;
+    send (cmd);
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 125:                  // Data connection already open; transfer starting
+      case 150:                  // File status okay; about to open data connection
+        return dtp.getInputStream ();
+      default:
+        throw new FTPException (response);
+      }
+  }
+  
   /**
    * Returns a stream for uploading a file.
    * If a file with the same filename already exists on the server, it will
@@ -692,24 +725,25 @@ public class FTPConnection
    * @param filename the name of the file to save the content as
    * @return an OutputStream to write the file data to
    */
-  public OutputStream store (String filename) throws IOException
-    {
-      if (dtp == null || transferMode == MODE_STREAM)
-        {
-          initialiseDTP ();
-        }
-      String cmd = STOR + ' ' + filename;
-      send (cmd);
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 125:                  // Data connection already open; transfer starting
-        case 150:                  // File status okay; about to open data connection
-          return dtp.getOutputStream ();
-        default:
-          throw new FTPException (response);
-        }
-    }
+  public OutputStream store (String filename)
+    throws IOException
+  {
+    if (dtp == null || transferMode == MODE_STREAM)
+      {
+        initialiseDTP ();
+      }
+    String cmd = STOR + ' ' + filename;
+    send (cmd);
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 125:                  // Data connection already open; transfer starting
+      case 150:                  // File status okay; about to open data connection
+        return dtp.getOutputStream ();
+      default:
+        throw new FTPException (response);
+      }
+  }
 
   /**
    * Returns a stream for uploading a file.
@@ -718,25 +752,26 @@ public class FTPConnection
    * @param filename the name of the file to save the content as
    * @return an OutputStream to write the file data to
    */
-  public OutputStream append (String filename) throws IOException
-    {
-      if (dtp == null || transferMode == MODE_STREAM)
-        {
-          initialiseDTP ();
-        }
-      String cmd = APPE + ' ' + filename;
-      send (cmd);
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 125:                  // Data connection already open; transfer starting
-        case 150:                  // File status okay; about to open data connection
-          return dtp.getOutputStream ();
-        default:
-          throw new FTPException (response);
-        }
-    }
-
+  public OutputStream append (String filename)
+    throws IOException
+  {
+    if (dtp == null || transferMode == MODE_STREAM)
+      {
+        initialiseDTP ();
+      }
+    String cmd = APPE + ' ' + filename;
+    send (cmd);
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 125:                  // Data connection already open; transfer starting
+      case 150:                  // File status okay; about to open data connection
+        return dtp.getOutputStream ();
+      default:
+        throw new FTPException (response);
+      }
+  }
+  
   /**
    * This command may be required by some servers to reserve sufficient
    * storage to accommodate the new file to be transferred.
@@ -744,185 +779,192 @@ public class FTPConnection
    * <code>append</code>.
    * @param size the number of bytes of storage to allocate
    */
-  public void allocate (long size) throws IOException
-    {
-      String cmd = ALLO + ' ' + size;
-      send (cmd);
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 200:                  // OK
-        case 202:                  // Superfluous
-          break;
-        default:
-          throw new FTPException (response);
-        }
-    }
-
+  public void allocate (long size)
+    throws IOException
+  {
+    String cmd = ALLO + ' ' + size;
+    send (cmd);
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 200:                  // OK
+      case 202:                  // Superfluous
+        break;
+      default:
+        throw new FTPException (response);
+      }
+  }
+  
   /**
    * Renames a file.
    * @param oldName the current name of the file
    * @param newName the new name
    * @return true if successful, false otherwise
    */
-  public boolean rename (String oldName, String newName) throws IOException
-    {
-      String cmd = RNFR + ' ' + oldName;
-      send (cmd);
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 450:                  // File unavailable
-        case 550:                  // File not found
-          return false;
-        case 350:                 // Pending
-          break;
-        default:
-          throw new FTPException (response);
-        }
-      cmd = RNTO + ' ' + newName;
-      send (cmd);
-      response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 250:                  // OK
-          return true;
-        case 450:
-        case 550:
-          return false;
-        default:
-          throw new FTPException (response);
-        }
-    }
-
+  public boolean rename (String oldName, String newName)
+    throws IOException
+  {
+    String cmd = RNFR + ' ' + oldName;
+    send (cmd);
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 450:                  // File unavailable
+      case 550:                  // File not found
+        return false;
+      case 350:                 // Pending
+        break;
+      default:
+        throw new FTPException (response);
+      }
+    cmd = RNTO + ' ' + newName;
+    send (cmd);
+    response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 250:                  // OK
+        return true;
+      case 450:
+      case 550:
+        return false;
+      default:
+        throw new FTPException (response);
+      }
+  }
+  
   /**
    * Aborts the transfer in progress.
    * @return true if a transfer was in progress, false otherwise
    */
-  public boolean abort () throws IOException
-    {
-      send (ABOR);
-      FTPResponse response = getResponse ();
-      // Abort client DTP
-      if (dtp != null)
-        {
-          dtp.abort ();
-        }
-      switch (response.getCode ())
-        {
-        case 226:                  // successful abort
-          return false;
-        case 426:                 // interrupted
-          response = getResponse ();
-          if (response.getCode () == 226)
-            {
-              return true;
-            }
-        default:
-          throw new FTPException (response);
-        }
-    }
-
+  public boolean abort ()
+    throws IOException
+  {
+    send (ABOR);
+    FTPResponse response = getResponse ();
+    // Abort client DTP
+    if (dtp != null)
+      {
+        dtp.abort ();
+      }
+    switch (response.getCode ())
+      {
+      case 226:                  // successful abort
+        return false;
+      case 426:                 // interrupted
+        response = getResponse ();
+        if (response.getCode () == 226)
+          {
+            return true;
+          }
+      default:
+        throw new FTPException (response);
+      }
+  }
+  
   /**
    * Causes the file specified to be deleted at the server site.
    * @param filename the file to delete
    */
-  public boolean delete (String filename) throws IOException
-    {
-      String cmd = DELE + ' ' + filename;
-      send (cmd);
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 250:                  // OK
-          return true;
-        case 450:                 // File unavailable
-        case 550:                 // File not found
-          return false;
-        default:
-          throw new FTPException (response);
-        }
-    }
-
+  public boolean delete (String filename)
+    throws IOException
+  {
+    String cmd = DELE + ' ' + filename;
+    send (cmd);
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 250:                  // OK
+        return true;
+      case 450:                 // File unavailable
+      case 550:                 // File not found
+        return false;
+      default:
+        throw new FTPException (response);
+      }
+  }
+  
   /**
    * Causes the directory specified to be deleted.
    * This may be an absolute or relative pathname.
    * @param pathname the directory to delete
    */
-  public boolean removeDirectory (String pathname) throws IOException
-    {
-      String cmd = RMD + ' ' + pathname;
-      send (cmd);
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 250:                  // OK
-          return true;
-        case 550:                 // File not found
-          return false;
-        default:
-          throw new FTPException (response);
-        }
-    }
+  public boolean removeDirectory (String pathname)
+    throws IOException
+  {
+    String cmd = RMD + ' ' + pathname;
+    send (cmd);
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 250:                  // OK
+        return true;
+      case 550:                 // File not found
+        return false;
+      default:
+        throw new FTPException (response);
+      }
+  }
 
   /**
    * Causes the directory specified to be created at the server site.
    * This may be an absolute or relative pathname.
    * @param pathname the directory to create
    */
-  public boolean makeDirectory (String pathname) throws IOException
-    {
-      String cmd = MKD + ' ' + pathname;
-      send (cmd);
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 257:                  // Directory created
-          return true;
-        case 550:                 // File not found
-          return false;
-        default:
-          throw new FTPException (response);
-        }
-    }
-
+  public boolean makeDirectory (String pathname)
+    throws IOException
+  {
+    String cmd = MKD + ' ' + pathname;
+    send (cmd);
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 257:                  // Directory created
+        return true;
+      case 550:                 // File not found
+        return false;
+      default:
+        throw new FTPException (response);
+      }
+  }
+  
   /**
    * Returns the current working directory.
    */
-  public String getWorkingDirectory () throws IOException
-    {
-      send (PWD);
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 257:
-          String message = response.getMessage ();
-          if (message.charAt (0) == '"')
-            {
-              int end = message.indexOf ('"', 1);
-              if (end == -1)
-                {
-                  throw new ProtocolException (message);
-                }
-              return message.substring (1, end);
-            }
-          else
-            {
-              int end = message.indexOf (' ');
-              if (end == -1)
-                {
-                  return message;
-                }
-              else
-                {
-                  return message.substring (0, end);
-                }
-            }
-        default:
-          throw new FTPException (response);
-        }
-    }
-
+  public String getWorkingDirectory ()
+    throws IOException
+  {
+    send (PWD);
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 257:
+        String message = response.getMessage ();
+        if (message.charAt (0) == '"')
+          {
+            int end = message.indexOf ('"', 1);
+            if (end == -1)
+              {
+                throw new ProtocolException (message);
+              }
+            return message.substring (1, end);
+          }
+        else
+          {
+            int end = message.indexOf (' ');
+            if (end == -1)
+              {
+                return message;
+              }
+            else
+              {
+                return message.substring (0, end);
+              }
+          }
+      default:
+        throw new FTPException (response);
+      }
+  }
+  
   /**
    * Returns a listing of information about the specified pathname.
    * If the pathname specifies a directory or other group of files, the
@@ -932,32 +974,33 @@ public class FTPConnection
    * current working or default directory.
    * @param pathname the context pathname, or null
    */
-  public InputStream list (String pathname) throws IOException
-    {
-      if (dtp == null || transferMode == MODE_STREAM)
-        {
-          initialiseDTP ();
-        }
-      if (pathname == null)
-        {
-          send (LIST);
-        }
-      else
-        {
-          String cmd = LIST + ' ' + pathname;
-          send (cmd);
-        }
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 125:                  // Data connection already open; transfer starting
-        case 150:                  // File status okay; about to open data connection
-          return dtp.getInputStream ();
-        default:
-          throw new FTPException (response);
-        }
-    }
-
+  public InputStream list (String pathname)
+    throws IOException
+  {
+    if (dtp == null || transferMode == MODE_STREAM)
+      {
+        initialiseDTP ();
+      }
+    if (pathname == null)
+      {
+        send (LIST);
+      }
+    else
+      {
+        String cmd = LIST + ' ' + pathname;
+        send (cmd);
+      }
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 125:                  // Data connection already open; transfer starting
+      case 150:                  // File status okay; about to open data connection
+        return dtp.getInputStream ();
+      default:
+        throw new FTPException (response);
+      }
+  }
+  
   /**
    * Returns a directory listing. The pathname should specify a
    * directory or other system-specific file group descriptor; a null
@@ -965,86 +1008,89 @@ public class FTPConnection
    * @param pathname the directory pathname, or null
    * @return a list of filenames (strings)
    */
-  public List nameList (String pathname) throws IOException
-    {
-      if (dtp == null || transferMode == MODE_STREAM)
-        {
-          initialiseDTP ();
-        }
-      if (pathname == null)
-        {
-          send (NLST);
-        }
-      else
-        {
-          String cmd = NLST + ' ' + pathname;
-          send (cmd);
-        }
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 125:                  // Data connection already open; transfer starting
-        case 150:                  // File status okay; about to open data connection
-          InputStream in = dtp.getInputStream ();
-          in = new BufferedInputStream (in);
-          in = new CRLFInputStream (in);     // TODO ensure that TYPE is correct
-          LineInputStream li = new LineInputStream (in);
-          List ret = new ArrayList ();
-          for (String line = li.readLine ();
-               line != null;
-               line = li.readLine ())
-            {
-              ret.add (line);
-            }
-          li.close ();
-          return ret;
-        default:
-          throw new FTPException (response);
-        }
-    }
-
+  public List nameList (String pathname)
+    throws IOException
+  {
+    if (dtp == null || transferMode == MODE_STREAM)
+      {
+        initialiseDTP ();
+      }
+    if (pathname == null)
+      {
+        send (NLST);
+      }
+    else
+      {
+        String cmd = NLST + ' ' + pathname;
+        send (cmd);
+      }
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 125:                  // Data connection already open; transfer starting
+      case 150:                  // File status okay; about to open data connection
+        InputStream in = dtp.getInputStream ();
+        in = new BufferedInputStream (in);
+        in = new CRLFInputStream (in);     // TODO ensure that TYPE is correct
+        LineInputStream li = new LineInputStream (in);
+        List ret = new ArrayList ();
+        for (String line = li.readLine ();
+             line != null;
+             line = li.readLine ())
+          {
+            ret.add (line);
+          }
+        li.close ();
+        return ret;
+      default:
+        throw new FTPException (response);
+      }
+  }
+  
   /**
    * Returns the type of operating system at the server.
    */
-  public String system () throws IOException
-    {
-      send (SYST);
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 215:
-          String message = response.getMessage ();
-          int end = message.indexOf (' ');
-          if (end == -1)
-            {
-              return message;
-            }
-          else
-            {
-              return message.substring (0, end);
-            }
-        default:
-          throw new FTPException (response);
-        }
-    }
-
+  public String system ()
+    throws IOException
+  {
+    send (SYST);
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 215:
+        String message = response.getMessage ();
+        int end = message.indexOf (' ');
+        if (end == -1)
+          {
+            return message;
+          }
+        else
+          {
+            return message.substring (0, end);
+          }
+      default:
+        throw new FTPException (response);
+      }
+  }
+  
   /**
    * Does nothing.
    * This method can be used to ensure that the connection does not time
    * out.
    */
-  public void noop () throws IOException
-    {
-      send (NOOP);
-      FTPResponse response = getResponse ();
-      switch (response.getCode ())
-        {
-        case 200:
-          break;
-        default:
-          throw new FTPException (response);
-        }
-    }
+  public void noop ()
+    throws IOException
+  {
+    send (NOOP);
+    FTPResponse response = getResponse ();
+    switch (response.getCode ())
+      {
+      case 200:
+        break;
+      default:
+        throw new FTPException (response);
+      }
+  }
 
   // -- I/O --
 
@@ -1053,118 +1099,121 @@ public class FTPConnection
    * The CRLF sequence is automatically appended.
    * @param cmd the command line to send
    */
-  protected void send (String cmd) throws IOException
-    {
-      byte[] data = cmd.getBytes (US_ASCII);
-      out.write (data);
-      out.write (CRLF);
-      out.flush ();
-    }
+  protected void send (String cmd)
+    throws IOException
+  {
+    byte[] data = cmd.getBytes (US_ASCII);
+    out.write (data);
+    out.write (CRLF);
+    out.flush ();
+  }
 
   /**
    * Reads the next response from the server.
    * If the server sends the "transfer complete" code, this is handled here,
    * and the next response is passed to the caller.
    */
-  protected FTPResponse getResponse () throws IOException
-    {
-      FTPResponse response = readResponse ();
-      if (response.getCode () == 226)
-        {
-          if (dtp != null)
-            {
-              dtp.transferComplete ();
-            }
-          response = readResponse ();
-        }
-      return response;
-    }
+  protected FTPResponse getResponse ()
+    throws IOException
+  {
+    FTPResponse response = readResponse ();
+    if (response.getCode () == 226)
+      {
+        if (dtp != null)
+          {
+            dtp.transferComplete ();
+          }
+        response = readResponse ();
+      }
+    return response;
+  }
 
   /**
    * Reads and parses the next response from the server.
    */
-  protected FTPResponse readResponse () throws IOException
-    {
-      String line = in.readLine ();
-      if (line == null)
-        {
-          throw new ProtocolException( "EOF");
-        }
-      if (line.length () < 4)
-        {
-          throw new ProtocolException (line);
-        }
-      int code = parseCode (line);
-      if (code == -1)
-        {
-          throw new ProtocolException (line);
-        }
-      char c = line.charAt (3);
-      if (c == ' ')
-        {
-          return new FTPResponse (code, line.substring (4));
-        }
-      else if (c == '-')
-        {
-          StringBuffer buf = new StringBuffer (line.substring (4));
-          buf.append ('\n');
-          while (true)
-            {
-              line = in.readLine ();
-              if (line == null)
-                {
-                  throw new ProtocolException ("EOF");
-                }
-              if (line.length () >= 4 &&
-                  line.charAt (3) == ' ' &&
-                  parseCode (line) == code)
-                {
-                  return new FTPResponse (code, line.substring (4),
-                                          buf.toString ());
-                }
-              else
-                {
-                  buf.append (line);
-                  buf.append ('\n');
-                }
-            }
-        }
-      else
-        {
-          throw new ProtocolException (line);
-        }
-    }
-
+  protected FTPResponse readResponse ()
+    throws IOException
+  {
+    String line = in.readLine ();
+    if (line == null)
+      {
+        throw new ProtocolException( "EOF");
+      }
+    if (line.length () < 4)
+      {
+        throw new ProtocolException (line);
+      }
+    int code = parseCode (line);
+    if (code == -1)
+      {
+        throw new ProtocolException (line);
+      }
+    char c = line.charAt (3);
+    if (c == ' ')
+      {
+        return new FTPResponse (code, line.substring (4));
+      }
+    else if (c == '-')
+      {
+        StringBuffer buf = new StringBuffer (line.substring (4));
+        buf.append ('\n');
+        while (true)
+          {
+            line = in.readLine ();
+            if (line == null)
+              {
+                throw new ProtocolException ("EOF");
+              }
+            if (line.length () >= 4 &&
+                line.charAt (3) == ' ' &&
+                parseCode (line) == code)
+              {
+                return new FTPResponse (code, line.substring (4),
+                                        buf.toString ());
+              }
+            else
+              {
+                buf.append (line);
+                buf.append ('\n');
+              }
+          }
+      }
+    else
+      {
+        throw new ProtocolException (line);
+      }
+  }
+  
   /*
    * Parses the 3-digit numeric code at the beginning of the given line.
    * Returns -1 on failure.
    */
   static final int parseCode (String line)
-    {
-      char[] c = { line.charAt (0), line.charAt (1), line.charAt (2) };
-      int ret = 0;
-      for (int i = 0; i < 3; i++)
-        {
-          int digit = ((int) c[i]) - 0x30;
-          if (digit < 0 || digit > 9)
-            {
-              return -1;
-            }
-          // Computing integer powers is way too expensive in Java!
-          switch (i)
-            {
-            case 0:
-              ret += (100 * digit);
-              break;
-            case 1:
-              ret += (10 * digit);
-              break;
-            case 2:
-              ret += digit;
-              break;
-            }
-        }
-      return ret;
-    }
+  {
+    char[] c = { line.charAt (0), line.charAt (1), line.charAt (2) };
+    int ret = 0;
+    for (int i = 0; i < 3; i++)
+      {
+        int digit = ((int) c[i]) - 0x30;
+        if (digit < 0 || digit > 9)
+          {
+            return -1;
+          }
+        // Computing integer powers is way too expensive in Java!
+        switch (i)
+          {
+          case 0:
+            ret += (100 * digit);
+            break;
+          case 1:
+            ret += (10 * digit);
+            break;
+          case 2:
+            ret += digit;
+            break;
+          }
+      }
+    return ret;
+  }
 
 }

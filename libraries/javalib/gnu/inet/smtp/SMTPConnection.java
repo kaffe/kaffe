@@ -1,5 +1,5 @@
 /*
- * $Id: SMTPConnection.java,v 1.1 2004/07/25 22:46:24 dalibor Exp $
+ * $Id: SMTPConnection.java,v 1.3 2004/09/13 11:00:28 dalibor Exp $
  * Copyright (C) 2003 Chris Burdess <dog@gnu.org>
  * 
  * This file is part of GNU inetlib, a library.
@@ -32,6 +32,7 @@ import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.ProtocolException;
 import java.net.Socket;
 import java.security.GeneralSecurityException;
@@ -66,7 +67,7 @@ import gnu.inet.util.SaslOutputStream;
  * This implements RFC 2821.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/07/25 22:46:24 $
+ * @version $Revision: 1.3 $ $Date: 2004/09/13 11:00:28 $
  */
 public class SMTPConnection
 {
@@ -153,7 +154,7 @@ public class SMTPConnection
    */
   public SMTPConnection (String host, int port) throws IOException
   {
-    this (host, port, -1, -1, false);
+    this (host, port, 0, 0, false);
   }
 
   /**
@@ -178,8 +179,16 @@ public class SMTPConnection
     this.debug = debug;
     
     // Initialise socket
-    // TODO connectionTimeout
-    socket = new Socket (host, port);
+    socket = new Socket ();
+    InetSocketAddress address = new InetSocketAddress (host, port);
+    if (connectionTimeout > 0)
+      {
+        socket.connect (address, connectionTimeout);
+      }
+    else
+      {
+        socket.connect (address);
+      }
     if (timeout > 0)
       {
         socket.setSoTimeout (timeout);

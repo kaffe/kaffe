@@ -1,5 +1,5 @@
 /*
- * $Id: Request.java,v 1.1 2004/07/25 22:46:19 dalibor Exp $
+ * $Id: Request.java,v 1.2 2004/08/09 14:38:06 dalibor Exp $
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -34,6 +34,9 @@ import java.net.ProtocolException;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -80,6 +83,11 @@ public class Request
   protected RequestBodyWriter requestBodyWriter;
 
   /**
+   * Request body negotiation threshold for 100-continue expectations.
+   */
+  protected int requestBodyNegotiationThreshold;
+
+  /**
    * The response body reader.
    */
   protected ResponseBodyReader responseBodyReader;
@@ -113,6 +121,7 @@ public class Request
     this.path = path;
     requestHeaders = new Headers ();
     responseHeaderHandlers = new HashMap ();
+    requestBodyNegotiationThreshold = 4096;
   }
 
   /**
@@ -246,6 +255,21 @@ public class Request
   }
 
   /**
+   * Sets the request body negotiation threshold.
+   * If this is set, it determines the maximum size that the request body
+   * may be before body negotiation occurs (via the
+   * <code>100-continue</code> expectation). This ensures that a large
+   * request body is not sent when the server wouldn't have accepted it
+   * anyway.
+   * @param threshold the body negotiation threshold, or &lt;=0 to disable
+   * request body negotation entirely
+   */
+  public void setRequestBodyNegotiationThreshold (int threshold)
+  {
+    requestBodyNegotiationThreshold = threshold;
+  }
+
+  /**
    * Dispatches this request.
    * A request can only be dispatched once; calling this method a second
    * time results in a protocol exception.
@@ -271,7 +295,7 @@ public class Request
     if (requestBodyWriter != null)
       {
         contentLength = requestBodyWriter.getContentLength ();
-        if (contentLength > 4096) // TODO make configurable
+        if (contentLength > requestBodyNegotiationThreshold)
           {
             expectingContinue = true;
             setHeader ("Expect", "100-continue");
@@ -282,76 +306,85 @@ public class Request
           }
       }
     
-    // Loop while authentication fails or continue
-    do
+    try
       {
-        retry = false;
-        // Send request
-        connection.fireRequestEvent (RequestEvent.REQUEST_SENDING, this);
-        
-        // Get socket output and input streams
-        Socket socket = connection.getSocket ();
-        OutputStream out = socket.getOutputStream ();
-        LineInputStream in = new LineInputStream (socket.getInputStream ());
-        // Request line
-        String requestUri =
-          connection.isUsingProxy () ? getRequestURI () : path;
-        String line = method + ' ' + requestUri + ' ' + version + CRLF;
-        out.write (line.getBytes (US_ASCII));
-        // Request headers
-        for (Iterator i = requestHeaders.keySet ().iterator ();
-             i.hasNext (); )
+        // Loop while authentication fails or continue
+        do
           {
-            String name = (String) i.next ();
-            String value = (String) requestHeaders.get (name);
-            line = name + HEADER_SEP + value + CRLF;
-            out.write (line.getBytes (US_ASCII));
-          }
-        out.write (CRLF.getBytes (US_ASCII));
-        // Request body
-        if (requestBodyWriter != null && !expectingContinue)
-          {
-            byte[] buffer = new byte[4096];
-            int len;
-            int count = 0;
+            retry = false;
+            // Send request
+            connection.fireRequestEvent (RequestEvent.REQUEST_SENDING, this);
             
-            requestBodyWriter.reset ();
-            do
+            // Get socket output and input streams
+            OutputStream out = connection.getOutputStream ();
+            LineInputStream in =
+              new LineInputStream (connection.getInputStream ());
+            // Request line
+            String requestUri =
+              connection.isUsingProxy () ? getRequestURI () : path;
+            String line = method + ' ' + requestUri + ' ' + version + CRLF;
+            out.write (line.getBytes (US_ASCII));
+            // Request headers
+            for (Iterator i = requestHeaders.keySet ().iterator ();
+                 i.hasNext (); )
               {
-                len = requestBodyWriter.write (buffer);
-                if (len > 0)
-                  {
-                    out.write (buffer, 0, len);
-                  }
-                count += len;
+                String name = (String) i.next ();
+                String value = (String) requestHeaders.get (name);
+                line = name + HEADER_SEP + value + CRLF;
+                out.write (line.getBytes (US_ASCII));
               }
-            while (len > -1 && count < contentLength);
             out.write (CRLF.getBytes (US_ASCII));
-          }
-        // Sent event
-        connection.fireRequestEvent (RequestEvent.REQUEST_SENT, this);
-        // Get response
-        response = readResponse (in);
-        int sc = response.getCode ();
-        if (sc == 401 && authenticator != null)
-          {
-            if (authenticate (response, attempts++))
+            // Request body
+            if (requestBodyWriter != null && !expectingContinue)
               {
+                byte[] buffer = new byte[4096];
+                int len;
+                int count = 0;
+                
+                requestBodyWriter.reset ();
+                do
+                  {
+                    len = requestBodyWriter.write (buffer);
+                    if (len > 0)
+                      {
+                        out.write (buffer, 0, len);
+                      }
+                    count += len;
+                  }
+                while (len > -1 && count < contentLength);
+                out.write (CRLF.getBytes (US_ASCII));
+              }
+            out.flush ();
+            // Sent event
+            connection.fireRequestEvent (RequestEvent.REQUEST_SENT, this);
+            // Get response
+            response = readResponse (in);
+            int sc = response.getCode ();
+            if (sc == 401 && authenticator != null)
+              {
+                if (authenticate (response, attempts++))
+                  {
+                    retry = true;
+                  }
+              }
+            else if (sc == 100 && expectingContinue)
+              {
+                requestHeaders.remove ("Expect");
+                setHeader ("Content-Length", Integer.toString (contentLength));
+                expectingContinue = false;
                 retry = true;
               }
           }
-        else if (sc == 100 && expectingContinue)
-          {
-            requestHeaders.remove ("Expect");
-            setHeader ("Content-Length", Integer.toString (contentLength));
-            expectingContinue = false;
-            retry = true;
-          }
+        while (retry);
       }
-    while (retry);
+    catch (IOException e)
+      {
+        connection.close ();
+        throw e;
+      }
     return response;
   }
-
+    
   Response readResponse (LineInputStream in)
     throws IOException
   {
@@ -360,6 +393,10 @@ public class Request
     
     // Read response status line
     line = in.readLine ();
+    if (line == null)
+      {
+        throw new ProtocolException ("Peer closed connection");
+      }
     if (!line.startsWith ("HTTP/"))
       {
         throw new ProtocolException (line);
@@ -416,6 +453,12 @@ public class Request
       {
         Map.Entry entry = (Map.Entry) i.next ();
         String name = (String) entry.getKey ();
+        // Handle Set-Cookie
+        if ("Set-Cookie".equalsIgnoreCase (name))
+          {
+            String value = (String) entry.getValue ();
+            handleSetCookie (value);
+          }
         ResponseHeaderHandler handler =
           (ResponseHeaderHandler) responseHeaderHandlers.get (name);
         if (handler != null)
@@ -525,6 +568,7 @@ public class Request
         Credentials creds = authenticator.getCredentials (realm, attempts);
         String username = creds.getUsername ();
         String password = creds.getPassword ();
+        connection.incrementNonce (nonce);
         try
           {
             MessageDigest md5 = MessageDigest.getInstance ("MD5");
@@ -654,11 +698,19 @@ public class Request
 
   /**
    * Returns the number of times the specified nonce value has been seen.
+   * This always returns an 8-byte 0-padded hexadecimal string.
    */
   String getNonceCount (String nonce)
   {
-    // TODO
-    return "00000001";
+    int nc = connection.getNonceCount (nonce);
+    String hex = Integer.toHexString (nc);
+    StringBuffer buf = new StringBuffer ();
+    for (int i = 8 - hex.length (); i > 0; i--)
+      {
+        buf.append ('0');
+      }
+    buf.append (hex);
+    return buf.toString ();
   }
 
   /**
@@ -696,6 +748,132 @@ public class Request
         ret[j++] = Character.forDigit (c % 0x10, 0x10);
       }
     return new String (ret);
+  }
+
+  /**
+   * Parse the specified cookie list and notify the cookie manager.
+   */
+  void handleSetCookie (String text)
+  {
+    CookieManager cookieManager = connection.getCookieManager ();
+    if (cookieManager == null)
+      {
+        return;
+      }
+    String name = null;
+    String value = null;
+    String comment = null;
+    String domain = connection.getHostName ();
+    String path = this.path;
+    int lsi = path.lastIndexOf ('/');
+    if (lsi != -1)
+      {
+        path = path.substring (0, lsi);
+      }
+    boolean secure = false;
+    Date expires = null;
+
+    int len = text.length ();
+    String attr = null;
+    StringBuffer buf = new StringBuffer ();
+    boolean inQuote = false;
+    for (int i = 0; i <= len; i++)
+      {
+        char c = (i == len) ? '\u0000' : text.charAt (i);
+        if (c == '"')
+          {
+            inQuote = !inQuote;
+          }
+        else if (!inQuote)
+          {
+            if (c == '=' && attr == null)
+              {
+                attr = buf.toString ().trim ();
+                buf.setLength (0);
+              }
+            else if (c == ';' || i == len || c == ',')
+              {
+                String val = unquote (buf.toString ().trim ());
+                if (name == null)
+                  {
+                    name = attr;
+                    value = val;
+                  }
+                else if ("Comment".equalsIgnoreCase (attr))
+                  {
+                    comment = val;
+                  }
+                else if ("Domain".equalsIgnoreCase (attr))
+                  {
+                    domain = val;
+                  }
+                else if ("Path".equalsIgnoreCase (attr))
+                  {
+                    path = val;
+                  }
+                else if ("Secure".equalsIgnoreCase (val))
+                  {
+                    secure = true;
+                  }
+                else if ("Max-Age".equalsIgnoreCase (attr))
+                  {
+                    int delta = Integer.parseInt (val);
+                    Calendar cal = Calendar.getInstance ();
+                    cal.setTimeInMillis (System.currentTimeMillis ());
+                    cal.add (Calendar.SECOND, delta);
+                    expires = cal.getTime ();
+                  }
+                else if ("Expires".equalsIgnoreCase (attr))
+                  {
+                    DateFormat dateFormat = new HTTPDateFormat ();
+                    try
+                      {
+                        expires = dateFormat.parse (val);
+                      }
+                    catch (ParseException e)
+                      {
+                        // if this isn't a valid date, it may be that
+                        // the value was returned unquoted; in that case, we
+                        // want to continue buffering the value
+                        buf.append (c);
+                        continue;
+                      }
+                  }
+                attr = null;
+                buf.setLength (0);
+                // case EOL
+                if (i == len || c == ',')
+                  {
+                    Cookie cookie = new Cookie (name, value, comment, domain,
+                                                path, secure, expires);
+                    cookieManager.setCookie (cookie);
+                  }
+                if (c == ',')
+                  {
+                    // Reset cookie fields
+                    name = null;
+                    value = null;
+                    comment = null;
+                    domain = connection.getHostName ();
+                    path = this.path;
+                    if (lsi != -1)
+                      {
+                        path = path.substring (0, lsi);
+                      }
+                    secure = false;
+                    expires = null;
+                  }
+              }
+            else
+              {
+                buf.append (c);
+              }
+          }
+        else
+          {
+            buf.append (c);
+          }
+      }
   }
 
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: BASE64.java,v 1.1 2004/07/25 22:46:24 dalibor Exp $
+ * $Id: BASE64.java,v 1.3 2004/09/13 11:00:28 dalibor Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -31,7 +31,7 @@ package gnu.inet.util;
  * Encodes and decodes text according to the BASE64 encoding.
  *
  * @author <a href="mailto:dog@gnu.org">Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/07/25 22:46:24 $
+ * @version $Revision: 1.3 $ $Date: 2004/09/13 11:00:28 $
  */
 public final class BASE64
 {
@@ -111,10 +111,15 @@ public final class BASE64
    */
   public static byte[] decode(byte[] bs)
     {
-      byte[]buffer = new byte[bs.length];
+      int srclen = bs.length;
+      while (srclen > 0 && bs[srclen - 1] == 0x3d)
+        {
+          srclen--; /* strip padding character */
+        }
+      byte[] buffer = new byte[srclen];
       int buflen = 0;
       int si = 0;
-      int len = bs.length - si;
+      int len = srclen - si;
       while (len > 0)
         {
           byte b0 = dst[bs[si++] & 0xff];
@@ -132,7 +137,7 @@ public final class BASE64
                   buffer[buflen++] = (byte) (b0 << 6 & 0xc0 | b2 & 0x3f);
                 }
             }
-          len = bs.length - si;
+          len = srclen - si;
         }
       byte[] bt = new byte[buflen];
       System.arraycopy (buffer, 0, bt, 0, buflen);

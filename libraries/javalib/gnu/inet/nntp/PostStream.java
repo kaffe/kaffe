@@ -1,5 +1,5 @@
 /*
- * $Id: PostStream.java,v 1.1 2004/07/25 22:46:23 dalibor Exp $
+ * $Id: PostStream.java,v 1.3 2004/10/04 19:34:02 robilad Exp $
  * Copyright (C) 2002, 2003 The free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -35,7 +35,7 @@ import java.io.IOException;
  * A stream to which article contents should be written.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/07/25 22:46:23 $
+ * @version $Revision: 1.3 $ $Date: 2004/10/04 19:34:02 $
  */
 public final class PostStream extends FilterOutputStream
 {
@@ -45,46 +45,46 @@ public final class PostStream extends FilterOutputStream
   byte last;
   
   PostStream (NNTPConnection connection, boolean isTakethis)
-    {
-      super (connection.out);
-      this.connection = connection;
-      this.isTakethis = isTakethis;
-    }
-
+  {
+    super (connection.out);
+    this.connection = connection;
+    this.isTakethis = isTakethis;
+  }
+  
   public void write (int c) throws IOException
-    {
-      super.write (c);
-      last = (byte) c;
-    }
+  {
+    super.write (c);
+    last = (byte) c;
+  }
 
   public void write (byte[] bytes, int pos, int len) throws IOException
-    {
-      super.write (bytes, pos, len);
-      if (len > 0)
-        {
-          last = bytes[pos + len - 1];
-        }
-    }
-
+  {
+    super.write (bytes, pos, len);
+    if (len > 0)
+      {
+        last = bytes[pos + len - 1];
+      }
+  }
+  
   /**
    * Close the stream.
    * This calls NNTPConnection.postComplete().
    */
   public void close () throws IOException
-    {
-      if (last != 0x0d)
-        {
-          // Need to add LF
-          write (0x0d);
-        }
-      if (isTakethis)
-        {
-          connection.takethisComplete ();
-        }
-      else
-        {
-          connection.postComplete ();
-        }
-    }
+  {
+    if (last != 0x0d)
+      {
+        // Need to add LF
+        write (0x0d);
+      }
+    if (isTakethis)
+      {
+        connection.takethisComplete ();
+      }
+    else
+      {
+        connection.postComplete ();
+      }
+  }
   
 }

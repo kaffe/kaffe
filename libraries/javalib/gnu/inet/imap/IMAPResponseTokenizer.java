@@ -1,5 +1,5 @@
 /*
- * $Id: IMAPResponseTokenizer.java,v 1.1 2004/07/25 22:46:22 dalibor Exp $
+ * $Id: IMAPResponseTokenizer.java,v 1.4 2004/10/04 19:34:00 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -40,7 +40,7 @@ import java.util.Stack;
  * protocol server responses into IMAPResponse tokens.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/07/25 22:46:22 $
+ * @version $Revision: 1.4 $ $Date: 2004/10/04 19:34:00 $
  */
 public class IMAPResponseTokenizer implements IMAPConstants
 {
@@ -52,7 +52,7 @@ public class IMAPResponseTokenizer implements IMAPConstants
 
   private byte[] buffer = null;
 
-  private static final int BUFFER_SIZE = 4096;  // TODO review
+  private static final int BUFFER_SIZE = 4096; // Seems to be a good value
   private static final String DEFAULT_ENCODING = "US-ASCII";
 
   private static final int STATE_TAG = 0;

@@ -1,5 +1,5 @@
 /*
- * $Id: Pair.java,v 1.1 2004/07/25 22:46:23 dalibor Exp $
+ * $Id: Pair.java,v 1.3 2004/10/04 19:34:01 robilad Exp $
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -31,7 +31,7 @@ package gnu.inet.nntp;
  * A pair of strings associated with one another.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/07/25 22:46:23 $
+ * @version $Revision: 1.3 $ $Date: 2004/10/04 19:34:01 $
  */
 public final class Pair
 {
@@ -40,25 +40,25 @@ public final class Pair
   String value;
 
   Pair (String key, String value)
-    {
-      this.key = key;
-      this.value = value;
-    }
+  {
+    this.key = key;
+    this.value = value;
+  }
 
   /**
    * The key.
    */
   public String getKey ()
-    {
-      return key;
-    }
+  {
+    return key;
+  }
 
   /**
    * The value.
    */
   public String getValue ()
-    {
-      return value;
-    }
+  {
+    return value;
+  }
 
 }

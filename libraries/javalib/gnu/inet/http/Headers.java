@@ -1,5 +1,5 @@
 /*
- * $Id: Headers.java,v 1.1 2004/07/25 22:46:19 dalibor Exp $
+ * $Id: Headers.java,v 1.3 2004/10/04 19:33:58 robilad Exp $
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -288,7 +288,7 @@ public class Headers implements Map
           {
             if (name != null)
               {
-                headers.put (new Header (name), value.toString ());
+                addValue (name, value.toString ());
               }
             break;
           }
@@ -297,7 +297,7 @@ public class Headers implements Map
           {
             if (name != null)
               {
-                headers.put (new Header (name), value.toString ());
+                addValue (name, value.toString ());
               }
             break;
           }
@@ -311,7 +311,7 @@ public class Headers implements Map
           {
             if (name != null)
               {
-                headers.put (new Header (name), value.toString ());
+                addValue (name, value.toString ());
               }
             
             int di = line.indexOf (':');
@@ -324,6 +324,20 @@ public class Headers implements Map
             while (di < len && line.charAt (di) == ' ');
             value.append (line.substring (di, len - 1));
           }
+      }
+  }
+  
+  private void addValue (String name, String value)
+  {
+    Header key = new Header (name);
+    String old = (String) headers.get (key);
+    if (old == null)
+      {
+        headers.put (key, value);
+      }
+    else
+      {
+        headers.put (key, old + ", " + value);
       }
   }
   

@@ -1,6 +1,6 @@
 /*
- * $Id: HeaderIterator.java,v 1.3 2004/10/04 19:34:01 robilad Exp $
- * Copyright (C) 2002 The Free Software Foundation
+ * CookieManager.java
+ * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
  * 
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
+ * 
  * As a special exception, if you link this library with other files to
  * produce an executable, this library does not by itself cause the
  * resulting executable to be covered by the GNU General Public License.
@@ -25,55 +25,30 @@
  * executable file might be covered by the GNU General Public License.
  */
 
-package gnu.inet.nntp;
-
-import java.io.IOException;
-import java.util.NoSuchElementException;
+package gnu.inet.http;
 
 /**
- * An iterator over an NNTP XHDR listing.
+ * Cookie manager interface.
+ * If an application wants to handle cookies, they should implement this
+ * interface and register the instance with each HTTPConnection they use.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.3 $ $Date: 2004/10/04 19:34:01 $
  */
-public class HeaderIterator extends LineIterator
+public interface CookieManager
 {
 
-  HeaderIterator (NNTPConnection connection)
-  {
-    super (connection);
-  }
-  
   /**
-   * Returns the next header entry.
+   * Stores a cookie in the cookie manager.
+   * @param cookie the cookie to store
    */
-  public Object next ()
-  {
-    try
-      {
-        return nextHeaderEntry ();
-      }
-    catch (IOException e)
-      {
-        throw new NoSuchElementException ("I/O error: " + e.getMessage ());
-      }
-  }
-  
+  void setCookie (Cookie cookie);
+
   /**
-   * Returns the next header entry.
+   * Retrieves the cookies matching the specified criteria.
+   * @param host the host name
+   * @param secure whether the connection is secure
+   * @param path the path to access
    */
-  public HeaderEntry nextHeaderEntry () throws IOException
-  {
-    String line = nextLine ();
-
-    // Parse line
-    int start = 0, end;
-    end = line.indexOf (' ', start);
-    String articleId = line.substring (start, end);
-    start = end + 1;
-    String header = line.substring (start);
-
-    return new HeaderEntry (articleId, header);
-  }
-
+  Cookie[] getCookies (String host, boolean secure, String path);
+  
 }

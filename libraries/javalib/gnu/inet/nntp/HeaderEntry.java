@@ -1,5 +1,5 @@
 /*
- * $Id: HeaderEntry.java,v 1.1 2004/07/25 22:46:23 dalibor Exp $
+ * $Id: HeaderEntry.java,v 1.3 2004/10/04 19:34:01 robilad Exp $
  * Copyright (C) 2002 The free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -31,7 +31,7 @@ package gnu.inet.nntp;
  * An item in an NNTP newsgroup single-header listing.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/07/25 22:46:23 $
+ * @version $Revision: 1.3 $ $Date: 2004/10/04 19:34:01 $
  */
 public final class HeaderEntry
 {
@@ -40,26 +40,26 @@ public final class HeaderEntry
   String header;
 
   HeaderEntry (String articleId, String header)
-    {
-      this.articleId = articleId;
-      this.header = header;
-    }
+  {
+    this.articleId = articleId;
+    this.header = header;
+  }
 
   /**
    * The article ID. This is either an article number, if a number or range
    * was used in the XHDR command, or a Message-ID.
    */
   public String getArticleId ()
-    {
-      return articleId;
-    }
+  {
+    return articleId;
+  }
 
   /**
    * The requested header value.
    */
   public String getHeader ()
-    {
-      return header;
-    }
-
+  {
+    return header;
+  }
+  
 }

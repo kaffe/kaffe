@@ -1,5 +1,5 @@
 /*
- * $Id: OverviewIterator.java,v 1.1 2004/07/25 22:46:23 dalibor Exp $
+ * $Id: OverviewIterator.java,v 1.3 2004/10/04 19:34:01 robilad Exp $
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -34,56 +34,56 @@ import java.util.NoSuchElementException;
  * An iterator over an overview listing.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/07/25 22:46:23 $
+ * @version $Revision: 1.3 $ $Date: 2004/10/04 19:34:01 $
  */
 public class OverviewIterator extends LineIterator
 {
 
   OverviewIterator (NNTPConnection connection)
-    {
-      super (connection);
-    }
+  {
+    super (connection);
+  }
 
   /**
    * Returns the next overview entry.
    */
   public Object next ()
-    {
-      try
-        {
-          return nextOverview ();
-        }
-      catch (IOException e)
-        {
-          throw new NoSuchElementException ("I/O error: " + e.getMessage ());
-        }
-    }
+  {
+    try
+      {
+        return nextOverview ();
+      }
+    catch (IOException e)
+      {
+        throw new NoSuchElementException ("I/O error: " + e.getMessage ());
+      }
+  }
 
   /**
    * Returns the next overview entry.
    */
   public Overview nextOverview () throws IOException
-    {
-      String line = nextLine ();
+  {
+    String line = nextLine ();
 
-      // Parse line
-      int start = 0, end;
-      end = line.indexOf ('\t', start);
-      int articleNumber = Integer.parseInt (line.substring (start, end));
-      start = end + 1;
-      Overview overview = new Overview (articleNumber);
-      end = line.indexOf ('\t', start);
-      while (end > -1)
-        {
-          String entry = line.substring (start, end);
-          overview.add (entry);
-          start = end + 1;
-          end = line.indexOf ('\t', start);
-        }
-      String entry = line.substring (start);
-      overview.add (entry);
+    // Parse line
+    int start = 0, end;
+    end = line.indexOf ('\t', start);
+    int articleNumber = Integer.parseInt (line.substring (start, end));
+    start = end + 1;
+    Overview overview = new Overview (articleNumber);
+    end = line.indexOf ('\t', start);
+    while (end > -1)
+      {
+        String entry = line.substring (start, end);
+        overview.add (entry);
+        start = end + 1;
+        end = line.indexOf ('\t', start);
+      }
+    String entry = line.substring (start);
+    overview.add (entry);
 
-      return overview;
-    }
+    return overview;
+  }
 
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: StatusResponse.java,v 1.1 2004/07/25 22:46:23 dalibor Exp $
+ * $Id: StatusResponse.java,v 1.3 2004/10/04 19:34:02 robilad Exp $
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -33,7 +33,7 @@ package gnu.inet.nntp;
  * response to client commands.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/07/25 22:46:23 $
+ * @version $Revision: 1.3 $ $Date: 2004/10/04 19:34:02 $
  */
 public class StatusResponse
 {
@@ -52,25 +52,25 @@ public class StatusResponse
    * Constructor.
    */
   protected StatusResponse (short status, String message)
-    {
-      this.status = status;
-      this.message = message;
-    }
+  {
+    this.status = status;
+    this.message = message;
+  }
 
   /**
    * Returns the status code associated with this response.
    */
   public short getStatus ()
-    {
-      return status;
-    }
-
+  {
+    return status;
+  }
+  
   /**
    * Returns the message associated with this response.
    */
   public String getMessage ()
-    {
-      return message;
-    }
-
+  {
+    return message;
+  }
+  
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: NNTPConnection.java,v 1.1 2004/07/25 22:46:23 dalibor Exp $
+ * $Id: NNTPConnection.java,v 1.2 2004/08/09 14:38:08 dalibor Exp $
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -27,11 +27,13 @@
 
 package gnu.inet.nntp;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
+import java.net.InetSocketAddress;
 import java.net.ProtocolException;
 import java.net.Socket;
 import java.text.DateFormat;
@@ -40,13 +42,22 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Properties;
 import java.util.TimeZone;
+
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.sasl.Sasl;
+import javax.security.sasl.SaslClient;
+import javax.security.sasl.SaslException;
 
 import gnu.inet.util.CRLFInputStream;
 import gnu.inet.util.CRLFOutputStream;
 import gnu.inet.util.LineInputStream;
 import gnu.inet.util.Logger;
 import gnu.inet.util.MessageInputStream;
+import gnu.inet.util.SaslCallbackHandler;
+import gnu.inet.util.SaslInputStream;
+import gnu.inet.util.SaslOutputStream;
 
 /**
  * An NNTP client.
@@ -54,7 +65,7 @@ import gnu.inet.util.MessageInputStream;
  * server.
  *
  * @author <a hef='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/07/25 22:46:23 $
+ * @version $Revision: 1.2 $ $Date: 2004/08/09 14:38:08 $
  */
 public class NNTPConnection
   implements NNTPConstants
@@ -74,16 +85,6 @@ public class NNTPConnection
    * The port on the host we are connected to.
    */
   protected int port;
-
-  /**
-   * The username used for authentication, if any.
-   */
-  protected String username;
-
-  /**
-   * The password used for authentication, if any.
-   */
-  protected String password;
 
   /**
    * The socket used for network communication.
@@ -129,9 +130,9 @@ public class NNTPConnection
    */
   public NNTPConnection (String hostname)
     throws IOException
-    {
-      this (hostname, DEFAULT_PORT, null, null, false);
-    }
+  {
+    this (hostname, DEFAULT_PORT, 0, 0, false);
+  }
 
   /**
    * Creates a new connection object.
@@ -140,82 +141,68 @@ public class NNTPConnection
    */
   public NNTPConnection (String hostname, int port)
     throws IOException
-    {
-      this (hostname, port, null, null, false);
-    }
-
-  /**
-   * Creates a new connection object.
-   * @param hostname the hostname or IP address of the news server
-   * @param username the username if authentication is required
-   * @param password the password if authentication is required
-   */
-  public NNTPConnection (String hostname, String username, String password)
-    throws IOException
-    {
-      this (hostname, DEFAULT_PORT, username, password, false);
-    }
+  {
+    this (hostname, port, 0, 0, false);
+  }
 
   /**
    * Creates a new connection object.
    * @param hostname the hostname or IP address of the news server
    * @param port the port to connect to
-   * @param username the username if authentication is required
-   * @param password the password if authentication is required
-   */
-  public NNTPConnection (String hostname, int port,
-      String username, String password)
-    throws IOException
-    {
-      this (hostname, port, username, password, false);
-    }
-
-  /**
-   * Creates a new connection object.
-   * @param hostname the hostname or IP address of the news server
-   * @param port the port to connect to
-   * @param username the username if authentication is required
-   * @param password the password if authentication is required
+   * @param connectionTimeout the socket connection timeout
+   * @param timeout the read timeout on the socket
    * @param debug whether to use debugging
    */
   public NNTPConnection (String hostname, int port,
-      String username, String password, boolean debug)
+                         int connectionTimeout, int timeout,
+                         boolean debug)
     throws IOException
-    {
-      if (port < 0)
-        {
-          port = DEFAULT_PORT;
-        }
-      
-      this.hostname = hostname;
-      this.port = port;
-      this.username = username;
-      this.password = password;
-      this.debug = debug;
-      
-      // Set up the socket and streams
-      socket = new Socket (hostname, port);
-      InputStream in = socket.getInputStream ();
-      in = new CRLFInputStream (in);
-      this.in = new LineInputStream (in);
-      OutputStream out = socket.getOutputStream ();
-      out = new BufferedOutputStream (out);
-      this.out = new CRLFOutputStream (out);
-      
-      // Read the welcome message (RFC977:2.4.3)
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case POSTING_ALLOWED:
-          canPost = true;
-        case NO_POSTING_ALLOWED:
-          welcome = response.getMessage ();
-          break;
-        default:
-          throw new NNTPException (response);
-        }
-    }
-
+  {
+    if (port < 0)
+      {
+        port = DEFAULT_PORT;
+      }
+    
+    this.hostname = hostname;
+    this.port = port;
+    this.debug = debug;
+    
+    // Set up the socket and streams
+    socket = new Socket ();
+    InetSocketAddress address = new InetSocketAddress (hostname, port);
+    if (connectionTimeout > 0)
+      {
+        socket.connect (address, connectionTimeout);
+      }
+    else
+      {
+        socket.connect (address);
+      }
+    if (timeout > 0)
+      {
+        socket.setSoTimeout (timeout);
+      }
+    InputStream in = socket.getInputStream ();
+    in = new CRLFInputStream (in);
+    this.in = new LineInputStream (in);
+    OutputStream out = socket.getOutputStream ();
+    out = new BufferedOutputStream (out);
+    this.out = new CRLFOutputStream (out);
+    
+    // Read the welcome message (RFC977:2.4.3)
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case POSTING_ALLOWED:
+        canPost = true;
+      case NO_POSTING_ALLOWED:
+        welcome = response.getMessage ();
+        break;
+      default:
+        throw new NNTPException (response);
+      }
+  }
+  
   /**
    * Return the welcome message sent by the server in reply to the initial
    * connection.
@@ -223,35 +210,35 @@ public class NNTPConnection
    * may be relevant to the user.
    */
   public String getWelcome ()
-    {
-      return welcome;
-    }
-
+  {
+    return welcome;
+  }
+  
   /*
    * Returns an NNTP-format date string.
    * This is only required when clients use the NEWGROUPS or NEWNEWS
    * methods, therefore rarely: we don't cache any of the variables here.
    */
   String formatDate (Date date)
-    {
-      DateFormat df = new SimpleDateFormat ("yyMMdd HHmmss 'GMT'");
-      Calendar cal = new GregorianCalendar ();
-      TimeZone gmt = TimeZone.getTimeZone ("GMT");
-      cal.setTimeZone (gmt);
-      df.setCalendar (cal);
-      cal.setTime (date);
-      return df.format (date);
-    }
+  {
+    DateFormat df = new SimpleDateFormat ("yyMMdd HHmmss 'GMT'");
+    Calendar cal = new GregorianCalendar ();
+    TimeZone gmt = TimeZone.getTimeZone ("GMT");
+    cal.setTimeZone (gmt);
+    df.setCalendar (cal);
+    cal.setTime (date);
+    return df.format (date);
+  }
 
   /*
    * Parse the specfied NNTP date text.
    */
   Date parseDate (String text)
     throws ParseException
-    {
-      DateFormat df = new SimpleDateFormat ("yyMMdd HHmmss 'GMT'");
-      return df.parse (text);
-    }
+  {
+    DateFormat df = new SimpleDateFormat ("yyMMdd HHmmss 'GMT'");
+    return df.parse (text);
+  }
 
   // RFC977:3.1 The ARTICLE, BODY, HEAD, and STAT commands
 
@@ -264,10 +251,10 @@ public class NNTPConnection
    */
   public ArticleResponse article (int articleNumber)
     throws IOException
-    {
-      return articleImpl (ARTICLE, Integer.toString(articleNumber));
-    }
-
+  {
+    return articleImpl (ARTICLE, Integer.toString(articleNumber));
+  }
+  
   /**
    * Send an article retrieval request to the server.
    * @param messageId the message-id of the article to retrieve
@@ -277,9 +264,9 @@ public class NNTPConnection
    */
   public ArticleResponse article (String messageId)
     throws IOException
-    {
-      return articleImpl (ARTICLE, messageId);
-    }
+  {
+    return articleImpl (ARTICLE, messageId);
+  }
 
   /**
    * Send an article head retrieval request to the server.
@@ -289,9 +276,9 @@ public class NNTPConnection
    */
   public ArticleResponse head (int articleNumber)
     throws IOException
-    {
-      return articleImpl (HEAD, Integer.toString (articleNumber));
-    }
+  {
+    return articleImpl (HEAD, Integer.toString (articleNumber));
+  }
 
   /**
    * Send an article head retrieval request to the server.
@@ -301,9 +288,9 @@ public class NNTPConnection
    */
   public ArticleResponse head (String messageId)
     throws IOException
-    {
-      return articleImpl (HEAD, messageId);
-    }
+  {
+    return articleImpl (HEAD, messageId);
+  }
 
   /**
    * Send an article body retrieval request to the server.
@@ -313,9 +300,9 @@ public class NNTPConnection
    */
   public ArticleResponse body (int articleNumber)
     throws IOException
-    {
-      return articleImpl (BODY, Integer.toString (articleNumber));
-    }
+  {
+    return articleImpl (BODY, Integer.toString (articleNumber));
+  }
 
   /**
    * Send an article body retrieval request to the server.
@@ -325,9 +312,9 @@ public class NNTPConnection
    */
   public ArticleResponse body (String messageId)
     throws IOException
-    {
-      return articleImpl (BODY, messageId);
-    }
+  {
+    return articleImpl (BODY, messageId);
+  }
 
   /**
    * Send an article status request to the server.
@@ -337,9 +324,9 @@ public class NNTPConnection
    */
   public ArticleResponse stat (int articleNumber)
     throws IOException
-    {
-      return articleImpl (STAT, Integer.toString (articleNumber));
-    }
+  {
+    return articleImpl (STAT, Integer.toString (articleNumber));
+  }
 
   /**
    * Send an article status request to the server.
@@ -349,9 +336,9 @@ public class NNTPConnection
    */
   public ArticleResponse stat (String messageId)
     throws IOException
-    {
-      return articleImpl (STAT, messageId);
-    }
+  {
+    return articleImpl (STAT, messageId);
+  }
 
   /**
    * Performs an ARTICLE, BODY, HEAD, or STAT command.
@@ -360,42 +347,42 @@ public class NNTPConnection
    */
   protected ArticleResponse articleImpl (String command, String messageId)
     throws IOException
-    {
-      if (messageId != null)
-        {
-          StringBuffer line = new StringBuffer (command);
-          line.append (' ');
-          line.append (messageId);
-          send (line.toString ());
-        }
-      else
-        {
-          send (command);
-        }
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case ARTICLE_FOLLOWS:
-        case HEAD_FOLLOWS:
-        case BODY_FOLLOWS:
-          ArticleResponse aresponse = (ArticleResponse) response;
-          ArticleStream astream =
-            new ArticleStream (new MessageInputStream (in));
-          pendingData = astream;
-          aresponse.in = astream;
-          return aresponse;
-        case ARTICLE_RETRIEVED:
-          return (ArticleResponse) response;
-        default:
-          // NO_GROUP_SELECTED
-          // NO_ARTICLE_SELECTED
-          // NO_SUCH_ARTICLE_NUMBER
-          // NO_SUCH_ARTICLE
-          // NO_PREVIOUS_ARTICLE
-          // NO_NEXT_ARTICLE
-          throw new NNTPException (response);
-        }
-    }
+  {
+    if (messageId != null)
+      {
+        StringBuffer line = new StringBuffer (command);
+        line.append (' ');
+        line.append (messageId);
+        send (line.toString ());
+      }
+    else
+      {
+        send (command);
+      }
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case ARTICLE_FOLLOWS:
+      case HEAD_FOLLOWS:
+      case BODY_FOLLOWS:
+        ArticleResponse aresponse = (ArticleResponse) response;
+        ArticleStream astream =
+          new ArticleStream (new MessageInputStream (in));
+        pendingData = astream;
+        aresponse.in = astream;
+        return aresponse;
+      case ARTICLE_RETRIEVED:
+        return (ArticleResponse) response;
+      default:
+        // NO_GROUP_SELECTED
+        // NO_ARTICLE_SELECTED
+        // NO_SUCH_ARTICLE_NUMBER
+        // NO_SUCH_ARTICLE
+        // NO_PREVIOUS_ARTICLE
+        // NO_NEXT_ARTICLE
+        throw new NNTPException (response);
+      }
+  }
   
   // RFC977:3.2 The GROUP command
 
@@ -406,21 +393,18 @@ public class NNTPConnection
    */
   public GroupResponse group (String name)
     throws IOException
-    {
-      StringBuffer line = new StringBuffer (GROUP);
-      line.append (' ');
-      line.append (name);
-      send (line.toString ());
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case GROUP_SELECTED:
-          return (GroupResponse) response;
-        default:
-          // NO_SUCH_GROUP
-          throw new NNTPException (response);
-        }
-    }
+  {
+    send (GROUP + ' ' + name);
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case GROUP_SELECTED:
+        return (GroupResponse) response;
+      default:
+        // NO_SUCH_GROUP
+        throw new NNTPException (response);
+      }
+  }
 
   // RFC977:3.3 The HELP command
 
@@ -430,20 +414,20 @@ public class NNTPConnection
    */
   public LineIterator help ()
     throws IOException
-    {
-      send (HELP);
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case HELP_TEXT:
-          LineIterator li = new LineIterator (this);
-          pendingData = li;
-          return li;
-        default:
-          throw new NNTPException (response);
-        }
-    }
-
+  {
+    send (HELP);
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case HELP_TEXT:
+        LineIterator li = new LineIterator (this);
+        pendingData = li;
+        return li;
+      default:
+        throw new NNTPException (response);
+      }
+  }
+  
   // RFC977:3.4 The IHAVE command
 
   /**
@@ -455,19 +439,19 @@ public class NNTPConnection
    */
   public PostStream ihave (String messageId)
     throws IOException
-    {
-      send (IHAVE);
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case SEND_TRANSFER_ARTICLE:
-          return new PostStream (this, false);
-        case ARTICLE_NOT_WANTED:
-          return null;
-        default:
-          throw new NNTPException (response);
-        }
-    }
+  {
+    send (IHAVE + ' ' + messageId);
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case SEND_TRANSFER_ARTICLE:
+        return new PostStream (this, false);
+      case ARTICLE_NOT_WANTED:
+        return null;
+      default:
+        throw new NNTPException (response);
+      }
+  }
 
   // RFC(77:3.5 The LAST command
 
@@ -478,9 +462,9 @@ public class NNTPConnection
    */
   public ArticleResponse last ()
     throws IOException
-    {
-      return articleImpl (LAST, null);
-    }
+  {
+    return articleImpl (LAST, null);
+  }
 
   // RFC977:3.6 The LIST command
 
@@ -491,25 +475,25 @@ public class NNTPConnection
    */
   public GroupIterator list ()
     throws IOException
-    {
-      return listImpl (LIST);
-    }
-
+  {
+    return listImpl (LIST);
+  }
+  
   GroupIterator listImpl (String command)
     throws IOException
-    {
-      send (command);
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case LIST_FOLLOWS:
-          GroupIterator gi = new GroupIterator (this);
-          pendingData = gi;
-          return gi;
-        default:
-          throw new NNTPException (response);
-        }
-    }
+  {
+    send (command);
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case LIST_FOLLOWS:
+        GroupIterator gi = new GroupIterator (this);
+        pendingData = gi;
+        return gi;
+      default:
+        throw new NNTPException (response);
+      }
+  }
 
   // RFC977:3.7 The NEWGROUPS command
 
@@ -523,33 +507,35 @@ public class NNTPConnection
    */
   public LineIterator newGroups (Date since, String[]distributions)
     throws IOException
-    {
-      StringBuffer buffer = new StringBuffer (NEWGROUPS);
-      buffer.append (' ');
-      buffer.append (formatDate (since));
-      if (distributions != null)
-        {
-          buffer.append (' ');
-          for (int i = 0; i < distributions.length; i++)
-            {
-              if (i > 0)
+  {
+    StringBuffer buffer = new StringBuffer (NEWGROUPS);
+    buffer.append (' ');
+    buffer.append (formatDate (since));
+    if (distributions != null)
+      {
+        buffer.append (' ');
+        for (int i = 0; i < distributions.length; i++)
+          {
+            if (i > 0)
+              {
                 buffer.append (',');
-              buffer.append (distributions[i]);
-            }
-        }
-      send (buffer.toString ());
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case NEWGROUPS_LIST_FOLLOWS:
-          LineIterator li = new LineIterator (this);
-          pendingData = li;
-          return li;
-        default:
-          throw new NNTPException (response);
-        }
-    }
-
+              }
+            buffer.append (distributions[i]);
+          }
+      }
+    send (buffer.toString ());
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case NEWGROUPS_LIST_FOLLOWS:
+        LineIterator li = new LineIterator (this);
+        pendingData = li;
+        return li;
+      default:
+        throw new NNTPException (response);
+      }
+  }
+  
   // RFC977:3.8 The NEWNEWS command
 
   /**
@@ -561,38 +547,40 @@ public class NNTPConnection
    * @param since the date from which to list new articles
    * @param distributions if non-null, a list of distributions to match
    */
-  public LineIterator newNews(String newsgroup, Date since,
-                              String[] distributions)
+  public LineIterator newNews (String newsgroup, Date since,
+                               String[] distributions)
     throws IOException
-    {
-      StringBuffer buffer = new StringBuffer (NEWNEWS);
-      buffer.append (' ');
-      buffer.append (newsgroup);
-      buffer.append (' ');
-      buffer.append (formatDate (since));
-      if (distributions != null)
-        {
-          buffer.append (' ');
-          for (int i = 0; i < distributions.length; i++)
-            {
-              if (i > 0)
+  {
+    StringBuffer buffer = new StringBuffer (NEWNEWS);
+    buffer.append (' ');
+    buffer.append (newsgroup);
+    buffer.append (' ');
+    buffer.append (formatDate (since));
+    if (distributions != null)
+      {
+        buffer.append (' ');
+        for (int i = 0; i < distributions.length; i++)
+          {
+            if (i > 0)
+              {
                 buffer.append (',');
-              buffer.append (distributions[i]);
-            }
-        }
-      send (buffer.toString ());
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case NEWNEWS_LIST_FOLLOWS:
-          LineIterator li = new LineIterator (this);
-          pendingData = li;
-          return li;
-        default:
-          throw new NNTPException (response);
-        }
-    }
-
+              }
+            buffer.append (distributions[i]);
+          }
+      }
+    send (buffer.toString ());
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case NEWNEWS_LIST_FOLLOWS:
+        LineIterator li = new LineIterator (this);
+        pendingData = li;
+        return li;
+      default:
+        throw new NNTPException (response);
+      }
+  }
+  
   // RFC977:3.9 The NEXT command
 
   /**
@@ -602,9 +590,9 @@ public class NNTPConnection
    */
   public ArticleResponse next ()
     throws IOException
-    {
-      return articleImpl (NEXT, null);
-    }
+  {
+    return articleImpl (NEXT, null);
+  }
 
   // RFC977:3.10 The POST command
 
@@ -619,19 +607,19 @@ public class NNTPConnection
    */
   public OutputStream post ()
     throws IOException
-    {
-      send (POST);
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case SEND_ARTICLE:
-          return new PostStream (this, false);
-        default:
-          // POSTING_NOT_ALLOWED
-          throw new NNTPException (response);
-        }
-    }
-
+  {
+    send (POST);
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case SEND_ARTICLE:
+        return new PostStream (this, false);
+      default:
+        // POSTING_NOT_ALLOWED
+        throw new NNTPException (response);
+      }
+  }
+  
   /**
    * Indicates that the client has finished writing all the bytes of the
    * article.
@@ -640,21 +628,21 @@ public class NNTPConnection
    */
   void postComplete ()
     throws IOException
-    {
-      send (DOT);
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case ARTICLE_POSTED:
-        case ARTICLE_TRANSFERRED:
-          return;
-        default:
-          // POSTING_FAILED
-          // TRANSFER_FAILED
-          // ARTICLE_REJECTED
-          throw new NNTPException (response);
-        }
-    }
+  {
+    send (DOT);
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case ARTICLE_POSTED:
+      case ARTICLE_TRANSFERRED:
+        return;
+      default:
+        // POSTING_FAILED
+        // TRANSFER_FAILED
+        // ARTICLE_REJECTED
+        throw new NNTPException (response);
+      }
+  }
 
   // RFC977:3.11 The QUIT command
 
@@ -664,19 +652,19 @@ public class NNTPConnection
    */
   public void quit ()
     throws IOException
-    {
-      send (QUIT);
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case CLOSING_CONNECTION:
-          socket.close ();
-          return;
-        default:
-          throw new NNTPException (response);
-        }
-    }
-
+  {
+    send (QUIT);
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case CLOSING_CONNECTION:
+        socket.close ();
+        return;
+      default:
+        throw new NNTPException (response);
+      }
+  }
+  
   // RFC977:3.12 The SLAVE command
 
   /**
@@ -684,42 +672,42 @@ public class NNTPConnection
    */
   public void slave ()
     throws IOException
-    {
-      send (SLAVE);
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case SLAVE_ACKNOWLEDGED:
-          break;
-        default:
-          throw new NNTPException (response);
-        }
-    }
-
+  {
+    send (SLAVE);
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case SLAVE_ACKNOWLEDGED:
+        break;
+      default:
+        throw new NNTPException (response);
+      }
+  }
+  
   // RFC2980:1.1 The CHECK command
 
   public boolean check (String messageId)
     throws IOException
-    {
-      StringBuffer buffer = new StringBuffer (CHECK);
-      buffer.append (' ');
-      buffer.append (messageId);
-      send (buffer.toString ());
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case SEND_ARTICLE_VIA_TAKETHIS:
-          return true;
-        case ARTICLE_NOT_WANTED_VIA_TAKETHIS:
-          return false;
-        default:
-          // SERVICE_DISCONTINUED
-          // TRY_AGAIN_LATER
-          // TRANSFER_PERMISSION_DENIED
-          // COMMAND_NOT_RECOGNIZED
-          throw new NNTPException (response);
-        }
-    }
+  {
+    StringBuffer buffer = new StringBuffer (CHECK);
+    buffer.append (' ');
+    buffer.append (messageId);
+    send (buffer.toString ());
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case SEND_ARTICLE_VIA_TAKETHIS:
+        return true;
+      case ARTICLE_NOT_WANTED_VIA_TAKETHIS:
+        return false;
+      default:
+        // SERVICE_DISCONTINUED
+        // TRY_AGAIN_LATER
+        // TRANSFER_PERMISSION_DENIED
+        // COMMAND_NOT_RECOGNIZED
+        throw new NNTPException (response);
+      }
+  }
 
   // RFC2980:1.2 The MODE STREAM command
 
@@ -732,19 +720,19 @@ public class NNTPConnection
    */
   public boolean modeStream ()
     throws IOException
-    {
-      send (MODE_STREAM);
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case STREAMING_OK:
-          return true;
-        default:
-          // COMMAND_NOT_RECOGNIZED
-          return false;
-        }
-    }
-
+  {
+    send (MODE_STREAM);
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case STREAMING_OK:
+        return true;
+      default:
+        // COMMAND_NOT_RECOGNIZED
+        return false;
+      }
+  }
+  
   // RFC2980:1.3 The TAKETHIS command
 
   /**
@@ -756,10 +744,10 @@ public class NNTPConnection
    */
   public OutputStream takethis (String messageId)
     throws IOException
-    {
-      send (TAKETHIS);
-      return new PostStream (this, true);
-    }
+  {
+    send (TAKETHIS + ' ' + messageId);
+    return new PostStream (this, true);
+  }
 
   /**
    * Completes a takethis transaction.
@@ -768,22 +756,22 @@ public class NNTPConnection
    */
   void takethisComplete ()
     throws IOException
-    {
-      send (DOT);
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case ARTICLE_TRANSFERRED_OK:
-          return;
-        default:
-          // SERVICE_DISCONTINUED
-          // ARTICLE_TRANSFER_FAILED
-          // TRANSFER_PERMISSION_DENIED
-          // COMMAND_NOT_RECOGNIZED
-          throw new NNTPException (response);
-        }
-    }
-
+  {
+    send (DOT);
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case ARTICLE_TRANSFERRED_OK:
+        return;
+      default:
+        // SERVICE_DISCONTINUED
+        // ARTICLE_TRANSFER_FAILED
+        // TRANSFER_PERMISSION_DENIED
+        // COMMAND_NOT_RECOGNIZED
+        throw new NNTPException (response);
+      }
+  }
+  
   // RFC2980:1.4 The XREPLIC command
 
   // TODO
@@ -799,16 +787,16 @@ public class NNTPConnection
    */
   public GroupIterator listActive (String wildmat)
     throws IOException
-    {
-      StringBuffer buffer = new StringBuffer (LIST_ACTIVE);
-      if (wildmat != null)
-        {
-          buffer.append (' ');
-          buffer.append (wildmat);
-        }
-      return listImpl (buffer.toString ());
-    }
-
+  {
+    StringBuffer buffer = new StringBuffer (LIST_ACTIVE);
+    if (wildmat != null)
+      {
+        buffer.append (' ');
+        buffer.append (wildmat);
+      }
+    return listImpl (buffer.toString ());
+  }
+  
   // RFC2980:2.1.3 The LIST ACTIVE.TIMES command
 
   /**
@@ -818,17 +806,17 @@ public class NNTPConnection
    */
   public ActiveTimesIterator listActiveTimes ()
     throws IOException
-    {
-      send (LIST_ACTIVE_TIMES);
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case LIST_FOLLOWS:
-          return new ActiveTimesIterator (this);
-        default:
-          throw new NNTPException (response);
-        }
-    }
+  {
+    send (LIST_ACTIVE_TIMES);
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case LIST_FOLLOWS:
+        return new ActiveTimesIterator (this);
+      default:
+        throw new NNTPException (response);
+      }
+  }
 
   // RFC2980:2.1.4 The LIST DISTRIBUTIONS command
 
@@ -849,25 +837,25 @@ public class NNTPConnection
    */
   public PairIterator listNewsgroups (String wildmat)
     throws IOException
-    {
-      StringBuffer buffer = new StringBuffer (LIST_NEWSGROUPS);
-      if (wildmat != null)
-        {
-          buffer.append (' ');
-          buffer.append (wildmat);
-        }
-      send (buffer.toString ());
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case LIST_FOLLOWS:
-          PairIterator pi = new PairIterator (this);
-          pendingData = pi;
-          return pi;
-        default:
-          throw new NNTPException (response);
-        }
-    }
+  {
+    StringBuffer buffer = new StringBuffer (LIST_NEWSGROUPS);
+    if (wildmat != null)
+      {
+        buffer.append (' ');
+        buffer.append (wildmat);
+      }
+    send (buffer.toString ());
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case LIST_FOLLOWS:
+        PairIterator pi = new PairIterator (this);
+        pendingData = pi;
+        return pi;
+      default:
+        throw new NNTPException (response);
+      }
+  }
 
   // RFC2980:2.1.7 The LIST OVERVIEW.FMT command
 
@@ -879,20 +867,20 @@ public class NNTPConnection
    */
   public LineIterator listOverviewFmt ()
     throws IOException
-    {
-      send (LIST_OVERVIEW_FMT);
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case LIST_FOLLOWS:
-          LineIterator li = new LineIterator (this);
-          pendingData = li;
-          return li;
-        default:
-          throw new NNTPException (response);
-        }
-    }
-
+  {
+    send (LIST_OVERVIEW_FMT);
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case LIST_FOLLOWS:
+        LineIterator li = new LineIterator (this);
+        pendingData = li;
+        return li;
+      default:
+        throw new NNTPException (response);
+      }
+  }
+  
   // RFC2980:2.1.8 The LIST SUBSCRIPTIONS command
 
   /**
@@ -900,9 +888,9 @@ public class NNTPConnection
    */
   public GroupIterator listSubscriptions ()
     throws IOException
-    {
-      return listImpl (LIST_SUBSCRIPTIONS);
-    }
+  {
+    return listImpl (LIST_SUBSCRIPTIONS);
+  }
 
   // RFC2980:2.2 The LISTGROUP command
 
@@ -914,25 +902,25 @@ public class NNTPConnection
    */
   public ArticleNumberIterator listGroup (String group)
     throws IOException
-    {
-      StringBuffer buffer = new StringBuffer (LISTGROUP);
-      if (group != null)
-        {
-          buffer.append (' ');
-          buffer.append (group);
-        }
-      send (buffer.toString ());
-      StatusResponse response = parseResponse (read (), true);
-      switch (response.status)
-        {
-        case GROUP_SELECTED:
-          ArticleNumberIterator ani = new ArticleNumberIterator (this);
-          pendingData = ani;
-          return ani;
-        default:
-          throw new NNTPException (response);
-        }
-    }
+  {
+    StringBuffer buffer = new StringBuffer (LISTGROUP);
+    if (group != null)
+      {
+        buffer.append (' ');
+        buffer.append (group);
+      }
+    send (buffer.toString ());
+    StatusResponse response = parseResponse (read (), true);
+    switch (response.status)
+      {
+      case GROUP_SELECTED:
+        ArticleNumberIterator ani = new ArticleNumberIterator (this);
+        pendingData = ani;
+        return ani;
+      default:
+        throw new NNTPException (response);
+      }
+  }
 
   // RFC2980:2.3 The MODE READER command
 
@@ -942,21 +930,21 @@ public class NNTPConnection
    */
   public boolean modeReader ()
     throws IOException
-    {
-      send (MODE_READER);
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case POSTING_ALLOWED:
-          canPost = true;
-          return canPost;
-        case POSTING_NOT_ALLOWED:
-          canPost = false;
-          return canPost;
-        default:
-          throw new NNTPException (response);
-        }
-    }
+  {
+    send (MODE_READER);
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case POSTING_ALLOWED:
+        canPost = true;
+        return canPost;
+      case POSTING_NOT_ALLOWED:
+        canPost = false;
+        return canPost;
+      default:
+        throw new NNTPException (response);
+      }
+  }
   
   // RFC2980:2.4 The XGTITLE command
 
@@ -966,53 +954,53 @@ public class NNTPConnection
    */
   public PairIterator xgtitle (String wildmat)
     throws IOException
-    {
-      StringBuffer buffer = new StringBuffer (XGTITLE);
-      if (wildmat != null)
-        {
-          buffer.append (' ');
-          buffer.append (wildmat);
-        }
-      send (buffer.toString ());
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case XGTITLE_LIST_FOLLOWS:
-          PairIterator pi = new PairIterator (this);
-          pendingData = pi;
-          return pi;
-        default:
-          throw new NNTPException (response);
-        }
-    }
-
+  {
+    StringBuffer buffer = new StringBuffer (XGTITLE);
+    if (wildmat != null)
+      {
+        buffer.append (' ');
+        buffer.append (wildmat);
+      }
+    send (buffer.toString ());
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case XGTITLE_LIST_FOLLOWS:
+        PairIterator pi = new PairIterator (this);
+        pendingData = pi;
+        return pi;
+      default:
+        throw new NNTPException (response);
+      }
+  }
+  
   // RFC2980:2.6 The XHDR command
 
   public HeaderIterator xhdr (String header, String range)
     throws IOException
-    {
-      StringBuffer buffer = new StringBuffer (XHDR);
-      buffer.append (' ');
-      buffer.append (header);
-      if (range != null)
-        {
-          buffer.append (' ');
-          buffer.append (range);
-        }
-      send (buffer.toString ());
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case HEAD_FOLLOWS:
-          HeaderIterator hi = new HeaderIterator (this);
-          pendingData = hi;
-          return hi;
-        default:
-          // NO_GROUP_SELECTED
-          // NO_SUCH_ARTICLE
-          throw new NNTPException (response);
-        }
-    }
+  {
+    StringBuffer buffer = new StringBuffer (XHDR);
+    buffer.append (' ');
+    buffer.append (header);
+    if (range != null)
+      {
+        buffer.append (' ');
+        buffer.append (range);
+      }
+    send (buffer.toString ());
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case HEAD_FOLLOWS:
+        HeaderIterator hi = new HeaderIterator (this);
+        pendingData = hi;
+        return hi;
+      default:
+        // NO_GROUP_SELECTED
+        // NO_SUCH_ARTICLE
+        throw new NNTPException (response);
+      }
+  }
 
   // RFC2980:2.7 The XINDEX command
 
@@ -1022,28 +1010,28 @@ public class NNTPConnection
 
   public OverviewIterator xover (Range range)
     throws IOException
-    {
-      StringBuffer buffer = new StringBuffer (XOVER);
-      if (range != null)
-        {
-          buffer.append (' ');
-          buffer.append (range.toString());
-        }
-      send (buffer.toString ());
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case OVERVIEW_FOLLOWS:
-          OverviewIterator oi = new OverviewIterator (this);
-          pendingData = oi;
-          return oi;
-        default:
-          // NO_GROUP_SELECTED
-          // PERMISSION_DENIED
-          throw new NNTPException (response);
-        }
-    }
-
+  {
+    StringBuffer buffer = new StringBuffer (XOVER);
+    if (range != null)
+      {
+        buffer.append (' ');
+        buffer.append (range.toString());
+      }
+    send (buffer.toString ());
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case OVERVIEW_FOLLOWS:
+        OverviewIterator oi = new OverviewIterator (this);
+        pendingData = oi;
+        return oi;
+      default:
+        // NO_GROUP_SELECTED
+        // PERMISSION_DENIED
+        throw new NNTPException (response);
+      }
+  }
+  
   // RFC2980:2.9 The XPAT command
 
   // TODO
@@ -1070,37 +1058,37 @@ public class NNTPConnection
    */
   public boolean authinfo (String username, String password)
     throws IOException
-    {
-      StringBuffer buffer = new StringBuffer (AUTHINFO_USER);
-      buffer.append (' ');
-      buffer.append (username);
-      send (buffer.toString ());
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case AUTHINFO_OK:
-          return true;
-        case SEND_AUTHINFOPASS:
-          buffer.setLength (0);
-          buffer.append (AUTHINFO_PASS);
-          buffer.append (' ');
-          buffer.append (password);
-          send (buffer.toString ());
-          response = parseResponse (read ());
-          switch (response.status)
-            {
-            case AUTHINFO_OK:
-              return true;
-            case PERMISSION_DENIED:
-              return false;
-            default:
-              throw new NNTPException (response);
-            }
-        default:
-          // AUTHINFO_REJECTED
-          throw new NNTPException (response);
-        }
-    }
+  {
+    StringBuffer buffer = new StringBuffer (AUTHINFO_USER);
+    buffer.append (' ');
+    buffer.append (username);
+    send (buffer.toString ());
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case AUTHINFO_OK:
+        return true;
+      case SEND_AUTHINFOPASS:
+        buffer.setLength (0);
+        buffer.append (AUTHINFO_PASS);
+        buffer.append (' ');
+        buffer.append (password);
+        send (buffer.toString ());
+        response = parseResponse (read ());
+        switch (response.status)
+          {
+          case AUTHINFO_OK:
+            return true;
+          case PERMISSION_DENIED:
+            return false;
+          default:
+            throw new NNTPException (response);
+          }
+      default:
+        // AUTHINFO_REJECTED
+        throw new NNTPException (response);
+      }
+  }
 
   // RFC2980:3.1.2 AUTHINFO SIMPLE
 
@@ -1111,61 +1099,98 @@ public class NNTPConnection
    */
   public boolean authinfoSimple (String username, String password)
     throws IOException
-    {
-      send (AUTHINFO_SIMPLE);
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case SEND_AUTHINFO_SIMPLE:
-          StringBuffer buffer = new StringBuffer (username);
-          buffer.append (' ');
-          buffer.append (password);
-          send (buffer.toString ());
-          response = parseResponse (read ());
-          switch (response.status)
-            {
-            case AUTHINFO_SIMPLE_OK:
-              return true;
-            case AUTHINFO_SIMPLE_DENIED:
-              return false;
-            default:throw new NNTPException (response);
-            }
-        default:
-          throw new NNTPException (response);
-        }
-    }
-
+  {
+    send (AUTHINFO_SIMPLE);
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case SEND_AUTHINFO_SIMPLE:
+        StringBuffer buffer = new StringBuffer (username);
+        buffer.append (' ');
+        buffer.append (password);
+        send (buffer.toString ());
+        response = parseResponse (read ());
+        switch (response.status)
+          {
+          case AUTHINFO_SIMPLE_OK:
+            return true;
+          case AUTHINFO_SIMPLE_DENIED:
+            return false;
+          default:throw new NNTPException (response);
+          }
+      default:
+        throw new NNTPException (response);
+      }
+  }
+  
   // RFC2980:3.1.3 AUTHINFO GENERIC
 
   /**
-   * Generic authentication strategy.
-   * @param authenticator the name of the authentication method
-   * @param args authenticator parameters in space-separated form...
+   * Authenticates the connection using the specified SASL mechanism,
+   * username and password.
+   * @param mechanism a SASL authentication mechanism, e.g. LOGIN, PLAIN,
+   * CRAM-MD5, GSSAPI
+   * @param username the authentication principal
+   * @param password the authentication credentials
    */
-  public boolean authinfoGeneric (String authenticator, String args)
+  public boolean authinfoGeneric (String mechanism,
+                                  String username, String password)
     throws IOException
-    {
-      StringBuffer buffer = new StringBuffer (AUTHINFO_GENERIC);
-      buffer.append (' ');
-      buffer.append (authenticator);
-      buffer.append (' ');
-      buffer.append (args);
-      send (buffer.toString ());
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case COMMAND_NOT_RECOGNIZED:
-        case SYNTAX_ERROR:
-        case INTERNAL_ERROR:
-          throw new NNTPException (response);
-        default:
-          // TODO attempt to connect authenticator
-          // ... do stuff ...
-          // PERMISSION_DENIED -> false
-          // AUTHINFO_OK -> true
-        }
-      return false;
-    }
+  {
+    String[] m = new String[] { mechanism };
+    CallbackHandler ch = new SaslCallbackHandler (username, password);
+    // Avoid lengthy callback procedure for GNU Crypto
+    Properties p = new Properties ();
+    p.put ("gnu.crypto.sasl.username", username);
+    p.put ("gnu.crypto.sasl.password", password);
+    SaslClient sasl =
+      Sasl.createSaslClient (m, null, "smtp",
+                             socket.getInetAddress ().getHostName (),
+                             p, ch);
+    if (sasl == null)
+      {
+        return false;
+      }
+    
+    StringBuffer cmd = new StringBuffer (AUTHINFO_GENERIC);
+    cmd.append (' ');
+    cmd.append (mechanism);
+    if (sasl.hasInitialResponse ())
+      {
+        cmd.append (' ');
+        byte[] init = sasl.evaluateChallenge (new byte[0]);
+        cmd.append (new String (init, "US-ASCII"));
+      }
+    send (cmd.toString ());
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case AUTHINFO_OK:
+        String qop = (String) sasl.getNegotiatedProperty (Sasl.QOP);
+        if ("auth-int".equalsIgnoreCase (qop)
+            || "auth-conf".equalsIgnoreCase (qop))
+          {
+            InputStream in = socket.getInputStream ();
+            in = new BufferedInputStream (in);
+            in = new SaslInputStream (sasl, in);
+            in = new CRLFInputStream (in);
+            this.in = new LineInputStream (in);
+            OutputStream out = socket.getOutputStream ();
+            out = new BufferedOutputStream (out);
+            out = new SaslOutputStream (sasl, out);
+            this.out = new CRLFOutputStream (out);
+          }
+        return true;
+      case PERMISSION_DENIED:
+        return false;
+      case COMMAND_NOT_RECOGNIZED:
+      case SYNTAX_ERROR:
+      case INTERNAL_ERROR:
+      default:
+        throw new NNTPException (response);
+        // FIXME how does the server send continuations?
+      }
+  }
   
   // RFC2980:3.2 The DATE command
 
@@ -1174,26 +1199,26 @@ public class NNTPConnection
    */
   public Date date ()
     throws IOException
-    {
-      send (DATE);
-      StatusResponse response = parseResponse (read ());
-      switch (response.status)
-        {
-        case DATE_OK:
-          String message = response.getMessage ();
-          try
-            {
-              DateFormat df = new SimpleDateFormat ("yyyyMMddHHmmss");
-              return df.parse (message);
-            }
-          catch (ParseException e)
-            {
-              throw new IOException ("Invalid date: " + message);
-            }
-        default:
-          throw new NNTPException (response);
-        }
-    }
+  {
+    send (DATE);
+    StatusResponse response = parseResponse (read ());
+    switch (response.status)
+      {
+      case DATE_OK:
+        String message = response.getMessage ();
+        try
+          {
+            DateFormat df = new SimpleDateFormat ("yyyyMMddHHmmss");
+            return df.parse (message);
+          }
+        catch (ParseException e)
+          {
+            throw new IOException ("Invalid date: " + message);
+          }
+      default:
+        throw new NNTPException (response);
+      }
+  }
 
   // -- Utility functions --
 
@@ -1202,9 +1227,9 @@ public class NNTPConnection
    */
   protected StatusResponse parseResponse (String line)
     throws ProtocolException
-    {
-      return parseResponse (line, false);
-    }
+  {
+    return parseResponse (line, false);
+  }
   
   /**
    * Parse a response object from a response line sent by the server.
@@ -1212,145 +1237,145 @@ public class NNTPConnection
    */
   protected StatusResponse parseResponse (String line, boolean isListGroup)
     throws ProtocolException
-    {
-      int start = 0, end;
-      short status = -1;
-      String statusText = line;
-      String message = null;
-      end = line.indexOf (' ', start);
-      if (end > start)
-        {
-          statusText = line.substring (start, end);
-          message = line.substring (end + 1);
-        }
-      try
-        {
-          status = Short.parseShort (statusText);
-        }
-      catch (NumberFormatException e)
-        {
-          throw new ProtocolException (line);
-        }
-      StatusResponse response;
-      switch (status)
-        {
-        case ARTICLE_FOLLOWS:
-        case HEAD_FOLLOWS:
-        case BODY_FOLLOWS:
-        case ARTICLE_RETRIEVED:
-        case GROUP_SELECTED:
-          /* The LISTGROUP command returns a list of articles with a 211,
-           * instead of the newsgroup totals returned with the GROUP command.
-           * Check for this case. */
-          if (status != GROUP_SELECTED || isListGroup)
-            {
-              try
-                {
-                  ArticleResponse aresponse =
-                    new ArticleResponse (status, message);
-                  // article number
-                  start = end + 1;
-                  end = line.indexOf (' ', start);
-                  if (end > start)
-                    {
-                      aresponse.articleNumber =
-                        Integer.parseInt (line.substring (start, end));
-                    }
-                  // message-id
-                  start = end + 1;
-                  end = line.indexOf (' ', start);
-                  if (end > start)
-                    {
-                      aresponse.messageId = line.substring (start, end);
-                    }
-                  else
-                    {
-                      aresponse.messageId = line.substring (start);
-                    }
-                  response = aresponse;
-                }
-              catch (NumberFormatException e)
-                {
-                  // This will happen for XHDR
-                  response = new StatusResponse (status, message);
-                }
-              break;
-            }
-          // This is the normal case for GROUP_SELECTED
-          GroupResponse gresponse = new GroupResponse (status, message);
-          try
-            {
-              // count
-              start = end + 1;
-              end = line.indexOf (' ', start);
-              if (end > start)
-                {
-                  gresponse.count =
-                    Integer.parseInt (line.substring (start, end));
-                }
-              // first
-              start = end + 1;
-              end = line.indexOf (' ', start);
-              if (end > start)
-                {
-                  gresponse.first =
-                    Integer.parseInt (line.substring (start, end));
-                }
-              // last
-              start = end + 1;
-              end = line.indexOf (' ', start);
-              if (end > start)
-                {
-                  gresponse.last =
-                    Integer.parseInt (line.substring (start, end));
-                }
-              // group
-              start = end + 1;
-              end = line.indexOf (' ', start);
-              if (end > start)
-                {
-                  gresponse.group = line.substring (start, end);
-                }
-              else
-                {
-                  gresponse.group = line.substring (start);
-                }
-            }
-          catch (NumberFormatException e)
-            {
-              throw new ProtocolException (line);
-            }
-          response = gresponse;
-          break;
-        default:
-          response = new StatusResponse (status, message);
-        }
-      return response;
-    }
+  {
+    int start = 0, end;
+    short status = -1;
+    String statusText = line;
+    String message = null;
+    end = line.indexOf (' ', start);
+    if (end > start)
+      {
+        statusText = line.substring (start, end);
+        message = line.substring (end + 1);
+      }
+    try
+      {
+        status = Short.parseShort (statusText);
+      }
+    catch (NumberFormatException e)
+      {
+        throw new ProtocolException (line);
+      }
+    StatusResponse response;
+    switch (status)
+      {
+      case ARTICLE_FOLLOWS:
+      case HEAD_FOLLOWS:
+      case BODY_FOLLOWS:
+      case ARTICLE_RETRIEVED:
+      case GROUP_SELECTED:
+        /* The LISTGROUP command returns a list of articles with a 211,
+         * instead of the newsgroup totals returned with the GROUP command.
+         * Check for this case. */
+        if (status != GROUP_SELECTED || isListGroup)
+          {
+            try
+              {
+                ArticleResponse aresponse =
+                  new ArticleResponse (status, message);
+                // article number
+                start = end + 1;
+                end = line.indexOf (' ', start);
+                if (end > start)
+                  {
+                    aresponse.articleNumber =
+                      Integer.parseInt (line.substring (start, end));
+                  }
+                // message-id
+                start = end + 1;
+                end = line.indexOf (' ', start);
+                if (end > start)
+                  {
+                    aresponse.messageId = line.substring (start, end);
+                  }
+                else
+                  {
+                    aresponse.messageId = line.substring (start);
+                  }
+                response = aresponse;
+              }
+            catch (NumberFormatException e)
+              {
+                // This will happen for XHDR
+                response = new StatusResponse (status, message);
+              }
+            break;
+          }
+        // This is the normal case for GROUP_SELECTED
+        GroupResponse gresponse = new GroupResponse (status, message);
+        try
+          {
+            // count
+            start = end + 1;
+            end = line.indexOf (' ', start);
+            if (end > start)
+              {
+                gresponse.count =
+                  Integer.parseInt (line.substring (start, end));
+              }
+            // first
+            start = end + 1;
+            end = line.indexOf (' ', start);
+            if (end > start)
+              {
+                gresponse.first =
+                  Integer.parseInt (line.substring (start, end));
+              }
+            // last
+            start = end + 1;
+            end = line.indexOf (' ', start);
+            if (end > start)
+              {
+                gresponse.last =
+                  Integer.parseInt (line.substring (start, end));
+              }
+            // group
+            start = end + 1;
+            end = line.indexOf (' ', start);
+            if (end > start)
+              {
+                gresponse.group = line.substring (start, end);
+              }
+            else
+              {
+                gresponse.group = line.substring (start);
+              }
+          }
+        catch (NumberFormatException e)
+          {
+            throw new ProtocolException (line);
+          }
+        response = gresponse;
+        break;
+      default:
+        response = new StatusResponse (status, message);
+      }
+    return response;
+  }
   
   /**
    * Send a single line to the server.
    * @param line the line to send
    */
-  protected void send(String line)
+  protected void send (String line)
     throws IOException
-    {
-      if (pendingData != null)
-        {
-          // Clear pending data
-          pendingData.readToEOF ();
-          pendingData = null;
-        }
-      if (debug)
-        {
-          Logger logger = Logger.getInstance ();
-          logger.log ("nntp", ">" + line);
-        }
-      byte[] data = line.getBytes (US_ASCII);
-      out.write (data);
-      out.writeln ();
-      out.flush ();
-    }
+  {
+    if (pendingData != null)
+      {
+        // Clear pending data
+        pendingData.readToEOF ();
+        pendingData = null;
+      }
+    if (debug)
+      {
+        Logger logger = Logger.getInstance ();
+        logger.log ("nntp", ">" + line);
+      }
+    byte[] data = line.getBytes (US_ASCII);
+    out.write (data);
+    out.writeln ();
+    out.flush ();
+  }
   
   /**
    * Read a single line from the server.
@@ -1358,17 +1383,21 @@ public class NNTPConnection
    */
   protected String read ()
     throws IOException
-    {
-      String line = in.readLine ();
-      if (debug)
-        {
-          Logger logger = Logger.getInstance ();
-          if (line == null)
+  {
+    String line = in.readLine ();
+    if (debug)
+      {
+        Logger logger = Logger.getInstance ();
+        if (line == null)
+          {
             logger.log ("nntp", "<EOF");
-          else
+          }
+        else
+          {
             logger.log ("nntp", "<" + line);
-        }
-      return line;
-    }
-
+          }
+      }
+    return line;
+  }
+  
 }

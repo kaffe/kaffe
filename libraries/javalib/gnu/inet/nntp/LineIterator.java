@@ -1,5 +1,5 @@
 /*
- * $Id: LineIterator.java,v 1.1 2004/07/25 22:46:23 dalibor Exp $
+ * $Id: LineIterator.java,v 1.3 2004/10/04 19:34:01 robilad Exp $
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -35,7 +35,7 @@ import java.util.NoSuchElementException;
  * An iterator over an NNTP multi-line response.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/07/25 22:46:23 $
+ * @version $Revision: 1.3 $ $Date: 2004/10/04 19:34:01 $
  */
 public class LineIterator implements Iterator, PendingData
 {
@@ -47,91 +47,91 @@ public class LineIterator implements Iterator, PendingData
   String current;
 
   LineIterator (NNTPConnection connection)
-    {
-      this.connection = connection;
-    }
+  {
+    this.connection = connection;
+  }
 
   void doRead () throws IOException
-    {
-      if (doneRead)
-        {
-          return;
-        }
-      String line = connection.read ();
-      if (DOT.equals (line))
-        {
-          current = null;
-        }
-      else
-        {
-          current = line;
-        }
-      doneRead = true;
-    }
+  {
+    if (doneRead)
+      {
+        return;
+      }
+    String line = connection.read ();
+    if (DOT.equals (line))
+      {
+        current = null;
+      }
+    else
+      {
+        current = line;
+      }
+    doneRead = true;
+  }
 
   /**
    * Indicates whether there are more lines to be read.
    */
   public boolean hasNext ()
-    {
-      try
-        {
-          doRead ();
-        }
-      catch (IOException e)
-        {
-          return false;
-        }
-      return (current != null);
-    }
+  {
+    try
+      {
+        doRead ();
+      }
+    catch (IOException e)
+      {
+        return false;
+      }
+    return (current != null);
+  }
 
   /**
    * Returns the next line.
    */
   public Object next ()
-    {
-      try
-        {
-          return nextLine ();
-        }
-      catch (IOException e)
-        {
-          throw new NoSuchElementException ("I/O error: " + e.getMessage ());
-        }
-    }
+  {
+    try
+      {
+        return nextLine ();
+      }
+    catch (IOException e)
+      {
+        throw new NoSuchElementException ("I/O error: " + e.getMessage ());
+      }
+  }
 
   /**
    * Returns the next line.
    */
   public String nextLine () throws IOException
-    {
-      doRead ();
-      if (current == null)
-        {
-          throw new NoSuchElementException ();
-        }
-      doneRead = false;
-      return current;
-    }
+  {
+    doRead ();
+    if (current == null)
+      {
+        throw new NoSuchElementException ();
+      }
+    doneRead = false;
+    return current;
+  }
 
   /**
    * This iterator is read-only.
    */
   public void remove ()
-    {
-      throw new UnsupportedOperationException ();
-    }
+  {
+    throw new UnsupportedOperationException ();
+  }
 
   /**
    * Read to the end of this iterator.
    */
   public void readToEOF () throws IOException
-    {
-      do
-        {
-          doRead ();
-        }
-      while (current != null);
-    }
+  {
+    do
+      {
+        doRead ();
+      }
+    while (current != null);
+  }
 
 }

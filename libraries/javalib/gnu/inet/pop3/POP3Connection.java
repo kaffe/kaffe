@@ -1,5 +1,5 @@
 /*
- * $Id: POP3Connection.java,v 1.1 2004/07/25 22:46:23 dalibor Exp $
+ * $Id: POP3Connection.java,v 1.2 2004/08/09 14:38:09 dalibor Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -32,8 +32,9 @@ import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.Socket;
+import java.net.InetSocketAddress;
 import java.net.ProtocolException;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -76,7 +77,7 @@ import gnu.inet.util.SaslOutputStream;
  * over POP3 documented in RFC 2595 and the AUTH command in RFC 1734.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/07/25 22:46:23 $
+ * @version $Revision: 1.2 $ $Date: 2004/08/09 14:38:09 $
  */
 public class POP3Connection
 {
@@ -149,9 +150,9 @@ public class POP3Connection
    */
   public POP3Connection (String hostname)
     throws UnknownHostException, IOException
-    {
-      this (hostname, -1, -1, -1, false);
-    }
+  {
+    this (hostname, -1, 0, 0, false);
+  }
 
   /**
    * Creates a new connection to the server.
@@ -160,9 +161,9 @@ public class POP3Connection
    */
   public POP3Connection (String hostname, int port)
     throws UnknownHostException, IOException
-    {
-      this (hostname, port, -1, -1, false);
-    }
+  {
+    this (hostname, port, 0, 0, false);
+  }
 
   /**
    * Creates a new connection to the server.
@@ -175,36 +176,44 @@ public class POP3Connection
   public POP3Connection (String hostname, int port,
                          int connectionTimeout, int timeout, boolean debug)
     throws UnknownHostException, IOException
-    {
-      this.debug = debug;
-      if (port <= 0)
-        {
-          port = DEFAULT_PORT;
-        }
-      
-      // Set up socket
-      // TODO connection timeout
-      socket = new Socket (hostname, port);
-      if (timeout > 0)
-        {
-          socket.setSoTimeout (timeout);
-        }
-      
-      InputStream in = socket.getInputStream ();
-      in = new BufferedInputStream (in);
-      in = new CRLFInputStream (in);
-      this.in = new LineInputStream (in);
-      OutputStream out = socket.getOutputStream ();
-      out = new BufferedOutputStream (out);
-      this.out = new CRLFOutputStream (out);
-      
-      if (getResponse() != OK)
-        {
-          throw new ProtocolException ("Connect failed: " + response);
-        }
-      // APOP timestamp
-      timestamp = parseTimestamp (response);
-    }
+  {
+    this.debug = debug;
+    if (port <= 0)
+      {
+        port = DEFAULT_PORT;
+      }
+    
+    // Set up socket
+    socket = new Socket ();
+    InetSocketAddress address = new InetSocketAddress (hostname, port);
+    if (connectionTimeout > 0)
+      {
+        socket.connect (address, connectionTimeout);
+      }
+    else
+      {
+        socket.connect (address);
+      }
+    if (timeout > 0)
+      {
+        socket.setSoTimeout (timeout);
+      }
+    
+    InputStream in = socket.getInputStream ();
+    in = new BufferedInputStream (in);
+    in = new CRLFInputStream (in);
+    this.in = new LineInputStream (in);
+    OutputStream out = socket.getOutputStream ();
+    out = new BufferedOutputStream (out);
+    this.out = new CRLFOutputStream (out);
+    
+    if (getResponse() != OK)
+      {
+        throw new ProtocolException ("Connect failed: " + response);
+      }
+    // APOP timestamp
+    timestamp = parseTimestamp (response);
+  }
 
   /**
    * Authenticates the connection using the specified SASL mechanism,
@@ -217,87 +226,87 @@ public class POP3Connection
    */
   public boolean auth (String mechanism, String username, String password)
     throws IOException
-    {
-      try
-        {
-          String[] m = new String[] { mechanism };
-          CallbackHandler ch = new SaslCallbackHandler (username, password);
-          // Avoid lengthy callback procedure for GNU Crypto
-          Properties p = new Properties ();
-          p.put ("gnu.crypto.sasl.username", username);
-          p.put ("gnu.crypto.sasl.password", password);
-          SaslClient sasl =
-            Sasl.createSaslClient (m, null, "smtp",
-                                   socket.getInetAddress ().getHostName (),
-                                   p, ch);
-          if (sasl == null)
-            {
-              return false;
-            }
-
-          StringBuffer cmd = new StringBuffer (AUTH);
-          cmd.append (' ');
-          cmd.append (mechanism);
-          if (sasl.hasInitialResponse ())
-            {
-              cmd.append (' ');
-              byte[] init = sasl.evaluateChallenge (new byte[0]);
-              cmd.append (new String (init, "US-ASCII"));
-            }
-          send (cmd.toString ());
-          while (true)
-            {
-              switch (getResponse ())
-                {
-                case OK:
-                  String qop = (String) sasl.getNegotiatedProperty (Sasl.QOP);
-                  if ("auth-int".equalsIgnoreCase (qop)
-                      || "auth-conf".equalsIgnoreCase (qop))
-                    {
-                      InputStream in = socket.getInputStream ();
-                      in = new BufferedInputStream (in);
-                      in = new SaslInputStream (sasl, in);
-                      in = new CRLFInputStream (in);
-                      this.in = new LineInputStream (in);
-                      OutputStream out = socket.getOutputStream ();
-                      out = new BufferedOutputStream (out);
-                      out = new SaslOutputStream (sasl, out);
-                      this.out = new CRLFOutputStream (out);
-                    }
-                  return true;
-                case READY:
-                  try
-                    {
-                      byte[] c0 = response.getBytes ("US-ASCII");
-                      byte[] c1 = BASE64.decode (c0);       // challenge
-                      byte[] r0 = sasl.evaluateChallenge (c1);
-                      byte[] r1 = BASE64.encode (r0);       // response
-                      out.write (r1);
-                      out.write (0x0d);
-                      out.flush ();
-                    }
-                  catch (SaslException e)
-                    {
-                      // Error in SASL challenge evaluation - cancel exchange
-                      out.write (0x2a);
-                      out.write (0x0d);
-                      out.flush ();
-                    }
-                default:
-                  return false;
-                }
-            }
-        }
-      catch (SaslException e)
-        {
-          return false;             // No provider for mechanism
-        }
-      catch (RuntimeException e)
-        {
-          return false;             // No javax.security.sasl classes
-        }
-    }
-
+  {
+    try
+      {
+        String[] m = new String[] { mechanism };
+        CallbackHandler ch = new SaslCallbackHandler (username, password);
+        // Avoid lengthy callback procedure for GNU Crypto
+        Properties p = new Properties ();
+        p.put ("gnu.crypto.sasl.username", username);
+        p.put ("gnu.crypto.sasl.password", password);
+        SaslClient sasl =
+          Sasl.createSaslClient (m, null, "smtp",
+                                 socket.getInetAddress ().getHostName (),
+                                 p, ch);
+        if (sasl == null)
+          {
+            return false;
+          }
+        
+        StringBuffer cmd = new StringBuffer (AUTH);
+        cmd.append (' ');
+        cmd.append (mechanism);
+        if (sasl.hasInitialResponse ())
+          {
+            cmd.append (' ');
+            byte[] init = sasl.evaluateChallenge (new byte[0]);
+            cmd.append (new String (init, "US-ASCII"));
+          }
+        send (cmd.toString ());
+        while (true)
+          {
+            switch (getResponse ())
+              {
+              case OK:
+                String qop = (String) sasl.getNegotiatedProperty (Sasl.QOP);
+                if ("auth-int".equalsIgnoreCase (qop)
+                    || "auth-conf".equalsIgnoreCase (qop))
+                  {
+                    InputStream in = socket.getInputStream ();
+                    in = new BufferedInputStream (in);
+                    in = new SaslInputStream (sasl, in);
+                    in = new CRLFInputStream (in);
+                    this.in = new LineInputStream (in);
+                    OutputStream out = socket.getOutputStream ();
+                    out = new BufferedOutputStream (out);
+                    out = new SaslOutputStream (sasl, out);
+                    this.out = new CRLFOutputStream (out);
+                  }
+                return true;
+              case READY:
+                try
+                  {
+                    byte[] c0 = response.getBytes ("US-ASCII");
+                    byte[] c1 = BASE64.decode (c0);       // challenge
+                    byte[] r0 = sasl.evaluateChallenge (c1);
+                    byte[] r1 = BASE64.encode (r0);       // response
+                    out.write (r1);
+                    out.write (0x0d);
+                    out.flush ();
+                  }
+                catch (SaslException e)
+                  {
+                    // Error in SASL challenge evaluation - cancel exchange
+                    out.write (0x2a);
+                    out.write (0x0d);
+                    out.flush ();
+                  }
+              default:
+                return false;
+              }
+          }
+      }
+    catch (SaslException e)
+      {
+        return false;             // No provider for mechanism
+      }
+    catch (RuntimeException e)
+      {
+        return false;             // No javax.security.sasl classes
+      }
+  }
+  
   /**
    * Authenticate the specified user using the APOP MD5-based method.
    * This does not transmit the password in the clear, but doesn't provide
@@ -307,51 +316,51 @@ public class POP3Connection
    */
   public boolean apop (String username, String password)
     throws IOException
-    {
-      if (username == null || password == null || timestamp == null)
-        {
-          return false;
-        }
-      // APOP <username> <digest>
-      try
-        {
-          byte[] secret = password.getBytes ("US-ASCII");
-          // compute digest
-          byte[] target = new byte[timestamp.length + secret.length];
-          System.arraycopy (timestamp, 0, target, 0, timestamp.length);
-          System.arraycopy (secret, 0, target, timestamp.length, secret.length);
-          MessageDigest md5 = MessageDigest.getInstance ("MD5");
-          byte[] db = md5.digest (target);
-          // create hexadecimal representation
-          StringBuffer digest = new StringBuffer ();
-          for (int i = 0; i < db.length; i++)
-            {
-              int c = (int) db[i];
-              if (c < 0)
-                {
-                  c += 256;
-                }
-              digest.append (Integer.toHexString ((c & 0xf0) >> 4));
-              digest.append (Integer.toHexString (c & 0x0f));
-            }
-          // send command
-          String cmd = new StringBuffer (APOP)
-            .append (' ')
-            .append (username)
-            .append (' ')
-            .append (digest.toString ())
-            .toString ();
-          send (cmd);
-          return getResponse () == OK;
-        }
-      catch (NoSuchAlgorithmException e)
-        {
-          Logger logger = Logger.getInstance ();
-          logger.log ("pop3", "MD5 algorithm not found");
-          return false;
-        }
-    }
-
+  {
+    if (username == null || password == null || timestamp == null)
+      {
+        return false;
+      }
+    // APOP <username> <digest>
+    try
+      {
+        byte[] secret = password.getBytes ("US-ASCII");
+        // compute digest
+        byte[] target = new byte[timestamp.length + secret.length];
+        System.arraycopy (timestamp, 0, target, 0, timestamp.length);
+        System.arraycopy (secret, 0, target, timestamp.length, secret.length);
+        MessageDigest md5 = MessageDigest.getInstance ("MD5");
+        byte[] db = md5.digest (target);
+        // create hexadecimal representation
+        StringBuffer digest = new StringBuffer ();
+        for (int i = 0; i < db.length; i++)
+          {
+            int c = (int) db[i];
+            if (c < 0)
+              {
+                c += 256;
+              }
+            digest.append (Integer.toHexString ((c & 0xf0) >> 4));
+            digest.append (Integer.toHexString (c & 0x0f));
+          }
+        // send command
+        String cmd = new StringBuffer (APOP)
+          .append (' ')
+          .append (username)
+          .append (' ')
+          .append (digest.toString ())
+          .toString ();
+        send (cmd);
+        return getResponse () == OK;
+      }
+    catch (NoSuchAlgorithmException e)
+      {
+        Logger logger = Logger.getInstance ();
+        logger.log ("pop3", "MD5 algorithm not found");
+        return false;
+      }
+  }
+  
   /**
    * Authenticate the user using the basic USER and PASS handshake.
    * It is recommended to use a more secure authentication method such as
@@ -362,33 +371,34 @@ public class POP3Connection
    */
   public boolean login (String username, String password)
     throws IOException
-    {
-      if (username == null || password == null)
-        {
-          return false;
-        }
-      // USER <username>
-      String cmd = USER + ' ' + username;
-      send (cmd);
-      if (getResponse () != OK)
-        {
-          return false;
-        }
-      // PASS <password>
-      cmd = PASS + ' ' + password;
-      send (cmd);
-      return getResponse () == OK;
-    }
-
+  {
+    if (username == null || password == null)
+      {
+        return false;
+      }
+    // USER <username>
+    String cmd = USER + ' ' + username;
+    send (cmd);
+    if (getResponse () != OK)
+      {
+        return false;
+      }
+    // PASS <password>
+    cmd = PASS + ' ' + password;
+    send (cmd);
+    return getResponse () == OK;
+  }
+  
   /**
    * Attempts to start TLS on the specified connection.
    * See RFC 2595 for details
    * @return true if successful, false otherwise
    */
-  public boolean stls () throws IOException
-    {
-      return stls (new EmptyX509TrustManager ());
-    }
+  public boolean stls ()
+    throws IOException
+  {
+    return stls (new EmptyX509TrustManager ());
+  }
   
   /**
    * Attempts to start TLS on the specified connection.
@@ -396,154 +406,161 @@ public class POP3Connection
    * @param tm the custom trust manager to use
    * @return true if successful, false otherwise
    */
-  public boolean stls (TrustManager tm) throws IOException
-    {
-      try
-        {
-          // Use SSLSocketFactory to negotiate a TLS session and wrap the
-          // current socket.
-          SSLContext context = SSLContext.getInstance ("TLS");
-          // We don't require strong validation of the server certificate
-          TrustManager[] trust = new TrustManager[] { tm };
-          context.init (null, trust, null);
-          SSLSocketFactory factory = context.getSocketFactory ();
-
-          send (STLS);
-          if (getResponse () != OK)
-            {
-              return false;
-            }
-
-          String hostname = socket.getInetAddress ().getHostName ();
-          int port = socket.getPort ();
-          SSLSocket ss =
-            (SSLSocket) factory.createSocket (socket, hostname, port, true);
-          String[] protocols = { "TLSv1", "SSLv3" };
-          ss.setEnabledProtocols (protocols);
-          ss.setUseClientMode (true);
-          ss.startHandshake ();
-
-          // set up streams
-          InputStream in = ss.getInputStream ();
-          in = new BufferedInputStream (in);
-          in = new CRLFInputStream (in);
-          this.in = new LineInputStream (in);
-          OutputStream out = ss.getOutputStream ();
-          out = new BufferedOutputStream (out);
-          this.out = new CRLFOutputStream (out);
-
-          return true;
-        }
-      catch (GeneralSecurityException e)
-        {
-          return false;
-        }
-    }
-
+  public boolean stls (TrustManager tm)
+    throws IOException
+  {
+    try
+      {
+        // Use SSLSocketFactory to negotiate a TLS session and wrap the
+        // current socket.
+        SSLContext context = SSLContext.getInstance ("TLS");
+        // We don't require strong validation of the server certificate
+        TrustManager[] trust = new TrustManager[] { tm };
+        context.init (null, trust, null);
+        SSLSocketFactory factory = context.getSocketFactory ();
+        
+        send (STLS);
+        if (getResponse () != OK)
+          {
+            return false;
+          }
+        
+        String hostname = socket.getInetAddress ().getHostName ();
+        int port = socket.getPort ();
+        SSLSocket ss =
+          (SSLSocket) factory.createSocket (socket, hostname, port, true);
+        String[] protocols = { "TLSv1", "SSLv3" };
+        ss.setEnabledProtocols (protocols);
+        ss.setUseClientMode (true);
+        ss.startHandshake ();
+        
+        // set up streams
+        InputStream in = ss.getInputStream ();
+        in = new BufferedInputStream (in);
+        in = new CRLFInputStream (in);
+        this.in = new LineInputStream (in);
+        OutputStream out = ss.getOutputStream ();
+        out = new BufferedOutputStream (out);
+        this.out = new CRLFOutputStream (out);
+        
+        return true;
+      }
+    catch (GeneralSecurityException e)
+      {
+        return false;
+      }
+  }
+  
   /**
    * Returns the number of messages in the maildrop.
    */
-  public int stat () throws IOException
-    {
-      send (STAT);
-      if (getResponse () != OK)
-        {
-          throw new ProtocolException ("STAT failed: " + response);
-        }
-      try
-        {
-          return
-            Integer.parseInt (response.substring (0, response.indexOf (' ')));
-        }
-      catch (NumberFormatException e)
-        {
-          throw new ProtocolException ("Not a number: " + response);
-        }
-      catch (ArrayIndexOutOfBoundsException e)
-        {
-          throw new ProtocolException ("Not a STAT response: " + response);
-        }
-    }
-
+  public int stat ()
+    throws IOException
+  {
+    send (STAT);
+    if (getResponse () != OK)
+      {
+        throw new ProtocolException ("STAT failed: " + response);
+      }
+    try
+      {
+        return
+          Integer.parseInt (response.substring (0, response.indexOf (' ')));
+      }
+    catch (NumberFormatException e)
+      {
+        throw new ProtocolException ("Not a number: " + response);
+      }
+    catch (ArrayIndexOutOfBoundsException e)
+      {
+        throw new ProtocolException ("Not a STAT response: " + response);
+      }
+  }
+  
   /**
    * Returns the size of the specified message.
    * @param msgnum the message number
    */
-  public int list (int msgnum) throws IOException
-    {
-      String cmd = LIST + ' ' + msgnum;
-      send (cmd);
-      if (getResponse () != OK)
-        {
-          throw new ProtocolException ("LIST failed: " + response);
-        }
-      try
-        {
-          return
-            Integer.parseInt (response.substring (response.indexOf (' ') + 1));
-        }
-      catch (NumberFormatException e)
-        {
-          throw new ProtocolException ("Not a number: " + response);
-        }
-    }
-
+  public int list (int msgnum)
+    throws IOException
+  {
+    String cmd = LIST + ' ' + msgnum;
+    send (cmd);
+    if (getResponse () != OK)
+      {
+        throw new ProtocolException ("LIST failed: " + response);
+      }
+    try
+      {
+        return
+          Integer.parseInt (response.substring (response.indexOf (' ') + 1));
+      }
+    catch (NumberFormatException e)
+      {
+        throw new ProtocolException ("Not a number: " + response);
+      }
+  }
+  
   /**
    * Returns an input stream containing the entire message.
    * This input stream must be read in its entirety before further commands
    * can be issued on this connection.
    * @param msgnum the message number
    */
-  public InputStream retr (int msgnum) throws IOException
-    {
-      String cmd = RETR + ' ' + msgnum;
-      send (cmd);
-      if (getResponse () != OK)
-        {
-          throw new ProtocolException ("RETR failed: " + response);
-        }
-      return new MessageInputStream (in);
-    }
-
+  public InputStream retr (int msgnum)
+    throws IOException
+  {
+    String cmd = RETR + ' ' + msgnum;
+    send (cmd);
+    if (getResponse () != OK)
+      {
+        throw new ProtocolException ("RETR failed: " + response);
+      }
+    return new MessageInputStream (in);
+  }
+  
   /**
    * Marks the specified message as deleted.
    * @param msgnum the message number
    */
-  public void dele (int msgnum) throws IOException
-    {
-      String cmd = DELE + ' ' + msgnum;
-      send (cmd);
-      if (getResponse () != OK)
-        {
-          throw new ProtocolException ("DELE failed: " + response);
-        }
-    }
-
+  public void dele (int msgnum)
+    throws IOException
+  {
+    String cmd = DELE + ' ' + msgnum;
+    send (cmd);
+    if (getResponse () != OK)
+      {
+        throw new ProtocolException ("DELE failed: " + response);
+      }
+  }
+  
   /**
    * Does nothing.
    * This can be used to keep the connection alive.
    */
-  public void noop () throws IOException
-    {
-      send (NOOP);
-      if (getResponse () != OK)
-        {
-          throw new ProtocolException ("NOOP failed: " + response);
-        }
-    }
+  public void noop ()
+    throws IOException
+  {
+    send (NOOP);
+    if (getResponse () != OK)
+      {
+        throw new ProtocolException ("NOOP failed: " + response);
+      }
+  }
 
   /**
    * If any messages have been marked as deleted, they are unmarked.
    */
-  public void rset () throws IOException
-    {
-      send (RSET);
-      if (getResponse () != OK)
-        {
-          throw new ProtocolException ("RSET failed: " + response);
-        }
-    }
-
+  public void rset ()
+    throws IOException
+  {
+    send (RSET);
+    if (getResponse () != OK)
+      {
+        throw new ProtocolException ("RSET failed: " + response);
+      }
+  }
+  
   /**
    * Closes the connection.
    * No further commands may be issued on this connection after this method
@@ -551,13 +568,14 @@ public class POP3Connection
    * @return true if all deleted messages were successfully removed, false
    * otherwise
    */
-  public boolean quit () throws IOException
-    {
-      send (QUIT);
-      int ret = getResponse ();
-      socket.close ();
-      return ret == OK;
-    }
+  public boolean quit ()
+    throws IOException
+  {
+    send (QUIT);
+    int ret = getResponse ();
+    socket.close ();
+    return ret == OK;
+  }
 
   /**
    * Returns just the headers of the specified message as an input stream.
@@ -565,164 +583,166 @@ public class POP3Connection
    * issued.
    * @param msgnum the message number
    */
-  public InputStream top (int msgnum) throws IOException
-    {
-      String cmd = new StringBuffer (TOP)
-        .append (' ')
-        .append (msgnum)
-        .append (' ')
-        .append (0)
-        .toString ();
-      send (cmd);
-      if (getResponse () != OK)
-        {
-          throw new ProtocolException ("TOP failed: " + response);
-        }
-      return new MessageInputStream (in);
-    }
-
+  public InputStream top (int msgnum)
+    throws IOException
+  {
+    String cmd = TOP + ' ' + msgnum + ' ' + '0';
+    send (cmd);
+    if (getResponse () != OK)
+      {
+        throw new ProtocolException ("TOP failed: " + response);
+      }
+    return new MessageInputStream (in);
+  }
+  
   /**
    * Returns a unique identifier for the specified message.
    * @param msgnum the message number
    */
-  public String uidl (int msgnum) throws IOException
-    {
-      String cmd = UIDL + ' ' + msgnum;
-      send (cmd);
-      if (getResponse () != OK)
-        {
-          throw new ProtocolException ("UIDL failed: " + response);
-        }
-      return response.substring (response.indexOf (' ') + 1);
-    }
+  public String uidl (int msgnum)
+    throws IOException
+  {
+    String cmd = UIDL + ' ' + msgnum;
+    send (cmd);
+    if (getResponse () != OK)
+      {
+        throw new ProtocolException ("UIDL failed: " + response);
+      }
+    return response.substring (response.indexOf (' ') + 1);
+  }
 
   /**
    * Returns a map of message number to UID pairs.
    * Message numbers are Integers, UIDs are Strings.
    */
-  public Map uidl () throws IOException
-    {
-      send (UIDL);
-      if (getResponse () != OK)
-        {
-          throw new ProtocolException ("UIDL failed: " + response);
-        }
-      Map uids = new LinkedHashMap ();
-      String line = in.readLine ();
-      while (line != null && !(".".equals (line)))
-        {
-          int si = line.indexOf (' ');
-          if (si < 1)
-            {
-              throw new ProtocolException ("Invalid UIDL response: " + line);
-            }
-          try
-            {
-              uids.put (new Integer (line.substring (0, si)),
-                        line.substring (si + 1));
-            }
-          catch (NumberFormatException e)
-            {
-              throw new ProtocolException ("Invalid message number: " + line);
-            }
-        }
-      return Collections.unmodifiableMap (uids);
-    }
+  public Map uidl ()
+    throws IOException
+  {
+    send (UIDL);
+    if (getResponse () != OK)
+      {
+        throw new ProtocolException ("UIDL failed: " + response);
+      }
+    Map uids = new LinkedHashMap ();
+    String line = in.readLine ();
+    while (line != null && !(".".equals (line)))
+      {
+        int si = line.indexOf (' ');
+        if (si < 1)
+          {
+            throw new ProtocolException ("Invalid UIDL response: " + line);
+          }
+        try
+          {
+            uids.put (new Integer (line.substring (0, si)),
+                      line.substring (si + 1));
+          }
+        catch (NumberFormatException e)
+          {
+            throw new ProtocolException ("Invalid message number: " + line);
+          }
+      }
+    return Collections.unmodifiableMap (uids);
+  }
 
   /**
    * Returns a list of capabilities supported by the POP3 server.
    * If the server does not support POP3 extensions, returns
    * <code>null</code>.
    */
-  public List capa () throws IOException
-    {
-      send (CAPA);
-      if (getResponse () == OK)
-        {
-          final String DOT = ".";
-          List list = new ArrayList ();
-          for (String line = in.readLine ();
-               !DOT.equals (line);
-               line = in.readLine ())
-            {
-              list.add (line);
-            }
-          return Collections.unmodifiableList (list);
-        }
-      return null;
-    }
-
+  public List capa ()
+    throws IOException
+  {
+    send (CAPA);
+    if (getResponse () == OK)
+      {
+        final String DOT = ".";
+        List list = new ArrayList ();
+        for (String line = in.readLine ();
+             !DOT.equals (line);
+             line = in.readLine ())
+          {
+            list.add (line);
+          }
+        return Collections.unmodifiableList (list);
+      }
+    return null;
+  }
+  
   /** 
    * Send the command to the server.
    * If <code>debug</code> is <code>true</code>,
    * the command is logged.
    */
-  protected void send (String command) throws IOException
-    {
-      if (debug)
-        {
-          Logger logger = Logger.getInstance ();
-          logger.log ("pop3", "> " + command);
-        }
-      out.write (command);
-      out.writeln ();
-      out.flush ();
-    }
-
+  protected void send (String command)
+    throws IOException
+  {
+    if (debug)
+      {
+        Logger logger = Logger.getInstance ();
+        logger.log ("pop3", "> " + command);
+      }
+    out.write (command);
+    out.writeln ();
+    out.flush ();
+  }
+  
   /**
    * Parse the response from the server.
    * If <code>debug</code> is <code>true</code>,
    * the response is logged.
    */
-  protected int getResponse () throws IOException
-    {
-      response = in.readLine ();
-      if (debug)
-        {
-          Logger logger = Logger.getInstance ();
-          logger.log ("pop3", "< " + response);
-        }
-      if (response.indexOf (_OK) == 0)
-        {
-          response = response.substring (3).trim ();
-          return OK;
-        }
-      else if (response.indexOf (_ERR) == 0)
-        {
-          response = response.substring (4).trim ();
-          return ERR;
-        }
-      else if (response.indexOf (_READY) == 0)
-        {
-          response = response.substring (2).trim ();
-          return READY;
-        }
-      else
-        {
-          throw new ProtocolException ("Unexpected response: " + response);
-        }
-    }
-
+  protected int getResponse ()
+    throws IOException
+  {
+    response = in.readLine ();
+    if (debug)
+      {
+        Logger logger = Logger.getInstance ();
+        logger.log ("pop3", "< " + response);
+      }
+    if (response.indexOf (_OK) == 0)
+      {
+        response = response.substring (3).trim ();
+        return OK;
+      }
+    else if (response.indexOf (_ERR) == 0)
+      {
+        response = response.substring (4).trim ();
+        return ERR;
+      }
+    else if (response.indexOf (_READY) == 0)
+      {
+        response = response.substring (2).trim ();
+        return READY;
+      }
+    else
+      {
+        throw new ProtocolException ("Unexpected response: " + response);
+      }
+  }
+  
   /*
    * Parse the APOP timestamp from the server's banner greeting.
    */
-  byte[] parseTimestamp (String greeting) throws IOException
-    {
-      int bra = greeting.indexOf ('<');
-      if (bra != -1)
-        {
-          int ket = greeting.indexOf ('>', bra);
-          if (ket != -1)
-            {
-              String mid = greeting.substring (bra, ket + 1);
-              int at = mid.indexOf ('@');
-              if (at != -1)           // This is a valid RFC822 msg-id
-                {
-                  return mid.getBytes ("US-ASCII");
-                }
-            }
-        }
-      return null;
-    }
-
+  byte[] parseTimestamp (String greeting)
+    throws IOException
+  {
+    int bra = greeting.indexOf ('<');
+    if (bra != -1)
+      {
+        int ket = greeting.indexOf ('>', bra);
+        if (ket != -1)
+          {
+            String mid = greeting.substring (bra, ket + 1);
+            int at = mid.indexOf ('@');
+            if (at != -1)           // This is a valid RFC822 msg-id
+              {
+                return mid.getBytes ("US-ASCII");
+              }
+          }
+      }
+    return null;
+  }
+  
 }

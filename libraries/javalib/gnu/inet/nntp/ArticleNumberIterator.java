@@ -1,5 +1,5 @@
 /*
- * $Id: ArticleNumberIterator.java,v 1.1 2004/07/25 22:46:23 dalibor Exp $
+ * $Id: ArticleNumberIterator.java,v 1.3 2004/10/04 19:34:01 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -34,38 +34,38 @@ import java.util.NoSuchElementException;
  * An iterator over a listing of article numbers.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2004/07/25 22:46:23 $
+ * @version $Revision: 1.3 $ $Date: 2004/10/04 19:34:01 $
  */
 public class ArticleNumberIterator extends LineIterator
 {
 
   ArticleNumberIterator (NNTPConnection connection)
-    {
-      super (connection);
-    }
+  {
+    super (connection);
+  }
 
   /**
    * Returns the next article number.
    */
   public Object next ()
-    {
-      try
-        {
-          return new Integer (nextArticleNumber ());
-        }
-      catch (IOException e)
-        {
-          throw new NoSuchElementException ("I/O error: " + e.getMessage ());
-        }
-    }
+  {
+    try
+      {
+        return new Integer (nextArticleNumber ());
+      }
+    catch (IOException e)
+      {
+        throw new NoSuchElementException ("I/O error: " + e.getMessage ());
+      }
+  }
 
   /**
    * Returns the next article number.
    */
   public int nextArticleNumber () throws IOException
-    {
-      String line = nextLine ();
-      return Integer.parseInt (line.trim ());
-    }
+  {
+    String line = nextLine ();
+    return Integer.parseInt (line.trim ());
+  }
 
 }

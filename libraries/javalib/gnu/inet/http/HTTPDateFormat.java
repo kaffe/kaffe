@@ -43,11 +43,11 @@ public class HTTPDateFormat
   extends DateFormat
 {
 
-  private static final String[] DAYS_OF_WEEK = {
+  static final String[] DAYS_OF_WEEK = {
     null, "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
   };
 
-  private static final String[] MONTHS = {
+  static final String[] MONTHS = {
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   };

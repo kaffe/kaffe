@@ -1,5 +1,5 @@
 /*
- * $Id: ArticleStream.java,v 1.1 2004/07/25 22:46:23 dalibor Exp $
+ * $Id: ArticleStream.java,v 1.3 2004/10/04 19:34:01 robilad Exp $
  * Copyright (C) 2002 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -35,32 +35,32 @@ import java.io.IOException;
  * A stream that can be told to read to the end of its data.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ Date$
+ * @version $Revision: 1.3 $ Date$
  */
 public final class ArticleStream
   extends FilterInputStream implements PendingData
 {
 
   ArticleStream (InputStream in)
-    {
-      super (in);
-    }
+  {
+    super (in);
+  }
 
   /**
    * Read to the end of the article data.
    */
   public void readToEOF () throws IOException
-    {
-      if (in.available () == 0)
-        {
-          return;
-        }
-      byte[] buf = new byte[4096];
-      int ret = 0;
-      while (ret != -1)
-        {
-          ret = in.read (buf);
-        }
-    }
+  {
+    if (in.available () == 0)
+      {
+        return;
+      }
+    byte[] buf = new byte[4096];
+    int ret = 0;
+    while (ret != -1)
+      {
+        ret = in.read (buf);
+      }
+  }
 
 }

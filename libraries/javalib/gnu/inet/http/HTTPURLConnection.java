@@ -1,5 +1,5 @@
 /*
- * $Id: HTTPURLConnection.java,v 1.1 2004/07/25 22:46:19 dalibor Exp $
+ * $Id: HTTPURLConnection.java,v 1.3 2004/10/04 19:33:58 robilad Exp $
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -240,8 +240,7 @@ extends HttpURLConnection
 
   public boolean usingProxy ()
   {
-    // TODO
-    return false;
+    return (proxyHostname != null);
   }
 
   /**
