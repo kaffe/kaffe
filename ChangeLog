@@ -1,5 +1,9 @@
 2004-08-30  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/i386/linux/md.c: Added missing md.h include.
+
+2004-08-30  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/gcj/gcj-soft.cc: Removed prototype 
 	for soft_vmultianewarray.
 

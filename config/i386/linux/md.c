@@ -11,6 +11,8 @@
 
 #include "config.h"
 #include "gtypes.h"
+#include "md.h"
+
 #include <malloc.h>
 #include <unistd.h>
 #include <stdio.h>
