@@ -41,18 +41,64 @@ package javax.net.ssl;
 
 import java.util.Enumeration;
 
+/**
+ * A collection of saved SSL sessions, with thier corresponding session
+ * IDs.
+ *
+ * @author Casey Marshall (rsdio@metastatic.org)
+ */
 public interface SSLSessionContext
 {
 
+  /**
+   * Returns an enumeration of all saved session IDs. Every element in
+   * the returned enumeration is a byte array.
+   *
+   * @return The session IDs.
+   */
   Enumeration getIds();
 
+  /**
+   * Gets the session specified by its ID, or <code>null</code> if there
+   * is no session, or if it has expired.
+   *
+   * @param sessionId The ID of the session to get.
+   * @return The session, or <code>null</code>.
+   */
   SSLSession getSession(byte[] sessionId);
 
+  /**
+   * Returns the maximum number of sessions that may be cached by this
+   * session context.
+   *
+   * @return The maximum number of sessions that may be cached.
+   */
   int getSessionCacheSize();
 
+  /**
+   * Returns the period of time (in seconds) that a session may be cached
+   * for before becoming invalid.
+   *
+   * @return The time a session may be valid.
+   */
   int getSessionTimeout();
 
+  /**
+   * Sets the maximum number of sessions that may be cached by this
+   * session context. A cache size of 0 means no limit.
+   *
+   * @param size The new cache size.
+   * @throws IllegalArgumentException If <code>size</code> is negative.
+   */
   void setSessionCacheSize(int size);
 
+  /**
+   * Sets the period of time (in seconds) that a session may be cached
+   * for before becoming invalid. A timeout of 0 means that sessions
+   * never expire.
+   *
+   * @param seconds The new timeout.
+   * @throws IllegalArgumentException If <code>seconds</code> is negative.
+   */
   void setSessionTimeout(int seconds);
 }

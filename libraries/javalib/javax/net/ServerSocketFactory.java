@@ -81,7 +81,7 @@ public abstract class ServerSocketFactory
   {
     try
       {
-        String s = Security.getProperty("defaultServerSocketFactory");
+        String s = Security.getProperty("gnu.defaultServerSocketFactory");
         if (s != null)
           {
             Class c = Class.forName(s);
@@ -117,29 +117,7 @@ public abstract class ServerSocketFactory
    */
   public abstract ServerSocket createServerSocket(int port) throws IOException;
 
-  /**
-   * Create a server socket bound to the given port, with the given
-   * backlog.
-   *
-   * @param port The port to bind the server socket to.
-   * @param backlog The connection backlog for the server socket.
-   * @return A server socket bound to <i>port</i> with a connection
-   *   backlog of <i>backlog</i>
-   * @throws IOException If a networking error occurs.
-   */
   public abstract ServerSocket createServerSocket(int port, int backlog) throws IOException;
 
-  /**
-   * Create a server socket bound to the given port and interface (by
-   * its address), with the given backlog.
-   *
-   * @param port The port to bind the server socket to.
-   * @param backlog The connection backlog for the server socket.
-   * @param bindAddress The address of the interface to bind to.
-   * @return A server socket bound to <i>port</i> on the interface
-   *   with address <i>bindAddress</i> with a connection backlog of
-   *   <i>backlog</i>
-   * @throws IOException If a networking error occurs.
-   */
   public abstract ServerSocket createServerSocket(int port, int backlog, InetAddress bindAddress) throws IOException;
 }

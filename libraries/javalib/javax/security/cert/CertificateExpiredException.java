@@ -39,6 +39,15 @@ version.  */
 
 package javax.security.cert;
 
+/**
+ * <p>Signals that a certificate has expired.</p>
+ *
+ * <p><b>This class is deprecated in favor of the {@link
+ * java.security.cert.CertificateExpiredException} class. It should not be used
+ * in new applications.</b></p>
+ *
+ * @deprecated Use java.security.cert.CertificateExpiredException instead.
+ */
 public class CertificateExpiredException extends CertificateException
 {
 

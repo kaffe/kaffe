@@ -39,6 +39,14 @@ version.  */
 
 package javax.security.cert;
 
+/**
+ * <p>Signals a parsing error when decoding a certificate.</p>
+ *
+ * <p><b>This class is deprecated. It should not be used in new
+ * applications.</b></p>
+ *
+ * @deprecated Use the java.security.cert package instead.
+ */
 public class CertificateParsingException extends CertificateException
 {
 

@@ -8723,7 +8723,7 @@ fi], [AC_MSG_RESULT(no)])
 AU_DEFUN([fp_WITH_DMALLOC], [AM_WITH_DMALLOC])
 
 # ----------------------------------------------------------------------------
-# $Id: aclocal.m4,v 1.72 2003/11/30 23:49:12 dalibor Exp $
+# $Id: aclocal.m4,v 1.84 2003/12/14 16:31:37 dalibor Exp $
 #
 # Copyright (C) 2003 Free Software Foundation, Inc.
 #
@@ -8767,7 +8767,7 @@ AU_DEFUN([fp_WITH_DMALLOC], [AM_WITH_DMALLOC])
 #
 # GNU Crypto m4 macro for use by VM Providers
 #
-# $Revision: 1.72 $
+# $Revision: 1.84 $
 #
 
 # process --with-gnu-crypto configure option.

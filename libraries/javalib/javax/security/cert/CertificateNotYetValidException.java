@@ -39,6 +39,15 @@ version.  */
 
 package javax.security.cert;
 
+/**
+ * <p>Signals that a certificate is not yet valid.</p>
+ *
+ * <p><b>This class is deprecated in favor of the {@link
+ * java.security.cert.CertificateNotYetValidException} class. It should not be
+ * used in new applications.</b></p>
+ *
+ * @deprecated Use java.security.cert.CertificateNotYetValidException instead.
+ */
 public class CertificateNotYetValidException extends CertificateException
 {
 

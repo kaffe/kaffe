@@ -50,8 +50,6 @@ import java.security.Provider;
 import java.security.Security;
 import java.security.UnrecoverableKeyException;
 
-import gnu.java.security.Engine;
-
 /**
  * A class that creates key manager implementations based on a
  * requested algorithm.

@@ -42,14 +42,36 @@ package javax.net.ssl;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
+/**
+ * A trust manager for dealing with X.509 certificates.
+ */
 public interface X509TrustManager extends TrustManager
 {
 
+  /**
+   * Checks if a certificate chain sent by the client is trusted.
+   *
+   * @param chain The certificate chain to check.
+   * @param authType The authentication type.
+   * @throws CertificateException If the client's certificates are not trusted.
+   */
   void checkClientTrusted(X509Certificate[] chain, String authType)
     throws CertificateException;
 
+  /**
+   * Checks if a certificate chain sent by the server is trusted.
+   *
+   * @param chain The certificate chain to check.
+   * @param authType The authentication type.
+   * @throws CertificateException If the server's certificates are not trusted.
+   */
   void checkServerTrusted(X509Certificate[] chain, String authType)
     throws CertificateException;
 
+  /**
+   * Returns the list of trusted issuer certificates currently in use.
+   *
+   * @return The list of trusted issuer certificates.
+   */
   X509Certificate[] getAcceptedIssuers();
 }

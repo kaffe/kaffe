@@ -81,7 +81,14 @@ public abstract class HttpsURLConnection extends HttpURLConnection
 
   static {
     defaultVerifier = new TrivialHostnameVerifier();
-    // defaultFactory = ...;
+    try
+      {
+        defaultFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+      }
+    catch (Throwable t)
+      {
+        t.printStackTrace();
+      }
   }
 
   // Constructor.
@@ -155,7 +162,7 @@ public abstract class HttpsURLConnection extends HttpURLConnection
    *   installed and a call to {@link
    *   SecurityManager#checkSetFactory()} fails.
    */
-  public void setDefaultSSLSocketFactory(SSLSocketFactory newDefault)
+  public static void setDefaultSSLSocketFactory(SSLSocketFactory newDefault)
   {
     if (newDefault == null)
       throw new IllegalArgumentException("default factory cannot be null");

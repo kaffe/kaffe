@@ -45,20 +45,65 @@ import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
+/**
+ * A key manager for X.509 certificates and their associated private keys.
+ */
 public interface X509KeyManager extends KeyManager
 {
 
+  /**
+   * Choose an alias for client-side authentication.
+   *
+   * @param keyTypes A list of acceptable key types.
+   * @param issuers A list of acceptable certificate issuers.
+   * @param socket The connecting socket.
+   * @return The chosen alias.
+   */
   String chooseClientAlias(String[] keyTypes, Principal[] issuers,
                            Socket socket);
 
+  /**
+   * Choose an alias for server-side authentication.
+   *
+   * @param keyType The desired certificate type.
+   * @param issuers A list of acceptable certificate issuers.
+   * @param socket The connecting socket.
+   * @return The chosen alias.
+   */
   String chooseServerAlias(String keyType, Principal[] issuers,
                            Socket socket);
 
+  /**
+   * Gets the X.509 certificate chain associated with the given alias.
+   *
+   * @param alias The alias.
+   * @return The certificate chain.
+   */
   X509Certificate[] getCertificateChain(String alias);
 
+  /**
+   * Returns all client aliases that support the given key type.
+   *
+   * @param keyType The desired key type.
+   * @param issuers A list of acceptable certificate issuers.
+   * @return The (possibly empty) list of aliases.
+   */
   String[] getClientAliases(String keyType, Principal[] issuers);
 
+  /**
+   * Gets the private key associated with the given alias.
+   *
+   * @param alias The alias.
+   * @return The private key.
+   */
   PrivateKey getPrivateKey(String alias);
 
+  /**
+   * Returns all server aliases that support the given key type.
+   *
+   * @param keyType The desired key type.
+   * @param issuers A list of acceptable certificate issuers.
+   * @return The (possibly empty) list of aliases.
+   */
   String[] getServerAliases(String keyType, Principal[] issuers);
 }

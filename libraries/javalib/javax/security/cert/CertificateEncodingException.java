@@ -39,6 +39,15 @@ version.  */
 
 package javax.security.cert;
 
+/**
+ * <p>Signals a problem when encoding certificates.</p>
+ *
+ * <p><b>This class is deprecated in favor of the {@link
+ * java.security.cert.CertificateEncodingException} class. It should not be used
+ * in new  applications.</b></p>
+ *
+ * @deprecated Use java.security.cert.CertificateEncodingException instead.
+ */
 public class CertificateEncodingException extends CertificateException
 {
 

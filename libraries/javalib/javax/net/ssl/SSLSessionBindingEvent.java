@@ -41,6 +41,10 @@ package javax.net.ssl;
 
 import java.util.EventObject;
 
+/**
+ * An event raised by {@link SSLSession} objects when objects are bound to
+ * them.
+ */
 public class SSLSessionBindingEvent extends EventObject
 {
 
@@ -52,6 +56,12 @@ public class SSLSessionBindingEvent extends EventObject
   // Constructor.
   // -------------------------------------------------------------------
 
+  /**
+   * Creates a new binding event.
+   *
+   * @param session The session being bound to.
+   * @param name The name the object was bound under.
+   */
   public SSLSessionBindingEvent(SSLSession session, String name)
   {
     super(session);
@@ -61,11 +71,21 @@ public class SSLSessionBindingEvent extends EventObject
   // Instance methods.
   // --------------------------------------------------------------------
 
+  /**
+   * Returns the name the object was bound under.
+   *
+   * @return The name.
+   */
   public String getName()
   {
     return name;
   }
 
+  /**
+   * Returns the session that the object was bound to.
+   *
+   * @return The session.
+   */
   public SSLSession getSession()
   {
     return (SSLSession) getSource();

@@ -39,6 +39,15 @@ version.  */
 
 package javax.security.cert;
 
+/**
+ * <p>Signals a generic problem with certificates.</p>
+ *
+ * <p><b>This class is deprecated in favor of the {@link
+ * java.security.cert.CertificateException} class. It should not be used in new
+ * applications.</b></p>
+ *
+ * @deprecated Use java.security.cert.CertificateException instead.
+ */
 public class CertificateException extends Exception
 {
 

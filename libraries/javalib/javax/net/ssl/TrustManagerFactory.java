@@ -49,25 +49,37 @@ import java.security.NoSuchProviderException;
 import java.security.Provider;
 import java.security.Security;
 
-import gnu.java.security.Engine;
-
+/**
+ * A factory for creating trust manager objects.
+ */
 public class TrustManagerFactory
 {
 
   // Constants and fields.
   // -------------------------------------------------------------------------
 
+  /** The service name for trust manager factories. */
   private static final String TRUST_MANAGER_FACTORY = "TrustManagerFactory";
 
+  /** The underlying engine class. */
   private final TrustManagerFactorySpi tmfSpi;
 
+  /** The provider of the engine class. */
   private final Provider provider;
 
+  /** The name of this trust manager algorithm. */
   private final String algorithm;
 
   // Constructor.
   // -------------------------------------------------------------------------
 
+  /**
+   * Creates a new trust manager factory.
+   *
+   * @param tmfSpi The underlying engine class.
+   * @param provider The provider of the engine class.
+   * @param algorithm The trust manager algorithm name.
+   */
   protected TrustManagerFactory(TrustManagerFactorySpi tmfSpi,
                                 Provider provider, String algorithm)
   {
@@ -79,6 +91,15 @@ public class TrustManagerFactory
   // Class methods.
   // -------------------------------------------------------------------------
 
+  /**
+   * Returns an instance of a trust manager factory for the given algorithm
+   * from the first provider that implements it.
+   *
+   * @param algorithm The name of the algorithm to get.
+   * @return The instance of the trust manager factory.
+   * @throws NoSuchAlgorithmException If no provider implements the given
+   *   algorithm.
+   */
   public static final TrustManagerFactory getInstance(String algorithm)
     throws NoSuchAlgorithmException
   {
@@ -96,22 +117,53 @@ public class TrustManagerFactory
     throw new NoSuchAlgorithmException(algorithm);
   }
 
+  /**
+   * Returns an instance of a trust manager factory for the given algorithm
+   * from the named provider.
+   *
+   * @param algorithm The name of the algorithm to get.
+   * @param provider The name of the provider to get the instance from.
+   * @return The instance of the trust manager factory.
+   * @throws NoSuchAlgorithmException If the provider does not implement the
+   *   given algorithm.
+   * @throws NoSuchProviderException If there is no such named provider.
+   * @throws IllegalArgumentException If the provider argument is null.
+   */
   public static final TrustManagerFactory getInstance(String algorithm,
                                                       String provider)
     throws NoSuchAlgorithmException, NoSuchProviderException
   {
     if (provider == null)
-      throw new IllegalArgumentException();
+      {
+        throw new IllegalArgumentException();
+      }
     Provider p = Security.getProvider(provider);
     if (p == null)
-      throw new NoSuchProviderException(provider);
+      {
+        throw new NoSuchProviderException(provider);
+      }
     return getInstance(algorithm, p);
   }
 
+  /**
+   * Returns an instance of a trust manager factory for the given algorithm
+   * from the specified provider.
+   *
+   * @param algorithm The name of the algorithm to get.
+   * @param provider The provider to get the instance from.
+   * @return The instance of the trust manager factory.
+   * @throws NoSuchAlgorithmException If the provider does not implement the
+   *   given algorithm.
+   * @throws IllegalArgumentException If the provider argument is null.
+   */
   public static final TrustManagerFactory getInstance(String algorithm,
                                                       Provider provider)
     throws NoSuchAlgorithmException
   {
+    if (provider == null)
+      {
+        throw new IllegalArgumentException();
+      }
     try
       {
         return new TrustManagerFactory((TrustManagerFactorySpi)
@@ -131,27 +183,57 @@ public class TrustManagerFactory
   // Instance methods.
   // -------------------------------------------------------------------------
 
+  /**
+   * Returns the name of this trust manager algorithm.
+   *
+   * @return The algorithm name.
+   */
   public final String getAlgorithm()
   {
     return algorithm;
   }
 
+  /**
+   * Returns the provider of the underlying implementation.
+   *
+   * @return The provider.
+   */
   public final Provider getProvider()
   {
     return provider;
   }
 
+  /**
+   * Returns the trust managers created by this factory.
+   *
+   * @return The trust managers.
+   */
   public final TrustManager[] getTrustManagers()
   {
     return tmfSpi.engineGetTrustManagers();
   }
 
+  /**
+   * Initialize this instance with some algorithm-specific parameters.
+   *
+   * @param params The parameters.
+   * @throws InvalidAlgorithmParameterException If the supplied parameters
+   *   are inappropriate for this instance.
+   */
   public final void init(ManagerFactoryParameters params)
     throws InvalidAlgorithmParameterException
   {
     tmfSpi.engineInit(params);
   }
 
+  /**
+   * Initialize this instance with a key store. The key store may be null,
+   * in which case a default will be used.
+   *
+   * @param store The key store.
+   * @throws KeyStoreException If there is a problem reading from the
+   *   key store.
+   */
   public final void init(KeyStore store) throws KeyStoreException
   {
     tmfSpi.engineInit(store);

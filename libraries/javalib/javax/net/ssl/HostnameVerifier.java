@@ -54,7 +54,7 @@ public interface HostnameVerifier
 
   /**
    * Verifies a hostname given a particular SSL session. This method
-   * should return <code>true</true> if the hostname is an accepted
+   * should return <code>true</code> if the hostname is an accepted
    * alias for the hostname negotiated in the SSL handshake.
    *
    * @param hostname The hostname in question.

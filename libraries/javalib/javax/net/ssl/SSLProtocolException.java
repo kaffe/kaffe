@@ -39,6 +39,11 @@ version.  */
 
 package javax.net.ssl;
 
+/**
+ * An exception thrown when a fatal protocol error is encountered. This
+ * exception usually indicates some serious problem with the local or
+ * remote SSL implementation.
+ */
 public class SSLProtocolException extends SSLException
 {
 

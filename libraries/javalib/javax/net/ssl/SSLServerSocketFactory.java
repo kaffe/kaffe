@@ -39,14 +39,24 @@ version.  */
 
 package javax.net.ssl;
 
+import java.security.KeyStore;
 import java.security.Security;
 import javax.net.ServerSocketFactory;
 
+/**
+ * A server socket factory for <i>Secure Socket Layer</i> (<b>SSL</b>)
+ * server sockets.
+ */
 public abstract class SSLServerSocketFactory extends ServerSocketFactory
 {
 
+  // Field.
+  // -------------------------------------------------------------------------
+
+  private static SSLContext context;
+
   // Constructor.
-  // --------------------------------------------------------------------
+  // -------------------------------------------------------------------------
 
   protected SSLServerSocketFactory()
   {
@@ -54,27 +64,91 @@ public abstract class SSLServerSocketFactory extends ServerSocketFactory
   }
 
   // Class methods.
-  // --------------------------------------------------------------------
+  // -------------------------------------------------------------------------
 
+  /**
+   * Returns a default implementation of a SSL server socket factory.
+   *
+   * <p>To control the class that gets returned by this method, set the
+   * security property "ssl.ServerSocketFactory.provider" to the class
+   * name of a concrete implementation of this class. If not set, a
+   * system-dependent implementation will be used.</p>
+   *
+   * <p>The implementation returned is created by the first implementation
+   * of the {@link SSLContext} class found, which is initialized with
+   * default parameters. To control the key and trust manager factory
+   * algorithms used as defaults, set the security properties
+   * "ssl.keyManagerFactory.algorithm" and "ssl.trustManagerFactory.algorithm"
+   * to the appropriate names.</p>
+   *
+   * <p>Using this method is not recommended. Instead, use the methods of
+   * {@link SSLContext}, which provide much better control over the
+   * creation of server socket factories.</p>
+   *
+   * @return The default server socket factory.
+   * @throws RuntimeException If no default can be created.
+   */
   public static synchronized ServerSocketFactory getDefault()
   {
     try
       {
         String s = Security.getProperty("ssl.ServerSocketFactory.provider");
-        if (s != null)
-          return (ServerSocketFactory) Class.forName(s).newInstance();
+        ClassLoader cl = ClassLoader.getSystemClassLoader();
+        if (s != null && cl != null)
+          {
+            return (ServerSocketFactory) cl.loadClass(s).newInstance();
+          }
       }
     catch (Exception e)
       {
       }
-    throw new Error();
-    //return new TLSServerSocketFactory();
+    try
+      {
+        if (context == null)
+          {
+            String kmAlg = Security.getProperty("ssl.keyManagerFactory.algorithm");
+            if (kmAlg == null)
+              {
+                kmAlg = "JessieX509";
+              }
+            String tmAlg = Security.getProperty("ssl.trustManagerFactory.algorithm");
+            if (tmAlg == null)
+              {
+                tmAlg = "JessieX509";
+              }
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(kmAlg);
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmAlg);
+            kmf.init(null, null);
+            tmf.init((KeyStore) null);
+            context = SSLContext.getInstance("SSLv3");
+            context.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+          }
+        synchronized (context)
+          {
+            return context.getServerSocketFactory();
+          }
+      }
+    catch (Exception e)
+      {
+      }
+    throw new RuntimeException("no SSLSocketFactory implementation available");
   }
 
   // Abstract methods.
-  // --------------------------------------------------------------------
+  // -------------------------------------------------------------------------
 
+  /**
+   * Returns the list of cipher suites that will be enabled in server sockets
+   * created by this factory.
+   *
+   * @return The default cipher suites.
+   */
   public abstract String[] getDefaultCipherSuites();
 
+  /**
+   * Returns the list of all cipher suites supported by this factory.
+   *
+   * @return The list of supported cipher suites.
+   */
   public abstract String[] getSupportedCipherSuites();
 }

@@ -42,37 +42,128 @@ package javax.net.ssl;
 import java.security.cert.Certificate;
 import javax.security.cert.X509Certificate;
 
+/**
+ * An SSL session is a mechanism through which connections can be established
+ * by re-using previously negotiated handshakes.
+ */
 public interface SSLSession
 {
 
+  /**
+   * Returns this session's cihper suite.
+   *
+   * @return The cipher suite.
+   */
   String getCipherSuite();
 
+  /**
+   * Returns the time in milliseconds since midnight GMT, 1 January 1970, that
+   * this session was created.
+   *
+   * @return The creation time.
+   */
   long getCreationTime();
 
+  /**
+   * Returns this session's unique identifier, a arbitrary byte array of up
+   * to 32 bytes.
+   *
+   * @return The session identifier.
+   */
   byte[] getId();
 
+  /**
+   * Returns the last time this session was accessed.
+   *
+   * @return The lest time this session was accessed.
+   */
   long getLastAccessedTime();
 
+  /**
+   * Returns the chain of certificates that the local side used in the
+   * handshake, or null if none were used.
+   *
+   * @return The local certificate chain.
+   */
   Certificate[] getLocalCertificates();
 
+  /**
+   * Returns the chain of certificates that the remote side used in
+   * the handshake, or null if none were used.
+   *
+   * @return The peer's certificate chain.
+   * @throws SSLPeerUnverifiedException If the identity of the peer has
+   *   not been verified.
+   */
   Certificate[] getPeerCertificates() throws SSLPeerUnverifiedException;
 
+  /**
+   * Returns the chain of certificates that the remote side used in
+   * the handshake, or null if none were used.
+   *
+   * @return The peer's certificate chain.
+   * @throws SSLPeerUnverifiedException If the identity of the peer has
+   *   not been verified.
+   */
   X509Certificate[] getPeerCertificateChain()
     throws SSLPeerUnverifiedException;
 
+  /**
+   * Returns the remote host's name.
+   *
+   * @return The name of the remote host.
+   */
   String getPeerHost();
 
+  /**
+   * Returns the protocol this session uses.
+   *
+   * @return The protocol.
+   */
   String getProtocol();
 
+  /**
+   * Returns this session's session context object.
+   *
+   * @return The session context.
+   * @throws SecurityException If the caller does not have the
+   *   {@link SSLPermission} "getSessionContext".
+   */
   SSLSessionContext getSessionContext();
 
+  /**
+   * Returns the names of all values bound to this session.
+   *
+   * @return The list of bound names.
+   */
   String[] getValueNames();
 
+  /**
+   * Returns the object bound to the given name.
+   *
+   * @param name The name of the value to get.
+   * @return The object bound by that name, or null.
+   */
   Object getValue(String name);
 
+  /**
+   * Invalidates this session, ensuring that it will not be continued by
+   * another socket.
+   */
   void invalidate();
 
+  /**
+   * Binds a value to this session, with the given name.
+   *
+   * @param name The name to bind the object with.
+   * @param value The value to bind.
+   */
   void putValue(String name, Object value);
 
+  /**
+   * Un-binds a value.
+   *
+   * @param name The name of the value to un-bind.
+   */
   void removeValue(String name);
 }

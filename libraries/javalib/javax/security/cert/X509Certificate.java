@@ -51,18 +51,41 @@ import java.security.cert.CertificateFactory;
 
 import java.util.Date;
 
+/**
+ * <p>The base class of all X.509 certificates.</p>
+ *
+ * <p><b>This class is deprecated in favor of the {@link
+ * java.security.cert.X509Certificate} class. It should not be used in new
+ * applications.</b></p>
+ *
+ * @deprecated Use java.security.cert.X509Certificate instead.
+ */
 public abstract class X509Certificate extends Certificate
 {
 
   // Class methods.
   // -------------------------------------------------------------------------
 
+  /**
+   * <p>Get an instance of X509Certificate for the given encoded bytes.</p>
+   *
+   * @param encoded The encoded certificate.
+   * @return An instance of X509Certificate.
+   * @throws CertificateException If the encoded certificate cannot be parsed.
+   */
   public static X509Certificate getInstance(byte[] encoded)
     throws CertificateException
   {
     return getInstance(new ByteArrayInputStream(encoded));
   }
 
+  /**
+   * <p>Get an instance of X509Certificate for the given encoded stream.</p>
+   *
+   * @param encoded The encoded certificate stream..
+   * @return An instance of X509Certificate.
+   * @throws CertificateException If the encoded certificate cannot be parsed.
+   */
   public static X509Certificate getInstance(InputStream encoded)
     throws CertificateException
   {
@@ -81,27 +104,91 @@ public abstract class X509Certificate extends Certificate
   // Abstract methods.
   // -------------------------------------------------------------------------
 
+  /**
+   * <p>Check if this certificate is valid now.</p>
+   *
+   * @throws CertificateExpiredException If the certificate has expired.
+   * @throws CertificateNotYetValidException If the certificate is not yet valid.
+   * @see #checkValidity(java.util.Date)
+   */
   public abstract void checkValidity()
     throws CertificateExpiredException, CertificateNotYetValidException;
 
+  /**
+   * <p>Check if this certificate is valid for the given date.</p>
+   *
+   * @param date The date to check.
+   * @throws CertificateExpiredException If the certificate has expired.
+   * @throws CertificateNotYetValidException If the certificate is not yet valid.
+   */
   public abstract void checkValidity(Date date)
     throws CertificateExpiredException, CertificateNotYetValidException;
 
+  /**
+   * <p>Returns the X.509 version number.</p>
+   *
+   * @return The version number.
+   */
   public abstract int getVersion();
 
+  /**
+   * <p>Returns this certificate's serial number.</p>
+   *
+   * @return The serial number.
+   */
   public abstract BigInteger getSerialNumber();
 
+  /**
+   * <p>Returns the distinguished name of this certificate's issuer.</p>
+   *
+   * @return The issuer's distinguished name.
+   */
   public abstract Principal getIssuerDN();
 
+  /**
+   * <p>Returns the distinguished name of this certificate's subject.</p>
+   *
+   * @return The subject's distinguished name.
+   */
   public abstract Principal getSubjectDN();
 
+  /**
+   * <p>Returns the <i>not before</i> portion of this certificate's validity
+   * period.</p>
+   *
+   * @return The not before date.
+   */
   public abstract Date getNotBefore();
 
+  /**
+   * <p>Returns the <i>not after</i> portion of this certificate's validity
+   * period.</p>
+   *
+   * @return The not after date.
+   */
   public abstract Date getNotAfter();
 
+  /**
+   * <p>Returns the name of this certificate's signature algorithm.</p>
+   *
+   * @return The name of the signature algorithm.
+   */
   public abstract String getSigAlgName();
 
+  /**
+   * <p>Returns the object identifier (OID) of this certificate's signature
+   * algorithm. The returned string is a sequence of integers separated by
+   * periods.</p>
+   *
+   * @return The signature OID.
+   */
   public abstract String getSigAlgOID();
 
+  /**
+   * <p>Returns the signature parameters. The returned byte array contains the
+   * raw DER-encoded parameters.</p>
+   *
+   * @return The signature parameters.
+   */
   public abstract byte[] getSigAlgParams();
 }

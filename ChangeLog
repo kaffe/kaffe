@@ -1,4 +1,75 @@
-2003-11-29  Dalibor Topic <robilad@kaffe.org>
+2003-12-02  Dalibor Topic <robilad@kaffe.org>
+
+	Reported by: Casey Marshall <rsdio@metastatic.org>
+
+	* aclocal.m4,
+        libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in:
+	Regenerated.
+	
+        * libraries/javalib/gnu/crypto/cipher/IBlockCipher.java,
+        libraries/javalib/gnu/crypto/hash/IMessageDigest.java,
+        libraries/javalib/gnu/crypto/mac/IMac.java,
+        libraries/javalib/gnu/crypto/mode/IMode.java,
+        libraries/javalib/gnu/crypto/prng/IRandom.java,
+        libraries/javalib/gnu/crypto/prng/LimitReachedException.java,
+        libraries/javalib/org/metastatic/jessie/CipherSuite.java,
+        libraries/javalib/org/metastatic/jessie/Constructed.java,
+        libraries/javalib/org/metastatic/jessie/ContentType.java,
+        libraries/javalib/org/metastatic/jessie/Context.java,
+        libraries/javalib/org/metastatic/jessie/Enumerated.java,
+        libraries/javalib/org/metastatic/jessie/Jessie.java,
+        libraries/javalib/org/metastatic/jessie/ProtocolVersion.java,
+        libraries/javalib/org/metastatic/jessie/SSLHMac.java,
+        libraries/javalib/org/metastatic/jessie/SSLSecurityParameters.java,
+        libraries/javalib/org/metastatic/jessie/SecurityParameters.java,
+        libraries/javalib/org/metastatic/jessie/Session.java,
+        libraries/javalib/org/metastatic/jessie/SessionContext.java,
+        libraries/javalib/org/metastatic/jessie/Text.java,
+        libraries/javalib/org/metastatic/jessie/X509KeyManagerFactory.java,
+        libraries/javalib/org/metastatic/jessie/X509TrustManagerFactory.java:
+	Removed as they are not necessary to build the JSSE API.
+	
+        * libraries/javalib/javax/net/ServerSocketFactory.java,
+        libraries/javalib/javax/net/package.html,
+        libraries/javalib/javax/net/ssl/Engine.java,
+        libraries/javalib/javax/net/ssl/HostnameVerifier.java,
+        libraries/javalib/javax/net/ssl/HttpsURLConnection.java,
+        libraries/javalib/javax/net/ssl/KeyManagerFactory.java,
+        libraries/javalib/javax/net/ssl/KeyManagerFactorySpi.java,
+        libraries/javalib/javax/net/ssl/SSLContext.java,
+        libraries/javalib/javax/net/ssl/SSLPermission.java,
+        libraries/javalib/javax/net/ssl/SSLProtocolException.java,
+        libraries/javalib/javax/net/ssl/SSLServerSocket.java,
+        libraries/javalib/javax/net/ssl/SSLServerSocketFactory.java,
+        libraries/javalib/javax/net/ssl/SSLSession.java,
+        libraries/javalib/javax/net/ssl/SSLSessionBindingEvent.java,
+        libraries/javalib/javax/net/ssl/SSLSessionBindingListener.java,
+        libraries/javalib/javax/net/ssl/SSLSessionContext.java,
+        libraries/javalib/javax/net/ssl/SSLSocket.java,
+        libraries/javalib/javax/net/ssl/SSLSocketFactory.java,
+        libraries/javalib/javax/net/ssl/TrustManager.java,
+        libraries/javalib/javax/net/ssl/TrustManagerFactory.java,
+        libraries/javalib/javax/net/ssl/TrustManagerFactorySpi.java,
+        libraries/javalib/javax/net/ssl/X509KeyManager.java,
+        libraries/javalib/javax/net/ssl/X509TrustManager.java,
+        libraries/javalib/javax/net/ssl/package.html,
+        libraries/javalib/javax/security/cert/Certificate.java,
+        libraries/javalib/javax/security/cert/CertificateEncodingException.java,
+        libraries/javalib/javax/security/cert/CertificateException.java,
+        libraries/javalib/javax/security/cert/CertificateExpiredException.java,
+        libraries/javalib/javax/security/cert/CertificateNotYetValidException.java,
+        libraries/javalib/javax/security/cert/CertificateParsingException.java,
+        libraries/javalib/javax/security/cert/X509CertBridge.java,
+        libraries/javalib/javax/security/cert/X509Certificate.java,
+        libraries/javalib/javax/security/cert/package.html:
+	Resynced with Jessie CVS.
+
+        * libraries/javalib/profiles/allatonce/all.files,
+        libraries/javalib/profiles/default/jsse.files:
+	Updated to include the new files, and removed deleted files.
+	
+2003-12-01  Dalibor Topic <robilad@kaffe.org>
 
 	* THIRDPARTY: Updated with information on licenses of
 	third party sources, as well as their URLs.

@@ -48,8 +48,6 @@ import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.Security;
 
-import gnu.java.security.Engine;
-
 /**
  * A "meta-factory" for protocol-specific socket and server socket
  * factories. This class serves as a clearinghouse for socket
@@ -142,10 +140,14 @@ public class SSLContext
     throws NoSuchAlgorithmException, NoSuchProviderException
   {
     if (provider == null)
-      throw new IllegalArgumentException();
+      {
+        throw new IllegalArgumentException();
+      }
     Provider p = Security.getProvider(provider);
     if (p == null)
-      throw new NoSuchProviderException();
+      {
+        throw new NoSuchProviderException(provider);
+      }
     return getInstance(protocol, p);
   }
 
@@ -173,10 +175,12 @@ public class SSLContext
       }
     catch (InvocationTargetException ite)
       {
+        ite.printStackTrace();
         throw new NoSuchAlgorithmException();
       }
     catch (ClassCastException cce)
       {
+        cce.printStackTrace();
         throw new NoSuchAlgorithmException();
       }
   }

@@ -44,11 +44,14 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+/**
+ * A socket that communicates over the secure socket layer protocol.
+ */
 public abstract class SSLSocket extends Socket
 {
 
   // Constructors.
-  // --------------------------------------------------------------------
+  // -------------------------------------------------------------------------
 
   protected SSLSocket() throws IOException
   {
@@ -81,43 +84,147 @@ public abstract class SSLSocket extends Socket
   }
 
   // Abstract methods.
-  // -------------------------------------------------------------------
+  // -------------------------------------------------------------------------
 
+  /**
+   * Adds a handshake completed listener that wants to be notified when the
+   * SSL handshake completes.
+   *
+   * @param listener The listener to add.
+   */
   public abstract void
-  addHandshakeCompletedListener(HandshakeCompletedListener listener);
+    addHandshakeCompletedListener(HandshakeCompletedListener listener);
 
+  /**
+   * Removes a handshake listener from this socket.
+   *
+   * @param listener The listener to remove.
+   */
   public abstract void
-  removeHandshakeCompletedListener(HandshakeCompletedListener listener);
+    removeHandshakeCompletedListener(HandshakeCompletedListener listener);
 
+  /**
+   * Returns the list of currently enabled cipher suites.
+   *
+   * @return The list of enabled cipher suites.
+   */
   public abstract String[] getEnabledCipherSuites();
 
+  /**
+   * Sets the list of enabled cipher suites.
+   *
+   * @param suites The list of suites to enable.
+   */
   public abstract void setEnabledCipherSuites(String[] suites);
 
+  /**
+   * Returns the list of enabled SSL protocols.
+   *
+   * @return The list of enabled protocols.
+   */
   public abstract String[] getEnabledProtocols();
 
+  /**
+   * Sets the list of enabled SSL protocols.
+   *
+   * @param protocols The list of protocols to enable.
+   */
   public abstract void setEnabledProtocols(String[] protocols);
 
+  /**
+   * Returns whether or not sessions will be created by this socket, and thus
+   * allow sessions to be continued later.
+   *
+   * @return Whether or not sessions will be created.
+   */
   public abstract boolean getEnableSessionCreation();
 
+  /**
+   * Sets whether or not sessions will be created by this socket.
+   *
+   * @param enable The new value.
+   */
   public abstract void setEnableSessionCreation(boolean enable);
 
+  /**
+   * Returns whether or not this socket will require connecting clients to
+   * authenticate themselves. This value only applies to sockets in server
+   * mode.
+   *
+   * @return Whether or not this socket requires client authentication.
+   */
   public abstract boolean getNeedClientAuth();
 
+  /**
+   * Sets whether or not this socket will require connecting clients to
+   * authenticate themselves. This value only applies to sockets in server
+   * mode.
+   *
+   * @param needAuth The new need auth value.
+   */
   public abstract void setNeedClientAuth(boolean needAuth);
 
+  /**
+   * Returns this socket's session object.
+   *
+   * @return The session.
+   */
   public abstract SSLSession getSession();
 
+  /**
+   * Returns the list of cipher suites supported by this socket.
+   *
+   * @return The list of supported cipher suites.
+   */
   public abstract String[] getSupportedCipherSuites();
 
+  /**
+   * Returns the list of protocols supported by this socket.
+   *
+   * @return The list of supported protocols.
+   */
   public abstract String[] getSupportedProtocols();
 
+  /**
+   * Returns whether or not this socket will connect in client mode.
+   *
+   * @return True if this is a client socket.
+   */
   public abstract boolean getUseClientMode();
 
+  /**
+   * Sets whether or not this socket will connect in client mode.
+   *
+   * @param clientMode The new value.
+   */
   public abstract void setUseClientMode(boolean clientMode);
 
+  /**
+   * Returns whether or not this socket will request that connecting clients
+   * authenticate themselves. This value only applies to sockets in server
+   * mode.
+   *
+   * @return The want client auth value.
+   */
   public abstract boolean getWantClientAuth();
 
+  /**
+   * Sets whether or not this socket will request that connecting clients
+   * authenticate themselves. This value only applies to sockets in server
+   * mode.
+   *
+   * @param wantAuth The new want auth value.
+   */
   public abstract void setWantClientAuth(boolean wantAuth);
 
+  /**
+   * Explicitly begins the handshake, or, if the handshake has already
+   * completed, requests that the handshake be repeated.
+   *
+   * <p>The handshake will begin implicitly when any attempt to read or
+   * write to the socket is made.</p>
+   *
+   * @throws IOException If an I/O or SSL error occurs.
+   */
   public abstract void startHandshake() throws IOException;
 }

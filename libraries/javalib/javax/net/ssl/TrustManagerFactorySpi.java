@@ -43,6 +43,9 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 
+/**
+ * The <i>service provider interface</i> (<b>SPI</b>) for trust managers.
+ */
 public abstract class TrustManagerFactorySpi
 {
 
@@ -57,10 +60,30 @@ public abstract class TrustManagerFactorySpi
   // Abstract methods.
   // -------------------------------------------------------------------------
 
+  /**
+   * Engine method that returns the trust managers created by this factory.
+   *
+   * @return The trust managers.
+   */
   protected abstract TrustManager[] engineGetTrustManagers();
 
+  /**
+   * Engine method that initializes this factory with some algorithm-specific
+   * parameters.
+   *
+   * @param params The parameters.
+   * @throws InvalidAlgorithmParameterException If the given parameters are
+   *   inappropriate.
+   */
   protected abstract void engineInit(ManagerFactoryParameters params)
     throws InvalidAlgorithmParameterException;
 
+  /**
+   * Engine method that initializes this factory with a key store. The key
+   * store parameter may be null, in which case some default should be used.
+   *
+   * @param store The key store.
+   * @throws KeyStoreException If a problem occurs reading from the key store.
+   */
   protected abstract void engineInit(KeyStore store) throws KeyStoreException;
 }

@@ -50,7 +50,11 @@ import java.security.SignatureException;
 
 import java.util.Date;
 
-class X509CertBridge extends X509Certificate
+/**
+ * <p>An implementation of the {@link X509Certificate} class that delegates
+ * calls to a {@link java.security.cert.X509Certificate}.</p>
+ */
+final class X509CertBridge extends X509Certificate
 {
 
   // Fields.
