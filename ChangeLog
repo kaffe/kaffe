@@ -1,3 +1,12 @@
+1999-04-12  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* config/i386/common.h (sysdepCallMethod): Rewrite so that it
+	compiles with egcs snapshots.  Make it an extern inline function,
+	to ease debugging.  It will only be defined if
+	NEED_sysdepCallMethod is defined.
+	* kaffe/kaffevm/support.c: Include support.h and define
+	NEED_sysdepCallMethod before machine.h.
+
 Fri Apr  9 14:00:00 PDT 1999 Transvirtual Technologies <info@transvirtual.com>
 
         * Version 1.0.b4 of Kaffe OpenVM released.

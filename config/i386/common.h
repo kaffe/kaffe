@@ -26,42 +26,38 @@
  * used for shared lib support on ELF systems (Linux, FreeBSD3.0) and gcc
  * will not save it before it uses it again, despite what we say in asm().
  */
-#define	sysdepCallMethod(CALL)						\
-	asm volatile ("							\n\
-1:									\n\
-		cmpl $0,%0						\n\
-		je 3f							\n\
-		decl %0							\n\
-		pushl (%1,%0,8)						\n\
-		jmp 1b							\n\
-3:									\n\
-		call *%3						\n\
-		movl %5,%%edi						\n\
-		movb %4,%%cl						\n\
-		cmpb $0x46,%%cl						\n\
-		jne 4f							\n\
-		fstps (%%edi)						\n\
-		jmp 6f							\n\
-4:									\n\
-		cmpb $0x44,%%cl						\n\
-		jne 5f							\n\
-		fstpl (%%edi)						\n\
-		jmp 6f							\n\
-5:									\n\
-		movl %%eax,(%%edi)					\n\
-		cmpb $0x4a,%%cl						\n\
-		jne 6f							\n\
-		movl %%edx,4(%%edi)					\n\
-6:									\n\
-	" :								\
-	  : "r" ((CALL)->nrargs),					\
-	    "r" ((CALL)->args),						\
-	    "r" ((CALL)->callsize),					\
-	    "m" ((CALL)->function),					\
-	    "m" ((CALL)->rettype),					\
-	    "m" ((CALL)->ret)						\
-	  : "eax", "ebx", "ecx", "edx", "edi", "esi", "cc", "memory");	\
-	asm volatile ("							\n\
-		subl %0,%%esp						\n\
-	" : : "r" ((CALL)->argsize * sizeof(jint)) : "cc")
+#if NEED_sysdepCallMethod
+extern inline void sysdepCallMethod(callMethodInfo *call) {
+  int args = call->nrargs;
+  unsigned int retsize = call->retsize;
+  char rettype = call->rettype;
+
+  while (args > 0)
+    asm volatile ("pushl %0" : : "m" (call->args[--args].i) : "sp");
+
+  switch(retsize) {
+  case 0:
+    ((void (*)(void))(call->function))();
+    break;
+
+  case 1:
+    if (rettype == 'F')
+      call->ret->f = ((jfloat (*)(void))(call->function))();
+    else
+      call->ret->i = ((jint (*)(void))(call->function))();
+    break;
+
+  default:
+    if (rettype == 'D')
+      call->ret->d = ((jdouble (*)(void))(call->function))();
+    else
+      call->ret->j = ((jlong (*)(void))(call->function))();
+    break;
+  }
+
+  asm volatile ("addl %0,%%esp" : :
+		"r" (call->argsize * sizeof(jint)) : "cc", "sp");
+}
+#endif /* NEED_sysdepCallMethod */
+
 #endif

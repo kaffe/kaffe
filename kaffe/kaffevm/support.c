@@ -26,8 +26,9 @@
 #include "lookup.h"
 #include "exception.h"
 #include "slots.h"
-#include "machine.h"
 #include "support.h"
+#define NEED_sysdepCallMethod 1
+#include "machine.h"
 #include "md.h"
 #include "itypes.h"
 #include "external.h"
