@@ -136,7 +136,7 @@ public int hashCode() {
 	return path.hashCode();
 }
 
-native private boolean isAbsolute();
+public native boolean isAbsolute();
 
 public boolean isDirectory() {
 	checkReadAccess();
