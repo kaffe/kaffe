@@ -114,6 +114,9 @@ AC_LIBLTDL_CONVENIENCE
 AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 AC_SUBST(LIBLTDL)
+## Let users override the linker used by libtool, but default to $CC.
+CCLD=${CCLD:-'$(CC)'}
+AC_SUBST(CCLD)
 
 dnl =========================================================================
 dnl Do we need underscore?
@@ -515,7 +518,7 @@ dnl Checks for libraries for vm library.
 dnl Include work around FreeBSD modulo bug.
 
 case "$host_os" in
-freebsd2|netbsd1)
+freebsd2|netbsd1|oskit)
 	AC_CHECK_LIBRARY(gcc,__moddi3,VM_LIBS);;
 esac
 
@@ -735,21 +738,6 @@ AC_CACHE_CHECK([for struct sigcontext_struct (with asm/sigcontext.h)],
 if test $ac_cv_struct_sigcontext_struct = yes -o $ac_cv_struct_sigcontext_struct_with = yes; then
   AC_DEFINE(HAVE_STRUCT_SIGCONTEXT_STRUCT, 1, [Do we have sigcontext_struct])
 fi
-
-dnl -------------------------------------------------------------------------
-
-dnl =========================================================================
-dnl Check for reg structure in sigcontext
-dnl -------------------------------------------------------------------------
-
-AC_CACHE_CHECK([for reg structure in sigcontext],
-  ac_cv_struct_reg_sigcontext,
-[AC_TRY_COMPILE([#include <asm/signal.h>
-#include <asm/sigcontext.h>
-struct sigcontext ctx;],
-[ void *foo = &ctx.reg; ],
-  ac_cv_struct_reg_sigcontext=yes; AC_DEFINE(HAVE_REG_SIGCONTEXT, 1, [Is function swab declared]), ac_cv_struct_reg_sigcontext=no)
-])
 
 dnl -------------------------------------------------------------------------
 

@@ -1,3 +1,20 @@
+Sat Oct 16 19:16:13 1999  Patrick Tullmann  <tullmann@cs.utah.edu>
+
+        * configure.in: add AC_SUBST(CCLD) and a workaround
+        for bug in OSKit C library.
+        * config/i386/oskit/*: Fixup the scripts to match the
+        OSKit snapshot 990722.  Add code to the startup to
+        parse a command line.  Separate OSKit and OSKit/UNIX
+        initialization better.
+        * kaffe/kaffevm/systems/oskit-pthreads/{thread-impl.h,
+        locks-impl.h}: new files to meet new jthread interface.
+        * kaffe/kaffevm/systems/oskit-pthreads/jthread.h: add
+        missing prototypes (jthread_createfirst and
+        jthread_stacklimit).
+        * kaffe/kaffevm/systems/oskit-pthreads/{pjthread.c, signal.c}:
+        synchronize with OSKit pthreads, add new Jthread interface 
+        functions.
+
 Sat Oct 16 23:17:38 1999  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
 	* libraries/javalib/rebuildLib.in (CPATH): Use PATHSEP as

@@ -65,6 +65,7 @@ AS = @AS@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
 CC = @CC@
+CCLD = @CCLD@
 CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
 CONFIG_MD_H = @CONFIG_MD_H@
 CPP = @CPP@
@@ -157,7 +158,6 @@ libmicrosoft_la_OBJECTS =  $(am_libmicrosoft_la_OBJECTS)
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 DIST_SOURCES =  $(libmicrosoft_la_SOURCES)
 DIST_COMMON =  Makefile.am Makefile.in
