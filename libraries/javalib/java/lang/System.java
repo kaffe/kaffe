@@ -50,6 +50,8 @@ static {
         // err = new PrintStream(new BufferedOutputStream(new kaffe.io.StdErrorStream(), 128), true);	
 }
 
+private System() { /* this class is not instantiable by the general public */ }
+
 private static void checkPropertyAccess() {
 	getSecurityManager().checkPropertiesAccess();
 }

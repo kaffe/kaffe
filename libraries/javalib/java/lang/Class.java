@@ -21,6 +21,8 @@ import kaffe.lang.SystemClassLoader;
 
 public final class Class implements Serializable {
 
+private Class() { /* this class is not instantiable by the general public */ }
+
 native public static Class forName(String className) throws ClassNotFoundException;
 
 private String fullResourceName(String name) {

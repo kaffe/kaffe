@@ -17,6 +17,8 @@ final public class Math
 	final public static double PI = 3.14159265358979323846;
 	public static Random randomGenerator = new Random();
 
+private Math() { /* this class is not instantiable by the general public */ }
+
 native public static double IEEEremainder(double f1, double f2);
 
 public static double abs(double a) { return (a < 0.0) ? (-a) : (a); }
