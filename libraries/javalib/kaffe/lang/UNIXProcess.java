@@ -32,14 +32,17 @@ public class UNIXProcess
 	OutputStream stdin_stream;
 	InputStream raw_stdout;
 	InputStream raw_stderr;
-	int numReaders;		// what's that for?
-	private static Thread tidy;
+	int numReaders;			// what's that for?
+	private static Thread tidy;	// what's that for?
+	Throwable throwable;		// saved to rethrow in correct thread
+
 
 public UNIXProcess() {
 }
 
-public UNIXProcess(String argv[], String arge[]) {
-
+public UNIXProcess(String argv[], String arge[])
+    throws Throwable
+{
 	stdin_fd = new FileDescriptor();
 	stdout_fd = new FileDescriptor();
 	stderr_fd = new FileDescriptor();
@@ -54,7 +57,19 @@ public UNIXProcess(String argv[], String arge[]) {
 	final String _arge[] = arge;
 	Thread sitter = new Thread() {
 		public void run() {
-			if (forkAndExec(_argv, _arge) == 0) {
+			int fae = 0;
+			try {
+				fae = forkAndExec(_argv, _arge);
+			}
+			catch (Throwable t) {
+				// save it to rethrow in correct thread
+				throwable = t;
+				synchronized(this) {
+					notify();
+				}
+				return;
+			}
+			if (fae == 0) {
 				synchronized(this) {
 					isalive = true;
 					notify();
@@ -80,6 +95,10 @@ public UNIXProcess(String argv[], String arge[]) {
 			sitter.wait();
 		}
 		catch (InterruptedException _) {
+		}
+		if (throwable != null) {
+			// rethrow in current thread
+			throw throwable.fillInStackTrace();
 		}
 
 		// Create streams from the file descriptors
