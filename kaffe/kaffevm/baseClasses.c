@@ -128,8 +128,10 @@ initialiseKaffe(void)
 	Exceptions_name = utf8ConstNew("Exceptions", -1);
 	SourceFile_name = utf8ConstNew("SourceFile", -1);
 
+#if defined(HAVE_GCJ_SUPPORT)
 	/* Init GCJ support */
 	gcjInit();
+#endif
 
 	/* Read in base classes */
 	initBaseClasses();
@@ -190,6 +192,7 @@ initBaseClasses(void)
 
 	/* Fixup primitive types */
 	finishTypes();
+	processClass(StringClass, CSTATE_COMPLETE, &einfo);
 
 	/* 
 	 * To make sure we have some ground to stand on, we doublecheck

@@ -19,6 +19,9 @@
 #include "gc.h"
 #include "exception.h"
 #include "stringSupport.h"
+#include "gcj.h"
+
+#if defined(HAVE_GCJ_SUPPORT)
 
 Hjava_lang_Object*
 _Jv_AllocObject(Hjava_lang_Class* type)
@@ -142,3 +145,5 @@ _Jv_LookupInterfaceMethod(Hjava_lang_Class* objcls, Utf8Const* mname, Utf8Const*
 	}
 	return (METHOD_NATIVECODE(meth));
 }
+
+#endif

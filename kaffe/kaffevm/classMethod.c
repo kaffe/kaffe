@@ -248,9 +248,11 @@ retry:
 		resolveObjectFields(class);
 		resolveStaticFields(class);
 
+#if defined(HAVE_GCJ_SUPPORT)
 		if (CLASS_GCJ(class)) {
 			gcjProcessClass(class);
 		}
+#endif
 
 		/* Build dispatch table.  We must handle interfaces a little
 		 * differently since they only have a <clinit> method.
@@ -837,9 +839,11 @@ DBG(VMCLASSLOADER,
 				centry->class = clazz;
 			}
 		}
+#if defined(HAVE_GCJ_SUPPORT)
 		else if (gcjFindClass(centry) == true) {
 			clazz = centry->class;
 		}
+#endif
 		else {
 			/* no classloader, use findClass */
 			clazz = findClass(centry, einfo);

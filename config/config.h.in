@@ -232,6 +232,15 @@
 /* Define if you have the waitpid function.  */
 #undef HAVE_WAITPID
 
+/* Define if you have the __throw function */
+#undef	HAVE___THROW
+
+/* Define if you have the __terminate_func function */
+#undef	HAVE___TERMINATE_FUNC
+
+/* Define if you have the __get_eh_info function */
+#undef	HAVE___GET_EH_INFO
+
 /* Define if you have the <alloca.h> header file.  */
 #undef HAVE_ALLOCA_H
 

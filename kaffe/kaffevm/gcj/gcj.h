@@ -11,4 +11,17 @@
 #ifndef __gcj_h
 #define __gcj_h
 
+/*
+ * If we have the necessary infra-structure, then include GCJ support.
+ */
+#if defined(HAVE___THROW) && \
+    defined(HAVE___TERMINATE_FUNC) && \
+    defined(HAVE___GET_EH_INFO)
+
+#define	HAVE_GCJ_SUPPORT 1
+
+#endif
+
+extern void gcjInit(void);
+
 #endif

@@ -585,6 +585,7 @@ AC_CHECK_FUNCS(mprotect madvise)
 AC_CHECK_FUNCS(waitpid kill fork execve execvp)
 AC_CHECK_FUNCS(sync fsync)
 AC_CHECK_FUNCS(atexit on_exit vsnprintf snprintf)
+AC_CHECK_FUNCS(__throw __terminate_func __get_eh_info)
 
 if test "$host_cpu" = "alpha" ; then
   AC_CACHE_CHECK([for alpha support of amask instruction],

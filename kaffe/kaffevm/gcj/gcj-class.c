@@ -22,6 +22,9 @@
 #include "jar.h"
 #include "classpath.h"
 #include "stringSupport.h"
+#include "gcj.h"
+
+#if defined(HAVE_GCJ_SUPPORT)
 
 static Hjava_lang_Class* preCList;
 
@@ -89,3 +92,5 @@ gcjProcessClass(Hjava_lang_Class* clazz)
 	}
 	clazz->head.dtable = ClassClass->dtable;
 }
+
+#endif

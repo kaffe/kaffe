@@ -19,6 +19,9 @@
 #include "stringSupport.h"
 #include "lookup.h"
 #include "md.h"
+#include "gcj.h"
+
+#if defined(HAVE_GCJ_SUPPORT)
 
 struct _exceptionFrame;
 
@@ -76,7 +79,6 @@ gcjDispatchException(struct _exceptionFrame* frame, exceptionInfo* einfo, Hjava_
 	p->eh_info.language = GCJ_LANGUAGECODE;
 	p->eh_info.version = GCJ_VERSIONCODE;
 	
-#if 0 /* NOT YET */
 	q = __get_eh_info();
 	*q = p;
 	oldfunc = __terminate_func;
@@ -87,7 +89,6 @@ gcjDispatchException(struct _exceptionFrame* frame, exceptionInfo* einfo, Hjava_
 	}
 	/* Failed */
 	__terminate_func = oldfunc;
-#endif
 }
 
 /*
@@ -105,3 +106,5 @@ _Jv_exception_info(void)
 	
 	return (obj);
 }
+
+#endif
