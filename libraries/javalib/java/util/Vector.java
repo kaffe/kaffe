@@ -32,7 +32,6 @@ public Vector ( int initialCapacity ) {
 // Here "increment" may be 0 to indicate doubling on reallocation
 public Vector(int initialCapacity, int increment) {
 	elementData = new Object[initialCapacity];
-	elementCount = 0;
 	capacityIncrement = increment;
 }
 
@@ -56,8 +55,24 @@ public void add(int index, Object obj) {
 	insertElementAt(obj, index);
 }
 
+public boolean addAll(Collection c) {
+  return addAll(size(), c);
+}
+
+public synchronized boolean addAll(int index, Collection c) {
+  ensureCapacity(size() + c.size());
+  for (Iterator i = c.iterator(); i.hasNext(); ) {
+    add(index++, i.next());
+  }
+  return c.size() > 0;
+}
+
 public int capacity() {
 	return elementData.length;
+}
+
+public void clear() {
+	removeAllElements();
 }
 
 public synchronized Object clone () {
@@ -80,27 +95,12 @@ public boolean contains(Object elem) {
 	return (indexOf(elem) != -1);
 }
 
+public boolean containsAll(Collection c) {
+	return super.containsAll(c);
+}
+
 public synchronized void copyInto ( Object anArray[] ) {
 	System.arraycopy( elementData, 0, anArray, 0, elementCount);
-}
-
-public synchronized Object[] toArray() {
-    Object objs[] = new Object[elementCount];
-    copyInto(objs);
-    return objs;
-}
-
-public synchronized Object[] toArray( Object anArray[] ) {
-    if (anArray.length < elementCount) {
-	anArray = (Object[])java.lang.reflect.Array.newInstance(
-		anArray.getClass().getComponentType(),
-		elementCount);
-    }
-    copyInto(anArray);
-    for (int i = anArray.length; i-- > elementCount; ) {
-	anArray[i] = null;
-    }
-    return anArray;
 }
 
 public synchronized Object elementAt ( int index ) {
@@ -108,7 +108,8 @@ public synchronized Object elementAt ( int index ) {
   // array that doesn't give us (physical) access errors
   if ( index >= elementCount )
 	  throw new ArrayIndexOutOfBoundsException("Array index out of range: " 
-						   + Integer.toString(index));
+						   + Integer.toString(index)
+						   + " >= " + elementCount);
 
   return elementData[index];
 }
@@ -137,6 +138,52 @@ public synchronized void ensureCapacity(int newCapacity) {
 	}
 }
 
+public synchronized boolean equals(Object o) {
+	// this is an optimisation when comparing against oneself.
+	if (o == this) {
+		return true;
+	}
+
+	if (o instanceof List) {
+		List other = (List) o;
+
+		// compare list size
+		if (size() != other.size()) {
+			return false;
+		}
+
+		// compare element by element.
+		Iterator iter = other.iterator();
+		/* walking the elementData array directly avoids
+		 * allocation of a ListIterator, as would be the case
+		 * in AbstractList.equals . That seems to be the whole
+		 * point of reimplementing this method here.
+		 */
+		int i = 0;
+		while (iter.hasNext() && i < elementCount) {
+			Object this_elem = elementData[i];
+			Object other_elem = iter.next();
+
+			// if an element differs, return false.
+			if ((this_elem == null && other_elem != null)
+			    || !this_elem.equals(other_elem)) {
+				return false;
+			}
+
+			++i;
+		}
+
+		/* since no element differs,
+		 * and they have the same size,
+		 * the lists are equal.
+		 */
+		return true;
+	}
+
+	// The object is not an instance of List.
+	return false;
+}
+
 public synchronized Object firstElement () {
 	if ( elementCount <= 0 ) {
 		throw new NoSuchElementException();
@@ -146,6 +193,20 @@ public synchronized Object firstElement () {
 
 public Object get(int idx) {
 	return (elementAt(idx));
+}
+
+public int hashCode() {
+	/* Algorithm found at page 965 of Java Class Libraries
+	 * Second Edition Volume 1 Supplement.
+	 */
+	int hashCode = 1;
+	for (int i = 0; i < size(); ++i) {
+		Object elem = elementData[i];
+		hashCode = 31 * hashCode
+			+ (elem == null ? 0 : elem.hashCode());
+	}
+
+	return hashCode;
 }
 
 private void increaseCapacity() {
@@ -228,6 +289,35 @@ public synchronized Object remove(int idx) {
 	return (obj);
 }
 
+public boolean remove(Object o) {
+	int index = indexOf(o);
+
+	if (index == -1) {
+		return false;
+	}
+	else {
+		remove(index);
+		return true;
+	}
+}
+
+public synchronized boolean removeAll(Collection c) {
+	int oldSize = size();
+
+	for (int i = 0; i < size(); ++i) {
+		Object elem = elementData[i];
+		if (c.contains(elem)) {
+			remove(i);
+			/* do this index again,
+			 * after the removal the successor is in its place
+			 */
+			--i;
+		}
+	}
+
+	return oldSize == size();
+}
+
 public synchronized void removeAllElements () {
 	for ( int i=elementCount-1; i>= 0; i-- ) {
 		elementData[i] = null;
@@ -278,6 +368,29 @@ public synchronized void setSize(int newSize) {
 
 public int size() {
 	return elementCount;
+}
+
+public List subList(int from, int to) {
+	return super.subList(from, to);
+}
+
+public synchronized Object[] toArray() {
+    Object objs[] = new Object[elementCount];
+    copyInto(objs);
+    return objs;
+}
+
+public synchronized Object[] toArray( Object anArray[] ) {
+    if (anArray.length < elementCount) {
+	anArray = (Object[])java.lang.reflect.Array.newInstance(
+		anArray.getClass().getComponentType(),
+		elementCount);
+    }
+    copyInto(anArray);
+    for (int i = anArray.length; i-- > elementCount; ) {
+	anArray[i] = null;
+    }
+    return anArray;
 }
 
 public synchronized String toString() {

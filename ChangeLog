@@ -1,3 +1,18 @@
+Fri May 24 17:32:32 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/util/Vector.java:
+	(Vector) elementCount was already initialized to 0 by the VM.
+	(addAll) merged from pocketlinux kaffe.
+	(clear) new method.
+	(containsAll) new method.
+	(elementAt) Improved exception message.
+	(equals) new method.
+	(hashCode) new method.
+	(remove) new method.
+	(removeAll) new method.
+	(subList) new method.
+	(toArray) moved between subList and toString.
+
 Fri May 24 17:25:45 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/lang/Thread.java:
