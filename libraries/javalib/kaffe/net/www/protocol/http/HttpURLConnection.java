@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Vector;
+import java.util.Iterator;
 import java.net.URL;
 import java.net.Socket;
 import java.awt.Toolkit;
@@ -137,7 +138,25 @@ public void connect() throws IOException {
 			long l = (tmpFile != null ? tmpFile.length() : 0L);
 			out.writeBytes("Content-Length: " + l + "\r\n");
 		}
-		// TODO: emit all RequestHeaders see setRequestProperty
+
+		// emit all RequestHeaders
+		for (Iterator iter = requestProperties.iterator(); iter.hasNext();) {
+			String key = (String)iter.next();
+			String val = (String)iter.next();
+			out.writeBytes(key);
+			if (val != null) 
+				out.writeBytes( ": " + val );
+			out.writeBytes("\r\n");
+		}
+
+        
+		if (! useCaches) {
+			if ( ! requestProperties.contains("Cache-Control") ) 
+				out.writeBytes("Cache-Control: no-cache\r\n");
+			if ( ! requestProperties.contains("Pragma") ) 
+				out.writeBytes("Pragma: no-cache\r\n");
+		}
+
 		// header end
 		out.writeBytes("\r\n");
 		if(doOutput) {

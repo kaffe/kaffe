@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Vector;
 import java.security.Permission;
 import java.security.AllPermission;
 import kaffe.net.DefaultFileNameMap;
@@ -35,9 +36,10 @@ abstract public class URLConnection
 	protected long ifModifiedSince;
 	protected URL url;
 	protected boolean useCaches = defaultUseCaches;
+	protected Vector requestProperties = new Vector();
 	private static ContentHandlerFactory factory;
 	private static boolean defaultAllowUserInteraction;
-	private static boolean defaultUseCaches;
+	private static boolean defaultUseCaches;    
 
 protected URLConnection (URL url) {
 	this.url = url;
@@ -230,6 +232,19 @@ public void setIfModifiedSince(long ifmodifiedsince) {
 }
 
 public void setRequestProperty(String key, String value) {
+	if ( key == null )
+		throw new NullPointerException("key is null");
+
+	// In the api sun says, that http should append recurrend headers
+	// but jdk 1.4.1 does not. So we replace here.
+	int pos = requestProperties.indexOf( key );
+	if (pos > -1) {
+	        requestProperties.removeElementAt( pos+1 );
+		requestProperties.removeElementAt( pos );
+	}         
+
+	requestProperties.add( key );
+	requestProperties.add( value );
 }
 
 public void setUseCaches(boolean usecaches) {

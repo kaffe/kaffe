@@ -162,24 +162,29 @@ public static double nextDouble(double d, boolean next) {
 public Number parse(String str, ParsePosition pos) {
         int startIndex = pos.getIndex();
 	int stopIndex = startIndex+1;
-	
-	if(patternNames == null){
-	        patternNames = new Hashtable();
-		for(int i=0;i<limits.length;i++)
-		    patternNames.put(strings[i],new Double(limits[i]));
-	}
 
-	Double number;
+	if(patternNames == null){
+		patternNames = new Hashtable();
+		for(int i=0;i<limits.length;i++)
+			patternNames.put(strings[i],new Double(limits[i]));
+	}
+	
+	Double number, found;
+
+	found = null;
 	while(stopIndex <= str.length()){
 	    number = (Double)patternNames.get(str.substring(startIndex,stopIndex));
-	    if(number == null)
-		stopIndex++;
-	    else {
+	    if(number != null) {
 		pos.setIndex(stopIndex);
-		return (number);
+		found = number;
 	    }
+	    stopIndex++;
 	}
-	return new Double(Double.NaN);
+	if (found != null)
+	    return found;
+
+	// This is the JDK 1.4.2's behaviour.
+	return null;
 }
 
 public void setChoices(double[] limits, String[] strings) {

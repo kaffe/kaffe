@@ -61,6 +61,10 @@ protected String responseMessage;
 
 protected HttpURLConnection(URL url) {
 	super(url);
+    
+	// Sun seems to has some default HttpHeaders
+	setRequestProperty( "Accept", "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2" );
+	setRequestProperty( "User-Agent", System.getProperty("java.vm.name")+"/"+System.getProperty("java.vm.version") );
 }
 
 public static boolean getFollowRedirects () {

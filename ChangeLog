@@ -1,3 +1,27 @@
+2003-07-18 Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/text/MessageFormat.java:
+	(toPattern) simply return pattern
+	(applyPattern) assign the pattern to "pattern"
+	(parse(String, ParsePosition)) implemented
+	(parse(String)) it should throws ParseException if the previous parse
+	fails.
+
+	* libraries/javalib/java/text/ChoiceFormat.java:
+	(parse) It must check the biggest choice possible, i.e. if you have
+	"ab" or "abc" to compare to "abcdef" you must return the choice "abc".
+
+2003-07-18 Sebastian Mancke <asteban@gmx.net>
+
+	* libraries/javalib/java/net/HttpUrlConnection.java:
+	(HttpUrlConnection) Add some default HTTP headers.
+
+	* libraries/javalib/java/net/URLConnection.java:
+	(setRequestProperty) implemented according to JDK 1.4.1 behaviour.
+
+	* libraries/javalib/kaffe/net/www/protocol/http/HttpUrlConnection.java:
+	(connect) flush HTTP headers when connecting to the server.
+
 2003-07-17 Guilhem Lavaux <guilhem@kaffe.org>
 	* libraries/javalib/java/test/DecimalFormat.java:
 	(applyPattern) Throw IllegalArgumentException if the pattern is

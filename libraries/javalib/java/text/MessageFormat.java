@@ -3,6 +3,7 @@
  *
  * Copyright (c) 1997, 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
+ * Some more Copyright(c) 2003 Guilhem Lavaux
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
@@ -76,12 +77,13 @@ public MessageFormat(String patt) {
 
 public void applyPattern(String patt) {
 	MessagePatternDescription desc;
-	
+
 	desc = tryToApplyPattern(patt);
 
 	formats = desc.formats;
 	strs = desc.strs;
 	argumentNumber = desc.argumentNumber;
+	pattern = patt;
 }
 
 private MessagePatternDescription tryToApplyPattern(String patt) {
@@ -305,11 +307,71 @@ public int hashCode() {
 }
 
 public Object[] parse(String str, ParsePosition pos) {
-	throw new NotImplemented(MessageFormat.class.getName() + ".parse(String,ParsePosition)");
+	Object[] data = new Object[argumentNumber.length];
+	int count, startPos, endPos;
+	int parsingPosition;
+	ParsePosition subParsePos = new ParsePosition(0);
+
+	parsingPosition = pos.getIndex();
+	str = str.substring(pos.getIndex());
+	for (parsingPosition=0,count=0;count<strs.length;count++) {
+		// Check the inter-argument string.
+		endPos = strs[count].length();
+		if (!strs[count].equals(str.substring(0, endPos))) {
+			pos.setErrorIndex(parsingPosition);
+			return null;
+		}
+		str = str.substring(endPos);
+
+		parsingPosition += endPos;
+		if (count == strs.length-1)
+			break;
+
+		// There is predefined format: great, let it decide if it
+		// is parsable.
+		if (formats[count] != null) {
+			subParsePos.setIndex(0);
+			data[count] = formats[count].parseObject(str, subParsePos);
+			if (data[count] == null) {
+				pos.setErrorIndex(subParsePos.getErrorIndex()+parsingPosition);
+				return null;
+			}
+			str = str.substring(subParsePos.getIndex());
+			parsingPosition += subParsePos.getIndex();
+		} else {
+			int boundary;
+			// Aie ! We need to guess. Try to mimic JDK.
+			// First find the boundary of the argument.
+			if (count == strs.length-2 && strs[strs.length-1].equals(""))
+				boundary = str.length();
+			else {
+				boundary = str.indexOf(strs[count+1]);
+				if (boundary == -1) {
+					pos.setErrorIndex(parsingPosition);
+					return null;
+				}
+			}
+
+			// Just extract the string.
+			data[count] = str.substring(0, boundary);
+			str = str.substring(boundary);
+			parsingPosition += boundary;
+		}
+	}
+	pos.setIndex(parsingPosition);
+
+	return data;
 }
 
 public Object[] parse(String str) throws ParseException {
-	return (parse(str, new ParsePosition(0)));
+	ParsePosition pos = new ParsePosition(0);
+	Object[] data;
+	
+	data = parse(str, pos);
+	if (data == null)
+		throw new ParseException("Message parsing error", pos.getErrorIndex());
+
+	return data;
 }
 
 public Object parseObject(String str, ParsePosition pos) {
@@ -329,7 +391,7 @@ public void setLocale(Locale loc) {
 }
 
 public String toPattern() {
-	throw new NotImplemented(MessageFormat.class.getName() + ".toPattern()");
+	return pattern;
 }
 
 }

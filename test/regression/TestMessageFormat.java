@@ -42,12 +42,23 @@ public class TestMessageFormat {
 	System.out.println(fmt.format(data));
     }
 
+    public static void test4() {
+        MessageFormat fmt = new MessageFormat("{0,number,#.#E0}");
+	Object[] data;
+
+	data = new Object[] { new Integer(130385093) };
+	System.out.println(fmt.format(data));
+	data = new Object[] { new Double(12.4) };
+	System.out.println(fmt.format(data));
+    }
+
     public static void main(String args[]) {
 	Locale.setDefault(Locale.US);
 
 	test1();
 	test2();
 	test3();
+	test4();
     }
 }
 /* Expected output:
@@ -58,4 +69,6 @@ This is bad
 This is unknown (10)
 130,385,093 12.4
 0 100
+1.3E8
+1.2E1
 */
