@@ -112,9 +112,12 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
 #endif
 
 #define METHOD_TRANSLATED(M)		((M)->accflags & ACC_TRANSLATED)
+#define METHOD_JITTED(M)		((M)->accflags & ACC_JITTED)
 #define	METHOD_NATIVECODE(M)		((M)->ncode)
 #define	SET_METHOD_NATIVECODE(M, C)	(M)->ncode = (C); \
 					(M)->accflags |= ACC_TRANSLATED
+#define	SET_METHOD_JITCODE(M, C)	(M)->ncode = (C); \
+					(M)->accflags |= ACC_TRANSLATED|ACC_JITTED
 
 #if defined(TRANSLATOR)
 #define	METHOD_INDIRECTMETHOD(M)	METHOD_NATIVECODE(M)
