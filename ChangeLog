@@ -1,3 +1,15 @@
+Wed Feb  2 15:38:32 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/support.c: avoid empty exception messages
+	in SignalError()
+
+Wed Feb  2 15:37:58 PST 2000  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/io/BufferedReader.java: act more
+	like JDK 1.2
+	* test/regression/BufferedReaderTest.java: new test
+	* test/regression/Makefile.{am,in}: add new test
+
 Mon Jan 31 16:53:56 PST 2000  Pavel Roskin <pavel_roskin@geocities.com>
 
 	* test/regression/TestScript.in: detect when a test fails
