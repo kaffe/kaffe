@@ -1,5 +1,14 @@
 2004-01-27  Dalibor Topic <robilad@kaffe.org>
 
+	* developers/patch-libtool-amiga-max-command-line-length.diff,
+	developers/patch-libtool-amiga.diff,
+	developers/patch-libtool-ltdl-memory-header-warning.diff,
+	developers/patch-libtool-openbsd.diff,
+	developers/patch-libtool-realloc.diff:
+	Removed. No longer necessary for libtool 1.5.2.
+
+2004-01-27  Dalibor Topic <robilad@kaffe.org>
+
         * FAQ/FAQ.automake:
 	Updated to mention gettext 0.13.1 and 
 	libtool 1.5.2
