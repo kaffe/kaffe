@@ -1,3 +1,9 @@
+Thu Jan 28 23:41:33 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/utf8const.c: don't reject "" as an invalid
+	utf8const.  While my interpretation of the VM spec says it
+	is indeed invalid, Sun accepts it and pizza produces it.
+
 Fri Jan 29 02:00:10 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in (KAFFEH_FOR_BUILD): better tell the user how to set
