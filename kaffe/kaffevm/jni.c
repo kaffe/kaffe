@@ -3751,12 +3751,12 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 			break;
 		case 'J':
 			pusharg_long(local(an), count);
-			count++;
+			count += pusharg_long_idx_inc - 1;
 			an++;
 			break;
 		case 'D':
 			pusharg_double(local(an), count);
-			count++;
+			count += pusharg_long_idx_inc - 1;
 			an++;
 			break;
 		}
@@ -3765,7 +3765,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	}
 
 #else
-
+	/* TODO: Deal with 64bits where J and D use only one slot.  */
 	/* Push the specified arguments */
 	count = maxArgs;
 	if (use_JNI) {
