@@ -193,7 +193,7 @@ public final class Security {
 			} catch (NoSuchAlgorithmException e) {
 			}
 		}
-		throw new NoSuchAlgorithmException();
+		throw new NoSuchAlgorithmException(algorithm);
 	}
 
 	static Engine getCryptInstance(String engClass, String alg, String prov)
@@ -202,7 +202,7 @@ public final class Security {
 		// Make sure provider is installed
 		Provider p = getProvider(prov);
 		if (p == null) {
-			throw new NoSuchProviderException();
+			throw new NoSuchProviderException(prov);
 		}
 		return getCryptInstance(engClass, alg, p);
 	}
@@ -220,8 +220,8 @@ public final class Security {
 		// Find class that implements the algorithm
 		String name = (String)p.get(engClass + "." + alg);
 		if (name == null) {
-			throw new NoSuchAlgorithmException(
-				"not defined by provider");
+			throw new NoSuchAlgorithmException("algorithm \""
+			    + alg+  "\" not defined by provider");
 		}
 
 		// Instantiate class
