@@ -2554,6 +2554,30 @@ ensureOpstackSizeErrorInVerifyBasicBlock(errorInfo* einfo,
 }
 
 /*
+ * Helper function for error reporting in CHECK_STACK_OVERFLOW macro in verifyBasicBlock.
+ */
+static inline
+bool
+checkStackOverflowErrorInVerifyBasicBlock(errorInfo* einfo,
+					  const Method* method,
+					  BlockInfo* block,
+					  Hjava_lang_Class* this,
+					  unsigned int n)
+{
+	DBG(VERIFY3,
+	    dprintf("                block->stacksz: %d :: N = %d :: method->stacksz = %d\n",
+		    block->stacksz,
+		    n,
+		    method->stacksz);
+	    );
+                DBG(VERIFY3,
+		    dprintf("                here's the stack: \n");
+		    printBlock(method, block, "                    ");
+		    );
+		return verifyErrorInVerifyBasicBlock(einfo, method, this, "stack overflow");
+}
+
+/*
  * Helper function for opstack access in verifyBasicBlock.
  *
  * @return nth item on the operand stack from the top.
@@ -2666,10 +2690,7 @@ verifyBasicBlock(errorInfo* einfo,
 
 #define CHECK_STACK_OVERFLOW(_N) \
 	if (block->stacksz + _N > method->stacksz) { \
-		DBG(VERIFY3, dprintf("                block->stacksz: %d :: N = %d :: method->stacksz = %d\n", \
-				     block->stacksz, _N, method->stacksz); ); \
-                DBG(VERIFY3, dprintf("                here's the stack: \n"); printBlock(method, block, "                    "); ); \
-		return verifyErrorInVerifyBasicBlock(einfo, method, this, "stack overflow"); \
+		return checkStackOverflowErrorInVerifyBasicBlock(einfo, method, block, this, _N); \
 	}
 	
 #define OPSTACK_INFO(_N) \

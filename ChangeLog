@@ -1,6 +1,12 @@
 2004-02-16  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+        (checkStackOverflowErrorInVerifyBasicBlock): New static inline function.
+        (CHECK_STACK_OVERFLOW) Use checkStackOverflowErrorInVerifyBasicBlock.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
         (getOpstackWTop): New static inline function.
         (OPSTACK_WTOP) Removed.
         Replaced use of OPSTACK_WTOP by getOpstackWTop.
