@@ -55,7 +55,11 @@ buildStackTrace(struct _exceptionFrame* base)
 
 	/* Build an array of stackTraceInfo */
 	info = gc_malloc(sizeof(stackTraceInfo) * (cnt+1), GC_ALLOC_NOWALK);
-	if (!info) return 0;
+	if (!info) {
+	    dprintf("buildStackTrace(%p): can't allocate stackTraceInfo\n",
+		    base);
+	    return 0;
+	}
 
 	cnt = 0;
 
