@@ -19,15 +19,15 @@ public HttpUtils() {
 }
 
 public static Hashtable parseQueryString(String s) {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(HttpUtils.class.getName() + ".parseQueryString()");
 }
 
 public static Hashtable parsePostData(int len, ServletInputStream in) {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(HttpUtils.class.getName() + ".parsePostData()");
 }
 
 public static StringBuffer getRequestURL(HttpServletRequest req) {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(HttpUtils.class.getName() + ".getRequestURL");
 }
 
 }

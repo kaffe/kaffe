@@ -129,7 +129,7 @@ public final ClassLoader getParent() {
 }
 
 public final Enumeration getResources(String name) throws IOException {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(ClassLoader.class.getName() + ".getResources(String)");
 }
 
 
@@ -142,7 +142,7 @@ URL getLocalResource(String name) {
 }
 
 public static Enumeration getSystemResources(String name) throws IOException {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(ClassLoader.class.getName() + ".getSystemResources(String)");
 }
 
 static ClassLoader getBaseClassLoader() {
@@ -150,15 +150,15 @@ static ClassLoader getBaseClassLoader() {
 }
 
 protected Package definePackage(String name, String specTitle, String specVersion, String specVendor, String implTitle, String implVersion, String implVendor, URL sealBase) throws IllegalArgumentException {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(ClassLoader.class.getName() + ".definePackage(String,String,String,String,String,String,String,URL");
 }
 
 protected Package getPackage(String name) {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(ClassLoader.class.getName() + ".getPackage(String)");
 }
 
 protected Package[] getPackages() {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(ClassLoader.class.getName() + ".getPackages()");
 }
 
 native private Class defineClass0(String name, byte data[], int offset, int length);

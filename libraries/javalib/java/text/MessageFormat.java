@@ -267,7 +267,7 @@ public int hashCode() {
 }
 
 public Object[] parse(String str, ParsePosition pos) {
-	throw new NotImplemented();
+	throw new NotImplemented(MessageFormat.class.getName() + ".parse(String,ParsePosition)");
 }
 
 public Object[] parse(String str) throws ParseException {
@@ -292,7 +292,7 @@ public void setLocale(Locale loc) {
 }
 
 public String toPattern() {
-	throw new NotImplemented();
+	throw new NotImplemented(MessageFormat.class.getName() + ".toPattern()");
 }
 
 }

@@ -375,15 +375,15 @@ public class Hashtable extends Dictionary implements Map, Cloneable, Serializabl
   }
 
   public Set entrySet() {
-    throw new kaffe.util.NotImplemented();
+    throw new kaffe.util.NotImplemented(Hashtable.class.getName() + ".entrySet()");
   }
 
   public Set keySet() {
-    throw new kaffe.util.NotImplemented();
+    throw new kaffe.util.NotImplemented(Hashtable.class.getName() + ".keySet()");
   }
 
   public Collection values() {
-    throw new kaffe.util.NotImplemented();
+    throw new kaffe.util.NotImplemented(Hashtable.class.getName() + ".values()");
   }
 
   /*

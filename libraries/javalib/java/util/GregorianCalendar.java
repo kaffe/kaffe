@@ -75,7 +75,7 @@ public GregorianCalendar(int year, int month, int date, int hour, int minute, in
 
 public void add(int field, int amount)
 	{
-	throw new NotImplemented();
+	throw new NotImplemented(GregorianCalendar.class.getName() + ".add(int,int)");
 }
 
 public boolean after(Object when)
@@ -160,21 +160,25 @@ private long computeDateTime()
 				time += fields[DAY_OF_MONTH] - 1;
 			}
 			else if (isSet[WEEK_OF_MONTH] && isSet[DAY_OF_WEEK]) {
-				throw new NotImplemented();
+				throw new NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
+							 "with WEEK_OF_MONTH and DAY_OF_WEEK set.");
 			}
 			else if (isSet[DAY_OF_WEEK_IN_MONTH] && isSet[DAY_OF_WEEK]) {
-				throw new NotImplemented();
+				throw new NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
+							 "with WEEK_OF_MONTH_IN_MONTH and DAY_OF_WEEK set.");
 			}
 		}
 		else if (isSet[DAY_OF_YEAR]) {
 			time += fields[DAY_OF_YEAR];
 		}
 		else if (isSet[DAY_OF_WEEK] && isSet[WEEK_OF_YEAR]) {
-			throw new NotImplemented();
+			throw new NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
+						 "with DAY_OF_WEEK and WEEK_OF_YEAR set.");
 		}
 	}
 	else {
-		throw new NotImplemented();
+		throw new NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
+					 "without YEAR set.");
 	}
 	time *= 24;
 
@@ -473,7 +477,7 @@ public boolean isLeapYear(int year)
 
 public void roll(int field, boolean up)
 	{
-	throw new NotImplemented();
+	throw new NotImplemented(GregorianCalendar.class.getName() + ".roll(int,boolean)");
 }
 
 public void setGregorianChange(Date date)

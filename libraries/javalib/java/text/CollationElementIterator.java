@@ -19,23 +19,23 @@ public final static int NULLORDER = 0xffffffff;
 private CollationElementIterator() {}
     
 public int next() {
-	throw new NotImplemented();
+	throw new NotImplemented(CollationElementIterator.class.getName() + ".next()");
 }
 
 public void reset() {
-	throw new NotImplemented();
+	throw new NotImplemented(CollationElementIterator.class.getName() + ".reset()");
 }
 
 public final static int primaryOrder(int order) {
-	throw new NotImplemented();
+	throw new NotImplemented(CollationElementIterator.class.getName() + ".primaryOrder(int)");
 }
 
 public final static short secondaryOrder(int order) {
-	throw new NotImplemented();
+	throw new NotImplemented(CollationElementIterator.class.getName() + ".secondaryOrder(int)");
 }
 
 public final static short tertiaryOrder(int order) {
-	throw new NotImplemented();
+	throw new NotImplemented(CollationElementIterator.class.getName() + ".tertiaryOrder(int)");
 }
 
 }

@@ -16,7 +16,7 @@ import kaffe.util.NotImplemented;
 public class RuleBasedCollator extends Collator {
 
 public RuleBasedCollator(String rules) throws ParseException {
-	/* NotImplemented */
+	throw new kaffe.util.NotImplemented(RuleBasedCollator.class.getName() + ".<init>(String)");
 }
 
 public Object clone() {
@@ -47,18 +47,15 @@ public boolean equals(Object obj) {
 }
 
 public CollationElementIterator getCollationElementIterator(String src) {
-	/* NotImplemented */
-	return (null);
+	throw new kaffe.util.NotImplemented(RuleBasedCollator.class.getName() + ".getCollationElementIterator(String)");
 }
 
 public CollationKey getCollationKey(String src) {
-	/* NotImplemented */
-	return (null);
+	throw new kaffe.util.NotImplemented(RuleBasedCollator.class.getName() + ".getCollationKey(String)");
 }
 
 public String getRules() {
-	/* NotImplemented */
-	return (null);
+	throw new kaffe.util.NotImplemented(RuleBasedCollator.class.getName() + ".getRules()");
 }
 
 public int hashCode() {

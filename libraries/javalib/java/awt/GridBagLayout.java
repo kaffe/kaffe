@@ -42,7 +42,7 @@ public class GridBagLayout
 	transient Point offset = new Point();
 
 protected void AdjustForGravity(GridBagConstraints cons, Rectangle display) {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(GridBagLayout.class.getName() + ".AdjustForGravity()");
 }
 
 protected void ArrangeGrid(Container container) {

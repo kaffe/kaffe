@@ -25,39 +25,39 @@ public HttpServlet() {
 }
 
 protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".doGet()");
 }
 
 protected long getLastModified(HttpServletRequest req) {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".getLastModified()");
 }
 
 protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".doPost()");
 }
 
 protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".doPut()");
 }
 
 protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".doDelete()");
 }
 
 protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".doOptions()");
 }
 
 protected void doTrace(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".doTrace()");
 }
 
 protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".service(HttpServletRequest,HttpServletResponse)");
 }
 
 public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
-	throw new kaffe.util.NotImplemented();
+	throw new kaffe.util.NotImplemented(HttpServlet.class.getName() + ".service(ServletRequest,ServletResponse)");
 }
 
 }

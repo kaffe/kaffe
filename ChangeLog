@@ -1,3 +1,16 @@
+Thu Jun 10 12:22:17 PDT 1999  Patrick A Tullmann  <tullmann@cs.utah.edu>
+
+	* libraries/javalib/java/awt/GridBagLayout.java
+	libraries/extensions/servlet/javalib/javax/servlet/http/HttpUtils.java
+	libraries/extensions/servlet/javalib/javax/servlet/http/HttpServlet.java
+	libraries/javalib/java/lang/ClassLoader.java
+	libraries/javalib/java/text/CollationElementIterator.java
+	libraries/javalib/java/text/MessageFormat.java
+	libraries/javalib/java/text/RuleBasedCollator.java
+	libraries/javalib/java/util/GregorianCalendar.java
+	libraries/javalib/java/util/Hashtable.java: add method names
+	to kaffe.util.NotImplemented exceptions
+
 1999-06-10  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libltdl/configure.in: Look for dlopen first in -ldl.
