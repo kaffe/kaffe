@@ -532,7 +532,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			        /* we do this because we might be loading a class before
 				 * loading String
 				 */
-				OPSTACK_PUSH(TSTRING);
+				OPSTACK_PUSH(getTSTRING());
 				break;
 			}
 			break;

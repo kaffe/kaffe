@@ -82,7 +82,12 @@ Type* TOBJARR = &verify_OBJARR;
 
 static const char* STRING_SIG = "Ljava/lang/String;";
 static Type  verify_STRING;
-Type* TSTRING = &verify_STRING;
+static Type* TSTRING = &verify_STRING;
+
+Type* getTSTRING(void)
+{
+  return TSTRING;
+}
 
 static const char* CHARARR_SIG = "[C";
 static Type  verify_CHARARR;

@@ -114,7 +114,7 @@ extern Type* getTLONGARR(void);
 extern Type* getTFLOATARR(void);
 extern Type* getTDOUBLEARR(void);
 
-extern Type* TSTRING;
+extern Type* getTSTRING(void);
 
 extern void initVerifierPrimTypes(void);
 
