@@ -276,7 +276,7 @@ DBG(NATIVENET,
 			except = (struct Hjava_io_InterruptedIOException *)
 			  execute_java_constructor(
 						   "java.net.SocketTimeoutException", 0, 0,
-						   "([Ljava/lang/String;)V",
+						   "(Ljava/lang/String;)V",
 						   checkPtr(stringC2Java("Read timed out")));
 			except->bytesTransferred = offset-unhand(pkt)->offset;
 			
