@@ -230,7 +230,7 @@ void
 registerTerminalSignal(int sig, void* handler)
 {
 	assert((sig == SIGINT) || (sig == SIGTERM));
-	registerSignalHandler(sig, handler, false);
+	registerSignalHandler(sig, handler, true);
 }
 
 /*
