@@ -176,3 +176,24 @@ Edouard G. Parmelan                         Ingenieur Developpeur
 Quadratec - Parc Club "Orsay Universite" - 14/16,rue Jean Rostand
 91893 Orsay Cedex - FRANCE               Phone (+33)1 69 33 20 80
 Email: edouard.parmelan@quadratec.fr
+
+From kaffe-core@rufus.w3.org Thu Apr 27 03:35:10 2000
+Date: Thu, 27 Apr 2000 13:15:03 +0200
+From: "Edouard G. Parmelan" <Edouard.Parmelan@quadratec.fr>
+To: kaffe-core@rufus.w3.org
+Subject: Re: unicode.pl
+
+Archie L. Cobbs wrote:
+
+> Where is the input file that unicode.pl reads? 
+
+Humm, I will add some comments in it and in README.unicode.
+
+It use UnicodeData.txt file from ftp://ftp.unicode.org/Public/UNIDATA or
+ftp://ftp.unicode.org/Public/*-Update/UnicodeData-*.txt
+
+Hope this helps.
+-- 
+Edouard G. Parmelan
+http://egp.free.fr
+
