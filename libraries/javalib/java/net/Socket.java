@@ -51,8 +51,17 @@ public Socket(String host, int port, boolean stream) throws IOException {
  */
 public Socket(InetAddress address, int port, boolean stream) throws IOException {
 	impl = factory.createSocketImpl();
-	impl.create(stream);
-	impl.connect(address, port);
+	try {
+		impl.create(stream);
+		impl.connect(address, port);
+	} catch (IOException ioe) {
+		try {
+			impl.close();
+		}
+		catch (IOException _) {
+		}
+		throw ioe;
+	}
 }
 
 protected Socket(SocketImpl simpl) throws SocketException {

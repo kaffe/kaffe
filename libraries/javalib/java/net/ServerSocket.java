@@ -49,9 +49,18 @@ public ServerSocket(int port, int backlog, InetAddress bindAddr) throws IOExcept
 		bindAddr = InetAddress.getAnyAddress();
 	}
 	impl = factory.createSocketImpl();
+	try {
 	impl.create(true);
 	impl.bind(bindAddr, port);
 	impl.listen(backlog);
+	} catch (IOException ioe) {
+		try {
+			impl.close();
+		}
+		catch (IOException _) {
+		}
+		throw ioe;
+	}
 }
 
 public Socket accept() throws IOException {
