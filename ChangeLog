@@ -1,3 +1,8 @@
+Mon Jul 27 09:32:05 1998  Giles Lean  <giles@nemeton.com.au>
+
+	* libraries/javalib/java/io/File.java: fix for getParent to return
+	"/" for "/tmp".
+
 Sun Jul 26 14:33:54 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* libraries/javalib/java/io/FileInputStream.java:  map IOException 
