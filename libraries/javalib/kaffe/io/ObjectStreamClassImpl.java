@@ -69,10 +69,6 @@ public void getObjectWithoutSuper(Object obj, ObjectInputStream in, ObjectInputS
 	if (superstream != null) {
 		superstream.getObjectWithoutSuper(obj, in, impl);
 	}
-	else {
-		// invoke <init>()V on super class (if it's possible)
-		invokeSuperclassInitV (obj, clazz.getSuperclass());
-	}
 
         try {
                 if ((method & ObjectStreamConstants.SC_EXTERNALIZABLE) != 0) {
@@ -401,16 +397,19 @@ public long getSerialVersionUID() {
 	return (getSerialVersionUID0(clazz));
 }
 
+public static boolean hasWriteObject(Class cls) {
+	return (hasWriteObject0(cls));
+}
+
 private native static void init();
 private native Object allocateNewObject();
 private native Object allocateNewArray(int size);
-public native static boolean hasWriteObject(Class cls);
-private native void invokeSuperclassInitV(Object obj, Class sc);
+private native static boolean hasWriteObject0(Class cls);
 private native void inputClassFields(Object obj, ObjectInputStream in);
 private native void outputClassFields(Object obj, ObjectOutputStream out);
 private native boolean invokeObjectReader0(Object obj, ObjectInputStream in);
 private native boolean invokeObjectWriter0(Object obj, ObjectOutputStream out);
 private native void outputClassFieldInfo(ObjectOutputStream out);
-public native static long getSerialVersionUID0(Class cls);
+private native static long getSerialVersionUID0(Class cls);
 
 }
