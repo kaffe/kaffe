@@ -631,7 +631,7 @@ expandInterfaces(Hjava_lang_Class *root_class,
 			if( imeth->accflags & ACC_STATIC )
 				continue;
 			/* Search for the corresponding slot. */
-			for( cl = class;
+			for( cl = root_class;
 			     cl && !foundit;
 			     cl = cl->superclass )
 			{
