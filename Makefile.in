@@ -32,10 +32,10 @@ depend:
 install:
 	@for i in $(subdirs); do (cd $$i && $(MAKE) install) || exit 1 ; done
 
-derived-files:	configure
+derived-files:	@srcdir@/configure
 	@for i in $(subdirs); do (cd $$i && $(MAKE) derived-files) || exit 1 ; done
 
-configure:	configure.in
-	autoconf
+@srcdir@/configure:	@srcdir@/configure.in
+	(cd @srcdir@; autoconf)
 
 DUMMY:

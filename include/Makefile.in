@@ -15,7 +15,7 @@ INSTALL=	@INSTALL@
 INSTALL_DATA=	@INSTALL_DATA@
 MKDIR=		@MKDIR@
 
-KAFFEH=		kaffeh
+KAFFEH=		../kaffe/kaffeh/kaffeh@EXEEXT@
 
 SHELL=		/bin/sh
 
@@ -53,9 +53,9 @@ install:
 		done
 
 derived-files:
-		$(KAFFEH) -classpath $(INSTROOT)$(classdir)/Klasses.jar java/lang/Thread
-		$(KAFFEH) -classpath $(INSTROOT)$(classdir)/Klasses.jar java/lang/ThreadGroup
-		$(KAFFEH) -classpath $(INSTROOT)$(classdir)/Klasses.jar java/lang/Throwable
+		$(KAFFEH) -d @srcdir@ -classpath $(INSTROOT)$(classdir)/Klasses.jar java/lang/Thread
+		$(KAFFEH) -d @srcdir@ -classpath $(INSTROOT)$(classdir)/Klasses.jar java/lang/ThreadGroup
+		$(KAFFEH) -d @srcdir@ -classpath $(INSTROOT)$(classdir)/Klasses.jar java/lang/Throwable
 
 depend:
 
