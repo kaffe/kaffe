@@ -1,4 +1,18 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+	
+	* config/i386/jit-i386.def,
+	kaffe/kaffevm/jit/machine.c:
+	Replace use of reginfo by KaffeVM_jitGetRegInfo.
+	
+	* kaffe/kaffevm/jit/registers.c:
+	(reginfo) Made static.
+	(KaffeVM_jitGetRegInfo) New function.
+	
+	* kaffe/kaffevm/jit/registers.h:
+	(reginfo) Removed prototype.
+	(KaffeVM_jitGetRegInfo) New prototype.
+
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/jit/registers.c,
 	kaffe/kaffevm/jit3/registers.c:

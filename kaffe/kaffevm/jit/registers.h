@@ -40,13 +40,13 @@ typedef struct _kregs {
 	uint8			regno;
 } kregs;
 
-extern kregs reginfo[];
+extern kregs* KaffeVM_jitGetRegInfo(void);
 
-#define	register_invalidate(r)	reginfo[r].slot = NOSLOT
+#define	register_invalidate(r)	KaffeVM_jitGetRegInfo()[r].slot = NOSLOT
 
 /* reserve a register */
-#define        register_reserve(r)     (reginfo[r].type |= Reserved)
-#define        register_unreserve(r)   (reginfo[r].type &= ~Reserved)
+#define        register_reserve(r)     (KaffeVM_jitGetRegInfo()[r].type |= Reserved)
+#define        register_unreserve(r)   (KaffeVM_jitGetRegInfo()[r].type &= ~Reserved)
 
 #define	MAXREG			NR_REGISTERS
 #define	NOREG			MAXREG
@@ -80,7 +80,7 @@ extern int enable_readonce;
 #define	rnowriteback		4
 
 #define _slotInRegister(_s, _t)					\
-	((reginfo[(_s)->regno].type & (_t)) == (_t))
+	((KaffeVM_jitGetRegInfo()[(_s)->regno].type & (_t)) == (_t))
 
 #define slotInRegister(_i, _t)					\
 	_slotInRegister(seq_slot(s, _i), _t)

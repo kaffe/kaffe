@@ -717,7 +717,7 @@ fixupFunctionCall(sequence* s)
 	 * flush them - we do not want to do that even if they are dirty.
 	 */
 	for (i = maxslot - 1; i >= 0; i--) {
-		if (slotinfo[i].regno != NOREG && (reginfo[slotinfo[i].regno].flags & Rnosaveoncall) == 0) {
+		if (slotinfo[i].regno != NOREG && (KaffeVM_jitGetRegInfo()[slotinfo[i].regno].flags & Rnosaveoncall) == 0) {
 			register_invalidate(slotinfo[i].regno);
 			slot_invalidate(&slotinfo[i]);
 		}
@@ -797,7 +797,7 @@ prepareFunctionCall(sequence* s)
 
 	/* Spill locals */
 	for (i = 0; i < maxLocal; i++) {
-		if ((localinfo[i].modified & rwrite) != 0 && localinfo[i].regno != NOREG && (reginfo[localinfo[i].regno].flags & Rnosaveoncall) == 0) {
+		if ((localinfo[i].modified & rwrite) != 0 && localinfo[i].regno != NOREG && (KaffeVM_jitGetRegInfo()[localinfo[i].regno].flags & Rnosaveoncall) == 0) {
 			spill(&localinfo[i]);
 			localinfo[i].modified = 0;
 		}
@@ -806,7 +806,7 @@ prepareFunctionCall(sequence* s)
 	/* Spill stack */
 	stkno = const_int(1);
 	for (i = stkno; i < maxStack+maxLocal; i++) {
-		if ((localinfo[i].modified & rwrite) != 0 && localinfo[i].regno != NOREG && (reginfo[localinfo[i].regno].flags & Rnosaveoncall) == 0) {
+		if ((localinfo[i].modified & rwrite) != 0 && localinfo[i].regno != NOREG && (KaffeVM_jitGetRegInfo()[localinfo[i].regno].flags & Rnosaveoncall) == 0) {
 			spill(&localinfo[i]);
 			localinfo[i].modified = 0;
 		}
@@ -815,7 +815,7 @@ prepareFunctionCall(sequence* s)
 	/* Spill temps currently in use */
 	tmpslot = const_int(2);
 	for (i = 0; i < tmpslot; i++) {
-		if ((tempinfo[i].modified & rwrite) != 0 && tempinfo[i].regno != NOREG && (reginfo[tempinfo[i].regno].flags & Rnosaveoncall) == 0) {
+		if ((tempinfo[i].modified & rwrite) != 0 && tempinfo[i].regno != NOREG && (KaffeVM_jitGetRegInfo()[tempinfo[i].regno].flags & Rnosaveoncall) == 0) {
 			spill(&tempinfo[i]);
 			tempinfo[i].modified = 0;
 		}
@@ -838,7 +838,7 @@ syncRegisters(sequence* s)
 
 	/* Spill locals */
 	for (i = 0; i < maxLocal; i++) {
-		if ((localinfo[i].modified & rwrite) != 0 && localinfo[i].regno != NOREG && (reginfo[localinfo[i].regno].flags & Rnosaveoncall) == 0) {
+		if ((localinfo[i].modified & rwrite) != 0 && localinfo[i].regno != NOREG && (KaffeVM_jitGetRegInfo()[localinfo[i].regno].flags & Rnosaveoncall) == 0) {
 			spill(&localinfo[i]);
 		}
 	}
@@ -846,7 +846,7 @@ syncRegisters(sequence* s)
 	/* Spill stack */
 	stkno = const_int(1);
 	for (i = stkno; i < maxLocal+maxStack; i++) {
-		if ((localinfo[i].modified & rwrite) != 0 && localinfo[i].regno != NOREG && (reginfo[localinfo[i].regno].flags & Rnosaveoncall) == 0) {
+		if ((localinfo[i].modified & rwrite) != 0 && localinfo[i].regno != NOREG && (KaffeVM_jitGetRegInfo()[localinfo[i].regno].flags & Rnosaveoncall) == 0) {
 			spill(&localinfo[i]);
 		}
 	}
@@ -854,7 +854,7 @@ syncRegisters(sequence* s)
 	/* Spill temps currently in use */
 	tmpslot = const_int(2);
 	for (i = 0; i < tmpslot; i++) {
-		if ((tempinfo[i].modified & rwrite) != 0 && tempinfo[i].regno != NOREG && (reginfo[tempinfo[i].regno].flags & Rnosaveoncall) == 0) {
+		if ((tempinfo[i].modified & rwrite) != 0 && tempinfo[i].regno != NOREG && (KaffeVM_jitGetRegInfo()[tempinfo[i].regno].flags & Rnosaveoncall) == 0) {
 			spill(&tempinfo[i]);
 		}
 	}

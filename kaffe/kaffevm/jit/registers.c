@@ -25,10 +25,19 @@
 /*
  * Define the registers.
  */
-kregs reginfo[MAXREG+1] = {
-	REGISTER_SET
-	{ /* BAD */	NULL, 0, 0, 0, 0, 0 }
+static kregs reginfo[MAXREG+1] = {
+  REGISTER_SET
+  { /* BAD */	NULL, 0, 0, 0, 0, 0 }
 };
+
+/**
+ * Get the registers.
+ */
+kregs* 
+KaffeVM_jitGetRegInfo(void)
+{
+  return reginfo;
+}
 
 /* This is horrible but necessary at the moment.  Sometime we need to
  * make transient changes to the registers which we will forget in 

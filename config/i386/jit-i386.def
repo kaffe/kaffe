@@ -1698,8 +1698,8 @@ kill_readonce_register (SlotInfo *s)
 DBG(REGFORCE,
     dprintf ("kill_readonce_register(%s)\n", regname(s->regno));
     );
-	if (((reginfo[s->regno].ctype & Rdouble) && (s->regno == REG_dbl0)) ||
-	    ((reginfo[s->regno].ctype & Rfloat) && (s->regno == REG_flt0))) {
+	if (((KaffeVM_jitGetRegInfo()[s->regno].ctype & Rdouble) && (s->regno == REG_dbl0)) ||
+	    ((KaffeVM_jitGetRegInfo()[s->regno].ctype & Rfloat) && (s->regno == REG_flt0))) {
 	    	OUT(0xDD);
 		OUT(0xD8);
 
