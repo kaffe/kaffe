@@ -11,6 +11,8 @@
 	API
 	(MulticastSocket) Fixed construction to request previously binded
 	address.
+
+	Reported by Everton da Silva Marques <everton@lab.ipaccess.diveo.net.br>
 	
 2003-10-30  Dalibor Topic <robilad@kaffe.org>
 
