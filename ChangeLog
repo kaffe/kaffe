@@ -2,6 +2,17 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-01-20  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/JTextField.java
+	(actions): New field.
+	(static): Initalize actions field.
+	(getActions): New method.
+
+2005-01-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-01-20  Mark Wielaard  <mark@klomp.org>
 
 	* javax/naming/directory/BasicAttributes.java (equals): Compare to any

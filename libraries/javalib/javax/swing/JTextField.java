@@ -47,9 +47,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.accessibility.AccessibleStateSet;
+import javax.swing.Action;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
+import javax.swing.text.TextAction;
 
 public class JTextField extends JTextComponent
   implements SwingConstants
@@ -80,12 +82,25 @@ public class JTextField extends JTextComponent
 
   private static final long serialVersionUID = 353853209832607592L;
 
+  private static final Action[] actions;
+
   public static final String notifyAction = "notify-field-accept";
   
+  static
+  {
+    actions = new Action[1];
+    actions[0] = new TextAction(notifyAction)
+      {
+	public void actionPerformed(ActionEvent event)
+	{
+	  JTextField textField = (JTextField) event.getSource();
+	  textField.fireActionPerformed();
+	}
+      };
+  }
+  
   private int columns;
-
   private int align;
-
   private int scrollOffset;
 
   /** @since 1.3 */
@@ -298,6 +313,11 @@ public class JTextField extends JTextComponent
   public void setScrollOffset(int offset)
   {
     scrollOffset = offset;
+  }
+
+  public Action[] getActions()
+  {
+    return TextAction.augmentList(super.getActions(), actions);
   }
 
   public void postActionEvent()
