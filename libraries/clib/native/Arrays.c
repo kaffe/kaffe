@@ -170,7 +170,7 @@ java_util_Arrays_sortObject(HArrayOfObject *a, jint fromIndex, jint toIndex, str
 	errorInfo info;
 	int k;
 
-	if (len == 0) {
+	if (len <= 1) {
 		return;
 	}
 
