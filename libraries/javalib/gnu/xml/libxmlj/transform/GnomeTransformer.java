@@ -77,7 +77,7 @@ import javax.xml.transform.stream.StreamResult;
  *
  *  @author Julian Scheid
  */
-public class TransformerImpl
+public class GnomeTransformer
   extends Transformer 
 {
 
@@ -95,13 +95,13 @@ public class TransformerImpl
    *  The URIResolver passed in by the {@link TransformFactory} or
    *  {@link Templates}.
    */
-  private URIResolverProxy uriResolverProxy = new URIResolverProxy();
+  private URIResolver uriResolver;
 
   /**
    *  The ErrorListener passed in by the {@link TransformFactory} or
    *  {@link Templates}.
    */
-  private ErrorListenerProxy errorListenerProxy = new ErrorListenerProxy();;
+  private ErrorListener errorListener;
 
   /**
    *  The object representing the underlying Libxslt Stylesheet.
@@ -110,7 +110,7 @@ public class TransformerImpl
 
   /**
    *  Package-private constructor. Called by {@link
-   *  TransformFactory}.
+   *  TransformerFactory}.
    *
    *  @param uriResolver the default URIResolver to use (can be
    *  overridden by the user).
@@ -118,19 +118,19 @@ public class TransformerImpl
    *  @param errorListener the default ErrorListener to use (can be
    *  overridden by the user).
    *
-   *  @param xsltSource the XML Source for reading the XSLT
-   *  stylesheet represented by this object.
+   *  @param nativeStylesheetHandle implementation-specific handle
+   *  to underlying stylesheet object.
    *
    *  @param attributes implementation-specific attributes passed in
    *  by the factory. These are currently not used.
    */
-  TransformerImpl (URIResolver uriResolver, 
-                   ErrorListener errorListener,
-                   LibxsltStylesheet stylesheet, 
-                   Map attributes)
+  GnomeTransformer (URIResolver uriResolver, 
+                    ErrorListener errorListener,
+                    LibxsltStylesheet stylesheet, 
+                    Map attributes)
   {
-    this.uriResolverProxy.set(uriResolver);
-    this.errorListenerProxy.set(errorListener);
+    this.uriResolver = uriResolver;
+    this.errorListener = errorListener;
     this.stylesheet = stylesheet;
 
     // ignore attributes
@@ -146,65 +146,65 @@ public class TransformerImpl
    *  @param errorListener the default ErrorListener to use (can be
    *  overridden by the user).
    *
-   *  @param nativeStylesheetHandle implementation-specific handle
-   *  to underlying stylesheet object.
+   *  @param xsltSource the XML Source for reading the XSLT
+   *  stylesheet represented by this object.
+   *
+   *  @param attributes implementation-specific attributes passed in
+   *  by the factory. These are currently not used.
    */
-  TransformerImpl (URIResolver uriResolver, 
-                   ErrorListener errorListener,
-                   Source source,
-                   Map attributes) 
+  GnomeTransformer (URIResolver uriResolver, 
+                    ErrorListener errorListener,
+                    Source source,
+                    Map attributes) 
     throws TransformerConfigurationException
   {
-    this.uriResolverProxy.set(uriResolver);
-    this.errorListenerProxy.set(errorListener);
-    this.stylesheet =
-      new LibxsltStylesheet (source, new JavaContext (uriResolverProxy, 
-                                                      errorListenerProxy));
-
-    // ignore attributes
+    this (uriResolver, errorListener,
+          new LibxsltStylesheet (source, new JavaContext (uriResolver, 
+                                                          errorListener)),
+          attributes);
   }
 
   //--- Implementation of javax.xml.transform.Transformer follows.
 
   // Set, get and clear the parameters to use on transformation
 
-  public void setParameter (String parameter, Object value)
+  public synchronized void setParameter (String parameter, Object value)
   {
-    this.parameters.put (parameter, value);
+    parameters.put (parameter, value);
   } 
 
-  public Object getParameter (String name)
+  public synchronized Object getParameter (String name)
   {
-    return this.parameters.get (name);
+    return parameters.get (name);
   }
 
-  public void clearParameters ()
+  public synchronized void clearParameters ()
   {
-    this.parameters.clear ();
+    parameters.clear ();
   }
 
   // Set and get the ErrorListener to use on transformation
 
   public void setErrorListener (ErrorListener listener)
   {
-    this.errorListenerProxy.set(listener);
+    this.errorListener = listener;
   } 
 
   public ErrorListener getErrorListener ()
   {
-    return this.errorListenerProxy.get();
+    return errorListener;
   }
 
   // Set and get the URIResolver to use on transformation
 
   public void setURIResolver (URIResolver uriResolver)
   {
-    this.uriResolverProxy.set(uriResolver);
+    this.uriResolver = uriResolver;
   } 
 
   public URIResolver getURIResolver ()
   {
-    return this.uriResolverProxy.get();
+    return uriResolver;
   }
 
   // Set the output properties to use on transformation; get default
@@ -219,7 +219,7 @@ public class TransformerImpl
 
   public void setOutputProperty (String name, String value)
   {
-    this.outputProperties.setProperty (name, value);
+    outputProperties.setProperty (name, value);
   } 
 
   public Properties getOutputProperties ()
@@ -230,7 +230,7 @@ public class TransformerImpl
 
   public String getOutputProperty (String name)
   {
-    return this.outputProperties.getProperty (name);
+    return outputProperties.getProperty (name);
   }
 
   /**
@@ -248,7 +248,7 @@ public class TransformerImpl
     throws TransformerException
   {
     stylesheet.transform (source, result, parameters,
-			  new JavaContext (uriResolverProxy, errorListenerProxy));
-  } 
+			  new JavaContext (uriResolver, errorListener));
+  }
 
 }

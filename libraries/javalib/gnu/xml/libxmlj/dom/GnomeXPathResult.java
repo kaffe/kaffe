@@ -1,5 +1,5 @@
 /*
- * GnomeComment.java
+ * GnomeXPathResult.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -26,21 +26,60 @@
  */
 package gnu.xml.libxmlj.dom;
 
-import org.w3c.dom.Comment;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Node;
+import org.w3c.dom.xpath.XPathException;
+import org.w3c.dom.xpath.XPathResult;
 
 /**
- * A DOM comment node implemented in libxml2.
+ * An XPath result object implemented in libxml2.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class GnomeComment
-extends GnomeCharacterData
-implements Comment
+class GnomeXPathResult
+implements XPathResult
 {
 
-  GnomeComment (long id)
+  /**
+   * xmlXPathObjectPtr
+   */
+  final long obj;
+
+  GnomeXPathResult (long obj)
     {
-      super (id);
+      this.obj = obj;
     }
 
+  protected void finalize ()
+    {
+      free (obj);
+    }
+
+  private native void free (long obj);
+  
+  public native short getResultType ();
+
+  public native double getNumberValue ()
+    throws XPathException;
+
+  public native String getStringValue ()
+    throws XPathException;
+
+  public native boolean getBooleanValue ()
+    throws XPathException;
+
+  public native Node getSingleNodeValue ()
+    throws XPathException;
+
+  public native boolean getInvalidIteratorState();
+
+  public native int getSnapshotLength ()
+    throws XPathException;
+
+  public native Node iterateNext ()
+    throws XPathException, DOMException;
+
+  public native Node snapshotItem (int index)
+    throws XPathException;
+  
 }

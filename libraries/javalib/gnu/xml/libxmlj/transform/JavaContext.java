@@ -47,10 +47,17 @@ import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 
 import java.io.InputStream;
+import java.io.IOException;
+import java.net.URL;
 
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+
+import gnu.xml.libxmlj.dom.GnomeDocument;
+import gnu.xml.libxmlj.util.StandaloneLocator;
+import gnu.xml.libxmlj.util.NamedInputStream;
+import gnu.xml.libxmlj.util.XMLJ;
 
 class JavaContext
 {
@@ -91,31 +98,92 @@ class JavaContext
     this.errorListener = errorListener;
     this.uriResolver = uriResolver;
   }
+
+  // -- Callbacks from libxmlj --
+
+  private InputStream resolveEntity (String publicId,
+                                     String systemId)
+    throws TransformerException
+    {
+      if (uriResolver != null)
+        {
+          systemId = uriResolver.resolve (null, systemId).getSystemId ();
+        }
+      if (systemId == null)
+        {
+          return null;
+        }
+      try
+        {
+          URL url = new URL (systemId);
+          return XMLJ.getInputStream (url);
+        }
+      catch (IOException e)
+        {
+          throw new TransformerException (e);
+        }
+    }
+
+  private void setDocumentLocator (long ctx, long loc)
+    {
+    }
+
+  private void warning (String message,
+                        int lineNumber,
+                        int columnNumber,
+                        String publicId,
+                        String systemId)
+    throws TransformerException
+    {
+      if (errorListener == null)
+        {
+          return;
+        }
+      SourceLocator l = new StandaloneLocator (lineNumber,
+                                               columnNumber,
+                                               publicId,
+                                               systemId);
+      errorListener.warning (new TransformerException (message, l));
+    }
   
-  //--- Implementation of
-  //--- gnu.xml.transform.LibxsltTransformErrorAdapter follows.
-
-  void saxWarning (String message, SourceLocator sourceLocator)
+  private void error (String message,
+                      int lineNumber,
+                      int columnNumber,
+                      String publicId,
+                      String systemId)
     throws TransformerException
-  {
-    errorListener.
-      warning (new TransformerException (message.trim (), sourceLocator));
-  } 
-
-  void saxError (String message, SourceLocator sourceLocator) 
+    {
+      if (errorListener == null)
+        {
+          return;
+        }
+      SourceLocator l = new StandaloneLocator (lineNumber,
+                                               columnNumber,
+                                               publicId,
+                                               systemId);
+      errorListener.error (new TransformerException (message, l));
+    } 
+  
+  private void fatalError (String message,
+                           int lineNumber,
+                           int columnNumber,
+                           String publicId,
+                           String systemId)
     throws TransformerException
-  {
-    errorListener.
-      error (new TransformerException (message.trim (), sourceLocator));
-  } 
-
-  void saxFatalError (String message, SourceLocator sourceLocator) 
-    throws TransformerException
-  {
-    errorListener.
-      fatalError (new TransformerException (message.trim (), sourceLocator));
-  } 
-
+    {
+      if (errorListener == null)
+        {
+          return;
+        }
+      SourceLocator l = new StandaloneLocator (lineNumber,
+                                               columnNumber,
+                                               publicId,
+                                               systemId);
+      errorListener.fatalError (new TransformerException (message, l));
+    } 
+ 
+  // -- TODO remove these --
+   
   void xsltGenericError (String message) 
     throws TransformerException
   {
@@ -123,13 +191,6 @@ class JavaContext
       new TransformerException (message.trim ());
     errorListener.error (exception);
   } 
-
-
-  SourceWrapper resolveURI (String href, String base) 
-    throws TransformerException
-  {
-    return new SourceWrapper (uriResolver.resolve (href, base));
-  }
 
   public String toString ()
   {
@@ -139,19 +200,37 @@ class JavaContext
 
   //--- DOM caching methods follow
 
-  private native int parseDocument (InputStream in, String systemId,
-				     String publicId);
+  private native GnomeDocument parseDocument (InputStream in,
+                                              byte[] detectBuffer,
+                                              String systemId,
+                                              String publicId);
 
-  LibxmlDocument resolveURIAndOpen (String href,
-                                    String base) 
+  GnomeDocument resolveURIAndOpen (String href,
+                                   String base) 
     throws TransformerException
   {
-    Source source = uriResolver.resolve (href, base);
-
-    return parseDocumentCached (source);
+    if (uriResolver != null)
+      {
+        Source source = uriResolver.resolve (href, base);
+        return parseDocumentCached (source);
+      }
+    else
+      {
+        try
+          {
+            URL url = new URL (XMLJ.getAbsoluteURI (base, href));
+            InputStream in = url.openStream();
+            return parseDocumentCached (in, url.toString (), null);
+          }
+        catch (IOException e)
+          {
+            throw new TransformerException(e);
+          }
+      }               
   }
 
-  LibxmlDocument parseDocumentCached (InputStream in, String systemId, String publicId)
+  GnomeDocument parseDocumentCached (InputStream in, String systemId,
+                                     String publicId)
     throws TransformerException
   {
     StreamSource source = new StreamSource ();
@@ -168,25 +247,35 @@ class JavaContext
     return parseDocumentCached (source);
   }
 
-  LibxmlDocument parseDocumentCached (Source source)
+  GnomeDocument parseDocumentCached (Source source)
     throws TransformerException
   {
     String systemId = source.getSystemId ();
-    LibxmlDocument cachedValue = (LibxmlDocument) cache.get (systemId);
+    GnomeDocument cachedValue = (GnomeDocument) cache.get (systemId);
     if (null != cachedValue)
       {
         return cachedValue;
       }
     else
       {
-        int rc 
-          = parseDocument (new SourceWrapper (source).getInputStream (),
-                           source.getSystemId (),
-                           null);
-        LibxmlDocument value = new LibxmlDocument (rc);
-        cache.remove (systemId);
-        cache.put (systemId, value);
-        return value;
+        try
+          {
+            NamedInputStream in = XMLJ.getInputStream (source);
+            byte[] detectBuffer = in.getDetectBuffer ();
+            if (detectBuffer == null)
+              {
+                throw new TransformerException ("No document element");
+              }
+            GnomeDocument value =
+              parseDocument (in, detectBuffer, systemId, null);
+            cache.remove (systemId);
+            cache.put (systemId, value);
+            return value;
+          }
+        catch (IOException e)
+          {
+            throw new TransformerException (e);
+          }
       }
   }
 }

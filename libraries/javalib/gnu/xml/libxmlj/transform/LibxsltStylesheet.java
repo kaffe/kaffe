@@ -38,8 +38,9 @@
 
 package gnu.xml.libxmlj.transform;
 
+import java.io.InputStream;
+import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PushbackInputStream;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -51,9 +52,13 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 
+import gnu.xml.libxmlj.dom.GnomeDocument;
+import gnu.xml.libxmlj.util.NamedInputStream;
+import gnu.xml.libxmlj.util.XMLJ;
+
 public class LibxsltStylesheet
 {
-  private int nativeStylesheetHandle;
+  private long nativeStylesheetHandle;
   private Properties outputProperties;
   private static int unfinalized = 0;
 
@@ -62,15 +67,27 @@ public class LibxsltStylesheet
   {
     try
       {
-        this.outputProperties = new Properties ();
+        outputProperties = new Properties ();
+        NamedInputStream in = XMLJ.getInputStream (xsltSource);
+        String systemId = in.getName ();
+        byte[] detectBuffer = in.getDetectBuffer ();
+        if (detectBuffer == null)
+          {
+            throw new TransformerException ("No document element");
+          }
         this.nativeStylesheetHandle
-          = newLibxsltStylesheet (IOToolkit.getSourceInputStream (xsltSource),
-                                  xsltSource.getSystemId (),
+          = newLibxsltStylesheet (in,
+                                  detectBuffer,
+                                  systemId,
                                   (xsltSource instanceof StreamSource) ?
                                   ((StreamSource) xsltSource).
                                   getPublicId () : null, javaContext,
-                                  this.outputProperties);
-      } 
+                                  outputProperties);
+      }
+    catch (IOException e)
+      {
+        throw new TransformerConfigurationException (e);
+      }
     catch (TransformerException e)
       {
         if (null != e.getCause ())
@@ -84,7 +101,7 @@ public class LibxsltStylesheet
       }
   }
 
-  public int getNativeStylesheetHandle ()
+  public long getNativeStylesheetHandle ()
   {
     return this.nativeStylesheetHandle;
   }
@@ -109,7 +126,7 @@ public class LibxsltStylesheet
 
     // Make an array from the parameters so JNI interface's job is
     // easier
-    String[]parameterArray = new String[parameters.size () * 2];
+    String[] parameterArray = new String[parameters.size () * 2];
     int index = 0;
 
     for (Iterator it = parameters.keySet ().iterator (); it.hasNext ();
@@ -124,21 +141,32 @@ public class LibxsltStylesheet
 
     // Transform
 
-    libxsltTransform (nativeStylesheetHandle,
-		      IOToolkit.getSourceInputStream (source),
-		      source.getSystemId (),
-		      (source instanceof StreamSource) ? ((StreamSource)
-							  source).
-		      getPublicId () : null,
-		      IOToolkit.getResultOutputStream (result),
-		      parameterArray, javaContext);
+    try
+      {
+        String systemId = source.getSystemId ();
+        String publicId = (source instanceof StreamSource) ?
+          ((StreamSource) source).getPublicId () : null;
+        GnomeDocument document = javaContext.parseDocumentCached (source);
+        libxsltTransform (nativeStylesheetHandle,
+                          document,
+                          systemId,
+                          publicId,
+                          XMLJ.getOutputStream (result),
+                          parameterArray,
+                          javaContext);
+      }
+    catch (IOException e)
+      {
+        throw new TransformerException (source.getSystemId (), e);
+      }
   }
 
   /*
    *  Native interface to libxslt.
    */
-  private static synchronized native int 
-  newLibxsltStylesheet (PushbackInputStream in,
+  private static synchronized native long
+  newLibxsltStylesheet (InputStream in,
+                        byte[] detectBuffer,
                         String inSystemId,
                         String inPublicId,
                         JavaContext javaContext,
@@ -146,15 +174,15 @@ public class LibxsltStylesheet
                         outputProperties);
 
   private static synchronized native void 
-  freeLibxsltStylesheet (int handle);
+  freeLibxsltStylesheet (long handle);
 
   private static synchronized native void 
-  libxsltTransform (int nativeStylesheetHandle,
-                    PushbackInputStream in,
+  libxsltTransform (long nativeStylesheetHandle,
+                    GnomeDocument document,
                     String inSystemId,
                     String inPublicId,
                     OutputStream out,
-                    String[]parameterArray,
+                    String[] parameterArray,
                     JavaContext javaContext)
     throws TransformerException;
 
@@ -165,4 +193,5 @@ public class LibxsltStylesheet
   {
     System.loadLibrary ("xmlj");
   }
+
 }

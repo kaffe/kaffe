@@ -37,7 +37,8 @@ libxmlj_la_SOURCES = \
 	xmlj_sax.h \
 	xmlj_transform.c \
 	xmlj_util.c \
-	xmlj_util.h
+	xmlj_util.h \
+	xmlj_xpath.c
 
 libxmlj_la_LDFLAGS = \
         $(KLIBFLAGS) \

@@ -92,7 +92,7 @@ public class NamespaceSupport
     /**
      * An empty enumeration.
      */
-    private final static Enumeration EMPTY_ENUMERATION =
+    final static Enumeration EMPTY_ENUMERATION =
 	new Vector().elements();
 
 

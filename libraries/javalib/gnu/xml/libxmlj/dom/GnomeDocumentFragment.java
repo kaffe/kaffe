@@ -38,9 +38,9 @@ extends GnomeNode
 implements DocumentFragment
 {
 
-  GnomeDocumentFragment(int id)
-  {
-    super(id);
-  }
+  GnomeDocumentFragment (long id)
+    {
+      super (id);
+    }
 
 }

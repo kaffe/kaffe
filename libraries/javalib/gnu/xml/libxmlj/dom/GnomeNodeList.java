@@ -41,15 +41,15 @@ implements NodeList
   /**
    * The node id.
    */
-  private final int id;
+  private final long id;
 
-  GnomeNodeList(int id)
-  {
-    this.id = id;
-  }
+  GnomeNodeList (long id)
+    {
+      this.id = id;
+    }
 
-  public native Node item(int index);
+  public native Node item (int index);
 
-  public native int getLength();
+  public native int getLength ();
   
 }

@@ -42,31 +42,31 @@ implements NamedNodeMap
   /**
    * The node id.
    */
-  private final int id;
+  private final long id;
 
-  GnomeNamedNodeMap(int id)
-  {
-    this.id = id;
-  }
+  GnomeNamedNodeMap (long id)
+    {
+      this.id = id;
+    }
 
-  public native Node getNamedItem(String name);
+  public native Node getNamedItem (String name);
 
-  public native Node setNamedItem(Node arg)
+  public native Node setNamedItem (Node arg)
     throws DOMException;
 
-  public native Node removeNamedItem(String name)
+  public native Node removeNamedItem (String name)
     throws DOMException;
 
-  public native Node item(int index);
+  public native Node item (int index);
   
-  public native int getLength();
+  public native int getLength ();
 
-  public native Node getNamedItemNS(String namespaceURI, String localName);
+  public native Node getNamedItemNS (String namespaceURI, String localName);
 
-  public native Node setNamedItemNS(Node arg)
+  public native Node setNamedItemNS (Node arg)
     throws DOMException;
 
-  public native Node removeNamedItemNS(String namespaceURI, String
-      localName);
+  public native Node removeNamedItemNS (String namespaceURI,
+                                        String localName);
   
 }

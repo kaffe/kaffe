@@ -42,80 +42,86 @@ extends GnomeNode
 implements Element
 {
 
-  GnomeElement(int id)
-  {
-    super(id);
-  }
-
-  public String getTagName()
-  {
-    return getNodeName();
-  }
-
-  public String getAttribute(String name)
-  {
-    return getAttributeNS(null, name);
-  }
-
-  public void setAttribute(String name, String value)
-    throws DOMException
-  {
-    setAttributeNS(null, name, value);
-  }
-
-  public void removeAttribute(String name)
-    throws DOMException
-  {
-    removeAttributeNS(null, name);
-  }
-
-  public Attr getAttributeNode(String name)
-  {
-    return getAttributeNodeNS(null, name);
-  }
-
-  public Attr setAttributeNode(Attr newAttr)
-    throws DOMException
-  {
-    return setAttributeNodeNS(newAttr);
-  }
-
-  public native Attr removeAttributeNode(Attr oldAttr)
-    throws DOMException;
-
-  public NodeList getElementsByTagName(String name)
-  {
-    return new MatchingNodeList(id, null, name, false);
-  }
-
-  public native String getAttributeNS(String namespaceURI, String localName);
-
-  public native void setAttributeNS(String namespaceURI, String
-      qualifiedName, String value)
-    throws DOMException;
-
-  public native void removeAttributeNS(String namespaceURI, String
-      localName)
-    throws DOMException;
-
-  public native Attr getAttributeNodeNS(String namespaceURI, String
-      localName);
-
-  public native Attr setAttributeNodeNS(Attr newAttr)
-    throws DOMException;
-
-  public NodeList getElementsByTagNameNS(String namespaceURI, String
-      localName)
-  {
-    return new MatchingNodeList(id, namespaceURI, localName, true);
-  }
+  GnomeElement (long id)
+    {
+      super (id);
+    }
   
-  public boolean hasAttribute(String name)
-  {
-    return hasAttributeNS(null, name);
-  }
+  public String getTagName ()
+    {
+      return getNodeName ();
+    }
 
-  public native boolean hasAttributeNS(String namespaceURI, String
+  public String getAttribute (String name)
+    {
+      return getAttributeNS (null, name);
+    }
+
+  public void setAttribute (String name, String value)
+    throws DOMException
+    {
+      setAttributeNS (null, name, value);
+    }
+  
+  public void removeAttribute (String name)
+    throws DOMException
+    {
+      removeAttributeNS (null, name);
+    }
+
+  public Attr getAttributeNode (String name)
+    {
+      return getAttributeNodeNS (null, name);
+    }
+  
+  public Attr setAttributeNode (Attr newAttr)
+    throws DOMException
+    {
+      return setAttributeNodeNS (newAttr);
+    }
+
+  public native Attr removeAttributeNode (Attr oldAttr)
+    throws DOMException;
+
+  public NodeList getElementsByTagName (String name)
+    {
+      return new MatchingNodeList (id, null, name, false);
+    }
+  
+  public native String getAttributeNS (String namespaceURI, String localName);
+  
+  public native void setAttributeNS (String namespaceURI, String
+                                     qualifiedName, String value)
+    throws DOMException;
+
+  public void removeAttributeNS (String namespaceURI, String localName)
+    throws DOMException
+    {
+      Attr attr = getAttributeNodeNS (namespaceURI, localName);
+      if (attr != null)
+        {
+          removeAttributeNode (attr);
+        }
+    }
+
+  public native Attr getAttributeNodeNS (String namespaceURI,
+                                         String localName);
+
+  public native Attr setAttributeNodeNS (Attr newAttr)
+    throws DOMException;
+
+  public NodeList getElementsByTagNameNS (String namespaceURI,
+                                          String localName)
+    {
+      return new MatchingNodeList (id, namespaceURI, localName, true);
+    }
+  
+  public boolean hasAttribute (String name)
+    {
+      return hasAttributeNS (null, name);
+    }
+
+  public native boolean hasAttributeNS (String namespaceURI, String
       localName);
 
   // DOM Level 3 methods
@@ -128,7 +134,7 @@ implements Element
 
   public void setIdAttribute (String name, boolean isId)
     {
-      // TODO
+      setIdAttributeNS (null, name, isId);
     }
 
   public void setIdAttributeNode (Attr isAddr, boolean isId)
@@ -141,4 +147,5 @@ implements Element
     {
       // TODO
     }
+
 }

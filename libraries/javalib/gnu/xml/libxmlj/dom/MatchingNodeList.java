@@ -41,7 +41,7 @@ implements NodeList
   /**
    * The parent node.
    */
-  private final int id;
+  private final long id;
 
   /**
    * The namespace URI to search for.
@@ -65,7 +65,7 @@ implements NodeList
    * @param name the element name to match
    * @param ns whether to search using namespaces
    */
-  MatchingNodeList(int id, String uri, String name, boolean ns)
+  MatchingNodeList(long id, String uri, String name, boolean ns)
   {
     this.id = id;
     this.uri = uri;

@@ -95,7 +95,7 @@ public abstract class TransformerFactory {
 	    try {
 		return (TransformerFactory) ClassStuff.createFactory (
 			"javax.xml.transform.TransformerFactory",
-			"gnu.xml.libxmlj.transform.TransformerFactoryImpl"
+			"gnu.xml.libxmlj.transform.GnomeTransformerFactory"
 			// "gnu.xml.util.SAXNullTransformerFactory"
 			// "org.apache.xalan.processor.TransformerFactoryImpl"
 			);

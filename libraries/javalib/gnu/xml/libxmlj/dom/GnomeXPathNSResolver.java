@@ -1,5 +1,5 @@
 /*
- * GnomeComment.java
+ * GnomeXPathNSResolver.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -26,21 +26,29 @@
  */
 package gnu.xml.libxmlj.dom;
 
-import org.w3c.dom.Comment;
+import org.w3c.dom.xpath.XPathNSResolver;
 
 /**
- * A DOM comment node implemented in libxml2.
+ * XPath namespace URI resolver implemented in libxml2.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class GnomeComment
-extends GnomeCharacterData
-implements Comment
+class GnomeXPathNSResolver
+implements XPathNSResolver
 {
 
-  GnomeComment (long id)
+  GnomeDocument doc;
+
+  GnomeXPathNSResolver (GnomeDocument doc)
     {
-      super (id);
+      this.doc = doc;
     }
+
+  public String lookupNamespaceURI (String prefix)
+    {
+      return lookupNamespaceURI (doc, prefix);
+    }
+
+  private native String lookupNamespaceURI (GnomeDocument doc, String prefix);
 
 }

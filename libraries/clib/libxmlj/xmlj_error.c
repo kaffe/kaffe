@@ -37,7 +37,10 @@
  */
 
 #include "xmlj_error.h"
+#include "xmlj_io.h"
+#include "xmlj_util.h"
 
+/*
 static void xmljErrorSAXFunc (void *ctx, const char *msg, ...);
 static void xmljFatalErrorSAXFunc (void *ctx, const char *msg, ...);
 static void xmljWarningSAXFunc (void *ctx, const char *msg, ...);
@@ -202,7 +205,6 @@ xmljSetDocumentLocator (void *ctx, xmlSAXLocatorPtr loc)
   loc->getSystemId = xmljGetSystemId;
 }
 
-
 void
 xmljInitErrorHandling (xmlSAXHandler * saxHandler)
 {
@@ -331,29 +333,54 @@ xmljFreeSaxErrorContext (SaxErrorContext * errorContext)
   }
   free (errorContext);
 }
-
+*/
 
 void
 xmljXsltErrorFunc (void *ctx, const char *msg, ...)
 {
   if (NULL != ctx)
     {
-      SaxErrorContext *errorContext = ((SaxErrorContext *) ctx);
-      JNIEnv *env = errorContext->env;
-
-      if (NULL != errorContext && !(*env)->ExceptionOccurred (env))
-	{
-	  char buffer[2048] = "[Error message too long]";
-	  va_list va;
-	  va_start (va, msg);
-	  vsnprintf (buffer, sizeof buffer, msg, va);
-	  va_end (va);
-
-	  (*env)->CallVoidMethod (env,
-				  errorContext->saxErrorAdapter,
-				  errorContext->xsltGenericErrorMethodID,
-				  (*env)->NewStringUTF (env, buffer));
-	}
+      SAXParseContext *sax = ((SAXParseContext *) ctx);
+      
+      if (NULL != sax)
+        {
+          JNIEnv *env = sax->env;
+          
+          if (!(*env)->ExceptionOccurred (env))
+            {
+              jobject target = sax->obj;
+              xmlChar *x_msg;
+              jstring j_msg;
+              va_list args;
+              
+              if (sax->error == NULL)
+                {
+                  sax->error =
+                    xmljGetMethodID (env,
+                                     target,
+                                     "error",
+                                 "(Ljava/lang/String;IILjava/lang/String;Ljava/lang/String;)V");
+                  if (sax->error == NULL)
+                    {
+                      return;
+                    }
+                }
+              
+              va_start (args, msg);
+              x_msg = (msg == NULL) ? NULL : xmlCharStrdup (msg);
+              va_end (args);
+              j_msg = xmljNewString (env, x_msg);
+              
+              (*env)->CallVoidMethod (env,
+                                      target,
+                                      sax->error,
+                                      j_msg,
+                                      -1,
+                                      -1,
+                                      NULL,
+                                      NULL);
+            }
+        }
     }
   else
     {

@@ -42,6 +42,7 @@
 #include <jni.h>  
 #include <libxml/xmlIO.h>
 
+/*
 typedef struct SaxErrorContext_ 
 {
   JNIEnv * env;
@@ -73,6 +74,7 @@ SaxErrorContext * xmljCreateSaxErrorContext (JNIEnv * env,
 void xmljFreeSaxErrorContext (SaxErrorContext * errorContext);
 
 void xmljInitErrorHandling (xmlSAXHandler * saxHandler);
+*/
 
 void xmljXsltErrorFunc (void *ctx, const char *msg, ...);
 

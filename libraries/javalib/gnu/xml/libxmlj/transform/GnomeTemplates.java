@@ -38,43 +38,62 @@
 
 package gnu.xml.libxmlj.transform;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.PushbackInputStream;
+import java.util.Properties;
+import java.util.Map;
 
+import javax.xml.transform.URIResolver;
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import javax.xml.transform.stream.StreamSource;
 
-public class SourceWrapper
+/**
+ *  An implementation of <code>javax.xml.transform.Templates</code>
+ *  producing <code>Transformer</code> objects which use
+ *  <code>libxslt</code> for transformation.
+ *
+ *  @author Julian Scheid
+ */
+public class GnomeTemplates
+  implements Templates
 {
-  private Source source;
+  
+  private Properties outputProperties;
+  private URIResolver uriResolver;
+  private ErrorListener errorListener;
+  private LibxsltStylesheet stylesheet;
+  private Map attributes;
 
-  public SourceWrapper (Source source)
+  GnomeTemplates (URIResolver uriResolver,
+                  ErrorListener errorListener,
+                  Source xsltSource,
+                  Map attributes)
+    throws TransformerConfigurationException
   {
-    this.source = source;
+    this.uriResolver = uriResolver;
+    this.errorListener = errorListener;
+    this.attributes = attributes;
+    outputProperties = new Properties ();
+    stylesheet =
+      new LibxsltStylesheet (xsltSource,
+			     new JavaContext (uriResolver, errorListener));
+  } 
+
+  public Transformer newTransformer () 
+    throws TransformerConfigurationException
+  {
+    return new GnomeTransformer (uriResolver,
+                                 errorListener,
+                                 stylesheet, attributes);
   }
 
-  public PushbackInputStream getInputStream () 
-    throws TransformerException
+  public Properties getOutputProperties ()
   {
-    return IOToolkit.getSourceInputStream (source);
+    return new Properties (outputProperties);
   }
-
-  public String getFilename ()
-  {
-    return new File (source.getSystemId ()).getName ();
-  }
-
-  public String getDirectory ()
-  {
-    return new File (source.getSystemId ()).
-      getParentFile ().getAbsolutePath ();
-  }
-
-  public String getSystemId ()
-  {
-    return source.getSystemId ();
-  }
+  
 }

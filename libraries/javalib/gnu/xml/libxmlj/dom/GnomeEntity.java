@@ -38,16 +38,16 @@ extends GnomeNode
 implements Entity
 {
 
-  GnomeEntity(int id)
-  {
-    super(id);
-  }
+  GnomeEntity (long id)
+    {
+      super (id);
+    }
 
-  public native String getPublicId();
+  public native String getPublicId ();
 
-  public native String getSystemId();
+  public native String getSystemId ();
 
-  public native String getNotationName();
+  public native String getNotationName ();
 
   // DOM Level 3 methods
   

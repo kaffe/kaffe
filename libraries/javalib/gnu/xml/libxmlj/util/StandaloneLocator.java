@@ -26,6 +26,7 @@
  */
 package gnu.xml.libxmlj.util;
 
+import javax.xml.transform.SourceLocator;
 import org.xml.sax.Locator;
 
 /**
@@ -34,7 +35,7 @@ import org.xml.sax.Locator;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public final class StandaloneLocator
-implements Locator
+implements Locator, SourceLocator
 {
 
   private final int lineNumber;

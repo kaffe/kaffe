@@ -1,5 +1,5 @@
 /*
- * GnomeComment.java
+ * GnomeXPathExpression.java
  * Copyright (C) 2004 The Free Software Foundation
  * 
  * This file is part of GNU JAXP, a library.
@@ -26,21 +26,54 @@
  */
 package gnu.xml.libxmlj.dom;
 
-import org.w3c.dom.Comment;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Node;
+import org.w3c.dom.xpath.XPathException;
+import org.w3c.dom.xpath.XPathExpression;
+import org.w3c.dom.xpath.XPathNSResolver;
 
 /**
- * A DOM comment node implemented in libxml2.
+ * A compiled XPath expression implemented in libxml2.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class GnomeComment
-extends GnomeCharacterData
-implements Comment
+class GnomeXPathExpression
+implements XPathExpression
 {
 
-  GnomeComment (long id)
+  /**
+   * xmlXPathCompExprPtr
+   */
+  final long expr;
+
+  GnomeXPathExpression (GnomeDocument doc, String expression,
+                        XPathNSResolver resolver)
     {
-      super (id);
+      expr = init (expression);
+      // TODO resolver
     }
 
+  protected void finalize ()
+    {
+      free (expr);
+    }
+
+  private native long init (String expression);
+
+  private native void free (long expr);
+
+  public Object evaluate (Node contextNode,
+                          short type,
+                          Object result)
+    throws XPathException, DOMException
+    {
+      return evaluate (expr, contextNode, type, result);
+    }
+  
+  private native Object evaluate (long expr,
+                                  Node contextNode,
+                                  short type,
+                                  Object result)
+    throws XPathException, DOMException;
+    
 }

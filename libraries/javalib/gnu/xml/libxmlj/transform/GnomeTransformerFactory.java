@@ -38,6 +38,8 @@
 
 package gnu.xml.libxmlj.transform;
 
+import java.io.InputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,6 +54,8 @@ import javax.xml.transform.URIResolver;
 
 import javax.xml.transform.stream.StreamSource;
 
+import gnu.xml.libxmlj.util.XMLJ;
+
 /**
  *  An implementation of <code>TransformerFactory</code> producing
  *  <code>Transformer</code> objects which use <code>libxslt</code>
@@ -59,31 +63,19 @@ import javax.xml.transform.stream.StreamSource;
  *
  *  @author Julian Scheid
  */
-public class TransformerFactoryImpl
+public class GnomeTransformerFactory
   extends TransformerFactory
 {
 
   /**
-   *  Libxmlj's default ErrorListener.
-   */
-  private static final ErrorListener defaultErrorListener 
-    = new DefaultErrorListenerImpl ();
-
-  /**
-   *  Libxmlj's default URIResolver.
-   */
-  private static final URIResolver defaultURIResolver
-    = new DefaultURIResolverImpl ();
-
-  /**
    *  URIResolver set by user, or default implementation.
    */
-  private URIResolver uriResolver = defaultURIResolver;
+  private URIResolver uriResolver;
 
   /**
    *  ErrorListener set by user, or default implementation.
    */
-  private ErrorListener errorListener = defaultErrorListener;
+  private ErrorListener errorListener;
 
   /**
    *  Attributes set by user.
@@ -103,20 +95,31 @@ public class TransformerFactoryImpl
 					 String charset) 
     throws TransformerConfigurationException
   {
-    String stylesheetURI
-      = getAssociatedStylesheet (new SourceWrapper (source), media, title,
-				 charset);
-    return new StreamSource (stylesheetURI);
+    try
+      {
+        InputStream in = XMLJ.getInputStream (source);
+        String stylesheetURI
+          = getAssociatedStylesheet (in,
+                                     source.getSystemId (),
+                                     media, title, charset);
+        StreamSource ret = new StreamSource (stylesheetURI);
+        ret.setInputStream (in);
+        return ret;
+      }
+    catch (IOException e)
+      {
+        throw new TransformerConfigurationException (e);
+      }
   }
 
-  public void setAttribute (String name, Object value)
+  public synchronized void setAttribute (String name, Object value)
   {
     this.attributes.put (name, value);
   } 
 
-  public Object getAttribute (String name)
+  public synchronized Object getAttribute (String name)
   {
-    return this.attributes.get (name);
+    return attributes.get (name);
   }
   
   public void setErrorListener (ErrorListener errorListener)
@@ -126,7 +129,7 @@ public class TransformerFactoryImpl
 
   public ErrorListener getErrorListener ()
   {
-    return this.errorListener;
+    return errorListener;
   }
   
   public void setURIResolver (URIResolver uriResolver)
@@ -136,7 +139,7 @@ public class TransformerFactoryImpl
 
   public URIResolver getURIResolver ()
   {
-    return this.uriResolver;
+    return uriResolver;
   }
   
   public boolean getFeature (String name)
@@ -162,26 +165,27 @@ public class TransformerFactoryImpl
   public Transformer newTransformer (Source source)
     throws TransformerConfigurationException
   {
-    return new TransformerImpl (uriResolver,
-                                errorListener,
-                                source, 
-                                attributes);
+    return new GnomeTransformer (uriResolver,
+                                 errorListener,
+                                 source, 
+                                 attributes);
   }
 
   /**
-   *  Returns a new instance of class {@link Transformer} for
+   *  Returns a new instance of class {@link Templates} for
    *  the given souce.
    */
   public Templates newTemplates (Source source) 
     throws TransformerConfigurationException
   {
-    return new TemplatesImpl (uriResolver,
-                              errorListener, 
-                              source,
-                              attributes);
+    return new GnomeTemplates (uriResolver,
+                               errorListener, 
+                               source,
+                               attributes);
   }
 
-  private static native String getAssociatedStylesheet (SourceWrapper source, 
+  private static native String getAssociatedStylesheet (InputStream in,
+                                                        String systemId, 
                                                         String media,
                                                         String title,
                                                         String charset) 

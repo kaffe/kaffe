@@ -15,6 +15,107 @@
 
 2004-06-03  Dalibor Topic  <robilad@kaffe.org>
 
+        * libraries/clib/libxmlj/Makefile.am:
+	(libxmlj_la_SOURCES) Added xmlj_xpath.c.
+
+        libraries/clib/libxmlj/Makefile.in,
+        libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in:
+	Regenerated.
+
+        * libraries/javalib/profiles/allatonce/all.files,
+        libraries/javalib/profiles/default/jaxp.files,
+        libraries/javalib/profiles/default/xml.files:
+	Updated.
+
+        * libraries/clib/libxmlj/xmlj_dom.c,
+        libraries/clib/libxmlj/xmlj_dom.h,
+        libraries/clib/libxmlj/xmlj_error.c,
+        libraries/clib/libxmlj/xmlj_error.h,
+        libraries/clib/libxmlj/xmlj_io.c,
+        libraries/clib/libxmlj/xmlj_io.h,
+        libraries/clib/libxmlj/xmlj_node.c,
+        libraries/clib/libxmlj/xmlj_sax.c,
+        libraries/clib/libxmlj/xmlj_transform.c,
+        libraries/clib/libxmlj/xmlj_xpath.c,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeAttr.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeCDATASection.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeCharacterData.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeComment.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeDocument.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeDocumentBuilder.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeDocumentBuilderFactory.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeDocumentFragment.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeDocumentType.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeElement.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeEntity.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeEntityReference.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeNamedNodeMap.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeNode.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeNodeList.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeNotation.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeProcessingInstruction.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeText.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeXPathExpression.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeXPathNSResolver.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/GnomeXPathResult.java,
+        libraries/javalib/gnu/xml/libxmlj/dom/MatchingNodeList.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/DefaultErrorListenerImpl.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/DefaultURIResolverImpl.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/GnomeTemplates.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/GnomeTransformer.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/GnomeTransformerFactory.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/IOToolkit.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/JavaContext.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/LibxmlDocument.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/LibxsltStylesheet.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/SourceLocatorImpl.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/SourceWrapper.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/TemplatesImpl.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/TransformTest.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/TransformerFactoryImpl.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/TransformerImpl.java,
+        libraries/javalib/gnu/xml/libxmlj/transform/package.html,
+        libraries/javalib/gnu/xml/libxmlj/util/NamedInputStream.java,
+        libraries/javalib/gnu/xml/libxmlj/util/StandaloneLocator.java,
+        libraries/javalib/gnu/xml/libxmlj/util/XMLJ.java,
+        libraries/javalib/javax/xml/transform/TransformerFactory.java,
+        libraries/javalib/org/w3c/dom/xpath/XPathEvaluator.java,
+        libraries/javalib/org/w3c/dom/xpath/XPathException.java,
+        libraries/javalib/org/w3c/dom/xpath/XPathExpression.java,
+        libraries/javalib/org/w3c/dom/xpath/XPathNSResolver.java,
+        libraries/javalib/org/w3c/dom/xpath/XPathNamespace.java,
+        libraries/javalib/org/w3c/dom/xpath/XPathResult.java,
+        libraries/javalib/org/xml/sax/helpers/NamespaceSupport.java,
+	Resynced with GNU JAXP.
+
+	2004-06-03  Chris Burdess <dog@gnu.org>
+
+        * all: Use longs for native pointers.
+        * dom: Added dom.xpath interfaces.
+
+	2004-06-02  Chris Burdess <dog@gnu.org>
+
+        * GnomeNode.java et al, xmlj_dom.c: Implementation of some DOM Level 3
+            methods.
+
+	2004-06-01  Chris Burdess <dog@gnu.org>
+
+        * GnomeNode.java et al: Applied Dalibor's #3080 patch for missing
+            imports.
+
+	2004-05-27  Chris Burdess <dog@gnu.org>
+
+        * GnomeXMLReader.java, GnomeDocumentBuilder.java, JavaContext.java:
+            Correct handling of zero-length documents.
+
+	2004-05-24  Chris Burdess <dog@gnu.org>
+
+        * all: Refactoring for Gnome* naming scheme. All modules now use
+            common parsing framework.
+
+2004-06-03  Dalibor Topic  <robilad@kaffe.org>
+
         * m4/acx_pthread.m4:
 	New file, taken from ac-archive.sf.net.
 

@@ -149,6 +149,12 @@ org/w3c/dom/ls/LSProgressEvent.java
 org/w3c/dom/ls/LSResourceResolver.java
 org/w3c/dom/ls/LSSerializer.java
 org/w3c/dom/ls/LSSerializerFilter.java
+org/w3c/dom/xpath/XPathEvaluator.java
+org/w3c/dom/xpath/XPathException.java
+org/w3c/dom/xpath/XPathExpression.java
+org/w3c/dom/xpath/XPathNSResolver.java
+org/w3c/dom/xpath/XPathNamespace.java
+org/w3c/dom/xpath/XPathResult.java
 org/xml/sax/ext/Attributes2.java
 org/xml/sax/ext/Attributes2Impl.java
 org/xml/sax/ext/DeclHandler.java

@@ -39,40 +39,44 @@ public class GnomeDocumentBuilderFactory
 extends DocumentBuilderFactory
 {
 
-  public GnomeDocumentBuilderFactory()
-  {
-    setNamespaceAware(true);
-    setValidating(true);
-  }
+  public GnomeDocumentBuilderFactory ()
+    {
+      setNamespaceAware (true);
+      setValidating (true);
+    }
 
-  public Object getAttribute(String name)
-  {
-    // TODO
-    return null;
-  }
+  public Object getAttribute (String name)
+    {
+      // TODO
+      return null;
+    }
 
-  public DocumentBuilder newDocumentBuilder()
+  public DocumentBuilder newDocumentBuilder ()
     throws ParserConfigurationException
-  {
-    if (!isNamespaceAware())
-      throw new ParserConfigurationException(
-          "Parser must be namespace-aware");
-    if (isIgnoringComments())
-      throw new ParserConfigurationException(
-          "Ignoring comments not supported");
-    if (isIgnoringElementContentWhitespace())
-      throw new ParserConfigurationException(
-          "Ignoring element content whitespace not supported");
-    return new GnomeDocumentBuilder(isValidating(),
-        isCoalescing(),
-        isExpandEntityReferences());
-  }
+    {
+      if (!isNamespaceAware ())
+        {
+          String msg = "Parser must be namespace-aware";
+          throw new ParserConfigurationException (msg);
+        }
+      if (isIgnoringComments ())
+        {
+          String msg = "Ignoring comments not supported";
+          throw new ParserConfigurationException (msg);
+        }
+      if (isIgnoringElementContentWhitespace ())
+        {
+          String msg = "Ignoring element content whitespace not supported";
+          throw new ParserConfigurationException (msg);
+        }
+      return new GnomeDocumentBuilder (isValidating (),
+                                       isCoalescing (),
+                                       isExpandEntityReferences ());
+    }
 
-  public void setAttribute(String name, Object value)
-  {
-    // TODO
-  }
-
-  
+  public void setAttribute (String name, Object value)
+    {
+      // TODO
+    }
   
 }

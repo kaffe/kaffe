@@ -82,11 +82,20 @@ Java_gnu_xml_libxmlj_dom_GnomeAttr_setValue (JNIEnv * env,
   xmlNodeSetContent (node, s_value);
 }
 
+JNIEXPORT jboolean JNICALL
+Java_gnu_xml_libxmlj_dom_GnomeAttr_isId (JNIEnv * env, jobject self)
+{
+  xmlAttrPtr attr;
+
+  attr = (xmlAttrPtr) xmljGetNodeID (env, self);
+  return (attr->atype == XML_ATTRIBUTE_ID);
+}
+
 /* -- GnomeDocument -- */
 
 JNIEXPORT void JNICALL
 Java_gnu_xml_libxmlj_dom_GnomeDocument_free (JNIEnv * env,
-                                             jobject self, jint id)
+                                             jobject self, jlong id)
 {
   xmlDocPtr doc;
 
@@ -216,8 +225,22 @@ Java_gnu_xml_libxmlj_dom_GnomeDocument_importNode (JNIEnv * env,
                                                    jobject importedNode,
                                                    jboolean deep)
 {
-  /* TODO */
-  return NULL;
+  xmlDocPtr doc;
+  xmlNodePtr node;
+  xmlNodePtr ret;
+
+  doc = (xmlDocPtr) xmljGetNodeID (env, self);
+  node = xmljGetNodeID (env, importedNode);
+  ret = xmlDocCopyNode (node, doc, deep);
+  if (ret == NULL)
+    {
+      xmljThrowDOMException (env, 9, NULL); /* NOT_SUPPORTED_ERR */
+      return NULL;
+    }
+  else
+    {
+      return xmljGetNodeInstance (env, ret);
+    }
 }
 
 JNIEXPORT jobject JNICALL
@@ -288,12 +311,129 @@ Java_gnu_xml_libxmlj_dom_GnomeDocument_getElementById (JNIEnv * env,
   return NULL;
 }
 
+JNIEXPORT jstring JNICALL
+Java_gnu_xml_libxmlj_dom_GnomeDocument_getInputEncoding (JNIEnv * env,
+                                                         jobject self)
+{
+  xmlDocPtr doc;
+
+  doc = (xmlDocPtr) xmljGetNodeID (env, self);
+  return (doc->encoding == NULL) ? NULL : xmljNewString (env, doc->encoding);
+}
+
+JNIEXPORT jboolean JNICALL
+Java_gnu_xml_libxmlj_dom_GnomeDocument_getXmlStandalone (JNIEnv * env,
+                                                         jobject self)
+{
+  xmlDocPtr doc;
+
+  doc = (xmlDocPtr) xmljGetNodeID (env, self);
+  return doc->standalone;
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_xml_libxmlj_dom_GnomeDocument_setXmlStandalone (JNIEnv * env,
+                                                         jobject self,
+                                                         jboolean xmlStandalone)
+{
+  xmlDocPtr doc;
+
+  doc = (xmlDocPtr) xmljGetNodeID (env, self);
+  doc->standalone = xmlStandalone;
+}
+
+JNIEXPORT jstring JNICALL
+Java_gnu_xml_libxmlj_dom_GnomeDocument_getXmlVersion (JNIEnv * env,
+                                                      jobject self)
+{
+  xmlDocPtr doc;
+
+  doc = (xmlDocPtr) xmljGetNodeID (env, self);
+  return (doc->version == NULL) ? NULL : xmljNewString (env, doc->version);
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_xml_libxmlj_dom_GnomeDocument_setXmlVersion (JNIEnv * env,
+                                                      jobject self,
+                                                      jstring xmlVersion)
+{
+  xmlDocPtr doc;
+
+  doc = (xmlDocPtr) xmljGetNodeID (env, self);
+  if (xmlVersion == NULL)
+    {
+      doc->version = NULL;
+    }
+  else
+    {
+      doc->version = xmljGetStringChars (env, xmlVersion);
+    }
+}
+
+JNIEXPORT jstring JNICALL
+Java_gnu_xml_libxmlj_dom_GnomeDocument_getDocumentURI (JNIEnv * env,
+                                                       jobject self)
+{
+  xmlDocPtr doc;
+
+  doc = (xmlDocPtr) xmljGetNodeID (env, self);
+  return (doc->name == NULL) ? NULL :
+    xmljNewString (env, (const xmlChar *) doc->name);
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_xml_libxmlj_dom_GnomeDocument_setDocumentURI (JNIEnv * env,
+                                                       jobject self,
+                                                       jstring documentURI)
+{
+  xmlDocPtr doc;
+
+  doc = (xmlDocPtr) xmljGetNodeID (env, self);
+  if (documentURI == NULL)
+    {
+      doc->name = NULL;
+    }
+  else
+    {
+      doc->name = (char *) xmljGetStringChars (env, documentURI);
+    }
+}
+
+JNIEXPORT jobject JNICALL
+Java_gnu_xml_libxmlj_dom_GnomeDocument_renameNode (JNIEnv * env,
+                                                   jobject self,
+                                                   jobject n,
+                                                   jstring namespaceURI,
+                                                   jstring qualifiedName)
+{
+  xmlNodePtr node;
+  const xmlChar *href;
+  const xmlChar *prefix;
+
+  node = xmljGetNodeID (env, n);
+  xmlNodeSetName (node, xmljGetStringChars (env, qualifiedName));
+  href = xmljGetStringChars (env, namespaceURI);
+  prefix = xmlSplitQName3 (node->name, NULL);
+  if (node->ns == NULL)
+    {
+      node->ns = xmlNewNs (node, href, prefix);
+    }
+  else
+    {
+      node->ns->href = href;
+      node->ns->prefix = prefix;
+    }
+  return n;
+}
+
 /* -- GnomeDocumentBuilder -- */
 
 JNIEXPORT jobject JNICALL
 Java_gnu_xml_libxmlj_dom_GnomeDocumentBuilder_parseStream (JNIEnv * env,
                                                            jobject self,
                                                            jobject in,
+                                                           jbyteArray
+                                                           detectBuffer,
                                                            jstring publicId,
                                                            jstring systemId,
                                                            jboolean validate,
@@ -310,6 +450,7 @@ Java_gnu_xml_libxmlj_dom_GnomeDocumentBuilder_parseStream (JNIEnv * env,
   doc = xmljParseDocument(env,
                           self,
                           in,
+                          detectBuffer,
                           publicId,
                           systemId,
                           validate,
@@ -321,8 +462,8 @@ Java_gnu_xml_libxmlj_dom_GnomeDocumentBuilder_parseStream (JNIEnv * env,
                           errorHandler,
                           0,
                           0,
-                          0);
-  return createDocument (env, self, doc);
+                          1);
+  return xmljCreateDocument (env, self, doc);
 }
 
 JNIEXPORT jobject JNICALL
@@ -335,14 +476,73 @@ Java_gnu_xml_libxmlj_dom_GnomeDocumentBuilder_createDocument (JNIEnv * env,
                                                               jobject doctype)
 {
   xmlDocPtr doc;
+  xmlNodePtr root;
+  xmlNsPtr ns;
+  const xmlChar *href;
+  const xmlChar *prefix;
   const xmlChar *version;
 
+  /* Create the document node */
   version = xmlCharStrdup ("1.0");
   doc = xmlNewDoc (version);
-  /* TODO namespaceURI
-   * TODO qualifiedName
-   * TODO doctype */
-  return createDocument (env, self, doc);
+
+  /* doctype */
+  if (doctype != NULL)
+    {
+      jclass cls;
+      jmethodID method;
+      const xmlChar *name;
+      const xmlChar *publicId;
+      const xmlChar *systemId;
+      const xmlChar *internalSubset;
+      xmlDtdPtr dtd;
+
+      cls = (*env)->GetObjectClass (env, doctype);
+      method = (*env)->GetMethodID (env, cls, "getName",
+                                    "()Ljava/lang/String;");
+      name =
+        xmljGetStringChars (env, (*env)->CallObjectMethod (env,
+                                                           doctype,
+                                                           method));
+      method = (*env)->GetMethodID (env, cls, "getPublicId",
+                                    "()Ljava/lang/String;");
+      publicId =
+        xmljGetStringChars (env, (*env)->CallObjectMethod (env,
+                                                           doctype,
+                                                           method));
+      method = (*env)->GetMethodID (env, cls, "getSystemId",
+                                    "()Ljava/lang/String;");
+      systemId =
+        xmljGetStringChars (env, (*env)->CallObjectMethod (env,
+                                                           doctype,
+                                                           method));
+      method = (*env)->GetMethodID (env, cls, "getInternalSubset",
+                                    "()Ljava/lang/String;");
+      internalSubset =
+        xmljGetStringChars (env, (*env)->CallObjectMethod (env,
+                                                           doctype,
+                                                           method));
+      /* TODO notations */
+      /* TODO entities */
+      if (internalSubset == NULL)
+        {
+          dtd = xmlNewDtd (doc, name, publicId, systemId);
+        }
+      else
+        {
+          dtd = xmlCreateIntSubset (doc, name, publicId, systemId);
+          /* TODO parse internal subset? */
+        }
+    }
+  
+  /* Create the root element */
+  root = xmlNewNode (NULL, xmljGetStringChars (env, qualifiedName));
+  href = xmljGetStringChars (env, namespaceURI);
+  prefix = xmlSplitQName3 (root->name, NULL);
+  ns = xmlNewNs (root, href, prefix);
+  xmlDocSetRootElement (doc, root);
+  
+  return xmljCreateDocument (env, self, doc);
 }
 
 /* -- GnomeDocumentType -- */
@@ -404,8 +604,11 @@ Java_gnu_xml_libxmlj_dom_GnomeElement_removeAttributeNode (JNIEnv * env,
                                                            jobject self,
                                                            jobject oldAttr)
 {
-  /* TODO */
-  return NULL;
+  xmlNodePtr attr;
+
+  attr = xmljGetNodeID (env, oldAttr);
+  xmlUnlinkNode (attr);
+  return oldAttr;
 }
 
 JNIEXPORT jstring JNICALL
@@ -463,15 +666,6 @@ Java_gnu_xml_libxmlj_dom_GnomeElement_setAttributeNS (JNIEnv * env,
       ns = xmlNewNs (node, s_uri, s_prefix);
       xmlSetNsProp (node, ns, s_localName, s_value);
     }
-}
-
-JNIEXPORT void JNICALL
-Java_gnu_xml_libxmlj_dom_GnomeElement_removeAttributeNS (JNIEnv * env,
-                                                         jobject self,
-                                                         jstring uri,
-                                                         jstring localName)
-{
-  /* TODO */
 }
 
 JNIEXPORT jobject JNICALL
@@ -552,15 +746,19 @@ Java_gnu_xml_libxmlj_dom_GnomeElement_hasAttributeNS (JNIEnv * env,
 JNIEXPORT jstring JNICALL
 Java_gnu_xml_libxmlj_dom_GnomeEntity_getPublicId (JNIEnv * env, jobject self)
 {
-  /* TODO */
-  return NULL;
+  xmlEntityPtr entity;
+
+  entity = (xmlEntityPtr) xmljGetNodeID (env, self);
+  return xmljNewString (env, entity->ExternalID);
 }
 
 JNIEXPORT jstring JNICALL
 Java_gnu_xml_libxmlj_dom_GnomeEntity_getSystemId (JNIEnv * env, jobject self)
 {
-  /* TODO */
-  return NULL;
+  xmlEntityPtr entity;
+
+  entity = (xmlEntityPtr) xmljGetNodeID (env, self);
+  return xmljNewString (env, entity->SystemID);
 }
 
 JNIEXPORT jstring JNICALL
@@ -580,7 +778,7 @@ Java_gnu_xml_libxmlj_dom_GnomeNamedNodeMap_getNamedItem (JNIEnv * env,
 {
   xmlAttrPtr attr;
 
-  attr = getNamedItem (env, self, name);
+  attr = xmljGetNamedItem (env, self, name);
   return xmljGetNodeInstance (env, (xmlNodePtr) attr);
 }
 
@@ -611,7 +809,7 @@ Java_gnu_xml_libxmlj_dom_GnomeNamedNodeMap_removeNamedItem (JNIEnv * env,
 {
   xmlAttrPtr attr;
 
-  attr = getNamedItem (env, self, name);
+  attr = xmljGetNamedItem (env, self, name);
   if (attr == NULL)
     {
       xmljThrowDOMException (env, 8, NULL);	/* NOT_FOUND_ERR */
@@ -668,7 +866,7 @@ Java_gnu_xml_libxmlj_dom_GnomeNamedNodeMap_getNamedItemNS (JNIEnv * env,
 {
   xmlAttrPtr attr;
 
-  attr = getNamedItemNS (env, self, uri, localName);
+  attr = xmljGetNamedItemNS (env, self, uri, localName);
   return xmljGetNodeInstance (env, (xmlNodePtr) attr);
 }
 
@@ -690,7 +888,7 @@ Java_gnu_xml_libxmlj_dom_GnomeNamedNodeMap_removeNamedItemNS (JNIEnv * env,
 {
   xmlAttrPtr attr;
 
-  attr = getNamedItemNS (env, self, uri, localName);
+  attr = xmljGetNamedItemNS (env, self, uri, localName);
   if (attr == NULL)
     {
       xmljThrowDOMException (env, 8, NULL);	/* NOT_FOUND_ERR */
@@ -821,8 +1019,8 @@ Java_gnu_xml_libxmlj_dom_GnomeNode_getAttributes (JNIEnv * env, jobject self)
 
   /* Construct named node map object */
   cls = (*env)->FindClass (env, "gnu/xml/libxmlj/dom/GnomeNamedNodeMap");
-  method = (*env)->GetMethodID (env, cls, "<init>", "(I)V");
-  return (*env)->NewObject (env, cls, method, node);
+  method = (*env)->GetMethodID (env, cls, "<init>", "(J)V");
+  return (*env)->NewObject (env, cls, method, (jlong) node);
 }
 
 JNIEXPORT jobject JNICALL
@@ -1001,6 +1199,81 @@ Java_gnu_xml_libxmlj_dom_GnomeNode_hasAttributes (JNIEnv * env, jobject self)
 
   node = xmljGetNodeID (env, self);
   return (node->properties != NULL);
+}
+
+JNIEXPORT jstring JNICALL
+Java_gnu_xml_libxmlj_dom_GnomeNode_getBaseURI (JNIEnv * env, jobject self)
+{
+  xmlNodePtr node;
+  xmlChar *baseURI;
+  jstring ret;
+  
+  node = xmljGetNodeID (env, self);
+  baseURI = xmlNodeGetBase (node->doc, node);
+  ret = xmljNewString (env, (const xmlChar *) baseURI);
+  xmlFree (baseURI);
+  return ret;
+}
+
+JNIEXPORT jstring JNICALL
+Java_gnu_xml_libxmlj_dom_GnomeNode_lookupPrefix (JNIEnv * env, jobject self,
+                                                 jstring namespaceURI)
+{
+  xmlNodePtr node;
+  xmlNsPtr ns;
+  
+  node = xmljGetNodeID (env, self);
+  ns = xmlSearchNsByHref (node->doc, node, xmljGetStringChars (env,
+                                                               namespaceURI));
+  if (ns == NULL)
+    {
+      return NULL;
+    }
+  else
+    {
+      return xmljNewString (env, ns->prefix);
+    }
+}
+
+JNIEXPORT jboolean JNICALL
+Java_gnu_xml_libxmlj_dom_GnomeNode_isDefaultNamespace (JNIEnv * env,
+                                                       jobject self,
+                                                       jstring namespaceURI)
+{
+  xmlNodePtr node;
+  xmlNsPtr ns;
+  
+  node = xmljGetNodeID (env, self);
+  ns = xmlSearchNsByHref (node->doc, node, xmljGetStringChars (env,
+                                                               namespaceURI));
+  if (ns == NULL)
+    {
+      return 0;
+    }
+  else
+    {
+      return (ns->prefix == NULL || xmlStrlen (ns->prefix) == 0);
+    }
+}
+
+JNIEXPORT jstring JNICALL
+Java_gnu_xml_libxmlj_dom_GnomeNode_lookupNamespaceURI (JNIEnv * env,
+                                                       jobject self,
+                                                       jstring prefix)
+{
+  xmlNodePtr node;
+  xmlNsPtr ns;
+  
+  node = xmljGetNodeID (env, self);
+  ns = xmlSearchNs (node->doc, node, xmljGetStringChars (env, prefix));
+  if (ns == NULL)
+    {
+      return NULL;
+    }
+  else
+    {
+      return xmljNewString (env, ns->href);
+    }
 }
 
 /* -- GnomeNodeList -- */
@@ -1183,7 +1456,7 @@ Java_gnu_xml_libxmlj_dom_MatchingNodeList_getLength (JNIEnv * env,
  * Create GnomeDocument object from the given xmlDocPtr
  */
 jobject
-createDocument (JNIEnv * env, jobject self, xmlDocPtr doc)
+xmljCreateDocument (JNIEnv * env, jobject self, xmlDocPtr doc)
 {
   jclass cls;
   jfieldID field;
@@ -1203,111 +1476,8 @@ createDocument (JNIEnv * env, jobject self, xmlDocPtr doc)
   return ret;
 }
 
-/*
- * Get parser context from GnomeDocumentBuilder field
- */
-xmlParserCtxtPtr
-getContext (JNIEnv * env, jobject self)
-{
-  xmlParserCtxtPtr ret;
-  jclass cls;
-  jfieldID field;
-
-  cls = (*env)->GetObjectClass (env, self);
-  field = (*env)->GetFieldID (env, cls, "context", "I");
-  ret = (xmlParserCtxtPtr) (*env)->GetIntField (env, self, field);
-  return ret;
-}
-
-/* -- Callback functions -- */
-
-xmlParserInputPtr
-xmljDOMResolveEntity (void *ctx,
-                      const xmlChar * publicId, const xmlChar * systemId)
-{
-  /* TODO */
-  return defaultResolveEntity (ctx, publicId, systemId);
-}
-
-void
-xmljDOMWarning (void *ctx, const char *msg, ...)
-{
-  va_list args;
-
-  va_start (args, msg);
-  dispatchLogCallback (msg, "warning");
-  va_end (args);
-}
-
-void
-xmljDOMError (void *ctx, const char *msg, ...)
-{
-  va_list args;
-
-  va_start (args, msg);
-  dispatchLogCallback (msg, "error");
-  va_end (args);
-}
-
-void
-xmljDOMFatalError (void *ctx, const char *msg, ...)
-{
-  va_list args;
-
-  va_start (args, msg);
-  dispatchLogCallback (msg, "fatalError");
-  va_end (args);
-}
-
-void
-dispatchLogCallback (const char *msg, const char *methodName)
-{
-  xmlParserCtxtPtr context;
-  const xmlChar *errorMsg;
-  const xmlChar *systemId;
-
-  jclass cls;
-  jmethodID method;
-
-  jstring j_msg;
-  jstring j_publicId;
-  jstring j_systemId;
-  jint lineNumber;
-  jint columnNumber;
-
-  context = getContext (dom_cb_env, dom_cb_obj);
-
-  /* Get the logging method to invoke */
-  cls = (*dom_cb_env)->GetObjectClass (dom_cb_env, dom_cb_obj);
-  method = (*dom_cb_env)->GetMethodID (dom_cb_env, cls,
-                                       methodName,
-                                       "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II)V");
-  if (method == NULL)
-    return;
-
-  /* Prepare arguments */
-  if (context->lastError.message != NULL)
-    errorMsg = xmlCharStrdup (context->lastError.message);
-  else
-    errorMsg = (msg == NULL) ? NULL : xmlCharStrdup (msg);
-  systemId = (context->lastError.file == NULL) ? NULL :
-    xmlCharStrdup (context->lastError.file);
-
-  j_msg = (errorMsg == NULL) ? NULL : xmljNewString (dom_cb_env, errorMsg);
-  j_publicId = NULL;
-  j_systemId = (systemId == NULL) ? NULL :
-    xmljNewString (dom_cb_env, systemId);
-  lineNumber = (jint) context->lastError.line;
-  columnNumber = -1;
-
-  /* Invoke the method */
-  (*dom_cb_env)->CallVoidMethod (dom_cb_env, dom_cb_obj, method,
-                                 j_msg, j_publicId, j_systemId,
-                                 lineNumber, columnNumber);
-}
-
 xmlAttrPtr
-getNamedItem (JNIEnv * env, jobject self, jstring name)
+xmljGetNamedItem (JNIEnv * env, jobject self, jstring name)
 {
   xmlNodePtr node;
   xmlAttrPtr attr;
@@ -1328,7 +1498,7 @@ getNamedItem (JNIEnv * env, jobject self, jstring name)
 }
 
 xmlAttrPtr
-getNamedItemNS (JNIEnv * env, jobject self, jstring uri, jstring localName)
+xmljGetNamedItemNS (JNIEnv * env, jobject self, jstring uri, jstring localName)
 {
   xmlNodePtr node;
   xmlAttrPtr attr;

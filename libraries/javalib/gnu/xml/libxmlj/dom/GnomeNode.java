@@ -58,64 +58,70 @@ implements Node
    * @param node the node pointer
    * @param type the node type
    */
-  static GnomeNode newInstance(int doc, int node, int type)
+  static GnomeNode newInstance (long doc, long node, int type)
     {
       if (instances == null)
-        instances = new HashMap();
-      Integer docKey = new Integer(doc);
-      Map docNodes = (Map)instances.get(docKey);
+        {
+          instances = new HashMap ();
+        }
+      Long docKey = new Long (doc);
+      Map docNodes = (Map) instances.get (docKey);
       if (docNodes == null)
         {
-          docNodes = new HashMap(1024); // TODO review optimal initial capacity
-          instances.put(docKey, docNodes);
+          docNodes = new HashMap (1024); // TODO review optimal initial capacity
+          instances.put (docKey, docNodes);
         }
-      Integer nodeKey = new Integer(node);
-      GnomeNode nodeInstance = (GnomeNode)docNodes.get(nodeKey);
+      Long nodeKey = new Long (node);
+      GnomeNode nodeInstance = (GnomeNode) docNodes.get (nodeKey);
       if (nodeInstance != null)
-        return nodeInstance; // Return cached version
+        {
+          return nodeInstance; // Return cached version
+        }
       switch (type)
         {
         case ELEMENT_NODE:
-          nodeInstance = new GnomeElement(node);
+          nodeInstance = new GnomeElement (node);
           break;
         case ATTRIBUTE_NODE:
-          nodeInstance = new GnomeAttr(node);
+          nodeInstance = new GnomeAttr (node);
           break;
         case TEXT_NODE:
-          nodeInstance = new GnomeText(node);
+          nodeInstance = new GnomeText (node);
           break;
         case CDATA_SECTION_NODE:
-          nodeInstance = new GnomeCDATASection(node);
+          nodeInstance = new GnomeCDATASection (node);
           break;
         case ENTITY_REFERENCE_NODE:
-          nodeInstance = new GnomeEntityReference(node);
+          nodeInstance = new GnomeEntityReference (node);
           break;
         case ENTITY_NODE:
-          nodeInstance = new GnomeEntity(node);
+          nodeInstance = new GnomeEntity (node);
           break;
         case PROCESSING_INSTRUCTION_NODE:
-          nodeInstance = new GnomeProcessingInstruction(node);
+          nodeInstance = new GnomeProcessingInstruction (node);
           break;
         case COMMENT_NODE:
-          nodeInstance = new GnomeComment(node);
+          nodeInstance = new GnomeComment (node);
           break;
         case DOCUMENT_NODE:
-          nodeInstance = new GnomeDocument(node);
+          nodeInstance = new GnomeDocument (node);
           break;
         case DOCUMENT_TYPE_NODE:
-          nodeInstance = new GnomeDocumentType(node);
+          nodeInstance = new GnomeDocumentType (node);
           break;
         case DOCUMENT_FRAGMENT_NODE:
-          nodeInstance = new GnomeDocumentFragment(node);
+          nodeInstance = new GnomeDocumentFragment (node);
           break;
         case NOTATION_NODE:
-          nodeInstance = new GnomeNotation(node);
+          nodeInstance = new GnomeNotation (node);
           break;
         default:
-          nodeInstance = new GnomeNode(node);
+          nodeInstance = new GnomeNode (node);
         }
       if (type != DOCUMENT_NODE)
-        docNodes.put(nodeKey, nodeInstance);
+        {
+          docNodes.put (nodeKey, nodeInstance);
+        }
       return nodeInstance;
     }
 
@@ -123,109 +129,112 @@ implements Node
    * Frees the specified document.
    * This removes all its nodes from the cache.
    */
-  static void freeDocument(int doc)
+  static void freeDocument (long doc)
     {
       if (instances == null)
-        return;
-      Integer docKey = new Integer(doc);
-      //instances.remove(docKey);
-      System.out.println("Freed "+instances.remove(docKey));
+        {
+          return;
+        }
+      Long docKey = new Long (doc);
+      instances.remove (docKey);
+      //System.out.println("Freed "+instances.remove(docKey));
     }
 
-  final int id;
+  /**
+   * xmlNodePtr
+   */
+  final long id;
 
   Map userData;
 
-  GnomeNode(int id)
+  GnomeNode (long id)
     {
       this.id = id;
     }
 
-  public native String getNodeName();
+  public native String getNodeName ();
 
-  public native String getNodeValue()
+  public native String getNodeValue ()
     throws DOMException;
 
-  public native void setNodeValue(String nodeValue)
+  public native void setNodeValue (String nodeValue)
     throws DOMException;
 
-  public native short getNodeType();
+  public native short getNodeType ();
 
-  public native Node getParentNode();
+  public native Node getParentNode ();
 
-  public NodeList getChildNodes()
+  public NodeList getChildNodes ()
     {
-      return new GnomeNodeList(id);
+      return new GnomeNodeList (id);
     }
 
-  public native Node getFirstChild();
+  public native Node getFirstChild ();
 
-  public native Node getLastChild();
+  public native Node getLastChild ();
 
-  public native Node getPreviousSibling();
+  public native Node getPreviousSibling ();
 
-  public native Node getNextSibling();
+  public native Node getNextSibling ();
 
-  public native NamedNodeMap getAttributes();
+  public native NamedNodeMap getAttributes ();
 
-  public native Document getOwnerDocument();
+  public native Document getOwnerDocument ();
 
-  public native Node insertBefore(Node newChild, Node refChild)
+  public native Node insertBefore (Node newChild, Node refChild)
     throws DOMException;
 
-  public native Node replaceChild(Node newChild, Node oldChild)
+  public native Node replaceChild (Node newChild, Node oldChild)
     throws DOMException;
 
-  public native Node removeChild(Node oldChild)
+  public native Node removeChild (Node oldChild)
     throws DOMException;
 
-  public native Node appendChild(Node newChild)
+  public native Node appendChild (Node newChild)
     throws DOMException;
 
-  public native boolean hasChildNodes();
+  public native boolean hasChildNodes ();
 
-  public native Node cloneNode(boolean deep);
+  public native Node cloneNode (boolean deep);
 
-  public native void normalize();
+  public native void normalize ();
 
-  public native boolean isSupported(String feature, String version);
+  public native boolean isSupported (String feature, String version);
 
-  public native String getNamespaceURI();
+  public native String getNamespaceURI ();
 
-  public native String getPrefix();
+  public native String getPrefix ();
 
-  public native void setPrefix(String prefix)
+  public native void setPrefix (String prefix)
     throws DOMException;
 
-  public native String getLocalName();
+  public native String getLocalName ();
 
-  public native boolean hasAttributes();
+  public native boolean hasAttributes ();
 
-  public int hashCode()
+  public int hashCode ()
     {
-      return id;
+      return (int) id;
     }
 
-  public boolean equals(Object other)
+  public boolean equals (Object other)
     {
-      if (other==this)
-        return true;
+      if (other == this)
+        {
+          return true;
+        }
       return (other instanceof GnomeNode &&
-              ((GnomeNode)other).id==id);
+              ((GnomeNode) other).id == id);
     }
 
-  public String toString()
+  public String toString ()
     {
-      return getClass().getName() + '#' + Integer.toHexString(id);
+      return getClass ().getName () + '#' + Long.toHexString(id);
     }
 
   // DOM Level 3 methods
 
-  public String getBaseURI ()
-    {
-      // TODO
-      return null;
-    }
+  public native String getBaseURI ();
 
   public short compareDocumentPosition (Node other) throws DOMException
     {
@@ -301,23 +310,11 @@ implements Node
         return equals (other);
       }
 
-    public String lookupPrefix (String namespaceURI)
-      {
-        // TODO
-        return null;
-      }
+    public native String lookupPrefix (String namespaceURI);
 
-    public boolean isDefaultNamespace (String namespaceURI)
-      {
-        // TODO
-        return false;
-      }
+    public native boolean isDefaultNamespace (String namespaceURI);
 
-    public String lookupNamespaceURI (String prefix)
-      {
-        // TODO
-        return null;
-      }
+    public native String lookupNamespaceURI (String prefix);
 
     public boolean isEqualNode (Node arg)
       {

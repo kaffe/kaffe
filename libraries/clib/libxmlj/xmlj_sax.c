@@ -30,74 +30,78 @@
 #include "xmlj_util.h"
 #include <unistd.h>
 
+xmlExternalEntityLoader defaultLoader = NULL;
+
 /* -- GnomeLocator -- */
 
 JNIEXPORT jstring JNICALL
 Java_gnu_xml_libxmlj_sax_GnomeLocator_getPublicId (JNIEnv * env,
                                                    jobject self,
-                                                   jint j_ctx, jint j_loc)
+                                                   jlong j_ctx,
+                                                   jlong j_loc)
 {
   xmlParserCtxtPtr ctx;
   xmlSAXLocatorPtr loc;
-  const xmlChar *ret;
-  jstring j_ret;
+  SAXParseContext *sax;
 
   ctx = (xmlParserCtxtPtr) j_ctx;
   loc = (xmlSAXLocatorPtr) j_loc;
-
-  ret = loc->getPublicId (ctx);
-  j_ret = xmljNewString (env, ret);
-  return j_ret;
+  sax = (SAXParseContext *) ctx->_private;
+  
+  return sax->publicId;
 }
 
 JNIEXPORT jstring JNICALL
 Java_gnu_xml_libxmlj_sax_GnomeLocator_getSystemId (JNIEnv * env,
                                                    jobject self,
-                                                   jint j_ctx, jint j_loc)
+                                                   jlong j_ctx,
+                                                   jlong j_loc)
 {
   xmlParserCtxtPtr ctx;
   xmlSAXLocatorPtr loc;
-  const xmlChar *ret;
-  jstring j_ret;
+  SAXParseContext *sax;
 
   ctx = (xmlParserCtxtPtr) j_ctx;
   loc = (xmlSAXLocatorPtr) j_loc;
-
-  ret = loc->getSystemId (ctx);
-  j_ret = xmljNewString (env, ret);
-  return j_ret;
+  sax = (SAXParseContext *) ctx->_private;
+  
+  return sax->systemId;
 }
 
 JNIEXPORT jint JNICALL
 Java_gnu_xml_libxmlj_sax_GnomeLocator_getLineNumber (JNIEnv * env,
                                                      jobject self,
-                                                     jint j_ctx, jint j_loc)
+                                                     jlong j_ctx,
+                                                     jlong j_loc)
 {
   xmlParserCtxtPtr ctx;
   xmlSAXLocatorPtr loc;
-  jint ret;
 
   ctx = (xmlParserCtxtPtr) j_ctx;
   loc = (xmlSAXLocatorPtr) j_loc;
-
-  ret = loc->getLineNumber (ctx);
-  return ret;
+  if (ctx == NULL || ctx->input == NULL)
+    {
+      return -1;
+    }
+  return ctx->input->line;
 }
 
 JNIEXPORT jint JNICALL
 Java_gnu_xml_libxmlj_sax_GnomeLocator_getColumnNumber (JNIEnv * env,
                                                        jobject self,
-                                                       jint j_ctx, jint j_loc)
+                                                       jlong j_ctx,
+                                                       jlong j_loc)
 {
   xmlParserCtxtPtr ctx;
   xmlSAXLocatorPtr loc;
-  jint ret;
 
   ctx = (xmlParserCtxtPtr) j_ctx;
   loc = (xmlSAXLocatorPtr) j_loc;
-
-  ret = loc->getColumnNumber (ctx);
-  return ret;
+  if (ctx == NULL || ctx->input == NULL)
+    {
+      return -1;
+    }
+  return ctx->input->col;
 }
 
 /* -- GnomeXMLReader -- */
@@ -109,6 +113,7 @@ JNIEXPORT void JNICALL
 Java_gnu_xml_libxmlj_sax_GnomeXMLReader_parseStream (JNIEnv * env,
                                                      jobject self,
                                                      jobject in,
+                                                     jbyteArray detectBuffer,
                                                      jstring publicId,
                                                      jstring systemId,
                                                      jboolean validate,
@@ -123,6 +128,7 @@ Java_gnu_xml_libxmlj_sax_GnomeXMLReader_parseStream (JNIEnv * env,
   xmljParseDocument (env,
                      self,
                      in,
+                     detectBuffer,
                      publicId,
                      systemId,
                      validate,
@@ -134,7 +140,30 @@ Java_gnu_xml_libxmlj_sax_GnomeXMLReader_parseStream (JNIEnv * env,
                      errorHandler,
                      declarationHandler,
                      lexicalHandler,
-                     1);
+                     0);
+}
+
+xmlParserInputPtr
+xmljExternalEntityLoader (const char *url, const char *id,
+                          xmlParserCtxtPtr context)
+{
+  const xmlChar *systemId;
+  const xmlChar *publicId;
+  xmlParserInputPtr ret;
+
+  printf("xmljExternalEntityLoader %s %s\n", url, id);
+  if (defaultLoader == NULL)
+    {
+      defaultLoader = xmlGetExternalEntityLoader ();
+    }
+  systemId = xmlCharStrdup (url);
+  publicId = xmlCharStrdup (id);
+  ret = xmljSAXResolveEntity (context, publicId, systemId);
+  if (ret == NULL)
+    {
+      ret = defaultLoader (url, id, context);
+    }
+  return ret;
 }
 
 /*
@@ -153,8 +182,6 @@ xmljNewSAXHandler (xmlSAXHandlerPtr orig,
   xmlSAXHandlerPtr sax;
 
   sax = (xmlSAXHandlerPtr) malloc (sizeof (xmlSAXHandler));
-  if (sax == NULL)
-    return NULL;
 
   if (dtdHandler)
     {
@@ -171,11 +198,13 @@ xmljNewSAXHandler (xmlSAXHandlerPtr orig,
     {
       sax->resolveEntity = &xmljSAXResolveEntity;
       /* The above function is never called in libxml2 */
-      xmlSetExternalEntityLoader (&xmljExternalEntityLoader);
+      printf ("Set custom external entity loader\n");
+      xmlSetExternalEntityLoader (xmljExternalEntityLoader);
     }
   else
     {
       sax->resolveEntity = (orig == NULL) ? NULL : orig->resolveEntity;
+      xmlSetExternalEntityLoader (defaultLoader);
     }
 
   if (declarationHandler)
@@ -257,19 +286,6 @@ xmljNewSAXHandler (xmlSAXHandlerPtr orig,
   sax->serror = NULL;
 
   return sax;
-}
-
-xmlParserInputPtr
-xmljExternalEntityLoader (const char *url, const char *id,
-                          xmlParserCtxtPtr context)
-{
-  const xmlChar *systemId;
-  const xmlChar *publicId;
-
-  printf("xmljExternalEntityLoader %s %s\n", url, id);
-  systemId = xmlCharStrdup (url);
-  publicId = xmlCharStrdup (id);
-  return xmljSAXResolveEntity (context, publicId, systemId);
 }
 
 /* -- Callback functions -- */
@@ -389,9 +405,25 @@ xmljSAXResolveEntity (void *vctx,
 
   /* Return an xmlParserInputPtr corresponding to the input stream */
   if (inputStream != NULL)
-    return xmljNewParserInput (env, inputStream, ctx);
+    {
+      jbyteArray detectBuffer;
+      jmethodID getDetectBuffer;
+      jclass cls;
+
+      /* Get the detect buffer from the NamedInputStream */
+      cls = (*env)->GetObjectClass (env, inputStream);
+      getDetectBuffer = (*env)->GetMethodID (env, inputStream,
+                                             "getDetectBuffer",
+                                             "()[B");
+      detectBuffer = (*env)->CallObjectMethod (env, inputStream,
+                                               getDetectBuffer);
+      
+      return xmljNewParserInput (env, inputStream, detectBuffer, ctx);
+    }
   else
-    return NULL;
+    {
+      return NULL;
+    }
 }
 
 xmlEntityPtr
@@ -691,7 +723,7 @@ xmljSAXSetDocumentLocator (void *vctx, xmlSAXLocatorPtr loc)
       sax->setDocumentLocator = xmljGetMethodID (env,
                                                  target,
                                                  "setDocumentLocator",
-                                                 "(II)V");
+                                                 "(JJ)V");
       if (sax->setDocumentLocator == NULL)
         {
           return;
@@ -701,8 +733,8 @@ xmljSAXSetDocumentLocator (void *vctx, xmlSAXLocatorPtr loc)
   (*env)->CallVoidMethod (env,
                           target,
                           sax->setDocumentLocator,
-                          (jint) ctx,
-                          (jint) loc);
+                          (jlong) ctx,
+                          (jlong) loc);
 }
 
 void

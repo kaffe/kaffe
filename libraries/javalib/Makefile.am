@@ -210,6 +210,7 @@ Klasses_jar_SRCS = \
 	$(org_w3c_dom_stylesheets_SRCS) \
 	$(org_w3c_dom_traversal_SRCS) \
 	$(org_w3c_dom_views_SRCS) \
+	$(org_w3c_dom_xpath_SRCS) \
 	$(org_xml_sax_SRCS) \
 	$(org_xml_sax_ext_SRCS) \
 	$(org_xml_sax_helpers_SRCS)
@@ -623,6 +624,9 @@ gnu_xml_libxmlj_dom_SRCS = \
 	gnu/xml/libxmlj/dom/GnomeNotation.java \
 	gnu/xml/libxmlj/dom/GnomeProcessingInstruction.java \
 	gnu/xml/libxmlj/dom/GnomeText.java \
+	gnu/xml/libxmlj/dom/GnomeXPathExpression.java \
+	gnu/xml/libxmlj/dom/GnomeXPathNSResolver.java \
+	gnu/xml/libxmlj/dom/GnomeXPathResult.java \
 	gnu/xml/libxmlj/dom/MatchingNodeList.java
 gnu_xml_libxmlj_sax_SRCS = \
 	gnu/xml/libxmlj/sax/GnomeLocator.java \
@@ -633,24 +637,20 @@ gnu_xml_libxmlj_sax_SRCS = \
 	gnu/xml/libxmlj/sax/StringArrayAttributes.java \
 	gnu/xml/libxmlj/sax/XMLName.java
 gnu_xml_libxmlj_transform_SRCS = \
-	gnu/xml/libxmlj/transform/DefaultErrorListenerImpl.java \
-	gnu/xml/libxmlj/transform/DefaultURIResolverImpl.java \
 	gnu/xml/libxmlj/transform/ErrorListenerProxy.java \
-	gnu/xml/libxmlj/transform/IOToolkit.java \
+	gnu/xml/libxmlj/transform/GnomeTemplates.java \
+	gnu/xml/libxmlj/transform/GnomeTransformerFactory.java \
+	gnu/xml/libxmlj/transform/GnomeTransformer.java \
 	gnu/xml/libxmlj/transform/JavaContext.java \
-	gnu/xml/libxmlj/transform/LibxmlDocument.java \
 	gnu/xml/libxmlj/transform/LibxsltStylesheet.java \
-	gnu/xml/libxmlj/transform/SourceLocatorImpl.java \
-	gnu/xml/libxmlj/transform/SourceWrapper.java \
-	gnu/xml/libxmlj/transform/TemplatesImpl.java \
-	gnu/xml/libxmlj/transform/TransformerFactoryImpl.java \
-	gnu/xml/libxmlj/transform/TransformerImpl.java \
 	gnu/xml/libxmlj/transform/TransformTest.java \
 	gnu/xml/libxmlj/transform/URIResolverProxy.java
 gnu_xml_libxmlj_util_SRCS = \
 	gnu/xml/libxmlj/util/EmptyNodeList.java \
+	gnu/xml/libxmlj/util/NamedInputStream.java \
 	gnu/xml/libxmlj/util/StandaloneDocumentType.java \
-	gnu/xml/libxmlj/util/StandaloneLocator.java
+	gnu/xml/libxmlj/util/StandaloneLocator.java \
+	gnu/xml/libxmlj/util/XMLJ.java
 gnu_xml_pipeline_SRCS = \
 	gnu/xml/pipeline/CallFilter.java \
 	gnu/xml/pipeline/DomConsumer.java \
@@ -2678,6 +2678,13 @@ org_w3c_dom_traversal_SRCS = \
 org_w3c_dom_views_SRCS = \
 	org/w3c/dom/views/AbstractView.java \
 	org/w3c/dom/views/DocumentView.java
+org_w3c_dom_xpath_SRCS = \
+	org/w3c/dom/xpath/XPathEvaluator.java \
+	org/w3c/dom/xpath/XPathException.java \
+	org/w3c/dom/xpath/XPathExpression.java \
+	org/w3c/dom/xpath/XPathNamespace.java \
+	org/w3c/dom/xpath/XPathNSResolver.java \
+	org/w3c/dom/xpath/XPathResult.java
 org_xml_sax_SRCS = \
 	org/xml/sax/AttributeList.java \
 	org/xml/sax/Attributes.java \

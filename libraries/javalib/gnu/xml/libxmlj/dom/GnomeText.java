@@ -40,22 +40,22 @@ extends GnomeCharacterData
 implements Text
 {
 
-  GnomeText(int id)
-  {
-    super(id);
-  }
+  GnomeText (long id)
+    {
+      super (id);
+    }
 
-  public Text splitText(int offset)
+  public Text splitText (int offset)
     throws DOMException
-  {
-    String value = getNodeValue();
-    String part1 = value.substring(0, offset);
-    String part2 = value.substring(offset);
-    Text text = getOwnerDocument().createTextNode(part1);
-    getParentNode().insertBefore(text, this);
-    setNodeValue(part2);
-    return text;
-  }
+    {
+      String value = getNodeValue ();
+      String part1 = value.substring (0, offset);
+      String part2 = value.substring (offset);
+      Text text = getOwnerDocument ().createTextNode (part1);
+      getParentNode ().insertBefore (text, this);
+      setNodeValue (part2);
+      return text;
+    }
   
   // DOM Level 3
 

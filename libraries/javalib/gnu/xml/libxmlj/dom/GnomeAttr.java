@@ -42,26 +42,26 @@ extends GnomeNode
 implements Attr
 {
 
-  GnomeAttr(int id)
+  GnomeAttr (long id)
     {
-      super(id);
+      super (id);
     }
   
-  public String getName()
+  public String getName ()
     {
-      return getNodeName();
+      return getNodeName ();
     }
   
-  public native boolean getSpecified();
+  public native boolean getSpecified ();
   
-  public native String getValue();
+  public native String getValue ();
   
-  public native void setValue(String value)
+  public native void setValue (String value)
     throws DOMException;
   
-  public Element getOwnerElement()
+  public Element getOwnerElement ()
     {
-      return (Element)getParentNode();
+      return (Element) getParentNode ();
     }
   
   // DOM Level 3 methods
@@ -72,10 +72,6 @@ implements Attr
       return null;
     }
   
-  public boolean isId ()
-    {
-      // TODO
-      return false;
-    }
+  public native boolean isId ();
   
 }

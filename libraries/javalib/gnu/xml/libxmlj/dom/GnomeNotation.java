@@ -38,13 +38,13 @@ extends GnomeNode
 implements Notation
 {
 
-  GnomeNotation(int id)
-  {
-    super(id);
-  }
+  GnomeNotation (long id)
+    {
+      super (id);
+    }
 
-  public native String getPublicId();
+  public native String getPublicId ();
 
-  public native String getSystemId();
+  public native String getSystemId ();
 
 }
