@@ -1,3 +1,12 @@
+2004-02-01  Helmer Kraemer <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/thread.c
+	(unlinkNativeAndJavaThread): don't set thread_data->jlThread to NULL
+
+	* libraries/javalib/java/security/Security.java
+	(getCryptInstance): use the classloader of the provider's class to
+	load the engine
+	
 2004-02-01  Dalibor Topic <robilad@kaffe.org>
 
         include/gettext.h:

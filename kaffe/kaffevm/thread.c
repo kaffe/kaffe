@@ -106,7 +106,7 @@ unlinkNativeAndJavaThread(jthread_t thread)
 	unhand((Hjava_lang_Thread *)thread_data->jlThread)->PrivateInfo = 0;
 	*/
 
-	thread_data->jlThread = 0;
+	//thread_data->jlThread = 0;
 	thread_data->jniEnv = 0;
 
 	ksemDestroy (&thread_data->sem);
