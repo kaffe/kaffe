@@ -1,0 +1,57 @@
+FAQ about local references
+==========================
+
+Why do I get "FATAL ERROR: No more room for local references" ?
+---------------------------------------------------------------
+
+As a user, it is likely you must report this error to the original
+developers of the java application/library you are using.
+As a developer, it means that the native code has got too many object
+references from the VM without acknowledging the VM that it does not
+need anymore the object.
+
+Each time a reference is returned by the VM, it attaches a local
+reference to it to inform the garbage collector that it may not free
+this object until the reference has been cleared. Indeed the garbage
+collector will look at all local/global references, all java
+references and the content of the stack before taking the decision of
+freeing an object.
+
+These references has been historically introduced for object which are
+only referenced by the native code into some variables that are not
+stored on the stack.
+
+What can I do to solve this problem ?
+-------------------------------------
+
+There are two different cases:
+
+(1) You are invoking the VM from a function invoked by the VM.
+
+Then all local references are freed at the exiting of the function
+invoked by the VM. Either you may need more room for references or,
+more likely, you may want to remove the references because the
+referenced objects are not used anymore or are anyway stored on the
+stack. In this case, you have to call the JNI function DeleteLocalRef
+with the object reference. The object will still be available. If you
+need more reference, you must call the JNI function
+EnsureLocalCapacity with the number of references you need.
+
+(2) You are invoking the VM from a function which has not been invoked
+   by the VM.
+
+This case looks like the previous one except for the following: the
+local reference table is never freed. So, you have to be really
+careful of deleting all local references. If you really need to keep
+an object into some global variable then you must invoke the JNI
+function NewGlobalRef to prevent the garbage collector to free the
+referenced object.
+
+More information about VM references can be found at:
+
+     http://java.sun.com/j2se/1.4.2/docs/guide/jni/spec/design.html#wp1242
+     http://java.sun.com/j2se/1.4.2/docs/guide/jni/jni-12.html#localrefs 
+
+
+Guilhem Lavaux <guilhem@kaffe.org>
+April 4, 2005
