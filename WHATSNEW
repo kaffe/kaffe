@@ -21,6 +21,8 @@ executable (fr, zh_TW).
 * Jessie merged in.
 * JZLib merged in.
 * GNU Classpath's implementation of Swing has been merged.
+* Tested in Ch environment.
+* Implemented weak references in the VM.
 
 What's New in Kaffe 1.1.3
 ------------------------------------------------------

@@ -1,5 +1,12 @@
 2004-12-27  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/soft.c
+	(instanceof_interface): Fixed instanceof implementation. It should
+	work as expected now (tested against Ant). CSTATE_PREPARED is
+	sufficient for implementors.
+
+2004-12-27  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/alpha/jit-alpha.def,
 	config/i386/jit-i386.def,
 	config/i386/jit3-i386.def,

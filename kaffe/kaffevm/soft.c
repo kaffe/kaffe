@@ -301,7 +301,7 @@ instanceof_interface(Hjava_lang_Class* c, Hjava_lang_Class* oc)
 	int i;
 	Hjava_lang_Class **impl_clazz;
 
-	if (oc->state < CSTATE_USABLE || c->state < CSTATE_USABLE || CLASS_IS_ARRAY(oc) || CLASS_IS_INTERFACE(oc))
+	if (oc->state < CSTATE_PREPARED || c->state < CSTATE_PREPARED || CLASS_IS_ARRAY(oc) || CLASS_IS_INTERFACE(oc))
 	  {
 	    /* Check 'total' interface list. If the class is not
 	     * prepared the dumb way is the only way. Arrays and interface do not have
@@ -321,7 +321,7 @@ instanceof_interface(Hjava_lang_Class* c, Hjava_lang_Class* oc)
 	    /* No interface implemented or this class is not implementing this
 	     * interface. Bailing out. */
 	    if (i == 0 || c->implementors == NULL ||
-		i >= (uintp)c->implementors[0] ||
+		i > (uintp)c->implementors[0] ||
 		c->implementors[i] == NULL)
 	      return 0;
 	    
