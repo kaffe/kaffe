@@ -53,6 +53,8 @@ typedef struct  sigaltstack stack_t;
 #define STACK_POINTER(scp) ((scp)->sc_sp)
 #endif
 
+#define DARWIN
+
 #include "kaffe-unix-stack.h"
 
 #endif

@@ -927,7 +927,7 @@ pagealloc(size_t size)
 
 #define	CHECK_OUT_OF_MEMORY(P)	if ((P) == 0) return 0;
 
-#if defined(HAVE_SBRK)
+#if defined(HAVE_SBRK) && !defined(DARWIN)
 
 	/* Our primary choice for basic memory allocation is sbrk() which
 	 * should avoid any unsee space overheads.

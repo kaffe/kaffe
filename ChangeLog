@@ -1,5 +1,14 @@
 2004-07-23  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* config/powerpc/darwin/md.h: Define a symbol called DARWIN
+	when we are on a darwin OS.
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c
+	(pagealloc): If this is darwin, don't use sbrk as it seems to
+	be broken.
+
+2004-07-23  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* config/powerpc/common.h: Define ALIGNMENT_OF_SIZE.
 
 2004-07-23  Guilhem Lavaux <guilhem@kaffe.org>
