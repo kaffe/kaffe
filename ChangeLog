@@ -1,3 +1,10 @@
+2004-01-19  Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/scripts/install-jar.in:
+	Put the jars in $prefix/lib/ directory. Use
+	basename while copying the jars to avoid problems with
+	directories prepended to the jar file name.
+	
 2004-01-22  Mark Wielaard  <mark@klomp.org>
 
 	Fix for Maven 1.0-rc1.

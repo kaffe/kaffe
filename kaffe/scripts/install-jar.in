@@ -3,7 +3,7 @@
 #  here to help install useful JAR's and cut down on installation bugs.
 
 prefix=@prefix@
-classdir=@datadir@/kaffe
+classdir=@prefix@/lib
 
 if test x"${1+set}" != x"set" ; then
 	echo "usage: install-jar <jarfile> ..."
@@ -13,7 +13,7 @@ fi
 for i in "$@"
 do
 	echo -n "Installing $i in $classdir ... "
-	cp "$i" "$classdir/$i" &&
+	cp "$i" "$classdir/`basename $i`" &&
 	echo "done"
 done
 
