@@ -4,6 +4,8 @@ Sat Aug 29 16:30:41 1998  Archie Cobbs <archie@whistle.com>
 	make sure finalize() is not static; take a small step towards
 	supporting unloading classes
 	* kaffe/kaffevm/jni.c: don't construct with a non-constructor
+	* config/i386/jit-i386.def: eliminate compiler warnings
+	* test/HelloWorldApp.java: remove unneeded file
 
 Fri Aug 28 21:44:06 1998  Archie Cobbs <archie@whistle.com>
 
