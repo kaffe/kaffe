@@ -1,5 +1,13 @@
 2004-01-14  Dalibor Topic <robilad@kaffe.org>
 
+	* configure.in:
+	(AC_PREREQ) Require autoconf 2.59 for rebuilding configure.
+
+	* configure:
+	Regenerated.
+
+2004-01-14  Dalibor Topic <robilad@kaffe.org>
+
         * FAQ/FAQ.automake,
         developers/autogen.sh:
         Updated to Automake 1.8.2.
