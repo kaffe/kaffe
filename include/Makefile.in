@@ -401,7 +401,11 @@ noinst_HEADERS = \
 	files.h \
 	getaddrinfo.h \
 	nets.h \
-	system.h
+	system.h \
+	Arrays.h \
+	errors.h \
+	jsyscall.h \
+	native.h 
 
 
 include_HEADERS = \
@@ -410,12 +414,14 @@ include_HEADERS = \
 	jvmpi.h 
 
 
-nodist_pkginclude_HEADERS = \
-	$(INSTALL_DERIVED_HDRS) \
-	$(INSTALL_JNI_DERIVED_HDRS) 
-
-
 pkginclude_HEADERS = \
+	java_lang_Object.h \
+	java_lang_String.h \
+	java_lang_StackTraceElement.h \
+	java_lang_Thread.h \
+	java_lang_ThreadGroup.h \
+	java_lang_Throwable.h \
+	java_lang_VMThrowable.h \
 	kaffe/jmalloc.h \
 	kaffe/jtypes.h 
 
@@ -436,8 +442,7 @@ CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/include/kaffe/jtypes.h
 CONFIG_CLEAN_FILES =
 DIST_SOURCES =
-HEADERS = $(include_HEADERS) $(nodist_noinst_HEADERS) \
-	$(nodist_pkginclude_HEADERS) $(noinst_HEADERS) \
+HEADERS = $(include_HEADERS) $(nodist_noinst_HEADERS) $(noinst_HEADERS) \
 	$(pkginclude_HEADERS)
 
 DIST_COMMON = $(include_HEADERS) $(noinst_HEADERS) \
@@ -477,24 +482,6 @@ uninstall-includeHEADERS:
 	  f="`echo $$p | sed -e 's|^.*/||'`"; \
 	  echo " rm -f $(DESTDIR)$(includedir)/$$f"; \
 	  rm -f $(DESTDIR)$(includedir)/$$f; \
-	done
-nodist_pkgincludeHEADERS_INSTALL = $(INSTALL_HEADER)
-install-nodist_pkgincludeHEADERS: $(nodist_pkginclude_HEADERS)
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(pkgincludedir)
-	@list='$(nodist_pkginclude_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " $(nodist_pkgincludeHEADERS_INSTALL) $$d$$p $(DESTDIR)$(pkgincludedir)/$$f"; \
-	  $(nodist_pkgincludeHEADERS_INSTALL) $$d$$p $(DESTDIR)$(pkgincludedir)/$$f; \
-	done
-
-uninstall-nodist_pkgincludeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(nodist_pkginclude_HEADERS)'; for p in $$list; do \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " rm -f $(DESTDIR)$(pkgincludedir)/$$f"; \
-	  rm -f $(DESTDIR)$(pkgincludedir)/$$f; \
 	done
 pkgincludeHEADERS_INSTALL = $(INSTALL_HEADER)
 install-pkgincludeHEADERS: $(pkginclude_HEADERS)
@@ -609,7 +596,7 @@ check: check-am
 all-am: Makefile $(HEADERS)
 
 installdirs:
-	$(mkinstalldirs) $(DESTDIR)$(includedir) $(DESTDIR)$(pkgincludedir) $(DESTDIR)$(pkgincludedir)
+	$(mkinstalldirs) $(DESTDIR)$(includedir) $(DESTDIR)$(pkgincludedir)
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -653,8 +640,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-includeHEADERS install-nodist_pkgincludeHEADERS \
-	install-pkgincludeHEADERS
+install-data-am: install-includeHEADERS install-pkgincludeHEADERS
 
 install-exec-am:
 
@@ -681,7 +667,7 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-includeHEADERS uninstall-info-am \
-	uninstall-nodist_pkgincludeHEADERS uninstall-pkgincludeHEADERS
+	uninstall-pkgincludeHEADERS
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
 	clean-libtool ctags distclean distclean-generic \
@@ -689,12 +675,11 @@ uninstall-am: uninstall-includeHEADERS uninstall-info-am \
 	info-am install install-am install-data install-data-am \
 	install-exec install-exec-am install-includeHEADERS \
 	install-info install-info-am install-man \
-	install-nodist_pkgincludeHEADERS install-pkgincludeHEADERS \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-includeHEADERS \
-	uninstall-info-am uninstall-nodist_pkgincludeHEADERS \
+	install-pkgincludeHEADERS install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
+	uninstall-am uninstall-includeHEADERS uninstall-info-am \
 	uninstall-pkgincludeHEADERS
 
 @USE_COMPAT_IFADDRS_TRUE@ifaddrs.h: ifaddrs_compat.h

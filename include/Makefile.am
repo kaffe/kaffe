@@ -32,6 +32,7 @@ EXTRA_DIST = distclean-hack \
 
 INSTALL_DERIVED_HDRS = 
 
+
 NOINSTALL_DERIVED_HDRS = \
 	java_lang_Object.h \
 	java_lang_String.h \
@@ -167,7 +168,11 @@ noinst_HEADERS = \
 	files.h \
 	getaddrinfo.h \
 	nets.h \
-	system.h
+	system.h \
+	Arrays.h \
+	errors.h \
+	jsyscall.h \
+	native.h 
 
 include_HEADERS = \
 	jni.h \
@@ -177,9 +182,16 @@ include_HEADERS = \
 
 nodist_pkginclude_HEADERS = \
 	$(INSTALL_DERIVED_HDRS) \
-	$(INSTALL_JNI_DERIVED_HDRS) 
+	$(INSTALL_JNI_DERIVED_HDRS) \
 
 pkginclude_HEADERS = \
+	java_lang_Object.h \
+	java_lang_String.h \
+	java_lang_StackTraceElement.h \
+	java_lang_Thread.h \
+	java_lang_ThreadGroup.h \
+	java_lang_Throwable.h \
+	java_lang_VMThrowable.h \
 	kaffe/jmalloc.h \
 	kaffe/jtypes.h 
 

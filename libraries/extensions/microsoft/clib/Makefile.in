@@ -241,6 +241,8 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
+AM_CPPFLAGS = -I$(top_builddir)/include
+
 native_LTLIBRARIES = libmicrosoft.la
 
 libmicrosoft_la_LDFLAGS = $(KLIBFLAGS) -module -release $(KVER) -export-symbols-regex "^([Jj]ava|kaffe)_"
