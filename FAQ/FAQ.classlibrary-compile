@@ -70,8 +70,7 @@ it the "-source 1.1" option. Jikes 1.18 generates class files for JDK
 1.4 by default, and kaffe complains about an unknown version
 number.
 
-Jikes 1.13 is known to work, too. It is a good fallback option if
-other versions of jikes fail.
+The recommended version of jikes is 1.18.
 
 * kjc
 

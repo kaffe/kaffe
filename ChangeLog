@@ -1,5 +1,13 @@
 2003-04-13 Dalibor Topic <robilad@yahoo.com>
 
+	* FAQ/FAQ.classlibrary-compile:
+	Removed jikes 1.13 recommendation as it was causing problems on
+	mips-linux.
+
+	Reported by: Seong Beom Kim <sbkim@mail.marusys.com>
+
+2003-04-13 Dalibor Topic <robilad@yahoo.com>
+
 	* libraries/javalib/java/sql/Date.java,
 	libraries/javalib/java/sql/Time.java,
 	libraries/javalib/java/sql/Timestamp.java,
