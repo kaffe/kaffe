@@ -1,3 +1,13 @@
+Sun Jul 18 12:07:49 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/util/Collections.java: implement the
+	unmodifiable*() methods and nCopies().
+	* libraries/javalib/java/util/TreeMap.java: bug fixes
+	* libraries/javalib/java/util/Arrays.java: make the default
+	Comparator implement Serializable
+	* libraries/javalib/java/util/AbstractListIterator.java: tweak comment
+	* libraries/javalib/java/util/SortedMap.java: fix typo
+
 Sat Jul 17 16:57:33 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/TreeMap.java: new file
