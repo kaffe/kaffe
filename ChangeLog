@@ -1,3 +1,57 @@
+2005-02-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-02-20  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        Merge of interfaces and exceptions to HEAD from
+        the generics branch.
+
+        * java/lang/StringBuilder.java: Serial version updated.
+        * java/lang/annotation/AnnotationTypeMismatchException.java: Likewise.
+
+        Changes from generics branch:
+
+        2005-02-20  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        * java/io/Closeable.java: Documented.
+        * java/io/Flushable.java: Documented.
+        * java/lang/Appendable.java: Corrected line overrun.
+        * java/lang/Readable.java: Corrected indentation.
+        * java/lang/TypeNotPresentException.java: Documented.
+        * java/lang/annotation/AnnotationFormatError.java: Likewise.
+        * java/lang/annotation/AnnotationTypeMismatchException.java: Likewise.
+        * java/lang/reflect/GenericArrayType.java: Likewise.
+        * java/lang/reflect/GenericSignatureFormatError.java: Likewise.
+        * java/lang/reflect/ParameterizedType.java: Likewise.
+        * java/lang/reflect/Type.java: Likewise.
+        * java/lang/reflect/WildcardType.java: Likewise.
+
+        2005-01-07  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        * java/lang/annotation/AnnotationTypeMismatchException.java:
+        Added import of java.lang.reflect.Method
+
+        2004-08-26  Tom Tromey  <tromey@redhat.com>
+
+        * java/lang/reflect/GenericSignatureFormatError.java: New file.
+        * java/lang/reflect/WildcardType.java: New file.
+        * java/lang/reflect/ParameterizedType.java: New file.
+        * java/lang/reflect/GenericArrayType.java: New file.
+        * java/lang/reflect/Type.java: New file.
+        * java/io/Flushable.java: New file.
+        * java/io/Closeable.java: New file.
+
+        2004-08-07  Tom Tromey  <tromey@redhat.com>
+
+        * java/lang/annotation/AnnotationFormatError.java: New file.
+        * java/lang/annotation/AnnotationTypeMismatchException.java: New
+        file.
+
+        2004-08-06  Tom Tromey  <tromey@redhat.com>
+
+        * java/lang/Readable.java: New file.
+
 2005-02-20  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.

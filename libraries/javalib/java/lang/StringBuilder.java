@@ -82,9 +82,9 @@ public final class StringBuilder
   // want to change StringBuffer as well.
 
   /**
-   * Compatible with JDK 1.0+.
+   * For compatability with Sun's JDK
    */
-  private static final long serialVersionUID = 3388685877147921107L;
+  private static final long serialVersionUID = 4383685877147921099L;
 
   /**
    * Index of next available character (and thus the size of the current

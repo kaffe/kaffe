@@ -1812,6 +1812,7 @@ java/io/ByteArrayOutputStream.java
 java/io/CharArrayReader.java
 java/io/CharArrayWriter.java
 java/io/CharConversionException.java
+java/io/Closeable.java
 java/io/DataInput.java
 java/io/DataInputStream.java
 java/io/DataOutput.java
@@ -1833,6 +1834,7 @@ java/io/FilterInputStream.java
 java/io/FilterOutputStream.java
 java/io/FilterReader.java
 java/io/FilterWriter.java
+java/io/Flushable.java
 java/io/IOException.java
 java/io/InputStream.java
 java/io/InputStreamReader.java
@@ -1936,6 +1938,7 @@ java/lang/OutOfMemoryError.java
 java/lang/Package.java
 java/lang/Process.java
 java/lang/ProcessInputStream.java
+java/lang/Readable.java
 java/lang/Runnable.java
 java/lang/Runtime.java
 java/lang/RuntimeException.java
@@ -1956,6 +1959,7 @@ java/lang/ThreadDeath.java
 java/lang/ThreadGroup.java
 java/lang/ThreadLocal.java
 java/lang/Throwable.java
+java/lang/TypeNotPresentException.java
 java/lang/UnknownError.java
 java/lang/UnsatisfiedLinkError.java
 java/lang/UnsupportedClassVersionError.java
@@ -1969,6 +1973,8 @@ java/lang/VMThrowable.java
 java/lang/VerifyError.java
 java/lang/VirtualMachineError.java
 java/lang/Void.java
+java/lang/annotation/AnnotationFormatError.java
+java/lang/annotation/AnnotationTypeMismatchException.java
 java/lang/ref/PhantomReference.java
 java/lang/ref/Reference.java
 java/lang/ref/ReferenceQueue.java
@@ -1978,14 +1984,19 @@ java/lang/reflect/AccessibleObject.java
 java/lang/reflect/Array.java
 java/lang/reflect/Constructor.java
 java/lang/reflect/Field.java
+java/lang/reflect/GenericArrayType.java
+java/lang/reflect/GenericSignatureFormatError.java
 java/lang/reflect/InvocationHandler.java
 java/lang/reflect/InvocationTargetException.java
 java/lang/reflect/Member.java
 java/lang/reflect/Method.java
 java/lang/reflect/Modifier.java
+java/lang/reflect/ParameterizedType.java
 java/lang/reflect/Proxy.java
 java/lang/reflect/ReflectPermission.java
+java/lang/reflect/Type.java
 java/lang/reflect/UndeclaredThrowableException.java
+java/lang/reflect/WildcardType.java
 java/math/BigDecimal.java
 java/math/BigInteger.java
 java/net/Authenticator.java

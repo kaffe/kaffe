@@ -55,7 +55,8 @@ import java.io.IOException;
  * </p>
  * <p>
  * <strong>Note</strong>: implementation of this interface is required for
- * any class that wishes to receive data from a <code>Formatter</code> instance.
+ * any class that wishes to receive data from a <code>Formatter</code>
+ * instance.
  * </p>
  *
  * @author Tom Tromey (tromey@redhat.com)

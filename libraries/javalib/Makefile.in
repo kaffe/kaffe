@@ -534,6 +534,7 @@ Klasses_jar_SRCS = \
 	$(java_beans_beancontext_SRCS) \
 	$(java_io_SRCS) \
 	$(java_lang_SRCS) \
+	$(java_lang_annotation_SRCS) \
 	$(java_lang_ref_SRCS) \
 	$(java_lang_reflect_SRCS) \
 	$(java_math_SRCS) \
@@ -2751,6 +2752,7 @@ java_io_SRCS = \
 	java/io/CharArrayReader.java \
 	java/io/CharArrayWriter.java \
 	java/io/CharConversionException.java \
+	java/io/Closeable.java \
 	java/io/DataInput.java \
 	java/io/DataInputStream.java \
 	java/io/DataOutput.java \
@@ -2772,6 +2774,7 @@ java_io_SRCS = \
 	java/io/FilterOutputStream.java \
 	java/io/FilterReader.java \
 	java/io/FilterWriter.java \
+	java/io/Flushable.java \
 	java/io/IOException.java \
 	java/io/InputStream.java \
 	java/io/InputStreamReader.java \
@@ -2877,6 +2880,7 @@ java_lang_SRCS = \
 	java/lang/Package.java \
 	java/lang/Process.java \
 	java/lang/ProcessInputStream.java \
+	java/lang/Readable.java \
 	java/lang/Runnable.java \
 	java/lang/Runtime.java \
 	java/lang/RuntimeException.java \
@@ -2897,6 +2901,7 @@ java_lang_SRCS = \
 	java/lang/ThreadGroup.java \
 	java/lang/ThreadLocal.java \
 	java/lang/Throwable.java \
+	java/lang/TypeNotPresentException.java \
 	java/lang/UnknownError.java \
 	java/lang/UnsatisfiedLinkError.java \
 	java/lang/UnsupportedClassVersionError.java \
@@ -2911,6 +2916,10 @@ java_lang_SRCS = \
 	java/lang/VirtualMachineError.java \
 	java/lang/Void.java
 
+java_lang_annotation_SRCS = \
+	java/lang/annotation/AnnotationFormatError.java \
+	java/lang/annotation/AnnotationTypeMismatchException.java
+
 java_lang_ref_SRCS = \
 	java/lang/ref/PhantomReference.java \
 	java/lang/ref/Reference.java \
@@ -2923,14 +2932,19 @@ java_lang_reflect_SRCS = \
 	java/lang/reflect/Array.java \
 	java/lang/reflect/Constructor.java \
 	java/lang/reflect/Field.java \
+	java/lang/reflect/GenericArrayType.java \
+	java/lang/reflect/GenericSignatureFormatError.java \
 	java/lang/reflect/InvocationHandler.java \
 	java/lang/reflect/InvocationTargetException.java \
 	java/lang/reflect/Member.java \
 	java/lang/reflect/Method.java \
 	java/lang/reflect/Modifier.java \
+	java/lang/reflect/ParameterizedType.java \
 	java/lang/reflect/Proxy.java \
 	java/lang/reflect/ReflectPermission.java \
-	java/lang/reflect/UndeclaredThrowableException.java
+	java/lang/reflect/Type.java \
+	java/lang/reflect/UndeclaredThrowableException.java \
+	java/lang/reflect/WildcardType.java
 
 java_math_SRCS = \
 	java/math/BigDecimal.java \
