@@ -2,6 +2,15 @@
 
 	Resynced with GNU Classpath.
 
+	2003-12-26  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/image/ImagingOpException.java
+        (serialVersionUID): Fixed.
+
+2004-01-03  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2003-12-26  Fernando Nasser  <fnasser@redhat.com>
 
         * java/awt/datatransfer/DataFlavor.java (getParameter):
