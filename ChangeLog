@@ -1,3 +1,9 @@
+Mon Oct 28 07:57:51 PST 2002  Jim Pick  <jim@kaffe.org>
+
+	* config/config-signal.h: Fixed typo.
+
+	Reported by: Jose M. Gomez <ilinsar@jazzfree.com>
+
 Fri Oct 25 10:30:19 CEST 2002 Oskar Sandberg <oskar@freenetproject.org>
 
 	* libraries/javalib/java/lang/Class.java:

@@ -40,7 +40,7 @@ typedef int sigset_t;
 
 #else
 
-#define	sigprocmark(op, nsig, osig)
+#define	sigprocmask(op, nsig, osig)
 /* Signal support (sigprocmask or sigsetmask) not available */
 
 #endif
