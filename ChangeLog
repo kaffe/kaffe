@@ -1,3 +1,8 @@
+Mon Jul 27 18:14:44 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* libraries/javalib/java/lang/String.java: fixed String.
+	equalsIgnoreCase() to work correctly when null is passed as argument.
+
 Mon Jul 27 09:32:05 1998  Giles Lean  <giles@nemeton.com.au>
 
 	* libraries/javalib/java/io/File.java: fix for getParent to return
