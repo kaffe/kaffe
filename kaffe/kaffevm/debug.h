@@ -58,6 +58,9 @@
 # define DBG_ELOOKUP		DBG_BIT(25) 
 # define DBG_FLOOKUP		DBG_BIT(26) 
 # define DBG_MLOOKUP		DBG_BIT(27) 
+# define DBG_NOGC		DBG_BIT(28) 
+# define DBG_JIT		DBG_BIT(29) 
+# define DBG_MOREJIT		DBG_BIT(30) 
 
 /* let's reserve 50-63 for temporary uses */
 # define DBG_SLACKANAL		DBG_BIT(50) 

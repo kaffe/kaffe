@@ -80,8 +80,8 @@ initThreads(void)
 	/* Allocate a thread to be the main thread */
 	createInitialThread("main");
 
-#if defined(GC_ENABLE)
 	/* Breaks encapsulation */
+	if (DBGEXPR(NOGC, false, true))
 	{
 		extern void gcMan(void*);
 		extern void finaliserMan(void*);
@@ -91,7 +91,6 @@ initThreads(void)
 		garbageman = createDaemon(&gcMan, "gc", THREAD_MAXPRIO);
 		gc_mode = GC_ENABLED;
 	}
-#endif
 }
 
 /*

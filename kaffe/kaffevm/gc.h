@@ -12,9 +12,6 @@
 #ifndef __gc_h
 #define __gc_h
 
-/* Enable the garbage collector - recommended */
-#define	GC_ENABLE
-
 /* Enable incremental collection - recommended but if you have odd behaviour
  * turn this option off - non-incremental collection is more debugged.
  */

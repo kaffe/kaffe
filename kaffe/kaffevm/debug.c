@@ -88,6 +88,9 @@ static struct debug_opts
 	D(ELOOKUP, "Debug exception lookup"),
 	D(FLOOKUP, "Debug field lookup"),
 	D(MLOOKUP, "Debug method lookup"),
+	D(JIT, 	"Debug JIT compiler--show emitted instructions."),
+	D(MOREJIT, 	"Debug JIT compiler--show callinfo."),
+	D(NOGC,	"Turn garbage collection off."),
 
 	/* you can define combinations too */
 	{ "lookup", DBG_MLOOKUP|DBG_ELOOKUP|DBG_FLOOKUP, 
@@ -182,6 +185,16 @@ void dbgSetMaskStr(char *mask_str)
 		/* Get next opt */
 		opt = strtok(NULL, separators);
 	}
+
+	if (kaffevmDebugMask & DBG_JIT) {
+#if defined(TRANSLATOR)
+		extern int jit_debug;
+		jit_debug = 1;
+#else
+		fprintf(stderr, 
+			"You cannot debug the JIT in interpreter mode \n");
+#endif
+	}
 }
 
 static char *debugBuffer;
@@ -217,6 +230,11 @@ debugExitHook(void)
 static void
 debugSysInit(void)
 {
+#if defined(TRANSLATOR)
+	extern int jit_debug;
+	if (getenv("JIT_DEBUG")) 
+		jit_debug = 1;
+#endif
 	atexit(debugExitHook);
 }
 
