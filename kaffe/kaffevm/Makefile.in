@@ -352,7 +352,8 @@ noinst_HEADERS = \
 	gcRefs.h \
 	thread.h \
 	threadData.h \
-	utf8const.h
+	utf8const.h \
+	verify.h
 
 
 CLEANFILES = so_locations

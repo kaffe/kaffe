@@ -242,6 +242,7 @@ libkaffejvmpi_la_DEPENDENCIES = \
 	$(LIBLTDL) \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la
 
+
 libkaffejvmpi_la_LIBADD = \
 	$(libkaffejvmpi_la_DEPENDENCIES) \
 	$(VM_LIBS) \

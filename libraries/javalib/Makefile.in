@@ -1434,6 +1434,8 @@ java_security_cert_SRCS = \
 	java/security/cert/Certificate.java \
 	java/security/cert/CertificateNotYetValidException.java \
 	java/security/cert/CertificateParsingException.java \
+	java/security/cert/CertPathBuilderException.java \
+	java/security/cert/CertPathValidatorException.java \
 	java/security/cert/CertStoreException.java \
 	java/security/cert/CRLException.java \
 	java/security/cert/CRL.java \
@@ -1449,6 +1451,7 @@ java_security_interfaces_SRCS = \
 	java/security/interfaces/DSAPrivateKey.java \
 	java/security/interfaces/DSAPublicKey.java \
 	java/security/interfaces/RSAKey.java \
+	java/security/interfaces/RSAMultiPrimePrivateCrtKey.java \
 	java/security/interfaces/RSAPrivateCrtKey.java \
 	java/security/interfaces/RSAPrivateKey.java \
 	java/security/interfaces/RSAPublicKey.java

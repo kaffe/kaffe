@@ -1,5 +1,5 @@
-/* ActivateFailedException.java -- thrown when activation fails
-   Copyright (c) 1996, 1997, 1998, 1999, 2002 Free Software Foundation, Inc.
+/* RSAMultiPrimePrivateCrtKey.java --
+   Copyright (C) 2003, Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,42 +35,76 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-package java.rmi.activation;
+package java.security.interfaces;
 
-import java.rmi.RemoteException;
+import java.math.BigInteger;
+import java.security.spec.RSAOtherPrimeInfo;
 
 /**
- * Thrown when activation fails on a remote call to an activatable object.
+ * The interface to an RSA multi-prime private key, as defined in the PKCS#1
+ * v2.1, using the <i>Chinese Remainder Theorem</i> (CRT) information values.
  *
- * @author unknown
- * @since 1.2
- * @status updated to 1.4
+ * @since 1.4
+ * @see java.security.spec.RSAPrivateKeySpec
+ * @see java.security.spec.RSAMultiPrimePrivateCrtKeySpec
+ * @see RSAPrivateKey
+ * @see RSAPrivateCrtKey
  */
-public class ActivateFailedException extends RemoteException
+public interface RSAMultiPrimePrivateCrtKey extends RSAPrivateKey
 {
-  /**
-   * Compatible with JDK 1.2+.
-   */
-  private static final long serialVersionUID = 4863550261346652506L;
+  // Constants
+  // --------------------------------------------------------------------------
+
+  // Methods
+  // --------------------------------------------------------------------------
 
   /**
-   * Create an exception with a message.
+   * Returns the public exponent.
    *
-   * @param s the message
+   * @return the public exponent.
    */
-  public ActivateFailedException(String s)
-  {
-    super(s);
-  }
+  BigInteger getPublicExponent();
 
   /**
-   * Create an exception with a message and a cause.
+   * Returns the primeP.
    *
-   * @param s the message
-   * @param ex the cause
+   * @return the primeP.
    */
-  public ActivateFailedException(String s, Exception ex)
-  {
-    super(s, ex);
-  }
+  BigInteger getPrimeP();
+
+  /**
+   * Returns the primeQ.
+   *
+   * @return the primeQ.
+   */
+  BigInteger getPrimeQ();
+
+  /**
+   * Returns the primeExponentP.
+   *
+   * @return the primeExponentP.
+   */
+  BigInteger getPrimeExponentP();
+
+  /**
+   * Returns the primeExponentQ.
+   *
+   * @return the primeExponentQ.
+   */
+  BigInteger getPrimeExponentQ();
+
+  /**
+   * Returns the crtCoefficient.
+   *
+   * @return the crtCoefficient.
+   */
+  BigInteger getCrtCoefficient();
+
+  /**
+   * Returns the otherPrimeInfo or <code>null</code> if there are only two
+   * prime factors (p and q).
+   *
+   * @return the otherPrimeInfo.
+   */
+  RSAOtherPrimeInfo[] getOtherPrimeInfo();
 }

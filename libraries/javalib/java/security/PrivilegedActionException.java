@@ -1,45 +1,109 @@
+/* PrivilegedActionException.java -- wrap an exception in a privileged action
+   Copyright (C) 1998, 2002 Free Software Foundation, Inc.
 
-/*
- * Java core library component.
- *
- * Copyright (c) 1999
- *	Archie L. Cobbs.  All rights reserved.
- * Copyright (c) 1999
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- *
- * Author: Archie L. Cobbs <archie@whistle.com>
- */
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
 
 package java.security;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
+/**
+ * This exception is thrown when an exception is thrown during a
+ * privileged action being performed with the
+ * <code>AccessController.doPrivileged()</code> method.  It wraps the
+ * actual exception thrown in the privileged code.
+ *
+ * @author Aaron M. Renn <arenn@urbanophile.com>
+ * @author Eric Blake <ebb9@email.byu.edu>
+ * @see PrivilegedExceptionAction
+ * @see AccessController#doPrivileged(PrivilegedExceptionAction)
+ * @see AccessController#doPrivileged(PrivilegedExceptionAction, AccessControlContext)
+ * @status updated to 1.4
+ */
+public class PrivilegedActionException extends Exception
+{
+  /**
+   * Compatible with JDK 1.1+.
+   */
+  private static final long serialVersionUID = 4724086851538908602L;
 
-public class PrivilegedActionException extends Exception {
-	private final Exception e;
+  /**
+   * This is the actual exception that occurred.
+   *
+   * @serial the wrapped exception
+   */
+  private Exception exception;
 
-	public PrivilegedActionException(Exception e) {
-		super();
-		this.e = e;
-	}
+  /**
+   * Create a new instance that wraps the specified <code>Exception</code>.
+   *
+   * @param e the <code>Exception</code> to wrap
+   */
+  public PrivilegedActionException(Exception e)
+  {
+    super(e);
+    exception = e;
+  }
 
-	public Exception getException() {
-		return e;
-	}
+  /**
+   * Get the underlying <code>Exception</code> that caused this one. This
+   * is a legacy method, the preferred way is {@link #getCause()}.
+   *
+   * @return the cause
+   */
+  public Exception getException()
+  {
+    return exception;
+  }
 
-	public void printStackTrace() {
-		e.printStackTrace();
-	}
+  /**
+   * Gets the cause of this exception.
+   *
+   * @return the cause
+   * @since 1.4
+   */
+  public Throwable getCause()
+  {
+    return exception;
+  }
 
-	public void printStackTrace(PrintStream p) {
-		e.printStackTrace(p);
-	}
-
-	public void printStackTrace(PrintWriter p) {
-		e.printStackTrace(p);
-	}
+  /**
+   * Convert this to a String.
+   *
+   * @return the string representation
+   */
+  public String toString()
+  {
+    return super.toString();
+  }
 }
-
