@@ -22,11 +22,6 @@ typedef struct _exceptionFrame {
         uintp	retpc;
 } exceptionFrame;
 
-/* Is this frame valid (ie. is it on the current stack) ? */
-#define	FRAMEOKAY(f)							\
-	((f)->retbp >= (int)TCTX(currentThread)->stackBase &&		\
-	 (f)->retbp < (int)TCTX(currentThread)->stackEnd)
-
 /* Get the next frame in the chain */
 #define	NEXTFRAME(f)							\
 	(f) = ((exceptionFrame*)(f)->retbp)
