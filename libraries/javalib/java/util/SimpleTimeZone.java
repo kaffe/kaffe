@@ -430,6 +430,8 @@ public class SimpleTimeZone extends TimeZone
    */
   private int checkRule(int month, int day, int dayOfWeek)
   {
+    if (month < 0 || month > 11)
+      throw new IllegalArgumentException("month out of range");
     int daysInMonth = getDaysInMonth(month, 1);
     if (dayOfWeek == 0)
       {
@@ -590,7 +592,7 @@ public class SimpleTimeZone extends TimeZone
    *
    * Note that this API isn't incredibly well specified.  It appears that the
    * after flag must override the parameters, since normally, the day and
-   * dayofweek can select this.  I.e., if day < 0 and dayOfWeek < 0, on or
+   * dayofweek can select this.  I.e., if day &lt; 0 and dayOfWeek &lt; 0, on or
    * before mode is chosen.  But if after == true, this implementation
    * overrides the signs of the other arguments.  And if dayOfWeek == 0, it
    * falls back to the behavior in the other APIs.  I guess this should be
