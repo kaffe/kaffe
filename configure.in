@@ -1365,6 +1365,28 @@ fi
 
 AC_SUBST(PROFILE)
 
+
+dnl -----------------------------------------------------------------------
+dnl                    Support for using a precompiled class library
+dnl -----------------------------------------------------------------------
+AC_ARG_WITH(rt_jar, [  --with-rt-jar=ABS.PATH	use precompiled kaffe class library])
+
+case "$with_rt_jar" in
+"" | "no" )
+	use_rt_jar=false
+	;;
+"yes")
+	AC_MSG_ERROR([Please suply an absolute path to a precompiled rt.jar from this version of kaffe])
+	;;
+*)
+	use_rt_jar=true
+	PATH_TO_RT_JAR=$with_rt_jar
+	;;
+esac;
+
+AM_CONDITIONAL(USE_PRECOMPILED_RT_JAR, test x$use_rt_jar = xtrue)
+AC_SUBST(PATH_TO_RT_JAR)
+
 JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/native/libnative.la \
 \$(top_builddir)/libraries/clib/net/libnet.la \

@@ -130,6 +130,7 @@ OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
+PATH_TO_RT_JAR = @PATH_TO_RT_JAR@
 PROFILE = @PROFILE@
 QEMBED = @QEMBED@
 QT_CXXFLAGS = @QT_CXXFLAGS@
@@ -650,13 +651,15 @@ $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist
 bootstrap: $(srcdir)/Klasses.jar.bootstrap
 
 .PHONY: jar-classes
-jar-classes rt.jar: $(LIBDIR)/stamp
-	cp $(srcdir)/kaffe/io/ByteToCharEUC_JP.tbl $(srcdir)/kaffe/io/CharToByteEUC_JP.tbl $(LIBDIR)/kaffe/io
-	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
-	for i in $(gnu_regexp_message_bundles) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
-	rm -f rt.jar
-	$(JAR_CMD1)
-	$(JAR_CMD2)
+@USE_PRECOMPILED_RT_JAR_TRUE@jar-classes rt.jar:
+@USE_PRECOMPILED_RT_JAR_TRUE@	cp $(PATH_TO_RT_JAR) .
+@USE_PRECOMPILED_RT_JAR_FALSE@jar-classes rt.jar: $(LIBDIR)/stamp
+@USE_PRECOMPILED_RT_JAR_FALSE@	cp $(srcdir)/kaffe/io/ByteToCharEUC_JP.tbl $(srcdir)/kaffe/io/CharToByteEUC_JP.tbl $(LIBDIR)/kaffe/io
+@USE_PRECOMPILED_RT_JAR_FALSE@	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
+@USE_PRECOMPILED_RT_JAR_FALSE@	for i in $(gnu_regexp_message_bundles) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
+@USE_PRECOMPILED_RT_JAR_FALSE@	rm -f rt.jar
+@USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD1)
+@USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD2)
 
 .PHONY: build-classes Klasses
 build-classes Klasses: rt.jar

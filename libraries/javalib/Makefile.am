@@ -2283,6 +2283,10 @@ JAR_CMD2 = $(JAR) -uvf rt.jar -C $(srcdir) META-INF/
 endif
 
 .PHONY: jar-classes
+if USE_PRECOMPILED_RT_JAR
+jar-classes rt.jar:
+	cp $(PATH_TO_RT_JAR) .
+else
 jar-classes rt.jar: $(LIBDIR)/stamp
 	cp $(srcdir)/kaffe/io/ByteToCharEUC_JP.tbl $(srcdir)/kaffe/io/CharToByteEUC_JP.tbl $(LIBDIR)/kaffe/io
 	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
@@ -2290,6 +2294,7 @@ jar-classes rt.jar: $(LIBDIR)/stamp
 	rm -f rt.jar
 	$(JAR_CMD1)
 	$(JAR_CMD2)
+endif
 
 .PHONY: build-classes Klasses
 build-classes Klasses: rt.jar

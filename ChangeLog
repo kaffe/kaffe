@@ -1,3 +1,14 @@
+2003-02-26 Dalibor Topic <robilad@yahoo.com>
+
+	* configure.in:
+	(--with-rt.jar) new option.
+	(USE_PRECOMPILED_RT_JAR) new conditional.
+	(PATH_TO_RT_JAR) new variable.
+
+	* libraries/javalib/Makefile.am:
+	Use precompiled rt.jar when supplied instead of compiling the
+	class library.
+	
 2003-02-26 Matthew Toseland <toad@amphibian.dyndns.org>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
