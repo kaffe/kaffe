@@ -1,110 +1,109 @@
 # Traditional Chinese translations for Kaffe Virtual Machine package.
-# Copyright (C) 2004 Kaffe.org contributors.
+# Copyright (c) 2004, 2005 Jim Huang <jserv@kaffe.org>.
 # This file is distributed under the same license as the Kaffe Virtual Machine package.
-# Jim Huang <jserv@kaffe.org>, 2004.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Kaffe Virtual Machine 1.1.x-cvs\n"
 "Report-Msgid-Bugs-To: kaffe@kaffe.org\n"
 "POT-Creation-Date: 2005-01-23 23:15-0500\n"
-"PO-Revision-Date: 2004-07-23 09:45+0800\n"
+"PO-Revision-Date: 2005-01-29 09:45+0800\n"
 "Last-Translator: Jim Huang <jserv@kaffe.org>\n"
 "Language-Team: Traditional Chinese <kaffe@kaffe.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=big5\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: kaffe/kaffe/main.c:418 kaffe/kaffe/main.c:496 kaffe/kaffe/main.c:548
 #: kaffe/kaffe/main.c:575 kaffe/kaffe/main.c:600 kaffe/kaffe/main.c:622
 #, c-format
 msgid "Error: out of memory.\n"
-msgstr "¿ù»~¡G°O¾ĞÅé¤£¨¬\n"
+msgstr "éŒ¯èª¤ï¼šè¨˜æ†¶é«”ä¸è¶³\n"
 
 #: kaffe/kaffe/main.c:637
 #, c-format
 msgid "Error: No stack size found for -ss option.\n"
-msgstr "¿ù»~¡G¦b -ss ¿ï¶µ¤¤¨S¦³«ü©w°ïÅ|ªÅ¶¡\n"
+msgstr "éŒ¯èª¤ï¼šåœ¨ -ss é¸é …ä¸­æ²’æœ‰æŒ‡å®šå †ç–Šç©ºé–“\n"
 
 #: kaffe/kaffe/main.c:645
 #, c-format
 msgid "Warning: Attempt to set stack size smaller than %d - ignored.\n"
-msgstr "Äµ§i¡G¹Á¸Õ³]©w¤Ö©ó %d ªº°ïÅ|ªÅ¶¡ - ©¿²¤\n"
+msgstr "è­¦å‘Šï¼šå˜—è©¦è¨­å®šå°‘æ–¼ %d çš„å †ç–Šç©ºé–“ - å¿½ç•¥\n"
 
 #: kaffe/kaffe/main.c:656
 #, c-format
 msgid "Error: No heap size found for -mx option.\n"
-msgstr "¿ù»~¡G¦b -mx ¿ï¶µ¤¤¨S¦³«ü©w heap ªÅ¶¡\n"
+msgstr "éŒ¯èª¤ï¼šåœ¨ -mx é¸é …ä¸­æ²’æœ‰æŒ‡å®š heap ç©ºé–“\n"
 
 #: kaffe/kaffe/main.c:669
 #, c-format
 msgid "Error: No heap size found for -ms option.\n"
-msgstr "¿ù»~¡G¦b -ms ¿ï¶µ¤¤¨S¦³«ü©w heap ªÅ¶¡\n"
+msgstr "éŒ¯èª¤ï¼šåœ¨ -ms é¸é …ä¸­æ²’æœ‰æŒ‡å®š heap ç©ºé–“\n"
 
 #: kaffe/kaffe/main.c:681
 #, c-format
 msgid "Error: No heap size found for -as option.\n"
-msgstr "¿ù»~¡G¦b -as ¿ï¶µ¤¤¨S¦³«ü©w heap ªÅ¶¡\n"
+msgstr "éŒ¯èª¤ï¼šåœ¨ -as é¸é …ä¸­æ²’æœ‰æŒ‡å®š heap ç©ºé–“\n"
 
 #: kaffe/kaffe/main.c:737
 #, c-format
 msgid "Error: -Xxprof_syms option requires a file name.\n"
-msgstr "¿ù»~¡G-Xxprof_syms ¿ï¶µ»İ­n´£¨ÑÀÉ¦W\n"
+msgstr "éŒ¯èª¤ï¼š-Xxprof_syms é¸é …éœ€è¦æä¾›æª”å\n"
 
 #: kaffe/kaffe/main.c:743
 #, c-format
 msgid "Unable to create profiler symbol file %s.\n"
-msgstr "µLªk«Ø¥ß profiler ²Å¸¹¸ê°TÀÉ¡G%s\n"
+msgstr "ç„¡æ³•å»ºç«‹ profiler ç¬¦è™Ÿè³‡è¨Šæª”ï¼š%s\n"
 
 #: kaffe/kaffe/main.c:752
 #, c-format
 msgid "Error: -Xxprof_gmon option requires a file name.\n"
-msgstr "¿ù»~¡G-Xxprof_gmon ¿ï¶µ»İ­n´£¨ÑÀÉ¦W\n"
+msgstr "éŒ¯èª¤ï¼š-Xxprof_gmon é¸é …éœ€è¦æä¾›æª”å\n"
 
 #: kaffe/kaffe/main.c:758
 #, c-format
 msgid "Unable to create gmon file %s.\n"
-msgstr "µLªk«Ø¥ß gmon ÀÉ¡G %s\n"
+msgstr "ç„¡æ³•å»ºç«‹ gmon æª”ï¼š %s\n"
 
 #: kaffe/kaffe/main.c:772
 #, c-format
 msgid "Error: -Xxdebug_file option requires a file name.\n"
-msgstr "¿ù»~¡G-Xxdebug_file ¿ï¶µ»İ­n´£¨ÑÀÉ¦W\n"
+msgstr "éŒ¯èª¤ï¼š-Xxdebug_file é¸é …éœ€è¦æä¾›æª”å\n"
 
 #: kaffe/kaffe/main.c:786
 #, c-format
 msgid "Error: -Xfeedback option requires a file name.\n"
-msgstr "¿ù»~¡G-Xfeedback ¿ï¶µ»İ­n´£¨ÑÀÉ¦W\n"
+msgstr "éŒ¯èª¤ï¼š-Xfeedback é¸é …éœ€è¦æä¾›æª”å\n"
 
 #: kaffe/kaffe/main.c:804
 #, c-format
 msgid "Error: -vmstats option requires a second arg.\n"
-msgstr "¿ù»~¡G-vmstats ¿ï¶µ»İ­nÃB¥~ªº°Ñ¼Æ\n"
+msgstr "éŒ¯èª¤ï¼š-vmstats é¸é …éœ€è¦é¡å¤–çš„åƒæ•¸\n"
 
 #: kaffe/kaffe/main.c:816
 #, c-format
 msgid "Error: -vmdebug option requires a debug flag. Use `list' for a list.\n"
-msgstr "¿ù»~¡G-vmdebug ¿ï¶µ»İ­n°»¿ùºX¼Ğ¡A½Ğ¥Î -vmdebug list ¨ú±oºX¼Ğ¦Cªí\n"
+msgstr "éŒ¯èª¤ï¼š-vmdebug é¸é …éœ€è¦åµéŒ¯æ——æ¨™ï¼Œè«‹ç”¨ -vmdebug list å–å¾—æ——æ¨™åˆ—è¡¨\n"
 
 #: kaffe/kaffe/main.c:829
 #, c-format
 msgid "Error: -debug-fd an open descriptor.\n"
-msgstr ""
+msgstr "éŒ¯èª¤ï¼š -debug-fd å¾Œé¢æ‡‰è©²æœ‰å€‹æª”æ¡ˆæè¿°å­ (file descriptor)\n"
 
 #: kaffe/kaffe/main.c:835
-#, fuzzy, c-format
+#, c-format
 msgid "Error: -debug-fd requires an integer.\n"
-msgstr "¿ù»~¡G-Xxdebug_file ¿ï¶µ»İ­n´£¨ÑÀÉ¦W\n"
+msgstr "éŒ¯èª¤ï¼š-debug-fd éœ€è¦çµ¦å®šä¸€å€‹æ•´æ•¸ã€‚\n"
 
 #: kaffe/kaffe/main.c:847
 #, c-format
 msgid "Error: Unrecognized JVM specific option `%s'.\n"
-msgstr "¿ù»~¡GµLªk¿ëÃÑªº JVM ¿ï¶µ¡G '%s'\n"
+msgstr "éŒ¯èª¤ï¼šç„¡æ³•è¾¨è­˜çš„ JVM é¸é …ï¼š '%s'\n"
 
 #: kaffe/kaffe/main.c:862
 #, c-format
 msgid "Unknown flag: %s\n"
-msgstr "¥¼ª¾ªººX¼Ğ¡G%s\n"
+msgstr "æœªçŸ¥çš„æ——æ¨™ï¼š%s\n"
 
 #: kaffe/kaffe/main.c:878
 #, c-format
@@ -115,16 +114,16 @@ msgid ""
 "\t-version\t\t Print version number\n"
 "\t-fullversion\t\t Print verbose version info\n"
 msgstr ""
-"¨Ï¥Î¤è¦¡¡G kaffe [-¿ï¶µ] Ãş§O\n"
-"¿ï¶µ¡G\n"
-"\t-help\t\t\t ¦L¦C¥»°T®§\n"
-"\t-version\t\t ¦L¦Cª©¥»¸¹½X\n"
-"\t-fullversion\t\t ¦L¦C¸Ô²Óªºª©¥»¸ê°T\n"
+"ä½¿ç”¨æ–¹å¼ï¼š kaffe [-é¸é …] é¡åˆ¥\n"
+"é¸é …ï¼š\n"
+"\t-help\t\t\t å°åˆ—æœ¬è¨Šæ¯\n"
+"\t-version\t\t å°åˆ—ç‰ˆæœ¬è™Ÿç¢¼\n"
+"\t-fullversion\t\t å°åˆ—è©³ç´°çš„ç‰ˆæœ¬è³‡è¨Š\n"
 
 #: kaffe/kaffe/main.c:884
 #, c-format
 msgid "\t-ia32\t\t\t Execute the ia32 version of Kaffe\n"
-msgstr "\t-ia32\t\t\t °õ¦æ ia32 ª©¥»ªº Kaffe\n"
+msgstr "\t-ia32\t\t\t åŸ·è¡Œ ia32 ç‰ˆæœ¬çš„ Kaffe\n"
 
 #: kaffe/kaffe/main.c:886
 #, c-format
@@ -149,30 +148,30 @@ msgid ""
 "\t-verbosecall\t\t Print detailed call flow information\n"
 "\t-nodeadlock\t\t Disable deadlock detection\n"
 msgstr ""
-"\t-ss <size>\t\t «ü©w³Ì¤jªº­ì¥Í (native) °ïÅ|ªÅ¶¡\n"
-"\t-mx <size> \t\t «ü©w³Ì¤j heap ªÅ¶¡\n"
-"\t-ms <size> \t\t «ü©wªì©l heap ªÅ¶¡\n"
-"\t-as <size> \t\t «ü©w heap »¼¼WªÅ¶¡\n"
-"\t-classpath <path>        ³]©w classpath\n"
-"\t-Xbootclasspath:<path>   ³]©w bootclasspath\n"
-"\t-Xbootclasspath/a:<path> ¦b bootclasspath ¤§«á°l¥[ path\n"
-"\t-Xbootclasspath/p:<path> ¦b bootclasspath «e¼W¥[ path\n"
-"\t-D<property>=<value>     µ¹¤©¯S©wÄİ©Ê\n"
-"\t-verify *\t\t ÀËÅç (verify) ©Ò¦³ bytecode\n"
-"\t-verifyremote *\t\t ÀËÅç (verify) ±qºô¸ô¤U¸üªº bytecode\n"
-"\t-noverify\t\t ¤£ÀËÅç (verify) ¥ô¦ó bytecode\n"
-"\t-noclassgc\t\t Ãö³¬ class garbage collection\n"
-"\t-verbosegc\t\t ¦b°õ¦æ garbage collection ®É¦L¦C¸Ô²Ó¸ê°T\n"
-"\t-v, -verbose\t\t ¦L¦C¸Ô²Óªº°õ¦æ±¡ªp\n"
-"\t-verbosejit\t\t ¦b JIT code generation ®É¦L¦C¸Ô²Ó¸ê°T\n"
-"\t-verbosemem\t\t ¦L¦C¸Ô²Ó°O¾ĞÅé°t¸m²Î­p\n"
-"\t-verbosecall\t\t ¦L¦C¸Ô²Ó©I¥s¬yµ{¸ê°T\n"
-"\t-nodeadlock\t\t Ãö³¬¦ºµ² (deadlock) °»´ú\n"
+"\t-ss <size>\t\t æŒ‡å®šæœ€å¤§çš„åŸç”Ÿ (native) å †ç–Šç©ºé–“\n"
+"\t-mx <size> \t\t æŒ‡å®šæœ€å¤§ heap ç©ºé–“\n"
+"\t-ms <size> \t\t æŒ‡å®šåˆå§‹ heap ç©ºé–“\n"
+"\t-as <size> \t\t æŒ‡å®š heap éå¢ç©ºé–“\n"
+"\t-classpath <path>        è¨­å®š classpath\n"
+"\t-Xbootclasspath:<path>   è¨­å®š bootclasspath\n"
+"\t-Xbootclasspath/a:<path> åœ¨ bootclasspath ä¹‹å¾Œè¿½åŠ  path\n"
+"\t-Xbootclasspath/p:<path> åœ¨ bootclasspath å‰å¢åŠ  path\n"
+"\t-D<property>=<value>     çµ¦äºˆç‰¹å®šå±¬æ€§\n"
+"\t-verify *\t\t æª¢é©— (verify) æ‰€æœ‰ bytecode\n"
+"\t-verifyremote *\t\t æª¢é©— (verify) å¾ç¶²è·¯ä¸‹è¼‰çš„ bytecode\n"
+"\t-noverify\t\t ä¸æª¢é©— (verify) ä»»ä½• bytecode\n"
+"\t-noclassgc\t\t é—œé–‰ class garbage collection\n"
+"\t-verbosegc\t\t åœ¨åŸ·è¡Œ garbage collection æ™‚å°åˆ—è©³ç´°è³‡è¨Š\n"
+"\t-v, -verbose\t\t å°åˆ—è©³ç´°çš„åŸ·è¡Œæƒ…æ³\n"
+"\t-verbosejit\t\t åœ¨ JIT code generation æ™‚å°åˆ—è©³ç´°è³‡è¨Š\n"
+"\t-verbosemem\t\t å°åˆ—è©³ç´°è¨˜æ†¶é«”é…ç½®çµ±è¨ˆ\n"
+"\t-verbosecall\t\t å°åˆ—è©³ç´°å‘¼å«æµç¨‹è³‡è¨Š\n"
+"\t-nodeadlock\t\t é—œé–‰æ­»çµ (deadlock) åµæ¸¬\n"
 
 #: kaffe/kaffe/main.c:906
 #, c-format
 msgid "\t-prof\t\t\t Enable profiling of Java methods\n"
-msgstr "\t-prof\t\t\t ¶}±Ò Java method ªº profiling\n"
+msgstr "\t-prof\t\t\t é–‹å•Ÿ Java method çš„ profiling\n"
 
 #: kaffe/kaffe/main.c:909
 #, c-format
@@ -182,20 +181,20 @@ msgid ""
 "jit-symbols.s]\n"
 "\t-Xxprof_gmon <file>\t Base name for gmon files [Default: xgmon.out]\n"
 msgstr ""
-"\t-Xxprof\t\t\t ¶}±Ò¸ó»y¨¥ profiling\n"
-"\t-Xxprof_syms <ÀÉ¦W>\t «ü©w profiling symbol ªºÀÉ®×¦WºÙ [¹w³]­È¡Gkaffe-jit-"
+"\t-Xxprof\t\t\t é–‹å•Ÿè·¨èªè¨€ profiling\n"
+"\t-Xxprof_syms <æª”å>\t æŒ‡å®š profiling symbol çš„æª”æ¡ˆåç¨± [é è¨­å€¼ï¼škaffe-jit-"
 "symbols.s]\n"
-"\t-Xxprof_gmon <ÀÉ¦W>\t «ü©w gmon ÀÉ®×ªº¦WºÙ [¹w³]­È¡Gxgmon.out]\n"
+"\t-Xxprof_gmon <æª”å>\t æŒ‡å®š gmon æª”æ¡ˆçš„åç¨± [é è¨­å€¼ï¼šxgmon.out]\n"
 
 #: kaffe/kaffe/main.c:914
 #, c-format
 msgid "\t-Xxdebug_file <file>\t Name of the debugging symbols file\n"
-msgstr "\t-Xxdebug_file <ÀÉ¦W>\t «ü©w debugging symbol ÀÉ®×¦WºÙ\n"
+msgstr "\t-Xxdebug_file <æª”å>\t æŒ‡å®š debugging symbol æª”æ¡ˆåç¨±\n"
 
 #: kaffe/kaffe/main.c:917
 #, c-format
 msgid "\t-Xfeedback <file>\t The file name to write feedback data to\n"
-msgstr "\t-Xfeedback <ÀÉ¦W>\t «ü©w¿é¥X feedback ¸ê®ÆªºÀÉ¦W\n"
+msgstr "\t-Xfeedback <æª”å>\t æŒ‡å®šè¼¸å‡º feedback è³‡æ–™çš„æª”å\n"
 
 #: kaffe/kaffe/main.c:919
 #, c-format
@@ -206,18 +205,18 @@ msgid ""
 "\t-oss <size> *\t\t Maximum java stack size\n"
 "\t-jar                     Executable is a JAR\n"
 msgstr ""
-"\t-debug * \t\t °lÂÜ method ©I¥s±¡ªp\n"
-"\t-noasyncgc *\t\t ¤£¬I¦æ«D¦P¨B garbage collection\n"
+"\t-debug * \t\t è¿½è¹¤ method å‘¼å«æƒ…æ³\n"
+"\t-noasyncgc *\t\t ä¸æ–½è¡ŒéåŒæ­¥ garbage collection\n"
 "\t-cs, -checksource *\t Check source against class files\n"
-"\t-oss <ªÅ¶¡> *\t\t «ü©w³Ì¤j Java °ïÅ|ªÅ¶¡\n"
-"\t-jar                     °õ¦æ JAR\n"
+"\t-oss <ç©ºé–“> *\t\t æŒ‡å®šæœ€å¤§ Java å †ç–Šç©ºé–“\n"
+"\t-jar                     åŸ·è¡Œ JAR\n"
 
 #: kaffe/kaffe/main.c:925
 #, c-format
 msgid ""
 "\t-vmdebug <flag{,flag}>\t Internal VM debugging.  Set flag=list for a list\n"
 msgstr ""
-"\t-vmdebug <ºX¼Ğ{,ºX¼Ğ}>\t ¤º³¡ VM °»¿ù¡A³]©w flag=list ¥i¨ú±o°»¿ù¶µ¥Ø²M³æ\n"
+"\t-vmdebug <æ——æ¨™{,æ——æ¨™}>\t å…§éƒ¨ VM åµéŒ¯ï¼Œè¨­å®š flag=list å¯å–å¾—åµéŒ¯é …ç›®æ¸…å–®\n"
 
 #: kaffe/kaffe/main.c:927
 #, c-format
@@ -228,23 +227,23 @@ msgstr ""
 #, c-format
 msgid "\t-vmstats <flag{,flag}>\t Print VM statistics.  Set flag=all for all\n"
 msgstr ""
-"\t-vmstats <ºX¼Ğ{,ºX¼Ğ}>\t ¦L¦C VM ²Î­p¼Æ¾Ú¡A¯S©w flag=all ¥i¨ú±o¥ş³¡¶µ¥Ø\n"
+"\t-vmstats <æ——æ¨™{,æ——æ¨™}>\t å°åˆ— VM çµ±è¨ˆæ•¸æ“šï¼Œç‰¹å®š flag=all å¯å–å¾—å…¨éƒ¨é …ç›®\n"
 
 #: kaffe/kaffe/main.c:932
 #, c-format
 msgid "\t-Xnative-big-math\t Use GMP for faster, native bignum calculations\n"
 msgstr ""
-"\t-Xnative-big-math\t ¨Ï¥Î GMP §@¬°­ì¥Íªº¤j¼Æ¹Bºâ¡A¥HÀò¨ú§ó§Öªº°õ¦æ³t«×\n"
+"\t-Xnative-big-math\t ä½¿ç”¨ GMP ä½œç‚ºåŸç”Ÿçš„å¤§æ•¸é‹ç®—ï¼Œä»¥ç²å–æ›´å¿«çš„åŸ·è¡Œé€Ÿåº¦\n"
 
 #: kaffe/kaffe/main.c:934
 #, c-format
 msgid "\t-Xkaffe-xlib-awt\tUse Kaffe's Xlib AWT backend\n"
-msgstr "\t-Xkaffe-xlib-awt\t¨Ï¥Î Kaffe ªº Xlib AWT backend\n"
+msgstr "\t-Xkaffe-xlib-awt\tä½¿ç”¨ Kaffe çš„ Xlib AWT backend\n"
 
 #: kaffe/kaffe/main.c:935
-#, fuzzy, c-format
+#, c-format
 msgid "\t-Xkaffe-qt-awt\t\tUse Kaffe's Qt2/3/Embedded AWT backend\n"
-msgstr "\t-Xkaffe-qt-awt\t\t¨Ï¥Î Kaffe ªº Qt2/3/Embedded AWT backend\n"
+msgstr "\t-Xkaffe-qt-awt\t\tä½¿ç”¨ Kaffe çš„ Qt2/3/Embedded AWT backend\n"
 
 #: kaffe/kaffe/main.c:937
 #, c-format
@@ -257,10 +256,10 @@ msgid ""
 "\t-Xms <size> \t\t Initial heap size\n"
 "\t-cp <path> \t\t Set classpath\n"
 msgstr ""
-"  ¼Ğ¥Ü * ªº¶µ¥Ø¥Ø«e¬O©¿²¤ªº\n"
+"  æ¨™ç¤º * çš„é …ç›®ç›®å‰æ˜¯å¿½ç•¥çš„\n"
 "\n"
-"«O«ù¬Û®e©Êªº¿ï¶µ¦³¡G\n"
-"\t-Xss <ªÅ¶¡>\t\t «ü©w³Ì¤j­ì¥Í (native) °ïÅ|ªÅ¶¡\n"
-"\t-Xmx <ªÅ¶¡> \t\t «ü©w³Ì¤j heap ªÅ¶¡\n"
-"\t-Xms <ªÅ¶¡> \t\t «ü©wªì©l heap ªÅ¶¡\n"
-"\t-cp <¸ô®|> \t\t ³]©w classpath\n"
+"ä¿æŒç›¸å®¹æ€§çš„é¸é …æœ‰ï¼š\n"
+"\t-Xss <ç©ºé–“>\t\t æŒ‡å®šæœ€å¤§åŸç”Ÿ (native) å †ç–Šç©ºé–“\n"
+"\t-Xmx <ç©ºé–“> \t\t æŒ‡å®šæœ€å¤§ heap ç©ºé–“\n"
+"\t-Xms <ç©ºé–“> \t\t æŒ‡å®šåˆå§‹ heap ç©ºé–“\n"
+"\t-cp <è·¯å¾‘> \t\t è¨­å®š classpath\n"
