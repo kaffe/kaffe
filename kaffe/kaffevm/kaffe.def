@@ -2182,8 +2182,17 @@ define_insn(RETURN)
 		softcall_initialise_class(c); \
 	}
 
+/* 
+ * We cannot do this optimization as final fields can be changed by JNI calls.
+ * However I leave the possibility of a future optimization by leaving the code in
+ * there.
+ */
+#if 0
 #define FIELD_IS_CONSTANT() \
 	field_class()->state==CSTATE_COMPLETE && (field_field()->accflags&ACC_FINAL)!=0
+#else
+#define FIELD_IS_CONSTANT() 0
+#endif
 
 define_insn(GETSTATIC)
 {

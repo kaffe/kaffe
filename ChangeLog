@@ -1,3 +1,11 @@
+2005-03-27  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/kaffe.def
+	(GETSTATIC, FIELD_IS_CONSTANT): Removed inline optimization because
+	final fields can be mutable.
+
+	Reported by:  Daniel Bonniot  <Daniel.Bonniot@inria.fr>
+
 2005-03-27  Gerrit P. Haase <gp@familiehaase.de>
 
 	* include/jsyscall.h: Whitespace cleanups.
