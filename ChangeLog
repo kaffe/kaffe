@@ -15,6 +15,172 @@
 	
 2004-11-11  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/xml/aelfred2/ContentHandler2.java,
+	libraries/javalib/gnu/xml/dom/DomNSResolverContext.java,
+	libraries/javalib/gnu/xml/transform/AbstractNumberNode.java,
+	libraries/javalib/gnu/xml/transform/ApplyTemplatesNode.java,
+	libraries/javalib/gnu/xml/transform/AttributeNode.java,
+	libraries/javalib/gnu/xml/transform/Bindings.java,
+	libraries/javalib/gnu/xml/transform/CallTemplateNode.java,
+	libraries/javalib/gnu/xml/transform/ChooseNode.java,
+	libraries/javalib/gnu/xml/transform/CommentNode.java,
+	libraries/javalib/gnu/xml/transform/CopyNode.java,
+	libraries/javalib/gnu/xml/transform/CopyOfNode.java,
+	libraries/javalib/gnu/xml/transform/DocumentFunction.java,
+	libraries/javalib/gnu/xml/transform/DummyNode.java,
+	libraries/javalib/gnu/xml/transform/ElementNode.java,
+	libraries/javalib/gnu/xml/transform/ForEachNode.java,
+	libraries/javalib/gnu/xml/transform/IfNode.java,
+	libraries/javalib/gnu/xml/transform/LiteralNode.java,
+	libraries/javalib/gnu/xml/transform/NodeNumberNode.java,
+	libraries/javalib/gnu/xml/transform/NumberNode.java,
+	libraries/javalib/gnu/xml/transform/OtherwiseNode.java,
+	libraries/javalib/gnu/xml/transform/ParameterNode.java,
+	libraries/javalib/gnu/xml/transform/ProcessingInstructionNode.java,
+	libraries/javalib/gnu/xml/transform/SAXSerializer.java,
+	libraries/javalib/gnu/xml/transform/SortKey.java,
+	libraries/javalib/gnu/xml/transform/StreamSerializer.java,
+	libraries/javalib/gnu/xml/transform/TemplateNode.java,
+	libraries/javalib/gnu/xml/transform/TextNode.java,
+	libraries/javalib/gnu/xml/transform/ValueOfNode.java,
+	libraries/javalib/gnu/xml/transform/WhenNode.java,
+	libraries/javalib/gnu/xml/transform/WithParam.java,
+	libraries/javalib/gnu/xml/transform/XSLComparator.java,
+	libraries/javalib/gnu/xml/transform/XSLURIResolver.java,
+	libraries/javalib/gnu/xml/xpath/BooleanFunction.java,
+	libraries/javalib/gnu/xml/xpath/CeilingFunction.java,
+	libraries/javalib/gnu/xml/xpath/ConcatFunction.java,
+	libraries/javalib/gnu/xml/xpath/ContainsFunction.java,
+	libraries/javalib/gnu/xml/xpath/CountFunction.java,
+	libraries/javalib/gnu/xml/xpath/DocumentOrderComparator.java,
+	libraries/javalib/gnu/xml/xpath/FalseFunction.java,
+	libraries/javalib/gnu/xml/xpath/FloorFunction.java,
+	libraries/javalib/gnu/xml/xpath/IdFunction.java,
+	libraries/javalib/gnu/xml/xpath/LangFunction.java,
+	libraries/javalib/gnu/xml/xpath/LastFunction.java,
+	libraries/javalib/gnu/xml/xpath/LocalNameFunction.java,
+	libraries/javalib/gnu/xml/xpath/NameFunction.java,
+	libraries/javalib/gnu/xml/xpath/NamespaceUriFunction.java,
+	libraries/javalib/gnu/xml/xpath/NormalizeSpaceFunction.java,
+	libraries/javalib/gnu/xml/xpath/NotFunction.java,
+	libraries/javalib/gnu/xml/xpath/NumberFunction.java,
+	libraries/javalib/gnu/xml/xpath/Path.java,
+	libraries/javalib/gnu/xml/xpath/PositionFunction.java,
+	libraries/javalib/gnu/xml/xpath/RoundFunction.java,
+	libraries/javalib/gnu/xml/xpath/StartsWithFunction.java,
+	libraries/javalib/gnu/xml/xpath/StringFunction.java,
+	libraries/javalib/gnu/xml/xpath/StringLengthFunction.java,
+	libraries/javalib/gnu/xml/xpath/SubstringAfterFunction.java,
+	libraries/javalib/gnu/xml/xpath/SubstringBeforeFunction.java,
+	libraries/javalib/gnu/xml/xpath/SubstringFunction.java,
+	libraries/javalib/gnu/xml/xpath/SumFunction.java,
+	libraries/javalib/gnu/xml/xpath/TranslateFunction.java,
+	libraries/javalib/gnu/xml/xpath/TrueFunction.java:
+	New files. Taken from GNU JAXP.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/gnu/xml/aelfred2/SAXDriver.java,
+	libraries/javalib/gnu/xml/aelfred2/XmlParser.java,
+	libraries/javalib/gnu/xml/dom/Consumer.java,
+	libraries/javalib/gnu/xml/dom/DomAttr.java,
+	libraries/javalib/gnu/xml/dom/DomCDATA.java,
+	libraries/javalib/gnu/xml/dom/DomCharacterData.java,
+	libraries/javalib/gnu/xml/dom/DomComment.java,
+	libraries/javalib/gnu/xml/dom/DomDoctype.java,
+	libraries/javalib/gnu/xml/dom/DomDocument.java,
+	libraries/javalib/gnu/xml/dom/DomElement.java,
+	libraries/javalib/gnu/xml/dom/DomEntity.java,
+	libraries/javalib/gnu/xml/dom/DomEntityReference.java,
+	libraries/javalib/gnu/xml/dom/DomEvent.java,
+	libraries/javalib/gnu/xml/dom/DomExtern.java,
+	libraries/javalib/gnu/xml/dom/DomFragment.java,
+	libraries/javalib/gnu/xml/dom/DomNamedNodeMap.java,
+	libraries/javalib/gnu/xml/dom/DomNode.java,
+	libraries/javalib/gnu/xml/dom/DomNotation.java,
+	libraries/javalib/gnu/xml/dom/DomNsNode.java,
+	libraries/javalib/gnu/xml/dom/DomPI.java,
+	libraries/javalib/gnu/xml/dom/DomText.java,
+	libraries/javalib/gnu/xml/dom/DomXPathExpression.java,
+	libraries/javalib/gnu/xml/dom/JAXPFactory.java,
+	libraries/javalib/gnu/xml/libxmlj/transform/GnomeTransformer.java,
+	libraries/javalib/gnu/xml/pipeline/DomConsumer.java,
+	libraries/javalib/gnu/xml/pipeline/EventFilter.java,
+	libraries/javalib/gnu/xml/transform/DOMResultWrapper.java,
+	libraries/javalib/gnu/xml/transform/DOMSerializer.java,
+	libraries/javalib/gnu/xml/transform/DOMSourceWrapper.java,
+	libraries/javalib/gnu/xml/transform/Stylesheet.java,
+	libraries/javalib/gnu/xml/transform/Template.java,
+	libraries/javalib/gnu/xml/transform/TemplatesImpl.java,
+	libraries/javalib/gnu/xml/transform/TransformerFactoryImpl.java,
+	libraries/javalib/gnu/xml/transform/TransformerImpl.java,
+	libraries/javalib/gnu/xml/xpath/AndExpr.java,
+	libraries/javalib/gnu/xml/xpath/ArithmeticExpr.java,
+	libraries/javalib/gnu/xml/xpath/Constant.java,
+	libraries/javalib/gnu/xml/xpath/EqualityExpr.java,
+	libraries/javalib/gnu/xml/xpath/Expr.java,
+	libraries/javalib/gnu/xml/xpath/ExpressionTest.java,
+	libraries/javalib/gnu/xml/xpath/FunctionCall.java,
+	libraries/javalib/gnu/xml/xpath/Index.java,
+	libraries/javalib/gnu/xml/xpath/NameTest.java,
+	libraries/javalib/gnu/xml/xpath/NegativeExpr.java,
+	libraries/javalib/gnu/xml/xpath/NodeTypeTest.java,
+	libraries/javalib/gnu/xml/xpath/OrExpr.java,
+	libraries/javalib/gnu/xml/xpath/ParenthesizedExpr.java,
+	libraries/javalib/gnu/xml/xpath/RelationalExpr.java,
+	libraries/javalib/gnu/xml/xpath/Root.java,
+	libraries/javalib/gnu/xml/xpath/Selector.java,
+	libraries/javalib/gnu/xml/xpath/Step.java,
+	libraries/javalib/gnu/xml/xpath/Test.java,
+	libraries/javalib/gnu/xml/xpath/UnionExpr.java,
+	libraries/javalib/gnu/xml/xpath/VariableReference.java,
+	libraries/javalib/gnu/xml/xpath/XPathParser.java,
+	libraries/javalib/gnu/xml/xpath/XPathParser.y,
+	libraries/javalib/gnu/xml/xpath/XPathTest.java:
+	Resynced with GNU JAXP.
+
+	2004-11-09  Chris Burdess  <dog@gnu.org>
+
+        * xpath: Separated functions into separate classes for efficiency.
+        Fixes to evaluation model, notably path components.
+        * transform: Fixes to XPath expression evaluation.
+
+	2004-11-08  Chris Burdess  <dog@gnu.org>
+
+        * transform: Fixes to template calling in foreign stylesheets.
+
+	2004-11-04  Chris Burdess  <dog@gnu.org>
+
+        * ContentHandler2.java: Extension interface for reporting XML
+        declaration.
+        * SAXDriver.java,XmlParser.java: Report XML declaration to content
+        handlers implementing the ContentHandler2 interface.
+        * Consumer.java,DomConsumer.java,EventFilter.java: Pass xmlDecl
+        events to ContentHandler2s.
+        * JAXPFactory.java: Set document URI during parse.
+        * transform,xpath: document() function, function calls, variable
+        binding fixes
+
+	2004-11-03  Chris Burdess  <dog@gnu.org>
+
+        * dom: Refactoring of DomNode for efficiency, using pointers to
+        next/previous/first/last nodes instead of arrays of children, and
+        explicit node type without the need for a method call. Fixed
+        problems inserting DocumentFragments.
+        * transform: whitespace stripping; parameters and variables;
+        document() function.
+        * xpath: Name test fix.
+
+	2004-11-02  Chris Burdess  <dog@gnu.org>
+
+        * transform: Fully compiled templates; many more XSL language
+        features supported; stream, SAX, and DOM results.
+
+2004-11-11  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/io/File.java:
         Resynced with GNU Classpath.
 
