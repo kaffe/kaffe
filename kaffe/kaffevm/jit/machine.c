@@ -222,7 +222,7 @@ translate(Method* meth, errorInfo *einfo)
 DBG(MOREJIT,
 	dprintf("asked to translate = %s.%s(%s)\n", 
 	    meth->class->name->data, meth->name->data, METHOD_SIGD(meth));	
-    )
+    );
 
 	/* If this code block is native, then just set it up and return */
 	if ((meth->accflags & ACC_NATIVE) != 0) {
@@ -249,7 +249,7 @@ DBG(MOREJIT,
 DBG(MOREJIT,
 	dprintf("successfully verified = %s.%s(%s)\n", 
 	    meth->class->name->data, meth->name->data, METHOD_SIGD(meth));	
-    )
+    );
 
 	/* Only one in the translator at once. */
 	enterTranslator();
@@ -278,7 +278,7 @@ DBG(MOREJIT,
 			jitting->class->name->data, jitting->name->data, 
 			METHOD_SIGD(jitting));	
 	}
-    )
+    );
 	/* start modifying global variables now */
 	assert(jitting == 0 || !!!"reentered jitter");	/* DEBUG */
 	jitting = meth;					/* DEBUG */
@@ -335,7 +335,7 @@ DBG(MOREJIT,
 			while (npc < len && !IS_STARTOFBASICBLOCK(npc) && !IS_STARTOFEXCEPTION(npc)) {
 				npc = npc + insnLen[base[npc]];
 			}
-DBG(JIT,		dprintf("unreachable basic block pc [%d:%d]\n", pc, npc - 1);   )
+DBG(JIT,		dprintf("unreachable basic block pc [%d:%d]\n", pc, npc - 1);   );
 			if (IS_STARTOFBASICBLOCK(npc)) {
 				end_basic_block();
 				start_basic_block();
@@ -344,7 +344,7 @@ DBG(JIT,		dprintf("unreachable basic block pc [%d:%d]\n", pc, npc - 1);   )
 			continue;
 		}
 
-DBG(JIT,	dprintf("pc = %d, npc = %d\n", pc, npc);	)
+DBG(JIT,	dprintf("pc = %d, npc = %d\n", pc, npc);	);
 
 		/* Determine various exception conditions */
 		checkCaughtExceptions(meth, pc);
@@ -400,7 +400,7 @@ DBG(JIT,
 	dprintf("Translated %s.%s%s (%s) %p\n", meth->class->name->data, 
 		meth->name->data, METHOD_SIGD(meth), 
 		isStatic ? "static" : "normal", METHOD_NATIVECODE(meth));	
-    )
+    );
 
 	if (Kaffe_JavaVMArgs.enableVerboseJIT) {
 		tme = currentTime();

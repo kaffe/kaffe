@@ -1,5 +1,13 @@
 2004-12-19  Adam Heath  <doogie@brainfood.com>
 
+	* config/i386/jit-i386.def, kaffe/kaffevm/intrp/machine.c,
+	  kaffe/kaffevm/jit/machine.c:
+	  With recent DBG() macro now behaving like a real statement, all
+	  calls to it must be followed with a ;.  Since the above files weren't
+	  the default on my machine, they got missed in the cleanup.
+
+2004-12-19  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/kaffevm/kaffe.def:
 	  Make the trace_jcode macro take variable args.
 

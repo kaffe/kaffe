@@ -56,12 +56,12 @@ char* engine_name = "Interpreter";
 
 #define	define_insn(code)	break;					\
 				case code:				\
-				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); )
+				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); );
 #define	define_insn_alias(code)	case code:				\
-				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); )
+				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); );
 #define	define_wide_insn(code)	break;					\
 				case code:				\
-				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); )
+				IDBG( dprintf("%03ld: %s\n", (long) pc, #code); );
 
 #define EXPLICIT_CHECK_NULL(_i, _s, _n)                       \
       cbranch_ref_const_ne((_s), 0, reference_label(_i, _n)); \
@@ -127,12 +127,12 @@ virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retva
 		}
 	}
 
-CDBG(	dprintf("Call: %s.%s%s.\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth)); )
+CDBG(	dprintf("Call: %s.%s%s.\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth)); );
 
 	/* If this is native, then call the real function */
 	methaccflags = meth->accflags;
 	if (methaccflags & ACC_NATIVE) {
-NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth)); )
+NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth)); );
 		if (methaccflags & ACC_STATIC) {
 			callMethodA(meth, meth, 0, (jvalue*)arg, (jvalue*)retval, 1);
 		}
@@ -235,7 +235,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 
 	cleanupExceptionHandling(&mjbuf, thread_data);
 
-RDBG(	dprintf("Returning from method %s%s.\n", meth->name->data, METHOD_SIGD(meth)); )
+RDBG(	dprintf("Returning from method %s%s.\n", meth->name->data, METHOD_SIGD(meth)); );
 }
 
 void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *retval, volatile VmExceptHandler *mjbuf, threadData *thread_data) {
