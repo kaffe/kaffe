@@ -38,13 +38,6 @@
 
 #define	DBG_ACTION(A,B)
 
-#if !(HAVE_DECLARED_SWAB)
-/* 
- * Some systems (Linux) do not declare swab in any standard header file
- */
-extern void swab(const void *from, void *to, size_t n);
-#endif
-
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
