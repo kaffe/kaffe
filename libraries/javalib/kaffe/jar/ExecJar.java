@@ -20,7 +20,6 @@ import java.lang.Character;
 import java.lang.String;
 import java.lang.reflect.Method;
 import java.util.jar.*;
-import kaffe.management.Classpath;
 
 public class ExecJar {
 
