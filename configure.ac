@@ -82,8 +82,29 @@ AC_PROG_CC
 
 dnl If gcc is the compiler, compile with -Wall for lots of warnings
 
-# turn on -Wall
-AX_CFLAGS_WARN_ALL
+dnl AX_CFLAGS_WARN_ALL
+
+# the following are covered by -Wall, but we list them separately, so
+# that it's easier to control.
+AX_CFLAGS_GCC_OPTION([-Wno-import])
+AX_CFLAGS_GCC_OPTION([-Wchar-subscripts])
+AX_CFLAGS_GCC_OPTION([-Wcomment])
+AX_CFLAGS_GCC_OPTION([-Wformat=2])
+AX_CFLAGS_GCC_OPTION([-Wimplicit-int])
+AX_CFLAGS_GCC_OPTION([-Wmain])
+AX_CFLAGS_GCC_OPTION([-Wmissing-braces])
+AX_CFLAGS_GCC_OPTION([-Wmultichar])
+AX_CFLAGS_GCC_OPTION([-Wparentheses])
+AX_CFLAGS_GCC_OPTION([-Wsequence-point])
+AX_CFLAGS_GCC_OPTION([-Wreturn-type])
+AX_CFLAGS_GCC_OPTION([-Wswitch])
+AX_CFLAGS_GCC_OPTION([-Wtrigraphs])
+AX_CFLAGS_GCC_OPTION([-Wunused-function])
+AX_CFLAGS_GCC_OPTION([-Wunused-label])
+AX_CFLAGS_GCC_OPTION([-Wunused-parameter])
+AX_CFLAGS_GCC_OPTION([-Wunused-variable])
+AX_CFLAGS_GCC_OPTION([-Wunused-value])
+AX_CFLAGS_GCC_OPTION([-Wuninitialized])
 
 # turn on all other gcc warnings for more fixing fun
 

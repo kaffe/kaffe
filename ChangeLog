@@ -1,5 +1,11 @@
 2004-04-03  Adam Heath <doogie@debian.org>
 
+        * scripts/sort-warnings.pl: Script to sort gcc warnings.
+	* configure.ac, configure: Turn off -Wall, instead specifing each
+	  warning explicitly.
+
+2004-04-03  Adam Heath <doogie@debian.org>
+
         * configure.ac, configure:
 	  Disable lines with dnl, not #.
 	  Disable -Wpadded.
