@@ -295,22 +295,6 @@ public class SwingUtilities
   }
 
   /**
-   * Returns the font metrics object for a given font. The metrics can be
-   * used to calculate crude bounding boxes and positioning information,
-   * for laying out components with textual elements.
-   *
-   * @param font The font to get metrics for
-   *
-   * @return The font's metrics
-   *
-   * @see java.awt.font.GlyphMetrics
-   */
-  public static FontMetrics getFontMetrics(Font font)
-  {
-    return Toolkit.getDefaultToolkit().getFontMetrics(font);
-  }
-
-  /**
    * If <code>comp</code> is a RootPaneContainer, return its JRootPane.
    * Otherwise call <code>getAncestorOfClass(JRootPane.class, a)</code>.
    *
