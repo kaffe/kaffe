@@ -33,6 +33,7 @@
 #define THREAD_SUSPENDED	0
 #define THREAD_RUNNING		1
 #define THREAD_DEAD		2
+#define THREAD_KILL		3
 
 /* suspend states (these are exclusive) */
 typedef enum {
@@ -66,6 +67,7 @@ typedef struct _jthread {
   /* wether this is a daemon thread */
   int			daemon;
   int                   interrupting;
+  char                  status;
 
   /* convars and mutexes aren't useful in signal handlers, semaphores are */
   repsem_t                 sem;

@@ -867,6 +867,7 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	nt->daemon = isDaemon;
 	nt->func = func;
 	nt->stackCur = 0;
+	nt->status = THREAD_RUNNING;
 
 #if defined(SCHEDULE_POLICY)
 	pthread_setschedparam( nt->tid, SCHEDULE_POLICY, &sp);
@@ -902,6 +903,7 @@ jthread_create ( unsigned char pri, void* func, int isDaemon, void* jlThread, si
 	nt->stackMax     = 0;
 	nt->stackCur     = 0;
 	nt->daemon	 = isDaemon;
+	nt->status = THREAD_RUNNING;
 	pthread_mutex_init(&nt->suspendLock, NULL);
 	
 	DBG( JTHREAD, TMSG_SHORT( "create new ", nt))
@@ -1020,11 +1022,17 @@ jthread_exit ( void )
 	   * bail out, to give them a chance to run their cleanup handlers
 	   */
 	  for ( t=cache; t != NULL; t = t->next ){
+		t->status = THREAD_KILL;
 		pthread_cancel( t->tid);
 	  }
 
 	  for ( t=activeThreads; t != NULL; t = t->next ){
 		if ( t != cur ) {
+		  /* Mark the thread as to be killed. */
+		  t->status = THREAD_KILL;
+		  /* Send an interrupt event to the remote thread. */
+		  jthread_interrupt(t);
+		  /* Cancel it to be sure it is dead. */
 		  pthread_cancel( t->tid);
 		}
 	  }

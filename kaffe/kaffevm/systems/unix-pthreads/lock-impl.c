@@ -45,6 +45,12 @@ clearBlockState(jthread_t cur, unsigned int newState)
       cur->stackCur = NULL;
       pthread_mutex_unlock(&cur->suspendLock);
     }
+
+  /* Catch an interrupt event sent while we were being killed.
+   * This is needed for Darwin's pthreads.
+   */
+  if (cur->status == THREAD_KILL)
+    pthread_exit(0);
 }
 
 void
