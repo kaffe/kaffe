@@ -18,9 +18,6 @@ Treat it as an TODO list.
 
 * Win32/Cygnus stuff:
 
-    It apparently doesn't build because .def files are missing:
-    (dlltool: Can't open def file ./libmanagement.def)
-
     Pavel Roskin writes:
 
     Can anybody explain me why the configuration files for cygwin are placed in
