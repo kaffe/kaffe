@@ -1,3 +1,7 @@
+Tue Nov  2 13:55:48 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/kjc.jar: upgrade to version 1.3D
+
 Tue Nov  2 12:22:18 MST 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* In kaffe/kaffevm:
