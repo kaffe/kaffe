@@ -1,5 +1,12 @@
 2003-12-29  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* libraries/javalib/Klasses.jar.bootstrap: Regenerated.
+
+	* test/regression/LineNumberReaderTest.java: Adapted output to
+	new exception messages.
+
+2003-12-29  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* libraries/javalib/java/io/BufferedReader.java,
 	libraries/javalib/java/net/DatagramPacket.java,
 	libraries/javalib/java/util/Calendar.java,

@@ -901,9 +901,9 @@ public class LineNumberReaderTest {
 class LineNumberReader_Test1 failed
 java.lang.NullPointerException
 class LineNumberReader_Test2 failed
-java.lang.IllegalArgumentException: Buffer size is negative
+java.lang.IllegalArgumentException: Illegal buffer size: 0
 class LineNumberReader_Test3 failed
-java.lang.IllegalArgumentException: Buffer size is negative
+java.lang.IllegalArgumentException: Illegal buffer size: -5
 0
 class LineNumberReader_Test4 succeeded
 class LineNumberReader_Test5 succeeded
