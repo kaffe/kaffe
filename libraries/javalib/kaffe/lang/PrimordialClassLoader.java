@@ -41,10 +41,7 @@ public Class loadClass(String name, boolean resolve)
 {
 	Class retval;
 
-	if( name.startsWith("kaffe.") &&
-	    (!name.startsWith("kaffe.security.provider.") &&
-	     !name.startsWith("kaffe.util.") &&
-	     !name.startsWith("kaffe.text.")) )
+	if( name.startsWith("kaffe.lang.") )
 	{
 		throw new ClassNotFoundException(name);
 	}
