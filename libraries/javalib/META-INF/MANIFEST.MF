@@ -2,6 +2,7 @@ Extension-Name: GNUJAXP
 Implementation-Title: GNU JAXP
 Implementation-URL: http://www.gnu.org/software/classpathx/jaxp
 Implementation-Vendor: Free Software Foundation
+Implementation-Version: 1.1
 Main-Class: gnu.xml.util.DoParse
 
 Name: gnu/xml/aelfred2/

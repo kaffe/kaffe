@@ -1361,5 +1361,6 @@ class Attribute
     {
         this.name = name;
         this.value = value;
+        this.nameSpace = "";
     }
 }

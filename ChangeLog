@@ -1,5 +1,53 @@
 2004-10-18  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/gnu/xml/dom/DomXPathResult.java,
+	libraries/javalib/gnu/xml/xpath/AndExpr.java,
+	libraries/javalib/gnu/xml/xpath/ArithmeticExpr.java,
+	libraries/javalib/gnu/xml/xpath/Constant.java,
+	libraries/javalib/gnu/xml/xpath/EqualityExpr.java,
+	libraries/javalib/gnu/xml/xpath/Expr.java,
+	libraries/javalib/gnu/xml/xpath/ExpressionTest.java,
+	libraries/javalib/gnu/xml/xpath/FunctionCall.java,
+	libraries/javalib/gnu/xml/xpath/Index.java,
+	libraries/javalib/gnu/xml/xpath/NameTest.java,
+	libraries/javalib/gnu/xml/xpath/NegativeExpr.java,
+	libraries/javalib/gnu/xml/xpath/NodeTypeTest.java,
+	libraries/javalib/gnu/xml/xpath/OrExpr.java,
+	libraries/javalib/gnu/xml/xpath/ParenthesizedExpr.java,
+	libraries/javalib/gnu/xml/xpath/RelationalExpr.java,
+	libraries/javalib/gnu/xml/xpath/Root.java,
+	libraries/javalib/gnu/xml/xpath/Selector.java,
+	libraries/javalib/gnu/xml/xpath/Step.java,
+	libraries/javalib/gnu/xml/xpath/Test.java,
+	libraries/javalib/gnu/xml/xpath/UnionExpr.java,
+	libraries/javalib/gnu/xml/xpath/XPathParser.java,
+	libraries/javalib/gnu/xml/xpath/XPathTokenizer.java:
+	New files taken from GNU JAXP.
+
+	* libraries/javalib/META-INF/MANIFEST.MF,
+	libraries/javalib/gnu/xml/aelfred2/SAXDriver.java,
+	libraries/javalib/gnu/xml/dom/DomImpl.java,
+	libraries/javalib/gnu/xml/dom/DomXPathExpression.java,
+	libraries/javalib/org/xml/sax/SAXNotRecognizedException.java,
+	libraries/javalib/org/xml/sax/SAXNotSupportedException.java:
+	Resynced with GNU JAXP.
+
+	2004-10-13  Arnaud Vandyck  <avdyk@gnu.org>
+
+        Reported by John Kristian <jk2004@engineer.com>:
+        * manifest.mf: added Implementation Version field.
+
+	2004-10-17  Chris Burdess  <dog@gnu.org>
+
+        * xpath: Added experimental XPath 1.0 engine.
+
+2004-10-18  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/security/provider/DSAParameters.java:
         Resynced with GNU Classpath.
 

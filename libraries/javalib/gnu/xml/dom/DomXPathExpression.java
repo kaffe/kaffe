@@ -38,11 +38,17 @@
 
 package gnu.xml.dom;
 
+import java.io.IOException;
+import java.util.Collection;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 import org.w3c.dom.xpath.XPathException;
 import org.w3c.dom.xpath.XPathExpression;
 import org.w3c.dom.xpath.XPathNSResolver;
+import org.w3c.dom.xpath.XPathResult;
+import gnu.xml.xpath.Expr;
+import gnu.xml.xpath.XPathParser;
+import gnu.xml.xpath.XPathTokenizer;
 
 /**
  * An XPath expression.
@@ -53,23 +59,75 @@ class DomXPathExpression
 implements XPathExpression
 {
 
-  DomDocument doc;
-  String expression;
-  XPathNSResolver resolver;
+  final DomDocument doc;
+  final Expr expression;
+  final XPathNSResolver resolver;
 
   DomXPathExpression (DomDocument doc, String expression,
                       XPathNSResolver resolver)
+    throws XPathException
   {
     this.doc = doc;
-    this.expression = expression;
     this.resolver = resolver;
+    
+    XPathParser parser = new XPathParser ();
+    XPathTokenizer tokenizer = new XPathTokenizer (expression);
+    try
+      {
+        this.expression = (Expr) parser.yyparse (tokenizer);
+      }
+    catch (IOException e)
+      {
+        throw new XPathException (XPathException.INVALID_EXPRESSION_ERR,
+                                  e.getMessage ());
+      }
+    catch (XPathParser.yyException e)
+      {
+        throw new XPathException (XPathException.INVALID_EXPRESSION_ERR,
+                                  e.getMessage ());
+      }
+    System.out.println("expression="+this.expression);
   }
 
   public Object evaluate (Node contextNode, short type, Object result)
     throws XPathException, DOMException
   {
-    // TODO
-    return null;
+    Object val = expression.evaluate (contextNode);
+    switch (type)
+      {
+      case XPathResult.BOOLEAN_TYPE:
+        if (!(val instanceof Boolean))
+          {
+            throw new XPathException (XPathException.TYPE_ERR, null);
+          }
+        break;
+      case XPathResult.NUMBER_TYPE:
+        if (!(val instanceof Double))
+          {
+            throw new XPathException (XPathException.TYPE_ERR, null);
+          }
+        break;
+      case XPathResult.STRING_TYPE:
+        if (!(val instanceof String))
+          {
+            throw new XPathException (XPathException.TYPE_ERR, null);
+          }
+        break;
+      case XPathResult.ANY_UNORDERED_NODE_TYPE:
+      case XPathResult.FIRST_ORDERED_NODE_TYPE:
+      case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
+      case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
+        if (!(val instanceof Collection))
+          {
+            throw new XPathException (XPathException.TYPE_ERR, null);
+          }
+        break;
+      case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
+      case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
+        /* We don't support ordered node-sets */
+        throw new XPathException (XPathException.TYPE_ERR, null);
+      }
+    return new DomXPathResult (val, type);
   }
   
 }

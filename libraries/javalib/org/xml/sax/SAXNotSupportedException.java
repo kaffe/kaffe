@@ -33,7 +33,7 @@ public class SAXNotSupportedException extends SAXException
      */
     public SAXNotSupportedException ()
     {
-	super();
+	super((String) null);
     }
 
 

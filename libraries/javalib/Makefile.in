@@ -501,6 +501,7 @@ Klasses_jar_SRCS = \
 	$(gnu_xml_libxmlj_util_SRCS) \
 	$(gnu_xml_pipeline_SRCS) \
 	$(gnu_xml_util_SRCS) \
+	$(gnu_xml_xpath_SRCS) \
 	$(java_applet_SRCS) \
 	$(java_awt_SRCS) \
 	$(java_awt_color_SRCS) \
@@ -1824,6 +1825,7 @@ gnu_xml_dom_SRCS = \
 	gnu/xml/dom/DomText.java \
 	gnu/xml/dom/DomXPathExpression.java \
 	gnu/xml/dom/DomXPathNSResolver.java \
+	gnu/xml/dom/DomXPathResult.java \
 	gnu/xml/dom/ImplementationList.java \
 	gnu/xml/dom/ImplementationSource.java \
 	gnu/xml/dom/JAXPFactory.java
@@ -1907,6 +1909,29 @@ gnu_xml_util_SRCS = \
 	gnu/xml/util/XCat.java \
 	gnu/xml/util/XHTMLWriter.java \
 	gnu/xml/util/XMLWriter.java
+
+gnu_xml_xpath_SRCS = \
+	gnu/xml/xpath/AndExpr.java \
+	gnu/xml/xpath/ArithmeticExpr.java \
+	gnu/xml/xpath/Constant.java \
+	gnu/xml/xpath/EqualityExpr.java \
+	gnu/xml/xpath/Expr.java \
+	gnu/xml/xpath/ExpressionTest.java \
+	gnu/xml/xpath/FunctionCall.java \
+	gnu/xml/xpath/Index.java \
+	gnu/xml/xpath/NameTest.java \
+	gnu/xml/xpath/NegativeExpr.java \
+	gnu/xml/xpath/NodeTypeTest.java \
+	gnu/xml/xpath/OrExpr.java \
+	gnu/xml/xpath/ParenthesizedExpr.java \
+	gnu/xml/xpath/RelationalExpr.java \
+	gnu/xml/xpath/Root.java \
+	gnu/xml/xpath/Selector.java \
+	gnu/xml/xpath/Step.java \
+	gnu/xml/xpath/Test.java \
+	gnu/xml/xpath/UnionExpr.java \
+	gnu/xml/xpath/XPathParser.java \
+	gnu/xml/xpath/XPathTokenizer.java
 
 java_applet_SRCS = \
 	java/applet/Applet.java \
