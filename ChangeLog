@@ -1,5 +1,12 @@
 2004-10-24  Eric Anholt  <eta@lclark.edu>
 
+	* config/x86_64/common.h,
+	config/x86_64/sysdepCallMethod.h: Move PROMOTE_* / NO_HOLES to common.h
+	instead of sysdepCallMethod.h (sysdepCallMethod isn't always included by
+	common.h)
+
+2004-10-24  Eric Anholt  <eta@lclark.edu>
+
 	* kaffe/kaffevm/support.c: Fixup for the commit to avoid undefined
 	macro warnings for PROMOTE_* an NO_HOLES, because defined(MACRO) is true
 	even if MACRO is 0.  Set the macros to 0 when they're unset rather than

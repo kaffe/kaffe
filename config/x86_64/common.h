@@ -16,6 +16,24 @@
 #define NEED_STACK_ALIGN
 #define STACK_ALIGN(p)  ((((unsigned long)(p)) & 15) ^ (unsigned long)(p))
 
+/* This define will cause callMethodV and callMethodA to avoid
+   introducing unused slots after jlongs and jdoubles.  */
+#ifndef NO_HOLES
+# define NO_HOLES 1
+#endif
+
+/* This define will cause callMethodV and callMethodA to promote every
+   integer type to a 64bit word, and every float to double, so that
+   every value can be loaded as a single 64bit word.  It also causes
+   float arguments to be marked as 'D'.  */
+#ifndef PROMOTE_TO_64bits
+# define PROMOTE_TO_64bits 1
+#endif
+ 
+#ifndef PROMOTE_jfloat2jdouble
+# define PROMOTE_jfloat2jdouble 0
+#endif
+
 #if defined(NEED_sysdepCallMethod)
 #include "sysdepCallMethod.h"
 #endif /* defined(NEED_sysdepCallMethod) */
