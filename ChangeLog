@@ -1,3 +1,8 @@
+2003-08-29  Jim Pick  <jim@kaffe.org>
+
+	* libraries/javalib/java/text/DecimalFormat.java:
+	Added import java.util.Currency to fix compile.
+
 2003-08-28  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* config/m68k/a-ux/jit-md.h, config/m68k/netbsd1/jit-md.h,

@@ -37,6 +37,7 @@ exception statement from your version. */
 
 package java.text;
 
+import java.util.Currency;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
