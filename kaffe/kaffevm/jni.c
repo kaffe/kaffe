@@ -3581,9 +3581,9 @@ Kaffe_DestroyJavaVM(JavaVM* vm)
 }
 
 static jint
-Kaffe_AttachCurrentThread(JavaVM* vm, JNIEnv** env, ThreadAttachArgs* args)
+Kaffe_AttachCurrentThread(JavaVM* vm, void** penv, ThreadAttachArgs* args)
 {
-	*env = NULL;
+	*penv = NULL;
 	return (0);
 }
 
