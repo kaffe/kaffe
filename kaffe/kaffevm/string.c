@@ -38,7 +38,7 @@ stringJava2C(const Hjava_lang_String* js)
 {
 	char* str;
 
-	str = gc_malloc(STRING_SIZE(js) + 1, GC_ALLOC_FIXED);
+	str = gc_malloc((size_t)(STRING_SIZE(js) + 1), GC_ALLOC_FIXED);
 	if (str != 0) {
 		stringJava2CBuf(js, str, STRING_SIZE(js) + 1);
 	}
@@ -118,7 +118,7 @@ stringC2CharArray(const char* cs)
 
 	/* Get new array object */
 	ary = (HArrayOfChar*)newArrayChecked(TYPE_CLASS(TYPE_Char),
-					     len, &info);
+					     (size_t)len, &info);
 	if (!ary) {
 		discardErrorInfo(&info);
 		return 0;
@@ -466,7 +466,7 @@ stringCharArray2Java(const jchar *data, int len)
 	}
 
 	/* Create a new String object */
-	ary = (HArrayOfChar*)newArrayChecked(charClass, len,
+	ary = (HArrayOfChar*)newArrayChecked(charClass, (size_t)len,
 					     &info);
 	if (!ary) {
 		discardErrorInfo(&info);

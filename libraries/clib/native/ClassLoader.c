@@ -43,7 +43,7 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	{
 		SignalError("java.lang.ClassFormatError", "truncated class");
 	}
-	classFileInit(&hand, &unhand_array(data)->body[offset], length, CP_BYTEARRAY);
+	classFileInit(&hand, &unhand_array(data)->body[offset], (unsigned) length, CP_BYTEARRAY);
 
 	clazz = newClass();
 	if (clazz == 0) {
@@ -116,7 +116,7 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
  * Resolve classes reference by this class.
  */
 void
-java_lang_ClassLoader_resolveClass0(struct Hjava_lang_ClassLoader* this, struct Hjava_lang_Class* class)
+java_lang_ClassLoader_resolveClass0(struct Hjava_lang_ClassLoader* this UNUSED, struct Hjava_lang_Class* class)
 {
 	errorInfo info;
 	if (processClass(class, CSTATE_COMPLETE, &info) == false) {

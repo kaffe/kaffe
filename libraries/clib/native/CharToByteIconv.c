@@ -58,7 +58,7 @@ Java_kaffe_io_CharToByteIconv_open0 (JNIEnv* env, jobject _this, jstring enc)
 }
 
 void
-Java_kaffe_io_CharToByteIconv_close0 (JNIEnv* env, jobject r, jobject cd)
+Java_kaffe_io_CharToByteIconv_close0 (JNIEnv* env UNUSED, jobject r UNUSED, jobject cd)
 {
 #if defined(HAVE_ICONV)
     iconv_close ((iconv_t)cd);

@@ -32,7 +32,7 @@
 /*
  * Is named item a file?
  */
-jboolean java_io_File_isFileInternal(struct Hjava_io_File* this, 
+jboolean java_io_File_isFileInternal(struct Hjava_io_File* this UNUSED, 
 				     struct Hjava_lang_String* fileName)
 {
   struct stat buf;
@@ -53,7 +53,7 @@ jboolean java_io_File_isFileInternal(struct Hjava_io_File* this,
 /*
  * Is named item a directory?
  */
-jboolean java_io_File_isDirectoryInternal(struct Hjava_io_File* this,
+jboolean java_io_File_isDirectoryInternal(struct Hjava_io_File* this UNUSED,
 					  struct Hjava_lang_String* fileName)
 {
   struct stat buf;
@@ -74,7 +74,7 @@ jboolean java_io_File_isDirectoryInternal(struct Hjava_io_File* this,
 /*
  * Does named file exist?
  */
-jboolean java_io_File_existsInternal(struct Hjava_io_File* this,
+jboolean java_io_File_existsInternal(struct Hjava_io_File* this UNUSED,
 				     struct Hjava_lang_String* fileName)
 {
   struct stat buf;
@@ -89,7 +89,7 @@ jboolean java_io_File_existsInternal(struct Hjava_io_File* this,
 /*
  * Last modified time on file.
  */
-jlong java_io_File_lastModifiedInternal(struct Hjava_io_File* this,
+jlong java_io_File_lastModifiedInternal(struct Hjava_io_File* this UNUSED,
 					struct Hjava_lang_String* fileName)
 {
   struct stat buf;
@@ -109,7 +109,7 @@ jlong java_io_File_lastModifiedInternal(struct Hjava_io_File* this,
  * Can I write to this file?
  */
 jboolean
-java_io_File_canWriteInternal(struct Hjava_io_File* this,
+java_io_File_canWriteInternal(struct Hjava_io_File* this UNUSED,
 			      struct Hjava_lang_String* fileName)
 {
 	char str[MAXPATHLEN];
@@ -124,7 +124,7 @@ java_io_File_canWriteInternal(struct Hjava_io_File* this,
 /*
  * Can I read from this file.
  */
-jboolean java_io_File_canReadInternal(struct Hjava_io_File* this,
+jboolean java_io_File_canReadInternal(struct Hjava_io_File* this UNUSED,
 				      struct Hjava_lang_String* fileName)
 {
   char str[MAXPATHLEN];
@@ -139,7 +139,7 @@ jboolean java_io_File_canReadInternal(struct Hjava_io_File* this,
 /*
  * Return length of file.
  */
-jlong java_io_File_lengthInternal(struct Hjava_io_File* this,
+jlong java_io_File_lengthInternal(struct Hjava_io_File* this UNUSED,
 				  struct Hjava_lang_String* fileName)
 {
   struct stat buf;
@@ -158,7 +158,7 @@ jlong java_io_File_lengthInternal(struct Hjava_io_File* this,
 /*
  * Create a directory.
  */
-jboolean java_io_File_mkdirInternal(struct Hjava_io_File* this,
+jboolean java_io_File_mkdirInternal(struct Hjava_io_File* this UNUSED,
 				    struct Hjava_lang_String* fileName)
 {
   char str[MAXPATHLEN];
@@ -172,7 +172,7 @@ jboolean java_io_File_mkdirInternal(struct Hjava_io_File* this,
 /*
  * Rename a file.
  */
-jboolean java_io_File_renameToInternal(struct Hjava_io_File* this,
+jboolean java_io_File_renameToInternal(struct Hjava_io_File* this UNUSED,
 				       struct Hjava_lang_String* fromName,
 				       struct Hjava_lang_String* toName)
 {
@@ -208,7 +208,7 @@ jboolean java_io_File_deleteInternal(struct Hjava_io_File* this,
 /*
  * Get a directory listing.
  */
-HArrayOfObject* java_io_File_listInternal(struct Hjava_io_File* this,
+HArrayOfObject* java_io_File_listInternal(struct Hjava_io_File* this UNUSED,
 					  struct Hjava_lang_String* dirName)
 {
 #if defined(HAVE_DIRENT_H)
@@ -313,7 +313,7 @@ jboolean java_io_File_createInternal(struct Hjava_lang_String* fileName)
   return 1;
 }
 
-jboolean java_io_File_setLastModifiedInternal(struct Hjava_io_File* this,
+jboolean java_io_File_setLastModifiedInternal(struct Hjava_io_File* this UNUSED,
 					      struct Hjava_lang_String* fileName,
 					      jlong thetime)
 {
@@ -334,7 +334,7 @@ jboolean java_io_File_setLastModifiedInternal(struct Hjava_io_File* this,
 #endif
 }
 
-jboolean java_io_File_setReadOnlyInternal(struct Hjava_io_File* this, 
+jboolean java_io_File_setReadOnlyInternal(struct Hjava_io_File* this UNUSED, 
 					  struct Hjava_lang_String* fileName)
 {
   struct stat buf;

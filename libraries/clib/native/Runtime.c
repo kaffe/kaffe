@@ -31,7 +31,7 @@ extern jboolean runFinalizerOnExit;
  * Exit this VM
  */
 void
-java_lang_Runtime_exit0(struct Hjava_lang_Runtime* r, jint v)
+java_lang_Runtime_exit0(struct Hjava_lang_Runtime* r UNUSED, jint v)
 {
 	EXIT (v);
 }
@@ -40,7 +40,7 @@ java_lang_Runtime_exit0(struct Hjava_lang_Runtime* r, jint v)
  * Exec another program.
  */
 struct Hjava_lang_Process*
-java_lang_Runtime_execInternal(struct Hjava_lang_Runtime* this,
+java_lang_Runtime_execInternal(struct Hjava_lang_Runtime* this UNUSED,
 		HArrayOfObject* argv, HArrayOfObject* arge, Hjava_io_File* dir)
 {
 	return (struct Hjava_lang_Process*)execute_java_constructor(
@@ -53,7 +53,7 @@ java_lang_Runtime_execInternal(struct Hjava_lang_Runtime* this,
  * Free memory.
  */
 jlong
-java_lang_Runtime_freeMemory(struct Hjava_lang_Runtime* this)
+java_lang_Runtime_freeMemory(struct Hjava_lang_Runtime* this UNUSED)
 {
 	/* This is a particularly inaccurate guess - it's basically how
 	 * much more memory we can claim from the heap, and ignores any
@@ -67,7 +67,7 @@ java_lang_Runtime_freeMemory(struct Hjava_lang_Runtime* this)
  * Maximally available memory.
  */
 jlong
-java_lang_Runtime_maxMemory(struct Hjava_lang_Runtime* this)
+java_lang_Runtime_maxMemory(struct Hjava_lang_Runtime* this UNUSED)
 {
 	return (gc_heap_limit);
 }
@@ -76,7 +76,7 @@ java_lang_Runtime_maxMemory(struct Hjava_lang_Runtime* this)
  * Total memory.
  */
 jlong
-java_lang_Runtime_totalMemory(struct Hjava_lang_Runtime* this)
+java_lang_Runtime_totalMemory(struct Hjava_lang_Runtime* this UNUSED)
 {
 	return (gc_heap_total);
 }
@@ -85,7 +85,7 @@ java_lang_Runtime_totalMemory(struct Hjava_lang_Runtime* this)
  * Run the garbage collector.
  */
 void
-java_lang_Runtime_gc(struct Hjava_lang_Runtime* this)
+java_lang_Runtime_gc(struct Hjava_lang_Runtime* this UNUSED)
 {
 	invokeGC();
 }
@@ -95,7 +95,7 @@ java_lang_Runtime_gc(struct Hjava_lang_Runtime* this)
  *  Finalising is part of the garbage collection system - so just run that.
  */
 void
-java_lang_Runtime_runFinalization(struct Hjava_lang_Runtime* this)
+java_lang_Runtime_runFinalization(struct Hjava_lang_Runtime* this UNUSED)
 {
 	invokeGC();
 }
@@ -104,7 +104,7 @@ java_lang_Runtime_runFinalization(struct Hjava_lang_Runtime* this)
  * Enable/disable tracing of instructions.
  */
 void
-java_lang_Runtime_traceInstructions(struct Hjava_lang_Runtime* this, jboolean on)
+java_lang_Runtime_traceInstructions(struct Hjava_lang_Runtime* this UNUSED, jboolean on)
 {
 	if (on == true) {
 		SignalError("java.lang.RuntimeException", "Cannot trace instructions");   
@@ -115,7 +115,7 @@ java_lang_Runtime_traceInstructions(struct Hjava_lang_Runtime* this, jboolean on
  * Enable/disable tracing of method calls.
  */
 void
-java_lang_Runtime_traceMethodCalls(struct Hjava_lang_Runtime* this, jboolean on)
+java_lang_Runtime_traceMethodCalls(struct Hjava_lang_Runtime* this UNUSED, jboolean on)
 {
 	if (on == true) {
 		SignalError("java.lang.RuntimeException", "Cannot trace method calls");   
@@ -132,7 +132,7 @@ java_lang_Runtime_runFinalizersOnExit(jboolean on)
 }
 
 jint
-Java_sun_misc_VM_getState(JNIEnv* env, jobject vm)
+Java_sun_misc_VM_getState(JNIEnv* env UNUSED, jobject vm UNUSED)
 {
 	return (0);
 }

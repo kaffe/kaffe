@@ -69,7 +69,7 @@ initProxyProperties (struct Hjava_util_Properties *prop)
 	char *proxy;
 	char *start, *p;
 	char c;
-	int len;
+	unsigned int len;
 	
 	
 	/* Build HTTP proxy properties from $http_proxy and $no_proxy
@@ -476,12 +476,12 @@ java_lang_System_arraycopy(struct Hjava_lang_Object* src, jint srcpos,
 
 	if (sclass == dclass) {
 #if defined(HAVE_MEMMOVE) 	 
-		memmove((void*)out, (void*)in, len); 	 
+		memmove((void*)out, (void*)in, (size_t)len); 	 
 #else 	 
 		/* Do it ourself */ 	 
 #if defined(HAVE_MEMCPY) 	 
 		if (src != dst) { 	 
-			memcpy((void*)out, (void*)in, len); 	 
+			memcpy((void*)out, (void*)in, (size_t)len); 	 
 		} else 	 
 #endif 	 
 		if (out < in) { 	 

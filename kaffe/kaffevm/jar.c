@@ -778,7 +778,7 @@ static int getCentralDirCount(jarFile *jf, unsigned int *out_dir_size)
 				jf->error = JAR_ERROR_IMPOSSIBLY_LARGE_DIRECTORY;
 			}
 			else if( jarSeek(jf,
-					 cde.offsetOfDirectory,
+					 (off_t)cde.offsetOfDirectory,
 					 SEEK_SET) >= 0 )
 			{
 				*out_dir_size = cde.sizeOfDirectory;
@@ -898,9 +898,9 @@ static uint8 *inflateJarData(jarFile *jf, jarEntry *je,
 					     GC_ALLOC_JAR)) )
 		{
 			if( inflate_oneshot(buf,
-					    je->compressedSize,
+					    (int)je->compressedSize,
 					    retval,
-					    je->uncompressedSize) == 0 )
+					    (int)je->uncompressedSize) == 0 )
 			{
 				addToCounter(&jarmem, "vmmem-jar files",
 					     1, GCSIZEOF(retval));
@@ -941,7 +941,7 @@ uint8 *getDataJarFile(jarFile *jf, jarEntry *je)
 	lockMutex(jf);
 	/* Move to the local header in the file and read it. */
 	if( !jf->error &&
-	    (jarSeek(jf, je->localHeaderOffset, SEEK_SET) >= 0) &&
+	    (jarSeek(jf, (off_t)je->localHeaderOffset, SEEK_SET) >= 0) &&
 	    readJarHeader(jf, LOCAL_HEADER_SIGNATURE, &lh,
 			  FILE_SIZEOF_LOCALHEADER) )
 	{

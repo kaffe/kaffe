@@ -44,7 +44,7 @@ java_lang_reflect_Array_newArray(struct Hjava_lang_Class* clazz, jint size)
 	if (size < 0) {
 		SignalError("java.lang.NegativeArraySizeException", "");
 	} else {
-		return (newArray(clazz, size));
+		return (newArray(clazz, (size_t) size));
 	}
 }
 

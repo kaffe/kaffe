@@ -89,49 +89,49 @@ cmpLong(const void *p1, const void *p2)
 void
 java_util_Arrays_sortByte(HArrayOfByte *a, jint fromIndex, jint toIndex)
 {
-	qsort(&unhand_array(a)->body[fromIndex], toIndex - fromIndex,
+	qsort(&unhand_array(a)->body[fromIndex], (size_t)(toIndex - fromIndex),
 		sizeof(*unhand_array(a)->body), cmpByte);
 }
 
 void
 java_util_Arrays_sortChar(HArrayOfChar *a, jint fromIndex, jint toIndex)
 {
-	qsort(&unhand_array(a)->body[fromIndex], toIndex - fromIndex,
+	qsort(&unhand_array(a)->body[fromIndex], (size_t)(toIndex - fromIndex),
 		sizeof(*unhand_array(a)->body), cmpChar);
 }
 
 void
 java_util_Arrays_sortDouble(HArrayOfDouble *a, jint fromIndex, jint toIndex)
 {
-	qsort(&unhand_array(a)->body[fromIndex], toIndex - fromIndex,
+	qsort(&unhand_array(a)->body[fromIndex], (size_t)(toIndex - fromIndex),
 		sizeof(*unhand_array(a)->body), cmpDouble);
 }
 
 void
 java_util_Arrays_sortFloat(HArrayOfFloat *a, jint fromIndex, jint toIndex)
 {
-	qsort(&unhand_array(a)->body[fromIndex], toIndex - fromIndex,
+	qsort(&unhand_array(a)->body[fromIndex], (size_t)(toIndex - fromIndex),
 		sizeof(*unhand_array(a)->body), cmpFloat);
 }
 
 void
 java_util_Arrays_sortInt(HArrayOfInt *a, jint fromIndex, jint toIndex)
 {
-	qsort(&unhand_array(a)->body[fromIndex], toIndex - fromIndex,
+	qsort(&unhand_array(a)->body[fromIndex], (size_t)(toIndex - fromIndex),
 		sizeof(*unhand_array(a)->body), cmpInt);
 }
 
 void
 java_util_Arrays_sortShort(HArrayOfShort *a, jint fromIndex, jint toIndex)
 {
-	qsort(&unhand_array(a)->body[fromIndex], toIndex - fromIndex,
+	qsort(&unhand_array(a)->body[fromIndex], (size_t)(toIndex - fromIndex),
 		sizeof(*unhand_array(a)->body), cmpShort);
 }
 
 void
 java_util_Arrays_sortLong(HArrayOfLong *a, jint fromIndex, jint toIndex)
 {
-	qsort(&unhand_array(a)->body[fromIndex], toIndex - fromIndex,
+	qsort(&unhand_array(a)->body[fromIndex], (size_t)(toIndex - fromIndex),
 		sizeof(*unhand_array(a)->body), cmpLong);
 }
 
@@ -166,14 +166,16 @@ cmpObject(const void *p1, const void *p2)
 void
 java_util_Arrays_sortObject(HArrayOfObject *a, jint fromIndex, jint toIndex, struct Hjava_util_Comparator *c)
 {
-	const int len = toIndex - fromIndex;
+	int slen = toIndex - fromIndex;
+	unsigned int len;
 	struct objcmpinfo *ilist;
 	errorInfo info;
-	int k;
+	unsigned int k;
 
-	if (len <= 1) {
+	if (slen <= 1) {
 		return;
 	}
+	len = slen;
 
 	/* Prepare shadow array */
 	ilist = KMALLOC(len * sizeof(*ilist));

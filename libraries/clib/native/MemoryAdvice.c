@@ -16,7 +16,7 @@
 #include "../../../kaffe/kaffevm/gc.h"
 
 void
-Java_kaffe_lang_MemoryAdvice_register0(JNIEnv* env, jobject this)
+Java_kaffe_lang_MemoryAdvice_register0(JNIEnv* env UNUSED, jobject this UNUSED)
 {
 	/* Not implemented in Desktop edition yet */
 }

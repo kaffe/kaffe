@@ -39,7 +39,7 @@
  * Translate a method given class, method name, and signature
  */
 void
-Java_kaffe_management_JIT_translateMethod(JNIEnv *env, jclass _vmclass, 
+Java_kaffe_management_JIT_translateMethod(JNIEnv *env UNUSED, jclass _vmclass UNUSED, 
 	jstring _cname, jstring _mname, 
 	jstring _signature, jobject loader)	
 	/* JNI? what's that? */
@@ -90,7 +90,7 @@ Java_kaffe_management_JIT_translateMethod(JNIEnv *env, jclass _vmclass,
  * Flush the dcache 
  */
 void
-Java_kaffe_management_JIT_flushCache(JNIEnv *env, jclass clazz)
+Java_kaffe_management_JIT_flushCache(JNIEnv *env UNUSED, jclass clazz UNUSED)
 {
 #if defined(TRANSLATOR) 
 #if defined(FULL_CACHE_FLUSH)

@@ -45,7 +45,7 @@ newObjectChecked(Hjava_lang_Class* class, errorInfo *info)
 				     CLASS_CNAME(class));
 		return (0);
 	}
-	obj = gc_malloc(CLASS_FSIZE(class), class->alloc_type);
+	obj = gc_malloc((size_t)(CLASS_FSIZE(class)), class->alloc_type);
 
 	if (!obj) {
 		postOutOfMemory(info);
@@ -127,7 +127,7 @@ DBG(NEWOBJECT,
  * Allocate a new array, of whatever types.
  */
 Hjava_lang_Object*
-newArrayChecked(Hjava_lang_Class* elclass, int count, errorInfo *info)
+newArrayChecked(Hjava_lang_Class* elclass, size_t count, errorInfo *info)
 {
 	Hjava_lang_Class* class = 0;
 	Hjava_lang_Object* obj = 0;
@@ -180,7 +180,7 @@ DBG(NEWOBJECT,
  * Allocate a new array, of whatever types.
  */
 Hjava_lang_Object*
-newArray(Hjava_lang_Class* elclass, int count)
+newArray(Hjava_lang_Class* elclass, size_t count)
 {
 	Hjava_lang_Object* obj;
 	errorInfo info;
@@ -202,9 +202,9 @@ newMultiArrayChecked(Hjava_lang_Class* clazz, int* dims, errorInfo *einfo)
 	Hjava_lang_Object** array;
 	int i;
 
-	obj = newArrayChecked(CLASS_ELEMENT_TYPE(clazz), dims[0], einfo);
+	obj = newArrayChecked(CLASS_ELEMENT_TYPE(clazz), (unsigned)dims[0], einfo);
 	if (!obj) {
-	    return NULL;
+		return NULL;
 	}
 
 	if (dims[1] >= 0) {
@@ -212,7 +212,7 @@ newMultiArrayChecked(Hjava_lang_Class* clazz, int* dims, errorInfo *einfo)
 		for (i = 0; i < dims[0]; i++) {
 			array[i] = newMultiArrayChecked(CLASS_ELEMENT_TYPE(clazz), &dims[1], einfo);
 			if (!array[i]) {
-			    return NULL;
+				return NULL;
 			}
 		}
 	}

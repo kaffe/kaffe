@@ -221,7 +221,7 @@ doubleDivide(jdouble v1, jdouble v2)
 	if (v1 == 0.0) {
 		return longToDouble(DNANBITS);
 	}
-	return longToDouble(DINFBITS | ((v1bits ^ v2bits) & DSIGNBIT));
+	return longToDouble((jlong)(DINFBITS | ((v1bits ^ v2bits) & DSIGNBIT)));
 }
 
 /*
@@ -244,5 +244,5 @@ floatDivide(jfloat v1, jfloat v2)
 	if (v1 == 0.0) {
 		return intToFloat(FNANBITS);
 	}
-	return intToFloat(FINFBITS | ((v1bits ^ v2bits) & FSIGNBIT));
+	return intToFloat((jint)(FINFBITS | ((v1bits ^ v2bits) & FSIGNBIT)));
 }

@@ -13,6 +13,7 @@
 #include "config-mem.h"
 #include <native.h>
 #include "java_util_zip_Adler32.h"
+#include "../../../kaffe/kaffevm/gtypes.h"
 
 #if defined(HAVE_LIBZ) && defined(HAVE_ZLIB_H)
 
@@ -21,7 +22,10 @@
 void
 java_util_zip_Adler32_update(struct Hjava_util_zip_Adler32* this, HArrayOfByte* buf, jint from, jint len)
 {
-	unhand(this)->adler = adler32(unhand(this)->adler, &unhand_array(buf)->body[from], len);
+	// XXX What happens if out of bounds ? 
+	if (from >= 0 && len > 0 && from + len <= obj_length(buf)) {
+		unhand(this)->adler = adler32((uint32)unhand(this)->adler, &unhand_array(buf)->body[from], (unsigned)len);
+	}
 }
 
 void
@@ -30,7 +34,7 @@ java_util_zip_Adler32_update1(struct Hjava_util_zip_Adler32* this, jint val)
 	jbyte b;
 
 	b = val;
-	unhand(this)->adler = adler32(unhand(this)->adler, &b, sizeof(b));
+	unhand(this)->adler = adler32((uint32)unhand(this)->adler, &b, sizeof(b));
 }
 
 #else

@@ -99,7 +99,7 @@
   };
 
 static char *
-ip2str(jint addr) 
+ip2str(uint32 addr) 
 {
 	static char addrbuf[16];
 
@@ -667,7 +667,7 @@ gnu_java_net_PlainSocketImpl_socketRead(struct Hgnu_java_net_PlainSocketImpl* th
 	total_read = 0;
 	r = 0;
 	do {
-	         rc = KSOCKREAD(fd, &unhand_array(buf)->body[offset], len, unhand(this)->timeout, &r);
+		rc = KSOCKREAD(fd, &unhand_array(buf)->body[offset], (unsigned)len, unhand(this)->timeout, &r);
 
 		 if (rc == ETIMEDOUT) {
 		         struct Hjava_io_InterruptedIOException* except;
@@ -708,7 +708,7 @@ gnu_java_net_PlainSocketImpl_socketWrite(struct Hgnu_java_net_PlainSocketImpl* t
 	if (fd >= 0) {
 		while (len > 0) {
 			r = KSOCKWRITE(fd,
-			    &unhand_array(buf)->body[offset], len, &nw);
+			    &unhand_array(buf)->body[offset], (unsigned)len, &nw);
 			if (r) {
 				SignalError("java.io.IOException", SYS_ERROR(r));
 			}

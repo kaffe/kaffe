@@ -143,7 +143,7 @@ initNative(void)
 	char* lpath;
 	char* nptr;
 	char* ptr;
-	int len;
+	unsigned int len;
 
 	DBG(INIT, dprintf("initNative()\n"); )
 
@@ -185,7 +185,7 @@ initNative(void)
 			continue;
 		}
 		else {
-			strncpy(lib, ptr, nptr - ptr);
+			strncpy(lib, ptr, (size_t)(nptr - ptr));
 			lib[nptr-ptr] = '\0';
 			nptr += strlen(path_separator);
 		}

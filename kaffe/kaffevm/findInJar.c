@@ -275,17 +275,17 @@ DBG(CLASSLOOKUP,	dprintf("Opening java file %s for %s\n", buf, cname); )
 			data = NULL;
 			if (sbuf.st_size > 0)
 			{
-				data = KMALLOC(sbuf.st_size);
+				data = KMALLOC((size_t)sbuf.st_size);
 				if (data == 0) {
-				postOutOfMemory(einfo);
-				goto done;
-			}
+					postOutOfMemory(einfo);
+					goto done;
+				}
 			}
 
 			i = 0;
 			while (i < sbuf.st_size) {
 				ssize_t j;
-				rc = KREAD(fp, data, sbuf.st_size - i, &j);
+				rc = KREAD(fp, data, (size_t)(sbuf.st_size - i), &j);
 				if (rc != 0) {
 					postExceptionMessage(einfo,
 						JAVA_IO(IOException),
@@ -302,7 +302,7 @@ DBG(CLASSLOOKUP,	dprintf("Opening java file %s for %s\n", buf, cname); )
 				}
 			}
 
-			classFileInit(hand, data, sbuf.st_size, CP_DIR);
+			classFileInit(hand, data, (unsigned)sbuf.st_size, CP_DIR);
 
 			KCLOSE(fp);
 			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
@@ -343,7 +343,7 @@ initClasspath(void)
 {
 	char* cp;
 	char* hm;
-	int len;
+	size_t len;
 	classpathEntry* ptr;
 
 	DBG(INIT, dprintf("initClasspath()\n"); )
@@ -710,7 +710,7 @@ handleManifestClassPath (classpathEntry *ptr)
 
 			if (len != 0) {
 				newEntry->path = KMALLOC(len + strlen(file_separator) + strlen(pathname));
-				strncpy (newEntry->path, ptr->path, len - 1);
+				strncpy (newEntry->path, ptr->path, (size_t)(len - 1));
 				sprintf (newEntry->path + len - 1, "%s%s",
 					 file_separator, pathname);
 			}

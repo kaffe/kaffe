@@ -48,7 +48,7 @@ static inline void classFileInit(classFile* cf,
  * Check that the needed number of bytes are available.  If
  * not a ClassFormatError is posted in einfo.
  */
-static inline bool checkBufSize(classFile* cf, int need,
+static inline bool checkBufSize(classFile* cf, u4 need,
 				const char* cfname,
 				errorInfo* einfo) __UNUSED__;
 /* Read a single unsigned byte from cf */
@@ -75,13 +75,12 @@ classFileInit(classFile* cf, const unsigned char* buf, size_t len, ClassFileType
 }
 
 static inline bool 
-checkBufSize(classFile* cf, int need, const char* cfname, errorInfo* einfo)
+checkBufSize(classFile* cf, u4 need, const char* cfname, errorInfo* einfo)
 {
 	assert(cf != NULL);
-	assert(need >= 0);
 	assert(cf->type != CP_INVALID);
 	
-	if ((cf->base + cf->size - cf->cur) < need)
+	if ((unsigned)(cf->base + cf->size - cf->cur) < need)
 	{
 		if (cfname != NULL)
 			postExceptionMessage(einfo,

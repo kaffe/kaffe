@@ -42,8 +42,8 @@ extern int jit_debug;
 #endif /* defined(TRANSLATOR) */
 
 static char *debugBuffer;
-static int bufferBegin = 0;
-static int bufferSz = 16 * 1024;
+static size_t bufferBegin = 0;
+static size_t bufferSz = 16 * 1024;
 static int bufferOutput = 0;
 
 #if defined(NDEBUG) || !defined(KAFFE_VMDEBUG)
@@ -314,8 +314,9 @@ dbgSetMaskStr(const char *orig_mask_str)
 static void
 debugToBuffer(int size)
 {
+	assert(size > 0);
 	bufferSz = size;
-	debugBuffer = malloc(size);
+	debugBuffer = malloc(bufferSz);
 	bufferOutput = 1;
 	assert(debugBuffer != NULL);
 }
@@ -391,7 +392,8 @@ kaffe_dprintf(const char *fmt, ...)
 
 #ifdef HAVE_VSNPRINTF
 	max = bufferSz - bufferBegin - 1;
-	n = vsnprintf(debugBuffer + bufferBegin, max, fmt, args);
+	assert(max > 0);
+	n = vsnprintf(debugBuffer + bufferBegin, (unsigned int)max, fmt, args);
 
 	/* The return value is bytes *needed* not bytes *used* */
 	if (n > max)
@@ -414,7 +416,7 @@ kaffe_dprintf(const char *fmt, ...)
 		while (max < n) {
 			int w =  write(2,
 				       debugBuffer + max,
-				       n - max);
+				       (size_t)(n - max));
 			if (w >= 0)
 				/* ignore errors */
 				max += w;

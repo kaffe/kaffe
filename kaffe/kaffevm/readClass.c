@@ -122,7 +122,7 @@ readInterfaces(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 		return true;
 	}			
 
-	if (! checkBufSize(fp, interfaces_count * 2, CLASS_CNAME(this), einfo))
+	if (! checkBufSize(fp, (u2)(interfaces_count * 2), CLASS_CNAME(this), einfo))
 		return false;
 
 	interfaces = (Hjava_lang_Class**)

@@ -121,7 +121,7 @@ static struct {
 
 #undef  OBJECTSIZE
 
-  { -1, -1, -1 }
+  { -1, -1, 0 }
 
 };
 
@@ -1224,7 +1224,7 @@ gcRealloc(Collector* gcif, void* mem, size_t size, gc_alloc_type_t fidx)
 
 	/* Allocate new memory, copy data, and free the old */
 	newmem = gcMalloc(gcif, size, fidx);
-	memcpy(newmem, mem, osize);
+	memcpy(newmem, mem, (size_t)osize);
 	gcFree(gcif, mem);
 
 	return (newmem);

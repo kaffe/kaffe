@@ -58,7 +58,7 @@ static const struct {
 #if defined(KAFFE_VMDEBUG) && !defined(NDEBUG)
 /* Generate a string for an inet addr (in host form). */
 static char *
-ip2str(jint addr) 
+ip2str(uint32 addr) 
 {
 	static char addrbuf[16];
 	unsigned int top = (addr >> 24) & 0xFF;
@@ -339,7 +339,7 @@ DBG(NATIVENET,
         do { 
 	        rc = KRECVFROM(unhand(this)->native_fd,
 			       &(unhand_array(unhand(pkt)->buffer)->body)[offset],
-			       to_read, 0, (struct sockaddr*)&addr,
+			       (unsigned)to_read, 0, (struct sockaddr*)&addr,
 			       &alen, unhand(this)->timeout, &r);
 		switch( rc )
 		{

@@ -123,7 +123,7 @@ static iStaticLock	nsLock;
  */
 HArrayOfArray*
 gnu_java_net_SysInetAddressImpl_getHostByName(
-		struct Hgnu_java_net_SysInetAddressImpl *this,
+		struct Hgnu_java_net_SysInetAddressImpl *this UNUSED,
 		struct Hjava_lang_String* jStr)
 {
 #if defined(HAVE_GETADDRINFO)
@@ -171,7 +171,7 @@ gnu_java_net_SysInetAddressImpl_getHostByName(
 	}
 		
       retval = (HArrayOfArray *)
-	newArrayChecked(ObjectClass, count, &einfo);
+	newArrayChecked(ObjectClass, (size_t)count, &einfo);
       curr = ai;
       while( curr && retval )
 	{
@@ -355,7 +355,7 @@ gnu_java_net_SysInetAddressImpl_getHostByName(
  */
 struct Hjava_lang_String*
 gnu_java_net_SysInetAddressImpl_getHostByAddr(
-		struct Hgnu_java_net_SysInetAddressImpl *this,
+		struct Hgnu_java_net_SysInetAddressImpl *this UNUSED,
 		HArrayOfByte *addr)
 {
 #if defined(HAVE_GETADDRINFO)
@@ -371,7 +371,7 @@ gnu_java_net_SysInetAddressImpl_getHostByAddr(
   int iLockRoot;
   errorInfo einfo;
   char *hostname;
-  int sin_len;
+  unsigned int sin_len;
 
   hostname = gc_malloc(NI_MAXHOST, GC_ALLOC_FIXED);
   switch( addr->length )

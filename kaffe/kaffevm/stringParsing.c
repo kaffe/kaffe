@@ -681,7 +681,7 @@ int parseString_private(parseErrorInfo *pe,
 			len = strlen(str_ptr);
 			new_pos = str;
 			if( ((pv.type == SPO_Noop) &&
-			     !strncmp(str, str_ptr, len)) ||
+			     !strncmp(str, str_ptr, (size_t)len)) ||
 			    ((pv.type != SPO_Noop) &&
 			     (new_pos = strstr(str, str_ptr)) &&
 			     (new_pos < str_end)) )
@@ -873,9 +873,9 @@ char *promoteParsedString(parsedString *ps)
 {
 	char *retval;
 
-	if( (retval = spMalloc(ps->len + 1)) )
+	if( (retval = spMalloc((size_t)(ps->len + 1))) )
 	{
-		strncpy(retval, ps->data, ps->len);
+		strncpy(retval, ps->data, (size_t)ps->len);
 		retval[ps->len] = '\0';
 	}
 	return( retval );

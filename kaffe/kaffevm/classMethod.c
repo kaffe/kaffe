@@ -885,12 +885,12 @@ done:
 static int
 inPackageSet(char **plist, Utf8Const *name)
 {
-	int name_len, lpc, retval = 0;
+	unsigned int name_len, lpc, retval = 0;
 	
 	name_len = strlen(name->data);
 	for( lpc = 0; plist[lpc] && !retval; lpc++ )
 	{
-		int len;
+		unsigned int len;
 
 		len = strlen(plist[lpc]);
 		if( (name_len > len) &&
@@ -1044,7 +1044,7 @@ addInnerClasses(Hjava_lang_Class* c, uint32 len UNUSED, classFile* fp,
 		return true;
 	}
 
-	if (! checkBufSize(fp, nr*(2*4), CLASS_CNAME(c), einfo))
+	if (! checkBufSize(fp, (u2)(nr*(2*4)), CLASS_CNAME(c), einfo))
 	    return false;
 
 	ic = gc_malloc(sizeof(innerClass) * nr, GC_ALLOC_CLASSMISC);
@@ -1816,8 +1816,9 @@ allocStaticFields(Hjava_lang_Class* class, errorInfo *einfo)
 		offset += fsize;
 	}
 
+	assert(offset > 0);
 	/* Allocate memory required */
-	mem = gc_malloc(offset, GC_ALLOC_STATICDATA);
+	mem = gc_malloc((unsigned int)offset, GC_ALLOC_STATICDATA);
 	if (mem == NULL) {
 		postOutOfMemory(einfo);
 		return (false);
@@ -2458,6 +2459,7 @@ checkForAbstractMethods(Hjava_lang_Class* class, errorInfo *einfo)
  */
 static
 bool
+/* ARGSUSED */
 prepareInterface(Hjava_lang_Class* class, errorInfo *einfo)
 {
 	Method* meth;

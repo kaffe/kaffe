@@ -68,7 +68,7 @@ jthreadedBind(int fd, struct sockaddr *addr, int namelen)
 	int rc = 0;
 
 	jthread_spinon(0);
-	if (bind(fd, addr, namelen) == -1) {
+	if (bind(fd, addr, (size_t)namelen) == -1) {
 		rc = errno;
 	}
 	jthread_spinoff(0);
@@ -153,7 +153,7 @@ jthreadedMkdir(const char *path, int mode)
 	int rc = 0;
 
 	jthread_spinon(0);
-	if (mkdir(path, mode) == -1) {
+	if (mkdir(path, (unsigned)mode) == -1) {
 		rc = errno;
 	}
 	jthread_spinoff(0);
@@ -201,7 +201,7 @@ jthreadedRemove(const char *entry)
 
 static int     
 jthreadedSendto(int a, const void* b, size_t c, int d, const struct sockaddr* e,
-		int f, ssize_t *out)
+		size_t f, ssize_t *out)
 {
 	int rc = 0;
 
@@ -220,7 +220,7 @@ jthreadedSetSockOpt(int a, int b, int c, const void* d, int e)
 	int rc = 0;
 
 	jthread_spinon(0);
-	if (setsockopt(a, b, c, d, e) == -1) {
+	if (setsockopt(a, b, c, d, (unsigned)e) == -1) {
 		rc = errno;
 	}
 	jthread_spinoff(0);
@@ -299,7 +299,7 @@ jthreadedGetHostByAddr(const char *host, int l, int t, struct hostent** out)
 
 	jthread_spinon(0);
 	/* NB: same comment as for jthreadedGetHostByName applies here */
-	*out = gethostbyaddr(host, l, t);
+	*out = gethostbyaddr(host, (unsigned)l, t);
 	if (*out == 0) {
 		rc = h_errno;
 		if (rc == 0) {

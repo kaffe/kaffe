@@ -1122,7 +1122,10 @@ AllocObject(const char* classname, Hjava_lang_ClassLoader* loader)
 Hjava_lang_Object*
 AllocArray(int len, int type)
 {
-	return (newArray(TYPE_CLASS(type), len));
+	if (len < 0) {
+		throwException(NegativeArraySizeException);
+	}
+	return (newArray(TYPE_CLASS(type), (size_t)len));
 }
 
 /**
@@ -1145,11 +1148,11 @@ AllocObjectArray(int sz, const char* classname, Hjava_lang_ClassLoader* loader)
 	if (sz < 0) {
 		throwException(NegativeArraySizeException);
 	}
-        elclass = getClassFromSignature(classname, loader, &info);
+	elclass = getClassFromSignature(classname, loader, &info);
 	if (elclass == 0) {
 		throwError(&info);
 	}
-        return (newArray(elclass, sz));
+	return (newArray(elclass, sz));
 
 }
 

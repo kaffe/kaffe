@@ -32,9 +32,12 @@ java_util_zip_Inflater_setDictionary(struct Hjava_util_zip_Inflater* this, HArra
 	z_stream* dstream;
 
 	dstream = GET_STREAM(this);
-	r = inflateSetDictionary (dstream, &unhand_array(buf)->body[from], len);
-	if (r < 0) {
-		SignalError("java.lang.Error", dstream->msg ? dstream->msg : "unknown error");
+	// XXX What happens if out of bounds ? 
+	if (from >= 0 && len > 0 && from + len <= obj_length(buf)) {
+		r = inflateSetDictionary (dstream, &unhand_array(buf)->body[from], (unsigned)len);
+		if (r < 0) {
+			SignalError("java.lang.Error", dstream->msg ? dstream->msg : "unknown error");
+		}
 	}
 }
 
@@ -117,13 +120,13 @@ java_util_zip_Inflater_end(struct Hjava_util_zip_Inflater* this)
 }
 
 static voidpf
-kaffe_zalloc(voidpf opaque, uInt items, uInt size) {
+kaffe_zalloc(voidpf opaque UNUSED, uInt items, uInt size) {
   /* allocate through the garbage collector interface */
   return KMALLOC(items*size);
 }
 
 static void
-kaffe_zfree(voidpf opaque, voidpf address) {
+kaffe_zfree(voidpf opaque UNUSED, voidpf address) {
   /* dispose through the garbage collector interface */
   KFREE(address);
 }

@@ -22,7 +22,7 @@ void
 kaffe_applet_AudioPlayer_playFile(struct Hjava_lang_String* jstr)
 {
 	char    fName[MAXPATHLEN];
-	int     bLen = 1024;
+	size_t  bLen = 1024;
 	int     fin, dev, rc;
 	ssize_t	bRead;
 	void	*buf;
@@ -48,7 +48,7 @@ kaffe_applet_AudioPlayer_playFile(struct Hjava_lang_String* jstr)
 
 	while ( (KREAD( fin, buf, bLen, &bRead ) == 0) && (bRead > 0)) {
 		ssize_t bWritten;
-		KWRITE( dev, buf, bRead, &bWritten );	/* XXX check error */
+		KWRITE( dev, buf, (size_t)bRead, &bWritten );	/* XXX check error */
 	}
 
 	KCLOSE( dev);

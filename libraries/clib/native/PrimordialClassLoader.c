@@ -32,7 +32,7 @@
  * Load a system class.
  */
 struct Hjava_lang_Class*
-kaffe_lang_PrimordialClassLoader_findClass0(Hkaffe_lang_PrimordialClassLoader* this, Hjava_lang_String* jStr)
+kaffe_lang_PrimordialClassLoader_findClass0(Hkaffe_lang_PrimordialClassLoader* this UNUSED, Hjava_lang_String* jStr)
 {
 	Hjava_lang_Class *clazz = 0;
 	errorInfo info;

@@ -171,7 +171,7 @@ getStackTraceElements(struct Hjava_lang_VMThrowable* state,
 	}
 
 	result = (HArrayOfObject*)newArray(javaLangStackTraceElement,
-					   frame - first_frame);
+					   (size_t)(frame - first_frame));
 
 	frame = 0;
 	for(i = 0; stack[i].meth != ENDOFSTACK; i++) {
@@ -270,7 +270,7 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 			}
 			KFREE(class_dot_name);
 			len = strlen(buf);
-			str = newArrayChecked(TYPE_CLASS(TYPE_Char), len, &einfo);
+			str = newArrayChecked(TYPE_CLASS(TYPE_Char), (size_t)len, &einfo);
 			if (!str) {
 				KFREE(buf);
 				if (nullOK) {

@@ -7,7 +7,7 @@
 
 void
 Java_kaffe_management_Debug_enable
-	(JNIEnv *env, jclass thisClass, jobject list)
+	(JNIEnv *env, jclass thisClass UNUSED, jobject list)
 {
 	const char *real_list = (*env)->GetStringUTFChars(env, list, 0);
 	/* do we always have alloca? */
@@ -21,28 +21,28 @@ Java_kaffe_management_Debug_enable
 
 void
 Java_kaffe_management_Debug_setVerboseGC
-	(JNIEnv *env, jclass thisClass, jint level)
+	(JNIEnv *env UNUSED, jclass thisClass UNUSED, jint level)
 {
 	Kaffe_JavaVMArgs[0].enableVerboseGC = level;
 }
 
 void
 Java_kaffe_management_Debug_setVerboseJIT
-	(JNIEnv *env, jclass thisClass, jboolean on)
+	(JNIEnv *env UNUSED, jclass thisClass UNUSED, jboolean on)
 {
 	Kaffe_JavaVMArgs[0].enableVerboseJIT = on;
 }
 
 void
 Java_kaffe_management_Debug_setTracing
-	(JNIEnv *env, jclass thisClass, jint level)
+	(JNIEnv *env UNUSED, jclass thisClass UNUSED, jint level)
 {
 	Kaffe_JavaVMArgs[0].enableVerboseCall = level;
 }
 
 void
 Java_kaffe_management_Debug_enableStats
-	(JNIEnv *env, jclass thisClass, jobject list)
+	(JNIEnv *env, jclass thisClass UNUSED, jobject list)
 {
 #ifdef KAFFE_STATS
 	static char *curStats;	/* kaffe expects this string to be

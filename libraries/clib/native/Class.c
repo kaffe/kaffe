@@ -281,13 +281,13 @@ java_lang_Class_getModifiers(struct Hjava_lang_Class* this)
 }
 
 HArrayOfObject*
-java_lang_Class_getSigners(struct Hjava_lang_Class* this)
+java_lang_Class_getSigners(struct Hjava_lang_Class* this UNUSED)
 {
 	unimp("java.lang.Class:getSigners unimplemented");
 }
 
 void
-java_lang_Class_setSigners(struct Hjava_lang_Class* this, HArrayOfObject* sigs)
+java_lang_Class_setSigners(struct Hjava_lang_Class* this UNUSED, HArrayOfObject* sigs UNUSED)
 {
 	unimp("java.lang.Class:setSigners unimplemented");
 }
@@ -714,7 +714,7 @@ static
 int
 checkParameters(Method* mth, HArrayOfObject* argtypes)
 {
-	int i;
+	unsigned int i;
 	errorInfo info;
 
 	/* The JDK doc says and experimentation shows that a null second

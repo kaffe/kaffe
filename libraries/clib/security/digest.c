@@ -147,21 +147,21 @@ Java_kaffe_security_provider_MD2_Final(JNIEnv *env, jobject this,
 #else
 
 void JNICALL
-Java_kaffe_security_provider_MD2_Init(JNIEnv *env, jobject this)
+Java_kaffe_security_provider_MD2_Init(JNIEnv *env, jobject this UNUSED)
 {
 	supportDisabled(env);
 }
 
 void JNICALL
-Java_kaffe_security_provider_MD2_Update(JNIEnv *env, jobject this,
-	jbyteArray buf, jint off, jint len)
+Java_kaffe_security_provider_MD2_Update(JNIEnv *env, jobject this UNUSED,
+	jbyteArray buf UNUSED, jint off UNUSED, jint len UNUSED)
 {
 	supportDisabled(env);
 }
 
 void JNICALL
-Java_kaffe_security_provider_MD2_Final(JNIEnv *env, jobject this,
-	jbyteArray buf, jint off)
+Java_kaffe_security_provider_MD2_Final(JNIEnv *env, jobject this UNUSED,
+	jbyteArray buf UNUSED, jint off UNUSED)
 {
 	supportDisabled(env);
 }
@@ -275,21 +275,21 @@ Java_kaffe_security_provider_MD4_Final(JNIEnv *env, jobject this,
 #else
 
 void JNICALL
-Java_kaffe_security_provider_MD4_Init(JNIEnv *env, jobject this)
+Java_kaffe_security_provider_MD4_Init(JNIEnv *env, jobject this UNUSED)
 {
 	supportDisabled(env);
 }
 
 void JNICALL
-Java_kaffe_security_provider_MD4_Update(JNIEnv *env, jobject this,
-	jbyteArray buf, jint off, jint len)
+Java_kaffe_security_provider_MD4_Update(JNIEnv *env, jobject this UNUSED,
+	jbyteArray buf UNUSED, jint off UNUSED, jint len UNUSED)
 {
 	supportDisabled(env);
 }
 
 void JNICALL
-Java_kaffe_security_provider_MD4_Final(JNIEnv *env, jobject this,
-	jbyteArray buf, jint off)
+Java_kaffe_security_provider_MD4_Final(JNIEnv *env, jobject this UNUSED,
+	jbyteArray buf UNUSED, jint off UNUSED)
 {
 	supportDisabled(env);
 }
@@ -356,7 +356,7 @@ Java_kaffe_security_provider_MD5_Update(JNIEnv *env, jobject this,
 	}
 
 	/* Get data byte array data */
-	if (off < 0 || off + len > (*env)->GetArrayLength(env, buf)) {
+	if (off < 0 || len < 0 || off + len > (*env)->GetArrayLength(env, buf)) {
 		(*env)->ThrowNew(env, aiobClass, "out of range");
 		return;
 	}
@@ -366,7 +366,7 @@ Java_kaffe_security_provider_MD5_Update(JNIEnv *env, jobject this,
 	}
 
 	/* Update with new data and release array data */
-	MD5Update((MD5_CTX *) ctxBytes, bufBytes + off, len);
+	MD5Update((MD5_CTX *) ctxBytes, bufBytes + off, (unsigned)len);
 	(*env)->ReleaseByteArrayElements(env, ctxArray, ctxBytes, 0);
 	(*env)->ReleaseByteArrayElements(env, buf, bufBytes, JNI_ABORT);
 }
@@ -455,7 +455,7 @@ Java_kaffe_security_provider_SHA_Update(JNIEnv *env, jobject this,
 	}
 
 	/* Get data byte array data */
-	if (off < 0 || off + len > (*env)->GetArrayLength(env, buf)) {
+	if (off < 0 || len < 0 || off + len > (*env)->GetArrayLength(env, buf)) {
 		(*env)->ThrowNew(env, aiobClass, "out of range");
 		return;
 	}
@@ -465,7 +465,7 @@ Java_kaffe_security_provider_SHA_Update(JNIEnv *env, jobject this,
 	}
 
 	/* Update with new data and release array data */
-	SHA1Update((SHA1_CTX *) ctxBytes, bufBytes + off, len);
+	SHA1Update((SHA1_CTX *) ctxBytes, bufBytes + off, (unsigned)len);
 	(*env)->ReleaseByteArrayElements(env, ctxArray, ctxBytes, 0);
 	(*env)->ReleaseByteArrayElements(env, buf, bufBytes, JNI_ABORT);
 }

@@ -265,6 +265,7 @@ Kaffe_DeleteGlobalRef(JNIEnv* env UNUSED, jref obj)
 }
 
 static void
+/* ARGSUSED */
 Kaffe_DeleteLocalRef(JNIEnv* env UNUSED, jref obj)
 {
 	REMOVE_REF(obj);
@@ -2706,7 +2707,7 @@ Kaffe_NewStringUTF(JNIEnv* env UNUSED, const char* data)
 {
 	Hjava_lang_String* str;
 	Utf8Const* utf8;
-	int len;
+	unsigned int len;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 

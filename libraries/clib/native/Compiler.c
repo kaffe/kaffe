@@ -23,19 +23,19 @@ java_lang_Compiler_initialize(void)
 }
 
 jbool
-java_lang_Compiler_compileClass(struct Hjava_lang_Class* class)
+java_lang_Compiler_compileClass(struct Hjava_lang_Class* class UNUSED)
 {
 	unimp("java.lang.Compiler:compilerClass unimplemented");
 }
 
 jbool
-java_lang_Compiler_compileClasses(struct Hjava_lang_String* str)
+java_lang_Compiler_compileClasses(struct Hjava_lang_String* str UNUSED)
 {
 	unimp("java.lang.Compiler:compileClasses unimplemented");
 }
 
 struct Hjava_lang_Object*
-java_lang_Compiler_command(struct Hjava_lang_Object* obj)
+java_lang_Compiler_command(struct Hjava_lang_Object* obj UNUSED)
 {
 	unimp("java.lang.Compiler:command unimplemented");
 }

@@ -20,21 +20,21 @@
 #include "../../../kaffe/kaffevm/stringSupport.h"
 #include <native.h>
 
-void Java_kaffe_management_XProfiler_on(JNIEnv *env, jclass clazz)
+void Java_kaffe_management_XProfiler_on(JNIEnv *env UNUSED, jclass clazz UNUSED)
 {
 #if defined(KAFFE_XPROFILER)
 	xProfilingOn();
 #endif
 }
 
-void Java_kaffe_management_XProfiler_off(JNIEnv *env, jclass clazz)
+void Java_kaffe_management_XProfiler_off(JNIEnv *env UNUSED, jclass clazz UNUSED)
 {
 #if defined(KAFFE_XPROFILER)
 	xProfilingOff();
 #endif
 }
 
-void Java_kaffe_management_XProfiler_stage(JNIEnv *env, jclass clazz,
+void Java_kaffe_management_XProfiler_stage(JNIEnv *env UNUSED, jclass clazz UNUSED,
 					   jstring _stage_name)
 {
 #if defined(KAFFE_XPROFILER)

@@ -87,7 +87,7 @@ struct Hjava_lang_Class {
 	struct _classEntry*	centry;
 
 	Utf8Const*		name;
-	int			packageLength;
+	unsigned int			packageLength;
 	char*			sourcefile;	/* source file name if known */
 	accessFlags		accflags;
 

@@ -122,8 +122,9 @@ static int		utf8ConstCompare(const void *v1, const void *v2);
  * Returns 0 if an malloc failed occurred.
  */
 Utf8Const *
-utf8ConstNew(const char *s, int len)
+utf8ConstNew(const char *s, int slen)
 {
+	unsigned int len;
 	Utf8Const *utf8, *temp;
 	int32 hash;
 	Utf8Const *fake;
@@ -133,8 +134,10 @@ utf8ConstNew(const char *s, int len)
 #endif
 
 	/* Automatic length finder */
-	if (len < 0) {
+	if (slen < 0) {
 		len = strlen(s);
+	}else{
+		len = (unsigned int) slen;
 	}
 
 #ifdef KAFFE_VMDEBUG

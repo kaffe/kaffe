@@ -483,7 +483,7 @@ BlockInfo **
 branchInBoundsErrorInVerifyMethod3a(errorInfo* einfo,
 				    Method* method,
 				    int codelen,
-				    int n)
+				    uint32 n)
 {
   DBG(VERIFY3, dprintf("ERROR: branch to (%d) out of bound (%d) \n", n, codelen); );
   return verifyErrorInVerifyMethod3a(einfo, method, "branch out of method code");
@@ -498,7 +498,7 @@ checkLocalIndexErrorInVerifyMethod3a(errorInfo* einfo,
 				     Method* method,
 				     uint32 pc,
 				     unsigned char* code,
-				     int n)
+				     uint32 n)
 {
   DBG(VERIFY3,
       dprintf("ERROR:  pc = %d, instruction = ", pc);

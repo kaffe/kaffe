@@ -28,13 +28,16 @@ void
 java_util_zip_Deflater_setDictionary(struct Hjava_util_zip_Deflater* this, HArrayOfByte* buf, jint from, jint len)
 {
 	int r;
-        z_stream* dstream;
+	z_stream* dstream;
 
-        dstream = GET_STREAM(this);
+ 	dstream = GET_STREAM(this);
 
-	r = deflateSetDictionary (dstream, &unhand_array(buf)->body[from], len);
-	if (r < 0) {
-		SignalError("java.lang.Error", dstream->msg ? dstream->msg : "unknown error");
+	// XXX What happens if out of bounds ? 
+	if (from >= 0 && len > 0 && from + len <= obj_length(buf)) {
+		r = deflateSetDictionary (dstream, &unhand_array(buf)->body[from], (unsigned)len);
+		if (r < 0) {
+			SignalError("java.lang.Error", dstream->msg ? dstream->msg : "unknown error");
+		}
 	}
 }
 
@@ -43,9 +46,9 @@ java_util_zip_Deflater_deflate(struct Hjava_util_zip_Deflater* this, HArrayOfByt
 {
 	int r;
 	int ilen;
-        z_stream* dstream;
+	z_stream* dstream;
 
-        dstream = GET_STREAM(this);
+ 	dstream = GET_STREAM(this);
 
 	ilen = unhand(this)->len;
 
@@ -117,13 +120,13 @@ java_util_zip_Deflater_end(struct Hjava_util_zip_Deflater* this)
 }
 
 static voidpf
-kaffe_zalloc(voidpf opaque, uInt items, uInt size) {
+kaffe_zalloc(voidpf opaque UNUSED, uInt items, uInt size) {
   /* allocate through the garbage collector interface */
   return KMALLOC(items*size);
 }
 
 static void
-kaffe_zfree(voidpf opaque, voidpf address) {
+kaffe_zfree(voidpf opaque UNUSED, voidpf address) {
   /* dispose through the garbage collector interface */
   KFREE(address);
 }
@@ -132,7 +135,7 @@ void
 java_util_zip_Deflater_init(struct Hjava_util_zip_Deflater* this, jbool val)
 {
 	int r;
-        z_stream* dstream;
+ 	z_stream* dstream;
 
 	dstream = KMALLOC(sizeof(*dstream));
 	dstream->next_in = 0;
