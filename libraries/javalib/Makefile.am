@@ -144,7 +144,8 @@ java_awt_SRCS = \
 	java/awt/Toolkit.java \
 	java/awt/WMEvent.java \
 	java/awt/Window.java \
-	java/awt/WindowEvt.java
+	java/awt/WindowEvt.java \
+	java/awt/DefKeyFilter.java
 java_awt_datatransfer_SRCS = \
 	java/awt/datatransfer/Clipboard.java \
 	java/awt/datatransfer/ClipboardOwner.java \
@@ -598,7 +599,12 @@ kaffe_awt_SRCS = \
 	kaffe/awt/ImageSpec.java \
 	kaffe/awt/ObjectSelection.java \
 	kaffe/awt/OpaqueComponent.java \
-	kaffe/awt/SerializerConverter.java
+	kaffe/awt/SerializerConverter.java \
+	kaffe/awt/FocusHook.java \
+	kaffe/awt/HookInstaller.java \
+	kaffe/awt/JavaColorModel.java  \
+	kaffe/awt/KeyHook.java \
+	kaffe/awt/MouseHook.java 
 kaffe_beans_editors_SRCS = \
 	kaffe/beans/editors/BooleanEditor.java \
 	kaffe/beans/editors/ByteEditor.java \
@@ -633,7 +639,10 @@ kaffe_lang_SRCS = \
 	kaffe/lang/MemoryAdvice.java \
 	kaffe/lang/MemoryAdviceCallback.java \
 	kaffe/lang/SystemClassLoader.java \
-	kaffe/lang/UNIXProcess.java
+	kaffe/lang/UNIXProcess.java \
+	kaffe/lang/Application.java \
+	kaffe/lang/ApplicationException.java  \
+        kaffe/lang/ApplicationResource.java 
 kaffe_management_SRCS = \
 	kaffe/management/Classpath.java
 kaffe_net_SRCS = \

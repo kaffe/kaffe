@@ -129,7 +129,7 @@ with_engine = @with_engine@
 SUBDIRS = $(ENGINE_NAME) systems gcj
 DIST_SUBDIRS = intrp jit systems gcj
 
-EXTRA_DIST =  	kaffe.def 	mem/gc-incremental.c 	mem/gc-incremental.h 	mem/gc-mem.c 	mem/gc-mem.h
+EXTRA_DIST =  	kaffe.def 	mem/gc-incremental.c 	mem/gc-incremental.h 	mem/gc-mem.c 	mem/gc-mem.h 	systems/win32/winio.c 	systems/win32/winthread.c 	systems/win32/winthread.h
 
 
 INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS)
@@ -368,7 +368,7 @@ distdir: $(DISTFILES)
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
 	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu kaffe/kaffevm/Makefile
-	$(mkinstalldirs) $(distdir)/mem
+	$(mkinstalldirs) $(distdir)/mem $(distdir)/systems/win32
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \

@@ -14,7 +14,10 @@ EXTRA_DIST = \
 	mem/gc-incremental.c \
 	mem/gc-incremental.h \
 	mem/gc-mem.c \
-	mem/gc-mem.h
+	mem/gc-mem.h \
+	systems/win32/winio.c \
+	systems/win32/winthread.c \
+	systems/win32/winthread.h
 
 @engine_frag@
 
