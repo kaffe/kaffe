@@ -1,3 +1,7 @@
+Mon May 17 11:55:13 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffevm/classMethod.h: fix race condition resolving fields
+
 1999-05-17  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in: Reverted ``be verbose about static/shared
