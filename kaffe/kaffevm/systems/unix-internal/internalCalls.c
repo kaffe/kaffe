@@ -176,12 +176,6 @@ threadedWaitpid(int wpid, int* status, int options)
 #endif
 }
 
-static int 
-threadedFileDescriptor(int fd)
-{
-	return (fd);
-}
-
 static int
 threadedOpen(const char *name, int flags, int mode)
 {
@@ -190,9 +184,14 @@ threadedOpen(const char *name, int flags, int mode)
 	return (fd);
 }
 
+static int
+forkexec(char **argv, char **arge, int fd[4])
+{
+	unimp("fork&exec unimplemented in internal, use jthread instead");
+}
+
 SystemCallInterface Kaffe_SystemCallInterface = {
 
-	threadedFileDescriptor,
 	threadedOpen,
 	threadedRead,
 	threadedWrite,
@@ -220,6 +219,8 @@ SystemCallInterface Kaffe_SystemCallInterface = {
 
 	select,
 
+	forkexec,
 	threadedWaitpid,
+	kill
 };
 
