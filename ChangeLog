@@ -1,3 +1,8 @@
+2003-08-07 Guilhem Lavaux <guilhem.lavaux@free.fr>
+
+	* libraries/javalib/java/net/Socket.java:
+	(bind,isClosed,isBound) added remaining Java 1.4 functions
+
 2003-08-06 Dalibor Topic <robilad@kaffe.org>
 
 	* kaffe/jvmpi/Makefile.am:

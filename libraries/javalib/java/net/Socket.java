@@ -21,6 +21,7 @@ public class Socket {
 private static SocketImplFactory factory = new DefaultSocketImplFactory();
 
 SocketImpl impl;
+boolean bound;
 
 public Socket(InetAddress address, int port) throws IOException {
     this(address, port, true);
@@ -58,6 +59,8 @@ public Socket(InetAddress address, int port, boolean stream) throws IOException 
  * @since 1.4
  */
 public void connect(SocketAddress address) throws IOException {
+    if (isClosed())
+	throw new SocketException("Socket is closed");
     if (address == null)
 	throw new IllegalArgumentException();
 
@@ -74,6 +77,8 @@ public void connect(SocketAddress address) throws IOException {
  * @since 1.4
  */
 public void connect(SocketAddress address, int timeout) throws IOException {
+    if (isClosed())
+	throw new SocketException("Socket is closed");
     if (address == null)
 	throw new IllegalArgumentException();
 
@@ -84,6 +89,32 @@ public void connect(SocketAddress address, int timeout) throws IOException {
 		null, 0, timeout);
    } else
 	throw new IllegalArgumentException();
+}
+
+public void bind(SocketAddress address) throws IOException
+{
+    if (isClosed())
+	throw new SocketException("Socket is closed");
+    if (!(address instanceof InetSocketAddress))
+        throw new IllegalArgumentException();
+    if (isBound())
+	throw new SocketException("Already bound");
+
+    InetSocketAddress iaddr = (InetSocketAddress)address;
+
+    impl = factory.createSocketImpl();
+    try {
+        impl.create(true);
+	if (address != null)
+	    impl.bind(iaddr.getAddress(), iaddr.getPort());
+    } catch (IOException ioe) {
+	try {
+	    impl.close();
+	} catch (IOException _) {
+	}
+	throw ioe;
+    }
+    bound = true;
 }
 
 private void connect(InetAddress address, int port, boolean stream,
@@ -102,10 +133,12 @@ private void connect(InetAddress address, int port, boolean stream,
         }
         throw ioe;
     }
+    bound = true;
 }
 
 protected Socket(SocketImpl simpl) throws SocketException {
 	impl = simpl;
+	bound = true;
 }
 
 protected Socket() {
@@ -114,6 +147,15 @@ protected Socket() {
 
 public synchronized void close() throws IOException {
 	impl.close();
+	bound = false;
+}
+
+public boolean isBound() {
+	return bound;
+}
+
+public boolean isClosed() {
+	return impl.fd.valid();
 }
 
 public InetAddress getInetAddress() {
