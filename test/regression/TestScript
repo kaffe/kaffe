@@ -390,7 +390,6 @@ Method: public java.lang.String java.lang.Object.toString()
 Method: public boolean java.lang.Object.equals(java.lang.Object)
 Method: public native int java.lang.Object.hashCode()
 Method: public final native java.lang.Class java.lang.Object.getClass()
-Constructor: public java.lang.Object()
 Field: public static final java.io.PrintStream java.lang.System.err
 Field: public static final java.io.PrintStream java.lang.System.out
 Field: public static final java.io.InputStream java.lang.System.in"
