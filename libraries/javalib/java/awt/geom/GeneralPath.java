@@ -642,7 +642,7 @@ public final class GeneralPath implements Shape, Cloneable
 	  if (transform != null)
 	    transform.transform( /* src */
 	    coords, /* srcOffset */
-	    pos, /* dest */ coords, /* destOffset */
+	    0, /* dest */ coords, /* destOffset */
 	    0, /* numPoints */ numCoords);
         }
       return seg;
