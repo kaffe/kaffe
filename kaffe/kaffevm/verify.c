@@ -1004,15 +1004,6 @@ static const char* DOUBLEARR_SIG = "[D";
 static Type  verify_DOUBLEARR;
 static Type* TDOUBLEARR = &verify_DOUBLEARR;
 
-
-#define IS_PRIMITIVE_ARRAY(_TINFO) \
-           (((_TINFO)->data.class) == TCHARARR->data.class  || ((_TINFO)->data.class) == TBYTEARR->data.class || \
-	    ((_TINFO)->data.class) == TSHORTARR->data.class || ((_TINFO)->data.class) == TINTARR->data.class  || \
-	    ((_TINFO)->data.class) == TLONGARR->data.class  || \
-            ((_TINFO)->data.class) == TFLOATARR->data.class || ((_TINFO)->data.class) == TDOUBLEARR->data.class)
-
-
-
 /***********************************************************************************
  * Methods for Pass 3 Verification
  ***********************************************************************************/

@@ -1,6 +1,11 @@
 2004-02-12  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+	(IS_PRIMITIVE_ARRAY): Removed unused macro.
+
+2004-02-12  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
         (isNull): New static inline function.
         (IS_NULL) Removed.
         Replaced use of IS_NULL by isNull.
