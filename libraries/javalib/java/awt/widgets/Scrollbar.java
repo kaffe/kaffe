@@ -486,7 +486,7 @@ void updateSliderRect () {
 	//slider position from value
 	if ( ori == HORIZONTAL ) {
 		int dx = Math.max( vis * width / (delta + vis), 10);
-		int x0 = val * ( width - dx ) / delta;
+		int x0 = (val - min) * ( width - dx ) / delta;
 		if ( x0 >= 0 )
 			slRect.setBounds( x0, 2, dx, height-4);
 		else
@@ -495,13 +495,12 @@ void updateSliderRect () {
 	else {
 		//total amount is max - min + vis, for contents cannot be scrolled out
 		int dy = Math.max( vis * height / (delta + vis), 10);
-		int y0 = val * ( height - dy ) / delta;	
+		int y0 = (val - min) * ( height - dy ) / delta;
 		if ( y0 >= 0 )
 			slRect.setBounds( 2, y0, width-4, dy);
 		else
 			slRect.setBounds( 0, 0, 0, 0);
 	}
-	
 }
 
 void updateValue () {
@@ -509,9 +508,9 @@ void updateValue () {
 	int newVal;
 	
 	if ( ori == HORIZONTAL )
-		newVal = slRect.x * ( max - min) / (width - slRect.width );
+		newVal = slRect.x * ( max - min) / (width - slRect.width ) + min;
 	else
-		newVal = slRect.y * ( max - min) / (height - slRect.height);
+		newVal = slRect.y * ( max - min) / (height - slRect.height) + min;
 	
 	if ( val != newVal ) {
 		val = newVal;
