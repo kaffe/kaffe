@@ -259,7 +259,7 @@ Hjava_lang_Class*	loadClass(Utf8Const*, Hjava_lang_ClassLoader*, errorInfo *einf
 Hjava_lang_Class*	loadArray(Utf8Const*, Hjava_lang_ClassLoader*, errorInfo *einfo);
 Hjava_lang_Class* 	findClass(struct _classEntry* centry, errorInfo *einfo);
 
-void			loadStaticClass(Hjava_lang_Class**, char*);
+void			loadStaticClass(Hjava_lang_Class**, const char*);
 
 Hjava_lang_Class*	setupClass(Hjava_lang_Class*, constIndex, constIndex, u2, Hjava_lang_ClassLoader*);
 Method*			addMethod(Hjava_lang_Class*, struct _method_info*);

@@ -39,7 +39,7 @@ java_io_ObjectInputStream_loadClass0(struct Hjava_io_ObjectInputStream* stream, 
 	classname2pathname(cstr, cstr);
 	nm = utf8ConstNew(cstr, -1);
 	KFREE(cstr);
-	
+
 	assert(cls == 0 || !"Don't know what to do with a non-zero class");
 
         loader = 0;
@@ -58,6 +58,7 @@ java_io_ObjectInputStream_loadClass0(struct Hjava_io_ObjectInputStream* stream, 
 	else {
 		clazz = loadClass(nm, loader, &einfo);
 	}
+	utf8ConstRelease(nm);
 
 	if (clazz == 0) {
 		throwError(&einfo);
@@ -134,6 +135,8 @@ jbool
 java_io_ObjectInputStream_invokeObjectReader(struct Hjava_io_ObjectInputStream* stream, struct Hjava_lang_Object* obj, struct Hjava_lang_Class* cls)
 {
 	Method* meth;
+	Utf8Const* name;
+	Utf8Const* sig;
 
 	/*
 	 * Each subclass of a Serializable object may define its own 
@@ -141,9 +144,11 @@ java_io_ObjectInputStream_invokeObjectReader(struct Hjava_io_ObjectInputStream* 
 	 * responsible for restoring its own fields, not those of its 
 	 * supertypes or subtypes. 
 	 */
-	meth = findMethodLocal(cls, 
-		utf8ConstNew("readObject", -1), 
-		utf8ConstNew("(Ljava/io/ObjectInputStream;)V", -1));
+	name = utf8ConstNew("readObject", -1);
+	sig = utf8ConstNew("(Ljava/io/ObjectInputStream;)V", -1);
+	meth = findMethodLocal(cls, name, sig);
+	utf8ConstRelease(name);
+	utf8ConstRelease(sig);
 
 	if (meth != 0) {
 		do_execute_java_method(obj, 0, 0, meth, 0, stream);

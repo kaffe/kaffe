@@ -3,7 +3,7 @@
  * String related functionality
  *
  * Copyright (c) 1998
- *	Transvirtual Technologies, Inc.  All rights reserved.
+ *	Transvirtual Technologies, Inc.	 All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
@@ -40,14 +40,6 @@ extern char*		  stringJava2CBuf(const Hjava_lang_String*, char*, int);
 /* Create an array of Unicode characters from the supplied C string */
 extern HArrayOfChar*	  stringC2CharArray(const char*);
 
-/* Create a String object from a Utf8Const */
-extern Hjava_lang_String* stringUtf82Java(const Utf8Const*);
-
-/* Create a String object from a Utf8Const, and replace all occurrences
-   of the first character with the second. */
-extern Hjava_lang_String* stringUtf82JavaReplace(const Utf8Const *,
-				jchar, jchar);
-
 /* Return the interned version of the String object */
 extern Hjava_lang_String* stringInternString(Hjava_lang_String*);
 
@@ -57,25 +49,39 @@ extern void		  stringUninternString(Hjava_lang_String*);
 
 /**** UTF-8 routines ****/
 
-/* Create a Utf8Const from a UTF-8 encoded array. The returned Utf8Const
-   is subject to garbage collection when no pointers to it remain. */
-extern Utf8Const*	utf8ConstNew(const char*, int);
+/* Create a Utf8Const from a UTF-8 encoded array. The returned pointer
+   remains valid until Utf8ConstRelease() is called. */
+extern Utf8Const*	  utf8ConstNew(const char*, int);
 
-/* Create a permanent Utf8Const from a UTF-8 encoded string. */
-extern Utf8Const*	utf8ConstNewFixed(const char*, int);
+/* Add a reference to a Utf8Const */
+extern void		  utf8ConstAddRef(Utf8Const*);
+
+/* Release a Utf8Const previously created via utf8ConstNew(). */
+extern void		  utf8ConstRelease(Utf8Const*);
+
+/* Create a String object from a Utf8Const */
+extern Hjava_lang_String* utf8Const2Java(const Utf8Const*);
+
+/* Create a String object from a Utf8Const, and replace all occurrences
+   of the first character with the second. */
+extern Hjava_lang_String* utf8Const2JavaReplace(const Utf8Const *,
+				jchar, jchar);
 
 /* Remove a Utf8Const from the intern table. This should only be called
    by the garbage collector finalization routine. */
-extern void		utf8ConstDestroy(const Utf8Const*);
+extern void		  utf8ConstDestroy(const Utf8Const*);
 
 /* Return the length of the corresponding Unicode string */
-extern int		utf8ConstUniLength(const Utf8Const*);
+extern int		  utf8ConstUniLength(const Utf8Const*);
+
+/* Check if a string is a valid UTF-8 string */
+extern int		  utf8ConstIsValidUtf8(const char *, unsigned int);
 
 /* Decode a Utf8Const (to Unicode) into the buffer (which must be big enough) */
-extern void		utf8ConstDecode(const Utf8Const*, jchar*);
+extern void		  utf8ConstDecode(const Utf8Const*, jchar*);
 
 /* Compare a Utf8Const and a String object */
-extern int		utf8ConstEqualJavaString(const Utf8Const*,
+extern int		  utf8ConstEqualJavaString(const Utf8Const*,
 				const Hjava_lang_String*);
 
 /* Since we intern all UTF-8 constants, we can do this: */

@@ -98,6 +98,8 @@ getClassFromSignature(const char* sig, Hjava_lang_ClassLoader* loader, errorInfo
 Hjava_lang_Class*
 classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 {
+	Hjava_lang_Class* cl;
+	Utf8Const* utf8;
 	const char* start;
 	const char* end;
 
@@ -120,7 +122,10 @@ classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo
 		if (*end != 0) {
 			(*strp)++;
 		}
-		return (loadClass(utf8ConstNew(start, end-start), loader, einfo));
+		utf8 = utf8ConstNew(start, end - start);
+		cl = loadClass(utf8, loader, einfo);
+		utf8ConstRelease(utf8);
+		return(cl);
 	default:
 		return (NULL);
 	}

@@ -124,20 +124,30 @@ stringC2CharArray(const char* cs)
 
 /*
  * Create a String object from a UTF-8 string.
+ *
+ * This function is here instead of in utf8const.c to
+ * avoid kaffeh linkage problems.
  */
 Hjava_lang_String*
-stringUtf82Java(const Utf8Const *utf8)
+utf8Const2Java(const Utf8Const *utf8)
 {
-	return(stringUtf82JavaReplace(utf8, 0, 0));
+	Hjava_lang_String* string;
+
+	string = utf8Const2JavaReplace(utf8, 0, 0);
+	unhand(string)->hash = utf8->hash;	/* why not, they're equal */
+	return(string);
 }
 
 /*
  * Create a String object from a UTF-8 string, replacing every
  * occurrence of "from_ch" with "to_ch". If "from_ch" is zero,
  * then no substitution is done.
+ *
+ * This function is here instead of in utf8const.c to
+ * avoid kaffeh linkage problems.
  */
 Hjava_lang_String*
-stringUtf82JavaReplace(const Utf8Const *utf8, jchar from_ch, jchar to_ch)
+utf8Const2JavaReplace(const Utf8Const *utf8, jchar from_ch, jchar to_ch)
 {
 	const int uniLen = utf8ConstUniLength(utf8);
 	Hjava_lang_String* string;

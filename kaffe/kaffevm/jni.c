@@ -1565,8 +1565,11 @@ Kaffe_GetFieldID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 {
 	Field* fld;
 	errorInfo info;
+	Utf8Const* utf8;
 
-	fld = lookupClassField((Hjava_lang_Class*)cls, utf8ConstNew((char*)name, -1), false, &info);
+	utf8 = utf8ConstNew(name, -1);
+	fld = lookupClassField((Hjava_lang_Class*)cls, utf8, false, &info);
+	utf8ConstRelease(utf8);
 	if (fld == NULL) {
 		postError(env, &info);
 	}
@@ -2315,8 +2318,11 @@ Kaffe_GetStaticFieldID(JNIEnv* env, jclass cls, const char* name, const char* si
 {
 	Field* fld;
 	errorInfo info;
+	Utf8Const* utf8;
 
-	fld = lookupClassField((Hjava_lang_Class*)cls, utf8ConstNew((char*)name, -1), true, &info);
+	utf8 = utf8ConstNew(name, -1);
+	fld = lookupClassField((Hjava_lang_Class*)cls, utf8, true, &info);
+	utf8ConstRelease(utf8);
 	if (fld == NULL) {
 		postError(env, &info);
 	}
@@ -2578,10 +2584,13 @@ jstring
 Kaffe_NewStringUTF(JNIEnv* env, const char* data)
 {
 	Hjava_lang_String* str;
+	Utf8Const* utf8;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	str = stringUtf82Java(utf8ConstNew(data, strlen(data)));
+	utf8 = utf8ConstNew(data, -1);
+	str = utf8Const2Java(utf8);
+	utf8ConstRelease(utf8);
 
 	END_EXCEPTION_HANDLING();
 	return (str);

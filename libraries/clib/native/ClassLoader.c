@@ -60,7 +60,7 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	if (name != NULL) {
 		/* The name uses dots, but clazz->name uses slashes */
 		Hjava_lang_String *temp =
-			stringUtf82JavaReplace(clazz->name, '/', '.'); 
+			utf8Const2JavaReplace(clazz->name, '/', '.'); 
 
 		if (STRING_SIZE(temp) != STRING_SIZE(name) ||
 			memcmp(STRING_DATA(temp), STRING_DATA(name), 
@@ -147,9 +147,11 @@ java_lang_ClassLoader_findSystemClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
         }
         stringJava2CBuf(str, name, len+1);
         classname2pathname(name, name);
-        c = utf8ConstNew(name, len);
 
+	c = utf8ConstNew(name, len);
 	clazz = loadClass(c, 0, &info);
+	utf8ConstRelease(c);
+
 	if (clazz == 0) {
 		/* 
 		 * upgrade error to an exception if *this* class wasn't found.
@@ -231,12 +233,15 @@ java_lang_ClassLoader_findLoadedClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
         }
         stringJava2CBuf(str, name, len+1);
         classname2pathname(name, name);
+
         c = utf8ConstNew(name, len);
         if (name != buffer) {
                 KFREE(name);
         }
 
         entry = lookupClassEntryInternal(c, this);
+        utf8ConstRelease(c);
+
 	if (entry != 0) {
 		return (entry->class);
 	} else {

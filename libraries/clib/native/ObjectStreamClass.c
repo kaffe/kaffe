@@ -214,7 +214,7 @@ java_io_ObjectStreamClass_getFields0(struct Hjava_io_ObjectStreamClass* stream, 
 
 		unhand(sf)->body[i] = AllocObject("java/io/ObjectStreamField");
 		obj = (Hjava_io_ObjectStreamField*)unhand(sf)->body[i];
-		unhand(obj)->name = stringUtf82Java(fld->name);
+		unhand(obj)->name = utf8Const2Java(fld->name);
 		unhand(obj)->offset = FIELD_OFFSET(fld);
 		unhand(obj)->type = convertFieldTypeToString(fld, buf);
 
@@ -232,8 +232,12 @@ java_io_ObjectStreamClass_getSerialVersionUID(struct Hjava_lang_Class* cls)
 {
 	Field* fld;
 	errorInfo info;
+	Utf8Const* name;
 
-	fld = lookupClassField(cls, utf8ConstNew("serialVersionUID" , -1), true, &info);
+	name = utf8ConstNew("serialVersionUID" , -1);
+	fld = lookupClassField(cls, name, true, &info);
+	utf8ConstRelease(name);
+
 	/* NB: lookupClassField should only fail if there is no
 	 * serialVersionUID field.  */
 	if (fld == 0) {
@@ -247,6 +251,7 @@ java_io_ObjectStreamClass_hasWriteObject(struct Hjava_lang_Class* class)
 {
 	Utf8Const* name;
 	Utf8Const* signature;
+	jbool rtn = false;
 
 	/* 
 	 * Note that we do not use findMethod because that would resolve
@@ -258,8 +263,12 @@ java_io_ObjectStreamClass_hasWriteObject(struct Hjava_lang_Class* class)
         for (; class != 0; class = class->superclass) {
                 Method* mptr = findMethodLocal(class, name, signature);
                 if (mptr != NULL) {
-                        return (true);
+                        rtn = true;
+			break;
                 }
         }
-	return (false);
+	utf8ConstRelease(name);
+	utf8ConstRelease(signature);
+
+	return(rtn);
 }

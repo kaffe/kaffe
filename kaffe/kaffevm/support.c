@@ -158,6 +158,7 @@ execute_java_constructor_v(const char* cname, Hjava_lang_Class* cc, const char* 
 	char buf[MAXEXCEPTIONLEN];
 	jvalue retval;
 	errorInfo info;
+	Utf8Const* sig;
 
 	if (cc == 0) {
 		/* Convert "." to "/" */
@@ -178,8 +179,9 @@ execute_java_constructor_v(const char* cname, Hjava_lang_Class* cc, const char* 
 		}
 	}
 
-	mb = findMethodLocal(cc, utf8ConstNew(constructor_name->data, -1), 
-				 utf8ConstNew(signature, -1));
+	sig = utf8ConstNew(signature, -1);
+	mb = findMethodLocal(cc, constructor_name, sig);
+	utf8ConstRelease(sig);
 	if (mb == 0) {
 		throwException(NoSuchMethodError(constructor_name->data));
 	}
@@ -572,7 +574,15 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 Method*
 lookupClassMethod(Hjava_lang_Class* cls, const char* name, const char* sig, errorInfo *einfo)
 {
-	return (findMethod(cls, utf8ConstNew(name,-1), utf8ConstNew(sig,-1), einfo));
+	Method *meth;
+	Utf8Const *name_utf8, *sig_utf8;
+
+	name_utf8 = utf8ConstNew(name, -1);
+	sig_utf8 = utf8ConstNew(sig, -1);
+	meth = findMethod(cls, name_utf8, sig_utf8, einfo);
+	utf8ConstRelease(name_utf8);
+	utf8ConstRelease(sig_utf8);
+	return(meth);
 }
 
 /*

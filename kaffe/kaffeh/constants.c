@@ -73,6 +73,10 @@ RDBG(		if (type != CONSTANT_Utf8) {
 
 				buf = KMALLOC(len);
 				readm(buf, len, sizeof(u1), fp);
+				if (!utf8ConstIsValidUtf8(buf, len)) {
+					fprintf(stderr, "Bad UTF-8 const\n");
+					return(false);
+				}
 				utf8 = utf8ConstNew(buf, len);
 				KFREE(buf);
 				pool[i] = (jword) &(utf8->data);

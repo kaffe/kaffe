@@ -67,7 +67,12 @@ RDBG(		printf("Constant type %d\n", type);			)
 		switch (type) {
 		case CONSTANT_Utf8:
 			readu2(&len, fp);
-			pool[i] = (ConstSlot) utf8ConstNew (fp->buf, len);
+			if (!utf8ConstIsValidUtf8(fp->buf, len)) {
+				SET_LANG_EXCEPTION_MESSAGE(einfo,
+				    ClassFormatError, "Invalid UTF-8 constant");
+				goto fail;
+			}
+			pool[i] = (ConstSlot) utf8ConstNew(fp->buf, len);
 			fp->buf += len;
 			break;
 		case CONSTANT_Class:
@@ -133,7 +138,14 @@ RDBG(		printf("Constant type %d\n", type);			)
 			break;
 
 		default:
-			SET_LANG_EXCEPTION(einfo, ClassFormatError)
+			SET_LANG_EXCEPTION_MESSAGE(einfo,
+				ClassFormatError, "Invalid constant type");
+fail:
+			while (--i >= 0) {
+				if (tags[i] == CONSTANT_Utf8) {
+					utf8ConstRelease((Utf8Const*)pool[i]);
+				}
+			}
 			return (false);
 		}
 	}
@@ -149,6 +161,7 @@ RDBG(		printf("Constant type %d\n", type);			)
 			if (info->tags[j] == CONSTANT_Utf8) {
 				/* Rewrite so points directly at string */
 				info->data[i] = info->data[j];
+				utf8ConstAddRef(WORD2UTF(info->data[j]));
 			}
 			else {
 				/* Set this tag so it will generate an error

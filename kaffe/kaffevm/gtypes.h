@@ -97,8 +97,9 @@ struct _dispatchTable;
 struct _jexception;
 
 struct _strconst {
-	int32		hash;		/* Hash code (zero if uninitialized) */
-	const char	data[1];	/* In Utf8 format, with final '\0' */
+	int32		hash;		/* Hash code (== String.hashCode()) */
+	int32		nrefs;		/* Number of references */
+	const char	data[1];	/* In UTF-8 format, with final '\0' */
 };
 
 #define	SHIFT_jchar		1

@@ -28,7 +28,6 @@
 #include "md.h"
 #include "jni.h"
 #include "access.h"
-#include "stringSupport.h"
 
 static gcList gclists[5];
 static int mustfree = 4;		/* temporary list */
@@ -117,7 +116,6 @@ int gc_mode = GC_DISABLED;	/* GC will be enabled after the first
 static void gcFree(void*);
 
 static void finalizeObject(void*);
-static void finalizeUtf8Const(void*);
 
 void walkMemory(void*);
 
@@ -187,7 +185,7 @@ static gcFuncs gcFunctions[] = {
 	{ walkNull,	    finalizeBytecode },	/* GC_ALLOC_BYTECODE */
 	{ walkConservative, finalizeEtable   },	/* GC_ALLOC_EXCEPTIONTABLE */
 	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_CONSTANT */
-	{ walkNull,	    finalizeUtf8Const },/* GC_ALLOC_UTF8CONST */
+	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_UTF8CONST */
 	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_INTERFACE */
 	{ walkConservative, finalizeJitcode  },	/* GC_ALLOC_JITCODE */
 	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_LOCK */
@@ -1075,13 +1073,6 @@ finalizeObject(void* ob)
 
 	assert(final != 0);
 	callMethodA(final, METHOD_INDIRECTMETHOD(final), obj, 0, 0);
-}
-
-static
-void
-finalizeUtf8Const(void* ptr)
-{
-	utf8ConstDestroy((Utf8Const*) ptr);
 }
 
 #if defined(STATS)

@@ -72,13 +72,17 @@ jbool
 java_io_ObjectOutputStream_invokeObjectWriter(struct Hjava_io_ObjectOutputStream* stream, struct Hjava_lang_Object* obj, struct Hjava_lang_Class* cls)
 {
 	Method* meth;
+	Utf8Const* name;
+	Utf8Const* sig;
 
 	/* do not look in super classes, see comment in
 	 * ObjectInputStream.invokeObjectReader  
 	 */
-	meth = findMethodLocal(cls, 
-		utf8ConstNew("writeObject", -1), 
-		utf8ConstNew("(Ljava/io/ObjectOutputStream;)V", -1));
+	name = utf8ConstNew("writeObject", -1);
+	sig = utf8ConstNew("(Ljava/io/ObjectOutputStream;)V", -1);
+	meth = findMethodLocal(cls, name, sig);
+	utf8ConstRelease(name);
+	utf8ConstRelease(sig);
 
 	if (meth != 0) {
 		do_execute_java_method(obj, 0, 0, meth, 0, stream);

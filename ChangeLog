@@ -1,3 +1,18 @@
+Sat Dec 26 17:59:40 1998  Archie Cobbs <archie@whistle.com>
+
+	* kaffe/kaffeh/constants.c kaffe/kaffevm/baseClasses.c
+	kaffe/kaffevm/classMethod.c kaffe/kaffevm/classMethod.h
+	kaffe/kaffevm/constants.c kaffe/kaffevm/gtypes.h
+	kaffe/kaffevm/itypes.c kaffe/kaffevm/jni.c
+	kaffe/kaffevm/mem/gc-incremental.c kaffe/kaffevm/string.c
+	kaffe/kaffevm/stringSupport.h kaffe/kaffevm/support.c
+	kaffe/kaffevm/utf8const.c libraries/clib/native/Class.c
+	libraries/clib/native/ClassLoader.c
+	libraries/clib/native/ObjectInputStream.c
+	libraries/clib/native/ObjectOutputStream.c
+	libraries/clib/native/ObjectStreamClass.c:
+	Implement reference counting scheme for Utf8Consts
+
 Tue Dec 22 10:30:16 1998  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffeh/Makefile.in: fix bugs reported by Raffaele Sena

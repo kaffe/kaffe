@@ -106,14 +106,14 @@ initialiseKaffe(void)
 	initNative();
 
 	/* Create the initialise and finalize names and signatures. */
-	init_name = utf8ConstNewFixed(INIT, -1);
-	final_name = utf8ConstNewFixed(FINAL, -1);
-	void_signature = utf8ConstNewFixed(VOIDSIG, -1);
-	constructor_name = utf8ConstNewFixed(CONSTRUCTOR_NAME, -1);
-	Code_name = utf8ConstNewFixed("Code", -1);
-	LineNumberTable_name = utf8ConstNewFixed("LineNumberTable", -1);
-	ConstantValue_name = utf8ConstNewFixed("ConstantValue", -1);
-	Exceptions_name = utf8ConstNewFixed("Exceptions", -1);
+	init_name = utf8ConstNew(INIT, -1);
+	final_name = utf8ConstNew(FINAL, -1);
+	void_signature = utf8ConstNew(VOIDSIG, -1);
+	constructor_name = utf8ConstNew(CONSTRUCTOR_NAME, -1);
+	Code_name = utf8ConstNew("Code", -1);
+	LineNumberTable_name = utf8ConstNew("LineNumberTable", -1);
+	ConstantValue_name = utf8ConstNew("ConstantValue", -1);
+	Exceptions_name = utf8ConstNew("Exceptions", -1);
 
 	/* Read in base classes */
 	initBaseClasses();
@@ -134,6 +134,7 @@ initBaseClasses(void)
 {
 	Field *f;
 	errorInfo einfo;
+	Utf8Const *utf8;
 	extern char* realClassPath;
 
 	/* Primitive types */
@@ -177,8 +178,9 @@ initBaseClasses(void)
 	 * Kaffe's class has a final public static field called 
 	 * "KAFFE_VERSION".
 	 */
-	f = lookupClassField(CloneClass, 
-		utf8ConstNew("KAFFE_VERSION", -1), true, &einfo);
+	utf8 = utf8ConstNew("KAFFE_VERSION", -1);
+	f = lookupClassField(CloneClass, utf8, true, &einfo);
+	utf8ConstRelease(utf8);
 	if (f == 0) {
 		fprintf(stderr,
 		    "\nCould not initialize Kaffe.\n"

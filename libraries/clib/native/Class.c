@@ -79,11 +79,11 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 	 *
 	 * This is somewhat described in Section 5.1.3 of the VM 
 	 * Specification, titled "Array Classes".  This section seems to 
-	 * imply that we must avoid to ask a class loader to resolve such
+	 * imply that we must avoid asking a class loader to resolve such
 	 * array names (those starting with an [), and this is what calling
 	 * loadArray does.
 	 */
-	utf8buf = utf8ConstNew(buf, strlen(buf));
+	utf8buf = utf8ConstNew(buf, -1);
 	if (buf[0] == '[') {
 		clazz = loadArray(utf8buf, loader, &einfo);
 	}
@@ -115,6 +115,7 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 			centry = lookupClassEntry(utf8buf, loader);
 			if (centry->class &&
 			    centry->class->state == CSTATE_FAILED) {
+				utf8ConstRelease(utf8buf);
 				throwError(&einfo);
 			}
 
@@ -127,8 +128,10 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 					ClassNotFoundException, einfo.mess)
 			}
 		}
+		utf8ConstRelease(utf8buf);
 		throwError(&einfo);
 	}
+	utf8ConstRelease(utf8buf);
 
 	/*
 	 * Note:
@@ -171,7 +174,7 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 struct Hjava_lang_String*
 java_lang_Class_getName(struct Hjava_lang_Class* c)
 {
-	return(stringUtf82JavaReplace(c->name, '/', '.'));
+	return(utf8Const2JavaReplace(c->name, '/', '.'));
 }
 
 /*
@@ -455,7 +458,7 @@ makeMethod(struct Hjava_lang_Class* clazz, int slot)
 
 	unhand(meth)->clazz = clazz;
 	unhand(meth)->slot = slot;
-	unhand(meth)->name = stringUtf82Java(mth->name);
+	unhand(meth)->name = utf8Const2Java(mth->name);
 	unhand(meth)->parameterTypes = makeParameters(mth);
 	unhand(meth)->exceptionTypes = makeExceptions(mth);
 	unhand(meth)->returnType = makeReturn(mth);
@@ -479,7 +482,7 @@ makeField(struct Hjava_lang_Class* clazz, int slot)
 	if (unhand(field)->type == 0) {
 		throwError(&info);
 	}
-	unhand(field)->name = stringUtf82Java(fld->name);
+	unhand(field)->name = utf8Const2Java(fld->name);
 	return (field);
 }
  

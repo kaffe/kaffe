@@ -728,7 +728,7 @@ loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 DBG(VMCLASSLOADER,		
 			dprintf("classLoader: loading %s\n", name->data); 
     )
-			str = stringUtf82JavaReplace(name, '/', '.');
+			str = utf8Const2JavaReplace(name, '/', '.');
 			/* If an exception is already pending, for instance
 			 * because we're resolving one that has occurred,
 			 * save it and clear it for the upcall.
@@ -857,13 +857,16 @@ loadArray(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
  * This is used only for essential classes, so let's bail if this fails.
  */
 void
-loadStaticClass(Hjava_lang_Class** class, char* name)
+loadStaticClass(Hjava_lang_Class** class, const char* name)
 {
 	Hjava_lang_Class *clazz;
 	errorInfo info;
+	Utf8Const *utf8;
 	classEntry* centry;
 
-        centry = lookupClassEntry(utf8ConstNew(name, -1), 0);
+	utf8 = utf8ConstNew(name, -1);
+	centry = lookupClassEntry(utf8, 0);
+	utf8ConstRelease(utf8);
 	lockMutex(centry);
 	if (centry->class == 0) {
 		clazz = findClass(centry, &info);
@@ -893,8 +896,11 @@ Hjava_lang_Class*
 lookupClass(const char* name, errorInfo *einfo)
 {
 	Hjava_lang_Class* class;
+	Utf8Const *utf8;
 
-	class = loadClass(utf8ConstNew(name, -1), NULL, einfo);
+	utf8 = utf8ConstNew(name, -1);
+	class = loadClass(utf8, NULL, einfo);
+	utf8ConstRelease(utf8);
 	if (class != 0) {
 		if (processClass(class, CSTATE_COMPLETE, einfo) == true) {
 			return (class);
@@ -1110,6 +1116,7 @@ resolveStaticFields(Hjava_lang_Class* class)
 {
 	uint8* mem;
 	constants* pool;
+	Utf8Const* utf8;
 	Field* fld;
 	int idx;
 	int n;
@@ -1156,8 +1163,10 @@ resolveStaticFields(Hjava_lang_Class* class)
 				break;
 
 			case CONSTANT_String:
-				pool->data[idx] = (ConstSlot)stringUtf82Java(WORD2UTF(pool->data[idx]));
+				utf8 = WORD2UTF(pool->data[idx]);
+				pool->data[idx] = (ConstSlot)utf8Const2Java(utf8);
 				pool->tags[idx] = CONSTANT_ResolvedString;
+				utf8ConstRelease(utf8);
 				/* ... fall through ... */
 			case CONSTANT_ResolvedString:
 				*(jref*)mem = (jref)CLASS_CONST_DATA(class, idx);
@@ -1415,6 +1424,7 @@ resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
 	int idx;
 	constants* pool;
 	bool success = true;
+	Utf8Const* utf8;
 
 	lockMutex(class->centry);
 
@@ -1425,8 +1435,10 @@ resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
 	for (idx = 0; idx < pool->size; idx++) {
 		switch (pool->tags[idx]) {
 		case CONSTANT_String:
-			pool->data[idx] = (ConstSlot)stringUtf82Java(WORD2UTF(pool->data[idx]));
+			utf8 = WORD2UTF(pool->data[idx]);
+			pool->data[idx] = (ConstSlot)utf8Const2Java(utf8);
 			pool->tags[idx] = CONSTANT_ResolvedString;
+			utf8ConstRelease(utf8);
 			break;
 
 #undef EAGER_LOADING
@@ -1513,8 +1525,9 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 	/* Add ours to end of hash */
 	*entryp = entry;
 
-	/* We keep an extra reference to the utf8 name so it won't be GCed */
-	gc_add_ref(entry->name);
+	/* We keep an extra reference to the utf8 name so it won't be GCed.
+	   XXX does this reference get deleted when the class is GC'd? */
+	utf8ConstAddRef(entry->name);
 
         unlockStaticMutex(&classHashLock);
 
@@ -1674,7 +1687,7 @@ lookupArray(Hjava_lang_Class* c)
 		const char* cname = CLASS_CNAME (c);
 		sprintf (sig, cname[0] == '[' ? "[%s" : "[L%s;", cname);
 	}
-	arr_name = utf8ConstNew(sig, -1);
+	arr_name = utf8ConstNew(sig, -1);	/* release before returning */
 	centry = lookupClassEntry(arr_name, c->loader);
 
 	if (centry->class != 0) {
@@ -1726,6 +1739,7 @@ lookupArray(Hjava_lang_Class* c)
 		CLASS_ARRAY_CACHE(c) = centry->class;
 	}
 
+	utf8ConstRelease(arr_name);
 	return (centry->class);
 }
 

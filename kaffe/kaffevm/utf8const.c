@@ -45,16 +45,26 @@
  * PTR is incremented to point after the character that gets returns.
  * On an error, -1 is returned and PTR is no longer valid.
  */
-#define UTF8_GET(PTR, END) \
-  ((PTR) >= (END) ? -1 \
-   : *(PTR) == 0 ? -1 \
-   : (*(PTR) & 0x80) == 0 ? *(PTR)++ \
-   : (*(PTR)&0xE0) == 0xC0 && ((PTR)+=2)<=(END) && ((PTR)[-1]&0xC0) == 0x80 \
-   ? (((PTR)[-2] & 0x1F) << 6) + ((PTR)[-1] & 0x3F) \
-   : (*(PTR) & 0xF0) == 0xE0 && ((PTR) += 3) <= (END) \
-   && ((PTR)[-2] & 0xC0) == 0x80 && ((PTR)[-1] & 0xC0) == 0x80 \
-   ? (((PTR)[-3]&0x1F) << 12) + (((PTR)[-2]&0x3F) << 6) + ((PTR)[-1]&0x3F) \
-   : ((PTR)++, -1))
+#define UTF8_GET(PTR, END)						\
+  ((PTR) >= (END)							\
+     ? -1								\
+   : (PTR)[0] == 0							\
+     ? -1								\
+   : ((PTR)[0]&0x80) == 0						\
+     ? *(PTR)++								\
+   : ((PTR)+2)<=(END)							\
+       && ((PTR)[0]&0xE0) == 0xC0					\
+       && ((PTR)[1]&0xC0) == 0x80					\
+       && ((PTR)+=2, 1)							\
+     ? (((PTR)[-2] & 0x1F) << 6) + ((PTR)[-1] & 0x3F)			\
+   : ((PTR)+3)<=(END)							\
+       && ((PTR)[0] & 0xF0) == 0xE0					\
+       && ((PTR)[1] & 0xC0) == 0x80					\
+       && ((PTR)[2] & 0xC0) == 0x80					\
+       && ((PTR)+=3, 1)							\
+     ? (((PTR)[-3]&0x1F) << 12)						\
+       + (((PTR)[-2]&0x3F) << 6) + ((PTR)[-1]&0x3F)			\
+   : -1)
 
 /* Internal variables */
 static hashtab_t	hashTable;
@@ -81,14 +91,7 @@ utf8ConstNew(const char *s, int len)
 	}
 
 #ifdef DEBUG
-	/* Verify string as valid UTF-8 encoding */
-	{
-		const char *ptr = s;
-		const char *const end = s + len;
-
-		while (UTF8_GET(ptr, end) != -1);
-		assert(ptr == end);
-	}
+	assert(utf8ConstIsValidUtf8(s, len);
 #endif
 
 	/* Precompute hash value using String.hashCode() algorithm */
@@ -127,6 +130,8 @@ utf8ConstNew(const char *s, int len)
 			KFREE(fake);
 		}
 		if (utf8 != NULL) {
+			assert(utf8->nrefs >= 1);
+			utf8->nrefs++;
 			unlockStaticMutex(&utf8Lock);
 			return(utf8);
 		}
@@ -136,10 +141,11 @@ utf8ConstNew(const char *s, int len)
 	}
 
 	/* Not in table; create new Utf8Const struct */
-	utf8 = gc_malloc(sizeof(Utf8Const) + len + 1, GC_ALLOC_UTF8CONST);
+	utf8 = KMALLOC(sizeof(Utf8Const) + len + 1);
 	memcpy((char *) utf8->data, s, len);
 	((char*)utf8->data)[len] = '\0';
 	utf8->hash = hash;
+	utf8->nrefs = 1;
 
 	/* Add to hash table */
 	temp = hashAdd(hashTable, utf8);
@@ -149,28 +155,31 @@ utf8ConstNew(const char *s, int len)
 }
 
 /*
- * Convert a C string into a UTF-8 string, and make it permanent.
+ * Add a reference to a Utf8Const.
  */
-Utf8Const *
-utf8ConstNewFixed(const char *s, int len)
-{
-	Utf8Const* str;
-
-	str = utf8ConstNew(s, len);
-	gc_add_ref(str);
-	return(str);
-}
-
-/*
- * Forget a UTF-8 string. This is called by the GC finalizer for
- * memory of type GC_ALLOC_UTF8CONST.
- */
-void	
-utf8ConstDestroy(const Utf8Const *utf8)
+void
+utf8ConstAddRef(Utf8Const *utf8)
 {
 	assert(staticLockIsInitialized(&utf8Lock));
 	lockStaticMutex(&utf8Lock);
-	hashRemove(hashTable, utf8);
+	assert(utf8->nrefs >= 1);
+	utf8->nrefs++;
+	unlockStaticMutex(&utf8Lock);
+}
+
+/*
+ * Release a Utf8Const.
+ */
+void
+utf8ConstRelease(Utf8Const *utf8)
+{
+	assert(staticLockIsInitialized(&utf8Lock));
+	lockStaticMutex(&utf8Lock);
+	assert(utf8->nrefs >= 1);
+	if (--utf8->nrefs == 0) {
+		hashRemove(hashTable, utf8);
+		KFREE(utf8);
+	}
 	unlockStaticMutex(&utf8Lock);
 }
 
@@ -195,6 +204,18 @@ utf8ConstCompare(const void *v1, const void *v2)
 	const Utf8Const *const utf8_2 = v2;
 
 	return(strcmp(utf8_1->data, utf8_2->data));
+}
+
+/*
+ * Check if a string is a valid UTF-8 string.
+ */
+int
+utf8ConstIsValidUtf8(const char *ptr, unsigned int len)
+{
+	const char *const end = ptr + len;
+
+	while (UTF8_GET(ptr, end) != -1);
+	return(ptr == end);
 }
 
 /*
@@ -240,6 +261,12 @@ utf8ConstEqualJavaString(const Utf8Const *utf8, const Hjava_lang_String *string)
 	const jchar *sptr = STRING_DATA(string);
 	int ch, slen = STRING_SIZE(string);
 
+#if 0
+	/* Question: would this optimization be worthwhile? */
+	if (unhand(string)->hash != 0 && unhand(string)->hash != utf8->hash) {
+		return(0);
+	}
+#endif
 	for (;;) {
 		if ((ch = UTF8_GET(uptr, uend)) == -1) {
 			return(slen == 0);
