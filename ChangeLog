@@ -1,3 +1,12 @@
+Mon Oct 19 22:27:56 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/baseClasses.h, kaffe/kaffevm/classMethod.[ch],
+	kaffe/kaffevm/support.h, kaffe/kaffevm/mem/gc-incremental.c:
+	added support for precise walking of ordinary objects.
+
+	kaffe/kaffevm/debug.[ch]: switched classMethod and gc-incremental
+	to new debugging scheme, added options.
+
 Fri, 16 Oct 1998 15:32:18 Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
 
 	* code-analyse.c, jit/machine.c - Handle unreachable code.
