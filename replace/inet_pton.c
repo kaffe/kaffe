@@ -21,6 +21,10 @@
 
 #ifndef HAVE_INET_PTON
 
+/* need to include sys/types.h before arpa/inet.h,
+ * otherwise it won't build on cygwin.
+ */
+#include <sys/types.h>
 #include <arpa/inet.h>
 #include <ctype.h>
 #include <errno.h>

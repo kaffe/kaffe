@@ -1,3 +1,8 @@
+2003-07-14  Dalibor Topic <robilad@kaffe.org>
+
+	* replace/inet_ntop.c, replace/inet_pton.c:
+	include <sys/types.h> for Cygwin to build.
+
 2003-07-11  Guilhem Lavaux <guilhem.lavaux@free.fr>
 
        * libraries/javalib/java/util/LinkedList.java (addAll#1, addAll#2):
