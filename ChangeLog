@@ -1,3 +1,11 @@
+2005-01-06  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* tests/internal/Makefile.am: Link jitBasic with libreplace.la
+
+	* tests/internal/Makefile.in: Regenerated.
+
+	Reported by Michael Franz <mvfranz@gmail.com>
+
 2005-01-06  Dalibor Topic  <robilad@kaffe.org>
 
 	* TODO: Added task for extensions override mechanism.
