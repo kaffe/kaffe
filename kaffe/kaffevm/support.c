@@ -225,11 +225,8 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 		s += call.callsize[i];
 		call.calltype[i] = 'L';
 		in[i].l = obj;
-		if (args != 0) {
-			memcpy(&in[i+1], args, sizeof(jvalue) * (MAXMARGS-i-1));
-		}
-		args = in;
 		i++;
+		args--; /* because args[i] would be off by one */
 	}
 
 	sig++;	/* Skip leading '(' */
@@ -243,11 +240,13 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 		case 'C':
 		case 'F':
 			call.callsize[i] = 1;
+			in[i] = args[i];
 			break;
 
 		case 'D':
 		case 'J':
 			call.callsize[i] = 2;
+			in[i] = args[i];
 			i++;
 			call.callsize[i] = 0;
 			break;
@@ -255,6 +254,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 		case '[':
 			call.calltype[i] = 'L';	/* Looks like an object */
 			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+			in[i] = args[i];
 			while (*sig == '[') {
 				sig++;
 			}
@@ -266,6 +266,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 			break;
 		case 'L':
 			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
+			in[i] = args[i];
 			while (*sig != ';') {
 				sig++;
 			}
@@ -296,7 +297,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 	call.function = func;
 	call.nrargs = i;
 	call.argsize = s;
-	call.args = args;
+	call.args = in;
 	call.ret = ret;
 
 #if defined(TRANSLATOR)
@@ -319,7 +320,7 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret)
 				sync = &meth->class->head;
 			}
 			else {
-				sync = (Hjava_lang_Object*)args[0].l;
+				sync = (Hjava_lang_Object*)call.args[0].l;
 			}
 			lockMutex(sync);
 		}

@@ -55,7 +55,8 @@ static struct {
 			int	loaded;
 		} sof;
 	} u;
-} classpath[MAXPATHELEM+1];
+} *classpath;
+int classpathlen;
 
 static char* splitClassPath;
 char* realClassPath;
@@ -325,7 +326,16 @@ initClasspath(void)
 	cp = splitClassPath;
 
 PDBG(	printf("initClasspath(): '%s'\n", cp);				)
-	for (i = 0; cp != 0 && i < MAXPATHELEM; i++) {
+	for (i = 0; cp != 0; i++) {
+		if (i >= classpathlen) {
+			void *old = classpath;
+			void *new = gc_malloc_fixed(sizeof(*classpath) * (classpathlen + MAXPATHELEM + 1));
+			if (classpath)
+				memcpy(new, classpath, sizeof(*classpath) * (classpathlen));
+			classpath = new;
+			classpathlen += MAXPATHELEM;
+			gc_free(old);
+		}
 		classpath[i].path = cp;
 		cp = strchr(cp, PATHSEP);
 		if (cp != 0) {
@@ -356,16 +366,23 @@ addClasspath(char* cp)
 
 PDBG(	printf("addClasspath(): '%s'\n", cp);				)
 
-	for (i = 0; i < MAXPATHELEM; i++) {
+	for (i = 0; ; i++) {
+		if (i >= classpathlen) {
+			void *old = classpath, *new = gc_malloc_fixed(sizeof(*classpath) * (classpathlen + MAXPATHELEM + 1));
+			if (classpath)
+				memcpy(new, classpath, sizeof(*classpath) * (classpathlen));
+			classpath = new;
+			classpathlen += MAXPATHELEM;
+			gc_free(old);
+		}
+
 		if (classpath[i].path == 0) {
-			goto found;
+			break;
 		}
 		if (!strcmp(cp, classpath[i].path)) {
 			return(0); /* already in */
 		}
 	}
-	fprintf(stderr, "addClasspath : CLASSPATH is full!\n");
-	return(-1);
 
 	found:
 	classpath[i].path = strdup(cp);
