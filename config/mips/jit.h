@@ -60,12 +60,14 @@ extern void __mipsGetNextFrame(struct _exceptionFrame*);
 typedef struct _methodTrampoline {
 	unsigned code[5];
 	struct _methods *meth;
+	void** where;
+	unsigned pad[1];
 } methodTrampoline;
 
 extern void mips_do_fixup_trampoline(void);
 
 /* We must construct jump address since jal can not hold absolute address */
-#define FILL_IN_TRAMPOLINE(t,m)					\
+#define FILL_IN_TRAMPOLINE(t,m,w)					\
 	do {								\
 		uint32 pc = (unsigned int)mips_do_fixup_trampoline;	\
 		(t)->code[0] = 0x001f1021;	/* addu $2,$31,$0 */	\
@@ -74,10 +76,11 @@ extern void mips_do_fixup_trampoline(void);
 		(t)->code[3] = 0x0320f809;	/* jalr $31,$25 */		\
 		(t)->code[4] = 0x00000000;	/* nop */		\
 		(t)->meth = (m);					\
+		(t)->where = (w);					\
 	} while (0)
 
-#define FIXUP_TRAMPOLINE_DECL	Method *_meth
-#define FIXUP_TRAMPOLINE_INIT	meth = _meth;
+#define FIXUP_TRAMPOLINE_DECL	Method *_meth, void* _where
+#define FIXUP_TRAMPOLINE_INIT	meth = _meth; where = _where;
 
 /**/
 /* Register management information. */
