@@ -50,10 +50,6 @@ public final class Security {
 			break readProps;
 		}
 
-try{
-props.store(System.out, "SECURITY PROPERTIES");
-} catch (IOException e) { }
-
 		// Install configured security providers
 		for (Iterator i = props.entrySet().iterator(); i.hasNext(); ) {
 			Map.Entry ent = (Map.Entry)i.next();
