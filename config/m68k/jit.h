@@ -61,19 +61,22 @@ typedef struct _methodTrampoline {
         unsigned short call;
 	int fixup;
 	struct _methods* meth;
+	void** where;
 } methodTrampoline;
 
 extern void m68k_do_fixup_trampoline(void);
 
-#define FILL_IN_TRAMPOLINE(t,m)                                         \
+#define FILL_IN_TRAMPOLINE(t,m,w)					\
         do {                                                            \
                 (t)->call = 0x4eb9;	/* jsr abs.l */			\
                 (t)->fixup = (int)m68k_do_fixup_trampoline;		\
                 (t)->meth = (m);                                        \
+		(t)->where = (w);					\
         } while (0)
 
-#define FIXUP_TRAMPOLINE_DECL   Method** _pmeth
-#define FIXUP_TRAMPOLINE_INIT   (meth = *_pmeth)
+#define FIXUP_TRAMPOLINE_DECL	void** _data
+#define FIXUP_TRAMPOLINE_INIT	(meth = (Method*)_data[0], \
+				 where = (void**)_data[1])
 
 /**/
 /* Register management information. */
