@@ -113,8 +113,11 @@ java_awt_SRCS = \
 	java/awt/ActiveEvent.java \
 	java/awt/Adjustable.java \
 	java/awt/AdjustmentEvt.java \
+	java/awt/AttributeValue.java \
 	java/awt/BarMenu.java \
+	java/awt/BasicStroke.java \
 	java/awt/BorderLayout.java \
+	java/awt/BufferCapabilities.java \
 	java/awt/Canvas.java \
 	java/awt/CardLayout.java \
 	java/awt/CheckboxMenuItem.java \
@@ -123,6 +126,8 @@ java_awt_SRCS = \
 	java/awt/Color.java \
 	java/awt/Component.java \
 	java/awt/ComponentEvt.java \
+	java/awt/Composite.java \
+	java/awt/CompositeContext.java \
 	java/awt/Container.java \
 	java/awt/ContainerEvt.java \
 	java/awt/Cursor.java \
@@ -130,25 +135,32 @@ java_awt_SRCS = \
 	java/awt/Defaults.java \
 	java/awt/Dialog.java \
 	java/awt/Dimension.java \
+	java/awt/DisplayMode.java \
 	java/awt/Event.java \
 	java/awt/EventDispatchThread.java \
 	java/awt/EventQueue.java \
 	java/awt/FileDialog.java \
 	java/awt/FlowLayout.java \
 	java/awt/FocusEvt.java \
+	java/awt/FocusTraversalPolicy.java \
 	java/awt/Font.java \
+	java/awt/FontFormatException.java \
 	java/awt/FontMetrics.java \
 	java/awt/Frame.java \
 	java/awt/Graphics.java \
 	java/awt/GraphicsLink.java \
+	java/awt/GradientPaint.java \
 	java/awt/GridBagConstraints.java \
 	java/awt/GridBagLayout.java \
 	java/awt/GridLayout.java \
+	java/awt/HeadlessException.java \
 	java/awt/IllegalComponentStateException.java \
 	java/awt/Image.java \
+	java/awt/ImageCapabilities.java \
 	java/awt/Insets.java \
 	java/awt/ItemEvt.java \
 	java/awt/ItemSelectable.java \
+	java/awt/JobAttributes.java \
 	java/awt/KeyEvt.java \
 	java/awt/LayoutManager.java \
 	java/awt/LayoutManager2.java \
@@ -164,6 +176,7 @@ java_awt_SRCS = \
 	java/awt/NativeGraphics.java \
 	java/awt/NativeSelection.java \
 	java/awt/OpaqueComponent.java \
+	java/awt/PageAttributes.java \
 	java/awt/PSGraphics.java \
 	java/awt/PSPrintJob.java \
 	java/awt/Paint.java \
@@ -180,9 +193,11 @@ java_awt_SRCS = \
 	java/awt/RenderingHints.java \
 	java/awt/RootWindow.java \
 	java/awt/ScrollPane.java \
+	java/awt/ScrollPaneAdjustable.java \
 	java/awt/Shape.java \
 	java/awt/ShortcutConsumer.java \
 	java/awt/ShortcutHandler.java \
+	java/awt/Stroke.java \
 	java/awt/SystemColor.java \
 	java/awt/TextEvt.java \
 	java/awt/Toolkit.java \
@@ -201,6 +216,8 @@ java_awt_datatransfer_SRCS = \
 	java/awt/datatransfer/ClipboardOwner.java \
 	java/awt/datatransfer/DataFlavor.java \
 	java/awt/datatransfer/FlavorMap.java \
+	java/awt/datatransfer/FlavorTable.java \
+	java/awt/datatransfer/MimeTypeParseException.java \
 	java/awt/datatransfer/StringSelection.java \
 	java/awt/datatransfer/Transferable.java \
 	java/awt/datatransfer/UnsupportedFlavorException.java
@@ -297,11 +314,13 @@ java_awt_image_SRCS = \
 	java/awt/image/ImageFilter.java \
 	java/awt/image/ImageObserver.java \
 	java/awt/image/ImageProducer.java \
+	java/awt/image/ImagingOpException.java \
 	java/awt/image/IndexColorModel.java \
 	java/awt/image/MemoryImageSource.java \
 	java/awt/image/PixelGrabber.java \
 	java/awt/image/RGBImageFilter.java \
 	java/awt/image/Raster.java \
+	java/awt/image/RasterFormatException.java \
 	java/awt/image/ReplicateScaleFilter.java \
 	java/awt/image/SampleModel.java \
 	java/awt/image/SinglePixelPackedSampleModel.java \

@@ -1,3 +1,34 @@
+Tue Nov 12 01:20:00 CET 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	added new files from GNU Classpath.
+
+	* libraries/javalib/java/awt/AttributeValue.java,
+	libraries/javalib/java/awt/BasicStroke.java,
+	libraries/javalib/java/awt/BufferCapabilities.java,
+	libraries/javalib/java/awt/Composite.java,
+	libraries/javalib/java/awt/CompositeContext.java,
+	libraries/javalib/java/awt/DisplayMode.java,
+	libraries/javalib/java/awt/FocusTraversalPolicy.java,
+	libraries/javalib/java/awt/FontFormatException.java,
+	libraries/javalib/java/awt/GradientPaint.java,
+	libraries/javalib/java/awt/HeadlessException.java,
+	libraries/javalib/java/awt/ImageCapabilities.java,
+	libraries/javalib/java/awt/JobAttributes.java,
+	libraries/javalib/java/awt/PageAttributes.java,
+	libraries/javalib/java/awt/ScrollPaneAdjustable.java,
+	libraries/javalib/java/awt/Stroke.java:
+	new files taken from GNU Classpath.
+
+	* libraries/javalib/java/awt/datatransfer/FlavorTable.java,
+	libraries/javalib/java/awt/datatransfer/MimeTypeParseException.java:
+	new files taken from GNU Classpath.
+	
+	* libraries/javalib/java/awt/image/ImagingOpException.java,
+	libraries/javalib/java/awt/image/RasterFormatException.java:
+	new files taken from GNU Classpath.
+	
+	
 Mon Nov 11 11:34:41 CET 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
