@@ -1,0 +1,6 @@
+#
+# Security configuration file for Kaffe
+#
+
+security.provider.1=kaffe.security.provider.Kaffe
+
