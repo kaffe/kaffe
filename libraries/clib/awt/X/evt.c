@@ -9,6 +9,7 @@
  */
 
 
+#include "config.h"
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
@@ -34,7 +35,7 @@ void forwardFocus ( int cmd, Window wnd );  /* from wnd.c */
  *
  */
 
-static int nextEvent ( JNIEnv* env, jclass clazz, Toolkit *X, int blockIt )
+static int nextEvent ( JNIEnv* env UNUSED, jclass clazz UNUSED, Toolkit *X, int blockIt UNUSED )
 {
   if ( X->preFetched )
 	return 1;
@@ -209,7 +210,7 @@ static char *eventStr ( int evtId )
 #endif /* defined(KAFFE_VMDEBUG) && !defined(NDEBUG) */
 
 static jobject
-skip ( JNIEnv* env, Toolkit* X )
+skip ( JNIEnv* env UNUSED, Toolkit* X UNUSED )
 {
   return NULL;
 }
@@ -750,7 +751,7 @@ static EventFunc  processEvent[LASTEvent] = {
  */
 
 jobject
-Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz )
+Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz UNUSED )
 {
   jclass Component;
 #if !defined(USE_POLLING_AWT)
@@ -893,7 +894,7 @@ Java_java_awt_Toolkit_evtPeekEventId ( JNIEnv* env, jclass clazz, jint id )
  * just dispatching this to the local queue (without passing to the server)
  */
 void
-Java_java_awt_Toolkit_evtWakeup ( JNIEnv* env, jclass clazz )
+Java_java_awt_Toolkit_evtWakeup ( JNIEnv* env UNUSED, jclass clazz UNUSED )
 {
   XEvent event;
 
@@ -917,13 +918,13 @@ Java_java_awt_Toolkit_evtWakeup ( JNIEnv* env, jclass clazz )
  * the native event thread. Not required here
  */
 void
-Java_java_awt_Toolkit_evtSendWMEvent ( JNIEnv* env, jclass clazz, jobject wmEvt )
+Java_java_awt_Toolkit_evtSendWMEvent ( JNIEnv* env UNUSED, jclass clazz UNUSED, jobject wmEvt UNUSED )
 {
 }
 
 
 jint
-Java_java_awt_Toolkit_evtRegisterSource ( JNIEnv* env, jclass clazz, Window wnd )
+Java_java_awt_Toolkit_evtRegisterSource ( JNIEnv* env UNUSED, jclass clazz UNUSED, Window wnd )
 {
   /*
    * We have done that already during the various wndCreateXX()
@@ -937,7 +938,7 @@ Java_java_awt_Toolkit_evtRegisterSource ( JNIEnv* env, jclass clazz, Window wnd 
 
 
 jint
-Java_java_awt_Toolkit_evtUnregisterSource ( JNIEnv* env, jclass clazz, Window wnd )
+Java_java_awt_Toolkit_evtUnregisterSource ( JNIEnv* env UNUSED, jclass clazz UNUSED, Window wnd )
 {
   int i = getSourceIdx( X, wnd);
 

@@ -196,7 +196,7 @@ registerTypeByIndex(int index, walk_func_t walk, final_func_t final,
  * is for statistical purposes.
  */
 static void
-gcRegisterFixedTypeByIndex(Collector* gcif, 
+gcRegisterFixedTypeByIndex(Collector* gcif UNUSED, 
 	int index, const char *description)
 {
 	registerTypeByIndex(index, 0, GC_OBJECT_FIXED, 0, description);
@@ -206,7 +206,7 @@ gcRegisterFixedTypeByIndex(Collector* gcif,
  * Register a allocation type that is subject to gc.  
  */
 static void
-gcRegisterGcTypeByIndex(Collector* gcif,
+gcRegisterGcTypeByIndex(Collector* gcif UNUSED,
 	int index, walk_func_t walk, final_func_t final,
 	destroy_func_t destroy,
 	const char *description)
@@ -284,7 +284,7 @@ DBG(GCWALK,
  * Mark the memory given by an address if it really is an object.
  */
 static void
-gcMarkAddress(Collector* gcif, const void* mem)
+gcMarkAddress(Collector* gcif UNUSED, const void* mem)
 {
 	gc_block* info;
 	gc_unit* unit;
@@ -307,7 +307,7 @@ gcMarkAddress(Collector* gcif, const void* mem)
  * and never, ever, be null.
  */
 static void
-gcMarkObject(Collector* gcif, const void* objp)
+gcMarkObject(Collector* gcif UNUSED, const void* objp)
 {
   gc_unit *unit = UTOUNIT(objp);
   gc_block *info = GCMEM2BLOCK(unit);
@@ -343,14 +343,14 @@ DBG(GCWALK,
  */
 static
 uint32
-gcGetObjectSize(Collector* gcif, const void* mem)
+gcGetObjectSize(Collector* gcif UNUSED, const void* mem)
 {
 	return (GCBLOCKSIZE(GCMEM2BLOCK(UTOUNIT(mem))));
 }
 
 static
 int
-gcGetObjectIndex(Collector* gcif, const void* mem)
+gcGetObjectIndex(Collector* gcif UNUSED, const void* mem)
 {
 	gc_unit* unit = UTOUNIT(mem);
 	gc_block* info = GCMEM2BLOCK(unit);
@@ -371,7 +371,7 @@ gcGetObjectIndex(Collector* gcif, const void* mem)
  */
 static
 void*
-gcGetObjectBase(Collector *gcif, const void* mem)
+gcGetObjectBase(Collector *gcif UNUSED, const void* mem)
 {
 	int idx;
 	gc_block* info;
@@ -469,14 +469,14 @@ DBG(GCWALK,
 
 #if !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG))
 static int
-gcClearCounts(Hjava_lang_Class *c, void *_)
+gcClearCounts(Hjava_lang_Class *c, void *_ UNUSED)
 {
 	c->live_count = 0;
 	return 0;
 }
 
 static int
-gcDumpCounts(Hjava_lang_Class *c, void *_)
+gcDumpCounts(Hjava_lang_Class *c, void *_ UNUSED)
 {
 	if (c->live_count)
 		dprintf("%7d %s\n", c->live_count,	c->name->data);
@@ -924,7 +924,7 @@ finaliserMan(void* arg)
 
 static
 void
-gcEnableGC(Collector* gcif)
+gcEnableGC(Collector* gcif UNUSED)
 {
 	int iLockRoot;
 
@@ -937,7 +937,7 @@ gcEnableGC(Collector* gcif)
 
 static
 void
-gcDisableGC(Collector* gcif)
+gcDisableGC(Collector* gcif UNUSED)
 {
 	int iLockRoot;
 
@@ -951,7 +951,7 @@ gcDisableGC(Collector* gcif)
  */
 static
 void
-gcInvokeGC(Collector* gcif, int mustgc)
+gcInvokeGC(Collector* gcif UNUSED, int mustgc)
 {
 	int iLockRoot;
 
@@ -1005,7 +1005,7 @@ void throwOutOfMemory(void) NONRETURNING;
 
 static
 void*
-gcMalloc(Collector* gcif, size_t size, gc_alloc_type_t fidx)
+gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
 {
 	gc_block* info;
 	gc_unit* unit;
@@ -1144,7 +1144,7 @@ gcMalloc(Collector* gcif, size_t size, gc_alloc_type_t fidx)
 
 static
 Hjava_lang_Throwable *
-gcThrowOOM(Collector *gcif)
+gcThrowOOM(Collector *gcif UNUSED)
 {
 	Hjava_lang_Throwable *ret = 0;
 	int reffed;
@@ -1235,7 +1235,7 @@ gcRealloc(Collector* gcif, void* mem, size_t size, gc_alloc_type_t fidx)
  */
 static
 void
-gcFree(Collector* gcif, void* mem)
+gcFree(Collector* gcif UNUSED, void* mem)
 {
 	gc_block* info;
 	int idx;
@@ -1269,7 +1269,7 @@ gcFree(Collector* gcif, void* mem)
 
 static
 void
-gcInit(Collector *collector)
+gcInit(Collector *collector UNUSED)
 {
 	gc_init = 1;
 }

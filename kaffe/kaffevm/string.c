@@ -495,7 +495,7 @@ stringCharArray2Java(const jchar *data, int len)
  * Walk a java.lang.String object
  */     
 void
-stringWalk(Collector* collector, void* str, uint32 size)
+stringWalk(Collector* collector, void* str, uint32 size UNUSED)
 {
         /* That's all we have to do here */
         GC_markObject(collector, unhand((Hjava_lang_String*)str)->value);
@@ -506,7 +506,7 @@ stringWalk(Collector* collector, void* str, uint32 size)
  */      
 void
 /* ARGSUSED */
-stringDestroy(Collector* collector, void* obj)
+stringDestroy(Collector* collector UNUSED, void* obj)
 {
         Hjava_lang_String* str = (Hjava_lang_String*)obj;
 

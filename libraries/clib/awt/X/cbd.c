@@ -28,7 +28,7 @@ jmethodID  getNativeData;
  */
 
 jobject
-selectionClear ( JNIEnv* env, Toolkit* tk )
+selectionClear ( JNIEnv* env, Toolkit* tk UNUSED )
 {
   (*env)->CallStaticVoidMethod( env, NativeClipboard, lostOwnership);
 
@@ -129,7 +129,7 @@ getRawData ( Toolkit* tk, Atom target, unsigned char** pData )
  */
 
 jobject
-Java_java_awt_Toolkit_cbdInitClipboard ( JNIEnv* env, jclass clazz )
+Java_java_awt_Toolkit_cbdInitClipboard ( JNIEnv* env, jclass clazz UNUSED)
 {
   unsigned long mask = 0;
   XSetWindowAttributes attrs;
@@ -162,12 +162,12 @@ Java_java_awt_Toolkit_cbdInitClipboard ( JNIEnv* env, jclass clazz )
 }
 
 void
-Java_java_awt_Toolkit_cbdFreeClipboard ( JNIEnv* env, jclass clazz, ClipBoard* cbd )
+Java_java_awt_Toolkit_cbdFreeClipboard ( JNIEnv* env UNUSED, jclass clazz UNUSED, ClipBoard* cbd UNUSED )
 {
 }
 
 jboolean
-Java_java_awt_Toolkit_cbdSetOwner ( JNIEnv* env, jclass clazz, ClipBoard* cbd )
+Java_java_awt_Toolkit_cbdSetOwner ( JNIEnv* env UNUSED, jclass clazz UNUSED, ClipBoard* cbd UNUSED )
 {
   XSetSelectionOwner( X->dsp, XA_PRIMARY, X->cbdOwner, CurrentTime);
   if ( XGetSelectionOwner( X->dsp, XA_PRIMARY) != X->cbdOwner )
@@ -184,7 +184,7 @@ Java_java_awt_Toolkit_cbdSetOwner ( JNIEnv* env, jclass clazz, ClipBoard* cbd )
  */
 
 jobject
-Java_java_awt_Toolkit_cbdGetContents ( JNIEnv* env, jclass clazz, ClipBoard* cbd )
+Java_java_awt_Toolkit_cbdGetContents ( JNIEnv* env, jclass clazz UNUSED, ClipBoard* cbd UNUSED )
 {
   int             ret;
   unsigned char   *data = 0;

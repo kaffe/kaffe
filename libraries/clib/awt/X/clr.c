@@ -355,7 +355,7 @@ initColormap ( JNIEnv* env, Toolkit* X, Colormap cm, Rgb2Pseudo* map )
 
 
 static Rgb2Pseudo*
-initRgb2Pseudo ( JNIEnv* env, jclass clazz, Toolkit* X )
+initRgb2Pseudo ( JNIEnv* env, jclass clazz UNUSED, Toolkit* X )
 {
   Colormap dcm;
   int i, j, k;
@@ -385,7 +385,7 @@ initRgb2Pseudo ( JNIEnv* env, jclass clazz, Toolkit* X )
  */
 
 static Rgb2True*
-initRgb2True (JNIEnv* env, jclass clazz,  Toolkit* X )
+initRgb2True (JNIEnv* env UNUSED, jclass clazz UNUSED,  Toolkit* X )
 {
   Visual *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
   unsigned int m;
@@ -537,7 +537,7 @@ static void setPartMapFromDMap ( Toolkit *X, Colormap dcm,
 }
 
 static Rgb2Direct*
-initRgb2Direct ( JNIEnv* env, jclass clazz, Toolkit* X )
+initRgb2Direct ( JNIEnv* env UNUSED, jclass clazz UNUSED, Toolkit* X )
 {
   Visual      *v = DefaultVisualOfScreen( DefaultScreenOfDisplay( X->dsp));
   Rgb2Direct  *map = (Rgb2Direct*) AWT_MALLOC( sizeof( Rgb2Direct));
@@ -658,7 +658,7 @@ Java_java_awt_Toolkit_clrGetPixelValue ( JNIEnv* env, jclass clazz, jint rgb )
 }
 
 void
-Java_java_awt_Toolkit_clrSetSystemColors ( JNIEnv* env, jclass clazz, jintArray sysClrs )
+Java_java_awt_Toolkit_clrSetSystemColors ( JNIEnv* env UNUSED, jclass clazz UNUSED, jintArray sysClrs UNUSED )
 {
 #ifdef NEVER /* maybe this could be initialized via X resources */
   jboolean isCopy;
@@ -703,7 +703,7 @@ Java_java_awt_Toolkit_clrSetSystemColors ( JNIEnv* env, jclass clazz, jintArray 
  * usable results). Even 256 colormaps suffer from that
  */
 jlong
-Java_java_awt_Toolkit_clrBright ( JNIEnv* env, jclass clazz, jint rgb )
+Java_java_awt_Toolkit_clrBright ( JNIEnv* env UNUSED, jclass clazz UNUSED, jint rgb )
 {
   unsigned int r, g, b;
   jint     modRgb, modPix;
@@ -727,7 +727,7 @@ Java_java_awt_Toolkit_clrBright ( JNIEnv* env, jclass clazz, jint rgb )
 }
 
 jlong
-Java_java_awt_Toolkit_clrDark ( JNIEnv* env, jclass clazz, jint rgb )
+Java_java_awt_Toolkit_clrDark ( JNIEnv* env UNUSED, jclass clazz UNUSED, jint rgb )
 {
   unsigned int r, g, b;
   jint     modRgb, modPix;

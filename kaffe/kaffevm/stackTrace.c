@@ -94,7 +94,7 @@ buildStackTrace(struct _exceptionFrame* base)
 
 #if defined(TRANSLATOR)
 static Method*
-stacktraceFindMethod(uintp fp, uintp pc)
+stacktraceFindMethod(uintp fp UNUSED, uintp pc)
 {
 	void *pc_base = GC_getObjectBase(main_collector, (void *)pc);
 
@@ -107,7 +107,7 @@ stacktraceFindMethod(uintp fp, uintp pc)
 #elif defined(INTERPRETER)
 
 static Method*
-stacktraceFindMethod(uintp fp, uintp pc)
+stacktraceFindMethod(uintp fp, uintp pc UNUSED)
 {
 	return (vmExcept_isJNIFrame ((VmExceptHandler *)fp)?0:((VmExceptHandler *)fp)->meth);
 }

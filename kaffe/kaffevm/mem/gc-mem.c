@@ -932,15 +932,18 @@ pagealloc(size_t size)
 }
 
 /* Free memory allocated with pagealloc */
-static void pagefree(uintp base, size_t size)
-{
 #ifdef HAVE_SBRK
+static void pagefree(uintp base UNUSED, size_t size)
+{
 	sbrk(-size);
+}
 #else
+static void pagefree(uintp base, size_t size UNUSED)
+{
 	/* it must have been allocated with memalign, valloc or malloc */
 	free((void *)base);
-#endif
 }
+#endif
 
 /*
  * Allocate size bytes of heap memory, and return the corresponding

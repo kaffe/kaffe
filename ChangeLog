@@ -1,3 +1,11 @@
+2004-04-02  Adam Heath <doogie@debian.org>
+
+	* kaffe/kaffevm/soft.c, kaffe/kaffevm/stackTrace.c,
+	  kaffe/kaffevm/string.c, kaffe/kaffevm/mem/gc-incremental.c,
+	  kaffe/kaffevm/mem/gc-mem.c, libraries/clib/awt/X/cbd.c,
+	  libraries/clib/awt/X/clr.c, libraries/clib/awt/X/evt.c:
+	More UNUSED warning fixes.
+
 2004-04-02  Dalibor Topic <robilad@kaffe.org>
 
 	* config/sparc/openbsd2/jit-md.h:

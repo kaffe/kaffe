@@ -1107,23 +1107,23 @@ soft_cvtdi(jdouble v)
 }
 
 void
-soft_debug1(void* a0, void* a1, void* a2)
+soft_debug1(void* a0 UNUSED, void* a1 UNUSED, void* a2 UNUSED)
 {
 }
 
 void
-soft_debug2(void* a0, void* a1, void* a2)
+soft_debug2(void* a0 UNUSED, void* a1 UNUSED, void* a2 UNUSED)
 {
 }
 
 void
-soft_trace(Method* meth, void* args)
+soft_trace(Method* meth, void* args UNUSED)
 {
     dprintf("soft_trace: %s.%s%s\n", CLASS_CNAME(meth->class), meth->name->data, METHOD_SIGD(meth));
 }
 
 void
-soft_enter_method(Hjava_lang_Object *obj, Method *meth)
+soft_enter_method(Hjava_lang_Object *obj UNUSED, Method *meth UNUSED)
 {
 #if defined(ENABLE_JVMPI)
 	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_METHOD_ENTRY) )
@@ -1146,10 +1146,10 @@ soft_enter_method(Hjava_lang_Object *obj, Method *meth)
 #endif
 }
 
+#if defined(ENABLE_JVMPI)
 void
 soft_exit_method(Method *meth)
 {
-#if defined(ENABLE_JVMPI)
 	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_METHOD_EXIT) )
 	{
 		JVMPI_Event ev;
@@ -1158,5 +1158,10 @@ soft_exit_method(Method *meth)
 		ev.u.method.method_id = meth;
 		jvmpiPostEvent(&ev);
 	}
-#endif
 }
+#else
+void
+soft_exit_method(Method *meth UNUSED)
+{
+}
+#endif
