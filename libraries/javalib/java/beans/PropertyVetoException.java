@@ -17,7 +17,7 @@ public class PropertyVetoException extends Exception {
   public PropertyVetoException(String mess, PropertyChangeEvent evt)
   {
     super(mess);
-    evt = evt;
+    this.evt = evt;
   }
 
   public PropertyChangeEvent getPropertyChangeEvent()

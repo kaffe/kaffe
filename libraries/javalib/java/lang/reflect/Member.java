@@ -15,8 +15,8 @@ import java.lang.String;
 
 public interface Member {
 
-final public static int PUBLIC = 1;
-final public static int DECLARED = 2;
+final public static int PUBLIC = 0;
+final public static int DECLARED = 1;
 
 abstract public Class getDeclaringClass();
 

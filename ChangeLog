@@ -1,3 +1,16 @@
+1999-04-25  Robert Zawiasa  <rhz@bibl.u-szeged.hu>
+
+	* libraries/clib/awt/X/fnt.c: If we can't find a slanted font with 
+	slant = "i", try "o".
+	* libraries/javalib/java/applet/Applet.java (resize): resize base
+	object too.
+	* libraries/javalib/java/beans/PropertyChangeEvent.java
+	(setPropagationId): Missing `this.' in assignment.
+	* libraries/javalib/java/beans/PropertyVetoException.java
+	(constructor): Likewise.
+	* libraries/javalib/java/lang/reflect/Member.java (PUBLIC,
+	DECLARED): Fix constants to be equal to JDK.
+
 1999-04-23  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in: Add -L and -R switches to LIBS, not LDFLAGS, so

@@ -108,11 +108,13 @@ public void play( URL url, String name) {
 }
 
 public void resize( Dimension d) {
+	super.resize( d);
 	if ( stub != null)
 		stub.appletResize( d.width, d.height);
 }
 
 public void resize( int width, int height) {
+	super.resize( width, height);
 	if ( stub != null)
 		stub.appletResize( width, height);
 }

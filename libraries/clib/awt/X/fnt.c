@@ -34,6 +34,12 @@ Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec, ji
   sprintf( buf, spec, weight, slant, size);
   fs = XLoadQueryFont( X->dsp, buf);
 
+  if ( ! fs && ( style & 0x2 ) ){
+	slant = "o";
+	sprintf( buf, spec, weight, slant, size);
+	fs = XLoadQueryFont( X->dsp, buf);
+  }
+
   if ( ! fs ){
 DBG(awt,("cannot load font: %s (backup to %s)\n", buf, backupFont));
 	if ( !(fs = XLoadQueryFont( X->dsp, backupFont)) ) {

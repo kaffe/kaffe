@@ -46,7 +46,7 @@ public class PropertyChangeEvent extends EventObject {
 
   public void setPropagationId(Object propagationId)
   {
-    propagationId = propagationId;
+    this.propagationId = propagationId;
   }
 
   public Object getPropagationId()
