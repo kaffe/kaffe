@@ -1,5 +1,21 @@
 2004-11-26  Dalibor Topic  <robilad@kaffe.org>
 
+	*  libraries/javalib/java/awt/print/PrinterJob.java:
+        Resynced with GNU Classpath.
+
+	2004-11-17  Michael Koch  <konqueror@gmx.de>
+
+        * java/awt/print/PrinterJob.java: Reformatted.
+
+	2004-11-17  Jerry Quinn  <jlquinn@optonline.net>
+
+        * java/awt/print/PrinterJob.java (lookupPrintServices,
+        getPrintService, setPrintService): Implement.
+        (lookupStreamPrintServices): Add commented out implementation.
+        (printer): New field.
+
+2004-11-26  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/net/Socket.java:
         Resynced with GNU Classpath.
 
