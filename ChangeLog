@@ -1,3 +1,8 @@
+Wed Jul 22 17:08:44 1998  Stephen Clawson  <sclawson@cs.utah.edu>
+
+	* libraries/javalib/java/net/InetAddress.java: use equals instead 
+	  of == to check for string equality.
+
 Wed Jul 22 16:39:56 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* libraries/clib/Makefile.in: make sure that we only recurse 
