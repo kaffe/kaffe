@@ -133,12 +133,12 @@ java_lang_ClassLoader_findSystemClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
 {
 	errorInfo info;
 	Hjava_lang_Class *clazz;
-        int len = javaStringLength(str);
+        int len = STRING_SIZE(str);
         Utf8Const* c;
         char* name;
         char buffer[100];
 
-        if (len <= 100) {
+        if (len <= sizeof(buffer) - 1) {
                 name = buffer;
         }
         else {
@@ -216,13 +216,13 @@ java_lang_ClassLoader_getSystemResourceAsBytes0(struct Hjava_lang_String* str)
 struct Hjava_lang_Class*
 java_lang_ClassLoader_findLoadedClass0(Hjava_lang_ClassLoader* this, Hjava_lang_String* str)
 {
-        int len = javaStringLength(str);
+        int len = STRING_SIZE(str);
         Utf8Const* c;
         char* name;
         char buffer[100];
         classEntry* entry;
 
-        if (len <= 100) {
+        if (len <= sizeof(buffer) - 1) {
                 name = buffer;
         }
         else {

@@ -17,10 +17,9 @@
 #include "java_lang_String.h"
 #include "java_lang_Throwable.h"
 
-#define STRING_SIZE(STR) \
-		javaStringLength(STR)
-#define STRING_DATA(STR) \
-		&(unhand(unhand(STR)->value)->body[unhand(STR)->offset])
+#define STRING_SIZE(STR)	(unhand(STR)->count)
+#define STRING_DATA(STR)	\
+		(&(unhand(unhand(STR)->value)->body[unhand(STR)->offset]))
 
 #define	STRINGCLASS	"java/lang/String"
 #define	STRINGINIT	"<init>"

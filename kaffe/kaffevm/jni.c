@@ -2534,6 +2534,7 @@ Kaffe_NewString(JNIEnv* env, const jchar* data, jsize len)
 	unhand(str)->offset = 0;
 	unhand(str)->count = len;
 	unhand(str)->value = (HArrayOfChar*)newArray(TYPE_CLASS(TYPE_Char), len);                   
+	unhand(str)->interned = 0;
 	memcpy(unhand(unhand(str)->value)->body, data, len * sizeof(jchar));
 
 	END_EXCEPTION_HANDLING();
@@ -2546,7 +2547,7 @@ Kaffe_GetStringLength(JNIEnv* env, jstring data)
 	jsize ret;
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ret = javaStringLength((Hjava_lang_String*)data);
+	ret = STRING_SIZE((Hjava_lang_String*)data);
 	END_EXCEPTION_HANDLING();
 	return (ret);
 }
@@ -2579,7 +2580,8 @@ Kaffe_NewStringUTF(JNIEnv* env, const char* data)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	str = makeReplaceJavaStringFromUtf8((char*)data, strlen(data), 0, 0);
+	str = makeReplaceJavaStringFromUtf8((unsigned char*)data,
+		strlen(data), 0, 0);
 
 	END_EXCEPTION_HANDLING();
 	return (str);
@@ -2588,6 +2590,7 @@ Kaffe_NewStringUTF(JNIEnv* env, const char* data)
 jsize
 Kaffe_GetStringUTFLength(JNIEnv* env, jstring data)
 {
+	Hjava_lang_String* const str = (Hjava_lang_String*)data;
 	jchar* ptr;
 	jsize len;
 	jsize count;
@@ -2595,8 +2598,8 @@ Kaffe_GetStringUTFLength(JNIEnv* env, jstring data)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	ptr = unhand(unhand((Hjava_lang_String*)data)->value)->body;
-	len = javaStringLength((Hjava_lang_String*)data);
+	ptr = STRING_DATA(str);
+	len = STRING_SIZE(str);
 
 	count = 0;
 	for (i = 0; i < len; i++) {
@@ -2618,10 +2621,10 @@ Kaffe_GetStringUTFLength(JNIEnv* env, jstring data)
 const jbyte*
 Kaffe_GetStringUTFChars(JNIEnv* env, jstring data, jbool* copy)
 {
+	Hjava_lang_String* const str = (Hjava_lang_String*)data;
 	jchar* ptr;
 	jbyte* buf;
 	jsize len;
-	jsize count;
 	jsize i;
 	jsize j;
 
@@ -2632,11 +2635,10 @@ Kaffe_GetStringUTFChars(JNIEnv* env, jstring data, jbool* copy)
 		*copy = JNI_TRUE;
 	}
 
-	count = Kaffe_GetStringUTFLength(env, data);
-	buf = KMALLOC(count+1);
+	buf = KMALLOC(Kaffe_GetStringUTFLength(env, data) + 1);
 
-	ptr = unhand(unhand((Hjava_lang_String*)data)->value)->body;
-	len = javaStringLength((Hjava_lang_String*)data);
+	ptr = STRING_DATA(str);
+	len = STRING_SIZE(str);
 
 	for (j = 0, i = 0; i < len; i++) {
 		if (ptr[i] >= 0x0001 && ptr[i] <= 0x007F) {

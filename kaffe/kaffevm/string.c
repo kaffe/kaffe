@@ -431,6 +431,7 @@ internJavaString(Hjava_lang_String* str)
 	}
 	strhash_count++;
 	*ptr = str;
+	unhand(str)->interned = true;
 	return (str);
 }
 

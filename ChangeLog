@@ -8,6 +8,17 @@ Sat Dec 19 14:36:27 1998  Archie Cobbs <archie@whistle.com>
 	* kaffe/kaffevm/gtypes.h: remove unused "utf8str" typedef
 	* kaffe/kaffevm/string.c, configure[.in], config/config.h.in:
 	don't need to detect or add strdup(), it's not used anywhere
+	* libraries/clib/native/ClassLoader.c: fix buffer overflow
+	bug when string length == 100
+	* kaffe/kaffevm/jni.c: fix bugs in Kaffe_GetStringUTFLength()
+	and Kaffe_GetStringUTFChars().
+	* include/java_lang_System.h, kaffe/kaffevm/baseClasses.h,
+	libraries/clib/native/ClassLoader.c, kaffe/kaffevm/jni.c:
+	get rid of javaStringLength() macro; use STRING_SIZE() instead
+	* kaffe/kaffevm/string.c: fix bug where interned strings were
+	not getting removed from hash table upon finalization.
+	* test/regression//InternHog.java: new test file
+	* test/regression/TestScript: add InternHog test
 
 Sat Dec 19 12:12:22 1998  Godmar Back  <gback@cs.utah.edu>
 

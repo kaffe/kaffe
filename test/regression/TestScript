@@ -135,6 +135,7 @@ runtest ModuloTest "-1111123 % -1123 = -476
 # Test strings
 runtest Str "12abcd34567890"
 runtest Str2 "12"
+runtest InternHog "Success."
 
 # Test exceptions
 runtest IndexTest "0
