@@ -219,6 +219,7 @@ public class GregorianCalendar extends Calendar
   {
     this(zone, locale, false);
     setTimeInMillis(System.currentTimeMillis());
+    complete();
   }
 
   /**
@@ -247,6 +248,7 @@ public class GregorianCalendar extends Calendar
   {
     this(TimeZone.getDefault(), Locale.getDefault(), false);
     set(year, month, day);
+    complete();
   }
 
   /**
@@ -263,6 +265,7 @@ public class GregorianCalendar extends Calendar
   {
     this(TimeZone.getDefault(), Locale.getDefault(), false);
     set(year, month, day, hour, minute);
+    complete();
   }
 
   /**
@@ -281,6 +284,7 @@ public class GregorianCalendar extends Calendar
   {
     this(TimeZone.getDefault(), Locale.getDefault(), false);
     set(year, month, day, hour, minute, second);
+    complete();
   }
 
   /**

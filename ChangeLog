@@ -1,5 +1,12 @@
 2004-12-19  Adam Heath  <doogie@brainfood.com>
 
+	* libraries/javalib/java/util/GregorianCalendar.java:
+	  Call complete() in the constructor after setting the time.  Fixes
+	  test case failure in commons-net, and makes the code behave like
+	  sun.
+
+2004-12-19  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/kaffevm/jit/basecode.h, kaffe/kaffevm/jit/codeproto.h
 	  kaffe/kaffevm/jit/funcs.c, kaffe/kaffevm/jit3/funcs.c:
 	  Miscellaenous sparse fixes.
