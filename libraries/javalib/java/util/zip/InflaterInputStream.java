@@ -225,8 +225,21 @@ public class InflaterInputStream extends FilterInputStream
     if (n == 0)
       return 0;
 
-    int len = (int) Math.min(n, 2048);
-    byte[] buf = new byte[len];
-    return (long) read(buf);
-  }
+    // Implementation copied from InputStream
+    // Throw away n bytes by reading them into a temp byte[].
+    // Limit the temp array to 2Kb so we don't grab too much memory.
+    final int buflen = n > 2048 ? 2048 : (int) n;
+    byte[] tmpbuf = new byte[buflen];
+    final long origN = n;
+
+    while (n > 0L)
+      {
+	int numread = read(tmpbuf, 0, n > buflen ? buflen : (int) n);
+	if (numread <= 0)
+	  break;
+	n -= numread;
+      }
+
+    return origN - n;
+ }
 }
