@@ -52,15 +52,15 @@ struct ifaddrs {
 #define	ifa_dstaddr	ifa_ifu.ifu_dstaddr	/* other end of link */
 #endif
 
-#include <sys/cdefs.h>
+#include "defs.h"
 
 #ifndef __THROW
 #define __THROW
 #endif
 
-__BEGIN_DECLS
+BEGIN_C_DECLS
 extern int getifaddrs (struct ifaddrs **) __THROW;
 extern void freeifaddrs (struct ifaddrs *) __THROW;
-__END_DECLS
+END_C_DECLS
 
 #endif	/* _IFADDRS_H */

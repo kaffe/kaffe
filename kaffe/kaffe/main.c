@@ -125,7 +125,7 @@ main(int argc, char* argv[])
 	{
 		if( !enableXCallGraph() )
 		{
-			dprintf(
+			fprintf(stderr, 
 				"Unable to initialize cross "
 				"language profiling\n");
 			xProfFlag = 0;
@@ -315,7 +315,7 @@ options(char** argv)
 
 			i++;
 			if (argv[i] == 0) {
-				dprintf(
+				fprintf(stderr, 
 				    "Error: No path found for %s option.\n",
 				    argv[i - 1]);
 				exit(1);
@@ -328,12 +328,15 @@ options(char** argv)
 
 			/* Get longer buffer FIXME:  free the old one */
 			if ((newcpath = malloc(cpathlength)) == NULL) {
-				dprintf( "Error: out of memory.\n");
+				fprintf(stderr,  "Error: out of memory.\n");
 				exit(1);
 			}
 
 			/* Construct new classpath */
-			strcpy(newcpath, vmargs.classpath);
+			if( vmargs.classpath != 0 )
+				strcpy(newcpath, vmargs.classpath);
+			else
+				newcpath[0] = '\0';
 			strcat(newcpath, path_separator);
 			strcat(newcpath, argv[i]);
 
@@ -345,7 +348,7 @@ options(char** argv)
 			if (argv[i][3] == 0) {
 				i++;
 				if (argv[i] == 0) {
-					dprintf( "Error: No stack size found for -ss option.\n");
+					fprintf(stderr,  "Error: No stack size found for -ss option.\n");
 					exit(1);
 				}
 				sz = parseSize(argv[i]);
@@ -353,7 +356,7 @@ options(char** argv)
 				sz = parseSize(&argv[i][3]);
 			}
 			if (sz < THREADSTACKSIZE) {
-				dprintf( "Warning: Attempt to set stack size smaller than %d - ignored.\n", THREADSTACKSIZE);
+				fprintf(stderr,  "Warning: Attempt to set stack size smaller than %d - ignored.\n", THREADSTACKSIZE);
 			}
 			else {
 				vmargs.nativeStackSize = sz;
@@ -364,7 +367,7 @@ options(char** argv)
 			if (argv[i][3] == 0) {
 				i++;
 				if (argv[i] == 0) {
-					dprintf( "Error: No heap size found for -mx option.\n");
+					fprintf(stderr,  "Error: No heap size found for -mx option.\n");
 					exit(1);
 				}
 				vmargs.maxHeapSize = parseSize(argv[i]);
@@ -377,7 +380,7 @@ options(char** argv)
 			if (argv[i][3] == 0) {
 				i++;
 				if (argv[i] == 0) {
-					dprintf( "Error: No heap size found for -ms option.\n");
+					fprintf(stderr,  "Error: No heap size found for -ms option.\n");
 					exit(1);
 				}
 				vmargs.minHeapSize = parseSize(argv[i]);
@@ -389,7 +392,7 @@ options(char** argv)
 			if (argv[i][3] == 0) {
 				i++;
 				if (argv[i] == 0) {
-					dprintf( "Error: No heap size found for -as option.\n");
+					fprintf(stderr,  "Error: No heap size found for -as option.\n");
 					exit(1);
 				}
 				vmargs.allocHeapSize = parseSize(argv[i]);
@@ -441,13 +444,13 @@ options(char** argv)
 		else if (strcmp(argv[i], "-Xxprof_syms") == 0) {
 			i++;
 			if (argv[i] == 0) {
-				dprintf(
+				fprintf(stderr, 
 					"Error: -Xxprof_syms option requires "
 					"a file name.\n");
 			}
 			else if( !profileSymbolFile(argv[i]) )
 			{
-				dprintf(
+				fprintf(stderr, 
 					"Unable to create profiler symbol "
 					"file %s.\n",
 					argv[i]);
@@ -456,13 +459,13 @@ options(char** argv)
 		else if (strcmp(argv[i], "-Xxprof_gmon") == 0) {
 			i++;
 			if (argv[i] == 0) {
-				dprintf(
+				fprintf(stderr, 
 					"Error: -Xxprof_gmon option requires "
 					"a file name.\n");
 			}
 			else if (!profileGmonFile(argv[i]))
 			{
-				dprintf(
+				fprintf(stderr, 
 					"Unable to create gmon file %s.\n",
 					argv[i]);
 			}
@@ -472,7 +475,7 @@ options(char** argv)
 		else if (strcmp(argv[i], "-Xxdebug_file") == 0) {
 			i++;
 			if (argv[i] == 0) {
-				dprintf(
+				fprintf(stderr, 
 					"Error: -Xxdebug_file option requires "
 					"a file name.\n");
 			}
@@ -486,7 +489,7 @@ options(char** argv)
 		else if (strcmp(argv[i], "-Xfeedback") == 0) {
 			i++;
 			if (argv[i] == 0) {
-				dprintf(
+				fprintf(stderr, 
 					"Error: -Xfeedback option requires a "
 					"file name.\n");
 			}
@@ -504,7 +507,7 @@ options(char** argv)
 			extern void statsSetMaskStr(char *);
                         i++;
                         if (argv[i] == 0) { /* forgot second arg */
-                                dprintf(
+                                fprintf(stderr, 
 					"Error: -vmstats option requires a "
 					"second arg.\n");
                                 exit(1);
@@ -516,7 +519,7 @@ options(char** argv)
                 else if (strcmp(argv[i], "-vmdebug") == 0) {
                         i++;
                         if (argv[i] == 0) { /* forgot second arg */
-                                dprintf(
+                                fprintf(stderr, 
 					"Error: -vmdebug option requires a "
 					"debug flag. Use `list' for a list.\n");
                                 exit(1);
@@ -542,7 +545,7 @@ options(char** argv)
 			prop->value = &argv[i][sz];
 		}
 		else if (argv[i][1] == 'X') {
-			dprintf(
+			fprintf(stderr, 
 				"Error: Unrecognized JVM specific option "
 				"`%s'.\n",
 				argv[i]);
@@ -558,7 +561,7 @@ options(char** argv)
 			i++;
 		}
 		else {
-			dprintf( "Unknown flag: %s\n", argv[i]);
+			fprintf(stderr,  "Unknown flag: %s\n", argv[i]);
 		}
 	}
 
@@ -573,62 +576,62 @@ static
 void
 usage(void)
 {
-	dprintf("usage: kaffe [-options] class\n");
-	dprintf("Options are:\n");
-	dprintf("	-help			Print this message\n");
-	dprintf("	-version		Print version number\n");
-	dprintf("	-fullversion		Print verbose version info\n");
+	fprintf(stderr, "usage: kaffe [-options] class\n");
+	fprintf(stderr, "Options are:\n");
+	fprintf(stderr, "	-help			Print this message\n");
+	fprintf(stderr, "	-version		Print version number\n");
+	fprintf(stderr, "	-fullversion		Print verbose version info\n");
 #if defined(__ia64__)
-	dprintf("	-ia32			Execute the ia32 version of Kaffe\n");
+	fprintf(stderr, "	-ia32			Execute the ia32 version of Kaffe\n");
 #endif
-	dprintf("	-ss <size>		Maximum native stack size\n");
-	dprintf("	-mx <size> 		Maximum heap size\n");
-	dprintf("	-ms <size> 		Initial heap size\n");
-	dprintf("	-as <size> 		Heap increment\n");
-	dprintf("	-classpath <path>	Set classpath\n");
-	dprintf("	-verify *		Verify all bytecode\n");
-	dprintf("	-verifyremote *		Verify bytecode loaded from network\n");
-	dprintf("	-noverify		Do not verify any bytecode\n");
-	dprintf("	-D<property>=<value>	Set a property\n");
-	dprintf("	-verbosegc		Print message during garbage collection\n");
-	dprintf("	-noclassgc		Disable class garbage collection\n");
-	dprintf("	-v, -verbose		Be verbose\n");
-	dprintf("	-verbosejit		Print message during JIT code generation\n");
-	dprintf("	-verbosemem		Print detailed memory allocation statistics\n");
-	dprintf("	-verbosecall		Print detailed call flow information\n");
-	dprintf("	-nodeadlock		Disable deadlock detection\n");
+	fprintf(stderr, "	-ss <size>		Maximum native stack size\n");
+	fprintf(stderr, "	-mx <size> 		Maximum heap size\n");
+	fprintf(stderr, "	-ms <size> 		Initial heap size\n");
+	fprintf(stderr, "	-as <size> 		Heap increment\n");
+	fprintf(stderr, "	-classpath <path>	Set classpath\n");
+	fprintf(stderr, "       -D<property>=<value>    Set a property\n");
+	fprintf(stderr, "	-verify *		Verify all bytecode\n");
+	fprintf(stderr, "	-verifyremote *		Verify bytecode loaded from network\n");
+	fprintf(stderr, "	-noverify		Do not verify any bytecode\n");
+	fprintf(stderr, "	-noclassgc		Disable class garbage collection\n");
+	fprintf(stderr, "	-verbosegc		Print message during garbage collection\n");
+	fprintf(stderr, "	-v, -verbose		Be verbose\n");
+	fprintf(stderr, "	-verbosejit		Print message during JIT code generation\n");
+	fprintf(stderr, "	-verbosemem		Print detailed memory allocation statistics\n");
+	fprintf(stderr, "	-verbosecall		Print detailed call flow information\n");
+	fprintf(stderr, "	-nodeadlock		Disable deadlock detection\n");
 #if defined(KAFFE_PROFILER)
-	dprintf("	-prof			Enable profiling of Java methods\n");
+	fprintf(stderr, "	-prof			Enable profiling of Java methods\n");
 #endif
 #if defined(KAFFE_XPROFILER)
-	dprintf("	-Xxprof			Enable cross language profiling\n");
-	dprintf("	-Xxprof_syms <file>	Name of the profiling symbols file [Default: kaffe-jit-symbols.s]\n");
-	dprintf("	-Xxprof_gmon <file>	Base name for gmon files [Default: xgmon.out]\n");
+	fprintf(stderr, "	-Xxprof			Enable cross language profiling\n");
+	fprintf(stderr, "	-Xxprof_syms <file>	Name of the profiling symbols file [Default: kaffe-jit-symbols.s]\n");
+	fprintf(stderr, "	-Xxprof_gmon <file>	Base name for gmon files [Default: xgmon.out]\n");
 #endif
 #if defined(KAFFE_XDEBUGGING)
-	dprintf("	-Xxdebug_file <file>	Name of the debugging symbols file\n");
+	fprintf(stderr, "	-Xxdebug_file <file>	Name of the debugging symbols file\n");
 #endif
 #if defined(KAFFE_FEEDBACK)
-	dprintf("	-Xfeedback <file>	The file name to write feedback data too\n");
+	fprintf(stderr, "	-Xfeedback <file>	The file name to write feedback data to\n");
 #endif
-	dprintf("	-debug * 		Trace method calls\n");
-	dprintf("	-noasyncgc *		Do not garbage collect asynchronously\n");
-	dprintf("	-cs, -checksource *	Check source against class files\n");
-	dprintf("	-oss <size> *		Maximum java stack size\n");
-        dprintf("	-jar                    Executable is a JAR\n");
+	fprintf(stderr, "	-debug * 		Trace method calls\n");
+	fprintf(stderr, "	-noasyncgc *		Do not garbage collect asynchronously\n");
+	fprintf(stderr, "	-cs, -checksource *	Check source against class files\n");
+	fprintf(stderr, "	-oss <size> *		Maximum java stack size\n");
+        fprintf(stderr, "	-jar                    Executable is a JAR\n");
 #ifdef DEBUG
-        dprintf("	-vmdebug <flag{,flag}>	Internal VM debugging.  Set flag=list for a list\n");
+        fprintf(stderr, "	-vmdebug <flag{,flag}>	Internal VM debugging.  Set flag=list for a list\n");
 #endif
 #ifdef KAFFE_STATS
-        dprintf("	-vmstats <flag{,flag}>	Print VM statistics.  Set flag=all for all\n");
+        fprintf(stderr, "	-vmstats <flag{,flag}>	Print VM statistics.  Set flag=all for all\n");
 #endif
-	dprintf("  * Option currently ignored.\n");
-	dprintf("\n");
-	dprintf("Compatibility options:\n");
-	dprintf("	-Xss <size>		Maximum native stack size\n");
-	dprintf("	-Xmx <size> 		Maximum heap size\n");
-	dprintf("	-Xms <size> 		Initial heap size\n");
-	dprintf("	-cp <path> 		Set classpath\n");
+	fprintf(stderr, "  * Option currently ignored.\n");
+	fprintf(stderr, "\n");
+	fprintf(stderr, "Compatibility options:\n");
+	fprintf(stderr, "	-Xss <size>		Maximum native stack size\n");
+	fprintf(stderr, "	-Xmx <size> 		Maximum heap size\n");
+	fprintf(stderr, "	-Xms <size> 		Initial heap size\n");
+	fprintf(stderr, "	-cp <path> 		Set classpath\n");
 }
 
 static

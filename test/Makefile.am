@@ -8,6 +8,9 @@
 
 SUBDIRS = regression
 
+DIST_SUBDIRS = regression
+
+
 EXTRA_DIST = \
 	awt/Calc/Calc.java \
 	awt/Calc/Calc.sh \
