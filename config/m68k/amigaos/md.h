@@ -25,6 +25,7 @@
 
 /* We do additional things here */
 
+extern void init_md(void);
 #define INIT_MD()       md_init()
 
 /* We cannot use the MMU for null pointer tests */

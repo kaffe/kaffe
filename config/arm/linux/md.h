@@ -20,6 +20,7 @@
 #endif
 
 /* Linux requires a little initialisation */
+extern void init_md(void);
 #define INIT_MD()       init_md()
 
 /* Define CREATE_NULLPOINTER_CHECKS in md.h when your machine cannot use the

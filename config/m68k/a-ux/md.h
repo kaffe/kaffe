@@ -16,6 +16,7 @@
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"
+extern void init_md(void);
 #define INIT_MD()       init_md()
 #endif
 

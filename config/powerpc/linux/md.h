@@ -15,6 +15,7 @@
 #include "powerpc/threads.h"
 
 /* Linux requires a little initialisation */
+extern void init_md(void);
 #define	INIT_MD()	init_md()
 
 #endif

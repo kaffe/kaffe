@@ -33,6 +33,7 @@
 #endif
 
 /* QNX requires a little initialisation */
+extern void init_md(void);
 #define       INIT_MD()       init_md()
 
 /*

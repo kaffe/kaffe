@@ -20,6 +20,7 @@
 #endif
 
 /* NCR MP-RAS requires a little initialisation */
+extern void init_md(void);
 #define INIT_MD()	init_md()
 
 #endif

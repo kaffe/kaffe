@@ -20,6 +20,7 @@
 #endif
 
 /* Alpha's require a little initialisation for proper IEEE math.  */
+extern void init_md(void);
 #define INIT_MD()       init_md()
 
 #endif
