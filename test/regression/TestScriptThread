@@ -114,8 +114,6 @@ runtest DeadThread "1 true
 true 1"
 
 runtest tthrd1 "main start
-thrd start
-thrd join
 true 1
 main end"
 

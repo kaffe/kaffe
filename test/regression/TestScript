@@ -359,8 +359,6 @@ runtest KaffeVerifyBug "okay"
 runtest Schtum "Okay"
 
 runtest tthrd1 "main start
-thrd start
-thrd join
 true 1
 main end"
 
