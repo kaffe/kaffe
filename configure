@@ -38422,7 +38422,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
-    if test "$ac_cv_sin_port_size" = unknown; then
+    if test "ac_cv_sin_port_size" = unknown; then
 	{ { echo "$as_me:$LINENO: error: Failed to get size of sin_port in struct sockaddr_in." >&5
 echo "$as_me: error: Failed to get size of sin_port in struct sockaddr_in." >&2;}
    { (exit 1); exit 1; }; }
@@ -39091,7 +39091,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 fi
 rm -f core core.* *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
 fi
-    if test "$ac_cv_sa_family_size" = unknown; then
+    if test "ac_cv_sa_family_size" = unknown; then
 	{ { echo "$as_me:$LINENO: error: Failed to get size of sa_family in struct sockaddr." >&5
 echo "$as_me: error: Failed to get size of sa_family in struct sockaddr." >&2;}
    { (exit 1); exit 1; }; }

@@ -1,3 +1,21 @@
+2003-09-22  Dalibor Topic <robilad@kaffe.org>
+
+	* sockinttypes.m4:
+	Updated to getaddrinfo-1.6.1. From the getaddrinfo docs:
+
+	Major changes in release 1.6.1
+
+	* Fix typo in m4/sockinttypes.m4.
+	configure exits with an error message if it fails to get size of
+	`sin_port' in `struct sockaddr_in' or `sa_family' in 
+	`struct sockaddr'.
+
+	* aclocal.m4, configure:
+	Regenerated.
+
+	* THIRDPARTY:
+	Added information on getaddrinfo.
+	
 2003-09-22  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/access.c: (findSuperMethod) minor tweak
