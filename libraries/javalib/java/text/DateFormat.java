@@ -160,6 +160,10 @@ public Date parse(String src) throws ParseException {
 
 public abstract Date parse(String src, ParsePosition pos);
 
+public Object parseObject(String source, ParsePosition status) {
+	return parse(source, status);
+}
+
 public Date parse(Object src, ParsePosition pos) {
 	return (parse((String)src, pos));
 }

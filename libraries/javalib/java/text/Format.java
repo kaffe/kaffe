@@ -1,3 +1,4 @@
+
 /*
  * Java core library component.
  *
@@ -10,11 +11,10 @@
 
 package java.text;
 
-import java.lang.String;
-import java.io.Serializable;
 import java.io.File;
-import java.util.ResourceBundle;
+import java.io.Serializable;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 public abstract class Format implements Serializable, Cloneable {
 /*
@@ -41,6 +41,12 @@ public final String format(Object obj) {
 }
 
 public abstract StringBuffer format(Object obj, StringBuffer buf, FieldPosition pos);
+
+public abstract Object parseObject(String source, ParsePosition status);
+
+public Object parseObject(String source) {
+	return parseObject(source, new ParsePosition(0));
+}
 
 static ResourceBundle getResources(String name, Locale loc) {
 	return (ResourceBundle.getBundle(RESOURCEBASE + name + ".locale", loc));
