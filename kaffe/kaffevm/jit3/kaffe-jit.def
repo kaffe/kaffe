@@ -758,11 +758,19 @@ define_insn(SASTORE)
 
 define_insn(POP)
 {
+    	/*
+	 * ..., slot -> ...
+	 */
+	pop_slot(stack(0), 1);
 	pop(1);
 }
 
 define_insn(POP2)
 {
+    	/*
+	 * ..., slot, slot -> ...
+	 */
+	pop_slot(stack(0), 2);
 	pop(2);
 }
 
