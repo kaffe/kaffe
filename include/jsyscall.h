@@ -12,6 +12,16 @@
 #ifndef __jsyscall_h
 #define __jsyscall_h
 
+#include "config.h"
+
+#if defined(HAVE_STDLIB_H)
+#include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
+
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#endif /* HAVE_UNISTD_H */
+
 struct sockaddr;
 struct timeval;
 struct fd_set;

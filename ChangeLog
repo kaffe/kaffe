@@ -1,5 +1,25 @@
 2004-03-19  Dalibor Topic <robilad@kaffe.org>
 
+	* include/jsyscall.h:
+	Added missing includes.
+
+	* kaffe/kaffevm/Makefile.am
+	(libkaffevm_la_SOURCES): Added ksem.c.
+
+	* kaffe/kaffevm/ksem.h
+	(ksemInit, ksemPut, ksemGet, ksemDestroy): Moved 
+	inline functions to ksem.c.
+
+	* kaffe/kaffevm/ksem.c:
+	New file.
+
+	* kaffe/kaffevm/Makefile.in,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+
+2004-03-19  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/gcFuncs.c,
 	kaffe/kaffevm/mem/gc-incremental.c,
 	kaffe/kaffevm/mem/gc-mem.c:

@@ -1586,10 +1586,16 @@ java_text_SRCS = \
 	java/text/ParsePosition.java \
 	java/text/RuleBasedCollator.java \
 	java/text/SimpleDateFormat.java \
+	java/text/SimpleLineIterator.java \
+	java/text/SimpleSentenceIterator.java \
+	java/text/SimpleWordIterator.java \
 	java/text/StringCharacterIterator.java
 java_util_SRCS = \
 	java/util/AbstractCollection.java \
+	java/util/AbstractListIterator.java \
 	java/util/AbstractList.java \
+	java/util/AbstractMapEntry.java \
+	java/util/AbstractMapEntrySet.java \
 	java/util/AbstractMap.java \
 	java/util/AbstractSequentialList.java \
 	java/util/AbstractSet.java \

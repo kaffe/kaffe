@@ -77,6 +77,7 @@ libkaffevm_la_SOURCES = \
 	itypes.c \
 	jar.c \
 	jni.c \
+	ksem.c \
 	locks.c \
 	lookup.c \
 	object.c \
