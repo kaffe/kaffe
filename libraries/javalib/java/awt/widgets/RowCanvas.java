@@ -244,8 +244,19 @@ void shiftVertical( int rows, boolean updScroll) {
 	}
 
 	int d = BORDER_WIDTH;
-	rgr.copyArea( d, d, width- 2*d, height- 2*d, 0, rows * rowHeight );
 
+	// hjb, 01-28-1999: only move the area that will fall in
+	// pane after the copy.
+	// otherwise text is displayed above or under the pane
+	// obscuring the scrollbar and/or other fields
+	
+	if (rows < 0)
+	    rgr.copyArea( d, d + rows * rowHeight, width- 2*d, height- 2*d,
+			  0, rows * rowHeight );
+	else
+	    rgr.copyArea( d, d, width- 2*d, height- 2*d - rows * rowHeight,
+			  0, rows * rowHeight );
+	    
 	if ( rows < 0 ){
 		int sIdx = first + getVisibleRows() + rows;
 		int len = -rows + 1;

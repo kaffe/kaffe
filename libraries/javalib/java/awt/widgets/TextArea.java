@@ -252,6 +252,7 @@ int get1D( Point p) {
 	for ( int i=0; i<p.y; i++) {
 		TextBuffer tb = (TextBuffer)rows.elementAt( i);
 		xt += tb.len;
+		xt ++;  // hjb 01-27-1999: count the virtual newline
 	}
 	xt += p.x;
 	
@@ -271,6 +272,7 @@ Point get2D( int pos) {
 		xt += tb.len;
 		if (xt >= pos)
 			return new Point( tb.len - xt + pos, i);
+		pos --;  // hjb 01-27-1999: substract 1 for the virtual newline
 	}
 	
 	return new Point( tb.len, rs-1);
@@ -418,18 +420,26 @@ public void keyPressed( KeyEvent e) {
 		case e.VK_TAB:
 		  if ( sh )
 				return;	//do not consume event for HotKeyHandler
+		    if ( ! isEditable)  // hjb 01-27-1999: do nothing for TAB,
+			break;          // ENTER, DEL and BS if not editable
   		insertChar( '\t' );
 			break;
 		case e.VK_ENTER:
+		        if ( ! isEditable)
+			    break;
 			newline();
 			break;
 		case e.VK_BACK_SPACE:
+		        if ( ! isEditable)
+			    break;
 			if ( hasSel() )
 				replaceSelectionWith("");
 			else
 				backspace();
 			break;
 		case e.VK_DELETE:
+		        if ( ! isEditable)
+		            break;
 			if ( hasSel() )
 				replaceSelectionWith("");
 			else
