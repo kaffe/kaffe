@@ -861,7 +861,7 @@ move_float(SlotInfo* dst, SlotInfo* src)
 	}
 #if defined(HAVE_move_float_const)
 	else if (slot_type(src) == Tconst) {
-		move_float_const(dst, slot_value(src).f);
+		move_float_const(dst, slot_value(src).d);
 	}
 #endif
 	else if (isGlobal(dst->slot)) {

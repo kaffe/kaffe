@@ -4,6 +4,7 @@ class DoublePrint {
     0.0,
     -0.0,
     Double.longBitsToDouble(0x8000000000000000L),
+    1.0, /* test dconst_1 */
     Double.NaN,
     Double.POSITIVE_INFINITY,
     Double.NEGATIVE_INFINITY,
@@ -20,6 +21,7 @@ class DoublePrint {
     0.0f,
     -0.0f,
     Float.intBitsToFloat(0x80000000),
+    1.0f, /* test fconst_1 */
     Float.NaN,
     Float.POSITIVE_INFINITY,
     Float.NEGATIVE_INFINITY,
@@ -80,6 +82,7 @@ Double values:
   0.0
   -0.0
   -0.0
+  1.0
   NaN
   Infinity
   -Infinity
@@ -97,6 +100,7 @@ Float values:
   0.0
   -0.0
   -0.0
+  1.0
   NaN
   Infinity
   -Infinity
