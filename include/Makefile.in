@@ -531,6 +531,7 @@ LIBGTKPEER_JNI_HDRS = \
 	gnu_java_awt_peer_gtk_GdkGlyphVector.h \
 	gnu_java_awt_peer_gtk_GdkGraphics.h \
 	gnu_java_awt_peer_gtk_GdkGraphics2D.h \
+	gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.h \
 	gnu_java_awt_peer_gtk_GdkPixbufDecoder.h \
 	gnu_java_awt_peer_gtk_GdkTextLayout.h \
 	gnu_java_awt_peer_gtk_GtkButtonPeer.h \

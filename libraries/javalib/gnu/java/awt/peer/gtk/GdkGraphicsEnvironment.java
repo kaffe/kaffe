@@ -68,16 +68,25 @@ public class GdkGraphicsEnvironment extends GraphicsEnvironment
   {
     return new GdkGraphics2D (image);
   }
+    native private int nativeGetNumFontFamilies ();
+    native private void nativeGetFontFamilies (String[] family_names);
 
   public Font[] getAllFonts ()
   {
     throw new java.lang.UnsupportedOperationException ();
   }
 
-  public String[] getAvailableFontFamilyNames ()
-  {
-    throw new java.lang.UnsupportedOperationException ();
-  }
+    public String[] getAvailableFontFamilyNames ()
+    {
+	String[] family_names;
+	int array_size;
+
+	array_size = nativeGetNumFontFamilies();
+	family_names = new String[array_size];
+
+	nativeGetFontFamilies(family_names);
+	return family_names;
+    }
 
   public String[] getAvailableFontFamilyNames (Locale l)
   {

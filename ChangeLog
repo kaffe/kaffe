@@ -1,5 +1,39 @@
 2004-10-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c:
+	New file taken from GNU Classpath.
+
+	* include/Makefile.am:
+	Added gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.h.
+
+	* libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.am:
+	Added gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c.
+
+	* include/Makefile.in,
+	libraries/clib/awt/classpath-gtk/gtk-peer/Makefile.in:
+	Regeneated.
+
+	* libraries/javalib/gnu/java/awt/peer/gtk/GdkGraphicsEnvironment.java:
+        Resynced with GNU Classpath.
+
+	2004-10-22  Andreas Tobler  <a.tobler@schweiz.ch>
+
+        * jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c:
+        New File.
+        (nativeGetNumFontsFamilies) New function.
+        (nativeGetFontFamilies) Likewise.
+        * gnu/java/awt/peer/gtk/GdkGraphicsEnvironment.java
+        (getAvailableFontFamilyNames): Implement.
+
+	2004-10-22  Michael Koch  <konqueror@gmx.de>
+
+        * include/Makefile.am:
+        Added gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.h.
+        * native/jni/gtk-peer/Makefile.am:
+        Added gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c.
+
+2004-10-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/awt/peer/ClasspathFontPeer.java:
         Resynced with GNU Classpath.
 

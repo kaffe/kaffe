@@ -15,6 +15,7 @@ libgtkpeer_la_SOURCES = \
 	gnu_java_awt_peer_gtk_GdkFontMetrics.c \
 	gnu_java_awt_peer_gtk_GdkFontPeer.c \
 	gnu_java_awt_peer_gtk_GdkGraphics.c \
+	gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c \
 	gnu_java_awt_peer_gtk_GdkPixbufDecoder.c \
 	gnu_java_awt_peer_gtk_GdkTextLayout.c \
 	gnu_java_awt_peer_gtk_GtkFileDialogPeer.c \
