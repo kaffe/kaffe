@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 
+	2003-11-15  Guilhem Lavaux <guilhem@kaffe.org>
+            Jim Pick  <jim@kaffe.org>
+
+        * java/text/DecimalFormat.java (getCurrency, setCurrency): New
+        methods.
+
+2004-01-03  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2003-12-27  Michael Koch  <konqueror@gmx.de>
 
         * java/nio/channels/spi/AbstractSelector.java:

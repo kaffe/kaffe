@@ -739,6 +739,14 @@ public class DecimalFormat extends NumberFormat
     return dest;
   }
 
+  /**
+   * Returns the currency corresponding to the currency symbol stored
+   * in the instance of <code>DecimalFormatSymbols</code> used by this
+   * <code>DecimalFormat</code>.
+   *
+   * @return A new instance of <code>Currency</code> if
+   * the currency code matches a known one, null otherwise.
+   */
   public Currency getCurrency()
   {
     return symbols.getCurrency();
@@ -963,6 +971,11 @@ public class DecimalFormat extends NumberFormat
     return result;
   }
 
+  /**
+   * Sets the <code>Currency</code> on the
+   * <code>DecimalFormatSymbols</code> used, which also sets the
+   * currency symbols on those symbols.
+   */
   public void setCurrency(Currency currency)
   {
     symbols.setCurrency(currency);
