@@ -19,6 +19,7 @@
 #include "support.h"
 #include "errors.h"
 #include "thread.h"
+#include "system.h"
 #include "md.h"
 #include "ltdl.h"
 
@@ -232,10 +233,37 @@ options(char** argv)
 		else if (strcmp(argv[i], "-classpath") == 0) {
 			i++;
 			if (argv[i] == 0) {
-				fprintf(stderr, "Error: No path found for -classpath option.\n");
+				fprintf(stderr,
+				    "Error: No path found for %s option.\n",
+				    "-classpath");
 				exit(1);
 			}
 			vmargs.classpath = argv[i];
+		}
+		else if (strcmp(argv[i], "-addclasspath") == 0) {
+			char	*newcpath;
+
+			i++;
+			if (argv[i] == 0) {
+				fprintf(stderr,
+				    "Error: No path found for %s option.\n",
+				    "-addclasspath");
+				exit(1);
+			}
+
+			/* Get longer buffer FIXME: free old one */
+			if ((newcpath = malloc(strlen(vmargs.classpath)
+			    + strlen(path_separator)
+			    + strlen(argv[i]) + 1)) == NULL) {
+				fprintf(stderr, "Error: out of memory.\n");
+				exit(1);
+			}
+
+			/* Construct new classpath */
+			strcpy(newcpath, vmargs.classpath);
+			strcat(newcpath, path_separator);
+			strcat(newcpath, argv[i]);
+			vmargs.classpath = newcpath;
 		}
 		else if (strncmp(argv[i], "-ss", 3) == 0) {
 			if (argv[i][3] == 0) {
