@@ -1,5 +1,29 @@
 2004-10-16  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c,
+	libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkLabelPeer.c,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkButtonPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkComponentPeer.java,
+	libraries/javalib/gnu/java/awt/peer/gtk/GtkLabelPeer.java:
+	Resynced with GNU Classpath.
+
+	2004-10-16  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+        * gnu/java/awt/peer/gtk/GtkButtonPeer.java,
+        jni/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c
+        (setNativeBounds): Set GtkEventBox, GtkButton and GtkLabel size
+        requests.
+        * gnu/java/awt/peer/gtk/GtkComponentPeer.java,
+        jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c
+        (setNativeBounds): Make package private.  Set size request even
+        if GTK parent is NULL.
+        * gnu/java/awt/peer/gtk/GtkLabelPeer.java,
+        jni/gtk-peer/gnu_java_awt_peer_gtk_GtkLabelPeer.c
+        (setNativeBounds): Set GtkEventBox and GtkLabel size requests.
+
+2004-10-16  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/rmi/RMISecurityManager.java:
 	Replaced by implementation from GNU Classpath.
 

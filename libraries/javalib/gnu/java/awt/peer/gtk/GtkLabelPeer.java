@@ -51,6 +51,7 @@ public class GtkLabelPeer extends GtkComponentPeer
   native void nativeSetAlignment (float alignment);
 
   native public void setText (String text);
+  native void setNativeBounds (int x, int y, int width, int height);
 
   void create ()
   {

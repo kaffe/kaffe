@@ -60,6 +60,7 @@ public class GtkButtonPeer extends GtkComponentPeer
   native void gtkWidgetSetBackground (int red, int green, int blue);
   native void gtkActivate ();
   native void gtkWidgetRequestFocus ();
+  native void setNativeBounds (int x, int y, int width, int height);
 
   public GtkButtonPeer (Button b)
   {

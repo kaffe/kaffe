@@ -403,7 +403,7 @@ public class GtkComponentPeer extends GtkGenericPeer
     gtkWidgetSetBackground (c.getRed(), c.getGreen(), c.getBlue());
   }
 
-  native public void setNativeBounds (int x, int y, int width, int height);
+  native void setNativeBounds (int x, int y, int width, int height);
 
   public void setBounds (int x, int y, int width, int height)
   {
