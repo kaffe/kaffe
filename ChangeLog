@@ -1,5 +1,12 @@
 2005-02-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/native/Method.c
+	(Java_java_lang_reflect_Method_invoke0) Use a jmethodID
+	when invoking JNI functions instead of Method *. Fixes
+	21 compiler warnings.
+
+2005-02-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/exception.c (vmExcept_isJNIFrame,
 	vmExcept_setSyncObj, vmExcept_getSyncObj, vmExcept_setPC,
 	vmExcept_getPC): Clarified asserts.

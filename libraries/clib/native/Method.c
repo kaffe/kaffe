@@ -126,6 +126,7 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 	jobject arg;
 	jclass argc;
 	Method* meth;
+	jmethodID methID;
 	jint slot;
 	jvalue args[255]; /* should this be allocated dynamically? */
 	jvalue ret;
@@ -162,6 +163,8 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 	 * would be returned by JNIEnv::GetMethodID for this method.
 	 */
 	meth = &CLASS_METHODS(clazz)[slot];
+	methID = (*env)->FromReflectedMethod(env, _this);
+
 	len = argobj ? obj_length(argobj) : 0;
 
 	rettype = *METHOD_RET_TYPE(meth);
@@ -207,7 +210,7 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 
 		/* invoke proper method via JNI CallStatic<Type>MethodA */
 #define CallStaticTypeMethodA(type) \
-	(*env)->CallStatic##type##MethodA(env, clazz, meth, args)
+	(*env)->CallStatic##type##MethodA(env, clazz, methID, args)
 
 		case 'V': CallStaticTypeMethodA(Void); break;
 		case 'J': ret.j = CallStaticTypeMethodA(Long); break;
@@ -229,7 +232,7 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 		/*
 		 * This if applies if we are called from Constructor.newInstance
 		 */
-		ret.l = (*env)->NewObjectA(env, clazz, meth, args);
+		ret.l = (*env)->NewObjectA(env, clazz, methID, args);
 		/* override return type parsed from signature */
 		rettype = 'L';
 	}
@@ -246,7 +249,7 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 		 * target object will occur. 
 		 */
 #define CallTypeMethodA(type) \
-	(*env)->Call##type##MethodA(env, obj, meth, args)
+	(*env)->Call##type##MethodA(env, obj, methID, args)
 
 		case 'V': CallTypeMethodA(Void); break;
 		case 'J': ret.j = CallTypeMethodA(Long); break;
