@@ -1,5 +1,20 @@
 2004-10-11  Dalibor Topic <robilad@kaffe.org>
 
+	* libraries/javalib/java/io/PrintStream.java:
+	Resynced with GNU Classpath.
+
+	2004-10-11  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/io/PrintStream.java
+        (ForwardStream): New inner class.
+        (PrintStream(OutputStream,boolean),
+        PrintStream(OutputStream,boolean,String)):
+        Changed to use ForwardStream.
+        (write(int), write(byte[],int,int)):
+        Don't consume thread interrupts.
+
+2004-10-11  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/java/util/logging/LogManager.java:
         Resynced with GNU Classpath.
 
