@@ -4,6 +4,16 @@
 
 	2004-02-27  Michael Koch  <konqueror@gmx.de>
 
+        * gnu/java/net/protocol/jar/Handler.java
+        (): Removed unneeded check for file != null. java.net.URL.getFile()
+        returns an empty string but never null.
+
+2004-03-07  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath
+
+	2004-02-27  Michael Koch  <konqueror@gmx.de>
+
         * gnu/java/awt/ComponentDataBlitOp.java
         (INSTANCE): Made final.
 
