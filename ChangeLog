@@ -1,3 +1,8 @@
+Mon Mar 22 22:15:54 1999  Mo DeJong <dejong@cs.umn.edu>
+
+	* /libraries/clib/native/Field.c: changed error message
+	  from setXXX() on final fields so that it matches the JDK.
+
 Mon Mar 22 22:13:11 1999  Alan L. Batongbacal <alanlb@access.rrinc.com>
 
 	* FAQ/FAQ.BeOS: updated list of known problems

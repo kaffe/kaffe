@@ -345,7 +345,7 @@ java_lang_reflect_Field_setBoolean(struct Hjava_lang_reflect_Field* this, struct
         base = getFieldAddress(this, obj);
 
         if (fld->accflags & ACC_FINAL) {
-                SignalError("java.lang.IllegalAccessException", "");
+                SignalError("java.lang.IllegalAccessException", "field is final");
         }
 
         if ( fld->type == _Jv_booleanClass ) {
@@ -368,7 +368,7 @@ java_lang_reflect_Field_setByte(struct Hjava_lang_reflect_Field* this, struct Hj
         base = getFieldAddress(this, obj);
 
         if (fld->accflags & ACC_FINAL) {
-                SignalError("java.lang.IllegalAccessException", "");
+                SignalError("java.lang.IllegalAccessException", "field is final");
         }
 
         if ( fld->type == _Jv_byteClass ) {
@@ -406,7 +406,7 @@ java_lang_reflect_Field_setChar(struct Hjava_lang_reflect_Field* this, struct Hj
         base = getFieldAddress(this, obj);
 
         if (fld->accflags & ACC_FINAL) {
-                SignalError("java.lang.IllegalAccessException", "");
+                SignalError("java.lang.IllegalAccessException", "field is final");
         }
 
         if ( fld->type == _Jv_charClass ) {
@@ -441,7 +441,7 @@ java_lang_reflect_Field_setShort(struct Hjava_lang_reflect_Field* this, struct H
         base = getFieldAddress(this, obj);
 
         if (fld->accflags & ACC_FINAL) {
-                SignalError("java.lang.IllegalAccessException", "");
+                SignalError("java.lang.IllegalAccessException", "field is final");
         }
 
         if ( fld->type == _Jv_shortClass ) {
@@ -476,7 +476,7 @@ java_lang_reflect_Field_setInt(struct Hjava_lang_reflect_Field* this, struct Hja
         base = getFieldAddress(this, obj);
 
         if (fld->accflags & ACC_FINAL) {
-                SignalError("java.lang.IllegalAccessException", "");
+                SignalError("java.lang.IllegalAccessException", "field is final");
         }
 
         if ( fld->type == _Jv_intClass ) {
@@ -508,7 +508,7 @@ java_lang_reflect_Field_setLong(struct Hjava_lang_reflect_Field* this, struct Hj
         base = getFieldAddress(this, obj);
 
         if (fld->accflags & ACC_FINAL) {
-                SignalError("java.lang.IllegalAccessException", "");
+                SignalError("java.lang.IllegalAccessException", "field is final");
         }
 
         if ( fld->type == _Jv_longClass ) {
@@ -537,7 +537,7 @@ java_lang_reflect_Field_setFloat(struct Hjava_lang_reflect_Field* this, struct H
         base = getFieldAddress(this, obj);
 
         if (fld->accflags & ACC_FINAL) {
-                SignalError("java.lang.IllegalAccessException", "");
+                SignalError("java.lang.IllegalAccessException", "field is final");
         }
 
         if ( fld->type == _Jv_floatClass ) {
@@ -563,7 +563,7 @@ java_lang_reflect_Field_setDouble(struct Hjava_lang_reflect_Field* this, struct 
         base = getFieldAddress(this, obj);
 
         if (fld->accflags & ACC_FINAL) {
-                SignalError("java.lang.IllegalAccessException", "");
+                SignalError("java.lang.IllegalAccessException", "field is final");
         }
 
         if ( fld->type == _Jv_doubleClass ) {
@@ -587,7 +587,7 @@ java_lang_reflect_Field_set(Hjava_lang_reflect_Field* this, struct Hjava_lang_Ob
         fld = CLASS_FIELDS(clas) + unhand(this)->slot;
 
         if (fld->accflags & ACC_FINAL) {
-                SignalError("java.lang.IllegalAccessException", "");
+                SignalError("java.lang.IllegalAccessException", "field is final");
         }
 	
 	ftype = resolveFieldType(fld, clas, &info);
