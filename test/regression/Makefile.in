@@ -186,6 +186,7 @@ TESTS = \
 	SortTest.java \
 	HashTest.java \
 	MapTest.java \
+	URLTest.java \
 	ReflectInvoke.java \
 	InvTarExcTest.java \
 	CLTest.java \

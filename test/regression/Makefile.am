@@ -68,6 +68,7 @@ TESTS = \
 	SortTest.java \
 	HashTest.java \
 	MapTest.java \
+	URLTest.java \
 ## simple test for Method.invoke
 	ReflectInvoke.java \
 ## simple test for InvocationTargetExceptions
