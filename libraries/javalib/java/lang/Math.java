@@ -15,7 +15,7 @@ final public class Math
 {
 	final public static double E = 2.7182818284590452354;
 	final public static double PI = 3.14159265358979323846;
-	public static Random randomGenerator = new Random();
+	private static Random randomGenerator = new Random();
 
 private Math() { /* this class is not instantiable by the general public */ }
 

@@ -103,7 +103,7 @@ public class FeatureDescriptor {
     return (table.elements());
   }
 
-  static protected String capitalize(String name)
+  static String capitalize(String name)
   {
     if (name.length() > 2 && Character.isUpperCase(name.charAt(0)) && Character.isUpperCase(name.charAt(1))) {
       return (name);

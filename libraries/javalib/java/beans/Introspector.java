@@ -19,6 +19,8 @@ public class Introspector
 {
 	private static String[] beansearch = { "kaffe.beans.infos" };
 
+private Introspector() {}
+    
 public static String decapitalize(String name)
 	{
 	if (name.length() > 2 && Character.isUpperCase(name.charAt(0)) && Character.isUpperCase(name.charAt(1))) {

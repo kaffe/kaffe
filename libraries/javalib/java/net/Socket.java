@@ -27,7 +27,7 @@ public Socket(InetAddress address, int port) throws IOException {
 	this(address, port, true);
 }
 
-public Socket(String host, int port) throws IOException {
+public Socket(String host, int port) throws UnknownHostException, IOException {
 	this(InetAddress.getByName(host), port, true);
 }
 

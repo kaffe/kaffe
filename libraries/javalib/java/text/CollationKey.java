@@ -17,6 +17,8 @@ public final class CollationKey {
 private String str;
 private Collator target;
 
+private CollationKey() {}
+    
 public int compareTo(CollationKey other) {
 	if (target != other.target) {
 		return (-1);

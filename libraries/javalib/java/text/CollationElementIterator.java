@@ -16,6 +16,8 @@ public final class CollationElementIterator {
 
 public final static int NULLORDER = 0xffffffff;
 
+private CollationElementIterator() {}
+    
 public int next() {
 	throw new NotImplemented();
 }
@@ -28,11 +30,11 @@ public final static int primaryOrder(int order) {
 	throw new NotImplemented();
 }
 
-public final static int secondaryOrder(int order) {
+public final static short secondaryOrder(int order) {
 	throw new NotImplemented();
 }
 
-public final static int tertiaryOrder(int order) {
+public final static short tertiaryOrder(int order) {
 	throw new NotImplemented();
 }
 

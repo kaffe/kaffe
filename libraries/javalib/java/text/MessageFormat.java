@@ -133,7 +133,7 @@ private void parseFormat(String argument, int argcount) {
 			forms[argcount] = NumberFormat.getCurrencyInstance(loc);
 		}
 		else if (astyle.equals("percent")) {
-			forms[argcount] = NumberFormat.getPercentageInstance(loc);
+			forms[argcount] = NumberFormat.getPercentInstance(loc);
 		}
 		else if (astyle.equals("integer")) {
 			forms[argcount] = NumberFormat.getNumberInstance(loc);

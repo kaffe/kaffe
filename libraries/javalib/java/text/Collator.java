@@ -76,7 +76,13 @@ public static synchronized Collator getInstance() {
 
 public static synchronized Collator getInstance(Locale loc) {
         ResourceBundle bundle = Format.getResources("collator", loc);
-        return (new RuleBasedCollator(bundle.getString("rule")));
+	try {
+	        return (new RuleBasedCollator(bundle.getString("rule")));
+	}
+	catch (ParseException _) {
+	        //is this the right thing to do?
+	        return null;
+	}
 }
 
 public synchronized int getStrength() {

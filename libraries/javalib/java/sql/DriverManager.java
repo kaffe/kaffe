@@ -40,6 +40,8 @@ static {
 	}
 }
 
+private DriverManager() {}
+    
 public static synchronized Connection getConnection(String url, String user, String password) throws SQLException {
 	Properties p = new Properties();
 	p.put("user", user);

@@ -12,7 +12,7 @@ package java.net;
 
 import java.lang.String;
 
-public class InetAddressImpl {
+class InetAddressImpl {
 
 static {
 	System.loadLibrary("net");

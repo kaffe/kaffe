@@ -102,7 +102,16 @@ public char previous() {
 	return (DONE);
 }
 
-public void setIndex(int pos) {
+public char setIndex(int pos) {
+        if ( pos < getBeginIndex() || pos > getEndIndex() ) {
+	        throw new IllegalArgumentException("Invalid index: "+pos);
+	}
+	    
 	this.pos = pos;
+
+	if ( pos == getEndIndex() )
+	    return DONE;
+	else
+	    return text.charAt(pos);
 }
 }

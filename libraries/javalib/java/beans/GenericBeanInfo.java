@@ -10,7 +10,7 @@
 
 package java.beans;
 
-public class GenericBeanInfo extends SimpleBeanInfo {
+class GenericBeanInfo extends SimpleBeanInfo {
 
   public GenericBeanInfo(BeanDescriptor bean, PropertyDescriptor[] properties, MethodDescriptor[] methods, EventSetDescriptor[] events)
   {

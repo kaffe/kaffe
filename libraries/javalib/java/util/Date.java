@@ -1,5 +1,6 @@
 package java.util;
 
+import java.io.Serializable;
 import java.lang.String;
 import java.lang.System;
 import java.text.DateFormat;
@@ -14,7 +15,7 @@ import java.text.ParseException;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public class Date
+public class Date implements Serializable, Cloneable
 {
 	private long time = 0;
 

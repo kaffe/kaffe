@@ -12,8 +12,10 @@ package java.sql;
 
 public class Types {
 
-// Values to match Sun's version.
+private Types() {}
 
+// Values to match Sun's version.
+    
 public static final int BIT = -7;
 public static final int TINYINT = -6;
 public static final int BIGINT = -5;

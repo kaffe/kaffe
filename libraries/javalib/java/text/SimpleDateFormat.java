@@ -366,7 +366,7 @@ public void setDateFormatSymbols(DateFormatSymbols syms) {
 	this.syms = syms;
 }
 
-public String toLocalizePattern() {
+public String toLocalizedPattern() {
 	StringBuffer buf = new StringBuffer();
 	String locals = syms.getLocalPatternChars();
 

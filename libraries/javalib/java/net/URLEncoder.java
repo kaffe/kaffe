@@ -14,6 +14,8 @@ import java.lang.String;
 
 public class URLEncoder
 {
+private URLEncoder() {}
+    
 public static String encode(String s) {
 	StringBuffer result = new StringBuffer();
 

@@ -19,7 +19,7 @@ public abstract char last();
 public abstract char current();
 public abstract char next();
 public abstract char previous();
-public abstract void setIndex(int pos);
+public abstract char setIndex(int pos);
 public abstract int getBeginIndex();
 public abstract int getEndIndex();
 public abstract int getIndex();

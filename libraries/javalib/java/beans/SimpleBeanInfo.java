@@ -59,4 +59,10 @@ public class SimpleBeanInfo implements BeanInfo {
     return (null);
   }
 
+  public Image loadImage(String resourceName)
+  {
+    //NOT YET IMPLEMENTED
+    return (null);
+  }
+    
 }

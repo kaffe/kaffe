@@ -38,7 +38,7 @@ public DecimalFormat(String pattern, DecimalFormatSymbols syms) {
 	applyPattern(pattern);
 }
 
-public DecimalFormat(String pattern, Locale loc) {
+DecimalFormat(String pattern, Locale loc) {
 	this(pattern, new DecimalFormatSymbols(loc));
 }
 
@@ -49,16 +49,16 @@ public void applyLocalizedPattern(String pattern) {
 		if (patt[i] == syms.digit) {
 			patt[i] = '#';
 		}
-		else if (patt[i] == syms.patternSeperator) {
+		else if (patt[i] == syms.patternSeparator) {
 			patt[i] = ';';
 		}
 		else if (patt[i] == syms.zeroDigit) {
 			patt[i] = '0';
 		}
-		else if (patt[i] == syms.groupSeperator) {
+		else if (patt[i] == syms.groupSeparator) {
 			patt[i] = ',';
 		}
-		else if (patt[i] == syms.decimalSeperator) {
+		else if (patt[i] == syms.decimalSeparator) {
 			patt[i] = '.';
 		}
 		else if (patt[i] == syms.percentSign) {
@@ -261,13 +261,13 @@ private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
 	int count = 0;
 	for (int i = endpos - 1; i >= startpos && count < maxint; i--, count++) {
 		if (grouping == true && count % groupsize == 0 && count > 0) {
-			buf.append(syms.groupSeperator);
+			buf.append(syms.groupSeparator);
 		}
 		buf.append((char)(val[i] - '0' + syms.zeroDigit));
 	}
 	for (; count < minint; count++) {
 		if (grouping == true && count % groupsize == 0) {
-			buf.append(syms.groupSeperator);
+			buf.append(syms.groupSeparator);
 		}
 		buf.append(syms.zeroDigit);
 	}
@@ -319,7 +319,7 @@ private StringBuffer format(String num, StringBuffer app, FieldPosition pos) {
 	}
 
 	if (decsepshown == true || (intonly == false && (decpos != -1 || minfrac > 0))) {
-		app.append(syms.decimalSeperator);
+		app.append(syms.decimalSeparator);
 	}
 
 	if (pos.field == FRACTION_FIELD) {
@@ -347,7 +347,7 @@ public DecimalFormatSymbols getDecimalFormatSymbols() {
 	return (syms);
 }
 
-public int getGroupSize() {
+public int getGroupingSize() {
 	return (groupsize);
 }
 
@@ -375,7 +375,7 @@ public int hashCode() {
 	return (super.hashCode());
 }
 
-public boolean isDecimalSeperatorAlwaysShown() {
+public boolean isDecimalSeparatorAlwaysShown() {
 	return (decsepshown);
 }
 
@@ -412,7 +412,7 @@ public Number parse(String source, ParsePosition pos) {
 		if ( Character.isDigit( c) ) {
 			can[cl++] = c;
 		}
-		else if ( c == syms.decimalSeperator) {
+		else if ( c == syms.decimalSeparator) {
 			can[cl++] = '.';
 		}
 	}
@@ -452,7 +452,7 @@ public void setPositiveSuffix(String val) {
 	positivesuffix = val;
 }
 
-public String toLocalizePattern() {
+public String toLocalizedPattern() {
 	throw new NotImplemented();
 }
 

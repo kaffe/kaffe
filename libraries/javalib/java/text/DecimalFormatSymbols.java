@@ -18,10 +18,10 @@ import java.util.Locale;
 public class DecimalFormatSymbols implements Serializable, Cloneable {
 
 char digit;
-char patternSeperator;
+char patternSeparator;
 char zeroDigit;
-char groupSeperator;
-char decimalSeperator;
+char groupSeparator;
+char decimalSeparator;
 char percentSign;
 char permillSign;
 char minusSign;
@@ -37,10 +37,10 @@ public DecimalFormatSymbols(Locale loc) {
 	ResourceBundle bundle = Format.getResources("numberformat", loc);
 
 	digit = bundle.getString("#").charAt(0);
-	patternSeperator = bundle.getString(";").charAt(0);
+	patternSeparator = bundle.getString(";").charAt(0);
 	zeroDigit = bundle.getString("0").charAt(0);
-	groupSeperator = bundle.getString(",").charAt(0);
-	decimalSeperator = bundle.getString(".").charAt(0);
+	groupSeparator = bundle.getString(",").charAt(0);
+	decimalSeparator = bundle.getString(".").charAt(0);
 	percentSign = bundle.getString("%").charAt(0);
 	permillSign = bundle.getString("\u2030").charAt(0);
 	minusSign = bundle.getString("-").charAt(0);
@@ -62,10 +62,10 @@ public boolean equals(Object obj) {
 	try {
 		DecimalFormatSymbols other = (DecimalFormatSymbols)obj;
 		if (digit == other.digit &&
-		    patternSeperator == other.patternSeperator &&
+		    patternSeparator == other.patternSeparator &&
 		    zeroDigit == other.zeroDigit &&
-		    groupSeperator == other.groupSeperator &&
-		    decimalSeperator == other.decimalSeperator &&
+		    groupSeparator == other.groupSeparator &&
+		    decimalSeparator == other.decimalSeparator &&
 		    percentSign == other.percentSign &&
 		    permillSign == other.permillSign &&
 		    minusSign == other.minusSign &&
@@ -80,15 +80,15 @@ public boolean equals(Object obj) {
 }
 
 public char getDecimalSeparator() {
-	return (decimalSeperator);
+	return (decimalSeparator);
 }
 
 public char getDigit() {
 	return (digit);
 }
 
-public char getGroupingSeperator() {
-	return (groupSeperator);
+public char getGroupingSeparator() {
+	return (groupSeparator);
 }
 
 public String getInfinity() {
@@ -99,12 +99,12 @@ public char getMinusSign() {
 	return (minusSign);
 }
 
-public String getNan() {
+public String getNaN() {
 	return (nan);
 }
 
-public char getPatternSeperator() {
-	return (patternSeperator);
+public char getPatternSeparator() {
+	return (patternSeparator);
 }
 
 public char getPercent() {
@@ -124,15 +124,15 @@ public int hashCode() {
 }
 
 public void setDecimalSeparator(char val) {
-	decimalSeperator = val;
+	decimalSeparator = val;
 }
 
 public void setDigit(char val) {
 	digit = val;
 }
 
-public void setGroupingSeperator(char val) {
-	groupSeperator = val;
+public void setGroupingSeparator(char val) {
+	groupSeparator = val;
 }
 
 public void setInfinity(String val) {
@@ -143,12 +143,12 @@ public void setMinusSign(char val) {
 	minusSign = val;
 }
 
-public void setNan(String val) {
+public void setNaN(String val) {
 	nan = val;
 }
 
-public void setPatternSeperator(char val) {
-	patternSeperator = val;
+public void setPatternSeparator(char val) {
+	patternSeparator = val;
 }
 
 public void setPercent(char val) {

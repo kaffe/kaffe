@@ -15,7 +15,7 @@ import kaffe.util.NotImplemented;
 
 public class RuleBasedCollator extends Collator {
 
-public RuleBasedCollator(String rules) {
+public RuleBasedCollator(String rules) throws ParseException {
 	/* NotImplemented */
 }
 

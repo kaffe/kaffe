@@ -123,11 +123,11 @@ public static NumberFormat getNumberInstance(Locale loc) {
 	return (new DecimalFormat("#,##0.###;-#,##0.###", loc));
 }
 
-final public static NumberFormat getPercentageInstance() {
-	return (getPercentageInstance(Locale.getDefault()));
+final public static NumberFormat getPercentInstance() {
+	return (getPercentInstance(Locale.getDefault()));
 }
 
-public static NumberFormat getPercentageInstance(Locale loc) {
+public static NumberFormat getPercentInstance(Locale loc) {
 	ResourceBundle bundle = getResources("numberformat", loc);
 	String cs = bundle.getString("%");
 	return (new DecimalFormat("#,##0" + cs, loc));
