@@ -52,6 +52,7 @@ public class BufferedWriter extends Writer {
         if (i == len) {
           return;
         }
+	len -= i;
         flush();
       }
 
