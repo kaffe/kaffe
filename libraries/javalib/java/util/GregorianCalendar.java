@@ -1,5 +1,5 @@
 /* java.util.GregorianCalendar
-   Copyright (C) 1998, 1999, 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -265,8 +265,7 @@ public class GregorianCalendar extends Calendar
 	// The additional leap year factor accounts for the fact that
 	// a leap day is not seen on Jan 1 of the leap year.
 	// And on and after the leap day, the leap day has already been
-	// included in dayOfYear.
-
+	// included in dayOfYear. 
 	int gregOffset = (year / 400) - (year / 100) + 2;
 	if (isLeapYear (year, true))
 	  --gregOffset;
@@ -404,7 +403,7 @@ public class GregorianCalendar extends Calendar
 	hour = fields[HOUR];
         if (isSet[AM_PM] && fields[AM_PM] == PM)
 	  if (hour != 12) /* not Noon */
-	    hour += 12;
+            hour += 12;
 	/* Fix the problem of the status of 12:00 AM (midnight). */
 	if (isSet[AM_PM] && fields[AM_PM] == AM && hour == 12)
 	  hour = 0;

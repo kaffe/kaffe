@@ -161,7 +161,6 @@ public final class Connection extends HttpURLConnection
 
     inputStream =
       new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-
     outputStream = new BufferedOutputStream (socket.getOutputStream());
     bufferedOutputStream = new ByteArrayOutputStream (256); //default is too small
 
@@ -250,7 +249,7 @@ public final class Connection extends HttpURLConnection
     String line = inputStream.readLine();
     String saveline = line;
     int idx = line.indexOf (" ");
-    
+
     if ((idx == -1)
         || (line.length() < (idx + 6)))
       throw new IOException ("Server reply was unparseable: " + saveline);
@@ -303,7 +302,7 @@ public final class Connection extends HttpURLConnection
           {
             if (key != null)
               {
-                headers.addHeaderField (key, value);
+                headers.addHeaderField (key.toLowerCase(), value);
                 key = null;
                 value = null;
               }
@@ -333,7 +332,7 @@ public final class Connection extends HttpURLConnection
     
     if (key != null)
       {
-        headers.addHeaderField (key, value);
+        headers.addHeaderField (key.toLowerCase(), value.toLowerCase());
       }
   }
 
@@ -411,6 +410,36 @@ public final class Connection extends HttpURLConnection
                                    method);
   }
 
+  public String getHeaderField(String name)
+  {
+    if (!connected)
+      try
+        {
+	  connect();
+	}
+      catch (IOException x)
+        {
+	  return null;
+	}
+
+    return (String) headers.getHeaderFieldValueByKey(name.toLowerCase());
+  }
+
+  public Map getHeaderFields()
+  {
+    if (!connected)
+      try
+        {
+	  connect();
+	}
+      catch (IOException x)
+        {
+	  return null;
+	}
+
+    return headers.getHeaderFields();
+  }
+
   /**
    * This method returns the header field value at the specified numeric
    * index.
@@ -424,11 +453,11 @@ public final class Connection extends HttpURLConnection
   {
     if (!connected)
       try
-	{
+        {
 	  connect();
 	}
-      catch (IOException e)
-	{
+      catch (IOException x)
+        {
 	  return null;
 	}
 
@@ -448,11 +477,11 @@ public final class Connection extends HttpURLConnection
   {
     if (!connected)
       try
-	{
+        {
 	  connect();
 	}
-      catch (IOException e)
-	{
+      catch (IOException x)
+        {
 	  return null;
 	}
 

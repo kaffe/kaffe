@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package gnu.java.net;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -95,6 +97,36 @@ public class HeaderFieldHelper
       }
 
     return value;
+  }
+
+  public String getHeaderFieldValueByKey(String key)
+  {
+    String value = null;
+
+    try
+      {
+	value = (String) headerFieldValues.elementAt
+			   (headerFieldKeys.indexOf(key));
+      }
+    catch (ArrayIndexOutOfBoundsException e)
+      {
+      }
+    
+    return value;
+  }
+
+  public Map getHeaderFields()
+  {
+    HashMap headers = new HashMap();
+    int max = headerFieldKeys.size();
+
+    for (int index = 0; index < max; index++)
+      {
+	headers.put(headerFieldKeys.elementAt(index),
+		    headerFieldValues.elementAt(index));
+      }
+
+    return headers;
   }
 
   public int getNumberOfEntries()

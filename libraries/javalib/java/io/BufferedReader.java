@@ -107,13 +107,13 @@ public class BufferedReader extends Reader
    * @param in The subordinate stream to read from
    * @param size The buffer size to use
    *
-   * @exception IllegalArgumentException if size <= 0
+   * @exception IllegalArgumentException if size &lt;&eq; 0
    */
   public BufferedReader(Reader in, int size)
   {
     super(in.lock);
     if (size <= 0)
-      throw new IllegalArgumentException ("Buffer size is negative");
+      throw new IllegalArgumentException("Illegal buffer size: " + size);
     this.in = in;
     buffer = new char[size];
   }
@@ -193,7 +193,7 @@ public class BufferedReader extends Reader
 	    int extraBuffSpace = 0;
 	    if (pos > limit)
 	      extraBuffSpace = 1;
-	    if (readLimit + extraBuffSpace > buffer.length)
+	    if (readLimit + extraBuffSpace > limit)
 	      buffer = new char[readLimit + extraBuffSpace];
 	    limit -= pos;
 	    if (limit >= 0)
@@ -463,6 +463,7 @@ public class BufferedReader extends Reader
 	// readLine should block. So we must not return until a -1 is reached.
 	if (pos >= limit)
 	  {
+	    // here count == 0 isn't sufficient to give a failure.
 	    int count = fill();
 	    if (count < 0)
 	      {

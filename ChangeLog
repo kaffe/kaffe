@@ -1,3 +1,16 @@
+2003-12-29  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/io/BufferedReader.java,
+	libraries/javalib/java/net/DatagramPacket.java,
+	libraries/javalib/java/util/Calendar.java,
+	libraries/javalib/java/util/GregorianCalendar.java,
+	libraries/javalib/java/util/IdentityHashMap.java,
+	libraries/javalib/java/util/SimpleTimeZone.java,
+	libraries/javalib/java/util/TimeZone.java,
+	libraries/javalib/gnu/java/net/protocol/HeaderFieldHelper.java,
+	libraries/javalib/gnu/java/net/protocol/http/Connection.java:
+	Synchronization with classpath.
+
 2003-12-28  Casey Marshall <rsdio@metastatic.org>
 
 	* libraries/javalib/kaffe/tools/jar/Jar.java
