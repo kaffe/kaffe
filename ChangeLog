@@ -1,3 +1,9 @@
+2004-03-06  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/io/BufferedInputStream.java
+	(mark, refill) Make an incremental mark buffer allocation.
+	New field marktarget, CHUNKSIZE.
+
 2004-03-05  Cliff Wright <cliffw@messagegate.com>
 
 	* libraries/clib/io/FileDescriptor.c:
