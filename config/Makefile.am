@@ -76,6 +76,12 @@ EXTRA_DIST = \
 	ia64/linux/md.h \
 	ia64/threads.h \
 	ia64/sysdepCallMethod.h \
+	x86_64/common.h \
+	x86_64/linux/config.frag \
+	x86_64/linux/md.c \
+	x86_64/linux/md.h \
+	x86_64/threads.h \
+	x86_64/sysdepCallMethod.h \
 	i386/beos/config.frag \
 	i386/beos/jit-md.h \
 	i386/beos/jit3-md.h \

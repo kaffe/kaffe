@@ -1,3 +1,16 @@
+2003-05-19  Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
+
+        Add support for Linux/AMD64.
+        * config/x86_64/common.h: New file.
+        * config/x86_64/threads.h: New file.
+        * config/x86_64/sysdepCallMethod.h: New file.
+        * config/x86_64/linux/config.frag: New file.
+        * config/x86_64/linux/md.c: New file.
+        * config/x86_64/linux/md.h: New file.
+
+        * config/Makefile.am: Update to add AMD64 files.
+        * config/Makefile.in: Likewise.
+
 2003-05-19 Dalibor Topic <robilad@yahoo.com>
 
 	* configure.in:
