@@ -554,5 +554,84 @@ runtest GCTest "[0]:  Success
 JAVA=$OLDJAVA
 
 # end of GCTest test
+
+# ThreadLocalTest
+runtest ThreadLocalTest "Thread 1 interation 0:
+	 TL:  TL initial
+	ITL: ITL initial
+Thread 2 interation 0:
+	 TL:  TL initial
+	ITL: ITL initial
+Thread 1 interation 1:
+	 TL:  TL initial changed by 1 at k == 0
+	ITL: null
+	Creating new thread 3
+	Creating new thread 4
+Thread 2 interation 1:
+	 TL:  TL initial changed by 2 at k == 0
+	ITL: null
+Thread 1 interation 2:
+	 TL:  TL initial changed by 1 at k == 0 changed by 1 at k == 1
+	ITL: set by 1 at k == 1
+Thread 3 interation 0:
+	 TL:  TL initial
+	ITL: null inherited from 1
+Thread 4 interation 0:
+	 TL:  TL initial
+	ITL: null inherited from 1
+Thread 2 interation 2:
+	 TL:  TL initial changed by 2 at k == 0 changed by 2 at k == 1
+	ITL: set by 2 at k == 1
+	Creating new thread 5
+	Creating new thread 6
+Thread 1 interation 3:
+	 TL:  TL initial changed by 1 at k == 0 changed by 1 at k == 1 changed by 1 at k == 2
+	ITL: null
+Thread 3 interation 1:
+	 TL:  TL initial changed by 3 at k == 0
+	ITL: null
+Thread 4 interation 1:
+	 TL:  TL initial changed by 4 at k == 0
+	ITL: null
+Thread 2 interation 3:
+	 TL:  TL initial changed by 2 at k == 0 changed by 2 at k == 1 changed by 2 at k == 2
+	ITL: null
+Thread 5 interation 0:
+	 TL:  TL initial
+	ITL: set by 2 at k == 1 inherited from 2
+Thread 6 interation 0:
+	 TL:  TL initial
+	ITL: set by 2 at k == 1 inherited from 2
+Thread 3 interation 2:
+	 TL:  TL initial changed by 3 at k == 0 changed by 3 at k == 1
+	ITL: set by 3 at k == 1
+Thread 4 interation 2:
+	 TL:  TL initial changed by 4 at k == 0 changed by 4 at k == 1
+	ITL: set by 4 at k == 1
+Thread 5 interation 1:
+	 TL:  TL initial changed by 5 at k == 0
+	ITL: null
+Thread 6 interation 1:
+	 TL:  TL initial changed by 6 at k == 0
+	ITL: null
+Thread 3 interation 3:
+	 TL:  TL initial changed by 3 at k == 0 changed by 3 at k == 1 changed by 3 at k == 2
+	ITL: null
+Thread 4 interation 3:
+	 TL:  TL initial changed by 4 at k == 0 changed by 4 at k == 1 changed by 4 at k == 2
+	ITL: null
+Thread 5 interation 2:
+	 TL:  TL initial changed by 5 at k == 0 changed by 5 at k == 1
+	ITL: set by 5 at k == 1
+Thread 6 interation 2:
+	 TL:  TL initial changed by 6 at k == 0 changed by 6 at k == 1
+	ITL: set by 6 at k == 1
+Thread 5 interation 3:
+	 TL:  TL initial changed by 5 at k == 0 changed by 5 at k == 1 changed by 5 at k == 2
+	ITL: null
+Thread 6 interation 3:
+	 TL:  TL initial changed by 6 at k == 0 changed by 6 at k == 1 changed by 6 at k == 2
+	ITL: null"
+
 # All done okay
 exit $overallerror
