@@ -1,3 +1,7 @@
+Fri, 16 Oct 1998 15:32:18 Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
+
+	* code-analyse.c, jit/machine.c - Handle unreachable code.
+
 Mon Oct 19 10:43:16 1998  Archie Cobbs <archie@whistle.com>
 
 	* test/regression/{TestScript,ThreadLocalTest}: fix
@@ -28,6 +32,7 @@ Tue Oct 13 16:36:07 1998  Stephen Clawson  <sclawson@cs.utah.edu>
 	* libraries/javalib/java/util/Vector.java: fix clone() to invoke
 	super.clone()
 
+>>>>>>> 1.151
 Mon Oct 12 22:07:24 PDT 1998	Andrew Raymond Trick <a-trick@students.uiuc.edu>
 
 	* java.io.DataInputStream: don't append \n

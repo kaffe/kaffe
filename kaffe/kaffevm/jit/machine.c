@@ -220,6 +220,20 @@ DBG(MOREJIT,
 
 		npc = pc + insnLen[base[pc]];
 
+		/* Skip over the generation of any unreachable basic blocks */
+		if (IS_UNREACHABLE(pc)) {
+			while (npc < len && !IS_STARTOFBASICBLOCK(npc) && !IS_STARTOFEXCEPTION(npc)) {
+				npc = npc + insnLen[base[npc]];
+			}
+DBG(JIT,		dprintf("unreachable basic block pc [%d:%d]\n", pc, npc - 1);   )
+			if (IS_STARTOFBASICBLOCK(npc)) {
+				end_basic_block();
+				start_basic_block();
+				stackno = STACKPOINTER(npc);
+			}
+			continue;
+		}
+
 DBG(JIT,	dprintf("pc = %d, npc = %d\n", pc, npc);	)
 
 		/* Determine various exception conditions */

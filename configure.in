@@ -324,6 +324,15 @@ dnl If symlink is overridden then don't bother with the test.
 if test "$LN_S" = "" ; then
 	AC_PROG_LN_S
 fi
+dnl This shell macro caches uses of ln -s in the generated script and
+dnl converts them to LN_S
+ln() {
+	if test "$1" = "-s" ; then
+		$LN_S $2 $3
+	else
+		ln $1 $2
+	fi
+}
 
 dnl If dlltool is found then we must generate and use the 'lib.exp' file.
 dnl  If not found then just use true to avoid the command erroring.

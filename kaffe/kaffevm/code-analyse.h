@@ -120,6 +120,9 @@ typedef struct codeinfo {
 #define	IS_NEEDVERIFY(pc)		(FLAGS(pc) & FLAG_NEEDVERIFY)
 #define	IS_DONEVERIFY(pc)		(FLAGS(pc) & FLAG_DONEVERIFY)
 #define	IS_STARTOFINSTRUCTION(pc)	(FLAGS(pc) & FLAG_STARTOFINSTRUCTION)
+#define	IS_UNREACHABLE(pc)		((IS_STARTOFBASICBLOCK(pc) || \
+					  IS_STARTOFEXCEPTION(pc)) && \
+					  !IS_DONEVERIFY(pc))
 
 #define	ALLOCFRAME()			gc_malloc_fixed((codeInfo->stacksz+codeInfo->localsz+1) * sizeof(frameElement))
 

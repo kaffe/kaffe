@@ -133,12 +133,18 @@ CDBG(	dprintf(__FUNCTION__"codeInfo = 0x%x\n", codeInfo);		)
 			SET_STARTOFBASICBLOCK(tabpc);
 			SET_JUMPFLOW(pc, tabpc);
 			pc = pc + INSNLEN(pc);
+			if (pc < codeInfo->codelen) {
+				SET_STARTOFBASICBLOCK(pc);
+			}
 			break;
 		case GOTO_W:
 			tabpc = pc + DWORD(pc+1);
 			SET_STARTOFBASICBLOCK(tabpc);
 			SET_JUMPFLOW(pc, tabpc);
 			pc = pc + INSNLEN(pc);
+			if (pc < codeInfo->codelen) {
+				SET_STARTOFBASICBLOCK(pc);
+			}
 			break;
 		case JSR:
 			tabpc = pc + WORD(pc+1);
@@ -166,6 +172,9 @@ CDBG(	dprintf(__FUNCTION__"codeInfo = 0x%x\n", codeInfo);		)
 			SET_STARTOFBASICBLOCK(pc+DWORD(tabpc));
 			SET_JUMPFLOW(pc, pc+DWORD(tabpc));
 			pc = tabpc + (DWORD(tabpc+8)-DWORD(tabpc+4)+1+3) * 4;
+			if (pc < codeInfo->codelen) {
+				SET_STARTOFBASICBLOCK(pc);
+			}
 			break;
 		case LOOKUPSWITCH:
 			tabpc = (pc + 4) & -4;
@@ -177,11 +186,17 @@ CDBG(	dprintf(__FUNCTION__"codeInfo = 0x%x\n", codeInfo);		)
 			SET_STARTOFBASICBLOCK(pc+DWORD(tabpc));
 			SET_JUMPFLOW(pc, pc+DWORD(tabpc));
 			pc = tabpc + (DWORD(tabpc+4)+1) * 8;
+			if (pc < codeInfo->codelen) {
+				SET_STARTOFBASICBLOCK(pc);
+			}
 			break;
 		case IRETURN:	case LRETURN:	case ARETURN:
 		case FRETURN:	case DRETURN:	case RETURN:
 		case ATHROW:	case RET:
 			pc = pc + INSNLEN(pc);
+			if (pc < codeInfo->codelen) {
+				SET_STARTOFBASICBLOCK(pc);
+			}
 			break;
 		case WIDE:
 			wide = true;
@@ -322,7 +337,9 @@ CDBG(	dprintf(__FUNCTION__"codeInfo = 0x%x\n", codeInfo);		)
 
 	/* Check we've processed each block at least once */
 	for (bcurr = bhead; bcurr != NULL; bcurr = bcurr->nextBB) {
-		assert((bcurr->flags & FLAG_DONEVERIFY) != 0);
+		if ((bcurr->flags & FLAG_DONEVERIFY) == 0) {
+			VDBG(printf("%s.%s%s pc %d bcurr->flags 0x%04x\n", meth->class->name->data, meth->name->data, meth->signature->data, bcurr - codeInfo->perPC, bcurr->flags);)
+		}
 	}
 }
 

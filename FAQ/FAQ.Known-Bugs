@@ -54,10 +54,6 @@ Treat it as an TODO list.
   Apparently, this causes some software such Cygnus's kawa to fail in 
   certain circumstances.  It seems like they should fix that.
 
-* Sparc/Linux port is broken due to the odd way in which setjmp/longjmp is
-  done.  If someone wants to provide some alternate functions for these that
-  work we'd be greatful.
-
 * While Kaffe currently doesn't compile with other compilers than Cygnus
   cygwin32 gcc compiler, we do know that people are trying to compile it
   with compilers such as Visual C++.  Jongwon Kim <freefish@chollian.net>
