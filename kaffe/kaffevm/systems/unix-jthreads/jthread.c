@@ -1172,13 +1172,14 @@ void
 jthread_disable_stop(void)
 {
 	if (currentJThread) {
+DBG(JTHREAD,	dprintf("disable stop for thread  %p\n", currentJThread);	)
 		intsDisable();
 		currentJThread->flags |= THREAD_FLAGS_DONTSTOP;
 		currentJThread->stopCounter++;
 		assert(currentJThread->stopCounter > 0);
 
 		/* XXX Shouldn't recurse that much... ever... hopefully. */
-		assert(currentJThread->stopCounter < 10);  
+		assert(currentJThread->stopCounter < 50);  
 
 		intsRestore();
 	}
@@ -1191,6 +1192,7 @@ void
 jthread_enable_stop(void)
 {
 	if (currentJThread) {
+DBG(JTHREAD,	dprintf("enable stop for thread  %p\n", currentJThread);	)
 		intsDisable();
 		if (--currentJThread->stopCounter == 0) {
 			currentJThread->flags &= ~THREAD_FLAGS_DONTSTOP;

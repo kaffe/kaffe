@@ -44,4 +44,4 @@ CLASSPATH=$CLASSPATH:$LIBDIR; export CLASSPATH
 cd $SRCDIR
 
 echo "Compiling classes ..."
-$JAVAC $VERBOSE -d $LIBDIR $CPATH ${1+"$@"}
+$JAVAC $VERBOSE $JAVAC_FLAGS -d $LIBDIR $CPATH ${1+"$@"}

@@ -55,6 +55,7 @@ Awt_SRCS = \
 	$(java_awt_event_SRCS) \
 	$(java_awt_font_SRCS) \
 	$(java_awt_geom_SRCS) \
+	$(java_awt_im_SRCS) \
 	$(java_awt_image_SRCS) \
 	$(java_awt_image_renderable_SRCS) \
 	$(java_awt_peer_SRCS) \
@@ -446,37 +447,45 @@ java_awt_dnd_peer_SRCS = \
 	java/awt/dnd/peer/DragSourceContextPeer.java \
 	java/awt/dnd/peer/DropTargetContextPeer.java
 java_awt_event_SRCS = \
-	java/awt/event/AWTEventListener.java \
-	java/awt/event/ActionEvent.java \
-	java/awt/event/ActionListener.java \
-	java/awt/event/AdjustmentEvent.java \
-	java/awt/event/AdjustmentListener.java \
-	java/awt/event/ComponentAdapter.java \
-	java/awt/event/ComponentEvent.java \
-	java/awt/event/ComponentListener.java \
-	java/awt/event/ContainerAdapter.java \
-	java/awt/event/ContainerEvent.java \
-	java/awt/event/ContainerListener.java \
-	java/awt/event/FocusAdapter.java \
-	java/awt/event/FocusEvent.java \
-	java/awt/event/FocusListener.java \
-	java/awt/event/InputEvent.java \
-	java/awt/event/ItemEvent.java \
-	java/awt/event/ItemListener.java \
-	java/awt/event/KeyAdapter.java \
-	java/awt/event/KeyEvent.java \
-	java/awt/event/KeyListener.java \
-	java/awt/event/MouseAdapter.java \
-	java/awt/event/MouseEvent.java \
-	java/awt/event/MouseListener.java \
-	java/awt/event/MouseMotionAdapter.java \
-	java/awt/event/MouseMotionListener.java \
-	java/awt/event/PaintEvent.java \
-	java/awt/event/TextEvent.java \
-	java/awt/event/TextListener.java \
-	java/awt/event/WindowAdapter.java \
-	java/awt/event/WindowEvent.java \
-	java/awt/event/WindowListener.java
+        java/awt/event/ActionEvent.java \
+        java/awt/event/ActionListener.java \
+        java/awt/event/AdjustmentEvent.java \
+        java/awt/event/AdjustmentListener.java \
+        java/awt/event/AWTEventListener.java \
+        java/awt/event/ComponentAdapter.java \
+        java/awt/event/ComponentEvent.java \
+        java/awt/event/ComponentListener.java \
+        java/awt/event/ContainerAdapter.java \
+        java/awt/event/ContainerEvent.java \
+        java/awt/event/ContainerListener.java \
+        java/awt/event/FocusAdapter.java \
+        java/awt/event/FocusEvent.java \
+        java/awt/event/FocusListener.java \
+        java/awt/event/HierarchyBoundsAdapter.java \
+        java/awt/event/HierarchyBoundsListener.java \
+        java/awt/event/HierarchyEvent.java \
+        java/awt/event/HierarchyListener.java \
+        java/awt/event/InputEvent.java \
+        java/awt/event/ItemEvent.java \
+        java/awt/event/ItemListener.java \
+        java/awt/event/KeyAdapter.java \
+        java/awt/event/KeyEvent.java \
+        java/awt/event/KeyListener.java \
+        java/awt/event/MouseAdapter.java \
+        java/awt/event/MouseEvent.java \
+        java/awt/event/MouseListener.java \
+        java/awt/event/MouseMotionAdapter.java \
+        java/awt/event/MouseMotionListener.java \
+        java/awt/event/MouseWheelEvent.java \
+        java/awt/event/MouseWheelListener.java \
+        java/awt/event/PaintEvent.java \
+        java/awt/event/TextEvent.java \
+        java/awt/event/TextListener.java \
+        java/awt/event/WindowAdapter.java \
+        java/awt/event/WindowEvent.java \
+        java/awt/event/WindowFocusListener.java \
+        java/awt/event/WindowListener.java \
+        java/awt/event/WindowStateListener.java 
 java_awt_font_SRCS = \
 	java/awt/font/TextHitInfo.java
 java_awt_geom_SRCS = \
@@ -497,10 +506,15 @@ java_awt_geom_SRCS = \
 	java/awt/geom/Rectangle2D.java \
 	java/awt/geom/RectangularShape.java \
 	java/awt/geom/RoundRectangle2D.java
+java_awt_im_SRCS = \
+        java/awt/im/InputMethodHighlight.java \
+        java/awt/im/InputMethodRequests.java \
+        java/awt/im/InputSubset.java
 java_awt_image_SRCS = \
 	java/awt/image/AreaAveragingScaleFilter.java \
 	java/awt/image/BufferedImage.java \
 	java/awt/image/BufferedImageOp.java \
+	java/awt/image/BufferStrategy.java \
 	java/awt/image/ColorModel.java \
 	java/awt/image/ComponentColorModel.java \
 	java/awt/image/ComponentSampleModel.java \
@@ -518,6 +532,7 @@ java_awt_image_SRCS = \
 	java/awt/image/ImagingOpException.java \
 	java/awt/image/IndexColorModel.java \
 	java/awt/image/MemoryImageSource.java \
+	java/awt/image/PackedColorModel.java \
 	java/awt/image/PixelGrabber.java \
 	java/awt/image/RasterOp.java \
 	java/awt/image/RenderedImage.java \
@@ -527,8 +542,10 @@ java_awt_image_SRCS = \
 	java/awt/image/ReplicateScaleFilter.java \
 	java/awt/image/SampleModel.java \
 	java/awt/image/SinglePixelPackedSampleModel.java \
+	java/awt/image/TileObserver.java \
 	java/awt/image/VolatileImage.java \
-	java/awt/image/WritableRaster.java
+	java/awt/image/WritableRaster.java \
+	java/awt/image/WritableRenderedImage.java
 java_awt_image_renderable_SRCS = \
 	java/awt/image/renderable/ContextualRenderedImageFactory.java \
 	java/awt/image/renderable/ParameterBlock.java \
@@ -2237,7 +2254,7 @@ jar-classes rt.jar: $(LIBDIR)/stamp
 	for i in $(gnu_regexp_message_bundles) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	rm -f rt.jar
 	(cd $(LIBDIR) && $(ZIP) -DX -r ../rt.jar $(SRCDIRS))
-	$(ZIP) -r rt.jar META-INF
+	$(ZIP) -r rt.jar $(srcdir)/META-INF
 
 .PHONY: build-classes Klasses
 build-classes Klasses: rt.jar

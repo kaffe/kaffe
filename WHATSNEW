@@ -10,6 +10,8 @@ What's New since Kaffe OpenVM 1.0.7
 
 * Support for JAXP from GNU JAXP
 
+* Support for java.util.regex from GNU regexp
+
 * Built-in XML parser (Aelfred2).
 
 * New packages:
@@ -18,6 +20,7 @@ What's New since Kaffe OpenVM 1.0.7
   * java.awt.dnd
   * java.awt.font
   * java.awt.geom
+  * java.awt.im
   * java.awt.image.renderable
   * java.awt.print
   * java.beans.beancontext

@@ -342,7 +342,8 @@ options(char** argv)
 			strcat(newcpath, argv[i]);
 			vmargs.classpath = newcpath;
 		}
-		else if (strncmp(argv[i], "-ss", 3) == 0) {
+		else if ((strncmp(argv[i], "-ss", 3) == 0) 
+			 || (strncmp(argv[i], "-Xss", 4) == 0)) {
 			if (argv[i][3] == 0) {
 				i++;
 				if (argv[i] == 0) {
@@ -360,7 +361,8 @@ options(char** argv)
 				vmargs.nativeStackSize = sz;
 			}
 		}
-		else if (strncmp(argv[i], "-mx", 3) == 0) {
+		else if ((strncmp(argv[i], "-mx", 3) == 0)
+			 || (strncmp(argv[i], "-Xmx", 4) == 0)) {
 			if (argv[i][3] == 0) {
 				i++;
 				if (argv[i] == 0) {
@@ -372,7 +374,8 @@ options(char** argv)
 				vmargs.maxHeapSize = parseSize(&argv[i][3]);
 			}
 		}
-		else if (strncmp(argv[i], "-ms", 3) == 0) {
+		else if ((strncmp(argv[i], "-ms", 3) == 0)
+			 || (strncmp(argv[i], "-Xms", 4) == 0)) {
 			if (argv[i][3] == 0) {
 				i++;
 				if (argv[i] == 0) {
@@ -581,8 +584,11 @@ usage(void)
 	dprintf("	-ia32			Execute the ia32 version of Kaffe\n");
 #endif
 	dprintf("	-ss <size>		Maximum native stack size\n");
+	dprintf("	-Xss <size>		Maximum native stack size\n");
 	dprintf("	-mx <size> 		Maximum heap size\n");
+	dprintf("	-Xmx <size> 		Maximum heap size\n");
 	dprintf("	-ms <size> 		Initial heap size\n");
+	dprintf("	-Xms <size> 		Initial heap size\n");
 	dprintf("	-as <size> 		Heap increment\n");
 	dprintf("	-classpath <path>	Set classpath\n");
 	dprintf("	-verify *		Verify all bytecode\n");

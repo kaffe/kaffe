@@ -1,3 +1,67 @@
+2003-01-11 Dalibor Topic <robilad@yahoo.com>
+
+	Merged in a few classes from GNU Classpath's implementation of
+	java.awt.im package.
+
+	* libraries/javalib/java/awt/im/InputMethodHighlight.java,
+	libraries/javalib/java/awt/im/InputMethodRequests.java,
+	libraries/javalib/java/awt/im/InputSubset.java:
+	New files from GNU Classpath.
+	
+	* libraries/javalib/java/awt/event/HierarchyBoundsAdapter.java,
+        libraries/javalib/java/awt/event/HierarchyBoundsListener.java,
+        libraries/javalib/java/awt/event/HierarchyEvent.java,
+        libraries/javalib/java/awt/event/HierarchyListener.java,
+        libraries/javalib/java/awt/event/MouseWheelEvent.java,
+        libraries/javalib/java/awt/event/MouseWheelListener.java,
+        libraries/javalib/java/awt/event/WindowFocusListener.java,
+        libraries/javalib/java/awt/event/WindowStateListener.java:
+	New files from GNU Classpath.
+
+	* libraries/javalib/java/awt/image/BufferStrategy.java,
+        libraries/javalib/java/awt/image/PackedColorModel.java,
+        libraries/javalib/java/awt/image/TileObserver.java,
+        libraries/javalib/java/awt/image/WritableRenderedImage.java:
+	New files from GNU Classpath.
+
+	* FAQ/FAQ.classlibrary-compile:
+	Added information on JAVAC_FLAGS, --with-jikes, and updated
+	information on jikes. Added a few paragraphs describing the
+	bootstrap process.
+
+	* kaffe/kaffe/main.c:
+	Added support for -Xms, -Xmx, -Xss options. They are equivalent to
+	their -ms, -mx, -ss, respectively. This provides better
+	compatibility with JDK 1.3 and above, where Sun renamed these
+	options.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	(jthread_disable_stop) Added debug message. Increased stop limit
+	to 50, in order to let the Jython 2.1 installer run.
+	(jthread_enable_stop) Added debug message.
+
+	* libraries/javalib/Makefile.am:
+	Added new classes from GNU Classpath.
+	(java_awt_im_SRCS) New package.
+
+	* libraries/javalib/Makefile.in:
+	regenerated.
+
+	* libraries/javalib/rebuildLib.in:
+	Added support for JAVAC_FLAGS.
+
+	* WHATSNEW:
+	Added information on java.util.regex. Added java.awt.im to the
+	package list.
+
+2003-01-11 Timothy S Stack <stack@cs.utah.edu>
+
+	* libraries/javalib/Makefile.am:
+	Fixed bug that prevented compiling the class library in a
+	different directory.
+
+	Reported by: Seong Beom Kim <sbkim@mail.marusys.com>
+	
 2003-01-10 Benja Fallenstein <b.fallenstein@gmx.de>
 
 	* libraries/javalib/java/awt/KeyEvt.java:

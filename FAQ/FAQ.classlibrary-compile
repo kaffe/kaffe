@@ -25,20 +25,61 @@ the version used by the kaffe developers.
 If you want to rebuild not only Klasses.jar, but also the jar-files of
 Kaffe extensions, type "make CLASSDIRS=all Klasses".
 
+How do I set the compiler?
+--------------------------
+
+The ./configure script has the --with-jikes option. Not setting it at
+all will use the included kjc Java compiler. Setting it to
+--with-jikes=yes will use the jikes compiler if one can be found. You
+can also specify the absolute path to a jikes executable using
+--with-jikes=/absolute-path-to/jikes.
+
+You can also use the absolute path to specify other Java
+compilers. For example, in order to use gcj to compile the class
+library, you would run ./configure --with-jikes=/path-to/gcj. The same
+method can be applied to configure kaffe to compile the class library
+using Sun's javac compiler, or any other Java compiler.
+
+If you manage to compile kaffe's class library using a Java compiler
+other than javac, kjc, jikes or gcj, please send a message to
+kaffe@kaffe.org.
+
+How do I pass flags to the compiler?
+--------------------------------------
+
+Use the JAVAC_FLAGS environment variable.
+
+make JAVAC_FLAGS="-verbose"
+
+will compile the class library with verbose messages about the
+compilation process. Which flags you can set depends on the Java
+compiler you use.
+
 What compilers are known to work?
 ---------------------------------
 
-The preferred compiler is jikes. If jikes is detected it will automatically
-be used. The URL for jikes is:
+* jikes
+
+The preferred compiler is jikes. The URL for jikes is:
 
   http://www10.software.ibm.com/developerworks/opensource/jikes/
 
 Please note that jikes 1.14 and 1.15 have bugs that result in a
-miscompiled Klasses.jar file. Use jikes 1.13 for now.
+miscompiled Klasses.jar file. If you use jikes 1.18, you need to pass
+it the "-source 1.1" option. Jikes 1.18 generates class files for JDK
+1.4 by default, and kaffe complains about an unknown version
+number.
+
+Jikes 1.13 is known to work, too. It is a good fallback option if
+other versions of jikes fail.
+
+* kjc
 
 The included compiler, kjc, also works. kjc is part of the Kopi project:
 
   http://www.dms.at/kopi/kjc.html
+
+* javac 
 
 Sun's javac compiler from JDK 1.3 and JDK 1.4 works as well. If you
 are using javac from JDK 1.4, please make sure that you specify the
@@ -48,3 +89,39 @@ warning messages when you install and use the Klasses.jar file.
 No known older version of Sun's javac compiler (up through JDK 1.2)
 will compile Kaffe's classes, due to bugs that Sun has yet to fix.
 
+What compilers are known not to work?
+-------------------------------------
+
+FSF's gcj doesn't work up to version 3.2.
+
+In order to compile the class library with gcj to bytecodes instead of
+native code, you need to pass it the "-C" flag. Unfortunately, gcj has
+some bugs that prevent it from compiling kaffe's class library at the
+moment.
+
+If you have managed to compile the class library using any version of
+gcj, please write to kaffe@kaffe.org.
+
+How does the bootstrap process work with kjc?
+---------------------------------------------
+
+If you use the default Java compiler, kaffe will use the included kjc
+compiler. Kjc is written in pure java, so kaffe will need to use some
+precompiled classes inorder to be able to run kjc.
+
+These precompiled classes are in the Klasses.jar.bootstrap file. It
+also includes some classes, used by kaffeh to generate include files
+for native methods.
+
+So kaffe will compile its class library using kjc, and create the
+rt.jar file.
+
+How do I add classes to Klasses.jar.bootstrap?
+----------------------------------------------
+
+Just edit the bootstrap.classlist file. It is a list of class
+files. Each entry must to end in '.class'. You can use the '#'
+character to comment out lines.
+
+After you have compiled the class library, run 'make bootstrap' to
+update Klasses.jar.bootstrap.
