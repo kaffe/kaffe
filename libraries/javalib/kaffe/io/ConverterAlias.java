@@ -114,7 +114,7 @@ public class ConverterAlias {
 	useIconv.put("8859_9", "ISO-8859-9");
 
 	alias.put("EBCDIC",		"CP1046");
-	useIconv.put("CP1046", "Y");
+	useIconv.put("CP1046", "CP1046");
 
 	alias.put("UTF-8",		"UTF8");
 	useIconv.put("UTF8", "UTF-8");

@@ -1,5 +1,10 @@
 2004-10-07  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
+	* libraries/javalib/kaffe/io/ConverterAlias.java:
+	Added missing change to CP1046.
+
+2004-10-07  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
 	* libraries/javalib/kaffe/io/ByteToCharConverter.java,
 	libraries/javalib/kaffe/io/CharToByteConverter.java,
 	libraries/javalib/kaffe/io/ConverterAlias.java:
