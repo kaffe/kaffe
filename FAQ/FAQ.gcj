@@ -99,10 +99,12 @@ Then you have to build a shared module.
 
 Example:
 	gcj -g -fPIC -c -classpath .:....kaffeclasspathlocation.... X.class
-	gcj -shared -o X.so X.o
+	gcc -shared -o X.so X.o
 
-Be sure to specify Kaffe's class libraries, or else gcj will pick up
-libgcj.zip, which is incompatible.
+Be sure to specify Kaffe's class libraries when compiling, or else gcj 
+will pick up libgcj.zip, which is incompatible.
+
+Be sure to link with gcc, not gcj, to avoid using libgcj's spec file.
 
 Next, you need to create a so-called fixup module.  To do this, compile
 and run the program fixup.c in developers.
