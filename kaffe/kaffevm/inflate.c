@@ -598,14 +598,15 @@ inflate(inflateInfo* pG)
 int
 inflate_free(inflateInfo* pG)
 {
-  if (pG->fixed_tl != 0)
-  {
-    huft_free(pG->fixed_td);
-    huft_free(pG->fixed_tl);
-    pG->fixed_td = pG->fixed_tl = 0;
+  if (pG != 0) {
+    if (pG->fixed_tl != 0) {
+      huft_free(pG->fixed_td);
+      huft_free(pG->fixed_tl);
+      pG->fixed_td = pG->fixed_tl = 0;
+    }
     KFREE(pG->slide);
+    KFREE(pG);
   }
-  KFREE(pG);
 
   return 0;
 }

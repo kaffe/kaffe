@@ -1,3 +1,9 @@
+Tue Jan 26 18:39:21 1999  Jongwon Kim <freefish@netsgo.com>
+
+	* kaffe/kaffevm/inflate.c: finally fixed memory leak after
+	Maxim Kizub <max@immsp.kiev.ua> rediscovered it.  Was originally
+	reported on Dec 8.
+
 Tue Jan 26 10:10:53 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/gc.h, kaffe/kaffevm/gcFuncs.c,
