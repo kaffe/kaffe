@@ -30,6 +30,8 @@
  * software floating point libraries and the build tools.
  */
 #if defined(NEED_sysdepCallMethod)
+static inline void sysdepCallMethod(callMethodInfo *call) ALWAYS_INLINE;
+
 static inline void sysdepCallMethod(callMethodInfo *call) {
   int extraargs[(call->nrargs>4)?(call->nrargs-4):0];
   switch(call->nrargs) {

@@ -159,6 +159,10 @@
 /* Define to 1 if you have the <gmp.h> header file. */
 #undef HAVE_GMP_H
 
+/* Define if unconditional inlining of functions a la GCC 3.1 and higher are
+   available. */
+#undef HAVE_GNUC25_ALWAYS_INLINE
+
 /* Define if function attributes a la GCC 2.5 and higher are available. */
 #undef HAVE_GNUC25_ATTRIB
 
@@ -791,6 +795,18 @@
 #else
 #define FUNCATTR(x)
 #endif
+#endif
+
+/* GNU C constant functions, or null. */
+#ifndef ATTRALWAYS_INLINE
+#ifdef HAVE_GNUC25_ALWAYS_INLINE
+#define ATTRALWAYS_INLINE always_inline
+#else
+#define ATTRALWAYS_INLINE
+#endif
+#endif
+#ifndef ALWAYS_INLINE
+#define ALWAYS_INLINE FUNCATTR((ATTRALWAYS_INLINE))
 #endif
 
 /* GNU C constant functions, or null. */

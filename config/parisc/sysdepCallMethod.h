@@ -29,6 +29,8 @@ typedef jlong j4int_f (int, int, int, int);
  * general purpose registers
  */
 
+static inline void sysdepCallMethod(callMethodInfo *call) ALWAYS_INLINE;
+
 static inline void sysdepCallMethod(callMethodInfo *call)
 {
   int argidx;

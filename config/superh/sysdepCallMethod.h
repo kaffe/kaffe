@@ -17,6 +17,8 @@
 
 #include "support.h"
 
+static inline void sysdepCallMethod(callMethodInfo *call) ALWAYS_INLINE;
+
 static inline void sysdepCallMethod(callMethodInfo *call)
 {
   int extraargs[((call)->nrargs>4)?((call)->nrargs-4):0];

@@ -36,6 +36,8 @@
  *	Still I do not understand 'asm' statement well, and the
  *	statement below is a 'because it works' version.
  */
+static inline void sysdepCallMethod(callMethodInfo *call) ALWAYS_INLINE;
+
 static inline void sysdepCallMethod(callMethodInfo *call) 
 {
 	int extraargs[(call)->nrargs];

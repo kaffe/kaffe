@@ -101,3 +101,18 @@ AC_DEFUN([GCC_ATTRIBUTE_FORMAT],[
 #define NONRETURNPRINTFFORMAT(si,tc) FUNCATTR((ATTRPRINTF(si,tc),ATTRNORETURN))
 #endif])
 ])
+AC_DEFUN([GCC_ATTRIBUTE_ALWAYS_INLINE],[
+ AC_REQUIRE([GCC_ATTRIBUTE_SUPPORTED])
+ GCC_ATTRIBUTE(always_inline,always_inline,[int x],always_inline,ALWAYS_INLINE,[Define if unconditional inlining of functions a la GCC 3.1 and higher are available.])
+ AH_BOTTOM([/* GNU C constant functions, or null. */
+#ifndef ATTRALWAYS_INLINE
+#ifdef HAVE_GNUC25_ALWAYS_INLINE
+#define ATTRALWAYS_INLINE always_inline
+#else
+#define ATTRALWAYS_INLINE
+#endif
+#endif
+#ifndef ALWAYS_INLINE
+#define ALWAYS_INLINE FUNCATTR((ATTRALWAYS_INLINE))
+#endif])
+])

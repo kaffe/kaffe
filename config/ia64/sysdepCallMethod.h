@@ -60,6 +60,8 @@
    build a standard C call using the passed call information.  By its
    nature this is highly processor specific.  This function is mandatory
    for both JIT and Interpreter (since stubs have now been deprecated).  */
+static inline void sysdepCallMethod(callMethodInfo* call) ALWAYS_INLINE;
+
 static inline void sysdepCallMethod(callMethodInfo* call)
 {
   void *func = call->function;

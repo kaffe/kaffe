@@ -57,6 +57,8 @@
  * Ross Patterson <Ross.Patterson@CA.Com>
  * Computer Associates International, Inc.
  */
+static inline void sysdepCallMethod(callMethodInfo *call) ALWAYS_INLINE;
+
 static inline void sysdepCallMethod(callMethodInfo *call)
 {
  /*

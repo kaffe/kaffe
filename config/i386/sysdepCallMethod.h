@@ -26,6 +26,11 @@
  *  have now been deprecated).
  */
 #if defined(NEED_sysdepCallMethod)
+/* ALWAYS_INLINE attribute can only be added to the declaration, not the 
+ * definition of a function, so we need to declare it separately.
+ */
+static inline void sysdepCallMethod(callMethodInfo *call) ALWAYS_INLINE;
+
 static inline void sysdepCallMethod(callMethodInfo *call) {
   unsigned args = call->nrargs;
 
