@@ -40,8 +40,8 @@ public String paramString () {
 	String s = "COMPONENT_";
 
 	switch ( id ) {
-	case COMPONENT_ADDED:  s += "ADDED";
-	case COMPONENT_REMOVED: s += "REMOVED";
+	case COMPONENT_ADDED:  s += "ADDED"; break;
+	case COMPONENT_REMOVED: s += "REMOVED"; break;
 	default: s += "?";
 	}
 

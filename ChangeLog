@@ -1,3 +1,18 @@
+1999-05-19  Edouard Parmelan <Edouard.Parmelan@quadratec.fr>
+
+	* libraries/javalib/java/awt/Image.java: Fix operators
+	precedence.
+	* libraries/javalib/java/awt/event/ContainerEvent.java: Add
+	missing break.
+	* libraries/javalib/java/awt/widgets/TextArea.java, 
+	libraries/javalib/java/awt/KeyEvt.java: Fix indentation.
+	* libraries/javalib/java/text/NumberFormat.java: Fix currency
+	symbol.
+	* libraries/javalib/java/util/Properties.java: Add comments for
+	AntiC.
+	* libraries/javalib/java/math/BigInteger.java: Write long
+	constants with L, add comments for AntiC.
+
 Tue May 18 20:16:44 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
 
 	* config/i386/oskit/{md.c mkimage.sh}:  Update startup 

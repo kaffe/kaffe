@@ -13,8 +13,8 @@ KeyEvt ( Component src, int evtId, long time, int mods, int kCode, char kChar ) 
 
 protected void dispatch () {
 
-if ( (id == KEY_RELEASED) && (keyCode == VK_F12) )
-	((Component)source).dump( " ");
+	if ( (id == KEY_RELEASED) && (keyCode == VK_F12) )
+		((Component)source).dump( " ");
 
 	if ( AWTEvent.keyTgt != null )           // do we have a focus window?
 		source = AWTEvent.keyTgt;

@@ -86,7 +86,7 @@ final public static NumberFormat getCurrencyInstance() {
 
 public static NumberFormat getCurrencyInstance(Locale loc) {
 	ResourceBundle bundle = getResources("numberformat", loc);
-	String cs = bundle.getString("\u00a40");
+	String cs = bundle.getString("\u00a4");
 	return (new DecimalFormat(cs + "#,##0.00;(" + cs + "#,##0.00)", loc));
 }
 

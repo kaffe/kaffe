@@ -142,7 +142,8 @@ public Enumeration propertyNames() {
 				throw new NoSuchElementException();
 			return result.elementAt(posn++);
 		}
-	};
+	} // not unreachable
+	;
 }
 
 public synchronized void load(InputStream in) throws IOException {
@@ -282,6 +283,7 @@ private static int getEscapedChar(PushbackInputStream in) throws IOException {
 					}
 					return cval;
 				}
+				// not unreachable, break getUnicode go here
 				while (n > 0)
 				    in.unread(dig[--n]);	// fall through
 			default:
@@ -289,11 +291,13 @@ private static int getEscapedChar(PushbackInputStream in) throws IOException {
 				return '\\';
 			}
 
+		// not fall through, previous switch always return
 		case -1:
 			return '\\';
 		default:
 			return ch;
 		}
+	// not fall through, previous switch always return
 	case '\r':
 		switch ((ch = in.read())) {
 		default:

@@ -325,7 +325,7 @@ Point get2D( int pos) {
 	int xt = 0;
 	TextBuffer tb = null;
 
-  if ( rs == 0 )
+	if ( rs == 0 )
 		return new Point( -1, -1);
 
 	for ( int i=0; i<rs; i++) {

@@ -104,7 +104,7 @@ public BigInteger(int bitLength, int certainty, Random rnd) {
 	byte andval = (byte)(~((~0) << zeroes));
 	/* orval is used to set the most significant bit.  */
 	byte orval = (byte)(0x100 >> zeroes);
-	BigInteger two = new BigInteger(2l);
+	BigInteger two = new BigInteger(2L);
  rerand:
 	for(;;) {
 		/* There must be a more efficient algorithm! */
@@ -120,7 +120,7 @@ public BigInteger(int bitLength, int certainty, Random rnd) {
 		   testLength is becomes zero.  */
 		long testLength = longValue()-1; // make it even
 		if (bitLength < 64)
-			testLength |= ~0l << bitLength;
+			testLength |= ~0L << bitLength;
 		do {
 			add0(this, two);
 			testLength += 2;
@@ -406,12 +406,15 @@ public byte[] toByteArray() {
 		case 4:
 			ret[--i] = (byte)num;
 			num >>= 8;
+			// fall through
 		case 3:
 			ret[--i] = (byte)num;
 			num >>= 8;
+			// fall through
 		case 2:
 			ret[--i] = (byte)num;
 			num >>= 8;
+			// fall through
 		case 1:
 			ret[--i] = (byte)num;
 		}

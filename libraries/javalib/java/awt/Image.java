@@ -128,7 +128,7 @@ void addObserver ( ImageObserver observer ) {
 
 synchronized int checkImage ( int w, int h, ImageObserver obs, boolean load ){
 	if ( (flags & (ImageObserver.ALLBITS | ImageObserver.FRAMEBITS)) != 0 ) {
-		if ( (w > 0) || (h > 0) && (w != width) && (h != height) ){
+		if ( ((w > 0) || (h > 0)) && (w != width) && (h != height) ){
 			scale( w, h);
 		}
 		
@@ -236,7 +236,7 @@ public synchronized int getWidth ( ImageObserver observer ) {
 synchronized boolean loadImage ( int w, int h, ImageObserver obs ) {
 	// it's (partly?) loaded already
 	if ( (flags & (ImageObserver.FRAMEBITS|ImageObserver.ALLBITS)) != 0 ){
-		if ( (w > 0) || (h > 0) && (w != width) && (h != height) ) {
+		if ( ((w > 0) || (h > 0)) && (w != width) && (h != height) ) {
 		        // but do we have to scale it? 
 			scale( w, h);
 		}
