@@ -3,6 +3,8 @@
 	* libraries/javalib/java/text/SimpleDateFormat.java (format): use
 	zone.getOffset() in place of zone.getRawOffset() to retreive the
 	_real_ offset for this date.
+	(getDefaultPattern): made it static, it's used in explicit
+	constructor invocation.
 
 	* libraries/javalib/java/text/DecimalFormat.java (parse):
 	reimplement, setup ParsePosition correctly and handle more cases.
