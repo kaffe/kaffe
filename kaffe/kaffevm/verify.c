@@ -1382,6 +1382,26 @@ checkLocalIndexErrorInVerifyMethod3a(errorInfo* einfo,
 }
 
 /*
+ * Helper function for byte code access.
+ */
+static inline
+uint32
+getIdx(const unsigned char * code, const uint32 pc)
+{
+	return ((uint32) code[pc + 1]);
+}
+
+/*
+ * Helper function for byte code access.
+ */
+static inline
+uint32
+getWIdx(const unsigned char * code, const uint32 pc)
+{
+	return ((uint32) getWord(code, pc + 1));
+}
+
+/*
  * verifyMethod3a()
  *     check static constraints.  section 4.8.1 of JVML Spec 2.
  *
@@ -1408,15 +1428,14 @@ verifyMethod3a(errorInfo* einfo,
 	if (_IDX > pool->size) { \
 		return verifyErrorInVerifyMethod3a(einfo, method, "attempt to access a constant pool index beyond constant pool range"); \
 	}
+
 	
 #define GET_IDX(_IDX, _PC) \
-	(_IDX) = (_PC) + 1; \
-	(_IDX) = code[_IDX]; \
+	(_IDX) = getIdx(code, _PC); \
 	CHECK_POOL_IDX(_IDX)
-	
+
 #define GET_WIDX(_IDX, _PC) \
-	_IDX = (_PC) + 1; \
-	_IDX = getWord(code, _IDX); \
+	_IDX = getWIdx(code, _PC); \
 	CHECK_POOL_IDX(_IDX)
 
 #define BRANCH_IN_BOUNDS(_N, _INST) \

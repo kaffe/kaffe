@@ -1,6 +1,13 @@
 2004-02-27  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+        (getIdx, getWIdx): New static inline functions.
+	(GET_IDX) Use getIdx.
+	(GET_WIDX) Use getWIdx.
+
+2004-02-27  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
         (getDWord): New static inline function.
         (DWORD) Removed.
         Replaced use of DWORD by getDWord.
