@@ -1,5 +1,8 @@
 Sun Feb 28 01:02:50 1999  Godmar Back  <gback@cs.utah.edu>
 
+	* libraries/javalib/java/lang/ExceptionInInitializerError.java:
+	added message of contained exception to exception.
+	* test/regression/ProcessClassTest.java: corrected output
 	* kaffe/kaffevm/exception.[ch], kaffe/kaffevm/jni.c:
 	added error2Throwable.
 

@@ -20,7 +20,8 @@ public class ExceptionInInitializerError extends LinkageError {
   }
 
   public ExceptionInInitializerError (Throwable t) {
-    super();
+    super("[exception was " 
+	+ t.getClass().getName() + ": " + t.getMessage() + "]");
     thrown = t;
   }
 
