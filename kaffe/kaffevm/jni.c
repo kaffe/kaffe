@@ -2587,9 +2587,13 @@ Kaffe_NewStringUTF(JNIEnv* env, const char* data)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	utf8 = utf8ConstNew(data, -1);
-	str = utf8Const2Java(utf8);
-	utf8ConstRelease(utf8);
+	if (!utf8ConstIsValidUtf8(data, strlen(data))) {
+		str = NULL;
+	} else {
+		utf8 = utf8ConstNew(data, -1);
+		str = utf8Const2Java(utf8);
+		utf8ConstRelease(utf8);
+	}
 
 	END_EXCEPTION_HANDLING();
 	return (str);
