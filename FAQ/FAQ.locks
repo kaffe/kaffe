@@ -10,20 +10,43 @@ and are recursive.  Here is a table of the available functions:
 waitCond	waitStaticCond		
 signalCond	signalStaticCond	
 broadcastCond	broadcastStaticCond	
-lockMutex	lockStaticMutex		lockJavaMutex	
-unlockMutex	unlockStaticMutex	unlockJavaMutex	
-unlockKnownMutex 			unlockKnownJavaMutex 
+lockMutex	lockStaticMutex		lockObject
+unlockMutex	unlockStaticMutex	unlockObject
 
-The plain and Java variants of this interface take an arbitrary
-address, and look up the corresponding iLock, while the Static
-variants take an iLock pointer.  unlockKnownMutex and
-unlockKnownJavaMutex take an iLock pointer, but will free the lock if
-it is no longer referenced.
+Here are the rules to choose which one you should use:
 
-The Java locking functions exist because of asynchronous exceptions:
-They should only be used for synchronized methods and java synchronized
-blocks.  Asynchronous exceptions are deferred until non Java locks are
-released, while Java locks are released as the stack is unwound.
+Object: This one should only be used for Java monitors.  It takes just
+a pointer to a Java Object.  The intent is that, if we ever create a
+facility to log the execution of all monitorenter/exit bytecodes,
+entries and exits of synchronized methods and JNI MonitorEnter/Exit
+primitives, we'll be able to do it by tweaking this function.  Note
+that it is a function, and must remain so, since its address is taken
+in some engines.
+
+plain: This one should be used for locks in the VM abstraction layer,
+but only when they're totally unrelated with Java monitors.  It takes
+a pointer to any structure that has a `lock' member of type `iLock*'
+and (implicitly) a pointer to a variable named `iLockRoot', assumed to
+be an automatic(*) variable declared in the caller function (used in
+the implementation of fast locks).  It is mostly used to lock non-Java
+objects, such as classEntries, but, in at least one situation, it is
+used to lock a Class object: when JIT-compiling a method, a lock on
+its Class is held.  Logging such a lock in the aforementioned facility
+would be unexpected: it would only be logged when the JIT was in use.
+Moreover, it is not mandated nor directed by any of the Java monitor
+facilities.  Therefore, this case uses the VM variant, and so should
+similar cases that ever come up.
+
+(*) i.e., it must not be static nor global, otherwise its whole
+purpose, which is of speeding up locking by means of using stack
+information, would be defeated.
+
+Static: This is the easiest.  When you have a stand-alone variable of
+type `iLock*', this is the variant you should use.  It takes a pointer
+to the lock variable (`iLock**') and (implicitly) a pointer to a
+variable named `iLockRoot', assumed to be in the current stack frame.
 
 Jason Baker <jbaker@cs.utah.edu>
 Jun 29, 1999
+updated by Alexandre Oliva <oliva@lsd.ic.unicamp.br>
+Sept 18, 1999

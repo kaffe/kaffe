@@ -1,5 +1,10 @@
 1999-09-18  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
+	* FAQ/FAQ.locks: Update, but no description of fastlocking.
+	Describe when lockObject should be used instead of lockMutex.
+	* kaffe/kaffevm/jit/machine.c (translate): Document why we're
+	locking a java.lang.Class with lockMutex instead of lockObject.
+
 	* kaffe/kaffevm/support.c (callMethodV): Do not lockObject(0).
 
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c (TLOCK,

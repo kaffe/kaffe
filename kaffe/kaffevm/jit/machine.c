@@ -198,7 +198,10 @@ translate(Method* meth, errorInfo *einfo)
 
 	static Method* jitting = 0;	/* DEBUG */
 
-	/* lock class to protect the method */
+	/* lock class to protect the method.  Even though meth->class
+	   is a Java Object, this lock is not in the Java abstraction
+	   layer; it is just a detail of implementation, so we must
+	   use lockMutex instead of lockObject.  */
 	lockMutex(&meth->class->head);
 	/* Must check the translation
 	 * hasn't been done by someone else once we get it.
