@@ -1,5 +1,80 @@
 2004-05-18  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/Makefile.am,
+        libraries/javalib/Makefile.in:
+	Regenerated.
+
+	* libraries/javalib/java/awt/image/PixelInterleavedSampleModel.java:
+	New file, taken from GNU Classpath.
+	
+        * libraries/javalib/java/awt/Color.java,
+        libraries/javalib/java/awt/ColorPaintContext.java,
+        libraries/javalib/java/awt/ComponentOrientation.java,
+        libraries/javalib/java/awt/datatransfer/DataFlavor.java,
+        libraries/javalib/java/awt/geom/Arc2D.java,
+        libraries/javalib/java/awt/image/ColorModel.java,
+        libraries/javalib/java/awt/image/ComponentColorModel.java,
+        libraries/javalib/java/awt/image/ComponentSampleModel.java,
+        libraries/javalib/java/awt/image/Raster.java,
+        libraries/javalib/java/awt/image/SampleModel.java,
+        libraries/javalib/java/awt/image/SinglePixelPackedSampleModel.java,
+        libraries/javalib/java/awt/peer/MenuPeer.java:
+	Resynced with GNU Classpath.
+	
+	2004-04-28  Ingo Proetel  <proetel@aicas.com>
+
+	* java/awt/ColorPaintContext.java (<init>): Added ColorModel to signature.
+	(getColorModel): Return the actual color model.
+	(getRaster): Implemented.
+	(ColorRaster): New inner class.
+
+	2004-05-07  Michael Koch  <konqueror@gmx.de>
+
+	* java/awt/geom/Arc2D.java:
+	Fixed javadocs all over.
+
+	2004-04-17  David Jee  <djee@redhat.com>
+
+	* java/awt/peer/MenuPeer.java
+	(addSeparator): Remove from interface.
+
+	2004-04-07  Ingo Proetel  <proetel@aicas.com>
+
+	* java/awt/image/SinglePixelPackedSampleModel.java (getDataElements):
+	New method.
+	(setDataElements): New method.
+	(setPixels): New method.
+	(toString): New method.
+
+	2004-04-28  Ingo Proetel  <proetel@aicas.com>
+
+	* java/awt/image/ComponentSampleModel.java (setDataSamples):Do not reset
+	scanline stride.
+
+	2004-04-07  Ingo Proetel  <proetel@aicas.com>
+
+	* java/awt/image/Raster.java (toString): Added method. 
+
+	2004-04-28  Ingo Proetel  <proetel@aicas.com>
+
+	* java/awt/image/ComponentSampleModel.java (setDataSamples):Do not reset
+	scanline stride.
+
+	2004-04-15  Sascha Brawer  <brawer@dandelis.ch>
+
+	* java/awt/image/ComponentColorModel.java
+	(createCompatibleSampleModel): Return PixelInterleavedSampleModel
+	for TYPE_BYTE and TYPE_USHORT transferTypes, in order to pass the
+	Mauve tests on this method. Improved documentation.
+
+	2004-04-28  Ingo Proetel  <proetel@aicas.com>
+
+	* java/awt/image/ColorModel.java (getRGBdefault): Default ColorModel has
+        32 bit pixels not 8 bit pixels.
+	(isCompatibleRaster): Added javadoc comment.
+
+2004-05-18  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/io/BufferedReader.java:
 	Resynced with GNU Classpath.
 	

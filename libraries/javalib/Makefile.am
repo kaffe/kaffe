@@ -916,6 +916,7 @@ java_awt_image_SRCS = \
 	java/awt/image/MemoryImageSource.java \
 	java/awt/image/PackedColorModel.java \
 	java/awt/image/PixelGrabber.java \
+	java/awt/image/PixelInterleavedSampleModel.java \
 	java/awt/image/RasterFormatException.java \
 	java/awt/image/Raster.java \
 	java/awt/image/RasterOp.java \

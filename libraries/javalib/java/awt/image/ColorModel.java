@@ -37,11 +37,10 @@ exception statement from your version. */
 
 package java.awt.image;
 
-import gnu.java.awt.Buffers;
-
 import java.awt.Point;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
+import gnu.java.awt.Buffers;
 
 /**
  * A color model operates with colors in several formats:
@@ -167,7 +166,7 @@ public abstract class ColorModel implements Transparency
    */
   public static ColorModel getRGBdefault()
   {
-    return new DirectColorModel(8, 0xff0000, 0xff00, 0xff, 0xff000000);
+    return new DirectColorModel(32, 0xff0000, 0xff00, 0xff, 0xff000000);
   }
 
   public final boolean hasAlpha()
@@ -598,7 +597,11 @@ public abstract class ColorModel implements Transparency
     return null;
   }
     
-  // Typically overridden
+  /**
+   * Checks if the given raster has a compatible data-layout (SampleModel).
+   * @param raster The Raster to test.
+   * @return true if raster is compatible.
+   */ 
   public boolean isCompatibleRaster(Raster raster)
   {
     SampleModel sampleModel = raster.getSampleModel();

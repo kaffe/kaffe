@@ -39,11 +39,11 @@ exception statement from your version. */
 package java.awt.datatransfer;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInput;
+import java.io.IOException;
 import java.io.ObjectOutput;
+import java.io.ObjectInput;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -270,7 +270,7 @@ DataFlavor(Class representationClass, String humanPresentableName)
 /**
  * Initializes a new instance of <code>DataFlavor</code> with the
  * specified MIME type and description.  If the MIME type has a
- * "class=<rep class>" parameter then the representation class will
+ * "class=&lt;rep class&gt;" parameter then the representation class will
  * be the class name specified. Otherwise the class defaults to
  * <code>java.io.InputStream</code>. If the human readable name
  * is not specified (<code>null</code>) then the human readable name
@@ -319,7 +319,7 @@ getRepresentationClassFromMime(String mimeString, ClassLoader classLoader)
 /**
  * Initializes a new instance of <code>DataFlavor</code> with the
  * specified MIME type and description.  If the MIME type has a
- * "class=<rep class>" parameter then the representation class will
+ * "class=&lt;rep class&gt;" parameter then the representation class will
  * be the class name specified. Otherwise the class defaults to
  * <code>java.io.InputStream</code>. If the human readable name
  * is not specified (<code>null</code>) then the human readable name
@@ -709,10 +709,10 @@ equals(DataFlavor flavor)
  * are met:
  * <p>
  * <ul>
- * <li>The object is not <code>null</code>.
- * <li>The object is an instance of <code>DataFlavor</code>.
+ * <li>The object is not <code>null</code>.</li>
+ * <li>The object is an instance of <code>DataFlavor</code>.</li>
  * <li>The object's MIME type and representation class are equal to
- * this object's.
+ * this object's.</li>
  * </ul>
  *
  * @param obj The <code>Object</code> to test against.
