@@ -1,7 +1,6 @@
 package java.util;
 
 import java.lang.ClassCastException;
-import kaffe.util.NotImplemented;
 
 /*
  * Java core library component.
@@ -67,7 +66,15 @@ public GregorianCalendar(int year, int month, int date, int hour, int minute, in
 }
 
 public void add(int field, int amount) {
-	throw new NotImplemented(GregorianCalendar.class.getName() + ".add(int,int)");
+	if (field == ZONE_OFFSET || field == DST_OFFSET) {
+		throw new IllegalArgumentException("bad field: " + field);
+	}
+	if (!isSet[field]) {
+		computeFields();
+	}
+	fields[field] += amount;
+	computeTime();
+	computeFields();
 }
 
 public boolean after(Object when) {
@@ -149,11 +156,11 @@ private long computeDateTime() {
 				time += fields[DAY_OF_MONTH] - 1;
 			}
 			else if (isSet[WEEK_OF_MONTH] && isSet[DAY_OF_WEEK]) {
-				throw new NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
+				throw new kaffe.util.NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
 							 "with WEEK_OF_MONTH and DAY_OF_WEEK set.");
 			}
 			else if (isSet[DAY_OF_WEEK_IN_MONTH] && isSet[DAY_OF_WEEK]) {
-				throw new NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
+				throw new kaffe.util.NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
 							 "with WEEK_OF_MONTH_IN_MONTH and DAY_OF_WEEK set.");
 			}
 		}
@@ -161,12 +168,12 @@ private long computeDateTime() {
 			time += fields[DAY_OF_YEAR];
 		}
 		else if (isSet[DAY_OF_WEEK] && isSet[WEEK_OF_YEAR]) {
-			throw new NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
+			throw new kaffe.util.NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
 						 "with DAY_OF_WEEK and WEEK_OF_YEAR set.");
 		}
 	}
 	else {
-		throw new NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
+		throw new kaffe.util.NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
 					 "without YEAR set.");
 	}
 	time *= 24;
@@ -451,7 +458,30 @@ public boolean isLeapYear(int year) {
 }
 
 public void roll(int field, boolean up) {
-	throw new NotImplemented(GregorianCalendar.class.getName() + ".roll(int,boolean)");
+	if (field == ZONE_OFFSET || field == DST_OFFSET) {
+		throw new IllegalArgumentException("bad field: " + field);
+	}
+	if (!isSet[field]) {
+		computeFields();
+	}
+	if (up) {
+		if (fields[field] == getMaximum(field)) {
+			fields[field] = getMinimum(field);
+		}
+		else {
+			fields[field] += 1;
+		}
+	}
+	else {
+		if (fields[field] == getMinimum(field)) {
+			fields[field] = getMaximum(field);
+		}
+		else {
+			fields[field] -= 1;
+		}
+	}
+	computeTime();
+	computeFields();
 }
 
 public void setGregorianChange(Date date) {

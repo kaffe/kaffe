@@ -230,6 +230,7 @@ final public void set(int field, int value)
 	isSet[field] = true;
 	fields[field] = value;
 	isTimeSet = false;
+	areFieldsSet = false;	// Force recalculation of other fields.
 }
 
 final public void set(int year, int month, int date)
