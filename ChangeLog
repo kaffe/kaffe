@@ -1,3 +1,18 @@
+2003-09-11  Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/kaffevm/external.c:
+	(loadNativeLibrary2) Removed unused variable vars.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jqueue.c:
+	(KaffePoolReleaseNode) Removed unused variable node_id.
+
+	* include/kaffe/jmalloc.h:
+	[KAFFE_DEBUG](KFREE) Added const to parameter declaration to avoid
+	compiler warnings.
+
+	* kaffe/kaffevm/verify.c:
+	(resolveType) Initialize tmp before use.
+	
 2003-09-09  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* test/regression/InetAddressTest.java:

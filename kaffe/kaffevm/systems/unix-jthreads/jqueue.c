@@ -114,14 +114,12 @@ KaffeNodeQueue *KaffePoolNewNode(KaffePool *pool)
 
 void KaffePoolReleaseNode(KaffePool *pool, KaffeNodeQueue *node)
 {
-  int node_id;
-
   assert(pool != NULL);
   /* 
    * This check cannot be done anymore as there different pools
    * now.
    *
-   * node_id = (int)(node-pool->pool)/sizeof(KaffeNodeQueue);
+   * int node_id = (int)(node-pool->pool)/sizeof(KaffeNodeQueue);
    * assert(node_id >= 0 && node_id < pool->num_nodes_in_pool);
    */
   assert(pool->num_free_nodes < pool->num_nodes_in_pool);

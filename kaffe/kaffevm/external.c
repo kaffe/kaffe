@@ -323,7 +323,8 @@ DBG(NATIVELIB,
         func = loadNativeLibrarySym("JNI_OnLoad"); 
 	if (func != NULL) {
 	    JavaVM *jvm = &Kaffe_JavaVM;
-	    jint vers = ((jint(JNICALL *)(JavaVM *, void *))func)(jvm, NULL);
+	    /* Call JNI_OnLoad */
+	    ((jint(JNICALL *)(JavaVM *, void *))func)(jvm, NULL);
 	}
 
 	return index;

@@ -4275,7 +4275,7 @@ void
 resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type)
 {
 	const char* sig;
-	char* tmp;
+	char* tmp = NULL;
 
 	if (type->tinfo & TINFO_NAME) {
 		sig = type->data.sig;
