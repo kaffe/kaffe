@@ -1173,7 +1173,7 @@ jar-classes $(LIBDIR)/Klasses.jar: $(LIBDIR)/stamp
 	rm -f $(LIBDIR)/$(CLASSFILE)
 	cp $(srcdir)/kaffe/lang/unicode.idx $(srcdir)/kaffe/lang/unicode.tbl $(LIBDIR)/kaffe/lang
 	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
-	(cd $(LIBDIR) && $(ZIP) -r $(CLASSFILE) $(SRCDIRS))
+	(cd $(LIBDIR) && $(ZIP) -DX -r $(CLASSFILE) $(SRCDIRS))
 
 .PHONY: build-classes Klasses
 build-classes Klasses: $(LIBDIR)/$(CLASSFILE)
