@@ -3,17 +3,23 @@ What's New in Kaffe OpenVM 1.0 Beta 4
 
 * New Java extensions:
 
-	o Serial port stuff: javax.comm
-
-	o Servlets: javax.servlet
-
 	o Personal Java extensions
+
+	o Serial port stuff: javax.comm (untested)
+
+	o Servlets: javax.servlet (untested)
 
 * Revamped class loading, supporting class unloading
 
 * Revamped and much more efficient garbage collection
+ 
+	o More efficient allocator
 
-* Cleaner threads interface, with support for Linux threads
+	o New, cleaner gc interface
+
+* Cleaner threads interface
+
+	o Linux native threads (incomplete)
 
 * Use of libtool and automake for portability
 
@@ -23,6 +29,16 @@ What's New in Kaffe OpenVM 1.0 Beta 4
 
 * Swing improvements - now supports Swing 1.1
 
-* Object Serialization fixed
+* Object Serialization overhall - still buggy but mostly working
+
+* Beans and reflection work better now
+
+* StackOverFlowErrors now generated
+
+* New java.lang.Character for real Unicode handling.
+
+* Improved GC handling of strings
+
+* Socket timeouts
 
 * Lots of bug fixes.
