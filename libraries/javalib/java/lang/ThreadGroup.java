@@ -11,7 +11,6 @@
 package java.lang;
 
 import java.util.Enumeration;
-import kaffe.util.Deprecated;
 
 public class ThreadGroup {
 
@@ -273,7 +272,16 @@ public void remove(ThreadGroup group) {
  * @deprecated
  */
 final public synchronized void resume() {
-	throw new Deprecated();
+        for (int i = 0; i < threads.length; i++) {
+                if (threads[i] != null) {
+                        threads[i].resume();
+                }
+        }
+        for (int i = 0; i < groups.length; i++) {
+                if (groups[i] != null) {
+                        groups[i].resume();
+                }
+        }
 }
 
 final public void setDaemon(boolean d) {
@@ -292,14 +300,32 @@ final public synchronized void setMaxPriority(int pri) {
  * @deprecated
  */
 final public synchronized void stop() {
-	throw new Deprecated();
+        for (int i = 0; i < threads.length; i++) {
+                if (threads[i] != null) {
+                        threads[i].stop();
+                }
+        }
+        for (int i = 0; i < groups.length; i++) {
+                if (groups[i] != null) {
+                        groups[i].stop();
+                }
+        }
 }
 
 /**
- * @deprecated
+ *  deprecated
  */
 final public synchronized void suspend() {
-	throw new Deprecated();
+        for (int i = 0; i < threads.length; i++) {
+                if (threads[i] != null) {
+                        threads[i].suspend();
+                }
+        }
+        for (int i = 0; i < groups.length; i++) {
+                if (groups[i] != null) {
+                        groups[i].suspend();
+                }
+        }
 }
 
 public String toString() {
