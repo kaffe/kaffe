@@ -1,5 +1,12 @@
 2004-01-15  Dalibor Topic <robilad@kaffe.org>
 
+	* configure.in:
+	Don't include standard headers when testing for
+	asm/signal.h header. Just include <linux/types.h>
+	to fox autoconf warning message.
+
+2004-01-15  Dalibor Topic <robilad@kaffe.org>
+
 	* configure.in (AC_CHECK_LIBRARY),
 	m4/alsa.m4 (AM_PATH_ALSA),
 	m4/esd.m4 (AM_PATH_ESD, 
