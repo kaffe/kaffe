@@ -62,7 +62,7 @@ subdir = libraries/javalib
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/rebuildLib.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/alsa.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/alsa.m4 $(top_srcdir)/m4/esd.m4 \
 	$(top_srcdir)/m4/gnu-crypto.m4 $(top_srcdir)/m4/gwqt.m4 \
 	$(top_srcdir)/m4/herrno.m4 $(top_srcdir)/m4/iconv.m4 \
 	$(top_srcdir)/m4/in6addr.m4 $(top_srcdir)/m4/lib-ld.m4 \
@@ -136,6 +136,9 @@ ENABLE_JVMPI_TRUE = @ENABLE_JVMPI_TRUE@
 ENABLE_XPROF_FALSE = @ENABLE_XPROF_FALSE@
 ENABLE_XPROF_TRUE = @ENABLE_XPROF_TRUE@
 ENGINE_NAME = @ENGINE_NAME@
+ESD_CFLAGS = @ESD_CFLAGS@
+ESD_CONFIG = @ESD_CONFIG@
+ESD_LIBS = @ESD_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@

@@ -467,7 +467,7 @@ ac_includes_default="\
 #endif"
 
 ac_subdirs_all="$ac_subdirs_all libltdl"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT abssrcdir CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB DLLTOOL ac_ct_DLLTOOL AS ac_ct_AS OBJDUMP ac_ct_OBJDUMP CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBTOOL_DEPS LIBLTDL CCLD REGEN_FORWARD CONFIG_MD_H CONFIG_CALLKAFFEEXCEPTION_H KAFFEVM_MD_C CONFIG_JIT_MD_H KAFFEVM_JIT_DEF KAFFEVM_ICODE_H HAVE_CONFIG_JIT_MD_H USE_JIT_TRUE USE_JIT_FALSE ENGINE_NAME BCEL_JAR HAVE_BCEL_TRUE HAVE_BCEL_FALSE ENABLE_JVMPI_TRUE ENABLE_JVMPI_FALSE DNSJAVA_JAR HAVE_DNSJAVA_TRUE HAVE_DNSJAVA_FALSE ENABLE_XPROF_TRUE ENABLE_XPROF_FALSE CONFIG_XPROFILE_MD_H NEED_LIBXPROF_TRUE NEED_LIBXPROF_FALSE SUN_COMPAT_TRUE SUN_COMPAT_FALSE THREAD_DIR JIKESPROG JIKES KAFFEVM_TRAMPOLINES_C KVER JAVA_LIBS with_engine THREAD_SYSTEM KPREFIX KAFFE_ARCHOS ZIP MKTEMP JASMIN HAVE_ZIP_TRUE HAVE_ZIP_FALSE HAVE_JIKES_TRUE HAVE_JIKES_FALSE HAVE_MKTEMP_TRUE HAVE_MKTEMP_FALSE HAVE_JASMIN_TRUE HAVE_JASMIN_FALSE KAFFE_LIBS M_LIBS VM_LIBS NET_LIBS ZIP_LIBS MATH_LIBS SECURITY_LIBS X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS AWT_LIBS HAVE_GCJ_SUPPORT_TRUE HAVE_GCJ_SUPPORT_FALSE LIBOBJS LIBICONV LTLIBICONV USE_COMPAT_IFADDRS_TRUE USE_COMPAT_IFADDRS_FALSE MOC UIC QEMBED QT_CXXFLAGS QT_LDADD QT_GUILINK AWT_DIR ALSA_CFLAGS ALSA_LIBS COND_SOUND_ALSA_TRUE COND_SOUND_ALSA_FALSE COND_SOUND_ESD_TRUE COND_SOUND_ESD_FALSE COND_PURE_JAVA_MATH_TRUE COND_PURE_JAVA_MATH_FALSE MATH_LIB INCLUDED_EXTENSIONS GNU_CRYPTO_HOME GNU_CRYPTO_JAR JAVAX_CRYPTO_JAR JAVAX_SECURITY_JAR USER_WANT_GNU_CRYPTO_TRUE USER_WANT_GNU_CRYPTO_FALSE PROFILE USE_PRECOMPILED_RT_JAR_TRUE USE_PRECOMPILED_RT_JAR_FALSE PATH_TO_RT_JAR DLOPEN_JAVA_LIBS KLIBFLAGS KVMBINFLAGS KVMLIBFLAGS KAFFEH MAKE_KAFFEH toolslibdir jredir jrebindir jrelibdir nativedir securitydir PATHSEP DIRSEP kaffe_TRANSF kaffeh_TRANSF kaffebin_TRANSF CFLAGS_WITHOUT_PG subdirs LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT abssrcdir CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB DLLTOOL ac_ct_DLLTOOL AS ac_ct_AS OBJDUMP ac_ct_OBJDUMP CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBTOOL_DEPS LIBLTDL CCLD REGEN_FORWARD CONFIG_MD_H CONFIG_CALLKAFFEEXCEPTION_H KAFFEVM_MD_C CONFIG_JIT_MD_H KAFFEVM_JIT_DEF KAFFEVM_ICODE_H HAVE_CONFIG_JIT_MD_H USE_JIT_TRUE USE_JIT_FALSE ENGINE_NAME BCEL_JAR HAVE_BCEL_TRUE HAVE_BCEL_FALSE ENABLE_JVMPI_TRUE ENABLE_JVMPI_FALSE DNSJAVA_JAR HAVE_DNSJAVA_TRUE HAVE_DNSJAVA_FALSE ENABLE_XPROF_TRUE ENABLE_XPROF_FALSE CONFIG_XPROFILE_MD_H NEED_LIBXPROF_TRUE NEED_LIBXPROF_FALSE SUN_COMPAT_TRUE SUN_COMPAT_FALSE THREAD_DIR JIKESPROG JIKES KAFFEVM_TRAMPOLINES_C KVER JAVA_LIBS with_engine THREAD_SYSTEM KPREFIX KAFFE_ARCHOS ZIP MKTEMP JASMIN HAVE_ZIP_TRUE HAVE_ZIP_FALSE HAVE_JIKES_TRUE HAVE_JIKES_FALSE HAVE_MKTEMP_TRUE HAVE_MKTEMP_FALSE HAVE_JASMIN_TRUE HAVE_JASMIN_FALSE KAFFE_LIBS M_LIBS VM_LIBS NET_LIBS ZIP_LIBS MATH_LIBS SECURITY_LIBS X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS AWT_LIBS HAVE_GCJ_SUPPORT_TRUE HAVE_GCJ_SUPPORT_FALSE LIBOBJS LIBICONV LTLIBICONV USE_COMPAT_IFADDRS_TRUE USE_COMPAT_IFADDRS_FALSE MOC UIC QEMBED QT_CXXFLAGS QT_LDADD QT_GUILINK AWT_DIR ALSA_CFLAGS ALSA_LIBS ESD_CONFIG ESD_CFLAGS ESD_LIBS COND_SOUND_ALSA_TRUE COND_SOUND_ALSA_FALSE COND_SOUND_ESD_TRUE COND_SOUND_ESD_FALSE COND_PURE_JAVA_MATH_TRUE COND_PURE_JAVA_MATH_FALSE MATH_LIB INCLUDED_EXTENSIONS GNU_CRYPTO_HOME GNU_CRYPTO_JAR JAVAX_CRYPTO_JAR JAVAX_SECURITY_JAR USER_WANT_GNU_CRYPTO_TRUE USER_WANT_GNU_CRYPTO_FALSE PROFILE USE_PRECOMPILED_RT_JAR_TRUE USE_PRECOMPILED_RT_JAR_FALSE PATH_TO_RT_JAR DLOPEN_JAVA_LIBS KLIBFLAGS KVMBINFLAGS KVMLIBFLAGS KAFFEH MAKE_KAFFEH toolslibdir jredir jrebindir jrelibdir nativedir securitydir PATHSEP DIRSEP kaffe_TRANSF kaffeh_TRANSF kaffebin_TRANSF CFLAGS_WITHOUT_PG subdirs LTLIBOBJS'
 ac_subst_files='cpu_os_frag cpu_frag engine_frag threads_frag'
 
 # Initialize some variables set by options.
@@ -1055,6 +1055,7 @@ Optional Features:
   --disable-mips2         Disable MIPS II instructions
   --disable-rpath         do not hardcode runtime library paths
   --disable-alsatest      Do not try to compile and run a test Alsa program
+  --disable-esdtest       Do not try to compile and run a test ESD program
   --disable-sound         Disable javax.sound support
   --enable-pure-java-math Enable pure java java.math.* package [default=native]
 
@@ -1088,6 +1089,8 @@ Optional Packages:
   --with-qtdir=DIR        Qt installation directory default=$QTDIR
   --with-alsa-prefix=PFX  Prefix where Alsa library is installed(optional)
   --with-alsa-inc-prefix=PFX  Prefix where include libraries are (optional)
+  --with-esd-prefix=PFX   Prefix where ESD is installed (optional)
+  --with-esd-exec-prefix=PFX Exec prefix where ESD is installed (optional)
   --without-alsa          Don't use ALSA for sound default is to use it if present
   --without-esd           Don't use esd for sound default is to use it if present
   --with-extensions       the extensions (like the servlet API) to include [default=none]
@@ -4350,7 +4353,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4353 "configure"' > conftest.$ac_ext
+  echo '#line 4356 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -5700,7 +5703,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:5703:" \
+echo "$as_me:5706:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -6737,11 +6740,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6740: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6743: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6744: \$? = $ac_status" >&5
+   echo "$as_me:6747: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6969,11 +6972,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6972: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6975: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6976: \$? = $ac_status" >&5
+   echo "$as_me:6979: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -7036,11 +7039,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7039: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7042: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7043: \$? = $ac_status" >&5
+   echo "$as_me:7046: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -9154,7 +9157,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9157 "configure"
+#line 9160 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -9252,7 +9255,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9255 "configure"
+#line 9258 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11408,11 +11411,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11411: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11414: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:11415: \$? = $ac_status" >&5
+   echo "$as_me:11418: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -11475,11 +11478,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11478: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11481: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:11482: \$? = $ac_status" >&5
+   echo "$as_me:11485: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12804,7 +12807,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12807 "configure"
+#line 12810 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12902,7 +12905,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12905 "configure"
+#line 12908 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13724,11 +13727,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13727: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13730: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13731: \$? = $ac_status" >&5
+   echo "$as_me:13734: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -13791,11 +13794,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13794: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13797: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13798: \$? = $ac_status" >&5
+   echo "$as_me:13801: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15757,11 +15760,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15760: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15763: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15764: \$? = $ac_status" >&5
+   echo "$as_me:15767: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -15989,11 +15992,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15992: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15995: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15996: \$? = $ac_status" >&5
+   echo "$as_me:15999: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -16056,11 +16059,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16059: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16062: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16063: \$? = $ac_status" >&5
+   echo "$as_me:16066: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18174,7 +18177,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18177 "configure"
+#line 18180 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -18272,7 +18275,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18275 "configure"
+#line 18278 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -45261,177 +45264,250 @@ fi
 
 
 
-have_esd_h=no
-if test "${ac_cv_header_esd_h+set}" = set; then
-  echo "$as_me:$LINENO: checking for esd.h" >&5
-echo $ECHO_N "checking for esd.h... $ECHO_C" >&6
-if test "${ac_cv_header_esd_h+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: $ac_cv_header_esd_h" >&5
-echo "${ECHO_T}$ac_cv_header_esd_h" >&6
+# Check whether --with-esd-prefix or --without-esd-prefix was given.
+if test "${with_esd_prefix+set}" = set; then
+  withval="$with_esd_prefix"
+  esd_prefix="$withval"
 else
-  # Is the header compilable?
-echo "$as_me:$LINENO: checking esd.h usability" >&5
-echo $ECHO_N "checking esd.h usability... $ECHO_C" >&6
-cat >conftest.$ac_ext <<_ACEOF
+  esd_prefix=""
+fi;
+
+# Check whether --with-esd-exec-prefix or --without-esd-exec-prefix was given.
+if test "${with_esd_exec_prefix+set}" = set; then
+  withval="$with_esd_exec_prefix"
+  esd_exec_prefix="$withval"
+else
+  esd_exec_prefix=""
+fi;
+# Check whether --enable-esdtest or --disable-esdtest was given.
+if test "${enable_esdtest+set}" = set; then
+  enableval="$enable_esdtest"
+
+else
+  enable_esdtest=yes
+fi;
+
+  if test x$esd_exec_prefix != x ; then
+     esd_args="$esd_args --exec-prefix=$esd_exec_prefix"
+     if test x${ESD_CONFIG+set} != xset ; then
+        ESD_CONFIG=$esd_exec_prefix/bin/esd-config
+     fi
+  fi
+  if test x$esd_prefix != x ; then
+     esd_args="$esd_args --prefix=$esd_prefix"
+     if test x${ESD_CONFIG+set} != xset ; then
+        ESD_CONFIG=$esd_prefix/bin/esd-config
+     fi
+  fi
+
+  # Extract the first word of "esd-config", so it can be a program name with args.
+set dummy esd-config; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_ESD_CONFIG+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $ESD_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_ESD_CONFIG="$ESD_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_ESD_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  test -z "$ac_cv_path_ESD_CONFIG" && ac_cv_path_ESD_CONFIG="no"
+  ;;
+esac
+fi
+ESD_CONFIG=$ac_cv_path_ESD_CONFIG
+
+if test -n "$ESD_CONFIG"; then
+  echo "$as_me:$LINENO: result: $ESD_CONFIG" >&5
+echo "${ECHO_T}$ESD_CONFIG" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+  min_esd_version=0.2.1
+  echo "$as_me:$LINENO: checking for ESD - version >= $min_esd_version" >&5
+echo $ECHO_N "checking for ESD - version >= $min_esd_version... $ECHO_C" >&6
+  no_esd=""
+  if test "$ESD_CONFIG" = "no" ; then
+    no_esd=yes
+  else
+
+
+    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+    ESD_CFLAGS=`$ESD_CONFIG $esdconf_args --cflags`
+    ESD_LIBS=`$ESD_CONFIG $esdconf_args --libs`
+
+    esd_major_version=`$ESD_CONFIG $esd_args --version | \
+           sed 's/\([0-9]*\).\([0-9]*\).\([0-9]*\)/\1/'`
+    esd_minor_version=`$ESD_CONFIG $esd_args --version | \
+           sed 's/\([0-9]*\).\([0-9]*\).\([0-9]*\)/\2/'`
+    esd_micro_version=`$ESD_CONFIG $esd_config_args --version | \
+           sed 's/\([0-9]*\).\([0-9]*\).\([0-9]*\)/\3/'`
+    if test "x$enable_esdtest" = "xyes" ; then
+      ac_save_CFLAGS="$CFLAGS"
+      ac_save_LIBS="$LIBS"
+      CFLAGS="$CFLAGS $ESD_CFLAGS"
+      LIBS="$LIBS $ESD_LIBS"
+      rm -f conf.esdtest
+      if test "$cross_compiling" = yes; then
+  echo $ac_n "cross compiling; assumed OK... $ac_c"
+else
+  cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-$ac_includes_default
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <esd.h>
+
+char*
+my_strdup (char *str)
+{
+  char *new_str;
+
+  if (str)
+    {
+      new_str = malloc ((strlen (str) + 1) * sizeof(char));
+      strcpy (new_str, str);
+    }
+  else
+    new_str = NULL;
+
+  return new_str;
+}
+
+int main ()
+{
+  int major, minor, micro;
+  char *tmp_version;
+
+  system ("touch conf.esdtest");
+
+  /* HP/UX 9 (%@#!) writes to sscanf strings */
+  tmp_version = my_strdup("$min_esd_version");
+  if (sscanf(tmp_version, "%d.%d.%d", &major, &minor, &micro) != 3) {
+     printf("%s, bad version string\n", "$min_esd_version");
+     exit(1);
+   }
+
+   if (($esd_major_version > major) ||
+      (($esd_major_version == major) && ($esd_minor_version > minor)) ||
+      (($esd_major_version == major) && ($esd_minor_version == minor) && ($esd_micro_version >= micro)))
+    {
+      return 0;
+    }
+  else
+    {
+      printf("\n*** 'esd-config --version' returned %d.%d.%d, but the minimum version\n", $esd_major_version, $esd_minor_version, $esd_micro_version);
+      printf("*** of ESD required is %d.%d.%d. If esd-config is correct, then it is\n", major, minor, micro);
+      printf("*** best to upgrade to the required version.\n");
+      printf("*** If esd-config was wrong, set the environment variable ESD_CONFIG\n");
+      printf("*** to point to the correct copy of esd-config, and remove the file\n");
+      printf("*** config.cache before re-running configure\n");
+      return 1;
+    }
+}
+
+
 _ACEOF
-rm -f conftest.$ac_objext
-if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
-  (eval $ac_compile) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"
-			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
+rm -f conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest.$ac_objext'
+  (exit $ac_status); } && { ac_try='./conftest$ac_exeext'
   { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_header_compiler=yes
+  :
 else
-  echo "$as_me: failed program was:" >&5
+  echo "$as_me: program exited with status $ac_status" >&5
+echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_header_compiler=no
+( exit $ac_status )
+no_esd=yes
 fi
-rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
-echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
-echo "${ECHO_T}$ac_header_compiler" >&6
+rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+fi
+       CFLAGS="$ac_save_CFLAGS"
+       LIBS="$ac_save_LIBS"
+       ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-# Is the header present?
-echo "$as_me:$LINENO: checking esd.h presence" >&5
-echo $ECHO_N "checking esd.h presence... $ECHO_C" >&6
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <esd.h>
-_ACEOF
-if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
-  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } >/dev/null; then
-  if test -s conftest.err; then
-    ac_cpp_err=$ac_c_preproc_warn_flag
-    ac_cpp_err=$ac_cpp_err$ac_c_werror_flag
-  else
-    ac_cpp_err=
+     fi
   fi
-else
-  ac_cpp_err=yes
-fi
-if test -z "$ac_cpp_err"; then
-  ac_header_preproc=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-  ac_header_preproc=no
-fi
-rm -f conftest.err conftest.$ac_ext
-echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
-echo "${ECHO_T}$ac_header_preproc" >&6
-
-# So?  What about this header?
-case $ac_header_compiler:$ac_header_preproc:$ac_c_preproc_warn_flag in
-  yes:no: )
-    { echo "$as_me:$LINENO: WARNING: esd.h: accepted by the compiler, rejected by the preprocessor!" >&5
-echo "$as_me: WARNING: esd.h: accepted by the compiler, rejected by the preprocessor!" >&2;}
-    { echo "$as_me:$LINENO: WARNING: esd.h: proceeding with the compiler's result" >&5
-echo "$as_me: WARNING: esd.h: proceeding with the compiler's result" >&2;}
-    ac_header_preproc=yes
-    ;;
-  no:yes:* )
-    { echo "$as_me:$LINENO: WARNING: esd.h: present but cannot be compiled" >&5
-echo "$as_me: WARNING: esd.h: present but cannot be compiled" >&2;}
-    { echo "$as_me:$LINENO: WARNING: esd.h:     check for missing prerequisite headers?" >&5
-echo "$as_me: WARNING: esd.h:     check for missing prerequisite headers?" >&2;}
-    { echo "$as_me:$LINENO: WARNING: esd.h: see the Autoconf documentation" >&5
-echo "$as_me: WARNING: esd.h: see the Autoconf documentation" >&2;}
-    { echo "$as_me:$LINENO: WARNING: esd.h:     section \"Present But Cannot Be Compiled\"" >&5
-echo "$as_me: WARNING: esd.h:     section \"Present But Cannot Be Compiled\"" >&2;}
-    { echo "$as_me:$LINENO: WARNING: esd.h: proceeding with the preprocessor's result" >&5
-echo "$as_me: WARNING: esd.h: proceeding with the preprocessor's result" >&2;}
-    { echo "$as_me:$LINENO: WARNING: esd.h: in the future, the compiler will take precedence" >&5
-echo "$as_me: WARNING: esd.h: in the future, the compiler will take precedence" >&2;}
-    (
-      cat <<\_ASBOX
-## ------------------------------ ##
-## Report this to kaffe@kaffe.org ##
-## ------------------------------ ##
-_ASBOX
-    ) |
-      sed "s/^/$as_me: WARNING:     /" >&2
-    ;;
-esac
-echo "$as_me:$LINENO: checking for esd.h" >&5
-echo $ECHO_N "checking for esd.h... $ECHO_C" >&6
-if test "${ac_cv_header_esd_h+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_cv_header_esd_h=$ac_header_preproc
-fi
-echo "$as_me:$LINENO: result: $ac_cv_header_esd_h" >&5
-echo "${ECHO_T}$ac_cv_header_esd_h" >&6
-
-fi
-if test $ac_cv_header_esd_h = yes; then
-  have_esd_h=yes
-else
-  echo "$as_me:$LINENO: result: Warning: Could not find Enlightened Sound Daemon header file" >&5
-echo "${ECHO_T}Warning: Could not find Enlightened Sound Daemon header file" >&6
-fi
+  if test "x$no_esd" = x ; then
+     echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+     esd_found=yes
+  else
+     echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+     if test "$ESD_CONFIG" = "no" ; then
+       echo "*** The esd-config script installed by ESD could not be found"
+       echo "*** If ESD was installed in PREFIX, make sure PREFIX/bin is in"
+       echo "*** your path, or set the ESD_CONFIG environment variable to the"
+       echo "*** full path to esd-config."
+     else
+       if test -f conf.esdtest ; then
+        :
+       else
+          echo "*** Could not run ESD test program, checking why..."
+          CFLAGS="$CFLAGS $ESD_CFLAGS"
+          LIBS="$LIBS $ESD_LIBS"
 
 
-echo "$as_me:$LINENO: checking for esd_open_sound in -lesd" >&5
-echo $ECHO_N "checking for esd_open_sound in -lesd... $ECHO_C" >&6
-if test "${ac_cv_lib_esd_esd_open_sound+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lesd  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
+          ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+          cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char esd_open_sound ();
+#include <stdio.h>
+#include <esd.h>
+
 int
 main ()
 {
-esd_open_sound ();
+ return 0;
   ;
   return 0;
 }
@@ -45458,28 +45534,46 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_esd_esd_open_sound=yes
+   echo "*** The test program compiled, but did not run. This usually means"
+          echo "*** that the run-time linker is not finding ESD or finding the wrong"
+          echo "*** version of ESD. If it is not finding ESD, you'll need to set your"
+          echo "*** LD_LIBRARY_PATH environment variable, or edit /etc/ld.so.conf to point"
+          echo "*** to the installed location  Also, make sure you have run ldconfig if that"
+          echo "*** is required on your system"
+	  echo "***"
+          echo "*** If you have an old version installed, it is best to remove it, although"
+          echo "*** you may also be able to get things to work by modifying LD_LIBRARY_PATH"
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_lib_esd_esd_open_sound=no
+ echo "*** The test program failed to compile or link. See the file config.log for the"
+          echo "*** exact error that occured. This usually means ESD was incorrectly installed"
+          echo "*** or that you have moved ESD since it was installed. In the latter case, you"
+          echo "*** may want to edit the esd-config script: $ESD_CONFIG"
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_esd_esd_open_sound" >&5
-echo "${ECHO_T}$ac_cv_lib_esd_esd_open_sound" >&6
-if test $ac_cv_lib_esd_esd_open_sound = yes; then
-  have_esd=yes;
-	echo "$as_me:$LINENO: result: Information: Enlightened Sound Daemon found" >&5
-echo "${ECHO_T}Information: Enlightened Sound Daemon found" >&6
-else
-  have_esd=no;
-	echo "$as_me:$LINENO: result: Information: Enlightened Sound Daemon not found" >&5
-echo "${ECHO_T}Information: Enlightened Sound Daemon not found" >&6
-fi
+          CFLAGS="$ac_save_CFLAGS"
+          LIBS="$ac_save_LIBS"
+          ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+       fi
+     fi
+     ESD_CFLAGS=""
+     ESD_LIBS=""
+     echo "$as_me:$LINENO: result: Useable version of ESD not found." >&5
+echo "${ECHO_T}Useable version of ESD not found." >&6
+	     esd_found=no
+
+  fi
+
+
+  rm -f conf.esdtest
 
 
 
@@ -45513,7 +45607,7 @@ case $with_esd in
 no)
 	;;
 *)
-	if test x"$have_esd" = x"yes" && test x"$have_esd_h" = x"yes"; then
+	if test x"$esd_found" = x"yes"; then
 		ESD_DIR=esd
 		ESD_LIB="\$(top_builddir)/libraries/extensions/sound/esd/libtritonusesd.la"
 	fi
@@ -47597,6 +47691,9 @@ s,@QT_GUILINK@,$QT_GUILINK,;t t
 s,@AWT_DIR@,$AWT_DIR,;t t
 s,@ALSA_CFLAGS@,$ALSA_CFLAGS,;t t
 s,@ALSA_LIBS@,$ALSA_LIBS,;t t
+s,@ESD_CONFIG@,$ESD_CONFIG,;t t
+s,@ESD_CFLAGS@,$ESD_CFLAGS,;t t
+s,@ESD_LIBS@,$ESD_LIBS,;t t
 s,@COND_SOUND_ALSA_TRUE@,$COND_SOUND_ALSA_TRUE,;t t
 s,@COND_SOUND_ALSA_FALSE@,$COND_SOUND_ALSA_FALSE,;t t
 s,@COND_SOUND_ESD_TRUE@,$COND_SOUND_ESD_TRUE,;t t

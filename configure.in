@@ -1281,19 +1281,10 @@ AM_PATH_ALSA(1.0.1,
 	     [AC_MSG_RESULT([Useable version of ALSA not found.])]
 )
 
-dnl Check for esd
-
-have_esd_h=no
-AC_CHECK_HEADER([esd.h],
-		[have_esd_h=yes],
-		[AC_MSG_RESULT([Warning: Could not find Enlightened Sound Daemon header file])])
-AC_CHECK_LIB(
-	esd,
-	esd_open_sound,
-	[have_esd=yes;
-	AC_MSG_RESULT(Information: Enlightened Sound Daemon found)],
-	[have_esd=no;
-	AC_MSG_RESULT(Information: Enlightened Sound Daemon not found)],
+AM_PATH_ESD([0.2.1],
+	    [esd_found=yes],
+	    [AC_MSG_RESULT([Useable version of ESD not found.])
+	     esd_found=no]
 )
 
 dnl Use alsa
@@ -1321,7 +1312,7 @@ case $with_esd in
 no)
 	;;
 *)
-	if test x"$have_esd" = x"yes" && test x"$have_esd_h" = x"yes"; then
+	if test x"$esd_found" = x"yes"; then
 		ESD_DIR=esd
 		ESD_LIB="\$(top_builddir)/libraries/extensions/sound/esd/libtritonusesd.la"
 	fi

@@ -971,6 +971,7 @@ INSTALL_STRIP_PROGRAM="\${SHELL} \$(install_sh) -c -s"
 AC_SUBST([INSTALL_STRIP_PROGRAM])])
 
 m4_include([m4/alsa.m4])
+m4_include([m4/esd.m4])
 m4_include([m4/gnu-crypto.m4])
 m4_include([m4/gwqt.m4])
 m4_include([m4/herrno.m4])

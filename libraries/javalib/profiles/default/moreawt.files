@@ -1,7 +1,6 @@
 java/awt/AlphaComposite.java
 java/awt/ColorPaintContext.java
 java/awt/ComponentOrientation.java
-java/awt/GridBagLayoutInfo.java
 java/awt/Robot.java
 java/awt/TexturePaint.java
 java/awt/dnd/peer/DropTargetContextPeer.java
