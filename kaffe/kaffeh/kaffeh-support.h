@@ -28,10 +28,10 @@ extern void endJniInclude(void);
 extern void kaffeh_findClass(const char *nm);
 
 /* support.c */
-extern bool addCode(Method* m, uint32 len, classFile* fp, errorInfo *einfo);	
-extern bool addLineNumbers(Method* m, uint32 len, classFile* fp, errorInfo *info);
-extern bool addLocalVariables(Method* m, uint32 len, classFile* fp, errorInfo *info);
-extern bool addCheckedExceptions(Method* m, uint32 len, classFile* fp, errorInfo *info);
+extern bool addCode(Method* m, size_t len, classFile* fp, errorInfo *einfo);	
+extern bool addLineNumbers(Method* m, size_t len, classFile* fp, errorInfo *info);
+extern bool addLocalVariables(Method* m, size_t len, classFile* fp, errorInfo *info);
+extern bool addCheckedExceptions(Method* m, size_t len, classFile* fp, errorInfo *info);
 
 /* sig.c */
 extern const char* translateSig(const char*, const char**, int*);

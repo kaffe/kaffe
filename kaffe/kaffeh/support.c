@@ -270,7 +270,7 @@ addSourceFile(Hjava_lang_Class* c UNUSED, int idx UNUSED, errorInfo *einfo UNUSE
 }
 
 bool
-addInnerClasses(Hjava_lang_Class* c UNUSED, uint32 len, classFile* fp,
+addInnerClasses(Hjava_lang_Class* c UNUSED, size_t len, classFile* fp,
 		errorInfo *einfo UNUSED)
 {
 	/* checkBufSize() done in caller. */
@@ -711,7 +711,7 @@ finishMethods (Hjava_lang_Class *this UNUSED)
 }
 
 bool 
-addCode(Method* m, uint32 len, classFile* fp, errorInfo *einfo UNUSED)
+addCode(Method* m, size_t len, classFile* fp, errorInfo *einfo UNUSED)
 {
 	/* Don't try dereferencing m! */
 	assert(m == (Method*)1);
@@ -722,7 +722,7 @@ addCode(Method* m, uint32 len, classFile* fp, errorInfo *einfo UNUSED)
 }
 
 bool
-addLineNumbers(Method* m, uint32 len, classFile* fp, errorInfo *info UNUSED)
+addLineNumbers(Method* m, size_t len, classFile* fp, errorInfo *info UNUSED)
 {
 	/* Don't try dereferencing m! */
 	assert(m == (Method*)1);
@@ -733,7 +733,7 @@ addLineNumbers(Method* m, uint32 len, classFile* fp, errorInfo *info UNUSED)
 }
 
 bool
-addLocalVariables(Method* m, uint32 len, classFile* fp, errorInfo *info UNUSED)
+addLocalVariables(Method* m, size_t len, classFile* fp, errorInfo *info UNUSED)
 {
 	/* Don't try dereferencing m! */
 	assert(m == (Method*)1);
@@ -744,7 +744,7 @@ addLocalVariables(Method* m, uint32 len, classFile* fp, errorInfo *info UNUSED)
 }
 
 bool
-addCheckedExceptions(Method* m, uint32 len, classFile* fp,
+addCheckedExceptions(Method* m, size_t len, classFile* fp,
 		     errorInfo *info UNUSED)
 {
 	/* Don't try dereferencing m! */

@@ -52,13 +52,13 @@ typedef struct _localVariables {
 struct _methods;
 struct classFile;
 
-bool	addCode(struct _methods*, uint32, struct classFile*,
+bool	addCode(struct _methods*, size_t, struct classFile*,
 		errorInfo *info);
-bool	addLineNumbers(struct _methods*, uint32, struct classFile*,
+bool	addLineNumbers(struct _methods*, size_t, struct classFile*,
 		       errorInfo *info);
-bool	addLocalVariables(struct _methods*, uint32, struct classFile *,
+bool	addLocalVariables(struct _methods*, size_t, struct classFile *,
 			  errorInfo *info);
-bool	addCheckedExceptions(struct _methods*, uint32,
+bool	addCheckedExceptions(struct _methods*, size_t,
 			     struct classFile*, errorInfo *info);
 
 #endif

@@ -1010,7 +1010,7 @@ addSourceFile(Hjava_lang_Class* c, int idx, errorInfo *einfo)
  * Read in InnerClasses declares for a class
  */
 bool
-addInnerClasses(Hjava_lang_Class* c, uint32 len UNUSED, classFile* fp,
+addInnerClasses(Hjava_lang_Class* c, size_t len UNUSED, classFile* fp,
 		errorInfo *einfo)
 {
 	int i;

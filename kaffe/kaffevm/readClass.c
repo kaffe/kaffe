@@ -236,21 +236,21 @@ readAttributes(classFile* fp, Hjava_lang_Class* this,
 				);
 			if (utf8ConstEqual(name, Code_name)
 			    && (thingType == READATTR_METHOD)) {
-				if (! addCode((Method*)thing, len, fp, einfo)) {
+				if (! addCode((Method*)thing, (size_t) len, fp, einfo)) {
 					return false;
 				}
 			}
 			else if (utf8ConstEqual(name, LineNumberTable_name)
 				 && (thingType == READATTR_METHOD)) {
 				if (!addLineNumbers((Method*)thing,
-						    len, fp, einfo)) {
+						    (size_t) len, fp, einfo)) {
 					return false;
 				}
 			}
 			else if (utf8ConstEqual(name, LocalVariableTable_name)
 				 && (thingType == READATTR_METHOD)) {
 				if (!addLocalVariables((Method*)thing,
-						       len, fp, einfo)) {
+						      (size_t) len, fp, einfo)) {
 					return false;
 				}
 			}
@@ -262,7 +262,7 @@ readAttributes(classFile* fp, Hjava_lang_Class* this,
 			else if (utf8ConstEqual(name, Exceptions_name)
 				&& (thingType == READATTR_METHOD)) {
 				if (!addCheckedExceptions((Method*)thing,
-							 len, fp, einfo)) {
+							 (size_t) len, fp, einfo)) {
 					return false;
 				}
 			}
@@ -276,7 +276,7 @@ readAttributes(classFile* fp, Hjava_lang_Class* this,
 			else if (utf8ConstEqual(name, InnerClasses_name)
 				 && (thingType == READATTR_CLASS)) {
 				if(! addInnerClasses((Hjava_lang_Class*)thing,
-						    len, fp, einfo)) {
+						    (size_t) len, fp, einfo)) {
 					return false;
 				}
 			}

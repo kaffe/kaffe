@@ -523,7 +523,7 @@ void			loadStaticClass(Hjava_lang_Class**, const char*);
 Hjava_lang_Class*	setupClass(Hjava_lang_Class*, constIndex,
 				   constIndex, u2, Hjava_lang_ClassLoader*, errorInfo*);
 bool 			addSourceFile(Hjava_lang_Class* c, int idx, errorInfo*);
-bool			addInnerClasses(Hjava_lang_Class* c, uint32 len, struct classFile* fp, errorInfo *info);
+bool			addInnerClasses(Hjava_lang_Class* c, size_t len, struct classFile* fp, errorInfo *info);
 int			startMethods(Hjava_lang_Class*, u2 methct, errorInfo*);
 Method*			addMethod(Hjava_lang_Class*, u2 access_flags,
 				  u2 name_index, u2 signature_index, errorInfo*);

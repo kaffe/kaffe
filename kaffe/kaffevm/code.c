@@ -25,7 +25,7 @@
 #include "exception.h"
 
 bool
-addCode(Method* m, uint32 len UNUSED, classFile* fp, errorInfo *einfo)
+addCode(Method* m, size_t len UNUSED, classFile* fp, errorInfo *einfo)
 {
 	bool retval = false;
 	Code c;
@@ -127,7 +127,7 @@ addCode(Method* m, uint32 len UNUSED, classFile* fp, errorInfo *einfo)
  * Read in line numbers assocated with code.
  */
 bool
-addLineNumbers(Method* m, uint32 len UNUSED, classFile* fp, errorInfo *info)
+addLineNumbers(Method* m, size_t len UNUSED, classFile* fp, errorInfo *info)
 {
 	lineNumbers* lines;
 	int i;
@@ -170,7 +170,7 @@ addLineNumbers(Method* m, uint32 len UNUSED, classFile* fp, errorInfo *info)
 }
 
 bool
-addLocalVariables(Method *m, uint32 len UNUSED, classFile *fp, errorInfo *info)
+addLocalVariables(Method *m, size_t len UNUSED, classFile *fp, errorInfo *info)
 {
 	constants *pool = CLASS_CONSTANTS(m->class);
 	localVariables *lv;
@@ -239,7 +239,7 @@ addLocalVariables(Method *m, uint32 len UNUSED, classFile *fp, errorInfo *info)
  * Read in (checked) exceptions declared for a method
  */
 bool
-addCheckedExceptions(Method* m, uint32 len UNUSED, classFile* fp,
+addCheckedExceptions(Method* m, size_t len UNUSED, classFile* fp,
 		     errorInfo *info)
 {
 	int i;
