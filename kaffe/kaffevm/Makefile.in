@@ -81,7 +81,7 @@ am_libkaffevm_la_OBJECTS = access.lo baseClasses.lo classMethod.lo \
 	constants.lo debug.lo exception.lo external.lo file.lo \
 	findInJar.lo fp.lo gc.lo hashtab.lo inflate.lo itypes.lo \
 	jar.lo jni.lo ksem.lo locks.lo lookup.lo object.lo \
-	readClass.lo sha-1.lo soft.lo stackTrace.lo stats.lo string.lo \
+	readClass.lo soft.lo stackTrace.lo stats.lo string.lo \
 	stringParsing.lo support.lo thread.lo utf8const.lo gcFuncs.lo \
 	gcRefs.lo verify.lo verify2.lo verify-block.lo verify-debug.lo \
 	verify-sigstack.lo verify-type.lo verify-uninit.lo
@@ -108,9 +108,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/ksem.Plo ./$(DEPDIR)/locks.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/lookup.Plo ./$(DEPDIR)/md.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/methodCache.Plo ./$(DEPDIR)/object.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/readClass.Plo ./$(DEPDIR)/sha-1.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/soft.Plo ./$(DEPDIR)/stackTrace.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/stats.Plo ./$(DEPDIR)/string.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/readClass.Plo ./$(DEPDIR)/soft.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/stackTrace.Plo ./$(DEPDIR)/stats.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/string.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/stringParsing.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/support.Plo ./$(DEPDIR)/thread.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/utf8const.Plo \
@@ -443,7 +443,6 @@ libkaffevm_la_SOURCES = \
 	lookup.c \
 	object.c \
 	readClass.c \
-	sha-1.c \
 	soft.c \
 	stackTrace.c \
 	stats.c \
@@ -491,7 +490,6 @@ noinst_HEADERS = \
 	lookup.h \
 	object.h \
 	readClass.h \
-	sha-1.h \
 	slib.h \
 	soft.h \
 	stackTrace.h \
@@ -610,7 +608,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/methodCache.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/object.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/readClass.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha-1.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/soft.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stackTrace.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stats.Plo@am__quote@

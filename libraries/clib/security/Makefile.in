@@ -73,14 +73,14 @@ nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libsecurity_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am__objects_1 = digest.lo kaffe_md5.lo
+am__objects_1 = digest.lo kaffe_md5.lo sha-1.lo
 am_libsecurity_la_OBJECTS = $(am__objects_1)
 libsecurity_la_OBJECTS = $(am_libsecurity_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/digest.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/kaffe_md5.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/kaffe_md5.Plo ./$(DEPDIR)/sha-1.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
@@ -336,13 +336,12 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 AM_CPPFLAGS = -I$(top_builddir)/include
 native_LTLIBRARIES = libsecurity.la
-EXTRA_DIST = \
-		kaffe_md5.h \
-		java.security
-
 SECURITY_SRCS = \
-		digest.c \
-		kaffe_md5.c
+	digest.c \
+	kaffe_md5.c \
+	kaffe_md5.h \
+	sha-1.c \
+	sha-1.h 
 
 security_DATA = java.security
 libsecurity_la_LDFLAGS = \
@@ -425,6 +424,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/digest.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffe_md5.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha-1.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

@@ -10,13 +10,12 @@ AM_CPPFLAGS = -I$(top_builddir)/include
 
 native_LTLIBRARIES = libsecurity.la
 
-EXTRA_DIST = \
-		kaffe_md5.h \
-		java.security
-
 SECURITY_SRCS =	\
-		digest.c \
-		kaffe_md5.c
+	digest.c \
+	kaffe_md5.c \
+	kaffe_md5.h \
+	sha-1.c \
+	sha-1.h 
 
 security_DATA = java.security
 

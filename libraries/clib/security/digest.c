@@ -24,7 +24,7 @@
 #include "../../../kaffe/kaffevm/exception.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
 #include "../../../kaffe/kaffevm/fp.h"
-#include "../../../kaffe/kaffevm/sha-1.h"
+#include "sha-1.h"
 #include <native.h>
 #include "kaffe_security_provider_MD2.h"
 #include "kaffe_security_provider_MD4.h"
