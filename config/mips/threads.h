@@ -24,7 +24,7 @@
 #define	THREADSTACKSIZE		(128 * 1024)
 #endif /* _MIPS_SIM == _MIPS_SIM_ABI32 */
 #else
-#define	THREADSTACKSIZE		(32 * 1024)
+#define	THREADSTACKSIZE		(64 * 1024)
 #endif
 
 /*

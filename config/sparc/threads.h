@@ -18,9 +18,9 @@
 #define	USE_INTERNAL_THREADS
 
 #if defined(INTERPRETER)
-#define	THREADSTACKSIZE		(48 * 1024)
+#define	THREADSTACKSIZE		(96 * 1024)
 #else
-#define	THREADSTACKSIZE		(32 * 1024)
+#define	THREADSTACKSIZE		(64 * 1024)
 #endif
 
 /*

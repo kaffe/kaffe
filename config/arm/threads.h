@@ -17,7 +17,7 @@
 /**/
 #define	USE_INTERNAL_THREADS
 
-#define	THREADSTACKSIZE		(32 * 1024)
+#define	THREADSTACKSIZE		(64 * 1024)
 
 /*
  * Stack offset.

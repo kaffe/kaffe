@@ -20,7 +20,7 @@
 #if defined(INTERPRETER)
 #define	THREADSTACKSIZE		(128 * 1024)
 #else
-#define	THREADSTACKSIZE		(32 * 1024)
+#define	THREADSTACKSIZE		(64 * 1024)
 #endif
 
 /*
