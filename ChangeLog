@@ -1,5 +1,83 @@
 2004-09-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/im/spi/package.html,
+	libraries/javalib/javax/crypto/package.html,
+	libraries/javalib/javax/crypto/interfaces/package.html,
+	libraries/javalib/javax/crypto/spec/package.html,
+	libraries/javalib/javax/net/ServerSocketFactory.java,
+	libraries/javalib/javax/net/SocketFactory.java,
+	libraries/javalib/javax/net/VanillaServerSocketFactory.java,
+	libraries/javalib/javax/net/VanillaSocketFactory.java,
+	libraries/javalib/javax/net/package.html,
+	libraries/javalib/javax/net/ssl/HandshakeCompletedEvent.java,
+	libraries/javalib/javax/net/ssl/HandshakeCompletedListener.java,
+	libraries/javalib/javax/net/ssl/HostnameVerifier.java,
+	libraries/javalib/javax/net/ssl/HttpsURLConnection.java,
+	libraries/javalib/javax/net/ssl/KeyManager.java,
+	libraries/javalib/javax/net/ssl/KeyManagerFactory.java,
+	libraries/javalib/javax/net/ssl/KeyManagerFactorySpi.java,
+	libraries/javalib/javax/net/ssl/ManagerFactoryParameters.java,
+	libraries/javalib/javax/net/ssl/SSLContext.java,
+	libraries/javalib/javax/net/ssl/SSLContextSpi.java,
+	libraries/javalib/javax/net/ssl/SSLException.java,
+	libraries/javalib/javax/net/ssl/SSLHandshakeException.java,
+	libraries/javalib/javax/net/ssl/SSLKeyException.java,
+	libraries/javalib/javax/net/ssl/SSLPeerUnverifiedException.java,
+	libraries/javalib/javax/net/ssl/SSLPermission.java,
+	libraries/javalib/javax/net/ssl/SSLProtocolException.java,
+	libraries/javalib/javax/net/ssl/SSLServerSocketFactory.java,
+	libraries/javalib/javax/net/ssl/SSLSession.java,
+	libraries/javalib/javax/net/ssl/SSLSessionBindingEvent.java,
+	libraries/javalib/javax/net/ssl/SSLSessionBindingListener.java,
+	libraries/javalib/javax/net/ssl/SSLSessionContext.java,
+	libraries/javalib/javax/net/ssl/SSLSocket.java,
+	libraries/javalib/javax/net/ssl/SSLSocketFactory.java,
+	libraries/javalib/javax/net/ssl/TrivialHostnameVerifier.java,
+	libraries/javalib/javax/net/ssl/TrustManager.java,
+	libraries/javalib/javax/net/ssl/TrustManagerFactory.java,
+	libraries/javalib/javax/net/ssl/TrustManagerFactorySpi.java,
+	libraries/javalib/javax/net/ssl/X509KeyManager.java,
+	libraries/javalib/javax/net/ssl/X509TrustManager.java,
+	libraries/javalib/javax/net/ssl/package.html,
+	libraries/javalib/javax/security/package.html,
+	libraries/javalib/javax/security/auth/package.html,
+	libraries/javalib/javax/security/auth/callback/package.html,
+	libraries/javalib/javax/security/auth/login/package.html,
+	libraries/javalib/javax/security/cert/package.html,
+	libraries/javalib/javax/security/sasl/package.html,
+	libraries/javalib/javax/swing/package.html,
+	libraries/javalib/javax/swing/border/package.html,
+	libraries/javalib/javax/swing/colorchooser/package.html,
+	libraries/javalib/javax/swing/filechooser/package.html,
+	libraries/javalib/javax/swing/plaf/package.html,
+	libraries/javalib/javax/swing/plaf/basic/package.html,
+	libraries/javalib/javax/swing/plaf/metal/package.html,
+	libraries/javalib/javax/swing/table/package.html,
+	libraries/javalib/javax/swing/text/html/package.html,
+	libraries/javalib/javax/swing/text/html/parser/package.html,
+	libraries/javalib/javax/swing/tree/package.html,
+	libraries/javalib/javax/swing/undo/package.html:
+	Resynced with GNU Classpath. Added missing package.html files,
+	and switched javax.net over to GNU Classpath's
+	implementation (resulting just in changes in header comments).
+
+	2004-09-21  Michael Koch  <konqueror@gmx.de>
+
+        * javax/crypto/package.html,
+        javax/crypto/interfaces/package.html,
+        javax/crypto/spec/package.html,
+        javax/net/package.html,
+        javax/net/ssl/package.html,
+        javax/security/package.html,
+        javax/security/auth/package.html,
+        javax/security/auth/callback/package.html,
+        javax/security/auth/login/package.html,
+        javax/security/cert/package.html,
+        javax/security/sasl/package.html:
+        New files for package documentation.
+
+2004-09-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/net/ssl/SSLServerSocket.java:
         Resynced with GNU Classpath.
 
