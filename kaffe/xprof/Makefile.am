@@ -44,5 +44,4 @@ noinst_HEADERS = \
 	sectionFile.h \
 	xprofiler.h
 
-CONF_CFLAGS = @CFLAGS@
-CFLAGS = $(filter-out -pg,$(CONF_CFLAGS))
+CFLAGS = @CFLAGS_WITHOUT_PG@
