@@ -1,5 +1,11 @@
 2004-12-08  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/xprof/debugFile.c: When printing out the DIA_SourceFile
+	  record, if addr is null, hard-code 0 as the value; otherwise,
+	  fprintf prints '(nil)', and ld complains when linking.
+
+2004-12-08  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
 	  Call unprotectThreadList *before* calling pthread_exit.  This
 	  prevents deadlocks during shutdown(discovered while getting xprof

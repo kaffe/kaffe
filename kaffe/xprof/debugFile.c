@@ -545,11 +545,17 @@ int addDebugInfo(struct debug_file *df, df_tag_t tag, ...)
 			case DIA_SourceFile:
 				name = va_arg(args, char *);
 				addr = va_arg(args, char *);
-				fprintf(df->df_file,
-					"\n\n.stabs \"%s\",%d,0,0,%p\n",
-					name,
-					N_SO,
-					addr);
+				if (addr != null)
+					fprintf(df->df_file,
+						"\n\n.stabs \"%s\",%d,0,0,%p\n",
+						name,
+						N_SO,
+						addr);
+				else
+					fprintf(df->df_file,
+						"\n\n.stabs \"%s\",%d,0,0,0\n",
+						name,
+						N_SO);
 				break;
 			case DIA_IncludeFile:
 				path = va_arg(args, char *);
