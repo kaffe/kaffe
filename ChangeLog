@@ -1,3 +1,8 @@
+Mon Nov 29 16:51:31 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* numerous files: next stage of GCJ integration.
+	See cvs log entries for detailed comments.
+
 1999-11-25  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
 	* kaffe/kaffevm/systems/unix-jthreads/Makefile.am
