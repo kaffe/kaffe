@@ -378,7 +378,7 @@ Kaffe_ThrowNew(JNIEnv* env, jclass cls, const char* mess)
 }
 
 static jobject
-Kaffe_ExceptionOccured(JNIEnv* env)
+Kaffe_ExceptionOccurred(JNIEnv* env)
 {
 	jobject obj;
 
@@ -4136,7 +4136,7 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 	NULL,
 	Kaffe_Throw,
 	Kaffe_ThrowNew,
-	Kaffe_ExceptionOccured,
+	Kaffe_ExceptionOccurred,
 	Kaffe_ExceptionDescribe,
 	Kaffe_ExceptionClear,
 	Kaffe_FatalError,
