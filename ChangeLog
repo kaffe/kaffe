@@ -1,3 +1,30 @@
+2005-01-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-01-02  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/text/AbstractDocument.java
+	(AbstractElement.getLength): Fixed off-by-one error.
+	(AbstractElement.children): Made abstract.
+	(AbstractElement.getAllowsChildren): Likewise.
+	(AbstractElement.getElement): Likewise.
+	(AbstractElement.dumpElement): New private method.
+	(AbstractElement.dump): New method.
+	(BranchElememt.getName): Fixed implementation.
+	(BranchElememt.toString): Likewise.
+	(BranchElememt.getElement): Fixed arguments.
+	(LeafElement.getName): Fixed implementation.
+	(LeafElement.toString): Likewise.
+	* javax/swing/text/GapContent.java
+	(GapContent): Put default content into buffer.
+	* javax/swing/text/PlainDocument.java
+	(reindex): Use empty attribute sets instead of null.
+	(createDefaultRoot): Reimplemented.
+	(insertUpdate): Call super method.
+	(removeUpdate): Likewise.
+	(getParagraphElement): Implemented.
+	
 2005-01-06  Dalibor Topic  <topic@mpiat2305>
 
 	* test/jni/Makefile.am (jniBase_LDADD): Link jitBasic with 

@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package javax.swing.text;
 
+import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Dictionary;
@@ -187,7 +188,7 @@ public abstract class AbstractDocument
 
   public int getLength()
   {
-    return content.length();
+    return content.length() - 1;
   }
 
   public EventListener[] getListeners(Class listenerType)
@@ -428,15 +429,9 @@ public abstract class AbstractDocument
 
     // TreeNode implementation
 
-    public Enumeration children()
-    {
-      return Collections.enumeration(tree_children);
-    }
+    public abstract Enumeration children();
       
-    public boolean getAllowsChildren()
-    {
-      return true;
-    }
+    public abstract boolean getAllowsChildren();
       
     public TreeNode getChildAt(int index)
     {
@@ -553,10 +548,7 @@ public abstract class AbstractDocument
       return AbstractDocument.this;
     }
       
-    public Element getElement(int index)
-    {
-      return (Element) element_children.get(index);
-    }
+    public abstract Element getElement(int index);
       
     public String getName()
     {
@@ -575,6 +567,42 @@ public abstract class AbstractDocument
     public abstract int getElementIndex(int offset);
       
     public abstract int getStartOffset();
+
+    private void dumpElement(PrintStream stream, String indent, Element element)
+    {
+      System.out.println(indent + "<" + element.getName() +">");
+      
+      if (element.isLeaf())
+	{
+	  int start = element.getStartOffset();
+	  int end = element.getEndOffset();
+	  String text = "";
+	  try
+	    {
+	      text = getContent().getString(start, end - start);
+	    }
+	  catch (BadLocationException e)
+	    {
+	    }
+	  System.out.println(indent + "  ["
+			     + start + ","
+			     + end + "]["
+			     + text + "]");
+	}
+      else
+	{
+	  for (int i = 0; i < element.getElementCount(); ++i)
+	    dumpElement(stream, indent + "  ", element.getElement(i));
+	}
+    }
+    
+    public void dump(PrintStream stream, int indent)
+    {
+      String indentStr = "";
+      for (int i = 0; i < indent; ++i)
+	indentStr += "  ";
+      dumpElement(stream, indentStr, this);
+    }
   }
 
   public class BranchElement extends AbstractElement
@@ -631,7 +659,7 @@ public abstract class AbstractDocument
 
     public String getName()
     {
-      return "AbstractDocument.BranchElement";
+      return ParagraphElementName;
     }
 
     public int getStartOffset()
@@ -671,7 +699,8 @@ public abstract class AbstractDocument
 
     public String toString()
     {
-      return getName() + ": " + "content";
+      return ("BranchElement(" + getName() + ") "
+	      + getStartOffset() + "," + getEndOffset() + "\n");
     }
   }
 
@@ -782,7 +811,7 @@ public abstract class AbstractDocument
       return false;
     }
 
-    public Element getElement()
+    public Element getElement(int index)
     {
       return null;
     }
@@ -804,7 +833,7 @@ public abstract class AbstractDocument
 
     public String getName()
     {
-      return "AbstractDocument.LeafElement";
+      return ContentElementName;
     }
 
     public int getStartOffset()
@@ -819,7 +848,8 @@ public abstract class AbstractDocument
 
     public String toString()
     {
-      return getName() + ": " + "content";
+      return ("LeafElement(" + getName() + ") "
+	      + getStartOffset() + "," + getEndOffset() + "\n");
     }
   }
 }
