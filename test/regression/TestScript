@@ -754,5 +754,7 @@ Success."
 
 runtest TestUnlock "Success."
 
+runtest MarkResetTest "Success."
+
 # All done okay
 exit $overallerror

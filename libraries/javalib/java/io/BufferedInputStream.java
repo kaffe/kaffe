@@ -16,10 +16,21 @@ public class BufferedInputStream
 	protected byte[] buf;
 	protected int count;
 	protected int pos;
-	protected int markpos = -1;
+	protected int markpos;
 	protected int marklimit;
-	private boolean EOF = false;
-	final private static int DEFAULTBUFFER = 2048;
+	final private static int DEFAULTBUFFER = 256;
+
+/*
+ * Code invariants:
+ *
+ * 1 markpos <= pos <= count <= buf.length == marklimit
+ *
+ * 2 If (count - pos > 0) then markpos != -1. That is, we only keep
+ *   data in the buffer if a mark is set. A mark remains set until
+ *   more than marklimit bytes have been read and/or skipped.
+ *
+ * 3 If (markpos == -1) then (count == 0 && pos == 0).
+ */
 
 public BufferedInputStream(InputStream in) {
 	this(in, DEFAULTBUFFER);
@@ -27,29 +38,28 @@ public BufferedInputStream(InputStream in) {
 
 public BufferedInputStream(InputStream in, int size) {
 	super(in);
-	buf=new byte[size];
-	count=size;
-	pos=size;
-	marklimit=0;
+	buf = new byte[size];
+	pos = count = 0;
+	marklimit = size;
+	markpos = -1;
 }
 
 public synchronized int available() throws IOException {
-	return (count-pos)+in.available();
-}
-
-private void fill() {
-	marklimit = 0;
-	pos = 0;
-	try {
-		count = super.read(buf, 0, buf.length);
-	} catch (IOException e) {
-		count = -1;
-	}
+	return (count - pos) + in.available();
 }
 
 public synchronized void mark(int readlimit) {
-	marklimit = readlimit;
-	markpos = pos;
+	if (readlimit > buf.length ) {			// need a bigger buffer
+		buf = new byte[readlimit];
+		pos = count = markpos = 0;
+		marklimit = readlimit;
+	} else if (readlimit > buf.length - pos) {	// shift same buffer
+		System.arraycopy(buf, pos, buf, 0, count - pos);
+		count -= pos;
+		pos = markpos = 0;
+	} else {					// no shift needed
+		markpos = pos;
+	}
 }
 
 public boolean markSupported() {
@@ -57,56 +67,124 @@ public boolean markSupported() {
 }
 
 public synchronized int read() throws IOException {
-	if (pos >= count) {
-		fill();
-		if (count <= 0) {
+	if (markpos == -1) {		// if no mark set, just read directly
+		return super.read();
+	} else if (pos == buf.length) {	// buffer consumed, invalidate it
+		pos = count = 0;
+		markpos = -1;
+		return super.read();
+	} else if (pos == count) {	// read more data into buffer first
+		if (!fillBuffer()) {
 			return -1;
 		}
 	}
-	return (buf[pos++] & 0xFF);
+	return (buf[pos++] & 0xFF);	// return next buffered byte
 }
 
 public synchronized int read(byte b[], int off, int len) throws IOException {
-	if (count <= 0) {
-		return (-1);
-	}
-	int i;
-	for (i = 0; i < len; i++) {
-		if (pos >= count) {
-			// If we've put something in the buffer and the last
-			// buffered read didn't fill it, we quit now and
-			// don't refill.
-			if (i > 0 && count != buf.length) {
-				break;
+	int nread, total = 0;
+
+	while (len > 0) {
+
+		// If buffer fully consumed, invalidate mark & reset buffer
+		if (pos == buf.length) {
+			pos = count = 0;
+			markpos = -1;
+		}
+
+		// If no mark is set, optimize with a direct read
+		if (markpos == -1) {
+			if ((nread = super.read(b, off, len)) == -1) {
+				return (total > 0) ? total : -1;
 			}
-			fill();
-			if (count <= 0) {
-				break;
+			return total + nread;
+		}
+
+		// If no data in buffer, go get some more
+		if (pos == count) {
+			if (!fillBuffer()) {
+				return (total > 0) ? total : -1;
 			}
 		}
-		b[off+i] = buf[pos++];
+
+		// Copy a chunk of bytes from our buffer
+		nread = count - pos;
+		if (nread > len) {
+			nread = len;
+		}
+		System.arraycopy(buf, pos, b, off, nread);
+		total += nread;
+		pos += nread;
+		off += nread;
+		len -= nread;
 	}
-	return (i);
+	return total;
 }
 
 public synchronized void reset() throws IOException {
-	if (pos > markpos + marklimit) {
-		throw new IOException("Cannot reset stream to " + markpos +
-			" from " + pos + " (marklimit=" + marklimit + ")");
+	if (markpos == -1) {
+		throw new IOException(
+		    "Attempt to reset when no mark is valid"
+			+ " (marklimit=" + marklimit + ")");
 	}
 	pos = markpos;
 }
 
+/*
+ * This version of skip() does not invalidate a mark if less
+ * than readlimit total bytes are read and/or skipped.
+ * Not sure if this is actually a requirement or not.
+ */
 public synchronized long skip(long n) throws IOException {
-	long a = n - (long)(count - pos);
-	if (a <= 0) {
-		pos += (int)n;
+
+	// Sanity check
+	if (n <= 0) {
+		return 0;
+	}
+
+	// Optimize for case of no mark set
+	if (markpos == -1) {
+		return super.skip(n);
+	}
+
+	// Skip buffered data, if available
+	if (pos < count) {
+		if (count - pos > n) {
+			pos += (int)n;		// narrowing cast OK
+		} else {
+			n = count - pos;
+			pos = count;
+		}
 		return n;
 	}
-	else {
-		a = super.skip(a) + (count-pos);
-		pos = count;
-		return a;
+
+	// If buffer fully consumed, invalidate mark & reset buffer
+	if (pos == buf.length) {
+		pos = count = 0;
+		markpos = -1;
+		return super.skip(n);
 	}
+
+	// Read data into buffer and try again
+	return fillBuffer() ? skip(n) : 0;
+}
+
+/*
+ * Get more buffered data. This should only be called when are all true:
+ *
+ *	1 markpos != -1
+ *	2 pos == count
+ *	3 count < buf.length
+ *
+ * Returns true if at least one byte was read.
+ */
+private boolean fillBuffer() throws IOException {
+	int	nread;
+
+	if ((nread = super.read(buf, pos, buf.length - pos)) <= 0) {
+		return false;
+	}
+	count += nread;
+	return true;
 }
 }
