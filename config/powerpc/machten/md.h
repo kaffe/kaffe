@@ -22,4 +22,8 @@
 #define SIGNAL_ARGS(sig, sc) int sig
 #undef HAVE_SIGALTSTACK
 
+/* align data types to their size */
+#define   ALIGNMENT_OF_SIZE(S)    (S)
+
+
 #endif

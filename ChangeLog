@@ -1,3 +1,13 @@
+2004-10-27  Riccardo Mottola <rmottola@users.sf.net>
+
+        * config/powerpc/common.h,
+        config/powerpc/aix/md.h
+        config/powerpc/darwin/md.h
+        config/powerpc/linux/md.h
+        config/powerpc/machten/md.h
+        config/powerpc/netbsd1/md.h
+        Set size of alignment (ALIGNMENT_OF_SIZE) for each PPC os differently
+
 2004-10-27  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/thread.c (standardGroup): removed

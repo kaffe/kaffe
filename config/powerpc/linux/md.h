@@ -45,5 +45,8 @@ extern void init_md(void);
 
 #include "kaffe-unix-stack.h"
 
+/* align data types to their size */
+#define   ALIGNMENT_OF_SIZE(S)    (S)
+
 
 #endif

@@ -37,4 +37,8 @@ extern int __aix_cmpxchg(void **A, void *O, void *N);
 #define SIGNAL_ARGS(sig, sc) int sig
 #undef HAVE_SIGALTSTACK
 
+/* align data types to their size */
+/* might be wrong, some 8byte stuff is 4byte aligned */
+#define   ALIGNMENT_OF_SIZE(S)    (S)
+
 #endif

@@ -47,4 +47,8 @@
 
 #include "kaffe-unix-stack.h"
 
+/* define alignment of 8 byte data types to 4byte boundaries */
+#define   ALIGNMENT_OF_SIZE(S)    ((S) < 4 ? (S) : 4)
+
+
 #endif
