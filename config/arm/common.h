@@ -1,6 +1,6 @@
 /*
- * arm32/common.h
- * Common arm32 configuration information.
+ * arm/common.h
+ * Common arm configuration information.
  *
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
@@ -11,8 +11,8 @@
  * Written by Godmar Back <gback@cs.utah.edu>
  */
 
-#ifndef __arm32_common_h
-#define __arm32_common_h
+#ifndef __arm_common_h
+#define __arm_common_h
 
 /*
  * The calling convention is such that the first four 32bit values are

@@ -1,6 +1,6 @@
 /*
- * arm32/netbsd1/md.c
- * NetBSD1.x arm32 specific functions.
+ * arm/netbsd1/md.c
+ * NetBSD1.x/arm32 specific functions.
  *
  * Copyright (c) 1996, 1997
  *      Transvirtual Technologies, Inc.  All rights reserved.
