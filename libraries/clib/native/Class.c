@@ -327,7 +327,7 @@ makeField(struct Hjava_lang_Class* clazz, int slot)
 	field = (Hjava_lang_reflect_Field*)AllocObject("java/lang/reflect/Field");
 	unhand(field)->clazz = clazz;
 	unhand(field)->slot = slot;
-	unhand(field)->type = (struct Hjava_lang_Class*)fld->type;
+	unhand(field)->type = resolveFieldType(fld, clazz);
 	unhand(field)->name = makeReplaceJavaStringFromUtf8(
 		fld->name->data, fld->name->length, 0, 0);
 	return (field);
