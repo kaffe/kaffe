@@ -357,7 +357,7 @@ DBG(VMTHREAD,
 
 		/* note that since exception.c does not allow JNI to catch
 		 * ThreadDeath (for now!), we won't see ThreadDeath here.
-		 * That is, we must invoke the uncaughtException paper
+		 * That is, we must invoke the uncaughtException method
 		 * if we see an exception here.
 		 */
 		eobj = (*env)->ExceptionOccurred(env);
