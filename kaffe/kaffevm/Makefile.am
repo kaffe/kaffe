@@ -29,11 +29,14 @@ lib_LTLIBRARIES = libkaffevm.la
 @cpu_os_frag@
 @threads_frag@
 
+if HAVE_GCJ_SUPPORT
+libgcj = gcj/libgcj.la
+endif
 libkaffevm_la_LDFLAGS = $(KVMLIBFLAGS) -export-dynamic -release $(KVER)
 libkaffevm_la_DEPENDENCIES = \
 	$(LIBLTDL) \
 	$(ENGINE_NAME)/libengine.la \
-	gcj/libgcj.la \
+	$(libgcj) \
 	systems/$(THREAD_SYSTEM)/libkthread.la
 libkaffevm_la_LIBADD = $(libkaffevm_la_DEPENDENCIES) $(VM_LIBS) $(M_LIBS)
 
