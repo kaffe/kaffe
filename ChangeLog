@@ -2,6 +2,20 @@
 
 	Resynced with GNU Classpath.
 
+	2003-12-29 Guilhem Lavaux <guilhem@kaffe.org>
+
+        * java/io/ObjectInputStream.java: Use if instead of catching
+        NullPointerException.
+
+	2003-12-28  Guilhem Lavaux <guilhem@kaffe.org>
+
+        * java/io/ObjectInputStream.java: Reindented. Some exception message
+        has been added.
+
+2004-01-03  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2003-12-28  Guilhem Lavaux <guilhem@kaffe.org>
 
         * java/io/LineNumberReader.java
