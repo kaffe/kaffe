@@ -1,6 +1,6 @@
 /*
- * signal.h
- * Jthread-private interface for handling signals.
+ * jsignal.h
+ * Interface for handling signals.
  *
  * Copyright (c) 1999
  * 	University of Utah, CSL.  All rights reserved.
@@ -19,7 +19,9 @@
 /*
  * Signal handling API
  *
- * This interface should only be used by other jthread files.
+ * This interface is mostly for other jthread files,
+ * except for unblockAsyncSignals/blockAsyncSignals, which is 
+ * exported to the VM.
  */
 
 #ifndef UNIXJTHREAD_SIGNAL_H
