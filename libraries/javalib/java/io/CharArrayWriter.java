@@ -70,7 +70,10 @@ public class CharArrayWriter extends Writer {
 
   public char[] toCharArray()
   {
-    return (buf);
+    /* note that the spec asks us to "Return a copy of the input data." */
+    char result[] = new char[count];
+    System.arraycopy(buf, 0, result, 0, count);
+    return result;
   }
 
   public int size()

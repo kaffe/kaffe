@@ -27,29 +27,30 @@ public BufferedOutputStream(OutputStream out, int size) {
 	count = 0;
 }
 
-public void finalize() throws IOException {
-	flush();
-}
-
-public synchronized void flush() throws IOException {
-	super.write(buf, 0, count);
-	super.flush();
+private void writeBuffer() throws IOException {
+	if (count > 0)
+	    out.write(buf, 0, count);
 	count = 0;
 }
 
+public synchronized void flush() throws IOException {
+	writeBuffer();
+	out.flush();
+}
+
 public synchronized void write(byte b[], int off, int len) throws IOException {
-	int pos = off;
-	while (pos < off + len) {
-		if (count == buf.length) {
-			flush();
-		}
-		buf[count++] = b[pos++];
+	if (count + len > buf.length) {
+		writeBuffer();
+		out.write(b, off, len);
+		return;
 	}
+	System.arraycopy(b, off, buf, count, len);
+	count += len;
 }
 
 public synchronized void write(int b) throws IOException {
 	if (count==buf.length) {
-		flush();
+		writeBuffer();
 	}
 	buf[count++] = (byte)b;
 }

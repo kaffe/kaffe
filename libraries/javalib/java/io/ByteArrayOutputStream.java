@@ -28,10 +28,10 @@ public ByteArrayOutputStream(int size)
 	count = 0;
 }
 
-public void ensureCapacity ( int size ) {
+private void ensureCapacity ( int size ) {
 	if ( size > buf.length ) {
 		byte oldBuf[] = buf;
-		buf = new byte[size];
+		buf = new byte[size + 32];
 		System.arraycopy( oldBuf, 0, buf, 0, oldBuf.length);
 	}
 }
@@ -80,13 +80,9 @@ public String toString(int hibyte)
 }
 
 public synchronized void write ( byte b[], int off, int len ) {
-	int n = count + len;
-	
-	if ( n > buf.length )
-		ensureCapacity( n);
-
-	for ( ; count < n; off++, count++ )
-		buf[count] = b[off];
+	ensureCapacity(count + len);
+	System.arraycopy(b, off, buf, count, len);
+	count += len;
 }
 
 public synchronized void write(int b)
