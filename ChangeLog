@@ -1,5 +1,11 @@
 2004-04-16  Dalibor Topic <robilad@kaffe.org>
 
+	* config/i386/jit.h:
+	(_methodTrampoline) Removed PACKED attibute for call
+	to fix a compiler warning on i386-cygwin.
+	
+2004-04-16  Dalibor Topic <robilad@kaffe.org>
+
 	* THIRDPARTY:
 	Updated with information on gjdoc and libxmlj.
 

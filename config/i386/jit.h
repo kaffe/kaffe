@@ -60,7 +60,7 @@ typedef struct _exceptionFrame {
 extern void i386_do_fixup_trampoline(void);
 
 typedef struct _methodTrampoline {
-	unsigned char call PACKED;
+	unsigned char call;
 	int fixup PACKED;
 	struct _methods* meth PACKED;
 	void** where PACKED;
