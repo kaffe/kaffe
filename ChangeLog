@@ -1,5 +1,12 @@
 2004-08-30  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/gcj/gcj-soft.cc: Removed prototype 
+	for soft_vmultianewarray.
+
+	* kaffe/kaffevm/soft.h: Added prototype for soft_vmultianewarray.
+
+2004-08-30  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/gc.c: Include jmalloc.h to fix compiler warnings.
 
 2004-08-30  Dalibor Topic  <robilad@kaffe.org>

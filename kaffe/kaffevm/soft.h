@@ -22,6 +22,7 @@ void	soft_null_call(void);
 void*	soft_new(struct Hjava_lang_Class*);
 void*	soft_newarray(jint, jint);
 void*	soft_anewarray(struct Hjava_lang_Class*, jint);
+void*   soft_vmultianewarray(struct Hjava_lang_Class* clazz, jint dims, va_list ap);
 void	soft_initialise_class(struct Hjava_lang_Class*);
 nativecode* soft_get_method_code (Method*);
 

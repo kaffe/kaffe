@@ -28,7 +28,6 @@
 extern "C" {
 extern jobject soft_newarray(jint type, jint size);
 extern JArray<java::lang::Object *> *soft_anewarray(void *type, jint size);
-extern void* soft_vmultianewarray(struct Hjava_lang_Class* clazz, jint dims, va_list ap);
 
 extern void * soft_checkcast(void *type, java::lang::Object *obj);
 extern int soft_instanceof(void *type, java::lang::Object *obj);
