@@ -4,8 +4,10 @@ import java.util.zip.*;
 
 public class DosTimeVerify {
 
-    public static void main(String[] argv) throws Exception
-    {
+    public static void main(String[] argv) throws Exception {
+
+	TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+
 	ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
 	ZipOutputStream zout = new ZipOutputStream(baos);
