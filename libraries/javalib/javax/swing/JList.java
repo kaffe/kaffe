@@ -862,13 +862,16 @@ public class JList extends JComponent implements Accessible, Scrollable
   /**
    * Sets the value of the {@link #celLRenderer} property.
    *
-   * @param cellRenderer The new property value
+   * @param renderer The new property value
    */
-  public void setCellRenderer(ListCellRenderer cr)
+  public void setCellRenderer(ListCellRenderer renderer)
   {
+    if (cellRenderer == renderer)
+      return;
+    
     ListCellRenderer old = cellRenderer;
-    cellRenderer = cr;
-    firePropertyChange(CELL_RENDERER_PROPERTY_CHANGED, old, cr);
+    cellRenderer = renderer;
+    firePropertyChange(CELL_RENDERER_PROPERTY_CHANGED, old, renderer);
     revalidate();
     repaint();
   }
@@ -890,15 +893,21 @@ public class JList extends JComponent implements Accessible, Scrollable
    *
    * @param model The new property value
    */
-  public void setModel(ListModel m)
+  public void setModel(ListModel model)
   {
-    ListModel old = model;
-    if (old != null)
-      old.removeListDataListener(listListener);
-    model = m;
-    if (model != null)
-      model.addListDataListener(listListener);
-    firePropertyChange(MODEL_PROPERTY_CHANGED, old, m);
+    if (this.model == model)
+      return;
+    
+    if (this.model != null)
+      this.model.removeListDataListener(listListener);
+    
+    ListModel old = this.model;
+    this.model = model;
+    
+    if (this.model != null)
+      this.model.addListDataListener(listListener);
+    
+    firePropertyChange(MODEL_PROPERTY_CHANGED, old, model);
     revalidate();
     repaint();
   }
@@ -914,17 +923,23 @@ public class JList extends JComponent implements Accessible, Scrollable
    * {@link #listListener} is unsubscribed from the existing selection
    * model, if it exists, and re-subscribed to the new selection model.
    *
-   * @param l The new property value
+   * @param model The new property value
    */
-  public void setSelectionModel(ListSelectionModel l)
+  public void setSelectionModel(ListSelectionModel model)
   {
+    if (selectionModel == model)
+      return;
+    
+    if (selectionModel != null)
+      selectionModel.removeListSelectionListener(listListener);
+    
     ListSelectionModel old = selectionModel;
-    if (old != null)
-      old.removeListSelectionListener(listListener);
-    selectionModel = l;
+    selectionModel = model;
+    
     if (selectionModel != null)
       selectionModel.addListSelectionListener(listListener);
-    firePropertyChange(SELECTION_MODEL_PROPERTY_CHANGED, old, l);
+    
+    firePropertyChange(SELECTION_MODEL_PROPERTY_CHANGED, old, model);
     revalidate();
     repaint();
   }

@@ -1,5 +1,25 @@
 2004-12-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/swing/DefaultListCellRenderer.java,
+	libraries/javalib/javax/swing/JLabel.java,
+	libraries/javalib/javax/swing/JList.java:
+        Resynced with GNU Classpath.
+
+	2004-12-06  Michael Koch  <konqueror@gmx.de>
+
+        * javax/swing/DefaultListCellRenderer.java
+        (serialVersionUID): Made private.
+        (getListCellRendererComponent): Set horizontal alignment.
+        * javax/swing/JLabel.java
+        (setVerticalAlignment): Re-implemented.
+        (setHorizontalAlignment): Do nothing if old value = new value.
+        * javax/swing/JList.java
+        (setCellRenderer): Likewise.
+        (setModel): Re-implemented.
+        (setSelectionModel): Likewise.
+
+2004-12-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/Component.java,
 	libraries/javalib/java/awt/geom/Rectangle2D.java:
         Resynced with GNU Classpath.

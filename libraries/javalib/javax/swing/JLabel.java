@@ -523,13 +523,13 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
    */
   public void setVerticalAlignment(int alignment)
   {
-    if (alignment != verticalAlignment)
-      {
-	int oldAlignment = verticalAlignment;
-	verticalAlignment = checkVerticalKey(alignment, "verticalAlignment");
-	firePropertyChange(VERTICAL_ALIGNMENT_CHANGED_PROPERTY, oldAlignment,
-	                   verticalAlignment);
-      }
+    if (alignment == verticalAlignment)
+      return;
+
+    int oldAlignment = verticalAlignment;
+    verticalAlignment = checkVerticalKey(alignment, "verticalAlignment");
+    firePropertyChange(VERTICAL_ALIGNMENT_CHANGED_PROPERTY,
+		       oldAlignment, verticalAlignment);
   }
 
   /**
@@ -550,6 +550,9 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
    */
   public void setHorizontalAlignment(int alignment)
   {
+    if (horizontalAlignment == alignment)
+      return;
+    
     int oldAlignment = horizontalAlignment;
     horizontalAlignment = checkHorizontalKey(alignment, "horizontalAlignment");
     firePropertyChange(HORIZONTAL_ALIGNMENT_CHANGED_PROPERTY, oldAlignment,
