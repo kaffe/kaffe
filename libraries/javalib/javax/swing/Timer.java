@@ -151,6 +151,8 @@ public class Timer implements Serializable
       try
         {
 	  sleep(initialDelay);
+	  
+	  queueEvent();
 
 	  while (running)
 	    {

@@ -1,3 +1,12 @@
+2005-03-02  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-02-24  Audrius Meskauskas  <audriusa@bluewin.ch>
+
+        * javax/swing/Timer.java (Waker.run): firing the first action
+        event.
+
 2005-02-24  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac (LIBDEBUG): Removed now useless classpath debug option.
