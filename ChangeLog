@@ -1,3 +1,30 @@
+2004-03-10  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath
+
+	2004-03-09  Guilhem Lavaux  <guilhem@kaffe.org>
+
+        * java/io/BufferedInputStream.java (marktarget): New field for max
+        mark limit.
+        (CHUNKSIZE): New constant for incremental mark buffer allocation.
+        (mark): Use new fields.
+        (read): Likewise.
+        (read(byte[],int,int)): Likewise.
+        (skip): Likewise.
+        (refill): Likewise.
+
+	2004-03-08  Dalibor Topic  <robilad@kaffe.org>
+
+        * java/text/AttributedString.java
+        (addAttribute(AttributedCharacterIterator.Attribute,Object,int,int)):
+        Use HashMap instead of Hashtable since value can be null, and
+        you can not store a null value in a Hashtable.
+
+	2004-03-08  Mark Wielaard  <mark@klomp.org>
+
+        * java/beans/BeanDescriptor.java (BeanDescriptor):
+        Set the FeatureDescriptor programmatic name.
+
 2004-03-09  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/javalib/gnu/javax/rmi/CORBA/DelegateFactory.java

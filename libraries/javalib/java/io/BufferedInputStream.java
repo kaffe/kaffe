@@ -108,12 +108,12 @@ public class BufferedInputStream extends FilterInputStream
    * to allocate new chunks (specified by <code>CHUNKSIZE</code>) until the
    * the size specified by this field is achieved.
    */
-  protected int marktarget = 0;
+  private int marktarget = 0;
 
   /**
    * This is the number of bytes to allocate to reach marktarget.
    */
-  static final protected int CHUNKSIZE = 1024;
+  static final private int CHUNKSIZE = 1024;
 
   /**
    * This method initializes a new <code>BufferedInputStream</code> that will
@@ -231,7 +231,7 @@ public class BufferedInputStream extends FilterInputStream
     if (pos >= count && !refill())
       return -1;	// EOF
 
-    if (markpos >= 0 && pos - markpos > marklimit)
+    if (markpos >= 0 && pos - markpos > marktarget)
       markpos = -1;
 
     return ((int) buf[pos++]) & 0xFF;
@@ -270,7 +270,7 @@ public class BufferedInputStream extends FilterInputStream
     System.arraycopy(buf, pos, b, off, remain);
     pos += remain;
 
-    if (markpos >= 0 && pos - markpos > marklimit)
+    if (markpos >= 0 && pos - markpos > marktarget)
       markpos = -1;
 
     return remain;
@@ -324,7 +324,7 @@ public class BufferedInputStream extends FilterInputStream
 	pos += numread;
 	n -= numread;
 
-        if (markpos >= 0 && pos - markpos > marklimit)
+        if (markpos >= 0 && pos - markpos > marktarget)
           markpos = -1;
       }
 

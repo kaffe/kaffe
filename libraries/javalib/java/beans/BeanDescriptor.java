@@ -1,5 +1,5 @@
 /* java.beans.BeanDescriptor
-   Copyright (C) 1998, 2003 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
