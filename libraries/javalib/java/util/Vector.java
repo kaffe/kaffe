@@ -14,32 +14,14 @@ import java.io.Serializable;
 import java.lang.String;
 import java.lang.System;
 
-public class Vector
-  extends AbstractList
-  implements Cloneable, Serializable {
+public class Vector extends AbstractList
+		implements List, Cloneable, Serializable {
 
 private static final long serialVersionUID = -2767605614048989439L;
 
 protected int capacityIncrement;
 protected int elementCount;
 protected Object[] elementData;
-
-class Enumerator
-  implements Enumeration
-{
-	int index;
-
-public boolean hasMoreElements (){
-	return (index < elementCount);
-}
-
-public Object nextElement () {
-	if ( index >= elementCount )
-		throw new NoSuchElementException();
-		
-	return elementData[index++];
-}
-}
 
 public Vector() {
 	this( 10, 0);
@@ -49,11 +31,18 @@ public Vector ( int initialCapacity ) {
 	this( initialCapacity, 0);
 }
 
-/* May be 0 indicating doubling on reallocation */
+// Here "increment" may be 0 to indicate doubling on reallocation
 public Vector(int initialCapacity, int increment) {
 	elementData = new Object[initialCapacity];
 	elementCount = 0;
 	capacityIncrement = increment;
+}
+
+public Vector(Collection c) {
+	this(c.size());
+	for (Iterator i = c.iterator(); i.hasNext(); ) {
+		addElement(i.next());
+	}
 }
 
 public synchronized void addElement(Object obj) {
@@ -114,13 +103,24 @@ public synchronized Object elementAt ( int index ) {
   // required because we might have a large enough, pre-allocated, empty element
   // array that doesn't give us (physical) access errors
   if ( index >= elementCount )
-    throw new ArrayIndexOutOfBoundsException( Integer.toString( index) + " >= " + 
-					      elementCount);
+    throw new ArrayIndexOutOfBoundsException(Integer.toString(index)
+			+ " >= " + elementCount);
   return elementData[index];
 }
 
-public synchronized Enumeration elements () {
-	return new Vector.Enumerator();
+public synchronized Enumeration elements() {
+	return new Enumeration() {
+		int index = 0;
+		public boolean hasMoreElements() {
+			return index < elementCount;
+		}
+		public Object nextElement() {
+			if (index >= elementCount) {
+				throw new NoSuchElementException();
+			}
+			return elementData[index++];
+		}
+	};
 }
 
 public synchronized void ensureCapacity(int newCapacity) { 
