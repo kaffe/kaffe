@@ -171,6 +171,16 @@ java_lang_Class_forName(struct Hjava_lang_String* str, jbool doinit,
  * Determine the class of the method that called the method that called
  * Class.getCallingClass(), which in turned called this native method.
  * It will be 3 stack frames up.
+ *
+ * Note: we must handle the special case of code like this:
+ *
+ *    Class c = Class.class;
+ *    Method m = c.getMethod("forName", new Class[] { String.class });
+ *    c = (Class)m.invoke(c, new Object[] { "Class2" });
+ *
+ * (if we didn't, then forName() would detect java.lang.reflect.Method
+ * as the calling class and always use the system ClassLoader for Class2).
+ * To deal with this, we skip over java.lang.reflect.Method.invoke().
  */
 struct Hjava_lang_Class*
 java_lang_Class_getCallingClass0()
@@ -187,8 +197,12 @@ java_lang_Class_getCallingClass0()
         for (i = 0; info[i].meth != ENDOFSTACK; i++) {
 		struct _methods *meth = stacktraceFindMethod(&info[i]);
 
-                if (i >= 3 && meth != NULL && meth->class != NULL)
-                        return meth->class;
+		if (i < 3 || meth == NULL || meth->class == NULL)
+			continue;
+		if (!strcmp(meth->class->name->data, "java/lang/reflect/Method")
+		    && !strcmp(meth->name->data, "invoke"))
+			continue;
+		return meth->class;
         }
 	abort();
 }
