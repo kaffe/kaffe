@@ -91,6 +91,10 @@ typedef int sigset_t;
 #define SP_OFFSET		2
 #define FP_OFFSET		13
 
+#elif defined(arm32) && defined(__NetBSD__)
+
+#define SP_OFFSET		23
+
 #else
 #error Your system was not yet tested
 #endif
