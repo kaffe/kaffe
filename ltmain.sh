@@ -568,7 +568,14 @@ compiler."
       # we shouldn't force the makefile maintainer to figure out
       # which system we are compiling for in order to pass an extra
       # flag for every libtool invokation.
-      allow_undefined=no
+      # allow_undefined=no
+
+      # FIXME: Unfortunately, there are problems with the above when trying
+      # to make a dll which has undefined symbols, in which case not
+      # even a static library is built.  For now, we need to specify
+      # -no-undefined on the libtool link line when we can be certain
+      # that all symbols are satisfied, otherwise we get a static library.
+      allow_undefined=yes
 
       # This is a source program that is used to create dlls on Windows
       # Don't remove nor modify the starting and closing comments
@@ -767,10 +774,12 @@ compiler."
 	case "$host" in
 	*-*-cygwin32* | *-*-mingw32* | *-*-os2*)
 	  compile_dependencylibs="$compile_dependencylibs $arg"
+	  dllsearchdir="`expr $arg : '-L\(.*\)'`"
+	  dllsearchdir=`cd "$dllsearchdir" && pwd || echo "$dllsearchdir"`
 	  if test -n "$dllsearchpath"; then
-	    dllsearchpath="$dllsearchpath:`expr $arg : '-L\(.*\)'`"
+	    dllsearchpath="$dllsearchpath:$dllsearchdir"
 	  else
-	    dllsearchpath="`expr $arg : '-L\(.*\)'`"
+	    dllsearchpath="$dllsearchdir"
 	  fi
 	  ;;
 	esac
@@ -1003,10 +1012,11 @@ compiler."
 	      case "$host" in
 	      *-*-cygwin32* | *-*-mingw32* | *-*-os2*)
 		compile_dependencylibs="$compile_dependencylibs -L$dir -l$name"
+		dllsearchdir=`cd "$dir" && pwd || echo "$dir"`
 		if test -n "$dllsearchpath"; then
-		  dllsearchpath="$dllsearchpath:$dir"
+		  dllsearchpath="$dllsearchpath:$dllsearchdir"
 		else
-		  dllsearchpath="$dir"
+		  dllsearchpath="$dllsearchdir"
 		fi
 		;;
 	      esac
@@ -1632,7 +1642,7 @@ EOF
 	    $show "(cd $xdir && $AR x ../$xlib)"
 	    $run eval "(cd \$xdir && $AR x ../\$xlib)" || exit $?
 
-	    libobjs="$libobjs `echo $xdir/*`"
+	    libobjs="$libobjs `find $xdir -name \*.o -print -o -name \*.lo -print`"
 	  done
 	fi
 
@@ -1823,7 +1833,7 @@ EOF
 	finalize_command=`$echo "X$finalize_command" | $SP2NL | $Xsed -e "$lo2o" | $NL2SP`
       fi
 
-      if test "$export_dynamic" = yes && test -n "$NM" && test -n "$global_symbol_pipe"; then
+      if test "$export_dynamic" = yes || test -n "$dlfiles$dlprefiles" && test -n "$NM" && test -n "$global_symbol_pipe"; then
 	dlsyms="${outputname}S.c"
       else
 	dlsyms=
@@ -1833,7 +1843,7 @@ EOF
 	case "$dlsyms" in
 	"") ;;
 	*.c)
-	  if test -z "$export_symbols"; then
+	  if test "$export_dynamic" = yes && test -z "$export_symbols"; then
 	    # Add our own program objects to the preloaded list.
 	    dlprefiles=`$echo "X$objs $dlprefiles" | $SP2NL | $Xsed -e "$lo2o" | $NL2SP`
 	  fi
@@ -1870,7 +1880,7 @@ extern \"C\" {
 /* External symbol declarations for the compiler. */\
 "
 
-	  if test -n "$export_symbols"; then
+	  if test "$export_dynamic" = yes && test -n "$export_symbols"; then
 	    sed -e 's/^\(.*\)/\1 \1/' < "$export_symbols" > "$nlist"
 	  fi
 
@@ -1880,7 +1890,7 @@ extern \"C\" {
 	  done
 
 	  if test -z "$run"; then
-	    # Make sure we at least have an empty file.
+	    # Make sure we have at least an empty file.
 	    test -f "$nlist" || : > "$nlist"
 
 	    # Try sorting and uniquifying the output.
@@ -1915,7 +1925,7 @@ dld_preloaded_symbols[] =
 {\
 "
 
-	    if test -n "$export_symbols"; then
+	    if test "$export_dynamic" = yes && test -n "$export_symbols"; then
 	      echo >> "$output_objdir/$dlsyms" "\
   {\"${output}\", (lt_ptr_t) 0},"
 	      sed 's/^\(.*\)/  {"\1", (lt_ptr_t) \&\1},/' < "$export_symbols" >> "$output_objdir/$dlsyms"
@@ -1957,8 +1967,6 @@ dld_preloaded_symbols[] =
 	  exit 1
 	  ;;
 	esac
-      elif test "$export_dynamic" != yes; then
-	test -n "$dlfiles$dlprefiles" && $echo "$modename: warning: \`-dlopen' and \`-dlpreopen' are ignored without \`-export-dynamic'" 1>&2
       else
 	# We keep going just in case the user didn't refer to
 	# dld_preloaded_symbols.  The linker will fail if global_symbol_pipe

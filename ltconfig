@@ -1591,7 +1591,7 @@ bsdi4*)
 cygwin32* | mingw32*)
   version_type=windows
   if test "$with_gcc" = yes; then
-    library_names_spec='${libname}`echo ${release} | sed -e 's/[.]/-/g'`${versuffix}.dll $libname-dll.a'
+    library_names_spec='${libname}`echo ${release} | sed -e 's/[.]/-/g'`${versuffix}.dll $libname.a'
   else
     library_names_spec='${libname}`echo ${release} | sed -e 's/[.]/-/g'`${versuffix}.dll $libname.lib'
   fi
