@@ -415,7 +415,7 @@ else
   AC_CHECK_LIBRARY(ipc,shmat,X_EXTRA_LIBS)
 
   OLIBS=$LIBS
-  LIBS="$X_LIBS $X_EXTRA_LIBS $LIBS"
+  LIBS="$ZIP_LIBS $X_LIBS $X_EXTRA_LIBS $LIBS"
   AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBS)
   AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBS)
   AC_CHECK_LIBRARY(gif,DGifOpenFileHandle,GIF_LIBS)

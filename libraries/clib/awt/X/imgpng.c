@@ -10,6 +10,10 @@
 
 #include "toolkit.h"
 
+#if ! HAVE_LIBPNG
+#undef HAVE_PNG_H
+#endif
+
 #if defined(HAVE_PNG_H) && defined(HAVE_LIBZ)
 
 #include "png.h"

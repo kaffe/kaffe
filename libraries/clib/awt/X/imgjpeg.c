@@ -13,6 +13,10 @@
 #include <stdio.h>
 #include <setjmp.h>
 
+#if ! HAVE_LIBJPEG
+#undef HAVE_JPEGLIB_H
+#endif
+
 #ifdef HAVE_JPEGLIB_H
 #include "jpeglib.h"
 #include "jerror.h"

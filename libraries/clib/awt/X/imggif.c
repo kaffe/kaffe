@@ -11,6 +11,10 @@
 #include "toolkit.h"
 #include <stdio.h>
 
+#if ! HAVE_LIBGIF
+#undef HAVE_GIF_LIB_H
+#endif
+
 #if defined(HAVE_GIF_LIB_H)
 #include "gif_lib.h"
 #endif

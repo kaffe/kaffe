@@ -1,3 +1,18 @@
+Mon Jan 11 15:28:28 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* config/Makefile.am (EXTRA_DIST): added regen-forward
+	* config/Makefile.in: regen
+
+	* libraries/clib/awt/X/imggif.c: if libgif is not available, undef
+	HAVE_GIF_LIB_H
+	* libraries/clib/awt/X/imgjpeg.c: if libjpeg is not available,
+	undef HAVE_JPEGLIB_H
+	* libraries/clib/awt/X/imgpng.c: if libpng is not available, undef
+	HAVE_PNG_H
+	* configure.in (PNG_LIBS): if libpng is static, ZIP_LIBS must be
+	explicitly added to LIBS for AC_CHECK_LIBRARY to find it
+	* configure, config/stamp-h1.in, include/stamp-h2.in: regen
+
 Mon Jan 11 14:51:13 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* config/Makefile.am (noinst_HEADERS): instead of BUILT_SOURCES

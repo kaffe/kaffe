@@ -18,7 +18,9 @@ noinst_HEADERS = $(GEN_HDRS) \
 	config-hacks.h config-io.h config-math.h config-mem.h \
 	config-net.h config-setjmp.h config-signal.h config-std.h
 
-EXTRA_DIST = config.alias \
+EXTRA_DIST = \
+	config.alias \
+	regen-forward \
 	alpha/jit-alpha.def \
 	alpha/common.h \
 	alpha/linux/jit-md.h.not-yet \
