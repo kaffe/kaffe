@@ -1,0 +1,62 @@
+Debugging Kaffe
+---------------
+
+This document provides some pointers for debugging the Kaffe VM. (Not
+necessarily for debugging Java apps running on Kaffe, though you can
+abuse these techniques to that end.)
+
+-vmdebug
+========
+
+Configure Kaffe with the '--enable-debug' option. This turns on a
+bunch of debugging infrastructure in Kaffe. Most of the
+infrastructure is for tracing, but there are some sanity checks that
+can be turned on (e.g., 'GCDIAG'), and other flags and settings (e.g.,
+'NOGC').
+
+Run kaffe with '-vmdebug list' to get a list of supported VM debugging
+options. Pass the options you're interested in as a comma-separated
+list of names. For example, you can use it like so:
+        kaffe -vmdebug INIT,VMTHREAD,GCSYSALLOC foo
+
+This will print some stats about initialization, VM-level threading
+events, and system-level memory allocations. Note that some of the
+options are very, very verbose (e.g., 'GCALLOC' or 'ALL'.)
+
+If you want to add more run-time tracing code, look at
+kaffe/kaffevm/debug.h. Grep for the DBG() macros to see how they're
+used.
+
+gdb
+===
+
+To run Kaffe in a debugger, use the KAFFE_DEBUG environment variable.
+(Look at the Kaffe script for details). For GDB, set KAFFE_DEBUG to
+'gdb'. ('kaffe' is a shell script so 'gdb kaffe' won't do what you
+want.)  I have shell aliases 'kdbg' and 'unkdbg' that set and unset
+the variable, respectively.
+
+There are some gdb macros in developers/gdbinit that are useful for
+looking at Kaffe's GC, thread, and object structures (in particular,
+look for 'pobject', 'livethreadsbt'). Some of the macros are out of
+sync wrt to the actual structures, so you may have to update
+them. Comments in the file should explain how to use them.
+
+Also, look at FAQ.xdebugging for a mechanism for including Java
+symbols in backtraces in GDB. If you're going to debug Kaffe on a
+regular basis, you should always include the xdebugging support.
+
+
+
+Other Stuff
+===========
+
+Debugging Performance: Look at FAQ.timing and FAQ.xprofiling for
+details on getting performance information out of the VM.
+
+Regression Testing: Regression tests are kept in test/regression/.
+Regression tests are just simple stand-alone .java programs. They
+have special comments at the end that influence how the tester treats
+their output. To add a new test, just add it to Makefile.am and
+regenerate the Makefile.in, and re-configure.
+
