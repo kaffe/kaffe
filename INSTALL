@@ -1,3 +1,20 @@
+Quick Start instructions
+========================
+
+   If you don't care to read the details below, just do this:
+
+      $ ./configure
+      $ make
+      $ make install
+
+   This will build and install kaffe plus associated files under /usr/local.
+   Then you can test your installation by doing:
+
+      $ make check
+
+   Note: Kaffe requires GNU make ("gmake") in order to build if you
+   downloaded it via anonymous CVS.
+
 Basic Installation
 ==================
 

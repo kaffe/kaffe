@@ -84,7 +84,9 @@ What about a web site?
 News about the "Open Source" Kaffe distribution can always be found at:
 
 	http://www.kaffe.org/
-and
+
+and also at:
+
 	http://www.transvirtual.com/
 
 And mailing lists?
@@ -108,13 +110,17 @@ to either:
   
 depending on what you are interested in.
 
-How do I compile kaffe?
------------------------
+How do I compile and install kaffe?
+-----------------------------------
 
-For UNIX it couldn't be simpler.
+For UNIX it couldn't be simpler:
 
-The machine comes complete with the interpreter, stub generator, and
-supporting native libraries.   Compilation is controlled using the
+  $ ./configure
+  $ make
+  $ make install
+
+The virtual machine comes complete with the interpreter, stub generator,
+and supporting native libraries.  Compilation is controlled using the
 GNU autoconf program.  To generate the necessary makefiles
 type "./configure" in this directory.  This will identify your system
 and configure the software appropriately.  If JIT mode is supported on your
@@ -123,7 +129,7 @@ interpreting mode.  Compilation should then be a simple matter of
 typing "make" in this directory.
 
 Note: if you downloaded a snapshot or checked out this version of kaffe
-from the CVS, you will need GNU make to build Kaffe.
+from the CVS, you will need GNU make ("gmake") in order to build Kaffe.
 If this is a distribution, it should work with your normal make.
 
 By default, the system will install into the /usr/local hierarchy as per
