@@ -1,3 +1,9 @@
+Tue Mar 19 21:40:47 PST 2002  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/net/MulticastSocket.java:
+	(getTimeToLive) new method. (getTTL) deprecated.
+	(setTimeToLive) new method. (setTTL) deprecated.
+
 Mon Mar 18 19:37:10 PST 2002  Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/util/HashMap.java:
