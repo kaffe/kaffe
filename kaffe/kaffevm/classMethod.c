@@ -2842,7 +2842,9 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 	arr_class->state = CSTATE_COMPLETE;
 	arr_class->centry = centry;
 
+	/* mark the corresponding centry as done */
 	centry->data.cl = arr_class;
+	centry->state = NMS_DONE;
 
 bail:
 	unlockMutex(centry);

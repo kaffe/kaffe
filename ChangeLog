@@ -1,5 +1,11 @@
 2003-07-07  Helmer Kraemer  <hkraemer@freenet.de>
 
+	* kaffe/kaffevm/classMethod.c: (lookupArray) set the state
+	of the centry to NMS_DONE so array classes are correctly
+	marked during gc
+
+2003-07-07  Helmer Kraemer  <hkraemer@freenet.de>
+
 	* kaffe/kaffevm/classPool.c: (walkClassEntries) only mark
 	entry->data.cl as an object if entry->state is at least
 	LOADING
