@@ -213,7 +213,10 @@ public static void arraycopy(Object src, int src_position, Object dst, int dst_p
 		}
 	}
 	else {
-		throw new ArrayStoreException("not arrays");
+		throw new ArrayStoreException("not arrays: source type is "
+					      + src.getClass().getName()
+					      + ", destination type is "
+					      + dst.getClass().getName());
 	}
 }
 

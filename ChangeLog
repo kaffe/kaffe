@@ -1,3 +1,28 @@
+Fri Oct 18 23:34:11 CEST 2002 Timothy S Stack <stack@cs.utah.edu>
+	* kaffe/kaffevm/thread.c:
+	The "started" field wasn't being set for the main thread
+
+	* libraries/javalib/java/lang/Thread.java:
+	The "group" field wasn't being cleared after the thread died.
+
+	The setPriority() method should throw an IllegalArgumentException
+	if the parameter is outside the range [MIN_PRIORITY, MAX_PRIORITY],
+	and not the ThreadGroup's max priority.  If the parameter was
+	greater than the group's max priority it should be set the priority
+	to the group's maximum.
+
+Fri Oct 18 18:33:54 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* libraries/javalib/kaffe/io/ConverterAlias.java:
+	added alias for US-ASCII.
+
+	Patch by: Vesa Kaihlavirta <vpkaihla@cc.jyu.fi>
+
+	* libraries/javalib/java/lang/System.java:
+	(arraycopy) fixed bug preventing SPEC JVM98 check to run. Now
+	throws NullPointerException when source or destination are null.
+
+	Reported by: Kevin D. Kissell <kevink@mips.com>
+
 Fri Oct 18 15:05:52 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	* libraries/clib/native/UNIXProcess.c: fixed crash when calling
 	Runtime.exec with an array of strings for the environment

@@ -239,6 +239,7 @@ createInitialThread(const char* nm)
 	unhand(tid)->interrupting = 0;
 	unhand(tid)->target = 0;
 	unhand(tid)->group = standardGroup;
+	unhand(tid)->started = 1;
 
 	initThreadLock(tid);
 

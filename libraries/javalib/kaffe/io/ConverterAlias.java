@@ -49,6 +49,7 @@ public class ConverterAlias {
 	alias.put("EUCJP",              "EUC_JP");
 	alias.put("EUC-JP",             "EUC_JP");
 	alias.put("EUCJIS",             "EUC_JP");
+	alias.put("US-ASCII",		"ASCII");
 	/* add more here */
     }
 

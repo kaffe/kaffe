@@ -194,12 +194,16 @@ final native private void finalize0();
  */
 /* Not private for now so GCJ won't optimize it away */
 void finish() {
+	ThreadGroup tg;
+	
 	synchronized(this) {
 		dying = true;
 		notifyAll();     // in case somebody is joining on us
+		tg = this.group;
+		this.group = null;
 	}
-	if (group != null) {
-		group.remove(this);
+	if (tg != null) {
+		tg.remove(this);
 	}
 	Application.removeResource(this);
 }
@@ -332,7 +336,7 @@ public void run() {
 }
 
 public final synchronized void setDaemon(boolean on) {
-	if (started && !dying) {
+	if (started) {
 		throw new IllegalThreadStateException("Active Thread");
 	}
 	daemon = on;
@@ -345,8 +349,11 @@ public final void setName(String name) {
 public final void setPriority(int newPriority) {
 	checkAccess();
 
-	if (newPriority < MIN_PRIORITY || newPriority > group.getMaxPriority()) {
-		throw new IllegalArgumentException();
+	if (newPriority < MIN_PRIORITY || newPriority > MAX_PRIORITY) {
+		throw new IllegalArgumentException("Priority: " + newPriority);
+	}
+	if (newPriority > this.group.getMaxPriority()) {
+		newPriority = this.group.getMaxPriority();
 	}
 	setPriority0(newPriority);
 }
