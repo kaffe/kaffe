@@ -40,8 +40,17 @@
 # define DBG_DETECTDEADLOCK	DBG_BIT(7) 
 # define DBG_BREAKONEXIT	DBG_BIT(8) 
 # define DBG_INIT		DBG_BIT(9) 
+# define DBG_GCPRIM		DBG_BIT(10) 
+# define DBG_GCSYSALLOC		DBG_BIT(11) 
+# define DBG_GCALLOC		DBG_BIT(12) 
+# define DBG_GCFREE		DBG_BIT(13) 
+# define DBG_GCSTAT		DBG_BIT(14) 
+# define DBG_ASYNCSTDIO		DBG_BIT(15) 
+# define DBG_CATCHOUTOFMEM	DBG_BIT(16) 
 
-/* let's reserve 50-63 for local uses */
+/* let's reserve 50-63 for temporary uses */
+# define DBG_SLACKANAL		DBG_BIT(50) 
+
 # define DBG_ALL		((jlong)(-1))
 # define DBG_ANY                DBG_ALL
 

@@ -67,6 +67,16 @@ static struct debug_opts
 	D(EXCEPTION, "Debug exceptions, don't catch traps"),
 	D(INIT,     "Show initialization steps."),
 	D(BREAKONEXIT, "Cause an exception before exiting. (Useful under GDB)"),
+	D(GCPRIM,   "Debug gc_primitive_*"),
+	D(GCALLOC,   "Debug gc_heap_alloc*"),
+	D(GCFREE,   "Debug gc_heap_free*"),
+	D(GCSYSALLOC,   "Show allocations of system memory"),
+	D(GCSTAT,   "Show allocation statistics"),
+	{ "GCMEM", DBG_GCPRIM|DBG_GCALLOC|DBG_GCFREE|DBG_GCSYSALLOC|DBG_GCSTAT, 
+			"All allocation and free operations in gc-mem" },
+	D(SLACKANAL,   "Print internal fragmentation statistics."),
+	D(ASYNCSTDIO, "Make stdio fds asynchronous despite debugging."),
+	D(CATCHOUTOFMEM, "Catch recursive out of memory exceptions."),
 
 	/* an example of how to define combinations */
 	{ "thread", DBG_JTHREAD|DBG_VMLOCKS|DBG_VMCONDS, 
