@@ -111,6 +111,10 @@ Mon Sep  7 21:52:32 1998  Petter Reinholdtsen <pere@cc.uit.no>
 	  libraries/javalib/java/lang/FilterInputStream.java:
 	  use read(byte[], int, int) instead of read(byte[])
 
+Fri Sep  4 15:40:20 PDT 1998	Tim Wilkinson <tim@transvirtual.com>
+
+	* Added new test application.
+
 Wed Sep  2 18:04:36 1998  Archie Cobbs <archie@whistle.com>
 
 	* libraries/clib/awt/X/img.c: fix bug in countAlphas()

@@ -11,8 +11,7 @@
 #include "config.h"
 #include "toolkit.h"
 
-#ifdef HAVE_PNG_H
-
+#if defined(HAVE_PNG_H)
 #include "png.h"
 
 
@@ -282,7 +281,7 @@ Image*
 readPngFile ( FILE* infile )
 {
   Image          *img = 0;
-#ifdef HAVE_PNG_H
+#if defined(HAVE_PNG_H)
   png_structp    png_ptr;
   png_infop      info_ptr;
 
@@ -307,7 +306,7 @@ Image*
 readPngData ( unsigned char* buf, long len )
 {
   Image          *img = 0;
-#ifdef HAVE_PNG_H
+#if defined(HAVE_PNG_H)
   png_structp    png_ptr;
   png_infop      info_ptr;
   BufferSource   source;

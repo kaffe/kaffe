@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <setjmp.h>
 
-#ifdef HAVE_JPEGLIB_H
+#if defined(HAVE_JPEGLIB_H)
 #include "jpeglib.h"
 #include "jerror.h"
 #endif
@@ -38,7 +38,7 @@ void Java_java_awt_Toolkit_imgFreeImage( JNIEnv* env, jclass clazz, Image * img)
 XImage* createXImage ( Toolkit* X, int width, int height );
 
 
-#ifdef HAVE_JPEGLIB_H
+#if defined(HAVE_JPEGLIB_H)
 
 /*******************************************************************************************
  * required typedefs and structs
@@ -246,7 +246,7 @@ readJpegFile ( FILE* infile )
 {
   Image *img = 0;
 
-#ifdef HAVE_JPEGLIB_H
+#if defined(HAVE_JPEGLIB_H)
   struct jpeg_decompress_struct cinfo;
 
   jpeg_create_decompress( &cinfo);
@@ -266,7 +266,7 @@ readJpegData ( unsigned char* buf, long len )
 {
   Image *img = 0;
 
-#ifdef HAVE_JPEGLIB_H
+#if defined(HAVE_JPEGLIB_H)
   struct jpeg_decompress_struct cinfo;
 
   jpeg_create_decompress( &cinfo);

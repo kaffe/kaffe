@@ -138,6 +138,15 @@
 /* Do we have netinet/tcp.h */
 #undef	HAVE_NETINET_TCP_H
 
+/* Do we have jpeglib.h */
+#undef	HAVE_JPEGLIB_H
+
+/* Do we have gif.h */
+#undef	HAVE_GIF_H
+
+/* Do we have png.h */
+#undef	HAVE_PNG_H
+
 /* Do we have strerror */
 #undef	HAVE_STRERROR
 
