@@ -1,3 +1,9 @@
+Sat Jan  9 07:33:26 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/Makefile.am (libkaffevm_la_SOURCES): gc-block.c no 
+	longer exists
+	* kaffe/kaffevm/Makefile.in: regen
+
 Thu Jan  7 19:27:21 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/systems/oskit-pthreads/Makefile.am: was missing

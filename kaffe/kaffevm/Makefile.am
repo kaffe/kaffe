@@ -35,7 +35,6 @@ libkaffevm_la_SOURCES = \
 	exception.c \
 	external.c \
 	findInJar.c \
-	gc-block.c \
 	gc-mem.c \
 	gc.c \
 	hashtab.c \
