@@ -98,6 +98,7 @@ typedef struct _nativeCodeInfo {
 
 typedef struct {
         bool BADARRAYINDEX;
+        bool NULLPOINTER;
 } jitflags;
 
 extern jitflags willcatch;
