@@ -1,0 +1,191 @@
+ 
+			 ===================
+
+			     Kaffe 1.1.5  
+
+			 ===================
+
+This is "Kaffe", a complete virtual machine and class library
+set which allows the execution of Java code.  It comes with a virtual
+machine and a set of class libraries including beans, and an AWT
+graphics system.
+
+Why use Kaffe?
+--------------
+
+Because Kaffe is distributed under the terms of the GNU Public License
+which means the source code is free for you to download, modify and
+use.  It's also demonstratably faster on many applications compared
+with the latest VM's from Sun, IBM or Microsoft.
+
+What systems does Kaffe support?
+-------------------------------
+
+Most of the porting issues of Kaffe are in the virtual machine itself
+(after all, the rest is in Java and is therefore inherently portable)
+so we may not support all the platforms you might want, but we support
+an amazing number and we'll add more as we can.  Take a look at the list
+below to see if Kaffe will run on your system ('J' means 'just-in-time'
+while 'I' means 'interpreter'):
+
+  ========================================================================
+  uProc     | Mode |    Systems
+  ========================================================================
+  ========================================================================
+  Alpha     | J+I  |    Linux		OSF/1		NetBSD 1.x
+  ------------------------------------------------------------------------
+  i386      | J+I  |    Linux 2.x       FreeBSD 2.x +   NetBSD 1.x
+            |      |    Solaris 2.x     BSDI 2.x        Unixware
+            |      |    SCO 3.2v5       NeXTStep 3.x    Windows '95/98/NT
+            |      |    DG/UX		OpenBSD 2.x	OpenStep 4.x
+            |      |    QNX 4.x		NCR MP-RAS 3.x  OSKit 0.96 +
+            |      |    GNU Hurd	BeOS		Cygwin
+	    |      |    Darwin
+  ------------------------------------------------------------------------
+  Sparc     | J+I  |    Linux 2.x       SunOS 4.x       NetBSD 1.x
+            |      |    NeXTStep 3.x    Solaris 2.x	Fujitsu UXP/DS
+            |      |    BSDI 3.x	OpenBSD 2.x
+  ------------------------------------------------------------------------
+  ARM       | J+I  |    Linux/Netwinder NetBSD 1.x	RISC OS
+  ------------------------------------------------------------------------
+  MIPS      | J+I  |    Linux/Cobalt    IRIX 5 & 6	NetBSD 1.x
+	    |	   |	Ultrix 4.2      PS2Linux
+  ------------------------------------------------------------------------
+  M68K      | J+I  |    AmigaOS         NeXTStep 3.x    NetBSD 1.x
+            |      |    SunOS 4.x	Linux		AUX
+            |      |    OpenBSD 2.x
+  ------------------------------------------------------------------------
+  PARISC    | I    |    HPUX 10.x       Linux 2.x
+  ------------------------------------------------------------------------
+  PowerPC   | I    |    Linux 2.x       MachTen 4.0.3	AIX
+	    |	   |	Darwin		NetBSD1.x       Mac OS X
+  ------------------------------------------------------------------------
+  ia64	    | I	   |	Linux 2.x	HPUX 11.x
+  ------------------------------------------------------------------------
+  x86-64    | I    |    Linux 2.x	FreeBSD 2.x +
+  ------------------------------------------------------------------------
+  s390	    | I	   |	Linux 2.x
+  ------------------------------------------------------------------------
+  SuperH    | I    |    Linux 2.x
+  ========================================================================
+
+Who can use Kaffe?
+------------------
+
+Kaffe is distributed under the GPL (GNU Public License).  Please
+read the license to make sure it's okay to use it in your circumstances.
+
+Where do I find new copies of Kaffe?
+------------------------------------
+
+Kaffe is available from various sites.  The primary site is:
+
+        ftp://ftp.kaffe.org/pub/kaffe/
+
+What about a web site?
+----------------------
+
+News about the "Open Source" Kaffe distribution can always be found at:
+
+	http://www.kaffe.org/
+
+And mailing lists?
+------------------
+
+A couple of mailing lists are available for information and discussion of
+the Kaffe project.  These lists are:
+  
+        kaffe@kaffe.org                             - General discussions
+        kaffe-announce@kaffe.org                    - Announcements
+
+In order to subscribe or unsubscribe, or to view the archives, please go
+to the website at:
+
+	http://www.kaffe.org/
+
+How do I report bugs and problems?
+----------------------------------
+
+Go the website http://www.kaffe.org/ and you'll find information on how to
+report bugs.
+
+How do I compile and install kaffe?
+-----------------------------------
+
+For UNIX it couldn't be simpler:
+
+  $ ./configure
+  $ make
+  $ make install
+
+Before compiling for your platform, you might want to check the
+RELEASE-NOTES file to see if it has been tested with this release, and
+whether or not there are any problems that other people have seen.
+
+The virtual machine comes complete with the interpreter, stub generator,
+and supporting native libraries.  Compilation is controlled using the
+GNU autoconf program.  To generate the necessary makefiles
+type "./configure" in this directory.  This will identify your system
+and configure the software appropriately.  If JIT mode is supported on your
+system it will be selected automatically, otherwise it defaults to
+interpreting mode.  Compilation should then be a simple matter of
+typing "make" in this directory.
+
+Note: You will need GNU make ("gmake") in order to build Kaffe.
+
+By default, the system will install into the /usr/local/kaffe
+hierarchy in a layout similar to how Sun's JDK lays out the files,
+with SDK tools (eg.  the java compiler) at the top level, and runtime
+files only in the "jre" subdirectory).  The install location can be
+changed using the --prefix option to configure.  To install the
+binaries type "make install".
+
+Kaffe can be reconfigured in a number of ways:
+
+1. Use --program-prefix, --program-suffix or --program-transform-name
+   configure option to prepend or append a string, or edit (with a sed
+   command) all command names.
+2. Use the --prefix configure option to place the kaffe installation tree
+   somewhere other than /usr/local/kaffe.
+
+For Windows 9x/NT, you can compile it using Red Hat's GNU tools for
+Windows from:
+
+	http://www.cygwin.com/
+
+Compilation and installation is as per the UNIX system.
+
+Running Kaffe
+=============
+
+No environment configuration is necessary to run kaffe.  However, you may 
+want to include the directory in which kaffe is installed in your path.  
+Typically, this would be /usr/local/kaffe/bin:
+
+        PATH=$PATH:/usr/local/kaffe/bin
+
+All necessary setup is taken care of by `kaffe' (note the lower case),
+which is actually a driver shell script for the `kaffe-bin'
+executable.
+
+Note that you don't have to setup the CLASSPATH - if you do then that's
+fine, but if you don't kaffe will construct a classpath that has the
+current directory plus the Jar and Zip files it needs to run.  For the 
+details of how the CLASSPATH is set up, refer to kaffe/scripts/kaffe.in.
+
+If you want to test the kaffe executable you built, type "make check".
+This will run a suite of tests to check that your Kaffe executable is
+in fact working.
+
+The Kaffe Team
+<kaffe@kaffe.org>
+
+----
+* Kaffe.org is a an independent, free software community project, not
+  directly affiliated with Transvirtual Technologies, Inc.
+* The Kaffe virtual machine is free software, licensed under the terms
+  of the GNU Public License.  It is a separate software product from
+  Transvirtual's proprietary KaffePro virtual machine.
+* Kaffe is a Trademark of Transvirtual Technologies, Inc.
+* Java is a Trademark of Sun Microsystems, Inc.
+

@@ -1,0 +1,172 @@
+Release Notes for 1.1.5
+=======================
+
+Release 1.1.5 of Kaffe is a "development" release.
+
+It has been tested, but not as thoroughly as a
+production release would be. It contains major 
+improvements over 1.1.4, which was released one 
+year ago. I anticipate that most people will have 
+less trouble with this release, and more fun.
+
+Please check the WHATSNEW file to see what has
+been added in this release.
+
+Even though this is not a production release, it
+contains a large number of improvements over 1.0.7, 
+which was released over two years ago.
+
+Bug reports, comments and patches are always
+welcome -- send them to the team at kaffe@kaffe.org.
+
+
+Platform Specific Notes
+=======================
+
+* PowerPC
+
+An PowerPC jitter has been contributed by Tim Stack. 
+It still needs some effort to make sure it passes 
+the regression tests. Volunteers would be very welcome.
+
+If you don't want to hack on the PowerPC jit, and just
+want to use the interpreter, please make sure that you
+pass the option --with-engine=intrp to Kaffe's 
+configure script.
+
+* ARM
+
+Jiri has reported some success using the libffi, rather
+than using Kaffe's own FFI interfaces, so you should 
+pass --with-libffi to Kaffe's configure script on ARM.
+
+Check the mailing list information for more details. The
+Kaffe Team would enjoy having a dedicated ARM hacker to
+make the ARM jitter shine again.
+
+* MIPS(EL)
+
+The jit3 implementation needs some more work. Casey 
+Marshall and Kevin Kissel have looked into it. A MIPS 
+hacker who would enjoy bringing the jit up to speed
+would be very appreciated.
+
+If you are just interested in running applications on
+a MIPS(EL) board on Kaffe instead of hacking on the jit
+please pass the option --with-engine=intrp to Kaffe's
+configure script.
+
+How to help
+===========
+
+We would appreciate your help in making Kaffe better,
+faster, and nicer. As a collaborative Free Software
+project, Kaffe only gets to be as good as its users
+and developers make it. If you want to track Kaffe
+development, and become a part of the Kaffe community
+please join the Kaffe mailing list. Instructions for
+joining the list are available at 
+http://www.kaffe.org/mailinglists.shtml
+
+A lot of informal communication between developers 
+and users happens on IRC, on the #kaffe channel on
+irc.freenode.org. It's a friendly channel where 
+someone may help you debug or port Kaffe, if you need
+hands on help.
+
+If you have looked at Sun's J2SE source code, 
+or signed NDAs that would prevent you from 
+contributing to Kaffe, we can not take source code 
+contributions from you. Otherwise, you're most welcome 
+to send in patches to the Kaffe mailing list at 
+kaffe@kaffe.org.
+
+An easy project to get yourself familiar with the source 
+code base are cleaning up the compiler warnings on 
+your platform. Every patch is welcome, and appreciated,
+no matter how small.
+
+If Kaffe doesn't pass all regression tests executed by 
+'make check' on your platform of choice under your desired
+configuration, patches to fix the regression failures would
+also be very appreciated.
+
+We won't ask you for copyright assignment. If you contribute 
+patches to code coming from other projects, then you should
+also send your patches 'upstream' to those projects, 
+beside contributing it to Kaffe, so that all users of 
+those upstream projects can benefit from your work.
+
+A particularly important upstream project for Kaffe is
+GNU Classpath, which provides the core class libraries.
+Even if Kaffe doesn't meat your needs, you are likely
+to find another Free Software runtime among the GNU
+Classpath family that suits your needs better. A list
+of such runtimes is available at 
+http://www.gnu.org/software/classpath/stories.html#jvm
+
+If you are not interested in hacking Kaffe, but want to 
+hack on GNU Classpath instead, Kaffe provides a quick, 
+efficient way to get yourself up and running with the 
+latest GNU Classpath code and have a working development 
+environment 'out of the box'. While not 100% merged with
+GNU Classpath yet, Kaffe follows for the 99% of the merged
+classes the developments in the GNU Classpath CVS regularly
+in its CVS head, and a script exists in the developers
+directory to make keeping in sync with GNU Classpath as
+simple as possible.
+
+Future Plans
+============
+
+Check out the TODO file for a list of things that are
+planned.
+
+Among other things, it is planed to fully switch Kaffe
+over to use GNU Classpath out of the box. Help to complete
+that task faster would be very welcome.
+
+After making Kaffe the integration melting pot for class 
+library components, it would be quite interesting to make 
+Kaffe an integration test bed for runtime components as 
+well.
+
+If you are looking for an interesting contribution to 
+make to the core VM, you may want to help with merging 
+in the new JIT engine, the merge of the gcj verifier 
+engine, or the efforts to make Kaffe use shared libraries
+complied by gcj.
+
+We'd also appreciate help with merging in the various other
+interesting developments from Kaffe forks like 
+JanosVM (Isolation), Latte (Hotspot-like engine), 
+BeKaffe (BeOS port), KaffeCE (WindowsCE port) and others.
+
+Platform Matrix
+===============
+
+The following platforms have been tested for this release:
+
+  arch	|   os	   | engine | threads |  gc   | passed
+======================================================
+  alpha	| linux    | intrp  | pthread | kaffe | 011/147
+  i386  | linux    | intrp  | pthread | kaffe | 147/147
+  i386  | linux    | jit    | pthread | kaffe | 147/147
+  i386  | linux    | jit3   | pthread | kaffe | 147/147
+  i386  | freebsd5 | jit3   | pthread | kaffe | 147/147
+  i386  | darwin7  | intrp  | pthread | kaffe | 011/147
+  i386  | linux    | jit3   | jthread | kaffe | 147/147
+  ia64	| hpux	   | intrp  | pthread | kaffe | 011/147
+  ia64	| linux	   | intrp  | pthread | kaffe | 139/147
+powerpc | linux    | intrp  | pthread | kaffe | 147/147
+powerpc | linux    | intrp  | jthread | kaffe | 147/147
+powerpc | darwin6  | intrp  | pthread | kaffe | 146/147
+powerpc | darwin7  | intrp  | pthread | kaffe | 147/147
+x86-64  | linux    | intrp  | pthread | kaffe | 145/147
+
+
+Have fun!
+
+Cheers,
+
+ - Dalibor Topic
