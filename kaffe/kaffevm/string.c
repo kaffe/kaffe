@@ -353,9 +353,9 @@ int32
 hashChars (jchar* ptr, int length)
 {
 	register jchar* limit = ptr + length;
-	int32 hash = *ptr;
-        while (++ptr < limit) {
-	       hash = (31 * hash) + *ptr;
+	int32 hash = 0;
+	while (ptr < limit) {
+	       hash = (31 * hash) + *ptr++;
 	}
 	return (hash);
 }
