@@ -450,6 +450,7 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 #else
 	int exc_len = 0;
 #endif
+	uintp const_align = sizeof(union _constpoolval) - 1;
 	uint32 constlen;
 	jitCodeHeader *jch;
 	nativecode* methblock;
@@ -457,17 +458,19 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	/* Emit pending instructions */
 	generateInsnSequence(codeInfo);
 
-	/* Okay, put this into malloc'ed memory */
+	/* Okay, put this into malloc'ed memory. We have to align the pool for
+	 * some double-word aligned instructions. */
 	constlen = KaffeJIT_getNumberOfConstants() * sizeof(union _constpoolval);
 	/* Allocate some padding to align codebase if so desired 
 	 */
-	methblock = gc_malloc(sizeof(jitCodeHeader) + exc_len + constlen + CODEPC + (align ? (align - ALIGNMENT_OF_SIZE(sizeof(jdouble))) : 0), KGC_ALLOC_JITCODE);
+	methblock = gc_malloc(sizeof(jitCodeHeader) + exc_len + constlen + const_align + CODEPC + (align ? (align - ALIGNMENT_OF_SIZE(sizeof(jdouble))) : 0), KGC_ALLOC_JITCODE);
 	if (methblock == 0) {
 		postOutOfMemory(einfo);
 		return (false);
 	}
 	jch = (jitCodeHeader *)methblock;
 	jch->pool = (void *)((char *)(jch + 1)) + exc_len;
+	jch->pool = (void *)(((uintp)jch->pool + const_align) & ~const_align );
 	jch->code_start = ((char *)jch->pool) + constlen;
 	jch->code_len = CODEPC;
 	/* align entry point if so desired */

@@ -481,6 +481,7 @@ finishInsnSequence(void* dummy UNUSED, nativeCodeInfo* code, errorInfo* einfo)
 	jitCodeHeader *jch;
 	nativecode* methblock;
 	jboolean success;
+	uintp const_align = sizeof(union _constpoolval) - 1;
 
 	/* Emit pending instructions */
 	success = generateInsnSequence(einfo);
@@ -490,10 +491,11 @@ finishInsnSequence(void* dummy UNUSED, nativeCodeInfo* code, errorInfo* einfo)
 
 	relinkFakeCalls();
 
-	/* Okay, put this into malloc'ed memory */
-	constlen = KaffeJIT3_getNumberOfConstants() * sizeof(union _constpoolval);
+	/* Okay, put this into malloc'ed memory. We allocate some more
+	 * memory for alignment purpose. */
+	constlen = KaffeJIT3_getNumberOfConstants() * sizeof(union _constpoolval); 
 	methblock = gc_malloc(sizeof(jitCodeHeader) +
-			      constlen +
+			      constlen + const_align +
 			      CODEPC,
 			      KGC_ALLOC_JITCODE);
 	if (methblock == 0) {
@@ -503,6 +505,7 @@ finishInsnSequence(void* dummy UNUSED, nativeCodeInfo* code, errorInfo* einfo)
 
 	jch = (jitCodeHeader *)methblock;
 	jch->pool = (void *)(jch + 1);
+	jch->pool = (void *) ( ((unsigned long)(jch->pool) + const_align) & ~const_align);
 	jch->code_start = ((char *)jch->pool) + constlen;
 	jch->code_len = CODEPC;
 	memcpy(jch->code_start, codeblock, jch->code_len);

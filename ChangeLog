@@ -1,3 +1,11 @@
+2005-01-10  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/jit/machine.c,
+	kaffe/kaffevm/jit3/machine.c
+	(finishInsnSequence): Align the constant pool on 8 bytes (sizeof(union
+	_constpoolval)). On sparc, a misalignment causes a SIGBUS in
+	establishConstants.
+
 2005-01-09  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* Makefile.am
