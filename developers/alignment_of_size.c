@@ -20,11 +20,17 @@ A(long long, LongLong);
 A(float, Float);
 A(double, Double);
 A(char, Char);
+A(struct { short _; }, ShortStruct);
+A(struct { char _; }, CharStruct);
+A(struct { int _; }, IntStruct);
+A(struct { float _; }, FloatStruct);
+A(struct { double _; }, DoubleStruct);
+A(struct { long long _; }, LongStruct);
 
 main()
 {
 #define P(name) \
-  printf("alignment of %10s with size %d -> %d\n", \
+  printf("alignment of %15s with size %d -> %d\n", \
         #name, sizeof(name.x), (char*)&name.x - (char*)&name)
   P(Char);
   P(Short);
@@ -32,4 +38,10 @@ main()
   P(Float);
   P(LongLong);
   P(Double);
+  P(CharStruct);
+  P(ShortStruct);
+  P(IntStruct);
+  P(FloatStruct);
+  P(DoubleStruct);
+  P(LongStruct);
 }
