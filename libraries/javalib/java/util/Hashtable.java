@@ -22,7 +22,7 @@ public class Hashtable extends Dictionary
 	private static final long serialVersionUID = 1421746759512286392L;
 	private static final int DEFAULT_CAPACITY = 11;
 	private static final float DEFAULT_LOADFACTOR = 0.75f;
-	private final HashMap map;
+	private HashMap map;
 
 	public Hashtable() {
 		this(DEFAULT_CAPACITY, DEFAULT_LOADFACTOR);
@@ -112,7 +112,14 @@ public class Hashtable extends Dictionary
 	}
 
 	public synchronized Object clone() {
-		return new Hashtable((HashMap)map.clone());
+		try {
+			Hashtable h = (Hashtable)super.clone();
+			h.map = (HashMap)map.clone();
+			return (h);
+		}
+		catch (CloneNotSupportedException _) {
+			return (null);
+		}
 	}
 
 	public synchronized String toString() {
