@@ -1,3 +1,46 @@
+2000-06-16  Edouard G. Parmelan  <egp@free.fr>
+
+	* test/regression/FPUStack.java, test/regression/Makefile.am,
+	test/regression/Makefile.in: new testcase for PR#620.
+
+	* config/i386/jit3-i386.def (kill_forced_register, pop_slot),
+	config/i386/jit3-icode.h (HAVE_kill_forced_register,
+	HAVE_pop_slot): new ix86 functions that deals with FPU stack
+	register.  Close PR#601 and PR#620.
+
+	* kaffe/kaffevm/jit3/registers.h (rforced): new modified flag.
+	(slot_kill_forced): add prototype.
+
+	* kaffe/kaffevm/jit3/registers.c: new framework to deals with
+	forced registers and stack register.  Close PR#601 and PR#620.
+	(spill): reset rforced flag as register is saved.
+	(slot_kill_forced): call HAVE_kill_forced_register on forced
+	slot.
+	(slotRegister): update rforced flag or call slot_kill_register().
+	(forceRegister): set rforced flag.
+
+	* kaffe/kaffevm/jit3/machine.c (generateInsnSequence): call
+	slot_kill_forced() on dead slots.
+
+	* kaffe/kaffevm/jit3/icode.c (pop_slot),
+	kaffe/kaffevm/jit3/kaffe-jit.def (POP, POP2): Create new sequence
+	if HAVE_pop_slot is defined to avoid eliminate slots that force
+	some registers.
+	
+	* kaffe/kaffevm/jit3/codeproto.h (pop_slot): add prototype.
+
+	* kaffe/kaffevm/debug.h kaffe/kaffevm/debug.c: add vmdebug flag
+	REGFORCE.
+
+	* kaffe/kaffevm/jit3/slots.c (lastuse_slot): add some REGFORCE
+	debug trace.
+
+	* libraries/javalib/kaffe/net/www/protocol/http/HttpURLConnection.java
+	(connect): fix typo.
+	
+	* libraries/javalib/java/io/InvalidClassException.java
+	(getMessage): Avoid recursive call.
+
 Thu Jun 15 11:16:52 MDT 2000  Godmar Back <gback@cs.utah.edu>
 
 	* libraries/clib/native/Class.c: when getMethod is invoked on an
