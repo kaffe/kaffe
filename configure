@@ -26740,71 +26740,6 @@ threads_frag=$srcdir/kaffe/kaffevm/systems/$with_threads/Makefile.frag
 
 THREAD_DIR=systems/$with_threads
 
-
-    echo "$as_me:$LINENO: checking the GNU C library version number" >&5
-echo $ECHO_N "checking the GNU C library version number... $ECHO_C" >&6
-if test "${ac_cv_gnu_library_version+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test "$cross_compiling" = yes; then
-  { { echo "$as_me:$LINENO: error: cannot run test program while cross compiling
-See \`config.log' for more details." >&5
-echo "$as_me: error: cannot run test program while cross compiling
-See \`config.log' for more details." >&2;}
-   { (exit 1); exit 1; }; }
-else
-  cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-#include <features.h>
-#include <stdio.h>
-#ifndef __GNU_LIBRARY__
-#error No GNU Library
-#endif
-
-main()
-{
-  FILE *f = fopen("conftestval", "w");
-  if (!f) exit(1);
-  fprintf(f, "%d\n", __GLIBC__ * 1000 + __GLIBC_MINOR__);
-  exit(0);
-}
-_ACEOF
-rm -f conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && { ac_try='./conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_gnu_library_version=`cat conftestval`
-else
-  echo "$as_me: program exited with status $ac_status" >&5
-echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-( exit $ac_status )
-ac_cv_gnu_library_version=no
-
-fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
-fi
-
-
-fi
-echo "$as_me:$LINENO: result: $ac_cv_gnu_library_version" >&5
-echo "${ECHO_T}$ac_cv_gnu_library_version" >&6
-
-
-
 if test x$with_threads = xunix-pthreads ; then
 
 
@@ -27417,16 +27352,6 @@ fi
 			;;
 	esac
 
-
-        if test x"$ac_cv_gnu_library_version" != x"no"; then
-		if "$ac_cv_gnu_library_version" -le "2002"; then
-
-cat >>confdefs.h <<\_ACEOF
-#define OLD_LINUXTHREADS 1
-_ACEOF
-
-		fi
-	fi
 	VMLIBS="$VM_LIBS $PTHREAD_LIBS"
  else
         CPPFLAGS="$CPPFLAGS -DBR_PTHREADS=0"
@@ -50304,6 +50229,193 @@ cat >>confdefs.h <<\_ACEOF
 #define HAVE_BROKEN_SO_RCVTIMEO 1
 _ACEOF
 
+fi
+
+
+
+
+    ac_c_compile_value_expand="__GLIBC__"
+  echo "$as_me:$LINENO: checking value of __GLIBC__ by analyzing object code" >&5
+echo $ECHO_N "checking value of __GLIBC__ by analyzing object code... $ECHO_C" >&6
+if test "${ac_cv_c_compile_value_glibc+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+
+    save_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS -c -o conftest.o"
+    cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#if defined(HAVE_FEATURES_H)
+#include <features.h>
+#endif
+
+      #include <stddef.h>
+      #include <stdint.h>
+      #include <stdlib.h>
+      #define COMPILE_VALUE $ac_c_compile_value_expand
+      #define HEX_DIGIT(n)      ((n) >= 10 ? 'a' + (n) - 10 : '0' + (n))
+      char object_code_block[] = {
+        '\n', 'e', '4', 'V', 'A',
+        '0', 'x',
+        (char) HEX_DIGIT((((COMPILE_VALUE / 16) / 16) / 16) % 16),
+        (char) HEX_DIGIT(((COMPILE_VALUE / 16) / 16) % 16),
+        (char) HEX_DIGIT((COMPILE_VALUE / 16) % 16),
+        (char) HEX_DIGIT(COMPILE_VALUE % 16),
+        'Y', '3', 'p', 'M', '\n'
+      };
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_c_compile_value_glibc=`
+        typeset -i n=\`sed -ne 's/^e4VA0x\(.*\)Y3pM$/0x\1/p' < conftest.o\`;
+        echo $n`
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_c_compile_value_glibc=0
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+    CFLAGS="$save_CFLAGS"
+fi
+echo "$as_me:$LINENO: result: $ac_cv_c_compile_value_glibc" >&5
+echo "${ECHO_T}$ac_cv_c_compile_value_glibc" >&6
+
+cat >>confdefs.h <<_ACEOF
+#define COMPILE_VALUE_GLIBC $ac_cv_c_compile_value_glibc
+_ACEOF
+
+
+
+
+
+    ac_c_compile_value_expand="__GLIBC_MINOR__"
+  echo "$as_me:$LINENO: checking value of __GLIBC_MINOR__ by analyzing object code" >&5
+echo $ECHO_N "checking value of __GLIBC_MINOR__ by analyzing object code... $ECHO_C" >&6
+if test "${ac_cv_c_compile_value_glibc_minor+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+
+    save_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS -c -o conftest.o"
+    cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#if defined(HAVE_FEATURES_H)
+#include <features.h>
+#endif
+
+      #include <stddef.h>
+      #include <stdint.h>
+      #include <stdlib.h>
+      #define COMPILE_VALUE $ac_c_compile_value_expand
+      #define HEX_DIGIT(n)      ((n) >= 10 ? 'a' + (n) - 10 : '0' + (n))
+      char object_code_block[] = {
+        '\n', 'e', '4', 'V', 'A',
+        '0', 'x',
+        (char) HEX_DIGIT((((COMPILE_VALUE / 16) / 16) / 16) % 16),
+        (char) HEX_DIGIT(((COMPILE_VALUE / 16) / 16) % 16),
+        (char) HEX_DIGIT((COMPILE_VALUE / 16) % 16),
+        (char) HEX_DIGIT(COMPILE_VALUE % 16),
+        'Y', '3', 'p', 'M', '\n'
+      };
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_c_compile_value_glibc_minor=`
+        typeset -i n=\`sed -ne 's/^e4VA0x\(.*\)Y3pM$/0x\1/p' < conftest.o\`;
+        echo $n`
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_c_compile_value_glibc_minor=0
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+    CFLAGS="$save_CFLAGS"
+fi
+echo "$as_me:$LINENO: result: $ac_cv_c_compile_value_glibc_minor" >&5
+echo "${ECHO_T}$ac_cv_c_compile_value_glibc_minor" >&6
+
+cat >>confdefs.h <<_ACEOF
+#define COMPILE_VALUE_GLIBC_MINOR $ac_cv_c_compile_value_glibc_minor
+_ACEOF
+
+
+
+
+
+if test "$ac_cv_c_compile_value_glibc" -le "2"; then
+	if "$ac_cv_c_compile_value_glibc_minor" -le "2"; then
+
+cat >>confdefs.h <<\_ACEOF
+#define OLD_LINUXTHREADS 1
+_ACEOF
+
+	fi
 fi
 
 # Check whether --enable-gtk-cairo or --disable-gtk-cairo was given.

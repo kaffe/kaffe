@@ -6,6 +6,12 @@
 /* Define the version we're compiling for */
 #undef ARCHOS
 
+/* __GLIBC__ */
+#undef COMPILE_VALUE_GLIBC
+
+/* __GLIBC_MINOR__ */
+#undef COMPILE_VALUE_GLIBC_MINOR
+
 /* sizeof(char) */
 #undef COMPILE_VALUE_SIZEOF_CHAR
 

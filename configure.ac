@@ -623,8 +623,6 @@ threads_frag=$srcdir/kaffe/kaffevm/systems/$with_threads/Makefile.frag
 AC_SUBST(THREAD_DIR)
 THREAD_DIR=systems/$with_threads
 
-KAFFE_CHECK_GLIBC_VER
-
 dnl Check for thread libraries
 if test x$with_threads = xunix-pthreads ; then
 	ACX_PTHREAD([THREADLIBS="$PTHREAD_LIBS "
@@ -636,12 +634,6 @@ if test x$with_threads = xunix-pthreads ; then
 	fi
 
 	KAFFE_LIB_SOLARIS_PTHREAD
-
-        if test x"$ac_cv_gnu_library_version" != x"no"; then
-		if "$ac_cv_gnu_library_version" -le "2002"; then
-			AC_DEFINE([OLD_LINUXTHREADS],1, [Is set if the current GLIBC is using the old Linuxthreads library])
-		fi
-	fi
 	VMLIBS="$VM_LIBS $PTHREAD_LIBS"
  else
         CPPFLAGS="$CPPFLAGS -DBR_PTHREADS=0"
@@ -1502,6 +1494,18 @@ int main(void) {
 ]])],[ac_cv_so_rcvtimeo_broken=no],[ac_cv_so_rcvtimeo_broken=yes],[ac_cv_so_rcvtimeo_broken=cross])])
 if test x"$ac_cv_sr_rcvtimeo_broken" = x"yes"; then
   AC_DEFINE(HAVE_BROKEN_SO_RCVTIMEO, 1, [Define if setsockopt(SO_RCVTIMEO) is broken])
+fi
+
+dnl ------------------------------------------------------------
+dnl Check for old linux threads (glibc <= 2.2)
+dnl ------------------------------------------------------------
+
+KAFFE_CHECK_GLIBC_VER
+
+if test "$ac_cv_c_compile_value_glibc" -le "2"; then
+	if "$ac_cv_c_compile_value_glibc_minor" -le "2"; then
+		AC_DEFINE([OLD_LINUXTHREADS],1, [Is set if the current GLIBC is using the old Linuxthreads library])
+	fi
 fi
 
 dnl ------------------------------------------------------------

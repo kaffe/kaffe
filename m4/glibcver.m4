@@ -15,26 +15,23 @@ dnl the same distribution terms as the rest of that program.
 
 AC_DEFUN([KAFFE_CHECK_GLIBC_VER],
 [
-    AC_CACHE_CHECK(the GNU C library version number,
-      ac_cv_gnu_library_version,
-      [AC_TRY_RUN([
+	AC_C_COMPILE_VALUE(
+	[__GLIBC__],
+        [glibc],
+        [
+#if defined(HAVE_FEATURES_H)
 #include <features.h>
-#include <stdio.h>
-#ifndef __GNU_LIBRARY__
-#error No GNU Library
 #endif
+	])
 
-main()
-{
-  FILE *f = fopen("conftestval", "w");
-  if (!f) exit(1);
-  fprintf(f, "%d\n", __GLIBC__ * 1000 + __GLIBC_MINOR__);
-  exit(0);
-}  ], 
-	ac_cv_gnu_library_version=`cat conftestval`, 
-	ac_cv_gnu_library_version=no
-	)
-      ]
-    )
+
+	AC_C_COMPILE_VALUE(
+	[__GLIBC_MINOR__],
+        [glibc_minor],
+        [
+#if defined(HAVE_FEATURES_H)
+#include <features.h>
+#endif
+	])
   ]
 )
