@@ -22,17 +22,11 @@ public class InputStreamReader
 	private byte[] inbuf = new byte[BUFDEFAULT];
 
 public InputStreamReader(InputStream in) {	
-	if (in == null) {
-		throw new NullPointerException();
-	}
 	strm = in;
 	encoding = ByteToCharConverter.getDefault();
 }
 
 public InputStreamReader(InputStream in, String enc) throws UnsupportedEncodingException {
-	if (in == null) {
-		throw new NullPointerException();
-	}
 	strm = in;
 	encoding = ByteToCharConverter.getConverter(enc);
 }
