@@ -11,6 +11,9 @@
 
 #include "config.h"
 #include <malloc.h>
+#if defined(HAVE_FEATURES_H)
+#include <features.h>
+#endif
 
 void
 init_md(void)
@@ -19,3 +22,12 @@ init_md(void)
 	mallopt(M_MMAP_MAX, 0);
 #endif
 }
+
+#if defined(__GLIBC__)
+extern void * __libc_stack_end;
+
+void *mdGetStackBase(void)
+{
+  return __libc_stack_end;
+}
+#endif

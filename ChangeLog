@@ -1,3 +1,17 @@
+2004-05-07  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* config/i386/linux/md.c, config/i386/linux/md.h:
+	New machine dependent function mdGetStackBase(). KAFFEMD_STACKBASE
+	is defined on ix86/linux now. If the user is running a GLIBC, then use
+	__libc_stack_end.
+
+	* kaffe/kaffevm/systems/unix-jthreads/signal.c:
+	(detectStackBoundaries)	Updated heuristics on detecting
+	stack boundaries. The code now accepts either KAFFEMD_STACKBASE,
+	KAFFEMD_STACKEND, stack limit finder or the old heuristic.
+
+	* FAQ/FAQ.kaffemd: Missing file from a previous check in.
+
 2004-05-06  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/text/Format.java:

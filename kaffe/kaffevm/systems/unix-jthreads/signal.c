@@ -345,42 +345,10 @@ blockAsyncSignals(void)
 	
 }
 
-#if defined(STACK_POINTER) && defined(SA_ONSTACK) && defined(HAVE_SIGALTSTACK)
-
-static JTHREAD_JMPBUF outOfLoop;
-static void *stackPointer;
-
-/*
- * This function intends to create a stack overflow error so we can evaluate
- * the stack boundaries. Unfortunately, gcc optimizes it here. This is the
- * purpose of the dummy variable a.
- */
-static void 
-infiniteLoop()
-{
-  int a;
-  infiniteLoop();
-  a = 0;
-}
-
-/*
- * This function is called by the system when we go beyond stack boundaries
- * in infiniteLoop. We get the stack address using the stack pointer register
- * and then go back in detectStackBoundaries() using the old stack.
- */
+#if defined(HAVE_SIGALTSTACK) && defined(SA_ONSTACK)
 static void
-stackOverflowDetector(SIGNAL_ARGS(sig, sc))
+setupSigAltStack(void)
 {
-  stackPointer = (void *)STACK_POINTER(GET_SIGNAL_CONTEXT_POINTER(sc));
-  unblockSignal(SIGSEGV);
-  JTHREAD_LONGJMP(outOfLoop, 1);
-}
-#endif
-
-void
-detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
-{
-#if defined(STACK_POINTER) && defined(SA_ONSTACK) && defined(HAVE_SIGALTSTACK)
         STACK_STRUCT newstack;
 
 	/*
@@ -396,11 +364,124 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 		    SYS_ERROR(errno));
 	    EXIT(1);
 	  }
-	
+}
+#else
+static void
+setupSigAltStack(void)
+{
+}
+#endif
+
+/* ----------------------------------------------------------------------
+ * STACK BOUNDARY DETECTORS
+ * ----------------------------------------------------------------------
+ */
+
+#if defined(KAFFEMD_STACKBASE) // STACK_POINTER
+
+/*
+ * The OS gives us the stack base. Get it and adjust the pointers.
+ */
+
+void
+detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
+{
+        void *stackPointer;
+
+	stackPointer = mdGetStackBase();
+
+	setupSigAltStack();
+
+#if defined(STACK_GROWS_UP)
+	jtid->stackBase = stackPointer;
+	jtid->stackEnd = (char *)jtid->stackBase + mainThreadStackSize;
+        jtid->restorePoint = jtid->stackEnd;
+#else
+	jtid->stackEnd = stackPointer;
+        jtid->stackBase = (char *) jtid->stackEnd - mainThreadStackSize;
+        jtid->restorePoint = jtid->stackBase;
+#endif
+
+}
+
+#elif defined(KAFFEMD_STACKEND) // KAFFEMD_STACKBASE
+
+/*
+ * Here the OS gives us the position of the end of stack. Get it
+ * and adjust our internal pointers.
+ */
+
+void
+detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
+{
+        void *stackPointer;
+
+	setupSigAltStack();
+
+	stackPointer = mdGetStackEnd();
+	fprintf(stderr,"stackPointer=%p\n", stackPointer);
+
+#if defined(STACK_GROWS_UP)
+	jtid->stackEnd = stackPointer;
+	jtid->stackBase = (char *)jtid->stackEnd - mainThreadStackSize;
+        jtid->restorePoint = jtid->stackEnd;
+#else
+	jtid->stackBase = stackPointer;
+        jtid->stackEnd = (char *) jtid->stackBase + mainThreadStackSize;
+        jtid->restorePoint = jtid->stackBase;
+#endif
+}
+
+#elif defined(STACK_POINTER) && defined(SA_ONSTACK) && defined(HAVE_SIGALTSTACK) && !defined(KAFFEMD_BUGGY_STACK_OVERFLOW)
+
+static JTHREAD_JMPBUF outOfLoop;
+
+/*
+ * This function is called by the system when we go beyond stack boundaries
+ * in infiniteLoop. We get the stack address using the stack pointer register
+ * and then go back in detectStackBoundaries() using the old stack.
+ */
+static void NONRETURNING
+stackOverflowDetector(SIGNAL_ARGS(sig UNUSED, sc))
+{
+  unblockSignal(SIGSEGV);
+  JTHREAD_LONGJMP(outOfLoop, 1);
+}
+
+void kaffeNoopFunc(char c UNUSED)
+{
+}
+
+/*
+ * This is the first type of heuristic we can use to guess the boundaries.
+ * Here we are provoking a SIGSEGV by overflowing the stack. Then we get
+ * the faulty adress directly.
+ */
+void
+detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
+{
+	char *guessPointer;
+
+	setupSigAltStack();
+
 	registerSignalHandler(SIGSEGV, stackOverflowDetector, false);
 	
 	if (JTHREAD_SETJMP(outOfLoop) == 0)
-	  infiniteLoop();
+	{
+	  unsigned int pageSize = getpagesize();
+
+	  guessPointer = (char *)((uintp)(&jtid) & ~(pageSize-1));
+	  
+	  while (1)
+	  {
+#if defined(STACK_GROWS_UP)
+	    guessPointer -= pageSize;
+#else
+	    guessPointer += pageSize;
+#endif
+	    kaffeNoopFunc(*guessPointer);
+	  }
+	}
 
 	/* Here we have detected one the boundary of the stack.
 	 * If stack grows up then it is the upper boundary. In the other
@@ -408,26 +489,35 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 	 * may guess the other boundary.
 	 */
 #if defined(STACK_GROWS_UP)
-	jtid->stackEnd = stackPointer;
-	jtid->stackBase = (char *)jtid->stackEnd - mainThreadStackSize;
+	jtid->stackBase = guessPointer;
+	jtid->stackEnd = (char *)jtid->stackBase + mainThreadStackSize;
 	jtid->restorePoint = jtid->stackEnd;
 #else
-	jtid->stackBase = stackPointer;
-	jtid->stackEnd = (char *)jtid->stackBase + mainThreadStackSize;
+	jtid->stackEnd = guessPointer;
+	jtid->stackBase = (char *)jtid->stackEnd - mainThreadStackSize;
 	jtid->restorePoint = jtid->stackBase;
 #endif
+}
 
-#else // STACK_POINTER
+#else
 
+/*
+ * This is the worse heuristic in terms of precision. But
+ * this may be the only one working on this platform.
+ */
+
+void
+detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
+{
 #if defined(STACK_GROWS_UP)
 	jtid->stackBase = (void*)(uintp)(&jtid - 0x100);
-	jtid->stackEnd = jtid->stackBase + mainThreadStackSize;
+	jtid->stackEnd = (char *)jtid->stackBase + mainThreadStackSize;
         jtid->restorePoint = jtid->stackEnd;
 #else
 	jtid->stackEnd = (void*)(uintp)(&jtid + 0x100);
         jtid->stackBase = (char *) jtid->stackEnd - mainThreadStackSize;
         jtid->restorePoint = jtid->stackBase;
 #endif
+}
 
 #endif
-}

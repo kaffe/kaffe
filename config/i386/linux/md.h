@@ -90,6 +90,11 @@ static inline rlim_t mdGetStackSize(void)
 }
 #endif
 
+#if defined(__GLIBC__)
+#define KAFFEMD_STACKBASE
+extern void *mdGetStackBase(void);
+#endif
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif

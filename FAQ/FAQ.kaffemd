@@ -1,0 +1,32 @@
+FAQ for defines
+===============
+
+Here are the defines to put in config/*/*/md.h to enable features
+in kaffe.
+
+KAFFEMD_PAGESIZE
+----------------
+
+This macro is to be defined if the OS supports mdGetPageSize().
+mdGetPageSize() returns the current page size for the operating system.
+
+KAFFEMD_STACKOVERFLOW
+---------------------
+
+This macro is to be defined if the operating system supports stack overflow 
+reporting. This macro should require that at least SA_ONSTACK, STACK_POINTER 
+and HAVE_SIGALTSTACK are defined. But if the operating system is badly supported
+on the architecture this can be left undefined and kaffe will keep the old
+behaviour.
+
+KAFFEMD_STACKBASE
+-----------------
+
+This macro is to be defined is the platform supports mdGetStackBase(). This
+function returns a pointer to the bottom of the stack.
+
+KAFFEMD_STACKEND
+-----------------
+
+This macro is to be defined is the platform supports mdGetStackEnd(). This
+function returns a pointer to the end of the stack.
