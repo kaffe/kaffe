@@ -74,8 +74,8 @@
 
 #define READMETHOD_START(METHODS_COUNT, THIS_CLASS)			\
 	do {								\
-		THIS_CLASS->methods =					\
-			gc_malloc(sizeof(Method)*(METHODS_COUNT), GC_ALLOC_METHOD);\
+		THIS_CLASS->methods = (METHODS_COUNT) == 0 ? (Method*)0	\
+			: gc_malloc(sizeof(Method)*(METHODS_COUNT), GC_ALLOC_METHOD);\
 		GC_WRITE(THIS_CLASS, THIS_CLASS->methods);		\
 		THIS_CLASS->nmethods = 0;				\
 	} while (0)
