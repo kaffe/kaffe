@@ -17,14 +17,22 @@
 /**/
 #define	USE_INTERNAL_THREADS
 
+#if defined(INTERPRETER)
+#if !defined(_MIPS_SIM) || (_MIPS_SIM == _MIPS_SIM_ABI32)
+#define	THREADSTACKSIZE		(64 * 1024)
+#else
+#define	THREADSTACKSIZE		(128 * 1024)
+#endif /* _MIPS_SIM == _MIPS_SIM_ABI32 */
+#else
 #define	THREADSTACKSIZE		(32 * 1024)
+#endif
 
 /*
  * Stack offset.
  * This is the offset into the setjmp buffer where the stack pointer is
  * stored.  This may be different with different OSes.
  */
-#if (_MIPS_SIM == _MIPS_SIM_ABI32)
+#if !defined(_MIPS_SIM) || (_MIPS_SIM == _MIPS_SIM_ABI32)
 #define SP_OFFSET               2
 #define FP_OFFSET               13
 #endif
