@@ -51,53 +51,53 @@
  */
 typedef struct SystemCallInterface {
 
-	int	(*_open)(const char*, int, int, int *);
-	int	(*_read)(int, void*, size_t, ssize_t *);
+	int	(*_open)(const char *, int, int, int *);
+	int	(*_read)(int, void *, size_t, ssize_t *);
 	int	(*_write)(int, const void*, size_t, ssize_t *);
 	int	(*_lseek)(int, off_t, int, off_t *);
 	int	(*_close)(int);
-	int	(*_fstat)(int, struct stat*);
-	int	(*_stat)(const char*, struct stat*);
+	int	(*_fstat)(int, struct stat *);
+	int	(*_stat)(const char *, struct stat *);
 	int	(*_ftruncate)(int, off_t);
 	int	(*_fsync)(int);
 
-	int	(*_mkdir)(const char*, int);
-	int	(*_rmdir)(const char*);
-	int	(*_rename)(const char*, const char*);
-	int	(*_remove)(const char*);
+	int	(*_mkdir)(const char *, int);
+	int	(*_rmdir)(const char *);
+	int	(*_rename)(const char *, const char *);
+	int	(*_remove)(const char *);
 
-	int	(*_socket)(int, int, int, int*);
-	int	(*_connect)(int, struct sockaddr*, int, int timeout);
-	int	(*_bind)(int, struct sockaddr*, int);
+	int	(*_socket)(int, int, int, int *);
+	int	(*_connect)(int, struct sockaddr *, int, int timeout);
+	int	(*_bind)(int, struct sockaddr *, int);
 	int	(*_listen)(int, int);
-	int	(*_accept)(int, struct sockaddr*, int*, int timeout, int*);
-	int	(*_sockread)(int, void*, size_t, int timeout, ssize_t *);
-	int	(*_recvfrom)(int,void*,size_t,int,struct sockaddr*, int*,
-		    int timeout, ssize_t *);
-	int	(*_sockwrite)(int, const void*, size_t, ssize_t *);
-	int 	(*_sendto)(int,const void*,size_t,int,const struct sockaddr*,
-		    int, ssize_t *);
-	int	(*_setsockopt)(int, int, int, const void*, int);
-	int	(*_getsockopt)(int, int, int, void*, int*);
-	int	(*_getsockname)(int, struct sockaddr*, int*);
-	int	(*_getpeername)(int, struct sockaddr*, int*);
+	int	(*_accept)(int, struct sockaddr *, int*, int, int *);
+	int	(*_sockread)(int, void*, size_t, int, ssize_t *);
+	int	(*_recvfrom)(int, void *, size_t, int, struct sockaddr *, int *,
+		int timeout, ssize_t *);
+	int	(*_sockwrite)(int, const void *, size_t, ssize_t *);
+	int	(*_sendto)(int, const void *, size_t, int, const struct sockaddr *,
+		int, ssize_t *);
+	int	(*_setsockopt)(int, int, int, const void *, int);
+	int	(*_getsockopt)(int, int, int, void *, int *);
+	int	(*_getsockname)(int, struct sockaddr *, int *);
+	int	(*_getpeername)(int, struct sockaddr *, int *);
 	int	(*_sockclose)(int);
-	int	(*_gethostbyname)(const char*, struct hostent**);
-	int	(*_gethostbyaddr)(const char*, int, int, struct hostent**);
+	int	(*_gethostbyname)(const char *, struct hostent **);
+	int	(*_gethostbyaddr)(const char *, size_t, int, struct hostent **);
 
-	int	(*_select)(int, fd_set*, fd_set*, fd_set*, struct timeval*, 
+	int	(*_select)(int, fd_set *, fd_set *, fd_set *, struct timeval *, 
 		int*);
-	int	(*_forkexec)(char**, char**, int[4], int*, const char*);
-	int	(*_waitpid)(int, int*, int, int*);
+	int	(*_forkexec)(char **, char **, int[4], int*, const char *);
+	int	(*_waitpid)(int, int *, int, int *);
 	int	(*_kill)(int, int);
 
-        int     (*_mmap)(void **memory, size_t *size, int mode, int fd, off_t *offset);
-	int     (*_munmap)(void *memory, size_t size);
-	int     (*_msync)(void *memory, size_t length);
+	int	(*_mmap)(void **, size_t *, int, int fd, off_t *);
+	int	(*_munmap)(void *, size_t);
+	int	(*_msync)(void *, size_t);
 
-	int     (*_pipecreate)(int *, int *);
-	int	(*_piperead)(int, void*, size_t, int timeout, ssize_t *);
-	int	(*_pipewrite)(int, const void*, size_t, int timeout, ssize_t *);
+	int	(*_pipecreate)(int *, int *);
+	int	(*_piperead)(int, void *, size_t, int, ssize_t *);
+	int	(*_pipewrite)(int, const void*, size_t, int, ssize_t *);
 } SystemCallInterface;
 
 extern SystemCallInterface Kaffe_SystemCallInterface;
