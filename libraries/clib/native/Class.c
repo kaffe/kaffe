@@ -98,13 +98,24 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 		 * NoClassDefFoundError, if for instance a superclass for
 		 * a class couldn't be found.
 		 *
-		 * When it throws which, we don't know.  We try to be 
+		 * When it throws which, we don't really know.  We try to be 
 		 * compatible, so we upgrade the error to an exception if it's 
 		 * (NoClassDefFoundError, this_class_name).
 		 */
 		if (!strcmp(einfo.classname, "java.lang.NoClassDefFoundError"))
 		{
-			/* this is not quite what Sun does: they use the
+			/*
+			 * However, we don't upgrade if it is a second attempt
+			 * to load a class whose loading has already failed.
+			 */
+			classEntry* centry;
+			centry = lookupClassEntry(utf8buf, loader);
+			if (centry->class &&
+			    centry->class->state == CSTATE_FAILED) {
+				throwError(&einfo);
+			}
+
+			/* This is not quite what Sun does: they use the
 			 * classname, we use the pathname as the message
 			 * of the exception  (FIXME?)
 			 */
