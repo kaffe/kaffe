@@ -1,3 +1,8 @@
+Thu Dec  3 12:24:06 1998  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/net/URL.java: fix bug in constructor
+	Reported by Alice Dubois <alice.dubois@lemel.fr>
+
 Thu Dec  3 12:14:13 1998  Parmelan, Edouard <EP510777@exchange.FRANCE.NCR.com>
 
 	* kaffe/kaffevm/jar.[ch]: memory map class files if possible
