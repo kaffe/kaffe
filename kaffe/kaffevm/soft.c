@@ -595,9 +595,10 @@ jlong
 soft_lrem(jlong v1, jlong v2)
 {
 	jlong r = v1 % v2;
-	/* Java says sgn(r) == sgn(v1).
-	 * C doesn't say what the sign of the remainder will be, and in
-	 * fact some implementations are wrong.  So we fix it up.
+	/* Java requires sgn(r) == sgn(v1).
+	 * FreeBSD <= 2.2.8 and <= 3.0 screw up here, and since we care
+	 * so much about FreeBSD, we fix it up for them.
+	 * XXX: add #ifdef LREM_BROKEN
 	 */
 	if ((v1 < 0L && r >= 0L) || (v1 >= 0L && r < 0L)) {
 		r = -r;
