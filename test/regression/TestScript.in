@@ -169,6 +169,7 @@ runtest BadFloatTest
 runtest ExecTest
 runtest ProcessTest $JAVA
 runtest UDPTest
+runtest SoTimeout
 runtest wc < $SRCDIR/wc.java
 runtest FileTest
 
