@@ -784,13 +784,15 @@ public abstract class Component
    * events).
    *
    * @param enabled true to enable this component
+   *
    * @see #isEnabled()
    * @see #isLightweight()
+   *
    * @since 1.1
    */
-  public void setEnabled(boolean b)
+  public void setEnabled(boolean enabled)
   {
-    enable (b);
+    enable(enabled);
   }
 
   /**
@@ -809,14 +811,15 @@ public abstract class Component
    * Enables or disables this component.
    *
    * @param enabled true to enable this component
+   *
    * @deprecated use {@link #setEnabled(boolean)} instead
    */
-  public void enable(boolean b)
+  public void enable(boolean enabled)
   {
-    if (b)
-      enable ();
+    if (enabled)
+      enable();
     else
-      disable ();
+      disable();
   }
 
   /**
@@ -864,15 +867,17 @@ public abstract class Component
    * not show the component, if a parent is invisible.
    *
    * @param visible true to make this component visible
+   *
    * @see #isVisible()
+   *
    * @since 1.1
    */
-  public void setVisible(boolean b)
+  public void setVisible(boolean visible)
   {
     // Inspection by subclassing shows that Sun's implementation calls
     // show(boolean) which then calls show() or hide(). It is the show()
     // method that is overriden in subclasses like Window.
-    show (b);
+    show(visible);
   }
 
   /**
@@ -903,14 +908,15 @@ public abstract class Component
    * Makes this component visible or invisible.
    *
    * @param visible true to make this component visible
+   *
    * @deprecated use {@link #setVisible(boolean)} instead
    */
-  public void show(boolean b)
+  public void show(boolean visible)
   {
-    if (b)
-      show ();
+    if (visible)
+      show();
     else
-      hide ();
+      hide();
   }
 
   /**
@@ -1786,7 +1792,8 @@ public abstract class Component
    * relative to this component. Subclasses should call either
    * <code>super.update(g)</code> or <code>paint(g)</code>.
    *
-   * @param graphics the graphics context for this update
+   * @param g the graphics context for this update
+   *
    * @see #paint(Graphics)
    * @see #repaint()
    */
@@ -1807,7 +1814,8 @@ public abstract class Component
   /**
    * Paints this entire component, including any sub-components.
    *
-   * @param graphics the graphics context for this paint job
+   * @param g the graphics context for this paint job
+   *
    * @see #paint(Graphics)
    */
   public void paintAll(Graphics g)
@@ -1869,8 +1877,8 @@ public abstract class Component
    * @param tm milliseconds before this component should be repainted
    * @param x the X coordinate of the upper left of the region to repaint
    * @param y the Y coordinate of the upper left of the region to repaint
-   * @param w the width of the region to repaint
-   * @param h the height of the region to repaint
+   * @param width the width of the region to repaint
+   * @param height the height of the region to repaint
    * @see #update(Graphics)
    */
   public void repaint(long tm, int x, int y, int width, int height)
@@ -1890,7 +1898,8 @@ public abstract class Component
    * done in a different manner from painting. However, the implementation
    * in this class simply calls the <code>paint()</code> method.
    *
-   * @param graphics the graphics context of the print device
+   * @param g the graphics context of the print device
+   *
    * @see #paint(Graphics)
    */
   public void print(Graphics g)
@@ -1904,7 +1913,8 @@ public abstract class Component
    * painting. However, the implementation in this class simply calls the
    * <code>paintAll()</code> method.
    *
-   * @param graphics the graphics context of the print device
+   * @param g the graphics context of the print device
+   *
    * @see #paintAll(Graphics)
    */
   public void printAll(Graphics g)
@@ -1922,7 +1932,7 @@ public abstract class Component
    *
    * <p>The coordinate system used depends on the particular flags.
    *
-   * @param image the image that has been updated
+   * @param img the image that has been updated
    * @param flags tlags as specified in <code>ImageObserver</code>
    * @param x the X coordinate
    * @param y the Y coordinate
@@ -2857,7 +2867,7 @@ public abstract class Component
    * Processes the specified event. In this class, this method simply
    * calls one of the more specific event handlers.
    *
-   * @param event the event to process
+   * @param e the event to process
    * @throws NullPointerException if e is null
    * @see #processComponentEvent(ComponentEvent)
    * @see #processFocusEvent(FocusEvent)
@@ -2908,7 +2918,7 @@ public abstract class Component
    * enabled. This method passes the event along to any listeners
    * that are attached.
    *
-   * @param event the <code>ComponentEvent</code> to process
+   * @param e the <code>ComponentEvent</code> to process
    * @throws NullPointerException if e is null
    * @see ComponentListener
    * @see #addComponentListener(ComponentListener)
@@ -2941,7 +2951,7 @@ public abstract class Component
    * enabled. This method passes the event along to any listeners
    * that are attached.
    *
-   * @param event the <code>FocusEvent</code> to process
+   * @param e the <code>FocusEvent</code> to process
    * @throws NullPointerException if e is null
    * @see FocusListener
    * @see #addFocusListener(FocusListener)
@@ -2969,7 +2979,7 @@ public abstract class Component
    * enabled. This method passes the event along to any listeners
    * that are attached.
    *
-   * @param event the <code>KeyEvent</code> to process
+   * @param e the <code>KeyEvent</code> to process
    * @throws NullPointerException if e is null
    * @see KeyListener
    * @see #addKeyListener(KeyListener)
@@ -2999,7 +3009,7 @@ public abstract class Component
    * enabled. This method passes the event along to any listeners
    * that are attached.
    *
-   * @param event the <code>MouseEvent</code> to process
+   * @param e the <code>MouseEvent</code> to process
    * @throws NullPointerException if e is null
    * @see MouseListener
    * @see #addMouseListener(MouseListener)
@@ -3036,7 +3046,7 @@ public abstract class Component
    * enabled. This method passes the event along to any listeners
    * that are attached.
    *
-   * @param event the <code>MouseMotionEvent</code> to process
+   * @param e the <code>MouseMotionEvent</code> to process
    * @throws NullPointerException if e is null
    * @see MouseMotionListener
    * @see #addMouseMotionListener(MouseMotionListener)
@@ -3064,7 +3074,7 @@ public abstract class Component
    * enabled. This method passes the event along to any listeners that are
    * attached.
    *
-   * @param event the <code>MouseWheelEvent</code> to process
+   * @param e the <code>MouseWheelEvent</code> to process
    * @throws NullPointerException if e is null
    * @see MouseWheelListener
    * @see #addMouseWheelListener(MouseWheelListener)
@@ -3086,7 +3096,7 @@ public abstract class Component
    * enabled. This method passes the event along to any listeners that are
    * attached.
    *
-   * @param event the <code>InputMethodEvent</code> to process
+   * @param e the <code>InputMethodEvent</code> to process
    * @throws NullPointerException if e is null
    * @see InputMethodListener
    * @see #addInputMethodListener(InputMethodListener)
@@ -3113,7 +3123,7 @@ public abstract class Component
    * are enabled. This method passes the event along to any listeners that are
    * attached.
    *
-   * @param event the <code>HierarchyEvent</code> to process
+   * @param e the <code>HierarchyEvent</code> to process
    * @throws NullPointerException if e is null
    * @see HierarchyListener
    * @see #addHierarchyListener(HierarchyListener)
@@ -3133,7 +3143,7 @@ public abstract class Component
    * are enabled. This method passes the event along to any listeners that are
    * attached.
    *
-   * @param event the <code>HierarchyEvent</code> to process
+   * @param e the <code>HierarchyEvent</code> to process
    * @throws NullPointerException if e is null
    * @see HierarchyBoundsListener
    * @see #addHierarchyBoundsListener(HierarchyBoundsListener)
@@ -3586,11 +3596,16 @@ public abstract class Component
    *
    * @param id one of FORWARD_TRAVERSAL_KEYS, BACKWARD_TRAVERSAL_KEYS,
    * or UP_CYCLE_TRAVERSAL_KEYS
+   *
+   * @return set of traversal keys
+   *
    * @throws IllegalArgumentException if id is invalid
+   *
    * @see #setFocusTraversalKeys (int, Set)
    * @see KeyboardFocusManager#FORWARD_TRAVERSAL_KEYS
    * @see KeyboardFocusManager#BACKWARD_TRAVERSAL_KEYS
    * @see KeyboardFocusManager#UP_CYCLE_TRAVERSAL_KEYS
+   *
    * @since 1.4
    */
   public Set getFocusTraversalKeys (int id)
@@ -4086,8 +4101,10 @@ public abstract class Component
   /**
    * Adds the specified popup menu to this component.
    *
-   * @param menu the popup menu to be added
+   * @param popup the popup menu to be added
+   *
    * @see #remove(MenuComponent)
+   *
    * @since 1.1
    */
   public synchronized void add(PopupMenu popup)
@@ -4106,7 +4123,7 @@ public abstract class Component
   /**
    * Removes the specified popup menu from this component.
    *
-   * @param menu the popup menu to remove
+   * @param popup the popup menu to remove
    * @see #add(PopupMenu)
    * @since 1.1
    */
@@ -4167,7 +4184,7 @@ public abstract class Component
   /**
    * Prints a listing of this component to the specified print stream.
    *
-   * @param stream the <code>PrintStream</code> to print to
+   * @param out the <code>PrintStream</code> to print to
    */
   public void list(PrintStream out)
   {
@@ -4178,7 +4195,7 @@ public abstract class Component
    * Prints a listing of this component to the specified print stream,
    * starting at the specified indentation point.
    *
-   * @param stream the <code>PrintStream</code> to print to
+   * @param out the <code>PrintStream</code> to print to
    * @param indent the indentation point
    */
   public void list(PrintStream out, int indent)
@@ -4191,7 +4208,7 @@ public abstract class Component
   /**
    * Prints a listing of this component to the specified print writer.
    *
-   * @param writer the <code>PrintWrinter</code> to print to
+   * @param out the <code>PrintWrinter</code> to print to
    * @since 1.1
    */
   public void list(PrintWriter out)
@@ -4203,7 +4220,7 @@ public abstract class Component
    * Prints a listing of this component to the specified print writer,
    * starting at the specified indentation point.
    *
-   * @param writer the <code>PrintWriter</code> to print to
+   * @param out the <code>PrintWriter</code> to print to
    * @param indent the indentation point
    * @since 1.1
    */
