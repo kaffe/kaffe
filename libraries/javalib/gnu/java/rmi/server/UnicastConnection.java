@@ -37,14 +37,17 @@ exception statement from your version. */
 
 package gnu.java.rmi.server;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectInput;
+import java.io.IOException;
 import java.net.Socket;
+import java.net.ServerSocket;
 import java.rmi.RemoteException;
 
 public class UnicastConnection 

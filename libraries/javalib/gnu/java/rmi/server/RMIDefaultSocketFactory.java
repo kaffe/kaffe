@@ -37,10 +37,10 @@ exception statement from your version. */
 
 package gnu.java.rmi.server;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.rmi.server.RMISocketFactory;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.ServerSocket;
 
 public class RMIDefaultSocketFactory
 	extends RMISocketFactory {

@@ -37,8 +37,8 @@ exception statement from your version. */
 
 package gnu.java.rmi.server;
 
-import java.rmi.server.RemoteRef;
 import java.rmi.server.RemoteStub;
+import java.rmi.server.RemoteRef;
 
 public class UnicastRemoteStub
 	extends RemoteStub {

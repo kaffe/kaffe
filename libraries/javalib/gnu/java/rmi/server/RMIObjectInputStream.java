@@ -37,11 +37,12 @@ exception statement from your version. */
 
 package gnu.java.rmi.server;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
+import java.io.ObjectInputStream;
+import java.io.InputStream;
+import java.io.IOException;
 import java.lang.reflect.Proxy;
+import java.net.URL;
 import java.net.MalformedURLException;
 import java.rmi.server.RMIClassLoader;
 

@@ -1,5 +1,6 @@
 /*
-  Copyright (c) 1996, 1997, 1998, 1999, 2002 Free Software Foundation, Inc.
+  Copyright (c) 1996, 1997, 1998, 1999, 2002i, 2004
+  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -37,21 +38,26 @@ exception statement from your version. */
 
 package gnu.java.rmi.server;
 
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.rmi.RemoteException;
-import java.rmi.server.RMIClientSocketFactory;
-import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.RMISocketFactory;
+import java.rmi.server.RMIServerSocketFactory;
+import java.rmi.server.RMIClientSocketFactory;
+import java.rmi.RemoteException;
+import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectInput;
+import java.io.DataInputStream;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+
+import gnu.java.rmi.server.UnicastConnection;
+import gnu.java.rmi.server.RMIIncomingThread;
 
 public class UnicastConnectionManager
 	implements Runnable, ProtocolConstants {

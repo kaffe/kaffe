@@ -1,5 +1,51 @@
 2004-10-04  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/java/rmi/rmic/RMIC.java,
+	libraries/javalib/gnu/java/rmi/server/RMIDefaultSocketFactory.java,
+	libraries/javalib/gnu/java/rmi/server/RMIHashes.java,
+	libraries/javalib/gnu/java/rmi/server/RMIObjectInputStream.java,
+	libraries/javalib/gnu/java/rmi/server/RMIObjectOutputStream.java,
+	libraries/javalib/gnu/java/rmi/server/UnicastConnection.java,
+	libraries/javalib/gnu/java/rmi/server/UnicastConnectionManager.java,
+	libraries/javalib/gnu/java/rmi/server/UnicastRemoteCall.java,
+	libraries/javalib/gnu/java/rmi/server/UnicastRemoteStub.java,
+	libraries/javalib/gnu/java/rmi/server/UnicastServerRef.java,
+	libraries/javalib/java/io/CharArrayWriter.java,
+	libraries/javalib/java/io/FileDescriptor.java,
+	libraries/javalib/java/io/FileInputStream.java,
+	libraries/javalib/java/io/FileOutputStream.java,
+	libraries/javalib/java/io/ObjectOutputStream.java,
+	libraries/javalib/java/io/ObjectStreamClass.java,
+	libraries/javalib/java/io/PipedInputStream.java,
+	libraries/javalib/java/io/RandomAccessFile.java:
+	Resynced with GNU Classpath.
+
+	2004-10-02  Michael Koch  <konqueror@gmx.de>
+
+        * java/io/CharArrayWriter.java
+        (resize): Remove redundant final modifier.
+        * java/io/FileDescriptor.java,
+        java/io/FileInputStream.java,
+        java/io/FileOutputStream.java,
+        java/io/ObjectOutputStream.java,
+        java/io/ObjectStreamClass.java,
+        java/io/PipedInputStream.java,
+        java/io/RandomAccessFile.java:
+        Reworked import statements.
+
+	2004-10-02  Michael Koch  <konqueror@gmx.de>
+
+        * gnu/java/rmi/rmic/RMIC.java,
+        gnu/java/rmi/server/RMIHashes.java,
+        gnu/java/rmi/server/RMIObjectInputStream.java,
+        gnu/java/rmi/server/UnicastConnection.java,
+        gnu/java/rmi/server/UnicastConnectionManager.java,
+        gnu/java/rmi/server/UnicastRemoteCall.java,
+        gnu/java/rmi/server/UnicastServerRef.java:
+        Import statements cleaned up.
+
+2004-10-04  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/io/DataInputStream.java:
 	Resynced with GNU Classpath.
 

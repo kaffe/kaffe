@@ -37,12 +37,13 @@ exception statement from your version. */
 
 package gnu.java.rmi.server;
 
-import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.rmi.Remote;
+import java.io.IOException;
 import java.rmi.server.RMIClassLoader;
+import java.rmi.Remote;
 import java.rmi.server.RemoteStub;
+import java.rmi.server.ObjID;
 
 public class RMIObjectOutputStream
 	extends ObjectOutputStream {
