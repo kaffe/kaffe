@@ -39,20 +39,18 @@ static Hjava_lang_Thread* activeThreads;
 /* Pure guess work !!! */
 #define	STACK_TOP(S)	((((uintp)(S)) + 0x1000 - 1) & -0x1000)
 
-static
-void
-TcreateFirst(Hjava_lang_Thread* tid)
+jthread_t
+jthread_init(void)
 {
 	nativeThread* ptr;
 	uintp stkp;
 	char* mem;
 
 	ptr = (nativeThread*)gc_malloc_fixed(sizeof(nativeThread));
-	unhand(tid)->PrivateInfo = (struct Hkaffe_util_Ptr*)ptr;
 
 	ptr->task = GetCurrentThreadId();
 	ptr->hand = GetCurrentThread();
-	unhand(tid)->sem = (void*)CreateSemaphore(NULL, 0, 1, NULL);
+	ptr->sem = CreateSemaphore(NULL, 0, 1, NULL);
 
 	/* Calculate the stack start and end */
 	__asm
@@ -72,9 +70,11 @@ TcreateFirst(Hjava_lang_Thread* tid)
 	// printf("stack: %x - %x\n", ptr->stkbase, ptr->stkend);
 
 	ptr->next = activeThreads;
-	activeThreads = tid;
+	// activeThreads = tid;
 
 	nonDemonThreads = 1;
+
+	return (ptr);
 }
 
 static
@@ -104,13 +104,9 @@ startNewThread(void* arg)
 	return (0);
 }
 
-static  
 void    
-Tprio(Hjava_lang_Thread* tid, jint prio)
+jthread_setpriority(jthread_t tid, jint prio)
 {
-	if (unhand(tid)->PrivateInfo == 0) {
-		return;
-	}
 	switch (prio) {
 	case 1:
 		prio = THREAD_PRIORITY_IDLE;
@@ -139,29 +135,27 @@ Tprio(Hjava_lang_Thread* tid, jint prio)
 		break;
 	}
 
-	SetThreadPriority(NATIVE_THREAD(tid)->hand, prio);
+	SetThreadPriority(tid->hand, prio);
 }            
 
-static
-void
-Tcreate(Hjava_lang_Thread* tid, void* func)
+jthread_t
+jthread_create(unsigned char pri, void (*func)(void*), int daemon, void* cookie, size_t stacksz)
 {
 	nativeThread* ptr;
 
 	ptr = (nativeThread*)gc_malloc_fixed(sizeof(nativeThread));
-	unhand(tid)->PrivateInfo = (struct Hkaffe_util_Ptr*)ptr;
+	// unhand(tid)->PrivateInfo = (struct Hkaffe_util_Ptr*)ptr;
 
 	ptr->func = (void(*)(void))func;
-	ptr->hand = CreateThread(NULL, threadStackSize,
+	ptr->hand = CreateThread(NULL, stacksz,
 		startNewThread, NULL, CREATE_SUSPENDED, &ptr->task);
-	Tprio(tid, unhand(tid)->priority);
+	ptr->sem = CreateSemaphore(NULL, 0, 1, NULL);
+	jthread_setpriority(ptr, pri);
 
-	unhand(tid)->sem = (void*)CreateSemaphore(NULL, 0, 1, NULL);
+	// ptr->next = activeThreads;
+	// activeThreads = tid;
 
-	ptr->next = activeThreads;
-	activeThreads = tid;
-
-	if (unhand(tid)->daemon == 0) {
+	if (daemon == 0) {
 		nonDemonThreads++;
 	}
 
@@ -171,12 +165,14 @@ Tcreate(Hjava_lang_Thread* tid, void* func)
 /*
  * Terminate current thread.
  */
-static
 void
-Texit(Hjava_lang_Thread* tid)
+jthread_exit(void)
 {
 	Hjava_lang_Thread** ptr;
 	nativeThread* ntid;
+	Hjava_lang_Thread* tid;
+
+	tid = getCurrentThread();
 
 	if (unhand(tid)->daemon == 0) {
 		nonDemonThreads--;
@@ -195,10 +191,10 @@ Texit(Hjava_lang_Thread* tid)
 				 * (we can't do it right here, because we are going to kill our
 				 * stack, which causes havoc to the gc/finalizer)
 				 */
-				SuspendThread( ntid->hand);
+				SuspendThread(ntid->hand);
 
 				/* Ok, suicide is painless.. */
-				CloseHandle((HANDLE)unhand(tid)->sem);
+				CloseHandle(ntid->sem);
 				CloseHandle(ntid->hand);
 
 				gc_free_fixed(ntid);
@@ -222,17 +218,52 @@ Texit(Hjava_lang_Thread* tid)
 /*
  * Yield processor
  */
-static
 void
-Tyield(void)
+jthread_yield(void)
 {
 	Sleep(0);
 }
 
-static
 void
-Tstop(Hjava_lang_Thread* tid, HObject* exc)
+jthread_sleep(jlong time)
 {
+	abort();	/* Deprecated */
+}
+
+void
+jthread_stop(jthread_t jtid)
+{
+	abort();	/* Deprecated */
+}
+
+void
+jthread_interrupt(jthread_t jtid)
+{
+	abort();	/* Deprecated */
+}
+
+void
+jthread_frames(jthread_t jtid)
+{
+	abort();	/* Deprecated */
+}
+
+void
+jthread_alive(jthread_t jtid)
+{
+	abort();	/* Deprecated */
+}
+
+void
+jthread_suspendall(void)
+{
+	/* Does nothing */
+}
+
+void
+jthread_unsuspendall(void)
+{
+	/* Does nothing */
 }
 
 /*
@@ -270,83 +301,27 @@ TcurrentNative(void)
 	return ((void*)GetCurrentThreadId());
 }
 
-static          
 void
-TwalkThreads(void)
+jthread_walkLiveThreads(void (*func)(void*))
 {               
 	Hjava_lang_Thread* tid;
 
 	// printf("Walking threads\n");
 	for (tid = activeThreads; tid != NULL; tid = NATIVE_THREAD(tid)->next) {
-		walkMemory((void*)tid);
+		(*func)((void*)tid);
 	}
 }
 
-/*      
- * Walk the thread's internal context.
- */
-static
 void
-TwalkThread(Hjava_lang_Thread* tid)
+jthread_extract_stack(jthread_t jtid, void** from, unsigned* len)
 {
-	nativeThread* ntid;
-
-	// printf("walking thread %x\n", tid);
-	ntid = NATIVE_THREAD(tid);
-	if (ntid == 0) {
-		return;
-	}
-
-	markObject(unhand(tid)->jnireferences);
-	markObject(unhand(tid)->exceptObj);
-
-	// printf("stack %x - %x\n", ntid->stkbase, ntid->stkend);
-	walkConservative((void*)ntid->stkbase, ntid->stkend - ntid->stkbase);
-	// printf("done\n");
-}
-
-static
-void
-TnextFrame(stackFrame* fm)
-{
-	machineStackFrame* nfm;
-	uintp fp;
-	nativeThread* ct = NATIVE_THREAD(TcurrentJava());
-
-	if (fm->return_frame == 0) {
-		nfm = (machineStackFrame*)STACK_CURRENT_FRAME();
-	}
-	else {
-		nfm = (machineStackFrame*)fm->return_frame;
-	}
-
-	fp = (uintp)STACK_FRAME(nfm);
-	// printf("fp = %x (%x-%x)\n", fp, ct->stkbase, ct->stkend);
-	if (fp > ct->stkbase && fp < ct->stkend) {
-		fm->return_pc = STACK_PC(nfm);
-		fm->return_frame = (void*)fp;
-	}
-	else {
-		fm->return_pc = 0;
-		fm->return_frame = 0;
-	}
-}
-
-static
-void
-TstackInfo(threadStackInfo* info)
-{
-	nativeThread* ct = NATIVE_THREAD(TcurrentJava());
-
-	info->low = (void*)ct->stkbase;
-	info->high = (void*)ct->stkend;
-	info->curr = info->low;
+	*from = jtid->stkbase;
+	*len = jtid->stkend - jtid->stakbase;
 }
               
 /*
  * Get a semaphore (with timeout).
  */
-static
 jboolean
 Lsemget(void* sem, jlong timeout)
 {
@@ -370,138 +345,9 @@ SDBG(	kprintf("Lsemget: %x\n", sem);	)
 /*
  * Put a semaphore.
  */
-static
 void
 Lsemput(void* sem)
 {
 SDBG(	kprintf("Lsemput: %x\n", sem);	)
 	ReleaseSemaphore((HANDLE)sem, 1, NULL);
 }
-
-static
-void
-Tinit(void)
-{
-}
-
-void
-notSupported()
-{
-	kprintf("Operation not supported\n");
-}
-
-void*
-Mpagealloc(int size)
-{
-	void* ptr;
-
-	size += gc_pgsize;
-
-#undef malloc
-
-	ptr = malloc(size);
-	if (ptr == 0) {
-		return (0);
-	}
-	ptr = (void*)((((uintp)ptr) + gc_pgsize - 1) & -(int)gc_pgsize);
-
-	return (ptr);
-}
-
-static
-int
-Kinput(void)
-{
-	char ch;
-	(*Kaffe_FileSystemCallInterface._read)(0, &ch ,1);
-	return (ch);
-}
-
-static
-void
-Koutput(int chr)
-{
-	char ch = (char)chr;
-	(*Kaffe_FileSystemCallInterface._write)(1, &ch ,1);
-}
-
-static
-void
-Kerror(int chr)
-{
-	char ch = (char)chr;
-	(*Kaffe_FileSystemCallInterface._write)(2, &ch ,1);
-}
-
-static
-jlong
-Ktime(void)
-{	
-	jlong tme;
-	struct _timeb tm;
-	_ftime(&tm);
-	tme = (((jlong)tm.time * (jlong)1000) + (jlong)tm.millitm);
-	return (tme);
-}
-
-/*
- * Define the thread interface.
- */
-
-ThreadInterface Kaffe_ThreadInterface = {
-
-	Tinit,
-
-	TcreateFirst,
-	Tcreate,
-	Tyield,
-	Tprio, 
-	Texit,
-	Tstop,
-	Tfinalize,
-
-	TcurrentJava,
-	TcurrentNative,
-
-	TwalkThreads,
-	TwalkThread,
-
-	TnextFrame,
-
-	TstackInfo,
-
-};
-
-/*
- * Define the lock interface.
- */
-
-LockInterface Kaffe_LockInterface = {
-
-	0,
-	0,
-	0,
-	0,
-
-	Lsemget,
-	Lsemput,
-
-};
-
-/*
- * Define the system call interface.
- */
-
-KernelCallInterface Kaffe_KernelCallInterface = {
-
-	0,
-	0,
-	0,
-	Mpagealloc,
-	0,
-	Kinput,
-	Koutput,
-	Kerror,
-	Ktime,
-
-};

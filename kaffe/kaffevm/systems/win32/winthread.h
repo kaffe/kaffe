@@ -21,10 +21,13 @@ typedef struct nativeThread {
 	uintp				stkbase;
 	uintp				stkend;
 	void				(*func)(void);
+	HAND				sem;
 } nativeThread;
 
 #define	JAVAPRIO2WIN32PRIO(P)	(P)
 
 #define	NATIVE_THREAD(T)	((nativeThread*)(unhand(T)->PrivateInfo))
+
+typedef nativeThread* jthread_t;
 
 #endif
