@@ -44,8 +44,9 @@ struct _errorInfo;
  * invoke a native or just-in-time compiled method.
  *
  * It is the task of the sysdepCallMethod macro, usually defined in 
- * config/$arch/common.h, to generate a procedure call that conforms to 
- * the calling convention of a particular architecture or set of build tools.
+ * config/$arch/sysdepCallMethod.h, to generate a procedure call that 
+ * conforms to the calling convention of a particular architecture or 
+ * set of build tools.
  *
  * The sysdepCallMethod macro takes a single argument of type callMethodInfo *
  * that describes where the parameters are, where the return value should
