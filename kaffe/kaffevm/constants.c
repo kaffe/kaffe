@@ -43,7 +43,8 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp)
 	u4 d4, d4b;
 	bool error;
 
-	assert(holdMutex(this->centry));
+	if (this->centry != 0)
+		assert(holdMutex(this->centry));
 
 	readu2(&info->size, fp);
 RDBG(	printf("constant_pool_count=%d\n", info->size);	)

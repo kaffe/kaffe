@@ -1,3 +1,13 @@
+Fri Apr 10 00:52:06 1998  Godmar Back  <gback@lal.cs.utah.edu>
+
+	* Fixes for ClassLoader
+	* kaffe/kaffevm/classMethod.[ch]: exported lookupClassEntry
+	* kaffe/kaffevm/constants.c: do not require lock if no centry
+	* libraries/clib/native/ClassLoader.c: classes loaded from byte 
+	  arrays now get their classEntry, added various checks
+	* test/regression/TestScript: added test case for ClassLoader
+	* test/regression/CLTest.java, test/regression/Hello.java: new files
+
 Thu Apr  9 14:30:59 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* New internal threading system added.  Should run on FreeBSD,

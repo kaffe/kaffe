@@ -250,6 +250,7 @@ void			addInterfaces(Hjava_lang_Class*, int, Hjava_lang_Class**);
 void			setFieldValue(Field*, u2);
 Hjava_lang_Class*	resolveFieldType(Field*, Hjava_lang_Class*);
 
+classEntry* lookupClassEntry(Utf8Const*, Hjava_lang_ClassLoader*);
 Hjava_lang_Class*	lookupClass(char*);
 Hjava_lang_Class*	lookupArray(Hjava_lang_Class*);
 Hjava_lang_Class*	lookupObjectArrayClass(Hjava_lang_Class*);

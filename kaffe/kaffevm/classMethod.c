@@ -64,7 +64,6 @@ extern void findClass(classEntry*);
 extern void verify2(Hjava_lang_Class*);
 extern void verify3(Hjava_lang_Class*);
 
-static classEntry* lookupClassEntry(Utf8Const*, Hjava_lang_ClassLoader*);
 static void internalSetupClass(Hjava_lang_Class*, Utf8Const*, int, int, Hjava_lang_ClassLoader*);
 
 static void buildDispatchTable(Hjava_lang_Class*);
@@ -961,7 +960,6 @@ resolveConstants(Hjava_lang_Class* class)
 	unlockMutex(class->centry);
 }
 
-static
 classEntry*
 lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 {
