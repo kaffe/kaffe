@@ -1,3 +1,20 @@
+2003-06-30  Dalibor Topic <robilad@yahoo.com>
+
+	* configure.in: 
+	(LONG_DIVISION_BROKEN, LONG_MODULO_BROKEN,
+	LONG_LONG_MODULO_BROKEN) tests removed.
+
+	* include/jtypes.h.in:
+	(JINT_MIN, JLONG_MIN) new #defined constants.
+
+	* kaffe/kaffevm/intrp/icode.h:
+	(div_long, rem_long, div_int, rem_int) fixed undefined
+	behaviour for MIN_VALUE / -1 and % -1.
+
+	Reported by: Tony Wyatt <wyattaw@optushome.com.au>,
+		     Luca Saiu <positrone@freemail.it>,
+                     Marc Kleine-Budde <kleine-budde@gmx.de>
+	
 2003-06-30  Rob Gonzalez <rob@kaffe.org>
 
 	The second of a serious of small checkins that will

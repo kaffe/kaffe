@@ -16,14 +16,8 @@
 #define	add_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong + (f2)[0].v.tlong
 #define	sub_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong - (f2)[0].v.tlong
 #define	mul_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong * (f2)[0].v.tlong
-#define	div_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong / (f2)[0].v.tlong
-#if LONG_LONG_MODULO_BROKEN
-/* egcs 1.1.* on IRIX 6.3/mips produces an arithmetic exception for
-   LONG_LONG_MIN % -1ll.  Since anything % -1ll is 0, special-case it.  */
-# define rem_long(t, f1, f2)			(t)[0].v.tlong = (((f2)[0].v.tlong != -1) ? ((f1)[0].v.tlong % (f2)[0].v.tlong) : 0)
-#else
-# define rem_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong % (f2)[0].v.tlong
-#endif
+#define div_long(t, f1, f2)			(t)[0].v.tlong = (((((f1)[0].v.tlong) == JLONG_MIN) && (((f2)[0].v.tlong) == -1)) ? JLONG_MIN : (((f1)[0].v.tlong) / ((f2)[0].v.tlong)))
+#define rem_long(t, f1, f2)                     (t)[0].v.tlong = ((((f2)[0].v.tlong) != -1) ? (((f1)[0].v.tlong) % ((f2)[0].v.tlong)) : 0)
 #define	neg_long(t, f)				(t)[0].v.tlong = -(f)[0].v.tlong
 
 #define	and_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong & (f2)[0].v.tlong
@@ -83,21 +77,8 @@
 #define	add_ref(t, f1, f2)			(t)[0].v.taddr = (void*)((uint8*)((f1)[0].v.taddr) + ((f2)[0].v.tint))
 #define	sub_int(t, f1, f2)			(t)[0].v.tint = ((f1)[0].v.tint) - ((f2)[0].v.tint)
 #define	mul_int(t, f1, f2)			(t)[0].v.tint = ((f1)[0].v.tint) * ((f2)[0].v.tint)
-
-#if LONG_DIVISION_BROKEN
-/* LONG_MIN / -1l on i386 produces an arithmetic exception.  Since
-   anything / -1l is -anything, special-case it.  */
-# define div_int(t, f1, f2)			(t)[0].v.tint = ((((f2)[0].v.tint) != -1) ? (((f1)[0].v.tint) / ((f2)[0].v.tint)) : -((f1)[0].v.tint))
-#else
-# define div_int(t, f1, f2)			(t)[0].v.tint = ((f1)[0].v.tint) / ((f2)[0].v.tint)
-#endif
-#if LONG_MODULO_BROKEN
-/* LONG_MIN % -1l on i386 produces an arithmetic exception.  Since
-   anything % -1l is 0, special-case it.  */
-# define rem_int(t, f1, f2)			(t)[0].v.tint = ((((f2)[0].v.tint) != -1) ? (((f1)[0].v.tint) % ((f2)[0].v.tint)) : 0)
-#else
-# define rem_int(t, f1, f2)			(t)[0].v.tint = ((f1)[0].v.tint) % ((f2)[0].v.tint)
-#endif
+#define div_int(t, f1, f2)			(t)[0].v.tint = (((((f1)[0].v.tint) == JINT_MIN) && (((f2)[0].v.tint) == -1)) ? JINT_MIN : (((f1)[0].v.tint) / ((f2)[0].v.tint)))
+#define rem_int(t, f1, f2)                      (t)[0].v.tint = ((((f2)[0].v.tint) != -1) ? (((f1)[0].v.tint) % ((f2)[0].v.tint)) : 0)
 #define	neg_int(t, f)				(t)[0].v.tint = -((f)[0].v.tint)
 #define	lshl_int_const(t, f, c)			(t)[0].v.tint = ((f)[0].v.tint) << (c & 31)
 #define	lshl_int(t, f1, f2)			(t)[0].v.tint = ((f1)[0].v.tint) << ((f2)[0].v.tint & 31)

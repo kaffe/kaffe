@@ -1015,57 +1015,6 @@ AC_CHECK_FUNCS([rint floor ceil finite isinf isnan strtod mergesort])
 AC_CHECK_FUNCS([strdup strstr strtod strtol strtoul])
 LIBS="$KSAVE_LIBS"
 
-dnl Test whether LONG_MIN / -1l crashes
-AC_CACHE_CHECK([whether long division is broken],
-  ac_cv_long_division_broken, [dnl
-    AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <limits.h>
-#define T long
-#ifndef LONG_MIN
-# define LONG_MIN ((((unsigned T)(~(T)0))>>1)+1)
-#endif
-T foo(T i, T j);
-int main() { return foo(LONG_MIN, -1l) && 1; }
-T foo(T i, T j) { return i / j; }
-]])],[ac_cv_long_division_broken=no],[ac_cv_long_division_broken=yes],[ac_cv_long_division_broken=cross])])
-if test x"$ac_cv_long_division_broken" = x"yes"; then
-  AC_DEFINE(LONG_DIVISION_BROKEN, 1, [Define if LONG_MIN / -1l produces an arithmetic exception])
-fi
-
-dnl Test whether LONG_MIN % -1l crashes
-AC_CACHE_CHECK([whether long modulo is broken],
-  ac_cv_long_modulo_broken, [dnl
-    AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <limits.h>
-#define T long
-#ifndef LONG_MIN
-# define LONG_MIN ((((unsigned T)(~(T)0))>>1)+1)
-#endif
-T foo(T i, T j);
-int main() { return foo(LONG_MIN, -1l) == 0; }
-T foo(T i, T j) { return i % j; }
-]])],[ac_cv_long_modulo_broken=no],[ac_cv_long_modulo_broken=yes],[ac_cv_long_modulo_broken=cross])])
-if test x"$ac_cv_long_modulo_broken" = x"yes"; then
-  AC_DEFINE(LONG_MODULO_BROKEN, 1, [Define if LONG_MIN % -1l produces an arithmetic exception])
-fi
-
-dnl Test whether LONG_LONG_MIN % -1ll crashes
-AC_CACHE_CHECK([whether long long modulo is broken],
-  ac_cv_long_long_modulo_broken, [dnl
-    AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <limits.h>
-#define T long long
-#ifndef LONG_LONG_MIN
-# define LONG_LONG_MIN ((((unsigned T)(~(T)0))>>1)+1)
-#endif
-T foo(T i, T j);
-int main() { return foo(LONG_LONG_MIN, -1ll) == 0; }
-T foo(T i, T j) { return i % j; }
-]])],[ac_cv_long_long_modulo_broken=no],[ac_cv_long_long_modulo_broken=yes],[ac_cv_long_long_modulo_broken=cross])])
-if test x"$ac_cv_long_long_modulo_broken" = x"yes"; then
-  AC_DEFINE(LONG_LONG_MODULO_BROKEN, 1, [Define if LONG_LONG_MIN % -1ll produces an arithmetic exception])
-fi
-
 dnl Test whether strtod("-0.0") is broken
 AC_CACHE_CHECK([whether strtod(\"-0.0\") is broken],
   ac_cv_strtod_m0_broken, [dnl
