@@ -583,7 +583,7 @@ Collector* createGC(void)
 {
   boehm_gc.collector.ops = &GC_Ops;
   initStaticLock(&gcman_lock);
-  initStaticLock(&gcmandend_lock);
+  initStaticLock(&gcmanend_lock);
   initStaticLock(&finman_lock);
 
   return (&boehm_gc.collector);

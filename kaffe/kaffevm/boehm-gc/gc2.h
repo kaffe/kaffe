@@ -13,6 +13,7 @@
 #ifndef _KAFFE_BOEHM_GC_H
 #define _KAFFE_BOEHM_GC_H
 
+#include "defs.h"
 #include "boehm/include/gc.h"
 #include "boehm/include/gc_mark.h"
 
