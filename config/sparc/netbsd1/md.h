@@ -19,4 +19,7 @@
 #include "jit-md.h"
 #endif
 
+#undef SP_OFFSET
+#define SP_OFFSET 2
+
 #endif
