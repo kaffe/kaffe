@@ -663,7 +663,7 @@ jthreadedForkExec(char **argv, char **arge,
 
 	int fds[8];
 	int nfd;		/* number of fds in `fds' that are valid */
-	sigset_t nsig;
+	sigset_t nsig, osig;
 	char b[1];
 	int pid, i, err;
 
@@ -696,7 +696,7 @@ jthreadedForkExec(char **argv, char **arge,
 	 * reenable signals in the child after we cleaned up.
 	 */
 	sigfillset(&nsig);
-	sigprocmask(SIG_BLOCK, &nsig, NULL);
+	sigprocmask(SIG_BLOCK, &nsig, &osig);
 
 	pid = fork();
 
@@ -752,7 +752,7 @@ jthreadedForkExec(char **argv, char **arge,
 		err = errno;
 		/* Close all pipe fds */
 		close_fds(fds, 8);
-		sigprocmask(SIG_UNBLOCK, &nsig, NULL);
+		sigprocmask(SIG_UNBLOCK, &osig, NULL);
 		return (err);
 
 	default:
@@ -769,7 +769,7 @@ jthreadedForkExec(char **argv, char **arge,
 		ioes[2] = fds[ERR_IN];
 		ioes[3] = fds[SYNC_OUT];
 
-		sigprocmask(SIG_UNBLOCK, &nsig, NULL);
+		sigprocmask(SIG_UNBLOCK, &osig, NULL);
 		*outpid = pid;
 		return (0);
 	}

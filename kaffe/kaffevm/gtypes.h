@@ -94,8 +94,10 @@ typedef	unsigned __int64	uint64;
 
 #if SIZEOF_VOID_P == 4
 typedef uint32			uintp;
+typedef int32			intp;
 #elif SIZEOF_VOID_P == 8
 typedef uint64			uintp;
+typedef int64			intp;
 #else
 #error "sizeof(void*) must be 4 or 8"
 #endif

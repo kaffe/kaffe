@@ -915,7 +915,6 @@ jthread_create ( unsigned int pri, void* func, int isDaemon, void* jlThread, siz
 	 * the newly created thread is set up correctly (i.e. is walkable)
 	 */
 	protectThreadList(cur);
-
 	nt->active = 1;
 	nt->next = activeThreads;
 	activeThreads = nt;
@@ -945,15 +944,17 @@ jthread_create ( unsigned int pri, void* func, int isDaemon, void* jlThread, siz
 	  }
 
 	  repsem_destroy( &nt->sem);
-	  unprotectThreadList(cur);
 	  KGC_rmRef(threadCollector, nt);
+	  nt->active = 0;
+	  activeThreads = nt->next;
+	  unprotectThreadList(cur);
 	  return NULL;
 	}
-
 	/* wait until the thread specific data has been set, and the new thread
 	 * is in a suspendable state */
 	repsem_wait( &nt->sem);
 
+	/* The key is installed. We can now let the signals coming. */
 	unprotectThreadList(cur);
   }
   return (nt);
@@ -1260,6 +1261,12 @@ jthread_suspendall (void)
   if ( ++critSection == 1 ){
 
 #if !defined(KAFFE_BOEHM_GC)
+	int val;
+	int numPending = 0;
+
+	repsem_getvalue(&critSem, &val);
+	assert(val == 0);
+
 	for ( t=activeThreads; t; t = t->next ){
 	  /*
 	   * make sure we don't suspend ourselves, and we don't expect suspend
@@ -1284,7 +1291,8 @@ jthread_suspendall (void)
 		  {
 		    if ((status = pthread_kill( t->tid, sigSuspend)) != 0)
 		      {
-			DBG( JTHREAD, dprintf("error sending SUSPEND signal to %p: %d\n", t, status));
+			dprintf("Internal error: error sending SUSPEND signal to %p: %d (%s)\n", t, status, strerror(status));
+			ABORT();
 		      }
 		    else
 		      {
@@ -1292,12 +1300,31 @@ jthread_suspendall (void)
 			 * It shouldn't be necessary (posix sems are accumulative), and it
 			 * is bad, performancewise (at least n*2 context switches per suspend)
 			 * but it works more reliably on linux 2.2.x */
-			repsem_wait( &critSem);
+			numPending++;
 		      }
 		  }
 	  }
 	  pthread_mutex_unlock(&t->suspendLock);
 	}
+
+	/* Now that all signals has been sent we may wait for all concerned
+	 * threads to handle them.
+	 */
+	while (numPending > 0)
+	  {
+	    repsem_getvalue(&critSem, &val);
+	    repsem_wait( &critSem);
+	    for ( numPending=0,t=activeThreads; t; t = t->next ){
+	      if (t->suspendState == SS_PENDING_SUSPEND)
+		numPending++;
+	    }
+	  }
+	/* Now flush the semaphore. */
+	repsem_getvalue(&critSem, &val);
+	for (;val != 0; val--)
+	  {
+	    repsem_wait(&critSem);
+	  }
 
 #else
 	/*
@@ -1339,6 +1366,7 @@ jthread_unsuspendall (void)
 	 * we cannot use mutexes as they cause a deadlock when the world
 	 * is suspended.
 	 */
+	  protectThreadList(cur);
 
 #if !defined(KAFFE_BOEHM_GC)
 	for ( t=activeThreads; t; t = t->next ){
@@ -1380,6 +1408,7 @@ jthread_unsuspendall (void)
 	GC_start_world();
 
 #endif
+	  unprotectThreadList(cur);
 
   }
 

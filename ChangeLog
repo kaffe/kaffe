@@ -1,5 +1,32 @@
 2004-12-29  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/gtypes.h: New intp type for signed integer that may
+	represent pointers.
+
+	* kaffe/kaffevm/thread.c
+	(nameThread): Check that the thread has been linked before returning
+	the name.
+
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c
+	(page_alloc): Use intp instead of intptr_t as it is not available on
+	all systems.
+	
+	* kaffe/kaffevm/kaffe-gc/gc-refs.c
+	(TwalkLiveThreads): Reuse jthread_walkLiveThreads_r to highlight the
+	bug on SMP.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jsignal.h: Removed ignoreSignal.
+
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c
+	(jthreadedForkExec): Save the old sigmask and restore it after fork.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthread_create): Cleanup the thread queue if pthread_create fails.
+	(jthread_suspendall): Temporarily changed logic to insure that all
+	concerned threads receive the signal.
+
+2004-12-29  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* config/sparc/jit-sparc.def: Renamed setEpilogueLabel to match the
 	new symbol names.
 

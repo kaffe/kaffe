@@ -297,7 +297,7 @@ DBG(GCWALK,
   * registered.  Terminating a thread will remove it from the
   * threading system, and then we won't walk it here anymore
   */
- KTHREAD(walkLiveThreads)(liveThreadWalker, collector);
+ KTHREAD(walkLiveThreads_r)(liveThreadWalker, collector);
  DBG(GCWALK,
      dprintf("Following references now...\n");
      );

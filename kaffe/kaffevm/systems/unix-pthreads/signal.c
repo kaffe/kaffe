@@ -311,7 +311,6 @@ unblockSignal(int sig)
 	sigprocmask(SIG_UNBLOCK, &nsig, NULL);
 }
 
-
 /*
  * Unblock all of the async signals.  (These are the
  * signals specified in the sa_mask in registerAsynchSignalHandler().)

@@ -538,7 +538,10 @@ nameThread(Hjava_lang_VMThread *tid)
 {
 	static char buf[80];
 
-	stringJava2CBuf(unhand(unhand(tid)->thread)->name, buf, sizeof(buf));
+	if (tid != NULL && unhand(tid)->thread != NULL && unhand(unhand(tid)->thread)->name != NULL)
+	  stringJava2CBuf(unhand(unhand(tid)->thread)->name, buf, sizeof(buf));
+	else
+	  strcpy(buf, "<null name>");
 
 	return buf;
 }

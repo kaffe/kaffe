@@ -37,10 +37,11 @@ void restoreAsyncSignalHandler(int sig, void* handler);
 
 void registerTerminalSignal(int sig, void* handler);
 
-void clearSignal(int sig);
 void unblockSignal(int sig);
+void clearSignal(int sig);
 void unblockAsyncSignals(void);
 void blockAsyncSignals(void);
+void unblockAndCheckSignal(int sig);
 
 void detectStackBoundaries(jthread_t jtid, int mainThreadStackSize);
 

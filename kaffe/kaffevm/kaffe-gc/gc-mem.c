@@ -980,7 +980,7 @@ pagealloc(size_t size)
 	 */
 	for (;;) {
 		int missed;
-		ptr = sbrk((intptr_t)size);
+		ptr = sbrk((intp)size);
 		if (ptr == (void*)-1) {
 			ptr = NULL;
 			break;
@@ -992,7 +992,7 @@ pagealloc(size_t size)
 		DBG(GCSYSALLOC,
 		    dprintf("unaligned sbrk %p, missed %d bytes\n",
 			    ptr, missed));
-		sbrk((intptr_t)(-size + missed));
+		sbrk((intp)(-size + missed));
 	}
 	CHECK_OUT_OF_MEMORY(ptr);
 
@@ -1028,7 +1028,7 @@ pagealloc(size_t size)
 #ifdef HAVE_SBRK
 static void pagefree(uintp base UNUSED, size_t size)
 {
-	sbrk((intptr_t)-size);
+	sbrk((intp)-size);
 }
 #else
 static void pagefree(uintp base, size_t size UNUSED)

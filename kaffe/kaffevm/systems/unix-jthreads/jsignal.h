@@ -39,7 +39,6 @@ void restoreAsyncSignalHandler(int sig, void* handler);
 
 void registerTerminalSignal(int sig, void* handler);
 
-void ignoreSignal(int sig);
 void clearSignal(int sig);
 void unblockSignal(int sig);
 void unblockAsyncSignals(void);
