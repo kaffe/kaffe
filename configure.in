@@ -440,7 +440,7 @@ if test "$have_x" = "yes" ; then
 	if test "${x_libraries}" != NONE && test -n "${x_libraries}"; then
 		X_LIBRARIES=-L`echo ${x_libraries} | sed -e "s/:/ -L/g"`
 	fi
-	X_LIBRARIES="$X_LIBRARIES -lX11"
+	X_LIBRARIES="$X_LIBRARIES -lX11 -L/usr/local/lib"
 	if test "${x_includes}" != NONE && test -n "${x_includes}"; then
 		X_INCLUDES=-I`echo ${x_includes} | sed -e "s/:/ -I/g"`
 	fi
