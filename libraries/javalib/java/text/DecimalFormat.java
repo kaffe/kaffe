@@ -1,18 +1,18 @@
+/*
+ * Java core library component.
+ *
+ * Copyright (c) 1997, 1998, 2000
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ */
 package java.text;
 
 import java.lang.String;
 import java.util.Locale;
 import kaffe.util.NotImplemented;
 
-/*
- * Java core library component.
- *
- * Copyright (c) 1997, 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
 public class DecimalFormat
   extends NumberFormat
 {
@@ -380,45 +380,87 @@ public boolean isDecimalSeparatorAlwaysShown() {
 	return (decsepshown);
 }
 
-public Number parse(String source, ParsePosition pos) {
-	char[] ca = source.toCharArray();
-	int ppl = positiveprefix.length();
-	int npl = negativeprefix.length();
-	boolean neg = false;
-	int cl = 0;
-	int si, ei;
-	char[] can;
 	
-	if ( (ppl > 0) && (source.startsWith( positiveprefix)) ) {
-		si = ppl; ei = ca.length - positivesuffix.length();
-	}
-	else if ( (npl > 0) && (source.startsWith( negativeprefix)) ) {
-		si = npl; ei = ca.length - negativesuffix.length();
-		neg = true;
-	}
-	else {
-		si = 0; ei = ca.length;
+public Number parse(String source, ParsePosition pos) {
+	StringBuffer sb = new StringBuffer();
+	int startIndex = pos.getIndex();
+	int index = parse0 (source, startIndex, source.length(), sb, false);
+
+	if (index < 0) {
+		pos.setErrorIndex (-index);
+		return null;
 	}
 
-	if ( neg ) {
-		can = new char[ei-si+1];
-		can[cl++] = '-';
+	pos.setIndex (index);
+	
+	// try Long first.
+	try {
+		return Long.valueOf (sb.toString());
 	}
-	else {
-		can = new char[ei-si];
+	catch (NumberFormatException nfe) {
+	}
+	try {
+		return Double.valueOf (sb.toString());
+	}
+	catch (NumberFormatException nfe) {
+		pos.setIndex (startIndex);
+		pos.setErrorIndex (index);
+		return null;
+	}
+}
+
+private int parse0 (String source, int index, int endIndex,
+		    StringBuffer sb, boolean isExponent) 
+{
+	if (!isExponent && !isParseIntegerOnly() &&
+	    source.regionMatches (false, index, syms.nan, 0, syms.nan.length())) {
+	    sb.append("NaN");
+	    return index + syms.nan.length();
 	}
 	
-	for ( int idx=si; idx<ei; idx++) {
-		char c = ca[idx];
-		if ( Character.isDigit( c) ) {
-			can[cl++] = c;
-		}
-		else if ( c == syms.decimalSeparator) {
-			can[cl++] = '.';
-		}
+	if ((positiveprefix.length() > 0) &&
+	    source.regionMatches (false, index, positiveprefix, 0, positiveprefix.length())) {
+		index += positiveprefix.length();
+	}
+	else if ((negativeprefix.length() > 0) && 
+		 source.regionMatches (false, index, negativeprefix, 0, negativeprefix.length())) {
+		sb.append('-');
+		index += negativeprefix.length();
+	}
+
+	if (!isExponent && !isParseIntegerOnly() &&
+	    source.regionMatches (false, index, syms.infinity, 0, syms.infinity.length())) {
+	    sb.append("Inf");
+	    index += syms.infinity.length();
 	}
 	
-	return Double.valueOf( new String( can, 0, cl));
+	boolean allowDot = !isExponent && !isParseIntegerOnly();
+	char zeroDigit = syms.zeroDigit;
+	char nineDigit = (char)(zeroDigit + 9);
+	while (index < endIndex) {
+		char c = source.charAt(index);
+		if ((zeroDigit <= c) && (c <= nineDigit)) {
+			sb.append ((char)(c - zeroDigit + '0'));
+			index++;
+		}
+		else if (c == syms.decimalSeparator && allowDot) {
+			allowDot = false;
+			sb.append ('.');
+			index++;
+		}
+		else if (c == syms.groupSeparator && isGroupingUsed() && !isExponent) {
+			index++;
+		}
+		else if (c == 'E' && !isExponent) {
+			sb.append ('E');
+			index = parse0 (source, index + 1, endIndex, sb, true);
+			if (index < 0)
+				return index;
+		}
+		else break;
+	}
+	
+	return index;
 }
 
 public void setDecimalFormatSymbols(DecimalFormatSymbols syms) {
