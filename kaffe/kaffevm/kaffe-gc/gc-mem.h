@@ -26,7 +26,6 @@ extern int gc_pgbits;
 #endif
 
 extern size_t gc_heap_total;
-extern size_t gc_heap_allocation_size;
 extern size_t gc_heap_limit;
 
 #ifdef KAFFE_VMDEBUG

@@ -1,5 +1,15 @@
 2004-08-31  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/kaffe-gc/gc-mem.h: 
+	(gc_heap_allocation_size) Removed declaration.
+	
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c: 
+	(gc_heap_allocation_size) Made static.
+
+	Reported by: Michael Franz <developer.franz@verizon.net>
+
+2004-08-31  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/kaffe-gc/gc-incremental.c:
 	(gcStats) Moved over here and made static.
 	(garbageman) Made static.
