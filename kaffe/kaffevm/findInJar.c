@@ -274,6 +274,9 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 	}
 	/* If we call out the loop then we didn't find anything */
 	hand.type = CP_INVALID;
+	/* cut off the ".class" suffix for the exception msg */
+	cname[strlen(cname) - strlen(".class")] = '\0';
+	SET_LANG_EXCEPTION_MESSAGE(einfo, NoClassDefFoundError, cname);
 
 	done:;
 	unlockStaticMutex(&jarlock);

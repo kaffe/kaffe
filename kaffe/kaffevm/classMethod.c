@@ -90,7 +90,7 @@ processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 	Method* meth;
 	Hjava_lang_Class* nclass;
 	Hjava_lang_Class** newifaces;
-	static iLock classLock;
+	iLock *classLock;
 	bool success = true;	/* optimistic */
 #ifdef DEBUG
 	static int depth;
@@ -101,11 +101,6 @@ processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 		return (true);
 	}
 
-	/* Initialise class lock */
-	if (!staticLockIsInitialized(&classLock)) {
-		initStaticLock(&classLock);
-	}
-
 #define	SET_CLASS_STATE(S)	class->state = (S)
 #define	DO_CLASS_STATE(S)	if ((S) > class->state && (S) <= tostate)
 
@@ -114,7 +109,7 @@ processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 	 * we've got to work out.
 	 */
 
-	lockStaticMutex(&classLock);
+	classLock = lockMutex(class);
 
 DBG(RESERROR,
 	/* show calls to processClass when debugging resolution errors */
@@ -149,7 +144,7 @@ retry:
 				goto done;
 			} else {
 				while (class->state == CSTATE_DOING_PREPARE) {
-					waitStaticCond(&classLock, 0);
+					waitStaticCond(classLock, 0);
 					goto retry;
 				}
 			}
@@ -173,10 +168,10 @@ retry:
 			 * upcall to a classloader, we must release the
 			 * classLock here.
 			 */
-			unlockStaticMutex(&classLock);
+			unlockKnownMutex(classLock);
 			class->superclass = getClass((uintp)class->superclass, 
 							class, einfo);
-			lockStaticMutex(&classLock);
+			classLock = lockMutex(class);
 			if (class->superclass == 0) {
 				success = false;
 				goto done;
@@ -210,9 +205,9 @@ retry:
 		}
 		for (i = 0; i < class->interface_len; i++) {
 			uintp iface = (uintp)class->interfaces[i];
-			unlockStaticMutex(&classLock);
+			unlockKnownMutex(classLock);
 			class->interfaces[i] = getClass(iface, class, einfo);
-			lockStaticMutex(&classLock);
+			classLock = lockMutex(class);
 			if (class->interfaces[i] == 0) {
 				success = false;
 				goto done;
@@ -314,7 +309,7 @@ retry:
 				goto done;
 			} else {
 				while (class->state == CSTATE_DOING_SUPER) {
-					waitStaticCond(&classLock, 0);
+					waitStaticCond(classLock, 0);
 					goto retry;
 				}
 			}
@@ -355,10 +350,10 @@ retry:
 			 * might call out into the superclass's initializer 
 			 * here!
 			 */
-			unlockStaticMutex(&classLock);
+			unlockKnownMutex(classLock);
 			success = processClass(class->superclass, 
 					     CSTATE_COMPLETE, einfo);
-			lockStaticMutex(&classLock);
+			classLock = lockMutex(class);
 			if (success == false) {
 				goto done;
 			}
@@ -396,7 +391,7 @@ DBG(STATICINIT, dprintf("Initialising %s static %d\n", class->name->data,
 				goto done;
 			} else {
 				while (class->state == CSTATE_DOING_INIT) {
-					waitStaticCond(&classLock, 0);
+					waitStaticCond(classLock, 0);
 					goto retry;
 				}
 			}
@@ -406,7 +401,7 @@ DBG(STATICINIT, dprintf("Initialising %s static %d\n", class->name->data,
 		class->processingThread = THREAD_NATIVE();
 
 		/* give classLock up for the duration of this call */
-		unlockStaticMutex(&classLock);
+		unlockKnownMutex(classLock);
 
 		/* we use JNI to catch possible exceptions, except
 		 * during initialization, when JNI doesn't work yet.
@@ -428,7 +423,7 @@ DBG(STATICINIT,
 			callMethodA(meth, METHOD_INDIRECTMETHOD(meth), 0, 0, 0);
 		}
 
-		lockStaticMutex(&classLock);
+		classLock = lockMutex(class);
 
 		if (exc != 0) {
 			/* this is special-cased in throwError */
@@ -463,8 +458,8 @@ done:
 	}
 
 	/* wake up any waiting threads */
-	broadcastStaticCond(&classLock);
-	unlockStaticMutex(&classLock);
+	broadcastStaticCond(classLock);
+	unlockKnownMutex(classLock);
 
 DBG(RESERROR,
 	for (i = 0; i < depth; dprintf("  ", i++));
@@ -838,20 +833,17 @@ DBG(VMCLASSLOADER,
 		} else {
 			/* no classloader, use findClass */
 			clazz = findClass(centry, einfo);
+
 			/* we do not ever unload system classes without a
 			 * classloader, so anchor this one
 			 */
 			if (clazz != NULL) {
 				gc_add_ref(clazz);
-			}
-
-			if (clazz == NULL) {
+			} else {
 DBG(RESERROR,
-				dprintf("NoClassDefFoundError: `%s'\n", 
-					name->data);
+				dprintf("findClass failed: %s:`%s'\n", 
+					einfo->classname, (char*)einfo->mess);
     )
-				SET_LANG_EXCEPTION_MESSAGE(einfo, 
-					NoClassDefFoundError, name->data)
 			}
 			centry->class = clazz;
 		}
@@ -1170,9 +1162,7 @@ resolveStaticFields(Hjava_lang_Class* class)
 	int idx;
 	int n;
 
-	/* No locking here, for now this is invoked under the classLock
-	 * umbrella.
-	 */
+	/* No locking here, assume class is already locked. */
 	pool = CLASS_CONSTANTS(class);
 	fld = CLASS_SFIELDS(class);
 	n = CLASS_NSFIELDS(class);
