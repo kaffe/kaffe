@@ -49,6 +49,8 @@ java/awt/image/ReplicateScaleFilter.java
 java/awt/image/RGBImageFilter.java
 java/awt/JobAttributes.java
 java/awt/KeyEvt.java
+java/awt/KeyEventDispatcher.java
+java/awt/KeyEventPostProcessor.java
 java/awt/OpaqueComponent.java
 java/awt/PageAttributes.java
 java/awt/peer/ActiveEvent.java

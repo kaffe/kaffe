@@ -53,6 +53,7 @@ Klasses_jar_SRCS = \
 	$(gnu_java_locale_SRCS) \
 	$(gnu_java_nio_SRCS) \
 	$(gnu_java_nio_charset_SRCS) \
+	$(gnu_java_security_SRCS) \
 	$(gnu_java_security_provider_SRCS) \
 	$(gnu_java_util_SRCS) \
 	$(gnu_java_util_prefs_SRCS) \
@@ -231,6 +232,8 @@ gnu_java_nio_charset_SRCS = \
 	gnu/java/nio/charset/UTF_16.java \
 	gnu/java/nio/charset/UTF_16LE.java \
 	gnu/java/nio/charset/UTF_8.java
+gnu_java_security_SRCS = \
+	gnu/java/security/Engine.java
 gnu_java_security_provider_SRCS = \
 	gnu/java/security/provider/DefaultPolicy.java
 gnu_java_util_SRCS = \
@@ -1159,6 +1162,7 @@ java_security_cert_SRCS = \
 	java/security/cert/CertificateNotYetValidException.java \
 	java/security/cert/CertificateParsingException.java \
 	java/security/cert/CertPathBuilderException.java \
+	java/security/cert/CertPath.java \
 	java/security/cert/CertPathValidatorException.java \
 	java/security/cert/CertStoreException.java \
 	java/security/cert/CRLException.java \
@@ -1189,6 +1193,7 @@ java_security_spec_SRCS = \
 	java/security/spec/KeySpec.java \
 	java/security/spec/PKCS8EncodedKeySpec.java \
 	java/security/spec/RSAKeyGenParameterSpec.java \
+	java/security/spec/RSAOtherPrimeInfo.java \
 	java/security/spec/RSAPrivateCrtKeySpec.java \
 	java/security/spec/RSAPrivateKeySpec.java \
 	java/security/spec/RSAPublicKeySpec.java \

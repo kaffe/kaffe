@@ -1,3 +1,22 @@
+2003-08-08  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/Makefile.am:
+	Regenerated.
+
+	* libraries/javalib/gnu/java/security/Engine.java,
+	libraries/javalib/java/security/cert/CertPath.java,
+	libraries/javalib/java/security/cert/CertificateFactory.java,
+	libraries/javalib/java/security/cert/CertificateFactorySpi.java,
+	libraries/javalib/java/security/spec/RSAOtherPrimeInfo.java:
+	Merged in from GNU Classpath.
+
+	* libraries/javalib/profiles/allatonce/all.files,
+	libraries/javalib/profiles/default/awt.files,
+	libraries/javalib/profiles/default/core.files,
+	libraries/javalib/profiles/default/coreawt.files:
+
+	Updated profile information.
+	
 2003-08-07  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/javalib/Makefile.am,

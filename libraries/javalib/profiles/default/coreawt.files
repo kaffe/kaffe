@@ -100,6 +100,8 @@ java/awt/font/FontRenderContext.java
 java/awt/font/GlyphJustificationInfo.java
 java/awt/font/GlyphMetrics.java
 java/awt/font/GlyphVector.java
+java/awt/font/MultipleMaster.java
+java/awt/font/OpenType.java
 java/awt/font/TextHitInfo.java
 java/awt/geom/AffineTransform.java
 java/awt/geom/Dimension2D.java
