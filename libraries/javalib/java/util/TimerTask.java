@@ -21,6 +21,7 @@ public abstract class TimerTask implements Runnable {
 	boolean changed;		// true if run() changes timer or task
 	long period;			// repeat period (or -1 for none)
 	long time;			// time of next expiration
+	private long lastTime;		// time of last expiration
 
 	public TimerTask() {
 	}
@@ -35,5 +36,13 @@ public abstract class TimerTask implements Runnable {
 		}
 	}
 
+	// These two routines must be synchronized because of the long value
+	public synchronized long scheduledExecutionTime() {
+		return lastTime;
+	}
+
+	synchronized void setScheduledExecutionTime(long when) {
+		lastTime = when;
+	}
 }
 

@@ -228,6 +228,8 @@ public class Timer {
 					}
 					task.changed = false;
 					try {
+						task.setScheduledExecutionTime(
+						    task.time);
 						task.run();
 					} catch (Throwable t) {
 					}
