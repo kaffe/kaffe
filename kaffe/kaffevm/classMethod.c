@@ -311,7 +311,7 @@ retry:
 					     CSTATE_COMPLETE, einfo);
 			lockStaticMutex(&classLock);
 			/* wake up any waiting threads */
-			signalStaticCond(&classLock);
+			broadcastStaticCond(&classLock);
 			if (success == false) {
 				goto done;
 			}
@@ -383,7 +383,7 @@ DBG(STATICINIT,
 		}
 
 		lockStaticMutex(&classLock);
-		signalStaticCond(&classLock);
+		broadcastStaticCond(&classLock);
 
 		if (exc != 0) {
 			/* this is special-cased in throwError */
