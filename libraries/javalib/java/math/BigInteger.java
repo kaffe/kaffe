@@ -245,7 +245,18 @@ public boolean isProbablePrime(int certainty) {
 }
 
 public int compareTo(BigInteger val) {
-	return (cmp0(this, val));
+	int r = cmp0(this, val);
+
+	// compute sign since JDK spec asks us to return -1/0/1, 
+	// but the GMP doc does not guarantee that.
+	if (r == 0) {
+	    return (0);
+	} else
+	if (r < 0) {
+	    return (-1);
+	} else {
+	    return (1);
+	}
 }
 
 public boolean equals(Object o) {
