@@ -1,5 +1,10 @@
 2005-02-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/intrp/machine.c
+	(getEngine): ANSI-fied prototype.
+
+2005-02-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c
 	(setBlockState): De-inlined to fix compiler warnings
 	with gcc 3.4 on powerpc-linux.

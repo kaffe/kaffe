@@ -289,7 +289,7 @@ void runVirtualMachine(methods *meth, slots *lcl, slots *sp, uintp npc, slots *r
  * say what engine we're using
  */
 const char*
-getEngine()
+getEngine(void)
 {
 	return "kaffe.intr";
 }
