@@ -86,7 +86,7 @@ public synchronized int read() throws IOException {
 }
 
 public synchronized int read(byte b[], int off, int len) throws IOException {
-	return super.read(b, off, len);
+	return super.read(b, off, Math.min(len, Math.max(1, available())));
 }
 
 protected synchronized void receive(int b) throws IOException {
