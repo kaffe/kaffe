@@ -6,12 +6,32 @@ Thu Jan 14 15:39:36 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 	* ltconfig, ltmain.sh, libltdl: updated from libtool
 	* configure, */Makefile.in: regen
 
+Thu Jan 14 10:35:35 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/java/lang/Class.java: fixed toString.
+	libraries/javalib/java/lang/reflect/Method.java: fixed toString
+	to use Class.getName() instead of Class.toString().
+	* libraries/javalib/java/beans/Introspector.java: added listener
+	types.
+	* kaffe/kaffevm/mem: used gc_lock to protect allocations, eliminated
+	LOCK()
+	* kaffe/kaffevm/systems/unix-internal/: removed
+	kaffe/kaffevm/systems/unix-jthreads/*: various restructuring and
+	improvements.  Removed bogus Tspinoffall.  Made deadlock detection
+	the default.
+	* kaffe/kaffevm/systems/linux-threads: added incomplete linux threads
+	port.  Don't use it yet.
+	* kaffe/kaffevm/*: related changes.
+	* kaffe/kaffevm/lock.h, classMethod.c: started using unlockKnownMutex.
+
 Thu Jan 14 09:38:06 1999  Moses DeJong <dejong@cs.umn.edu>
 
 	* libraries/clib/native/Class.c: fix case where null is passed
 	as arg types in get(Declared){Constructor|Method}
 	* libraries/javalib/java/lang/reflect/Method.java, Constructor.java: 
 	fix for equals(null).
+	* regression/BeanBug.java|out, MethodBug.java|out: added tests
+	for bean & reflection bugs.
 
 Wed Jan 13 20:17:36 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
