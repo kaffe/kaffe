@@ -258,7 +258,7 @@ Java_java_awt_Toolkit_graFillOval ( JNIEnv* env, jclass clazz, Graphics* gr,
 int jarray2Points ( JNIEnv* env, Toolkit* X, XPoint** pp, int x0, int y0,
 					jarray xPoints, jarray yPoints, int nPoints )
 {
-  register i;
+  register int i;
   int      n;
   jboolean isCopy;
   jint     *jx = (*env)->GetIntArrayElements( env, xPoints, &isCopy);

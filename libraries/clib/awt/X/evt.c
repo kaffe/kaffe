@@ -28,7 +28,7 @@ extern void* currentJThread;
 __inline__ int getSourceIdx ( Toolkit* X, Window w )
 {
   int      n;
-  register i;
+  register int i;
 
   if ( w == X->lastWindow ){
 	return X->srcIdx;
@@ -668,7 +668,7 @@ Java_java_awt_Toolkit_evtWakeup ( JNIEnv* env, jclass clazz )
 jint
 Java_java_awt_Toolkit_evtRegisterSource ( JNIEnv* env, jclass clazz, void* wnd )
 {
-  register i;
+  register int i;
   int      n;
 
   /*

@@ -169,7 +169,7 @@ jpeg_buffer_src (j_decompress_ptr cinfo, unsigned char* buf, long len )
 void
 jscan_to_img( Image * img, JSAMPROW buf, struct jpeg_decompress_struct * cinfo)
 {
-  register col, pix, rgb, idx;
+  register int col, pix, rgb, idx;
   register JSAMPARRAY colormap = cinfo->colormap;
 
   for ( col = 0; col < cinfo->output_width; col++) {

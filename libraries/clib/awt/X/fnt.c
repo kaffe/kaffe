@@ -128,7 +128,7 @@ Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, XFontStruct* fs 
   jarray    widths;
   jint      *jw;
   jboolean isCopy;
-  register  i, j;
+  register int i, j;
 
   widths = (*env)->NewIntArray( env, 256);
   jw = (*env)->GetIntArrayElements( env, widths, &isCopy);

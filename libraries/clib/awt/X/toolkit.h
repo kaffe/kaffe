@@ -174,7 +174,7 @@ extern long StdEvents;
 
 static __inline__ char* java2CString ( JNIEnv *env, Toolkit* X, jstring jstr ) {
   jboolean isCopy;
-  register i;
+  register int i;
   int      n = (*env)->GetStringLength( env, jstr);
   const jchar    *jc = (*env)->GetStringChars( env, jstr, &isCopy);
 
@@ -193,7 +193,7 @@ static __inline__ char* java2CString ( JNIEnv *env, Toolkit* X, jstring jstr ) {
 }
 
 static __inline__ char* jchar2CString ( Toolkit* X, jchar* jc, int len ) {
-  register i;
+  register int i;
   int      n = len+1;
   
   if ( n > X->nBuf ) {
