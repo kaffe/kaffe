@@ -3165,7 +3165,7 @@ Kaffe_ReleaseByteArrayElements(JNIEnv* env, jbyteArray arr, jbyte* elems, jint m
 }
 
 static void
-Kaffe_ReleasePrimitiveArrayCritical(JNIEnv* env, jbyteArray arr, jbyte* elems, jint mode)
+Kaffe_ReleasePrimitiveArrayCritical(JNIEnv* env, jbyteArray arr, void* elems, jint mode)
 {
   Kaffe_ReleaseByteArrayElements(env, (jbyteArray)arr, (jbyte*)elems, mode);
 }

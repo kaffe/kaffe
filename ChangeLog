@@ -1,5 +1,17 @@
 2004-01-07  Dalibor Topic <robilad@kaffe.org>
 
+	* include/jni.h
+	(JNINativeInterface): Changed GetPrimitiveArrayCritical 
+	protoype to match spec.
+
+	* kaffe/kaffevm/jni.c
+	(Kaffe_ReleasePrimitiveArrayCritical): Changed prototype 
+	to match spec.
+
+        Reported by: Riccardo Mottola <zuse@libero.it>
+
+2004-01-07  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/intrp/machine.c
 	(runVirtualMachine): Removed unused variable lcc.
         Fixes a compiler warning on sparc-solaris.
