@@ -27,7 +27,7 @@ static iStaticLock	stringLock = KAFFE_STATIC_LOCK_INITIALIZER; /* mutex on all i
 static int *            stringLockRoot = NULL;	/* the string lock is not a monitor */
 
 /* Internal functions */
-static int		stringHashValue(const void *ptr);
+static int		stringHashValue(void *ptr);
 static int		stringCompare(const void *s1, const void *s2);
 
 /*
@@ -304,11 +304,11 @@ stringFree(const void *ptr)
  * Return the interned version of a String object.
  * May or may not be the same String.
  */
-Hjava_lang_String *
+const Hjava_lang_String *
 stringInternString(Hjava_lang_String *string)
 {
 	int iLockRoot;
-	Hjava_lang_String *temp;
+	const Hjava_lang_String *temp;
 
 	/* Lock intern table */
 	lockStaticMutex(&stringLock);
@@ -316,7 +316,7 @@ stringInternString(Hjava_lang_String *string)
 
 	/* See if string is already in the table */
 	if (hashTable != NULL) {
-		Hjava_lang_String *string2;
+		const Hjava_lang_String *string2;
 
 		if ((string2 = hashFind(hashTable, string)) != NULL) {
 			unlockStaticMutex(&stringLock);
@@ -368,9 +368,9 @@ stringUninternString(Hjava_lang_String* string)
  * is getting written no matter who writes it (strings are immutable).
  */
 static int
-stringHashValue(const void *ptr)
+stringHashValue(void *ptr)
 {
-	Hjava_lang_String *const string = (Hjava_lang_String*) ptr;
+	Hjava_lang_String *string = (Hjava_lang_String*) ptr;
 	jint hash;
 	int k;
 

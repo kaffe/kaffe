@@ -1165,8 +1165,8 @@ sortSlots(const void* s1, const void* s2)
 	localUse* lcluse1;
 	localUse* lcluse2;
 
-	lcluse1 = &codeInfo->localuse[*((SlotInfo**)s1) - localinfo];
-	lcluse2 = &codeInfo->localuse[*((SlotInfo**)s2) - localinfo];
+	lcluse1 = &codeInfo->localuse[*((SlotInfo* const*)s1) - localinfo];
+	lcluse2 = &codeInfo->localuse[*((SlotInfo* const*)s2) - localinfo];
 
 	if (lcluse1->use == lcluse2->use) {
 		return (0);

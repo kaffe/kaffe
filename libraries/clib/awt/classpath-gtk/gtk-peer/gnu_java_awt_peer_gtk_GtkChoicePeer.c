@@ -92,7 +92,7 @@ Java_gnu_java_awt_peer_gtk_GtkChoicePeer_append
 
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkChoicePeer_nativeAdd 
-  (JNIEnv *env, jobject obj, jstring item, jint index)
+  (JNIEnv *env, jobject obj, jstring item, jint i)
 {
   void *ptr;
   const char *label;
@@ -102,7 +102,7 @@ Java_gnu_java_awt_peer_gtk_GtkChoicePeer_nativeAdd
   label = (*env)->GetStringUTFChars (env, item, NULL);      
 
   gdk_threads_enter ();
-  gtk_combo_box_insert_text (GTK_COMBO_BOX (ptr), index, label);
+  gtk_combo_box_insert_text (GTK_COMBO_BOX (ptr), i, label);
   gdk_threads_leave ();
 
   (*env)->ReleaseStringUTFChars (env, item, label);
@@ -110,14 +110,14 @@ Java_gnu_java_awt_peer_gtk_GtkChoicePeer_nativeAdd
 
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkChoicePeer_nativeRemove 
-  (JNIEnv *env, jobject obj, jint index)
+  (JNIEnv *env, jobject obj, jint i)
 {
   void *ptr;
 
   ptr = NSA_GET_PTR (env, obj);
 
   gdk_threads_enter ();
-  gtk_combo_box_remove_text (GTK_COMBO_BOX (ptr), index);
+  gtk_combo_box_remove_text (GTK_COMBO_BOX (ptr), i);
   gdk_threads_leave ();
 }
 
@@ -148,14 +148,14 @@ Java_gnu_java_awt_peer_gtk_GtkChoicePeer_nativeRemoveAll
 
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkChoicePeer_select 
-  (JNIEnv *env, jobject obj, jint index)
+  (JNIEnv *env, jobject obj, jint i)
 {
   void *ptr;
 
   ptr = NSA_GET_PTR (env, obj);
 
   gdk_threads_enter ();
-  gtk_combo_box_set_active (GTK_COMBO_BOX (ptr), index);
+  gtk_combo_box_set_active (GTK_COMBO_BOX (ptr), i);
   gdk_threads_leave ();
 }
 
@@ -164,15 +164,15 @@ Java_gnu_java_awt_peer_gtk_GtkChoicePeer_nativeGetSelected
   (JNIEnv *env, jobject obj)
 {
   void *ptr;
-  int index;
+  int i;
 
   ptr = NSA_GET_PTR (env, obj);
 
   gdk_threads_enter ();
-  index = gtk_combo_box_get_active (GTK_COMBO_BOX (ptr));
+  i = gtk_combo_box_get_active (GTK_COMBO_BOX (ptr));
   gdk_threads_leave ();
 
-  return index;
+  return i;
 }
 
 void selection_changed (GtkComboBox *combobox, jobject peer)
@@ -181,11 +181,11 @@ void selection_changed (GtkComboBox *combobox, jobject peer)
   GtkTreeModel *model;
   GtkTreeIter iter;
   gchar *selected;
-  gint index;
+  gint i;
 
-  index = gtk_combo_box_get_active(combobox);
+  i = gtk_combo_box_get_active(combobox);
 
-  if (index >= 0)
+  if (i >= 0)
     {
       model = gtk_combo_box_get_model (combobox);
 

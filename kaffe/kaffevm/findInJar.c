@@ -50,7 +50,7 @@
 
 classpathEntry* classpath;
 
-char* realClassPath;
+const char* realClassPath;
 char* realBootClassPath;
 
 void initClasspath(void);
@@ -66,7 +66,7 @@ static int insertClasspath(const char* cp, int prepend);
 
 #if defined(HANDLE_MANIFEST_CLASSPATH)
 static int isEntryInClasspath(const char*);
-static uint8* getManifestMainAttribute(jarFile*, char*);
+static uint8* getManifestMainAttribute(jarFile*, const char*);
 static void handleManifestClassPath (classpathEntry *);
 #endif
 
@@ -134,9 +134,8 @@ DBG(CLASSLOOKUP,
 	case CP_DIR:
 	case CP_ZIPFILE:
 		class = newClass();
-		if (class == 0) {
+		if (class == NULL) {
 			postOutOfMemory(einfo);
-			KFREE(hand.base);
 			return (NULL);
 		}
 
@@ -144,14 +143,13 @@ DBG(CLASSLOOKUP,
 		class->centry = centry;
 		class = readClass(class, &hand, NULL, einfo);
 
-		if (hand.base != 0) {
+		if (hand.base != NULL) {
 #if defined(KAFFE_STATS)
 			if (hand.type == CP_ZIPFILE) {
 				addToCounter(&jarmem, "vmmem-jar files", 1,
 					-(jlong)GCSIZEOF(hand.base));
 			}
 #endif
-			KFREE(hand.base);
 		}
 		return (class);
 
@@ -345,17 +343,17 @@ DBG(CLASSLOOKUP,	dprintf("Opening java file %s for %s\n", buf, cname); );
 void
 initClasspath(void)
 {
-	char* cp;
-	char* hm;
+	const char* cp;
+	const char* hm;
 	size_t len;
 	classpathEntry* ptr;
 
 	DBG(INIT, dprintf("initClasspath()\n"); );
 
-	cp = (char*)Kaffe_JavaVMArgs.bootClasspath;
-	hm = (char*)Kaffe_JavaVMArgs.classhome;
+	cp = Kaffe_JavaVMArgs.bootClasspath;
+	hm = Kaffe_JavaVMArgs.classhome;
 
-	if (cp != 0 && cp[0] != '\0') {
+	if (cp != NULL && cp[0] != '\0') {
 		/* cp may reside in read-only memory, but
 		 * makeClasspath writes to it
 		 */
@@ -380,7 +378,7 @@ initClasspath(void)
 
 	if (len == 0) {
 		/* Error on classpath will be reported latter */
-		realBootClassPath = "";
+		realBootClassPath = strdup("");
 		return;
 	}
 
@@ -393,7 +391,7 @@ initClasspath(void)
 		strcat(realBootClassPath, ptr->path);
 	}
 	
-	realClassPath = (char *)Kaffe_JavaVMArgs.classpath;
+	realClassPath = Kaffe_JavaVMArgs.classpath;
 
 	DBG(INIT, dprintf("initClasspath() done, got %s\n", realBootClassPath); );
 }
@@ -610,13 +608,14 @@ isEntryInClasspath(const char *path)
 
 
 static uint8*
-getManifestMainAttribute(jarFile* file, char* attrName)
+getManifestMainAttribute(jarFile* file, const char* attrName)
 {
 	jarEntry* mf;
 	uint8* mfdata;
 	uint8* attrEntry;
 	uint8* ret;
-	int i, posAttrValue;
+	size_t i;
+	int posAttrValue;
 
 	/* Locate manifest entry in jar */
 	mf = lookupJarFile(file, "META-INF/MANIFEST.MF");

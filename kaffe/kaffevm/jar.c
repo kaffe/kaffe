@@ -1234,12 +1234,12 @@ void closeJarFile(jarFile *jf)
 	}
 }
 
-jarEntry *lookupJarFile(jarFile *jf, char *entry_name)
+jarEntry *lookupJarFile(jarFile *jf, const char *entry_name)
 {
 	jarEntry *retval = NULL;
 
-	assert(jf != 0);
-	assert(entry_name != 0);
+	assert(jf != NULL);
+	assert(entry_name != NULL);
 	
 	/*
 	 * No need to visit the kernel here since we're just walking the

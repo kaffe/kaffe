@@ -73,7 +73,7 @@
  */
   static const struct {
 	  int opt;
-	  char *name;
+	  const char *name;
   } optionNames[] = {
 
 #if defined(SO_SNDBUF)
@@ -124,17 +124,7 @@ ip62str(struct in6_addr *addr)
 	int i, count;
 
 	for (count=0,i=0;i<16;i++) {
-	    char *format;
-	    
-	    if (i == 0 && addr->s6_addr[i] != 0)
-	      format = "%x";
-	    else if (addr->s6_addr[i] != 0)
-	      format = "%x:";
-	    else if (i != 0)
-	      format = ":";
-	    else
-	      format = "";
-	    count += sprintf(&addrbuf[count], format, addr->s6_addr[i]);
+	    count += sprintf(&addrbuf[count], i == 0 && addr->s6_addr[i] != 0 ? "%x" : addr->s6_addr[i] != 0 ? "%x:" : i != 0 ? ":" : "", addr->s6_addr[i]);
 	}
 	return addrbuf;
 }
@@ -572,7 +562,7 @@ gnu_java_net_PlainSocketImpl_socketSetOption(struct Hgnu_java_net_PlainSocketImp
 	unsigned int k;
 
 	DBG(NATIVENET,
-	    char *optstr = "UNKNOWN";
+	    const char *optstr = "UNKNOWN";
 	    for (k = 0; k < sizeof(optionNames) / sizeof(optionNames[0]); k++) 
 		    if (optionNames[k].opt == opt)
 			    optstr = optionNames[k].name;
@@ -632,7 +622,7 @@ gnu_java_net_PlainSocketImpl_socketGetOption(struct Hgnu_java_net_PlainSocketImp
 	unsigned int k;
 
 	DBG(NATIVENET,
-	    char *optstr = "UNKNOWN";
+	    const char *optstr = "UNKNOWN";
 	    for (k = 0; k < sizeof(optionNames) / sizeof(optionNames[0]); k++) 
 		    if (optionNames[k].opt == opt)
 			    optstr = optionNames[k].name;

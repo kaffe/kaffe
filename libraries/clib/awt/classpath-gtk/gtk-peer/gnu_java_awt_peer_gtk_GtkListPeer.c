@@ -236,7 +236,7 @@ Java_gnu_java_awt_peer_gtk_GtkListPeer_append
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkListPeer_add
-  (JNIEnv *env, jobject obj, jstring text, jint index)
+  (JNIEnv *env, jobject obj, jstring text, jint i)
 {
   void *ptr;
   const char *str;
@@ -252,10 +252,10 @@ Java_gnu_java_awt_peer_gtk_GtkListPeer_add
   list = TREE_VIEW_FROM_SW (ptr);
   list_store = gtk_tree_view_get_model (list);
 
-  if (index == -1)
+  if (i == -1)
     gtk_list_store_append (GTK_LIST_STORE (list_store), &iter);
   else
-    gtk_list_store_insert (GTK_LIST_STORE (list_store), &iter, index);
+    gtk_list_store_insert (GTK_LIST_STORE (list_store), &iter, i);
 
   gtk_list_store_set (GTK_LIST_STORE (list_store), &iter,
                       COLUMN_STRING, str, -1);
@@ -304,7 +304,7 @@ Java_gnu_java_awt_peer_gtk_GtkListPeer_delItems
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkListPeer_select
-  (JNIEnv *env, jobject obj, jint index)
+  (JNIEnv *env, jobject obj, jint i)
 {
   void *ptr;
   GtkTreeView *list;
@@ -315,7 +315,7 @@ Java_gnu_java_awt_peer_gtk_GtkListPeer_select
   gdk_threads_enter ();
 
   list = TREE_VIEW_FROM_SW (ptr);
-  path = gtk_tree_path_new_from_indices (index, -1);
+  path = gtk_tree_path_new_from_indices (i, -1);
   gtk_tree_view_set_cursor (list, path, NULL, FALSE);
 
   gdk_threads_leave ();
@@ -323,7 +323,7 @@ Java_gnu_java_awt_peer_gtk_GtkListPeer_select
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkListPeer_deselect
-  (JNIEnv *env, jobject obj, jint index)
+  (JNIEnv *env, jobject obj, jint i)
 {
   void *ptr;
   GtkTreeView *list;
@@ -336,7 +336,7 @@ Java_gnu_java_awt_peer_gtk_GtkListPeer_deselect
 
   list = TREE_VIEW_FROM_SW (ptr);
   selection = gtk_tree_view_get_selection (list);
-  path = gtk_tree_path_new_from_indices (index, -1);
+  path = gtk_tree_path_new_from_indices (i, -1);
   gtk_tree_selection_unselect_path (selection, path);
 
   gdk_threads_leave ();
@@ -443,7 +443,7 @@ Java_gnu_java_awt_peer_gtk_GtkListPeer_getSelectedIndexes
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkListPeer_makeVisible
-  (JNIEnv *env, jobject obj, jint index)
+  (JNIEnv *env, jobject obj, jint i)
 {
   void *ptr;
   GtkTreeView *list;
@@ -454,7 +454,7 @@ Java_gnu_java_awt_peer_gtk_GtkListPeer_makeVisible
   gdk_threads_enter ();
 
   list = TREE_VIEW_FROM_SW (ptr);
-  path = gtk_tree_path_new_from_indices (index, -1);
+  path = gtk_tree_path_new_from_indices (i, -1);
   gtk_tree_view_scroll_to_cell (list, path, NULL, FALSE, 0.0, 0.0);
 
   gdk_threads_leave ();

@@ -529,13 +529,13 @@ finalizeObject(Collector* collector UNUSED, void* ob)
  * Print a description of an object at a given address.
  * Single-threaded.
  */
-char*
+const char*
 describeObject(const void* mem)
 {
 	static char buf[256];		/* BIG XXX */
-	Hjava_lang_Class* clazz;
-	Hjava_lang_String* str;
-	Hjava_lang_Object* obj;
+	const Hjava_lang_Class* clazz;
+	const Hjava_lang_String* str;
+	const Hjava_lang_Object* obj;
 	char* c;
 	jchar* jc;
 	int l;
@@ -544,7 +544,7 @@ describeObject(const void* mem)
 	switch (idx) {
 	case KGC_ALLOC_JAVASTRING:
 
-		str = (Hjava_lang_String*)mem;
+		str = (const Hjava_lang_String*)mem;
 		strcpy(buf, "java.lang.String `");
 		c = buf + strlen(buf);
 		jc = unhand(str)->value ? STRING_DATA(str) : NULL;
@@ -557,7 +557,7 @@ describeObject(const void* mem)
 		break;
 
 	case KGC_ALLOC_CLASSOBJECT:
-		clazz = (Hjava_lang_Class*)mem;
+		clazz = (const Hjava_lang_Class*)mem;
 		sprintf(buf, "java.lang.Class `%s'", clazz->name ?
 			CLASS_CNAME(clazz) : "name unknown");
 		break;
@@ -567,7 +567,7 @@ describeObject(const void* mem)
 	case KGC_ALLOC_FINALIZEOBJECT:
 	case KGC_ALLOC_REFARRAY:
 	case KGC_ALLOC_PRIMARRAY:
-		obj = (Hjava_lang_Object*)mem;
+		obj = (const Hjava_lang_Object*)mem;
 		if (obj->vtable != 0) {
 			clazz = obj->vtable->class;
 			sprintf(buf, "%s", CLASS_CNAME(clazz));
@@ -580,7 +580,7 @@ describeObject(const void* mem)
 	/* add more? */
 
 	default:
-		return ((char*)KGC_getObjectDescription(main_collector, mem));
+		return KGC_getObjectDescription(main_collector, mem);
 	}
 	return (buf);
 }

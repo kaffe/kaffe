@@ -97,7 +97,7 @@ Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_nativeSetHelpMenu
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_delMenu
-  (JNIEnv *env, jobject obj, jint index)
+  (JNIEnv *env, jobject obj, jint i)
 {
   void *ptr;
   GList *list;
@@ -106,7 +106,7 @@ Java_gnu_java_awt_peer_gtk_GtkMenuBarPeer_delMenu
 
   gdk_threads_enter ();
   list = gtk_container_children (GTK_CONTAINER (ptr));
-  list = g_list_nth (list, index);
+  list = g_list_nth (list, i);
   gtk_container_remove (GTK_CONTAINER (ptr), GTK_WIDGET (list->data));
   gdk_threads_leave ();
 }

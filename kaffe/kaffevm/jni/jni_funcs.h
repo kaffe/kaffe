@@ -30,7 +30,7 @@ jstring KaffeJNI_NewStringUTF(JNIEnv* env, const char* data);
 jsize   KaffeJNI_GetStringUTFLength(JNIEnv* env, jstring data);
 const jbyte*
         KaffeJNI_GetStringUTFChars(JNIEnv* env, jstring data, jbool* copy);
-void    KaffeJNI_ReleaseStringUTFChars(JNIEnv* env, jstring data, jbyte* chars);
+void    KaffeJNI_ReleaseStringUTFChars(JNIEnv* env, jstring data, const char* chars);
 void    KaffeJNI_GetStringRegion(JNIEnv *env, jstring data, jsize start, jsize len, jchar *buf);
 void    KaffeJNI_GetStringUTFRegion(JNIEnv *env, jstring data, jsize start, jsize len, char *buf);
 

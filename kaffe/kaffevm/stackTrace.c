@@ -97,9 +97,9 @@ buildStackTrace(struct _exceptionFrame* base)
 #include "machine.h"
 
 static Method*
-stacktraceFindMethod(uintp fp UNUSED, uintp pc)
+stacktraceFindMethod(uintp fp UNUSED, uintp _pc)
 {
-	void *pc_base = KGC_getObjectBase(main_collector, (void *)pc);
+	void *pc_base = KGC_getObjectBase(main_collector, (void *)_pc);
 
 	if (pc_base) {
 		jitCodeHeader *jch;
@@ -120,9 +120,9 @@ stacktraceFindMethod(uintp fp, uintp pc UNUSED)
 #endif
 
 static inline int32
-getLineNumber(Method* meth, uintp pc)
+getLineNumber(Method* meth, uintp _pc)
 {
-	int i;
+	size_t i;
 	int32 linenr;
 	uintp linepc;
 
@@ -130,7 +130,7 @@ getLineNumber(Method* meth, uintp pc)
 	if (meth->lines != 0) {
 		linepc = 0;
 		for (i = 0; i < meth->lines->length; i++) {
-			if (pc >= meth->lines->entry[i].start_pc
+			if (_pc >= meth->lines->entry[i].start_pc
 			    && linepc <= meth->lines->entry[i].start_pc) {
 				linenr = meth->lines->entry[i].line_nr;
 				linepc = meth->lines->entry[i].start_pc;
@@ -214,7 +214,7 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 	Hjava_lang_VMThrowable* vmstate;
 	stackTraceInfo* info;
 	Method* meth;
-	uintp pc;
+	uintp _pc;
 	int32 linenr;
 	char *buf;
 	int len;
@@ -225,18 +225,18 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 	errorInfo einfo;
 
 	vmstate = (Hjava_lang_VMThrowable*)unhand(o)->vmState;
-	if (vmstate == 0) {
+	if (vmstate == NULL) {
 		return;
 	}
 	info = (stackTraceInfo*)unhand(vmstate)->backtrace;
-	if (info == 0) {
+	if (info == NULL) {
 		return;
 	}
 	for (i = 0; info[i].meth != ENDOFSTACK; i++) {
-		pc = info[i].pc;
+		_pc = info[i].pc;
 		meth = info[i].meth; 
-		if (meth != 0) {
-			linenr = getLineNumber (meth, pc);
+		if (meth != NULL) {
+			linenr = getLineNumber (meth, _pc);
 			
 			/* Even if we are reporting an out of memory and
 			   checkPtr fails, this is ok.  If we can't allocate
@@ -262,7 +262,7 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 						class_dot_name,
 						meth->name->data, 
 						CLASS_SOURCEFILE(meth->class),
-						(void*)pc);
+						(void*)_pc);
 				}
 			}
 			else {
@@ -288,8 +288,8 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 				cptr[j] = (unsigned char)buf[j];
 			}
 			if (p != NULL || !nullOK) {
-				do_execute_java_method(p, "println",
-					"([C)V", NULL, NULL, str);
+				do_execute_java_method(NULL, p, "println",
+					"([C)V", NULL, 0, str);
 			} else {
 				dprintf("%s\n", buf);
 			}

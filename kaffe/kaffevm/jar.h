@@ -237,7 +237,7 @@ void closeJarFile(jarFile *jf);
  * `jf' - The jarFile in which to search for the given file.
  * `entry_name' - The name of the file to search for in the JAR.
  */
-jarEntry *lookupJarFile(jarFile *jf, char *entry_name);
+jarEntry *lookupJarFile(jarFile *jf, const char *entry_name);
 /*
  * Read in and, if necessary, decompress the contents of a file stored in a
  * JAR file.

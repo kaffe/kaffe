@@ -1,3 +1,20 @@
+2004-12-21  Adam Heath  <doogie@brainfood.com>
+
+	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/findInJar.c,
+	  kaffe/kaffevm/gc.h, kaffe/kaffevm/gcFuncs.c,
+	  kaffe/kaffevm/hashtab.c, kaffe/kaffevm/jar.c, kaffe/kaffevm/jar.h,
+	  kaffe/kaffevm/stackTrace.c, kaffe/kaffevm/string.c,
+	  kaffe/kaffevm/stringSupport.h, kaffe/kaffevm/jit3/machine.c,
+	  kaffe/kaffevm/jni/jni-string.c, kaffe/kaffevm/jni/jni.c,
+	  kaffe/kaffevm/jni/jni_funcs.h,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkChoicePeer.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkListPeer.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuBarPeer.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GtkMenuPeer.c,
+	  libraries/clib/net/PlainSocketImpl.c:
+	  Various gcc and sparse fixes all over the board.
+
 2004-12-21  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/util/iso4217.properties:

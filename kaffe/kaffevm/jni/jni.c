@@ -185,7 +185,7 @@ Kaffe_NewGlobalRef(JNIEnv* env, jref obj)
 }
 
 static jclass
-Kaffe_DefineClass(JNIEnv* env, jobject loader, const jbyte* buf, jsize len)
+Kaffe_DefineClass(JNIEnv* env, const char *name, jobject loader, const jbyte* buf, jsize len)
 {
 	Hjava_lang_Class* cls;
 	classFile hand;
@@ -294,7 +294,7 @@ Kaffe_ThrowNew(JNIEnv* env UNUSED, jclass cls, const char* mess)
 
 	eobj = execute_java_constructor(NULL, NULL, cls,
 					"(Ljava/lang/String;)V",
-					checkPtr(stringC2Java((char*)mess)));
+					checkPtr(stringC2Java(mess)));
 
 	thread_data->exceptObj = (struct Hjava_lang_Throwable*)eobj;
 
@@ -475,7 +475,7 @@ Kaffe_GetMethodID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 	errorInfo info;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
-	meth = lookupClassMethod((Hjava_lang_Class*)cls, (char*)name, (char*)sig, &info);
+	meth = lookupClassMethod((Hjava_lang_Class*)cls, name, sig, &info);
 	if (meth == NULL) {
 		postError(env, &info);
 	} 
@@ -515,7 +515,7 @@ Kaffe_GetStaticMethodID(JNIEnv* env, jclass cls, const char* name, const char* s
 	errorInfo info;
 
 	BEGIN_EXCEPTION_HANDLING(NULL);
-	meth = lookupClassMethod((Hjava_lang_Class*)cls, (char*)name, (char*)sig, &info);
+	meth = lookupClassMethod((Hjava_lang_Class*)cls, name, sig, &info);
 	if (meth == NULL) {
 		postError(env, &info);
 	} else if (!METHOD_IS_STATIC(meth)) {
@@ -643,7 +643,7 @@ Kaffe_DestroyJavaVM(JavaVM* vm UNUSED)
 }
 
 static jint
-Kaffe_AttachCurrentThread(JavaVM* vm UNUSED, void** penv, JavaVMAttachArgs* args UNUSED)
+Kaffe_AttachCurrentThread(JavaVM* vm UNUSED, void** penv, void* args UNUSED)
 {
 	if (KTHREAD(attach_current_thread) (false)) {
 		KSEM(init)(&THREAD_DATA()->sem);
@@ -655,7 +655,7 @@ Kaffe_AttachCurrentThread(JavaVM* vm UNUSED, void** penv, JavaVMAttachArgs* args
 }
 
 static jint
-Kaffe_AttrachCurrentThreadAsDaemon(JavaVM* vm UNUSED, void** penv, JavaVMAttachArgs* args UNUSED)
+Kaffe_AttrachCurrentThreadAsDaemon(JavaVM* vm UNUSED, void** penv, void* args UNUSED)
 {
 	if (KTHREAD(attach_current_thread) (true)) {
 		KSEM(init)(&THREAD_DATA()->sem);
@@ -963,7 +963,7 @@ struct JNINativeInterface Kaffe_JNINativeInterface = {
 /*
  * Setup the Kaffe invoke interface.
  */
-struct JNIInvokeInterface Kaffe_JNIInvokeInterface = {
+const struct JNIInvokeInterface Kaffe_JNIInvokeInterface = {
 	NULL,
 	NULL,
 	NULL,
@@ -994,8 +994,8 @@ KaffeVM_Arguments Kaffe_JavaVMInitArgs = {
 	".",		/* Classpath */
 	NULL,		/* Bootclasspath */
 	(void*)&vfprintf,/* Vprintf */
-	(void*)&exit,	/* Exit */
-	(void*)&abort,	/* Abort */
+	&exit,	/* Exit */
+	&abort,	/* Abort */
 	1,		/* Enable class GC */
 	0,		/* Enable verbose GC */
 	1,		/* Disable async GC */

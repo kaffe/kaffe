@@ -885,7 +885,7 @@ done:
  * @return True if the class name is in one of the packages, false otherwise.
  */
 static int
-inPackageSet(char **plist, Utf8Const *name)
+inPackageSet(const char **plist, Utf8Const *name)
 {
 	unsigned int name_len, lpc, retval = 0;
 	
@@ -908,7 +908,7 @@ inPackageSet(char **plist, Utf8Const *name)
  * The set of restricted packages that a user defined class loader can't add
  * classes to.
  */
-static char *restrictedPackages[] = {
+static const char *restrictedPackages[] = {
 	"java/",
 	"kaffe/",
 	NULL

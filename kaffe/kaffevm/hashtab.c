@@ -103,7 +103,7 @@ void *
 hashAdd(hashtab_t tab, const void *ptr)
 {
 	int	i;
-	void	*rtn;
+	const void	*rtn;
 
 	if (NEED_RESIZE(tab)) {
 		if (hashResize(tab) == 0) {
@@ -117,7 +117,7 @@ hashAdd(hashtab_t tab, const void *ptr)
 		tab->list[i] = ptr;
 		tab->count++;
 	}
-	rtn = (void *) tab->list[i];
+	rtn = tab->list[i];
 
 	return(rtn);
 }
@@ -148,12 +148,12 @@ void *
 hashFind(hashtab_t tab, const void *ptr)
 {
 	int i;
-	void *rtn;
+	const void *rtn;
 
 	i = hashFindSlot(tab, ptr);
 	assert(i != -1);
 	rtn = (tab->list[i] == DELETED) ?
-		NULL : (void *) tab->list[i];
+		NULL : tab->list[i];
 
 	return(rtn);
 }
