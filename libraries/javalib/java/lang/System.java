@@ -10,6 +10,8 @@
 
 package java.lang;
 
+import gnu.classpath.Configuration;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileDescriptor;
@@ -40,6 +42,17 @@ static {
 	// XXX what are the constraints on the initialization order in here?
 
 	properties = initProperties(new Properties());
+
+	/* Add GNU Classpath specific properties */
+	properties.put("gnu.classpath.home",
+		       properties.get("java.home"));
+	properties.put("gnu.classpath.version",
+		       Configuration.CLASSPATH_VERSION);
+
+	// Set base URL if not already set.
+	if (properties.get("gnu.classpath.home.url") == null)
+	    properties.put("gnu.classpath.home.url",
+			   "file://" + properties.get("gnu.classpath.home") + "/jre/lib");
 
 	// Initialise the I/O
 	if (properties.getProperty("kaffe.embedded", "false").equals("false")) {
