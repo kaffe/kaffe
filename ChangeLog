@@ -1,3 +1,60 @@
+2000-11-30  Edouard G. Parmelan  <egp@free.fr>
+
+	* config/config-mem.h, libraries/clib/awt/X/toolkit.h: Move
+	prototype of swab() into config-mem.h.
+
+	* libraries/javalib/java/io/PipedInputStream.java (read): Read
+	almost available() bytes.  Close PR#690.
+	* test/regression/PipeTest.java: new test case for PR#690.
+	Submitted by Win van Velthoven <ftu@fi.uu.nl>.
+
+	* test/regression/Makefile.am: new test case PipeTest.
+	
+	* kaffe/kaffeh/support.c (kstat, kfstat): Convert Tru64 silly macros
+	stat() and fstat() to functions.  Close PR#710.
+	Reported by Stephane Bortzmeyer <bortzmeyer@pasteur.fr>
+
+	* libraries/javalib/rebuildLib.in (LIBDIR): Reset CDPATH to
+	default value.  This avoid printing directory by cd.
+
+	* Makefile.am: Add missing files from FAQ/ and developers/
+	directories into EXTRA_DIST list.
+	
+	* developers/EncodeEUC_JP.java, developers/README.EUC_JP: Build
+	tables for EUC-JP encoding.
+
+	* libraries/javalib/kaffe/io/{ByteToChar,CharToByte}EUC_JP.{java,tbl}:
+	Proper handle EUC-JP encoding.
+	Submitted by Ito Kazumitsu <kaz@maczuka.gcd.org>.
+
+	* libraries/javalib/kaffe/io/{ByteToChar,CharToByte}EUC_JP.ser:
+	Removed.
+
+	* libraries/javalib/kaffe/io/ConverterAlias.java: Remove bad alias
+	EUC_JP for iso-2022-jp.
+
+	* libraries/clib/native/{ByteToChar,CharToByte}Iconv.c,
+	libraries/javalib/kaffe/io/{ByteToChar,CharToByte}Iconv.java:
+	New encoding converters based on iconv() [UNIX98].
+
+  	* libraries/javalib/kaffe/io/{ByteToChar,CharToByte}Converter.java
+	(getConverter): try with iconv() if getConverterInternal() fail.
+	(getDefault): use getConverter().
+	
+	* include/Makefile.am: add generation of header files
+	kaffe_io_ByteToCharIconv.h and kaffe_io_CharToByteIconv.h.
+
+	* libraries/javalib/Makefile.am: add new Java files.
+	* libraries/clib/native/Makefile.am: add new C files.
+
+	* configure.in: Add check for iconv.h and iconv().
+
+	* configure, Makefile.in, config/config.h.in, include/Makefile.in,
+	libraries/javalib/Makefile.in, libraries/clib/native/Makefile.in,
+	test/regression/Makefile.in: regen.
+
+	* libraries/javalib/Klasses.jar: regen with Jikes 1.10.
+	
 Mon Nov 13 14:31:16 MST 2000  Godmar Back <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/gcFuncs.c: fixed race condition in destroyClass
@@ -5,8 +62,8 @@ Mon Nov 13 14:31:16 MST 2000  Godmar Back <gback@cs.utah.edu>
 
 2000-11-07  Edouard G. Parmelan  <egp@free.fr>
 
-	* configure.in (ZIP_LIBS): Add check for __gmpz_get_d as it's the
-	new name of mpz_get_d with GNU MP.
+	* configure.in (MATH_LIBS): Add check for __gmpz_get_d as it's the
+	new name of mpz_get_d with GNU MP 3.
 	* configure: regen
 
 Tue Oct 31 14:36:47 MST 2000  Jason Baker  <jbaker@cs.utah.edu>
