@@ -180,27 +180,27 @@ public class HashMap extends AbstractMap
 		HashMap clone;
 		try {
 			clone = (HashMap)super.clone();
+
+			// Clear cached keySet() and values() from AbstractMap
+			clone.keyset = null;
+			clone.valcol = null;
+
+			// Make a shallow copy of hashmap (ie, just the buckets)
+			clone.table = new Entry[table.length];
+			for (int bucket = 0; bucket < table.length; bucket++) {
+				Entry first = table[bucket];
+				if (first == null) {
+					continue;
+				}
+				Entry newent = new Entry(first.key, first.value);
+				clone.table[bucket] = newent;
+				for (Entry e = first.next; e != null; e = e.next) {
+					newent.next = new Entry(e.key, e.value);
+					newent = newent.next;
+				}
+			}
 		} catch (CloneNotSupportedException e) {
 			clone = null;		// can't happen
-		}
-
-		// Clear cached keySet() and values() from AbstractMap
-		clone.keyset = null;
-		clone.valcol = null;
-
-		// Make a shallow copy of hashmap (ie, just the buckets)
-		clone.table = new Entry[table.length];
-		for (int bucket = 0; bucket < table.length; bucket++) {
-			Entry first = table[bucket];
-			if (first == null) {
-				continue;
-			}
-			Entry newent = new Entry(first.key, first.value);
-			clone.table[bucket] = newent;
-			for (Entry e = first.next; e != null; e = e.next) {
-				newent.next = new Entry(e.key, e.value);
-				newent = newent.next;
-			}
 		}
 		return clone;
 	}
