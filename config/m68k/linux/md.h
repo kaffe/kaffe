@@ -15,6 +15,15 @@
 #include "m68k/common.h"
 #include "m68k/threads.h"
 #include "support.h"
+#if defined(HAVE_SYS_TIME_H)
+#include <sys/time.h>
+#endif
+#if defined(HAVE_SYS_RESOURCE_H)
+#include <sys/resource.h>
+#endif
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
 
 /*
  * Redefine stack pointer offset.
