@@ -1,3 +1,11 @@
+2000-07-24  Edouard G. Parmelan  <egp@free.fr>
+
+	* test/regression/PropertiesTest.java: Add magic comment java args
+	to work with VPATH.
+
+	* test/regression/SoInterrupt.java test/regression/SoTimeout.java:
+	use InetAddress.getByName(null) to retreive loopback address.
+
 Fri Jul 21 15:57:58 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/Properties.java: escape chars < 0x20
