@@ -38,11 +38,6 @@
 #define  HAVE_SYS_SELECT_H 1
 #endif
 
-/* Hack to configure Linux with WINE installed */
-#if defined(linux)
-#undef	HAVE_WINSOCK_H
-#endif
-
 /* The 386 can do unaligned memory accesses */
 #if defined(__i386__)
 #define	HAVE_UNALIGNEDACCESS

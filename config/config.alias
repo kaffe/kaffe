@@ -4,7 +4,7 @@
 
 case "$host_cpu" in
 
-hppa1.1)	host_cpu=parisc ;;
+hppa*)		host_cpu=parisc ;;
 i[3456]86)	host_cpu=i386 ;;
 sa110)		host_cpu=arm ;;
 arm32)		host_cpu=arm ;;
