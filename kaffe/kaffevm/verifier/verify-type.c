@@ -186,7 +186,7 @@ resolveType(Verifier* v, Type *t)
 		t->data.class = getClassFromSignature(t->data.sig, v->class->loader, v->einfo);	    
 	}
 	else if (t->tinfo & TINFO_NAME) {
-		char* tmp;
+		char* tmp = NULL;;
 		const char* sig = t->data.name;
 		
 		tmp = checkPtr(gc_malloc((strlen(sig) + 3) * sizeof(char), GC_ALLOC_VERIFIER));
@@ -201,54 +201,86 @@ resolveType(Verifier* v, Type *t)
 			gc_free(tmp);
 		}
 	}
-	else {
-		/* TODO: post an internal error here...we should never get this */
-	}
 }
 
+
 /**
- * Constructs the list of common supertypes from t1 and t2,
- * storing the result in t2 as a TINFO_SUPERTYPES.
- * In the process, it allocates memory for the new supertype
- * list and puts it onto our SupertypeSet of memory allocations.
+ * Takes two classes, two lists of interfaces, merges them all into a newly
+ * allocated SupertypeSet, and puts the result into the head of the Verifier's
+ * list of allocated supertype sets.
  */
 void
-mergeSupersets(Verifier* v, Type* t1, Type* t2)
+createSupertypeSet(Verifier* v,
+		   Hjava_lang_Class* class_a,
+		   uint32 num_interfaces_a,
+		   Hjava_lang_Class** interfaces_a,
+		   Hjava_lang_Class* class_b,
+		   uint32 num_interfaces_b,
+		   Hjava_lang_Class** interfaces_b)
 {
-	int i, j;
+	uint32 i, j;
 	SupertypeSet* set = checkPtr(gc_malloc(sizeof(SupertypeSet), GC_ALLOC_VERIFIER));
 	
-	/* we allocate more memory than we'll ever use, but this is faster than
-	 * counting out all the common superinterfaces, allocating memory for the set,
-	 * and then finding all the common superinterfaces again.
-	 *
-	 * besides, we're just allocating a small amount of memory for pointers ;)
-	 */
-	(t1->data.class->total_interface_len > t2->data.class->total_interface_len) ?
-		(i = t1->data.class->total_interface_len + 1)
-		:
-		(i = t2->data.class->total_interface_len + 1);
+	(num_interfaces_a > num_interfaces_b) ?
+		(i = num_interfaces_a + 1) :
+		(i = num_interfaces_b + 1) ;
 	set->list = checkPtr(gc_malloc(i * sizeof(Hjava_lang_Class*), GC_ALLOC_VERIFIER));
 	
-	/* the first common supertype is always a common class */
-	set->list[0] = getCommonSuperclass(t1->data.class, t2->data.class);
+	set->list[0] = getCommonSuperclass(class_a, class_b);
 	set->count = 1;
 	
-	/* cycle through all interfaces that both inherit from, adding them
-	 * to the list of common supertypes
-	 */
-	for (i = 0; i < t1->data.class->total_interface_len; i++) {
-		for (j = 0; j < t2->data.class->total_interface_len; j++) {
-			if (t1->data.class->interfaces[i] == t2->data.class->interfaces[i]) {
-				set->list[set->count] = t1->data.class->interfaces[i];
-				set->count++;
-				break;
+	for (i = 0; i < num_interfaces_a; i++) {
+		for (j = 0; j < num_interfaces_b; j++) {
+			if (interfaces_a[i] == interfaces_b[j]) {
+				set->list[set->count++] = interfaces_a[i];
 			}
 		}
 	}
 	
 	set->next = v->supertypes;
 	v->supertypes = set;
+}
+
+/**
+ * t1 is a TINFO_CLASS
+ * t2 is a TINFO_CLASS
+ */
+static inline
+void
+mergeClassesIntoSuperset(Verifier* v,
+			 Type* t1,
+			 Type* t2)
+{
+	createSupertypeSet(v,
+			   t1->data.class, (uint32)t1->data.class->total_interface_len, t1->data.class->interfaces,
+			   t2->data.class, (uint32)t2->data.class->total_interface_len, t2->data.class->interfaces);
+}
+
+/**
+ * tc is a TINFO_CLASS
+ * ts is a TINFO_SUPERTYPES
+ */
+static inline
+void
+mergeClassAndSuperset(Verifier* v, Type* tc, Type* ts)
+{
+	createSupertypeSet(v,
+			   tc->data.class, (uint32)tc->data.class->total_interface_len, tc->data.class->interfaces,
+			   ts->data.supertypes->list[0], ts->data.supertypes->count - 1, ts->data.supertypes->list + 1);
+}
+
+/**
+ * t1 is a TINFO_SUPERTYPES
+ * t2 is a TINFO_SUPERTYPES
+ */
+static inline
+void
+mergeSupersets(Verifier* v, Type* t1, Type* t2)
+{
+	createSupertypeSet(v,
+			   t1->data.supertypes->list[0], t1->data.supertypes->count - 1, t1->data.supertypes->list + 1,
+			   t2->data.supertypes->list[0], t2->data.supertypes->count - 1, t2->data.supertypes->list + 1);
+	
 }
 
 /**
@@ -309,15 +341,33 @@ mergeTypes(Verifier* v, Type* t1, Type* t2)
 		return false;
 	}
 	
-	if (instanceof(t1->data.class, t2->data.class)) {
-		*t2 = *t1;
-		return true;
+	
+	/* at this point, t1 and t2 are either TINFO_CLASS or
+	 * TINFO_SUPERTYPES */
+	if (t1->tinfo & TINFO_SUPERTYPES) {
+		if (t2->tinfo & TINFO_SUPERTYPES)
+			mergeSupersets(v, t1, t2);
+		else
+			mergeClassAndSuperset(v, t2, t1);
 	}
-	else if (instanceof(t2->data.class, t1->data.class)) {
-		return false;
+	else if (t2->tinfo & TINFO_SUPERTYPES) {
+		mergeClassAndSuperset(v, t1, t2);
+	}
+	else {
+		/* both are TINFO_CLASS */
+		if (instanceof(t1->data.class, t2->data.class)) {
+			*t2 = *t1;
+			return true;
+		}
+		else if (instanceof(t2->data.class, t1->data.class)) {
+			return false;
+		}
+		else {
+			DBG(VERIFY3, dprintf("HERE\n"); );
+			mergeClassesIntoSuperset(v, t1, t2);
+		}
 	}
 	
-	mergeSupersets(v, t1, t2);
 	if (v->supertypes->count == 1) {
 		t2->tinfo = TINFO_CLASS;
 		t2->data.class = v->supertypes->list[0];
@@ -336,7 +386,8 @@ mergeTypes(Verifier* v, Type* t1, Type* t2)
  *               nor is either a primitive type
  */
 Hjava_lang_Class*
-getCommonSuperclass(Hjava_lang_Class* t1, Hjava_lang_Class* t2)
+getCommonSuperclass(Hjava_lang_Class* t1,
+		    Hjava_lang_Class* t2)
 {
 	Hjava_lang_Class* A;
 	Hjava_lang_Class* B;

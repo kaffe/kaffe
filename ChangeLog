@@ -1,5 +1,12 @@
 2004-06-28  Rob Gonzalez <rob@kaffe.org>
-	* kaffe/kaffevm/verifier/verity-types.c
+	* kaffe/kaffevm/verifier/verify-types.h
+	* kaffe/kaffevm/verifier/verify-types.c
+	(createSupertypeSet) added.
+	(mergeTypes) significantly modified to take all the
+	different combinations of merging supertype sets.
+
+2004-06-28  Rob Gonzalez <rob@kaffe.org>
+	* kaffe/kaffevm/verifier/verify-types.c
 	(mergeTypes) return value of mergeSupertypes fixed.
 
 	Reported by: Helmer Kraemer  <hkraemer@freenet.de>

@@ -142,9 +142,13 @@ extern bool typecheck(struct Verifier* v,
 
 
 /* for dealing with the supertype lists */
-extern void mergeSupersets(struct Verifier* v,
-			   Type* t1,
-			   Type* t2);
+extern void createSupertypeSet(struct Verifier* v,
+			       Hjava_lang_Class* class_a,
+			       uint32 num_interfaces_a,
+			       Hjava_lang_Class** interfaces_a,
+			       Hjava_lang_Class* class_b,
+			       uint32 num_interfaces_b,
+			       Hjava_lang_Class** interfaces_b);
 extern void freeSupertypes(SupertypeSet* supertypes);
 
 
