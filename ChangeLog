@@ -1,3 +1,9 @@
+2003-11-06 Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	libraries/javalib/gnu/xml/aelfred2/SAXDriver.java,
+	libraries/javalib/gnu/xml/aelfred2/XmlParser.java:
+	Resynced with GNU Classpathx.
+
 2003-11-04  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/clib/net/PlainDatagramSocketImpl.c:
