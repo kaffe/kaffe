@@ -28,6 +28,7 @@
 #include "exception.h"
 #include "itypes.h"
 #include "md.h"
+#include "java_lang_Cloneable.h"
 
 Utf8Const* init_name;
 Utf8Const* final_name;
@@ -130,6 +131,10 @@ initialiseKaffe(void)
 void
 initBaseClasses(void)
 {
+	Field *f;
+	errorInfo einfo;
+	extern char* realClassPath;
+
 	/* Primitive types */
 	initTypes();
 
@@ -164,5 +169,40 @@ initBaseClasses(void)
 
 	/* Fixup primitive types */
 	finishTypes();
+
+	/* 
+	 * To make sure we have some ground to stand on, we doublecheck
+	 * that we really got Kaffe's java.lang.Cloneable class here.
+	 * Kaffe's class has a final public static field called 
+	 * "KAFFE_VERSION".
+	 */
+	f = lookupClassField(CloneClass, 
+		makeUtf8Const("KAFFE_VERSION", -1), true, &einfo);
+	if (f == 0) {
+		fprintf(stderr,
+		    "\nCould not initialize Kaffe.\n"
+		    "It's likely that your CLASSPATH settings are wrong. "
+		    "Please make sure\nyour CLASSPATH does not include any "
+		    "java.lang.* classes from other JVM\nvendors, such as "
+		    "Sun's classes.zip, BEFORE Kaffe's Klasses.jar.\n"
+		    "It is okay to have classes.zip AFTER Klasses.jar\n\n"
+		    "The current effective classpath is `%s'\n\n", 
+		    realClassPath
+		);
+		EXIT(-1);
+	}
+
+	if (*(jint*)FIELD_ADDRESS(f) != java_lang_Cloneable_KAFFE_VERSION) {
+		fprintf(stderr,
+		    "\nCould not initialize Kaffe.\n"
+		    "Your Klasses.jar version is %3.2f, but this VM "
+		    "was compiled with version %3.2f\n\n"
+		    "The current effective classpath is `%s'\n\n", 
+		    *(jint*)FIELD_ADDRESS(f)/100.0, 
+		    java_lang_Cloneable_KAFFE_VERSION/100.0,
+		    realClassPath
+		);
+		EXIT(-1);
+	}
 }
 

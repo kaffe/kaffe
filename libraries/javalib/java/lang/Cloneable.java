@@ -11,4 +11,12 @@
 package java.lang;
 
 public interface Cloneable {
+	/**
+	 * This field is checked by the VM to detect whether it loads
+	 * the correct java.lang.Cloneable class.
+	 *
+	 * This is our sanity check to guard against people using the
+	 * wrong jar file.
+	 */
+        final public static int KAFFE_VERSION = 103;
 };

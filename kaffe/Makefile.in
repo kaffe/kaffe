@@ -8,7 +8,7 @@
 
 @VPATHOPT@=	@srcdir@
 
-subdirs=	kaffevm kaffe kaffeh scripts man
+subdirs=	kaffeh kaffevm kaffe scripts man
 
 all:
 	@for i in $(subdirs); do (cd $$i && $(MAKE) all) || exit 1 ; done

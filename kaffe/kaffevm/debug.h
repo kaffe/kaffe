@@ -166,9 +166,17 @@ extern int kaffe_dprintf(const char *fmt, ...);
 
 /* --- give some simple macros for debugging kaffeh */
 
-# define DBG(mask, statement)		statement
-# define DBGEXPR(mask, expr, default) 	expr
-# define DBGIF(statement)  statement
+/* You must define DEBUG_KAFFEH to debug kaffeh */
+# if defined(DEBUG_KAFFEH)
+#  define DBG(mask, statement)		statement
+#  define DBGEXPR(mask, expr, default) 	expr
+#  define DBGIF(statement)  statement
+# else
+#  define DBG(mask, statement)
+#  define DBGEXPR(mask, expr, default) 	default
+#  define DBGIF(statement)
+# endif /* defined(DEBUG_KAFFEH) */
+
 /* we don't link with debug.o, so make dprintf a simple printf */
 # define dprintf	printf
 
