@@ -1,5 +1,10 @@
 2003-06-12 Dalibor Topic <robilad@yahoo.com>
 
+	* test/regression/Reflect.java:
+	Fixed expected output for java.lang.System.arraycopy.
+	
+2003-06-12 Dalibor Topic <robilad@yahoo.com>
+
 	Linux 2.0.x IPv6 support compilation fixes.
 	
 	* configure.in:
