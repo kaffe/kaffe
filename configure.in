@@ -81,6 +81,12 @@ if test x"$with_staticvm" = x"yes" ; then
 	vm_dynamic_library=no
 fi
 
+dnl If the vm is static or all libraries are static then make sure we set
+dnl the no-share-vmlibrary flag.
+if test "$vm_dynamic_library" = "no" || test "$dynamic_libraries" = "no"; then
+	AC_DEFINE(NO_SHARED_VMLIBRARY, 1, [If the vm is static or all libraries are static])
+fi
+
 dnl =========================================================================
 dnl Look for the configuration information
 dnl -------------------------------------------------------------------------
