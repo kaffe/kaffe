@@ -1,6 +1,13 @@
 2004-02-08  Dalibor Topic <robilad@kaffe.org>
 
 	* kaffe/kaffevm/mem/gc-incremental.c
+	(gcClearCounts, gcDumpCounts): Fixed gcc compiler warning
+	about unused functions when user compiled without debugging 
+	enabled.
+
+2004-02-08  Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/kaffevm/mem/gc-incremental.c
 	(gcMalloc): Fixed compiler warning about unused variable.
 
 2004-02-08  Dalibor Topic <robilad@kaffe.org>

@@ -467,7 +467,7 @@ DBG(GCWALK,
 	}
 }
 
-#ifdef KAFFE_VMDEBUG
+#if !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG))
 static int
 gcClearCounts(Hjava_lang_Class *c, void *_)
 {
@@ -482,7 +482,7 @@ gcDumpCounts(Hjava_lang_Class *c, void *_)
 		dprintf("%7d %s\n", c->live_count,	c->name->data);
 	return 0;
 }
-#endif
+#endif /* !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG)) */
 
 /*
  * The Garbage Collector sits in a loop starting a collection, waiting
