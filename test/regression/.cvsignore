@@ -6,4 +6,6 @@ ziptest2.zip
 .cvsignore
 *.class
 *.out
+*.fail
 ExceptionTest
+.gdb_history

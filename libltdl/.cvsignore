@@ -8,4 +8,4 @@ conftest*
 libtool
 *.lo
 *.la
-stamp-h
+stamp-h*
