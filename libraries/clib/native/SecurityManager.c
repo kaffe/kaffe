@@ -30,11 +30,16 @@ HArrayOfObject* /* HArrayOfClass */
 java_lang_SecurityManager_getClassContext0(void)
 {
 	stackTraceInfo* info;
+	errorInfo einfo;
 	int cnt;
 	int i;
 	HArrayOfObject* array;
 
 	info = (stackTraceInfo*)buildStackTrace(0);
+	if (info == NULL) {
+		postOutOfMemory(&einfo);
+		throwError(&einfo);
+	}
 
 	cnt = 0;
 	for (i = 0; info[i].meth != ENDOFSTACK; i++) {
@@ -44,7 +49,7 @@ java_lang_SecurityManager_getClassContext0(void)
 		}
 	}
 
-	array = (HArrayOfObject*)AllocObjectArray(cnt, "Ljava/lang/Class;");
+	array = (HArrayOfObject*)AllocObjectArray(cnt, "Ljava/lang/Class;", 0);
 
 	cnt = 0;
 	for (i = 0; info[i].meth != ENDOFSTACK; i++) {

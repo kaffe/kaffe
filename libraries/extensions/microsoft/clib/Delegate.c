@@ -44,7 +44,8 @@ makeParameters(Method* meth)
 	errorInfo info;
 	Hjava_lang_Class* clazz;
 
-	array = (HArrayOfObject*)AllocObjectArray(METHOD_NARGS(meth), "Ljava/lang/Class;");
+	array = (HArrayOfObject*)AllocObjectArray(METHOD_NARGS(meth),
+	    "Ljava/lang/Class;", 0);
 	for (i = 0; i < METHOD_NARGS(meth); ++i) {
 		clazz = getClassFromSignaturePart(METHOD_ARG_TYPE(meth, i),
 					      meth->class->loader, &info);
@@ -68,7 +69,7 @@ makeExceptions(Method* meth)
 	Hjava_lang_Class** ptr;
 
 	nr = meth->ndeclared_exceptions;
-	array = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class;");
+	array = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class;", 0);
 	ptr = (Hjava_lang_Class**)&unhand_array(array)->body[0];
 	for (i = 0; i < nr; i++) {
 		errorInfo info;
@@ -112,7 +113,8 @@ Java_com_ms_lang_Delegate_getMethod0(JNIEnv* env, jclass delegate, jobject o, js
 	utf8ConstRelease(fname);
 	utf8ConstRelease(fsig);
 
-	meth = (Hjava_lang_reflect_Method*)AllocObject("java/lang/reflect/Method");
+	meth = (Hjava_lang_reflect_Method*)
+	    AllocObject("java/lang/reflect/Method", 0);
 	unhand(meth)->clazz = clazz;
 	unhand(meth)->slot = m - CLASS_METHODS(clazz);
 	unhand(meth)->name = name;

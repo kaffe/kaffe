@@ -1120,42 +1120,6 @@ lookupClass(const char* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 }
 
 /*
- * Determine the 'current' class loader. We do this by examining stack
- * frames, starting with the current frame and going back up the stack.
- * We stop when we find a stack frame corresponding to a Java method,
- * and then use the class loader associated with the method's class.
- * We ignore class 'java/lang/Class' for the sake of Class.forName()
- * (it's class loader is always the bootstrap class loader anyway).
- *
- * Returns 1 on success and sets *loaderp to the class loader or
- * NULL for the bootstrap loader, or 0 on failure and sets *einfo.
- */
-
-int
-getClassLoader(Hjava_lang_ClassLoader** loaderp, errorInfo *einfo)
-{
-	stackTraceInfo* strace;
-
-	if ((strace = (stackTraceInfo*)buildStackTrace(0)) == NULL) {
-		postOutOfMemory(einfo);
-		return 0;
-	}
-	while (strace->meth != ENDOFSTACK) {
-		strace->meth = stacktraceFindMethod(strace);
-		if (strace->meth != NULL
-		    && strace->meth->class != NULL
-		    && strcmp(strace->meth->class->name->data,
-		      CLASSCLASS) != 0) {
-			*loaderp = strace->meth->class->loader;
-			return 1;
-		}
-		strace++;
-	}
-	*loaderp = NULL;
-	return 1;
-}
-
-/*
  * Return FIELD_TYPE(FLD), but if !FIELD_RESOLVED, resolve the field first.
  */
 Hjava_lang_Class*

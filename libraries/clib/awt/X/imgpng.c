@@ -110,6 +110,7 @@ readImageData ( png_structp png_ptr, png_infop info_ptr, png_bytepp rows, Image 
   }
 }
 
+#if 0
 static void
 readbackRow ( Image *img, unsigned char* rowBuf, int row )
 {
@@ -130,7 +131,9 @@ readbackRow ( Image *img, unsigned char* rowBuf, int row )
 	*p++ = b;
   }
 }
+#endif
 
+#if 0
 /*
  * THIS DOESN'T WORK YET. The idea is to avoid allocating temporary
  * memory for the WHOLE image in ARGB pels (but ADAM7 seems to require
@@ -158,6 +161,7 @@ readInterlacedData ( png_structp png_ptr, png_infop info_ptr, png_bytep row, Ima
 	}
   }
 }
+#endif
 
 
 static Image*

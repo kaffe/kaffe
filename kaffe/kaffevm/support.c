@@ -170,19 +170,15 @@ do_execute_java_method(void* obj, const char* method_name, const char* signature
  * Call a Java static method on a class from native code.
  */
 jvalue
-do_execute_java_class_method_v(const char* cname, const char* method_name, const char* signature, va_list argptr)
+do_execute_java_class_method_v(const char* cname,
+	Hjava_lang_ClassLoader* loader, const char* method_name,
+	const char* signature, va_list argptr)
 {
-	Hjava_lang_ClassLoader* loader;
 	Hjava_lang_Class* clazz;
 	errorInfo info;
 	Method* mb = 0;
 	jvalue retval;
 	char *buf;
-
-	/* Get class loader */
-	if (!getClassLoader(&loader, &info)) {
-		throwError(&info);
-	}
 
 	/* Convert "." to "/" and lookup class */
 	buf = checkPtr(KMALLOC(strlen(cname) + 1));
@@ -210,13 +206,14 @@ do_execute_java_class_method_v(const char* cname, const char* method_name, const
 }
 
 jvalue
-do_execute_java_class_method(const char* cname, const char* method_name, const char* signature, ...)
+do_execute_java_class_method(const char* cname, Hjava_lang_ClassLoader*loader,
+	const char* method_name, const char* signature, ...)
 {
 	va_list argptr;
 	jvalue retval;
 
 	va_start(argptr, signature);
-	retval = do_execute_java_class_method_v(cname, method_name, signature, argptr);
+	retval = do_execute_java_class_method_v(cname, loader, method_name, signature, argptr);
 	va_end(argptr);
 
 	return (retval);
@@ -226,7 +223,8 @@ do_execute_java_class_method(const char* cname, const char* method_name, const c
  * Allocate an object and execute the constructor.
  */
 Hjava_lang_Object*
-execute_java_constructor_v(const char* cname, Hjava_lang_Class* cc, const char* signature, va_list argptr)
+execute_java_constructor_v(const char* cname, Hjava_lang_ClassLoader* loader,
+	Hjava_lang_Class* cc, const char* signature, va_list argptr)
 {
 	Hjava_lang_Object* obj;
 	Method* mb;
@@ -235,13 +233,7 @@ execute_java_constructor_v(const char* cname, Hjava_lang_Class* cc, const char* 
 	Utf8Const* sig;
 
 	if (cc == 0) {
-		Hjava_lang_ClassLoader* loader;
 		char *buf;
-
-		/* Get class loader */
-		if (!getClassLoader(&loader, &info)) {
-			throwError(&info);
-		}
 
 		/* Convert "." to "/" and lookup class */
 		buf = checkPtr(KMALLOC(strlen(cname) + 1));
@@ -281,13 +273,14 @@ execute_java_constructor_v(const char* cname, Hjava_lang_Class* cc, const char* 
 }
 
 Hjava_lang_Object*
-execute_java_constructor(const char* cname, Hjava_lang_Class* cc, const char* signature, ...)
+execute_java_constructor(const char* cname, Hjava_lang_ClassLoader* loader,
+	Hjava_lang_Class* cc, const char* signature, ...)
 {
 	va_list argptr;
 	Hjava_lang_Object* obj;
 
 	va_start(argptr, signature);
-	obj = execute_java_constructor_v(cname, cc, signature, argptr);
+	obj = execute_java_constructor_v(cname, loader, cc, signature, argptr);
 	va_end(argptr);
 
 	return (obj);
@@ -797,10 +790,10 @@ SignalError(const char* cname, const char* str)
 
 	if (str == NULL || *str == '\0') {
 		obj = (Hjava_lang_Throwable*)execute_java_constructor(cname,
-			0, ERROR_SIGNATURE0);
+			0, 0, ERROR_SIGNATURE0);
 	} else {
 		obj = (Hjava_lang_Throwable*)execute_java_constructor(cname,
-			0, ERROR_SIGNATURE, checkPtr(stringC2Java(str)));
+			0, 0, ERROR_SIGNATURE, checkPtr(stringC2Java(str)));
 	}
 	throwException(obj);
 }
@@ -905,15 +898,11 @@ setProperty(void* properties, char* key, char* value)
  * Allocate a new object of the given class name.
  */
 Hjava_lang_Object*
-AllocObject(const char* classname)
+AllocObject(const char* classname, Hjava_lang_ClassLoader* loader)
 {
-	Hjava_lang_ClassLoader* loader;
 	Hjava_lang_Class* clazz;
 	errorInfo info;
 
-	if (!getClassLoader(&loader, &info)) {
-		throwError(&info);
-	}
 	clazz = lookupClass(classname, loader, &info);
 	if (clazz == 0) {
 		throwError(&info);
@@ -934,7 +923,7 @@ AllocArray(int len, int type)
  * Allocate a new array of the given size and class name.
  */
 Hjava_lang_Object*
-AllocObjectArray(int sz, const char* classname)
+AllocObjectArray(int sz, const char* classname, Hjava_lang_ClassLoader* loader)
 {
 	Hjava_lang_Class *elclass;
 	errorInfo info;
@@ -942,7 +931,7 @@ AllocObjectArray(int sz, const char* classname)
 	if (sz < 0) {
 		throwException(NegativeArraySizeException);
 	}
-        elclass = getClassFromSignature(classname, NULL, &info);
+        elclass = getClassFromSignature(classname, loader, &info);
 	if (elclass == 0) {
 		throwError(&info);
 	}

@@ -1,3 +1,29 @@
+Tue Mar 28 15:02:57 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* include/errors.h, include/native.h, kaffe/kaffevm/exception.c,
+	kaffe/kaffevm/support.c, kaffe/kaffevm/support.h,
+	libraries/clib/io/File.c, libraries/clib/native/Array.c,
+	libraries/clib/native/Field.c, libraries/clib/native/Method.c,
+	libraries/clib/native/Runtime.c, libraries/clib/native/ZipFile.c,
+	libraries/clib/native/SecurityManager.c,
+	libraries/extensions/microsoft/clib/Delegate.c: all functions
+	that take a class name as an argument must also take a ClassLoader
+	argument; fix this.
+	* kaffe/kaffevm/classMethod.c, kaffe/kaffevm/classMethod.h
+	remove obsolete getClassLoader() function
+	* kaffe/kaffevm/debug.c, kaffe/kaffevm/debug.h: avoid gcc warning
+	* kaffe/kaffevm/jni.c: rewrite FindClass() to call Class.forName()
+	to get the proper behavior wrt. using the right ClassLoader.
+	* libraries/clib/awt/X/imgpng.c: fix unused function warning
+	* libraries/javalib/java/lang/Class.java,
+	libraries/clib/native/Class.c: remove unnecessary method
+	getCallingClass0(); replace with getStackClass() which just
+	calls SecurityMangager.getClassContext() instead
+	* libraries/javalib/Klasses.jar: Regen
+	* libraries/javalib/java/lang/Runtime.java,
+	libraries/javalib/java/lang/System.java: use getStackClass(1)
+	instead of getCallingClass()
+
 Wed Mar 22 17:46:57 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* include/Makefile.{am,in}: add java_lang_NativeLibrary.h

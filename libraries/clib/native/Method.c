@@ -313,7 +313,7 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 
 		(*env)->ExceptionClear(env);
 		e = (struct Hjava_lang_Throwable *)execute_java_constructor(
-			"java.lang.reflect.InvocationTargetException", 0, 
+			"java.lang.reflect.InvocationTargetException", 0, 0,
 			"(Ljava/lang/Throwable;)V", targetexc);
 		throwException(e);
 		assert(!"Not here");
@@ -324,28 +324,28 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 		robj = 0;
 		break;
 	case 'J':
-		robj = execute_java_constructor(0, javaLangLongClass, "(J)V", ret.j);
+		robj = execute_java_constructor(0, 0, javaLangLongClass, "(J)V", ret.j);
 		break;
 	case 'F':
-		robj = execute_java_constructor(0, javaLangFloatClass, "(F)V", ret.f);
+		robj = execute_java_constructor(0, 0, javaLangFloatClass, "(F)V", ret.f);
 		break;
 	case 'D':
-		robj = execute_java_constructor(0, javaLangDoubleClass, "(D)V", ret.d);
+		robj = execute_java_constructor(0, 0, javaLangDoubleClass, "(D)V", ret.d);
 		break;
 	case 'I':
-		robj = execute_java_constructor(0, javaLangIntegerClass, "(I)V", ret.i);
+		robj = execute_java_constructor(0, 0, javaLangIntegerClass, "(I)V", ret.i);
 		break;
 	case 'S':
-		robj = execute_java_constructor(0, javaLangShortClass, "(S)V", ret.s);
+		robj = execute_java_constructor(0, 0, javaLangShortClass, "(S)V", ret.s);
 		break;
 	case 'B':
-		robj = execute_java_constructor(0, javaLangByteClass, "(B)V", ret.b);
+		robj = execute_java_constructor(0, 0, javaLangByteClass, "(B)V", ret.b);
 		break;
 	case 'Z':
-		robj = execute_java_constructor(0, javaLangBooleanClass, "(Z)V", ret.z);
+		robj = execute_java_constructor(0, 0, javaLangBooleanClass, "(Z)V", ret.z);
 		break;
 	case 'C':
-		robj = execute_java_constructor(0, javaLangCharacterClass, "(C)V", ret.c);
+		robj = execute_java_constructor(0, 0, javaLangCharacterClass, "(C)V", ret.c);
 		break;
 	case 'L':
 	case '[':

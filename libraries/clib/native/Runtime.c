@@ -66,7 +66,7 @@ java_lang_Runtime_execInternal(struct Hjava_lang_Runtime* this,
 		HArrayOfObject* argv, HArrayOfObject* arge, Hjava_io_File* dir)
 {
 	return (struct Hjava_lang_Process*)execute_java_constructor(
-	    "kaffe.lang.UNIXProcess", 0,
+	    "kaffe.lang.UNIXProcess", 0, 0,
 	    "([Ljava/lang/String;[Ljava/lang/String;Ljava/io/File;)V",
 	    argv, arge, dir);
 }

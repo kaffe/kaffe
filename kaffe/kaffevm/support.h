@@ -103,6 +103,7 @@ struct Hjava_lang_String;
 struct Hjava_lang_Class;
 struct Hjava_lang_Object;
 struct Hjava_lang_Throwable;
+struct Hjava_lang_ClassLoader;
 
 extern void		setProperty(void*, char*, char*);
 extern char*		getEngine(void);
@@ -110,11 +111,11 @@ extern void		classname2pathname(const char*, char*);
 extern void		pathname2classname(const char*, char*);
 extern jvalue		do_execute_java_method(void*, const char*, const char*, struct _methods*, int, ...);
 extern jvalue		do_execute_java_method_v(void*, const char*, const char*, struct _methods*, int, va_list);
-extern jvalue		do_execute_java_class_method(const char*, const char*, const char*, ...);
-extern jvalue		do_execute_java_class_method_v(const char*, const char*, const char*, va_list);
+extern jvalue		do_execute_java_class_method(const char*, struct Hjava_lang_ClassLoader*, const char*, const char*, ...);
+extern jvalue		do_execute_java_class_method_v(const char*, struct Hjava_lang_ClassLoader*, const char*, const char*, va_list);
 
-extern struct Hjava_lang_Object* execute_java_constructor(const char*, struct Hjava_lang_Class*, const char*, ...);
-extern struct Hjava_lang_Object* execute_java_constructor_v(const char*, struct Hjava_lang_Class*, const char*, va_list);
+extern struct Hjava_lang_Object* execute_java_constructor(const char*, struct Hjava_lang_ClassLoader*, struct Hjava_lang_Class*, const char*, ...);
+extern struct Hjava_lang_Object* execute_java_constructor_v(const char*, struct Hjava_lang_ClassLoader*, struct Hjava_lang_Class*, const char*, va_list);
 extern jlong		currentTime(void);
 extern void		addNativeMethod(const char*, void*);
 

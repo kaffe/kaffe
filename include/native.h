@@ -23,6 +23,7 @@
 
 struct _methods;
 struct Hjava_lang_Class;
+struct Hjava_lang_ClassLoader;
 struct _strconst;
 
 #if !defined(__DEFINED_METHOD)
@@ -65,8 +66,8 @@ typedef	Hjava_lang_String	HString;
  * Function used for Kaffe Native Interface (KNI).
  */
 extern jvalue	do_execute_java_method(void*, const char*, const char*, Method*, int, ...);
-extern jvalue	do_execute_java_class_method(const char*, const char*, const char*, ...);
-extern HObject*	execute_java_constructor(const char*, HClass*, const char*, ...);
+extern jvalue	do_execute_java_class_method(const char*, struct Hjava_lang_ClassLoader*, const char*, const char*, ...);
+extern HObject*	execute_java_constructor(const char*, struct Hjava_lang_ClassLoader*, HClass*, const char*, ...);
 
 extern char*	stringJava2CBuf(const HString*, char*, int);
 extern char*	stringJava2C(const HString*);
@@ -76,9 +77,9 @@ extern int	utf8ConstEqualJavaString(const Utf8Const*, const HString*);
 
 extern void	SignalError(const char*, const char*) __NORETURN__;
 
-extern HObject*	AllocObject(const char*);
+extern HObject*	AllocObject(const char*, struct Hjava_lang_ClassLoader*);
 extern HObject*	AllocArray(int, int);
-extern HObject*	AllocObjectArray(int, const char*);
+extern HObject*	AllocObjectArray(int, const char*, struct Hjava_lang_ClassLoader*);
 
 extern void	addNativeMethod(const char*, void*);
 

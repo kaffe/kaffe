@@ -78,11 +78,11 @@ error2Throwable(errorInfo* einfo)
 	case KERR_EXCEPTION:
 		if (einfo->mess == 0 || *einfo->mess == '\0') {
 			err = (Hjava_lang_Throwable*)execute_java_constructor(
-				    einfo->classname, 0, "()V");
+				    einfo->classname, 0, 0, "()V");
 		} else {
 			err = (Hjava_lang_Throwable*)execute_java_constructor(
 				    einfo->classname, 
-				    0, "(Ljava/lang/String;)V",
+				    0, 0, "(Ljava/lang/String;)V",
 				    checkPtr(stringC2Java(einfo->mess)));
 		}
 		break;
@@ -92,7 +92,7 @@ error2Throwable(errorInfo* einfo)
 			   "java/lang/ExceptionInInitializerError") != 0) {
 			err = (Hjava_lang_Throwable*)execute_java_constructor(
 				    JAVA_LANG(ExceptionInInitializerError),
-				    0, "(Ljava/lang/Throwable;)V",
+				    0, 0, "(Ljava/lang/Throwable;)V",
 				    einfo->throwable);
 			break;
 		}

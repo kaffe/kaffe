@@ -289,40 +289,34 @@ Kaffe_DefineClass(JNIEnv* env, jobject loader, const jbyte* buf, jsize len)
 	return (cls);
 }
 
+/*
+ * For this routine, we defer most of the work to Class.forName(),
+ * which handles the task of figuring out the right ClassLoader to
+ * use based on the calling method, which requires examining the
+ * stack backtrace.
+ */
 static jclass
 Kaffe_FindClass(JNIEnv* env, const char* name)
 {
-	Hjava_lang_ClassLoader* loader;
-	Hjava_lang_Class* cls;
-	errorInfo info;
+	jstring nameString;
+	Utf8Const* utf8;
+	jvalue retval;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	if (!getClassLoader(&loader, &info)) {
-		cls = 0;
-	} else {
-		char *buf;
+	/* We accepts slashes, but Class.forName() does not */
+	utf8 = checkPtr(utf8ConstNew(name, -1));
+	nameString = utf8Const2JavaReplace(utf8, '/', '.');
+	utf8ConstRelease(utf8);
+	checkPtr(nameString);
 
-		buf = checkPtr(KMALLOC(strlen(name) + 1));
-		classname2pathname(name, buf);
+	/* Call Class.forName() */
+	retval = do_execute_java_class_method("java.lang.Class", NULL,
+	    "forName", "(Ljava/lang/String;)Ljava/lang/Class;", nameString);
 
-		if (buf[0] == '[') {
-			cls = getClassFromSignature(&buf[1], loader, &info);
-			if (cls != 0) {
-				cls = lookupArray(cls, &info);
-			}
-		}
-		else {
-			cls = lookupClass(buf, loader, &info);
-		}
-		KFREE(buf);
-	}
-
-	if (cls == 0) {
-		postError(env, &info);
-	}
+	ADD_REF(retval.l);
 	END_EXCEPTION_HANDLING();
-	return (cls);
+	return (retval.l);
 }
 
 static jclass
@@ -373,7 +367,7 @@ Kaffe_ThrowNew(JNIEnv* env, jclass cls, const char* mess)
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
-	eobj = execute_java_constructor(NULL, cls,
+	eobj = execute_java_constructor(NULL, NULL, cls,
 					"(Ljava/lang/String;)V",
 					checkPtr(stringC2Java((char*)mess)));
 

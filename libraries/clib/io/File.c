@@ -269,7 +269,8 @@ java_io_File_list0(struct Hjava_io_File* this)
 	/* XXX make part of jsyscall interface !? */
 	closedir(dir);
 
-	array = (HArrayOfObject*)AllocObjectArray(count, "Ljava/lang/String;");
+	array = (HArrayOfObject*)AllocObjectArray(count,
+	    "Ljava/lang/String;", 0);
 	/* XXX: This assert is a noop.  If AllocObjectArray throws an
 	   exception, we leak. */
 	assert(array != 0);

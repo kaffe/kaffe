@@ -47,70 +47,70 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 		SignalError("java.lang.IllegalArgumentException", "");
 
 	clazz = CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj));
-	
+
 	if ( clazz == intClass ) {
 		HArrayOfInt *arr = (HArrayOfInt *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
-		
-		return execute_java_constructor(0,javaLangIntegerClass,"(I)V",
-						(jint)(unhand_array(arr)->body[elem]));
+
+		return execute_java_constructor(0, 0, javaLangIntegerClass,
+		    "(I)V", (jint)unhand_array(arr)->body[elem]);
 	}
 	else if ( clazz == shortClass ) {
 		HArrayOfShort *arr = (HArrayOfShort *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
-		
-		return execute_java_constructor(0,javaLangShortClass,"(S)V",
-						(jint)(unhand_array(arr)->body[elem]));
+
+		return execute_java_constructor(0, 0, javaLangShortClass,
+		    "(S)V", (jint)unhand_array(arr)->body[elem]);
 	}
 	else if ( clazz == longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
-		
-		return execute_java_constructor(0,javaLangLongClass,"(J)V",
-						(jlong)(unhand_array(arr)->body[elem]));
+
+		return execute_java_constructor(0, 0, javaLangLongClass,
+		    "(J)V", (jlong)unhand_array(arr)->body[elem]);
 	}
 	else if ( clazz == byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
-		
-		return execute_java_constructor(0,javaLangByteClass,"(B)V",
-						(jint)(unhand_array(arr)->body[elem]));
+
+		return execute_java_constructor(0, 0, javaLangByteClass,
+		    "(B)V", (jint)unhand_array(arr)->body[elem]);
 	}
 	else if ( clazz == booleanClass ) {
 		HArrayOfBoolean *arr = (HArrayOfBoolean *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
-		
-		return execute_java_constructor(0,javaLangBooleanClass,"(Z)V",
-						(jint)(unhand_array(arr)->body[elem]));
+
+		return execute_java_constructor(0, 0, javaLangBooleanClass,
+		   "(Z)V", (jint)unhand_array(arr)->body[elem]);
 	}
 	else if ( clazz == charClass ) {
 		HArrayOfChar *arr = (HArrayOfChar *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
-		
-		return execute_java_constructor(0,javaLangCharacterClass,"(C)V",
-						(jint)(unhand_array(arr)->body[elem]));
+
+		return execute_java_constructor(0, 0, javaLangCharacterClass,
+		    "(C)V", (jint)unhand_array(arr)->body[elem]);
 	}
 	else if ( clazz == floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
-		
-		return execute_java_constructor(0,javaLangFloatClass,"(F)V",
-						(jfloat)(unhand_array(arr)->body[elem]));
+
+		return execute_java_constructor(0, 0, javaLangFloatClass,
+		    "(F)V", (jfloat)unhand_array(arr)->body[elem]);
 	}
 	else if ( clazz == doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
-		
-		return execute_java_constructor(0,javaLangDoubleClass,"(D)V",
-						(jdouble)(unhand_array(arr)->body[elem]));
+
+		return execute_java_constructor(0, 0, javaLangDoubleClass,
+		    "(D)V", (jdouble)unhand_array(arr)->body[elem]);
 	}
 	else {
 		/* If clazz isn't one of the above then it's either a
@@ -120,7 +120,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 		HArrayOfObject *arr = (HArrayOfObject *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
-		
+
 		return unhand_array(arr)->body[elem];
 	}
 }

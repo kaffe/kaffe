@@ -153,18 +153,6 @@
 /* Defines what debugging output is seen. Needs to be 64-bit. */
 extern long long kaffevmDebugMask;
 
-/* Set the debugging mask to use. (give the mask) */
-void dbgSetMask(long long mask);
-
-/* 
- * Set the debugging mask to use. (give a string, useful for
- * parsing a command line option.  The string is a comma-separated
- * list of options which combined form the debugging mask.
- *
- * Return false if nothing was set
- */
-int dbgSetMaskStr(char *mask_str);
-
 # define DBGIF(statement)  statement
 
 /* Debug macros that are selected with the above flags. */
@@ -210,5 +198,17 @@ int kaffe_dprintf(const char *fmt, ...);
 # define dprintf	printf
 
 #endif /* defined(NDEBUG) || !defined(DEBUG) */
+
+/* Set the debugging mask to use. (give the mask) */
+void dbgSetMask(long long mask);
+
+/* 
+ * Set the debugging mask to use. (give a string, useful for
+ * parsing a command line option.  The string is a comma-separated
+ * list of options which combined form the debugging mask.
+ *
+ * Return false if nothing was set
+ */
+int dbgSetMaskStr(char *mask_str);
 
 #endif /* __kaffevm_debug_h */

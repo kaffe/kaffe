@@ -35,14 +35,15 @@
 /* Don't waste space with the debugging functions */
 
 void dbgSetMask(jlong m) { }
-void dbgSetMaskStr(char *s) { }
+int dbgSetMaskStr(char *s) { return 0; }
 
 #else /* Actually define the functions */
 /* --- Debugging is enabled --- */ 
 
 jlong kaffevmDebugMask = DEFAULT_DEBUG_MASK;
 
-void dbgSetMask(jlong mask)
+void
+dbgSetMask(jlong mask)
 {
 	kaffevmDebugMask = mask;
 }
@@ -157,7 +158,8 @@ void printDebugBuffer(void);
 
 #define NELEMS(a)	(sizeof (a) / sizeof(a[0]))
 
-int dbgSetMaskStr(char *mask_str)
+int
+dbgSetMaskStr(char *mask_str)
 {
 	int i;
 	char *separators = "|,";

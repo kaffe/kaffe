@@ -89,28 +89,36 @@ java_lang_reflect_Field_get(Hjava_lang_reflect_Field* this, struct Hjava_lang_Ob
         base = getFieldAddress(this, obj);
 
 	if ( fld->type == intClass ) {
-		return execute_java_constructor(0,javaLangIntegerClass,"(I)V",*((jint*)base));
+		return execute_java_constructor(0, 0, javaLangIntegerClass,
+		    "(I)V", *((jint*)base));
 	}
 	else if ( fld->type == shortClass ) {
-		return execute_java_constructor(0,javaLangShortClass,"(S)V",*(jshort*)base);
+		return execute_java_constructor(0, 0, javaLangShortClass,
+		    "(S)V", *(jshort*)base);
 	}
 	else if ( fld->type == longClass ) {
-		return execute_java_constructor(0,javaLangLongClass,"(J)V",*(jlong*)base);
+		return execute_java_constructor(0, 0, javaLangLongClass,
+		    "(J)V", *(jlong*)base);
 	}
 	else if ( fld->type == byteClass ) {
-		return execute_java_constructor(0,javaLangByteClass,"(B)V",*(jbyte*)base);
+		return execute_java_constructor(0, 0, javaLangByteClass,
+		    "(B)V", *(jbyte*)base);
 	}
 	else if ( fld->type == booleanClass ) {
-		return execute_java_constructor(0,javaLangBooleanClass,"(Z)V",*(jbool*)base);
+		return execute_java_constructor(0, 0, javaLangBooleanClass,
+		    "(Z)V", *(jbool*)base);
 	}
 	else if ( fld->type == charClass ) {
-		return execute_java_constructor(0,javaLangCharacterClass,"(C)V",*(jchar*)base);
+		return execute_java_constructor(0, 0, javaLangCharacterClass,
+		    "(C)V", *(jchar*)base);
 	}
 	else if ( fld->type == floatClass ) {
-		return execute_java_constructor(0,javaLangFloatClass,"(F)V",*(jfloat*)base);
+		return execute_java_constructor(0, 0, javaLangFloatClass,
+		    "(F)V", *(jfloat*)base);
 	}
 	else if ( fld->type == doubleClass ) {
-		return execute_java_constructor(0,javaLangDoubleClass,"(D)V",*(jdouble*)base);
+		return execute_java_constructor(0, 0, javaLangDoubleClass,
+		    "(D)V", *(jdouble*)base);
 	}
 	else {
 		/* If fld->type isn't one of the above then it's either a

@@ -168,46 +168,6 @@ java_lang_Class_forName(struct Hjava_lang_String* str, jbool doinit,
 }
 
 /*
- * Determine the class of the method that called the method that called
- * Class.getCallingClass(), which in turned called this native method.
- * It will be 3 stack frames up.
- *
- * Note: we must handle the special case of code like this:
- *
- *    Class c = Class.class;
- *    Method m = c.getMethod("forName", new Class[] { String.class });
- *    c = (Class)m.invoke(c, new Object[] { "Class2" });
- *
- * (if we didn't, then forName() would detect java.lang.reflect.Method
- * as the calling class and always use the system ClassLoader for Class2).
- * To deal with this, we skip over java.lang.reflect.Method.invoke().
- */
-struct Hjava_lang_Class*
-java_lang_Class_getCallingClass0()
-{
-	stackTraceInfo *info;
-        int i;
-
-        info = (stackTraceInfo*)buildStackTrace(0);
-	if (info == NULL) {
-		errorInfo einfo;
-		postOutOfMemory(&einfo);
-		throwError(&einfo);
-	}
-        for (i = 0; info[i].meth != ENDOFSTACK; i++) {
-		struct _methods *meth = stacktraceFindMethod(&info[i]);
-
-		if (i < 3 || meth == NULL || meth->class == NULL)
-			continue;
-		if (!strcmp(meth->class->name->data, "java/lang/reflect/Method")
-		    && !strcmp(meth->name->data, "invoke"))
-			continue;
-		return meth->class;
-        }
-	abort();
-}
-
-/*
  * Convert class to string name.
  */
 struct Hjava_lang_String*
@@ -226,7 +186,7 @@ java_lang_Class_newInstance(struct Hjava_lang_Class* this)
 		SignalError("java.lang.InstantiationException", 
 			    CLASS_CNAME(this));
 	}
-	return (execute_java_constructor(0, this, "()V"));
+	return (execute_java_constructor(0, 0, this, "()V"));
 }
 
 /*
@@ -269,7 +229,7 @@ java_lang_Class_getInterfaces(struct Hjava_lang_Class* this)
 	}
 #endif
 
-	obj = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class;");
+	obj = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class;", 0);
 	ifaces = (struct Hjava_lang_Class**)unhand_array(obj)->body;
 	for (i = 0; i < nr; i++) {
 		ifaces[i] = this->interfaces[i];
@@ -388,8 +348,7 @@ java_lang_Class_setSigners(struct Hjava_lang_Class* this, HArrayOfObject* sigs)
 	unimp("java.lang.Class:setSigners unimplemented");
 }
 
-static
-HArrayOfObject*
+static HArrayOfObject*
 makeParameters(Method* meth)
 {
 	int i;
@@ -397,7 +356,8 @@ makeParameters(Method* meth)
 	errorInfo info;
 	Hjava_lang_Class* clazz;
 
-	array = (HArrayOfObject*)AllocObjectArray(METHOD_NARGS(meth), "Ljava/lang/Class;");
+	array = (HArrayOfObject*)AllocObjectArray(METHOD_NARGS(meth),
+	    "Ljava/lang/Class;", 0);
 	for (i = 0; i < METHOD_NARGS(meth); ++i) {
 		clazz = getClassFromSignaturePart(METHOD_ARG_TYPE(meth, i),
 					      meth->class->loader, &info);
@@ -410,8 +370,7 @@ makeParameters(Method* meth)
         return (array);
 }
 
-static
-Hjava_lang_Class*
+static Hjava_lang_Class*
 makeReturn(Method* meth)
 {
 	errorInfo info;
@@ -431,8 +390,7 @@ makeReturn(Method* meth)
  *
  * We do not bother to cache the resolved types here.
  */
-static
-HArrayOfObject*
+static HArrayOfObject*
 makeExceptions(Method* meth)
 {
 	int nr;
@@ -441,7 +399,7 @@ makeExceptions(Method* meth)
 	Hjava_lang_Class** ptr;
 
 	nr = meth->ndeclared_exceptions;
-	array = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class;");
+	array = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class;", 0);
 	ptr = (Hjava_lang_Class**)&unhand_array(array)->body[0];
 	for (i = 0; i < nr; i++) {
 		errorInfo info;
@@ -464,7 +422,8 @@ makeConstructor(struct Hjava_lang_Class* clazz, int slot)
 	Method* mth;
 
 	mth = CLASS_METHODS(clazz) + slot;
-	meth = (Hjava_lang_reflect_Constructor*)AllocObject("java/lang/reflect/Constructor");      
+	meth = (Hjava_lang_reflect_Constructor*)
+	    AllocObject("java/lang/reflect/Constructor", 0);      
 
 	unhand(meth)->clazz = clazz;
 	unhand(meth)->slot = slot;
@@ -482,7 +441,8 @@ makeMethod(struct Hjava_lang_Class* clazz, int slot)
 	Method* mth;
 
 	mth = CLASS_METHODS(clazz) + slot;
-	meth = (Hjava_lang_reflect_Method*)AllocObject("java/lang/reflect/Method");      
+	meth = (Hjava_lang_reflect_Method*)
+	    AllocObject("java/lang/reflect/Method", 0);      
 
 	unhand(meth)->clazz = clazz;
 	unhand(meth)->slot = slot;
@@ -503,7 +463,8 @@ makeField(struct Hjava_lang_Class* clazz, int slot)
 	errorInfo info;
 
 	fld = CLASS_FIELDS(clazz) + slot;
-	field = (Hjava_lang_reflect_Field*)AllocObject("java/lang/reflect/Field");
+	field = (Hjava_lang_reflect_Field*)
+	    AllocObject("java/lang/reflect/Field", 0);
 	unhand(field)->clazz = clazz;
 	unhand(field)->slot = slot;
 	unhand(field)->type = resolveFieldType(fld, clazz, &info);
@@ -582,7 +543,8 @@ getInterfaceMethods0(struct Hjava_lang_Class* this, jint declared)
 		}
 	}
 
-	array = (HArrayOfObject*)AllocObjectArray(count, "Ljava/lang/reflect/Method;");
+	array = (HArrayOfObject*)
+	    AllocObjectArray(count, "Ljava/lang/reflect/Method;", 0);
 	ptr = (Hjava_lang_reflect_Method**)&unhand_array(array)->body[0];
 
 	addMethods(this, declared, &ptr);
@@ -622,7 +584,8 @@ java_lang_Class_getMethods0(struct Hjava_lang_Class* this, jboolean declared)
 			break;
 		}
 	}
-	array = (HArrayOfObject*)AllocObjectArray(count, "Ljava/lang/reflect/Method;");
+	array = (HArrayOfObject*)
+	    AllocObjectArray(count, "Ljava/lang/reflect/Method;", 0);
 	ptr = (Hjava_lang_reflect_Method**)&unhand_array(array)->body[0];
 	for (clas = this; clas != NULL; clas = clas->superclass) {
 
@@ -654,7 +617,8 @@ java_lang_Class_getConstructors0(struct Hjava_lang_Class* this, jboolean declare
 			count++;
 		}
 	}
-	array = (HArrayOfObject*)AllocObjectArray(count, "Ljava/lang/reflect/Constructor;");
+	array = (HArrayOfObject*)
+	   AllocObjectArray(count, "Ljava/lang/reflect/Constructor;", 0);
 	ptr = (Hjava_lang_reflect_Constructor**)&unhand_array(array)->body[0];
 	clas = this;
 	mth = CLASS_METHODS(clas);
@@ -742,7 +706,8 @@ java_lang_Class_getFields0(struct Hjava_lang_Class* clazz, jboolean declared)
 	else {
 		count = countPublicFields(clazz);
 	}
-	array = (HArrayOfObject*)AllocObjectArray(count, "Ljava/lang/reflect/Field;");
+	array = (HArrayOfObject*)
+	    AllocObjectArray(count, "Ljava/lang/reflect/Field;", 0);
 	ptr = (Hjava_lang_reflect_Field**)&unhand_array(array)->body[0];
 	makePublicFields(clazz, declared, &ptr);
 
@@ -820,7 +785,7 @@ java_lang_Class_getMethod0(struct Hjava_lang_Class* this, struct Hjava_lang_Stri
 	 * not found becomes the error message 
 	 */
 	throwException((struct Hjava_lang_Throwable*)execute_java_constructor(
-		"java.lang.NoSuchMethodException", 0, 
+		"java.lang.NoSuchMethodException", 0, 0, 
 		"(Ljava/lang/String;)V", name));
 }
 

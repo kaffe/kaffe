@@ -113,7 +113,7 @@ public static Runtime getRuntime() {
 }
 
 public void loadLibrary(String libname) {
-	loadLibrary(libname, Class.getCallingClass().getClassLoader());
+	loadLibrary(libname, Class.getStackClass(1).getClassLoader());
 }
 
 void loadLibrary(String libname, ClassLoader loader) {
@@ -138,7 +138,7 @@ void loadLibrary(String libname, ClassLoader loader) {
 }
 
 public void load(String filename) {
-	load(filename, Class.getCallingClass().getClassLoader());
+	load(filename, Class.getStackClass(1).getClassLoader());
 }
 
 void load(String filename, ClassLoader loader) {

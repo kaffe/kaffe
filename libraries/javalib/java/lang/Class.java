@@ -20,6 +20,7 @@ import java.net.URL;
 import kaffe.lang.SystemClassLoader;
 
 public final class Class implements Serializable {
+
 /* For GCJ compatibility, we cannot define any fields in
  * java.lang.Class at this point.  Valid as of 10/28/99 
  * We special case it instead in clib/native/ObjectStreamClassImpl.c
@@ -27,21 +28,29 @@ public final class Class implements Serializable {
  */
 // private static final long serialVersionUID = 3206093459760846163L;
 
-private Class() { /* this class is not instantiable by the general public */ }
-
-/*
- * This returns the "calling class", i.e., the class containing
- * the method that called the method calling this method. This is
- * used in Class.java, System.java, and Runtime.java.
- */
-static Class getCallingClass() {
-	return getCallingClass0();
+// Only instantiable by the VM
+private Class() {
 }
 
-private static native Class getCallingClass0();
-
+/*
+ * We must use the ClassLoader associated with the calling method/class.
+ * We must handle the special case of code like this:
+ *
+ *    Class c = Class.class;
+ *    Method m = c.getMethod("forName", new Class[] { String.class });
+ *    c = (Class)m.invoke(c, new Object[] { "Class2" });
+ *
+ * If we didn't, then we would detect java.lang.reflect.Method as the
+ * calling class, and end up always using the bootstrap ClassLoader.
+ * To deal with this, we skip over java.lang.reflect.Method.
+ */
 public static Class forName(String className) throws ClassNotFoundException {
-	return forName(className, true, getCallingClass().getClassLoader());
+	Class callingClass = getStackClass(1);
+	if (callingClass != null
+	    && callingClass.getName().equals("java.lang.reflect.Method"))
+		callingClass = getStackClass(2);
+	return forName(className, true,
+	    callingClass == null ? null : callingClass.getClassLoader());
 }
 
 public static native Class forName(String className,
@@ -256,6 +265,28 @@ native public Object newInstance() throws InstantiationException, IllegalAccessE
 public String toString() {
 	return (isInterface() ? "interface " : isPrimitive() ? "" : "class ")
 	    + getName();
+}
+
+/*
+ * Determine the Class associated with the method N frames up the stack:
+ *
+ * Frame #      Method
+ * -------      ------
+ *   -3		SecurityManager.getClassContext0()
+ *   -2		SecurityManager.getClassContext()
+ *   -1		Class.getStackClass()
+ *    0		The method calling Class.getStackClass()
+ *    1		The method calling the method calling Class.getStackClass()
+ *    2		...etc...
+ *
+ * Returns null if not found.
+ */
+static Class getStackClass(int frame) {
+	Class[] classStack = System.getSecurityManager().getClassContext();
+	frame += 2;
+	if (frame >= 0 && frame < classStack.length)
+		return classStack[frame];
+	return null;
 }
 
 }

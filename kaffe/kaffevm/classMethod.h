@@ -357,8 +357,6 @@ bool			processClass(Hjava_lang_Class*, int, errorInfo *einfo);
 Hjava_lang_Class*	loadClass(Utf8Const*, Hjava_lang_ClassLoader*, errorInfo *einfo);
 Hjava_lang_Class*	loadArray(Utf8Const*, Hjava_lang_ClassLoader*, errorInfo *einfo);
 Hjava_lang_Class* 	findClass(struct _classEntry* centry, errorInfo *einfo);
-int			getClassLoader(Hjava_lang_ClassLoader** loaderp,
-				errorInfo *einfo);
 
 void			loadStaticClass(Hjava_lang_Class**, const char*);
 
