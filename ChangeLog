@@ -1,3 +1,15 @@
+2004-06-10  Dalibor Topic  <robilad@kaffe.org>
+
+	Fixed build on i386-freebsd 5.2.
+
+	* config/config-signal.h:
+	Include config-std.h.
+
+	* config/config-std.h:
+	Include config.h.
+
+	Reported by: pancake
+
 2004-06-09  Ito Kazumitsu  <kaz@ph.maczuka.gcd.org>
 
 	* libraries/javalib/kaffe/lang/UNIXProcess.java:

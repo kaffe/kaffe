@@ -8,12 +8,16 @@
  * of this file. 
  */
 
+
+#include "config.h"
 #ifndef __config_std_h
 #define __config_std_h
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+
+#include "config.h"
 
 #if defined(HAVE_STRING_H)
 #include <string.h>

@@ -8,9 +8,11 @@
  * of this file. 
  */
 
+
 #ifndef __config_signal_h
 #define __config_signal_h
 
+#include "config-std.h"
 #include <signal.h>
 
 /* This macro may not exist - define it if necessary */
