@@ -1,3 +1,22 @@
+2004-01-24  Jim Pick  <jim@kaffe.org>
+
+	* libraries/javalib/essential.files:
+	Add extra classes needed for kjc build.
+
+	* libraries/javalib/bootstrap.classlist:
+	Add classes used during kjc build.
+	
+	* libraries/javalib/Makefile.am.in:
+	Create $(LIBDIR)/gnu/java/locale directory before
+	installing files.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+	
+	* libraries/javalib/Klasses.jar.bootstrap:
+	Rebuilt.
+
 2004-01-23  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/javalib/java/security/PermissionCollection.java,

@@ -37,6 +37,7 @@ gnu/java/nio/ServerSocketChannelImpl.java
 gnu/java/nio/ServerSocketChannelSelectionKey.java
 gnu/java/nio/SocketChannelImpl.java
 gnu/java/nio/SocketChannelSelectionKey.java
+gnu/java/security/provider/DefaultPolicy.java
 gnu/regexp/CharIndexed.java
 gnu/regexp/CharIndexedCharArray.java
 gnu/regexp/CharIndexedInputStream.java
@@ -343,6 +344,7 @@ java/security/MessageDigestSpi.java
 java/security/Permission.java
 java/security/Permissions.java
 java/security/PermissionCollection.java
+java/security/Policy.java
 java/security/Provider.java
 java/security/Principal.java
 java/security/PrivilegedAction.java
@@ -400,6 +402,7 @@ java/util/HashMap.java
 java/util/HashSet.java
 java/util/Hashtable.java
 java/util/Iterator.java
+java/util/LinkedHashMap.java
 java/util/LinkedList.java
 java/util/List.java
 java/util/ListIterator.java

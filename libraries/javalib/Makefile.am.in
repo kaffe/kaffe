@@ -230,6 +230,8 @@ jar-classes rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
 	if [ ! -d $(LIBDIR)/gnu ] ; then \
 		mkdir $(LIBDIR)/gnu ; \
 		mkdir $(LIBDIR)/gnu/regexp ; \
+		mkdir $(LIBDIR)/gnu/java ; \
+		mkdir $(LIBDIR)/gnu/java/locale ; \
 	fi
 	for i in $(gnu_regexp_message_bundles) $(gnu_java_locale_bundles) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	rm -f rt.jar

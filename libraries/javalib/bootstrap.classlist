@@ -135,10 +135,17 @@ java/security/Guard.class
 java/security/AllPermission.class
 java/security/Permission.class
 java/security/PermissionCollection.class
+java/security/Principal.class
 java/security/ProtectionDomain.class
 java/security/SecureClassLoader.class
+java/text/AttributedCharacterIterator.class
+java/text/AttributedCharacterIterator$Attribute.class
+java/text/CharacterIterator.class
 java/text/Format.class
+java/text/Format$Field.class
+java/text/FormatCharacterIterator.class
 java/text/MessageFormat.class
+java/text/MessageFormat$Field.class
 java/text/MessageFormatElement.class
 java/util/AbstractCollection.class
 java/util/AbstractList.class
