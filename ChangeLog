@@ -1,3 +1,25 @@
+2004-10-18  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/Calendar.java,
+	libraries/javalib/java/util/Date.java,
+	libraries/javalib/java/util/GregorianCalendar.java:
+	Resynced with GNU Classpath.
+
+	2004-10-17  Jeroen Frijters  <jeroen@frijters.net>
+
+        * java/util/Calendar.java
+        (setTimeInMillis): Added call to clear, removed computeFields call.
+        * java/util/Date.java
+        (Date(int,int,int,int,int,int)): Removed workaround for
+        GregorianCalendar bug.
+        * java/util/GregorianCalendar.java
+        (GregorianCalendar): Chained all constructors to a (new)
+        common constructor.
+        (computeTime): Fixed support for lenient month treatment.
+        (getLinearDay): Return long instead of int.
+        (calculateDay): Added fields argument and changed day argument
+        to long.
+
 2004-10-18  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/thread.c

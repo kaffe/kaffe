@@ -575,9 +575,9 @@ public abstract class Calendar implements Serializable, Cloneable
    */
   public void setTimeInMillis(long time)
   {
+    clear();
     this.time = time;
     isTimeSet = true;
-    computeFields();
   }
 
   /**

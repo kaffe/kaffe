@@ -113,14 +113,9 @@ public class Date implements Cloneable, Comparable, java.io.Serializable
    */
   public Date(int year, int month, int day, int hour, int min, int sec)
   {
-    GregorianCalendar cal = new GregorianCalendar(year + 1900, 0, 1);
-    int dst = cal.get(Calendar.DST_OFFSET);
-    cal.add(GregorianCalendar.MONTH, month);
-    cal.add(GregorianCalendar.DAY_OF_MONTH, day - 1);
-    cal.add(GregorianCalendar.HOUR, hour);
-    cal.add(GregorianCalendar.MINUTE, min);
-    cal.add(GregorianCalendar.SECOND, sec);
-    time = cal.getTimeInMillis() + dst - cal.get(Calendar.DST_OFFSET);
+    GregorianCalendar cal =
+	new GregorianCalendar(year + 1900, month, day, hour, min, sec);
+    time = cal.getTimeInMillis();
   }
 
   /**

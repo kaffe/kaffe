@@ -131,10 +131,22 @@ public class GregorianCalendar extends Calendar
    */
   public GregorianCalendar(TimeZone zone, Locale locale)
   {
+    this(zone, locale, false);
+    setTimeInMillis(System.currentTimeMillis());
+  }
+
+  /**
+   * Common constructor that all constructors should call.
+   * @param zone a time zone.  
+   * @param locale a locale.  
+   * @param unused unused parameter to make the signature differ from
+   * the public constructor (TimeZone, Locale).
+   */
+  private GregorianCalendar(TimeZone zone, Locale locale, boolean unused)
+  {
     super(zone, locale);
     ResourceBundle rb = getBundle(locale);
     gregorianCutover = ((Date) rb.getObject("gregorianCutOver")).getTime();
-    setTimeInMillis(System.currentTimeMillis());
   }
 
   /**
@@ -146,7 +158,7 @@ public class GregorianCalendar extends Calendar
    */
   public GregorianCalendar(int year, int month, int day)
   {
-    super();
+    this(TimeZone.getDefault(), Locale.getDefault(), false);
     set(year, month, day);
   }
 
@@ -161,7 +173,7 @@ public class GregorianCalendar extends Calendar
    */
   public GregorianCalendar(int year, int month, int day, int hour, int minute)
   {
-    super();
+    this(TimeZone.getDefault(), Locale.getDefault(), false);
     set(year, month, day, hour, minute);
   }
 
@@ -178,7 +190,7 @@ public class GregorianCalendar extends Calendar
   public GregorianCalendar(int year, int month, int day,
 			   int hour, int minute, int second)
   {
-    super();
+    this(TimeZone.getDefault(), Locale.getDefault(), false);
     set(year, month, day, hour, minute, second);
   }
 
@@ -392,6 +404,21 @@ public class GregorianCalendar extends Calendar
   {
     int era = isSet[ERA] ? fields[ERA] : AD;
     int year = isSet[YEAR] ? fields[YEAR] : 1970;
+    if (isLenient() && isSet[MONTH])
+      {
+	int month = fields[MONTH];
+	year += month / 12;
+	month %= 12;
+	if (month < 0)
+	  {
+	    month += 12;
+	    year--;
+	  }
+	fields[MONTH] = month;
+	isSet[YEAR] = true;
+	fields[YEAR] = year;
+      }
+
     if (era == BC)
       year = 1 - year;
 
@@ -442,19 +469,20 @@ public class GregorianCalendar extends Calendar
     int rawOffset = isSet[ZONE_OFFSET]
       ? fields[ZONE_OFFSET] : zone.getRawOffset();
 
-    int dayOfYear = daysOfYear[0] + daysOfYear[1];
-    // This formula isn't right, so check for month as a quick fix.
-    // It doesn't compensate for leap years and puts day 30 in month 1
-    // instead of month 0.
-    int month = isSet[MONTH]
-	? fields[MONTH] : (dayOfYear * 5 + 3) / (31 + 30 + 31 + 30 + 31);
-    // This formula isn't right, so check for day as a quick fix.  It
-    // doesn't compensate for leap years, either.
-    int day = isSet[DAY_OF_MONTH] ? fields[DAY_OF_MONTH]
-	: (6 + (dayOfYear * 5 + 3) % (31 + 30 + 31 + 30 + 31)) / 5;
-    int weekday = ((int) (time / (24 * 60 * 60 * 1000L)) + THURSDAY) % 7;
-    if (weekday <= 0)
-      weekday += 7;
+    int day = (int) (time / (24 * 60 * 60 * 1000L));
+    millisInDay = (int) (time % (24 * 60 * 60 * 1000L));
+    if (millisInDay < 0)
+      {
+	millisInDay += (24 * 60 * 60 * 1000);
+	day--;
+      }
+
+    int[] f = new int[FIELD_COUNT];
+    calculateDay(f, day, time - rawOffset >= gregorianCutover);
+    year = f[YEAR];
+    int month = f[MONTH];
+    day = f[DAY_OF_MONTH];
+    int weekday = f[DAY_OF_WEEK];
     int dstOffset = isSet[DST_OFFSET]
       ? fields[DST_OFFSET] : (zone.getOffset((year < 0) ? BC : AD,
 					     (year < 0) ? 1 - year : year,
@@ -497,13 +525,13 @@ public class GregorianCalendar extends Calendar
    * @param dayOfYear the day of year of the date; 1 based.
    * @param gregorian True, if we should use Gregorian rules.
    * @return the days since the epoch, may be negative.  */
-  private int getLinearDay(int year, int dayOfYear, boolean gregorian)
+  private long getLinearDay(int year, int dayOfYear, boolean gregorian)
   {
     // The 13 is the number of days, that were omitted in the Gregorian
     // Calender until the epoch.
     // We shift right by 2 instead of dividing by 4, to get correct
     // results for negative years (and this is even more efficient).
-    int julianDay = ((year * (365 * 4 + 1)) >> 2) + dayOfYear -
+    long julianDay = ((year * (365L * 4 + 1)) >> 2) + dayOfYear -
       ((1970 * (365 * 4 + 1)) / 4 + 1 - 13);
 
     if (gregorian)
@@ -531,23 +559,23 @@ public class GregorianCalendar extends Calendar
    * into the fields array.
    * @param day the linear day.  
    */
-  private void calculateDay(int day, boolean gregorian)
+  private void calculateDay(int[] fields, long day, boolean gregorian)
   {
     // the epoch is a Thursday.
-    int weekday = (day + THURSDAY) % 7;
+    int weekday = (int)(day + THURSDAY) % 7;
     if (weekday <= 0)
       weekday += 7;
     fields[DAY_OF_WEEK] = weekday;
 
     // get a first approximation of the year.  This may be one 
     // year too big.
-    int year = 1970 + (gregorian
+    int year = 1970 + (int)(gregorian
 		       ? ((day - 100) * 400) / (365 * 400 + 100 - 4 + 1)
 		       : ((day - 100) * 4) / (365 * 4 + 1));
     if (day >= 0)
       year++;
 
-    int firstDayOfYear = getLinearDay(year, 1, gregorian);
+    long firstDayOfYear = getLinearDay(year, 1, gregorian);
 
     // Now look in which year day really lies.
     if (day < firstDayOfYear)
@@ -558,7 +586,7 @@ public class GregorianCalendar extends Calendar
 
     day -= firstDayOfYear - 1;	// day of year,  one based.
 
-    fields[DAY_OF_YEAR] = day;
+    fields[DAY_OF_YEAR] = (int)day;
     if (year <= 0)
       {
 	fields[ERA] = BC;
@@ -573,13 +601,13 @@ public class GregorianCalendar extends Calendar
     int leapday = isLeapYear(year, gregorian) ? 1 : 0;
     if (day <= 31 + 28 + leapday)
       {
-	fields[MONTH] = day / 32;	// 31->JANUARY, 32->FEBRUARY
-	fields[DAY_OF_MONTH] = day - 31 * fields[MONTH];
+	fields[MONTH] = (int)day / 32; // 31->JANUARY, 32->FEBRUARY
+	fields[DAY_OF_MONTH] = (int)day - 31 * fields[MONTH];
       }
     else
       {
 	// A few more magic formulas
-	int scaledDay = (day - leapday) * 5 + 8;
+	int scaledDay = ((int)day - leapday) * 5 + 8;
 	fields[MONTH] = scaledDay / (31 + 30 + 31 + 30 + 31);
 	fields[DAY_OF_MONTH] = (scaledDay % (31 + 30 + 31 + 30 + 31)) / 5 + 1;
       }
@@ -598,7 +626,7 @@ public class GregorianCalendar extends Calendar
     fields[ZONE_OFFSET] = zone.getRawOffset();
     long localTime = time + fields[ZONE_OFFSET];
 
-    int day = (int) (localTime / (24 * 60 * 60 * 1000L));
+    long day = localTime / (24 * 60 * 60 * 1000L);
     int millisInDay = (int) (localTime % (24 * 60 * 60 * 1000L));
     if (millisInDay < 0)
       {
@@ -606,7 +634,7 @@ public class GregorianCalendar extends Calendar
 	day--;
       }
 
-    calculateDay(day, gregorian);
+    calculateDay(fields, day, gregorian);
     fields[DST_OFFSET] =
       zone.getOffset(fields[ERA], fields[YEAR], fields[MONTH],
 		     fields[DAY_OF_MONTH], fields[DAY_OF_WEEK],
@@ -616,7 +644,7 @@ public class GregorianCalendar extends Calendar
     if (millisInDay >= 24 * 60 * 60 * 1000)
       {
 	millisInDay -= 24 * 60 * 60 * 1000;
-	calculateDay(++day, gregorian);
+	calculateDay(fields, ++day, gregorian);
       }
 
     fields[DAY_OF_WEEK_IN_MONTH] = (fields[DAY_OF_MONTH] + 6) / 7;
