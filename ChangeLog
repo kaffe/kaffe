@@ -1,3 +1,7 @@
+Thu Dec  3 12:14:13 1998  Parmelan, Edouard <EP510777@exchange.FRANCE.NCR.com>
+
+	* kaffe/kaffevm/jar.[ch]: memory map class files if possible
+
 Thu Dec  3 07:51:00 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* libraries/javalib/Makefile.in (build-classes, install-classes): 

@@ -26,6 +26,50 @@
 #define	gc_free_fixed(M)	free(M)
 #endif
 
+#ifdef HAVE_MMAP
+static inline int
+jar_read(jarFile* file, char *buf, off_t len)
+{
+    if (file->offset + len > file->size)
+	len = file->size - file->offset;
+    if (len <= 0)
+	return 0;
+    memcpy(buf, file->data + file->offset, len);
+    file->offset += len;
+    return len;
+}
+
+static inline off_t
+jar_lseek(jarFile* file, off_t offset, int whence)
+{
+    off_t pos;
+
+    switch (whence) {
+	case SEEK_CUR:
+	    pos = file->offset + offset;
+	    break;
+	case SEEK_SET:
+	    pos = offset;
+	    break;
+	case SEEK_END:
+	    pos = file->size + offset;
+	    break;
+	default:
+	    return (off_t)-1;
+    }
+    if (pos < 0)
+	return (off_t)-1;
+    else if (pos > file->size)
+	return (off_t)-1;
+    file->offset = pos;
+    return pos;
+}
+#else
+#define jar_read(F, B, L)	read(F->fd, B, L)
+#define jar_lseek(F, O, W)	lseek(F->fd, O, W)
+#endif
+
+
 /*
  * Read in a central directory record.
  */
@@ -39,23 +83,23 @@ readCentralDirRecord(jarFile* file)
 	int len, extra;
 	off_t pos;
 
-	head.signature = READ32(file->fp);
-	head.versionMade = READ16(file->fp);
-	head.versionExtract = READ16(file->fp);
-	head.flags = READ16(file->fp);
-	head.compressionMethod = READ16(file->fp);
-	head.lastModifiedTime = READ16(file->fp);
-	head.lastModifiedDate = READ16(file->fp);
-	head.crc = READ32(file->fp);
-	head.compressedSize = READ32(file->fp);
-	head.uncompressedSize = READ32(file->fp);
-	head.fileNameLength = READ16(file->fp);
-	head.extraFieldLength = READ16(file->fp);
-	head.fileCommentLength = READ16(file->fp);
-	head.diskNumberStart = READ16(file->fp);
-	head.internalFileAttribute = READ16(file->fp);
-	head.externalFileAttribute = READ32(file->fp);
-	head.relativeLocalHeaderOffset = READ32(file->fp);
+	head.signature = READ32(file);
+	head.versionMade = READ16(file);
+	head.versionExtract = READ16(file);
+	head.flags = READ16(file);
+	head.compressionMethod = READ16(file);
+	head.lastModifiedTime = READ16(file);
+	head.lastModifiedDate = READ16(file);
+	head.crc = READ32(file);
+	head.compressedSize = READ32(file);
+	head.uncompressedSize = READ32(file);
+	head.fileNameLength = READ16(file);
+	head.extraFieldLength = READ16(file);
+	head.fileCommentLength = READ16(file);
+	head.diskNumberStart = READ16(file);
+	head.internalFileAttribute = READ16(file);
+	head.externalFileAttribute = READ32(file);
+	head.relativeLocalHeaderOffset = READ32(file);
 
 	if (head.signature != CENTRALHEADERSIGNATURE) {
 		file->error = "Bad central record signature";
@@ -71,22 +115,21 @@ readCentralDirRecord(jarFile* file)
         ret->compressedSize = head.compressedSize;
         ret->uncompressedSize = head.uncompressedSize;
 
-	READBYTES(file->fp, head.fileNameLength, ret->fileName);
-	SKIPBYTES(file->fp, head.extraFieldLength);
-	SKIPBYTES(file->fp, head.fileCommentLength);
+	READBYTES(file, head.fileNameLength, ret->fileName);
+	SKIPBYTES(file, head.extraFieldLength + head.fileCommentLength);
 
 DBG(JARFILES,	
 	dprintf("Central record filename: %s\n", ret->fileName);	)
 
 	/* Compute file data location using local header info */
-	pos = lseek(file->fp, (off_t)0, SEEK_CUR);
-	(void)lseek(file->fp, (off_t)(head.relativeLocalHeaderOffset + 28), SEEK_SET);
-	extra = READ16(file->fp);
+	pos = jar_lseek(file, (off_t)0, SEEK_CUR);
+	(void)jar_lseek(file, (off_t)(head.relativeLocalHeaderOffset + 28), SEEK_SET);
+	extra = READ16(file);
 	ret->dataPos = head.relativeLocalHeaderOffset
 		+ SIZEOFLOCALHEADER + head.fileNameLength + extra;
 
 	/* Jump back to original central directory position */
-	(void)lseek(file->fp, pos, SEEK_SET);
+	(void)jar_lseek(file, pos, SEEK_SET);
 	return (ret);
 }
 
@@ -104,25 +147,25 @@ findFirstCentralDirRecord(jarFile* file)
 	uint16 sz;
 	uint32 off;
 
-	if (lseek(file->fp, -SIZEOFCENTRALEND, SEEK_END) == -1) {
+	if (jar_lseek(file, -SIZEOFCENTRALEND, SEEK_END) == -1) {
 		file->error = "Failed to seek into JAR file";
 		return (0);
 	}
 
-	signature = READ32(file->fp);
+	signature = READ32(file);
 	if (signature != CENTRALENDSIGNATURE) {
 		file->error = "Failed to find end of JAR record";
 		return (0);
 	}
 
-	ign = READ16(file->fp);	/* Nr of disk */
-	ign = READ16(file->fp);	/* Nr of disk with central directory */
-	ign = READ16(file->fp);	/* Nr of entries in central directory on this disk */
-	sz = READ16(file->fp);	/* Nr of entries in central directory */
-	ign = READ32(file->fp);	/* Size of central directory */
-	off = READ32(file->fp);	/* Offset of central directory */
+	ign = READ16(file);	/* Nr of disk */
+	ign = READ16(file);	/* Nr of disk with central directory */
+	ign = READ16(file);	/* Nr of entries in central directory on this disk */
+	sz = READ16(file);	/* Nr of entries in central directory */
+	ign = READ32(file);	/* Size of central directory */
+	off = READ32(file);	/* Offset of central directory */
 
-	if (lseek(file->fp, (off_t)off, SEEK_SET) == -1) {
+	if (jar_lseek(file, (off_t)off, SEEK_SET) == -1) {
 		file->error = "Failed to seek into central directory offset";
 		return (0);
 	}
@@ -139,10 +182,26 @@ openJarFile(char* name)
 
 	file = gc_malloc_fixed(sizeof(jarFile));
 
-	file->fp = open(name, O_RDONLY, 0);
-	if (file->fp == -1) {
+	file->fd = open(name, O_RDONLY, 0);
+	if (file->fd == -1) {
+		gc_free_fixed(file);
 		return (0);
 	}
+#ifdef HAVE_MMAP
+	file->size = lseek(file->fd, 0, SEEK_END);
+	if (file->size == -1) {
+		close(file->fd);
+		gc_free_fixed(file);
+		return (0);
+	}
+	file->data = mmap(NULL, file->size, PROT_READ, MAP_SHARED, file->fd, 0);
+	close(file->fd);
+	if (file->data == (char*)-1) {
+		gc_free_fixed(file);
+		return (0);
+	}
+	file->offset = 0;
+#endif
 
 	i = findFirstCentralDirRecord(file);
 	file->count = i;
@@ -179,12 +238,12 @@ getDataJarFile(jarFile* file, jarEntry* entry)
 	uint8* buf;
 	uint8* nbuf;
 
-	if (lseek(file->fp, (off_t)entry->dataPos, SEEK_SET) == -1) {
+	if (jar_lseek(file, (off_t)entry->dataPos, SEEK_SET) == -1) {
 		file->error = "Failed to seek into JAR file";
 		return (0);
 	}
 	buf = gc_malloc_fixed(entry->compressedSize);
-	if (read(file->fp, buf, entry->compressedSize) != entry->compressedSize) {
+	if (jar_read(file, buf, entry->compressedSize) != entry->compressedSize) {
 		file->error = "Failed to read from JAR file";
 		gc_free_fixed(buf);
 		return (0);
@@ -232,7 +291,10 @@ closeJarFile(jarFile* file)
 		gc_free_fixed(curr);
 	}
 
-	close(file->fp);
-
+#ifdef HAVE_MMAP
+	munmap(file->data, file->size);
+#else
+	close(file->fd);
+#endif
 	gc_free_fixed(file);
 }
