@@ -30,6 +30,11 @@
 /* Default debugging mask to use (if debug is enabled) */
 #define DEFAULT_DEBUG_MASK	DBG_NONE
 
+static char *debugBuffer;
+static int bufferBegin = 0;
+static int bufferSz = 16 * 1024;
+static int bufferOutput = 0;
+
 #if defined(NDEBUG) || !defined(DEBUG)
 /* --- Debugging is NOT enabled --- */
 
@@ -289,13 +294,6 @@ dbgSetMaskStr(const char *orig_mask_str)
 	return 1;
 }
 
-#endif /* DEBUG */
-
-static char *debugBuffer;
-static int bufferBegin = 0;
-static int bufferSz = 16 * 1024;
-static int bufferOutput = 0;
-
 /*
  * create a buffer in which debugging output is written
  */
@@ -306,20 +304,6 @@ debugToBuffer(int size)
 	debugBuffer = malloc(size);
 	bufferOutput = 1;
 	assert(debugBuffer != NULL);
-}
-
-/*
- * The following function is invoked at exit time.
- * It deliberately caused a trap, to give control to gdb.
- */
-static void
-debugExitHook(void)
-{
-	/*
-	 * this is a hook for catching exits from GDB.
-	 * make this dependent on the selection of this option
-	 */
-	DBG(BREAKONEXIT, DBGGDBBREAK())
 }
 
 /*
@@ -342,7 +326,6 @@ debugSysInit(void)
 	atexit(debugExitHook);
 }
 
-
 static void
 printDebugBuffer(void)
 {
@@ -358,6 +341,23 @@ printDebugBuffer(void)
 	while(i < end)
 		putc(debugBuffer[i++], stdout);
 }
+
+/*
+ * The following function is invoked at exit time.
+ * It deliberately caused a trap, to give control to gdb.
+ */
+static void
+debugExitHook(void)
+{
+	/*
+	 * this is a hook for catching exits from GDB.
+	 * make this dependent on the selection of this option
+	 */
+	DBG(BREAKONEXIT, DBGGDBBREAK())
+}
+
+#endif /* DEBUG */
+
 
 /*
  * When debugging, printf should use fprintf() to avoid
