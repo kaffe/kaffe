@@ -1,4 +1,4 @@
-/* ImageTranscoder.java -- Image metadata transcoder.
+/* ImageTypeSpecifier.java --
    Copyright (C) 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -38,17 +38,57 @@ exception statement from your version. */
 
 package javax.imageio;
 
-import javax.imageio.metadata.IIOMetadata;
+import java.awt.image.ColorModel;
+import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
 
-/**
- * @author Michael Koch (konqueror@gmx.de)
- */
-public interface ImageTranscoder
+public class ImageTypeSpecifier
 {
-  IIOMetadata convertImageMetadata(IIOMetadata inData,
-		                   ImageTypeSpecifier imageType,
-				   ImageWriteParam param);
+  protected ColorModel colorModel;
+  protected SampleModel sampleModel;
 
-  IIOMetadata convertStreamMetadata(IIOMetadata inData,
-				    ImageWriteParam param);
+  public ImageTypeSpecifier(ColorModel colorModel, SampleModel sampleModel)
+  {
+    if (colorModel == null)
+      throw new IllegalArgumentException("colorModel may not be null");
+
+    if (sampleModel == null)
+      throw new IllegalArgumentException("sampleModel may not be null");
+
+    if (!colorModel.isCompatibleSampleModel(sampleModel))
+      throw new IllegalArgumentException
+        ("sample Model not compatible with colorModel");
+    
+    this.colorModel = colorModel;
+    this.sampleModel = sampleModel;
+  }
+
+  public ImageTypeSpecifier(RenderedImage image)
+  {
+    if (image == null)
+      throw new IllegalArgumentException("image may not be null");
+    
+    this.colorModel = image.getColorModel();
+    this.sampleModel = image.getSampleModel();
+  }
+
+  public ColorModel getColorModel()
+  {
+    return colorModel;
+  }
+
+  public int getNumBands()
+  {
+    return sampleModel.getNumBands();
+  }
+
+  public int getNumComponents()
+  {
+    return colorModel.getNumComponents();
+  }
+
+  public SampleModel getSampleModel()
+  {
+    return sampleModel;
+  }
 }

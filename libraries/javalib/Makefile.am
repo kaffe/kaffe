@@ -212,6 +212,7 @@ Klasses_jar_SRCS = \
 	$(javax_crypto_spec_SRCS) \
 	$(javax_imageio_SRCS) \
 	$(javax_imageio_event_SRCS) \
+	$(javax_imageio_metadata_SRCS) \
 	$(javax_imageio_spi_SRCS) \
 	$(javax_imageio_stream_SRCS) \
 	$(javax_naming_SRCS) \
@@ -2608,8 +2609,15 @@ javax_crypto_spec_SRCS = \
 	javax/crypto/spec/SecretKeySpec.java
 javax_imageio_SRCS = \
 	javax/imageio/IIOException.java \
+	javax/imageio/IIOImage.java \
+	javax/imageio/IIOParam.java \
+	javax/imageio/IIOParamController.java \
+	javax/imageio/ImageIO.java \
+	javax/imageio/ImageReadParam.java \
 	javax/imageio/ImageReader.java \
 	javax/imageio/ImageTranscoder.java \
+	javax/imageio/ImageTypeSpecifier.java \
+	javax/imageio/ImageWriteParam.java \
 	javax/imageio/ImageWriter.java
 javax_imageio_event_SRCS = \
 	javax/imageio/event/IIOReadProgressListener.java \
@@ -2617,7 +2625,12 @@ javax_imageio_event_SRCS = \
 	javax/imageio/event/IIOReadWarningListener.java \
 	javax/imageio/event/IIOWriteProgressListener.java \
 	javax/imageio/event/IIOWriteWarningListener.java
+javax_imageio_metadata_SRCS = \
+	javax/imageio/metadata/IIOMetadata.java \
+	javax/imageio/metadata/IIOMetadataController.java \
+	javax/imageio/metadata/IIOMetadataFormat.java
 javax_imageio_spi_SRCS = \
+	javax/imageio/spi/IIORegistry.java \
 	javax/imageio/spi/IIOServiceProvider.java \
 	javax/imageio/spi/ImageInputStreamSpi.java \
 	javax/imageio/spi/ImageOutputStreamSpi.java \

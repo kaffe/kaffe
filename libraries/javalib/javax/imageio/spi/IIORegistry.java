@@ -1,4 +1,4 @@
-/* ImageTranscoder.java -- Image metadata transcoder.
+/* IIORegistry.java --
    Copyright (C) 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,19 +36,68 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package javax.imageio;
+package javax.imageio.spi;
 
-import javax.imageio.metadata.IIOMetadata;
+import gnu.classpath.ServiceFactory;
 
-/**
- * @author Michael Koch (konqueror@gmx.de)
- */
-public interface ImageTranscoder
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+
+public final class IIORegistry extends ServiceRegistry
 {
-  IIOMetadata convertImageMetadata(IIOMetadata inData,
-		                   ImageTypeSpecifier imageType,
-				   ImageWriteParam param);
+  private static final HashSet defaultCategories = new HashSet();
+  
+  private static HashMap instances = new HashMap();
 
-  IIOMetadata convertStreamMetadata(IIOMetadata inData,
-				    ImageWriteParam param);
+  static
+  {
+    //defaultCategories.add(ImageReaderSpi.class);
+    //defaultCategories.add(ImageWriterSpi.class);
+    defaultCategories.add(ImageTranscoderSpi.class);
+    defaultCategories.add(ImageInputStreamSpi.class);
+    defaultCategories.add(ImageOutputStreamSpi.class);
+  }
+  
+  public static synchronized IIORegistry getDefaultInstance()
+  {
+    ThreadGroup group = Thread.currentThread().getThreadGroup();
+    IIORegistry registry = (IIORegistry) instances.get(group);
+    
+    if (registry == null)
+      {
+        registry = new IIORegistry();
+        instances.put(group, registry);
+      }
+    
+    return registry;
+  }
+
+  private IIORegistry()
+  {
+    super(defaultCategories.iterator());
+
+    // XXX: Register built-in Spis here.
+    
+    registerApplicationClasspathSpis();
+  }
+
+  /**
+   * Registers all available service providers found on the application
+   * classpath.
+   */
+  public void registerApplicationClasspathSpis()
+  {
+    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    Iterator categories = getCategories();
+
+    while (categories.hasNext())
+      {
+	Class category = (Class) categories.next();
+	Iterator providers = ServiceFactory.lookupProviders(category, loader);
+
+	while (providers.hasNext())
+	  registerServiceProvider((IIOServiceProvider) providers.next());
+      }
+  }
 }

@@ -1,4 +1,4 @@
-/* ImageTranscoder.java -- Image metadata transcoder.
+/* IIOParam.java --
    Copyright (C) 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -38,17 +38,15 @@ exception statement from your version. */
 
 package javax.imageio;
 
-import javax.imageio.metadata.IIOMetadata;
-
 /**
  * @author Michael Koch (konqueror@gmx.de)
  */
-public interface ImageTranscoder
+public abstract class IIOParam
 {
-  IIOMetadata convertImageMetadata(IIOMetadata inData,
-		                   ImageTypeSpecifier imageType,
-				   ImageWriteParam param);
-
-  IIOMetadata convertStreamMetadata(IIOMetadata inData,
-				    ImageWriteParam param);
+  /**
+   * Initializes an <code>IIOParam</code> object.
+   */
+  protected IIOParam()
+  {
+  }
 }

@@ -1,4 +1,4 @@
-/* ImageTranscoder.java -- Image metadata transcoder.
+/* ImageIO.java --
    Copyright (C) 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -38,17 +38,16 @@ exception statement from your version. */
 
 package javax.imageio;
 
-import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.spi.IIORegistry;
 
-/**
- * @author Michael Koch (konqueror@gmx.de)
- */
-public interface ImageTranscoder
+public final class ImageIO
 {
-  IIOMetadata convertImageMetadata(IIOMetadata inData,
-		                   ImageTypeSpecifier imageType,
-				   ImageWriteParam param);
-
-  IIOMetadata convertStreamMetadata(IIOMetadata inData,
-				    ImageWriteParam param);
+  /**
+   * Rescans the application classpath for ImageIO service providers
+   * and registers them.
+   */
+  public static void scanForPlugins()
+  {
+    IIORegistry.getDefaultInstance().registerApplicationClasspathSpis();
+  }
 }

@@ -1,5 +1,97 @@
 2004-10-04  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/imageio/IIOImage.java,
+	libraries/javalib/javax/imageio/IIOParam.java,
+	libraries/javalib/javax/imageio/IIOParamController.java,
+	libraries/javalib/javax/imageio/ImageIO.java,
+	libraries/javalib/javax/imageio/ImageReadParam.java,
+	libraries/javalib/javax/imageio/ImageTypeSpecifier.java,
+	libraries/javalib/javax/imageio/ImageWriteParam.java,
+	libraries/javalib/javax/imageio/metadata/IIOMetadata.java,
+	libraries/javalib/javax/imageio/metadata/IIOMetadataController.java,
+	libraries/javalib/javax/imageio/metadata/IIOMetadataFormat.java,
+	libraries/javalib/javax/imageio/spi/IIORegistry.java:
+	New files from GNU Classpath.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/javax/imageio/ImageTranscoder.java,
+	libraries/javalib/javax/imageio/spi/ImageInputStreamSpi.java,
+	libraries/javalib/javax/imageio/spi/ImageOutputStreamSpi.java,
+	libraries/javalib/javax/imageio/spi/ServiceRegistry.java,
+	libraries/javalib/javax/imageio/stream/ImageInputStream.java,
+	libraries/javalib/javax/imageio/stream/ImageOutputStream.java:
+	Resynced with GNU Classpath.
+
+	2004-10-04  Michael Koch  <konqueror@gmx.de>
+
+        * javax/imageio/ImageWriteParam.java,
+        javax/imageio/metadata/IIOMetadataFormat.java:
+        Implemented.
+
+	2004-10-04  Michael Koch  <konqueror@gmx.de>
+
+        * javax/imageio/ImageTypeSpecifier.java:
+        Mostly implemented.
+
+	2004-10-04  Michael Koch  <konqueror@gmx.de>
+
+        * javax/imageio/metadata/IIOMetadata.java:
+        Mostly implemented.
+
+	2004-10-04  Michael Koch  <konqueror@gmx.de>
+
+        * javax/imageio/IIOImage.java,
+        javax/imageio/ImageReadParam.java,
+        javax/imageio/metadata/IIOMetadataController.java,
+        javax/imageio/metadata/IIOMetadataFormat.java:
+        New files.
+        * javax/imageio/stream/ImageOutputStream.java:
+        Implemented.
+
+	2004-10-04  Michael Koch  <konqueror@gmx.de>
+
+        * javax/imageio/IIOParam.java,
+        javax/imageio/IIOParamController.java,
+        javax/imageio/ImageTypeSpecifier.java,
+        javax/imageio/ImageWriteParam.java,
+        javax/imageio/metadata/IIOMetadata.java:
+        New files.
+        * javax/imageio/ImageTranscoder.java:
+        Implemented.
+
+	2004-10-04  Michael Koch  <konqueror@gmx.de>
+
+        * javax/imageio/spi/ImageInputStreamSpi.java,
+        javax/imageio/spi/ImageOutputStreamSpi.java:
+        Reworked import startments.
+        * javax/imageio/spi/ServiceRegistry.java:
+        Reworked import startments. Fixed XHTML in javadocs.
+        (ServiceRegistry): Added @param tag to javadoc.
+        * javax/imageio/stream/ImageInputStream.java
+        (mark): Doesn't throws IOException;
+
+	2004-10-04  Michael Koch  <konqueror@gmx.de>
+
+        * javax/imageio/ImageIO.java:
+        New file.
+
+	2004-10-04  Michael Koch  <konqueror@gmx.de>
+
+        * javax/imageio/spi/IIORegistry.java
+        (static): Don't register ImageReaderSpi.class and
+        ImageWriterSpi.class yet.
+
+	2004-10-03  Michael Koch  <konqueror@gmx.de>
+
+        * javax/imageio/spi/IIORegistry.java:
+        New file.
+
+2004-10-04  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/java/rmi/rmic/RMIC.java,
 	libraries/javalib/gnu/java/rmi/server/RMIDefaultSocketFactory.java,
 	libraries/javalib/gnu/java/rmi/server/RMIHashes.java,
