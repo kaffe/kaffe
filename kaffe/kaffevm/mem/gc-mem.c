@@ -41,7 +41,6 @@ static gc_block* gc_large_block(size_t);
 
 static gc_block* gc_primitive_alloc(size_t);
 void gc_primitive_free(gc_block*);
-static void* gc_system_alloc(size_t);
 
 uintp gc_heap_base;
 uintp gc_block_base;
@@ -206,7 +205,7 @@ gc_heap_initialise(void)
 	 * of powers of two
 	 */
 #define	OBJSIZE(NR) \
-	((gc_pgsize-GCBLOCK_OVH-ROUNDUPALIGN(1)-(NR*(2+sizeof(void*))))/NR)
+	((gc_pgsize-ROUNDUPALIGN(1)-(NR*(2+sizeof(void*))))/NR)
 
 	/* For a given number of tiles in a block, work out the size of
 	 * the allocatable units which'll fit in them and build a translation
@@ -280,11 +279,10 @@ DBG(SLACKANAL,
 	gc_heap_initial_size = ROUNDUPPAGESIZE(gc_heap_initial_size);
 
 	/* allocate heap of initial size from system */
-	gc_system_alloc(gc_heap_initial_size);
+	gc_heap_grow(gc_heap_initial_size);
 }
 
-/*
- * gc_heap_malloc
+/**
  * Allocate a piece of memory.
  */
 void*
@@ -292,11 +290,10 @@ gc_heap_malloc(size_t sz)
 {
 	static int gc_heap_init = 0;
 	size_t lnr;
-	gc_freeobj* mem;
+	gc_freeobj* mem = 0;
 	gc_block** mptr;
 	gc_block* blk;
 	size_t nsz;
-	int times;
 	int iLockRoot;
 
 	/* Initialise GC heap first time in - we must assume single threaded
@@ -309,17 +306,12 @@ gc_heap_malloc(size_t sz)
 
 	lockStaticMutex(&gc_heap_lock);
 
-	times = 0;
-
 DBG(SLACKANAL,
 	if (GC_SMALL_OBJECT(sz)) {
 		totalslack += (freelist[sztable[sz].list].sz - sz);
 		totalsmallobjs++;
 	}
     )
-
-	rerun:;
-	times++;
 
 DBG(GCDIAG, 
 	gc_heap_check();
@@ -342,8 +334,7 @@ DBG(GCALLOC,		dprintf("gc_heap_malloc: freelist %ld at %p free %p\n",
 		else {
 			blk = gc_small_block(nsz);
 			if (blk == 0) {
-				nsz = gc_pgsize;
-				goto nospace;
+				goto out;
 			}
 			blk->next = *mptr;
 			*mptr = blk;
@@ -378,9 +369,7 @@ DBG(GCALLOC,		dprintf("gc_heap_malloc: small block %ld at %p free %p\n",
 		nsz = sz;
 		blk = gc_large_block(nsz);
 		if (blk == 0) {
-			nsz = nsz + GCBLOCK_OVH + sizeof(gcFuncs*) + ROUNDUPALIGN(1);
-			nsz = ROUNDUPPAGESIZE(nsz);
-			goto nospace;
+			goto out;
 		}
 		mem = GCBLOCK2FREE(blk, 0);
 		GC_SET_STATE(blk, 0, GC_STATE_NORMAL);
@@ -395,60 +384,13 @@ DBG(GCALLOC,	dprintf("gc_heap_malloc: large block %ld at %p\n",
 
 	assert(GC_OBJECT_SIZE(mem) >= sz);
 
+	out:
 	unlockStaticMutex(&gc_heap_lock);
 
 	return (mem);
-
-	/* --------------------------------------------------------------- */
-	nospace:;
-
-	/* Failed to find space in any freelists. Must try to get the
-	 * memory from somewhere.
-	 */
-
-	switch (times) {
-	case 1:
-		/* Try invoking GC if it is available */
-		if (garbageman != 0) {
-			/* The other caller of invokeGC,  Runtime.gc() can't 
-			 * give up this lock on its own, since it does not 
-			 * hold this lock.
-			 */
-			unlockStaticMutex(&gc_heap_lock);
-			adviseGC();
-			lockStaticMutex(&gc_heap_lock);
-		}
-		break;
-
-	case 2:
-		/* Get from the system */
-		if (nsz < gc_heap_allocation_size) {
-			nsz = gc_heap_allocation_size;
-		}
-		gc_system_alloc(nsz);
-		break;
-
-	default:
-		if (DBGEXPR(CATCHOUTOFMEM, true, false))
-		{
-			/*
-			 * If we ran out of memory, a OutOfMemoryException is
-			 * thrown.  If we fail to allocate memory for it, all
-			 * is lost.
-			 */
-			static int ranout;
-			assert (ranout++ == 0 || !!!"Ran out of memory!");
-		}
-		/* Guess we've really run out */
-		unlockStaticMutex(&gc_heap_lock);
-		return (0);
-	}
-
-	/* Try again */
-	goto rerun;
 }
 
-/*
+/**
  * Free a piece of memory.
  */
 void
@@ -523,7 +465,7 @@ DBG(GCFREE,
 	}
 	else {
 		/* Calculate true size of block */
-		msz = info->size + GCBLOCK_OVH + ROUNDUPALIGN(1);
+		msz = info->size + ROUNDUPALIGN(1);
 		msz = ROUNDUPPAGESIZE(msz);
 		info->size = msz;
 		gc_primitive_free(info);
@@ -555,7 +497,7 @@ gc_small_block(size_t sz)
 	}
 
 	/* Calculate number of objects in this block */
-	nr = (gc_pgsize-GCBLOCK_OVH-ROUNDUPALIGN(1))/(sz+2);
+	nr = (gc_pgsize-ROUNDUPALIGN(1))/(sz+2);
 
 	/* Setup the meta-data for the block */
 	DBG(GCDIAG, info->magic = GC_MAGIC);
@@ -570,12 +512,14 @@ gc_small_block(size_t sz)
 	DBG(GCDIAG, memset(info->data, 0, sz * nr));
 
 	/* Build the objects into a free list */
-	for (i = nr-1; i >= 0; i--) {
+	for (i = nr-1; i-- > 0;) {
 		GCBLOCK2FREE(info, i)->next = GCBLOCK2FREE(info, i+1);
 		GC_SET_COLOUR(info, i, GC_COLOUR_FREE);
 		GC_SET_STATE(info, i, GC_STATE_NORMAL);
 	}
 	GCBLOCK2FREE(info, nr-1)->next = 0;
+	GC_SET_COLOUR(info, nr-1, GC_COLOUR_FREE);
+	GC_SET_STATE(info, nr-1, GC_STATE_NORMAL);
 	info->free = GCBLOCK2FREE(info, 0);
 DBG(SLACKANAL,
 	int slack = ((void *)info) 
@@ -596,7 +540,7 @@ gc_large_block(size_t sz)
 	size_t msz;
 
 	/* Add in management overhead */
-	msz = sz+GCBLOCK_OVH+2+ROUNDUPALIGN(1);
+	msz = sz+2+ROUNDUPALIGN(1);
 	/* Round size up to a number of pages */
 	msz = ROUNDUPPAGESIZE(msz);
 
@@ -1005,17 +949,33 @@ gc_block_alloc(size_t size)
 	return GCMEM2BLOCK(heap_addr);
 }
 
-static
-void*
-gc_system_alloc(size_t sz)
+/**
+ * Grows the heap.
+ *
+ * @param sz minimum number of bytes to grow.
+ * @return 0 in case of an error, otherwise != 0
+ */
+void *
+gc_heap_grow(size_t sz)
 {
 	gc_block* blk;
+
+	if (GC_SMALL_OBJECT(sz)) {
+		sz = gc_pgsize;
+	} else {
+		sz = sz + 2 + ROUNDUPALIGN(1);
+		sz = ROUNDUPPAGESIZE(sz);
+	}
+
+	if (sz < gc_heap_allocation_size) {
+		sz = gc_heap_allocation_size;
+	}
 
 	assert(sz % gc_pgsize == 0);
 
 	if (gc_heap_total == gc_heap_limit) {
 		return (0);
-	} else 	if (gc_heap_total + sz > gc_heap_limit) {
+	} else if (gc_heap_total + sz > gc_heap_limit) {
 		/* take as much memory as we can */
 		sz = gc_heap_limit - gc_heap_total;
 		assert(sz % gc_pgsize == 0);
@@ -1026,13 +986,14 @@ gc_system_alloc(size_t sz)
 #endif
 
 	blk = gc_block_alloc(sz);
-	
-DBG(GCSYSALLOC,
-	dprintf("gc_system_alloc: %ld byte at %p\n", (long) sz, blk);		)
+
+	DBG(GCSYSALLOC,
+	    dprintf("gc_system_alloc: %ld byte at %p\n", (long) sz, blk); )
 
 	if (blk == 0) {
 		return (0);
 	}
+
 	gc_heap_total += sz;
 	assert(gc_heap_total <= gc_heap_limit);
 

@@ -860,19 +860,53 @@ gcMalloc(Collector* gcif, size_t size, int fidx)
 	int i;
 	size_t bsz;
 	int iLockRoot;
+	int times = 0;
 
 	assert(gc_init != 0);
 	assert(fidx < nrTypes && size != 0);
 
-	unit = gc_heap_malloc(size + sizeof(gc_unit));
-
-	/* keep pointer to object */
-	mem = UTOMEM(unit);
-	if (unit == 0) {
-		return 0;
-	}
+	size += sizeof(gc_unit);
 
 	lockStaticMutex(&gc_lock);
+
+	for (unit=0; unit==0;) {
+		times++;
+		unit = gc_heap_malloc(size);
+	
+		/* keep pointer to object */
+		mem = UTOMEM(unit);
+		if (unit == 0) {
+			switch (times) {
+			case 1:
+				/* Try invoking GC if it is available */
+				if (garbageman != 0) {
+					unlockStaticMutex(&gc_lock);
+					adviseGC();
+					lockStaticMutex(&gc_lock);
+				}
+				break;	  
+
+			case 2:
+				/* Grow the heap */
+				gc_heap_grow(size);
+				break;
+
+			default:
+				if (DBGEXPR(CATCHOUTOFMEM, true, false)) {
+					/*
+					 * If we ran out of memory, a OutOfMemoryException is
+					 * thrown.  If we fail to allocate memory for it, all
+					 * is lost.
+					 */
+					static int ranout;
+					assert (ranout++ == 0 || !!!"Ran out of memory!");
+				}
+				/* Guess we've really run out */
+				unlockStaticMutex(&gc_lock);
+				return (0);
+			}
+		}
+	}
 
 	info = GCMEM2BLOCK(mem);
 	i = GCMEM2IDX(info, unit);

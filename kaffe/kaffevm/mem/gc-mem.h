@@ -14,6 +14,12 @@
 #ifndef __gc_mem_h
 #define	__gc_mem_h
 
+#include "md.h"
+
+#if !defined(ALIGNMENT_OF_SIZE)
+#define ALIGNMENT_OF_SIZE(S)	(S)
+#endif
+
 #ifndef gc_pgsize
 extern size_t gc_pgsize;
 extern int gc_pgbits;
@@ -44,7 +50,7 @@ typedef struct _gc_freeobj {
  * Alignment for gc_blocks
  *
  */
-#define	MEMALIGN		8
+#define	MEMALIGN		(ALIGNMENT_OF_SIZE(sizeof(jdouble)))
 
 /**
  * rounds @V up to the next MEMALIGN boundary. 
@@ -68,6 +74,8 @@ typedef struct _gc_freeobj {
 
 extern void*	gc_heap_malloc(size_t);    
 extern void	gc_heap_free(void*);
+
+extern void*	gc_heap_grow(size_t);
 
 /**
  * Evaluates to the size of the object that contains address @M.
@@ -154,14 +162,12 @@ extern void	gc_primitive_free(gc_block* mem);
  * Evaluates to the first usable address in gc_block @B.
  *
  */ 
-#define GCBLOCK2BASE(B)	(((char *)gc_heap_base)		\
-			 + gc_pgsize * ((B) - GC_BLOCKS))
-
+#define GCBLOCK2BASE(B)		(((char *)gc_heap_base) \
+					 + gc_pgsize * ((B) - GC_BLOCKS))
 
 /* This is OK, gc_prim_(alloc|free) never assume GCBLOCKEND is really
    a valid block */
 #define GCBLOCKEND(B)		((B) + (((B)->size+gc_pgsize-1)>>gc_pgbits))
-#define GCBLOCK_OVH		0
 
 #define ASSERT_ONBLOCK(OBJ, BLK) assert(GCMEM2BLOCK(OBJ) == BLK)
 

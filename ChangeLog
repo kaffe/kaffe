@@ -1,5 +1,19 @@
 2003-06-20  Helmer Kraemer  <hkraemer@freenet.de>
 
+	* kaffe/kaffevm/mem/gc-mem.h
+	(GCBLOCK_OVH): removed
+	(MEMALIGN): defined to alignment of jdoubles
+
+	* kaffe/kaffevm/mem/gc-mem.c
+	(gc_system_alloc): renamed to gc_heap_grow 
+	(gc_free): fixed initialisation of free list
+	(gc_malloc): moved invocation of garbage collector  ...
+
+	* kaffe/kaffevm/mem/gc-incremental.c
+	(gcMalloc): ... to here
+	
+2003-06-20  Helmer Kraemer  <hkraemer@freenet.de>
+
 	* config/sparc/openbsd2/md.h (SP_OFFSET): define it to 2
 
 	Reported by: WhiteGandalf <zuse@libero.it>
