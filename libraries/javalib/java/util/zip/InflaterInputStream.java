@@ -79,8 +79,10 @@ public int read(byte b[], int off, int lenx) throws IOException {
 public long skip(long n) throws IOException {
 	// This is a terribly inefficient way to skip ...
 	long cnt;
+	byte[] b = new byte[1];
+
 	for (cnt = 0; cnt < n; cnt++) {
-		int r = read();
+		int r = read(b, 0, 1);
 		if (r == -1) {
 			break;
 		}

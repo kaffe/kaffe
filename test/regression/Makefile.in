@@ -233,6 +233,8 @@ TESTS = \
 	tthrd1.java \
 	SoInterrupt.java \
 	sysdepCallMethod.java \
+	DosTimeVerify.java \
+	ZipVerify.java \
 	TestNative.java
 
 

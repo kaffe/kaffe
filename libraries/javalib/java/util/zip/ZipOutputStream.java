@@ -130,14 +130,17 @@ public void closeEntry() throws IOException
 
 	dout += curr.csize;
 
-	// Always add data descriptor (flags must have 0x0008 bit set)
-	byte[] da = new byte[DATA_RECSZ];
-	put32(da, DATA_SIGNATURE, (int)DATA_HEADSIG);
-	put32(da, DATA_CRC, (int)curr.crc);
-	put32(da, DATA_COMPRESSEDSIZE, (int) curr.csize);
-	put32(da, DATA_UNCOMPRESSEDSIZE, (int) curr.size);
-	strm.write(da);
-	dout += DATA_RECSZ;
+	// We only add the data descriptor when writing a compressed entry
+
+	if (curr.flag == 0x0008) {
+	    byte[] da = new byte[DATA_RECSZ];
+	    put32(da, DATA_SIGNATURE, (int)DATA_HEADSIG);
+	    put32(da, DATA_CRC, (int)curr.crc);
+	    put32(da, DATA_COMPRESSEDSIZE, (int) curr.csize);
+	    put32(da, DATA_UNCOMPRESSEDSIZE, (int) curr.size);
+	    strm.write(da);
+	    dout += DATA_RECSZ;
+	}
 
 	curr = null;
 }
@@ -160,9 +163,9 @@ public void finish() throws IOException
 		ZipEntry ze = (ZipEntry)e.nextElement();
 
 		put32(ch, CEN_SIGNATURE, (int)CEN_HEADSIG);
-		put16(ch, CEN_VERSIONMADE, ZIPVER_2_0);
-		put16(ch, CEN_VERSIONEXTRACT,
-		    ze.method == STORED ? ZIPVER_1_0 : ZIPVER_2_0);
+		int zipver = (ze.method == STORED ? ZIPVER_1_0 : ZIPVER_2_0);
+		put16(ch, CEN_VERSIONMADE, zipver);
+		put16(ch, CEN_VERSIONEXTRACT, zipver);
 		put16(ch, CEN_FLAGS, ze.flag);
 		put16(ch, CEN_METHOD, ze.method);
 		put32(ch, CEN_TIME, ze.dosTime);
@@ -186,8 +189,14 @@ public void finish() throws IOException
 		ze.name.getBytes(0, ze.name.length(), buf, 0);
 		strm.write(buf);
 
+		int extra_length = 0;
+		if (ze.extra != null) {
+		    strm.write(ze.extra);
+		    extra_length = ze.extra.length;
+		}
+
 		count++;
-		size += CEN_RECSZ + ze.name.length();
+		size += CEN_RECSZ + ze.name.length() + extra_length;
 	}
 
 	// Flag error if no entries were written.
@@ -225,8 +234,10 @@ public void putNextEntry(ZipEntry ze) throws IOException
 		if (ze.crc == -1) {
 			throw new ZipException("crc not set in stored entry");
 		}
+		ze.flag = 0;
+	} else {
+		ze.flag = 0x0008;
 	}
-	ze.flag = 0x0008;
 
 	if (curr == null || curr.method != ze.method) {
 		if (ze.method == STORED) {
@@ -240,14 +251,19 @@ public void putNextEntry(ZipEntry ze) throws IOException
 	byte[] lh = new byte[LOC_RECSZ];
 	put32(lh, LOC_SIGNATURE, (int)LOC_HEADSIG);
 	put16(lh, LOC_VERSIONEXTRACT,
-		method == STORED ? ZIPVER_1_0 : ZIPVER_2_0);
+		ze.method == STORED ? ZIPVER_1_0 : ZIPVER_2_0);
 	put16(lh, LOC_FLAGS, ze.flag);
 	put16(lh, LOC_METHOD, ze.method);
 	put32(lh, LOC_TIME, ze.dosTime);
 
-	put32(lh, LOC_CRC, 0);
-	put32(lh, LOC_COMPRESSEDSIZE, 0);
-	put32(lh, LOC_UNCOMPRESSEDSIZE, 0);
+	put32(lh, LOC_CRC, (int) ze.crc);
+	if (ze.method == STORED) {
+		put32(lh, LOC_COMPRESSEDSIZE, (int) ze.csize);
+		put32(lh, LOC_UNCOMPRESSEDSIZE, (int) ze.size);
+	} else {
+		put32(lh, LOC_COMPRESSEDSIZE, 0);
+		put32(lh, LOC_UNCOMPRESSEDSIZE, 0);
+	}
 
 	put16(lh, LOC_FILENAMELEN, ze.name == null ? 0 : ze.name.length());
 	put16(lh, LOC_EXTRAFIELDLEN, ze.extra == null ? 0 : ze.extra.length);

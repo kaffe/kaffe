@@ -55,7 +55,10 @@ public class ZipEntry implements Cloneable, ZipConstants {
     method = -1;
     extra = null;
     comment = null;
+    flag = 0;
+    version = 0;
     csize = -1;
+    offset = 0;
   }
 
   /**
@@ -65,6 +68,7 @@ public class ZipEntry implements Cloneable, ZipConstants {
   {
     name = entry.name;
     time = entry.time;
+    dosTime = entry.dosTime;
     crc  = entry.crc;
     size = entry.size;
     method = entry.method;
@@ -183,20 +187,20 @@ public class ZipEntry implements Cloneable, ZipConstants {
 
   // Encode timestamp in DOS format
   int computeDosTime(long time) {
-    time = (time + 1) & ~1L;
+    time = (time + 1) & ~1L; // Round up to even seconds.
     Calendar cal = new GregorianCalendar();
     cal.setTime(new Date(time));
     return encodeDosTime(
-	cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
-	cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR),
+	cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1,
+	cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY),
 	cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
   }
 
   int encodeDosTime(int year, int month, int day, int hour,
       int minute, int second) {
-    return (year < 1980) ? encodeDosTime(1980, 0, 1, 0, 0, 0) :
-      ((year - 1980) << 25) | ((month + 1) << 21) | (day << 16) |
-      (hour << 11) | (minute << 5) | (second >> 1);
+    return (year < 1980) ? encodeDosTime(1980, 1, 1, 0, 0, 0) :
+      ((year - 1980) << 25) | (month << 21) | (day << 16) |
+      (hour << 11) | (minute << 5) | (second >>> 1);
   }
 
   void setDosTime(int date) {

@@ -995,7 +995,7 @@ public class Jar {
 	// YIKES!! Watch out for the really ugly special case where
 	// we attempt to add the archive that we are writing to the
 	// archive we are writing to the archive we are writing.
-	// You get the idea. There is not way to avoid this case
+	// You get the idea. There is no way to avoid this case
 	// when writing to stdout.
 
 	if (archive != null) {
@@ -1027,52 +1027,61 @@ public class Jar {
 	ZipEntry ze = new ZipEntry(entryname);
 	long entryfile_length = entryfile.length();
 
-	// Set some file attributes
+	// Set some entry attributes
 	if (compression) {
 	    ze.setMethod(ZipEntry.DEFLATED); // compressed entry
 	} else {
 	    ze.setMethod(ZipEntry.STORED);   // uncompressed entry
 	    ze.setSize(entryfile_length);
-
-	    // Calculate the CRC for this file if uncompressed
-	    CRC32 crc = new CRC32();
-	    InputStream in = new XPFileInputStream(entryfile);
-	    try {
-		CheckedInputStream c = new CheckedInputStream(in, crc);
-		readwriteStreams(c, new OutputStream() {
-		    public void write(int b) {
-		    }
-		    public void write(byte[] buf, int off, int len) {
-		    }
-		});
-	    } finally {
-		in.close();
-	    }
-	    ze.setCrc(crc.getValue());
+	    ze.setCrc( 0 );                  // set after stream is read/written to zip
 	}
 
-	// Compress file and write it into the archive
-	if (debug) {
-	    System.out.println("opening input file \"" + entryfile + "\"");
-	}
 	zos.putNextEntry(ze);
+
 	if (verbose) {
 	    // adding: file1 (in=16) (out=18) (deflated -12%)
 	    vout.print("adding: " + entryname + " ");
 	    vout.print("(in=" + entryfile_length + ") ");
 	}
+
+	// Write file into the archive, compressing if so requested
+	if (debug) {
+	    System.out.println("opening input file \"" + entryfile + "\"");
+	}
+
 	InputStream in = new XPFileInputStream(entryfile);
+
+	// This is part of the ugly workaround for a design flaw
+	// in the JDK zip API, for uncompressed entries we
+	// are forced to calculate a CRC for the input stream
+	CRC32 crc = null;
+	    
+	if (! compression) {
+	    crc = new CRC32();
+	    in = new CheckedInputStream(in,crc);
+	}
+
 	try {
 	    readwriteStreams(in, zos);
 	} finally {
 	    in.close();
 	}
 
+	// ZIP design flaw workaround
+	    
+	if (! compression) {
+	    ze.setCrc(crc.getValue());
+	}
+
+	// finish writing the entry to the stream
+	// this lets us access the compressed size
+	// attribute of the current ZipEntry
+
 	zos.closeEntry();
 
 	if (verbose) {
 
-	    // Find compressed size of entry adter it has been added
+	    // Find compressed size of entry after it has been added
 
 	    long unsize = ze.getSize();
 	    long csize = ze.getCompressedSize();

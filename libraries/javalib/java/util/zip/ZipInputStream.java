@@ -19,8 +19,10 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
 
   private byte sigbuf[] = new byte[4];
   private byte zheader[] = new byte[LOC_RECSZ];
+  private byte dheader[] = new byte[DATA_RECSZ];
   private boolean closed;
   private SwitchInflater sinf;
+  private ZipEntry entry = null;
 
   public ZipInputStream(InputStream in) {
     super(in, new SwitchInflater(true, true));
@@ -41,38 +43,43 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
 	long sig = get32(sigbuf, 0);
 
 	if (sig == CEN_HEADSIG) {
+	  //System.out.println("found CEN header");
 	  return (null);
 	}
 	else if (sig == DATA_HEADSIG) {
-	  skip(DATA_RECSZ - sigbuf.length);
-	  continue;
+	  //System.out.println("found DATA header");
+	  throw new IOException("DATA header signature found at invalid location");
 	}
 	else if (sig == LOC_HEADSIG) {
+	  //System.out.println("found LOC header");
 	  if (readFully(zheader, sigbuf.length, zheader.length - sigbuf.length) == zheader.length - sigbuf.length) {
 	    break;
 	  }
 	}
-        throw new IOException("LOC header signature bad: " + Long.toHexString(sig));
+        throw new IOException("LOC header signature bad: 0x" + Long.toHexString(sig));
       }
-  
+
       char[] name = new char[get16(zheader, LOC_FILENAMELEN)];
       for (int i = 0; i < name.length; i++) {
         name[i] = (char)read();	// So much for Unicode ...!
       }
-  
+
       byte[] extra = new byte[get16(zheader, LOC_EXTRAFIELDLEN)];
       readFully(extra, 0, extra.length);
-  
-      ZipEntry entry = new ZipEntry(new String(name));
-      entry.setDosTime((int)get32(zheader, LOC_TIME));
-      entry.crc = get32(zheader, LOC_CRC);
-      entry.size = (int)get32(zheader, LOC_UNCOMPRESSEDSIZE);
-      entry.method = get16(zheader, LOC_METHOD);
-      entry.extra = extra;
-      entry.comment = "";
-      entry.flag = (int)get16(zheader, LOC_FLAGS);
+
+      entry = new ZipEntry(new String(name));
       entry.version = get16(zheader, LOC_VERSIONEXTRACT);
-      entry.csize = (int)get32(zheader, LOC_COMPRESSEDSIZE);
+      entry.flag    = get16(zheader, LOC_FLAGS);
+
+      entry.setMethod(get16(zheader, LOC_METHOD));
+      entry.setDosTime((int)get32(zheader, LOC_TIME));
+      entry.setCrc(get32(zheader, LOC_CRC));
+
+      entry.setCompressedSize( get32(zheader, LOC_COMPRESSEDSIZE) );
+      entry.setSize( get32(zheader, LOC_UNCOMPRESSEDSIZE) );
+
+      entry.setExtra( extra );
+      entry.setComment("");
       entry.offset = 0;
 
       // Select the loader, simple or inflater.
@@ -84,7 +91,7 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
 	sinf.setMode(false);
       }
 
-// System.out.println("ZipEntry: " + entry + ", meth=" + entry.method + ", size=" + entry.size + ", csize=" + entry.csize);
+      //System.out.println("ZipEntry (Post LOC): " + entry + ", meth=" + entry.method + ", size=" + entry.size + ", csize=" + entry.csize + ", crc=" + entry.crc);
 
       closed = false;
 
@@ -93,23 +100,85 @@ public class ZipInputStream extends InflaterInputStream implements ZipConstants 
   }
 
   public void closeEntry() throws IOException {
+      synchronized (this) {
 	if (closed == false) {
-		/* skip remaining compressed data */
+	        // skip remaining compressed data
 		byte[] buf = new byte[512];
-		while (read (buf, 0, 512) != -1) {}
+		while (read(buf, 0, buf.length) != -1) {}
 
 		closed = true;
-		/* reset inflate state machine */
+		// reset inflate state machine
 		sinf.reset();
 		sinf.setMode(true);
 		sinf.setLength(Integer.MAX_VALUE);
 	}
+	if ((entry != null) && (entry.method == ZipConstants.DEFLATED)) {
+	    // In the case where closeEntry() is
+	    // called after reading a compressed entry
+	    // we need to read the DATA header from
+	    // and update the ZipEntry with the info
+	    // from the DATA header. This is so that
+	    // users can find out the compressed and
+	    // uncompressed sizes of data written in
+	    // a compressed entry!
+
+	    if (readFully(sigbuf, 0, sigbuf.length) != sigbuf.length) {
+		throw new IOException("signature not found");
+	    }
+
+	    long sig = get32(sigbuf, 0);
+
+	    if (sig == CEN_HEADSIG) {
+		throw new IOException("CEN header signature found at invalid location");
+	    } else if (sig == END_ENDSIG) {
+		throw new IOException("DATA header signature found at invalid location");
+	    } else if (sig == LOC_HEADSIG) {
+		throw new IOException("LOC header signature found at invalid location");
+	    } else if (sig != DATA_HEADSIG) {
+		throw new IOException("DATA header signature bad: 0x" +
+				      Long.toHexString(sig));
+	    }
+
+	    //System.out.println("found DATA header in closeEntry()");
+
+	    if (readFully(dheader, sigbuf.length, dheader.length - sigbuf.length)
+		!= (dheader.length - sigbuf.length)) {
+		throw new IOException("DATA header could not be read");
+	    }
+
+	    long data_crc = get32(dheader, DATA_CRC);
+
+	    if (data_crc == 0) {
+		throw new IOException("CRC of 0 is not valid in a DATA header");
+	    }
+
+	    entry.setCrc( data_crc );
+
+	    long data_csize = get32(dheader, DATA_COMPRESSEDSIZE);
+
+	    if (data_csize == 0) {
+		throw new IOException("COMPRESSEDSIZE of 0 is not valid in a DATA header");
+	    }
+
+	    entry.setCompressedSize( data_csize );
+
+	    long data_size = get32(dheader, DATA_UNCOMPRESSEDSIZE);
+
+	    if (data_size == 0) {
+		throw new IOException("UNCOMPRESSEDSIZE os 0 is not valid in a DATA header");
+	    }
+
+	    entry.setSize( data_size );
+
+	    //System.out.println("ZipEntry (Post DATA): " + entry + ", meth=" + entry.method + ", size=" + entry.size + ", csize=" + entry.csize + ", crc=" + entry.crc);
+
+	    entry = null;
+	}
+      }
   }
 
-  public int read(byte b[], int off, int len) throws IOException {
-    int r;
-    r = super.read(b, off, len);
-    return r;
+  public int read(byte[] b, int off, int len) throws IOException {
+    return super.read(b, off, len);
   }
 
   public long skip(long n) throws IOException {

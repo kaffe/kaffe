@@ -126,6 +126,9 @@ TESTS = \
 ## This is kind of tricky, and Sun doesn't support it.
 	SoInterrupt.java \
 	sysdepCallMethod.java \
+## Test for package java.util.zip
+	DosTimeVerify.java \
+	ZipVerify.java \
 ## This one is skipped unless you --enable-debug.
 	TestNative.java
 
