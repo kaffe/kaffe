@@ -1094,6 +1094,7 @@ Optional Features:
   --enable-libxmlj        Enable building of libxmlj
   --disable-xmltest       Do not try to compile and run a test LIBXML program
   --disable-xslttest       Do not try to compile and run a test LIBXSLT program
+  --enable-gjdoc          Enable building of gjdoc
   --enable-binreloc       compile with binary relocation support
                           (default=enable when available)
 
@@ -1158,7 +1159,6 @@ Optional Packages:
   --with-xml-exec-prefix=PFX Exec prefix where libxml is installed (optional)
   --with-xslt-prefix=PFX   Prefix where libxslt is installed (optional)
   --with-xslt-exec-prefix=PFX Exec prefix where libxslt is installed (optional)
-  --with-gjdoc            Enable building of gjdoc
   --with-rt-jar=ABS.PATH  use precompiled kaffe class library
   --with-jni-library-path=dir
                           additional directories to search for native jni
@@ -55571,16 +55571,15 @@ fi
 
 
 
-
-# Check whether --with-gjdoc or --without-gjdoc was given.
-if test "${with_gjdoc+set}" = set; then
-  withval="$with_gjdoc"
+# Check whether --enable-gjdoc or --disable-gjdoc was given.
+if test "${enable_gjdoc+set}" = set; then
+  enableval="$enable_gjdoc"
 
 fi;
 
 
 
-if test x"$with_gjdoc" = x"yes"; then
+if test x"$enable_gjdoc" = x"yes"; then
   COND_GJDOC_TRUE=
   COND_GJDOC_FALSE='#'
 else

@@ -1891,11 +1891,11 @@ dnl =========================================================================
 dnl Building of gjdoc
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH([gjdoc],
-		AS_HELP_STRING([--with-gjdoc],
+AC_ARG_ENABLE([gjdoc],
+		AS_HELP_STRING([--enable-gjdoc],
 				[Enable building of gjdoc]))
 
-AM_CONDITIONAL([COND_GJDOC], [test x"$with_gjdoc" = x"yes"])
+AM_CONDITIONAL([COND_GJDOC], [test x"$enable_gjdoc" = x"yes"])
 
 dnl -----------------------------------------------------------------------
 dnl                    Support for using a precompiled class library
