@@ -53,6 +53,7 @@ TESTS = \
 	TestCasts.java \
 	Alias.java \
 	NullPointerTest.java \
+	NullInvoke.java \
 	TableSwitch.java \
 	LostFrame.java \
 	ConstructorTest.java \
