@@ -175,8 +175,10 @@ public class PrintWriter extends Writer {
 
   public void println(char x)
   {
-    write((int)x);
-    println();
+    synchronized(lock) {
+      write((int)x);
+      println();
+    }
   }
 
   public void println(int x)
@@ -201,14 +203,18 @@ public class PrintWriter extends Writer {
 
   public void println(char x[])
   {
-    write(x, 0, x.length);
-    println();
+    synchronized(lock) {
+      write(x, 0, x.length);
+      println();
+    }
   }
 
   public void println(String x)
   {
-    write(x);
-    println();
+    synchronized(lock) {
+      write(x);
+      println();
+    }
   }
 
   public void println(Object x)
