@@ -2002,6 +2002,12 @@ dnl =========================================================================
 dnl Building of gjdoc
 dnl -------------------------------------------------------------------------
 
+AC_ARG_WITH([antlr-jar],
+            AS_HELP_STRING([--with-antlr-jar=file],
+                           [Use ANTLR from the specified jar file. ANTLR is required for gjdoc]),
+  [ ANTLR_JAR=$withval ],
+  [ ANTLR_JAR="$ANTLR_JAR" ])
+
 AC_ARG_ENABLE([gjdoc],
 		AS_HELP_STRING([--enable-gjdoc],
 				[Enable building of gjdoc]),
@@ -2306,6 +2312,7 @@ AC_CONFIG_FILES([kaffe/scripts/compat/appletviewer])
 AC_CONFIG_FILES([kaffe/scripts/compat/javadoc])
 AC_CONFIG_FILES([po/Makefile.in])
 AC_CONFIG_FILES([tools/Makefile])
+AC_CONFIG_FILES([tools/gjdoc/javalib/version.properties])
 AC_CONFIG_FILES([tools/gjdoc/Makefile])
 AC_CONFIG_FILES([tools/gjdoc/javalib/Makefile])
 AC_CONFIG_FILES([test/Makefile])

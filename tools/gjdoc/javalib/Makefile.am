@@ -249,6 +249,7 @@ EXTRA_DIST = \
 
 JAR_CMD1 = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new $(SRCDIRS))
 JAR_CMD2 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gjdoc_ressources))
+JAR_CMD3 = ($(ZIP) -q -DX -r $(CURDIR)/$@.new version.properties)
 
 LIBDIR = lib
 
@@ -277,6 +278,7 @@ $(CLASSFILE): $(LIBDIR)/stamp
 	rm -f $@ $@.new
 	$(JAR_CMD1)
 	$(JAR_CMD2)
+	$(JAR_CMD3)
 	mv $@.new $@
 
 export JIKES top_builddir LIBDIR srcdir

@@ -274,12 +274,20 @@ public class NotifyingInputStreamReader
          }
          else if (coderResult.isUnderflow()) {
             if (!allInputConsumed) {
+               int nRemainingBytes = 0;
+               if (byteBuffer.position() > 0) {
+                  nRemainingBytes = Math.max(0, byteBuffer.limit() - byteBuffer.position());
+               }
+               if (nRemainingBytes > 0) {
+                  byteBuffer.get(readBuffer, 0, nRemainingBytes);
+               }
                byteBuffer.rewind();
-               int nread = in.read(readBuffer);
+               int nread = in.read(readBuffer, nRemainingBytes, 
+                                   readBuffer.length - nRemainingBytes);
                if (nread < 0) {
                   allInputConsumed = true;
                }
-               byteBuffer.limit(Math.max(0, nread));
+               byteBuffer.limit(nRemainingBytes + Math.max(0, nread));
             }
             else {
                break;

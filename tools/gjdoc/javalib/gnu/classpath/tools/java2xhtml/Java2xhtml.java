@@ -1,7 +1,22 @@
-/* Copyright (C) 2003 Shayne Steele
- * License and warranty are under the terms of the GNU General Public License 
- * Version 2.0.  See http://www.gnu.org for license and warranty details. 
- */
+/* gnu.classpath.tools.java2xhtml.Java2xhtml
+   Copyright (C) 2005 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+ 
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA. */
 
 /** Java2xhtml.java  Version 0.9
  *  Produces an XHTML file from Java source code with syntax highlighting,
@@ -43,7 +58,7 @@ public class Java2xhtml
     private static final String constantStyle = "constant member";
     private static final String doubleQuoteStyle = "double quote";
     private static final String singleQuoteStyle = "single quote";
-    private static final String numericalLiteralStyle = "numerical literal";
+    private static final String numericLiteralStyle = "numeric literal";
     private static final String primitiveLiteralStyle = "primitive literal";
 
     private static final String iconStyle = "icon";
@@ -58,16 +73,16 @@ public class Java2xhtml
         // parse the invokation arguments 
         if (args.length < 1 || args.length > 3) // invoked program incorrectly
         {
-            System.out.println("Java2xhtml Version 0.9 (C) 2003 Shayne Steele");
+            System.out.println("Java2xhtml Version 0.9 (C) 2005 Free Software Foundation");
             System.out.println("    Produces an XHTML file of Java source" +
                                " code with syntax highlighting,");
             System.out.println("    includes additional options " +
                                "(line numbering, tab spacing, etc.)");
-            System.out.println("    License and warranty are under the terms " +
-                               "of the GNU General Public License");
-            System.out.println("        (GPL) Version 2.0");
-            System.out.println("    See http://www.gnu.org for license and " +
-                               "warranty details.");
+            System.out.println("    This tool is part of GNU Classpath.");
+            System.out.println("    GNU Classpath is free software; you can redistribute it and/or modify");
+            System.out.println("    it under the terms of the GNU General Public License as published by");
+            System.out.println("    the Free Software Foundation; either version 2, or (at your option)");
+            System.out.println("    any later version.");
             System.out.println("    NOTE: Common java naming structure is " +
                                "assumed");
             System.out.println("");
@@ -590,7 +605,7 @@ public class Java2xhtml
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("       font-style: oblique;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    ." + numericalLiteralStyle + "\r\n"); 
+                bufferOut.append("    ." + numericLiteralStyle + "\r\n"); 
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #333300;\r\n"); 
                 bufferOut.append("       background-color: transparent;\r\n");
@@ -692,8 +707,8 @@ public class Java2xhtml
                              "doubleQuote</span>\r\n");
             bufferOut.append("    <span class=\"" + singleQuoteStyle + "\">" +
                              "singleQuote</span>\r\n");
-            bufferOut.append("    <span class=\"" + numericalLiteralStyle + "\">" +
-                             "numericalLiteral</span>\r\n");
+            bufferOut.append("    <span class=\"" + numericLiteralStyle + "\">" +
+                             "numericLiteral</span>\r\n");
             bufferOut.append("    <span class=\"" + primitiveLiteralStyle + "\">" +
                              "primitiveLiteral</span>\r\n");
             bufferOut.append("   </div>\r\n");
@@ -1036,7 +1051,7 @@ public class Java2xhtml
                                              "\"" + primitiveLiteralStyle + "\">");
                             bufferOut.append("</span>");
                         }
-                        // a numerical literal
+                        // a numeric literal
                         else 
                         {
                             if (((presentIndex - 
@@ -1049,7 +1064,7 @@ public class Java2xhtml
                             bufferOut.insert(bufferOut.length() - 
                                              qualifiedIdentifierLength, 
                                              "<span class=" +
-                                             "\"" + numericalLiteralStyle + "\">");
+                                             "\"" + numericLiteralStyle + "\">");
                             bufferOut.append("</span>");
                         }
                     }

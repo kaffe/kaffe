@@ -7,8 +7,8 @@ AC_DEFUN([AC_PROG_ANTLR],[
                       ANTLR_JAR=$antlr_lib_home/antlr.jar
 	fi
   done
-  test -z $ANTLR_JAR && \
-        AC_MSG_ERROR(no suitable antlr.jar found for version $1.$2.$3)
+  test -f $ANTLR_JAR || AC_MSG_ERROR([specified ANTLR jar file $ANTLR_JAR not found.]) \
+  	&& AC_MSG_NOTICE([using ANTLR parser generator in $ANTLR_JAR])
   AC_MSG_RESULT([yes])
   AC_SUBST(ANTLR_JAR)
   AC_PROVIDE([$0])dnl

@@ -65,9 +65,9 @@ public class InheritDocTagImpl
    }
 
    public Tag[] firstSentenceTags() {
-      TagContainer inheritedDoc = getInheritedDoc();
-      if (inheritedDoc != null) {
-         return inheritedDoc.firstSentenceTags();
+      TagContainer _inheritedDoc = getInheritedDoc();
+      if (_inheritedDoc != null) {
+         return _inheritedDoc.firstSentenceTags();
       }
       else {
          return null;
@@ -75,9 +75,9 @@ public class InheritDocTagImpl
    }
 
    public Tag[] inlineTags() {
-      TagContainer inheritedDoc = getInheritedDoc();
-      if (inheritedDoc != null) {
-         return inheritedDoc.inlineTags();
+      TagContainer _inheritedDoc = getInheritedDoc();
+      if (_inheritedDoc != null) {
+         return _inheritedDoc.inlineTags();
       }
       else {
          return null;

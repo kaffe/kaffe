@@ -226,6 +226,11 @@ public final class Main
    * true when -all has been specified on the command line.
    */
   private boolean option_all;
+
+  /**
+   * true when -reflection has been specified on the command line.
+   */
+  private boolean option_reflection;
   
   // TODO: add the rest of the options as instance variables
   
@@ -553,7 +558,7 @@ public final class Main
           .toArray(new String[0][0]);
       if (validOptionsMethod != null
           && !((Boolean) validOptionsMethod.invoke(null, new Object[]
-            { customOptionArr, this })).booleanValue())
+            { customOptionArr, reporter })).booleanValue())
       {
         // Not ok: shutdown system.
         shutdown();
@@ -757,14 +762,91 @@ public final class Main
 
       instance.start(args);
     }
-    catch (Throwable e)
+    catch (Exception e)
     {
 
       //--- Report any error
 
       e.printStackTrace();
+      System.exit(1);
     }
   }
+
+  /**
+   * Parses command line arguments and subsequentially handles control to the
+   * startDoclet() method
+   *   
+   * @param args The command line parameters.
+   */
+   public static int execute(String[] args)
+   {
+     try
+     {
+       instance.start(args);
+     }
+     catch (Exception e)
+     {
+       return 1;
+     }
+ 
+     return 0;
+   }
+
+  /**
+   * @param programName Name of the program (for error messages). *disregarded*
+   * @param args The command line parameters.
+   * @returns The return code.
+   */
+  public static int execute(String programName,
+                            String[] args)
+  {
+    return execute(args);
+  }
+ 
+  /**
+   * @param programName Name of the program (for error messages).
+   * @param defaultDocletClassName Fully qualified class name.
+   * @param args The command line parameters.
+   * @returns The return code.
+   *//*
+  public static int execute(String programName,
+                            String defaultDocletClassName,
+                            String[] args)
+  {
+    // not yet implemented
+  }*/
+ 
+  /**
+   * @param programName Name of the program (for error messages).
+   * @param defaultDocletClassName Fully qualified class name.
+   * @param args The command line parameters.
+   * @returns The return code.
+   *//*
+  public static int execute(String programName,
+                            String defaultDocletClassName,
+                            String[] args)
+  {
+    // not yet implemented
+  }*/
+ 
+  /**
+   * @param programName Name of the program (for error messages).
+   * @param errWriter PrintWriter to receive error messages.
+   * @param warnWriter PrintWriter to receive error messages.
+   * @param noticeWriter PrintWriter to receive error messages.
+   * @param defaultDocletClassName Fully qualified class name.
+   * @param args The command line parameters.
+   * @returns The return code.
+   *//*
+  public static int execute(String programName,
+                            PrintWriter errWriter,
+                            PrintWriter warnWriter,
+                            PrintWriter noticeWriter,
+                            String defaultDocletClassName,
+                            String[] args)
+  {
+    // not yet implemented
+  }*/
 
   /**
    * Parses command line arguments and subsequentially handles control to the
@@ -930,7 +1012,12 @@ public final class Main
       startDoclet(arguments);
     }
 
-    System.exit(0);
+    if (reporter.getErrorCount() > 0) {
+      System.exit(1);
+    }
+    else {
+      System.exit(0);
+    }
   }
 
   private void addJavaLangClasses()
@@ -1248,6 +1335,8 @@ public final class Main
       {
         void process(String[] args)
         {
+          reporter.printWarning("-classpath option could not be passed to the VM.  Faking it with ");
+          reporter.printWarning("    System.setProperty(\"java.class.path\", \"" + args[0] + "\");");
           System.setProperty("java.class.path", args[0]);
         }
       });
@@ -1270,6 +1359,13 @@ public final class Main
         void process(String[] args)
         {
           option_all = true;
+        }
+      });
+    options.put("-reflection", new OptionProcessor(1)
+      {
+        void process(String[] args)
+        {
+          option_reflection = true;
         }
       });
   }
@@ -1385,7 +1481,7 @@ public final class Main
             + "  -helpfile <filen>       Path to an alternate help file\n"
             + "  -stylesheetfile <file>  Path to an alternate CSS stylesheet\n"
             + "  -addstylesheet <file>   Path to an additional CSS stylesheet\n"
-            /* + " -serialwarn              Generate compile time error for missing '@serial' tags\n" */
+            + "  -serialwarn             Complain about missing '@serial' tags [ignored]\n"
             + "  -charset <IANACharset>  Specifies the HTML charset\n"
             + "  -docencoding <IANACharset>\n"
             + "                          Specifies the encoding of the generated HTML files\n"
@@ -1398,10 +1494,12 @@ public final class Main
             + "                          Excludes 'doc-files' subdirectories with a give name\n"
             + "  -noqualifier all|<packagename1:packagename2:...>\n"
             + "                          Do never fully qualify given package names\n"
+            + "  -nocomment              Suppress the entire comment body including the main\n"
+            + "                          description and all tags, only generate declarations\n"
             + "\n"
             + "Gjdoc extension options:\n"
+            + "  -reflection             Use reflection for resolving unqualified class names\n"
             + "  -licensetext            Include license text from source files\n"
-            /* + " -nocomment               Suppress the entire comment body including the main description and all tags, only generate the declarations\n" */
                /**
             + "  -genhtml                Generate HTML code instead of XML code. This is the\n"
             + "                          default.\n"
@@ -1601,5 +1699,10 @@ public final class Main
       }
     }
     return gjdocVersion;
+  }
+
+  public boolean isReflectionEnabled()
+  {
+    return this.option_reflection;
   }
 }

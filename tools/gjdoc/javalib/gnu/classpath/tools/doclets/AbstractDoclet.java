@@ -174,9 +174,9 @@ public abstract class AbstractDoclet
       for (int i=0, ilim=rootDoc.options().length; i<ilim; ++i) {
             
          String[] optionArr = rootDoc.options()[i];
-         String optionTag = optionArr[0];
+         String _optionTag = optionArr[0];
 
-         DocletOption option = (DocletOption)nameToOptionMap.get(optionTag);
+         DocletOption option = (DocletOption)nameToOptionMap.get(_optionTag);
 
          if (null != option) {
             option.set(optionArr);
@@ -789,7 +789,7 @@ public abstract class AbstractDoclet
     */
    private Map collectUsage() {
 
-      Map usedClassToPackagesMap = new HashMap();
+      Map _usedClassToPackagesMap = new HashMap();
 
       ClassDoc[] classes = rootDoc.classes();
       for (int i = 0, ilim = classes.length; i < ilim; ++ i) {
@@ -802,7 +802,7 @@ public abstract class AbstractDoclet
             Iterator it = relation.implementingClasses.iterator();
             while (it.hasNext()) {
                ClassDoc implementor = (ClassDoc)it.next();
-               addUsedBy(usedClassToPackagesMap,
+               addUsedBy(_usedClassToPackagesMap,
                          clazz, UsageType.CLASS_IMPLEMENTING, implementor, implementor.containingPackage());
             }
          }
@@ -810,7 +810,7 @@ public abstract class AbstractDoclet
             // classes derived from
             for (ClassDoc superclass = clazz.superclass(); superclass != null; 
                  superclass = superclass.superclass()) {
-               addUsedBy(usedClassToPackagesMap,
+               addUsedBy(_usedClassToPackagesMap,
                          superclass, UsageType.CLASS_DERIVED_FROM, clazz, clazz.containingPackage());
             }
          }
@@ -822,7 +822,7 @@ public abstract class AbstractDoclet
             // fields of type                  
             ClassDoc fieldType = field.type().asClassDoc();
             if (null != fieldType) {
-               addUsedBy(usedClassToPackagesMap,
+               addUsedBy(_usedClassToPackagesMap,
                          fieldType, UsageType.FIELD_OF_TYPE, 
                          field, clazz.containingPackage());
             }
@@ -836,7 +836,7 @@ public abstract class AbstractDoclet
 
             ClassDoc returnType = method.returnType().asClassDoc();
             if (null != returnType) {
-               addUsedBy(usedClassToPackagesMap,
+               addUsedBy(_usedClassToPackagesMap,
                          returnType, UsageType.METHOD_WITH_RETURN_TYPE, 
                          method, clazz.containingPackage());
             }
@@ -848,7 +848,7 @@ public abstract class AbstractDoclet
                Parameter parameter = parameters[k];
                ClassDoc parameterType = parameter.type().asClassDoc();
                if (null != parameterType) {
-                  addUsedBy(usedClassToPackagesMap,
+                  addUsedBy(_usedClassToPackagesMap,
                             parameterType, UsageType.METHOD_WITH_PARAMETER_TYPE, 
                             method, clazz.containingPackage());
                }
@@ -859,7 +859,7 @@ public abstract class AbstractDoclet
             ClassDoc[] thrownExceptions = method.thrownExceptions();
             for (int k = 0, klim = thrownExceptions.length; k < klim; ++ k) {
                ClassDoc thrownException = thrownExceptions[k];
-               addUsedBy(usedClassToPackagesMap,
+               addUsedBy(_usedClassToPackagesMap,
                          thrownException, UsageType.METHOD_WITH_THROWN_TYPE, 
                          method, clazz.containingPackage());
             }
@@ -878,7 +878,7 @@ public abstract class AbstractDoclet
                Parameter parameter = parameters[k];
                ClassDoc parameterType = parameter.type().asClassDoc();
                if (null != parameterType) {
-                  addUsedBy(usedClassToPackagesMap,
+                  addUsedBy(_usedClassToPackagesMap,
                             parameterType, UsageType.CONSTRUCTOR_WITH_PARAMETER_TYPE, 
                             constructor, clazz.containingPackage());
                }
@@ -889,23 +889,23 @@ public abstract class AbstractDoclet
             ClassDoc[] thrownExceptions = constructor.thrownExceptions();
             for (int k = 0, klim = thrownExceptions.length; k < klim; ++ k) {
                ClassDoc thrownException = thrownExceptions[k];
-               addUsedBy(usedClassToPackagesMap,
+               addUsedBy(_usedClassToPackagesMap,
                          thrownException, UsageType.CONSTRUCTOR_WITH_THROWN_TYPE, 
                          constructor, clazz.containingPackage());
             }
          }
       }
-      return usedClassToPackagesMap;
+      return _usedClassToPackagesMap;
    }
 
-   Map usedClassToPackagesMap = null;
+   private Map usedClassToPackagesMap = null;
 
    protected Map getUsageOfClass(ClassDoc classDoc)
    {
       if (null == this.usedClassToPackagesMap) {
          this.usedClassToPackagesMap = collectUsage();
       }
-      return (Map)usedClassToPackagesMap.get(classDoc);
+      return (Map)this.usedClassToPackagesMap.get(classDoc);
    }
 
    protected static class UsageType

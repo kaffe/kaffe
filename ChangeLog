@@ -1,5 +1,150 @@
 2005-03-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/scripts/compat/javadoc.in,
+	kaffe/scripts/compat/javadoc.in:
+	Added -Xmx512M to parameters used to invoke Kaffe to be able to 
+	deal with running javadoc on Kaffe's source tree out of the box.
+
+	* m4/m4/ac_prog_antlr.m4: Fixed antlr.jar test to bail out if 
+	no antlr.jar can be found.
+	
+	Resynced with gjdoc.
+	
+	2005-03-14  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/java2xhtml/Java2xhtml.java: Added
+	license boilerplate; updated copyright and license in usage
+	output.
+
+	2005-03-13  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/gjdoc/Main.java: Added method
+	execute(String, String[]) and commented-out empty shells for
+	additional execute methods.  Thanks to Jerry Haltom.
+	
+	2005-03-08  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/gjdoc/Main.java: add support for option
+	-reflection; disable reflection by default.
+
+	* src/gnu/classpath/tools/gjdoc/RootDocImpl.java: only use
+	reflection if enabled on command line.
+
+	2005-03-08  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/gjdoc/ExecutableMemberDocImpl.java:
+	properly parse the thrown exception immediately preceding the
+	closing semicolon of an interface method declaration.
+
+	Reported by Robert Schuster
+
+	2005-03-04  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/gjdoc/SeeTagImpl.java: Removed bogus
+	Thread.dumpStack() invocation.
+
+	Reported by Arnaud Vandyck
+
+	* src/gnu/classpath/tools/gjdoc/Main.java: Pass DocErrorReporter
+	in reflected invocation of Doclet's validOptions() method.
+
+	Reported by Christopher Oezbek
+
+	2005-02-21  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java: fix
+	support for option -title.
+
+	2005-02-14  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/NotifyingInputStreamReader.java: fixed
+	bug #11989: ParseException with -encoding UTF-8.
+	
+	Reported by Kalle Olavi Niemitalo.
+
+	2005-02-11  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/NotifyingInputStreamReader.java:
+	correctly handle remaining undecoded bytes in the input buffer.
+
+	* src/gnu/classpath/tools/MalformedInputEvent.java: added
+	toString() method.
+
+	2005-02-11  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/gjdoc/Main.java: do not catch Throwable,
+	catch Exception instead so that Errors can fall through.
+
+	2005-02-11  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/gjdoc/Main.java: Also exit with return
+	code 1 if the doclet raised any errors.
+
+	2005-02-11  Michael Koch  <konqueror@gmx.de>
+
+	* src/gnu/classpath/tools/gjdoc/Main.java
+	(main): Fixed typo.
+
+	2005-02-11  Michael Koch  <konqueror@gmx.de>
+
+	* src/gnu/classpath/tools/gjdoc/Main.java
+	(main): Exit with return code of '1' of execution is failing.
+
+	2005-02-10  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java:
+	fix private field access.
+
+	2005-02-10  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java:
+	force generation of overview page if a single package is
+	documented and either -title, -doctitle or -overview has been
+	specified.
+
+	2005-02-10  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/gjdoc/Main.java: output warning when
+	option -classpath hasn't been interceptded at the wrapper level;
+	add -serialwarn and -nocomment to usage; better usage message for
+	-serialwarn.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java:
+	properly support optiosn -overview and -nocomment.  Replace option
+	-noserialwarn with -serialwarn.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/CssClass.java,
+	src/resources/htmldoclet/gjdochtml-clean-layout.css: add new style
+	for overview page.
+
+	2005-02-09  Julian Scheid  <julian@sektor37.de>
+
+	* m4/ac_prog_antlr.m4: if $ANTLR_JAR is set, use that for locating
+	antlr.jar; complain if $ANTLR_JAR specifies a non-existing file.
+
+	* configure.ac: set autoconf prerequisite version to 2.59; set
+	config macro directory; accept option --with-antlr-jar.
+
+	2005-02-08  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/doclets/AbstractDoclet.java:
+	* src/gnu/classpath/tools/gjdoc/ClassDocImpl.java:
+	* src/gnu/classpath/tools/gjdoc/InheritDocTagImpl.java:
+	* src/gnu/classpath/tools/gjdoc/Parser.java:
+	* src/gnu/classpath/tools/gjdoc/RootDocImpl.java:
+	* src/gnu/classpath/tools/gjdoc/TagImpl.java:
+	refactor so that jikes doesn't warn anymore.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java:
+	* src/gnu/classpath/tools/doclets/htmldoclet/CssClass.java:
+	* src/resources/htmldoclet/gjdochtml-clean-layout.css:
+	some HTML output and CSS refactoring
+
+	* src/gnu/classpath/tools/java2xhtml/Java2xhtml.java:
+	s/numerical/numeric/g
+
+2005-03-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/classpath/VMSystemProperties.java (VMSystemProperties): 
 	Set build.compiler to jikes to allow out of the box Tomcat4 JSP examples to run.
 

@@ -305,7 +305,7 @@ public class ExecutableMemberDocImpl extends MemberDocImpl implements Executable
 	 else if (source[endx]=='[' || source[endx]==']') {
 	    dimSuffix += source[endx];
 	 }
-	 else if (source[endx]==',' || source[endx]=='{') {
+	 else if (source[endx]==',' || source[endx]=='{' || source[endx]==';') {
 	    word=word.trim();
 	    if (word.length()>0) {
 	       ClassDoc exceptionType=rc.containingClass().findClass(word);

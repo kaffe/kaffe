@@ -811,18 +811,19 @@ public class RootDocImpl
       {
          String topLevelName = name;
          int ndx = topLevelName.indexOf('.');
-         String innerClassName = null;
+
+         String _innerClassName = null;
          if (ndx > 0) {
-            innerClassName = topLevelName.substring(ndx + 1);
+            _innerClassName = topLevelName.substring(ndx + 1);
             topLevelName = topLevelName.substring(0, ndx);
          }
 
          if (this.name.equals(topLevelName)) {
-            if (null == innerClassName) {
+            if (null == _innerClassName) {
                return qualifiedName;
             }
             else {
-               return qualifiedName + "." + innerClassName;
+               return qualifiedName + "." + _innerClassName;
             }
          }
          else {
@@ -983,7 +984,7 @@ public class RootDocImpl
    private ResolvedImport resolveImport(String importSpecifier)
    {
       ResolvedImport result = resolveImportFileSystem(importSpecifier);
-      if (null == result) {
+      if (null == result && Main.getInstance().isReflectionEnabled()) {
          result = resolveImportReflection(importSpecifier);
       }
       if (null == result) {
@@ -1026,20 +1027,20 @@ public class RootDocImpl
 
       for (Iterator it=sourcePath.iterator(); it.hasNext(); ) {
             
-         File sourcePath = (File)it.next();
+         File _sourcePath = (File)it.next();
 
          StringBuffer packageOrClassPrefix = new StringBuffer();
          StringTokenizer st = new StringTokenizer(importSpecifier, ".");
-         while (st.hasMoreTokens() && sourcePath.isDirectory()) {
+         while (st.hasMoreTokens() && _sourcePath.isDirectory()) {
             String token = st.nextToken();
             if ("*".equals(token)) {
-               return new ResolvedImportPackageFile(sourcePath, 
+               return new ResolvedImportPackageFile(_sourcePath, 
                                                     packageOrClassPrefix.substring(0, packageOrClassPrefix.length() - 1));
             }
             else {
                packageOrClassPrefix.append(token);
                packageOrClassPrefix.append('.');
-               File classFile = new File(sourcePath, token + ".java");
+               File classFile = new File(_sourcePath, token + ".java");
                //System.err.println("  looking for file " + classFile);
                if (classFile.exists()) {
                   StringBuffer innerClassName = new StringBuffer();
@@ -1053,7 +1054,7 @@ public class RootDocImpl
                   return new ResolvedImportClassFile(classFile, innerClassName.toString(), token, importSpecifier);
                }
                else {
-                  sourcePath = new File(sourcePath, token);
+                  _sourcePath = new File(_sourcePath, token);
                }
             }
          }
@@ -1144,13 +1145,18 @@ public class RootDocImpl
       // use reflection, assume fully qualified class name
 
       if (!unlocatableReflectedClassNames.contains(scheduledClassName)) {
-         try {
-            Class clazz = Class.forName(scheduledClassName);
-            printWarning("Cannot locate class " + scheduledClassName + " on file system, falling back to reflection.");
-            ClassDoc result = new ClassDocReflectedImpl(clazz);
-            return result;
+         if (Main.getInstance().isReflectionEnabled()) {
+            try {
+               Class clazz = Class.forName(scheduledClassName);
+               printWarning("Cannot locate class " + scheduledClassName + " on file system, falling back to reflection.");
+               ClassDoc result = new ClassDocReflectedImpl(clazz);
+               return result;
+            }
+            catch (Throwable ignore) {
+               unlocatableReflectedClassNames.add(scheduledClassName);
+            }
          }
-         catch (Throwable ignore) {
+         else {
             unlocatableReflectedClassNames.add(scheduledClassName);
          }
       }

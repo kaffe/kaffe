@@ -82,4 +82,12 @@ public class MalformedInputEvent
    {
       return length;
    }
+
+   public String toString()
+   {
+      return "MalformedInputEvent{line=" + lineNumber
+         + ",column=" + columnNumber
+         + ",length=" + length
+         + "}";
+   }
 }

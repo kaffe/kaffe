@@ -69,7 +69,7 @@ div[class="class title outer"]
         border: 1px solid;
 }
 
-[class="serialized package header"]
+.serialized.package.header
 {
         margin: 0em;
         padding: 0.25em;
@@ -77,17 +77,30 @@ div[class="class title outer"]
         margin-bottom: 1em;
 }
 
-[class="serialized class header"]
+
+.serialized.class.header
 {
         margin: 0em;
         padding: 0.25em;
+        padding-left: 3.25em;
         border: 1px solid;
+        text-indent: -3em;
+        font-weight: normal;
+        font-size: 1.2em;
 }
 
-td[class~="summary"][class~="left"],
-td[class~="summary"][class~="right"],
-[class="class summary inherited"],
-.summary .left
+.serialized.section.header
+{
+        font-size: 1.15em;
+}
+
+div.serialized.section
+{
+        padding-left: 1em;
+}
+
+.summary td,
+.summary .inherited
 {
         padding: 0.25em;
 }
@@ -112,17 +125,17 @@ hr
         border-right: 0px;
 }
 
-[class="class summary left"]
+.class.summary .left
 {
         width: 10%;
 }
 
-td[class="class summary left"]
+.class.summary td.left
 {
         text-align: right;
 }
 
-[class="class summary left"] [class~="synopsis"]
+.class.summary .left .synopsis
 {
         font-size: small;
 }
@@ -133,7 +146,7 @@ td[class="class summary left"]
         width: 20%;
 }
 
-ul [class~="inheritance"]
+ul.inheritance
 {       
         margin-left: 1.8em;
         padding-left: 0em;
@@ -142,14 +155,14 @@ ul [class~="inheritance"]
         list-style-image: none;
 }
 
-li [class~="inheritance]
+li.inheritance
 {
         margin: 0em !important;
         padding: 0em !important;
         marker-offset: 0em !important;
 }
 
-ul [class~="inheritance"] > li:before
+ul.inheritance > li:before
 {
         display: marker;
         width: 12px;
@@ -164,7 +177,7 @@ ul [class~="inheritance"] > li:before
         display: none;
 }
 
-[class="inheritance 0"]
+ul [class="inheritance 0"]
 {
         margin-left: 12px !important;
         padding-left: 0em;
@@ -172,26 +185,26 @@ ul [class~="inheritance"] > li:before
         list-style-image: none !important;
 }
 
-[class="class inheritance-tree"]
+.inheritance-tree
 {
         position: relative;
         left: -24px;
 }
 
-[class="class synopsis outer"]
+.synopsis.outer
 {
         padding: 0em;
         margin-bottom: 0.3em;
 }
 
-[class="class synopsis outer"] > *
+.synopsis.outer > *
 {
         margin: 0em;
         padding: 0em;
         line-height: 1.0em;
 }
 
-div[class~="navbar"][class~="div"]
+div.navbar.div
 {
         padding: 0em;
         margin: 0em;
@@ -199,9 +212,9 @@ div[class~="navbar"][class~="div"]
         left: -0.2em;
 }
 
-table[class~="navbar"][class~="div"],
-table[class~="navbar"][class~="div"] tr,
-table[class~="navbar"][class~="div"] td
+.navbar.div,
+.navbar.div tr,
+.navbar.div td
 {
         margin: 0em;
         padding: 0em;
@@ -209,18 +222,18 @@ table[class~="navbar"][class~="div"] td
         border-collapse: collapse;
 }
 
-table[class~="navbar"][class~="div"]
+table.navbar.div
 {
         width: 100%;
 }
 
-table[class~="navbar"][class~="div"] td
+table.navbar.div td
 {
         line-height: 1.9em;
         text-align: top;
 }
 
-[class~="navbar"][class~="item"]
+.navbar.item
 {
         /* float: left; */
         border: 1px solid;
@@ -235,7 +248,7 @@ table[class~="navbar"][class~="div"] td
         margin-bottom: 0.5em;
 }
 
-[class~="navbar"][class~="item"][class~="active"]
+.navbar.item.active
 {
         /* font-weight: bold; */
         border: 1px solid;
@@ -248,76 +261,88 @@ table[class~="navbar"][class~="div"] td
         margin-top: 0em;
 }
 
-[class="table container"]
+.table.container
 {
         padding: 0em;
         margin: 0em;
 }
 
-[class="overview summary"]
+.overview.summary
 {
         padding: 0em;
         margin: 0em;
 }
 
-table[class~="summary"]
+.summary
 {
         margin-bottom: 1.2em;
 }
 
-table[class="navbar div top"]
+table.navbar.top
 {
         margin-bottom: 1em !important;
 }
 
-[class~="package"][class~="description"]
+.package.description
 {
         margin-top: 0.0em;
         margin-bottom: 1.0em;
 }
 
-[class="class summary right list"]
+[class="overview description top"]
+{
+        margin-top: 0.0em;
+        margin-bottom: 1.0em;
+}
+
+[class="overview description full"]
+{
+        margin-top: 1.0em;
+        margin-bottom: 0.0em;
+}
+
+.class.summary .right .list
 {
         margin: 0em;
         padding: 0em;  
 }
 
-[class="class summary right list"] [class="synopsis"]
+.class.summary .right .list .synopsis
 {
         margin: 0em;
         padding: 0em;         
 }
 
-[class="classes menu-subtitle"]
+.classes .menu-subtitle
 {
         padding: 0em;
         margin-top: 0.5em;
         margin-bottom: 0em;
 }
 
-[class~="menu-title"]
+.menu-title
 {
         padding: 0em;
         margin-top: 0.8em;
         margin-bottom: 0.2em;
 }
 
-[class~="menu-entry"]
+.menu-entry
 {
         font-size: 0.8em;
 }
 
-[class="class summary right"]
+.class.summary .right
 {
         vertical-align: top;
 }
 
-[class="class summary right list"]
+.class.summary .right .list
 {
         vertical-align: top;
 }
 
-[class="navbar div top navi"]
+.navi
 {
         padding-top: 0.5em;
         font-size: x-small;
@@ -358,19 +383,19 @@ h3
         font-size: 1.1em;
 }
 
-[class~="usage"][class~="summary"][class~="right"] .synopsis
+.usage.summary .right .synopsis
 {
         padding-left: 5.25em;
         text-indent: -5em;
 }
 
-[class~="usage"][class~="summary"][class~="right"] .description
+.usage.summary .right .description
 {
         padding-left: 3em;
         padding-top: 0.1em;
 }
 
-td[class~="usage"][class~="summary"]
+td.usage.summary
 {
         vertical-align: top;
 }
@@ -422,10 +447,4 @@ ul.tree ul
 {
         margin-left: 0em;
         padding-left: 1.8em;
-}
-
-[class="serialized class header"]
-{
-        text-indent: -3em;
-        padding-left: 3.25em;
 }

@@ -27,7 +27,6 @@ public class TagImpl extends AbstractTagImpl implements Tag {
 
    private String kind;
    private String name;
-   private Map    tagMap;
 
    TagImpl(String name, String text, ClassDocImpl contextClass, MemberDocImpl contextMember) {
       super(text);

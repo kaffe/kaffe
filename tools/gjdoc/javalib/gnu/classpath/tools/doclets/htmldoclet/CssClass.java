@@ -43,8 +43,10 @@ public class CssClass
 
    public static final CssClass OVERVIEW_TITLE = new CssClass("overview title", "h1");
    public static final CssClass OVERVIEW_SUMMARY = new CssClass("overview summary");
-   public static final CssClass OVERVIEW_SUMMARY_LEFT = new CssClass("overview summary left");
-   public static final CssClass OVERVIEW_SUMMARY_RIGHT = new CssClass("overview summary right");
+   public static final CssClass OVERVIEW_SUMMARY_LEFT = new CssClass("left");
+   public static final CssClass OVERVIEW_SUMMARY_RIGHT = new CssClass("right");
+   public static final CssClass OVERVIEW_DESCRIPTION_TOP = new CssClass("overview description top");
+   public static final CssClass OVERVIEW_DESCRIPTION_FULL = new CssClass("overview description full");
 
    public static final CssClass DEPRECATION_TITLE = new CssClass("deprecation title", "h1");
    public static final CssClass DEPRECATION_SUMMARY = new CssClass("summary");
@@ -63,12 +65,13 @@ public class CssClass
    public static final CssClass SERIALIZED_SVUID_OUTER = new CssClass("serialized svuid outer", "p");
    public static final CssClass SERIALIZED_SVUID_HEADER = new CssClass("serialized svuid header", "b");
    public static final CssClass SERIALIZED_SVUID_VALUE = new CssClass("serialized svuid header");
+   public static final CssClass SERIALIZED_SECTION = new CssClass("serialized section");
    public static final CssClass SERIALIZED_SECTION_HEADER = new CssClass("serialized section header", "h4");
 
    public static final CssClass PACKAGE_TITLE = new CssClass("package title", "h1");
    public static final CssClass PACKAGE_SUMMARY = new CssClass("package summary");
-   public static final CssClass PACKAGE_SUMMARY_LEFT = new CssClass("package summary left");
-   public static final CssClass PACKAGE_SUMMARY_RIGHT = new CssClass("package summary right");
+   public static final CssClass PACKAGE_SUMMARY_LEFT = new CssClass("left");
+   public static final CssClass PACKAGE_SUMMARY_RIGHT = new CssClass("right");
    public static final CssClass PACKAGE_DESCRIPTION_TOP = new CssClass("package description top");
    public static final CssClass PACKAGE_DESCRIPTION_FULL = new CssClass("package description full");
    public static final CssClass PACKAGE_TREE_TITLE = new CssClass("package tree title", "h1");
@@ -121,13 +124,13 @@ public class CssClass
    public static final CssClass CLASS_SYNOPSIS_IMPLEMENTS = new CssClass("class synopsis implements", "div", "code");
    public static final CssClass CLASS_DESCRIPTION = new CssClass("class description");
    public static final CssClass CLASS_SUMMARY = new CssClass("class summary");
-   public static final CssClass CLASS_SUMMARY_LEFT = new CssClass("class summary left", new String[] { "valign" }, new String[] { "top" });
-   public static final CssClass CLASS_SUMMARY_LEFT_SYNOPSIS = new CssClass("class summary left synopsis", "code");
-   public static final CssClass CLASS_SUMMARY_RIGHT = new CssClass("class summary right");
-   public static final CssClass CLASS_SUMMARY_RIGHT_LIST = new CssClass("class summary right list", "dl");
-   public static final CssClass CLASS_SUMMARY_RIGHT_SYNOPSIS = new CssClass("class summary right synopsis", "dt", "code");
-   public static final CssClass CLASS_SUMMARY_RIGHT_DESCRIPTION = new CssClass("class summary right description", "dd");
-   public static final CssClass CLASS_SUMMARY_INHERITED = new CssClass("class summary inherited");
+   public static final CssClass CLASS_SUMMARY_LEFT = new CssClass("left", new String[] { "valign" }, new String[] { "top" });
+   public static final CssClass CLASS_SUMMARY_LEFT_SYNOPSIS = new CssClass("synopsis", "code");
+   public static final CssClass CLASS_SUMMARY_RIGHT = new CssClass("right");
+   public static final CssClass CLASS_SUMMARY_RIGHT_LIST = new CssClass("list", "dl");
+   public static final CssClass CLASS_SUMMARY_RIGHT_SYNOPSIS = new CssClass("synopsis", "dt", "code");
+   public static final CssClass CLASS_SUMMARY_RIGHT_DESCRIPTION = new CssClass("description", "dd");
+   public static final CssClass CLASS_SUMMARY_INHERITED = new CssClass("inherited");
    public static final CssClass CLASS_SUMMARY_INHERITED_MEMBER = new CssClass("member", "code");
    public static final CssClass CLASS_BOILERPLATE = new CssClass("boilerplate", "pre", new String[] { "style" }, new String[] { "font-size: x-small;" });
 
@@ -135,8 +138,8 @@ public class CssClass
    public static final CssClass USAGE_PACKAGE_TITLE = new CssClass("usage package title", "h2");
    public static final CssClass USAGE_USAGE_TITLE = new CssClass("usage usage title", "h3");
    public static final CssClass USAGE_SUMMARY = new CssClass("usage summary");
-   public static final CssClass USAGE_SUMMARY_LEFT = new CssClass("usage summary left");
-   public static final CssClass USAGE_SUMMARY_RIGHT = new CssClass("usage summary right");
+   public static final CssClass USAGE_SUMMARY_LEFT = new CssClass("left");
+   public static final CssClass USAGE_SUMMARY_RIGHT = new CssClass("right");
    public static final CssClass USAGE_SUMMARY_SYNOPSIS = new CssClass("synopsis");
    public static final CssClass USAGE_SUMMARY_DESCRIPTION = new CssClass("description");
    public static final CssClass USAGE_TABLE_HEADER = new CssClass("table header", "h3");
@@ -173,10 +176,11 @@ public class CssClass
    public static final CssClass TABLE_SUB_HEADER = new CssClass("table sub header", "h3");
    public static final CssClass TABLE_CONTAINER = new CssClass("table container", "dl");
 
+   public static final CssClass SECTION = new CssClass("section", "div");
    public static final CssClass SECTION_HEADER = new CssClass("section header", "h2");
 
    public static final CssClass NAVBAR_TOP = new CssClass("navbar div top", new String[] { "colspan" }, new String[] { "2" });
-   public static final CssClass NAVBAR_TOP_NAVI = new CssClass("navbar div top navi");
+   public static final CssClass NAVBAR_TOP_NAVI = new CssClass("navi");
    public static final CssClass NAVBAR_TOP_HEADER = new CssClass("header", new String[] { "rowspan" }, new String[] { "2" });
    public static final CssClass NAVBAR_BOTTOM = new CssClass("navbar div bottom");
    public static final CssClass NAVBAR_BOTTOM_SPACER = new CssClass("navbar bottom spacer", "p");

@@ -946,7 +946,7 @@ public class HtmlDoclet
       String anchor = null;
       String description = null;
       if (entry instanceof PackageDoc) {
-         output.beginAnchor(getPackageURL((PackageDoc)entry) + "package-summary" + filenameExtension);
+         output.beginAnchor(getPackageURL((PackageDoc)entry) + "/package-summary" + filenameExtension);
          output.print(entry.name());
          output.endAnchor();
          output.print(" - package");
@@ -1732,11 +1732,9 @@ public class HtmlDoclet
          output.div(CssClass.OVERVIEW_TITLE, overviewHeader);
       }
 
-      /*
-      output.beginDiv(CssClass.PACKAGE_DESCRIPTION_TOP);
-      printTags(output, packageDoc.firstSentenceTags(), true);
-      output.endDiv(CssClass.PACKAGE_DESCRIPTION_TOP);
-      */
+      output.beginDiv(CssClass.OVERVIEW_DESCRIPTION_TOP);
+      printTags(output, getRootDoc(), getRootDoc().firstSentenceTags(), true);
+      output.endDiv(CssClass.OVERVIEW_DESCRIPTION_TOP);
 
       List packageGroups = getPackageGroups();
 
@@ -1765,12 +1763,10 @@ public class HtmlDoclet
          }
       }
 
-      /*
       output.anchorName("description");
-      output.beginDiv(CssClass.PACKAGE_DESCRIPTION_FULL);
-      printTags(output, packageDoc.inlineTags(), false);
-      output.endDiv(CssClass.PACKAGE_DESCRIPTION_FULL);
-      */
+      output.beginDiv(CssClass.OVERVIEW_DESCRIPTION_FULL);
+      printTags(output, getRootDoc(), getRootDoc().inlineTags(), false);
+      output.endDiv(CssClass.OVERVIEW_DESCRIPTION_FULL);
 
       printNavBarBottom(output, "overview");
       output.endBody();
@@ -2369,13 +2365,17 @@ public class HtmlDoclet
          }
 
          CssClass sectionClass;
+         CssClass headerClass;
          if (isOnSerializedPage) {
-            sectionClass = CssClass.SERIALIZED_SECTION_HEADER;
+            sectionClass = CssClass.SERIALIZED_SECTION;
+            headerClass = CssClass.SERIALIZED_SECTION_HEADER;
          }
          else {
-            sectionClass = CssClass.SECTION_HEADER;
+            sectionClass = CssClass.SECTION;
+            headerClass = CssClass.SECTION_HEADER;
          }
-         output.div(sectionClass, header);
+         output.div(headerClass, header);
+         output.beginDiv(sectionClass);
 
          for (int i=0; i<memberDocs.length; ++i) {
             if (i>0) {
@@ -2677,6 +2677,7 @@ public class HtmlDoclet
             output.endDiv(CssClass.MEMBER_DETAIL_BODY);
             output.endDiv(CssClass.MEMBER_DETAIL);
          }
+         output.endDiv(sectionClass);
       }
    }
 
@@ -2798,7 +2799,10 @@ public class HtmlDoclet
 
    private void printTags(HtmlPage output, Doc contextDoc, Tag[] tags, boolean firstSentence, boolean inline)
    {
-      output.print(renderInlineTags(tags, new HtmlTagletContext(contextDoc, output, false)));
+      if (!optionNoComment.getValue()) {
+         output.print(renderInlineTags(tags, new HtmlTagletContext(contextDoc, output, false)));
+      }
+
       /*
       if (!optionNoComment.getValue()) {
          output.print(renderInlineTags(tag.firstSentenceTags(), output));
@@ -2924,8 +2928,8 @@ public class HtmlDoclet
    protected void run()
       throws DocletConfigurationException, IOException
    {
-      if (optionNoSerialWarn.getValue()) {
-         printWarning("option -noserialwarn is currently ignored.");
+      if (optionSerialWarn.getValue()) {
+         printWarning("option -serialwarn is currently ignored.");
       }
 
       if (null != optionTitle.getValue()) {
@@ -3223,8 +3227,8 @@ public class HtmlDoclet
    private DocletOptionFlag optionNoComment = 
      new DocletOptionFlag("-nocomment");
 
-   private DocletOptionFlag optionNoSerialWarn = 
-     new DocletOptionFlag("-noserialwarn");
+   private DocletOptionFlag optionSerialWarn = 
+     new DocletOptionFlag("-serialwarn");
 
    private DocletOptionFlag optionSplitIndex = 
      new DocletOptionFlag("-splitindex");
@@ -3315,6 +3319,7 @@ public class HtmlDoclet
          optionStylesheetFile,
          optionWindowTitle,
          optionDocTitle,
+         optionTitle,
          optionLinkSource,
          optionLink,
          optionLinkOffline,
@@ -3606,5 +3611,19 @@ public class HtmlDoclet
          sheets.put("GNU Clean", cleanSheets.toArray(new String[0]));
       }
       return sheets;
+   }
+
+   protected boolean isSinglePackage()
+   {
+      if (getRootDoc().firstSentenceTags().length > 0) {
+         return false;
+      }
+      else if (null != optionDocTitle.getValue() 
+               || null != optionTitle.getValue()) {
+         return false;
+      }
+      else {
+         return super.isSinglePackage();
+      }
    }
 }

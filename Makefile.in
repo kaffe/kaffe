@@ -749,7 +749,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/. $(distdir)/FAQ $(distdir)/binreloc $(distdir)/compat-include $(distdir)/developers $(distdir)/include/kaffe $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/libraries/javalib/gnu/classpath $(distdir)/m4 $(distdir)/po $(distdir)/scripts $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/compiler $(distdir)/test/regression/run_time
+	$(mkdir_p) $(distdir)/. $(distdir)/FAQ $(distdir)/binreloc $(distdir)/compat-include $(distdir)/developers $(distdir)/include/kaffe $(distdir)/kaffe/man $(distdir)/kaffe/scripts $(distdir)/kaffe/scripts/compat $(distdir)/libraries/javalib $(distdir)/libraries/javalib/gnu/classpath $(distdir)/m4 $(distdir)/po $(distdir)/scripts $(distdir)/test/regression $(distdir)/test/regression/compile_time $(distdir)/test/regression/compiler $(distdir)/test/regression/run_time $(distdir)/tools/gjdoc/javalib
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

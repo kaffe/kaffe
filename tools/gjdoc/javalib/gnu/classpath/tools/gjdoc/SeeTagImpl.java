@@ -38,9 +38,6 @@ public class SeeTagImpl extends AbstractTagImpl implements SeeTag {
    public SeeTagImpl(String text, ClassDocImpl contextClass) {
       super(text);
       this.contextClass=contextClass;
-      if (null == contextClass) {
-         Thread.dumpStack();
-      }
    }
 
    public void resolve() {

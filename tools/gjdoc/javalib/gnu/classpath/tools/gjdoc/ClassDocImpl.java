@@ -122,68 +122,6 @@ public class ClassDocImpl
       return rc;
    }
 
-
-   /**
-    *   Find a class within the context of this class. 
-    *
-    *   @todo check this against java lang spec. (class id hiding)
-    */
-   public ClassDoc _findClass(String className) {
-
-      //Debug.log(9,"findClass("+className+")");
-      ClassDoc rc;
-      //Debug.log(9,"trying by name");
-      rc=Main.getRootDoc().classNamed(className);
-      if (rc!=null) return rc;
-      
-      /*
-      System.err.println("trying '"+containingPackage().name()+"."+className+"'");
-      rc=Main.getRootDoc().classNamed(containingPackage().name()+"."+className);
-      if (rc!=null) return rc;
-      */
-
-      for (int i=0; i<importedClasses.length; ++i) {
-	 //Debug.log(9,"trying (by imported class)");
-	 if (importedClasses[i].qualifiedName().endsWith("."+className)) {
-	    rc=Main.getRootDoc().classNamed(importedClasses[i].qualifiedName());
-	    if (rc!=null) return rc;
-	 }
-         if (null == importedClasses[i]) {
-            System.err.println("importedClasses[" + i + "]=null");
-         }
-         else if (null == className) {
-            System.err.println("className=null");
-         }
-	 if (className.startsWith(importedClasses[i].name()+".")) {
-	    //Debug.log(9,"trying (by inner class) "+importedClasses[i].qualifiedName()+className.substring(importedClasses[i].name().length()));
-	    rc=Main.getRootDoc().classNamed(importedClasses[i].qualifiedName()+className.substring(importedClasses[i].name().length()));
-	    if (rc!=null) return rc;
-	 }
-      }
-
-      for (ClassDoc cdi=this; cdi!=null; cdi=cdi.containingClass()) {
-	 for (ClassDoc sdi=cdi; sdi!=null; sdi=sdi.superclass()) {
-	    rc=Main.getRootDoc().classNamed(sdi.qualifiedName()+"."+className);
-	    if (rc!=null) return rc;
-	 }
-
-	 rc=Main.getRootDoc().classNamed(cdi.qualifiedName()+"."+className);
-	 if (rc!=null) return rc;
-      }
-
-      //Debug.log(9,"importedPackages.length="+importedPackages.length+", this="+this);
-      for (int i=0; i<importedPackages.length; ++i) {
-	 //Debug.log(9,"trying (by package) "+importedPackages[i].name()+"."+className+"...");
-	 rc=Main.getRootDoc().classNamed(importedPackages[i].name()+"."+className);
-	 if (rc!=null) return rc;
-      }
-      rc=Main.getRootDoc().classNamed(containingPackage().name()+"."+className);
-      if (rc!=null) {
-	 return rc;
-      }
-      return Main.getRootDoc().classNamed("java.lang."+className);
-   } 
-
    // Get the list of classes declared as imported. 
    public ClassDoc[] importedClasses() {
       return importedClasses;
@@ -529,8 +467,7 @@ public class ClassDocImpl
 
 	 if (superclass instanceof ClassDocProxy) {
 
-	    String className=superclass.qualifiedName();
-	    ClassDoc realClassDoc=findClass(className);
+	    ClassDoc realClassDoc=findClass(superclass.qualifiedName());
 
 	    if (realClassDoc==null) {
 	       /*
@@ -548,8 +485,7 @@ public class ClassDocImpl
             for (int i=0; i<interfaces.length; ++i) {
                if (interfaces[i] instanceof ClassDocProxy) {
                   //Debug.log(9,"class "+qualifiedName()+" implements "+interfaces[i].qualifiedName());
-                  String className=interfaces[i].qualifiedName();
-                  ClassDoc realClassDoc=findClass(className);
+                  ClassDoc realClassDoc=findClass(interfaces[i].qualifiedName());
                   if (realClassDoc==null) {
                      /*
                        if (Main.recursiveClasses) {
@@ -807,12 +743,12 @@ public class ClassDocImpl
 	 rc=findConstructor(cdi, nameAndSignature);
 	 if (rc!=null) return rc;
 
-	 ClassDoc superclass = cdi.superclass();
-	 if (null == superclass) {
+	 ClassDoc _superclass = cdi.superclass();
+	 if (null == _superclass) {
 	    break;
 	 }
 	 else {
-	    cdi = superclass;
+	    cdi = _superclass;
 	 }
       }
       return null;
@@ -979,12 +915,12 @@ public class ClassDocImpl
             }
          }
          else {
-            ClassDoc[] interfaces = classDoc.interfaces();
-            if (null != interfaces) {
-               for (int i=0; i<interfaces.length; ++i) {
-                  if (interfaces[i] instanceof ClassDocImpl) { 
+            ClassDoc[] _interfaces = classDoc.interfaces();
+            if (null != _interfaces) {
+               for (int i=0; i<_interfaces.length; ++i) {
+                  if (_interfaces[i] instanceof ClassDocImpl) { 
                      FieldDoc fieldDoc 
-                        = ((ClassDocImpl)interfaces[i]).getFieldDoc(fieldName);
+                        = ((ClassDocImpl)_interfaces[i]).getFieldDoc(fieldName);
                      if (null != fieldDoc) {
                         return fieldDoc.constantValue();
                      }
@@ -1002,12 +938,12 @@ public class ClassDocImpl
    {
       int ndx = identifier.lastIndexOf('.');
       if (ndx >= 0) {
-         String className = identifier.substring(0, ndx);
-         String fieldName = identifier.substring(ndx + 1);
+         String _className = identifier.substring(0, ndx);
+         String _fieldName = identifier.substring(ndx + 1);
 
-         ClassDoc classDoc = findClass(className);
-         if (null != classDoc) {
-            return findFieldValue(identifier, classDoc, fieldName);
+         ClassDoc _classDoc = findClass(_className);
+         if (null != _classDoc) {
+            return findFieldValue(identifier, _classDoc, _fieldName);
          }
          else {
             throw new UnknownIdentifierException(identifier);

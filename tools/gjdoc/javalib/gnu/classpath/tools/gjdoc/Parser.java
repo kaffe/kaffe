@@ -346,7 +346,7 @@ import gnu.classpath.tools.MalformedInputEvent;
 	 for (Iterator it=fields.iterator(); it.hasNext(); ) {
 	    FieldDocImpl field=(FieldDocImpl)it.next();
 	    boolean fieldHasSerialTag=!field.isTransient() && !field.isStatic(); //field.hasSerialTag();
-	    if ((field.isIncluded() || fieldHasSerialTag) && parser.addComments) {
+	    if ((field.isIncluded() || fieldHasSerialTag) && parser.getAddComments()) {
 	       field.setRawCommentText(parser.getLastComment());
 	    }
             parser.ctx.fieldList.add(field);
@@ -386,7 +386,7 @@ import gnu.classpath.tools.MalformedInputEvent;
 									parser.ctx.classDoc.containingPackage(), 
 									source, startIndex, endIndex);
 
-	 if (parser.addComments)
+	 if (parser.getAddComments())
 	    execDoc.setRawCommentText(parser.getLastComment());
 
 	 parser.setLastComment(null);
@@ -561,11 +561,11 @@ import gnu.classpath.tools.MalformedInputEvent;
       int process(Parser parser, char[] source, int startIndex, int endIndex) throws ParseException, IOException {
 
 	 parser.classOpened(source, startIndex, endIndex);
-	 if (parser.addComments)
+	 if (parser.getAddComments())
 	    parser.ctx.classDoc.setRawCommentText(parser.getLastComment());
 	 parser.setLastComment(null);
 
-	 int rc=parser.parse(source, endIndex, parser.classLevelComponents);
+	 int rc=parser.parse(source, endIndex, parser.getClassLevelComponents());
 	 return rc;
       }
 
@@ -621,7 +621,12 @@ public class Parser {
       }
    }
 
-   static boolean addComments=false;
+   private boolean addComments = false;
+
+   public boolean getAddComments()
+   {
+      return this.addComments;
+   }
 
    public static final String WHITESPACE=" \t\r\n";
 
@@ -656,8 +661,13 @@ public class Parser {
       return result;
    }
 
-   static SourceComponent[] sourceLevelComponents;
-   static SourceComponent[] classLevelComponents;
+   private SourceComponent[] sourceLevelComponents;
+   private SourceComponent[] classLevelComponents;
+
+   public SourceComponent[] getClassLevelComponents()
+   {
+      return this.classLevelComponents;
+   }
 
    public Parser() {
       try {
@@ -689,7 +699,7 @@ public class Parser {
       }
    }
 
-   public static int getNumberOfProcessedFiles() {
+   public int getNumberOfProcessedFiles() {
       return processedFiles.size();
    }
 
