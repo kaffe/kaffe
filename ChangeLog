@@ -1,3 +1,22 @@
+2003-08-11  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/verify.c:
+	(verifyMethod3b) fixed verification of blocks that contain RETs
+	and are branch targets of JSRs.  
+	(verifyBasicBlock) fixed handling of BALOAD and BASTORE as they
+	are not only used for byte arrays but also for boolean arrays.
+	(implements) removed since instanceof_interface does the same
+	(mergeTypes) check TADDR before doing checks that involve tinfo,
+	since TADDR uses tinfo to store the return address; return
+	immediately if resolving one of the two types fails; adapted to
+	the removal of implements
+	(typecheck) return immediately if resolving one of the types
+	fails; adapted to removal of implements
+	(printType) check TADDR before doing checks that involve tinfo
+
+	* kaffe/kaffevm/soft.h:
+	(instanceof_interface) made public so the verifier can use it
+	
 2003-08-10  Jim Pick  <jim@kaffe.org>
 
 	* ChangeLog.1:

@@ -88,6 +88,7 @@ jfloat	soft_cvtdf(jdouble);
 
 jint instanceof(struct Hjava_lang_Class*, struct Hjava_lang_Class*);
 jint instanceof_class(struct Hjava_lang_Class*, struct Hjava_lang_Class*);
+jint instanceof_interface(struct Hjava_lang_Class*, struct Hjava_lang_Class*);
 jint instanceof_array(struct Hjava_lang_Class*, struct Hjava_lang_Class*);
 
 void	soft_debug1(void*, void*, void*);

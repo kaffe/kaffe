@@ -1030,7 +1030,6 @@ static Hjava_lang_Class*  getCommonSuperclass(Hjava_lang_Class* t1,
 
 
 static bool               typecheck(errorInfo*, Hjava_lang_Class* this, Type* t1, Type* t2);
-static bool               implements(Hjava_lang_Class* t1, Hjava_lang_Class* t2);
 
 static const char*        getReturnSig(const Method*);
 static uint32             countSizeOfArgsInSignature(const char* sig);
@@ -2100,7 +2099,13 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				if (!merge(einfo, method, curBlock, nextBlock)) {
 					VERIFY_ERROR("jsr: error merging operand stacks");
 				}
-				break;
+	
+				/*
+				 * args, we need to verify the RET block first ...
+				 */
+				for (;curIndex<numBlocks && blocks[curIndex]!=nextBlock; curIndex++);
+				assert (curIndex < numBlocks);
+				continue;
 				
 			case RET:
 				if (status[pc] & WIDE_MODDED) {
@@ -2123,8 +2128,13 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				if (!merge(einfo, method, curBlock, nextBlock)) {
 					VERIFY_ERROR("error merging opstacks when returning from a subroutine");
 				}
-				break;
-				
+
+				/* 
+				 * unmark this block as visited, so that the next
+				 * entry is treated as a first time merge.
+				 */
+				blocks[curIndex]->status ^= VISITED;
+				break;	
 				
 			case IF_ACMPEQ:  case IFNONNULL:
 			case IF_ACMPNE:  case IFNULL:
@@ -2320,9 +2330,9 @@ merge(errorInfo* einfo,
 	
 	DBG(VERIFY3,
 	    dprintf("%snot a first time merge\n", indent);
-	    dprintf("%s  from block:\n", indent);
+	    dprintf("%s  from block (%d - %d):\n", indent, fromBlock->startAddr, fromBlock->lastAddr);
 	    printBlock(method, fromBlock, indent2);
-	    dprintf("%s  to block:\n", indent);
+	    dprintf("%s  to block (%d - %d):\n", indent, toBlock->startAddr, toBlock->lastAddr);
 	    printBlock(method, toBlock, indent2);
 	    dprintf("\n");
 	    );
@@ -2911,7 +2921,6 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case IALOAD: ARRAY_LOAD(TINT,   TINTARR);   break;
 		case FALOAD: ARRAY_LOAD(TFLOAT, TFLOATARR); break;
-		case BALOAD: ARRAY_LOAD(TINT,   TBYTEARR);  break;
 		case CALOAD: ARRAY_LOAD(TINT,   TCHARARR);  break;
 		case SALOAD: ARRAY_LOAD(TINT,   TSHORTARR); break;
 			
@@ -2919,8 +2928,25 @@ verifyBasicBlock(errorInfo* einfo,
 		case DALOAD: ARRAY_WLOAD(TDOUBLE, TDOUBLEARR); break;
 #undef ARRAY_LOAD
 #undef ARRAY_WLOAD
-			
-			
+
+		case BALOAD:
+			/* BALOAD can be used for bytes or booleans .... */
+			OPSTACK_POP_T(TINT);
+
+			if (!typecheck (einfo, this, TBYTEARR, OPSTACK_TOP) &&
+			    !typecheck (einfo, this, TBOOLARR, OPSTACK_TOP)) {
+                                DBG(VERIFY3,
+                                    dprintf("                OPSTACK_TOP: ");
+                                    printType(OPSTACK_TOP);
+                                    dprintf(" vs. what's we wanted: TBYTEARR or TBOOLARR"); )
+                                VERIFY_ERROR("top of opstack does not have desired type");
+			}
+
+			OPSTACK_POP_BLIND;
+			OPSTACK_PUSH(TINT);
+			break;
+
+
 		case AASTORE:
 			// the runtime value of the type on the top of the stack must be
 			// assignment compatible with the type of the array
@@ -2981,7 +3007,6 @@ verifyBasicBlock(errorInfo* einfo,
 			
 		case IASTORE: ARRAY_STORE(TINT,   TINTARR);   break;
 		case FASTORE: ARRAY_STORE(TFLOAT, TFLOATARR); break;
-		case BASTORE: ARRAY_STORE(TINT,   TBYTEARR);  break;
 		case CASTORE: ARRAY_STORE(TINT,   TCHARARR);  break;
 		case SASTORE: ARRAY_STORE(TINT,   TSHORTARR); break;
 			
@@ -2989,7 +3014,22 @@ verifyBasicBlock(errorInfo* einfo,
 		case DASTORE: ARRAY_WSTORE(TDOUBLE, TDOUBLEARR); break;
 #undef ARRAY_STORE
 #undef ARRAY_WSTORE
-			
+
+		case BASTORE: 
+			/* BASTORE can store either bytes or booleans .... */
+			OPSTACK_POP_T(TINT);
+			OPSTACK_POP_T(TINT);
+
+			if ( !typecheck(einfo, this, TBYTEARR, OPSTACK_TOP) &&
+			     !typecheck(einfo, this, TBOOLARR, OPSTACK_TOP)) {
+				DBG(VERIFY3,
+				    dprintf("                OPSTACK_TOP: ");
+				    printType(OPSTACK_TOP);
+				    dprintf(" vs. what's we wanted: TBYTEARR or TBOOLARR"); )
+				VERIFY_ERROR("top of opstack does not have desired type");
+			}
+			OPSTACK_POP_BLIND;
+			break;			
 			
 			
 			/**************************************************************
@@ -3403,6 +3443,7 @@ verifyBasicBlock(errorInfo* einfo,
 		case JSR:
 			OPSTACK_PUSH_INFO(TADDR->type, pc + insnLen[code[pc]]);
 			break;
+
 		case RET:
 			// type checking done during merging stuff...
 			break;
@@ -4194,7 +4235,7 @@ resolveType(errorInfo* einfo, Hjava_lang_Class* this, Type *type)
 {
 	char* sig;
 	char* tmp;
-	
+
 	if (type->tinfo & CLASS_NAMESTR) {
 		sig = (char*)type->type;
 		
@@ -4245,9 +4286,17 @@ bool
 mergeTypes(errorInfo* einfo, Hjava_lang_Class* this,
 	   Type* t1, Type* t2)
 {
-	Hjava_lang_Class* type;
-	
-	if (t2->type == TUNSTABLE->type || sameType(t1, t2)) {
+	if (t1->type == TADDR->type || t2->type == TADDR->type) {
+		/* if one of the types is TADDR, the other one must also be TADDR */
+		if (t1->type != TADDR->type || t2->type != TADDR->type) {
+			return false;
+		}
+
+		t2->tinfo = t1->tinfo;
+
+		return true;
+	}
+	else if (t2->type == TUNSTABLE->type || sameType(t1, t2)) {
 		return false;
 	}
 	else if (t1->tinfo & UNINIT || t2->tinfo & UNINIT ||
@@ -4265,27 +4314,46 @@ mergeTypes(errorInfo* einfo, Hjava_lang_Class* this,
 	
 	// not equivalent, must resolve them
 	resolveType(einfo, this, t1);
+	if (t1->type == NULL) {
+		return false;
+	}
+
 	resolveType(einfo, this, t2);
-	if (t1->type == NULL || t2->type == NULL) {
-		DBG(VERIFY3,
-		    dprintf("%smergeTypes ERROR: t1 = ", indent);
-		    printType(t1); dprintf(" :: t2 = "); printType(t2); dprintf("\n"); );
+	if (t2->type == NULL) {
 		return false;
 	}
 	
+	if (CLASS_IS_INTERFACE(t1->type) &&
+	    instanceof_interface(t1->type, t2->type)) {
 	
-	type = getCommonSuperclass(t1->type, t2->type);
-	if (type == TOBJ->type) {
-		if (implements(t1->type, t2->type)) {
-			*t2 = *t1;
-			return true;
-		} else if (implements(t2->type, t1->type)) {
-			return false;
-		}
-	}
+		/* t1 is an interface and t2 implements it,
+		 * so the interface is the merged type.
+		 */
+
+		*t2 = *t1;
+		
+		return true;
 	
-	t2->type = type;
-	return true;
+	} else if (CLASS_IS_INTERFACE(t2->type) &&
+		   instanceof_interface(t2->type, t1->type)) {
+		
+		/* same as above, but we don't need to merge, since
+		 * t2 already is the merged type
+		 */
+
+		return false;
+	} else {
+		/*
+		 * neither of the types is an interface, so we have to
+		 * check for common superclasses. Only merge iff t2 is
+		 * not the common superclass.
+		 */
+		Hjava_lang_Class *tmp = t2->type;
+		
+		t2->type = getCommonSuperclass(t1->type, t2->type);
+	
+		return tmp != t2->type;
+	} 
 }
 
 
@@ -4322,6 +4390,10 @@ static
 bool
 isReference(const Type* type)
 {
+	if (IS_ADDRESS(type)) {
+		return false;
+	}
+
 	if (type->tinfo & CLASS_NAMESTR || type->tinfo & CLASS_SIGSTR)
 		return true;
 	
@@ -4329,8 +4401,7 @@ isReference(const Type* type)
 		(type->type != TUNSTABLE->type &&
 		 type->type != TWIDE->type &&
 		 type->type != TVOID->type &&
-		 !IS_PRIMITIVE_TYPE(type) &&
-		 !IS_ADDRESS(type));
+		 !IS_PRIMITIVE_TYPE(type));
 }
 
 /*
@@ -4507,46 +4578,18 @@ typecheck(errorInfo* einfo, Hjava_lang_Class* this, Type* t1, Type* t2)
 		return true;
 	}
 
-
 	resolveType(einfo, this, t1);
-	resolveType(einfo, this, t2);
-	
-	if (t1->type == NULL || t2->type == NULL) {
-		DBG(VERIFY3,
-		    dprintf("%stypecheck ERROR: t1 = ", indent);
-		    printType(t1); dprintf(" :: t2 = "); printType(t2); dprintf("\n"); );
+	if (t1->type == NULL) {
 		return false;
 	}
-	
-	return (instanceof(t1->type, t2->type) || implements(t1->type, t2->type));
+
+	resolveType(einfo, this, t2);
+	if (t2->type == NULL) {
+		return false;
+	}
+
+	return instanceof(t1->type, t2->type);
 }
-
-
-
-/*
- * returns whether t2 implements t1
- *
- * here we have to check if any of the interfaces implemented by t2 are subclasses of t1
- *
- * precondition: t1 and t2 must be reference types, or we get some serious issues here
- */
-static
-bool
-implements(Hjava_lang_Class* t1, Hjava_lang_Class* t2)
-{
-	int i;
-	
-	if (!CLASS_IS_INTERFACE(t1))
-		return(false);
-	
-	for (i = 0; i < t2->interface_len; i++)
-		if (instanceof(t1, t2->interfaces[i]))
-			return(true);
-	
-	return(false);
-}
-
-
 
 /*
  * allocate memory for a block info and fill in with default values
@@ -5090,12 +5133,6 @@ printType(const Type* t)
 	if (type == NULL) {
 		dprintf("NULL");
 	}
-	else if (t->tinfo & CLASS_NAMESTR || t->tinfo & CLASS_SIGSTR) {
-		dprintf("%s", (const char*)type);
-	}
-	else if (t->tinfo & UNINIT) {
-		printType(&((UninitializedType*)t->type)->type);
-	}
 	else if (type == TNULL->type) {
 		dprintf("TNULL");
 	}
@@ -5152,6 +5189,12 @@ printType(const Type* t)
 	}
 	else if (type == TOBJARR->type) {
 		dprintf("TOBJARR");
+	}
+	else if (t->tinfo & CLASS_NAMESTR || t->tinfo & CLASS_SIGSTR) {
+		dprintf("%s", (const char *)type);
+	}
+	else if (t->tinfo & UNINIT) {
+                printType(&((UninitializedType*)t->type)->type);
 	}
 	else {
 		if (type->name == NULL || CLASS_CNAME(type) == NULL) {
