@@ -27,7 +27,7 @@ public class SimpleDateFormat
 	private DateFormatSymbols syms;
 	private String pattern;
 
-private String getDefaultPattern(Locale loc)
+private static String getDefaultPattern(Locale loc)
 {
 	ResourceBundle bundle = getResources("dateformat", loc);
 	String date = ((String[])bundle.getObject("date"))[DateFormat.DEFAULT];
