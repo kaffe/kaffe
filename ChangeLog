@@ -1,3 +1,11 @@
+2004-07-15  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/external.c
+	(loadNativeLibrary2): Improve error message when library 
+	can't be found.
+
+	Reported by: Fabien Renaud  <renaud@nentec.de>
+
 2004-07-15  Dalibor Topic  <robilad@kaffe.org>,
 	    Timothy S. Stack <stack@cs.utah.edu>
 
