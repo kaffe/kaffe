@@ -1,3 +1,15 @@
+Wed Jan 12 11:12:20 PST 2000  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/lang/Thread.java: make toString()
+	consistent with JDK
+	* libraries/javalib/java/io/BufferedReader.java: use same
+	default buffer size as JDK
+	* libraries/javalib/java/io/StreamTokenizer.java: EOL bug fixes
+	* libraries/javalib/java/io/Reader.java: misc bug fixes
+	* test/regression/ReaderReadVoidTest.java,
+	test/regression/ReaderTest.java: new tests for java.io.Reader
+	* test/regression/Makefile.{am,in}: add new tests
+
 Sun Jan  9 16:37:34 CET 2000  Edouard G. Parmelan  <egp@free.fr>
 
 	* WHATSNEW: Some news since release 1.0.5.
