@@ -1,5 +1,10 @@
 2003-09-28  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* libraries/javalib/java/nio/ByteBufferHelper.java: added missing
+	file.
+
+2003-09-28  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* libraries/javalib/gnu/java/net/PlainDatagramSocketImpl.java,
 	libraries/javalib/gnu/java/net/PlainSocketImpl.java,
 	libraries/javalib/gnu/java/net/SocketInputStream.java,
