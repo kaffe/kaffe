@@ -1,3 +1,9 @@
+Mon Feb  8 05:04:04 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
+	(jthreadedConnect): on Solaris 2.5, retrying connect() after
+	EINPROGRESS may result EISCONN; assume success.
+
 Mon Feb  8 03:51:06 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/systems/oskit-pthreads/Makefile.am

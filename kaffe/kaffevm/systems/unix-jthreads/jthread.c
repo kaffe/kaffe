@@ -1909,6 +1909,18 @@ jthreadedConnect(int fd, struct sockaddr* addr, size_t len)
 	for (;;) {
 		r = connect(fd, addr, len);
 		if (r == 0 || !(errno == EINPROGRESS || errno == EINTR)) {
+			if (haveBlocked && r == -1 && errno == EISCONN) {
+				/* on Solaris 2.5, connect returns
+				   EISCONN when we retry a connect
+				   attempt in background.  This might
+				   lead to false positives if the
+				   connect fails and another thread
+				   tries to connect this socket and
+				   succeeds before this one is waken
+				   up.  Let's just hope it doesn't
+				   happen for now.  */
+				r = 0;
+			}
 			break;	/* success or real error */
 		}
 		if (errno == EINTR) {
