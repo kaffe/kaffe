@@ -2,6 +2,16 @@
 
 	Resynced with GNU Classpath.
 	
+	2005-01-19  Michael Koch  <konqueror@gmx.de>
+
+	* gnu/java/awt/ClasspathToolkit.java:
+	Import statements reworked.
+	(imageCache): Made it of type java.util.HashMap.
+
+2005-01-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
 	2005-01-19  Graydon Hoare  <graydon@redhat.com>
 
 	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.c:
