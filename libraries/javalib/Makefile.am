@@ -902,7 +902,6 @@ gnu_inet_util_SRCS = \
 	gnu/inet/util/CRLFOutputStream.java \
 	gnu/inet/util/EmptyX509TrustManager.java \
 	gnu/inet/util/GetLocalHostAction.java \
-	gnu/inet/util/GetSystemPropertyAction.java \
 	gnu/inet/util/LineInputStream.java \
 	gnu/inet/util/Logger.java \
 	gnu/inet/util/MessageInputStream.java \
