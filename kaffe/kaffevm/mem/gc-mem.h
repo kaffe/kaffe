@@ -40,6 +40,7 @@ extern int gc_system_alloc_cnt;
 typedef struct _gcFuncs {
 	void			(*walk)(void*, uint32);
 	void			(*final)(void*);
+	void			(*destroy)(void*);
 } gcFuncs;
 
 typedef struct _gc_freeobj {

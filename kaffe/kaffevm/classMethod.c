@@ -238,6 +238,10 @@ retry:
 					newifaces[i] = nclass->interfaces[j];
 				}
 			}
+			/* free old list of interfaces */
+			if (class->interfaces != 0) {
+				KFREE(class->interfaces);
+			}
 			class->interfaces = newifaces;
 		}
 
@@ -510,6 +514,7 @@ void
 internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags, int su, Hjava_lang_ClassLoader* loader)
 {
 	cl->name = name;
+	utf8ConstAddRef(name);
 	CLASS_METHODS(cl) = NULL;
 	CLASS_NMETHODS(cl) = 0;
 	assert(cl->superclass == 0);
@@ -568,7 +573,9 @@ DBG(CLASSFILE,
 
 	mt = &c->methods[c->nmethods++];
 	mt->name = name;
+	utf8ConstAddRef(name);
 	mt->signature = signature;
+	utf8ConstAddRef(signature);
 	mt->class = c;
 	mt->accflags = m->access_flags;
 	mt->c.bcode.code = 0;
@@ -623,11 +630,19 @@ DBG(RESERROR,	dprintf("addField: no signature name.\n");		)
 		return (0);
 	}
 	ft->name = WORD2UTF(pool->data[nc]);
+	utf8ConstAddRef(ft->name);
 	ft->accflags = f->access_flags;
 
 	sig = CLASS_CONST_UTF8(c, sc)->data;
 	if (sig[0] == 'L' || sig[0] == '[') {
-		FIELD_TYPE(ft) = (Hjava_lang_Class*)CLASS_CONST_UTF8(c, sc);
+		/* This `type' field is used to hold a utf8Const describing
+		 * the type of the field.  This utf8Const will be replaced
+		 * with a pointer to an actual class type in resolveFieldType
+		 * Between now and then, we add a reference to it.
+		 */
+		Utf8Const *ftype = CLASS_CONST_UTF8(c, sc);
+		FIELD_TYPE(ft) = (Hjava_lang_Class*)ftype;
+		utf8ConstAddRef(ftype);
 		FIELD_SIZE(ft) = PTR_TYPE_SIZE;
 		ft->accflags |= FIELD_UNRESOLVED_FLAG;
 	}
@@ -937,6 +952,7 @@ resolveFieldType(Field *fld, Hjava_lang_Class* this, errorInfo *einfo)
 
 	clas = getClassFromSignature(name, this->loader, einfo);
 
+	utf8ConstRelease((Utf8Const*)fld->type);
 	FIELD_TYPE(fld) = clas;
 	fld->accflags &= ~FIELD_UNRESOLVED_FLAG;
 
@@ -1294,7 +1310,7 @@ buildDispatchTable(Hjava_lang_Class* class)
 		return;
 	}
 
-	class->if2itable = gc_malloc(class->total_interface_len * sizeof(short), GC_ALLOC_NOWALK);
+	class->if2itable = KMALLOC(class->total_interface_len * sizeof(short));
 
 	/* first count how many indices we need */
 	j = 0;
@@ -1307,7 +1323,7 @@ buildDispatchTable(Hjava_lang_Class* class)
 			 */
 		return;
 	}
-	class->itable2dtable = gc_malloc(j * sizeof(short), GC_ALLOC_NOWALK);
+	class->itable2dtable = KMALLOC(j * sizeof(short));
 	j = 0;
 	for (i = 0; i < class->total_interface_len; i++) {
 		int nm = CLASS_NMETHODS(class->interfaces[i]);
@@ -1414,16 +1430,52 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class)
 }
 
 /*
+ * convert a CONSTANT_String entry in the constant poool
+ * from utf8 to java.lang.String
+ */
+Hjava_lang_String*
+resolveString(constants* pool, int idx)
+{
+	Utf8Const* utf8;
+	Hjava_lang_String* str = 0;
+
+	lockMutex(pool);
+	switch (pool->tags[idx]) {
+	case CONSTANT_String:
+		utf8 = WORD2UTF(pool->data[idx]);
+		pool->data[idx] = (ConstSlot)(str = utf8Const2Java(utf8));
+		pool->tags[idx] = CONSTANT_ResolvedString;
+		utf8ConstRelease(utf8);
+		break;
+
+	case CONSTANT_ResolvedString:	/* somebody else resolved it */
+		str = (Hjava_lang_String*)pool->data[idx];
+		break;
+
+	default:
+		assert(!!!"Neither String nor ResolvedString?");
+	}
+	unlockMutex(pool);
+	return (str);
+}
+
+#undef EAGER_LOADING
+/*
  * Initialise the constants.
  * First we make sure all the constant strings are converted to java strings.
+ *
+ * This code removed:
+ * There seems to be no need to be so eager in loading
+ * referenced classes or even resolving strings.
  */
 static
 bool
 resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
 {
+	bool success = true;
+#ifdef EAGER_LOADING
 	int idx;
 	constants* pool;
-	bool success = true;
 	Utf8Const* utf8;
 
 	lockMutex(class->centry);
@@ -1441,26 +1493,18 @@ resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
 			utf8ConstRelease(utf8);
 			break;
 
-#undef EAGER_LOADING
-#ifdef EAGER_LOADING
-		/* This code removed:
-		 * There seems to be no need to be so eager in loading
-		 * referenced classes.
-		 */
 		case CONSTANT_Class:
 			if (getClass(idx, class, einfo) == 0) {
 				success = false;
 				goto done;
 			}
 			break;
-#endif
 		}
 	}
 
-#ifdef EAGER_LOADING
 done:
-#endif
 	unlockMutex(class->centry);
+#endif	/* EAGER_LOADING */
 	return (success);
 }
 
@@ -1525,8 +1569,10 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader)
 	/* Add ours to end of hash */
 	*entryp = entry;
 
-	/* We keep an extra reference to the utf8 name so it won't be GCed.
-	   XXX does this reference get deleted when the class is GC'd? */
+	/* 
+	 * This reference to the utf8 name will be released if and when this 
+	 * class entry is freed in finalizeClassLoader.
+	 */
 	utf8ConstAddRef(entry->name);
 
         unlockStaticMutex(&classHashLock);
@@ -1773,7 +1819,76 @@ findMethodFromPC(uintp pc)
 #endif
 
 /*
- * finalize a classloader and remove its entries in the class entry pool.
+ * Destroy a class object.
+ */
+void
+destroyClass(void* c)
+{
+        int i;
+	int idx;
+	Hjava_lang_Class* clazz = c;
+	constants* pool;
+
+DBG(CLASSGC,
+        dprintf("destroying class %s @ %p\n", clazz->name->data, c);
+   )
+
+	assert(!CLASS_IS_PRIMITIVE(clazz));
+	assert(clazz->loader);
+
+        /* destroy all fields */
+        if (CLASS_FIELDS(clazz) != 0) {
+                Field *f = CLASS_FIELDS(clazz);
+                for (i = 0; i < CLASS_NFIELDS(clazz); i++) {
+                        utf8ConstRelease(f->name);
+                        /* if the field was never resolved, we must release the
+                         * Utf8Const to which its type field points */
+                        if (!FIELD_RESOLVED(f)) {
+                                utf8ConstRelease((Utf8Const*)FIELD_TYPE(f));
+                        }
+			f++;
+                }
+                KFREE(CLASS_FIELDS(clazz));
+        }
+
+        /* destroy all methods, only if this class has indeed a method table */
+        if (!CLASS_IS_ARRAY(clazz) && CLASS_METHODS(clazz) != 0) {
+                Method *m = CLASS_METHODS(clazz);
+                for (i = 0; i < CLASS_NMETHODS(clazz); i++) {
+                        utf8ConstRelease(m->name);
+                        utf8ConstRelease(m->signature);
+                        KFREE(m->lines);
+                        KFREE(m->declared_exceptions);
+			m++;
+                }
+                KFREE(CLASS_METHODS(clazz));
+        }
+
+        /* release remaining refs to utf8consts in constant pool */
+	pool = CLASS_CONSTANTS (clazz);
+	for (idx = 0; idx < pool->size; idx++) {
+		switch (pool->tags[idx]) {
+		case CONSTANT_String:	/* unresolved strings */
+		case CONSTANT_Utf8:
+			utf8ConstRelease(WORD2UTF(pool->data[idx]));
+			break;
+		}
+	}
+
+        /* free various other fixed things */
+        KFREE(clazz->if2itable);
+        KFREE(clazz->itable2dtable);
+        KFREE(clazz->gc_layout);
+
+        /* The interface table for array classes points to static memory */
+        if (!CLASS_IS_ARRAY(clazz)) {
+                KFREE(clazz->interfaces);
+        }
+        utf8ConstRelease(clazz->name);
+}
+
+/*
+ * Finalize a classloader and remove its entries in the class entry pool.
  */
 void
 finalizeClassLoader(Hjava_lang_ClassLoader* loader)
@@ -1794,11 +1909,19 @@ DBG(CLASSGC,
 			totalent++;
 			entry = *entryp;
 			if (entry->loader == loader) {
+				if (Kaffe_JavaVMArgs[0].enableVerboseGC > 0 &&
+				    entry->class != 0) 
+				{
+					fprintf(stderr, 
+						"<GC: unloading class `%s'>\n",
+						entry->name->data);
+				}
 DBG(CLASSGC,
 				dprintf("removing %s l=%p/c=%p\n", 
 				    entry->name->data, loader, entry->class);
     )
-				gc_rm_ref(entry->name);
+				/* release reference to name */
+				utf8ConstRelease(entry->name);
 				(*entryp) = entry->next;
 				KFREE(entry);
 			}

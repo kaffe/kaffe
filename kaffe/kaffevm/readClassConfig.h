@@ -46,7 +46,6 @@
 			readu2(&iface, fp);				\
 			interfaces[i] = (Hjava_lang_Class*) (size_t) iface; \
 		}							\
-		GC_WRITE(this, interfaces);				\
 		addInterfaces(this, count, interfaces);			\
 	} while(0)
 

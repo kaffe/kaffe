@@ -1,3 +1,26 @@
+Sun Jan  3 15:22:22 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/jar.c:  added O_BINARY flag for Windoze.
+	* libraries/clib/native/Double.c: improved error handling for 
+	Double.valueOf, handle empty strings better.
+	test/regression/DoubleBug.java: test for that.
+	* kaffe/kaffevm/external.c, baseClasses.c: cosmetic changes.
+	* kaffe/kaffevm/classMethod.[ch], kaffe/kaffevm/code.c,
+	kaffe/kaffevm/gc.h, kaffe/kaffevm/kaffe.def,
+	kaffe/kaffevm/readClassConfig.h, kaffe/kaffevm/support.h
+	kaffe/kaffevm/utf8const.c, kaffe/kaffevm/mem/gc-incremental.[ch]
+	kaffe/kaffevm/mem/gc-mem.h:
+	- adapted class garbage collection to properly work with Archie's 
+	  utf8 reference counting.
+	- reintroduced utf8 allocation type for statistical purposes.
+	- added (C++ like) destructor functions for gc objects.
+	- turned off eager loading of strings by default (the CONSTINIT state 
+	  is redundant now.)
+	- changed ordering of gc allocation types some to visualize grouping.
+	- walk fields and methods of a class from within walkClass.
+	- converted more elements of classes, methods, and fields to be 
+	  either explicitly freed or at least precisely walked.
+
 Sun Jan  3 11:51:52 1999  Archie Cobbs <archie@whistle.com>
 
 	* test/regression/Reflect.{java,out}: don't display final keyword

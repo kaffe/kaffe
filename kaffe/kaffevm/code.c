@@ -91,7 +91,7 @@ addLineNumbers(Method* m, uint32 len, classFile* fp)
 	u2 data;
 
 	readu2(&nr, fp);
-	lines = gc_malloc(sizeof(lineNumbers)+sizeof(lineNumberEntry) * nr, GC_ALLOC_NOWALK);
+	lines = KMALLOC(sizeof(lineNumbers)+sizeof(lineNumberEntry) * nr);
 
 	lines->length = nr;
 	for (i = 0; i < nr; i++) {
@@ -102,7 +102,6 @@ addLineNumbers(Method* m, uint32 len, classFile* fp)
 	}
 
 	/* Attach lines to method */
-	GC_WRITE(m, lines);
 	m->lines = lines;
 }
 
@@ -118,8 +117,7 @@ addCheckedExceptions(struct _methods* m, uint32 len, classFile* fp)
 
 	readu2(&nr, fp);
 	m->ndeclared_exceptions = nr;
-	idx = gc_malloc(sizeof(constIndex) * nr, GC_ALLOC_NOWALK);
-	GC_WRITE(m, idx);
+	idx = KMALLOC(sizeof(constIndex) * nr);
 	m->declared_exceptions = idx;
 
 	for (i = 0; i < nr; i++) {

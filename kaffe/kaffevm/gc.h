@@ -12,8 +12,8 @@
 #ifndef __gc_h
 #define __gc_h
 
-/* Enable incremental collection - recommended but if you have odd behaviour
- * turn this option off - non-incremental collection is more debugged.
+/* 
+ * We do not support incremental collection as this time.
  */
 #undef	GC_INCREMENTAL
 
@@ -25,22 +25,22 @@
  */
 #define	GC_ALLOC_NORMAL		0
 #define	GC_ALLOC_NOWALK		1
-#define	GC_ALLOC_FIXED		2
-#define	GC_ALLOC_NORMALOBJECT	3
-#define	GC_ALLOC_PRIMARRAY	4
-#define	GC_ALLOC_REFARRAY	5
-#define	GC_ALLOC_CLASSOBJECT	6
-#define	GC_ALLOC_FINALIZEOBJECT	7
-#define	GC_ALLOC_METHOD		8
-#define	GC_ALLOC_FIELD		9
-#define	GC_ALLOC_STATICDATA	10
-#define	GC_ALLOC_DISPATCHTABLE	11
-#define	GC_ALLOC_BYTECODE	12
-#define	GC_ALLOC_EXCEPTIONTABLE	13
-#define	GC_ALLOC_CONSTANT	14
-#define	GC_ALLOC_UTF8CONST	15
-#define	GC_ALLOC_INTERFACE	16
-#define	GC_ALLOC_JITCODE	17
+#define	GC_ALLOC_NORMALOBJECT	2
+#define	GC_ALLOC_PRIMARRAY	3
+#define	GC_ALLOC_REFARRAY	4
+#define	GC_ALLOC_CLASSOBJECT	5
+#define	GC_ALLOC_FINALIZEOBJECT	6
+#define	GC_ALLOC_STATICDATA	7
+#define	GC_ALLOC_BYTECODE	8
+#define	GC_ALLOC_DISPATCHTABLE	9
+#define	GC_ALLOC_EXCEPTIONTABLE	10
+#define	GC_ALLOC_JITCODE	11
+#define	GC_ALLOC_CONSTANT	12
+#define	GC_ALLOC_FIXED		13
+#define	GC_ALLOC_METHOD		14
+#define	GC_ALLOC_FIELD		15
+#define	GC_ALLOC_UTF8CONST	16
+#define	GC_ALLOC_INTERFACE	17
 #define	GC_ALLOC_LOCK		18
 #define	GC_ALLOC_THREADCTX	19
 #define	GC_ALLOC_REF		20

@@ -141,7 +141,7 @@ utf8ConstNew(const char *s, int len)
 	}
 
 	/* Not in table; create new Utf8Const struct */
-	utf8 = KMALLOC(sizeof(Utf8Const) + len + 1);
+	utf8 = gc_malloc(sizeof(Utf8Const) + len + 1, GC_ALLOC_UTF8CONST);
 	memcpy((char *) utf8->data, s, len);
 	((char*)utf8->data)[len] = '\0';
 	utf8->hash = hash;
@@ -178,7 +178,7 @@ utf8ConstRelease(Utf8Const *utf8)
 	assert(utf8->nrefs >= 1);
 	if (--utf8->nrefs == 0) {
 		hashRemove(hashTable, utf8);
-		KFREE(utf8);
+		jfree(utf8);
 	}
 	unlockStaticMutex(&utf8Lock);
 }

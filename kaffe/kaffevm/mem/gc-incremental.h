@@ -76,5 +76,6 @@ extern struct _gcStats {
 
 extern void walkConservative(void*, uint32);
 extern void markObject(void* mem);
+extern void destroyClass(void*);
 
 #endif

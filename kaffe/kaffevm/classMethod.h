@@ -35,6 +35,7 @@
 #define	CSTATE_FAILED		-1
 
 struct _classEntry;
+struct Hjava_lang_String;
 
 typedef struct Hjava_lang_ClassLoader {
 	int	dummy;
@@ -155,8 +156,6 @@ typedef struct _dispatchTable {
 	Hjava_lang_Class*	class;
 	void*			method[1];
 } dispatchTable;
-
-#define	CLASS_STATE		((int)&(((Hjava_lang_Class*)0)->state))
 
 #define	DTABLE_CLASS		0
 #define	DTABLE_METHODOFFSET	(sizeof(void*))
@@ -292,6 +291,7 @@ Method*			findMethodFromPC(uintp);
 
 void			finalizeClassLoader(Hjava_lang_ClassLoader* loader);
 void			registerClass(classEntry* entry);
+struct Hjava_lang_String* resolveString(constants* pool, int idx);
 
 extern Utf8Const* init_name;		/* "<clinit>" */
 extern Utf8Const* constructor_name;	/* "<init>" */

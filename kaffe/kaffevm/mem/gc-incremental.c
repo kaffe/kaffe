@@ -121,8 +121,8 @@ void walkMemory(void*);
 
 static void walkNull(void*, uint32);
 static void walkClass(void*, uint32);
-static void walkFields(void*, uint32);
-static void walkMethods(void*, uint32);
+static void walkFields(Field*, int);
+static void walkMethods(Method*, int);
 static void walkObject(void*, uint32);
 static void walkRefArray(void*, uint32);
 #define walkPrimArray walkNull
@@ -132,65 +132,52 @@ static void walkRefArray(void*, uint32);
  * if we are debugging, provide a bunch of fake finalizers whose only
  * purpose it is to tell us when things are about to be freed
  */
-static void finalizeClass(void* c)
-{
-    Hjava_lang_Class* clazz = c;
-DBG(FINALIZE,
-    dprintf("freeing class %s @ %p\n", clazz->name->data, c);
-   )
-}
-
 #define F(WHAT) 				\
-static void finalize##WHAT(void *p) {		\
+static void destroy##WHAT(void *p) {		\
 DBG(FINALIZE,					\
-    dprintf("finalize%s %p\n", #WHAT, p);	\
+    dprintf("destroy%s %p\n", #WHAT, p);	\
    )						\
 }
 
-F(Method)
-F(Field)
 F(Dispatch)
 F(Bytecode)
 F(Jitcode)
-F(Staticdata)
+F(Static)
 F(Etable)
 
 #else /* Without debugging, don't bother to run these: */
      
-#define finalizeClass           GC_OBJECT_NORMAL
-#define finalizeMethod		GC_OBJECT_NORMAL
-#define finalizeField		GC_OBJECT_NORMAL
-#define finalizeDispatch	GC_OBJECT_NORMAL
-#define finalizeBytecode	GC_OBJECT_NORMAL
-#define finalizeJitcode		GC_OBJECT_NORMAL
-#define finalizeStaticdata	GC_OBJECT_NORMAL
-#define finalizeEtable		GC_OBJECT_NORMAL
+#define destroyDispatch		0
+#define destroyBytecode		0
+#define destroyJitcode		0
+#define destroyStatic		0
+#define destroyEtable		0
 
 #endif	/* DEBUG */
 
 /* Standard GC function sets */
 static gcFuncs gcFunctions[] = {
-	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_NORMAL */
-	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_NOWALK */
-	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_FIXED */
-	{ walkObject,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_NORMALOBJECT */
-	{ walkPrimArray,    GC_OBJECT_NORMAL },	/* GC_ALLOC_PRIMARRAY */
-	{ walkRefArray,     GC_OBJECT_NORMAL },	/* GC_ALLOC_REFARRAY */
-	{ walkClass,        finalizeClass    },	/* GC_ALLOC_CLASSOBJECT */
-	{ walkObject,       finalizeObject   },	/* GC_ALLOC_FINALIZEOBJECT */
-	{ walkMethods, 	    finalizeMethod   },	/* GC_ALLOC_METHOD */
-	{ walkFields, 	    finalizeField    },	/* GC_ALLOC_FIELD */
-	{ walkNull,	    finalizeStaticdata },/* GC_ALLOC_STATICDATA */
-	{ walkConservative, finalizeDispatch },	/* GC_ALLOC_DISPATCHTABLE */
-	{ walkNull,	    finalizeBytecode },	/* GC_ALLOC_BYTECODE */
-	{ walkConservative, finalizeEtable   },	/* GC_ALLOC_EXCEPTIONTABLE */
-	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_CONSTANT */
-	{ walkNull,	    GC_OBJECT_NORMAL },	/* GC_ALLOC_UTF8CONST */
-	{ walkConservative, GC_OBJECT_NORMAL },	/* GC_ALLOC_INTERFACE */
-	{ walkConservative, finalizeJitcode  },	/* GC_ALLOC_JITCODE */
-	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_LOCK */
-	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_THREADCTX */
-	{ walkNull,	    GC_OBJECT_FIXED  },	/* GC_ALLOC_REF */
+  { walkConservative, GC_OBJECT_NORMAL, 0 },  		   /* NORMAL */
+  { walkNull,	      GC_OBJECT_NORMAL, 0 },  		   /* NOWALK */
+  { walkObject,	      GC_OBJECT_NORMAL, 0 },  		   /* NORMALOBJECT */
+  { walkPrimArray,    GC_OBJECT_NORMAL, 0 },  		   /* PRIMARRAY */
+  { walkRefArray,     GC_OBJECT_NORMAL, 0 },  		   /* REFARRAY */
+  { walkClass,        GC_OBJECT_NORMAL, destroyClass },    /* CLASSOBJECT */
+  { walkObject,       finalizeObject,   0 },   		   /* FINALIZEOBJECT */
+  { walkNull,	      GC_OBJECT_NORMAL, destroyStatic },   /* STATICDATA */
+  { walkNull,	      GC_OBJECT_NORMAL, destroyBytecode }, /* BYTECODE */
+  { walkConservative, GC_OBJECT_NORMAL, destroyDispatch }, /* DISPATCHTABLE */
+  { walkConservative, GC_OBJECT_NORMAL, destroyEtable },   /* EXCEPTIONTABLE */
+  { walkConservative, GC_OBJECT_NORMAL, destroyJitcode },  /* JITCODE */
+  { walkConservative, GC_OBJECT_NORMAL, 0 },		   /* CONSTANT */
+  { walkNull,	      GC_OBJECT_FIXED,  0 },  		   /* FIXED */
+  { walkNull, 	      GC_OBJECT_FIXED,  0 },		   /* METHOD */
+  { walkNull, 	      GC_OBJECT_FIXED,  0 },		   /* FIELD */
+  { walkNull,	      GC_OBJECT_FIXED,  0 },		   /* UTF8CONST */
+  { walkNull, 	      GC_OBJECT_FIXED,  0 },		   /* INTERFACE */
+  { walkNull,	      GC_OBJECT_FIXED,  0 },		   /* LOCK */
+  { walkNull,	      GC_OBJECT_FIXED,  0 },		   /* THREADCTX */
+  { walkNull,	      GC_OBJECT_FIXED,  0 },		   /* REF */
 };
 
 #define	REFOBJALLOCSZ	128
@@ -431,30 +418,19 @@ do {                                  \
  */
 static
 void
-walkMethods(void* base, uint32 size)
+walkMethods(Method* m, int nm)
 {
-	Method* m = (Method*)base;
-	int nm;
-
-	if (!m->class) {
-		return;
-	}
-	nm = CLASS_NMETHODS(m->class);
-
-	RECORD_MARKED(1, size)		
+	RECORD_MARKED(1, nm * sizeof(Method))		
 	while (nm-- > 0) {
-		MARK_IFNONZERO(m, name);
-		MARK_IFNONZERO(m, signature);
 		/* This is either a block of memory for native or bytecode */
 		MARK_IFNONZERO(m, c.bcode.code);/* aka c.ncode.ncode_start */
-		MARK_IFNONZERO(m, class);
-		MARK_IFNONZERO(m, lines);
+		MARK_OBJECT_PRECISE(m->class);
 		MARK_IFNONZERO(m, exception_table);
-		MARK_IFNONZERO(m, declared_exceptions);
 
 		/* NB: need to mark ncode only if it points to a trampoline */
-		if(!METHOD_TRANSLATED(m) && (m->ncode != 0))
+		if(!METHOD_TRANSLATED(m) && (m->ncode != 0)) {
 			markObject(m->ncode);
+		}
 		m++;
 	}
 }
@@ -464,16 +440,15 @@ walkMethods(void* base, uint32 size)
  */
 static
 void
-walkFields(void* base, uint32 size)
+walkFields(Field* fld, int nf)
 {
-	Field* fld = (Field*)base;
-	int nf = size/sizeof(Field);
-
-	RECORD_MARKED(1, size)
+	RECORD_MARKED(1, nf * sizeof(Field))
 	while (nf-- > 0) {
-		MARK_IFNONZERO(fld, name);
-		MARK_IFNONZERO(fld, type);
-		markObject(*(void**)&fld->info); /* should be MARK_OBJECT_PRECISE */
+		if (FIELD_RESOLVED(fld)) {
+			MARK_OBJECT_PRECISE(fld->type);
+		} /* else it's an Utf8Const which is not subject to gc */
+
+		markObject(*(void**)&fld->info); /* XXX: should be MARK_OBJECT_PRECISE */
 		fld++;
 	}
 }
@@ -493,24 +468,35 @@ walkClass(void* base, uint32 size)
 
 	class = (Hjava_lang_Class*)base;
 
-	MARK_IFNONZERO(class, name);
 	if (class->state >= CSTATE_PREPARED) {
-		MARK_IFNONZERO(class, superclass);
+		MARK_OBJECT_PRECISE(class->superclass);
 	}
 	MARK_IFNONZERO(class, constants.data);
-	MARK_IFNONZERO(class, methods);
-	MARK_IFNONZERO(class, fields);
+	if (CLASS_FIELDS(class) != 0) {
+		walkFields(CLASS_FIELDS(class), CLASS_NFIELDS(class));
+	}
 	if (!CLASS_IS_PRIMITIVE(class)) {
 		MARK_IFNONZERO(class, dtable);
 	}
-	/* The interface table for array classes points to static memory */
+
+	/* The interface table for array classes points to static memory,
+	 * so we must not mark it.  */
 	if (!CLASS_IS_ARRAY(class)) {
-		MARK_IFNONZERO(class, interfaces);
+		/* mark interfaces referenced by this class */
+		for (n = 0; n < class->total_interface_len; n++) {
+			MARK_OBJECT_PRECISE(class->interfaces[n]);
+		}
+	} else {
+		/* array classes should keep their element type alive */
+		MARK_OBJECT_PRECISE(CLASS_ELEMENT_TYPE(class));
+	} 
+
+	/* CLASS_METHODS only points to the method array for non-array and
+	 * non-primitive classes */
+	if (!CLASS_IS_PRIMITIVE(class) && !CLASS_IS_ARRAY(class) && CLASS_METHODS(class) != 0) {
+		walkMethods(CLASS_METHODS(class), CLASS_NMETHODS(class));
 	}
-	MARK_IFNONZERO(class, loader);
-	MARK_IFNONZERO(class, gc_layout);
-	MARK_IFNONZERO(class, if2itable);
-	MARK_IFNONZERO(class, itable2dtable);
+	MARK_OBJECT_PRECISE(class->loader);
 
 	/* Walk the static data elements */
 	if (class->state >= CSTATE_DOING_PREPARE) {
@@ -594,7 +580,7 @@ gcMan(void* arg)
 				DBG(GCDIAG,
 				    assert(gc_heap_isobject(info, unit)));
 				GC_SET_STATE(info, idx, GC_STATE_INFINALIZE);
-				markObject(UTOMEM(unit));
+				markObjectDontCheck(unit, info, idx);
 			}
 		}
 		/* We may now have more grey objects, so walk them */
@@ -728,8 +714,8 @@ finishGC(void)
 
 	/* this is where we'll stop locking out other threads 
 	 * measure gc time until here.  This is not quite accurate, as
-	 * it exclude some of the time to sweep objects, but lacking
-	 * per-thread timing it's the best we can do.
+	 * it excludes the time to sweep objects, but lacking
+	 * per-thread timing it's a reasonable thing to do.
 	 */
 	stopTiming(&gc_time);
 
@@ -744,8 +730,18 @@ finishGC(void)
 	 * thread manipulating the "mustfree" list.
 	 */
 	while (gclists[mustfree].cnext != &gclists[mustfree]) {
+		void (*destroy)(void *);
 		lockStaticMutex(&gc_lock);
 		unit = gclists[mustfree].cnext;
+
+		/* invoke destroy function before freeing the object */
+		info = GCMEM2BLOCK(unit);
+		idx = GCMEM2IDX(info, unit);
+		destroy = gcFunctions[GC_GET_FUNCS(info,idx)].destroy;
+		if (destroy != 0) {
+			destroy(UTOMEM(unit));
+		}
+
 		UREMOVELIST(unit);
 		gc_heap_free(unit);
 		unlockStaticMutex(&gc_lock);
@@ -999,7 +995,6 @@ gcFree(void* mem)
 			gc_heap_free(unit);
 		}
 		else {
-			/* We just ignore this - it'll get GCed */
 			assert(!!!"Attempt to explicitly free nonfixed object");
 		}
 		unlockStaticMutex(&gc_lock);

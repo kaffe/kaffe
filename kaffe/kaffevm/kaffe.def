@@ -105,6 +105,9 @@ define_insn(LDC1)
 	idx = (uint8)getpc(0);
 	push(1);
 	switch (CLASS_CONST_TAG(current_class(), idx)) {
+	case CONSTANT_String:
+		resolveString(CLASS_CONSTANTS(current_class()), idx);
+		/* FALL THROUGH ... */
 	case CONSTANT_ResolvedString:
 		move_string_const(stack(0), (void*)CLASS_CONST_DATA(current_class(),idx));
 		break;
@@ -129,6 +132,9 @@ define_insn(LDC2)
 	idx = (uint16)((getpc(0) << 8) | getpc(1));
 	push(1);
 	switch (CLASS_CONST_TAG(current_class(), idx)) {
+	case CONSTANT_String:
+		resolveString(CLASS_CONSTANTS(current_class()), idx);
+		/* FALL THROUGH ... */
 	case CONSTANT_ResolvedString:
 		move_string_const(stack(0), (void*)CLASS_CONST_DATA(current_class(),idx));
 		break;

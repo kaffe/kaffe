@@ -135,8 +135,7 @@ extern int addClasspath(const char*);
 
 /* create a new bitmap for b bits */
 #define BITMAP_NEW(b)	\
-    (int *)gc_calloc(((b) + BITMAP_BPI - 1)/BITMAP_BPI, sizeof(int), \
-		     GC_ALLOC_NOWALK)
+    (int *)KCALLOC(((b) + BITMAP_BPI - 1)/BITMAP_BPI, sizeof(int))
 
 /* set nth bit, counting from MSB to the right */
 #define BITMAP_SET(m, n) \
