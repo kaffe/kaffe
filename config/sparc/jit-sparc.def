@@ -31,6 +31,7 @@ int jit_debug;
 #define	REG_f0			32
 #define	REG_f1			33
 
+#ifdef DEBUG
 static char* rnames[] = {
 	"g0", "g1", "g2", "g3", "g4", "g5", "g6", "g7",
 	"o0", "o1", "o2", "o3", "o4", "o5", "o6", "o7",
@@ -42,6 +43,7 @@ static char* rnames[] = {
 	"f25", "f26", "f27", "f28", "f29", "f30", "f31"			};
 #define	regname(n)	rnames[n]
 #define	fregname(n)	rnames[(n)+32]
+#endif
 
 static int argcount = 0;
 
