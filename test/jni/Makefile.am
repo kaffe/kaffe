@@ -27,10 +27,16 @@ libjvmpi = #
 endif
 
 LIBNATIVE = $(top_builddir)/libraries/clib/native/libnative.la
+LIBREPLACE = $(top_builddir)/replace/libreplace.la
 LIBKAFFEVM = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(libjvmpi) $(libxprof)
 
 jniBase_SOURCES= jniBase.c
-jniBase_LDADD= "-dlopen" $(LIBNATIVE) $(LIBKAFFEVM) @LIBLTDL@
+jniBase_LDADD= \
+	"-dlopen" $(LIBNATIVE) \
+	$(LIBKAFFEVM) \
+	$(LIBREPLACE) \
+        $(LTLIBINTL) \
+	@LIBLTDL@
 jniBase_DEPENDENCIES= $(LIBKAFFEVM)
 
 jniExecClass_SOURCES= jniExecClass.c

@@ -89,6 +89,8 @@ am__DEPENDENCIES_1 =  \
 @NEED_LIBXPROF_TRUE@	../../kaffe/xprof/libkaffexprof.la
 am__DEPENDENCIES_4 = $(top_builddir)/kaffe/kaffevm/libkaffevm.la \
 	$(am__DEPENDENCIES_2) $(am__DEPENDENCIES_3)
+am__DEPENDENCIES_5 = $(top_builddir)/replace/libreplace.la
+am__DEPENDENCIES_6 =
 am_jniExecClass_OBJECTS = jniExecClass.$(OBJEXT)
 jniExecClass_OBJECTS = $(am_jniExecClass_OBJECTS)
 am_jniReflect_OBJECTS = jniReflect.$(OBJEXT)
@@ -392,9 +394,16 @@ AM_CPPFLAGS = \
 @ENABLE_JVMPI_FALSE@libjvmpi = #
 @ENABLE_JVMPI_TRUE@libjvmpi = ../../kaffe/jvmpi/libkaffejvmpi.la
 LIBNATIVE = $(top_builddir)/libraries/clib/native/libnative.la
+LIBREPLACE = $(top_builddir)/replace/libreplace.la
 LIBKAFFEVM = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(libjvmpi) $(libxprof)
 jniBase_SOURCES = jniBase.c
-jniBase_LDADD = "-dlopen" $(LIBNATIVE) $(LIBKAFFEVM) @LIBLTDL@
+jniBase_LDADD = \
+	"-dlopen" $(LIBNATIVE) \
+	$(LIBKAFFEVM) \
+	$(LIBREPLACE) \
+        $(LTLIBINTL) \
+	@LIBLTDL@
+
 jniBase_DEPENDENCIES = $(LIBKAFFEVM)
 jniExecClass_SOURCES = jniExecClass.c
 jniExecClass_LDADD = "-dlopen" $(LIBNATIVE) $(LIBKAFFEVM) @LIBLTDL@
