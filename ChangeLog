@@ -1,6 +1,11 @@
 2004-08-29  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/jit3/machine.c (findFakeCall): 
+	Only define if HAVE_branch_and_link is defined.
+
+2004-08-29  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/jit3/machine.c (findFakeCall): 
 	Made static.
 	
 2004-08-29  Dalibor Topic  <robilad@kaffe.org>

@@ -1376,6 +1376,7 @@ initFakeCalls(void)
 	lastFake = &firstFake;
 }
 
+#if defined(HAVE_branch_and_link)
 static
 fakeCall *
 findFakeCall(void *func)
@@ -1389,6 +1390,7 @@ findFakeCall(void *func)
 	}
 	return( retval );
 }
+#endif /* defined(HAVE_branch_and_link) */
 
 /*
  * Build a fake call to a function.
