@@ -130,9 +130,3 @@ java_lang_Runtime_runFinalizersOnExit(jboolean on)
 {
 	runFinalizerOnExit = on;
 }
-
-jint
-Java_sun_misc_VM_getState(JNIEnv* env UNUSED, jobject vm UNUSED)
-{
-	return (0);
-}

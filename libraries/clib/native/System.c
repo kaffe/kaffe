@@ -67,7 +67,7 @@ extern void printStackTrace(struct Hjava_lang_Throwable*,
 static void
 initProxyProperties (struct Hjava_util_Properties *prop)
 {
-	static char *http_prefix = "http://";
+	static const char *http_prefix = "http://";
 	char *proxy;
 	char *start, *p;
 	char c;
@@ -167,12 +167,12 @@ struct Hjava_util_Properties*
 java_lang_System_initProperties(struct Hjava_util_Properties* p)
 {
 	int r;
-	char* jhome;
-	char* cpath;
-	char* dir;
+	const char* jhome;
+	const char* cpath;
+	const char* dir;
 	userProperty* prop;
 #if defined(HAVE_SYS_UTSNAME_H)
-	struct utsname system;
+	struct utsname system_id;
 #endif
 #if defined(HAVE_PWD_H)
 	struct passwd* pw;
@@ -305,11 +305,11 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 
 #if defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
 	/* Setup system properties */
-	r = uname(&system);
+	r = uname(&system_id);
 	assert(r >= 0);
-	setProperty(p, "os.name", system.sysname);
-	setProperty(p, "os.arch", system.machine);
-	setProperty(p, "os.version", system.release);
+	setProperty(p, "os.name", system_id.sysname);
+	setProperty(p, "os.arch", system_id.machine);
+	setProperty(p, "os.version", system_id.release);
 #else
 	setProperty(p, "os.name", "Unknown");
 	setProperty(p, "os.arch", "Unknown");
@@ -384,36 +384,36 @@ java_lang_System_currentTimeMillis(void)
  * Set the stdin stream.
  */
 void
-Java_java_lang_System_setIn0(JNIEnv *env, jclass system, jobject stream)
+Java_java_lang_System_setIn0(JNIEnv *env, jclass system_cls, jobject stream)
 {
-	jfieldID in = (*env)->GetStaticFieldID(env, system, 
+	jfieldID in = (*env)->GetStaticFieldID(env, system_cls, 
 					"in", "Ljava/io/InputStream;");
 	assert(in != NULL);
-	(*env)->SetStaticObjectField(env, system, in, stream);
+	(*env)->SetStaticObjectField(env, system_cls, in, stream);
 }
 
 /*
  * Set the stdout stream.
  */
 void
-Java_java_lang_System_setOut0(JNIEnv *env, jclass system, jobject stream)
+Java_java_lang_System_setOut0(JNIEnv *env, jclass system_cls, jobject stream)
 {
-	jfieldID out = (*env)->GetStaticFieldID(env, system, 
+	jfieldID out = (*env)->GetStaticFieldID(env, system_cls, 
 					"out", "Ljava/io/PrintStream;");
 	assert(out != NULL);
-	(*env)->SetStaticObjectField(env, system, out, stream);
+	(*env)->SetStaticObjectField(env, system_cls, out, stream);
 }
 
 /*
  * Set the error stream.
  */
 void
-Java_java_lang_System_setErr0(JNIEnv *env, jclass system, struct Hjava_io_PrintStream* stream)
+Java_java_lang_System_setErr0(JNIEnv *env, jclass system_cls, struct Hjava_io_PrintStream* stream)
 {
-	jfieldID err = (*env)->GetStaticFieldID(env, system, 
+	jfieldID err = (*env)->GetStaticFieldID(env, system_cls, 
 					"err", "Ljava/io/PrintStream;");
 	assert(err != NULL);
-	(*env)->SetStaticObjectField(env, system, err, stream);
+	(*env)->SetStaticObjectField(env, system_cls, err, stream);
 }
 
 jint
