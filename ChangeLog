@@ -1,3 +1,10 @@
+2003-12-12  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/Makefile.am.in:
+	Deleted *EUC_JP.tbl.
+
 2003-12-12  Atsushi Nemoto  <anemo@mba.ocn.ne.jp>
 
 	* libraries/clib/native/ByteToCharIconv.c,

@@ -2585,9 +2585,7 @@ EXTRA_DIST = \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
 	$(gnu_regexp_message_bundles) \
-	$(gnu_java_locale_bundles) \
-	kaffe/io/ByteToCharEUC_JP.tbl \
-	kaffe/io/CharToByteEUC_JP.tbl 
+	$(gnu_java_locale_bundles)
 
 dist-hook:
 	rm -rf `find $(distdir) -name CVS`
@@ -2645,8 +2643,6 @@ jar-classes rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
 	       mkdir $(LIBDIR)/kaffe ; \
 	       mkdir $(LIBDIR)/kaffe/io ; \
 	fi
-	cp $(srcdir)/kaffe/io/ByteToCharEUC_JP.tbl $(LIBDIR)/kaffe/io
-	cp $(srcdir)/kaffe/io/CharToByteEUC_JP.tbl $(LIBDIR)/kaffe/io
 	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	if [ ! -d $(LIBDIR)/gnu ] ; then \
 		mkdir $(LIBDIR)/gnu ; \

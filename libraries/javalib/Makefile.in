@@ -2973,9 +2973,7 @@ EXTRA_DIST = \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
 	$(gnu_regexp_message_bundles) \
-	$(gnu_java_locale_bundles) \
-	kaffe/io/ByteToCharEUC_JP.tbl \
-	kaffe/io/CharToByteEUC_JP.tbl 
+	$(gnu_java_locale_bundles)
 
 
 LIBDIR = lib
@@ -3222,8 +3220,6 @@ $(srcdir)/Klasses.jar.bootstrap: bootstrap.classlist
 @USE_PRECOMPILED_RT_JAR_FALSE@	       mkdir $(LIBDIR)/kaffe ; \
 @USE_PRECOMPILED_RT_JAR_FALSE@	       mkdir $(LIBDIR)/kaffe/io ; \
 @USE_PRECOMPILED_RT_JAR_FALSE@	fi
-@USE_PRECOMPILED_RT_JAR_FALSE@	cp $(srcdir)/kaffe/io/ByteToCharEUC_JP.tbl $(LIBDIR)/kaffe/io
-@USE_PRECOMPILED_RT_JAR_FALSE@	cp $(srcdir)/kaffe/io/CharToByteEUC_JP.tbl $(LIBDIR)/kaffe/io
 @USE_PRECOMPILED_RT_JAR_FALSE@	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 @USE_PRECOMPILED_RT_JAR_FALSE@	if [ ! -d $(LIBDIR)/gnu ] ; then \
 @USE_PRECOMPILED_RT_JAR_FALSE@		mkdir $(LIBDIR)/gnu ; \
