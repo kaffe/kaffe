@@ -1,3 +1,33 @@
+2004-04-28  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/i386/beos/md.h,
+ 	config/i386/bsdi/md.h,
+ 	config/i386/dgux/md.h,
+ 	config/i386/freebsd2/md.h,
+ 	config/i386/gnu/md.h,
+ 	config/i386/linux/md.h,
+ 	config/i386/netbsd1/md.h,
+ 	config/i386/nextstep3/md.h,
+ 	config/i386/openbsd2/md.h,
+ 	config/i386/oskit/md.h,
+ 	config/i386/qnx/md.h,
+ 	config/i386/sco3.2v5/md.h,
+ 	config/i386/solaris2/md.h,
+ 	config/i386/univel_svr4/md.h,
+ 	config/sparc/bsdi3/md.h,
+ 	config/sparc/linux/md.h,
+ 	config/sparc/openbsd2/md.h,
+	config/sparc/solaris2/md.h,
+ 	config/sparc/sunos4/md.h,
+ 	config/sparc/uxpds/md.h:
+	(mdGetStackSize) Changed prototype to return rlim_t.
+	Changed return code when no stack size could be 
+	determined to 0. That fixes a compiler warning.
+
+ 	* kaffe/kaffevm/thread.c:
+	(initNativeThreads) Changed stackSize type to rlim_t.
+	Check for 0 as return value from mdGetStackSize.
+
 2004-04-27  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* config/powerpc/aix/md.h, config/powerpc/darwin/md.h,

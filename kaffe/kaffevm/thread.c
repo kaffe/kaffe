@@ -680,7 +680,7 @@ void
 initNativeThreads(int nativestacksize)
 {
 	threadData *thread_data;
-	int stackSize;
+	rlim_t stackSize;
 
 	DBG(INIT, dprintf("initNativeThreads(0x%x)\n", nativestacksize); )
 
@@ -716,7 +716,7 @@ initNativeThreads(int nativestacksize)
 	 */
 #if defined(KAFFEMD_STACKSIZE)
 	stackSize = mdGetStackSize();
-	if (stackSize < 0)
+	if (stackSize == 0)
 	  {
 	    dprintf("WARNING: Impossible to retrieve the real stack size\n");
 	    dprintf("WARNING: You may experience deadlocks\n");

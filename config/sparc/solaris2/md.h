@@ -37,12 +37,12 @@
 #if defined(HAVE_GETRLIMIT)
 #define KAFFEMD_STACKSIZE
 
-static inline size_t mdGetStackSize(void)
+static inline rlim_t mdGetStackSize(void)
 {
   struct rlimit rl;
 
   if (getrlimit(RLIMIT_STACK, &rl) < 0)
-    return -1;
+    return 0;
   else
     return rl.rlim_cur;
 }
