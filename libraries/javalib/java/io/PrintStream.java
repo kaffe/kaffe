@@ -21,11 +21,11 @@ public PrintStream(OutputStream out) {
 }
 
 public PrintStream(OutputStream out, boolean autoFlush) {
+	super(out);
+	this.autoFlush = autoFlush;
 	if (out == null) {
 		throw new NullPointerException();
 	}
-	super(out);
-	this.autoFlush = autoFlush;
 }
 
 public boolean checkError() {
