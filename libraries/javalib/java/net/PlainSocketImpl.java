@@ -34,15 +34,16 @@ protected void accept(SocketImpl s) throws IOException {
 	socketAccept(s);
 }
 
-protected int available() throws IOException {
-	return (socketAvailable());
+protected synchronized int available() throws IOException {
+	return closed ? 0 : socketAvailable();
 }
 
 protected void bind(InetAddress address, int lport) throws IOException {
 	socketBind(address, lport);
 }
 
-protected void close() throws IOException {
+protected synchronized void close() throws IOException {
+	closed = true;
 	in = null;
 	out = null;
 	socketClose();
