@@ -65,7 +65,8 @@ public class FormatCharacterIterator implements AttributedCharacterIterator
   private int attributeIndex;
   private int[] ranges;
   private HashMap[] attributes;
-  
+  private static final boolean DEBUG = false;
+
   /**
    * This constructor builds an empty iterated strings. The attributes
    * are empty and so is the string. However you may append strings
@@ -496,7 +497,7 @@ public class FormatCharacterIterator implements AttributedCharacterIterator
 
   private void debug(String s)
   {
-    if (Configuration.DEBUG)
+    if (DEBUG)
       System.out.println(s);
   }
 
@@ -504,7 +505,7 @@ public class FormatCharacterIterator implements AttributedCharacterIterator
   {
     int start_range = 0;
     
-    if (!Configuration.DEBUG)
+    if (!DEBUG)
       return;
 
     System.out.println("Dumping internal table:");

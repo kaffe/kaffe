@@ -59,15 +59,6 @@ public interface Configuration
   String CLASSPATH_VERSION = "@VERSION@";
 
   /**
-   * The value of DEBUG is substituted according to whether the
-   * "--enable-debug" argument was passed to configure. Code
-   * which is made conditional based on the value of this flag - typically 
-   * code that generates debugging output - will be removed by the optimizer 
-   * in a non-debug build.
-   */
-  boolean DEBUG = @LIBDEBUG@;
-
-  /**
    * The value of LOAD_LIBRARY is substituted according to whether the
    * "--enable-load-library" or "--disable-load-library" argument was passed 
    * to configure.  By default, configure should define this is as true.

@@ -75,6 +75,8 @@ import java.util.Random;
  */
 public final strictfp class StrictMath
 {
+  private static final boolean DEBUG = false;
+
   /**
    * StrictMath is non-instantiable.
    */
@@ -1443,7 +1445,7 @@ public final strictfp class StrictMath
     x = abs(x);
     double z;
     int n;
-    if (Configuration.DEBUG && (x <= PI / 4 || x != x
+    if (DEBUG && (x <= PI / 4 || x != x
                                 || x == Double.POSITIVE_INFINITY))
       throw new InternalError("Assertion failure");
     if (x < 3 * PI / 4) // If |x| is small.
@@ -1710,7 +1712,7 @@ public final strictfp class StrictMath
    */
   private static double scale(double x, int n)
   {
-    if (Configuration.DEBUG && abs(n) >= 2048)
+    if (DEBUG && abs(n) >= 2048)
       throw new InternalError("Assertion failure");
     if (x == 0 || x == Double.NEGATIVE_INFINITY
         || ! (x < Double.POSITIVE_INFINITY) || n == 0)
@@ -1745,7 +1747,7 @@ public final strictfp class StrictMath
    */
   private static double sin(double x, double y)
   {
-    if (Configuration.DEBUG && abs(x + y) > 0.7854)
+    if (DEBUG && abs(x + y) > 0.7854)
       throw new InternalError("Assertion failure");
     if (abs(x) < 1 / TWO_27)
       return x;  // If |x| ~< 2**-27, already know answer.
@@ -1767,7 +1769,7 @@ public final strictfp class StrictMath
    */
   private static double cos(double x, double y)
   {
-    if (Configuration.DEBUG && abs(x + y) > 0.7854)
+    if (DEBUG && abs(x + y) > 0.7854)
       throw new InternalError("Assertion failure");
     x = abs(x);
     if (x < 1 / TWO_27)
@@ -1794,7 +1796,7 @@ public final strictfp class StrictMath
   private static double tan(double x, double y, boolean invert)
   {
     // PI/2 is irrational, so no double is a perfect multiple of it.
-    if (Configuration.DEBUG && (abs(x + y) > 0.7854 || (x == 0 && invert)))
+    if (DEBUG && (abs(x + y) > 0.7854 || (x == 0 && invert)))
       throw new InternalError("Assertion failure");
     boolean negative = x < 0;
     if (negative)

@@ -146,7 +146,7 @@ public class ObjectOutputStream extends OutputStream
     useSubclassMethod = false;
     writeStreamHeader();
 
-    if (Configuration.DEBUG)
+    if (DEBUG)
       {
 	String val = System.getProperty("gcj.dumpobjects");
 	if (val != null && !val.equals(""))
@@ -378,7 +378,7 @@ public class ObjectOutputStream extends OutputStream
 	setBlockDataMode(false);
 	try
 	  {
-	    if (Configuration.DEBUG)
+	    if (DEBUG)
 	      {
 		e.printStackTrace(System.out);
 	      }
@@ -389,7 +389,7 @@ public class ObjectOutputStream extends OutputStream
 	    StreamCorruptedException ex = 
 	      new StreamCorruptedException
 	      (ioe + " thrown while exception was being written to stream.");
-	    if (Configuration.DEBUG)
+	    if (DEBUG)
 	      {
 		ex.printStackTrace(System.out);
 	      }
@@ -1565,6 +1565,8 @@ public class ObjectOutputStream extends OutputStream
 
   // Set if we're generating debugging dumps
   private boolean dump = false;
+
+  private static final boolean DEBUG = false;
 
   static
   {

@@ -1,5 +1,26 @@
 2005-02-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/lang/StrictMath.java (DEBUG): 
+	new constant.
+	(tan, cos, sin, scale, remPiOver2) Use internal debug switch.
+	
+	* libraries/javalib/java/io/ObjectInputStream.java (DEBUG):
+	new constant.
+	(ObjectInputStream, resolveClass) Use internal debug switch.
+
+	* libraries/javalib/java/io/ObjectOutputStream.java (DEBUG):
+	new constant.
+	(ObjectOutputStream, writeObject) Use internal debug switch.
+	
+	* libraries/javalib/gnu/java/text/FormatCharacterIterator.java (DEBUG): 
+	new constant.
+	(debug, dumpTable) Use internal debug switch.
+	
+	* libraries/javalib/gnu/classpath/Configuration.java.in
+	(DEBUG) Removed.
+
+2005-02-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/gnu/classpath/Configuration.java.in
 	(default_awt_peer_toolkit) Removed.
 

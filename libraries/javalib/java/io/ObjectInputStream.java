@@ -75,7 +75,7 @@ public class ObjectInputStream extends InputStream
   public ObjectInputStream(InputStream in)
     throws IOException, StreamCorruptedException
   {
-    if (Configuration.DEBUG)
+    if (DEBUG)
       {
 	String val = System.getProperty("gcj.dumpobjects");
 	if (dump == false && val != null && !val.equals(""))
@@ -773,7 +773,7 @@ public class ObjectInputStream extends InputStream
     if (callersClassLoader == null)
       {
 	callersClassLoader = currentLoader ();
-	if (Configuration.DEBUG && dump)
+	if (DEBUG && dump)
 	  {
 	    dumpElementln ("CallersClassLoader = " + callersClassLoader);
 	  }
@@ -1935,6 +1935,8 @@ public class ObjectInputStream extends InputStream
 
   // The nesting depth for debugging output
   private int depth = 0;
+
+  private static final boolean DEBUG = false;
 
   private void dumpElement (String msg)
   {
