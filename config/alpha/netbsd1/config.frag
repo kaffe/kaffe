@@ -1,6 +1,8 @@
 #
 # Alpha/Netbsd1 configuration
 #
-Khost_cpu=alpha
-Khost_os=netbsd1
 CFLAGS="$CFLAGS -mieee"
+
+if [ "$cross_compiling" = yes ]; then
+  ac_cv_c_char_unsigned=${ac_cv_c_char_unsigned='no'}
+fi

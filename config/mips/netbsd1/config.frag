@@ -1,5 +1,8 @@
 #
 # Mips/Netbsd configuration.
 #
-Khost_cpu=mips
-Khost_os=netbsd1
+CFLAGS="$CFLAGS -fno-omit-frame-pointer"
+
+if [ "$cross_compiling" = yes ]; then
+  ac_cv_c_char_unsigned=${ac_cv_c_char_unsigned='no'}
+fi

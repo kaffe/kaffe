@@ -1,3 +1,18 @@
+2003-07-28  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	config/alpha/netbsd1/config.frag,
+	config/arm/netbsd1/config.frag,
+	config/i386/netbsd1/config.frag,
+	config/m68k/netbsd1/config.frag,
+	config/mips/netbsd1/config.frag,
+	config/powerpc/netbsd1/config.frag,
+	config/sparc/netbsd1/config.frag:
+	Delete 'Khost_cpu' and 'Khost_os' defined in some files.
+	'ac_cv_sizeof_int' etc. are now properly handled by 'configure'
+   	even for cross compiling.
+	'ac_cv_c_char_unsigned' is now set to 'no', when cross compiling.
+	'CFLAGS' is now used only to append mandatory settings for the port.
+
 2003-07-28  Timothy S. Stack <stack@cs.utah.edu>
 
 	* kaffe/kaffevm/intrp/stackTrace-impl.h:

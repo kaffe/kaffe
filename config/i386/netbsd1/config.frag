@@ -1,5 +1,6 @@
 #
 # i386/Netbsd1 configuration
 #
-Khost_cpu=i386
-Khost_os=netbsd1
+if [ "$cross_compiling" = yes ]; then
+  ac_cv_c_char_unsigned=${ac_cv_c_char_unsigned='no'}
+fi
