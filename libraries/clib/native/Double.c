@@ -18,6 +18,7 @@
 #include "../../../kaffe/kaffevm/locks.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
 #include "defs.h"
+#include "files.h"
 #include "Double.h"
 #include <native.h>
 
@@ -42,6 +43,7 @@ java_lang_Double_valueOf0(struct Hjava_lang_String* str)
 	double value;
 	char buf[MAXNUMLEN];
 	char* endbuf;
+	char* msg = "Bad float/double format";
 
 	stringJava2CBuf(str, buf, sizeof(buf));
 
@@ -60,16 +62,34 @@ java_lang_Double_valueOf0(struct Hjava_lang_String* str)
 			endbuf++;
 			break;
 		default:
-			SignalError("java.lang.NumberFormatException", "Bad float/double format");
-			break;
+			goto bail;
 		}
 	}
+	/* don't return 0 if string was empty */
+	if (endbuf == buf) {
+		msg = "empty string";
+		goto bail;
+	}
+	if (errno == ERANGE) {
+		if (value == HUGE_VAL || value == -HUGE_VAL) {
+			msg = "Overflow";
+			goto bail;
+		}
+		if (value == 0.0) {
+			msg = "Underflow";
+			goto bail;
+		}
+	} 
 #else
 	/* Fall back on old atof - no error checking */
 	value = atof(buf);
 #endif
 
 	return (value);
+
+bail:;
+	SignalError("java.lang.NumberFormatException", msg);
+	return (0);
 }
 
 /*
