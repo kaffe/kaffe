@@ -516,6 +516,13 @@ AC_CHECK_LIBRARY(m,sin,M_LIBS)
 
 AC_SUBST(M_LIBS)
 
+dnl If there is no native sysdepCallMethod, let's use libffi
+
+AC_ARG_WITH(libffi,[  --with-libffi           Use libffi for sysdepCallMethod])
+if test x"$with_libffi" = x"yes" ; then
+	AC_CHECK_LIBRARY(ffi,ffi_call,VM_LIBS)
+fi
+
 dnl Checks for libraries for vm library.
 dnl Include work around FreeBSD modulo bug.
 

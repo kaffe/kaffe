@@ -1,0 +1,36 @@
+
+Pavel Roskin contributed the libffi support in support.c:
+
+    Hello!
+
+    The attached patch makes it possible to use libffi together with Kaffe.
+    sysdepCallMethod has been implemented using libffi calls.
+
+    libffi can be downloaded from http://sourceware.cygnus.com/libffi/
+
+    You should specify --with-libffi explicitly in order to use this code. No
+    attempts are made yet to guess if libffi should be used on a particular
+    platform.
+
+    This patch has only been tested on i386 and is known to pass almost all
+    tests including TestNative. However, it needs testing on other platforms,
+    on PowerPC in the first place.
+
+    The only test that fails is InvTarExcTest.java. I have no idea why it
+    fails. The only difference is that following line doesn't appear in th
+    output:
+
+	    at java.lang.reflect.Method.invoke(Method.java:native)
+
+    Pavel Roskin
+
+
+The failure in InvTarExcTest is most likely unrelated.
+I like Pavel's patch because it's completely optional (the default
+should be unaffected) and reasonably well localized.
+While we're happy to use libffi for those platforms for which we do 
+not have a sysdepCallMethod, we do not currently plan to convert those 
+architectures for which we do have them.
+
+	- Godmar 	(2/5/99)
+
