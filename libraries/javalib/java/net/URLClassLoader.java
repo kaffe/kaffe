@@ -71,7 +71,7 @@ public class URLClassLoader extends SecureClassLoader {
 	}
 
 	protected Class findClass(String name) throws ClassNotFoundException {
-		URL url = findResource(name.replace('.', '/') + ".class");
+		URL url = findResourceInternal(null, name.replace('.', '/') + ".class");
 		if (url == null) {
 			throw new ClassNotFoundException(name);
 		}
@@ -151,17 +151,18 @@ public class URLClassLoader extends SecureClassLoader {
 	}
 
 	public URL findResource(String name) {
-		try {
-			return (URL)findResources(name).nextElement();
-		} catch (IOException e) {
-		} catch (NoSuchElementException e) {
-		}
-		return null;
+		return findResourceInternal(null, name); 
 	}
 
 	public Enumeration findResources(String name) throws IOException {
 		Vector v = new Vector();
 
+		findResourceInternal(v, name);
+		
+		return v.elements();
+	}
+
+	private URL findResourceInternal(Vector v, String name) {
 		if (name.charAt(0)=='/') {
 			name = name.substring(1);
 		}
@@ -185,19 +186,22 @@ public class URLClassLoader extends SecureClassLoader {
 				// Try to get it, to see if it's really there
 				URLConnection u = url.openConnection();
 
-				// OK it's there, add it
-				v.addElement(url);
-
 				// Try not to leave a lingering connection
 				try {
 					u.getClass().getMethod("disconnect",
 					    null).invoke(u, new Object[0]);
 				} catch (Exception e) {
 				}
+			
+				if (v != null) {
+					v.addElement(url);
+				} else {
+					return url;
+				}
 			} catch (IOException e) {	// resource not found
 			}
 		}
-		return v.elements();
+		return null; 
 	}
 
 	// Find a JAR file, keeping a cache of already downloaded ones

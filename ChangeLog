@@ -1,3 +1,16 @@
+2003-07-07  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* kaffe/kaffevm/classPool.c: (walkClassEntries) only mark
+	entry->data.cl as an object if entry->state is at least
+	LOADING
+	* kaffe/kaffevm/code-analyse.c: fix warnings with gcc 3.2
+	* libraries/javalib/java/net/URLClassLoader.java:
+	(findResourceInternal): new method that searches for a
+	resource
+	(findClass, findResource, findResources): call
+	findResourceInternal since findResources() might be
+	overriden by subclasses.
+
 2003-07-06  Jim Pick  <jim@kaffe.org>
 
 	* kaffe/kaffevm/mem/gc-incremental.c:

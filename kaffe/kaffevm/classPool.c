@@ -173,7 +173,7 @@ walkClassEntries(Collector *collector, Hjava_lang_ClassLoader* loader)
                 for (entry = classEntryPool[ipool]; entry != NULL;
                      entry = entry->next)
                 {
-                        if (entry->loader == loader) {
+                        if (entry->loader == loader && entry->state >= NMS_LOADING) {
                                 GC_markObject(collector, entry->data.cl);
                         }
                 }
