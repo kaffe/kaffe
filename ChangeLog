@@ -1,4 +1,22 @@
-2004-04-22  Dalibor Topic <robilad@kaffe.org>
+2004-04-23  Dalibor Topic  <robilad@kaffe.org>
+
+        * libraries/javalib/java/security/spec/DSAParameterSpec.java,
+        libraries/javalib/java/security/spec/DSAPrivateKeySpec.java,
+        libraries/javalib/java/security/spec/DSAPublicKeySpec.java:
+	Resynced with GNU Classpath.
+
+	2004-04-02  Tom Tromey  <tromey@redhat.com>
+
+        * java/security/Security.java (Security): Removed redundant
+        `extends'.
+        * java/security/spec/DSAPublicKeySpec.java (DSAPublicKeySpec):
+        Removed redundant `extends'.
+        * java/security/spec/DSAPrivateKeySpec.java (DSAPrivateKeySpec):
+        Removed redundant `extends'.
+        * java/security/spec/DSAParameterSpec.java (DSAParameterSpec):
+        Removed redundant `extends'.
+
+2004-04-23  Dalibor Topic  <robilad@kaffe.org>
 
         * libraries/javalib/java/text/AttributedCharacterIterator.java,
         libraries/javalib/java/text/AttributedString.java,
