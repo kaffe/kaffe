@@ -62,8 +62,7 @@ class DoublePrint {
   }
 }
 
-// On FreeBSD port of JDK?
-/* (Un)Expected output:
+/* Expected output:
 Double values:
   NaN -> 7ff8000000000000
   0.0
@@ -72,11 +71,11 @@ Double values:
   Infinity
   -Infinity
   4.9406564584124654E-324
-  1.7976931348623157E+308
+  1.7976931348623157E308
   123.75
   -9000000.0
   0.001
-  1.05E+9
+  1.05E9
   0.0/0.0 = NaN
 
 Float values:
@@ -87,9 +86,9 @@ Float values:
   Infinity
   -Infinity
   1.4012985E-45
-  3.4028235E+38
+  3.4028235E38
   123.75
-  1.0E+7
+  1.0E7
   -0.001
   0.0/0.0 = NaN
 */
@@ -103,11 +102,11 @@ Double values:
   NaN
   Infinity
   -Infinity
-  4.9E-324
+  4.9E-324             <--- this is wrong
   1.7976931348623157E308
   123.75
   -9000000.0
-  0.0010
+  0.0010               <--- this is wrong
   1.05E9
   0.0/0.0 = NaN
 
@@ -118,10 +117,10 @@ Float values:
   NaN
   Infinity
   -Infinity
-  1.4E-45
+  1.4E-45               <--- this is wrong
   3.4028235E38
   123.75
   1.0E7
-  -0.0010
+  -0.0010               <--- this is wrong
   0.0/0.0 = NaN
 */
