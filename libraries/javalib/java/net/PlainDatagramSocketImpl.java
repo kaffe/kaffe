@@ -16,6 +16,8 @@ import java.io.FileDescriptor;
 public class PlainDatagramSocketImpl
   extends DatagramSocketImpl {
 
+private int timeout;
+
 static {
 	System.loadLibrary("net");
 }
@@ -40,8 +42,8 @@ public void setOption(int option, Object data) throws SocketException {
 	case SO_REUSEADDR:
 		break;
 	case SO_TIMEOUT:
-		/* XXX what to do here? */
-		throw new SocketException("Unimplemented socket option");
+		timeout = ((Integer)data).intValue();
+		return;
 	case SO_BINDADDR:
 		throw new SocketException("Read-only socket option");
 	case IP_MULTICAST_IF:
@@ -64,8 +66,7 @@ public Object getOption(int option) throws SocketException {
 	case SO_REUSEADDR:
 		return new Integer(socketGetOption(option));
 	case SO_TIMEOUT:
-		/* XXX what to do here? */
-		throw new SocketException("Unimplemented socket option");
+		return new Integer(timeout);
 	case SO_BINDADDR:
 	case IP_MULTICAST_IF:
 		int val = socketGetOption(option);

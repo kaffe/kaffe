@@ -17,6 +17,7 @@ typedef struct Classjava_net_PlainSocketImpl {
   jint localport;
   struct Hjava_io_InputStream* in;
   struct Hjava_io_OutputStream* out;
+  jint timeout;
 } Classjava_net_PlainSocketImpl;
 HandleTo(java_net_PlainSocketImpl);
 
@@ -29,6 +30,8 @@ extern void java_net_PlainSocketImpl_socketClose(struct Hjava_net_PlainSocketImp
 extern void java_net_PlainSocketImpl_socketConnect(struct Hjava_net_PlainSocketImpl*, struct Hjava_net_InetAddress*, jint);
 extern void java_net_PlainSocketImpl_socketCreate(struct Hjava_net_PlainSocketImpl*, jbool);
 extern void java_net_PlainSocketImpl_socketListen(struct Hjava_net_PlainSocketImpl*, jint);
+extern void java_net_PlainSocketImpl_write(struct Hjava_net_PlainSocketImpl*, HArrayOfByte*, jint, jint);
+extern jint java_net_PlainSocketImpl_read(struct Hjava_net_PlainSocketImpl*, HArrayOfByte*, jint, jint);
 
 #ifdef __cplusplus
 }

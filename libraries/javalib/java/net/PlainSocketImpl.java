@@ -21,6 +21,7 @@ public class PlainSocketImpl
 
 private InputStream in;
 private OutputStream out;
+private int timeout;
 
 static {
 	System.loadLibrary("net");
@@ -96,11 +97,11 @@ protected synchronized int getSoLinger() throws SocketException {
 }
 
 protected synchronized void setSoTimeout(int timeout) throws SocketException {
-	socketSetOption(SO_TIMEOUT, new Integer(timeout));
+	setOption(SocketOptions.SO_TIMEOUT, new Integer(timeout));
 }
 
 protected synchronized int getSoTimeout() throws SocketException {
-	return socketGetOption(SO_TIMEOUT);
+	return ((Integer)getOption(SocketOptions.SO_TIMEOUT)).intValue();
 }
 
 protected synchronized void setSendBufferSize(int size) throws SocketException {
@@ -134,8 +135,9 @@ public void setOption(int option, Object data) throws SocketException {
 		data = new Integer(disable ? 0 : 1);
 		break;
 	case SO_TIMEOUT:
-		/* XXX what to do here? */
-		throw new SocketException("Unimplemented socket option");
+		timeout = ((Integer)data).intValue();
+		return;
+
 	case SO_BINDADDR:
 		throw new SocketException("Read-only socket option");
 	case IP_MULTICAST_IF:
@@ -155,8 +157,7 @@ public Object getOption(int option) throws SocketException {
 	case TCP_NODELAY:
 		return new Boolean(socketGetOption(option) != 0);
 	case SO_TIMEOUT:
-		/* XXX what to do here? */
-		throw new SocketException("Unimplemented socket option");
+		return new Integer(timeout);
 	case SO_BINDADDR:
 		int val = socketGetOption(option);
 		try {

@@ -21,6 +21,7 @@
 #include "InetAddress.h"
 #include "InetAddressImpl.h"
 #include "nets.h"
+#include "jsyscall.h"
 
 #define	HOSTNMSZ	80
 
@@ -33,7 +34,7 @@ java_net_InetAddressImpl_getLocalHostName(struct Hjava_net_InetAddressImpl* none
 	char hostname[HOSTNMSZ];
 
 	if (gethostname(hostname, HOSTNMSZ-1) < 0) {
-		strcpy("localhost", hostname);
+		strcpy(hostname, "localhost");
 	}
 	return (stringC2Java(hostname));
 }
@@ -57,12 +58,13 @@ java_net_InetAddressImpl_lookupHostAddr(struct Hjava_net_InetAddressImpl* none, 
 {
 	char name[MAXHOSTNAME];
 	struct hostent* ent;
+	int rc;
 
 	stringJava2CBuf(str, name, sizeof(name));
 
-	ent = gethostbyname(name);
-	if (ent == 0) {
-		SignalError("java.net.UnknownHostException", SYS_HERROR);
+	rc = KGETHOSTBYNAME(name, &ent);
+	if (rc) {
+		SignalError("java.net.UnknownHostException", SYS_HERROR(rc));
 	}
 	return (ntohl(*(jint*)ent->h_addr_list[0]));
 }
@@ -78,12 +80,13 @@ java_net_InetAddressImpl_lookupAllHostAddr(struct Hjava_net_InetAddressImpl* non
 	HArrayOfInt* array;
 	int i;
 	int alength;
+	int rc;
 
 	stringJava2CBuf(str, name, sizeof(name));
 
-	ent = gethostbyname(name);
-	if (ent == 0) {
-		SignalError("java.net.UnknownHostException", SYS_HERROR);
+	rc = KGETHOSTBYNAME(name, &ent);
+	if (rc) {
+		SignalError("java.net.UnknownHostException", SYS_HERROR(rc));
 	}
 
 	for (alength = 0; ent->h_addr_list[alength]; alength++)
@@ -107,11 +110,12 @@ struct Hjava_lang_String*
 java_net_InetAddressImpl_getHostByAddr(struct Hjava_net_InetAddressImpl* none, jint addr)
 {
 	struct hostent* ent;
+	int rc;
 
 	addr = htonl(addr);
-	ent = gethostbyaddr((char*)&addr, sizeof(jint), AF_INET);
-	if (ent == 0) {
-		SignalError("java.net.UnknownHostException", SYS_HERROR);
+	rc = KGETHOSTBYADDR((char*)&addr, sizeof(jint), AF_INET, &ent);
+	if (rc) {
+		SignalError("java.net.UnknownHostException", SYS_HERROR(rc));
 	}
 
 	return (stringC2Java((char*)ent->h_name));
