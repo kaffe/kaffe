@@ -1,3 +1,26 @@
+Fri Jun 01 13:32:02 MDT 2001  Jason Baker  <jbaker@cs.utah.edu>
+
+	* libraries/clib/native/Field.c (getFieldAddress): get() on a
+	static  field is an active use, and ensures that the class is
+	fully processed.
+
+	* libraries/clib/native/Class.c (countMethods, addMethods):
+	Exclude <clinit> from declared methods.
+
+	* kaffe/kaffevm/code-analyse.c (verifyBasicBlock): Handle
+	verification errors in mid-basic-block more gracefully.  Try to
+	improve message about invalid max_stack/max_locals.
+
+	* kaffe/kaffevm/classPool.c (walkClassPool): Walk each class once, 
+	when we hit the entry for its defining loader, rather than once
+	for each initiating loader.
+	
+	* test/regression/ClassGC.java, test/regression/ClassGCTest.java,
+	test/regression/ClassGCTestLater.java: 
+	When we load a class from a ClassLoader, then call newInstance,
+	the class must be public.
+	
+
 2001-05-15  Edouard G. Parmelan  <egp@free.fr>
 
 	* libraries/javalib/java/io/InputStreamReader.java (read): read
