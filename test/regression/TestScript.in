@@ -59,12 +59,10 @@ run()
 	$VERBOSE $JAVA $*
 	if test "x$SORT" = "xyes"; then
 	    # grep will take care of stripping \r from DOS-like output
-	    $JAVA $* 2>&1 | sort | grep '.*' > $RESULT
-	    error=$?
+	    { $JAVA $* 2>&1; error=$?; } | sort | grep '.*' > $RESULT
 	else
 	    # grep will take care of stripping \r from DOS-like output
-	    $JAVA $* 2>&1 | grep '.*' > "$RESULT"
-	    error=$?
+	    { $JAVA $* 2>&1; error=$?; } | grep '.*' > "$RESULT"
 	fi
 	if test ! -f "$1.out"; then
 		if test "$error" = 0 || test "$error" = 77; then

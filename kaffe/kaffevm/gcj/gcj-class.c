@@ -48,7 +48,7 @@ gcjInit(void)
         /* Load any shared objects into VM now */
         for (entry = classpath; entry != 0; entry = entry->next) {
                 if (entry->type == CP_SOFILE) {
-                        loadNativeLibrary(entry->path);
+                        loadNativeLibrary(entry->path, NULL, 0);
                 }
         }
 }

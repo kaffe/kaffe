@@ -1,3 +1,10 @@
+Thu Aug 19 19:39:09 CEST 1999  Edouard G. Parmelan <edouard.parmelan@quadratec.fr>
+
+	* test/regression/TestScript.in: retreive error code from $JAVA
+	not from grep.
+	* kaffe/kaffevm/gcj/gcj-class.c: add missing parameters to
+	loadNativeLibrary().
+
 Wed Aug 18 22:11:14 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/external.{c,h}, libraries/clib/native/Runtime.c,
