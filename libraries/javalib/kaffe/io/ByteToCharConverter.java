@@ -1,7 +1,3 @@
-package kaffe.io;
-
-import java.io.UnsupportedEncodingException;
-
 /*
  * Java core library component.
  *
@@ -11,6 +7,11 @@ import java.io.UnsupportedEncodingException;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
+
+package kaffe.io;
+
+import java.io.UnsupportedEncodingException;
+
 abstract public class ByteToCharConverter
 {
 	private static String encodingRoot;
@@ -29,9 +30,6 @@ public ByteToCharConverter() {
 void carry ( byte[] from, int fpos, int flen ) {
 	int n;
 	int m = blen + flen;
-
-	if ( (from == buf) && (fpos == 0) ) // avoid recursive carry by flush()
-		return;
 
 	if ( buf == null ){
 		n = (flen < 128) ? 128 : flen;
@@ -57,9 +55,9 @@ public int flush ( char[] to, int tpos, int tlen ) {
 		return 0;
 	}
 	else {
-		int n = convert( buf, 0, blen, to, tpos, tlen);
-		blen -= n;
-		return n;
+		int oblen = blen;
+		blen = 0;
+		return (convert( buf, 0, oblen, to, tpos, tlen));
 	}
 }
 
