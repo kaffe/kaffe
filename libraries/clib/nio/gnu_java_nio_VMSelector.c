@@ -159,14 +159,16 @@ helper_select (JNIEnv *env, jclass thread_class, jmethodID thread_interrupted,
 
 		r = KSELECT (n, readfds, writefds, exceptfds,
 		      timeout ? &delay : NULL, &retcode);
-		      
-		if (r != EINTR)
+
+		if (r == 0)
 			return retcode;
+		if (r != EINTR)
+			return -r;
 
 		/* Here we know we got EINTR. */
 		if ( (*env)->CallStaticBooleanMethod(env, thread_class, thread_interrupted) )
 		{
-			return -2;
+			return -EINTR;
 		}
 
 		if (timeout)
@@ -249,7 +251,7 @@ Java_gnu_java_nio_VMSelector_select (JNIEnv *env,
 	result = helper_select (env, thread_class, thread_interrupted, max_fd + 1, &read_fds, &write_fds,
 								&except_fds, time_data);
 
-	if( result == -2 ) {
+	if( result == -EINTR ) {
 		/* The behavior of JRE 1.4.1 is that no exception is thrown
 		 * when the thread is interrupted, but the thread's interrupt
 		 * status is set. Clear all of our select sets and return 0,
@@ -269,8 +271,9 @@ Java_gnu_java_nio_VMSelector_select (JNIEnv *env,
     {
 #if defined(HAVE_STRERROR_R)
 	char message_buf[BUF_SIZE+1];
+	int errcode = -result;
 
-    	if( strerror_r(errno, message_buf, BUF_SIZE) )
+    	if( strerror_r(errcode, message_buf, BUF_SIZE) )
     	{
     		/* This would mean that message_buf was to small
     		 * to hold the error message.
@@ -281,7 +284,7 @@ Java_gnu_java_nio_VMSelector_select (JNIEnv *env,
     	}
 	message = message_buf;
 #else
-	message = strerror(errno);
+	message = strerror(errcode);
 #endif
 
 	JCL_ThrowException (env, "java/io/IOException", message);

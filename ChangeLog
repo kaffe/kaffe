@@ -1,3 +1,13 @@
+2005-04-03  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
+	(jthreadedSelect): Prepare dummy sets in case one of the parameter
+	is NULL.
+
+	* libraries/clib/nio/gnu_java_nio_VMSelector.c
+	(helper_select): Return the error code.
+	(select0): Decode the result code.
+	
 2005-04-03  Rei Odaira <ray@is.s.u-tokyo.ac.jp>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c

@@ -3319,6 +3319,7 @@ jthreadedSelect(int a, fd_set* b, fd_set* c, fd_set* d,
 	int i;
 	long time_milli;
 	int second_time = 0;
+	fd_set dummy_sets[3];
 	
 	assert(a < FD_SETSIZE);
 	
@@ -3329,6 +3330,21 @@ jthreadedSelect(int a, fd_set* b, fd_set* c, fd_set* d,
 		time_milli = e->tv_usec / 1000 + e->tv_sec * 1000;
 	else
 		time_milli = NOTIMEOUT;
+
+
+	if (b == NULL) {
+		FD_ZERO(&dummy_sets[0]);
+		b = &dummy_sets[0];
+	}
+
+	if (c == NULL) {
+		FD_ZERO(&dummy_sets[1]);
+		c = &dummy_sets[1];
+	}
+	if (d == NULL) {
+		FD_ZERO(&dummy_sets[2]);
+		d = &dummy_sets[2];
+	}
 
 	intsDisable();
 
