@@ -32,6 +32,12 @@ public class FeatureDescriptor {
     table = new Hashtable();
   }
 
+  FeatureDescriptor(String name)
+  {
+	this();
+	this.name = name;
+  }
+
   public String getName()
   {
     return (name);

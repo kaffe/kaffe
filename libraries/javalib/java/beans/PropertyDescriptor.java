@@ -28,6 +28,7 @@ public PropertyDescriptor(String propertyName, Class beanClass) throws Introspec
 
 public PropertyDescriptor(String propertyName, Class beanClass, String getterName, String setterName) throws IntrospectionException
 {
+	super(propertyName);
 	this.getter = null;
 	this.setter = null;
 	this.rettype = null;
@@ -51,6 +52,7 @@ public PropertyDescriptor(String propertyName, Class beanClass, String getterNam
 
 public PropertyDescriptor(String propertyName, Method getter, Method setter) throws IntrospectionException
 {
+	super(propertyName);
 	this.getter = getter;
 	this.setter = setter;
 	rettype = null;
