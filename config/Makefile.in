@@ -595,7 +595,7 @@ EXTRA_DIST = \
 	m68k/sysdepCallMethod.h \
 	m68k/threads.h \
 	m68k/trampolines.S \
-	mips/atomicity.h \
+	mips/atomic.h \
 	mips/callKaffeException.h \
 	mips/common.h \
 	mips/irix5/config.frag \
