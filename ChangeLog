@@ -2,6 +2,19 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-11  Craig Black  <craig.black@aonix.com>
+
+        * gnu/java/awt/peer/gtk/GtkCheckboxMenuItem.java
+        (postMenuActionEvent): Implement to notify ItemListeners.
+        * java/awt/CheckboxMenuItem.java
+        (dispatchEventImpl): Update state on ItemEvent.
+        * java/awt/MenuItem.java
+        (processActionEvent): Retarget event source.
+
+2005-02-14  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-11  Thomas Fitzsimmons  <fitzsim@redhat.com>
 
         * jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFileDialogPeer.c (create):

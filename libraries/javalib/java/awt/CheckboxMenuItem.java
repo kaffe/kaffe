@@ -274,6 +274,14 @@ processItemEvent(ItemEvent event)
 void
 dispatchEventImpl(AWTEvent e)
 {
+  if (e instanceof ItemEvent)
+    {
+      synchronized (this)
+        {
+          state = (((ItemEvent) e).getStateChange() == ItemEvent.SELECTED);
+        }
+    }
+
   if (e.id <= ItemEvent.ITEM_LAST 
       && e.id >= ItemEvent.ITEM_FIRST
       && (item_listeners != null 

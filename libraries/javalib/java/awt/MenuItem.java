@@ -563,7 +563,10 @@ protected void
 processActionEvent(ActionEvent event)
 {
   if (action_listeners != null)
-    action_listeners.actionPerformed(event);
+    {
+      event.setSource(this);
+      action_listeners.actionPerformed(event);
+    }
 }
 
 /*************************************************************************/
