@@ -508,7 +508,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 		case LCONST_0:
 		case LCONST_1:
-			OPSTACK_WPUSH(TLONG);
+			OPSTACK_WPUSH(getTLONG());
 			break;
 			
 		case DCONST_0:
@@ -541,7 +541,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			GET_WIDX;
 			tag = CONST_TAG(idx, pool);
 			if (tag == CONSTANT_Long) {
-				OPSTACK_WPUSH(TLONG);
+				OPSTACK_WPUSH(getTLONG());
 			} else {
 				OPSTACK_WPUSH(getTDOUBLE());
 			}
@@ -661,8 +661,8 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case LLOAD:
 			GET_CONST_INDEX;
 		LLOAD_common:
-			ENSURE_LOCAL_WTYPE(idx, TLONG);
-			OPSTACK_WPUSH(TLONG);
+			ENSURE_LOCAL_WTYPE(idx, getTLONG());
+			OPSTACK_WPUSH(getTLONG());
 			break;
 			
 			
@@ -674,8 +674,8 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case LSTORE:
 			GET_CONST_INDEX;
 		LSTORE_common:
-			OPSTACK_WPOP_T(TLONG);
-			block->locals[idx] = *TLONG;
+			OPSTACK_WPOP_T(getTLONG());
+			block->locals[idx] = *getTLONG();
 			block->locals[idx + 1] = *TWIDE;
 			break;
 			
@@ -786,7 +786,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case CALOAD: ARRAY_LOAD(TINT,   getTCHARARR());  break;
 		case SALOAD: ARRAY_LOAD(TINT,   getTSHORTARR()); break;
 			
-		case LALOAD: ARRAY_WLOAD(TLONG,   getTLONGARR());   break;
+		case LALOAD: ARRAY_WLOAD(getTLONG(),   getTLONGARR());   break;
 		case DALOAD: ARRAY_WLOAD(getTDOUBLE(), getTDOUBLEARR()); break;
 #undef ARRAY_LOAD
 #undef ARRAY_WLOAD
@@ -871,7 +871,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case CASTORE: ARRAY_STORE(TINT,   getTCHARARR());  break;
 		case SASTORE: ARRAY_STORE(TINT,   getTSHORTARR()); break;
 			
-		case LASTORE: ARRAY_WSTORE(TLONG,   getTLONGARR());   break;
+		case LASTORE: ARRAY_WSTORE(getTLONG(),   getTLONGARR());   break;
 		case DASTORE: ARRAY_WSTORE(getTDOUBLE(), getTDOUBLEARR()); break;
 #undef ARRAY_STORE
 #undef ARRAY_WSTORE
@@ -908,15 +908,15 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 		case LAND: case LOR:  case LXOR:
 		case LADD: case LSUB: case LMUL: case LDIV: case LREM:
-			OPSTACK_WPOP_T(TLONG);
+			OPSTACK_WPOP_T(getTLONG());
 			break;
 		case LNEG:
-			OPSTACK_WPEEK_T(TLONG);
+			OPSTACK_WPEEK_T(getTLONG());
 			break;
 			
 		case LSHL: case LSHR: case LUSHR:
 			OPSTACK_POP_T(TINT);
-			OPSTACK_WPEEK_T(TLONG);
+			OPSTACK_WPEEK_T(getTLONG());
 			break;
 			
 			
@@ -937,8 +937,8 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 			
 		case LCMP:
-			OPSTACK_WPOP_T(TLONG);
-			OPSTACK_WPOP_T(TLONG);
+			OPSTACK_WPOP_T(getTLONG());
+			OPSTACK_WPOP_T(getTLONG());
 			opstackPushBlind(block, TINT);
 			break;
 			
@@ -987,7 +987,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case I2L:
 			OPSTACK_POP_T(TINT);
 			CHECK_STACK_OVERFLOW(2);
-			opstackWPushBlind(block, TLONG);
+			opstackWPushBlind(block, getTLONG());
 			break;
 		case I2D:
 			OPSTACK_POP_T(TINT);
@@ -1001,7 +1001,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			break;
 		case F2L:
 			OPSTACK_POP_T(getTFLOAT());
-			OPSTACK_WPUSH(TLONG);
+			OPSTACK_WPUSH(getTLONG());
 			break;
 		case F2D:
 			OPSTACK_POP_T(getTFLOAT());
@@ -1009,15 +1009,15 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			break;
 			
 		case L2I:
-			OPSTACK_WPOP_T(TLONG);
+			OPSTACK_WPOP_T(getTLONG());
 			opstackPushBlind(block, TINT);
 			break;
 		case L2F:
-			OPSTACK_WPOP_T(TLONG);
+			OPSTACK_WPOP_T(getTLONG());
 			opstackPushBlind(block, getTFLOAT());
 			break;
 		case L2D:
-			OPSTACK_WPOP_T(TLONG);
+			OPSTACK_WPOP_T(getTLONG());
 			opstackWPushBlind(block, getTDOUBLE());
 			break;
 			
@@ -1031,7 +1031,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			break;
 		case D2L:
 			OPSTACK_WPOP_T(getTDOUBLE());
-			opstackWPushBlind(block, TLONG);
+			opstackWPushBlind(block, getTLONG());
 			break;
 			
 			
@@ -1198,7 +1198,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 				break;
 				
 			case 'F': opstackPushBlind(block, getTFLOAT()); break;
-			case 'J': OPSTACK_WPUSH(TLONG); break;
+			case 'J': OPSTACK_WPUSH(getTLONG()); break;
 			case 'D': OPSTACK_WPUSH(getTDOUBLE()); break;
 				
 			case '[':
@@ -1238,7 +1238,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 				break;
 				
 			case 'F': OPSTACK_POP_T_BLIND(getTFLOAT());   break;
-			case 'J': OPSTACK_WPOP_T_BLIND(TLONG);   break;
+			case 'J': OPSTACK_WPOP_T_BLIND(getTLONG());   break;
 			case 'D': OPSTACK_WPOP_T_BLIND(getTDOUBLE()); break;
 				
 			case '[':
@@ -1285,7 +1285,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 				break;
 				
 			case 'F': OPSTACK_POP_T_BLIND(getTFLOAT());   break;
-			case 'J': OPSTACK_WPOP_T_BLIND(TLONG);   break;
+			case 'J': OPSTACK_WPOP_T_BLIND(getTLONG());   break;
 			case 'D': OPSTACK_WPOP_T_BLIND(getTDOUBLE()); break;
 				
 			case '[':
@@ -1399,7 +1399,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			}
 			break;
 		case LRETURN:
-			OPSTACK_WPEEK_T(TLONG);
+			OPSTACK_WPEEK_T(getTLONG());
 			sig = getMethodReturnSig(v->method);
 			if (strcmp(sig, "J")) {
 				return verifyError(v, "lreturn: method doesn't return a long");

@@ -426,7 +426,7 @@ printType(const Type* t)
 		if (type == TINT->data.class) {
 			dprintf("TINT");
 		}
-		else if (type == TLONG->data.class) {
+		else if (type == getTLONG()->data.class) {
 			dprintf("TLONG");
 		}
 		else if (type == getTFLOAT()->data.class) {

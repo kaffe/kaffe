@@ -690,7 +690,7 @@ checkMethodCall(Verifier* v,
 			break;
 			
 		case 'J':
-			if (binfo->opstack[paramIndex].data.class != TLONG->data.class ||
+			if (binfo->opstack[paramIndex].data.class != getTLONG()->data.class ||
 			    !isWide(&binfo->opstack[paramIndex + 1])) {
 				return typeErrorInCheckMethodCall(v, argbuf, pc, idx, pool, methSig);
 			}
@@ -753,7 +753,7 @@ checkMethodCall(Verifier* v,
 		break;
 		
 	case 'J':
-		binfo->opstack[binfo->stacksz]     = *TLONG;
+		binfo->opstack[binfo->stacksz]     = *getTLONG();
 		binfo->opstack[binfo->stacksz + 1] = *TWIDE;
 		binfo->stacksz += 2;
 		break;
@@ -859,7 +859,7 @@ loadInitialArgs(Verifier* v)
 			if (paramCount + 1 > v->method->localsz) {
 				return localOverflowErrorInLoadInitialArgs(v, argbuf);
 			}
-			locals[paramCount] = *TLONG;
+			locals[paramCount] = *getTLONG();
 			locals[paramCount+1] = *TWIDE;
 			paramCount += 2;
 			break;

@@ -46,8 +46,13 @@ Type* getTFLOAT(void)
 }
        
 static Type  verify_LONG;
-Type* TLONG = &verify_LONG;
-       
+static Type* TLONG = &verify_LONG;
+
+Type* getTLONG(void)
+{
+  return TLONG;
+}
+
 static Type  verify_DOUBLE;
 static Type* TDOUBLE = &verify_DOUBLE;
 

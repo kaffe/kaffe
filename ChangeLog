@@ -1,6 +1,21 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/verifier/verify-type.c
+	(TLONG): Made static. 
+	(getTLONG) Added.
+
+	* kaffe/kaffevm/verifier/verify-type.h: 
+	(TLONG) Removed prototype.
+	(getTLONG) Added prototype.
+
+	* kaffe/kaffevm/verifier/verify.c,
+	kaffe/kaffevm/verifier/verify-debug.c,
+	kaffe/kaffevm/verifier/verify-block.c:
+	Replaced use of TLONG by getTLONG.
+	
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/verifier/verify-type.c
 	(TFLOAT): Made static. 
 	(getTFLOAT) Added.
 

@@ -97,7 +97,7 @@ extern Type* getTUNSTABLE(void);
 
 extern Type* TINT;
 extern Type* getTFLOAT(void);
-extern Type* TLONG;
+extern Type* getTLONG(void);
 extern Type* getTDOUBLE(void);
 extern Type* getTNULL(void);
 extern Type* TWIDE;
