@@ -319,7 +319,7 @@ jthreadedMmap(void **memory, size_t *size, int mode, int fd, off_t *offset)
   
 	pages_offset = (*offset)/getpagesize();
 	*offset = pages_offset*getpagesize();
-	fprintf(stderr, "pages_offset=%lu pages_sz=%lu\n", pages_offset, pages_sz);
+	fprintf(stderr, "pages_offset=%lu pages_sz=%lu\n", pages_offset, (unsigned long) pages_sz);
 
 	switch (mode) {
 		case KAFFE_MMAP_READ:
