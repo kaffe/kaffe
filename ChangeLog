@@ -3,6 +3,7 @@ Sun Apr 25 20:15:52 PDT 1999 Archie Cobbs <archie@whistle.com>
 	* java/lang/String.java: fix race condition
 	* java/io/PrintStream.java: restore JDK compatibility tweaks
 	* java/lang/System.java: put private constructor back in
+	* test/regression/Reflect.java: sort output
 
 1999-04-25  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
