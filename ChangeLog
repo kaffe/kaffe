@@ -1,3 +1,11 @@
+Mon Jan 11 18:01:48 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* kaffe/kaffevm/jit/Makefile.am (icode.h, jit.def, trampolines.c): 
+	added explicit dependencies upon them, so that we don't try to
+	build a source that depends on them before creating them
+	* kaffe/kaffevm/Makefile.am (java_lang_Cloneable.h): ditto
+	* kaffe/kaffevm/Makefile.in, kaffe/kaffevm/jit/Makefile.in: regen
+
 Mon Jan 11 16:42:57 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in (AWT_LIBS, X_LIBS): replace -R with -rpath

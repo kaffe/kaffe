@@ -60,7 +60,7 @@ libkaffevm_la_SOURCES = \
 	utf8const.c \
 	verify.c
 
-noinst_HEADERS = java_lang_Cloneable.h
+baseclasses.lo: java_lang_Cloneable.h
 
 java_lang_Cloneable.h: $(top_srcdir)/libraries/javalib/Klasses.jar
 	if test -x $(KAFFEH_FOR_HOST); then \
