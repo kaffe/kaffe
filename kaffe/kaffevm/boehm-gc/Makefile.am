@@ -35,5 +35,3 @@ libkaffegc_la_SOURCES= \
 	gc-refs.h \
 	gc-kaffe.c \
 	gc-kaffe.h
-
-EXTRA_DIST= boehm

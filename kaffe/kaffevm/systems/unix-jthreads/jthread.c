@@ -1485,7 +1485,7 @@ jthread_create(unsigned char pri, void (*func)(void *), int isDaemon,
 	page_size = getpagesize();
 	if (threadStackSize == 0)
 		threadStackSize = THREADSTACKSIZE;
-	threadStackSize = (threadStackSize + page_size - 1) & -page_size;
+	threadStackSize = (threadStackSize + page_size - 1) & (uintp)-page_size;
 
 	jmutex_lock(&threadLock);
 	jtid = newThreadCtx(threadStackSize);

@@ -154,9 +154,11 @@ void record_marked(int nr_of_objects, uint32 size)
         gcStats.markedmem += size;
 } 
 
-static iStaticLock	gcman;
-static iStaticLock	finman;
-static iStaticLock	gc_lock;			/* allocator mutex */
+static iStaticLock	gcman = KAFFE_STATIC_LOCK_INITIALIZER;
+static iStaticLock	finman = KAFFE_STATIC_LOCK_INITIALIZER;
+static iStaticLock	gcmanend = KAFFE_STATIC_LOCK_INITIALIZER;
+static iStaticLock	finmanend = KAFFE_STATIC_LOCK_INITIALIZER;
+static iStaticLock	gc_lock = KAFFE_STATIC_LOCK_INITIALIZER;	/* allocator mutex */
 
 static void gcFree(Collector* gcif, void* mem);
 
@@ -213,7 +215,7 @@ struct _gcStats gcStats;
 static void startGC(Collector *gcif);
 static void finishGC(Collector *gcif);
 static void startFinalizer(void);
-static void markObjectDontCheck(gc_unit *unit, gc_block *info, int idx);
+static void markObjectDontCheck(gc_unit *unit, gc_block *info, uintp idx);
 
 /* Return true if gc_unit is pointer to an allocated object */
 static inline int
@@ -237,7 +239,7 @@ gc_heap_isobject(gc_block *info, gc_unit *unit)
 }
 
 static void
-markObjectDontCheck(gc_unit *unit, gc_block *info, int idx)
+markObjectDontCheck(gc_unit *unit, gc_block *info, uintp idx)
 {
 	/* If the object has been traced before, don't do it again. */
 	if (KGC_GET_COLOUR(info, idx) != KGC_COLOUR_WHITE) {
@@ -315,13 +317,13 @@ KaffeGC_WalkConservative(Collector* gcif, const void* base, uint32 size)
 
 DBG(GCWALK,	
 	dprintf("scanning %d bytes conservatively from %p-%p\n", 
-		size, base, ((char *)base) + size);
+		size, base, ((const char *)base) + size);
     )
 
 	record_marked(1, size);
 
 	if (size > 0) {
-		for (mem = ((const int8*)base) + (size & -ALIGNMENTOF_VOIDP) - sizeof(void*);
+		for (mem = ((const int8*)base) + (size & (uintp)-ALIGNMENTOF_VOIDP) - sizeof(void*);
 		     (const void*)mem >= base;
 		     mem -= ALIGNMENTOF_VOIDP) {
 			const void *p = *(void * const *)mem;
@@ -370,17 +372,20 @@ gcGetObjectBase(Collector *gcif UNUSED, void* mem)
 {
 	int idx;
 	gc_block* info;
+	int iLockRoot;
 
 	/* quickly reject pointers that are not part of this heap */
 	if (!IS_A_HEAP_POINTER(mem)) {
 		return (0);
 	}
 
+	lockStaticMutex(&gc_lock);
 	/* the allocator initializes all block infos of a large
 	   object using the address of the first page allocated
 	   for the large object. Hence, simply using GCMEM2* works
 	   even for large blocks
 	  */
+
 	info = GCMEM2BLOCK(mem);
 	idx = GCMEM2IDX(info, mem);
 
@@ -389,8 +394,11 @@ gcGetObjectBase(Collector *gcif UNUSED, void* mem)
 	    ((KGC_GET_COLOUR(info, idx) & KGC_COLOUR_INUSE) || 
 	     (KGC_GET_COLOUR(info, idx) & KGC_COLOUR_FIXED))) 
 	{
-	    	return (UTOMEM(GCBLOCK2MEM(info, idx)));
+	    	mem = UTOMEM(GCBLOCK2MEM(info, idx));
+		unlockStaticMutex(&gc_lock);
+		return mem;
 	}
+	unlockStaticMutex(&gc_lock);
 	return (0);
 }
 
@@ -480,16 +488,17 @@ gcMan(void* arg)
 {
 	gc_unit* unit;
 	gc_block* info;
-	int idx;
+	uintp idx;
 	Collector *gcif = (Collector*)arg;
 	int iLockRoot;
 
+	lockStaticMutex(&gcman);
+	gcRunning = 0;
 	/* Wake up anyone waiting for the GC to finish every time we're done */
 	for (;;) {
-		lockStaticMutex(&gcman);
 
 		while (gcRunning == 0) {
-			waitStaticCond(&gcman, 0);
+			waitStaticCond(&gcman, (jlong)0);
 		}
 		/* We have observed that gcRunning went from 0 to 1 or 2 
 		 * One thread requested a gc.  We will decide whether to gc
@@ -635,10 +644,12 @@ DBG(GCSTAT,
 
 gcend:;
 		/* now signal any waiters */
+		lockStaticMutex(&gcmanend);
 		gcRunning = 0;
-		broadcastStaticCond(&gcman);
-		unlockStaticMutex(&gcman);
+		broadcastStaticCond(&gcmanend);
+		unlockStaticMutex(&gcmanend);
 	}
+	unlockStaticMutex(&gcman);
 }
 
 /*
@@ -650,7 +661,7 @@ startGC(Collector *gcif)
 {
 	gc_unit* unit;
 	gc_block* info;
-	int idx;
+	uintp idx;
 
 	gcStats.freedmem = 0;
 	gcStats.freedobj = 0;
@@ -845,12 +856,12 @@ finaliserMan(void* arg)
 	int iLockRoot;
 
 
+	lockStaticMutex(&finman);
 	for (;;) {
-		lockStaticMutex(&finman);
 
 		finalRunning = false;
 		while (finalRunning == false) {
-			waitStaticCond(&finman, 0);
+			waitStaticCond(&finman, (jlong)0);
 		}
 		assert(finalRunning == true);
 
@@ -903,9 +914,11 @@ finaliserMan(void* arg)
 		}
 
 		/* Wake up anyone waiting for the finalizer to finish */
-		broadcastStaticCond(&finman);
-		unlockStaticMutex(&finman);
+		lockStaticMutex(&finmanend);
+		broadcastStaticCond(&finmanend);
+		unlockStaticMutex(&finmanend);
 	}
+	unlockStaticMutex(&finman);
 }
 
 static
@@ -947,13 +960,14 @@ gcInvokeGC(Collector* gcif UNUSED, int mustgc)
 		if (!gcDisabled)
 			signalStaticCond(&gcman);
 	}
+
+	lockStaticMutex(&gcmanend);
 	unlockStaticMutex(&gcman);
 
-	lockStaticMutex(&gcman);
 	while (gcRunning != 0) {
-		waitStaticCond(&gcman, 0);
+		waitStaticCond(&gcmanend, (jlong)0);
 	}
-	unlockStaticMutex(&gcman);
+	unlockStaticMutex(&gcmanend);
 }
 
 /*
@@ -976,8 +990,10 @@ gcInvokeFinalizer(Collector* gcif)
 		finalRunning = true;
 		signalStaticCond(&finman); 
 	}
-	waitStaticCond(&finman, 0);
+	lockStaticMutex(&finmanend);
 	unlockStaticMutex(&finman);
+	waitStaticCond(&finmanend, (jlong)0);
+	unlockStaticMutex(&finmanend);
 }
 
 /*
@@ -1126,7 +1142,7 @@ gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
 }
 
 static
-Hjava_lang_Throwable *
+struct Hjava_lang_Throwable *
 gcThrowOOM(Collector *gcif UNUSED)
 {
 	Hjava_lang_Throwable *ret = 0;
@@ -1333,7 +1349,7 @@ void
 objectSizesAdd(size_t sz)
 {
         int i;
-        for (i = 0; sz > objectSizes[i].size; i++)
+        for (i = 0; objectSizes[i].size > 0 &&  sz > (size_t)objectSizes[i].size; i++)
                 ;
         objectSizes[i].count++;
 
@@ -1399,11 +1415,17 @@ gcGetHeapTotal(Collector *gcif UNUSED)
   return gc_heap_total;
 }
 
+static const char *
+gcGetName(UNUSED Collector *gcif)
+{
+	return "kaffe-gc";
+}
+
 /*
  * vtable for object implementing the collector interface.
  */
 static struct GarbageCollectorInterface_Ops KGC_Ops = {
-	0,		/* reserved */
+	gcGetName,		/* reserved */
 	0,		/* reserved */
 	0,		/* reserved */
 	gcMalloc,

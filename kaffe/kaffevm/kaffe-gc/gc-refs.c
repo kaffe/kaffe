@@ -78,7 +78,7 @@ KaffeGC_addRef(Collector *collector, const void* mem)
  * zero then the reference is removed.
  */
 bool
-KaffeGC_rmRef(Collector *collector, const void* mem)
+KaffeGC_rmRef(Collector *collector, void* mem)
 {
   uint32 idx;
   refObject** objp;

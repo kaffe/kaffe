@@ -397,7 +397,6 @@ libkaffegc_la_SOURCES = \
 	gc-kaffe.c \
 	gc-kaffe.h
 
-EXTRA_DIST = boehm
 all: all-recursive
 
 .SUFFIXES:

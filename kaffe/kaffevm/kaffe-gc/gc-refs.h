@@ -20,7 +20,7 @@
 
 struct _Collector;
 bool KaffeGC_addRef(struct _Collector *collector, const void* mem);
-bool KaffeGC_rmRef(struct _Collector *collector, const void* mem);
+bool KaffeGC_rmRef(struct _Collector *collector, void* mem);
 void KaffeGC_walkRefs(struct _Collector* collector);
 
 #endif /* __gcrefs_h */

@@ -1068,8 +1068,8 @@ if test x"${GC_NAME}" = x"boehm-gc"; then
 	esac
 
 	ac_configure_args="$ac_configure_args --enable-libgc-convenience"
-	AC_CONFIG_SUBDIRS([kaffe/kaffevm/boehm-gc/boehm])
 fi
+AC_CONFIG_SUBDIRS([kaffe/kaffevm/boehm-gc/boehm])
 
 AC_SUBST(BOEHMGC_SPECIFIC_FLAGS)
 

@@ -1,3 +1,37 @@
+2004-08-27  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* configure.ac: Moved AC_CONFIG_SUBDIRS to make configure
+	generate the "boehm" directory in any cases.
+
+	* kaffe/kaffevm/boehm-gc/Makefile.am: Removed EXTRA_DIST.
+
+	* libraries/javalib/Makefile.am.in: Added "com" to EXTRA_DIST.
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in,
+	configure, kaffe/kaffevm/boehm-gc/Makefile.in: Regenerated.
+
+	* kaffe/kaffevm/kaffe-gc/gc-refs.c,
+	kaffe/kaffevm/kaffe-gc/gc-refs.h
+	(KaffeGC_rmRef): Changed prototype to fix a warning.
+	
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
+	(gcman, finman, gc_lock): Initialize explicitly.
+	(gcmaned, finmanend): New static locks.
+	(markObjectDontCheck): Changed prototype to fix a warning.
+	(KaffeGC_WalkConservative): Fixed various warnings.
+	(gcGetObjectBase): Added a mutex lock to protect the read access
+	to the pointer list.
+	(gcMan): Fixed mutex locking logic and some warnings.
+	(finaliserMan): Fixed mutex locking logic.
+	(gcInvokeGC): Likewise.
+	(gcInvokeFinalizer): Likewise.
+	(objectSizesAdd): Fixes a warning.
+	(gcGetName): New function to report GC name.
+	(KGC_Ops): Updated.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
+	(jthread_create): Fixed a potential warning.
+	
 2004-08-26  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/jit3/constpool.c (printConstant): 
