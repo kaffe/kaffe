@@ -226,6 +226,7 @@ public InputStream getResourceAsStream(String name) {
 }
 
 native public Object[] getSigners();
+native void setSigners(Object[] signers);
 
 native public Class getSuperclass();
 
