@@ -35,4 +35,13 @@ extern char* sys_errlist[];
 #define	SYS_HERROR(x)	"Network error"
 #endif
 
-#endif
+#if !defined(HAVE_INET_NTOP)
+extern const char * inet_ntop(int af, const void * src, char * dst, size_t size);
+#endif /* HAVE_INET_NTOP */
+
+#if !defined(HAVE_INET_PTON)
+extern int inet_pton(int af, const char * src, void * dst);
+#endif /* HAVE_INET_PTON */
+
+#endif /* __nets_h */
+

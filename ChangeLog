@@ -1,3 +1,9 @@
+2003-12-19  Dalibor Topic <robilad@kaffe.org>
+
+	* include/nets.h
+	[!HAVE_INET_NTOP]: Added prototype for inet_ntop.
+	[!HAVE_INET_PTON]: Added prototype for inet_pton.
+
 2003-12-14  Dalibor Topic <robilad@kaffe.org>
 
 	* kaffe/kaffevm/support.h:
