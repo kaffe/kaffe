@@ -69,7 +69,7 @@ run()
 	RESULT="$1.fail"
 	TMPRESULT="$1.tmp"
 	$VERBOSE $JAVA $*
-	env CLASSPATH=${CLASSPATH}${PATHSEP}run_time $JAVA -verifyremote $* <&0 >$TMPRESULT 2>&1 &
+	env CLASSPATH=${CLASSPATH}${PATHSEP}run_time $JAVA $* <&0 >$TMPRESULT 2>&1 &
 	error=$?
 	pid=$!
 	$VERBOSE "Background pid: $pid"
