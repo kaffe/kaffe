@@ -24,5 +24,11 @@ class IndexTest {
 5
 Catch
 java.lang.ArrayIndexOutOfBoundsException
+	at java.lang.Throwable.fillInStackTrace(Throwable.java:native)
+	at java.lang.Throwable.<init>(Throwable.java:33)
+	at java.lang.Exception.<init>(Exception.java:20)
+	at java.lang.RuntimeException.<init>(RuntimeException.java:17)
+	at java.lang.IndexOutOfBoundsException.<init>(IndexOutOfBoundsException.java:17)
+	at java.lang.ArrayIndexOutOfBoundsException.<init>(ArrayIndexOutOfBoundsException.java:17)
 	at IndexTest.main(IndexTest.java:7)
 */
