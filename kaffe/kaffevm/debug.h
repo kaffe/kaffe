@@ -108,6 +108,7 @@
 
 # define DBG_REGFORCE		DBG_BIT(57)
 # define DBG_SYSDEPCALLMETHOD   DBG_BIT(58)
+# define DBG_READCLASS		DBG_BIT(59)
 
 # define DBG_ALL		((debugmask_t)(-1))
 # define DBG_ANY                DBG_ALL
@@ -166,7 +167,7 @@ typedef long long int   debugmask_t;
  */
 # define DBGGDBBREAK() { ((void)0); }
 
-#elif !defined(KAFFEH) 
+#else
 /* --- Debugging is enabled --- */
 
 /* Defines what debugging output is seen. Needs to be 64-bit. */
@@ -188,38 +189,19 @@ extern debugmask_t kaffevmDebugMask;
 /* Do something that would cause GDB to gain control. */
 # define DBGGDBBREAK() { (*(int*)0) = 42; }
 
-# ifdef __cplusplus
-extern "C"
-# else
-extern
-# endif
-#else	/* !defined(KAFFEH) */
-
-/* --- give some simple macros for debugging kaffeh */
-
-/* You must define DEBUG_KAFFEH to debug kaffeh */
-# if defined(DEBUG_KAFFEH)
-#  define DBG(mask, statement)		statement
-#  define DBGEXPR(mask, expr, default) 	expr
-#  define DBGIF(statement)  statement
-# else
-#  define DBG(mask, statement)
-#  define DBGEXPR(mask, expr, default) 	default
-#  define DBGIF(statement)
-# endif /* defined(DEBUG_KAFFEH) */
-
-/* Kaffeh doesn't link with debug.o, so make dprintf a simple printf */
-# undef dprintf
-# define dprintf	printf
-
 #endif /* defined(NDEBUG) || !defined(DEBUG) */
 
 
-/* XXX: change dprintf to kaffe_dprintf and get rid of the macro */
 #undef dprintf
 #define dprintf       kaffe_dprintf
 
-int kaffe_dprintf(const char *fmt, ...);
+#if defined(__GNUC__)
+#define KFUNC_FORMAT(archtype,fmt,arg) __attribute__((__format__ (archtype,fmt,arg)))
+#else
+#define KFUNC_FORMAT(archtype,fmt,arg)
+#endif
+
+int kaffe_dprintf(const char *fmt, ...) KFUNC_FORMAT(printf,1,2);
 
 /* Set the debugging mask to use. (give the mask) */
 void dbgSetMask(debugmask_t mask);
@@ -231,6 +213,6 @@ void dbgSetMask(debugmask_t mask);
  *
  * Return false if nothing was set
  */
-int dbgSetMaskStr(char *mask_str);
+int dbgSetMaskStr(const char *mask_str);
 
 #endif /* __kaffevm_debug_h */

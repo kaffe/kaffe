@@ -284,7 +284,7 @@ DBG(MLOOKUP,
 
 DBG(MLOOKUP,
 	dprintf("findMethodLocal(%s,%s,%s) -> NOT FOUND\n",
-		class->name->data, name->data, signature->data, mptr); )
+		class->name->data, name->data, signature->data); )
 
 	return NULL;
 }

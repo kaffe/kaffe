@@ -82,6 +82,8 @@ static void removeJNIref(jref);
 
 /*
  * Define how we handle exceptions in JNI.
+ *
+ * XXX variable declarations in macros are nasty.
  */
 #define	BEGIN_EXCEPTION_HANDLING(X)			\
 	vmException ebuf;				\
@@ -271,9 +273,8 @@ Kaffe_DefineClass(JNIEnv* env, jobject loader, const jbyte* buf, jsize len)
 	errorInfo info;
 
 	BEGIN_EXCEPTION_HANDLING(0);
-	hand.base = (void*)buf;
-	hand.buf = hand.base;
-	hand.size = len;
+
+	classFileInit(&hand, buf, len, CP_BYTEARRAY);
 
 	cls = newClass();
 	if (cls == 0) {

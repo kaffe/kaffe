@@ -19,9 +19,9 @@
 #include "locks.h"
 #include "jsyscall.h"
 #include "hashtab.h"
-#include "stringSupport.h"
 #include "stats.h"
 #include "debug.h"
+#include "utf8const.h"
 
 /* For kaffeh, don't use the hash table. Instead, just make these
    function calls into macros in such a way as to avoid compiler
@@ -119,6 +119,7 @@ static int		utf8ConstCompare(const void *v1, const void *v2);
 
 /*
  * Convert a non-terminated UTF-8 string into an interned Utf8Const.
+ * Returns 0 if an malloc failed occurred.
  */
 Utf8Const *
 utf8ConstNew(const char *s, int len)
@@ -374,36 +375,6 @@ utf8ConstEncode(const jchar *chars, int clength)
 		}
 	}
 	return (buf);
-}
-
-/*
- * Return true iff the Utf8Const string is equal to the Java String.
- */
-int
-utf8ConstEqualJavaString(const Utf8Const *utf8, const Hjava_lang_String *string)
-{
-	const char *uptr = utf8->data;
-	const char *const uend = uptr + strlen(utf8->data);
-	const jchar *sptr = STRING_DATA(string);
-	int ch, slen = STRING_SIZE(string);
-
-#if 0
-	/* Question: would this optimization be worthwhile? */
-	if (unhand(string)->hash != 0 && unhand(string)->hash != utf8->hash) {
-		return(0);
-	}
-#endif
-	for (;;) {
-		if ((ch = UTF8_GET(uptr, uend)) == -1) {
-			return(slen == 0);
-		}
-		if (--slen < 0) {
-			return(0);
-		}
-		if (ch != *sptr++) {
-			return(0);
-		}
-	}
 }
 
 /*

@@ -11,11 +11,6 @@
 #ifndef __classpath_h
 #define __classpath_h
 
-#define CP_INVALID      0
-#define CP_ZIPFILE      1
-#define CP_DIR          2
-#define CP_SOFILE       3
-
 #define IS_ZIP(B) \
 	((B)[0] == 'P' && (B)[1] == 'K')
 #define	IS_SOFILE(B) \

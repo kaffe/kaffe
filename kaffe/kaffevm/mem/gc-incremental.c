@@ -9,6 +9,7 @@
  * of this file. 
  */
 
+/* XXX this should be controllable, somehow. */
 #define	SUPPORT_VERBOSEMEM
 
 #include "config.h"
@@ -195,7 +196,7 @@ markObjectDontCheck(gc_unit *unit, gc_block *info, int idx)
 		return;
 	}
 DBG(GCWALK,	
-	dprintf("  marking @%08p: %s\n", UTOMEM(unit),
+	dprintf("  marking @%p: %s\n", UTOMEM(unit),
 			describeObject(UTOMEM(unit)));
     )
 
@@ -386,7 +387,7 @@ gcWalkMemory(Collector* gcif, void* mem)
 	walkf = gcFunctions[GC_GET_FUNCS(info, idx)].walk;
 	if (walkf != 0) {
 DBG(GCWALK,	
-		dprintf("walking %d bytes @%08p: %s\n", size, mem, 
+		dprintf("walking %d bytes @%p: %s\n", size, mem, 
 			describeObject(mem));
     )
 		walkf(gcif, mem, size);

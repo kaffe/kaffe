@@ -9,8 +9,12 @@
  * of this file. 
  */
 
-#ifndef __readclass_h
-#define __readclass_h
+#ifndef kaffevm_readclass_h
+#define kaffevm_readclass_h
+
+/*
+ * Used in kaffeh and kaffevm.
+ */
 
 #define	JAVAMAGIC	0xCafeBabe
 #define	MAJOR_VERSION_V1_1	45
@@ -18,27 +22,21 @@
 #define	MAJOR_VERSION_V1_4	46
 #define	MINOR_VERSION_V1_4	0
 
-typedef struct _field_info {
-	u2		access_flags;
-	u2		name_index;
-	u2		signature_index;
-} field_info;
-
-typedef struct _method_info {
-	u2		access_flags;
-	u2		name_index;
-	u2		signature_index;
-} method_info;
+typedef enum ReadAttrType {
+	READATTR_METHOD = 11,
+	READATTR_CLASS  = 12,
+ 	READATTR_FIELD  = 13
+} ReadAttrType;
 
 struct Hjava_lang_Class;
 struct Hjava_lang_ClassLoader;
-struct _methods;
 struct _errorInfo;
 
 struct Hjava_lang_Class* readClass(struct Hjava_lang_Class*, classFile*, struct Hjava_lang_ClassLoader*, struct _errorInfo*);
 bool readInterfaces(classFile*, struct Hjava_lang_Class*, struct _errorInfo*);
 bool readMethods(classFile*, struct Hjava_lang_Class*, struct _errorInfo*);
 bool readFields(classFile*, struct Hjava_lang_Class*, struct _errorInfo*);
-bool readAttributes(classFile*, struct Hjava_lang_Class*, void*, struct _errorInfo*);
+bool readAttributes(classFile*, struct Hjava_lang_Class*, ReadAttrType, void*, struct _errorInfo*);
+  
+#endif /* kaffevm_readclass_h */
 
-#endif

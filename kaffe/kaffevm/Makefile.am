@@ -111,7 +111,6 @@ noinst_HEADERS = \
 	lookup.h \
 	object.h \
 	readClass.h \
-	readClassConfig.h \
 	sha-1.h \
 	slib.h \
 	soft.h \

@@ -135,6 +135,12 @@ gc_heap_check(void)
 		} else {
 			gc_freeobj* mem = blk->free;
 
+			assert(blk->inuse);
+			assert(blk->avail < blk->nr);
+			assert(blk->funcs == (uint8*)GCBLOCK2BASE(blk));
+			assert(blk->state == (uint8*)(blk->funcs + blk->nr));
+			assert(blk->data  == (uint8*)ROUNDUPALIGN(blk->state + blk->nr));
+
 			while (mem) {
 				ASSERT_ONBLOCK(mem, blk);
 				mem = mem->next;
@@ -345,6 +351,7 @@ DBG(GCALLOC,		dprintf("gc_heap_malloc: small block %d at %p free %p\n", sz, *mpt
 		/* Once we use all the sub-blocks up, remove the whole block
 		 * from the freelist.
 		 */
+		assert(blk->nr >= blk->avail);
 		assert(blk->avail > 0);
 		blk->avail--;
 		if (blk->avail == 0) {
@@ -581,6 +588,11 @@ gc_large_block(size_t sz)
 	DBG(GCDIAG, memset(info->data, 0, sz));
 
 	GCBLOCK2FREE(info, 0)->next = 0;
+
+	/*
+	 * XXX gc_large_block only called during a block allocation.
+	 * The following is just going to get overwritten. (Right?)
+	 */
 	GC_SET_COLOUR(info, 0, GC_COLOUR_FREE);
 	GC_SET_STATE(info, 0, GC_STATE_NORMAL);
 

@@ -13,11 +13,28 @@
 #include "config-std.h"
 #include "config-mem.h"
 #include "kaffeh-support.h"
+#include "utf8const.h"
+#include "debug.h"
 
 #define	BUFSZ	1024
 #define	PATHSZ	1024
 
 #define	PATH_SEP_CHAR	'/'
+
+/*
+ * Global symbols expected by the class parsing code.
+ * XXX Move into classMethod.c and share between kaffeh and kaffevm.
+ */
+Utf8Const* init_name;
+Utf8Const* final_name;
+Utf8Const* void_signature;
+Utf8Const* constructor_name;
+Utf8Const* Code_name;
+Utf8Const* LineNumberTable_name;
+Utf8Const* ConstantValue_name;
+Utf8Const* Exceptions_name;
+Utf8Const* SourceFile_name;
+Utf8Const* InnerClasses_name;
 
 FILE* include;
 FILE* jni_include;
@@ -34,7 +51,6 @@ char* directoryName = 0;
 
 static void usage(void);
 static int options(char**);
-extern void utf8ConstInit(void);
 
 /*
  * MAIN
@@ -53,7 +69,18 @@ main(int argc, char* argv[])
 		usage();
 		exit(1);
 	}
+
 	utf8ConstInit();
+	init_name = utf8ConstNew("<clinit>", -1);
+	final_name = utf8ConstNew("finalize", -1);
+	void_signature = utf8ConstNew("()V", -1);
+	constructor_name = utf8ConstNew("<init>", -1);
+	Code_name = utf8ConstNew("Code", -1);
+	LineNumberTable_name = utf8ConstNew("LineNumberTable", -1);
+	ConstantValue_name = utf8ConstNew("ConstantValue", -1);
+	Exceptions_name = utf8ConstNew("Exceptions", -1);
+	SourceFile_name = utf8ConstNew("SourceFile", -1);
+	InnerClasses_name = utf8ConstNew("InnerClasses", -1);
 
 	/* Process each class */
 	for (nm = argv[farg]; nm != 0; nm = argv[++farg]) {
@@ -144,7 +171,7 @@ main(int argc, char* argv[])
 		}
 
 		/* Process class */
-		findClass(pathName);
+		kaffeh_findClass(pathName);
 
 		/* Finalize */
 		if (outputName == 0 || argv[farg + 1] == 0) {
@@ -195,6 +222,12 @@ options(char** argv)
 		else if (strcmp(argv[i], "-jni") == 0) {
 			flag_jni = 1;
 		}
+#ifdef DEBUG
+		else if (strcmp(argv[i], "-Xdebug") == 0) {
+			i++;
+			dbgSetMaskStr(argv[i]);
+		}
+#endif /*DEBUG*/
 		else if (strcmp(argv[i], "-classpath") == 0) {
 			i++;
 			strcpy(realClassPath, argv[i]);
@@ -229,6 +262,9 @@ usage(void)
 	dprintf("	-version		Print version number\n");
 	dprintf("	-classpath <path>	Set classpath\n");
 	dprintf("	-jni			Generate JNI interface\n");
+#ifdef DEBUG
+	dprintf("	-Xdebug <opts>		Kaffe debug options.\n");
+#endif /*DEBUG*/
 	dprintf("	-o <file>		Generate all output to the given file\n");
 	dprintf("	-d <directory>		Directory for the output\n");
 }

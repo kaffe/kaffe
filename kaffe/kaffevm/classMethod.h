@@ -293,7 +293,7 @@ typedef struct _fields {
 struct _Code;
 struct _method_info;
 struct _field_info;
-struct _classFile;
+struct classFile;
 
 #define CLASS_METHODS(CLASS)  ((CLASS)->methods)
 #define CLASS_NMETHODS(CLASS)  ((CLASS)->nmethods)
@@ -361,6 +361,29 @@ struct _classFile;
 #define CLASS_GCJ(C)		((C)->accflags & ACC_GCJ)
 #define SET_CLASS_GCJ(C)	(C)->accflags |= ACC_GCJ
 
+/* For manipulating the constant pool in a class */
+#define CLASS_CONSTANTS(CL) (&(CL)->constants)
+#define CLASS_CONST_SIZE(CL) ((CL)->constants.size)
+#define CLASS_CONST_TAG(CL, IDX) ((CL)->constants.tags[IDX])
+#define CLASS_CONST_DATA(CL, IDX) ((CL)->constants.data[IDX])
+#define CLASS_CONST_UTF8(CL, IDX) WORD2UTF(CLASS_CONST_DATA(CL, IDX))
+#define CLASS_CONST_INT(CL, IDX) ((int32) CLASS_CONST_DATA(CL, IDX))
+#if SIZEOF_VOIDP == 8
+#define CLASS_CONST_LONG(CL, IDX) \
+  ((uint64) CLASS_CONST_DATA(CL, IDX))
+#else
+#define CLASS_CONST_LONG(CL, IDX) \
+  WORDS_TO_LONG ((CL)->constants.data[IDX], (CL)->constants.data[(IDX)+1])
+#endif
+#define	CLASS_CONST_DOUBLE(CL, IDX) \
+  CLASS_CONST_LONG(CL, IDX)
+/* The first uint16 of the INDEX'th constant pool entry. */
+#define CLASS_CONST_USHORT1(CL, INDEX) ((CL)->constants.data[INDEX] & 0xFFFF)
+/* The second uint16 of the INDEX'th constant pool entry. */
+#define CLASS_CONST_USHORT2(CL, INDEX) \
+  ((uint16)((CL)->constants.data[INDEX] >> 16))
+
+
 /*
  * 'processClass' is the core of the class initialiser and can prepare a
  * class from the cradle to the grave.
@@ -373,16 +396,19 @@ Hjava_lang_Class* 	findClass(struct _classEntry* centry, errorInfo *einfo);
 
 void			loadStaticClass(Hjava_lang_Class**, const char*);
 
-Hjava_lang_Class*	setupClass(Hjava_lang_Class*, constIndex,
-				   constIndex, u2, Hjava_lang_ClassLoader*);
+bool			setupClass(Hjava_lang_Class*, constIndex,
+				   constIndex, u2, Hjava_lang_ClassLoader*, errorInfo*);
 bool 			addSourceFile(Hjava_lang_Class* c, int idx, errorInfo*);
-bool			addInnerClasses(Hjava_lang_Class* c, uint32 len, struct _classFile* fp, errorInfo *info);
-Method*			addMethod(Hjava_lang_Class*, struct _method_info*, errorInfo*);
+bool			addInnerClasses(Hjava_lang_Class* c, uint32 len, struct classFile* fp, errorInfo *info);
+void			startMethods(Hjava_lang_Class*, u2 methct);
+Method*			addMethod(Hjava_lang_Class*, u2 access_flags,
+				  u2 name_index, u2 signature_index, errorInfo*);
 Method*			addExceptionMethod(Hjava_lang_Class*, Utf8Const*, Utf8Const*);
 void 			addMethodCode(Method*, struct _Code*);
-Field*        		addField(Hjava_lang_Class*, struct _field_info*);
-void			addInterfaces(Hjava_lang_Class*, int, Hjava_lang_Class**);
-void			setFieldValue(Field*, u2);
+Field*        		addField(Hjava_lang_Class*, u2 access_flags,
+				 u2 name_index, u2 signature_index, errorInfo* einfo);
+void			addInterfaces(Hjava_lang_Class*, u2, Hjava_lang_Class**);
+void			setFieldValue(Hjava_lang_Class*, Field*, u2);
 Hjava_lang_Class*	resolveFieldType(Field*, Hjava_lang_Class*, errorInfo*);
 bool			getInheritedMethodIndex(Hjava_lang_Class *clazz, Method *meth);
 
@@ -415,6 +441,7 @@ Hjava_lang_Class*	getClassFromSignaturePart(const char*, Hjava_lang_ClassLoader*
 int			countArgsInSignature(const char *);
 parsed_signature_t*	parseSignature(Utf8Const *, errorInfo*);
 
+void			startFields(Hjava_lang_Class*, u2 fieldct);
 void			finishFields(Hjava_lang_Class*);
 Method*			findMethodFromPC(uintp);
 

@@ -10,18 +10,15 @@ INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -DKAFFEH
 
 bin_PROGRAMS = kaffeh
 
-GEN_SRCS = inflate.c jar.c utf8const.c readClass.c
+GEN_SRCS = inflate.c jar.c utf8const.c readClass.c constants.c debug.c
 
 DISTCLEANFILES = $(GEN_SRCS)
 
-kaffeh_SOURCES = $(GEN_SRCS) constants.c sigs.c support.c main.c
+kaffeh_SOURCES = $(GEN_SRCS) sigs.c support.c main.c mem.c
 
-noinst_HEADERS = constants.h file.h kaffeh-support.h readClassConfig.h \
+noinst_HEADERS = kaffeh-support.h \
 	java_lang_ClassLoader.h \
-	java_lang_Object.h \
-	java_lang_String.h
-
-kaffeh_LDADD = $(KAFFE_LIBS)
+	java_lang_Object.h
 
 $(GEN_SRCS):
 	$(SHELL) $(REGEN_FORWARD) $(srcdir)/../kaffevm/$@ $@

@@ -9,8 +9,6 @@
  * of this file. 
  */
 
-#define	RCDBG(s)
-
 #include "config.h"
 #include "config-std.h"
 #include "config-io.h"
@@ -22,13 +20,10 @@
 #include "constants.h"
 #include "errors.h"
 #include "debug.h"
-#ifdef KAFFEH
-#include <readClassConfig.h>
-#else
-#include "readClassConfig.h"
-#endif
-#include "stringSupport.h"
 #include "readClass.h"
+#include "classMethod.h"
+#include "code.h"
+#include "utf8const.h"
 
 Hjava_lang_Class*
 readClass(Hjava_lang_Class* classThis, classFile* fp, struct Hjava_lang_ClassLoader* loader, errorInfo *einfo)
@@ -40,17 +35,28 @@ readClass(Hjava_lang_Class* classThis, classFile* fp, struct Hjava_lang_ClassLoa
 	u2 this_class;
 	u2 super_class;
 
+	/* CLASS_CNAME(classThis) won't work until after 'setupClass', below */
+	const char* className = NULL;
+
+	if (! checkBufSize(fp, 4+2+2, className, einfo))
+		return 0;
+
 	/* Read in class info */
 	readu4(&magic, fp);
 	if (magic != JAVAMAGIC) {
 		postExceptionMessage(einfo, JAVA_LANG(ClassFormatError), 
 				    "Bad magic number 0x%x", magic);
-		return (0);
+		return 0;
 	}
 	readu2(&minor_version, fp);
 	readu2(&major_version, fp);
 
-RCDBG(	dprintf("major=%d, minor=%d\n", major_version, minor_version);	)
+	/* Note, can't print CLASS_CNAME(classThis), as name isn't initialized yet... */
+
+	DBG(READCLASS,
+	    dprintf("major=%d, minor=%d\n",
+		    major_version, minor_version);
+		);
 
 	if (! ((major_version == MAJOR_VERSION_V1_1 && minor_version == MINOR_VERSION_V1_1) ||
 	       (major_version == MAJOR_VERSION_V1_4 && minor_version == MINOR_VERSION_V1_4))) {
@@ -59,20 +65,29 @@ RCDBG(	dprintf("major=%d, minor=%d\n", major_version, minor_version);	)
 	}
 
 	if (readConstantPool(classThis, fp, einfo) == false) {
-		return (0);
+		return 0;
 	}
+
+	if (! checkBufSize(fp, 2+2+2, className, einfo))
+		return 0;
 
 	readu2(&access_flags, fp);
 	readu2(&this_class, fp);
 	readu2(&super_class, fp);
 
-	ADDCLASS(this_class, super_class, access_flags, constant_pool);
+	if (! setupClass(classThis,
+			 this_class, super_class, access_flags,
+			 loader, einfo)) {
+		return (0);
+	}
+
+	/* CLASS_CNAME(classThis) is now defined. */
 
 	if (readInterfaces(fp, classThis, einfo) == false ||
 	    readFields(fp, classThis, einfo) == false ||
 	    readMethods(fp, classThis, einfo) == false ||
-	    readAttributes(fp, classThis, classThis, einfo) == false) {
-		return (0);
+	    readAttributes(fp, classThis, READATTR_CLASS, classThis, einfo) == false) {
+		return 0;
 	}
 
 	return (classThis);
@@ -84,17 +99,44 @@ RCDBG(	dprintf("major=%d, minor=%d\n", major_version, minor_version);	)
 bool
 readInterfaces(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 {
+	Hjava_lang_Class** interfaces;
 	u2 interfaces_count;
+	u2 i;				
+
+	if (! checkBufSize(fp, 2, CLASS_CNAME(this), einfo))
+		return false;
 
 	readu2(&interfaces_count, fp);
-RCDBG(	dprintf("interfaces_count=%d\n", interfaces_count);	)
+	DBG(READCLASS,
+	    dprintf("%s: interfaces_count=%d\n",
+		    CLASS_CNAME(this), interfaces_count);
+		);
 
-#ifdef READINTERFACES
-	READINTERFACES(fp, this, interfaces_count);
-#else
-	seekm(fp, interfaces_count * 2);
-#endif
-	return (true);
+	if (interfaces_count == 0) {		
+		return true;
+	}			
+
+	if (! checkBufSize(fp, interfaces_count * 2, CLASS_CNAME(this), einfo))
+		return false;
+
+	interfaces = (Hjava_lang_Class**)
+		gc_malloc(sizeof(Hjava_lang_Class**) * interfaces_count, GC_ALLOC_INTERFACE);
+	if (interfaces == 0) {
+		postOutOfMemory(einfo);
+		return false;	
+	}				
+
+	for (i = 0; i < interfaces_count; i++)
+	{
+		u2 iface;
+		readu2(&iface, fp);
+		/* Will be converted from idx to Class* in processClass() */
+		interfaces[i] = (Hjava_lang_Class*) (size_t) iface;
+	}
+
+	addInterfaces(this, interfaces_count, interfaces);
+		
+	return true;
 }
 
 /*
@@ -105,32 +147,40 @@ readFields(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 {
 	u2 i;
 	u2 fields_count;
-	void* fieldThis;
+
+	if (! checkBufSize(fp, 2, CLASS_CNAME(this), einfo))
+		return false;
 
 	readu2(&fields_count, fp);
-RCDBG(	dprintf("fields_count=%d\n", fields_count);		)
-	fieldThis = 0;
+	DBG(READCLASS,
+	    dprintf("%s: fields_count=%d\n", CLASS_CNAME(this), fields_count);
+		);
 
-#if defined(READFIELD_START)
-	READFIELD_START(fields_count, this);
-#endif
+	startFields(this, fields_count);
+
 	for (i = 0; i < fields_count; i++) {
-#if defined(READFIELD)
-		READFIELD(fp, this);
-#else
-		fseek(fp, 6, SEEK_CUR);
-#endif
-#if defined(READFIELD_ATTRIBUTE)
-		READFIELD_ATTRIBUTE(fp, this);
-#else
-		if (readAttributes(fp, this, fieldThis, einfo) == false) {
-			return (false);
-		}
-#endif
+		Field* fieldThis;
+		u2 access_flags;
+		u2 name_index;
+		u2 signature_index;
+		
+		if (! checkBufSize(fp, 2+2+2, CLASS_CNAME(this), einfo))
+			return false;
+
+		readu2(&access_flags, fp);
+		readu2(&name_index, fp);
+		readu2(&signature_index, fp);
+		fieldThis = addField(this, access_flags, name_index, signature_index, einfo);
+
+		if (fieldThis == NULL)
+			return false;
+
+		if (! readAttributes(fp, this, READATTR_FIELD, fieldThis, einfo))
+			return false;
 	}
-#if defined(READFIELD_END)
-	READFIELD_END(this);
-#endif
+
+	finishFields(this);
+	
 	return (true);
 }
 
@@ -138,27 +188,107 @@ RCDBG(	dprintf("fields_count=%d\n", fields_count);		)
  * Read in attributes.
  */
 bool
-readAttributes(classFile* fp, Hjava_lang_Class* this, void* thing, errorInfo *einfo)
+readAttributes(classFile* fp, Hjava_lang_Class* this,
+	       ReadAttrType thingType, void* thing, errorInfo *einfo)
 {
 	u2 i;
 	u2 cnt;
 
-	readu2(&cnt, fp);
-RCDBG(	dprintf("attributes_count=%d\n", cnt);				)
+	if (! checkBufSize(fp, 2, CLASS_CNAME(this), einfo))
+		return false;
 
-	/* Skip attributes for the moment */
+	readu2(&cnt, fp);
+	DBG(READCLASS,
+	    dprintf("%s: attributes_count=%d\n",
+		    CLASS_CNAME(this),
+		    cnt);
+		);
+
 	for (i = 0; i < cnt; i++) {
-#ifdef READATTRIBUTE
-		READATTRIBUTE(fp, this, thing);
-#else
 		u2 idx;
 		u4 len;
+
+		if (! checkBufSize(fp, 2+4, CLASS_CNAME(this), einfo))
+			return false;
+
 		readu2(&idx, fp);
 		readu4(&len, fp);
+
+		if (! checkBufSize(fp, len, CLASS_CNAME(this), einfo))
+			return false;
+
+		if (CLASS_CONST_TAG(this, idx) == CONSTANT_Utf8) {
+			Utf8Const* name;
+			name = WORD2UTF(CLASS_CONST_DATA (this, idx));
+			DBG(READCLASS,
+			    dprintf("%s: parsing attr %s on %s\n", CLASS_CNAME(this), name->data,
+				    (thingType == READATTR_METHOD) ? "Method"
+				    : ((thingType == READATTR_CLASS) ? "Class"
+				       : ((thingType == READATTR_FIELD) ? "Field"
+					  : "unknown enum element")));
+				);
+			if (utf8ConstEqual(name, Code_name)
+			    && (thingType == READATTR_METHOD)) {
+				if (! addCode((Method*)thing, len, fp, einfo)) {
+					return false;
+				}
+			}
+			else if (utf8ConstEqual(name, LineNumberTable_name)
+				 && (thingType == READATTR_METHOD)) {
+				if (!addLineNumbers((Method*)thing,
+						    len, fp, einfo)) {
+					return false;
+				}
+			}
+			else if (utf8ConstEqual(name, ConstantValue_name)
+				 && (thingType == READATTR_FIELD)) {
+				readu2(&idx, fp);
+				setFieldValue(this, (Field*)thing, idx);
+			}
+			else if (utf8ConstEqual(name, Exceptions_name)
+				&& (thingType == READATTR_METHOD)) {
+				if (!addCheckedExceptions((Method*)thing,
+							 len, fp, einfo)) {
+					return false;
+				}
+			}
+			else if (utf8ConstEqual(name, SourceFile_name)
+				&& (thingType == READATTR_CLASS)) {
+				readu2(&idx, fp);
+				if (! addSourceFile((Hjava_lang_Class*)thing, idx, einfo)) {
+					return false;
+				}
+			}
+			else if (utf8ConstEqual(name, InnerClasses_name)
+				 && (thingType == READATTR_CLASS)) {
+				if(! addInnerClasses((Hjava_lang_Class*)thing,
+						    len, fp, einfo)) {
+					return false;
+				}
+			}
+			else {
+				DBG(READCLASS,
+				    dprintf("%s: don't know how to parse %s on %s\n",
+					    CLASS_CNAME(this), name->data,
+					    (thingType == READATTR_METHOD) ? "Method"
+					    : ((thingType == READATTR_CLASS) ? "Class"
+					       : ((thingType == READATTR_FIELD) ? "Field"
+						  : "unknown enum element")));
+				    );
+
 		seekm(fp, len);
-#endif
 	}
-	return (true);
+		}
+		else {
+			/* XXX should this throw an exception? */
+			DBG(READCLASS,
+			    dprintf("%s: WARNING! Skipping broken(?) attribute (name is not a Utf8 constant).\n",
+				    CLASS_CNAME(this)));
+			
+			seekm(fp, len);
+		}
+	}
+	return true;
 }
 
 /*
@@ -169,30 +299,44 @@ readMethods(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 {
 	u2 i;
 	u2 methods_count;
-	Method* methodThis;
+
+	if (! checkBufSize(fp, 2, CLASS_CNAME(this), einfo))
+		return false;
 
 	readu2(&methods_count, fp);
-RCDBG(	dprintf("methods_count=%d\n", methods_count);		)
-	methodThis = 0;
 
-#ifdef READMETHOD_START
-	READMETHOD_START(methods_count, this);
-#endif
+	DBG(READCLASS,
+	    dprintf("%s: methods_count=%d\n", CLASS_CNAME(this), methods_count);
+		);
+
+	startMethods(this, methods_count);
+
 	for (i = 0; i < methods_count; i++) {
-#ifdef READMETHOD
-		READMETHOD(methodThis, fp, this, einfo);
-		if (READMETHOD_FAILED(methodThis)) {
-			return (false);
+		Method* methodThis;
+		u2 access_flags;
+		u2 name_index;
+		u2 signature_index;
+
+		if (! checkBufSize(fp, 2+2+2, CLASS_CNAME(this), einfo))
+			return false;
+
+		readu2(&access_flags, fp);
+		readu2(&name_index, fp);
+		readu2(&signature_index, fp);
+
+		methodThis = addMethod(this, access_flags, name_index, signature_index,
+				       einfo);
+
+		if (methodThis == NULL) {
+			return false;
 		}
-#else
-		fseek(fp, 6, SEEK_CUR);
-#endif
-		if (readAttributes(fp, this, methodThis, einfo) == false) {
-			return (false);
+
+		if (readAttributes(fp, this, READATTR_METHOD, methodThis, einfo) == false) {
+			return false;
 		}
 	}
-#ifdef READMETHOD_END
-	READMETHOD_END();
-#endif
+	
+	// finishMethods(this);
+
 	return (true);
 }

@@ -12,7 +12,7 @@
  * of this file.
  */
 
-#define	IDBG(s)
+#define	IDBG(s) /* XXX */
 
 #include "config.h"
 #include "config-std.h"
@@ -20,7 +20,7 @@
 #include "debug.h"
 #include "gtypes.h"
 #include "inflate.h"
-#include "gc.h"
+#include "jmalloc.h"
 
 #define	WSIZE	0x8000
 

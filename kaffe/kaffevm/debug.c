@@ -36,7 +36,7 @@
 /* Don't waste space with the debugging functions */
 
 void dbgSetMask(debugmask_t m) { }
-int dbgSetMaskStr(char *s) { return 0; }
+int dbgSetMaskStr(const char *s) { return 0; }
 
 #else /* Actually define the functions */
 /* --- Debugging is enabled --- */
@@ -129,6 +129,7 @@ static struct debug_opts
 	D(GCJMORE,	"Debug GCJ support (additional msg)."),
 
 	D(REGFORCE,	"Debug forced registers framework."),
+	D(READCLASS,	"Trace readClass() parsing of .class files."),
 
 	/* you can define combinations too */
 	{ "lookup", DBG_MLOOKUP|DBG_ELOOKUP|DBG_FLOOKUP,
@@ -163,18 +164,33 @@ void printDebugBuffer(void);
 #define NELEMS(a)	(sizeof (a) / sizeof(a[0]))
 
 int
-dbgSetMaskStr(char *mask_str)
+dbgSetMaskStr(const char *orig_mask_str)
 {
 	int i;
-	char *separators = "|,";
+	char *mask_str;
+	const char *separators = "|,";
 	char *opt;
 
 	debugSysInit();
 
+	kaffevmDebugMask = DEFAULT_DEBUG_MASK;
+
+	if (orig_mask_str == NULL) {
+		return 1;
+	}
+
+	/* Duplicate in case orig_mask_str is read-only. */
+	mask_str = strdup(orig_mask_str);
+	if (mask_str == NULL)
+	{
+		dprintf("debug.c: Failed to allocate duplicate for %s. Debugging disabled.\n", orig_mask_str);
+		return 0;
+	}
+
 	opt = strtok(mask_str, separators);
 
 	if (!opt) {
-		kaffevmDebugMask = DEFAULT_DEBUG_MASK;
+		free(mask_str);
 		return 1;
 	}
 
@@ -198,6 +214,7 @@ dbgSetMaskStr(char *mask_str)
 				       (int)(debug_opts[i].mask),
 				       debug_opts[i].desc);
 			}
+		free(mask_str);
 		return 0;
 	}
 
@@ -244,6 +261,7 @@ dbgSetMaskStr(char *mask_str)
 				if (*endp != '\0') {
 					dprintf("Unknown flag (%s) passed to -vmdebug\n",
 						opt);
+					free(mask_str);
 					return 0;
 				}
 				if (set)
@@ -266,6 +284,8 @@ dbgSetMaskStr(char *mask_str)
 			"You cannot debug the JIT in interpreter mode \n");
 #endif
 	}
+
+	free(mask_str);
 	return 1;
 }
 #endif

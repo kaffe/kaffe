@@ -136,7 +136,7 @@ processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 DBG(RESERROR,
 	/* show calls to processClass when debugging resolution errors */
 	depth++;
-	for (i = 0; i < depth; dprintf("  ", i++));
+	for (i = 0; i < depth; dprintf("  "), i++);
 	dprintf("%p entering process class %s %d->%d\n",
 		jthread_current(), class->name->data,
 		class->state, tostate);
@@ -551,7 +551,7 @@ done:
 	unlockClass(class);
 
 DBG(RESERROR,
-	for (i = 0; i < depth; dprintf("  ", i++));
+	for (i = 0; i < depth; dprintf("  "), i++);
 	depth--;
 	dprintf("%p leaving process class %s -> %s\n",
 		jthread_current(), class->name->data,
@@ -646,26 +646,7 @@ done:
 	return (success);
 }
 
-Hjava_lang_Class*
-setupClass(Hjava_lang_Class* cl, constIndex c, constIndex s, u2 flags, Hjava_lang_ClassLoader* loader)
-{
-	constants* pool;
-
-	pool = CLASS_CONSTANTS(cl);
-
-	/* Find the name of the class */
-	if (pool->tags[c] != CONSTANT_Class) {
-DBG(RESERROR,	dprintf("setupClass: not a class.\n");			)
-		return (0);
-	}
-
-	internalSetupClass(cl, WORD2UTF(pool->data[c]), flags, c, s, loader);
-
-	return (cl);
-}
-
-static
-void
+static void
 internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags, int this_index, int su, Hjava_lang_ClassLoader* loader)
 {
 	utf8ConstAssign(cl->name, name);
@@ -687,6 +668,28 @@ internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags, int this_in
 	cl->inner_classes = 0;
 	cl->nr_inner_classes = 0;
 }
+
+bool
+setupClass(Hjava_lang_Class* cl, constIndex c, constIndex s,
+	   u2 flags, Hjava_lang_ClassLoader* loader,
+	   errorInfo* einfo)
+{
+	constants* pool;
+
+	pool = CLASS_CONSTANTS(cl);
+
+	/* Find the name of the class */
+	if (pool->tags[c] != CONSTANT_Class) {
+                postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
+				     "this class constant pool index is bogus");
+		return false;
+	}
+
+	internalSetupClass(cl, WORD2UTF(pool->data[c]), flags, c, s, loader);
+
+	return true;
+}
+
 
 /*
  * add source file name to be printed in exception backtraces
@@ -725,20 +728,26 @@ addSourceFile(Hjava_lang_Class* c, int idx, errorInfo *einfo)
  */
 bool
 addInnerClasses(Hjava_lang_Class* c, uint32 len, classFile* fp,
-		errorInfo *info)
+		errorInfo *einfo)
 {
 	int i;
 	u2 nr;
 	innerClass *ic;
+
+	if (! checkBufSize(fp, 2, CLASS_CNAME(c), einfo))
+		return false;
 
 	readu2(&nr, fp);
 	if (nr == 0) {
 		return true;
 	}
 
+	if (! checkBufSize(fp, nr*(2*4), CLASS_CNAME(c), einfo))
+	    return false;
+
 	ic = KMALLOC(sizeof(innerClass) * nr);
 	if (!ic) {
-		postOutOfMemory(info);
+		postOutOfMemory(einfo);
 		return false;
 	}
 
@@ -760,9 +769,24 @@ addInnerClasses(Hjava_lang_Class* c, uint32 len, classFile* fp,
 	return true;
 }
 
+void
+startMethods(Hjava_lang_Class* this, u2 methct)
+{
+	if (methct == 0)
+		this->methods = NULL;
+	else
+		this->methods = gc_malloc(sizeof(Method)*(methct), GC_ALLOC_METHOD);
+	GC_WRITE(this, this->methods);
+
+	this->nmethods = 0; /* updated in addMethod */
+}
 
 Method*
-addMethod(Hjava_lang_Class* c, method_info* m, errorInfo *einfo)
+addMethod(Hjava_lang_Class* c,
+	  u2 access_flags,
+	  u2 name_index,
+	  u2 signature_index,
+	  errorInfo *einfo)
 {
 	constIndex nc;
 	constIndex sc;
@@ -776,13 +800,15 @@ addMethod(Hjava_lang_Class* c, method_info* m, errorInfo *einfo)
 
 	pool = CLASS_CONSTANTS (c);
 
-	nc = m->name_index;
+	nc = name_index;
 	if (pool->tags[nc] != CONSTANT_Utf8) {
+		/* XXX fill in einfo! */
 DBG(RESERROR,	dprintf("addMethod: no method name.\n");		)
 		return (0);
 	}
-	sc = m->signature_index;
+	sc = signature_index;
 	if (pool->tags[sc] != CONSTANT_Utf8) {
+		/* XXX fill in einfo! */
 DBG(RESERROR,	dprintf("addMethod: no signature name.\n");	)
 		return (0);
 	}
@@ -798,7 +824,7 @@ DBG(RESERROR,	dprintf("addMethod: no signature name.\n");	)
 #endif
 
 DBG(CLASSFILE,
-	dprintf("Adding method %s:%s%s (%x)\n", c->name->data, name->data, signature->data, m->access_flags);
+	dprintf("Adding method %s:%s%s (%x)\n", c->name->data, name->data, signature->data, access_flags);
     )
 
 	mt = &CLASS_METHODS(c)[CLASS_NMETHODS(c)];
@@ -809,7 +835,7 @@ DBG(CLASSFILE,
 	}
 	mt->class = c;
 	/* Warning: ACC_CONSTRUCTION match ACC_STRICT */
-	mt->accflags = m->access_flags & ACC_MASK;
+	mt->accflags = access_flags & ACC_MASK;
 	mt->c.bcode.code = 0;
 	mt->stacksz = 0;
 	mt->localsz = 0;
@@ -826,7 +852,11 @@ DBG(CLASSFILE,
 }
 
 Field*
-addField(Hjava_lang_Class* c, field_info* f)
+addField(Hjava_lang_Class* c,
+	 u2 access_flags,
+	 u2 name_index,
+	 u2 signature_index,
+	 errorInfo* einfo)
 {
 	constIndex nc;
 	constIndex sc;
@@ -837,14 +867,14 @@ addField(Hjava_lang_Class* c, field_info* f)
 
 	pool = CLASS_CONSTANTS (c);
 
-	nc = f->name_index;
+	nc = name_index;
 	if (pool->tags[nc] != CONSTANT_Utf8) {
 DBG(RESERROR,	dprintf("addField: no field name.\n");			)
 		return (0);
 	}
 
 	--CLASS_FSIZE(c);	/* holds field count initially */
-	if (f->access_flags & ACC_STATIC) {
+	if (access_flags & ACC_STATIC) {
 		index = CLASS_NSFIELDS(c);
 	}
 	else {
@@ -854,17 +884,17 @@ DBG(RESERROR,	dprintf("addField: no field name.\n");			)
 
 DBG(CLASSFILE,
 	dprintf("Adding field %s:%s\n",
-		c->name->data, WORD2UTF(pool->data[nc])->data);
+		CLASS_CNAME(c), CLASS_CONST_UTF8(c, nc)->data);
     )
 
-	sc = f->signature_index;
+	sc = signature_index;
 	if (pool->tags[sc] != CONSTANT_Utf8) {
 DBG(RESERROR,	dprintf("addField: no signature name.\n");		)
 		CLASS_NFIELDS(c)++;
 		return (0);
 	}
 	utf8ConstAssign(ft->name, WORD2UTF(pool->data[nc]));
-	ft->accflags = f->access_flags;
+	ft->accflags = access_flags;
 
 	sig = CLASS_CONST_UTF8(c, sc)->data;
 	if (sig[0] == 'L' || sig[0] == '[') {
@@ -888,18 +918,34 @@ DBG(RESERROR,	dprintf("addField: no signature name.\n");		)
 	}
 
 	CLASS_NFIELDS(c)++;
-	if (f->access_flags & ACC_STATIC) {
+	if (access_flags & ACC_STATIC) {
 		CLASS_NSFIELDS(c)++;
 	}
 	return (ft);
 }
 
 void
-setFieldValue(Field* ft, u2 idx)
+setFieldValue(Hjava_lang_Class* unused, Field* ft, u2 idx)
 {
 	/* Set value index */
 	FIELD_CONSTIDX(ft) = idx;
 	ft->accflags |= FIELD_CONSTANT_VALUE;
+}
+
+void
+startFields(Hjava_lang_Class* this, u2 fieldct)
+{
+	CLASS_NFIELDS(this) = 0; /* updated in addField() */
+	CLASS_FSIZE(this) = fieldct;
+	if (fieldct == 0) {
+		CLASS_FIELDS(this) = (Field*)0;
+	}
+	else {
+		CLASS_FIELDS(this) = (Field*) gc_malloc(sizeof(Field) * fieldct,
+							GC_ALLOC_FIELD);
+	}
+	GC_WRITE(this, CLASS_FIELDS(this)); /* XXX */
+	
 }
 
 void
@@ -932,12 +978,15 @@ addMethodCode(Method* m, Code* c)
 }
 
 void
-addInterfaces(Hjava_lang_Class* c, int inr, Hjava_lang_Class** inf)
+addInterfaces(Hjava_lang_Class* c, u2 inr, Hjava_lang_Class** inf)
 {
+	assert(c);
 	assert(inr > 0);
 
         c->interfaces = inf;
 	c->interface_len = inr;
+
+	GC_WRITE(c, c->interfaces); /* XXX */
 }
 
 /*
@@ -1326,7 +1375,7 @@ resolveObjectFields(Hjava_lang_Class* class, errorInfo *einfo)
 	nbits = offset/ALIGNMENTOF_VOIDP;
 
 DBG(GCPRECISE,
-	dprintf("GCLayout for %s:\n", class->name->data);
+	dprintf("GCLayout for %s:\n", CLASS_CNAME(class));
     )
 
 	/* Now work out the gc layout */

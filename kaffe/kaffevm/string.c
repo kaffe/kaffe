@@ -235,6 +235,36 @@ stringJava2Utf8ConstReplace(Hjava_lang_String *str, jchar from, jchar to)
 }
 
 /*
+ * Return true iff the Utf8Const string is equal to the Java String.
+ */
+int
+utf8ConstEqualJavaString(const Utf8Const *utf8, const Hjava_lang_String *string)
+{
+	const char *uptr = utf8->data;
+	const char *const uend = uptr + strlen(utf8->data);
+	const jchar *sptr = STRING_DATA(string);
+	int ch, slen = STRING_SIZE(string);
+
+#if 0
+	/* Question: would this optimization be worthwhile? */
+	if (unhand(string)->hash != 0 && unhand(string)->hash != utf8->hash) {
+		return(0);
+	}
+#endif
+	for (;;) {
+		if ((ch = UTF8_GET(uptr, uend)) == -1) {
+			return(slen == 0);
+		}
+		if (--slen < 0) {
+			return(0);
+		}
+		if (ch != *sptr++) {
+			return(0);
+		}
+	}
+}
+
+/*
  * Define functions used by the string hashtable to resize itself.
  * The problem is that we may block in KCALLOC/KFREE and the gc may kick
  * in.  The collector, however, must be able to call stringUninternString

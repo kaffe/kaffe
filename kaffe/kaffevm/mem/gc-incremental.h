@@ -57,12 +57,12 @@ typedef struct {
 /* ------------------------------------------------------------------------ */
 
 #define GC_COLOUR_MASK          0x0F
-#define GC_COLOUR_INUSE         0x08
+#define GC_COLOUR_INUSE         0x08            /* a mask, not a value */
 #define GC_COLOUR_FREE          0x00
 #define GC_COLOUR_FIXED         0x01
-#define GC_COLOUR_WHITE         0x08
-#define GC_COLOUR_GREY          0x09
-#define GC_COLOUR_BLACK         0x0A
+#define GC_COLOUR_WHITE         0x08            /* hit by _INUSE mask */
+#define GC_COLOUR_GREY          0x09            /* hit by _INUSE mask */
+#define GC_COLOUR_BLACK         0x0A            /* hit by _INUSE mask */
 
 #define GC_STATE_MASK           0xF0
 #define GC_STATE_NORMAL         0x00            /* Has no finalise method */

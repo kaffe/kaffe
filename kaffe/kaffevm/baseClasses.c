@@ -84,10 +84,6 @@ Hjava_lang_Class* javaIoIOException;
 #define	LOADERCLASS "java/lang/ClassLoader"
 #define PTRCLASS    "kaffe/util/Ptr"
 
-#define	INIT			"<clinit>"
-#define	FINAL			"finalize"
-#define	VOIDSIG			"()V"
-#define	CONSTRUCTOR_NAME	"<init>"
 
 /* Initialisation prototypes */
 void initClasspath(void);
@@ -167,10 +163,10 @@ initialiseKaffe(void)
 #endif
 
 	/* Create the initialise and finalize names and signatures. */
-	init_name = utf8ConstNew(INIT, -1);
-	final_name = utf8ConstNew(FINAL, -1);
-	void_signature = utf8ConstNew(VOIDSIG, -1);
-	constructor_name = utf8ConstNew(CONSTRUCTOR_NAME, -1);
+	init_name = utf8ConstNew("<clinit>", -1);
+	final_name = utf8ConstNew("finalize", -1);
+	void_signature = utf8ConstNew("()V", -1);
+	constructor_name = utf8ConstNew("<init>", -1);
 	Code_name = utf8ConstNew("Code", -1);
 	LineNumberTable_name = utf8ConstNew("LineNumberTable", -1);
 	ConstantValue_name = utf8ConstNew("ConstantValue", -1);

@@ -59,7 +59,7 @@ typedef struct _gc_block {
 	struct _gc_freeobj*	free;	/* Next free sub-block */
 	struct _gc_block*	next;	/* Next block in prim/small freelist */
 	struct _gc_block*	nfree;	/* Next block on sub-freelist */
-	uint32			inuse;	/* Is block allocated? */
+	uint32			inuse;	/* 1bit! Is block allocated? */
 	uint32			size;	/* Size of objects in this block */
 	uint16			nr;	/* Nr of objects in block */
 	uint16			avail;	/* Nr of objects available in block */

@@ -37,13 +37,13 @@ typedef struct _lineNumbers {
 } lineNumbers;
 
 struct _methods;
-struct _classFile;
+struct classFile;
 
-bool	addCode(struct _methods*, uint32, struct _classFile*,
+bool	addCode(struct _methods*, uint32, struct classFile*,
 		errorInfo *info);
-bool	addLineNumbers(struct _methods*, uint32, struct _classFile*,
+bool	addLineNumbers(struct _methods*, uint32, struct classFile*,
 		       errorInfo *info);
 bool	addCheckedExceptions(struct _methods*, uint32,
-			     struct _classFile*, errorInfo *info);
+			     struct classFile*, errorInfo *info);
 
 #endif

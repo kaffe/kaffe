@@ -54,7 +54,7 @@ static void generateMangledName(char*, const char*);
 #endif
 static void discoverClasspath(const char*);
 static void makeClasspath(char*);
-static classFile findClassInJar(char*, struct _errorInfo*);
+static void findClassInJar(char*, classFile*, struct _errorInfo*);
 static int insertClasspath(const char* cp, int prepend);
 
 #if defined(HANDLE_MANIFEST_CLASSPATH)
@@ -118,7 +118,7 @@ DBG(CLASSLOOKUP,
 	sprintf(buf, "%s.class", cname);
 
 	/* Find class in Jar file */
-	hand = findClassInJar(buf, einfo);
+	findClassInJar(buf, &hand, einfo);
 	KFREE(buf);
 	if (hand.type == CP_INVALID) {
 		return (0);
@@ -167,17 +167,17 @@ DBG(CLASSLOOKUP,
 }
 
 /*
- * Locate the given name in the CLASSPATH.
+ * Locate the given name in the CLASSPATH.  Fill in the provided
+ * classFile handle with a buffer containing the class (or
+ * set the hand->type to CP_INVALID).
+ *
+ * May write into cname.
  */
-static classFile
-findClassInJar(char* cname, errorInfo *einfo)
+static void
+findClassInJar(char* cname, classFile* hand, errorInfo *einfo)
 {
 	char *buf;
 	int fp;
-	struct stat sbuf;
-	classFile hand;
-	ssize_t j;
-	jarEntry* entry;
 	static iLock* jarlock;
 	classpathEntry* ptr;
 	int i;
@@ -185,17 +185,21 @@ findClassInJar(char* cname, errorInfo *einfo)
 	int iLockRoot;
 
 	/* Look for the class */
-DBG(CLASSLOOKUP,
-	dprintf("Scanning for element %s\n", cname);		)
+DBG(CLASSLOOKUP,  dprintf("Scanning for element %s\n", cname); );
+
+	hand->type = CP_INVALID;
 
 	/* One into the jar at once */
 	lockStaticMutex(&jarlock);
 
 	for (ptr = classpath; ptr != 0; ptr = ptr->next) {
 DBG(CLASSLOOKUP,dprintf("Processing classpath entry '%s'\n", ptr->path); )
-		hand.type = ptr->type;
 		switch (ptr->type) {
 		case CP_ZIPFILE:
+		{
+			jarEntry* entry;
+			const char* data;
+
 DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); )
 			if (ptr->u.jar == 0) {
 				ptr->u.jar = openJarFile(ptr->path);
@@ -212,17 +216,17 @@ DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); )
 			if (entry == 0) {
 				break;
 			}
-			hand.base = getDataJarFile(ptr->u.jar, entry);
-			if (hand.base == 0) {
+			data = getDataJarFile(ptr->u.jar, entry);
+			if (data == 0) {
 				postExceptionMessage(einfo,
 					JAVA_IO(IOException),
 					"Couldn't extract data from jar: %s",
 					ptr->u.jar->error);
-				hand.type = CP_INVALID;
 				goto done;
 			}
-			hand.size = entry->uncompressedSize;
-			hand.buf = hand.base;
+
+			classFileInit(hand, data, entry->uncompressedSize, CP_ZIPFILE);
+
 			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
 				dprintf("Loading %s(%s)", cname, ptr->path);
 				if (entry->compressionMethod != COMPRESSION_STORED) {
@@ -231,8 +235,13 @@ DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); )
 				dprintf("\n");
 			}
 			goto done;
+		}
 
 		case CP_DIR:
+		{
+			struct stat sbuf;
+			char* data;
+			
 			buf = checkPtr(KMALLOC(strlen(ptr->path)
 			    + strlen(file_separator) + strlen(cname) + 1));
 			sprintf(buf, "%s%s%s",
@@ -252,29 +261,35 @@ DBG(CLASSLOOKUP,	dprintf("Opening java file %s for %s\n", buf, cname); )
 				postExceptionMessage(einfo,
 					JAVA_IO(IOException),
 					"Couldn't fstat: %s", SYS_ERROR(rc));
-				hand.type = CP_INVALID;
 				goto done;
 			}
-			hand.size = sbuf.st_size;
 
-			hand.base = hand.size == 0 ? NULL : KMALLOC(hand.size);
-			if (hand.size != 0 && hand.base == 0) {
+			/*
+			 * XXX Whlist bogus, a zero-length class file poses
+			 * no problems for this code.  Assume the user of
+			 * the file will find that problem...
+			 */
+
+			data = NULL;
+			if (sbuf.st_size > 0)
+			{
+				data = KMALLOC(sbuf.st_size);
+				if (data == 0) {
 				postOutOfMemory(einfo);
-				hand.type = CP_INVALID;
 				goto done;
 			}
-			hand.buf = hand.base;
+			}
 
 			i = 0;
-			while (i < hand.size) {
-				rc = KREAD(fp, hand.buf, hand.size - i, &j);
+			while (i < sbuf.st_size) {
+				ssize_t j;
+				rc = KREAD(fp, data, sbuf.st_size - i, &j);
 				if (rc != 0) {
 					postExceptionMessage(einfo,
 						JAVA_IO(IOException),
 						"Couldn't read: %s",
 						SYS_ERROR(rc));
-					hand.type = CP_INVALID;
-					KFREE(hand.base);
+					KFREE(data);
 					break;
 				} else {
 					if (j > 0) {	/* more data */
@@ -284,27 +299,31 @@ DBG(CLASSLOOKUP,	dprintf("Opening java file %s for %s\n", buf, cname); )
 					}
 				}
 			}
+
+			classFileInit(hand, data, sbuf.st_size, CP_DIR);
+
 			KCLOSE(fp);
 			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
 				dprintf("Loading %s\n", cname);
 			}
 			goto done;
+		}
 
 		/* Ignore bad entries */
 		default:
+			/* XXX warning.... */
 			break;
 		}
 	}
 	/* If we call out the loop then we didn't find anything */
-	hand.type = CP_INVALID;
+	assert (hand->type == CP_INVALID);
+
 	/* cut off the ".class" suffix for the exception msg */
 	cname[strlen(cname) - strlen(".class")] = '\0';
 	postNoClassDefFoundError(einfo, cname);
 
 	done:;
 	unlockStaticMutex(&jarlock);
-
-	return (hand);
 }
 
 /*

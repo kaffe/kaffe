@@ -9,14 +9,11 @@
  * of this file. 
  */
 
-#define	RDBG(s)
-
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
 #include "config-hacks.h"
 #include "gtypes.h"
-#include "slots.h"
 #include "access.h"
 #include "object.h"
 #include "constants.h"
@@ -25,8 +22,13 @@
 #include "file.h"
 #include "exception.h"
 #include "classMethod.h"
-#include "stringSupport.h"
-#include "locks.h"
+#include "utf8const.h"
+#include "debug.h"
+
+/*
+ * XXX move into readClass.c
+ */
+
 
 /*
  * Read in constant pool from opened file.
@@ -43,10 +45,17 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 	u2 len;
 	u2 d2, d2b;
 	u4 d4, d4b;
-	u4 poolsize;
+	u2 poolsize;
+	const char* className = "unknown";  // CLASS_CNAME(this) won't work until after constant pool is read...
+
+
+	if (!checkBufSize(fp, 2, className, einfo))
+		return false;
 
 	readu2(&poolsize, fp);
-RDBG(	dprintf("constant_pool_count=%d\n", poolsize);	)
+	DBG(READCLASS,
+	    dprintf("constant_pool_count=%d\n", poolsize);
+		);
 
 	/* Allocate space for tags and data */
 	pool = gc_malloc((sizeof(ConstSlot) + sizeof(u1)) * poolsize,
@@ -64,28 +73,42 @@ RDBG(	dprintf("constant_pool_count=%d\n", poolsize);	)
 	tags[0] = CONSTANT_Unknown;
 	for (i = 1; i < info->size; i++) {
 
+		if (! checkBufSize(fp, 1, className, einfo))
+			goto fail;
+
 		readu1(&type, fp);
-RDBG(		dprintf("Constant type %d\n", type);			)
+		DBG(READCLASS,
+		    dprintf("Constant[%d] type %d\n", i, type);
+			);
 		tags[i] = type;
 
 		switch (type) {
 		case CONSTANT_Utf8:
+			if (! checkBufSize(fp, 2, className, einfo))
+				goto fail;
+
 			readu2(&len, fp);
-			if (!utf8ConstIsValidUtf8(fp->buf, len)) {
+
+			if (! checkBufSize(fp, len, className, einfo))
+				goto fail;
+
+			if (!utf8ConstIsValidUtf8(fp->cur, len)) {
 				postExceptionMessage(einfo,
 					JAVA_LANG(ClassFormatError), 
 					"Invalid UTF-8 constant");
 				goto fail;
 			}
-			pool[i] = (ConstSlot) utf8ConstNew(fp->buf, len);
+			pool[i] = (ConstSlot) utf8ConstNew(fp->cur, len);
 			if (!pool[i]) {
 				postOutOfMemory(einfo);
 				goto fail;
 			}
-			fp->buf += len;
+			seekm(fp, len);
 			break;
 		case CONSTANT_Class:
 		case CONSTANT_String:
+			if (! checkBufSize(fp, 2, className, einfo))
+				goto fail;
 			readu2(&d2, fp);
 			pool[i] = d2;
 			break;
@@ -94,6 +117,8 @@ RDBG(		dprintf("Constant type %d\n", type);			)
 		case CONSTANT_Methodref:
 		case CONSTANT_InterfaceMethodref:
 		case CONSTANT_NameAndType:
+			if (! checkBufSize(fp, 4, className, einfo))
+				goto fail;
 			readu2(&d2, fp);
 			readu2(&d2b, fp);
 			pool[i] = (d2b << 16) | d2;
@@ -101,11 +126,15 @@ RDBG(		dprintf("Constant type %d\n", type);			)
 
 		case CONSTANT_Integer:
 		case CONSTANT_Float:
+			if (! checkBufSize(fp, 4, className, einfo))
+				goto fail;
 			readu4(&d4, fp);
 			pool[i] = d4;
 			break;
 
 		case CONSTANT_Long:
+			if (! checkBufSize(fp, 8, className, einfo))
+				goto fail;
 			readu4(&d4, fp);
 			readu4(&d4b, fp);
 #if SIZEOF_VOIDP == 8
@@ -121,6 +150,8 @@ RDBG(		dprintf("Constant type %d\n", type);			)
 			break;
 
 		case CONSTANT_Double:
+			if (! checkBufSize(fp, 8, className, einfo))
+				goto fail;
 			readu4(&d4, fp);
 			readu4(&d4b, fp);
 
@@ -149,7 +180,8 @@ RDBG(		dprintf("Constant type %d\n", type);			)
 		default:
 			postExceptionMessage(einfo, 
 				JAVA_LANG(ClassFormatError), 
-				"Invalid constant type %d", type);
+					     "Invalid constant type %d in class",
+					     type);
 fail:
 			info->size = 0;
 			while (--i >= 0) {
@@ -157,7 +189,7 @@ fail:
 					utf8ConstRelease((Utf8Const*)pool[i]);
 				}
 			}
-			return (false);
+			return false;
 		}
 	}
 
@@ -187,5 +219,5 @@ fail:
 			break;
 		}
 	}
-	return (true);
+	return true;
 }

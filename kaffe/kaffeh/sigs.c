@@ -12,15 +12,15 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
-
+#include "kaffeh-support.h"
 
 static char fp[100];
 
 /*
  * Translate signature into argument count.
  */
-char*
-translateSig(char* str, char** nstr, int* argp)
+const char*
+translateSig(const char* str, const char** nstr, int* argp)
 {
 	int j;
 	int arg = 0;
@@ -142,8 +142,8 @@ translateSig(char* str, char** nstr, int* argp)
 /*
  * Translate signature to union type.
  */
-char*
-translateSigType(char* str, char* type)
+const char*
+translateSigType(const char* str, char* type)
 {
 	switch (*str++) {
 	case 'L':

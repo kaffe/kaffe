@@ -139,6 +139,7 @@ ALWAYS_TESTS = \
 	DosTimeVerify.java \
 	ZipVerify.java \
 	ZipTest.java \
+	TruncatedClass.java \
 ## This one is skipped unless you --enable-debug.
 	TestNative.java
 

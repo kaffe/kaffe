@@ -8,8 +8,8 @@
  * of this file. 
  */
 
-#ifndef __kaffeh_support_h
-#define __kaffeh_support_h
+#ifndef __kaffeh_kaffeh_support_h
+#define __kaffeh_kaffeh_support_h
 
 extern void initStub(void);
 extern void startStub(void);
@@ -22,10 +22,10 @@ extern void initJniInclude(void);
 extern void startJniInclude(void);
 extern void endJniInclude(void);
 
-extern void findClass(char *nm);
+extern void kaffeh_findClass(const char *nm);
 
-#ifndef dprintf
-extern int kaffe_dprintf(const char *, ...);
-#define dprintf kaffe_dprintf
-#endif
-#endif
+/* sig.c */
+extern const char* translateSig(const char*, const char**, int*);
+extern const char* translateSigType(const char*, char*);
+
+#endif /* __kaffeh_kaffeh_support_h */

@@ -1,3 +1,73 @@
+Wed May 29 15:59:09 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+        From: Pat Tullmann <pat@tullmann.org>
+
+	* kaffe/kaffeh/mem.c, kaffe/kaffeh/Makefile.am,
+	kaffe/kaffeh/java_lang_ClassLoader.h,
+	kaffe/kaffeh/java_lang_Object.h,
+	kaffe/kaffeh/kaffeh-support.h, kaffe/kaffeh/main.c,
+	kaffe/kaffeh/sigs.c, kaffe/kaffeh/support.c,
+	kaffe/kaffevm/Makefile.am, kaffe/kaffevm/baseClasses.c,
+	kaffe/kaffevm/classMethod.c, kaffe/kaffevm/classMethod.h,
+	kaffe/kaffevm/classpath.h, kaffe/kaffevm/code.c,
+	kaffe/kaffevm/code.h, kaffe/kaffevm/constants.c,
+	kaffe/kaffevm/constants.h, kaffe/kaffevm/exception.c,
+	kaffe/kaffevm/file.h, kaffe/kaffevm/lookup.c,
+	kaffe/kaffevm/readClass.c, kaffe/kaffevm/readClass.h,
+	kaffe/kaffevm/support.c, kaffe/kaffevm/utf8const.c:
+	Handle truncated classes in readClass.  Also took the
+	opportunity to clean up some really ugly macros, and share
+	more code between kaffevm and kaffeh.  Moved the buffer
+	reading macros used by readClass() into inline functions with
+	asserts.  Added many 'const' to various 'char *'.  Split
+	kaffeh mem-related code into a new file.  kaffeh overrides
+	various functions now, but does not override internal header
+	files or macros.  Cleaned up the kaffeh java_lang_* headers.
+	Add -Xdebug option to kaffeh, as kaffeh can now use the
+	kaffevm debug.c infrastructure.  Moved class-specific constant
+	table parsing macros into classMethod.h (out of constants.h).
+
+	* kaffe/kaffeh/mem.c, kaffe/kaffevm/utfconst.h:
+	Added as part of above.
+
+	* kaffe/kaffeh/constants.c, kaffe/kaffeh/constants.h,
+	* kaffe/kaffeh/file.h, kaffe/kaffeh/readClassConfig.h,
+	* kaffe/kaffevm/readClassConfig.h: 
+	Removed as part of above.
+
+	* kaffe/kaffevm/debug.c,kaffe/kaffevm/debug.h:
+	Added READCLASS flag to debug infrastructure.  dbgSetMaskStr()
+	now takes a 'const char*'.  debug.h is usable in Kaffeh, so
+	many hacks were removed.  Made GCC understand that
+	kaffe_dprintf works just like printf, so it can debug the
+	format strings (several debug format strings were fixed
+	because of these valid warnings).
+
+	* kaffe/kaffevm/findInJar.c, libraries/clib/native/ClassLoader.c
+	Use the new file.h classFile interface, 
+
+	* kaffe/kaffevm/utf8const.h, kaffe/kaffevm/string.c,
+	kaffe/kaffevm/stringSupport.h:
+	To cleanly share the utf8 code between kaffeh and kaffevm,
+	created kaffevm/utf8const.h which contains only the
+	utf8-related functions, types and macros.
+
+	* test/regression/Makefile.am,
+	test/regression/TruncatedClass.java:
+	Added a new regression test TruncatedClass.java that tests
+	truncated classes.
+
+	* kaffe/kaffevm/inflate.c, kaffe/kaffevm/jni.c,
+	libraries/clib/native/Runtime.c
+
+	Minor comment changes and cleanups
+
+	kaffe/kaffevm/mem/gc-incremental.c,
+	kaffe/kaffevm/mem/gc-incremental.h,
+	kaffe/kaffevm/mem/gc-mem.c, kaffe/kaffevm/mem/gc-mem.h:
+
+	Added some asserts to the gc, and some more comments.  
+
 Wed May 29 13:06:10 PDT 2002  Jim Pick  <jim@kaffe.org>
 
 	* README: Added new supported platforms s390 and ia64. Added BeOS

@@ -39,9 +39,7 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	errorInfo info;
 	int iLockRoot;
 
-	hand.base = &unhand_array(data)->body[offset];
-	hand.buf = hand.base;
-	hand.size = length;
+	classFileInit(&hand, &unhand_array(data)->body[offset], length, CP_BYTEARRAY);
 
 	clazz = newClass();
 	if (clazz == 0) {

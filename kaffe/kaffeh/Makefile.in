@@ -137,16 +137,14 @@ INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -DKAFFEH
 
 bin_PROGRAMS = kaffeh
 
-GEN_SRCS = inflate.c jar.c utf8const.c readClass.c
+GEN_SRCS = inflate.c jar.c utf8const.c readClass.c constants.c debug.c
 
 DISTCLEANFILES = $(GEN_SRCS)
 
-kaffeh_SOURCES = $(GEN_SRCS) constants.c sigs.c support.c main.c
+kaffeh_SOURCES = $(GEN_SRCS) sigs.c support.c main.c mem.c
 
-noinst_HEADERS = constants.h file.h kaffeh-support.h readClassConfig.h 	java_lang_ClassLoader.h 	java_lang_Object.h 	java_lang_String.h
+noinst_HEADERS = kaffeh-support.h 	java_lang_ClassLoader.h 	java_lang_Object.h
 
-
-kaffeh_LDADD = $(KAFFE_LIBS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config/config.h ../../include/jtypes.h
 CONFIG_CLEAN_FILES = 
@@ -163,8 +161,9 @@ X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 kaffeh_OBJECTS =  inflate.$(OBJEXT) jar.$(OBJEXT) utf8const.$(OBJEXT) \
-readClass.$(OBJEXT) constants.$(OBJEXT) sigs.$(OBJEXT) \
-support.$(OBJEXT) main.$(OBJEXT)
+readClass.$(OBJEXT) constants.$(OBJEXT) debug.$(OBJEXT) sigs.$(OBJEXT) \
+support.$(OBJEXT) main.$(OBJEXT) mem.$(OBJEXT)
+kaffeh_LDADD = $(LDADD)
 kaffeh_DEPENDENCIES = 
 kaffeh_LDFLAGS = 
 CFLAGS = @CFLAGS@
@@ -180,8 +179,9 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-DEP_FILES =  .deps/constants.P .deps/inflate.P .deps/jar.P .deps/main.P \
-.deps/readClass.P .deps/sigs.P .deps/support.P .deps/utf8const.P
+DEP_FILES =  .deps/constants.P .deps/debug.P .deps/inflate.P .deps/jar.P \
+.deps/main.P .deps/mem.P .deps/readClass.P .deps/sigs.P .deps/support.P \
+.deps/utf8const.P
 SOURCES = $(kaffeh_SOURCES)
 OBJECTS = $(kaffeh_OBJECTS)
 

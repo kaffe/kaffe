@@ -33,40 +33,49 @@ addCode(Method* m, uint32 len, classFile* fp, errorInfo *einfo)
 	u2 i2;
 	u2 elen;
 
+	/* no checkBufSize calls necessary, done in caller (readAttributes) */
+
 	readu2(&c.max_stack, fp);
 	readu2(&c.max_locals, fp);
 	readu4(&c.code_length, fp);
-DBG(CODEATTR,	
-	dprintf("addCode for method %s.%s\n", m->class->name->data, m->name->data);	
+	DBG(CODEATTR,	
+	    dprintf("addCode for method %s.%s\n", CLASS_CNAME(m->class), m->name->data);	
 	dprintf("Max stack = %d\n", c.max_stack);
 	dprintf("Max locals = %d\n", c.max_locals);
 	dprintf("Code length = %d\n", c.code_length);
-    )
+		);
+	
 	if (c.code_length > 0) {
 		c.code = gc_malloc(c.code_length, GC_ALLOC_BYTECODE);
 		if (c.code == 0) {
 			postOutOfMemory(einfo);
 			return (false);
 		}
-DBG(CODEATTR,	
+		DBG(CODEATTR,	
 		dprintf("allocating bytecode @%p\n", c.code);
-    )
+			);
+
 		readm(c.code, c.code_length, sizeof(bytecode), fp);
 	}
 	else {
 		c.code = 0;
 	}
+
 	readu2(&elen, fp);
-DBG(CODEATTR,	dprintf("Exception table length = %d\n", elen);	)
+	DBG(CODEATTR,
+	    dprintf("Exception table length = %d\n", elen);
+		);
+
 	if (elen > 0) {
 		c.exception_table = gc_malloc(sizeof(jexception) + ((elen - 1) * sizeof(jexceptionEntry)), GC_ALLOC_EXCEPTIONTABLE);
 		if (c.exception_table == 0) {
 			if (c.code) {
 				gc_free(c.code);
 			}
-			return (false);
+			return false;
 		}
 		c.exception_table->length = elen;
+
 		for (i = 0; i < elen; i++) {
 			readu2(&i2, fp);
 			c.exception_table->entry[i].start_pc = i2;
@@ -86,7 +95,7 @@ DBG(CODEATTR,	dprintf("Exception table length = %d\n", elen);	)
 	GC_WRITE(m, c.exception_table);
 	addMethodCode(m, &c);
 
-	return (readAttributes(fp, m->class, m, einfo));
+	return (readAttributes(fp, m->class, READATTR_METHOD, m, einfo));
 }
 
 /*
@@ -100,11 +109,14 @@ addLineNumbers(Method* m, uint32 len, classFile* fp, errorInfo *info)
 	u2 nr;
 	u2 data;
 
+	/* no checkBufSize, done in caller (readAttributes) */
+
 	readu2(&nr, fp);
+
 	lines = KMALLOC(sizeof(lineNumbers)+sizeof(lineNumberEntry) * nr);
 	if (!lines) {
 		postOutOfMemory(info);
-		return (false);
+		return false;
 	}
 	
 	lines->length = nr;
@@ -117,24 +129,27 @@ addLineNumbers(Method* m, uint32 len, classFile* fp, errorInfo *info)
 
 	/* Attach lines to method */
 	m->lines = lines;
-	return (true);
+	return true;
 }
 
 /*
  * Read in (checked) exceptions declared for a method
  */
 bool
-addCheckedExceptions(struct _methods* m, uint32 len, classFile* fp,
+addCheckedExceptions(Method* m, uint32 len, classFile* fp,
 		     errorInfo *info)
 {
 	int i;
 	u2 nr;
 	constIndex *idx;
 
+	/* no checkBufSize, done in caller (readAttributes) */
+
 	readu2(&nr, fp);
 	if (nr == 0) {
 		return true;
 	}
+
 	m->ndeclared_exceptions = nr;
 	idx = KMALLOC(sizeof(constIndex) * nr);
 	if (!idx) {

@@ -512,8 +512,14 @@ callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* ret,
 	call.args = in;
 	call.ret = ret;
 
+
 #if defined(TRANSLATOR)
 	call.function = func;
+
+	/* GCDIAG wipes free memory with 0xf4... */
+	assert(call.function);
+	assert(*(uint32*)(call.function) != 0xf4f4f4f4);
+
 	/* Make the call - system dependent */
 	sysdepCallMethod(&call);
 #endif
@@ -724,7 +730,14 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 	call.ret = ret;
 
 #if defined(TRANSLATOR)
+	assert((func == (METHOD_NATIVECODE(meth)))
+	       || (func == (((Hjava_lang_Object*)obj)->dtable->method[meth->idx])));
 	call.function = func;
+
+	/* GCDIAG wipes free memory with 0xf4... */
+	assert(call.function);
+	assert(*(uint32*)(call.function) != 0xf4f4f4f4);
+
 	/* Make the call - system dependent */
 	sysdepCallMethod(&call);
 #endif

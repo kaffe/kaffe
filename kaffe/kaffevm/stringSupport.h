@@ -14,6 +14,7 @@
 
 #include "object.h"
 #include "native.h"
+#include "utf8const.h"
 #include "java_lang_String.h"
 
 /**** String routines ****/
@@ -64,27 +65,7 @@ extern void    		  stringDestroy(struct _Collector*, void*);
 /* Initialize string support system */
 extern void		  stringInit(void);
 
-/**** UTF-8 routines ****/
-
-/* Create a Utf8Const from a UTF-8 encoded array. The returned pointer
-   remains valid until Utf8ConstRelease() is called. */
-extern Utf8Const*	  utf8ConstNew(const char*, int);
-
-/* Add a reference to a Utf8Const */
-extern void		  utf8ConstAddRef(Utf8Const*);
-
-/* Release a Utf8Const previously created via utf8ConstNew(). */
-extern void		  utf8ConstRelease(Utf8Const*);
-
-/* Assign a Utf8Const B to A and do proper reference counting */
-#define utf8ConstAssign(A, B) 			\
-	do {					\
-		if ((A) != 0) {			\
-			utf8ConstRelease((A));	\
-		}				\
-		utf8ConstAddRef((B));		\
-		(A) = (B);			\
-	} while (0)
+/**** UTF-8 routines (see also utf8const.h) ****/
 
 /* Create a String object from a Utf8Const */
 extern Hjava_lang_String* utf8Const2Java(const Utf8Const*);
@@ -94,59 +75,8 @@ extern Hjava_lang_String* utf8Const2Java(const Utf8Const*);
 extern Hjava_lang_String* utf8Const2JavaReplace(const Utf8Const *,
 				jchar, jchar);
 
-/* Return the length of the corresponding Unicode string */
-extern int		  utf8ConstUniLength(const Utf8Const*);
-
-/* Check if a string is a valid UTF-8 string */
-extern int		  utf8ConstIsValidUtf8(const char *, unsigned int);
-
-/* Decode a Utf8Const (to Unicode) into the buffer (which must be big enough) */
-extern void		  utf8ConstDecode(const Utf8Const*, jchar*);
-
-/* 
- * Encode a jchar[] Array into a zero-terminated C string
- * that contains the array's utf8 encoding.
- */
-extern char * utf8ConstEncode(const jchar *chars, int clength);
-
 /* Compare a Utf8Const and a String object */
 extern int		  utf8ConstEqualJavaString(const Utf8Const*,
 				const Hjava_lang_String*);
-
-/* Since we intern all UTF-8 constants, we can do this: */
-#define utf8ConstEqual(A,B)	((A) == (B))
-
-/* Since we compute hash values at creation time, we can do this: */
-#define utf8ConstHashValue(A)	((A)->hash)
-
-/* Initialize utf8const support system */
-extern void		  utf8ConstInit(void);
-
-/*
- * Extract a character from a Java-style Utf8 string.
- * PTR points to the current UTF-8 byte; END points to the end of the string.
- * PTR is incremented to point after the character that gets returns.
- * On an error, -1 is returned and PTR is no longer valid.
- */
-#define UTF8_GET(PTR, END)						\
-  ((PTR) >= (END)							\
-     ? -1								\
-   : (PTR)[0] == 0							\
-     ? (PTR)++, -1							\
-   : ((PTR)[0]&0x80) == 0						\
-     ? *(PTR)++								\
-   : ((PTR)+2)<=(END)							\
-       && ((PTR)[0]&0xE0) == 0xC0					\
-       && ((PTR)[1]&0xC0) == 0x80					\
-       && ((PTR)+=2, 1)							\
-     ? (((PTR)[-2] & 0x1F) << 6) + ((PTR)[-1] & 0x3F)			\
-   : ((PTR)+3)<=(END)							\
-       && ((PTR)[0] & 0xF0) == 0xE0					\
-       && ((PTR)[1] & 0xC0) == 0x80					\
-       && ((PTR)[2] & 0xC0) == 0x80					\
-       && ((PTR)+=3, 1)							\
-     ? (((PTR)[-3]&0x1F) << 12)						\
-       + (((PTR)[-2]&0x3F) << 6) + ((PTR)[-1]&0x3F)			\
-   : -1)
 
 #endif
