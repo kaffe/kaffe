@@ -528,6 +528,7 @@ EXTRA_DIST = \
 	m68k/jit3-icode.h \
 	m68k/jit3-m68k.def \
 	m68k/linux/README \
+	m68k/linux/clear-cache.h \
 	m68k/linux/config.frag \
 	m68k/linux/jit-md.h \
 	m68k/linux/md.c \
