@@ -9,7 +9,7 @@ Fri May 26 15:45:43 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
 	Thread.stop() exception.  Fill in the stopped thread's stack trace
 	when stop wakes us up from a wait.
 
-	*, kaffe/kaffevm/gc.h, kaffe/kaffevm/gcFuncs.c,
+	* kaffe/kaffevm/gc.h, kaffe/kaffevm/gcFuncs.c,
 	kaffe/kaffevm/gcRefs.c, kaffe/kaffevm/mem/gc-incremental.c:
 	Minor gc optimizations, which can result in as much as 25%
 	improvement in gc time (which is still painfully slow).
