@@ -1236,11 +1236,9 @@ verifyMethod3a(errorInfo* einfo,
 				VERIFY_ERROR("invokeinterface cannot be used to invoke any instruction with a name starting with '<'");
 			}
 			
-			n = countArgsInSignature(sig);
-			if (n != code[pc + 3] + 1) {
-				VERIFY_ERROR("fourth byte of invokeinterface doesn't have the number of arguments expected by the method plus one");
-			}
-			else if (code[pc + 4] != 0) {
+			if (code[pc + 3] == 0) {
+				VERIFY_ERROR("fourth byte of invokeinterface is zero");
+			} else if (code[pc + 4] != 0) {
 				VERIFY_ERROR("fifth byte of invokeinterface is not zero");
 			}
 			
@@ -1544,7 +1542,7 @@ verifyMethod3a(errorInfo* einfo,
 			// get the high and low values of the table
 			low  = DWORD(code, n + 4);
 			high = DWORD(code, n + 8);
-			if (high <= low) {
+			if (high < low) {
 				VERIFY_ERROR("tableswitch high val <= low val");
 			}
 			n += 12;
