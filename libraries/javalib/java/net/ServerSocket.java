@@ -56,6 +56,7 @@ public ServerSocket(int port, int backlog, InetAddress bindAddr) throws IOExcept
 
 public Socket accept() throws IOException {
 	Socket s = new Socket();
+	s.impl.localport = impl.localport;
 	implAccept(s);
 	return (s);
 }
