@@ -55,7 +55,7 @@ jint Java_java_awt_Toolkit_clrGetPixelValue(JNIEnv* env, jclass clazz,
 	initColorMapping( env, clazz, X);
 
   // uint pixel = QColor(JRED(rgb), JGREEN(rgb), JBLUE(rgb)).pixel();
-  // AWT_DBG(qDebug("clrGetPixelValue: %8x -> %x (%d)\n", rgb, pixel, pixel));
+  // AWT_DBG(qqDebug("clrGetPixelValue: %8x -> %x (%d)\n", rgb, pixel, pixel));
 
   return rgb;
 }

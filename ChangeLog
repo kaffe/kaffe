@@ -1,5 +1,20 @@
 2004-07-12  Jim Huang  <jserv@kaffe.org>
 
+	* libraries/clib/awt/qt/cbd.cc,
+	libraries/clib/awt/qt/clr.cc,
+	libraries/clib/awt/qt/evt.cc,
+	libraries/clib/awt/qt/fnt.cc,
+	libraries/clib/awt/qt/gra.cc,
+	libraries/clib/awt/qt/img.cc,
+	libraries/clib/awt/qt/tlk.cc,
+	libraries/clib/awt/qt/toolkit.h,
+	libraries/clib/awt/qt/wnd.cc:
+	Introduces qqDebug() macro to wrap qDebug for better debugging
+	information, so that we can catch specific details via message
+	handler.
+
+2004-07-12  Jim Huang  <jserv@kaffe.org>
+
 	* libraries/clib/awt/qt/evt.cc:
 	Safer way to handler processEvent.
 

@@ -37,7 +37,7 @@ QApplication *qapp;
 
 jint Java_java_awt_Toolkit_tlkProperties(JNIEnv* env, jclass clazz)
 {
-  DBG(AWT, qDebug("tlkProperties\n"));
+  DBG(AWT, qqDebug("tlkProperties\n"));
   jint props = TLK_EXTERNAL_DECO;
 
   // take out the flags TLK_IS_BLOCKING & TLK_NEEDS_FLUSH from props
@@ -75,7 +75,7 @@ jboolean Java_java_awt_Toolkit_tlkInit(JNIEnv* env, jclass clazz,
 #else
   qapp = new QApplication(argc, argv, QApplication::GuiServer);
 #endif  
-  DBG(AWT, qDebug("qapp initialization.\n"));
+  DBG(AWT, qqDebug("qapp initialization.\n"));
 
   // allocate X->buf for string opeartion
   getBuffer(X, 128);
@@ -86,7 +86,7 @@ jboolean Java_java_awt_Toolkit_tlkInit(JNIEnv* env, jclass clazz,
   X->windows = (WindowRec*) AWT_CALLOC( X->nWindows, sizeof(WindowRec));
 
   X->fwdIdx = -1;
-  DBG(AWT, qDebug("tlkInit Done.\n"));
+  DBG(AWT, qqDebug("tlkInit Done.\n"));
   return JNI_TRUE;
 }
 
@@ -102,13 +102,13 @@ void Java_java_awt_Toolkit_tlkTerminate(JNIEnv* env, jclass clazz)
 
 jstring Java_java_awt_Toolkit_tlkVersion(JNIEnv* env, jclass clazz)
 {
-  DBG(AWT, qDebug("tlkVersion\n"));
+  DBG(AWT, qqDebug("tlkVersion\n"));
   return env->NewStringUTF( "QtAWT-1.0");
 }
 
 jint Java_java_awt_Toolkit_tlkGetResolution(JNIEnv* env, jclass clazz)
 {
-  DBG(AWT, qDebug("tlkGetResolution\n"));
+  DBG(AWT, qqDebug("tlkGetResolution\n"));
   /*
    * DPI of screen. It seems that this information will not be used by Java.
    */
@@ -117,19 +117,19 @@ jint Java_java_awt_Toolkit_tlkGetResolution(JNIEnv* env, jclass clazz)
 
 jint Java_java_awt_Toolkit_tlkGetScreenHeight(JNIEnv* env, jclass clazz)
 {
-  DBG(AWT, qDebug("tlkGetScreenHeight\n"));
+  DBG(AWT, qqDebug("tlkGetScreenHeight\n"));
   return qapp->desktop()->height();
 }
 
 jint Java_java_awt_Toolkit_tlkGetScreenWidth(JNIEnv* env, jclass clazz)
 {
-  DBG(AWT, qDebug("tlkGetScreenWidth\n"));
+  DBG(AWT, qqDebug("tlkGetScreenWidth\n"));
   return qapp->desktop()->width();
 }
 
 void Java_java_awt_Toolkit_tlkSync(JNIEnv* env, jclass clazz)
 {
-  DBG(AWT, qDebug("tlkSync\n"));
+  DBG(AWT, qqDebug("tlkSync\n"));
   /*
    * We simply let Qt handles synchronization,
    */
@@ -137,19 +137,19 @@ void Java_java_awt_Toolkit_tlkSync(JNIEnv* env, jclass clazz)
 
 void Java_java_awt_Toolkit_tlkFlush(JNIEnv* env, jclass clazz)
 {
-  DBG(AWT, qDebug("tlkFlush\n"));
+  DBG(AWT, qqDebug("tlkFlush\n"));
 }
 
 
 void Java_java_awt_Toolkit_tlkBeep(JNIEnv* env, jclass clazz)
 {
-  DBG(AWT, qDebug("tlkBeep\n"));
+  DBG(AWT, qqDebug("tlkBeep\n"));
   qapp->beep();
 }
 
 void Java_java_awt_Toolkit_tlkDisplayBanner(JNIEnv* env, jclass clazz,
   jstring banner )
 {
-  DBG(AWT, qDebug("tlkDisplayBanner\n"));
+  DBG(AWT, qqDebug("tlkDisplayBanner\n"));
 }
 

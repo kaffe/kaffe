@@ -77,7 +77,7 @@ Java_java_awt_Toolkit_fntInitFont ( JNIEnv* env, jclass clazz, jstring jSpec,
   int weight=QFont::Normal;
   bool italic=FALSE;
 
-  DBG(AWT, qDebug("fntInitFont...%s\n",spec));
+  DBG(AWT, qqDebug("fntInitFont...%s\n",spec));
 
   if ( style & 0x1 ) { /* we have a Font.BOLD request */
     //i0 = NWEIGHT - 1; i1 = -1; di = -1;
@@ -140,7 +140,7 @@ Java_java_awt_Toolkit_fntGetFixedWidth ( JNIEnv* env, jclass clazz, QFont* fs )
 
   QFontMetrics fm((QFont)(*fs));
   int w =  ((fm.minRightBearing() - fm.minLeftBearing()) == fm.maxWidth()) ? fm.maxWidth() : 0;
-  DBG(AWT, qDebug("fntGetFixedWidth %d\n",w));
+  DBG(AWT, qqDebug("fntGetFixedWidth %d\n",w));
   return w;
 }
 
@@ -182,7 +182,7 @@ Java_java_awt_Toolkit_fntGetMaxDescent ( JNIEnv* env, jclass clazz, QFont* fs )
 jboolean
 Java_java_awt_Toolkit_fntIsWideFont ( JNIEnv* env, jclass clazz, QFont* fs )
 {
-  DBG(AWT, qDebug("fntIsWideFont\n"));
+  DBG(AWT, qqDebug("fntIsWideFont\n"));
   return 0;
   // XXX: like: (fs->min_byte1 | fs->max_byte1);
 }
@@ -205,7 +205,7 @@ Java_java_awt_Toolkit_fntGetWidths ( JNIEnv* env, jclass clazz, QFont* fs )
   for( i=0;i<n;i++)
   jw[i] = fm.width(QChar((char)i));
   env->ReleaseIntArrayElements( widths, jw, 0);
-  DBG(AWT, qDebug("fntGetWidths %d\n",fm.maxWidth()));
+  DBG(AWT, qqDebug("fntGetWidths %d\n",fm.maxWidth()));
   return widths;
 }
 
@@ -224,7 +224,7 @@ Java_java_awt_Toolkit_fntBytesWidth ( JNIEnv* env, jclass clazz,
   a.setRawData(jb+off,len);
   w = fm.width(QString(a),len);
   env->ReleaseByteArrayElements( jBytes, jb, JNI_ABORT);
-  DBG(AWT, qDebug("fntBytesWidth %s %d\n",jb+off, w));
+  DBG(AWT, qqDebug("fntBytesWidth %s %d\n",jb+off, w));
   return w;
 }
 
@@ -235,7 +235,7 @@ Java_java_awt_Toolkit_fntCharWidth ( JNIEnv* env, jclass clazz, QFont* fs, jchar
   jChar = (jChar << 8) | (jChar >> 8);
 #endif
   QFontMetrics fm((QFont)(*fs));
-  DBG(AWT, qDebug("fntCharWidth...\n"));
+  DBG(AWT, qqDebug("fntCharWidth...\n"));
 
   return fm.width(QChar((ushort)jChar));
 }
@@ -251,7 +251,7 @@ Java_java_awt_Toolkit_fntCharsWidth ( JNIEnv* env, jclass clazz,
   QChar  *unicode;
   int      w;
   QFontMetrics fm((QFont)(*fs));
-  DBG(AWT, qDebug("fntCharsWidth...\n"));
+  DBG(AWT, qqDebug("fntCharsWidth...\n"));
 
   if ( off+len > n ) len = n - off;
 
@@ -269,7 +269,7 @@ Java_java_awt_Toolkit_fntCharsWidth ( JNIEnv* env, jclass clazz,
 
   w = fm.width(QString(jchar2CString(X,jc+off,len)));
   env->ReleaseCharArrayElements( jChars, jc, JNI_ABORT);
-  DBG(AWT, qDebug("fntCharsWidth %s %d\n",jchar2CString(X,jc+off,len),w));
+  DBG(AWT, qqDebug("fntCharsWidth %s %d\n",jchar2CString(X,jc+off,len),w));
   return w;
 }
 
@@ -299,7 +299,7 @@ Java_java_awt_Toolkit_fntStringWidth ( JNIEnv* env, jclass clazz, QFont* fs, jst
 
   w = fm.width(QString(jchar2CString(X,jc,len)));
 
-  DBG(AWT, qDebug("fntStringWidth %s %d\n",jchar2CString(X,jc,len),w));
+  DBG(AWT, qqDebug("fntStringWidth %s %d\n",jchar2CString(X,jc,len),w));
   env->ReleaseStringChars( jStr, jc);
   return w;
 }

@@ -35,6 +35,7 @@ BEGIN_C_DECLS
 #include "debug.h"
 
 #include <fcntl.h>
+#include <stdarg.h>
 
 /**
  * image handling structures
@@ -422,6 +423,12 @@ static inline void _awt_free_wrapper ( void* adr )
   leaveUnsafeRegion();
 }
 
+#define qqDebug(format, args...) \
+  do { \
+    qDebug("[%s:%d] ", __FILE__, __LINE__); \
+    qDebug(format, ## args); \
+  } while (0)
+ 
 
 #define AWT_MALLOC(_n) \
   _awt_malloc_wrapper( _n)

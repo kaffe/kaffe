@@ -33,7 +33,7 @@ void* Java_java_awt_Toolkit_graInitGraphics(JNIEnv* env, jclass clazz,
 {
   QPaintDevice*       drw;
 
-  DBG(AWT, qDebug("initGraphics: gr %p (tgt %p, type=%d) xo %d,yo %d  %d,%d - %d,%d  %p %x %x\n",
+  DBG(AWT, qqDebug("initGraphics: gr %p (tgt %p, type=%d) xo %d,yo %d  %d,%d - %d,%d  %p %x %x\n",
     gr, tgt,tgtType, xOff,yOff, xClip,yClip,wClip,hClip, fnt,fg,bg));
 
   if ( tgt ) {
@@ -43,11 +43,11 @@ void* Java_java_awt_Toolkit_graInitGraphics(JNIEnv* env, jclass clazz,
         break;          /* Window   */
       case 1:
         drw = (QPixmap*)(((Image*)tgt)->qpm);
-        DBG(AWT, qDebug("tgt = IMAGE drw=%p\n",drw));
+        DBG(AWT, qqDebug("tgt = IMAGE drw=%p\n",drw));
         break;     /* Image    */
       case 2:
         drw = ((Graphics*)tgt)->drw;
-        DBG(AWT, qDebug("tgt = GRAPHICS\n"));
+        DBG(AWT, qqDebug("tgt = GRAPHICS\n"));
         break;  /* Graphics */
       default:
         qFatal("illegal Graphics target: %d\n", tgtType);
@@ -69,7 +69,7 @@ void* Java_java_awt_Toolkit_graInitGraphics(JNIEnv* env, jclass clazz,
   }
 
   gr->painter = new QPainter(drw);
-  DBG(AWT, qDebug("painter=%x\n", gr->painter));
+  DBG(AWT, qqDebug("painter=%x\n", gr->painter));
 
   gr->painter->setPen(QCOLOR(fg));
   gr->painter->setBrush(QCOLOR(fg));
@@ -102,7 +102,7 @@ void* Java_java_awt_Toolkit_graInitGraphics(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graFreeGraphics(JNIEnv* env, jclass clazz,
   Graphics* gr)
 {
-  DBG(AWT, qDebug("freeGraphics: %p\n", gr));
+  DBG(AWT, qqDebug("freeGraphics: %p\n", gr));
 
   if(gr->painter)
     delete gr->painter;
@@ -114,7 +114,7 @@ void Java_java_awt_Toolkit_graCopyArea(JNIEnv* env, jclass clazz,
   Graphics* gr, jint x, jint y, jint width, jint height,
   jint xDelta, jint yDelta )
 {
-  DBG(AWT, qDebug("copyArea: %p, %d,%d-%d,%d  %d,%d\n", gr, x,y,width,height, xDelta,yDelta));
+  DBG(AWT, qqDebug("copyArea: %p, %d,%d-%d,%d  %d,%d\n", gr, x,y,width,height, xDelta,yDelta));
 
   /* some X servers act alleric on that (careless bitblt, again) */
   if ( (width < 0) || (height < 0) )
@@ -127,7 +127,7 @@ void Java_java_awt_Toolkit_graCopyArea(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graClearRect(JNIEnv* env, jclass clazz,
   Graphics* gr, jint x, jint y, jint width, jint height)
 {
-  DBG(AWT, qDebug("clearRect: %p, %d,%d-%d,%d\n", gr, x,y,width,height));
+  DBG(AWT, qqDebug("clearRect: %p, %d,%d-%d,%d\n", gr, x,y,width,height));
 
   QPainter *painter = (QPainter*)gr->painter;
   painter->fillRect(x + gr->x0, y + gr->y0, width, height, QCOLOR(gr->bg));
@@ -149,7 +149,7 @@ Java_java_awt_Toolkit_graDrawBytes ( JNIEnv* env, jclass clazz,
   jb = env->GetByteArrayElements( jBytes, &isCopy);
   jbo = jb + offset;
 
-  DBG(AWT, qDebug("drawBytes: %p, %p,%d,%d  \"%s\"  %d,%d\n", gr,
+  DBG(AWT, qqDebug("drawBytes: %p, %p,%d,%d  \"%s\"  %d,%d\n", gr,
 				 jBytes,offset,len, jb, x,y));
 
   if ( offset+len > n )
@@ -180,7 +180,7 @@ Java_java_awt_Toolkit_graDrawChars ( JNIEnv* env, jclass clazz,
   jc = env->GetCharArrayElements( jChars, &isCopy);
   jco = jc + offset;
 
-  DBG(AWT, qDebug("drawChars: %p, %p,%d,%d  \"%s\"  %d,%d\n", gr, jChars,offset,len,
+  DBG(AWT, qqDebug("drawChars: %p, %p,%d,%d  \"%s\"  %d,%d\n", gr, jChars,offset,len,
 				 jchar2CString(X,jco,len), x,y));
 
   if ( offset+len > n )
@@ -212,7 +212,7 @@ void Java_java_awt_Toolkit_graDrawString(JNIEnv* env, jclass clazz,
   if ( !str ) return;
 
   cstr = java2CString(env, X, str);
-  DBG(AWT, qDebug("drawString: %p  \"%s\"  %d,%d\n", gr, cstr, x,y));
+  DBG(AWT, qqDebug("drawString: %p  \"%s\"  %d,%d\n", gr, cstr, x,y));
   painter = (QPainter*)gr->painter;
 
   QString qstr(cstr);
@@ -223,7 +223,7 @@ void Java_java_awt_Toolkit_graDrawString(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graDrawLine(JNIEnv* env, jclass clazz,
   Graphics* gr, jint x1, jint y1, jint x2, jint y2)
 {
-  DBG( AWT_GRA, qDebug("drawLine: %p, %d,%d - %d,%d\n", gr, x1,y1, x2,y2));
+  DBG( AWT_GRA, qqDebug("drawLine: %p, %d,%d - %d,%d\n", gr, x1,y1, x2,y2));
 
   QPainter *painter = (QPainter*)gr->painter;
   if( (x1==x2) && (y1==y2) ) { //swing gimmicks
@@ -239,7 +239,7 @@ void Java_java_awt_Toolkit_graDrawArc(JNIEnv* env, jclass clazz,
   Graphics* gr, jint x, jint y, jint width, jint height,
   jint startAngle, jint arcAngle)
 {
-  DBG( AWT_GRA, qDebug("drawArc: %p, %d,%d-%d,%d  %d,%d\n", gr,
+  DBG( AWT_GRA, qqDebug("drawArc: %p, %d,%d-%d,%d  %d,%d\n", gr,
 				 x,y,width,height, startAngle,arcAngle));
 
   QPainter *painter = (QPainter*)gr->painter;
@@ -253,7 +253,7 @@ void Java_java_awt_Toolkit_graFillArc(JNIEnv* env, jclass clazz,
   Graphics* gr, jint x, jint y, jint width, jint height,
   jint startAngle, jint arcAngle)
 {
-  DBG( AWT_GRA, qDebug("fillArc: %p, %d,%d-%d,%d  %d,%d\n", gr,
+  DBG( AWT_GRA, qqDebug("fillArc: %p, %d,%d-%d,%d  %d,%d\n", gr,
 				 x,y,width,height, startAngle, arcAngle));
 
   QPainter *painter = (QPainter*)gr->painter;
@@ -266,7 +266,7 @@ void Java_java_awt_Toolkit_graFillArc(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graDrawOval(JNIEnv* env, jclass clazz,
   Graphics* gr, int x, jint y, jint width, jint height)
 {
-  DBG( AWT_GRA, qDebug("drawOval: %p, %d,%d - %d,%d\n", gr, x,y,width,height));
+  DBG( AWT_GRA, qqDebug("drawOval: %p, %d,%d - %d,%d\n", gr, x,y,width,height));
 
   QPainter *painter = (QPainter*)gr->painter;
 
@@ -278,7 +278,7 @@ void Java_java_awt_Toolkit_graDrawOval(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graFillOval(JNIEnv* env, jclass clazz,
   Graphics* gr, jint x, jint y, jint width, jint height)
 {
-  DBG( AWT_GRA, qDebug("fillOval: %p, %d,%d - %d,%d\n", gr, x,y,width,height));
+  DBG( AWT_GRA, qqDebug("fillOval: %p, %d,%d - %d,%d\n", gr, x,y,width,height));
 
   QPainter *painter = (QPainter*)gr->painter;
 
@@ -317,7 +317,7 @@ void Java_java_awt_Toolkit_graDrawPolygon(JNIEnv* env, jclass clazz,
 {
   int n;
 
-  DBG( AWT_GRA, qDebug("drawPolygon: %p, %p,%p  %d\n", gr, xPoints, yPoints, nPoints));
+  DBG( AWT_GRA, qqDebug("drawPolygon: %p, %p,%p  %d\n", gr, xPoints, yPoints, nPoints));
 
   if ( !xPoints || !yPoints ) return;
 
@@ -336,7 +336,7 @@ void Java_java_awt_Toolkit_graDrawPolygon(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graDrawPolyline(JNIEnv* env, jclass clazz,
   Graphics* gr, jintArray xPoints, jintArray yPoints, jint nPoints)
 {
-  DBG( AWT_GRA, qDebug("drawPolyline: %p, %p,%p  %d\n", gr, xPoints, yPoints, nPoints));
+  DBG( AWT_GRA, qqDebug("drawPolyline: %p, %p,%p  %d\n", gr, xPoints, yPoints, nPoints));
 
   if ( !xPoints || !yPoints ) return;
 
@@ -352,7 +352,7 @@ void Java_java_awt_Toolkit_graFillPolygon ( JNIEnv* env, jclass clazz,
 {
   //XPoint   *p;
 
-  DBG( AWT_GRA, qDebug("fillPolygon: %p, %p,%p  %d\n", gr, xPoints, yPoints, nPoints));
+  DBG( AWT_GRA, qqDebug("fillPolygon: %p, %p,%p  %d\n", gr, xPoints, yPoints, nPoints));
 
   if ( !xPoints || !yPoints ) return;
 
@@ -366,7 +366,7 @@ void Java_java_awt_Toolkit_graFillPolygon ( JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graDrawRect(JNIEnv* env, jclass clazz,
   Graphics* gr, jint x, jint y, jint width, jint height)
 {
-  DBG( AWT_GRA, qDebug("drawRect: %p, %d,%d - %d,%d\n", gr, x,y,width,height));
+  DBG( AWT_GRA, qqDebug("drawRect: %p, %d,%d - %d,%d\n", gr, x,y,width,height));
 
   QPainter *painter = (QPainter*)gr->painter;
 
@@ -378,7 +378,7 @@ void Java_java_awt_Toolkit_graDrawRect(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graFillRect(JNIEnv* env, jclass clazz,
   Graphics* gr, jint x, jint y, jint width, jint height)
 {
-  DBG( AWT_GRA, qDebug("fillRect: %p, %d,%d - %d,%d\n", gr, x,y,width,height));
+  DBG( AWT_GRA, qqDebug("fillRect: %p, %d,%d - %d,%d\n", gr, x,y,width,height));
 
   QPainter *painter = (QPainter*)gr->painter;
 
@@ -401,7 +401,7 @@ void Java_java_awt_Toolkit_graDrawRoundRect(JNIEnv* env, jclass clazz,
 {
   int x1, x2, y1, y2, a, b;
 
-  DBG( AWT_GRA, qDebug("drawRoundRect: %p, %d,%d - %d,%d  %d,%d\n", gr,
+  DBG( AWT_GRA, qqDebug("drawRoundRect: %p, %d,%d - %d,%d  %d,%d\n", gr,
 				 x,y,width,height, wArc, hArc));
 
   QPainter *painter = (QPainter*)gr->painter;
@@ -415,7 +415,7 @@ Java_java_awt_Toolkit_graFillRoundRect ( JNIEnv* env, jclass clazz, Graphics* gr
 {
   int x1, x2, y1, y2, a, b;
 
-  DBG( AWT_GRA, qDebug("fillRoundRect: %p, %d,%d - %d,%d  %d,%d\n", gr,
+  DBG( AWT_GRA, qqDebug("fillRoundRect: %p, %d,%d - %d,%d  %d,%d\n", gr,
 				 x,y,width,height, wArc, hArc));
 
   QPainter *painter = (QPainter*)gr->painter;
@@ -428,7 +428,7 @@ void Java_java_awt_Toolkit_graDraw3DRect(JNIEnv* env, jclass clazz,
   int      bright, dark;
   int      xw, yh;
 
-  DBG( AWT_GRA, qDebug("draw3DRect: %p, %d,%d - %d,%d  %d %x\n", gr,
+  DBG( AWT_GRA, qqDebug("draw3DRect: %p, %d,%d - %d,%d  %d %x\n", gr,
 				 x,y,width,height, raised, rgb));
 
   QPainter *painter = (QPainter*)gr->painter;
@@ -456,7 +456,7 @@ void Java_java_awt_Toolkit_graFill3DRect(JNIEnv* env, jclass clazz,
   Graphics* gr, jint x, jint y, jint width, jint height,
   jboolean raised, jint rgb)
 {
-  DBG( AWT_GRA, qDebug("fill3DRect: %p, %d,%d - %d,%d  %d %x\n", gr,
+  DBG( AWT_GRA, qqDebug("fill3DRect: %p, %d,%d - %d,%d  %d %x\n", gr,
 				 x,y,width,height, raised, rgb));
 
   QPainter *painter = (QPainter*)gr->painter;
@@ -479,7 +479,7 @@ void Java_java_awt_Toolkit_graAddClip(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graSetClip(JNIEnv* env, jclass clazz,
   Graphics* gr, jint xClip, jint yClip, jint wClip, jint hClip)
 {
-  DBG( AWT_GRA, qDebug("setClip: %p, %d,%d - %d,%d\n", gr, xClip, yClip, wClip, hClip));
+  DBG( AWT_GRA, qqDebug("setClip: %p, %d,%d - %d,%d\n", gr, xClip, yClip, wClip, hClip));
 
   if(wClip <= 0)
     wClip = 0;
@@ -495,7 +495,7 @@ void Java_java_awt_Toolkit_graSetClip(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graSetColor(JNIEnv* env, jclass clazz,
   Graphics* gr, jint clr)
 {
-  DBG(AWT, qDebug("setColor: gr=%p, clr=%x, painter=%x\n", gr, clr,
+  DBG(AWT, qqDebug("setColor: gr=%p, clr=%x, painter=%x\n", gr, clr,
     gr->painter));
 
   gr->fg = clr;
@@ -512,7 +512,7 @@ void Java_java_awt_Toolkit_graSetColor(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graSetBackColor(JNIEnv* env, jclass clazz,
   Graphics* gr, jint clr)
 {
-  DBG( AWT_GRA, qDebug("setBackColor: %p, %x\n", gr, clr));
+  DBG( AWT_GRA, qqDebug("setBackColor: %p, %x\n", gr, clr));
 
   gr->bg = clr;
 
@@ -524,7 +524,7 @@ void Java_java_awt_Toolkit_graSetBackColor(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graSetFont(JNIEnv* env, jclass clazz,
   Graphics* gr, jobject fnt)
 {
-  DBG( AWT_GRA, qDebug("setFont: %p, %p\n", gr, fnt));
+  DBG( AWT_GRA, qqDebug("setFont: %p, %p\n", gr, fnt));
 
   QPainter *painter = (QPainter*)gr->painter;
   gr->painter->setFont(*((QFont*)fnt));
@@ -533,7 +533,7 @@ void Java_java_awt_Toolkit_graSetFont(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graSetOffset(JNIEnv* env, jclass clazz,
   Graphics* gr, jint xOff, jint yOff)
 {
-  DBG( AWT_GRA, qDebug("setOffset: %p, %d,%d\n", gr, xOff, yOff));
+  DBG( AWT_GRA, qqDebug("setOffset: %p, %d,%d\n", gr, xOff, yOff));
 
   gr->x0 = xOff;
   gr->y0 = yOff;
@@ -542,7 +542,7 @@ void Java_java_awt_Toolkit_graSetOffset(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graSetPaintMode(JNIEnv* env, jclass clazz,
   Graphics* gr)
 {
-  DBG( AWT_GRA, qDebug("setPaintMode: %p\n", gr));
+  DBG( AWT_GRA, qqDebug("setPaintMode: %p\n", gr));
 
   gr->xor_mode = 0;
 
@@ -556,7 +556,7 @@ void Java_java_awt_Toolkit_graSetPaintMode(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graSetXORMode(JNIEnv* env, jclass clazz,
   Graphics* gr, jint xorClr)
 {
-  DBG( AWT_GRA, qDebug("setXORMode: %p, %x\n", gr, xorClr));
+  DBG( AWT_GRA, qqDebug("setXORMode: %p, %x\n", gr, xorClr));
 
   gr->xor_mode = 1;
   gr->xclr = xorClr;
@@ -571,7 +571,7 @@ void Java_java_awt_Toolkit_graSetXORMode(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_graSetVisible(JNIEnv* env, jclass clazz,
   Graphics* gr, jint isVisible)
 {
-  DBG( AWT_GRA, qDebug("setVisble: %p  %d\n", gr, isVisible));
+  DBG( AWT_GRA, qqDebug("setVisble: %p  %d\n", gr, isVisible));
 
   /*
    * This is rather a hack to "defuse" a Graphics object, but we don't want to
@@ -603,7 +603,7 @@ drawAlphaImage ( Graphics* gr, Image* img,
   unsigned long dpix, spix, bgpix = 0;
   int    sr, sg, sb, dr, dg, db;
 
-  DBG( AWT_GRA, qDebug("drawAlphaImage: %p %p (%p, %p),  %d,%d  %d,%d  %d,%d  %x\n",
+  DBG( AWT_GRA, qqDebug("drawAlphaImage: %p %p (%p, %p),  %d,%d  %d,%d  %d,%d  %x\n",
 				 gr, img, img->qImg, img->alpha, srcX, srcY, dstX, dstY, width, height, bgval));
 
   if ( !img ) return;
@@ -682,7 +682,7 @@ Java_java_awt_Toolkit_graDrawImage ( JNIEnv* env, jclass clazz, Graphics* gr, Im
 									 jint dstX, jint dstY,
 									 jint width, jint height, jint bgval )
 {
-  DBG( AWT_GRA, qDebug("drawImage: %p %p (%p,%p,%p %d,%d) %d,%d, %d,%d, %d,%d, %x\n",
+  DBG( AWT_GRA, qqDebug("drawImage: %p %p (%p,%p,%p %d,%d) %d,%d, %d,%d, %d,%d, %x\n",
 				 gr, img,  img->qImg,img->qImg_AlphaMask,img->alpha,  img->width,img->height,
 				 srcX,srcY,  dstX,dstY,	 width,height, bgval));
 
@@ -717,7 +717,7 @@ Java_java_awt_Toolkit_graDrawImageScaled ( JNIEnv* env, jclass clazz, Graphics* 
   Image      *tgt;
   int        tmpXImg = (img->qImg == NULL);
 
-  DBG( AWT_GRA, qDebug("drawImageScaled: %p %p (%p), %d,%d,%d,%d, %d,%d,%d,%d, %x\n",
+  DBG( AWT_GRA, qqDebug("drawImageScaled: %p %p (%p), %d,%d,%d,%d, %d,%d,%d,%d, %x\n",
 				 gr, img, img->qImg, dx0, dy0, dx1, dy1, sx0, sy0, sx1, sy1, bgval));
 
   if ( !img ) return;

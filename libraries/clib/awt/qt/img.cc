@@ -44,7 +44,7 @@ createXImage ( Toolkit* X, Image* img )
   unsigned int nPix;
   char *data;
   img->qImg = new QImage();
-  DBG( AWT_IMG, qDebug("alloc: %p %p (%dx%d)\n", img, img->qImg, img->width, img->height));
+  DBG( AWT_IMG, qqDebug("alloc: %p %p (%dx%d)\n", img, img->qImg, img->width, img->height));
 }
 
 void
@@ -62,7 +62,7 @@ createXMaskImage ( Toolkit* X, Image* img )
   memset( data, 0xff, nBytes);
 
   img->qImg_AlphaMask = new QImage();
-  DBG( AWT_IMG, qDebug( "alloc mask: %p %p (%dx%d)\n", img, img->qImg_AlphaMask, img->width, img->height));
+  DBG( AWT_IMG, qqDebug( "alloc mask: %p %p (%dx%d)\n", img, img->qImg_AlphaMask, img->width, img->height));
 }
 
 
@@ -126,7 +126,7 @@ reduceAlpha ( Toolkit* X, Image* img, int threshold )
 	for ( j=0; j<img->width; j++ ) {
 	  a = GetAlpha( img->alpha, j, i);
 	  if ( a < threshold ) {
- 		DBG( AWT_IMG, qDebug("reduce alpha! %d %d",img->qImg->width(),img->qImg->height()) );
+ 		DBG( AWT_IMG, qqDebug("reduce alpha! %d %d",img->qImg->width(),img->qImg->height()) );
 		img->qImg->setPixel(j,i,0);
 	  }
 	}
@@ -145,7 +145,7 @@ reduceAlpha ( Toolkit* X, Image* img, int threshold )
 void*
 Java_java_awt_Toolkit_imgCreateImage ( JNIEnv* env, jclass clazz, jint width, jint height )
 {
-  DBG( AWT_IMG, qDebug("imgCreateImage w=%d h=%d\n",(int)width,(int)height));
+  DBG( AWT_IMG, qqDebug("imgCreateImage w=%d h=%d\n",(int)width,(int)height));
   Image *img = createImage( width, height);
   createXImage( X, img);
   return img;
@@ -155,7 +155,7 @@ Java_java_awt_Toolkit_imgCreateImage ( JNIEnv* env, jclass clazz, jint width, ji
 void*
 Java_java_awt_Toolkit_imgCreateScreenImage ( JNIEnv* env, jclass clazz, jint width, jint height )
 {
-  DBG( AWT_IMG, qDebug("imgCreateScreenImage w=%d h=%d\n",(int)width,(int)height));
+  DBG( AWT_IMG, qqDebug("imgCreateScreenImage w=%d h=%d\n",(int)width,(int)height));
   Image  *img = createImage( width, height);
   img->qpm = new QPixmap(width,height);
   return img;
@@ -170,7 +170,7 @@ Java_java_awt_Toolkit_imgSetIdxPels ( JNIEnv* env, jclass clazz, Image * img,
 		jintArray clrMap, jbyteArray idxPels, jint trans,
 		jint off, jint scan)
 {
-  DBG( AWT_IMG, qDebug("imgSetIdxPels\n"));
+  DBG( AWT_IMG, qqDebug("imgSetIdxPels\n"));
   register int    row, col;
   unsigned long   pix;
   jint            rgb;
@@ -209,7 +209,7 @@ Java_java_awt_Toolkit_imgSetRGBPels ( JNIEnv* env, jclass clazz, Image * img,
 									  jint x, jint y, jint w, jint h,
 									  jintArray rgbPels, jint off, jint scan)
 {
-  DBG( AWT_IMG, qDebug("imgSetRGBPels\n"));
+  DBG( AWT_IMG, qqDebug("imgSetRGBPels\n"));
   register int    row, col;
   unsigned long   pix = 0;
   jboolean        isCopy;
@@ -256,7 +256,7 @@ Java_java_awt_Toolkit_imgComplete( JNIEnv* env, jclass clazz, Image * img, jint 
    * called for external (generic) production, since our own prod facilities usually
    * know better if and how to do alpha support
    */
-  DBG( AWT_IMG, qDebug("imgComplete\n"));
+  DBG( AWT_IMG, qqDebug("imgComplete\n"));
   if ( img->alpha &&  !needsFullAlpha( X, img, 0.0) )
 	reduceAlpha( X, img, 128);
 }
@@ -285,7 +285,7 @@ void*
 Java_java_awt_Toolkit_imgCreateScaledImage ( JNIEnv* env, jclass clazz,
 											 Image* img, int width, int height )
 {
-  DBG( AWT_IMG, qDebug("imgCreateScaledImage img=%p w=%d h=%d\n",img, (int)width, (int)height));
+  DBG( AWT_IMG, qqDebug("imgCreateScaledImage img=%p w=%d h=%d\n",img, (int)width, (int)height));
   Image *scaledImg = createImage( width, height);
 
   *(scaledImg->qImg) = img->qImg->smoothScale(width,height);
@@ -298,7 +298,7 @@ Java_java_awt_Toolkit_imgCreateScaledImage ( JNIEnv* env, jclass clazz,
 void
 Java_java_awt_Toolkit_imgProduceImage ( JNIEnv* env, jclass clazz, jobject producer, Image* img )
 {
-  DBG( AWT_IMG, qDebug("imgProduceImage\n"));
+  DBG( AWT_IMG, qqDebug("imgProduceImage\n"));
   int            i, j;
   int            r, g, b;
   unsigned long  pix;
@@ -427,27 +427,10 @@ Java_java_awt_Toolkit_imgCreateFromFile ( JNIEnv* env, jclass clazz, jstring fil
   char  *fn = java2CString( env, X, fileName);
   unsigned char  sig[SIG_LENGTH];
 
-  DBG( AWT_IMG, qDebug("imgCreateFromFile file=%s\n",fn));
+  DBG( AWT_IMG, qqDebug("imgCreateFromFile file=%s\n",fn));
   QImage *image = new QImage();
   bool ok = FALSE;
 #if 0  
-  if ( (infile = AWT_OPEN( fn)) >= 0 ) {
-	if ( AWT_READ( infile, sig, sizeof(sig)) == sizeof(sig) ) {
-	  AWT_REWIND( infile);  /* some native converters can't skip the signature read */
-
-	  switch ( imageFormat( sig) ) {
-	  case SIG_GIF:
-		//fprintf(stderr,"got gif!!!!\n");
-		//img = readGifFile( infile,fn);
-		//fprintf(stderr,"img=%p\n",img);
-		//if(img->next) break;
-                //AWT_FREE(img);
-	  case SIG_JPEG:
-		//img = readJpegFile( infile);
-		//break;
-	  case SIG_PNG:
-		//img = readPngFile( infile);
-		//break;
 		//QApplication::setOverrideCursor( waitCursor );
 #endif
 		ok = image->load( fn);
@@ -475,7 +458,7 @@ void*
 Java_java_awt_Toolkit_imgCreateFromData ( JNIEnv* env, jclass clazz,
 										  jbyteArray jbuffer, jint off, jint len )
 {
-  DBG( AWT_IMG, qDebug("imgCreateFromData\n"));
+  DBG( AWT_IMG, qqDebug("imgCreateFromData\n"));
   Image *img = 0;
   jboolean isCopy;
   jint   length = env->GetArrayLength( jbuffer);
@@ -523,7 +506,7 @@ Java_java_awt_Toolkit_imgCreateFromData ( JNIEnv* env, jclass clazz,
 void*
 Java_java_awt_Toolkit_imgSetFrame ( JNIEnv* env, jclass clazz, Image* img, int frameNo )
 {
-  printf("imgSetFrame\n");
+  DBG(AWT_IMG, qqDebug("imgSetFrame\n"));
   Image *imgCur = img;
 
   if ( !img->next )

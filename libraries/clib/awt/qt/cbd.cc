@@ -95,7 +95,7 @@ Java_java_awt_Toolkit_cbdGetContents ( JNIEnv* env, jclass clazz, ClipBoard* cbd
   }	
   else {
 	mime = "application/x-java-serialized-object";
-	AWT_DBG(printf("Only text copy and paste is supported...\n"));
+	AWT_DBG(qqDebug("Only text copy and paste is supported...\n"));
 	//KEN : FIXIT
 	//Do we need this?
   }
@@ -133,9 +133,9 @@ void pollJavaClipboard(JNIEnv *env)
         len = env->GetArrayLength( jData);
         cbdText = QString((char *)data);  
         //QApplication::clipboard()->setData(new QTextDrag( cbdText));
-	fprintf(stderr,"!!!Posting to Clipboard %s\n",data);
+	qFatal("!!!Posting to Clipboard %s\n",data);
     } else {
-        fprintf(stderr,"!!!Clipboard EMPTY!!!!\n");
+        qFatal("!!!Clipboard EMPTY!!!!\n");
     }
 	cbdDirty = 0;
   }
@@ -151,7 +151,7 @@ jobject clearJavaClipboard(JNIEnv* env)
         if(QTextDrag::decode(QApplication::clipboard()->data(), text)) {
           //Poll native clipboard for new data
           if(text.compare(cbdText) != 0) {
-            fprintf(stderr,"!!!lostOwnership!!!!\n");
+            qFatal("!!!lostOwnership!!!!\n");
             cbdText = text;
 	    return env->CallStaticVoidMethod( NativeClipboard, lostOwnership);
 	  }
