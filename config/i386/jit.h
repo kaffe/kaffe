@@ -34,7 +34,8 @@ typedef struct _exceptionFrame {
 	(obj) = (*(Hjava_lang_Object**)((f) + 8))
 
 /* Get the first exception frame from a subroutine call */
-#define	FIRSTFRAME(f, o) (f) = *((exceptionFrame*)(((uintp)&(o))-8))
+#define	FIRSTFRAME(f, o)						\
+	((f) = *(exceptionFrame*)__builtin_frame_address(0))
 
 /* Call the relevant exception handler (rewinding the stack as
    necessary). */
