@@ -1,3 +1,25 @@
+Fri May 26 15:45:43 MDT 2000  Jason Baker  <jbaker@cs.utah.edu>
+
+	* kaffe/kaffevm/utf8const.c: Be careful not to hold the utf8 lock
+	when allocating memory.
+
+	* kaffe/kaffevm/thread.c, libraries/javalib/java/lang/Thread.java,
+	ibraries/javalib/Klasses.jar: 
+	Throw the user-specified exception in response to an asynchornous
+	Thread.stop() exception.  Fill in the stopped thread's stack trace
+	when stop wakes us up from a wait.
+
+	*, kaffe/kaffevm/gc.h, kaffe/kaffevm/gcFuncs.c,
+	kaffe/kaffevm/gcRefs.c, kaffe/kaffevm/mem/gc-incremental.c:
+	Minor gc optimizations, which can result in as much as 25%
+	improvement in gc time (which is still painfully slow).
+	o Don't call instanceof Thread in walkObject.  We only walk stacks
+	  in walkLiveThreads, which means that the threading system
+	  bettern know what is live
+	o inline markObjectDontCheck
+	o turn off a slow assertion unless -vmdebug GCDIAG is specified
+
+	
 Tue May 23 14:15:30 2000  Jason Baker  <jbaker@cs.utah.edu>
 
 	* libraries/clib/management/Makefile.am,
