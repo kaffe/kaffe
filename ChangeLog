@@ -2,6 +2,15 @@
 
         Resynced with GNU Classpath
 
+	2004-01-15  Michael Koch  <konqueror@gmx.de>
+
+        * java/io/File.java
+        (list): Return null in error case.
+
+2004-03-07  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath
+
 	2004-02-27  Michael Koch  <konqueror@gmx.de>
 
         * gnu/java/nio/FileLockImpl.java
