@@ -1,3 +1,17 @@
+2000-12-21  Edouard G. Parmelan  <egp@free.fr>
+
+	* config/alpha/jit.h, config/alpha/jit-alpha.def: Reserve f30 as
+	temporary float/double register.  Don't save f1 in prologue.  Add
+	trapb() instruction and create valid trap shadows: inputs of
+	trapable instructions must not be clobber.
+
+	* config/alpha/osf/config.frag: If not defined, declare NM to
+	"/usr/bin/nm -B" as configure does not found it.
+
+	* config/alpha/osf/jit-md.h: remove "do not use" marker.
+
+	* config/alpha/osf/md.c: Mark ieee exception when needed.
+
 2000-12-20  Edouard G. Parmelan  <egp@free.fr>
 
 	* kaffe/kaffevm/utf8const.c (utf8ConstNew): fix bad unlockUTF()
