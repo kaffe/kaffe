@@ -101,7 +101,7 @@ public class Inflater {
   public native synchronized int getTotalIn();
   public native synchronized int getTotalOut();
   public native synchronized void reset();
-  public native synchronized void init(boolean nowrap);
+  private native synchronized void init(boolean nowrap);
   public native synchronized void end();
 
 }

@@ -20,16 +20,16 @@ protected boolean eos;
 private InputStream strm;
 
 public static final int GZIP_MAGIC		= 0x1f8b;
-public static final int OLD_GZIP_MAGIC		= 0x1f9e;
+static final int OLD_GZIP_MAGIC		= 0x1f9e;
 
-public static final int GZIP_FLAG_ASCII_FLAG	= 0x01;	// probably ascii text
-public static final int GZIP_FLAG_CONTINUATION	= 0x02;	// continuation of
+static final int GZIP_FLAG_ASCII_FLAG	= 0x01;	// probably ascii text
+static final int GZIP_FLAG_CONTINUATION	= 0x02;	// continuation of
 							//  multi-part gzip file
-public static final int GZIP_FLAG_EXTRA_FIELD	= 0x04;	// extra field present
-public static final int GZIP_FLAG_ORIG_NAME	= 0x08;	// file name present
-public static final int GZIP_FLAG_COMMENT	= 0x10;	// file comment present
-public static final int GZIP_FLAG_ENCRYPTED	= 0x20;	// file is encrypted
-public static final int GZIP_FLAG_RESERVED	= 0xc0;	// must be zero
+static final int GZIP_FLAG_EXTRA_FIELD	= 0x04;	// extra field present
+static final int GZIP_FLAG_ORIG_NAME	= 0x08;	// file name present
+static final int GZIP_FLAG_COMMENT	= 0x10;	// file comment present
+static final int GZIP_FLAG_ENCRYPTED	= 0x20;	// file is encrypted
+static final int GZIP_FLAG_RESERVED	= 0xc0;	// must be zero
 
 public GZIPInputStream(InputStream in) throws IOException {
 	this(in, 512);

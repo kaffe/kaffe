@@ -101,7 +101,7 @@ public static long parseLong(String s) throws NumberFormatException {
 	return parseLong(s, 10);
 }
 
-public static long parseLong(String s, int radix) {
+public static long parseLong(String s, int radix) throws NumberFormatException {
 	if (s.length() <= 0) {
 		throw new NumberFormatException();
 	}

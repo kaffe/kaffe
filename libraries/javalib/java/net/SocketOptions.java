@@ -10,7 +10,7 @@
 
 package java.net;
 
-interface SocketOptions {
+public interface SocketOptions {
 
 /*
  * Various options.  Note that these constants match those used by Sun.

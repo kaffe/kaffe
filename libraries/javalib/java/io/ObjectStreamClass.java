@@ -72,7 +72,7 @@ public static ObjectStreamClass lookup(Class cl) {
 	else if (Serializable.class.isAssignableFrom(cl)) {
 		method = ObjectStreamConstants.SC_SERIALIZABLE;
 		if (factory.hasRdWrMethods(cl)) {
-			method |= ObjectStreamConstants.SC_WRRD_METHODS;
+			method |= ObjectStreamConstants.SC_WRITE_METHOD;
 //System.out.println(" has read/write");
                 }
 //System.out.println(" is serializable");

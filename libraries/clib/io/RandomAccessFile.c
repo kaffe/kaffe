@@ -37,7 +37,7 @@ java_io_RandomAccessFile_open(struct Hjava_io_RandomAccessFile* this, struct Hja
 	rc = KOPEN(str, (rw == 0 ? O_RDONLY : O_RDWR|O_CREAT)|O_BINARY, 0666, &fd);
 	if (rc) {
 		unhand(unhand(this)->fd)->fd = -1;
-		SignalError("java.io.IOException", SYS_ERROR(rc));
+		SignalError("java.io.FileNotFoundException", SYS_ERROR(rc));
 	}
 	unhand(unhand(this)->fd)->fd = fd;
 }

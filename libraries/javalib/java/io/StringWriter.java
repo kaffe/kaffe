@@ -22,7 +22,7 @@ public class StringWriter extends Writer {
     this(DEFAULT);
   }
 
-  protected StringWriter(int initialSize)
+  public StringWriter(int initialSize)
   {
     buf = new StringBuffer(initialSize);
   }

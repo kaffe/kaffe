@@ -1,3 +1,37 @@
+1999-04-25  Aaron Place  <beavis@ihug.co.nz>
+
+	* libraries/clib/io/RandomAccessFile.c: change constructor to
+	throw FileNotFoundException 
+	* libraries/javalib/java/io/ObjectStreamClass.java,
+	ObjectStreamConstants.java, kaffe/io/ObjectStreamClassImpl.java:
+	replace SC_WRRD_METHODS with SC_WRITE_METHOD and add jdk1.2
+	constants
+	* libraries/javalib/java/io/PipedInputStream.java: rename pipe to
+	buffer and make protected and fix EOS bug (now passes mauve test)
+	(available): new method
+	* libraries/javalib/java/io/PrintWriter.java: rename strm to
+	out and make protected
+	* libraries/javalib/java/io/StringWriter.java (StringWriter): make 
+	public
+	* libraries/javalib/java/lang/Long.java (parseLong): should throw
+	NumberFormatException
+	* libraries/javalib/java/lang/Math.java (toDegrees): new method
+	(toRadians): new method
+	* libraries/javalib/java/lang/reflect/Modifier.java: add strictfp
+	modifier
+	* libraries/javalib/java/net/SocketOptions.java: make public
+	* libraries/javalib/java/text/ChoiceFormat.java (parse): fix
+	* libraries/javalib/java/text/DateFormat.java, NumberFormat.java:
+	do not implement Cloneable, the superclass does already
+	* libraries/javalib/java/util/AbstractCollection.java,
+	AbstractList.java: make constructor protected
+	* libraries/javalib/java/util/zip/Deflater.java (setStrategy): change
+	signature
+	* libraries/javalib/java/util/zip/GZIPInputStream.java: make most
+	constants default access
+	* libraries/javalib/java/util/zip/Inflater.java (init): make private
+	* libraries/javalib/java/util/zip/ZipEntry.java: make Cloneable
+
 1999-04-25  Robert Zawiasa  <rhz@bibl.u-szeged.hu>
 
 	* libraries/clib/awt/X/fnt.c: If we can't find a slanted font with 

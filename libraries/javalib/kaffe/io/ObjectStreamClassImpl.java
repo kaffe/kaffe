@@ -50,7 +50,7 @@ public ObjectStreamClassImpl(Class cl, int meth) {
 public ObjectStreamClassImpl() {
 	clazz = ObjectStreamClassImpl.class;
 	name = clazz.getName();
-	method = ObjectStreamConstants.SC_WRRD_METHODS|ObjectStreamConstants.SC_SERIALIZABLE;
+	method = ObjectStreamConstants.SC_WRITE_METHOD|ObjectStreamConstants.SC_SERIALIZABLE;
 	serialVersionUID = 0;
 	superstream = null;
 	iclazz = null;
@@ -76,7 +76,7 @@ public void getObjectWithoutSuper(Object obj, ObjectInputStream in, ObjectInputS
  {
                         ((Externalizable)obj).readExternal(in);
                 }
-                else if ((method & ObjectStreamConstants.SC_WRRD_METHODS) !=
+                else if ((method & ObjectStreamConstants.SC_WRITE_METHOD) !=
  0) {
 			boolean restore = impl.enableBuffering(true);
                         invokeObjectReader0(obj, in);
@@ -225,7 +225,7 @@ public void putObjectWithoutSuper(Object obj, ObjectOutputStream out, ObjectOutp
 //System.out.println("...writeExternal");
 		((Externalizable)obj).writeExternal(out);
 	}
-	else if ((method & ObjectStreamConstants.SC_WRRD_METHODS) != 0) {
+	else if ((method & ObjectStreamConstants.SC_WRITE_METHOD) != 0) {
 //System.out.println("...invokeObjectWriter");
 		boolean restore = impl.enableBuffering(true);
 		invokeObjectWriter0(obj, out);

@@ -28,7 +28,7 @@ public ZipFile(String fname) throws IOException
 	name = fname;
 	zip = openZipFile0(fname);
 	if (zip == null) {
-		throw new IOException("No such zip file" + fname);
+		throw new IOException("No such zip file " + fname);
 	}
 }
 

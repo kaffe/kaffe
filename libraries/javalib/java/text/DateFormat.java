@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.Calendar;
 
-public abstract class DateFormat extends Format implements Cloneable {
+public abstract class DateFormat extends Format {
 
 private static final long serialVersionUID = 7218322306649953788L;
 public final static int FULL = 0;

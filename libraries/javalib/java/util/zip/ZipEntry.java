@@ -10,7 +10,7 @@
 
 package java.util.zip;
 
-public class ZipEntry implements ZipConstants {
+public class ZipEntry implements Cloneable, ZipConstants {
 
   public static final int STORED = Deflater.NO_COMPRESSION;
   public static final int DEFLATED = Deflater.DEFLATED;

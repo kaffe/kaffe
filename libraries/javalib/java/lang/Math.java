@@ -99,6 +99,15 @@ native public static double sin(double a);
 native public static double sqrt(double a);
 
 native public static double tan(double a);
+
+public static double toDegrees(double angrad) {
+	return(angrad * 180 / PI);
+}
+
+public static double toRadians(double angdeg) {
+	return(angdeg * PI / 180);
+}
+
 }
 
 /**

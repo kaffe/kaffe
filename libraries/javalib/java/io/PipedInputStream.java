@@ -19,10 +19,11 @@ public class PipedInputStream
 {
 	PipedOutputStream src = null;
 	final protected static int PIPE_SIZE = 512;
-	protected byte[] pipe = new byte[PIPE_SIZE];
+	protected byte[] buffer = new byte[PIPE_SIZE];
 	protected int out = 0;
 	protected int in = 0;
 	private boolean closed = true;
+        private boolean finished = true;
 
 public PipedInputStream () {
 }
@@ -32,6 +33,10 @@ public PipedInputStream (PipedOutputStream src) throws IOException {
 	connect(src);
 }
 
+public int available() throws IOException {
+	return(in >= out ? in-out : PIPE_SIZE+out-in);
+}
+    
 public void close() throws IOException {
 	out = 0;
 	in = 0;
@@ -47,6 +52,7 @@ public void connect(PipedOutputStream src) throws IOException {
 		src.connect(this);
 	}
 	closed = false;
+	finished = false;
 }
 
 public synchronized int read() throws IOException {
@@ -55,19 +61,23 @@ public synchronized int read() throws IOException {
 		throw new IOException("stream closed");
 	}
 
+	if (finished && (out == in)) {
+	        return (-1);
+	}
+
 	while (out == in) {
 		try {
 			this.wait();
 		}
 		catch (InterruptedException e) {
 		}
-		if (closed) {
-			return (-1);
+		if (finished && (out == in)) {
+		        return (-1);
 		}
 	}
 
 	/* Should be Ok now */
-	byte result = pipe[out];
+	byte result = buffer[out];
 	out = (out + 1) % PIPE_SIZE;
 
 	this.notifyAll();
@@ -80,13 +90,13 @@ public synchronized int read(byte b[], int off, int len) throws IOException {
 }
 
 protected synchronized void receive(int b) throws IOException {
-	while (out == in+1) {
+	while (out == (in+1) % PIPE_SIZE) {
 		try {
 			this.wait();
 		}
 		catch (InterruptedException e) {}
 	}
-	pipe[in] = (byte)b;
+	buffer[in] = (byte)b;
 	in = (in + 1) % PIPE_SIZE;
 
 	this.notifyAll();
@@ -94,6 +104,6 @@ protected synchronized void receive(int b) throws IOException {
 
 //Used in java.io.PipedOutputStream
 void receivedLast() {
-	closed = true;
+    	finished = true;
 }
 }

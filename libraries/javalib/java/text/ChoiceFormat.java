@@ -171,7 +171,7 @@ public Number parse(String str, ParsePosition pos) {
 	}
 
 	Double number;
-	while(stopIndex < str.length()){
+	while(stopIndex <= str.length()){
 	    number = (Double)patternNames.get(str.substring(startIndex,stopIndex));
 	    if(number == null)
 		stopIndex++;

@@ -16,7 +16,7 @@ public class PrintWriter extends Writer {
 
   private static final String newline = System.getProperty("line.separator");
 
-  private Writer strm;
+  protected Writer out;
   private boolean flsh;
   private boolean error;
 
@@ -27,7 +27,7 @@ public class PrintWriter extends Writer {
 
   public PrintWriter(Writer out, boolean autoFlush)
   {
-    strm = out;
+    this.out = out;
     flsh = autoFlush;
     error = false;
   }
@@ -39,7 +39,7 @@ public class PrintWriter extends Writer {
 
   public PrintWriter(OutputStream out, boolean autoFlush)
   {
-    strm = new OutputStreamWriter(out);
+    this.out = new OutputStreamWriter(out);
     flsh = autoFlush;
     error = false;
   }
@@ -47,7 +47,7 @@ public class PrintWriter extends Writer {
   public void flush()
   {
     try {
-      strm.flush();
+      out.flush();
     }
     catch (IOException _) {
       error = true;
@@ -57,7 +57,7 @@ public class PrintWriter extends Writer {
   public void close()
   {
     try {
-      strm.close();
+      out.close();
     }
     catch (IOException _) {
       error = true;
@@ -85,7 +85,7 @@ public class PrintWriter extends Writer {
   public void write(char buf[], int off, int len)
   {
     try {
-      strm.write(buf, off, len);
+      out.write(buf, off, len);
     }
     catch (IOException _) {
       error = true;

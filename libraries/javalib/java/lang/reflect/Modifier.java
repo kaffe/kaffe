@@ -23,6 +23,7 @@ public class Modifier {
   public static final int NATIVE = 0x0100;
   public static final int INTERFACE = 0x0200;
   public static final int ABSTRACT = 0x0400;
+  public static final int STRICT = 0x0800;
 
   public Modifier()
   {
@@ -84,6 +85,11 @@ public class Modifier {
     return ((mod & ABSTRACT) == 0 ? false : true);
   }
 
+  public static boolean isStrict(int mod)
+  {
+    return ((mod & STRICT) == 0 ? false : true);
+  }
+
   public static String toString(int mod)
   {
     StringBuffer str = new StringBuffer();
@@ -117,6 +123,9 @@ public class Modifier {
     }
     if ((mod & NATIVE) != 0) {
       append(str, "native");
+    }
+    if ((mod & STRICT) != 0) {
+      append(str, "strictfp");
     }
     if ((mod & INTERFACE) != 0) {
       append(str, "interface");

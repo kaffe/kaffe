@@ -14,7 +14,7 @@ import java.lang.String;
 
 public abstract class AbstractCollection implements Collection {
 
-public AbstractCollection() {
+protected AbstractCollection() {
 }
 
 public abstract Iterator iterator();

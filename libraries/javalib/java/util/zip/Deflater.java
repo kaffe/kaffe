@@ -75,7 +75,7 @@ public class Deflater {
     setDictionary(b, 0, b.length);
   }
 
-  public synchronized void setStrategy(int stgy) throws IllegalArgumentException
+  public synchronized void setStrategy(int stgy)
   {
     if (stgy != DEFLATED) {
       throw new IllegalArgumentException("only support deflation");

@@ -15,6 +15,9 @@ public abstract class AbstractList
 
 protected int modCount;
 
+protected AbstractList() {
+}
+    
 public boolean add(Object o) {
   add(size(), o);
   return (true);
