@@ -70,6 +70,9 @@
 	kaffe/kaffevm/jit3/machine.c: Updated to new lock interface.
 	(initEngine): New initializer.
 
+	* kaffe/xprof/debugFile.c, kaffe/xprof/feedback.c,
+	kaffe/xprof/sectionFile.c: Removed iLockRoot.
+
 2005-03-11  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
