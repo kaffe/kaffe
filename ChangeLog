@@ -1,3 +1,24 @@
+Wed Sep  4 17:58:42 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	added kaffe.lang.PackageHelper
+
+	* libraries/javalib/kaffe/lang/PackageHelper.java: new class.
+
+	* libraries/javalib/java/lang/Class.java:
+	(getPackage) implemented.
+
+	* libraries/javalib/java/lang/ClassLoader.java:
+	(loadedPackages) new private field.
+	(NO_PACKAGES) new private constant.
+	(definePackage), (getPackage), (getPackages) implemented.
+
+	* libraries/javalib/java/lang/Package.java: implemented.
+
+	* libraries/javalib/java/net/URLClassLoader.java:
+	(findClass) definee a package for the class if its package is not
+	defined yet.
+
 Wed Sep  4 13:07:46 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/util/MissingResourceException.java:

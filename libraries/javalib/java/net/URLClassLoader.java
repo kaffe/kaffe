@@ -30,7 +30,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Vector;
 import java.util.jar.Attributes;
+import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
+import kaffe.lang.PackageHelper;
 
 public class URLClassLoader extends SecureClassLoader {
 	private final Vector urls;
@@ -76,10 +78,25 @@ public class URLClassLoader extends SecureClassLoader {
 			for (int r; (r = in.read(buf)) != -1; ) {
 				out.write(buf, 0, r);
 			}
-			in.close();
 			buf = out.toByteArray();
-			return defineClass(name, buf, 0, buf.length,
+
+			Class found =  defineClass(name, buf, 0, buf.length,
 			    new CodeSource(url, new Certificate[0]));	// XXX specify codesource certificates
+
+			// package management
+			String pkgName = PackageHelper.getPackageName(found);
+			if (getPackage(pkgName) == null) {
+				if (in instanceof JarInputStream) {	
+					definePackage(pkgName, ((JarInputStream)in).getManifest(), url);
+				}
+				else {
+					definePackage(pkgName, null, null, null, null, null, null, null);
+				}
+			}
+			in.close();
+
+			return found;
+
 		} catch (IOException e) {
 			throw new ClassNotFoundException(name + ": " + e);
 		}
@@ -99,6 +116,7 @@ public class URLClassLoader extends SecureClassLoader {
 	}
 
 	// XXX incomplete
+	// need to implement SEALED.
 	protected Package definePackage(String name, Manifest man, URL url)
 			throws IllegalArgumentException {
 		return super.definePackage(name,

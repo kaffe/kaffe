@@ -768,6 +768,7 @@ kaffe_lang_SRCS = \
 	kaffe/lang/DummyClassLoader.java \
 	kaffe/lang/MemoryAdvice.java \
 	kaffe/lang/MemoryAdviceCallback.java \
+	kaffe/lang/PackageHelper.java \
 	kaffe/lang/ResourceReader.java \
 	kaffe/lang/SystemClassLoader.java \
 	kaffe/lang/UNIXProcess.java

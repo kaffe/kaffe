@@ -22,6 +22,7 @@ import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.Vector;
+import kaffe.lang.PackageHelper;
 import kaffe.lang.SystemClassLoader;
 
 public final class Class implements Serializable {
@@ -308,11 +309,23 @@ native public int getModifiers();
 
 native public String getName();
 
-native static Class getPrimitiveClass(String name);
+public Package getPackage() {
+	ClassLoader loader = getClassLoader();
+	if (loader != null) {
+		String pkgName = PackageHelper.getPackageName(this);
+		if (pkgName != null) {
+			return loader.getPackage(pkgName);
+		}
+	}
+
+	return null;
+}
 
 public ProtectionDomain getProtectionDomain() {
 	return getClassLoader().getProtectionDomain(this);
 }
+
+native static Class getPrimitiveClass(String name);
 
 /**
  * Finds a resource with the specified name.

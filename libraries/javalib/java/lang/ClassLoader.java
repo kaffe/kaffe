@@ -40,6 +40,11 @@ private final Hashtable loadedClasses = new Hashtable();
  */
 private final Set loadedLibraries = new HashSet();
 
+/**
+ * We keep a reference to all packages loaded by this loader.
+ */
+private final Hashtable loadedPackages = new Hashtable();
+private static final Package [] NO_PACKAGES = new Package[0];
 
 /**
  * We keep the references to loaded classes and their protection domain
@@ -239,21 +244,54 @@ public static ClassLoader getSystemClassLoader() {
 }
 
 protected Package definePackage(String name, String specTitle,
-	String specVersion, String specVendor, String implTitle,
-	String implVersion, String implVendor, URL sealBase)
-		throws IllegalArgumentException {
-	throw new kaffe.util.NotImplemented(getClass().getName()
-		+ ".definePackage()");
+				String specVersion, String specVendor,
+				String implTitle, String implVersion,
+				String implVendor, URL sealBase)
+	throws IllegalArgumentException {
+
+	Package pack = getPackage(name);
+
+	if (pack != null) {
+		throw new IllegalArgumentException("Package " + name + " already defined");
+	}
+
+	pack = new Package(name, specTitle, specVersion, specVendor,
+			   implTitle, implVersion, implVendor, sealBase);
+	loadedPackages.put(name, pack);
+	return pack;
 }
 
 protected Package getPackage(String name) {
-	throw new kaffe.util.NotImplemented(getClass().getName()
-		+ ".getPackage()");
+	Package pack = (Package) loadedPackages.get(name);
+
+	if (pack == null) {
+		ClassLoader dad = getParent();
+		if (dad != null) {
+			pack = dad.getPackage(name);
+		}
+	}
+
+	return pack;
 }
 
 protected Package[] getPackages() {
-	throw new kaffe.util.NotImplemented(getClass().getName()
-		+ ".getPackages()");
+	Package [] values = (Package []) (loadedPackages.values().toArray(NO_PACKAGES));
+	Package [] packs = (values.length == 0)
+		? NO_PACKAGES
+		: (Package []) values;
+
+	ClassLoader dad = getParent();
+	if (dad != null) {
+		Package [] ancestorPacks = dad.getPackages();
+		Package [] allPacks = new Package[packs.length
+						 + ancestorPacks.length];
+		System.arraycopy(packs, 0, allPacks, 0, packs.length);
+		System.arraycopy(ancestorPacks, 0, allPacks, packs.length,
+				 ancestorPacks.length);
+		packs = allPacks;
+	}
+
+	return packs;
 }
 
 protected String findLibrary(String libname) {
