@@ -59,10 +59,11 @@ typedef struct SlotInfo SlotInfo;
 
 /* Global slots flags */
 #define	GL_NOGLOBAL		0x00
-#define	GL_PRELOAD		0x01
-#define	GL_NOLOAD		0x02
+#define	GL_ISGLOBAL		0x01
+#define	GL_PRELOAD		0x02
 #define	GL_RONLY		0x04
 
+#define	setGlobal(S,T)		(S)->global = (T)
 #define	isGlobal(S)		((S)->global != GL_NOGLOBAL)
 #define	isGlobalPreload(S)	(((S)->global & GL_PRELOAD) != 0)
 #define	isGlobalReadonly(S)	(((S)->global & GL_RONLY) != 0)

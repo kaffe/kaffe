@@ -39,6 +39,9 @@
 #define	HAVE_exception_prologue		eprologue_xLx
 #define	HAVE_check_stack_limit		check_stack_limit_xRC
 
+#define	HAVE_move_register_int		movereg_RR
+#define	HAVE_move_register_ref		movereg_RR
+
 #define	HAVE_move_int_const		move_RxC
 #define	HAVE_move_int			move_RxR
 #define	HAVE_move_float_const		fmove_RxC

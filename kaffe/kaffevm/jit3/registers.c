@@ -575,6 +575,11 @@ preloadRegister(SlotData* slot, int type, int idealreg)
 	else {
 		slotRegister(slot, type, rwrite, idealreg);
 	}
+#if defined(TRACE_METHOD_ARGS)
+	if (Kaffe_JavaVMArgs[0].enableVerboseCall != 0) {
+		spill(slot);
+	}
+#endif
 }
 
 void

@@ -2,7 +2,7 @@
  * arm/jit.h
  * Common ARM JIT configuration information.
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 1998, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -137,29 +137,31 @@ extern void arm_do_fixup_trampoline(void);
 /* Register management information. */
 /**/
 
+#define	_GR_	(Rglobal|Rnosaveoncall)
+
 /* Define the register set */
 	// slot, ctype, type, flags, used, regno
 #define	REGISTER_SET							\
-	{ /* r0 */	0, 0, Rint|Rref,	Rnosaveoncall, 0, 0    },		\
-	{ /* r1 */	0, 0, Rint|Rref,	Rnosaveoncall, 0, 1    },		\
-	{ /* r2 */	0, 0, Rint|Rref,	Rnosaveoncall, 0, 2    },		\
-	{ /* r3 */	0, 0, Rint|Rref,	Rnosaveoncall, 0, 3    },		\
-	{ /* r4 */	0, 0, Rint|Rref,	0, 0, 4    },		\
-	{ /* r5 */	0, 0, Rint|Rref,	0, 0, 5    },		\
-	{ /* r6 */	0, 0, Rint|Rref,	0, 0, 6    },		\
-	{ /* r7 */	0, 0, Rint|Rref,	0, 0, 7    },		\
-	{ /* r8 */	0, 0, Rint|Rref,	0, 0, 8    },		\
+	{ /* r0 */	0, 0, Rint|Rref,	0, 0, 0    },		\
+	{ /* r1 */	0, 0, Rint|Rref,	0, 0, 1    },		\
+	{ /* r2 */	0, 0, Rint|Rref,	0, 0, 2    },		\
+	{ /* r3 */	0, 0, Rint|Rref,	0, 0, 3    },		\
+	{ /* r4 */	0, 0, Rint|Rref,	_GR_, 0, 4    },	\
+	{ /* r5 */	0, 0, Rint|Rref,	_GR_, 0, 5    },	\
+	{ /* r6 */	0, 0, Rint|Rref,	_GR_, 0, 6    },	\
+	{ /* r7 */	0, 0, Rint|Rref,	_GR_, 0, 7    },	\
+	{ /* r8 */	0, 0, Rint|Rref,	_GR_, 0, 8    },	\
 	{ /* r9 */	0, 0, Reserved,		0, 0, 9    },	/* Static base */	\
-	{ /* r10 */	0, 0, Rint|Rref,	0, 0, 10   },	/* Stack limit */	\
+	{ /* r10 */	0, 0, Rint|Rref,	_GR_, 0, 10   },/* Stack limit */	\
 	{ /* fp */	0, 0, Reserved,		0, 0, 11   },		\
-	{ /* ip */	0, 0, Rint|Rref,	Rnosaveoncall, 0, 12   },		\
+	{ /* ip */	0, 0, Rint|Rref,	0, 0, 12   },		\
 	{ /* sp */	0, 0, Reserved,		0, 0, 13   },		\
 	{ /* lr */	0, 0, Reserved,		0, 0, 14   },		\
 	{ /* pc */	0, 0, Reserved,		0, 0, 15   },		\
-	{ /* f0  */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 0    },		\
-	{ /* f1  */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 1    },		\
-	{ /* f2  */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 2    },		\
-	{ /* f3  */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 3    },		\
+	{ /* f0  */	0, 0, Rfloat|Rdouble,	0, 0, 0    },		\
+	{ /* f1  */	0, 0, Rfloat|Rdouble,	0, 0, 1    },		\
+	{ /* f2  */	0, 0, Rfloat|Rdouble,	0, 0, 2    },		\
+	{ /* f3  */	0, 0, Rfloat|Rdouble,	0, 0, 3    },		\
 	{ /* f4  */	0, 0, Reserved,		0, 0, 4    },		\
 	{ /* f5  */	0, 0, Reserved,		0, 0, 5    },		\
 	{ /* f6  */	0, 0, Reserved,		0, 0, 6    },		\
@@ -204,8 +206,13 @@ extern void arm_do_fixup_trampoline(void);
 //
 // We push ..BFP|BIP|BLR|BR4|BR5|BR6|BR7|BR8|BR9|BR10
 //
+#if !defined(JIT3)
 // We save 10 registers
 #define REGISTERS_SAVED (10)
+#else
+// We save 11 registers
+#define REGISTERS_SAVED (11)
+#endif
 
 //
 // First four arguments are in registers, and then we need
@@ -268,5 +275,62 @@ extern void arm_do_fixup_trampoline(void);
 extern void flush_dcache(void);
 #define	FLUSH_DCACHE(BEG, END)	flush_dcache()
 
+#if defined(JIT3)
+/*
+ * Redefine anything relevant to JIT3.
+ */
+
+#undef	FRAMEOBJECT
+#undef	LABEL_Lframe
+#undef	SLOT2LOCALOFFSET
+#undef	SLOT2ARGOFFSET
+
+#define FRAMEOBJECT(F) \
+	(*(Hjava_lang_Object**)((uintp)(F) - SLOTSIZE * REGISTERS_SAVED))
+
+/* Number of function globals in register set */
+#define	NR_GLOBALS	6
+
+/**/
+/* We must setup the incoming argument state */
+/**/
+#define	NR_ARGUMENTS	4
+
+/*
+ * First four arguments are in registers, and then we need
+ * to compensate for the save code pointer, which is stored
+ * at (fp+4). The first argument is at (FP+8).We allocate
+ * slots for the first four arguments in the "locals"
+ * region.  We always allocate 4 slots even though they're not
+ * always used.
+ *
+ * Generate slot offset for a local (non-argument)
+ */
+
+#define SLOT2LOCALOFFSET(N) \
+	(-SLOTSIZE * (REGISTERS_SAVED + (N) - maxArgs + NR_ARGUMENTS))
+
+#define SLOT2ARGOFFSET(N) \
+	((N) >= NR_ARGUMENTS ? (SLOTSIZE * ((N) - NR_ARGUMENTS + 1)) : \
+		-SLOTSIZE * (REGISTERS_SAVED + (N)))
+
+#define STACK_LIMIT() \
+	SLOT2ARGOFFSET(maxArgs)
+
+#define LABEL_Lframe(P,V,L) \
+        {                                                               \
+                int shift = 0;                                          \
+                int val = (NR_ARGUMENTS + (maxLocal - maxArgs) +        \
+                        maxStack + maxTemp);                            \
+                val *= SLOTSIZE;                                        \
+                while ((val & 0xFFFFFF00) != 0) {                       \
+                        val = val >> 2;                                 \
+                        shift += 2;                                     \
+                }                                                       \
+                shift /= 2; shift = (32 - shift); shift &= 0xf;         \
+                *(P) = (*(P) & 0xFFFFF000) | (shift<<8) | val;          \
+        }
+
+#endif
 
 #endif

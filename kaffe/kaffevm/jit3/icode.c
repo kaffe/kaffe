@@ -282,7 +282,7 @@ finish_function(void)
 {
 }
 
-
+ 
 /* ----------------------------------------------------------------------- */
 /* Conditional monitor management.					   */
 /*									   */
@@ -722,7 +722,7 @@ move_double_const(SlotInfo* dst, jdouble val)
 		l->from = 0;
 
 #if defined(HAVE_load_constpool_double)
-		slot_slot_const(dst, 0, (jword)l, HAVE_load_constpool_double, Tnull);
+		lslot_lslot_const(dst, 0, (jword)l, HAVE_load_constpool_double, Tnull);
 #else
 		{
 			SlotInfo* tmp;
@@ -812,21 +812,29 @@ move_long(SlotInfo* dst, SlotInfo* src)
 #endif
 }
 
-#if defined(HAVE_move_float)
 void
 move_float(SlotInfo* dst, SlotInfo* src)
 {
+#if defined(HAVE_move_float)
 	slot_slot_slot(dst, 0, src, HAVE_move_float, Tcopy);
-}
+#elif defined(HAVE_NO_FLOATING_POINT)
+	move_int(dst, src);
+#else
+	ABORT();
 #endif
+}
 
-#if defined(HAVE_move_double)
 void
 move_double(SlotInfo* dst, SlotInfo* src)
 {
+#if defined(HAVE_move_double)
 	lslot_lslot_lslot(dst, 0, src, HAVE_move_double, Tcopy);
-}
+#elif defined(HAVE_NO_FLOATING_POINT)
+	move_long(dst, src);
+#else
+	ABORT();
 #endif
+}
 
 #if defined(HAVE_move_label_const)
 void
@@ -2163,13 +2171,17 @@ load_addr_long(SlotInfo* dst, void* addr)
 #endif
 }
 
-#if defined(HAVE_load_float)
 void
 load_float(SlotInfo* dst, SlotInfo* src)
 {
+#if defined(HAVE_load_float)
 	slot_slot_slot(dst, 0, src, HAVE_load_float, Tload);
-}
+#elif defined(HAVE_NO_FLOATING_POINT)
+	load_int(dst, src);
+#else
+	ABORT();
 #endif
+}
 
 void
 load_addr_float(SlotInfo* dst, void* addr)
@@ -2185,19 +2197,23 @@ load_addr_float(SlotInfo* dst, void* addr)
 #endif
 }
 
-#if defined(HAVE_load_double)
 void
 load_double(SlotInfo* dst, SlotInfo* src)
 {
+#if defined(HAVE_load_double)
 	lslot_lslot_slot(dst, 0, src, HAVE_load_double, Tload);
-}
+#elif defined(HAVE_NO_FLOATING_POINT)
+	load_long(dst, src);
+#else
+	ABORT();
 #endif
+}
 
 void
 load_addr_double(SlotInfo* dst, void* addr)
 {
 #if defined(HAVE_load_addr_double)
-	slot_slot_const(dst, 0, (uintp)addr, HAVE_load_addr_double, Tload);
+	lslot_lslot_const(dst, 0, (uintp)addr, HAVE_load_addr_double, Tload);
 #else
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
@@ -2298,6 +2314,7 @@ load_offset_long(SlotInfo* dst, SlotInfo* src, jint offset)
 	else
 #endif
 	{
+                /* Don't use LSLOT & HSLOT here */
 		load_offset_int(dst, src, offset);
 		load_offset_int(dst+1, src, offset+4);
 	}
@@ -2469,13 +2486,14 @@ load_offset_scaled_long(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 		SlotInfo* nidx;
 		slot_alloctmp(nidx);
 		lshl_int_const(nidx, idx, 1);
-		if (src != LSLOT(dst)) {
-			load_offset_scaled_int(LSLOT(dst), src, nidx, offset);
-			load_offset_scaled_int(HSLOT(dst), src, nidx, offset+4);
+                /* Don't use LSLOT & HSLOT here */
+		if (src != dst) {
+			load_offset_scaled_int(dst, src, nidx, offset);
+			load_offset_scaled_int(dst+1, src, nidx, offset+4);
 		}
 		else {
-			load_offset_scaled_int(HSLOT(dst), src, nidx, offset+4);
-			load_offset_scaled_int(LSLOT(dst), src, nidx, offset);
+			load_offset_scaled_int(dst+1, src, nidx, offset+4);
+			load_offset_scaled_int(dst, src, nidx, offset);
 		}
 		slot_freetmp(nidx);
 	}
@@ -2511,7 +2529,7 @@ load_offset_scaled_double(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offse
 	}
 	else
 #if defined(HAVE_load_offset_scaled_double)
-	slot_slot_slot_const_const(dst, src, idx, offset, 0, HAVE_load_offset_scaled_double, Tload);
+	lslot_slot_slot_const_const(dst, src, idx, offset, 0, HAVE_load_offset_scaled_double, Tload);
 #else
 	{
 		SlotInfo* tmp;
@@ -2727,6 +2745,7 @@ store_offset_long(SlotInfo* dst, jint offset, SlotInfo* src)
 	else
 #endif
 	{
+                /* Don't use LSLOT & HSLOT here */
 		store_offset_int(dst, offset, src);
 		store_offset_int(dst, offset+4, src+1);
 	}
@@ -2746,13 +2765,17 @@ store_addr_long(void* addr, SlotInfo* src)
 #endif
 }
 
-#if defined(HAVE_store_float)
 void
 store_float(SlotInfo* dst, SlotInfo* src)
 {
+#if defined(HAVE_store_float)
 	slot_slot_slot(0, dst, src, HAVE_store_float, Tstore);
-}
+#elif defined(HAVE_NO_FLOATING_POINT)
+	store_int(dst, src);
+#else
+	ABORT();
 #endif
+}
 
 void
 store_offset_float(SlotInfo* dst, jint offset, SlotInfo* src)
@@ -2790,13 +2813,17 @@ store_addr_float(void* addr, SlotInfo* src)
 #endif
 }
 
-#if defined(HAVE_store_double)
 void
 store_double(SlotInfo* dst, SlotInfo* src)
 {
+#if defined(HAVE_store_double)
 	slot_slot_lslot(0, dst, src, HAVE_store_double, Tstore);
-}
+#elif defined(HAVE_NO_FLOATING_POINT)
+	store_long(dst, src);
+#else
+	ABORT();
 #endif
+}
 
 void
 store_offset_double(SlotInfo* dst, jint offset, SlotInfo* src)
@@ -2807,7 +2834,7 @@ store_offset_double(SlotInfo* dst, jint offset, SlotInfo* src)
 	else
 #if defined(HAVE_store_offset_double)
 	if (HAVE_store_offset_double_rangecheck(offset)) {
-		slot_slot_const(src, dst, offset, HAVE_store_offset_double, Tstore);
+		lslot_slot_const(src, dst, offset, HAVE_store_offset_double, Tstore);
 	}
 	else
 #endif
@@ -2824,7 +2851,7 @@ void
 store_addr_double(void* addr, SlotInfo* src)
 {
 #if defined(HAVE_store_addr_double)
-	slot_slot_const(0, src, (uintp)addr, HAVE_store_addr_double, Tstore);
+	lslot_lslot_const(0, src, (uintp)addr, HAVE_store_addr_double, Tstore);
 #else
 	SlotInfo* tmp;
 	slot_alloctmp(tmp);
@@ -3070,8 +3097,9 @@ store_offset_scaled_long(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src
 		SlotInfo* nidx;
 		slot_alloctmp(nidx);
 		lshl_int_const(nidx, idx, 1);
-		store_offset_scaled_int(dst, nidx, offset, LSLOT(src));
-		store_offset_scaled_int(dst, nidx, offset+4, HSLOT(src));
+                /* Don't use LSLOT & HSLOT here */
+		store_offset_scaled_int(dst, nidx, offset, src);
+		store_offset_scaled_int(dst, nidx, offset+4, src+1);
 		slot_freetmp(nidx);
 	}
 #endif
@@ -3106,7 +3134,7 @@ store_offset_scaled_double(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* s
 	}
 	else
 #if defined(HAVE_store_offset_scaled_double)
-	slot_slot_slot_const_const(dst, idx, src, offset, 0, HAVE_store_offset_scaled_double, Tstore);
+	slot_slot_lslot_const_const(dst, idx, src, offset, 0, HAVE_store_offset_scaled_double, Tstore);
 #else
 	{
 		SlotInfo* tmp;
@@ -3336,23 +3364,31 @@ pusharg_utf8_const(Utf8Const* val, int idx)
 #endif
 }
 
-#if defined(HAVE_pusharg_float)
 void
 pusharg_float(SlotInfo* src, int idx)
 {
+#if defined(HAVE_pusharg_float)
 	slot_slot_const(0, src, idx, HAVE_pusharg_float, Tnull);
 	argcount += 1;
-}
+#elif defined(HAVE_NO_FLOATING_POINT)
+	pusharg_int(src, idx);
+#else
+	ABORT();
 #endif
+}
 
-#if defined(HAVE_pusharg_double)
 void
 pusharg_double(SlotInfo* src, int idx)
 {
+#if defined(HAVE_pusharg_double)
 	lslot_lslot_const(0, src, idx, HAVE_pusharg_double, Tnull);
 	argcount += pusharg_long_idx_inc;
-}
+#elif defined(HAVE_NO_FLOATING_POINT)
+	pusharg_long(src, idx);
+#else
+	ABORT();
 #endif
+}
 
 void
 pusharg_long(SlotInfo* src, int idx)
@@ -3602,21 +3638,29 @@ return_long(SlotInfo* dst)
 }
 #endif
 
-#if defined(HAVE_return_float)
 void
 return_float(SlotInfo* dst)
 {
+#if defined(HAVE_return_float)
 	slot_slot_slot(dst, 0, 0, HAVE_return_float, Tnull);
-}
+#elif defined(HAVE_NO_FLOATING_POINT)
+	return_int(dst);
+#else
+	ABORT();
 #endif
+}
 
-#if defined(HAVE_return_double)
 void
 return_double(SlotInfo* dst)
 {
+#if defined(HAVE_return_double)
 	lslot_lslot_lslot(dst, 0, 0, HAVE_return_double, Tnull);
-}
+#elif defined(HAVE_NO_FLOATING_POINT)
+	return_long(dst);
+#else
+	ABORT();
 #endif
+}
 
 #if defined(HAVE_returnarg_int)
 void
@@ -3642,22 +3686,29 @@ returnarg_long(SlotInfo* src)
 }
 #endif
 
-#if defined(HAVE_returnarg_float)
 void
 returnarg_float(SlotInfo* src)
 {
+#if defined(HAVE_returnarg_float)
 	slot_slot_slot(0, 0, src, HAVE_returnarg_float, Tcopy);
-}
+#elif defined(HAVE_NO_FLOATING_POINT)
+	returnarg_int(src);
+#else
+	ABORT();
 #endif
+}
 
-#if defined(HAVE_returnarg_double)
 void
 returnarg_double(SlotInfo* src)
 {
+#if defined(HAVE_returnarg_double)
 	lslot_lslot_lslot(0, 0, src, HAVE_returnarg_double, Tcopy);
-}
+#elif defined(HAVE_NO_FLOATING_POINT)
+	returnarg_long(src);
+#else
+	ABORT();
 #endif
-
+}
 
 /* ----------------------------------------------------------------------- */
 /* Labels.								   */
@@ -4189,7 +4240,7 @@ cvt_int_short(SlotInfo* dst, SlotInfo* src)
 /*									   */
 
 void
-breakpoint()
+softcall_breakpoint()
 {
 	ABORT();
 }
@@ -4448,7 +4499,7 @@ check_null(int x, SlotInfo* obj, int y)
 void
 check_div(int x, SlotInfo* obj, int y)
 {
-#if defined(CREATE_NULLPOINTER_CHECKS)
+#if defined(CREATE_DIVZERO_CHECKS)
 #if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
 	if (!canCatch(ANY)) {
 		cbranch_int_const_eq(obj, 0, newFakeCall(soft_divzero, pc));
@@ -4473,7 +4524,9 @@ check_div(int x, SlotInfo* obj, int y)
 void
 check_div_long(int x, SlotInfo* obj, int y)
 {
-#if defined(CREATE_NULLPOINTER_CHECKS)
+#if defined(CREATE_DIVZERO_CHECKS)
+#if 0
+	THE CODE BELOW DOES NOT WORK - !!! FIX ME !!!
 #if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
 	if (!canCatch(ANY)) {
 		cbranch_int_const_eq(LSLOT(obj), 0, newFakeCall(soft_divzero, pc));
@@ -4481,10 +4534,13 @@ check_div_long(int x, SlotInfo* obj, int y)
 	}
 	else
 #endif
+#endif
 	{
+		end_sub_block();
 		cbranch_int_const_ne(LSLOT(obj), 0, reference_label(x, y+0));
 		cbranch_int_const_ne(HSLOT(obj), 0, reference_label(x, y+1));
 		softcall_divzero();
+		start_sub_block();
 		set_label(x, y+1);
 		set_label(x, y+0);
 	}
@@ -4763,9 +4819,7 @@ softcall_checkcast(SlotInfo* objw, SlotInfo* objr, Hjava_lang_Class* class)
 	call_soft(soft_checkcast);
 	popargs();
 	end_func_sync();
-	if (objw != objr) {
-		move_ref(objw, objr);
-	}
+	return_ref(objw);
 }
 
 void
@@ -4790,9 +4844,6 @@ softcall_instanceof(SlotInfo* dst, SlotInfo* obj, Hjava_lang_Class* class)
 void
 softcall_initialise_class(Hjava_lang_Class* c)
 {
-#if 0 /* Custom edition */
-	if (c != 0 && (c->sdata == 0 || c->sdata->state != CSTATE_COMPLETE)) {
-#endif
 	if (c != 0 && c->state != CSTATE_COMPLETE) {
 		begin_func_sync();
 		pusharg_class_const(c, 0);
@@ -4874,9 +4925,13 @@ softcall_trace(Method* meth)
 }
 
 #if defined(GC_INCREMENTAL)
+#if defined(GC_INCREMENTAL)
 void
-softcall_addreference(SlotInfo* from, SlotInfo* to)
+softcall_writeref(SlotInfo* from, SlotInfo* to)
 {
+	end_sub_block();
+
+	cbranch_int_const_eq(to, 0, reference_label(1, 1));
 	begin_func_sync();
 #if defined(PUSHARG_FORWARDS)
 	pusharg_ref(from, 0);
@@ -4885,14 +4940,20 @@ softcall_addreference(SlotInfo* from, SlotInfo* to)
 	pusharg_ref(to, 1);
 	pusharg_ref(from, 0);
 #endif
-	call_soft(soft_addreference);
+	call_soft(gcWriteRef);
 	popargs();
 	end_func_sync();
+
+	start_sub_block();
+        set_label(1, 1);
 }
 
 void
-softcall_addreference_static(void* from, SlotInfo* to)
+softcall_writeref_static(void* from, SlotInfo* to)
 {
+	end_sub_block();
+	cbranch_int_const_eq(to, 0, reference_label(1, 1));
+
 	begin_func_sync();
 #if defined(PUSHARG_FORWARDS)
 	pusharg_ref_const(from, 0);
@@ -4901,10 +4962,77 @@ softcall_addreference_static(void* from, SlotInfo* to)
 	pusharg_ref(to, 1);
 	pusharg_ref_const(from, 0);
 #endif
-	call_soft(soft_addreference);
+	call_soft(gcWriteRef);
 	popargs();
 	end_func_sync();
+
+	start_sub_block();
+        set_label(1, 1);
 }
+
+#else
+/* Smarter write barriers to save calls.
+ * Benchmarking suggests this may not be that useful.
+ */
+void
+softcall_writeref(SlotInfo* from, SlotInfo* to)
+{
+	SlotInfo* tmp1;
+
+	end_sub_block();
+	cbranch_int_const_eq(to, 0, reference_label(1, 2));
+	slot_alloctmp(tmp1);
+	load_offset_int(tmp1, from, object_gc_color);
+	cbranch_int_const_ne(tmp1, COLOR_BLACK, reference_label(1, 1));
+        slot_freetmp(tmp1);
+
+	begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
+	pusharg_ref(from, 0);
+	pusharg_ref(to, 1);
+#else
+	pusharg_ref(to, 1);
+	pusharg_ref(from, 0);
+#endif
+	call_soft(gcWriteRef);
+	popargs();
+	end_func_sync();
+
+	start_sub_block();
+        set_label(1, 1);
+	set_label(1, 2);
+}
+
+void
+softcall_writeref_static(void* from, SlotInfo* to)
+{
+	SlotInfo* tmp1,*tmp2;
+
+	slot_alloctmp(tmp1);
+
+	end_sub_block();
+	cbranch_int_const_eq(to, 0, reference_label(1, 2));
+	load_addr_int(tmp1, (void*)((uintp)from + object_gc_color));
+	cbranch_int_const_ne(tmp1, COLOR_BLACK, reference_label(1, 1));
+        slot_freetmp(tmp1);
+
+	begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
+	pusharg_ref_const(from, 0);
+	pusharg_ref(to, 1);
+#else
+	pusharg_ref(to, 1);
+	pusharg_ref_const(from, 0);
+#endif
+	call_soft(gcWriteRef);
+	popargs();
+	end_func_sync();
+
+	start_sub_block();
+        set_label(1, 1);
+	set_label(1, 2);
+}
+#endif
 #endif
 
 #if defined(HAVE_get_arg_ptr)

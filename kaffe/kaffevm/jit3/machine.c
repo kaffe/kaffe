@@ -808,6 +808,7 @@ bindSlotToGlobal(int lcl, int r, int type)
 {
 	kregs* reg;
 	SlotData* dslot;
+	int gtype;
 
 	reg = &reginfo[r];
 	dslot = localinfo[lcl].slot;
@@ -818,19 +819,19 @@ bindSlotToGlobal(int lcl, int r, int type)
 	reg->slot = dslot;
 	dslot->regno = r;
 
+	gtype = GL_ISGLOBAL;
+
 	/* If this is an argument then pre-load */
 	if (lcl < maxArgs) {
-		dslot->global = GL_PRELOAD;
-	}
-	else {
-		dslot->global = GL_NOLOAD;
+		gtype |= GL_PRELOAD;
 	}
 	/* If this slot is never written note that the global is
 	 * read only.
 	 */
 	if (codeInfo->localuse[lcl].write == -1) {
-		dslot->global |= GL_RONLY;
+		gtype |= GL_RONLY;
 	}
+	setGlobal(dslot, gtype);
 }
 
 /*

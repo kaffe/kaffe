@@ -368,6 +368,12 @@ define_insn(reload_double, freloadl_Rxx)
 	debug(("fldl %d(ebp)\n", o));
 }
 
+void
+movereg_RR(int toreg, int fromreg)
+{
+	do_move_int(toreg, fromreg);
+}
+
 /* --------------------------------------------------------------------- */
 
 define_insn(move_int_const, move_RxC)

@@ -35,10 +35,11 @@ initSeq(void)
 sequence*
 nextSeq(void)
 {
-	int i;
-	sequence* ret = currSeq;
+	sequence* ret;
 
+	ret = currSeq;
 	if (ret == 0) {
+		int i;
 		/* Allocate chunk of sequence elements */
 		ret = jmalloc(ALLOCSEQNR * sizeof(sequence));
 

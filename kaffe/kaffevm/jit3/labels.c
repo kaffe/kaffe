@@ -23,9 +23,9 @@
 #include "support.h"
 #include "machine.h"
 
-label* firstLabel;
-label* lastLabel;
-label* currLabel;
+static label* firstLabel;
+static label* lastLabel;
+static label* currLabel;
 
 /* Custom edition */
 #define	kprintf	kaffe_dprintf
@@ -145,8 +145,9 @@ label*
 newLabel(void)
 {
 	int i;
-	label* ret = currLabel;
+	label* ret;
 
+	ret = currLabel;
 	if (ret == 0) {
 		/* Allocate chunk of label elements */
 		ret = gc_calloc_fixed(ALLOCLABELNR, sizeof(label));

@@ -84,6 +84,7 @@
 #define field_name()		(finfo.name)
 #define field_classname()	(finfo.cname)
 #define field_sig()		(finfo.signature)
+#define field_static_data()	((finfo.class)->sdata)
 
 /* -------------------------------------------------------------------- */
 /* Classes */
@@ -115,8 +116,8 @@
 
 /* Provide write barrier support for incremental GC */
 #if defined(GC_INCREMENTAL)
-#define	SOFT_ADDREFERENCE(_f, _t)	 softcall_addreference(_f, _t)
-#define	SOFT_ADDREFERENCE_STATIC(_f, _t) softcall_addreference_static(_f, _t)
+#define	SOFT_ADDREFERENCE(_f, _t)	 softcall_writeref(_f, _t)
+#define	SOFT_ADDREFERENCE_STATIC(_f, _t) softcall_writeref_static(_f, _t)
 #else
 #define	SOFT_ADDREFERENCE(_f, _t)
 #define	SOFT_ADDREFERENCE_STATIC(_f, _t)

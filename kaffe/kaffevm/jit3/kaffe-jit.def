@@ -2840,5 +2840,5 @@ define_insn(JSR_W)
 
 define_insn(BREAKPOINT)
 {
-	breakpoint();
+	softcall_breakpoint();
 }
