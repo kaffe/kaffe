@@ -60,6 +60,13 @@ extern uintp Kaffe_JNI_eend;
 extern void Kaffe_JNIExceptionHandler(void);
 
 extern void Tspinoffall(void);
+/*
+ * say how many bytes need to be left on the stack when entering a function
+ * call.  When throwing a StackOverflowException, this variable is set to
+ * STACK_LOW to have enough space to create the StackOverflowError --- if
+ * the error is caught, we set it back to STACK_HIGH.
+ */
+int needOnStack;
 
 /*
  * Throw an internal exception.
@@ -71,6 +78,27 @@ throwException(Hjava_lang_Object* eobj)
 		unhand((Hjava_lang_Throwable*)eobj)->backtrace = buildStackTrace(0);
 	}
 	throwExternalException(eobj);
+}
+
+/*
+ * Create and throw an exception resulting from an error during VM processing.
+ */
+void 
+throwError(errorInfo* einfo)
+{
+	/* special case this, message is actually a throwable here */
+	if (!strcmp(einfo->classname, 
+		"java.lang.ExceptionInInitializerError")) 
+	{
+		throwException(
+			execute_java_constructor(einfo->classname, 
+			    0, "(Ljava/lang/Throwable;)V", einfo->mess));
+	} else {
+		throwException(
+			execute_java_constructor(einfo->classname, 
+			    0, "(Ljava/lang/String;)V",
+			    makeJavaString(einfo->mess, strlen(einfo->mess))));
+	}
 }
 
 /*
@@ -162,6 +190,7 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 
 			/* If handler found, call it */
 			if (res == true) {
+				needOnStack = STACK_HIGH;
 				frame->pc = einfo.handler;
 				longjmp(frame->jbuf, 1);
 			}
@@ -226,17 +255,12 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 	 */
 	if (strcmp(cname, THREADDEATHCLASS) == 0) {
 		exitThread();
+	} else {
+		fprintf(stderr, 
+			"It's not ThreadDeath, and there's no exception "
+			"handler.\n This is something I cannot handle.\n");
+		ABORT();
 	}
-
-	/* If all else fails we call the the uncaught exception method
-	 * on this thread's group.  Note we must set a flag so we don't do
-	 * this again while in the handler.
-	 */
-	if (unhand(ct)->dying == false) {
-		unhand(ct)->dying = true;
-		do_execute_java_method(unhand((*Kaffe_ThreadInterface.currentJava)())->group, "uncaughtException", "(Ljava/lang/Thread;Ljava/lang/Throwable;)V", 0, 0, (*Kaffe_ThreadInterface.currentJava)(), eobj);
-	}
-	exitThread();
 }
 
 /*

@@ -133,7 +133,8 @@ static void finishJNIcall(void);
 
 void Kaffe_JNIExceptionHandler(void);
 jint Kaffe_GetVersion(JNIEnv*);
-
+jclass Kaffe_FindClass(JNIEnv*, const char*);
+jint Kaffe_ThrowNew(JNIEnv*, jclass, const char*);
 
 jint
 JNI_GetDefaultJavaVMInitArgs(JavaVMInitArgs* args)
@@ -162,14 +163,14 @@ JNI_CreateJavaVM(JavaVM** vm, JNIEnv** env, JavaVMInitArgs* args)
 	Kaffe_JavaVMArgs[0] = *args;
 	initialiseKaffe();
 
+	/* Setup the JNI Exception handler */
+	Kaffe_JNI_estart = (uintp)&Kaffe_GetVersion; /* First routine */
+	Kaffe_JNI_eend = (uintp)&Kaffe_JNIExceptionHandler; /* Last routine */
+
 	/* Setup JNI for main thread */
 #if defined(NEED_JNIREFS)
 	unhand(getCurrentThread())->jnireferences = gc_malloc(sizeof(jnirefs), &gcNormal);
 #endif
-
-	/* Setup the JNI Exception handler */
-	Kaffe_JNI_estart = (uintp)&Kaffe_GetVersion; /* First routine */
-	Kaffe_JNI_eend = (uintp)&Kaffe_JNIExceptionHandler; /* Last routine */
 
 	/* Return the VM and JNI we're using */
 	*vm = &Kaffe_JavaVM;
@@ -193,22 +194,35 @@ Kaffe_GetVersion(JNIEnv* env)
 	return ((java_major_version << 16) | java_minor_version);
 }
 
+/*
+ * take a VM error and throw it as JNI error 
+ */
+static void
+postError(JNIEnv* env, errorInfo* info)
+{
+	jclass errclass = Kaffe_FindClass(env, info->classname);
+	if (errclass != 0) {
+		Kaffe_ThrowNew(env, errclass, info->mess);
+	}
+}
+
 jclass
 Kaffe_DefineClass(JNIEnv* env, jobject loader, const jbyte* buf, jsize len)
 {
 	Hjava_lang_Class* cls;
 	classFile hand;
-
-	BEGIN_EXCEPTION_HANDLING(0);
+	errorInfo info;
 
 	hand.base = (void*)buf;
 	hand.buf = hand.base;
 	hand.size = len;
 
 	cls = newClass();
-	cls = readClass(cls, &hand, loader);
+	cls = readClass(cls, &hand, loader, &info);
+	if (cls == 0) {
+		postError(env, &info);
+	}
 
-	END_EXCEPTION_HANDLING();
 	return (cls);
 }
 
@@ -216,19 +230,24 @@ jclass
 Kaffe_FindClass(JNIEnv* env, const char* name)
 {
 	Hjava_lang_Class* cls;
-	char buf[1024];
-
-	BEGIN_EXCEPTION_HANDLING(0);
+	char buf[1024];		/* FIXME: UNCHECKED BUFFER! */
+	errorInfo info;
 
 	classname2pathname((char*)name, buf);
 
 	if (buf[0] == '[') {
-		cls = lookupArray(getClassFromSignature(&buf[1], NULL));
+		cls = getClassFromSignature(&buf[1], NULL, &info);
+		if (cls != 0) {
+			cls = lookupArray(cls);
+		}
 	}
 	else {
-		cls = lookupClass(buf);
+		cls = lookupClass(buf, &info);
 	}
-	END_EXCEPTION_HANDLING();
+
+	if (cls == 0) {
+		postError(env, &info);
+	}
 	return (cls);
 }
 
@@ -473,15 +492,18 @@ jmethodID
 Kaffe_GetMethodID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 {
 	Method* meth;
+	errorInfo info;
 
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	meth = lookupClassMethod((Hjava_lang_Class*)cls, (char*)name, (char*)sig);
-	if (meth == 0 || METHOD_IS_STATIC(meth)) {
-		throwException(NoSuchMethodError((char*)name));
+	meth = lookupClassMethod((Hjava_lang_Class*)cls, (char*)name, (char*)sig, &info);
+	if (meth == 0) {
+		postError(env, &info);
+	} 
+	else if (METHOD_IS_STATIC(meth)) {
+		SET_LANG_EXCEPTION_MESSAGE(&info, NoSuchMethodError, (char*)name)
+		postError(env, &info);
+		meth = 0;
 	}
 
-	END_EXCEPTION_HANDLING();
 	return (meth);
 }
 
@@ -1540,15 +1562,13 @@ jfieldID
 Kaffe_GetFieldID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 {
 	Field* fld;
+	errorInfo info;
 
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	fld = lookupClassField((Hjava_lang_Class*)cls, makeUtf8Const((char*)name, -1), false);
+	fld = lookupClassField((Hjava_lang_Class*)cls, makeUtf8Const((char*)name, -1), false, &info);
 	if (fld == NULL) {
-		throwException(NoSuchFieldError((char*)name));
+		postError(env, &info);
 	}
 
-	END_EXCEPTION_HANDLING();
 	return (fld);
 }
 
@@ -1757,15 +1777,17 @@ jmethodID
 Kaffe_GetStaticMethodID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 {
 	Method* meth;
+	errorInfo info;
 
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	meth = lookupClassMethod((Hjava_lang_Class*)cls, (char*)name, (char*)sig);
-	if (meth == 0 || !METHOD_IS_STATIC(meth)) {
-		throwException(NoSuchMethodError(((char*)name)));
+	meth = lookupClassMethod((Hjava_lang_Class*)cls, (char*)name, (char*)sig, &info);
+	if (meth == 0) {
+		postError(env, &info);
+	} else if (!METHOD_IS_STATIC(meth)) {
+		SET_LANG_EXCEPTION_MESSAGE(&info, NoSuchMethodError, (char*)name)
+		postError(env, &info);
+		meth = 0;
 	}
 
-	END_EXCEPTION_HANDLING();
 	return (meth);
 }
 
@@ -2290,15 +2312,13 @@ jfieldID
 Kaffe_GetStaticFieldID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 {
 	Field* fld;
+	errorInfo info;
 
-	BEGIN_EXCEPTION_HANDLING(0);
-
-	fld = lookupClassField((Hjava_lang_Class*)cls, makeUtf8Const((char*)name, -1), true);
+	fld = lookupClassField((Hjava_lang_Class*)cls, makeUtf8Const((char*)name, -1), true, &info);
 	if (fld == NULL) {
-		throwException(NoSuchFieldError((char*)name));
+		postError(env, &info);
 	}
 
-	END_EXCEPTION_HANDLING();
 	return (fld);
 }
 

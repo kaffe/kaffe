@@ -1868,7 +1868,7 @@ define_insn(RETURN)
  * This macro initialises the static data associated with a class.
  */
 #define	INIT_STATIC_CLASS(c)				\
-	if (c != 0 && c->state != CSTATE_OK) {		\
+	if (c != 0 && c->state != CSTATE_COMPLETE /* ??? is that right ??? */) {	\
 		softcall_initialise_class(c);		\
 	}
 

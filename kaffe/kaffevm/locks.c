@@ -25,7 +25,6 @@
  * It is wrong to call (*Kaffe_ThreadInterface.currentJava)() anywhere in
  * this file since it may not be initialized. 
  */
-#define THREAD_NATIVE()		(*Kaffe_ThreadInterface.currentNative)()
 
 /* Note:
  * USE_LOCK_CACHE can be defined to if we are prepared to keep an extra
@@ -39,6 +38,46 @@ static struct lockList {
 	void*		lock;
 	iLock*		head;
 } lockTable[MAXLOCK];
+
+/* a list in which we keep all static locks */
+static iLock *staticLocks;
+
+#ifdef DEBUG
+static void
+dumpLock(iLock *lk)
+{
+	if (lk->ref == -1) {
+		dprintf("%s ", lk->address);
+	} else {
+		dprintf("lk@ad=%p ", lk->address);
+	}
+	dprintf(".hd=%p .ct=%d .mx=%p .cv=%p\n",
+		lk->holder, lk->count, lk->mux, lk->cv);
+}
+
+/*
+ * dump all locks
+ */
+void
+dumpLocks(void)
+{
+	int i;
+	iLock* lock;
+
+	dprintf("dumping dynamic locks:\n");
+	for (i = 0; i < MAXLOCK; i++) {
+		for (lock = lockTable[i].head; lock; lock = lock->next) {
+			if (lock->ref)
+				dumpLock(lock);
+		}
+	}
+
+	dprintf("dumping static locks:\n");
+	for (lock = staticLocks; lock; lock = lock->next) {
+		dumpLock(lock);
+	}
+}
+#endif
 
 /*
  * Retrieve a machine specific (possibly) locking structure associated with
@@ -136,8 +175,12 @@ DBG(VMLOCKS,	dprintf("Freeing lock for addr=0x%x\n", lk->address);	)
  * Initialise a new lock.
  */
 void
-__initLock(iLock* lk)
+__initLock(iLock* lk, const char *lkname)
 {
+	lk->ref = -1;
+	lk->address = (void*)lkname;
+	lk->next = staticLocks;
+	staticLocks = lk;
 	(*Kaffe_LockInterface.init)(lk);
 }
 
@@ -153,14 +196,30 @@ DBG(VMLOCKS,	dprintf("Lock 0x%x on iLock=0x%x\n", THREAD_NATIVE(), lk);	    )
 	/*
 	 * Note: simply testing 'holder == currentNative' is not enough.
 	 * If a thread systems uses the same value to which we initialized
-	 * holder as a thread id (null), we might be fouled into thinking 
+	 * holder as a thread id (null), we might be fooled into thinking 
 	 * we already hold the lock, when in fact we don't.
 	 */
 	if (lk->count > 0 && lk->holder == (*Kaffe_ThreadInterface.currentNative)()) {
 		lk->count++;
 	}
 	else {
+#ifdef DEBUG
+		int trace = 0;
+#endif
+DBG(LOCKCONTENTION,
+		if (lk->count != 0) {
+		    dprintf("%p waiting for ", THREAD_NATIVE());
+		    dumpLock(lk);
+		    trace = 1;
+		}
+    )
 		(*Kaffe_LockInterface.lock)(lk);
+DBG(LOCKCONTENTION,
+		if (trace) {
+		    dprintf("%p got ", THREAD_NATIVE());
+		    dumpLock(lk);
+		}
+    )
 		lk->count = 1;
 	}
 }

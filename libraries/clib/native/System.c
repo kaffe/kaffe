@@ -177,7 +177,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	setProperty(p, "java.version", kaffe_version);
 	setProperty(p, "java.vendor", kaffe_vendor);
 	setProperty(p, "java.vendor.url", kaffe_vendor_url);
-	setProperty(p, "java.compiler", "kaffe.jit");
+	setProperty(p, "java.compiler", getEngine());
 
 	jhome = getenv(KAFFEHOME);
 	if (jhome == 0) {
@@ -241,6 +241,7 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	setProperty(p, "user.timezone", "PST");
 
 	setProperty(p, "file.encoding.pkg", "kaffe.io");
+	setProperty(p, "file.encoding", "Default");
 
 	/* Now process user defined properties */
 	for (prop = userProperties; prop != 0; prop = prop->next) {

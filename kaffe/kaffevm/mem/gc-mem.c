@@ -19,6 +19,7 @@
 #include "locks.h"
 #include "gc-mem.h"
 #include "gc.h"
+#include "gc-block.h"
 #include "jni.h"
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -74,13 +75,17 @@ static iLock gc_lock;
 size_t gc_heap_total;
 size_t gc_heap_allocation_size;
 size_t gc_heap_limit;
+
+#ifndef gc_pgsize
 size_t gc_pgsize;
-gc_block* gc_objecthash[GC_OBJECT_HASHSIZE];
+int gc_pgbits;
+#endif
+
+#ifdef DEBUG
+int gc_system_alloc_cnt;
+#endif
 
 extern struct Hjava_lang_Thread* garbageman;
-
-static void* pagealloc(size_t);
-extern void throwOutOfMemory(void);
 
 #ifdef DEBUG
 /*
@@ -105,7 +110,15 @@ static
 void
 gc_heap_initialise(void)
 {
+#ifndef gc_pgsize
 	gc_pgsize = getpagesize();
+	for (gc_pgbits = 0;
+	     (1 << gc_pgbits) != gc_pgsize && gc_pgbits < 64;
+	     gc_pgbits++)
+		;
+	assert(gc_pgbits < 64);
+#endif
+
 	gc_heap_allocation_size = Kaffe_JavaVMArgs[0].allocHeapSize;
 	gc_heap_limit = Kaffe_JavaVMArgs[0].maxHeapSize;
 
@@ -124,7 +137,7 @@ gc_heap_initialise(void)
 	 * of powers of two
 	 */
 #define	OBJSIZE(NR) \
-	((gc_pgsize-sizeof(gc_block)-ROUNDUPALIGN(1)-(NR*(2+sizeof(void*))))/NR)
+	((gc_pgsize-GCBLOCK_OVH-ROUNDUPALIGN(1)-(NR*(2+sizeof(void*))))/NR)
 
 	/* For a given number of tiles in a block, work out the size of
 	 * the allocatable units which'll fit in them and build a translation
@@ -204,6 +217,8 @@ DBG(SLACKANAL,
 
 	/* Round 'gc_heap_allocation_size' up to pagesize */
 	gc_heap_allocation_size = ROUNDUPPAGESIZE(gc_heap_allocation_size);
+
+	gc_block_init();
 }
 
 /*
@@ -272,13 +287,12 @@ DBG(GCALLOC,		dprintf("gc_heap_malloc: small block %d at %p\n", sz, *mptr);)
 
 		/* Unlink free one and return it */
 		mem = blk->free;
-#if defined(GC_DEBUG)
-		assert(blk->magic == GC_MAGIC);
-		assert((uintp)mem >= (uintp)blk &&
-			(uintp)mem < (uintp)blk + gc_pgsize);
-		assert(mem->next == 0 || ((uintp)mem->next >= (uintp)blk &&
-			(uintp)mem->next < (uintp)blk + gc_pgsize));
-#endif
+
+		DBG(GCDIAG,
+		    assert(blk->magic == GC_MAGIC);
+		    ASSERT_ONBLOCK(mem, blk);
+		    if (mem->next) ASSERT_ONBLOCK(mem->next, blk));
+
 		blk->free = mem->next;
 
 		GC_SET_STATE(blk, GCMEM2IDX(blk, mem), GC_STATE_NORMAL);
@@ -296,7 +310,7 @@ DBG(GCALLOC,		dprintf("gc_heap_malloc: small block %d at %p\n", sz, *mptr);)
 		nsz = sz;
 		blk = gc_large_block(nsz);
 		if (blk == 0) {
-			nsz = nsz + sizeof(gc_block) + sizeof(gcFuncs*) + ROUNDUPALIGN(1);
+			nsz = nsz + GCBLOCK_OVH + sizeof(gcFuncs*) + ROUNDUPALIGN(1);
 			nsz = ROUNDUPPAGESIZE(nsz);
 			goto nospace;
 		}
@@ -348,15 +362,11 @@ DBG(GCSTAT,
 		blk = gc_system_alloc(nsz);
 		if (blk != 0) {
 			/* Place block into the freelist for subsequent use */
-#if defined(GC_DEBUG)
-			blk->magic = GC_MAGIC;
-#endif
+			DBG(GCDIAG, blk->magic = GC_MAGIC);
 			blk->size = nsz;
 
 			/* Attach block to object hash */
-			lnr = GC_OBJECT_HASHIDX(blk);
-			blk->next = gc_objecthash[lnr];
-			gc_objecthash[lnr] = blk;
+			gc_block_add(blk);
 
 			/* Free block into the system */
 			gc_primitive_free(blk);
@@ -401,10 +411,11 @@ gc_heap_free(void* mem)
 
 	info = GCMEM2BLOCK(mem);
 	idx = GCMEM2IDX(info, mem);
-#if defined(GC_DEBUG)
-	assert(info->magic == GC_MAGIC);
-	assert(GC_GET_COLOUR(info, idx) != GC_COLOUR_FREE);
-#endif
+
+	DBG(GCDIAG,
+	    assert(info->magic == GC_MAGIC);
+	    assert(GC_GET_COLOUR(info, idx) != GC_COLOUR_FREE));
+
 	GC_SET_COLOUR(info, idx, GC_COLOUR_FREE);
 
 DBG(GCFREE,
@@ -420,20 +431,16 @@ DBG(GCFREE,
 			freelist[lnr].list = info;
 		}
 		info->avail++;
-#if defined(GC_DEBUG)
-		/* write pattern in memory to see when live objects were
-		 * freed - Note that (f4f4f4f4 == -185273100)
-		 */
-		memset(mem, 0xf4, info->size);
-#endif
+		DBG(GCDIAG,
+		    /* write pattern in memory to see when live objects were
+		     * freed - Note that (f4f4f4f4 == -185273100)
+		     */
+		    memset(mem, 0xf4, info->size));
 		obj = GCMEM2FREE(mem);
 		obj->next = info->free;
 		info->free = obj;
 
-#if defined(GC_DEBUG)
-		assert((uintp)obj >= (uintp)info &&
-			(uintp)obj < (uintp)info + gc_pgsize);
-#endif
+		ASSERT_ONBLOCK(obj, info);
 
 		/* If we free all sub-blocks, free the block */
 		assert(info->avail <= info->nr);
@@ -453,7 +460,7 @@ DBG(GCFREE,
 	}
 	else {
 		/* Calculate true size of block */
-		msz = info->size + sizeof(gc_block) + ROUNDUPALIGN(1);
+		msz = info->size + GCBLOCK_OVH + ROUNDUPALIGN(1);
 		msz = ROUNDUPPAGESIZE(msz);
 		info->size = msz;
 		gc_primitive_free(info);
@@ -480,22 +487,19 @@ gc_small_block(size_t sz)
 	}
 
 	/* Calculate number of objects in this block */
-	nr = (gc_pgsize-sizeof(gc_block)-ROUNDUPALIGN(1))/(sz+2);
+	nr = (gc_pgsize-GCBLOCK_OVH-ROUNDUPALIGN(1))/(sz+2);
 
 	/* Setup the meta-data for the block */
-#if defined(GC_DEBUG)
-	info->magic = GC_MAGIC;
-#endif
+	DBG(GCDIAG, info->magic = GC_MAGIC);
+
 	info->size = sz;
 	info->nr = nr;
 	info->avail = nr;
-	info->funcs = (uint8*)(info + 1);
+	info->funcs = (uint8*)GCBLOCK2BASE(info);
 	info->state = (uint8*)(info->funcs + nr);
 	info->data = (uint8*)ROUNDUPALIGN(info->state + nr);
 
-#if defined(GC_DEBUG)
-	memset(info->data, 0, sz * nr);
-#endif
+	DBG(GCDIAG, memset(info->data, 0, sz * nr));
 
 	/* Build the objects into a free list */
 	for (i = nr-1; i >= 0; i--) {
@@ -524,7 +528,7 @@ gc_large_block(size_t sz)
 	size_t msz;
 
 	/* Add in management overhead */
-	msz = sz+sizeof(gc_block)+2+ROUNDUPALIGN(1);
+	msz = sz+GCBLOCK_OVH+2+ROUNDUPALIGN(1);
 	/* Round size up to a number of pages */
 	msz = ROUNDUPPAGESIZE(msz);
 
@@ -534,20 +538,17 @@ gc_large_block(size_t sz)
 	}
 
 	/* Setup the meta-data for the block */
-#if defined(GC_DEBUG)
-	info->magic = GC_MAGIC;
-#endif
+	DBG(GCDIAG, info->magic = GC_MAGIC);
+
 	info->size = sz;
 	info->nr = 1;
 	info->avail = 1;
-	info->funcs = (uint8*)(info + 1);
+	info->funcs = (uint8*)GCBLOCK2BASE(info);
 	info->state = (uint8*)(info->funcs + 1);
 	info->data = (uint8*)ROUNDUPALIGN(info->state + 1);
 	info->free = 0;
 
-#if defined(GC_DEBUG)
-	memset(info->data, 0, sz);
-#endif
+	DBG(GCDIAG, memset(info->data, 0, sz));
 
 	GCBLOCK2FREE(info, 0)->next = 0;
 	GC_SET_COLOUR(info, 0, GC_COLOUR_FREE);
@@ -566,7 +567,6 @@ gc_primitive_alloc(size_t sz)
 {
 	gc_block* ptr;
 	gc_block** pptr;
-	int hidx;
 
 	assert(sz % gc_pgsize == 0);
 
@@ -583,17 +583,15 @@ gc_primitive_alloc(size_t sz)
 				ptr->size = sz;
 				nptr = GCBLOCKEND(ptr);
 				nptr->size = left;
-#if defined(GC_DEBUG)
-				nptr->magic = GC_MAGIC;
-#endif
+
+				DBG(GCDIAG, nptr->magic = GC_MAGIC);
+
 				nptr->next = ptr->next;
 				ptr->next = nptr;
 			}
 			*pptr = ptr->next;
 DBG(GCPRIM,		dprintf("gc_primitive_alloc: %d bytes from freelist @ %p\n", ptr->size, ptr); )
-			hidx = GC_OBJECT_HASHIDX(ptr);
-			ptr->next = gc_objecthash[hidx];
-			gc_objecthash[hidx] = ptr;
+			gc_block_add(ptr);
 			return (ptr);
 		}
 	}
@@ -611,25 +609,11 @@ gc_primitive_free(gc_block* mem)
 {
 	gc_block* lptr;
 	gc_block* nptr;
-	int hidx;
 
 	assert(mem->size % gc_pgsize == 0);
 
 	/* Remove from object hash */
-	hidx = GC_OBJECT_HASHIDX(mem);
-	if (gc_objecthash[hidx] == mem) {
-		gc_objecthash[hidx] = mem->next;
-	}
-	else {
-		for (lptr = gc_objecthash[hidx]; lptr->next != 0; lptr = lptr->next) {
-			if (lptr->next == mem) {
-				lptr->next = mem->next;
-				goto found;
-			}
-		}
-		assert("Failed to find freeing block in object hash" == 0);
-		found:;
-	}
+	gc_block_rm(mem);
 	mem->next = 0;
 
 	if(mem < gc_prim_freelist || gc_prim_freelist == 0) {
@@ -721,68 +705,14 @@ gc_system_alloc(size_t sz)
 		return (0);
 	}
 	gc_heap_total += sz;
+#ifdef DEBUG
+	gc_system_alloc_cnt++;
+#endif
 
-	mem = pagealloc(sz);
+	mem = gc_block_alloc(sz);
 
 DBG(GCSYSALLOC,
 	dprintf("gc_system_alloc: %d byte at %p\n", sz, mem);		)
 
 	return (mem);
-}
-
-/* --------------------------------------------------------------------- */
-
-void*
-pagealloc(size_t size)
-{
-	void* ptr;
-
-#define	CHECK_OUT_OF_MEMORY(P)	if ((P) == 0) throwOutOfMemory();
-
-#if defined(HAVE_SBRK)
-
-	/* Our primary choice for basic memory allocation is sbrk() which
-	 * should avoid any unsee space overheads.
-	 */
-	for (;;) {
-		int missed;
-		ptr = sbrk(size);
-		if (ptr == (void*)-1) {
-			ptr = 0;
-			break;
-		}
-		if ((uintp)ptr % gc_pgsize == 0) {
-			break;
-		}
-		missed = gc_pgsize - ((uintp)ptr % gc_pgsize);
-		sbrk(-size + missed);
-	}
-	CHECK_OUT_OF_MEMORY(ptr);
-
-#elif defined(HAVE_MEMALIGN)
-
-        ptr = memalign(gc_pgsize, size);
-	CHECK_OUT_OF_MEMORY(ptr);
-
-#elif defined(HAVE_VALLOC)
-
-        ptr = valloc(size);
-	CHECK_OUT_OF_MEMORY(ptr);
-
-#else
-
-	/* Fallback ...
-	 * Allocate memory using malloc and align by hand.
-	 */
-	size += gc_pgsize;
-#ifdef malloc
-#undef malloc
-#endif
-        ptr = malloc(size);
-	CHECK_OUT_OF_MEMORY(ptr);
-	ptr = (void*)((((uintp)ptr) + gc_pgsize - 1) & -gc_pgsize);
-
-#endif
-
-	return (ptr);
 }

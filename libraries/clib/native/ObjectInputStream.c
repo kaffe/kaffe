@@ -32,6 +32,7 @@ java_io_ObjectInputStream_loadClass0(struct Hjava_io_ObjectInputStream* stream, 
 	Hjava_lang_ClassLoader* loader;
 	int i;
 	stackTraceInfo* info;
+	errorInfo einfo;
 
 	cstr = makeCString(str);
 	classname2pathname(cstr, cstr);
@@ -50,12 +51,15 @@ java_io_ObjectInputStream_loadClass0(struct Hjava_io_ObjectInputStream* stream, 
         }
 
 	if (cstr[0] == '[') {
-		clazz = loadArray(nm, loader);
+		clazz = loadArray(nm, loader, &einfo);
 	}
 	else {
-		clazz = loadClass(nm, loader);
+		clazz = loadClass(nm, loader, &einfo);
 	}
 
+	if (clazz == 0) {
+		throwError(&einfo);
+	}
 	return (clazz);
 }
 

@@ -20,6 +20,7 @@
 #include "access.h"
 #include "object.h"
 #include "constants.h"
+#include "errors.h"
 #include "classMethod.h"
 #include "baseClasses.h"
 #include "lookup.h"
@@ -28,7 +29,6 @@
 #include "exception.h"
 #include "support.h"
 #include "external.h"
-#include "errors.h"
 #include "gc.h"
 #include "jni.h"
 #include "md.h"
@@ -50,10 +50,12 @@ static iLock thread_start_lock;
 void
 initThreads(void)
 {
+	errorInfo info;
+
 	/* Get a handle on the thread and thread group classes */
-	ThreadClass = lookupClass(THREADCLASS);
+	ThreadClass = lookupClass(THREADCLASS, &info);
 	assert(ThreadClass != 0);
-	ThreadGroupClass = lookupClass(THREADGROUPCLASS);
+	ThreadGroupClass = lookupClass(THREADGROUPCLASS, &info);
 	assert(ThreadGroupClass != 0);
 
 	/* Create base group */
@@ -201,7 +203,11 @@ static
 void
 firstStartThread(void* arg)
 {
+	extern JNIEnv Kaffe_JNIEnv;
+	JNIEnv *env = &Kaffe_JNIEnv;
 	Hjava_lang_Thread* tid;
+	jmethodID runmethod;
+	jthrowable eobj;
 
 	/* 
 	 * Make sure the thread who created us returned from
@@ -215,10 +221,45 @@ firstStartThread(void* arg)
 
 DBG(VMTHREAD,	dprintf("firstStartThread %x\n", tid);		)
 
-	/* Find the run()V method and call it */
-	do_execute_java_method(tid, "run", "()V", 0, 0);
+	/*
+	 * We use JNI here to make sure the stack is unrolled when we get
+	 * into the uncaughtException handler.  Otherwise, we wouldn't be
+	 * able to handle StackOverflowError.
+	 */
 
-	exitThread();
+	/* Find the run()V method and call it */
+	runmethod = (*env)->GetMethodID(env, (*env)->GetObjectClass(env, tid),  
+					"run", "()V");
+	if (runmethod != 0) {
+		(*env)->CallVoidMethod(env, tid, runmethod);
+
+		/* note that since exception.c does not allow JNI to catch
+		 * ThreadDeath (for now!), we won't see ThreadDeath here.
+		 * That is, we must invoke the uncaughtException paper
+		 * if we see an exception here.
+		 */
+		eobj = (*env)->ExceptionOccurred(env);
+		(*env)->ExceptionClear(env);
+		if (eobj == 0) {
+			/* no exception, let this thread die silently. */
+			exitThread();
+		}
+	} else {
+		/* eobj will usually be NoSuchMethodError */
+		eobj = (*env)->ExceptionOccurred(env);
+	}
+
+	/* If all else fails we call the the uncaught exception method
+	 * on this thread's group.  Note we must set a flag so we 
+	 * don't do this again while in the handler.
+	 */
+	if (unhand(tid)->dying == false) {
+		unhand(tid)->dying = true;
+		do_execute_java_method(unhand(tid)->group, 
+			"uncaughtException", 
+			"(Ljava/lang/Thread;Ljava/lang/Throwable;)V",
+			 0, 0, tid, eobj);
+	}
 }
 
 /*

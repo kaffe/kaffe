@@ -12,6 +12,7 @@
 #ifndef __support_h
 #define	__support_h
 
+#include "config-std.h"
 #include <stdarg.h>
 
 /* For user defined properties */
@@ -33,6 +34,7 @@ extern nativeFunction* native_funcs;
 extern userProperty* userProperties;
 
 struct _methods;
+struct _errorInfo;
 
 /* 64 should put us on the safe side */
 #define	MAXMARGS		64
@@ -95,6 +97,7 @@ struct Hjava_lang_String;
 struct Hjava_lang_Class;
 
 extern void		setProperty(void*, char*, char*);
+extern char*		getEngine(void);
 extern void		classname2pathname(char*, char*);
 extern struct Hjava_lang_Object* makeJavaCharArray(char*, int);
 extern struct Hjava_lang_String* makeJavaString(char*, int);
@@ -113,8 +116,8 @@ extern void		addNativeMethod(char*, void*);
 
 extern void	callMethodA(struct _methods*, void*, void*, jvalue*, jvalue*);
 extern void	callMethodV(struct _methods*, void*, void*, va_list, jvalue*);
-extern struct _methods*	lookupClassMethod(struct Hjava_lang_Class*, char*, char*);
-extern struct _methods*	lookupObjectMethod(struct Hjava_lang_Object*, char*, char*);
+extern struct _methods*	lookupClassMethod(struct Hjava_lang_Class*, char*, char*, struct _errorInfo*);
+extern struct _methods*	lookupObjectMethod(struct Hjava_lang_Object*, char*, char*, struct _errorInfo*);
 
 struct _strconst;
 extern void SignalError(char *, char *) __NORETURN__;
@@ -146,5 +149,31 @@ extern int addClasspath(char*);
 	if (m[(n) / BITMAP_BPI] &  \
 		(1 << (BITMAP_BPI - 1 - (n) % BITMAP_BPI))) \
 	    dprintf("1"); else dprintf("0"); }
+
+/*
+ * Structures and prototypes for getrusage based execution timing.
+ */
+#if defined(TIMING)
+
+typedef struct _timespent timespent;
+
+struct _timespent {
+	char *name;
+	timespent *next;
+	int calls;
+	struct timeval total;
+	struct timeval current;
+};
+
+extern void startTiming(timespent *counter, char *name);
+extern void stopTiming(timespent *counter);
+#else
+/* We either can't or wont perform timing:  The first macro suppresses
+   unused variable warnings. */
+typedef char timespent;
+
+#define startTiming(C,N) (*(C) = 0)
+#define stopTiming(C)
+#endif
 
 #endif

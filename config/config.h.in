@@ -39,6 +39,9 @@
 /* Do we have sys/time.h */
 #undef	HAVE_SYS_TIME_H
 
+/* Can we also include time.h */
+#undef TIME_WITH_SYS_TIME_H
+
 /* Do we have sys/ioctl.h */
 #undef	HAVE_SYS_IOCTL_H
 
@@ -122,6 +125,9 @@
 
 /* Do we have mach-o/rld.h - a Machism */
 #undef	HAVE_MACH_O_RLD_H
+
+/* Do we have sys/resource.h */
+#undef HAVE_SYS_RESOURCE_H
 
 /* Do we have sys/stat.h */
 #undef	HAVE_SYS_STAT_H
@@ -295,6 +301,9 @@
 /* Do we have atexit */
 #undef	HAVE_ATEXIT
 
+/* Do we have getrusage */
+#undef HAVE_GETRUSAGE
+
 /* Do we have on_exit (Sun OS 4.x) */
 #undef	HAVE_ON_EXIT
 
@@ -370,6 +379,9 @@
 /* Do we use native threads and locks */
 #undef	USE_NATIVE_THREADS
 #undef	USE_NATIVE_LOCKS
+
+/* Do we time various pieces of the vm? */
+#undef TIMING
 
 /* The shared library suffix */
 #undef	LIBRARYSUFFIX

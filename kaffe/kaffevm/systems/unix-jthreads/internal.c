@@ -96,6 +96,25 @@ runfinalizer(void)
 		invokeFinalizer();
 }
 
+/* 
+ * For debugging purposes, the jthread system might ask us to assign
+ * a name to a given thread.  This can be single-threaded.
+ */
+static
+char *
+nameThread(void *tid)
+{
+	static char buf[80];
+	int i = 0;
+	HArrayOfChar* name = unhand((Hjava_lang_Thread*)tid)->name;
+	while (i < sizeof buf - 1 && i < ARRAY_SIZE(name)) {
+		buf[i] = ((short*)ARRAY_DATA(name))[i];
+		i++;
+	}
+	buf[i] = 0;
+	return buf;
+}
+
 static
 void
 Tinit(int nativestacksize)
@@ -106,11 +125,12 @@ Tinit(int nativestacksize)
 		java_lang_Thread_MAX_PRIORITY+1,
 		java_lang_Thread_MIN_PRIORITY,
 		java_lang_Thread_NORM_PRIORITY,
-		threadStackSize,
+		(1024*1024),	/* assume at least 1MB for main thread */
 		thread_malloc,
 		thread_free,
 		broadcastDeath,
-		throwDeath);	
+		throwDeath,
+		nameThread);	
 	assert(mainthread);
 	gc_add_ref(mainthread);
 }
@@ -124,6 +144,13 @@ TcreateFirst(Hjava_lang_Thread* tid)
 	GET_COOKIE() = tid;
 	GC_WRITE(tid, mainthread);
 	unhand(tid)->PrivateInfo = mainthread;
+	/* Even though the underlying threading system would probably 
+	 * extend the main thread's stack, we must impose this artificial
+	 * boundary, because otherwise we wouldn't be able to catch
+	 * stack overflow exceptions thrown by the main thread.
+	 */
+	unhand(tid)->stackOverflowError = 
+		(Hjava_lang_Throwable*)StackOverflowError;
 }
 
 static
@@ -140,6 +167,10 @@ Tcreate(Hjava_lang_Thread* tid, void* func)
 		threadStackSize);
 	GC_WRITE(tid, nativethread);
 	unhand(tid)->PrivateInfo = nativethread;
+	/* preallocate a stack overflow error for this thread in case it 
+	   runs out */
+	unhand(tid)->stackOverflowError = 
+		(Hjava_lang_Throwable*)StackOverflowError;
 }
 
 static  
@@ -353,6 +384,30 @@ int mkdir_with_int(const char *path, int m)
 }
 
 /*
+ * check whether we have at least `left' bytes left on the stack
+ */
+static
+Hjava_lang_Throwable*
+TcheckStack(int left) 
+{
+	int rc;
+	/* XXX should probably not be in internal.c */
+#if defined(STACK_GROWS_UP) 
+	rc = jthread_on_current_stack((void*)&rc + left);
+#else
+	rc = jthread_on_current_stack((void*)&rc - left);
+#endif
+DBG(VMTHREAD,
+	if (rc == false) {
+		dprintf("%s doesn't have %d bytes left\n", 
+			nameThread(GET_COOKIE()), left);
+	}
+    )
+	return (Hjava_lang_Throwable*)
+		(rc == true ? 0 : unhand(TcurrentJava())->stackOverflowError);
+}
+
+/*
  * Define the thread interface.
  */
 ThreadInterface Kaffe_ThreadInterface = {
@@ -373,6 +428,7 @@ ThreadInterface Kaffe_ThreadInterface = {
         TwalkThreads,
         TwalkThread,
         TnextFrame,
+	TcheckStack,
 
 };
 

@@ -21,6 +21,7 @@
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/soft.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
+#include "../../../kaffe/kaffevm/exception.h"
 #include "InputStream.h"
 #include "PrintStream.h"
 #include "System.h"
@@ -579,6 +580,8 @@ java_lang_reflect_Field_set(Hjava_lang_reflect_Field* this, struct Hjava_lang_Ob
         Hjava_lang_Class* clas, *clazz;
         Field* fld;
         char* base;
+	errorInfo info;
+	Hjava_lang_Class* ftype;
 
         clas = (Hjava_lang_Class*) unhand(this)->clazz;
         fld = CLASS_FIELDS(clas) + unhand(this)->slot;
@@ -587,7 +590,12 @@ java_lang_reflect_Field_set(Hjava_lang_reflect_Field* this, struct Hjava_lang_Ob
                 SignalError("java.lang.IllegalAccessException", "");
         }
 	
-	if (FIELD_ISREF(fld) && (val == NULL || soft_instanceof(resolveFieldType(fld, clas), val))) {
+	ftype = resolveFieldType(fld, clas, &info);
+	if (ftype == 0) {
+		throwError(&info);
+	}
+
+	if (FIELD_ISREF(fld) && (val == NULL || soft_instanceof(ftype, val))) {
 		base = getFieldAddress(this, obj);
 		*(struct Hjava_lang_Object**)base = val;
 		return;

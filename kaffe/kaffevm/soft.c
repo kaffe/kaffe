@@ -23,10 +23,10 @@
 #include "access.h"
 #include "object.h"
 #include "constants.h"
+#include "errors.h"
 #include "classMethod.h"
 #include "baseClasses.h"
 #include "lookup.h"
-#include "errors.h"
 #include "exception.h"
 #include "locks.h"
 #include "soft.h"
@@ -43,8 +43,11 @@ void*
 soft_new(Hjava_lang_Class* c)
 {
 	Hjava_lang_Object* obj;
+	errorInfo info;
 
-	processClass(c, CSTATE_OK);
+	if (processClass(c, CSTATE_COMPLETE, &info) == false) {
+		throwError(&info);
+	}
 	obj = newObject(c);
 
 DBG(NEWINSTR,	
@@ -193,11 +196,12 @@ soft_lookupmethod(Hjava_lang_Object* obj, Utf8Const* name, Utf8Const* sig)
 {
 	Hjava_lang_Class* cls;
 	Method* meth;
+	errorInfo info;
 
 	cls = OBJECT_CLASS(obj);
-	meth = findMethod(cls, name, sig);
+	meth = findMethod(cls, name, sig, &info);
 	if (meth == 0) {
-		throwException(NoSuchMethodError(name->data));
+		throwError(&info);
 	}
 
 #if defined(TRANSLATOR)
@@ -406,7 +410,7 @@ soft_nullpointer(void)
 void            
 soft_nosuchmethod(Hjava_lang_Class* c, Utf8Const* n, Utf8Const* s)
 {
-	char buf[100];
+	char buf[200];	/* FIXME: unchecked buffer */
 	sprintf(buf, "%s.%s%s", CLASS_CNAME(c), n->data, s->data);
 	throwException(NoSuchMethodError(buf));
 }
@@ -418,8 +422,11 @@ void
 soft_initialise_class(Hjava_lang_Class* c)
 {
 	/* We check this outside the processClass to save a subroutine call */
-	if (c->state != CSTATE_OK) {
-		processClass(c, CSTATE_OK);
+	if (c->state != CSTATE_COMPLETE) {
+		errorInfo info;
+		if (processClass(c, CSTATE_COMPLETE, &info) == false) {
+			throwError(&info);
+		}
 	}
 }
 
@@ -431,14 +438,20 @@ nativecode*
 soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL)
 {
 	Method* meth;
+	errorInfo info;
 	FIXUP_TRAMPOLINE_INIT;
 
 	/* If this class needs initializing, do it now.  */
-	processClass(meth->class, CSTATE_OK);
+	if (meth->class->state < CSTATE_USABLE &&
+		processClass(meth->class, CSTATE_COMPLETE, &info) == false) {
+		throwError(&info);
+	}
 
 	/* Generate code on demand.  */
 	if (!METHOD_TRANSLATED(meth)) {
-		translate(meth);
+		if (translate(meth, &info) == false) {
+			throwError(&info);
+		}
 	}
 
 	/* Update dispatch table */
@@ -581,7 +594,13 @@ soft_ldiv(jlong v1, jlong v2)
 jlong
 soft_lrem(jlong v1, jlong v2)
 {
+#if 0
+	long long r = (v1 % v2);
+	dprintf("%qd %% %qd = %qd\n", v1, v2, r);
+	return (r);
+#else
 	return (v1 % v2);
+#endif
 }
 
 jfloat

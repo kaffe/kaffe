@@ -32,8 +32,13 @@
 /* -------------------------------------------------------------------- */
 /* Methods */
 
-#define	get_method_info(idx)  getMethodSignatureClass(idx, meth->class, true, false, &cinfo)
-#define	get_special_method_info(idx)  getMethodSignatureClass(idx, meth->class, true, true, &cinfo)
+#define	get_method_info(idx)  \
+  if (getMethodSignatureClass(idx, meth->class, true, false, &cinfo, einfo) \
+	== false) { success = false; goto done; }
+
+#define	get_special_method_info(idx)  \
+  if (getMethodSignatureClass(idx, meth->class, true, true, &cinfo, einfo) \
+	== false) { success = false; goto done; } 
 
 #define	method_name()	(cinfo.name)
 #define	method_sig()	(cinfo.signature)
@@ -51,17 +56,25 @@
 /* Fields */
 
 #define	get_field_info(IDX) \
-				getField((IDX), meth->class, false, &finfo)
+  if (getField((IDX), meth->class, false, &finfo, einfo) == false) { \
+    success = false; goto done; \
+  }
 
 #define	get_static_field_info(IDX) \
-				getField((IDX), meth->class, true, &finfo)
+  if (getField((IDX), meth->class, true, &finfo, einfo) == false) { \
+    success = false; goto done; \
+  }
 
 #define field_class()		(finfo.class)
 
 /* -------------------------------------------------------------------- */
 /* Classes */
 
-#define	get_class_info(IDX)	crinfo = getClass((IDX), meth->class)
+#define	get_class_info(IDX)	\
+  crinfo = getClass((IDX), meth->class, einfo); \
+  if (crinfo == 0) { \
+    success = false; goto done; \
+  }
 
 #define	class_object()		(crinfo)
 
@@ -88,7 +101,7 @@
 #endif
 
 struct _methods;
-void translate(struct _methods*);
+bool translate(struct _methods*, errorInfo*);
 
 typedef struct _nativeCodeInfo {
 	void*	mem;

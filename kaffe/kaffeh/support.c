@@ -497,7 +497,7 @@ findClass(char* nm)
 			objectDepth++;
 			savepool = constant_pool;
 
-			readClass(NULL, &hand, NULL);
+			readClass(NULL, &hand, NULL, NULL);
 
 			constant_pool = savepool;
 			objectDepth--;
@@ -530,7 +530,7 @@ findClass(char* nm)
 			objectDepth++;
 			savepool = constant_pool;
 
-			readClass(NULL, &hand, NULL);
+			readClass(NULL, &hand, NULL, NULL);
 
 			constant_pool = savepool;
 			objectDepth--;

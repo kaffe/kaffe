@@ -75,9 +75,11 @@ static struct debug_opts
 	D(GCWALK,   "Show gc walking"),
 	D(GCPRECISE, "Debug precise collection of the heap."),
 	D(GCSTAT,   "Show allocation statistics"),
+	D(GCDIAG,   "Perform diagnostic checks on heap" ),
 	{ "GCMEM", DBG_GCPRIM|DBG_GCALLOC|DBG_GCFREE|DBG_GCSYSALLOC|DBG_GCSTAT, 
 			"All allocation and free operations in gc-mem" },
 	D(SLACKANAL,   "Print internal fragmentation statistics."),
+
 	D(ASYNCSTDIO, "Make stdio fds asynchronous despite debugging."),
 	D(CATCHOUTOFMEM, "Catch recursive out of memory exceptions."),
 	D(JARFILES, "Debug reading JAR files in jar.c."),
@@ -97,6 +99,7 @@ static struct debug_opts
 	D(CLASSFILE,	"Show when methods and fields are added."),
 	D(RESERROR,	"Show error in class file resolution."),
 	D(VMCLASSLOADER,"Announce when VM calls class loaders.."),
+	D(LOCKCONTENTION,"Show when a lock is contended."),
 
 	/* you can define combinations too */
 	{ "lookup", DBG_MLOOKUP|DBG_ELOOKUP|DBG_FLOOKUP, 
@@ -107,6 +110,8 @@ static struct debug_opts
 
 	{ "intrp", DBG_INT_NATIVE|DBG_INT_RETURN|DBG_INT_VMCALL, 
 			"Calls of interpreter (without instructions)" },
+	{ "deadlock", DBG_DETECTDEADLOCK|DBG_LOCKCONTENTION, 
+			"Debug deadlocks" },
 	{ "intrpA", 
 		DBG_INT_CHECKS|DBG_INT_INSTR|DBG_INT_NATIVE|
 		DBG_INT_RETURN|DBG_INT_VMCALL, 

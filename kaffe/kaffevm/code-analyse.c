@@ -10,7 +10,6 @@
 
 #define	CDBG(s)
 #define	DBG(s)
-#define	FDBG(s)
 #define	VDBG(s) s
 
 #include "config.h"
@@ -52,7 +51,7 @@ const uint8 insnLen[256] = {
 };
 
 static void mergeFrame(int, int, frameElement*, Method*);
-static bool verifyBasicBlock(Method*, int32);
+static bool verifyBasicBlock(Method*, int32, errorInfo*);
 /*
  * Note that verifyMethod and tidyVerifyMethod must be atomic since 
  * they both rely on codeInfo.  Therefore, we grab the vlock in verifyMethod
@@ -63,8 +62,8 @@ static bool verifyBasicBlock(Method*, int32);
  */
 static iLock vlock;
 
-void
-verifyMethod(Method* meth)
+bool
+verifyMethod(Method* meth, errorInfo *einfo)
 {
 	int32 pc;
 	int32 tabpc;
@@ -91,13 +90,13 @@ verifyMethod(Method* meth)
 	/* We don't need to do this twice */
 	meth->accflags |= ACC_VERIFIED;
 
-CDBG(	dprintf("verifyMethod: %s.%s, codeInfo = 0x%x\n", 
+CDBG(	fprintf(stderr, "verifyMethod: %s.%s, codeInfo = %p\n", 
 	meth->class->name->data, meth->name->data, codeInfo);)
 
 	assert (codeInfo == 0 && " Attempt to reenter verifier!");
 	codeInfo = gc_malloc_fixed(sizeof(codeinfo) + (meth->c.bcode.codelen * sizeof(perPCInfo)));
 
-CDBG(	dprintf(__FUNCTION__"codeInfo = 0x%x\n", codeInfo);		)
+CDBG(	fprintf(stderr, __FUNCTION__"codeInfo = %p\n", codeInfo);		)
 
 	/* Allocate code info. block */
 	codeInfo->localsz = meth->localsz;
@@ -323,13 +322,11 @@ CDBG(	dprintf(__FUNCTION__"codeInfo = 0x%x\n", codeInfo);		)
 		for (bcurr = bhead; bcurr != NULL; bcurr = bcurr->nextBB) {
 			pc = bcurr - codeInfo->perPC;
 			if (IS_NEEDVERIFY(pc)) {
-				failed = verifyBasicBlock(meth, pc);
-#ifdef notyet
+				failed = verifyBasicBlock(meth, pc, einfo);
+
 				if (failed) {
-					unlockStaticMutex(&vlock);
-					throwException(VerifyError);
+					return (false);
 				}
-#endif
 				rerun = true;
 			}
 		}
@@ -341,11 +338,12 @@ CDBG(	dprintf(__FUNCTION__"codeInfo = 0x%x\n", codeInfo);		)
 			VDBG(printf("%s.%s%s pc %d bcurr->flags 0x%04x\n", meth->class->name->data, meth->name->data, meth->signature->data, bcurr - codeInfo->perPC, bcurr->flags);)
 		}
 	}
+	return (true);
 }
 
 static
 bool
-verifyBasicBlock(Method* meth, int32 pc)
+verifyBasicBlock(Method* meth, int32 pc, errorInfo *einfo)
 {
 	int32 tabpc;
 	int32 idx;
@@ -1358,7 +1356,10 @@ DBG(		printf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case GETSTATIC:
-			getField(lclw, meth->class, true, &finfo);
+			if (getField(lclw, meth->class, true, &finfo, einfo) == 0) {
+				failed = true;
+				goto done;
+			}
 			if (FIELD_ISREF(finfo.field)) {
 				STKPUSH(1);
 				STACKOUT(0, TOBJ);
@@ -1394,7 +1395,10 @@ DBG(		printf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case PUTSTATIC:
-			getField(lclw, meth->class, true, &finfo);
+			if (getField(lclw, meth->class, true, &finfo, einfo) == 0) {
+				failed = true;
+				goto done;
+			}
 			if (FIELD_ISREF(finfo.field)) {
 				STACKIN(0, TOBJ);
 				STKPOP(1);
@@ -1430,7 +1434,10 @@ DBG(		printf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case GETFIELD:
-			getField(lclw, meth->class, false, &finfo);
+			if (getField(lclw, meth->class, false, &finfo, einfo) == 0) {
+				failed = true;
+				goto done;
+			}
 			STACKIN(0, TOBJ);
 			if (FIELD_ISREF(finfo.field)) {
 				STACKOUT(0, TOBJ);
@@ -1464,7 +1471,10 @@ DBG(		printf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case PUTFIELD:
-			getField(lclw, meth->class, false, &finfo);
+			if (getField(lclw, meth->class, false, &finfo, einfo) == 0) {
+				failed = true;
+				goto done;
+			}
 			if (FIELD_ISREF(finfo.field)) {
 				STACKIN(0, TOBJ);
 				STACKIN(1, TOBJ);
@@ -1506,7 +1516,10 @@ DBG(		printf("%d: %d\n", pc, INSN(pc));		)
 
 		case INVOKEVIRTUAL:
 		case INVOKESPECIAL:
-			getMethodSignatureClass(lclw, meth->class, false, false, &call);
+			if (getMethodSignatureClass(lclw, meth->class, false, false, &call, einfo) == false) {
+				failed = true;
+				goto done;
+			}
 
 			sig = call.signature->data;
 			assert(sig[0] == '(');
@@ -1604,7 +1617,10 @@ DBG(		printf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case INVOKEINTERFACE:
-			getMethodSignatureClass(lclw, meth->class, false, false, &call);
+			if (getMethodSignatureClass(lclw, meth->class, false, false, &call, einfo) == false) {
+				failed = true;
+				goto done;
+			}
 
 			sig = call.signature->data;
 			assert(sig[0] == '(');
@@ -1701,7 +1717,10 @@ DBG(		printf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case INVOKESTATIC:
-			getMethodSignatureClass(lclw, meth->class, false, false, &call);
+			if (getMethodSignatureClass(lclw, meth->class, false, false, &call, einfo) == false) {
+				failed = true;
+				goto done;
+			}
 
 			sig = call.signature->data;
 			assert(sig[0] == '(');
@@ -1835,7 +1854,11 @@ DBG(		printf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case CHECKCAST:
-			class = getClass(lclw, meth->class);
+			class = getClass(lclw, meth->class, einfo);
+			if (class == 0) {
+				failed = true;
+				goto done;
+			}
 			/* SET_INSN(pc, CHECKCAST_FAST); */
 			STACKIN(0, TOBJ);
 			STACKOUT(0, TOBJ);
@@ -1843,7 +1866,11 @@ DBG(		printf("%d: %d\n", pc, INSN(pc));		)
 			break;
 
 		case INSTANCEOF:
-			class = getClass(lclw, meth->class);
+			class = getClass(lclw, meth->class, einfo);
+			if (class == 0) {
+				failed = true;
+				goto done;
+			}
 			/* SET_INSN(pc, INSTANCEOF_FAST); */
 			STACKIN(0, TOBJ);
 			STACKOUT(0, TINT);
@@ -1884,6 +1911,7 @@ DBG(		printf("%d: %d\n", pc, INSN(pc));		)
 		FRAMEMERGE(pc, sp);
 	}
 
+done:
 	/* Discard active frame */
 	gc_free(activeFrame);
 

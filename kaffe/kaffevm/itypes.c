@@ -87,13 +87,13 @@ finishTypes(void)
 }
 
 Hjava_lang_Class*
-getClassFromSignature(char* sig, Hjava_lang_ClassLoader* loader)
+getClassFromSignature(char* sig, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 {
-	return (classFromSig(&sig, loader));
+	return (classFromSig(&sig, loader, einfo));
 }
 
 Hjava_lang_Class*
-classFromSig(char** strp, Hjava_lang_ClassLoader* loader)
+classFromSig(char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 {
 	char* start;
 	char* end;
@@ -108,7 +108,7 @@ classFromSig(char** strp, Hjava_lang_ClassLoader* loader)
 	case 'F': return (floatClass);
 	case 'D': return (doubleClass);
 	case 'J': return (longClass);
-	case '[': return (lookupArray(classFromSig(strp, loader)));
+	case '[': return (lookupArray(classFromSig(strp, loader, einfo)));
 	case 'L':
 		start = *strp;
 		for (end = start; *end != 0 && *end != ';'; end++)
@@ -117,7 +117,7 @@ classFromSig(char** strp, Hjava_lang_ClassLoader* loader)
 		if (*end != 0) {
 			(*strp)++;
 		}
-		return (loadClass(makeUtf8Const(start, end-start), loader));
+		return (loadClass(makeUtf8Const(start, end-start), loader, einfo));
 	default:
 		return (NULL);
 	}

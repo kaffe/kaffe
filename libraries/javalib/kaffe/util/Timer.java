@@ -44,21 +44,21 @@ public synchronized void addClient ( TimerClient tc, int startWait, int interval
 		for ( i=nClients; i<clients.length; i++ )
 			clients[i] = new TimerClientEntry();
 	}
-	
+
 	tce = clients[nClients++];
 	tce.client = tc;
 	tce.nextNotify = System.currentTimeMillis() + startWait;
 	tce.interval = interval;
+
+	if ( nClients == 1 ) {
+		notify();
+	}
 
 	// If interval is smaller than current resolution, drop current
 	// resolution and wake the timer thread.
 	if (interval < resolution) {
 		resolution = interval;
 		interrupt();
-	}
-	
-	if ( nClients == 1 ) {
-		notify();
 	}
 }
 
@@ -74,8 +74,7 @@ public synchronized void removeClient ( TimerClient tc ) {
 
 	int newres = Integer.MAX_VALUE;
 
-	nClients--;
-	for (int i=0; i <= nClients; i++ ) {
+	for (int i=0; i < nClients; i++ ) {
 		TimerClientEntry tce = clients[i];
 		if (tce.interval < newres) {
 			newres = tce.interval;
@@ -83,6 +82,7 @@ public synchronized void removeClient ( TimerClient tc ) {
 		if ( tce.client == tc ) {
 			tce.client = null;
 			int i1 = i+1;
+			nClients--;
 			if (i1 < nClients) {
 				System.arraycopy( clients, i1, clients, i, (nClients-i));
 				clients[nClients] = tce;

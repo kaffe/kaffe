@@ -37,8 +37,10 @@ extern Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
 struct Hjava_lang_Class*
 java_lang_Class_forName(struct Hjava_lang_String* str)
 {
+	errorInfo einfo;
 	Hjava_lang_Class* clazz;
 	Hjava_lang_ClassLoader* loader;
+	Utf8Const *utf8buf;
 	char buf[MAXNAMELEN];
         stackTraceInfo* info;
         int i;
@@ -78,17 +80,41 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 	 * array names (those starting with an [), and this is what calling
 	 * loadArray does.
 	 */
+	utf8buf = makeUtf8Const (buf, strlen(buf));
 	if (buf[0] == '[') {
-		clazz = loadArray(makeUtf8Const (buf, strlen(buf)), loader);
+		clazz = loadArray(utf8buf, loader, &einfo);
 	}
 	else {
-		clazz = loadClass(makeUtf8Const (buf, strlen(buf)), loader);
+		clazz = loadClass(utf8buf, loader, &einfo);
 	}
 
-	/* if we got here, either clazz must be valid or a 
-	 * ClassNotFoundException was thrown
-	 */
-	assert(clazz != 0);
+	/* if an error occurred, throw an exception */
+	if (clazz == 0) {
+		/* The only checked exception that Class.forName() throws
+		 * is ClassNotFoundException.  This is an exception, not an
+		 * Error, which users often catch.
+		 *
+		 * However, Class.forName() can also throw errors, such as
+		 * NoClassDefFoundError, if for instance a superclass for
+		 * a class couldn't be found.
+		 *
+		 * When it throws which, we don't know.  We try to be 
+		 * compatible, so we upgrade the error to an exception if it's 
+		 * (NoClassDefFoundError, this_class_name).
+		 */
+		if (!strcmp(einfo.classname, "java.lang.NoClassDefFoundError"))
+		{
+			/* this is not quite what Sun does: they use the
+			 * classname, we use the pathname as the message
+			 * of the exception  (FIXME?)
+			 */
+			if (!strcmp(einfo.mess, buf)) {
+				SET_LANG_EXCEPTION_MESSAGE(&einfo, 
+					ClassNotFoundException, einfo.mess)
+			}
+		}
+		throwError(&einfo);
+	}
 
 	/*
 	 * Note:
@@ -117,15 +143,11 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 	 *	ClassLoader_defineClass0: 	returns CSTATE_PREPARED
 	 * 	ClassLoader_resolveClass0:	returns CSTATE_LINKED
 	 * 	ClassLoader_findSystemClass0:	returns CSTATE_LINKED
-	 * 	Class_forName:			returns CSTATE_OK
-	 *
-	 * We have also observed that processing a class to CSTATE_OK in
-	 * defineClass0 *does not* work; it causes repeated invocations of
-	 * static initializers, which crashes in classMethod.c where
-	 * ncode_start and ncode_end are set to zero after a initializer
-	 * was invoked.
+	 * 	Class_forName:			returns CSTATE_COMPLETE
 	 */
-	processClass(clazz, CSTATE_OK);
+	if (processClass(clazz, CSTATE_COMPLETE, &einfo) == false) {
+		throwError(&einfo);
+	}
 	return (clazz);
 }
 
@@ -333,6 +355,7 @@ makeParameters(Method* meth)
 	char* sig;
 	HArrayOfObject* array;
 	Hjava_lang_Class* clazz;
+	errorInfo info;
 
 	sig = meth->signature->data;
 	len = 0;
@@ -350,7 +373,10 @@ makeParameters(Method* meth)
 	array = (HArrayOfObject*)AllocObjectArray(len, "Ljava/lang/Class;");
 	sig = meth->signature->data + 1;	/* Skip leading '(' */
 	for (i = 0; i < len; i++) {
-		clazz = classFromSig(&sig, meth->class->loader);
+		clazz = classFromSig(&sig, meth->class->loader, &info);
+		if (clazz == 0) {
+			throwError(&info);
+		}
 		unhand(array)->body[i] = &clazz->head;
 	}
 
@@ -362,11 +388,17 @@ Hjava_lang_Class*
 makeReturn(Method* meth)
 {
 	char* sig;
+	errorInfo info;
+	Hjava_lang_Class* clazz;
 
 	/* Skip to end of signature to find return type */
 	sig = strchr(meth->signature->data, ')') + 1;
 
-	return (classFromSig(&sig, meth->class->loader));
+	clazz = classFromSig(&sig, meth->class->loader, &info);
+	if (clazz == 0) {
+		throwError(&info);
+	}
+	return (clazz);
 }
 
 /*
@@ -389,7 +421,14 @@ makeExceptions(Method* meth)
 	array = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class;");
 	ptr = (Hjava_lang_Class**)&unhand(array)->body[0];
 	for (i = 0; i < nr; i++) {
-		*ptr++ = getClass(meth->declared_exceptions[i], meth->class);
+		errorInfo info;
+		Hjava_lang_Class* clazz;
+		clazz = getClass(meth->declared_exceptions[i], meth->class, 
+				&info);
+		if (clazz == 0) {
+			throwError(&info);
+		}
+		*ptr++ = clazz;
 	}
 	return (array);
 }
@@ -439,12 +478,16 @@ makeField(struct Hjava_lang_Class* clazz, int slot)
 {
 	Hjava_lang_reflect_Field* field;
 	Field* fld;
+	errorInfo info;
 
 	fld = CLASS_FIELDS(clazz) + slot;
 	field = (Hjava_lang_reflect_Field*)AllocObject("java/lang/reflect/Field");
 	unhand(field)->clazz = clazz;
 	unhand(field)->slot = slot;
-	unhand(field)->type = resolveFieldType(fld, clazz);
+	unhand(field)->type = resolveFieldType(fld, clazz, &info);
+	if (unhand(field)->type == 0) {
+		throwError(&info);
+	}
 	unhand(field)->name = makeReplaceJavaStringFromUtf8(
 		fld->name->data, fld->name->length, 0, 0);
 	return (field);
@@ -663,14 +706,16 @@ checkParameters(Method* mth, HArrayOfObject* argtypes)
 {
 	char *sig = mth->signature->data;
 	int   i;
+	errorInfo info;
 
 	sig++;	/* skip leading '(' */
 	for (i = 0; i < ARRAY_SIZE(argtypes); i++) {
 
 		/* signature was too short or type doesn't match */
+		/* NB: if classFromSig fails, we pretend we don't care. */
 		if (!*sig || (struct Hjava_lang_Class *)
 				OBJARRAY_DATA(argtypes)[i] != 
-				classFromSig(&sig, mth->class->loader))
+				classFromSig(&sig, mth->class->loader, &info))
 			return (0);
 	}
 	/* return false if signature was too long */

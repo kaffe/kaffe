@@ -1,0 +1,70 @@
+
+The new state graph for class loading.
+
+			       PRELOADED
+				  |
+				  V
+UNLOADED --- read bytecode ---> LOADED 
+   +------------------------------|
+   |    			  V
+   |    		     DOING_PREPARE -- go "PREPARE" --> ClassCircularity
+   |    			  |
+   |    		bring superclass to LINKED
+   |    		build interface table
+   |    		resolveObjectFields
+   |    		resolveStaticFields
+   |    		buildDispatchTable -- any fail -------------------+
+   |    			  |					  |
+ L |    			  V					  |
+   |    		       PREPARED					  |
+ O |    			  |					  |
+   |    			  V					  |
+ C |    		       verify2					  |
+   |    		       verify3     -- any fail -------------------|
+ K |    			  |					  |
+   |    			  V					  |
+   |    		       LINKED					  |
+   |    			  |					  |
+   |    			  V					  |
+   |    		resolveConstants       -- fail -------------------|
+   |    			  |					  |
+   |    			  V				     	  |
+   |    		      DOING_SUPER  --> on go wait 		  | 
+   |    			  |					  |
+   +------------------------------|					  |
+				  |					  |
+        		bring superclass to COMPLETE       --> fail --> FAILED
+				  |					  |
+				  |					  v
+ L +------------------------------|				   return false
+ O |    			  |					  ^
+ C |    			  V					  |
+ K | 			   USABLE/DOING_INIT  --> on go wait 		  | go
+   |				  |					  | "CO
+   +------------------------------|					  | MPL
+				  |					  | ETE"
+        		    call static {}		  		  | 
+				  |					  |
+ L +------------------------------|					  | 
+   |    			  V					  |
+ O |    		          |--- static {} FAILS --> INIT_FAILED ---+
+   |    			  |				|
+ C |    		    static {} returns okay		|
+   |    			  |				|
+ K |    			  V				|
+   +---------------------------COMPLETE				|
+				  |				|
+				  +-----------------------------|
+								|
+								V
+							    return true
+
+
+PRELOADED						COMPLETE(*)
+     \							/
+   LOADED -> DOING_PREPARE -...-> DOING_SUPER -> USABLE/DOING_INIT
+     /							\
+UNLOADED						INIT_FAILED(*)
+			FAILED(*)
+
+(*) final state

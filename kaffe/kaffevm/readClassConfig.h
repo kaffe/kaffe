@@ -12,8 +12,8 @@
 #ifndef __readclassconfig_h
 #define __readclassconfig_h
 
-#include "classMethod.h"
 #include "errors.h"
+#include "classMethod.h"
 #include "lookup.h"
 #include "exception.h"
 #include "code.h"
@@ -25,7 +25,8 @@
 #define	ADDCLASS(this, super, access, constants)			\
 	classThis = setupClass(classThis, this, super, access, loader);	\
 	if (classThis == 0) {						\
-                throwException(ClassFormatError);			\
+                SET_LANG_EXCEPTION(einfo, ClassFormatError);		\
+		return (0);						\
 	}
 
 /*

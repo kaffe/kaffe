@@ -216,7 +216,7 @@ typedef struct codeinfo {
 #define	LOCALIN(L, T)			LOCAL_CHECKTYPE(L, T);
 
 struct _methods;
-void verifyMethod(struct _methods*);
+bool verifyMethod(struct _methods*, errorInfo*);
 void tidyVerifyMethod(void);
 
 extern codeinfo* codeInfo;

@@ -47,8 +47,9 @@ typedef struct _constants {
 
 struct Hjava_lang_Class;
 struct _classFile;
+struct _errorInfo;
 
-void readConstantPool(struct Hjava_lang_Class*, struct _classFile*);
+bool readConstantPool(struct Hjava_lang_Class*, struct _classFile*, struct _errorInfo*);
 
 /* Extract a character from a Java-style Utf8 string.
  * PTR points to the current character.

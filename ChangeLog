@@ -1,5 +1,50 @@
+Wed Dec  2 14:02:08 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/*: libraries/clib/native/*:
+	restructured the core to handle error conditions without deadlock.  
+	Plus, changed class states to be closer to Java spec.
+	Too many files changed to mention here.  Mention only these two:
+	* kaffe/kaffevm/classMethod.c:  fixed class states.  See also 
+	FAQ/FAQ.class-states.
+	* kaffe/kaffevm/jni.c:  took advantage of exception free core to
+	streamline some jni operations.
+
+	* kaffe/kaffevm/systems/unix-jthreads/*:  fixed problem with
+	lost wakeup on select.  Fixed HP-UX prob where EWOULDBLOCK != EAGAIN.
+	Added dumpThreads for debugging, extending suggestion by Edouard.
+	* kaffe/kaffevm/locks: added LOCKCONTENTION debug option as suggested
+	by Edouard.  Use "-vmdebug deadlock" to look at deadlocks. 
+	* libraries/javalib/java/lang/Thread.java, 
+	include/java_lang_Thread.h: added stackOverflowError to java.lang.Thread
+	kaffe/kaffevm/intrp/machine.c: 
+	kaffe/kaffevm/systems/unix-jthreads/*: implemented StackOverflowError
+	(interpreter only!)
+	kaffe/kaffevm/systems/unix-internal/*: not implemented in old scheme.
+	* kaffe/kaffevm/thread.c, exception.c: changed implementation of
+	uncaughtException,  use JNI to invoke Thread.run().
+	* include/nets.h:  don't declare h_errno if defined as function.
+	* libraries/javalib/java/lang/ClassLoader.java: added loadClassVM() 
+	method for safer class loading.
+	* test/regression/TestScript:  added new tests for new functionality
+        and other stuff:
+	DoubleBug, ExceptionInInitializerTest, FindSystemClass, Overflow,
+	ProcessClassInst, ProcessClassLockTest, ProcessClassTest.
+
+Wed Dec  2 14:02:07 1998  Jason Baker  <jbaker@cs.utah.edu>
+
+	* kaffe/kaffevm/mem/*:  added new, faster block allocation scheme.
+	Use --with-gcblock=new to use it.  Read FAQ/FAQ.gcblock for doc.
+	* kaffe/kaffevm/support.[ch]: added support for --with-timing
+	option.
+	* kaffe/kaffevm/slib.h: added support for finding addresses of shlibs.
+	* config/config.h.in, config/config-std.h, configure.in,
+	kaffe/kaffevm/Makefile.in:  added configure and make support for new 
+	gcblock scheme and --with-timing option.
+
 Wed Dec  2 10:05:32 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
 
+	* libraries/javalib/java/lang/System.java: respond to attempts to
+	set securitymanager to null by keeping defaultSecurityManager. 
 	* libraries/clib/native/Double.c: handle cap 'F' in Double.valueOf().
 
 Fri Nov 27 10:50:34 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>

@@ -98,7 +98,21 @@ virtualMachine(methods* meth, slots* volatile arg, slots* retval, Hjava_lang_Thr
 	/* Call, field and creation information */
 	callInfo cinfo;
 	fieldInfo finfo;
+	errorInfo einfo;
 	Hjava_lang_Class* crinfo;
+	Hjava_lang_Throwable* overflow;
+
+	/* implement stack overflow check */
+	overflow = (*Kaffe_ThreadInterface.checkStack)(needOnStack);
+	if (overflow != 0) {
+		if (needOnStack == STACK_LOW) {
+			fprintf(stderr, 
+				"Panic: unhandled StackOverflowError()\n");
+			ABORT();
+		}
+		needOnStack = STACK_LOW;
+		throwException(overflow);
+	}
 
 CDBG(	dprintf("Call: %s.%s%s.\n", meth->class->name->data, meth->name->data, meth->signature->data); )
 
@@ -117,8 +131,11 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 
 	/* Verify method if required */
 	if ((methaccflags & ACC_VERIFIED) == 0) {
-		verifyMethod(meth);
+		bool success = verifyMethod(meth, &einfo);
 		tidyVerifyMethod();
+		if (success == false) {
+			throwError(&einfo);
+		}
 	}
 
 	/* Allocate stack space and locals. */
@@ -201,4 +218,13 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	}
 
 RDBG(	dprintf("Returning from method %s%s.\n", meth->name->data, meth->signature->data); )
+}
+
+/*
+ * say what engine we're using
+ */
+char* 
+getEngine()
+{
+	return "kaffe.intr";
 }

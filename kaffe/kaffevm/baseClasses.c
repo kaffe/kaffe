@@ -19,7 +19,7 @@
 #include "access.h"
 #include "object.h"
 #include "constants.h"
-#include "classMethod.h"
+#include "errors.h"
 #include "baseClasses.h"
 #include "thread.h"
 #include "lookup.h"
@@ -126,8 +126,6 @@ initialiseKaffe(void)
 /*
  * We need to use certain classes in the internal machine so we better
  * get them in now in a known way so we can refer back to them.
- * Currently we need java/lang/Object, java/lang/Class, java/lang/String
- * and java/lang/System.
  */
 void
 initBaseClasses(void)

@@ -26,8 +26,8 @@
  * Verify pass 2:  Check the internal consistency of the class file
  *  but do not check the bytecode.
  */
-void
-verify2(Hjava_lang_Class* class)
+bool
+verify2(Hjava_lang_Class* class, errorInfo *einfo)
 {
 	constants* info;
 	bool error;
@@ -106,19 +106,21 @@ DBG(	printf("Verifing class %s\n", (char*)class->name->data);	)
 
 	/* If we found an inconsistency then throw an exception */
 	if (error == true) {
-		throwException(ClassFormatError);
+		SET_LANG_EXCEPTION(einfo, ClassFormatError)
+		return (false);
 	}
+	return (true);
 }
 
 /*
  * Verify pass 3:  Check the consistency of the bytecode.
  */
-void
-verify3(Hjava_lang_Class* class)
+bool
+verify3(Hjava_lang_Class* class, errorInfo *einfo)
 {
 	if ((class->loader == 0 && (Kaffe_JavaVMArgs[0].verifyMode & 1) == 0) ||
 	    (class->loader != 0 && (Kaffe_JavaVMArgs[0].verifyMode & 2) == 0)) {
-		return;
+		return (true);
 	}
 
 	/* Run bytecode verifier - for reasons only known to the Sun gods
@@ -132,4 +134,5 @@ verify3(Hjava_lang_Class* class)
 	 */
 
 		/* NOT YET !!! */
+	return (true);
 }

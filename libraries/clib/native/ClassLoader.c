@@ -22,6 +22,7 @@
 #include "../../../kaffe/kaffevm/itypes.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
+#include "../../../kaffe/kaffevm/exception.h"
 #include <native.h>
 #include "defs.h"
 
@@ -45,6 +46,7 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	Hjava_lang_Class* clazz;
 	classFile hand;
 	classEntry *centry;
+	errorInfo info;
 
 	hand.base = &unhand(data)->body[offset];
 	hand.buf = hand.base;
@@ -56,7 +58,9 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	 * assert that a lock on centry is held during readClass
 	 */
 	clazz->centry = NULL;
-	clazz = readClass(clazz, &hand, this);
+	clazz = readClass(clazz, &hand, this, &info);
+	if (clazz == 0)
+		throwError(&info);
 
 	/* 
 	 * If a name was given, but the name we found in the class file
@@ -106,7 +110,9 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	 * Presumably, it shouldn't be necessary here, but is at the
 	 * moment - XXX
 	 */
-	processClass(clazz, CSTATE_PREPARED);
+	if (processClass(clazz, CSTATE_PREPARED, &info) == false) {
+		throwError(&info);
+	}
 	return (clazz);
 }
 
@@ -116,7 +122,10 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 void
 java_lang_ClassLoader_resolveClass0(struct Hjava_lang_ClassLoader* this, struct Hjava_lang_Class* class)
 {
-	processClass(class, CSTATE_LINKED);
+	errorInfo info;
+	if (processClass(class, CSTATE_LINKED, &info) == false) {
+		throwError(&info);
+	}
 }
 
 /*
@@ -125,6 +134,8 @@ java_lang_ClassLoader_resolveClass0(struct Hjava_lang_ClassLoader* this, struct 
 struct Hjava_lang_Class*
 java_lang_ClassLoader_findSystemClass0(Hjava_lang_ClassLoader* this, Hjava_lang_String* str)
 {
+	errorInfo info;
+	Hjava_lang_Class *clazz;
 	int len = javaStringLength(str);
 	Utf8Const* c;
 	char* name;
@@ -151,7 +162,25 @@ java_lang_ClassLoader_findSystemClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
 	c->length = len;
 	c->hash = (uint16) hashUtf8String (name, len);
 #endif /* ! INTERN_UTF8CONSTS */
-	return (loadClass(c, 0));
+	clazz = loadClass(c, 0, &info);
+	if (clazz == 0) {
+		/* 
+		 * upgrade error to an exception if *this* class wasn't found.
+		 * See discussion in Class.forName()
+		 */
+		if (!strcmp(info.classname, "java.lang.NoClassDefFoundError")
+		    && !strcmp(info.mess, name))
+		{
+			SET_LANG_EXCEPTION_MESSAGE(&info,
+				ClassNotFoundException, info.mess)
+		}
+		throwError(&info);
+	}
+
+	if (processClass(clazz, CSTATE_COMPLETE, &info) == false) {
+		throwError(&info);
+	}
+	return (clazz);
 }
 
 /*

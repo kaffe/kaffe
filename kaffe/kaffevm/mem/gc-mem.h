@@ -11,11 +11,22 @@
 #ifndef __gc_mem_h
 #define	__gc_mem_h
 
-#define	GC_DEBUG 1
-
 #define	MIN_HEAPSIZE	0
 #define	MAX_HEAPSIZE	(32*1024*1024)
 #define	ALLOC_HEAPSIZE	(1024*1024)
+
+#ifndef gc_pgsize
+extern size_t gc_pgsize;
+extern int gc_pgbits;
+#endif
+
+extern size_t gc_heap_total;
+extern size_t gc_heap_allocation_size;
+extern size_t gc_heap_limit;
+
+#ifdef DEBUG
+extern int gc_system_alloc_cnt;
+#endif
 
 /* ------------------------------------------------------------------------ */
 
@@ -32,34 +43,6 @@ typedef struct _gc_unit {
 	struct _gc_unit*	cprev;
 	struct _gc_unit*	cnext;
 } gc_unit;
-
-typedef struct _gc_block {
-	uint32			magic;	/* Magic number */
-	struct _gc_freeobj*	free;	/* Next free sub-block */
-	struct _gc_block*	nfree;	/* Next block on sub-freelist */
-	uint32			size;	/* Size of objects in this block */
-	uint32			nr;	/* Nr of objects in block */
-	uint32			avail;	/* Nr of objects available in block */
-	struct _gc_block*	next;	/* Next block in freelist/hashtable */
-	uint8*			funcs;	/* Function for objects */
-	uint8*			state;	/* Colour & state of objects */
-	uint8*			data;	/* Address of first object in */
-} gc_block;
-
-/* ------------------------------------------------------------------------ */
-
-#define	GC_MAGIC		0xD0DECADE
-
-#define	GCBLOCK2STATE(B, N)	(&(B)->state[(N)])
-#define	GCBLOCK2MEM(B, N)	((gc_unit*)(&(B)->data[(N)*(B)->size]))
-#define	GCBLOCK2FREE(B, N)	((gc_freeobj*)GCBLOCK2MEM(B, N))
-#define	GCBLOCKSIZE(B)		(B)->size
-
-#define	GCMEM2BLOCK(M)		((gc_block*)(((uintp)(M)) & -gc_pgsize))
-#define	GCMEM2FREE(M)		((gc_freeobj*)(M))
-#define	GCMEM2IDX(B, M)		(((uint8*)(M) - (B)->data) / (B)->size)
-
-#define	GCBLOCKEND(B)		((gc_block*)(((uint8*)(B)) + (B)->size))
 
 /* ------------------------------------------------------------------------ */
 
@@ -100,16 +83,13 @@ typedef struct _gc_block {
 #define	ROUNDDOWNALIGN(V)	((uintp)(V) & -MEMALIGN)
 #define	ROUNDUPPAGESIZE(V)	(((uintp)(V) + gc_pgsize - 1) & -gc_pgsize)
 
-#define	GC_OBJECT_HASHSIZE	1024
-#define	GC_OBJECT_HASHIDX(B)	((((uintp)(B)) / gc_pgsize) & (GC_OBJECT_HASHSIZE-1))
-
 /* ------------------------------------------------------------------------ */
 
 extern void*	gc_heap_malloc(size_t);    
 extern void	gc_heap_free(void*);
 
-extern size_t	gc_pgsize;
-
 #define	GC_OBJECT_SIZE(M)	GCMEM2BLOCK(M)->size
+
+#define ASSERT_ONBLOCK(OBJ, BLK) assert(GCMEM2BLOCK(OBJ) == BLK)
 
 #endif

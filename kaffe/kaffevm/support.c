@@ -9,11 +9,13 @@
  * of this file. 
  */
 
+#include "debug.h"
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
 #include "jni.h"
 #include <stdarg.h>
+#include "errors.h"
 #include "classMethod.h"
 #include "jtypes.h"
 #include "access.h"
@@ -21,7 +23,6 @@
 #include "constants.h"
 #include "baseClasses.h"
 #include "lookup.h"
-#include "errors.h"
 #include "exception.h"
 #include "slots.h"
 #include "machine.h"
@@ -58,18 +59,19 @@ jvalue
 do_execute_java_method_v(void* obj, char* method_name, char* signature, Method* mb, int isStaticCall, va_list argptr)
 {
 	jvalue retval;
+	errorInfo info;
 
 	if (mb == 0) {
 		if (isStaticCall) {
-			mb = lookupClassMethod((Hjava_lang_Class*)obj, method_name, signature);
+			mb = lookupClassMethod((Hjava_lang_Class*)obj, method_name, signature, &info);
 		}
 		else {
-			mb = lookupObjectMethod((Hjava_lang_Object*)obj, method_name, signature);
+			mb = lookupObjectMethod((Hjava_lang_Object*)obj, method_name, signature, &info);
 		}
 	}
 	/* No method or wrong type - throw exception */
 	if (mb == 0) {
-		throwException(NoSuchMethodError(method_name));
+		throwError(&info);
 	}
 	else if (isStaticCall && (mb->accflags & ACC_STATIC) == 0) {
 		throwException(NoSuchMethodError(method_name));
@@ -102,17 +104,26 @@ do_execute_java_method(void* obj, char* method_name, char* signature, Method* mb
 jvalue
 do_execute_java_class_method_v(char* cname, char* method_name, char* signature, va_list argptr)
 {
-	Method* mb;
+	Method* mb = 0;
 	jvalue retval;
 	char cnname[CLASSMAXSIG];	/* Unchecked buffer - FIXME! */
+	Hjava_lang_Class* clazz;
+	errorInfo info;
 
 	/* Convert "." to "/" */
 	classname2pathname(cname, cnname);
 
-	mb = lookupClassMethod(lookupClass(cnname), method_name, signature);
+	clazz = lookupClass(cnname, &info);
+	if (clazz != 0) {
+		mb = lookupClassMethod(clazz, method_name, signature, &info);
+	}
+
+	if (mb == 0) {
+		throwError(&info);
+	}
 
 	/* Method must be static to invoke it here */
-	if (mb == 0 || (mb->accflags & ACC_STATIC) == 0) {
+	if ((mb->accflags & ACC_STATIC) == 0) {
 		throwException(NoSuchMethodError(method_name));
 	}
 
@@ -145,12 +156,13 @@ execute_java_constructor_v(char* cname, Hjava_lang_Class* cc, char* signature, v
 	Method* mb;
 	char buf[MAXEXCEPTIONLEN];
 	jvalue retval;
+	errorInfo info;
 
 	if (cc == 0) {
 		/* Convert "." to "/" */
 		classname2pathname(cname, buf);
 
-		cc = lookupClass (buf);
+		cc = lookupClass(buf, &info);
 		assert(cc != 0);
 	}
 
@@ -159,8 +171,10 @@ execute_java_constructor_v(char* cname, Hjava_lang_Class* cc, char* signature, v
 		throwException(InstantiationException(cc->name->data));
 	}
 
-	if (cc->state != CSTATE_OK) {
-		processClass(cc, CSTATE_OK);
+	if (cc->state < CSTATE_USABLE) {
+		if (processClass(cc, CSTATE_COMPLETE, &info) == false) {
+			throwError(&info);
+		}
 	}
 
 	mb = findMethodLocal(cc, makeUtf8Const(constructor_name->data, -1), 
@@ -546,18 +560,18 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
  * Lookup a method given class, name and signature.
  */
 Method*
-lookupClassMethod(Hjava_lang_Class* cls, char* name, char* sig)
+lookupClassMethod(Hjava_lang_Class* cls, char* name, char* sig, errorInfo *einfo)
 {
-	return (findMethod(cls, makeUtf8Const(name,-1), makeUtf8Const(sig,-1)));
+	return (findMethod(cls, makeUtf8Const(name,-1), makeUtf8Const(sig,-1), einfo));
 }
 
 /*
  * Lookup a method given object, name and signature.
  */
 Method*
-lookupObjectMethod(Hjava_lang_Object* obj, char* name, char* sig)
+lookupObjectMethod(Hjava_lang_Object* obj, char* name, char* sig, errorInfo *einfo)
 {
-	return (lookupClassMethod(OBJECT_CLASS(obj), name, sig));
+	return (lookupClassMethod(OBJECT_CLASS(obj), name, sig, einfo));
 }
 
 /*
@@ -639,7 +653,13 @@ setProperty(void* properties, char* key, char* value)
 Hjava_lang_Object*
 AllocObject(char* classname)
 {
-	return (newObject(lookupClass(classname)));
+	errorInfo info;
+	Hjava_lang_Class* clazz = lookupClass(classname, &info);
+
+	if (clazz == 0) {
+		throwError(&info);
+	}
+	return (newObject(clazz));
 }
 
 /*
@@ -657,10 +677,17 @@ AllocArray(int len, int type)
 Hjava_lang_Object*
 AllocObjectArray(int sz, char* classname)
 {
+	Hjava_lang_Class *elclass;
+	errorInfo info;
+
 	if (sz < 0) {
 		throwException(NegativeArraySizeException);
 	}
-        return (newArray(getClassFromSignature(classname, NULL), sz));
+        elclass = getClassFromSignature(classname, NULL, &info);
+	if (elclass == 0) {
+		throwError(&info);
+	}
+        return (newArray(elclass, sz));
 
 }
 
@@ -714,3 +741,78 @@ addNativeMethod(char* name, void* func)
 	native_funcs[funcs_nr].func = 0;
 }
 #endif
+
+#if defined(TIMING)
+
+static timespent *counters;	/* all timers that have been run */
+
+/* Print total user time, user time spent by each defined counter, along
+ * with the number of passes each counter took.
+ */
+static void
+print_time_spent(void)
+{
+	timespent *p;
+	struct rusage tot_usage;
+
+	getrusage(RUSAGE_SELF, &tot_usage);
+	fprintf(stderr, "total user time = %ld.%06ld\n",
+	       tot_usage.ru_utime.tv_sec, tot_usage.ru_utime.tv_usec);
+	for (p = counters; p; p = p->next) {
+		fprintf(stderr, "time spent in %s = %ld.%06ld (%d calls)\n",
+			p->name, p->total.tv_sec, p->total.tv_usec,
+			p->calls);
+	}
+}
+
+/* Disable interrupts and start timing some portion of JVM activity.
+ * If we are called for the first time, install the exit function
+ * to print timings.  If we are called for the first time on a counter,
+ * initialize it and add it to the list of all counters.
+ */
+void
+startTiming(timespent *counter, char *name)
+{
+	struct rusage ru;
+	
+	if (!counters) atexit(print_time_spent);
+	if (!counter->name) {
+		counter->name = name;
+		counter->next = counters;
+		counters = counter;
+	}
+	counter->calls++;
+	getrusage(RUSAGE_SELF, &ru);
+	counter->current = ru.ru_utime;
+}
+
+/* End a timing run.  Adjust total time for this counter and enable
+ * interrupts.
+ */
+void
+stopTiming(timespent *counter)
+{
+	struct rusage ru;
+
+	getrusage(RUSAGE_SELF, &ru);
+	ru.ru_utime.tv_usec -= counter->current.tv_usec;
+	if (ru.ru_utime.tv_usec < 0) {
+		ru.ru_utime.tv_usec += 1000000;
+		ru.ru_utime.tv_sec -= 1;
+	}
+	ru.ru_utime.tv_sec -= counter->current.tv_sec;
+
+	/* fprintf(stderr, "%s pass %d: %ld.%06ld + %ld.%06ld = ",
+	        counter->name, counter->calls,
+		counter->total.tv_sec, counter->total.tv_usec,
+		ru.ru_utime.tv_sec, ru.ru_utime.tv_usec); */
+	counter->total.tv_usec += ru.ru_utime.tv_usec;
+	if (counter->total.tv_usec > 1000000) {
+		counter->total.tv_usec -= 1000000;
+		counter->total.tv_sec += 1;
+	}
+	counter->total.tv_sec += ru.ru_utime.tv_sec;
+	/* fprintf(stderr, "%ld.%06ld\n",
+		counter->total.tv_sec, counter->total.tv_usec); */
+}
+#endif /* TIMING */

@@ -25,6 +25,7 @@ typedef struct Classjava_lang_Thread {
   struct Hkaffe_util_Ptr* exceptPtr;
   struct Hkaffe_util_Ptr* exceptObj;
   struct Hkaffe_util_Ptr* jnireferences;
+  struct Hjava_lang_Throwable* stackOverflowError;
   jbool dying;
   struct Hjava_util_Hashtable* threadLocals;
   struct Hjava_lang_Object* suspendResume;
@@ -40,6 +41,7 @@ extern void java_lang_Thread_setPriority0(struct Hjava_lang_Thread*, jint);
 extern void java_lang_Thread_sleep0(jlong);
 extern void java_lang_Thread_interrupt0(struct Hjava_lang_Thread*);
 extern void java_lang_Thread_destroy0(struct Hjava_lang_Thread*);
+extern void java_lang_Thread_stop0(struct Hjava_lang_Thread*, struct Hjava_lang_Object*);
 
 #ifdef __cplusplus
 }

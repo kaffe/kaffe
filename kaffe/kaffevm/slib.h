@@ -38,6 +38,7 @@ char* dlerror(void);
 			}						\
 		}							\
 	}
+#define LIBRARYADDR(ADDR) ADDR = dlsym(RTLD_NEXT, "printf")
 #define	LIBRARYHANDLE	void*
 #if defined(HAVE_DLERROR)
 #define	LIBRARYERROR()	dlerror()
@@ -90,6 +91,7 @@ char* dlerror(void);
 #endif
 #define	LIBRARYFUNCTION(FUNC, SYM)					\
 	rld_lookup(NULL,SYM,&FUNC)
+#define LIBRARYADDR(ADDR) rld_lookup(NULL, "printf", &ADDR)
 #define	LIBRARYHANDLE	long
 #define	LIBRARYERROR()	"No specific error support"
 #endif
@@ -112,6 +114,7 @@ char* dlerror(void);
 		if (shl_findsym(&all_libs,SYM,TYPE_PROCEDURE,&FUNC))	\
 			FUNC = 0;					\
 	}
+#define LIBRARYADDR(ADDR) LIBRARYFUNCTION(ADDR, "printf")
 #define	LIBRARYHANDLE	shl_t
 #define	LIBRARYERROR()	"No specific error support"
 #endif
@@ -136,6 +139,11 @@ char* dlerror(void);
 			}						\
 		}							\
 	}
+
+/* I don't know how to search all libraries in windows, so I assume
+ * kaffevm is in a shared lib.
+ */
+#define LIBRARYADDR(ADDR) ADDR = gc_heap_malloc
 #define	LIBRARYHANDLE	void*
 #define	LIBRARYERROR()	"No specific error support"
 #endif 
@@ -160,6 +168,7 @@ char* dlerror(void);
 	HAND = !dld_link(LIB)
 #define LIBRARYFUNCTION(FUNC, SYM)					\
 	FUNC = dld_get_func(SYM)
+#define LIBRARYADDR(ADDR) ADDR = sbrk(0)
 #define	LIBRARYHANDLE	int
 #define	LIBRARYERROR()	"No specific error support"
 #endif
@@ -173,6 +182,7 @@ char* dlerror(void);
 #if defined(NO_SHARED_LIBRARIES)
 #undef	LIBRARYLOAD
 #undef	LIBRARYFUNCTION
+#undef  LIBRARYADDR
 #undef	LIBRARYHANDLE
 #undef	LIBRARYERROR
 
@@ -189,6 +199,7 @@ char* dlerror(void);
 			}						\
 		}							\
 	} while (0)
+#define LIBRARYADDR(ADDR) ADDR = 0
 #define	LIBRARYHANDLE			int
 #define	LIBRARYERROR()			"No shared library support"
 

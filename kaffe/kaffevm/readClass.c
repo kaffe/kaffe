@@ -24,7 +24,7 @@
 #include "readClass.h"
 
 Hjava_lang_Class*
-readClass(Hjava_lang_Class* classThis, classFile* fp, struct Hjava_lang_ClassLoader* loader)
+readClass(Hjava_lang_Class* classThis, classFile* fp, struct Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 {
 	u2 minor_version;
 	u2 major_version;
@@ -51,7 +51,9 @@ DBG(	printf("major=%d, minor=%d\n", major_version, minor_version);	)
 		fprintf(stderr, "Warning: Minor version number mismatch.\n");
 	}
 
-	readConstantPool(classThis, fp);
+	if (readConstantPool(classThis, fp, einfo) == false) {
+		return (0);
+	}
 
 	readu2(&access_flags, fp);
 	readu2(&this_class, fp);

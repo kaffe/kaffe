@@ -29,13 +29,19 @@
 #include "soft.h"
 
 static void throwAbstractMethodError(void);
-static void throwNoSuchMethodError(void);
 
 /*
  * Lookup a method reference and get the various interesting bits.
+ *
+ * Return false if unsuccessful because of a malformed class file
+ *	or if the class couldn't be found or processed.
+ * Returns true otherwise. 
+ *
+ * Note that even if it returns true, the method may not be found.
+ * call->method is set to NULL in this case.
  */
-void
-getMethodSignatureClass(constIndex idx, Hjava_lang_Class* this, bool loadClass, bool isSpecial, callInfo* call)
+bool
+getMethodSignatureClass(constIndex idx, Hjava_lang_Class* this, bool loadClass, bool isSpecial, callInfo* call, errorInfo *einfo)
 {
 	constants* pool;
 	constIndex ci;
@@ -47,8 +53,11 @@ getMethodSignatureClass(constIndex idx, Hjava_lang_Class* this, bool loadClass, 
 	pool = CLASS_CONSTANTS(this);
 	if (pool->tags[idx] != CONSTANT_Methodref &&
 	    pool->tags[idx] != CONSTANT_InterfaceMethodref) {
-DBG(MLOOKUP,	dprintf("No Methodref found\n");			)
-                throwNoSuchMethodError();
+DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
+		/* shouldn't that be ClassFormatError or something? */
+		SET_LANG_EXCEPTION_MESSAGE(einfo, NoSuchMethodError, 
+			"method name unknown")
+                return (false);
 	}
 
 	ni = METHODREF_NAMEANDTYPE(idx, pool);
@@ -64,8 +73,12 @@ DBG(MLOOKUP,	dprintf("No Methodref found\n");			)
 	}
 	else {
 		ci = METHODREF_CLASS(idx, pool);
-		class = getClass(ci, this);
-		processClass(class, CSTATE_LINKED);
+		class = getClass(ci, this, einfo);
+		if (class == NULL)
+			return (false);
+		if (processClass(class, CSTATE_LINKED, einfo) == false) {
+			return (false);
+		}
 
                 if (isSpecial == true) {
                         if (!equalUtf8Consts(name, constructor_name) && class !=
@@ -73,9 +86,6 @@ DBG(MLOOKUP,	dprintf("No Methodref found\n");			)
                                 class = this->superclass;
                         }
                 }
-
-DBG(MLOOKUP,	dprintf("getMethodSignatureClass(%s,%s,%s)\n",
-			class->name->data, name->data, sig->data);	)
 
 		call->class = class;
 		call->method = 0;
@@ -89,15 +99,21 @@ DBG(MLOOKUP,	dprintf("getMethodSignatureClass(%s,%s,%s)\n",
 				break;
 			}
 		}
-
 	}
 
 	/* Calculate in's and out's */
 	countInsAndOuts(sig->data, &call->in, &call->out, &call->rettype);
+
+DBG(MLOOKUP,	
+	if (loadClass) 
+		dprintf("getMethodSignatureClass(%s,%s,%s) -> %s\n",
+			call->class->name->data, name->data, sig->data, 
+			(call->method ? "success" : "failure"));	)
+	return (true);
 }
 
 Hjava_lang_Class*
-getClass(constIndex idx, Hjava_lang_Class* this)
+getClass(constIndex idx, Hjava_lang_Class* this, errorInfo *einfo)
 {
 	constants* pool;
 	Utf8Const *name;
@@ -128,21 +144,21 @@ getClass(constIndex idx, Hjava_lang_Class* this)
 		break;
 
 	default:
-		throwException(ClassFormatError);
-		break;
+		SET_LANG_EXCEPTION(einfo, ClassFormatError)
+		return NULL;
 	}
 
 	/* Find the specified class.  We cannot use 'loadClassOrArray' here
 	 * because the name is *not* a signature.
 	 */
 	if (name->data[0] == '[') {
-		class = loadArray(name, this->loader);
+		class = loadArray(name, this->loader, einfo);
 	}
 	else {
-		class = loadClass(name, this->loader);
+		class = loadClass(name, this->loader, einfo);
 	}
-	if (class == 0) {
-		throwException(ClassNotFoundException(name->data));
+	if (class == 0) {	/* propagate failure */
+		return NULL;
 	}
 
 	/* Lock the class while we update the constant pool.  Someone
@@ -156,8 +172,8 @@ getClass(constIndex idx, Hjava_lang_Class* this)
 	return (class);
 }
 
-void
-getField(constIndex idx, Hjava_lang_Class* this, bool isStatic, fieldInfo* ret)
+bool
+getField(constIndex idx, Hjava_lang_Class* this, bool isStatic, fieldInfo* ret, errorInfo *einfo)
 {
 	constants* pool;
 	constIndex ci;
@@ -167,12 +183,15 @@ getField(constIndex idx, Hjava_lang_Class* this, bool isStatic, fieldInfo* ret)
 
 	pool = CLASS_CONSTANTS(this);
 	if (pool->tags[idx] != CONSTANT_Fieldref) {
-DBG(FLOOKUP,	dprintf("No Fieldref found\n");				)
-                throwException(NoSuchFieldError(""));
+DBG(RESERROR,	dprintf("No Fieldref found\n");				)
+		SET_LANG_EXCEPTION(einfo, NoSuchFieldError)
+		return (false);
 	}
 
 	ci = FIELDREF_CLASS(idx, pool);
-	class = getClass(ci, this);
+	class = getClass(ci, this, einfo);
+	if (class == NULL)
+		return (false);
 
 	ni = FIELDREF_NAMEANDTYPE(idx, pool);
 
@@ -182,14 +201,14 @@ DBG(FLOOKUP,	dprintf("*** getField(%s,%s,%s)\n",
 		WORD2UTF(pool->data[NAMEANDTYPE_SIGNATURE(ni, pool)])->data);
     )
 
-	field = lookupClassField(class, WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)]), isStatic);
+	field = lookupClassField(class, WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)]), isStatic, einfo);
 	if (field == 0) {
-DBG(FLOOKUP,	printf("Field not found\n");				)
-                throwException(NoSuchFieldError(WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)])->data));
+		return (false);
 	}
 
 	ret->field = field;
 	ret->class = class;
+	return (true);
 }
 
 /*
@@ -214,20 +233,25 @@ findMethodLocal(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature)
 			return (mptr);
 		}
 	}
-	return (NULL);
+	return (0);
 }
 
 /*
  * Lookup a method (and translate) in the specified class.
  */
 Method*
-findMethod(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature)
+findMethod(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature, errorInfo *einfo)
 {
+	bool success;
 	/*
 	 * Waz CSTATE_LINKED - Must resolve constants before we do any
 	 * translation.  Might not be right though ... XXX
 	 */
-	processClass(class, CSTATE_OK);
+	if (class->state < CSTATE_USABLE) {
+		success = processClass(class, CSTATE_COMPLETE, einfo);
+		if (!success)
+			return (0);
+	}
 
 	/*
 	 * Lookup method - this could be alot more efficient but never mind.
@@ -239,6 +263,7 @@ findMethod(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature)
 			return mptr;
 		}
 	}
+	SET_LANG_EXCEPTION_MESSAGE(einfo, NoSuchMethodError, name->data)
 	return (0);
 }
 
@@ -267,6 +292,7 @@ DBG(ELOOKUP,	dprintf("Exception not found.\n");			)
 
 /*
  * Look for exception block in method.
+ * Returns true if there is an exception handler, false otherwise.
  */
 bool
 findExceptionBlockInMethod(uintp pc, Hjava_lang_Class* class, Method* ptr, exceptionInfo* info)
@@ -306,7 +332,13 @@ DBG(ELOOKUP,	dprintf("Found exception 0x%x\n", handler_pc); )
 		}
 		/* Resolve catch class if necessary */
 		if (eptr[i].catch_type == NULL) {
-			eptr[i].catch_type = getClass(eptr[i].catch_idx, ptr->class);
+			errorInfo info;
+			eptr[i].catch_type = getClass(eptr[i].catch_idx, ptr->class, &info);
+			/* if we could not resolve the catch class, let's raise
+			 * an error here -- not sure if this is okay.  FIXME!
+			 */
+			if (eptr[i].catch_type == NULL)
+				throwError(&info);
 		}
 		for (cptr = class; cptr != 0; cptr = cptr->superclass) {
 			if (cptr == eptr[i].catch_type) {
@@ -316,13 +348,6 @@ DBG(ELOOKUP,	dprintf("Found exception 0x%x\n", handler_pc); )
 		}
 	}
 	return (false);
-}
-
-static
-void
-throwNoSuchMethodError(void)
-{
-	throwException(NoSuchMethodError("method name unknown"));
 }
 
 static

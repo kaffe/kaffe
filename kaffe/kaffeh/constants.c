@@ -24,8 +24,8 @@ constants* constant_pool;
 /*
  * Read in constant pool from opened file.
  */
-void
-readConstantPool(struct Hjava_lang_Class* this, classFile* fp)
+bool
+readConstantPool(struct Hjava_lang_Class* this, classFile* fp, struct _errorInfo* einfo)
 {
 	constants* info;
 	jword* pool;
@@ -38,7 +38,7 @@ readConstantPool(struct Hjava_lang_Class* this, classFile* fp)
 
 	info = (constants*)malloc(sizeof(constants));
 	if (info == 0) {
-		return;
+		return (false);
 	}
 
 	readu2(&info->size, fp);
@@ -47,7 +47,7 @@ RDBG(	printf("constant_pool_count=%d\n", info->size);	)
 	/* Allocate space for tags and data */
 	pool = (jword*)malloc((sizeof(jword) + sizeof(u1)) * info->size);
 	if (pool == 0) {
-		return;
+		return (false);
 	}
 	tags = (u1*)&pool[info->size];
 	info->data = pool;
@@ -137,9 +137,10 @@ RDBG(				printf("%2d: Cnst %2d: utf8: %.*s\n", i, type, len, name); )
 
 		default:
 			fprintf(stderr, "Bad constant %d\n", type);
-			return;
+			return (false);
 		}
 	}
 
 	constant_pool = info;
+	return (true);
 }

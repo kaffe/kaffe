@@ -24,6 +24,9 @@
 #if defined(HAVE_SYS_TYPES_H)
 #include <sys/types.h>
 #endif
+#if defined(HAVE_SYS_RESOURCE_H)
+#include <sys/resource.h>
+#endif
 #if defined(HAVE_WINNT_H)
 #include <winnt.h>
 #endif

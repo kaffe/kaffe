@@ -120,7 +120,8 @@ public static void setSecurityManager(SecurityManager s) {
 	if (security != defaultSecurityManager) {
 		throw new SecurityException();
 	}
-	security = s;
+	if (s != null)
+		security = s;
 }
 
 native public static long currentTimeMillis();

@@ -230,8 +230,11 @@ jlong
 java_io_ObjectStreamClass_getSerialVersionUID(struct Hjava_lang_Class* cls)
 {
 	Field* fld;
+	errorInfo info;
 
-	fld = lookupClassField(cls, makeUtf8Const("serialVersionUID" , -1), true);
+	fld = lookupClassField(cls, makeUtf8Const("serialVersionUID" , -1), true, &info);
+	/* NB: lookupClassField should only fail if there is no
+	 * serialVersionUID field.  */
 	if (fld == 0) {
 		return (0L);
 	}

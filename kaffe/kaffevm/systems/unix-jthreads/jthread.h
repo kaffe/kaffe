@@ -38,6 +38,7 @@
 #include "jtypes.h"
 #include "gtypes.h"
 #include "thread.h"
+#include "errors.h"
 #include "support.h"
 #include "md.h"
 #include "lerrno.h"
@@ -136,7 +137,8 @@ jthread_init(
         void *(*_allocator)(size_t),	/* memory allocator */
 	void (*_deallocator)(void*),	/* memory deallocator */
 	void (*_destructor1)(void*),	/* called when a thread exits */ 
-	void (*_onstop)(void));		/* called when a thread is stopped */
+	void (*_onstop)(void), 		/* called when a thread is stopped */
+	char *(*_nameThread)(void *tid));/* called to get a thread's name */
 
 /*
  * create a thread with a given priority

@@ -18,6 +18,7 @@
 #include "../../../kaffe/kaffevm/constants.h"
 #include "../../../kaffe/kaffevm/access.h"
 #include "../../../kaffe/kaffevm/soft.h"
+#include "../../../kaffe/kaffevm/baseClasses.h"
 #include <native.h>
 
 /*
@@ -65,18 +66,12 @@ java_lang_Object_clone(struct Hjava_lang_Object* o)
 {
 	Hjava_lang_Object* obj;
 	Hjava_lang_Class* class;
-	static Hjava_lang_Class* cloneClass;
-
-	/* * Lookup cloneable class interface if we don't have it  */
-	if (cloneClass == 0) {
-		cloneClass = lookupClass("java/lang/Cloneable");
-	}
 
 	class = OBJECT_CLASS(o);
 
 	if (!CLASS_IS_ARRAY(class)) {
 		/* Check class is cloneable and throw exception if it isn't */
-		if (soft_instanceof(cloneClass, o) == 0) {
+		if (soft_instanceof(CloneClass, o) == 0) {
 			SignalError("java.lang.CloneNotSupportedException", class->name->data);
 		}
 		/* Clone an object */

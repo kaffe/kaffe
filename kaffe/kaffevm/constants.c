@@ -21,17 +21,16 @@
 #include "object.h"
 #include "constants.h"
 #include "object.h"
-#include "classMethod.h"
-#include "file.h"
 #include "errors.h"
+#include "file.h"
 #include "exception.h"
 #include "locks.h"
 
 /*
  * Read in constant pool from opened file.
  */
-void
-readConstantPool(Hjava_lang_Class* this, classFile* fp)
+bool
+readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 {
 	constants* info = CLASS_CONSTANTS (this);
 	ConstSlot* pool;
@@ -42,7 +41,6 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp)
 	u2 len;
 	u2 d2, d2b;
 	u4 d4, d4b;
-	bool error;
 
 	if (this->centry != 0)
 		assert(holdMutex(this->centry));
@@ -57,7 +55,6 @@ RDBG(	printf("constant_pool_count=%d\n", info->size);	)
 	info->data = pool;
 	info->tags = tags;
 
-	error = false;
 	pool[0] = 0;
 	tags[0] = CONSTANT_Unknown;
 	for (i = 1; i < info->size; i++) {
@@ -135,8 +132,8 @@ RDBG(		printf("Constant type %d\n", type);			)
 			break;
 
 		default:
-			throwException(ClassFormatError);
-			break;
+			SET_LANG_EXCEPTION(einfo, ClassFormatError)
+			return (false);
 		}
 	}
 
@@ -165,4 +162,5 @@ RDBG(		printf("Constant type %d\n", type);			)
 			break;
 		}
 	}
+	return (true);
 }

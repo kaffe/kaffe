@@ -63,7 +63,7 @@ static classpathEntry* classpath;
 char* realClassPath;
 
 void initClasspath(void);
-classFile findInJar(char*);
+classFile findInJar(char*, errorInfo*);
 
 static int getClasspathType(char*);
 static void generateMangledName(char*, char*);
@@ -72,14 +72,16 @@ static void makeClasspath(char*);
 
 /*
  * Find the named class in a directory or JAR file.
+ * Returns true if successful, false otherwise.
  */
-void
-findClass(classEntry* centry)
+bool
+findClass(classEntry* centry, errorInfo *einfo)
 {
 	char buf[MAXBUF];
 	classFile hand;
 	char* cname;
 	Hjava_lang_Class* class;
+	bool success = true;
 
 	cname = centry->name->data;
 	class = centry->class;
@@ -91,7 +93,11 @@ CDBG(	printf("Scanning for class %s\n", cname);		)
 	strcat(buf, ".class");
 
 	/* Find class in Jar file */
-	hand = findInJar(buf);
+	hand = findInJar(buf, einfo);
+	if (hand.type == CP_INVALID) {
+		return (false);
+	}
+
 	switch (hand.type) {
 	case CP_DIR:
 	case CP_ZIPFILE:
@@ -104,15 +110,19 @@ CDBG(	printf("Scanning for class %s\n", cname);		)
 		class->name = centry->name;
 		class->centry = centry;
 		centry->class = class;
-		readClass(class, &hand, NULL);
-		class->state = CSTATE_LOADED;
+		if (readClass(class, &hand, NULL, einfo) == 0) {
+			success = false;
+		} else {
+			success = true;
+			class->state = CSTATE_LOADED;
+		}
 
 		unlockMutex(centry);
 
 		if (hand.base != 0) {
 			gc_free_fixed(hand.base);
 		}
-		return;
+		return (success);
 
 	case CP_SOFILE:
 		/* Note that if for an Elf shared library created using
@@ -127,7 +137,7 @@ CDBG(	printf("Scanning for class %s\n", cname);		)
 		centry->class = class;
 		class->centry = centry;
 		registerClass(centry);
-		return;
+		return (true);
 
 	default:
 		break;
@@ -135,21 +145,22 @@ CDBG(	printf("Scanning for class %s\n", cname);		)
 
 	/*
 	 * Certain classes are essential.  If we don't find them then
-	 * abort.
+	 * abort.  Note that loadStaticClass will abort for essential
+	 * classes, so we only have to check for these two here.
 	 */
 	if (strcmp(cname, "java/lang/ClassNotFoundException") == 0 ||
 	    strcmp(cname, "java/lang/Object") == 0) {
 		fprintf(stderr, "Cannot find essential class '%s' in class library ... aborting.\n", cname);
 		ABORT();
 	}
-	return;
+	return (false);
 }
 
 /*
  * Locate the given name in the CLASSPATH.
  */
 classFile
-findInJar(char* cname)
+findInJar(char* cname, errorInfo *einfo)
 {
 	char buf[MAXBUF];
 	int fp;
@@ -192,7 +203,10 @@ ZDBG(			printf("Opening JAR file %s for %s\n", ptr->path, cname); )
 			}
 			hand.base = getDataJarFile(ptr->u.jar, entry);
 			if (hand.base == 0) {
-				throwException(IOException(ptr->u.jar->error));
+				SET_IO_EXCEPTION_MESSAGE(einfo, 
+					IOException, ptr->u.jar->error);
+				hand.type = CP_INVALID;
+				goto done;
 			}
 			hand.size = entry->uncompressedSize;
 			hand.buf = hand.base;
@@ -203,7 +217,7 @@ ZDBG(			printf("Opening JAR file %s for %s\n", ptr->path, cname); )
 				}
 				fprintf(stderr, "\n");
 			}
-			goto okay;
+			goto done;
 
 		case CP_DIR:
 			strcpy(buf, ptr->path);
@@ -230,14 +244,16 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 					i += j;
 				}
 				else if (!(errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)) {
-					throwException(IOException("failed to read class data"));
+					SET_IO_EXCEPTION_MESSAGE(einfo, IOException, "failed to read class data")
+					hand.type = CP_INVALID;
+					break;
 				}
 			}
 			close(fp);
 			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
 				fprintf(stderr, "Loading %s\n", cname);
 			}
-			goto okay;
+			goto done;
 
 		case CP_SOFILE:
 			if (ptr->u.sof.loaded == 0) {
@@ -254,7 +270,7 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 			if (Kaffe_JavaVMArgs[0].enableVerboseClassloading) {
 				fprintf(stderr, "Registering %s.\n", cname);
 			}
-			goto okay;
+			goto done;
 
 		/* Ignore bad entries */
 		default:
@@ -264,7 +280,7 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 	/* If we call out the loop then we didn't find anything */
 	hand.type = CP_INVALID;
 
-	okay:;
+	done:;
 	unlockStaticMutex(&jarlock);
 
 	return (hand);
@@ -389,7 +405,7 @@ discoverClasspath(char* home)
 	int len;
 	int hlen;
 	char* name;
-	char buf[256];		/* FIXED SIZED BUFFER XXX */
+	char buf[256];		/* FIXME:  FIXED SIZED BUFFER */
 
 	dir = opendir(home);
 	if (dir == 0) {

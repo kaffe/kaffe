@@ -16,7 +16,7 @@
 #include "config-mem.h"
 #include "gtypes.h"
 #include "gc.h"
-#include "classMethod.h"
+#include "gc-block.h"
 #include "locks.h"
 #include "thread.h"
 #include "errors.h"
@@ -36,6 +36,7 @@ static int finalise = 0;
 
 static bool gcRunning = false;
 static bool finalRunning = false;
+static timespent gc_time;
 
 #if defined(STATS)
 
@@ -159,7 +160,6 @@ static refTable			refObjects;
 
 struct _gcStats gcStats;
 extern size_t gc_heap_total;
-extern gc_block* gc_objecthash[];
 extern Hjava_lang_Class* ThreadClass;
 
 static void startGC(void);
@@ -187,9 +187,6 @@ void
 markObject(void* mem)
 {
 	gc_block* info;
-	gc_block* hptr;
-	uintp hidx;
-	int idx;
 	gc_unit* unit;
 
 	/*
@@ -198,32 +195,11 @@ markObject(void* mem)
 	 */
 
 	/* Get block info for this memory - if it exists */
+	info = GCMEM2BLOCK(mem);
 	unit = UTOUNIT(mem);
-	info = GCMEM2BLOCK(unit);
-
-	/* Get hash index for this block */
-	hidx = GC_OBJECT_HASHIDX(info);
-	for (hptr = gc_objecthash[hidx]; hptr != 0; hptr = hptr->next) {
-		if (hptr == info) {
-			/* Make sure 'unit' refers to the beginning of an
-			 * object.  We do this by making sure it is correctly
-			 * aligned within the block.
-			 */
-			idx = GCMEM2IDX(info, unit);
-			if (idx < info->nr && GCBLOCK2MEM(info, idx) == unit && (GC_GET_COLOUR(info, idx) & GC_COLOUR_INUSE) == GC_COLOUR_INUSE) {
-				goto found;
-			}
-			break;
-		}
+	if (gc_heap_isobject(info, unit)) {
+		markObjectDontCheck(unit, info, GCMEM2IDX(info, unit));
 	}
-
-	/* Not found */
-	return;
-
-	/* It is a real object ... */
-
-	found:;
-	markObjectDontCheck(unit, info, idx);
 }
 
 static void
@@ -469,7 +445,7 @@ gcMan(void* arg)
 		for (unit = gclists[grey].cnext; unit != &gclists[grey]; unit = gclists[grey].cnext) {
 			walkMemory(UTOMEM(unit));
 		}
-		/* Now walk any white objects which will be finalied.  They
+		/* Now walk any white objects which will be finalized.  They
 		 * may get reattached, so anything they reference must also
 		 * be live just in case.
 		 */
@@ -525,6 +501,9 @@ startGC(void)
 
 	/* disable the mutator to protect colour lists */
 	LOCK();
+
+	/* measure time */
+	startTiming(&gc_time, "gc");
 
 	/* Walk the referenced objects */
 	for (i = 0; i < REFOBJHASHSZ; i++) {
@@ -604,6 +583,14 @@ finishGC(void)
 		}
 		GC_SET_COLOUR(info, idx, GC_COLOUR_WHITE);
 	}
+
+	/* this is where we'll stop locking out other threads 
+	 * measure gc time until here.  This is not quite accurate, as
+	 * it exclude some of the time to sweep objects, but lacking
+	 * per-thread timing it's the best we can do.
+	 */
+	stopTiming(&gc_time);
+
 	/* 
 	 * Now that all lists that the mutator manipulates are in a
 	 * consistent state, we can reenable the mutator here 
@@ -739,7 +726,7 @@ gcMalloc(size_t size, int fidx)
 	static int gc_init = 0;
 	gc_block* info;
 	gc_unit* unit;
-	void *mem;
+	void * volatile mem;	/* needed on SGI, see comment below */
 	int i;
 
 	/* Initialise GC */
@@ -756,7 +743,7 @@ gcMalloc(size_t size, int fidx)
 		throwOutOfMemory();
 	}
 
-	info = GCMEM2BLOCK(unit);
+	info = GCMEM2BLOCK(mem);
 	i = GCMEM2IDX(info, unit);
 
 	gcStats.totalmem += GCBLOCKSIZE(info);
@@ -790,6 +777,8 @@ gcMalloc(size_t size, int fidx)
 		 * find any references to it.  This is why we need to keep
 		 * a reference in `mem'.  Note that keeping a reference in
 		 * `unit' will not do because markObject performs a UTOUNIT()!
+		 * In addition, on some architectures (SGI), we must tell the
+		 * compiler to not delay computing mem by defining it volatile.
 		 */
 		LOCK(); 
 		GC_SET_COLOUR(info, i, GC_COLOUR_WHITE);
@@ -932,8 +921,9 @@ void
 finalizeObject(void* ob)
 {
 	Method* final;
+	errorInfo info;
 
-	final = findMethod(OBJECT_CLASS((Hjava_lang_Object*)ob), final_name, void_signature);
+	final = findMethod(OBJECT_CLASS((Hjava_lang_Object*)ob), final_name, void_signature, &info);
 	if (final != 0) {
 		callMethodA(final, METHOD_INDIRECTMETHOD(final), (Hjava_lang_Object*)ob, 0, 0);
 	}

@@ -15,6 +15,7 @@
 #include "md.h"
 
 #include "native.h"
+#include "java_lang_Throwable.h"
 #include "java_lang_Thread.h"
 #include "java_lang_ThreadGroup.h"
 
@@ -62,9 +63,12 @@ typedef struct ThreadInterface {
 	void			(*GcWalkThread)(Hjava_lang_Thread*);
 
 	void*			(*nextFrame)(void*);
+	Hjava_lang_Throwable*	(*checkStack)(int);
 
 } ThreadInterface;
 
 extern ThreadInterface Kaffe_ThreadInterface;
+
+#define THREAD_NATIVE()         (*Kaffe_ThreadInterface.currentNative)()
 
 #endif

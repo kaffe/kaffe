@@ -16,6 +16,7 @@
 
 typedef struct Hjava_lang_Class Hjava_lang_Class;
 typedef struct _methods methods;
+typedef struct _errorInfo errorInfo;
 
 /* Following functions are defined in kaffeh/support.c */
 void addClass(u2 this, u2 super, u2 access, constants* cpool);

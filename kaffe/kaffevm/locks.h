@@ -21,7 +21,7 @@
 #define	broadcastCond			_broadcastCond
 #define	holdMutex			_holdMutex
 
-#define	initStaticLock(THING)		__initLock((THING))
+#define	initStaticLock(THING)		__initLock((THING), #THING)
 #define	lockStaticMutex(THING)		__lockMutex((THING))
 #define	unlockStaticMutex(THING)	__unlockMutex((THING))
 #define	waitStaticCond(THING, TIME)	__waitCond((THING), (TIME))
@@ -41,7 +41,7 @@ typedef struct _iLock {
 } iLock;
 
 extern iLock*	getLock(void*);
-extern void	__initLock(iLock* lk);
+extern void	__initLock(iLock* lk, const char *lkname);
 extern void	__lockMutex(iLock*);
 extern void	__unlockMutex(iLock*);
 extern int	__waitCond(iLock*, jlong);

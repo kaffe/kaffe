@@ -15,6 +15,7 @@
 #include "gtypes.h"
 #include "object.h"
 #include "constants.h"
+#include "errors.h"
 
 #define	MAXMETHOD		64
 
@@ -24,12 +25,14 @@
 #define	CSTATE_PRELOADED	2
 #define CSTATE_DOING_PREPARE	3
 #define CSTATE_PREPARED		4
-#define	CSTATE_DOING_LINK	5
-#define CSTATE_LINKED		6
-#define	CSTATE_DOING_CONSTINIT	7
-#define	CSTATE_CONSTINIT	8
+#define CSTATE_LINKED		5
+#define CSTATE_CONSTINIT	6
+#define	CSTATE_DOING_SUPER	7
+#define	CSTATE_USABLE		8
 #define	CSTATE_DOING_INIT	9
-#define	CSTATE_OK		10
+#define	CSTATE_INIT_FAILED	10
+#define	CSTATE_COMPLETE		11
+#define	CSTATE_FAILED		-1
 
 struct _classEntry;
 
@@ -88,8 +91,9 @@ struct Hjava_lang_Class {
 	   It contains CLASS_FSIZE/ALIGNMENTVOIDP bits.
 	   The MSB corresponds to the dtable field.
 	 */
-	int			*gc_layout;
+	int*			gc_layout;
 	char			state;
+	void*			processingThread;
 };
 
 #ifndef __DEFINED_CLASS
@@ -245,10 +249,10 @@ struct _classFile;
  * 'processClass' is the core of the class initialiser and can prepare a
  * class from the cradle to the grave.
  */
-void			processClass(Hjava_lang_Class*, int);
+bool			processClass(Hjava_lang_Class*, int, errorInfo *einfo);
 
-Hjava_lang_Class*	loadClass(Utf8Const*, Hjava_lang_ClassLoader*);
-Hjava_lang_Class*	loadArray(Utf8Const*, Hjava_lang_ClassLoader*);
+Hjava_lang_Class*	loadClass(Utf8Const*, Hjava_lang_ClassLoader*, errorInfo *einfo);
+Hjava_lang_Class*	loadArray(Utf8Const*, Hjava_lang_ClassLoader*, errorInfo *einfo);
 
 void			loadStaticClass(Hjava_lang_Class**, char*);
 
@@ -260,22 +264,22 @@ Field*        		addField(Hjava_lang_Class*, struct _field_info*);
 void			addCode(Method*, uint32, struct _classFile*);
 void			addInterfaces(Hjava_lang_Class*, int, Hjava_lang_Class**);
 void			setFieldValue(Field*, u2);
-Hjava_lang_Class*	resolveFieldType(Field*, Hjava_lang_Class*);
+Hjava_lang_Class*	resolveFieldType(Field*, Hjava_lang_Class*, errorInfo*);
 
 classEntry* lookupClassEntry(Utf8Const*, Hjava_lang_ClassLoader*);
-Hjava_lang_Class*	lookupClass(char*);
+Hjava_lang_Class*	lookupClass(char*, errorInfo*);
 Hjava_lang_Class*	lookupArray(Hjava_lang_Class*);
 Hjava_lang_Class*	lookupObjectArrayClass(Hjava_lang_Class*);
-Field*			lookupClassField(Hjava_lang_Class*, Utf8Const*, bool);
+Field*			lookupClassField(Hjava_lang_Class*, Utf8Const*, bool, errorInfo *einfo);
 
-Hjava_lang_Class*	getClass(constIndex, Hjava_lang_Class*);
+Hjava_lang_Class*	getClass(constIndex, Hjava_lang_Class*, errorInfo *einfo);
 
 void			countInsAndOuts(char*, short*, short*, char*);
 int			sizeofSig(char**, bool);
 int			sizeofSigItem(char**, bool);
 void			establishMethod(Method*);
-Hjava_lang_Class*	classFromSig(char**, Hjava_lang_ClassLoader*);
-Hjava_lang_Class*	getClassFromSignature(char*, Hjava_lang_ClassLoader*);
+Hjava_lang_Class*	classFromSig(char**, Hjava_lang_ClassLoader*, errorInfo*);
+Hjava_lang_Class*	getClassFromSignature(char*, Hjava_lang_ClassLoader*, errorInfo*);
 
 void			finishFields(Hjava_lang_Class*);
 Method*			findMethodFromPC(uintp);

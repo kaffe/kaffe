@@ -21,8 +21,13 @@
 #define	object_array_offset	(ARRAY_DATA_OFFSET)
 #define	object_array_length	(ARRAY_SIZE_OFFSET)
 
-#define	get_method_info(idx)  getMethodSignatureClass(idx, meth->class, true, false, &cinfo)
-#define	get_special_method_info(idx)  getMethodSignatureClass(idx, meth->class, true, true, &cinfo)
+#define get_method_info(idx)  \
+  if (getMethodSignatureClass(idx, meth->class, true, false, &cinfo, &einfo) \
+	== false) { throwError(&einfo); }
+
+#define get_special_method_info(idx)  \
+  if (getMethodSignatureClass(idx, meth->class, true, true, &cinfo, &einfo) \
+        == false) { throwError(&einfo); }
 
 #define	get_dispatch_table(mtable) \
 	move_ref(mtable, ((slots*)&cinfo.class->dtable))
@@ -37,15 +42,20 @@
 #define	method_returntype()	(cinfo.rettype)
 
 #define	get_field_info(IDX) \
-	getField(IDX, meth->class, false, &finfo)
+  if (getField(IDX, meth->class, false, &finfo, &einfo) == false) { \
+    throwError(&einfo); \
+  }
 
 #define	get_static_field_info(IDX) \
-	getField(IDX, meth->class, true, &finfo)
+  if (getField(IDX, meth->class, true, &finfo, &einfo) == false) { \
+    throwError(&einfo); \
+  }
 
 #define field_class()		(finfo.class)
 
 #define	get_class_info(_idx) \
-	crinfo = getClass(_idx, meth->class)
+  crinfo = getClass(_idx, meth->class, &einfo); \
+  if (crinfo == 0) { throwError(&einfo); }
 
 #define	class_object()		(crinfo)
 

@@ -170,6 +170,32 @@ AC_MSG_RESULT($with_engine)
 AC_SUBST_FILE(engine_frag)dnl
 engine_frag=$srcdir/kaffe/kaffevm/$with_engine/Makefile.frag
 
+dnl -------------------------------------------------------------------------
+dnl Choose a gc_block allocation scheme
+dnl -------------------------------------------------------------------------
+
+AC_ARG_WITH(gcblock, [  --with-gcblock=(old|new)	Choose gc_block allocation])
+
+dnl default to old scheme
+if test "$with_gcblock" = ""; then
+	with_gcblock=old
+fi
+
+dnl This is not a very good test.  AC_FUNC_MMAP may decide that mmap is 
+dnl present but broken.  The only way to check this is to look at 
+dnl ac_func_mmap_fixed_mapped.
+
+AC_FUNC_MMAP			dnl keep out of conditional
+if test "$with_gcblock" = "new"; then
+	if test "$ac_cv_func_mmap_fixed_mapped" != "yes"; then
+		echo "can't use new gcblock without mmap"
+		with_gcblock=old
+	fi
+fi
+
+dnl transform to directory name in kaffevm/mem
+gcblock="block.$with_gcblock"
+
 dnl =========================================================================
 
 AC_MSG_CHECKING(library type)
@@ -283,6 +309,7 @@ AC_SUBST(LINKLIB)
 AC_SUBST(LINKVMLIB)
 AC_SUBST(LD)
 AC_SUBST(THREAD_SYSTEM)
+AC_SUBST(gcblock)
 AC_SUBST(DEPTOOL)
 AC_SUBST(INC_DEPEND)
 AC_DEFINE_UNQUOTED(LIBRARYSUFFIX, "$LIBEXT")
@@ -491,6 +518,24 @@ CPPFLAGS="$CPPFLAGS -I/usr/local/include"
 AC_HEADER_STDC
 AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h sys/socket.h winnt.h wintypes.h wtypes.h winbase.h windows.h winsock.h dlfcn.h sys/ioctl.h sys/filio.h malloc.h alloca.h sys/param.h sys/utsname.h pwd.h asm/sigcontext.h sigcontext.h asm/signal.h signal.h mach-o/rld.h sys/types.h sys/stat.h string.h sys/select.h memory.h bsd/libc.h dl.h features.h sys/wait.h zlib.h netinet/tcp.h netinet/in_systm.h jpeglib.h gif.h png.h gmp.h)
 AC_HEADER_DIRENT
+
+dnl We need both getrusage and the header containing its decls.
+have_rusage=no
+AC_CHECK_HEADERS(sys/resource.h, AC_CHECK_FUNCS(getrusage, have_rusage=yes))
+
+dnl =========================================================================
+dnl Do we build a timing measuring vm?
+dnl -------------------------------------------------------------------------
+
+AC_ARG_WITH(timing,[  --with-timing              Time vm execution])
+
+if test "$with_timing" = "yes" ; then
+	if test have_rusage = "no" ; then
+		echo "Can't build with timing but no rusage"
+	else
+		AC_DEFINE(TIMING)
+	fi
+fi
 
 dnl -------------------------------------------------------------------------
 

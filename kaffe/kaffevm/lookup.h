@@ -35,11 +35,11 @@ typedef struct _fieldInfo {
 	Hjava_lang_Class*	class;
 } fieldInfo;
 
-void	getMethodSignatureClass(constIndex, Hjava_lang_Class*, bool, bool, callInfo*);
-void	getField(constIndex, Hjava_lang_Class*, bool, fieldInfo*);
-Hjava_lang_Class* getClass(constIndex, Hjava_lang_Class*);
+bool	getMethodSignatureClass(constIndex, Hjava_lang_Class*, bool, bool, callInfo*, errorInfo*);
+bool	getField(constIndex, Hjava_lang_Class*, bool, fieldInfo*, errorInfo*);
+Hjava_lang_Class* getClass(constIndex, Hjava_lang_Class*, errorInfo*);
 
-Method* findMethod(Hjava_lang_Class*, Utf8Const*, Utf8Const*);
+Method* findMethod(Hjava_lang_Class*, Utf8Const*, Utf8Const*, errorInfo*);
 Method* findMethodLocal(Hjava_lang_Class*, Utf8Const*, Utf8Const*);
 
 void	findExceptionInMethod(uintp, Hjava_lang_Class*, exceptionInfo*);

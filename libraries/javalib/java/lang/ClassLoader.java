@@ -86,6 +86,18 @@ native public static byte[] getSystemResourceAsBytes0(String name);
 
 native private void init();
 
+/**
+ * The VM will always call loadClassVM, and never loadClass directly
+ * because otherwise an exception might go uncaught.
+ */
+private Class loadClassVM(String name, boolean resolve) {
+	Class clazz = null;
+	try {
+		clazz = loadClass(name, resolve);
+	} catch (Throwable _) { }
+	return clazz;
+}
+
 public Class loadClass(String name) throws ClassNotFoundException {
 	return (loadClass(name, true));
 }

@@ -73,11 +73,14 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 	clazz = unhand(this)->clazz;
 
 	/* 
-	 * make sure constants are resolved and static initializers are run 
-	 * before invoking a method on this class
+	 * we must not have handed out Method objects to unusable class
+	 * objects.  XXX
 	 */
-	if (clazz->state != CSTATE_OK) {
-		processClass(clazz, CSTATE_OK);
+	if (clazz->state < CSTATE_USABLE) {
+		errorInfo info;
+		SET_LANG_EXCEPTION_MESSAGE(&info, InternalError, 
+			"attempt to invoke method on unusable class object");
+		throwError(&info);
 	}
 
 	slot = unhand(this)->slot;

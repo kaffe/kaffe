@@ -17,6 +17,7 @@ struct _exceptionFrame;
 struct Hjava_lang_Class;
 struct Hjava_lang_Object;
 struct _methods;
+struct _errorInfo;
 
 typedef struct _jexceptionEntry {
 	uintp				start_pc;
@@ -43,6 +44,7 @@ struct _exceptionFrame;
 
 void throwException(struct Hjava_lang_Object*) __NORETURN__;
 void throwExternalException(struct Hjava_lang_Object*) __NORETURN__;
+void throwError(struct _errorInfo*) __NORETURN__;
 
 struct Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
 
@@ -54,5 +56,9 @@ extern void catchSignal(int, void*);
 #else
 #define SIG_T   void*
 #endif
+
+#define STACK_HIGH      (8*1024)
+#define STACK_LOW       256
+extern int needOnStack;		/* # of bytes needed on stack */
 
 #endif

@@ -12,8 +12,29 @@
 #ifndef __errors_h
 #define __errors_h
 
+/*
+ * This struct serves to keep information about an exception
+ * that will be thrown later if some operation failed.
+ */
+typedef struct _errorInfo {
+	char *classname;		/* name of exception class */
+	char *mess;
+} errorInfo;
+
 #include "classMethod.h"
 #include "support.h"
+
+#define SET_LANG_EXCEPTION(ep, NAME) { \
+  (ep)->classname = "java.lang." #NAME; \
+  (ep)->mess = ""; }
+
+#define SET_LANG_EXCEPTION_MESSAGE(ep, NAME, MESS) { \
+  (ep)->classname = "java.lang." #NAME; \
+  (ep)->mess = MESS; }
+
+#define SET_IO_EXCEPTION_MESSAGE(ep, NAME, MESS) { \
+  (ep)->classname = "java.io." #NAME; \
+  (ep)->mess = MESS; }
 
 #define NEW_LANG_EXCEPTION(NAME) \
   execute_java_constructor("java.lang." #NAME, 0, "()V")
@@ -50,6 +71,7 @@
 #define AbstractMethodError NEW_LANG_EXCEPTION(AbstractMethodError)
 #define VerifyError NEW_LANG_EXCEPTION(VerifyError)
 #define ThreadDeath NEW_LANG_EXCEPTION(ThreadDeath)
+#define StackOverflowError NEW_LANG_EXCEPTION(StackOverflowError)
 #define IllegalThreadStateException NEW_LANG_EXCEPTION(IllegalThreadStateException)
 #define	InstantiationException(M) NEW_LANG_EXCEPTION_MESSAGE(InstantiationException, M)
 #define	IOException(M) NEW_IO_EXCEPTION_MESSAGE(IOException, M)

@@ -1083,6 +1083,14 @@ Tspinoffall(void)
 	Tspinoff(0);
 }
 
+static
+Hjava_lang_Throwable*
+TcheckStack(int left)
+{
+	/* stack overflow check not implemented in unix-internal system */
+	return (0);	
+}
+
 /*
  * Define the thread interface.
  */
@@ -1107,6 +1115,7 @@ ThreadInterface Kaffe_ThreadInterface = {
 	TwalkThread,
 
 	TnextFrame,
+	TcheckStack,
 };
 
 /*

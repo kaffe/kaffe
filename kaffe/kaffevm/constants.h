@@ -142,8 +142,9 @@ int equalUtf8Consts (register Utf8Const* a, register Utf8Const *b)
 #define CLASS_FIELD(idx, pool)			((Field*)pool->data[idx])
 
 struct _classFile;
+struct _errorInfo;
 struct Hjava_lang_Class;
 
-extern void readConstantPool(struct Hjava_lang_Class*, struct _classFile*);
+extern bool readConstantPool(struct Hjava_lang_Class*, struct _classFile*, struct _errorInfo*);
 
 #endif

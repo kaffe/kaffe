@@ -89,6 +89,10 @@ static int alarmBlocked;
 
 static int sigPending;		/* flags that says whether a intr is pending */
 static int pendingSig[NSIG];	/* array that says which intrs are pending */
+static int sigPipe[2];		/* a pipe to ensure we don't lose our wakeup */
+static int wouldlosewakeup;	/* a flag that says whether we're past the
+				   point where we check for pending signals 
+				   before sleeping in select() */
 
 static int blockInts;		/* counter that says whether irqs are blocked */
 static int needReschedule;	/* is a change in the current thread required */
@@ -101,6 +105,7 @@ static void *(*allocator)(size_t); 	/* malloc */
 static void (*deallocator)(void*);	/* free */
 static void (*destructor1)(void*);	/* call when a thread exits */
 static void (*onstop)(void);		/* call when a thread is stopped */
+static char *(*nameThread)(void *); 	/* call to get a thread's name */
 static int  max_priority;		/* maximum supported priority */
 static int  min_priority;		/* minimum supported priority */
 
@@ -501,8 +506,17 @@ interrupt(int sig)
 	 * We better don't touch one of them in this case and come back later.
 	 */
 	if (blockInts > 0) {
+		char c;
 		pendingSig[sig] = 1;
 		sigPending = 1;
+		/* if we would lose the wakeup because we're about to go to
+		 * sleep in select(), write into the sigPipe to ensure select
+		 * returns.
+		 */
+		if (wouldlosewakeup) {
+			write(sigPipe[1], &c, 1);
+			wouldlosewakeup = 0;
+		}
 		return;
 	}
 	intsDisable();
@@ -579,6 +593,67 @@ alarmException(void)
 	}
 }
 
+#ifdef DEBUG
+/*
+ * print thread flags in pretty form.
+ */
+static char*
+printflags(unsigned i)
+{
+	static char b[256];	/* plenty */
+	struct {
+		int flagvalue;
+		char *flagname;
+	} flags[] = {
+	    { THREAD_FLAGS_GENERAL, "GENERAL" },
+	    { THREAD_FLAGS_NOSTACKALLOC, "NOSTACKALLOC" },
+	    { THREAD_FLAGS_KILLED, "KILLED" },
+	    { THREAD_FLAGS_ALARM, "ALARM" },
+	    { THREAD_FLAGS_USERSUSPEND, "USERSUSPEND" },
+	    { THREAD_FLAGS_DONTSTOP, "DONTSTOP" },
+	    { THREAD_FLAGS_DYING, "DYING" },
+	    { THREAD_FLAGS_BLOCKEDEXTERNAL, "BLOCKEDEXTERNAL" },
+	    { 0, NULL }
+	}, *f = flags;
+
+	b[0] = '\0';
+	while (f->flagname) {
+		if (i & f->flagvalue) {
+			strcat(b, f->flagname);
+			strcat(b, " ");
+		}
+		f++;
+	}
+	return b;
+}
+
+static void
+dumpThreads(void)
+{
+        jthread* tid;
+
+	dprintf("dumping live threads:\n");
+        for (tid = liveThreads; tid != NULL; tid = tid->nextlive) {
+		dprintf("tid %p, status %s flags %s\n  `%s'", tid, 
+			tid->status == THREAD_SUSPENDED ? "SUSPENDED" :
+			tid->status == THREAD_RUNNING ? "RUNNING" :
+			tid->status == THREAD_DEAD ? "DEAD" : "UNKNOWN!!!", 
+			printflags(tid->flags), nameThread(tid->jlThread));
+		if (tid->blockqueue != NULL) {
+			jthread *t;
+			dprintf(" blockqueue %p (%p->", tid->blockqueue,
+			    *tid->blockqueue);
+			for (t = (*tid->blockqueue)->nextQ; t; t = t->nextQ) {
+				dprintf("%p->", t);
+			}
+			dprintf("|) ");
+		}
+		dprintf("\n");
+        }
+}
+#endif DEBUG
+
+
 /*
  * handle an interrupt.
  * 
@@ -589,6 +664,12 @@ static void
 handleInterrupt(int sig)
 {
 	switch(sig) {
+#ifdef DEBUG
+	case SIGUSR1:
+		dumpThreads();
+		break;
+#endif
+
 	case SIGALRM:
 		alarmException();
 		break;
@@ -739,7 +820,8 @@ jthread_init(int pre,
 	void *(*_allocator)(size_t), 
 	void (*_deallocator)(void*),
 	void (*_destructor1)(void*),
-	void (*_onstop)(void))
+	void (*_onstop)(void),
+	char *(*_nameThread)(void *tid))
 {
         jthread *jtid; 
 	int i;
@@ -785,6 +867,7 @@ jthread_init(int pre,
 	allocator = _allocator;
 	deallocator = _deallocator;
 	onstop = _onstop;
+	nameThread = _nameThread;
 	destructor1 = _destructor1;
 	threadQhead = allocator((maxpr + 1) * sizeof (jthread *));
 	threadQtail = allocator((maxpr + 1) * sizeof (jthread *));
@@ -793,13 +876,23 @@ jthread_init(int pre,
 	catchSignal(SIGALRM, interrupt);
 	catchSignal(SIGIO, interrupt);
 
+	/* a we use this signal to get a thread dump */
+	DBGIF(catchSignal(SIGUSR1, interrupt);)
+
 #if defined(SIGCHLD)
         catchSignal(SIGCHLD, interrupt);
 #endif  
 
+	/* create the helper pipe for lost wakeup problem */
+	if (pipe(sigPipe) != 0)
+		return (0);
+	if (maxFd == -1) {
+		maxFd = sigPipe[0] > sigPipe[1] ? sigPipe[0] : sigPipe[1];
+	}
+
 	jtid = newThreadCtx(0);
 	if (!jtid)
-		return 0;
+		return (0);
 
         jtid->priority = mainthreadpr;
         jtid->status = THREAD_SUSPENDED;
@@ -1237,10 +1330,25 @@ dprintf("switch from %p to %p\n", lastThread, currentJThread); )
 			return;
 		}
 
+		/* since we set `wouldlosewakeup' first, we might write into
+		 * the pipe but not go to handleIO at all.  That's okay ---
+		 * all it means is that we'll return from the next select()
+		 * for no reason.  handleIO will eventually drain the pipe.
+		 */
+		wouldlosewakeup = 1;
+		if (sigPending) {
+			processSignals();
+			continue;
+		}
+
 		if (DBGEXPR(DETECTDEADLOCK, true, false) &&
-			tblocked_on_external == 0)
+			tblocked_on_external == 0) {
+			extern void dumpLocks(void);	/* XXX */
+			dumpLocks();			/* XXX */
+			dumpThreads();
 			assert(!!!"Deadlock: "
 			   " all threads blocked on internal events\n");
+		}
 		handleIO(true);
 	}
 }
@@ -1282,8 +1390,16 @@ retry:
 	if (sleep) {
 		b = blockInts;
 		blockInts = 0;
+		FD_SET(sigPipe[0], &rd);
 	}
 	r = select(maxFd+1, &rd, &wr, 0, sleep ? 0 : &zero);
+
+	/* drain helper pipe if a byte was written */
+	if (r > 0 && FD_ISSET(sigPipe[0], &rd)) {
+		char c;
+		read(sigPipe[0], &c, 1);
+	}
+
 	if (sleep) {
 		blockInts = b;
 		if (sigPending)
@@ -1634,7 +1750,8 @@ jthreadedAccept(int fd, struct sockaddr* addr, size_t* len)
 	intsDisable();
 	for (;;) {
 		r = accept(fd, addr, len);
-		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR))
+		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR 
+				|| errno == EAGAIN))
 			break;
 		blockOnFile(fd, TH_ACCEPT);
 	}
@@ -1653,9 +1770,8 @@ jthreadedRead(int fd, void* buf, size_t len)
 	intsDisable();
 	for (;;) {
 		r = read(fd, buf, len);
-		/* Note that EWOULDBLOCK != EAGAIN on HP/UX */
-		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR || 
-			errno ==EAGAIN))
+		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR 
+				|| errno == EAGAIN))
 			break;
 
 		blockOnFile(fd, TH_READ);
@@ -1684,7 +1800,7 @@ jthreadedWrite(int fd, const void* buf, size_t len)
 			r = ptr - buf;
 			continue;
 		}
-		if (!(errno == EWOULDBLOCK || errno == EINTR))
+		if (!(errno == EWOULDBLOCK || errno == EINTR || errno == EAGAIN))
 			break;
 
 		blockOnFile(fd, TH_WRITE);
@@ -1706,7 +1822,8 @@ jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
 	intsDisable();
 	for (;;) {
 		r = recvfrom(fd, buf, len, flags, from, fromlen);
-		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR))
+		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR 
+					|| errno == EAGAIN))
 			break;
 		blockOnFile(fd, TH_READ);
 	}

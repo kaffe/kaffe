@@ -17,14 +17,13 @@
 #include "slots.h"
 #include "access.h"
 #include "object.h"
-#include "classMethod.h"
+#include "errors.h"
 #include "code.h"
 #include "file.h"
 #include "readClass.h"
 #include "baseClasses.h"
 #include "thread.h"
 #include "itypes.h"
-#include "errors.h"
 #include "exception.h"
 #include "md.h"
 #include "external.h"
@@ -33,6 +32,7 @@
 #include "gc.h"
 #include "locks.h"
 #include "md.h"
+#include "jni.h"
 
 #define	CLASSHASHSZ	256	/* Must be a power of two */
 static iLock classHashLock;
@@ -52,18 +52,19 @@ static Hjava_lang_Class* arr_interfaces[2];
 
 extern gcFuncs gcClassObject;
 
-extern void findClass(classEntry*);
-extern void verify2(Hjava_lang_Class*);
-extern void verify3(Hjava_lang_Class*);
+extern bool findClass(classEntry*, errorInfo*);
+extern bool verify2(Hjava_lang_Class*, errorInfo*);
+extern bool verify3(Hjava_lang_Class*, errorInfo*);
 
 static void internalSetupClass(Hjava_lang_Class*, Utf8Const*, int, int, Hjava_lang_ClassLoader*);
 
 static void buildDispatchTable(Hjava_lang_Class*);
+static bool checkForAbstractMethods(Hjava_lang_Class* class, errorInfo *einfo);
 static void buildInterfaceDispatchTable(Hjava_lang_Class*);
 static void allocStaticFields(Hjava_lang_Class*);
 static void resolveObjectFields(Hjava_lang_Class*);
 static void resolveStaticFields(Hjava_lang_Class*);
-static void resolveConstants(Hjava_lang_Class*);
+static bool resolveConstants(Hjava_lang_Class*, errorInfo *einfo);
 
 #if !defined(ALIGNMENT_OF_SIZE)
 #define	ALIGNMENT_OF_SIZE(S)	(S)
@@ -75,9 +76,11 @@ static void resolveConstants(Hjava_lang_Class*);
  * is called by various parts of the machine in order to load, link
  * and initialise the class.  Putting it all together here makes it a damn
  * sight easier to understand what's happening.
+ *
+ * Returns true if processing was successful, false otherwise.
  */
-void
-processClass(Hjava_lang_Class* class, int tostate)
+bool
+processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 {
 	int i;
 	int j;
@@ -87,10 +90,23 @@ processClass(Hjava_lang_Class* class, int tostate)
 	Hjava_lang_Class** newifaces;
 	static bool init;
 	static iLock classLock;
+	bool success = true;	/* optimistic */
+#ifdef DEBUG
+	static int depth;
+#endif
+
+	/* if the initialization of that class failed once before, don't
+	 * bother and report that no definition for this class exists
+	 */
+	if (class->state == CSTATE_FAILED) {
+		SET_LANG_EXCEPTION_MESSAGE(einfo, 
+			NoClassDefFoundError, class->name->data)
+		return (false);
+	}
 
 	/* If this class is initialised to the required point, quit now */
 	if (class->state >= tostate) {
-		return;
+		return (true);
 	}
 
 	/* Initialise class lock */
@@ -109,12 +125,21 @@ processClass(Hjava_lang_Class* class, int tostate)
 
 	lockStaticMutex(&classLock);
 
+DBG(RESERROR,
+	/* show calls to processClass when debugging resolution errors */
+	depth++;
+	for (i = 0; i < depth; dprintf("  ", i++));
+	dprintf("%p entering process class %s %d->%d\n", 
+		(*Kaffe_ThreadInterface.currentNative)(), class->name->data,
+		class->state, tostate);
+    )
 	DO_CLASS_STATE(CSTATE_PREPARED) {
 
 		/* Check for circular dependent classes */
 		if (class->state == CSTATE_DOING_PREPARE) {
-			unlockStaticMutex(&classLock);
-			throwException(ClassCircularityError);
+			SET_LANG_EXCEPTION(einfo, ClassCircularityError)
+			success = false;
+			goto done;
 		}
 
 		/* Allocate any static space required by class and initialise
@@ -129,10 +154,24 @@ processClass(Hjava_lang_Class* class, int tostate)
 
 		/* Load and link the super class */
 		if (class->superclass) {
-			class->superclass = getClass((uintp)class->superclass, class);
-			processClass(class->superclass, CSTATE_LINKED);
-			/* copy field size and gc layout from superclass.
-			 * Later, this class's fields are resolved and added.
+			/* propagate failures in super class loading and 
+			 * processing
+			 */
+			class->superclass = getClass((uintp)class->superclass, 
+							class, einfo);
+			if (class->superclass == 0) {
+				success = false;
+				goto done;
+			}
+			if (processClass(class->superclass, CSTATE_LINKED, 
+					 einfo) == false) {
+				success = false;
+				goto done;
+			}
+						
+			/* Copy initial field size and gc layout. 
+			 * Later, as this class's fields are resolved, they
+			 * are added to the superclass's layout.
 			 */
 			CLASS_FSIZE(class) = CLASS_FSIZE(class->superclass);
 			class->gc_layout = class->superclass->gc_layout;
@@ -152,7 +191,11 @@ processClass(Hjava_lang_Class* class, int tostate)
 		}
 		for (i = 0; i < class->interface_len; i++) {
 			uintp iface = (uintp)class->interfaces[i];
-			class->interfaces[i] = getClass(iface, class);
+			class->interfaces[i] = getClass(iface, class, einfo);
+			if (class->interfaces[i] == 0) {
+				success = false;
+				goto done;
+			}
 			j += class->interfaces[i]->total_interface_len;
 		}
 		class->total_interface_len = j;
@@ -192,6 +235,10 @@ processClass(Hjava_lang_Class* class, int tostate)
 		 */
 		if (!CLASS_IS_INTERFACE(class)) {
 			buildDispatchTable(class);
+			success = checkForAbstractMethods(class, einfo);
+			if (success == false) {
+				goto done;
+			}
 		}
 		else {
 			buildInterfaceDispatchTable(class);
@@ -202,58 +249,183 @@ processClass(Hjava_lang_Class* class, int tostate)
 
 	DO_CLASS_STATE(CSTATE_LINKED) {
 
-		/* Okay, flag we're doing link */
-		SET_CLASS_STATE(CSTATE_DOING_LINK);
-
 		/* Second stage verification - check the class format is okay */
-		verify2(class);
+		success =  verify2(class, einfo);
+		if (success == false) {
+			goto done;
+		}
 
 		/* Third stage verification - check the bytecode is okay */
-		verify3(class);
+		success = verify3(class, einfo);
+		if (success == false) {
+			goto done;
+		}
 
-		/* And note that it's done */
 		SET_CLASS_STATE(CSTATE_LINKED);
 	}
 
-	DO_CLASS_STATE(CSTATE_OK) {
-
-		/* If init is in progress return.  This must be the same
-		 * thread because we lock the class when we come in here.
-		 */
-		if (class->state == CSTATE_DOING_INIT) {
-			unlockStaticMutex(&classLock);
-			return;
+	/* NB: the reason that CONSTINIT is a separate state is that
+	 * CONSTINIT depends on StringClass, which isn't available during 
+	 * initialization when we bring the base classes to the LINKED state.
+	 */
+	DO_CLASS_STATE(CSTATE_CONSTINIT) {
+		/* Initialise the constants */
+		success = resolveConstants(class, einfo);
+		if (success == false) {
+			goto done;
 		}
 
-		SET_CLASS_STATE(CSTATE_DOING_CONSTINIT);
-
-		/* Initialise the constants */
-		resolveConstants(class);
-
+		/* And note that it's done */
 		SET_CLASS_STATE(CSTATE_CONSTINIT);
+	}
+
+retry:
+	DO_CLASS_STATE(CSTATE_USABLE) {
+
+		/* If somebody's already processing the super class,
+		 * check whether it's us.  If so, return.
+		 * Else, wait for the other thread to complete and
+		 * start over to reevaluate the situation.
+		 */
+		if (class->state == CSTATE_DOING_SUPER) {
+			if (THREAD_NATIVE() == class->processingThread) {
+				goto done;
+			} else {
+				while (class->state == CSTATE_DOING_SUPER) {
+					waitStaticCond(&classLock, 0);
+					goto retry;
+				}
+			}
+		}
 
 		if (class->superclass != NULL) {
-			processClass(class->superclass, CSTATE_OK);
+			SET_CLASS_STATE(CSTATE_DOING_SUPER);
+			class->processingThread = THREAD_NATIVE();
+
+			/* We must not hold the class lock here because we 
+			 * might call out into the superclass's initializer 
+			 * here!
+			 */
+			unlockStaticMutex(&classLock);
+			success = processClass(class->superclass, 
+					     CSTATE_COMPLETE, einfo);
+			lockStaticMutex(&classLock);
+			/* wake up any waiting threads */
+			signalStaticCond(&classLock);
+			if (success == false) {
+				goto done;
+			}
 		}
 
-		SET_CLASS_STATE(CSTATE_DOING_INIT);
+		SET_CLASS_STATE(CSTATE_USABLE);
+	}
+
+	DO_CLASS_STATE(CSTATE_COMPLETE) {
+		extern JNIEnv Kaffe_JNIEnv;
+		JNIEnv *env = &Kaffe_JNIEnv;
+		jthrowable exc = 0;
+		JavaVM *vms[1];
+		jsize jniworking;
+
+		/* If we need a successfully initialized class here, but its
+		 * initializer failed, return false as well
+		 */
+		if (class->state == CSTATE_INIT_FAILED) {
+			SET_LANG_EXCEPTION_MESSAGE(einfo, 
+				NoClassDefFoundError, class->name->data)
+			success = false;
+			goto done;
+		}
 
 DBG(STATICINIT, dprintf("Initialising %s static %d\n", class->name->data,
 			CLASS_FSIZE(class)); 	)
 		meth = findMethodLocal(class, init_name, void_signature);
-		if (meth != NULL) {
-			callMethodA(meth, METHOD_INDIRECTMETHOD(meth), 0, 0, 0);
-			/* Since we'll never run this again we might as well
-			 * loose it now.
-			 */
-			METHOD_NATIVECODE(meth) = 0;
-			meth->c.ncode.ncode_start = 0;
-			meth->c.ncode.ncode_end = 0;
+		if (meth == NULL) {
+			SET_CLASS_STATE(CSTATE_COMPLETE);
+			goto done;
+		} 
+
+		if (class->state == CSTATE_DOING_INIT) {
+			if (THREAD_NATIVE() == class->processingThread) {
+				goto done;
+			} else {
+				while (class->state == CSTATE_DOING_INIT) {
+					waitStaticCond(&classLock, 0);
+					goto retry;
+				}
+			}
 		}
-		SET_CLASS_STATE(CSTATE_OK);
+
+		SET_CLASS_STATE(CSTATE_DOING_INIT);
+		class->processingThread = THREAD_NATIVE();
+
+		/* give classLock up for the duration of this call */
+		unlockStaticMutex(&classLock);
+
+		/* we use JNI to catch possible exceptions, except
+		 * during initialization, when JNI doesn't work yet.
+		 * Should an exception occur at that time, we're
+		 * lost anyway.
+		 */
+		JNI_GetCreatedJavaVMs(vms, 1, &jniworking);
+		if (jniworking) {
+DBG(STATICINIT, 		
+			dprintf("using JNI\n");	
+)
+			(*env)->CallStaticVoidMethodA(env, class, meth, 0);
+			exc = (*env)->ExceptionOccurred(env);
+			(*env)->ExceptionClear(env);
+		} else {
+DBG(STATICINIT, 
+			dprintf("using callMethodA\n");	
+    )
+			callMethodA(meth, METHOD_INDIRECTMETHOD(meth), 0, 0, 0);
+		}
+
+		lockStaticMutex(&classLock);
+		signalStaticCond(&classLock);
+
+		if (exc != 0) {
+			/* this is special-cased in throwError */
+			SET_LANG_EXCEPTION_MESSAGE(einfo,
+				ExceptionInInitializerError, (char*)exc)
+			/*
+			 * we return false here because COMPLETE fails
+			 */
+			success = false;
+			SET_CLASS_STATE(CSTATE_INIT_FAILED);
+		} else {
+			SET_CLASS_STATE(CSTATE_COMPLETE);
+		}
+
+		/* Since we'll never run this again we might as well
+		 * loose it now.
+		 */
+		METHOD_NATIVECODE(meth) = 0;
+		meth->c.ncode.ncode_start = 0;
+		meth->c.ncode.ncode_end = 0;
+	}
+
+done:
+	/* If anything ever goes wrong with this class, we declare it dead
+	 * and will respond with NoClassDefFoundErrors to any future attempts
+	 * to access that class.
+	 * NB: this does not include when a static initializer failed.
+	 */
+	if (success == false && class->state != CSTATE_INIT_FAILED) {
+		SET_CLASS_STATE(CSTATE_FAILED);
 	}
 
 	unlockStaticMutex(&classLock);
+
+DBG(RESERROR,
+	for (i = 0; i < depth; dprintf("  ", i++));
+	depth--;
+	dprintf("%p leaving process class %s -> %s\n", 
+		(*Kaffe_ThreadInterface.currentNative)(), class->name->data,
+		success ? "success" : "failure");
+    )
+	return (success);
 }
 
 Hjava_lang_Class*
@@ -433,7 +605,10 @@ DBG(RESERROR,	dprintf("addField: no signature name.\n");		)
 		ft->accflags |= FIELD_UNRESOLVED_FLAG;
 	}
 	else {
-		FIELD_TYPE(ft) = getClassFromSignature(sig, 0);
+		/* NB: since this class is primitive, getClassFromSignature
+		 * will not fail.  Hence it's okay to pass errorInfo as NULL
+		 */
+		FIELD_TYPE(ft) = getClassFromSignature(sig, 0, NULL);
 		FIELD_SIZE(ft) = TYPE_PRIM_SIZE(FIELD_TYPE(ft));
 	}
 
@@ -491,7 +666,7 @@ addInterfaces(Hjava_lang_Class* c, int inr, Hjava_lang_Class** inf)
  * The name is as used in class files, e.g. "java/lang/String".
  */
 Hjava_lang_Class*
-loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader)
+loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 {
 	classEntry* centry;
 	Hjava_lang_Class* clazz = NULL;
@@ -517,9 +692,14 @@ DBG(VMCLASSLOADER,
 		dprintf("classLoader: loading %s\n", name->data); 
     )
 		str = makeReplaceJavaStringFromUtf8(name->data, name->length, '/', '.');
-		clazz = (Hjava_lang_Class*)do_execute_java_method((Hjava_lang_Object*)loader, "loadClass", "(Ljava/lang/String;Z)Ljava/lang/Class;", 0, false, str, true).l;
+		/*
+		 * We must invoke loadClassVM here to ensure that we return.
+		 */
+		clazz = (Hjava_lang_Class*)do_execute_java_method((Hjava_lang_Object*)loader, "loadClassVM", "(Ljava/lang/String;Z)Ljava/lang/Class;", 0, false, str, true).l;
 		if (clazz == NULL) {
-			throwException(ClassNotFoundException(name->data));
+			SET_LANG_EXCEPTION_MESSAGE(einfo, 
+				ClassNotFoundException, name->data)
+			return NULL;
 		}
 		clazz->centry = centry;
 DBG(VMCLASSLOADER,		
@@ -535,8 +715,9 @@ DBG(VMCLASSLOADER,
 
 		if (loader == NULL) {
 			/* findClass will set centry->class if it finds it */
-			findClass(centry);
-			clazz = centry->class;
+			if (findClass(centry, einfo) == true) {
+				clazz = centry->class;
+			}
 		} else {
 			centry->class = clazz;
 		}
@@ -545,15 +726,31 @@ DBG(VMCLASSLOADER,
 		 * so that other threads will find a processed class if 
 		 * centry->class is not null.
 		 */
-		if (clazz != NULL)
-			processClass(clazz, CSTATE_LINKED);
+		if (clazz != NULL) {
+			if (processClass(clazz, 
+					 CSTATE_LINKED, einfo) == false) 
+			{
+				clazz = NULL;
+			}
+		} else {
+DBG(RESERROR,
+			dprintf("NoClassDefFoundError: `%s'\n", name->data);
+    )
+			if (0) {
+			SET_LANG_EXCEPTION_MESSAGE(einfo, 
+				ClassNotFoundException, name->data)
+			} else {
+			SET_LANG_EXCEPTION_MESSAGE(einfo, 
+				NoClassDefFoundError, name->data)
+			}
+		}
 	}
 
 	/* Release lock now class has been entered and processed */
 	unlockMutex(centry);
 
 	if (clazz == NULL) {
-		throwException(ClassNotFoundException(name->data));
+		return NULL;
 	}
 
 	found:;
@@ -561,14 +758,25 @@ DBG(VMCLASSLOADER,
 }
 
 Hjava_lang_Class*
-loadArray(Utf8Const* name, Hjava_lang_ClassLoader* loader)
+loadArray(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 {
-	return (lookupArray(getClassFromSignature(&name->data[1], loader)));
+	Hjava_lang_Class *clazz;
+
+	clazz = getClassFromSignature(&name->data[1], loader, einfo);
+	if (clazz != 0) {
+		return (lookupArray(clazz));
+	}
+	return (0);
 }
 
+/*
+ * Load a class to whose Class object we refer globally.
+ * This is used only for essential classes, so let's bail if this fails.
+ */
 void
 loadStaticClass(Hjava_lang_Class** class, char* name)
 {
+	errorInfo info;
 	classEntry* centry;
 
 	(*class) = newClass();
@@ -577,29 +785,44 @@ loadStaticClass(Hjava_lang_Class** class, char* name)
 	lockMutex(centry);
 	if (centry->class == 0) {
 		centry->class = *class;
-		findClass(centry);
+		if (findClass(centry, &info) == false) {
+			goto bad;
+		}
 	}
 	unlockMutex(centry);
 
-	processClass(centry->class, CSTATE_LINKED);
+	if (processClass(centry->class, CSTATE_LINKED, &info) == true) {
+		return;
+	}
+
+bad:
+	fprintf(stderr, "Couldn't find or load essential class `%s' %s %s\n", 
+			name, info.classname, info.mess);
+	ABORT();
 }
 
+/*
+ * Look a class up by name.
+ */
 Hjava_lang_Class*
-lookupClass(char* name)
+lookupClass(char* name, errorInfo *einfo)
 {
 	Hjava_lang_Class* class;
 
-	class = loadClass(makeUtf8Const(name, -1), NULL);
-	processClass(class, CSTATE_OK);
-
-	return (class);
+	class = loadClass(makeUtf8Const(name, -1), NULL, einfo);
+	if (class != 0) {
+		if (processClass(class, CSTATE_COMPLETE, einfo) == true) {
+			return (class);
+		}
+	}
+	return (0);
 }
 
 /*
  * Return FIELD_TYPE(FLD), but if !FIELD_RESOLVED, resolve the field first.
  */
 Hjava_lang_Class*
-resolveFieldType(Field *fld, Hjava_lang_Class* this)
+resolveFieldType(Field *fld, Hjava_lang_Class* this, errorInfo *einfo)
 {
 	Hjava_lang_Class* clas;
 	char* name;
@@ -621,7 +844,7 @@ resolveFieldType(Field *fld, Hjava_lang_Class* this)
 	name = ((Utf8Const*)fld->type)->data;
 	unlockMutex(this->centry);
 
-	clas = getClassFromSignature(name, this->loader);
+	clas = getClassFromSignature(name, this->loader, einfo);
 
 	FIELD_TYPE(fld) = clas;
 	fld->accflags &= ~FIELD_UNRESOLVED_FLAG;
@@ -963,16 +1186,30 @@ buildDispatchTable(Hjava_lang_Class* class)
 		}
 	}
 #endif
+}
 
-	/* Check for undefined abstract methods if class is not abstract.
-	 * See "Java Language Specification" (1996) section 12.3.2. */
+/* Check for undefined abstract methods if class is not abstract.
+ * See "Java Language Specification" (1996) section 12.3.2. 
+ *
+ * Returns true if the class is abstract or if no abstract methods were 
+ * found, false otherwise.
+ */
+static
+bool
+checkForAbstractMethods(Hjava_lang_Class* class, errorInfo *einfo)
+{
+	int i;
+	void **mtab = class->dtable->method;
+
 	if ((class->accflags & ACC_ABSTRACT) == 0) {
 		for (i = class->msize - 1; i >= 0; i--) {
 			if (mtab[i] == NULL) {
-				throwException(AbstractMethodError);
+				SET_LANG_EXCEPTION(einfo, AbstractMethodError)
+				return (false);
 			}
 		}
 	}
+	return (true);
 }
 
 static
@@ -1009,11 +1246,12 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class)
  * First we make sure all the constant strings are converted to java strings.
  */
 static
-void
-resolveConstants(Hjava_lang_Class* class)
+bool
+resolveConstants(Hjava_lang_Class* class, errorInfo *einfo)
 {
 	int idx;
 	constants* pool;
+	bool success = true;
 
 	lockMutex(class->centry);
 
@@ -1028,13 +1266,23 @@ resolveConstants(Hjava_lang_Class* class)
 			pool->tags[idx] = CONSTANT_ResolvedString;
 			break;
 
+#if 0
+		/* This code removed:
+		 * There seems to be no need to be so eager in loading
+		 * referenced classes.
+		 */
 		case CONSTANT_Class:
-			getClass(idx, class);
+			if (getClass(idx, class, einfo) == 0) {
+				success = false;
+				goto done;
+			}
 			break;
+#endif
 		}
 	}
 
 	unlockMutex(class->centry);
+	return (success);
 }
 
 classEntry*
@@ -1092,7 +1340,7 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader)
  * Lookup a named field.
  */
 Field*
-lookupClassField(Hjava_lang_Class* clp, Utf8Const* name, bool isStatic)
+lookupClassField(Hjava_lang_Class* clp, Utf8Const* name, bool isStatic, errorInfo *einfo)
 {
 	Field* fptr;
 	int n;
@@ -1109,15 +1357,18 @@ lookupClassField(Hjava_lang_Class* clp, Utf8Const* name, bool isStatic)
 	while (--n >= 0) {
 		if (equalUtf8Consts (name, fptr->name)) {
 			/* Resolve field if necessary */
-			resolveFieldType(fptr, clp);
+			if (resolveFieldType(fptr, clp, einfo) == 0) {
+				return (NULL);
+			}
 			return (fptr);
 		}
 		fptr++;
 	}
 DBG(RESERROR,
-	dprintf("Class:field lookup failed %s:%s\n", 
+	dprintf("lookupClassField failed %s:%s\n", 
 		clp->name->data, name->data);
     )
+	SET_LANG_EXCEPTION_MESSAGE(einfo, NoSuchFieldError, name->data)
 	return (0);
 }
 
@@ -1282,7 +1533,7 @@ lookupArray(Hjava_lang_Class* c)
 
 	arr_class->total_interface_len = arr_class->interface_len;
 	arr_class->head.dtable = ClassClass->dtable;
-	arr_class->state = CSTATE_OK;
+	arr_class->state = CSTATE_COMPLETE;
 	arr_class->centry = centry;
 
 	unlockMutex(centry);

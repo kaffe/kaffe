@@ -119,9 +119,11 @@ jlong	currentTime(void);
 
 /*
  * Translate a method into native code.
+ *
+ * Return true if successful, false otherwise.
  */
-void
-translate(Method* meth)
+bool
+translate(Method* meth, errorInfo *einfo)
 {
 	jint low;
 	jint high;
@@ -137,6 +139,7 @@ translate(Method* meth)
 	callInfo cinfo;
 	fieldInfo finfo;
 	Hjava_lang_Class* crinfo;
+	bool success = true;
 
 	nativeCodeInfo ncode;
 
@@ -157,7 +160,7 @@ translate(Method* meth)
 	lockStaticMutex(&translatorlock);
 	if (METHOD_TRANSLATED(meth)) {
 		unlockStaticMutex(&translatorlock);
-		return;
+		return (true);
 	}
 
 	lockMutex(meth->class);
@@ -176,9 +179,7 @@ DBG(MOREJIT,
 		KAFFEJIT_TO_NATIVE(meth);
 		/* Note that this is a real function not a trampoline.  */
 		meth->c.ncode.ncode_end = METHOD_NATIVECODE(meth);
-		unlockMutex(meth->class);
-		unlockStaticMutex(&translatorlock);
-		return;
+		goto done2;
 	}
 
 	maxLocal = meth->localsz;
@@ -198,7 +199,10 @@ DBG(MOREJIT,
 	len = meth->c.bcode.codelen;
 
 	/* Scan the code and determine the basic blocks */
-	verifyMethod(meth);
+	success = verifyMethod(meth, einfo);
+	if (success == false) {
+		goto done;
+	}
 
 	/***************************************/
 	/* Next reduce bytecode to native code */
@@ -250,9 +254,9 @@ DBG(JIT,	dprintf("pc = %d, npc = %d\n", pc, npc);	)
 		switch (base[pc]) {
 		default:
 			fprintf(stderr, "Unknown bytecode %d\n", base[pc]);
-			unlockStaticMutex(&translatorlock);
-			throwException(VerifyError);
-			break;
+			SET_LANG_EXCEPTION(einfo, VerifyError)
+			success = false;
+			goto done;
 #include "kaffe.def"
 		}
 
@@ -280,6 +284,7 @@ DBG(JIT,	dprintf("pc = %d, npc = %d\n", pc, npc);	)
 	finishInsnSequence(&ncode);
 	installMethodCode(meth, &ncode);
 
+done:
 	tidyVerifyMethod();
 
 DBG(JIT,
@@ -298,8 +303,10 @@ DBG(JIT,
 		       METHOD_NATIVECODE(meth));
 	}
 
+done2:
 	unlockMutex(meth->class);
 	unlockStaticMutex(&translatorlock);
+	return (success);
 }
 
 /*
@@ -685,4 +692,13 @@ checkCaughtExceptions(Method* meth, int pc)
 			}
 		}
 	}
+}
+
+/*
+ * return what engine we're using
+ */
+char* 
+getEngine()
+{
+	return "kaffe.jit";
 }
