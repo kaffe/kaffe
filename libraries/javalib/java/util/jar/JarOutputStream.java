@@ -1,5 +1,5 @@
 /* JarOutputStream.java - OutputStream for writing jar files
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 

@@ -1,5 +1,5 @@
-/* Attributes.java -- Reads, writes and manipulaties jar manifest files
-   Copyright (C) 2000 Free Software Foundation, Inc.
+/* Manifest.java -- Reads, writes and manipulaties jar manifest files
+   Copyright (C) 2000, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
