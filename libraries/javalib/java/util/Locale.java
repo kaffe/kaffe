@@ -18,27 +18,27 @@ final public class Locale
   implements Cloneable, Serializable
 {
 	private static final long serialVersionUID = 9149081749638150636L;
-	final public static Locale ENGLISH = new Locale("EN", null);
-	final public static Locale FRENCH = new Locale("FR", null);
-	final public static Locale GERMAN = new Locale("DE", null);
-	final public static Locale ITALIAN = new Locale("IT", null);
-	final public static Locale JAPANESE = new Locale("JA", null);
-	final public static Locale KOREAN = new Locale("KO", null);
-	final public static Locale CHINESE = new Locale("ZH", null);
-	final public static Locale SIMPLIFIED_CHINESE = new Locale("ZH", null);
-	final public static Locale TRADITIONAL_CHINESE = new Locale("ZH", null);
-	final public static Locale FRANCE = new Locale("FR", "FR");
-	final public static Locale GERMANY = new Locale("DE", "DE");
-	final public static Locale ITALY = new Locale("IT", "IT");
-	final public static Locale JAPAN = new Locale("JA", "JP");
-	final public static Locale KOREA = new Locale("KO", "KR");
-	final public static Locale CHINA = new Locale("ZH", "CN");
-	final public static Locale PRC = new Locale("??", "??");
-	final public static Locale TAIWAN = new Locale("ZH", "TW");
-	final public static Locale UK = new Locale("EN", "GB");
-	final public static Locale US = new Locale("EN", "US");
-	final public static Locale CANADA = new Locale("EN", "CA");
-	final public static Locale CANADA_FRENCH = new Locale("FR", "CA");
+	final public static Locale ENGLISH = new Locale("en", null);
+	final public static Locale FRENCH = new Locale("fr", null);
+	final public static Locale GERMAN = new Locale("de", null);
+	final public static Locale ITALIAN = new Locale("it", null);
+	final public static Locale JAPANESE = new Locale("ja", null);
+	final public static Locale KOREAN = new Locale("ko", null);
+	final public static Locale CHINESE = new Locale("zh", null);
+	final public static Locale SIMPLIFIED_CHINESE = new Locale("zh", "CN");
+	final public static Locale TRADITIONAL_CHINESE = new Locale("zh", "TW");
+	final public static Locale FRANCE = new Locale("fr", "FR");
+	final public static Locale GERMANY = new Locale("de", "DE");
+	final public static Locale ITALY = new Locale("it", "IT");
+	final public static Locale JAPAN = new Locale("ja", "JP");
+	final public static Locale KOREA = new Locale("ko", "KR");
+	final public static Locale CHINA = new Locale("zh", "CN");
+	final public static Locale PRC = new Locale("zh", "CN");
+	final public static Locale TAIWAN = new Locale("zh", "TW");
+	final public static Locale UK = new Locale("en", "GB");
+	final public static Locale US = new Locale("en", "US");
+	final public static Locale CANADA = new Locale("en", "CA");
+	final public static Locale CANADA_FRENCH = new Locale("fr", "CA");
 	private static Locale defaultLocale;
 	private String lang;
 	private String cntry;
@@ -46,7 +46,7 @@ final public class Locale
 	private int hashcode;
 
 static {
-	String dlang = System.getProperty("user.language", "EN");
+	String dlang = System.getProperty("user.language", "en");
 	String dcntry = System.getProperty("user.region", "US");
 	defaultLocale = new Locale(dlang, dcntry);
 }
