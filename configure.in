@@ -920,6 +920,8 @@ libraries/extensions/pjava/Makefile \
 libraries/extensions/pjava/javalib/Makefile \
 libraries/extensions/servlet/Makefile \
 libraries/extensions/servlet/javalib/Makefile \
+libraries/extensions/tools/Makefile \
+libraries/extensions/tools/javalib/Makefile \
 kaffe/man/kaffe.1 \
 libraries/javalib/rebuildLib \
 kaffe/scripts/install-jar \

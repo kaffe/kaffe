@@ -1,4 +1,4 @@
 #! /bin/sh
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-exec @bindir@/@kaffe_TRANSF@ sun.tools.jar.Main ${1+"$@"}
+exec @bindir@/@kaffe_TRANSF@ kaffe.tools.jar.Jar ${1+"$@"}

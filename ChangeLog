@@ -1,3 +1,17 @@
+1999-06-06  Mo DeJong <dejong@cs.umn.edu>
+
+        * libraries/javalib/kaffe/tools/jar/Jar.java,
+          libraries/javalib/kaffe/tools/jar/{XPF*.java},
+          libraries/javalib/java/util/HashMap.java,
+          libraries/javalib/java/util/jar/JarOutputStream.java,
+          libraries/javalib/java/util/jar/Attributes.java,
+          libraries/javalib/java/util/jar/Manifest.java:
+          added new files for Jar implementation.
+
+        * kaffe/scripts/jar.in, kaffe/scripts/bat/jar:
+          changed name in jar wrapper from sun.tools.jar.Main
+          to kaffe.jar.Jar.
+
 Wed Jun 30 19:07:18 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/io/BufferedOutputStream.java: fix bug

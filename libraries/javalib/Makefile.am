@@ -35,6 +35,7 @@ Klasses_jar_SRCS = \
 	$(java_util_SRCS) \
 	$(java_util_mime_SRCS) \
 	$(java_util_zip_SRCS) \
+	$(java_util_jar_SRCS) \
 	$(kaffe_applet_SRCS) \
 	$(kaffe_awt_SRCS) \
 	$(kaffe_beans_editors_SRCS) \
@@ -542,6 +543,10 @@ java_util_zip_SRCS = \
 	java/util/zip/ZipFile.java \
 	java/util/zip/ZipInputStream.java \
 	java/util/zip/ZipOutputStream.java
+java_util_jar_SRCS = \
+	java/util/jar/JarOutputStream.java \
+	java/util/jar/Attributes.java \
+	java/util/jar/Manifest.java
 kaffe_applet_SRCS = \
 	kaffe/applet/AppletViewer.java \
 	kaffe/applet/AudioPlayer.java

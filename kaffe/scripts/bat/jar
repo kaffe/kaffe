@@ -1,2 +1,2 @@
 @echo off
-kaffe sun.tools.jar.Main %1 %2 %3 %4 %5
+kaffe kaffe.tools.jar.Jar %1 %2 %3 %4 %5

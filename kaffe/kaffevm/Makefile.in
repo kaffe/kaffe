@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.4a from Makefile.am
+# Makefile.in generated automatically by automake 1.4 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -9,6 +9,15 @@
 # but WITHOUT ANY WARRANTY, to the extent permitted by law; without
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
+
+# Makefile.in for kaffevm - a Java(tm) compatible virtual machine.
+#
+# Copyright (c) 1996, 1997, 1998, 1999
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
 
 SHELL = @SHELL@
 
@@ -45,10 +54,9 @@ AUTOMAKE = @AUTOMAKE@
 AUTOHEADER = @AUTOHEADER@
 
 INSTALL = @INSTALL@
-INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
-INSTALL_STRIP_FLAG =
 transform = @program_transform_name@
 
 NORMAL_INSTALL = :
@@ -59,8 +67,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
-AMDEP = @AMDEP@
-AMTAR = @AMTAR@
 AS = @AS@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
@@ -68,9 +74,6 @@ CC = @CC@
 CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
 CONFIG_MD_H = @CONFIG_MD_H@
 CPP = @CPP@
-CXX = @CXX@
-CXXCPP = @CXXCPP@
-DEPDIR = @DEPDIR@
 DIRSEP = @DIRSEP@
 DLLTOOL = @DLLTOOL@
 DLOPEN_JAVA_LIBS = @DLOPEN_JAVA_LIBS@
@@ -121,24 +124,10 @@ kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
 
-# Makefile.in for kaffevm - a Java(tm) compatible virtual machine.
-#
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
-#
-# See the file "license.terms" for information on usage and redistribution 
-# of this file. 
-
-
 SUBDIRS = $(ENGINE_NAME) systems gcj
 DIST_SUBDIRS = intrp jit systems gcj
 
-EXTRA_DIST = \
-	kaffe.def \
-	mem/gc-incremental.c \
-	mem/gc-incremental.h \
-	mem/gc-mem.c \
-	mem/gc-mem.h
+EXTRA_DIST =  	kaffe.def 	mem/gc-incremental.c 	mem/gc-incremental.h 	mem/gc-mem.c 	mem/gc-mem.h
 
 
 INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS)
@@ -146,90 +135,17 @@ INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(to
 lib_LTLIBRARIES = libkaffevm.la
 
 libkaffevm_la_LDFLAGS = $(KVMLIBFLAGS) -export-dynamic -release $(KVER)
-libkaffevm_la_DEPENDENCIES = \
-	$(LIBLTDL) \
-	$(ENGINE_NAME)/libengine.la \
-	gcj/libgcj.la \
-	systems/$(THREAD_SYSTEM)/libkthread.la
+libkaffevm_la_DEPENDENCIES =  	$(LIBLTDL) 	$(ENGINE_NAME)/libengine.la 	gcj/libgcj.la 	systems/$(THREAD_SYSTEM)/libkthread.la
 
 libkaffevm_la_LIBADD = $(libkaffevm_la_DEPENDENCIES) $(VM_LIBS) $(M_LIBS)
 
-libkaffevm_la_GEN_SRCS = \
-	gc-mem.c \
-	md.c
+libkaffevm_la_GEN_SRCS =  	gc-mem.c 	md.c
 
 
-libkaffevm_la_SOURCES = \
-	$(libkaffevm_la_GEN_SRCS) \
-	baseClasses.c \
-	classMethod.c \
-	classPool.c \
-	code-analyse.c \
-	code.c \
-	constants.c \
-	debug.c \
-	exception.c \
-	external.c \
-	findInJar.c \
-	fp.c \
-	gc.c \
-	hashtab.c \
-	inflate.c \
-	itypes.c \
-	jar.c \
-	jni.c \
-	locks.c \
-	lookup.c \
-	object.c \
-	readClass.c \
-	soft.c \
-	stackTrace.c \
-	stats.c \
-	string.c \
-	support.c \
-	thread.c \
-	utf8const.c \
-	gcFuncs.c \
-	gcRefs.c \
-	verify.c
+libkaffevm_la_SOURCES =  	$(libkaffevm_la_GEN_SRCS) 	baseClasses.c 	classMethod.c 	classPool.c 	code-analyse.c 	code.c 	constants.c 	debug.c 	exception.c 	external.c 	findInJar.c 	fp.c 	gc.c 	hashtab.c 	inflate.c 	itypes.c 	jar.c 	jni.c 	locks.c 	lookup.c 	object.c 	readClass.c 	soft.c 	stackTrace.c 	stats.c 	string.c 	support.c 	thread.c 	utf8const.c 	gcFuncs.c 	gcRefs.c 	verify.c
 
 
-noinst_HEADERS = \
-	access.h \
-	baseClasses.h \
-	bytecode.h \
-	classMethod.h \
-	classpath.h \
-	code-analyse.h \
-	code.h \
-	constants.h \
-	debug.h \
-	errors.h \
-	exception.h \
-	external.h \
-	file.h \
-	fp.h \
-	gc.h \
-	gtypes.h \
-	hashtab.h \
-	inflate.h \
-	itypes.h \
-	jar.h \
-	jnirefs.h \
-	lerrno.h \
-	locks.h \
-	lookup.h \
-	object.h \
-	readClass.h \
-	readClassConfig.h \
-	slib.h \
-	soft.h \
-	stackTrace.h \
-	stats.h \
-	stringSupport.h \
-	support.h \
-	gcRefs.h \
-	thread.h
+noinst_HEADERS =  	access.h 	baseClasses.h 	bytecode.h 	classMethod.h 	classpath.h 	code-analyse.h 	code.h 	constants.h 	debug.h 	errors.h 	exception.h 	external.h 	file.h 	fp.h 	gc.h 	gtypes.h 	hashtab.h 	inflate.h 	itypes.h 	jar.h 	jnirefs.h 	lerrno.h 	locks.h 	lookup.h 	object.h 	readClass.h 	readClassConfig.h 	slib.h 	soft.h 	stackTrace.h 	stats.h 	stringSupport.h 	support.h 	gcRefs.h 	thread.h
 
 
 CLEANFILES = so_locations
@@ -248,46 +164,41 @@ X_CFLAGS = @X_CFLAGS@
 X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
-am_libkaffevm_la_OBJECTS =  gc-mem.lo md.lo baseClasses.lo \
-classMethod.lo classPool.lo code-analyse.lo code.lo constants.lo \
-debug.lo exception.lo external.lo findInJar.lo fp.lo gc.lo hashtab.lo \
-inflate.lo itypes.lo jar.lo jni.lo locks.lo lookup.lo object.lo \
-readClass.lo soft.lo stackTrace.lo stats.lo string.lo support.lo \
-thread.lo utf8const.lo gcFuncs.lo gcRefs.lo verify.lo
-libkaffevm_la_OBJECTS =  $(am_libkaffevm_la_OBJECTS)
+libkaffevm_la_OBJECTS =  gc-mem.lo md.lo baseClasses.lo classMethod.lo \
+classPool.lo code-analyse.lo code.lo constants.lo debug.lo exception.lo \
+external.lo findInJar.lo fp.lo gc.lo hashtab.lo inflate.lo itypes.lo \
+jar.lo jni.lo locks.lo lookup.lo object.lo readClass.lo soft.lo \
+stackTrace.lo stats.lo string.lo support.lo thread.lo utf8const.lo \
+gcFuncs.lo gcRefs.lo verify.lo
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
-LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES =  $(libkaffevm_la_SOURCES)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 HEADERS =  $(noinst_HEADERS)
 
-DIST_COMMON =  $(noinst_HEADERS) Makefile.am Makefile.in
+DIST_COMMON =  Makefile.am Makefile.in
 
 
-DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
+TAR = tar
 GZIP_ENV = --best
-depcomp = $(SHELL) $(top_srcdir)/depcomp
-DEP_FILES =  @AMDEP@ $(DEPDIR)/baseClasses.Plo $(DEPDIR)/classMethod.Plo \
-$(DEPDIR)/classPool.Plo $(DEPDIR)/code-analyse.Plo $(DEPDIR)/code.Plo \
-$(DEPDIR)/constants.Plo $(DEPDIR)/debug.Plo $(DEPDIR)/exception.Plo \
-$(DEPDIR)/external.Plo $(DEPDIR)/findInJar.Plo $(DEPDIR)/fp.Plo \
-$(DEPDIR)/gc-mem.Plo $(DEPDIR)/gc.Plo $(DEPDIR)/gcFuncs.Plo \
-$(DEPDIR)/gcRefs.Plo $(DEPDIR)/hashtab.Plo $(DEPDIR)/inflate.Plo \
-$(DEPDIR)/itypes.Plo $(DEPDIR)/jar.Plo $(DEPDIR)/jni.Plo \
-$(DEPDIR)/locks.Plo $(DEPDIR)/lookup.Plo $(DEPDIR)/md.Plo \
-$(DEPDIR)/object.Plo $(DEPDIR)/readClass.Plo $(DEPDIR)/soft.Plo \
-$(DEPDIR)/stackTrace.Plo $(DEPDIR)/stats.Plo $(DEPDIR)/string.Plo \
-$(DEPDIR)/support.Plo $(DEPDIR)/thread.Plo $(DEPDIR)/utf8const.Plo \
-$(DEPDIR)/verify.Plo
+DEP_FILES =  .deps/baseClasses.P .deps/classMethod.P .deps/classPool.P \
+.deps/code-analyse.P .deps/code.P .deps/constants.P .deps/debug.P \
+.deps/exception.P .deps/external.P .deps/findInJar.P .deps/fp.P \
+.deps/gc-mem.P .deps/gc.P .deps/gcFuncs.P .deps/gcRefs.P \
+.deps/hashtab.P .deps/inflate.P .deps/itypes.P .deps/jar.P .deps/jni.P \
+.deps/locks.P .deps/lookup.P .deps/md.P .deps/object.P \
+.deps/readClass.P .deps/soft.P .deps/stackTrace.P .deps/stats.P \
+.deps/string.P .deps/support.P .deps/thread.P .deps/utf8const.P \
+.deps/verify.P
 SOURCES = $(libkaffevm_la_SOURCES)
-OBJECTS = $(am_libkaffevm_la_OBJECTS)
+OBJECTS = $(libkaffevm_la_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .c .lo .o
+.SUFFIXES: .S .c .lo .o .s
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu kaffe/kaffevm/Makefile
 
@@ -317,10 +228,15 @@ install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 
 uninstall-libLTLIBRARIES:
 	@$(NORMAL_UNINSTALL)
-	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
-	  echo " $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(libdir)/$$p"; \
+	list='$(lib_LTLIBRARIES)'; for p in $$list; do \
 	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(libdir)/$$p; \
 	done
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
 
 mostlyclean-compile:
 	-rm -f *.o core *.core
@@ -332,6 +248,12 @@ distclean-compile:
 
 maintainer-clean-compile:
 
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -341,39 +263,6 @@ clean-libtool:
 distclean-libtool:
 
 maintainer-clean-libtool:
-gc-mem.lo:
-md.lo:
-baseClasses.lo:
-classMethod.lo:
-classPool.lo:
-code-analyse.lo:
-code.lo:
-constants.lo:
-debug.lo:
-exception.lo:
-external.lo:
-findInJar.lo:
-fp.lo:
-gc.lo:
-hashtab.lo:
-inflate.lo:
-itypes.lo:
-jar.lo:
-jni.lo:
-locks.lo:
-lookup.lo:
-object.lo:
-readClass.lo:
-soft.lo:
-stackTrace.lo:
-stats.lo:
-string.lo:
-support.lo:
-thread.lo:
-utf8const.lo:
-gcFuncs.lo:
-gcRefs.lo:
-verify.lo:
 
 libkaffevm.la: $(libkaffevm_la_OBJECTS) $(libkaffevm_la_DEPENDENCIES)
 	$(LINK) -rpath $(libdir) $(libkaffevm_la_LDFLAGS) $(libkaffevm_la_OBJECTS) $(libkaffevm_la_LIBADD) $(LIBS)
@@ -414,7 +303,7 @@ maintainer-clean-recursive:
 	dot_seen=no; \
 	rev=''; list='$(SUBDIRS)'; for subdir in $$list; do \
 	  rev="$$subdir $$rev"; \
-	  if test "$$subdir" = "."; then dot_seen=yes; else :; fi; \
+	  test "$$subdir" = "." && dot_seen=yes; \
 	done; \
 	test "$$dot_seen" = "no" && rev=". $$rev"; \
 	target=`echo $@ | sed s/-recursive//`; \
@@ -472,11 +361,16 @@ distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 subdir = kaffe/kaffevm
 
 distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu kaffe/kaffevm/Makefile
 	$(mkinstalldirs) $(distdir)/mem
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pr $$/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
@@ -494,30 +388,37 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 
-@AMDEP@include $(DEP_FILES)
+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
+
+-include $(DEP_FILES)
 
 mostlyclean-depend:
 
 clean-depend:
 
 distclean-depend:
-	-rm -rf $(DEPDIR)
+	-rm -rf .deps
 
 maintainer-clean-depend:
 
-@AMDEP@CCDEPMODE = @CCDEPMODE@
+%.o: %.c
+	@echo '$(COMPILE) -c $<'; \
+	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-cp .deps/$(*F).pp .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm .deps/$(*F).pp
 
-.c.o:
-@AMDEP@	source='$<' object='$@' \
-@AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' \
-@AMDEP@	$(CCDEPMODE) $(depcomp) \
-	$(COMPILE) -c $<
-
-.c.lo:
-@AMDEP@	source='$<' object='$@' \
-@AMDEP@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' \
-@AMDEP@	$(CCDEPMODE) $(depcomp) \
-	$(LTCOMPILE) -c -o $@ $<
+%.lo: %.c
+	@echo '$(LTCOMPILE) -c $<'; \
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
+	  < .deps/$(*F).pp > .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm -f .deps/$(*F).pp
 info-am:
 info: info-recursive
 dvi-am:
@@ -540,7 +441,7 @@ uninstall: uninstall-recursive
 all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 all-redirect: all-recursive
 install-strip:
-	$(MAKE) $(AM_MAKEFLAGS) INSTALL_STRIP_FLAG=-s install
+	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
 installdirs: installdirs-recursive
 installdirs-am:
 	$(mkinstalldirs)  $(DESTDIR)$(libdir)
@@ -600,9 +501,9 @@ mostlyclean-depend distclean-depend clean-depend \
 maintainer-clean-depend info-am info dvi-am dvi check check-am \
 installcheck-am installcheck install-exec-am install-exec \
 install-data-am install-data install-am install uninstall-am uninstall \
-all-redirect all-am all install-strip installdirs-am installdirs \
-mostlyclean-generic distclean-generic clean-generic \
-maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+all-redirect all-am all installdirs-am installdirs mostlyclean-generic \
+distclean-generic clean-generic maintainer-clean-generic clean \
+mostlyclean distclean maintainer-clean
 
 
 @engine_frag@
