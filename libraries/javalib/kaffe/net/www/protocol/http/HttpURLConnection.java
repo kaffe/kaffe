@@ -147,8 +147,8 @@ public void connect() throws IOException {
 		responseMessage = line.substring(messagePos + 1);
 
 		// save the Status-Line as field 0 as Sun API does
-		headerFields.addElement(null, 0);
-		headerFields.addElement(line, 1);
+		headerFields.addElement(null);
+		headerFields.addElement(line);
 		    
 		// now read header fields
 		for (;;) {
