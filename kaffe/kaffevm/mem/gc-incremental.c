@@ -46,11 +46,13 @@ static const int finalise = 0;
 static int gc_init = 0;
 static volatile int gcRunning = 0;
 static volatile bool finalRunning = false;
+static void (*walkRootSet)(Collector*);
+#if defined(KAFFE_STATS)
 static timespent gc_time;
 static timespent sweep_time;
-static void (*walkRootSet)(Collector*);
 static counter gcgcablemem;
 static counter gcfixedmem;
+#endif /* KAFFE_STATS */
 
 #if defined(SUPPORT_VERBOSEMEM)
 
