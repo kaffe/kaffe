@@ -1,5 +1,55 @@
 2004-10-28  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/gnu/java/awt/color/CieXyzConverter.java,
+	libraries/javalib/gnu/java/awt/color/ClutProfileConverter.java,
+	libraries/javalib/gnu/java/awt/color/ColorLookUpTable.java,
+	libraries/javalib/gnu/java/awt/color/ColorSpaceConverter.java,
+	libraries/javalib/gnu/java/awt/color/GrayProfileConverter.java,
+	libraries/javalib/gnu/java/awt/color/GrayScaleConverter.java,
+	libraries/javalib/gnu/java/awt/color/LinearRGBConverter.java,
+	libraries/javalib/gnu/java/awt/color/ProfileHeader.java,
+	libraries/javalib/gnu/java/awt/color/PyccConverter.java,
+	libraries/javalib/gnu/java/awt/color/RgbProfileConverter.java,
+	libraries/javalib/gnu/java/awt/color/SrgbConverter.java,
+	libraries/javalib/gnu/java/awt/color/TagEntry.java,
+	libraries/javalib/gnu/java/awt/color/ToneReproductionCurve.java:
+	New files taken from GNU Classpath.
+
+	* libraries/javalib/java/awt/color/ICC_ColorSpace.java,
+	libraries/javalib/java/awt/color/ICC_Profile.java,
+	libraries/javalib/java/awt/color/ICC_ProfileGray.java,
+	libraries/javalib/java/awt/color/ICC_ProfileRGB.java:
+	Resynced with GNU Classpath.
+
+	2004-10-28  Sven de Marothy  <sven@physto.se>
+
+        * gnu/java/awt/color/CieXyzConverter.java,
+        gnu/java/awt/color/GrayScaleConverter.java,
+        gnu/java/awt/color/SrgbConverter.java,
+        gnu/java/awt/color/ClutProfileConverter.java,
+        gnu/java/awt/color/LinearRGBConverter.java,
+        gnu/java/awt/color/TagEntry.java,
+        gnu/java/awt/color/ColorLookUpTable.java,
+        gnu/java/awt/color/ProfileHeader.java,
+        gnu/java/awt/color/ToneReproductionCurve.java,
+        gnu/java/awt/color/ColorSpaceConverter.java,
+        gnu/java/awt/color/PyccConverter.java,
+        gnu/java/awt/color/GrayProfileConverter.java,
+        gnu/java/awt/color/RgbProfileConverter.java:
+        New files.
+        * java/awt/color/ICC_ColorSpace.java,
+        java/awt/color/ICC_Profile.java,
+        java/awt/color/ICC_ProfileGray.java,
+        java/awt/color/ICC_ProfileRGB.java:
+        Implemented (sans PhotoYCC color space).
+
+2004-10-28  Dalibor Topic  <robilad@kaffe.org>
+
 	*  libraries/javalib/java/awt/font/TextAttribute.java:
         Resynced with GNU Classpath.
 

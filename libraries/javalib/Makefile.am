@@ -115,6 +115,7 @@ Klasses_jar_SRCS = \
 	$(gnu_inet_smtp_SRCS) \
 	$(gnu_inet_util_SRCS) \
 	$(gnu_java_awt_SRCS) \
+	$(gnu_java_awt_color_SRCS) \
 	$(gnu_java_awt_image_SRCS) \
 	$(gnu_java_awt_peer_SRCS) \
 	$(gnu_java_awt_peer_gtk_SRCS) \
@@ -953,6 +954,20 @@ gnu_java_awt_SRCS = \
 	gnu/java/awt/EmbeddedWindow.java \
 	gnu/java/awt/EmbeddedWindowSupport.java \
 	gnu/java/awt/EventModifier.java
+gnu_java_awt_color_SRCS = \
+	gnu/java/awt/color/CieXyzConverter.java \
+	gnu/java/awt/color/ClutProfileConverter.java \
+	gnu/java/awt/color/ColorLookUpTable.java \
+	gnu/java/awt/color/ColorSpaceConverter.java \
+	gnu/java/awt/color/GrayProfileConverter.java \
+	gnu/java/awt/color/GrayScaleConverter.java \
+	gnu/java/awt/color/LinearRGBConverter.java \
+	gnu/java/awt/color/ProfileHeader.java \
+	gnu/java/awt/color/PyccConverter.java \
+	gnu/java/awt/color/RgbProfileConverter.java \
+	gnu/java/awt/color/SrgbConverter.java \
+	gnu/java/awt/color/TagEntry.java \
+	gnu/java/awt/color/ToneReproductionCurve.java
 gnu_java_awt_image_SRCS = \
 	gnu/java/awt/image/ImageDecoder.java \
 	gnu/java/awt/image/XBMDecoder.java
