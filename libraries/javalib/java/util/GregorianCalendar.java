@@ -254,8 +254,11 @@ public class GregorianCalendar extends Calendar
 	//
 	// The additional leap year factor accounts for the fact that
 	// a leap day is not seen on Jan 1 of the leap year.
+	// And on and after the leap day, the leap day has already been
+	// included in dayOfYear.
+
 	int gregOffset = (year / 400) - (year / 100) + 2;
-	if (isLeapYear (year, true) && dayOfYear < 31 + 29)
+	if (isLeapYear (year, true))
 	  --gregOffset;
 	time += gregOffset * (24 * 60 * 60 * 1000L);
       }

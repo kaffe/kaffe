@@ -1,3 +1,7 @@
+2003-09-11  Ito Kazumitsu <kaz@maczuka.gcd.org>
+	* java/util/GregorianCalendar.java:
+	(getLinearTime) corrected a bug of counting leap days twice.
+
 2003-09-11  Dalibor Topic <robilad@kaffe.org>
 
 	* kaffe/kaffevm/external.c:
