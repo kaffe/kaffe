@@ -344,6 +344,15 @@ unwindStackFrame(stackTraceInfo* frame, Hjava_lang_Throwable *eobj)
 	if (obj != 0 && (meth->accflags & ACC_SYNCHRONISED) != 0) {
 		_slowUnlockMutexIfHeld(&obj->lock, (void*)frame->fp);
 	}
+
+	/* If method found and profiler enable, fix self+children time */
+#if defined(KAFFE_PROFILER)
+	if (profFlag && meth) {
+		profiler_click_t end;
+		profiler_get_clicks(end);
+		meth->totalClicks += end;
+	}
+#endif
 	return (meth);
 }
 #endif /* defined(TRANSLATOR) */
@@ -420,19 +429,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 		stackTraceInfo* frame;
 
 		for (frame = baseframe; frame->meth != ENDOFSTACK; frame++) {
-			Method *meth = unwindStackFrame(frame, eobj);
-			/* 
-			 * XXX: Let profiler people decide whether the
-			 * code before should go in unwindStackFrame or not
-			 */
-#if defined(KAFFE_PROFILER)
-			/* If method found and profiler enable, fix time */
-			if (profFlag && meth) {
-				profiler_click_t end;
-				profiler_get_clicks(end);
-				meth->totalClicks += end;
-			}
-#endif
+			unwindStackFrame(frame, eobj);
 		}
 	}
 #endif
