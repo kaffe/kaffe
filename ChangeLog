@@ -1,3 +1,9 @@
+Wed Apr 28 15:45:04 PDT 1999  Archie Cobbs <archie@whistle.com>
+
+	* java/lang/ExceptionInInitializer.java: don't append a null
+	exception message
+	* test/regression/ProcessClassTest.java: adjust expected output
+
 1999-04-27  Pavel Roskin <pavel_roskin@geocities.com>
 
 	* libraries/clib/awt/X/gra.c, img.c, tlk.c, toolkit.h:
