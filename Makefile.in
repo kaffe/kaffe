@@ -267,6 +267,7 @@ EXTRA_DIST = \
 	FAQ/FAQ.class-states \
 	FAQ/FAQ.classlibrary-compile \
 	FAQ/FAQ.coding-style \
+	FAQ/FAQ.cross-compiling \
 	FAQ/FAQ.debugging \
 	FAQ/FAQ.depend \
 	FAQ/FAQ.dmalloc \

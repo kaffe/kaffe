@@ -7,3 +7,5 @@
 # of this file. 
 
 SUBDIRS = @INCLUDED_EXTENSIONS@
+
+DIST_SUBDIRS = comm microsoft pjava servlet sound
