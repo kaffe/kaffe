@@ -228,7 +228,10 @@ public class ServerSocket
 
     try
       {
-	impl.bind (tmp.getAddress (), tmp.getPort ());
+	if (tmp.getAddress () != null)
+	  impl.bind (tmp.getAddress (), tmp.getPort ());
+	else
+	  impl.bind (InetAddress.ANY_IF, tmp.getPort ());
 	impl.listen(backlog);
 	bound = true;
       }

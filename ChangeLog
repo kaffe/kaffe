@@ -1,3 +1,8 @@
+2003-12-24  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/net/ServerSocket.java
+	(bind): Check whether the address to bind to is null.
+
 2003-12-23  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/kjc.jar: Regenerated a new KJC
