@@ -313,7 +313,7 @@ struct JavaVMInitArgs {
 	jint		enableVerboseJIT;
 	jint		allocHeapSize;
 	const char*	classhome;
-	const char*	libraryhome;
+	const char*	librarypath;
 };
 
 extern JavaVMInitArgs Kaffe_JavaVMArgs[];

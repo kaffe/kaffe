@@ -44,9 +44,10 @@ static int main2(JNIEnv* env, char *argv[], int farg, int argc);
 
 #define	KAFFEHOME	"KAFFEHOME"
 #define	CLASSPATH1	"KAFFECLASSPATH"
-#define	LIBRARYHOME1	"KAFFELIBRARYPATH"
+#define	LIBRARYPATH1	"KAFFELIBRARYPATH"
 
 #define	CLASSPATH2	"CLASSPATH"
+#define	LIBRARYPATH2	"LD_LIBRARY_PATH"
 
 /*
  * MAIN
@@ -73,21 +74,16 @@ main(int argc, char* argv[])
 	}
 	vmargs.classpath = cp;
 
-        cp = getenv(LIBRARYHOME1);
-#if defined(DEFAULT_LIBRARYHOME)
-        if (cp == 0) {
-                cp = DEFAULT_LIBRARYHOME;
-        }
-#endif
-        vmargs.libraryhome = cp;
+        cp = getenv(LIBRARYPATH1);
+	if (cp == 0) {
+		cp = getenv(LIBRARYPATH2);
+	}
+        vmargs.librarypath = cp;
 
         cp = getenv(KAFFEHOME);
         if (cp == 0) {
 #if defined(DEFAULT_KAFFEHOME)
                 cp = DEFAULT_KAFFEHOME;
-#else
-                fprintf(stderr, "%s is not set!\n", KAFFEHOME);
-                exit(1);
 #endif
         }
         vmargs.classhome = cp;

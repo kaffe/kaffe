@@ -87,24 +87,8 @@ initNative(void)
 	char* ptr;
 	int len;
 
-	lpath = getenv(LIBRARYPATH);
-	if (lpath != 0) {
-		lpath = strdup(lpath);
-	}
-#if defined(DEFAULT_LIBRARYPATH)
-	else {
-		lpath = DEFAULT_LIBRARYPATH;
-	}
-#endif
-	home = getenv(KAFFEHOME);
-	if (home != 0) {
-		home = strdup(home);
-	}
-#if defined(DEFAULT_KAFFEHOME)
-	else {
-		home = DEFAULT_KAFFEHOME;
-	}
-#endif
+	lpath = (char*)Kaffe_JavaVMArgs[0].librarypath;
+	home = (char*)Kaffe_JavaVMArgs[0].classhome;
 
 	len = 0;
 	if (lpath != 0) {
@@ -112,10 +96,6 @@ initNative(void)
 	}
 	if (home != 0) {
 		len += strlen(home);
-	}
-	if (len == 0) {
-		fprintf(stderr, "Library path and Kaffe home not set!\n");
-		return;
 	}
 
 	/*
