@@ -73,6 +73,15 @@ java_lang_reflect_Method_invoke(struct Hjava_lang_reflect_Method* this, struct H
 	jthrowable targetexc;
 
 	clazz = unhand(this)->clazz;
+
+	/* 
+	 * make sure constants are resolved and static initializers are run 
+	 * before invoking a method on this class
+	 */
+	if (clazz->state != CSTATE_OK) {
+		processClass(clazz, CSTATE_OK);
+	}
+
 	slot = unhand(this)->slot;
 
 	assert(slot < clazz->nmethods);
