@@ -1020,7 +1020,7 @@ rem_float(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 	pusharg_float(src, 0);
 	call_soft(soft_frem);
 	popargs();
-	end_sub_block();
+	start_sub_block();
 	return_float(dst);
 }
 
@@ -1033,7 +1033,7 @@ rem_double(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 	pusharg_double(src, 0);
 	call_soft(soft_freml);
 	popargs();
-	end_sub_block();
+	start_sub_block();
 	return_double(dst);
 }
 
