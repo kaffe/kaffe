@@ -3,6 +3,8 @@
  *
  * Copyright (c) 1998
  *	Kevin B. Hendricks  All rights reserved.
+ * Copyright (c) 2001
+ *	Edouard G. Parmelan.  All rights reserved.
  *
  * distributed under the GPL license
  */
@@ -120,21 +122,18 @@ void sysdepCallMethod_ppc(
             break;
 
        case 'F':                   /* type is float */
-	 /* this assumes that floats are stored as 1 32 bit word on kaffe 
-	    args array and that if passed in parameter stack to C, should be
-	    as double word 	 */
-
-            if (f < 8) {
-               fpr[f++] = (double) (CALL)->args[argidx].f;
-	    } else {
-	      /* The next 2 lines should be here based on Sys V ABI, but... */
-	       if (((long) p) & 4)          
-	          p++;
-              /* into parameter stack */
-	       *((double *)p) = (double) (CALL)->args[argidx].f;
-               p += 2;
-	    }
-            break;
+	   /* floats are store as 32 bit word on Kaffe and passed as
+	      float in parameter stack to C as native method have prototype.
+	      Without prototype, float will be cast to double but this is
+	      not the case here.  */
+	   if (f < 8) {
+	       fpr[f++] = (double) (CALL)->args[argidx].f;
+	   } else {
+	       /* into parameter stack */
+	       *((float *)p) = (CALL)->args[argidx].f;
+	       p++;
+	   }
+	   break;
 
        case 'J':                /* type is long long */
             if (n & 1) n++; 	/* note even elements gpr[] will map to odd registers*/
