@@ -1,3 +1,68 @@
+2003-10-29  Guilhem Lavaux <guilhem@kaffe.org>
+	
+	* libraries/javalib/kjc.jar: Apparently it was misuploaded
+	the last time.
+
+	* libraries/javalib/gnu/java/net/HeaderFieldHelper.java,
+	libraries/javalib/gnu/java/net/content/text/plain.java,
+	libraries/javalib/gnu/java/net/protocol/file/Connection.java,
+	libraries/javalib/gnu/java/net/protocol/file/Handler.java,
+	libraries/javalib/gnu/java/net/protocol/http/Connection.java,
+	libraries/javalib/gnu/java/net/protocol/http/Handler.java,
+	libraries/javalib/gnu/java/net/protocol/jar/Connection.java,
+	libraries/javalib/gnu/java/net/protocol/jar/Handler.java,
+	libraries/javalib/java/net/ContentHandler.java,
+	libraries/javalib/java/net/ContentHandlerFactory.java,
+	libraries/javalib/java/net/FileNameMap.java,
+	libraries/javalib/java/net/HttpURLConnection.java,
+	libraries/javalib/java/net/JarURLConnection.java,
+	libraries/javalib/java/net/MimeTypeMapper.java,
+	libraries/javalib/java/net/NetPermission.java,
+	libraries/javalib/java/net/URL.java,
+	libraries/javalib/java/net/URLClassLoader.java,
+	libraries/javalib/java/net/URLConnection.java,
+	libraries/javalib/java/net/URLDecoder.java,
+	libraries/javalib/java/net/URLEncoder.java,
+	libraries/javalib/java/net/URLStreamHandler.java,
+	libraries/javalib/java/net/URLStreamHandlerFactory.java:
+
+	Merged classes from GNU Classpath. Fixed parseUrl in URLStreamHandler
+	when there is some userinfo in a URL.
+	Jar's handler has also been fixed so URLTest can pass.
+	
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	Regenerated.
+
+	* libraries/javalib/kaffe/net/DefaultFileNameMap.java,
+	libraries/javalib/kaffe/net/DefaultStreamMap.java,
+	libraries/javalib/kaffe/net/DefaultURLStreamHandlerFactory.java,
+	libraries/javalib/kaffe/net/StreamMap.java,
+	libraries/javalib/kaffe/net/www/protocol/BasicURLConnection.java,
+	libraries/javalib/kaffe/net/www/protocol/file/FileURLConnection.java,
+	libraries/javalib/kaffe/net/www/protocol/file/Handler.java,
+	libraries/javalib/kaffe/net/www/protocol/ftp/FtpURLConnection.java,
+	libraries/javalib/kaffe/net/www/protocol/ftp/Handler.java,
+	libraries/javalib/kaffe/net/www/protocol/http/Handler.java,
+	libraries/javalib/kaffe/net/www/protocol/http/HttpURLConnection.java,
+	libraries/javalib/kaffe/net/www/protocol/jar/Handler.java,
+	libraries/javalib/kaffe/net/www/protocol/jar/JarURLConnection.java,
+	libraries/javalib/kaffe/net/www/protocol/system/Handler.java,
+	libraries/javalib/kaffe/net/www/protocol/system/SystemURLConnection.java:
+	Removed kaffe's old implementation.
+
+	* libraries/javalib/profiles/allatonce/all.files,
+	libraries/javalib/bootstrap.classlist,
+	libraries/javalib/essential.files,
+	libraries/javalib/profiles/default/core.files,
+	libraries/javalib/profiles/default/rest.files:
+	Updated profiles to take into account the new classes from Classpath.
+
+	* libraries/javalib/gnu/java/net/URLParseError.java:
+	New class for Classpath to report parse error in parseUrl().
+
+	* test/regression/URLTest.java: Changed some expected strings to
+	match classpath's spelling.
+
 2003-10-28  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/javalib/bootstrap.classlist:

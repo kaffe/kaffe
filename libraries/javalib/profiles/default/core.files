@@ -59,8 +59,10 @@ java/lang/VerifyError.java
 java/net/Authenticator.java
 java/net/BindException.java
 java/net/ConnectException.java
+java/net/HttpURLConnection.java
 java/net/InetSocketAddress.java
 java/net/JarURLConnection.java
+java/net/MimeTypeMapper.java
 java/net/MulticastSocket.java
 java/net/NetworkInterface.java
 java/net/NoRouteToHostException.java

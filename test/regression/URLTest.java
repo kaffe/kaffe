@@ -26,13 +26,13 @@ class URLTest {
     new TestCase(
 	null,
 	"http://www.kaffe.org",
-	"http://www.kaffe.org/"
+	"http://www.kaffe.org"
     ),
 
     new TestCase(
 	null,
 	"http://www.kaffe.org:8080#ref",
-	"http://www.kaffe.org:8080/#ref"
+	"http://www.kaffe.org:8080#ref"
     ),
 
     new TestCase(
@@ -62,7 +62,7 @@ class URLTest {
     new TestCase(
 	null,
 	"foo/bar",
-	"java.net.MalformedURLException: no protocol: foo/bar"
+	"java.net.MalformedURLException: Protocol handler not found: foo/bar"
     ),
 
     new TestCase(
@@ -116,7 +116,7 @@ class URLTest {
     new TestCase(
 	null,
 	"foo/bar",
-	"java.net.MalformedURLException: no protocol: foo/bar"
+	"java.net.MalformedURLException: Protocol handler not found: foo/bar"
     ),
 
     new TestCase(
@@ -128,7 +128,7 @@ class URLTest {
     new TestCase(
 	null,
 	"jar:abc!/eat/me",
-	"java.net.MalformedURLException: invalid inner URL: no protocol: abc"
+	"java.net.MalformedURLException: invalid inner URL: Protocol handler not found: abc"
     ),
 
   };

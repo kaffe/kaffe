@@ -1,5 +1,5 @@
-/* URLStreamHandlerFactory.java -- Maps protocols to URLStreamHandlers
-   Copyright (C) 1998, 1999, 2000, 2001, 2003 Free Software Foundation, Inc.
+/* Handler.java -- HTTP protocol handler for java.net
+   Copyright (c) 1998, 1999, 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -7,7 +7,7 @@ GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
- 
+
 GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -35,33 +35,52 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-package java.net;
+package gnu.java.net.protocol.http;
+
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 
 /**
- * Written using on-line Java Platform 1.2 API Specification, as well
- * as "The Java Class Libraries", 2nd edition (Addison-Wesley, 1998).
- * Status:  Believed complete and correct.
- */
-
-/**
- * This interface contains one method which maps the protocol portion of
- * a URL (eg, "http" in "http://www.urbanophile.com/arenn/") to a 
- * <code>URLStreamHandler</code> object.
+ * This is the protocol handler for the HTTP protocol.  It implements
+ * the abstract openConnection() method from URLStreamHandler by returning
+ * a new HttpURLConnection object (from this package).  All other 
+ * methods are inherited
  *
  * @author Aaron M. Renn (arenn@urbanophile.com)
- * @author Warren Levy <warrenl@cygnus.com>
+ * @author Warren Levy
+ * @author Anthony Green <green@redhat.com>
  */
-public interface URLStreamHandlerFactory
+public class Handler extends URLStreamHandler
 {
   /**
-    * This method maps the protocol portion of a URL to a 
-    * <code>URLStreamHandler</code> object.
-    *
-    * @param protocol The protocol name to map ("http", "ftp", etc).
-    *
-    * @return The <code>URLStreamHandler</code> for the specified protocol
-    */
-  URLStreamHandler createURLStreamHandler (String protocol);
+   * A do nothing constructor
+   */
+  public Handler()
+  {
+  }
 
-} // interface URLStreamHandlerFactory
+  /**
+   * This method returs a new HttpURLConnection for the specified URL
+   *
+   * @param url The URL to return a connection for
+   *
+   * @return The URLConnection
+   *
+   * @exception IOException If an error occurs
+   */
+  protected URLConnection openConnection (URL url) throws IOException
+  {
+    return new Connection (url);
+  }
 
+  /**
+   * Returns the default port for a URL parsed by this handler.
+   */
+  protected int getDefaultPort()
+  {
+    return 80;
+  }
+
+} // class Handler

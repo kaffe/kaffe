@@ -1,5 +1,5 @@
-/* URLStreamHandlerFactory.java -- Maps protocols to URLStreamHandlers
-   Copyright (C) 1998, 1999, 2000, 2001, 2003 Free Software Foundation, Inc.
+/* HeaderFieldHelper.java -- Helps manage headers fields 
+   Copyright (C) 1998, 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,33 +35,72 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-package java.net;
+
+package gnu.java.net;
+
+import java.util.Vector;
 
 /**
- * Written using on-line Java Platform 1.2 API Specification, as well
- * as "The Java Class Libraries", 2nd edition (Addison-Wesley, 1998).
- * Status:  Believed complete and correct.
- */
-
-/**
- * This interface contains one method which maps the protocol portion of
- * a URL (eg, "http" in "http://www.urbanophile.com/arenn/") to a 
- * <code>URLStreamHandler</code> object.
+ * This class manages header field keys and values.
  *
- * @author Aaron M. Renn (arenn@urbanophile.com)
- * @author Warren Levy <warrenl@cygnus.com>
+ * @author Aaron M. Renn <arenn@urbanophile.com>
  */
-public interface URLStreamHandlerFactory
+public class HeaderFieldHelper
 {
-  /**
-    * This method maps the protocol portion of a URL to a 
-    * <code>URLStreamHandler</code> object.
-    *
-    * @param protocol The protocol name to map ("http", "ftp", etc).
-    *
-    * @return The <code>URLStreamHandler</code> for the specified protocol
-    */
-  URLStreamHandler createURLStreamHandler (String protocol);
+  private Vector headerFieldKeys;
+  private Vector headerFieldValues;
 
-} // interface URLStreamHandlerFactory
+  public HeaderFieldHelper()
+  {
+    this (10);
+  }
+
+  public HeaderFieldHelper (int size)
+  {
+    headerFieldKeys = new Vector (size);
+    headerFieldValues = new Vector (size);
+  }
+
+  public void addHeaderField (String key, String value)
+  {
+    headerFieldKeys.addElement (key);
+    headerFieldValues.addElement (value);
+  }
+
+  public String getHeaderFieldKeyByIndex (int index)
+  {
+    String key = null;
+
+    try
+      {
+        key = (String) headerFieldKeys.elementAt (index);
+      }
+    catch (ArrayIndexOutOfBoundsException e)
+      {
+      }
+
+    return key;
+  }
+
+  public String getHeaderFieldValueByIndex(int index)
+  {
+    String value = null;
+
+    try
+      {
+        value = (String) headerFieldValues.elementAt (index);
+      }
+    catch (ArrayIndexOutOfBoundsException e)
+      {
+      }
+
+    return value;
+  }
+
+  public int getNumberOfEntries()
+  {
+    return headerFieldKeys.size();
+  }
+
+} // class HeaderFieldHelper
 

@@ -216,19 +216,17 @@ kaffe/util/UTF8.class
 java/net/URL.class
 java/net/URLClassLoader.class
 java/net/MalformedURLException.class
-kaffe/net/DefaultURLStreamHandlerFactory.class
 java/net/URLStreamHandlerFactory.class
 java/net/URLStreamHandler.class
 java/net/NetPermission.class
-kaffe/net/www/protocol/jar/Handler.class
-kaffe/net/www/protocol/file/Handler.class
+gnu/java/net/protocol/jar/Handler.class
+gnu/java/net/protocol/file/Handler.class
+gnu/java/net/protocol/file/Connection.class
+gnu/java/net/URLParseError.class
 java/net/URLConnection.class
-kaffe/net/www/protocol/jar/JarURLConnection.class
+gnu/java/net/protocol/jar/Connection.class
 java/net/JarURLConnection.class
-kaffe/net/DefaultFileNameMap.class
 java/net/FileNameMap.class
-kaffe/net/DefaultStreamMap.class
-kaffe/net/StreamMap.class
 gnu/java/lang/reflect/TypeSignature.class
 
 # Additional classes used by -v option passed to kjc
