@@ -20,7 +20,7 @@
 #if LONG_LONG_MODULO_BROKEN
 /* egcs 1.1.* on IRIX 6.3/mips produces an arithmetic exception for
    LONG_LONG_MIN % -1ll.  Since anything % -1ll is 0, special-case it.  */
-# define rem_long(t, f1, f2)			(t)[0].v.tlong = (((f2)[0].v.tlong == -1) ? ((f1)[0].v.tlong % (f2)[0].v.tlong) : 0)
+# define rem_long(t, f1, f2)			(t)[0].v.tlong = (((f2)[0].v.tlong != -1) ? ((f1)[0].v.tlong % (f2)[0].v.tlong) : 0)
 #else
 # define rem_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong % (f2)[0].v.tlong
 #endif
