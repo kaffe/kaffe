@@ -1,3 +1,35 @@
+2001-08-19  Edouard G. Parmelan  <egp@free.fr>
+
+	* kaffe/kaffe/main.c (main): Handle new environment variable
+	KAFFE_VMDEBUG as alternative to -vmdebug option.
+
+	* kaffe/kaffevm/debug.c (dbgSetMaskStr): Allow '-' (and optional
+	'+') debug flag prefix to clear (set) option.  An integer is a bit
+	number, usefull to temporary add a debug bit without rebuild all.
+
+	* kaffe/kaffevm/findInJar.c (initClasspath): Handle empty
+	classpath even after discovery.
+
+	* configure.in: check headers sys/ipc.h, sys/shm.h and
+	X11/extensions/XShm.h.  Add option --with-staticbin to force
+	static virtual machine binary.
+
+	* libraries/clib/awt/X/toolkit.h: disable XShm support if one of
+	headers sys/ipc.h, sys/shm.h or X11/extensions/XShm.h is missing.
+
+	* libraries/clib/awt/X/img.c, libraries/clib/awt/X/tlk.c: use
+	macro USE_XSHM_EXTENSION in place of HAVE_LIBXEXT.
+
+	* kaffe/kaffe/Makefile.am (Kaffe_LDFLAGS): Add $(KVMBINFLAGS) to
+	control static build.
+
+	* config/Makefile.am, include/Makefile.am,
+	kaffe/kaffeh/Makefile.am, kaffe/kaffevm/Makefile.am,
+	test/regression/Makefile.am: add missing EXTRA_DIST file and add
+	dist-hook rule to remove built headers.
+
+	* configure, config/config.h.in, */Makefile.in: rebuilt.
+
 2001-08-14  Edouard G. Parmelan  <egp@free.fr>
 
 	* WHATSNEW: notable changes since 1.0.6.
