@@ -7,6 +7,18 @@
 
 2004-08-31  Dalibor Topic  <robilad@kaffe.org>
 
+	Fix for static builds on netbsd.
+
+	* configure.ac: disable -Wuninitialized.
+
+	* configure: Regenerated.
+
+	Reported by: Kiyo Inaba  <inaba@src.ricoh.co.jp>,
+		     Guilhem Lavaux  <guilhem@kaffe.org>,
+		     Riccardo Mottola <rmottola@users.sf.net>
+
+2004-08-31  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/kaffe-gc/gc-mem.h: 
 	(gc_heap_allocation_size) Removed declaration.
 	

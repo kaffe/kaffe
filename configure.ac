@@ -104,7 +104,11 @@ AX_CFLAGS_GCC_OPTION([-Wunused-label])
 AX_CFLAGS_GCC_OPTION([-Wunused-parameter])
 AX_CFLAGS_GCC_OPTION([-Wunused-variable])
 AX_CFLAGS_GCC_OPTION([-Wunused-value])
-AX_CFLAGS_GCC_OPTION([-Wuninitialized])
+## disable -Wuninitialized as it clashes with -O0
+## leading to trouble for libtool, which
+## misinterprets the compiler warnings for
+## something more serious.
+# AX_CFLAGS_GCC_OPTION([-Wuninitialized])
 
 # turn on all other gcc warnings for more fixing fun
 
