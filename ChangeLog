@@ -1,3 +1,10 @@
+2004-07-17  Riccardo Mottola <rmottola@users.sf.net>
+
+	* libraries/clib/native/TimeZone.c
+	(java_util_TimeZone_getDefaultTimeZoneId):
+	The old code has been put back again because some
+	architectures does not implement tm_zone.
+	
 2004-07-17  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* configure.ac: Added a new test to check whether tm_zone exists in
