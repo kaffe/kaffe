@@ -1,5 +1,5 @@
 /* Proxy.java -- build a proxy class that implements reflected interfaces
-   Copyright (C) 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 2001, 2002, 2003, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -42,6 +42,7 @@ import gnu.classpath.Configuration;
 import gnu.java.lang.reflect.TypeSignature;
 
 import java.io.Serializable;
+import java.security.ProtectionDomain;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -153,7 +154,7 @@ import java.util.Set;
  * @see InvocationHandler
  * @see UndeclaredThrowableException
  * @see Class
- * @author Eric Blake <ebb9@email.byu.edu>
+ * @author Eric Blake (ebb9@email.byu.edu)
  * @since 1.3
  * @status updated to 1.4, except for the use of ProtectionDomain
  */
@@ -270,18 +271,9 @@ public class Proxy implements Serializable
                               ? getProxyData0(loader, interfaces)
                               : ProxyData.getProxyData(pt));
 
-            // FIXME workaround for bug in gcj 3.0.x
-            // Not needed with the latest gcj from cvs
-            //clazz = (Configuration.HAVE_NATIVE_GENERATE_PROXY_CLASS
-            //	       ? generateProxyClass0(loader, data)
-            //         : new ClassFactory(data).generate(loader));
-            if (Configuration.HAVE_NATIVE_GENERATE_PROXY_CLASS)
-              clazz = generateProxyClass0(loader, data);
-            else
-              {
-                ClassFactory cf = new ClassFactory(data);
-                clazz = cf.generate(loader);
-              }
+            clazz = (Configuration.HAVE_NATIVE_GENERATE_PROXY_CLASS
+		     ? generateProxyClass0(loader, data)
+                     : new ClassFactory(data).generate(loader));
           }
 
         Object check = proxyClasses.put(pt, clazz);
@@ -731,10 +723,10 @@ public class Proxy implements Serializable
   private static final class ProxyData
   {
     /**
-     * The package this class is in.  Possibly null, meaning the unnamed
-     * package.
+     * The package this class is in <b>including the trailing dot</b>
+     * or an empty string for the unnamed (aka default) package.
      */
-    Package pack;
+    String pack;
 
     /**
      * The interfaces this class implements.  Non-null, but possibly empty.
@@ -763,7 +755,7 @@ public class Proxy implements Serializable
     /**
      * For unique id's
      */
-    private static int count = 0;
+    private static int count;
 
     /**
      * The id of this proxy class
@@ -775,6 +767,20 @@ public class Proxy implements Serializable
      */
     ProxyData()
     {
+    }
+
+    /**
+     * Return the name of a package (including the trailing dot)
+     * given the name of a class.
+     * Returns an empty string if no package.  We use this in preference to
+     * using Class.getPackage() to avoid problems with ClassLoaders
+     * that don't set the package.
+     */
+    private static String getPackage(Class k)
+    {
+      String name = k.getName();
+      int idx = name.lastIndexOf('.');
+      return name.substring(0, idx + 1);
     }
 
     /**
@@ -819,8 +825,8 @@ public class Proxy implements Serializable
           if (! Modifier.isPublic(inter.getModifiers()))
             if (in_package)
               {
-                Package p = inter.getPackage();
-                if (data.pack != inter.getPackage())
+		String p = getPackage(inter);
+                if (! data.pack.equals(p))
                   throw new IllegalArgumentException("non-public interfaces "
                                                      + "from different "
                                                      + "packages");
@@ -828,7 +834,7 @@ public class Proxy implements Serializable
             else
               {
                 in_package = true;
-                data.pack = inter.getPackage();
+                data.pack = getPackage(inter);
               }
           for (int j = i-1; j >= 0; j--)
             if (data.interfaces[j] == inter)
@@ -955,8 +961,7 @@ public class Proxy implements Serializable
       // access_flags
       putU2(Modifier.SUPER | Modifier.FINAL | Modifier.PUBLIC);
       // this_class
-      qualName = ((data.pack == null ? "" : data.pack.getName() + '.')
-                  + "$Proxy" + data.id);
+      qualName = (data.pack + "$Proxy" + data.id);
       putU2(classInfo(TypeSignature.getEncodingOfClass(qualName, false)));
       // super_class
       putU2(classInfo("java/lang/reflect/Proxy"));
@@ -1298,7 +1303,7 @@ public class Proxy implements Serializable
      *        implies the bootstrap class loader
      * @return the proxy class Class object
      */
-    final Class generate(ClassLoader loader)
+    Class generate(ClassLoader loader)
     {
       byte[] bytecode = new byte[pool.length() + stream.length()];
       // More efficient to bypass calling charAt() repetitively.
@@ -1319,41 +1324,26 @@ public class Proxy implements Serializable
 
       try
         {
-          // XXX Do we require more native support here?
-
-          // XXX Security hole - it is possible for another thread to grab the
-          // VMClassLoader.defineClass Method object, and abuse it while we
-          // have temporarily made it accessible. Do we need to add some
-          // synchronization lock to prevent user reflection while we use it?
-
-          // XXX This is waiting on VM support for protection domains.
-
-          Class vmClassLoader = Class.forName("java.lang.ClassLoader");
-          Class[] types = {String.class,
+          Class vmClassLoader = Class.forName("java.lang.VMClassLoader");
+          Class[] types = {ClassLoader.class, String.class,
                            byte[].class, int.class, int.class,
-                           /* ProtectionDomain.class */ };
+                           ProtectionDomain.class };
           Method m = vmClassLoader.getDeclaredMethod("defineClass", types);
+          // We can bypass the security check of setAccessible(true), since
+	  // we're in the same package.
+          m.flag = true;
 
-          // Bypass the security check of setAccessible(true), since this
-          // is trusted code. But note the comment above about the security
-          // risk of doing this outside a synchronized block.
-          m.setAccessible(true);
-          Object[] args = {qualName, bytecode, new Integer(0),
+          Object[] args = {loader, qualName, bytecode, new Integer(0),
                            new Integer(bytecode.length),
-                           /* Object.class.getProtectionDomain() */ };
-          Class clazz = (Class) m.invoke(loader != null ? loader : ClassLoader.getSystemClassLoader(), args);
-          m.setAccessible(false);
+                           Object.class.getProtectionDomain() };
+          Class clazz = (Class) m.invoke(null, args);
 
           // Finally, initialize the m field of the proxy class, before
           // returning it.
-
-          // No security risk here, since clazz has not been exposed yet,
-          // so user code cannot grab the same reflection object.
           Field f = clazz.getDeclaredField("m");
-          f.setAccessible(true);
+          f.flag = true;
           // we can share the array, because it is not publicized
           f.set(null, methods);
-          f.setAccessible(false);
 
           return clazz;
         }
