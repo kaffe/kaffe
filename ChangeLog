@@ -1,3 +1,13 @@
+Mon Aug  2 22:36:46 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* In libraries/javalib:
+	java/lang/Thread.java, java/lang/Runtime.java:
+	kaffe/lang/Application.java, kaffe/lang/ClassPathReader.java
+	kaffe/lang/ResourceReader.java, 
+	kaffe/net/www/protocol/system/SystemURLConnection.java:
+	improvements to application extensions.  Basis for 1.2-like
+	application classloader scheme.
+
 Mon Aug  2 17:47:38 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/lang/ClassLoader.java: adjust to
