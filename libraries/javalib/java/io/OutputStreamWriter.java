@@ -15,13 +15,15 @@ import kaffe.io.CharToByteConverter;
 public class OutputStreamWriter
   extends Writer
 {
-	final private static int BUFDEFAULT = 1024;
+	private final static int BUFDEFAULT = 1024;
+	private final static int MINMARGIN = 32;
 	private OutputStream strm;
 	private CharToByteConverter encoding;
 	private byte[] outbuf = new byte[BUFDEFAULT];
+	private int buflen;
 
 public OutputStreamWriter(OutputStream out)
-	{
+{
 	strm = out;
 	encoding = CharToByteConverter.getDefault();
 }
@@ -40,11 +42,17 @@ public void close() throws IOException
 
 public void flush() throws IOException
 {
+	synchronized (lock) {
+		if (buflen > 0) {
+			strm.write(outbuf, 0, buflen);
+			buflen = 0;
+		}
+	}
 	strm.flush();
 }
 
 public String getEncoding()
-	{
+{
 	return (encoding.toString());
 }
 
@@ -53,14 +61,15 @@ public void write(String str, int off, int len) throws IOException
 	write(str.toCharArray(), off, len);
 }
 
-public void write ( char cbuf[], int off, int len ) throws IOException
+public void write(char cbuf[], int off, int len) throws IOException
 {
-	int outlen;
-
-	synchronized(lock) {
-		while ( len > 0 ) {
-			outlen = encoding.convert( cbuf, off, len, outbuf, 0, outbuf.length);
-			strm.write( outbuf, 0, outlen);
+	synchronized (lock) {
+		while (len > 0) {
+			int outlen = encoding.convert(cbuf, off, len,
+				outbuf, buflen, outbuf.length - buflen);
+			buflen += outlen;
+			if (outlen == 0 || outbuf.length - buflen < MINMARGIN)
+				flush();
 			off += outlen;
 			len -= outlen;
 		}
@@ -69,8 +78,6 @@ public void write ( char cbuf[], int off, int len ) throws IOException
 
 public void write(int c) throws IOException
 {
-	char ch[] = new char[1];
-	ch[0] = (char)c;
-	write (ch, 0, 1);
+	write (new char[] { (char)c }, 0, 1);
 }
 }
