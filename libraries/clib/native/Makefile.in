@@ -110,13 +110,12 @@ am__objects_2 = libnative_la-Class.lo libnative_la-ClassLoader.lo \
 am__objects_3 = libnative_la-Array.lo libnative_la-Constructor.lo \
 	libnative_la-Field.lo libnative_la-Method.lo
 am__objects_4 = libnative_la-AccessController.lo
-am__objects_5 = libnative_la-DateFormat.lo
-am__objects_6 = libnative_la-TestNative.lo
-am__objects_7 = libnative_la-Arrays.lo libnative_la-TimeZone.lo
-am__objects_8 = libnative_la-java_lang_ref_Reference.lo
+am__objects_5 = libnative_la-TestNative.lo
+am__objects_6 = libnative_la-TimeZone.lo
+am__objects_7 = libnative_la-java_lang_ref_Reference.lo
 am_libnative_la_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	$(am__objects_3) $(am__objects_4) $(am__objects_5) \
-	$(am__objects_6) $(am__objects_7) $(am__objects_8)
+	$(am__objects_6) $(am__objects_7)
 libnative_la_OBJECTS = $(am_libnative_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -452,14 +451,10 @@ REFLECT_SRCS = \
 SECURITY_SRCS = \
 		AccessController.c
 
-TEXT_SRCS = \
-		DateFormat.c
-
 TEST_SRCS = \
 		TestNative.c
 
 UTIL_SRCS = \
-		Arrays.c \
 		TimeZone.c
 
 libnative_la_CFLAGS = \
@@ -478,7 +473,15 @@ libnative_la_DEPENDENCIES = \
 libnative_la_LIBADD = $(M_LIBS) $(LTLIBICONV) \
 	$(libnative_la_DEPENDENCIES)
 
-libnative_la_SOURCES = $(IO_SRCS) $(LANG_SRCS) $(REFLECT_SRCS) $(SECURITY_SRCS) $(TEXT_SRCS) $(TEST_SRCS) $(UTIL_SRCS) $(REF_SRCS)
+libnative_la_SOURCES = \
+	$(IO_SRCS) \
+	$(LANG_SRCS) \
+	$(REFLECT_SRCS) \
+	$(SECURITY_SRCS) \
+	$(TEST_SRCS) \
+	$(UTIL_SRCS) \
+	$(REF_SRCS)
+
 CLEANFILES = so_locations
 all: all-am
 
@@ -551,7 +554,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-AccessController.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Array.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Arrays.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-ByteToCharDefault.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-ByteToCharIconv.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-CharToByteDefault.Plo@am__quote@
@@ -559,7 +561,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Class.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-ClassLoader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Constructor.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-DateFormat.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Double.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Field.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-Float.Plo@am__quote@
@@ -784,26 +785,12 @@ libnative_la-AccessController.lo: AccessController.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-AccessController.lo `test -f 'AccessController.c' || echo '$(srcdir)/'`AccessController.c
 
-libnative_la-DateFormat.lo: DateFormat.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-DateFormat.lo -MD -MP -MF "$(DEPDIR)/libnative_la-DateFormat.Tpo" -c -o libnative_la-DateFormat.lo `test -f 'DateFormat.c' || echo '$(srcdir)/'`DateFormat.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-DateFormat.Tpo" "$(DEPDIR)/libnative_la-DateFormat.Plo"; else rm -f "$(DEPDIR)/libnative_la-DateFormat.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='DateFormat.c' object='libnative_la-DateFormat.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-DateFormat.lo `test -f 'DateFormat.c' || echo '$(srcdir)/'`DateFormat.c
-
 libnative_la-TestNative.lo: TestNative.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-TestNative.lo -MD -MP -MF "$(DEPDIR)/libnative_la-TestNative.Tpo" -c -o libnative_la-TestNative.lo `test -f 'TestNative.c' || echo '$(srcdir)/'`TestNative.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-TestNative.Tpo" "$(DEPDIR)/libnative_la-TestNative.Plo"; else rm -f "$(DEPDIR)/libnative_la-TestNative.Tpo"; exit 1; fi
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='TestNative.c' object='libnative_la-TestNative.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-TestNative.lo `test -f 'TestNative.c' || echo '$(srcdir)/'`TestNative.c
-
-libnative_la-Arrays.lo: Arrays.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-Arrays.lo -MD -MP -MF "$(DEPDIR)/libnative_la-Arrays.Tpo" -c -o libnative_la-Arrays.lo `test -f 'Arrays.c' || echo '$(srcdir)/'`Arrays.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-Arrays.Tpo" "$(DEPDIR)/libnative_la-Arrays.Plo"; else rm -f "$(DEPDIR)/libnative_la-Arrays.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='Arrays.c' object='libnative_la-Arrays.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-Arrays.lo `test -f 'Arrays.c' || echo '$(srcdir)/'`Arrays.c
 
 libnative_la-TimeZone.lo: TimeZone.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-TimeZone.lo -MD -MP -MF "$(DEPDIR)/libnative_la-TimeZone.Tpo" -c -o libnative_la-TimeZone.lo `test -f 'TimeZone.c' || echo '$(srcdir)/'`TimeZone.c; \

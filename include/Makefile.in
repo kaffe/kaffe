@@ -443,8 +443,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_net_SocketImpl.h \
 	java_net_SocketOptions.h \
 	java_security_VMAccessController.h \
-	java_text_DateFormat.h \
-	java_util_Arrays.h \
 	java_util_Comparator.h \
 	java_util_VMTimeZone.h \
 	java_util_Vector.h \

@@ -1,5 +1,17 @@
 2005-02-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/native/DateFormat.c,
+	libraries/clib/native/Arrays.c:
+	Removed unused files.
+
+	* libraries/clib/native/Makefile.am:
+	Removed DateFormat.c and Arrays.c.
+
+	* include/Makefile.am:
+	Don't create headers for DateFormat and Arrays.
+
+2005-02-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/powerpc/aix/md.c,
 	config/powerpc/linux/md.c,
 	config/powerpc/machten/md.c:

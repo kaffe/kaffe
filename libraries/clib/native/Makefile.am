@@ -53,14 +53,10 @@ REFLECT_SRCS = \
 SECURITY_SRCS = \
 		AccessController.c
 
-TEXT_SRCS = \
-		DateFormat.c
-
 TEST_SRCS = \
 		TestNative.c
 
 UTIL_SRCS = \
-		Arrays.c \
 		TimeZone.c
 
 libnative_la_CFLAGS = \
@@ -79,6 +75,13 @@ libnative_la_DEPENDENCIES = \
 libnative_la_LIBADD = $(M_LIBS) $(LTLIBICONV) \
 	$(libnative_la_DEPENDENCIES)
 
-libnative_la_SOURCES = $(IO_SRCS) $(LANG_SRCS) $(REFLECT_SRCS) $(SECURITY_SRCS) $(TEXT_SRCS) $(TEST_SRCS) $(UTIL_SRCS) $(REF_SRCS)
+libnative_la_SOURCES = \
+	$(IO_SRCS) \
+	$(LANG_SRCS) \
+	$(REFLECT_SRCS) \
+	$(SECURITY_SRCS) \
+	$(TEST_SRCS) \
+	$(UTIL_SRCS) \
+	$(REF_SRCS)
 
 CLEANFILES = so_locations
