@@ -74,7 +74,7 @@ public class Attributes implements Map, Cloneable {
     }
 
     public void putAll(Map attr) {
-	map.putAll(attr);
+	map.putAll((Attributes)attr);
     }
 
     public void clear() {
@@ -119,11 +119,19 @@ public class Attributes implements Map, Cloneable {
 	public static final Name
 		IMPLEMENTATION_VENDOR	= new Name("Implementation-Vendor");
 	public static final Name
+		IMPLEMENTATION_VENDOR_ID= new Name("Implementation-Vendor-Id");
+	public static final Name
+		IMPLEMENTATION_VENDOR_URL=new Name("Implementation-Vendor-URL");
+	public static final Name
 		SPECIFICATION_TITLE	= new Name("Specification-Title");
 	public static final Name
 		SPECIFICATION_VERSION	= new Name("Specification-Version");
 	public static final Name
 		SPECIFICATION_VENDOR	= new Name("Specification-Vendor");
+	public static final Name
+		EXTENSION_LIST		= new Name("Extension-List");
+	public static final Name
+		EXTENSION_INSTALLATION	= new Name("Extension-Installation");
 
 	public Name(String name) {
 	    if (name.length() == 0) {
