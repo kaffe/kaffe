@@ -1,3 +1,8 @@
+Wed Mar 24 09:50:56 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* test/regression/DoublePrint.java: skip it, since not even Sun
+	JDK for Solaris/sparc prints the expected output
+
 Wed Mar 24 07:48:05 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* test/regression/TestCasts.java: simplified for integration in
