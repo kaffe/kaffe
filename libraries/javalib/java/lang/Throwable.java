@@ -406,7 +406,8 @@ public class Throwable implements Serializable
 
     static
     {
-      nl = System.getProperty("line.separator");
+      // Access package private properties field to prevent Security check.
+      nl = System.properties.getProperty("line.separator");
     }
   }
 

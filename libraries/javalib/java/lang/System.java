@@ -26,7 +26,7 @@ public final class System {
 	final public static InputStream in;
 	final public static PrintStream out;
 	final public static PrintStream err;
-	private static Properties props;
+	static Properties properties;
 	private static SecurityManager security;
 
 // When trying to debug Java code that gets executed early on during
@@ -40,10 +40,10 @@ public static native void debugE(Throwable t);	// print stack trace to stderr
 static {
 	// XXX what are the constraints on the initialization order in here?
 
-	props = initProperties(new Properties());
+	properties = initProperties(new Properties());
 
 	// Initialise the I/O
-	if (props.getProperty("kaffe.embedded", "false").equals("false")) {
+	if (properties.getProperty("kaffe.embedded", "false").equals("false")) {
 		in = new BufferedInputStream(new FileInputStream(FileDescriptor.in), 128);
 		out = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.out), 128), true);
 		err = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err), 128), true);
@@ -85,19 +85,19 @@ public static void gc() {
 public static Properties getProperties() {
 	checkPropertiesAccess();
 
-	return props;
+	return properties;
 }
 
 public static String getProperty(String key) {
 	checkPropertyAccess(key);
 
-	return props.getProperty(key);
+	return properties.getProperty(key);
 }
 
 public static String getProperty(String key, String def) {
 	checkPropertyAccess(key);
 
-	return props.getProperty(key, def);
+	return properties.getProperty(key, def);
 }
 
 public static SecurityManager getSecurityManager() {
@@ -110,7 +110,7 @@ public static String getenv(String name) {
 
 native public static int identityHashCode(Object x);
 
-native private static Properties initProperties(Properties props);
+native private static Properties initProperties(Properties properties);
 
 public static void load(String filename) {
 	Runtime.getRuntime().load(filename,
@@ -165,16 +165,16 @@ public static String setProperty(String key, String value) {
 		sm.checkPermission(new PropertyPermission(key, "write"));
 	if (key.length() == 0)
 		throw new IllegalArgumentException("key can't be empty");
-	return (String)props.setProperty(key, value);
+	return (String)properties.setProperty(key, value);
 }
 
 public static void setProperties(Properties prps) {
 	checkPropertiesAccess();
 	if (prps == null) {
-		props.clear();
+		properties.clear();
 		return;
 	}
-	props = prps;
+	properties = prps;
 }
 
 public static void setSecurityManager(SecurityManager s) {
