@@ -122,6 +122,7 @@ DBG(NEWINSTR,
 void*
 soft_multianewarray(Hjava_lang_Class* class, jint dims, slots* args)
 {
+	errorInfo einfo;
         int array[MAXDIMS];
         Hjava_lang_Object* obj;
         jint arg;
@@ -149,12 +150,16 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, slots* args)
         arraydims[i] = -1;
 
         /* Mmm, okay now build the array using the wonders of recursion */
-        obj = newMultiArray(class, arraydims);
+        obj = newMultiArrayChecked(class, arraydims, &einfo);
 
 	if (arraydims != array) {
 		KFREE(arraydims);
 	}
 
+	if (!obj) {
+		throwError(&einfo);
+	}
+	
         /* Return the base object */
 	return (obj);
 }
@@ -164,13 +169,14 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, slots* args)
 void*
 soft_vmultianewarray(Hjava_lang_Class* class, jint dims, va_list ap)
 {
+	errorInfo einfo;
 	int array[MAXDIMS];
 	int i;
 	jint arg;
 	Hjava_lang_Object* obj;
 	int* arraydims;
 
-        if (dims < MAXDIMS) {
+        if (dims < MAXDIMS-1) {
 		arraydims = array;
 	}
 	else {
@@ -191,10 +197,14 @@ soft_vmultianewarray(Hjava_lang_Class* class, jint dims, va_list ap)
 	arraydims[i] = -1;
 
 	/* Mmm, okay now build the array using the wonders of recursion */
-        obj = newMultiArray(class, arraydims);
+        obj = newMultiArrayChecked(class, arraydims, &einfo);
 
 	if (arraydims != array) {
 		KFREE(arraydims);
+	}
+
+	if (!obj) {
+		throwError(&einfo);
 	}
 
 	/* Return the base object */
@@ -259,10 +269,10 @@ soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, in
 	 * is that's missing (or create multiple nosuch_method routines,
 	 * given that they should be rare---minus possible DoS.)
 	 */
-	if (ncode == (void*)0xffffffff) {
+	if (ncode == (void *)-1) {
 		goto notfound;
 	}
-	assert(ncode);
+	assert(ncode != NULL);
 	return (ncode);
 
 notfound:
