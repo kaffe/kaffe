@@ -20,6 +20,7 @@
 #define	PATH_SEP_CHAR	'/'
 
 FILE* include;
+FILE* jni_include;
 char className[BUFSZ];
 char pathName[BUFSZ];
 char includeName[BUFSZ];
@@ -60,9 +61,16 @@ main(int argc, char* argv[])
 			fprintf(stderr, "Failed to create '%s'.\n", outputName);
 			exit(1);
 		}
-		include = file;
-		/* Setup the include ifdef name */
-		strcpy(className, outputName);
+		if (flag_jni != 0) {
+			jni_include = file;
+			strcpy(className, outputName);
+			initJniInclude();
+		}
+		else {
+			include = file;
+			strcpy(className, outputName);
+			initInclude();
+		}
 	}
 
 	for (nm = argv[farg]; nm != 0; nm = argv[++farg]) {
@@ -116,20 +124,41 @@ main(int argc, char* argv[])
 		strcat(includeName, ".h");
 
 		if (outputName == 0) {
-			include = fopen(includeName, "w");
-			if (include == 0) {
-				fprintf(stderr, "Failed to create '%s'.\n", includeName);
-				exit(1);
+			if (flag_jni != 0) {
+				jni_include = fopen(includeName, "w");
+				if (jni_include == 0) {
+					fprintf(stderr, "Failed to create '%s'.\n", includeName);
+					exit(1);
+				}
+				initJniInclude();
+			}
+			else {
+				include = fopen(includeName, "w");
+				if (include == 0) {
+					fprintf(stderr, "Failed to create '%s'.\n", includeName);
+					exit(1);
+				}
+				initInclude();
 			}
 		}
-		initInclude();
-		startInclude();
+		if (flag_jni != 0) {
+			startJniInclude();
+		}
+		else {
+			startInclude();
+		}
 		findClass(pathName);
 
 		if (outputName == 0) {
 			if (include != 0) {
 				endInclude();
 				fclose(include);
+				include = 0;
+			}
+			if (jni_include != 0) {
+				endJniInclude();
+				fclose(jni_include);
+				jni_include = 0;
 			}
 		}
 	}
@@ -138,6 +167,10 @@ main(int argc, char* argv[])
 		if (include != 0) {
 			endInclude();
 			fclose(include);
+		}
+		if (jni_include != 0) {
+			endJniInclude();
+			fclose(jni_include);
 		}
 	}
 
@@ -208,6 +241,7 @@ usage(void)
 	fprintf(stderr, "	-help			Print this message\n");
 	fprintf(stderr, "	-version		Print version number\n");
 	fprintf(stderr, "	-classpath <path>	Set classpath\n");
+	fprintf(stderr, "	-jni			Generate JNI interface\n");
 	fprintf(stderr, "	-o <file>		Generate all output to the given file\n");
 	fprintf(stderr, "	-d <directory>		Directory for the output\n");
 }
