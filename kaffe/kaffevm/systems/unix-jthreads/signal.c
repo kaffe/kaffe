@@ -38,7 +38,6 @@
 
 static void nullException(SIGNAL_ARGS(sig, sc));
 static void floatingException(EXCEPTIONPROTO);
-static void ignoreSignal(int sig);
 
 static exchandler_t nullHandler;
 static exchandler_t floatingHandler;
@@ -68,7 +67,7 @@ jthread_initexceptions(exchandler_t _nullHandler,
 		registerSyncSignalHandler(SIGFPE, floatingException);
 #endif
 #if defined(SIGPIPE)
-		ignoreSignal(SIGPIPE);
+		KaffeJThread_ignoreSignal(SIGPIPE);
 #endif
 	}
 }
@@ -281,8 +280,8 @@ clearSignal(int sig)
 /*
  * Ignore the given signal.
  */
-static void
-ignoreSignal(int sig)
+void
+KaffeJThread_ignoreSignal(int sig)
 {
 	registerSignalHandler(sig, SIG_IGN, false);
 }

@@ -39,6 +39,7 @@ void restoreAsyncSignalHandler(int sig, void* handler);
 
 void registerTerminalSignal(int sig, void* handler);
 
+void KaffeJThread_ignoreSignal(int sig);
 void clearSignal(int sig);
 void unblockSignal(int sig);
 void unblockAsyncSignals(void);

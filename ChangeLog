@@ -1,3 +1,10 @@
+2004-12-30  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jsignal.h,
+	kaffe/kaffevm/systems/unix-jthreads/signal.c:
+	Brought back ignoreSignal as a global symbol but renamed it to
+	KaffeJThread_ignoreSignal.
+
 2004-12-29  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/gtypes.h: New intp type for signed integer that may

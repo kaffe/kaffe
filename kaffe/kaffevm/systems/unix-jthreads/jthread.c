@@ -1278,7 +1278,7 @@ jthread_init(int pre,
 	 * So we'll just ignore it and keep running.  Note that this will
 	 * detach us from the session too.
 	 */
-	ignoreSignal(SIGHUP);
+	KaffeJThread_ignoreSignal(SIGHUP);
 
 	KaffeSetDefaultAllocator(thread_static_allocator, thread_static_free, thread_reallocator);
 	queuePool = KaffeCreatePool();
