@@ -592,6 +592,9 @@
 /* Define to 1 if you have the <X11/extensions/XShm.h> header file. */
 #undef HAVE_X11_EXTENSIONS_XSHM_H
 
+/* Enable PXA?XScale support */
+#undef HAVE_XSCALE
+
 /* Define to 1 if you have the <zlib.h> header file. */
 #undef HAVE_ZLIB_H
 

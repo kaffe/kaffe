@@ -1,3 +1,16 @@
+2004-03-09  Dalibor Topic <robilad@kaffe.org>
+
+	config/arm/linux/md.h,
+	config/arm/threads.h:
+	Use HAVE_XSCALE define as well.
+
+	config/config.h.in,
+	configure:
+	Regenerated.
+
+	configure.in:
+	Added --enable-pxa option to enable XScale support.
+
 2004-03-09  Holger Schurig <h.schurig@mn-logistik.de>
 
 	config/arm/linux/md.h,

@@ -24,10 +24,10 @@
  * This is the offset into the setjmp buffer where the stack pointer is
  * stored.  This may be different with different OSes.
  */
-#ifdef __XSCALE__
+#if defined(__XSCALE__) || defined(HAVE_XSCALE)
 #define	SP_OFFSET		20
 #else
 #define	SP_OFFSET		23
-#endif
+#endif /* defined(__XSCALE__) || defined(HAVE_XSCALE) */
 
 #endif

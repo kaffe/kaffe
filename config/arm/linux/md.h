@@ -79,11 +79,12 @@ extern void init_md(void);
  * figured by looking at sysdeps/arm/bits/setjmp.h
  * and sysdeps/arm/setjmp.S from glibc
  */ 
-#ifdef __XSCALE__
+#if defined(__XSCALE__) || defined(HAVE_XSCALE)
 #define SP_OFFSET	20
 #else
 #define SP_OFFSET	8
-#endif
+#endif /* defined(__XSCALE__) || defined(HAVE_XSCALE) */
+
 #define FP_OFFSET	7
 
 #endif

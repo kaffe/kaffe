@@ -971,6 +971,19 @@ AC_MSG_RESULT($enable_mips2)
 dnl -------------------------------------------------------------------------
 
 dnl =========================================================================
+dnl Do we enable XScale(PXA)
+dnl -------------------------------------------------------------------------
+
+AC_ARG_ENABLE(pxa, [  --enable-pxa         Enable PXA/XScale support])
+AC_MSG_CHECKING([whether to enable PXA/XScale support])
+if test x"$enable_pxa" != x"no"; then
+    AC_DEFINE([HAVE_XSCALE], 1, [Enable PXA?XScale support])
+fi
+AC_MSG_RESULT($enable_pxa)
+
+dnl -------------------------------------------------------------------------
+
+dnl =========================================================================
 dnl Checks for typedefs, structures, and compiler characteristics.
 dnl -------------------------------------------------------------------------
 
