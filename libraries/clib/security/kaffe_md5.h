@@ -146,6 +146,7 @@ extern void *md5_read_ctx __P ((const struct md5_ctx *ctx, void *resbuf));
    resulting message digest number will be written into the 16 bytes
    beginning at RESBLOCK.  */
 extern int __md5_stream __P ((FILE *stream, void *resblock));
+extern int md5_stream __P ((FILE *stream, void *resblock));
 
 /* Compute MD5 message digest for LEN bytes beginning at BUFFER.  The
    result is always in little endian byte order, so that a byte-wise
