@@ -30,7 +30,8 @@ protected String toExternalForm(URL u) {
 	StringBuffer buf = new StringBuffer();
 	buf.append(u.getProtocol());
 	buf.append(":");
-	if (!u.getHost().equals("")) {
+	String host = u.getHost();
+	if (host != null && !u.getHost().equals("")) {
 		buf.append("//");
 		buf.append(u.getHost());
 		if (u.getPort() != -1) {
