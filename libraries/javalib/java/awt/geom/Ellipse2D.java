@@ -48,8 +48,8 @@ package java.awt.geom;
  * <blockquote>(<i>x</i>/<i>a</i>)<sup>2</sup> +
  * (<i>y</i>/<i>b</i>)<sup>2</sup> = 1<BR><BR>
  *
- * @author Tom Tromey <tromey@cygnus.com>
- * @author Eric Blake <ebb9@email.byu.edu>
+ * @author Tom Tromey (tromey@cygnus.com)
+ * @author Eric Blake (ebb9@email.byu.edu)
  *
  * @since 1.2
  */
