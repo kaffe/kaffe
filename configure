@@ -1043,15 +1043,15 @@ Optional Features:
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
-  --enable-debug          Enable run-time debugging machinery
-  --disable-debug         Disable assertion checking (but not -g)
+  --enable-debug          Enable run-time debugging machinery [default=yes]
+  --disable-debug         Disable assertion checking (but not -g)]
   --enable-xprofiling     Enable profiling for C and jitted code
   --enable-xdebugging     Enable debugging symbol generation for jitted code
   --enable-feedback       Enable generation of feedback data
   --enable-gcj            Enable GCJ support
   --disable-mips2         Disable MIPS II instructions
   --disable-sound         Disable javax.sound support
-  --enable-pure-java-math Enable pure java java.math.* package default=native
+  --enable-pure-java-math Enable pure java java.math.* package [default=native]
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -1070,8 +1070,8 @@ Optional Packages:
   --with-dnsjava=<jar>       Use the specified DNS java Jar file.
   --with-profiling        Compile with gprof(1) profiling support
   --without-suncompat     Don't include Sun compatibility scripts
-  --with-threads=SYSTEM   Define which threading system to use default=unix-jthreads
-  --with-jikes=JIKES    Define to use jikes compiler default=no
+  --with-threads=SYSTEM   Define which threading system to use [default=unix-jthreads]
+  --with-jikes=JIKES    Define to use jikes compiler [default=no]
   --with-libffi           Use libffi for sysdepCallMethod
   --with-x                use the X Window System
   --with-stats            Gather statistics on vm execution
@@ -1080,7 +1080,7 @@ Optional Packages:
   --with-qtdir=DIR        Qt installation directory default=$QTDIR
   --without-alsa          Don't use ALSA for sound default is to use it if present
   --without-esd           Don't use esd for sound default is to use it if present
-  --with-extensions       the extensions (like the servlet API) to include default=none
+  --with-extensions       the extensions (like the servlet API) to include [default=none]
   --with-dmalloc          use dmalloc, as in
                           http://www.dmalloc.com/dmalloc.tar.gz
   --with-class-library-profile=PROFILE	specify class library profile
@@ -18816,7 +18816,6 @@ if test "${enable_debug+set}" = set; then
 
 fi;
 case "$enable_debug" in
-"") ;;
 no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
 *) CPPFLAGS="$CPPFLAGS -DKAFFE_VMDEBUG";;
 esac

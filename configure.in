@@ -297,10 +297,9 @@ dnl =========================================================================
 dnl Allow selection of debugging mechanisms
 dnl -------------------------------------------------------------------------
 
-AC_ARG_ENABLE(debug,[  --enable-debug          Enable run-time debugging machinery
+AC_ARG_ENABLE(debug,[  --enable-debug          Enable run-time debugging machinery @<:@default=yes@:>@]
   --disable-debug         Disable assertion checking (but not -g)])
 case "$enable_debug" in
-"") ;;
 no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
 *) CPPFLAGS="$CPPFLAGS -DKAFFE_VMDEBUG";;
 esac
@@ -396,7 +395,7 @@ dnl =========================================================================
 dnl Use the new internal threading system "jthreads"
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(threads,[  --with-threads=SYSTEM   Define which threading system to use [default=unix-jthreads]])
+AC_ARG_WITH(threads,[  --with-threads=SYSTEM   Define which threading system to use @<:@default=unix-jthreads@:>@])
 AC_MSG_CHECKING(thread system)
 if test x"$with_threads" = x"" ; then
 	with_threads=unix-jthreads
@@ -416,7 +415,7 @@ dnl Use jikes instead of kjc?
 dnl =========================================================================
 
 AC_CHECK_PROG(JIKESPROG, jikes, jikes)
-AC_ARG_WITH(jikes,[  --with-jikes[=JIKES]    Define to use jikes compiler [default=no]],[JIKES="$withval"],[JIKES=""])
+AC_ARG_WITH(jikes,[  --with-jikes[=JIKES]    Define to use jikes compiler @<:@default=no@:>@],[JIKES="$withval"],[JIKES=""])
 AC_MSG_CHECKING([whether to use jikes])
 
 case $with_jikes in
@@ -1278,7 +1277,7 @@ dnl                 Pure java imlementation of java.math.*
 dnl -----------------------------------------------------------------------
 
 AC_ARG_ENABLE(pure_java_math,
-[  --enable-pure-java-math Enable pure java java.math.* package [default=native]],
+[  --enable-pure-java-math Enable pure java java.math.* package @<:@default=native@:>@],
 [case "$enableval" in
 yes)
 	pure_java_math=true
@@ -1327,7 +1326,7 @@ dnl                       Support selection of extensions
 dnl -----------------------------------------------------------------------
 
 AC_ARG_WITH(extensions, 
-[  --with-extensions       the extensions (like the servlet API) to include [default=none]])
+[  --with-extensions       the extensions (like the servlet API) to include @<:@default=none@:>@])
 AC_MSG_CHECKING([which extensions to include])
 
 dnl ouch

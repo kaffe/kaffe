@@ -1,5 +1,20 @@
 2003-06-01  Jim Pick  <jim@kaffe.org>
 
+	* configure.in:
+	Make --enable-debug the default.  Fix some quoting
+	in the help texts.
+	
+	* developers/autogen.sh:
+	In my last checkin, autoconf was never being run
+	because I was using "set -e".  So, ignore automake
+	warnings, and remove preexisting configure script
+	(and friends) so that failure is obvious.
+	
+	* configure:
+	Regenerated.
+
+2003-06-01  Jim Pick  <jim@kaffe.org>
+
 	* developers/autogen.sh:
 	Added checks for version of automake/autoconf
 

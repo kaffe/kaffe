@@ -68,8 +68,16 @@ fi
 fi
 
 ( cd libraries/javalib && ../../developers/update-class-list )
+
+# Make sure we regenerate things
+rm -f configure aclocal.m4
+find . -type f -name 'Makefile.in' | grep -v libltdl | xargs rm -f
+
 aclocal -I .
 autoheader -Wall
-automake --add-missing --copy -Wall
+automake --add-missing --copy -Wall || /bin/true  # ignore warnings
 autoconf -Wall
+
+# Shouldn't we also regenerated the configure script and makefiles
+# in libltdl?  Should we be updating libtool?  - jpick
 
