@@ -93,12 +93,14 @@ function contentPageLoaded(title)
    if (title) {
       top.document.title = title;
    }
+   /** 20050204: removed since there is only one stylesheet at the time
    if (top.frames.length > 0) {
       setStyleSheet(getActiveStylesheetTitle(top.frames.packages), "content");
    }
    else if (top.selectedSheet) { 
       setStyleSheet(top.selectedSheet, "content");
    }
+   **/
 }
 
 /**
@@ -107,5 +109,7 @@ function contentPageLoaded(title)
  */
 function secondaryPageLoaded(frame_name)
 { 
+   /** 20050204: removed since there is only one stylesheet at the time
    setStyleSheet(getActiveStylesheetTitle(top.frames.packages), frame_name);
+   **/
 }

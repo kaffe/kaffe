@@ -851,7 +851,7 @@ public class Driver {
       this.rootDoc = _rootDoc;
       _rootDoc = null;
 
-      boolean xmlOnly = false;
+      boolean xmlOnly = true;
 
       // Set the default Taglet order
 
@@ -918,6 +918,7 @@ public class Driver {
 	       else if ("-genhtml".equals(optionTag)) {
 		  htmlTargetContext.setTargetDirectory(targetDirectory);
 		  targets.add(targetContext = htmlTargetContext);
+                  xmlOnly = false;
 	       } 
 	       else if ("-geninfo".equals(optionTag)) {
                   targetContext
@@ -928,6 +929,7 @@ public class Driver {
 		     printNotice("NOTE: -geninfo implies -fixhtml.");
 		     fixHTML = true;
 		  }
+                  xmlOnly = false;
 	       }
 	       else if ("-gendocbook".equals(optionTag)) {
                   targetContext = new TargetContext(DocTranslet.fromClasspath("/doctranslets/docbook/gengj.xsl"), 

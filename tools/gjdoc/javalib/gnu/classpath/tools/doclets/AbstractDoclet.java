@@ -794,12 +794,25 @@ public abstract class AbstractDoclet
       ClassDoc[] classes = rootDoc.classes();
       for (int i = 0, ilim = classes.length; i < ilim; ++ i) {
          ClassDoc clazz = classes[i];
-
-         // classes derived from
-         for (ClassDoc superclass = clazz.superclass(); superclass != null; 
-              superclass = superclass.superclass()) {
-            addUsedBy(usedClassToPackagesMap,
-                      superclass, UsageType.CLASS_DERIVED_FROM, clazz, clazz.containingPackage());
+         
+         if (clazz.isInterface()) {
+            // classes implementing
+            InterfaceRelation relation
+               = (InterfaceRelation)getInterfaceRelations().get(clazz);
+            Iterator it = relation.implementingClasses.iterator();
+            while (it.hasNext()) {
+               ClassDoc implementor = (ClassDoc)it.next();
+               addUsedBy(usedClassToPackagesMap,
+                         clazz, UsageType.CLASS_IMPLEMENTING, implementor, implementor.containingPackage());
+            }
+         }
+         else {
+            // classes derived from
+            for (ClassDoc superclass = clazz.superclass(); superclass != null; 
+                 superclass = superclass.superclass()) {
+               addUsedBy(usedClassToPackagesMap,
+                         superclass, UsageType.CLASS_DERIVED_FROM, clazz, clazz.containingPackage());
+            }
          }
 
          FieldDoc[] fields = clazz.fields();
@@ -898,6 +911,7 @@ public abstract class AbstractDoclet
    protected static class UsageType
    {
       public static final UsageType CLASS_DERIVED_FROM = new UsageType("class-derived-from");
+      public static final UsageType CLASS_IMPLEMENTING = new UsageType("class-implementing");
       public static final UsageType FIELD_OF_TYPE = new UsageType("field-of-type");
       public static final UsageType METHOD_WITH_RETURN_TYPE = new UsageType("method-with-return-type");
       public static final UsageType METHOD_WITH_PARAMETER_TYPE = new UsageType("method-with-parameter-type");
@@ -975,7 +989,8 @@ public abstract class AbstractDoclet
    {
       if (null == sourcePaths) {
          for (int i=0; i<rootDoc.options().length; ++i) {
-            if ("-sourcepath".equals(rootDoc.options()[i][0])) {
+            if ("-sourcepath".equals(rootDoc.options()[i][0])
+                || "-s".equals(rootDoc.options()[i][0])) {
                sourcePaths = new LinkedHashSet();
                String sourcepathString = rootDoc.options()[i][1];
                StringTokenizer st = new StringTokenizer(sourcepathString, File.pathSeparator);
@@ -1269,10 +1284,7 @@ public abstract class AbstractDoclet
 
    protected abstract String renderTag(String tagName, Tag[] tags, TagletContext context);
    
-   protected String getDocletVersion()
-   {
-      return "0.7.1-cvs";
-   }
+   protected abstract String getDocletVersion();
 
    protected SortedSet getThrownExceptions(ExecutableMemberDoc execMemberDoc)
    {

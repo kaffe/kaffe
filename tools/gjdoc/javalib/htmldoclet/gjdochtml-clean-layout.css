@@ -20,14 +20,24 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 
 /* --- GNU Clean Style: Layout --- */
 
+body
+{
+        background: white;
+        color: black;
+}
+
 body.content
 {
-        margin: 1.5em;        
+        margin-left: 1.3em;        
+        margin-right: 1.3em;        
+        margin-top: 0.9em;        
+        margin-bottom: 1.3em;        
 }
 
 div[class="class title outer"]
 {
         margin: 0em;
+        margin-bottom: 1em;
         border: 1px solid;
         padding: 10pt;
 }
@@ -76,7 +86,8 @@ div[class="class title outer"]
 
 td[class~="summary"][class~="left"],
 td[class~="summary"][class~="right"],
-[class="class summary inherited"]
+[class="class summary inherited"],
+.summary .left
 {
         padding: 0.25em;
 }
@@ -170,13 +181,14 @@ ul [class~="inheritance"] > li:before
 [class="class synopsis outer"]
 {
         padding: 0em;
+        margin-bottom: 0.3em;
 }
 
 [class="class synopsis outer"] > *
 {
         margin: 0em;
         padding: 0em;
-        line-height: 1.2em;
+        line-height: 1.0em;
 }
 
 div[class~="navbar"][class~="div"]
@@ -197,21 +209,36 @@ table[class~="navbar"][class~="div"] td
         border-collapse: collapse;
 }
 
+table[class~="navbar"][class~="div"]
+{
+        width: 100%;
+}
+
+table[class~="navbar"][class~="div"] td
+{
+        line-height: 1.9em;
+        text-align: top;
+}
+
 [class~="navbar"][class~="item"]
 {
-        float: left;
+        /* float: left; */
         border: 1px solid;
-        font-size: 0.9em;
-        width: 7.5em;
+        /* width: 7.5em; */
         text-align: center;
-        margin: 0.2em;
+        margin: 0.05em;
         padding-top: 0.2em;
         padding-bottom: 0.3em;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        font-size: 0.75em;
+        margin-bottom: 0.5em;
 }
 
 [class~="navbar"][class~="item"][class~="active"]
 {
-        font-weight: bold;
+        /* font-weight: bold; */
+        border: 1px solid;
 }
 
 [class~="title"]
@@ -278,4 +305,127 @@ table[class="navbar div top"]
 [class~="menu-entry"]
 {
         font-size: 0.8em;
+}
+
+[class="class summary right"]
+{
+        vertical-align: top;
+}
+
+[class="class summary right list"]
+{
+        vertical-align: top;
+}
+
+[class="navbar div top navi"]
+{
+        padding-top: 0.5em;
+        font-size: x-small;
+}
+
+.navbar .header
+{
+        vertical-align: top;
+}
+
+.navbar .header span
+{
+        border: none;
+        white-space: nowrap;
+        padding-top: 0.2em;
+        padding-bottom: 0.3em;
+        padding-left: 0.5em;
+}
+
+.navbar .header a
+{
+        font-weight: bold;
+        font-size: 11pt;
+}
+
+h1
+{
+        font-size: 1.5em;
+}
+
+h2
+{
+        font-size: 1.3em;
+}
+
+h3
+{
+        font-size: 1.1em;
+}
+
+[class~="usage"][class~="summary"][class~="right"] .synopsis
+{
+        padding-left: 5.25em;
+        text-indent: -5em;
+}
+
+[class~="usage"][class~="summary"][class~="right"] .description
+{
+        padding-left: 3em;
+        padding-top: 0.1em;
+}
+
+td[class~="usage"][class~="summary"]
+{
+        vertical-align: top;
+}
+
+.index .entry .description
+{
+        padding-left: 3em;
+}
+
+.index .entry .key
+{
+        padding-left: 5.25em;
+        text-indent: -5em;
+}
+
+.dep-list .summary .description
+{
+        padding-top: 0.1em;
+        padding-left: 3em;
+}
+
+.dep-toc .header
+{
+        padding-bottom: 0em;
+        margin-bottom: 0.2em;
+}
+
+.dep-toc .list
+{
+        margin-top: 0em;
+        margin-bottom: 1.5em;
+        padding-top: 0em;
+        padding-bottom: 0em;
+        padding-left: 2em;
+}
+
+ul.tree li
+{
+        list-style-type: disc;
+}
+
+ul.tree li div
+{
+        text-indent: -3em;
+        padding-left: 3em;
+}
+
+ul.tree ul
+{
+        margin-left: 0em;
+        padding-left: 1.8em;
+}
+
+[class="serialized class header"]
+{
+        text-indent: -3em;
+        padding-left: 3.25em;
 }

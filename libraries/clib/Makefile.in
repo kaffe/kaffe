@@ -51,10 +51,6 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ac_prog_antlr.m4 \
-	$(top_srcdir)/m4/ac_prog_java.m4 \
-	$(top_srcdir)/m4/ac_prog_java_works.m4 \
-	$(top_srcdir)/m4/ac_prog_javac.m4 \
-	$(top_srcdir)/m4/ac_prog_javac_works.m4 \
 	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/alsa.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
 	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/compile_value.m4 \
@@ -97,7 +93,6 @@ ALSA_LIBS = @ALSA_LIBS@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
-ANTLR = @ANTLR@
 ANTLR_JAR = @ANTLR_JAR@
 AR = @AR@
 AS = @AS@
@@ -199,8 +194,6 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INTLLIBS = @INTLLIBS@
 JASMIN = @JASMIN@
-JAVA = @JAVA@
-JAVAC = @JAVAC@
 JAVAC_FLAGS = @JAVAC_FLAGS@
 JAVA_LIBS = @JAVA_LIBS@
 JIKES = @JIKES@
@@ -365,7 +358,6 @@ subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
-uudecode = @uudecode@
 with_engine = @with_engine@
 @COND_LIBXMLJ_TRUE@MAYBE_LIBXMLJ_DIR = libxmlj
 @COND_NATIVE_AWT_TRUE@MAYBE_NATIVE_AWT_DIR = awt

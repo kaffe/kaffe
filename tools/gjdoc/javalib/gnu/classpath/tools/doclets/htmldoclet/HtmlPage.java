@@ -34,6 +34,12 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import com.sun.javadoc.Tag;
 
 /**
@@ -42,6 +48,7 @@ import com.sun.javadoc.Tag;
  */
 public class HtmlPage 
 {
+   private File file;
    private PrintWriter out;
    private String pathToRoot;
    private String docType;
@@ -58,6 +65,7 @@ public class HtmlPage
    public HtmlPage(File file, String pathToRoot, String encoding, String docType)
       throws IOException
    {
+      this.file = file;
       OutputStream fileOut = new FileOutputStream(file);
       Writer writer;
       if (null != encoding) {
@@ -258,7 +266,13 @@ public class HtmlPage
       endSpan(cssClass);
    }
 
-   public void beginPage(String title, String charset)
+   public void beginPage(String title, String charset, Map stylesheets)
+   {
+      beginPage(title, charset, Collections.EMPTY_SET, stylesheets);
+   }
+
+   public void beginPage(String title, String charset, 
+                         Collection keywords, Map stylesheets)
    {
       print("<?xml version=\"1.0\" encoding=\"" + charset + "\"?>\n");
       print(docType);
@@ -278,16 +292,28 @@ public class HtmlPage
       atomicElement("meta", 
                     new String[] { "name", "content" },
                     new String[] { "generator", "GNU Gjdoc Standard Doclet" });
-      atomicElement("link", 
-                    new String[] { "rel", "type", "href", "title" },
-                    new String[] { "stylesheet", "text/css", 
-                                   pathToRoot + "/resources/gjdochtml-clean-layout.css",
-                                   "GNU Clean" });
-      atomicElement("link", 
-                    new String[] { "rel", "type", "href", "title" },
-                    new String[] { "stylesheet", "text/css", 
-                                   pathToRoot + "/resources/gjdochtml-clean-color1.css",
-                                   "GNU Clean" });
+      Iterator keywordIt = keywords.iterator();
+      while (keywordIt.hasNext()) {
+         String keyword = (String)keywordIt.next();
+         atomicElement("meta", 
+                       new String[] { "name", "content" },
+                       new String[] { "keywords", keyword });
+      }
+
+      Iterator cssIt = stylesheets.keySet().iterator();
+      while (cssIt.hasNext()) {
+         String sheetName = (String)cssIt.next();
+         String[] sheetFiles = (String[])stylesheets.get(sheetName);
+
+         for (int i=0; i<sheetFiles.length; ++i) {
+            String sheetFile = sheetFiles[i];
+            atomicElement("link", 
+                          new String[] { "rel", "type", "href", "title" },
+                          new String[] { "stylesheet", "text/css", 
+                                         pathToRoot + "/" + sheetFile, sheetName });
+         }
+      }
+
       endElement("head");
    }
 
@@ -467,5 +493,10 @@ public class HtmlPage
       result.append(content);
       result.append("</a>");
       return result.toString();
+   }
+
+   public File getFile()
+   {
+      return this.file;
    }
 }

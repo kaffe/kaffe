@@ -1,5 +1,250 @@
 2005-02-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* m4/ac_prog_antlr.m4: Simplified. No longer needs
+	java or javac. 
+
+	*m4/ac_prog_java.m4,
+	m4/ac_prog_java_works.m4,
+	m4/ac_prog_javac.m4,
+	m4/ac_prog_javac_works.m4: Removed.
+
+	Reported by:  Fernando Lozano  <fernando@lozano.eti.br>
+
+	* kaffe/scripts/javadoc.in, 
+	kaffe/scripts/compat/javadoc.in: Use installed antlr.
+
+	* tools/gjdoc/javalib/Makefile.am (toolslib_DATA):
+	Don't copy antlr.jar around.
+
+	Reported by:  Arnaud Vandyck  <avdyk@gnu.org>
+
+	* tools/gjdoc/javalib/dtd/dbcentx.mod,
+	tools/gjdoc/javalib/dtd/ent/iso-amsa.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-amsb.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-amsc.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-amsn.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-amso.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-amsr.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-box.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-cyr1.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-cyr2.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-dia.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-grk1.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-grk2.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-grk3.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-grk4.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-lat1.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-lat2.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-num.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-pub.ent,
+	tools/gjdoc/javalib/dtd/ent/iso-tech.ent,
+	tools/gjdoc/javalib/gnu/classpath/tools/doclets/AbstractDoclet.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/doclets/htmldoclet/CssClass.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/doclets/htmldoclet/HtmlPage.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/doclets/xmldoclet/Driver.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/gjdoc/Main.java,
+	tools/gjdoc/javalib/gnu/classpath/tools/java2xhtml/Java2xhtml.java,
+	tools/gjdoc/javalib/htmldoclet/HtmlDoclet.properties,
+	tools/gjdoc/javalib/htmldoclet/gjdoc.js,
+	tools/gjdoc/javalib/htmldoclet/gjdochtml-clean-color1.css,
+	tools/gjdoc/javalib/htmldoclet/gjdochtml-clean-layout.css,
+	tools/gjdoc/javalib/htmldoclet/help.xhtml:
+	Resynced with gjdoc.
+
+	2005-02-07  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java: make
+	links to classes on index page work correctly.
+
+	2005-02-06  Julian Scheid  <julian@sektor37.de>
+
+	* src/resources/htmldoclet/gjdochtml-clean-layout.css: fix
+	navigation bar wrapping problem.
+
+	2005-02-06  Julian Scheid  <julian@sektor37.de>
+
+	* README: replaced usage with latest output.
+
+	* src/gnu/classpath/tools/gjdoc/Main.java: add -s and
+	-addstylesheet to usage. Reword `path of' in usage to `path to'.
+	
+	2005-02-06  Julian Scheid  <julian@sektor37.de>
+
+	* README: replaced usage with latest output; added -nocomment and
+	-serialwarn to Missing Features and adjusted wording re: command
+	line compatibility.
+
+	* src/gnu/classpath/tools/doclets/AbstractDoclet.java: accept `-s'
+	as an alias for `-sourcepath'.
+
+	* src/gnu/classpath/tools/gjdoc/Main.java: accept `-s' as an alias
+	for `-sourcepath'; accept `--help' as an alias for `-help'. add
+	option '-all'; rearrange usage; remove
+	[ignored] from usage for option -locale; fix typos in usage;
+
+	* src/gnu/classpath/tools/java2xhtml/Java2xhtml.java: factor out
+	CSS class names; rename CSS classes for brevity.
+
+	* src/resources/htmldoclet/gjdochtml-clean-color1.css: CSS class
+	name refactoring.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java: add
+	option -addstylesheet; fix option -stylesheetfile;
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlPage.java: have
+	beginPage() accept a list of stylesheets.
+
+	2005-02-05  Mark Wielaard  <mark@klomp.org>
+
+	* README: Add last two lines of usage message.
+
+	2005-02-05  Julian Scheid  <julian@sektor37.de>
+
+	* README:
+	* TROUBLESHOOTING:
+	* src/gnu/classpath/tools/gjdoc/Main.java:
+	applied documentation update patch by Mark Wielaard.
+
+	2005-02-05  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java:
+	fixed bottom navigation bar on use pages.
+
+	2005-02-05  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/doclets/xmldoclet/Driver.java: make
+	-xmlonly the default mode.
+
+	2005-02-05  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/doclets/AbstractDoclet.java: collect
+	"implemented by" usage information for interfaces.
+	
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java: add
+	"implemented by" information and summary description to use pages.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/CssClass.java: add
+	new classes for use pages.
+
+	* src/resources/htmldoclet/HtmlDoclet.properties: add text for
+	"implemented by" usage category.
+
+	* src/resources/htmldoclet/gjdochtml-clean-layout.css: add layout
+	for usage summary description.
+
+	2005-02-05  Julian Scheid  <julian@sektor37.de>
+
+	* ChangeLog: correction.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java: fix
+	typo in output.
+
+	2005-02-05  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java: more
+	information for uses pages; fixed bugs in navigation bar; add
+	decoration for source code page; link to next/previous index
+	letter; add message for empty use pages; several minor
+	improvements and bugfixes.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlPage.java: add
+	method getFile().
+	
+	* src/gnu/classpath/tools/doclets/htmldoclet/CssClass.java: add
+	new CSS styles.
+
+	* src/gnu/classpath/tools/java2xhtml/Java2xhtml.java: better tag
+	nesting for line anchor.
+
+	* src/resources/htmldoclet/gjdochtml-clean-layout.css:
+	* src/resources/htmldoclet/gjdochtml-clean-color1.css: 
+	improved stylesheets.
+
+	2005-02-04  Julian Scheid  <julian@sektor37.de>
+
+	* configure.ac: bump version to 0.7.1.
+
+	* README: update to reflect changes since previous release.
+
+	* Makefile.am: generate version.properties at compile-time and add
+	to jars and native executable.
+
+	* src/gnu/classpath/tools/gjdoc/Main.java: use version string from
+	generated /version.properties.
+	
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java: add
+	message to deprecated page if there are no deprecated API
+	elements; make space between parameter type and parameter name
+	non-breaking; add meta-equiv keywords to class and package pages;
+	fix bug on deprecated page; add next/prev links and shortcuts to
+	navigation bar; improve formatting of method/constructor synopsis
+	in detail section; add "throws" information to method/constructor
+	synopsisl; use version string from /version.properties; remove
+	help page from output for now.
+
+	* src/gnu/classpath/tools/doclets/AbstractDoclet.java: move
+	getDocletVersion() to HtmlDoclet.java.
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/CssClass.java: add
+	new CSS classes; change tag for detail synopsis to "pre".
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlPage.java:
+	support keyword output.
+
+	* src/resources/htmldoclet/gjdochtml-clean-layout.css: some
+	polishing.
+
+	* src/resources/htmldoclet/help.xhtml: friendlier "no help
+	available" message.
+
+	* src/resources/htmldoclet/gjdoc.js: remove stylesheet-related
+	hacks for now.
+	
+	2005-02-03  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/gjdoc/Main.java: recognize option
+	-bootclasspath; output warning if -bootclasspath is specified.
+
+	2005-02-03  Andrew Overholt  <overholt@redhat.com>
+
+	* Makefile.am: Add java-expression.g to EXTRA_DIST.  Add fixes for
+	distcheck.  Add necessary include to AM_GCJFLAGS for the
+	antlr-generated files.
+
+	2005-02-03  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/gjdoc/Main.java: add support for option
+	--version.
+
+	2005-02-02  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java
+	(printPackageTreeRec): add parameter parentNode; don't output tree
+	parent in package interface tree implements list; prefix
+	implements list with "also implements:" for interfaces; remove
+	bogus whitespace in output.
+	(printClassTree, printInterfaceTree): pass parameter parentNode.
+	
+	2005-02-02  Julian Scheid  <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/gjdoc/Main.java (getCollator):
+	gracefully handle null return values from
+	Collator.getCollator(Locale); add documentation.
+
+	2005-02-01  Andrew Overholt  <overholt@redhat.com>
+
+	* configure.ac: Add --enable-xmldoclet option (default to no).
+
+	* Makefile.am: Add required logic for above.  Minor tweaks for antlr.
+
+	2005-01-14  Julian Scheid <julian@sektor37.de>
+
+	* src/gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java:
+	add missing table row tags and table end tag on usage page.
+
+2005-02-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/native/Method.c
 	(Java_java_lang_reflect_Method_invoke0) Use a jmethodID
 	when invoking JNI functions instead of Method *. Fixes

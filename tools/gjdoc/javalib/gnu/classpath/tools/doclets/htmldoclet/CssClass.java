@@ -39,6 +39,7 @@ public class CssClass
    public static final CssClass BODY_CONTENT_FULL_TREE    = new CssClass("content fulltree");
    public static final CssClass BODY_CONTENT_INDEX        = new CssClass("content index");
    public static final CssClass BODY_CONTENT_USES         = new CssClass("content uses");
+   public static final CssClass BODY_CONTENT_SOURCE       = new CssClass("content source");
 
    public static final CssClass OVERVIEW_TITLE = new CssClass("overview title", "h1");
    public static final CssClass OVERVIEW_SUMMARY = new CssClass("overview summary");
@@ -46,14 +47,15 @@ public class CssClass
    public static final CssClass OVERVIEW_SUMMARY_RIGHT = new CssClass("overview summary right");
 
    public static final CssClass DEPRECATION_TITLE = new CssClass("deprecation title", "h1");
-   public static final CssClass DEPRECATION_SUMMARY = new CssClass("deprecation summary");
-   public static final CssClass DEPRECATION_SUMMARY_LEFT = new CssClass("deprecation summary left");
-   public static final CssClass DEPRECATION_SUMMARY_RIGHT = new CssClass("deprecation summary right");
-   public static final CssClass DEPRECATION_SUMMARY_DESCRIPTION = new CssClass("deprecation summary description");
-   public static final CssClass DEPRECATION_TOC = new CssClass("deprecation toc outer");
-   public static final CssClass DEPRECATION_TOC_HEADER = new CssClass("deprecation toc header", "h3");
-   public static final CssClass DEPRECATION_TOC_LIST = new CssClass("deprecation toc list", "ul");
-   public static final CssClass DEPRECATION_TOC_ENTRY = new CssClass("deprecation toc entry", "li");
+   public static final CssClass DEPRECATION_SUMMARY = new CssClass("summary");
+   public static final CssClass DEPRECATION_SUMMARY_LEFT = new CssClass("left");
+   public static final CssClass DEPRECATION_SUMMARY_DESCRIPTION = new CssClass("description");
+   public static final CssClass DEPRECATION_TOC = new CssClass("dep-toc");
+   public static final CssClass DEPRECATION_TOC_HEADER = new CssClass("header", "h3");
+   public static final CssClass DEPRECATION_TOC_LIST = new CssClass("list", "ul");
+   public static final CssClass DEPRECATION_TOC_ENTRY = new CssClass("entry", "li");
+   public static final CssClass DEPRECATION_EMPTY = new CssClass("dep-empty", "p");
+   public static final CssClass DEPRECATION_LIST = new CssClass("dep-list", "div");
 
    public static final CssClass SERIALIZED_TITLE = new CssClass("serialized title", "h1");
    public static final CssClass SERIALIZED_PACKAGE_HEADER = new CssClass("serialized package header", "h2");
@@ -71,6 +73,8 @@ public class CssClass
    public static final CssClass PACKAGE_DESCRIPTION_FULL = new CssClass("package description full");
    public static final CssClass PACKAGE_TREE_TITLE = new CssClass("package tree title", "h1");
    public static final CssClass PACKAGE_TREE_SECTION_TITLE = new CssClass("package tree section title", "h2");
+   public static final CssClass PACKAGE_TREE = new CssClass("tree", "ul");
+
    public static final CssClass TREE_LINK = new CssClass("tree link", "b");
 
    public static final CssClass FULL_TREE_PACKAGELIST = new CssClass("fulltree package list", "dl");
@@ -91,7 +95,8 @@ public class CssClass
    public static final CssClass INDEX_CATEGORY = new CssClass("index category");
    public static final CssClass INDEX_CATEGORY_HEADER = new CssClass("index category header", "h2");
    public static final CssClass INDEX_ENTRY = new CssClass("index entry");
-   public static final CssClass INDEX_ENTRY_DESCRIPTION = new CssClass("index entry description");
+   public static final CssClass INDEX_ENTRY_DESCRIPTION = new CssClass("description");
+   public static final CssClass INDEX_ENTRY_KEY = new CssClass("key");
    public static final CssClass INDEX_LETTERS = new CssClass("index letters");
    public static final CssClass INDEX_LETTER = new CssClass("index letter");
    public static final CssClass INDEX_LETTER_SPACER = new CssClass("index letter spacer");
@@ -132,10 +137,15 @@ public class CssClass
    public static final CssClass USAGE_SUMMARY = new CssClass("usage summary");
    public static final CssClass USAGE_SUMMARY_LEFT = new CssClass("usage summary left");
    public static final CssClass USAGE_SUMMARY_RIGHT = new CssClass("usage summary right");
+   public static final CssClass USAGE_SUMMARY_SYNOPSIS = new CssClass("synopsis");
+   public static final CssClass USAGE_SUMMARY_DESCRIPTION = new CssClass("description");
+   public static final CssClass USAGE_TABLE_HEADER = new CssClass("table header", "h3");
+   public static final CssClass USAGE_EMPTY = new CssClass("usage empty", "p");
+
    public static final CssClass MEMBER_DETAIL = new CssClass("member detail outer");
    public static final CssClass MEMBER_DETAIL_NAME = new CssClass("member detail name", "h3");
    public static final CssClass MEMBER_DETAIL_BODY = new CssClass("member detail name", "blockquote");
-   public static final CssClass MEMBER_DETAIL_SYNOPSIS = new CssClass("member detail synopsis", "code");
+   public static final CssClass MEMBER_DETAIL_SYNOPSIS = new CssClass("member detail synopsis", "pre");
    public static final CssClass MEMBER_DETAIL_DESCRIPTION = new CssClass("member detail description");
    public static final CssClass MEMBER_DETAIL_SPECIFIED_BY_LIST = new CssClass("member detail specified by list", "dl");
    public static final CssClass MEMBER_DETAIL_SPECIFIED_BY_HEADER = new CssClass("member detail specified by header", "dt", "b");
@@ -165,7 +175,9 @@ public class CssClass
 
    public static final CssClass SECTION_HEADER = new CssClass("section header", "h2");
 
-   public static final CssClass NAVBAR_TOP = new CssClass("navbar div top");
+   public static final CssClass NAVBAR_TOP = new CssClass("navbar div top", new String[] { "colspan" }, new String[] { "2" });
+   public static final CssClass NAVBAR_TOP_NAVI = new CssClass("navbar div top navi");
+   public static final CssClass NAVBAR_TOP_HEADER = new CssClass("header", new String[] { "rowspan" }, new String[] { "2" });
    public static final CssClass NAVBAR_BOTTOM = new CssClass("navbar div bottom");
    public static final CssClass NAVBAR_BOTTOM_SPACER = new CssClass("navbar bottom spacer", "p");
    public static final CssClass NAVBAR_ITEM_ENABLED = new CssClass("navbar item enabled");
@@ -174,7 +186,11 @@ public class CssClass
 
    public static final CssClass TAGLET = new CssClass("taglet", "p");
 
+   public static final CssClass ABOUT_TITLE = new CssClass("about title", "h1");
    public static final CssClass ABOUT_GENERATOR = new CssClass("about generator", "p");
+
+   public static final CssClass SOURCE = new CssClass("source body");
+   public static final CssClass SOURCE_TITLE = new CssClass("source title", "h1");
 
    public static final CssClass DEPRECATED = new CssClass("deprecated", "span");
    public static final CssClass DEPRECATED_INLINE = new CssClass("deprecated", "p");

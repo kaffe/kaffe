@@ -22,6 +22,34 @@ import java.util.*;
 
 public class Java2xhtml
 {
+    //--- define CSS classes for individual output elements
+
+    private static final String sourceCodeStyle = "source";
+    private static final String lineNumberStyle = "line-number even";
+    private static final String modulusLineNumberStyle = "line-number odd";
+
+    private static final String keywordStyle = "keyword";
+    private static final String methodStyle = "method member";
+    private static final String variableStyle = "variable member";
+    private static final String singleLineCommentStyle = "line comment";
+    private static final String traditionalCommentStyle = "c comment";
+    private static final String javadocCommentStyle = "javadoc comment";
+    private static final String javadocTagStyle = "javadoc tag";
+    private static final String importNameStyle = "import header type";
+    private static final String packageNameStyle = "package header type";
+    private static final String primitiveTypeStyle = "primitive type";
+    private static final String nonPrimitiveTypeStyle = "non-primitive type";
+    private static final String constructorStyle = "constructor member";
+    private static final String constantStyle = "constant member";
+    private static final String doubleQuoteStyle = "double quote";
+    private static final String singleQuoteStyle = "single quote";
+    private static final String numericalLiteralStyle = "numerical literal";
+    private static final String primitiveLiteralStyle = "primitive literal";
+
+    private static final String iconStyle = "icon";
+
+
+
     // parse the command line arguments
     // give a decent responce for bad input
     // call the HTMLifier on good input
@@ -436,7 +464,7 @@ public class Java2xhtml
             {
                 bufferOut.append("  <style type=\"text/css\">\r\n");
                 bufferOut.append("   <!-- /* <![CDATA[ */\r\n");
-                bufferOut.append("    .sourceCodeStyle\r\n");
+                bufferOut.append("    ." + sourceCodeStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #000000;\r\n");
                 bufferOut.append("       background-color: #FFFFFF;\r\n");
@@ -445,7 +473,7 @@ public class Java2xhtml
                     bufferOut.append("       font-weight: bold;\r\n");
                 }
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .lineNumberStyle\r\n");
+                bufferOut.append("    ." + lineNumberStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       font-weight: normal;\r\n");
                 bufferOut.append("       color: #000000;\r\n");
@@ -453,7 +481,7 @@ public class Java2xhtml
                 bufferOut.append("     }\r\n");
                 if (lineModulus > 0)
                 {
-                    bufferOut.append("    .modulusLineNumberStyle\r\n");
+                    bufferOut.append("    ." + modulusLineNumberStyle + "\r\n");
                     bufferOut.append("     {\r\n");
                     bufferOut.append("       font-weight: bold;\r\n");
                     bufferOut.append("       color: #000000;\r\n");
@@ -485,96 +513,96 @@ public class Java2xhtml
                         bufferOut.append("     }\r\n");
                     }
                 }
-                bufferOut.append("    .keywordStyle\r\n");
+                bufferOut.append("    ." + keywordStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #9900FF;\r\n");
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .methodStyle\r\n");
+                bufferOut.append("    ." + methodStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #0000FF;\r\n"); 
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .variableStyle\r\n");
+                bufferOut.append("    ." + variableStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #CC9933;\r\n"); 
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .singleLineCommentStyle\r\n");
+                bufferOut.append("    ." + singleLineCommentStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #CC3333;\r\n");
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .traditionalCommentStyle\r\n");
+                bufferOut.append("    ." + traditionalCommentStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #FF0000;\r\n"); 
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .javadocCommentStyle\r\n");
+                bufferOut.append("    ." + javadocCommentStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #CC0033;\r\n");
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .javadocTagStyle\r\n");
+                bufferOut.append("    ." + javadocTagStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #0099CC;\r\n");
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .importNameStyle\r\n");
+                bufferOut.append("    ." + importNameStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #33CCCC;\r\n");
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .packageNameStyle\r\n");
+                bufferOut.append("    ." + packageNameStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #339999;\r\n");
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .primitiveTypeStyle\r\n");
+                bufferOut.append("    ." + primitiveTypeStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #009900;\r\n");
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .nonPrimitiveTypeStyle\r\n");
+                bufferOut.append("    ." + nonPrimitiveTypeStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #009966;\r\n");
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .constructorStyle\r\n"); 
+                bufferOut.append("    ." + constructorStyle + "\r\n"); 
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #3300CC;\r\n");
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .constantStyle\r\n");
+                bufferOut.append("    ." + constantStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #666666;\r\n");
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .doubleQuoteStyle\r\n");
+                bufferOut.append("    ." + doubleQuoteStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #996633;\r\n");
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("       font-style: italic;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .singleQuoteStyle\r\n");
+                bufferOut.append("    ." + singleQuoteStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #663333;\r\n");
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("       font-style: oblique;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .numericalLiteralStyle\r\n"); 
+                bufferOut.append("    ." + numericalLiteralStyle + "\r\n"); 
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #333300;\r\n"); 
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("     }\r\n");
-                bufferOut.append("    .primitiveLiteralStyle\r\n");
+                bufferOut.append("    ." + primitiveLiteralStyle + "\r\n");
                 bufferOut.append("     {\r\n");
                 bufferOut.append("       color: #006600;\r\n"); 
                 bufferOut.append("       background-color: transparent;\r\n");
                 bufferOut.append("     }\r\n");
                 if (hasFooterIcons)
                 {
-                    bufferOut.append("    .iconStyle\r\n");
+                    bufferOut.append("    ." + iconStyle + "\r\n");
                     bufferOut.append("     {\r\n");
                     bufferOut.append("       border-style: none;\r\n"); 
                     bufferOut.append("     }\r\n");
@@ -632,47 +660,47 @@ public class Java2xhtml
             bufferOut.append("  <div id=\"legendTitle\">\r\n");
             bufferOut.append("   Legend\r\n");
             bufferOut.append("  </div>\r\n");
-            bufferOut.append("  <div class=\"sourceCodeStyle\">\r\n");
+            bufferOut.append("  <div class=\"" + sourceCodeStyle + "\">\r\n");
             bufferOut.append("   <div id=\"legend\">\r\n");
-            bufferOut.append("    <span class=\"keywordStyle\">");
+            bufferOut.append("    <span class=\"" + keywordStyle + "\">");
             bufferOut.append("keyword</span>\r\n");
-            bufferOut.append("    <span class=\"methodStyle\">");
+            bufferOut.append("    <span class=\"" + methodStyle + "\">");
             bufferOut.append("method</span>\r\n");
-            bufferOut.append("    <span class=\"variableStyle\">variable" +
+            bufferOut.append("    <span class=\"" + variableStyle + "\">variable" +
                              "</span>\r\n");
-            bufferOut.append("    <span class=\"singleLineCommentStyle\">" +
+            bufferOut.append("    <span class=\"" + singleLineCommentStyle + "\">" +
                              "singleLineComment</span>\r\n");
-            bufferOut.append("    <span class=\"traditionalCommentStyle\">" +
+            bufferOut.append("    <span class=\"" + traditionalCommentStyle + "\">" +
                              "traditionalComment</span>\r\n");
-            bufferOut.append("    <span class=\"javadocCommentStyle\">" +
+            bufferOut.append("    <span class=\"" + javadocCommentStyle + "\">" +
                              "javadocComment</span>\r\n");
-            bufferOut.append("    <span class=\"javadocTagStyle\">javadocTag" +
+            bufferOut.append("    <span class=\"" + javadocTagStyle + "\">javadocTag" +
                              "</span>\r\n");
-            bufferOut.append("    <span class=\"importNameStyle\">" +
+            bufferOut.append("    <span class=\"" + importNameStyle + "\">" +
                              "importName</span>\r\n");
-            bufferOut.append("    <span class=\"packageNameStyle\">" +
+            bufferOut.append("    <span class=\"" + packageNameStyle + "\">" +
                              "packageName</span>\r\n");
-            bufferOut.append("    <span class=\"primitiveTypeStyle\">" +
+            bufferOut.append("    <span class=\"" + primitiveTypeStyle + "\">" +
                              "primitiveType</span>\r\n");
-            bufferOut.append("    <span class=\"nonPrimitiveTypeStyle\">" +
+            bufferOut.append("    <span class=\"" + nonPrimitiveTypeStyle + "\">" +
                              "nonPrimitiveType</span>\r\n");
-            bufferOut.append("    <span class=\"constructorStyle\">" +
+            bufferOut.append("    <span class=\"" + constructorStyle + "\">" +
                              "constructor</span>\r\n");
-            bufferOut.append("    <span class=\"constantStyle\">" +
+            bufferOut.append("    <span class=\"" + constantStyle + "\">" +
                              "constant</span>\r\n");
-            bufferOut.append("    <span class=\"doubleQuoteStyle\">" +
+            bufferOut.append("    <span class=\"" + doubleQuoteStyle + "\">" +
                              "doubleQuote</span>\r\n");
-            bufferOut.append("    <span class=\"singleQuoteStyle\">" +
+            bufferOut.append("    <span class=\"" + singleQuoteStyle + "\">" +
                              "singleQuote</span>\r\n");
-            bufferOut.append("    <span class=\"numericalLiteralStyle\">" +
+            bufferOut.append("    <span class=\"" + numericalLiteralStyle + "\">" +
                              "numericalLiteral</span>\r\n");
-            bufferOut.append("    <span class=\"primitiveLiteralStyle\">" +
+            bufferOut.append("    <span class=\"" + primitiveLiteralStyle + "\">" +
                              "primitiveLiteral</span>\r\n");
             bufferOut.append("   </div>\r\n");
             bufferOut.append("  </div>\r\n");
             bufferOut.append("  <hr />\r\n");
         }
-        bufferOut.append("  <div class=\"sourceCodeStyle\">\r\n");
+        bufferOut.append("  <div class=\"" + sourceCodeStyle + "\">\r\n");
         if (hasLineModulusCodeBlocks)
         {
             bufferOut.append("<pre class=\"modulusBlockPREStyle\">\r\n");
@@ -714,12 +742,12 @@ public class Java2xhtml
                         if (State.TRADITIONAL_COMMENT == presentState)
                         {
                             bufferOut.append("<span class=" +
-                                             "\"traditionalCommentStyle\">");
+                                             "\"" + traditionalCommentStyle + "\">");
                         }
                         if (State.JAVADOC == presentState)
                         {
                             bufferOut.append("<span class=" +
-                                             "\"javadocCommentStyle\">");
+                                             "\"" + javadocCommentStyle + "\">");
                         }
                     }
                     isNewBlock = !isNewBlock;
@@ -739,14 +767,14 @@ public class Java2xhtml
                 }
                 bufferOut.append("<a name=\"line.");
                 bufferOut.append(codeLineNumber);
-                bufferOut.append("\"/>");
+                bufferOut.append("\">");
 
                 if (hasLineNumbers)
                 {
                     if ((lineModulus > 0) && (codeLineNumber%lineModulus == 0))
                     {
                         bufferOut.append("<span class=" +
-                                         "\"modulusLineNumberStyle\">");
+                                         "\"" + modulusLineNumberStyle + "\">");
                         bufferOut.append(codeLineNumber);
                         bufferOut.append(": </span>");
                         if (hasLineModulusDrawnLines)
@@ -805,12 +833,14 @@ public class Java2xhtml
                     else 
                     {
                         // line numbers are in lineNumberColor 
-                        bufferOut.append("<span class=\"lineNumberStyle\">");
+                        bufferOut.append("<span class=\"" + lineNumberStyle + "\">");
                         bufferOut.append(codeLineNumber);
                         bufferOut.append(":</span> ");
                     }
                 }
                 isNewLine = false;
+
+                bufferOut.append("</a>");
             }
             // a state machine
             presentChar = bufferIn.charAt(presentIndex);
@@ -844,7 +874,7 @@ public class Java2xhtml
                     // be a variable 
                     bufferOut.insert(bufferOut.length() -
                                      qualifiedIdentifierLength,
-                                     "<span class=\"variableStyle\">");
+                                     "<span class=\"" + variableStyle + "\">");
                     bufferOut.append("</span>");
                     presentState = State.JAVADOC;
                 }
@@ -857,7 +887,7 @@ public class Java2xhtml
                     {
                         // identifier is a javadocTag
                         bufferOut.insert(bufferOut.length() - identifierLength,
-                                         "<span class=\"javadocTagStyle\">");
+                                         "<span class=\"" + javadocTagStyle + "\">");
                         bufferOut.append("</span>");
                         if (("param").equals(identifier))
                         {
@@ -872,7 +902,7 @@ public class Java2xhtml
                     // import identifier
                     bufferOut.insert(bufferOut.length() - 
                                      qualifiedIdentifierLength,
-                                     "<span class=\"importNameStyle\">");
+                                     "<span class=\"" + importNameStyle + "\">");
                     bufferOut.append("</span>");
                     presentState = State.TEXT;
                 }
@@ -881,7 +911,7 @@ public class Java2xhtml
                     // package identifier
                     bufferOut.insert(bufferOut.length() - 
                                      qualifiedIdentifierLength,
-                                     "<span class=\"packageNameStyle\">");
+                                     "<span class=\"" + packageNameStyle + "\">");
                     bufferOut.append("</span>");
                     presentState = State.TEXT;
                 }
@@ -892,7 +922,7 @@ public class Java2xhtml
                         // identifier is a keyword 
                         bufferOut.insert(bufferOut.length() - 
                                          qualifiedIdentifierLength,
-                                         "<span class=\"keywordStyle\">");
+                                         "<span class=\"" + keywordStyle + "\">");
                         bufferOut.append("</span>");
                         if (("import").equals(identifier))
                         {
@@ -912,7 +942,7 @@ public class Java2xhtml
                         // identifier is a primitive type  
                         bufferOut.insert(bufferOut.length() -
                                          qualifiedIdentifierLength,
-                                         "<span class=\"primitiveTypeStyle\">");
+                                         "<span class=\"" + primitiveTypeStyle + "\">");
                         bufferOut.append("</span>");
                     }
                     else if ((identifier.equals(identifier.toUpperCase())) &&
@@ -921,7 +951,7 @@ public class Java2xhtml
                         // identifier is a constant
                         bufferOut.insert(bufferOut.length() -
                                          qualifiedIdentifierLength, 
-                                         "<span class=\"constantStyle\">");
+                                         "<span class=\"" + constantStyle + "\">");
                         bufferOut.append("</span>");
                     }
                     else if (Character.isUpperCase(identifier.charAt(0)))
@@ -939,7 +969,7 @@ public class Java2xhtml
                             bufferOut.insert(bufferOut.length() -
                                              qualifiedIdentifierLength,
                                              "<span class=" +
-                                             "\"constructorStyle\">");
+                                             "\"" + constructorStyle + "\">");
                             bufferOut.append("</span>");
                         }
                         else
@@ -948,7 +978,7 @@ public class Java2xhtml
                             bufferOut.insert(bufferOut.length() -
                                              qualifiedIdentifierLength,
                                              "<span class=" + 
-                                             "\"nonPrimitiveTypeStyle\">");
+                                             "\"" + nonPrimitiveTypeStyle + "\">");
                             bufferOut.append("</span>");
                         }
                     }
@@ -969,7 +999,7 @@ public class Java2xhtml
                         {
                             bufferOut.insert(bufferOut.length() - 
                                              qualifiedIdentifierLength, 
-                                             "<span class=\"methodStyle\">");
+                                             "<span class=\"" + methodStyle + "\">");
                             bufferOut.append("</span>");                 
                         }
                         else if (bufferIn.charAt(saveIndex) == ',')
@@ -977,7 +1007,7 @@ public class Java2xhtml
                             // comma seperated variables
                             bufferOut.insert(bufferOut.length() - 
                                              qualifiedIdentifierLength, 
-                                             "<span class=\"variableStyle\">");
+                                             "<span class=\"" + variableStyle + "\">");
                             bufferOut.append("</span>"); 
                         }
                         else
@@ -992,7 +1022,7 @@ public class Java2xhtml
                             }
                             bufferOut.insert(bufferOut.length() - 
                                              qualifiedIdentifierLength, 
-                                             "<span class=\"variableStyle\">");
+                                             "<span class=\"" + variableStyle + "\">");
                             bufferOut.append("</span>");                        
                         }
                     }
@@ -1003,7 +1033,7 @@ public class Java2xhtml
                             // primitiveLiteral (boolean or null)
                             bufferOut.insert(bufferOut.length() -
                                              identifierLength, "<span class=" +
-                                             "\"primitiveLiteralStyle\">");
+                                             "\"" + primitiveLiteralStyle + "\">");
                             bufferOut.append("</span>");
                         }
                         // a numerical literal
@@ -1019,7 +1049,7 @@ public class Java2xhtml
                             bufferOut.insert(bufferOut.length() - 
                                              qualifiedIdentifierLength, 
                                              "<span class=" +
-                                             "\"numericalLiteralStyle\">");
+                                             "\"" + numericalLiteralStyle + "\">");
                             bufferOut.append("</span>");
                         }
                     }
@@ -1045,7 +1075,7 @@ public class Java2xhtml
                     {
                         presentState = State.DOUBLE_QUOTE;
                         bufferOut.insert(bufferOut.length()-("&quot;").length(),
-                                         "<span class=\"doubleQuoteStyle\">");
+                                         "<span class=\"" + doubleQuoteStyle + "\">");
                     }   
                     else if (State.DOUBLE_QUOTE == presentState)
                     {
@@ -1059,7 +1089,7 @@ public class Java2xhtml
                     {
                         presentState = State.SINGLE_QUOTE;
                         bufferOut.insert(bufferOut.length() - ("\'").length(), 
-                                         "<span class=\"singleQuoteStyle\">");
+                                         "<span class=\"" + singleQuoteStyle + "\">");
                     }
                     else if (State.SINGLE_QUOTE == presentState)
                     {
@@ -1094,14 +1124,14 @@ public class Java2xhtml
                             presentState = State.JAVADOC;
                             bufferOut.insert(bufferOut.length() - 
                                              ("/*").length(), "<span class=" +
-                                             "\"javadocCommentStyle\">");
+                                             "\"" + javadocCommentStyle + "\">");
                         }
                         else
                         {                        
                             presentState = State.TRADITIONAL_COMMENT;
                             bufferOut.insert(bufferOut.length() - 
                                              ("/*").length(), "<span class=" +
-                                             "\"traditionalCommentStyle\">");
+                                             "\"" + traditionalCommentStyle + "\">");
                         }
                     }
                     break;
@@ -1120,7 +1150,7 @@ public class Java2xhtml
                     {   
                         bufferOut.insert(bufferOut.length() - ("//").length(), 
                                          "<span class=" + 
-                                         "\"singleLineCommentStyle\">");
+                                         "\"" + singleLineCommentStyle + "\">");
                         presentState = State.LINE_COMMENT;
                     } 
                     break;
@@ -1159,12 +1189,12 @@ public class Java2xhtml
                         if (State.TRADITIONAL_COMMENT == presentState)
                         {
                             bufferOut.append("<span class=" +
-                                             "\"traditionalCommentStyle\">");
+                                             "\"" + traditionalCommentStyle + "\">");
                         }
                         if (State.JAVADOC == presentState)
                         {
                             bufferOut.append("<span class=" +
-                                             "\"javadocCommentStyle\">");
+                                             "\"" + javadocCommentStyle + "\">");
                         }
                     }
                     else
@@ -1197,7 +1227,7 @@ public class Java2xhtml
         {
             bufferOut.append("   </div>\r\n");
         }
-        bufferOut.append("  </div>\r\n");  // end div of sourceCodeStyle 
+        bufferOut.append("  </div>\r\n");  // end div of sourceCodeStyle
         // if code snippet then don't add ending tags of xhtml page
         if (!isCodeSnippet)
         {
@@ -1223,7 +1253,7 @@ public class Java2xhtml
                     bufferOut.append("   <a href=\"");
                     bufferOut.append("http://validator.w3.org/check/referer");
                     bufferOut.append("\">\r\n");
-                    bufferOut.append("    <img class=\"iconStyle\" src=\"");
+                    bufferOut.append("    <img class=\"" + iconStyle + "\" src=\"");
                     bufferOut.append("http://www.w3.org/Icons/");
                     if (isXHTML_1_1)
                     {
@@ -1243,7 +1273,7 @@ public class Java2xhtml
                     bufferOut.append("http://jigsaw.w3.org");
                     bufferOut.append("/css-validator/check/referer");
                     bufferOut.append("\">\r\n");
-                    bufferOut.append("    <img class=\"iconStyle\" src=\"");
+                    bufferOut.append("    <img class=\"" + iconStyle + "\" src=\"");
                     bufferOut.append("http://jigsaw.w3.org/");
                     bufferOut.append("css-validator/images/vcss");
                     bufferOut.append("\"\r\n");

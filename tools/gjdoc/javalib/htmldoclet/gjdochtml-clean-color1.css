@@ -27,5 +27,54 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 [class="serialized package header"],
 [class="serialized class header"]
 {
-        background-color: #f3f3f6;
+        background-color: #E8EAFF;
 }
+
+[class~="navbar"][class~="item"]
+{
+         border-color: #000000;
+         color: #000000;
+}
+
+[class~="navbar"][class~="item"][class~="disabled"]
+{
+         border-color: #aaaaaa;
+         color: #aaaaaa;
+}
+
+[class~="navbar"][class~="item"][class~="active"]
+{
+        color: #000000;
+        background-color: #E8EAFF;
+}
+
+[class~="navbar"][class~="item"][class~="active"]
+{
+        border-color:  #222222;
+}
+
+.navbar .header a
+{
+        color: #777777;
+}
+
+a[href] {
+  color: #141EB8;
+}
+
+a[href]:visited {
+  color: #0C126E;
+}
+
+
+/* ---- source highlighting ---- */
+
+.comment      { color: #777777; }
+.tag          { color: #444444; }
+.keyword      { color: #B36B00; }
+.header.type  { color: #00248F; }
+.type         { color: #0033CC; }
+.literal      { color: #809FFF; }
+.variable     { color: #007D48; }
+.method       { color: #B32400; }
+.line-number  { color: #AAAAAA; }

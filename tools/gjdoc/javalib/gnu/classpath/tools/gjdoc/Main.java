@@ -101,6 +101,11 @@ public final class Main
   private ErrorReporter reporter;
 
   /**
+   * Cache for version string from resource /version.properties
+   */
+  private String gjdocVersion;
+
+  /**
    * <code>false</code> during Phase I: preparation of the documentation data.
    * <code>true</code> during Phase II: documentation output by doclet.
    */
@@ -143,11 +148,6 @@ public final class Main
    * FIXME: this should be a list of paths
    */
   private List option_sourcepath = new ArrayList();
-
-  /**
-   * Option "-bootclasspath": path to Java bootstrap classes.
-   */
-  private String option_bootclasspath;
 
   /**
    * Option "-extdirs": path to Java extension files.
@@ -211,6 +211,21 @@ public final class Main
    * The locale-dependent collator used for sorting.
    */
   private Collator collator;
+
+  /**
+   * true when --version has been specified on the command line.
+   */
+  private boolean option_showVersion;
+  
+  /**
+   * true when -bootclasspath has been specified on the command line.
+   */
+  private boolean option_bootclasspath_specified;
+  
+  /**
+   * true when -all has been specified on the command line.
+   */
+  private boolean option_all;
   
   // TODO: add the rest of the options as instance variables
   
@@ -411,38 +426,20 @@ public final class Main
 
         for (Iterator pit = option_sourcepath.iterator(); pit.hasNext(); ) {
           File sourceDir = (File)pit.next();
-
           File packageDir = new File(sourceDir, subpackage.replace('.', File.separatorChar));
           findPackages(subpackage, packageDir, foundPackages);
         }
-        
-        if (foundPackages.isEmpty()) {
-          reporter.printWarning("No classes found under subpackage " + subpackage);
-        }
-        else {
-          boolean onePackageAdded = false;
-          for (Iterator rit = foundPackages.iterator(); rit.hasNext();) {
-            String foundPackage = (String)rit.next();
-            boolean excludeThisPackage = false;
 
-            for (Iterator eit = option_exclude.iterator(); eit.hasNext();) {
-              String excludePackage = (String)eit.next();
-              if (foundPackage.equals(excludePackage) ||
-                  foundPackage.startsWith(excludePackage + ":")) {
-                excludeThisPackage = true;
-                break;
-              }
-            }
+        addFoundPackages(subpackage, foundPackages);
+      }
 
-            if (!excludeThisPackage) {
-              rootDoc.addSpecifiedPackageName(foundPackage);
-              onePackageAdded = true;
-            }
-          }
-          if (!onePackageAdded) {
-            reporter.printWarning("No non-excluded classes found under subpackage " + subpackage);
-          }
+      if (option_all) {
+        Set foundPackages = new LinkedHashSet();
+        for (Iterator pit = option_sourcepath.iterator(); pit.hasNext(); ) {
+          File sourceDir = (File)pit.next();
+          findPackages(null, sourceDir, foundPackages);
         }
+        addFoundPackages(null, foundPackages);
       }
 
       for (Iterator it = packageAndClasses.iterator(); it.hasNext();)
@@ -626,6 +623,42 @@ public final class Main
     }
   }
 
+  private void addFoundPackages(String subpackage, Set foundPackages)
+  {        
+    if (foundPackages.isEmpty()) {
+      reporter.printWarning("No classes found under subpackage " + subpackage);
+    }
+    else {
+      boolean onePackageAdded = false;
+      for (Iterator rit = foundPackages.iterator(); rit.hasNext();) {
+        String foundPackage = (String)rit.next();
+        boolean excludeThisPackage = false;
+
+        for (Iterator eit = option_exclude.iterator(); eit.hasNext();) {
+          String excludePackage = (String)eit.next();
+          if (foundPackage.equals(excludePackage) ||
+              foundPackage.startsWith(excludePackage + ":")) {
+            excludeThisPackage = true;
+            break;
+          }
+        }
+
+        if (!excludeThisPackage) {
+          rootDoc.addSpecifiedPackageName(foundPackage);
+          onePackageAdded = true;
+        }
+      }
+      if (!onePackageAdded) {
+        if (null != subpackage) {
+          reporter.printWarning("No non-excluded classes found under subpackage " + subpackage);
+        }
+        else {
+          reporter.printWarning("No non-excluded classes found.");
+        }
+      }
+    }
+  }
+
   /**
    *  Verify that the given file is a valid Java source file and that
    *  it specifies the given package.
@@ -663,9 +696,14 @@ public final class Main
       for (int i=0; i<files.length; ++i) {
         File file = files[i];
         if (file.isDirectory()) {
-          findPackages(subpackage + "." + file.getName(),
-                       file,
-                       result);
+          String newSubpackage;
+          if (null != subpackage) {
+            newSubpackage = subpackage + "." + file.getName();
+          }
+          else {
+            newSubpackage = file.getName();
+          }
+          findPackages(newSubpackage, file, result);
         }
       }
     }
@@ -860,6 +898,18 @@ public final class Main
 
       readOptions(optionArr);
 
+      //--- Show version and exit if requested by user
+
+      if (option_showVersion) {
+        System.err.println("gjdoc " + getGjdocVersion());
+        System.exit(0);
+      }
+
+      if (option_bootclasspath_specified) {
+        reporter.printWarning("-bootclasspath ignored: not supported by"
+                              + " gjdoc wrapper script, or no wrapper script in use.");
+      }
+
       // If we have an empty source path list, add the current directory ('.')
 
       if (option_sourcepath.size() == 0)
@@ -998,14 +1048,17 @@ public final class Main
           option_coverage = COVERAGE_PRIVATE;
         }
       });
-    options.put("-help", new OptionProcessor(1)
+    OptionProcessor helpProcessor = new OptionProcessor(1)
       {
 
         void process(String[] args)
         {
           option_help = true;
         }
-      });
+      };
+
+    options.put("-help", helpProcessor);
+    options.put("--help", helpProcessor);
     options.put("-doclet", new OptionProcessor(2)
         {
 
@@ -1045,9 +1098,7 @@ public final class Main
             }
           }
         });
-    options.put("-sourcepath", new OptionProcessor(2)
-      {
-
+    OptionProcessor sourcePathProcessor = new OptionProcessor(2) {
         void process(String[] args)
         {
           Debug.log(1, "-sourcepath is '" + args[0] + "'");
@@ -1064,7 +1115,9 @@ public final class Main
             option_sourcepath.add(file);
           }
         }
-      });
+      };
+    options.put("-s", sourcePathProcessor);
+    options.put("-sourcepath", sourcePathProcessor);
     options.put("-subpackages", new OptionProcessor(2)
       {
         void process(String[] args)
@@ -1198,6 +1251,27 @@ public final class Main
           System.setProperty("java.class.path", args[0]);
         }
       });
+    options.put("--version", new OptionProcessor(1)
+      {
+        void process(String[] args)
+        {
+          option_showVersion = true;
+        }
+      });
+    options.put("-bootclasspath", new OptionProcessor(1)
+      {
+        void process(String[] args)
+        {
+          option_bootclasspath_specified = true;
+        }
+      });
+    options.put("-all", new OptionProcessor(1)
+      {
+        void process(String[] args)
+        {
+          option_all = true;
+        }
+      });
   }
 
   /**
@@ -1249,63 +1323,84 @@ public final class Main
         .print("\n"
             + "USAGE: gjdoc [options] [packagenames] "
             + "[sourcefiles] [@files]\n\n"
+            + "  --version                Show version information and exit\n"
+            + "  -all                     Process all source files found in the source path\n"
             + "  -overview <file>         Read overview documentation from HTML file\n"
             + "  -public                  Include only public classes and members\n"
-            + "  -protected               Include protected and public classes and members.\n"
-            + "                           This is the default.\n"
+            + "  -protected               Include protected and public classes and members\n"
+            + "                           This is the default\n"
             + "  -package                 Include package/protected/public classes and members\n"
             + "  -private                 Include all classes and members\n"
-            + "  -help                    Show this information\n"
+            + "  -help, --help            Show this information\n"
             + "  -doclet <class>          Doclet class to use for generating output\n"
-            + "  -docletpath <classpath>  Specifies the search path for the doclet and dependencies\n"
-            + "  -source <release>        Provide source compatibility with specified release (1.4 to handle assertion)\n"
+            + "  -docletpath <classpath>  Specifies the search path for the doclet and\n"
+            + "                           dependencies\n"
+            + "  -source <release>        Provide source compatibility with specified\n"
+            + "                           release (1.4 to handle assertion)\n"
             + "  -sourcepath <pathlist>   Where to look for source files\n"
+            + "  -s <pathlist>            Alias for -sourcepath\n"
+            + "  -subpackages <spkglist>  List of subpackages to recursively load\n"
+            + "  -exclude <pkglist>       List of packages to exclude\n"
             + "  -verbose                 Output messages about what Gjdoc is doing [ignored]\n"
             + "  -quiet                   Do not print non-error and non-warning messages\n"
-            + "  -locale <name>           Locale to be used, e.g. en_US or en_US_WIN [ignored]\n"
+            + "  -locale <name>           Locale to be used, e.g. en_US or en_US_WIN\n"
             + "  -encoding <name>         Source file encoding name\n"
             + "  -breakiterator           Compute first sentence with BreakIterator\n"
-            + "  -classpath               Set the path used for loading auxilliary classes\n"
-
-            + "Gjdoc extension options:\n"
-            + "  -licensetext             Include license text from source files\n"
-
+            + "  -classpath <pathlist>    Set the path used for loading auxilliary classes\n"
+            + "\n"
             + "Standard doclet options:\n"
             + "  -d                      Set target directory\n"
-            + "  -use                    Includes the 'Use' page for each documented class and package\n"
+            + "  -use                    Includes the 'Use' page for each documented class\n"
+            + "                          and package\n"
             + "  -version                Includes the '@version' tag\n"
             + "  -author                 Includes the '@author' tag\n"
             + "  -splitindex             Splits the index file into multiple files\n"
             + "  -windowtitle <text>     Browser window title\n"
-            + "  -doctitle <text>        Title near the top of the overview summary file (html allowed)\n"
-            + "  -title <text>           Title for this set of API documentation (deprecated, -doctitle should be used instead).\n"
-            + "  -header <text>          Text to include in the top navigation bar (html allowed)\n"
-            + "  -footer <text>          Text to include in the bottom navigation bar (html allowed)\n"
-            + "  -bottom <text>          Text to include at the bottom of each output file (html allowed)\n"
-            + "  -link <extdoc URL>      Link to external javadoc-generated documentation you want to link to\n"
-            + "  -linkoffline <extdoc URL> <packagelistLoc>  Link to external javadoc-generated documentation for the specified package-list\n"
+            + "  -doctitle <text>        Title near the top of the overview summary file\n"
+            + "                          (HTML allowed)\n"
+            + "  -title <text>           Title for this set of API documentation\n"
+            + "                          (deprecated, -doctitle should be used instead)\n"
+            + "  -header <text>          Text to include in the top navigation bar\n"
+            + "                          (HTML allowed)\n"
+            + "  -footer <text>          Text to include in the bottom navigation bar\n"
+            + "                          (HTML allowed)\n"
+            + "  -bottom <text>          Text to include at the bottom of each output file\n"
+            + "                          (HTML allowed)\n"
+            + "  -link <extdoc URL>      Link to external generated documentation at URL\n"
+            + "  -linkoffline <extdoc URL> <packagelistLoc>\n"
+            + "                          Link to external generated documentation for\n"
+            + "                          the specified package-list\n"
             + "  -linksource             Creates an HTML version of each source file\n"
-            + "  -group <groupheading> <packagepattern:packagepattern:...> Separates packages on the overview page into groups\n"
+            + "  -group <groupheading> <packagepattern:packagepattern:...>\n"
+            + "                          Separates packages on the overview page into groups\n"
             + "  -nodeprecated           Prevents the generation of any deprecated API\n"
-            + "  -nodeprecatedlist       Prevents the generation of the file containing the list of deprecated APIs and the link to the navigation bar to that page\n"
+            + "  -nodeprecatedlist       Prevents the generation of the file containing\n"
+            + "                          the list of deprecated APIs and the link to the\n"
+            + "                          navigation bar to that page\n"
             + "  -nosince                Omit the '@since' tag\n"
             + "  -notree                 Do not generate the class/interface hierarchy page\n"
             + "  -noindex                Do not generate the index file\n"
-            + "  -nohelp                 Do not generate the HELP link\n"
+            + "  -nohelp                 Do not generate the help link\n"
             + "  -nonavbar               Do not generate the navbar, header and footer\n"
-            + "  -helpfile <filename>    Path of an alternate help file\n"
-            + "  -stylesheetfile <filename>   Path of an alternate html stylesheet\n"
+            + "  -helpfile <filen>       Path to an alternate help file\n"
+            + "  -stylesheetfile <file>  Path to an alternate CSS stylesheet\n"
+            + "  -addstylesheet <file>   Path to an additional CSS stylesheet\n"
             /* + " -serialwarn              Generate compile time error for missing '@serial' tags\n" */
-            + "  -charset <IANACharset>   Specifies the HTML charset\n"
-            + "  -docencoding <IANACharset> Specifies the encoding of the generated HTML files\n"
-            + "  -tag <tagname>:Xaoptcmf:\"<taghead>\" Enables gjdoc to interpret a custom tag\n"
-            + "  -taglet                 Adds a Taglet class to the map of taglets.\n"
-            + "  -tagletpath             Sets the CLASSPATH to load subsequent Taglets from.\n"
-            + "  -subpackages <spkglist> List of subpackages to recursively load\n"
-            + "  -exclude <pkglist>      List of packages to exclude\n"
+            + "  -charset <IANACharset>  Specifies the HTML charset\n"
+            + "  -docencoding <IANACharset>\n"
+            + "                          Specifies the encoding of the generated HTML files\n"
+            + "  -tag <tagname>:Xaoptcmf:\"<taghead>\"\n"
+            + "                          Enables gjdoc to interpret a custom tag\n"
+            + "  -taglet                 Adds a Taglet class to the map of taglets\n"
+            + "  -tagletpath             Sets the CLASSPATH to load subsequent Taglets from\n"
             + "  -docfilessubdirs        Enables deep copy of 'doc-files' directories\n"
-            + "  -excludedocfilessubdir  <name1:name2:...> Excludes 'doc-files' subdirectories with a give name\n"
-            + "  -noqualifier all|<packagename1:packagename2:...> Do not qualify package name from ahead of class names\n"
+            + "  -excludedocfilessubdir <name1:name2:...>\n"
+            + "                          Excludes 'doc-files' subdirectories with a give name\n"
+            + "  -noqualifier all|<packagename1:packagename2:...>\n"
+            + "                          Do never fully qualify given package names\n"
+            + "\n"
+            + "Gjdoc extension options:\n"
+            + "  -licensetext            Include license text from source files\n"
             /* + " -nocomment               Suppress the entire comment body including the main description and all tags, only generate the declarations\n" */
                /**
             + "  -genhtml                Generate HTML code instead of XML code. This is the\n"
@@ -1446,11 +1541,42 @@ public final class Main
     return this.option_locale;
   }
 
+  /**
+   *  Return the collator to use based on the specified -locale
+   *  option. If no collator can be found for the given locale, a
+   *  warning is emitted and the default collator is used instead.
+   */
   public Collator getCollator()
   {
     if (null == this.collator) {
-      this.collator = Collator.getInstance(getLocale());
-      this.collator.setStrength(Collator.SECONDARY);
+      Locale locale = getLocale();
+      this.collator = Collator.getInstance(locale);
+      Locale defaultLocale = Locale.getDefault();
+      if (null == this.collator
+          && !defaultLocale.equals(locale)) {
+        this.collator = Collator.getInstance(defaultLocale);
+        if (null != this.collator) {
+          reporter.printWarning("No collator found for locale " 
+                                + locale.getDisplayName() 
+                                + "; using collator for default locale " 
+                                + defaultLocale.getDisplayName()
+                                + ".");
+        }
+        else {
+          this.collator = Collator.getInstance();
+          reporter.printWarning("No collator found for specified locale " 
+                                + locale.getDisplayName() 
+                                + " or default locale " 
+                                + defaultLocale.getDisplayName()
+                                + ": using default collator.");
+        }
+      }
+      if (null == this.collator) {
+        this.collator = Collator.getInstance();
+        reporter.printWarning("No collator found for locale " 
+                              + locale.getDisplayName() 
+                              + ": using default collator.");
+      }
     }
     return this.collator;
   }
@@ -1458,5 +1584,22 @@ public final class Main
   public boolean isCacheRawComments()
   {
     return true;
+  }
+
+  public String getGjdocVersion()
+  {
+    if (null == gjdocVersion) {
+      try {
+        Properties versionProperties = new Properties();
+        versionProperties.load(getClass().getResourceAsStream("/version.properties"));
+        gjdocVersion = versionProperties.getProperty("gjdoc.version");
+      }
+      catch (IOException ignore) {
+      }
+      if (null == gjdocVersion) {
+        gjdocVersion = "unknown";
+      }
+    }
+    return gjdocVersion;
   }
 }

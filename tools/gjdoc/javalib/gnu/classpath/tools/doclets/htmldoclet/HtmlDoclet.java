@@ -93,6 +93,16 @@ public class HtmlDoclet
     */
    private Map packageNameToDocSet = new HashMap();
 
+   /**
+    *  Cache for version string from resource /version.properties
+    */
+   private String docletVersion;
+
+   /**
+    *  For now, do not output a help page.
+    */
+   private static final boolean outputHelpPage = false;
+
    private void printNavBar(HtmlPage output, String currentPage, ClassDoc currentClass)
    {
          output.beginDiv(CssClass.NAVBAR_TOP);
@@ -101,8 +111,10 @@ public class HtmlDoclet
             = ("overview".equals(currentPage)
                || "full-tree".equals(currentPage)
                || "index".equals(currentPage)
+               || "split-index".equals(currentPage)
                || "serialized".equals(currentPage)
                || "deprecated".equals(currentPage)
+               || "about".equals(currentPage)
                );
 
          if (!isSinglePackage()) {
@@ -122,7 +134,7 @@ public class HtmlDoclet
             output.print(" ");
          }
 
-         if (!overviewLevel) {
+         if (!overviewLevel || isSinglePackage()) {
             if ("package".equals(currentPage)) {
                output.beginSpan(CssClass.NAVBAR_ITEM_ACTIVE);
                output.print("Package");
@@ -130,7 +142,14 @@ public class HtmlDoclet
             }
             else {
                output.beginSpan(CssClass.NAVBAR_ITEM_ENABLED);
-               output.beginAnchor("package-summary" + filenameExtension);
+               String packageHref;
+               if (isSinglePackage()) {
+                  packageHref = output.getPathToRoot() + "/" + getPackageURL(getSinglePackage()) + "/package-summary" + filenameExtension;
+               }
+               else {
+                  packageHref = "package-summary" + filenameExtension;
+               }
+               output.beginAnchor(packageHref);
                output.print("Package");
                output.endAnchor();
                output.endSpan(CssClass.NAVBAR_ITEM_ENABLED);
@@ -169,11 +188,18 @@ public class HtmlDoclet
                output.print(" ");
 
                if (null != currentClass) {
-                  output.beginSpan(CssClass.NAVBAR_ITEM_ENABLED);
-                  output.beginAnchor(currentClass.name() + "-uses" + filenameExtension);
-                  output.print("Use");
-                  output.endAnchor();
-                  output.endSpan(CssClass.NAVBAR_ITEM_ENABLED);
+                  if ("uses".equals(currentPage)) {
+                     output.beginSpan(CssClass.NAVBAR_ITEM_ACTIVE);
+                     output.print("Use");
+                     output.endSpan(CssClass.NAVBAR_ITEM_ACTIVE);
+                  }
+                  else {
+                     output.beginSpan(CssClass.NAVBAR_ITEM_ENABLED);
+                     output.beginAnchor(currentClass.name() + "-uses" + filenameExtension);
+                     output.print("Use");
+                     output.endAnchor();
+                     output.endSpan(CssClass.NAVBAR_ITEM_ENABLED);
+                  }
                }
                else {
                   output.beginSpan(CssClass.NAVBAR_ITEM_DISABLED);
@@ -185,23 +211,33 @@ public class HtmlDoclet
             if (optionLinkSource.getValue()) {
                output.print(" ");
 
-               if (null != currentClass) {
-                  output.beginSpan(CssClass.NAVBAR_ITEM_ENABLED);
-                  String targetClassName = currentClass.name();
-                  String targetAnchor = "";
-                  if (null != currentClass.containingClass()) {
-                     targetClassName = getOuterClassDoc(currentClass).name();
-                     targetAnchor = "#line." + currentClass.position().line();
-                  }
-                  output.beginAnchor(targetClassName + "-source" + filenameExtension + targetAnchor);
+               
+               if ("source".equals(currentPage)) {
+                  output.beginSpan(CssClass.NAVBAR_ITEM_ACTIVE);
                   output.print("Source");
-                  output.endAnchor();
-                  output.endSpan(CssClass.NAVBAR_ITEM_ENABLED);
+                  output.endSpan(CssClass.NAVBAR_ITEM_ACTIVE);
                }
                else {
-                  output.beginSpan(CssClass.NAVBAR_ITEM_DISABLED);
-                  output.print("Source");
-                  output.endSpan(CssClass.NAVBAR_ITEM_DISABLED);
+
+                  if (null != currentClass) {
+                     
+                     output.beginSpan(CssClass.NAVBAR_ITEM_ENABLED);
+                     String targetClassName = currentClass.name();
+                     String targetAnchor = "";
+                     if (null != currentClass.containingClass()) {
+                        targetClassName = getOuterClassDoc(currentClass).name();
+                        targetAnchor = "#line." + currentClass.position().line();
+                     }
+                     output.beginAnchor(targetClassName + "-source" + filenameExtension + targetAnchor);
+                     output.print("Source");
+                     output.endAnchor();
+                     output.endSpan(CssClass.NAVBAR_ITEM_ENABLED);
+                  }
+                  else {
+                     output.beginSpan(CssClass.NAVBAR_ITEM_DISABLED);
+                     output.print("Source");
+                     output.endSpan(CssClass.NAVBAR_ITEM_DISABLED);
+                  }
                }
             }
          }
@@ -211,15 +247,22 @@ public class HtmlDoclet
             output.print(" ");
 
             if ("full-tree".equals(currentPage) 
-                || "package-tree".equals(currentPage)
-                || (isSinglePackage() && overviewLevel)) {
+                || "package-tree".equals(currentPage)) {
                output.beginSpan(CssClass.NAVBAR_ITEM_ACTIVE);
                output.print("Tree");
                output.endSpan(CssClass.NAVBAR_ITEM_ACTIVE);
             }
             else {
                output.beginSpan(CssClass.NAVBAR_ITEM_ENABLED);
-               output.beginAnchor("tree" + filenameExtension);
+               String treeHref;
+               if (isSinglePackage() && overviewLevel) {
+                  treeHref = getPackageURL(getSinglePackage()) + "/tree" + filenameExtension;
+               }
+               else {
+                  treeHref = "tree" + filenameExtension;
+               }
+
+               output.beginAnchor(treeHref);
                output.print("Tree");
                output.endAnchor();
                output.endSpan(CssClass.NAVBAR_ITEM_ENABLED);
@@ -236,7 +279,7 @@ public class HtmlDoclet
             indexName = "alphaindex";
          }
 
-         if ("index".equals(currentPage)) {
+         if ("index".equals(currentPage) || "split-index".equals(currentPage)) {
             output.beginSpan(CssClass.NAVBAR_ITEM_ACTIVE);
             output.print("Index");
             output.endSpan(CssClass.NAVBAR_ITEM_ACTIVE);
@@ -266,20 +309,22 @@ public class HtmlDoclet
             }
          }
 
-         if (!optionNoHelp.getValue()) {
-            output.print(" ");
-
-            if ("help".equals(currentPage)) {
-               output.beginSpan(CssClass.NAVBAR_ITEM_ACTIVE);
-               output.print("Help");
-               output.endSpan(CssClass.NAVBAR_ITEM_ACTIVE);
-            }
-            else {
-               output.beginSpan(CssClass.NAVBAR_ITEM_ENABLED);
-               output.beginAnchor(output.getPathToRoot() + "/help" + filenameExtension);
-               output.print("Help");
-               output.endAnchor();
-               output.endSpan(CssClass.NAVBAR_ITEM_ENABLED);
+         if (outputHelpPage) {
+            if (!optionNoHelp.getValue()) {
+               output.print(" ");
+               
+               if ("help".equals(currentPage)) {
+                  output.beginSpan(CssClass.NAVBAR_ITEM_ACTIVE);
+                  output.print("Help");
+                  output.endSpan(CssClass.NAVBAR_ITEM_ACTIVE);
+               }
+               else {
+                  output.beginSpan(CssClass.NAVBAR_ITEM_ENABLED);
+                  output.beginAnchor(output.getPathToRoot() + "/help" + filenameExtension);
+                  output.print("Help");
+                  output.endAnchor();
+                  output.endSpan(CssClass.NAVBAR_ITEM_ENABLED);
+               }
             }
          }
 
@@ -301,25 +346,207 @@ public class HtmlDoclet
          output.endDiv(CssClass.NAVBAR_TOP);
    }
 
-   private void printNavBarTop(HtmlPage output, String currentPage)
+   private void printNavBarTopRow(HtmlPage output, String currentPage, ClassDoc currentClass)
    {
-      printNavBarTop(output, currentPage, null);
+      output.beginRow();
+      output.beginCell(CssClass.NAVBAR_TOP);
+      printNavBar(output, currentPage, currentClass);
+      output.endCell();
+      if (null != optionHeader.getValue()) {
+         output.beginCell(CssClass.NAVBAR_TOP_HEADER);
+         output.print(replaceDocRoot(output, optionHeader.getValue()));
+         output.endCell();
+      }
+      output.endRow();
    }
 
-   private void printNavBarTop(HtmlPage output, String currentPage, ClassDoc currentClass)
+   private void printNavBarTopNaviCell(HtmlPage output)
+   {
+      output.beginCell(CssClass.NAVBAR_TOP_NAVI);
+      output.beginAnchor(output.getPathToRoot() + "/index" + filenameExtension, "Show in a frameset", "_top");
+      output.print("Frames");
+      output.endAnchor();
+      output.print(" | ");
+
+      output.beginAnchor(output.getFile().getName(), "Show without frames", "_top");
+      output.print("No Frames");
+      output.endAnchor();
+      output.print(" ");
+
+      output.endCell();
+   }
+
+   private void printNavBarTop(HtmlPage output, String currentPage)
+   {
+      printNavBarTop(output, currentPage, null, null, null);
+   }
+
+   private void printNavBarTop(HtmlPage output, String currentPage, 
+                               ClassDoc currentClass, Object prev, Object next)
    {
       if (!optionNoNavBar.getValue()) {
          output.beginTable(CssClass.NAVBAR_TOP);
+         printNavBarTopRow(output, currentPage, currentClass);
          output.beginRow();
-         output.beginCell(CssClass.NAVBAR_TOP);
-         printNavBar(output, currentPage, currentClass);
-         output.endCell();
-         if (null != optionHeader.getValue()) {
-            output.beginCell();
-            output.print(replaceDocRoot(output, optionHeader.getValue()));
+         if ("class".equals(currentPage)) {
+            output.beginCell(CssClass.NAVBAR_TOP_NAVI);
+            ClassDoc prevClass = (ClassDoc)prev;
+            ClassDoc nextClass = (ClassDoc)next;
+            if (null != prevClass) {
+               output.anchor(getClassDocURL(output, prevClass), "Prev Class");
+            }
+            else {
+               output.print("Prev Class");
+            }
+            output.print(" | ");
+            if (null != nextClass) {
+               output.anchor(getClassDocURL(output, nextClass), "Next Class");
+            }
+            else {
+               output.print("Next Class");
+            }
             output.endCell();
          }
+         else if ("split-index".equals(currentPage)) {
+            output.beginCell(CssClass.NAVBAR_TOP_NAVI);
+            Integer prevLetter = (Integer)prev;
+            Integer nextLetter = (Integer)next;
+            if (null != prevLetter) {
+               output.anchor("alphaindex-" + prevLetter + filenameExtension, "Prev Letter");
+            }
+            else {
+               output.print("Prev Letter");
+            }
+            output.print(" | ");
+            if (null != nextLetter) {
+               output.anchor("alphaindex-" + nextLetter + filenameExtension, "Next Letter");
+            }
+            else {
+               output.print("Next Letter");
+            }
+            output.endCell();
+         }
+         else {
+            output.beginCell(CssClass.NAVBAR_TOP_NAVI);
+            output.endCell();
+         }
+
+         printNavBarTopNaviCell(output);
          output.endRow();
+
+         if ("class".equals(currentPage)) {
+            output.beginRow();
+
+            output.beginCell(CssClass.NAVBAR_TOP_NAVI);
+            output.print("Summary: ");
+            
+            if (currentClass.innerClasses().length > 0) {
+               output.anchor("#summary-inner", "Nested");               
+            }
+            else {
+               output.print("Nested");
+            }
+
+            output.print(" | ");
+            
+            if (currentClass.fields().length > 0) {
+               output.anchor("#summary-fields", "Field");
+            }
+            else {
+               output.print("Field");
+            }
+
+            output.print(" | ");
+            
+            if (currentClass.methods().length > 0) {
+               output.anchor("#summary-methods", "Method");
+            }
+            else {
+               output.print("Method");
+            }
+
+            output.print(" | ");
+            
+            if (currentClass.constructors().length > 0) {
+               output.anchor("#summary-constructors", "Constr");
+            }
+            else {
+               output.print("Constr");
+            }
+
+            output.endCell();
+
+            output.beginCell(CssClass.NAVBAR_TOP_NAVI);
+            output.print("Detail: ");
+            
+            if (currentClass.innerClasses().length > 0) {
+               output.anchor("#detail-inner", "Nested");               
+            }
+            else {
+               output.print("Nested");
+            }
+
+            output.print(" | ");
+            
+            if (currentClass.fields().length > 0) {
+               output.anchor("#detail-fields", "Field");
+            }
+            else {
+               output.print("Field");
+            }
+
+            output.print(" | ");
+            
+            if (currentClass.methods().length > 0) {
+               output.anchor("#detail-methods", "Method");
+            }
+            else {
+               output.print("Method");
+            }
+
+            output.print(" | ");
+            
+            if (currentClass.constructors().length > 0) {
+               output.anchor("#detail-constructors", "Constr");
+            }
+            else {
+               output.print("Constr");
+            }
+
+            output.endCell();
+            output.endRow();
+         }
+         output.endTable();
+      }
+   }
+
+   private void printNavBarTopPackage(HtmlPage output, String currentPage, 
+                                      PackageDoc prevPackage, PackageDoc nextPackage)
+   {
+      if (!optionNoNavBar.getValue()) {
+         output.beginTable(CssClass.NAVBAR_TOP);
+         printNavBarTopRow(output, currentPage, null);
+
+         output.beginRow();
+         output.beginCell(CssClass.NAVBAR_TOP_NAVI);
+         if (null != prevPackage) {
+            output.anchor(output.getPathToRoot() + "/" + getPackageURL(prevPackage) + "/package-summary" + filenameExtension, "Prev Package");
+         }
+         else {
+            output.print("Prev Package");
+         }
+         output.print(" | ");
+         if (null != nextPackage) {
+            output.anchor(output.getPathToRoot() + "/" + getPackageURL(nextPackage) + "/package-summary" + filenameExtension, "Next Package");
+         }
+         else {
+            output.print("Next Package");
+         }
+         output.endCell();
+
+         printNavBarTopNaviCell(output);
+         output.endRow();
+
          output.endTable();
       }
    }
@@ -417,16 +644,24 @@ public class HtmlDoclet
       out.close();
    }
 
-   private void printPackagePage(File packageDir, String pathToRoot, PackageDoc packageDoc)
+   private void printPackagePage(File packageDir, String pathToRoot, 
+                                 PackageDoc packageDoc, 
+                                 PackageDoc prevPackageDoc, 
+                                 PackageDoc nextPackageDoc)
       throws IOException
    {
       HtmlPage output = new HtmlPage(new File(packageDir,
                                               "package-summary" + filenameExtension),
                                      pathToRoot,
                                      getOutputDocEncoding());
-      output.beginPage(getPageTitle(packageDoc.name()), getOutputCharset());
+
+      Set keywords = new LinkedHashSet();
+      keywords.add(packageDoc.name() + " packages");
+
+      output.beginPage(getPageTitle(packageDoc.name()), getOutputCharset(),
+                       keywords, getStylesheets());
       output.beginBody(CssClass.BODY_CONTENT_PACKAGE);
-      printNavBarTop(output, "package");
+      printNavBarTopPackage(output, "package", prevPackageDoc, nextPackageDoc);
 
       output.beginDiv(CssClass.PACKAGE_TITLE);
       output.print("Package ");
@@ -530,9 +765,10 @@ public class HtmlDoclet
       return node;
    }
 
-   private void printPackageTreeRec(HtmlPage output, TreeNode node)
+   private void printPackageTreeRec(HtmlPage output, TreeNode node, TreeNode parentNode)
    {
       output.beginElement("li");
+      output.beginElement("div");
       if (node.classDoc.isIncluded()) {
          output.print(node.classDoc.containingPackage().name());
          output.print(".");
@@ -544,31 +780,47 @@ public class HtmlDoclet
          output.print(possiblyQualifiedName(node.classDoc));
       }
       ClassDoc[] interfaces = node.classDoc.interfaces();
-      if (interfaces.length > 0) {
-         output.print(" (implements ");
+      ClassDoc parentClassDoc = null;
+      if (null != parentNode) {
+         parentClassDoc = parentNode.classDoc;
+      }
+      if (interfaces.length > 0 
+          && !(interfaces.length == 1 && interfaces[0].equals(parentClassDoc))) {
+         if (node.classDoc.isInterface()) {
+            output.print(" (also implements ");
+         }
+         else {
+            output.print(" (implements ");
+         }
+
+         boolean firstItem = true;
          for (int i=0; i<interfaces.length; ++i) {
             ClassDoc implemented = interfaces[i];
-            if (i > 0) {
-               output.print(", ");
-            }
-            if (implemented.isIncluded()) {
-               output.print(implemented.containingPackage().name());
-               output.print(".");
-               printType(output, implemented);
-            }
-            else {
-               output.print(possiblyQualifiedName(implemented));
+            if (!implemented.equals(parentClassDoc)) {
+               if (!firstItem) {
+                  output.print(", ");
+               }
+               firstItem = false;
+               if (implemented.isIncluded()) {
+                  output.print(implemented.containingPackage().name());
+                  output.print(".");
+                  printType(output, implemented);
+               }
+               else {
+                  output.print(possiblyQualifiedName(implemented));
+               }
             }
          }
-         output.print(" )");
+         output.print(")");
       }
 
+      output.endElement("div");
       output.endElement("li");
       output.beginElement("ul");
       Iterator it = node.children.iterator();
       while (it.hasNext()) {
          TreeNode child = (TreeNode)it.next();
-         printPackageTreeRec(output, child);
+         printPackageTreeRec(output, child, node);
       }
       output.endElement("ul");
    }
@@ -587,9 +839,9 @@ public class HtmlDoclet
       TreeNode root = (TreeNode)classTreeMap.get("java.lang.Object");
       if (null != root) {
          output.div(CssClass.PACKAGE_TREE_SECTION_TITLE, "Class Hierarchy");
-         output.beginElement("ul");
-         printPackageTreeRec(output, root);
-         output.endElement("ul");
+         output.beginDiv(CssClass.PACKAGE_TREE);
+         printPackageTreeRec(output, root, null);
+         output.endDiv(CssClass.PACKAGE_TREE);
       }
    }
 
@@ -609,12 +861,12 @@ public class HtmlDoclet
          Iterator it = interfaceRoot.children.iterator();
          if (it.hasNext()) {
             output.div(CssClass.PACKAGE_TREE_SECTION_TITLE, "Interface Hierarchy");
-            output.beginElement("ul");
+            output.beginDiv(CssClass.PACKAGE_TREE);
             while (it.hasNext()) {
                TreeNode node = (TreeNode)it.next();
-               printPackageTreeRec(output, node);
+               printPackageTreeRec(output, node, null);
             }
-            output.endElement("ul");
+            output.endDiv(CssClass.PACKAGE_TREE);
          }
       }
 
@@ -627,7 +879,9 @@ public class HtmlDoclet
                                               "tree" + filenameExtension),
                                      pathToRoot,
                                      getOutputDocEncoding());
-      output.beginPage(getPageTitle(packageDoc.name() + " Hierarchy"), getOutputCharset());
+      output.beginPage(getPageTitle(packageDoc.name() + " Hierarchy"), 
+                       getOutputCharset(),
+                       getStylesheets());
       output.beginBody(CssClass.BODY_CONTENT_PACKAGE_TREE);
       printNavBarTop(output, "package-tree");
 
@@ -650,7 +904,9 @@ public class HtmlDoclet
                                               "tree" + filenameExtension),
                                      ".",
                                      getOutputDocEncoding());
-      output.beginPage(getPageTitle("Hierarchy"), getOutputCharset());
+      output.beginPage(getPageTitle("Hierarchy"), 
+                       getOutputCharset(),
+                       getStylesheets());
       output.beginBody(CssClass.BODY_CONTENT_FULL_TREE);
       printNavBarTop(output, "full-tree");
 
@@ -686,6 +942,7 @@ public class HtmlDoclet
    private void printIndexEntry(HtmlPage output, Doc entry)
    {
       output.beginDiv(CssClass.INDEX_ENTRY);
+      output.beginDiv(CssClass.INDEX_ENTRY_KEY);
       String anchor = null;
       String description = null;
       if (entry instanceof PackageDoc) {
@@ -750,6 +1007,7 @@ public class HtmlDoclet
          }
          printType(output, containingClass);
       }
+      output.endDiv(CssClass.INDEX_ENTRY_KEY);
       output.beginDiv(CssClass.INDEX_ENTRY_DESCRIPTION);
       printTags(output, entry, entry.firstSentenceTags(), true);
       output.endDiv(CssClass.INDEX_ENTRY_DESCRIPTION);
@@ -766,7 +1024,7 @@ public class HtmlDoclet
                                      HtmlPage.DOCTYPE_FRAMESET);
       
       String title = getWindowTitle();
-      output.beginPage(title, getOutputCharset());
+      output.beginPage(title, getOutputCharset(), getStylesheets());
       output.beginElement("frameset", "cols", "20%,80%");
 
       String contentURL;
@@ -802,7 +1060,7 @@ public class HtmlDoclet
                                               "all-packages" + filenameExtension),
                                      ".",
                                      getOutputDocEncoding());
-      output.beginPage(getPageTitle("Package Menu"), getOutputCharset());
+      output.beginPage(getPageTitle("Package Menu"), getOutputCharset(), getStylesheets());
       output.beginBody(CssClass.BODY_MENU_PACKAGES, false);
 
       output.beginSpan(CssClass.PACKAGE_MENU_ENTRY);
@@ -922,7 +1180,7 @@ public class HtmlDoclet
                                               "all-classes" + filenameExtension),
                                      ".",
                                      getOutputDocEncoding());
-      output.beginPage(getPageTitle("Class Menu"), getOutputCharset());
+      output.beginPage(getPageTitle("Class Menu"), getOutputCharset(), getStylesheets());
       output.beginBody(CssClass.BODY_MENU_CLASSES, false);
 
       output.div(CssClass.CLASS_MENU_TITLE, "All Classes");
@@ -942,7 +1200,8 @@ public class HtmlDoclet
                                      pathToRoot,
                                      getOutputDocEncoding());
 
-      output.beginPage(getPageTitle(packageDoc.name() + " Class Menu"), getOutputCharset());
+      output.beginPage(getPageTitle(packageDoc.name() + " Class Menu"), 
+                       getOutputCharset(), getStylesheets());
       output.beginBody(CssClass.BODY_MENU_CLASSES, false);
 
       output.beginDiv(CssClass.CLASS_MENU_TITLE);
@@ -969,20 +1228,21 @@ public class HtmlDoclet
       Map categorizedIndex = getCategorizedIndex();
       Iterator it = categorizedIndex.keySet().iterator();
       int n = 1;
+      int count = categorizedIndex.size();
       while (it.hasNext()) {
          Character c = (Character)it.next();
          List classList = (List)categorizedIndex.get(c);
-         printIndexPage(n++, c, classList);
+         printIndexPage(n++, count, c, classList);
       }
    }
 
    private void printIndexPage()
       throws IOException
    {
-      printIndexPage(0, null, null);
+      printIndexPage(0, 0, null, null);
    }
 
-   private void printIndexPage(int index, Character letter, List classList)
+   private void printIndexPage(int index, int maxIndex, Character letter, List classList)
       throws IOException
    {
       String pageName = "alphaindex";
@@ -993,12 +1253,28 @@ public class HtmlDoclet
                                               pageName + filenameExtension),
                                      ".",
                                      getOutputDocEncoding());
-      output.beginPage(getPageTitle("Alphabetical Index"), getOutputCharset());
+      output.beginPage(getPageTitle("Alphabetical Index"), 
+                       getOutputCharset(),
+                       getStylesheets());
       output.beginBody(CssClass.BODY_CONTENT_INDEX);
-      printNavBarTop(output, "index");
+      if (null == letter) {
+         printNavBarTop(output, "index");
+      }
+      else {
+         printNavBarTop(output, "split-index", null,
+                        (index > 1) ? new Integer(index - 1) : null, 
+                        (index < maxIndex) ? new Integer(index + 1) : null);
+      }
 
       {
-         output.div(CssClass.INDEX_TITLE, "Alphabetical Index");
+         String title;
+         if (null == letter) {
+            title = "Alphabetical Index";
+         }
+         else {
+            title = "Alphabetical Index: " + letter;
+         }
+         output.div(CssClass.INDEX_TITLE, title);
 
          output.beginDiv(CssClass.INDEX_LETTERS);
 
@@ -1108,7 +1384,9 @@ public class HtmlDoclet
                                               "serialized-form" + filenameExtension),
                                      ".",
                                      getOutputDocEncoding());
-      output.beginPage(getPageTitle("Serialized Form"), getOutputCharset());
+      output.beginPage(getPageTitle("Serialized Form"), 
+                       getOutputCharset(),
+                       getStylesheets());
       output.beginBody(CssClass.BODY_CONTENT_DEPRECATED);
       printNavBarTop(output, "serialized");
 
@@ -1163,11 +1441,11 @@ public class HtmlDoclet
                printMemberDetails(output, 
                                   classDoc.serializationMethods(), 
                                   "Serialization Methods",
-                                  true);
+                                  true, null);
                printMemberDetails(output, 
                                   classDoc.serializableFields(), 
                                   "Serialized Fields",
-                                  true);
+                                  true, null);
             }
          }
       }
@@ -1187,7 +1465,9 @@ public class HtmlDoclet
                                               "deprecated" + filenameExtension),
                                      ".",
                                      getOutputDocEncoding());
-      output.beginPage(getPageTitle("Deprecated API"), getOutputCharset());
+      output.beginPage(getPageTitle("Deprecated API"), 
+                       getOutputCharset(),
+                       getStylesheets());
       output.beginBody(CssClass.BODY_CONTENT_DEPRECATED);
       printNavBarTop(output, "deprecated");
 
@@ -1244,67 +1524,85 @@ public class HtmlDoclet
          }
       }
 
-      output.beginDiv(CssClass.DEPRECATION_TOC);
-      output.div(CssClass.DEPRECATION_TOC_HEADER, "Contents");
-      output.beginDiv(CssClass.DEPRECATION_TOC_LIST);
-      if (!deprecatedInterfaces.isEmpty()) {
-         output.beginDiv(CssClass.DEPRECATION_TOC_ENTRY);
-         output.anchor("#interfaces", "Deprecated Interfaces");
-         output.endDiv(CssClass.DEPRECATION_TOC_ENTRY);
-      }
-      if (!deprecatedClasses.isEmpty()) {
-         output.beginDiv(CssClass.DEPRECATION_TOC_ENTRY);
-         output.anchor("#classes", "Deprecated Classes");
-         output.endDiv(CssClass.DEPRECATION_TOC_ENTRY);
-      }
-      if (!deprecatedExceptions.isEmpty()) {
-         output.beginDiv(CssClass.DEPRECATION_TOC_ENTRY);
-         output.anchor("#exceptions", "Deprecated Exceptions");
-         output.endDiv(CssClass.DEPRECATION_TOC_ENTRY);
-      }
-      if (!deprecatedErrors.isEmpty()) {
-         output.beginDiv(CssClass.DEPRECATION_TOC_ENTRY);
-         output.anchor("#errors", "Deprecated Errors");
-         output.endDiv(CssClass.DEPRECATION_TOC_ENTRY);
-      }
-      if (!deprecatedFields.isEmpty()) {
-         output.beginDiv(CssClass.DEPRECATION_TOC_ENTRY);
-         output.anchor("#fields", "Deprecated Fields");
-         output.endDiv(CssClass.DEPRECATION_TOC_ENTRY);
-      }
-      if (!deprecatedFields.isEmpty()) {
-         output.beginDiv(CssClass.DEPRECATION_TOC_ENTRY);
-         output.anchor("#methods", "Deprecated Methods");
-         output.endDiv(CssClass.DEPRECATION_TOC_ENTRY);
-      }
-      if (!deprecatedFields.isEmpty()) {
-         output.beginDiv(CssClass.DEPRECATION_TOC_ENTRY);
-         output.anchor("#constructors", "Deprecated Constructors");
-         output.endDiv(CssClass.DEPRECATION_TOC_ENTRY);
-      }
-      output.endDiv(CssClass.DEPRECATION_TOC_LIST);
-      output.endDiv(CssClass.DEPRECATION_TOC);
+      if (!deprecatedInterfaces.isEmpty()
+          || !deprecatedClasses.isEmpty()
+          || !deprecatedExceptions.isEmpty()
+          || !deprecatedErrors.isEmpty()
+          || !deprecatedFields.isEmpty()
+          || !deprecatedMethods.isEmpty()
+          || !deprecatedConstructors.isEmpty()) {
 
-      output.anchorName("interfaces");
-      printDeprecationSummary(output, deprecatedInterfaces, "Deprecated Interfaces");
+         output.beginDiv(CssClass.DEPRECATION_TOC);
+         output.div(CssClass.DEPRECATION_TOC_HEADER, "Contents");
+         output.beginDiv(CssClass.DEPRECATION_TOC_LIST);
+         if (!deprecatedInterfaces.isEmpty()) {
+            output.beginDiv(CssClass.DEPRECATION_TOC_ENTRY);
+            output.anchor("#interfaces", "Deprecated Interfaces");
+            output.endDiv(CssClass.DEPRECATION_TOC_ENTRY);
+         }
+         if (!deprecatedClasses.isEmpty()) {
+            output.beginDiv(CssClass.DEPRECATION_TOC_ENTRY);
+            output.anchor("#classes", "Deprecated Classes");
+            output.endDiv(CssClass.DEPRECATION_TOC_ENTRY);
+         }
+         if (!deprecatedExceptions.isEmpty()) {
+            output.beginDiv(CssClass.DEPRECATION_TOC_ENTRY);
+            output.anchor("#exceptions", "Deprecated Exceptions");
+            output.endDiv(CssClass.DEPRECATION_TOC_ENTRY);
+         }
+         if (!deprecatedErrors.isEmpty()) {
+            output.beginDiv(CssClass.DEPRECATION_TOC_ENTRY);
+            output.anchor("#errors", "Deprecated Errors");
+            output.endDiv(CssClass.DEPRECATION_TOC_ENTRY);
+         }
+         if (!deprecatedFields.isEmpty()) {
+            output.beginDiv(CssClass.DEPRECATION_TOC_ENTRY);
+            output.anchor("#fields", "Deprecated Fields");
+            output.endDiv(CssClass.DEPRECATION_TOC_ENTRY);
+         }
+         if (!deprecatedMethods.isEmpty()) {
+            output.beginDiv(CssClass.DEPRECATION_TOC_ENTRY);
+            output.anchor("#methods", "Deprecated Methods");
+            output.endDiv(CssClass.DEPRECATION_TOC_ENTRY);
+         }
+         if (!deprecatedConstructors.isEmpty()) {
+            output.beginDiv(CssClass.DEPRECATION_TOC_ENTRY);
+            output.anchor("#constructors", "Deprecated Constructors");
+            output.endDiv(CssClass.DEPRECATION_TOC_ENTRY);
+         }
+         output.endDiv(CssClass.DEPRECATION_TOC_LIST);
+         output.endDiv(CssClass.DEPRECATION_TOC);
+         output.beginDiv(CssClass.DEPRECATION_LIST);
 
-      output.anchorName("classes");
-      printDeprecationSummary(output, deprecatedClasses, "Deprecated Classes");
+         output.anchorName("interfaces");
+         printDeprecationSummary(output, deprecatedInterfaces, "Deprecated Interfaces");
 
-      output.anchorName("exceptions");
-      printDeprecationSummary(output, deprecatedExceptions, "Deprecated Exceptions");
+         output.anchorName("classes");
+         printDeprecationSummary(output, deprecatedClasses, "Deprecated Classes");
 
-      output.anchorName("errors");
-      printDeprecationSummary(output, deprecatedErrors, "Deprecated Errors");
+         output.anchorName("exceptions");
+         printDeprecationSummary(output, deprecatedExceptions, "Deprecated Exceptions");
 
-      output.anchorName("fields");
-      printDeprecationSummary(output, deprecatedFields, "Deprecated Fields");
+         output.anchorName("errors");
+         printDeprecationSummary(output, deprecatedErrors, "Deprecated Errors");
 
-      output.anchorName("methods");
-      printDeprecationSummary(output, deprecatedMethods, "Deprecated Methods");
+         output.anchorName("fields");
+         printDeprecationSummary(output, deprecatedFields, "Deprecated Fields");
 
-      output.anchorName("constructors");
-      printDeprecationSummary(output, deprecatedConstructors, "Deprecated Constructors");
+         output.anchorName("methods");
+         printDeprecationSummary(output, deprecatedMethods, "Deprecated Methods");
+
+         output.anchorName("constructors");
+         printDeprecationSummary(output, deprecatedConstructors, "Deprecated Constructors");
+
+         output.endDiv(CssClass.DEPRECATION_LIST);
+      }
+      else {
+         output.beginDiv(CssClass.DEPRECATION_EMPTY);
+         output.print("No deprecated classes or class members in this API.");
+         output.endDiv(CssClass.DEPRECATION_EMPTY);
+         
+      }
 
       printNavBarBottom(output, "deprecated");
       output.endBody();
@@ -1319,22 +1617,58 @@ public class HtmlDoclet
                                               "about" + filenameExtension),
                                      ".",
                                      getOutputDocEncoding());
-      output.beginPage(getPageTitle("About"), getOutputCharset());
+      output.beginPage(getPageTitle("About"), 
+                       getOutputCharset(),
+                       getStylesheets());
       output.beginBody(CssClass.BODY_CONTENT_ABOUT);
 
       printNavBarTop(output, "about");
 
+      output.div(CssClass.ABOUT_TITLE, "About");
+
       output.beginDiv(CssClass.ABOUT_GENERATOR);
       output.print("Generated by ");
-      output.print("GNU Gjdoc");
-      output.print(" Standard Doclet ");
+      output.print("Gjdoc");
+      output.print(" HtmlDoclet ");
       output.print(getDocletVersion());
+      output.print(", part of ");
+      output.beginAnchor("http://www.gnu.org/software/classpath/cp-tools/", "", "_top");
+      output.print("GNU Classpath Tools");
+      output.endAnchor();
       output.endDiv(CssClass.ABOUT_GENERATOR);
 
       printNavBarBottom(output, "about");
 
       output.endBody();
       output.endPage();
+      output.close();
+   }
+
+   private void printSourcePage(File packageDir, ClassDoc classDoc, String sourceXhtml)
+      throws IOException
+   {
+      HtmlPage output = new HtmlPage(new File(packageDir, 
+                                              classDoc.name() + "-source" + filenameExtension),
+                                     getPathToRoot(packageDir, getTargetDirectory()),
+                                     getOutputDocEncoding());
+      output.beginPage(getPageTitle("Source for " + classDoc.qualifiedTypeName()), 
+                       getOutputCharset(),
+                       getStylesheets());
+
+      output.beginBody(CssClass.BODY_CONTENT_SOURCE);
+
+      printNavBarTop(output, "source", classDoc, null, null);
+
+      output.div(CssClass.SOURCE_TITLE, "Source for " + classDoc.qualifiedTypeName());
+      output.beginDiv(CssClass.SOURCE);
+      output.print(sourceXhtml);
+      output.endDiv(CssClass.SOURCE);
+
+      printNavBarBottom(output, "source", classDoc);
+
+      output.endBody();
+      output.endPage();
+
       output.close();
    }
 
@@ -1345,7 +1679,9 @@ public class HtmlDoclet
                                               "help" + filenameExtension),
                                      ".",
                                      getOutputDocEncoding());
-      output.beginPage(getPageTitle("Help"), getOutputCharset());
+      output.beginPage(getPageTitle("Help"), 
+                       getOutputCharset(),
+                       getStylesheets());
       output.beginBody(CssClass.BODY_CONTENT_HELP);
 
       printNavBarTop(output, "help");
@@ -1374,7 +1710,9 @@ public class HtmlDoclet
                                               "index-noframes" + filenameExtension),
                                      ".",
                                      getOutputDocEncoding());
-      output.beginPage(getWindowTitle(), getOutputCharset());
+      output.beginPage(getWindowTitle(), 
+                       getOutputCharset(),
+                       getStylesheets());
       output.beginBody(CssClass.BODY_CONTENT_OVERVIEW);
 
       printNavBarTop(output, "overview");
@@ -1473,14 +1811,16 @@ public class HtmlDoclet
                                               classDoc.name() + "-uses" + filenameExtension),
                                      pathToRoot,
                                      getOutputDocEncoding());
-      output.beginPage(getPageTitle(classDoc.name()), getOutputCharset());
+      output.beginPage(getPageTitle(classDoc.name()), getOutputCharset(), getStylesheets());
       output.beginBody(CssClass.BODY_CONTENT_USES);
-      printNavBarTop(output, "uses", classDoc);
+      printNavBarTop(output, "uses", classDoc, null, null);
 
-      output.div(CssClass.USAGE_TITLE, "Uses of class " + classDoc.qualifiedName());
+      output.div(CssClass.USAGE_TITLE, 
+                 "Uses of " + getClassTypeName(classDoc) 
+                 + " " + classDoc.qualifiedName());
 
       Map packageToUsageTypeMap = getUsageOfClass(classDoc);
-      if (null != packageToUsageTypeMap) {
+      if (null != packageToUsageTypeMap && !packageToUsageTypeMap.isEmpty()) {
 
          Iterator packagesIterator = packageToUsageTypeMap.keySet().iterator();
          while (packagesIterator.hasNext()) {
@@ -1495,20 +1835,28 @@ public class HtmlDoclet
                
                output.endDiv(CssClass.TABLE_CONTAINER);
                output.beginTable(CssClass.USAGE_SUMMARY, new String[] { "border", "width" }, new String[] { "1", "100%" });
-               output.rowDiv(CssClass.TABLE_HEADER, format("usagetype." + usageType.getId(), 
-                                                           classDoc.qualifiedName()));
+               output.rowDiv(CssClass.USAGE_TABLE_HEADER, format("usagetype." + usageType.getId(), 
+                                                                 classDoc.qualifiedName()));
 
                Set users = (Set)usageTypeToUsersMap.get(usageType);
                Iterator userIterator = users.iterator();
                while (userIterator.hasNext()) {
                   Doc user = (Doc)userIterator.next();
+
+                  output.beginRow();
+
                   if (user instanceof ClassDoc) {
                      output.beginCell(CssClass.USAGE_SUMMARY_LEFT);
                      output.print("class");
                      output.endCell();
 
                      output.beginCell(CssClass.USAGE_SUMMARY_RIGHT);
+                     output.beginDiv(CssClass.USAGE_SUMMARY_SYNOPSIS);
                      printType(output, ((ClassDoc)user));
+                     output.endDiv(CssClass.USAGE_SUMMARY_SYNOPSIS);
+                     output.beginDiv(CssClass.USAGE_SUMMARY_DESCRIPTION);
+                     printTags(output, ((ClassDoc)user), ((ClassDoc)user).firstSentenceTags(), true);
+                     output.endDiv(CssClass.USAGE_SUMMARY_DESCRIPTION);
                      output.endCell();
                   }
                   else if (user instanceof FieldDoc) {
@@ -1519,9 +1867,16 @@ public class HtmlDoclet
                      output.endCell();
 
                      output.beginCell(CssClass.USAGE_SUMMARY_RIGHT);
+                     output.beginDiv(CssClass.USAGE_SUMMARY_SYNOPSIS);
+                     printType(output, ((FieldDoc)user).containingClass());
+                     output.print(".");
                      output.beginAnchor(getMemberDocURL(output, (FieldDoc)user));
                      output.print(((FieldDoc)user).name());
                      output.endAnchor();
+                     output.endDiv(CssClass.USAGE_SUMMARY_SYNOPSIS);
+                     output.beginDiv(CssClass.USAGE_SUMMARY_DESCRIPTION);
+                     printTags(output, ((FieldDoc)user), ((FieldDoc)user).firstSentenceTags(), true);
+                     output.endDiv(CssClass.USAGE_SUMMARY_DESCRIPTION);
                      output.endCell();
                   }
                   else if (user instanceof MethodDoc) {
@@ -1532,28 +1887,48 @@ public class HtmlDoclet
                      output.endCell();
 
                      output.beginCell(CssClass.USAGE_SUMMARY_RIGHT);
+                     output.beginDiv(CssClass.USAGE_SUMMARY_SYNOPSIS);
+                     printType(output, ((MethodDoc)user).containingClass());
+                     output.print(".");
                      output.beginAnchor(getMemberDocURL(output, (MethodDoc)user));
                      output.print(((MethodDoc)user).name());
                      output.endAnchor();
                      printParameters(output, (ExecutableMemberDoc)user);
+                     output.endDiv(CssClass.USAGE_SUMMARY_SYNOPSIS);
+                     output.beginDiv(CssClass.USAGE_SUMMARY_DESCRIPTION);
+                     printTags(output, ((MethodDoc)user), ((MethodDoc)user).firstSentenceTags(), true);
+                     output.endDiv(CssClass.USAGE_SUMMARY_DESCRIPTION);
                      output.endCell();
                   }
                   else if (user instanceof ConstructorDoc) {
                      ConstructorDoc constructorDoc = (ConstructorDoc)user;
 
-                     output.beginCell(CssClass.USAGE_SUMMARY_LEFT);
-                     output.endCell();
-
                      output.beginCell(CssClass.USAGE_SUMMARY_RIGHT);
+                     output.beginDiv(CssClass.USAGE_SUMMARY_SYNOPSIS);
+                     printType(output, ((ConstructorDoc)user).containingClass());
+                     output.print(".");
                      output.beginAnchor(getMemberDocURL(output, (ConstructorDoc)user));
                      output.print(((ConstructorDoc)user).name());
                      output.endAnchor();
                      printParameters(output, (ExecutableMemberDoc)user);
+                     output.endDiv(CssClass.USAGE_SUMMARY_SYNOPSIS);
+                     output.beginDiv(CssClass.USAGE_SUMMARY_DESCRIPTION);
+                     printTags(output, ((ConstructorDoc)user), 
+                               ((ConstructorDoc)user).firstSentenceTags(), true);
+                     output.endDiv(CssClass.USAGE_SUMMARY_DESCRIPTION);
                      output.endCell();
                   }
+
+                  output.endRow();
                }
+               output.endTable();
             }
          }
+      }
+      else {
+         output.div(CssClass.USAGE_EMPTY,
+                    getClassTypeName(classDoc) 
+                    + " " + classDoc.qualifiedName() + " is not used by any class in this documentation set.");
       }
       printNavBarBottom(output, "uses", classDoc);
       output.endBody();
@@ -1620,16 +1995,34 @@ public class HtmlDoclet
       }
    }
 
-   private void printClassPage(File packageDir, String pathToRoot, ClassDoc classDoc)
+   private void printClassPage(File packageDir, String pathToRoot, 
+                               ClassDoc classDoc, ClassDoc prevClassDoc, ClassDoc nextClassDoc)
       throws IOException
    {
       HtmlPage output = new HtmlPage(new File(packageDir,
                                               classDoc.name() + filenameExtension),
                                      pathToRoot,
                                      getOutputDocEncoding());
-      output.beginPage(getPageTitle(classDoc.name()), getOutputCharset());
+      Set keywords = new LinkedHashSet();
+      {
+         keywords.add(classDoc.qualifiedName() + " class");
+         FieldDoc[] fieldDocs = classDoc.fields();
+         for (int i=0; i<fieldDocs.length; ++i) {
+            FieldDoc fieldDoc = fieldDocs[i];
+            keywords.add(fieldDoc.name());
+         }
+
+         MethodDoc[] methodDocs = classDoc.methods();
+         for (int i=0; i<methodDocs.length; ++i) {
+            MethodDoc methodDoc = methodDocs[i];
+            keywords.add(methodDoc.name() + "()");
+         }
+      }
+
+      output.beginPage(getPageTitle(classDoc.name()), getOutputCharset(),
+                       keywords, getStylesheets());
       output.beginBody(CssClass.BODY_CONTENT_CLASS);
-      printNavBarTop(output, "class", classDoc);
+      printNavBarTop(output, "class", classDoc, prevClassDoc, nextClassDoc);
       
       output.beginDiv(CssClass.CLASS_TITLE);
       output.div(CssClass.CLASS_TITLE_PACKAGE, 
@@ -1638,6 +2031,8 @@ public class HtmlDoclet
                  getClassTypeName(classDoc) 
                  + " " + classDoc.name());
       output.endDiv(CssClass.CLASS_TITLE);
+
+      boolean needSep = false;
 
       if (classDoc.isInterface()) {
 
@@ -1658,8 +2053,14 @@ public class HtmlDoclet
                                   relation.implementingClasses, 
                                   "Known Implementing Classes:",
                                   CssClass.CLASS_KNOWNIMPLEMENTING);
+
+         needSep = !relation.superInterfaces.isEmpty()
+            || !relation.subInterfaces.isEmpty()
+            || !relation.implementingClasses.isEmpty();
       }
       else {   
+         needSep = true;
+
          LinkedList superClasses = new LinkedList();
          for (ClassDoc cd = classDoc; cd != null; cd = cd.superclass()) {
             superClasses.add(cd);
@@ -1705,7 +2106,9 @@ public class HtmlDoclet
          }
       }
 
-      output.hr();
+      if (needSep) {
+         output.hr();
+      }
 
       output.beginDiv(CssClass.CLASS_SYNOPSIS);
       output.beginDiv(CssClass.CLASS_SYNOPSIS_DECLARATION);
@@ -1778,26 +2181,29 @@ public class HtmlDoclet
             }
          }
 
-         ClassDoc superClassDoc = classDoc.superclass();
-         while (null != superClassDoc
-                && (!haveInheritedFields 
-                    || !haveInheritedMethods
-                    || !haveInheritedClasses)) {
-            if (superClassDoc.fields().length > 0) {
-               haveInheritedFields = true;
+         if (!classDoc.isInterface()) {
+            ClassDoc superClassDoc = classDoc.superclass();
+            while (null != superClassDoc
+                   && (!haveInheritedFields 
+                       || !haveInheritedMethods
+                       || !haveInheritedClasses)) {
+               if (superClassDoc.fields().length > 0) {
+                  haveInheritedFields = true;
+               }
+               if (superClassDoc.methods().length > 0) {
+                  haveInheritedMethods = true;
+               }
+               if (superClassDoc.innerClasses().length > 0) {
+                  haveInheritedClasses = true;
+               }
+               superClassDoc = superClassDoc.superclass();
             }
-            if (superClassDoc.methods().length > 0) {
-               haveInheritedMethods = true;
-            }
-            if (superClassDoc.innerClasses().length > 0) {
-               haveInheritedClasses = true;
-            }
-            superClassDoc = superClassDoc.superclass();
          }
       }
       
       printProgramElementDocs(output, getSortedInnerClasses(classDoc), 
-                              "Nested Class Summary", haveInheritedClasses);
+                              "Nested Class Summary", haveInheritedClasses,
+                              "summary-inner");
 
       {
          ClassDoc superClassDoc = classDoc.superclass();
@@ -1810,7 +2216,8 @@ public class HtmlDoclet
       }
 
       printProgramElementDocs(output, getSortedFields(classDoc), 
-                              "Field Summary", haveInheritedFields);
+                              "Field Summary", haveInheritedFields,
+                              "summary-fields");
 
       {
          ClassDoc superClassDoc = classDoc.superclass();
@@ -1837,9 +2244,11 @@ public class HtmlDoclet
       }
 
       printProgramElementDocs(output, getSortedConstructors(classDoc), 
-                              "Constructor Summary", false);
+                              "Constructor Summary", false,
+                              "summary-constructors");
       printProgramElementDocs(output, getSortedMethods(classDoc),
-                              "Method Summary", haveInheritedMethods);
+                              "Method Summary", haveInheritedMethods,
+                              "summary-methods");
 
       if (classDoc.isInterface()) {
          InterfaceRelation relation 
@@ -1863,11 +2272,11 @@ public class HtmlDoclet
       }
 
       printMemberDetails(output, getSortedFields(classDoc), 
-                         "Field Details", false);
+                         "Field Details", false, "detail-fields");
       printMemberDetails(output, getSortedConstructors(classDoc), 
-                         "Constructor Details", false);
+                         "Constructor Details", false, "detail-constructors");
       printMemberDetails(output, getSortedMethods(classDoc),
-                         "Method Details", false);
+                         "Method Details", false, "detail-methods");
 
       printNavBarBottom(output, "class", classDoc);
 
@@ -1950,9 +2359,15 @@ public class HtmlDoclet
 
    private void printMemberDetails(HtmlPage output,
                                    ProgramElementDoc[] memberDocs, String header,
-                                   boolean isOnSerializedPage)
+                                   boolean isOnSerializedPage,
+                                   String anchor)
    {
       if (memberDocs.length > 0) {
+
+         if (null != anchor) {
+            output.anchorName(anchor);
+         }
+
          CssClass sectionClass;
          if (isOnSerializedPage) {
             sectionClass = CssClass.SERIALIZED_SECTION_HEADER;
@@ -1974,19 +2389,38 @@ public class HtmlDoclet
             output.beginDiv(CssClass.MEMBER_DETAIL);
             output.div(CssClass.MEMBER_DETAIL_NAME, memberDoc.name());
 
-            output.beginDiv(CssClass.MEMBER_DETAIL_SYNOPSIS);
+            StringBuffer synopsis = new StringBuffer();
+            int synopsisLength = 0;
+
             if (!isOnSerializedPage || !memberDoc.isField()) {
-               output.print(getFullModifiers(memberDoc));
+               String fullModifiers = getFullModifiers(memberDoc);
+               synopsis.append(fullModifiers);
+               synopsisLength += fullModifiers.length();
+
             }
-            if (memberDoc.isMethod()) {
-               output.print(" ");
-               printType(output, ((MethodDoc)memberDoc).returnType());
+            if (memberDoc.isMethod() || memberDoc.isField()) {
+               Type type;
+               if (memberDoc.isMethod()) {
+                  type = ((MethodDoc)memberDoc).returnType();
+               }
+               else {
+                  type = ((FieldDoc)memberDoc).type();
+               }
+               
+               synopsis.append(" ");
+               synopsisLength ++;
+               synopsis.append(createTypeHref(output, type, false));
+               if (null != type.asClassDoc() && type.asClassDoc().isIncluded()) {
+                  synopsisLength += type.asClassDoc().name().length();
+               }
+               else {
+                  synopsisLength += type.qualifiedTypeName().length();
+               }
+               synopsisLength += type.dimension().length();
             }
-            else if (memberDoc.isField()) {
-               output.print(" ");
-               printType(output, ((FieldDoc)memberDoc).type());
-            }
-            output.print(" ");
+
+            synopsis.append(" ");
+            synopsisLength ++;
 
             if (optionLinkSource.getValue() && null != memberDoc.position()) {
                ClassDoc containingClass = memberDoc.containingClass();
@@ -1994,17 +2428,48 @@ public class HtmlDoclet
                   containingClass = containingClass.containingClass();
                }
                String href = containingClass.name() + "-source" + filenameExtension + "#line." + memberDoc.position().line();
-               output.beginAnchor(href);
-               output.print(memberDoc.name());
-               output.endAnchor();
+               synopsis.append(output.createHrefString(href, memberDoc.name()));
             }
             else {
-               output.print(memberDoc.name());
+               synopsis.append(memberDoc.name());
             }
+            synopsisLength += memberDoc.name().length();
 
             if (memberDoc.isConstructor() || memberDoc.isMethod()) {
-               printParameters(output, (ExecutableMemberDoc)memberDoc);
+               //printParameters(output, (ExecutableMemberDoc)memberDoc);
+               synopsis.append("(");
+               ++ synopsisLength;
+               StringBuffer paddingLeft = new StringBuffer();
+               for (int j=0; j<synopsisLength; ++j) {
+                  paddingLeft.append(' ');
+               }
+               Parameter[] parameters = ((ExecutableMemberDoc)memberDoc).parameters();
+               for (int j=0; j<parameters.length; ++j) {
+                  Parameter parameter = parameters[j];
+                  synopsis.append(createTypeHref(output, parameter.type(), false));
+                  synopsis.append(" ");
+                  synopsis.append(parameter.name());
+                  if (j < parameters.length - 1) {
+                     synopsis.append(",\n");
+                     synopsis.append(paddingLeft);
+                  }
+               }
+               synopsis.append(")");
+               ClassDoc[] exceptions = ((ExecutableMemberDoc)memberDoc).thrownExceptions();
+               if (exceptions.length > 0) {
+                  synopsis.append("\n            throws ");
+                  for (int j=0; j<exceptions.length; ++j) {
+                     ClassDoc exception = exceptions[j];
+                     synopsis.append(createTypeHref(output, exception, false));
+                     if (j < exceptions.length - 1) {
+                        synopsis.append(",\n                   ");
+                     }
+                  }
+               }
             }
+
+            output.beginDiv(CssClass.MEMBER_DETAIL_SYNOPSIS);
+            output.print(synopsis.toString());
             output.endDiv(CssClass.MEMBER_DETAIL_SYNOPSIS);
 
             output.beginDiv(CssClass.MEMBER_DETAIL_BODY);
@@ -2225,7 +2690,7 @@ public class HtmlDoclet
             output.print(", ");
          }
          printType(output, parameters[j].type());
-         output.print(" ");
+         output.print("&nbsp;");
          output.print(parameters[j].name());
       }
       output.print(")");
@@ -2234,9 +2699,11 @@ public class HtmlDoclet
    private void printProgramElementDocs(HtmlPage output,
                                         ProgramElementDoc[] memberDocs, 
                                         String header,
-                                        boolean forceOutputHeader)
+                                        boolean forceOutputHeader,
+                                        String anchor)
    {
       if (memberDocs.length > 0 || forceOutputHeader) {
+         output.anchorName(anchor);
          output.beginDiv(CssClass.TABLE_CONTAINER);
          output.beginTable(CssClass.CLASS_SUMMARY, new String[] { "border", "width" }, new String[] { "1", "100%" });
          output.rowDiv(CssClass.TABLE_HEADER, header);
@@ -2451,7 +2918,7 @@ public class HtmlDoclet
 
    private String getClassURL(ClassDoc classDoc)
    {
-      return getPackageURL(classDoc.containingPackage()) + classDoc.name() + filenameExtension;
+      return getPackageURL(classDoc.containingPackage()) + "/" + classDoc.name() + filenameExtension;
    }
 
    protected void run()
@@ -2509,7 +2976,7 @@ public class HtmlDoclet
             printSplitIndex();
          }
       }
-      if (!optionNoHelp.getValue()) {
+      if (outputHelpPage && !optionNoHelp.getValue()) {
          printHelpPage();
       }
 
@@ -2545,13 +3012,22 @@ public class HtmlDoclet
 
       // Copy stylesheets
 
-      File stylesheetTargetFile = new File(resourcesDir,
-                                           "gjdochtml.css");
+      if (null != optionAddStylesheet.getValue()) { 
+         File addStylesheetTargetFile = new File(resourcesDir,
+                                                 "user.css");
+
+         IOToolkit.copyFile(optionAddStylesheet.getValue(),
+                            addStylesheetTargetFile);
+      }
 
       if (null != optionStylesheetFile.getValue()) { 
+         File stylesheetTargetFile = new File(resourcesDir,
+                                              "user.css");
+
          IOToolkit.copyFile(optionStylesheetFile.getValue(),
                             stylesheetTargetFile);
       }
+      /*
       else {
          InputStream cssIn = getClass().getResourceAsStream("/htmldoclet/gjdochtml-vanilla.css");
          FileOutputStream cssOut = new FileOutputStream(stylesheetTargetFile);
@@ -2559,6 +3035,7 @@ public class HtmlDoclet
          cssIn.close();
          cssOut.close();
       }
+      */
 
       if (!optionNoDeprecatedList.getValue()) {
          printDeprecationPage();
@@ -2566,10 +3043,12 @@ public class HtmlDoclet
 
       printSerializationPage();
 
-      Collection packageDocs = getAllPackages();
-      Iterator it = packageDocs.iterator();
-      while (it.hasNext()) {
-         PackageDoc packageDoc = (PackageDoc)it.next();
+      Collection packageDocsCollection = getAllPackages();
+      PackageDoc[] packageDocs
+         = (PackageDoc[])packageDocsCollection.toArray(new PackageDoc[0]);
+
+      for (int i=0; i<packageDocs.length; ++i) {
+         PackageDoc packageDoc = packageDocs[i];
          File packageDir = new File(getTargetDirectory(),
                                     packageDoc.name().replace('.', File.separatorChar));
          if (!packageDir.exists() && !packageDir.mkdirs()) {
@@ -2591,7 +3070,9 @@ public class HtmlDoclet
             packageName = "<unnamed>";
          }
          printNotice("Writing HTML files for package " + packageName);
-         printPackagePage(packageDir, pathToRoot, packageDoc);
+         printPackagePage(packageDir, pathToRoot, packageDoc,
+                          (i > 0) ? packageDocs[i - 1] : null,
+                          (i < packageDocs.length - 1) ? packageDocs[i + 1] : null);
          if (!optionNoTree.getValue()) {
             printPackageTreePage(packageDir, pathToRoot, packageDoc);
          }
@@ -2600,7 +3081,11 @@ public class HtmlDoclet
          for (int j=0; j<classDocs.length; ++j) {
             ClassDoc classDoc = classDocs[j];
             if (classDoc.isIncluded()) {
-               printClassPage(packageDir, pathToRoot, classDocs[j]);
+               printClassPage(packageDir, pathToRoot, 
+                              classDocs[j],
+                              (j > 0) ? classDocs[j - 1] : null,
+                              (j < classDocs.length - 1) ? classDocs[j + 1] : null
+                              );
                if (optionUse.getValue()) {
                   printClassUsagePage(packageDir, pathToRoot, classDocs[j]);
                }
@@ -2620,11 +3105,9 @@ public class HtmlDoclet
                      sourceReader.close();
                      String result = java2xhtml.makeHTML(sourceBuffer.getBuffer(), sourceFile.getName());
                      
-                     File targetFile = new File(packageDir,
-                                                classDoc.name() + "-source" + filenameExtension);
-                     FileWriter targetWriter = new FileWriter(targetFile);
-                     targetWriter.write(result);
-                     targetWriter.close();
+                     printSourcePage(packageDir,
+                                     classDoc,
+                                     result);
                   }
                   catch (IOException e) {
                      printWarning("Cannot locate source file for class " + classDoc.qualifiedTypeName());
@@ -2812,6 +3295,9 @@ public class HtmlDoclet
    private DocletOptionString optionCharset =
      new DocletOptionString("-charset");
 
+   private DocletOptionFile optionAddStylesheet = 
+     new DocletOptionFile("-addstylesheet");
+
    private DocletOption[] options = 
       {
          optionNoNavBar,
@@ -2835,6 +3321,7 @@ public class HtmlDoclet
          optionDocEncoding,
          optionEncoding,
          optionCharset,
+         optionAddStylesheet,
       };
 
    static {
@@ -3082,5 +3569,42 @@ public class HtmlDoclet
       else {
          return title + " (" + optionWindowTitle.getValue() + ")";
       }
+   }
+
+   protected String getDocletVersion()
+   {
+      if (null == docletVersion) {
+         try {
+            Properties versionProperties = new Properties();
+            versionProperties.load(getClass().getResourceAsStream("/version.properties"));
+            docletVersion = versionProperties.getProperty("gjdoc.version");
+         }
+         catch (IOException ignore) {
+         }
+         if (null == docletVersion) {
+            docletVersion = "unknown";
+         }
+      }
+      return docletVersion;
+   }
+
+   private Map getStylesheets()
+   {
+      Map sheets = new HashMap();
+      if (null != optionStylesheetFile.getValue()) {
+         sheets.put("User-specified", new String[] { 
+            "resources/user.css" 
+         });
+      }
+      else {
+         List cleanSheets = new LinkedList();
+         cleanSheets.add("resources/gjdochtml-clean-layout.css");
+         cleanSheets.add("resources/gjdochtml-clean-color1.css");
+         if (null != optionAddStylesheet.getValue()) {
+            cleanSheets.add("resources/user.css");
+         }
+         sheets.put("GNU Clean", cleanSheets.toArray(new String[0]));
+      }
+      return sheets;
    }
 }

@@ -10,7 +10,7 @@
 CLASSFILE = gjdoc.jar
 SRCDIRS = com gnu
 
-toolslib_DATA = $(CLASSFILE) $(ANTLR_JAR)
+toolslib_DATA = $(CLASSFILE)
 
 
 gjdoc_jar_SRCS = \
