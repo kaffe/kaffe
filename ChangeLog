@@ -1,3 +1,9 @@
+Tue Oct 31 14:36:47 MST 2000  Jason Baker  <jbaker@cs.utah.edu>
+
+	* test/regression/Makefile.am, test/regression/CLTestDelegate:
+	Remove this test, since now it can only fail due to conservative
+	GC.
+
 Fri Oct 27 19:27:23 MDT 2000  Godmar Back <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/baseClasses.[ch], kaffe/kaffevm/classMethod.[ch],
