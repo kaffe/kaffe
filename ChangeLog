@@ -1,5 +1,10 @@
 2004-05-25  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/AWTEvent.java:
+	(evtLock) Removed unused variable.
+
+2004-05-25  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/native/Runtime.c:
 	(Java_sun_misc_VM_getState) Removed unused function.
 

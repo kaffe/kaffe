@@ -46,7 +46,6 @@ public class AWTEvent
 	protected static int inputModifier;
 	protected static Component[] sources;
 	private static int nSources;
-	protected static Object evtLock = new Object();
 	protected static RootWindow root;
 	protected static Component nativeSource;
 	protected static KeyHook keyHook;
