@@ -4692,26 +4692,24 @@ echo "configure:4692: checking for underscore in C assembly names" >&5
 if eval "test \"`echo '$''{'ac_cv_underscore_c_names'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
-  if test "$cross_compiling" = yes; then
-  ac_cv_underscore_c_names=cross
-else
   cat > conftest.$ac_ext <<EOF
-#line 4700 "configure"
+#line 4697 "configure"
 #include "confdefs.h"
-extern int main_symbol();void* x;asm("\n_main_symbol:");main(){ x = &main_symbol; exit(0); }
+extern int foo_alias();asm("\n_foo_alias:");void foo() {};
+int main() {
+foo_alias();
+; return 0; }
 EOF
-if { (eval echo configure:4704: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest && (./conftest; exit) 2>/dev/null
-then
+if { (eval echo configure:4704: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
+  rm -rf conftest*
   ac_cv_underscore_c_names=yes
 else
   echo "configure: failed program was:" >&5
   cat conftest.$ac_ext >&5
-  rm -fr conftest*
+  rm -rf conftest*
   ac_cv_underscore_c_names=no
 fi
-rm -fr conftest*
-fi
-
+rm -f conftest*
 fi
 
 echo "$ac_t""$ac_cv_underscore_c_names" 1>&6
