@@ -176,7 +176,7 @@ public class ArrayList extends AbstractList
 		if (fixed) {
 			throw new UnsupportedOperationException();
 		}
-		add(len, element);
+		addInternal(len, element);
 		return true;
 	}
 
@@ -187,6 +187,11 @@ public class ArrayList extends AbstractList
 		if (index < 0 || index > len) {
 			throw new IndexOutOfBoundsException();
 		}
+
+		addInternal(index, element);
+	}
+
+	private void addInternal(int index, Object element) {
 		final int initialModCount = modCount;
 		if (off > 0 && index < len / 2) {
 			System.arraycopy(a, off, a, off - 1, index);

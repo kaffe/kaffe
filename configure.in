@@ -53,6 +53,9 @@ else
 	AC_MSG_ERROR([Kaffe can only build with GCC])
 fi
 
+dnl Find the c++ compiler early on
+AC_PROG_CXX
+
 dnl Find the machine type and setup the relevant links
 AC_CANONICAL_HOST
 AC_EXEEXT
@@ -131,7 +134,6 @@ esac
 AC_LIBTOOL_DLOPEN
 AC_LIBLTDL_CONVENIENCE
 AC_PROG_LIBTOOL
-AC_REQUIRE([AC_LTDL_SHLIBEXT])
 AC_SUBST(LIBTOOL_DEPS)
 AC_SUBST(LIBLTDL)
 ## Let users override the linker used by libtool, but default to $CC.
@@ -440,8 +442,8 @@ elif test x"$with_jikes" = x"yes" ; then
 else
 	JIKES=$with_jikes
 	use_jikes="yes ($JIKES)"
-	AC_MSG_RESULT($use_jikes)
 fi
+AC_MSG_RESULT($use_jikes)
 AC_SUBST(JIKES)
 
 dnl =========================================================================
@@ -942,20 +944,18 @@ dnl -------------------------------------------------------------------------
 
 AC_FUNC_STRFTIME
 AC_FUNC_MMAP
-AC_CHECK_FUNCS([dnl
-select socket getsockname getpagesize dnl
-memcpy memmove dnl
-mkdir dnl
-getcwd chdir getwd gettimeofday ftime time uname getuid dnl
-localtime dnl
-])
+AC_CHECK_FUNCS([select socket getsockname getpagesize])
+AC_CHECK_FUNCS([memcpy memmove])
+AC_CHECK_FUNCS([mkdir])
+AC_CHECK_FUNCS([getcwd chdir getwd gettimeofday ftime time uname getuid])
+AC_CHECK_FUNCS([localtime])
 
 AM_ICONV
 LIBS="$LIBS $LIBICONV"
 
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
-AC_CHECK_FUNCS(remainder remainderf fmod fmodf drem rint floor ceil finite isinf isnan strtod mergesort)
+AC_CHECK_FUNCS([remainder remainderf fmod fmodf drem rint floor ceil finite isinf isnan strtod mergesort])
 LIBS="$KSAVE_LIBS"
 
 dnl Test whether LONG_MIN / -1l crashes
@@ -1066,17 +1066,15 @@ if test x"$ac_cv_strtod_m0_broken" = x"yes"; then
   AC_DEFINE(STRTOD_m0_BROKEN, 1, [Define if strtod(\"-0.0\") is broken])
 fi
 
-AC_CHECK_FUNCS([dnl
-strerror hstrerror dnl
-fcntl ioctl dnl
-alarm setitimer dnl
-sigprocmask sigsetmask sigemptyset sigaddset signal sigaction dnl
-sbrk valloc memalign mallopt dnl
-mprotect madvise dnl
-waitpid kill fork execve execvp dnl
-sync fsync dnl
-atexit on_exit vsnprintf snprintf dnl
-])
+AC_CHECK_FUNCS([strerror hstrerror])
+AC_CHECK_FUNCS([fcntl ioctl])
+AC_CHECK_FUNCS([alarm setitimer])
+AC_CHECK_FUNCS([sigprocmask sigsetmask sigemptyset sigaddset signal sigaction])
+AC_CHECK_FUNCS([sbrk valloc memalign mallopt])
+AC_CHECK_FUNCS([mprotect madvise])
+AC_CHECK_FUNCS([waitpid kill fork execve execvp])
+AC_CHECK_FUNCS([sync fsync])
+AC_CHECK_FUNCS([atexit on_exit vsnprintf snprintf])
 
 if test "$Khost_cpu" = "alpha" ; then
   AC_CACHE_CHECK([for alpha support of amask instruction],
@@ -1164,7 +1162,6 @@ X)
 	;;
 
 qt)
-	AC_PROG_CXX
 	gw_CHECK_QT
 	AWT_DIR=qt
 	;;
@@ -1287,7 +1284,7 @@ dnl =========================================================================
 dnl Extract path and dir separator information from paths.h
 dnl -------------------------------------------------------------------------
 
-AC_REQUIRE([AC_PROG_CPP])
+AC_PROG_CPP
 
 AC_CACHE_CHECK([for path separator],ac_cv_kaffe_pathsep,
 [	rm -f conftest.c
@@ -1332,7 +1329,7 @@ AC_SUBST(CFLAGS_WITHOUT_PG)
 
 AC_CONFIG_SUBDIRS(libltdl)
 AM_CONFIG_HEADER(config/config.h include/jtypes.h)
-AC_OUTPUT(Makefile \
+AC_OUTPUT([Makefile \
 config/Makefile \
 include/Makefile \
 kaffe/Makefile \
@@ -1401,4 +1398,4 @@ kaffe/scripts/compat/javadoc \
 test/Makefile \
 test/regression/Makefile \
 test/regression/TestScript \
-)
+])

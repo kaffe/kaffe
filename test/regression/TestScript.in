@@ -27,12 +27,12 @@ else
 fi
 
 # Don't let these variables mess up the order of `sort'
-if test -n "${LC_ALL+set}"; then
+# if test -n "${LC_ALL+set}"; then
   LC_ALL=C; export LC_ALL
-fi
-if test -n "${LANG+set}"; then
+# fi
+# if test -n "${LANG+set}"; then
   LANG=C; export LANG
-fi
+# fi
 
 $VERBOSE $0 ${1+"$@"}
 

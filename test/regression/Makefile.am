@@ -11,11 +11,31 @@ SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(
 TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT) $(SHELL) TestScript
 
 ALWAYS_TESTS = \
+	$(SIMPLE_HEALTH_CHECK) \
+	$(TEST_COMPILER) \
+	$(TEST_INTS_LONGS_FLOATS_DOUBLES) \
+	$(TEST_STRINGS) \
+	$(TEST_EXCEPTIONS) \
+	$(TEST_THREADS) \
+	$(TEST_SERIALIZATION) \
+	$(TEST_MISC) \
+	$(TEST_REFLECTION) \
+	$(TEST_CLASS_LOADING) \
+	$(TEST_STOPPING_THREADS) \
+	$(TEST_ZIP) \
+	$(TEST_INTERRUPTING_IO) \
+	$(TEST_NATIVE)
+
 ## Simple health check
-	HelloWorldApp.class.save \
+SIMPLE_HEALTH_CHECK = \
+	HelloWorldApp.class.save 
+
 ## Now test the compiler
-	HelloWorldApp.java \
+TEST_COMPILER = \
+	HelloWorldApp.java 
+
 ## Test ints, longs, floats and doubles
+TEST_INTS_LONGS_FLOATS_DOUBLES = \
 	TestIntLong.java \
 	TestFloatDouble.java \
 	DoubleCvt.java \
@@ -26,26 +46,34 @@ ALWAYS_TESTS = \
 	ModuloTest.java \
 	LongNeg.java \
 	FPUStack.java \
-	divtest.java \
+	divtest.java 
+
 ## Test strings
+TEST_STRINGS = \
 	Str.java \
 	Str2.java \
-	InternHog.java \
+	InternHog.java 
+
 ## Test exceptions
+## note that CatchLimits can be compiled from CatchLimits.j by Jasmin
+TEST_EXCEPTIONS = \
 	IndexTest.java \
 	StackDump.java \
-## note that the following can be compiled from CatchLimits.j by Jasmin
-	CatchLimits.class.save \
+	CatchLimits.class.save 
+
 ## Test threads
+## Preempt tests that preemption works---may not be supported by all threading systems
+TEST_THREADS = \
 	tname.java \
 	ttest.java \
 	ThreadInterrupt.java \
 	ThreadState.java \
 	UncaughtException.java \
 	IllegalWait.java \
-## Test that preemption works---may not be supported by all threading systems
-	Preempt.java 		\
+	Preempt.java 
+
 ## Serialization tests
+TEST_SERIALIZATION = \
 	TestSerializable.java \
 	TestSerializable2.java \
 	SerializationCompatibility.java \
@@ -53,8 +81,10 @@ ALWAYS_TESTS = \
 	TestSerialVersions.java \
 	TestSerialPersistent.java \
 	TestSerialFields.java \
-	TestObjectStreamField.java \
+	TestObjectStreamField.java 
+
 ## Misc tests
+TEST_MISC = \
 	ReflectInterfaces.java \
 	InnerTest.java \
 	SerialUID.java \
@@ -101,12 +131,14 @@ ALWAYS_TESTS = \
 	ReaderReadVoidTest.java \
 	PipeTest.java \
 	GetField.java \
-	LostTrampolineFrame.java \
-## simple test for Method.invoke
+	LostTrampolineFrame.java 
+
+TEST_REFLECTION = \
 	ReflectInvoke.java \
-## simple test for InvocationTargetExceptions
-	InvTarExcTest.java \
+	InvTarExcTest.java 
+
 ## tests for ClassLoader
+TEST_CLASS_LOADING = \
 	SystemLoaderTest.java \
 	NoClassDefTest.java \
 	CLTest.java \
@@ -136,24 +168,34 @@ ALWAYS_TESTS = \
 	MarkResetTest.java \
 	HashtableTest1.java \
 	ReflectMultiArray.java \
-	ExecTest.java \
+	ExecTest.java 
+
 ## Test catching our own death
-	CatchDeath.java \
 ## Test various ways of stopping threads
+TEST_STOPPING_THREADS = \
+	CatchDeath.java \
 	ThreadStop.java \
 	DeadThread.java \
-	tthrd1.java \
-## Test interrupting I/O
-## This is kind of tricky, and Sun doesn't support it.
-	SoInterrupt.java \
-	sysdepCallMethod.java \
+	tthrd1.java 
+
 ## Test for package java.util.zip
+TEST_ZIP = \
 	DosTimeVerify.java \
 	ZipVerify.java \
 	ZipTest.java \
-	TruncatedClass.java \
+	TruncatedClass.java 
+
+## Test interrupting I/O
+## This is kind of tricky, and Sun doesn't support it.
+TEST_INTERRUPTING_IO = \
+	SoInterrupt.java \
+	sysdepCallMethod.java 
+
 ## This one is skipped unless you --enable-debug.
+TEST_NATIVE = \
 	TestNative.java
+
+
 
 TEST_Overflow = Overflow.java
 
@@ -181,4 +223,4 @@ EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow) \
 CLEANFILES = *.class *.fail *.out core *.core ExceptionTest ziptest1.zip \
 	ziptest2.zip frozen_serial
 
-check-TESTS: clean TestScript
+## check-TESTS: clean TestScript

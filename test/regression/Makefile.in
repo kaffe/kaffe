@@ -144,7 +144,49 @@ SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(
 
 TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT) $(SHELL) TestScript
 
-ALWAYS_TESTS =  	HelloWorldApp.class.save 	HelloWorldApp.java 	TestIntLong.java 	TestFloatDouble.java 	DoubleCvt.java 	DoubleNeg.java 	DoubleConst.java 	DoublePrint.java 	DoubleComp.java 	ModuloTest.java 	LongNeg.java 	FPUStack.java 	divtest.java 	Str.java 	Str2.java 	InternHog.java 	IndexTest.java 	StackDump.java 	CatchLimits.class.save 	tname.java 	ttest.java 	ThreadInterrupt.java 	ThreadState.java 	UncaughtException.java 	IllegalWait.java 	Preempt.java 			TestSerializable.java 	TestSerializable2.java 	SerializationCompatibility.java 	SerialPersistentFields.java 	TestSerialVersions.java 	TestSerialPersistent.java 	TestSerialFields.java 	TestObjectStreamField.java 	ReflectInterfaces.java 	InnerTest.java 	SerialUID.java 	TestCasts.java 	Alias.java 	NullPointerTest.java 	NullInvoke.java 	TableSwitch.java 	LostFrame.java 	ConstructorTest.java 	burford.java 	IllegalInterface.java 	GetInterfaces.java 	IntfTest.java 	SignedShort.java 	CharCvt.java 	BadFloatTest.java 	ProcessTest.java 	UDPTest.java 	SoTimeout.java 	wc.java 	FileTest.java 	FileChecks.java 	finalexc.java 	finaltest.java 	finaltest2.java 	forNameTest.java 	LoaderTest.java 	ArrayForName.java 	KaffeVerifyBug.java 	Schtum.java 	Reflect.java 	MethodBug.java 	Bean.java 	SortTest.java 	HashTest.java 	MapTest.java 	URLTest.java 	PropertiesTest.java 	ReaderTest.java 	CharArrayReaderTest.java 	LineNumberReaderTest.java 	BufferedReaderTest.java 	ReaderReadVoidTest.java 	PipeTest.java 	GetField.java 	LostTrampolineFrame.java 	ReflectInvoke.java 	InvTarExcTest.java 	SystemLoaderTest.java 	NoClassDefTest.java 	CLTest.java 	CLTestConc.java 	CLTestJLock.java 	CLTestLie.java 	CLTestFindLoaded.java 	ClassDeadLock.java 	ExceptionTest.java 	ExceptionTestClassLoader.java 	ExceptionTestClassLoader2.java 	TestClassRef.java 	ClassGC.java 	GCTest.java 	ThreadLocalTest.java 	BeanBug.java 	BitSetTest.java 	ExceptionInInitializerTest.java 	InitTest.java 	ProcessClassTest.java 	ProcessClassInst.java 	ProcessClassStop.java 	FindSystemClass.java 	ProcessClassLockTest.java 	DoubleBug.java 	TestUnlock.java 	MarkResetTest.java 	HashtableTest1.java 	ReflectMultiArray.java 	ExecTest.java 	CatchDeath.java 	ThreadStop.java 	DeadThread.java 	tthrd1.java 	SoInterrupt.java 	sysdepCallMethod.java 	DosTimeVerify.java 	ZipVerify.java 	ZipTest.java 	TruncatedClass.java 	TestNative.java
+ALWAYS_TESTS =  	$(SIMPLE_HEALTH_CHECK) 	$(TEST_COMPILER) 	$(TEST_INTS_LONGS_FLOATS_DOUBLES) 	$(TEST_STRINGS) 	$(TEST_EXCEPTIONS) 	$(TEST_THREADS) 	$(TEST_SERIALIZATION) 	$(TEST_MISC) 	$(TEST_REFLECTION) 	$(TEST_CLASS_LOADING) 	$(TEST_STOPPING_THREADS) 	$(TEST_ZIP) 	$(TEST_INTERRUPTING_IO) 	$(TEST_NATIVE)
+
+
+SIMPLE_HEALTH_CHECK =  	HelloWorldApp.class.save 
+
+
+TEST_COMPILER =  	HelloWorldApp.java 
+
+
+TEST_INTS_LONGS_FLOATS_DOUBLES =  	TestIntLong.java 	TestFloatDouble.java 	DoubleCvt.java 	DoubleNeg.java 	DoubleConst.java 	DoublePrint.java 	DoubleComp.java 	ModuloTest.java 	LongNeg.java 	FPUStack.java 	divtest.java 
+
+
+TEST_STRINGS =  	Str.java 	Str2.java 	InternHog.java 
+
+
+TEST_EXCEPTIONS =  	IndexTest.java 	StackDump.java 	CatchLimits.class.save 
+
+
+TEST_THREADS =  	tname.java 	ttest.java 	ThreadInterrupt.java 	ThreadState.java 	UncaughtException.java 	IllegalWait.java 	Preempt.java 
+
+
+TEST_SERIALIZATION =  	TestSerializable.java 	TestSerializable2.java 	SerializationCompatibility.java 	SerialPersistentFields.java 	TestSerialVersions.java 	TestSerialPersistent.java 	TestSerialFields.java 	TestObjectStreamField.java 
+
+
+TEST_MISC =  	ReflectInterfaces.java 	InnerTest.java 	SerialUID.java 	TestCasts.java 	Alias.java 	NullPointerTest.java 	NullInvoke.java 	TableSwitch.java 	LostFrame.java 	ConstructorTest.java 	burford.java 	IllegalInterface.java 	GetInterfaces.java 	IntfTest.java 	SignedShort.java 	CharCvt.java 	BadFloatTest.java 	ProcessTest.java 	UDPTest.java 	SoTimeout.java 	wc.java 	FileTest.java 	FileChecks.java 	finalexc.java 	finaltest.java 	finaltest2.java 	forNameTest.java 	LoaderTest.java 	ArrayForName.java 	KaffeVerifyBug.java 	Schtum.java 	Reflect.java 	MethodBug.java 	Bean.java 	SortTest.java 	HashTest.java 	MapTest.java 	URLTest.java 	PropertiesTest.java 	ReaderTest.java 	CharArrayReaderTest.java 	LineNumberReaderTest.java 	BufferedReaderTest.java 	ReaderReadVoidTest.java 	PipeTest.java 	GetField.java 	LostTrampolineFrame.java 
+
+
+TEST_REFLECTION =  	ReflectInvoke.java 	InvTarExcTest.java 
+
+
+TEST_CLASS_LOADING =  	SystemLoaderTest.java 	NoClassDefTest.java 	CLTest.java 	CLTestConc.java 	CLTestJLock.java 	CLTestLie.java 	CLTestFindLoaded.java 	ClassDeadLock.java 	ExceptionTest.java 	ExceptionTestClassLoader.java 	ExceptionTestClassLoader2.java 	TestClassRef.java 	ClassGC.java 	GCTest.java 	ThreadLocalTest.java 	BeanBug.java 	BitSetTest.java 	ExceptionInInitializerTest.java 	InitTest.java 	ProcessClassTest.java 	ProcessClassInst.java 	ProcessClassStop.java 	FindSystemClass.java 	ProcessClassLockTest.java 	DoubleBug.java 	TestUnlock.java 	MarkResetTest.java 	HashtableTest1.java 	ReflectMultiArray.java 	ExecTest.java 
+
+
+TEST_STOPPING_THREADS =  	CatchDeath.java 	ThreadStop.java 	DeadThread.java 	tthrd1.java 
+
+
+TEST_ZIP =  	DosTimeVerify.java 	ZipVerify.java 	ZipTest.java 	TruncatedClass.java 
+
+
+TEST_INTERRUPTING_IO =  	SoInterrupt.java 	sysdepCallMethod.java 
+
+
+TEST_NATIVE =  	TestNative.java
 
 
 TEST_Overflow = Overflow.java
@@ -291,8 +333,6 @@ all-redirect all-am all installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
-
-check-TESTS: clean TestScript
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -1,3 +1,27 @@
+2002-12-10 Dalibor Topic <robilad@yahoo.com>
+
+	* configure.in: test for C++ compiler early on. Don't require
+	AC_LTDL_SHLIBEXT, as it doesn't exist in current libtool
+	anymore. Alway print a result message for using jikes. Split
+	AC_CHECK_FUNCS invocations into single lines. Added some quotes.
+	* configure: regenrated.
+
+	* libraries/javalib/java/util/ArrayList.java:
+	(add) use addInternal. Fixes a bug that prevented tritonus from
+	running on kaffe.
+	(addInternal) new method.
+
+	* test/regression/Makefile.am:
+	(ALWAYS_TESTS) removed comments, and created variables for test
+	classes.
+	(check-TESTS) commented out as it hides the default definition of
+	check-TESTS with automake 1.7.1 and autoconf 2.56.
+	* test/regression/Makefile.in: regenerated.
+
+	* test/regression/TestScript.in: fixed the test case failures when 
+	LC_ALL!=C by always setting LC_ALL and LANG to C before running the
+	regression tests.
+
 2002-12-04 Dalibor Topic <robilad@yahoo.com>
 
 	* config/config-mem.h: changed prototype for swab to use ssize_t
