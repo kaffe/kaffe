@@ -14,6 +14,43 @@
 
 2004-07-11  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/net/URL.java:
+	Resynced with GNU Classpath.
+
+	2004-07-03  Mark Wielaard  <mark@klomp.org>
+            Anthony Green  <green@redhat.com>
+
+        * java/net/URL.java (getFile): Clarify return value doc.
+        (getPath): Return null if file is empty - not
+        empty String.
+
+	2004-07-03  Mark Wielaard  <mark@klomp.org>
+            Anthony Green  <green@redhat.com>
+
+        * java/net/URL.java (set): Convert protocol to lower case before
+        doing anything.
+        Only change the protocol handler if it's different.
+
+	2004-07-03  Anthony Green  <green@redhat.com>
+
+        * java/net/URL.java (URL): Convert protocol to lower case before
+        doing anything, so we getURLStreamHandler() with the proper
+        value.
+
+	2004-07-01  Mark Wielaard  <mark@klomp.org>
+
+        Reported by Roman Kennke <roman@ontographics.com> (bug #9331)
+        * java/net/URLStreamHandler.java (parseURL): When url file part
+        doesn't contain a '/' just ignore context.
+
+	2004-07-01  Mark Wielaard  <mark@klomp.org>
+
+        * java/net/URL.java (systemClassLoader): New static field.
+        (getURLStreamHandler): Always use system/application classloader
+        for finding URLStreamhandler. Remove unecessary instanceof checks.
+
+2004-07-11  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/net/DatagramPacket.java:
 	Resynced with GNU Classpath.
 

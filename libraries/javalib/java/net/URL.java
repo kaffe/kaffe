@@ -1,5 +1,6 @@
 /* URL.java -- Uniform Resource Locator Class
-   Copyright (C) 1998, 1999, 2000, 2002, 2003  Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000, 2002, 2003, 2004
+   Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,6 +39,8 @@ exception statement from your version. */
 package java.net;
 
 import gnu.java.net.URLParseError;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -122,6 +125,9 @@ public final class URL implements Serializable
 {
   private static final String DEFAULT_SEARCH_PATH =
     "gnu.java.net.protocol|gnu.inet";
+
+  // Cached System ClassLoader
+  private static ClassLoader systemClassLoader;
 
   /**
    * The name of the protocol for this URL.
@@ -262,7 +268,8 @@ public final class URL implements Serializable
   {
     if (protocol == null)
       throw new MalformedURLException("null protocol");
-    this.protocol = protocol.toLowerCase();
+    protocol = protocol.toLowerCase();
+    this.protocol = protocol;
 
     if (ph != null)
       {
@@ -512,7 +519,7 @@ public final class URL implements Serializable
    * Defined as <code>path[?query]</code>.
    * Returns the empty string if there is no file portion.
    *
-   * @return The filename specified in this URL.
+   * @return The filename specified in this URL, or an empty string if empty.
    */
   public String getFile()
   {
@@ -523,13 +530,17 @@ public final class URL implements Serializable
    * Returns the path of the URL. This is the part of the file before any '?'
    * character.
    *
-   * @return The path specified in this URL.
+   * @return The path specified in this URL, or null if empty.
    *
    * @since 1.3
    */
   public String getPath()
   {
-    int quest = (file == null) ? -1 : file.indexOf('?');
+    // The spec says we need to return an empty string, but some
+    // applications depends on receiving null when the path is empty.
+    if (file == null)
+      return null;
+    int quest = file.indexOf('?');
     return quest < 0 ? getFile() : file.substring(0, quest);
   }
 
@@ -696,14 +707,17 @@ public final class URL implements Serializable
   protected void set(String protocol, String host, int port, String file,
                      String ref)
   {
-    URLStreamHandler protocolHandler = getURLStreamHandler(protocol);
+    URLStreamHandler protocolHandler = null;
+    protocol = protocol.toLowerCase();
+    if (! this.protocol.equals(protocol))
+      protocolHandler = getURLStreamHandler(protocol);
     
     // It is an hidden feature of the JDK. If the protocol does not exist,
     // we keep the previously initialized protocol.
     if (protocolHandler != null)
       {
-        this.ph = protocolHandler;
-        this.protocol = protocol.toLowerCase();
+	this.ph = protocolHandler;
+	this.protocol = protocol;
       }
     this.authority = "";
     this.port = port;
@@ -739,14 +753,17 @@ public final class URL implements Serializable
   protected void set(String protocol, String host, int port, String authority,
                      String userInfo, String path, String query, String ref)
   {
-    URLStreamHandler protocolHandler = getURLStreamHandler(protocol);
+    URLStreamHandler protocolHandler = null;
+    protocol = protocol.toLowerCase();
+    if (! this.protocol.equals(protocol))
+      protocolHandler = getURLStreamHandler(protocol);
     
     // It is an hidden feature of the JDK. If the protocol does not exist,
     // we keep the previously initialized protocol.
     if (protocolHandler != null)
       {
-        this.ph = protocolHandler;
-        this.protocol = protocol.toLowerCase();
+	this.ph = protocolHandler;
+	this.protocol = protocol;
       }
     this.host = host;
     this.userInfo = userInfo;
@@ -854,36 +871,39 @@ public final class URL implements Serializable
 	// Finally loop through our search path looking for a match.
 	StringTokenizer pkgPrefix = new StringTokenizer(ph_search_path, "|");
 
+	// Cache the systemClassLoader
+	if (systemClassLoader == null)
+	  {
+	    systemClassLoader = (ClassLoader) AccessController.doPrivileged
+	      (new PrivilegedAction() {
+		  public Object run() {
+		    return ClassLoader.getSystemClassLoader();
+		  }
+		});
+	  }
+
 	do
 	  {
-	    String clsName =
-	      (pkgPrefix.nextToken() + "." + protocol + ".Handler");
-
 	    try
 	      {
-		Object obj = Class.forName(clsName).newInstance();
-
-		if (! (obj instanceof URLStreamHandler))
-		  continue;
-		else
-		  ph = (URLStreamHandler) obj;
+		// Try to get a class from the system/application
+		// classloader, initialize it, make an instance
+		// and try to cast it to a URLStreamHandler.
+		String clsName =
+		  (pkgPrefix.nextToken() + "." + protocol + ".Handler");
+		Class c = Class.forName(clsName, true, systemClassLoader);
+		ph = (URLStreamHandler) c.newInstance();
 	      }
-	    catch (Exception e)
-	      {
-		// Can't instantiate; handler still null,
-		// go on to next element.
-	      }
+	    catch (Throwable t) { /* ignored */ }
 	  }
-	 while ((! (ph instanceof URLStreamHandler))
-	        && pkgPrefix.hasMoreTokens());
+	 while (ph == null && pkgPrefix.hasMoreTokens());
       }
 
     // Update the hashtable with the new protocol handler.
     if (ph != null && cache_handlers)
-      if (ph instanceof URLStreamHandler)
-	ph_cache.put(protocol, ph);
-      else
-	ph = null;
+      ph_cache.put(protocol, ph);
+    else
+      ph = null;
 
     return ph;
   }
