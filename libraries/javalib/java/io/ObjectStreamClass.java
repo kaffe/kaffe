@@ -781,14 +781,20 @@ implements Serializable
 	private void getEndOfDataBlock(ObjectInputStream in)
 		throws StreamCorruptedException 
 	{
+		byte read = 0;
+
 		try {
-			if (in.readByte() == ObjectStreamConstants.TC_ENDBLOCKDATA) {
-				return;
-			}
+			read = in.readByte();
 		}
-		catch (IOException _) {
+		catch (IOException e) {
+			StreamCorruptedException sce = new StreamCorruptedException("failed to read endblockdata: " + e);
+			sce.initCause(e);
+			throw sce;
 		}
-		throw new StreamCorruptedException("failed to read endblockdata");
+		
+		if (read != ObjectStreamConstants.TC_ENDBLOCKDATA) {
+			throw new StreamCorruptedException("failed to read endblockdata: no marker found");
+		}
 	}
 
 	/*package*/ Object getClass(ObjectInputStream in)
