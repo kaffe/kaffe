@@ -2,7 +2,7 @@
  * NetworkInterface.c
  * Native implementation of java.net.NetworkInterface functions.
  *
- * Copyright (c) 2002 University of Utah and the Flux Group.
+ * Copyright (c) 2002, 2003 University of Utah and the Flux Group.
  * All rights reserved.
  *
  * This file is licensed under the terms of the GNU Public License.
@@ -98,13 +98,14 @@ getInetAddress(struct ifaddrs *ifa)
 			NII_MAX_ADDRESS_SIZE);
 	      address_string = checkPtr(stringC2Java(addr));
 	      break;
-#if defined(AF_INET6)
+#if defined(HAVE_STRUCT_SOCKADDR_IN6)
 	    case AF_INET6:
 	      inet_ntop(sa->sa_family,
 			&((struct sockaddr_in6 *)sa)->sin6_addr,
 			addr,
 			NII_MAX_ADDRESS_SIZE);
 	      address_string = checkPtr(stringC2Java(addr));
+	      break;
 #endif
 	    default:
 	      /* XXX What to do? */

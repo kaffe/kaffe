@@ -1,3 +1,8 @@
+2003-09-18  Timothy S. Stack <stack@cs.utah.edu>
+
+	* libraries/clib/net/NetworkInterface.c:
+	Fix compile error for IPv6 stuff.
+	
 2003-09-17  Timothy S. Stack <stack@cs.utah.edu>
 
 	* kaffe/kaffevm/jit3/labels.c,
