@@ -464,7 +464,7 @@ ac_includes_default="\
 #endif"
 
 ac_subdirs_all="$ac_subdirs_all libltdl"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT abssrcdir CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO RANLIB ac_ct_RANLIB CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBTOOL_DEPS LIBLTDL CCLD REGEN_FORWARD CONFIG_MD_H KAFFEVM_MD_C CONFIG_JIT_MD_H KAFFEVM_JIT_DEF KAFFEVM_ICODE_H HAVE_CONFIG_JIT_MD_H USE_JIT_TRUE USE_JIT_FALSE ENGINE_NAME ENABLE_XPROF_TRUE ENABLE_XPROF_FALSE CONFIG_XPROFILE_MD_H NEED_LIBXPROF_TRUE NEED_LIBXPROF_FALSE SUN_COMPAT_TRUE SUN_COMPAT_FALSE THREAD_DIR JIKESPROG JIKES KAFFEVM_TRAMPOLINES_C KVER JAVA_LIBS with_engine THREAD_SYSTEM KPREFIX KAFFE_ARCHOS ZIP HAVE_ZIP_TRUE HAVE_ZIP_FALSE HAVE_JIKES_TRUE HAVE_JIKES_FALSE KAFFE_LIBS M_LIBS VM_LIBS NET_LIBS ZIP_LIBS MATH_LIBS SECURITY_LIBS X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS AWT_LIBS HAVE_GCJ_SUPPORT_TRUE HAVE_GCJ_SUPPORT_FALSE LIBOBJS LIBICONV USE_COMPAT_IFADDRS_TRUE USE_COMPAT_IFADDRS_FALSE MOC UIC QEMBED QT_CXXFLAGS QT_LDADD QT_GUILINK AWT_DIR ALSA_DIR ESD_DIR java_math_files NATIVE_MATH_DIR MATH_LIB PROFILE USE_PRECOMPILED_RT_JAR_TRUE USE_PRECOMPILED_RT_JAR_FALSE PATH_TO_RT_JAR DLOPEN_JAVA_LIBS KLIBFLAGS KVMBINFLAGS KVMLIBFLAGS KAFFEH MAKE_KAFFEH toolslibdir jredir jrebindir jrelibdir nativedir securitydir PATHSEP DIRSEP kaffe_TRANSF kaffebin_TRANSF CFLAGS_WITHOUT_PG subdirs LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT abssrcdir CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO RANLIB ac_ct_RANLIB CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBTOOL_DEPS LIBLTDL CCLD REGEN_FORWARD CONFIG_MD_H KAFFEVM_MD_C CONFIG_JIT_MD_H KAFFEVM_JIT_DEF KAFFEVM_ICODE_H HAVE_CONFIG_JIT_MD_H USE_JIT_TRUE USE_JIT_FALSE ENGINE_NAME ENABLE_XPROF_TRUE ENABLE_XPROF_FALSE CONFIG_XPROFILE_MD_H NEED_LIBXPROF_TRUE NEED_LIBXPROF_FALSE SUN_COMPAT_TRUE SUN_COMPAT_FALSE THREAD_DIR JIKESPROG JIKES KAFFEVM_TRAMPOLINES_C KVER JAVA_LIBS with_engine THREAD_SYSTEM KPREFIX KAFFE_ARCHOS ZIP HAVE_ZIP_TRUE HAVE_ZIP_FALSE HAVE_JIKES_TRUE HAVE_JIKES_FALSE KAFFE_LIBS M_LIBS VM_LIBS NET_LIBS ZIP_LIBS MATH_LIBS SECURITY_LIBS X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS AWT_LIBS HAVE_GCJ_SUPPORT_TRUE HAVE_GCJ_SUPPORT_FALSE LIBOBJS LIBICONV USE_COMPAT_IFADDRS_TRUE USE_COMPAT_IFADDRS_FALSE MOC UIC QEMBED QT_CXXFLAGS QT_LDADD QT_GUILINK AWT_DIR COND_SOUND_ALSA_TRUE COND_SOUND_ALSA_FALSE COND_SOUND_ESD_TRUE COND_SOUND_ESD_FALSE COND_PURE_JAVA_MATH_TRUE COND_PURE_JAVA_MATH_FALSE MATH_LIB PROFILE USE_PRECOMPILED_RT_JAR_TRUE USE_PRECOMPILED_RT_JAR_FALSE PATH_TO_RT_JAR DLOPEN_JAVA_LIBS KLIBFLAGS KVMBINFLAGS KVMLIBFLAGS KAFFEH MAKE_KAFFEH toolslibdir jredir jrebindir jrelibdir nativedir securitydir PATHSEP DIRSEP kaffe_TRANSF kaffebin_TRANSF CFLAGS_WITHOUT_PG subdirs LTLIBOBJS'
 ac_subst_files='cpu_os_frag cpu_frag engine_frag threads_frag'
 
 # Initialize some variables set by options.
@@ -30061,6 +30061,7 @@ if test "${enable_sound+set}" = set; then
   enableval="$enable_sound"
 
 fi;
+
 case "$enable_sound" in
 no)
 	ALSA_DIR=""
@@ -30071,6 +30072,24 @@ no)
 esac
 
 
+
+if test "$ALSA_DIR" = alsa; then
+  COND_SOUND_ALSA_TRUE=
+  COND_SOUND_ALSA_FALSE='#'
+else
+  COND_SOUND_ALSA_TRUE='#'
+  COND_SOUND_ALSA_FALSE=
+fi
+
+
+
+if test "$ESD_DIR" = esd; then
+  COND_SOUND_ESD_TRUE=
+  COND_SOUND_ESD_FALSE='#'
+else
+  COND_SOUND_ESD_TRUE='#'
+  COND_SOUND_ESD_FALSE=
+fi
 
 
 
@@ -30379,16 +30398,22 @@ fi
 
 fi;
 
-if test x"$pure_java_math" = x"true" ; then
-	java_math_files="pure_java_math.files"
-	NATIVE_MATH_DIR=""
-	MATH_LIB=""
+
+
+if test "$enable_pure_java_math" = yes; then
+  COND_PURE_JAVA_MATH_TRUE=
+  COND_PURE_JAVA_MATH_FALSE='#'
 else
-	java_math_files="native_java_math.files"
-	NATIVE_MATH_DIR="math"
-	MATH_LIB="\$(top_builddir)/libraries/clib/math/libmath.la"
+  COND_PURE_JAVA_MATH_TRUE='#'
+  COND_PURE_JAVA_MATH_FALSE=
 fi
 
+
+if test x"$pure_java_math" = x"true" ; then
+	MATH_LIB=""
+else
+	MATH_LIB="\$(top_builddir)/libraries/clib/math/libmath.la"
+fi
 
 
 
@@ -31077,6 +31102,27 @@ if test -z "${USE_COMPAT_IFADDRS_TRUE}" && test -z "${USE_COMPAT_IFADDRS_FALSE}"
   { { echo "$as_me:$LINENO: error: conditional \"USE_COMPAT_IFADDRS\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"USE_COMPAT_IFADDRS\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${COND_SOUND_ALSA_TRUE}" && test -z "${COND_SOUND_ALSA_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"COND_SOUND_ALSA\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"COND_SOUND_ALSA\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${COND_SOUND_ESD_TRUE}" && test -z "${COND_SOUND_ESD_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"COND_SOUND_ESD\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"COND_SOUND_ESD\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${COND_PURE_JAVA_MATH_TRUE}" && test -z "${COND_PURE_JAVA_MATH_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"COND_PURE_JAVA_MATH\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"COND_PURE_JAVA_MATH\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -31817,10 +31863,12 @@ s,@QT_CXXFLAGS@,$QT_CXXFLAGS,;t t
 s,@QT_LDADD@,$QT_LDADD,;t t
 s,@QT_GUILINK@,$QT_GUILINK,;t t
 s,@AWT_DIR@,$AWT_DIR,;t t
-s,@ALSA_DIR@,$ALSA_DIR,;t t
-s,@ESD_DIR@,$ESD_DIR,;t t
-s,@java_math_files@,$java_math_files,;t t
-s,@NATIVE_MATH_DIR@,$NATIVE_MATH_DIR,;t t
+s,@COND_SOUND_ALSA_TRUE@,$COND_SOUND_ALSA_TRUE,;t t
+s,@COND_SOUND_ALSA_FALSE@,$COND_SOUND_ALSA_FALSE,;t t
+s,@COND_SOUND_ESD_TRUE@,$COND_SOUND_ESD_TRUE,;t t
+s,@COND_SOUND_ESD_FALSE@,$COND_SOUND_ESD_FALSE,;t t
+s,@COND_PURE_JAVA_MATH_TRUE@,$COND_PURE_JAVA_MATH_TRUE,;t t
+s,@COND_PURE_JAVA_MATH_FALSE@,$COND_PURE_JAVA_MATH_FALSE,;t t
 s,@MATH_LIB@,$MATH_LIB,;t t
 s,@PROFILE@,$PROFILE,;t t
 s,@USE_PRECOMPILED_RT_JAR_TRUE@,$USE_PRECOMPILED_RT_JAR_TRUE,;t t

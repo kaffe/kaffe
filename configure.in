@@ -1272,6 +1272,7 @@ dnl Global sound setting
 dnl No overrides --with-* settings
 
 AC_ARG_ENABLE(sound,[  --disable-sound         Disable javax.sound support])
+
 case "$enable_sound" in
 no)
 	ALSA_DIR=""
@@ -1281,8 +1282,8 @@ no)
 	;;
 esac
 
-AC_SUBST(ALSA_DIR)
-AC_SUBST(ESD_DIR)
+AM_CONDITIONAL([COND_SOUND_ALSA], [test "$ALSA_DIR" = alsa])
+AM_CONDITIONAL([COND_SOUND_ESD], [test "$ESD_DIR" = esd])
 
 dnl -----------------------------------------------------------------------
 dnl                 Pure java imlementation of java.math.*
@@ -1323,19 +1324,16 @@ dnl  Otherwise use pure java implementation.
 ]
 )
 
+AM_CONDITIONAL([COND_PURE_JAVA_MATH], [test "$enable_pure_java_math" = yes])
+
 if test x"$pure_java_math" = x"true" ; then
-	java_math_files="pure_java_math.files"
-	NATIVE_MATH_DIR=""
 	MATH_LIB=""
 else
-	java_math_files="native_java_math.files"
-	NATIVE_MATH_DIR="math"
 	MATH_LIB="\$(top_builddir)/libraries/clib/math/libmath.la"
 fi
 
-AC_SUBST(java_math_files)
-AC_SUBST(NATIVE_MATH_DIR)
 AC_SUBST(MATH_LIB)
+
 dnl -----------------------------------------------------------------------
 dnl                    Memory debugging support
 dnl -----------------------------------------------------------------------

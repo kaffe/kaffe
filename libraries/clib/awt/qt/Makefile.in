@@ -46,7 +46,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
 ACLOCAL = @ACLOCAL@
-ALSA_DIR = @ALSA_DIR@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
@@ -62,6 +61,12 @@ CCDEPMODE = @CCDEPMODE@
 CCLD = @CCLD@
 CFLAGS = @CFLAGS@
 CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
+COND_PURE_JAVA_MATH_FALSE = @COND_PURE_JAVA_MATH_FALSE@
+COND_PURE_JAVA_MATH_TRUE = @COND_PURE_JAVA_MATH_TRUE@
+COND_SOUND_ALSA_FALSE = @COND_SOUND_ALSA_FALSE@
+COND_SOUND_ALSA_TRUE = @COND_SOUND_ALSA_TRUE@
+COND_SOUND_ESD_FALSE = @COND_SOUND_ESD_FALSE@
+COND_SOUND_ESD_TRUE = @COND_SOUND_ESD_TRUE@
 CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
 CONFIG_MD_H = @CONFIG_MD_H@
 CONFIG_XPROFILE_MD_H = @CONFIG_XPROFILE_MD_H@
@@ -84,7 +89,6 @@ EGREP = @EGREP@
 ENABLE_XPROF_FALSE = @ENABLE_XPROF_FALSE@
 ENABLE_XPROF_TRUE = @ENABLE_XPROF_TRUE@
 ENGINE_NAME = @ENGINE_NAME@
-ESD_DIR = @ESD_DIR@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
@@ -132,7 +136,6 @@ MATH_LIB = @MATH_LIB@
 MATH_LIBS = @MATH_LIBS@
 MOC = @MOC@
 M_LIBS = @M_LIBS@
-NATIVE_MATH_DIR = @NATIVE_MATH_DIR@
 NEED_LIBXPROF_FALSE = @NEED_LIBXPROF_FALSE@
 NEED_LIBXPROF_TRUE = @NEED_LIBXPROF_TRUE@
 NET_LIBS = @NET_LIBS@
@@ -205,7 +208,6 @@ host_vendor = @host_vendor@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
-java_math_files = @java_math_files@
 jrebindir = @jrebindir@
 jredir = @jredir@
 jrelibdir = @jrelibdir@
@@ -238,7 +240,6 @@ libawt_la_MOC = \
 	evt.moc.cc
 
 libawt_la_SOURCES = \
-	$(libawt_la_MOC) \
 	tlk.cc \
 	wnd.cc \
 	evt.cc \
@@ -247,6 +248,10 @@ libawt_la_SOURCES = \
 	clr.cc \
 	img.cc \
 	cbd.cc
+
+
+nodist_libawt_la_SOURCES = \
+	$(libawt_la_MOC)
 
 
 noinst_HEADERS = \
@@ -267,10 +272,11 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(native_LTLIBRARIES)
 
 libawt_la_DEPENDENCIES =
+am_libawt_la_OBJECTS = tlk.lo wnd.lo evt.lo gra.lo fnt.lo clr.lo img.lo \
+	cbd.lo
 am__objects_1 = evt.moc.lo
-am_libawt_la_OBJECTS = $(am__objects_1) tlk.lo wnd.lo evt.lo gra.lo \
-	fnt.lo clr.lo img.lo cbd.lo
-libawt_la_OBJECTS = $(am_libawt_la_OBJECTS)
+nodist_libawt_la_OBJECTS = $(am__objects_1)
+libawt_la_OBJECTS = $(am_libawt_la_OBJECTS) $(nodist_libawt_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -292,7 +298,7 @@ DIST_SOURCES = $(libawt_la_SOURCES)
 HEADERS = $(noinst_HEADERS)
 
 DIST_COMMON = $(noinst_HEADERS) Makefile.am Makefile.in
-SOURCES = $(libawt_la_SOURCES)
+SOURCES = $(libawt_la_SOURCES) $(nodist_libawt_la_SOURCES)
 
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am

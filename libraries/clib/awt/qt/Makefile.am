@@ -22,7 +22,6 @@ libawt_la_LIBADD = $(AWT_LIBS) $(QT_LDADD)
 libawt_la_MOC = \
 	evt.moc.cc
 libawt_la_SOURCES = \
-	$(libawt_la_MOC) \
 	tlk.cc \
 	wnd.cc \
 	evt.cc \
@@ -31,6 +30,9 @@ libawt_la_SOURCES = \
 	clr.cc \
 	img.cc \
 	cbd.cc
+
+nodist_libawt_la_SOURCES = \
+	$(libawt_la_MOC)
 
 noinst_HEADERS = \
 	keysyms.h \

@@ -76,7 +76,6 @@ TESTS = $(check_PROGRAMS)
 XFAIL_TESTS =
 
 EXTRA_DIST = \
-	$(TESTS) \
 	ConstMethods.java \
 	ConstMathMethods.java \
 	ParameterizedMethods.java \

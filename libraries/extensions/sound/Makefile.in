@@ -14,9 +14,9 @@
 
 @SET_MAKE@
 
-# Base level Makefile.in for kaffe extensions
+# Base level Makefile.am for kaffe extensions
 #
-# Copyright (c) 2002
+# Copyright (c) 2002, 2003
 #	Dalibor Topic <robilad@yahoo.com>
 #
 # See the file "license.terms" for information on usage and redistribution 
@@ -45,7 +45,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
 ACLOCAL = @ACLOCAL@
-ALSA_DIR = @ALSA_DIR@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
@@ -60,6 +59,12 @@ CCDEPMODE = @CCDEPMODE@
 CCLD = @CCLD@
 CFLAGS = @CFLAGS@
 CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
+COND_PURE_JAVA_MATH_FALSE = @COND_PURE_JAVA_MATH_FALSE@
+COND_PURE_JAVA_MATH_TRUE = @COND_PURE_JAVA_MATH_TRUE@
+COND_SOUND_ALSA_FALSE = @COND_SOUND_ALSA_FALSE@
+COND_SOUND_ALSA_TRUE = @COND_SOUND_ALSA_TRUE@
+COND_SOUND_ESD_FALSE = @COND_SOUND_ESD_FALSE@
+COND_SOUND_ESD_TRUE = @COND_SOUND_ESD_TRUE@
 CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
 CONFIG_MD_H = @CONFIG_MD_H@
 CONFIG_XPROFILE_MD_H = @CONFIG_XPROFILE_MD_H@
@@ -82,7 +87,6 @@ EGREP = @EGREP@
 ENABLE_XPROF_FALSE = @ENABLE_XPROF_FALSE@
 ENABLE_XPROF_TRUE = @ENABLE_XPROF_TRUE@
 ENGINE_NAME = @ENGINE_NAME@
-ESD_DIR = @ESD_DIR@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
@@ -130,7 +134,6 @@ MATH_LIB = @MATH_LIB@
 MATH_LIBS = @MATH_LIBS@
 MOC = @MOC@
 M_LIBS = @M_LIBS@
-NATIVE_MATH_DIR = @NATIVE_MATH_DIR@
 NEED_LIBXPROF_FALSE = @NEED_LIBXPROF_FALSE@
 NEED_LIBXPROF_TRUE = @NEED_LIBXPROF_TRUE@
 NET_LIBS = @NET_LIBS@
@@ -203,7 +206,6 @@ host_vendor = @host_vendor@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
-java_math_files = @java_math_files@
 jrebindir = @jrebindir@
 jredir = @jredir@
 jrelibdir = @jrelibdir@
@@ -226,9 +228,11 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 
-SUBDIRS = common $(ALSA_DIR) $(ESD_DIR)
+@COND_SOUND_ALSA_TRUE@MAYBE_ALSA_DIR = alsa
 
-DIST_SUBDIRS = common alsa esd
+@COND_SOUND_ESD_TRUE@MAYBE_ESD_DIR = esd
+
+SUBDIRS = common $(MAYBE_ALSA_DIR) $(MAYBE_ESD_DIR)
 subdir = libraries/extensions/sound
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -243,6 +247,7 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	installdirs-recursive install-recursive uninstall-recursive \
 	check-recursive installcheck-recursive
 DIST_COMMON = Makefile.am Makefile.in
+DIST_SUBDIRS = common alsa esd
 all: all-recursive
 
 .SUFFIXES:

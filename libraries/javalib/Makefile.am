@@ -17,6 +17,13 @@
 
 SRCDIRS = gnu java javax kaffe org
 
+## Pick source of java math implementation
+if COND_PURE_JAVA_MATH
+  JAVA_MATH_FILES = pure_java_math.files
+else
+  JAVA_MATH_FILES = native_java_math.files
+endif
+
 ## taken from top level Makefile.am
 JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)
 KAFFELIBRARYPATH=$(top_builddir)/libraries/clib/native/:$(top_builddir)/libraries/clib/io/:$(top_builddir)/libraries/clib/zip/
@@ -2221,8 +2228,8 @@ gnu_regexp_message_bundles = \
 
 EXTRA_DIST = \
 	Klasses.jar.bootstrap \
-	$(jrelib_DATA) \
-	$(toolslib_DATA) \
+        $(jrelib_DATA) \
+        $(toolslib_DATA) \
 	META-INF \
 	gnu \
 	java \
@@ -2231,6 +2238,8 @@ EXTRA_DIST = \
 	org \
 	pure-java \
 	essential.files \
+	pure_java_math.files \
+	native_java_math.files \
 	profiles \
         bootstrap.classlist \
 	$(OMITTED_PACKAGES_SRCS) \
@@ -2260,7 +2269,7 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
 	$(SHELL) $(rebuildLib) @essential.files
-	$(SHELL) $(rebuildLib) @@java_math_files@
+	$(SHELL) $(rebuildLib) @$(JAVA_MATH_FILES)
 	for i in `cat $(srcdir)/profiles/$(PROFILE)/profile` ;  do \
 		$(SHELL) $(rebuildLib) @profiles/$(PROFILE)/$$i ; \
 		if [ $${?} -ne 0 ]; then \
@@ -2304,4 +2313,4 @@ endif
 .PHONY: build-classes Klasses
 build-classes Klasses: rt.jar
 
-
+all-am: rebuildLib
