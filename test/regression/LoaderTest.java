@@ -19,10 +19,16 @@ public class LoaderTest {
 		Class c2 = (Class)m.invoke(o, null);
 		show(c2);
 
+		System.out.println("Loading Class3 via Class1");
+		m = c1.getMethod("getClass3", null);
+		Class c31 = (Class)m.invoke(null, null);
+		show(c31);
+
 		System.out.println("Loading Class3 via Loader2");
 		ClassLoader l2 = new Loader2();
 		Class c3 = Class.forName("Class3", true, l2);
 		show(c3);
+		System.out.println(c3.equals(c31));
 	}
 
 	public static byte[] getClassBytes(String name)
@@ -59,6 +65,11 @@ class Class1 {
 	}
 	public Class getClass2() throws Exception {
 		return Class.forName("Class2");
+	}
+	public static Class getClass3() throws Exception {
+		Class c = Class.class;
+		Method m = c.getMethod("forName", new Class[] { String.class });
+		return (Class)m.invoke(c, new Object[] { "Class3" });
 	}
 }
 
@@ -148,8 +159,13 @@ Loading Class2 via Class1
 Loader1: finding Class2
 Loader1.findLibrary(Class2.lib)
 -> class Class2 loader Loader1
+Loading Class3 via Class1
+Loader1: finding Class3
+Loader1.findLibrary(Class3.lib)
+-> class Class3 loader Loader1
 Loading Class3 via Loader2
 Loader2: finding Class3
 Loader2.findLibrary(Class3.lib)
 -> class Class3 loader Loader2
+false
 */
