@@ -1,5 +1,12 @@
 2004-04-30  Guilhem Lavaux <guilhem@kaffe.org>
 
+	Reported by Emil Mikulic <emikulic@dmr.ath.cx>
+
+	* config/i386/openbsd2/md.h: Added inclusion of sys/time.h to
+	make kaffe compile on OpenBSD.
+
+2004-04-30  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* libraries/javalib/java/text/DecimalFormat.java
 	(MAXIMUM_INTEGER_DIGITS): New private constant.
 	(applyPatternWithSymbols): Use MAXIMUM_INTEGER_DIGITS.
