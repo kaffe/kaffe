@@ -81,6 +81,10 @@ public Enumeration findResources(String name) throws IOException {
 	StringTokenizer t = new StringTokenizer(classpath, pathSep);
 	Vector v = new Vector();
 
+	if (name.startsWith("/")) {
+	    name = name.substring(1);
+	}
+
 	while (t.hasMoreTokens()) {
 		File file = new File(t.nextToken());
 

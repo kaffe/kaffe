@@ -1,3 +1,10 @@
+Thu Aug 15 11:53:08 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/kaffe/lang/SystemClassLoader.java:
+	(findResources) remove eventual leading slash before using
+	resource name.
+	Reported by Helmer Kraemer <hkraemer@freenet.de>
+
 Thu Aug 15 11:37:50 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/io/RandomAccessFile.java:
