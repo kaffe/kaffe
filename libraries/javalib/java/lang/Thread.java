@@ -322,6 +322,10 @@ final public void setPriority(int newPriority) {
 	setPriority0(newPriority);
 }
 
+public void setContextClassLoader(ClassLoader cl) {
+	// XXX implement me
+}
+
 native private void setPriority0(int prio);
 
 public static void sleep(long millis) throws InterruptedException {
