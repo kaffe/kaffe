@@ -25,16 +25,16 @@ init_md(void)
 #define	GET_SP(E)	(((void**)(E))[SP_OFFSET])
 
 extern int __speciallongjmp(void*);
-asm("
-__speciallongjmp:
-	mov %o0,%g1
-	ta 3
-	ld [%g1],%sp
-	ld [%g1+4],%fp
-	ld [%g1+8],%g1
-	jmp %g1+8
-	mov 1,%o0
-");
+asm(" \n"
+"__speciallongjmp: \n"
+"	mov %o0,%g1 \n"
+"	ta 3 \n"
+"	ld [%g1],%sp \n"
+"	ld [%g1+4],%fp \n"
+"	ld [%g1+8],%g1 \n"
+"	jmp %g1+8 \n"
+"	mov 1,%o0 \n"
+);
 
 void
 sparcLinuxContextSwitch(jthread* from, jthread* to)

@@ -1,5 +1,10 @@
 2003-10-05  Dalibor Topic <robilad@kaffe.org>
 
+	* config/superh/trampolines.c:
+	Changed multi-line strings to single line strings.
+
+2003-10-05  Dalibor Topic <robilad@kaffe.org>
+
 	* config/sparc/jit.h,
 	config/sparc/trampolines.c,
 	config/sparc/linux/md.c:
