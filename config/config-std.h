@@ -43,12 +43,6 @@
 #if defined(HAVE_WINTYPES_H)
 #include <wintypes.h>
 #endif
-#if defined(HAVE_WTYPES_H)
-#include <wtypes.h>
-#endif
-#if defined(HAVE_WINBASE_H)
-#include <winbase.h>
-#endif
 #if defined(HAVE_BSD_LIBC_H)
 #include <bsd/libc.h>
 #endif

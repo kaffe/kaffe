@@ -1,5 +1,23 @@
 2004-06-21  Dalibor Topic  <robilad@kaffe.org>
 
+        * configure.ac:
+	Removed checks for winbase.h, winnt.h and
+	winsock.h.
+
+        * config/config-io.h:
+	Don't include winsock.h.
+
+        * config/config-std.h:
+	Don't include winbase.h and winnt.h.
+
+        * configure,
+        config/config.h.in:
+	Regenerated.
+
+	Reported by:  Takashi Kihara <kihara@mift.sony.co.jp>
+
+2004-06-21  Dalibor Topic  <robilad@kaffe.org>
+
 	Moved verifier to its own module.
 
 	* kaffe/kaffevm/verify-block.c,

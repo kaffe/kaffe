@@ -25,10 +25,6 @@
 #endif
 #if defined(HAVE_SYS_SOCKET_H)
 #include <sys/socket.h>
-#else
-# if defined(HAVE_WINSOCK_H)
-# include <winsock.h>
-# endif
 #endif
 #if defined(HAVE_SYS_IOCTL_H)
 #include <sys/ioctl.h>
