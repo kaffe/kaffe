@@ -22,6 +22,7 @@ INCLUDEFILES= \
 		native.h \
 		jmalloc.h \
 		jsyscall.h \
+		jni.h \
 		Arrays.h \
 		java_lang_Object.h \
 		java_lang_String.h \
