@@ -9,15 +9,23 @@
  */
 
 package java.util;
+import java.io.Serializable;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.ClassNotFoundException;
 
 /* Hashtable (NOT tree) with simple clustering */
 
-public class Hashtable extends Dictionary implements Cloneable {
-  private HashtableEntry bucket[];
-  private float loadFactor;
+public class Hashtable extends Dictionary implements Cloneable, Serializable {
+  transient private HashtableEntry bucket[];
+  transient private float loadFactor;
   private int numberOfKeys;
 
   private static final int DEFAULTCAPACITY=16;
+
+  /* This is what Sun's JDK1.1 "serialver java.util.Hashtable" spits out */
+  private static final long serialVersionUID = 1421746759512286392L;
 
   public Hashtable(int initialCapacity, float loadFactor)
   {
@@ -28,7 +36,6 @@ public class Hashtable extends Dictionary implements Cloneable {
     this.loadFactor = loadFactor;
     this.bucket = new HashtableEntry[initialCapacity];
     this.numberOfKeys = 0;
-    clear();
   }
   
   public Hashtable(int initialCapacity) {
@@ -209,6 +216,63 @@ public class Hashtable extends Dictionary implements Cloneable {
     return (Object)result;
   }
   
+  /**
+   * read this hashtable from a stream
+   */
+  private void readObject(java.io.ObjectInputStream stream)
+      throws IOException, ClassNotFoundException
+  {
+    // read all non-transient fields
+    stream.defaultReadObject();
+
+    // read load factor
+    loadFactor = stream.readFloat();
+    if (loadFactor == 0.0) {
+      throw new Error("Load Factor is 0.0");
+    }
+
+    // create buckets
+    bucket = new HashtableEntry[stream.readInt()];
+
+    // clear table, but remember how many entries are in the stream
+    int nkeys = numberOfKeys;
+    numberOfKeys = 0;
+
+    // read entries
+    for (int i=0; i<nkeys; i++) {
+      Object k = stream.readObject();
+      put(k, stream.readObject());
+    }
+
+    // safety check: do we actually have as many elements in the table
+    // now as were written when the table was serialized?
+    if (numberOfKeys != nkeys)
+      throw new IOException("read " + numberOfKeys + " expected " + nkeys);
+  }
+
+  /**
+   * write this hashtable into a stream
+   */
+  private void writeObject(java.io.ObjectOutputStream stream)
+	    throws IOException
+  {
+    // write all non-transient fields
+    stream.defaultWriteObject();
+
+    // write load factor
+    stream.writeFloat(loadFactor);
+
+    // remember how many buckets there were
+    stream.writeInt(bucket.length);
+
+    for (int pos=0; pos<bucket.length; pos++) {
+      for (HashtableEntry ptr = bucket[pos]; ptr != null; ptr = ptr.next) {
+	stream.writeObject(ptr.getKey());
+	stream.writeObject(ptr.getData());
+      }
+    }
+  }
+
   public synchronized String toString() {
     boolean firstTime=true;
     StringBuffer result=new StringBuffer();
