@@ -52,6 +52,7 @@ EXTRA_DIST = \
 	FAQ/FAQ.libtool \
 	FAQ/FAQ.linux \
 	FAQ/FAQ.locks \
+	FAQ/FAQ.mauve \
 	FAQ/FAQ.nativemethods \
 	FAQ/FAQ.ncr \
 	FAQ/FAQ.profiler \

@@ -1,7 +1,52 @@
-2003-05-22 Dalibor Topic <robilad@yahoo.com>
+2003-05-23 Dalibor Topic <robilad@yahoo.com>
+
+	* Makefile.am:
+	(EXTRA_DIST) FAQ.mauve added.
+
+	* Makefile.in: regenrated.
+	
+	* FAQ/FAQ.mauve: new file.
+
+2003-05-23 Dalibor Topic <robilad@yahoo.com>
 
 	* Makefile.am:
 	(EXTRA_DIST) Added THIRDPARTY.
+
+	* kaffe-patched/kaffe/kaffe/Makefile.am,
+	kaffe-patched/kaffe/kaffeh/Makefile.am,
+	kaffe-patched/kaffe/kaffevm/gcj/Makefile.am,
+	kaffe-patched/kaffe/kaffevm/intrp/Makefile.am,
+	kaffe-patched/kaffe/kaffevm/jit/Makefile.am,
+	kaffe-patched/kaffe/kaffevm/jit3/Makefile.am,
+	kaffe-patched/kaffe/kaffevm/Makefile.am,
+	kaffe-patched/kaffe/kaffevm/systems/beos-native/Makefile.am,
+	kaffe-patched/kaffe/kaffevm/systems/oskit-pthreads/Makefile.am,
+	kaffe-patched/kaffe/kaffevm/systems/unix-jthreads/Makefile.am,
+	kaffe-patched/kaffe/kaffevm/systems/unix-pthreads/Makefile.am,
+	kaffe-patched/kaffe/xprof/Makefile.am,
+	kaffe-patched/libraries/clib/net/Makefile.am,
+	kaffe-patched/Makefile.am,
+	kaffe-patched/replace/Makefile.am,
+	kaffe-patched/test/internal/Makefile.am:
+	(INCLUDES) replaced by AM_CPPFLAGS.
+	
+	* kaffe-patched/kaffe/kaffe/Makefile.in,
+	kaffe-patched/kaffe/kaffeh/Makefile.in,
+	kaffe-patched/kaffe/kaffevm/gcj/Makefile.in,
+	kaffe-patched/kaffe/kaffevm/intrp/Makefile.in,
+	kaffe-patched/kaffe/kaffevm/jit/Makefile.in,
+	kaffe-patched/kaffe/kaffevm/jit3/Makefile.in,
+	kaffe-patched/kaffe/kaffevm/Makefile.in,
+	kaffe-patched/kaffe/kaffevm/systems/beos-native/Makefile.in,
+	kaffe-patched/kaffe/kaffevm/systems/oskit-pthreads/Makefile.in,
+	kaffe-patched/kaffe/kaffevm/systems/unix-jthreads/Makefile.in,
+	kaffe-patched/kaffe/kaffevm/systems/unix-pthreads/Makefile.in,
+	kaffe-patched/kaffe/xprof/Makefile.in,
+	kaffe-patched/libraries/clib/net/Makefile.in,
+	kaffe-patched/Makefile.in,
+	kaffe-patched/replace/Makefile.in,
+	kaffe-patched/test/internal/Makefile.in:
+	regenerated.
 	
 2003-05-22 Dalibor Topic <robilad@yahoo.com>
 

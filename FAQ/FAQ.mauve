@@ -1,0 +1,96 @@
+Running Mauve with Kaffe
+========================
+Author: Dalibor Topic <robilad@yahoo.com>
+
+Introduction
+============
+
+Q: What is Mauve?
+
+A: Mauve is a free test suite for Java class libraries. It contains
+tests checking the compatibility of an implementation against the Java
+API specifications.
+
+Q: Where can I get it?
+
+A: Visit the Mauve site at http:// for more information. Make sure
+that you follow the latest Mauve developements in their CVS.
+
+Q: How well does Mauve run on Kaffe?
+
+A: The tests for Java 1.0 and Java 1.1 APIs build and run on
+kaffe. The tests for other API versions don't build due to missing
+methods and classes in kaffe's class library. Nevertheless, you can
+test specific classes and packages by using KEYS="\!java. x.y.z"
+to test a specific package or class x.y.z.
+
+In your runs, you should exclude the Unicode tests, since they result
+in a ton of errors, most of which are bogus. You should run mauve with
+"\!java.lang.Character.unicode" in your KEYS string.
+
+Installation
+============
+
+1. get kaffe from CVS, build and install it somewhere
+
+2. get mauve from CVS
+
+3. cd mauve
+
+4. autoreconf (you need latest auto* tools for this step)
+
+5. ./configure JAVA=/path/to/kaffe JAVAC=/path/to/kjc
+
+Running
+========
+
+In order to test kaffe's compatibiity with some Java API release:
+
+make check KEYS="JDK 1.release \!java.lang.Character.unicode" > kaffe.log
+
+If you want extra verbose output, use make check KEYS=something
+TESTFLAGS="-verbose". You can pick single tests to run, by using make
+check KEYS="JDK1.release \!java. \!javax. package.class.test"
+
+Finally, you can pipe the output of the verbose runs into a perl script that
+generates nice web pages like http://www.japhar.org/mauve-results-12.html . The
+script is Japhar's CVS.
+
+Helping Out
+===========
+
+There are several ways how you can help out on kaffe using mauve.
+
+Running Mauve Regularly
+-----------------------
+
+Despite everyone's efforts to improve kaffe, sometimes fixes break
+other things on other platforms. In order to be able to find out early
+when things break, we need contributors that run mauve regularly on
+their platforms, publish the results, and report regressions.
+
+Fixing Issues You Find
+----------------------
+
+You're likely to discover bugs in kaffe's implementation by running
+mauve tests. If you can, please fix the bugs that you find and post
+patches to the kaffe mailing list kaffe@kaffe.org.
+
+Writing Mauve Tests
+-------------------
+
+Mauve provides a nice test framework. It's quite simple to use and
+write tests for it. When you find bugs in kaffe's implementation of an
+API that are not exposed by mauve tests already, please submit a test
+to the mauve mailing list. That way, other free Java virtual machine
+and class library implementations can use the test case to check their
+own work.
+
+Known Issues
+============
+
+The Unicode tests result in a ton of failures. According to
+developers/README.unicode, it's the Unicode tests that need fixing.
+
+Some tests can not be built since kaffe doesn't implement the APIs
+yet.
