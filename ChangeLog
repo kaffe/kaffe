@@ -1,5 +1,11 @@
 2003-05-15 Dalibor Topic <robilad@yahoo.com>
 
+	* FAQ/FAQ.benchmarking:
+	new file. Entry on benchmarking kaffe using Volanomark written by
+	Dan Kegel <dank@kegel.com>.
+	
+2003-05-15 Dalibor Topic <robilad@yahoo.com>
+
 	* kaffe/kaffevm/systems/unix-pthread/thread-impl.c:
 	(jthread_createfirst) added missing semicolon, hopefully fixing
 	compilation on hppa-linux with pthreads.

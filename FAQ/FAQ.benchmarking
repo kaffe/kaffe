@@ -1,0 +1,189 @@
+Benchmarking
+============
+
+There are many benchmarks for Java. Some of them are freely available,
+others, like the SPEC benchmarks, are not. Below you'll find some
+advice on setting up kaffe to run some popular benchmarks.
+
+If you use a benchmark to evaluate kaffe's performance, it would be
+nice to send your findings to the kaffe mailing list
+kaffe@kaffe.org.
+
+Benchmarking Kaffe using Volanomark
+===================================
+Author: Dan Kegel <dank@kegel.com>
+
+Introduction
+============
+
+Q: What is Volanomark ?
+
+A: Volanomark is a zero-cost, publically available Java benchmark.
+It mimics a client/server chat system load test, with one thread per
+client, so it's a good way to measure how many threads doing useful
+work a JVM can handle.
+
+Q: Where can I get it ?
+
+A: Volanomark is available for download at:
+http://www.volano.com/report/
+
+Q: How well does Kaffe do on this benchmark ?
+
+A: See the March 2000 results page (Volano dropped Kaffe from their runs after that).
+http://www.volano.com/report-2000-03-24/
+It did better than early untuned Blackdown 1.1.7 JVMs, but only did 40% as
+well as the best JVM.  However, since Kaffe is available on any system
+you care to port it to, it does infinitely better than Blackdown on those
+systems where Blackdown doesn't run :-)
+
+Installation
+============
+
+Read http://www.volano.com/benchmarks.html
+and  http://www.volano.com/report/
+to learn how the benchmark works, and what the rules are for publishing
+results.
+
+Download the benchmark and unpack it into the 'vmark' directory as follows:
+   cd
+   wget http://www.volano.com/pub/vmark2_1_2_0.class
+   kaffe vmark2_1_2_0 -o ~/vmark
+
+Make sure kaffe runs the benchmark code properly.  Start the server with
+   cd ~/vmark
+   kaffe -ms8m -mx64m COM.volano.Main &
+Then do a small test run with the client:
+   kaffe -ms8m -mx64m COM.volano.Mark -count 100 -rooms 1 -users 2
+The client should finish in a few seconds and print out its throughput
+in messages per second.
+
+Download the loopback performance test scripts:
+   cd ~/vmark
+   wget http://www.volano.com/report/server.sh
+   wget http://www.volano.com/report/client.sh
+
+(There are also network scalability test scripts; handling those is left as
+an exercise for the reader.)
+
+Edit the loopback performance test scripts to add lines for running with kaffe. 
+Here's a patch that illustrates the lines to add:
+
+--- orig/client.sh	Mon Dec 10 17:55:17 2001
++++ new/client.sh	Sat Jan  4 08:04:17 2003
+@@ -6,6 +6,9 @@
+   do
+     sleep 60
+ 
++    # default installation of kaffe
++    kaffe -ms8m -mx64m COM.volano.Mark -count 100
++
+     # Red Hat Linux 7.1
+     # /usr/java/jdk1.3.1/bin/java -server -showversion -Xms8m -Xmx64m COM.volano.Mark -count 100
+     # /usr/local/j2sdk1.3.0/bin/java -green -showversion -Djava.compiler=OpenJIT -Xms8m -Xmx64m COM.volano.Mark -count 100
+diff -Naur orig/server.sh new/server.sh
+--- orig/server.sh	Mon Dec 10 17:55:18 2001
++++ new/server.sh	Sat Jan  4 08:02:33 2003
+@@ -3,6 +3,9 @@
+ # Run this script before starting "client.sh" on the same machine.
+ rm *.log
+ 
++# default installation of kaffe
++kaffe -ms8m -mx64m COM.volano.Main
++
+ # Red Hat Linux 7.1
+ # /usr/java/jdk1.3.1/bin/java -server -showversion -Xms8m -Xmx64m COM.volano.Main
+ # /usr/local/j2sdk1.3.0/bin/java -green -showversion -Djava.compiler=OpenJIT -Xms8m -Xmx64m COM.volano.Main
+
+
+Benchmarking
+============
+
+
+Now that you've got the benchmark set up, you can do some real
+benchmarking. client.sh runs a benchmark four times and prints the
+results.
+
+sh client.sh > results.txt
+
+
+Known Issues
+============
+
+On at least one platform (in particular, embedded powerpc with a compiler I found
+in a corner somewhere), the server VM will abort with an assertion failure when
+you kill the client VM in the middle of a run (it probably helps to compile
+kaffe for debugging).  See
+  http://www.kaffe.org/pipermail/kaffe/2003-January/009500.html
+It looks like killing the volanomark client VM might be a good test of
+the locking primitives inside Kaffe.
+
+Benchmarking Kaffe using Ashes
+==============================
+Author: Dalibor Topic <robilad@yahoo.com>
+
+Introduction
+============
+
+Q: What is Ashes ?
+
+A: Ashes is a freely redistributable collection of Java benchmarks and
+shell scripts. 
+
+Q: Where can I get it ?
+
+A: Ashes is available for download at:
+http://www.sable.mcgill.ca/software
+
+Installation
+============
+
+You'll need to download ashesBase-21Mar2000.tar.gz and
+ashesSuiteCollection.tar.gz and unpack them in a directory.
+
+Then you need to set a few environment variables. How you set
+environment variables depends on your shell. It's export VAR=value in
+bash. Use absolute paths because some Ashes scripts will fail when you
+use relative paths.
+
+ASHES_SUITE_COLLECTION=/absolute-path-to/ashesSuiteCollection
+CLASSPATH=/absolute-path-to/ashesBase/classes/
+ASHES_JDK_CLASSES=/abolute-path-to-installed/kaffe/jre/rt
+ASHES_PDS=:
+PATH=$PATH:/absolute-path-to/ashesBase/bin
+
+Read the file index.html in the ashesBase directory for more
+information on installing and using Ashes.
+
+Benchmarking
+============
+
+Before you start, you need to make sure that the java command actually
+invokes kaffe on your system. If it doesn't, set
+
+PATH=/absolute-path-to-installed/kaffe/bin:$PATH
+
+You need to copy a benchmark from the Ashes suite collection to the
+current directory first. I'll use achesEasyTestSuite in this
+example. Look into ashesSuiteCollection/suites for more test suites.
+
+refreshSuite ashesEasyTestSuite
+
+You should have an ashesEasyTestSuite directory in your current
+directory now.
+
+applyCmdOnSuite executeBenchmark ashesEasyTestSuite
+
+runs each benchmark exactly once. You can check if your checkout works
+that way. You should not get any 
+
+*** Warning: Benchmark ran incorrectly! ***
+
+messages. If you do, please make sure that java invokes kaffe.  java
+-fullversion will give you information on kaffe.
+
+Now that you've got the benchmark set up, you can do some real
+benchmarking. timeBenchmark runs a benchmark ten times and prints the
+results.
+
+applyCmdOnSuite timeBenchmark ashesEasyTestSuite > results.txt
