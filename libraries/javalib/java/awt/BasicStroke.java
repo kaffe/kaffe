@@ -222,9 +222,10 @@ public class BasicStroke implements Stroke
     hash ^= cap;
     hash ^= join;
     hash ^= Float.floatToIntBits(limit);
-    
-    for (int i = 0; i < dash.length; i++)
-      hash ^=  Float.floatToIntBits(dash[i]);
+   
+    if (dash != null)
+      for (int i = 0; i < dash.length; i++)
+	hash ^=  Float.floatToIntBits(dash[i]);
 
     hash ^= Float.floatToIntBits(phase);
 
