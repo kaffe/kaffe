@@ -19,6 +19,18 @@ public class SoTimeout {
 	    } catch (IOException _) {}
 	}
         final int port = tryport;
+
+        Thread watchdog = new Thread() {
+            public void run() {
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException _) { }
+                System.out.println("Failure:   Time out.");
+                System.exit(-1);
+            }
+        };
+        watchdog.start();
+
         Thread t = new Thread() {
             public void run() {
 		try {
