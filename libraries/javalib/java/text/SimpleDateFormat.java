@@ -801,8 +801,10 @@ public class SimpleDateFormat extends DateFormat
 	    int i;
 	    for (i = offset; i < match.length; ++i)
 	      {
-		if (dateStr.startsWith(match[i], index))
-		  break;
+		if (match[i] != null)
+		  if (dateStr.toUpperCase().startsWith(match[i].toUpperCase(),
+							index))
+		    break;
 	      }
 	    if (i == match.length)
 	      {
