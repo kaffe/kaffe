@@ -4,24 +4,26 @@ What's New in CVS
 What's New in Kaffe 1.1.5
 ------------------------------------------------------
 
-* Better stack pointer / stack size handling.
-* JNI direct invocation fixes.
-* Added some internationalization support to kaffe's
-executable (fr, zh_TW).
-* Fixes for NetBSD, OpenBSD.
-* Resynced with latest GNU Classpath, GNU JAXP.
-* Compiler warning fixes.
-* Verifier moved to its own directory.
-* JNI upgrades to 1.2
-* KJC fixes.
+* Resynced with latest GNU Classpath.
+* GNU Classpath's implementation of Swing has been merged.
 * Added GNU EmbbededWindow extension from GNU Classpath.
   * gcjwebplugin is known to work with the extension.
+* Better stack pointer / stack size handling.
+* JNI direct invocation fixes.
+* Verifier moved to its own directory.
+* JNI upgrades to 1.2
 * New experimental Boehm-Weiser garbage collector.
-* DNSJava, Jessie, JZLib and gjdoc merged in.
-* GNU Classpath's implementation of Swing has been merged.
-* Tested in Ch environment.
+* Merged in JIT3 for powerpc from JanosVM.
 * Implemented weak references in the VM.
 * New Nano X AWT backend.
+* KJC temporarily replaced by jikes.
+* DNSJava, Jessie, JZLib and gjdoc merged in.
+* Added some internationalization support to kaffe's
+executable (fr, zh_TW).
+* Compiler warning fixes.
+* Tested in Ch environment.
+* Fixes for NetBSD, OpenBSD, FreeBSD, Darwin.
+* New ports to FreeBSD on x86-64 and Darwin on x86.
 
 What's New in Kaffe 1.1.3
 ------------------------------------------------------
