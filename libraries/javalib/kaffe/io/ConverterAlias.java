@@ -27,10 +27,14 @@ public class ConverterAlias {
 	alias.put("ISO_8859_1",		"8859_1");
 	alias.put("ISO 8859-1",		"8859_1");
 	alias.put("ISO 8859_1",		"8859_1");
+	alias.put("ISO_8859-1",		"8859_1");
 	alias.put("ISO8859_1",		"8859_1");
+	alias.put("ISO-IR-100",		"8859_1");
 	alias.put("LATIN1",	 	"8859_1");
+	alias.put("L1",			"8859_1");
 	alias.put("IBM819",	 	"8859_1");
 	alias.put("CP819",	 	"8859_1");
+	alias.put("CSISOLATIN1",	"8859_1");
 	alias.put("ISO-8859-2",		"8859_2");
 	alias.put("ISO-8859-3",		"8859_3");
 	alias.put("ISO-8859-4",		"8859_4");
