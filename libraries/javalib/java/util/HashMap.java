@@ -234,9 +234,7 @@ public class HashMap extends AbstractMap
 
 	private final static int bucket(Object key, int length) {
 		int hash = (key == null) ? 0 : key.hashCode();
-		if (hash < 0) {
-			hash = -hash;
-		}
+		hash &= 0x7fffffff;
 		return hash % length;
 	}
 
