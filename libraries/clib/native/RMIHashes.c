@@ -20,7 +20,21 @@
 /* #include "kaffe_rmi_server_RMIHashes.h" */
 #include "sha-1.h"
 
-extern char* pathname2ClassnameCopy(const char*);
+/*
+ * Take a class name in slashed form pkg/subpkg/name, returns 
+ * a newly allocated one in dot form pkg.subpkg.name.
+ * Caller must free using KFREE.
+ */
+char*
+pathname2ClassnameCopy(const char *orig)
+{
+	char* str;
+	str = KMALLOC(strlen(orig) + 1);
+	if (str != 0) {
+		pathname2classname(orig, str);
+	}
+	return (str);
+}
 
 jlong
 kaffe_rmi_server_RMIHashes_getMethodHash(struct Hjava_lang_reflect_Method* meth)
