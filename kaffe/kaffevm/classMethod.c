@@ -1533,9 +1533,9 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
  * The impl_index is an index for each class that is used to index the
  * implementor table of the interface when dispatching an interface
  * method.  See soft_lookupinterfacemethod in soft.c
- * It points directly at the first itable2dtable index for section
+ * It points directly at the first itable2dtable index for the section
  * that describes the interface (which is what's now redundantly stored
- * in if2itable[x].
+ * in if2itable[x].)
  *
  * This allows interface lookup in constant time.
  */
@@ -1557,7 +1557,7 @@ computeInterfaceImplementationIndex(Hjava_lang_Class* clazz, errorInfo* einfo)
 	 * We assume that a verifier design is possible that will ensure 
 	 * that a run-time object indeed implements an interface at the
 	 * time when soft_lookupinterfacemethod is invoked.  We do not have
-	 * such verifier at this point.
+	 * such a verifier at this point.
 	 */
 	i = 0;
 	do {
