@@ -4,6 +4,19 @@
 
 	2004-12-30  Michael Koch  <konqueror@gmx.de>
 
+	* javax/imageio/metadata/IIOInvalidTreeException.java
+	(IIOInvalidTreeException): Reformatted.
+	* javax/imageio/spi/IIORegistry.java
+	(static): Register ImageReaderSpi.class and ImageWriterSpi.class.
+	* javax/imageio/stream/MemoryCacheImageInputStream.java:
+	Reworked import statements.
+	
+2005-01-06  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2004-12-30  Michael Koch  <konqueror@gmx.de>
+
 	* gnu/java/awt/peer/gtk/GtkToolkit.java:
 	Explicitely import used classes.
 	(getLocalGraphicsEnvironment): Simplify.

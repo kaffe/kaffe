@@ -54,7 +54,8 @@ public class IIOInvalidTreeException extends IIOException
     this.offendingNode = offendingNode;
   }
 
-  public IIOInvalidTreeException(String message, Throwable cause, Node offendingNode)
+  public IIOInvalidTreeException(String message, Throwable cause,
+				 Node offendingNode)
   {
     super(message, cause);
     this.offendingNode = offendingNode;

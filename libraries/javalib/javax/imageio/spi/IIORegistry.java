@@ -52,8 +52,8 @@ public final class IIORegistry extends ServiceRegistry
 
   static
   {
-    //defaultCategories.add(ImageReaderSpi.class);
-    //defaultCategories.add(ImageWriterSpi.class);
+    defaultCategories.add(ImageReaderSpi.class);
+    defaultCategories.add(ImageWriterSpi.class);
     defaultCategories.add(ImageTranscoderSpi.class);
     defaultCategories.add(ImageInputStreamSpi.class);
     defaultCategories.add(ImageOutputStreamSpi.class);

@@ -38,8 +38,8 @@ exception statement from your version. */
 
 package javax.imageio.stream;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author Michael Koch (konqueror@gmx.de)
