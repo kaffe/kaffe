@@ -56,6 +56,7 @@ Hjava_lang_Class* javaLangFloatClass;
 Hjava_lang_Class* javaLangDoubleClass;
 
 Hjava_lang_Class* javaLangArrayIndexOutOfBoundsException;
+Hjava_lang_Class* javaLangNullPointerException;
 
 #define SYSTEMCLASS "java/lang/System"
 #define	SERIALCLASS "java/io/Serializable"
@@ -163,6 +164,7 @@ initBaseClasses(void)
 
 	/* Exception handling types */
 	loadStaticClass(&javaLangArrayIndexOutOfBoundsException, "java/lang/ArrayIndexOutOfBoundsException");
+	loadStaticClass(&javaLangNullPointerException, "java/lang/NullPointerException");
 
 	/* Fixup primitive types */
 	finishTypes();
