@@ -387,7 +387,7 @@ jthreadedGetHostByName(const char *host, struct hostent** out)
 }
 
 static int
-jthreadedGetHostByAddr(const char *host, int l, int t, struct hostent** out)
+jthreadedGetHostByAddr(const char *host, size_t l, int t, struct hostent** out)
 {
 	int rc = 0;
 

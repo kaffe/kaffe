@@ -342,9 +342,9 @@ static void flip_pixbuf (GdkPixbuf *pixbuf,
           guchar *right = left + channels * (width - 1);
           while (left < right)
             { 
-              g_memmove (buf, left, channels);
-              g_memmove (left, right, channels);
-              g_memmove (right, buf, channels);
+              g_memmove (buf, left, (size_t)channels);
+              g_memmove (left, right, (size_t)channels);
+              g_memmove (right, buf, (size_t)channels);
               left += channels;
               right -= channels;
             }
@@ -355,13 +355,13 @@ static void flip_pixbuf (GdkPixbuf *pixbuf,
     {
       guchar *top = src_pix;
       guchar *bottom = top + (height - 1) * src_rs;
-      gpointer buf = g_malloc (src_rs);
+      gpointer buf = g_malloc ((size_t)src_rs);
       
       while (top < bottom)
         {
-          g_memmove (buf, top, src_rs);
-          g_memmove (top, bottom, src_rs);
-          g_memmove (bottom, buf, src_rs); 
+          g_memmove (buf, top, (size_t)src_rs);
+          g_memmove (top, bottom, (size_t)src_rs);
+          g_memmove (bottom, buf, (size_t)src_rs); 
           top += src_rs;
           bottom -= src_rs;
         }

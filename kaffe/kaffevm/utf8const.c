@@ -125,7 +125,7 @@ static int		utf8ConstCompare(const void *v1, const void *v2);
 Utf8Const *
 utf8ConstNew(const char *s, int slen)
 {
-	unsigned int len;
+	size_t len;
 	Utf8Const *utf8, *temp;
 	int32 hash;
 	Utf8Const *fake;

@@ -1,5 +1,12 @@
 2004-12-12  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/utf8const.c, kaffe/kaffevm/jni/jni-string.c,
+	  kaffe/kaffevm/systems/unix-pthreads/syscalls.c,
+	  libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c:
+	  Signed/unsigned warning fixes(size_t kinda stuff).
+
+2004-12-12  Adam Heath  <doogie@brainfood.com>
+
 	* kaffe/kaffevm/thread.c, kaffe/kaffevm/thread.h:
 	  Make firstStartThread and exitThread NONRETURNING.
 

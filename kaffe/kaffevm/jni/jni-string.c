@@ -79,7 +79,7 @@ KaffeJNI_NewStringUTF(JNIEnv* env UNUSED, const char* data)
 {
   Hjava_lang_String* str;
   Utf8Const* utf8;
-  unsigned int len;
+  size_t len;
 
   BEGIN_EXCEPTION_HANDLING(0);
 
@@ -87,7 +87,7 @@ KaffeJNI_NewStringUTF(JNIEnv* env UNUSED, const char* data)
   if (!utf8ConstIsValidUtf8(data, len)) {
     str = NULL;
   } else {
-    utf8 = checkPtr(utf8ConstNew(data, len));
+    utf8 = checkPtr(utf8ConstNew(data, (int)len));
     str = utf8Const2Java(utf8);
     utf8ConstRelease(utf8);
     if (!str) {
@@ -149,7 +149,7 @@ KaffeJNI_GetStringUTFChars(JNIEnv* env, jstring data, jbool* copy)
     *copy = JNI_TRUE;
   }
 
-  buf = checkPtr(KMALLOC(KaffeJNI_GetStringUTFLength(env, data) + 1));
+  buf = checkPtr(KMALLOC((size_t)KaffeJNI_GetStringUTFLength(env, data) + 1));
 
   ptr = STRING_DATA(str);
   len = STRING_SIZE(str);
