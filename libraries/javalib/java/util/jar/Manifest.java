@@ -80,7 +80,7 @@ public class Manifest implements Cloneable {
 			Attributes attr = (Attributes)e.getValue();
 
 			out.println("Name: " + attr.getValue(NAME));
-			writeAttributes(out, main, NAME);
+			writeAttributes(out, attr, NAME);
 			out.println();
 		}
 		out.flush();
