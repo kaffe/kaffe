@@ -211,16 +211,6 @@ implements TargetDataLine
 	public class AlsaTargetDataLineGainControl
 	extends		FloatControl
 	{
-		/*
-		 *	These variables should be static. However, Java 1.1
-		 *	doesn't allow this. So they aren't.
-		 */
-		private /*static*/ final float	MAX_GAIN = 90.0F;
-		private /*static*/ final float	MIN_GAIN = -96.0F;
-
-		// TODO: recheck this value
-		private /*static*/ final int	GAIN_INCREMENTS = 1000;
-
 		// private float		m_fGain;
 		// private boolean		m_bMuted;
 

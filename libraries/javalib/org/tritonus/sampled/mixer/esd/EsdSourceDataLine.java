@@ -344,15 +344,6 @@ public class EsdSourceDataLine
 	public class EsdSourceDataLineGainControl
 		extends		FloatControl
 	{
-		/*
-		 *	These variables should be static. However, Java 1.1
-		 *	doesn't allow this. So they aren't.
-		 */
-		private /*static*/ final float	MAX_GAIN = 24.0F;
-		private /*static*/ final float	MIN_GAIN = -96.0F;
-
-
-
 		/*package*/ EsdSourceDataLineGainControl()
 		{
 			super(FloatControl.Type.MASTER_GAIN,	// or VOLUME  ?

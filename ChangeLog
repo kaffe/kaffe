@@ -1,5 +1,15 @@
 2004-12-10  Adam Heath  <doogie@brainfood.com>
 
+	* libraries/javalib/org/tritonus/sampled/mixer/alsa/AlsaBaseDataLine.java,
+	  libraries/javalib/org/tritonus/sampled/mixer/alsa/AlsaSourceDataLine.java,
+	  libraries/javalib/org/tritonus/sampled/mixer/alsa/AlsaTargetDataLine.java,
+	  libraries/javalib/org/tritonus/sampled/mixer/esd/EsdSourceDataLine.java,
+	  libraries/javalib/org/tritonus/sampled/mixer/esd/EsdTargetDataLine.java:
+	  Remove unused static variables(actually fixes a warning about assigning a
+	  constant value to a static that isn't also final).
+	
+2004-12-10  Adam Heath  <doogie@brainfood.com>
+
 	* libraries/javalib/gnu/regexp/RE.java,
 	  libraries/javalib/java/util/regex/Pattern.java:
 	  Use braces around assignments in conditions.
