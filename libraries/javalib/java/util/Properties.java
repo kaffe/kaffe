@@ -79,11 +79,15 @@ public String getProperty(String key, String defaultValue) {
 }
 
 public void list(PrintStream out) {
-	list(new PrintWriter(out));
+	list(new PrintWriter(out, true));
 }
 
 public void list(PrintWriter out) {
-	save(out, "Properties list");
+	try {
+		save(out, "Properties list");
+	} catch (IOException _) { 
+		System.err.println("unable to list properties");
+	}
 }
 
 public synchronized void load(InputStream in) throws IOException {
@@ -181,30 +185,31 @@ private String readLine(InputStream in) throws IOException
 }
 
 public synchronized void save(OutputStream out, String header) {
-	save(new PrintWriter(out), header);
-}
-
-private synchronized void save(Writer out, String header) {
 	try {
-		if (header != null) {
-			out.write("# ");
-			out.write(escape(header));
-			out.write("\n");
-		}
-
-		Enumeration keys = propertyNames();
-
-		while (keys.hasMoreElements()) {
-			String key=(String)keys.nextElement();
-			out.write(escape(key));
-			out.write("=");
-			out.write(escape(getProperty(key)));
-			out.write("\n");
-		}
+		store(out, header);
 	}
 	catch (IOException e) {
 		System.err.println("Unable to save properties: "+header);
 	}
+}
+
+public synchronized void store(OutputStream out, String header) throws IOException {
+	save(new PrintWriter(out, true), header);
+}
+
+// NB: use a PrintWriter here to get platform-specific line separator
+private synchronized void save(PrintWriter out, String header) throws IOException {
+	if (header != null) {
+		out.println("# " + escape(header));
+	}
+
+	Enumeration keys = propertyNames();
+
+	while (keys.hasMoreElements()) {
+		String key=(String)keys.nextElement();
+		out.println(escape(key) + "=" + escape(getProperty(key)));
+	}
+	out.flush();	// shouldn't be necessary
 }
 }
 
