@@ -7,6 +7,7 @@ Thu Dec  9 11:51:04 PST 1999  Archie Cobbs <archie@whistle.com>
 	libraries/clib/math/Makefile.am, libraries/clib/native/Makefile.am,
 	libraries/clib/security/Makefile.am, libraries/clib/zip/Makefile.am,
 	libraries/extensions/microsoft/clib/Makefile.am: fix libtool problem
+	* libraries/javalib/kjc.jar: update to version 1.4A
 
 Mon Dec  6 17:42:57 PST 1999  Archie Cobbs <archie@whistle.com>
 
