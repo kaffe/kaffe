@@ -1,3 +1,19 @@
+Fri Sep 27 2002 Patrick Tullmann  <pat@tullmann.org>
+	* libraries/javalib/Makefile.{am,in}: Fix bootstrap
+	rule so it works when building outside source tree.
+	
+	* libraries/javalib/rebuildLib.in: Move VERBOSE=-v
+	so its only used with KJC and not jikes; remove stale
+	comments.
+	
+	* developers/FullTest.sh: do a bootstrap build and
+	rebuild Kaffe to check if changes to bootstrap classes
+	work.
+
+	* libraries/javalib/bootstrap.classlist: java/lang/Package
+	is a bootstrap class as its referenced by Class and ClassLoader.
+	java.util.AbstractMap$3 and AbstractMap$4 added, too.
+	
 Thu Sep  5 01:08:56 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	* kaffe/kaffevm/gc.h:
 	(GC_ALLOC_JAR) added.
