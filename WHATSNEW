@@ -1,44 +1,22 @@
-What's New in Kaffe OpenVM 1.0 Beta 4
--------------------------------------
+What's New in Kaffe OpenVM 1.0.5
+--------------------------------
 
-* New Java extensions:
+* JIT port for StrongARM
 
-	o Personal Java extensions
+* JIT port for MIPS
 
-	o Serial port stuff: javax.comm (untested)
+* New JIT3 - increases performance of JIT code by a factor of 3 over the
+  old JIT system.
+	- Supports: x86, MIPS
+	- Coming soon: StrongARM, m68k, Sparc.
 
-	o Servlets: javax.servlet (untested)
+* RMI implementation (released under the Lesser GPL in conjuntion with
+  the Classpath project)
+	- Provide JDK 1.1 and JDK 1.2 compatible RMI
+	- Unimplemented: Distributed GC, Activations.
 
-* Revamped class loading, supporting class unloading
+* Now ships with KJC Java compiler, a truly Open Source Java compiler.
 
-* Revamped and much more efficient garbage collection
- 
-	o More efficient allocator
-
-	o New, cleaner gc interface
-
-* Cleaner threads interface
-
-	o Linux native threads (incomplete)
-
-* Use of libtool and automake for portability
-
-* Fully intern'd strings and UTF8 constants
-
-* Support for BeOS and OSKit
-
-* Swing improvements - now supports Swing 1.1
-
-* Object Serialization overhall - still buggy but mostly working
-
-* Beans and reflection work better now
-
-* StackOverFlowErrors now generated
-
-* New java.lang.Character for real Unicode handling.
-
-* Improved GC handling of strings
-
-* Socket timeouts
+* ....
 
 * Lots of bug fixes.
