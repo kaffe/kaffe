@@ -9,6 +9,8 @@
  * of this file. 
  */
 
+/* XXX a change for cvs */
+
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
