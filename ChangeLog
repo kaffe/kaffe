@@ -1,3 +1,8 @@
+Wed Mar 24 18:19:02 PST 1999  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/net/URL.java: Allow URL's to have a port
+	but no trailing slash; check for null's in the constructor.
+
 Wed Mar 24 16:53:57 PST 1999  Moses DeJong <dejong@cs.umn.edu>
 
 	* configure.in: enhance help message re --with-engine option
