@@ -106,10 +106,10 @@ newArray(Hjava_lang_Class* elclass, int count)
 	Hjava_lang_Object* obj;
 
 	if (CLASS_IS_PRIMITIVE(elclass)) {
-		obj = gc_malloc((TYPE_SIZE(elclass) * count) + sizeof(Array), GC_ALLOC_PRIMARRAY);
+		obj = gc_malloc((TYPE_SIZE(elclass) * count) + ARRAY_DATA_OFFSET, GC_ALLOC_PRIMARRAY);
 	}
 	else {
-		obj = gc_malloc((PTR_TYPE_SIZE * count) + sizeof(Array), GC_ALLOC_REFARRAY);
+		obj = gc_malloc((PTR_TYPE_SIZE * count) + ARRAY_DATA_OFFSET, GC_ALLOC_REFARRAY);
 	}
 	class = lookupArray(elclass);
 	obj->dtable = class->dtable;

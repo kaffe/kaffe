@@ -77,7 +77,6 @@ typedef	u1		nativecode;
 typedef u2		accessFlags;
 typedef u2		constIndex;
 
-typedef struct Array Array;
 typedef struct _fields Field;
 
 #if !defined(__DEFINED_METHOD)

@@ -291,7 +291,7 @@
 
 #define	adjustpc(a)				/* Not needed for interpreter */
 
-#define	check_array_index(O, I)			if ((I)[0].v.tint >= ((struct Array*)((O)[0].v.taddr))->length) { \
+#define	check_array_index(O, I)			if ((I)[0].v.tint >= ARRAY_SIZE((O)[0].v.taddr)) { \
 							soft_badarrayindex(); \
 						}
 #define	build_call_frame(SIG, OBJ, NRARGS)	/* Not needed for interpreter */

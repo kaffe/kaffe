@@ -22,16 +22,16 @@
 #define	OBJECT_DATA(OBJ)	((void*)((Hjava_lang_Object*)(OBJ)+1))
 
 /* Number of elements. */
-#define	ARRAY_SIZE(ARRAY)	(((Array*)(ARRAY))->length)
-#define	ARRAY_DATA(ARRAY)	((void*)((Array*)(ARRAY)+1))
-#define	OBJARRAY_DATA(ARRAY)	((Hjava_lang_Object**)((Array*)(ARRAY)+1))
+#define	ARRAY_SIZE(ARRAY)	(((HArrayOfObject*)(ARRAY))->length)
+#define	ARRAY_DATA(ARRAY)	((void*)&(((HArrayOfObject*)(ARRAY))->data))
+#define	OBJARRAY_DATA(ARRAY)	((Hjava_lang_Object**)&(((HArrayOfObject*)(ARRAY))->data))
 
 /*
  * These bizzare casts provide various offset into the object structure.
  */
 #define	OBJECT_DTABLE_OFFSET	((int)&(*(Hjava_lang_Object*)0).dtable)
 #define	ARRAY_SIZE_OFFSET	((int)&ARRAY_SIZE(0))
-#define	ARRAY_DATA_OFFSET	((int)(((Array*)0)+1))
+#define	ARRAY_DATA_OFFSET	((int)ARRAY_DATA(0))
 
 struct Hjava_lang_Class;
 
