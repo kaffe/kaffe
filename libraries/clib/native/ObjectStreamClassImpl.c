@@ -404,7 +404,7 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 	unsigned char md[SHA_DIGEST_LENGTH];
 	int mod;
 	int i;
-	uidItem* base;
+	uidItem* base = 0;
 	int len;
 	errorInfo einfo;
 	jshort tmp;
@@ -424,7 +424,9 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 	if (len < cls->interface_len) {
 		len = cls->interface_len;
 	}
-	base = KMALLOC(sizeof(uidItem) * len);
+	if (len > 0) {
+		base = KMALLOC(sizeof(uidItem) * len);
+	}
 
 	SHA1Init(&c);
 
