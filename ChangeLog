@@ -1,3 +1,9 @@
+2005-03-16  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Check for tramploines.S instead of trampolines.c.
+
+	Reported and suggested by: Christian Thalinger <twisti@complang.tuwien.ac.at>
+
 2005-03-15  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/powerpc/trampolines.c: Use common powerpc assembler

@@ -29030,7 +29030,7 @@ KAFFEVM_TRAMPOLINES_S=
 if test x"$with_engine" != x"intrp" ; then
 	echo "$as_me:$LINENO: checking for trampolines" >&5
 echo $ECHO_N "checking for trampolines... $ECHO_C" >&6
-	if test -f $srcdir/config/$Khost_cpu/trampolines.c ; then
+	if test -f $srcdir/config/$Khost_cpu/trampolines.S ; then
 		KAFFEVM_TRAMPOLINES_S="\$(top_srcdir)/config/$Khost_cpu/trampolines.S"
 
 		echo "$as_me:$LINENO: result: yes" >&5

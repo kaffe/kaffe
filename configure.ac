@@ -780,7 +780,7 @@ dnl -------------------------------------------------------------------------
 KAFFEVM_TRAMPOLINES_S=
 if test x"$with_engine" != x"intrp" ; then
 	AC_MSG_CHECKING(for trampolines)
-	if test -f $srcdir/config/$Khost_cpu/trampolines.c ; then
+	if test -f $srcdir/config/$Khost_cpu/trampolines.S ; then
 		KAFFEVM_TRAMPOLINES_S="\$(top_srcdir)/config/$Khost_cpu/trampolines.S"
 		AC_SUBST(KAFFEVM_TRAMPOLINES_S)
 		AC_MSG_RESULT(yes)
