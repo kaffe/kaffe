@@ -1,3 +1,10 @@
+Fri Mar 31 17:05:18 PST 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/net/PlainSocketImpl.java: don't synchronize
+	on read() and write()
+	* libraries/javalib/java/lang/StringBuffer.java,
+	libraries/javalib/java/lang/String.java: misc bug fixes & cleanups
+
 Thu Mar 30 13:52:54 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/thread.c: comment out too-strict assert() in intrp
@@ -9,8 +16,6 @@ Thu Mar 30 13:52:54 PST 2000  Archie Cobbs <archie@whistle.com>
 	use the right ClassLoader
 	* libraries/javalib/java/io/ObjectInputStream.java: add comment
 	note describing ClassLoader bug here
-	* libraries/javalib/java/lang/StringBuffer.java,
-	libraries/javalib/java/lang/String.java: misc bug fixes & cleanups
 
 Wed Mar 29 18:22:48 CEST 2000  Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
 
