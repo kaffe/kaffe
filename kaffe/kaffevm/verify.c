@@ -3170,12 +3170,13 @@ verifyBasicBlock(errorInfo* einfo,
 				type->tinfo = 0;
 			} else {
 				const char* namestr = CLASS_NAMED(idx, pool);
-				type->type = (Hjava_lang_Class*)namestr;
+				
 				if (*namestr == '[') {
-					type->tinfo = CLASS_SIGSTR;
-				} else {
-					type->tinfo = CLASS_NAMESTR;
+					VERIFY_ERROR("new: used to create an array");
 				}
+				
+				type->type = (Hjava_lang_Class*)namestr;
+				type->tinfo = CLASS_NAMESTR;
 			}
 			
 			*uninits = pushUninit(*uninits, type);

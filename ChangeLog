@@ -1,5 +1,10 @@
 2003-08-07  Rob Gonzalez <rob@kaffe.org>
 
+	* kaffe/kaffevm/verify.c
+	Disallow new to create array types.
+
+2003-08-07  Rob Gonzalez <rob@kaffe.org>
+
 	Committed full bytecode verifier.
 
 	* kaffe/kaffevm/verify.c
