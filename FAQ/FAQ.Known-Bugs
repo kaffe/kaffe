@@ -48,6 +48,9 @@ Treat it as an TODO list.
 * Object serialization and RMI are broken.
   Class UIDs are not computed.
 
+* Several classes do not have serialVersionUIDs hard-coded in them. This
+  makes these classes not interoperable with Sun's classes.
+
 * When making test in the test dir, GCTest.java is flagged as failing
   because output gets on one line:
     [13]:  Success[43]:  Success[11]:  Success
@@ -57,9 +60,6 @@ Treat it as an TODO list.
 * Automatically generate the external_wrappers.h files in native, net, 
   math, and zip with a sed script or equivalent.  This might require moving 
   TestNative.c elsewhere.
-
-* Under Linux, EXTRA_CFLAGS=-DDEBUG doesn't compile because dprintf is defined
-  in stdio.h. --> Solution:  rename dprintf to kaffe_dprintf.
 
 * Thread.interrupt() is not implemented properly.
 
