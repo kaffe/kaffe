@@ -12,7 +12,7 @@ package java.util.zip;
 
 // This isn't documented so I don't know what it contains .... !!!
 
-public interface ZipConstants {
+interface ZipConstants {
 
   public final static int CEN_SIGNATURE = 0;
   public final static int CEN_VERSIONMADE = 4;

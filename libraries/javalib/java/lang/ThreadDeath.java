@@ -12,6 +12,12 @@ package java.lang;
 
 public class ThreadDeath extends Error {
 
+/* NB: Sun's does not hardwire this, but we must because our computed
+ * hash will differ from Sun's because of the package local constructor
+ * below.
+ */
+private static final long serialVersionUID = -4417128565033088268L;
+
 public ThreadDeath() {
 }
 

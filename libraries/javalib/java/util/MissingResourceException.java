@@ -14,19 +14,20 @@ import java.lang.String;
 
 public class MissingResourceException extends RuntimeException {
 
-  private String clsnm;
+  // NB: both are part of serialized form
+  private String className;
   private String key;
 
   public MissingResourceException(String s, String className, String ky)
   {
     super(s);
-    clsnm = className;
+    this.className = className;
     key = ky;
   }
 
   public String getClassName()
   {
-    return (clsnm);
+    return (className);
   }
 
   public String getKey()

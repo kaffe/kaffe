@@ -13,7 +13,7 @@ import java.awt.event.WindowEvent;
  * of this file.
  * @author P.C.Mehlitz
  */
-public class EventDispatchThread
+class EventDispatchThread
   extends Thread
 {
 	boolean stop;

@@ -16,10 +16,55 @@ import kaffe.util.NotImplemented;
 
 public class MessageFormat extends Format {
 
-private Locale loc = Locale.getDefault();
-private String[] strs;
-private Format[] forms;
-private int[] argno;
+/**
+ * @serial The locale to use for formatting numbers and dates.
+ */
+private Locale locale = Locale.getDefault();
+
+/**
+ * @serial An array of ten formatters, which are used to format 
+ * the first ten arguments.
+ */
+private Format[] formats;
+
+/**
+ * @serial The argument numbers corresponding to each formatter. 
+ *  (The formatters are stored in the order they occur in the pattern, not
+ *   in the order in which the arguments are specified.)
+ */
+private int[] argumentNumber;
+
+/*
+ * XXX: this class does not conform to Sun's serial form.
+ * We list the members that need to initialized for proper serialization
+ * below.
+ */
+transient private String[] strs;
+
+/**
+ * @serial
+ *  One less than the number of entries in offsets. Can also be
+ *  thought of as the index of the highest-numbered element in
+ *  offsets that is being used. All of these arrays should have the
+ *  same number of elements being used as offsets does, and so this
+ *  variable suffices to tell us how many entries are in all of them.
+ */
+private int maxOffset;
+
+/**
+ * @serial
+ *  The positions where the results of formatting each argument are
+ *  to be inserted into the pattern.
+ */
+private int[] offsets;
+
+/**
+ * @serial
+ *  The string that the formatted values are to be plugged into. In
+ *  other words, this is the pattern supplied on construction with
+ *  all of the {} expressions taken out.
+ */
+private String pattern;
 
 public MessageFormat(String patt) {
 	applyPattern(patt);
@@ -39,9 +84,9 @@ public void applyPattern(String patt) {
 
 	// Allocate the required number of formatting arguments and enough
 	// strings to go around them.
-	forms = new Format[argcount];
+	formats = new Format[argcount];
 	strs = new String[argcount+1];
-	argno = new int[argcount];
+	argumentNumber = new int[argcount];
 
 	argcount = 0;
 	int start = 0;
@@ -87,87 +132,87 @@ private void parseFormat(String argument, int argcount) {
 	aformat = argument.substring(fstart, fend);
 	astyle = argument.substring(sstart, argument.length());
 
-	argno[argcount] = anumber;
+	argumentNumber[argcount] = anumber;
 	if (aformat.equals("time")) {
 		if (astyle.equals("")) {
-			forms[argcount] = DateFormat.getTimeInstance(DateFormat.DEFAULT, loc);
+			formats[argcount] = DateFormat.getTimeInstance(DateFormat.DEFAULT, locale);
 		}
 		else if (astyle.equals("short")) {
-			forms[argcount] = DateFormat.getTimeInstance(DateFormat.SHORT, loc);
+			formats[argcount] = DateFormat.getTimeInstance(DateFormat.SHORT, locale);
 		}
 		else if (astyle.equals("medium")) {
-			forms[argcount] = DateFormat.getTimeInstance(DateFormat.MEDIUM, loc);
+			formats[argcount] = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
 		}
 		else if (astyle.equals("long")) {
-			forms[argcount] = DateFormat.getTimeInstance(DateFormat.LONG, loc);
+			formats[argcount] = DateFormat.getTimeInstance(DateFormat.LONG, locale);
 		}
 		else if (astyle.equals("full")) {
-			forms[argcount] = DateFormat.getTimeInstance(DateFormat.FULL, loc);
+			formats[argcount] = DateFormat.getTimeInstance(DateFormat.FULL, locale);
 		}
 		else {
-			forms[argcount] = new SimpleDateFormat(astyle, loc);
+			formats[argcount] = new SimpleDateFormat(astyle, locale);
 		}
 	}
 	else if (aformat.equals("date")) {
 		if (astyle.equals("")) {
-			forms[argcount] = DateFormat.getDateInstance(DateFormat.DEFAULT, loc);
+			formats[argcount] = DateFormat.getDateInstance(DateFormat.DEFAULT, locale);
 		}
 		else if (astyle.equals("short")) {
-			forms[argcount] = DateFormat.getDateInstance(DateFormat.SHORT, loc);
+			formats[argcount] = DateFormat.getDateInstance(DateFormat.SHORT, locale);
 		}
 		else if (astyle.equals("medium")) {
-			forms[argcount] = DateFormat.getDateInstance(DateFormat.MEDIUM, loc);
+			formats[argcount] = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
 		}
 		else if (astyle.equals("long")) {
-			forms[argcount] = DateFormat.getDateInstance(DateFormat.LONG, loc);
+			formats[argcount] = DateFormat.getDateInstance(DateFormat.LONG, locale);
 		}
 		else if (astyle.equals("full")) {
-			forms[argcount] = DateFormat.getDateInstance(DateFormat.FULL, loc);
+			formats[argcount] = DateFormat.getDateInstance(DateFormat.FULL, locale);
 		}
 		else {
-			forms[argcount] = new SimpleDateFormat(astyle, loc);
+			formats[argcount] = new SimpleDateFormat(astyle, locale);
 		}
 	}
 	else if (aformat.equals("number")) {
 		if (astyle.equals("currency")) {
-			forms[argcount] = NumberFormat.getCurrencyInstance(loc);
+			formats[argcount] = NumberFormat.getCurrencyInstance(locale);
 		}
 		else if (astyle.equals("percent")) {
-			forms[argcount] = NumberFormat.getPercentInstance(loc);
+			formats[argcount] = NumberFormat.getPercentInstance(locale);
 		}
 		else if (astyle.equals("integer")) {
-			forms[argcount] = NumberFormat.getNumberInstance(loc);
+			formats[argcount] = NumberFormat.getNumberInstance(locale);
 		}
 		else {
-			forms[argcount] = new DecimalFormat(astyle, loc);
+			formats[argcount] = new DecimalFormat(astyle, locale);
 		}
 	}
 	else if (aformat.equals("choice")) {
-		forms[argcount] = new ChoiceFormat(astyle);
+		formats[argcount] = new ChoiceFormat(astyle);
 	}
 	else {
 		// Should be a string.
-		forms[argcount] = null;
+		formats[argcount] = null;
 	}
 }
 
 public Object clone() {
 	MessageFormat obj = new MessageFormat("");
-	obj.loc = this.loc;
+	obj.locale = this.locale;
 	obj.strs = this.strs;
-	obj.forms = this.forms;
-	obj.argno = this.argno;
+	obj.formats = this.formats;
+	obj.argumentNumber = this.argumentNumber;
 	return (obj);
 }
 
 public boolean equals(Object obj) {
 	try {
 		MessageFormat other = (MessageFormat)obj;
-		if (loc != other.loc) {
+		if (locale != other.locale) {
 			return (false);
 		}
-		for (int i = 0; i < forms.length; i++) {
-			if (!forms[i].equals(other.forms[i])) {
+		for (int i = 0; i < formats.length; i++) {
+			if (!formats[i].equals(other.formats[i])) {
 				return (false);
 			}
 			if (!strs[i].equals(other.strs[i])) {
@@ -187,13 +232,13 @@ public static String format(String patt, Object args[]) {
 
 public final StringBuffer format(Object args[], StringBuffer buf, FieldPosition ignore) {
 	FieldPosition dummy = new FieldPosition(0);
-	for (int i = 0; i < forms.length; i++) {
+	for (int i = 0; i < formats.length; i++) {
 		buf.append(strs[i]);
-		if (forms[i] == null) {
-			buf.append(args[argno[i]].toString());
+		if (formats[i] == null) {
+			buf.append(args[argumentNumber[i]].toString());
 		}
 		else {
-			forms[i].format(args[argno[i]], buf, dummy);
+			formats[i].format(args[argumentNumber[i]], buf, dummy);
 		}
 	}
 	buf.append(strs[strs.length - 1]);
@@ -210,11 +255,11 @@ public final StringBuffer format(Object arg, StringBuffer append, FieldPosition 
 }
 
 public Format[] getFormats() {
-	return (forms);
+	return (formats);
 }
 
 public Locale getLocale() {
-	return (loc);
+	return (locale);
 }
 
 public int hashCode() {
@@ -235,15 +280,15 @@ public Object parseObject(String str, ParsePosition pos) {
 }
 
 public void setFormat(int num, Format newformat) {
-	forms[num] = newformat;
+	formats[num] = newformat;
 }
 
 public void setFormats(Format[] newformats) {
-	forms = newformats;
+	formats = newformats;
 }
 
 public void setLocale(Locale loc) {
-	this.loc = loc;
+	this.locale = loc;
 }
 
 public String toPattern() {

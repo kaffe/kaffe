@@ -14,7 +14,7 @@ public class DataTruncation
   extends SQLWarning {
 
 private int index;
-private boolean param;
+private boolean parameter;
 private boolean read;
 private int dataSize;
 private int transferSize;
@@ -22,7 +22,7 @@ private int transferSize;
 public DataTruncation(int index, boolean parameter, boolean read, int dataSize, int transferSize) {
 	super("Data truncation", "01004");
 	this.index = index;
-	this.param = parameter;
+	this.parameter = parameter;
 	this.read = read;
 	this.dataSize = dataSize;
 	this.transferSize = transferSize;
@@ -33,7 +33,7 @@ public int getIndex() {
 }
 
 public boolean getParameter() {
-	return (param);
+	return (parameter);
 }
 
 public boolean getRead() {

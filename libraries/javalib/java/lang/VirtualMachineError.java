@@ -10,7 +10,7 @@ package java.lang;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public class VirtualMachineError
+public abstract class VirtualMachineError
   extends Error
 {
 public VirtualMachineError () {

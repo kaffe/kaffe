@@ -14,43 +14,44 @@ import java.util.EventObject;
 
 public class PropertyChangeEvent extends EventObject {
 
-  private String pname;
-  private Object ovalue;
-  private Object nvalue;
-  private Object pid;
+  // NB: these are all part of the serial form
+  private String propertyName;
+  private Object oldValue;
+  private Object newValue;
+  private Object propagationId;
 
   public PropertyChangeEvent(Object source, String propertyName, Object oldValue, Object newValue)
   {
     super(source);
-    pname = propertyName;
-    ovalue = oldValue;
-    nvalue = newValue;
-    pid = null;
+    propertyName = propertyName;
+    oldValue = oldValue;
+    newValue = newValue;
+    propagationId = null;
   }
 
   public String getPropertyName()
   {
-    return (pname);
+    return (propertyName);
   }
 
   public Object getNewValue()
   {
-    return (nvalue);
+    return (newValue);
   }
 
   public Object getOldValue()
   {
-    return (ovalue);
+    return (oldValue);
   }
 
   public void setPropagationId(Object propagationId)
   {
-    pid = propagationId;
+    propagationId = propagationId;
   }
 
   public Object getPropagationId()
   {
-    return (pid);
+    return (propagationId);
   }
 
 }

@@ -13,14 +13,15 @@ package java.sql;
 public class SQLException
   extends Exception {
 
-private String state;
-private int code;
+// NB: these are part of the serial form;
+private String SQLState;
+private int vendorCode;
 private SQLException next;
 
 public SQLException(String reason, String SQLState, int vendorCode) {
 	super(reason);
-	state = SQLState;
-	code = vendorCode;
+	this.SQLState = SQLState;
+	this.vendorCode = vendorCode;
 	next = null;
 }
 
@@ -37,11 +38,11 @@ public SQLException() {
 }
 
 public String getSQLState() {
-	return (state);
+	return (SQLState);
 }
 
 public int getErrorCode() {
-	return (code);
+	return (vendorCode);
 }
 
 public SQLException getNextException() {

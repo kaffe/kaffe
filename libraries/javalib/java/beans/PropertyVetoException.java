@@ -12,17 +12,17 @@ package java.beans;
 
 public class PropertyVetoException extends Exception {
 
-  private PropertyChangeEvent e;
+  private PropertyChangeEvent evt;
 
   public PropertyVetoException(String mess, PropertyChangeEvent evt)
   {
     super(mess);
-    e = evt;
+    evt = evt;
   }
 
   public PropertyChangeEvent getPropertyChangeEvent()
   {
-    return (e);
+    return (evt);
   }
 
 }
