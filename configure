@@ -2463,9 +2463,9 @@ ENGINE_NAME="$with_engine"
 engine_frag=$srcdir/kaffe/kaffevm/$with_engine/Makefile.frag
 
 
-# Check whether --with-debug or --without-debug was given.
-if test "${with_debug+set}" = set; then
-  withval="$with_debug"
+# Check whether --enable-debug or --disable-debug was given.
+if test "${enable_debug+set}" = set; then
+  enableval="$enable_debug"
   :
 fi
 
@@ -7654,6 +7654,7 @@ kaffe/scripts/jar \
 kaffe/scripts/javap \
 kaffe/scripts/jdb \
 kaffe/scripts/kjc \
+kaffe/scripts/kopi \
 kaffe/scripts/javadoc \
 kaffe/scripts/appletviewer \
 kaffe/scripts/rmic \
@@ -7896,6 +7897,7 @@ kaffe/scripts/jar \
 kaffe/scripts/javap \
 kaffe/scripts/jdb \
 kaffe/scripts/kjc \
+kaffe/scripts/kopi \
 kaffe/scripts/javadoc \
 kaffe/scripts/appletviewer \
 kaffe/scripts/rmic \
