@@ -127,8 +127,8 @@ public abstract class AbstractMap implements Map {
 	}
 
 	public Collection values() {
-		if (keyset != null) {
-			return keyset;
+		if (valcol != null) {
+			return valcol;
 		}
 		valcol = new AbstractCollection() {
 			public int size() {
