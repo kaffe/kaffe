@@ -3904,7 +3904,7 @@ checkMethodCall(errorInfo* einfo, const Method* method,
 			if (receiver->tinfo & TINFO_UNINIT) {
 				UninitializedType* uninit = receiver->data.uninit;
 				
-				if (receiver->tinfo & TINFO_UNINIT_SUPER) {
+				if (receiver->tinfo == TINFO_UNINIT_SUPER) {
 					Type t;
 					t.tinfo = TINFO_CLASS;
 					t.data.class = uninit->type.data.class->superclass;
