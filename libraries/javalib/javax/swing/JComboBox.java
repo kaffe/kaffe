@@ -192,8 +192,9 @@ public class JComboBox extends JComponent implements ItemSelectable,
   private Object prototypeDisplayValue;
 
   /**
-   * Constructs JComboBox object with specified data model for it. The first
-   * item in the specified data model is selected by default.
+   * Constructs JComboBox object with specified data model for it.
+   * <p>Note that the JComboBox will not change the value that
+   * is preselected by your ComboBoxModel implementation.</p>
    *
    * @param model Data model that will be used by this JComboBox to keep track
    *        of its list of items.
@@ -205,11 +206,6 @@ public class JComboBox extends JComponent implements ItemSelectable,
     setMaximumRowCount(DEFAULT_MAXIMUM_ROW_COUNT);
     setModel(model);
     setActionCommand("comboBoxChanged");
-
-    /* By default set selected item to the first element in the combo box
-     * or select nothing if there are no elements.
-     */
-    setSelectedIndex(getItemCount() != 0 ? 0 : -1);    
 
     lightWeightPopupEnabled = true;
     isEditable = false;
