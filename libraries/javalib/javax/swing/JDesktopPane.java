@@ -87,7 +87,7 @@ public class JDesktopPane extends JLayeredPane implements Accessible
   /**
    * AccessibleJDesktopPane
    */
-  protected class AccessibleJDesktopPane extends AccessibleJComponent
+  protected class AccessibleJDesktopPane extends JComponent.AccessibleJComponent
   {
     /** DOCUMENT ME! */
     private static final long serialVersionUID = 6079388927946077570L;

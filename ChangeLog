@@ -1,5 +1,10 @@
 2004-10-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/javax/swing/JDesktopPane.java:
+	Added workaround for kjc back.
+
+2004-10-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c:
 	New file taken from GNU Classpath.
 
