@@ -161,6 +161,26 @@ public static final int HANGING_BASELINE = 2;
    */
   public static final int LAYOUT_NO_LIMIT_CONTEXT = 4;
 
+  /**
+   * The logical name of this font.
+   *
+   * @since 1.0
+   */
+  protected String name;
+
+  /**
+   * The size of this font in pixels.
+   *
+   * @since 1.0
+   */
+  protected int size;
+
+  /**
+   * The style of this font -- PLAIN, BOLD, ITALIC or BOLD+ITALIC.
+   *
+   * @since 1.0
+   */
+  protected int style;
 
 // Serialization constant
 private static final long serialVersionUID = -4206021311591459213L;
