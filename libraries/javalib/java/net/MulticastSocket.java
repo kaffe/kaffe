@@ -35,6 +35,13 @@ public InetAddress getInterface() throws SocketException {
 	return (iface);
 }
 
+public int getTimeToLive() throws IOException {
+	return getTTL();
+}
+
+/**
+ * @deprecated.
+ */
 public byte getTTL() throws IOException {
 	return (impl.getTTL());
 }
@@ -58,6 +65,17 @@ public void setInterface(InetAddress inf) throws SocketException {
 	iface = inf;
 }
 
+public void setTimeToLive(int ttl)  throws IOException {
+	if (ttl < 0 || ttl > 255) {
+		throw new IllegalArgumentException("ttl out of range");
+	}
+
+	setTTL((byte) ttl);
+}
+
+/**
+ * @deprecated.
+ */
 public void setTTL(byte ttl) throws IOException {
 	impl.setTTL(ttl);
 }
