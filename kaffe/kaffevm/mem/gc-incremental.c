@@ -243,7 +243,7 @@ gc_heap_isobject(gc_block *info, gc_unit *unit)
 	return 0;
 }
 
-static inline void
+static void
 markObjectDontCheck(gc_unit *unit, gc_block *info, int idx)
 {
 	/* If the object has been traced before, don't do it again. */

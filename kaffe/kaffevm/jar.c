@@ -376,8 +376,8 @@ void flushJarCache(void)
  * This also takes an `instantiation' function which is used to convert
  * any data into the proper byte order and alignment.
  */
-static inline int jarRead(jarFile *jf, uint8 *buf, size_t len,
-			  int (*ins_func)(uint8 *dest, uint8 *src))
+static int jarRead(jarFile *jf, uint8 *buf, size_t len,
+		   int (*ins_func)(uint8 *dest, uint8 *src))
 {
 	int retval = -1;
 
@@ -552,7 +552,7 @@ do { \
  * Note 2: We're hoping that the compiler is smart enough to drop the unused
  * data members when inlining...
  */
-static inline int
+static int
 instantiateCentralDir(uint8 *dest, uint8 *buf)
 {
 	jarCentralDirectoryRecord *cdr = (jarCentralDirectoryRecord *)dest;
@@ -579,7 +579,7 @@ instantiateCentralDir(uint8 *dest, uint8 *buf)
 	return( FILE_SIZEOF_CENTRALDIR );
 }
 
-static inline int
+static int
 instantiateLocalHeader(uint8 *dest, uint8 *buf)
 {
 	jarLocalHeader *lh = (jarLocalHeader *)dest;
@@ -600,7 +600,7 @@ instantiateLocalHeader(uint8 *dest, uint8 *buf)
 	return( FILE_SIZEOF_LOCALHEADER );
 }
 
-static inline int
+static int
 instantiateCentralDirEnd(uint8 *dest, uint8 *buf)
 {
 	jarCentralDirectoryEnd *cde = (jarCentralDirectoryEnd *)dest;

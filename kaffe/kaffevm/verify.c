@@ -355,7 +355,7 @@ verify3(Hjava_lang_Class* class, errorInfo *einfo)
 /* to make sure we don't forget to unalloc anything...
  * should be called during ANY EXIT FROM verifyMethod
  */
-static inline
+static
 void
 cleanupInVerifyMethod(uint32* status, SigStack* sigs, UninitializedType* uninits, uint32* numBlocks, BlockInfo ** blocks)
 {
