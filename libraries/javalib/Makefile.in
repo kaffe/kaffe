@@ -509,7 +509,6 @@ Klasses_jar_SRCS = \
 	$(gnu_xml_aelfred2_SRCS) \
 	$(gnu_xml_dom_SRCS) \
 	$(gnu_xml_dom_ls_SRCS) \
-	$(gnu_xml_libxmlj_SRCS) \
 	$(gnu_xml_libxmlj_dom_SRCS) \
 	$(gnu_xml_libxmlj_sax_SRCS) \
 	$(gnu_xml_libxmlj_transform_SRCS) \
@@ -667,7 +666,7 @@ Klasses_jar_SRCS = \
 	$(org_w3c_dom_bootstrap_SRCS) \
 	$(org_w3c_dom_css_SRCS) \
 	$(org_w3c_dom_events_SRCS) \
-	$(org_w3c_dom_html_SRCS) \
+	$(org_w3c_dom_html2_SRCS) \
 	$(org_w3c_dom_ls_SRCS) \
 	$(org_w3c_dom_ranges_SRCS) \
 	$(org_w3c_dom_stylesheets_SRCS) \
@@ -2033,6 +2032,7 @@ gnu_xml_dom_SRCS = \
 	gnu/xml/dom/DomImpl.java \
 	gnu/xml/dom/DomIterator.java \
 	gnu/xml/dom/DomNamedNodeMap.java \
+	gnu/xml/dom/DomNodeIterator.java \
 	gnu/xml/dom/DomNode.java \
 	gnu/xml/dom/DomNotation.java \
 	gnu/xml/dom/DomNsNode.java \
@@ -2059,11 +2059,6 @@ gnu_xml_dom_ls_SRCS = \
 	gnu/xml/dom/ls/SAXEventSink.java \
 	gnu/xml/dom/ls/WriterOutputStream.java
 
-gnu_xml_libxmlj_SRCS = \
-	gnu/xml/libxmlj/RawData32.java \
-	gnu/xml/libxmlj/RawData64.java \
-	gnu/xml/libxmlj/RawData.java
-
 gnu_xml_libxmlj_dom_SRCS = \
 	gnu/xml/libxmlj/dom/GnomeAttr.java \
 	gnu/xml/libxmlj/dom/GnomeCDATASection.java \
@@ -2080,7 +2075,6 @@ gnu_xml_libxmlj_dom_SRCS = \
 	gnu/xml/libxmlj/dom/GnomeEntity.java \
 	gnu/xml/libxmlj/dom/GnomeEntityReference.java \
 	gnu/xml/libxmlj/dom/GnomeNamedNodeMap.java \
-	gnu/xml/libxmlj/dom/GnomeNodeIterator.java \
 	gnu/xml/libxmlj/dom/GnomeNode.java \
 	gnu/xml/libxmlj/dom/GnomeNodeList.java \
 	gnu/xml/libxmlj/dom/GnomeNotation.java \
@@ -2105,7 +2099,6 @@ gnu_xml_libxmlj_transform_SRCS = \
 	gnu/xml/libxmlj/transform/ErrorListenerErrorHandler.java \
 	gnu/xml/libxmlj/transform/GnomeTransformerFactory.java \
 	gnu/xml/libxmlj/transform/GnomeTransformer.java \
-	gnu/xml/libxmlj/transform/TransformTest.java \
 	gnu/xml/libxmlj/transform/URIResolverEntityResolver.java
 
 gnu_xml_libxmlj_util_SRCS = \
@@ -2246,7 +2239,6 @@ gnu_xml_xpath_SRCS = \
 	gnu/xml/xpath/XPathFactoryImpl.java \
 	gnu/xml/xpath/XPathImpl.java \
 	gnu/xml/xpath/XPathParser.java \
-	gnu/xml/xpath/XPathTest.java \
 	gnu/xml/xpath/XPathTokenizer.java
 
 java_applet_SRCS = \
@@ -4921,18 +4913,7 @@ org_w3c_dom_bootstrap_SRCS = \
 
 org_w3c_dom_css_SRCS = \
 	org/w3c/dom/css/Counter.java \
-	org/w3c/dom/css/CSS2Azimuth.java \
-	org/w3c/dom/css/CSS2BackgroundPosition.java \
-	org/w3c/dom/css/CSS2BorderSpacing.java \
-	org/w3c/dom/css/CSS2CounterIncrement.java \
-	org/w3c/dom/css/CSS2CounterReset.java \
-	org/w3c/dom/css/CSS2Cursor.java \
-	org/w3c/dom/css/CSS2FontFaceSrc.java \
-	org/w3c/dom/css/CSS2FontFaceWidths.java \
-	org/w3c/dom/css/CSS2PageSize.java \
-	org/w3c/dom/css/CSS2PlayDuring.java \
 	org/w3c/dom/css/CSS2Properties.java \
-	org/w3c/dom/css/CSS2TextShadow.java \
 	org/w3c/dom/css/CSSCharsetRule.java \
 	org/w3c/dom/css/CSSFontFaceRule.java \
 	org/w3c/dom/css/CSSImportRule.java \
@@ -4964,63 +4945,63 @@ org_w3c_dom_events_SRCS = \
 	org/w3c/dom/events/MutationEvent.java \
 	org/w3c/dom/events/UIEvent.java
 
-org_w3c_dom_html_SRCS = \
-	org/w3c/dom/html/HTMLAnchorElement.java \
-	org/w3c/dom/html/HTMLAppletElement.java \
-	org/w3c/dom/html/HTMLAreaElement.java \
-	org/w3c/dom/html/HTMLBaseElement.java \
-	org/w3c/dom/html/HTMLBaseFontElement.java \
-	org/w3c/dom/html/HTMLBodyElement.java \
-	org/w3c/dom/html/HTMLBRElement.java \
-	org/w3c/dom/html/HTMLButtonElement.java \
-	org/w3c/dom/html/HTMLCollection.java \
-	org/w3c/dom/html/HTMLDirectoryElement.java \
-	org/w3c/dom/html/HTMLDivElement.java \
-	org/w3c/dom/html/HTMLDListElement.java \
-	org/w3c/dom/html/HTMLDocument.java \
-	org/w3c/dom/html/HTMLDOMImplementation.java \
-	org/w3c/dom/html/HTMLElement.java \
-	org/w3c/dom/html/HTMLFieldSetElement.java \
-	org/w3c/dom/html/HTMLFontElement.java \
-	org/w3c/dom/html/HTMLFormElement.java \
-	org/w3c/dom/html/HTMLFrameElement.java \
-	org/w3c/dom/html/HTMLFrameSetElement.java \
-	org/w3c/dom/html/HTMLHeadElement.java \
-	org/w3c/dom/html/HTMLHeadingElement.java \
-	org/w3c/dom/html/HTMLHRElement.java \
-	org/w3c/dom/html/HTMLHtmlElement.java \
-	org/w3c/dom/html/HTMLIFrameElement.java \
-	org/w3c/dom/html/HTMLImageElement.java \
-	org/w3c/dom/html/HTMLInputElement.java \
-	org/w3c/dom/html/HTMLIsIndexElement.java \
-	org/w3c/dom/html/HTMLLabelElement.java \
-	org/w3c/dom/html/HTMLLegendElement.java \
-	org/w3c/dom/html/HTMLLIElement.java \
-	org/w3c/dom/html/HTMLLinkElement.java \
-	org/w3c/dom/html/HTMLMapElement.java \
-	org/w3c/dom/html/HTMLMenuElement.java \
-	org/w3c/dom/html/HTMLMetaElement.java \
-	org/w3c/dom/html/HTMLModElement.java \
-	org/w3c/dom/html/HTMLObjectElement.java \
-	org/w3c/dom/html/HTMLOListElement.java \
-	org/w3c/dom/html/HTMLOptGroupElement.java \
-	org/w3c/dom/html/HTMLOptionElement.java \
-	org/w3c/dom/html/HTMLParagraphElement.java \
-	org/w3c/dom/html/HTMLParamElement.java \
-	org/w3c/dom/html/HTMLPreElement.java \
-	org/w3c/dom/html/HTMLQuoteElement.java \
-	org/w3c/dom/html/HTMLScriptElement.java \
-	org/w3c/dom/html/HTMLSelectElement.java \
-	org/w3c/dom/html/HTMLStyleElement.java \
-	org/w3c/dom/html/HTMLTableCaptionElement.java \
-	org/w3c/dom/html/HTMLTableCellElement.java \
-	org/w3c/dom/html/HTMLTableColElement.java \
-	org/w3c/dom/html/HTMLTableElement.java \
-	org/w3c/dom/html/HTMLTableRowElement.java \
-	org/w3c/dom/html/HTMLTableSectionElement.java \
-	org/w3c/dom/html/HTMLTextAreaElement.java \
-	org/w3c/dom/html/HTMLTitleElement.java \
-	org/w3c/dom/html/HTMLUListElement.java
+org_w3c_dom_html2_SRCS = \
+	org/w3c/dom/html2/HTMLAnchorElement.java \
+	org/w3c/dom/html2/HTMLAppletElement.java \
+	org/w3c/dom/html2/HTMLAreaElement.java \
+	org/w3c/dom/html2/HTMLBaseElement.java \
+	org/w3c/dom/html2/HTMLBaseFontElement.java \
+	org/w3c/dom/html2/HTMLBodyElement.java \
+	org/w3c/dom/html2/HTMLBRElement.java \
+	org/w3c/dom/html2/HTMLButtonElement.java \
+	org/w3c/dom/html2/HTMLCollection.java \
+	org/w3c/dom/html2/HTMLDirectoryElement.java \
+	org/w3c/dom/html2/HTMLDivElement.java \
+	org/w3c/dom/html2/HTMLDListElement.java \
+	org/w3c/dom/html2/HTMLDocument.java \
+	org/w3c/dom/html2/HTMLElement.java \
+	org/w3c/dom/html2/HTMLFieldSetElement.java \
+	org/w3c/dom/html2/HTMLFontElement.java \
+	org/w3c/dom/html2/HTMLFormElement.java \
+	org/w3c/dom/html2/HTMLFrameElement.java \
+	org/w3c/dom/html2/HTMLFrameSetElement.java \
+	org/w3c/dom/html2/HTMLHeadElement.java \
+	org/w3c/dom/html2/HTMLHeadingElement.java \
+	org/w3c/dom/html2/HTMLHRElement.java \
+	org/w3c/dom/html2/HTMLHtmlElement.java \
+	org/w3c/dom/html2/HTMLIFrameElement.java \
+	org/w3c/dom/html2/HTMLImageElement.java \
+	org/w3c/dom/html2/HTMLInputElement.java \
+	org/w3c/dom/html2/HTMLIsIndexElement.java \
+	org/w3c/dom/html2/HTMLLabelElement.java \
+	org/w3c/dom/html2/HTMLLegendElement.java \
+	org/w3c/dom/html2/HTMLLIElement.java \
+	org/w3c/dom/html2/HTMLLinkElement.java \
+	org/w3c/dom/html2/HTMLMapElement.java \
+	org/w3c/dom/html2/HTMLMenuElement.java \
+	org/w3c/dom/html2/HTMLMetaElement.java \
+	org/w3c/dom/html2/HTMLModElement.java \
+	org/w3c/dom/html2/HTMLObjectElement.java \
+	org/w3c/dom/html2/HTMLOListElement.java \
+	org/w3c/dom/html2/HTMLOptGroupElement.java \
+	org/w3c/dom/html2/HTMLOptionElement.java \
+	org/w3c/dom/html2/HTMLOptionsCollection.java \
+	org/w3c/dom/html2/HTMLParagraphElement.java \
+	org/w3c/dom/html2/HTMLParamElement.java \
+	org/w3c/dom/html2/HTMLPreElement.java \
+	org/w3c/dom/html2/HTMLQuoteElement.java \
+	org/w3c/dom/html2/HTMLScriptElement.java \
+	org/w3c/dom/html2/HTMLSelectElement.java \
+	org/w3c/dom/html2/HTMLStyleElement.java \
+	org/w3c/dom/html2/HTMLTableCaptionElement.java \
+	org/w3c/dom/html2/HTMLTableCellElement.java \
+	org/w3c/dom/html2/HTMLTableColElement.java \
+	org/w3c/dom/html2/HTMLTableElement.java \
+	org/w3c/dom/html2/HTMLTableRowElement.java \
+	org/w3c/dom/html2/HTMLTableSectionElement.java \
+	org/w3c/dom/html2/HTMLTextAreaElement.java \
+	org/w3c/dom/html2/HTMLTitleElement.java \
+	org/w3c/dom/html2/HTMLUListElement.java
 
 org_w3c_dom_ls_SRCS = \
 	org/w3c/dom/ls/DOMImplementationLS.java \

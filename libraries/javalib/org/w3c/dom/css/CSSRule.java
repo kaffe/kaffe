@@ -65,14 +65,6 @@ public interface CSSRule {
     /**
      *  The parsable textual representation of the rule. This reflects the 
      * current state of the rule and not its initial value. 
-     * @exception DOMException
-     *   SYNTAX_ERR: Raised if the specified CSS string value has a syntax 
-     *   error and is unparsable.
-     *   <br>INVALID_MODIFICATION_ERR: Raised if the specified CSS string 
-     *   value represents a different type of rule than the current one.
-     *   <br>HIERARCHY_REQUEST_ERR: Raised if the rule cannot be inserted at 
-     *   this point in the style sheet.
-     *   <br>NO_MODIFICATION_ALLOWED_ERR: Raised if the rule is readonly.
      */
     public String getCssText();
     /**

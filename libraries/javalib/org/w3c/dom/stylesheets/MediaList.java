@@ -28,11 +28,6 @@ public interface MediaList {
     /**
      *  The parsable textual representation of the media list. This is a 
      * comma-separated list of media. 
-     * @exception DOMException
-     *   SYNTAX_ERR: Raised if the specified string value has a syntax error 
-     *   and is unparsable.
-     *   <br>NO_MODIFICATION_ALLOWED_ERR: Raised if this media list is 
-     *   readonly.
      */
     public String getMediaText();
     /**

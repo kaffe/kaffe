@@ -83,9 +83,6 @@ public interface TreeWalker {
      * <code>currentNode</code> even if it is not part of the current view, 
      * by applying the filters in the requested direction; if no traversal 
      * is possible, <code>currentNode</code> is not changed. 
-     * @exception DOMException
-     *   NOT_SUPPORTED_ERR: Raised if an attempt is made to set 
-     *   <code>currentNode</code> to <code>null</code>.
      */
     public Node getCurrentNode();
     /**

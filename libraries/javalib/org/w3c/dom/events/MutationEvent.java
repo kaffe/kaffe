@@ -50,14 +50,14 @@ public interface MutationEvent extends Event {
     /**
      *  <code>prevValue</code> indicates the previous value of the 
      * <code>Attr</code> node in DOMAttrModified events, and of the 
-     * <code>CharacterData</code> node in DOMCharDataModified events. 
+     * <code>CharacterData</code> node in DOMCharacterDataModified events. 
      */
     public String getPrevValue();
 
     /**
      *  <code>newValue</code> indicates the new value of the <code>Attr</code> 
      * node in DOMAttrModified events, and of the <code>CharacterData</code> 
-     * node in DOMCharDataModified events. 
+     * node in DOMCharacterDataModified events. 
      */
     public String getNewValue();
 

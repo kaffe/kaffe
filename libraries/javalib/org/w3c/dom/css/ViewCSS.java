@@ -30,7 +30,7 @@ import org.w3c.dom.views.AbstractView;
  */
 public interface ViewCSS extends AbstractView {
     /**
-     *  This method is used to get the computed style as it is defined in . 
+     *  This method is used to get the computed style as it is defined in [<a href='http://www.w3.org/TR/1998/REC-CSS2-19980512'>CSS2</a>]. 
      * @param elt  The element whose style is to be computed. This parameter 
      *   cannot be null. 
      * @param pseudoElt  The pseudo-element or <code>null</code> if none. 

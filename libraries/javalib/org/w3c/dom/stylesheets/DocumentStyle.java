@@ -27,7 +27,7 @@ public interface DocumentStyle {
      * embedded in a document. For HTML documents, this includes external 
      * style sheets, included via the HTML  LINK element, and inline  STYLE 
      * elements. In XML, this includes external style sheets, included via 
-     * style sheet processing instructions (see ). 
+     * style sheet processing instructions (see [XML StyleSheet]). 
      */
     public StyleSheetList getStyleSheets();
 

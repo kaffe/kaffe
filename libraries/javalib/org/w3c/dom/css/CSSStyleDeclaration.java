@@ -40,11 +40,6 @@ public interface CSSStyleDeclaration {
      * result in the parsing of the new value and resetting of all the 
      * properties in the declaration block including the removal or addition 
      * of properties. 
-     * @exception DOMException
-     *   SYNTAX_ERR: Raised if the specified CSS string value has a syntax 
-     *   error and is unparsable.
-     *   <br>NO_MODIFICATION_ALLOWED_ERR: Raised if this declaration is 
-     *   readonly or a property is readonly.
      */
     public String getCssText();
     /**
@@ -106,24 +101,27 @@ public interface CSSStyleDeclaration {
 
     /**
      *  Used to retrieve the priority of a CSS property (e.g. the 
-     * <code>"important"</code> qualifier) if the property has been 
+     * <code>"important"</code> qualifier) if the priority has been 
      * explicitly set in this declaration block. 
      * @param propertyName  The name of the CSS property. See the CSS 
      *   property index. 
      * @return  A string representing the priority (e.g. 
-     *   <code>"important"</code>) if one exists. The empty string if none 
-     *   exists. 
+     *   <code>"important"</code>) if the property has been explicitly set 
+     *   in this declaration block and has a priority specified. The empty 
+     *   string otherwise. 
      */
     public String getPropertyPriority(String propertyName);
 
     /**
      *  Used to set a property value and priority within this declaration 
-     * block. 
+     * block. <code>setProperty</code> permits to modify a property or add a 
+     * new one in the declaration block. Any call to this method may modify 
+     * the order of properties in the <code>item</code> method.
      * @param propertyName  The name of the CSS property. See the CSS 
      *   property index. 
      * @param value  The new value of the property. 
      * @param priority  The new priority of the property (e.g. 
-     *   <code>"important"</code>).  
+     *   <code>"important"</code>) or the empty string if none.  
      * @exception DOMException
      *   SYNTAX_ERR: Raised if the specified value has a syntax error and is 
      *   unparsable.
