@@ -1,3 +1,10 @@
+Thu Aug 15 14:35:16 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/rebuildLib.in: removed the 32 MB cap on memory
+	utilisation during compilation of class libraries as it prevented
+	kaffe from compiling its class libraries on
+	sparc-solaris-jit/intrp and i386-freebsd-intrp.
+
 Thu Aug 15 14:20:20 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 	Merged in fixes for classMethod.c from JanosVM 0.6.0
 

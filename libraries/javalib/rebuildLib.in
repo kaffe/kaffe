@@ -28,9 +28,7 @@ if [ "$JIKES" = "" ] ; then
 	if [ -z "$JAVA" ]; then
 		test -f ${TOPBLD}/BUILD_ENVIRONMENT &&
 		. ${TOPBLD}/BUILD_ENVIRONMENT
-		# Limit heap to 32M in an attempt to get it to
-		# compile on machines with limited memory
-		JAVA="$JAVA -verbosegc -mx 32M -ms 30M"
+		JAVA="$JAVA -verbosegc"
 	fi
 	if [ -z "$JAVAC" ]; then
 		JAVAC="$JAVA at.dms.kjc.Main"
