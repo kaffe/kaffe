@@ -12,25 +12,90 @@
 #ifndef __sparc_common_h
 #define __sparc_common_h
 
-#define	sysdepCallMethod(CALL)						\
-	asm volatile ("							\n\
-		cmp %2,0						\n\
-		be 1f							\n\
-		nop							\n\
-		ld [%2],%%o0						\n\
-		ld [%2+8],%%o1						\n\
-		ld [%2+16],%%o2						\n\
-		ld [%2+24],%%o3						\n\
-		ld [%2+32],%%o4						\n\
-		ld [%2+40],%%o5						\n\
-	1:								\n\
-		call %1,0						\n\
-		nop							\n\
-		st %%o0,[%0]						\n\
-	" :								\
-	  : "r" ((CALL)->ret),						\
-	    "r" ((CALL)->function),					\
-	    "r" ((CALL)->args)						\
-	  : "g1" , "g2", "g3", "g4", "o0", "o1", "o2", "o3", "o4", "o5", "o7" )
+#define	sysdepCallMethod(CALL) do {					\
+  /* allocates variable arrays one word past the minimum stack frame */ \
+  int extraargs[((CALL)->nrargs>6)?((CALL)->nrargs-6):0];		\
+  switch((CALL)->nrargs) {						\
+    register int o0 asm("o0");						\
+    register int o1 asm("o1");						\
+    register int o2 asm("o2");						\
+    register int o3 asm("o3");						\
+    register int o4 asm("o4");						\
+    register int o5 asm("o5");						\
+    register double f0d asm("f0");					\
+    register float f0f asm("f0");					\
+    int *res;								\
+  default:								\
+    {									\
+      int *args = extraargs-1;						\
+      int argidx = 6; 							\
+      for(; argidx < (CALL)->nrargs; ++argidx, ++args) {		\
+	if ((CALL)->callsize[argidx])					\
+	  *args = (CALL)->args[argidx].i;				\
+	else								\
+	  *args = (CALL)->args[argidx-1].j;				\
+      }									\
+    }									\
+  case 6:								\
+    if ((CALL)->callsize[5])						\
+      o5 = (CALL)->args[5].i;						\
+    else								\
+      o5 = (CALL)->args[4].j;						\
+  case 5:								\
+    if ((CALL)->callsize[4])						\
+      o4 = (CALL)->args[4].i;						\
+    else								\
+      o4 = (CALL)->args[3].j;						\
+  case 4:								\
+    if ((CALL)->callsize[3])						\
+      o3 = (CALL)->args[3].i;						\
+    else								\
+      o3 = (CALL)->args[2].j;						\
+  case 3:								\
+    if ((CALL)->callsize[2])						\
+      o2 = (CALL)->args[2].i;						\
+    else								\
+      o2 = (CALL)->args[1].j;						\
+  case 2:								\
+    if ((CALL)->callsize[1])						\
+      o1 = (CALL)->args[1].i;						\
+    else								\
+      o1 = (CALL)->args[0].j;						\
+  case 1:								\
+  case 0:								\
+    asm ("call %2,0\n							\
+          ld %3, %0\n"							\
+	: "=r" (o0), "=r" (o1)						\
+	: "r" ((CALL)->function),					\
+	  "m" ((CALL)->args?(CALL)->args[0].i:0),			\
+	  "0" (o0), "1" (o1), "r" (o2), "r" (o3), "r" (o4), "r" (o5)	\
+	: "g1", "g2", "g3", "g4", "o7", "cc"				\
+	);								\
+    if ((CALL)->retsize != 0)						\
+      res = &(CALL)->ret->i;						\
+    switch((CALL)->retsize) {						\
+    case 2:								\
+      if ((CALL)->rettype == 'D')					\
+        *(double*)res = f0d;						\
+      else {								\
+        res[1] = o1;							\
+        res[0] = o0;							\
+      }									\
+      break;								\
+    case 1:								\
+      if ((CALL)->rettype == 'F')					\
+        *(float*)res = f0f;						\
+      else								\
+        *res = o0;							\
+      break;								\
+    case 0:								\
+      break;								\
+    default:								\
+      ABORT();								\
+      break;								\
+    }									\
+    break;								\
+  }									\
+} while (0)								\
 
 #endif

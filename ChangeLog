@@ -1,3 +1,14 @@
+Wed May  6 14:48:49 PDT 1998	Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+        * config/sparc/jit-sparc.def: (build_key) add missing semicolon.
+        (returnarg_long) swap i0 and i1, when needed.
+        * config/sparc/common.h: (sysdepCallMethod) total rewrite,
+        in order to correctly handle jlongs and jdoubles arguments and
+        return values, as well as long (>6 words) argument lists.
+        * kaffe/kaffevm/support.c: (callMethodV) assume jboolean,
+        jshort, jbyte and jchar are all promoted to jint, just like
+        most of kaffe.def does.  Fixed handling of jdouble and jlong.
+
 Tue Apr 14 15:53:40 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/clib/native/Class.c: added check for parameters

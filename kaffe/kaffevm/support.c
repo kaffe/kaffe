@@ -362,24 +362,12 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		call.calltype[i] = *sig;
 		switch (*sig) {
 		case 'I':
-			call.callsize[i] = 1;
-			in[i].i = va_arg(args, jint);
-			break;
 		case 'Z':
-			call.callsize[i] = 1;
-			in[i].z = va_arg(args, jboolean);
-			break;
 		case 'S':
-			call.callsize[i] = 1;
-			in[i].s = va_arg(args, jshort);
-			break;
 		case 'B':
-			call.callsize[i] = 1;
-			in[i].b = va_arg(args, jbyte);
-			break;
 		case 'C':
 			call.callsize[i] = 1;
-			in[i].c = va_arg(args, jchar);
+			in[i].i = va_arg(args, jint);
 			break;
 		case 'F':
 			call.callsize[i] = 1;
@@ -388,10 +376,16 @@ callMethodV(Method* meth, void* func, void* obj, va_list args, jvalue* ret)
 		case 'D':
 			call.callsize[i] = 2;
 			in[i].d = va_arg(args, jdouble);
+			i++;
+			call.callsize[i] = 0;
+			s += 2;
 			break;
 		case 'J':
 			call.callsize[i] = 2;
 			in[i].j = va_arg(args, jlong);
+			i++;
+			call.callsize[i] = 0;
+			s += 2;
 			break;
 		case '[':
 			call.callsize[i] = PTR_TYPE_SIZE / SIZEOF_INT;
