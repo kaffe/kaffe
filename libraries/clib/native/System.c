@@ -29,6 +29,7 @@
 #include "../../../kaffe/kaffevm/constants.h"
 #include "../../../kaffe/kaffevm/access.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
+#include "../../../kaffe/kaffevm/stringSupport.h"
 #include "../../../kaffe/kaffevm/support.h"
 #include "../../../kaffe/kaffevm/soft.h"
 #include "../../../include/system.h"
@@ -45,6 +46,8 @@ extern jlong currentTime(void);
 extern userProperty* userProperties;
 extern char* realClassPath;
 extern jint java_lang_Object_hashCode(struct Hjava_lang_Object*);
+extern void printStackTrace(struct Hjava_lang_Throwable*,
+	struct Hjava_lang_Object*, int);
 
 /*
  * Copy one part of an array to another.
@@ -364,3 +367,37 @@ java_lang_System_identityHashCode(struct Hjava_lang_Object* o)
 {
        return (java_lang_Object_hashCode(o));
 }
+
+/*
+ * See java/lang/System.java for info on these two routines.
+ */
+void
+java_lang_System_debug(struct Hjava_lang_String *str)
+{
+	char *s;
+
+	s = checkPtr(stringJava2C(str));
+	fprintf(stderr, "%s\n", s);
+	KFREE(s);
+}
+
+void
+java_lang_System_debugE(struct Hjava_lang_Throwable *t)
+{
+	Hjava_lang_String *msg;
+	const char *cname;
+	char *s;
+
+	cname = CLASS_CNAME(OBJECT_CLASS(&t->base));
+	msg = unhand(t)->message;
+
+	if (msg) {
+		s = checkPtr(stringJava2C(msg));
+		fprintf(stderr, "%s: %s\n", cname, s);
+		KFREE(s);
+	} else {
+		fprintf(stderr, "%s\n", cname);
+	}
+	printStackTrace(t, 0, 1);
+}
+

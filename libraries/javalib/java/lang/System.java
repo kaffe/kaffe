@@ -15,19 +15,29 @@ import java.io.BufferedOutputStream;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.io.IOException;
 import java.util.Properties;
 
-final public class System
-{
-	final static SecurityManager defaultSecurityManager = new NullSecurityManager();
+final public class System {
+	final static SecurityManager defaultSecurityManager =
+		new NullSecurityManager();
 	final public static InputStream in;
 	final public static PrintStream out;
 	final public static PrintStream err;
 	private static Properties props;
 	private static SecurityManager security;
+
+// When trying to debug Java code that gets executed early on during
+// JVM initialization, eg, before System.err is initialized, debugging
+// println() statements don't work. In these cases, the following routines
+// are very handy. Simply uncomment the following two lines to enable them.
+
+/****
+public static native void debug(String s);	// print s to stderr, then \n
+public static native void debugE(Throwable t);	// print stack trace to stderr
+****/
 
 static {
 	// XXX what are the constraints on the initialization order in here?
