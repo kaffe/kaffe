@@ -34,16 +34,16 @@
 
 /* Don't waste space with the debugging functions */
 
-void dbgSetMask(jlong m) { }
+void dbgSetMask(debugmask_t m) { }
 int dbgSetMaskStr(char *s) { return 0; }
 
 #else /* Actually define the functions */
 /* --- Debugging is enabled --- */ 
 
-jlong kaffevmDebugMask = DEFAULT_DEBUG_MASK;
+debugmask_t kaffevmDebugMask = DEFAULT_DEBUG_MASK;
 
 void
-dbgSetMask(jlong mask)
+dbgSetMask(debugmask_t mask)
 {
 	kaffevmDebugMask = mask;
 }
@@ -55,7 +55,7 @@ dbgSetMask(jlong mask)
 static struct debug_opts
 {
 	char *name;
-	jlong mask;
+	debugmask_t mask;
 	char *desc;
 } debug_opts[] =
 {

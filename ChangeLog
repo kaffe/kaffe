@@ -1,3 +1,13 @@
+Wed Oct  4 15:50:21 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
+
+	* kaffe/kaffevm/debug.h: new typedef 'debugmask_t' replaces
+	uses of 'jlong'.  Defined to be 'long long int'.  #include "config.h"
+	to figure out how to define debugmask_t.
+	* kaffe/kaffevm/debug.c: use the new debugmask_t type.
+	* kaffe/kaffevm/jar.c: add a comment  
+	* kaffe/kaffevm/systems/unix-jthreads/syscalls.c: remove #include
+	of unneeded debug.h
+
 Wed Sep 27 10:36:25 2000  Patrick A Tullmann  <tullmann@cs.utah.edu>
 
 	* libraries/javalib/java/util/zip/ZipFile.java: add size()

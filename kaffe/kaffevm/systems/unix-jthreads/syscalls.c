@@ -9,7 +9,6 @@
  */
 
 #include "config.h"
-#include "debug.h"
 #include "config-std.h"
 #include "config-mem.h"
 #include "config-io.h"

@@ -77,7 +77,7 @@ typedef struct _jarEntry {
 typedef struct _jarFile {
 
 	int			fd;
-	int			count;
+	int			count; /* number of entries in central dir */
 	jarEntry*		head;
 	char*			error;
 #ifdef HAVE_MMAP

@@ -21,6 +21,8 @@
 #ifndef __kaffevm_debug_h
 #define __kaffevm_debug_h
 
+#include "config.h"
+
 /* Pascal Bourguignon <pjb@imaginet.fr> writes:
  * We include stdio here because on Linux, stdio defines dprintf.
  * Hence, we can override it with a macro defined here. (stdio.h
@@ -39,7 +41,7 @@
  * If you add options, try to invent sensible categories.
  */
 /* Debug Masks: (1 bit per option) */
-# define DBG_BIT(x) (((jlong)1)<<x)
+# define DBG_BIT(x) (((debugmask_t)1)<<x)
 # define DBG_NONE		(0)
 # define DBG_SLOWLOCKS          DBG_BIT(0)
 # define DBG_VMCONDS		DBG_BIT(1)
@@ -106,9 +108,23 @@
 
 # define DBG_REGFORCE		DBG_BIT(57)
 
-# define DBG_ALL		((jlong)(-1))
+# define DBG_ALL		((debugmask_t)(-1))
 # define DBG_ANY                DBG_ALL
 
+/*
+ * Debugging mask type.  Must be at least 64 bits.
+ *
+ * Define the type in both debug and non-debug versions.
+ */
+#if SIZEOF_LONG >= 8
+typedef long int        debugmask_t
+#elif SIZEOF___INT64 == 8
+typedef __int64         debugmask_t;
+#elif SIZEOF_LONG_LONG >= 8
+typedef long long int   debugmask_t;
+#else
+#error "no known 64-bit type for debugmask_t"
+#endif
 
 #if defined(NDEBUG) || !defined(DEBUG)
 /* --- Debugging is NOT enabled --- */
@@ -153,7 +169,7 @@
 /* --- Debugging is enabled --- */
 
 /* Defines what debugging output is seen. Needs to be 64-bit. */
-extern long long kaffevmDebugMask;
+extern debugmask_t kaffevmDebugMask;
 
 # define DBGIF(statement)  statement
 
@@ -171,11 +187,11 @@ extern long long kaffevmDebugMask;
 /* Do something that would cause GDB to gain control. */
 # define DBGGDBBREAK() { (*(int*)0) = 42; }
 
-#ifdef __cplusplus
+# ifdef __cplusplus
 extern "C"
-#else
+# else
 extern
-#endif
+# endif
 #else	/* !defined(KAFFEH) */
 
 /* --- give some simple macros for debugging kaffeh */
@@ -191,18 +207,19 @@ extern
 #  define DBGIF(statement)
 # endif /* defined(DEBUG_KAFFEH) */
 
-/* we don't link with debug.o, so make dprintf a simple printf */
+/* Kaffeh doesn't link with debug.o, so make dprintf a simple printf */
 # define dprintf	printf
 
 #endif /* defined(NDEBUG) || !defined(DEBUG) */
 
+
 /* XXX: change dprintf to kaffe_dprintf and get rid of the macro */
-# define dprintf       kaffe_dprintf
+#define dprintf       kaffe_dprintf
 
 int kaffe_dprintf(const char *fmt, ...);
 
 /* Set the debugging mask to use. (give the mask) */
-void dbgSetMask(long long mask);
+void dbgSetMask(debugmask_t mask);
 
 /* 
  * Set the debugging mask to use. (give a string, useful for
