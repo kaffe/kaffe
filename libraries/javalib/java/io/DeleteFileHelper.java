@@ -51,11 +51,6 @@ public final class DeleteFileHelper extends Thread
 {
   private static ArrayList filesToDelete;
 
-  static
-  {
-    Runtime.getRuntime().addShutdownHook(new DeleteFileHelper());
-  }
-
   static synchronized void add(File file)
   {
     if (filesToDelete == null)
