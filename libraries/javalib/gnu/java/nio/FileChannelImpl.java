@@ -45,6 +45,9 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * This file is not user visible !
@@ -124,11 +127,6 @@ public class FileChannelImpl extends FileChannel
     return s;
   }
 
-  public long read (ByteBuffer[] dsts) throws IOException
-  {
-    return read (dsts, 0, dsts.length);
-  }
-
   public long read (ByteBuffer[] dsts, int offset, int length)
     throws IOException
   {
@@ -142,6 +140,11 @@ public class FileChannelImpl extends FileChannel
     return result;
   }
 
+  public int read (ByteBuffer src, long position) throws IOException
+  {
+    return 0;
+  }
+				   
   public int write (ByteBuffer src) throws IOException
   {
     int w = 0;
@@ -171,6 +174,11 @@ public class FileChannelImpl extends FileChannel
 	    }
 	return res;
     }
+
+  public int write (ByteBuffer src, long position) throws IOException
+  {
+    return 0;
+  }
 				   
   public MappedByteBuffer map (FileChannel.MapMode mode, long position,
                                long size)
@@ -213,4 +221,41 @@ public class FileChannelImpl extends FileChannel
   static native void nio_unmmap_file (int fd, long address, int size);
 
   static native void nio_msync (int fd, long address, int length);
+
+  public FileLock lock (long position, long size, boolean shared) throws IOException
+  {
+    return null;
+  }
+
+  public FileLock tryLock (long position, long size, boolean shared) throws IOException
+  {
+    return null;
+  }
+
+  public long position () throws IOException
+  {
+    return 0;
+  }
+
+  public FileChannel position (long newPosition) throws IOException
+  {
+    return this;
+  }
+
+  public long transferTo (long position, long count, WritableByteChannel target)
+    throws IOException
+  {
+    return 0;
+  }
+
+  public long transferFrom (ReadableByteChannel src, long position, long count)
+    throws IOException
+  {
+    return 0;
+  }
+
+  public FileChannel truncate (long size) throws IOException
+  {
+    return null;
+  }
 }

@@ -1,3 +1,38 @@
+2002-12-21 Dalibor Topic <robilad@yahoo.com>
+
+	* gnu/java/nio/ByteBufferImpl.java,
+	gnu/java/nio/CharBufferImpl.java,
+	gnu/java/nio/DoubleBufferImpl.java,
+	gnu/java/nio/FileChannelImpl.java,
+	gnu/java/nio/FloatBufferImpl.java,
+	gnu/java/nio/IntBufferImpl.java,
+	gnu/java/nio/LongBufferImpl.java,
+	gnu/java/nio/ShortBufferImpl.java,
+	gnu/java/nio/SocketChannelImpl.java,
+	java/nio/ByteBuffer.java,
+	java/nio/CharBuffer.java,
+	java/nio/DoubleBuffer.java,
+	java/nio/FloatBuffer.java,
+	java/nio/IntBuffer.java,
+	java/nio/LongBuffer.java,
+	java/nio/ShortBuffer.java,
+	java/nio/channels/DatagramChannel.java,
+	java/nio/channels/FileChannel.java,
+	java/nio/channels/FileLock.java,
+	java/nio/channels/Pipe.java,
+	java/nio/channels/SelectableChannel.java,
+	java/nio/channels/SelectionKey.java,
+	java/nio/channels/ServerSocketChannel.java,
+	java/nio/channels/SocketChannel.java,
+	java/nio/channels/spi/AbstractInterruptibleChannel.java,
+	java/nio/channels/spi/AbstractSelectableChannel.java,
+	java/nio/channels/spi/SelectorProvider.java,
+	java/util/logging/LogManager.java:
+	Synced with GNU Classpath.
+
+	gnu/xml/aelfred2/XmlReader.java:
+	Synced with GNU JAXP.
+
 2002-12-10 Dalibor Topic <robilad@yahoo.com>
 
 	* configure.in: test for C++ compiler early on. Don't require

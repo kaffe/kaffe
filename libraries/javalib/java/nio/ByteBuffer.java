@@ -42,7 +42,7 @@ import gnu.java.nio.ByteBufferImpl;
 /**
  * @since 1.4
  */
-public abstract class ByteBuffer extends Buffer
+public abstract class ByteBuffer extends Buffer implements Comparable
 {
   private ByteOrder endian = ByteOrder.BIG_ENDIAN;
   
@@ -99,7 +99,7 @@ public abstract class ByteBuffer extends Buffer
    * @exception IndexOutOfBoundsException - If the preconditions on the offset
    * and length parameters do not hold.
    */
-  final public ByteBuffer get (byte[] dst, int offset, int length)
+  public ByteBuffer get (byte[] dst, int offset, int length)
   {
     if ((offset < 0) ||
         (offset > dst.length) ||
@@ -124,7 +124,7 @@ public abstract class ByteBuffer extends Buffer
    * @exception BufferUnderflowException If there are fewer than dst.length
    * bytes remaining in this buffer.
    */
-  final public ByteBuffer get (byte[] dst)
+  public ByteBuffer get (byte[] dst)
   {
     return get (dst, 0, dst.length);
   }
@@ -139,7 +139,7 @@ public abstract class ByteBuffer extends Buffer
    * @exception IllegalArgumentException If the source buffer is this buffer.
    * @exception ReadOnlyBufferException If this buffer is read only.
    */
-  final public ByteBuffer put (ByteBuffer src)
+  public ByteBuffer put (ByteBuffer src)
   {
     if (src == this)
       throw new IllegalArgumentException ();
@@ -167,7 +167,7 @@ public abstract class ByteBuffer extends Buffer
    * and length parameters do not hold.
    * @exception ReadOnlyBufferException If this buffer is read only.
    */
-  final public ByteBuffer put (byte[] src, int offset, int length)
+  public ByteBuffer put (byte[] src, int offset, int length)
   {
     if ((offset < 0) ||
         (offset > src.length) ||

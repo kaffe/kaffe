@@ -141,19 +141,31 @@ public class LogManager
   protected LogManager()
   {
     if (logManager != null)
-      throw new IllegalStateException("there can be only one LogManager; use LogManager.getLogManager()");
+      throw new IllegalStateException(
+        "there can be only one LogManager; use LogManager.getLogManager()");
 
     logManager = this;
     loggers = new java.util.HashMap();
     rootLogger = new Logger("", null);
     addLogger(rootLogger);
-
-    /* Logger.global is set during class initialization of Logger,
-     * which can be before the root logger has been created. Make
-     * sure that the global logger always has the root logger as
-     * its parent.
+    
+    /* Make sure that Logger.global has the rootLogger as its parent.
+     *
+     * Logger.global is set during class initialization of Logger,
+     * which may or may not be before this code is being executed.
+     * For example, on the Sun 1.3.1 and 1.4.0 JVMs, Logger.global
+     * has been set before this code is being executed. In contrast,
+     * Logger.global still is null on GCJ 3.2.  Since the LogManager
+     * and Logger classes are mutually dependent, both behaviors are
+     * correct.
+     *
+     * This means that we cannot depend on Logger.global to have its
+     * value when this code executes, although that variable is final.
+     * Since Logger.getLogger will always return the same logger for
+     * the same name, the subsequent line works fine irrespective of
+     * the order in which classes are initialized.
      */
-    Logger.global.setParent(rootLogger);
+    Logger.getLogger("global").setParent(rootLogger);
   }
 
 

@@ -88,7 +88,7 @@ public abstract class DatagramChannel
    * @exception IOException If an error occurs
    * @exception NotYetConnectedException The channel's socket is not connected.
    */
-  public final long write (ByteBuffer[] srcs)
+  public final long write (ByteBuffer[] srcs) throws IOException
   {
     long b = 0;
     
@@ -101,16 +101,25 @@ public abstract class DatagramChannel
   /**
    * Connects this channel's socket.
    *
-   * @exception IOException If an error occurs
+   * @exception AsynchronousCloseException If another thread closes this channel
+   * while the connect operation is in progress.
+   * @exception ClosedByInterruptException If another thread interrupts the
+   * current thread while the read operation is in progress, thereby closing the
+   * channel and setting the current thread's interrupt status.
+   * @exception ClosedChannelException If this channel is closed.
+   * @exception IOException If an error occurs.
+   * @exception SecurityException If a security manager has been installed and
+   * it does not permit datagrams to be sent to the given address.
    */
-  public abstract DatagramChannel connect (SocketAddress remote);
+  public abstract DatagramChannel connect (SocketAddress remote)
+    throws IOException;
 
   /**
    * Disonnects this channel's socket.
    *
    * @exception IOException If an error occurs
    */
-  public abstract DatagramChannel disconnect ();
+  public abstract DatagramChannel disconnect () throws IOException;
 
   /**
    * Tells whether or not this channel's socket is connected.
@@ -123,7 +132,7 @@ public abstract class DatagramChannel
   /**
    * Reads data from this channel.
    */
-  public abstract int read (ByteBuffer dst);
+  public abstract int read (ByteBuffer dst) throws IOException;
   
   /**
    * Reads data from this channel.
@@ -131,21 +140,38 @@ public abstract class DatagramChannel
    * @exception IOException If an error occurs.
    * @exception NotYetConnectedException The channel's socket is not connected.
    */
-  public abstract long read (ByteBuffer[] dsts, int offset, int length);
+  public abstract long read (ByteBuffer[] dsts, int offset, int length)
+    throws IOException;
  
   /**
    * Receives a datagram via this channel.
    *
+   * @exception AsynchronousCloseException If another thread closes this channel
+   * while the connect operation is in progress.
+   * @exception ClosedByInterruptException If another thread interrupts the
+   * current thread while the read operation is in progress, thereby closing the
+   * channel and setting the current thread's interrupt status.
+   * @exception ClosedChannelException If this channel is closed.
    * @exception IOException If an error occurs
+   * @exception SecurityException If a security manager has been installed and
+   * it does not permit datagrams to be sent to the given address.
    */
-  public abstract SocketAddress receive (ByteBuffer dst);
+  public abstract SocketAddress receive (ByteBuffer dst) throws IOException;
  
   /**
    * Sends a datagram via this channel.
    *
+   * @exception AsynchronousCloseException If another thread closes this channel
+   * while the connect operation is in progress.
+   * @exception ClosedByInterruptException If another thread interrupts the
+   * current thread while the read operation is in progress, thereby closing the
+   * channel and setting the current thread's interrupt status.
+   * @exception ClosedChannelException If this channel is closed.
    * @exception IOException If an error occurs
+   * @exception SecurityException If a security manager has been installed and
+   * it does not permit datagrams to be sent to the given address.
    */
-  public abstract int send (ByteBuffer src, SocketAddress target);
+  public abstract int send (ByteBuffer src, SocketAddress target) throws IOException;
  
   /**
    * Retrieves the channel's socket.
@@ -158,7 +184,7 @@ public abstract class DatagramChannel
    * @exception IOException If an error occurs.
    * @exception NotYetConnectedException The channel's socket is not connected.
    */
-  public abstract int write (ByteBuffer src);
+  public abstract int write (ByteBuffer src) throws IOException;
   
   /**
    * Writes data to this channel.
@@ -166,7 +192,8 @@ public abstract class DatagramChannel
    * @exception IOException If an error occurs.
    * @exception NotYetConnectedException The channel's socket is not connected.
    */
-  public abstract long write (ByteBuffer[] srcs, int offset, int length);
+  public abstract long write (ByteBuffer[] srcs, int offset, int length)
+    throws IOException;
 
   /**
    * Retrieves the valid operations for this channel.

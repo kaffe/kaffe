@@ -108,12 +108,26 @@ public abstract class FileChannel extends AbstractInterruptibleChannel
     return result;
   }
   
+  public abstract int write (ByteBuffer src) throws IOException;
+
   /**
    * Writes data to the channel.
    */
   public abstract long write(ByteBuffer[] srcs, int offset, int length)
     throws IOException;
   
+  public final long read (ByteBuffer[] dsts) throws IOException
+  {
+    long result = 0;
+    
+    for (int i = 0; i < dsts.length; i++)
+      {
+        read (dsts [i]);
+      }
+
+    return result;
+  }
+
   /**
    * Reads data from the channel.
    */

@@ -49,6 +49,7 @@ import java.net.SocketAddress;
  * @since 1.4
  */
 abstract public class SocketChannel extends AbstractSelectableChannel
+  implements ByteChannel, ScatteringByteChannel, GatheringByteChannel
 {
   /**
    * Initializes this socket.
@@ -71,7 +72,17 @@ abstract public class SocketChannel extends AbstractSelectableChannel
   /**
    * Opens a channel and connects it to a remote address.
    *
+   * @exception AsynchronousCloseException If this channel is already connected.
+   * @exception ClosedByInterruptException If another thread interrupts the
+   * current thread while the connect operation is in progress, thereby closing
+   * the channel and setting the current thread's interrupt status.
    * @exception IOException If an error occurs
+   * @exception SecurityException If a security manager has been installed and
+   * it does not permit access to the given remote endpoint.
+   * @exception UnresolvedAddressException If the given remote address is not
+   * fully resolved.
+   * @exception UnsupportedAddressTypeException If the type of the given remote
+   * address is not supported.
    */
   public static SocketChannel open (SocketAddress remote) throws IOException
   {
@@ -88,8 +99,9 @@ abstract public class SocketChannel extends AbstractSelectableChannel
    * Reads data from the channel.
    *
    * @exception IOException If an error occurs
+   * @exception NotYetConnectedException If this channel is not yet connected.
    */
-  public final long read (ByteBuffer[] dsts)
+  public final long read (ByteBuffer[] dsts) throws IOException
   {
     long b = 0;
     
@@ -105,8 +117,9 @@ abstract public class SocketChannel extends AbstractSelectableChannel
    * Writes data to the channel.
    *
    * @exception IOException If an error occurs
+   * @exception NotYetConnectedException If this channel is not yet connected.
    */
-  public final long write (ByteBuffer[] dsts)
+  public final long write (ByteBuffer[] dsts) throws IOException
   {
     long b = 0;
 
@@ -130,22 +143,44 @@ abstract public class SocketChannel extends AbstractSelectableChannel
    * Reads data from the channel.
    *
    * @exception IOException If an error occurs
+   * @exception NotYetConnectedException If this channel is not yet connected.
    */
-  public abstract int read (ByteBuffer dst);
+  public abstract int read (ByteBuffer dst) throws IOException;
 
   /**
    * Connects the channel's socket to the remote address.
    *
+   * @exception AlreadyConnectedException If this channel is already connected.
+   * @exception AsynchronousCloseException If this channel is already connected.
+   * @exception ClosedByInterruptException If another thread interrupts the
+   * current thread while the connect operation is in progress, thereby closing
+   * the channel and setting the current thread's interrupt status.
+   * @exception ClosedChannelException If this channel is closed.
+   * @exception ConnectionPendingException If a non-blocking connection
+   * operation is already in progress on this channel.
    * @exception IOException If an error occurs
+   * @exception SecurityException If a security manager has been installed and
+   * it does not permit access to the given remote endpoint.
+   * @exception UnresolvedAddressException If the given remote address is not
+   * fully resolved.
+   * @exception UnsupportedAddressTypeException If the type of the given remote
+   * address is not supported.
    */
   public abstract boolean connect (SocketAddress remote) throws IOException;
   
   /**
    * Finishes the process of connecting a socket channel.
    *
+   * @exception AsynchronousCloseException If this channel is already connected.
+   * @exception ClosedByInterruptException If another thread interrupts the
+   * current thread while the connect operation is in progress, thereby closing
+   * the channel and setting the current thread's interrupt status.
+   * @exception ClosedChannelException If this channel is closed.
    * @exception IOException If an error occurs
+   * @exception NoConnectionPendingException If this channel is not connected
+   * and a connection operation has not been initiated.
    */
-  public abstract boolean finishConnect ();
+  public abstract boolean finishConnect () throws IOException;
  
   /**
    * Tells whether or not the channel's socket is connected.
@@ -161,8 +196,10 @@ abstract public class SocketChannel extends AbstractSelectableChannel
    * Reads data from the channel.
    *
    * @exception IOException If an error occurs
+   * @exception NotYetConnectedException If this channel is not yet connected.
    */
-  public abstract long read (ByteBuffer[] dsts, int offset, int length);
+  public abstract long read (ByteBuffer[] dsts, int offset, int length)
+    throws IOException;
  
   /**
    * Retrieves the channel's socket.
@@ -173,13 +210,16 @@ abstract public class SocketChannel extends AbstractSelectableChannel
    * Writes data to the channel.
    *
    * @exception IOException If an error occurs
+   * @exception NotYetConnectedException If this channel is not yet connected.
    */
-  public abstract int write (ByteBuffer src);
+  public abstract int write (ByteBuffer src) throws IOException;
   
   /**
    * Writes data to the channel.
    *
    * @exception IOException If an error occurs
+   * @exception NotYetConnectedException If this channel is not yet connected.
    */
-  public abstract long write (ByteBuffer[] srcs, int offset, int length);
+  public abstract long write (ByteBuffer[] srcs, int offset, int length)
+    throws IOException;
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: XmlReader.java,v 1.1 2002/12/03 01:27:55 dalibor Exp $
+ * $Id: XmlReader.java,v 1.2 2002/12/21 16:40:40 dalibor Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -37,7 +37,7 @@ import gnu.xml.pipeline.EventFilter;
 import gnu.xml.pipeline.ValidationConsumer;
 
 
-// $Id: XmlReader.java,v 1.1 2002/12/03 01:27:55 dalibor Exp $
+// $Id: XmlReader.java,v 1.2 2002/12/21 16:40:40 dalibor Exp $
 
 /**
  * This SAX2 parser optionally layers a validator over the &AElig;lfred2
@@ -61,7 +61,7 @@ import gnu.xml.pipeline.ValidationConsumer;
  * @see gnu.xml.pipeline.ValidationConsumer
  *
  * @author David Brownell
- * @version $Date: 2002/12/03 01:27:55 $
+ * @version $Date: 2002/12/21 16:40:40 $
  */
 public final class XmlReader implements XMLReader
 {
@@ -273,6 +273,7 @@ public final class XmlReader implements XMLReader
     throws SAXException, IOException
     {
 	EventFilter	next;
+	boolean		nsdecls;
 
 	synchronized (aelfred2) {
 	    if (active)
@@ -288,7 +289,14 @@ public final class XmlReader implements XMLReader
 	    next = filter;
 
 	// connect pipeline and error handler
+	// don't let _this_ call to bind() affect xmlns* attributes
+	nsdecls = aelfred2.getFeature (
+	    SAXDriver.FEATURE + "namespace-prefixes");
 	EventFilter.bind (aelfred2, next);
+	if (!nsdecls)
+	    aelfred2.setFeature (
+		SAXDriver.FEATURE + "namespace-prefixes",
+		false);
 
 	// parse, clean up
 	try {

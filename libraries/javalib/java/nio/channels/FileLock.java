@@ -37,6 +37,8 @@ exception statement from your version. */
 
 package java.nio.channels;
 
+import java.io.IOException;
+
 /**
  * @since 1.4
  */
@@ -76,7 +78,7 @@ public abstract class FileLock
    * @exception IOException If an error occurs
    * @exception ClosedChannelException If the locked channel is no longer open.
    */
-  public abstract void release ();
+  public abstract void release () throws IOException;
   
   /**
    * Returns the file channel upon whose file this lock is held.
