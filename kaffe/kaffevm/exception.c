@@ -45,8 +45,6 @@
 #include "java_lang_VMThrowable.h"
 
 #if defined(INTERPRETER)
-#define	FIRSTFRAME(f, e)	/* Does nothing */
-
 #define FRAMEOBJECT(O, F, E)    (O) = vmExcept_getSyncObj((VmExceptHandler*)(F))
 
 

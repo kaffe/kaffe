@@ -1,3 +1,12 @@
+2003-09-26  Dalibor Topic <robilad@kaffe.org>
+
+	*  kaffe/kaffevm/exception.c:
+	[INTERPRETER](FIRSTFRAME) Removed to fix compiler warning on
+	parisc-hpux with gcc 3.3.1.
+
+	* kaffe/kaffevm/intrp/stackTrace-impl.h:
+	(FIRSTFRAME) Added comment.
+
 2003-09-25  Dalibor Topic <robilad@kaffe.org>
 
 	* libraries/clib/awt/X/clr.c:

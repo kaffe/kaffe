@@ -23,6 +23,6 @@ struct _exceptionFrame {
 
 /* XXX Fix to work with jvmpi */
 #define EXCEPTIONFRAME(f, c)
-#define FIRSTFRAME(f, c)
+#define FIRSTFRAME(f, c)        /* Does nothing */
 
 #endif /* __stackTrace_impl_h__ */
