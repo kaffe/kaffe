@@ -125,6 +125,7 @@ extern struct _methods*	lookupObjectMethod(struct Hjava_lang_Object*, const char
 
 struct _strconst;
 extern void SignalError(const char *, const char *) __NORETURN__;
+extern void SignalErrorf(const char *, const char *, ...) __NORETURN__;
 extern void unimp(const char*) __NORETURN__;
 extern void kprintf(FILE*, const char*, ...);
 extern int addClasspath(const char*);

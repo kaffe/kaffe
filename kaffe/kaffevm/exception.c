@@ -114,16 +114,12 @@ postException(errorInfo *einfo, const char *name)
 	einfo->throwable = 0;
 }
 
-/*
- * post a longer exception with a message using full name
- */
 void 
-postExceptionMessage(errorInfo *einfo,
-	const char * fullname, const char * fmt, ...)
+vpostExceptionMessage(errorInfo *einfo,
+	const char * fullname, const char * fmt, va_list args)
 {
         char *msgBuf;
         int msgLen;
-        va_list args;
 
 	msgBuf = KMALLOC(MAX_ERROR_MESSAGE_SIZE);
 	if (msgBuf == 0) {
@@ -131,19 +127,30 @@ postExceptionMessage(errorInfo *einfo,
 		return;
 	}
 
-        va_start(args, fmt);
 #ifdef HAVE_VSNPRINTF
         msgLen = vsnprintf(msgBuf, MAX_ERROR_MESSAGE_SIZE, fmt, args);
 #else
         /* XXX potential buffer overruns problem: */
         msgLen = vsprintf(msgBuf, fmt, args);
 #endif
-        va_end(args);
-
 	einfo->type = KERR_EXCEPTION | KERR_FREE_MESSAGE;
 	einfo->classname = fullname;
 	einfo->mess = msgBuf;
 	einfo->throwable = 0;
+}
+
+/*
+ * post a longer exception with a message using full name
+ */
+void 
+postExceptionMessage(errorInfo *einfo,
+	const char * fullname, const char * fmt, ...)
+{
+        va_list args;
+
+        va_start(args, fmt);
+	vpostExceptionMessage(einfo, fullname, fmt, args);
+        va_end(args);
 }
 
 /*

@@ -705,6 +705,7 @@ lookupObjectMethod(Hjava_lang_Object* obj, const char* name, const char* sig, er
 
 /*
  * Signal an error by creating the object and throwing the exception.
+ * See also SignalErrorf
  */
 void
 SignalError(const char* cname, const char* str)
@@ -714,6 +715,22 @@ SignalError(const char* cname, const char* str)
 	obj = (Hjava_lang_Throwable*)execute_java_constructor(cname,
 		0, ERROR_SIGNATURE, stringC2Java(str));
 	throwException(obj);
+}
+
+/*
+ * Signal an error by creating the object and throwing the exception.
+ * allows for printf-like msg format with additional parameters.
+ */
+void
+SignalErrorf(const char* cname, const char* fmt, ...)
+{
+	errorInfo info;
+	va_list args;
+
+	va_start(args, fmt);
+	vpostExceptionMessage(&info, cname, fmt, args);
+	va_end(args);
+	throwError(&info);
 }
 
 static void

@@ -12,6 +12,8 @@
 #ifndef __errors_h
 #define __errors_h
 
+#include <stdarg.h>
+
 #define KERR_EXCEPTION			0x0001
 #define KERR_RETHROW			0x0002
 #define KERR_INITIALIZER_ERROR		0x0004
@@ -39,6 +41,11 @@ extern void postException(errorInfo *, const char *name);
 /* post an exception with a print like message */
 extern void postExceptionMessage(errorInfo *, 
 	const char *name, const char *msgfmt, ...);
+
+/* va_list version of postExceptionMessage */
+extern void vpostExceptionMessage(errorInfo *einfo,
+        const char * fullname, const char * fmt, va_list args);
+
 
 #define MAX_ERROR_MESSAGE_SIZE        1024
 

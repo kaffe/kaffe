@@ -64,7 +64,8 @@ java_net_InetAddressImpl_lookupHostAddr(struct Hjava_net_InetAddressImpl* none, 
 
 	rc = KGETHOSTBYNAME(name, &ent);
 	if (rc) {
-		SignalError("java.net.UnknownHostException", SYS_HERROR(rc));
+		SignalErrorf("java.net.UnknownHostException", "%s: %s",
+			SYS_HERROR(rc), name);
 	}
 	return (ntohl(*(jint*)ent->h_addr_list[0]));
 }
@@ -86,7 +87,8 @@ java_net_InetAddressImpl_lookupAllHostAddr(struct Hjava_net_InetAddressImpl* non
 
 	rc = KGETHOSTBYNAME(name, &ent);
 	if (rc) {
-		SignalError("java.net.UnknownHostException", SYS_HERROR(rc));
+		SignalErrorf("java.net.UnknownHostException", "%s: %s",
+			SYS_HERROR(rc), name);
 	}
 
 	for (alength = 0; ent->h_addr_list[alength]; alength++)
@@ -115,7 +117,15 @@ java_net_InetAddressImpl_getHostByAddr(struct Hjava_net_InetAddressImpl* none, j
 	addr = htonl(addr);
 	rc = KGETHOSTBYADDR((char*)&addr, sizeof(jint), AF_INET, &ent);
 	if (rc) {
-		SignalError("java.net.UnknownHostException", SYS_HERROR(rc));
+		char ipaddr[16];
+		sprintf(ipaddr, "%3d.%3d.%3d.%3d",
+			/* XXX Make sure it is the right endiannes */
+			(addr >> 24) & 0xff,
+			(addr >> 16) & 0xff,
+			(addr >>  8) & 0xff,
+			(addr)       & 0xff);
+		SignalErrorf("java.net.UnknownHostException", "%s: %s",
+			SYS_HERROR(rc), ipaddr);
 	}
 
 	return (stringC2Java((char*)ent->h_name));

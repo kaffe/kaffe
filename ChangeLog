@@ -1,3 +1,10 @@
+Wed Apr 28 22:21:19 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/errors.h, kaffe/kaffevm/exception.c,
+	kaffe/kaffevm/support.c, kaffe/kaffevm/support.h,
+	libraries/clib/net/InetAddressImpl.c:  implemented SignalErrorf,
+	a printf-like version of SignalError.
+
 Wed Apr 28 15:45:04 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* java/lang/ExceptionInInitializer.java: don't append a null
