@@ -259,6 +259,7 @@ case $basic_machine in
 	| pyramid \
 	| sh | sh[1234] | sh[23]e | sh[34]eb | shbe | shle | sh[1234]le | sh3ele \
 	| sh64 | sh64le \
+	| superh \
 	| sparc | sparc64 | sparc86x | sparclet | sparclite | sparcv9 | sparcv9b \
 	| strongarm \
 	| tahoe | thumb | tic80 | tron \
@@ -331,6 +332,7 @@ case $basic_machine in
 	| romp-* | rs6000-* \
 	| sh-* | sh[1234]-* | sh[23]e-* | sh[34]eb-* | shbe-* \
 	| shle-* | sh[1234]le-* | sh3ele-* | sh64-* | sh64le-* \
+	| superh-* \
 	| sparc-* | sparc64-* | sparc86x-* | sparclet-* | sparclite-* \
 	| sparcv9-* | sparcv9b-* | strongarm-* | sv1-* | sx?-* \
 	| tahoe-* | thumb-* \
@@ -1037,7 +1039,7 @@ case $basic_machine in
 	we32k)
 		basic_machine=we32k-att
 		;;
-	sh3 | sh4 | sh[34]eb | sh[1234]le | sh[23]ele)
+	sh3 | sh4 | sh[34]eb | sh[1234]le | sh[23]ele | superh)
 		basic_machine=sh-unknown
 		;;
 	sh64)

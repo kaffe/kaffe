@@ -1,3 +1,8 @@
+2003-06-04 Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config.sub, libltdl/config.sub:
+	added superh to known sh platforms.
+
 2003-06-04  Dalibor Topic <robilad@yahoo.com>
 
 	* FAQ/FAQ.automake:
