@@ -388,6 +388,7 @@ DBG(GCALLOC,		dprintf("gc_heap_malloc: freelist %ld at %p free %p\n",
 			if (blk == 0) {
 				goto out;
 			}
+			assert(*mptr == NULL);
 			blk->next = *mptr;
 			*mptr = blk;
 

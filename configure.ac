@@ -635,6 +635,8 @@ if test x$with_threads = xunix-pthreads ; then
 	ACX_PTHREAD([THREADLIBS="$PTHREAD_LIBS "
 		     CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
                      CC="$PTHREAD_CC"])
+	AC_CHECK_LIB(semaphore,sem_init,SEMAPHORE_LIB)
+	AC_SUBST(SEMAPHORE_LIB)
 
 	if test -z "$THREADLIBS"; then
 		AC_MSG_ERROR([Missing library libpthread, read FAQ/FAQ.pthreads])

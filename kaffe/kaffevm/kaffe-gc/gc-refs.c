@@ -31,6 +31,8 @@
 typedef struct _refObject {
   const void*		mem;
   unsigned int		ref;
+  void **weakrefs;
+  
   struct _refObject*	next;
 } refObject;
 
@@ -39,9 +41,25 @@ typedef struct _refTable {
 } refTable;
 
 static refTable			refObjects;
+static weakRefTable             weakRefObjects;
 
 /* This is a bit homemade.  We need a 7-bit hash from the address here */
 #define	REFOBJHASH(V)	((((uintp)(V) >> 2) ^ ((uintp)(V) >> 9))%REFOBJHASHSZ)
+
+static refObject*
+KaffeGC_addRefToTable(Collector *collector, const void* mem)
+{
+  uint32 idx;
+  
+  idx = REFOBJHASH(mem);
+  for (obj = refObjects.hash[idx]; obj != NULL; obj = obj->next) {
+    /* Found it - just return the object */
+    if (obj->mem == mem)
+      return obj;
+  }
+  
+  obj = (refObject *) KGC_malloc(collector, sizeof(refObject
+}
 
 /*
  * Add a persistent reference to an object.
@@ -100,6 +118,14 @@ KaffeGC_rmRef(Collector *collector, void* mem)
 
   /* Not found!! */
   return false;
+}
+
+bool KaffeGC_addWeakRef(struct _Collector *collector, void **ref, const void *obj)
+{
+}
+
+bool KaffeGC_rmWeakRef(struct _Collector *collector, void **ref)
+{
 }
 
 /*      

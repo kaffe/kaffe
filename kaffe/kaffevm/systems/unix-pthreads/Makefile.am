@@ -15,7 +15,9 @@ libkthread_la_LIBADD = \
 	$(NET_LIBS)
 
 libkthread_la_LDFLAGS = \
-	$(KVMLIBFLAGS)
+	$(KVMLIBFLAGS) \
+	$(PTHREAD_LIBS) \
+	$(SEMAPHORE_LIB)
 
 libkthread_la_SOURCES = lock-impl.c signal.c syscalls.c thread-impl.c
 EXTRA_DIST = Makefile.frag lock-impl.h thread-impl.h thread-internal.h \
