@@ -1,5 +1,17 @@
 2004-01-14  Dalibor Topic <robilad@kaffe.org>
 
+        * configure.in
+        (AC_INIT): Changed package name to 'Kaffe Virtual Machine'.
+
+	* Makefile.am:
+	Changed package name to 'Kaffe Virtual Machine'.
+
+	* configure,
+	Makefile.in:
+	Regenerated.
+
+2004-01-14  Dalibor Topic <robilad@kaffe.org>
+
 	* configure.in:
 	(AC_COPYRIGHT) Added copyright information.
 

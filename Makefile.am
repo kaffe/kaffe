@@ -1,4 +1,4 @@
-# Top-level Makefile for Kaffe OpenVM.
+# Top-level Makefile for Kaffe Virtual Machine.
 #
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
