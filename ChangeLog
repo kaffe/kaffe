@@ -1,5 +1,12 @@
 2004-12-11  Adam Heath  <doogie@brainfood.com>
 
+	* scripts/GCCWarning.pm, scripts/JikesWarning.pm,
+	  scripts/LogWarning.pm, scripts/Registry.pm,
+	  scripts/WarningDescription.pm, scripts/sort-warnings.pl:
+	  Reindent.
+
+2004-12-11  Adam Heath  <doogie@brainfood.com>
+
 	* include/jsyscall.h:
 	  Improving formatting.
 
