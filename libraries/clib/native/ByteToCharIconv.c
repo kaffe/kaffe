@@ -86,7 +86,7 @@ Java_kaffe_io_ByteToCharIconv_convert (JNIEnv* env, jobject _this,
     ret = iconv (cd, (ICONV_CONST char **) &icv_in, &icv_inlen, &icv_out, &icv_outlen);
     if (ret < 0) {
 	/* convert the begining of an invalid  multibyte  sequence to '?' */
-	if (errno == EILSEQ) {
+	if (errno == EILSEQ && icv_outlen >= 2) {
 		icv_in++;
 		icv_inlen--;
 		*(icv_out++) = 0;

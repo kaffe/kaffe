@@ -1,5 +1,11 @@
 2005-01-12  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
+	* libraries/clib/native/ByteToCharIconv.c
+	(Java_kaffe_io_ByteToCharIconv_convert):
+	Check buffer overflow in the same way I did in CharToByteIconv.c.
+
+2005-01-12  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
 	* libraries/clib/native/CharToByteIconv.c
 	(Java_kaffe_io_CharToByteIconv_convert):
 	Check whether errno == EILSEQ.
