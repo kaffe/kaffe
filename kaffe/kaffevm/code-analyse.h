@@ -18,7 +18,9 @@ typedef	struct {
 typedef struct perPCInfo {
 	uint16			stackPointer;
 	uint16			flags;
+#if defined(TRANSLATOR)
 	uintp			nativePC;
+#endif
 	struct perPCInfo*	nextBB;
 	frameElement*		frame;
 } perPCInfo;
@@ -96,8 +98,12 @@ typedef struct codeinfo {
 #define	SET_STACKPOINTER(PC, SP)	STACKPOINTER(PC) = (SP); \
 					FLAGS(PC) |= FLAG_STACKPOINTERSET
 
+#if defined(TRANSLATOR)
 #define	SET_INSNPC(P, V)		codeInfo->perPC[(P)].nativePC = (V)
 #define	INSNPC(P)			codeInfo->perPC[(P)].nativePC
+#else
+#define	SET_INSNPC(P, V)
+#endif
 
 #if defined(INTERPRETER)
 #define	SET_INSN(PC, V)			INSN(PC) = (V)
