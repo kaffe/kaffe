@@ -1,3 +1,7 @@
+Thu Aug  3 18:10:10 PDT 2000  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/util/ResourceBundle.java: add missing method
+
 2000-07-26  Edouard G. Parmelan  <egp@free.fr>
 
 	* libraries/javalib/kjc.jar: upgrade to version kjc-1.4F-egp1: fix
