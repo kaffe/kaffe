@@ -128,6 +128,7 @@ public class GZIPInputStream
   {
     super(in, new Inflater(true), size);
     crc = new CRC32();
+    readHeader();
   }
 
   /**
