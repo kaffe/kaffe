@@ -102,6 +102,19 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 	 */
 	meth = &clazz->methods[slot];
 
+	if( !(meth->accflags & ACC_STATIC) &&
+	    !(meth->accflags & ACC_CONSTRUCTOR) &&
+	    (obj == 0) )
+	{
+		SignalError("java.lang.NullPointerException",
+			    "Null object pointer");
+	}
+	if( obj && !instanceof(obj->dtable->class, clazz) )
+	{
+		SignalError("java.lang.IllegalArgumentException",
+			    "Object type doesn't match method's class");
+	}
+	
 	len = argobj ? obj_length(argobj) : 0;
 
 	if (len != METHOD_NARGS(meth)) {
