@@ -119,11 +119,11 @@ public class Connection extends JarURLConnection
       return jf;
     }
   }
-  
-  protected Connection (URL url)
+
+  public Connection(URL url)
     throws MalformedURLException
   {
-    super (url);
+    super(url);
   }
   
   public void connect() throws IOException
@@ -173,5 +173,4 @@ public class Connection extends JarURLConnection
 
     return (int) jar_entry.getSize();
   }
-  
-} // class Connection
+}
