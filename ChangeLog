@@ -1,3 +1,20 @@
+2000-06-20  Edouard G. Parmelan  <egp@free.fr>
+
+	* libraries/javalib/java/text/SimpleDateFormat.java (format): use
+	zone.getOffset() in place of zone.getRawOffset() to retreive the
+	_real_ offset for this date.
+
+	* libraries/javalib/java/text/DecimalFormat.java (parse):
+	reimplement, setup ParsePosition correctly and handle more cases.
+	
+	* libraries/javalib/java/text/SimpleDateFormat.java (parse):
+	reimplement, follow patterns format.  Close PR#565.
+	(SimpleDateFormat): retreive default pattern.
+	
+	* libraries/javalib/kaffe/applet/AppletViewer.java
+	(DefaultAppletStub): set documentBase with correct constructor
+	parameter.  Close PR#602.
+	
 2000-06-19  Edouard G. Parmelan  <egp@free.fr>
 
 	* kaffe/kaffevm/jit3/icode.c kaffe/kaffevm/jit3/kaffe-jit.def
@@ -860,6 +877,11 @@ Wed Feb  2 15:37:58 PST 2000  Dalibor Topic <robilad@yahoo.com>
 	like JDK 1.2
 	* test/regression/BufferedReaderTest.java: new test
 	* test/regression/Makefile.{am,in}: add new test
+
+2000-02-01  Tim Wilkinson <tim@transvirtual.com>
+
+	* kaffe/kaffevm/jit3/machine.c: Fixed assertion failure (was using the
+	wrong global test).  Close PR#581.
 
 Mon Jan 31 16:53:56 PST 2000  Pavel Roskin <pavel_roskin@geocities.com>
 
