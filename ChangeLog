@@ -1,3 +1,7 @@
+Sun Apr 28 2002 Patrick Tullmann  <pat@tullmann.org>
+	* developers/FullTest.sh: Added. Builds/tests/installs a full
+	complement of Kaffe variations.
+	
 Fri Apr 26 2002 Patrick Tullmann  <pat@tullmann.org>
 	* kaffe/kaffevm/exceptions.c: Improve the ELOOKUP tracing
 	of exception lookup.  Add some asserts to dispatchException().
