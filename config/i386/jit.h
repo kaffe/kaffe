@@ -157,4 +157,103 @@ typedef struct _methodTrampoline {
 /* The Pentium optimization manual recommends these */
 #define CALLTARGET_ALIGNMENT	16
 
+#if defined (HAVE_GCJ_SUPPORT)
+
+/*
+ * If we provide gcj support, we must include some architecture specific
+ * information about gcc here.
+ */
+
+/* from egcs/gcc/config/i386/i386.h 
+ *
+ * How to renumber registers for dbx and gdb.
+ *
+ *   #define CALL_USED_REGISTERS \
+ *    ax,dx,cx,bx,si,di,bp,sp,st,st1,st2,st3,st4,st5,st6,st7,arg,flags,fpsr   \
+ *  {  1, 1, 1, 0, 0, 0, 0, 1, 1,  1,  1,  1,  1,  1,  1,  1,  1,    1,   1 }
+ *
+ */
+
+/* {0,2,1,3,6,7,4,5,12,13,14,15,16,17}  */
+#define DBX_REGISTER_NUMBER(n) \
+((n) == 0 ? 0 : \
+ (n) == 1 ? 2 : \
+ (n) == 2 ? 1 : \
+ (n) == 3 ? 3 : \
+ (n) == 4 ? 6 : \
+ (n) == 5 ? 7 : \
+ (n) == 6 ? 4 : \
+ (n) == 7 ? 5 : \
+ (n) + 4)
+
+#define FIRST_PSEUDO_REGISTER 		19
+#define DWARF_FRAME_RETURN_COLUMN	8
+
+/* offset of CFA from cfa register */
+#define CFA_OFFSET			8
+#define CFA_REGISTER			DBX_REGISTER_NUMBER(/* gcc_esp */ 7)
+
+/* offset of return address from CFA */
+#define RETADDR_SAVED_OFFSET		-4
+#define CFA_SAVED_OFFSET		-8
+
+/*
+ * Frame layout on the x86 is like so
+ *
+ *	CFA	-> +0  			Canonical Frame Address -- by definition
+ *		   -4  			caller's ret pc
+ *	ebp	-> -8  			caller's ebp
+ *		   -12 			local 1
+ *		   -16 			local 2
+ *		   -20 			local 3
+ *		   ...	
+ *		   -8 -meth->framesize	local n
+ *		   -12-meth->framesize  caller's %edi
+ *		   -16-meth->framesize  caller's %esi
+ *		   -20-meth->framesize  caller's %ebx
+ *	esp	->
+ *
+ */
+
+struct kaffe_frame_descriptor;
+
+/* 
+ * Establish JIT3 callee-saved register information for i386
+ * We must tell gcj where esi, edi, and ebx have been stored
+ * on this frame, as an offset from the CFA.
+ * In addition, we must tell it where the caller's esp was stored
+ *
+ * Compare prologue_xxx in jit3-i386.def
+ */
+void arch_get_frame_description(int framesize, 
+	struct kaffe_frame_descriptor frame_desc[], 
+	int *n);
+
+/* See libgcj's MAKE_THROW_FRAME */
+#define FAKE_THROW_FRAME()                                      \
+do {                                                            \
+        register unsigned long _ebp = frame->retbp;             \
+        register unsigned char *_eip = (unsigned char *)(frame->retpc); \
+        _eip += 2;                                              \
+								\
+        asm volatile ("mov %0, (%%ebp); mov %1, 4(%%ebp)"       \
+                  : : "r"(_ebp), "r"(_eip));                    \
+} while (0)
+
+/* The following information is need to compile gcj/eh.c */
+#define STACK_GROWS_DOWNWARD   1
+typedef void *word_type;
+
+#undef INCOMING_REGNO   /* only for sparc */
+#undef EH_TABLE_LOOKUP  /* only for some archs */
+
+#define DWARF2_UNWIND_INFO
+
+/* as far as gcc is concerned, we're single-threaded XXX FIXME */
+#undef __GTHREADS
+
+/* End of eh.c specific information */
+
+#endif
+
 #endif
