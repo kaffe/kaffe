@@ -178,7 +178,7 @@ int testMethod(Hjava_lang_Class *cl, Field *field)
 			jvalue rc;
 
 			field2values(args, METHOD_PSIG(meth), &tf);
-			methblock = GC_getObjectBase(main_collector,
+			methblock = KGC_getObjectBase(main_collector,
 						     METHOD_NATIVECODE(meth));
 			callMethodA(meth,
 				    METHOD_NATIVECODE(meth),
