@@ -26,6 +26,7 @@ public final class Float extends Number implements Comparable {
   public static final float MAX_VALUE		= 3.4028234663852885981e+38f;
 
   public static final Class TYPE = Class.getPrimitiveClass("float");
+  private static final int MAX_DIGITS = 10;
 
   private final float value;
 
@@ -34,6 +35,7 @@ public final class Float extends Number implements Comparable {
 
   public static native int floatToRawIntBits(float value);
   public static native float intBitsToFloat(int bits);
+  private static native String toStringWithPrecision(float value, int max_precision);
 
   public Float(float value) {
     this.value = value;
@@ -84,8 +86,6 @@ public final class Float extends Number implements Comparable {
   }
 
   public static String toString(float value) {
-    int precision, bitIndex;
-
     // Handle exceptional values
     if (isNaN(value))
       return "NaN";
@@ -94,22 +94,7 @@ public final class Float extends Number implements Comparable {
     if (value == NEGATIVE_INFINITY)
       return "-Infinity";
 
-    // Determine number of digits of decimal precision to display
-    int bits = floatToRawIntBits(value);
-    if ((bits & EXPONENT_MASK) == 0) {			// denormalized value
-	    for (bitIndex = NUM_MANTISSA_BITS - 1;
-		bitIndex > 0 && ((1 << bitIndex) & bits) == 0;
-		bitIndex--);
-	    precision = Double.bitsToDecimal[bitIndex];
-    } else {						// normalized value
-	    precision = Double.bitsToDecimal[NUM_MANTISSA_BITS - 1];
-    }
-
-    // Add an extra digit to handle rounding
-    precision++;
-
-    // Display value
-    return Double.toStringWithPrecision(value, precision);
+    return toStringWithPrecision(value, MAX_DIGITS);
   }
 
   public String toString() {

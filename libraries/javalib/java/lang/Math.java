@@ -91,7 +91,14 @@ public static int min(int a, int b) { return (a < b) ? (a) : (b); }
 
 public static long min(long a, long b) { return (a < b) ? (a) : (b); }
 
-native public static double pow(double a, double b);
+public static double pow(double a, double b) {
+	if (abs(a) == 1.0 && Double.isInfinite(b)) {
+		return Double.NaN;
+	}
+	return pow0(a, b);
+}
+
+native private static double pow0(double a, double b);
 
 public static synchronized double random() {
 	return MathRandom.random.nextDouble();

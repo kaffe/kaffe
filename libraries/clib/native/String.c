@@ -41,7 +41,11 @@ java_lang_String_indexOf(Hjava_lang_String* str, Hjava_lang_String* pat, jint of
   unsigned char  bs[256];
   int *ibs;
 
-  if ( !pat || !str ) return -1;
+  if (pat == 0) {
+    SignalError("java.lang.NullPointerException", "");
+  }
+
+  if ( !str ) return -1;
 
   a = &(unhand_array(unhand(str)->value)->body[unhand(str)->offset]);
   n = unhand(str)->count;

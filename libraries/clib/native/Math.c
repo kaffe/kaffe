@@ -100,7 +100,7 @@ java_lang_Math_atan2(double v1, double v2)
 }
 
 double
-java_lang_Math_pow(double v1, double v2)
+java_lang_Math_pow0(double v1, double v2)
 {
 	return (pow(v1, v2));
 }

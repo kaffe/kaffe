@@ -97,9 +97,20 @@ public synchronized char charAt(int index) {
 	return buffer[index];
 }
 
-public synchronized StringBuffer deleteCharAt(int index) {
-	if (index < 0 || index >= used)
+private void checkIndex(int index) {
+	if (index < 0 || index > length()) {
 		throw new StringIndexOutOfBoundsException();
+	}
+}
+
+private void checkExistingIndex(int index) {
+	if (index < 0 || index >= length()) {
+		throw new StringIndexOutOfBoundsException();
+	}
+}
+
+public synchronized StringBuffer deleteCharAt(int index) {
+	checkExistingIndex(index);
 	System.arraycopy(buffer, index + 1, buffer, index, --used - index);
 	return this;
 }
@@ -193,14 +204,13 @@ public synchronized StringBuffer insert(int offset, char c) {
 }
 
 public StringBuffer insert(int offset, char[] str) {
+	checkIndex(offset);
 	return insert(offset, str, 0, str.length);
 }
 
 public synchronized StringBuffer insert(int index, char[] str,
 		int offset, int len) {
-	if (index < 0 || index > used) {
-		throw new StringIndexOutOfBoundsException();
-	}
+	checkIndex(index);
 	if (offset < 0 || len < 0 || offset + len > str.length) {
 		throw new StringIndexOutOfBoundsException();
 	}
@@ -250,8 +260,7 @@ public synchronized StringBuffer reverse() {
 }
 
 public synchronized void setCharAt(int index, char ch) {
-	if (index < 0 || index >= used)
-		throw new StringIndexOutOfBoundsException();
+	checkIndex(index);
 	if (isStringized)				// optimization
 		ensureCapacity(used, true);
 	buffer[index] = ch;

@@ -19,8 +19,10 @@ private static final long serialVersionUID = -8287574255936472291L;
 private Ptr number;
 private int hash;
 
+private static final BigInteger MINUS_ONE;
 public static final BigInteger ZERO;
 public static final BigInteger ONE;
+private static final BigInteger TWO;
 
 static {
 	System.loadLibrary("math");
@@ -29,8 +31,10 @@ static {
 	   declarations, otherwise they'd be initialized before the
 	   libmath is loaded and initialized.  Moving their
 	   declarations after this block doesn't help.  */
+	MINUS_ONE = new BigInteger(-1L);
 	ZERO = new BigInteger();
 	ONE = new BigInteger(1L);
+	TWO = new BigInteger(2L);
 }
 
 public BigInteger(byte val[]) {
@@ -107,7 +111,6 @@ public BigInteger(int bitLength, int certainty, Random rnd) {
 	byte andval = (byte)(~((~0) << zeroes));
 	/* orval is used to set the most significant bit.  */
 	byte orval = (byte)(0x100 >> zeroes);
-	BigInteger two = new BigInteger(2L);
  rerand:
 	for(;;) {
 		/* There must be a more efficient algorithm! */
@@ -125,7 +128,7 @@ public BigInteger(int bitLength, int certainty, Random rnd) {
 		if (bitLength < 64)
 			testLength |= ~0L << bitLength;
 		do {
-			add0(this, two);
+			add0(this, TWO);
 			testLength += 2;
 			if (testLength == 0
 			    && bitLength0() > bitLength)
@@ -152,6 +155,12 @@ public BigInteger add(BigInteger val) {
 	BigInteger r = new BigInteger();
 	r.add0(this, val);
 	return (r);
+}
+
+private static void checkIfBitAddressIsNotNegative(int n) {
+	if (n < 0) {
+		throw new ArithmeticException("Negative bit address");
+	}
 }
 
 public BigInteger subtract(BigInteger val) {
@@ -231,32 +240,72 @@ public BigInteger modInverse(BigInteger mod) {
 	return (r);
 }
 
-public BigInteger shiftLeft(int n) {
-	if( n < 0 )
-	{
-		return this.shiftRight(-n);
+private BigInteger shift(int n) {
+	/* avoid creation of a new object if n == 0 or this is ZERO */
+	if (n == 0 || this.equals(ZERO)) {
+		return this;
 	}
-	else
-	{
-		BigInteger s = new BigInteger();
-		s.setbit0(s, n);
-		s.mul0(this, s);
-		return (s);
+
+	/* if we are shifting to right, then n is negative.
+	 * We want to avoid creation of new objects when we are
+	 * shifting too far to the right.
+	 */
+	if (bitLength() < -n) {
+		switch (signum()) {
+		    case 1:
+		    case 0:
+			    /* For non-negative BigIntegers we return ZERO. */
+			    return ZERO;
+		    case -1:
+			    /* For negative BigIntegers we return MINUS_ONE. */
+			    return MINUS_ONE;
+		    default:
+			    throw new InternalError("signum not in {-1,0,1}");
+		}
+	}
+
+	BigInteger s = BigInteger.ZERO.setBit(Math.abs(n));
+	if (n > 0) {
+		/* shift to left == multiply with 2^n */
+		return multiply(s);
+	}
+	else { /* n < 0 */
+		switch (signum()) {
+		    case 1:
+			    /* shift to right : if this is positive,
+			     * then division by 2^n will round to floor.
+			     * Rounding to floor is demanded by API spec.
+			     */
+			    return divide(s);
+		    case 0:
+			    /* shifting 0 to right always yields 0 */ 
+			    return this;
+		    case -1:
+			    /* shift to right : if this is negative,
+			     * then division by 2^n will not round to floor.
+			     *
+			     * Using BigDecimal's division would be overkill.
+			     * We simulate the division with floor rounding.
+			     * If the remainder is not 0, we substract 1 from
+			     * the result.
+			     */
+			    BigInteger [] qr = divideAndRemainder(s);
+			    if (!qr[1].equals(ZERO)) {
+				    qr[0] = qr[0].subtract(ONE);
+			    }
+			    return qr[0];
+		    default:
+			    throw new InternalError("signum not in {-1,0,1}");
+		}
 	}
 }
 
+public BigInteger shiftLeft(int n) {
+	return shift(n);
+}
+
 public BigInteger shiftRight(int n) {
-	if( n < 0 )
-	{
-		return this.shiftLeft(-n);
-	}
-	else
-	{
-		BigInteger s = new BigInteger();
-		s.setbit0(s, n);
-		s.div0(this, s);
-		return (s);
-	}
+	return shift(-n);
 }
 
 public BigInteger and(BigInteger val) {
@@ -291,6 +340,7 @@ public BigInteger andNot(BigInteger val) {
 }
 
 public boolean testBit(int n) {
+	checkIfBitAddressIsNotNegative(n);
 	BigInteger b = new BigInteger();
 	b.setbit0(this, n);
 	if (cmp0(b, this) == 0) {
@@ -302,18 +352,21 @@ public boolean testBit(int n) {
 }
 
 public BigInteger setBit(int n) {
+	checkIfBitAddressIsNotNegative(n);
 	BigInteger r = new BigInteger();
 	r.setbit0(this, n);
 	return (r);
 }
 
 public BigInteger clearBit(int n) {
+	checkIfBitAddressIsNotNegative(n);
 	BigInteger r = new BigInteger();
 	r.clrbit0(this, n);
 	return (r);
 }
 
 public BigInteger flipBit(int n) {
+	checkIfBitAddressIsNotNegative(n);
 	BigInteger r = new BigInteger();
 	r.setbit0(r, n);
 	r.xor0(r, this);

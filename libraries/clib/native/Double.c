@@ -26,18 +26,18 @@
 
 /*
  * Convert a "normal" double to a string with the supplied precision.
+ * The string is stored in the supplied buffer. The buffer is
+ * returned upon completion.
  *
  * This assumes printf(3) conforms to ISO 9899: 1990 (``ISO C'').
  *
- * XXX We still print some values incorrectly. For example the double
- * XXX 0x400B333333333333 should be displayed as "3.4" instead of what
- * XXX we display, "3.3999999999999999".
+ * If you fix bugs in printing methods in Double.c, please fix them
+ * in Float.c as well.
  */
-struct Hjava_lang_String*
-java_lang_Double_toStringWithPrecision(jdouble val, jint precision)
-{
-	const jlong bits = java_lang_Double_doubleToRawLongBits(val);
-	char *s, buf[MAXNUMLEN];
+static char *
+toCharArrayWithPrecision(char * buf, jdouble val, jint precision) {
+ 	const jlong bits = java_lang_Double_doubleToRawLongBits(val);
+	char *s;
 	int k;
 
 	/* Deal with negative numbers manually so negative zero is "-0.0" */
@@ -49,14 +49,6 @@ java_lang_Double_toStringWithPrecision(jdouble val, jint precision)
 
 	/* Print in normal or 'scientific' form according to value */
 	if (val == 0.0 || (val >= 1.0e-3 && val < 1.0e7)) {
-		static const double powTen[] = {
-		  1.0e0, 1.0e1, 1.0e2, 1.0e3, 1.0e4, 1.0e5, 1.0e6
-		};
-
-		/* Account for precision digits ahead of the decimal point */
-		for (k = 6; k >= 0 && val < powTen[k]; k--);
-		precision -= k + 1;
-
 		/* Print in decimal notation */
 		sprintf(s, "%.*f", (int) precision, (double) val);
 
@@ -97,33 +89,32 @@ java_lang_Double_toStringWithPrecision(jdouble val, jint precision)
 		for (t = eptr - 1; *t == '0' && t[-1] != '.'; t--);
 		memmove(t + 1, eptr, strlen(eptr) + 1);
 	}
-	return (checkPtr(stringC2Java(buf)));
+	return buf;
 }
 
 /*
- * Convert string to double object.
+ * Convert char array to double object.
+ *
+ * If you fix bugs in printing methods in Double.c, please fix them
+ * in Float.c as well.
  */
-double
-java_lang_Double_valueOf0(struct Hjava_lang_String* str)
+static double
+valueOfCharArray(char * buf)
 {
 	double value;
-	char buf0[MAXNUMLEN];
-	char *buf;
+	char* startbuf;
 	char* endbuf;
 	char* msg = "Bad float/double format";
 #if defined(STRTOD_m0_BROKEN)
 	int negate;
 #endif
 
-	/* stringJava2CBuf would silently promote 0 to an empty string */
-	if (str == 0) {
-		SignalError("java.lang.NullPointerException", "");
-	}
-	stringJava2CBuf(str, buf0, sizeof(buf0));
+	startbuf = buf;
 
 	/* Skip initial white space */
-	for (buf = buf0; isspace((int) *buf); buf++)
-		;
+	while(isspace((int) *buf)) {
+	    buf++;
+	}
 
 #if defined(HAVE_STRTOD)
 
@@ -141,7 +132,7 @@ java_lang_Double_valueOf0(struct Hjava_lang_String* str)
 	/* Parse value; check for empty parse */
 	value = strtod(buf, &endbuf);
 	if (endbuf == buf) {
-		msg = buf0;		/* this is what JDK 1.1.6 does */
+		msg = startbuf;		/* this is what JDK 1.1.6 does */
 		goto bail;
 	}
 
@@ -163,18 +154,6 @@ java_lang_Double_valueOf0(struct Hjava_lang_String* str)
 		}
 	}
 
-	/* Check for overflow/underflow */
-	if (errno == ERANGE) {
-		if (value == HUGE_VAL || value == -HUGE_VAL) {
-			msg = "Overflow";
-			goto bail;
-		}
-		if (value == 0.0) {
-			msg = "Underflow";
-			goto bail;
-		}
-	} 
-
 #if defined(STRTOD_m0_BROKEN)
 	if (negate) {
 		value = -value;
@@ -189,9 +168,66 @@ java_lang_Double_valueOf0(struct Hjava_lang_String* str)
 	/* Got a good value; return it */
 	return (value);
 
-bail:;
+bail:
 	SignalError("java.lang.NumberFormatException", msg);
 	return (0);
+}
+
+/*
+ * Convert a "normal" double to a string with the supplied precision.
+ *
+ * This assumes printf(3) conforms to ISO 9899: 1990 (``ISO C'').
+ *
+ * If you fix bugs in printing methods in Double.c, please fix them
+ * in Float.c as well.
+ */
+struct Hjava_lang_String*
+java_lang_Double_toStringWithPrecision(jdouble val, jint max_precision)
+{
+	char buf[MAXNUMLEN];
+	jint min_precision = 1;
+	jint precision = 0;
+
+	/* perform a binary search over precision. */
+	while (max_precision != min_precision + 1) {
+	    precision = (max_precision + min_precision) / 2;
+	    toCharArrayWithPrecision(buf, val, (int) precision);
+
+	    if (valueOfCharArray(buf) != val) {
+		min_precision = precision;
+	    }
+	    else {
+		max_precision = precision;
+	    }
+	}
+
+	/* we could have exited the loop with
+	 * precision == min_precision,
+	 * where the value with min_precision
+	 * is not equal to val.
+	 */
+	if (precision == min_precision) {
+	    toCharArrayWithPrecision(buf, val, (int) precision + 1);
+	}
+
+	return (checkPtr(stringC2Java(buf)));
+}
+
+/*
+ * Convert string to double object.
+ */
+double
+java_lang_Double_valueOf0(struct Hjava_lang_String* str)
+{
+	char buf0[MAXNUMLEN];
+
+	/* stringJava2CBuf would silently promote 0 to an empty string */
+	if (str == 0) {
+		SignalError("java.lang.NullPointerException", "");
+	}
+	stringJava2CBuf(str, buf0, sizeof(buf0));
+
+	return valueOfCharArray(buf0);
 }
 
 /*

@@ -1,3 +1,64 @@
+Fri Apr 12 13:26:13 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+	* libraries/javalib/Klasses.jar: regenerated using javac 1.4.0.
+	Options: -target 1.1 -O.
+	* libraries/javalib/java/math/BigInteger.java:
+	(MINUS_ONE), (TWO) new private constants.
+	(static) initalize MINUS_ONE and TWO.
+	(BigInteger) use constant TWO instead of dynamically created
+	object of same value.
+	(checkIfBitAddressIsNotNegative) new method.
+	(shift) new method. Fixed bugs with shifting negative integers to
+	right. Optimized for minimal object creation.
+	(shiftLeft) rewritten to use shift internally.
+	(shiftRight) rewritten to use shift internally.
+	(testBit), (setBit), (clearBit), (flipBit) added check for
+	negative bit address.
+	* libraries/clib/native/Double.c:
+	(toCharArrayWithPrecision) new function.
+	(valueOfCharArray) new function. Removed handling of overflow and
+	underflow, since the JDK does not seem to be taking care of it
+	anyway. It just returns Infinity on overflow and 0.0 on underflow.
+	(java_lang_Double_toStringWithPrecision) use
+	toCharArrayWithPrecision internally. implemented a binary search
+	over possible precisions to find the shortest String
+	representation resulting in the same double when converted back.
+	(java_lang_Double_valueOf0) use valueOfCharArray internally.
+	* libraries/clib/native/Float.c:
+	(toCharArrayWithPrecision) new function.
+	(valueOfCharArray) new function. Removed handling of overflow and
+	underflow, since the JDK does not seem to be taking care of it
+	anyway. It just returns Infinity on overflow and 0.0 on underflow.
+	(java_lang_Float_toStringWithPrecision) new method. use
+	toCharArrayWithPrecision internally. implemented a binary search
+	over possible precisions to find the shortest String
+	representation resulting in the same double when converted back.
+	* libraries/javalib/java/lang/Double.java:
+	(MAX_DIGITS) new field.
+	(bitsToDecimal) removed, no longer necessary.
+	(toString) simplified. use toStringWithPrecision directly.
+	* libraries/javalib/java/lang/Float.java:
+	(MAX_DIGITS) new field.
+	(bitsToDecimal) removed, no longer necessary.
+	(toString) simplified. use toStringWithPrecision directly.
+	(toStringWithPrecision) new native method.
+	* test/regression/finaltest.java:
+	test/regression/finaltest2.java: fixed expected value.
+	* libraries/clib/native/Math.c:
+	(pow) renamed to (pow0).
+	* libraries/javalib/java/lang/Math.java:
+	(pow) return NaN if abs(a) is 1.0 and b is infinite. i368-linux
+	glibc 2.2.4 doesn't do it.
+	(pow0) new native method.
+	* libraries/clib/native/String.c:
+	(java_lang_String_indexOf) throw NullPointerException if pattern
+	is NULL.
+	* libraries/javalib/java/lang/StringBuffer.java:
+	(checkIndex) new method.
+	(checkExistingIndex) new method.
+	(deleteCharAt) use checkExistingIndex instead of inlined check.
+	(insert) use checkIndex instead of inlined check.
+	(setCharAt) same.
+
 Thu Apr  4 18:44:05 CEST 2002 Tim Stack  <stack@cs.utah.edu>
 	* libraries/clib/native/Method.c:
 	(Java_java_lang_reflect_Method_invoke) added more argument checks.
