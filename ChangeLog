@@ -1,3 +1,12 @@
+2005-01-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+	
+	2005-01-10  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFramePeer.c
+	(nativeSetIconImageFromData): Re-add native implementation.
+
 2005-01-12  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/clib/native/ByteToCharIconv.c
