@@ -187,9 +187,14 @@ public class URLClassLoader extends SecureClassLoader
 
     URLLoader(URLClassLoader classloader, URL baseURL)
     {
+      this(classloader, baseURL, baseURL);
+    }
+
+    URLLoader(URLClassLoader classloader, URL baseURL, URL overrideURL)
+    {
       this.classloader = classloader;
       this.baseURL = baseURL;
-      this.noCertCodeSource = new CodeSource(baseURL, null);
+      this.noCertCodeSource = new CodeSource(overrideURL, null);
     }
 
     /**

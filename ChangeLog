@@ -1,5 +1,14 @@
 2005-02-16  Dalibor Topic  <robilad@kaffe.org>
 
+	Resynced with GNU Classpath.
+
+	2005-02-14  Tom Tromey  <tromey@redhat.com>
+
+        * java/net/URLClassLoader.java (URLLoader(URLClassLoader, URL,
+        URL)): New constructor.
+
+2005-02-16  Dalibor Topic  <robilad@kaffe.org>
+
 	Resynced with GNU inetlib.
 
 	2005-02-14  Kai Mueller  <kai@faldal.mine.nu>
