@@ -5,6 +5,7 @@
 #include "jtypes.h"
 #include "itypes.h"
 #include "threadData.h"
+#include "thread.h"
 #include "exception.h"
 #include "md.h"
 

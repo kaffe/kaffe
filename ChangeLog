@@ -13,6 +13,22 @@
 
 2004-06-22  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/jni_funcs.h,
+	kaffe/kaffevm/jni-base.c,
+	kaffe/kaffevm/jni-callmethod.c: New files.
+
+	* kaffe/kaffevm/jni.c:
+	Moved JNI initializers to jni-base.c
+	Moved JNI functions to call methods to jni-callmethod.c
+
+	* kaffe/kaffevm/jni/Makefile.am: Added jni-base.c and
+	jni-callmethod.c to libkaffejni_la_SOURCES.
+	Added jni_funcs.h to noinst_HEADERS.
+
+	* kaffe/kaffevm/jni/Makefile.in: Regenerated.
+
+2004-06-22  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* configure.ac: Use AM_LCMESSAGES to check for LC_MESSAGES in
 	locale.h. jni module added.
 

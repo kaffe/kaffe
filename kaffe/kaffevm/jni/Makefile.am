@@ -22,13 +22,14 @@ AM_CPPFLAGS = \
 noinst_LTLIBRARIES = libkaffejni.la
 
 libkaffejni_la_LDFLAGS = \
-	$(KVMLIBFLAGS) \
-	-export-dynamic \
-	-release $(PACKAGE_VERSION)
+	$(KVMLIBFLAGS)
 
 libkaffejni_la_SOURCES = \
-	jni.c
+	jni.c \
+	jni-base.c \
+	jni-callmethod.c
 
 noinst_HEADERS= \
 	jni_i.h \
-	jnirefs.h
+	jnirefs.h \
+	jni_funcs.h
