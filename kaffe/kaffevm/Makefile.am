@@ -21,7 +21,7 @@ EXTRA_DIST = \
 
 @engine_frag@
 
-INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) $(LTDLINCL) $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/xprof
+INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/xprof
 
 native_LTLIBRARIES = libkaffevm.la
 

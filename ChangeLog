@@ -1,3 +1,10 @@
+Fri May 31 21:52:39 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	* Configure.in: Revert patch from Mariusz, I didn't realize that
+	it removed the "convenience library" way of building libltdl,
+	which is needed if a system libltdl isn't installed.  Isn't
+	libtool fun?
+
 Fri May 31 20:30:22 PDT 2002  Jim Pick  <jim@kaffe.org>
 
         From: Timothy Stack <stack@cs.utah.edu>

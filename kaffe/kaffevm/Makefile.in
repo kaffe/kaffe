@@ -139,7 +139,7 @@ DIST_SUBDIRS = intrp jit jit3 systems gcj
 EXTRA_DIST =  	kaffe.def 	mem/gc-incremental.c 	mem/gc-incremental.h 	mem/gc-mem.c 	mem/gc-mem.h 	systems/win32/winio.c 	systems/win32/winthread.c 	systems/win32/winthread.h
 
 
-INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) $(LTDLINCL) $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/xprof
+INCLUDES = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/xprof
 
 native_LTLIBRARIES = libkaffevm.la
 @HAVE_GCJ_SUPPORT_TRUE@libgcj = gcj/libgcj.la

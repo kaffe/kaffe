@@ -14,7 +14,7 @@ else
 libxprof = #
 endif
 
-INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm $(LTDLINCL) \
+INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
 	-I$(top_srcdir)/kaffe/xprof
 
 Kaffe_SOURCES = main.c version.c version.h

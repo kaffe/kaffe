@@ -137,7 +137,7 @@ jrebin_PROGRAMS = Kaffe
 @NEED_LIBXPROF_TRUE@libxprof = ../xprof/libkaffexprof.la
 @NEED_LIBXPROF_FALSE@libxprof = #
 
-INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm $(LTDLINCL) 	-I$(top_srcdir)/kaffe/xprof
+INCLUDES = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl 	-I$(top_srcdir)/kaffe/xprof
 
 
 Kaffe_SOURCES = main.c version.c version.h
