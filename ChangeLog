@@ -1,3 +1,8 @@
+Thu Feb 03 11:26:59 MST 2000  Jason Baker  <jbaker@cs.utah.edu>
+
+	* kaffe/kaffevm/debug.c: make stdio blocking even for debug
+	arguments which are not flags (like list)
+
 Wed Feb  2 15:38:32 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/support.c: avoid empty exception messages
