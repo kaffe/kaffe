@@ -1,3 +1,12 @@
+2004-05-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Allow enabling of xprofiling without
+	an explicit 'yes'.
+
+	* configure: Regenerated.
+
+	Reported by: Kero van Gelder <kero@d4050.upc-d.chello.nl>.
+
 2004-05-09 Guilhem Lavaux <guilhem@kaffe.org>
 
 	* config/i386/freebsd2/md.c: Fixed compilation and copyright

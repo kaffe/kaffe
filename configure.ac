@@ -487,7 +487,6 @@ if test "x$NOSIGCONTEXT" = "xtrue"; then
 fi
 
 case "$enable_xprofiling" in
-"") xprofiling=no ;;
 no) xprofiling=no ;;
 *)  xprofiling=yes; need_libxprof=yes; CPPFLAGS="$CPPFLAGS -DKAFFE_XPROFILER";;
 esac
