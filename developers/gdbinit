@@ -52,7 +52,7 @@ define jthreadInfo
   printf ";  .jlThread=%p\n", $jth.jlThread
   printf "java.lang.Thread:"
     p $jlth
-  printf "  .PrivateInfo=%x", $jlth.data.PrivateInfo
+  printf "  .PrivateInfo=%x", $jlth.PrivateInfo
   printf ";  .name="
     jlthreadName $jlth
   printf "\n"
@@ -287,11 +287,11 @@ end
 
 define threadInfo
   set $jlth = (Hjava_lang_Thread*)($arg0)
-  set $jth = (jthread*)($jlth.data.PrivateInfo)
+  set $jth = (jthread*)($jlth.PrivateInfo)
   if $jth == 0
      printf "Thread at %p not yet initialized (PrivateInfo == 0)\n", $jlth
-     printf "  State = %d; Name = ", $jlth.data.state
-     jlstring $jlth.data.name
+     printf "  State = %d; Name = ", $jlth.state
+     jlstring $jlth.name
   else
     if $jth.jlThread != $jlth
        printf "threadInfo: ERROR $jth.jlThread (%p) != $jlth (%p)\n", $jth.jlThread, $jlth
@@ -333,7 +333,7 @@ document jlthread
 end
 
 define jlthreadName
-  set $chararr = ($arg0).data.name
+  set $chararr = ($arg0).name
   set $strcount = $chararr.length
 
   if $strcount < 1
@@ -371,9 +371,9 @@ document printDebugBuffer
 end
 
 define sunjlString
-  set $strcount = ($arg0).data.count
-  set $strstart = ($arg0).data.offset
-  set $chararr = ($arg0).data.value
+  set $strcount = ($arg0).count
+  set $strstart = ($arg0).offset
+  set $chararr = ($arg0).value
   if $strcount < 1
     printf "(String is zero length)\n"
   else
@@ -563,7 +563,7 @@ end
 define dumpexcchain
     set $th = ((jthread*)$arg0)
     set $jth = (Hjava_lang_Thread*)$th.jlThread
-    set $eptr = (vmException*)$jth.data.exceptPtr
+    set $eptr = (vmException*)$jth.exceptPtr
     while $eptr != 0
 	printf "%p ", $eptr
 	if $eptr.meth == 1
