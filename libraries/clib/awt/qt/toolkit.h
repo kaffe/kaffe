@@ -4,6 +4,9 @@
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2002, 2003, 2004
+ *	Kaffe.org contributors, see ChangeLog for details.  All rights reserved.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -24,40 +27,22 @@ BEGIN_C_DECLS
 #include "config-mem.h"
 #include "config-setjmp.h"
 
-//#include <X11/Xlib.h>
-//#include <X11/Xutil.h>
-
-#undef USE_XSHM_EXTENSION
-#define	XShmGetImage(A,B,C,D,E,F)		0
-#define	XShmPutImage(A,B,C,D,E,F,G,H,I,J,K)	0
-#define	XShmSegmentInfo				void
-
 #include <jni.h>
 #include <native.h>
-#include "../../../../kaffe/kaffevm/gtypes.h"
-#include "../../../../kaffe/kaffevm/gc.h"
-#include "../../../../kaffe/kaffevm/debug.h"
-#include "../../../../kaffe/kaffevm/thread.h"
-
-#define	DBG_ACTION(A,B)
-
-#define AWT_DBG(X) printf("Native AWT ---->"); X
+#include "gtypes.h"
+#include "gc.h"
+#include "thread.h"
+#include "debug.h"
 
 #include <fcntl.h>
 
-/*******************************************************************************
+/**
  * image handling structures
  */
-//struct QImage;
-//struct QPixmap;
 typedef struct _AlphaImage {       /* storage for full alpha channel images */
   unsigned char *buf;
   int           width, height;
 } AlphaImage;
-
-#define NO_SHM       0             /* we don't have MIT-Shm support in the X server */
-#define USE_SHM      1             /* we have support, use it */
-#define SUSPEND_SHM  2             /* we have support, but it ran out of space */
 
 typedef struct _Image {
   
@@ -65,13 +50,6 @@ typedef struct _Image {
   QPixmap	   *qpmScaled;
   QImage	   *qImg;
   QImage 	   *qImg_AlphaMask;
-  //Pixmap           pix;            /* pixmap for screen images */
-
-  //XImage           *xImg;          /* "real" image */
-  //XShmSegmentInfo  *shmiImg;       /* Shm info for shared mem real image */
-
-  //XImage           *xMask;         /* mask image for reduced alpha (on/off) images */
-  //XShmSegmentInfo  *shmiMask;      /* Shm info for shared mem mask image */
 
   AlphaImage       *alpha;         /* full alpha channel (for alpha != 0x00 or 0xff) */
 
@@ -85,10 +63,9 @@ typedef struct _Image {
 } Image;
 
 
-/*******************************************************************************
+/**
  * structure to store guessed and computed Frame/Dialog insets (titlebar, borders)
  */
-
 typedef struct _DecoInset {
   int            left;
   int            top;
@@ -98,28 +75,24 @@ typedef struct _DecoInset {
 } DecoInset;           
 
 
-/*******************************************************************************
- * We use  our own structure instead of directly storing X window handles, to
- * enable us to attach and query attributes (owners, states, flags..) to particular
- * X window instances. We could do this by means of X properties, but this might
- * end up in costly round-trips and even more memory (than we trade for speed here).
+/**
+ * Kaffe uses its own structure instead of directly storing handles from window
+ * system to enable attach and query attributes (owners, states, flags..) to 
+ * particular window instances. We could do this by means of X properties, but 
+ * this might end up in costly round-trips and even more memory (than we trade 
+ * for speed here).
  * It's a must have for our popup key/focus event forwarding (see wnd.c)
  */
-
 typedef struct _WindowRec {
   void*          w;
   unsigned       flags;
   void*          owner;
 } WindowRec;
 
-/*******************************************************************************
+/**
  * this is the master AWT structure (singleton object), glueing it al together
  */
-
 typedef struct _Toolkit {
-//  Display        *dsp;
-//  Window         root;
-
   char           *buf;
   unsigned int   nBuf;
 
@@ -133,7 +106,6 @@ typedef struct _Toolkit {
   DecoInset      frameInsets;
   DecoInset      dialogInsets;
 
-  //XEvent         event;
   char           preFetched;
   char           blocking;
   int            pending;
@@ -154,12 +126,11 @@ typedef struct _Toolkit {
 } Toolkit;
 
 
-/*********************************************************************
-  Exported JNI Functions
- *********************************************************************/
+/**
+ * Exported JNI Functions
+ */
 
 /* Clipboard */
-
 typedef void ClipBoard;
 jobject Java_java_awt_Toolkit_cbdInitClipboard ( JNIEnv* env, jclass clazz );
 void Java_java_awt_Toolkit_cbdFreeClipboard ( JNIEnv* env, jclass clazz,
@@ -170,7 +141,6 @@ jobject Java_java_awt_Toolkit_cbdGetContents ( JNIEnv* env, jclass clazz,
   ClipBoard* cbd);
 
 /* Color */
-
 jint Java_java_awt_Toolkit_clrGetPixelValue ( JNIEnv* env, jclass clazz, jint rgb);
 void Java_java_awt_Toolkit_clrSetSystemColors ( JNIEnv* env, jclass clazz,
   jintArray sysClrs);
@@ -179,7 +149,6 @@ jlong Java_java_awt_Toolkit_clrDark ( JNIEnv* env, jclass clazz, jint rgb);
 jobject Java_java_awt_Toolkit_clrGetColorModel ( JNIEnv* env, jclass clazz);
 
 /* Event */
-
 jobject Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz);
 jobject Java_java_awt_Toolkit_evtGetNextEvent ( JNIEnv* env, jclass clazz);
 jobject Java_java_awt_Toolkit_evtPeekEvent ( JNIEnv* env, jclass clazz);
@@ -233,15 +202,7 @@ jint Java_java_awt_Toolkit_fntStringWidth ( JNIEnv* env, jclass clazz,
   QFont* fs, jstring jStr);
 
 /* Graphics */
-
-
-//struct QPainter;
-//struct QWidget;
-//class QPaintDevice;
-
 typedef struct {
-  //GC        gc;
-  //Drawable  drw;
   QPaintDevice   *drw;
   QPainter  *painter;
   int       fg;
@@ -329,9 +290,7 @@ void Java_java_awt_Toolkit_graDrawImageScaled ( JNIEnv* env, jclass clazz,
   jint sx0, jint sy0, jint sx1, jint sy1, jint bgval);
 
 
-
-  /* Image */
-
+/* Image */
 void* Java_java_awt_Toolkit_imgCreateImage ( JNIEnv* env, jclass clazz,
   jint width, jint height);
 void* Java_java_awt_Toolkit_imgCreateScreenImage ( JNIEnv* env, jclass clazz,
@@ -362,7 +321,6 @@ jint Java_java_awt_Toolkit_imgGetLatency ( JNIEnv* env, jclass clazz, Image* img
 void* Java_java_awt_Toolkit_imgGetNextFrame ( JNIEnv* env, jclass clazz, Image* img);
 
 /* Toolkit */
-
 jint Java_java_awt_Toolkit_tlkProperties ( JNIEnv* env, jclass clazz);
 jboolean Java_java_awt_Toolkit_tlkInit ( JNIEnv* env, jclass clazz,
   jstring name);
@@ -412,39 +370,19 @@ void Java_java_awt_Toolkit_wndToFront ( JNIEnv* env, jclass clazz, void* wnd);
 void Java_java_awt_Toolkit_wndSetCursor ( JNIEnv* env, jclass clazz,
   void* wnd, jint jCursor);
 
-/*******************************************************************************
+/**
  * global data def/decl
  */
 #ifdef MAIN
 
 Toolkit   XTk;
 Toolkit   *X = &XTk;
-#if 0
-Atom WM_PROTOCOLS;
-Atom WM_DELETE_WINDOW;
-Atom WM_TAKE_FOCUS;
-Atom WAKEUP;
-Atom RETRY_FOCUS;
-Atom FORWARD_FOCUS;
-Atom SELECTION_DATA;
-Atom JAVA_OBJECT;
-#endif
 jclass  AWTError;
 JNIEnv  *JniEnv;
 
 #else
 
 extern Toolkit* X;
-#if 0
-extern Atom WM_PROTOCOLS;
-extern Atom WM_DELETE_WINDOW;
-extern Atom WM_TAKE_FOCUS;
-extern Atom WAKEUP;
-extern Atom RETRY_FOCUS;
-extern Atom FORWARD_FOCUS;
-extern Atom SELECTION_DATA;
-extern Atom JAVA_OBJECT;
-#endif
 extern jclass AWTError;
 extern JNIEnv* JniEnv;
 
@@ -453,10 +391,9 @@ extern JNIEnv* JniEnv;
 extern long StdEvents, PopupEvents;
 
 
-/*****************************************************************************************
+/**
  * heap wrapper macros
  */
-
 static inline void* _awt_malloc_wrapper ( size_t size )
 {
   void *adr;
@@ -494,11 +431,6 @@ static inline void _awt_free_wrapper ( void* adr )
 
 #define AWT_FREE(_adr) \
   _awt_free_wrapper( _adr);
-
-
-/*******************************************************************************
- *
- */
 
 
 static inline char* java2CString ( JNIEnv *env, Toolkit* X, const jstring jstr ) {
@@ -549,12 +481,10 @@ static inline void* getBuffer ( Toolkit* X, unsigned int nBytes ) {
 }
 
 
-/*****************************************************************************************
+/**
  * color functions & defines
  */
-
 void initColorMapping ( JNIEnv* env, jclass clazz, Toolkit* X);
-
 
 #define JRGB(_r,_g,_b)  (_r<<16 | _g<<8 | _b)
 #define JRED(_rgb)      ((_rgb & 0xff0000) >> 16)
@@ -562,10 +492,9 @@ void initColorMapping ( JNIEnv* env, jclass clazz, Toolkit* X);
 #define JBLUE(_rgb)     (_rgb & 0x0000ff)
 
 
-/*****************************************************************************************
+/**
  * image functions
  */
-
 int needsFullAlpha(Toolkit*, Image*, double);
 Image* createImage ( int width, int height);
 void createXMaskImage ( Toolkit* X, Image* img );
@@ -589,29 +518,16 @@ GetAlpha ( AlphaImage* img, int col, int row )
   return img->buf[ row*img->width + col];
 }
 
-/*****************************************************************************************
+/**
  * clipboard functions
  */
-
 jobject selectionClear ( JNIEnv* env, Toolkit* X );
 jobject selectionRequest ( JNIEnv* env, Toolkit* X );
 
 
-/*****************************************************************************************
- * async (multithreaded) macros
- * this can be used to solve the problem of deferred drawing requests, not being
- * flushed because of infrequent (non-polled) XNextEvent calls.
- * (for now, we go with a backgound flush thread)
- */
-
-#define XFLUSH(_X,_force)
-
-
-
-/*****************************************************************************************
+/**
  * file io wrapper macros (for image production)
  */
-
 #define AWT_OPEN(_file)               open(_file, 0)
 #define AWT_REWIND(_fd)               lseek(_fd, 0, SEEK_SET)
 #define AWT_SETPOS(_fd,_off)          lseek(_fd, _off, SEEK_CUR)
@@ -619,11 +535,10 @@ jobject selectionRequest ( JNIEnv* env, Toolkit* X );
 #define AWT_CLOSE(_fd)                close(_fd)
 
 
-/*****************************************************************************************
+/**
  * macros to manage the source table (conversion of X windows to/from indices, which
  * are consistent with the AWTEvent.sources array)
  */
-
 #define WND_FRAME      0x01
 #define WND_WINDOW     0x02
 #define WND_DIALOG     0x04
@@ -682,10 +597,9 @@ static inline int checkSource ( Toolkit* X, int idx )
 }
 
 
-/*****************************************************************************************
+/**
  * focus forwarding
  */
-
 #define FWD_SET    0  /* set focus forwarding */
 #define FWD_CLEAR  1  /* reset focus forwarding */
 #define FWD_REVERT 2  /* reset focus on owner */
@@ -697,7 +611,7 @@ static inline void resetFocusForwarding ( Toolkit* X )
 }
 
 
-/*****************************************************************************************
+/**
  * Macros to implement keyboard handling for owned windows (which don't ever get
  * the X focus). This is done by means of forwarding and generation of "artificial"
  * focus events (generated from clientMessages.)

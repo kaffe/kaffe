@@ -4,6 +4,9 @@
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2002, 2003, 2004
+ *	Kaffe.org contributors, see ChangeLog for details.  All rights reserved.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -22,132 +25,14 @@ jmethodID  getNativeData;
 typedef void ClipBoard;
 QString cbdText;
 int cbdDirty;
-/*****************************************************************************************
- * internal event handling functions
- *  (note that non of them gets back to Java via events (->return 0);
- */
-#if 0
-jobject
-selectionClear ( JNIEnv* env, Toolkit* X )
-{
-  env->CallStaticVoidMethod( NativeClipboard, lostOwnership);
 
-  return 0; /* don't pass event to Java */
-}
-jobject
-selectionRequest ( JNIEnv* env, Toolkit* X )
-{
-  //XEvent     e;
-  char       *mime;
-  jstring    jMimeType;
-  jbyteArray jData;
-  jbyte      *data;
-  jboolean   isCopy;
-  int        len;
-  //Atom       target = X->event.xselectionrequest.target;
-
-  if ( target == JAVA_OBJECT )
-	mime = "application/x-java-serialized-object";
-  else if ( target == XA_STRING )
-	mime = "text/plain; charset=unicode";
-  else
-	mime = XGetAtomName( X->dsp, target);
-
-  jMimeType = env->NewStringUTF( (const char*) mime);
-  jData = env->CallStaticObjectMethod( NativeClipboard, getNativeData, jMimeType);
-
-  if ( jData ) {
-	data = env->GetByteArrayElements( jData, &isCopy);
-	len = env->GetArrayLength( jData);
-
-	//XChangeProperty( X->dsp,
-	//				 X->event.xselectionrequest.requestor,
-	//				 X->event.xselectionrequest.property,
-	//				 X->event.xselectionrequest.target,
-	//				 8, PropModeReplace, data, len);
-
-	env->ReleaseByteArrayElements( jData, data, JNI_ABORT);
-	//e.xselection.property  = X->event.xselectionrequest.property;
-  }
-  else {
-	//e.xselection.property  = None;  /* format not supported */
-  }
-/*
-  e.xselection.type      = SelectionNotify;
-  e.xselection.requestor = X->event.xselectionrequest.requestor;
-  e.xselection.selection = X->event.xselectionrequest.selection;
-  e.xselection.target    = target;
-  e.xselection.time      = X->event.xselectionrequest.time;
-
-  XSendEvent( X->dsp, e.xselection.requestor, False, 0, &e);
-*/
-  return 0; /* don't pass event to Java */
-}
-#endif
-
-/*
- * this is the low level helper - get the raw data of the requested 'target' format
- * returns :
- *   -1 if there is no selection owner
- *    0 if the owner cannot prvide the requested format
- *    length of *pData otherwise
- */
-#if 0
-static int
-getRawData ( Toolkit* X, Atom target, unsigned char** pData )
-{
-
-  int              i, format;
-  unsigned long    len = 8191, remain = 1;
-  Atom             type;
-  XEvent           e;
-
-  XConvertSelection( X->dsp, XA_PRIMARY, target, SELECTION_DATA, X->cbdOwner, CurrentTime);
-
-  for ( i=0; i<2; i++ ) {
-	XSync( X->dsp, False);
-	if ( XCheckTypedWindowEvent( X->dsp, X->cbdOwner, SelectionNotify, &e) ){
-	  if ( e.xselection.property == None )  /* target type not supported by owner */
-		return 0;
-
-	  while ( remain ) {
-		len += remain;
-		XGetWindowProperty( X->dsp, X->cbdOwner, SELECTION_DATA, 0, len, False,
-							AnyPropertyType, &type, &format, &len, &remain, pData);
-	  }
-	  return len;
-	}
-	sleep( 1);
-  }
-  return -1; /* no selection owner at all */
-}
-#endif
-
-/*****************************************************************************************
+/**
  * exported functions
  */
 
 jobject
 Java_java_awt_Toolkit_cbdInitClipboard ( JNIEnv* env, jclass clazz )
 {
-#if 0
-  unsigned long mask = 0;
-  XSetWindowAttributes attrs;
-
-  attrs.override_redirect = True;
-  mask |= CWOverrideRedirect;
-
-  /*
-   * We need an appropriate native owner/requestor (Window) since
-   * Java requestors/owners can be non-native Windows. We also
-   * don't want to introduce artificial events (with all their
-   * required infrastructure)
-   */
-  X->cbdOwner = XCreateWindow( X->dsp, X->root, -10000, -10000, 1, 1, 0, CopyFromParent,
-							   InputOutput, CopyFromParent, mask, &attrs);
-
-#endif
-
   NativeClipboard = env->FindClass( "java/awt/NativeClipboard");
   lostOwnership   = env->GetStaticMethodID( NativeClipboard,
 											   "lostOwnership", "()V");
@@ -157,8 +42,6 @@ Java_java_awt_Toolkit_cbdInitClipboard ( JNIEnv* env, jclass clazz )
 												  "createTransferable",
 												  "(Ljava/lang/String;[B)Ljava/awt/datatransfer/Transferable;");
 
-//  SELECTION_DATA   = XInternAtom( X->dsp, "SELECTION_DATA", False);
-//  JAVA_OBJECT      = XInternAtom( X->dsp, "application/x-java-serialized-object", False);
   return 0;
 }
 
@@ -173,14 +56,6 @@ Java_java_awt_Toolkit_cbdSetOwner ( JNIEnv* env, jclass clazz, ClipBoard* cbd )
 
   cbdDirty = 1;  
   return 1;
-
-#if 0
-  XSetSelectionOwner( X->dsp, XA_PRIMARY, X->cbdOwner, CurrentTime);
-  if ( XGetSelectionOwner( X->dsp, XA_PRIMARY) != X->cbdOwner )
-        return 0;
-  else
-        return 1;
-#endif
 }
 
 
@@ -229,7 +104,6 @@ Java_java_awt_Toolkit_cbdGetContents ( JNIEnv* env, jclass clazz, ClipBoard* cbd
 	jMimeType = env->NewStringUTF( (const char*)mime);
 	jdata = env->NewByteArray( ret);
 	env->SetByteArrayRegion( jdata, 0, ret, (jbyte*)data);
-	//XFree( data);
 
 	return env->CallStaticObjectMethod( NativeClipboard, createTransferable,
 										   jMimeType, jdata);
@@ -287,3 +161,4 @@ jobject clearJavaClipboard(JNIEnv* env)
 #endif
   return NULL;
 }
+

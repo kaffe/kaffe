@@ -4,6 +4,9 @@
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2002, 2003, 2004
+ *	Kaffe.org contributors, see ChangeLog for details.  All rights reserved.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -90,12 +93,10 @@ EventDispatcher::EventDispatcher(QWidget *parent, const char *name) {
 }
 
 bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
-//  AWT_DBG(printf("event type=%d widget=%p\n", e->type(), o));
+  DBG(AWT, qDebug("event type=%d widget=%p\n", e->type(), o));
   QEvent* newEvent = NULL;
   EventPacket* packet = NULL;
   bool processed = false;
-
-//  getSourceIdx(X, o);
 
   if(X->srcIdx == 0)
     return QWidget::eventFilter(o, e);
@@ -115,7 +116,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
     }
 
     case QEvent::Show: {
-      AWT_DBG(printf("Event Show: srcIdx=%d\n", X->srcIdx));
+      DBG(AWT, qDebug("Event Show: srcIdx=%d\n", X->srcIdx));
 
 #if (QT_VERSION < 300)
       newEvent = (QEvent*) new QShowEvent(true);
@@ -129,7 +130,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
     }
     
     case QEvent::Hide: {
-      AWT_DBG(printf("Event Hid: srcIdx=%d\n", X->srcIdx));
+      DBG(AWT, qDebug("Event Hid: srcIdx=%d\n", X->srcIdx));
 
 #if (QT_VERSION < 300)
       newEvent = (QEvent*) new QHideEvent(true);
@@ -144,7 +145,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
     
     case QEvent::FocusIn:
     case QEvent::FocusOut: {
-      AWT_DBG(printf("Event Focus: srcIdx=%d\n", X->srcIdx));
+      DBG(AWT, qDebug("Event Focus: srcIdx=%d\n", X->srcIdx));
       QFocusEvent* tmpFocusEvent = (QFocusEvent*)e;
       newEvent = (QEvent*) new QFocusEvent(tmpFocusEvent->type());
       ((QFocusEvent*)newEvent)->setReason(tmpFocusEvent->reason());
@@ -154,7 +155,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
 
     case QEvent::KeyPress:
     case QEvent::KeyRelease: {
-      AWT_DBG(printf("Event Key: srcIdx=%d\n", X->srcIdx));
+      DBG(AWT, qDebug("Event Key: srcIdx=%d\n", X->srcIdx));
       QKeyEvent* tmpKeyEvent = (QKeyEvent*)e;
       newEvent = (QEvent*) new QKeyEvent(tmpKeyEvent->type(),tmpKeyEvent->key(),
 	tmpKeyEvent->ascii(), tmpKeyEvent->state(), tmpKeyEvent->text(),
@@ -166,7 +167,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
     case QEvent::MouseButtonPress:
     case QEvent::MouseButtonRelease:
     case QEvent::MouseMove: {
-      AWT_DBG(printf("Event MouseButton: srcIdx=%d\n", X->srcIdx));
+      DBG(AWT, qDebug("Event MouseButton: srcIdx=%d\n", X->srcIdx));
       QMouseEvent* tmpMouseEvent = (QMouseEvent*)e;
       newEvent = (QEvent*) new QMouseEvent(tmpMouseEvent->type(),
         tmpMouseEvent->pos(), tmpMouseEvent->button(),
@@ -175,7 +176,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
       break;
     }
     case QEvent::Paint: {
-      AWT_DBG(printf("Event Paint: srcIdx=%d\n", X->srcIdx));
+      DBG(AWT, qDebug("Event Paint: srcIdx=%d\n", X->srcIdx));
       QPaintEvent* tmpPaintEvent = (QPaintEvent*)e;
       newEvent = (QEvent*) new QPaintEvent(tmpPaintEvent->rect(),
         tmpPaintEvent->erased());
@@ -183,7 +184,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
       break;
     }
     case QEvent::Move: {
-      AWT_DBG(printf("Event Move: srcIdx=%d\n", X->srcIdx));
+      DBG(AWT, qDebug("Event Move: srcIdx=%d\n", X->srcIdx));
       QPoint data(((QWidget*)o)->width(), ((QWidget*)o)->height());
       QMoveEvent* tmpMoveEvent = (QMoveEvent*)e;
       // Hide width/height in oldPos of newEvent
@@ -193,7 +194,7 @@ bool EventDispatcher::eventFilter(QObject* o, QEvent* e) {
       break;
     }
     case QEvent::Resize: {
-      AWT_DBG(printf("Event Resize: srcIdx=%d\n", X->srcIdx));
+      DBG(AWT, qDebug("Event Resize: srcIdx=%d\n", X->srcIdx));
       QSize data(((QWidget*)o)->x(), ((QWidget*)o)->y());
       QResizeEvent* tmpResizeEvent = (QResizeEvent*)e;
       // Hide x/y in oldSize of newEvent
@@ -217,12 +218,8 @@ EventDispatcher* eventDispatcher;
 void forwardFocus ( int cmd, void* wnd );  /* from wnd.c */
 
 
-/*****************************************************************************
- *
- */
-
-
-/* X-to-Java key modifier mapping
+/**
+ * Qt-X-Java key modifier mapping
  *                                     altGr   : PC
  *     shift       -    ctrl     alt    meta   : Java
  *     Shift    Lock    Ctrl    Mod1    Mod3   : X      symbol
@@ -281,369 +278,20 @@ static char *eventStr ( int evtId )
   }
 };
 #endif
-#if 0
-static jobject
-keyNotify ( JNIEnv* env, Toolkit* X )
-{
-  KeySym          keysym;
-  XComposeStatus  ioStatus;
-  int             n, keyCode, keyChar, mod, idx;
-
-  /*
-   * We should eventually support input methods here.
-   * Note that 'keysym' is queried separately (with a standard state), to
-   * ensure the "one physical key -> one keycode" invariant
-   */
-  n = XLookupString( &X->event.xkey, X->buf, X->nBuf, 0, &ioStatus);
-  keysym = XKeycodeToKeysym( X->dsp, X->event.xkey.keycode, 0);
-
-  if ( (keysym >= 0xff00) || (n == 0) ) {
-	keyCode = FKeyCode[keysym & 0xff];
-	/*
-	 * There are some "control keys" that should generate KEY_TYPED events
-	 * (enter, cancel, backspace, del, tab). This is flagged by a negative keyCode
-	 * value and leads to non-zero keyChars
-	 */
-	if ( keyCode < 0 ){
-	  keyChar = keyCode = -keyCode;
-	}
-	else {  /* a "pure" function key */
-	  keyChar = 0;
-	}
-
-  }
-  else {
-	keyChar = (unsigned char)X->buf[0];
-	keyCode = LKeyCode[keysym & 0xff];
-  }
-
-  X->evtId = (X->event.xany.type == KeyPress)? KEY_PRESSED : KEY_RELEASED;
-  mod = keyMod( X->event.xkey.state);
-
-  if ( X->fwdIdx >= 0 ) {
-	/*
-	 * watch out - we still might have key events for a already
-	 * unregistered forwardee in the queue (since we fake X, we can't rely on it
-	 * to remove key events for a destroyed forwardee)
-	 */
-	if ( !checkSource( X, X->fwdIdx) )
-	  return 0;
-	idx = X->fwdIdx;
-  }
-  else {
-	idx = X->srcIdx;
-  }
-
-  return env->CallStaticObjectMethod( KeyEvent, getKeyEvent,
-                      idx, X->evtId, keyCode, keyChar, mod);
-}
-
-
-static jobject
-buttonNotify ( JNIEnv* env, Toolkit* X )
-{
-  if ( X->event.xany.type == ButtonPress ) {
-	X->evtId = MOUSE_PRESSED;
-
-	if ( (X->windows[X->srcIdx].w == X->focus) && (X->fwdIdx >= 0) )
-	  forwardFocus( FWD_REVERT, X->event.xany.window);
-  }
-}
-
-
-static jobject
-mouseNotify ( JNIEnv* env, Toolkit* X )
-{
-  X->evtId = (X->event.xany.type == EnterNotify) ? MOUSE_ENTERED : MOUSE_EXITED;
-
-  return env->CallStaticObjectMethod(  MouseEvent, getMouseEvent,
-    X->srcIdx, X->evtId,
-    0, X->event.xcrossing.x, X->event.xcrossing.y);
-}
-
-
-static jobject
-focusNotify ( JNIEnv* env, Toolkit* X )
-{
-  return 0;
-#if 0
-  int et = X->event.xany.type;
-  int idx = (X->focusFwd) ? X->fwdIdx : X->srcIdx;
-
-  /*
-   * get rid of all these fancy intermediate focus events (the real thing should
-   * come last), but be aware of that we might get events for already unregistered windows
-   * (in case the app isn't particulary careful with disposing windows), ending up in
-   * ArrayOutOfBoundsExceptions in the getFocusEvent
-   */
-  while ( XCheckMaskEvent( X->dsp, FocusChangeMask, &X->event) ){
-	X->pending--;
-	if ( getSourceIdx( X, X->event.xfocus.window) >= 0 ) {
-	  et = X->event.xany.type;
-	  idx = (X->focusFwd) ? X->fwdIdx : X->srcIdx;
-	}
-  }
-
-  if ( et == FocusIn ) {
-	X->evtId = FOCUS_GAINED;
-	X->focus = X->event.xany.window;
-  }
-  else {
-	X->evtId = FOCUS_LOST;
-	X->focus = 0;
-  }
-
-  /*
-   * No matter what the focus change is - if we get a REAL focus notification,
-   * it means that we will end focus forwarding (which is done on the owner-basis,
-   * not by means of a global grab mode)
-   */
-  resetFocusForwarding( X);
-
-  if ( checkSource( X, idx) ){
-	return env->CallStaticObjectMethod( FocusEvent, getFocusEvent, idx,
-										   X->evtId, JNI_FALSE);
-  }
-  else {
-	return 0;
-  }
-#endif
-}
-
-static jobject
-destroyNotify ( JNIEnv* env, Toolkit* X )
-{
-  /*
-   * We should get this just for windows which have been destroyed from an
-   * external client, since removeNotify() calls evtUnregisterSource() (i.e.
-   * removes windows properly from the dispatch table)
-   */
-  X->windows[X->srcIdx].flags &= ~WND_MAPPED;
-
-  return env->CallStaticObjectMethod( WMEvent, getWMEvent,
-				 X->srcIdx, (X->evtId = WM_KILLED));
-}
-
-
-static jobject
-mapNotify ( JNIEnv* env, Toolkit* X )
-{
-  int id = 0;
-
-  if ( X->event.xany.type == MapNotify ) {
-	if ( (X->windows[X->srcIdx].flags & WND_MAPPED) == 0 ){
-	  id = WINDOW_DEICONIFIED;
-	  X->windows[X->srcIdx].flags |= WND_MAPPED;
-	}
-  }
-  else {
-	if ( (X->windows[X->srcIdx].flags & WND_MAPPED) != 0 ){
-	  id = WINDOW_ICONIFIED;
-	  X->windows[X->srcIdx].flags &= ~WND_MAPPED;
-	}
-  }
-
-  if ( id ) {
-	return env->CallStaticObjectMethod( WindowEvent, getWindowEvent,
-		   X->srcIdx, id);
-  }
-  else {
-	// we do the ComponentEvent show/hide in Java
-	return 0;
-  }
-}
-
-static jobject
-clientMessage ( JNIEnv* env, Toolkit* X )
-{
-  return 0;
-#if 0
-  if ( X->windows[X->srcIdx].flags & WND_DESTROYED ){
-	/* we lost him, Jim */
-	return 0;
-  }
-
-  if ( X->event.xclient.message_type == WM_PROTOCOLS ) {
-	if ( X->event.xclient.data.l[0] == WM_DELETE_WINDOW ) {
-	  return env->CallStaticObjectMethod( WindowEvent, getWindowEvent,
-											 X->srcIdx, (X->evtId = WINDOW_CLOSING));
-	}
-	else if ( X->event.xclient.data.l[0] == WM_TAKE_FOCUS ) {
-	  XSetInputFocus( X->dsp, X->event.xany.window, RevertToParent, CurrentTime);
-	}
-  }
-
-  /*
-   * This is a workaround for the common problem of requesting the focus for not
-   * yet mapped windows (resulting in BadMatch errors)
-   */
-  else if ( X->event.xclient.message_type == RETRY_FOCUS ) {
-	if ( X->windows[X->srcIdx].flags & WND_MAPPED ) {
-	  XSetInputFocus( X->dsp, (Window)X->event.xclient.window, RevertToParent, CurrentTime);
-	  if ( X->event.xclient.data.l[1] ) {
-		/* we have a pending forward request, too */
-		forwardFocus( FWD_SET, X->event.xclient.data.l[1]);
-	  }
-	}
-  }
-
-  /*
-   * This is a workaround for X not having "owned" windows (popups), which do
-   * not "shade" the titlebar of their owner (i.e. don't indicate a change in
-   * the activeWindow). The only way to implement this reliable (w/o playing
-   * around with a window manager) is to not let these popups select on
-   * key events at all. But rather than to expose this to the Java side (like
-   * the JDK does), we hide this in the native layer
-   */
-  else if ( X->event.xclient.message_type == FORWARD_FOCUS ) {
-	switch ( X->event.xclient.data.l[0] ){
-	case FWD_SET:
-	  DBG( AWT_EVT, printf("FWD_SET: %lx (%d) %lx\n", X->event.xany.window, X->srcIdx, X->windows[X->srcIdx].owner));
-
-	  if ( (X->srcIdx != X->fwdIdx) && (X->focus == X->windows[X->srcIdx].owner) ){
-		X->fwdIdx = X->srcIdx;
-		X->focusFwd = X->event.xany.window;
-		return env->CallStaticObjectMethod( FocusEvent, getFocusEvent,
-											   X->srcIdx, FOCUS_GAINED, JNI_TRUE);
-	  }
-	  else {
-		return 0;
-	  }
-
-	case FWD_CLEAR:
-	  DBG( AWT_EVT, printf("FWD_CLEAR: %lx (%d) %lx\n", X->event.xany.window, X->srcIdx, X->windows[X->srcIdx].owner));
-
-	  if ( X->fwdIdx >= 0 ) {
-		resetFocusForwarding( X);
-		return env->CallStaticObjectMethod( FocusEvent, getFocusEvent,
-											   X->srcIdx, FOCUS_LOST, JNI_FALSE);
-	  }
-	  else {
-		return 0;
-	  }
-
-	case FWD_REVERT:
-	  DBG( AWT_EVT, printf("FWD_REVERT: %lx\n", X->event.xany.window));
-	  if ( X->event.xany.window == X->focus ) {
-		resetFocusForwarding( X);
-		return env->CallStaticObjectMethod( FocusEvent, getFocusEvent,
-											   X->srcIdx, FOCUS_GAINED, JNI_FALSE);
-	  }
-	}
-  }
-  return 0;
-#endif
-}
-
-static jobject
-reparentNotify ( JNIEnv* env, Toolkit* X )
-{
-  Window    window, parent, root;
-  jclass    clazz = 0;
-  jmethodID setDecoInsets = 0;
-  int       left, top, right, bottom;
-  int       x, y, w, h, bw, d;
-  int       xc, yc, wc, hc;
-  DecoInset *in = 0;
-  XSizeHints wmHints;
-  long      supHints;
-
-  if ( X->frameInsets.guess || X->dialogInsets.guess ) {
-	window = X->event.xreparent.window;
-	parent = X->event.xreparent.parent;
-
-	XGetGeometry( X->dsp, parent, &root, &x, &y, &w, &h, &bw, &d);
-	XGetGeometry( X->dsp, window, &root, &xc, &yc, &wc, &hc, &bw, &d);
-
-	left   = X->event.xreparent.x;
-	top    = X->event.xreparent.y;
-	right  = w - wc - left;
-	bottom = h - hc - top;
-
-	if ( (X->windows[X->srcIdx].flags & WND_DIALOG) && X->dialogInsets.guess ) {
-	  in = &(X->dialogInsets);
-	  if ( (left != in->left) || (top != in->top) ||
-		   (right != in->right) || (bottom != in->bottom) ){
-		clazz = env->FindClass( "java/awt/Dialog");
-		setDecoInsets = env->GetStaticMethodID( clazz, "setDecoInsets","(IIIII)V");
-	  }
-	  in->guess = 0;
-	}
-	else if ( X->frameInsets.guess ) {
-	  in = &(X->frameInsets);
-	  if ( (left != in->left) || (top != in->top) ||
-		   (right != in->right) || (bottom != in->bottom) ){
-		clazz = env->FindClass( "java/awt/Frame");
-		setDecoInsets = env->GetStaticMethodID( clazz, "setDecoInsets","(IIIII)V");
-	  }
-	  in->guess = 0;
-	}
-
-	if ( clazz ) {
-	  wc -= (left + right) - (in->left + in->right);
-	  hc -= (top + bottom) - (in->top + in->bottom);
-
-	  XCheckTypedWindowEvent( X->dsp, window, ConfigureNotify, &X->event);
-	  XCheckTypedWindowEvent( X->dsp, window, Expose, &X->event);
-	  XResizeWindow( X->dsp, window, wc, hc);
-
-	  in->left = left;
-	  in->top = top;
-	  in->right = right;
-	  in->bottom = bottom;
-
-	  env->CallStaticVoidMethod( clazz, setDecoInsets, 
-									in->top, in->left, in->bottom, in->right, X->srcIdx);
-
-	  /* check if this was a resize locked window (which has to be locked again) */
-	  XGetWMNormalHints( X->dsp, window, &wmHints, &supHints);
-	  if ( wmHints.min_width == wmHints.max_width ){
-		wmHints.min_width = wmHints.max_width = wc;
-		wmHints.min_height = wmHints.max_height = hc;
-		XSetWMNormalHints( X->dsp, window, &wmHints);
-	  }
-	}
-  }
-
-  return NULL;
-}
-
-typedef jobject (*EventFunc)(JNIEnv*,Toolkit*);
-
-static EventFunc  processEvent[LASTEvent] = {
-  keyNotify,            /* KeyPress                 2 */
-  keyNotify,            /* KeyRelease               3 */
-  mouseNotify,          /* EnterNotify              7 */
-  mouseNotify,          /* LeaveNotify              8 */
-  focusNotify,          /* FocusIn                  9 */
-  focusNotify,          /* FocusOut                10 */
-  destroyNotify,        /* DestroyNotify           17 */
-  mapNotify,            /* UnmapNotify             18 */
-  mapNotify,            /* MapNotify               19 */
-  reparentNotify,       /* ReparentNotify          21 */
-  selectionClear,       /* SelectionClear          29 */
-  selectionRequest,     /* SelectionRequest        30 */
-  clientMessage,        /* ClientMessage           33 */
-};
-#endif
-
-/*******************************************************************************
- *
- */
 
 jobject Java_java_awt_Toolkit_evtInit(JNIEnv* env, jclass clazz)
 {
   jclass Component;
 
-  AWT_DBG(printf("evtInit\n"));
+  DBG(AWT, qDebug("evtInit\n"));
 
   if ( ComponentEvent != NULL ){
-    AWT_DBG(printf("evtInit called twice\n"));
+    DBG(AWT, qDebug("evtInit called twice\n"));
     return NULL;
   }
 
   if(qapp == NULL) {
-    AWT_DBG(printf("evtInit: qapp not initialized!\n"));
+    DBG(AWT, qDebug("evtInit: qapp not initialized!\n"));
   }
 
   eventDispatcher = new EventDispatcher();
@@ -714,7 +362,7 @@ jobject processEvent(JNIEnv* env, Toolkit* X, QEvent* event, int index)
       
 
     case QEvent::Destroy: {
-      AWT_DBG(printf("processing Destroy: SrcIdx=%d\n", index));
+      DBG(AWT, qDebug("processing Destroy: SrcIdx=%d\n", index));
       /*
        * We should get this just for windows which have been destroyed from an
        * external client, since removeNotify() calls evtUnregisterSource() (i.e.
@@ -728,13 +376,13 @@ jobject processEvent(JNIEnv* env, Toolkit* X, QEvent* event, int index)
     }
     
     case QEvent::Reparent: {
-      AWT_DBG(printf("processing Reparent: SrcIdx=%d\n", index));
+      DBG(AWT, qDebug("processing Reparent: SrcIdx=%d\n", index));
       return NULL;
     }
 
     case QEvent::FocusIn:
     case QEvent::FocusOut: {
-      AWT_DBG(printf("processing %s: SrcIdx=%d\n",(event->type() == QEvent::FocusIn)?"FocusIn":"FocusOut",index));
+      DBG(AWT, qDebug("processing %s: SrcIdx=%d\n",(event->type() == QEvent::FocusIn)?"FocusIn":"FocusOut",index));
       int evtId;
       int et = event->type();
       if ( et == QEvent::FocusIn ) {
@@ -756,7 +404,7 @@ jobject processEvent(JNIEnv* env, Toolkit* X, QEvent* event, int index)
 
     case QEvent::KeyPress:
     case QEvent::KeyRelease: { 
-      AWT_DBG(printf("processing %s: SrcIdx=%d\n",(event->type() == QEvent::KeyPress)?"KeyPress":"KeyRelease",index));
+      DBG(AWT, qDebug("processing %s: SrcIdx=%d\n",(event->type() == QEvent::KeyPress)?"KeyPress":"KeyRelease",index));
       QKeyEvent *keyEvent = (QKeyEvent*)event;
       int             n, keyCode, keyChar, mod;
       
@@ -793,7 +441,7 @@ jobject processEvent(JNIEnv* env, Toolkit* X, QEvent* event, int index)
       int evtId = (((QEvent*)keyEvent)->type() == QEvent::KeyPress)? KEY_PRESSED : KEY_RELEASED;
       mod = keyMod(keyEvent->state());
       
-      AWT_DBG(printf("KeyEvent: idx=%d keyCode=%d keyChar=%c mod=%d\n", index, keyCode,keyChar,mod));
+      DBG(AWT, qDebug("KeyEvent: idx=%d keyCode=%d keyChar=%c mod=%d\n", index, keyCode,keyChar,mod));
 
       return env->CallStaticObjectMethod( KeyEvent, getKeyEvent,
                                           index, evtId, keyCode, keyChar, mod);
@@ -801,7 +449,7 @@ jobject processEvent(JNIEnv* env, Toolkit* X, QEvent* event, int index)
     }
     
     case QEvent::MouseButtonPress: {
-      AWT_DBG(printf("processing MouseButtonPress Event SrcIdx=%d\n", index));
+      DBG(AWT, qDebug("processing MouseButtonPress Event SrcIdx=%d\n", index));
       QMouseEvent* mouseEvent = (QMouseEvent*)event;
       // check the diff between event.xbutton.button and QMouseEvent::button()
       if (checkSource( X, index) ){
@@ -816,7 +464,7 @@ jobject processEvent(JNIEnv* env, Toolkit* X, QEvent* event, int index)
         mouseEvent->x(), mouseEvent->y());
     }
     case QEvent::MouseButtonRelease: {
-      AWT_DBG(printf("processing MouseButtonRelease Event SrcIdx=%d\n", index));
+      DBG(AWT, qDebug("processing MouseButtonRelease Event SrcIdx=%d\n", index));
       QMouseEvent* mouseEvent = (QMouseEvent*)event;
       // check the diff between event.xbutton.button and QMouseEvent::button()
       return env->CallStaticObjectMethod(MouseEvent, getMouseEvent,
@@ -824,21 +472,21 @@ jobject processEvent(JNIEnv* env, Toolkit* X, QEvent* event, int index)
         mouseEvent->x(), mouseEvent->y());
     }
     case QEvent::MouseMove: {
-      AWT_DBG(printf("processing MouseMove Event SrcIdx=%d\n", index));
+      DBG(AWT, qDebug("processing MouseMove Event SrcIdx=%d\n", index));
       QMouseEvent* mouseEvent = (QMouseEvent*)event;
       return env->CallStaticObjectMethod(MouseEvent, getMouseEvent,
         index, MOUSE_MOVED, 0,
         mouseEvent->x(), mouseEvent->y());
     }
     case QEvent::Paint: {
-      AWT_DBG(printf("processing Paint Event SrcIdx=%d\n", index));
+      DBG(AWT, qDebug("processing Paint Event SrcIdx=%d\n", index));
       QPaintEvent* paintEvent = (QPaintEvent*)event;
       QRect rect=paintEvent->rect();
       return env->CallStaticObjectMethod(PaintEvent, getPaintEvent,
         index, UPDATE, rect.x(), rect.y(), rect.width(), rect.height());
     }
     case QEvent::Move: {
-      AWT_DBG(printf("processing Move Event SrcIdx=%d\n", index));
+      DBG(AWT, qDebug("processing Move Event SrcIdx=%d\n", index));
       QMoveEvent* moveEvent = (QMoveEvent*)event;
       QPoint pos, data;
       pos = moveEvent->pos();
@@ -847,7 +495,7 @@ jobject processEvent(JNIEnv* env, Toolkit* X, QEvent* event, int index)
         index, COMPONENT_RESIZED, pos.x(), pos.y(), data.x(), data.y());
     }
     case QEvent::Resize: {
-      AWT_DBG(printf("processing Resize Event SrcIdx=%d\n", index));
+      DBG(AWT, qDebug("processing Resize Event SrcIdx=%d\n", index));
       QResizeEvent* resizeEvent = (QResizeEvent*)event;
       QSize size, data;
       size = resizeEvent->size();
@@ -867,7 +515,7 @@ jobject Java_java_awt_Toolkit_evtGetNextEvent(JNIEnv* env, jclass clazz)
   QEvent *event;
   int index;
 
-  //AWT_DBG(printf("getNextEvent..\n"));
+  DBG(AWT, qDebug("getNextEvent..\n"));
   pollJavaClipboard(env);
 
   if (g_event_queue.count()) {
@@ -879,7 +527,6 @@ jobject Java_java_awt_Toolkit_evtGetNextEvent(JNIEnv* env, jclass clazz)
     delete packet;
   }
 
-//  qapp->processOneEvent();
   qapp->processEvents(10);
 
   return jEvt;
@@ -890,7 +537,7 @@ Java_java_awt_Toolkit_evtPeekEvent ( JNIEnv* env, jclass clazz )
 {
   jobject jEvt = NULL;
 
-  AWT_DBG(printf("peekEvent..\n"));
+  DBG(AWT, qDebug("peekEvent..\n"));
 #if 0
   if ( nextEvent( env, clazz, X, False) && ((getSourceIdx( X, (void*)X->event.xany.window) >= 0)) ) {
 	if ( (jEvt = (processEvent[X->event.xany.type])( env, X)) )
@@ -933,19 +580,7 @@ Java_java_awt_Toolkit_evtPeekEventId ( JNIEnv* env, jclass clazz, jint id )
  */
 void Java_java_awt_Toolkit_evtWakeup(JNIEnv* env, jclass clazz)
 {
-//  XEvent event;
-
-  AWT_DBG(printf("evtWakeup\n"));
-
-/*
-  event.xclient.type = ClientMessage; 
-  event.xclient.message_type = WAKEUP;
-  event.xclient.format = 8;
-  event.xclient.window = X->wakeUp;
-
-  XSendEvent( X->dsp, X->wakeUp, False, 0, &event);
-  XFlush( X->dsp);
-*/
+  DBG(AWT, qDebug("evtWakeup\n"));
 }
 
 /*
@@ -967,7 +602,7 @@ jint Java_java_awt_Toolkit_evtRegisterSource(JNIEnv* env, jclass clazz,
    */
   int i = getSourceIdx( X, wnd);
 
-  AWT_DBG(printf("registerSource( %p) -> %d\n", wnd, i));
+  DBG(AWT, qDebug("registerSource( %p) -> %d\n", wnd, i));
 
   return i;
 }
@@ -987,7 +622,7 @@ jint Java_java_awt_Toolkit_evtUnregisterSource(JNIEnv* env, jclass clazz,
   if ( X->lastWindow == wnd )
 	X->lastWindow = 0;
 
-  AWT_DBG(printf("unregisterSource( %p) -> %d\n", wnd, i));
+  DBG(AWT, qDebug("unregisterSource( %p) -> %d\n", wnd, i));
 
   return i;
 }

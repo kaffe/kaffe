@@ -4,6 +4,9 @@
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2002, 2003, 2004
+ *	Kaffe.org contributors, see ChangeLog for details.  All rights reserved.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -26,23 +29,18 @@ extern QPEApplication *qapp;
 extern QApplication *qapp;
 #endif
 
-/********************************************************************************
- * auxiliary functions
- */
-
-
-/********************************************************************************
+/**
  * common funcs
  */
 
 void initColorMapping(JNIEnv* env, jclass clazz,  Toolkit* X)
 {
-//  qapp->setColorSpec(QApplication::NormalColor);
+  // qapp->setColorSpec(QApplication::NormalColor);
   X->colorMode = QApplication::ManyColor;
 }
 
 
-/********************************************************************************
+/**
  * exported functions
  */
 
@@ -56,10 +54,9 @@ jint Java_java_awt_Toolkit_clrGetPixelValue(JNIEnv* env, jclass clazz,
   if ( !X->colorMode )
 	initColorMapping( env, clazz, X);
 
-//  uint pixel = QColor(JRED(rgb), JGREEN(rgb), JBLUE(rgb)).pixel();
-//  AWT_DBG(printf("clrGetPixelValue: %8x -> %x (%d)\n", rgb, pixel, pixel));
+  // uint pixel = QColor(JRED(rgb), JGREEN(rgb), JBLUE(rgb)).pixel();
+  // AWT_DBG(qDebug("clrGetPixelValue: %8x -> %x (%d)\n", rgb, pixel, pixel));
 
-//  return pixel;
   return rgb;
 }
 
@@ -136,3 +133,4 @@ jobject Java_java_awt_Toolkit_clrGetColorModel(JNIEnv* env, jclass clazz)
 
   return cm;
 }
+

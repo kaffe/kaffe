@@ -4,6 +4,9 @@
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2002, 2003, 2004
+ *	Kaffe.org contributors, see ChangeLog for details.  All rights reserved.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -30,19 +33,6 @@ extern QPEApplication *qapp;
 extern QApplication *qapp;
 #endif
 
-#if 0
-long StdEvents = ExposureMask | KeyPressMask | KeyReleaseMask |
-		 PointerMotionMask | /* PointerMotionHintMask | */
-		 ButtonPressMask | ButtonReleaseMask | ButtonMotionMask |
-		 EnterWindowMask | LeaveWindowMask | StructureNotifyMask |
-		 FocusChangeMask | VisibilityChangeMask;
-
-long PopupEvents = ExposureMask |
-		 PointerMotionMask | /* PointerMotionHintMask | */
-		 ButtonPressMask | ButtonReleaseMask | ButtonMotionMask |
-		 EnterWindowMask | LeaveWindowMask | StructureNotifyMask |
-		 VisibilityChangeMask;
-#endif
 /*
  * X dosen't have "owned" popups (menus, choice windows etc.), all it has
  * are 'isTransientFor' properties, and these might not be honored by native
@@ -66,35 +56,11 @@ long PopupEvents = ExposureMask |
 /* also used in evt.c */
 void forwardFocus ( int cmd, void* wnd )
 {
-#if 0
-  XEvent event;
-
-  event.xclient.type = ClientMessage; 
-  event.xclient.message_type = FORWARD_FOCUS;
-  event.xclient.format = 32;
-  event.xclient.data.l[0] = cmd;
-  event.xclient.window = wnd;
-	  
-  XSendEvent( X->dsp, wnd, False, StdEvents, &event);
-#endif
 }
 
 static void 
 retryFocus ( void* wnd, void* owner, int count )
 {
-#if 0
-  XEvent event;
-
-  event.xclient.type = ClientMessage; 
-  event.xclient.message_type = RETRY_FOCUS;
-  event.xclient.format = 32;
-  event.xclient.data.l[0] = count;
-  event.xclient.data.l[1] = owner;
-  event.xclient.window = wnd;
-	  
-  XSendEvent( X->dsp, (Window)wnd, False, StdEvents, &event);
-  XSync( X->dsp, False);
-#endif
 }
 
 static int
@@ -155,7 +121,7 @@ getCursor ( jint jCursor )
 void Java_java_awt_Toolkit_wndSetTitle(JNIEnv* env, jclass clazz,
   void* wnd, jstring jTitle )
 {
-  fprintf(stderr,"wndSetTitle\n");
+  DBG(AWT, qDebug("wndSetTitle\n"));
   if ( jTitle ) {
     char *buf = java2CString( env, X, jTitle);
     ((QWidget*)wnd)->setCaption(QString(buf));
@@ -166,11 +132,11 @@ void Java_java_awt_Toolkit_wndSetTitle(JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_wndSetResizable(JNIEnv* env, jclass clazz,
   void* wnd, jboolean isResizable, int x, int y, int width, int height)
 {
-  fprintf(stderr,"wndSetResizable\n");
+  DBG(AWT, qDebug("wndSetResizable\n"));
   int min_width, max_width;
   int min_height, max_height;
 
-  AWT_DBG(printf("setResizable: %p, %d, %d,%d,%d,%d\n",
+  DBG(AWT, qDebug("setResizable: %p, %d, %d,%d,%d,%d\n",
     wnd, isResizable, x, y, width, height));
 
   if ( !isResizable ) {
@@ -188,69 +154,6 @@ void Java_java_awt_Toolkit_wndSetResizable(JNIEnv* env, jclass clazz,
   ((QWidget*)wnd)->setMaximumHeight(max_height);
 }
 
-#if 0
-static Window
-createWindow ( JNIEnv* env, jclass clazz, Window parent, Window owner,
-  jstring jTitle, jint x, jint y, jint width, jint height,
-  jint jCursor, jint clrBack, jboolean isResizable )
-{
-  unsigned long          valueMask;
-  XSetWindowAttributes   attributes;
-  Window                 wnd;
-  Atom                   protocol[2];
-  int                    i;
-
-  /* note that we don't select on key / focus events for popus
-     (owner, no title) */
-  attributes.event_mask = (owner && !jTitle) ? PopupEvents :  StdEvents;
-  attributes.background_pixel = clrBack;
-  attributes.bit_gravity = ForgetGravity;
-  attributes.cursor = getCursor( jCursor);
-  valueMask = CWEventMask | CWBackPixel | CWBitGravity | CWCursor;
-
-  if ( !jTitle ) {
-	attributes.override_redirect = True;
-	attributes.save_under = True;
-	valueMask |= CWOverrideRedirect | CWSaveUnder;
-  }
-  else {
-	attributes.backing_store = WhenMapped;
-	valueMask |= CWBackingStore;
-  }
-
-  if ( width <= 0 )  width = 1;
-  if ( height <= 0 ) height = 1;
-
-  DBG( AWT_WND, printf("XCreateWindow %d,%d,%d,%d\n", x, y, width, height));
-  wnd = XCreateWindow( X->dsp, parent, x, y, width, height, 0,
-					   CopyFromParent, InputOutput, CopyFromParent,
-					   valueMask, &attributes);
-  DBG( AWT_WND, printf(" -> %lx\n", wnd));
-
-  if ( wnd ) {
-	i=0;
-	protocol[i++] = WM_DELETE_WINDOW;
-	protocol[i++] = WM_TAKE_FOCUS;
-	XSetWMProtocols( X->dsp, wnd, protocol, i);
-
-	if ( owner ){
-	  XSetTransientForHint( X->dsp, wnd, owner ); // ???
-	}
-
-	if ( !isResizable )
-	  Java_java_awt_Toolkit_wndSetResizable( env, clazz,
-			 (void*)wnd, isResizable, x, y, width, height);
-
-	if ( jTitle )
-	  Java_java_awt_Toolkit_wndSetTitle( env, clazz, (void*)wnd, jTitle);
-
-	return wnd;
-  }
-  else {
-	return 0;
-  }
-}
-#endif
 /*
  * We register here (and not in evt.c, during evtRegisterSource) because
  * we want to be able to store attributes (flags, owner), without being
@@ -273,7 +176,7 @@ static int registerSource(Toolkit* X, QWidget* wnd, QWidget* owner,
 	return i;
   }
   else {
-	DBG( AWT_EVT, printf("window table out of space: %d", X->nWindows));
+	DBG(AWT_EVT, qDebug("window table out of space: %d", X->nWindows));
 	return -1;
   }
 }
@@ -283,13 +186,9 @@ void* Java_java_awt_Toolkit_wndCreateFrame(JNIEnv* env, jclass clazz,
   jstring jTitle, jint x, jint y, jint width, jint height,
   jint jCursor, jint clrBack, jboolean isResizable)
 {
-//  Window w = createWindow( env, clazz, DefaultRootWindow( X->dsp), 0, jTitle,
-//	   x, y, width, height, jCursor, clrBack, isResizable);
-
-  fprintf(stderr,"wndCreateFrame\n");
-  //QMainWindow* mw = new QMainWindow();
+  DBG(AWT, qDebug("wndCreateFrame\n"));
   QFrame *mw = new QFrame();
-  AWT_DBG(printf("createFrame( %p, %d,%d,%d,%d,..) -> %p\n", 
+  DBG(AWT, qDebug("createFrame( %p, %d,%d,%d,%d,..) -> %p\n", 
     jTitle, x, y, width, height, mw));
 
   if ( width <= 0 )  width = 1;
@@ -306,10 +205,8 @@ void* Java_java_awt_Toolkit_wndCreateFrame(JNIEnv* env, jclass clazz,
 
   Java_java_awt_Toolkit_wndSetTitle(env, clazz, (void*)mw, jTitle);
 
-  //mw->show(); // this should be removed
-
   int idx = registerSource( X, (QWidget*)mw, 0, WND_FRAME);
-  AWT_DBG(printf("registerSource: mw=%p idx=%d\n",mw,idx));
+  DBG(AWT, qDebug("registerSource: mw=%p idx=%d\n",mw,idx));
   return (void*)mw;
 }
 
@@ -318,9 +215,7 @@ void* Java_java_awt_Toolkit_wndCreateWindow(JNIEnv* env, jclass clazz,
   void* owner, jint x, jint y, jint width, jint height,
   jint jCursor, jint clrBack )
 {
-  fprintf(stderr,"wndCreateWindow\n");
-/*  Window w = createWindow( env, clazz, X->root, (Window)owner, NULL,
-             x, y, width, height, jCursor, clrBack, JNI_TRUE); */
+  DBG(AWT, qDebug("wndCreateWindow\n"));
 
   QFrame* mw = new QFrame((QWidget*)owner);
   mw->setFrameStyle(QFrame::Panel|QFrame::Raised);
@@ -329,7 +224,7 @@ void* Java_java_awt_Toolkit_wndCreateWindow(JNIEnv* env, jclass clazz,
   y = p.y();
   // Owner
 
-  AWT_DBG(printf("createWindow( %p, %d,%d,%d,%d,..) -> %p\n", 
+  DBG(AWT, qDebug("createWindow( %p, %d,%d,%d,%d,..) -> %p\n", 
           owner,x,y,width,height, mw));
 
   if ( width <= 0 )  width = 1;
@@ -341,10 +236,8 @@ void* Java_java_awt_Toolkit_wndCreateWindow(JNIEnv* env, jclass clazz,
 
   mw->setBackgroundColor(QCOLOR(clrBack));
 
-  //mw->show(); // this should be removed
-
   int idx = registerSource( X, (QWidget*)mw, (QWidget*)owner, WND_WINDOW);
-  AWT_DBG(printf("registerSource: mw=%p idx=%d\n",mw,idx));
+  DBG(AWT, qDebug("registerSource: mw=%p idx=%d\n",mw,idx));
   return (void*)mw;
 }
 
@@ -358,7 +251,7 @@ void* Java_java_awt_Toolkit_wndCreateDialog(JNIEnv* env, jclass clazz,
     (Window)owner, jTitle, x, y, width, height,
     jCursor, clrBack, isResizable); */
 
-  fprintf(stderr,"wndCreateDialog\n");
+  DBG(AWT, qDebug("wndCreateDialog\n"));
   QFrame* mw = new QFrame();
   mw->setFrameStyle(QFrame::Panel|QFrame::Raised);
   QPoint p = mw->mapToParent(mw->mapFromGlobal(QPoint(x,y)));
@@ -367,7 +260,7 @@ void* Java_java_awt_Toolkit_wndCreateDialog(JNIEnv* env, jclass clazz,
 
   // Owner
 
-  AWT_DBG( printf("createDialog( %p,%p, %d,%d,%d,%d,..) -> %p\n", 
+  DBG(AWT, qDebug("createDialog( %p,%p, %d,%d,%d,%d,..) -> %p\n", 
     owner, jTitle, x, y, width, height, mw));
 
   if ( width <= 0 )  width = 1;
@@ -384,10 +277,8 @@ void* Java_java_awt_Toolkit_wndCreateDialog(JNIEnv* env, jclass clazz,
 
   Java_java_awt_Toolkit_wndSetTitle(env, clazz, (void*)mw, jTitle);
 
-  //mw->show(); // this should be removed
-
   int idx = registerSource( X, (QWidget*)mw, (QWidget*)owner, WND_DIALOG);
-  AWT_DBG(printf("registerSource: mw=%p idx=%d\n",mw,idx));
+  DBG(AWT, qDebug("registerSource: mw=%p idx=%d\n",mw,idx));
   return (void*)mw;
 }
 
@@ -397,7 +288,7 @@ void Java_java_awt_Toolkit_wndDestroyWindow(JNIEnv* env, jclass clazz,
 {
   int i = getSourceIdx( X, wnd);
 
-  AWT_DBG(printf("destroy window: %p (%d)\n", wnd, i));
+  DBG(AWT, qDebug("destroy window: %p (%d)\n", wnd, i));
 
   if ( (i >= 0) && !(X->windows[i].flags & WND_DESTROYED) ) {
     if ( wnd == X->focusFwd ) {
@@ -422,7 +313,6 @@ void Java_java_awt_Toolkit_wndDestroyWindow(JNIEnv* env, jclass clazz,
     X->windows[i].flags &= ~WND_MAPPED;
 
     ((QWidget*)wnd)->close(TRUE);
-    // XDestroyWindow( X->dsp, wnd);
   }
 }
 
@@ -432,7 +322,7 @@ void Java_java_awt_Toolkit_wndRequestFocus(JNIEnv* env, jclass clazz,
 {
   int i = getSourceIdx( X, wnd);
 
-  AWT_DBG( printf("request focus: %lx (%d)\n", wnd, i));
+  DBG(AWT, qDebug("request focus: %lx (%d)\n", wnd, i));
 
   if ( (i < 0) || (X->windows[i].flags & WND_DESTROYED) )
     return;
@@ -440,44 +330,6 @@ void Java_java_awt_Toolkit_wndRequestFocus(JNIEnv* env, jclass clazz,
   ((QWidget*)wnd)->setActiveWindow();
   ((QWidget*)wnd)->raise();
   ((QWidget*)wnd)->setFocus();
-#if 0
-  if ( (X->windows[i].owner) && (X->windows[i].flags & WND_WINDOW) ) {
-    if ( X->focus != X->windows[i].owner ) {
-      /* if our owner doesn't have it yet, make him the focus window */
-      XSetInputFocus( X->dsp, X->windows[i].owner, RevertToParent, CurrentTime);
-    }
-
-    /*
-     * This marks the beginning of a focus forward to a owned window
-     * (which isn't allowed to get the real focus because it would
-     * "shade" the titlebar of the owner)
-     */
-    forwardFocus( FWD_SET, wnd);
-  }
-  else {
-    if ( (X->windows[i].flags & WND_MAPPED) == 0 ){
-      /* If it's not mapped yet, try again later. Somebody might
-       * have been too fast with requesting the focus of a not yet visible
-       * window, resulting in BadMatch errors
-       */
-      retryFocus( wnd, X->windows[i].owner, 5);
-    }
-    else if ( (X->focusFwd) && (wnd == X->focus) ) {
-      /* We still have it in real life, but we have to pretend we re-gained
-       * it from our ownee. Reset forwarding here (instead of in the
-       * ClientMessage), because a subsequent destroy of the ownee otherwise
-       * might cause another revert (with the Java keyTgtRequest already
-       * eaten up by this FWD_REVERT)
-       */
-      resetFocusForwarding( X);
-      forwardFocus( FWD_REVERT, wnd);
-    }
-    else {
-      /* we don't reset X->focusFwd here, that's done in the event handler */
-      XSetInputFocus( X->dsp, (Window)wnd, RevertToParent, CurrentTime);
-    }
-  }
-#endif
 }
 
 
@@ -521,7 +373,7 @@ Java_java_awt_Toolkit_wndSetDialogInsets ( JNIEnv* env, jclass clazz,
 void Java_java_awt_Toolkit_wndSetBounds(JNIEnv* env, jclass clazz, void* wnd,
   jint x, jint y, jint width, jint height, jboolean isResizable)
 {
-  AWT_DBG(printf("setBounds: %p %d,%d,%d,%d\n", wnd, x, y,
+  DBG(AWT, qDebug("setBounds: %p %d,%d,%d,%d\n", wnd, x, y,
     width, height));
 
   if(width < 0) width = 1;
@@ -545,7 +397,7 @@ void Java_java_awt_Toolkit_wndSetBounds(JNIEnv* env, jclass clazz, void* wnd,
 void Java_java_awt_Toolkit_wndRepaint(JNIEnv* env, jclass clazz, void* wnd,
   jint x, jint y, jint width, jint height )
 {
-  AWT_DBG(printf("wndRepaint: %lx %d,%d,%d,%d\n", wnd, x, y, width, height));
+  DBG(AWT, qDebug("wndRepaint: %lx %d,%d,%d,%d\n", wnd, x, y, width, height));
 
   ((QWidget*)wnd)->repaint(x, y, width, height);  // or use update?
 }
@@ -562,7 +414,7 @@ void Java_java_awt_Toolkit_wndSetVisible(JNIEnv* env, jclass clazz,
   int     i = getSourceIdx( X, wnd);
   void*  owner;
 
-  AWT_DBG( printf("setVisible: %lx (%d) %d\n", wnd, i, showIt));
+  DBG(AWT, qDebug("setVisible: %lx (%d) %d\n", wnd, i, showIt));
 
   if ( (i < 0) || (X->windows[i].flags & WND_DESTROYED) )
     return;
@@ -575,9 +427,6 @@ void Java_java_awt_Toolkit_wndSetVisible(JNIEnv* env, jclass clazz,
     ((QWidget*)wnd)->setActiveWindow();
     ((QWidget*)wnd)->raise();
     ((QWidget*)wnd)->repaint();
-//    XMapRaised( X->dsp, wnd);
-//    XSync( X->dsp, False);
-
     /*
      * Don't automatically forward the focus for owned popups, the standard
      * JDK behavior is NOT to set the focus on them unless explicitly
@@ -593,22 +442,20 @@ void Java_java_awt_Toolkit_wndSetVisible(JNIEnv* env, jclass clazz,
 
     X->windows[i].flags &= ~WND_MAPPED;
     ((QWidget*)wnd)->hide();
-    // XUnmapWindow( X->dsp, wnd);
-    // XSync( X->dsp, False);
   }
 }
 
 
 void Java_java_awt_Toolkit_wndToBack(JNIEnv* env, jclass clazz, void* wnd)
 {
-  AWT_DBG(printf("toBack: %p\n", wnd));
+  DBG(AWT, qDebug("toBack: %p\n", wnd));
   ((QWidget*)wnd)->lower();
 }
 
 
 void Java_java_awt_Toolkit_wndToFront(JNIEnv* env, jclass clazz, void* wnd)
 {
-  AWT_DBG(printf("toFront: %p\n", wnd));
+  DBG(AWT, qDebug("toFront: %p\n", wnd));
   ((QWidget*)wnd)->raise();
 }
 
@@ -616,7 +463,6 @@ void Java_java_awt_Toolkit_wndToFront(JNIEnv* env, jclass clazz, void* wnd)
 void Java_java_awt_Toolkit_wndSetCursor(JNIEnv* env, jclass clazz,
   void* wnd, jint jCursor)
 {
-  AWT_DBG(printf("setCursor: %lx, %d\n", (QWidget *)wnd, jCursor));
+  DBG(AWT, qDebug("setCursor: %lx, %d\n", (QWidget *)wnd, jCursor));
   ((QWidget*)wnd)->setCursor(QCursor( getCursor(jCursor)));
-//  XDefineCursor( X->dsp, (Window)wnd, getCursor( jCursor));
 }

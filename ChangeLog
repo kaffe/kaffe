@@ -1,3 +1,33 @@
+2004-07-10  Jim Huang  <jserv@kaffe.org>
+
+	* libraries/clib/awt/qt/imggif.cc,
+	libraries/clib/awt/qt/imgjpeg.cc,
+	libraries/clib/awt/qt/imgpng.cc:
+	removed.
+	
+	* libraries/clib/awt/qt/Makefile.am,
+	libraries/clib/awt/qt/Makefile.in:
+	Remove useless imggif.cc, imgjpeg.cc, and imgpng.cc
+	because Qt AWT backend handles images via Qt toolkit.
+	Update copyright note.
+
+	* libraries/clib/awt/qt/cbd.cc,
+	libraries/clib/awt/qt/clr.cc,
+	libraries/clib/awt/qt/evt.cc,
+	libraries/clib/awt/qt/evt.h,
+	libraries/clib/awt/qt/fnt.cc,
+	libraries/clib/awt/qt/gra.cc,
+	libraries/clib/awt/qt/img.cc,
+	libraries/clib/awt/qt/keysyms.h,
+	libraries/clib/awt/qt/tlk.cc,
+	libraries/clib/awt/qt/tlkprops.h,
+	libraries/clib/awt/qt/toolkit.h,
+	libraries/clib/awt/qt/wnd.cc:
+	Clean up X specific comments and macros for advanced
+	refactoring.
+	Better way to dump debug messages.
+	Update copyright note.
+
 2004-07-09  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/profiles/default/coreawt.files,

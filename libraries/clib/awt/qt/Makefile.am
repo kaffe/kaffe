@@ -1,8 +1,11 @@
-# QT-embedded-based AWT support for standard Java libraries
+# Qt AWT backend for Kaffe
 #
 # Copyright (c) 2001-2002
-#	Dialogue Technologies, Inc.  All rights reserved.
-# Author: Murphy Chen, Ken-Hao Liu
+#	Murphy Chen, Ken-Hao Liu from Dialogue Technologies, Inc.
+#	All rights reserved.
+#
+# Copyright (c) 2002, 2003, 2004
+#	Kaffe.org contributors, see ChangeLog for details.  All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
@@ -50,9 +53,6 @@ BUILT_SOURCES = $(libawt_la_MOC)
 
 CLEANFILES = so_locations $(BUILT_SOURCES)
 
-EXTRA_DIST = evt.h \
-	imggif.cc \
-	imgjpeg.cc \
-	imgpng.cc
+EXTRA_DIST = evt.h
 
 
