@@ -1,3 +1,9 @@
+Thu Nov  7 19:32:53 CET 2002 Mark J Roberts <mjr@znex.org>
+
+	* libraries/javalib/java/util/GregorianCalendar.java:
+	(add) fixed a bug that caused the Calendar to return the same time
+	values even when times are added.
+
 Thu Nov  7 19:23:28 CET 2002 Oskar Sandberg <oskar@freenetproject.org>
 
 	* libraries/javalib/java/net/Socket.java:

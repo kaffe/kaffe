@@ -74,6 +74,7 @@ public void add(int field, int amount) {
 		computeFields();
 	}
 	fields[field] += amount;
+	isTimeSet = false;
 	computeTime();
 	computeFields();
 }
