@@ -1,3 +1,15 @@
+2004-05-16  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/mem/gc-incremental.c
+	(gcMalloc): Removed a suspicious static variable which is not
+	used anyway and caused compile error.
+
+	* kaffe/kaffevm/support.c
+	(userProperties): Set to NULL.
+
+	* kaffe/kaffevm/jit/icode.c:
+	(softcall_exit_method): New function copied from JIT3.
+
 2004-05-15  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Improved description for xdebugging.

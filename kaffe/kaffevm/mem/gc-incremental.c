@@ -1041,11 +1041,7 @@ gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
 					 * is lost.
 					 */
 
-#if !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG))
-					static int ranout;
-#endif /* !(defined(NDEBUG) || !defined(KAFFE_VMDEBUG)) */
-
-					assert (ranout++ == 0 || !!!"Ran out of memory!");
+					assert (!!!"Ran out of memory!");
 				}
 				/* Guess we've really run out */
 				unlockStaticMutex(&gc_lock);

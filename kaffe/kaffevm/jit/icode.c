@@ -3596,6 +3596,23 @@ softcall_checkarraystore(SlotInfo* array, SlotInfo* obj)
 	fixup_function_call();
 }
 
+#if defined(ENABLE_JVMPI)
+void
+softcall_exit_method(Method *meth)
+{
+        begin_func_sync();
+#if defined(PUSHARG_FORWARDS)
+        pusharg_ref_const(meth, 0);
+#else
+	pusharg_ref_const(meth, 0);
+#endif
+	call_soft(soft_exit_method);
+	popargs();
+	end_func_sync();
+}
+#endif
+
+
 #if defined(GC_INCREMENTAL)
 void
 softcall_addreference(SlotInfo* from, SlotInfo* to)

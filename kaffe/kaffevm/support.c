@@ -48,7 +48,7 @@
 #define	ERROR_SIGNATURE		"(Ljava/lang/String;)V"
 
 /* Anchor point for user defined properties */
-userProperty* userProperties;
+userProperty* userProperties = NULL;
 
 #if defined(NO_SHARED_LIBRARIES)
 /* Internal native functions */
