@@ -487,6 +487,7 @@ java_util_SRCS = \
 	java/util/AbstractList.java \
 	java/util/AbstractListIterator.java \
 	java/util/AbstractMap.java \
+	java/util/AbstractMapEntrySet.java \
 	java/util/AbstractSequentialList.java \
 	java/util/AbstractSet.java \
 	java/util/ArrayList.java \
@@ -528,9 +529,9 @@ java_util_SRCS = \
 	java/util/SortedSet.java \
 	java/util/Stack.java \
 	java/util/StringTokenizer.java \
-	java/util/SystemClassLoader.java \
 	java/util/TimeZone.java \
 	java/util/TooManyListenersException.java \
+	java/util/TreeMap.java \
 	java/util/Vector.java
 java_util_jar_SRCS = \
 	java/util/jar/Attributes.java \
