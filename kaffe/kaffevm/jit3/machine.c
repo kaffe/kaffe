@@ -77,7 +77,7 @@ uint32 npc;
 jitflags willcatch;
 
 /* jit3 specific prototypes from icode.c */
-void explict_check_null (int x, SlotInfo* obj, int y);
+void explicit_check_null (int x, SlotInfo* obj, int y);
 void check_null (int x, SlotInfo* obj, int y);
 void check_div (int x, SlotInfo* obj, int y);
 void check_div_long (int x, SlotInfo* obj, int y);
@@ -328,7 +328,7 @@ DBG(JIT,                dprintf("unreachable basic block pc [%d:%d]\n", pc, npc 
 			postException(einfo, JAVA_LANG(VerifyError));
                         success = false;
 			break;
-#include "kaffe-jit.def"
+#include "kaffe.def"
 		}
 
 		/* Note maximum number of temp slots used and reset it */
@@ -1119,6 +1119,7 @@ setupArgumentRegisters(void)
 void*
 jit_soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 {
+	errorInfo einfo;
 	int array[16];
 	Hjava_lang_Object* obj;
 	jint arg;
@@ -1126,11 +1127,11 @@ jit_soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 	int* arraydims;
 	va_list ap;
 
-        if (dims < 16) {
+        if (dims < 16-1) {
 		arraydims = array;
 	}
 	else {
-		arraydims = gc_calloc(dims+1, sizeof(int), GC_ALLOC_JITCODE);
+		arraydims = checkPtr(gc_calloc(dims+1, sizeof(int), GC_ALLOC_JITCODE));
 	}
 
 	/* Extract the dimensions into an array */
@@ -1138,6 +1139,9 @@ jit_soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 	for (i = 0; i < dims; i++) {
 		arg = va_arg(ap, jint);
 		if (arg < 0) {
+			if (arraydims != array) {
+				gc_free (arraydims);
+			}
                         throwException(NegativeArraySizeException);
 		}
 		arraydims[i] = arg;
@@ -1146,12 +1150,16 @@ jit_soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
 	va_end(ap);
 
 	/* Mmm, okay now build the array using the wonders of recursion */
-        obj = newMultiArray(class, arraydims);
+        obj = newMultiArrayChecked(class, arraydims, &einfo);
 
 	if (arraydims != array) {
 		gc_free(arraydims);
 	}
 
+	if (!obj) {
+		throwError(&einfo);
+	}
+	
 	/* Return the base object */
 	return (obj);
 }
