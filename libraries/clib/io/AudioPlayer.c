@@ -8,6 +8,7 @@
  * of this file. 
  */
 
+#include "config-std.h"
 #include "jni.h"
 #include "files.h"
 #include "defs.h"

@@ -1,3 +1,9 @@
+Wed Dec  9 11:08:35 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/clib/io/AudioPlayer.c: include config-std.h before
+ 	jni.h, so as to prevent malloc from being defined when stdlib is
+ 	included
+
 Tue Dec  8 23:53:51 1998  Archie Cobbs <archie@whistle.com>
 
 	* test/regression/ModuloTest.java: add test for the 64 bit
