@@ -113,7 +113,9 @@ java_io_FileInputStream_skip(struct Hjava_io_FileInputStream* fh, jlong off)
 	/* Not seekable - try just reading. */
 	ret = 0;
 	while (off > 0) {
-		rc = KREAD(unhand(unhand(fh)->fd)->fd, buffer, 100, &count);
+		int num = (off < 100) ? off : 100;
+
+		rc = KREAD(unhand(unhand(fh)->fd)->fd, buffer, num, &count);
 		if (rc) {
 			SignalError("java.io.IOException", SYS_ERROR(rc));
 		}
