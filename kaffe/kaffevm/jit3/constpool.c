@@ -98,7 +98,7 @@ newConstant(int type, ...)
 		lastConst = &cpc->data[ALLOCCONSTNR-1];
 
 		/* Link elements into list */
-		for (i = 0; i < ALLOCCONSTNR - 2; i++) {
+		for (i = 0; i < ALLOCCONSTNR - 1; i++) {
 			cpc->data[i].next = &cpc->data[i+1];
 		}
 	}
@@ -182,10 +182,11 @@ resetConstants(void)
 		constpoolchunk *cpc = poolchunks;
 
 		poolchunks = cpc->next;
-		gc_free(poolchunks);
+		gc_free(cpc);
 	}
 	if( poolchunks != NULL )
 	{
 		poolchunks->data[ALLOCCONSTNR - 1].next = NULL;
+		lastConst = &poolchunks->data[ALLOCCONSTNR - 1];
 	}
 }

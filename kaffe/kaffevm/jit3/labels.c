@@ -71,11 +71,12 @@ resetLabels(void)
 		labelchunk *lc = labelchunks;
 
 		labelchunks = lc->next;
-		gc_free(labelchunks);
+		gc_free(lc);
 	}
 	if( labelchunks != NULL )
 	{
 		labelchunks->data[ALLOCLABELNR - 1].next = NULL;
+		lastLabel = &labelchunks->data[ALLOCLABELNR - 1];
 	}
 }
 
@@ -259,7 +260,7 @@ newLabel(void)
 		lastLabel = &lc->data[ALLOCLABELNR-1];
 
 		/* Link elements into list */
-		for (i = 0; i < ALLOCLABELNR - 2; i++) {
+		for (i = 0; i < ALLOCLABELNR - 1; i++) {
 #if defined(KAFFE_VMDEBUG)
 			sprintf(lc->data[i].name, "L%d", labelCount + i);
 #endif

@@ -1,5 +1,11 @@
 2003-09-17  Timothy S. Stack <stack@cs.utah.edu>
 
+	* kaffe/kaffevm/jit3/labels.c,
+	kaffe/kaffevm/jit3/constpool.c:
+	Fix for the last allocation fix.
+
+2003-09-17  Timothy S. Stack <stack@cs.utah.edu>
+
 	* libraries/clib/net/InetAddressImpl.c:
 	Fix a compilation error.
 	
