@@ -70,7 +70,7 @@ public class SimpleTimeZone extends TimeZone
   /**
    * The daylight savings offset.  This is a positive offset in
    * milliseconds with respect to standard time.  Typically this
-   * is one hour, but for some time zones this may be half an our.
+   * is one hour, but for some time zones this may be half an hour.
    * @serial
    * @since JDK1.1.4
    */
@@ -694,7 +694,8 @@ public class SimpleTimeZone extends TimeZone
 	boolean afterStart = !isBefore(year, month, day, dayOfWeek, millis,
 				       startMode, startMonth,
 				       startDay, startDayOfWeek, startTime);
-	boolean beforeEnd = isBefore(year, month, day, dayOfWeek, millis,
+	boolean beforeEnd = isBefore(year, month, day, dayOfWeek,
+				     millis + dstSavings,
 				     endMode, endMonth,
 				     endDay, endDayOfWeek, endTime);
 
