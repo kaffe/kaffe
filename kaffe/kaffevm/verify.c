@@ -2344,6 +2344,24 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 
 
 /*
+ * Helper function for error reporting in merge.
+ */
+static inline
+bool
+verifyErrorInMerge(errorInfo* einfo,
+		   const Method* method,
+		   const char * msg)
+{
+        if (einfo->type == 0) {
+        	postExceptionMessage(einfo, JAVA_LANG(VerifyError),
+				     "in method \"%s.%s\": %s",
+				     CLASS_CNAME(method->class), METHOD_NAMED(method), msg);
+	}
+	return(false);
+}
+
+
+/*
  * merges two operand stacks.  just to repeat what the JVML 2 spec says about this:
  *   Merge the state of the operand stack and local variable array at the end of the
  *   execution of the current instruction into each of the successor instructions.  In
@@ -2379,15 +2397,6 @@ merge(errorInfo* einfo,
       BlockInfo* fromBlock,
       BlockInfo* toBlock)
 {
-#define VERIFY_ERROR(_MSG) \
-        if (einfo->type == 0) { \
-        	postExceptionMessage(einfo, JAVA_LANG(VerifyError), \
-				     "in method \"%s.%s\": %s", \
-				     CLASS_CNAME(method->class), METHOD_NAMED(method), _MSG); \
-	} \
-	return(false)
-	
-	
 	uint32 n;
 	
 	
@@ -2397,12 +2406,12 @@ merge(errorInfo* einfo,
 	if (toBlock->startAddr < fromBlock->startAddr) {
 		for (n = 0; n < method->localsz; n++) {
 			if (fromBlock->locals[n].tinfo & TINFO_UNINIT) {
-				VERIFY_ERROR("uninitialized object reference in a local variable during a backwards branch");
+				return verifyErrorInMerge(einfo, method, "uninitialized object reference in a local variable during a backwards branch");
 			}
 		}
 		for (n = 0; n < fromBlock->stacksz; n++) {
 			if (fromBlock->opstack[n].tinfo & TINFO_UNINIT) {
-				VERIFY_ERROR("uninitialized object reference on operand stack during a backwards branch");
+				return verifyErrorInMerge(einfo, method, "uninitialized object reference on operand stack during a backwards branch");
 			}
 		}
 	}
@@ -2462,7 +2471,6 @@ merge(errorInfo* einfo,
 	
 	
 	return(true);
-#undef VERIFY_ERROR
 }
 
 
