@@ -106,36 +106,19 @@ strLengthUtf8(char* str, int len)
 int32
 hashUtf8String (char* str, int len)
 {
-	int str_length;
-	register unsigned char* ptr;
-	register unsigned char* limit;
-	int32 hash;
-	int32 base;
-	int j;
-	int k;
+        register unsigned char* ptr;
+        register unsigned char* limit;
+        int32 hash;
 
-	str_length = strLengthUtf8 (str, len);
-	ptr = (unsigned char*) str;
-	limit = ptr + len;
-	hash = 0;
-	j = 1;
+        ptr = (unsigned char*) str;
+        limit = ptr + len;
+        hash = 0;
 
-	if (str_length <= 15) {
-		base = 37;
-		k = 1;
-	}
-	else {
-		base = 39;
-		k = str_length / 8;
-	}
-	for (; ptr < limit;) {
-		int ch = UTF8_GET (ptr, limit);
-		if (--j == 0) {
-			hash = (base * hash) + ch;
-			j = k;
-		}
-	}
-	return (hash);
+        for (; ptr < limit;) {
+                int ch = UTF8_GET (ptr, limit);
+                hash = (31 * hash) + ch;
+        }
+        return (hash);
 }
 
 #if INTERN_UTF8CONSTS
@@ -366,22 +349,13 @@ findInternSlot (jchar* data, int len, int hash)
 
 /* Calculate a hash code for the string starting at PTR at given LENGTH.
    This uses the same formula as specified for java.lang.String.hash. */
-
 int32
 hashChars (jchar* ptr, int length)
 {
 	register jchar* limit = ptr + length;
-       int32 hash = *ptr;
-	if (length <= 15) {
-               while (++ptr < limit) {
-                       hash = (37 * hash) + *ptr;
-		}
-	}
-	else {
-               int skip = length / 8;
-               while ((ptr += skip) < limit) {
-                       hash = (39 * hash) + *ptr;
-		}
+	int32 hash = *ptr;
+        while (++ptr < limit) {
+	       hash = (31 * hash) + *ptr;
 	}
 	return (hash);
 }
