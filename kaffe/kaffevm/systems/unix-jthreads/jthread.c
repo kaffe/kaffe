@@ -1914,7 +1914,11 @@ jcondvar_waiting(jcondvar *cv, jthread_t **threads)
 static int
 jthreadedFileDescriptor(int fd)
 {
-	int r, on = 1;
+	int r;
+#if (defined(FIOSSAIOSTAT) && !(defined(hpux) && defined(FIOASYNC))) || \
+    (defined(FIOASYNC) && !defined(linux))
+	int on = 1;
+#endif
 #if (defined(FIOSSAIOOWN) && !(defined(hpux) && defined(F_SETOWN))) || \
     defined(F_SETOWN)
 	/* cache pid to accommodate antique C libraries */
@@ -2122,7 +2126,7 @@ jthreadedOpen(const char* path, int flags, int mode, int *out)
  * Threaded socket connect.
  */
 int
-jthreadedConnect(int fd, struct sockaddr* addr, size_t len, int timeout)
+jthreadedConnect(int fd, struct sockaddr* addr, int len, int timeout)
 {
 	int r;
 	jlong deadline = 0;
@@ -2172,8 +2176,8 @@ jthreadedConnect(int fd, struct sockaddr* addr, size_t len, int timeout)
  * Threaded socket accept.
  */
 int
-jthreadedAccept(int fd, struct sockaddr* addr, size_t* len, 
-		int timeout, ssize_t* out)
+jthreadedAccept(int fd, struct sockaddr* addr, int* len, 
+		int timeout, int* out)
 {
 	/* absolute time at which time out is reached */
 	jlong deadline = 0;

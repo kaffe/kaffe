@@ -64,7 +64,7 @@ jthreadedKill(int pid, int sig)
 }
 
 static int
-jthreadedBind(int fd, struct sockaddr *addr, size_t namelen)
+jthreadedBind(int fd, struct sockaddr *addr, int namelen)
 {
 	int rc = 0;
 

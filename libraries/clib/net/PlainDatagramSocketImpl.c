@@ -76,7 +76,7 @@ java_net_PlainDatagramSocketImpl_bind(struct Hjava_net_PlainDatagramSocketImpl* 
 {
 	int r;
 	struct sockaddr_in addr;
-	size_t alen;
+	int alen;
 	const int fd = unhand(unhand(this)->fd)->fd;
 
 	memset(&addr, 0, sizeof(addr));
@@ -130,7 +130,7 @@ java_net_PlainDatagramSocketImpl_peek(struct Hjava_net_PlainDatagramSocketImpl* 
 	ssize_t r;
 	int rc;
 	struct sockaddr_in saddr;
-	size_t alen = sizeof(saddr);
+	int alen = sizeof(saddr);
 
 	rc = KRECVFROM(unhand(unhand(this)->fd)->fd, 0, 0, MSG_PEEK, (struct sockaddr*)&saddr, &alen, 0 /* timeout */, &r);
 	if (rc) {
@@ -148,7 +148,7 @@ java_net_PlainDatagramSocketImpl_receive(struct Hjava_net_PlainDatagramSocketImp
 	ssize_t r;
 	int rc;
 	struct sockaddr_in addr;
-	size_t alen = sizeof(addr);
+	int alen = sizeof(addr);
 
 	/* Which port am I receiving from */
 	addr.sin_port = htons(unhand(this)->localPort);

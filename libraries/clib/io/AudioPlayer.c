@@ -22,7 +22,8 @@ void
 kaffe_applet_AudioPlayer_playFile( jstring jstr ) {
 	char    fName[MAXPATHLEN];
 	int     bLen = 1024;
-	int     bRead, fin, dev, rc;
+	int     fin, dev, rc;
+	size_t	bRead;
 	void	*buf;
 
 	buf = KMALLOC( bLen);
@@ -44,7 +45,7 @@ kaffe_applet_AudioPlayer_playFile( jstring jstr ) {
 		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}
 
-	while ( (KREAD( fin, buf, bLen, &bRead ) == 0) && (bRead > 0)) {
+	while ( (KREAD( fin, buf, bLen, &bRead ) == 0) && ((ssize_t)bRead > 0)) {
 		ssize_t bWritten;
 		KWRITE( dev, buf, bRead, &bWritten );	/* XXX check error */
 	}
