@@ -79,7 +79,5 @@ static void removeJNIref(jref);
 	thread_data->exceptPtr = ebuf.prev
 
 extern void NONRETURNING Kaffe_FatalError(JNIEnv* env, const char* mess);
-extern jint Kaffe_JNI_native(Method*);
-extern void Kaffe_KNI_wrapper(Method* xmeth, void* func);
 #endif
 

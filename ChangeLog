@@ -1,4 +1,17 @@
-2004-06-52  Guilhem Lavaux <guilhem@kaffe.org>
+2004-06-26  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/jni/jni.c, kaffe/kaffevm/jni/jni_i.h:
+	Moved out functions concerning native call handling to jni-native.c
+	and jni_native.h.
+
+	* kaffe/kaffevm/jni/jni-native.c, kaffe/kaffevm/jni/jni_native.h:
+	New files.
+
+	* kaffe/kaffevm/jni/Makefile.am: Added jni-native.c and jni_native.h.
+
+	* kaffe/kaffevm/jni/Makefile.in: Regenerated.
+
+2004-06-25  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/jni/jni.c, kaffe/kaffevm/jni/jni_funcs.h:
 	Moved out functions concerning Field handling to jni-fields.c.

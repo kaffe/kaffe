@@ -20,6 +20,7 @@
 #include "Arrays.h"
 #include "jnirefs.h"
 #include "exception.h"
+#include "object.h"
 
 jobject
 KaffeJNI_GetObjectArrayElement(JNIEnv* env UNUSED, jobjectArray arr, jsize elem)
@@ -55,7 +56,7 @@ jobjectArray
 KaffeJNI_NewObjectArray(JNIEnv* env UNUSED, jsize len, jclass cls, jobject init)
 {
 	HArrayOfObject* obj;
-	int i;
+	unsigned int i;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 

@@ -29,9 +29,11 @@ libkaffejni_la_SOURCES = \
 	jni-base.c \
 	jni-callmethod.c \
 	jni-fields.c \
-	jni-arrays.c
+	jni-arrays.c \
+	jni-native.c
 
 noinst_HEADERS= \
 	jni_i.h \
 	jnirefs.h \
-	jni_funcs.h
+	jni_funcs.h \
+	jni_native.h
