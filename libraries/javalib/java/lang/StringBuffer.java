@@ -19,7 +19,7 @@ public final class StringBuffer implements java.io.Serializable {
 						//  and therefore unmodifiable
 
 	// This is what Sun's JDK1.1 "serialver java.lang.StringBuffer" says
-	private static final long serialVersionUID = 3388685877147921107L; 
+	private static final long serialVersionUID = 3388685877147921107L;
 
 public StringBuffer() {
 	buffer = new char[SPARECAPACITY];
@@ -148,7 +148,7 @@ private boolean ensureCapacity(int minCapacity, boolean forceNew) {
 
 	// Do we really need to create a new buffer?
 	if (!forceNew && minCapacity <= buffer.length) {
-		return false; 
+		return false;
 	}
 
 	// Increase buffer size in powers of two to avoid O(n^2) behavior
@@ -214,7 +214,7 @@ public synchronized StringBuffer insert(int index, char[] str,
 	System.arraycopy(str, offset, buffer, index, len);
 
 	// Update used count
-	used += str.length;
+	used += len;
 	return this;
 }
 
