@@ -6,6 +6,31 @@ Wed Sep  9 16:27:16 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 Wed Sep  9 16:24:07 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
+	* kaffe/scripts/kaffe.in: if KAFFE_DEBUG is defined to either
+	gdb or (some variant of) emacs, start a debugging session with
+	working directory and argument list properly set
+
+	* kaffe/scripts/appletviewer: if KAFFE_HOME is not set, look
+	for other scripts and/or Kaffe in the directory that contains
+	the script, following soft links, so that no environment
+	variable has to be set
+	* kaffe/scripts/jar: ditto
+	* kaffe/scripts/javac: ditto
+	* kaffe/scripts/javadoc: ditto
+	* kaffe/scripts/javakey: ditto
+	* kaffe/scripts/javap: ditto
+	* kaffe/scripts/jdb: ditto
+	* kaffe/scripts/native2ascii: ditto
+	* kaffe/scripts/pizza: ditto
+	* kaffe/scripts/pizzadoc: ditto
+	* kaffe/scripts/rmic: ditto
+	* kaffe/scripts/rmiregistry: ditto
+	* kaffe/scripts/serialver: ditto
+	* kaffe/scripts/compat/appletviewer: ditto
+	* kaffe/scripts/compat/java: ditto
+	* kaffe/scripts/compat/javac: ditto
+	* kaffe/scripts/compat/javadoc: ditto
+
 	* libraries/javalib/java/lang/Integer.java (toUnsignedString):
 	create string from unsigned int, using bit operations
 	(toBinaryString, toHexString, toOctalString): implement in terms

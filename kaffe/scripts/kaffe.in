@@ -16,6 +16,10 @@
 #	4. classes.zip in $prefix/share/kaffe iff it exists.
 #
 
+# If KAFFE_DEBUG is set to either gdb or emacs, a debugging session
+# will be started.  gdb will be started so that the current working
+# directory and the argument list are correct.
+
 prefix="@prefix@"
 exec_prefix="@exec_prefix@"
 : ${KAFFE_BINDIR="@bindir@"}
@@ -26,4 +30,29 @@ export CLASSPATH
 LD_LIBRARY_PATH="$KAFFE_LIB"${LD_LIBRARY_PATH+":$LD_LIBRARY_PATH"}
 export LD_LIBRARY_PATH
 
-exec $KAFFE_BINDIR/Kaffe ${1+"$@"}
+if test x"${KAFFE_DEBUG+set}"x != x"set"x; then
+    exec $KAFFE_BINDIR/Kaffe ${1+"$@"}
+else
+    case `"$KAFFE_DEBUG" --version </dev/null 2>/dev/null` in
+    "GDB"*|"GNU gdb"*)
+	# start command-line gdb within the correct working directory,
+	# and set up the specified argument list
+	{
+	    echo "shell rm -f /tmp/.gdbinit.$$"
+	    echo "cd `pwd`"
+	    echo "set args $*"
+	} >/tmp/.gdbinit.$$
+	exec "$KAFFE_DEBUG" -command /tmp/.gdbinit.$$ $KAFFE_BINDIR/Kaffe
+	rm -f /tmp/.gdbinit.$$;;
+    "GNU Emacs"*)
+	# start gdb within GNU Emacs, move into the current working
+	# directory and set up the specified argument list
+	exec "$KAFFE_DEBUG" -eval "(progn (gdb \"gdb $KAFFE_BINDIR/Kaffe\") (gud-call \"cd `pwd`\") (gud-call \"set args $*\"))";;
+    XEmacs*)
+	# start gdb within XEmacs, move into the current working
+	# directory and set up the specified argument list
+	exec "$KAFFE_DEBUG" -eval "(progn (gdb \"$KAFFE_BINDIR/Kaffe\") (gdb-call \"cd `pwd`\") (gdb-call \"set args $*\"))";;
+    *) echo you must set KAFFE_DEBUG to either emacs or gdb >&2;;
+    esac
+fi
+exit 1

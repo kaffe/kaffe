@@ -1,2 +1,29 @@
 #! /bin/sh
-exec java sun.tools.jar.Main "$@"
+runme=java
+if test x"${KAFFE_HOME+set}"x = x"set"x &&
+   test -x "$KAFFE_HOME/bin/$runme"; then
+    # use $runme from $KAFFE_HOME/bin
+    runme="$KAFFE_HOME/bin/$runme"
+else
+    # if not set or not found, use the same directory that contains
+    # this script, after following soft-links
+    file="$0"
+    while test -h "$file"; do
+	# follow soft-links.
+	# first, find out the link name, printed after ` -> ' in ls output
+	newfile=`ls -l "$file" | sed s/'.* -> '//`
+	case "$newfile" in
+	/*) # absolute link: just use it
+	    file="$newfile";;
+	*)  # relative link: concat current basedir with link
+	    file=`echo "$file" | sed 's%/[^/]*$%%;s/^$/./'`/"$newfile";;
+	esac
+    done
+    # remove trailing slash and basename
+    # (avoid duplicated output by redirecting cd to /dev/null)
+    basedir=`cd \`echo "$file" | sed 's%/[^/]*$%%;s/^$/./'\` >/dev/null 2>&1; pwd`
+    # if $runme exists in basedir, use it
+    if test -x "$basedir/$runme"; then runme="$basedir/$runme"; fi
+    # otherwise, it will be searched in the PATH...
+fi
+exec "$runme" sun.tools.jar.Main ${1+"$@"}
