@@ -1,5 +1,21 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 	
+	* kaffe/kaffevm/jit/machine.c:
+	Replace use of enable_readonce by 
+	KaffeVM_jitSetEnableReadonce and KaffeVM_jitGetEnableReadonce.
+	
+	* kaffe/kaffevm/jit/registers.c:
+	(enable_readonce) Made static.
+	(KaffeVM_jitGetEnableReadonce,
+	KaffeVM_jitSetEnableReadonce) New functions.
+	
+	* kaffe/kaffevm/jit/registers.h:
+	(enable_readonce) Removed prototype.
+	(KaffeVM_jitGetEnableReadonce,
+	KaffeVM_jitSetEnableReadonce) New prototypes.
+	
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+	
 	* config/i386/jit-i386.def,
 	kaffe/kaffevm/jit/machine.c:
 	Replace use of reginfo by KaffeVM_jitGetRegInfo.

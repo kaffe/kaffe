@@ -44,7 +44,27 @@ KaffeVM_jitGetRegInfo(void)
  * a short while.  This can have a bad effect on read-once register so
  * we disable them termporaily.
  */
-int enable_readonce = Rreadonce;
+static int enable_readonce = Rreadonce;
+
+/**
+ * Get the value of enable_readonce.
+ */
+int
+KaffeVM_jitGetEnableReadonce(void)
+{
+  return enable_readonce;
+}
+
+/**
+ * Set the value of enable_readonce.
+ *
+ * @param enable new value
+ */
+void
+KaffeVM_jitSetEnableReadonce(int enable)
+{
+  enable_readonce = enable;
+}
 
 /* Count for each register use - gives an idea of which register is
  * to be reused.

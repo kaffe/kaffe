@@ -833,8 +833,8 @@ syncRegisters(sequence* s)
 	int i;
 	int old_ro;
 
-	old_ro = enable_readonce;
-	enable_readonce = 0;
+	old_ro = KaffeVM_jitGetEnableReadonce();
+	KaffeVM_jitSetEnableReadonce(0);
 
 	/* Spill locals */
 	for (i = 0; i < maxLocal; i++) {
@@ -859,7 +859,7 @@ syncRegisters(sequence* s)
 		}
 	}
 
-	enable_readonce = old_ro;
+	KaffeVM_jitSetEnableReadonce(old_ro);
 }
 
 /*

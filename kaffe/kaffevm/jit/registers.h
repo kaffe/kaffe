@@ -73,7 +73,8 @@ void	forceRegister(SlotInfo*, int, int);
 int	slowSlotOffset(SlotInfo*, int, int);
 
 extern int idealReg;
-extern int enable_readonce;
+extern int KaffeVM_jitGetEnableReadonce(void);
+extern void KaffeVM_jitSetEnableReadonce(int enable);
 
 #define	rread			1
 #define	rwrite			2
