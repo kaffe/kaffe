@@ -150,6 +150,7 @@ TESTS = \
 	DoubleComp.java \
 	ModuloTest.java \
 	LongNeg.java \
+	FPUStack.java \
 	Str.java \
 	Str2.java \
 	InternHog.java \

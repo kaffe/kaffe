@@ -29,6 +29,7 @@ TESTS = \
 	DoubleComp.java \
 	ModuloTest.java \
 	LongNeg.java \
+	FPUStack.java \
 ## Test strings
 	Str.java \
 	Str2.java \
