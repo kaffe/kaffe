@@ -596,7 +596,7 @@ DBG(CLASSFILE,
 	dprintf("Adding method %s:%s%s (%x)\n", c->name->data, WORD2UTF(pool->data[nc])->data, WORD2UTF(pool->data[sc])->data, m->access_flags);	
     )
 
-	mt = &c->methods[c->nmethods++];
+	mt = &CLASS_METHODS(c)[CLASS_NMETHODS(c)];
 	utf8ConstAssign(mt->name, name);
 	utf8ConstAssign(mt->signature, signature);
 	mt->class = c;
@@ -612,6 +612,7 @@ DBG(CLASSFILE,
 		mt->accflags |= ACC_CONSTRUCTOR;
 	}
 
+	CLASS_NMETHODS(c)++;
 	return (mt);
 }
 
@@ -650,6 +651,7 @@ DBG(CLASSFILE,
 	sc = f->signature_index;
 	if (pool->tags[sc] != CONSTANT_Utf8) {
 DBG(RESERROR,	dprintf("addField: no signature name.\n");		)
+		CLASS_NFIELDS(c)++;
 		return (0);
 	}
 	utf8ConstAssign(ft->name, WORD2UTF(pool->data[nc]));
@@ -676,6 +678,7 @@ DBG(RESERROR,	dprintf("addField: no signature name.\n");		)
 		FIELD_SIZE(ft) = TYPE_PRIM_SIZE(FIELD_TYPE(ft));
 	}
 
+	CLASS_NFIELDS(c)++;
 	return (ft);
 }
 

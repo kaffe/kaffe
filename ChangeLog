@@ -1,3 +1,8 @@
+Sun May  2 22:27:09 1999  Edouard Parmelan <Edouard.Parmelan@quadratec.fr>
+
+	* kaffe/kaffevm/readClassConfig.h, kaffe/kaffevm/classMethod.c:
+	fix for race condition in class gc
+
 Sat May  1 23:06:31 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/kaffe.def: fixed tableswitch bug

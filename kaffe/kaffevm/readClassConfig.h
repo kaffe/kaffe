@@ -51,7 +51,7 @@
 
 #define	READFIELD_START(count, this) \
 	do {								\
-		CLASS_NFIELDS(this) = count;				\
+		CLASS_NFIELDS(this) = 0;				\
 		CLASS_FSIZE(this) = count;				\
 		CLASS_FIELDS(this) = count == 0 ? (Field*)0		\
 			: (Field*) gc_malloc(sizeof(Field) * count, GC_ALLOC_FIELD);\
