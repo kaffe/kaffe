@@ -42,7 +42,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilePermission;
 import java.io.InputStream;
@@ -68,6 +67,11 @@ import java.util.NoSuchElementException;
 public class Connection extends URLConnection
 {
   /**
+   * Default permission for a file
+   */
+  private static final String DEFAULT_PERMISSION = "read";
+
+  /**
    * This is a File object for this connection
    */
   private File file;
@@ -75,12 +79,12 @@ public class Connection extends URLConnection
   /**
    * InputStream if we are reading from the file
    */
-  private BufferedInputStream inputStream;
+  private InputStream inputStream;
 
   /**
    * OutputStream if we are writing to the file
    */
-  private BufferedOutputStream outputStream;
+  private OutputStream outputStream;
 
   /**
    * FilePermission to read the file
@@ -88,14 +92,9 @@ public class Connection extends URLConnection
   private FilePermission permission;
 
   /**
-   * Default permission for a file
-   */
-  private static final String DEFAULT_PERMISSION = "read";
-
-  /**
    * Calls superclass constructor to initialize.
    */
-  public Connection (URL url)
+  public Connection(URL url)
   {
     super (url);
     
@@ -116,15 +115,11 @@ public class Connection extends URLConnection
     
     // If not connected, then file needs to be openned.
     file = new File (getURL().getFile());
-
-    if (!file.exists())
-      throw new FileNotFoundException (file.getPath());
-
     if (doInput)
-      inputStream = new BufferedInputStream (new FileInputStream (file));
+      inputStream = new BufferedInputStream(new FileInputStream(file));
     
     if (doOutput)
-      outputStream = new BufferedOutputStream (new FileOutputStream (file));
+      outputStream = new BufferedOutputStream(new FileOutputStream(file));
     
     connected = true;
   }
@@ -140,7 +135,7 @@ public class Connection extends URLConnection
     throws IOException
   {
     if (!doInput)
-      throw new ProtocolException ("Can't open InputStream if doInput is false");
+      throw new ProtocolException("Can't open InputStream if doInput is false");
     
     if (!connected)
       connect();
@@ -159,7 +154,8 @@ public class Connection extends URLConnection
     throws IOException
   {
     if (!doOutput)
-      throw new ProtocolException ("Can't open OutputStream if doOutput is false");
+      throw new
+	ProtocolException("Can't open OutputStream if doOutput is false");
 
     if (!connected)
       connect();
@@ -178,7 +174,7 @@ public class Connection extends URLConnection
       {
 	if (!connected)
 	  connect();
-        
+
 	return file.lastModified();
       }
     catch (IOException e)
@@ -206,8 +202,7 @@ public class Connection extends URLConnection
 	return -1;
       }
   }
-
-
+  
   /**
    * This method returns a <code>Permission</code> object representing the
    * permissions required to access this URL.  This method returns a
@@ -321,5 +316,5 @@ public class Connection extends URLConnection
 	}
       };
   }
-  
+
 } // class FileURLConnection
