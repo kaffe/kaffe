@@ -10,15 +10,6 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-# Library support
-#
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
-#
-# See the file "license.terms" for information on usage and redistribution 
-# of this file. 
-
-
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -68,6 +59,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
+AMDEP = @AMDEP@
+AMTAR = @AMTAR@
 AS = @AS@
 AWT_DIR = @AWT_DIR@
 AWT_LIBS = @AWT_LIBS@
@@ -75,6 +68,9 @@ CC = @CC@
 CONFIG_JIT_MD_H = @CONFIG_JIT_MD_H@
 CONFIG_MD_H = @CONFIG_MD_H@
 CPP = @CPP@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+DEPDIR = @DEPDIR@
 DIRSEP = @DIRSEP@
 DLLTOOL = @DLLTOOL@
 DLOPEN_JAVA_LIBS = @DLOPEN_JAVA_LIBS@
@@ -126,36 +122,106 @@ kaffe_TRANSF = @kaffe_TRANSF@
 nativedir = @nativedir@
 with_engine = @with_engine@
 
+# Library support
+#
+# Copyright (c) 1996, 1997, 1998, 1999
+#	Transvirtual Technologies, Inc.  All rights reserved.
+#
+# See the file "license.terms" for information on usage and redistribution 
+# of this file. 
+
+
 KLASSES_JAR = $(top_srcdir)/libraries/javalib/Klasses.jar
 
 EXTRA_DIST = distclean-hack
 
-INSTALL_DERIVED_HDRS =  	java_lang_Throwable.h 	java_lang_Thread.h 	java_lang_ThreadGroup.h
+INSTALL_DERIVED_HDRS = \
+	java_lang_Throwable.h \
+	java_lang_Thread.h \
+	java_lang_ThreadGroup.h
 
 
-NOINSTALL_DERIVED_HDRS =  	java_io_File.h 	java_io_FileDescriptor.h 	java_io_FileInputStream.h 	java_io_FileOutputStream.h 	java_io_InputStream.h 	java_io_ObjectInputStream.h 	java_io_ObjectOutputStream.h 	kaffe_io_ObjectStreamClassImpl.h 	java_io_PrintStream.h 	java_io_RandomAccessFile.h 	java_lang_Boolean.h 	java_lang_Byte.h 	java_lang_Character.h 	java_lang_Cloneable.h 	java_lang_Compiler.h 	java_lang_Double.h 	java_lang_Float.h 	java_lang_Integer.h 	java_lang_Long.h 	java_lang_Math.h 	java_lang_Runtime.h 	java_lang_SecurityManager.h 	java_lang_Short.h 	java_lang_System.h 	java_lang_reflect_Array.h 	java_lang_reflect_Constructor.h 	java_lang_reflect_Field.h 	java_lang_reflect_Method.h 	java_net_DatagramPacket.h 	java_net_InetAddress.h 	java_net_InetAddressImpl.h 	java_net_PlainDatagramSocketImpl.h 	java_net_PlainSocketImpl.h 	java_net_SocketImpl.h 	java_net_SocketOptions.h 	java_util_Arrays.h 	java_util_Comparator.h 	java_util_Vector.h 	java_util_zip_Adler32.h 	java_util_zip_CRC32.h 	java_util_zip_Deflater.h 	java_util_zip_Inflater.h 	java_util_zip_ZipEntry.h 	kaffe_lang_UNIXProcess.h
+NOINSTALL_DERIVED_HDRS = \
+	java_io_File.h \
+	java_io_FileDescriptor.h \
+	java_io_FileInputStream.h \
+	java_io_FileOutputStream.h \
+	java_io_InputStream.h \
+	java_io_ObjectInputStream.h \
+	java_io_ObjectOutputStream.h \
+	kaffe_io_ObjectStreamClassImpl.h \
+	java_io_PrintStream.h \
+	java_io_RandomAccessFile.h \
+	java_lang_Boolean.h \
+	java_lang_Byte.h \
+	java_lang_Character.h \
+	java_lang_Cloneable.h \
+	java_lang_Compiler.h \
+	java_lang_Double.h \
+	java_lang_Float.h \
+	java_lang_Integer.h \
+	java_lang_Long.h \
+	java_lang_Math.h \
+	java_lang_Runtime.h \
+	java_lang_SecurityManager.h \
+	java_lang_Short.h \
+	java_lang_System.h \
+	java_lang_reflect_Array.h \
+	java_lang_reflect_Constructor.h \
+	java_lang_reflect_Field.h \
+	java_lang_reflect_Method.h \
+	java_net_DatagramPacket.h \
+	java_net_InetAddress.h \
+	java_net_InetAddressImpl.h \
+	java_net_PlainDatagramSocketImpl.h \
+	java_net_PlainSocketImpl.h \
+	java_net_SocketImpl.h \
+	java_net_SocketOptions.h \
+	java_util_Arrays.h \
+	java_util_Comparator.h \
+	java_util_Vector.h \
+	java_util_zip_Adler32.h \
+	java_util_zip_CRC32.h \
+	java_util_zip_Deflater.h \
+	java_util_zip_Inflater.h \
+	java_util_zip_ZipEntry.h \
+	kaffe_lang_UNIXProcess.h
 
 
 DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
 
-noinst_HEADERS = $(NOINSTALL_DERIVED_HDRS) 	defs.h 	files.h 	nets.h 	system.h
+noinst_HEADERS = $(NOINSTALL_DERIVED_HDRS) \
+	defs.h \
+	files.h \
+	nets.h \
+	system.h
 
 
-pkginclude_HEADERS = $(INSTALL_DERIVED_HDRS) 	jtypes.h 	native.h 	jmalloc.h 	jsyscall.h 	jni.h 	jni_cpp.h 	Arrays.h 	java_lang_Object.h 	java_lang_String.h
+pkginclude_HEADERS = $(INSTALL_DERIVED_HDRS) \
+	jtypes.h \
+	native.h \
+	jmalloc.h \
+	jsyscall.h \
+	jni.h \
+	jni_cpp.h \
+	Arrays.h \
+	java_lang_Object.h \
+	java_lang_String.h
 
 
 CLEANFILES = $(DERIVED_HDRS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config/config.h jtypes.h
 CONFIG_CLEAN_FILES = 
+DIST_SOURCES = 
 HEADERS =  $(noinst_HEADERS) $(pkginclude_HEADERS)
 
-DIST_COMMON =  ./stamp-h2.in Makefile.am Makefile.in jtypes.h.in
+DIST_COMMON =  $(noinst_HEADERS) $(pkginclude_HEADERS) ./stamp-h2.in \
+Makefile.am Makefile.in jtypes.h.in
 
 
-DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
@@ -173,18 +239,22 @@ jtypes.h: stamp-h2
 		$(MAKE) stamp-h2; \
 	else :; fi
 stamp-h2: $(srcdir)/jtypes.h.in $(top_builddir)/config.status
+	@rm -f stamp-h2 stamp-h2T
+	@echo timestamp > stamp-h2T 2> /dev/null
 	cd $(top_builddir) \
 	  && CONFIG_FILES= CONFIG_HEADERS=include/jtypes.h \
 	     $(SHELL) ./config.status
-	@echo timestamp > stamp-h2 2> /dev/null
+	@mv stamp-h2T stamp-h2
 $(srcdir)/jtypes.h.in: @MAINTAINER_MODE_TRUE@$(srcdir)/stamp-h2.in
 	@if test ! -f $@; then \
 		rm -f $(srcdir)/stamp-h2.in; \
 		$(MAKE) $(srcdir)/stamp-h2.in; \
 	else :; fi
 $(srcdir)/stamp-h2.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	@rm -f $(srcdir)/stamp-h2.in $(srcdir)/stamp-h2.inT
+	@echo timestamp > $(srcdir)/stamp-h2.inT 2> /dev/null
 	cd $(top_srcdir) && $(AUTOHEADER)
-	@echo timestamp > $(srcdir)/stamp-h2.in 2> /dev/null
+	@mv $(srcdir)/stamp-h2.inT $(srcdir)/stamp-h2.in
 
 mostlyclean-hdr:
 
@@ -200,14 +270,17 @@ install-pkgincludeHEADERS: $(pkginclude_HEADERS)
 	$(mkinstalldirs) $(DESTDIR)$(pkgincludedir)
 	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
 	  if test -f "$$p"; then d= ; else d="$(srcdir)/"; fi; \
-	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(pkgincludedir)/$$p"; \
-	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(pkgincludedir)/$$p; \
+	  f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(pkgincludedir)/$$f"; \
+	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(pkgincludedir)/$$f; \
 	done
 
 uninstall-pkgincludeHEADERS:
 	@$(NORMAL_UNINSTALL)
-	list='$(pkginclude_HEADERS)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(pkgincludedir)/$$p; \
+	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
+	  f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " rm -f $(DESTDIR)$(pkgincludedir)/$$f"; \
+	  rm -f $(DESTDIR)$(pkgincludedir)/$$f; \
 	done
 
 tags: TAGS
@@ -244,11 +317,6 @@ distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 subdir = include
 
 distdir: $(DISTFILES)
-	here=`cd $(top_builddir) && pwd`; \
-	top_distdir=`cd $(top_distdir) && pwd`; \
-	distdir=`cd $(distdir) && pwd`; \
-	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu include/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -308,6 +376,7 @@ clean-am:  clean-hdr clean-tags clean-generic mostlyclean-am
 clean: clean-am
 
 distclean-am:  distclean-hdr distclean-tags distclean-generic clean-am
+	-rm -f libtool
 
 distclean: distclean-am
 
@@ -324,7 +393,7 @@ mostlyclean-tags distclean-tags clean-tags maintainer-clean-tags \
 distdir info-am info dvi-am dvi check check-am installcheck-am \
 installcheck all-recursive-am install-exec-am install-exec \
 install-data-am install-data install-am install uninstall-am uninstall \
-all-redirect all-am all installdirs mostlyclean-generic \
+all-redirect all-am all install-strip installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 

@@ -6,10 +6,10 @@ Mon Jul 26 18:13:50 PDT 1999  Archie Cobbs <archie@whistle.com>
 	warnings in the process
 	* kaffe/kaffevm/debug.c, debug.h: add missing AWT debug flags
 	* libraries/clib/security/Makefile.am: install java.security
-	* libraries/clib/security/Makefile.in: regen
 	* test/regression/HashTest.java: new file
 	* libraries/javalib/java/util/TreeSet.java: new file
 	* libraries/javalib/Makefile.am: add TreeSet.java
+	* */Makefile.in: regen
 
 Mon Jul 26 17:26:37 MDT 1999  Jason Baker  <jbaker@cs.utah.edu>
 
