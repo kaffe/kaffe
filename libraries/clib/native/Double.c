@@ -45,6 +45,11 @@ java_lang_Double_valueOf0(struct Hjava_lang_String* str)
 	char* endbuf;
 	char* msg = "Bad float/double format";
 
+	/* stringJava2CBuf would silently promote 0 to an empty string */
+	if (str == 0) {
+		SignalError("java.lang.NullPointerException", "");
+	}
+
 	stringJava2CBuf(str, buf, sizeof(buf));
 
 #if defined(HAVE_STRTOD)

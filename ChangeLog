@@ -2,6 +2,8 @@ Thu Jan  7 01:40:40 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/clib/native/Runtime.c: fixed typo pointed out by
 	Aaron Place <beavis@ihug.co.nz>
+	* libraries/clib/native/Double.c: throw right exception in value0
+	as pointed out by Moses DeJong <dejong@cs.umn.edu>
 
 Wed Jan  6 15:50:32 1999  Jason Baker  <jbaker@cs.utah.edu>
 
