@@ -128,7 +128,7 @@ currentTime(void)
 /*
  * Threaded socket create.
  */
-int
+static int
 jthreadedSocket(int af, int type, int proto, int *out)
 {
         int r;
@@ -143,7 +143,7 @@ jthreadedSocket(int af, int type, int proto, int *out)
         return (r);
 }
 
-int
+static int
 jthreadedOpen(const char* path, int flags, int mode, int *out)
 {
         int r;
@@ -197,7 +197,7 @@ jthreadedBind(int fd, struct sockaddr *addr, int namelen)
 {
 	int rc = 0;
 
-	if (bind(fd, addr, namelen) == -1) {
+	if (bind(fd, addr, (socklen_t)namelen) == -1) {
 		rc = errno;
 	}
 	return (rc);
@@ -264,7 +264,7 @@ jthreadedMkdir(const char *path, int mode)
 {
 	int rc = 0;
 
-	if (mkdir(path, mode) == -1) {
+	if (mkdir(path, (mode_t)mode) == -1) {
 		rc = errno;
 	}
 	return (rc);
@@ -309,7 +309,7 @@ jthreadedSendto(int a, const void* b, size_t c, int d, const struct sockaddr* e,
 {
 	int rc = 0;
 
-	*out = e ? sendto(a, b, c, d, e, f) : send(a, b, c, d);
+	*out = e ? sendto(a, b, c, d, e, (socklen_t)f) : send(a, b, c, d);
 	if (*out == -1) {
 		rc = errno;
 	}
@@ -321,7 +321,7 @@ jthreadedSetSockOpt(int a, int b, int c, const void* d, int e)
 {
 	int rc = 0;
 
-	if (setsockopt(a, b, c, d, e) == -1) {
+	if (setsockopt(a, b, c, d, (socklen_t)e) == -1) {
 		rc = errno;
 	}
 	return (rc);
@@ -416,7 +416,7 @@ jthreadedSelect(int a, fd_set* b, fd_set* c, fd_set* d,
 /*
  * Threaded socket connect.
  */
-int
+static int
 jthreadedConnect(int fd, struct sockaddr* addr, int len, int timeout)
 {
 	int r;
@@ -425,7 +425,7 @@ jthreadedConnect(int fd, struct sockaddr* addr, int len, int timeout)
 
 	SET_DEADLINE(deadline, timeout)
 	for (;;) {
-		r = connect(fd, addr, len);
+		r = connect(fd, addr, (socklen_t)len);
 		if (r == 0 || !(errno == EINPROGRESS 
 				|| errno == EINTR || errno == EISCONN)) {
 			break;	/* success or real error */
@@ -463,7 +463,7 @@ jthreadedConnect(int fd, struct sockaddr* addr, int len, int timeout)
 /*
  * Threaded socket accept.
  */
-int
+static int
 jthreadedAccept(int fd, struct sockaddr* addr, int* len, 
 		int timeout, int* out)
 {
@@ -519,7 +519,7 @@ jthreadedAccept(int fd, struct sockaddr* addr, int* len,
 /*
  * Threaded read with timeout
  */
-int
+static int
 jthreadedTimedRead(int fd, void* buf, size_t len, int timeout, ssize_t *out)
 {
 	ssize_t r = -1;
@@ -538,7 +538,7 @@ jthreadedTimedRead(int fd, void* buf, size_t len, int timeout, ssize_t *out)
 /*
  * Threaded write with timeout
  */
-int
+static int
 jthreadedTimedWrite(int fd, const void* buf, size_t len, int timeout, ssize_t *out)
 {
 	ssize_t r = -1;
@@ -557,7 +557,7 @@ jthreadedTimedWrite(int fd, const void* buf, size_t len, int timeout, ssize_t *o
 /*
  * Threaded read with no time out
  */
-int
+static int
 jthreadedRead(int fd, void* buf, size_t len, ssize_t *out)
 {
 	ssize_t r = -1;
@@ -570,7 +570,7 @@ jthreadedRead(int fd, void* buf, size_t len, ssize_t *out)
 /*
  * Threaded write
  */
-int
+static int
 jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *out)
 {
 	ssize_t r = 1;
@@ -581,9 +581,9 @@ jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *out)
 	while (len > 0 && r > 0) {
 		r = (ssize_t)write(fd, ptr, len);
 		if (r >= 0) {
-			ptr += r;
+			ptr = (void *)((uintp)ptr + r);
 			len -= r;
-			r = ptr - buf;
+			r = (uintp)ptr - (uintp)buf;
 			continue;
 		}
 		if (errno == EINTR) {
@@ -604,7 +604,7 @@ jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *out)
 /*
  * Threaded recvfrom 
  */
-int 
+static int 
 jthreadedRecvfrom(int fd, void* buf, size_t len, int flags, 
 	struct sockaddr* from, int* fromlen, int timeout, ssize_t *out)
 {
@@ -635,7 +635,7 @@ close_fds(int fd[], int n)
 	}
 }
 
-int 
+static int 
 jthreadedForkExec(char **argv, char **arge,
 	int ioes[4], int *outpid, const char *dir)
 {
@@ -769,7 +769,7 @@ jthreadedForkExec(char **argv, char **arge,
 /* 
  * Wait for a child process.
  */
-int
+static int
 jthreadedWaitpid(int wpid, int* status, int options, int *outpid)
 {
 #if defined(HAVE_WAITPID)
@@ -788,7 +788,7 @@ jthreadedWaitpid(int wpid, int* status, int options, int *outpid)
 #endif
 }
 
-int
+static int
 jthreadedMmap(void **memory, size_t *size, int mode, int fd, off_t *offset)
 {
 #if defined(HAVE_MMAP)
@@ -863,7 +863,8 @@ jthreadedMsync(void *memory, size_t size)
 #endif
 }
 
-int jthreadedPipeCreate(int *read_fd, int *write_fd)
+static int
+jthreadedPipeCreate(int *read_fd, int *write_fd)
 {
 	int pairs[2];
 

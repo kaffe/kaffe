@@ -27,6 +27,8 @@
 #ifndef UNIXJTHREAD_SIGNAL_H
 #define UNIXJTHREAD_SIGNAL_H
 
+#include "thread-internal.h"
+
 void registerSyncSignalHandler(int sig, void* handler);
 void restoreSyncSignalHandler(int sig, void* handler);
 
@@ -40,5 +42,7 @@ void clearSignal(int sig);
 void unblockSignal(int sig);
 void unblockAsyncSignals(void);
 void blockAsyncSignals(void);
+
+void detectStackBoundaries(jthread_t jtid, int mainThreadStackSize);
 
 #endif /* UNIXJTHREAD_SIGNAL_H */

@@ -1,3 +1,12 @@
+2004-07-04  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/jsignal.h,
+	kaffe/kaffevm/systems/unix-pthreads/signal.c,
+	kaffe/kaffevm/systems/unix-pthreads/syscalls.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	Imported stack pointer detection in the unix-pthreads
+	implementation of kaffe threads.
+
 2004-07-03  Dalibor Topic  <robilad@kaffe.org>
 
         * configure.ac:

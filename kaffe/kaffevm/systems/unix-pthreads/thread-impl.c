@@ -412,10 +412,10 @@ jthread_init(int pre,
         int maxpr, int minpr,
         void *(*_allocator)(size_t),
         void (*_deallocator)(void*),
-        void *(*_reallocator)(void*,size_t),
-        void (*_destructor1)(void*),
-        void (*_onstop)(void),
-        void (*_ondeadlock)(void))
+        void *(*_reallocator)(void*,size_t) UNUSED,
+        void (*_destructor1)(void*) UNUSED,
+        void (*_onstop)(void) UNUSED,
+        void (*_ondeadlock)(void) UNUSED)
 {
   DBG(JTHREAD, dprintf("initialized\n"))
 
@@ -460,13 +460,7 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThrea
   /* Get stack boundaries. Note that this is just an approximation
    * which should cover all gc-relevant stack locations
    */
-#if defined(STACK_GROWS_UP)
-  nt->stackMin  = (void*) (uintp)(&nt - 0x100);
-  nt->stackMax  = (void*) ((uintp) nt->stackMin + mainThreadStackSize);
-#else
-  nt->stackMax  = (void*) (uintp)(&nt + 0x100);
-  nt->stackMin  = (void*) ((uintp) nt->stackMax - mainThreadStackSize);
-#endif
+  detectStackBoundaries(nt, mainThreadStackSize);
 
   DBG( JTHREAD, TMSG_SHORT( "create first ", nt))
 
@@ -545,7 +539,7 @@ void* tRun ( void* p )
 
   /* get the stack boundaries */
   pthread_attr_getstacksize( &cur->attr, &ss);
-
+  
 #if defined(STACK_GROWS_UP)
   cur->stackMin = &cur;
   cur->stackMax = (void*) ((unsigned long)cur->stackMin + ss);

@@ -19,6 +19,9 @@
 #include "jsignal.h"
 #include "md.h"
 #include "stackTrace-impl.h"
+#include "thread-internal.h"
+#include "files.h"
+#include <errno.h>
 
 #if defined(INTERPRETER)
 #define	DEFINEFRAME()		/* Does nothing */
@@ -30,7 +33,9 @@
 #define	EXCEPTIONFRAMEPTR	&frame
 #endif /* TRANSLATOR */
 
-typedef void (*exchandler_t)(struct _exceptionFrame*);
+#ifndef STACK_STRUCT
+#define STACK_STRUCT stack_t
+#endif
 
 #if defined(__WIN32__)
 #define SIG_T   void(*)()
@@ -43,6 +48,7 @@ static void floatingException(EXCEPTIONPROTO);
 
 static exchandler_t nullHandler;
 static exchandler_t floatingHandler;
+static exchandler_t stackOverflowHandler;
 
 /*
  * Setup the internal exceptions.
@@ -50,10 +56,11 @@ static exchandler_t floatingHandler;
 void
 jthread_initexceptions(exchandler_t _nullHandler,
 		       exchandler_t _floatingHandler,
-		       exchandler_t _stackOverflowHandler UNUSED)
+		       exchandler_t _stackOverflowHandler)
 {
 	nullHandler = _nullHandler;
 	floatingHandler = _floatingHandler;
+	stackOverflowHandler = _stackOverflowHandler;
 
 	if (DBGEXPR(EXCEPTION, false, true)) {
 		/* Catch signals we need to convert to exceptions */
@@ -78,6 +85,9 @@ jthread_initexceptions(exchandler_t _nullHandler,
 void
 nullException(EXCEPTIONPROTO)
 {
+        void *stackptr;
+	jthread_t current_thread;
+
 	DEFINEFRAME();
 
 	/* Restore the signal handler if necessary */
@@ -87,7 +97,18 @@ nullException(EXCEPTIONPROTO)
 	unblockSignal(sig);
 
 	EXCEPTIONFRAME(frame, ctx);
-	nullHandler(EXCEPTIONFRAMEPTR);
+#if defined(STACK_POINTER)
+	current_thread = jthread_current();
+	stackptr = (void *)STACK_POINTER(GET_SIGNAL_CONTEXT_POINTER(ctx));
+#if defined(STACK_GROWS_UP)
+	if (current_thread != NULL && stackptr >= current_thread->stackMax)
+#else
+	if (current_thread != NULL && stackptr <= current_thread->stackMin)
+#endif
+	  stackOverflowHandler(EXCEPTIONFRAMEPTR);
+	else
+#endif // STACK_POINTER
+	  nullHandler(EXCEPTIONFRAMEPTR);
 }
 
 /*
@@ -315,3 +336,185 @@ blockAsyncSignals(void)
 	sigprocmask(SIG_BLOCK, &nsig, 0);
 	
 }
+
+#if defined(HAVE_SIGALTSTACK) && defined(SA_ONSTACK)
+static void
+setupSigAltStack(void)
+{
+        STACK_STRUCT newstack;
+
+	/*
+	 * Signals has to have their own stack so we can solve
+	 * stack problems.
+	 */
+	newstack.ss_size = THREADSTACKSIZE;
+	newstack.ss_flags = 0;
+	newstack.ss_sp = KMALLOC(newstack.ss_size);
+	if (sigaltstack(&newstack, NULL) < 0)
+	  {
+	    dprintf("Unexpected error calling sigaltstack: %s\n",
+		    SYS_ERROR(errno));
+	    EXIT(1);
+	  }
+}
+#else
+static void
+setupSigAltStack(void)
+{
+}
+#endif
+
+/* ----------------------------------------------------------------------
+ * STACK BOUNDARY DETECTORS
+ * ----------------------------------------------------------------------
+ */
+
+#if defined(KAFFEMD_STACKBASE) // STACK_POINTER
+
+/*
+ * The OS gives us the stack base. Get it and adjust the pointers.
+ */
+
+void
+detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
+{
+        void *stackPointer;
+
+	stackPointer = mdGetStackBase();
+
+	setupSigAltStack();
+
+#if defined(STACK_GROWS_UP)
+	jtid->stackMin = stackPointer;
+	jtid->stackMax = (char *)jtid->stackMin + mainThreadStackSize;
+        jtid->stackCur = jtid->stackMax;
+#else
+	jtid->stackMax = stackPointer;
+        jtid->stackMin = (char *) jtid->stackMax - mainThreadStackSize;
+        jtid->stackCur = jtid->stackMin;
+#endif
+
+}
+
+#elif defined(KAFFEMD_STACKEND) // KAFFEMD_STACKBASE
+
+/*
+ * Here the OS gives us the position of the end of stack. Get it
+ * and adjust our internal pointers.
+ */
+
+void
+detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
+{
+        void *stackPointer;
+
+	setupSigAltStack();
+
+	stackPointer = mdGetStackEnd();
+	fprintf(stderr,"stackPointer=%p\n", stackPointer);
+
+#if defined(STACK_GROWS_UP)
+	jtid->stackMax = stackPointer;
+	jtid->stackMin = (char *)jtid->stackMax - mainThreadStackSize;
+        jtid->stackCur = jtid->stackMax;
+#else
+	jtid->stackBase = stackPointer;
+        jtid->stackEnd = (char *) jtid->stackMin + mainThreadStackSize;
+        jtid->stackCur = jtid->stackMin;
+#endif
+}
+
+#elif defined(SA_ONSTACK) && defined(HAVE_SIGALTSTACK) && !defined(KAFFEMD_BUGGY_STACK_OVERFLOW)
+
+static JTHREAD_JMPBUF outOfLoop;
+
+/*
+ * This function is called by the system when we go beyond stack boundaries
+ * in infiniteLoop. We get the stack address using the stack pointer register
+ * and then go back in detectStackBoundaries() using the old stack.
+ */
+static void NONRETURNING
+stackOverflowDetector(SIGNAL_ARGS(sig UNUSED, sc))
+{
+  unblockSignal(SIGSEGV);
+  JTHREAD_LONGJMP(outOfLoop, 1);
+}
+
+void kaffeNoopFunc(char c UNUSED)
+{
+}
+
+/*
+ * This is the first type of heuristic we can use to guess the boundaries.
+ * Here we are provoking a SIGSEGV by overflowing the stack. Then we get
+ * the faulty adress directly.
+ */
+void
+detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
+{
+	char *guessPointer;
+
+	setupSigAltStack();
+
+#if defined(SIGSEGV)
+	registerSyncSignalHandler(SIGSEGV, stackOverflowDetector);
+#endif
+#if defined(SIGBUS)
+	registerSyncSignalHandler(SIGBUS, stackOverflowDetector);
+#endif
+	
+	if (JTHREAD_SETJMP(outOfLoop) == 0)
+	{
+	  unsigned int pageSize = getpagesize();
+
+	  guessPointer = (char *)((uintp)(&jtid) & ~(pageSize-1));
+	  
+	  while (1)
+	  {
+#if defined(STACK_GROWS_UP)
+	    guessPointer -= pageSize;
+#else
+	    guessPointer += pageSize;
+#endif
+	    kaffeNoopFunc(*guessPointer);
+	  }
+	}
+
+	/* Here we have detected one the boundary of the stack.
+	 * If stack grows up then it is the upper boundary. In the other
+	 * case we have the lower boundary. As we know the stack size we
+	 * may guess the other boundary.
+	 */
+#if defined(STACK_GROWS_UP)
+	jtid->stackMin = guessPointer;
+	jtid->stackMax = (char *)jtid->stackMin + mainThreadStackSize;
+	jtid->stackCur = jtid->stackMax;
+#else
+	jtid->stackMax = guessPointer;
+	jtid->stackMin = (char *)jtid->stackMax - mainThreadStackSize;
+	jtid->stackCur = jtid->stackMin;
+#endif
+}
+
+#else
+
+/*
+ * This is the worse heuristic in terms of precision. But
+ * this may be the only one working on this platform.
+ */
+
+void
+detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
+{
+#if defined(STACK_GROWS_UP)
+	jtid->stackMin = (void*)(uintp)(&jtid - 0x100);
+	jtid->stackMax = (char *)jtid->stackMin + mainThreadStackSize;
+        jtid->stackCur = jtid->stackMax;
+#else
+	jtid->stackMax = (void*)(uintp)(&jtid + 0x100);
+        jtid->stackMin = (char *) jtid->stackMax - mainThreadStackSize;
+        jtid->stackCur = jtid->stackMin;
+#endif
+}
+
+#endif
