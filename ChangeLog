@@ -5,6 +5,8 @@ Wed Sep  2 18:04:36 1998  Archie Cobbs <archie@whistle.com>
 	* libraries/javalib/java/net/InetAddress.java,
 	libraries/javalib/java/net/URL.java: don't compare strings with ==
 	* Klasses.jar: regenerate derived file
+	* libraries/javalib/java/io/ClassLoader.java: fix double-slash
+	bug in fullResourceName()
 
 Wed Sep  2 16:44:09 PDT 1998	Tim Wilkinson <tim@transvirtual.com>
 
