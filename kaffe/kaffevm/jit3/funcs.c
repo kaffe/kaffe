@@ -28,7 +28,7 @@
 nativecode* codeblock;
 uintp CODEPC;
 
-#define ALIGN(byte)							\
+#define ALIGN_CODEPC(byte)						\
 	(CODEPC = (CODEPC % (byte)					\
 		   ? CODEPC + (byte) - (CODEPC % (byte))		\
 		   : CODEPC))

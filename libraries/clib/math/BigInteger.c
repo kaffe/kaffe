@@ -542,7 +542,7 @@ Java_java_math_BigInteger_hamDist0(JNIEnv* env, jobject s1, jobject s2)
 	return (mpz_hamdist(src1, src2));
 }
 
-#else
+#else /* !defined(HAVE_GMP_H) || !defined(HAVE_LIBGMP) */
 
 /* throw a kaffe.util.SupportDisabled exception */
 static void
@@ -707,48 +707,64 @@ jint
 Java_java_math_BigInteger_scansetbit0(JNIEnv* env, jobject s)
 {
 	gmp_not_found(env);
+
+	return 0;
 }
 
 jint
 Java_java_math_BigInteger_cmp0(JNIEnv* env, jclass cls, jobject s1, jobject s2)
 {
 	gmp_not_found(env);
+
+	return 0;
 }
 
 jstring
 Java_java_math_BigInteger_toString0(JNIEnv* env, jobject s, jint base)
 {
 	gmp_not_found(env);
+
+	return NULL;
 }
 
 jdouble
 Java_java_math_BigInteger_toDouble0(JNIEnv* env, jobject s)
 {
 	gmp_not_found(env);
+
+	return 0.0;
 }
 
 jint
 Java_java_math_BigInteger_toInt0(JNIEnv* env, jobject s)
 {
 	gmp_not_found(env);
+
+	return 0;
 }
 
 jint
 Java_java_math_BigInteger_probablyPrime0(JNIEnv* env, jobject s, jint prop)
 {
 	gmp_not_found(env);
+
+	return 0;
 }
 
 jint
 Java_java_math_BigInteger_bitLength0(JNIEnv* env, jobject s)
 {
 	gmp_not_found(env);
+
+	return 0;
 }
 
 jint
 Java_java_math_BigInteger_hamDist0(JNIEnv* env, jobject s1, jobject s2)
 {
 	gmp_not_found(env);
+
+	return 0;
 }
 
-#endif
+#endif /* defined(HAVE_GMP_H) && defined(HAVE_LIBGMP) */

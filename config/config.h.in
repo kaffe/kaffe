@@ -536,9 +536,6 @@
 /* Define to 1 if you have the `valloc' function. */
 #undef HAVE_VALLOC
 
-/* Define if va_copy is available */
-#undef HAVE_VA_COPY
-
 /* Define to 1 if you have the `vsnprintf' function. */
 #undef HAVE_VSNPRINTF
 
@@ -568,9 +565,6 @@
 
 /* Define to 1 if you have the <zlib.h> header file. */
 #undef HAVE_ZLIB_H
-
-/* Define if __va_copy is available */
-#undef HAVE__VA_COPY
 
 /* Define to 1 if you have the `__get_eh_info' function. */
 #undef HAVE___GET_EH_INFO
@@ -664,9 +658,6 @@
 
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 #undef TM_IN_SYS_TIME
-
-/* Define if va_list is an array */
-#undef VA_LIST_IS_ARRAY
 
 /* Version number of package */
 #undef VERSION

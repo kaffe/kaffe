@@ -211,7 +211,7 @@ if USE_PRECOMPILED_RT_JAR
 jar-classes rt.jar:
 	cp $(PATH_TO_RT_JAR) rt.jar
 else
-jar-classes rt.jar: $(LIBDIR)/stamp
+jar-classes rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
 	if [ ! -d $(LIBDIR)/kaffe ] ; then \
 	       mkdir $(LIBDIR)/kaffe ; \
 	       mkdir $(LIBDIR)/kaffe/io ; \

@@ -2885,7 +2885,7 @@ $(srcdir)/Klasses.jar.bootstrap: bootstrap.classlist
 .PHONY: jar-classes
 @USE_PRECOMPILED_RT_JAR_TRUE@jar-classes rt.jar:
 @USE_PRECOMPILED_RT_JAR_TRUE@	cp $(PATH_TO_RT_JAR) rt.jar
-@USE_PRECOMPILED_RT_JAR_FALSE@jar-classes rt.jar: $(LIBDIR)/stamp
+@USE_PRECOMPILED_RT_JAR_FALSE@jar-classes rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
 @USE_PRECOMPILED_RT_JAR_FALSE@	if [ ! -d $(LIBDIR)/kaffe ] ; then \
 @USE_PRECOMPILED_RT_JAR_FALSE@	       mkdir $(LIBDIR)/kaffe ; \
 @USE_PRECOMPILED_RT_JAR_FALSE@	       mkdir $(LIBDIR)/kaffe/io ; \

@@ -188,7 +188,8 @@ File Layout
     value "0x45" into the current position in the code block and
     increment CODEPC by four.
 
-    ALIGN(byte) - A macro that aligns the CODEPC to the given value.
+    ALIGN_CODEPC(byte) - A macro that aligns the CODEPC to the given
+    value.
 
   kaffe/kaffevm/jit3/icode.c - The implementation of the intermediate
   functions.  These functions generate "sequence" structures that

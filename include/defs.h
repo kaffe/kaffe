@@ -52,7 +52,7 @@
 
 /* va_list is an array, use memcpy */
 #    if defined(VA_LIST_IS_ARRAY)
-#     define VA_LIST_COPY(dest, src) (memcpy (a, b, sizeof (a)))
+#     define VA_LIST_COPY(dest, src) (memcpy (dest, src, sizeof (dest)))
 #    else /* ! HAVE_VA_COPY && ! HAVE__VA_COPY && ! VA_LIST_IS_ARRAY */
 
 /* use plain assignment, then */

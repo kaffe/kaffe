@@ -1,5 +1,37 @@
 2003-06-25  Dalibor Topic <robilad@yahoo.com>
 
+	* include/defs.h:
+	(VA_LIST_COPY) fixed array copying macro to use its variables.
+	
+2003-06-25  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/Makefile.am.in:
+	(rt.jar) depend on all class library sources.
+
+	Reported by: Rob Gonzalez <rgonzale@wso.williams.edu>
+
+2003-06-25  Dalibor Topic <robilad@yahoo.com>
+
+	* kaffe/kaffevm/jit3/funcs.c:
+	(ALIGN) renamed to ALIGN_CODEPC to fix a warning on OpenBSD.
+
+	* FAQ/FAQ.jit3: renamed ALIGN to ALIGN_CODEPC.
+	
+2003-06-25  Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/clib/math/BigInteger.c:
+	(Java_java_math_BigInteger_scansetbit0,
+	Java_java_math_BigInteger_cmp0,
+	Java_java_math_BigInteger_toString0,
+	Java_java_math_BigInteger_toDouble0,
+	Java_java_math_BigInteger_toInt0,
+	Java_java_math_BigInteger_probablyPrime0,
+	Java_java_math_BigInteger_bitLength0,
+	Java_java_math_BigInteger_hamDist0) added return statements in
+	dummy implementations to fix compiler warnings.
+	
+2003-06-25  Dalibor Topic <robilad@yahoo.com>
+
 	* valist.m4: new file. valist handling macros taken from GPL-d
 	Quakeforge. Thanks to Bill Currie <taniwha@quakeforge.org>.
 
