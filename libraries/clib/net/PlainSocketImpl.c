@@ -13,6 +13,7 @@
 #include "config-io.h"
 #include "config-mem.h"
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <native.h>
 #include "../native/FileDescriptor.h"
 #include "../native/Integer.h"
@@ -251,7 +252,12 @@ java_net_PlainSocketImpl_socketSetOption(struct Hjava_net_PlainSocketImpl* this,
 		break;
 
 	case java_net_SocketOptions_TCP_NODELAY:
-		/* What does this do ??? */
+		intp = (struct Hjava_lang_Integer*)v3;
+		v = unhand(intp)->value;
+		r = setsockopt(unhand(unhand(this)->fd)->fd, IPPROTO_TCP, TCP_NODELAY, &v, sizeof(v));
+		if(r < 0) {
+			SignalError("java.net.SocketException", SYS_ERROR);
+		}
 		break;
 
 	case java_net_SocketOptions_IP_MULTICAST_IF:
@@ -277,9 +283,19 @@ java_net_PlainSocketImpl_socketGetOption(struct Hjava_net_PlainSocketImpl* this,
 		break;
 
 	case java_net_SocketOptions_SO_REUSEADDR:
+		s = sizeof(v);
 		r = getsockopt(unhand(unhand(this)->fd)->fd, SOL_SOCKET, SO_REUSEADDR, &v, &s);
 		if(r < 0) {
 			SignalError("java.net.SocketException", SYS_ERROR);    
+		}
+		r = v;
+		break;
+
+	case java_net_SocketOptions_TCP_NODELAY:
+		s = sizeof(v);
+		r = getsockopt(unhand(unhand(this)->fd)->fd, IPPROTO_TCP, TCP_NODELAY, &v, &s);
+		if(r < 0) {
+			SignalError("java.net.SocketException", SYS_ERROR);
 		}
 		r = v;
 		break;
