@@ -211,7 +211,7 @@ struct JNINativeInterface {
 	const jchar* (*GetStringChars)		(JNIEnv*, jstring, jboolean*);
 	void	(*ReleaseStringChars)		(JNIEnv*, jstring, const jchar*);
 	jstring	(*NewStringUTF)			(JNIEnv*, const char*);
-	jsize	(*GetSTringUTFLength)		(JNIEnv*, jstring);
+	jsize	(*GetStringUTFLength)		(JNIEnv*, jstring);
 	const jbyte* (*GetStringUTFChars)	(JNIEnv*, jstring, jbool*);
 	void	(*ReleaseStringUTFChars)	(JNIEnv*, jstring, const jbyte*);
 	jsize	(*GetArrayLength)		(JNIEnv*, jarray);
