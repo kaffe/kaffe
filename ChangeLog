@@ -1,3 +1,8 @@
+2004-04-27  Dalibor Topic  <robilad@kaffe.org>
+
+	* developers/autogen.sh: Really use autoreconf 
+	this time.
+
 2004-04-27  Ean Schuessler <ean@brainfood.com>
 
 	* kaffe/scripts/nm2as.awk:

@@ -128,14 +128,11 @@ autoconf -Wall
  cd ..
 )
 
-( 
- cd libltdl 	 
+(
+ cd libltdl
  # Need to regenerate things because patching 	 
  # screws up timestamps 	 
- aclocal -I . 	 
- automake --add-missing --force-missing --copy -Wall 	 
- touch config-h.in 	 
- autoconf -Wall 	 
- patch < ../developers/patch-config.sub-superh.diff 	 
+ autoreconf -i -Wall
+ patch < ../developers/patch-config.sub-superh.diff
 ) 	 
  
