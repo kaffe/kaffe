@@ -80,6 +80,7 @@ TESTS = \
 	MapTest.java \
 	URLTest.java \
 	ReaderTest.java \
+	BufferedReaderTest.java \
 	ReaderReadVoidTest.java \
 ## simple test for Method.invoke
 	ReflectInvoke.java \

@@ -194,6 +194,7 @@ TESTS = \
 	MapTest.java \
 	URLTest.java \
 	ReaderTest.java \
+	BufferedReaderTest.java \
 	ReaderReadVoidTest.java \
 	ReflectInvoke.java \
 	InvTarExcTest.java \
