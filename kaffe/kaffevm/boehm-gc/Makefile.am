@@ -30,12 +30,18 @@ libkaffegc_la_LDFLAGS = \
 
 libkaffegc_la_SOURCES= \
 	gc2.c \
+	gc-refs.c \
+	gc-refs.h \
+	gc-kaffe.c \
+	gc-kaffe.h \
 	boehm/allchblk.c boehm/alloc.c boehm/blacklst.c boehm/checksums.c \
 	boehm/dbg_mlc.c boehm/dyn_load.c boehm/finalize.c \
 	boehm/include/private/gcconfig.h \
 	boehm/include/gc.h \
 	boehm/include/gc_alloc.h \
 	boehm/include/gc_cpp.h \
+	boehm/include/private/gc_hdrs.h \
+	boehm/include/private/gc_priv.h \
 	boehm/include/gc_typed.h \
 	boehm/gcj_mlc.c \
 	boehm/headers.c \

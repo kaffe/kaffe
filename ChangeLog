@@ -1,3 +1,198 @@
+2004-08-02  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/Makefile.am
+	(libkaffevm_la_SOURCES): Removed gcRefs.c, gcRefs.h.
+	
+	* kaffe/kaffevm/boehm-gc/boehm/BCC_MAKEFILE,
+	kaffe/kaffevm/boehm-gc/boehm/aix_irix_threads.c,
+	kaffe/kaffevm/boehm-gc/boehm/allchblk.c,
+	kaffe/kaffevm/boehm-gc/boehm/alloc.c,
+	kaffe/kaffevm/boehm-gc/boehm/checksums.c,
+	kaffe/kaffevm/boehm-gc/boehm/cord/cordprnt.c,
+	kaffe/kaffevm/boehm-gc/boehm/cord/cordtest.c,
+	kaffe/kaffevm/boehm-gc/boehm/cord/cordxtra.c,
+	kaffe/kaffevm/boehm-gc/boehm/cord/de.c,
+	kaffe/kaffevm/boehm-gc/boehm/darwin_stop_world.c,
+	kaffe/kaffevm/boehm-gc/boehm/dbg_mlc.c,
+	kaffe/kaffevm/boehm-gc/boehm/doc/README,
+	kaffe/kaffevm/boehm-gc/boehm/doc/README.changes,
+	kaffe/kaffevm/boehm-gc/boehm/doc/README.darwin,
+	kaffe/kaffevm/boehm-gc/boehm/doc/README.environment,
+	kaffe/kaffevm/boehm-gc/boehm/doc/README.macros,
+	kaffe/kaffevm/boehm-gc/boehm/doc/README.win32,
+	kaffe/kaffevm/boehm-gc/boehm/doc/debugging.html,
+	kaffe/kaffevm/boehm-gc/boehm/doc/gcdescr.html,
+	kaffe/kaffevm/boehm-gc/boehm/doc/gcinterface.html,
+	kaffe/kaffevm/boehm-gc/boehm/doc/simple_example.html,
+	kaffe/kaffevm/boehm-gc/boehm/dyn_load.c,
+	kaffe/kaffevm/boehm-gc/boehm/finalize.c,
+	kaffe/kaffevm/boehm-gc/boehm/gcj_mlc.c,
+	kaffe/kaffevm/boehm-gc/boehm/headers.c,
+	kaffe/kaffevm/boehm-gc/boehm/if_not_there.c,
+	kaffe/kaffevm/boehm-gc/boehm/include/gc.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/gc_allocator.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/gc_config_macros.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/gc_cpp.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/gc_gcj.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/gc_local_alloc.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/gc_mark.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/javaxfc.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/new_gc_alloc.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/private/darwin_stop_world.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/private/dbg_mlc.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/private/gc_locks.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/private/gc_pmark.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/private/gc_priv.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/private/gcconfig.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/private/pthread_support.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/private/solaris_threads.h,
+	kaffe/kaffevm/boehm-gc/boehm/include/private/specific.h,
+	kaffe/kaffevm/boehm-gc/boehm/mach_dep.c,
+	kaffe/kaffevm/boehm-gc/boehm/malloc.c,
+	kaffe/kaffevm/boehm-gc/boehm/mallocx.c,
+	kaffe/kaffevm/boehm-gc/boehm/mark.c,
+	kaffe/kaffevm/boehm-gc/boehm/misc.c,
+	kaffe/kaffevm/boehm-gc/boehm/new_hblk.c,
+	kaffe/kaffevm/boehm-gc/boehm/os_dep.c,
+	kaffe/kaffevm/boehm-gc/boehm/pthread_stop_world.c,
+	kaffe/kaffevm/boehm-gc/boehm/pthread_support.c,
+	kaffe/kaffevm/boehm-gc/boehm/solaris_pthreads.c,
+	kaffe/kaffevm/boehm-gc/boehm/solaris_threads.c,
+	kaffe/kaffevm/boehm-gc/boehm/tests/middle.c,
+	kaffe/kaffevm/boehm-gc/boehm/tests/test.c,
+	kaffe/kaffevm/boehm-gc/boehm/tests/test_cpp.cc,
+	kaffe/kaffevm/boehm-gc/boehm/tests/trace_test.c,
+	kaffe/kaffevm/boehm-gc/boehm/threadlibs.c,
+	kaffe/kaffevm/boehm-gc/boehm/typd_mlc.c,
+	kaffe/kaffevm/boehm-gc/boehm/version.h,
+	kaffe/kaffevm/boehm-gc/boehm/win32_threads.c:
+	Upgraded to gc6.3.
+
+	* kaffe/kaffevm/boehm-gc/Makefile.am
+	(libkaffegc_la_SOURCES): Added gc-refs.[ch] and gc-kaffe.[ch].
+
+	* kaffe/kaffevm/boehm-gc/Makefile.frag:
+	Define GC_DEFS.
+	
+	* kaffe/kaffevm/boehm-gc/gc-kaffe.c,
+	kaffe/kaffevm/boehm-gc/gc-kaffe.h: New allocation kind for boehm-gc.
+
+	* kaffe/kaffevm/boehm-gc/gc-refs.c,
+	kaffe/kaffevm/boehm-gc/gc-refs.h: New files to handle Java references
+	with the GC. Largely inspired from gcRefs.[ch]
+
+	* kaffe/kaffevm/boehm-gc/gc2.c:
+	Reimplemented.
+	
+	* kaffe/kaffevm/classMethod.h,
+	kaffe/kaffevm/classPool.c
+	(walkClassEntries): New parameter.
+	
+	* kaffe/kaffevm/debug.c:
+	(dprintf): If stderr has been closed we must
+	exit the main loop because it is a potential infinite
+	loop.
+	
+	* kaffe/kaffevm/gc.h:
+	(walk_func_t): New parameter.
+	(KGC_OBJECT_NORMAL, KGC_OBJECT_FIXED): Reindented.
+	(GarbageCollectorInterface_Ops): New entries:
+	getCollectorName, addRef, rmRef.
+	(markAddress, markObject): New parameter.
+	(createGC): Removed parameter.
+	(KGC_getCollectorName, KGC_addRef, KGC_rmRef):
+	New GC call.
+	(KGC_markObject): New parameter.
+	
+	* kaffe/kaffevm/gcFuncs.c:
+	(walkMethods, walkClass, walkRefArray,
+	walkObject, walkLoader): New parameter.
+	(walkMethods): Removed dead code.
+	(initCollector): createGC has no parameter now.
+
+	* kaffe/kaffevm/gcRefs.c,
+	kaffe/kaffevm/gcRefs.h: Removed.
+	
+	* kaffe/kaffevm/kaffe-gc/Makefile.in,
+	kaffe/kaffevm/boehm-gc/Makefile.in,
+	kaffe/kaffevm/systems/unix-pthreads/Makefile.in,
+	kaffe/kaffevm/Makefile.in:
+	Regenerated.
+
+	* kaffe/kaffevm/kaffe-gc/Makefile.am:
+	(libkaffegc_la_SOURCES): Added gc-refs.c.
+	(noinst_HEADERS): Added gc-refs.h.
+	
+	* kaffe/kaffevm/kaffe-gc/Makefile.frag:
+	Define GC_DEFS.
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c:
+	(walkRootSet): Removed.
+	(gcMarkAddress, gcMarkObject): New parameter.
+	(KaffeGC_walkConservative): Cleaned up.
+	(gcGetObjectBase): Fixed warnings.
+	(kaffeGC_WalkMemory): Updated to new API.
+	(gcMan): Renamed function call.
+	(startGC): Call KaffeGC_walkRefs directly now.
+	(gcMalloc): Cleaned up.
+	(createGC): Removed parameter.
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.h: Fixed a few warnings.
+	
+	* kaffe/kaffevm/kaffe-gc/gc-mem.h:
+	Fixed a few warnings.
+
+	* kaffe/kaffevm/kaffe-gc/gc-refs.c: New file. Moved from gcRefs.c.
+	
+	* kaffe/kaffevm/kaffe-gc/gc-refs.h: New file. Moved from gcRefs.h.
+
+	* kaffe/kaffevm/ksem.c
+	(ksemGet, ksemPut): Marked sem as volatile to prevent deadlocks.
+        
+	* kaffe/kaffevm/object.c
+	(newMultiArrayChecked): Transformed the recursive algorithm
+	in an iterative one.
+
+	* kaffe/kaffevm/string.c,
+	kaffe/kaffevm/string.h
+	(stringWalk): New parameter.
+
+	* kaffe/kaffevm/support.c: Removed dead code.
+
+	* kaffe/kaffevm/systems/unix-pthreads/Makefile.am:
+	(AM_CPPFLAGS): Use GC_DEFS from the GC makefile.frag.
+
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c:
+        Include "gc.h" if kaffe is compiled with the Boehm-GC.
+	
+        * kaffe/kaffevm/systems/unix-pthreads/signal.c
+	(detectStackBoundaries): If kaffe is compiled with the Boehm-GC
+	use GC_stackbottom to get stack boundaries.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.h,
+	kaffe/kaffevm/systems/unix-pthreads/thread-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-internal.h
+	(jthread_walkLiveThreads) accept some user data for the
+	walk function.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.h
+	(jthread_attach_current_thread): Moved the UNUSED attribute before
+	bool.
+	
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(tInitSignalHandlers): Do not enable SIG_SUSPEND and
+	SIG_RESUME if the boehm-gc is enabled.
+	(jthread_suspendall, jthread_unsuspendall): 
+	If the boehm-gc is enabled, use GC_stop_world
+	and GC_start_world.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h
+	(jthread_on_current_stack): Added some debug trace.
+
+	* kaffe/kaffevm/thread.c
+	(dumpJavaThread): jthread_walkLiveThreads has a new parameter.
+
 2004-08-01  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* configure.ac: Fixed warnings in tests.

@@ -48,7 +48,7 @@ extern void		  stringUninternString(Hjava_lang_String*);
 
 /* Have the collector walk/destroy a string */
 struct _Collector;
-extern void    		  stringWalk(struct _Collector*, void*, uint32);
+extern void    		  stringWalk(struct _Collector*, void*, void*, uint32);
 extern void    		  stringDestroy(struct _Collector*, void*);
 
 /* Initialize string support system */

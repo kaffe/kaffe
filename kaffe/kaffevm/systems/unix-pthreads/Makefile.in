@@ -375,7 +375,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_builddir)/include \
 	$(ENGINE_INCUDES) \
-	$(ENGINE_DEFS)
+	$(ENGINE_DEFS) \
+	$(GC_DEFS)
 
 all: all-am
 
@@ -632,6 +633,7 @@ uninstall-am: uninstall-info-am
 
 
 @engine_frag@
+@gc_frag@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

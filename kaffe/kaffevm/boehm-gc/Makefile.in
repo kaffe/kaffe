@@ -84,14 +84,14 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 libkaffegc_la_LIBADD =
-am_libkaffegc_la_OBJECTS = gc2.lo allchblk.lo alloc.lo blacklst.lo \
-	checksums.lo dbg_mlc.lo dyn_load.lo finalize.lo gcj_mlc.lo \
-	headers.lo aix_irix_threads.lo win32_threads.lo \
-	solaris_pthreads.lo solaris_threads.lo pthread_support.lo \
-	pthread_stop_world.lo malloc.lo mallocx.lo mark.lo mark_rts.lo \
-	misc.lo new_hblk.lo obj_map.lo os_dep.lo pcr_interface.lo \
-	ptr_chck.lo real_malloc.lo reclaim.lo stubborn.lo typd_mlc.lo \
-	mach_dep.lo
+am_libkaffegc_la_OBJECTS = gc2.lo gc-refs.lo gc-kaffe.lo allchblk.lo \
+	alloc.lo blacklst.lo checksums.lo dbg_mlc.lo dyn_load.lo \
+	finalize.lo gcj_mlc.lo headers.lo aix_irix_threads.lo \
+	win32_threads.lo solaris_pthreads.lo solaris_threads.lo \
+	pthread_support.lo pthread_stop_world.lo malloc.lo mallocx.lo \
+	mark.lo mark_rts.lo misc.lo new_hblk.lo obj_map.lo os_dep.lo \
+	pcr_interface.lo ptr_chck.lo real_malloc.lo reclaim.lo \
+	stubborn.lo typd_mlc.lo mach_dep.lo
 libkaffegc_la_OBJECTS = $(am_libkaffegc_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am_if_mach_OBJECTS = if_mach.$(OBJEXT)
@@ -388,12 +388,18 @@ libkaffegc_la_LDFLAGS = \
 
 libkaffegc_la_SOURCES = \
 	gc2.c \
+	gc-refs.c \
+	gc-refs.h \
+	gc-kaffe.c \
+	gc-kaffe.h \
 	boehm/allchblk.c boehm/alloc.c boehm/blacklst.c boehm/checksums.c \
 	boehm/dbg_mlc.c boehm/dyn_load.c boehm/finalize.c \
 	boehm/include/private/gcconfig.h \
 	boehm/include/gc.h \
 	boehm/include/gc_alloc.h \
 	boehm/include/gc_cpp.h \
+	boehm/include/private/gc_hdrs.h \
+	boehm/include/private/gc_priv.h \
 	boehm/include/gc_typed.h \
 	boehm/gcj_mlc.c \
 	boehm/headers.c \
@@ -510,6 +516,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbg_mlc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dyn_load.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/finalize.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-kaffe.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-refs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gcj_mlc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/headers.Plo@am__quote@

@@ -84,7 +84,7 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 libkaffegc_la_LIBADD =
-am_libkaffegc_la_OBJECTS = gc-incremental.lo gc-mem.lo
+am_libkaffegc_la_OBJECTS = gc-incremental.lo gc-mem.lo gc-refs.lo
 libkaffegc_la_OBJECTS = $(am_libkaffegc_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -376,10 +376,9 @@ libkaffegc_la_LDFLAGS = \
 libkaffegc_la_SOURCES = \
 	gc-incremental.c \
 	gc-mem.c \
-	gc-incremental.h \
-	gc-mem.h
+	gc-refs.c
 
-noinst_HEADERS = gc-mem.h gc-incremental.h
+noinst_HEADERS = gc-mem.h gc-incremental.h gc-refs.h
 all: all-am
 
 .SUFFIXES:
@@ -451,6 +450,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-incremental.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-mem.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-refs.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

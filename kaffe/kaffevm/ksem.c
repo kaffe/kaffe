@@ -34,7 +34,7 @@ ksemInit(Ksem* sem)
  * Spurious wakeups are not handled here.
  */
 jboolean
-ksemGet(Ksem* sem, jlong timeout)
+ksemGet(Ksem* volatile sem, jlong timeout)
 {
 	jboolean r;
 
@@ -70,7 +70,7 @@ ksemGet(Ksem* sem, jlong timeout)
  * on the cv (if any).
  */
 void
-ksemPut(Ksem* sem)
+ksemPut(Ksem* volatile sem)
 {
 	assert(sem != NULL);
 	jmutex_lock(&sem->mux);

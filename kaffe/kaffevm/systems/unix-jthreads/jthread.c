@@ -1054,12 +1054,12 @@ jthread_destroy(jthread *jtid)
  * iterate over all live threads
  */
 void
-jthread_walkLiveThreads(void (*func)(jthread_t))
+jthread_walkLiveThreads(void (*func)(jthread_t,void*), void *priv)
 {
         KaffeNodeQueue* liveQ;
 
         for (liveQ = liveThreads; liveQ != NULL; liveQ = liveQ->next) {
-                func(JTHREADQ(liveQ));
+                func(JTHREADQ(liveQ), priv);
         }
 }
 

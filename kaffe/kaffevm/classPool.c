@@ -166,7 +166,7 @@ findMethodFromPC(uintp pc)
 #endif
 
 void
-walkClassEntries(Collector *collector, Hjava_lang_ClassLoader* loader)
+walkClassEntries(Collector *collector, void *gc_info, Hjava_lang_ClassLoader* loader)
 {
         classEntry* entry;
         int ipool;
@@ -176,7 +176,7 @@ walkClassEntries(Collector *collector, Hjava_lang_ClassLoader* loader)
                      entry = entry->next)
                 {
                         if (entry->loader == loader && entry->state >= NMS_LOADING) {
-                                KGC_markObject(collector, entry->data.cl);
+                                KGC_markObject(collector, gc_info, entry->data.cl);
                         }
                 }
         }

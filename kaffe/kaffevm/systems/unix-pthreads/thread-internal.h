@@ -16,6 +16,7 @@
 
 #include "gtypes.h"
 #include "threadData.h"
+#include "debug.h"
 
 #if !defined(STACKREDZONE)
 #define STACKREDZONE    8192
@@ -183,10 +184,18 @@ static inline
 bool jthread_on_current_stack(void* p)
 {
   jthread_t nt = jthread_current();
+	  
+DBG(JTHREADDETAIL, dprintf("on current stack: base=%p size=%ld bp=%p",
+			nt->stackMin,
+		       	(long)((char *)nt->stackMax - (char *)nt->stackMin),
+			p); )
+
   if (nt == 0 || (p > nt->stackMin && p < nt->stackMax)) {
+DBG(JTHREADDETAIL, dprintf(" yes\n"); )
 	return (true);
   }
   else {
+DBG(JTHREADDETAIL, dprintf(" no\n"); )
 	return (false);
   }
 }
@@ -368,7 +377,7 @@ void jthread_unsuspendall (void);
  * Call a function once for each active thread.
  *
  */
-void jthread_walkLiveThreads (void(*)(jthread_t));
+void jthread_walkLiveThreads (void(*)(jthread_t,void*), void *);
 
 /**
  * Return thread status

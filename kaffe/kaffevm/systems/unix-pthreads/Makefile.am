@@ -22,6 +22,7 @@ EXTRA_DIST = Makefile.frag lock-impl.h thread-impl.h thread-internal.h \
 		jsignal.h jthread.h
 
 @engine_frag@
+@gc_frag@
 
 AM_CPPFLAGS = \
 	-I. \
@@ -35,4 +36,5 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_builddir)/include \
 	$(ENGINE_INCUDES) \
-	$(ENGINE_DEFS)
+	$(ENGINE_DEFS) \
+	$(GC_DEFS)

@@ -198,26 +198,57 @@ newArray(Hjava_lang_Class* elclass, size_t count)
 Hjava_lang_Object*
 newMultiArrayChecked(Hjava_lang_Class* clazz, int* dims, errorInfo *einfo)
 {
-	Hjava_lang_Object* obj;
-	Hjava_lang_Object** array;
-	int i;
+  Hjava_lang_Object* obj;
+  Hjava_lang_Object** stack;
+  Hjava_lang_Class* prevclazz;
+  Hjava_lang_Object** array;
+  int i, j, k, ndims, fullsize;
+  int stacksize, stackptr;
 
-	obj = newArrayChecked(CLASS_ELEMENT_TYPE(clazz), (unsigned)dims[0], einfo);
-	if (!obj) {
-		return NULL;
+  for (i=0,fullsize=1;dims[i+1] >= 0; i++)
+    fullsize += fullsize*dims[i];
+  ndims = i+1;
+
+  stack = (Hjava_lang_Object **)
+    KMALLOC(fullsize * sizeof(Hjava_lang_Object *));
+  if (stack == NULL)
+    {
+      postOutOfMemory(einfo);
+      return NULL;
+    }
+  
+  obj = newArrayChecked(CLASS_ELEMENT_TYPE(clazz), (unsigned)dims[0], einfo);
+  if (!obj)
+    return NULL;
+  
+  stack[0] = obj;
+  stackptr = 0;
+  stacksize = 1;
+  for (j=0;j<ndims-1;j++)
+    {
+      int localdim = dims[j];
+      
+      prevclazz = CLASS_ELEMENT_TYPE(clazz);
+      for (i=0;i<stacksize;i++)
+	{
+	  int localptr = stackptr + stacksize + i*localdim;
+
+	  array = OBJARRAY_DATA(stack[stackptr+i]);
+	  for (k=0;k<localdim;k++)
+	  {
+	    stack[localptr+k] = array[k] = 
+	      newArrayChecked(CLASS_ELEMENT_TYPE(prevclazz), (unsigned)dims[j+1], einfo);
+	    if (array[k] == NULL)
+	      return NULL;
+	  }
 	}
+      stackptr += stacksize;
+      stacksize *= dims[j];
+    }
 
-	if (dims[1] >= 0) {
-		array = OBJARRAY_DATA(obj);
-		for (i = 0; i < dims[0]; i++) {
-			array[i] = newMultiArrayChecked(CLASS_ELEMENT_TYPE(clazz), &dims[1], einfo);
-			if (!array[i]) {
-				return NULL;
-			}
-		}
-	}
+  KFREE(stack);
 
-	return (obj);
+  return obj;
 }
 
 /*

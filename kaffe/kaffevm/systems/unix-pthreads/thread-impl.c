@@ -21,6 +21,9 @@
 #include "thread-impl.h"
 #include "debug.h"
 #include "md.h"
+#ifdef KAFFE_BOEHM_GC
+#include "boehm-gc/boehm/include/gc.h"
+#endif
 
 #ifndef MAINSTACKSIZE
 #define MAINSTACKSIZE (1024*1024)
@@ -348,12 +351,16 @@ tInitSignalHandlers (void)
   sigaddset( &sigSuspend.sa_mask, SIGCONT);
   sigaddset( &sigSuspend.sa_mask, SIGWINCH);
 
+#ifndef KAFFE_BOEHM_GC
   sigaction( SIG_SUSPEND, &sigSuspend, NULL);
+#endif
 
   sigResume.sa_flags = 0; /* Note that we do not want restart here. */
   sigResume.sa_handler = resume_signal_handler;
   sigResume.sa_mask = sigSuspend.sa_mask;
+#ifndef KAFFE_BOEHM_GC
   sigaction( SIG_RESUME, &sigResume, NULL);
+#endif
 
 #if defined(SIG_DUMP)
   sigDump.sa_flags = flags;
@@ -495,7 +502,7 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned char pri, void* jlThrea
    */
   pthread_setspecific( ntKey, nt);
   pthread_setcanceltype( PTHREAD_CANCEL_ASYNCHRONOUS, &oldCancelType);
-
+  
   /* if we aren't the first one, we are in trouble */
   assert( activeThreads == 0);
  
@@ -592,7 +599,7 @@ void* tRun ( void* p )
 
   /* get the stack boundaries */
   pthread_attr_getstacksize( &cur->attr, &ss);
-  
+
 #if defined(STACK_GROWS_UP)
   cur->stackMin = &cur;
   cur->stackMax = (void*) ((unsigned long)cur->stackMin + ss);
@@ -1063,6 +1070,7 @@ jthread_suspendall (void)
 
   if ( ++critSection == 1 ){
 
+#if !defined(KAFFE_BOEHM_GC)
 	for ( t=activeThreads; t; t = t->next ){
 	  /*
 	   * make sure we don't suspend ourselves, and we don't expect suspend
@@ -1087,11 +1095,17 @@ jthread_suspendall (void)
 	  }
 	}
 
-#ifdef NEVER
-	/* wait until all signals we've sent out have been handled */
-	while ( nSuspends ){
-	  sem_wait( &critSem);
-	  nSuspends--;
+#else
+	/*
+	 * Here, we must use the special Boehm's stop world routine.
+	 * However we continue to update our own thread state flag.
+	 */
+	GC_stop_world();
+
+	for ( t=activeThreads; t; t = t->next ) {
+	  if ( (t != cur) && (t->suspendState == 0) && (t->active) ) {
+		t->suspendState = SS_PENDING_SUSPEND;
+	  }
 	}
 #endif
   }
@@ -1123,6 +1137,7 @@ jthread_unsuspendall (void)
 	 */
 	TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
 
+#if !defined(KAFFE_BOEHM_GC)
 	for ( t=activeThreads; t; t = t->next ){
 	  if ( t->suspendState & (SS_PENDING_SUSPEND | SS_SUSPENDED) ){
 
@@ -1139,6 +1154,17 @@ jthread_unsuspendall (void)
 		sem_wait( &critSem);
 	  }
 	}
+
+#else
+	for ( t=activeThreads; t; t = t->next ){
+	  if ( t->suspendState & (SS_PENDING_SUSPEND | SS_SUSPENDED) ){
+		t->suspendState = SS_PENDING_RESUME;
+	  }
+	}
+
+	GC_start_world();
+
+#endif
 
 #ifdef NEVER
 	/* wait until all signals we've sent out have been handled */
@@ -1174,14 +1200,14 @@ jthread_unsuspendall (void)
  *
  */
 void
-jthread_walkLiveThreads (void(*func)(jthread_t))
+jthread_walkLiveThreads (void(*func)(jthread_t,void*), void *private)
 {
   jthread_t t;
 
   DBG( JTHREAD, dprintf("start walking threads\n"))
 
   for ( t = activeThreads; t != NULL; t = t->next) {
-	func(t);
+	func(t, private);
   }
 
   DBG( JTHREAD, dprintf("end walking threads\n"))

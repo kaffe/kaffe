@@ -27,12 +27,12 @@
 #undef	KGC_INCREMENTAL
 
 typedef struct _Collector Collector;
-typedef void (*walk_func_t)(struct _Collector*, void*, uint32);
-typedef void (*final_func_t)(struct _Collector*, void*);
-typedef void (*destroy_func_t)(struct _Collector*, void*);
+typedef void (*walk_func_t)(struct _Collector* collector, void* gc_info, void* obj, uint32 size);
+typedef void (*final_func_t)(struct _Collector* collector, void* obj);
+typedef void (*destroy_func_t)(struct _Collector* collector, void* obj);
 
-#define	KGC_OBJECT_NORMAL	((final_func_t)0)
-#define	KGC_OBJECT_FIXED		((final_func_t)1)
+#define	KGC_OBJECT_NORMAL	  ((final_func_t)0)
+#define	KGC_OBJECT_FIXED	  ((final_func_t)1)
 
 /*
  * Garbage collector interface.
@@ -99,7 +99,7 @@ struct _Collector {
 
 struct GarbageCollectorInterface_Ops {
 
-	void*   reserved1;
+        const char * (*getCollectorName)(Collector *);
 	void*   reserved2;
 	void*   reserved3;
 	void*	(*malloc)(Collector *, size_t size, gc_alloc_type_t type);
@@ -111,16 +111,12 @@ struct GarbageCollectorInterface_Ops {
 	void	(*init)(Collector *);
 	void	(*enable)(Collector *);
 
-	void	(*markAddress)(Collector *, const void* addr);
-	void	(*markObject)(Collector *, const void* obj);
+	void	(*markAddress)(Collector *, void *gc_info, const void* addr);
+	void	(*markObject)(Collector *, void *gc_info, const void* obj);
 	uint32	(*getObjectSize)(Collector *, const void* obj);
 	const char* (*getObjectDescription)(Collector *, const void* obj);
 	int	(*getObjectIndex)(Collector *, const void* obj);
-	void*	(*getObjectBase)(Collector *, const void* obj);
-
-	void	(*walkMemory)(Collector *, void *addr);
-	void	(*walkConservative)(Collector *, 
-			const void* addr, uint32 length);
+	void*	(*getObjectBase)(Collector *, void* obj);
 
 	void	(*registerFixedTypeByIndex)(Collector *, 
 			gc_alloc_type_t gc_index, const char *description);
@@ -137,9 +133,12 @@ struct GarbageCollectorInterface_Ops {
   
         uintp   (*getHeapLimit)(Collector *);
         uintp   (*getHeapTotal)(Collector *);
+
+        bool    (*addRef)(Collector *, const void *mem);
+        bool    (*rmRef)(Collector *, void *ref);
 };
 
-Collector* createGC(void (*_walkRootSet)(Collector*));
+Collector* createGC(void);
 
 /*
  * Convenience macros
@@ -160,14 +159,18 @@ Collector* createGC(void (*_walkRootSet)(Collector*));
     ((G)->ops->enable)((Collector*)(G))
 #define KGC_throwOOM(G)		\
     ((G)->ops->throwOOM)((Collector*)(G))
-#define KGC_markAddress(G, addr)		\
-    ((G)->ops->markAddress)((Collector*)(G), (addr))
+#define KGC_markAddress(G, gc_info, addr)		\
+    ((G)->ops->markAddress)((Collector*)(G), (gc_info), (addr))
+#define KGC_addRef(G, addr) \
+    ((G)->ops->addRef)((Collector*)(G), (addr))
+#define KGC_rmRef(G, addr) \
+    ((G)->ops->rmRef)((Collector*)(G), (addr))
 
 #if !defined(KAFFEH)
-static inline void KGC_markObject(void *g, void *addr)
+static inline void KGC_markObject(void *g, void *gc_info, void *addr)
 {
 	if (addr)
-		((Collector*) g)->ops->markObject((Collector*) g, addr);
+		((Collector*) g)->ops->markObject((Collector*) g, gc_info, addr);
 }
 #endif
 
@@ -179,10 +182,6 @@ static inline void KGC_markObject(void *g, void *addr)
     ((G)->ops->getObjectIndex)((Collector*)(G), (obj))
 #define KGC_getObjectBase(G, obj)	\
     ((G)->ops->getObjectBase)((Collector*)(G), (obj))
-#define KGC_walkMemory(G, addr)	\
-    ((G)->ops->walkMemory)((Collector*)(G), (addr))
-#define KGC_walkConservative(G, addr, len)		\
-    ((G)->ops->walkConservative)((Collector*)(G), (addr), (len))
 #define KGC_registerFixedTypeByIndex(G, idx, desc)	\
     ((G)->ops->registerFixedTypeByIndex)((Collector*)(G),   \
 				(idx), (desc))
@@ -198,6 +197,8 @@ static inline void KGC_markObject(void *g, void *addr)
     ((G)->ops->getHeapLimit)((Collector *)(G));
 #define KGC_getHeapTotal(G) \
     ((G)->ops->getHeapTotal)((Collector *)(G));
+#define KGC_getCollectorName(G) \
+    ((G)->ops->getCollectorName)((Collector *)(G));
 #define KGC_WRITE(a, b)
 
 /*
@@ -209,6 +210,8 @@ extern Collector* main_collector;
 #define	gc_calloc(A,B,C)    KGC_malloc(main_collector,(A)*(B),C)
 #define	gc_realloc(A,B,C)   KGC_realloc(main_collector,(A),(B),C)
 #define	gc_free(A)	    KGC_free(main_collector,(A))
+#define gc_add_ref(A)       KGC_addRef(main_collector, (A))
+#define gc_rm_ref(A)        KGC_rmRef(main_collector, (A))
 
 #define	invokeGC()	    KGC_invoke(main_collector,1)
 #define	adviseGC()	    KGC_invoke(main_collector,0)
@@ -219,6 +222,5 @@ extern Collector* main_collector;
 #define gc_enableGC()	    KGC_enableGC(main_collector)
 #define gc_disableGC()	    KGC_disableGC(main_collector)
 
-#include "gcRefs.h"
 extern char* describeObject(const void* mem);
 #endif

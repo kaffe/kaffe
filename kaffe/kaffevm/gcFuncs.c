@@ -42,7 +42,6 @@
 #include "jni.h"
 #include "soft.h"
 #include "thread.h"
-#include "gcRefs.h"
 #include "methodCache.h"
 #include "jvmpi_kaffe.h"
 
@@ -241,22 +240,10 @@ DBG(CLASSGC,
  */
 static
 void
-walkMethods(Collector* collector, Method* m, int nm)
+walkMethods(Collector* collector, void *gc_info, Method* m, int nm)
 {
         while (nm-- > 0) {
-#if defined(TRANSLATOR) && 0
-                /* walk the block of jitted code conservatively.
-                 * Is this really needed?
- 		 */
-                if (METHOD_TRANSLATED(m) && (m->accflags & ACC_NATIVE) == 0) {
-                        void *mem = m->c.ncode.ncode_start;
-                        if (mem != 0) {
-				KGC_walkConservative(collector, mem,
-					KGC_getObjectSize(collector, mem));
-                        }
-                }
-#endif
-                KGC_markObject(collector, m->class);
+                KGC_markObject(collector, gc_info, m->class);
 
                 /* walk exception table in order to keep resolved catch types
                    alive */
@@ -267,7 +254,7 @@ walkMethods(Collector* collector, Method* m, int nm)
                         for (i = 0; i < m->exception_table->length; i++) {
                                 Hjava_lang_Class* c = eptr[i].catch_type;
                                 if (c != 0 && c != UNRESOLVABLE_CATCHTYPE) {
-                                        KGC_markObject(collector, c);
+                                        KGC_markObject(collector, gc_info, c);
                                 }
                         }
                 }
@@ -279,7 +266,7 @@ walkMethods(Collector* collector, Method* m, int nm)
  * Walk a class object.
  */
 static void
-walkClass(Collector* collector, void* base, uint32 size UNUSED)
+walkClass(Collector* collector, void *gc_info, void* base, uint32 size UNUSED)
 {
         Hjava_lang_Class* class;
         Field* fld;
@@ -294,7 +281,7 @@ DBG(GCPRECISE,
     )
 
         if (class->state >= CSTATE_PREPARED) {
-                KGC_markObject(collector, class->superclass);
+                KGC_markObject(collector, gc_info, class->superclass);
         }
 
         /* walk constant pool - only resolved classes and strings count */
@@ -303,10 +290,10 @@ DBG(GCPRECISE,
                 switch (pool->tags[idx]) {
                 case CONSTANT_ResolvedClass:
 			assert(!CLASS_IS_PRIMITIVE(CLASS_CLASS(idx, pool)));
-                        KGC_markObject(collector, CLASS_CLASS(idx, pool));
+                        KGC_markObject(collector, gc_info, CLASS_CLASS(idx, pool));
                         break;
                 case CONSTANT_ResolvedString:
-                        KGC_markObject(collector, (void*)pool->data[idx]);
+                        KGC_markObject(collector, gc_info, (void*)pool->data[idx]);
                         break;
                 }
         }
@@ -335,7 +322,7 @@ DBG(GCPRECISE,
 				&& !CLASS_IS_PRIMITIVE(fld->type))
 			{
 				if (!CLASS_GCJ(fld->type)) {
-					KGC_markObject(collector, fld->type);
+					KGC_markObject(collector, gc_info, fld->type);
 				}
                         } /* else it's an Utf8Const that is not subject to gc */
                         fld++;
@@ -358,10 +345,10 @@ DBG(GCPRECISE,
 				if (FIELD_TYPE(fld) == StringClass) {
 					KGC_markAddress(collector, *faddr);
 				} else {
-					KGC_markObject(collector, *faddr);
+					KGC_markObject(collector, gc_info, *faddr);
 				}
 #else
-				KGC_markObject(collector, *faddr);
+				KGC_markObject(collector, gc_info, *faddr);
 #endif
                         }
                         fld++;
@@ -373,22 +360,22 @@ DBG(GCPRECISE,
         if (!CLASS_IS_ARRAY(class)) {
                 /* mark interfaces referenced by this class */
                 for (n = 0; n < class->total_interface_len; n++) {
-                        KGC_markObject(collector, class->interfaces[n]);
+                        KGC_markObject(collector, gc_info, class->interfaces[n]);
                 }
         } else {
                 /* array classes should keep their element type alive */
 		Hjava_lang_Class *etype = CLASS_ELEMENT_TYPE(class);
 		if (etype && !CLASS_IS_PRIMITIVE(etype)) {
-			KGC_markObject(collector, etype);
+			KGC_markObject(collector, gc_info, etype);
 		}
         }
 
         /* CLASS_METHODS only points to the method array for non-array and
          * non-primitive classes */
         if (!CLASS_IS_PRIMITIVE(class) && !CLASS_IS_ARRAY(class) && CLASS_METHODS(class) != 0) {
-                walkMethods(collector, CLASS_METHODS(class), CLASS_NMETHODS(class));
+                walkMethods(collector, gc_info, CLASS_METHODS(class), CLASS_NMETHODS(class));
         }
-        KGC_markObject(collector, class->loader);
+        KGC_markObject(collector, gc_info, class->loader);
 }
 
 /*****************************************************************************
@@ -399,7 +386,7 @@ DBG(GCPRECISE,
  */
 static
 void
-walkRefArray(Collector* collector, void* base, uint32 size UNUSED)
+walkRefArray(Collector* collector, void *gc_info, void* base, uint32 size UNUSED)
 {
         Hjava_lang_Object* arr;
         int i;
@@ -414,7 +401,7 @@ walkRefArray(Collector* collector, void* base, uint32 size UNUSED)
         /* mark class only if not a system class (which would be anchored
          * anyway.)  */
         if (arr->vtable->class->loader != 0) {
-                KGC_markObject(collector, arr->vtable->class);
+                KGC_markObject(collector, gc_info, arr->vtable->class);
         }
 
         for (i = ARRAY_SIZE(arr); --i>= 0; ) {
@@ -423,7 +410,7 @@ walkRefArray(Collector* collector, void* base, uint32 size UNUSED)
 		 * NB: This would break if some objects (i.e. class objects)
 		 * are not gc-allocated.
 		 */
-		KGC_markObject(collector, el);
+		KGC_markObject(collector, gc_info, el);
         }
 }
 
@@ -432,7 +419,7 @@ walkRefArray(Collector* collector, void* base, uint32 size UNUSED)
  */
 static
 void
-walkObject(Collector* collector, void* base, uint32 size)
+walkObject(Collector* collector, void *gc_info, void* base, uint32 size)
 {
         Hjava_lang_Object *obj = (Hjava_lang_Object*)base;
         Hjava_lang_Class *clazz;
@@ -454,7 +441,7 @@ walkObject(Collector* collector, void* base, uint32 size)
          * bother marking them.
          */
         if (clazz->loader != 0) {
-                KGC_markObject(collector, clazz);
+                KGC_markObject(collector, gc_info, clazz);
         }
 
         layout = clazz->gc_layout;
@@ -490,7 +477,7 @@ DBG(GCPRECISE,
                                  * to a "real" Java object.
                                  */
 				void *p = *(void **)mem;
-				KGC_markObject(collector, p);
+				KGC_markObject(collector, gc_info, p);
                         }
                         i++;
                         l <<= 1;
@@ -505,10 +492,10 @@ DBG(GCPRECISE,
  */
 static
 void
-walkLoader(Collector* collector, void* base, uint32 size)
+walkLoader(Collector* collector, void *gc_info, void* base, uint32 size)
 {
-        walkObject(collector, base, size);
-        walkClassEntries(collector, (Hjava_lang_ClassLoader*)base);
+        walkObject(collector, gc_info, base, size);
+        walkClassEntries(collector, gc_info, (Hjava_lang_ClassLoader*)base);
 }
 
 static
@@ -601,7 +588,7 @@ describeObject(const void* mem)
 Collector*
 initCollector(void)
 {
-	Collector *gc = createGC(gc_walk_refs);
+	Collector *gc = createGC();
 
 	DBG(INIT, dprintf("initCollector()\n"); )
 

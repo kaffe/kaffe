@@ -23,6 +23,9 @@
 #include "files.h"
 #include "kaffe/jmalloc.h"
 #include <errno.h>
+#ifdef KAFFE_BOEHM_GC
+#include "boehm-gc/boehm/include/gc.h"
+#endif
 
 #if defined(INTERPRETER)
 #define	DEFINEFRAME()		/* Does nothing */
@@ -344,8 +347,25 @@ blockAsyncSignals(void)
  * STACK BOUNDARY DETECTORS
  * ----------------------------------------------------------------------
  */
+#if defined(KAFFE_BOEHM_GC)
 
-#if defined(KAFFEMD_STACKBASE) // STACK_POINTER
+/*
+ * The Boehm-Weiser GC has already the stack bottom. Use the
+ * value it has detected.
+ */
+void
+detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
+{
+        void *stackPointer;
+
+	stackPointer = GC_stackbottom;
+
+	jtid->stackMax = stackPointer;
+	jtid->stackMin = (char *)jtid->stackMax - mainThreadStackSize;
+        jtid->stackCur = jtid->stackMax;
+}
+
+#elif defined(KAFFEMD_STACKBASE)
 
 /*
  * The OS gives us the stack base. Get it and adjust the pointers.

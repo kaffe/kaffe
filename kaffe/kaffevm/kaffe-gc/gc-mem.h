@@ -152,7 +152,7 @@ extern void	gc_primitive_free(gc_block* mem);
  * Evaluates to the index of the object in gc_block @B that contains address @M.
  *
  */
-#define	GCMEM2IDX(B, M)		(((uint8*)(M) - (B)->data) / (B)->size)
+#define	GCMEM2IDX(B, M)		(((uint8*)(uintp)(M) - (B)->data) / (B)->size)
 
 /**
  * Evaluates to the gc_block that contains address @M.

@@ -16,6 +16,9 @@
 #include "jthread.h"
 /* For NOTIMEOUT */
 #include "jsyscall.h"
+#ifdef KAFFE_BOEHM_GC
+#include "boehm-gc/boehm/include/gc.h"
+#endif
 
 void
 jmutex_lock( jmutex* lk )

@@ -27,7 +27,7 @@
 #include "stats.h"
 #include "classMethod.h"
 #include "gc-incremental.h"
-
+#include "gc-refs.h"
 #include "jvmpi_kaffe.h"
 
 /* Avoid recursively allocating OutOfMemoryError */
@@ -60,7 +60,6 @@ static int gc_init = 0;
 static volatile int gcDisabled = 0;
 static volatile int gcRunning = 0;
 static volatile bool finalRunning = false;
-static void (*walkRootSet)(Collector*);
 #if defined(KAFFE_STATS)
 static timespent gc_time;
 static timespent sweep_time;
@@ -80,7 +79,7 @@ static void *outOfMem_allocator;
 #if defined(SUPPORT_VERBOSEMEM)
 
 static struct {
-  int size;
+  ssize_t size;
   int count;
   uint64 total;
 } objectSizes[] = {
@@ -278,7 +277,7 @@ DBG(GCWALK,
  * Mark the memory given by an address if it really is an object.
  */
 static void
-gcMarkAddress(Collector* gcif UNUSED, const void* mem)
+gcMarkAddress(Collector* gcif UNUSED, void *gc_info UNUSED, const void* mem)
 {
 	gc_block* info;
 	gc_unit* unit;
@@ -301,7 +300,7 @@ gcMarkAddress(Collector* gcif UNUSED, const void* mem)
  * and never, ever, be null.
  */
 static void
-gcMarkObject(Collector* gcif UNUSED, const void* objp)
+gcMarkObject(Collector* gcif UNUSED, void *gc_info UNUSED, const void* objp)
 {
   gc_unit *unit = UTOUNIT(objp);
   gc_block *info = GCMEM2BLOCK(unit);
@@ -309,10 +308,10 @@ gcMarkObject(Collector* gcif UNUSED, const void* objp)
   markObjectDontCheck(unit, info, GCMEM2IDX(info, unit));
 }
 
-static void
-gcWalkConservative(Collector* gcif, const void* base, uint32 size)
+void
+KaffeGC_WalkConservative(Collector* gcif, const void* base, uint32 size)
 {
-	int8* mem;
+	const int8* mem;
 
 DBG(GCWALK,	
 	dprintf("scanning %d bytes conservatively from %p-%p\n", 
@@ -322,10 +321,12 @@ DBG(GCWALK,
 	record_marked(1, size);
 
 	if (size > 0) {
-		for (mem = ((int8*)base) + (size & -ALIGNMENTOF_VOIDP) - sizeof(void*); (void*)mem >= base; mem -= ALIGNMENTOF_VOIDP) {
-			void *p = *(void **)mem;
+		for (mem = ((const int8*)base) + (size & -ALIGNMENTOF_VOIDP) - sizeof(void*);
+		     (const void*)mem >= base;
+		     mem -= ALIGNMENTOF_VOIDP) {
+			const void *p = *(void * const *)mem;
 			if (p) {
-				gcMarkAddress(gcif, p);
+				gcMarkAddress(gcif, NULL, p);
 			}
 		}
 	}
@@ -365,7 +366,7 @@ gcGetObjectIndex(Collector* gcif UNUSED, const void* mem)
  */
 static
 void*
-gcGetObjectBase(Collector *gcif UNUSED, const void* mem)
+gcGetObjectBase(Collector *gcif UNUSED, void* mem)
 {
 	int idx;
 	gc_block* info;
@@ -403,9 +404,8 @@ gcGetObjectDescription(Collector* gcif, const void* mem)
 /*
  * Walk a bit of memory.
  */
-static
 void
-gcWalkMemory(Collector* gcif, void* mem)
+KaffeGC_WalkMemory(Collector* gcif, void* mem)
 {
 	gc_block* info;
 	int idx;
@@ -449,7 +449,7 @@ DBG(GCWALK,
 		dprintf("walking %d bytes @%p: %s\n", size, mem, 
 			describeObject(mem));
     )
-		walkf(gcif, mem, size);
+		walkf(gcif, NULL, mem, size);
 	}
 }
 
@@ -561,7 +561,7 @@ DBG(GCSTAT,
 		/* process any objects found by walking the root references */
 		while (gclists[grey].cnext != &gclists[grey]) {
 			unit = gclists[grey].cnext;
-			gcWalkMemory(gcif, UTOMEM(unit));
+			KaffeGC_WalkMemory(gcif, UTOMEM(unit));
 		}
 
 		/* Now walk any white objects which will be finalized.  They
@@ -585,7 +585,7 @@ DBG(GCSTAT,
 		/* now process the objects that are referenced by objects to be finalized */
 		while (gclists[grey].cnext != &gclists[grey]) {
 			unit = gclists[grey].cnext;
-			gcWalkMemory(gcif, UTOMEM(unit));
+			KaffeGC_WalkMemory(gcif, UTOMEM(unit));
 		}
 
 		finishGC(gcif);
@@ -694,7 +694,7 @@ startGC(Collector *gcif)
 		markObjectDontCheck(unit, info, idx); 
 	}
 
-	(*walkRootSet)(gcif);
+	KaffeGC_walkRefs(gcif);
 }
 
 /*
@@ -1066,7 +1066,8 @@ gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
 	OBJECTSIZESADD(size);
 
 	/* Determine whether we need to finalise or not */
-	if (gcFunctions[fidx].final == KGC_OBJECT_NORMAL || gcFunctions[fidx].final == KGC_OBJECT_FIXED) {
+	if (gcFunctions[fidx].final == KGC_OBJECT_NORMAL ||
+	    gcFunctions[fidx].final == KGC_OBJECT_FIXED) {
 		KGC_SET_STATE(info, i, KGC_STATE_NORMAL);
 	}
 	else {
@@ -1232,7 +1233,7 @@ gcFree(Collector* gcif UNUSED, void* mem)
 
 		if (KGC_GET_COLOUR(info, idx) == KGC_COLOUR_FIXED) {
 			size_t sz = GCBLOCKSIZE(info);
-
+			
 			OBJECTSTATSREMOVE(unit);
 
 			/* Keep the stats correct */
@@ -1418,24 +1419,23 @@ static struct GarbageCollectorInterface_Ops KGC_Ops = {
 	gcGetObjectDescription,
 	gcGetObjectIndex,
 	gcGetObjectBase,
-	gcWalkMemory,
-	gcWalkConservative,
 	gcRegisterFixedTypeByIndex,
 	gcRegisterGcTypeByIndex,
 	gcThrowOOM,
 	gcEnableGC,
 	gcDisableGC,
 	gcGetHeapLimit,
-	gcGetHeapTotal
+	gcGetHeapTotal,
+	KaffeGC_addRef,
+	KaffeGC_rmRef
 };
 
 /*
  * Initialise the Garbage Collection system.
  */
 Collector* 
-createGC(void (*_walkRootSet)(Collector*))
+createGC()
 {
-	walkRootSet = _walkRootSet;
 	URESETLIST(gclists[nofin_white]);
 	URESETLIST(gclists[fin_white]);
 	URESETLIST(gclists[grey]);

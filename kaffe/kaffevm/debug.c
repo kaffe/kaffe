@@ -26,9 +26,12 @@
 
 #include <stdio.h>
 
+#include <errno.h>
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
+#include "config-io.h"
+#include "config-signal.h"
 #include "kaffe/jni_md.h"
 #include "gtypes.h"
 #include "gc.h"
@@ -420,6 +423,14 @@ kaffe_dprintf(const char *fmt, ...)
 			if (w >= 0)
 				/* ignore errors */
 				max += w;
+			else if (errno != SIGINT)
+			  {
+		            /* Stderr should have been closed by another thread.
+			     * We may only exit without printing anything.
+			     */
+			    break;
+			  }
+			  
 		}
 		bufferBegin = 0;
 	}

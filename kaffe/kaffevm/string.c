@@ -500,10 +500,10 @@ stringCharArray2Java(const jchar *data, int len)
  * Walk a java.lang.String object
  */     
 void
-stringWalk(Collector* collector, void* str, uint32 size UNUSED)
+stringWalk(Collector* collector, void *gc_info, void* str, uint32 size UNUSED)
 {
         /* That's all we have to do here */
-        KGC_markObject(collector, unhand((Hjava_lang_String*)str)->value);
+        KGC_markObject(collector, gc_info, unhand((Hjava_lang_String*)str)->value);
 }
 
 /*       

@@ -25,7 +25,6 @@ libkaffegc_la_LDFLAGS = \
 libkaffegc_la_SOURCES= \
 	gc-incremental.c \
 	gc-mem.c \
-	gc-incremental.h \
-	gc-mem.h
+	gc-refs.c
 
-noinst_HEADERS= gc-mem.h gc-incremental.h
+noinst_HEADERS= gc-mem.h gc-incremental.h gc-refs.h

@@ -1,9 +1,12 @@
 /*
- * gcRefs.h
+ * gc-refs.h
  * Manage root set for garbage collector
  *
  * Copyright (c) 1996, 1997
  *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * Copyright (c) 2004
+ *      The Kaffe.org's developers. See ChangeLog for details.
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
@@ -16,8 +19,8 @@
 #include "gc.h"
 
 struct _Collector;
-bool gc_add_ref(const void* mem);
-bool gc_rm_ref(const void* mem);
-void gc_walk_refs(struct _Collector*);
+bool KaffeGC_addRef(struct _Collector *collector, const void* mem);
+bool KaffeGC_rmRef(struct _Collector *collector, const void* mem);
+void KaffeGC_walkRefs(struct _Collector* collector);
 
 #endif /* __gcrefs_h */

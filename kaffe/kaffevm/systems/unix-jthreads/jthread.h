@@ -184,7 +184,7 @@ void 	jthread_atexit(void (*f)(void));
  * walk all live threads, and invoke `func', passing in their cookie
  * this is used with `func' set to walkMemory
  */
-void 	jthread_walkLiveThreads(void (*func)(jthread_t));
+void 	jthread_walkLiveThreads(void (*func)(jthread_t, void*), void*);
 
 /* 
  * destroy this jthread structure 
@@ -356,7 +356,7 @@ int jthread_has_run(jthread_t jt);
 void 	jthread_exit_when_done(void) NONRETURNING;
 
 static inline
-bool jthread_attach_current_thread(bool isDaemon UNUSED)
+bool jthread_attach_current_thread(UNUSED bool isDaemon)
 {
 	return false;
 }

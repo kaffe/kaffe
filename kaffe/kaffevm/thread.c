@@ -570,7 +570,7 @@ runfinalizer(void)
  * print info about a java thread.
  */
 static void
-dumpJavaThread(jthread_t thread)
+dumpJavaThread(jthread_t thread, UNUSED void *p)
 {
 	Hjava_lang_VMThread *tid = (Hjava_lang_VMThread *)jthread_get_data(thread)->jlThread;
 	dprintf("`%s' ", nameThread(tid));
@@ -582,7 +582,7 @@ static void
 dumpThreads(void)
 {
 	dprintf("Dumping live threads:\n");
-	jthread_walkLiveThreads(dumpJavaThread);
+	jthread_walkLiveThreads(dumpJavaThread, NULL);
 }
 
 /*

@@ -515,7 +515,7 @@ classEntry*		lookupClassEntry(Utf8Const*, Hjava_lang_ClassLoader*,
 classEntry*		lookupClassEntryInternal(Utf8Const*,
 				Hjava_lang_ClassLoader*);
 int			removeClassEntries(Hjava_lang_ClassLoader*);
-void 			walkClassEntries(Collector *collector, Hjava_lang_ClassLoader*);
+void 			walkClassEntries(Collector *collector, void *gc_info, Hjava_lang_ClassLoader*);
 
 Collector* 		initCollector(void);
 

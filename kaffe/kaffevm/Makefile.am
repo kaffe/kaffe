@@ -111,7 +111,6 @@ libkaffevm_la_SOURCES = \
 	thread.c \
 	utf8const.c \
 	gcFuncs.c \
-	gcRefs.c \
 	reflect.c \
 	$(BINRELOC_SOURCES)
 
@@ -149,7 +148,6 @@ noinst_HEADERS = \
 	stringParsing.h \
 	stringSupport.h \
 	support.h \
-	gcRefs.h \
 	thread.h \
 	threadData.h \
 	utf8const.h \

@@ -51,12 +51,6 @@
 /* Anchor point for user defined properties */
 userProperty* userProperties = NULL;
 
-#if defined(NO_SHARED_LIBRARIES)
-/* Internal native functions */
-static nativeFunction null_funcs[1];
-nativeFunction* native_funcs = null_funcs;
-#endif
-
 #if defined(HAVE_LIBFFI)
 #include <ffi.h>
 static inline ffi_type *j2ffi(char type)
@@ -1226,32 +1220,3 @@ int bitCount(int bits)
 	}
 	return( retval );
 }
-
-#if defined(NO_SHARED_LIBRARIES)
-/**
- * Register an user function statically linked in the binary.
- */
-void
-addNativeMethod(const char* name, void* func)
-{
-	static int funcs_nr = 0;
-	static int funcs_max = 0;
-
-	/* If we run out of space, reallocate */
-	if (funcs_nr + 1 >= funcs_max) {
-		funcs_max += NATIVE_FUNC_INCREMENT;
-		if (native_funcs != null_funcs) {
-			native_funcs = KREALLOC(native_funcs, funcs_max * sizeof(nativeFunction));
-		}
-		else {
-			native_funcs = KMALLOC(NATIVE_FUNC_INCREMENT * sizeof(nativeFunction));
-		}
-	}
-	native_funcs[funcs_nr].name = KMALLOC(strlen(name) + 1);
-	strcpy(native_funcs[funcs_nr].name, name);
-	native_funcs[funcs_nr].func = func;
-	funcs_nr++;
-	native_funcs[funcs_nr].name = 0;
-	native_funcs[funcs_nr].func = 0;
-}
-#endif

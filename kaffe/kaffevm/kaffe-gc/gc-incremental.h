@@ -98,8 +98,8 @@ typedef	gc_unit			gcList;
 				(OBJ)->cprev = 0; \
 				(OBJ)->cnext = 0
 
-#define	UTOMEM(OBJ)		((void*)(((gc_unit*)(OBJ))+1))
-#define	UTOUNIT(OBJ)		(((gc_unit*)(OBJ))-1)
+#define	UTOMEM(OBJ)		((void*)(((gc_unit*)(uintp)(OBJ))+1))
+#define	UTOUNIT(OBJ)		(((gc_unit*)(uintp)(OBJ))-1)
 
 /* ------------------------------------------------------------------------ */
 
@@ -118,5 +118,8 @@ extern struct _gcStats {
         uint32  finalobj;
         uint32  finalmem;
 } gcStats;
+
+void KaffeGC_WalkConservative(Collector* gcif, const void* base, uint32 size);
+void KaffeGC_WalkMemory(Collector* gcif, void* mem);
 
 #endif
