@@ -1,6 +1,15 @@
 2005-01-08  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
+	
+	2005-01-08  Michael Koch  <konqueror@gmx.de>
+
+	* gnu/java/net/protocol/http/HTTPConnection.java
+	(newRequest): Use "/" as path if no path given in URL.
+
+2005-01-08  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
 
 	2005-01-07  Michael Koch  <konqueror@gmx.de>
 

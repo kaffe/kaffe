@@ -366,7 +366,7 @@ public class HTTPConnection
       }
     if (path == null || path.length() == 0)
       {
-        throw new IllegalArgumentException("path must have non-zero length");
+        path = "/";
       }
     Request ret = new Request(this, method, path);
     ret.setHeader("Host", hostname);
