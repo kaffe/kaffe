@@ -35,6 +35,7 @@ TESTS = \
 	ttest.java \
 	ThreadInterrupt.java \
 	UncaughtException.java \
+	IllegalWait.java \
 ## Test that preemption works---may not be supported by all threading systems
 	Preempt.java 		\
 ## Misc tests
