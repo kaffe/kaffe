@@ -70,6 +70,14 @@ such, might not produce representative results):
   under test/awt
   Reported by: Carlos Valiente
 
+  Tested Version: 1.0.7 (Final)
+  Configuration: Default (intrp)
+  OS Version: Debian unstable/woody, Linux 2.4.18-powerpc-smp
+  Hardware: Dual G4 PowerPC 500Mhz
+  Compiled with: gcc 2.95.4
+  Results: All 114 tests passed.
+  Reported by: Jim Pick
+
 * PowerPC / Mac OS X
 
   Tested Version: 1.0.7 (Final)
@@ -92,6 +100,17 @@ such, might not produce representative results):
             I need to check the regression testing script)
   Reported by: Jim Pick
 
+* Sparc / Linux
+  
+  Tested Version: 1.0.7 (Final)
+  Configuration: Default (jit3)
+  OS Version: Debian potato, Linux 2.4.19-pre7
+  Hardware: Dual UltraSPARC 450
+  Compiled with: gcc 2.95.2
+  Results: Compile failed, died in signal.c "structure has no member named
+           `si_regs`"
+  Reported by: Jim Pick
+
 * ARM / Linux
 
   Tested Version: 1.0.7 (Final)
@@ -110,7 +129,44 @@ such, might not produce representative results):
   Results: Compiles, all tests fail.
   Reported by: Jim Pick
 
+* MIPS (Big-Endian) / Linux
 
+  Tested Version: 1.0.7 (Final)
+  Configuration: Default (jit3)
+  OS Version: Debian unstable/woody, Linux 2.4.17
+  Hardware: SGI Indy (R4000SC V3.0 100MHz)
+  Compiled with: gcc 2.95.4
+  Results: Did not compile (sigcontext.h not found from md.h)
+  Reported by: Jim Pick
 
+* MIPS (Little-Endian) / Linux
+
+  Tested Version: 1.0.7 (Final)
+  Configuration: Default (jit3)
+  OS Version: Debian unstable/woody, Linux 2.4.17
+  Hardware: Masquerade Pro (R5000 250MHz)
+  Compiled with: gcc 2.95.4
+  Results: Did not compile (sigcontext.h not found from md.h)
+  Reported by: Jim Pick
+
+* PA-RISC / Linux
+
+  Tested Version: 1.0.7 (Final)
+  Configuration: Default (intrp)
+  OS Version: Debian unstable/woody, Linux 2.4.18-64
+  Hardware: 2 processor 550MHz PA8600 a500
+  Compiled with: gcc 3.0.4
+  Results: Compiles, 33 of 114 tests failed.
+  Reported by: Jim Pick
+
+* IA-64 / Linux
+
+* Alpha / Linux
+
+* S390 / Linux
+
+* SuperH / Linux
+
+  Not tested.
 
 
