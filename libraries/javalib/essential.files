@@ -155,6 +155,7 @@ java/lang/Float.java
 java/lang/IllegalAccessError.java
 java/lang/IllegalAccessException.java
 java/lang/IllegalArgumentException.java
+java/lang/IllegalMonitorStateException.java
 java/lang/IllegalStateException.java
 java/lang/IllegalThreadStateException.java
 java/lang/IncompatibleClassChangeError.java

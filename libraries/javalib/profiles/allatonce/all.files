@@ -1,4 +1,3 @@
-
 gnu/classpath/Configuration.java
 gnu/classpath/RawData.java
 gnu/classpath/ServiceFactory.java
@@ -753,7 +752,6 @@ java/lang/AbstractMethodError.java
 java/lang/AssertionError.java
 java/lang/ClassCircularityError.java
 java/lang/Compiler.java
-java/lang/IllegalMonitorStateException.java
 java/lang/InstantiationError.java
 java/lang/NoSuchFieldError.java
 java/lang/NoSuchMethodError.java
