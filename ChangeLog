@@ -1,3 +1,11 @@
+2003-02-12 Mark J Roberts <mjr@znex.org>
+
+	* libraries/javalib/java/net/URLDecoder.java:
+	(decode) throw IllegalArgumentException.
+
+	* libraries/javalib/java/util/Calendar.java:
+	(getTimeInMillis) made public.
+
 2003-02-12 Dalibor Topic <robilad@yahoo.com>
 
 	Added new class library compilation runs to default profile in

@@ -259,7 +259,7 @@ final public Date getTime()
 	return (new Date(getTimeInMillis()));
 }
 
-protected long getTimeInMillis()
+public long getTimeInMillis()
 {
 	if (!isTimeSet) {
 		computeTime();

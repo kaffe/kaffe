@@ -20,7 +20,7 @@ public class URLDecoder {
 	public URLDecoder() {
 	}
 
-	public static String decode(String s) throws Exception {
+	public static String decode(String s) {
 		StringBuffer buf = new StringBuffer();
 
 		for (int pos = 0; pos < s.length(); pos++) {
@@ -32,7 +32,7 @@ public class URLDecoder {
 					buf.append((char)Integer.parseInt(
 					    s.substring(pos + 1, pos + 3), 16));
 				} else {
-					throw new Exception("invalid input");
+					throw new IllegalArgumentException("invalid input");
 				}
 				pos += 2;
 			} else {
