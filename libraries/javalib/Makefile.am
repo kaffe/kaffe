@@ -1485,6 +1485,7 @@ java_security_SRCS = \
 	java/security/Guard.java \
 	java/security/Identity.java \
 	java/security/IdentityScope.java \
+	java/security/IntersectingDomainCombiner.java \
 	java/security/InvalidAlgorithmParameterException.java \
 	java/security/InvalidKeyException.java \
 	java/security/InvalidParameterException.java \
@@ -1527,7 +1528,8 @@ java_security_SRCS = \
 	java/security/SignedObject.java \
 	java/security/Signer.java \
 	java/security/UnrecoverableKeyException.java \
-	java/security/UnresolvedPermission.java
+	java/security/UnresolvedPermission.java \
+	java/security/VMAccessController.java
 java_security_acl_SRCS = \
 	java/security/acl/AclEntry.java \
 	java/security/acl/Acl.java \

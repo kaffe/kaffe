@@ -44,6 +44,9 @@ REFLECT_SRCS = \
 		Field.c \
 		Method.c
 
+SECURITY_SRCS = \
+		AccessController.c
+
 TEXT_SRCS = \
 		DateFormat.c
 
@@ -62,6 +65,6 @@ libnative_la_LDFLAGS = \
 
 libnative_la_LIBADD = $(M_LIBS) $(LTLIBICONV)
 
-libnative_la_SOURCES = $(IO_SRCS) $(LANG_SRCS) $(REFLECT_SRCS) $(TEXT_SRCS) $(TEST_SRCS) $(UTIL_SRCS)
+libnative_la_SOURCES = $(IO_SRCS) $(LANG_SRCS) $(REFLECT_SRCS) $(SECURITY_SRCS) $(TEXT_SRCS) $(TEST_SRCS) $(UTIL_SRCS)
 
 CLEANFILES = so_locations

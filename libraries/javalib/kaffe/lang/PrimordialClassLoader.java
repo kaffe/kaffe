@@ -14,6 +14,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.AllPermission;
+import java.security.CodeSource;
+import java.security.Permissions;
 import java.security.ProtectionDomain;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -27,14 +30,22 @@ import java.util.zip.ZipFile;
  * Java-level access to the primordial class loader.
  */
 public final class PrimordialClassLoader extends ClassLoader {
-	
+
 private static final PrimordialClassLoader SINGLETON =
 	new PrimordialClassLoader();
 
 private static final Package[] NO_PACKAGES = new Package[0];
-private static final ProtectionDomain DEFAULT_PROTECTION_DOMAIN = new ProtectionDomain(null, null);
+private static final ProtectionDomain DEFAULT_PROTECTION_DOMAIN;
 
 private static final Map bootjars = new Hashtable();
+
+static {
+	CodeSource source = new CodeSource(null, null);
+	Permissions permissions = new Permissions();
+	permissions.add(new AllPermission());
+	permissions.setReadOnly();
+	DEFAULT_PROTECTION_DOMAIN = new ProtectionDomain(source, permissions);
+}
 
 private PrimordialClassLoader() {
 	super(null);
@@ -66,7 +77,7 @@ public Class loadClass(String name, boolean resolve)
 // Throws ClassNotFoundException if the component type
 // is not a primitive type and is not enclosed by 'L' and ';'.
 private static String componentType(String name) throws ClassNotFoundException {
-        // find the start of the component type
+	// find the start of the component type
 	int componentStart = name.lastIndexOf('[') + 1;
 
 	// if component type is an object type,
@@ -86,7 +97,7 @@ private static String componentType(String name) throws ClassNotFoundException {
 	}
 	// if component type is a primitive type return primitive type.
 	// if the length of the primitive type name is > 1,
-	// then it's a bad primitive type: 
+	// then it's a bad primitive type:
 	// just return the primitive type name
 	// for the error message
 	else if (name.length() - componentStart > 1) {
@@ -114,7 +125,7 @@ protected void findResources(Vector v, String name) throws IOException {
 	String pathSep = System.getProperties().getProperty("path.separator");
 	String classpath = System.getProperties().getProperty("sun.boot.class.path");
 	StringTokenizer t = new StringTokenizer(classpath, pathSep);
-	
+
 	if (name.startsWith("/")) {
 	    name = name.substring(1);
 	}
@@ -157,7 +168,7 @@ protected void findResources(Vector v, String name) throws IOException {
 public URL findResource (String name) {
 	try {
 		Vector v = new Vector ();
-		
+
 		findResources (v, name);
 
 		if (v.size()>0) {
@@ -165,7 +176,7 @@ public URL findResource (String name) {
 		}
 	} catch (IOException _) {
 	}
- 
+
 	return null;
 }
 
@@ -173,7 +184,7 @@ public Enumeration findResources(String name) throws IOException {
 	Vector retval = new Vector();
 
 	this.findResources(retval, name);
-	
+
 	return retval.elements();
 }
 
@@ -190,7 +201,7 @@ public ProtectionDomain getProtectionDomain (Class clazz) {
 }
 
 protected Class findClass(String name) throws ClassNotFoundException {
-	return findClass0(name); 
+	return findClass0(name);
 }
 
 private native Class findClass0(String name) throws ClassNotFoundException;

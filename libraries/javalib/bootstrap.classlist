@@ -151,6 +151,9 @@ java/security/PermissionCollection.class
 java/security/Principal.class
 java/security/ProtectionDomain.class
 java/security/SecureClassLoader.class
+java/security/DomainCombiner.class
+java/security/IntersectingDomainCombiner.class
+java/security/VMAccessController.class
 java/text/AttributedCharacterIterator.class
 java/text/AttributedCharacterIterator$Attribute.class
 java/text/CharacterIterator.class

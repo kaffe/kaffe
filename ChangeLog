@@ -1,3 +1,51 @@
+2004-05-31  Casey Marshall <csm@gnu.org>
+
+	* include/Makefile.am: added java_security_VMAccessController.h.
+	* include/Makefile.in: updated.
+	* libraries/clib/native/AccessController.c: new file.
+	* libraries/clib/native/Makefile.am: add AccessController.c.
+	* libraries/clib/native/Makefile.in: updated.
+	* libraries/javalib/bootstrap.classlist: add java.security
+	classes.
+	* libraries/javalib/essential.files: add java.security classes.
+	* libraries/javalib/gnu/java/security/PolicyFile.java
+	(debug): don't check `DEBUG' here. Changed all calls to check
+	`DEBUG' before calling `debug'.
+	* libraries/javalib/java/lang/SecurityManager.java
+	(getSecurityContext): return AccessController.getContext().
+	(checkPermission): call AccessController.checkPermission().
+	(checkPermission(Permission,Object)): call checkPermission of
+	`context' if it is an AccessControlContext.
+	(checkRead): likewise.
+	(checkConnect): likewise.
+	* libraries/javalib/java/net/SocketPermission.java
+	(implies): check `actions' list properly.
+	* libraries/javalib/java/security/AccessControlContext.java:
+	Use Classpath's version as base.
+	(<init>): copy ProtectionDomains properly.
+	(checkPermission): only succeed if the permission is implied by
+	every domain in the list.
+	* libraries/javalib/java/security/AccessController.java:
+	Use Classpath's version as base.
+	(doPrivileged): call VMAccessController.pushContext and
+	VMAccessController.popContext if a context is supplied.
+	(getContext): implemented.
+	* libraries/javalib/java/security/IntersectingDomainCombiner.java:
+	new file.
+	* libraries/javalib/java/security/ProtectionDomain.java
+	(<init>): set statically bound to `true' in the two-argument
+	version.
+	* libraries/javalib/java/security/SecureClassLoader.java
+	Use Classpath's version as base.
+	(getPermissions): call `Policy.getCurrentPolicy' to bypass
+	security check.
+	* libraries/javalib/java/security/VMAccessController.java: new
+	file.
+	* libraries/javalib/java/util/PropertyPermissionCollection.java
+	(implies): avoid infinite loop.
+	* libraries/javalib/kaffe/lang/PrimordialClassLoader.java
+	(DEFAULT_PROTECTION_DOMAIN): set permissions to `AllPermissions'.
+
 2004-05-31  Michael Franz  <developer.franz@verizon.net>
 
 	* libraries/clib/management/JIT.c,

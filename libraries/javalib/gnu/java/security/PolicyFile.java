@@ -145,20 +145,14 @@ public final class PolicyFile extends Policy
   private static final boolean DEBUG = true;
   private static void debug(String msg)
   {
-    if (DEBUG)
-      {
-        System.err.print(">> PolicyFile: ");
-        System.err.println(msg);
-      }
+    System.err.print(">> PolicyFile: ");
+    System.err.println(msg);
   }
 
   private static void debug(Throwable t)
   {
-    if (DEBUG)
-      {
-        System.err.println(">> PolicyFile");
-        t.printStackTrace(System.err);
-      }
+    System.err.println(">> PolicyFile");
+    t.printStackTrace(System.err);
   }
 
   private static final String DEFAULT_POLICY = System.getProperty("java.home")
@@ -189,7 +183,7 @@ public final class PolicyFile extends Policy
         CodeSource cs = (CodeSource) e.getKey();
         if (cs.implies(codeSource))
           {
-            debug(cs+" -> "+codeSource);
+            if (DEBUG) debug(cs+" -> "+codeSource);
             PermissionCollection pc = (PermissionCollection) e.getValue();
             for (Enumeration ee = pc.elements(); ee.hasMoreElements(); )
               {
@@ -197,9 +191,9 @@ public final class PolicyFile extends Policy
               }
           }
         else
-          debug(cs+" !-> "+codeSource);
+          if (DEBUG) debug(cs+" !-> "+codeSource);
       }
-    perms.setReadOnly();
+    if (DEBUG) debug ("returning permissions " + perms + " for " + codeSource);
     return perms;
   }
 
@@ -210,6 +204,7 @@ public final class PolicyFile extends Policy
     try
       {
         policyFiles.add(new File(DEFAULT_POLICY).toURL());
+        if (DEBUG) debug ("defualt policy is " + DEFAULT_POLICY);
         policyFiles.addAll((List) AccessController.doPrivileged(
           new PrivilegedExceptionAction()
           {
@@ -219,13 +214,13 @@ public final class PolicyFile extends Policy
               for (int i = 1; ; i++)
                 {
                   String s = Security.getProperty("policy.file."+i);
-                  debug("policy.file."+i+"="+s);
+                  if (DEBUG) debug("policy.file."+i+"="+s);
                   if (s == null)
                     break;
                   l.add(new URL(s));
                 }
               String s = System.getProperty("java.security.policy");
-              debug("java.security.policy="+s);
+              if (DEBUG) debug("java.security.policy="+s);
               if (s != null)
                 l.add(new URL(s));
               return l;
@@ -234,11 +229,11 @@ public final class PolicyFile extends Policy
       }
     catch (PrivilegedActionException pae)
       {
-        debug(pae);
+        if (DEBUG) debug(pae);
       }
     catch (MalformedURLException mue)
       {
-        debug(mue);
+        if (DEBUG) debug(mue);
       }
     for (Iterator it = policyFiles.iterator(); it.hasNext(); )
       {
@@ -249,7 +244,7 @@ public final class PolicyFile extends Policy
           }
         catch (IOException ioe)
           {
-            debug(ioe);
+            if (DEBUG) debug(ioe);
           }
       }
   }
@@ -276,6 +271,7 @@ public final class PolicyFile extends Policy
    */
   private void parse(final URL url) throws IOException
   {
+    if (DEBUG) debug ("reading policy file from " + url);
     final StreamTokenizer in = new StreamTokenizer(new InputStreamReader(url.openStream()));
     in.resetSyntax();
     in.slashSlashComments(true);

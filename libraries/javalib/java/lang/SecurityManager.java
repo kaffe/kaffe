@@ -45,6 +45,8 @@ import java.io.FilePermission;
 import java.lang.reflect.Member;
 import java.net.InetAddress;
 import java.net.SocketPermission;
+import java.security.AccessControlContext;
+import java.security.AccessController;
 import java.security.AllPermission;
 import java.security.Permission;
 import java.security.Security;
@@ -183,7 +185,7 @@ public class SecurityManager
    *  are from system classes</li>
    * <li>A check of <code>java.security.AllPermission</code> succeeds.</li>
    * </ul>
-   * 
+   *
    * @return the most recent non-system ClassLoader on the execution stack
    * @deprecated use {@link #checkPermission(Permission)} instead
    */
@@ -205,7 +207,7 @@ public class SecurityManager
    *  are from system classes</li>
    * <li>A check of <code>java.security.AllPermission</code> succeeds.</li>
    * </ul>
-   * 
+   *
    * @return the most recent non-system Class on the execution stack
    * @deprecated use {@link #checkPermission(Permission)} instead
    */
@@ -244,7 +246,7 @@ public class SecurityManager
    *  are from system classes</li>
    * <li>A check of <code>java.security.AllPermission</code> succeeds.</li>
    * </ul>
-   * 
+   *
    * @return the index of the most recent non-system Class on the stack
    * @deprecated use {@link #checkPermission(Permission)} instead
    */
@@ -307,8 +309,7 @@ public class SecurityManager
    */
   public Object getSecurityContext()
   {
-    // XXX Should be: return AccessController.getContext();
-    return new SecurityContext(getClassContext());
+    return AccessController.getContext();
   }
 
   /**
@@ -323,8 +324,7 @@ public class SecurityManager
    */
   public void checkPermission(Permission perm)
   {
-    // XXX Should be: AccessController.checkPermission(perm);
-    throw new SecurityException("Operation not allowed");
+    AccessController.checkPermission(perm);
   }
 
   /**
@@ -345,11 +345,9 @@ public class SecurityManager
    */
   public void checkPermission(Permission perm, Object context)
   {
-    // XXX Should be:
-    // if (! (context instanceof AccessControlContext))
-    //   throw new SecurityException("Missing context");
-    // ((AccessControlContext) context).checkPermission(perm);
-    throw new SecurityException("Operation not allowed");
+    if (! (context instanceof AccessControlContext))
+      throw new SecurityException("Missing context");
+    ((AccessControlContext) context).checkPermission(perm);
   }
 
   /**
@@ -393,8 +391,8 @@ public class SecurityManager
    */
   public void checkAccess(Thread thread)
   {
-    if (thread.getThreadGroup() != null 
-	&& thread.getThreadGroup().getParent() != null)
+    if (thread.getThreadGroup() != null
+        && thread.getThreadGroup().getParent() != null)
       checkPermission(new RuntimePermission("modifyThread"));
   }
 
@@ -548,12 +546,10 @@ public class SecurityManager
    */
   public void checkRead(String filename, Object context)
   {
-    // XXX Should be:
-    // if (! (context instanceof AccessControlContext))
-    //   throw new SecurityException("Missing context");
-    // AccessControlContext ac = (AccessControlContext) context;
-    // ac.checkPermission(new FilePermission(filename, "read"));
-    throw new SecurityException("Cannot read files via file names.");
+    if (! (context instanceof AccessControlContext))
+      throw new SecurityException("Missing context");
+    AccessControlContext ac = (AccessControlContext) context;
+    ac.checkPermission(new FilePermission(filename, "read"));
   }
 
   /**
@@ -667,17 +663,15 @@ public class SecurityManager
    */
   public void checkConnect(String host, int port, Object context)
   {
-    // XXX Should be:
-    // if (! (context instanceof AccessControlContext))
-    //   throw new SecurityException("Missing context");
-    // AccessControlContext ac = (AccessControlContext) context;
-    // if (port == -1)
-    //   ac.checkPermission(new SocketPermission(host, "resolve"));
-    // else
-    //   // Use the toString() hack to do the null check.
-    //   ac.checkPermission(new SocketPermission(host.toString + ":" +port,
-    //                                           "connect"));
-    throw new SecurityException("Cannot make network connections.");
+    if (! (context instanceof AccessControlContext))
+      throw new SecurityException("Missing context");
+    AccessControlContext ac = (AccessControlContext) context;
+    if (port == -1)
+      ac.checkPermission(new SocketPermission(host, "resolve"));
+    else
+      // Use the toString() hack to do the null check.
+      ac.checkPermission(new SocketPermission(host.toString() + ":" + port,
+                                              "connect"));
   }
 
   /**
@@ -1033,7 +1027,7 @@ public class SecurityManager
              index != -1; index = list.indexOf(packageName, index + 1))
           {
             // Exploit package visibility for speed.
-	    int packageNameCount = packageName.length();
+            int packageNameCount = packageName.length();
             if (index + packageNameCount == list.length()
                 || list.charAt(index + packageNameCount) == ',')
               {
@@ -1049,8 +1043,8 @@ public class SecurityManager
 
 // XXX This class is unnecessary.
 class SecurityContext {
-	Class[] classes;
-	SecurityContext(Class[] classes) {
-		this.classes = classes;
-	}
+        Class[] classes;
+        SecurityContext(Class[] classes) {
+                this.classes = classes;
+        }
 }

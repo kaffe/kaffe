@@ -346,8 +346,10 @@ java/security/Certificate.java
 java/security/CodeSource.java
 java/security/DigestException.java
 java/security/DigestOutputStream.java
+java/security/DomainCombiner.java
 java/security/GeneralSecurityException.java
 java/security/Guard.java
+java/security/IntersectingDomainCombiner.java
 java/security/Key.java
 java/security/KeyException.java
 java/security/MessageDigest.java
@@ -370,6 +372,7 @@ java/security/SignatureException.java
 java/security/InvalidKeyException.java
 java/security/NoSuchProviderException.java
 java/security/NoSuchAlgorithmException.java
+java/security/VMAccessController.java
 java/security/cert/Certificate.java
 java/security/cert/CertificateException.java
 java/security/cert/CertificateFactory.java

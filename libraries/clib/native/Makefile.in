@@ -84,17 +84,19 @@ am__objects_2 = Class.lo ClassLoader.lo Double.lo Float.lo Math.lo \
 	Thread.lo ThreadStack.lo Throwable.lo UNIXProcess.lo \
 	ZipFile.lo
 am__objects_3 = Array.lo Constructor.lo Field.lo Method.lo
-am__objects_4 = DateFormat.lo
-am__objects_5 = TestNative.lo
-am__objects_6 = Arrays.lo TimeZone.lo
+am__objects_4 = AccessController.lo
+am__objects_5 = DateFormat.lo
+am__objects_6 = TestNative.lo
+am__objects_7 = Arrays.lo TimeZone.lo
 am_libnative_la_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	$(am__objects_3) $(am__objects_4) $(am__objects_5) \
-	$(am__objects_6)
+	$(am__objects_6) $(am__objects_7)
 libnative_la_OBJECTS = $(am_libnative_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/Array.Plo ./$(DEPDIR)/Arrays.Plo \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/AccessController.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Array.Plo ./$(DEPDIR)/Arrays.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ByteToCharDefault.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ByteToCharIconv.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/CharToByteDefault.Plo \
@@ -398,6 +400,9 @@ REFLECT_SRCS = \
 		Field.c \
 		Method.c
 
+SECURITY_SRCS = \
+		AccessController.c
+
 TEXT_SRCS = \
 		DateFormat.c
 
@@ -415,7 +420,7 @@ libnative_la_LDFLAGS = \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
 libnative_la_LIBADD = $(M_LIBS) $(LTLIBICONV)
-libnative_la_SOURCES = $(IO_SRCS) $(LANG_SRCS) $(REFLECT_SRCS) $(TEXT_SRCS) $(TEST_SRCS) $(UTIL_SRCS)
+libnative_la_SOURCES = $(IO_SRCS) $(LANG_SRCS) $(REFLECT_SRCS) $(SECURITY_SRCS) $(TEXT_SRCS) $(TEST_SRCS) $(UTIL_SRCS)
 CLEANFILES = so_locations
 all: all-am
 
@@ -486,6 +491,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AccessController.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Array.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Arrays.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ByteToCharDefault.Plo@am__quote@
