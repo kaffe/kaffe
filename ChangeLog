@@ -1,3 +1,8 @@
+Thu Feb  4 21:50:39 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/itypes.c, libraries/clib/native/Class.c:
+	handle malformed signatures in Class.forName()
+
 Thu Feb  4 17:57:15 1999  Moses DeJong <dejong@cs.umn.edu>
 
 	* libraries/javalib/java/lang/{Byte,Short}.java:
