@@ -219,7 +219,7 @@ public class WaveAudioFileReader extends TAudioFileReader
 		}
 		// if frameSize isn't set, calculate it (the default)
 		if (frameSize==0) {
-			frameSize=(sampleSizeInBits * channelCount) / 8;
+			frameSize = calculateFrameSize(sampleSizeInBits, channelCount);
 		}
 
 		if (TDebug.TraceAudioFileReader) {

@@ -48,7 +48,7 @@ getQueueTimerNativeHandle(JNIEnv* env, jobject obj);
 snd_seq_remove_events_t*
 getRemoveEventsNativeHandle(JNIEnv* env, jobject obj);
 snd_seq_system_info_t*
-getSystemInfoNativeHandle(JNIEnv* env, jobject obj);
+getSystemInfoNativeHandle(JNIEnv *env, jobject obj);
 
 
 
@@ -773,10 +773,13 @@ Java_org_tritonus_lowlevel_alsa_AlsaSeq_setQueueTempo
 	if (debug_flag) { (void) fprintf(debug_file, "Java_org_tritonus_lowlevel_alsa_AlsaSeq_setQueueTempo(): begin\n"); }
 	seq = getHandle(env, obj);
 	pQueueTempo = getQueueTempoNativeHandle(env, queueTempoObj);
+	//fprintf(debug_file, "pQueueTempo: %p\n", pQueueTempo); fflush(debug_file);
 	nReturn = snd_seq_set_queue_tempo(seq, nQueue, pQueueTempo);
+	if (debug_flag) { (void) fprintf(debug_file, "Java_org_tritonus_lowlevel_alsa_AlsaSeq_setQueueTempo(): snd_seq_set_queue_tempo() returns %d\n", nReturn); }
 	if (nReturn < 0)
 	{
-		throwRuntimeException(env, "snd_seq_set_queue_tempo() failed");
+		//throwRuntimeException(env, "snd_seq_set_queue_tempo() failed");
+		throwRuntimeException(env, snd_strerror(nReturn));
 	}
 	if (debug_flag) { (void) fprintf(debug_file, "Java_org_tritonus_lowlevel_alsa_AlsaSeq_setQueueTempo(): end\n"); }
 	return (jint) nReturn;

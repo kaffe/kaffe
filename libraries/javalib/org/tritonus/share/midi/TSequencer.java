@@ -3,8 +3,7 @@
  */
 
 /*
- *  Copyright (c) 1999 - 2001 by Matthias Pfisterer <Matthias.Pfisterer@gmx.de>
- *
+ *  Copyright (c) 1999 - 2003 by Matthias Pfisterer
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as published
@@ -19,9 +18,7 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
  */
-
 
 package	org.tritonus.share.midi;
 
@@ -159,13 +156,14 @@ public abstract class TSequencer
 
 
 
-	public void start()
+	public synchronized void start()
 	{
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.start(): begin"); }
+		checkOpen();
 		if (! isRunning())
 		{
 			m_bRunning = true;
-			// TODO: check open status, perhaps sequence present
+			// TODO: perhaps check if sequence present
 			startImpl();
 		}
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.start(): end"); }
@@ -184,9 +182,10 @@ public abstract class TSequencer
 
 
 
-	public void stop()
+	public synchronized void stop()
 	{
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.stop(): begin"); }
+		checkOpen();
 		if (isRunning())
 		{
 			stopImpl();
@@ -209,9 +208,28 @@ public abstract class TSequencer
 
 
 
-	public boolean isRunning()
+	public synchronized boolean isRunning()
 	{
 		return m_bRunning;
+	}
+
+
+
+	/** Checks if the Sequencer is open.
+		This method is intended to be called by
+		{@link javax.sound.midi.Sequencer#start start},
+		{@link javax.sound.midi.Sequencer#stop stop},
+		{@link javax.sound.midi.Sequencer#startRecording startRecording}
+		and {@link javax.sound.midi.Sequencer#stop stopRecording}.
+
+		@throw IllegalStateException if the <code>Sequencer</code> is not open
+	 */
+	protected void checkOpen()
+	{
+		if (! isOpen())
+		{
+			throw new IllegalStateException("Sequencer is not open");
+		}
 	}
 
 
@@ -238,29 +256,10 @@ public abstract class TSequencer
 
 
 
-	protected float getNominalTempoInMPQ()
-	{
-		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.getNominalTempoInMPQ(): begin"); }
-		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.getNominalTempoInMPQ(): end"); }
-		return m_fNominalTempoInMPQ;
-	}
-
-
-
-	protected void setNominalTempoInMPQ(float fMPQ)
-	{
-		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.setNominalTempoInMPQ(): begin"); }
-		m_fNominalTempoInMPQ = fMPQ;
-		setRealTempo();
-		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.setNominalTempoInMPQ(): end"); }
-	}
-
-
-
 	protected void setRealTempo()
 	{
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.setRealTempo(): begin"); }
-		float	fRealTempo = getNominalTempoInMPQ() / getTempoFactor();
+		float	fRealTempo = getTempoInMPQ() / getTempoFactor();
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.setRealTempo(): real tempo: " + fRealTempo); }
 		setTempoImpl(fRealTempo);
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.setRealTempo(): end"); }
@@ -291,20 +290,20 @@ public abstract class TSequencer
 	public float getTempoInMPQ()
 	{
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.getTempoInMPQ(): begin"); }
-		// float fMPQ = getTempoNative() * getTempoFactor();
-		float	fMPQ = getNominalTempoInMPQ();
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.getTempoInMPQ(): end"); }
-		return fMPQ;
+		return m_fNominalTempoInMPQ;
 	}
 
 
-
+	/** Sets the tempo.
+		Implementation classes are required to call this method for changing
+		the tempo in reaction to a tempo change event.
+	 */
 	public void setTempoInMPQ(float fMPQ)
 	{
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.setTempoInMPQ(): begin"); }
-		setNominalTempoInMPQ(fMPQ);
-//		float	fRealTempo = fMPQ / getTempoFactor();
-//		setTempoNative(fRealTempo);
+ 		m_fNominalTempoInMPQ = fMPQ;
+ 		setRealTempo();
 		if (TDebug.TraceSequencer) { TDebug.out("TSequencer.setTempoInMPQ(): end"); }
 	}
 
@@ -339,7 +338,6 @@ public abstract class TSequencer
 
 
 
-	// TODO: what should be the behaviour if no Sequence is set?
 	// NOTE: has to be redefined if recording is done natively
 	public long getTickLength()
 	{
@@ -355,7 +353,6 @@ public abstract class TSequencer
 
 
 
-	// TODO: what should be the behaviour if no Sequence is set?
 	// NOTE: has to be redefined if recording is done natively
 	public long getMicrosecondLength()
 	{

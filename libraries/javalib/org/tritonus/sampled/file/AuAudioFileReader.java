@@ -160,7 +160,7 @@ public class AuAudioFileReader extends TAudioFileReader
 		                                     (float) nSampleRate,
 		                                     nSampleSize,
 		                                     nNumChannels,
-		                                     (nSampleSize * nNumChannels) / 8,
+		                                     calculateFrameSize(nSampleSize, nNumChannels),
 		                                     (float) nSampleRate,
 		                                     true);
 		AudioFileFormat	audioFileFormat = new TAudioFileFormat(

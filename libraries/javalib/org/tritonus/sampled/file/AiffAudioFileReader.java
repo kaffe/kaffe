@@ -122,7 +122,8 @@ public class AiffAudioFileReader extends TAudioFileReader
 		*/
 		int nFrameSize = (nSampleSize == 4) ?
 			AudioSystem.NOT_SPECIFIED :
-			(nSampleSize * nNumChannels) / 8;
+			calculateFrameSize(nSampleSize, nNumChannels);
+		if (TDebug.TraceAudioFileReader) { TDebug.out("calculated frame size: " + nFrameSize); }
 		skipChunk(dataInputStream, chunkLength, nRead);
 		AudioFormat format = new AudioFormat(encoding,
 		                                     fSampleRate,

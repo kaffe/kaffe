@@ -3,7 +3,7 @@
  */
 
 /*
- *  Copyright (c) 1999 - 2001 by Matthias Pfisterer <Matthias.Pfisterer@gmx.de>
+ *  Copyright (c) 1999 - 2003 by Matthias Pfisterer
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as published
@@ -69,25 +69,26 @@ public class AlsaSequencer
 	private static final int	CLOCK_EVENT_TAG = 255;
 
 
-	private AlsaSeq			m_playbackAlsaSeq;
-	private AlsaSeq			m_recordingAlsaSeq;
-	private int			m_nRecordingPort;
-	private int			m_nPlaybackPort;
-	private int			m_nQueue;
+	private AlsaSeq				m_playbackAlsaSeq;
+	private AlsaSeq				m_recordingAlsaSeq;
+	private int					m_nRecordingPort;
+	private int					m_nPlaybackPort;
+	private int					m_nQueue;
 	private AlsaSeqQueueInfo	m_queueInfo;
 	private AlsaSeqQueueStatus	m_queueStatus;
 	private AlsaSeqQueueTempo	m_queueTempo;
-	private AlsaMidiIn		m_playbackAlsaMidiIn;
-	private AlsaMidiOut		m_playbackAlsaMidiOut;
-	private AlsaMidiIn		m_recordingAlsaMidiIn;
-	private Thread			m_loaderThread;
-	private Thread			m_syncThread;
+	private AlsaMidiIn			m_playbackAlsaMidiIn;
+	private AlsaMidiOut			m_playbackAlsaMidiOut;
+	private AlsaMidiIn			m_recordingAlsaMidiIn;
+	private Thread				m_loaderThread;
+	private Thread				m_syncThread;
 	private AlsaSeqEvent		m_queueControlEvent;
 	private AlsaSeqEvent		m_clockEvent;
-	private boolean			m_bRecording;
-	private Track			m_track;
+	private boolean				m_bRecording;
+	private Track				m_track;
 	private AlsaSeqEvent		m_allNotesOffEvent;
 	private Sequencer.SyncMode	m_oldSlaveSyncMode;
+	private float				m_fCachedRealMPQ;
 
 
 	public AlsaSequencer(MidiDevice.Info info)
@@ -96,7 +97,7 @@ public class AlsaSequencer
 		      Arrays.asList(MASTER_SYNC_MODES),
 		      Arrays.asList(SLAVE_SYNC_MODES));
 		if (TDebug.TraceSequencer) { TDebug.out("AlsaSequencer.<init>(): begin"); }
-		setTempoInMPQ(500000);
+		m_fCachedRealMPQ = -1.0F;
 		if (TDebug.TraceSequencer) { TDebug.out("AlsaSequencer.<init>(): end"); }
 	}
 
@@ -218,6 +219,11 @@ public class AlsaSequencer
 			AlsaSeq.SND_SEQ_ADDRESS_UNKNOWN);	// dest port
 		m_allNotesOffEvent = new AlsaSeqEvent();
 		m_oldSlaveSyncMode = getSlaveSyncMode();
+		if (m_fCachedRealMPQ != -1.0F)
+		{
+			setTempoImpl(m_fCachedRealMPQ);
+			m_fCachedRealMPQ = -1.0F;
+		}
 		m_loaderThread = new LoaderThread();
 		m_loaderThread.start();
 		// this is for sending clock events
@@ -304,10 +310,14 @@ public class AlsaSequencer
 	public boolean isRunning()
 	{
 		if (TDebug.TraceSequencer) { TDebug.out("AlsaSequencer.isRunning(): begin"); }
-		updateQueueStatus();
-		int	nStatus = getQueueStatus().getStatus();
-		if (TDebug.TraceSequencer) { TDebug.out("AlsaSequencer.isRunning(): queue status: " + nStatus); }
-		boolean	bRunning = nStatus != 0;
+		boolean bRunning = false;
+		if (isOpen())
+		{
+			updateQueueStatus();
+			int	nStatus = getQueueStatus().getStatus();
+			if (TDebug.TraceSequencer) { TDebug.out("AlsaSequencer.isRunning(): queue status: " + nStatus); }
+			bRunning = (nStatus != 0);
+		}
 		if (TDebug.TraceSequencer) { TDebug.out("AlsaSequencer.isRunning(): end"); }
 		return bRunning;
 	}
@@ -316,6 +326,7 @@ public class AlsaSequencer
 
 	public void startRecording()
 	{
+		checkOpen(); // may throw IllegalStateException
 		m_bRecording = true;
 		start();
 	}
@@ -324,6 +335,7 @@ public class AlsaSequencer
 
 	public void stopRecording()
 	{
+		checkOpen(); // may throw IllegalStateException
 		m_bRecording = false;
 	}
 
@@ -366,6 +378,7 @@ public class AlsaSequencer
 		else
 		{
 			if (TDebug.TraceSequencer) { TDebug.out("AlsaSequencer.setTempoImpl(): ignoring because sequencer is not opened"); }
+			m_fCachedRealMPQ = fRealMPQ;
 		}
 		if (TDebug.TraceSequencer) { TDebug.out("AlsaSequencer.setTempoImpl(): end"); }
 	}

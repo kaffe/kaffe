@@ -23,10 +23,10 @@
  */
 
 
-package	org.tritonus.share;
+package org.tritonus.share;
 
 
-import	org.tritonus.share.TDebug;
+import org.tritonus.share.TDebug;
 
 
 
@@ -35,9 +35,9 @@ public class TCircularBuffer
 	private boolean		m_bBlockingRead;
 	private boolean		m_bBlockingWrite;
 	private byte[]		m_abData;
-	private int		m_nSize;
-	private int		m_nReadPos;
-	private int		m_nWritePos;
+	private int			m_nSize;
+	private int			m_nReadPos;
+	private int			m_nWritePos;
 	private Trigger		m_trigger;
 	private boolean		m_bOpen;
 
@@ -63,6 +63,12 @@ public class TCircularBuffer
 		// TODO: call notify() ?
 	}
 
+
+
+	private boolean isOpen()
+	{
+		return m_bOpen;
+	}
 
 
 	public int availableRead()
@@ -102,25 +108,23 @@ public class TCircularBuffer
 
 	public int read(byte[] abData, int nOffset, int nLength)
 	{
-		if (!m_bOpen)
+		if (TDebug.TraceCircularBuffer)
+		{
+			TDebug.out(">TCircularBuffer.read(): called.");
+			dumpInternalState();
+		}
+		if (! isOpen())
 		{
 			if (availableRead() > 0)
 			{
 				nLength = Math.min(nLength, availableRead());
+				if (TDebug.TraceCircularBuffer) { TDebug.out("reading rest in closed buffer, length: " + nLength); }
 			}
 			else
 			{
 				if (TDebug.TraceCircularBuffer) { TDebug.out("< not open. returning -1."); }
 				return -1;
 			}
-		}
-		if (TDebug.TraceCircularBuffer)
-		{
-			TDebug.out(">TCircularBuffer.read(): called.");
-			TDebug.out("m_nReadPos  = " + m_nReadPos + " ^= "+getReadPos());
-			TDebug.out("m_nWritePos = " + m_nWritePos + " ^= "+getWritePos());
-			TDebug.out("availableRead()  = " + availableRead());
-			TDebug.out("availableWrite() = " + availableWrite());
 		}
 		synchronized (this)
 		{
@@ -243,6 +247,7 @@ public class TCircularBuffer
 		TDebug.out("availableRead()  = " + availableRead());
 		TDebug.out("availableWrite() = " + availableWrite());
 	}
+
 
 
 	public static interface Trigger

@@ -58,6 +58,7 @@ public class WaveTool {
 
 	public static final int MIN_FMT_CHUNK_LENGTH=14;
 	public static final int MIN_DATA_OFFSET=12+8+MIN_FMT_CHUNK_LENGTH+8;
+	public static final int MIN_FACT_CHUNK_LENGTH = 4;
 
 	// we always write the sample size in bits and the length of extra bytes.
 	// There are programs (CoolEdit) that rely on the
@@ -68,7 +69,8 @@ public class WaveTool {
 	public static final int DATA_OFFSET=RIFF_CONTAINER_CHUNK_SIZE
 	                                    +CHUNK_HEADER_SIZE+FMT_CHUNK_SIZE+CHUNK_HEADER_SIZE;
 
-	public static AudioFormat.Encoding GSM0610=Encodings.getEncoding("GSM0610");
+	public static AudioFormat.Encoding GSM0610 = Encodings.getEncoding("GSM0610");
+	public static AudioFormat.Encoding IMA_ADPCM = Encodings.getEncoding("IMA_ADPCM");
 
 	public static short getFormatCode(AudioFormat format) {
 		AudioFormat.Encoding encoding = format.getEncoding();

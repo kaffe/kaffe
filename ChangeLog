@@ -1,3 +1,34 @@
+2003-12-03  Dalibor Topic <robilad@kaffe.org>
+
+        * extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeq.c,
+        extensions/sound/alsa/org_tritonus_lowlevel_alsa_AlsaSeqEvent.c,
+        extensions/sound/esd/org_tritonus_lowlevel_esd_EsdStream.c,
+        javalib/org/tritonus/core/package.html,
+        javalib/org/tritonus/lowlevel/alsa/AlsaCtl.java,
+        javalib/org/tritonus/lowlevel/alsa/package.html,
+        javalib/org/tritonus/lowlevel/esd/package.html,
+        javalib/org/tritonus/midi/device/alsa/AlsaSequencer.java,
+        javalib/org/tritonus/midi/device/alsa/package.html,
+        javalib/org/tritonus/midi/file/package.html,
+        javalib/org/tritonus/sampled/convert/package.html,
+        javalib/org/tritonus/sampled/file/AiffAudioFileReader.java,
+        javalib/org/tritonus/sampled/file/AuAudioFileReader.java,
+        javalib/org/tritonus/sampled/file/WaveAudioFileReader.java,
+        javalib/org/tritonus/sampled/file/WaveTool.java,
+        javalib/org/tritonus/sampled/file/package.html,
+        javalib/org/tritonus/sampled/mixer/alsa/package.html,
+        javalib/org/tritonus/sampled/mixer/esd/package.html,
+        javalib/org/tritonus/share/TCircularBuffer.java,
+        javalib/org/tritonus/share/midi/TSequencer.java,
+        javalib/org/tritonus/share/midi/package.html,
+        javalib/org/tritonus/share/package.html,
+        javalib/org/tritonus/share/sampled/convert/package.html,
+        javalib/org/tritonus/share/sampled/file/TAudioFileReader.java,
+        javalib/org/tritonus/share/sampled/file/package.html,
+        javalib/org/tritonus/share/sampled/mixer/package.html,
+        javalib/org/tritonus/share/sampled/package.html:
+	Resynced with Tritonus.
+
 2003-12-02  Dalibor Topic <robilad@kaffe.org>
 
         * gnu/xml/aelfred2/JAXPFactory.java,

@@ -372,6 +372,13 @@ public abstract class TAudioFileReader
 
 
 
+	protected static int calculateFrameSize(int nSampleSize, int nNumChannels)
+	{
+		return ((nSampleSize + 7) / 8) * nNumChannels;
+	}
+
+
+
 	public static int readLittleEndianInt(InputStream is)
 		throws	IOException
 	{

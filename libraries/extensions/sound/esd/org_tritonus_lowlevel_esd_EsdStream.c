@@ -30,7 +30,7 @@
 #include	"org_tritonus_lowlevel_esd_EsdStream.h"
 
 // TODO: remove, replace by debug_flag
-static int	TRITONUS_DEBUG = 0;
+//static int	debug_flag = 0;
 
 HandleFieldHandlerDeclaration(handler, int)
 
@@ -88,7 +88,7 @@ Java_org_tritonus_lowlevel_esd_EsdStream_write
 	data = (*env)->GetByteArrayElements(env, abData, NULL);
 	nWritten = write(nFd, data + nOffset, nLength);
 	(*env)->ReleaseByteArrayElements(env, abData, data, JNI_ABORT);
-	if (TRITONUS_DEBUG)
+	if (debug_flag)
 	{
 		printf("Java_org_tritonus_lowlevel_esd_EsdStream_write: Length: %d\n", (int) nLength);
 		printf("Java_org_tritonus_lowlevel_esd_EsdStream_write: Written: %d\n", nWritten);

@@ -529,7 +529,7 @@ Java_org_tritonus_lowlevel_alsa_AlsaSeqEvent_setControl
 	handle = getHandle(env, obj);
 	if (snd_seq_ev_is_variable(handle))
 	{
-		printf("var data   free: %p\n", handle->data.ext.ptr);
+		// printf("var data   free: %p\n", handle->data.ext.ptr);
 		free(handle->data.ext.ptr);
 	}
 	snd_seq_ev_set_fixed(handle);
@@ -557,7 +557,7 @@ Java_org_tritonus_lowlevel_alsa_AlsaSeqEvent_setQueueControl
 	handle = getHandle(env, obj);
 	if (snd_seq_ev_is_variable(handle))
 	{
-		printf("var data   free: %p\n", handle->data.ext.ptr);
+		// printf("var data   free: %p\n", handle->data.ext.ptr);
 		free(handle->data.ext.ptr);
 	}
 	snd_seq_ev_set_fixed(handle);
@@ -597,11 +597,11 @@ Java_org_tritonus_lowlevel_alsa_AlsaSeqEvent_setVar
 	handle = getHandle(env, obj);
 	if (snd_seq_ev_is_variable(handle))
 	{
-		printf("var data   free: %p\n", handle->data.ext.ptr);
+		// printf("var data   free: %p\n", handle->data.ext.ptr);
 		free(handle->data.ext.ptr);
 	}
 	pData = (jbyte*) malloc(nLength);
-	printf("var data malloc: %p\n", pData);
+	// printf("var data malloc: %p\n", pData);
 	if (pData == NULL)
 	{
 		if (debug_flag) { fprintf(debug_file, "Java_org_tritonus_lowlevel_alsa_AlsaSeqEvent_setVar(): malloc() failed, throwing exception\n"); }
