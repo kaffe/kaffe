@@ -1,5 +1,15 @@
 2004-10-25  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/net/InetAddress.java:
+        Resynced with GNU Classpath.
+
+	2004-10-25  Michael Koch  <konqueror@gmx.de>
+
+        * java/net/InetAddress.java
+        (toString): Rename 'address' to 'addr'.
+
+2004-10-25  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/font/TextAttribute.java,
 	libraries/javalib/javax/security/auth/spi/package.html,
 	libraries/javalib/javax/swing/JComponent.java,
