@@ -1,5 +1,11 @@
 2004-12-12  Adam Heath  <doogie@brainfood.com>
 
+	* libraries/clib/classpath/jcl.c:
+	  In JCL_ThrowException, use fputs instead of fprintf.  Fixes
+	  a gcc waring, using a non-constant format string.
+
+2004-12-12  Adam Heath  <doogie@brainfood.com>
+
 	* scripts/GCCWarning.pm, scripts/JikesWarning.pm,
 	  scripts/LogWarning.pm, scripts/sort-warnings.pl:
 	  Add ability to ignore specify warnings.

@@ -65,10 +65,10 @@ JCL_ThrowException (JNIEnv * env, const char *className, const char *errMsg)
 	  errExcClass = (*env)->FindClass (env, "java/lang/InternalError");
 	  if (errExcClass == NULL)
 	    {
-	      fprintf (stderr, "JCL: Utterly failed to throw exeption ");
-	      fprintf (stderr, className);
-	      fprintf (stderr, " with message ");
-	      fprintf (stderr, errMsg);
+	      fputs ("JCL: Utterly failed to throw exeption ", stderr);
+	      fputs (className, stderr);
+	      fputs (" with message ", stderr);
+	      fputs (errMsg, stderr);
 	      return;
 	    }
 	}
