@@ -123,6 +123,9 @@ DBG(CLASSGC,
                 KFREE(clazz->interfaces);
         }
         utf8ConstRelease(clazz->name);
+	if (clazz->sourcefile != 0) {
+		utf8ConstRelease(clazz->sourcefile);
+	}
 }
 
 /*      

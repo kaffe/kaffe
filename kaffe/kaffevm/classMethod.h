@@ -48,6 +48,7 @@ struct Hjava_lang_Class {
 	struct _classEntry*	centry;
 
 	Utf8Const*		name;
+	Utf8Const*		sourcefile;	/* source file name if known */
 	accessFlags		accflags;
 
 	/* If non-NULL, a pointer to the superclass.
@@ -230,6 +231,8 @@ struct _classFile;
 
 #define OBJECT_CLASS(OBJ)     ((OBJ)->dtable->class)
 #define CLASS_CNAME(CL)  ((CL)->name->data)
+#define CLASS_SOURCEFILE(CL)	\
+	((CL)->sourcefile == 0 ? "source file unknown" : (CL)->sourcefile->data)
 #define _PRIMITIVE_DTABLE ((struct _dispatchTable*)(-1))
 #define CLASS_IS_PRIMITIVE(CL) ((CL)->dtable == _PRIMITIVE_DTABLE)
 
@@ -270,6 +273,7 @@ Hjava_lang_Class* 	findClass(struct _classEntry* centry, errorInfo *einfo);
 void			loadStaticClass(Hjava_lang_Class**, const char*);
 
 Hjava_lang_Class*	setupClass(Hjava_lang_Class*, constIndex, constIndex, u2, Hjava_lang_ClassLoader*);
+void 			addSourceFile(Hjava_lang_Class* c, int idx);
 Method*			addMethod(Hjava_lang_Class*, struct _method_info*);
 Method*			addExceptionMethod(Hjava_lang_Class*, Utf8Const*, Utf8Const*);
 void 			addMethodCode(Method*, struct _Code*);
@@ -314,5 +318,6 @@ extern Utf8Const* Code_name;		/* "Code" */
 extern Utf8Const* LineNumberTable_name;	/* "LineNumberTable" */
 extern Utf8Const* ConstantValue_name;	/* "ConstantValue" */
 extern Utf8Const* Exceptions_name;	/* "Exceptions" */
+extern Utf8Const* SourceFile_name;	/* "SourceFile" */
 
 #endif

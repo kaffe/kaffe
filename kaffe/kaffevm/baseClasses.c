@@ -39,6 +39,7 @@ Utf8Const* Code_name;
 Utf8Const* LineNumberTable_name;
 Utf8Const* ConstantValue_name;
 Utf8Const* Exceptions_name;
+Utf8Const* SourceFile_name;
 
 static Hjava_lang_Class dummyClassClass;
 Hjava_lang_Class* ClassClass = &dummyClassClass;
@@ -124,6 +125,7 @@ initialiseKaffe(void)
 	LineNumberTable_name = utf8ConstNew("LineNumberTable", -1);
 	ConstantValue_name = utf8ConstNew("ConstantValue", -1);
 	Exceptions_name = utf8ConstNew("Exceptions", -1);
+	SourceFile_name = utf8ConstNew("SourceFile", -1);
 
 	/* Read in base classes */
 	initBaseClasses();

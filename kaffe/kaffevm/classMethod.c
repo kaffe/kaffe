@@ -529,6 +529,21 @@ internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags, int su, Hja
 	cl->loader = loader;
 }
 
+/*
+ * add source file name to be printed in exception backtraces
+ */
+void
+addSourceFile(Hjava_lang_Class* c, int idx)
+{
+	constants* pool;
+	Utf8Const* sourcefile;
+
+	pool = CLASS_CONSTANTS (c);
+	sourcefile = WORD2UTF (pool->data[idx]);
+	utf8ConstAddRef(sourcefile);
+	c->sourcefile = sourcefile;
+}
+
 Method*
 addMethod(Hjava_lang_Class* c, method_info* m)
 {

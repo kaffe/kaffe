@@ -119,14 +119,17 @@ printStackTrace(struct Hjava_lang_Throwable* o, struct Hjava_lang_Object* p)
 				}
 			}
 			if (linenr == -1) {
-				sprintf(buf, "\tat %.80s.%.80s(line unknown, pc %p)",
+				sprintf(buf, "\tat %.80s.%.80s(%s:line unknown, pc %p)",
 					CLASS_CNAME(meth->class),
-					meth->name->data, (void*)pc);
+					meth->name->data, 
+					CLASS_SOURCEFILE(meth->class),
+					(void*)pc);
 			}
 			else {
-				sprintf(buf, "\tat %.80s.%.80s(%d)",
+				sprintf(buf, "\tat %.80s.%.80s(%s:%d)",
 					CLASS_CNAME(meth->class),
 					meth->name->data,
+					CLASS_SOURCEFILE(meth->class),
 					linenr);
 			}
 			len = strlen(buf);

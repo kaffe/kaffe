@@ -121,6 +121,10 @@
 			else if (utf8ConstEqual(name, Exceptions_name)){ \
 				addCheckedExceptions((Method*)thing, len, fp);\
 			}						\
+			else if (utf8ConstEqual(name, SourceFile_name)){ \
+				readu2(&idx, fp);			\
+				addSourceFile((Hjava_lang_Class*)thing, idx); \
+			}						\
 			else {						\
 				seekm(fp, len);				\
 			}						\
