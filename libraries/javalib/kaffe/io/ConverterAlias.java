@@ -20,9 +20,14 @@ import java.util.Hashtable;
 public class ConverterAlias {
     private static final Hashtable alias = new Hashtable();
 
+    // All aliases should be upper case
     static {
 	alias.put("DEFAULT",		"Default");
 	alias.put("ISO-8859-1", 	"8859_1");
+	alias.put("ISO_8859_1",		"8859_1");
+	alias.put("ISO 8859-1",		"8859_1");
+	alias.put("ISO 8859_1",		"8859_1");
+	alias.put("ISO8859_1",		"8859_1");
 	alias.put("LATIN1",	 	"8859_1");
 	alias.put("IBM819",	 	"8859_1");
 	alias.put("CP819",	 	"8859_1");
