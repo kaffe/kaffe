@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package gnu.java.io.decode;
 
-import java.io.CharConversionException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -124,10 +123,9 @@ getSchemeName()
   *
   * @return The number of characters than can be decoded from the byte array
   *
-  * @exception CharConversionException If the bytes do not evenly translate to characters, or an invalid byte is encountered.
   */
 public int
-charsInByteArray(byte[] buf) throws CharConversionException
+charsInByteArray(byte[] buf)
 {
   return(charsInByteArray(buf, 0, buf.length));
 }
@@ -148,10 +146,9 @@ charsInByteArray(byte[] buf) throws CharConversionException
   *
   * @return The number of characters than can be decoded from the byte array
   *
-  * @exception CharConversionException If the bytes do not evenly translate to characters, or an invalid byte is encountered.
   */
 public abstract int
-charsInByteArray(byte[] buf, int offset, int len) throws CharConversionException;
+charsInByteArray(byte[] buf, int offset, int len);
 
 /*************************************************************************/
 
@@ -163,10 +160,9 @@ charsInByteArray(byte[] buf, int offset, int len) throws CharConversionException
   *
   * @return The converted char array
   *
-  * @exception CharConversionException If an error occurs, such as an invalid byte in the source array.
   */
 public char[]
-convertToChars(byte[] buf) throws CharConversionException
+convertToChars(byte[] buf)
 {
   return(convertToChars(buf, 0, buf.length));
 }
@@ -184,10 +180,9 @@ convertToChars(byte[] buf) throws CharConversionException
   *
   * @return The converted char array
   *
-  * @exception CharConversionException If an error occurs, such as an invalid byte in the source array.
   */
 public char[]
-convertToChars(byte[] buf, int offset, int len) throws CharConversionException
+convertToChars(byte[] buf, int offset, int len)
 {
   char[] cbuf = new char[charsInByteArray(buf, offset, len)];
 
@@ -212,11 +207,9 @@ convertToChars(byte[] buf, int offset, int len) throws CharConversionException
   * @return The char array passed by the caller as a param, now filled with converted characters.
   *
   * @exception ArrayIndexOutOfBoundsException If the destination char array is not big enough to hold all the converted characters
-  * @exception CharConversionException If an error occurs, such as an invalid byte in the source array.
   */
 public char[]
-convertToChars(byte[] buf, char[] cbuf, int cbuf_offset) throws
-                  CharConversionException
+convertToChars(byte[] buf, char[] cbuf, int cbuf_offset)
 {
   return(convertToChars(buf, 0, buf.length, cbuf, cbuf_offset));
 }
@@ -242,11 +235,10 @@ convertToChars(byte[] buf, char[] cbuf, int cbuf_offset) throws
   * @return The char array passed by the caller as a param, now filled with converted characters.
   *
   * @exception ArrayIndexOutOfBoundsException If the destination char array is not big enough to hold all the converted characters
-  * @exception CharConversionException If an error occurs, such as an invalid byte in the source array.
   */
 public abstract char[]
 convertToChars(byte[] buf, int buf_offset, int len, char[] cbuf,
-               int cbuf_offset) throws CharConversionException;
+               int cbuf_offset);
 
 /*************************************************************************/
 

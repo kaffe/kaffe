@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package gnu.java.io.encode;
 
-import java.io.CharConversionException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
@@ -75,17 +74,6 @@ private final String scheme_name;
   * This is the <code>OutputStream</code> bytes are written to
   */
 protected final OutputStream out;
-
-/**
-  * This is the value that is substituted for bad characters that can't
-  * be encoded.
-  */
-protected char bad_char;
-
-/**
-  * This indicates whether or not the bad char is set or not
-  */
-protected boolean bad_char_set;
 
 /*************************************************************************/
 
@@ -143,10 +131,9 @@ Encoder(OutputStream out, String name)
   *
   * @return The number of bytes than will be encoded from the char array
   *
-  * @exception CharConversionException If bad char value are encountered for this encoding
   */
 public int
-bytesInCharArray(char[] buf) throws CharConversionException
+bytesInCharArray(char[] buf)
 {
   return(bytesInCharArray(buf, 0, buf.length));
 }
@@ -169,10 +156,9 @@ bytesInCharArray(char[] buf) throws CharConversionException
   *
   * @return The number of bytes than can be encoded from the char array
   *
-  * @exception CharConversionException If bad char value are encountered for this encoding
   */
 public abstract int
-bytesInCharArray(char[] buf, int offset, int len) throws CharConversionException;
+bytesInCharArray(char[] buf, int offset, int len);
 
 /*************************************************************************/
 
@@ -184,10 +170,9 @@ bytesInCharArray(char[] buf, int offset, int len) throws CharConversionException
   *
   * @return The converted bytes array
   *
-  * @exception CharConversionException If an error occurs
   */
 public byte[]
-convertToBytes(char[] buf) throws CharConversionException
+convertToBytes(char[] buf)
 {
   return(convertToBytes(buf, 0, buf.length));
 }
@@ -205,10 +190,9 @@ convertToBytes(char[] buf) throws CharConversionException
   *
   * @return The converted byte array
   *
-  * @exception CharConversionException If an error occurs.
   */
 public byte[]
-convertToBytes(char[] buf, int offset, int len) throws CharConversionException
+convertToBytes(char[] buf, int offset, int len)
 {
   byte[] bbuf = new byte[bytesInCharArray(buf, offset, len)];
 
@@ -233,11 +217,9 @@ convertToBytes(char[] buf, int offset, int len) throws CharConversionException
   * @return The byte array passed by the caller as a param, now filled with converted bytes.
   *
   * @exception ArrayIndexOutOfBoundsException If the destination byte array is not big enough to hold all the converted bytes
-  * @exception CharConversionException If any other error occurs.
   */
 public byte[]
-convertToBytes(char[] buf, byte[] bbuf, int bbuf_offset) throws
-                  CharConversionException
+convertToBytes(char[] buf, byte[] bbuf, int bbuf_offset)
 {
   return(convertToBytes(buf, 0, buf.length, bbuf, bbuf_offset));
 }
@@ -263,11 +245,10 @@ convertToBytes(char[] buf, byte[] bbuf, int bbuf_offset) throws
   * @return The byte array passed by the caller as a param, now filled with converted bytes.
   *
   * @exception ArrayIndexOutOfBoundsException If the destination byte array is not big enough to hold all the converted bytes.
-  * @exception CharConversionException If any other error occurs.
   */
 public abstract byte[]
 convertToBytes(char[] buf, int buf_offset, int len, byte[] bbuf,
-               int bbuf_offset) throws CharConversionException;
+               int bbuf_offset);
 
 /*************************************************************************/
 
@@ -296,28 +277,6 @@ flush() throws IOException
 }
 
 /*************************************************************************/
-
-/**
-  * This method sets that character that will be used when converting
-  * a Unicode character that is invalid in the current encoding.  If this 
-  * is set, it will be substituted for the bad value.  Otherwise, an
-  * exception will be thrown.  Note that this character itself must be
-  * valid for the current encoding.  If it is not, an exception is thrown.
-  *
-  * @param bad_char The substitute for any bad characters found.
-  *
-  * @exception CharConversionException If the bad char value is not valid in this encoding
-  */
-public void
-setBadCharValue(char bad_char) throws CharConversionException
-{
-  char[] buf = new char[1];
-  buf[0] = bad_char;
-  convertToBytes(buf);
-
-  this.bad_char = bad_char;
-  bad_char_set = true;
-}
 
 } // class Encoder
 

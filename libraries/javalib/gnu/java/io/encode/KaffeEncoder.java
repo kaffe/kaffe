@@ -91,7 +91,7 @@ bytesInCharArray(char[] buf, int offset, int len)
   * Convert the requested chars to bytes
   */
 public byte[]
-convertToBytes(char[] buf, int offset, int len) throws CharConversionException
+convertToBytes(char[] buf, int offset, int len)
 {
 
   ByteArrayOutputStream tmpout = new ByteArrayOutputStream(len * 3);
@@ -111,7 +111,7 @@ convertToBytes(char[] buf, int offset, int len) throws CharConversionException
   */
 public byte[]
 convertToBytes(char[] buf, int buf_offset, int len, byte[] bbuf, 
-               int bbuf_offset) throws CharConversionException
+               int bbuf_offset)
 {
   converter.convert(buf, buf_offset, len,
                     bbuf, bbuf_offset, bbuf.length - bbuf_offset);

@@ -116,10 +116,6 @@ public String(byte ascii[], int hibyte) {
       {
         throw new Error(uee);
       }
-    catch (CharConversionException cce)
-      {
-        throw new Error(cce);
-      }
     this.offset = 0;
     this.count = value.length;
   }
@@ -130,16 +126,9 @@ public String(byte ascii[], int hibyte) {
   {
     if (offset < 0 || count < 0 || offset + count > data.length)
       throw new StringIndexOutOfBoundsException();
-    try
-      {
-        // XXX Consider using java.nio here.
-        value = EncodingManager.getDecoder(encoding)
-          .convertToChars(data, offset, count);
-      }
-    catch (CharConversionException cce)
-      {
-        throw new Error(cce);
-      }
+    // XXX Consider using java.nio here.
+    value = EncodingManager.getDecoder(encoding)
+        .convertToChars(data, offset, count);
     this.offset = 0;
     this.count = value.length;
   }
