@@ -18,7 +18,7 @@
 #include "classMethod.h"
 #include "object.h"
 #include "support.h"
-#include "../../kaffe/kaffevm/thread.h"
+#include "thread.h"
 
 extern int maxArgs;
 extern int isStatic;

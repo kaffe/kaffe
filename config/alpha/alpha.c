@@ -14,7 +14,7 @@
 
 #include "gtypes.h"
 #include "debug.h"
-#include "../../kaffe/kaffevm/thread.h"
+#include "thread.h"
 
 /* return register number that contains return address if function at
    pc is a frame-less procedure.  Else return -1. */
