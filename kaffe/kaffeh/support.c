@@ -305,6 +305,8 @@ DBG(	printf("Method %s%s\n", (char*)cpool->data[m.name_index], (char*)cpool->dat
 			if (sig[1] != ')') {
 				fprintf(include, ", ");
 			}
+		} else if (sig[1] == ')') {
+			fprintf(include, "void");
 		}
 	}
 

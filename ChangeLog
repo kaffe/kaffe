@@ -11,6 +11,8 @@ Fri Aug 28 10:57:38 1998  Archie Cobbs <archie@whistle.com>
 	libraries/clib/native/Compiler.h, libraries/clib/native/System.h:
 	minor fixes to eliminate gcc compiler warnings
 	* configure.in: add -Wstrict-prototypes to gcc flags
+	* kaffe/kaffeh/support.c: for static methods taking no arguments,
+	generate protypes as "method(void)" instead of "method()".
 
 Fri Aug 28 09:49:20 1998  Godmar Back  <gback@cs.utah.edu>
 
