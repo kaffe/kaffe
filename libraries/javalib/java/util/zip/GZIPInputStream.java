@@ -37,9 +37,9 @@ exception statement from your version. */
 
 package java.util.zip;
 
-import java.io.EOFException;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
+import java.io.EOFException;
 
 /**
  * This filter stream is used to decompress a "GZIP" format stream. 
@@ -86,7 +86,6 @@ public class GZIPInputStream
    * The CRC-32 checksum value for uncompressed data.
    */
   protected CRC32 crc; 
-
 
   /**
    * Indicates whether or not the end of the stream has been reached.
@@ -319,7 +318,6 @@ public class GZIPInputStream
     readGZIPHeader = true;
     //System.err.println("Read GZIP header");
   }
-
 
   private void readFooter() throws IOException
   {

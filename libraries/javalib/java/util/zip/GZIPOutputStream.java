@@ -1,5 +1,5 @@
 /* GZIPOutputStream.java - Create a file in gzip format
-   Copyright (C) 2001 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -45,20 +45,21 @@ import java.io.OutputStream;
  * The "GZIP" format is described in RFC 1952.
  *
  * @author John Leuner
+ * @author Tom Tromey
  * @since JDK 1.1
  */
 
+/* Written using on-line Java Platform 1.2 API Specification
+ * and JCL book.
+ * Believed complete and correct.
+ */
 
 public class GZIPOutputStream extends DeflaterOutputStream
 {
-  //Variables
-
-  /* CRC-32 value for uncompressed data
+  /**
+   * CRC-32 value for uncompressed data
    */
-  
-  protected CRC32 crc = new CRC32(); 
-
-  // Constructors
+  protected CRC32 crc;
 
   /* Creates a GZIPOutputStream with the default buffer size
    *
@@ -66,21 +67,18 @@ public class GZIPOutputStream extends DeflaterOutputStream
    * @param out The stream to read data (to be compressed) from 
    * 
    */
-
-  public GZIPOutputStream(OutputStream out)  throws IOException
+  public GZIPOutputStream(OutputStream out) throws IOException
   {
     this(out, 4096);
   }
 
-  /* Creates a GZIPOutputStream with the specified buffer size
-   *
+  /**
+   * Creates a GZIPOutputStream with the specified buffer size
    *
    * @param out The stream to read compressed data from 
-   * 
    * @param size Size of the buffer to use 
    */
-
-  public GZIPOutputStream(OutputStream out, int size)  throws IOException
+  public GZIPOutputStream(OutputStream out, int size) throws IOException
   {
     super(out, new Deflater(Deflater.DEFAULT_COMPRESSION, true), size);
     
@@ -112,10 +110,11 @@ public class GZIPOutputStream extends DeflaterOutputStream
     //    System.err.println("wrote GZIP header (" + gzipHeader.length + " bytes )");
   }
   
-  public void write(byte[] buf, int off, int len) throws IOException
+  public synchronized void write(byte[] buf, int off, int len)
+    throws IOException
   {
-    crc.update(buf, off, len);
     super.write(buf, off, len);
+    crc.update(buf, off, len);
   }
   
   /** Writes remaining compressed output data to the output stream
@@ -129,7 +128,6 @@ public class GZIPOutputStream extends DeflaterOutputStream
 
   public void finish() throws IOException
   {
-
     super.finish();
 
     int totalin = def.getTotalIn();

@@ -1,5 +1,28 @@
 2004-04-21  Dalibor Topic <robilad@kaffe.org>
 
+        * libraries/javalib/java/util/zip/CheckedInputStream.java,
+        libraries/javalib/java/util/zip/CheckedOutputStream.java:
+	Reverted to versions from Classpath, since the differences
+	were just in sorting of imports.
+
+        * libraries/javalib/java/util/zip/GZIPInputStream.java,
+        libraries/javalib/java/util/zip/GZIPOutputStream.java,
+        libraries/javalib/java/util/zip/InflaterInputStream.java:
+	Resynced with GNU Classpath.
+
+	2004-04-12  Michael Koch  <konqueror@gmx.de>
+
+        * java/util/zip/DeflaterOutputStream.java
+        (write): Removed debug code.
+        * java/util/zip/GZIPInputStream.java: Jalopied.
+        * java/util/zip/GZIPOutputStream.java: Jalopied
+        (write): Update CRC sum after actually writing data.
+        * java/util/zip/InflaterInputStream.java: Jalopied.
+        (InflaterInputStream): Check arguments before setting fields.
+        (markSupported): Removed.
+
+2004-04-21  Dalibor Topic <robilad@kaffe.org>
+
 	* libraries/javalib/javax/naming/spi/DirStateFactory.java:
 	Resynced with GNU Classpath.
 

@@ -1,5 +1,6 @@
 /* InflaterInputStream.java - Input stream filter for decompressing
-   Copyright (C) 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004
+   Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,8 +39,8 @@ exception statement from your version. */
 package java.util.zip;
 
 import java.io.FilterInputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
 
 /**
  * This filter stream is used to decompress data compressed in the "deflate"
@@ -68,7 +69,6 @@ public class InflaterInputStream extends FilterInputStream
    * Size of buffer   
    */
   protected int len;
-
 
   /*
    * We just use this if we are decoding one byte at a time with the read() call
@@ -109,17 +109,17 @@ public class InflaterInputStream extends FilterInputStream
   public InflaterInputStream(InputStream in, Inflater inf, int size) 
   {
     super(in);
-    this.inf = inf;
     this.len = 0;
-    
-    if (size <= 0)
-      throw new IllegalArgumentException("size <= 0");
-    buf = new byte[size]; //Create the buffer
 
     if (in == null)
-      throw new NullPointerException("InputStream null");
+      throw new NullPointerException ("in may not be null");
     if (inf == null)
-      throw new NullPointerException("Inflater null");
+      throw new NullPointerException ("inf may not be null");
+    if (size < 0)
+      throw new IllegalArgumentException ("size may not be negative");
+    
+    this.inf = inf;
+    this.buf = new byte [size];
   }
 
   /**
@@ -128,6 +128,8 @@ public class InflaterInputStream extends FilterInputStream
    */
   public int available() throws IOException
   {
+    // According to the JDK 1.2 docs, this should only ever return 0
+    // or 1 and should not be relied upon by Java programs.
     return inf.finished() ? 0 : 1;
   }
 
@@ -181,11 +183,13 @@ public class InflaterInputStream extends FilterInputStream
    */
   public int read(byte[] b, int off, int len) throws IOException
   {
-    if (len == 0) return 0;
+    if (len == 0)
+      return 0;
 
     for (;;)
       {
 	int count;
+	
 	try
 	  {
 	    count = inf.inflate(b, off, len);
@@ -217,22 +221,12 @@ public class InflaterInputStream extends FilterInputStream
   {
     if (n < 0)
       throw new IllegalArgumentException();
-    int len = 2048;
-    if (n < len)
-      len = (int) n;
-    byte[] tmp = new byte[len];
-    return (long) read(tmp);
-  }
 
-  /**
-   * Since this stream tends to buffer large (unpredictable?) amounts
-   * of stuff, it causes problems to the mark/reset mechanism.  Hence,
-   * it claims not to support mark.
-   *
-   * @return false
-   */
-  public boolean markSupported()
-  {
-    return false;
+    if (n == 0)
+      return 0;
+
+    int len = (int) Math.min(n, 2048);
+    byte[] buf = new byte[len];
+    return (long) read(buf);
   }
 }
