@@ -49,7 +49,14 @@ LIBREPLACE = $(top_builddir)/replace/libreplace.la
 LIBKAFFEVM = ../../kaffe/kaffevm/libkaffevm.la $(libjvmpi)
 
 jitBasic_LDFLAGS = -export-dynamic
-jitBasic_LDADD = "-dlopen" $(LIBNATIVE) $(LIBKAFFEVM) $(LIBREPLACE) $(libxprof) @LIBLTDL@
+jitBasic_LDADD = \
+	"-dlopen" $(LIBNATIVE) \
+	$(LIBKAFFEVM) \
+	$(LIBREPLACE) \
+	$(libxprof) \
+        $(LTLIBINTL) \
+	@LIBLTDL@
+
 jitBasic_DEPENDENCIES = $(LIBNATIVE) $(LIBKAFFEVM) $(libxprof)
 
 STUB = main_stub.c

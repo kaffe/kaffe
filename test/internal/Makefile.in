@@ -96,6 +96,7 @@ am__DEPENDENCIES_3 = ../../kaffe/kaffevm/libkaffevm.la \
 am__DEPENDENCIES_4 = $(top_builddir)/replace/libreplace.la
 @NEED_LIBXPROF_TRUE@am__DEPENDENCIES_5 =  \
 @NEED_LIBXPROF_TRUE@	../../kaffe/xprof/libkaffexprof.la
+am__DEPENDENCIES_6 =
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
@@ -403,7 +404,14 @@ LIBNATIVE = $(top_builddir)/libraries/clib/native/libnative.la
 LIBREPLACE = $(top_builddir)/replace/libreplace.la
 LIBKAFFEVM = ../../kaffe/kaffevm/libkaffevm.la $(libjvmpi)
 jitBasic_LDFLAGS = -export-dynamic
-jitBasic_LDADD = "-dlopen" $(LIBNATIVE) $(LIBKAFFEVM) $(LIBREPLACE) $(libxprof) @LIBLTDL@
+jitBasic_LDADD = \
+	"-dlopen" $(LIBNATIVE) \
+	$(LIBKAFFEVM) \
+	$(LIBREPLACE) \
+	$(libxprof) \
+        $(LTLIBINTL) \
+	@LIBLTDL@
+
 jitBasic_DEPENDENCIES = $(LIBNATIVE) $(LIBKAFFEVM) $(libxprof)
 STUB = main_stub.c
 JIT_STUB = jit_stub.c

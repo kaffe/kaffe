@@ -1,3 +1,10 @@
+2005-01-06  Dalibor Topic  <topic@mpiat2305>
+
+	* test/internal/Makefile.am (jitBasic_LDADD): Added LTLIBINTL
+	to fix build breakage on freebsd tinderbox.
+
+	* tests/internal/Makefile.in: Regenerated.
+
 2005-01-06  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* tests/internal/Makefile.am: Link jitBasic with libreplace.la
