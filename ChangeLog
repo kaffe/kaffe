@@ -15,6 +15,29 @@
 
 	Reported by: Ito Kazumitsu <kas@maczuka.gcd.org>
 
+2003-08-21  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/gnu/java/rmi/RMIVoidValue.java: new file for a
+	class representing a void return.
+
+	* libraries/javalib/gnu/java/rmi/server/UnicastRemoteCall.java:
+	(DummyOutputStream) add a boolean before each written field to
+	know whether it is a primitive.
+	(releaseOutputStream) flush parameters at write time
+	
+	* libraries/javalib/gnu/java/rmi/server/UnicastServerRef.java:
+	(incomingMessageCall) return a RMIVoidValue if no value is to be
+	returned.
+
+	* libraries/javalib/gnu/java/rmi/server/UnicastServer.java:
+	(incomingMessageCall) do not write a returned object if it is
+	a RMIVoidValue.
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in,
+	libraries/javalib/profiles/default/rmi.files,
+	libraries/javalib/profiles/allatonce/all.files:
+	added RMIVoidValue.java and regenerated
+	
 2003-08-21  Dalibor Topic <robilad@kaffe.org>,
             Helmer Kraemer  <hkraemer@freenet.de>
 
