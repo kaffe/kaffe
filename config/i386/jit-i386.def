@@ -70,6 +70,82 @@ char* rnames[] = { "eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi" };
 
 extern bool used_ieee_division;
 
+#if defined(KAFFE_PROFILER)
+
+/* This code reads the timestamp register, and substracts it
+ * from COUNTER.  As this will scratch EDX and EAX, the second
+ * parameter said if they must be saved.  */
+#define profiler_start(COUNTER, SAVE_EDX_EAX) do {		\
+	int *__counter = (int *)&(COUNTER);			\
+	if (SAVE_EDX_EAX) {					\
+		/* Save EAX and EDX */				\
+		OUT = 0x50|REG_edx;				\
+		OUT = 0x50|REG_eax;				\
+		debug(("pushl edx\n"));				\
+		debug(("pushl eax\n"));				\
+	}							\
+								\
+	OUT = 0x0F;						\
+	OUT = 0x31;						\
+	debug(("rdtsc\n"));					\
+								\
+	OUT = 0x29;						\
+	OUT = 0x05;						\
+	LOUT = (int)(__counter);				\
+	debug(("sub eax, 0x%x\n", (int)(__counter)));		\
+								\
+	OUT = 0x19;						\
+	OUT = 0x15;						\
+	LOUT = (int)(__counter + 1);				\
+	debug(("sbb edx, 0x%x\n", (int)(__counter + 1)));	\
+								\
+	if (SAVE_EDX_EAX) {					\
+		/* Restore EAX and EDX */			\
+		OUT = 0x58|REG_eax;				\
+		OUT = 0x58|REG_edx;				\
+		debug(("popl eax\n"));				\
+		debug(("popl edx\n"));				\
+	}							\
+} while(0)
+
+/* This code reads the timestamp register, and add it to COUNTER.
+ * As this will scratch EDX and EAX, the second parameter said if
+ * they must be saved.  */
+#define profiler_end(COUNTER, SAVE_EDX_EAX) do {		\
+	int *__counter = (int *)&(COUNTER);			\
+	if (SAVE_EDX_EAX) {					\
+		/* Save EAX and EDX */				\
+		OUT = 0x50|REG_edx;				\
+		OUT = 0x50|REG_eax;				\
+		debug(("pushl edx\n"));				\
+		debug(("pushl eax\n"));				\
+	}							\
+								\
+	OUT = 0x0F;						\
+	OUT = 0x31;						\
+	debug(("rdtsc\n"));					\
+								\
+	OUT = 0x01;						\
+	OUT = 0x05;						\
+	LOUT = (int)(__counter);				\
+	debug(("add eax, 0x%x\n", (int)(__counter)));		\
+								\
+	OUT = 0x11;						\
+	OUT = 0x15;						\
+	LOUT = (int)(__counter + 1);				\
+	debug(("adc edx, 0x%x\n", (int)(__counter + 1)));	\
+								\
+	if (SAVE_EDX_EAX) {					\
+		/* Restore EAX and EDX */			\
+		OUT = 0x58|REG_eax;				\
+		OUT = 0x58|REG_edx;				\
+		debug(("popl eax\n"));				\
+		debug(("popl edx\n"));				\
+	}							\
+} while(0)
+
+#endif
+
 /* --------------------------------------------------------------------- */
 
 define_insn(unimplemented, unimplemented)
@@ -110,6 +186,18 @@ define_insn(prologue, prologue_xxx)
 	debug(("pushl edi\n"));
 	debug(("pushl esi\n"));
 	debug(("pushl ebx\n"));
+
+#if defined(KAFFE_PROFILER)
+	if (profFlag)
+	{
+		profiler_start(globalMethod->totalClicks, 0);
+
+		OUT = 0xFF;
+		OUT = 0x05;
+		LOUT = (int)&(globalMethod->callsCount);
+		debug(("incl 0x%x\n",&(globalMethod->callsCount)));
+	}
+#endif
 
 	/* If this method uses IEEE, set up the mode here */
 	if (used_ieee_division == true && 0) {
@@ -227,6 +315,12 @@ define_insn(epilogue, epilogue_xxx)
 		LOUT = 8;
 		debug(("addl 8,esp\n"));
 	}
+
+#if defined(KAFFE_PROFILER)
+	if (profFlag) {
+		profiler_end(globalMethod->totalClicks, 1);
+	}
+#endif
 
 	OUT = 0x58|REG_ebx;
 	OUT = 0x58|REG_esi;
@@ -1147,6 +1241,13 @@ define_insn(call_ref, call_xCC)
 	label* l = const_label(1);
 	assert(const_int(2) == ba);
 
+#if defined(KAFFE_PROFILER)
+	if (profFlag && !(l->type & Lnoprofile)) {
+		/*  don't profile call_soft */
+		profiler_start(globalMethod->totalChildrenClicks, 1);
+	}
+#endif
+
 	OUT = 0xE8;
 	l->type |= Llong|Lrelative;
 	l->at = CODEPC;
@@ -1154,6 +1255,13 @@ define_insn(call_ref, call_xCC)
 	l->from = CODEPC;
 
 	debug(("call ?\n"));
+
+#if defined(KAFFE_PROFILER)
+	if (profFlag && !(l->type & Lnoprofile)) {
+		/*  don't profile call_soft */
+		profiler_end(globalMethod->totalChildrenClicks, 1);
+	}
+#endif
 }
 
 define_insn(call, call_xRC)
@@ -1161,10 +1269,22 @@ define_insn(call, call_xRC)
 	int r = rreg_int(1);
 	assert(const_int(2) == ba);
 
+#if defined(KAFFE_PROFILER)
+	if (profFlag) {
+		profiler_start(globalMethod->totalChildrenClicks, 1);
+	}
+#endif
+
 	OUT = 0xFF;
 	OUT = 0xD0|r;
 
 	debug(("call %s\n", regname(r)));
+
+#if defined(KAFFE_PROFILER)
+	if (profFlag) {
+		profiler_end(globalMethod->totalChildrenClicks, 1);
+	}
+#endif
 }
 
 define_insn(call_indirect_const, call_ind_xCC)
@@ -1172,10 +1292,22 @@ define_insn(call_indirect_const, call_ind_xCC)
 	int m = const_int(1);
 	assert(const_int(2) == ba);
 
+#if defined(KAFFE_PROFILER)
+	if (profFlag) {
+		profiler_start(globalMethod->totalChildrenClicks, 1);
+	}
+#endif
+
 	WOUT = 0x15FF;
 	LOUT = m;
 
 	debug(("call *%x\n", m));
+
+#if defined(KAFFE_PROFILER)
+	if (profFlag) {
+		profiler_end(globalMethod->totalChildrenClicks, 1);
+	}
+#endif
 }
 
 define_insn(ret, ret_xxx)

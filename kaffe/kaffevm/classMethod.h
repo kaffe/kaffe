@@ -13,6 +13,7 @@
 #define __classmethod_h
 
 #include "gtypes.h"
+#include "md.h"
 #include "object.h"
 #include "constants.h"
 #include "errors.h"
@@ -154,6 +155,12 @@ typedef struct _methods {
 	struct _jexception*	exception_table;
 	u2			ndeclared_exceptions;
 	constIndex*		declared_exceptions;
+#if defined(KAFFE_PROFILER)
+	profiler_click_t	jitClicks;
+	profiler_click_t	totalClicks;
+	profiler_click_t	totalChildrenClicks;
+	int			callsCount;
+#endif
 } methods;
 
 typedef struct _dispatchTable {
@@ -319,6 +326,8 @@ void			finalizeClassLoader(Hjava_lang_ClassLoader* loader);
 void			registerClass(classEntry* entry);
 struct Hjava_lang_String* resolveString(constants* pool, int idx,
 					errorInfo *einfo);
+
+void walkClassPool(int (*walker)(Hjava_lang_Class *clazz, void *), void *param);
 
 extern Utf8Const* init_name;		/* "<clinit>" */
 extern Utf8Const* constructor_name;	/* "<init>" */

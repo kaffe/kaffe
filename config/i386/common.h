@@ -61,4 +61,20 @@ static inline void sysdepCallMethod(callMethodInfo *call) {
 }
 #endif /* NEED_sysdepCallMethod */
 
+
+#define KAFFE_PROFILER 1
+
+#if defined(KAFFE_PROFILER)
+
+/* profiler clicks counter type.  */
+typedef int64	profiler_click_t;
+
+/* ReaD the processor Time Stamp Counter.
+ * This is a macro to help GCC optimization.
+ * The rdtsc instruction load TSC to edx:eax aka A register.  */
+#define profiler_get_clicks(COUNTER)	\
+	asm volatile (".byte 0xf; .byte 0x31" /* "rdtsc" */ : "=A" (COUNTER))
+
+#endif
+
 #endif

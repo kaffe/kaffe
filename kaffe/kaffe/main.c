@@ -23,6 +23,9 @@
 #include "md.h"
 #include "ltdl.h"
 
+#if defined(KAFFE_PROFILER)
+extern int profFlag;
+#endif
 extern char* engine_name;
 extern char* engine_version;
 static char* java_version;
@@ -62,6 +65,9 @@ main(int argc, char* argv[])
 #endif
 	java_version = "1.1";
 	vmargs.version = 0x00010001;
+#if defined(KAFFE_PROFILER)
+	profFlag = 0;
+#endif
 
 	JNI_GetDefaultJavaVMInitArgs(&vmargs);
 
@@ -346,6 +352,12 @@ options(char** argv)
                 else if (strcmp(argv[i], "-jar") == 0) {
                         isJar = 1;
                 }
+		else if (strcmp(argv[i], "-prof") == 0) {
+#if defined(KAFFE_PROFILER)
+			profFlag = 1;
+			vmargs.enableClassGC = 0;
+#endif
+		}
 #if defined(KAFFE_STATS)
                 else if (strcmp(argv[i], "-vmstats") == 0) {
 			extern void statsSetMaskStr(char *);
@@ -393,8 +405,7 @@ options(char** argv)
 		 */
 		else if (strcmp(argv[i], "-noasyncgc") == 0 ||
 		   strcmp(argv[i], "-cs") == 0 ||
-		   strcmp(argv[i], "-checksource") == 0 ||
-		   strcmp(argv[i], "-prof") == 0) {
+		   strcmp(argv[i], "-checksource")) {
 		}
 		else if (strcmp(argv[i], "-oss") == 0) {
 			i++;
@@ -433,6 +444,7 @@ usage(void)
 	fprintf(stderr, "	-v, -verbose		Be verbose\n");
 	fprintf(stderr, "	-verbosejit		Print message during JIT code generation\n");
 	fprintf(stderr, "	-verbosemem		Print detailed memory allocation statistics\n");
+	fprintf(stderr, "	-prof			Enable profiling of Java methods\n");
 	fprintf(stderr, "	-debug * 		Trace method calls\n");
 	fprintf(stderr, "	-noasyncgc *		Do not garbage collect asynchronously\n");
 	fprintf(stderr, "	-cs, -checksource *	Check source against class files\n");
@@ -444,7 +456,6 @@ usage(void)
 #ifdef KAFFE_STATS
         fprintf(stderr, "	-vmstats <flag{,flag}>	Print VM statistics.  Set flag=all for all\n");                     
 #endif
-	fprintf(stderr, "	-prof *			?\n");
 	fprintf(stderr, "  * Option currently ignored.\n");
 }
 

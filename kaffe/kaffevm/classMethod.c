@@ -1457,12 +1457,6 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 		postOutOfMemory(einfo);
 		return (false);
 	}
-	class->itable2dtable = KMALLOC(j * sizeof(short));
-	if (!class->itable2dtable) {
-		errorInfo info;
-		postOutOfMemory(&info);
-		return false;
-	}
 	j = 0;
 	for (i = 0; i < class->total_interface_len; i++) {
 		int nm = CLASS_NMETHODS(class->interfaces[i]);

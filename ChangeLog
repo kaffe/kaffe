@@ -1,3 +1,20 @@
+Sat Jul 10 16:53:19 PDT 1999 Edouard G. Parmelan <edouard.parmelan@quadratec.fr>
+
+	* FAQ/FAQ.profiler config/i386/common.h config/i386/jit-i386.def
+	kaffe/kaffevm/jit/machine.h kaffe/kaffevm/jit/machine.c
+	kaffe/kaffevm/classMethod.h kaffe/kaffevm/support.c kaffe/kaffe/main.c:
+	Merge Nathan M. Hanish <hanishn@itsc.uah.edu> and William E. Cohen
+	<cohen@ece.uah.edu> i386 hardware profiler.  Simplify it.
+	Improve time guest.  Disable ClassGC when profiling.
+	* kaffe/kaffevm/classPool.c: Add a class pool walker function for
+	profiler and for stats.
+	* kaffe/kaffevm/jni.c: Profile native wrapper.  Fix error handling.
+	* kaffe/kaffevm/classMethod.c: Fix memory leak in buildDispatchTable().
+	* kaffe/kaffevm/exception.c: end profiling method on exception.
+	* kaffe/kaffevm/jit/icode.c kaffe/kaffevm/jit/labels.h: new flag
+	for label type Lnoprofile that disable profiling, don't count
+	call_soft() as child call.
+
 Thu Jul  8 11:57:45 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/Arrays.java: fix binarySearch bugs

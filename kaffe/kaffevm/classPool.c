@@ -243,8 +243,33 @@ checkClass(Hjava_lang_Class *c, Hjava_lang_ClassLoader *loader)
 	}
 }
 
-#if defined(KAFFE_STATS)
+
+#if defined(KAFFE_STATS) || defined(KAFFE_PROFILER)
+/**
+ * Walk the class pool and invoke walker() for each classes
+ */
 void
+walkClassPool(int (*walker)(Hjava_lang_Class *clazz, void *), void *param)
+{
+	int ipool;
+	classEntry* entry;
+
+	assert(walker != NULL);
+
+	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
+		entry = classEntryPool[ipool];
+		for (; entry != NULL; entry = entry->next) {
+			if (entry->class) {
+				walker(entry->class, param);
+			}
+		}
+	}
+}
+#endif
+
+
+#if defined(KAFFE_STATS)
+static void
 statClass(Hjava_lang_Class *clazz, int *total)
 {
 	Collector *c = main_collector;
@@ -310,8 +335,6 @@ statClass(Hjava_lang_Class *clazz, int *total)
 void
 statClassPool(void)
 {
-	int ipool;
-	classEntry* entry;
 	int total[20];
 		 
 	memset(total, 0, sizeof total);
@@ -320,17 +343,11 @@ statClassPool(void)
 		"#MISC", "MISCFIX", "JCODE", "BCODE", "CLASS");
 	fprintf(stderr, "%-7s %-7s %-7s %-7s %-7s\n",
 		"#------", "-------", "-------", "-------", "--------------\n");
-	for (ipool = CLASSHASHSZ;  --ipool >= 0; ) {
-		entry = classEntryPool[ipool];
-		for (; entry != NULL; entry = entry->next) {
-			if (entry->class) {
-				statClass(entry->class, total);
-			}
-		}
-	}
+	walkClassPool(statClass, total);
 	fprintf(stderr, "%7.2f %7.2f %7.2f %7.2f KBytes\n",
 		total[0]/1024.0, total[1]/1024.0, total[2]/1024.0,
 		total[3]/1024.0);
 	fflush(stderr);
 }
 #endif
+

@@ -40,7 +40,7 @@
 struct _exceptionFrame { };
 #define	FIRSTFRAME(f, e)	/* Does nothing */
 #elif defined(TRANSLATOR)
-static void findExceptionInMethod(uintp, Hjava_lang_Class*, exceptionInfo*);
+static Method* findExceptionInMethod(uintp, Hjava_lang_Class*, exceptionInfo*);
 #endif	/* TRANSLATOR */
 
 static void nullException(struct _exceptionFrame *);
@@ -324,7 +324,9 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 		exceptionInfo einfo;
 
 		for (frame = baseframe; frame != 0; frame = nextFrame(frame)) {
-			findExceptionInMethod(PCFRAME(frame), class, &einfo);
+			Method *meth;
+			
+			meth = findExceptionInMethod(PCFRAME(frame), class, &einfo);
 
                         if (einfo.method == 0 && PCFRAME(frame) >= Kaffe_JNI_estart && PCFRAME(frame) < Kaffe_JNI_eend) {
 				Kaffe_JNIExceptionHandler();
@@ -385,6 +387,14 @@ dispatchException(Hjava_lang_Throwable* eobj, struct _exceptionFrame* baseframe)
 			if (lk != 0 && lk->holder == jthread_current()) {
 				unlockKnownJavaMutex(lk);
 			}
+#if defined(KAFFE_PROFILER)
+			/* If method found and profiler enable, fix time */
+			if (profFlag && meth) {
+				profiler_click_t end;
+				profiler_get_clicks(end);
+				meth->totalClicks += end;
+			}
+#endif
 		}
 	}
 #endif
@@ -463,7 +473,7 @@ floatingException(struct _exceptionFrame *frame)
 /*
  * Find exception in method.
  */
-static void
+static Method *
 findExceptionInMethod(uintp pc, Hjava_lang_Class* class, exceptionInfo* info)
 {
 	Method* ptr;
@@ -475,10 +485,11 @@ findExceptionInMethod(uintp pc, Hjava_lang_Class* class, exceptionInfo* info)
 	ptr = findMethodFromPC(pc);
 	if (ptr != 0) {
 		if (findExceptionBlockInMethod(pc, class, ptr, info) == true) {
-			return;
+			return ptr;
 		}
 	}
 DBG(ELOOKUP,	dprintf("Exception not found.\n");			)
+	return ptr;
 }
 #endif
 

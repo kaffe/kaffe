@@ -16,7 +16,6 @@
 #include "jni.h"
 #include <stdarg.h>
 #include "errors.h"
-#include "classMethod.h"
 #include "jtypes.h"
 #include "access.h"
 #include "object.h"
@@ -28,6 +27,7 @@
 #include "slots.h"
 #include "support.h"
 #define NEED_sysdepCallMethod 1
+#include "classMethod.h"
 #include "machine.h"
 #include "md.h"
 #include "itypes.h"

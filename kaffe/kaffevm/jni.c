@@ -3599,6 +3599,7 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	int count;
 	nativeCodeInfo ncode;
 	SlotInfo* tmp;
+	bool success = true;
 
 	/* Convert the signature into a simple string of types, and
 	 * count the size of the arguments too.
@@ -3637,13 +3638,24 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	 * arguments.
 	 */
 	enterTranslator();
-	maxArgs = maxLocal = count; /* make sure args are spilled if needed */
-	if (!initInsnSequence(0, count, 0, &info)) {
-		leaveTranslator();
-		throwError(&info);
+#if defined(KAFFE_PROFILER)
+	if (profFlag) {
+		profiler_get_clicks(xmeth->jitClicks);
+		xmeth->callsCount = 0;
+		xmeth->totalClicks = 0;
+		xmeth->totalChildrenClicks = 0;
+		globalMethod = xmeth;
 	}
+#endif
+
+	maxArgs = maxLocal = count; /* make sure args are spilled if needed */
+	success = initInsnSequence(0, count, 0, &info);
+	if (!success) {
+		goto done;
+	}
+
 	start_basic_block();
-	prologue(0);
+	prologue(xmeth);
 
 	/* Start a JNI call */
 	prepare_function_call();
@@ -3820,15 +3832,31 @@ Kaffe_JNI_wrapper(Method* xmeth, void* func)
 	 * only needed if we have labels referring to bytecode.  This is
 	 * not the case here.
 	 */
-	if (finishInsnSequence(0, &ncode, &info) == false) {
-		throwError(&info);
+	success = finishInsnSequence(0, &ncode, &info);
+	if (!success) {
+		goto done;
 	}
 
 	assert(xmeth->exception_table == 0);
 	installMethodCode(0, xmeth, &ncode);
 
 	xmeth->accflags |= ACC_JNI;
+
+done:
+#if defined(KAFFE_PROFILER)
+	if (profFlag) {
+		profiler_click_t end;
+
+		profiler_get_clicks(end);
+		xmeth->jitClicks = end - xmeth->jitClicks;
+		globalMethod = 0;
+	}
+#endif
+
 	leaveTranslator();
+	if (!success) {
+		throwError(&info);
+	}
 }
 #endif
 #if defined(INTERPRETER)

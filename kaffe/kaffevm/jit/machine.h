@@ -165,4 +165,9 @@ extern nativecode* codeblock;
 extern uint32 pc;
 extern uint32 npc;
 
+#if defined(KAFFE_PROFILER)
+extern int profFlag;
+extern Method *globalMethod;
+#endif
+
 #endif

@@ -2585,7 +2585,7 @@ call_soft(void *routine)
 {
 #if defined(HAVE_call_soft)
 	label* l = newLabel();
-	l->type = Labsolute|Lexternal;
+	l->type = Labsolute|Lexternal|Lnoprofile;
 	l->at = 0;
 	l->to = (uintp)routine;	/* What place does it goto */
 	l->from = 0;
@@ -2594,7 +2594,7 @@ call_soft(void *routine)
 #elif defined(HAVE_call_ref)
 	label* l;
 	l = newLabel();
-	l->type = Lexternal;
+	l->type = Lexternal|Lnoprofile;
 	l->at = 0;
 	l->to = (uintp)routine;	/* What place does it goto */
 	l->from = 0;
