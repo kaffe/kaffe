@@ -5,8 +5,8 @@ Tue Dec 15 22:13:46 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 Tue Dec 15 16:11:24 1998  Archie Cobbs <archie@whistle.com>
 
-	* configure, configure.in: use -lgcc on FreeBSD platform
-	as a better workaround for the modulo bug.
+	* configure, configure.in: use -lgcc on FreeBSD and NetBSD
+	platforms as a better workaround for the modulo bug.
 	* kaffe/kaffevm/soft.c: remove previous (slower) workaround.
 
 Tue Dec 15 14:11:32 1998  Godmar Back  <gback@cs.utah.edu>

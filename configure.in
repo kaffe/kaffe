@@ -448,7 +448,7 @@ if test "$dynamic_libraries" = "yes" ; then
 		fi
 	fi
 fi
-if test "$host_os" = "freebsd2" ; then
+if test "$host_os" = "freebsd2" -o "$host_os" = "netbsd1" ; then
 	AC_CHECK_LIBRARY(gcc,__moddi3,VM_LIBRARIES)
 fi
 AC_SUBST(VM_LIBRARIES)

@@ -2485,7 +2485,7 @@ fi
 		fi
 	fi
 fi
-if test "$host_os" = "freebsd2" ; then
+if test "$host_os" = "freebsd2" -o "$host_os" = "netbsd1" ; then
 	echo $ac_n "checking for __moddi3 in -lgcc""... $ac_c" 1>&6
 echo "configure:2491: checking for __moddi3 in -lgcc" >&5
 ac_lib_var=`echo gcc'_'__moddi3 | sed 'y%./+-%__p_%'`
