@@ -347,6 +347,7 @@ static void
 setupSigAltStack(void)
 {
         STACK_STRUCT newstack;
+	void *stackp;
 
 	/*
 	 * Signals has to have their own stack so we can solve
@@ -354,7 +355,12 @@ setupSigAltStack(void)
 	 */
 	newstack.ss_size = THREADSTACKSIZE;
 	newstack.ss_flags = 0;
-	newstack.ss_sp = KMALLOC(newstack.ss_size);
+	stackp = KMALLOC(newstack.ss_size);
+#if defined(SIGALTSTACK_NEEDS_END)
+	newstack.ss_sp = (void *)((uintp)stackp + newstack.ss_size);
+#else
+	newstack.ss_sp = stackp;
+#endif
 	if (sigaltstack(&newstack, NULL) < 0)
 	  {
 	    dprintf("Unexpected error calling sigaltstack: %s\n",

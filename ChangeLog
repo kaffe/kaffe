@@ -1,3 +1,12 @@
+2005-03-12  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-jthreads/config-jthreads.h: Define
+	SIGALTSTACK_NEEDS_END if the system is IRIX.
+
+	* kaffe/kaffevm/systems/unix-jthreads/signal.c
+	(setupSigAltStack): Put a pointer to he end of the stack if
+	SIGALTSTACK_NEEDS_END is defined.
+	
 2005-03-12  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/alpha/jit.h:  Use translatorlock instead of 

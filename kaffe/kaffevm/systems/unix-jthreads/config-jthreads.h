@@ -101,6 +101,8 @@ typedef int sigset_t;
 #define SP_OFFSET		2
 #define FP_OFFSET		13
 
+#define SIGALTSTACK_NEEDS_END   1
+
 #elif defined(arm32) && defined(__NetBSD__)
 
 #define SP_OFFSET		23
