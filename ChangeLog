@@ -1,3 +1,8 @@
+1999-04-15  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* test/regression/DoubleComp.java (DoubleComp): Add try/catch
+	blocks so that it reports which tests cause ArithmeticExceptions.
+
 1999-04-14  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* config/i386/common.h (sysdepCallMethod): Do not use extern

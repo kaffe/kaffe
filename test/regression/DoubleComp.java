@@ -75,7 +75,9 @@ public class DoubleComp {
     System.out.println("Double tests:");
     for (int k = 0; k < tests.length; k++) {
       String exp = tests[k].expect;
-      String got = Double.toString(tests[k].val1 / tests[k].val2);
+      String got;
+      try { got = Double.toString(tests[k].val1 / tests[k].val2); }
+      catch (Throwable t) { got = t.toString(); }
 
       if (!exp.equals(got))
 	System.out.println("  FAIL"
@@ -86,8 +88,10 @@ public class DoubleComp {
     System.out.println("Float tests:");
     for (int k = 0; k < tests.length; k++) {
       String exp = tests[k].expect;
-      String got = Float.toString((float) tests[k].val1
-					/ (float) tests[k].val2);
+      String got;
+      try { got = Float.toString((float) tests[k].val1
+				 / (float) tests[k].val2); }
+      catch (Throwable t) { got = t.toString(); }
 
       if (!exp.equals(got))
 	System.out.println("  FAIL"
