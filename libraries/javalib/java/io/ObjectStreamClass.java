@@ -73,14 +73,15 @@ public static ObjectStreamClass lookup(Class cl) {
 			method |= ObjectStreamConstants.SC_WRRD_METHODS;
 //System.out.println(" has read/write");
                 }
-		osc = factory.newObjectStreamClass(cl, method);
 //System.out.println(" is serializable");
         }
-        else {
+	else {
 //System.out.println("Cannot be serialized");
 		// Cannot be serialized
+		return (null);
         }
 
+	osc = factory.newObjectStreamClass(cl, method);
 	streamClasses.put(cl, osc);
 
 	return (osc);
