@@ -13,7 +13,7 @@
 #include <native.h>
 #include <math.h>
 #include "config-math.h"
-#include "Math.h"
+#include "../../../libraries/clib/native/Math.h"
 
 double
 java_lang_Math_sin(double v)
