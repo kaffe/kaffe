@@ -567,6 +567,7 @@ jthread_createfirst(size_t mainThreadStackSize, UNUSED unsigned char pri, void* 
   nt->func   = NULL;
   nt->next   = NULL;
   nt->daemon = false;
+  pthread_mutex_init(&nt->suspendLock, NULL);
 
   /* Get stack boundaries. Note that this is just an approximation
    * which should cover all gc-relevant stack locations

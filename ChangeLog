@@ -1,3 +1,8 @@
+2004-11-12  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthread_createfirst): Initialize suspendLock.
+
 2004-11-11  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* configure, config/config.h.in: Regenerated.
