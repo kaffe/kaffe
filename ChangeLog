@@ -1,3 +1,14 @@
+2001-05-14  Edouard G. Parmelan  <egp@free.fr>
+
+	* configure.in: add definition of NO_SHARED_VMLIBRARY as does in
+	TVT sources.
+
+	* config/arm/trampolines.c: comment out NO_SHARED_VMLIBRARY test
+	as in TVT sources.  Close PR#794, PR#795.
+	Tested by Sanjay Tiwari <sjtiwari@mail.usa.com>.
+
+	* config/config.h.in, configure: regen.
+
 2001-05-07  Edouard G. Parmelan  <egp@free.fr>
 
 	* libraries/javalib/java/util/zip/ZipOutputStream.java: STORED and
