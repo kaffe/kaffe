@@ -51,6 +51,7 @@ JAR=BOOTCLASSPATH=$(BOOTCLASSPATH) KAFFELIBRARYPATH=$(KAFFELIBRARYPATH) $(JAVA) 
 jrelib_DATA = \
 	rt.jar \
 	logging.properties
+
 toolslib_DATA = kjc.jar
 
 Klasses_jar_SRCS = \
@@ -4695,6 +4696,9 @@ gnu_getopt_message_bundles = \
 	gnu/getopt/MessagesBundle_hu.properties \
        	gnu/getopt/MessagesBundle.properties
 
+classpath_resources = \
+	java/util/iso4217.properties
+
 EXTRA_DIST = \
 	Makefile.am.in \
 	Klasses.jar.bootstrap \
@@ -4759,12 +4763,15 @@ JAR_CMD2 = (cd $(LIBDIR) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(SRCDIRS))
 JAR_CMD3 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_regexp_message_bundles))
 JAR_CMD4 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(serialized_converters))
 JAR_CMD5 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_getopt_message_bundles))
+JAR_CMD6 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(classpath_resources))
+
 else
 JAR_CMD1 = $(JAR) -cf $@.new -C $(LIBDIR) $(SRCDIRS)
 JAR_CMD2 = $(JAR) -uf $@.new -C $(srcdir) META-INF/
 JAR_CMD3 = $(JAR) -uf $@.new -C $(srcdir) $(gnu_regexp_message_bundles)
 JAR_CMD4 = $(JAR) -uf $@.new -C $(srcdir) $(serialized_converters)
 JAR_CMD5 = $(JAR) -uf $@.new -C $(srcdir) $(gnu_getopt_message_bundles)
+JAR_CMD6 = $(JAR) -uf $@.new -C $(srcdir) $(classpath_resources)
 endif
 
 .PHONY: jar-classes
@@ -4781,6 +4788,7 @@ rt.jar: $(LIBDIR)/stamp $(Klasses_jar_SRCS)
 	$(JAR_CMD3)
 	$(JAR_CMD4)
 	$(JAR_CMD5)
+	$(JAR_CMD6)
 	mv $@.new $@
 endif
 

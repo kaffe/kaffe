@@ -38,6 +38,7 @@ exception statement from your version. */
 package java.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.Properties;
@@ -115,7 +116,8 @@ public final class Currency
     /* Try and load the properties from our iso4217.properties resource */
     try 
       {
-        properties.load(Currency.class.getResourceAsStream("iso4217.properties"));
+	InputStream propertyStream = Currency.class.getResourceAsStream("iso4217.properties");
+        properties.load(propertyStream);
       }
     catch (IOException exception)
       {

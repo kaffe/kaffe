@@ -370,8 +370,13 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-AM_CPPFLAGS = -I../kaffevm -I$(srcdir)/../kaffevm -DKAFFEH \
-	      -I$(top_builddir)/include -I$(top_srcdir)/kaffe/kaffevm/jni
+AM_CPPFLAGS = \
+	-I../kaffevm \
+	-I$(srcdir)/../kaffevm \
+	-DKAFFEH \
+	-I$(top_builddir)/include \
+	-I$(top_builddir)/config \
+	-I$(top_srcdir)/kaffe/kaffevm/jni
 
 GEN_SRCS = \
 	constants.c \

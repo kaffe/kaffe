@@ -5309,6 +5309,9 @@ gnu_getopt_message_bundles = \
 	gnu/getopt/MessagesBundle_hu.properties \
        	gnu/getopt/MessagesBundle.properties
 
+classpath_resources = \
+	java/util/iso4217.properties
+
 EXTRA_DIST = \
 	Makefile.am.in \
 	Klasses.jar.bootstrap \
@@ -5339,6 +5342,8 @@ rebuildLib = ./rebuildLib
 @HAVE_ZIP_TRUE@JAR_CMD4 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(serialized_converters))
 @HAVE_ZIP_FALSE@JAR_CMD5 = $(JAR) -uf $@.new -C $(srcdir) $(gnu_getopt_message_bundles)
 @HAVE_ZIP_TRUE@JAR_CMD5 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gnu_getopt_message_bundles))
+@HAVE_ZIP_FALSE@JAR_CMD6 = $(JAR) -uf $@.new -C $(srcdir) $(classpath_resources)
+@HAVE_ZIP_TRUE@JAR_CMD6 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(classpath_resources))
 all: all-recursive
 
 .SUFFIXES:
@@ -5727,6 +5732,7 @@ $(srcdir)/Klasses.jar.bootstrap: bootstrap.classlist
 @USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD3)
 @USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD4)
 @USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD5)
+@USE_PRECOMPILED_RT_JAR_FALSE@	$(JAR_CMD6)
 @USE_PRECOMPILED_RT_JAR_FALSE@	mv $@.new $@
 
 .PHONY: build-classes Klasses
