@@ -48,9 +48,16 @@
 
 #undef	__NORETURN__
 #if defined(__GNUC__)
-#define	__NORETURN__ __attribute__((noreturn))
+#define	__NORETURN__ __attribute__((__noreturn__))
 #else
 #define	__NORETURN__
+#endif
+
+#undef	__UNUSED__
+#if defined(__GNUC__)
+#define	__UNUSED__ __attribute__((__unused__))
+#else
+#define	__UNUSED__
 #endif
 
 /* SunOS has on_exit only */
