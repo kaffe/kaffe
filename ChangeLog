@@ -1,12 +1,20 @@
-Thu Apr  6 10:59:39 PDT 2000  Mo DeJong <mdejong@cygnus.com>
-
-	* test/regression/Str.java: add more exhaustive StringBuffer tests
-
 Thu Apr  6 10:59:38 PDT 2000  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/lang/StringBuffer.java,
 	libraries/javalib/java/lang/String.java: fix more bugs and
 	add missing methods
+	* libraries/javalib/java/util/AbstractCollection.java: implement
+	removeAll() per the spec'd algorithm
+	* libraries/javalib/java/util/AbstractSet.java: implement
+	missing removeAll() method
+	* libraries/javalib/java/util/AbstractMap.java,
+	libraries/javalib/java/util/HashMap.java,
+	libraries/javalib/java/util/TreeMap.java: don't implement clone()
+	in AbstractMap in order to present the same API as JDK
+
+Thu Apr  6 10:59:37 PDT 2000  Mo DeJong <mdejong@cygnus.com>
+
+	* test/regression/Str.java: add more exhaustive StringBuffer tests
 
 Wed Apr  5 10:02:29 PDT 2000  Archie Cobbs <archie@whistle.com>
 
