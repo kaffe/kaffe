@@ -1642,7 +1642,7 @@ EOF
 	    $show "(cd $xdir && $AR x ../$xlib)"
 	    $run eval "(cd \$xdir && $AR x ../\$xlib)" || exit $?
 
-	    libobjs="$libobjs `find $xdir -name \*.o -print -o -name \*.lo -print`"
+	    libobjs="$libobjs "`find $xdir -name \*.o -print -o -name \*.lo -print`
 	  done
 	fi
 
