@@ -1768,6 +1768,8 @@ AC_CONFIG_FILES([test/regression/Makefile])
 AC_CONFIG_FILES([test/regression/TestScript])
 AC_CONFIG_FILES([test/regression/compile_time/Makefile])
 AC_CONFIG_FILES([test/regression/compile_time/CompileScript])
+AC_CONFIG_FILES([test/regression/compiler/Makefile])
+AC_CONFIG_FILES([test/regression/compiler/CompileScript])
 AC_CONFIG_FILES([test/regression/run_time/Makefile])
 AC_CONFIG_FILES([test/regression/run_time/CompileScript])
 

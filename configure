@@ -52754,6 +52754,10 @@ subdirs="$subdirs libltdl"
 
           ac_config_files="$ac_config_files test/regression/compile_time/CompileScript"
 
+          ac_config_files="$ac_config_files test/regression/compiler/Makefile"
+
+          ac_config_files="$ac_config_files test/regression/compiler/CompileScript"
+
           ac_config_files="$ac_config_files test/regression/run_time/Makefile"
 
           ac_config_files="$ac_config_files test/regression/run_time/CompileScript"
@@ -53546,6 +53550,8 @@ do
   "test/regression/TestScript" ) CONFIG_FILES="$CONFIG_FILES test/regression/TestScript" ;;
   "test/regression/compile_time/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/regression/compile_time/Makefile" ;;
   "test/regression/compile_time/CompileScript" ) CONFIG_FILES="$CONFIG_FILES test/regression/compile_time/CompileScript" ;;
+  "test/regression/compiler/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/regression/compiler/Makefile" ;;
+  "test/regression/compiler/CompileScript" ) CONFIG_FILES="$CONFIG_FILES test/regression/compiler/CompileScript" ;;
   "test/regression/run_time/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/regression/run_time/Makefile" ;;
   "test/regression/run_time/CompileScript" ) CONFIG_FILES="$CONFIG_FILES test/regression/run_time/CompileScript" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;

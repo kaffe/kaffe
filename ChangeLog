@@ -1,3 +1,33 @@
+2004-01-28  Dalibor Topic <robilad@kaffe.org>
+
+        * configure.in:
+	(AC_OUTPUT) Added new files test/regression/compiler/.
+
+        * test/regression/Makefile.am:
+	(SUBDIRS) Added compiler.
+
+        * test/regression/compile_time/Makefile.am:
+	Removed VarInit and VarInit2.
+
+        * test/regression/compile_time/VarInit.java,
+        test/regression/compile_time/VarInit2.java:
+	Removed.
+
+        * test/regression/compiler/Makefile.am,
+        test/regression/compiler/CompileScript.in,
+        test/regression/compiler/VarInit.java,
+        test/regression/compiler/VarInit2.java:
+	New files.
+	
+	* Makefile.in,
+        configure,
+        libltdl/configure,
+        libltdl/mkinstalldirs,
+        test/regression/Makefile.in,
+        test/regression/compile_time/Makefile.in,
+        test/regression/compiler/Makefile.in:
+	Regenerated.
+
 2004-01-27  Dalibor Topic <robilad@kaffe.org>
 
 	* developers/patch-libtool-amiga-max-command-line-length.diff,

@@ -16,15 +16,12 @@
 
 # Compile time class files.
 #
-# Copyright (c) 2002, 2003 University of Utah and the Flux Group.
-# All rights reserved.
+# Copyright (c) 2004
+#      Kaffe.org contributors. See ChangeLogs for details. All rights reserved.
 #
 # This file is licensed under the terms of the GNU Public License.
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
-#
-# Contributed by the Flux Research Group, Department of Computer Science,
-# University of Utah, http://www.cs.utah.edu/flux/
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -46,7 +43,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
-subdir = test/regression/compile_time
+subdir = test/regression/compiler
 DIST_COMMON = $(srcdir)/CompileScript.in $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -325,32 +322,14 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 CLASS_FILES = \
-	ClassToInterface.class \
-	DefinedToAbstract.class \
-	DefinedToUndefined.class \
-	InterfaceToClass.class \
-	IntToFloat.class \
-	InstToStatic.class \
-	a/ProtectedToPrivate.class \
-	a/PublicToPackage.class \
-	a/PublicToProtected.class \
-	PublicToPrivate.class \
-	StaticToInst.class
+	VarInit.class \
+	VarInit2.class
 
 SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 CLEANFILES = $(CLASS_FILES)
 EXTRA_DIST = \
-	ClassToInterface.java \
-	DefinedToAbstract.java \
-	DefinedToUndefined.java \
-	InterfaceToClass.java \
-	IntToFloat.java \
-	InstToStatic.java \
-	a/ProtectedToPrivate.java \
-	a/PublicToPackage.java \
-	a/PublicToProtected.java \
-	PublicToPrivate.java \
-	StaticToInst.java
+	VarInit.java \
+	VarInit2.java
 
 all: all-am
 
@@ -364,9 +343,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  test/regression/compile_time/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  test/regression/compiler/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  test/regression/compile_time/Makefile
+	  $(AUTOMAKE) --gnu  test/regression/compiler/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -404,7 +383,6 @@ CTAGS:
 
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/a
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -517,42 +495,10 @@ uninstall-am: uninstall-info-am
 	uninstall-info-am
 
 
-ClassToInterface.class: ClassToInterface.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/ClassToInterface.java
+VarInit.class VarInit2.class: VarInit.java VarInit2.java
+	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/VarInit.java $(srcdir)/VarInit2.java
 
-DefinedToAbstract.class: DefinedToAbstract.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/DefinedToAbstract.java
-
-DefinedToUndefined.class: DefinedToUndefined.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/DefinedToUndefined.java
-
-InterfaceToClass.class: InterfaceToClass.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/InterfaceToClass.java
-
-IntToFloat.class: IntToFloat.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/IntToFloat.java
-
-InstToStatic.class: InstToStatic.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/InstToStatic.java
-
-a/ProtectedToPrivate.class: a/ProtectedToPrivate.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/a/ProtectedToPrivate.java
-
-a/PublicToPackage.class: a/PublicToPackage.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/a/PublicToPackage.java
-
-a/PublicToProtected.class: a/PublicToProtected.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/a/PublicToProtected.java
-
-PublicToPrivate.class: PublicToPrivate.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/PublicToPrivate.java
-
-StaticToInst.class: StaticToInst.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/StaticToInst.java
-
-all-am: CompileScript $(CLASS_FILES)
-
-check-am: all-am
+check-am: CompileScript $(CLASS_FILES)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
