@@ -17,6 +17,7 @@
 #include "../../../kaffe/kaffevm/object.h"
 #include "../../../kaffe/kaffevm/constants.h"
 #include "../../../kaffe/kaffevm/access.h"
+#include "../../../kaffe/kaffevm/soft.h"
 #include <native.h>
 
 /*
@@ -65,7 +66,6 @@ java_lang_Object_clone(struct Hjava_lang_Object* o)
 	Hjava_lang_Object* obj;
 	Hjava_lang_Class* class;
 	static Hjava_lang_Class* cloneClass;
-	int i;
 
 	/* * Lookup cloneable class interface if we don't have it  */
 	if (cloneClass == 0) {
