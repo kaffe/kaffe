@@ -15,6 +15,12 @@
 #include "../../../kaffe/kaffevm/itypes.h"
 #include <native.h>
 
+void
+java_math_BigInteger_plumbInit(void)
+{
+	/* No init needed */
+}
+
 #if defined(HAVE_LIBGMP)
 
 #include <gmp.h>
@@ -56,12 +62,6 @@ mpz2bytes(HArrayOfByte** outp, MP_INT* val)
 	mpz_clear(&rem);
 
 	(*outp) = out;
-}
-
-void
-java_math_BigInteger_plumbInit(void)
-{
-	/* No init needed */
 }
 
 HArrayOfByte*
@@ -306,6 +306,58 @@ java_math_BigInteger_plumbModPow(HArrayOfByte* src1, HArrayOfByte* src2, HArrayO
 	return (result);
 }
 
+#else
+
+HArrayOfByte*
+java_math_BigInteger_plumbAdd(HArrayOfByte* src1, HArrayOfByte* src2)
+{
+	unimp("bigint");
+}
+
+struct Hjava_math_BigInteger*
+java_math_BigInteger_plumbSubtract(HArrayOfByte* src1, HArrayOfByte* src2)
+{
+	unimp("bigint");
+}
+
+HArrayOfByte*
+java_math_BigInteger_plumbMultiply(HArrayOfByte* src1, HArrayOfByte* src2)
+{
+	unimp("bigint");
+}
+
+HArrayOfByte*
+java_math_BigInteger_plumbDivide(HArrayOfByte* src1, HArrayOfByte* src2)
+{
+	unimp("bigint");
+}
+
+HArrayOfByte*
+java_math_BigInteger_plumbRemainder(HArrayOfByte* src1, HArrayOfByte* src2)
+{
+	unimp("bigint");
+}
+
+HArrayOfArray*
+java_math_BigInteger_plumbDivideAndRemainder(HArrayOfByte* src1, HArrayOfByte* src2)
+{
+	unimp("bigint");
+}
+
+HArrayOfByte*
+java_math_BigInteger_plumbGcd(HArrayOfByte* src1, HArrayOfByte* src2)
+{
+	unimp("bigint");
+}
+
+HArrayOfByte*
+java_math_BigInteger_plumbModPow(HArrayOfByte* src1, HArrayOfByte* src2, HArrayOfByte* src3)
+{
+	unimp("bigint");
+}
+
+#endif
+
 HArrayOfByte*
 java_math_BigInteger_plumbModInverse(HArrayOfByte* src1, HArrayOfByte* src2)
 {
@@ -323,5 +375,3 @@ java_math_BigInteger_plumbGeneratePrime(HArrayOfByte* src)
 {
 	unimp("bigint");
 }
-
-#endif
