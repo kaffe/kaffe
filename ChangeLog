@@ -1,5 +1,10 @@
 2003-08-12  Rob Gonzalez <rob@kaffe.org>
 
+	* kaffe/kaffevm/verify.c
+	TYPE_LONG change to TYPE_Long.  Ooops!
+	
+2003-08-12  Rob Gonzalez <rob@kaffe.org>
+
 	* kaffe/kaffevm/verify.h
 	* kaffe/kaffevm/verify.c
 	(Type.type) change to a union Type.data.

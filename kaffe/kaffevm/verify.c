@@ -2891,7 +2891,7 @@ verifyBasicBlock(errorInfo* einfo,
 			case TYPE_Byte:    OPSTACK_PUSH(TBYTEARR);   break;
 			case TYPE_Short:   OPSTACK_PUSH(TSHORTARR);  break;
 			case TYPE_Int:     OPSTACK_PUSH(TINTARR);    break;
-			case TYPE_LONG:    OPSTACK_PUSH(TLONGARR);   break;
+			case TYPE_Long:    OPSTACK_PUSH(TLONGARR);   break;
 			default: VERIFY_ERROR("newarray of unknown type");
 			}
 			break;
