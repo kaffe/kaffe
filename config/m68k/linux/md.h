@@ -12,6 +12,7 @@
 #ifndef __m68k_linux_md_h
 #define __m68k_linux_md_h
 
+#include "m68k/common.h"
 #include "m68k/threads.h"
 
 #if defined(TRANSLATOR)

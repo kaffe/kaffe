@@ -1,3 +1,8 @@
+Wed May 27 12:39:02 PDT 1998	Rémi Perrot <remi.perrot@mail.dotcom.fr>
+
+	* config/m68k/common.h, config/m68k/linux/md.h: Fixed configuation
+	  so now works on Linux.
+
 Tue May 26 17:03:18 PDT 1998	Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/libraries/clib/native/Method.c

@@ -46,8 +46,12 @@
 #define SP_OFFSET               2
 #define HAVE_SYS_FILIO_H 1
 
-#elif defined(__linux__)
-/* Linux */
+#elif defined(__linux__) && defined(mc68000)
+
+#define SP_OFFSET		14
+
+#elif defined(__linux__) && defined(i386)
+
 #define SP_OFFSET		4
 
 #elif defined(__svr4__) && defined(__sparc__)
