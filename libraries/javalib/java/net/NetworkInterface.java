@@ -1,5 +1,5 @@
 /* NetworkInterface.java --
-   Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003, 2004  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -90,14 +90,14 @@ public final class NetworkInterface
   }
 
   /**
-   *  Returns all available addresses of the network interface
+   * Returns all available addresses of the network interface
    *
-   *  If a @see SecurityManager is available all addresses are checked
-   *  with @see SecurityManager::checkConnect() if they are available.
-   *  Only <code>InetAddresses</code> are returned where the security manager
-   *  doesn't throw an exception.
+   * If a @see SecurityManager is available all addresses are checked
+   * with @see SecurityManager::checkConnect() if they are available.
+   * Only <code>InetAddresses</code> are returned where the security manager
+   * doesn't throw an exception.
    *
-   *  @return An enumeration of all addresses.
+   * @return An enumeration of all addresses.
    */
   public Enumeration getInetAddresses()
   {
@@ -127,9 +127,9 @@ public final class NetworkInterface
   }
 
   /**
-   *  Returns the display name of the interface
+   * Returns the display name of the interface
    *
-   *  @return The display name of the interface
+   * @return The display name of the interface
    */
   public String getDisplayName()
   {
@@ -163,12 +163,14 @@ public final class NetworkInterface
   }
 
   /**
-   *  Return a network interface by its address
+   * Return a network interface by its address
    *
-   *  @param addr The address of the interface to return
+   * @param addr The address of the interface to return
    *
-   *  @exception SocketException If an error occurs
-   *  @exception NullPointerException If the specified addess is null
+   * @return the interface, or <code>null</code> if none found
+   *
+   * @exception SocketException If an error occurs
+   * @exception NullPointerException If the specified addess is null
    */
   public static NetworkInterface getByInetAddress(InetAddress addr)
     throws SocketException
@@ -225,9 +227,11 @@ public final class NetworkInterface
   }
 
   /**
-   *  Return an <code>Enumeration</code> of all available network interfaces
+   * Return an <code>Enumeration</code> of all available network interfaces
    *
-   *  @exception SocketException If an error occurs
+   * @return all interfaces
+   * 
+   * @exception SocketException If an error occurs
    */
   public static Enumeration getNetworkInterfaces() throws SocketException
   {
@@ -242,9 +246,11 @@ public final class NetworkInterface
   }
 
   /**
-   *  Checks if the current instance is equal to obj
+   * Checks if the current instance is equal to obj
    *
-   *  @param obj The object to compare with
+   * @param obj The object to compare with
+   *
+   * @return <code>true</code> if equal, <code>false<code> otherwise
    */
   public boolean equals(Object obj)
   {
@@ -257,7 +263,9 @@ public final class NetworkInterface
   }
 
   /**
-   *  Returns the hashcode of the current instance
+   * Returns the hashcode of the current instance
+   *
+   * @return the hashcode
    */
   public int hashCode()
   {
@@ -266,7 +274,9 @@ public final class NetworkInterface
   }
 
   /**
-   *  Returns a string representation of the interface
+   * Returns a string representation of the interface
+   *
+   * @return the string
    */
   public String toString()
   {
@@ -286,4 +296,4 @@ public final class NetworkInterface
 
     return result;
   }
-} // class NetworkInterface
+}

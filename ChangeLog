@@ -1,5 +1,51 @@
 2004-11-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/io/BufferedReader.java,
+	libraries/javalib/java/io/FileInputStream.java,
+	libraries/javalib/java/io/FileOutputStream.java,
+	libraries/javalib/java/io/FileWriter.java,
+	libraries/javalib/java/io/OutputStreamWriter.java,
+	libraries/javalib/java/io/PipedInputStream.java,
+	libraries/javalib/java/io/PipedOutputStream.java,
+	libraries/javalib/java/io/PipedReader.java,
+	libraries/javalib/java/io/PipedWriter.java,
+	libraries/javalib/java/io/PrintStream.java,
+	libraries/javalib/java/io/PushbackInputStream.java,
+	libraries/javalib/java/io/RandomAccessFile.java,
+	libraries/javalib/java/io/Reader.java,
+	libraries/javalib/java/io/StreamTokenizer.java,
+	libraries/javalib/java/io/StringReader.java,
+	libraries/javalib/java/net/NetworkInterface.java,
+	libraries/javalib/java/net/URLClassLoader.java,
+	libraries/javalib/java/nio/ByteOrder.java,
+	libraries/javalib/java/nio/channels/Channel.java:
+	Resynced with GNU Classpath.
+
+	2004-11-16  Michael Koch  <konqueror@gmx.de>
+
+        * java/io/BufferedReader.java,
+        java/io/FileInputStream.java,
+        java/io/FileOutputStream.java,
+        java/io/FileWriter.java,
+        java/io/OutputStreamWriter.java,
+        java/io/PipedInputStream.java,
+        java/io/PipedOutputStream.java,
+        java/io/PipedReader.java,
+        java/io/PipedWriter.java,
+        java/io/PrintStream.java,
+        java/io/PushbackInputStream.java,
+        java/io/RandomAccessFile.java,
+        java/io/Reader.java,
+        java/io/StreamTokenizer.java,
+        java/io/StringReader.java,
+        java/net/NetworkInterface.java,
+        java/net/URLClassLoader.java,
+        java/nio/ByteOrder.java,
+        java/nio/channels/Channel.java:
+        Fixed javadocs all over.
+
+2004-11-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/color/ICC_ColorSpace.java,
 	libraries/javalib/java/awt/color/ICC_Profile.java,
 	libraries/javalib/java/awt/color/ICC_ProfileGray.java,
