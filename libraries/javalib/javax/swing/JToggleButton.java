@@ -62,7 +62,6 @@ import javax.swing.plaf.ButtonUI;
  */
 public class JToggleButton extends AbstractButton implements Accessible
 {
-  
   /**
    * This class provides accessibility support for the toggle button.
    */
