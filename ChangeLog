@@ -1,3 +1,8 @@
+2003-10-19  Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/gnu/xml/aelfred2/SAXDriver.java:
+	Reverted because the 2003-10-18 change was unreasonable.
+
 2003-10-18  Ito Kazumitsu <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/gnu/xml/aelfred2/SAXDriver.java:
