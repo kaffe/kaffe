@@ -92,7 +92,7 @@ java_net_PlainSocketImpl_socketConnect(struct Hjava_net_PlainSocketImpl* this, s
 	addr.sin_addr.s_addr = htonl(unhand(daddr)->address);
 
 	fd = unhand(unhand(this)->fd)->fd;
-	r = KCONNECT(fd, (struct sockaddr*)&addr, sizeof(addr));
+	r = KCONNECT(fd, (struct sockaddr*)&addr, sizeof(addr), unhand(this)->timeout);
 	if (r) {
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}

@@ -1900,7 +1900,7 @@ jthreadedOpen(const char* path, int flags, int mode, int *out)
  * Threaded socket connect.
  */
 int
-jthreadedConnect(int fd, struct sockaddr* addr, size_t len)
+jthreadedConnect(int fd, struct sockaddr* addr, size_t len, int timeout)
 {
 	int r;
 	int haveBlocked = 0;
@@ -1932,7 +1932,7 @@ jthreadedConnect(int fd, struct sockaddr* addr, size_t len)
 			break;
 		}
 
-		blockOnFile(fd, TH_CONNECT, NOTIMEOUT);
+		blockOnFile(fd, TH_CONNECT, timeout);
 		haveBlocked++;
 	}
 	if (r == -1) {

@@ -41,7 +41,7 @@ typedef struct SystemCallInterface {
 	int	(*_remove)(const char*);
 
 	int	(*_socket)(int, int, int, int*);
-	int	(*_connect)(int, struct sockaddr*, size_t);
+	int	(*_connect)(int, struct sockaddr*, size_t, int timeout);
 	int	(*_bind)(int, struct sockaddr*, size_t);
 	int	(*_listen)(int, int);
 	int	(*_accept)(int, struct sockaddr*, size_t *, int timeout, int*);
@@ -88,7 +88,8 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
 
 #define	KSOCKET(A,B,C,D) \
 			(*Kaffe_SystemCallInterface._socket)(A,B,C,D)
-#define	KCONNECT(A,B,C)	(*Kaffe_SystemCallInterface._connect)(A,B,C)
+#define	KCONNECT(A,B,C,D) \
+			(*Kaffe_SystemCallInterface._connect)(A,B,C,D)
 #define	KBIND(A,B,C)	(*Kaffe_SystemCallInterface._bind)(A,B,C)
 #define	KLISTEN(A,B)	(*Kaffe_SystemCallInterface._listen)(A,B)
 #define	KACCEPT(A,B,C,D,E) \
