@@ -172,6 +172,11 @@ public void finish() throws IOException
 		size += CEN_RECSZ + ze.name.length();
 	}
 
+	// Flag error if no entries were written.
+	if (count == 0) {
+	        throw new ZipException("ZIP file must have at least one entry");
+	}
+
 	put32(ce, END_SIGNATURE, (int)END_ENDSIG);
 	put16(ce, END_DISKNUMBER, 0);
 	put16(ce, END_CENDISKNUMBER, 0);
@@ -218,8 +223,8 @@ public void putNextEntry(ZipEntry ze) throws IOException
 	put16(lh, LOC_METHOD, ze.method);
 	put16(lh, LOC_TIME, 0);
 	put16(lh, LOC_DATE, 0);
-	put32(lh, LOC_CRC, (int)ze.crc);
 
+	put32(lh, LOC_CRC, (ze.crc == -1) ? 0 : (int)ze.crc);
 	put32(lh, LOC_COMPRESSEDSIZE, ze.csize == -1 ? 0 : (int)ze.csize);
 	put32(lh, LOC_UNCOMPRESSEDSIZE, ze.size == -1 ? 0 : (int)ze.size);
 

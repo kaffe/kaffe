@@ -124,12 +124,12 @@ public class ZipEntry implements ZipConstants {
     return (method);
   }
 
-  public void setExtra(byte xtra[])
+  public void setExtra(byte extra[])
   {
-    if (xtra.length > 0xFFFFF) {
+    if ((extra != null) && (extra.length > 0xFFFFF)) {
       throw new IllegalArgumentException("extra length > 0xFFFFF");
     }
-    extra = xtra;
+    this.extra = extra;
   }
 
   public byte[] getExtra()
@@ -137,12 +137,12 @@ public class ZipEntry implements ZipConstants {
     return (extra);
   }
 
-  public void setComment(String commnt)
+  public void setComment(String comment)
   {
-    if (commnt.length() > 0xFFFF) {
+    if ((comment != null) && (comment.length() > 0xFFFF)) {
       throw new IllegalArgumentException("comment length > 0xFFFF");
     }
-    comment = commnt;
+    this.comment = comment;
   }
 
   public String getComment()
