@@ -7,6 +7,8 @@ Mon Feb 22 20:42:16 PST 1999  Tim Wilkinson <tim@transvirtual.com>
 
 	* config/i386/jit-i386.def: fix stack corruption problem when
 	signal happened at just the wrong moment.
+	* kaffe/kaffevm/kaffe.def: fix LOOKUPSWITCH when there is
+	only a default case
 
 Mon Feb 22 09:38:44 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
