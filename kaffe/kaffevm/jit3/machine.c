@@ -94,7 +94,7 @@ void softcall_fakecall (label* from,label* to, void* func);
 /* Codeblock redzone - allows for safe overrun when generating instructions */
 #define	CODEBLOCKREDZONE	256
 
-int codeblock_size;
+static uint codeblock_size;
 static int code_generated;
 static int bytecode_processed;
 static int codeperbytecode;
@@ -113,7 +113,7 @@ static jboolean generateInsnSequence(errorInfo*);
  * @param meth The method that may contain an exception handler.
  * @param pc The location within the method to look for a handler.
  */
-static void checkCaughtExceptions(Method* meth, int pc);
+static void checkCaughtExceptions(Method* meth, uint32 pc);
 
 static void initFakeCalls(void);
 static void makeFakeCalls(void);
@@ -820,9 +820,9 @@ SCHK(		sanityCheck();					);
  */
 static
 void 
-checkCaughtExceptions(Method* meth, int pc)
+checkCaughtExceptions(Method* meth, uint32 pc)
 {
-	int i;
+	unsigned int i;
 
 	willcatch.ANY = false;
 	willcatch.BADARRAYINDEX = false;

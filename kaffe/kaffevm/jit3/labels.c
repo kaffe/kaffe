@@ -4,6 +4,9 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2004
+ *	Kaffe.org contributors. See ChangeLog for details.  All rights reserved.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -161,7 +164,7 @@ linkLabels(uintp codebase)
 			dest = 0;
 			break;
 		default:
-			goto unhandled;
+		        return;
 		}
 
 		/*
@@ -178,7 +181,7 @@ linkLabels(uintp codebase)
 			dest -= codebase;
 			break;
 		default:
-			goto unhandled;
+		        return;
 		}
 
 		/* Get the insertion point. */
@@ -209,28 +212,7 @@ linkLabels(uintp codebase)
 		/* Machine specific labels go in this magic macro */
 			EXTRA_LABELS(place, dest, l);
 
-		unhandled:
-#if 0
-		default:
-#if defined(KAFFE_VMDEBUG)
-			kprintf("Label type 0x%x not supported (%p).\n", l->type & Ltypemask, l);
-#endif
-			ABORT();
-#endif
 		}
-#if 0
-		/*
-		 * If we were saving relocation information we must save all
-		 * labels which are 'Labsolute', that is they hold an absolute
-		 * address for something.  Note that this doesn't catch
-		 * everything, specifically it doesn't catch string objects
-		 * or references to classes.
-		 */
-		if ((l->type & Labsolute) != 0) {
-			l->snext = savedLabel;
-			savedLabel = l;
-		}
-#endif
 	}
 }
 

@@ -1,3 +1,18 @@
+2004-01-23  Dalibor Topic <robilad@kaffe.org>
+
+	* kaffe/kaffevm/jit3/labels.c:
+	(linkLabels) Removed unused code. Fixed gcc 3.3.2 
+	warning.
+
+	* kaffe/kaffevm/jit3/machine.c
+	(codeblock_size): Made unsigned to fix gcc warning.
+	Changed scope to static since it's not used outside
+	of machine.c.
+	(checkCaughtExceptions): Changed type of i to 
+	unsigned int to fix compiler warning. Changed type
+	of parameter pc to unit32 to match declaration of
+	pc to fix compiler warnings.
+	
 2004-01-22  Christophe Dubach <christophe.dubach@epfl.ch>
 
 	* kaffe/kaffevm/jni.c
