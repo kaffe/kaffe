@@ -1,4 +1,4 @@
-/* DomHTMLButtonElement.java -- 
+/* DomHTMLHRElement.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,84 +37,62 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.html2.HTMLButtonElement;
-import org.w3c.dom.html2.HTMLFormElement;
+import org.w3c.dom.html2.HTMLHRElement;
 
 /**
- * An HTML 'BUTTON' element node.
+ * An HTML 'HR' element node.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomHTMLButtonElement
+public class DomHTMLHRElement
   extends DomHTMLElement
-  implements HTMLButtonElement
+  implements HTMLHRElement
 {
 
-  protected DomHTMLButtonElement(DomHTMLDocument owner, String namespaceURI,
-                                 String name)
+  protected DomHTMLHRElement(DomHTMLDocument owner, String namespaceURI,
+                             String name)
   {
     super(owner, namespaceURI, name);
   }
 
-  public HTMLFormElement getForm()
+  public String getAlign()
   {
-    return (HTMLFormElement) getParentElement("form");
+    return getHTMLAttribute("align");
   }
 
-  public String getAccessKey()
+  public void setAlign(String align)
   {
-    return getHTMLAttribute("accesskey");
-  }
-
-  public void setAccessKey(String accessKey)
-  {
-    setHTMLAttribute("accesskey", accessKey);
+    setHTMLAttribute("align", align);
   }
   
-  public boolean getDisabled()
+  public boolean getNoShade()
   {
-    return getBooleanHTMLAttribute("disabled");
+    return getBooleanHTMLAttribute("noshade");
   }
 
-  public void setDisabled(boolean disabled)
+  public void setNoShade(boolean noShade)
   {
-    setBooleanHTMLAttribute("disabled", disabled);
+    setBooleanHTMLAttribute("noshade", noShade);
   }
   
-  public String getName()
+  public String getSize()
   {
-    return getHTMLAttribute("name");
+    return getHTMLAttribute("size");
   }
 
-  public void setName(String name)
+  public void setSize(String size)
   {
-    setHTMLAttribute("name", name);
+    setHTMLAttribute("size", size);
   }
   
-  public int getTabIndex()
+  public String getWidth()
   {
-    return getIntHTMLAttribute("tabindex");
+    return getHTMLAttribute("width");
   }
 
-  public void setTabIndex(int tabIndex)
+  public void setWidth(String width)
   {
-    setIntHTMLAttribute("tabindex", tabIndex);
-  }
-
-  public String getType()
-  {
-    return getHTMLAttribute("type");
-  }
-  
-  public String getValue()
-  {
-    return getHTMLAttribute("value");
-  }
-
-  public void setValue(String value)
-  {
-    setHTMLAttribute("value", value);
+    setHTMLAttribute("width", width);
   }
   
 }

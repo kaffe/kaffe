@@ -37,15 +37,18 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
+import gnu.xml.dom.DomDOMException;
 import gnu.xml.dom.DomElement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.html2.HTMLCollection;
+import org.w3c.dom.html2.HTMLOptionsCollection;
 import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.NodeIterator;
 
@@ -55,17 +58,19 @@ import org.w3c.dom.traversal.NodeIterator;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 class DomHTMLCollection
-  implements HTMLCollection, NodeList, NodeFilter
+  implements HTMLCollection, HTMLOptionsCollection, NodeList, NodeFilter
 {
 
   final DomHTMLDocument doc;
+  final Node root;
   List nodeNames;
   List attributeNames;
   List results;
 
-  DomHTMLCollection(DomHTMLDocument doc)
+  DomHTMLCollection(DomHTMLDocument doc, Node root)
   {
-    this.doc = doc;  
+    this.doc = doc;
+    this.root = root;
   }
 
   // -- Node name and attribute filtering --
@@ -159,7 +164,7 @@ class DomHTMLCollection
 
   void evaluate()
   {
-    NodeIterator i = doc.createNodeIterator(doc, NodeFilter.SHOW_ELEMENT,
+    NodeIterator i = doc.createNodeIterator(root, NodeFilter.SHOW_ELEMENT,
                                             this, true);
     results = new ArrayList();
     for (Node node = i.nextNode(); node != null; node = i.nextNode())
@@ -173,6 +178,11 @@ class DomHTMLCollection
   public int getLength()
   {
     return results.size();
+  }
+
+  public void setLength(int length)
+  {
+    throw new DomDOMException(DOMException.NOT_SUPPORTED_ERR);
   }
 
   public Node item(int index)

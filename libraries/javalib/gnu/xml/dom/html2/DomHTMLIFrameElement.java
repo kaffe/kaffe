@@ -1,4 +1,4 @@
-/* DomHTMLButtonElement.java -- 
+/* DomHTMLIFrameElement.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,49 +37,83 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.html2.HTMLButtonElement;
-import org.w3c.dom.html2.HTMLFormElement;
+import org.w3c.dom.Document;
+import org.w3c.dom.html2.HTMLIFrameElement;
 
 /**
- * An HTML 'BUTTON' element node.
+ * An HTML 'IFRAME' element node.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomHTMLButtonElement
+public class DomHTMLIFrameElement
   extends DomHTMLElement
-  implements HTMLButtonElement
+  implements HTMLIFrameElement
 {
 
-  protected DomHTMLButtonElement(DomHTMLDocument owner, String namespaceURI,
-                                 String name)
+  protected DomHTMLIFrameElement(DomHTMLDocument owner, String namespaceURI,
+                                String name)
   {
     super(owner, namespaceURI, name);
   }
 
-  public HTMLFormElement getForm()
+  public String getAlign()
   {
-    return (HTMLFormElement) getParentElement("form");
+    return getHTMLAttribute("align");
   }
 
-  public String getAccessKey()
+  public void setAlign(String align)
   {
-    return getHTMLAttribute("accesskey");
-  }
-
-  public void setAccessKey(String accessKey)
-  {
-    setHTMLAttribute("accesskey", accessKey);
+    setHTMLAttribute("align", align);
   }
   
-  public boolean getDisabled()
+  public String getFrameBorder()
   {
-    return getBooleanHTMLAttribute("disabled");
+    return getHTMLAttribute("frameborder");
   }
 
-  public void setDisabled(boolean disabled)
+  public void setFrameBorder(String frameBorder)
   {
-    setBooleanHTMLAttribute("disabled", disabled);
+    setHTMLAttribute("frameborder", frameBorder);
+  }
+  
+  public String getHeight()
+  {
+    return getHTMLAttribute("height");
+  }
+
+  public void setHeight(String height)
+  {
+    setHTMLAttribute("height", height);
+  }
+  
+  public String getLongDesc()
+  {
+    return getHTMLAttribute("longdesc");
+  }
+
+  public void setLongDesc(String longDesc)
+  {
+    setHTMLAttribute("longdesc", longDesc);
+  }
+  
+  public String getMarginHeight()
+  {
+    return getHTMLAttribute("marginheight");
+  }
+
+  public void setMarginHeight(String marginHeight)
+  {
+    setHTMLAttribute("marginheight", marginHeight);
+  }
+  
+  public String getMarginWidth()
+  {
+    return getHTMLAttribute("marginwidth");
+  }
+
+  public void setMarginWidth(String marginWidth)
+  {
+    setHTMLAttribute("marginwidth", marginWidth);
   }
   
   public String getName()
@@ -92,29 +126,40 @@ public class DomHTMLButtonElement
     setHTMLAttribute("name", name);
   }
   
-  public int getTabIndex()
+  public String getScrolling()
   {
-    return getIntHTMLAttribute("tabindex");
+    return getHTMLAttribute("scrolling");
   }
 
-  public void setTabIndex(int tabIndex)
+  public void setScrolling(String scrolling)
   {
-    setIntHTMLAttribute("tabindex", tabIndex);
-  }
-
-  public String getType()
-  {
-    return getHTMLAttribute("type");
+    setHTMLAttribute("scrolling", scrolling);
   }
   
-  public String getValue()
+  public String getSrc()
   {
-    return getHTMLAttribute("value");
+    return getHTMLAttribute("src");
   }
 
-  public void setValue(String value)
+  public void setSrc(String src)
   {
-    setHTMLAttribute("value", value);
+    setHTMLAttribute("src", src);
+  }
+
+  public String getWidth()
+  {
+    return getHTMLAttribute("width");
+  }
+
+  public void setWidth(String width)
+  {
+    setHTMLAttribute("width", width);
+  }
+  
+  public Document getContentDocument()
+  {
+    // TODO getContentDocument
+    return null;
   }
   
 }

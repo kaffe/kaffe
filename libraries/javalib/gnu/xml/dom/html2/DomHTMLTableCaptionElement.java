@@ -1,4 +1,4 @@
-/* DomHTMLButtonElement.java -- 
+/* DomHTMLTableCaptionElement.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,84 +37,33 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.html2.HTMLButtonElement;
-import org.w3c.dom.html2.HTMLFormElement;
+import org.w3c.dom.html2.HTMLTableCaptionElement;
 
 /**
- * An HTML 'BUTTON' element node.
+ * An HTML 'CAPTION' element node.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomHTMLButtonElement
+public class DomHTMLTableCaptionElement
   extends DomHTMLElement
-  implements HTMLButtonElement
+  implements HTMLTableCaptionElement
 {
 
-  protected DomHTMLButtonElement(DomHTMLDocument owner, String namespaceURI,
-                                 String name)
+  protected DomHTMLTableCaptionElement(DomHTMLDocument owner,
+                                       String namespaceURI,
+                                       String name)
   {
     super(owner, namespaceURI, name);
   }
 
-  public HTMLFormElement getForm()
+  public String getAlign()
   {
-    return (HTMLFormElement) getParentElement("form");
+    return getHTMLAttribute("align");
   }
 
-  public String getAccessKey()
+  public void setAlign(String align)
   {
-    return getHTMLAttribute("accesskey");
-  }
-
-  public void setAccessKey(String accessKey)
-  {
-    setHTMLAttribute("accesskey", accessKey);
-  }
-  
-  public boolean getDisabled()
-  {
-    return getBooleanHTMLAttribute("disabled");
-  }
-
-  public void setDisabled(boolean disabled)
-  {
-    setBooleanHTMLAttribute("disabled", disabled);
-  }
-  
-  public String getName()
-  {
-    return getHTMLAttribute("name");
-  }
-
-  public void setName(String name)
-  {
-    setHTMLAttribute("name", name);
-  }
-  
-  public int getTabIndex()
-  {
-    return getIntHTMLAttribute("tabindex");
-  }
-
-  public void setTabIndex(int tabIndex)
-  {
-    setIntHTMLAttribute("tabindex", tabIndex);
-  }
-
-  public String getType()
-  {
-    return getHTMLAttribute("type");
-  }
-  
-  public String getValue()
-  {
-    return getHTMLAttribute("value");
-  }
-
-  public void setValue(String value)
-  {
-    setHTMLAttribute("value", value);
+    setHTMLAttribute("align", align);
   }
   
 }

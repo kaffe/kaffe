@@ -1,4 +1,4 @@
-/* DomHTMLAnchorElement.java -- 
+/* DomHTMLFrameElement.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,72 +37,63 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
-import org.w3c.dom.html2.HTMLAnchorElement;
+import org.w3c.dom.Document;
+import org.w3c.dom.html2.HTMLFrameElement;
 
 /**
- * An HTML 'A' element node.
+ * An HTML 'FRAME' element node.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomHTMLAnchorElement
+public class DomHTMLFrameElement
   extends DomHTMLElement
-  implements HTMLAnchorElement
+  implements HTMLFrameElement
 {
 
-  protected DomHTMLAnchorElement(DomHTMLDocument owner, String namespaceURI,
-                                 String name)
+  protected DomHTMLFrameElement(DomHTMLDocument owner, String namespaceURI,
+                                String name)
   {
     super(owner, namespaceURI, name);
   }
 
-  public String getAccessKey()
+  public String getFrameBorder()
   {
-    return getHTMLAttribute("accesskey");
+    return getHTMLAttribute("frameborder");
   }
 
-  public void setAccessKey(String accessKey)
+  public void setFrameBorder(String frameBorder)
   {
-    setHTMLAttribute("accesskey", accessKey);
+    setHTMLAttribute("frameborder", frameBorder);
   }
   
-  public String getCharset()
+  public String getLongDesc()
   {
-    return getHTMLAttribute("charset");
+    return getHTMLAttribute("longdesc");
   }
 
-  public void setCharset(String charset)
+  public void setLongDesc(String longDesc)
   {
-    setHTMLAttribute("charset", charset);
+    setHTMLAttribute("longdesc", longDesc);
   }
   
-  public String getCoords()
+  public String getMarginHeight()
   {
-    return getHTMLAttribute("coords");
+    return getHTMLAttribute("marginheight");
   }
 
-  public void setCoords(String coords)
+  public void setMarginHeight(String marginHeight)
   {
-    setHTMLAttribute("coords", coords);
+    setHTMLAttribute("marginheight", marginHeight);
   }
   
-  public String getHref()
+  public String getMarginWidth()
   {
-    return getHTMLAttribute("href");
+    return getHTMLAttribute("marginwidth");
   }
 
-  public void setHref(String href)
+  public void setMarginWidth(String marginWidth)
   {
-    setHTMLAttribute("href", href);
-  }
-  
-  public String getHreflang()
-  {
-    return getHTMLAttribute("hreflang");
-  }
-
-  public void setHreflang(String hreflang)
-  {
-    setHTMLAttribute("hreflang", hreflang);
+    setHTMLAttribute("marginwidth", marginWidth);
   }
   
   public String getName()
@@ -115,74 +106,40 @@ public class DomHTMLAnchorElement
     setHTMLAttribute("name", name);
   }
   
-  public String getRel()
+  public boolean getNoResize()
   {
-    return getHTMLAttribute("rel");
+    return getBooleanHTMLAttribute("noresize");
   }
 
-  public void setRel(String rel)
+  public void setNoResize(boolean noResize)
   {
-    setHTMLAttribute("rel", rel);
+    setBooleanHTMLAttribute("noresize", noResize);
   }
   
-  public String getRev()
+  public String getScrolling()
   {
-    return getHTMLAttribute("rev");
+    return getHTMLAttribute("scrolling");
   }
 
-  public void setRev(String rev)
+  public void setScrolling(String scrolling)
   {
-    setHTMLAttribute("rev", rev);
+    setHTMLAttribute("scrolling", scrolling);
   }
   
-  public String getShape()
+  public String getSrc()
   {
-    return getHTMLAttribute("shape");
+    return getHTMLAttribute("src");
   }
 
-  public void setShape(String shape)
+  public void setSrc(String src)
   {
-    setHTMLAttribute("shape", shape);
-  }
-  
-  public int getTabIndex()
-  {
-    return getIntHTMLAttribute("tabindex");
+    setHTMLAttribute("src", src);
   }
 
-  public void setTabIndex(int tabIndex)
+  public Document getContentDocument()
   {
-    setIntHTMLAttribute("tabindex", tabIndex);
-  }
-  
-  public String getTarget()
-  {
-    return getHTMLAttribute("target");
-  }
-
-  public void setTarget(String target)
-  {
-    setHTMLAttribute("target", target);
-  }
-  
-  public String getType()
-  {
-    return getHTMLAttribute("type");
-  }
-
-  public void setType(String type)
-  {
-    setHTMLAttribute("type", type);
-  }
-
-  public void blur()
-  {
-    dispatchUIEvent("blur");
-  }
-
-  public void focus()
-  {
-    dispatchUIEvent("focus");
+    // TODO getContentDocument
+    return null;
   }
   
 }

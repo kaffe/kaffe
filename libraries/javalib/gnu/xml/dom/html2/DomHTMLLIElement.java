@@ -1,4 +1,4 @@
-/* DomHTMLButtonElement.java -- 
+/* DomHTMLLIElement.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,84 +37,42 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.html2.HTMLButtonElement;
-import org.w3c.dom.html2.HTMLFormElement;
+import org.w3c.dom.html2.HTMLLIElement;
 
 /**
- * An HTML 'BUTTON' element node.
+ * An HTML 'LI' element node.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomHTMLButtonElement
+public class DomHTMLLIElement
   extends DomHTMLElement
-  implements HTMLButtonElement
+  implements HTMLLIElement
 {
 
-  protected DomHTMLButtonElement(DomHTMLDocument owner, String namespaceURI,
-                                 String name)
+  protected DomHTMLLIElement(DomHTMLDocument owner, String namespaceURI,
+                             String name)
   {
     super(owner, namespaceURI, name);
-  }
-
-  public HTMLFormElement getForm()
-  {
-    return (HTMLFormElement) getParentElement("form");
-  }
-
-  public String getAccessKey()
-  {
-    return getHTMLAttribute("accesskey");
-  }
-
-  public void setAccessKey(String accessKey)
-  {
-    setHTMLAttribute("accesskey", accessKey);
-  }
-  
-  public boolean getDisabled()
-  {
-    return getBooleanHTMLAttribute("disabled");
-  }
-
-  public void setDisabled(boolean disabled)
-  {
-    setBooleanHTMLAttribute("disabled", disabled);
-  }
-  
-  public String getName()
-  {
-    return getHTMLAttribute("name");
-  }
-
-  public void setName(String name)
-  {
-    setHTMLAttribute("name", name);
-  }
-  
-  public int getTabIndex()
-  {
-    return getIntHTMLAttribute("tabindex");
-  }
-
-  public void setTabIndex(int tabIndex)
-  {
-    setIntHTMLAttribute("tabindex", tabIndex);
   }
 
   public String getType()
   {
     return getHTMLAttribute("type");
   }
-  
-  public String getValue()
+
+  public void setType(String type)
   {
-    return getHTMLAttribute("value");
+    setHTMLAttribute("type", type);
+  }
+  
+  public int getValue()
+  {
+    return getIntHTMLAttribute("value");
   }
 
-  public void setValue(String value)
+  public void setValue(int value)
   {
-    setHTMLAttribute("value", value);
+    setIntHTMLAttribute("value", value);
   }
   
 }

@@ -1,4 +1,4 @@
-/* DomHTMLButtonElement.java -- 
+/* DomHTMLOptGroupElement.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,41 +37,24 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.html2.HTMLButtonElement;
-import org.w3c.dom.html2.HTMLFormElement;
+import org.w3c.dom.html2.HTMLOptGroupElement;
 
 /**
- * An HTML 'BUTTON' element node.
+ * An HTML 'OPTGROUP' element node.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomHTMLButtonElement
+public class DomHTMLOptGroupElement
   extends DomHTMLElement
-  implements HTMLButtonElement
+  implements HTMLOptGroupElement
 {
 
-  protected DomHTMLButtonElement(DomHTMLDocument owner, String namespaceURI,
-                                 String name)
+  protected DomHTMLOptGroupElement(DomHTMLDocument owner, String namespaceURI,
+                             String name)
   {
     super(owner, namespaceURI, name);
   }
 
-  public HTMLFormElement getForm()
-  {
-    return (HTMLFormElement) getParentElement("form");
-  }
-
-  public String getAccessKey()
-  {
-    return getHTMLAttribute("accesskey");
-  }
-
-  public void setAccessKey(String accessKey)
-  {
-    setHTMLAttribute("accesskey", accessKey);
-  }
-  
   public boolean getDisabled()
   {
     return getBooleanHTMLAttribute("disabled");
@@ -81,40 +64,15 @@ public class DomHTMLButtonElement
   {
     setBooleanHTMLAttribute("disabled", disabled);
   }
-  
-  public String getName()
+
+  public String getLabel()
   {
-    return getHTMLAttribute("name");
+    return getHTMLAttribute("label");
   }
 
-  public void setName(String name)
+  public void setLabel(String label)
   {
-    setHTMLAttribute("name", name);
-  }
-  
-  public int getTabIndex()
-  {
-    return getIntHTMLAttribute("tabindex");
-  }
-
-  public void setTabIndex(int tabIndex)
-  {
-    setIntHTMLAttribute("tabindex", tabIndex);
-  }
-
-  public String getType()
-  {
-    return getHTMLAttribute("type");
-  }
-  
-  public String getValue()
-  {
-    return getHTMLAttribute("value");
-  }
-
-  public void setValue(String value)
-  {
-    setHTMLAttribute("value", value);
+    setHTMLAttribute("label", label);
   }
   
 }

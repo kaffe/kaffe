@@ -1,4 +1,4 @@
-/* DomHTMLButtonElement.java -- 
+/* DomHTMLModElement.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,84 +37,42 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.html2.HTMLButtonElement;
-import org.w3c.dom.html2.HTMLFormElement;
+import org.w3c.dom.html2.HTMLModElement;
 
 /**
- * An HTML 'BUTTON' element node.
+ * An HTML 'INS' or 'DEL' element node.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomHTMLButtonElement
+public class DomHTMLModElement
   extends DomHTMLElement
-  implements HTMLButtonElement
+  implements HTMLModElement
 {
 
-  protected DomHTMLButtonElement(DomHTMLDocument owner, String namespaceURI,
-                                 String name)
+  protected DomHTMLModElement(DomHTMLDocument owner, String namespaceURI,
+                              String name)
   {
     super(owner, namespaceURI, name);
   }
 
-  public HTMLFormElement getForm()
+  public String getCite()
   {
-    return (HTMLFormElement) getParentElement("form");
+    return getHTMLAttribute("cite");
   }
 
-  public String getAccessKey()
+  public void setCite(String cite)
   {
-    return getHTMLAttribute("accesskey");
-  }
-
-  public void setAccessKey(String accessKey)
-  {
-    setHTMLAttribute("accesskey", accessKey);
+    setHTMLAttribute("cite", cite);
   }
   
-  public boolean getDisabled()
+  public String getDateTime()
   {
-    return getBooleanHTMLAttribute("disabled");
+    return getHTMLAttribute("datetime");
   }
 
-  public void setDisabled(boolean disabled)
+  public void setDateTime(String dateTime)
   {
-    setBooleanHTMLAttribute("disabled", disabled);
-  }
-  
-  public String getName()
-  {
-    return getHTMLAttribute("name");
-  }
-
-  public void setName(String name)
-  {
-    setHTMLAttribute("name", name);
-  }
-  
-  public int getTabIndex()
-  {
-    return getIntHTMLAttribute("tabindex");
-  }
-
-  public void setTabIndex(int tabIndex)
-  {
-    setIntHTMLAttribute("tabindex", tabIndex);
-  }
-
-  public String getType()
-  {
-    return getHTMLAttribute("type");
-  }
-  
-  public String getValue()
-  {
-    return getHTMLAttribute("value");
-  }
-
-  public void setValue(String value)
-  {
-    setHTMLAttribute("value", value);
+    setHTMLAttribute("datetime", dateTime);
   }
   
 }

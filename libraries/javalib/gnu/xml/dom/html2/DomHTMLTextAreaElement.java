@@ -1,4 +1,4 @@
-/* DomHTMLAnchorElement.java -- 
+/* DomHTMLTextAreaElement.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,24 +37,43 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
-import org.w3c.dom.html2.HTMLAnchorElement;
+import org.w3c.dom.html2.HTMLFormElement;
+import org.w3c.dom.html2.HTMLTextAreaElement;
 
 /**
- * An HTML 'A' element node.
+ * An HTML 'TEXTAREA' element node.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomHTMLAnchorElement
+public class DomHTMLTextAreaElement
   extends DomHTMLElement
-  implements HTMLAnchorElement
+  implements HTMLTextAreaElement
 {
 
-  protected DomHTMLAnchorElement(DomHTMLDocument owner, String namespaceURI,
-                                 String name)
+  protected String value;
+
+  protected DomHTMLTextAreaElement(DomHTMLDocument owner,
+                                   String namespaceURI,
+                                   String name)
   {
     super(owner, namespaceURI, name);
   }
 
+  public String getDefaultValue()
+  {
+    return getHTMLAttribute("value");
+  }
+
+  public void setDefaultValue(String defaultValue)
+  {
+    setHTMLAttribute("value", defaultValue);
+  }
+
+  public HTMLFormElement getForm()
+  {
+    return (HTMLFormElement) getParentElement("form");
+  }
+  
   public String getAccessKey()
   {
     return getHTMLAttribute("accesskey");
@@ -65,44 +84,24 @@ public class DomHTMLAnchorElement
     setHTMLAttribute("accesskey", accessKey);
   }
   
-  public String getCharset()
+  public int getCols()
   {
-    return getHTMLAttribute("charset");
+    return getIntHTMLAttribute("cols");
   }
 
-  public void setCharset(String charset)
+  public void setCols(int cols)
   {
-    setHTMLAttribute("charset", charset);
+    setIntHTMLAttribute("cols", cols);
   }
   
-  public String getCoords()
+  public boolean getDisabled()
   {
-    return getHTMLAttribute("coords");
+    return getBooleanHTMLAttribute("disabled");
   }
 
-  public void setCoords(String coords)
+  public void setDisabled(boolean disabled)
   {
-    setHTMLAttribute("coords", coords);
-  }
-  
-  public String getHref()
-  {
-    return getHTMLAttribute("href");
-  }
-
-  public void setHref(String href)
-  {
-    setHTMLAttribute("href", href);
-  }
-  
-  public String getHreflang()
-  {
-    return getHTMLAttribute("hreflang");
-  }
-
-  public void setHreflang(String hreflang)
-  {
-    setHTMLAttribute("hreflang", hreflang);
+    setBooleanHTMLAttribute("disabled", disabled);
   }
   
   public String getName()
@@ -115,34 +114,24 @@ public class DomHTMLAnchorElement
     setHTMLAttribute("name", name);
   }
   
-  public String getRel()
+  public boolean getReadOnly()
   {
-    return getHTMLAttribute("rel");
+    return getBooleanHTMLAttribute("readOnly");
   }
 
-  public void setRel(String rel)
+  public void setReadOnly(boolean readOnly)
   {
-    setHTMLAttribute("rel", rel);
+    setBooleanHTMLAttribute("readonly", readOnly);
   }
   
-  public String getRev()
+  public int getRows()
   {
-    return getHTMLAttribute("rev");
+    return getIntHTMLAttribute("rows");
   }
 
-  public void setRev(String rev)
+  public void setRows(int rows)
   {
-    setHTMLAttribute("rev", rev);
-  }
-  
-  public String getShape()
-  {
-    return getHTMLAttribute("shape");
-  }
-
-  public void setShape(String shape)
-  {
-    setHTMLAttribute("shape", shape);
+    setIntHTMLAttribute("rows", rows);
   }
   
   public int getTabIndex()
@@ -155,24 +144,23 @@ public class DomHTMLAnchorElement
     setIntHTMLAttribute("tabindex", tabIndex);
   }
   
-  public String getTarget()
-  {
-    return getHTMLAttribute("target");
-  }
-
-  public void setTarget(String target)
-  {
-    setHTMLAttribute("target", target);
-  }
-  
   public String getType()
   {
-    return getHTMLAttribute("type");
+    return "textarea";
   }
 
-  public void setType(String type)
+  public String getValue()
   {
-    setHTMLAttribute("type", type);
+    if (value == null)
+      {
+        value = getDefaultValue();
+      }
+    return value;
+  }
+
+  public void setValue(String value)
+  {
+    this.value = value;
   }
 
   public void blur()
@@ -183,6 +171,11 @@ public class DomHTMLAnchorElement
   public void focus()
   {
     dispatchUIEvent("focus");
+  }
+  
+  public void select()
+  {
+    dispatchUIEvent("select");
   }
   
 }

@@ -1,4 +1,4 @@
-/* DomHTMLButtonElement.java -- 
+/* DomHTMLInputElement.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,31 +37,63 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.html2.HTMLButtonElement;
 import org.w3c.dom.html2.HTMLFormElement;
+import org.w3c.dom.html2.HTMLInputElement;
 
 /**
- * An HTML 'BUTTON' element node.
+ * An HTML 'INPUT' element node.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomHTMLButtonElement
+public class DomHTMLInputElement
   extends DomHTMLElement
-  implements HTMLButtonElement
+  implements HTMLInputElement
 {
 
-  protected DomHTMLButtonElement(DomHTMLDocument owner, String namespaceURI,
-                                 String name)
+  protected String value;
+  protected Boolean checked;
+
+  protected DomHTMLInputElement(DomHTMLDocument owner, String namespaceURI,
+                                String name)
   {
     super(owner, namespaceURI, name);
+  }
+
+  public String getDefaultValue()
+  {
+    return getHTMLAttribute("value");
+  }
+
+  public void setDefaultValue(String defaultValue)
+  {
+    setHTMLAttribute("value", defaultValue);
+  }
+  
+  public boolean getDefaultChecked()
+  {
+    return getBooleanHTMLAttribute("checked");
+  }
+
+  public void setDefaultChecked(boolean defaultChecked)
+  {
+    setBooleanHTMLAttribute("checked", defaultChecked);
   }
 
   public HTMLFormElement getForm()
   {
     return (HTMLFormElement) getParentElement("form");
   }
+  
+  public String getAccept()
+  {
+    return getHTMLAttribute("accept");
+  }
 
+  public void setAccept(String accept)
+  {
+    setHTMLAttribute("accept", accept);
+  }
+  
   public String getAccessKey()
   {
     return getHTMLAttribute("accesskey");
@@ -70,6 +102,40 @@ public class DomHTMLButtonElement
   public void setAccessKey(String accessKey)
   {
     setHTMLAttribute("accesskey", accessKey);
+  }
+  
+  public String getAlign()
+  {
+    return getHTMLAttribute("align");
+  }
+
+  public void setAlign(String align)
+  {
+    setHTMLAttribute("align", align);
+  }
+  
+  public String getAlt()
+  {
+    return getHTMLAttribute("alt");
+  }
+
+  public void setAlt(String alt)
+  {
+    setHTMLAttribute("alt", alt);
+  }
+  
+  public boolean getChecked()
+  {
+    if (checked == null)
+      {
+        checked = Boolean.valueOf(getDefaultChecked());
+      }
+    return checked.booleanValue();
+  }
+
+  public void setChecked(boolean checked)
+  {
+    this.checked = Boolean.valueOf(checked);
   }
   
   public boolean getDisabled()
@@ -82,6 +148,16 @@ public class DomHTMLButtonElement
     setBooleanHTMLAttribute("disabled", disabled);
   }
   
+  public int getMaxLength()
+  {
+    return getIntHTMLAttribute("maxLength");
+  }
+
+  public void setMaxLength(int maxLength)
+  {
+    setIntHTMLAttribute("maxLength", maxLength);
+  }
+  
   public String getName()
   {
     return getHTMLAttribute("name");
@@ -90,6 +166,36 @@ public class DomHTMLButtonElement
   public void setName(String name)
   {
     setHTMLAttribute("name", name);
+  }
+  
+  public boolean getReadOnly()
+  {
+    return getBooleanHTMLAttribute("readonly");
+  }
+
+  public void setReadOnly(boolean readOnly)
+  {
+    setBooleanHTMLAttribute("readonly", readOnly);
+  }
+  
+  public int getSize()
+  {
+    return getIntHTMLAttribute("size");
+  }
+
+  public void setSize(int size)
+  {
+    setIntHTMLAttribute("size", size);
+  }
+  
+  public String getSrc()
+  {
+    return getHTMLAttribute("src");
+  }
+
+  public void setSrc(String src)
+  {
+    setHTMLAttribute("src", src);
   }
   
   public int getTabIndex()
@@ -101,20 +207,59 @@ public class DomHTMLButtonElement
   {
     setIntHTMLAttribute("tabindex", tabIndex);
   }
-
+  
   public String getType()
   {
     return getHTMLAttribute("type");
   }
+
+  public void setType(String type)
+  {
+    setHTMLAttribute("type", type);
+  }
+  
+  public String getUseMap()
+  {
+    return getHTMLAttribute("usemap");
+  }
+
+  public void setUseMap(String useMap)
+  {
+    setHTMLAttribute("usemap", useMap);
+  }
   
   public String getValue()
   {
-    return getHTMLAttribute("value");
+    if (value == null)
+      {
+        value = getDefaultValue();
+      }
+    return value;
   }
 
   public void setValue(String value)
   {
-    setHTMLAttribute("value", value);
+    this.value = value;
+  }
+
+  public void blur()
+  {
+    dispatchUIEvent("blur");
+  }
+
+  public void focus()
+  {
+    dispatchUIEvent("focus");
+  }
+
+  public void select()
+  {
+    dispatchUIEvent("select");
+  }
+
+  public void click()
+  {
+    dispatchUIEvent("click");
   }
   
 }

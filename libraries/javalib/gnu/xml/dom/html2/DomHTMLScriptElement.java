@@ -1,4 +1,4 @@
-/* DomHTMLAnchorElement.java -- 
+/* DomHTMLScriptElement.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,34 +37,54 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
-import org.w3c.dom.html2.HTMLAnchorElement;
+import org.w3c.dom.html2.HTMLScriptElement;
 
 /**
- * An HTML 'A' element node.
+ * An HTML 'SCRIPT' element node.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomHTMLAnchorElement
+public class DomHTMLScriptElement
   extends DomHTMLElement
-  implements HTMLAnchorElement
+  implements HTMLScriptElement
 {
 
-  protected DomHTMLAnchorElement(DomHTMLDocument owner, String namespaceURI,
+  protected DomHTMLScriptElement(DomHTMLDocument owner, String namespaceURI,
                                  String name)
   {
     super(owner, namespaceURI, name);
   }
 
-  public String getAccessKey()
+  public String getText()
   {
-    return getHTMLAttribute("accesskey");
+    return getTextContent();
   }
 
-  public void setAccessKey(String accessKey)
+  public void setText(String text)
   {
-    setHTMLAttribute("accesskey", accessKey);
+    setTextContent(text);
   }
-  
+
+  public String getHtmlFor()
+  {
+    return getHTMLAttribute("for");
+  }
+
+  public void setHtmlFor(String htmlFor)
+  {
+    setHTMLAttribute("for", htmlFor);
+  }
+
+  public String getEvent()
+  {
+    return getHTMLAttribute("event");
+  }
+
+  public void setEvent(String event)
+  {
+    setHTMLAttribute("event", event);
+  }
+
   public String getCharset()
   {
     return getHTMLAttribute("charset");
@@ -74,97 +94,27 @@ public class DomHTMLAnchorElement
   {
     setHTMLAttribute("charset", charset);
   }
-  
-  public String getCoords()
+
+  public boolean getDefer()
   {
-    return getHTMLAttribute("coords");
+    return getBooleanHTMLAttribute("defer");
   }
 
-  public void setCoords(String coords)
+  public void setDefer(boolean defer)
   {
-    setHTMLAttribute("coords", coords);
-  }
-  
-  public String getHref()
-  {
-    return getHTMLAttribute("href");
+    setBooleanHTMLAttribute("defer", defer);
   }
 
-  public void setHref(String href)
+  public String getSrc()
   {
-    setHTMLAttribute("href", href);
-  }
-  
-  public String getHreflang()
-  {
-    return getHTMLAttribute("hreflang");
+    return getHTMLAttribute("src");
   }
 
-  public void setHreflang(String hreflang)
+  public void setSrc(String src)
   {
-    setHTMLAttribute("hreflang", hreflang);
-  }
-  
-  public String getName()
-  {
-    return getHTMLAttribute("name");
+    setHTMLAttribute("src", src);
   }
 
-  public void setName(String name)
-  {
-    setHTMLAttribute("name", name);
-  }
-  
-  public String getRel()
-  {
-    return getHTMLAttribute("rel");
-  }
-
-  public void setRel(String rel)
-  {
-    setHTMLAttribute("rel", rel);
-  }
-  
-  public String getRev()
-  {
-    return getHTMLAttribute("rev");
-  }
-
-  public void setRev(String rev)
-  {
-    setHTMLAttribute("rev", rev);
-  }
-  
-  public String getShape()
-  {
-    return getHTMLAttribute("shape");
-  }
-
-  public void setShape(String shape)
-  {
-    setHTMLAttribute("shape", shape);
-  }
-  
-  public int getTabIndex()
-  {
-    return getIntHTMLAttribute("tabindex");
-  }
-
-  public void setTabIndex(int tabIndex)
-  {
-    setIntHTMLAttribute("tabindex", tabIndex);
-  }
-  
-  public String getTarget()
-  {
-    return getHTMLAttribute("target");
-  }
-
-  public void setTarget(String target)
-  {
-    setHTMLAttribute("target", target);
-  }
-  
   public String getType()
   {
     return getHTMLAttribute("type");
@@ -173,16 +123,6 @@ public class DomHTMLAnchorElement
   public void setType(String type)
   {
     setHTMLAttribute("type", type);
-  }
-
-  public void blur()
-  {
-    dispatchUIEvent("blur");
-  }
-
-  public void focus()
-  {
-    dispatchUIEvent("focus");
   }
   
 }

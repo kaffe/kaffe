@@ -1,4 +1,4 @@
-/* DomHTMLAnchorElement.java -- 
+/* DomHTMLFormElement.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,74 +37,45 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
-import org.w3c.dom.html2.HTMLAnchorElement;
+import org.w3c.dom.html2.HTMLCollection;
+import org.w3c.dom.html2.HTMLFormElement;
 
 /**
- * An HTML 'A' element node.
+ * An HTML 'FORM' element node.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomHTMLAnchorElement
+public class DomHTMLFormElement
   extends DomHTMLElement
-  implements HTMLAnchorElement
+  implements HTMLFormElement
 {
 
-  protected DomHTMLAnchorElement(DomHTMLDocument owner, String namespaceURI,
-                                 String name)
+  protected DomHTMLFormElement(DomHTMLDocument owner, String namespaceURI,
+                               String name)
   {
     super(owner, namespaceURI, name);
   }
 
-  public String getAccessKey()
+  public HTMLCollection getElements()
   {
-    return getHTMLAttribute("accesskey");
+    DomHTMLCollection ret =
+      new DomHTMLCollection((DomHTMLDocument) getOwnerDocument(), this);
+    ret.addNodeName("input");
+    ret.addNodeName("button");
+    ret.addNodeName("select");
+    ret.addNodeName("textarea");
+    ret.addNodeName("isindex");
+    ret.addNodeName("label");
+    ret.addNodeName("option");
+    ret.evaluate();
+    return ret;
   }
 
-  public void setAccessKey(String accessKey)
+  public int getLength()
   {
-    setHTMLAttribute("accesskey", accessKey);
-  }
-  
-  public String getCharset()
-  {
-    return getHTMLAttribute("charset");
+    return getElements().getLength();
   }
 
-  public void setCharset(String charset)
-  {
-    setHTMLAttribute("charset", charset);
-  }
-  
-  public String getCoords()
-  {
-    return getHTMLAttribute("coords");
-  }
-
-  public void setCoords(String coords)
-  {
-    setHTMLAttribute("coords", coords);
-  }
-  
-  public String getHref()
-  {
-    return getHTMLAttribute("href");
-  }
-
-  public void setHref(String href)
-  {
-    setHTMLAttribute("href", href);
-  }
-  
-  public String getHreflang()
-  {
-    return getHTMLAttribute("hreflang");
-  }
-
-  public void setHreflang(String hreflang)
-  {
-    setHTMLAttribute("hreflang", hreflang);
-  }
-  
   public String getName()
   {
     return getHTMLAttribute("name");
@@ -115,44 +86,44 @@ public class DomHTMLAnchorElement
     setHTMLAttribute("name", name);
   }
   
-  public String getRel()
+  public String getAcceptCharset()
   {
-    return getHTMLAttribute("rel");
+    return getHTMLAttribute("accept-charset");
   }
 
-  public void setRel(String rel)
+  public void setAcceptCharset(String acceptCharset)
   {
-    setHTMLAttribute("rel", rel);
+    setHTMLAttribute("accept-charset", acceptCharset);
   }
   
-  public String getRev()
+  public String getAction()
   {
-    return getHTMLAttribute("rev");
+    return getHTMLAttribute("action");
   }
 
-  public void setRev(String rev)
+  public void setAction(String action)
   {
-    setHTMLAttribute("rev", rev);
+    setHTMLAttribute("action", action);
   }
   
-  public String getShape()
+  public String getEnctype()
   {
-    return getHTMLAttribute("shape");
+    return getHTMLAttribute("enctype");
   }
 
-  public void setShape(String shape)
+  public void setEnctype(String enctype)
   {
-    setHTMLAttribute("shape", shape);
+    setHTMLAttribute("enctype", enctype);
   }
   
-  public int getTabIndex()
+  public String getMethod()
   {
-    return getIntHTMLAttribute("tabindex");
+    return getHTMLAttribute("method");
   }
 
-  public void setTabIndex(int tabIndex)
+  public void setMethod(String method)
   {
-    setIntHTMLAttribute("tabindex", tabIndex);
+    setHTMLAttribute("method", method);
   }
   
   public String getTarget()
@@ -164,25 +135,15 @@ public class DomHTMLAnchorElement
   {
     setHTMLAttribute("target", target);
   }
-  
-  public String getType()
+
+  public void submit()
   {
-    return getHTMLAttribute("type");
+    dispatchUIEvent("submit");
   }
 
-  public void setType(String type)
+  public void reset()
   {
-    setHTMLAttribute("type", type);
-  }
-
-  public void blur()
-  {
-    dispatchUIEvent("blur");
-  }
-
-  public void focus()
-  {
-    dispatchUIEvent("focus");
+    dispatchUIEvent("reset");
   }
   
 }

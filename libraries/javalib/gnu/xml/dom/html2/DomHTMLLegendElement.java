@@ -1,4 +1,4 @@
-/* DomHTMLAnchorElement.java -- 
+/* DomHTMLLegendElement.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,22 +37,28 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
-import org.w3c.dom.html2.HTMLAnchorElement;
+import org.w3c.dom.html2.HTMLFormElement;
+import org.w3c.dom.html2.HTMLLegendElement;
 
 /**
- * An HTML 'A' element node.
+ * An HTML 'LEGEND' element node.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomHTMLAnchorElement
+public class DomHTMLLegendElement
   extends DomHTMLElement
-  implements HTMLAnchorElement
+  implements HTMLLegendElement
 {
 
-  protected DomHTMLAnchorElement(DomHTMLDocument owner, String namespaceURI,
+  protected DomHTMLLegendElement(DomHTMLDocument owner, String namespaceURI,
                                  String name)
   {
     super(owner, namespaceURI, name);
+  }
+
+  public HTMLFormElement getForm()
+  {
+    return (HTMLFormElement) getParentElement("form");
   }
 
   public String getAccessKey()
@@ -65,124 +71,14 @@ public class DomHTMLAnchorElement
     setHTMLAttribute("accesskey", accessKey);
   }
   
-  public String getCharset()
+  public String getAlign()
   {
-    return getHTMLAttribute("charset");
+    return getHTMLAttribute("align");
   }
 
-  public void setCharset(String charset)
+  public void setAlign(String align)
   {
-    setHTMLAttribute("charset", charset);
-  }
-  
-  public String getCoords()
-  {
-    return getHTMLAttribute("coords");
-  }
-
-  public void setCoords(String coords)
-  {
-    setHTMLAttribute("coords", coords);
-  }
-  
-  public String getHref()
-  {
-    return getHTMLAttribute("href");
-  }
-
-  public void setHref(String href)
-  {
-    setHTMLAttribute("href", href);
-  }
-  
-  public String getHreflang()
-  {
-    return getHTMLAttribute("hreflang");
-  }
-
-  public void setHreflang(String hreflang)
-  {
-    setHTMLAttribute("hreflang", hreflang);
-  }
-  
-  public String getName()
-  {
-    return getHTMLAttribute("name");
-  }
-
-  public void setName(String name)
-  {
-    setHTMLAttribute("name", name);
-  }
-  
-  public String getRel()
-  {
-    return getHTMLAttribute("rel");
-  }
-
-  public void setRel(String rel)
-  {
-    setHTMLAttribute("rel", rel);
-  }
-  
-  public String getRev()
-  {
-    return getHTMLAttribute("rev");
-  }
-
-  public void setRev(String rev)
-  {
-    setHTMLAttribute("rev", rev);
-  }
-  
-  public String getShape()
-  {
-    return getHTMLAttribute("shape");
-  }
-
-  public void setShape(String shape)
-  {
-    setHTMLAttribute("shape", shape);
-  }
-  
-  public int getTabIndex()
-  {
-    return getIntHTMLAttribute("tabindex");
-  }
-
-  public void setTabIndex(int tabIndex)
-  {
-    setIntHTMLAttribute("tabindex", tabIndex);
-  }
-  
-  public String getTarget()
-  {
-    return getHTMLAttribute("target");
-  }
-
-  public void setTarget(String target)
-  {
-    setHTMLAttribute("target", target);
-  }
-  
-  public String getType()
-  {
-    return getHTMLAttribute("type");
-  }
-
-  public void setType(String type)
-  {
-    setHTMLAttribute("type", type);
-  }
-
-  public void blur()
-  {
-    dispatchUIEvent("blur");
-  }
-
-  public void focus()
-  {
-    dispatchUIEvent("focus");
+    setHTMLAttribute("align", align);
   }
   
 }

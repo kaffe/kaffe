@@ -1,4 +1,4 @@
-/* DomHTMLButtonElement.java -- 
+/* DomHTMLMetaElement.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,49 +37,42 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.html2.HTMLButtonElement;
-import org.w3c.dom.html2.HTMLFormElement;
+import org.w3c.dom.html2.HTMLMetaElement;
 
 /**
- * An HTML 'BUTTON' element node.
+ * An HTML 'META' element node.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomHTMLButtonElement
+public class DomHTMLMetaElement
   extends DomHTMLElement
-  implements HTMLButtonElement
+  implements HTMLMetaElement
 {
 
-  protected DomHTMLButtonElement(DomHTMLDocument owner, String namespaceURI,
-                                 String name)
+  protected DomHTMLMetaElement(DomHTMLDocument owner, String namespaceURI,
+                               String name)
   {
     super(owner, namespaceURI, name);
   }
 
-  public HTMLFormElement getForm()
+  public String getContent()
   {
-    return (HTMLFormElement) getParentElement("form");
+    return getHTMLAttribute("content");
   }
 
-  public String getAccessKey()
+  public void setContent(String content)
   {
-    return getHTMLAttribute("accesskey");
-  }
-
-  public void setAccessKey(String accessKey)
-  {
-    setHTMLAttribute("accesskey", accessKey);
+    setHTMLAttribute("content", content);
   }
   
-  public boolean getDisabled()
+  public String getHttpEquiv()
   {
-    return getBooleanHTMLAttribute("disabled");
+    return getHTMLAttribute("http-equiv");
   }
 
-  public void setDisabled(boolean disabled)
+  public void setHttpEquiv(String httpEquiv)
   {
-    setBooleanHTMLAttribute("disabled", disabled);
+    setHTMLAttribute("http-equiv", httpEquiv);
   }
   
   public String getName()
@@ -92,29 +85,14 @@ public class DomHTMLButtonElement
     setHTMLAttribute("name", name);
   }
   
-  public int getTabIndex()
+  public String getScheme()
   {
-    return getIntHTMLAttribute("tabindex");
+    return getHTMLAttribute("scheme");
   }
 
-  public void setTabIndex(int tabIndex)
+  public void setScheme(String scheme)
   {
-    setIntHTMLAttribute("tabindex", tabIndex);
-  }
-
-  public String getType()
-  {
-    return getHTMLAttribute("type");
-  }
-  
-  public String getValue()
-  {
-    return getHTMLAttribute("value");
-  }
-
-  public void setValue(String value)
-  {
-    setHTMLAttribute("value", value);
+    setHTMLAttribute("scheme", scheme);
   }
   
 }

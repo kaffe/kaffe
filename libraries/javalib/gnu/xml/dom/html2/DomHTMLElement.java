@@ -37,9 +37,13 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
+import gnu.xml.dom.DomDOMException;
 import gnu.xml.dom.DomElement;
+import gnu.xml.dom.DomEvent;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.events.UIEvent;
 import org.w3c.dom.html2.HTMLElement;
 
 /**
@@ -101,7 +105,7 @@ public abstract class DomHTMLElement
   protected boolean getBooleanHTMLAttribute(String name)
   {
     String value = getHTMLAttribute(name);
-    return "true".equals(value);
+    return value != null;
   }
 
   /**
@@ -119,15 +123,25 @@ public abstract class DomHTMLElement
         String attrName = attr.getLocalName();
         if (attrName.equalsIgnoreCase(name))
           {
-            attr.setNodeValue(value);
+            if (value != null)
+              {
+                attr.setNodeValue(value);
+              }
+            else
+              {
+                attrs.removeNamedItem(attr.getNodeName());
+              }
             return;
           }
       }
-    // Create a new attribute
-    DomHTMLDocument doc = (DomHTMLDocument) getOwnerDocument();
-    // XXX namespace URI for attribute?
-    attr = doc.createAttribute(name);
-    attr.setNodeValue(value);
+    if (value != null)
+      {
+        // Create a new attribute
+        DomHTMLDocument doc = (DomHTMLDocument) getOwnerDocument();
+        // XXX namespace URI for attribute?
+        attr = doc.createAttribute(name);
+        attr.setNodeValue(value);
+      }
   }
 
   protected void setIntHTMLAttribute(String name, int value)
@@ -137,7 +151,68 @@ public abstract class DomHTMLElement
 
   protected void setBooleanHTMLAttribute(String name, boolean value)
   {
-    setHTMLAttribute(name, value ? "true" : "false");
+    setHTMLAttribute(name, value ? name : null);
+  }
+
+  /**
+   * Returns the first parent element with the specified name.
+   */
+  protected Node getParentElement(String name)
+  {
+    for (Node parent = getParentNode(); parent != null;
+         parent = parent.getParentNode())
+      {
+        if (name.equalsIgnoreCase(parent.getLocalName()))
+          {
+            return parent;
+          }
+      }
+    return null;
+  }
+
+  /**
+   * Returns the first child element with the specified name.
+   */
+  protected Node getChildElement(String name)
+  {
+    for (Node child = getFirstChild(); child != null;
+         child = child.getNextSibling())
+      {
+        if (name.equalsIgnoreCase(child.getLocalName()))
+          {
+            return child;
+          }
+      }
+    return null;
+  }
+
+  /**
+   * Returns the index of this element among elements of the same name,
+   * relative to its parent.
+   */
+  protected int getIndex()
+  {
+    int index = 0;
+    Node parent = getParentNode();
+    if (parent != null)
+      {
+        for (Node ctx = parent.getFirstChild(); ctx != null;
+             ctx = ctx.getNextSibling())
+          {
+            if (ctx == this)
+              {
+                return index;
+              }
+            index++;
+          }
+      }
+    throw new DomDOMException(DOMException.NOT_FOUND_ERR);
+  }
+
+  protected void dispatchUIEvent(String name)
+  {
+    UIEvent event = new DomEvent.DomUIEvent(name);
+    dispatchEvent(event);
   }
 
   public String getId()

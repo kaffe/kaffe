@@ -1,4 +1,4 @@
-/* DomHTMLButtonElement.java -- 
+/* DomHTMLFontElement.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,84 +37,52 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.html2.HTMLButtonElement;
-import org.w3c.dom.html2.HTMLFormElement;
+import org.w3c.dom.html2.HTMLFontElement;
 
 /**
- * An HTML 'BUTTON' element node.
+ * An HTML 'FONT' element node.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomHTMLButtonElement
+public class DomHTMLFontElement
   extends DomHTMLElement
-  implements HTMLButtonElement
+  implements HTMLFontElement
 {
 
-  protected DomHTMLButtonElement(DomHTMLDocument owner, String namespaceURI,
-                                 String name)
+  protected DomHTMLFontElement(DomHTMLDocument owner, String namespaceURI,
+                               String name)
   {
     super(owner, namespaceURI, name);
   }
 
-  public HTMLFormElement getForm()
+  public String getColor()
   {
-    return (HTMLFormElement) getParentElement("form");
+    return getHTMLAttribute("color");
   }
 
-  public String getAccessKey()
+  public void setColor(String color)
   {
-    return getHTMLAttribute("accesskey");
-  }
-
-  public void setAccessKey(String accessKey)
-  {
-    setHTMLAttribute("accesskey", accessKey);
+    setHTMLAttribute("color", color);
   }
   
-  public boolean getDisabled()
+  public String getFace()
   {
-    return getBooleanHTMLAttribute("disabled");
+    return getHTMLAttribute("face");
   }
 
-  public void setDisabled(boolean disabled)
+  public void setFace(String face)
   {
-    setBooleanHTMLAttribute("disabled", disabled);
+    setHTMLAttribute("face", face);
   }
   
-  public String getName()
+  public String getSize()
   {
-    return getHTMLAttribute("name");
+    return getHTMLAttribute("size");
   }
 
-  public void setName(String name)
+  public void setSize(String size)
   {
-    setHTMLAttribute("name", name);
-  }
-  
-  public int getTabIndex()
-  {
-    return getIntHTMLAttribute("tabindex");
-  }
-
-  public void setTabIndex(int tabIndex)
-  {
-    setIntHTMLAttribute("tabindex", tabIndex);
-  }
-
-  public String getType()
-  {
-    return getHTMLAttribute("type");
-  }
-  
-  public String getValue()
-  {
-    return getHTMLAttribute("value");
-  }
-
-  public void setValue(String value)
-  {
-    setHTMLAttribute("value", value);
+    setHTMLAttribute("size", size);
   }
   
 }

@@ -1,4 +1,4 @@
-/* DomHTMLButtonElement.java -- 
+/* DomHTMLStyleElement.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,41 +37,24 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.html2.HTMLButtonElement;
-import org.w3c.dom.html2.HTMLFormElement;
+import org.w3c.dom.html2.HTMLStyleElement;
 
 /**
- * An HTML 'BUTTON' element node.
+ * An HTML 'STYLE' element node.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomHTMLButtonElement
+public class DomHTMLStyleElement
   extends DomHTMLElement
-  implements HTMLButtonElement
+  implements HTMLStyleElement
 {
 
-  protected DomHTMLButtonElement(DomHTMLDocument owner, String namespaceURI,
-                                 String name)
+  protected DomHTMLStyleElement(DomHTMLDocument owner, String namespaceURI,
+                                String name)
   {
     super(owner, namespaceURI, name);
   }
 
-  public HTMLFormElement getForm()
-  {
-    return (HTMLFormElement) getParentElement("form");
-  }
-
-  public String getAccessKey()
-  {
-    return getHTMLAttribute("accesskey");
-  }
-
-  public void setAccessKey(String accessKey)
-  {
-    setHTMLAttribute("accesskey", accessKey);
-  }
-  
   public boolean getDisabled()
   {
     return getBooleanHTMLAttribute("disabled");
@@ -82,39 +65,24 @@ public class DomHTMLButtonElement
     setBooleanHTMLAttribute("disabled", disabled);
   }
   
-  public String getName()
+  public String getMedia()
   {
-    return getHTMLAttribute("name");
+    return getHTMLAttribute("media");
   }
 
-  public void setName(String name)
+  public void setMedia(String media)
   {
-    setHTMLAttribute("name", name);
+    setHTMLAttribute("media", media);
   }
   
-  public int getTabIndex()
-  {
-    return getIntHTMLAttribute("tabindex");
-  }
-
-  public void setTabIndex(int tabIndex)
-  {
-    setIntHTMLAttribute("tabindex", tabIndex);
-  }
-
   public String getType()
   {
     return getHTMLAttribute("type");
   }
-  
-  public String getValue()
-  {
-    return getHTMLAttribute("value");
-  }
 
-  public void setValue(String value)
+  public void setType(String type)
   {
-    setHTMLAttribute("value", value);
+    setHTMLAttribute("type", type);
   }
   
 }

@@ -1,4 +1,4 @@
-/* DomHTMLButtonElement.java -- 
+/* DomHTMLOptionElement.java -- 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,21 +37,22 @@ exception statement from your version. */
 
 package gnu.xml.dom.html2;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.html2.HTMLButtonElement;
 import org.w3c.dom.html2.HTMLFormElement;
+import org.w3c.dom.html2.HTMLOptionElement;
 
 /**
- * An HTML 'BUTTON' element node.
+ * An HTML 'OPTION' element node.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-public class DomHTMLButtonElement
+public class DomHTMLOptionElement
   extends DomHTMLElement
-  implements HTMLButtonElement
+  implements HTMLOptionElement
 {
 
-  protected DomHTMLButtonElement(DomHTMLDocument owner, String namespaceURI,
+  protected Boolean selected;
+
+  protected DomHTMLOptionElement(DomHTMLDocument owner, String namespaceURI,
                                  String name)
   {
     super(owner, namespaceURI, name);
@@ -62,14 +63,24 @@ public class DomHTMLButtonElement
     return (HTMLFormElement) getParentElement("form");
   }
 
-  public String getAccessKey()
+  public boolean getDefaultSelected()
   {
-    return getHTMLAttribute("accesskey");
+    return getBooleanHTMLAttribute("selected");
   }
 
-  public void setAccessKey(String accessKey)
+  public void setDefaultSelected(boolean defaultSelected)
   {
-    setHTMLAttribute("accesskey", accessKey);
+    setBooleanHTMLAttribute("selected", defaultSelected);
+  }
+
+  public String getText()
+  {
+    return getTextContent();
+  }
+
+  public int getIndex()
+  {
+    return super.getIndex();
   }
   
   public boolean getDisabled()
@@ -82,29 +93,28 @@ public class DomHTMLButtonElement
     setBooleanHTMLAttribute("disabled", disabled);
   }
   
-  public String getName()
+  public String getLabel()
   {
-    return getHTMLAttribute("name");
+    return getHTMLAttribute("label");
   }
 
-  public void setName(String name)
+  public void setLabel(String label)
   {
-    setHTMLAttribute("name", name);
+    setHTMLAttribute("label", label);
   }
   
-  public int getTabIndex()
+  public boolean getSelected()
   {
-    return getIntHTMLAttribute("tabindex");
+    if (selected == null)
+      {
+        selected = Boolean.valueOf(getDefaultSelected());
+      }
+    return selected.booleanValue();
   }
 
-  public void setTabIndex(int tabIndex)
+  public void setSelected(boolean selected)
   {
-    setIntHTMLAttribute("tabindex", tabIndex);
-  }
-
-  public String getType()
-  {
-    return getHTMLAttribute("type");
+    this.selected = Boolean.valueOf(selected);
   }
   
   public String getValue()
