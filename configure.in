@@ -557,7 +557,7 @@ ZIP_LIBS="$CTLIBS $ZIP_LIBS"
 AC_SUBST(ZIP_LIBS)
 
 dnl Check for libraries for math library.
-AC_CHECK_LIBRARY(gmp,mpz_add,MATH_LIBS)
+AC_CHECK_LIBRARY(gmp,mpz_get_d,MATH_LIBS)
 MATH_LIBS="$CTLIBS $MATH_LIBS"
 AC_SUBST(MATH_LIBS)
 

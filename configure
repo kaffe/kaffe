@@ -3912,9 +3912,9 @@ ZIP_LIBS="$CTLIBS $ZIP_LIBS"
 
 KSAVE_LIBS="$LIBS"
 LIBS="$MATH_LIBS $KSAVE_LIBS"
-echo $ac_n "checking for mpz_add in -lgmp""... $ac_c" 1>&6
-echo "configure:3917: checking for mpz_add in -lgmp" >&5
-ac_lib_var=`echo gmp'_'mpz_add | sed 'y%./+-%__p_%'`
+echo $ac_n "checking for mpz_get_d in -lgmp""... $ac_c" 1>&6
+echo "configure:3917: checking for mpz_get_d in -lgmp" >&5
+ac_lib_var=`echo gmp'_'mpz_get_d | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -3926,10 +3926,10 @@ cat > conftest.$ac_ext <<EOF
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char mpz_add();
+char mpz_get_d();
 
 int main() {
-mpz_add()
+mpz_get_d()
 ; return 0; }
 EOF
 if { (eval echo configure:3936: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
