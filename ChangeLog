@@ -1,3 +1,13 @@
+Mon Jul 19 22:43:16 PDT 1999  Aaron Place <beavis@ihug.co.nz>
+
+	* In libraries/javalib: java/io/ObjectInputStream.java,
+	java/io/ObjectOutputStream.java, java/io/StringReader.java,
+	java/io/StringWriter.java, java/lang/ClassLoader.java,
+	java/net/ServerSocket.java, java/text/DecimalFormatSymbols.java,
+	java/util/BitSet.java, java/util/Random.java,
+	java/util/Vector.java, java/math/BigDecimal.java,
+	java/math/BigInteger.java: fix incorrect method declarations
+
 Sun Jul 18 12:07:49 PDT 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/util/Collections.java: implement the
