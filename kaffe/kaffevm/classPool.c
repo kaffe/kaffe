@@ -263,7 +263,7 @@ checkClass(Hjava_lang_Class *c, Hjava_lang_ClassLoader *loader)
 }
 
 
-#if defined(KAFFE_STATS) || defined(KAFFE_PROFILER)
+#if defined(KAFFE_STATS) || defined(KAFFE_PROFILER) || defined(DEBUG)
 /**
  * Walk the class pool and invoke walker() for each classes
  */
