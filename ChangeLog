@@ -1,5 +1,12 @@
 2003-10-05  Dalibor Topic <robilad@kaffe.org>
 
+	* config/m68k/common.h,
+	config/m68k/trampolines.c,
+	config/m68k/amigaos/md.c:
+	Changed multi-line strings to single line strings.
+
+2003-10-05  Dalibor Topic <robilad@kaffe.org>
+
 	*  config/i386/bsdi/md.c
 	config/i386/common.h,
  	config/i386/dgux/jit-md.h,
