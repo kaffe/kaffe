@@ -1,3 +1,15 @@
+Wed Aug  5 15:39:40 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* libraries/javalib/java/lang/String.java:
+	kaffe/kaffevm/string.c: updated hash function to comply with 1.2,
+	patch provided by <archie@whistle.com>
+
+Wed Aug  5 13:21:06 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
+
+	* libraries/javalib/java/lang/{Number|Double|Float|Long|Short|
+	Integer|Byte}.java:  byteValue() and shortValue() are not 
+	abstract, they can be implemented in terms of intValue();
+
 Tue Aug  4 12:00:54 1998  Archie Cobbs  <archie@whistle.com>
 
 	* libraries/javalib/java/lang/Object.java: make sure wait(0,1)
