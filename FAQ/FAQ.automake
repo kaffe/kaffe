@@ -5,6 +5,8 @@ IMPORTANT NOTE:
 recent versions of autoconf and automake: autoconf 2.57 and automake
 1.7.5.
 
+- in order to rebuild Makefile.in files and the configure script 
+please run the developers/autogen.sh script in the top level directory.
 **************************************************************************
 
 Kaffe has adopted GNU automake to ease the maintenance of Makefiles.
