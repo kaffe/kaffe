@@ -89,6 +89,14 @@ public boolean havePending() {
 	return blen != 0;
 }
 
+public int pendingLength() {
+	return blen;
+}
+
+public void reset() {
+	blen = 0;
+}
+
 public int withdraw ( byte[] to, int tpos, int tlen ) {
 	int n = (tlen < blen ? tlen : blen);
 

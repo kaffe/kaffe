@@ -40,12 +40,17 @@ package java.nio.charset;
 
 import gnu.java.nio.charset.Provider;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.spi.CharsetProvider;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.SortedMap;
@@ -137,28 +142,74 @@ public abstract class Charset implements Comparable
   private static Charset charsetForName (String charsetName)
   {
     checkName (charsetName);
-    return provider ().charsetForName (charsetName);
+    Charset cs = null;
+    CharsetProvider[] providers = providers ();
+    for (int i = 0; i < providers.length; i++) {
+        cs = providers[i].charsetForName (charsetName);
+        if (cs != null) break;
+    }
+    return cs;
   }
 
   public static SortedMap availableCharsets ()
   {
     TreeMap charsets = new TreeMap (String.CASE_INSENSITIVE_ORDER);
 
-    for (Iterator i = provider ().charsets (); i.hasNext (); )
+    CharsetProvider[] providers = providers ();
+    for (int j = 0; j < providers.length; j++)
       {
-        Charset cs = (Charset) i.next ();
-        charsets.put (cs.name (), cs);
+        for (Iterator i = providers[j].charsets (); i.hasNext (); )
+          {
+            Charset cs = (Charset) i.next ();
+            charsets.put (cs.name (), cs);
+          }
       }
 
     return Collections.unmodifiableSortedMap (charsets);
   }
 
-  // XXX: we need to support multiple providers, reading them from
-  // java.nio.charset.spi.CharsetProvider in the resource directory
-  // META-INF/services
   private static CharsetProvider provider ()
   {
     return Provider.provider ();
+  }
+
+  // we need to support multiple providers, reading them from
+  // java.nio.charset.spi.CharsetProvider in the resource directory
+  // META-INF/services
+
+  private static CharsetProvider[] providers;
+  private static CharsetProvider[] providers ()
+  {
+    if (providers == null)
+      {
+        try
+          {
+            Enumeration en = ClassLoader.getSystemResources("META-INF/services/java.nio.charset.spi.CharsetProvider");
+            LinkedHashSet set = new LinkedHashSet();
+            set.add(provider ());
+            while (en.hasMoreElements())
+              {
+                BufferedReader rdr = new BufferedReader(new InputStreamReader(
+                    ((URL)(en.nextElement())).openStream()));
+                while (true)
+                  {
+                    String s = rdr.readLine();
+                    if (s == null) break;
+                    CharsetProvider p = (CharsetProvider)(
+                        (Class.forName(s)).newInstance());
+                    set.add(p);
+                  }
+               }
+
+            providers = new CharsetProvider[set.size()];
+            set.toArray(providers);
+          }
+        catch (Exception e)
+          {
+            throw new RuntimeException(e);
+          }
+      }
+    return providers;
   }
 
   public final String name ()

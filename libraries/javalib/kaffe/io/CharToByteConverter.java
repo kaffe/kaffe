@@ -80,6 +80,18 @@ public int flush ( byte[] to, int tpos, int tlen ) {
 	}
 }
 
+public boolean havePending() {
+	return blen != 0;
+}
+
+public int pendingLength() {
+	return blen;
+}
+
+public void reset() {
+	blen = 0;
+}
+
 private static CharToByteConverter getConverterInternal(String enc)
 {
 	Class cls = (Class)cache.get(enc);

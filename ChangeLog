@@ -1,3 +1,16 @@
+2005-01-07  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/java/nio/charset/Charset.java (providers):
+	New method to make an array of CharsetProviders defined in
+	META-INF/services/java.nio.charset.spi.CharsetProvider.
+	(charsetForName, availableCharsets): Use the new method providers().
+
+	* libraries/javalib/kaffe/io/ByteToCharConverter.java
+	(pendingLength, reset),
+	libraries/javalib/kaffe/io/CharToByteConverter.java
+	(havePending, pendingLength, reset): New methods to be used
+	for subclasses of java.nio.charset.Charset.
+
 2005-01-06  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.
