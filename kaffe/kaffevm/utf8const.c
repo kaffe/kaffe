@@ -37,7 +37,7 @@
 /* Internal variables */
 #ifndef KAFFEH				/* Yuk! */
 static hashtab_t	hashTable;
-static iStaticLock	utf8Lock;	/* mutex on all intern operations */
+static iStaticLock	utf8Lock = KAFFE_STATIC_LOCK_INITIALIZER;	/* mutex on all intern operations */
 
 /*
  * Used to keep track of the current utf8Lock holder's stack

@@ -73,6 +73,7 @@ Hjava_lang_Class* javaLangIntegerClass;
 Hjava_lang_Class* javaLangLongClass;
 Hjava_lang_Class* javaLangFloatClass;
 Hjava_lang_Class* javaLangDoubleClass;
+Hjava_lang_Class* kaffeLangAppClassLoaderClass;
 
 Hjava_lang_Class* javaLangThrowable;
 Hjava_lang_Class* javaLangVMThrowable;
@@ -86,6 +87,8 @@ Hjava_lang_Class* javaLangNoClassDefFoundError;
 Hjava_lang_Class* javaLangStackOverflowError;
 /* Let's not load this if we can't open Klasses.jar */
 Hjava_lang_Class* javaIoIOException;
+
+Hjava_lang_ClassLoader* appClassLoader;
 
 #define SYSTEMCLASS "java/lang/System"
 #define	SERIALCLASS "java/io/Serializable"
@@ -280,6 +283,7 @@ initBaseClasses(void)
 	loadStaticClass(&javaLangDoubleClass, "java/lang/Double");
 	loadStaticClass(&PtrClass, PTRCLASS);
 	loadStaticClass(&ClassLoaderClass, LOADERCLASS);
+	loadStaticClass(&kaffeLangAppClassLoaderClass, APPCLASSLOADERCLASS);
 
 	/* Exception handling types */
 	loadStaticClass(&javaLangThrowable, "java/lang/Throwable");
@@ -301,5 +305,7 @@ initBaseClasses(void)
 	
 	if (!processClass(StringClass, CSTATE_COMPLETE, &einfo))
 		abortWithEarlyClassFailure(&einfo);
+
+	appClassLoader = NULL;
 }
 

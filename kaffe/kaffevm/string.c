@@ -23,8 +23,8 @@
 
 /* Internal variables */
 static hashtab_t	hashTable;	/* intern hash table */
-static iStaticLock	stringLock;	/* mutex on all intern operations */
-static int *            stringLockRoot;	/* the string lock is not a monitor */
+static iStaticLock	stringLock = KAFFE_STATIC_LOCK_INITIALIZER; /* mutex on all intern operations */
+static int *            stringLockRoot = NULL;	/* the string lock is not a monitor */
 
 /* Internal functions */
 static int		stringHashValue(const void *ptr);
@@ -351,6 +351,11 @@ stringUninternString(Hjava_lang_String* string)
 	int iLockRoot;
 
 	lockStaticMutex(&stringLock);
+	if (!unhand(string)->interned)
+	{
+	  unlockStaticMutex(&stringLock);
+	  return;
+	}
 	stringLockRoot = &iLockRoot;
 	hashRemove(hashTable, string);
 	unhand(string)->interned = false;

@@ -29,7 +29,7 @@
 #include "md.h"
 
 #define	CLASSHASHSZ	256	/* Must be a power of two */
-static iStaticLock	classHashLock;
+static iStaticLock	classHashLock = KAFFE_STATIC_LOCK_INITIALIZER;
 static classEntry* classEntryPool[CLASSHASHSZ];
 #if defined(KAFFE_STATS)
 statobject classStats;
@@ -250,7 +250,7 @@ destroyClassLoader(Collector *c UNUSED, void* _loader)
 }
 
 static nameDependency *dependencies;
-static iStaticLock	mappingLock;
+static iStaticLock	mappingLock = KAFFE_STATIC_LOCK_INITIALIZER;
 
 static
 nameDependency *findNameDependency(jthread_t jt)

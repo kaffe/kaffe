@@ -58,7 +58,7 @@ Hjava_lang_ThreadGroup* standardGroup;
 static void firstStartThread(void*);
 static void runfinalizer(void);
 
-static iStaticLock	thread_start_lock;
+static iStaticLock	thread_start_lock = KAFFE_STATIC_LOCK_INITIALIZER;
 
 /*
  * How do I get memory?
@@ -719,8 +719,8 @@ initNativeThreads(int nativestacksize)
 
 	if (stackSize == KAFFEMD_STACK_ERROR)
 	  {
-	    dprintf("WARNING: Impossible to retrieve the real stack size\n");
-	    dprintf("WARNING: You may experience deadlocks\n");
+	    fprintf(stderr, "WARNING: Impossible to retrieve the real stack size\n");
+	    fprintf(stderr, "WARNING: You may experience deadlocks\n");
 	  }
 	else if (stackSize == KAFFEMD_STACK_INFINITE || stackSize > threadStackSize)
 	  {
@@ -730,7 +730,8 @@ initNativeThreads(int nativestacksize)
 	  }
 	else
 	  {
-	    dprintf("NOTE: It is impossible to set the main thread stack\n"
+	    fprintf(stderr, 
+	            "NOTE: It is impossible to set the main thread stack\n"
 		    "NOTE: size because the system stack size is too low\n");
 	  }
 #else

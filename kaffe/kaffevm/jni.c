@@ -362,12 +362,30 @@ Kaffe_DefineClass(JNIEnv* env, jobject loader, const jbyte* buf, jsize len)
  * use based on the calling method, which requires examining the
  * stack backtrace.
  */
+
 static jclass
-Kaffe_FindClass(JNIEnv* env UNUSED, const char* name)
+tryClassForName(jstring nameString)
+{
+	jvalue retval;
+
+	BEGIN_EXCEPTION_HANDLING(0);
+
+	/* Call Class.forName() */
+	retval = do_execute_java_class_method("java.lang.Class", NULL,
+	    "forName", "(Ljava/lang/String;)Ljava/lang/Class;", nameString);
+
+	END_EXCEPTION_HANDLING();
+
+	return retval.l;
+}
+
+static jclass
+Kaffe_FindClass(JNIEnv* env, const char* name)
 {
 	jstring nameString;
 	Utf8Const* utf8;
-	jvalue retval;
+	jobject retval;
+	jobject exc;
 
 	BEGIN_EXCEPTION_HANDLING(0);
 
@@ -377,13 +395,45 @@ Kaffe_FindClass(JNIEnv* env UNUSED, const char* name)
 	utf8ConstRelease(utf8);
 	checkPtr(nameString);
 
-	/* Call Class.forName() */
-	retval = do_execute_java_class_method("java.lang.Class", NULL,
-	    "forName", "(Ljava/lang/String;)Ljava/lang/Class;", nameString);
+	retval = tryClassForName(nameString);
 
-	ADD_REF(retval.l);
+	exc = thread_data->exceptObj;
+	if (exc != NULL)
+	{
+		if (soft_instanceof(javaLangClassNotFoundException, exc))
+		{
+			int iLockRoot;
+			static iStaticLock appLock = KAFFE_STATIC_LOCK_INITIALIZER;
+
+			thread_data->exceptObj = NULL;
+			if (appClassLoader == NULL)
+			{
+				lockStaticMutex(&appLock);
+				if (appClassLoader == NULL)
+					appClassLoader = do_execute_java_method(kaffeLangAppClassLoaderClass, "getSingleton", "()Ljava/lang/ClassLoader;", NULL, true).l;
+				unlockStaticMutex(&appLock);
+
+				if (thread_data->exceptObj != NULL)
+				{
+					fprintf(stderr,
+						"ERROR: The default user class loader "
+					       	APPCLASSLOADERCLASS " can not be loaded.\n"
+						"Aborting...\n");
+					ABORT();
+				}
+			}
+
+			
+			retval = do_execute_java_class_method("java.lang.Class", NULL,
+			    "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;", nameString, true, appClassLoader).l;
+			ADD_REF(retval);
+		}
+	} else {
+		ADD_REF(retval);
+	}
+
 	END_EXCEPTION_HANDLING();
-	return (retval.l);
+	return (retval);
 }
 
 static jclass

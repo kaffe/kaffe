@@ -66,14 +66,21 @@ static const char * JAR_ERROR_UNSUPPORTED_COMPRESSION      = "Unsupported compre
  * jarFiles in memory longer than we should but it helps to avoid the
  * constant opening/closing some java code does.
  */
-static struct _jarCache {
+struct _jarCache {
 #if !defined(KAFFEH)
 	iStaticLock	lock;
 #endif
 	jarFile *files;
 #define JAR_FILE_CACHE_MAX 12
 	unsigned int count;
-} jarCache;
+};
+
+static struct _jarCache jarCache = {
+#if !defined(KAFFEH)
+	KAFFE_STATIC_LOCK_INITIALIZER,
+#endif
+	NULL, 0
+};
 
 /*
  * Hash a file name, the hash value is stored in what `hash' points to.

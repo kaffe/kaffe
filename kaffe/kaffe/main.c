@@ -87,10 +87,6 @@ main(int argc, char* argv[])
 	textdomain(PACKAGE);
 #endif
 
-#if defined(MAIN_MD)
-	/* Machine specific main first */
-	MAIN_MD;
-#endif
 	vmargs.version = JAVA_VERSION_HEX;
 
 #if defined(KAFFE_PROFILER)
@@ -260,57 +256,16 @@ main2(JNIEnv* env, char *argv[], int farg, int argc)
 	/* Executable is a JAR?  Use the JAR launcher */
 	if (isJar != 0) {
 		exec = "kaffe.jar.ExecJar";
-		
-		mcls = (*env)->FindClass(env, exec);
-		if (checkException())
-			goto done;
 	}
 	else {
 		exec = argv[farg];
 		farg++;
 		argc--;
-
-		/* Get the application class loader class */
-		lcls = (*env)->FindClass(env, "kaffe.lang.AppClassLoader");
-		if (checkException())
-			goto done;
-		
-		/* ... and then get the singleton. */
-		cmth = (*env)->GetStaticMethodID(env,
-						 lcls,
-						 "getSingleton",
-						 "()Ljava/lang/ClassLoader;");
-		if (checkException())
-			goto done;
-		
-		loader = (*env)->CallStaticObjectMethod(env,
-							lcls,
-							cmth);
-		if (checkException())
-			goto done;
-		
-		/* Load the main class into the AppClassLoader */
-		lmth = (*env)->GetMethodID(env,
-					   lcls,
-					   "loadClass",
-					   "(Ljava/lang/String;Z)Ljava/lang/Class;");
-		if (checkException())
-			goto done;
-		
-DBG(VMCLASSLOADER,
-    /* Announce when VM calls class loaders.. */
-    dprintf("Calling user-defined \"startup\" class loader "
-	    "kaffe/lang/AppClassLoader - loadClass(%s)\n", exec);
-    )
-	
-		mcls = (*env)->CallObjectMethod(env,
-						loader,
-						lmth,
-						(*env)->NewStringUTF(env, exec),
-						false);
-		if (checkException())
-			goto done;
 	}
+	
+	mcls = (*env)->FindClass(env, exec);
+	if (checkException())
+		goto done;
 	
 	/* ... and run main. */
 	mmth = (*env)->GetStaticMethodID(env,

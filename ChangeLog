@@ -1,3 +1,47 @@
+2004-06-15  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/baseClasses.c
+	(kaffeLangAppClassLoaderClass): New class reference for the kaffe's
+	class loader.
+	(appClassLoader): New reference to the VM's wide user class loader.
+	(initBaseClasses): Preload kaffe/lang/AppClassLoader and initialize
+	appClassLoader.
+
+	* kaffe/kaffevm/baseClasses.h
+	(kaffeLangAppClassLoaderClass): New class reference for the kaffe's
+	class loader.
+	(appClassLoader): New reference to the VM's wide user class loader.
+	(APPCLASSLOADERCLASS): New macro for the name of the user class
+	loader.
+
+	* kaffe/kaffevm/classPool.c, kaffe/kaffevm/findInJar.c,
+	kaffe/kaffevm/jar.c, kaffe/kaffevm/string.c, kaffe/kaffevm/thread.c,
+	kaffe/kaffevm/utf8const.c:
+	Use KAFFE_STATIC_LOCK_INITIALIZER to have all static locks
+	rightfully initialized at startup.
+
+	* kaffe/kaffevm/jni.c
+	(tryClassForName): New function to be able to catch exceptions.
+	(Kaffe_FindClass): Initialize a user class loader and use it to load
+	a class if it has not been found by the default classloader.
+	
+	* kaffe/kaffevm/locks.h
+	(KAFFE_STATIC_LOCK_INITIALIZER): New macro to initialize static locks.
+
+	* kaffe/kaffevm/string.c
+	(stringUninternString): Check twice "interned" to prevent race
+	conditions.
+
+	* kaffe/kaffevm/thread.c
+	(initNativeThreads): Use "fprintf(stderr," instead of "dprintf" to be
+	sure all users will see the issued warning.
+
+	* kaffe/kaffe/main.c
+	(main): Removed the call to INIT_MD as it is already done in
+	initialiseKaffe.
+	(main2): The application class loader is now directly managed by the
+	core VM.
+
 2003-06-15  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/java/nio/Buffer.java,

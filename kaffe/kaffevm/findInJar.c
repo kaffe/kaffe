@@ -180,7 +180,7 @@ findClassInJar(char* cname, classFile* hand, errorInfo *einfo)
 {
 	char *buf;
 	int fp;
-	static iStaticLock	jarlock;
+	static iStaticLock	jarlock = KAFFE_STATIC_LOCK_INITIALIZER;
 	classpathEntry* ptr;
 	int i;
 	int rc;
