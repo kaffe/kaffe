@@ -217,13 +217,12 @@ public class JFormattedTextField extends JTextField
 
   public void setDocument(Document newdoc)
   {
-    Document document = getDocument();
+    Document olddoc = getDocument();
 
-    if (document == newdoc)
+    if (olddoc == newdoc)
       return;
     
-    setDocument(newdoc);
-    firePropertyChange("document", document, newdoc);
+    super.setDocument(newdoc);
   }
 
   public void setLostFocusBehavior (int behavior)
