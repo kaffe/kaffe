@@ -14,6 +14,7 @@ java/io/FileDescriptor.class
 java/io/FileInputStream.class
 java/io/FileNotFoundException.class
 java/io/FileOutputStream.class
+java/io/FileReader.class
 java/io/FilterInputStream.class
 java/io/FilterOutputStream.class
 java/io/FilterReader.class
@@ -21,6 +22,7 @@ java/io/IOException.class
 java/io/InputStream.class
 java/io/InputStreamReader.class
 java/io/InterruptedIOException.class
+java/io/LineNumberReader.class
 java/io/ObjectInput.class
 java/io/ObjectInputStream.class
 java/io/ObjectStreamConstants.class
@@ -54,6 +56,7 @@ java/lang/Comparable.class
 java/lang/Double.class
 java/lang/Error.class
 java/lang/Exception.class
+java/lang/ExceptionInInitializerError.class
 java/lang/Float.class
 java/lang/IllegalAccessException.class
 java/lang/IllegalArgumentException.class

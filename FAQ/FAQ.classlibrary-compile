@@ -125,3 +125,84 @@ character to comment out lines.
 
 After you have compiled the class library, run 'make bootstrap' to
 update Klasses.jar.bootstrap.
+
+How do I adapt the class library to my needs?
+---------------------------------------------
+
+If you are using kaffe on an embedded system, you may want to use only
+a part of the functionality provided by the class library. For
+example, you may not need JAXP or AWT on your system. So you shouldn't
+have to waste space on the device by including classes you are not
+going to use.
+
+Kaffe supports user defined class library profiles. It works on two
+levels of indirection: a profile file tells the build process where to
+find lists of files to be compiled in a single compiler run. The
+compiler then compiles the listed files.
+
+Let's take a look at the default profile in
+libraries/javalib/profiles/default/profile . It lists a few sets of
+files needed to compile the class library. Among them there is a set
+of files needed for AWT support, another for JAXP support etc.
+
+Each of these sets is a simple list of java source files that should
+be compiled together in a compiler run. They are passed to the
+compiler using the @file-containing-a-list-of-sources option, so that
+it works on systems with small maximal command line length.
+
+In order to remove the AWT classes from your class library, you can
+simply remove the line with awt.files from the profile.
+
+In order to remove single classes from your class library, you can
+remove them from the respective lists of files they are in. This may
+cause the compilation of other classes to fail, so check the compiler
+output to make sure the compilation still worked.
+
+How do I add classes to a class library profile?
+------------------------------------------------
+
+If you want to add a class to specific compiler run, just add the path
+to its source to the file listing the classes to be compiled in that
+run.
+
+If you want to add a set of classes, you should add a new compiler run
+in the profile, and list paths to the sources in a separate file.
+
+You should still consider adding the classes to Klasses_jar_SRCS in
+order to have the changes automatically picked up by the build system.
+
+How do I add my own class library profile?
+------------------------------------------
+
+Just make a new directory with your profile's name in
+libraries/javalib/profiles and create a file named 'profile' in the
+new directory.
+
+In order to make your life easier, kaffe automatically compiles all
+essential files needed for java.lang.Object using the list of files in
+libraries/javalib/essential.files . So you don't have to re-list those
+files, but doing so won't hurt. It just helps you to get started by
+allowing you to focus on creating your library profile instead of
+getting java.lang.Object to compile.
+
+Kaffe also automatically takes care about picking the java.math
+implementation.
+
+You can use the minimal profile as your starting point. It compiles no
+further files, beside those automatically compiled in. You can either
+add the classes at once, and add more tofix any compiler error, or you
+can use a tool like jakarta BCEL's transitive hull verifier on the
+root class of your application and add all the classes it
+traverses. That's what I did to get the list of essential files. I
+started with java.lang.Object. If you are using BCEL's verifier, you
+may need to add some interfaces by hand.
+
+If you create some profiles that you consider to be of value for
+others, please consider sending them to the Kaffe mailing list on
+kaffe@kaffe.org .
+
+How do I pick which class library profile to use?
+-------------------------------------------------
+
+The configure script has the option --with-class-library-profile,
+which allows you to specify a profile to use for the class library.

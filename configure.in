@@ -38,8 +38,8 @@ AC_ARG_WITH(libraries,
 	sed -e 's/ / -L/g' -e 's/-L //g' -e 's/-L$//'`
     LTLIBS="$LTLIBS"`echo " $withval" |
 	sed -e 's/ / -R/g' -e 's/-R //g' -e 's/-R$//'`],
-  [ CTLIBS="$CTLIBS -L/usr/local/lib"
-    LTLIBS="$LTLIBS -R/usr/local/lib"])
+  [ CTLIBS="$CTLIBS"
+    LTLIBS="$LTLIBS"])
 
 LIBS="$CTLIBS $LIBS"
 
@@ -1314,7 +1314,7 @@ if test x$pure_java_math = xtrue ; then
 else
 	java_math_SRCS="native_java_math_SRCS"
 	NATIVE_MATH_DIR="math"
-	MATH_LIB=$(top_builddir)/libraries/clib/math/libmath.la
+	MATH_LIB="\$(top_builddir)/libraries/clib/math/libmath.la"
 fi
 
 AC_SUBST(java_math_SRCS)
@@ -1326,6 +1326,18 @@ dnl -----------------------------------------------------------------------
 
 AM_WITH_DMALLOC
 
+dnl -----------------------------------------------------------------------
+dnl                    Support for different class library profiles
+dnl -----------------------------------------------------------------------
+AC_ARG_WITH(class_library_profile, [  --with-class-library-profile=PROFILE	specify class library profile])
+
+if test "$with_class_library_profile" = "" ; then
+	PROFILE=default
+else
+	PROFILE=$with_class_library_profile
+fi
+
+AC_SUBST(PROFILE)
 
 JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/native/libnative.la \

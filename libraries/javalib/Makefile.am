@@ -22,7 +22,8 @@ Klasses_jar_SRCS = \
 	$(java_lang_SRCS) \
 	$(java_lang_ref_SRCS) \
 	$(java_lang_reflect_SRCS) \
-	$(@java_math_SRCS@) \
+	$(native_java_math_SRCS) \
+	$(pure_java_math_SRCS) \
 	$(java_net_SRCS) \
 	$(java_security_SRCS) \
 	$(java_security_acl_SRCS) \
@@ -43,8 +44,7 @@ Klasses_jar_SRCS = \
 	$(kaffe_security_SRCS) \
 	$(kaffe_security_provider_SRCS) \
 	$(kaffe_util_SRCS) \
-	$(kaffe_util_zip_SRCS)
-Awt_SRCS = \
+	$(kaffe_util_zip_SRCS) \
 	$(gnu_java_awt_SRCS) \
 	$(java_applet_SRCS) \
 	$(java_awt_SRCS) \
@@ -63,8 +63,7 @@ Awt_SRCS = \
 	$(java_awt_widgets_SRCS) \
 	$(kaffe_applet_SRCS) \
 	$(kaffe_awt_SRCS) \
-	$(kaffe_util_log_SRCS)
-Rest_SRCS = \
+	$(kaffe_util_log_SRCS) \
 	$(gnu_java_nio_SRCS) \
 	$(gnu_java_nio_charset_SRCS) \
 	$(gnu_java_util_prefs_SRCS) \
@@ -90,8 +89,7 @@ Rest_SRCS = \
 	$(kaffe_text_collator_SRCS) \
 	$(kaffe_text_dateformat_SRCS) \
 	$(kaffe_text_numberformat_SRCS) \
-	$(kaffe_util_locale_SRCS) 
-RMI_SRCS = \
+	$(kaffe_util_locale_SRCS) \
 	$(gnu_javax_rmi_SRCS) \
 	$(gnu_javax_rmi_CORBA_SRCS) \
 	$(java_rmi_SRCS) \
@@ -115,8 +113,7 @@ RMI_SRCS = \
 	$(kaffe_rmi_server_SRCS) \
 	$(kaffe_tools_compiler_SRCS) \
 	$(kaffe_tools_jar_SRCS) \
-	$(kaffe_tools_serialver_SRCS) 
-JAXP_SRCS = \
+	$(kaffe_tools_serialver_SRCS) \
 	$(gnu_xml_aelfred2_SRCS) \
 	$(gnu_xml_dom_SRCS) \
 	$(gnu_xml_pipeline_SRCS) \
@@ -136,8 +133,7 @@ JAXP_SRCS = \
 	$(org_w3c_dom_views_SRCS) \
 	$(org_xml_sax_SRCS) \
 	$(org_xml_sax_ext_SRCS) \
-	$(org_xml_sax_helpers_SRCS) 
-SOUND_SRCS = \
+	$(org_xml_sax_helpers_SRCS) \
 	$(org_tritonus_core_SRCS) \
 	$(org_tritonus_lowlevel_alsa_SRCS) \
 	$(org_tritonus_lowlevel_esd_SRCS) \
@@ -1750,9 +1746,11 @@ kaffe_util_log_SRCS = \
 kaffe_util_zip_SRCS = \
 	kaffe/util/zip/SwitchInflater.java
 native_java_math_SRCS = \
+	java/lang/ArithmeticException.java \
 	java/math/BigDecimal.java \
 	java/math/BigInteger.java
 pure_java_math_SRCS = \
+	java/lang/ArithmeticException.java \
         pure-java/math/gnu/java/math/MPN.java \
         pure-java/math/java/math/BigDecimal.java \
         pure-java/math/java/math/BigInteger.java 
@@ -2204,7 +2202,6 @@ gnu_regexp_message_bundles = \
 	gnu/regexp/MessagesBundle.properties
 
 EXTRA_DIST = Klasses.jar.bootstrap $(toolslib_DATA) $(Klasses_jar_SRCS) \
-	$(Awt_SRCS) $(Rest_SRCS) $(RMI_SRCS) $(JAXP_SRCS) $(SOUND_SRCS) \
         bootstrap.classlist \
 	$(OMITTED_PACKAGES_SRCS) \
 	$(serialized_converters) \
@@ -2227,15 +2224,12 @@ rebuildLib = ./rebuildLib
 
 .PHONY: compile-classes classes
 ## classes is provided for backward compatibility; use compile-classes
-compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS) $(Awt_SRCS) $(Rest_SRCS) $(RMI_SRCS) $(JAXP_SRCS) $(SOUND_SRCS)
+compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
-	$(SHELL) $(rebuildLib) $(Klasses_jar_SRCS)
-	$(SHELL) $(rebuildLib) $(Awt_SRCS)
-	$(SHELL) $(rebuildLib) $(Rest_SRCS)
-	$(SHELL) $(rebuildLib) $(RMI_SRCS)
-	$(SHELL) $(rebuildLib) $(JAXP_SRCS)
-	$(SHELL) $(rebuildLib) $(SOUND_SRCS)
+	$(SHELL) $(rebuildLib) @essential.files
+	$(SHELL) $(rebuildLib) $(@java_math_SRCS@)
+	for i in `cat profiles/$(PROFILE)/profile` ;  do $(SHELL) $(rebuildLib) @profiles/$(PROFILE)/$$i ; done
 	echo timestamp > $(LIBDIR)/stamp
 
 $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist

@@ -124,6 +124,7 @@ OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PATHSEP = @PATHSEP@
+PROFILE = @PROFILE@
 QEMBED = @QEMBED@
 QT_CXXFLAGS = @QT_CXXFLAGS@
 QT_GUILINK = @QT_GUILINK@
@@ -155,17 +156,7 @@ SRCDIRS = gnu java javax kaffe org
 jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
 
-Klasses_jar_SRCS =  	$(gnu_java_util_SRCS) 	$(gnu_regexp_SRCS) 	$(java_io_SRCS) 	$(java_lang_SRCS) 	$(java_lang_ref_SRCS) 	$(java_lang_reflect_SRCS) 	$(@java_math_SRCS@) 	$(java_net_SRCS) 	$(java_security_SRCS) 	$(java_security_acl_SRCS) 	$(java_security_cert_SRCS) 	$(java_security_interfaces_SRCS) 	$(java_security_spec_SRCS) 	$(java_sql_SRCS) 	$(java_text_SRCS) 	$(java_util_SRCS) 	$(java_util_jar_SRCS) 	$(java_util_regex_SRCS) 	$(java_util_zip_SRCS) 	$(kaffe_io_SRCS) 	$(kaffe_jar_SRCS) 	$(kaffe_lang_SRCS) 	$(kaffe_management_SRCS) 	$(kaffe_net_SRCS) 	$(kaffe_security_SRCS) 	$(kaffe_security_provider_SRCS) 	$(kaffe_util_SRCS) 	$(kaffe_util_zip_SRCS)
-
-Awt_SRCS =  	$(gnu_java_awt_SRCS) 	$(java_applet_SRCS) 	$(java_awt_SRCS) 	$(java_awt_color_SRCS) 	$(java_awt_datatransfer_SRCS) 	$(java_awt_dnd_SRCS) 	$(java_awt_dnd_peer_SRCS) 	$(java_awt_event_SRCS) 	$(java_awt_font_SRCS) 	$(java_awt_geom_SRCS) 	$(java_awt_im_SRCS) 	$(java_awt_image_SRCS) 	$(java_awt_image_renderable_SRCS) 	$(java_awt_peer_SRCS) 	$(java_awt_print_SRCS) 	$(java_awt_widgets_SRCS) 	$(kaffe_applet_SRCS) 	$(kaffe_awt_SRCS) 	$(kaffe_util_log_SRCS)
-
-Rest_SRCS =  	$(gnu_java_nio_SRCS) 	$(gnu_java_nio_charset_SRCS) 	$(gnu_java_util_prefs_SRCS) 	$(java_beans_SRCS) 	$(java_beans_beancontext_SRCS) 	$(java_nio_SRCS) 	$(java_nio_channels_SRCS) 	$(java_nio_channels_spi_SRCS) 	$(java_nio_charset_SRCS) 	$(java_nio_charset_spi_SRCS) 	$(java_util_logging_SRCS) 	$(java_util_mime_SRCS) 	$(java_util_prefs_SRCS) 	$(javax_accessibility_SRCS) 	$(javax_swing_text_SRCS) 	$(kaffe_beans_editors_SRCS) 	$(kaffe_net_www_protocol_SRCS) 	$(kaffe_net_www_protocol_file_SRCS) 	$(kaffe_net_www_protocol_ftp_SRCS) 	$(kaffe_net_www_protocol_http_SRCS) 	$(kaffe_net_www_protocol_jar_SRCS) 	$(kaffe_net_www_protocol_system_SRCS) 	$(kaffe_text_collator_SRCS) 	$(kaffe_text_dateformat_SRCS) 	$(kaffe_text_numberformat_SRCS) 	$(kaffe_util_locale_SRCS) 
-
-RMI_SRCS =  	$(gnu_javax_rmi_SRCS) 	$(gnu_javax_rmi_CORBA_SRCS) 	$(java_rmi_SRCS) 	$(java_rmi_activation_SRCS) 	$(java_rmi_dgc_SRCS) 	$(java_rmi_registry_SRCS) 	$(java_rmi_server_SRCS) 	$(javax_naming_SRCS) 	$(javax_naming_directory_SRCS) 	$(javax_naming_event_SRCS) 	$(javax_naming_ldap_SRCS) 	$(javax_naming_spi_SRCS) 	$(javax_rmi_SRCS) 	$(javax_rmi_CORBA_SRCS) 	$(javax_sql_SRCS) 	$(javax_transaction_SRCS) 	$(javax_transaction_xa_SRCS) 	$(kaffe_rmi_dgc_SRCS) 	$(kaffe_rmi_registry_SRCS) 	$(kaffe_rmi_rmic_SRCS) 	$(kaffe_rmi_server_SRCS) 	$(kaffe_tools_compiler_SRCS) 	$(kaffe_tools_jar_SRCS) 	$(kaffe_tools_serialver_SRCS) 
-
-JAXP_SRCS =  	$(gnu_xml_aelfred2_SRCS) 	$(gnu_xml_dom_SRCS) 	$(gnu_xml_pipeline_SRCS) 	$(gnu_xml_util_SRCS) 	$(javax_xml_parsers_SRCS) 	$(javax_xml_transform_SRCS) 	$(javax_xml_transform_dom_SRCS) 	$(javax_xml_transform_sax_SRCS) 	$(javax_xml_transform_stream_SRCS) 	$(org_w3c_dom_SRCS) 	$(org_w3c_dom_css_SRCS) 	$(org_w3c_dom_events_SRCS) 	$(org_w3c_dom_html_SRCS) 	$(org_w3c_dom_ranges_SRCS) 	$(org_w3c_dom_stylesheets_SRCS) 	$(org_w3c_dom_traversal_SRCS) 	$(org_w3c_dom_views_SRCS) 	$(org_xml_sax_SRCS) 	$(org_xml_sax_ext_SRCS) 	$(org_xml_sax_helpers_SRCS) 
-
-SOUND_SRCS =  	$(org_tritonus_core_SRCS) 	$(org_tritonus_lowlevel_alsa_SRCS) 	$(org_tritonus_lowlevel_esd_SRCS) 	$(org_tritonus_midi_device_alsa_SRCS) 	$(org_tritonus_midi_file_SRCS) 	$(org_tritonus_sampled_convert_SRCS) 	$(org_tritonus_sampled_file_SRCS) 	$(org_tritonus_sampled_mixer_alsa_SRCS) 	$(org_tritonus_sampled_mixer_esd_SRCS) 	$(org_tritonus_share_SRCS) 	$(org_tritonus_share_midi_SRCS) 	$(org_tritonus_share_sampled_SRCS) 	$(org_tritonus_share_sampled_convert_SRCS) 	$(org_tritonus_share_sampled_file_SRCS) 	$(org_tritonus_share_sampled_mixer_SRCS) 	$(javax_sound_midi_SRCS) 	$(javax_sound_midi_spi_SRCS) 	$(javax_sound_sampled_SRCS) 	$(javax_sound_sampled_spi_SRCS) 
+Klasses_jar_SRCS =  	$(gnu_java_util_SRCS) 	$(gnu_regexp_SRCS) 	$(java_io_SRCS) 	$(java_lang_SRCS) 	$(java_lang_ref_SRCS) 	$(java_lang_reflect_SRCS) 	$(native_java_math_SRCS) 	$(pure_java_math_SRCS) 	$(java_net_SRCS) 	$(java_security_SRCS) 	$(java_security_acl_SRCS) 	$(java_security_cert_SRCS) 	$(java_security_interfaces_SRCS) 	$(java_security_spec_SRCS) 	$(java_sql_SRCS) 	$(java_text_SRCS) 	$(java_util_SRCS) 	$(java_util_jar_SRCS) 	$(java_util_regex_SRCS) 	$(java_util_zip_SRCS) 	$(kaffe_io_SRCS) 	$(kaffe_jar_SRCS) 	$(kaffe_lang_SRCS) 	$(kaffe_management_SRCS) 	$(kaffe_net_SRCS) 	$(kaffe_security_SRCS) 	$(kaffe_security_provider_SRCS) 	$(kaffe_util_SRCS) 	$(kaffe_util_zip_SRCS) 	$(gnu_java_awt_SRCS) 	$(java_applet_SRCS) 	$(java_awt_SRCS) 	$(java_awt_color_SRCS) 	$(java_awt_datatransfer_SRCS) 	$(java_awt_dnd_SRCS) 	$(java_awt_dnd_peer_SRCS) 	$(java_awt_event_SRCS) 	$(java_awt_font_SRCS) 	$(java_awt_geom_SRCS) 	$(java_awt_im_SRCS) 	$(java_awt_image_SRCS) 	$(java_awt_image_renderable_SRCS) 	$(java_awt_peer_SRCS) 	$(java_awt_print_SRCS) 	$(java_awt_widgets_SRCS) 	$(kaffe_applet_SRCS) 	$(kaffe_awt_SRCS) 	$(kaffe_util_log_SRCS) 	$(gnu_java_nio_SRCS) 	$(gnu_java_nio_charset_SRCS) 	$(gnu_java_util_prefs_SRCS) 	$(java_beans_SRCS) 	$(java_beans_beancontext_SRCS) 	$(java_nio_SRCS) 	$(java_nio_channels_SRCS) 	$(java_nio_channels_spi_SRCS) 	$(java_nio_charset_SRCS) 	$(java_nio_charset_spi_SRCS) 	$(java_util_logging_SRCS) 	$(java_util_mime_SRCS) 	$(java_util_prefs_SRCS) 	$(javax_accessibility_SRCS) 	$(javax_swing_text_SRCS) 	$(kaffe_beans_editors_SRCS) 	$(kaffe_net_www_protocol_SRCS) 	$(kaffe_net_www_protocol_file_SRCS) 	$(kaffe_net_www_protocol_ftp_SRCS) 	$(kaffe_net_www_protocol_http_SRCS) 	$(kaffe_net_www_protocol_jar_SRCS) 	$(kaffe_net_www_protocol_system_SRCS) 	$(kaffe_text_collator_SRCS) 	$(kaffe_text_dateformat_SRCS) 	$(kaffe_text_numberformat_SRCS) 	$(kaffe_util_locale_SRCS) 	$(gnu_javax_rmi_SRCS) 	$(gnu_javax_rmi_CORBA_SRCS) 	$(java_rmi_SRCS) 	$(java_rmi_activation_SRCS) 	$(java_rmi_dgc_SRCS) 	$(java_rmi_registry_SRCS) 	$(java_rmi_server_SRCS) 	$(javax_naming_SRCS) 	$(javax_naming_directory_SRCS) 	$(javax_naming_event_SRCS) 	$(javax_naming_ldap_SRCS) 	$(javax_naming_spi_SRCS) 	$(javax_rmi_SRCS) 	$(javax_rmi_CORBA_SRCS) 	$(javax_sql_SRCS) 	$(javax_transaction_SRCS) 	$(javax_transaction_xa_SRCS) 	$(kaffe_rmi_dgc_SRCS) 	$(kaffe_rmi_registry_SRCS) 	$(kaffe_rmi_rmic_SRCS) 	$(kaffe_rmi_server_SRCS) 	$(kaffe_tools_compiler_SRCS) 	$(kaffe_tools_jar_SRCS) 	$(kaffe_tools_serialver_SRCS) 	$(gnu_xml_aelfred2_SRCS) 	$(gnu_xml_dom_SRCS) 	$(gnu_xml_pipeline_SRCS) 	$(gnu_xml_util_SRCS) 	$(javax_xml_parsers_SRCS) 	$(javax_xml_transform_SRCS) 	$(javax_xml_transform_dom_SRCS) 	$(javax_xml_transform_sax_SRCS) 	$(javax_xml_transform_stream_SRCS) 	$(org_w3c_dom_SRCS) 	$(org_w3c_dom_css_SRCS) 	$(org_w3c_dom_events_SRCS) 	$(org_w3c_dom_html_SRCS) 	$(org_w3c_dom_ranges_SRCS) 	$(org_w3c_dom_stylesheets_SRCS) 	$(org_w3c_dom_traversal_SRCS) 	$(org_w3c_dom_views_SRCS) 	$(org_xml_sax_SRCS) 	$(org_xml_sax_ext_SRCS) 	$(org_xml_sax_helpers_SRCS) 	$(org_tritonus_core_SRCS) 	$(org_tritonus_lowlevel_alsa_SRCS) 	$(org_tritonus_lowlevel_esd_SRCS) 	$(org_tritonus_midi_device_alsa_SRCS) 	$(org_tritonus_midi_file_SRCS) 	$(org_tritonus_sampled_convert_SRCS) 	$(org_tritonus_sampled_file_SRCS) 	$(org_tritonus_sampled_mixer_alsa_SRCS) 	$(org_tritonus_sampled_mixer_esd_SRCS) 	$(org_tritonus_share_SRCS) 	$(org_tritonus_share_midi_SRCS) 	$(org_tritonus_share_sampled_SRCS) 	$(org_tritonus_share_sampled_convert_SRCS) 	$(org_tritonus_share_sampled_file_SRCS) 	$(org_tritonus_share_sampled_mixer_SRCS) 	$(javax_sound_midi_SRCS) 	$(javax_sound_midi_spi_SRCS) 	$(javax_sound_sampled_SRCS) 	$(javax_sound_sampled_spi_SRCS) 
 
 gnu_java_awt_SRCS =  	gnu/java/awt/BitMaskExtent.java 	gnu/java/awt/Buffers.java 	gnu/java/awt/ComponentDataBlitOp.java 	gnu/java/awt/EventModifier.java 
 
@@ -385,9 +376,9 @@ kaffe_util_log_SRCS =  	kaffe/util/log/LogClient.java 	kaffe/util/log/LogStream.
 
 kaffe_util_zip_SRCS =  	kaffe/util/zip/SwitchInflater.java
 
-native_java_math_SRCS =  	java/math/BigDecimal.java 	java/math/BigInteger.java
+native_java_math_SRCS =  	java/lang/ArithmeticException.java 	java/math/BigDecimal.java 	java/math/BigInteger.java
 
-pure_java_math_SRCS =          pure-java/math/gnu/java/math/MPN.java         pure-java/math/java/math/BigDecimal.java         pure-java/math/java/math/BigInteger.java 
+pure_java_math_SRCS =  	java/lang/ArithmeticException.java         pure-java/math/gnu/java/math/MPN.java         pure-java/math/java/math/BigDecimal.java         pure-java/math/java/math/BigInteger.java 
 
 org_tritonus_core_SRCS =  	org/tritonus/core/Service.java 	org/tritonus/core/TAudioConfig.java 	org/tritonus/core/TInit.java 	org/tritonus/core/TMidiConfig.java
 
@@ -452,7 +443,7 @@ serialized_converters =  	kaffe/io/ByteToChar8859_2.ser 	kaffe/io/ByteToChar8859
 gnu_regexp_message_bundles =  	gnu/regexp/MessagesBundle_fr.properties 	gnu/regexp/MessagesBundle.properties
 
 
-EXTRA_DIST = Klasses.jar.bootstrap $(toolslib_DATA) $(Klasses_jar_SRCS) 	$(Awt_SRCS) $(Rest_SRCS) $(RMI_SRCS) $(JAXP_SRCS) $(SOUND_SRCS)         bootstrap.classlist 	$(OMITTED_PACKAGES_SRCS) 	$(serialized_converters) 	$(gnu_regexp_message_bundles) 	kaffe/io/ByteToCharEUC_JP.tbl 	kaffe/io/CharToByteEUC_JP.tbl 	kaffe/lang/unicode.idx 	kaffe/lang/unicode.tbl
+EXTRA_DIST = Klasses.jar.bootstrap $(toolslib_DATA) $(Klasses_jar_SRCS)         bootstrap.classlist 	$(OMITTED_PACKAGES_SRCS) 	$(serialized_converters) 	$(gnu_regexp_message_bundles) 	kaffe/io/ByteToCharEUC_JP.tbl 	kaffe/io/CharToByteEUC_JP.tbl 	kaffe/lang/unicode.idx 	kaffe/lang/unicode.tbl
 
 
 LIBDIR = lib
@@ -551,7 +542,7 @@ distdir: $(DISTFILES)
 	   $(distdir)/java/beans $(distdir)/java/beans/beancontext \
 	   $(distdir)/java/io $(distdir)/java/lang \
 	   $(distdir)/java/lang/ref $(distdir)/java/lang/reflect \
-	   $(distdir)/java/net $(distdir)/java/nio \
+	   $(distdir)/java/math $(distdir)/java/net $(distdir)/java/nio \
 	   $(distdir)/java/nio/channels \
 	   $(distdir)/java/nio/channels/spi $(distdir)/java/nio/charset \
 	   $(distdir)/java/nio/charset/spi $(distdir)/java/rmi \
@@ -619,7 +610,9 @@ distdir: $(DISTFILES)
 	   $(distdir)/org/w3c/dom/stylesheets \
 	   $(distdir)/org/w3c/dom/traversal \
 	   $(distdir)/org/w3c/dom/views $(distdir)/org/xml/sax \
-	   $(distdir)/org/xml/sax/ext $(distdir)/org/xml/sax/helpers
+	   $(distdir)/org/xml/sax/ext $(distdir)/org/xml/sax/helpers \
+	   $(distdir)/pure-java/math/gnu/java/math \
+	   $(distdir)/pure-java/math/java/math
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -702,15 +695,12 @@ new-classes: $(top_srcdir)/developers/update-class-list
 	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
 
 .PHONY: compile-classes classes
-compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS) $(Awt_SRCS) $(Rest_SRCS) $(RMI_SRCS) $(JAXP_SRCS) $(SOUND_SRCS)
+compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	rm -rf $(LIBDIR)
 	mkdir $(LIBDIR)
-	$(SHELL) $(rebuildLib) $(Klasses_jar_SRCS)
-	$(SHELL) $(rebuildLib) $(Awt_SRCS)
-	$(SHELL) $(rebuildLib) $(Rest_SRCS)
-	$(SHELL) $(rebuildLib) $(RMI_SRCS)
-	$(SHELL) $(rebuildLib) $(JAXP_SRCS)
-	$(SHELL) $(rebuildLib) $(SOUND_SRCS)
+	$(SHELL) $(rebuildLib) @essential.files
+	$(SHELL) $(rebuildLib) $(@java_math_SRCS@)
+	for i in `cat profiles/$(PROFILE)/profile` ;  do $(SHELL) $(rebuildLib) @profiles/$(PROFILE)/$$i ; done
 	echo timestamp > $(LIBDIR)/stamp
 
 $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist
