@@ -1,3 +1,8 @@
+Tue Mar 14 12:08:37 PST 2000  Mo DeJong <mdejong@cygnus.com>
+
+	* test/regression/ZipVerify.java: update test
+	* test/regression/ZipVerifyUtils.java: new support class
+
 Tue Mar 14 14:23:22 CET 2000  Edouard G. Parmelan  <egp@free.fr>
 	
 	* libraries/javalib/kjc.jar: update to version 1.4D from
