@@ -1,3 +1,8 @@
+2004-04-27  Ean Schuessler <ean@brainfood.com>
+
+	* kaffe/scripts/nm2as.awk:
+	Added awk invocation.
+
 2004-04-26  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/rebuildLib.in:

@@ -1,3 +1,4 @@
+#!/usr/bin/awk
 
 # nm2as.awk
 # Used only by kaffexprof 
