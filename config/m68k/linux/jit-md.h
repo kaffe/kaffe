@@ -14,6 +14,8 @@
 #ifndef __m68k_linux_jit_md_h
 #define __m68k_linux_jit_md_h
 
+#include "clear-cache.h"
+
 /**/
 /* Include common information. */
 /**/
@@ -39,4 +41,10 @@
 		(f).retpc = (uintp)(c)->sc_pc;				\
 	} while (0)
 
-#endif
+/*
+ * Flush the cache on linux.
+ */
+#undef  FLUSH_DCACHE
+#define FLUSH_DCACHE(beg,end)   CLEAR_INSN_CACHE((beg),(end))
+
+#endif /* __m68k_linux_jit_md_h */

@@ -1,5 +1,23 @@
 2004-03-15  Dalibor Topic <robilad@kaffe.org>
 
+	* config/m68k/clear-cache.h:
+	Removed.
+
+	* config/m68k/jit.h:
+	Reverted patch since it breaks things on non-linux platforms.
+
+	Reported by: Tony Wyatt <wyattaw@optushome.com.au>
+
+	* config/m68k/linux/jit-md.h:
+	Added linux specific cache clearing code.
+
+	*  config/m68k/linux/clear-cache.h:
+	New file. Fixed #define.
+
+	Reported by: Riccardo Mottola <zuse@libero.it>
+
+2004-03-15  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
 	Import limits.h instead of linux specific bits/local_lim.h.
 
