@@ -16,6 +16,7 @@
 #include "config-std.h"
 #include "config-io.h"
 #include "config-mem.h"
+#include "config-signal.h"
 #include "lerrno.h"
 #include "object.h"
 #include "thread.h"

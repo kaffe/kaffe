@@ -22,6 +22,12 @@
 #include "i386/common.h"
 #include "i386/threads.h"
 
+/*
+ * Redefine stack pointer offset.
+ */
+#undef	SP_OFFSET
+#define	SP_OFFSET	7
+
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif
@@ -55,9 +61,9 @@
 		movl %5,%%ebx						\n\
 		movb %4,%%cl						\n\
 		movl %%eax,(%%ebx)					\n\
-		cmpb $'D',%%cl						\n\
+		cmpb $0x44,%%cl						\n\
 		je 4f							\n\
-		cmpb $'J',%%cl						\n\
+		cmpb $0x4a,%%cl						\n\
 		jne 5f							\n\
 4:									\n\
 		movl %%edx,4(%%ebx)					\n\
@@ -66,7 +72,7 @@
 	  : "r" ((CALL)->nrargs),					\
 	    "r" ((CALL)->args),						\
 	    "r" ((CALL)->callsize),					\
-	    "m" (METHOD_NATIVECODE((CALL)->meth)),			\
+	    "m" ((CALL)->function),					\
 	    "m" ((CALL)->rettype),					\
 	    "m" ((CALL)->ret)						\
 	  : "eax", "ebx", "ecx", "edx", "edi", "esi", "cc", "memory");	\

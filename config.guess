@@ -342,6 +342,9 @@ EOF
     *:AIX:*:*)
 	echo rs6000-ibm-aix
 	exit 0 ;;
+    *:QNX:*:*)
+	echo i386-pc-qnx`echo ${UNAME_VERSION}|sed -e 's/\(.\)/\1./'`
+	exit 0 ;;
     ibmrt:4.4BSD:*|romp-ibm:BSD:*)
 	echo romp-ibm-bsd4.4
 	exit 0 ;;
