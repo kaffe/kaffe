@@ -1,3 +1,12 @@
+2003-05-11 Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/java/net/URL.java:
+	(openConnection) Don't call connect for http connections, giving
+	the user time to set its options up.
+
+	* libraries/javalib/kaffe/net/www/protocol/http/HttpURLConnection.java:
+	Added support for getOutputStream.
+	
 2003-05-11 Tony Wyatt <wyattaw@optushome.com.au>
 
 	* configure.in:

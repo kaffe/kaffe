@@ -13,9 +13,13 @@ package kaffe.net.www.protocol.http;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.DataOutputStream;
 import java.io.DataInputStream;
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.Vector;
 import java.net.URL;
 import java.net.Socket;
@@ -34,6 +38,8 @@ private Vector headerFields = new Vector(0);
 private Socket sock;
 private InputStream in;
 private DataOutputStream out;
+private File tmpFile;
+private OutputStream tmpOut;
 private boolean redir = getFollowRedirects();
 
 static {
@@ -64,9 +70,14 @@ static {
 
 public HttpURLConnection(URL url) {
 	super(url);
+	connected = false;
 }
 
 public void connect() throws IOException {
+	if(connected) return;
+	connected = true;
+
+	if (tmpOut != null) tmpOut.close();
 	for (;;) {
 	    	// reset response data
 		responseCode = -1;
@@ -111,6 +122,7 @@ public void connect() throws IOException {
 				file = "/";
 			}
 		}
+		if (doOutput) method = "POST";
 		// HTTP/1.0 request line
 		out.writeBytes(method + " " + file + " HTTP/1.0\r\n");
 		// HTTP/1.1 Host header field, required for virtual server name
@@ -121,9 +133,27 @@ public void connect() throws IOException {
 		else {
 			out.writeBytes("Host: " + url.getHost() + ":" + port + "\r\n");
 		}
+		if(doOutput) {
+			long l = (tmpFile != null ? tmpFile.length() : 0L);
+			out.writeBytes("Content-Length: " + l + "\r\n");
+		}
 		// TODO: emit all RequestHeaders see setRequestProperty
 		// header end
 		out.writeBytes("\r\n");
+		if(doOutput) {
+			if (tmpFile != null) {
+				InputStream tmpIn = new FileInputStream(
+					tmpFile);
+				byte[] buf = new byte[4096];
+				while (true) {
+					int l = tmpIn.read(buf, 0, buf.length);
+					if (l < 0) break;
+					out.write(buf,0,l);
+				}
+				tmpIn.close();
+				tmpFile.delete();
+			}
+		}
 		out.flush();
 
 		DataInputStream inp = new DataInputStream(in);
@@ -190,11 +220,36 @@ public void connect() throws IOException {
 	}
 }
 
+private void doConnect() throws IOException {
+	if (!connected) connect();
+}
+
+private void tryConnect() {
+	if (!connected) {
+		try {
+			connect();
+		}
+		catch (IOException e) {
+			//  I don't know what to do
+		}
+	}
+}
+
 public InputStream getInputStream() throws IOException {
+	doConnect();
 	return (in);
 }
 
+public OutputStream getOutputStream() throws IOException {
+	if (tmpOut != null) return tmpOut;
+	tmpFile = File.createTempFile("POST",".tmp");
+	tmpFile.deleteOnExit();
+	tmpOut = new FileOutputStream(tmpFile);
+	return tmpOut;
+}
+
 public String getHeaderField(String name) {
+	tryConnect();
 	// Ignore field 0, it's the Status-Line
 	for (int i = headerFields.size() - 2; i > 0; i -= 2) {
 		if (((String)headerFields.elementAt(i)).equalsIgnoreCase(name)) {
@@ -205,6 +260,7 @@ public String getHeaderField(String name) {
 }
 
 public String getHeaderField(int pos) {
+	tryConnect();
 	if (pos < 0 || pos >= (headerFields.size() >> 1)) {
 		return (null);
 	}
@@ -212,6 +268,7 @@ public String getHeaderField(int pos) {
 }
 
 public String getHeaderFieldKey(int pos) {
+	tryConnect();
 	if (pos < 0 || pos >= (headerFields.size() >> 1)) {
 		return (null);
 	}
@@ -232,6 +289,7 @@ protected void setHeaderField(String key, String value) {
 }
 
 public Object getContent() throws IOException {
+	tryConnect();
     	String ct = getContentType();
 	if (ct == null) {
 		return (in);

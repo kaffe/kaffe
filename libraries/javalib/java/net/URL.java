@@ -229,7 +229,17 @@ public URLConnection openConnection() throws IOException {
 	// We *ALWAYS* open a new connection even if we already have
 	// one open.
 	conn = handler.openConnection(this);
-	conn.connect();
+	if (protocol.equals("http")) {
+		// It is too early to do connect() here. connect() should be
+		// called when really needed.
+	}
+	else {
+		// As for protocols other than "http", connect() should be
+		// called when really needed,  but in reality,  not calling
+		// connect() here may cause some problem.  For example,
+		// not connected JarURLConnection is a dangerous thing.
+		conn.connect();
+	}
 	return (conn);
 }
 
