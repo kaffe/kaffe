@@ -20,6 +20,7 @@ BUILT_INCLUDEFILES= \
 
 INCLUDEFILES= \
 		native.h \
+		jmalloc.h \
 		jsyscall.h \
 		Arrays.h \
 		java_lang_Object.h \
