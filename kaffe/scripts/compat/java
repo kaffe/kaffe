@@ -1,0 +1,3 @@
+#! /bin/sh
+# Pretend Kaffe is Java
+exec kaffe $@
