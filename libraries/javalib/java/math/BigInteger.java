@@ -71,6 +71,9 @@ public BigInteger(int signum, byte magnitude[]) {
 
 public BigInteger(String val, int radix) {
 	this();
+	if ((radix < Character.MIN_RADIX) || (radix > Character.MAX_RADIX)) {
+	    throw new NumberFormatException("Bad radix: " + radix);
+	}
 	assignString0(val, radix);
 }
 
@@ -367,6 +370,9 @@ public int hashCode() {
 }
 
 public String toString(int radix) {
+	if ((radix < Character.MIN_RADIX) || (radix > Character.MAX_RADIX)) {
+	    radix = 10;
+	}
 	return (toString0(radix));
 }
 
