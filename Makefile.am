@@ -160,8 +160,8 @@ BUILD_ENVIRONMENT-make: Makefile
 	echo CLASSPATH=.\''$(PATHSEP)'\'\$${GNU_CRYPTO_JAR}\''$(PATHSEP)'\'\$${JAVAX_SECURITY_JAR}\''$(PATHSEP)'\'$(BCEL_JAR)\''$(PATHSEP)'\'$(GNU_CRYPTO_JAR)\''$(PATHSEP)'\'$(JAVAX_SECURITY_JAR)\; export CLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' >> BUILD_ENVIRONMENT.new; \
 	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}`for f in $(JAVA_LIBS); do echo "$$f" | sed 's%/[^/]*$$%%'; done | (tr '\012' ' '; echo) | sed -e 's/ $$//' -e "s/ /\'$(PATHSEP)\'/g"`\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT.new; \
 	echo JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT.new; \
-	echo LD_LIBRARY_PATH=$(top_builddir)/libraries/clib/classpath/.libs\; export LD_LIBRARY_PATH >> BUILD_ENVIRONMENT.new;\
-	echo DYLD_LIBRARY_PATH=$(top_builddir)/libraries/clib/classpath/.libs\; export DYLD_LIBRARY_PATH >> BUILD_ENVIRONMENT.new
+	echo LD_LIBRARY_PATH=$(top_builddir)/libraries/clib/classpath/.libs:\$${LD_LIBRARY_PATH}\; export LD_LIBRARY_PATH >> BUILD_ENVIRONMENT.new;\
+	echo DYLD_LIBRARY_PATH=$(top_builddir)/libraries/clib/classpath/.libs:\$${DYLD_LIBRARY_PATH}\; export DYLD_LIBRARY_PATH >> BUILD_ENVIRONMENT.new
 	rm -f BUILD_ENVIRONMENT
 	mv BUILD_ENVIRONMENT.new BUILD_ENVIRONMENT
 

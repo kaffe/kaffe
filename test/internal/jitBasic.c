@@ -117,7 +117,13 @@ int field2values(jvalue *dst, parsed_signature_t *ps, struct testField *tf)
 			dst[lpc - 1].i = strtoul(arg->data, 0, 0);
 			break;
 		case 'J':
+#if defined(HAVE_STRTOULL)
+			dst[lpc - 1].j = (long long)strtoull(arg->data, 0, 0);
+#elif defined(HAVE_STRTOUQ)
 			dst[lpc - 1].j = (long long)strtouq(arg->data, 0, 0);
+#else
+#error "jitBasic needs either strtoull or strtouq."
+#endif
 			break;
 		case 'D':
 		case 'F':

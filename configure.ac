@@ -1381,7 +1381,7 @@ KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
 AC_CHECK_FUNCS([remainder remainderf fmod fmodf drem])
 AC_CHECK_FUNCS([rint floor ceil strtod mergesort])
-AC_CHECK_FUNCS([strdup strstr strtod strtol strtoul])
+AC_CHECK_FUNCS([strdup strstr strtod strtol strtoul strtouq strtoull])
 
 dnl isinf, isnan, finite checking code taken from Sablotron 1.0,
 dnl dually licensed licensed under MPL 1.1 and GPL
