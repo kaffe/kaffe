@@ -117,7 +117,8 @@ class VMSystemProperties
       /* Define the default java compiler - this should be configured
        * somehow.
        */
-      properties.setProperty("kaffe.compiler", "kjc");
+      properties.setProperty("kaffe.compiler", "jikes");
+      properties.setProperty("build.compiler", "jikes");
 
       // Invoke native methods to get the values of the other properties
 
