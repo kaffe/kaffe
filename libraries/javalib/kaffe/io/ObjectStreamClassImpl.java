@@ -263,6 +263,14 @@ public void putArray(Object obj, ObjectOutputStream out, ObjectOutputStreamImpl 
                         out.writeChar(arr[i]);
                 }
         }
+        else if (elem == Byte.TYPE) {
+                byte[] arr = (byte[])obj;
+                int len = arr.length;
+                out.writeInt(len);
+                for (int i = 0; i < len; i++) {
+                        out.writeByte(arr[i]);
+                }
+        }
         else if (elem == Short.TYPE) {
                 short[] arr = (short[])obj;
                 int len = arr.length;
