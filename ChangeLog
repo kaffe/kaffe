@@ -1,3 +1,8 @@
+2003-05-14 Ito Kazumitsu <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/java/awt/image/ColorModel.java:
+	(ColorModel) Use sRGB color space.
+	
 2003-05-13 Benja Fallenstein <b.fallenstein@gmx.de>
 
 	* libraries/javalib/java/security/MessageDigest.java:

@@ -113,7 +113,7 @@ public abstract class ColorModel implements Transparency
   {
     this(bits * 4, // total bits, sRGB, four channels
 	 nArray(bits, 4), // bits for each channel
-	 null, // FIXME: should be sRGB
+	 ColorSpace.getInstance(ColorSpace.CS_sRGB), // sRGB
 	 true, // has alpha
 	 false, // not premultiplied
 	 TRANSLUCENT,
