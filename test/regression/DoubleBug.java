@@ -15,7 +15,7 @@ public class DoubleBug {
 
 
     static String good[] = { "0.2", "0.2f", "0.2F", "0.2d", "0.2D" };
-    static String bad[] = { "0.2L" };
+    static String bad[] = { "0.2L", "" };
     
     public static void main(String argv[]) {
 	boolean fail = false;
