@@ -10,19 +10,29 @@ srcdir=		@srcdir@
 MKDIR=		@MKDIR@
 subdirs=	native net zip math management awt
 
+#
+# only recurse into existing subdirectories, the awt directory might 
+# not exist unless we have X11
+#
+
 all:
-	@for i in $(subdirs); do (cd $$i && $(MAKE) all) || exit 1 ; done
+	@for i in $(subdirs); \
+		do (test ! -d $$i || (cd $$i && $(MAKE) all)) || exit 1 ; done
 
 clean:
-	for i in $(subdirs); do (cd $$i && $(MAKE) clean) ; done
+	for i in $(subdirs); \
+		do (test ! -d $$i || (cd $$i && $(MAKE) clean)) ; done
 
 distclean:
-	for i in $(subdirs); do (cd $$i && $(MAKE) distclean) ; done
+	for i in $(subdirs); do \
+		(test ! -d $$i || (cd $$i && $(MAKE) distclean)) ; done
 	rm -f Makefile .depend
 	-rmdir $(subdirs)
 
 install:
-	for i in $(subdirs); do (cd $$i && $(MAKE) install) || exit 1 ; done
+	for i in $(subdirs); do \
+		(test ! -d $$i || (cd $$i && $(MAKE) install)) || exit 1 ; done
 
 depend:
-	for i in $(subdirs); do (cd $$i && $(MAKE) depend) || exit 1 ; done
+	for i in $(subdirs); do \
+		(test ! -d $$i || (cd $$i && $(MAKE) depend)) || exit 1 ; done
