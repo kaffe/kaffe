@@ -1,3 +1,7 @@
+Thu Dec 10 16:32:00 1998  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* libraries/clib/math/BigInteger.c: undef calloc too
+
 Wed Dec  9 22:01:05 1998  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/errors.h kaffe/kaffevm/exception.c

@@ -16,6 +16,7 @@
 #include <gmp.h>
 
 #undef	malloc
+#undef  calloc
 #undef	free
 
 #include <stdlib.h>
