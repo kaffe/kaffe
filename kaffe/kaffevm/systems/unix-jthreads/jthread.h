@@ -232,7 +232,17 @@ void 	jthread_exit(void) __NORETURN__;
 static inline int
 jthread_on_current_stack(void *bp)      
 {
-        return bp >= currentJThread->stackBase && bp < currentJThread->stackEnd;
+        int rc = bp >= currentJThread->stackBase && bp < currentJThread->stackEnd;
+
+DBG(JTHREADDETAIL,
+	dprintf("on current stack: base=%p size=%d bp=%p %s\n",
+		currentJThread->stackBase,
+		currentJThread->stackEnd-currentJThread->stackBase,
+		bp,
+		(rc ? "yes" : "no"));
+    )
+
+        return rc;
 }
 
 /* 
@@ -322,9 +332,9 @@ jthread_getcookie(jthread_t tid)
  */
 int jthreadedOpen(const char* path, int flags, int mode, int*);
 int jthreadedSocket(int af, int type, int proto, int*);
-int jthreadedConnect(int fd, struct sockaddr* addr, size_t len, int timeout);
-int jthreadedAccept(int fd, struct sockaddr* addr, size_t* len, 
-	int timeout, ssize_t *);
+int jthreadedConnect(int fd, struct sockaddr* addr, int len, int timeout);
+int jthreadedAccept(int fd, struct sockaddr* addr, int* len, 
+	int timeout, int *);
 int jthreadedRead(int fd, void* buf, size_t len, ssize_t *);
 int jthreadedTimedRead(int fd, void* buf, size_t len, int timeout, ssize_t *);
 int jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *);

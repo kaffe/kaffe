@@ -139,7 +139,7 @@ java_net_PlainSocketImpl_socketConnect(struct Hjava_net_PlainSocketImpl* this,
 	int fd;
 	int r;
 	struct sockaddr_in addr;
-	size_t alen;
+	int alen;
 
 	DBG(NATIVENET,
 	    dprintf("socketConnect(%p, %s, %d)\n", 
@@ -191,7 +191,7 @@ java_net_PlainSocketImpl_socketBind(struct Hjava_net_PlainSocketImpl* this,
 	struct sockaddr_in addr;
 	int fd;
 	int on = 1;
-	size_t alen;
+	int alen;
 
 	DBG(NATIVENET,
 	    dprintf("socketBind(%p, %s, %d)\n", 
@@ -259,7 +259,7 @@ java_net_PlainSocketImpl_socketAccept(struct Hjava_net_PlainSocketImpl* this, st
 {
 	int r;
 	int rc;
-	size_t alen;
+	int alen;
 	struct sockaddr_in addr;
 
 	memset(&addr, 0, sizeof(addr));
