@@ -17,6 +17,8 @@ gnu/classpath/RawData32.java
 gnu/classpath/RawData64.java
 gnu/classpath/ServiceFactory.java
 gnu/classpath/ServiceProviderLoadingAction.java
+gnu/classpath/SystemProperties.java
+gnu/classpath/VMSystemProperties.java
 gnu/crypto/Properties.java
 gnu/crypto/Registry.java
 gnu/crypto/assembly/Assembly.java

@@ -37,7 +37,7 @@ exception statement from your version.  */
 
 package gnu.java.net.protocol.file;
 
-import gnu.java.security.action.GetPropertyAction;
+import gnu.classpath.SystemProperties;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -83,8 +83,7 @@ public class Connection extends URLConnection
                              new Locale ("En", "Us", "Unix"));
 
     static String lineSeparator =
-      (String)AccessController.doPrivileged(
-        new GetPropertyAction("line.separator"));
+      SystemProperties.getProperty("line.separator");
   }
 
   

@@ -814,27 +814,6 @@ currentTime(void)
 }
 
 /**
- * Set a property to a value.
- *
- * @param properties pointer to the properties object whose contents are to be modified
- * @param key the key of the property to be set
- * @param value the value of the property to be set
- */
-void
-setProperty(void* properties, const char* key, const char* value)
-{
-	Hjava_lang_String* jkey;
-	Hjava_lang_String* jvalue;
-
-	jkey = checkPtr(stringC2Java(key));
-	jvalue = checkPtr(stringC2Java(value));
-
-	do_execute_java_method(properties, "put",
-		"(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
-		0, false, jkey, jvalue);
-}
-
-/**
  * Allocate a new object of the given class name.
  *
  * @param classname the name of the class to be instantiated

@@ -11,6 +11,7 @@
 package java.lang;
 
 import gnu.classpath.Configuration;
+import gnu.classpath.SystemProperties;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -28,7 +29,6 @@ public final class System {
 	final public static InputStream in;
 	final public static PrintStream out;
 	final public static PrintStream err;
-	static Properties properties;
 
 // When trying to debug Java code that gets executed early on during
 // JVM initialization, eg, before System.err is initialized, debugging
@@ -39,23 +39,8 @@ public static native void debug(String s);	// print s to stderr, then \n
 public static native void debugE(Throwable t);	// print stack trace to stderr
 ****/
 static {
-	// XXX what are the constraints on the initialization order in here?
-
-	properties = initProperties(new Properties());
-
-	/* Add GNU Classpath specific properties */
-	properties.put("gnu.classpath.home",
-		       properties.get("java.home"));
-	properties.put("gnu.classpath.version",
-		       Configuration.CLASSPATH_VERSION);
-
-	// Set base URL if not already set.
-	if (properties.get("gnu.classpath.home.url") == null)
-	    properties.put("gnu.classpath.home.url",
-			   "file://" + properties.get("gnu.classpath.home") + "/jre/lib");
-
 	// Initialise the I/O
-	if (properties.getProperty("kaffe.embedded", "false").equals("false")) {
+	if (getProperty("kaffe.embedded", "false").equals("false")) {
 		in = new BufferedInputStream(new FileInputStream(FileDescriptor.in), 128);
 		out = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.out), 128), true);
 		err = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err), 128), true);
@@ -94,23 +79,30 @@ public static void gc() {
 	Runtime.getRuntime().gc();
 }
 
-public static Properties getProperties() {
-	checkPropertiesAccess();
-
-	return properties;
-}
-
-public static String getProperty(String key) {
-	checkPropertyAccess(key);
-
-	return properties.getProperty(key);
-}
-
-public static String getProperty(String key, String def) {
-	checkPropertyAccess(key);
-
-	return properties.getProperty(key, def);
-}
+  /* taken from GNUClasspath */
+  public static Properties getProperties()
+  {
+    SecurityManager sm = SecurityManager.current; // Be thread-safe.
+    if (sm != null)
+      sm.checkPropertiesAccess();
+    return SystemProperties.getProperties();
+  }
+  public static String getProperty(String key)
+  {
+    SecurityManager sm = SecurityManager.current; // Be thread-safe.
+    if (sm != null)
+      sm.checkPropertyAccess(key);
+    else if (key.length() == 0)
+      throw new IllegalArgumentException("key can't be empty");
+    return SystemProperties.getProperty(key);
+  }
+  public static String getProperty(String key, String def)
+  {
+    SecurityManager sm = SecurityManager.current; // Be thread-safe.
+    if (sm != null)
+      sm.checkPropertyAccess(key);
+    return SystemProperties.getProperty(key, def);
+  }
 
 public static SecurityManager getSecurityManager() {
 	return Runtime.securityManager;
@@ -178,23 +170,22 @@ public static void setOut(PrintStream out) {
 
 native private static void setOut0(PrintStream out);
 
-public static String setProperty(String key, String value) {
-	SecurityManager sm = getSecurityManager();
-	if (sm != null)
-		sm.checkPermission(new PropertyPermission(key, "write"));
-	if (key.length() == 0)
-		throw new IllegalArgumentException("key can't be empty");
-	return (String)properties.setProperty(key, value);
-}
 
-public static void setProperties(Properties prps) {
-	checkPropertiesAccess();
-	if (prps == null) {
-		properties.clear();
-		return;
-	}
-	properties = prps;
-}
+  /* taken from GNU Classpath */
+  public static String setProperty(String key, String value)
+  {
+    SecurityManager sm = SecurityManager.current; // Be thread-safe.
+    if (sm != null)
+      sm.checkPermission(new PropertyPermission(key, "write"));
+    return SystemProperties.setProperty(key, value);
+  }
+  public static void setProperties(Properties properties)
+  {
+    SecurityManager sm = SecurityManager.current; // Be thread-safe.
+    if (sm != null)
+      sm.checkPropertiesAccess();
+    SystemProperties.setProperties(properties);
+  }
 
 public static void setSecurityManager(SecurityManager s) {
 	if (Runtime.securityManager != null) {

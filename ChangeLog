@@ -1,3 +1,127 @@
+2004-12-08  Dalibor Topic  <robilad@kaffe.org>
+
+	* include/Makefile.am:
+	Added gnu_classpath_VMSystemProperties.h to include files.
+
+	* libraries/clib/native/Makefile.am:
+	Added gnu_classpath_VMSystemProperties.c.
+
+	* include/Makefile.in,
+	libraries/clib/native/Makefile.in,
+	libltdl/configure,
+	libraries/javalib/Klasses.jar.bootstrap,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* kaffe/kaffevm/external.h:
+	Added missing include.
+
+	* kaffe/kaffevm/support.c,
+	kaffe/kaffevm/support.h:
+	(setProperty) Removed.
+
+	* libraries/clib/native/System.c:
+	(initProperties, initProxyProperties) removed.
+
+	* libraries/clib/native/gnu_classpath_VMSystemProperties.c:
+	New file.
+
+	* libraries/javalib/bootstrap.classlist,
+	libraries/javalib/java/lang/System.java:
+	Updated for new system properties mechanism.
+
+	* libraries/javalib/gnu/classpath/Configuration.java,
+	libraries/javalib/gnu/classpath/SystemProperties.java,
+	libraries/javalib/gnu/classpath/VMSystemProperties.java,
+	libraries/javalib/gnu/java/net/protocol/file/Connection.java,
+	libraries/javalib/gnu/java/security/action/GetSecurityPropertyAction.java,
+	libraries/javalib/java/io/File.java,
+	libraries/javalib/java/lang/SecurityManager.java,
+	libraries/javalib/java/lang/Thread.java,
+	libraries/javalib/java/lang/ThreadGroup.java,
+	libraries/javalib/java/lang/Throwable.java,
+	libraries/javalib/java/security/Security.java,
+	libraries/javalib/java/security/cert/X509CRLSelector.java,
+	libraries/javalib/java/security/cert/X509CertSelector.java,
+	libraries/javalib/java/util/Locale.java:
+	Resynced with GNU Classpath.
+
+	2004-12-07  Jeroen Frijters  <jeroen@frijters.net>
+
+        * vm/reference/gnu/classpath/VMSystemProperties.java:
+        Added import to make it compile.
+
+	004-12-06  Jeroen Frijters  <jeroen@frijters.net>
+
+        * gnu/classpath/SystemProperties.java: New file.
+        * vm/reference/gnu/classpath/VMSystemProperties.java: New file.
+        * gnu/java/io/EncodingManager.java,
+        gnu/java/net/protocol/file/Connection.java,
+        java/io/File.java,
+        java/lang/Throwable.java,
+        java/security/Security.java,
+        java/security/cert/X509CRLSelector.java,
+        java/security/cert/X509CertSelector.java,
+        java/util/Locale.java,
+        vm/reference/java/lang/VMClassLoader.java:
+        Modified to use SystemProperties.
+        * java/lang/Class.java: Modified to use SecurityManager.current.
+        * java/lang/ClassLoader.java
+        (StaticData.systemClassLoader): New field.
+        (StaticData.static): New static initializer to install default
+        security manager.
+        (ClassLoader()): Modified to use StaticData.systemClassLoader.
+        ClassLoader(ClassLoader)): Modified to use SecurityManager.current.
+        (findSystemClass): Modified to use StaticData.systemClassLoader.
+        (getParent): Modified to use SecurityManager.current.
+        (getSystemResource,getSystemResources): Modified to use
+        StaticData.systemClassLoader.
+        (getSystemClassLoader): Modified to use SecurityManager.current and
+        StaticData.systemClassLoader.
+        (getExtClassLoaderUrls,getSystemClassLoaderUrls): Modified to use
+        SystemProperties.
+        (defaultGetSystemClassLoader): Modified to use SecurityManager.current
+        and SystemProperties.
+        (getSystemProperty): Removed.
+        * java/lang/Runtime.java
+        (securityManager): Removed.
+        (defaultProperties): Removed.
+        (static): Removed.
+        (Runtime): Modified to use SystemProperties.
+        (exit,removeShutdownHook,halt,runFinalizersOnExit,exec,load,loadLib):
+        Modified to use SecurityManager.current.
+        (loadLibrary): Modified to use SecurityManager.current and changed
+        call to System.mapLibraryName to VMRuntime.mapLibraryName.
+        * java/lang/SecurityManager.java
+        (current): New field.
+        * java/lang/System.java
+        (systemClassLoader): Removed.
+        (properties): Removed.
+        (in,out,err): Initialize in-line.
+        (static): Removed.
+        (initLoadLibrary): Removed.
+        (initProperties): Removed.
+        (initSystemClassLoader): Removed.
+        (initSecurityManager): Removed.
+        (setIn,setOut,setErr,setSecurityManager,getSecurityManager,getenv):
+        Modified to use SecurityManager.current.
+        (getProperties,setProperties,getProperty(String),
+        getProperty(String,String),setProperty): Modified to use
+        SecurityManager.current and SystemProperties.
+        (mapLibraryName): Modified to call VMRuntime.mapLibraryName.
+        * java/lang/Thread.java: Modified to use SecurityManager.current.
+        * java/lang/ThreadGroup.java: Modified to use SecurityManager.current.
+        * native/jni/java-lang/java_lang_VMSystem.c
+        (Java_java_lang_VMSystem_isWordsBigEndian): Removed.
+        * vm/reference/java/lang/VMRuntime.java
+        (nativeGetLibname): Removed (renamed to mapLibraryName).
+        (mapLibraryName): New method.
+        (insertSystemProperties): Removed.
+        * vm/reference/java/lang/VMSystem.java
+        (isWordsBigEndian): Removed.
+
 2004-12-07  Adam Heath  <doogie@brainfood.com>
 
         * libraries/javalib/gnu/java/io/decoder/KaffeDecoder.java,

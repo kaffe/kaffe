@@ -86,7 +86,8 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-am__DEPENDENCIES_2 = ../../../kaffe/kaffevm/libkaffevm.la
+am__DEPENDENCIES_2 = ../../../kaffe/kaffevm/libkaffevm.la \
+	$(top_builddir)/libraries/clib/classpath/libclasspath.la
 am__objects_1 = libnative_la-ByteToCharDefault.lo \
 	libnative_la-ByteToCharIconv.lo \
 	libnative_la-CharToByteDefault.lo \
@@ -99,6 +100,7 @@ am__objects_2 = libnative_la-Class.lo libnative_la-ClassLoader.lo \
 	libnative_la-String.lo libnative_la-System.lo \
 	libnative_la-Thread.lo libnative_la-ThreadStack.lo \
 	libnative_la-Throwable.lo libnative_la-UNIXProcess.lo \
+	libnative_la-gnu_classpath_VMSystemProperties.lo \
 	libnative_la-ZipFile.lo
 am__objects_3 = libnative_la-Array.lo libnative_la-Constructor.lo \
 	libnative_la-Field.lo libnative_la-Method.lo
@@ -394,7 +396,8 @@ with_engine = @with_engine@
 native_LTLIBRARIES = libnative.la
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/jvmpi -I$(top_builddir)/include \
-	-I$(top_srcdir)/kaffe/kaffevm/jni
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
+        -I$(top_srcdir)/libraries/clib/classpath
 
 IO_SRCS = \
 		ByteToCharDefault.c \
@@ -419,6 +422,7 @@ LANG_SRCS = \
 		ThreadStack.c \
 		Throwable.c \
 		UNIXProcess.c \
+		gnu_classpath_VMSystemProperties.c \
 		ZipFile.c
 
 REFLECT_SRCS = \
@@ -450,7 +454,8 @@ libnative_la_LDFLAGS = \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
 libnative_la_DEPENDENCIES = \
-	../../../kaffe/kaffevm/libkaffevm.la
+	../../../kaffe/kaffevm/libkaffevm.la \
+        $(top_builddir)/libraries/clib/classpath/libclasspath.la
 
 libnative_la_LIBADD = $(M_LIBS) $(LTLIBICONV) \
 	$(libnative_la_DEPENDENCIES)
@@ -556,6 +561,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-TimeZone.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-UNIXProcess.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-ZipFile.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -717,6 +723,13 @@ libnative_la-UNIXProcess.lo: UNIXProcess.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='UNIXProcess.c' object='libnative_la-UNIXProcess.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-UNIXProcess.lo `test -f 'UNIXProcess.c' || echo '$(srcdir)/'`UNIXProcess.c
+
+libnative_la-gnu_classpath_VMSystemProperties.lo: gnu_classpath_VMSystemProperties.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-gnu_classpath_VMSystemProperties.lo -MD -MP -MF "$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Tpo" -c -o libnative_la-gnu_classpath_VMSystemProperties.lo `test -f 'gnu_classpath_VMSystemProperties.c' || echo '$(srcdir)/'`gnu_classpath_VMSystemProperties.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Tpo" "$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Plo"; else rm -f "$(DEPDIR)/libnative_la-gnu_classpath_VMSystemProperties.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_classpath_VMSystemProperties.c' object='libnative_la-gnu_classpath_VMSystemProperties.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -c -o libnative_la-gnu_classpath_VMSystemProperties.lo `test -f 'gnu_classpath_VMSystemProperties.c' || echo '$(srcdir)/'`gnu_classpath_VMSystemProperties.c
 
 libnative_la-ZipFile.lo: ZipFile.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnative_la_CFLAGS) $(CFLAGS) -MT libnative_la-ZipFile.lo -MD -MP -MF "$(DEPDIR)/libnative_la-ZipFile.Tpo" -c -o libnative_la-ZipFile.lo `test -f 'ZipFile.c' || echo '$(srcdir)/'`ZipFile.c; \

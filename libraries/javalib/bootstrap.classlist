@@ -1,5 +1,6 @@
 # Used when kjc runs (while compiling classes) and kaffeh (to generate headers)
 
+gnu/classpath/VMSystemProperties.class
 gnu/java/io/PlatformHelper.class
 gnu/java/io/EncodingManager.class
 gnu/java/io/decode/Decoder.class
@@ -122,6 +123,7 @@ java/lang/StringBuffer.class
 java/lang/StringIndexOutOfBoundsException.class
 java/lang/System.class
 java/lang/Thread.class
+java/lang/ThreadDeath.class
 java/lang/ThreadLocal.class
 java/lang/VMThread.class
 java/lang/ThreadGroup.class

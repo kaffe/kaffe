@@ -37,6 +37,8 @@ exception statement from your version. */
 
 package java.util;
 
+import gnu.classpath.SystemProperties;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -194,9 +196,9 @@ public final class Locale implements Serializable, Cloneable
    * bootstrapping has completed.
    */
   private static Locale defaultLocale =
-    new Locale(System.getProperty("user.language", "en"),
-               System.getProperty("user.region", ""),
-               System.getProperty("user.variant", ""));
+    new Locale(SystemProperties.getProperty("user.language", "en"),
+               SystemProperties.getProperty("user.region", ""),
+               SystemProperties.getProperty("user.variant", ""));
 
   /**
    * Convert new iso639 codes to the old ones.

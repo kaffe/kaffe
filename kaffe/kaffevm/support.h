@@ -107,7 +107,6 @@ struct Hjava_lang_Object;
 struct Hjava_lang_Throwable;
 struct Hjava_lang_ClassLoader;
 
-extern void		setProperty(void*, const char*, const char*);
 extern const char*		getEngine(void);
 extern jvalue		do_execute_java_method(void*, const char*, const char*, struct _methods*, int, ...);
 extern jvalue		do_execute_java_method_v(void*, const char*, const char*, struct _methods*, int, va_list);

@@ -12,6 +12,8 @@
 #ifndef __external_h
 #define __external_h
 
+#include "gtypes.h"
+
 #define	MAXSTUBLEN	1024
 #define	MAXLIBPATH	1024
 #define	MAXLIBS		16

@@ -13,7 +13,8 @@ native_LTLIBRARIES = libnative.la
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/jvmpi -I$(top_builddir)/include \
-	-I$(top_srcdir)/kaffe/kaffevm/jni
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
+        -I$(top_srcdir)/libraries/clib/classpath
 
 IO_SRCS = \
 		ByteToCharDefault.c \
@@ -38,6 +39,7 @@ LANG_SRCS = \
 		ThreadStack.c \
 		Throwable.c \
 		UNIXProcess.c \
+		gnu_classpath_VMSystemProperties.c \
 		ZipFile.c
 
 REFLECT_SRCS = \
@@ -69,7 +71,8 @@ libnative_la_LDFLAGS = \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
 libnative_la_DEPENDENCIES = \
-	../../../kaffe/kaffevm/libkaffevm.la
+	../../../kaffe/kaffevm/libkaffevm.la \
+        $(top_builddir)/libraries/clib/classpath/libclasspath.la
 
 libnative_la_LIBADD = $(M_LIBS) $(LTLIBICONV) \
 	$(libnative_la_DEPENDENCIES)

@@ -317,7 +317,7 @@ public class Thread implements Runnable
   public Thread(ThreadGroup group, Runnable target, String name, long size)
   {
     // Bypass System.getSecurityManager, for bootstrap efficiency.
-    SecurityManager sm = Runtime.securityManager;
+    SecurityManager sm = SecurityManager.current;
     Thread current = currentThread();
     if (group == null)
       {
@@ -388,7 +388,7 @@ public class Thread implements Runnable
   public final void checkAccess()
   {
     // Bypass System.getSecurityManager, for bootstrap efficiency.
-    SecurityManager sm = Runtime.securityManager;
+    SecurityManager sm = SecurityManager.current;
     if (sm != null)
       sm.checkAccess(this);
   }
@@ -703,7 +703,7 @@ public class Thread implements Runnable
   public synchronized ClassLoader getContextClassLoader()
   {
     // Bypass System.getSecurityManager, for bootstrap efficiency.
-    SecurityManager sm = Runtime.securityManager;
+    SecurityManager sm = SecurityManager.current;
     if (sm != null)
       // XXX Don't check this if the caller's class loader is an ancestor.
       sm.checkPermission(new RuntimePermission("getClassLoader"));
@@ -724,7 +724,7 @@ public class Thread implements Runnable
    */
   public synchronized void setContextClassLoader(ClassLoader classloader)
   {
-    SecurityManager sm = System.getSecurityManager();
+    SecurityManager sm = SecurityManager.current;
     if (sm != null)
       sm.checkPermission(new RuntimePermission("setContextClassLoader"));
     this.contextClassLoader = classloader;
@@ -887,7 +887,7 @@ public class Thread implements Runnable
     if (t == null)
       throw new NullPointerException();
     // Bypass System.getSecurityManager, for bootstrap efficiency.
-    SecurityManager sm = Runtime.securityManager;
+    SecurityManager sm = SecurityManager.current;
     if (sm != null)
       {
         sm.checkAccess(this);
