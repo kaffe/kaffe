@@ -84,6 +84,14 @@ am__DEPENDENCIES_1 =
 am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(ENGINE_NAME)/libengine.la \
 	$(am__DEPENDENCIES_2) systems/$(THREAD_SYSTEM)/libkthread.la \
 	verifier/libkaffeverifier.la jni/libkaffejni.la
+am__libkaffevm_la_SOURCES_DIST = access.c baseClasses.c classMethod.c \
+	classPool.c methodCache.c code-analyse.c code.c constants.c \
+	debug.c exception.c external.c file.c findInJar.c fp.c gc.c \
+	hashtab.c inflate.c itypes.c jar.c ksem.c locks.c lookup.c \
+	object.c readClass.c soft.c stackTrace.c stats.c string.c \
+	stringParsing.c support.c thread.c utf8const.c gcFuncs.c \
+	gcRefs.c ../../binreloc/prefix.c
+@ENABLE_BINRELOC_TRUE@am__objects_1 = prefix.lo
 am_libkaffevm_la_OBJECTS = access.lo baseClasses.lo classMethod.lo \
 	classPool.lo methodCache.lo code-analyse.lo code.lo \
 	constants.lo debug.lo exception.lo external.lo file.lo \
@@ -91,9 +99,9 @@ am_libkaffevm_la_OBJECTS = access.lo baseClasses.lo classMethod.lo \
 	jar.lo ksem.lo locks.lo lookup.lo object.lo readClass.lo \
 	soft.lo stackTrace.lo stats.lo string.lo stringParsing.lo \
 	support.lo thread.lo utf8const.lo gcFuncs.lo gcRefs.lo \
-	prefix.lo
-am__objects_1 = gc-mem.lo md.lo
-nodist_libkaffevm_la_OBJECTS = $(am__objects_1)
+	$(am__objects_1)
+am__objects_2 = gc-mem.lo md.lo
+nodist_libkaffevm_la_OBJECTS = $(am__objects_2)
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
 	$(nodist_libkaffevm_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
@@ -129,7 +137,7 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libkaffevm_la_SOURCES) $(nodist_libkaffevm_la_SOURCES)
-DIST_SOURCES = $(libkaffevm_la_SOURCES)
+DIST_SOURCES = $(am__libkaffevm_la_SOURCES_DIST)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-exec-recursive install-info-recursive \
@@ -191,6 +199,8 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ENABLE_BINRELOC_FALSE = @ENABLE_BINRELOC_FALSE@
+ENABLE_BINRELOC_TRUE = @ENABLE_BINRELOC_TRUE@
 ENABLE_JVMPI_FALSE = @ENABLE_JVMPI_FALSE@
 ENABLE_JVMPI_TRUE = @ENABLE_JVMPI_TRUE@
 ENABLE_XPROF_FALSE = @ENABLE_XPROF_FALSE@
@@ -436,6 +446,9 @@ libkaffevm_la_GEN_SRCS = \
 nodist_libkaffevm_la_SOURCES = \
 	$(libkaffevm_la_GEN_SRCS)
 
+@ENABLE_BINRELOC_TRUE@BINRELOC_SOURCES = \
+@ENABLE_BINRELOC_TRUE@	../../binreloc/prefix.c
+
 libkaffevm_la_SOURCES = \
 	access.c \
 	baseClasses.c \
@@ -471,7 +484,7 @@ libkaffevm_la_SOURCES = \
 	utf8const.c \
 	gcFuncs.c \
 	gcRefs.c \
-	../../binreloc/prefix.c
+	$(BINRELOC_SOURCES)
 
 noinst_HEADERS = \
 	access.h \

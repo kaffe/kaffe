@@ -72,6 +72,11 @@ libkaffevm_la_GEN_SRCS = \
 nodist_libkaffevm_la_SOURCES = \
 	$(libkaffevm_la_GEN_SRCS)
 
+if ENABLE_BINRELOC
+BINRELOC_SOURCES=\
+	../../binreloc/prefix.c
+endif
+
 libkaffevm_la_SOURCES = \
 	access.c \
 	baseClasses.c \
@@ -107,7 +112,7 @@ libkaffevm_la_SOURCES = \
 	utf8const.c \
 	gcFuncs.c \
 	gcRefs.c \
-	../../binreloc/prefix.c
+	$(BINRELOC_SOURCES)
 
 noinst_HEADERS = \
 	access.h \

@@ -1812,8 +1812,13 @@ dnl =========================================================================
 dnl Configure Binreloc support
 dnl -------------------------------------------------------------------------
 
-AM_BINRELOC
-CFLAGS="$CFLAGS \$(BINRELOC_CFLAGS)"
+AC_CHECK_HEADERS([pthread.h])
+if test x"$ac_cv_header_pthread_h" = x"yes"; then
+  dnl We can now check whether we want binreloc
+  AM_BINRELOC
+  CFLAGS="$CFLAGS \$(BINRELOC_CFLAGS)"
+fi
+AM_CONDITIONAL(ENABLE_BINRELOC, test x"$enable_binreloc" = x"yes")
 
 dnl =========================================================================
 dnl Set up for local build of kaffeh when cross-compiling

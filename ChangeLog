@@ -1,5 +1,17 @@
 2004-07-04  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/code-analyse.c: Removed insnLen as it is already
+	defined in the verifier.
+
+	* configure.ac: Disable completely BINRELOC if pthread.h is not
+	detected.
+
+	* kaffe/kaffevm/Makefile.am: Moved prefix.c into BINRELOC_SOURCES.
+
+	* kaffe/kaffevm/Makefile.in, configure: Regenerated.
+
+2004-07-04  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/jsignal.h,
 	kaffe/kaffevm/systems/unix-pthreads/signal.c,
 	kaffe/kaffevm/systems/unix-pthreads/syscalls.c,
