@@ -1,3 +1,13 @@
+2003-09-01  Jim Pick  <jim@kaffe.org>
+
+	* configure.in:
+	Check for stdarg.h (needed by valist.m4 varargs
+	checks, otherwise varargs.h is used, which fails
+	on gcc 3.3)
+	
+	* configure, config/config.h.in:
+	Regenerated.
+
 2003-09-01  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* test/regression/DeleteFile.java: added missing test case.
