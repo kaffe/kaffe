@@ -34,8 +34,9 @@ echo_n_sp ()
 
 compile()
 {
+	FILES=`echo $* | awk '{ for (i = 1; i <= NF; i++) printf "%s.java ", $i }'`
 	echo ERROR > $RESULT
-	$JAVAC -d $DESTDIR $1.java > $RESULT 2>&1
+	$JAVAC -d $DESTDIR ${FILES} > $RESULT 2>&1
 	if test "`cat $RESULT`" != "" ; then
 		echo "error compiling"
 		cat $RESULT
@@ -89,7 +90,7 @@ runtest()
 	echo_n_sp "$1 ..." 1>&2
 	if test "x$3" = "xdeprecated"; then
 	    compile_deprecated $1
-	else
+	elif test "x$3" != "xnocompile"; then
 	    compile $1
 	fi
 	if test $error = 0 ; then
@@ -559,9 +560,8 @@ Success 4."
 # end of CLTest tests
 
 # begin of class garbage collection tests
-compile ClassGCTest
-compile ClassGCTestLater
-runtest ClassGC "Success."
+compile ClassGC ClassGCTest ClassGCTestLater
+runtest ClassGC "Success." nocompile
 
 # end of class garbage collection tests
 
