@@ -11,6 +11,7 @@
 package java.lang;
 
 import java.io.Serializable;
+import kaffe.util.IntegerHashtable;
 
 public final class Character implements Serializable, Comparable {
 
@@ -455,9 +456,7 @@ public final class Character implements Serializable, Comparable {
 	char lower;
 	char title;
 
-	static CharacterProperties cached =
-	    new CharacterProperties((char)0x0000, CONTROL, false, (short)-1,
-		(char)0x0000, (char)0x0000, (char)0x0000);
+	static IntegerHashtable cache = new IntegerHashtable();
 
 	CharacterProperties(char unicode, int category, boolean noBreak,
 		short numeric, char upper, char lower, char title) {
@@ -469,7 +468,7 @@ public final class Character implements Serializable, Comparable {
 	    this.lower = lower;
 	    this.title = title;
 
-	    cached = this;
+	    cache.put((int)unicode, this);
 	}
 
 
@@ -614,8 +613,8 @@ public final class Character implements Serializable, Comparable {
 
     private static CharacterProperties getCharProp(char ch) {
 	// consult the cache
-	CharacterProperties chProp = CharacterProperties.cached;
-	if (chProp.unicode == ch) {
+	CharacterProperties chProp = (CharacterProperties)CharacterProperties.cache.get((int)ch);
+	if (chProp != null) {
 	    return chProp;
 	}
 
@@ -629,7 +628,6 @@ public final class Character implements Serializable, Comparable {
 	else {
 	    chProp = CharacterProperties.decodeProp(ch, index);
 	}
-	CharacterProperties.cached = chProp;
 	return chProp;
     }
 
