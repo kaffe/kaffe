@@ -312,7 +312,7 @@ int jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
         struct sockaddr* from, int* fromlen, int timeout, ssize_t *);
 int jthreadedWaitpid(int wpid, int* status, int options, int *);
 int jthreadedForkExec(char **argv, char **arge,
-	int ioes[4], int *, const char *);
+		      int ioes[/* 4 */], int *, const char *);
 int
 jthreadedSelect(int a, fd_set* b, fd_set* c, fd_set* d, 
 		struct timeval* e, int* out);

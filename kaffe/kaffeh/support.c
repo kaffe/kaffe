@@ -142,6 +142,12 @@ SystemCallInterface Kaffe_SystemCallInterface =
         NULL,		/* forkexec */
         NULL,		/* waitpid */
         NULL,		/* kill */
+	NULL,           /* mmap */
+        NULL,           /* munmap */
+        NULL,           /* msync */
+        NULL,           /* pipecreate */
+        NULL,           /* piperead */
+        NULL,           /* pipewrite */
 };
 
 
@@ -163,7 +169,7 @@ binary_open(const char *file, int mode, int perm, int *out) {
 void
 initInclude(void)
 {
-	if (include == 0) {
+	if (include == NULL) {
 		return;
 	}
 
@@ -184,7 +190,7 @@ initInclude(void)
 void
 startInclude(void)
 {
-	if (include == 0) {
+	if (include == NULL) {
 		return;
 	}
 
@@ -209,7 +215,7 @@ startInclude(void)
 void
 endInclude(void)
 {
-	if (include == 0) {
+	if (include == NULL) {
 		return;
 	}
 
@@ -224,7 +230,7 @@ endInclude(void)
 void
 initJniInclude(void)
 {
-	if (jni_include == 0) {
+	if (jni_include == NULL) {
 		return;
 	}
 
@@ -248,7 +254,7 @@ startJniInclude(void)
 void
 endJniInclude(void)
 {
-	if (jni_include == 0) {
+	if (jni_include == NULL) {
 		return;
 	}
 
@@ -315,7 +321,7 @@ jniType(const char *sig)
 			return "jobjectArray";
 		default:
 			dprintf("bogus array type `%c'", sig[1]);
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 	case 'L':
 		if (strncmp(sig, "Ljava/lang/Class;", 17) == 0)
@@ -343,7 +349,7 @@ jniType(const char *sig)
 		return "void";
 	default:
 		dprintf("bogus signature type `%c'", sig[0]);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -353,7 +359,7 @@ jniType(const char *sig)
 static void
 fprintfJni (FILE *f, const char *s) 
 {
-	while (*s && *s != ')')
+	while (*s != '\0' && *s != ')')
 	{
 		switch (*s)
 		{
@@ -402,11 +408,11 @@ addField(Hjava_lang_Class* this,
 
 	if (CLASS_CONST_TAG(this, name_index) != CONSTANT_Utf8) {
 		dprintf("addField(): no method name.\n"); /* XXX */
-		return (0);
+		return (NULL);
 	}
 	if (CLASS_CONST_TAG(this, signature_index) != CONSTANT_Utf8) {
 		dprintf("addField(): no signature name.\n"); /* XXX */
-		return (0);
+		return (NULL);
 	}
 
 	DBG(CLASSFILE,
@@ -426,7 +432,7 @@ addField(Hjava_lang_Class* this,
 	f->bsize = 0; /* not used by kaffeh */
 	f->info.idx = 0; /* not used by kaffeh */
 
-	if (include != 0) {
+	if (include != NULL) {
 		/*
 		 * Non-static fields are represented in the struct.
 		 */
@@ -493,19 +499,19 @@ constValueToString(Hjava_lang_Class* this, u2 idx,
 void
 setFieldValue(Hjava_lang_Class* this, Field* f, u2 idx)
 {
-	assert(f);
+	assert(f != NULL);
 
 	if ((f->accflags & (ACC_STATIC|ACC_PUBLIC|ACC_FINAL)) == (ACC_STATIC|ACC_PUBLIC|ACC_FINAL)) {
 		char cval[512];
 			
 		constValueToString(this, idx, cval, sizeof(cval));
 
-		if (cval[0] != 0) {
-			if (include != 0) {
+		if (cval[0] != '\0') {
+			if (include != NULL) {
 				fprintf(include, "#define %s_%s %s\n",
 					className, f->name->data, cval);
 			}
-			if (jni_include != 0) {
+			if (jni_include != NULL) {
 				fprintf(jni_include, "#define %s_%s %s\n",
 					className, f->name->data, cval);
 			}
@@ -516,7 +522,7 @@ setFieldValue(Hjava_lang_Class* this, Field* f, u2 idx)
 void
 finishFields(Hjava_lang_Class* this)
 {
-	if (include == 0) {
+	if (include == NULL) {
 		return;
 	}
 
@@ -547,21 +553,21 @@ addMethod(Hjava_lang_Class* this,
 	/* If we shouldn't generate method prototypes, quit now */
 	if (objectDepth > 0) {
 		/* XXX set einfo */
-		return 0;
+		return NULL;
 	}
 
-	assert(this);
-	assert(einfo);
+	assert(this != NULL);
+	assert(einfo != NULL);
 
 	cpool = CLASS_CONSTANTS(this);
 
 	if (cpool->tags[name_index] != CONSTANT_Utf8) {
 		dprintf("addMethod(): no method name.\n"); /* XXX */
-		return (0);
+		return (NULL);
 	}
 	if (cpool->tags[signature_index] != CONSTANT_Utf8) {
 		dprintf("addMethod(): no signature name.\n"); /* XXX */
-		return (0);
+		return (NULL);
 	}
 
 	name = WORD2UTF(cpool->data[name_index])->data;
@@ -650,7 +656,7 @@ finishMethods (Hjava_lang_Class *this)
 		ret = strchr(i->sig,')');
 	ret++;
 
-	if (include != 0) {
+	if (include != NULL) {
 		fprintf(include, "extern %s", translateSig(ret, 0, 0));
 			fprintf(include, " %s_%s(", className, i->name);
 			if (!(i->access_flags & ACC_STATIC)) {
@@ -663,7 +669,7 @@ finishMethods (Hjava_lang_Class *this)
 		}
 	}
 
-	if (jni_include != 0) {
+	if (jni_include != NULL) {
 			fprintf(jni_include, "JNIEXPORT %s JNICALL Java_%s_",
 				jniType(ret), className);
 			
@@ -689,20 +695,20 @@ finishMethods (Hjava_lang_Class *this)
 		str = i->sig + 1;
 	args++;
 	while (str[0] != ')') {
-		if (jni_include != 0)
+		if (jni_include != NULL)
 			fprintf(jni_include, ", %s", jniType(str));
 		tsig = translateSig(str, &str, &args);
-		if (include != 0) {
+		if (include != NULL) {
 			fprintf(include, "%s", tsig);
 			if (str[0] != ')') {
 				fprintf(include, ", ");
 			}
 		}
 	}
-	if (include != 0) {
+	if (include != NULL) {
 		fprintf(include, ");\n");
 	}
-	if (jni_include != 0) {
+	if (jni_include != NULL) {
 		fprintf(jni_include, ");\n");
 	}
 
@@ -768,14 +774,14 @@ setupClass(Hjava_lang_Class* this, u2 thisidx, u2 super, u2 access_flags,
 
 	if (super != 0) {
 		kaffeh_findClass(CLASS_CONST_UTF8(this, super)->data);
-		if (include != 0)
+		if (include != NULL)
 		{
 			/* Put a blank line between fields for each (super)class. */
 			fprintf(include, "\n");
 		}
 	}
 
-	if (include != 0) {
+	if (include != NULL) {
 		if (strcmp(CLASS_CNAME(this), "java/lang/Object")) {
 			fprintf(include, "  /* Fields from %s: */\n", CLASS_CNAME(this));
 		}
@@ -796,7 +802,7 @@ addInterfaces(Hjava_lang_Class* this, u2 icount, Hjava_lang_Class** ifaces)
 void
 readMethod(classFile* fp, Hjava_lang_Class* this, constants* cpool)
 {
-	assert(0);
+	assert(false);
 }
 
 /*
@@ -816,26 +822,26 @@ kaffeh_findClass(const char* nm)
 	errorInfo einfo; /* XXX initialize, and check! */
 
 	/* If classpath isn't set, get it from the environment */
-	if (realClassPath[0] == 0) {
+	if (realClassPath[0] == '\0') {
 		start = getenv("KAFFE_CLASSPATH");
-		if (start == 0) {
+		if (start == NULL) {
 			start = getenv("CLASSPATH");
 		}
-		if (start == 0) {
+		if (start == NULL) {
 			dprintf("CLASSPATH not set!\n");
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 		strcpy(realClassPath, start);
 	}
 
-	for (start = realClassPath; end != 0; start = end + 1) {
+	for (start = realClassPath; end != NULL; start = end + 1) {
 		end = strchr(start, PATHSEP);
-		if (end == 0) {
+		if (end == NULL) {
 			strcpy(superName, start);
 		}
 		else {
 			strncpy(superName, start, end-start);
-			superName[end-start] = 0;
+			superName[end-start] = '\0';
 		}
 
 		if (stat(superName, &sbuf) < 0) {
@@ -863,7 +869,7 @@ kaffeh_findClass(const char* nm)
 			{
 				dprintf("kaffeh: Ran out of memory!");
 				close(fd);
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 
 			/* XXX this is a bit weak. */
@@ -935,5 +941,5 @@ kaffeh_findClass(const char* nm)
 		}
 	}
 	dprintf("Failed to open object '%s'\n", nm);
-	exit(1);
+	exit(EXIT_FAILURE);
 }

@@ -1,5 +1,45 @@
 2004-01-22  Dalibor Topic <robilad@kaffe.org>
 
+	* kaffe/kaffeh/sigs.c: 
+	(translateSig) Changed type of k to size_t to fix splint 
+	warning. Explicitely assign '\0' as char.
+
+	* kaffe/kaffevm/file.h:
+	(checkBufSize, readu1, readu2, readu4, readm
+	seekm) Made sure asserts are performed over
+	boolean expressions.
+
+	(readu2, readu4) Added casts to make sure 
+	shifts happen on a large enough data type.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.h
+	Commented meaningless size constant in prototype
+	declaration out.
+
+	* kaffe/kaffevm/utf8const.h:
+	(utf8ConstEqual, utf8ConstHashValue) Made sure
+	asserts are performed over boolean expressions.
+
+	* kaffe/kaffeh/support.c:
+	(Kaffe_SystemCallInterface) Added a few missing 
+	interfaces.
+	(initInclude, startInclude, endInclude, initJniInclude
+	endJniInclude, addField) Use NULL in FILE* comparisons.
+	(jniType) Use EXIT_FAILURE to avoid implementation 
+	defined behaviour.
+	(fprintfJni) Clarified loop condition.
+	(setFieldValue) Made sure asserts are performed 
+	over boolean expressions.
+	(setFieldValue) Use '\0' in char comparisons. Use
+	NULL in pointer comparisons.
+	(finishFields, finishMethods, setupClass) 
+	Use NULL in pointer comparisons.
+	(kaffeh_findClass) Use '\0' in char comparisons.
+	Use '\0' in char assignments. Use EXIT_FAILURE to 
+	avoid implementation defined behaviour.
+	
+2004-01-22  Dalibor Topic <robilad@kaffe.org>
+
 	* config/m68k/netbsd1/jit-md.h:
 	Removed commented out code.
 

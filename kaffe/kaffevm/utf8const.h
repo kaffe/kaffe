@@ -56,9 +56,9 @@ extern char * utf8ConstEncode(const jchar *chars, int clength);
 static inline bool utf8ConstEqual(Utf8Const* a, Utf8Const* b) __UNUSED__;
 static inline bool utf8ConstEqual(Utf8Const* a, Utf8Const* b)
 {
-	assert(a);
+	assert(a != NULL);
 	assert(a->nrefs >= 1);
-	assert(b);
+	assert(b != NULL);
 	assert(b->nrefs >= 1);
 
 #ifdef KAFFEH
@@ -81,7 +81,7 @@ static inline bool utf8ConstEqual(Utf8Const* a, Utf8Const* b)
 static inline int32 utf8ConstHashValue(Utf8Const* a) __UNUSED__;
 static inline int32 utf8ConstHashValue(Utf8Const* a)
 {
-	assert(a);
+	assert(a != NULL);
 	assert(a->nrefs >= 1);
 	return a->hash;
 }

@@ -77,7 +77,7 @@ classFileInit(classFile* cf, const unsigned char* buf, size_t len, ClassFileType
 static inline bool 
 checkBufSize(classFile* cf, int need, const char* cfname, errorInfo* einfo)
 {
-	assert(cf);
+	assert(cf != NULL);
 	assert(need >= 0);
 	assert(cf->type != CP_INVALID);
 	
@@ -103,8 +103,8 @@ checkBufSize(classFile* cf, int need, const char* cfname, errorInfo* einfo)
 static inline void 
 readu1(u1* c, classFile* cf)
 {
-	assert(c);
-	assert(cf);
+	assert(c != NULL);
+	assert(cf != NULL);
 	assert(cf->type != CP_INVALID);
 
 	*c = cf->cur[0];
@@ -114,25 +114,25 @@ readu1(u1* c, classFile* cf)
 static inline void 
 readu2(u2* c, classFile* cf)
 {
-	assert(c);
-	assert(cf);
+	assert(c != NULL);
+	assert(cf != NULL);
 	assert(cf->type != CP_INVALID);
 
-	*c = (cf->cur[0] << 8) | (cf->cur[1]);
+	*c = (((u2) cf->cur[0]) << 8) | ((u2) cf->cur[1]);
 	cf->cur += 2;
 }
 
 static inline void 
 readu4(u4* c, classFile* cf)
 {
-	assert(c);
-	assert(cf);
+	assert(c != NULL);
+	assert(cf != NULL);
 	assert(cf->type != CP_INVALID);
 
-	*c = (cf->cur[0] << 24)
-		| (cf->cur[1] << 16)
-		| (cf->cur[2] << 8)
-		| (cf->cur[3]);
+	*c = (((u4) cf->cur[0]) << 24)
+		| (((u4) cf->cur[1]) << 16)
+		| (((u4) cf->cur[2]) << 8)
+		| ((u4) cf->cur[3]);
 	cf->cur += 4;
 }
 
@@ -142,8 +142,8 @@ readu4(u4* c, classFile* cf)
 static inline void
 readm(void* dest, size_t len, size_t size, classFile* cf)
 {
-	assert(dest);
-	assert(cf);
+	assert(dest != NULL);
+	assert(cf != NULL);
 	assert(cf->type != CP_INVALID);
 
 	memcpy(dest, cf->cur, len*size);
@@ -153,7 +153,7 @@ readm(void* dest, size_t len, size_t size, classFile* cf)
 static inline void
 seekm(classFile* cf, size_t len)
 {
-	assert(cf);
+	assert(cf != NULL);
 	assert(cf->type != CP_INVALID);
 
 	cf->cur += len;
