@@ -68,8 +68,11 @@ run()
 {
 	RESULT="$1.fail"
 	TMPRESULT="$1.tmp"
-	$VERBOSE $JAVA $*
-	env CLASSPATH=${CLASSPATH}${PATHSEP}run_time $JAVA $* <&0 >$TMPRESULT 2>&1 &
+	# Use security provider from source code
+#	SECURITY_PROVIDER_URL=-Dgnu.classpath.home.url=file://@top_srcdir@/libraries/clib/
+	SECURITY_PROVIDER_URL="-Dgnu.classpath.home.url=file://`pwd`/@top_srcdir@/libraries/clib/"
+	$VERBOSE $JAVA $SECURITY_PROVIDER_URL ${JAVA_TEST_FLAGS} $*
+	env CLASSPATH=${CLASSPATH}${PATHSEP}run_time $JAVA $SECURITY_PROVIDER_URL ${JAVA_TEST_FLAGS} $* <&0 >$TMPRESULT 2>&1 &
 	error=$?
 	pid=$!
 	$VERBOSE "Background pid: $pid"
