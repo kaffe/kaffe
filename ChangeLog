@@ -2,6 +2,80 @@
 
 	Resynced with GNU Classpath
 
+	2004-02-17  Per Bothner  <per@bothner.com>
+
+        * java/nio/CharBufferImpl.java:  Inline super constructor.
+        * java/nio/DoubleBufferImpl.java:  Likewise.
+        * java/nio/FloatBufferImpl.java:  Likewise.
+        * java/nio/IntBufferImpl.java:  Likewise.
+        * java/nio/LongBufferImpl.java:  Likewise.
+        * java/nio/ShortBufferImpl.java:  Likewise.
+        * java/nio/CharBuffer.java:  Remove unused constructor.
+        * java/nio/DoubleBuffer.java:  Likewise.
+        * java/nio/FloatBuffer.java:  Likewise.
+        * java/nio/IntBuffer.java:  Likewise.
+        * java/nio/LongBuffer.java:  Likewise.
+        * java/nio/ShortBuffer.java:  Likewise.
+        * java/nio/CharViewBufferImpl.java:  New convenience constructor.
+        Fix buggy call to super constructor.
+        * java/nio/DoubleViewBufferImpl.java:  Likewise.
+        * java/nio/FloatViewBufferImpl.java:  Likewise.
+        * java/nio/IntViewBufferImpl.java:  Likewise.
+        * java/nio/LongViewBufferImpl.java:  Likewise.
+        * java/nio/ShortViewBufferImpl.java:  Likewise.
+
+        * java/nio/ByteBuffer.java (endian):  Make non-private so other
+        java.nio classes can inherit it.
+        (<init>):  Don't bother clearing array_offset.
+        * java/nio/ByteBuffer.java (allocate):  Re-implement using wrap.
+        * java/nio/ByteBuffer.java (get(byte[],int,int)):  Check underflow.
+        Remove redundant test.
+
+        * java/nio/ByteBufferImpl.java (asCharBuffer, asShortBuffer,
+        asIntBuffer, asLongBuffer, asFloatBuffer, asDoubleBuffer):
+        Use new XxxViewBufferImpl constructors.
+        * java/nio/MappedByteBufferImpl.java:  Likewise.
+        * java/nio/DirectByteBufferImpl.java:  Likewise.
+
+        * java/nio/ByteBufferImpl.java:  Remove one constructor.
+        Inline super in remaining constructor.
+        * java/nio/ByteBuffer.java:  Remove unused constructor.
+
+        * java/nio/ByteBufferImpl.java (shiftDown):  New optimized method.
+
+        * java/nio/ByteBufferImpl.java (get, put):  Add array_offset.
+
+	2004-02-11  Per Bothner  <per@bothner.com>
+
+        * java/nio/ByteBuffer.java (shiftDown):  New helper method.
+        * java/nio/ByteBufferImpl.java (compact):  Use new shiftDown method.
+        * sava/nio/ByteBufferHelper.java:  Remove redundant 'final' specifiers.
+        Pass ByteOrder parameter to most methods, since the underlying
+        ByteBuffer's order isn't always what we should use.
+        * java/nio/ByteBufferImpl.java:  Pass byte-order various places.
+        * java/nio/DirectByteBufferImpl.java:  Likewise.
+        Use ByteBufferHelper methods.
+        * java/nio/MappedByteBufferImpl.java:  Likewise.
+        (compact):  Use shiftDown.
+        * java/nio/CharViewBufferImpl.java (<init>):  Pass byte-order.
+        (get, put):  Use ByteBufferHelper.
+        (compact):  Use new shiftDown method.
+        (duplicate(boolean)):  New helper method.
+        (duplicate, asReadOnlyBuffer):  Use it.
+        (order):  Return endian field.
+        * java/nio/DoubleViewBufferImpl.java:  Likewise.
+        * java/nio/FloatViewBufferImpl.java:  Likewise.
+        * java/nio/IntViewBufferImpl.java:  Likewise.
+        * java/nio/LongViewBufferImpl.java:  Likewise.
+        * java/nio/ShortViewBufferImpl.java:  Likewise.
+        * java/nio/CharViewBufferImpl.java (subsequence):  Redundant test.
+        * java/nio/DirectByteBufferImpl.java (shiftDown):  New native method.
+        (compact):  Re-implement using shiftDown.
+
+2004-02-23  Dalibor Topic <robilad@kaffe.org>
+
+	Resynced with GNU Classpath
+
 	2004-02-06  Mohan Embar  <gnustuff@thisiscool.com>
 
         * gnu/java/nio/SocketChannelImpl.java

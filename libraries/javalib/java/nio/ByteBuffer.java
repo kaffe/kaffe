@@ -1,5 +1,5 @@
 /* ByteBuffer.java -- 
-   Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -44,7 +44,7 @@ package java.nio;
 public abstract class ByteBuffer extends Buffer
   implements Comparable
 {
-  private ByteOrder endian = ByteOrder.BIG_ENDIAN;
+  ByteOrder endian = ByteOrder.BIG_ENDIAN;
 
   int array_offset;
   byte[] backing_buffer;
@@ -52,16 +52,8 @@ public abstract class ByteBuffer extends Buffer
   ByteBuffer (int capacity, int limit, int position, int mark)
   {
     super (capacity, limit, position, mark);
-    array_offset = 0;
   }
 
-  ByteBuffer (byte[] buffer, int offset, int capacity, int limit, int position, int mark)
-  {
-    super (capacity, limit, position, mark);
-    this.backing_buffer = buffer;
-    this.array_offset = offset;
-  }
-  
   /**
    * Allocates a new direct byte buffer.
    */ 
@@ -75,7 +67,7 @@ public abstract class ByteBuffer extends Buffer
    */
   public static ByteBuffer allocate (int capacity)
   {
-    return new ByteBufferImpl (capacity);
+    return wrap(new byte[capacity], 0, capacity);
   }
 
   /**
@@ -87,6 +79,14 @@ public abstract class ByteBuffer extends Buffer
    */
   final public static ByteBuffer wrap (byte[] array, int offset, int length)
   {
+    // FIXME: In GCJ and other implementations where arrays may not
+    // move we might consider, at least when offset==0:
+    // return new DirectByteBufferImpl(array,
+    //                                 address_of_data(array) + offset,
+    //                                 length, length, 0, false);
+    // This may be more efficient, mainly because we can then use the
+    // same logic for all ByteBuffers.
+
     return new ByteBufferImpl (array, 0, array.length, offset + length, offset, -1, false);
   }
 
@@ -116,11 +116,10 @@ public abstract class ByteBuffer extends Buffer
    */
   public ByteBuffer get (byte[] dst, int offset, int length)
   {
-    if ((offset < 0)
-        || (offset > dst.length)
-        || (length < 0)
-        || (length > (dst.length - offset)))
+    if (offset < 0 || length < 0 || offset + length > dst.length)
       throw new IndexOutOfBoundsException ();
+    if (length > remaining())
+      throw new BufferUnderflowException();
 
     for (int i = offset; i < offset + length; i++)
       {
@@ -382,8 +381,14 @@ public abstract class ByteBuffer extends Buffer
    */
   public abstract ByteBuffer compact ();
 
+  void shiftDown (int dst_offset, int src_offset, int count)
+  {
+    for (int i = 0; i < count; i++)
+      put(dst_offset + i, get(src_offset + i));
+  }
+
   /**
-   * Tells wether or not this buffer is direct.
+   * Tells whether or not this buffer is direct.
    */
   public abstract boolean isDirect ();
 
