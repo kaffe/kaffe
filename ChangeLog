@@ -1,3 +1,9 @@
+Sun Jul 26 14:33:54 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* libraries/javalib/java/lang/ThreadGroup.java: fixed printThreads 
+	and printGroups to deal with null entries which may exist  
+	after threads or groups are removed.
+
 Sat Jul 25 12:57:56 1998  Even Holen  <evenh@pvv.ntnu.no>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c: patches to get
