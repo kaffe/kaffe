@@ -1,3 +1,7 @@
+Fri Apr  2 10:00:59 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/java/io/ByteArrayInputStream.java: fixed mark()
+
 Fri Apr  2 08:21:03 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* configure.in: if JIT is selected as default but jit-md.h
