@@ -162,9 +162,6 @@ Klasses_jar_SRCS = \
 	$(kaffe_rmi_rmic_SRCS) \
 	$(kaffe_rmi_server_SRCS) \
 	$(kaffe_security_provider_SRCS) \
-	$(kaffe_text_collator_SRCS) \
-	$(kaffe_text_dateformat_SRCS) \
-	$(kaffe_text_numberformat_SRCS) \
 	$(kaffe_tools_compiler_SRCS) \
 	$(kaffe_tools_jar_SRCS) \
 	$(kaffe_tools_native2ascii_SRCS) \
@@ -2048,15 +2045,6 @@ kaffe_security_provider_SRCS = \
 	kaffe/security/provider/SHA1PRNG.java \
 	kaffe/security/provider/SHA.java \
 	kaffe/security/provider/UpdateDigest.java
-kaffe_text_collator_SRCS = \
-	kaffe/text/collator/locale_en_US.java \
-	kaffe/text/collator/locale.java
-kaffe_text_dateformat_SRCS = \
-	kaffe/text/dateformat/locale_en_US.java \
-	kaffe/text/dateformat/locale.java
-kaffe_text_numberformat_SRCS = \
-	kaffe/text/numberformat/locale_en_US.java \
-	kaffe/text/numberformat/locale.java
 kaffe_tools_compiler_SRCS = \
 	kaffe/tools/compiler/Compiler_default.java \
 	kaffe/tools/compiler/Compiler.java \
