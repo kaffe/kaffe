@@ -279,9 +279,25 @@ DBG(GCPRECISE,
                 /* walk static fields that contain references */
                 fld = CLASS_SFIELDS(class);
                 for (n = 0; n < CLASS_NSFIELDS(class); n++) {
+		    	/* Note that we must resolve field types eagerly
+			 * in processClass for gcj code cause it may never
+			 * call anything like getField to get the field
+			 * type resolved.  This can happen for such types as [C
+			 */
                         if (FIELD_RESOLVED(fld) && FIELD_ISREF(fld)) {
 				void **faddr = (void**)FIELD_ADDRESS(fld);
+#if defined (HAVE_GCJ_SUPPORT)
+/* 1. GCJ work-around, see 
+ * http://sourceware.cygnus.com/ml/java-discuss/1999-q4/msg00379.html 
+ */
+				if (FIELD_TYPE(fld) == StringClass) {
+					GC_markAddress(collector, *faddr);
+				} else {
+					GC_markObject(collector, *faddr);
+				}
+#else
 				GC_markObject(collector, *faddr);
+#endif
                         }
                         fld++;
                 }
