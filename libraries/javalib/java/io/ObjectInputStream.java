@@ -178,6 +178,11 @@ public int skipBytes(int count) throws IOException
 
 protected Class resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException
 {
+	// XXX This is broken .. the spec says:
+	//
+	//   "By default the class name is resolved relative to the
+	//    class that called readObject."
+	//
 	return (Class.forName(desc.getName()));
 }
 
