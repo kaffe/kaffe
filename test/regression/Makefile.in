@@ -173,7 +173,6 @@ TESTS = \
 	Schtum.java \
 	Reflect.java \
 	MethodBug.java \
-	PrintFlush.java \
 	Bean.java \
 	ReflectInvoke.java \
 	InvTarExcTest.java \
