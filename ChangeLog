@@ -1,5 +1,25 @@
 2004-08-09  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/awt/classpath-gtk/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c:
+	Resynced with GNU Classpath.
+
+	2004-08-08  Mark Wielaard  <mark@klomp.org>
+
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c:
+        #include gdk.h, not gtk.h. #include jni.h, native_state.h, 
+	string.h and stdlib.h, not gtkpeer.h.
+        (*vm): New static variable.
+        (areaPreparedID): Make static.
+        (areaUpdatedID): Likewise.
+        (area_prepared): Get and use JNIEnv through stored JavaVM *vm.
+        (area_prepared): Likewise.
+        (area_updated): Likewise.
+        (closed): Likewise.
+        (initStaticState): Initialize *vm javaVM.
+        (pumpBytes): Use given env, not global gdk_env.
+
+2004-08-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/geom/CubicCurve2D.java:
 	Resynced with GNU Classpath.
 
