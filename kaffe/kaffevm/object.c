@@ -101,7 +101,7 @@ DBG(NEWOBJECT,
  * works.
  */
 static Hjava_lang_Class *
-ptrClass()
+ptrClass(void)
 {
 	static Hjava_lang_Class *r = 0;
 	
