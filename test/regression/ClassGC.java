@@ -45,9 +45,13 @@ public class ClassGC extends ClassLoader {
 	}
     }
 
-    static void doit(String testclass) throws Exception {
+    /*
+     * load a class and create an instance, but drop the class
+     */
+    static ClassLoader doit(String testclass) throws Exception {
 	ClassGC l = new ClassGC();
 	l.loadClass(testclass).newInstance();
+	return l;
     }
 
     static void cleanup() {
@@ -60,8 +64,14 @@ public class ClassGC extends ClassLoader {
 	String testclass = "ClassGCTest";
 
 	for (int i = 0; i < 10; i++) {
-	    doit(testclass);
+	    ClassLoader l = doit(testclass);
 	    cleanup();
+	    /* this class refers to the former to which we didn't keep
+	     * a ref.  If our class gc is too eager, it will have freed it
+	     * and bad things will happen.
+	     */
+	    Class c = l.loadClass("ClassGCTestLater");
+	    c.newInstance();
 	}
     }
     public static boolean gotOne;

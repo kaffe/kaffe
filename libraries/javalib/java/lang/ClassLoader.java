@@ -16,9 +16,16 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Hashtable;
 
 public abstract class ClassLoader {
 
+/**
+ * To prevent any classes from being gc'd before we are gc'd, we keep them
+ * in this hashtable.  The contents of this table correspond to entries
+ * in the VM-internal class entry pool.
+ */
+private Hashtable loadedClasses = new Hashtable();
 private ClassLoader parent;
 
 protected ClassLoader() {
@@ -31,7 +38,13 @@ protected ClassLoader(ClassLoader parent) {
 }
 
 final protected Class defineClass(String name, byte data[], int offset, int length) {
-	return (defineClass0(name, data, offset, length));
+	Class clazz =defineClass0(name, data, offset, length);
+	if (name != null) {
+		loadedClasses.put(name, clazz);
+	} else {
+		loadedClasses.put(clazz.getName(), clazz);
+	}
+	return (clazz);
 }
 
 /**

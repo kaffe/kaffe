@@ -6,6 +6,8 @@ Thu Dec 17 13:53:38 1998  Edouard Parmelan <Edouard.Parmelan@France.NCR.COM>
 
 Thu Dec 17 13:22:59 1998  Godmar Back  <gback@cs.utah.edu>
 
+	* libraries/javalib/java/lang/ClassLoader.java: keep all loaded
+	classes in hashtable to prevent losing them prematurely.
 	* libraries/clib/native/ClassLoader.c: removed INTERNUTF8 defines and
 	fixed memory leak in findSystemClass.
 	* kaffe/kaffevm/code-analyse.c: replaced gc_free with KFREE for
