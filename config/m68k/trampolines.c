@@ -8,7 +8,10 @@
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  *
- * Written by Kiyo Inaba (inaba@src.ricoh.co.jp) based on i386/trampolines.c
+ * Written by Kiyo Inaba <k-inaba@mxb.mesh.ne.jp>, 1998;
+ *	based on i386/trampolines.c
+ * Modified by Kiyo Inaba <k-inaba@mxb.mesh.ne.jp>, 1999;
+ *	to use linux's assembler syntax to support both linux/netbsd.
  */
 
 #if defined(TRAMPOLINE_FUNCTION)

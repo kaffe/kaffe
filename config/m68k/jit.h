@@ -7,16 +7,13 @@
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
+ *
+ * Modified by Kiyo Inaba <k-inaba@mxb.mesh.ne.jp>, 1999;
+ *	to support the trampoline mechanism.
  */
 
 #ifndef __m68k_jit_h
 #define __m68k_jit_h
-
-/*
- * NOTE: Kiyo Inaba <inaba@snoopy.src.ricoh.co.jp> says that this file is
- * very specific to m68k/Linux, and moreover, that it's currently broken.
- * It should not be considered a common file for m68k JITs at this point.
- */
 
 /**/
 /* Exception handling information. */

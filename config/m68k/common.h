@@ -2,17 +2,20 @@
  * m68k/common.h
  * Common M68K configuration information.
  *
- * Copyright (c) 1996, 1997, 1998
+ * Copyright (c) 1996, 1997, 1998, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  *
- * Written by Kiyo Inaba <inaba@src.ricoh.co.jp>, 1998;
+ * Written by Kiyo Inaba <k-inaba@mxb.mesh.ne.jp>, 1998;
  * Based on the ports
  *      by Remi Perrot <r_perrot@mail.club-internet.fr> to m68k/linux
  * and
  *      by Alexandre Oliva <oliva@dcc.unicamp.br> to sparc
+ *
+ * Modified by Kiyo Inaba <k-inaba@mxb.mesh.ne.jp>, 1999 to support
+ *	both linux and netbsd1.
  */
 
 #ifndef __m68k_common_h
@@ -23,6 +26,16 @@
  */
 #define ALIGNMENT_OF_SIZE(S)    (((S>1)?2:1))
 
+/*
+ * sysdepCallMethod supports:
+ *
+ *	Calling sequences for linux and netbsd1 are same, except for
+ *	the place of return values. The float/double values are in
+ *	fp0 (linux) or d0/d1 (netbsd1).
+ *
+ *	Still I do not understand 'asm' statement well, and the
+ *	statement below is a 'because it works' version.
+ */
 #if defined(__linux__)
 #ifdef	USE_ASM		/* Old and obsolete... */
 #define	sysdepCallMethod(CALL)					       \
