@@ -2429,6 +2429,7 @@ java_util_SRCS = \
 	java/util/TooManyListenersException.java \
 	java/util/TreeMap.java \
 	java/util/TreeSet.java \
+	java/util/VMTimeZone.java \
 	java/util/Vector.java \
 	java/util/WeakHashMap.java
 java_util_jar_SRCS = \

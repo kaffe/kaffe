@@ -38,8 +38,9 @@ exception statement from your version. */
 
 
 package java.util;
-import gnu.classpath.Configuration;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.text.DateFormatSymbols;
 
 /**
@@ -83,44 +84,61 @@ public abstract class TimeZone implements java.io.Serializable, Cloneable
    * The default time zone, as returned by getDefault.
    */
   private static TimeZone defaultZone0;
-  /* initialize this static field lazily to overhead if
-   * it is not needed: 
+
+  /**
+   * Tries to get the default TimeZone for this system if not already
+   * set.  It will call <code>getDefaultTimeZone(String)</code> with
+   * the result of <code>System.getProperty("user.timezone")</code>.
+   * If that fails it calls <code>VMTimeZone.getDefaultTimeZoneId()</code>.
+   * If that also fails GMT is returned.
    */
-  private static synchronized TimeZone defaultZone() {
+  private static synchronized TimeZone defaultZone()
+  {
     /* Look up default timezone */
     if (defaultZone0 == null) 
       {
-	if (Configuration.INIT_LOAD_LIBRARY)
-	  {
-	    System.loadLibrary("native");
-	  }
-	String tzid = System.getProperty("user.timezone");
-	
-	if (tzid == null)
-	  tzid = getDefaultTimeZoneId();
-	
-	if (tzid == null)
-	  tzid = "GMT";
-	
-	defaultZone0 = getTimeZone(tzid);
+	defaultZone0 = (TimeZone) AccessController.doPrivileged
+	  (new PrivilegedAction()
+	    {
+	      public Object run()
+	      {
+		TimeZone zone = null;
+		
+		// Prefer System property user.timezone.
+		String tzid = System.getProperty("user.timezone");
+		if (tzid != null && !tzid.equals(""))
+		  zone = getDefaultTimeZone(tzid);
+		
+		// Try platfom specific way.
+		if (zone == null)
+		  zone = VMTimeZone.getDefaultTimeZoneId();
+		
+		// Fall back on GMT.
+		if (zone == null)
+		  zone = (TimeZone) timezones().get("GMT");
+		
+		return zone;
+	      }
+	    });
       }
+    
     return defaultZone0; 
   }
-
-
+  
   private static final long serialVersionUID = 3581463369166924961L;
 
   /**
-   * Hashtable for timezones by ID.  
+   * HashMap for timezones by ID.  
    */
-  private static Hashtable timezones0;
+  private static HashMap timezones0;
   /* initialize this static field lazily to overhead if
    * it is not needed: 
    */
-  private static synchronized Hashtable timezones() {
-    if (timezones0==null) 
+  private static synchronized HashMap timezones()
+  {
+    if (timezones0 == null) 
       {
-	Hashtable timezones = new Hashtable();
+	HashMap timezones = new HashMap();
 	timezones0 = timezones;
 
 	TimeZone tz;
@@ -784,17 +802,133 @@ public abstract class TimeZone implements java.io.Serializable, Cloneable
     return timezones0;
   }
 
-
-  /* This method returns us a time zone id string which is in the
-     form <standard zone name><GMT offset><daylight time zone name>.
-     The GMT offset is in seconds, except where it is evenly divisible
-     by 3600, then it is in hours.  If the zone does not observe
-     daylight time, then the daylight zone name is omitted.  Examples:
-     in Chicago, the timezone would be CST6CDT.  In Indianapolis 
-     (which does not have Daylight Savings Time) the string would
-     be EST5
+  /**
+   * Maps a time zone name (with optional GMT offset and daylight time
+   * zone name) to one of the known time zones.  This method called
+   * with the result of <code>System.getProperty("user.timezone")</code>
+   * or <code>getDefaultTimeZoneId()</code>.  Note that giving one of
+   * the standard tz data names from ftp://elsie.nci.nih.gov/pub/ is
+   * preferred.  The time zone name can be given as follows:
+   * <code>(standard zone name)[(GMT offset)[(daylight time zone name)]]</code>
+   * <p>
+   * If only a (standard zone name) is given (no numbers in the
+   * String) then it gets mapped directly to the TimeZone with that
+   * name, if that fails null is returned.
+   * <p>
+   * A GMT offset is the offset to add to the local time to get GMT.
+   * If a (GMT offset) is included (either in seconds or hours) then
+   * an attempt is made to find a TimeZone name matching both the name
+   * and the offset (that doesn't observe daylight time, if the
+   * timezone observes daylight time then you must include a daylight
+   * time zone name after the offset), if that fails then a TimeZone
+   * with the given GMT offset is returned (whether or not the
+   * TimeZone observes daylight time is ignored), if that also fails
+   * the GMT TimeZone is returned.
+   * <p>
+   * If the String ends with (GMT offset)(daylight time zone name)
+   * then an attempt is made to find a TimeZone with the given name and
+   * GMT offset that also observes (the daylight time zone name is not
+   * currently used in any other way), if that fails a TimeZone with
+   * the given GMT offset that observes daylight time is returned, if
+   * that also fails the GMT TimeZone is returned.
+   * <p>
+   * Examples: In Chicago, the time zone id could be "CST6CDT", but
+   * the preferred name would be "America/Chicago".  In Indianapolis
+   * (which does not have Daylight Savings Time) the string could be
+   * "EST5", but the preferred name would be "America/Indianapolis".
+   * The standard time zone name for The Netherlands is "Europe/Amsterdam",
+   * but can also be given as "CET-1CEST".
    */
-  private static native String getDefaultTimeZoneId();
+  static TimeZone getDefaultTimeZone(String sysTimeZoneId)
+  {
+    // First find start of GMT offset info and any Daylight zone name.
+    int startGMToffset = 0;
+    int sysTimeZoneIdLength = sysTimeZoneId.length();
+    for (int i = 0; i < sysTimeZoneIdLength && startGMToffset == 0; i++)
+      {
+	char c = sysTimeZoneId.charAt(i);
+	if (Character.isDigit(c))
+	  startGMToffset = i;
+	else if ((c == '+' || c == '-')
+		 && i + 1 < sysTimeZoneIdLength
+		 && Character.isDigit(sysTimeZoneId.charAt(i + 1)))
+	  startGMToffset = i;
+      }
+    
+    String tzBasename;
+    if (startGMToffset == 0)
+      tzBasename = sysTimeZoneId;
+    else
+      tzBasename = sysTimeZoneId.substring (0, startGMToffset);
+    
+    int startDaylightZoneName = 0;
+    for (int i = sysTimeZoneIdLength - 1;
+	 i >= 0 && !Character.isDigit(sysTimeZoneId.charAt(i)); --i)
+      startDaylightZoneName = i;
+    
+    boolean useDaylightTime = startDaylightZoneName > 0;
+    
+    // Integer.parseInt() doesn't handle leading +.
+    if (sysTimeZoneId.charAt(startGMToffset) == '+')
+      startGMToffset++;
+    
+    int gmtOffset = 0;
+    if (startGMToffset > 0)
+      {
+	gmtOffset = Integer.parseInt
+	  (startDaylightZoneName == 0
+	   ? sysTimeZoneId.substring(startGMToffset)
+	   : sysTimeZoneId.substring(startGMToffset,
+				     startDaylightZoneName));
+	
+	// Offset could be in hours or seconds.  Convert to millis.
+	// The offset is given as the time to add to local time to get GMT
+	// we need the time to add to GMT to get localtime.
+	if (Math.abs(gmtOffset) < 24)
+	  gmtOffset *= 60 * 60;
+	gmtOffset *= -1000;
+      }
+    
+    // Try to be optimistic and get the timezone that matches the base name.
+    // If we only have the base name then just accept this timezone.
+    // Otherwise check the gmtOffset and day light attributes.
+    TimeZone tz = (TimeZone) timezones().get(tzBasename);
+    if (tz != null
+	&& (tzBasename == sysTimeZoneId
+	    || (tz.getRawOffset() == gmtOffset
+		&& tz.useDaylightTime() == useDaylightTime)))
+      return tz;
+    
+    // Maybe there is one with the daylight zone name?
+    if (useDaylightTime)
+      {
+	String daylightZoneName;
+	daylightZoneName = sysTimeZoneId.substring(startDaylightZoneName);
+	if (!daylightZoneName.equals(tzBasename))
+	  {
+	    tz = (TimeZone) timezones().get(tzBasename);
+	    if (tz != null
+		&& tz.getRawOffset() == gmtOffset
+		&& tz.useDaylightTime())
+	      return tz;
+	  }
+      }
+    
+    // If no match, see if a valid timezone has similar attributes as this
+    // and then use it instead. We take the first one that looks OKish.
+    if (startGMToffset > 0)
+      {
+	String[] ids = getAvailableIDs(gmtOffset);
+	for (int i = 0; i < ids.length; i++)
+	  {
+	    tz = (TimeZone) timezones().get(ids[i]);
+	    if (tz.useDaylightTime() == useDaylightTime)
+	      return tz;
+	  }
+      }
+    
+    return null;
+  }
 
   /**
    * Gets the time zone offset, for current date, modified in case of 
@@ -1140,16 +1274,18 @@ public abstract class TimeZone implements java.io.Serializable, Cloneable
   /**
    * Returns the time zone under which the host is running.  This
    * can be changed with setDefault.
-   * @return the time zone for this host.
+   *
+   * @return A clone of the current default time zone for this host.
    * @see #setDefault
    */
   public static TimeZone getDefault()
   {
-    return defaultZone();
+    return (TimeZone) defaultZone().clone();
   }
 
   public static void setDefault(TimeZone zone)
   {
+    // Hmmmm. No Security checks?
     defaultZone0 = zone;
   }
 

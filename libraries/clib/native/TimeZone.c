@@ -21,7 +21,7 @@
 #include "java_util_TimeZone.h"
 
 struct Hjava_lang_String*
-java_util_TimeZone_getDefaultTimeZoneId(void)
+java_util_VMTimeZone_getSystemTimeZoneId(void)
 {
 	        char *tempZoneName = NULL;
 #if defined(HAVE_TM_ZONE)

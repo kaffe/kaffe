@@ -113,6 +113,7 @@ java/lang/StringBuffer.class
 java/lang/StringIndexOutOfBoundsException.class
 java/lang/System.class
 java/lang/Thread.class
+java/lang/ThreadLocal.class
 java/lang/VMThread.class
 java/lang/ThreadGroup.class
 java/lang/Throwable.class
@@ -127,6 +128,7 @@ java/lang/Void.class
 java/lang/ref/Reference.class
 java/lang/ref/SoftReference.class
 java/lang/ref/ReferenceQueue.class
+java/lang/ref/WeakReference.class
 java/lang/reflect/AccessibleObject.class
 java/lang/reflect/Array.class
 java/lang/reflect/Constructor.class
@@ -202,6 +204,7 @@ java/util/Collections$EmptySet.class
 java/util/Collections$ReverseComparator.class
 java/util/Collections$SynchronizedCollection.class
 java/util/Collections$SynchronizedList.class
+java/util/Collections$SynchronizedMap.class
 java/util/Collections$SynchronizedSet.class
 java/util/Comparator.class
 java/util/ConcurrentModificationException.class
@@ -243,6 +246,12 @@ java/util/StringTokenizer.class
 java/util/TimeZone.class
 java/util/Vector.class
 java/util/Vector$1.class
+java/util/VMTimeZone.class
+java/util/WeakHashMap$WeakBucket.class
+java/util/WeakHashMap$1.class
+java/util/WeakHashMap.class
+java/util/WeakHashMap$WeakBucket$WeakEntry.class
+java/util/WeakHashMap$WeakEntrySet.class
 java/util/jar/JarEntry.class
 java/util/jar/JarException.class
 java/util/jar/JarFile.class

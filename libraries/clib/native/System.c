@@ -162,7 +162,7 @@ initProxyProperties (struct Hjava_util_Properties *prop)
 
 
 /* Adapted from GNU Classpath */
-void
+struct Hjava_lang_String*
 java_lang_System_getenv0(struct Hjava_lang_String *str) 
 {
   const char *cname;

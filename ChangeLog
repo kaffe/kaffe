@@ -1,3 +1,54 @@
+2004-09-12  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/VMTimeZone.java:
+	New file, taken from GNU Classpath.
+
+	* include/Makefile.am: Generate header for VMTimeZone.
+
+	* include/Makefile.in: Regenerated.
+
+	* libraries/clib/native/System.c (getenv0): 
+	Fixed prototype.
+
+	* libraries/clib/native/TimeZone.c: Changed to VMTimeZone
+	prototype.
+
+	* libraries/javalib/Klasses.jar.bootstrap: Regenerated.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/bootstrap.classlist:
+	Added VMTimeZone and other necessary files for kjc's
+	bootstrap.
+
+	* libraries/javalib/java/util/TimeZone.java:
+	Resynced with GNU Classpath.
+
+	2004-08-29  Mark Wielaard  <mark@klomp.org>
+
+        * java/util/TimeZone.java (defaultZone): Use VMTimeZone.
+        (getDefaultTimeZone): Make package private. Check that GMToffset
+        contains at least one digit.
+        (getDefaultTimeZoneId, readTimeZoneFile, readtzFile): (Re)Moved to
+        VMTimeZone.
+        * vm/reference/java/util/VMTimeZone.java: New file with above methods.
+
+	2004-08-28  Mark Wielaard  <mark@klomp.org>
+
+        * java/util/TimeZone.java (defaultZone): Try a couple of ways to get
+        a TimeZoneId string and then try to convert that to a TimeZone with
+        getDefaultSystemTimeZone(String).
+        (timezones0): Changed type from Hashtable to HashMap.
+        (timezones): Create HashMap, not Hashtable.
+        (getDefaultTimeZone): New method, rewritten from CNI version.
+        (readTimeZoneFile): New method.
+        (readtzFile): Likewise.
+        (skipFully): Likewise.
+
+
 2004-09-11  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/m68k/openbsd2/md.h: Fixed another typo in sysdepCallMethod.

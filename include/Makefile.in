@@ -435,7 +435,7 @@ NOINSTALL_DERIVED_HDRS = \
 	java_text_DateFormat.h \
 	java_util_Arrays.h \
 	java_util_Comparator.h \
-	java_util_TimeZone.h \
+	java_util_VMTimeZone.h \
 	java_util_Vector.h \
 	java_util_zip_Adler32.h \
 	java_util_zip_CRC32.h \
