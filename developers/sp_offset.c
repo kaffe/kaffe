@@ -9,8 +9,10 @@
 #include <setjmp.h>
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <sys/types.h>
 
 #define STACK_SIZE	65536
 #define STACK_COPY	128
