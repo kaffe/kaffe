@@ -44,6 +44,8 @@
 #include <native.h>
 #include <jni.h>
 
+#include <locale.h>
+
 static char cwdpath[MAXPATHLEN];
 
 extern char* realClassPath;
@@ -168,7 +170,6 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	char* jhome;
 	char* cpath;
 	char* dir;
-	char* tzone;
 	userProperty* prop;
 #if defined(HAVE_SYS_UTSNAME_H)
 	struct utsname system;
@@ -326,6 +327,30 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	{
 		setProperty(p, "user.name", "Unknown");
 		setProperty(p, "user.home", "Unknown");
+	}
+	
+	{
+	char *tmp;
+	char *locale;
+	char lang[3];
+
+	locale = setlocale (LC_ALL, "");
+
+	tmp = strchr (locale, '_');
+
+	if (tmp != NULL) {
+		lang[2] = '\0';
+
+		strncpy (lang, locale, 2);
+		setProperty (p, "user.language", lang);
+
+		strncpy (lang, tmp+1, 2);
+		setProperty (p, "user.region", lang);
+	} else {
+		/* locale not set or not of the form <lang>_<region> */
+		setProperty (p, "user.language", "en");
+		setProperty (p, "user.region", "US");
+	}	
 	}
 
 	setProperty(p, "file.encoding.pkg", "kaffe.io");

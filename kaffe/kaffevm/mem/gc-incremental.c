@@ -163,9 +163,6 @@ static void gcFree(Collector* gcif, void* mem);
 /* Standard GC function sets.  We call them "allocation types" now */
 static gcFuncs gcFunctions[GC_ALLOC_MAX_INDEX];
 
-/* Number of registered allocation types */
-static int nrTypes;
-
 /*
  * register an allocation type under a certain index
  * NB: we could instead return a pointer to the record describing the
@@ -173,22 +170,19 @@ static int nrTypes;
  * allow us to use compile-time constants.
  */
 static void
-registerTypeByIndex(int index, walk_func_t walk, final_func_t final,
+registerTypeByIndex(gc_alloc_type_t idx, walk_func_t walk, final_func_t final,
 	destroy_func_t destroy,
 	const char *description)
 {
 	/* once only, please */
-	assert (gcFunctions[index].description == 0);
+	assert (gcFunctions[idx].description == 0);
 	/* don't exceed bounds */
-	assert (index >= 0 && 
-		index < sizeof(gcFunctions)/sizeof(gcFunctions[0]));
-	gcFunctions[index].walk = walk;
-	gcFunctions[index].final = final;
-	gcFunctions[index].destroy = destroy;
-	gcFunctions[index].description = description;
-	if (index >= nrTypes) {
-		nrTypes = index + 1;
-	}
+	assert (idx < sizeof(gcFunctions)/sizeof(gcFunctions[0]));
+
+	gcFunctions[idx].walk = walk;
+	gcFunctions[idx].final = final;
+	gcFunctions[idx].destroy = destroy;
+	gcFunctions[idx].description = description;
 }
 
 /*
@@ -197,9 +191,9 @@ registerTypeByIndex(int index, walk_func_t walk, final_func_t final,
  */
 static void
 gcRegisterFixedTypeByIndex(Collector* gcif UNUSED, 
-	int index, const char *description)
+	gc_alloc_type_t idx, const char *description)
 {
-	registerTypeByIndex(index, 0, GC_OBJECT_FIXED, 0, description);
+	registerTypeByIndex(idx, 0, GC_OBJECT_FIXED, 0, description);
 }
 
 /*
@@ -207,11 +201,11 @@ gcRegisterFixedTypeByIndex(Collector* gcif UNUSED,
  */
 static void
 gcRegisterGcTypeByIndex(Collector* gcif UNUSED,
-	int index, walk_func_t walk, final_func_t final,
+	gc_alloc_type_t idx, walk_func_t walk, final_func_t final,
 	destroy_func_t destroy,
 	const char *description)
 {
-	registerTypeByIndex(index, walk, final, destroy, description);
+	registerTypeByIndex(idx, walk, final, destroy, description);
 }
 
 struct _gcStats gcStats;
@@ -226,17 +220,16 @@ static inline int
 gc_heap_isobject(gc_block *info, gc_unit *unit)
 {
 	uintp p = (uintp) UTOMEM(unit) - gc_heap_base;
-	int idx;
 
 	if (!(p & (MEMALIGN - 1)) && p < gc_heap_range && GCBLOCKINUSE(info)) {
 		/* Make sure 'unit' refers to the beginning of an
 		 * object.  We do this by making sure it is correctly
 		 * aligned within the block.
 		 */
-		idx = GCMEM2IDX(info, unit);
-		if (idx < info->nr && GCBLOCK2MEM(info, idx) == unit
-		    && (GC_GET_COLOUR(info, idx) & GC_COLOUR_INUSE) ==
-		    GC_COLOUR_INUSE) {
+		uint16 idx = GCMEM2IDX(info, unit);
+		if (idx < info->nr &&
+		    GCBLOCK2MEM(info, idx) == unit &&
+		    (GC_GET_COLOUR(info, idx) & GC_COLOUR_INUSE) == GC_COLOUR_INUSE) {
 			return 1;
 		}
 	}
@@ -381,20 +374,12 @@ gcGetObjectBase(Collector *gcif UNUSED, const void* mem)
 		return (0);
 	}
 
+	/* the allocator initializes all block infos of a large
+	   object using the address of the first page allocated
+	   for the large object. Hence, simply using GCMEM2* works
+	   even for large blocks
+	  */
 	info = GCMEM2BLOCK(mem);
-	if (!GCBLOCKINUSE(info)) {
-		/* go down block list to find out whether we were hitting
-		 * in a large object
-		 */
-		while (!GCBLOCKINUSE(info) && (uintp)info > (uintp)gc_block_base) {
-			info--;
-		}
-		/* must be a large block, hence nr must be 1 */
-		if (!GCBLOCKINUSE(info) || info->nr != 1) {
-			return (0);
-		}
-	}
-
 	idx = GCMEM2IDX(info, mem);
 
 	/* report fixed objects as well */
@@ -1016,7 +1001,7 @@ gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
 	int times = 0;
 
 	assert(gc_init != 0);
-	assert(fidx < nrTypes && size != 0);
+	assert(gcFunctions[fidx].description != NULL && size != 0);
 
 	size += sizeof(gc_unit);
 
@@ -1037,7 +1022,7 @@ gcMalloc(Collector* gcif UNUSED, size_t size, gc_alloc_type_t fidx)
 					adviseGC();
 					lockStaticMutex(&gc_lock);
 				}
-				break;	  
+				break;
 
 			case 2:
 				/* Grow the heap */
@@ -1194,7 +1179,7 @@ gcRealloc(Collector* gcif, void* mem, size_t size, gc_alloc_type_t fidx)
 	int idx;
 	void* newmem;
 	gc_unit* unit;
-	int osize;
+	size_t osize;
 	int iLockRoot;
 
 	assert(gcFunctions[fidx].final == GC_OBJECT_FIXED);
@@ -1312,7 +1297,7 @@ objectStatsChange(gc_unit* unit, int diff)
 	info = GCMEM2BLOCK(unit);
 	idx = GC_GET_FUNCS(info, GCMEM2IDX(info, unit));
 
-	assert(idx >= 0 && idx < nrTypes);
+	assert(idx >= 0 && gcFunctions[idx].description!=NULL);
 	gcFunctions[idx].nr += diff * 1;
 	gcFunctions[idx].mem += diff * GCBLOCKSIZE(info);
 }
@@ -1326,7 +1311,7 @@ objectStatsPrint(void)
 	dprintf("Memory statistics:\n");
 	dprintf("------------------\n");
 
-	while (cnt < nrTypes) {
+	while (gcFunctions[cnt].description != NULL) {
 		dprintf("%14.14s: Nr %6d  Mem %6dK",
 			gcFunctions[cnt].description, 
 			gcFunctions[cnt].nr, 

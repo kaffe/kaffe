@@ -544,6 +544,7 @@ gc_large_block(size_t sz)
 {
 	gc_block* info;
 	size_t msz;
+	size_t block_count;
 
 	/* Add in management overhead */
 	msz = sz+2+ROUNDUPALIGN(1);
@@ -554,6 +555,11 @@ gc_large_block(size_t sz)
 	if (info == 0) {
 		return (0);
 	}
+
+	/* number of pages allocated for block */
+	block_count = msz >> gc_pgbits;
+	
+	DBG(GCPRIM, dprintf ("large block covers %x pages\n", block_count); )
 
 	/* Setup the meta-data for the block */
 	DBG(GCDIAG, gc_set_magic_marker(info));
@@ -569,6 +575,18 @@ gc_large_block(size_t sz)
 	DBG(GCDIAG, memset(info->data, 0, sz));
 
 	GCBLOCK2FREE(info, 0)->next = 0;
+
+	/* now initialize the other blocks that were allocated */
+	while (--block_count > 0) {
+
+		info[block_count].size  = sz;
+		info[block_count].nr    = 1;
+		info[block_count].avail = 0;
+		info[block_count].funcs = info[0].funcs;
+		info[block_count].state = info[0].state;
+		info[block_count].data  = info[0].data;
+		info[block_count].free  = 0;
+	}
 
 	/*
 	 * XXX gc_large_block only called during a block allocation.

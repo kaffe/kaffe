@@ -121,10 +121,10 @@ struct GarbageCollectorInterface_Ops {
 			const void* addr, uint32 length);
 
 	void	(*registerFixedTypeByIndex)(Collector *, 
-			int gc_index, const char *description);
+			gc_alloc_type_t gc_index, const char *description);
 
 	void 	(*registerGcTypeByIndex)(Collector *, 
-			int gc_index,
+			gc_alloc_type_t gc_index,
 			walk_func_t walk, final_func_t final, 
 			destroy_func_t destroy, const char
 					 *description);

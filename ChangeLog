@@ -1,3 +1,24 @@
+2004-04-20  Helmer Kraemer  <hkraemer@freenet.de>
+
+	* libraries/clib/native/System.c:
+	(java_lang_System_initProperties) autodetect user.language and
+	user.region using setlocale()
+
+	* kaffe/kaffevm/gc.h: 
+	(registerFixedTypeByIndex, registerGcTypeByIndex): change type
+	of gc_index parameter to gc_alloc_type_t
+
+	* kaffe/kaffevm/mem/gc-mem.c:
+	(gc_large_block): initialize all gc_blocks covered by the large block,
+	so the GCMEM2* macros work for addresses inside a large block
+	
+	* kaffe/kaffevm/mem/gc-incremental.c:
+	(nrTypes): removed
+	(registerTypeByIndex, gcRegisterFixedTypeByIndex, gcRegisterGcTypeByIndex):
+	adapted to modified prototypes in gc.h
+	(gcGetObjectBase): simplified since GCMEM2* macros now work for
+	addresses inside large blocks
+
 2004-04-20  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/ksem.h
