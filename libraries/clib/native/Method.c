@@ -18,6 +18,7 @@
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/itypes.h"
 #include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/exception.h"
 #include "../../../kaffe/kaffevm/baseClasses.h"
 #include "Method.h"
 #include "Boolean.h"
@@ -348,6 +349,7 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 		robj = ret.l;
 		break;
 	default:
+		robj = 0;	/* avoid compiler warning */
 		ABORT();
 	}
 
