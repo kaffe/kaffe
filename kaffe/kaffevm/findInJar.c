@@ -72,19 +72,27 @@ static void makeClasspath(char*);
 
 /*
  * Find the named class in a directory or JAR file.
- * Returns true if successful, false otherwise.
+ * Returns class if successful, NULL otherwise.
  */
-bool
+Hjava_lang_Class*
 findClass(classEntry* centry, errorInfo *einfo)
 {
 	char buf[MAXBUF];
 	classFile hand;
 	char* cname;
-	Hjava_lang_Class* class;
+	Hjava_lang_Class* class = 0;
 	bool success = true;
 
 	cname = centry->name->data;
-	class = centry->class;
+
+	/* Note: In order to avoid that a thread goes on and tries to link a
+	 * class that hasn't been fully read, we make sure we don't set 
+	 * centry->class before the reading has completed.  It's the 
+	 * caller's responsibility to set centry->class after the reading 
+	 * is completed and threads can start racing for who gets to process 
+	 * it.
+	 */
+	assert(centry->class == 0);
 
 	/* Look for the class */
 CDBG(	printf("Scanning for class %s\n", cname);		)
@@ -95,34 +103,25 @@ CDBG(	printf("Scanning for class %s\n", cname);		)
 	/* Find class in Jar file */
 	hand = findInJar(buf, einfo);
 	if (hand.type == CP_INVALID) {
-		return (false);
+		return (0);
 	}
 
 	switch (hand.type) {
 	case CP_DIR:
 	case CP_ZIPFILE:
+		class = newClass();
 		if (class == 0) {
-			class = newClass();
+			return (0);
 		}
-
-		lockMutex(centry);
 
 		class->name = centry->name;
 		class->centry = centry;
-		centry->class = class;
-		if (readClass(class, &hand, NULL, einfo) == 0) {
-			success = false;
-		} else {
-			success = true;
-			class->state = CSTATE_LOADED;
-		}
-
-		unlockMutex(centry);
+		class = readClass(class, &hand, NULL, einfo);
 
 		if (hand.base != 0) {
 			gc_free_fixed(hand.base);
 		}
-		return (success);
+		return (class);
 
 	case CP_SOFILE:
 		/* Note that if for an Elf shared library created using
@@ -134,10 +133,9 @@ CDBG(	printf("Scanning for class %s\n", cname);		)
 		 */
 		assert(class == NULL);
 		class = (Hjava_lang_Class*)hand.base;
-		centry->class = class;
 		class->centry = centry;
 		registerClass(centry);
-		return (true);
+		return (class);
 
 	default:
 		break;
@@ -153,7 +151,7 @@ CDBG(	printf("Scanning for class %s\n", cname);		)
 		fprintf(stderr, "Cannot find essential class '%s' in class library ... aborting.\n", cname);
 		ABORT();
 	}
-	return (false);
+	return (0);
 }
 
 /*

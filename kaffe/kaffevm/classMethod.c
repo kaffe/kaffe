@@ -52,7 +52,6 @@ static Hjava_lang_Class* arr_interfaces[2];
 
 extern gcFuncs gcClassObject;
 
-extern bool findClass(classEntry*, errorInfo*);
 extern bool verify2(Hjava_lang_Class*, errorInfo*);
 extern bool verify3(Hjava_lang_Class*, errorInfo*);
 
@@ -95,15 +94,6 @@ processClass(Hjava_lang_Class* class, int tostate, errorInfo *einfo)
 	static int depth;
 #endif
 
-	/* if the initialization of that class failed once before, don't
-	 * bother and report that no definition for this class exists
-	 */
-	if (class->state == CSTATE_FAILED) {
-		SET_LANG_EXCEPTION_MESSAGE(einfo, 
-			NoClassDefFoundError, class->name->data)
-		return (false);
-	}
-
 	/* If this class is initialised to the required point, quit now */
 	if (class->state >= tostate) {
 		return (true);
@@ -133,13 +123,35 @@ DBG(RESERROR,
 		(*Kaffe_ThreadInterface.currentNative)(), class->name->data,
 		class->state, tostate);
     )
+
+retry:
+	/* If the initialization of that class failed once before, don't
+	 * bother and report that no definition for this class exists.
+	 * We must do that after the retry label so that threads waiting
+	 * on other threads performing a particular initialization step
+	 * can learn that things went wrong.
+	 */
+	if (class->state == CSTATE_FAILED) {
+		SET_LANG_EXCEPTION_MESSAGE(einfo, 
+			NoClassDefFoundError, class->name->data)
+		success = false;
+		goto done;
+	}
+
 	DO_CLASS_STATE(CSTATE_PREPARED) {
 
-		/* Check for circular dependent classes */
 		if (class->state == CSTATE_DOING_PREPARE) {
-			SET_LANG_EXCEPTION(einfo, ClassCircularityError)
-			success = false;
-			goto done;
+			if (THREAD_NATIVE() == class->processingThread) {
+				/* Check for circular dependent classes */
+				SET_LANG_EXCEPTION(einfo, ClassCircularityError)
+				success = false;
+				goto done;
+			} else {
+				while (class->state == CSTATE_DOING_PREPARE) {
+					waitStaticCond(&classLock, 0);
+					goto retry;
+				}
+			}
 		}
 
 		/* Allocate any static space required by class and initialise
@@ -151,23 +163,25 @@ DBG(RESERROR,
 		}
 
 		SET_CLASS_STATE(CSTATE_DOING_PREPARE);
+		class->processingThread = THREAD_NATIVE();
 
 		/* Load and link the super class */
 		if (class->superclass) {
 			/* propagate failures in super class loading and 
-			 * processing
+			 * processing.  Since getClass might involve an
+			 * upcall to a classloader, we must release the
+			 * classLock here.
 			 */
+			unlockStaticMutex(&classLock);
 			class->superclass = getClass((uintp)class->superclass, 
 							class, einfo);
+			lockStaticMutex(&classLock);
 			if (class->superclass == 0) {
 				success = false;
 				goto done;
 			}
-			if (processClass(class->superclass, CSTATE_LINKED, 
-					 einfo) == false) {
-				success = false;
-				goto done;
-			}
+			/* that's pretty much obsolete. */
+			assert(class->superclass->state >= CSTATE_LINKED);
 						
 			/* Copy initial field size and gc layout. 
 			 * Later, as this class's fields are resolved, they
@@ -176,6 +190,8 @@ DBG(RESERROR,
 			CLASS_FSIZE(class) = CLASS_FSIZE(class->superclass);
 			class->gc_layout = class->superclass->gc_layout;
 		}
+		if (class->superclass)
+			assert(class->superclass->state >= CSTATE_LINKED);
 
 		/* Load all the implemented interfaces. */
 		j = class->interface_len;
@@ -191,7 +207,9 @@ DBG(RESERROR,
 		}
 		for (i = 0; i < class->interface_len; i++) {
 			uintp iface = (uintp)class->interfaces[i];
+			unlockStaticMutex(&classLock);
 			class->interfaces[i] = getClass(iface, class, einfo);
+			lockStaticMutex(&classLock);
 			if (class->interfaces[i] == 0) {
 				success = false;
 				goto done;
@@ -247,6 +265,8 @@ DBG(RESERROR,
 		SET_CLASS_STATE(CSTATE_PREPARED);
 	}
 
+	assert(class == ObjectClass || class->superclass != 0);
+
 	DO_CLASS_STATE(CSTATE_LINKED) {
 
 		/* Second stage verification - check the class format is okay */
@@ -279,7 +299,6 @@ DBG(RESERROR,
 		SET_CLASS_STATE(CSTATE_CONSTINIT);
 	}
 
-retry:
 	DO_CLASS_STATE(CSTATE_USABLE) {
 
 		/* If somebody's already processing the super class,
@@ -310,8 +329,6 @@ retry:
 			success = processClass(class->superclass, 
 					     CSTATE_COMPLETE, einfo);
 			lockStaticMutex(&classLock);
-			/* wake up any waiting threads */
-			broadcastStaticCond(&classLock);
 			if (success == false) {
 				goto done;
 			}
@@ -383,7 +400,6 @@ DBG(STATICINIT,
 		}
 
 		lockStaticMutex(&classLock);
-		broadcastStaticCond(&classLock);
 
 		if (exc != 0) {
 			/* this is special-cased in throwError */
@@ -416,6 +432,8 @@ done:
 		SET_CLASS_STATE(CSTATE_FAILED);
 	}
 
+	/* wake up any waiting threads */
+	broadcastStaticCond(&classLock);
 	unlockStaticMutex(&classLock);
 
 DBG(RESERROR,
@@ -487,6 +505,7 @@ internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags, int su, Hja
 	cl->name = name;
 	CLASS_METHODS(cl) = NULL;
 	CLASS_NMETHODS(cl) = 0;
+	assert(cl->superclass == 0);
 	cl->superclass = (Hjava_lang_Class*)(uintp)su;
 	cl->msize = 0;
 	CLASS_FIELDS(cl) = 0;
@@ -495,6 +514,7 @@ internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags, int su, Hja
 	cl->dtable = 0;
         cl->interfaces = 0;
 	cl->interface_len = 0;
+	assert(cl->state < CSTATE_LOADED);
 	cl->state = CSTATE_LOADED;
 	cl->loader = loader;
 }
@@ -672,6 +692,12 @@ loadClass(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 	Hjava_lang_Class* clazz = NULL;
 
         centry = lookupClassEntry(name, loader);
+	/*
+	 * An invariant for classEntries is that if centry->class != 0, then
+	 * the corresponding class object has been read completely and it is
+	 * safe to invoke processClass on it.  processClass will resolve any
+	 * races between threads.
+	 */
 	if (centry->class != NULL) {
 		goto found;
 	}
@@ -714,25 +740,11 @@ DBG(VMCLASSLOADER,
 	if (centry->class == NULL) {
 
 		if (loader == NULL) {
-			/* findClass will set centry->class if it finds it */
-			if (findClass(centry, einfo) == true) {
-				clazz = centry->class;
-			}
-		} else {
-			centry->class = clazz;
-		}
+			clazz = findClass(centry, einfo);
+		} 
+		centry->class = clazz;
 
-		/* We process the class while we're holding the centry lock 
-		 * so that other threads will find a processed class if 
-		 * centry->class is not null.
-		 */
-		if (clazz != NULL) {
-			if (processClass(clazz, 
-					 CSTATE_LINKED, einfo) == false) 
-			{
-				clazz = NULL;
-			}
-		} else {
+		if (clazz == NULL) {
 DBG(RESERROR,
 			dprintf("NoClassDefFoundError: `%s'\n", name->data);
     )
@@ -750,8 +762,23 @@ DBG(RESERROR,
 		return (NULL);
 	}
 
-	found:;
-	return (centry->class);
+	/*
+	 * A post condition of getClass is that the class is at least in
+	 * state LINKED.  However, we must not call processClass (and attempt
+	 * to get the global lock there) while having the lock on centry.
+	 * Otherwise, we would deadlock with a thread calling getClass out
+	 * of processClass.
+	 */
+found:;
+	clazz = centry->class;
+
+	if (clazz->state < CSTATE_LINKED) {
+		if (processClass(clazz, CSTATE_LINKED, einfo) == false)  {
+			return (NULL);
+		}
+	}
+
+	return (clazz);
 }
 
 Hjava_lang_Class*
@@ -773,18 +800,18 @@ loadArray(Utf8Const* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 void
 loadStaticClass(Hjava_lang_Class** class, char* name)
 {
+	Hjava_lang_Class *clazz;
 	errorInfo info;
 	classEntry* centry;
-
-	(*class) = newClass();
 
         centry = lookupClassEntry(makeUtf8Const(name, -1), 0);
 	lockMutex(centry);
 	if (centry->class == 0) {
-		centry->class = *class;
-		if (findClass(centry, &info) == false) {
+		clazz = findClass(centry, &info);
+		if (clazz == 0) {
 			goto bad;
 		}
+		(*class) = centry->class = clazz;
 	}
 	unlockMutex(centry);
 
@@ -1026,8 +1053,9 @@ resolveStaticFields(Hjava_lang_Class* class)
 	int idx;
 	int n;
 
-	lockMutex(class->centry);
-
+	/* No locking here, for now this is invoked under the classLock
+	 * umbrella.
+	 */
 	pool = CLASS_CONSTANTS(class);
 	fld = CLASS_SFIELDS(class);
 	n = CLASS_NSFIELDS(class);
@@ -1077,8 +1105,6 @@ resolveStaticFields(Hjava_lang_Class* class)
 			}
 		}
 	}
-
-	unlockMutex(class->centry);
 }
 
 static
