@@ -307,5 +307,14 @@ __alpha_nextFrame (exceptionFrame *frame)
 
  end:
     frame->sp = sp + framesize;
+
+    /*
+     * if we did not find the fp of this frame, we use its sp instead.
+     * This works since kaffe will only use the fp of jitted methods to
+     * find objects and all of them have an fp.
+     */
+    if (frame->fp == fp) {
+        frame->fp = frame->sp;
+    }
     return frame;
 }
