@@ -1,3 +1,9 @@
+Mon Mar  6 11:16:55 MST 2000  Patrick A Tullmann <tullmann@cs.utah.edu>
+
+        * config/i386/oskit/*: Update to work with latest OSKit snapshot,
+        20000202; make configuration on OSKit more robust. Add missing
+        jit-md.h.
+
 Tue Feb 29 14:08:27 PST 2000  Archie Cobbs <archie@whistle.com>
 
 	* kaffe/kaffevm/exception.c: avoid empty string exception messages
