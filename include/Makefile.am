@@ -51,11 +51,9 @@ NOINSTALL_DERIVED_HDRS = \
 	java_io_FileOutputStream.h \
 	java_io_InputStream.h \
 	java_io_InterruptedIOException.h \
-	java_io_ObjectInputStream.h \
 	java_io_PrintStream.h \
 	java_io_RandomAccessFile.h \
 	java_io_VMFile.h \
-	java_io_VMObjectStreamClass.h \
 	java_lang_Boolean.h \
 	java_lang_Byte.h \
 	java_lang_Character.h \
@@ -110,6 +108,8 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	gnu_classpath_VMSystemProperties.h \
 	gnu_java_nio_channels_FileChannelImpl.h \
 	gnu_java_nio_SelectorImpl.h \
+	java_io_ObjectInputStream.h \
+	java_io_VMObjectStreamClass.h \
 	java_nio_channels_Channels.h \
 	java_nio_VMDirectByteBuffer.h \
 	java_nio_MappedByteBufferImpl.h \

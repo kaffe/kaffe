@@ -238,7 +238,7 @@ soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, in
 	Hjava_lang_Class* cls;
 	void*	ncode;
 	register int i;
-	register short* implementors;
+	register void*** implementors;
 
 	if (obj == NULL) {
 		soft_nullpointer();
@@ -262,7 +262,7 @@ soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, in
 	}
 #endif
 	/* skip word at the beginning of itable2dtable */
-	ncode = cls->itable2dtable[implementors[i] + idx + 1];
+	ncode = implementors[i][idx + 1];
 
 	/* This means this class does not implement this interface method
 	 * at all.  This is something we detect at the time the interface
@@ -272,11 +272,11 @@ soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, in
 	 * is that's missing (or create multiple nosuch_method routines,
 	 * given that they should be rare---minus possible DoS.)
 	 */
-	if (ncode == (void *)-1) {
-		return NULL;
-	}
+	if (ncode == (void *)-1)
+	  return NULL;
 	assert(ncode != NULL);
-	return (ncode);
+
+	return ncode;
 }
 
 inline
@@ -299,14 +299,39 @@ jint
 instanceof_interface(Hjava_lang_Class* c, Hjava_lang_Class* oc)
 {
 	int i;
+	Hjava_lang_Class **impl_clazz;
 
-	/* Check 'total' interface list */
-	for (i = oc->total_interface_len - 1; i >= 0; i--) {
-		if (c == oc->interfaces[i]) {
-			return (1);
-		}
-	}
-	return (0);
+	if (oc->state < CSTATE_USABLE || c->state < CSTATE_USABLE || CLASS_IS_ARRAY(oc) || CLASS_IS_INTERFACE(oc))
+	  {
+	    /* Check 'total' interface list. If the class is not
+	     * prepared the dumb way is the only way. Arrays and interface do not have
+	     * any implementors too so we have to go through the all list.
+	     */
+	    for (i = oc->total_interface_len - 1; i >= 0; i--) {
+	      if (c == oc->interfaces[i]) {
+		return 1;
+	      }
+	    }
+	    return 0;
+	  }
+	else
+	  {
+	    /* Fetch the implementation reference from the class. */
+	    i = oc->impl_index;
+	    /* No interface implemented or this class is not implementing this
+	     * interface. Bailing out. */
+	    if (i == 0 || c->implementors == NULL ||
+		i >= (uintp)c->implementors[0] ||
+		c->implementors[i] == NULL)
+	      return 0;
+	    
+	    /* We retrieve the first pointer in the itable2dtable array. */
+	    impl_clazz = (Hjava_lang_Class **)(KGC_getObjectBase(main_collector, c->implementors[i]));
+	    assert(impl_clazz != NULL);
+	    
+	    /* Now we may compare the raw pointers. */
+	    return (*impl_clazz == oc);
+	  }
 }
 
 inline

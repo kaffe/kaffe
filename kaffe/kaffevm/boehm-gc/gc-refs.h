@@ -18,5 +18,8 @@
 struct _Collector;
 bool KaffeGC_addRef(struct _Collector *collector, const void* mem);
 bool KaffeGC_rmRef(struct _Collector *collector, const void* mem);
+bool KaffeGC_addWeakRef(struct _Collector *collector, void *mem, void **obj);
+bool KaffeGC_rmWeakRef(struct _Collector *collector, void *mem, void **obj);
+void KaffeGC_clearWeakRef(struct _Collector *collector, void *mem);
 
 #endif /* __gcrefs_h */

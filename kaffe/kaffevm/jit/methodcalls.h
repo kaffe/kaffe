@@ -42,5 +42,4 @@ soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL);
  */
 #define engine_reservedArgs(M) 0
 
-
 #endif /* __method_dispatch_h__ */

@@ -28,7 +28,7 @@ static inline void*
 getMethodFunc (Method* meth, Hjava_lang_Object *obj)
 {
   if (obj && CLASS_IS_INTERFACE (meth->class)) {
-    register short *implementors;
+    register void ***implementors;
     register Hjava_lang_Class *clazz;
 		
     assert (meth->idx >= 0);
@@ -36,9 +36,9 @@ getMethodFunc (Method* meth, Hjava_lang_Object *obj)
     implementors = meth->class->implementors;
     clazz = OBJECT_CLASS(obj);
 
-    assert (implementors != NULL && clazz->impl_index <= implementors[0]);
+    assert (implementors != NULL && clazz->impl_index <= (uintp)implementors[0]);
 		
-    return clazz->itable2dtable[implementors[clazz->impl_index] + meth->idx + 1]; 	
+    return implementors[clazz->impl_index][meth->idx + 1]; 	
   } else {
     return meth->idx >= 0 ? obj->vtable->method[meth->idx] : METHOD_NATIVECODE (meth);
   }

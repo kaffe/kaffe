@@ -131,9 +131,9 @@ struct Hjava_lang_Class {
 	void**			itable2dtable;
 	short			interface_len;
 	short			total_interface_len;
-	/* indices for all classes implementing this interface */
-	short*			implementors;	/* interfaces only */
-	int			impl_index;
+	/* pointers to all itable2dtable entries of classes implementing this interface */
+	void***			implementors;	/* interfaces only */
+        int			impl_index;    /* index of the class in the implementors array. */
 
 	Hjava_lang_ClassLoader*	loader;
 

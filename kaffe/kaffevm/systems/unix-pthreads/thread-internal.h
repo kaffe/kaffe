@@ -363,9 +363,16 @@ void jthread_unsuspendall (void);
 
 /**
  * Call a function once for each active thread.
- *
+ * Caution. This should only be used when all threads
+ * are suspended using jthread_suspendall.
  */
 void jthread_walkLiveThreads (void(*)(jthread_t,void*), void *);
+
+/**
+ * Call a function once for each active thread.
+ * This is a reentrant version.
+ */
+void jthread_walkLiveThreads_r (void(*)(jthread_t,void*), void *);
 
 /**
  * Return thread status

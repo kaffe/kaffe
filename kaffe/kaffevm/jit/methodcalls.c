@@ -63,17 +63,13 @@ DBG(MOREJIT,
 	 */
 #if defined(COMPARE_AND_EXCHANGE)
 	if (COMPARE_AND_EXCHANGE(where, tramp, METHOD_NATIVECODE(meth))) {
-		gc_free(tramp);
+		;
 	}
 #elif defined(ATOMIC_EXCHANGE)
 	{
 		void *tmp = METHOD_NATIVECODE(meth);
 
 		ATOMIC_EXCHANGE(where, tmp);
-
-		if (tmp == tramp) {
-			gc_free(tramp);
-		}
 	}
 #else
 #error "You have to define either COMPARE_AND_EXCHANGE or ATOMIC_EXCHANGE"
@@ -182,6 +178,7 @@ engine_buildTrampoline (Method *meth, void **where, errorInfo *einfo)
 				!!!"Cannot override trampoline anchor");
 		}
 		ret = tramp;
+		//		gc_add_ref(tramp);
 	} else {
 		if (CLASS_GCJ((meth)->class)) {
 			_SET_METHOD_NATIVECODE(meth, meth->ncode);

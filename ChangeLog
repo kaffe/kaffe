@@ -1,3 +1,67 @@
+2004-12-22  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* configure.ac: Fixed CPPFLAGS generation to be compatible with
+	boehm's configure.
+
+	* config/mips/irix5/md.h: Removed extra macros.
+
+	* include/Makefile.am: Moved ObjectInputStream and
+	VMObjectStreamClass to JNI headers.
+
+	* kaffe/kaffevm/baseClasses.c: Reset dummyClassClass before using
+	it.
+
+	* kaffe/kaffevm/classMethod.c
+	(processClass, resolveInterfaces): Use weak references to track
+	vanishing classes.
+	(processClass): Do not free explicitly the generated code anymore.
+	(buildInterfaceDispatchTable): Remember the total length of the
+	table. Store the parent class of the table in the first entry. 
+	(computeInterfaceImplementationIndex): Store a pointer to the
+	itable2dtable instead of an index.
+
+	* kaffe/kaffevm/soft.c
+	(soft_lookupinterfacemethod): Use directly the pointer in
+	implementors.
+	(instanceof_interface): Use implementors to directly check the
+	inheritancy.
+
+	* kaffe/kaffevm/gc.h: New type for interface table. Two new
+	functions to handle weak references.
+
+	* kaffe/kaffevm/gcFuncs.c
+	(destroyClass): Do not explicitly free memory for the
+	native/bytecode code. Use weak references to track classes which
+	has already been freed.
+	(walkMethods): Mark the bytecode _and_ the native code.
+	(walkClass): Mark the dtable, the interfaces, the vtable.
+	(initCollector): KGC_ALLOC_TRAMPOLINE, KGC_ALLOC_JITCODE,
+	KGC_ALLOC_BYTECODE, KGC_ALLOC_INTERFACE, KGC_ALLOC_INTERFACE_TABLE
+	are now dynamic.
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
+	(finishGC): Invoke KaffeGC_clearWeakRef.
+	
+	* kaffe/kaffevm/kaffe-gc/gc-refs.c
+	(refObject): Renamed to strongRefObject.
+	(refTable): Likewise.
+	(weakRefObject, weakRefTable): New table.
+	(KaffeGC_addWeakRef, KaffeGC_rmWeakRef): New functions.
+	(KaffeGC_clearWeakRef): New function.
+
+	* kaffe/kaffevm/boehm-gc/gc-refs.c: Like kaffe-gc/gc-refs.c
+
+	* kaffe/kaffevm/boehm-gc/gc2.c
+	(finalizeObject): Invoke KaffeGC_clearWeakRef.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthread_unsuspend_all): Removed mutex protection.
+	(jthread_walkLiveThreads_r, jthread_walkLiveThreads): Splitted in
+	a reentrant function and a non-reentrant one. (See
+	jthread_unsuspend_all)
+	
+	* include/Makefile.in, configure: Regenerated.
+	
 2004-12-24  Adam Heath  <doogie@brainfood.com>
 
 	* libraries/javalib/java/util/zip/ZipFile.java:

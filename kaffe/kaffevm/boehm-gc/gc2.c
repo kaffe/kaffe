@@ -145,6 +145,8 @@ finalizeObject(void* ob, UNUSED void* descriptor)
   if (f->final != KGC_OBJECT_NORMAL && f->final != NULL)
     f->final(&boehm_gc.collector, ALIGN_FORWARD(ob));
 
+  KaffeGC_clearWeakRef(&boehm_gc.collector, ALIGN_FORWARD(ob));
+
   if (f->destroy != NULL)
     f->destroy(&boehm_gc.collector, ALIGN_FORWARD(ob));
 }
@@ -498,7 +500,9 @@ onObjectMarking(GC_word *addr, struct GC_ms_entry * mark_stack_ptr,
 static void
 KaffeGC_warnproc(char *msg, GC_word arg)
 {
-DBG(GCDIAG, dprintf(msg, arg); )
+DBG(GCDIAG, 
+     dprintf(msg, arg);
+    );
 }
 
 static void
@@ -544,7 +548,6 @@ KaffeGC_Enable(Collector* collector)
     }
 }
 
-
 /*
  * vtable for object implementing the collector interface.
  */
@@ -574,7 +577,9 @@ static struct GarbageCollectorInterface_Ops GC_Ops = {
   KaffeGC_HeapLimit,
   KaffeGC_HeapTotal,
   KaffeGC_addRef,
-  KaffeGC_rmRef
+  KaffeGC_rmRef,
+  KaffeGC_addWeakRef,
+  KaffeGC_rmWeakRef
 };
 
 /*

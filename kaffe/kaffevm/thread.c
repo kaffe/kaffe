@@ -610,7 +610,7 @@ static void
 dumpThreads(void)
 {
 	dprintf("Dumping live threads:\n");
-	KTHREAD(walkLiveThreads)(dumpJavaThread, NULL);
+	KTHREAD(walkLiveThreads_r)(dumpJavaThread, NULL);
 }
 
 /*

@@ -44,6 +44,7 @@
 #include "thread.h"
 #include "methodCache.h"
 #include "jvmpi_kaffe.h"
+#include "methodcalls.h"
 
 /*****************************************************************************
  * Class-related functions
@@ -135,22 +136,16 @@ DBG(CLASSGC,
 				}
 #endif
 			}
-                        utf8ConstRelease(m->name);
+			utf8ConstRelease(m->name);
                         utf8ConstRelease(METHOD_SIG(m));
                         KFREE(METHOD_PSIG(m));
                         KFREE(m->lines);
 			KFREE(m->lvars);
 			if( m->ndeclared_exceptions != -1 )
-				KFREE(m->declared_exceptions);
+			  KFREE(m->declared_exceptions);
                         KFREE(m->exception_table);
-                        KFREE(m->c.bcode.code);	 /* aka c.ncode.ncode_start */
 
-			/* Free ncode if necessary: this concerns
-			 * any uninvoked trampolines
-			 */
-			if (KGC_getObjectIndex(collector, ncode) != -1) {
-				KFREE(ncode);
-			}
+			/* ncode is swept by the GC. */
 			m++;
                 }
                 KFREE(CLASS_METHODS(clazz));
@@ -167,71 +162,78 @@ DBG(CLASSGC,
 		}
 	}
 	/* free constant pool */
-	if (pool->data != 0) {
-		KFREE(pool->data);
-	}
+	if (pool->data != NULL)
+	  {
+	    KFREE(pool->data);
+	  }
 
         /* free various other fixed things */
         KFREE(CLASS_STATICDATA(clazz));
-	if( clazz->vtable )
-	{
-		for( i = 0; i < clazz->msize; i++ )
-		{
-			if( clazz->vtable->method[i] == 0 )
-				continue;
-			/* Free ncode if necessary: this concerns
-			 * any uninvoked trampolines
-			 */
-			if (KGC_getObjectIndex(collector,
-					      clazz->vtable->method[i])
-			    == KGC_ALLOC_DISPATCHTABLE) {
-				KFREE(clazz->vtable->method[i]);
-			}
-		}
-		KFREE(clazz->vtable);
-	}
+
+       	if(clazz->vtable != NULL)
+	  {
+	    /* The native methods in the vtable are swept by the GC. */
+	    KFREE(clazz->vtable);
+	  }
+
         KFREE(clazz->if2itable);
+
+	if (clazz->implementors != NULL)
+	  {
+	    uintp len, uidx;
+
+	    len = (uintp)clazz->implementors[0] + 1;
+	    for (uidx = 1; uidx < len; uidx++)
+	      {
+		void *impl = clazz->implementors[uidx];
+		Hjava_lang_Class **impl_clazz;
+
+		if (impl == NULL)
+		  continue;
+		
+		impl_clazz = (Hjava_lang_Class **)KGC_getObjectBase(collector, impl);
+		assert(impl_clazz != NULL);
+
+		/* We must walk the list of interfaces for this class and
+		 * unregister this interface. As the class should also be
+		 * freed (in the other case this interface would not have 
+		 * been destroyed), there is no problem with this.
+		 */
+		for (i = 0; i < (*impl_clazz)->total_interface_len; i++)
+		  if ((*impl_clazz)->interfaces[i] == clazz)
+		    {
+		      (*impl_clazz)->interfaces[i] = NULL;
+		      break;
+		    }
+	      }
+	    
+	    KFREE(clazz->implementors);
+	  }
+
 	if( clazz->itable2dtable )
 	{
-		for (i = 0; i < clazz->total_interface_len; i++) {
-			Hjava_lang_Class* iface = clazz->interfaces[i];
-
-			/* only if interface has not been freed already */
-			if (KGC_getObjectIndex(collector, iface)
-			    == KGC_ALLOC_CLASSOBJECT)
-			{
-				iface->implementors[clazz->impl_index] = -1;
-			}
-		}
-
-		/* NB: we can't just sum up the msizes of the interfaces
-		 * here because they might be destroyed simultaneously
-		 */
-		j = KGC_getObjectSize(collector, clazz->itable2dtable)
-			/ sizeof (void*);
-		for( i = 0; i < j; i++ )
-		{
-			if (KGC_getObjectIndex(collector,
-					      clazz->itable2dtable[i])
-			    == KGC_ALLOC_DISPATCHTABLE) {
-				KGC_free(collector, clazz->itable2dtable[i]);
-			}
-		}
-		KGC_free(collector, clazz->itable2dtable);
+	  for (i = 0; i < clazz->total_interface_len; i++) {
+	    Hjava_lang_Class* iface = clazz->interfaces[i];
+	    
+	    /* only if interface has not been freed already. We
+	     * update the implementors section of the interface
+	     * accordingly.
+	     */
+	    if (iface != NULL)
+	      iface->implementors[clazz->impl_index] = NULL;
+	  }
+	  /* The itable2dtable table will be automatically swept by the
+	   * GC when the class becomes unused as it is only marked while
+	   * the class is being walked (see walkClass).
+	   */
 	}
-	if( clazz->gc_layout &&
-	    (clazz->superclass->gc_layout != clazz->gc_layout) )
-	{
-		KFREE(clazz->gc_layout);
-	}
+	if (clazz->gc_layout != NULL && clazz->superclass != NULL &&
+	    clazz->superclass->gc_layout != clazz->gc_layout)
+	  KFREE(clazz->gc_layout);
+
 	KFREE(clazz->sourcefile);
-	KFREE(clazz->implementors);
 	KFREE(clazz->inner_classes);
 
-        /* The interface table for array classes points to static memory */
-        if (!CLASS_IS_ARRAY(clazz)) {
-                KFREE(clazz->interfaces);
-        }
         utf8ConstRelease(clazz->name);
 }
 
@@ -243,7 +245,19 @@ void
 walkMethods(Collector* collector, void *gc_info, Method* m, int nm)
 {
         while (nm-- > 0) {
+	        int index;
+
                 KGC_markObject(collector, gc_info, m->class);
+		
+		index = KGC_getObjectIndex(collector, m->ncode);
+		if (index == KGC_ALLOC_JITCODE || index == KGC_ALLOC_TRAMPOLINE)
+		  KGC_markObject(collector, gc_info, m->ncode);
+		
+		index = KGC_getObjectIndex(collector, m->c.bcode.code);
+		if (index == KGC_ALLOC_JITCODE || index == KGC_ALLOC_TRAMPOLINE ||
+		    index == KGC_ALLOC_BYTECODE)
+		  KGC_markObject(collector, gc_info, m->c.bcode.code);
+		
 
                 /* walk exception table in order to keep resolved catch types
                    alive */
@@ -282,7 +296,35 @@ DBG(GCPRECISE,
 
         if (class->state >= CSTATE_PREPARED) {
                 KGC_markObject(collector, gc_info, class->superclass);
-        }
+        } 
+
+        /* We only need the interface array to be allocated.
+	 * We do not want to mark array's interfaces as the pointer is
+	 * static (see lookupArray). */
+	if (class->interfaces != NULL && CLASS_CNAME(class)[0] != '[')
+          {
+            KGC_markObject(collector, gc_info, class->interfaces);
+          }
+
+	if (class->itable2dtable != NULL)
+	  {
+	    unsigned int len = class->if2itable[class->total_interface_len];
+	    KGC_markObject(collector, gc_info, class->itable2dtable);
+
+	    for (idx = 1; idx < len; idx++)
+	      {
+		void *method = class->itable2dtable[idx];
+		int index;
+		
+		if (method == (void*)-1)
+		  continue;
+		
+		index = KGC_getObjectIndex(collector, method);
+		
+		if (index == KGC_ALLOC_JITCODE || index == KGC_ALLOC_TRAMPOLINE)
+		  KGC_markObject(collector, gc_info, method);
+	      }
+	  }
 
         /* walk constant pool - only resolved classes and strings count */
         pool = CLASS_CONSTANTS(class);
@@ -297,6 +339,18 @@ DBG(GCPRECISE,
                         break;
                 }
         }
+
+	/* walk the local vtable */
+	if (class->vtable != NULL && !CLASS_IS_PRIMITIVE(class))
+	  for (idx = 0; idx < class->msize; idx++)
+	    {
+	      void *method = class->vtable->method[idx];
+	      int index = KGC_getObjectIndex(collector, method);
+
+	      if (index == KGC_ALLOC_JITCODE || index == KGC_ALLOC_TRAMPOLINE ||
+		  index == KGC_ALLOC_BYTECODE)
+		KGC_markObject(collector, gc_info, method);
+	    }
 
         /*
          * NB: We suspect that walking the class pool should suffice if
@@ -369,6 +423,25 @@ DBG(GCPRECISE,
 			KGC_markObject(collector, gc_info, etype);
 		}
         }
+
+	/* Now we walk the interface table pointer. */
+	if (class->itable2dtable != NULL)
+	  {
+	    unsigned int num_interfaces;
+
+	    KGC_markObject(collector, gc_info, class->itable2dtable);
+	    /* We want the number of interfaces registered in the table. As
+	     * this number is not recorded in the table we recompute it
+	     * quickly using if2itable. (See classMethod.c/buildInterfaceDispatchTable).
+	     */
+	    for (idx = 1, n = 0; n < class->total_interface_len; n++)
+	      {
+		void *iface = class->itable2dtable[idx];
+		
+		KGC_markObject(collector, gc_info, iface);
+		idx += class->interfaces[n]->msize+1;
+	      }
+	  }
 
         /* CLASS_METHODS only points to the method array for non-array and
          * non-primitive classes */
@@ -613,11 +686,19 @@ initCollector(void)
 	    "j.l.ClassLoader");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_THREADCTX, 
 	    NULL, KGC_OBJECT_NORMAL, NULL, "thread-ctxts");
+	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_INTERFACE,
+  	    NULL, KGC_OBJECT_NORMAL, NULL, "interfaces");
+	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_INTERFACE_TABLE,
+            NULL, KGC_OBJECT_NORMAL, NULL, "interface table");
+	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_TRAMPOLINE,
+	    NULL, KGC_OBJECT_NORMAL, NULL, "trampoline");
+	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_JITCODE,
+	    NULL, KGC_OBJECT_NORMAL, NULL, "jit-code");
+	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_BYTECODE,
+	    NULL, KGC_OBJECT_NORMAL, NULL, "java-bytecode");
 
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_STATIC_THREADDATA, "thread-data");
-	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_BYTECODE, "java-bytecode");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_EXCEPTIONTABLE, "exc-table");
-	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JITCODE, "jitcode");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_STATICDATA, "static-data");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_CONSTANT, "constants");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_FIXED, "other-fixed");
@@ -625,7 +706,6 @@ initCollector(void)
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_METHOD, "methods");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_FIELD, "fields");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_UTF8CONST, "utf8consts");
-	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_INTERFACE, "interfaces");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_LOCK, "locks");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_REF, "gc-refs");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JITTEMP, "jit-temp-data");
@@ -637,7 +717,6 @@ initCollector(void)
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_DECLAREDEXC, "declared-exc");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_CLASSMISC, "class-misc");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_VERIFIER, "verifier");
-	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_TRAMPOLINE, "trampoline");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_NATIVELIB, "native-lib");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JIT_SEQ, "jit-seq");
 	KGC_registerFixedTypeByIndex(gc, KGC_ALLOC_JIT_CONST, "jit-const");

@@ -799,6 +799,9 @@ finishGC(Collector *gcif)
 		}
 #endif
 
+		/* clear all weak references to the object */
+		KaffeGC_clearWeakRef(gcif, UTOMEM(unit));
+
 		/* invoke destroy function before freeing the object */
 		info = gc_mem2block(unit);
 		idx = GCMEM2IDX(info, unit);
@@ -1475,7 +1478,9 @@ static struct GarbageCollectorInterface_Ops KGC_Ops = {
 	gcGetHeapLimit,
 	gcGetHeapTotal,
 	KaffeGC_addRef,
-	KaffeGC_rmRef
+	KaffeGC_rmRef,
+	KaffeGC_addWeakRef,
+	KaffeGC_rmWeakRef
 };
 
 /*

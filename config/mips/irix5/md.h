@@ -29,12 +29,6 @@
 #define SIGNAL_PC(scp) ((scp)->sc_pc)             /* pc at time of signal */
 #define STACK_POINTER(scp) ((scp)->sc_badvaddr)   /* cp0 bad virtual address */
 
-#define SIGNAL_ARGS(sig, sc) int sig, int code UNUSED, struct sigcontext *sc
-#define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext *scp
-#define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)
-#define SIGNAL_PC(scp) 
-#define STACK_POINTER(scp) ((scp)->sc_badvaddr)
-
 #include "kaffe-unix-stack.h"
 
 #endif

@@ -1335,10 +1335,10 @@ jthread_unsuspendall (void)
 	return;
 
   if ( --critSection == 0 ){
-	/* No need to sync, there's nobody else running. It's just a matter of
-	 * defensive programming (and we use our fast locks)
+	/* No need to sync, there's nobody else running. However it seems
+	 * we cannot use mutexes as they cause a deadlock when the world
+	 * is suspended.
 	 */
-  	protectThreadList(cur);
 
 #if !defined(KAFFE_BOEHM_GC)
 	for ( t=activeThreads; t; t = t->next ){
@@ -1381,7 +1381,6 @@ jthread_unsuspendall (void)
 
 #endif
 
-	unprotectThreadList(cur);
   }
 
   DBG( JTHREAD, dprintf("exit crit section (%d)\n", critSection));
@@ -1410,17 +1409,24 @@ void
 jthread_walkLiveThreads (void(*func)(jthread_t,void*), void *private)
 {
   jthread_t t;
-  jthread_t cur = jthread_current();
 
   DBG( JTHREAD, dprintf("start walking threads\n"));
 
-  protectThreadList(cur);
   for ( t = activeThreads; t != NULL; t = t->next) {
 	func(t, private);
   }
-  unprotectThreadList(cur);
 
   DBG( JTHREAD, dprintf("end walking threads\n"));
+}
+
+void
+jthread_walkLiveThreads_r (void(*func)(jthread_t, void *), void *private)
+{
+  jthread_t cur = jthread_current();
+
+  protectThreadList(cur);
+  jthread_walkLiveThreads (func, private);
+  unprotectThreadList(cur);
 }
 
 void

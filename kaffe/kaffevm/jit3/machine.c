@@ -585,8 +585,6 @@ installMethodCode(void* ignore UNUSED, Method* meth, nativeCodeInfo* code)
 
 	SET_METHOD_JITCODE(meth, code->code);
 
-	if( meth->c.bcode.code )
-		gc_free(meth->c.bcode.code);
 	meth->c.ncode.ncode_start = code->mem;
 	meth->c.ncode.ncode_end = (void*)((uintp)code->code + code->codelen);
 	
@@ -634,8 +632,6 @@ installMethodCode(void* ignore UNUSED, Method* meth, nativeCodeInfo* code)
 #if defined(FLUSH_DCACHE)
 	FLUSH_DCACHE(code->code, (void*)((uintp)code->code + code->codelen));
 #endif
-
-	gc_free(tramp);
 
 	/* Translate exception table and make it available */
 	if (meth->exception_table != 0) {

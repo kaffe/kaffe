@@ -679,6 +679,7 @@ if test x$with_threads = xunix-pthreads ; then
 
 	KAFFE_LIB_SOLARIS_PTHREAD
 	VMLIBS="$VM_LIBS $PTHREAD_LIBS"
+	CPPFLAGS="$CPPFLAGS -D_REENTRANT"
  else
         CPPFLAGS="$CPPFLAGS -DBR_PTHREADS=0"
 fi
@@ -1096,12 +1097,10 @@ if test x"${GC_NAME}" = x"boehm-gc"; then
 			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_HPUX_THREADS"
 			;;
 		linux*)
-			if test x"$ac_cv_c_compile_value_glibc" -le x"2"; then
-			   if test "$ac_c_compile_value_glibc_minor" -le "2"; then
-				BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_LINUX_THREADS"
-			   fi
-			   if test "$ac_cv_c_compile_value_glibc_minor" -ge "3"; then
-			        BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_PTHREADS"
+			if test "$ac_cv_c_compile_value_glibc" -le "2"; then
+			   BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_LINUX_THREADS"
+			   if test "$Khost_cpu" = "i386"; then
+			     BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DTHREAD_LOCAL_ALLOC"
 			   fi
 			fi
 			;;

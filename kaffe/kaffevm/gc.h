@@ -72,6 +72,7 @@ typedef enum {
 	KGC_ALLOC_LINENRTABLE,
 	KGC_ALLOC_LOCALVARTABLE,
 	KGC_ALLOC_DECLAREDEXC,
+	KGC_ALLOC_INTERFACE_TABLE,
 	KGC_ALLOC_CLASSMISC,
 
 	/* miscelanious allocation types */
@@ -138,6 +139,8 @@ struct GarbageCollectorInterface_Ops {
 
         bool    (*addRef)(Collector *, const void *mem);
         bool    (*rmRef)(Collector *, void *ref);
+        bool    (*addWeakRef)(Collector *, void *mem, void **ref);
+        bool    (*rmWeakRef)(Collector *, void *mem, void **ref);
 };
 
 Collector* createGC(void);
@@ -167,6 +170,10 @@ Collector* createGC(void);
     ((G)->ops->addRef)((Collector*)(G), (addr))
 #define KGC_rmRef(G, addr) \
     ((G)->ops->rmRef)((Collector*)(G), (addr))
+#define KGC_addWeakRef(G, addr, ref) \
+    ((G)->ops->addWeakRef((Collector *)(G), (addr), (ref)))
+#define KGC_rmWeakRef(G, addr, ref) \
+    ((G)->ops->rmWeakRef((Collector *)(G), (addr), (ref)))
 
 #if !defined(KAFFEH)
 static inline void KGC_markObject(void *g, void *gc_info, const void *addr)

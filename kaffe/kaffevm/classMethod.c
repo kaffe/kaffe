@@ -196,7 +196,7 @@ retry:
 #endif
 			{
 				class->superclass =
-					getClass((uintp)class->superclass,
+					getClass((constIndex)(uintp)class->superclass,
 						 class,
 						 einfo);
 			}
@@ -207,6 +207,7 @@ retry:
 				success = false;
 				goto done;
 			}
+			KGC_addWeakRef(main_collector, class->superclass, &(class->superclass));
 			if( !(class->accflags & ACC_INTERFACE) &&
 			    (class->superclass->accflags & ACC_INTERFACE)) {
 				postExceptionMessage(
@@ -622,7 +623,6 @@ DBG(STATICINIT,
 #endif
 		    1) {
 			_SET_METHOD_NATIVECODE(meth, NULL);
-			KFREE(meth->c.ncode.ncode_start);
 			meth->c.ncode.ncode_start = NULL;
 			meth->c.ncode.ncode_end = NULL;
 		}
@@ -803,6 +803,7 @@ resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo)
 #endif /* HAVE_GCJ_SUPPORT */
 
 		class->interfaces[i] = nclass;
+
 		lockClass(class);
 		if (class->interfaces[i] == 0) {
 			success = false;
@@ -853,10 +854,6 @@ resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo)
 			for (j = 0; j < nclass->total_interface_len; j++, i++) {
 				newifaces[i] = nclass->interfaces[j];
 			}
-		}
-		/* free old list of interfaces */
-		if (class->interfaces != 0) {
-			KFREE(class->interfaces);
 		}
 		class->interfaces = newifaces;
 	}
@@ -2091,26 +2088,31 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 		return (true);
 	}
 
-	class->if2itable = gc_malloc(class->total_interface_len * sizeof(short), KGC_ALLOC_CLASSMISC);
+	class->if2itable = gc_malloc((class->total_interface_len + 1) * sizeof(short), KGC_ALLOC_CLASSMISC);
 
 	if (class->if2itable == 0) {
 		postOutOfMemory(einfo);
 		return (false);
 	}
 
-	/* first count how many indices we need */
-	j = 0;
+	/* first count how many indices we need. We need at least one entry to put
+	 * the pointer to the class.
+	 */
+	j = 1;
 	for (i = 0; i < class->total_interface_len; i++) {
 		class->if2itable[i] = j;
 		j += 1;		/* add one word to store interface class */
 		j += class->interfaces[i]->msize;
 	}
-	class->itable2dtable = gc_malloc(j * sizeof(void *), KGC_ALLOC_CLASSMISC);
+	/* This last entry is to specify the total length of the table. */
+	class->if2itable[class->total_interface_len] = j;
+	class->itable2dtable = gc_malloc(j * sizeof(void *), KGC_ALLOC_INTERFACE_TABLE);
 	if (class->itable2dtable == 0) {
 		postOutOfMemory(einfo);
 		return (false);
 	}
-	j = 0;
+	class->itable2dtable[0] = class;
+	j = 1;
 	for (i = 0; i < class->total_interface_len; i++) {
 		int inm = CLASS_NMETHODS(class->interfaces[i]);
 		Method *imeth = CLASS_METHODS(class->interfaces[i]);
@@ -2249,15 +2251,17 @@ computeInterfaceImplementationIndex(Hjava_lang_Class* clazz, errorInfo* einfo)
 		found_i = 1;
 		for (j = 0; j < clazz->total_interface_len; j++) {
 			Hjava_lang_Class* iface = clazz->interfaces[j];
-	    		int len = 0;
+	    		uintp len = 0;
 
-			if (iface->implementors != 0) {
+			if (iface->implementors != NULL) {
 				/* This is how many entries follow, so the
-				 * array has a[0] + 1 elements
+				 * array has a[0] + 1 elements. We have to convert
+				 * the value from pointer type (which is at least 16 bits
+				 * as previously).
 				 */
-				len = iface->implementors[0];
+			        len = (uintp)iface->implementors[0];
 			}
-			if (i >= len || iface->implementors[i+1] == -1) {
+			if (i >= len || iface->implementors[i+1] == NULL) {
 				continue;	/* this one would work */
 			} else {
 				found_i = 0;
@@ -2277,41 +2281,38 @@ computeInterfaceImplementationIndex(Hjava_lang_Class* clazz, errorInfo* einfo)
 	 */
 	for (j = 0; j < clazz->total_interface_len; j++) {
 		Hjava_lang_Class* iface = clazz->interfaces[j];
-		short len;
+		uintp len;
 
 		/* make sure the implementor table is big enough */
-		if (iface->implementors == NULL || i > iface->implementors[0]) {
-			short firstnewentry;
+		if (iface->implementors == NULL || i > (uintp)iface->implementors[0]) {
 			if (iface->implementors == NULL) {
 				len = (i + 1) + 4; /* 4 is slack only */
-				iface->implementors = gc_malloc(len * sizeof(short), KGC_ALLOC_CLASSMISC);
+				iface->implementors = (void ***)gc_malloc(len * sizeof(void **), KGC_ALLOC_CLASSMISC);
 			} else {
 				/* double in size */
-				len = iface->implementors[0] * 2;
+				len = (uintp)(iface->implementors[0] + 1) * 2;
 				if (len <= i) {
-					len = i + 4;
+					len = (i + 1) + 4;
 				}
-				iface->implementors = gc_realloc(
+				iface->implementors = (void ***)gc_realloc(
 					iface->implementors,
-					len * sizeof(short), KGC_ALLOC_CLASSMISC);
+					len * sizeof(void **), KGC_ALLOC_CLASSMISC);
 			}
 
-			if (iface->implementors == 0) {
+			if (iface->implementors == NULL) {
 				postOutOfMemory(einfo);
 				goto done;
 			}
 			/* NB: we assume KMALLOC/KREALLOC zero memory out */
-			firstnewentry = iface->implementors[0] + 1;
-			iface->implementors[0] = len - 1;
+			iface->implementors[0] = (void *)(len - 1);
 
-			/* mark new entries as unused */
-			for (k = firstnewentry; k < len; k++) {
-				iface->implementors[k] = -1;
-			}
+			/* New entries are magically marked as unused by the GC
+			 * as it fills the memory with 0.
+			 */
 		}
 
-		assert(i < iface->implementors[0] + 1);
-		iface->implementors[i] = clazz->if2itable[j];
+		assert(i < (uintp)iface->implementors[0] + 1);
+		iface->implementors[i] = &(clazz->itable2dtable[clazz->if2itable[j]]);
 	}
 	rc = true;
 

@@ -1096,6 +1096,12 @@ jthread_walkLiveThreads(void (*func)(jthread_t,void*), void *priv)
         }
 }
 
+void
+jthread_walkLiveThreads_r(void (*func)(jthread_t,void*), void *priv)
+{
+	jthread_walkLiveThreads(func, priv);
+}
+
 /*
  * determine the interesting stack range for a conservative gc
  */

@@ -178,11 +178,18 @@ jthread_initexceptions(exchandler_t _nullHandler,
  */
 void 	jthread_atexit(void (*f)(void));
 
-/*
+/**
  * walk all live threads, and invoke `func', passing in their cookie
  * this is used with `func' set to walkMemory
  */
 void 	jthread_walkLiveThreads(void (*func)(jthread_t, void*), void*);
+
+/**
+ * walk all live threads, and invoke `func', passing in their cookie
+ * this is used with `func' set to walkMemory.
+ * This function is reentrant.
+ */
+void 	jthread_walkLiveThreads_r(void (*func)(jthread_t, void*), void*);
 
 /* 
  * destroy this jthread structure 

@@ -261,6 +261,8 @@ initBaseClasses(void)
 {
         errorInfo einfo;
 
+	memset(&dummyClassClass, 0, sizeof(dummyClassClass));
+
         /* Primitive types */
         initTypes();
 	initVerifierPrimTypes();
