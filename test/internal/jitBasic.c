@@ -197,10 +197,10 @@ int testMethod(Hjava_lang_Class *cl, Field *field)
 			switch( field->bsize )
 			{
 			case sizeof(jbyte):
-				actual.i = ((char *)field->info.addr)[0];
+				actual.b = ((char *)field->info.addr)[0];
 				break;
 			case sizeof(jshort):
-				actual.i = ((short *)field->info.addr)[0];
+				actual.s = ((short *)field->info.addr)[0];
 				break;
 			case sizeof(jint):
 				memcpy(&actual.i,

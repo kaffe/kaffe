@@ -91,6 +91,11 @@ static char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', '
 
 
 /*
+ * Flag to say whether the thread subsystem has been initialized.
+ */
+static char jthreadInitialized = false;
+
+/*
  * Signal to use to suspend all threads.
  */
 static int sigSuspend;
@@ -567,6 +572,8 @@ jthread_init(UNUSED int pre,
   sigaddset( &suspendSet, sigResume);
 
   tSetupFirstNative();
+
+  jthreadInitialized = true;
 
   DBG( JTHREAD, tStartDeadlockWatchdog() );
 }
@@ -1715,6 +1722,9 @@ bool jthread_extract_stack(jthread_t tid, void** from, unsigned* len)
  */
 jthread_t jthread_current(void)      
 {
+  if (!jthreadInitialized)
+    return NULL;
+
   return (jthread_t)pthread_getspecific(ntKey);
 }
 

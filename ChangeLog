@@ -1,5 +1,14 @@
 2005-03-28  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(jthreadInitialized): New static variable.
+	(jthread_init): Set jthreadInitialized.
+	(jthread_current): Return NULL if jthreadInitialized is false.
+
+	Reported by:  Riccardo Mottola <zuse@libero.it>
+
+2005-03-28  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/string.c
 	(stringWalk): Mark the object lock also.
 
