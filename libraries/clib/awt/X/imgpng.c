@@ -174,13 +174,14 @@ readPng ( png_structp png_ptr, png_infop info_ptr )
   png_read_info( png_ptr, info_ptr);
   
   /* handle gamma correction  */
-#if defined(PNG_READ_sRGB_SUPPORTED)
-  if ( png_get_sRGB( png_ptr, info_ptr, &intent) ) {
-	png_set_sRGB( png_ptr, info_ptr, intent);
-  }
-  else
-#endif
   {
+#if defined(PNG_READ_sRGB_SUPPORTED)
+	int intent;
+	if ( png_get_sRGB( png_ptr, info_ptr, &intent) ) {
+		png_set_sRGB( png_ptr, info_ptr, intent);
+	}
+	else
+#endif
 	if ( png_get_gAMA(png_ptr, info_ptr, &file_gamma) )
 	  png_set_gamma( png_ptr, screen_gamma, file_gamma);
 	else
