@@ -631,15 +631,14 @@ if test "$cross_compiling" = yes; then
   if test -z "${KAFFEH}"; then
     AC_MSG_ERROR([please set KAFFEH to the full pathname of a locally executable kaffeh])
   fi
-  KAFFEH_FOR_BUILD="$KAFFEH"
-  MAKE_KAFFEH_FOR_BUILD=":"
+  MAKE_KAFFEH=":"
 else
-  KAFFEH_FOR_BUILD="\$(top_builddir)/kaffe/kaffeh/kaffeh\$(EXEEXT)"
-  MAKE_KAFFEH_FOR_BUILD="cd \$(top_builddir)/kaffe/kaffeh && \$(MAKE)"
+  KAFFEH="\$(top_builddir)/kaffe/kaffeh/kaffeh\$(EXEEXT)"
+  MAKE_KAFFEH="cd \$(top_builddir)/kaffe/kaffeh && \$(MAKE)"
 fi
 
-AC_SUBST(KAFFEH_FOR_BUILD)
-AC_SUBST(MAKE_KAFFEH_FOR_BUILD)
+dnl KAFFEH is AC_SUBSTed by AC_PATH_PROG
+AC_SUBST(MAKE_KAFFEH)
 
 dnl =========================================================================
 dnl Define directory to put native library support

@@ -6691,13 +6691,11 @@ fi
   if test -z "${KAFFEH}"; then
     { echo "configure: error: please set KAFFEH to the full pathname of a locally executable kaffeh" 1>&2; exit 1; }
   fi
-  KAFFEH_FOR_BUILD="$KAFFEH"
-  MAKE_KAFFEH_FOR_BUILD=":"
+  MAKE_KAFFEH=":"
 else
-  KAFFEH_FOR_BUILD="\$(top_builddir)/kaffe/kaffeh/kaffeh\$(EXEEXT)"
-  MAKE_KAFFEH_FOR_BUILD="cd \$(top_builddir)/kaffe/kaffeh && \$(MAKE)"
+  KAFFEH="\$(top_builddir)/kaffe/kaffeh/kaffeh\$(EXEEXT)"
+  MAKE_KAFFEH="cd \$(top_builddir)/kaffe/kaffeh && \$(MAKE)"
 fi
-
 
 
 
@@ -6719,7 +6717,7 @@ EOF
 
 
 echo $ac_n "checking how to run the C preprocessor""... $ac_c" 1>&6
-echo "configure:6723: checking how to run the C preprocessor" >&5
+echo "configure:6721: checking how to run the C preprocessor" >&5
 # On Suns, sometimes $CPP names a directory.
 if test -n "$CPP" && test -d "$CPP"; then
   CPP=
@@ -6734,13 +6732,13 @@ else
   # On the NeXT, cc -E runs the code through the compiler's parser,
   # not just through cpp.
   cat > conftest.$ac_ext <<EOF
-#line 6738 "configure"
+#line 6736 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:6744: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:6742: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -6751,13 +6749,13 @@ else
   rm -rf conftest*
   CPP="${CC-cc} -E -traditional-cpp"
   cat > conftest.$ac_ext <<EOF
-#line 6755 "configure"
+#line 6753 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:6761: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:6759: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -6768,13 +6766,13 @@ else
   rm -rf conftest*
   CPP="${CC-cc} -nologo -E"
   cat > conftest.$ac_ext <<EOF
-#line 6772 "configure"
+#line 6770 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:6778: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:6776: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -6800,7 +6798,7 @@ echo "$ac_t""$CPP" 1>&6
 
 
 echo $ac_n "checking for path separator""... $ac_c" 1>&6
-echo "configure:6804: checking for path separator" >&5
+echo "configure:6802: checking for path separator" >&5
 if eval "test \"`echo '$''{'ac_cv_kaffe_pathsep'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6817,7 +6815,7 @@ PATHSEP=$ac_cv_kaffe_pathsep
 
 
 echo $ac_n "checking for directory separator""... $ac_c" 1>&6
-echo "configure:6821: checking for directory separator" >&5
+echo "configure:6819: checking for directory separator" >&5
 if eval "test \"`echo '$''{'ac_cv_kaffe_dirsep'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -7102,8 +7100,7 @@ s%@DLOPEN_JAVA_LIBS@%$DLOPEN_JAVA_LIBS%g
 s%@KLIBFLAGS@%$KLIBFLAGS%g
 s%@KVMLIBFLAGS@%$KVMLIBFLAGS%g
 s%@KAFFEH@%$KAFFEH%g
-s%@KAFFEH_FOR_BUILD@%$KAFFEH_FOR_BUILD%g
-s%@MAKE_KAFFEH_FOR_BUILD@%$MAKE_KAFFEH_FOR_BUILD%g
+s%@MAKE_KAFFEH@%$MAKE_KAFFEH%g
 s%@nativedir@%$nativedir%g
 s%@classdir@%$classdir%g
 s%@PATHSEP@%$PATHSEP%g

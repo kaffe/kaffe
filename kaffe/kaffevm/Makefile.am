@@ -100,8 +100,8 @@ noinst_HEADERS = \
 baseClasses.lo: java_lang_Cloneable.h
 
 java_lang_Cloneable.h: $(top_srcdir)/libraries/javalib/Klasses.jar
-	if test -x $(KAFFEH_FOR_BUILD); then \
-	    $(KAFFEH_FOR_BUILD) \
+	if test -x $(KAFFEH); then \
+	    $(KAFFEH) \
 		-classpath $(top_srcdir)/libraries/javalib/Klasses.jar \
 		java.lang.Cloneable; \
 	fi

@@ -82,7 +82,7 @@ EXEEXT = @EXEEXT@
 HAVE_CONFIG_JIT_MD_H = @HAVE_CONFIG_JIT_MD_H@
 JAVA_LIBS = @JAVA_LIBS@
 JIKES = @JIKES@
-KAFFEH_FOR_BUILD = @KAFFEH_FOR_BUILD@
+KAFFEH = @KAFFEH@
 KAFFEVM_ICODE_H = @KAFFEVM_ICODE_H@
 KAFFEVM_JIT_DEF = @KAFFEVM_JIT_DEF@
 KAFFEVM_MD_C = @KAFFEVM_MD_C@
@@ -99,7 +99,7 @@ LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LN_S = @LN_S@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
-MAKE_KAFFEH_FOR_BUILD = @MAKE_KAFFEH_FOR_BUILD@
+MAKE_KAFFEH = @MAKE_KAFFEH@
 MATH_LIBS = @MATH_LIBS@
 M_LIBS = @M_LIBS@
 NET_LIBS = @NET_LIBS@
@@ -502,8 +502,8 @@ mostlyclean distclean maintainer-clean
 baseClasses.lo: java_lang_Cloneable.h
 
 java_lang_Cloneable.h: $(top_srcdir)/libraries/javalib/Klasses.jar
-	if test -x $(KAFFEH_FOR_BUILD); then \
-	    $(KAFFEH_FOR_BUILD) \
+	if test -x $(KAFFEH); then \
+	    $(KAFFEH) \
 		-classpath $(top_srcdir)/libraries/javalib/Klasses.jar \
 		java.lang.Cloneable; \
 	fi
