@@ -1,3 +1,4 @@
+
 /*
  * Java core library component.
  *
@@ -10,18 +11,9 @@
 
 package kaffe.lang;
 
-import java.lang.String;
-import java.io.FileDescriptor;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
-public class UNIXProcess
-  extends Process
-  implements Runnable
-{
+public class UNIXProcess extends Process {
 	boolean isalive;
 	int exit_code;
 	FileDescriptor stdin_fd;
@@ -32,17 +24,9 @@ public class UNIXProcess
 	OutputStream stdin_stream;
 	InputStream raw_stdout;
 	InputStream raw_stderr;
-	int numReaders;			// what's that for?
-	private static Thread tidy;	// what's that for?
 	Throwable throwable;		// saved to rethrow in correct thread
 
-
-public UNIXProcess() {
-}
-
-public UNIXProcess(String argv[], String arge[])
-    throws Throwable
-{
+public UNIXProcess(final String argv[], final String arge[]) throws Throwable {
 	stdin_fd = new FileDescriptor();
 	stdout_fd = new FileDescriptor();
 	stderr_fd = new FileDescriptor();
@@ -53,13 +37,11 @@ public UNIXProcess(String argv[], String arge[])
 	 * it's parent (UNIX for example).  So, we have to create a thread
 	 * to do the waiting.
 	 */
-	final String _argv[] = argv;
-	final String _arge[] = arge;
 	Thread sitter = new Thread() {
 		public void run() {
 			int fae = 0;
 			try {
-				fae = forkAndExec(_argv, _arge);
+				fae = forkAndExec(argv, arge);
 			}
 			catch (Throwable t) {
 				// save it to rethrow in correct thread
@@ -117,19 +99,11 @@ public UNIXProcess(String argv[], String arge[])
 	}
 }
 
-native public void destroy();
-
 public int exitValue() {
 	if (isalive) {
 		throw new IllegalThreadStateException();
 	}
 	return exit_code;
-}
-
-native private int forkAndExec(Object cmd[], Object env[]);
-native private int execWait();
-
-public void run() {
 }
 
 public InputStream getErrorStream() {
@@ -153,15 +127,18 @@ public int waitFor() throws InterruptedException {
 	return (exit_code);
 }
 
-/**
- * Native callback.
- */
-private void processDied(int status) {
-	synchronized(this) {
-		isalive = false;
-		exit_code = status;
-		notifyAll();
-	}
+public void sendSignal(int signum) throws IOException {
+	sendSignal0(pid, signum);
 }
 
+public static void sendSignal(int pid, int signum) throws IOException {
+	sendSignal0(pid, signum);
 }
+
+public native void destroy();
+private native int forkAndExec(Object cmd[], Object env[]);
+private native int execWait();
+private native static void sendSignal0(int pid, int signum);
+
+}
+
