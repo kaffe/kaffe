@@ -1145,7 +1145,7 @@ Optional Packages:
   --with-qtdir=DIR        Qt installation directory default=$QTDIR
   --with-kaffe-nanox-awt  enable build of Kaffe's Nano-X AWT engine (not built
                           by default)
-  --with-nanox-includes=dir
+  --with-nanox-include=dir
                           Specify NanoX include directory
   --with-nanox-library=dir
                           Specify NanoX library directory

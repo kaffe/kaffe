@@ -1,3 +1,22 @@
+2005-02-14  Jim Huang  <jserv@kaffe.org>
+
+	* configure.ac: Fix typo.
+
+	* FAQ/FAQ.awt:
+	Updated Graphics2D implementation and DirectFB kawt
+	information.
+
+	* kaffe/scripts/Makefile.am:
+	The appletviewer script would not be installed if the
+	native AWT backends are disabled.
+	NOTE: we must introduce a better way to let appletviewer
+	switches different AWT backends, and use gcjwebplugin
+	later.
+
+	* configure,
+	kaffe/scripts/Makefile.in:
+	Regenerated.
+
 2005-02-13  Dalibor Topic  <robilad@kaffe.org>
 
 	Resynced with GNU Classpath.

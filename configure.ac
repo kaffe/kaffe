@@ -1716,7 +1716,7 @@ if test x"$enable_native_awt" = x"yes"; then
 	dnl -----------------------------------------------------------------------
 
 	AC_ARG_WITH(nanox-include,
-		AS_HELP_STRING([--with-nanox-includes=dir],
+		AS_HELP_STRING([--with-nanox-include=dir],
 		[Specify NanoX include directory]),
 		[ NANOXINC=$withval ],
 		[ NANOXINC="/usr/include/microwin" ])

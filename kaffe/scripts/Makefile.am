@@ -18,7 +18,14 @@ if SUN_COMPAT
 SUBDIRS = compat
 SCRIPTFILES_COMPAT=
 else
-SCRIPTFILES_COMPAT=appletviewer javac javadoc
+if COND_NATIVE_AWT
+KAFFE_APPLETVIEWER = appletviewer
+else
+# If no native AWT backends are enabled, the appletviewer
+# must be absent.
+KAFFE_APPLETVIEWER =
+endif
+SCRIPTFILES_COMPAT= $(KAFFE_APPLETVIEWER) javac javadoc
 endif
 
 if ENABLE_XPROF
