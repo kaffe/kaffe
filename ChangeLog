@@ -1,3 +1,14 @@
+Wed Jun  3 11:48:15 1998  Kiyo Inaba  <inaba@snoopy.src.ricoh.co.jp>
+	 		  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* config/sparc/sunos4/md.h, kaffe/kaffevm/Makefile.in,
+ 	kaffe/kaffevm/systems/unix-internal/Makefile.frag
+	kaffe/kaffevm/systems/unix-jthreads/Makefile.frag:
+	SunOS4 changes: removed use of += construct in Makefile,
+	corrected SP_OFFSET
+	kaffe/kaffevm/systems/unix-jthreads/jthread.h: 
+	configure.in, config/config.h.in: included test for SunOS4 on_exit
+	
 Thu May 28 13:57:47 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* kaffe/kaffevm/jar.[ch]: removed use of stdio.
