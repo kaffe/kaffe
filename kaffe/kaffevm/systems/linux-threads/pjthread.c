@@ -15,6 +15,7 @@
 #include "jthread.h"
 #include <sys/wait.h>
 #include <sys/time.h>
+#include <signal.h>
 
 #include <semaphore.h>
 /*
