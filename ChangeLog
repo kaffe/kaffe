@@ -1,3 +1,21 @@
+Mon Dec 13 23:06:59 CET 1999  Edouard G. Parmelan  <egp.free.fr>
+
+	* test/regression/Makefile.am: exclude Overflow.java when gcj
+	is enabled.
+
+	* kaffe/kaffevm/Makefile.am kaffe/kaffevm/gcj/Makefile.am: use else
+	clause in automake conditional.
+
+	* test/regression/Makefile.in kaffe/kaffevm/Makefile.in
+	kaffe/kaffevm/gcj/Makefile.in: regen.
+
+	* config/i386/univel_svr4/jit3-md.h: added.
+
+	* libraries/clib/awt/X/toolkit.h: fix XShmDetach() and
+	XShmAttach() macros when libXext is not found.
+	* libraries/clib/awt/X/img.c libraries/clib/awt/X/tlk.c: enclose some
+	XShm code insife defined(HAVE_LIBXEXT).
+
 Fri Dec 10 17:03:08 PST 1999  Dalibor Topic <dtopic@socs.uts.edu.au>
 
 	* libraries/javalib/java/io/StreamTokenizer.java: fix bugs
