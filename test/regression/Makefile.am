@@ -68,6 +68,7 @@ ALWAYS_TESTS = \
 	SoTimeout.java \
 	wc.java \
 	FileTest.java \
+	FileChecks.java \
 	finalexc.java \
 	finaltest.java \
 	finaltest2.java \

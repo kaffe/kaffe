@@ -1,3 +1,16 @@
+Wed Jun 19 18:14:31 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	From: Pat Tullmann <pat@tullmann.org>
+	
+	* libraries/javalib/java/io/FileInputStream.java,
+	libraries/javalib/java/io/FileOutputStream.java: Change
+	constructors to detect and fail with FileNotFoundException if
+	given file/filename is a directory.
+	* test/regression/FileChecks.java: Test the FileInputStream
+	constructors.
+	* java/util/TimeZone.java: Add sanity check to prevent failure
+	to lookup GMT from causing infinite recursion.
+	
 Sun Jun 16 22:40:33 PDT 2002  Jim Pick  <jim@kaffe.org>
 
 	* developers/update-class-list: Fixed (was broken by

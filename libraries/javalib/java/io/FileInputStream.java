@@ -20,31 +20,38 @@ static {
         System.loadLibrary("io");
 }
 
-public FileInputStream(File file) throws FileNotFoundException {
-	this(file.getPath());
-}
-
 public FileInputStream(FileDescriptor fdObj) {
 	SecurityManager sm = System.getSecurityManager();
 	if (sm != null)
 		sm.checkRead(fdObj);
+	// XXX check if fd is invalid?  Or points to a non-file object?
 	fd=fdObj;
 }
 
 public FileInputStream(String name) throws FileNotFoundException {
-	final SecurityManager sm = System.getSecurityManager();
-	if (sm != null)
-		sm.checkRead(name);
+	this(new File(name));
+}
+
+public FileInputStream(File file) throws FileNotFoundException {
+	final String fname = file.getPath();
+
+	// Note File.isDirectory() will do the required SecurityManager 
+	// canRead() check for us.
+	if (file.isDirectory())
+		throw new FileNotFoundException(fname+ ": Is a directory");
+
 	try {
-		open(name);
+		open(fname);
 	} catch (IOException e) {
 		/* Note that open may throw an IOException, but the spec says
 		 * that this constructor throws only FileNotFoundExceptions,
 		 * hence we must map them.
 		 */
-		throw new FileNotFoundException(name + ": " + e.getMessage());
+		throw new FileNotFoundException(fname + ": " + e.getMessage());
 	}
 }
+
+
 
 native public int available() throws IOException;
 
