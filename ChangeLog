@@ -4,6 +4,15 @@
 
 	2005-02-10  Michael Koch  <konqueror@gmx.de>
 
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImagePainter.c:
+        Merged file header from java-gui-20050128-branch.
+
+2005-02-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-02-10  Michael Koch  <konqueror@gmx.de>
+
         * java/awt/Container.java (paramString):
         If layoutMgr is null just return result of super.paramString().
 
