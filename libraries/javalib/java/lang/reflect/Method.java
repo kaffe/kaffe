@@ -25,9 +25,13 @@ public class Method
 
 public boolean equals(Object obj)
 	{
-	// Catch the simple case wher they're really the same
+	// Catch the simple case where they're really the same
 	if ((Object)this == obj) {
 		return (true);
+	}
+	// if obj is null then they are not the same
+	if (obj == null) {
+		return (false);
 	}
 
 	Method mobj;
