@@ -2182,7 +2182,6 @@ java_beans_SRCS = \
 	java/beans/ExceptionListener.java \
 	java/beans/Expression.java \
 	java/beans/FeatureDescriptor.java \
-	java/beans/GenericBeanInfo.java \
 	java/beans/IndexedPropertyDescriptor.java \
 	java/beans/IntrospectionException.java \
 	java/beans/Introspector.java \
