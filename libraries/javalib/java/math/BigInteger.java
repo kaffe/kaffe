@@ -144,8 +144,10 @@ public BigInteger modPow(BigInteger exponent, BigInteger mod) {
 	return (r);
 }
 
-public BigInteger modInverse(BigInteger m) throws ArithmeticException {
-	throw new kaffe.util.NotImplemented();
+public BigInteger modInverse(BigInteger mod) throws ArithmeticException {
+	BigInteger r = new BigInteger();
+	r.modinv0(this, mod);
+	return (r);
 }
 
 public BigInteger shiftLeft(int n) {
@@ -402,6 +404,7 @@ private native void pow0(BigInteger s, int p);
 private native void gcd0(BigInteger s1, BigInteger s2);
 private native void mod0(BigInteger s1, BigInteger s2);
 private native void modpow0(BigInteger s1, BigInteger s2, BigInteger s3);
+private native void modinv0(BigInteger s1, BigInteger s2);
 
 private native void and0(BigInteger s1, BigInteger s2);
 private native void or0(BigInteger s1, BigInteger s2);

@@ -278,6 +278,36 @@ Java_java_math_BigInteger_modpow0(JNIEnv* env, jobject r, jobject s1, jobject s2
 	mpz_powm(res, src1, src2, src3);
 }
 
+/*
+ * r = s1^(-1) mod s2
+ */
+void
+Java_java_math_BigInteger_modinv0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	mpz_ptr res;
+	mpz_srcptr src1;
+	mpz_srcptr src2;
+	int rc;
+
+	src1 = (mpz_srcptr)(*env)->GetObjectField(env, s1, number);
+	src2 = (mpz_srcptr)(*env)->GetObjectField(env, s2, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
+
+	/*
+	 * mpz_invert (rop, op1, op2)
+	 * Compute the inverse of op1 modulo op2 and put the result 
+	 * in rop. Return non-zero if an inverse exist, zero otherwise. 
+	 * When the function returns zero, do not assume anything about 
+	 * the value in rop. 
+	 */
+	rc = mpz_invert (res, src1, src2);
+	if (rc == 0) {
+		jclass arexc = (*env)->FindClass(env, 
+			"java.lang.ArithmeticException");
+		(*env)->ThrowNew(env, arexc, "Inverse does not exist");
+	}
+}
+
 void
 Java_java_math_BigInteger_and0(JNIEnv* env, jobject r, jobject s1, jobject s2)
 {
