@@ -8,7 +8,5 @@ libkaffejvmpi_la_DEPENDENCIES = $(LIBLTDL)
 libkaffejvmpi_la_LIBADD = $(libkaffejvmpi_la_DEPENDENCIES) $(VM_LIBS) $(M_LIBS)
 
 libkaffejvmpi_la_SOURCES = \
-	jvmpi_kaffe.c
-
-libkaffejvmpi_la_HEADERS = \
+	jvmpi_kaffe.c \
 	jvmpi_kaffe.h

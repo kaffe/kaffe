@@ -1,4 +1,18 @@
 2003-07-27  Dalibor Topic <robilad@kaffe.org>,
+
+	Fixes for 'make dist'
+
+	* kaffe/jvmpi/Makefile.am:
+	(libkaffejvmpi_la_SOURCES) added jvmpi_kaffe.h
+	(libkaffejvmpi_la_HEADERS) removed.
+
+	* kaffe/kaffevm/Makefile.am:
+	(noinst_HEADERS) Added threadData.h
+
+	* Makefile.am:
+	(EXTRA_DIST) removed developers/patch-kjc-variable-propagation
+
+2003-07-27  Dalibor Topic <robilad@kaffe.org>,
 	    Helmer Kraemer <hkraemer@freenet.de>
 
 	Fixes for compiler warnings on alpha-linux.

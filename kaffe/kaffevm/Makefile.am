@@ -121,6 +121,7 @@ noinst_HEADERS = \
 	support.h \
 	gcRefs.h \
 	thread.h \
+	threadData.h \
 	utf8const.h
 
 gc-mem.c: stamp-h01

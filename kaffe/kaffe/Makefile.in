@@ -245,9 +245,9 @@ jrebin_PROGRAMS = kaffe-bin
 @NEED_LIBXPROF_FALSE@libxprof = #
 
 @NEED_LIBXPROF_TRUE@libxprof = ../xprof/libkaffexprof.la
-@ENABLE_JVMPI_FALSE@libjvmpi = #
 
 @ENABLE_JVMPI_TRUE@libjvmpi = ../jvmpi/libkaffejvmpi.la
+@ENABLE_JVMPI_FALSE@libjvmpi = #
 
 AM_CPPFLAGS = -I../kaffevm -I$(srcdir)/../kaffevm -I$(top_srcdir)/libltdl \
 	-I$(top_srcdir)/kaffe/jvmpi -I$(top_srcdir)/kaffe/xprof

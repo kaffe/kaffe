@@ -342,7 +342,6 @@ EXTRA_DIST = \
 	developers/mauve-kaffe \
 	developers/mauve-results.sh \
 	developers/patch-config.sub-superh.diff \
-	developers/patch-kjc-variable-propagation \
 	developers/patch-libtool-amiga.diff \
 	developers/patch-libtool-openbsd.diff \
 	developers/patch-libtool-realloc.diff \
