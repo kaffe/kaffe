@@ -7,6 +7,145 @@
 
 2004-11-10  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/gnu/java/security/provider/CollectionCertStoreImpl.java,
+	libraries/javalib/gnu/java/security/provider/EncodedKeyFactory.java,
+	libraries/javalib/gnu/java/security/provider/GnuDHPublicKey.java,
+	libraries/javalib/gnu/java/security/provider/GnuRSAPrivateKey.java,
+	libraries/javalib/gnu/java/security/provider/GnuRSAPublicKey.java,
+	libraries/javalib/gnu/java/security/provider/MD2withRSA.java,
+	libraries/javalib/gnu/java/security/provider/MD4withRSA.java,
+	libraries/javalib/gnu/java/security/provider/MD5withRSA.java,
+	libraries/javalib/gnu/java/security/provider/PKIXCertPathValidatorImpl.java,
+	libraries/javalib/gnu/java/security/provider/RSA.java,
+	libraries/javalib/gnu/java/security/provider/RSAKeyFactory.java,
+	libraries/javalib/gnu/java/security/provider/SHA1withRSA.java,
+	libraries/javalib/gnu/java/security/x509/GnuPKIExtension.java,
+	libraries/javalib/gnu/java/security/x509/PolicyNodeImpl.java,
+	libraries/javalib/gnu/java/security/x509/Util.java,
+	libraries/javalib/gnu/java/security/x509/X509CRLSelectorImpl.java,
+	libraries/javalib/gnu/java/security/x509/X509CertPath.java,
+	libraries/javalib/gnu/java/security/x509/X509CertSelectorImpl.java,
+	libraries/javalib/gnu/java/security/x509/ext/AuthorityKeyIdentifier.java
+	libraries/javalib/gnu/java/security/x509/ext/BasicConstraints.java,
+	libraries/javalib/gnu/java/security/x509/ext/CRLNumber.java,
+	libraries/javalib/gnu/java/security/x509/ext/CertificatePolicies.java,
+	libraries/javalib/gnu/java/security/x509/ext/ExtendedKeyUsage.java,
+	libraries/javalib/gnu/java/security/x509/ext/Extension.java,
+	libraries/javalib/gnu/java/security/x509/ext/GeneralNames.java,
+	libraries/javalib/gnu/java/security/x509/ext/IssuerAlternativeNames.java,
+	libraries/javalib/gnu/java/security/x509/ext/KeyUsage.java,
+	libraries/javalib/gnu/java/security/x509/ext/PolicyConstraint.java,
+	libraries/javalib/gnu/java/security/x509/ext/PolicyMappings.java,
+	libraries/javalib/gnu/java/security/x509/ext/PrivateKeyUsagePeriod.java,
+	libraries/javalib/gnu/java/security/x509/ext/ReasonCode.java,
+	libraries/javalib/gnu/java/security/x509/ext/SubjectAlternativeNames.java,
+	libraries/javalib/gnu/java/security/x509/ext/SubjectKeyIdentifier.java:
+	New files. Taken from GNU Classpath.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/gnu/java/security/der/BitString.java,
+	libraries/javalib/gnu/java/security/der/DER.java,
+	libraries/javalib/gnu/java/security/der/DERReader.java,
+	libraries/javalib/gnu/java/security/der/DERValue.java,
+	libraries/javalib/gnu/java/security/der/DERWriter.java,
+	libraries/javalib/gnu/java/security/provider/Gnu.java,
+	libraries/javalib/gnu/java/security/provider/X509CertificateFactory.java,
+	libraries/javalib/gnu/java/security/x509/X500DistinguishedName.java,
+	libraries/javalib/gnu/java/security/x509/X509CRL.java,
+	libraries/javalib/gnu/java/security/x509/X509CRLEntry.java,
+	libraries/javalib/gnu/java/security/x509/X509Certificate.java,
+	libraries/javalib/java/security/cert/TrustAnchor.java:
+	Resynced with GNU Classpath.
+
+	2004-11-07  Casey Marshall  <csm@gnu.org>
+
+	* gnu/java/security/x509/X509CertPath.java
+	(parse): fixed reference to 'X509CertificateImpl' from previous
+	checkin.
+
+	2004-11-07  Casey Marshall  <csm@gnu.org>
+
+	* gnu/java/security/x509/X509CRL.java
+	Missed import statements in previous checkin.
+
+	2004-11-07  Casey Marshall  <csm@gnu.org>
+
+        * gnu/java/security/provider/Gnu.java
+        (<init>): add entries in a priviliged action.
+        Add new algorithms.
+        * gnu/java/security/provider/X509CertificateFactory.java
+        (engineGenerateCertificate): chain exceptions.
+        (engineGenerateCertificates): likewise.
+        (engineGenerateCRL): likewise.
+        (engineGenerateCRLs): likewise.
+        (engineGenerateCertPath): new methods.
+        (generateCert): throw exception if 'inStream' is null.
+        (generateCRL): likewise.
+        * gnu/java/security/x509/X500DistinguishedName.java: replaced with
+        version from GNU Crypto CVS.
+        * gnu/java/security/x509/X509CRL.java: likewise.
+        * gnu/java/security/x509/X509CRLEntry.java: likewise.
+        * gnu/java/security/x509/X509Certificate.java: likewise.
+        * java/security/cert/TrustAnchor.java: call 'toString' and not
+        toRFC2253.
+        * gnu/java/security/provider/CollectionCertStoreImpl.java,
+        * gnu/java/security/provider/EncodedKeyFactory.java,
+        * gnu/java/security/provider/GnuDHPublicKey.java,
+        * gnu/java/security/provider/GnuRSAPrivateKey.java,
+        * gnu/java/security/provider/GnuRSAPublicKey.java,
+        * gnu/java/security/provider/MD2withRSA.java,
+        * gnu/java/security/provider/MD4withRSA.java,
+        * gnu/java/security/provider/MD5withRSA.java,
+        * gnu/java/security/provider/PKIXCertPathValidatorImpl.java,
+        * gnu/java/security/provider/RSA.java,
+        * gnu/java/security/provider/RSAKeyFactory.java,
+        * gnu/java/security/provider/SHA1withRSA.java,
+        * gnu/java/security/x509/GnuPKIExtension.java,
+        * gnu/java/security/x509/PolicyNodeImpl.java,
+        * gnu/java/security/x509/Util.java,
+        * gnu/java/security/x509/X509CRLSelectorImpl.java,
+        * gnu/java/security/x509/X509CertPath.java,
+        * gnu/java/security/x509/X509CertSelectorImpl.java,
+        * gnu/java/security/x509/ext/AuthorityKeyIdentifier.java,
+        * gnu/java/security/x509/ext/BasicConstraints.java,
+        * gnu/java/security/x509/ext/CRLNumber.java,
+        * gnu/java/security/x509/ext/CertificatePolicies.java,
+        * gnu/java/security/x509/ext/ExtendedKeyUsage.java,
+        * gnu/java/security/x509/ext/Extension.java,
+        * gnu/java/security/x509/ext/GeneralNames.java,
+        * gnu/java/security/x509/ext/IssuerAlternativeNames.java,
+        * gnu/java/security/x509/ext/KeyUsage.java,
+        * gnu/java/security/x509/ext/PolicyConstraint.java,
+        * gnu/java/security/x509/ext/PolicyMappings.java,
+        * gnu/java/security/x509/ext/PrivateKeyUsagePeriod.java,
+        * gnu/java/security/x509/ext/ReasonCode.java,
+        * gnu/java/security/x509/ext/SubjectAlternativeNames.java,
+        * gnu/java/security/x509/ext/SubjectKeyIdentifier.java:
+        new files.
+
+	2004-08-14  Casey Marshall <csm@gnu.org>
+
+        Author e-mail updated for all files.
+        * gnu/java/security/der/BitString.java (equals): test if the
+        argument is an instance of BitString.
+        * gnu/java/security/der/DERReader.java: Removed NIO imports.  Made
+        class final. Made fields private.
+        (<init>): new constructor.
+        (skip): new method.
+        (makeString): made static; don't use NIO.
+        (fromIso88591, fromUtf16Be, fromUtf8): new methods.
+        * gnu/java/security/der/DERWriter.java: fixed imports.
+        (writeString): don't use NIO.
+        (toIso88591, toUtf16Be, toUtf8): new methods.
+        * gnu/java/security/der/DERValue.java: formatting changes only.
+        * gnu/java/security/der/DER.java: likewise.
+
+2004-11-10  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/java/awt/geom/GeneralPath.java:
 	Resynced with GNU Classpath.
 
