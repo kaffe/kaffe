@@ -3259,7 +3259,7 @@ pusharg_ref_const(void* val, int idx)
 }
 
 void
-pusharg_class_const(void* cls, int idx)
+pusharg_class_const(Hjava_lang_Class* cls, int idx)
 {
 #if 1
 	pusharg_ref_const(cls, idx);
@@ -3269,7 +3269,7 @@ pusharg_class_const(void* cls, int idx)
 }
 
 void
-pusharg_utf8_const(void* val, int idx)
+pusharg_utf8_const(Utf8Const* val, int idx)
 {
 #if 1
 	pusharg_ref_const(val, idx);

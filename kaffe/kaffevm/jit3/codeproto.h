@@ -115,8 +115,8 @@ void pusharg_long_const(jlong, int);
 void pusharg_float(SlotInfo*, int);
 void pusharg_double(SlotInfo*, int);
 void pusharg_string_const(void*, int);
-void pusharg_class_const(void*, int);
-void pusharg_utf8_const(void*, int);
+void pusharg_class_const(struct Hjava_lang_Class*, int);
+void pusharg_utf8_const(Utf8Const*, int);
 void popargs(void);
 
 void return_int(SlotInfo*);
