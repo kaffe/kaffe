@@ -1,5 +1,5 @@
 /* Choice.java -- Java choice button widget.
-   Copyright (C) 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2001, 2002, 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -169,6 +169,8 @@ add(String item)
       ChoicePeer cp = (ChoicePeer) peer;
       cp.add (item, i);
     }
+  else if (selectedIndex == -1) 
+    select(0);
 }
 
 /*************************************************************************/
@@ -218,6 +220,8 @@ insert(String item, int index)
       ChoicePeer cp = (ChoicePeer) peer;
       cp.add (item, index);
     }
+  else if (selectedIndex == -1 || selectedIndex >= index)
+    select(0);
 }
 
 /*************************************************************************/
@@ -260,6 +264,13 @@ remove(int index)
     {
       ChoicePeer cp = (ChoicePeer) peer;
       cp.remove (index);
+    }
+  else
+    {
+      if (getItemCount() == 0)
+	selectedIndex = -1;
+      else if (index == selectedIndex)
+	select(0);
     }
 
   if (selectedIndex > index)
