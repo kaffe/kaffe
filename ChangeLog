@@ -1,5 +1,13 @@
 2004-03-24  Dalibor Topic <robilad@kaffe.org>
 
+	* configure.ac:
+	Disabled -Wtraditional warnings again since
+	they added too much noise.
+
+	* configure: Regenerated.
+
+2004-03-24  Dalibor Topic <robilad@kaffe.org>
+
 	* configure.in: Moved over to configure.ac.
 
         * Makefile.in,

@@ -87,9 +87,11 @@ AX_CFLAGS_WARN_ALL
 
 # turn on all other gcc warnings for more fixing fun
 
+#AX_CFLAGS_GCC_OPTION([-pedantic])
+#AX_CFLAGS_GCC_OPTION([-ansi])
 AX_CFLAGS_GCC_OPTION([-W])
 AX_CFLAGS_GCC_OPTION([Wfloat-equal])
-AX_CFLAGS_GCC_OPTION([-Wtraditional])
+#AX_CFLAGS_GCC_OPTION([-Wtraditional])
 AX_CFLAGS_GCC_OPTION([-Wundef])
 AX_CFLAGS_GCC_OPTION([-Wendif-labels])
 AX_CFLAGS_GCC_OPTION([-Wshadow])
