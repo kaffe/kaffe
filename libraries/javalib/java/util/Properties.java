@@ -188,9 +188,11 @@ public synchronized void save(OutputStream out, String header) {
 
 private synchronized void save(Writer out, String header) {
 	try {
-		out.write("# ");
-		out.write(escape(header));
-		out.write("\n");
+		if (header != null) {
+			out.write("# ");
+			out.write(escape(header));
+			out.write("\n");
+		}
 
 		Enumeration keys = propertyNames();
 

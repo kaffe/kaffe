@@ -1,5 +1,7 @@
 Sat Dec 12 19:04:18 1998  Godmar Back  <gback@cs.utah.edu>
 
+	* libraries/javalib/java/util/Properties.java: 
+	handle header == null in Properties.save.
 	* kaffe/kaffevm/stackTrace.c: make sure we find line numbers
 	even if start_pc == 0 (which can happen in the interpreter)
 	* libraries/javalib/java/io/StreamTokenizer.java: fixed bug where
