@@ -18,21 +18,24 @@ import java.util.Locale;
 import kaffe.io.ByteToCharConverter;
 import kaffe.io.CharToByteConverter;
 
-final public class String implements Serializable, Comparable {
+public final class String implements Serializable, Comparable {
 
 	/**
 	 * Maximum slop (extra unused chars in the char[]) that
 	 * will be accepted in a StringBuffer -> String conversion.
+	 * This helps avoid certain pathological cases where lots of
+	 * extra buffer space is maintained for short strings that
+	 * were created from StringBuffer objects.
 	 */
 	private static final int STRINGBUFFER_SLOP = 32;
 
 	// Note: value, offset, and count are not private, because
 	// StringBuffer uses them for faster access
-	char[] value;		// really "final"
-	int offset;		// really "final"
-	int count;		// really "final"
-	int hash;
+	final char[] value;
+	final int offset;
+	final int count;
 	boolean interned;
+	int hash;
 
 	/* This is what Sun's JDK1.1 "serialver java.lang.String" spits out */
 	static final long serialVersionUID = -6849794470754667710L;
@@ -47,6 +50,8 @@ final public class String implements Serializable, Comparable {
 
 public String() {
 	value = new char[0];
+	offset = 0;
+	count = 0;
 }
 
 public String(String other) {
@@ -56,45 +61,49 @@ public String(String other) {
 	hash = other.hash;
 }
 
-public String (StringBuffer sb) {
+public String(StringBuffer sb) {
 	synchronized (sb) {
 		if (sb.buffer.length > sb.used + STRINGBUFFER_SLOP) {
 			value = new char[sb.used];
+			offset = 0;
 			count = sb.used;
 			System.arraycopy(sb.buffer, 0, value, 0, count);
 		}
 		else {
 			value = sb.buffer;
+			offset = 0;
 			count = sb.used;
 			sb.isStringized = true;
 		}
 	}
 }
 
-public String( byte[] bytes) {
-	initString( bytes, 0, bytes.length, ByteToCharConverter.getDefault());
+public String(byte[] bytes) {
+	this(decodeBytes(bytes, 0,
+	      bytes.length, ByteToCharConverter.getDefault()));
 }
 
-public String( byte[] bytes, String enc) throws UnsupportedEncodingException
-{
-	initString( bytes, 0, bytes.length, ByteToCharConverter.getConverter(enc));
+public String(byte[] bytes, String enc) throws UnsupportedEncodingException {
+	this(decodeBytes(bytes, 0,
+	    bytes.length, ByteToCharConverter.getConverter(enc)));
 }
 
 /**
  * @deprecated
  */
-public String( byte ascii[], int hibyte) {
-	this( ascii, hibyte, 0, ascii.length);
+public String(byte ascii[], int hibyte) {
+	this(ascii, hibyte, 0, ascii.length);
 }
 
-public String( byte[] bytes, int offset, int length)
-{
-	initString( bytes, offset, length, ByteToCharConverter.getDefault());
+public String(byte[] bytes, int offset, int length) {
+	this(decodeBytes(bytes, offset,
+	    length, ByteToCharConverter.getDefault()));
 }
 
-public String( byte[] bytes, int offset, int length, String enc) throws UnsupportedEncodingException
-{
-	initString( bytes, offset, length, ByteToCharConverter.getConverter(enc));
+public String(byte[] bytes, int offset, int length, String enc)
+		throws UnsupportedEncodingException {
+	this(decodeBytes(bytes, offset,
+	    length, ByteToCharConverter.getConverter(enc)));
 }
 
 /**
@@ -106,6 +115,7 @@ public String( byte ascii[], int hibyte, int offset, int count) {
 		throw new NullPointerException();
 	}
 	value = new char[count];
+	this.offset = 0;
 	this.count = count;
 
 	hibyte = (hibyte & 0xFF) << 8;
@@ -120,6 +130,7 @@ public String( char other[]) {
 
 public String( char other[], int offset, int count) {
 	value = new char[count];
+	this.offset = 0;
 	this.count = count;    
 
 	if ( count > 0)
@@ -287,10 +298,12 @@ public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin) {
 
 public int hashCode() {
 	if (hash == 0 && count > 0) {
+		int tempHash = 0;
 		final int stop = offset + count;
 		for (int index = offset; index < stop; index++) {
-			hash = (31 * hash) + value[index];
+			tempHash = (31 * tempHash) + value[index];
 		}
+		hash = tempHash;	// race condition here is ok
 	}
 	return hash;
 }
@@ -318,20 +331,16 @@ public int indexOf( int ch, int sIdx) {
 	return -1;
 }
 
-private void initString( byte[] bytes, int offset, int length, ByteToCharConverter encoding) {
-	StringBuffer sbuf = new StringBuffer( length);
+private static StringBuffer decodeBytes(byte[] bytes, int offset,
+		int len, ByteToCharConverter encoding) {
+	StringBuffer sbuf = new StringBuffer(len);
 	char[] out = new char[512];
-	int outlen = encoding.convert( bytes, offset, length, out, 0, out.length);
-	while ( outlen > 0) {
-		sbuf.append( out, 0, outlen);
-		outlen = encoding.flush( out, 0, out.length);
+	int outlen = encoding.convert(bytes, offset, len, out, 0, out.length);
+	while (outlen > 0) {
+		sbuf.append(out, 0, outlen);
+		outlen = encoding.flush(out, 0, out.length);
 	}
-
-	String str = sbuf.toString();
-
-	value = str.value;
-	offset = str.offset;
-	count  = str.count;
+	return sbuf;
 }
 
 public int lastIndexOf( String str) {
