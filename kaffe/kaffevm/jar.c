@@ -170,7 +170,11 @@ static void collectJarFile(jarFile *jf)
 #ifdef HAVE_MMAP
 	if( jf->data != MAP_FAILED )
 	{
-		int rc = munmap(jf->data, jf->size);
+#if !defined(NDEBUG)
+		/* Only define rc for use in assert */
+		int rc = 
+#endif /* defined(NDEBUG)  */
+		munmap(jf->data, jf->size);
 
 		assert(rc == 0);
 	}
