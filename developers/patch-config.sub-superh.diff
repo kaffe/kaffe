@@ -12,7 +12,7 @@ This should be merged upstream to autoconf.
  	| sh | sh[1234] | sh[23]e | sh[34]eb | shbe | shle | sh[1234]le | sh3ele \
  	| sh64 | sh64le \
 +	| superh \
- 	| sparc | sparc64 | sparc86x | sparclet | sparclite | sparcv9 | sparcv9b \
+ 	| sparc | sparc64 | sparc86x | sparclet | sparclite | sparcv8 | sparcv9 | sparcv9b \
  	| strongarm \
  	| tahoe | thumb | tic80 | tron \
 @@ -331,6 +332,7 @@
