@@ -1,6 +1,9 @@
- 
-The new gc_block allocation scheme is an optimization that reduces
-gc times by improving cache and virtual memory performance.
+The new gc_block allocation scheme optimizes virtual memory and
+cache behavior.
+
+It has been tested on a variety of systems, and although we believe it 
+to be reasonably robust, you may enable the old gc-block allocation for
+now with ./configure --with-gcblock=hash.
 
 Previously, each page of the heap had a header, struct gc_block.
 The conservative GC tested whether a pointer pointed into the heap by
@@ -9,14 +12,44 @@ allocation scheme allows faster conservative object marking by
 eliminating gc_object_hash, and reduces cache conflict misses and
 paging by placing struct gc_blocks in an array.
 
-On startup, the new system finds a free address range large enough for
-the heap, and a seconda range large enough for all the gc_block
-structures.  Memory is mapped into these ranges as needed, and these
-addresses must still be available when they are needed.
- 
+Since gc_blocks are not part of the pages they describe further memory
+optimizations are possible:  Free pages anywhere in the heap can be
+marked as low priority with madvise.  And, free pages can be made
+unreadable, as is done when compiled with -DDEBUG.  Madvise is not
+currently used, since it seems to have a negligible effect.  
+
 Rather than searching a hash table to find a gc_block structure,
 markObject simply needs to subtract the heap base from a pointer, and
 use the difference in pages to index the gc_block array.
+
+There are some complications:  The java heap is not really an array of
+pages:  Pages allocated by malloc and gc_system_alloc may be interleaved.
+There are three ways to deal with this:
+1. Allocate the entire heap up front, which needlessly ties up
+   resources.
+2. Allocate some address space, then fill in the heap and gc_block
+   array as needed (using mmap).  On systems which support the
+   MAP_NORESERVE flag, mmap can allocate address space without
+   allocating backing store.  But, on other systems a strange trick
+   would be required:  Call mmap(0) to find out where mmap wants to
+   place memory, add an arbitrary constant, and start the heap there.
+   This trick is less than reliable.  And, neither approach works on
+   systems that don't have mmap.
+3. Allocate the full gc_block array up front.  Compensate for holes in
+   the heap address range, but be prepared to realloc the gc_block
+   array if neeeded.
+
+I have taken the third approach.  Kaffe initially allocates an array
+of max-heap-pages * 1.25 gc_block structures using malloc.  If this
+array turns out to be too small (because quite a few memory
+allocation requests are bypassing gc_malloc), the array is
+realloc'ed to a better guess at its maximum size.  Pointers to
+gc_blocks (both inside gc_blocks and in variables such as
+gc_prim_freelist) are relocated.  
+
+This adds a wrinkle to any work on a concurrent GC:  There can be no
+gc_block *'s on any stack when the array is realloced (inside
+gc_heap_malloc).
 
 mem/gc-mem.c and mem/gc-incremental.c have been modified to work with
 either heap layout.  mem/gc-block-mmap.[hc] and mem/gc-block-hash.[hc]
@@ -28,25 +61,5 @@ gc-block-*.h: defines gc_block struct, accessor macros and
 gc-block-*.c: defines gc_block_init, gc_block_add, gc_block_rm and
         gc_block_alloc.
  
-It has been tested with FreeBSD and linux (on i386), irix and hpux.  
-It is known not to work with Solaris.  By default, the old gc-block
-allocation scheme is used.  The new scheme can be enabled with
-./configure --with-gcblock=mmap.
-
-Portability:
- 
-The new gc_block system requires mmap, and some way of mapping
-anonymous memory (either MAP_ANON or /dev/zero).  It has more subtle
-system requirements as well:  It assumes that shared libraries will be
-loaded into roughly contiguous addresses, and will not use addresses
-which are "close" to a shared function.  It also assumes that the
-system will use the mmap hint address when not using MAP_FIXED.  
-The last requirement is one which solaris cannot meet.
- 
-When --with-gcblock=mmap is given, configure will check that a working
-mmap is available.  If not, it will fall back to the old hash-based
-scheme.  However, configure currently does not test for the other
-assumptions mentioned above.
-
 Jason Baker <jbaker@cs.utah.edu>
-Dec 2, 1998
+Dec 17, 1998
