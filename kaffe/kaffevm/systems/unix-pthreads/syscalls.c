@@ -247,7 +247,8 @@ jthreadedSendto(int a, const void* b, size_t c, int d, const struct sockaddr* e,
 {
 	int rc = 0;
 
-	if ((*out = sendto(a, b, c, d, e, f)) == -1) {
+	*out = e ? sendto(a, b, c, d, e, f) : send(a, b, c, d);
+	if (*out == -1) {
 		rc = errno;
 	}
 	return (rc);
