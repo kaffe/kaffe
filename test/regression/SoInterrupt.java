@@ -17,11 +17,18 @@ import java.io.*;
 
 public class SoInterrupt {
     public static void main(String av[]) throws Exception {
-        final int port = 45054;
 	final String foo = "foo";
 	final Thread main = Thread.currentThread();
 
-        ServerSocket server = new ServerSocket(port); 
+	int tryport = 45054;
+	ServerSocket server;
+	for(;;++tryport) {
+	    try {
+		server = new ServerSocket(tryport);
+		break;
+	    } catch (IOException _) {}
+	}
+        final int port = tryport;
         Thread t = new Thread() {
             public void run() {
 		try {

@@ -1,3 +1,9 @@
+Sun Feb 14 01:40:55 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* test/regression/SoInterrupt.java (SoInterrupt): do not use a
+	fixed port, to avoid failures if the port is already bound
+	* test/regression/SoTimeout.java (SoTimeout): ditto
+
 Sun Feb 14 01:24:21 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
