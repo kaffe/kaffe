@@ -12,6 +12,9 @@
 #ifndef __icode_h
 #define	__icode_h
 
+#include "slots.h"
+#include "soft.h"
+
 #define	move_long_const(t, c)			(t)[0].v.tlong = (c)
 #define	add_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong + (f2)[0].v.tlong
 #define	sub_long(t, f1, f2)			(t)[0].v.tlong = (f1)[0].v.tlong - (f2)[0].v.tlong
@@ -305,9 +308,25 @@
 
 #define	adjustpc(a)				/* Not needed for interpreter */
 
-#define	check_array_index(O, I)			if ((I)[0].v.tint >= ARRAY_SIZE((O)[0].v.taddr)) { \
-							soft_badarrayindex(); \
-						}
+/* check if an array index is out of bounds.
+ *
+ * it is out of bounds if the index is less then zero
+ * or if it is larger or equal to the size of the array
+ * to be indexed.
+ */ 
+static inline void check_array_index(const slots* array_slot, 
+				     const slots* index_slot)
+{
+	const jint array_index = index_slot->v.tint;
+	const void* array_reference = array_slot->v.taddr;
+
+	if (array_index < 0 ||
+	    array_index >= ARRAY_SIZE(array_reference))
+	{
+		soft_badarrayindex();
+	}
+}
+
 #define	build_call_frame(SIG, OBJ, NRARGS)	/* Not needed for interpreter */
 
 
