@@ -1,3 +1,28 @@
+2004-06-25  Rob Gonzalez <rob@kaffe.org>
+	* verify2.c
+	Some minor fixes to keep gcc from complaining
+
+	* verify.[ch], verify-*.[ch]
+	(Verifier) structure added.
+	
+	Refactored most major method calls to use the Verifier structure
+	instead of huge parameter lists.  Also did some minor debugging
+	to keep gcc from issuing so many warnings.
+
+	There is still some refactoring work to do, but all-in-all the
+	code is much cleaner and more OO-like.
+
+	* verify-type.[ch]
+	(SupertypeSet) structure added, with skeleton support methods for
+	allocation, building, freeing, etc.
+	
+	Skeleton code for the support of SupertypeSet added.
+	SupertypeSet memory allocation will work like the UninitializedType
+	memory allocation currently does.
+	The code is currently not hooked into the verifier in many places,
+	but the next major commit should allow full support of type checking
+	with multiple inheritence of interfaces.
+
 2004-06-23  Michael Franz <developer.franz@verizon.net>
 
 	config/alpha/alpha.c,
