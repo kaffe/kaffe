@@ -18,6 +18,8 @@
 #undef	malloc
 #undef	free
 
+#include <stdlib.h>
+
 static jfieldID number;
 
 void
