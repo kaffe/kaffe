@@ -31,7 +31,21 @@ public class Classpath {
 		p.setProperty("java.class.path", cpath + sep + elem);
 	}
 
+	public static void prepend(String elem) {
+
+		// Add to internal classpath
+		prepend0(elem);
+
+		// Add to classpath property
+		Properties p = System.getProperties();
+		String sep = p.getProperty("path.separator");
+		String cpath = p.getProperty("java.class.path");
+		p.setProperty("java.class.path", elem + sep + cpath);
+	}
+
 	public native static void add0(String elem);
+
+	public native static void prepend0(String elem);
 
 /**
  * Print out the classpath.
