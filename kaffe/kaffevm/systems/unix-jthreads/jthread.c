@@ -405,7 +405,7 @@ interrupt(int sig)
 	 * but the wouldlosewakeup flag is set.  This is the case before
 	 * we go in select/poll.
 	 */
-	if (intsDisabled() || wouldlosewakeup) {
+	if (intsDisabled() /* || wouldlosewakeup */) {
 		char c;
 		pendingSig[sig] = 1;
 		sigPending = 1;
