@@ -89,8 +89,10 @@ DBG(CLASSGC,
 #endif
 
 	if (Kaffe_JavaVMArgs.enableVerboseGC > 0 && clazz->name) {
-		dprintf("<GC: unloading class `%s'>\n",
-			CLASS_CNAME(clazz));
+		DBG(CLASSGC,
+			dprintf("<GC: unloading class `%s'>\n",
+				CLASS_CNAME(clazz));
+		);
 	}
 
         /* destroy all fields */

@@ -15,6 +15,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
+#include "debug.h"
 #include "jni.h"
 #include "jnirefs.h"
 #include "jni_i.h"
@@ -222,7 +223,9 @@ KaffeJNI_ParseArgs(KaffeVM_Arguments *args, JavaVMOption *options, jint nOptions
 	    {
 	      args->nativeStackSize = sz;
 	    }
-	  dprintf("Setup stack size to %d\n", sz);
+	  DBG(INIT,
+	    dprintf("Setup stack size to %d\n", sz);
+	  );
 	}
     }
   args->bootClasspath = bootClasspath;

@@ -604,17 +604,21 @@ runfinalizer(void)
 static void
 dumpJavaThread(jthread_t thread, UNUSED void *p)
 {
+DBG(VMTHREAD,
 	Hjava_lang_VMThread *tid = (Hjava_lang_VMThread *)KTHREAD(get_data)(thread)->jlThread;
 	dprintf("`%s' ", nameThread(tid));
 	KTHREAD(dumpthreadinfo)(thread);
 	dprintf("\n");
+);
 }
 
 static void
 dumpThreads(void)
 {
+DBG(VMTHREAD,
 	dprintf("Dumping live threads:\n");
 	KTHREAD(walkLiveThreads_r)(dumpJavaThread, NULL);
+);
 }
 
 /*
@@ -639,9 +643,12 @@ onDeadlock(void)
 #if defined(JTHREAD_RESTORE_FD)
         jthreadRestoreFD(2);
 #endif
+
 	dumpLocks();
 	dumpThreads();
+DBG(VMTHREAD,
 	dprintf("Deadlock: all threads blocked on internal events\n");
+);
 	fflush(stderr);
 	ABORT();
 }

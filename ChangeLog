@@ -1,5 +1,23 @@
 2005-01-29  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/ksem.c: Include debug.h for dprintf.
+
+	* kaffe/kaffevm/debug.c
+	kaffe/kaffevm/debug.h:
+	Added debug identifiers for ksem and references.
+
+	* kaffe/kaffevm/baseClasses.c,
+	kaffe/kaffevm/gcFuncs.c,
+	kaffe/kaffevm/reference.c,
+	kaffe/kaffevm/thread.c,
+	kaffe/kaffevm/intrp/machine.c,
+	kaffe/kaffevm/jni/jni-base.c:
+	Added guards for dprintf invocations.
+
+	Reported by:  Michael Franz <mvfranz@gmail.com>
+
+2005-01-29  Dalibor Topic  <robilad@kaffe.org>
+
 	* developers/autogen.sh:
 	Set locale to C tp avoid different locales interfering 
 	with sorting of class lists.

@@ -142,9 +142,11 @@ initialiseKaffe(void)
 	{
 		if( !enableXProfiling() )
 		{
-			dprintf(
+			DBG(INIT,
+				dprintf(
 				"Unable to initialize cross "
 				"language profiling\n");
+			);
 		}
 	}
 #endif
@@ -208,7 +210,7 @@ initialiseKaffe(void)
 	      constructor_name && Code_name && LineNumberTable_name &&
 	      LocalVariableTable_name && ConstantValue_name &&
 	      Exceptions_name && SourceFile_name && InnerClasses_name)) {
-		dprintf("not enough memory to run kaffe\n");
+		DBG(INIT, dprintf("not enough memory to run kaffe\n"); );
 		ABORT();
 	}
 
@@ -246,15 +248,19 @@ initialiseKaffe(void)
 static void NONRETURNING
 abortWithEarlyClassFailure(errorInfo* einfo)
 {
+	DBG(INIT,
 	dprintf("\n"
 		"Failure loading and/or initializing a critical class.\n"
 		"This failure occured too early in the VM startup, and is\n"
 		"indicative of bug in the initialization, or a insufficient\n"
 		"stack space or heap space to complete initialization.\n");
+	);
 
 	/* XXX print einfo. */
+	DBG(INIT,
 	dprintf("*einfo: type=%d;\n\tclassname=`%s';\n\tmess=`%s'\n",
 		einfo->type, einfo->classname, einfo->mess);
+	);
 
 	EXIT(-1);
 }

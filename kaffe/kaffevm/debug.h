@@ -114,6 +114,9 @@
 # define DBG_VERIFY3            DBG_BIT(61)
 # define DBG_VERIFY             (DBG_VERIFY2 | DBG_VERIFY3)
 
+# define DBG_KSEM               DBG_BIT(62)
+# define DBG_REFERENCE          DBG_BIT(63)
+
 # define DBG_ALL		((debugmask_t)(-1))
 # define DBG_ANY                DBG_ALL
 

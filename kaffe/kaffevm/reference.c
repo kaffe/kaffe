@@ -9,6 +9,7 @@
  * of this file.
  */
 
+#include "debug.h"
 #include "gtypes.h"
 #include "hashtab.h"
 #include "baseClasses.h"
@@ -105,8 +106,11 @@ void KaffeVM_registerObjectReference(jobject reference, jobject obj, kgc_referen
       if (referent_field == NULL)
 	{
 	  dumpErrorInfo(&einfo);
-	  dprintf("Internal error: The java/lang/ref/Reference class does not have any 'referent' field.\n"
-		  "Aborting.\n");
+	  DBG(REFERENCE,
+	    dprintf("Internal error: The java/lang/ref/Reference class does not have any "
+		    "'referent' field.\n"
+		    "Aborting.\n");
+	  );
 	  ABORT();
 	}
 
@@ -179,9 +183,11 @@ referenceObjectFinalizer(jobject ob)
 	}
       else
 	{
-	  dprintf("Internal error: a reference without the enqueue method has been registered.");
-	  
-	  dprintf("Aborting.\n");
+	  DBG(REFERENCE,
+	    dprintf("Internal error: a reference without the enqueue method "
+		    "has been registered.");
+	    dprintf("Aborting.\n");
+	  );
 	  ABORT();
 	}
 
@@ -250,8 +256,10 @@ void KaffeVM_setFinalizer(jobject obj, kgc_finalizer_type fintype)
       kobj->finalizer_call = referenceObjectFinalizer;
       break;
     default:
-      dprintf("Internal error: invalid finalizer type %d for object %p.\n", fintype, obj);
-      dprintf("Aborting.\n");
+      DBG(REFERENCE,
+        dprintf("Internal error: invalid finalizer type %d for object %p.\n", fintype, obj);
+        dprintf("Aborting.\n");
+      );
       ABORT();
     }
 }
