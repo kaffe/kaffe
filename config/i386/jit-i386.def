@@ -4,8 +4,8 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #include "debug.h"
@@ -381,7 +381,7 @@ define_insn(reload_int, reload_Rxx)
 	int r = lreg_int(0);
 	int o = const_int(1);
 
-	OUT = 0x8B; 
+	OUT = 0x8B;
 	OUT = 0x80|(r<<3)|REG_ebp;
 	LOUT = o;
 
@@ -740,6 +740,7 @@ define_insn(div_int, div_RRR)
 {
 	int r;
 	int w;
+	label *l1;
 
 	check_reg_01();
 
@@ -751,21 +752,51 @@ define_insn(div_int, div_RRR)
 	/* EDX is also used so get hold of it */
 	clobberRegister(REG_edx);
 
+
+	r = rreg_int(2);
+
+	assert(r != REG_eax);
+	assert(r != REG_edx);
+
+	/* special case for LONG_MIN / -1l: r == -1 ? -eax : eax / r  */
+	OUT = 0x83;
+	OUT = 0xF8|r;
+	OUT = 0xFF;
+	debug(("cmp #0xFF,%s\n", regname(r)));
+
+	l1 = newLabel();
+	l1->type = Linternal| Llong8|Lrelative;
+	OUT = 0x74;
+	l1->at = CODEPC;
+	OUT = 0;
+	l1->from = CODEPC;
+	debug(("je neg\n"));
+
 	/* Setup EDX - should contains the sign of EAX */
 	do_move_int(REG_edx, REG_eax);
+#if 0
 	OUT = 0xC1;
 	OUT = 0xF8|REG_edx;
 	OUT = 31;
 	debug(("sarl #31,edx\n"));
-
-	r = rreg_int(2);
+#else
+	OUT = 0x99;
+	debug(("cltd\n"));
+#endif
 
 	OUT = 0xF7;
         OUT = 0xF8|r;
-
-	assert(r != REG_eax);
-	assert(r != REG_edx);
 	debug(("idivl %s,%s\n", regname(r), regname(w)));
+
+	OUT = 0xEB;
+	OUT = 2;
+	debug(("jmp +2\n"));
+
+	debug(("neg:\n"));
+	l1->to = CODEPC;
+	OUT = 0xF7;
+	OUT = 0xD8|REG_eax;
+	debug(("neg eax\n"));
 }
 
 define_insn(div_float, fdiv_RRR)
@@ -800,6 +831,7 @@ define_insn(rem_int, rem_RRR)
 {
 	int r;
 	int w;
+	label *l1;
 
 	check_reg_01();
 
@@ -811,21 +843,50 @@ define_insn(rem_int, rem_RRR)
 	/* EDX is also used so get hold of it */
 	clobberRegister(REG_edx);
 
+	r = rreg_int(2);
+
+	assert(r != REG_eax);
+	assert(r != REG_edx);
+
+	/* special case for LONG_MIN % -1l: r == -1 ? 0 : eax / r  */
+	OUT = 0x83;
+	OUT = 0xF8|r;
+	OUT = 0xFF;
+	debug(("cmp #0xFF,%s\n", regname(r)));
+
+	l1 = newLabel();
+	l1->type = Linternal| Llong8|Lrelative;
+	OUT = 0x74;
+	l1->at = CODEPC;
+	OUT = 0;
+	l1->from = CODEPC;
+	debug(("je const0\n"));
+
 	/* Setup EDX - should contains the sign of EAX */
 	do_move_int(REG_edx, REG_eax);
+#if 0
 	OUT = 0xC1;
 	OUT = 0xF8|REG_edx;
 	OUT = 31;
 	debug(("sarl #31,edx\n"));
-
-	r = rreg_int(2);
+#else
+	OUT = 0x99;
+	debug(("cltd\n"));
+#endif
 
 	OUT = 0xF7;
         OUT = 0xF8|r;
-
-	assert(r != REG_eax);
-	assert(r != REG_edx);
 	debug(("idivl %s,%s\n", regname(r), regname(w)));
+
+	OUT = 0xEB;
+	OUT = 2;
+	debug(("jmp +2\n"));
+
+	debug(("const0:\n"));
+	l1->to = CODEPC;
+	OUT = 0x31;
+        OUT = 0xC0|(REG_edx<<3)|REG_edx;
+	debug(("xorl edx,edx\n"));
 
 	/* Result is in EDX not EAX - we must force the slot register */
 	forceRegister(seq_dst(s), REG_edx, Rint);
@@ -1478,7 +1539,7 @@ define_insn(load_offset_int, load_RRC)
 	int w = wreg_int(0);
 
 	assert(r != REG_esp);
-	OUT = 0x8B; 
+	OUT = 0x8B;
 	OUT = 0x80|(w<<3)|r;
 	LOUT = v;
 
@@ -1541,7 +1602,7 @@ define_insn(store_offset_int, store_xRRC)
 	r1 = rreg_int(1);
 
 	assert(r0 != REG_esp);
-	OUT = 0x89; 
+	OUT = 0x89;
 	OUT = 0x80|(r0<<3)|r1;
 	LOUT = v;
 

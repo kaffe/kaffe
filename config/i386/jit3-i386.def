@@ -8,8 +8,8 @@
  * the Flux Research Group, Department of Computer Science,
  * University of Utah, http://www.cs.utah.edu/flux/
  *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #include "debug.h"
@@ -304,7 +304,7 @@ define_insn(prologue, prologue_xxx)
 
 /*
  * Establish JIT3 callee-saved register information for i386
- * We must tell gcj where esi, edi, and ebx have been stored 
+ * We must tell gcj where esi, edi, and ebx have been stored
  * on this frame, as an offset from the CFA.
  * In addition, we must tell it where the caller's esp was stored
  *
@@ -356,7 +356,7 @@ define_insn(check_stack_limit, check_stack_limit_xRC)
 {
 	int r = rreg_int(1);
 	label* l = const_label(2);
-	
+
 	OUT = 0x39;
 	OUT = 0xC0|(r<<3)|REG_esp;
 	debug(("cmpl esp,%s\n", regname(r)));
@@ -528,7 +528,7 @@ define_insn(reload_int, reload_Rxx)
 	r = lreg_int(0);
 	o = const_int(1);
 
-	OUT = 0x8B; 
+	OUT = 0x8B;
 	OUT = 0x80|(r<<3)|REG_ebp;
 	LOUT = o;
 
@@ -908,6 +908,7 @@ define_insn(div_int, div_RRR)
 {
 	int r;
 	int w;
+	label *l1;
 
 	check_reg_01();
 
@@ -919,21 +920,50 @@ define_insn(div_int, div_RRR)
 	/* EDX is also used so get hold of it */
 	clobberRegister(REG_edx);
 
+	r = rreg_int(2);
+
+	assert(r != REG_eax);
+	assert(r != REG_edx);
+
+	/* special case for LONG_MIN / -1l: r == -1 ? -eax : eax / r  */
+	OUT = 0x83;
+	OUT = 0xF8|r;
+	OUT = 0xFF;
+	debug(("cmp #0xFF,%s\n", regname(r)));
+
+	l1 = newLabel();
+	l1->type = Linternal| Llong8|Lrelative;
+	OUT = 0x74;
+	l1->at = CODEPC;
+	OUT = 0;
+	l1->from = CODEPC;
+	debug(("je neg\n"));
+
 	/* Setup EDX - should contains the sign of EAX */
 	do_move_int(REG_edx, REG_eax);
+#if 0
 	OUT = 0xC1;
 	OUT = 0xF8|REG_edx;
 	OUT = 31;
 	debug(("sarl #31,edx\n"));
-
-	r = rreg_int(2);
+#else
+	OUT = 0x99;
+	debug(("cltd\n"));
+#endif
 
 	OUT = 0xF7;
         OUT = 0xF8|r;
-
-	assert(r != REG_eax);
-	assert(r != REG_edx);
 	debug(("idivl %s,%s\n", regname(r), regname(w)));
+
+	OUT = 0xEB;
+	OUT = 2;
+	debug(("jmp +2\n"));
+
+	debug(("neg:\n"));
+	l1->to = CODEPC;
+	OUT = 0xF7;
+	OUT = 0xD8|REG_eax;
+	debug(("neg eax\n"));
 }
 
 define_insn(div_float, fdiv_RRR)
@@ -972,6 +1002,7 @@ define_insn(rem_int, rem_RRR)
 {
 	int r;
 	int w;
+	label *l1;
 
 	check_reg_01();
 
@@ -983,21 +1014,50 @@ define_insn(rem_int, rem_RRR)
 	/* EDX is also used so get hold of it */
 	clobberRegister(REG_edx);
 
+	r = rreg_int(2);
+
+	assert(r != REG_eax);
+	assert(r != REG_edx);
+
+	/* special case for LONG_MIN % -1l: r == -1 ? 0 : eax / r  */
+	OUT = 0x83;
+	OUT = 0xF8|r;
+	OUT = 0xFF;
+	debug(("cmp #0xFF,%s\n", regname(r)));
+
+	l1 = newLabel();
+	l1->type = Linternal| Llong8|Lrelative;
+	OUT = 0x74;
+	l1->at = CODEPC;
+	OUT = 0;
+	l1->from = CODEPC;
+	debug(("je const0\n"));
+
 	/* Setup EDX - should contains the sign of EAX */
 	do_move_int(REG_edx, REG_eax);
+#if 0
 	OUT = 0xC1;
 	OUT = 0xF8|REG_edx;
 	OUT = 31;
 	debug(("sarl #31,edx\n"));
-
-	r = rreg_int(2);
+#else
+	OUT = 0x99;
+	debug(("cltd\n"));
+#endif
 
 	OUT = 0xF7;
         OUT = 0xF8|r;
-
-	assert(r != REG_eax);
-	assert(r != REG_edx);
 	debug(("idivl %s,%s\n", regname(r), regname(w)));
+
+	OUT = 0xEB;
+	OUT = 2;
+	debug(("jmp +2\n"));
+
+	debug(("const0:\n"));
+	l1->to = CODEPC;
+	OUT = 0x31;
+        OUT = 0xC0|(REG_edx<<3)|REG_edx;
+	debug(("xorl edx,edx\n"));
 
 	/* Result is in EDX not EAX - we must force the slot register */
 	set_slot_register(seq_dst(s), REG_edx, Rint);
@@ -1708,7 +1768,7 @@ define_insn(load_offset_int, load_RRC)
 	int w = wreg_int(0);
 
 	assert(r != REG_esp);
-	OUT = 0x8B; 
+	OUT = 0x8B;
 	OUT = 0x80|(w<<3)|r;
 	LOUT = v;
 
@@ -1771,7 +1831,7 @@ define_insn(store_offset_int, store_xRRC)
 	r1 = rreg_int(1);
 
 	assert(r0 != REG_esp);
-	OUT = 0x89; 
+	OUT = 0x89;
 	OUT = 0x80|(r0<<3)|r1;
 	LOUT = v;
 
@@ -2049,13 +2109,13 @@ define_insn(get_arg_ptr, get_arg_ptr_R)
 define_insn(and_int_const, and_RRC)
 {
         int rw;
-        int v; 
-        
+        int v;
+
         rw = rwreg_int(0);
-        v = const_int(2); 
-        
+        v = const_int(2);
+
         OUT = 0x81;
-        OUT = 0xE0|rw;  
+        OUT = 0xE0|rw;
         LOUT = v;
 
         debug(("andl #%d,%s\n", v, regname(rw)));
@@ -2068,14 +2128,14 @@ define_insn(or_int_const, or_RRC)
 
         rw = rwreg_int(0);
         v = const_int(2);
-        
+
         OUT = 0x81;
         OUT = 0xC8|rw;
         LOUT = v;
 
         debug(("orl #%d,%s\n", v, regname(rw)));
 }
-        
+
 define_insn(xor_int_const, xor_RRC)
 {
         int rw;
@@ -2083,7 +2143,7 @@ define_insn(xor_int_const, xor_RRC)
 
         rw = rwreg_int(0);
         v = const_int(2);
-        
+
         OUT = 0x81;
         OUT = 0xF0|rw;
         LOUT = v;
@@ -2095,7 +2155,7 @@ define_insn(mul_int_const, mul_RRC)
 {
         int rw;
         int v;
- 
+
         rw = rwreg_int(0);
         v = const_int(2);
 
@@ -2114,7 +2174,7 @@ define_insn(lshr_int_const, lshr_RRC)
         rw = rwreg_int(0);
         v = const_int(2);
 
-        OUT = 0xC1;     
+        OUT = 0xC1;
         OUT = 0xE8|rw;
         OUT = v;
 
@@ -2122,19 +2182,19 @@ define_insn(lshr_int_const, lshr_RRC)
 }
 
 define_insn(ashr_int_const, ashr_RRC)
-{       
+{
         int rw;
         int v;
 
         rw = rwreg_int(0);
         v = const_int(2);
-        
+
         OUT = 0xC1;
         OUT = 0xF8|rw;
         OUT = v;
 
         debug(("sarl #%d,%s\n", v, regname(rw)));
-}       
+}
 
 define_insn(neg_int, neg_RxR)
 {
@@ -2305,10 +2365,10 @@ define_insn(store_offset_scaled_int, store_RRRC)
 	debug(("mov %s,%d(%s,%s,4)\n", regname(r), v, regname(w1), regname(w2)));
 }
 
-define_insn(load_addr_int, load_RxA)  
+define_insn(load_addr_int, load_RxA)
 {
 	int o = const_int(2);
-	int w = wreg_int(0); 
+	int w = wreg_int(0);
 
 	OUT = 0x8B;
 	OUT = 0x05|(w<<3);
@@ -2319,7 +2379,7 @@ define_insn(load_addr_int, load_RxA)
 
 define_insn(store_addr_int, store_xRA)
 {
-	int r = rreg_int(1); 
+	int r = rreg_int(1);
 	int o = const_int(2);
 
 	OUT = 0x89;
@@ -2348,7 +2408,7 @@ define_insn(store_offset_byte, storeb_xRRC)
 	v = const_int(2);
 	r1 = rreg_int(1);
 
-	OUT = 0x88; 
+	OUT = 0x88;
 	OUT = 0x80|(r0<<3)|r1;
 	LOUT = v;
 
@@ -2365,8 +2425,8 @@ define_insn(store_offset_short, stores_xRRC)
 	r1 = rreg_int(1);
 	r0 = rreg_int(0);
 
-	OUT = 0x66; 
-	OUT = 0x89; 
+	OUT = 0x66;
+	OUT = 0x89;
 	OUT = 0x80|(r0<<3)|r1;
 	LOUT = v;
 
@@ -2387,7 +2447,7 @@ define_insn(store_const_offset_int, store_xRCC)
 	OUT = 0x80|r;
 	LOUT = o;
         LOUT = v;
-        
+
         debug(("movl %d,%d(%s)\n", v, o, regname(r)));
 }
 
@@ -2405,7 +2465,7 @@ define_insn(store_const_offset_byte, storeb_xRCC)
 	OUT = 0x80|r;
 	LOUT = o;
         OUT = v;
-        
+
         debug(("movb %d,%d(%s)\n", v, o, regname(r)));
 }
 
