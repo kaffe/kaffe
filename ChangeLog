@@ -1,3 +1,10 @@
+Sat Jun  1 18:09:06 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	* README: Updated some docs, moved PowerPC up to supported
+	section.  (Mac OS X now works quite nicely when configured with
+	--with-engine=intrp --with-staticlib --with-staticbin
+	--with-staticvm, failing only 6 of 113 tests in make check)
+
 Sat Jun  1 17:33:34 PDT 2002  Jim Pick  <jim@kaffe.org>
 
 	* configure.in, kaffe/kaffe/.cvsignore, kaffe/kaffe/Makefile.am,
@@ -6,6 +13,9 @@ Sat Jun  1 17:33:34 PDT 2002  Jim Pick  <jim@kaffe.org>
 	kaffe-bin, because wrapper script is also called "kaffe", which is
 	a problem on some filesystems that don't respect case
 	(eg. Darwin).
+
+	* Changed from [ -z "${arg/#-ia32/}" ] to [ "$arg" = "-ia32" ] in
+	wrapper script (failed on some BSD /bin/sh's).
 	
 Sat Jun  1 10:33:35 PDT 2002  Jim Pick  <jim@kaffe.org>
 

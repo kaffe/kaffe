@@ -53,6 +53,9 @@ while 'I' means 'interpreter'):
   ------------------------------------------------------------------------
   PARISC    | I    |    HPUX 10.x
   ------------------------------------------------------------------------
+  PowerPC   | I    |    MkLinux         MachTen 4.0.3	AIX
+	    |	   |	Darwin		NetBSD1.x       Mac OS X
+  ------------------------------------------------------------------------
   ia64	    | I	   |	Linux 2.x
  ------------------------------------------------------------------------
   s390	    | I	   |	Linux 2.x
@@ -63,9 +66,6 @@ behind recent changes.  If you wanted to update these ports feel free:
 
   ========================================================================
   Alpha     | J+I  |    Linux		OSF/1		NetBSD 1.x
-  ------------------------------------------------------------------------
-  PowerPC   | I    |    MkLinux         MachTen 4.0.3	AIX
-	    |	   |	Darwin		NetBSD1.x
   ========================================================================
 
 Who can use Kaffe?
@@ -74,14 +74,12 @@ Who can use Kaffe?
 Kaffe is distributed under the GPL (GNU Public License).  Please
 read the license to make sure it's okay to use it in your circumstances.
 
-
 Where do I find new copies of Kaffe?
 ------------------------------------
 
-Kaffe is available from various sites.  The primary sites is:
+Kaffe is available from various sites.  The primary site is:
 
-        ftp://ftp.kaffe.org/pub/kaffe
-
+        ftp://ftp.kaffe.org/pub/kaffe/
 
 What about a web site?
 ----------------------
@@ -89,7 +87,6 @@ What about a web site?
 News about the "Open Source" Kaffe distribution can always be found at:
 
 	http://www.kaffe.org/
-
 
 And mailing lists?
 ------------------
@@ -105,13 +102,11 @@ to the website at:
 
 	http://www.kaffe.org/
 
-
 How do I report bugs and problems?
 ----------------------------------
 
-Go the website http://www.kaffe.org and you'll find information on how to
+Go the website http://www.kaffe.org/ and you'll find information on how to
 report bugs.
-
 
 How do I compile and install kaffe?
 -----------------------------------
@@ -131,13 +126,14 @@ system it will be selected automatically, otherwise it defaults to
 interpreting mode.  Compilation should then be a simple matter of
 typing "make" in this directory.
 
-Note: if you downloaded a snapshot or checked out this version of kaffe
-from the CVS, you will need GNU make ("gmake") in order to build Kaffe.
-If this is a distribution, it should work with your normal make.
+Note: You will need GNU make ("gmake") in order to build Kaffe.
 
-By default, the system will install into the /usr/local/kaffe hierarchy as
-per the standard GNU coding rules.  This can be changed using the --prefix
-option to configure.  To install the binaries type "make install".
+By default, the system will install into the /usr/local/kaffe
+hierarchy in a layout similar to how Sun's JDK lays out the files,
+with SDK tools (eg.  the java compiler) at the top level, and runtime
+files only in the "jre" subdirectory).  The install location can be
+changed using the --prefix option to configure.  To install the
+binaries type "make install".
 
 Kaffe can be reconfigured in a number of ways:
 
@@ -147,18 +143,10 @@ Kaffe can be reconfigured in a number of ways:
 2. Use the --prefix configure option to place the kaffe installation tree
    somewhere other than /usr/local/kaffe.
 
-For Windows 9x/NT it's a little different.
+For Windows 9x/NT, you can compile it using Red Hat's GNU tools for
+Windows from:
 
-The only 'working' port to Windows '95 uses Red Hat's GNU tools for
-Windows (available from http://www.cygwin.com/ - don't ask me how to 
-install them!)
-
-To configure you would type the following:
-
-        ./configure --prefix=//c/kaffe
-
-This would configure Kaffe to install in c:\kaffe and build in the
-source directories.
+	http://www.cygwin.com/
 
 Compilation and installation is as per the UNIX system.
 
@@ -172,20 +160,27 @@ Typically, this would be /usr/local/kaffe/bin:
         PATH=$PATH:/usr/local/kaffe/bin
 
 All necessary setup is taken care of by `kaffe' (note the lower case),
-which is actually a driver shell script for the `Kaffe' executable.
+which is actually a driver shell script for the `kaffe-bin'
+executable.
 
 Note that you don't have to setup the CLASSPATH - if you do then that's
 fine, but if you don't kaffe will construct a classpath that has the
 current directory plus the Jar and Zip files it needs to run.  For the 
 details of how the CLASSPATH is set up, refer to kaffe/scripts/kaffe.in.
 
-If you want to test the kaffe executable you built, type
-"make all install", and type "make check".  This will run a suite of 
-tests to check that your Kaffe executable is in fact working.
-
+If you want to test the kaffe executable you built, type "make check".
+This will run a suite of tests to check that your Kaffe executable is
+in fact working.
 
 The Kaffe Team
 <kaffe@kaffe.org>
+
 ----
-* Java and Javasoft are registered trademark of Sun Microsystems, Inc.
-* Kaffe is a registered trademark of Transvirtual Technologies, Inc.
+* Kaffe.org is a an independent, free software community project, not
+  directly affiliated with Transvirtual Technologies, Inc.
+* The Kaffe virtual machine is free software, licensed under the terms
+  of the GNU Public License.  It is a separate software product from
+  Transvirtual's proprietary KaffePro virtual machine.
+* Kaffe is a Trademark of Transvirtual Technologies, Inc.
+* Java is a Trademark of Sun Microsystems, Inc.
+
