@@ -283,7 +283,8 @@ DBG(LIBTOOL,
         }
 
 DBG(LIBTOOL,
-	dprintf(stderr, "Failed to locate native function:\n\t%s.%s%s\n", m->class->name->data, m->name->data, m->signature->data);
+	dprintf("Failed to locate native function:\n\t%s.%s%s\n",
+		m->class->name->data, m->name->data, m->signature->data);
     )
 	SET_METHOD_NATIVECODE(m, (void*)error_stub);
 
