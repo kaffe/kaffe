@@ -1,5 +1,79 @@
 2004-12-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/java/awt/Button.java,
+	libraries/javalib/java/awt/Checkbox.java,
+	libraries/javalib/java/awt/Choice.java,
+	libraries/javalib/java/awt/Menu.java,
+	libraries/javalib/java/awt/MenuItem.java,
+	libraries/javalib/java/awt/PopupMenu.java,
+	libraries/javalib/java/awt/TextArea.java,
+	libraries/javalib/java/awt/TextComponent.java,
+	libraries/javalib/java/awt/TextField.java:
+	Resynced with GNU Classpath.
+
+	2004-11-23 Jerry Quinn <jlquinn@optonline.net>
+
+        * java/awt/Menu.java (AccessibleAWTMenu
+        getAccessibleContext): Implement.
+        * java/awt/PopupMenu.java (AccessibleAWTPopupMenu
+        getAccessibleContext): Implement.
+        * java/awt/TextComponent.java (AccessibleAWTTextComponent
+        getAccessibleContext): Implement.
+        (TextComponent): Extends Accessible.
+        (getIndexAtPoint, getCharacterBounds): New methods.
+
+	2004-11-23 Jerry Quinn <jlquinn@optonline.net>
+
+        * java/awt/Button.java
+        (AccessibleAWTButton.getAccessibleActionDescription): Explain the
+        source of 'click'.
+
+	2004-11-23 Jerry Quinn <jlquinn@optonline.net>
+
+        * java/awt/Checkbox.java: Remove stub comments.
+
+	2004-11-23 Jerry Quinn <jlquinn@optonline.net>
+
+        * java/awt/Button.java
+        (AccessibleAWTButton.getAccessibleActionDescription): Return
+        'click'.
+
+	2004-11-23 Jerry Quinn <jlquinn@optonline.net>
+
+        * java/awt/Checkbox.java (AccessibleAWTCheckBox): Remove todo
+        comments.
+
+	2004-11-23 Jerry Quinn <jlquinn@optonline.net>
+
+        * java/awt/Checkbox.java (itemStateChanged): Implement function.
+        (getAccessibleContext): Add AccessibleAWTCheckBox to item listeners.
+
+	2004-11-23 Jerry Quinn <jlquinn@optonline.net>
+
+        * java/awt/TextArea.java (AccessibleAWTTextArea,
+        getAccessibleContext): Implement.
+        * java/awt/TextField.java (AccessibleAWTTextField,
+        getAccessibleContext): Implement.
+
+	2004-11-23 Jerry Quinn <jlquinn@optonline.net>
+
+        * java/awt/Checkbox.java (AccessibleAWTCheckBox): Implement.
+        (getAccessibleContext): Implement.
+
+	2004-11-23 Jerry Quinn <jlquinn@optonline.net>
+
+        * java/awt/MenuItem.java (AccessibleAWTMenuItem): Implement.
+
+	2004-11-23 Jerry Quinn <jlquinn@optonline.net>
+
+        * java/awt/Choice.java (AccessibleAWTChoice): Implement.
+
+	2004-11-23 Jerry Quinn <jlquinn@optonline.net>
+
+        * java/awt/MenuItem.java (AccessibleAWTMenuItem): Implement.
+
+2004-12-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/javax/swing/DefaultSingleSelectionModel.java,
 	libraries/javalib/javax/swing/JPasswordField.java,
 	libraries/javalib/javax/swing/tree/AbstractLayoutCache.java:

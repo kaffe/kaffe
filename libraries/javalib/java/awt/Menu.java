@@ -43,6 +43,9 @@ import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
+
 /**
   * This class represents a pull down or tear off menu in Java's AWT.
   *
@@ -432,7 +435,28 @@ paramString()
 	  + super.paramString());
 }
 
-// Accessibility API not yet implemented.
-// public AccessibleContext getAccessibleContext()
+  /**
+   * Basic Accessibility class for Menu.  Details get provided in derived
+   * classes.
+   */
+  protected class AccessibleAWTMenu extends AccessibleAWTMenuItem
+  {
+    protected AccessibleAWTMenu()
+    {
+    }
+
+    public AccessibleRole getAccessibleRole()
+    {
+      return AccessibleRole.MENU;
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see java.awt.MenuComponent#getAccessibleContext()
+   */
+  public AccessibleContext getAccessibleContext()
+  {
+    return new AccessibleAWTMenu();
+  }
 
 } // class Menu

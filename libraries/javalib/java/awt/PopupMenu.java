@@ -40,6 +40,9 @@ package java.awt;
 
 import java.awt.peer.PopupMenuPeer;
 
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
+
 /**
   * This class implement an AWT popup menu widget
   *
@@ -134,6 +137,24 @@ show(Component component, int x, int y)
       pmp.show (component, x, y);
     }
 }
+
+  protected class AccessibleAWTPopupMenu extends AccessibleAWTMenu
+  {
+    protected AccessibleAWTPopupMenu()
+    {
+    }
+
+    public AccessibleRole getAccessibleRole()
+    {
+      return AccessibleRole.POPUP_MENU;
+    }
+
+  }
+
+  public AccessibleContext getAccessibleContext()
+  {
+    return new AccessibleAWTPopupMenu();
+  }
 
 } // class PopupMenu
 

@@ -44,6 +44,9 @@ import java.awt.peer.TextAreaPeer;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleStateSet;
+
 
 /**
  * A TextArea is a text component capable of displaying multiple lines
@@ -596,5 +599,22 @@ public class TextArea extends TextComponent implements java.io.Serializable
   private static synchronized long getUniqueLong ()
   {
     return next_text_number++;
+  }
+
+  protected class AccessibleAWTTextArea extends AccessibleAWTTextComponent
+  {
+    protected AccessibleAWTTextArea()
+    {
+    }
+
+    public AccessibleStateSet getAccessibleStateSet()
+    {
+      return super.getAccessibleStateSet();
+    }
+  }
+
+  public AccessibleContext getAccessibleContext()
+  {
+    return new AccessibleAWTTextArea();
   }
 }

@@ -44,6 +44,9 @@ import java.awt.peer.ComponentPeer;
 import java.awt.peer.TextFieldPeer;
 import java.util.EventListener;
 
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleStateSet;
+
 /**
   * This class implements a single line text entry field widget
   *
@@ -517,4 +520,22 @@ paramString()
   {
     return (ActionListener[]) getListeners (ActionListener.class);
   }
+
+  protected class AccessibleAWTTextField extends AccessibleAWTTextComponent
+  {
+    protected AccessibleAWTTextField()
+    {
+    }
+
+    public AccessibleStateSet getAccessibleStateSet()
+    {
+      return super.getAccessibleStateSet();
+    }
+  }
+
+  public AccessibleContext getAccessibleContext()
+  {
+    return new AccessibleAWTTextField();
+  }
+
 } // class TextField
