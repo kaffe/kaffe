@@ -401,13 +401,18 @@ java_lang_ref_SRCS = \
 	java/lang/ref/SoftReference.java \
 	java/lang/ref/WeakReference.java
 java_lang_reflect_SRCS = \
+	java/lang/reflect/AccessibleObject.java \
 	java/lang/reflect/Array.java \
 	java/lang/reflect/Constructor.java \
 	java/lang/reflect/Field.java \
+	java/lang/reflect/InvocationHandler.java \
 	java/lang/reflect/InvocationTargetException.java \
 	java/lang/reflect/Member.java \
 	java/lang/reflect/Method.java \
-	java/lang/reflect/Modifier.java
+	java/lang/reflect/Modifier.java \
+	java/lang/reflect/Proxy.java \
+	java/lang/reflect/ReflectPermission.java \
+	java/lang/reflect/UndeclaredThrowableException.java
 java_math_SRCS = \
 	java/math/BigDecimal.java \
 	java/math/BigInteger.java
