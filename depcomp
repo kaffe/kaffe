@@ -18,7 +18,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
-# Originally written by Alexandre Oliva <oliva@dcc.unicamp.br>.
+# Originally written by Alexandre Oliva <oliva@lsd.ic.unicamp.br>.
 
 if test -z "$depmode" || test -z "$source" || test -z "$object"; then
   echo "depcomp: Variables source, object and depmode must be set" 1>&2
@@ -56,8 +56,7 @@ gcc)
 ## typically no way to rebuild the header).  We avoid this by adding
 ## dummy dependencies for each header file.  Too bad gcc doesn't do
 ## this for us directly.
-  tr ' ' '
-' < "$tmpdepfile" |
+  tr ' .' "`echo; echo .`" < "$tmpdepfile" |
 ## Some versions of gcc put a space before the `:'.  On the theory
 ## that the space means something, we add a space to the output as
 ## well.
@@ -75,8 +74,7 @@ sgi)
   rm -f "$depfile" 
   echo "$object : \\" > "$depfile"
   sed 's/^[^:]*: / /' < "$tmpdepfile" >> "$depfile"
-  tr ' ' '
-' < "$tmpdepfile" | \
+  tr ' ' "`echo; echo .`" < "$tmpdepfile" | \
     sed -e 's/^\\$//' -e '/^$/d' -e '/:$/d' -e 's/$/ :/' >> "$depfile"
   rm -f "$tmpdepfile"
   ;;
@@ -116,8 +114,7 @@ dashmstdout)
   if test "$stat" != 0; then exit $stat; fi
   rm -f "$depfile" 
   cat < "$tmpdepfile" > "$depfile"
-  tr ' ' '
-' < "$tmpdepfile" | \
+  tr ' ' "`echo; echo .`" < "$tmpdepfile" | \
     sed -e 's/^\\$//' -e '/^$/d' -e '/:$/d' -e 's/$/ :/' >> "$depfile"
   rm -f "$tmpdepfile"
   ;;
@@ -153,8 +150,7 @@ dashXmstdout)
   if test "$stat" != 0; then exit $stat; fi
   rm -f "$depfile" 
   cat < "$tmpdepfile" > "$depfile"
-  tr ' ' '
-' < "$tmpdepfile" | \
+  tr ' ' "`echo; echo .`" < "$tmpdepfile" | \
     sed -e 's/^\\$//' -e '/^$/d' -e '/:$/d' -e 's/$/ :/' >> "$depfile"
   rm -f "$tmpdepfile"
   ;;
@@ -189,8 +185,7 @@ makedepend)
   if test "$stat" != 0; then exit $stat; fi
   rm -f "$depfile" 
   cat < "$tmpdepfile" > "$depfile"
-  tail +3 "$tmpdepfile" | tr ' ' '
-' | \
+  tail +3 "$tmpdepfile" | tr ' ' "`echo; echo .`" |
     sed -e 's/^\\$//' -e '/^$/d' -e '/:$/d' -e 's/$/ :/' >> "$depfile"
   rm -f "$tmpdepfile" "$tmpdepfile".bak
   ;;

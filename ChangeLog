@@ -1,3 +1,7 @@
+Thu Oct 14 04:04:00 1999  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
+
+	* depcomp: Protect from MS-DOS CR+LF lossage.
+
 Thu Oct 14 03:55:36 1999  Alexandre Oliva  <oliva@lsd.ic.unicamp.br>
 
 	* kaffe/kaffevm/readClass.c (readMethods): Pass methodThis
