@@ -1,5 +1,5 @@
 /*
- * $Id: XmlParser.java,v 1.2 2003/09/02 16:30:46 kaz Exp $
+ * $Id: XmlParser.java,v 1.3 2003/09/13 22:32:02 kaz Exp $
  * Copyright (C) 1999-2001 David Brownell
  * 
  * This file is part of GNU JAXP, a library.
@@ -69,7 +69,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 
-// $Id: XmlParser.java,v 1.2 2003/09/02 16:30:46 kaz Exp $
+// $Id: XmlParser.java,v 1.3 2003/09/13 22:32:02 kaz Exp $
 
 /**
  * Parse XML documents and return parse events through call-backs.
@@ -79,7 +79,7 @@ import org.xml.sax.SAXException;
  * @author Written by David Megginson &lt;dmeggins@microstar.com&gt;
  *	(version 1.2a with bugfixes)
  * @author Updated by David Brownell &lt;dbrownell@users.sourceforge.net&gt;
- * @version $Date: 2003/09/02 16:30:46 $
+ * @version $Date: 2003/09/13 22:32:02 $
  * @see SAXDriver
  */
 final class XmlParser
@@ -1721,11 +1721,11 @@ loop:
 	}
     }
 
-    private void parseCharRef ()
+  private void parseCharRef ()
     throws SAXException, IOException
-    {
-	parseCharRef (true /* do flushDataBuffer by default */);
-    }
+  {
+    parseCharRef (true /* do flushDataBuffer by default */);
+  }
 
     /**
      * Read and interpret a character reference.
@@ -1808,7 +1808,7 @@ loop2:
 	    error ("character reference " + value + " is too large for UTF-16",
 		   new Integer (value).toString (), null);
 	}
-	if (doFlush) dataBufferFlush ();
+  if (doFlush) dataBufferFlush ();
     }
 
 
@@ -2386,7 +2386,7 @@ loop:
 			    dataBufferAppend ('&');
 			    break;
 			}
-			parseCharRef (false /* Do not do flushDataBuffer */);
+      parseCharRef (false /* Do not do flushDataBuffer */);
 
 			// exotic WFness risk: this is an entity literal,
 			// dataBuffer [dataBufferPos - 1] == '&', and
