@@ -33,96 +33,7 @@
 #include "md.h"
 #include "stackTrace.h"
 
-#define	ENDOFSTACK		((Method*)-1)
-typedef struct _stackTraceInfo {
-	uintp	pc;
-	Method*	meth;
-} stackTraceInfo;
 
-Hjava_lang_Object*
-getClassContext(void* bulk)
-{
-	int cnt=0;
-	int i;
-	stackTrace trace;
-	Hjava_lang_Object* clazz;
-	Method* meth;
-
-	STACKTRACEINIT(trace,NULL,bulk);
-	for( ; !STACKTRACEEND(trace) ; STACKTRACESTEP(trace) ) {
-		if ( STACKTRACEMETH(trace) != 0 ) {
-			cnt++;
-		}
-	}
-
-	assert( cnt > 0 );
-
-	clazz = newArray(ClassClass, cnt);
-
-	STACKTRACEINIT(trace,NULL,bulk);
-	for(i=0;!STACKTRACEEND(trace);STACKTRACESTEP(trace)){
-		meth=STACKTRACEMETH(trace);
-		if ( meth !=0 ) {
-			OBJARRAY_DATA(clazz)[i] =
-				(Hjava_lang_Object*)meth->class;
-			fprintf(stderr,"class %s, loader %p\n",
-				CLASS_CNAME(meth->class),meth->class->loader);
-			i++;
-		}
-	}
-
-	assert( cnt == i );
-
-	return clazz;
-}
-
-Hjava_lang_Class*
-getClassWithLoader(int* depth)
-{
-	int cnt;
-	stackTrace trace;
-	Method* meth;
-
-	cnt = 0;
-	STACKTRACEINIT(trace, NULL, depth);
-	for(; !STACKTRACEEND(trace); STACKTRACESTEP(trace)) {
-		meth = STACKTRACEMETH(trace);
-		if (meth != 0) {
-			if (meth->class->loader != NULL) {
-				*depth = cnt;
-				return (meth->class);
-			}
-			cnt++;
-		}
-	}
-	*depth = -1;
-	return (NULL);
-}
-
-jint
-classDepth(char* name)
-{
-	int cnt;
-	stackTrace trace;
-	Method* meth;
-
-	cnt = 0;
-	STACKTRACEINIT(trace,NULL,name);
-	for( ; !STACKTRACEEND(trace); STACKTRACESTEP(trace) ) {
-		meth = STACKTRACEMETH(trace);
-		if (meth != 0) {
-			if (!strcmp(CLASS_CNAME(meth->class), name)) {
-				return (cnt);
-			}
-			cnt++;
-		}
-	}
-	return(-1);
-}
-
-/*
- * Build an array of stackTraceInfo[] for the current stack backtrace.
- */
 Hjava_lang_Object*
 buildStackTrace(struct _exceptionFrame* base)
 {
@@ -146,12 +57,7 @@ buildStackTrace(struct _exceptionFrame* base)
 
 	for(; !STACKTRACEEND(trace); STACKTRACESTEP(trace)) {
 		info[cnt].pc = STACKTRACEPC(trace);
-#if defined(INTERPRETER)
 		info[cnt].meth = STACKTRACEMETH(trace);
-#endif
-#if defined(TRANSLATOR)
-		info[cnt].meth = 0;	/* We do this lazily */
-#endif
 		cnt++;
 	}
 	info[cnt].pc = 0;
@@ -181,12 +87,7 @@ printStackTrace(struct Hjava_lang_Throwable* o, struct Hjava_lang_Object* p)
 	}
 	for (i = 0; info[i].meth != ENDOFSTACK; i++) {
 		pc = info[i].pc;
-#if defined(INTERPRETER)
 		meth = info[i].meth; 
-#endif
-#if defined(TRANSLATOR)
-		meth = findMethodFromPC(pc);
-#endif
 		if (meth != 0) {
 			linepc = 0;
 			linenr = -1;

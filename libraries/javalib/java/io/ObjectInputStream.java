@@ -225,7 +225,7 @@ public final Object readObject() throws OptionalDataException, ClassNotFoundExce
 					defaultReadObject();
 					break;
 				default:
-					throw new StreamCorruptedException("unknown method type");
+					throw new StreamCorruptedException("unknown method type: " + currStreamClass.method);
 				}
 				break;
 

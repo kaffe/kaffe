@@ -29,6 +29,8 @@
 #include <native.h>
 #include "defs.h"
 
+extern Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
+
 /*
  * Convert string name to class object.
  */
@@ -39,7 +41,8 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 	Hjava_lang_Class* loadedclass;
 	Hjava_lang_ClassLoader* loader;
 	char buf[MAXNAMELEN];
-	int depth;
+        stackTraceInfo* info;
+        int i;
 
 	/* Get string and convert '.' to '/' */
 	javaString2CString(str, buf, sizeof(buf));
@@ -50,8 +53,14 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 	 * loader, use that class loader to find the class corresponding to
 	 * the name.  Otherwise, use the system class loader.
 	 */
-	loadedclass = getClassWithLoader(&depth);
-	loader = (depth == 0) ? loadedclass->loader : NULL;
+	loader = 0;
+        info = (stackTraceInfo*)buildStackTrace(0);
+        for (i = 0; info[i].meth != ENDOFSTACK; i++) {
+                if (info[i].meth != 0 && info[i].meth->class != 0) {
+                	loader = info[i].meth->class->loader;
+			break;
+                }
+        }
 
 	/*
 	 * Note the following oddity: 
@@ -70,8 +79,12 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 	 * array names (those starting with an [), and this is what calling
 	 * loadArray does.
 	 */
-	clazz = ((buf[0] == '[') ? loadArray : loadClass)
-			(makeUtf8Const (buf, strlen(buf)), loader);
+	if (buf[0] == '[') {
+		clazz = loadArray(makeUtf8Const (buf, strlen(buf)), loader);
+	}
+	else {
+		clazz = loadClass(makeUtf8Const (buf, strlen(buf)), loader);
+	}
 
 	/* if we got here, either clazz must be valid or a 
 	 * ClassNotFoundException was thrown

@@ -24,52 +24,34 @@
 #include "../../../kaffe/kaffevm/stackTrace.h"
 #include "../../../kaffe/kaffevm/support.h"
 
-extern struct Hjava_lang_Class* getClassWithLoader(int*);
+extern Hjava_lang_Object* buildStackTrace(struct _exceptionFrame*);
 
 HArrayOfObject* /* HArrayOfClass */
-java_lang_SecurityManager_getClassContext(struct Hjava_lang_SecurityManager* this)
+java_lang_SecurityManager_getClassContext0(void)
 {
-	return ((HArrayOfObject*)getClassContext(NULL));
-}
+	stackTraceInfo* info;
+	int cnt;
+	int i;
+	HArrayOfObject* array;
 
-struct Hjava_lang_ClassLoader*
-java_lang_SecurityManager_currentClassLoader(struct Hjava_lang_SecurityManager* this)
-{
-	int depth;
-	struct Hjava_lang_Class* class;
+	info = (stackTraceInfo*)buildStackTrace(0);
 
-	class = getClassWithLoader(&depth);
-	if (class != NULL) {
-		return ((struct Hjava_lang_ClassLoader*)(class->loader));
+	cnt = 0;
+	for (i = 0; info[i].meth != ENDOFSTACK; i++) {
+		if (info[i].meth != 0 && info[i].meth->class != 0) {
+			cnt++;
+		}
 	}
-	else {
-		return NULL;
+
+	array = (HArrayOfObject*)AllocObjectArray(cnt, "Ljava/lang/Class;");
+
+	cnt = 0;
+	for (i = 0; info[i].meth != ENDOFSTACK; i++) {
+		if (info[i].meth != 0 && info[i].meth->class != 0) {
+			unhand(array)->body[cnt] = (Hjava_lang_Object*)info[i].meth->class;
+			cnt++;
+		}
 	}
-}
 
-jint
-java_lang_SecurityManager_classDepth(struct Hjava_lang_SecurityManager* this, struct Hjava_lang_String* str)
-{
-	char buf[MAXNAMELEN];
-
-	javaString2CString(str, buf, sizeof(buf));
-	classname2pathname(buf, buf);
-
-	return (classDepth(buf));
-}
-
-jint
-java_lang_SecurityManager_classLoaderDepth(struct Hjava_lang_SecurityManager* this)
-{
-	int depth;
-
-	(void)getClassWithLoader(&depth);
-
-	return (depth);
-}
-
-struct Hjava_lang_Class*
-java_lang_SecurityManager_currentLoadedClass0(struct Hjava_lang_SecurityManager* this)
-{
-	unimp("java.lang.SecurityManager:currentLoadedClass0 unimplemented");
+	return (array);
 }

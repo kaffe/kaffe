@@ -48,9 +48,15 @@ typedef struct _stackTrace {
 
 #endif
 
-Hjava_lang_Object*	buildStackTrace(struct _exceptionFrame* base);
-Hjava_lang_Object*	getClassContext(void* bulk);
-Hjava_lang_Class*	getClassWithLoader(int* depth);
-jint			classDepth(char* name);
+struct _methods;
+
+typedef struct _stackTraceInfo {
+	uintp   pc;
+	struct _methods* meth;
+} stackTraceInfo;
+
+#define ENDOFSTACK	((struct _methods*)-1)
+
+Hjava_lang_Object*	buildStackTrace(struct _exceptionFrame*);
 
 #endif

@@ -1,8 +1,3 @@
-package java.lang;
-
-import java.io.FileDescriptor;
-import java.net.InetAddress;
-
 /*
  * Java core library component.
  *
@@ -12,9 +7,16 @@ import java.net.InetAddress;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-abstract public class SecurityManager
-{
-	protected boolean inCheck;
+
+package java.lang;
+
+import java.io.FileDescriptor;
+import java.lang.Thread;
+import java.lang.Class;
+import java.net.InetAddress;
+import kaffe.util.Deprecated;
+
+abstract public class SecurityManager {
 
 protected SecurityManager() {
 }
@@ -31,8 +33,7 @@ public void checkAccess(ThreadGroup g) {
 	throw new SecurityException();
 }
 
-public void checkAwtEventQueueAccess()
-	{
+public void checkAwtEventQueueAccess() {
 	throw new SecurityException();
 }
 
@@ -68,18 +69,15 @@ public void checkListen(int port) {
 	throw new SecurityException();
 }
 
-public void checkMemberAccess ( Class clazz, int which )
-{
+public void checkMemberAccess ( Class clazz, int which ) {
 	throw new SecurityException();
 }
 
-public void checkMulticast(InetAddress maddr)
-	{
+public void checkMulticast(InetAddress maddr) {
 	throw new SecurityException();
 }
 
-public void checkMulticast(InetAddress maddr, byte ttl)
-	{
+public void checkMulticast(InetAddress maddr, byte ttl) {
 	throw new SecurityException();
 }
 
@@ -91,8 +89,7 @@ public void checkPackageDefinition(String pkg) {
 	throw new SecurityException();
 }
 
-public void checkPrintJobAccess()
-	{
+public void checkPrintJobAccess() {
 	throw new SecurityException();
 }
 
@@ -120,8 +117,7 @@ public void checkRead(String file, Object context) {
 	throw new SecurityException();
 }
 
-public void checkSecurityAccess(String action)
-	{
+public void checkSecurityAccess(String action) {
 	throw new SecurityException();
 }
 
@@ -129,8 +125,7 @@ public void checkSetFactory() {
 	throw new SecurityException();
 }
 
-public void checkSystemClipboardAccess()
-	{
+public void checkSystemClipboardAccess() {
 	throw new SecurityException();
 }
 
@@ -146,37 +141,59 @@ public void checkWrite(String file) {
 	throw new SecurityException();
 }
 
-native protected int classDepth(String name);
+protected int classDepth(String name) {
+	throw new Deprecated();
+}
 
-native protected int classLoaderDepth();
+protected int classLoaderDepth() {
+	throw new Deprecated();
+}
 
-native protected ClassLoader currentClassLoader();
-
-protected Class currentLoadedClass()
-	{
+protected Class currentLoadedClass() {
+	Class[] classes = getClassContext();
+	for (int i = 0; i < classes.length; i++) {
+		if (classes[i].getClassLoader() != null) {
+			return (classes[i]);
+		}
+	}
 	return (null);
 }
 
-native protected Class[] getClassContext();
-
 public boolean getInCheck() {
-	return inCheck;
+	throw new Deprecated();
 }
 
 public Object getSecurityContext() {
-	return null;
-}
-
-public ThreadGroup getThreadGroup()
-	{
 	return (null);
 }
 
+public ThreadGroup getThreadGroup() {
+	return (Thread.currentThread().getThreadGroup());
+}
+
 protected boolean inClass(String name) {
-	return (classDepth(name)>0);
+	throw new Deprecated();
 }
 
 protected boolean inClassLoader() {
-	return (classLoaderDepth()>0);
+	throw new Deprecated();
 }
+
+protected Class[] getClassContext() {
+	return (getClassContext0());
+}
+
+protected ClassLoader currentClassLoader() {
+	Class[] classes = getClassContext0();
+	for (int i = 0; i < classes.length; i++) {
+		ClassLoader loader = classes[i].getClassLoader();
+		if (loader != null) {
+			return (loader);
+		}
+	}
+	return (null);
+}
+
+native static private Class[] getClassContext0();
+
 }

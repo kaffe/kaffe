@@ -29,7 +29,9 @@ java_io_ObjectInputStream_loadClass0(struct Hjava_io_ObjectInputStream* stream, 
 	Hjava_lang_Class* clazz;
 	char* cstr;
 	Utf8Const* nm;
-	int depth;
+	Hjava_lang_ClassLoader* loader;
+	int i;
+	stackTraceInfo* info;
 
 	cstr = makeCString(str);
 	classname2pathname(cstr, cstr);
@@ -37,9 +39,22 @@ java_io_ObjectInputStream_loadClass0(struct Hjava_io_ObjectInputStream* stream, 
 	free(cstr);
 	
 	assert(cls == 0 || !"Don't know what to do with a non-zero class");
-	clazz = getClassWithLoader(&depth);
-	clazz = ((cstr[0] == '[') ? loadArray : loadClass)
-		    (nm, depth == -1 ? 0 : clazz->loader);	
+
+        loader = 0;
+        info = (stackTraceInfo*)buildStackTrace(0);
+        for (i = 0; info[i].meth != ENDOFSTACK; i++) {
+                if (info[i].meth != 0 && info[i].meth->class != 0) {
+                        loader = info[i].meth->class->loader;
+                        break;
+                }
+        }
+
+	if (cstr[0] == '[') {
+		clazz = loadArray(nm, loader);
+	}
+	else {
+		clazz = loadClass(nm, loader);
+	}
 
 	return (clazz);
 }

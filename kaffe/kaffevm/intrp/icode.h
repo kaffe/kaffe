@@ -89,7 +89,7 @@
 #define	xor_int(t, f1, f2)			(t)[0].v.tint = ((f1)[0].v.tint) ^ ((f2)[0].v.tint)
 
 #define	cvt_int_byte(t, f)			(t)[0].v.tint = (((f)[0].v.tint) << 24) >> 24
-#define	cvt_int_char(t, f)			(t)[0].v.tint = (((f)[0].v.tint) << 16) >> 16
+#define	cvt_int_char(t, f)			(t)[0].v.tint = ((f)[0].v.tint) & 0xFFFF
 #define	cvt_int_short(t, f)			(t)[0].v.tint = (((f)[0].v.tint) << 16) >> 16
 
 #define	branch_indirect(w)			w
