@@ -22,6 +22,7 @@ final public class String implements Serializable
 	char[] value;
 	int offset;
 	int count;
+	int hash;
 
 	/* This is what Sun's JDK1.1 "serialver java.lang.String" spits out */
 	static final long serialVersionUID = -6849794470754667710L;
@@ -226,17 +227,11 @@ public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin)
 }
 
 public int hashCode() {
-	int i, n=offset+count;
-	int hash = 0;
-
-	if ( count <= 15 ) {
-		for ( i=offset+1; i<n; i++ )
-			hash = (37 * hash) + value[i];
-	}
-	else {
-		int skip = count / 8;
-		for ( i=offset+skip; i<n; i+=skip )
-			hash = (39 * hash) + value[i];
+	if (hash == 0 && count > 0) {
+		final int stop = offset + count;
+		for (int index = offset; index < stop; index++) {
+			hash = (31 * hash) + value[index];
+		}
 	}
 	return hash;
 }
