@@ -340,33 +340,6 @@ blockAsyncSignals(void)
 	
 }
 
-#if defined(HAVE_SIGALTSTACK) && defined(SA_ONSTACK)
-static void
-setupSigAltStack(void)
-{
-        STACK_STRUCT newstack;
-
-	/*
-	 * Signals has to have their own stack so we can solve
-	 * stack problems.
-	 */
-	newstack.ss_size = THREADSTACKSIZE;
-	newstack.ss_flags = 0;
-	newstack.ss_sp = KMALLOC(newstack.ss_size);
-	if (sigaltstack(&newstack, NULL) < 0)
-	  {
-	    dprintf("Unexpected error calling sigaltstack: %s\n",
-		    SYS_ERROR(errno));
-	    EXIT(1);
-	  }
-}
-#else
-static void
-setupSigAltStack(void)
-{
-}
-#endif
-
 /* ----------------------------------------------------------------------
  * STACK BOUNDARY DETECTORS
  * ----------------------------------------------------------------------
@@ -385,8 +358,6 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 
 	stackPointer = mdGetStackBase();
 
-	setupSigAltStack();
-
 	jtid->stackMin = stackPointer;
 	jtid->stackMax = (char *)jtid->stackMin + mainThreadStackSize;
         jtid->stackCur = jtid->stackMax;
@@ -403,8 +374,6 @@ void
 detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 {
         void *stackPointer;
-
-	setupSigAltStack();
 
 	stackPointer = mdGetStackEnd();
 
@@ -443,8 +412,6 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 {
 	static volatile char *guessPointer;
 	void *handler_segv, *handler_bus;
-
-	setupSigAltStack();
 
 #if defined(SIGSEGV)
 	handler_segv = registerSyncSignalHandler(SIGSEGV, stackOverflowDetector);

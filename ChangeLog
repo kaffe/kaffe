@@ -5,6 +5,12 @@
 
 2004-07-30  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/signal.c
+	(setupSigAltStack, detectStackBoundaries): Removed setupSigAltStack
+	for unix-pthreads as its use is unsafe on most architectures.
+
+2004-07-30  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* libraries/java/lang/Thread.java: Reverted to original file from
 	GNU Classpath.
 
