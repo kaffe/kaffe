@@ -75,6 +75,7 @@ java_awt_SRCS = \
 	java/awt/AWTEvent.java \
 	java/awt/AWTEventMulticaster.java \
 	java/awt/AWTException.java \
+	java/awt/AWTPermission.java \
 	java/awt/ActionEvt.java \
 	java/awt/Adjustable.java \
 	java/awt/AdjustmentEvt.java \
