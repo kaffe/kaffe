@@ -1,3 +1,40 @@
+2001-02-11  Edouard G. Parmelan  <egp@free.fr>
+
+	* config/alpha/trampolines.c: setup return register before
+	epilogue.
+	
+	* config/alpha/jit-alpha.def (lshr_int, lshr_int_const): Clear
+	high bits to avoid wrong sign propagation.
+	(cvt_float_int, cvt_float_long, cvt_double_int, cvt_double_long):
+	Disabled in flavor to soft_cvtXX().
+	
+	* config/alpha/jit-icode.h (HAVE_cvt_float_int,
+	HAVE_cvt_float_long, HAVE_cvt_double_int, HAVE_cvt_double_long):
+	Disabled in flavor to soft_cvtXX().
+
+	* kaffe/kaffevm/soft.c (soft_cvtfl, soft_cvtdl): Handle NaN and
+	integer overflow/underflow.
+
+	* kaffe/kaffevm/intrp/icode.h (cvt_float_long, cvt_double_long,
+	cvt_float_int, cvt_double_int): use soft_cvtXX() to handle
+	rounding toward zero.
+
+	* test/regression/DoubleCvt.java, test/regression/Makefile.am,
+	test/regression/Makefile.in: New test case for floating-point
+	conversion.
+
+	* config/alpha/common.h (COMPARE_AND_EXCHANGE): Create safe version.
+
+	* config/mips/common.h (COMPARE_AND_EXCHANGE): Create safe
+	version.  Note that is use MIPS II instructions ll/sc and does
+	not work on R3000.
+
+	* configure.in, configure: add option --disable-mips2.
+
+2001-01-09  Godmar Back <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/locks.c: Remove unsafe version of COMPARE_AND_EXCHANGE.
+
 2000-12-27  Edouard G. Parmelan  <egp@free.fr>
 
 	* test/regression/FPUStack.java: Add test for PR#737.
