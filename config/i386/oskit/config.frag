@@ -24,9 +24,13 @@ ac_cv_sizeof_long_long='8'
 ac_cv_sizeof_int='4'
 ac_cv_alignmentof_voidp='4'
 
+ac_cv_strtod_m0_broken='yes'
+ac_cv_long_long_modulo_broken='yes'
+
 # oskit libc's depends on osenv_wakeup, so it doesn't link XXX
 ac_cv_func_select='yes'
 
+ac_cv_lib_md_MD5Init='no'
 # autoconf tends to erroneously fall back to /lib/cpp
 CPP="$CC -E"
 
@@ -70,32 +74,32 @@ eval `$CPP conftest.c 2>&1 | grep oskit_env | awk '{print $3}'`
 #if [ "$oskit_env" = "real" ]
 #then
 #KAFFE_LIBS="\
-#                -loskit_startup \
-#                -loskit_threads \
-#                -loskit_svm -loskit_amm \
-#                -loskit_bootp \
-#                -loskit_freebsd_net \
-#                -loskit_linux_dev -loskit_dev \
-#                -loskit_kern -loskit_lmm \
-#		-loskit_netbsd_fs \
-#		-loskit_freebsd_c_r \
-#                -loskit_diskpart -loskit_fs -loskit_com \
-#                -loskit_threads \
+#   -loskit_startup  -loskit_clientos		\
+#   -loskit_threads  -loskit_svm -loskit_amm	\
+#   -loskit_bootp				\
+#   -loskit_freebsd_net				\
+#   -loskit_linux_dev -loskit_dev		\
+#   -loskit_netbsd_fs				\
+#   -loskit_kern					\
+#   -loskit_lmm					\
+#   -loskit_diskpart -loskit_memfs		\
+#   -loskit_freebsd_c_r  -loskit_fsnamespace_r \
+#   -loskit_com		\
+#   -loskit_freebsd_m -loskit_freebsd_c_r	\
+#   -loskit_threads	\
 #$KAFFE_LIBS "
 #elif (exit 0)
 #then
+# Some things we want to link with aren't in the oskit lib directory, and
+# some of them aren't even archive.  What to do?
 #KAFFE_LIBS="\
-#                -loskit_startup \
-#                -loskit_threads \
-#                -loskit_bootp \
-#                -loskit_freebsd_net \
-#                -loskit_linux_dev -loskit_freebsd_c_r \
-#		-loskit_dev \
-#                -loskit_kern -loskit_lmm \
-#		-loskit_netbsd_fs \
-#		-loskit_freebsd_c_r \
-#                -loskit_diskpart -loskit_fs -loskit_com \
-#                -loskit_threads \
+#        ${oskit}/lib/unix_support_pthreads.o			\
+#        -loskit_startup  -loskit_clientos -loskit_fsnamespace_r	\
+#        -loskit_threads -loskit_unix -loskit_dev		\
+#  	-loskit_freebsd_c_r  -loskit_com			\
+#  	-loskit_freebsd_m -loskit_freebsd_c_r			\
+#        ${oskit}/examples/unix/freebsd/libfreebsdsys.a		\
+#        -loskit_threads						\
 #$KAFFE_LIBS "
 #fi
 #

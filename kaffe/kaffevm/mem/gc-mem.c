@@ -581,6 +581,10 @@ gc_large_block(size_t sz)
  * compiled with DEBUG.
  */ 
 
+#ifndef PROT_NONE
+#define PROT_NONE 0
+#endif
+
 #if !defined(HAVE_MPROTECT) || !defined(DEBUG)
 #define mprotect(A,L,P)
 #define ALL_PROT

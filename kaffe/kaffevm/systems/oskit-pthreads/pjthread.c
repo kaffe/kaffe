@@ -82,11 +82,17 @@ catch_death(void)
 {
 	jthread_t tid = pthread_getspecific(jthread_key);
 
-	tid->status = THREAD_DYING;
 	if (!(tid->flags & THREAD_FLAG_DONTSTOP)) {
 		onstop();
 		jthread_exit();
+	} else {
+		/* try {} catch(Error e) may save a dying thread.
+		 * We only mark a thread as dying between catching the
+		 * signal and calling the onstop handler
+		 */
+		tid->status = THREAD_DYING;
 	}
+
 }
 
 static void 
@@ -247,9 +253,15 @@ jthread_destroy(jthread_t tid)
 DBG(JTHREAD, 
 	dprintf("destroying tid %d\n", tid->native_thread);	
     )
+#ifdef newer_than_990722
+	/* We can't use join here because of a bug in main thread
+	 * initialization.  See the comment in jthread_exit.  This
+	 * doesn't need to be synchronous anyway?
+	 */
 	jthread_disable_stop();
 	pthread_join(tid->native_thread, &status);
 	jthread_enable_stop();
+#endif
 	deallocator(tid);
 }
 
@@ -399,6 +411,7 @@ jthread_enable_stop(void)
 
 	tid->flags &= ~THREAD_FLAG_DONTSTOP;
 	if (tid->status == THREAD_DYING) {
+		tid->status = THREAD_RUNNING;
 		onstop();
 		jthread_exit();
 	}
@@ -419,7 +432,7 @@ jthread_interrupt(jthread_t tid)
  * This function install the cleanup handler, sets jthread-specific 
  * data and calls the actual work function.
  */
-void
+void *
 start_me_up(void *arg)
 {
 	jthread_t tid = (jthread_t)arg;
@@ -450,6 +463,7 @@ DBG(JTHREAD,
 	mark_thread_dead();
 	/* by returning, we exit this thread */
 #endif
+	return 0;
 }
 
 /*
@@ -641,6 +655,13 @@ DBG(JTHREAD,
     )
 
 	mark_thread_dead();
+#ifndef newer_than_990722
+	/* The main thread must be explicitly detached before
+	 * exitting.  Since its mutex is unitialized, detach will work,
+	 * but the idle thread will crash trying to clean up.
+	 */
+	pthread_detach(pthread_self());
+#endif
 	pthread_exit(0);
 	while (1)
 		assert(!"This better not return.");

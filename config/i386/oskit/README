@@ -1,3 +1,16 @@
+OSKit 990722 snapshot:
+
+This version of kaffe has been ported to the July OSKit snapshot.
+There are some known problems with this oskit/kaffe combination:
+Threads waiting on conditions cannot be interrupted, and all the math
+problems found in freebsd 2.x are also found here.
+
+Rather than letting configure choose oskit libraries, I have been
+using ld-oskit.sh.  However, when building with this method you invoke
+make with CCLD=ld-oskit on the commandline...every single time.
+Otherwise, look at the commented out KAFFE_LIBS= lines in config.frag.
+
+****************************************************************************
 This is the i386/oskit specific configuration directory.
 
 There are several scripts in this directory to aid in the build process.

@@ -34,6 +34,14 @@
 
 extern oskit_clock_t *oskit_system_clock;
 
+#ifdef newer_than_990722
+/* 
+ * The oskit 990722 snapshot has a bug at the intersection of
+ * oskit_create_threaded_listener and pthread_mutex_init.  Until we
+ * (utah) release a fixed version of the oskit, disable the timeout
+ * event listeners.
+ */
+
 /*
  * Interrupt a network system call.  It is OK for the timer to expire
  * just after the call returns, the SIG_INT handler does nothing.  The
@@ -58,12 +66,15 @@ make_net_timer(int ms)
 	oskit_timer_t *timer;
 	oskit_listener_t *listener;
 	oskit_itimerspec_t spec;
+	/* XXX: oskit snapshot 990722 was missing a prototype */
+	extern oskit_listener_t *oskit_create_threaded_listener
+		(oskit_listener_callback_t, void *);
 
 	memset(&spec, 0, sizeof(spec));
 	spec.it_value.tv_sec = ms/1000;
 	spec.it_value.tv_nsec = (ms % 1000) * 1000000;
-	listener = oskit_create_listener(interrupt_me,
-					 (void *) pthread_self());
+	listener = oskit_create_threaded_listener(interrupt_me,
+						  (void *) pthread_self());
 	oskit_clock_createtimer(oskit_system_clock, &timer);
 	oskit_timer_setlistener(timer, listener);
 	oskit_listener_release(listener);
@@ -81,6 +92,9 @@ make_net_timer(int ms)
     if (_timer) oskit_timer_release(_timer);	\
     return _r;					\
 }
+#else
+#define WITH_TIMEOUT(_,EXP) return EXP
+#endif
 
 /* return error code or 0 */   
 #define ERR(EXP) (((EXP) < 0) ? errno : 0)

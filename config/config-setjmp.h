@@ -31,7 +31,11 @@
 #define JTHREAD_SETJMP(buf)		setjmp((buf))
 #endif
 #ifndef JTHREAD_LONGJMP
-#if defined(__FreeBSD__) && defined(__i386__)
+/* Under the OSkit, __FreeBSD__ is defined but we don't use setjmp
+ * from the freebsd libc (appearently).  At any rate, the freebsd
+ * setjmp.h has been replaced.
+ */
+#if defined(__FreeBSD__) && defined(__i386__) && !defined(_OSKIT_C_SETJMP_H_)
 /* XXX Check for a corrupted jump buffer before jumping there. This version for
    XXX FreeBSD/i386 checks the stack pointer and PC counter. This is a temp
    XXX hack to try to catch a bug (to reproduce: run GCTest a zillion times). */

@@ -93,7 +93,7 @@ oskit_kaffe_clean_cmdline(int *pargc, char ***pargv)
 	FILE		*fp;
 	int		c;
 
-	oskit_clientos_init();
+	oskit_clientos_init_pthreads();
 	start_osenv();
 #if !defined(OSKIT_UNIX)
 	/*
@@ -101,6 +101,8 @@ oskit_kaffe_clean_cmdline(int *pargc, char ***pargv)
 	 */
 	start_world_pthreads();
 #else
+	startup_atexit_init();
+	start_clock();	
 	/*
 	 * Unix mode.
 	 *
@@ -109,7 +111,6 @@ oskit_kaffe_clean_cmdline(int *pargc, char ***pargv)
 	 */
 	pthread_init(1);
 	
-	start_clock();	
 	start_fs_native_pthreads("/");
 	start_network_native_pthreads();
 
