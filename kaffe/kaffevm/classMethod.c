@@ -502,10 +502,14 @@ DBG(STATICINIT,
 			makeMethodInactive(meth);
 #endif
 #endif
-#if defined(KAFFE_XPROFILER)
-		if( !xProfFlag )
+		if (
+#if defined(JIT3)
+		    (exc == 0) &&
 #endif
-		{
+#if defined(KAFFE_XPROFILER)
+		    !xProfFlag &&
+#endif
+		    1) {
 			METHOD_NATIVECODE(meth) = 0;
 			KFREE(meth->c.ncode.ncode_start);
 			meth->c.ncode.ncode_start = 0;
