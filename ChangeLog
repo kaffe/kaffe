@@ -1,3 +1,9 @@
+2004-03-09  Holger Schurig <h.schurig@mn-logistik.de>
+
+	config/arm/linux/md.h,
+	config/arm/threads.h:
+	Fixed SP_OFFSET on XScale.
+
 2004-03-09  Gerard Basler <gerard.basler@starticket.ch>
 
 	Fixes for XScale.
