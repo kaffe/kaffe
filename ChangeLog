@@ -1,5 +1,9 @@
 2004-12-08  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffe/main.c: Add call to enableXProfiling.
+
+2004-12-08  Adam Heath  <doogie@brainfood.com>
+
 	* libraries/javalib/Makefile.am,
 	  libraries/javalib/Makefile.in,
 	  libraries/javalib/rebuildLib.in:

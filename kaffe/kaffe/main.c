@@ -153,7 +153,7 @@ main(int argc, char* argv[])
 #if defined(KAFFE_XPROFILER)
 	if( xProfFlag )
 	{
-		if( !enableXCallGraph() )
+		if( !enableXCallGraph() && !enableXProfiling() )
 		{
 			fprintf(stderr, 
 				"Unable to initialize cross "
