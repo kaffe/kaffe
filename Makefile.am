@@ -21,7 +21,21 @@ AUTOMAKE_OPTIONS = foreign 1.3e
 #MAYBE_BINRELOC_DIR = binreloc
 #endif
 
-SUBDIRS = . libraries/javalib config libltdl replace $(MAYBE_BINRELOC_DIR) kaffe/kaffeh include  kaffe/kaffevm libraries/clib kaffe po tools
+SUBDIRS = \
+	. \
+	libraries/javalib \
+	config \
+	libltdl \
+	$(MAYBE_BINRELOC_DIR) \
+	kaffe/kaffeh \
+	include  \
+	replace \
+	kaffe/kaffevm \
+	libraries/clib \
+	kaffe \
+	po \
+	tools
+
 DIST_SUBDIRS = config include replace libltdl kaffe libraries tools test po
 
 EXTRA_DIST = \
