@@ -1,3 +1,26 @@
+2004-10-25  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/gnu/java/security/action/GetSecurityPropertyAction.java:
+	New file taken from GNU Classpath.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/all.files:
+	Regenerated.
+
+	* libraries/javalib/javax/security/auth/login/Configuration.java,
+	libraries/javalib/javax/security/auth/login/LoginContext.java,
+	libraries/javalib/javax/security/auth/spi/LoginModule.java:
+	Resynced with GNU Classpath.
+
+	2004-10-24  Casey Marshall  <csm@gnu.org>
+
+        * gnu/java/security/action/GetSecurityPropertyAction.java: new file.
+        * javax/security/auth/login/Configuration.java
+        (getConfig): new method.
+        * javax/security/auth/login/LoginContext.java: implemented.
+        * javax/security/auth/spi/LoginModule.java: new file.
+
 2004-10-25  Riccardo Mottola <rmottola@users.sf.net>
 
         * kaffe/kaffevm/kaffe-gc/gc-incremental.c : split assertion for finer

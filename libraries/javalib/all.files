@@ -864,6 +864,7 @@ gnu/java/security/Engine.java
 gnu/java/security/OID.java
 gnu/java/security/PolicyFile.java
 gnu/java/security/action/GetPropertyAction.java
+gnu/java/security/action/GetSecurityPropertyAction.java
 gnu/java/security/action/SetAccessibleAction.java
 gnu/java/security/der/BitString.java
 gnu/java/security/der/DER.java

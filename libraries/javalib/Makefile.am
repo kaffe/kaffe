@@ -1276,6 +1276,7 @@ gnu_java_security_SRCS = \
 	gnu/java/security/PolicyFile.java
 gnu_java_security_action_SRCS = \
 	gnu/java/security/action/GetPropertyAction.java \
+	gnu/java/security/action/GetSecurityPropertyAction.java \
 	gnu/java/security/action/SetAccessibleAction.java
 gnu_java_security_der_SRCS = \
 	gnu/java/security/der/BitString.java \
