@@ -19,7 +19,9 @@ public class MarkResetTest {
 		charsRead += len;
 	    if (len < 0)
 		break;
-	    System.out.println ("read " + buf);
+	    // jikes will incorrectly print a char[] as a String, but
+	    // Sun's javac won't.
+	    System.out.println ("read " + new String(buf));
 	    br.reset();
 	    br.read();    // next char
 	}
