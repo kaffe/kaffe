@@ -36,7 +36,6 @@ static jthread_t startingThread;
 
 extern struct JNINativeInterface Kaffe_JNINativeInterface;
 extern KaffeVM_Arguments Kaffe_JavaVMInitArgs;
-extern JavaVM Kaffe_JavaVM;
 
 jint
 JNI_GetDefaultJavaVMInitArgs(void* args)
@@ -302,7 +301,7 @@ JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
   THREAD_DATA()->jnireferences = reftable; 
 
   /* Return the VM and JNI we're using */
-  *vm = &Kaffe_JavaVM;
+  *vm = KaffeJNI_GetKaffeVM();
   *env = THREAD_JNIENV();
   startingThread = KTHREAD(current)();
   Kaffe_NumVM++;
@@ -336,7 +335,7 @@ KaffeJNI_DestroyJavaVM(JavaVM* vm UNUSED)
 jint
 JNI_GetCreatedJavaVMs(JavaVM** vm, jsize buflen UNUSED, jsize* nvm)
 {
-  vm[0] = &Kaffe_JavaVM;
+  vm[0] = KaffeJNI_GetKaffeVM();
   *nvm = Kaffe_NumVM;
 
   return (0);

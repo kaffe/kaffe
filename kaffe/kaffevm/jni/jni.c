@@ -44,7 +44,13 @@
 
 extern struct JNINativeInterface Kaffe_JNINativeInterface;
 extern KaffeVM_Arguments Kaffe_JavaVMInitArgs;
-extern JavaVM Kaffe_JavaVM;
+static JavaVM Kaffe_JavaVM;
+
+JavaVM*
+KaffeJNI_GetKaffeVM(void)
+{
+  return &Kaffe_JavaVM;
+}
 
 static jint Kaffe_GetVersion(JNIEnv*);
 static jclass Kaffe_FindClass(JNIEnv*, const char*);
@@ -728,6 +734,13 @@ Kaffe_MonitorExit(JNIEnv* env UNUSED, jobject obj)
 /*
  * Functions past this point don't bother with jni exceptions.
  */
+
+JavaVM*
+Kaffe_GetKaffeVM(void)
+{
+  return &Kaffe_JavaVM;
+}
+
 static jint
 Kaffe_GetJavaVM(JNIEnv* env UNUSED, JavaVM** vm)
 {
@@ -1070,7 +1083,7 @@ const struct JNIInvokeInterface Kaffe_JNIInvokeInterface = {
 /*
  * Setup the Kaffe VM.
  */
-JavaVM Kaffe_JavaVM = {
+static JavaVM Kaffe_JavaVM = {
 	&Kaffe_JNIInvokeInterface,
 };
 

@@ -75,8 +75,6 @@ static struct _libHandle {
 static iStaticLock	libraryLock; /* mutex on all intern operations */
 static char *libraryPath = NULL;
 
-extern JavaVM Kaffe_JavaVM;
-
 #ifdef ENABLE_BINRELOC
 static
 const char *discoverLibraryHome(void)
@@ -295,7 +293,7 @@ DBG(NATIVELIB,
  
         func = loadNativeLibrarySym("JNI_OnLoad"); 
 	if (func != NULL) {
-	    JavaVM *jvm = &Kaffe_JavaVM;
+	    JavaVM *jvm = KaffeJNI_GetKaffeVM();
 	    /* Call JNI_OnLoad */
 	    ((jint(JNICALL *)(JavaVM *, void *))func)(jvm, NULL);
 	}

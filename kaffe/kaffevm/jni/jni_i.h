@@ -9,6 +9,8 @@
 #include "exception.h"
 #include "md.h"
 
+extern JavaVM* KaffeJNI_GetKaffeVM(void);
+
 #define KAFFE_VM_ENV(env) ((KaffeVM_Environment *) (((JNIEnv *)(env)) + 1))
 
 /*

@@ -1,5 +1,18 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/external.c,
+	kaffe/kaffevm/jni/jni-base.c:
+	Replaced use of Kaffe_JavaVM by KaffeJNI_GetKaffeVM.
+	
+	*  kaffe/kaffevm/jni/jni.c
+	(Kaffe_JavaVM) Made static.
+	(KaffeJNI_GetKaffeVM): New function.
+	
+	* kaffe/kaffevm/jni/jni_i.h
+	(KaffeJNI_GetKaffeVM) New prototype.
+	
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c: 
 	(systemMutex) Made static.
 	
