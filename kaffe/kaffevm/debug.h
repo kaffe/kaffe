@@ -207,7 +207,7 @@ extern debugmask_t dbgGetMask(void);
 #define KFUNC_FORMAT(archtype,fmt,arg)
 #endif
 
-extern int kaffe_dprintf_fd;
+extern void dbgSetDprintfFD(int fd);
 int kaffe_dprintf(const char *fmt, ...) KFUNC_FORMAT(printf,1,2);
 
 /* Set the debugging mask to use. (give the mask) */

@@ -848,7 +848,7 @@ options(char** argv, int argc)
 					_("Error: -debug-fd an open descriptor.\n"));
                                 exit(1);
                         }
-			kaffe_dprintf_fd = strtol(argv[i], &end, 10);
+			dbgSetDprintfFD(strtol(argv[i], &end, 10));
 			if (end != 0 && *end != '\0') {
 				fprintf(stderr,
 					_("Error: -debug-fd requires an integer.\n"));

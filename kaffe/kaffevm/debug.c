@@ -49,7 +49,18 @@ static char *debugBuffer;
 static size_t bufferBegin = 0;
 static size_t bufferSz = 16 * 1024;
 static int bufferOutput = 0;
-int kaffe_dprintf_fd = 2;
+static int kaffe_dprintf_fd = 2;
+
+/**
+ * Set the file descriptor used for debug output.
+ *
+ * @param fd new file descriptor
+ */
+void
+dbgSetDprintfFD(int fd)
+{
+	kaffe_dprintf_fd = fd;
+}
 
 #if defined(NDEBUG) || !defined(KAFFE_VMDEBUG)
 /* --- Debugging is NOT enabled --- */

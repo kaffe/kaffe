@@ -1,5 +1,18 @@
 2005-03-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/debug.h: 
+	(kaffe_dprintf_fd) Made static.
+	(dbgSetDprintfFD) New function.
+	
+	* kaffe/kaffevm/debug.h: 
+	(kaffe_dprintf_fd) Removed prototype.
+	(dbgSetDprintfFD) Added prototype.
+
+	* kaffe/kaffe/main.c (options): 
+	Replace use of kaffe_dprintf_fd by dbgSetDprintfFD.
+
+2005-03-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/debug.c
 	(kaffevmDebugMask) Made static.
 	(dbgGetMask) New function.
