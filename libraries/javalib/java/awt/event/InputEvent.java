@@ -23,6 +23,7 @@ public class InputEvent
 	final public static int BUTTON1_MASK = 16;
 	final public static int BUTTON2_MASK = ALT_MASK;
 	final public static int BUTTON3_MASK = META_MASK;
+	private static final long serialVersionUID = -2482525981698309786L;
 
 InputEvent ( Component src, int evtId ) {
   super( src, evtId);

@@ -17,6 +17,7 @@ abstract public class NumberFormat
   extends Format
   implements Cloneable
 {
+	private static final long serialVersionUID = -2308460125733713944L;
 	final public static int INTEGER_FIELD = 0;
 	final public static int FRACTION_FIELD = 1;
 	boolean grouping;

@@ -21,6 +21,8 @@ import kaffe.lang.SystemClassLoader;
 
 public final class Class implements Serializable {
 
+private static final long serialVersionUID = 3206093459760846163L;
+
 private Class() { /* this class is not instantiable by the general public */ }
 
 native public static Class forName(String className) throws ClassNotFoundException;

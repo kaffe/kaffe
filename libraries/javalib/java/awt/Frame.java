@@ -24,6 +24,7 @@ public class Frame
 	static Insets frameInsets;
 	static Insets menuFrameInsets;
 	static Rectangle frameDeco;
+	private static final long serialVersionUID = 2673458971256075116L;
 
 static {
 	// these are just the guesses (to be overwritten by a subsequent

@@ -19,6 +19,7 @@ import java.util.Locale;
 public class Applet
   extends Panel
 {
+	private static final long serialVersionUID = -5836846270535785031L;
 	AppletStub stub;
 
 public Applet() {

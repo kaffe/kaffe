@@ -20,6 +20,7 @@ public class Insets
 	public int bottom;
 	public int right;
 	static Insets noInsets = new Insets();
+	private static final long serialVersionUID = -2272572637695466749L;
 
 Insets () {
 }

@@ -15,6 +15,7 @@ import kaffe.util.Ptr;
 
 public class BigInteger extends Number {
 
+private static final long serialVersionUID = -8287574255936472291L;
 private Ptr number;
 
 static {

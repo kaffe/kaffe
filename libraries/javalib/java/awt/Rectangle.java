@@ -14,6 +14,7 @@ package java.awt;
 public class Rectangle
   implements Shape
 {
+	private static final long serialVersionUID = -4345857070255674764L;
 	public int x;
 	public int y;
 	public int width;

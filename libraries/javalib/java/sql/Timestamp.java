@@ -15,6 +15,7 @@ import java.util.Date;
 public class Timestamp
   extends Date {
 
+private static final long serialVersionUID = 2745179027874758501L;
 private int nanos;
 
 public Timestamp(int year, int month, int date, int hour, int minute, int second, int nano) {

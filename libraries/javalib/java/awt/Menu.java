@@ -18,6 +18,7 @@ public class Menu
   extends MenuItem
   implements MenuContainer
 {
+	private static final long serialVersionUID = -8809584163345499784L;
 	Vector items = new Vector( 5);
 	boolean isTearOff;
 

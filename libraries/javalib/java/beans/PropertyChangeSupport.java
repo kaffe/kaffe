@@ -15,6 +15,7 @@ import java.util.Vector;
 public class PropertyChangeSupport
   implements Serializable
 {
+	private static final long serialVersionUID = 6401253773779951803L;
 	private Vector listeners;
 	private Object source;
 

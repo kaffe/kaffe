@@ -18,6 +18,8 @@ import java.io.Serializable;
 final public class BitSet
     implements Cloneable, Serializable
 {
+    private static final long serialVersionUID = 7997698588986878753L;
+
     /**
      * The bits in this BitSet.
      * @serial The ith bit is stored in bits[i/64] (aka bits[i>>6])

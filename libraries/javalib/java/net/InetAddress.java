@@ -17,6 +17,8 @@ import java.util.StringTokenizer;
 final public class InetAddress
   implements Serializable {
 
+private static final long serialVersionUID = 3286316764910316507L;
+
 private static InetAddressImpl impl;
 
 private String hostName;

@@ -24,6 +24,7 @@ public class WindowEvent
 	final public static int WINDOW_ACTIVATED = 205;
 	final public static int WINDOW_DEACTIVATED = 206;
 	final public static int WINDOW_LAST = 206;
+	private static final long serialVersionUID = -1567959133147912127L;
 
 public WindowEvent ( Window  src, int evtId ) {
 	super( src, evtId);

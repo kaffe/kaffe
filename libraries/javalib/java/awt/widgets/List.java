@@ -25,6 +25,7 @@ public class List
   extends Container
   implements ItemSelectable
 {
+	private static final long serialVersionUID = -3304312411574666869L;
 	ActionListener aListener;
 	ItemListener iListener;
 	ItemPane ip = new ItemPane();

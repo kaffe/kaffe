@@ -26,6 +26,7 @@ public class Font
 	final public static int BOLD = 1;
 	final public static int ITALIC = 2;
 	static Hashtable nativeSpecs = new Hashtable();
+	private static final long serialVersionUID = -4206021311591459213L;
 
 static {
 	nativeSpecs.put( "Default", Defaults.FsDefault);

@@ -20,6 +20,7 @@ public class MenuBar
 {
 	Vector menus = new Vector();
 	Menu helpMenu;
+	private static final long serialVersionUID = -4930327919388951260L;
 
 public MenuBar() {
 }

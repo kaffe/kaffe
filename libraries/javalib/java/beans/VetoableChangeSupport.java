@@ -15,6 +15,7 @@ import java.util.Vector;
 
 public class VetoableChangeSupport implements Serializable {
 
+  private static final long serialVersionUID = -5090210921595982017L;
   private Vector listeners;
   private Object source;
 

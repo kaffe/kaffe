@@ -21,6 +21,7 @@ import kaffe.util.NotImplemented;
 public class SimpleDateFormat
   extends DateFormat
 {
+	private static final long serialVersionUID = 4774881970558875024L;
 	final private static String DEFAULTPATTERNCHARS = "GyMdkHmsSEDFwWahKz";
 	private DateFormatSymbols syms;
 	private String pattern;

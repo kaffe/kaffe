@@ -32,6 +32,7 @@ public class MouseEvent
 	final public static int MOUSE_ENTERED = MOUSE_FIRST + 4;
 	final public static int MOUSE_EXITED = MOUSE_FIRST + 5;
 	final public static int MOUSE_DRAGGED = MOUSE_FIRST + 6;
+	private static final long serialVersionUID = -991214153494842848L;
 
 public MouseEvent ( Component src, int evtId, long time, int modifiers,
 	     int x, int y, int clickCount, boolean isPopupTrigger) {

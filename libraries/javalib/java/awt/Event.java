@@ -33,6 +33,7 @@ public class Event
 	public long when;
 	Event next;
 	private static Event cache;
+	private static final long serialVersionUID = 5488922509400504703L;
 	final public static int SHIFT_MASK = 1;
 	final public static int CTRL_MASK = 2;
 	final public static int META_MASK = 4;

@@ -21,6 +21,7 @@ public class Scrollbar
   extends Component
   implements Adjustable, MouseListener, MouseMotionListener, TimerClient
 {
+	private static final long serialVersionUID = 8451667562882310543L;
 	final public static int HORIZONTAL = 0;
 	final public static int VERTICAL = 1;
 	int min;

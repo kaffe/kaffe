@@ -16,6 +16,7 @@ public class GregorianCalendar
   extends Calendar
 {
 	private static Calendar stdDateChange;
+	private static final long serialVersionUID = -8125100834729963327L;
 	final public static int BC = 0;
 	final public static int AD = 1;
 	final private static long MILLISECSPERSEC = 1000;

@@ -23,6 +23,7 @@ public class Button
   extends Component
   implements MouseListener, FocusListener, ShortcutConsumer
 {
+	private static final long serialVersionUID = -8774683716313001058L;
 	String label;
 	ActionListener aListener;
 	String aCmd;

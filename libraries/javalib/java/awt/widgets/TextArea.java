@@ -24,6 +24,7 @@ import java.util.Vector;
 public class TextArea
   extends TextComponent
 {
+	private static final long serialVersionUID = 3692302836626095722L;
 	final public static int SCROLLBARS_BOTH = 0;
 	final public static int SCROLLBARS_VERTICAL_ONLY = 1;
 	final public static int SCROLLBARS_HORIZONTAL_ONLY = 2;

@@ -15,6 +15,8 @@ package java.awt;
 public class Canvas
   extends Component
 {
+private static final long serialVersionUID = -2284879212465893870L;
+
 public Canvas() {
 	// Canvases usually get their own update events, not being updated
 	// sync within their parents

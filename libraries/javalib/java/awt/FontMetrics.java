@@ -30,6 +30,7 @@ public class FontMetrics
 	int[] widths;
 	boolean isWideFont;
 	static Hashtable cache = new Hashtable();
+	private static final long serialVersionUID = 1681126225205050147L;
 
 FontMetrics ( Font fnt ) {
 	font = fnt;

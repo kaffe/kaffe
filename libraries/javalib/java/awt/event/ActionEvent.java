@@ -26,6 +26,7 @@ public class ActionEvent
 	final public static int ACTION_FIRST = 1001;
 	final public static int ACTION_LAST = 1001;
 	final public static int ACTION_PERFORMED = ACTION_FIRST;
+	private static final long serialVersionUID = -7671078796273832149L;
 
 public ActionEvent ( Object src, int evtId, String cmdString ) {
 	this( src, evtId, cmdString, 0);

@@ -26,6 +26,7 @@ public class TextField
   extends TextComponent
   implements MouseMotionListener, KeyListener, FocusListener, MouseListener, ComponentListener
 {
+	private static final long serialVersionUID = -2966288784432217853L;
 	char echoChar;
 	ActionListener aListener;
 	int cols;

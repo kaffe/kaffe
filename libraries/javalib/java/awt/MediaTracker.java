@@ -17,6 +17,8 @@ public class MediaTracker
   implements Serializable
 {
 	private MediaTrackerEntry images;
+	private static final long serialVersionUID = -483174189758638095L;
+
 	final public static int LOADING = 1;
 	final public static int ABORTED = 2;
 	final public static int ERRORED = 4;

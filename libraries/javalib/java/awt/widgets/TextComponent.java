@@ -23,6 +23,7 @@ abstract public class TextComponent
   extends Container
   implements ActionListener
 {
+	private static final long serialVersionUID = -2214773872412987419L;
 	protected transient TextListener textListener;
 	boolean isEditable = true;
 	protected static TextEvent tEvt = new TextEvent( null, TextEvent.TEXT_VALUE_CHANGED);

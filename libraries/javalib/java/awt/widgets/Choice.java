@@ -25,6 +25,7 @@ public class Choice
   extends Container
   implements ItemSelectable, ActionListener, ItemListener, MouseListener, KeyListener, FocusListener
 {
+	private static final long serialVersionUID = -4075310674757313071L;
 	Vector items = new Vector();
 	Object selection;
 	ItemListener iListener;

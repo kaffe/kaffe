@@ -12,6 +12,7 @@ package java.math;
 
 public class BigDecimal extends Number {
 
+private static final long serialVersionUID = 6108874887143696463L;
 public static final int ROUND_UP = 1;
 public static final int ROUND_DOWN = 2;
 public static final int ROUND_CEILING = 3;

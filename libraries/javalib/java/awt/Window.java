@@ -26,6 +26,7 @@ public class Window
 	WindowListener wndListener;
 	Frame owner;
 	static Window dummy = new Window();
+	private static final long serialVersionUID = 4497834738069338734L;
 
 Window () {
 	// windows aren't visible per se, but they are exposed, colored and fontified

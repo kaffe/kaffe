@@ -16,6 +16,7 @@ abstract public class Calendar
   extends Object
   implements Serializable, Cloneable
 {
+	private static final long serialVersionUID = -1807547505821590642L;
 	final public static int ERA = 0;
 	final public static int YEAR = 1;
 	final public static int MONTH = 2;

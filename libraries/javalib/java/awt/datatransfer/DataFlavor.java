@@ -25,6 +25,7 @@ public class DataFlavor
 	public static DataFlavor stringFlavor = null;
 	static Class defaultRepClass;
 	static String defaultMimeType;
+	private static final long serialVersionUID = 8367026044764648243L;
 
 static {
 	try {

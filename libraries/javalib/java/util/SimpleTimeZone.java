@@ -14,6 +14,7 @@ import java.lang.String;
 public class SimpleTimeZone
   extends TimeZone
 {
+	private static final long serialVersionUID = -403250971215465050L;
 	private int startMonth;
 	private int startDayOfWeek;
 	private int startDayOfWeekInMonth;

@@ -13,6 +13,7 @@ package java.awt;
 public class Panel
   extends Container
 {
+	private static final long serialVersionUID = -2728009084054400034L;
 	private static LayoutManager defaultLayout = new FlowLayout();
 
 public Panel() {

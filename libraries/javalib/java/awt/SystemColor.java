@@ -18,6 +18,7 @@ final public class SystemColor
 {
 	int idx;
 	static int[] sysColors;
+	private static final long serialVersionUID = 4503142729533789064L;
 	final public static byte DESKTOP = 0;
 	final public static byte ACTIVE_CAPTION = 1;
 	final public static byte ACTIVE_CAPTION_TEXT = 2;

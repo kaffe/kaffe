@@ -20,6 +20,7 @@ public class ScrollPane
   extends Container
   implements AdjustmentListener
 {
+	private static final long serialVersionUID = 7956609840827222915L;
 	final public static int SCROLLBARS_AS_NEEDED = 0;
 	final public static int SCROLLBARS_ALWAYS = 1;
 	final public static int SCROLLBARS_NEVER = 2;

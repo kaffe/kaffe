@@ -14,6 +14,7 @@ package java.awt;
  */
 public class Point
 {
+	private static final long serialVersionUID = -5276940640259749850L;
 	public int x;
 	public int y;
 

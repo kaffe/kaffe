@@ -21,6 +21,7 @@ import java.lang.System;
 public class Properties
   extends Hashtable
 {
+	private static final long serialVersionUID = 4112578634029874840L;
 	protected Properties defaults;
 
 public Properties() {

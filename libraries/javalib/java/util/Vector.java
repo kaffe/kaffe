@@ -18,7 +18,7 @@ public class Vector
   extends AbstractList
   implements Cloneable, Serializable {
 
-static final long serialVersionUID = -2767605614048989439L;
+private static final long serialVersionUID = -2767605614048989439L;
 
 protected int capacityIncrement;
 protected int elementCount;

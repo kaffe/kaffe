@@ -30,6 +30,7 @@ public class AWTEvent
 	protected int id;
 	protected boolean consumed = false;
 	protected AWTEvent next;
+	private static final long serialVersionUID = -1825314779160409405L;
 	final public static int COMPONENT_EVENT_MASK = 0x01;
 	final public static int CONTAINER_EVENT_MASK = 0x02;
 	final public static int FOCUS_EVENT_MASK = 0x04;

@@ -31,6 +31,7 @@ public class Cursor
 	int type;
 	protected static Cursor[] predefined = new Cursor[14];
 	static Cursor defaultCursor;
+	private static final long serialVersionUID = 8028237497568985504L;
 
 static {
 	defaultCursor = predefined[DEFAULT_CURSOR] = new Cursor( DEFAULT_CURSOR);

@@ -14,6 +14,8 @@ import java.util.Vector;
 
 public class CheckboxGroup {
 
+private static final long serialVersionUID = 3729780091441768983L;
+
 Checkbox selection;
 Vector boxes = new Vector();
 

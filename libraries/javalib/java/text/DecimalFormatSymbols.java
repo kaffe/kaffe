@@ -17,6 +17,7 @@ import java.util.Locale;
 
 public class DecimalFormatSymbols implements Serializable, Cloneable {
 
+private static final long serialVersionUID = 5772796243397350300L;
 char digit;
 char patternSeparator;
 char zeroDigit;

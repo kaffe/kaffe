@@ -19,6 +19,7 @@ public class CheckboxMenuItem
 {
 	boolean isChecked;
 	ItemListener iListener;
+	private static final long serialVersionUID = 6190621106981774043L;
 
 public CheckboxMenuItem () {
 	this( "", false);

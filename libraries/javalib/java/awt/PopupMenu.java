@@ -15,6 +15,7 @@ package java.awt;
 public class PopupMenu
   extends Menu
 {
+	private static final long serialVersionUID = -4620452533522760060L;
 	PopupWindow wnd;
 
 public PopupMenu() {

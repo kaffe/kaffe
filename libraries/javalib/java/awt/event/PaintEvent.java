@@ -14,6 +14,7 @@ public class PaintEvent
 	final public static int PAINT = 800;
 	final public static int UPDATE = 801;
 	final public static int PAINT_LAST = 802;
+	private static final long serialVersionUID = 1267492026433337593L;
 
 public PaintEvent ( Component src, int evtId, Rectangle updateRect ) {
 	super( src, evtId);

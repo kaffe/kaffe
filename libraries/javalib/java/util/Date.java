@@ -18,6 +18,7 @@ import java.io.Serializable;
 
 public class Date implements Serializable, Cloneable
 {
+	private static final long serialVersionUID = 7523967970034938905L;
 	private long time = 0;
 
 public Date() {

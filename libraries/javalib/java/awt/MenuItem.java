@@ -27,6 +27,7 @@ public class MenuItem
 	String aCmd;
 	boolean isEnabled = true;
 	static MenuItem separator = new MenuItem( "-");
+	private static final long serialVersionUID = -21757335363267194L;
 
 public MenuItem() {
 	this( null, null);

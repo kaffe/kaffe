@@ -48,7 +48,7 @@ abstract public class Component
   extends Object
   implements ImageObserver, MenuContainer
 {
-	final static long serialVersionUID = -7644114512714619750L;
+	private final static long serialVersionUID = -7644114512714619750L;
 	Container parent;
 	int x;
 	int y;

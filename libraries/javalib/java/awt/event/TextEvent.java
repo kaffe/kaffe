@@ -19,6 +19,7 @@ public class TextEvent
 	final public static int TEXT_FIRST = 900;
 	final public static int TEXT_LAST = TEXT_FIRST;
 	final public static int TEXT_VALUE_CHANGED = TEXT_FIRST;
+	private static final long serialVersionUID = 6269902291250941179L;
 
 public TextEvent ( Object src, int evtId ) {
 	super( src, evtId);

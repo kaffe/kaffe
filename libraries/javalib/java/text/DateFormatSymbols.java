@@ -17,6 +17,8 @@ import java.util.Locale;
 
 public class DateFormatSymbols implements Serializable, Cloneable {
 
+private static final long serialVersionUID = -5987973545549424702L;
+
 String[] amPmStrings;
 String[] eras;
 String localPatternChars;

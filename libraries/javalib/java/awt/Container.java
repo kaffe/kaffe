@@ -19,6 +19,7 @@ import kaffe.awt.OpaqueComponent;
 abstract public class Container
   extends Component
 {
+	private static final long serialVersionUID = 4613797578919906343L;
 	Component[] children;
 	int nChildren;
 	LayoutManager layoutm;

@@ -17,6 +17,7 @@ public class KeyEvent
 {
 	protected int keyCode;
 	protected char keyChar;
+	private static final long serialVersionUID = -2352130953028126954L;
 	final public static int KEY_FIRST = 400;
 	final public static int KEY_LAST = 402;
 	final public static int KEY_TYPED = KEY_FIRST;

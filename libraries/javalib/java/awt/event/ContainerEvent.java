@@ -20,6 +20,7 @@ public class ContainerEvent
 	final public static int CONTAINER_LAST = 301;
 	final public static int COMPONENT_ADDED = CONTAINER_FIRST;
 	final public static int COMPONENT_REMOVED = CONTAINER_FIRST + 1;
+	private static final long serialVersionUID = -4114942250539772041L;
 
 public ContainerEvent ( Component src, int evtId, Component child ) {
 	super( src, evtId);

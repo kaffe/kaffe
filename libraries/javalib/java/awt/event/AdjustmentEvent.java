@@ -20,6 +20,8 @@ public class AdjustmentEvent
 {
 	protected int adjType;
 	protected int adjVal;
+	private static final long serialVersionUID = 5700290645205279921L;
+
 	final public static int UNIT_INCREMENT = 1;
 	final public static int UNIT_DECREMENT = 2;
 	final public static int BLOCK_DECREMENT = 3;

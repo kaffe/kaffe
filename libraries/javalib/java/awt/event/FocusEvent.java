@@ -22,6 +22,7 @@ public class FocusEvent
 	final public static int FOCUS_LAST = 1005;
 	final public static int FOCUS_GAINED = FOCUS_FIRST;
 	final public static int FOCUS_LOST = FOCUS_FIRST + 1;
+	private static final long serialVersionUID = 523753786457416396L;
 
 public FocusEvent ( Component src, int evtId ) {
 	super( src, evtId);

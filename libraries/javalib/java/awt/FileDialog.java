@@ -23,6 +23,7 @@ public class FileDialog
   extends Dialog
   implements ActionListener, ItemListener, FilenameFilter
 {
+	private static final long serialVersionUID = 5035145889651310422L;
 	final public static int LOAD = 0;
 	final public static int SAVE = 1;
 	final static String upDir = "..";

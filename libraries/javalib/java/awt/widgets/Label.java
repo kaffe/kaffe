@@ -14,6 +14,7 @@ package java.awt;
 public class Label
   extends Component
 {
+	private static final long serialVersionUID = 3094126758329070636L;
 	final public static int LEFT = 0;
 	final public static int CENTER = 1;
 	final public static int RIGHT = 2;

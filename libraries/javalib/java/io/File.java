@@ -15,6 +15,7 @@ import java.util.Vector;
  */
 public class File implements Serializable
 {
+	private static final long serialVersionUID = 301077366599181567L;
 	final public static String separator = System.getProperty("file.separator");
 	final public static char separatorChar = separator.charAt(0);
 	final public static String pathSeparator = System.getProperty("path.separator");

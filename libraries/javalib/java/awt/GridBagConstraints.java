@@ -18,6 +18,7 @@ public class GridBagConstraints
   implements Cloneable, Serializable
 {
 
+private static final long serialVersionUID = -1000070633030801713L;
 final public static int RELATIVE = -1;
 final public static int REMAINDER = 0;
 final public static int NONE = 0;

@@ -19,6 +19,7 @@ public class Polygon
 	public int[] xpoints;
 	public int[] ypoints;
 	protected Rectangle bounds;
+	private static final long serialVersionUID = -6460061437900069969L;
 
 public Polygon() {
 	npoints = 0;

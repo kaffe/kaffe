@@ -21,6 +21,7 @@ abstract public class MenuComponent
 	final static int IS_OLD_EVENT = 0x20;
 	int flags;
 	Component owner;
+	private static final long serialVersionUID = -4536902356223894379L;
 
 public MenuComponent () {
 	setFont( defFnt);

@@ -24,6 +24,7 @@ public class ItemEvent
 	final public static int ITEM_STATE_CHANGED = ITEM_FIRST;
 	final public static int SELECTED = 1;
 	final public static int DESELECTED = 2;
+	private static final long serialVersionUID = -608708132447206933L;
 
 public ItemEvent ( ItemSelectable src, int evtId, Object item, int stateChange) {
 	super( src, evtId);

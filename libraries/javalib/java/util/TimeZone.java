@@ -16,6 +16,7 @@ import java.lang.System;
 abstract public class TimeZone
   implements Serializable, Cloneable
 {
+	private static final long serialVersionUID = 3581463369166924961L;
 	private static TimeZone defaultTimeZone;
 	private static Hashtable zones = new Hashtable();
 	private String timezoneID = null;

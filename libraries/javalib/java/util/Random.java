@@ -25,6 +25,7 @@ public class Random implements Serializable
 	protected boolean haveNextNextGaussian;
 	protected double nextNextGaussian;
 
+	private static final long serialVersionUID = 3905348978240129619L;
 	final private long p1 = 0x5DEECE66DL;
 	final private long p2 = 0xBL;
 	final private long mask = ((1L << 48) - 1);

@@ -19,6 +19,7 @@ import kaffe.net.DefaultURLStreamHandlerFactory;
 final public class URL
   implements Serializable
 {
+	private static final long serialVersionUID = -7627629688361524110L;
 	private static URLStreamHandlerFactory defaultFactory = new DefaultURLStreamHandlerFactory();
 	private static URLStreamHandlerFactory factory;
 	private URLStreamHandler handler;

@@ -21,6 +21,7 @@ public class ComponentEvent
 	final public static int COMPONENT_RESIZED = COMPONENT_FIRST + 1;
 	final public static int COMPONENT_SHOWN = COMPONENT_FIRST + 2;
 	final public static int COMPONENT_HIDDEN = COMPONENT_FIRST + 3;
+	private static final long serialVersionUID = 8101406823902992965L;
 
 public ComponentEvent ( Component source, int id ) {
 	super( source, id);

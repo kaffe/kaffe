@@ -16,6 +16,7 @@ import kaffe.util.Ptr;
 public class Dialog
   extends Frame
 {
+	private static final long serialVersionUID = 5920926903803293709L;
 	static Insets dialogInsets;
 	static Rectangle dialogDeco;
 

@@ -22,6 +22,7 @@ public class Checkbox
   extends Component
   implements ItemSelectable, MouseListener, FocusListener, KeyListener
 {
+	private static final long serialVersionUID = 7270714317450821763L;
 	CheckboxGroup group;
 	int state;
 	String label;

@@ -28,6 +28,7 @@ public class Color
 	final public static Color white = new Color( (byte)255, (byte)255, (byte)255);
 	final public static Color lightGray = new Color( (byte)192, (byte)192, (byte)192);
 	final public static Color gray = new Color( (byte)128, (byte)128, (byte)128);
+	private static final long serialVersionUID = 118526816881161077L;
 
 static {
 	// Make sure all the static fields which have not been initialized completely

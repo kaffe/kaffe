@@ -13,6 +13,7 @@ package java.lang.reflect;
 public class InvocationTargetException
   extends Exception
 {
+	private static final long serialVersionUID = 4085088731926701167L;
 	private Throwable thrown;
 
 protected InvocationTargetException () {

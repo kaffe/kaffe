@@ -9,6 +9,7 @@ public class MenuShortcut
 	MenuShortcut next;
 	MenuShortcut nextMod;
 	ShortcutConsumer consumer;
+	private static final long serialVersionUID = 143448358473180225L;
 
 MenuShortcut( MenuShortcut ms) {
 	mods = ms.mods;

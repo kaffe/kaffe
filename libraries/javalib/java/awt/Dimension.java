@@ -14,6 +14,7 @@ package java.awt;
  */
 public class Dimension
 {
+	private static final long serialVersionUID = 4723952579491349524L;
 	public int width;
 	public int height;
 

@@ -26,6 +26,8 @@ import kaffe.io.DefaultSerializationFactory;
 
 public class ObjectStreamClass implements Serializable {
 
+private static final long serialVersionUID = -6120832682080437368L;
+
 public static SerializationFactory factory = new DefaultSerializationFactory();
 
 private static Hashtable streamClasses = new Hashtable();
