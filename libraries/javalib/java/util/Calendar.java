@@ -83,6 +83,23 @@ protected Calendar(TimeZone zne, Locale aLocale)
 	mindaysinfirstweek = 1;
 	zone = zne;
 	locale = aLocale;
+	set(ZONE_OFFSET, zne.getRawOffset());
+}
+
+abstract public void add(int field, int amount);
+
+public boolean after(Object when) {
+	try {
+		Calendar cal = (Calendar)when;
+		if (getTimeInMillis() > cal.getTimeInMillis()) {
+			return (true);
+		}
+	}
+	catch (ClassCastException _) {
+	}
+	catch (NullPointerException __) {
+	}
+	return (false);
 }
 
 private boolean areAllFieldsSet() {
@@ -95,11 +112,19 @@ private boolean areAllFieldsSet() {
 	return true;
 }
 
-abstract public void add(int field, int amount);
-
-abstract public boolean after(Object when);
-
-abstract public boolean before(Object when);
+public boolean before(Object when) {
+	try {
+		Calendar cal = (Calendar)when;
+		if (getTimeInMillis() < cal.getTimeInMillis()) {
+			return (true);
+		}
+	}
+	catch (ClassCastException _) {
+	}
+	catch (NullPointerException __) {
+	}
+	return (false);
+}
 
 final public void clear()
 {
@@ -145,13 +170,45 @@ abstract protected void computeFields();
 
 abstract protected void computeTime();
 
-abstract public boolean equals(Object when);
+public boolean equals(Object obj) {
+	if (obj instanceof Calendar) {
+		Calendar cal = (Calendar)obj;
+		return (isLenient() == cal.isLenient()
+			&& getFirstDayOfWeek() == cal.getFirstDayOfWeek()
+			&& getMinimalDaysInFirstWeek() == cal.getMinimalDaysInFirstWeek()
+			&& getTimeZone() == cal.getTimeZone()
+			&& getTime().equals(cal.getTime()));
+	}
+	return (false);
+}
 
 final public int get(int field)
 {
-	if (!isSet[field])
+	if (!isSet[field]) {
 		complete();
+	}
 	return (internalGet(field));
+}
+
+private int getActualLimit(int field, boolean up) {
+	int old_value = get(field);
+	int limit = 0;
+
+	do {
+		limit = get(field);
+		roll (field, up);
+	}
+	while (limit != get(field));
+	set(field, old_value);
+	return limit;
+}
+
+public int getActualMaximum(int field) {
+	return getActualLimit(field, true);
+}
+
+public int getActualMinimum(int field) {
+	return getActualLimit(field, false);
 }
 
 public static synchronized Locale[] getAvailableLocales()
@@ -215,9 +272,23 @@ public TimeZone getTimeZone()
 	return (zone);
 }
 
+public int hashCode() {
+	return (getFirstDayOfWeek()
+		^ getMinimalDaysInFirstWeek()
+		^ getTimeZone().getRawOffset()
+		^ (int) getTimeInMillis()
+		^ (isLenient() ? 0xFFFFFFFF : 0));
+}
+
 final protected int internalGet(int field)
 {
 	return (fields[field]);
+}
+
+/* used to just set the given field to the given value */
+void internalSet(int field, int value) {
+    isSet[field] = true;
+    fields[field] = value;
 }
 
 public boolean isLenient()
@@ -250,53 +321,85 @@ public void roll(int field, int amount)
 
 final public void set(int field, int value)
 {
-	isSet[field] = true;
-	fields[field] = value;
+	/* the range of value is restricted for lenient calendars */
+	if (isLenient()) {
+		if (value > internalGet(field)) {
+			int limit = getMaximum(field);
+			if (value > limit) {
+				value = limit;
+			}
+		}
+		else if (value < internalGet(field)) {
+			int limit = getMinimum(field);
+			if (value < limit) {
+				value = limit;
+			}
+		}
+	}
+
+	internalSet(field, value);
+
+	/* Perform eventual clean up, clearing other fields,
+	 * so that the recomputation will consider the new
+	 * values. See Chen et al. Java Class Libraries
+	 * Second Edition Volume 1, p.270.
+	 *
+	 * We deferr the setting of fields until the recomputation.
+	 */
+	switch (field) {
+	    case AM_PM:
+		    clear(HOUR_OF_DAY);
+		    break;
+	    case DAY_OF_WEEK:
+		    if (isSet(DAY_OF_MONTH)) {
+			    clear(DAY_OF_MONTH);
+		    }
+		    else {
+			    clear(MONTH);
+			    clear(DAY_OF_YEAR);
+		    }
+		    break;
+	    case DAY_OF_WEEK_IN_MONTH:
+		    clear(DAY_OF_MONTH);
+		    clear(WEEK_OF_MONTH);
+		    break;
+	    case DAY_OF_YEAR:
+		    clear(MONTH);
+		    break;
+	    case HOUR:
+		    clear(HOUR_OF_DAY);
+		    break;
+	    case WEEK_OF_MONTH:
+		    clear(DAY_OF_MONTH);
+		    break;
+	    case WEEK_OF_YEAR:
+		    clear(MONTH);
+		    clear(DAY_OF_YEAR);
+		    break;
+	}
+
 	isTimeSet = false;
 	areFieldsSet = false;	// Force recalculation of other fields.
 }
 
 final public void set(int year, int month, int date)
 {
-	fields[YEAR] = year;
-	fields[MONTH] = month;
-	fields[DATE] = date;
-	isSet[YEAR] = true;
-	isSet[MONTH] = true;
-	isSet[DATE] = true;
-	isTimeSet = false;
+	set(YEAR, year);
+	set(MONTH, month);
+	set(DATE, date);
 }
 
 final public void set(int year, int month, int date, int hour, int minute)
 {
-	fields[YEAR] = year;
-	fields[MONTH] = month;
-	fields[DATE] = date;
-	fields[HOUR_OF_DAY] = hour;
-	fields[MINUTE] = minute;
-	isSet[YEAR] = true;
-	isSet[MONTH] = true;
-	isSet[DATE] = true;
-	isSet[HOUR_OF_DAY] = true;
-	isSet[MINUTE] = true;
-	isTimeSet = false;
+	set(year, month, date);
+	set(HOUR_OF_DAY, hour);
+	set(MINUTE, minute);
 }
 
 final public void set(int year, int month, int date, int hour, int minute, int second)
 {
-	fields[YEAR] = year;
-	fields[MONTH] = month;
-	fields[DATE] = date;
-	fields[HOUR_OF_DAY] = hour;
-	fields[MINUTE] = minute;
-	fields[SECOND] = second;
-	isSet[YEAR] = true;
-	isSet[MONTH] = true;
-	isSet[DATE] = true;
-	isSet[HOUR_OF_DAY] = true;
-	isSet[MINUTE] = true;
-	isSet[SECOND] = true;
-	isTimeSet = false;
+	set(year, month, date, hour, minute);
+	set(SECOND, second);
 }
 
 public void setFirstDayOfWeek(int value)
@@ -333,8 +436,9 @@ public void setTimeZone(TimeZone value)
 }
 
 public String toString() {
+	complete();
 	return getClass().getName()
-		+ "[time=" + time
+		+ "[time=" + getTimeInMillis()
 		+ ",areFieldsSet=" + areFieldsSet
 		+ ",areAllFieldsSet=" + areAllFieldsSet()
 		+ ",lenient=" + isLenient()

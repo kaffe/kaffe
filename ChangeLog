@@ -1,3 +1,21 @@
+Wed Sep  4 13:07:46 CEST 2002 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/javalib/java/util/MissingResourceException.java:
+	(MissingResourceException) improved exception message.
+
+	* libraries/javalib/java/util/Calendar.java:
+	(after), (before), (equals), (getActualMaximum),
+	(getActualMinimum), (hashCode) implemented.
+	(getActualLimit), (internalSet) new private methods.
+	(set) simplified.
+	(toString) use getTimeInMillis.
+
+	* libraries/javalib/java/util/GregorianCalendar.java: added
+	support for dates before epoch start (1970). Use verbose constant
+	names instead of numerical constants. Implemented computing dates
+	using WEEK_OF_MONTH* and DAY_OF_WEEK. Modularized big methods into
+	smaller ones. Added lots of comments. Cleaned it up in general.
+	
 Wed Sep  4 09:36:45 CEST 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:

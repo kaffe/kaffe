@@ -19,7 +19,7 @@ public class MissingResourceException extends RuntimeException {
 
   public MissingResourceException(String s, String className, String ky)
   {
-    super(s);
+    super(s + "\t" + className + "\t" + ky);
     this.className = className;
     key = ky;
   }
