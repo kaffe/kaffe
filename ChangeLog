@@ -1,3 +1,8 @@
+Tue Mar  9 18:40:27 PST 1999  Moses DeJong <dejong@cs.umn.edu>
+
+	* developers/autogen.sh: new file
+	* developers/README: document new file
+
 Tue Mar  9 14:31:18 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/lang/Float.java, Double.java:
