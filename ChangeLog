@@ -1,3 +1,9 @@
+2004-04-13  Jim Pick <jim@kaffe.org>
+
+	* libraries/clib/native/System.c:
+	Fix for timezone problem - remove obsolete system properties,
+	user.language, user.region and user.timezone.
+
 2004-04-13  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c

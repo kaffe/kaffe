@@ -220,9 +220,6 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 	 * user.name            User account name
 	 * user.home            User home directory
 	 * user.dir             User's current working directory
-	 * user.language        User's language locale code
-	 * user.region          User's country locale code
-	 * user.timezone	User's timezone
 	 *
 	 * Others:
 	 *
@@ -330,23 +327,6 @@ java_lang_System_initProperties(struct Hjava_util_Properties* p)
 		setProperty(p, "user.name", "Unknown");
 		setProperty(p, "user.home", "Unknown");
 	}
-
-	/* We should try to work this stuff out really - XXX */
-	setProperty(p, "user.language", "EN");
-	setProperty(p, "user.region", "US");
-
-	/* Figure out the local time zone; fallback to GMT if we can't */
-	tzone = "GMT";
-#if defined(HAVE_TM_ZONE) && defined(HAVE_LOCALTIME)
-	{
-		const time_t now = time(NULL);
-
-		if (now != (time_t) -1) {
-			tzone = (char*)localtime(&now)->tm_zone;
-		}
-	}
-#endif
-	setProperty(p, "user.timezone", tzone);
 
 	setProperty(p, "file.encoding.pkg", "kaffe.io");
 	setProperty(p, "file.encoding", "Default");
