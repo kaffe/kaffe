@@ -11,6 +11,7 @@
 
 /* Use the incremental garbage collector */
 /* XXX put this in a make that a separate file !!! */
+#include "config-std.h"
 #include "mem/gc-incremental.c"
 
 Collector* main_collector;

@@ -22,7 +22,7 @@ Klasses_jar_SRCS = \
 	$(java_lang_SRCS) \
 	$(java_lang_ref_SRCS) \
 	$(java_lang_reflect_SRCS) \
-	$(java_math_SRCS) \
+	$(@java_math_SRCS@) \
 	$(java_net_SRCS) \
 	$(java_security_SRCS) \
 	$(java_security_acl_SRCS) \
@@ -811,9 +811,6 @@ java_lang_reflect_SRCS = \
 	java/lang/reflect/Proxy.java \
 	java/lang/reflect/ReflectPermission.java \
 	java/lang/reflect/UndeclaredThrowableException.java
-java_math_SRCS = \
-	java/math/BigDecimal.java \
-	java/math/BigInteger.java
 java_net_SRCS = \
 	java/net/Authenticator.java \
 	java/net/BindException.java \
@@ -1752,6 +1749,13 @@ kaffe_util_log_SRCS = \
 	kaffe/util/log/SimpleLogViewer.java
 kaffe_util_zip_SRCS = \
 	kaffe/util/zip/SwitchInflater.java
+native_java_math_SRCS = \
+	java/math/BigDecimal.java \
+	java/math/BigInteger.java
+pure_java_math_SRCS = \
+        pure-java/math/gnu/java/math/MPN.java \
+        pure-java/math/java/math/BigDecimal.java \
+        pure-java/math/java/math/BigInteger.java 
 org_tritonus_core_SRCS = \
 	org/tritonus/core/Service.java \
 	org/tritonus/core/TAudioConfig.java \

@@ -117,6 +117,7 @@ MAKE_KAFFEH = @MAKE_KAFFEH@
 MATH_LIBS = @MATH_LIBS@
 MOC = @MOC@
 M_LIBS = @M_LIBS@
+NATIVE_MATH_DIR = @NATIVE_MATH_DIR@
 NET_LIBS = @NET_LIBS@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
@@ -137,6 +138,7 @@ VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
 ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
+java_math_SRCS = @java_math_SRCS@
 jrebindir = @jrebindir@
 jredir = @jredir@
 jrelibdir = @jrelibdir@
@@ -152,7 +154,7 @@ SRCDIRS = gnu java javax kaffe org
 jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
 
-Klasses_jar_SRCS =  	$(gnu_java_util_SRCS) 	$(gnu_regexp_SRCS) 	$(java_io_SRCS) 	$(java_lang_SRCS) 	$(java_lang_ref_SRCS) 	$(java_lang_reflect_SRCS) 	$(java_math_SRCS) 	$(java_net_SRCS) 	$(java_security_SRCS) 	$(java_security_acl_SRCS) 	$(java_security_cert_SRCS) 	$(java_security_interfaces_SRCS) 	$(java_security_spec_SRCS) 	$(java_sql_SRCS) 	$(java_text_SRCS) 	$(java_util_SRCS) 	$(java_util_jar_SRCS) 	$(java_util_regex_SRCS) 	$(java_util_zip_SRCS) 	$(kaffe_io_SRCS) 	$(kaffe_jar_SRCS) 	$(kaffe_lang_SRCS) 	$(kaffe_management_SRCS) 	$(kaffe_net_SRCS) 	$(kaffe_security_SRCS) 	$(kaffe_security_provider_SRCS) 	$(kaffe_util_SRCS) 	$(kaffe_util_zip_SRCS)
+Klasses_jar_SRCS =  	$(gnu_java_util_SRCS) 	$(gnu_regexp_SRCS) 	$(java_io_SRCS) 	$(java_lang_SRCS) 	$(java_lang_ref_SRCS) 	$(java_lang_reflect_SRCS) 	$(@java_math_SRCS@) 	$(java_net_SRCS) 	$(java_security_SRCS) 	$(java_security_acl_SRCS) 	$(java_security_cert_SRCS) 	$(java_security_interfaces_SRCS) 	$(java_security_spec_SRCS) 	$(java_sql_SRCS) 	$(java_text_SRCS) 	$(java_util_SRCS) 	$(java_util_jar_SRCS) 	$(java_util_regex_SRCS) 	$(java_util_zip_SRCS) 	$(kaffe_io_SRCS) 	$(kaffe_jar_SRCS) 	$(kaffe_lang_SRCS) 	$(kaffe_management_SRCS) 	$(kaffe_net_SRCS) 	$(kaffe_security_SRCS) 	$(kaffe_security_provider_SRCS) 	$(kaffe_util_SRCS) 	$(kaffe_util_zip_SRCS)
 
 Awt_SRCS =  	$(gnu_java_awt_SRCS) 	$(java_applet_SRCS) 	$(java_awt_SRCS) 	$(java_awt_color_SRCS) 	$(java_awt_datatransfer_SRCS) 	$(java_awt_dnd_SRCS) 	$(java_awt_dnd_peer_SRCS) 	$(java_awt_event_SRCS) 	$(java_awt_font_SRCS) 	$(java_awt_geom_SRCS) 	$(java_awt_im_SRCS) 	$(java_awt_image_SRCS) 	$(java_awt_image_renderable_SRCS) 	$(java_awt_peer_SRCS) 	$(java_awt_print_SRCS) 	$(java_awt_widgets_SRCS) 	$(kaffe_applet_SRCS) 	$(kaffe_awt_SRCS) 	$(kaffe_util_log_SRCS)
 
@@ -229,8 +231,6 @@ java_lang_SRCS =  	java/lang/AbstractMethodError.java 	java/lang/ArithmeticExcep
 java_lang_ref_SRCS =  	java/lang/ref/PhantomReference.java 	java/lang/ref/Reference.java 	java/lang/ref/ReferenceQueue.java 	java/lang/ref/SoftReference.java 	java/lang/ref/WeakReference.java
 
 java_lang_reflect_SRCS =  	java/lang/reflect/AccessibleObject.java 	java/lang/reflect/Array.java 	java/lang/reflect/Constructor.java 	java/lang/reflect/Field.java 	java/lang/reflect/InvocationHandler.java 	java/lang/reflect/InvocationTargetException.java 	java/lang/reflect/Member.java 	java/lang/reflect/Method.java 	java/lang/reflect/Modifier.java 	java/lang/reflect/Proxy.java 	java/lang/reflect/ReflectPermission.java 	java/lang/reflect/UndeclaredThrowableException.java
-
-java_math_SRCS =  	java/math/BigDecimal.java 	java/math/BigInteger.java
 
 java_net_SRCS =  	java/net/Authenticator.java 	java/net/BindException.java 	java/net/ConnectException.java 	java/net/ContentHandler.java 	java/net/ContentHandlerFactory.java 	java/net/DatagramPacket.java 	java/net/DatagramSocket.java 	java/net/DatagramSocketImpl.java 	java/net/DatagramSocketImplFactory.java 	java/net/FileNameMap.java 	java/net/HttpURLConnection.java 	java/net/InetAddress.java 	java/net/InetAddressImpl.java 	java/net/InetSocketAddress.java 	java/net/JarURLConnection.java 	java/net/MalformedURLException.java 	java/net/MulticastSocket.java 	java/net/NetPermission.java 	java/net/NoRouteToHostException.java 	java/net/PasswordAuthentication.java 	java/net/PlainDatagramSocketImpl.java 	java/net/PlainSocketImpl.java 	java/net/PortUnreachableException.java 	java/net/ProtocolException.java 	java/net/ServerSocket.java 	java/net/Socket.java 	java/net/SocketAddress.java 	java/net/SocketException.java 	java/net/SocketImpl.java 	java/net/SocketImplFactory.java 	java/net/SocketInputStream.java 	java/net/SocketOptions.java 	java/net/SocketOutputStream.java 	java/net/SocketPermission.java 	java/net/SocketTimeoutException.java 	java/net/URI.java 	java/net/URISyntaxException.java 	java/net/URL.java 	java/net/URLClassLoader.java 	java/net/URLConnection.java 	java/net/URLDecoder.java 	java/net/URLEncoder.java 	java/net/URLStreamHandler.java 	java/net/URLStreamHandlerFactory.java 	java/net/UnknownHostException.java 	java/net/UnknownServiceException.java
 
@@ -383,6 +383,10 @@ kaffe_util_locale_SRCS =  	kaffe/util/locale/Country.java 	kaffe/util/locale/Cou
 kaffe_util_log_SRCS =  	kaffe/util/log/LogClient.java 	kaffe/util/log/LogStream.java 	kaffe/util/log/SimpleLogViewer.java
 
 kaffe_util_zip_SRCS =  	kaffe/util/zip/SwitchInflater.java
+
+native_java_math_SRCS =  	java/math/BigDecimal.java 	java/math/BigInteger.java
+
+pure_java_math_SRCS =          pure-java/math/gnu/java/math/MPN.java         pure-java/math/java/math/BigDecimal.java         pure-java/math/java/math/BigInteger.java 
 
 org_tritonus_core_SRCS =  	org/tritonus/core/Service.java 	org/tritonus/core/TAudioConfig.java 	org/tritonus/core/TInit.java 	org/tritonus/core/TMidiConfig.java
 
@@ -546,7 +550,7 @@ distdir: $(DISTFILES)
 	   $(distdir)/java/beans $(distdir)/java/beans/beancontext \
 	   $(distdir)/java/io $(distdir)/java/lang \
 	   $(distdir)/java/lang/ref $(distdir)/java/lang/reflect \
-	   $(distdir)/java/math $(distdir)/java/net $(distdir)/java/nio \
+	   $(distdir)/java/net $(distdir)/java/nio \
 	   $(distdir)/java/nio/channels \
 	   $(distdir)/java/nio/channels/spi $(distdir)/java/nio/charset \
 	   $(distdir)/java/nio/charset/spi $(distdir)/java/rmi \

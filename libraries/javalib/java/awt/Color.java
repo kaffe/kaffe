@@ -129,7 +129,7 @@ public static int HSBtoRGB ( float hue, float sat, float bri ) {
 	else {
 		hue *= 6.0f;                 // remove scaling
 		hi = (int) Math.floor( hue);
-		if ( hi == 6 ) hi = 0;       // 360ø == 0ø
+		if ( hi == 6 ) hi = 0;       // 360 == 0
 		
 		hfrac = hue - hi;
 		bri *= 255;
@@ -194,7 +194,7 @@ public static float[] RGBtoHSB ( int r, int g, int b, float[] hsb ) {
 			else
 				hsb[0] = (4.0f + (rf - gf)/dif) / 6.0f;
 			
-			if ( hsb[0] < 0 ) hsb[0] += 1.0f;            // wrap hue around 360ø
+			if ( hsb[0] < 0 ) hsb[0] += 1.0f;            // wrap hue around 360
 		}
 		else {                                         // we don't want NaNs
 			hsb[0] = 0.0f;

@@ -544,12 +544,211 @@ Java_java_math_BigInteger_hamDist0(JNIEnv* env, jobject s1, jobject s2)
 
 #else
 
+/* throw a kaffe.util.SupportDisabled exception */
+static void
+gmp_not_found(JNIEnv* env) 
+{
+	jclass sd = (*env)->FindClass(env, "kaffe.util.SupportDisabled");
+	(*env)->ThrowNew(env, sd, "GNU gmp was not found by Kaffe configure script");
+}
+
 /* We should put some dummies in here */
 void
 Java_java_math_BigInteger_initialize0(JNIEnv* env, jclass cls)
 {
-	jclass sd = (*env)->FindClass(env, "kaffe.util.SupportDisabled");
-	(*env)->ThrowNew(env, sd, "GNU gmp was not found by Kaffe configure script");
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_init0(JNIEnv* env, jobject r)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_finalize0(JNIEnv* env, jobject r)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_assignLong0(JNIEnv* env, jobject r, jlong v)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_assignBytes0(JNIEnv* env, jobject r, jint sign, jbyteArray magnitude)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_assignString0(JNIEnv* env, jobject r, jstring val, jint radix)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_add0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_sub0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_mul0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_div0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_rem0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_divrem0(JNIEnv* env, jclass cls, jobject r1, jobject r2, jobject s1, jobject s2)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_abs0(JNIEnv* env, jobject r, jobject s)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_neg0(JNIEnv* env, jobject r, jobject s)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_pow0(JNIEnv* env, jobject r, jobject s, jint power)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_gcd0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_mod0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_modpow0(JNIEnv* env, jobject r, jobject s1, jobject s2, jobject s3)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_modinv0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_and0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_or0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_xor0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_not0(JNIEnv* env, jobject r, jobject s)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_setbit0(JNIEnv* env, jobject r, jobject s, jint n)
+{
+	gmp_not_found(env);
+}
+
+void
+Java_java_math_BigInteger_clrbit0(JNIEnv* env, jobject r, jobject s, jint n)
+{
+	gmp_not_found(env);
+}
+
+jint
+Java_java_math_BigInteger_scansetbit0(JNIEnv* env, jobject s)
+{
+	gmp_not_found(env);
+}
+
+jint
+Java_java_math_BigInteger_cmp0(JNIEnv* env, jclass cls, jobject s1, jobject s2)
+{
+	gmp_not_found(env);
+}
+
+jstring
+Java_java_math_BigInteger_toString0(JNIEnv* env, jobject s, jint base)
+{
+	gmp_not_found(env);
+}
+
+jdouble
+Java_java_math_BigInteger_toDouble0(JNIEnv* env, jobject s)
+{
+	gmp_not_found(env);
+}
+
+jint
+Java_java_math_BigInteger_toInt0(JNIEnv* env, jobject s)
+{
+	gmp_not_found(env);
+}
+
+jint
+Java_java_math_BigInteger_probablyPrime0(JNIEnv* env, jobject s, jint prop)
+{
+	gmp_not_found(env);
+}
+
+jint
+Java_java_math_BigInteger_bitLength0(JNIEnv* env, jobject s)
+{
+	gmp_not_found(env);
+}
+
+jint
+Java_java_math_BigInteger_hamDist0(JNIEnv* env, jobject s1, jobject s2)
+{
+	gmp_not_found(env);
 }
 
 #endif

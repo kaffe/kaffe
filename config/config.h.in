@@ -601,6 +601,9 @@
 /* Defined if on Win32 platform */
 #undef WIN32
 
+/* Define if using the dmalloc debugging malloc package */
+#undef WITH_DMALLOC
+
 /* Define default KAFFEHOME */
 #undef DEFAULT_KAFFEHOME
 

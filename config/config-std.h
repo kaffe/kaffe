@@ -71,4 +71,8 @@
 #define atexit(x)       on_exit(x, 0)
 #endif
 
+#if WITH_DMALLOC
+#  include <dmalloc.h>            
+#endif
+
 #endif

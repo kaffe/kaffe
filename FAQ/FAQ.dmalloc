@@ -1,0 +1,53 @@
+How to use dmalloc to debug memory leaks in kaffe
+=================================================
+
+Author: Dalibor Topic <robilad@yahoo.com>
+
+What is dmalloc?
+----------------
+
+Dmalloc is a replacement library for system memory management
+functions like malloc and free. Dmalloc offers several runtime
+debugging aids, which can be setup using a simple environment
+variable.
+
+It is available at http://www.dmalloc.com under a BSD type license.
+
+How do I set kaffe up for dmalloc?
+----------------------------------
+
+Configure with --with-dmalloc. Make sure that the respective dynamic
+or static dmalloc libraries are in your library path, depending on how
+you want to build kaffe.
+
+If you're doing a dynamic build, make sure that the compiled binaries
+are linked against dmalloc as well. For example, on linux
+
+ldd /path/to/kaffe/jre/lib/i386/libkaffevm.so
+
+should mention libdmalloc among other libraries.
+
+How do I run kaffe with dmalloc?
+--------------------------------
+
+Dmalloc uses the DMALLOC_OPTIONS environment variable for its
+settings. So you need to set it up beforehand. Use the dmalloc command
+line utility to get the value for DMALLOC_OPTIONS appropriate for
+your settings. Note that the dmalloc command doesn't set the
+environment variable for you, it only tells you how to set it in your
+startup scripts.
+
+For example, logging dmalloc output to 'logfile', at an interval of
+100, and running with a low number of checks would result in the
+following DMALLOC_OPTIONS:
+
+dmalloc -l logfile -i 100 low
+DMALLOC_OPTIONS=debug=0x4e40503,inter=100,log=logfile
+
+After you've set DMALLOC_OPTIONS in your environment, running kaffe
+will generate dmalloc output in file 'logfile'.
+
+How do I debug memory errors in kaffe?
+--------------------------------------
+
+Just follow the instructions on using GDB in dmalloc's documentation.

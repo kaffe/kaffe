@@ -1268,6 +1268,63 @@ esac
 AC_SUBST(ALSA_DIR)
 AC_SUBST(ESD_DIR)
 
+dnl -----------------------------------------------------------------------
+dnl                 Pure java imlementation of java.math.*
+dnl -----------------------------------------------------------------------
+
+AC_ARG_ENABLE(pure_java_math,
+[  --enable-pure-java-math Enable pure java java.math.* package [default=native]],
+[case "$enableval" in
+yes)
+	pure_java_math=true
+	;;
+no)
+dnl  Use native implementation
+	pure_java_math=false
+	;;
+*)
+	AC_MSG_ERROR(bad value ${enableval} for --enable-pure-java-math)
+	;;
+esac],
+[
+dnl  If nothing is set, use native implementation if GNU MP can be found.
+dnl  Otherwise use pure java implementation.
+	if test $ac_cv_lib_gmp_mpz_get_d = no; then
+		if test $ac_cv_lib_gmp___gmpz_get_d = no; then
+		   pure_java_math=true
+		else
+			AC_CHECK_HEADER([gmp.h],
+					[pure_java_math=false],
+					[AC_MSG_WARN([Found GNU MP library, but can't find gmp.h. Using pure java implementation.])
+					pure_java_math=true])
+		fi
+	else
+		AC_CHECK_HEADER([gmp.h],
+				[pure_java_math=false],
+				[AC_MSG_WARN([Found GNU MP library, but can't find gmp.h. Using pure java implementation.])
+				pure_java_math=true])
+	fi
+]
+)
+
+if test x$pure_java_math = xtrue ; then
+	java_math_SRCS="pure_java_math_SRCS"
+	NATIVE_MATH_DIR=""
+else
+	java_math_SRCS="native_java_math_SRCS"
+	NATIVE_MATH_DIR="math"
+fi
+
+AC_SUBST(java_math_SRCS)
+AC_SUBST(NATIVE_MATH_DIR)
+
+dnl -----------------------------------------------------------------------
+dnl                    Memory debugging support
+dnl -----------------------------------------------------------------------
+
+AM_WITH_DMALLOC
+
+
 JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/native/libnative.la \
 \$(top_builddir)/libraries/clib/net/libnet.la \

@@ -27,13 +27,13 @@
 
 /* Hashtable structure */
 struct _hashtab {
-	const void	**list;	/* List of pointers to whatever */
-	int		count;	/* Number of slots used in the list */
-	int		size;	/* Total size list; always a power of 2 */
-	compfunc_t	comp;	/* Comparison function */
-	hashfunc_t	hash;	/* Hash function */
-	allocfunc_t	alloc;	/* Allocation function */
-	freefunc_t	free;	/* Free function */
+	const void	**list; 	/* List of pointers to whatever */
+	int		count;  	/* Number of slots used in the list */
+	int		size;   	/* Total size list; always a power of 2 */
+	compfunc_t	comp;   	/* Comparison function */
+	hashfunc_t	hash;   	/* Hash function */
+	allocfunc_t	alloc;  	/* Allocation function */
+	freefunc_t	dealloc;	/* Free function */
 };
 
 /* Internal functions */
@@ -47,7 +47,7 @@ static const void	*const DELETED = (const void *)&DELETED;
  * Create a new hashtable
  */
 hashtab_t
-hashInit(hashfunc_t hash, compfunc_t comp, allocfunc_t alloc, freefunc_t free)
+hashInit(hashfunc_t hash, compfunc_t comp, allocfunc_t alloc, freefunc_t dealloc)
 {
 	hashtab_t tab;
 
@@ -63,7 +63,7 @@ hashInit(hashfunc_t hash, compfunc_t comp, allocfunc_t alloc, freefunc_t free)
 	tab->hash = hash;
 	tab->comp = comp;
 	tab->alloc = alloc;
-	tab->free = free;
+	tab->dealloc = dealloc;
 	/* start out with initial size */
 	return (hashResize(tab));
 }
@@ -84,9 +84,9 @@ hashDestroy(hashtab_t tab)
 	}
 
 	/* Nuke the table */
-	if (tab->free) {
-		tab->free(tab->list);
-		tab->free(tab);
+	if (tab->dealloc) {
+		tab->dealloc(tab->list);
+		tab->dealloc(tab);
 	} else {
 		KFREE(tab->list);
 		KFREE(tab);
@@ -227,8 +227,8 @@ hashResize(hashtab_t tab)
 	 * entries, for instance when uninterning strings.
 	 */
 	if (!NEED_RESIZE(tab)) {
-		if (tab->free) {
-			tab->free(newList);
+		if (tab->dealloc) {
+			tab->dealloc(newList);
 		} else {
 			KFREE(newList);
 		}
@@ -256,8 +256,8 @@ hashResize(hashtab_t tab)
 	}
 
 	/* Update table */
-	if (tab->free) {
-		tab->free(tab->list);
+	if (tab->dealloc) {
+		tab->dealloc(tab->list);
 	} else {
 		KFREE(tab->list);
 	}

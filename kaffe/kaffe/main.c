@@ -307,31 +307,27 @@ options(char** argv)
 			/* FIXME: skip, case handled by the calle script */
 		}
 #endif
-		else if (strcmp(argv[i], "-classpath") == 0) {
-			i++;
-			if (argv[i] == 0) {
-				dprintf(
-				    "Error: No path found for %s option.\n",
-				    "-classpath");
-				exit(1);
-			}
-			vmargs.classpath = argv[i];
-		}
-		else if (strcmp(argv[i], "-addclasspath") == 0) {
+		else if ((strcmp(argv[i], "-addclasspath") == 0)
+			 || (strcmp(argv[i], "-classpath") == 0)
+			 || (strcmp(argv[i], "-cp") == 0)) {
 			char	*newcpath;
+			int      cpathlength;
 
 			i++;
 			if (argv[i] == 0) {
 				dprintf(
 				    "Error: No path found for %s option.\n",
-				    "-addclasspath");
+				    argv[i - 1]);
 				exit(1);
 			}
 
-			/* Get longer buffer FIXME: free old one */
-			if ((newcpath = malloc(strlen(vmargs.classpath)
-			    + strlen(path_separator)
-			    + strlen(argv[i]) + 1)) == NULL) {
+			cpathlength = strlen(vmargs.classpath)
+				+ strlen(path_separator)
+				+ strlen(argv[i])
+				+ 1;
+
+			/* Get longer buffer FIXME:  free the old one */
+			if ((newcpath = malloc(cpathlength)) == NULL) {
 				dprintf( "Error: out of memory.\n");
 				exit(1);
 			}
@@ -340,6 +336,8 @@ options(char** argv)
 			strcpy(newcpath, vmargs.classpath);
 			strcat(newcpath, path_separator);
 			strcat(newcpath, argv[i]);
+
+			/* set the new classpath */
 			vmargs.classpath = newcpath;
 		}
 		else if ((strncmp(argv[i], "-ss", 3) == 0) 
@@ -584,11 +582,8 @@ usage(void)
 	dprintf("	-ia32			Execute the ia32 version of Kaffe\n");
 #endif
 	dprintf("	-ss <size>		Maximum native stack size\n");
-	dprintf("	-Xss <size>		Maximum native stack size\n");
 	dprintf("	-mx <size> 		Maximum heap size\n");
-	dprintf("	-Xmx <size> 		Maximum heap size\n");
 	dprintf("	-ms <size> 		Initial heap size\n");
-	dprintf("	-Xms <size> 		Initial heap size\n");
 	dprintf("	-as <size> 		Heap increment\n");
 	dprintf("	-classpath <path>	Set classpath\n");
 	dprintf("	-verify *		Verify all bytecode\n");
@@ -628,6 +623,12 @@ usage(void)
         dprintf("	-vmstats <flag{,flag}>	Print VM statistics.  Set flag=all for all\n");
 #endif
 	dprintf("  * Option currently ignored.\n");
+	dprintf("\n");
+	dprintf("Compatibility options:\n");
+	dprintf("	-Xss <size>		Maximum native stack size\n");
+	dprintf("	-Xmx <size> 		Maximum heap size\n");
+	dprintf("	-Xms <size> 		Initial heap size\n");
+	dprintf("	-cp <path> 		Set classpath\n");
 }
 
 static

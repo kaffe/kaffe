@@ -148,7 +148,7 @@ void loadLibrary(String libname, ClassLoader loader) {
 			errmsg = e.getMessage();
 		}
 	}
-	throw new UnsatisfiedLinkError(errmsg);
+	throw new UnsatisfiedLinkError(errmsg + "\nAdding its directory to LD_LIBRARY_PATH may help.");
 }
 
 public void load(String filename) {
