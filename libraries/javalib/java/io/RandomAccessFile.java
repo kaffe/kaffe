@@ -10,11 +10,9 @@
 
 package java.io;
 
-import java.lang.String;
+import kaffe.util.UTF8;
 
-public class RandomAccessFile
-  implements DataOutput, DataInput
-{
+public class RandomAccessFile implements DataOutput, DataInput {
 	private FileDescriptor fd = new FileDescriptor();
 
 static {
@@ -162,54 +160,7 @@ final public short readShort() throws IOException {
 }
 
 final public String readUTF() throws IOException {
-	int length=readUnsignedShort();
-	StringBuffer buffer=new StringBuffer();
-
-	int pos=0;
-	while (pos<length) {
-		byte data=readByte();
-
-		if ((data & 0x80)==0x80) {
-			/* Hi-bit set, multi byte char */
-			if ((data & 0xE0)==0xC0) {
-				/* Valid 2 byte string '110' */
-				byte data2=readByte();
-
-				if ((data2 & 0xC0) == 0x80) {
-					/* Valid 2nd byte */
-					char toAdd=(char )((((int )(data & 0x1F)) << 6) + (data2 & 0x3F));
-					buffer.append(toAdd);
-					pos=pos+2;
-				}
-				else throw new UTFDataFormatException();
-			} else if ((data & 0xF0)==0xE0) {
-				/* Valid 3 byte string '1110' */
-				byte data2=readByte();
-
-				if ((data2 & 0xC0) == 0x80) {
-					/* Valid 2nd byte */
-					byte data3=readByte();
-
-					if ((data3 & 0xC0) == 0x80) {
-						/* Valid 3rd byte */
-						char toAdd=(char )((((int )(data & 0x0F)) << 12) + (((int )(data2 & 0x3F)) << 6)+ (data3 & 0x3F));
-						buffer.append(toAdd);
-						pos=pos+3;
-					}
-					else throw new UTFDataFormatException();
-				}
-				else throw new UTFDataFormatException();
-			}
-			else throw new UTFDataFormatException();
-		}
-		else {
-			buffer.append((char )data);
-			pos++;
-		}
-	}
-	if (pos>length) throw new UTFDataFormatException();
-
-	return buffer.toString();
+	return UTF8.decode(this, readUnsignedShort());
 }
 
 final public int readUnsignedByte() throws IOException {
@@ -301,33 +252,14 @@ final public void writeShort(int v) throws IOException {
 }
 
 final public void writeUTF(String str) throws IOException {
-	char c[] = str.toCharArray();
-	ByteArrayOutputStream b = new ByteArrayOutputStream(c.length);
-	for (int i = 0; i < c.length; i++) {
-		char chr = c[i];
-
-		if (chr >= '\u0001' && chr <= '\u007F')
-			b.write(chr);
-		else if (chr <= '\u07FF') {
-			b.write(0xC0 | (0x3F & (chr >> 6)));
-			b.write(0x80 | (0x3F & chr));
-		}
-		else {
-			b.write(0xE0 | (0x0F & (chr >> 12)));
-			b.write(0x80 | (0x3F & (chr >>  6)));
-			b.write(0x80 | (0x3F & chr));
-		}
-	}
-	c = null;
-
-	int len = b.size();
-	if (len > 65535) {
+	byte[] data = UTF8.encode(str);
+	if (data.length > 0xffff) {
 		throw new UTFDataFormatException("String too long");
 	}
 	synchronized(this) {
-		writeShort(len);
-		byte[] a = b.toByteArray();
-		writeBytes( a, 0, len);
+		writeShort(data.length);
+		write(data, 0, data.length);
 	}
 }
+
 }

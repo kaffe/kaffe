@@ -1,11 +1,3 @@
-package java.lang;
-
-import java.io.DataInput;
-import java.io.EOFException;
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UTFDataFormatException;
 
 /*
  * Java core library component.
@@ -16,10 +8,19 @@ import java.io.UTFDataFormatException;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-class ProcessInputStream
-  extends FilterInputStream
-  implements DataInput
-{
+
+package java.lang;
+
+import java.io.DataInput;
+import java.io.EOFException;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UTFDataFormatException;
+import kaffe.util.UTF8;
+
+class ProcessInputStream extends FilterInputStream implements DataInput {
+
 public ProcessInputStream(InputStream in) {
 	super(in);
 }
@@ -134,59 +135,7 @@ final public short readShort() throws IOException {
 }
 
 final public String readUTF() throws IOException {
-	return readUTF(this);
-}
-
-final public static synchronized String readUTF(DataInput in) throws IOException {
-	int length=in.readUnsignedShort();
-	StringBuffer buffer=new StringBuffer();
-
-	int pos=0;
-	while (pos<length) {
-		int data=in.readUnsignedByte();
-
-		if ((data & 0x80)==0x80) {
-			/* Hi-bit set, multi byte char */
-			if ((data & 0xE0)==0xC0) {
-				/* Valid 2 byte string '110' */
-				byte data2=in.readByte();
-
-				if ((data2 & 0xC0) == 0x80) {
-					/* Valid 2nd byte */
-					char toAdd=(char )((((int )(data & 0x1F)) << 6) + (data2 & 0x3F));
-					buffer.append(toAdd);
-					pos=pos+2;
-				}
-				else throw new UTFDataFormatException();
-			} else if ((data & 0xF0)==0xE0) {
-				/* Valid 3 byte string '1110' */
-				byte data2=in.readByte();
-
-				if ((data2 & 0xC0) == 0x80) {
-					/* Valid 2nd byte */
-					byte data3=in.readByte();
-
-					if ((data3 & 0xC0) == 0x80) {
-						/* Valid 3rd byte */
-						char toAdd=(char )((((int )(data & 0x0F)) << 12) + (((int )(data2 & 0x3F)) << 6)+ (data3 & 0x3F));
-						buffer.append(toAdd);
-						pos=pos+3;
-					}
-					else throw new UTFDataFormatException();
-				}
-				else throw new UTFDataFormatException();
-			}
-			else throw new UTFDataFormatException();
-		}
-		else {
-			buffer.append((char )data);
-			pos++;
-		}
-	}
-
-	if (pos>length) throw new UTFDataFormatException();
-
-	return buffer.toString();
+	return UTF8.decode(this, readUnsignedShort());
 }
 
 final public int readUnsignedByte() throws IOException {

@@ -1,6 +1,3 @@
-package java.io;
-
-import java.lang.String;
 
 /*
  * Java core library component.
@@ -11,10 +8,12 @@ import java.lang.String;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-public class DataOutputStream
-  extends FilterOutputStream
-  implements DataOutput
-{
+
+package java.io;
+
+import kaffe.util.UTF8;
+
+public class DataOutputStream extends FilterOutputStream implements DataOutput {
 	protected int written;
 
 public DataOutputStream(OutputStream out) {
@@ -96,32 +95,15 @@ final public void writeShort(int v) throws IOException {
 }
 
 final public void writeUTF(String str) throws IOException {
-	char c[] = str.toCharArray();
-	ByteArrayOutputStream b = new ByteArrayOutputStream(c.length);
-	for (int i = 0; i < c.length; i++) {
-		char chr = c[i];
-
-		if (chr >= '\u0001' && chr <= '\u007F')
-			b.write(chr);
-		else if (chr <= '\u07FF') {
-			b.write(0xC0 | (0x3F & (chr >> 6)));
-			b.write(0x80 | (0x3F & chr));
-		}
-		else {
-			b.write(0xE0 | (0x0F & (chr >> 12)));
-			b.write(0x80 | (0x3F & (chr >>  6)));
-			b.write(0x80 | (0x3F & chr));
-		}
-	}
-	c = null;
-
-	int len = b.size();
-	if (len > 65535) {
+	byte[] data = UTF8.encode(str);
+	if (data.length > 0xffff) {
 		throw new UTFDataFormatException("String too long");
 	}
 	synchronized(this) {
-		writeShort(len);
-		b.writeTo(this);
+		writeShort(data.length);
+		write(data, 0, data.length);
 	}
 }
+
 }
+
