@@ -31067,6 +31067,50 @@ fi
 	esac
 
 
+    echo "$as_me:$LINENO: checking whether we are using the GNU C Library 2.3 or later" >&5
+echo $ECHO_N "checking whether we are using the GNU C Library 2.3 or later... $ECHO_C" >&6
+if test "${ac_cv_gnu_library_2_3+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#include <features.h>
+#ifdef __GNU_LIBRARY__
+ #if (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 3) || (__GLIBC__ > 2)
+  Lucky GNU user
+ #endif
+#endif
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "Lucky GNU user" >/dev/null 2>&1; then
+  ac_cv_gnu_library_2_3=yes
+else
+  ac_cv_gnu_library_2_3=no
+fi
+rm -f conftest*
+
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_gnu_library_2_3" >&5
+echo "${ECHO_T}$ac_cv_gnu_library_2_3" >&6
+
+
+
+	if test x"$ac_cv_gnu_library_2_3" != x"yes" -a x"$ac_cv_gnu_library_2_1"; then
+
+cat >>confdefs.h <<\_ACEOF
+#define OLD_LINUXTHREADS 1
+_ACEOF
+
+	fi
+
 	VMLIBS="$VM_LIBS $PTHREAD_LIBS"
  else
         CPPFLAGS="$CPPFLAGS -DBR_PTHREADS=0"

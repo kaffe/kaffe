@@ -873,6 +873,11 @@ if test x$with_threads = xunix-pthreads ; then
 	fi
 
 	KAFFE_LIB_SOLARIS_PTHREAD
+	KAFFE_CHECK_GLIBC_VER([2],[3])
+
+	if test x"$ac_cv_gnu_library_2_3" != x"yes" -a x"$ac_cv_gnu_library_2_1"; then
+		AC_DEFINE([OLD_LINUXTHREADS],1, [Is set if the current GLIBC is using the old Linuxthreads library])
+	fi
 
 	VMLIBS="$VM_LIBS $PTHREAD_LIBS"
  else

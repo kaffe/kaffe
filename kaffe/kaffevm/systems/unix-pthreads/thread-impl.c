@@ -73,28 +73,41 @@ static char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', '
  * a suspend signal is delivered, and it's therefore not safe
  * to mulitplex a sinle signal for both suspend & resume purposes
  */
-#if !defined(__SIGRTMIN) || (__SIGRTMAX - __SIGRTMIN < 3)
-#define          SIG_SUSPEND   SIGURG
-#define          SIG_RESUME    SIGTSTP
-#define          SIG_DUMP      SIGXCPU
+#if !defined(__SIGRTMIN) || (__SIGRTMAX - __SIGRTMIN < 7)
+
+#  if defined(OLD_LINUXTHREADS)
+
+#    define	SIG_SUSPEND   SIGURG
+#    define	SIG_RESUME    SIGTSTP
+#    define	SIG_DUMP      SIGXCPU
 
 /*
  * Sneak these signal in from the thread library.
  */
-#define		 PSIG_RESTART	SIGUSR1
-#define		 PSIG_CANCEL	SIGUSR2
+#    define	PSIG_RESTART	SIGUSR1
+#    define	PSIG_CANCEL	SIGUSR2
+
+#  else // OLD_LINUXTHREADS
+
+#    define	SIG_SUSPEND	SIGUSR1
+#    define	SIG_RESUME	SIGUSR2
+#    define	SIG_DUMP	SIGXCPU
+
+// PSIG_RESTART and PSIG_CANCEL are left undefined.
+
+#  endif
 
 #else
 
-#define          SIG_SUSPEND   SIGUSR1
-#define          SIG_RESUME    SIGUSR2
-#define          SIG_DUMP      SIGXCPU
+#  define	SIG_SUSPEND   (__SIGRTMIN+6)
+#  define	SIG_RESUME    (__SIGRTMIN+5)
+#  define	SIG_DUMP      SIGXCPU
 
 /*
  * Sneak these signal in from the thread library.
  */
-#define		 PSIG_RESTART	(__SIGRTMIN)
-#define		 PSIG_CANCEL	(__SIGRTMIN+1)
+#  define	PSIG_RESTART	(__SIGRTMIN)
+#  define	PSIG_CANCEL	(__SIGRTMIN+1)
 
 #endif
 
@@ -324,8 +337,12 @@ tInitSignalHandlers (void)
   sigemptyset( &sigSuspend.sa_mask);
   sigaddset( &sigSuspend.sa_mask, SIG_SUSPEND);
   sigaddset( &sigSuspend.sa_mask, SIG_RESUME);
+#if defined(PSIG_RESTART)
   sigaddset( &sigSuspend.sa_mask, PSIG_RESTART);
+#endif
+#if defined(PSIG_RESTART)
   sigaddset( &sigSuspend.sa_mask, PSIG_CANCEL);
+#endif
 
   sigaddset( &sigSuspend.sa_mask, SIGSTOP);
   sigaddset( &sigSuspend.sa_mask, SIGCONT);
@@ -333,7 +350,7 @@ tInitSignalHandlers (void)
 
   sigaction( SIG_SUSPEND, &sigSuspend, NULL);
 
-  sigResume.sa_flags = 0; // Note that we do not want restart here.
+  sigResume.sa_flags = 0; /* Note that we do not want restart here. */
   sigResume.sa_handler = resume_signal_handler;
   sigResume.sa_mask = sigSuspend.sa_mask;
   sigaction( SIG_RESUME, &sigResume, NULL);
@@ -1022,8 +1039,6 @@ jthread_suspendall (void)
   jthread_t	t;
   int		iLockRoot;
  
-  //int           nSuspends;
-
   /* don't allow any new thread to be created or recycled until this is done */
   TLOCK( cur); /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ tLock */
 
@@ -1031,7 +1046,6 @@ jthread_suspendall (void)
 			critSection, cur, cur->tid, cur->data.jlThread))
 
   if ( ++critSection == 1 ){
-	//nSuspends = 0;
 
 	for ( t=activeThreads; t; t = t->next ){
 	  /*
@@ -1048,8 +1062,6 @@ jthread_suspendall (void)
 		  DBG( JTHREAD, dprintf("error sending SUSPEND signal to %p: %d\n", t, stat))
 		}
 		else {
-		  //nSuspends++;
-
 		  /* BAD: Empirical workaround for lost signals (with accumulative syncing)
 		   * It shouldn't be necessary (posix sems are accumulative), and it
 		   * is bad, performancewise (at least n*2 context switches per suspend)
@@ -1085,14 +1097,11 @@ jthread_unsuspendall (void)
   jthread_t	t;
   int		stat;
   int		iLockRoot;
-  //int          nResumes;
 
   if ( !critSection )
 	return;
 
   if ( --critSection == 0 ){
-	//nResumes = 0;
-
 	/* No need to sync, there's nobody else running. It's just a matter of
 	 * defensive programming (and we use our fast locks)
 	 */
@@ -1100,7 +1109,6 @@ jthread_unsuspendall (void)
 
 	for ( t=activeThreads; t; t = t->next ){
 	  if ( t->suspendState & (SS_PENDING_SUSPEND | SS_SUSPENDED) ){
-		//nResumes++;
 
 		DBG( JTHREAD, dprintf("signal resume: %p (sus: %d blk: %d)\n",
 				      t, t->suspendState, t->blockState))
@@ -1193,73 +1201,6 @@ jthread_set_blocking (int fd, int blocking)
     fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) & ~O_NONBLOCK);
   }
 }
-
-#if 0
-/*
- * Walk the thread's internal context. The stack is actually "walked down"
- * [base+size..base].
- * ? how useful is this for the GC thread itself ?
- */
-void
-TwalkThread ( Hjava_lang_Thread* thread )
-{
-  nativeThread  *t;
-  nativeThread  *nt = NATIVE_THREAD( thread);
-  void          *base;
-  long          size;
-
-  if ( !nt || !nt->active || !nt->stackMin ){
-	return;
-  }
-
-  DBG( JTHREAD, TMSG_LONG( "walking ", nt));
-
-  if ( !nt->suspendState && !nt->blockState ){
-	t = GET_CURRENT_THREAD(&t);
-	if ( t == nt ){
-	  /* Ok, we do walk the gcMan for now, but just up to this point */
-	  nt->stackCur = &t;
-	}
-	else {
-	  /* everything else should be blocked or suspended by now */
-	  DBG( JTHREAD, ("walking a running thread %p\n", nt));
-	  //tDump();
-	  //ABORT();
-	  return;
-	}
-  }
-  else if ( nt->suspendState == SS_PENDING_SUSPEND ){
-	DBG( JTHREAD, ("pending suspend, walk whole stack\n"));
-	/*
-	 * Assuming the very next thing after a context switch to this thread
-	 * would be calling the signal handler, we accept that case. Unfortunately,
-	 * we don't have a stackCur, yet
-	 */
-#if defined(STACK_GROWS_UP)
-	nt->stackCur = nt->stackMax;
-#else
-	nt->stackCur = nt->stackMin;
-#endif
-  }
-
-  if ( ((uintp) nt->stackCur < (uintp) nt->stackMin) ||
-	   (((uintp) nt->stackCur > (uintp) nt->stackMax)) ) {
-	DBG( JTHREAD, ("inconsistent stack\n"));
-	tDump();
-	ABORT();
-  }
-
-#if defined(STACK_GROWS_UP)
-  base = nt->stackMin;
-  size = (unsigned long)nt->stackCur - (unsigned long) base;
-#else
-  base = nt->stackCur;
-  size = (uintp)nt->stackMax - (uintp) base;
-#endif
-
-  walkConservative( base, size);
-}
-#endif
 
 /*
  * Get the current stack limit.

@@ -207,8 +207,7 @@ msgstr ""
 msgid ""
 "\t-vmdebug <flag{,flag}>\t Internal VM debugging.  Set flag=list for a list\n"
 msgstr ""
-"\t-vmdebug <旗標{,旗標}>\t 內部 VM 偵錯，設定 flag=list 可取得偵錯項目清"
-"單\n"
+"\t-vmdebug <旗標{,旗標}>\t 內部 VM 偵錯，設定 flag=list 可取得偵錯項目清單\n"
 
 #: kaffe/kaffe/main.c:776
 #, c-format

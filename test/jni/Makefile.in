@@ -21,7 +21,7 @@
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file.
-SOURCES = $(jniBase_SOURCES) $(jniExecClass_SOURCES)
+SOURCES = $(jniBase_SOURCES) $(jniExecClass_SOURCES) $(jniReflect_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -44,7 +44,8 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
-check_PROGRAMS = jniBase$(EXEEXT) jniExecClass$(EXEEXT)
+check_PROGRAMS = jniBase$(EXEEXT) jniExecClass$(EXEEXT) \
+	jniReflect$(EXEEXT)
 subdir = test/jni
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -53,15 +54,15 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/acx_pthread.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
 	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/compile_value.m4 \
 	$(top_srcdir)/m4/esd.m4 $(top_srcdir)/m4/gcc_attribute.m4 \
-	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/gnu-crypto.m4 \
-	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/herrno.m4 \
-	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/in6addr.m4 \
-	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/libxml.m4 \
-	$(top_srcdir)/m4/libxslt.m4 $(top_srcdir)/m4/nls.m4 \
-	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
-	$(top_srcdir)/m4/sockaddrin6.m4 \
+	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/glibcver.m4 \
+	$(top_srcdir)/m4/gnu-crypto.m4 $(top_srcdir)/m4/gwqt.m4 \
+	$(top_srcdir)/m4/herrno.m4 $(top_srcdir)/m4/iconv.m4 \
+	$(top_srcdir)/m4/in6addr.m4 $(top_srcdir)/m4/lcmessage.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/libxslt.m4 \
+	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
 	$(top_srcdir)/m4/sockinttypes.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
@@ -83,11 +84,14 @@ am__DEPENDENCIES_4 = $(top_builddir)/kaffe/kaffevm/libkaffevm.la \
 	$(am__DEPENDENCIES_2) $(am__DEPENDENCIES_3)
 am_jniExecClass_OBJECTS = jniExecClass.$(OBJEXT)
 jniExecClass_OBJECTS = $(am_jniExecClass_OBJECTS)
+am_jniReflect_OBJECTS = jniReflect.$(OBJEXT)
+jniReflect_OBJECTS = $(am_jniReflect_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config -I$(top_builddir)/include/kaffe
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/jniBase.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/jniExecClass.Po
+@AMDEP_TRUE@	./$(DEPDIR)/jniExecClass.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/jniReflect.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
@@ -95,8 +99,10 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
 	$(AM_CFLAGS) $(CFLAGS)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(jniBase_SOURCES) $(jniExecClass_SOURCES)
-DIST_SOURCES = $(jniBase_SOURCES) $(jniExecClass_SOURCES)
+SOURCES = $(jniBase_SOURCES) $(jniExecClass_SOURCES) \
+	$(jniReflect_SOURCES)
+DIST_SOURCES = $(jniBase_SOURCES) $(jniExecClass_SOURCES) \
+	$(jniReflect_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -363,6 +369,9 @@ jniBase_DEPENDENCIES = $(LIBKAFFEVM)
 jniExecClass_SOURCES = jniExecClass.c
 jniExecClass_LDADD = "-dlopen" $(LIBNATIVE) $(LIBKAFFEVM) @LIBLTDL@
 jniExecClass_DEPENDENCIES = $(LIBKAFFEVM)
+jniReflect_SOURCES = jniReflect.c
+jniReflect_LDADD = "-dlopen" $(LIBNATIVE) $(LIBKAFFEVM) @LIBLTDL@
+jniReflect_DEPENDENCIES = $(LIBKAFFEVM)
 TESTS_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 TESTS = $(check_PROGRAMS)
 CLEANFILES = *.fail *.out core *.core *.class
@@ -412,6 +421,9 @@ jniBase$(EXEEXT): $(jniBase_OBJECTS) $(jniBase_DEPENDENCIES)
 jniExecClass$(EXEEXT): $(jniExecClass_OBJECTS) $(jniExecClass_DEPENDENCIES) 
 	@rm -f jniExecClass$(EXEEXT)
 	$(LINK) $(jniExecClass_LDFLAGS) $(jniExecClass_OBJECTS) $(jniExecClass_LDADD) $(LIBS)
+jniReflect$(EXEEXT): $(jniReflect_OBJECTS) $(jniReflect_DEPENDENCIES) 
+	@rm -f jniReflect$(EXEEXT)
+	$(LINK) $(jniReflect_LDFLAGS) $(jniReflect_OBJECTS) $(jniReflect_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -421,6 +433,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jniBase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jniExecClass.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jniReflect.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

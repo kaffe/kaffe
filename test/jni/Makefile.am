@@ -6,7 +6,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file.
 
-check_PROGRAMS= jniBase jniExecClass
+check_PROGRAMS= jniBase jniExecClass jniReflect
 
 AM_CPPFLAGS= -I$(top_srcdir)/include -I$(top_srcdir)/include/kaffe \
 	     -I$(top_srcdir)/libltdl \
@@ -34,6 +34,10 @@ jniBase_DEPENDENCIES= $(LIBKAFFEVM)
 jniExecClass_SOURCES= jniExecClass.c
 jniExecClass_LDADD= "-dlopen" $(LIBNATIVE) $(LIBKAFFEVM) @LIBLTDL@
 jniExecClass_DEPENDENCIES= $(LIBKAFFEVM)
+
+jniReflect_SOURCES= jniReflect.c
+jniReflect_LDADD= "-dlopen" $(LIBNATIVE) $(LIBKAFFEVM) @LIBLTDL@
+jniReflect_DEPENDENCIES= $(LIBKAFFEVM)
 
 TESTS_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 TESTS = $(check_PROGRAMS)

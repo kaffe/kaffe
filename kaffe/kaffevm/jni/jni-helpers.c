@@ -51,9 +51,9 @@ KaffeJNI_ToReflectedMethod (JNIEnv *env UNUSED, jclass cls, jmethodID mid, jbool
 	
 	clazz = (Hjava_lang_Class *)cls;
 	refMeth = NULL;
-	for (allMethods = CLASS_METHODS(clazz), i = CLASS_NMETHODS(clazz); 
-	     i >= 0; 
-	     i--, allMethods++)
+	for (allMethods = CLASS_METHODS(clazz), i = 0;
+	     i < CLASS_NMETHODS(clazz); 
+	     i++, allMethods++)
 	  {
 	    if (allMethods == (Method *)mid)
 	      {
@@ -78,8 +78,8 @@ KaffeJNI_ToReflectedField (JNIEnv *env UNUSED, jclass cls, jfieldID fid, jboolea
 
 	clazz = (Hjava_lang_Class *)cls;
 	refField = NULL;
-	for (allFields = CLASS_FIELDS(clazz), i = CLASS_NFIELDS(clazz);
-	     i >= 0;
+	for (allFields = CLASS_FIELDS(clazz), i = 0;
+	     i < CLASS_NFIELDS(clazz);
 	     i++, allFields++)
 	  {
 	    if (allFields == (Field *)fid)

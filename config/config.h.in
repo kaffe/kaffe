@@ -708,6 +708,9 @@
 /* If the vm is static or all libraries are static */
 #undef NO_SHARED_VMLIBRARY
 
+/* Is set if the current GLIBC is using the old Linuxthreads library */
+#undef OLD_LINUXTHREADS
+
 /* Name of package */
 #undef PACKAGE
 
