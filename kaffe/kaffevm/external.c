@@ -377,7 +377,7 @@ void*
 loadNativeLibrarySym(const char* name)
 {
   int i = 0;
-  void* func = NULL;;
+  void* func = NULL;
   int iLockRoot;
 
   lockStaticMutex(&libraryLock);

@@ -1,3 +1,8 @@
+2004-12-21  Timothy S. Stack  <stack@cs.utah.edu>
+
+	* kaffe/kaffevm/external.c:
+	Fix a typo.
+	
 2004-12-21  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/clib/native/Class.c
