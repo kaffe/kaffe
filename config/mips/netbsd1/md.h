@@ -5,6 +5,9 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2003
+ *      Kaffe.org contributors. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
@@ -28,10 +31,9 @@
 
 /*
  * System dependent call method routine definition.
- * We use 'mips32CallMethod' (defined in mips.c) for NetBSD/mips.
+ * We use 'sysdepCallMethod' (defined in md.c) for NetBSD/mips.
  */
-#undef sysdepCallMethod
-#define sysdepCallMethod(CALL) mips32CallMethod(CALL)
+extern void sysdepCallMethod(callMethodInfo *call);
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"

@@ -5,6 +5,9 @@
  * Copyright (c) 1996, 1997, 1998
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2003
+ *      Kaffe.org contributors. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -13,6 +16,7 @@
 #define __mips_linux_md_h
 
 #include "mips/common.h"
+#include "mips/sysdepCallMethod.h"
 #include "mips/threads.h"
 
 #undef	SP_OFFSET

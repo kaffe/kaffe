@@ -475,6 +475,7 @@ EXTRA_DIST = \
 	mips/netbsd1/md.c \
 	mips/netbsd1/md.h \
 	mips/o32-sysdepCallMethod.h \
+	mips/sysdepCallMethod.h \
 	mips/threads.h \
 	mips/trampolines.c \
 	mips/ultrix4/Make.frag \

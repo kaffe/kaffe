@@ -1,3 +1,28 @@
+2003-12-13  Dalibor Topic <robilad@kaffe.org>
+
+	* config/mips/sysdepCallMethod.h: New file.
+
+	* config/mips/common.h: Moved sysdepCallMethod selection
+	into config/mips/sysdepCallMethod.h.
+
+	* config/mips/irix5/md.h,
+	config/mips/linux/md.h,
+	config/mips/ultrix4/md.h:
+	Include config/mips/sysdepCallMethod.h.
+
+	* config/mips/netbsd1/md.c:
+	(mips32CallMethod) Renamed to sysdepCallMethod.
+
+	* config/mips/netbsd1/md.h:
+	Declared sysdepCallMethod.
+
+	* config/Makefile.am
+	(EXTRA_DIST): Added config/mips/sysdepCallMethod.h.
+
+	* aclocal.m4,
+	config/Makefile.in:
+	Regenerated.
+
 2003-12-12  Atsushi Nemoto  <anemo@mba.ocn.ne.jp>
 
 	Fixed build on mipsel-linux for jit3.
