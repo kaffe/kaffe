@@ -15,8 +15,8 @@ LIBDIR=${LIBDIR-lib}
 TOPBLD=${top_builddir-`sed -n '/^top_builddir *= */ s///p' < Makefile`}
 
 # We now rebuild the class library using kjc and Klasses.jar.bootstrap 
-# JIKES=@JIKES@
-JIKES=
+JIKES=@JIKES@
+# JIKES=
 
 rm -rf $LIBDIR
 mkdir $LIBDIR
@@ -33,7 +33,8 @@ if [ -z "$JIKES" ] ; then
 		JAVAC="$JAVA at.dms.kjc.Main"
 		VERBOSE=-v
 	fi
-	CPATH="-classpath $LIBDIR${CPATH+@PATHSEP@$CPATH}"
+	CPATH="${CPATH+-classpath $LIBRARY${CPATH+@PATHSEP@$CPATH}}"
+	CLASSPATH=./Klasses.jar.bootstrap:$CLASSPATH; export CLASSPATH
 else
 	JAVAC="$JIKES"
 	CPATH="${CPATH+-classpath $CPATH}"
@@ -43,4 +44,4 @@ fi
 cd $SRCDIR
 
 echo "Compiling classes ..."
-CLASSPATH=./Klasses.jar.bootstrap:$CLASSPATH $JAVAC $VERBOSE -d $LIBDIR $CPATH ${1+"$@"}
+$JAVAC $VERBOSE -d $LIBDIR $CPATH ${1+"$@"}

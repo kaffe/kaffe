@@ -1,3 +1,16 @@
+2002-11-20  Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
+
+	* Makefile.am (BUILD_ENVIRONMENT-make):  Always add '.' to CLASSPATH.
+	This fixes make check problems when CLASSPATH is not empty.
+
+2002-11-20 Herve Roussain <roussain@univ-ubs.fr>
+	* libraries/javalib/kaffe/util/locale/Country_fr.java:
+	fixed compilation problems caused by non-ASCII character.
+
+	* configure.in, libraries/javalib/rebuildLib.in: added --with-jikes
+	configure option, and improved jikes support for rebuilding the class
+	library.
+
 Wed Nov 13 12:11:59 CET 2002 Dalibor Topic <robilad@yahoo.com>
 
 	* configure.in: removed -I/usr/local/include from default

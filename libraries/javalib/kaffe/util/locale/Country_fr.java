@@ -183,7 +183,7 @@ public class Country_fr extends ListResourceBundle {
 	{ "NR", "Nauru" }, // NAURU
 	{ "NP", "N\u00E9pal" }, // NEPAL
 	{ "NL", "Pays-Bas" }, // NETHERLANDS
-	{ "AN", "Antilles Néerlandaises" }, // NETHERLANDS ANTILLES
+	{ "AN", "Antilles N\u00E9erlandaises" }, // NETHERLANDS ANTILLES
 	{ "NC", "Nouvelle-Cal\u00E9donie" }, // NEW CALEDONIA
 	{ "NZ", "Nouvelle-Z\u00E9lande" }, // NEW ZEALAND
 	{ "NI", "Nicaragua" }, // NICARAGUA

@@ -427,6 +427,24 @@ AC_SUBST(THREAD_DIR)
 THREAD_DIR=systems/$with_threads
 
 dnl =========================================================================
+dnl Use jikes instead of kjc?
+dnl =========================================================================
+
+AC_ARG_WITH(jikes,[  --with-jikes[=JIKES]      Define to use jikes compiler])
+AC_MSG_CHECKING([whether to use jikes])
+if test x"$with_jikes" = x"" ; then
+	use_jikes=no
+	JIKES=
+elif test x"$with_jikes" = x"yes" ; then
+	AC_CHECK_PROG(JIKES, jikes, jikes)
+else
+	JIKES=$with_jikes
+	use_jikes="yes ($JIKES)"
+	AC_MSG_RESULT($use_jikes)
+fi
+AC_SUBST(JIKES)
+
+dnl =========================================================================
 dnl Look for trampoline code if in JIT mode
 dnl -------------------------------------------------------------------------
 KAFFEVM_TRAMPOLINES_C=
@@ -478,7 +496,6 @@ dnl -------------------------------------------------------------------------
 
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-AC_CHECK_PROG(JIKES, jikes, jikes)
 AC_CHECK_PROG(ZIP, zip, zip)
 
 dnl If symlink is overridden then don't bother with the test.
