@@ -99,7 +99,7 @@ public class Window extends Container implements Accessible
       return AccessibleRole.WINDOW;
     }
     
-    public AccessibleStateSet getAccessibleState()
+    public AccessibleStateSet getAccessibleStateSet()
     {
       AccessibleStateSet states = super.getAccessibleStateSet();
       if (isActive())

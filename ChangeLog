@@ -1,3 +1,14 @@
+2005-01-26  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+	
+	2005-01-26  Michael Koch  <konqueror@gmx.de>
+
+	* java/awt/Window.java
+	(AccessibleWindow.getAccessibleStateSet): Fixed method name.
+	* java/awt/dnd/DnDConstants.java
+	(DnDConstants): New private constructor.
+	
 2005-01-27  David Tiller  <dtiller@captechventures.com>
 
 	* Makefile.am (SUBDIRS): Move replace dir after include dir to
