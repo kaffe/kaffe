@@ -1,3 +1,36 @@
+2003-09-21  Dalibor Topic <robilad@kaffe.org>
+
+	Fix for libtool problems with sound libraries.
+	
+	* libraries/extensions/sound/alsa/Makefile.am:
+	(libtritonusalsa_la_LIBADD) Removed unportable attempt to link in
+	common code as a shared library.
+	(libtritonusalsa_la_SOURCES) Added common.c.
+	
+        libraries/extensions/sound/common/Makefile.am:
+	(native_LTLIBRARIES, libtritonuscommon_la_LDFLAGS,
+	libtritonuscommon_la_SOURCES) Removed unneeded variables.
+	(noinst_SOURCES) New variable.
+	
+        libraries/extensions/sound/esd/Makefile.am:
+	(libtritonusesd_la_LDFLAGS) Reformatted.
+	(libtritonusesd_la_LIBADD) Removed unportable attempt to link in
+	common code as a shared library.
+	(libtritonusesd_la_SOURCES) Removed common.h. Added common.c.
+	(noinst_HEADERS) New variable.
+	
+        * libraries/extensions/sound/alsa/Makefile.in,
+        libraries/extensions/sound/common/Makefile.in,
+        libraries/extensions/sound/esd/Makefile.in:
+	Regenerated.
+
+	* libraries/extensions/sound/alsa/common.c,
+	libraries/extensions/sound/esd/common.c:
+	New files.
+
+	Reported by: Mark Wielaard  <mark@klomp.org>,
+	             James Simmons  <jsimmons@infradead.org>
+	
 2003-09-19  Timothy S. Stack <stack@cs.utah.edu>
 
 	* configure.in:
