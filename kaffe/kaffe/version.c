@@ -28,8 +28,8 @@ printShortVersion(void)
 {
 	if (!versionfd)
 		versionfd = stderr;
-	fprintf(versionfd, "Kaffe Virtual Machine\n\n");
-	fprintf(versionfd, "Copyright (c) 1996-2002 Kaffe.org project contributors (please see\n");
+	fprintf(versionfd, "%s\n\n", PACKAGE_NAME);
+	fprintf(versionfd, "Copyright (c) 1996-2004 Kaffe.org project contributors (please see\n");
 	fprintf(versionfd, "  the source code for a full list of contributors).  All rights reserved.\n");
 	fprintf(versionfd, "Portions Copyright (c) 1996-2002 Transvirtual Technologies, Inc.\n\n");
 

@@ -1,5 +1,10 @@
 2004-01-14  Dalibor Topic <robilad@kaffe.org>
 
+	* kaffe/kaffe/version.c
+	(printShortVersion): Use PACKAGE_NAME.
+
+2004-01-14  Dalibor Topic <robilad@kaffe.org>
+
         * configure.in
         (AC_INIT): Changed package name to 'Kaffe Virtual Machine'.
 
