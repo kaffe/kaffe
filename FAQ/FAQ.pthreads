@@ -1,0 +1,29 @@
+NOTES ABOUT PTHREAD AND KAFFE
+=============================
+
+Kaffe can now make use of native threads (currently only Linux pthreads).
+To enable this add the following option to configure:
+
+	--with-threads=unix-pthreads
+
+Note that this will only work with GLIBC 2.1.2 or later.  If you are using
+GLIBC 2.1.1 there is a patch in the developers directory you need to apply.
+
+Limitation
+----------
+
+* We currently don't support fork/exec/wait under pthreads.
+
+* Certain I/O operations cannot be interrupted.
+
+SMP support
+-----------
+
+Kaffe with pthread will work on an SMP Linux machine and make use of all the
+processors.  *However*, Kaffe is currently not particularly SMP aware and
+most benchmarks we've tried show dismal performance on SMP.  These problems
+will be addressed shortly (but no in this release).
+
+Tim Wilkinson
+Transvirtual Technologies, Inc.
+tim@transvirtual.com
