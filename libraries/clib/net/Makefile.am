@@ -19,3 +19,6 @@ libnet_la_SOURCES = \
 	PlainSocketImpl.c
 
 CLEANFILES = so_locations
+
+EXTRA_DIST = NetworkInterface.c
+

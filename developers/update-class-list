@@ -4,7 +4,7 @@
 # updated by Edouard G. Parmelan <egp@free.fr>
 
 # This script can be used to update the list of class files to
-# compiled into Klasses.jar and included in the Kaffe distribution.
+# compiled into rt.jar and included in the Kaffe distribution.
 # Whenever you add or remove a file, run this script from within
 # kaffe-src/libraries/javalib
 
@@ -24,7 +24,7 @@ omitted_packages="\
 java/awt/win32 \
 "
 
-echo "WARNING: Omited packages: $omitted_packages"
+echo "WARNING: Omitted packages: $omitted_packages"
 find $SRCDIRS -name \*.java -print | sort > classlist
 
 
@@ -32,7 +32,7 @@ for pkg in $omitted_packages; do
   echo "$pkg"
 done | sed 's,/,\\/,g;s,^,/^,;s,$,$/d,' > omit_filter
 
-sed 's,/[^/]*$,,' < classlist | uniq | sed -f omit_filter > pkglist
+sed 's,/[^/]*$,,' < classlist | sort | uniq | sed -f omit_filter > pkglist
 
 {
   sed 's,^,	$(,;s,$,_SRCS) \\,;$s, \\$,,;s,[-/],_,g' < pkglist
@@ -48,7 +48,7 @@ for pkg in $omitted_packages; do
   echo "$pkg"
 done | sed 's,/,\\/,g;s,^,/^,;s,$,$/p,' > omit_filter
 
-sed 's,/[^/]*$,,' < classlist | uniq | sed -n -f omit_filter > pkglist
+sed 's,/[^/]*$,,' < classlist | sort | uniq | sed -n -f omit_filter > pkglist
 
 {
   echo "OMITTED_PACKAGES_SRCS = \\"

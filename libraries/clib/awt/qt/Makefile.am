@@ -43,5 +43,11 @@ BUILT_SOURCES = $(libawt_la_MOC)
 
 CLEANFILES = so_locations $(BUILT_SOURCES)
 
+EXTRA_DIST = evt.h \
+	imggif.cc \
+	imgjpeg.cc \
+	imgpng.cc
+
+	
 
 

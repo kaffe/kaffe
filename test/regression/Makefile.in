@@ -456,7 +456,9 @@ EXTRA_DIST = $(ALWAYS_TESTS) $(TEST_Overflow) \
 	LoaderTest_Class2.java \
 	LoaderTest_Class3.java \
 	LoaderTest_Loader1.java \
-	LoaderTest_Loader2.java
+	LoaderTest_Loader2.java \
+	CatchLimits.j \
+	FloatAlias.j
 
 
 CLEANFILES = *.class *.fail *.out core *.core ExceptionTest ziptest1.zip \

@@ -44,9 +44,12 @@ Klasses_jar_SRCS = \
 	$(gnu_java_awt_SRCS) \
 	$(gnu_java_lang_SRCS) \
 	$(gnu_java_lang_reflect_SRCS) \
+	$(gnu_java_nio_SRCS) \
 	$(gnu_java_nio_charset_SRCS) \
+	$(gnu_java_security_provider_SRCS) \
 	$(gnu_java_util_SRCS) \
 	$(gnu_java_util_prefs_SRCS) \
+	$(gnu_javax_rmi_SRCS) \
 	$(gnu_javax_rmi_CORBA_SRCS) \
 	$(gnu_regexp_SRCS) \
 	$(gnu_xml_aelfred2_SRCS) \
@@ -62,6 +65,7 @@ Klasses_jar_SRCS = \
 	$(java_awt_event_SRCS) \
 	$(java_awt_font_SRCS) \
 	$(java_awt_geom_SRCS) \
+	$(java_awt_im_SRCS) \
 	$(java_awt_image_SRCS) \
 	$(java_awt_image_renderable_SRCS) \
 	$(java_awt_peer_SRCS) \
@@ -71,6 +75,7 @@ Klasses_jar_SRCS = \
 	$(java_beans_beancontext_SRCS) \
 	$(java_io_SRCS) \
 	$(java_lang_SRCS) \
+	$(java_lang_ref_SRCS) \
 	$(java_lang_reflect_SRCS) \
 	$(java_math_SRCS) \
 	$(java_net_SRCS) \
@@ -188,6 +193,22 @@ gnu_java_lang_SRCS = \
 	gnu/java/lang/CharData.java
 gnu_java_lang_reflect_SRCS = \
 	gnu/java/lang/reflect/TypeSignature.java
+gnu_java_nio_SRCS = \
+	gnu/java/nio/DatagramChannelImpl.java \
+	gnu/java/nio/FileChannelImpl.java \
+	gnu/java/nio/MappedByteFileBuffer.java \
+	gnu/java/nio/MappedCharFileBuffer.java \
+	gnu/java/nio/MappedDoubleFileBuffer.java \
+	gnu/java/nio/MappedFloatFileBuffer.java \
+	gnu/java/nio/MappedIntFileBuffer.java \
+	gnu/java/nio/MappedLongFileBuffer.java \
+	gnu/java/nio/MappedShortFileBuffer.java \
+	gnu/java/nio/PipeImpl.java \
+	gnu/java/nio/SelectionKeyImpl.java \
+	gnu/java/nio/SelectorImpl.java \
+	gnu/java/nio/SelectorProviderImpl.java \
+	gnu/java/nio/ServerSocketChannelImpl.java \
+	gnu/java/nio/SocketChannelImpl.java
 gnu_java_nio_charset_SRCS = \
 	gnu/java/nio/charset/ISO_8859_1.java \
 	gnu/java/nio/charset/Provider.java \
@@ -198,6 +219,8 @@ gnu_java_nio_charset_SRCS = \
 	gnu/java/nio/charset/UTF_16.java \
 	gnu/java/nio/charset/UTF_16LE.java \
 	gnu/java/nio/charset/UTF_8.java
+gnu_java_security_provider_SRCS = \
+	gnu/java/security/provider/DefaultPolicy.java
 gnu_java_util_SRCS = \
 	gnu/java/util/EmptyEnumeration.java
 gnu_java_util_prefs_SRCS = \
@@ -206,6 +229,8 @@ gnu_java_util_prefs_SRCS = \
 	gnu/java/util/prefs/MemoryBasedPreferences.java \
 	gnu/java/util/prefs/NodeReader.java \
 	gnu/java/util/prefs/NodeWriter.java
+gnu_javax_rmi_SRCS = \
+	gnu/javax/rmi/PortableServer.java
 gnu_javax_rmi_CORBA_SRCS = \
 	gnu/javax/rmi/CORBA/DelegateFactory.java \
 	gnu/javax/rmi/CORBA/GetDelegateInstanceException.java \
@@ -519,6 +544,10 @@ java_awt_geom_SRCS = \
 	java/awt/geom/Rectangle2D.java \
 	java/awt/geom/RectangularShape.java \
 	java/awt/geom/RoundRectangle2D.java
+java_awt_im_SRCS = \
+	java/awt/im/InputMethodHighlight.java \
+	java/awt/im/InputMethodRequests.java \
+	java/awt/im/InputSubset.java
 java_awt_image_SRCS = \
 	java/awt/image/AreaAveragingScaleFilter.java \
 	java/awt/image/BufferedImage.java \
@@ -800,6 +829,12 @@ java_lang_SRCS = \
 	java/lang/VerifyError.java \
 	java/lang/VirtualMachineError.java \
 	java/lang/Void.java
+java_lang_ref_SRCS = \
+	java/lang/ref/PhantomReference.java \
+	java/lang/ref/Reference.java \
+	java/lang/ref/ReferenceQueue.java \
+	java/lang/ref/SoftReference.java \
+	java/lang/ref/WeakReference.java
 java_lang_reflect_SRCS = \
 	java/lang/reflect/AccessibleObject.java \
 	java/lang/reflect/Array.java \
@@ -1066,6 +1101,7 @@ java_security_SRCS = \
 	java/security/PermissionCollection.java \
 	java/security/Permission.java \
 	java/security/Permissions.java \
+	java/security/Policy.java \
 	java/security/Principal.java \
 	java/security/PrivateKey.java \
 	java/security/PrivilegedActionException.java \

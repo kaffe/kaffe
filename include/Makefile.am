@@ -8,7 +8,8 @@
 
 KLASSES_JAR = $(top_srcdir)/libraries/javalib/Klasses.jar.bootstrap
 
-EXTRA_DIST = distclean-hack
+EXTRA_DIST = distclean-hack \
+		stamp-h2.in
 
 # INSTALL_ means: these headers get installed,
 # NOINSTALL_ means: they don't get installed.

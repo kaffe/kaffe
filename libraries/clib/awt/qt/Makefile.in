@@ -273,6 +273,12 @@ noinst_HEADERS = \
 BUILT_SOURCES = $(libawt_la_MOC)
 
 CLEANFILES = so_locations $(BUILT_SOURCES)
+
+EXTRA_DIST = evt.h \
+	imggif.cc \
+	imgjpeg.cc \
+	imgpng.cc
+
 subdir = libraries/clib/awt/qt
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

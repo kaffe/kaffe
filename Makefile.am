@@ -38,6 +38,7 @@ EXTRA_DIST = \
 	FAQ/FAQ.debugging \
 	FAQ/FAQ.depend \
 	FAQ/FAQ.dmalloc \
+	FAQ/FAQ.dns \
 	FAQ/FAQ.embedded \
 	FAQ/FAQ.feedback \
 	FAQ/FAQ.gcblock \
@@ -88,6 +89,9 @@ EXTRA_DIST = \
 	developers/geteh_from_libgcc2 \
 	developers/glibc-2.1.1-signal.patch \
 	developers/mangleNative.pl \
+	developers/mauve-html-gen.pl \
+	developers/mauve-kaffe \
+	developers/mauve-results.sh \
 	developers/rpm-kaffe.spec \
 	developers/sp_offset.c \
 	developers/unicode.pl \

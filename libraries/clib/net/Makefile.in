@@ -252,6 +252,8 @@ libnet_la_SOURCES = \
 
 
 CLEANFILES = so_locations
+
+EXTRA_DIST = NetworkInterface.c
 subdir = libraries/clib/net
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

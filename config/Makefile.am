@@ -29,6 +29,7 @@ noinst_HEADERS = $(GEN_HDRS) \
 EXTRA_DIST = \
 	config.alias \
 	regen-forward \
+	stamp-h1.in \
 	alpha/alpha.c \
 	alpha/common.h \
 	alpha/jit-alpha.def \
@@ -302,7 +303,6 @@ EXTRA_DIST = \
 	sparc/uxpds/md.c \
 	sparc/uxpds/md.h \
         superh/common.h \
-        superh/linux/ \
         superh/linux/config.frag \
         superh/linux/md.c \
         superh/linux/md.h \

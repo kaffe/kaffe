@@ -1,3 +1,32 @@
+2003-06-01  Jim Pick  <jim@kaffe.org>
+
+	* developers/autogen.sh:
+	Added checks for version of automake/autoconf
+
+	* developers/update-class-list:
+	I had some problems with the generated Makefile.am,
+	so I made some changes.
+
+	* Makefile.am, 
+	config/Makefile.am,
+	include/Makefile.am,
+	libraries/clib/awt/qt/Makefile.am,
+	libraries/clib/net/Makefile.am,
+	libraries/javalib/Makefile.am,
+	test/regression/Makefile.am:
+	Various "make dist" fixes.
+
+	* Makefile.in,
+	config/Makefile.in,
+	include/Makefile.in,
+	kaffe/scripts/Makefile.in,
+	kaffe/scripts/compat/Makefile.in,
+	libraries/clib/awt/qt/Makefile.in,
+	libraries/clib/net/Makefile.in,
+	libraries/javalib/Makefile.in,
+	test/regression/Makefile.in:
+	Regenerated.
+
 2003-05-31  Helmer Kraemer  <hkraemer@freenet.de>
 
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
