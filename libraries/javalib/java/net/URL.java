@@ -14,6 +14,8 @@ package java.net;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.String;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -281,4 +283,44 @@ public String toExternalForm() {
 public String toString() {
 	return (toExternalForm());
 }
+
+    /* Serialization */
+    class DefaultSerialization 
+    {
+	private String file;
+	private int hashCode;
+	private String host;
+	private int port;
+	private String protocol;
+	private String ref;
+	
+	private void readDefaultObject() {
+	    set(protocol, host, port, file, ref);
+	}
+	
+	private void writeDefaultObject () {
+	    file = URL.this.file;
+	    hashCode = URL.this.hashCode();
+	    host = URL.this.host;
+	    port = URL.this.port;
+	    protocol = URL.this.protocol;
+	    ref = URL.this.ref;
+	}
+    }
+    
+    private void readObject (ObjectInputStream stream)
+	throws IOException, ClassNotFoundException 
+    {
+	// read all default fields
+	stream.defaultReadObject();
+	
+	setHandler(protocol, null);
+    }
+
+    private void writeObject (java.io.ObjectOutputStream stream)
+	throws IOException 
+    {
+	// write all default fields
+	stream.defaultWriteObject();
+    }
 }
