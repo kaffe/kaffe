@@ -1,3 +1,14 @@
+2004-01-04  Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/profiles/allatonce/all.files,
+	libraries/javalib/profiles/default/core.files:
+	Removed kaffe/io/ByteToCharEUC_JP.java and 
+	kaffe/io/CharToByteEUC_JP.java.
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+
 2004-01-03  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/kaffe/io/ConverterAlias.java:

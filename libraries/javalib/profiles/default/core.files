@@ -251,12 +251,10 @@ java/util/zip/GZIPOutputStream.java
 java/util/zip/ZipOutputStream.java
 kaffe/io/AccessibleBAOStream.java
 kaffe/io/ByteToChar8859_1.java
-kaffe/io/ByteToCharEUC_JP.java
 kaffe/io/ByteToCharSHIFT_JIS.java
 kaffe/io/ByteToCharHashBased.java
 kaffe/io/ByteToCharUTF8.java
 kaffe/io/CharToByte8859_1.java
-kaffe/io/CharToByteEUC_JP.java
 kaffe/io/CharToByteSHIFT_JIS.java
 kaffe/io/CharToByteHashBased.java
 kaffe/io/CharToByteUTF8.java
