@@ -2,6 +2,28 @@
 
 	Resynced with GNU Classpath.
 
+	2005-02-15  Mark Wielaard  <mark@klomp.org>
+
+        * java/net/URLClassLoader.java (JarURLLoader.JarURLLoader): Just use
+        space for parsing CLASS_PATH attribute.
+
+	2005-02-15  Andrew Haley  <aph@redhat.com>
+
+        * java/net/URLClassLoader.java
+        (URLLoader.getClassPath): New method.
+        (JarURLLoader.JarURLLoader): Read mainfest to parse "Class-Path"
+        attribute and add URLs for each entry.
+        (JarURLLoader.classPath): New field.
+        (JarURLLoader.getClassPath): New method.
+        (addURLImpl): Scan through the list of extraUrls in the new
+        loader, adding them to our urlinfos.
+        (definePackage, findURLResource, findResources): Use
+        urlinfos.size(), not urls.size().
+
+2005-02-16  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
 	2005-02-14  Mark Wielaard  <mark@klomp.org>
 
         * java/net/URLClassLoader.java (findClass): Throw
