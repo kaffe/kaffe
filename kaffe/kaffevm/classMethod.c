@@ -216,7 +216,7 @@ retry:
 				goto done;
 			}
 			/* that's pretty much obsolete. */
-			assert(class->superclass->state >= CSTATE_LINKED);
+			assert(class->superclass->state >= CSTATE_DOING_LINK);
 			classMappingLoaded(ce, class);
 			/* Copy initial field size and gc layout.
 			 * Later, as this class's fields are resolved, they
@@ -227,7 +227,7 @@ retry:
 		}
 		if( class->superclass )
 		{
-			assert(class->superclass->state >= CSTATE_LINKED);
+			assert(class->superclass->state >= CSTATE_DOING_LINK);
 		}
 		
 	}
@@ -678,7 +678,8 @@ expandMethods(Hjava_lang_Class *cl, Method *imeth, errorInfo *einfo)
 {
 	Method *new_methods = 0;
 	int retval = 0;
-
+	
+	/*
 	if( !CLASS_IS_ABSTRACT(cl) )
 	{
 		postExceptionMessage(einfo,
@@ -689,7 +690,9 @@ expandMethods(Hjava_lang_Class *cl, Method *imeth, errorInfo *einfo)
 				     imeth->name->data,
 				     imeth->parsed_sig->signature->data);
 	}
-	else if( (new_methods = KREALLOC(CLASS_METHODS(cl),
+	else
+	*/
+	if( (new_methods = KREALLOC(CLASS_METHODS(cl),
 					 sizeof(Method) *
 					 (CLASS_NMETHODS(cl) + 1))) )
 	{

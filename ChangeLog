@@ -1,3 +1,10 @@
+2003-08-01  Rob Gonzalez <rob@kaffe.org>
+
+	* kaffe/kaffevm/classMethod.h
+	Commented out checks that abstract methods are only in abstract classes.
+	
+	Also change checks for CSTATE_LINKED to CSTATE_DOING_LINK.
+	
 2003-08-01  Dalibor Topic <robilad@kaffe.org>
 
 	Header reorganization and fixes for BerkeleyDB, required for
