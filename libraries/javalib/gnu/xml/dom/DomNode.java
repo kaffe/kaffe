@@ -859,7 +859,7 @@ public abstract class DomNode
     {
 	if (parent == null || getNodeType() == ATTRIBUTE_NODE)
 	    return null;
-        return (index < parent.length) ? parent.children[index + 1] : null;
+        return ((index + 1) < parent.length) ? parent.children[index + 1] : null;
     }
 
 
