@@ -14,8 +14,8 @@ Tue Mar  9 23:20:15 PST 1999  Aaron Place <beavis@ihug.co.nz>
 	libraries/javalib/java/lang/Math.java,
 	libraries/javalib/java/net/{InetAddressImpl,Socket,SocketOptions}.java,
 	libraries/javalib/java/text/RuleBasedCollator.java,
-	libraries/javalib/java/util/Date.java: fixed access modifiers
-	and checked exceptions
+	libraries/javalib/java/util/Date.java, Stack.java: fixed access
+	modifiers and checked exceptions
 	* libraries/javalib/java/beans/Introspector.java,
 	libraries/javalib/java/net/URLEncoder.java,
 	libraries/javalib/java/sql/{DriverManager,Types}.java,
