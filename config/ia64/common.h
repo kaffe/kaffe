@@ -12,8 +12,6 @@
 #ifndef __ia64_common_h
 #define __ia64_common_h
 
-#include "atomicity.h"
-
 #define NEED_STACK_ALIGN
 #define STACK_ALIGN(p)  ((((unsigned long)(p)) & 15) ^ (unsigned long)(p))
 
