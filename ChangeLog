@@ -1,3 +1,10 @@
+Fri Jul 10 20:41:54 1998  Godmar Back  <gback@marker.cs.utah.edu>
+
+	* kaffe/kaffevm/systems/unix-jthread/jthread.[ch]:
+	  config/i386/freebsd2/md.h:  added macros SAVE_FP, LOAD_FP, and
+	  SAVED_FP_SIZE for architectures where the threading system must
+	  save the floating point state.
+
 Wed Jul  8 15:24:17 1998  Godmar Back  <gback@marker.cs.utah.edu>
 
 	* kaffe/kaffevm/baseClasses.c: preload java.lang.NullPointerException.
