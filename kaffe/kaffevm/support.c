@@ -609,24 +609,39 @@ SignalError(const char* cname, const char* str)
 	throwException(obj);
 }
 
-/*
- * Convert a class name to a path name.
- */
-void
-classname2pathname(const char* from, char* to)
+static void
+replacechar(const char* from, char* to, char old, char new)
 {
 	int i;
 
-	/* Convert any '.' in name to '/' */
+	/* Convert any 'old' in name to 'new' */
 	for (i = 0; from[i] != 0; i++) {
-		if (from[i] == '.') {
-			to[i] = '/';
+		if (from[i] == old) {
+			to[i] = new;
 		}
 		else {
 			to[i] = from[i];
 		}
 	}
 	to[i] = 0;
+}
+
+/*
+ * Convert a class name to a path name.
+ */
+void
+classname2pathname(const char* from, char* to)
+{
+	replacechar(from, to, '.', '/');
+}
+
+/*
+ * Convert a path name to a class name.
+ */
+void
+pathname2classname(const char* from, char* to)
+{
+	replacechar(from, to, '/', '.');
 }
 
 /*

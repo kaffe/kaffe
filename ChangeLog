@@ -1,3 +1,9 @@
+Fri Feb  5 19:24:30 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* kaffe/kaffevm/support.[ch]: added pathname2classname.
+	kaffe/kaffevm/stackTrace.c: print class names dotted in backtrace
+	as suggested by Moses DeJong.
+
 Fri Feb  5 16:34:46 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* ltmain.sh: update from libtool; cygwin32 was renamed to cygwin

@@ -94,11 +94,12 @@ printStackTrace(struct Hjava_lang_Throwable* o, struct Hjava_lang_Object* p)
 	uintp pc;
 	int32 linenr;
 	uintp linepc;
-	char buf[200];
+	char buf[256];			/* FIXME: unchecked buffer */
 	int len;
 	int j;
 	Hjava_lang_Object* str;
 	jchar* cptr;
+	char* class_dot_name;
 
 	info = (stackTraceInfo*)unhand(o)->backtrace;
 	if (info == 0) {
@@ -118,20 +119,23 @@ printStackTrace(struct Hjava_lang_Throwable* o, struct Hjava_lang_Object* p)
 					}
 				}
 			}
+			class_dot_name = KMALLOC(strlen(CLASS_CNAME(meth->class)) + 1);
+			pathname2classname(CLASS_CNAME(meth->class), class_dot_name);
 			if (linenr == -1) {
 				sprintf(buf, "\tat %.80s.%.80s(%s:line unknown, pc %p)",
-					CLASS_CNAME(meth->class),
+					class_dot_name,
 					meth->name->data, 
 					CLASS_SOURCEFILE(meth->class),
 					(void*)pc);
 			}
 			else {
 				sprintf(buf, "\tat %.80s.%.80s(%s:%d)",
-					CLASS_CNAME(meth->class),
+					class_dot_name,
 					meth->name->data,
 					CLASS_SOURCEFILE(meth->class),
 					linenr);
 			}
+			KFREE(class_dot_name);
 			len = strlen(buf);
 			str = newArray(TYPE_CLASS(TYPE_Char), len);
 			cptr = (jchar*)OBJARRAY_DATA(str);
