@@ -32,7 +32,7 @@
 #define THREAD_FLAGS_NOSTACKALLOC       1
 #define THREAD_FLAGS_KILLED             2
 #define THREAD_FLAGS_ALARM              4
-#define THREAD_FLAGS_USERSUSPEND        8
+#define THREAD_FLAGS_EXITING        	8
 #define THREAD_FLAGS_DONTSTOP        	16
 #define THREAD_FLAGS_DYING        	32
 #define THREAD_FLAGS_BLOCKEDEXTERNAL	64
@@ -609,7 +609,7 @@ printflags(unsigned i)
 	    { THREAD_FLAGS_NOSTACKALLOC, "NOSTACKALLOC" },
 	    { THREAD_FLAGS_KILLED, "KILLED" },
 	    { THREAD_FLAGS_ALARM, "ALARM" },
-	    { THREAD_FLAGS_USERSUSPEND, "USERSUSPEND" },
+	    { THREAD_FLAGS_EXITING, "EXITING" },
 	    { THREAD_FLAGS_DONTSTOP, "DONTSTOP" },
 	    { THREAD_FLAGS_DYING, "DYING" },
 	    { THREAD_FLAGS_BLOCKEDEXTERNAL, "BLOCKEDEXTERNAL" },
@@ -1197,6 +1197,7 @@ jthread_exit(void)
 {
 	jthread** ntid;
 	jthread* tid;
+	int found = 0;
 
 DBG(JTHREAD,
 	dprintf("jthread_exit %x\n", currentJThread);		)
@@ -1213,9 +1214,12 @@ DBG(JTHREAD,
 	{
 		if (currentJThread == (*ntid)) {
 			(*ntid) = currentJThread->nextlive;
+			found = 1;
 			break;
 		}
 	}
+	currentJThread->flags |= THREAD_FLAGS_EXITING;
+	assert(found || !!!"Attempt to exit a thread twice");
 
 	jmutex_unlock(&threadLock);
 
@@ -1311,13 +1315,21 @@ dprintf("switch from %p to %p\n", lastThread, currentJThread); )
 
 				assert(currentJThread == lastThread);
 
-				/* I might be dying */
+				/* Now handle external requests for cancelation
+				 * We do not act upon them if:
+				 * + The thread has the DONTSTOP flags set.
+				 * + The threads is already exiting
+				 */
 				if ((currentJThread->flags & 
 					THREAD_FLAGS_KILLED) != 0 && 
 				    (currentJThread->flags & 
 					THREAD_FLAGS_DONTSTOP) == 0 &&
+				    (currentJThread->flags & 
+					THREAD_FLAGS_EXITING) == 0 &&
 				    blockInts == 1) 
+				{
 					die();
+				}
 			}
 			/* Now kill the schedule */
 			needReschedule = false;
