@@ -2,6 +2,20 @@
 
         Resynced with GNU Classpath
 
+	2004-02-05  Olga Rodimina <rodimina@redhat.com>
+
+        * java/awt/geom/AffineTransform.java:
+        Corrected comments on the field definitions 
+        for m11 and m10
+        (shear): Fixed few errors that caused shear 
+        transformation to be performed incorrectly.
+        (createInverse): Fixed to return correct inverse
+        of the given matrix.
+
+2004-02-24  Dalibor Topic <robilad@kaffe.org>
+
+        Resynced with GNU Classpath
+
 	2004-02-06  Michael Koch  <konqueror@gmx.de>
 
         * java/awt/datatransfer/DataFlavor.java
