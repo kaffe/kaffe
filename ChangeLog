@@ -1,3 +1,21 @@
+Sun Jun 16 22:40:33 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+	* developers/update-class-list: Fixed (was broken by
+	rt.jar name change)
+
+	* kaffe/kaffevm/external.c: Fix error reporting when native lib
+	not found.
+
+	* Bump version to 1.0.7-rc2
+
+Sun Jun 16 22:10:49 PDT 2002  Jim Pick  <jim@kaffe.org>
+
+        From: Timothy Stack <stack@cs.utah.edu>
+	
+	* acinclude.m4, configure.in, kaffe/kaffevm/external.c:
+	Libtool-related fix for loading of native libraries (look
+	for .so/.dll as well as .la)
+
 Tue Jun 11 00:26:16 CEST 2002 Patrick Tullmann  <pat@tullmann.org>
 
 	* FAQ/FAQ.Known-Bugs: Added entry for FileInputStream.

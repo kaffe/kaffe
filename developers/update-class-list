@@ -11,7 +11,7 @@
 if test -f Makefile.am &&
    classfile=`sed -n '/^CLASSFILE *= */ s///p' < Makefile.am` &&
    SRCDIRS=`sed -n '/^SRCDIRS *= */ s///p' < Makefile.am` &&
-   classSRCS=`echo "$classfile" | sed 's/\./_/g;s/$/_SRCS/'` &&
+   classSRCS=Klasses_jar_SRCS &&
    grep "^$classSRCS *=" < Makefile.am > /dev/null; then :
 else
     echo update-class-list must be run from within a javalib directory >&2
