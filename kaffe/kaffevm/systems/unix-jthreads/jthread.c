@@ -1336,9 +1336,11 @@ dprintf("switch from %p to %p\n", lastThread, currentJThread); )
 
 		if (DBGEXPR(DETECTDEADLOCK, true, false) &&
 			tblocked_on_external == 0) {
+#ifdef DEBUG
 			extern void dumpLocks(void);	/* XXX */
 			dumpLocks();			/* XXX */
 			dumpThreads();
+#endif
 			assert(!!!"Deadlock: "
 			   " all threads blocked on internal events\n");
 		}
