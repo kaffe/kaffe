@@ -259,6 +259,9 @@
 /* Do we have execve */
 #undef	HAVE_EXECVE
 
+/* Do we have execvp */
+#undef	HAVE_EXECVP
+
 /* Do we have waitpid */
 #undef	HAVE_WAITPID
 
