@@ -202,26 +202,26 @@ public abstract class URLStreamHandler
         char sepChar = '/';
         int lastSlash = file.lastIndexOf (sepChar);
         if (lastSlash < 0 && File.separatorChar != sepChar
-            && url.getProtocol().equals ("file"))
+            && url.getProtocol ().equals ("file"))
           {
             // On Windows, even '\' is allowed in a "file" URL.
             sepChar = File.separatorChar;
             lastSlash = file.lastIndexOf (sepChar);
           }
         
-        file = file.substring (0, lastSlash)
+        file = file.substring(0, lastSlash)
                 + sepChar + spec.substring (start, end);
 
-        if (url.getProtocol().equals ("file"))
+        if (url.getProtocol ().equals ("file"))
           {
             // For "file" URLs constructed relative to a context, we
             // need to canonicalise the file path.
             try
               {
-		boolean endsWithSlash = file.charAt (file.length() - 1) == '/';
-                file = new File (file).getCanonicalPath();
+		boolean endsWithSlash = file.charAt(file.length() - 1) == '/';
+                file = new File (file).getCanonicalPath ();
 		if (endsWithSlash
-		    && file.charAt (file.length() - 1) != '/')
+		    && file.charAt(file.length() - 1) != '/')
 		  file += '/';
               }
             catch (IOException e)

@@ -1,5 +1,5 @@
-/* java.util.zip.InflaterInputStream
-   Copyright (C) 2001, 2003 Free Software Foundation, Inc.
+/* InflaterInputStream.java - Input stream filter for decompressing
+   Copyright (C) 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -7,7 +7,7 @@ GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
-
+ 
 GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -49,6 +49,7 @@ import java.io.IOException;
  * as the <code>GZIPInputStream</code>.
  *
  * @author John Leuner
+ * @author Tom Tromey
  * @since 1.1
  */
 public class InflaterInputStream extends FilterInputStream

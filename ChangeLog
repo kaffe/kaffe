@@ -1,3 +1,85 @@
+2002-11-22  Dalibor Topic <robilad@kaffe.org>
+
+	Partially resynced with GNU Classpath. Detailed ChangeLog follows.
+
+	2003-08-29  Dalibor Topic  <robilad@kaffe.org>
+
+	* gnu/java/rmi/rmic/Compile_kjc.java: New file.
+	* gnu/java/rmi/rmic/Compile_jikes.java: Likewise
+	* gnu/java/rmi/rmic/RMICException.java: Likewise.
+	
+	2003-11-15  Michael Koch  <konqueror@gmx.de>
+
+	* java/awt/datatransfer/DataFlavor.java,
+	java/security/cert/CertStore.java,
+	java/sql/Timestamp.java,
+	javax/naming/CompoundName.java (equals):
+	Removed some redundant obj == null checks.
+
+	2003-11-11  Sascha Brawer  <brawer@dandelis.ch>
+
+	* java/awt/geom/FlatteningPathIterator.java: Entirely re-written.
+
+	2003-11-17  Jeff Sturm  <jsturm@one-point.com>
+
+	* java/io/ByteArrayOutputStream.java (resize):
+	Fix off-by-one error.
+
+	2003-11-16  Tom Tromey  <tromey@redhat.com>
+
+	* java/io/StreamTokenizer.java (commentChar): Clear other
+	attributes for character.
+	(quoteChar): Likewise.
+
+	2003-11-09  Tom Tromey  <tromey@redhat.com>
+
+	* java/net/Inet4Address.java (serialVersionUID): Updated.
+
+	2003-11-04  Michael Koch  <konqueror@gmx.de>
+
+	* java/net/SocketPermission.java
+	(equals): Removed unneeded obj == null check.
+	* java/net/URL.java
+	(equals): Removed unneeded obj == null check.
+
+	2003-11-13  Guilhem Lavaux  <guilhem@kaffe.org>
+	    Mark Wielaard  <mark@klomp.org>
+
+	* java/net/URLStreamHandler (parseUrl): Fixed URL parsing
+	('@' should be checked to distinguish port from userinfo).
+	(toExternalForm): Add @ userInfo if necessary.
+
+	2003-11-04  Michael Koch  <konqueror@gmx.de>
+
+	* java/nio/ByteBuffer.java
+	(equals): Removed unneeded obj != null check.
+
+	2003-10-21  Michael Koch  <konqueror@gmx.de>
+
+	* java/text/CollationKey.java
+	(compareTo): Simplified implementation.
+	(equals): Reoved redundant obj == null check.
+
+	2003-11-19  Dalibor Topic <robilad@kaffe.org>
+
+	* java/text/FieldPosition.java (equals): Adapted to handle
+	field_attribute. Added fast-circuit check for comparison to self.
+	Replaced use of instanceof by getClass to fix symmetry for derived
+	types.
+	(toString): Adapted to handle field_attribute. Improved readability.
+	(hashCode): New method.
+	
+	2003-10-26  Bryce McKinlay  <bryce@mckinlay.net.nz>	
+	* java/util/TreeMap.java: Doc fixes. HashMap -> TreeMap.
+
+	2003-11-04  Michael Koch  <konqueror@gmx.de>
+
+	* java/util/zip/Checksum.java,
+	java/util/zip/ZipConstants.java:
+	Removed redundant modifiers.
+	* java/util/zip/InflaterInputStream.java:
+	Merged copyright with libgcj's version.
+	
 2003-11-21  Guilhem Lavaux <guilhem@kaffe.org>
 
 	* libraries/javalib/kjc.jar: Regenerated to include Ito's patch.

@@ -98,23 +98,15 @@ public final class CollationKey implements Comparable
    */
   public int compareTo (CollationKey ck)
   {
-    int i;
-    for (i = 0; i < key.length; i++)
+    int max = Math.min (key.length, ck.key.length);
+
+    for (int i = 0; i < max; ++i)
       {
-        if (ck.key.length <= i)
-          return 1;
-
-        if (key [i] < ck.key [i])
-          return -1;
-
-        if (key [i] > ck.key [i])
-          return 1;
+	if (key[i] != ck.key[i])
+	  return key[i] - ck.key[i];
       }
 
-    if (i == ck.key.length)
-      return 0;
-    else
-      return -1;
+    return key.length - ck.key.length;
   }
 
   /**
@@ -151,9 +143,6 @@ public final class CollationKey implements Comparable
    */
   public boolean equals (Object obj)
   {
-    if (obj == null)
-      return false;
-
     if (! (obj instanceof CollationKey))
       return false;
 

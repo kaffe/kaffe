@@ -169,8 +169,8 @@ public class FieldPosition
    * <ul>
    * <li>The specified object is not <code>null</code>.
    * <li>The specified object is an instance of <code>FieldPosition</code>.
-   * <li>The specified object has the same field identifier and beginning
-   * and ending index as this object.
+   * <li>The specified object has the same field identifier, field attribute 
+   * and beginning and ending index as this object.
    * </ul>
    *
    * @param obj The object to test for equality to this object.
@@ -180,13 +180,38 @@ public class FieldPosition
    */
   public boolean equals (Object obj)
   {
-    if (! (obj instanceof FieldPosition))
+    if (this == obj)
+      return true;
+
+    if (obj == null || obj.getClass() != this.getClass())
       return false;
 
     FieldPosition fp = (FieldPosition) obj;
     return (field_id == fp.field_id
+	    && (field_attribute == fp.field_attribute 
+		|| (field_attribute != null 
+		    && field_attribute.equals(fp.field_attribute)))
 	    && begin == fp.begin
 	    && end == fp.end);
+  }
+
+
+  /**
+   * This method returns a hash value for this object
+   * 
+   * @return A hash value for this object.
+   */
+  public int hashCode ()
+  {
+    int hash = 5;
+
+    hash = 31 * hash + field_id;
+    hash = 31 * hash + begin;
+    hash = 31 * hash + end;
+    hash = 31 * hash + 
+      (null == field_attribute ? 0 : field_attribute.hashCode());
+
+    return hash;
   }
 
   /**
@@ -197,7 +222,11 @@ public class FieldPosition
    */
   public String toString ()
   {
-    return (getClass ().getName () + "[field=" + getField () + ",beginIndex="
-	    + getBeginIndex () + ",endIndex=" + getEndIndex () + "]");
+    return (getClass ().getName ()
+	    + "[field=" + getField ()
+	    + ",attribute=" + getFieldAttribute ()
+	    + ",beginIndex=" + getBeginIndex () 
+	    + ",endIndex=" + getEndIndex () 
+	    + "]");
   }
 }
