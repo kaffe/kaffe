@@ -2693,14 +2693,6 @@ verifyBasicBlock(errorInfo* einfo,
 		return checkStackOverflowErrorInVerifyBasicBlock(einfo, method, block, this, _N); \
 	}
 	
-#define OPSTACK_INFO(_N) \
-        (block->opstack[block->stacksz - _N].tinfo)
-
-#define LOCALS_INFO(_N) \
-	(block->locals[_N].tinfo)
-	
-	
-	
 #define OPSTACK_PUSH_BLIND(_TINFO) \
 	block->opstack[block->stacksz++] = *(_TINFO)
 	
@@ -3946,9 +3938,6 @@ verifyBasicBlock(errorInfo* einfo,
 #undef OPSTACK_WPUSH_BLIND
 #undef OPSTACK_PUSH
 #undef OPSTACK_PUSH_BLIND
-
-#undef LOCALS_INFO
-#undef OPSTACK_INFO
 
 #undef CHECK_STACK_OVERFLOW
 #undef ENSURE_OPSTACK_SIZE

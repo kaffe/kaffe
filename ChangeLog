@@ -1,6 +1,11 @@
 2004-02-16  Dalibor Topic <robilad@kaffe.org>
 
         * kaffe/kaffevm/verify.c
+	(LOCALS_INFO, OPSTACK_INFO): Removed, since unused.
+
+2004-02-16  Dalibor Topic <robilad@kaffe.org>
+
+        * kaffe/kaffevm/verify.c
         (checkStackOverflowErrorInVerifyBasicBlock): New static inline function.
         (CHECK_STACK_OVERFLOW) Use checkStackOverflowErrorInVerifyBasicBlock.
 
