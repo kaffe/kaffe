@@ -1755,8 +1755,6 @@ kaffe_rmi_server_SRCS = \
 	kaffe/rmi/server/UnicastRemoteStub.java \
 	kaffe/rmi/server/UnicastServer.java \
 	kaffe/rmi/server/UnicastServerRef.java
-kaffe_security_SRCS = \
-	kaffe/security/Engine.java
 kaffe_security_provider_SRCS = \
 	kaffe/security/provider/Kaffe.java \
 	kaffe/security/provider/MD2.java \
