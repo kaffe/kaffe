@@ -384,7 +384,10 @@ getEncoder(OutputStream out)
     }
   catch(Exception e)
     {
-      throw new Error("Unexpected problems with default encoder");
+      Error err = new Error("Unexpected problems with default encoder: an exception was received");
+      err.initCause(e);
+
+      throw err;
     }
 
   return(enc);
@@ -436,7 +439,10 @@ getEncoder(OutputStream out, String encoding, boolean cache)
     }
   catch(Exception e)
     {
-      throw new UnsupportedEncodingException(encoding + ": " + e.getMessage());
+      UnsupportedEncodingException e2 = new UnsupportedEncodingException(encoding + ": " + e.getMessage());
+
+      e2.initCause(e);
+      throw e2;
     }
 
   return(enc);
