@@ -27,12 +27,6 @@ label* firstLabel;
 label* lastLabel;
 label* currLabel;
 
-extern int maxPush;
-extern int maxLocal;
-extern int maxArgs;
-extern int maxStack;
-extern int maxTemp;
-
 /* Custom edition */
 #define	kprintf	kaffe_dprintf
 #define	gc_calloc_fixed(A,B)	jmalloc((A)*(B))

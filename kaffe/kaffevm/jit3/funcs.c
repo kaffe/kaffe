@@ -21,16 +21,10 @@
 #include "classMethod.h"
 #include "icode.h"
 
-extern int maxArgs;
-extern int maxLocal;
-extern int maxTemp;
-extern int maxStack;
-extern int maxPush;
-extern int isStatic;
-extern uintp CODEPC;
-extern nativecode* codeblock;
-
 #define	define_insn(n, i) void i (sequence* s)
+
+nativecode* codeblock;
+uintp CODEPC;
 
 #define ALIGN(byte)							\
 	(CODEPC = (CODEPC % (byte)					\

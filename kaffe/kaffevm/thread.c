@@ -43,7 +43,7 @@
  * store the native thread for the main thread here 
  * between init and createFirst 
  */
-static struct Hkaffe_util_Ptr*	mainthread;
+static jthread_t	mainthread;
 static int threadStackSize;	/* native stack size */
 
 /* referenced by native/Runtime.c */
@@ -274,7 +274,7 @@ createInitialThread(const char* nm)
 	jthread_atexit(runfinalizer);
 	/* set Java thread associated with main thread */
 	mainthread = jthread_createfirst(MAINSTACKSIZE, java_lang_Thread_NORM_PRIORITY, tid);
-	unhand(tid)->PrivateInfo = mainthread;
+	unhand(tid)->PrivateInfo = (struct Hkaffe_util_Ptr*)mainthread;
 	unhand(tid)->stackOverflowError = 
 		(Hjava_lang_Throwable*)StackOverflowError;
 	unhand(tid)->needOnStack = STACK_HIGH;

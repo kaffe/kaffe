@@ -52,6 +52,10 @@ extern void	lockObject(struct Hjava_lang_Object*);
 extern void	unlockObject(struct Hjava_lang_Object*);
 extern void* 	_releaseLock(iLock**);
 extern void 	_acquireLock(iLock**, void*);
+extern void 	slowLockObject(struct Hjava_lang_Object*, void*);
+extern void 	slowUnlockObject(struct Hjava_lang_Object*, void*);
+extern void	initLocking(void);
+extern void	dumpLocks(void);
 
 /*
  * Unblock an object and call a function. When the function returns reclaim

@@ -370,7 +370,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseframe)
 
 			/* If method found and synchronised, unlock the lock */
 			if (obj != 0 && (meth->accflags & ACC_SYNCHRONISED) != 0) {
-				_slowUnlockMutexIfHeld(&obj->lock, frame->fp);
+				_slowUnlockMutexIfHeld(&obj->lock, (void*)frame->fp);
 			}
 #if defined(KAFFE_PROFILER)
 			/* If method found and profiler enable, fix time */

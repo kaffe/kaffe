@@ -45,6 +45,7 @@
 #include "thread.h"
 #include "itypes.h"
 #include "methodCache.h"
+#include "support.h"
 
 char* engine_name = "Just-in-time v3";
 char* engine_version = KAFFEVERSION;
@@ -64,13 +65,6 @@ uint32 pc;
 uint32 npc;
 
 /* Various exception related things */
-extern struct JNIEnv_ Kaffe_JNIEnv;
-extern Method* jniMethod;
-extern void startJNIcall(void);
-extern void finishJNIcall(void);
-extern void addJNIref(jref);
-extern void removeJNIref(jref);
-
 jitflags willcatch;
 
 /* jit3 specific prototypes from icode.c */
@@ -84,30 +78,18 @@ void softcall_fakecall (label* from,label* to, void* func);
 /* Codeblock redzone - allows for safe overrun when generating instructions */
 #define	CODEBLOCKREDZONE	256
 
-nativecode* codeblock;
 int codeblock_size;
 static int code_generated;
 static int bytecode_processed;
 static int codeperbytecode;
 iLock *translatorlock;
 
-int CODEPC;
-
 struct {
 	int time;
 } jitStats;
 
-extern int enable_readonce;
-
-void	initInsnSequence(Method*, int, int, int);
-jboolean finishInsnSequence(void*, nativeCodeInfo*, errorInfo*);
 static void generateInsnSequence(void);
-void installMethodCode(void*, Method*, nativeCodeInfo*);
 static void nullCall(void);
-
-jlong	currentTime(void);
-Method*	findMethodFromPC(uintp);
-label* newFakeCall(void*, uintp);
 static void makeFakeCalls(void);
 
 /* Desktop edition */
@@ -185,7 +167,7 @@ DBG( vm_jit_translate, ("callinfo = 0x%x\n", &cinfo));
 	/* Handle null calls specially */
 	if (METHOD_BYTECODE_LEN(xmeth) == 1 && METHOD_BYTECODE_CODE(xmeth)[0] == RETURN) {
 		SET_METHOD_NATIVECODE(xmeth, (nativecode*)nullCall);
-		goto done2;
+		goto done;
 	}
 
 	assert(reinvoke == false);
@@ -196,7 +178,7 @@ DBG( vm_jit_translate, ("callinfo = 0x%x\n", &cinfo));
 	maxStack = xmeth->stacksz;
         maxArgs = sizeofSigMethod(xmeth, false);
 	if (maxArgs == -1) {
-		goto done2;
+		goto done;
 	}
 	if (xmeth->accflags & ACC_STATIC) {
 		isStatic = 1;
@@ -240,7 +222,10 @@ SUSE(
 	/*
 	 * Initialise the translator.
 	 */
-	initInsnSequence(xmeth, codeperbytecode * METHOD_BYTECODE_LEN(xmeth), xmeth->localsz, xmeth->stacksz);
+	success = initInsnSequence(xmeth, codeperbytecode * METHOD_BYTECODE_LEN(xmeth), xmeth->localsz, xmeth->stacksz, einfo);
+	if (!success) {
+		goto done;
+	}
 
 	/***************************************/
 	/* Next reduce bytecode to native code */
@@ -345,7 +330,6 @@ DBG( vm_jit_translate, ("Translating %s.%s%s (%s) %p\n",
 		       METHOD_NATIVECODE(xmeth), xmeth);
 	}
 
-done2:;
 	leaveTranslator();
 done3:;
 	unlockMutex(xmeth->class->centry);
@@ -415,6 +399,7 @@ getInsnPC(int pc)
 
 /*
  * Install the compiled code in the method.
+ * Returns true if successful
  */
 void
 installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
@@ -461,8 +446,8 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 /*
  * Init instruction generation.
  */
-void
-initInsnSequence(Method* meth, int codesize, int localsz, int stacksz)
+bool
+initInsnSequence(Method* meth, int codesize, int localsz, int stacksz, errorInfo *einfo)
 {
 	/* Clear various counters */
 	tmpslot = 0;
@@ -487,7 +472,12 @@ initInsnSequence(Method* meth, int codesize, int localsz, int stacksz)
 		codeblock_size = ALLOCCODEBLOCKSZ;
 	}
 	codeblock = gc_malloc(codeblock_size + CODEBLOCKREDZONE, GC_ALLOC_FIXED);
+	if (codeblock == 0) {
+		postOutOfMemory(einfo);
+		return (false);
+	}
 	CODEPC = 0;
+	return (true);
 }
 
 /*

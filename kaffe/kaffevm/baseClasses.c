@@ -154,7 +154,7 @@ initialiseKaffe(void)
 	/* Setup exceptions */
 	initExceptions();
 
-	/* Seup locking */
+	/* Setup locking */
 	initLocking();
 
 	/* Init thread support */

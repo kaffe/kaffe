@@ -39,6 +39,7 @@ sequence* nextSeq(void);
 extern sequence*		firstSeq;
 extern sequence*		lastSeq;
 extern sequence*		currSeq;
+extern sequence* 		activeSeq;
 
 #define	ALLOCSEQNR		1024
 

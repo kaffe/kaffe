@@ -16,6 +16,7 @@
 #include "md.h"
 #include "registers.h"
 #include "gc.h"
+#include "machine.h"
 
 int maxslot;
 SlotInfo* basicslots;
@@ -27,11 +28,6 @@ SlotInfo stack_limit[1];	/* Used to represent the stack limit */
 static SlotData* basicdatas;
 static int lastnrslots = 0;
 static SlotData stack_limit_data;
-
-extern int maxLocal;
-extern int maxArgs;
-extern int maxStack;
-extern int maxTemp;
 
 /*
  * Initiate slots.

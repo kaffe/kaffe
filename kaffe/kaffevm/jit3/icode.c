@@ -45,29 +45,9 @@ int noArrayBoundsChecks = 0;
 #define	HSLOT(_s)	((_s)+1)
 #endif
 
-extern void startInsn(sequence*);
-
-extern void doSpill(sequence*);
-extern void doReload(sequence*);
-extern SlotData** createSpillMask(void);
-extern label* newFakeCall(void*, uintp);
-extern void slotAlias(sequence*);
-extern void slowLockObject(Hjava_lang_Object*, void*);
-extern void slowUnlockObject(Hjava_lang_Object*, void*);
-
-extern uint32 pc;
-extern uint32 npc;
-extern int maxPush;
-extern int maxArgs;
-extern int maxTemp;
-extern int maxLocal;
-extern int maxStack;
-extern int isStatic;
-
 bool used_ieee_rounding;
 bool used_ieee_division;
 
-extern sequence* activeSeq;
 sequence* lastSpill;
 
 #define	MAXLABTAB	64

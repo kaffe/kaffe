@@ -23,12 +23,6 @@
 #include "codeproto.h"
 #include "gc.h"
 
-extern int maxArgs;
-extern int maxLocal;
-extern int maxStack;
-extern int maxTemp;
-extern int isStatic;
-
 static void spill(SlotData*);
 
 /*

@@ -159,4 +159,37 @@ void setupArgumentRegisters(void);
 	goto done; \
 }
 
+/*
+ * Various methods exported by machine.c
+ */
+struct SlotData;
+struct _label_;
+struct _sequence;
+struct _errorInfo;
+extern bool initInsnSequence(Method *meth, int codesize, int localsz, 
+	int stacksz, struct _errorInfo *einfo);
+extern jboolean finishInsnSequence(void*, nativeCodeInfo*, struct _errorInfo*);
+extern void     installMethodCode(void*, Method*, nativeCodeInfo*);
+extern struct _label_* newFakeCall(void*, uintp);
+extern void 	doSpill(struct _sequence*);
+extern void 	doReload(struct _sequence*);
+extern struct SlotData** createSpillMask(void);
+extern void     slotAlias(struct _sequence*);
+extern void     startInsn(struct _sequence*);
+extern jboolean translate(Method* xmeth, struct _errorInfo* einfo);
+
+/*
+ * Some global variables used by the translater which we must export.
+ */
+extern uint32 pc;
+extern uint32 npc;
+extern int maxPush;
+extern int maxArgs;
+extern int maxTemp;
+extern int maxLocal;
+extern int maxStack;
+extern int isStatic;
+extern nativecode* codeblock;
+extern uintp CODEPC;
+
 #endif

@@ -90,7 +90,9 @@ utf8ConstNew(const char *s, int len)
 	int32 hash;
 	Utf8Const *fake;
 	char buf[200];
+#if !defined(KAFFEH)
 	int iLockRoot;
+#endif
 
 	/* Automatic length finder */
 	if (len < 0) {
@@ -171,7 +173,9 @@ utf8ConstNew(const char *s, int len)
 void
 utf8ConstAddRef(Utf8Const *utf8)
 {
+#if !defined(KAFFEH)
 	int iLockRoot;
+#endif
 
 	lockStaticMutex(&utf8Lock);
 	assert(utf8->nrefs >= 1);
@@ -185,7 +189,9 @@ utf8ConstAddRef(Utf8Const *utf8)
 void
 utf8ConstRelease(Utf8Const *utf8)
 {
+#if !defined(KAFFEH)
 	int iLockRoot;
+#endif
 
 	/* NB: we ignore zero utf8s here in order to not having to do it at
 	 * the call sites, such as when destroying half-processed class 
