@@ -752,7 +752,7 @@ gnu_java_net_PlainDatagramSocketImpl_getTTL(struct Hgnu_java_net_PlainDatagramSo
 
 #if defined(IP_MULTICAST_TTL)
 	unsigned char v;
-	int s;
+	int s = 1;
 	int r;
 
 	r = KGETSOCKOPT(unhand(this)->native_fd,

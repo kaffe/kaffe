@@ -15,7 +15,7 @@ public class DeleteFile
 		System.exit(0);
 	}
 }
-// java args: || test -f deleteOnExit.test
+// java args: DeleteFile || test -f deleteOnExit.test
 /* Expected Output:
 done.
 */
