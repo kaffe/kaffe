@@ -11,6 +11,9 @@
 package java.math;
 
 import java.util.Random;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.IOException;
 import kaffe.util.Ptr;
 
 public class BigInteger extends Number {
@@ -310,6 +313,80 @@ public double doubleValue() {
 protected void finalize() throws Throwable {
 	finalize0();
 	super.finalize();
+}
+
+/** XXX implement writeObject according to serial form, see below */
+private void writeObject(ObjectOutputStream s) throws IOException
+{
+	throw new kaffe.util.NotImplemented();
+}
+
+/**
+ * deserialize this object
+ */
+private void readObject(ObjectInputStream s)
+                 throws IOException, ClassNotFoundException {
+    	/* serialized form is
+	 * int bitCount
+	 *
+	 *   The bitCount of this BigInteger, as returned by 
+	 *   bitCount(), or -1 (either value is acceptable).
+	 *
+	 * int bitLength
+	 *
+	 *   The bitLength of this BigInteger, as returned by bitLength(), 
+	 *   or -1 (either value is acceptable).
+	 *
+	 * int firstNonzeroByteNum
+	 *
+	 *   The byte-number of the lowest-order nonzero byte in the 
+	 *   magnitude of this BigInteger, or -2 (either value is acceptable). 
+	 *   The least significant byte has byte-number 0, the next byte in 
+	 *   order of increasing significance has byte-number 1, and so forth.
+	 *
+	 * int lowestSetBit
+	 *
+	 *   The lowest set bit of this BigInteger, as returned by 
+	 *   getLowestSetBit(), or -2 (either value is acceptable).
+	 *
+	 * byte[] magnitude
+	 *
+	 *   The magnitude of this BigInteger, in big-endian byte-order: 
+	 *   the zeroth element of this array is the most-significant byte 
+	 *   of the magnitude. The magnitude must be "minimal" in that the 
+	 *   most-significant byte (magnitude[0]) must be non-zero.  This is 
+	 *   necessary to ensure that there is exactly one representation for 
+	 *   each BigInteger value. Note that this implies that the BigInteger 
+	 *   zero has a zero-length magnitude array.
+	 *
+	 * int signum
+	 *
+         *   The signum of this BigInteger: -1 for negative, 0 for zero, 
+	 *   or 1 for positive.  Note that the BigInteger zero must have a 
+	 *   signum of 0. This is necessary to ensures that there is exactly 
+	 *   one representation for each BigInteger value.
+	 *
+	 * NB: the order has magnitude last cause it's an object 
+	 */
+
+	/* 
+	 * I don't know whether that's the right way to do it 
+	 */
+	System.out.println("jmb: readObject called, this is experimental");
+	int bitCount = s.readInt();	// ignored, not implemented
+	int bitLength = s.readInt();	// ignored, not implemented
+	int firstNonzeroByteNum = s.readInt();	// ignored, can be recomputed?
+	int lowestSetBit = s.readInt();	// ignored, can be recomputed?
+	int signum = s.readInt();
+
+	// magnitude is an object and hence last
+	byte[] magnitude = (byte[])s.readObject();
+
+	init0();	/* I think this is needed because the serialization 
+			 * won't invoke the constructor
+			 */
+	assignBytes0(signum, magnitude);
+	System.out.println("jmb: " + toString());
 }
 
 private native void init0();
