@@ -12,7 +12,8 @@ configure where to find it.
 
 libungif 4.0:	You need libungif 4.0 if you want Kaffe's awt to be 
     able to decompress gif images.  Note that earlier versions will not
-    work.
+    work.  You can get libgif from:
+    http://prtr-13.ucsc.edu/~badger/software/libungif.shtml
 
 libz:		You need libz to use the functionality in java.util.zip
 
