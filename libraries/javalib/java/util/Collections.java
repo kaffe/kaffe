@@ -236,7 +236,6 @@ public class Collections {
 
 	public static Set singleton(final Object o) {
 		return new AbstractSet() {
-			private final Object object = o;
 			public int size() {
 				return 1;
 			}
@@ -299,7 +298,7 @@ public class Collections {
 			if (index < 0 || index > num) {
 				throw new IndexOutOfBoundsException();
 			}
-			return new AbstractListIterator(this, num - index);
+			return new AbstractListIterator(this, index);
 		}
 		public List subList(int fromIndex, int toIndex) {
 			if (fromIndex < 0 || toIndex > num) {
