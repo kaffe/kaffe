@@ -60,7 +60,7 @@
 #endif
   };
 
-#ifdef KAFFE_VMDEBUG
+#if defined(KAFFE_VMDEBUG) && !defined(NDEBUG)
 /*
  * Option names (for debugging only)
  */

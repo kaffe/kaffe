@@ -56,7 +56,7 @@ static const struct {
 #endif
   };
 
-#ifdef KAFFE_VMDEBUG
+#if defined(KAFFE_VMDEBUG) && !defined(NDEBUG)
 /* Generate a string for an inet addr (in host form). */
 static char *
 ip2str(jint addr) 
