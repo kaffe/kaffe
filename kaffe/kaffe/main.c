@@ -757,8 +757,8 @@ usage(void)
 	fprintf(stderr, "	-as <size> 		 Heap increment\n");
 	fprintf(stderr, "	-classpath <path>        Set classpath\n");
 	fprintf(stderr, "	-Xbootclasspath:<path>   Set bootclasspath\n");
-	fprintf(stderr, "	-Xbootclasspath:/a<path> Append path to bootclasspath\n");
-	fprintf(stderr, "	-Xbootclasspath:/p<path> Prepend path to bootclasspath\n");
+	fprintf(stderr, "	-Xbootclasspath/a:<path> Append path to bootclasspath\n");
+	fprintf(stderr, "	-Xbootclasspath/p:<path> Prepend path to bootclasspath\n");
 	fprintf(stderr, "	-D<property>=<value>     Set a property\n");
 	fprintf(stderr, "	-verify *		 Verify all bytecode\n");
 	fprintf(stderr, "	-verifyremote *		 Verify bytecode loaded from network\n");
