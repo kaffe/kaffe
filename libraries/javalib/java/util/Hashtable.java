@@ -223,7 +223,7 @@ public class Hashtable extends Dictionary implements Cloneable, Serializable {
   }
   
   public synchronized void clear() {
-    for (int pos = keys.length; pos >= 0; pos--) {
+    for (int pos = keys.length - 1; pos >= 0; pos--) {
       keys[pos] = free;
       elements[pos] = free;
     }

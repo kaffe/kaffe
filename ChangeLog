@@ -1,3 +1,8 @@
+Fri Sep 25 11:58:18 1998  Maxim Kizub <max@immsp.kiev.ua>
+
+	* libraries/javalib/java/util/Hashtable.java: fix
+	ArrayIndexOutOfBoundsException in clear() method
+
 Thu Sep 24 13:38:51 PDT 1998	Tim Wilkinson	<tim@transvirtual.com>
 
 	* Added java.sql package.
