@@ -61,7 +61,7 @@ public long skip(long n) throws IOException {
 
 	while (n > 0) {
 		int r = read(buf, 0, buf.length < n ? buf.length : (int)n);
-		if (r <= 0)
+		if (r < 0)
 			break;
 		n -= r;
 		skipped += r;
