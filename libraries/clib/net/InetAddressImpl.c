@@ -97,7 +97,7 @@ java_net_InetAddressImpl_lookupAllHostAddr(struct Hjava_net_InetAddressImpl* non
 
 	for (i = 0; i < alength; i++) {
 		/* Copy in the network address */
-		unhand(array)->body[i] = ntohl(*(jint*)ent->h_addr_list[i]);
+		unhand_array(array)->body[i] = ntohl(*(jint*)ent->h_addr_list[i]);
 	}
 
 	return (array);

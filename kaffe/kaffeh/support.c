@@ -194,7 +194,8 @@ startInclude(void)
 	fprintf(include, "\n");
 	fprintf(include, "/* Header for class %s */\n", className);
 	fprintf(include, "\n");
-	fprintf(include, "typedef struct Class%s {\n", className);
+	fprintf(include, "typedef struct H%s {\n", className);
+	fprintf(include, "  Hjava_lang_Object base;\n");
 }
 
 /*
@@ -279,11 +280,12 @@ readFieldEnd(void)
 	}
 
 	if (objectDepth == 0) {
+#if 0
 		if (argpos == 0) {
 			fprintf(include, "\tint __DUMMY__;\n");
 		}
-		fprintf(include, "} Class%s;\n", className);
-		fprintf(include, "HandleTo(%s);\n\n", className);
+#endif
+		fprintf(include, "} H%s;\n\n", className);
 	}
 }
 

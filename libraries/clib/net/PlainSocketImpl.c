@@ -341,7 +341,7 @@ java_net_PlainSocketImpl_read(struct Hjava_net_PlainSocketImpl* this, HArrayOfBy
 		SignalError("java.io.IOException", "fd invalid"); 
 	}
 
-        rc = KSOCKREAD(fd, &unhand(buf)->body[offset], len, unhand(this)->timeout, &r);
+        rc = KSOCKREAD(fd, &unhand_array(buf)->body[offset], len, unhand(this)->timeout, &r);
 	if (rc == EINTR) {
 		SignalError("java.io.InterruptedIOException", 
 			    "Read timed out or was interrupted");
@@ -365,7 +365,7 @@ java_net_PlainSocketImpl_write(struct Hjava_net_PlainSocketImpl* this, HArrayOfB
 
 	fd = unhand(unhand(this)->fd)->fd;
         if (fd >= 0) {
-		int rc = KSOCKWRITE(fd, &unhand(buf)->body[offset], len, &r);
+		int rc = KSOCKWRITE(fd, &unhand_array(buf)->body[offset], len, &r);
 		if (rc) {
 			SignalError("java.io.IOException", SYS_ERROR(rc));
 		}

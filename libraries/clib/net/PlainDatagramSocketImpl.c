@@ -117,7 +117,7 @@ java_net_PlainDatagramSocketImpl_send(struct Hjava_net_PlainDatagramSocketImpl* 
 	addr.sin_port = htons(unhand(pkt)->port);
 	addr.sin_addr.s_addr = htonl(unhand(unhand(pkt)->address)->address);
 
-	rc = KSENDTO(unhand(unhand(this)->fd)->fd, unhand(unhand(pkt)->buf)->body, unhand(pkt)->length, 0, (struct sockaddr*)&addr, sizeof(addr), &bsent);
+	rc = KSENDTO(unhand(unhand(this)->fd)->fd, unhand_array(unhand(pkt)->buf)->body, unhand(pkt)->length, 0, (struct sockaddr*)&addr, sizeof(addr), &bsent);
 	if (rc) {
 		SignalError("java.net.SocketException", SYS_ERROR(rc));
 	}
@@ -152,7 +152,7 @@ java_net_PlainDatagramSocketImpl_receive(struct Hjava_net_PlainDatagramSocketImp
 	/* Which port am I receiving from */
 	addr.sin_port = htons(unhand(this)->localPort);
 
-	rc = KRECVFROM(unhand(unhand(this)->fd)->fd, unhand(unhand(pkt)->buf)->body, unhand(pkt)->length, 0, (struct sockaddr*)&addr, &alen, unhand(this)->timeout, &r);
+	rc = KRECVFROM(unhand(unhand(this)->fd)->fd, unhand_array(unhand(pkt)->buf)->body, unhand(pkt)->length, 0, (struct sockaddr*)&addr, &alen, unhand(this)->timeout, &r);
 	if (rc) {
 		SignalError("java.net.SocketException", SYS_ERROR(rc));
 	}

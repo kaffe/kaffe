@@ -235,7 +235,7 @@ java_lang_Class_getInterfaces(struct Hjava_lang_Class* this)
 		nr = 0;
 
 	obj = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class");
-	ifaces = (struct Hjava_lang_Class**)unhand(obj)->body;
+	ifaces = (struct Hjava_lang_Class**)unhand_array(obj)->body;
 	for (i = 0; i < nr; i++) {
 		ifaces[i] = this->interfaces[i];
 	}
@@ -298,7 +298,7 @@ java_lang_Class_getPrimitiveClass(struct Hjava_lang_String* name)
 {
 	jchar* chrs;
 
-	chrs = &unhand(unhand(name)->value)->body[unhand(name)->offset];
+	chrs = STRING_DATA(name);
 	switch (chrs[0]) {
 	case 'b':
 		if (chrs[1] == 'y') {
@@ -384,7 +384,7 @@ makeParameters(Method* meth)
 		if (clazz == 0) {
 			throwError(&info);
 		}
-		unhand(array)->body[i] = &clazz->head;
+		unhand_array(array)->body[i] = &clazz->head;
 	}
 
         return (array);
@@ -426,7 +426,7 @@ makeExceptions(Method* meth)
 
 	nr = meth->ndeclared_exceptions;
 	array = (HArrayOfObject*)AllocObjectArray(nr, "Ljava/lang/Class;");
-	ptr = (Hjava_lang_Class**)&unhand(array)->body[0];
+	ptr = (Hjava_lang_Class**)&unhand_array(array)->body[0];
 	for (i = 0; i < nr; i++) {
 		errorInfo info;
 		Hjava_lang_Class* clazz;
@@ -567,7 +567,7 @@ getInterfaceMethods0(struct Hjava_lang_Class* this, jint declared)
 	}
 
 	array = (HArrayOfObject*)AllocObjectArray(count, "Ljava/lang/reflect/Method;");
-	ptr = (Hjava_lang_reflect_Method**)&unhand(array)->body[0];
+	ptr = (Hjava_lang_reflect_Method**)&unhand_array(array)->body[0];
 
 	addMethods(this, declared, &ptr);
 	if (!declared) {
@@ -607,7 +607,7 @@ java_lang_Class_getMethods0(struct Hjava_lang_Class* this, jint declared)
 		}
 	}
 	array = (HArrayOfObject*)AllocObjectArray(count, "Ljava/lang/reflect/Method;");
-	ptr = (Hjava_lang_reflect_Method**)&unhand(array)->body[0];
+	ptr = (Hjava_lang_reflect_Method**)&unhand_array(array)->body[0];
 	for (clas = this; clas != NULL; clas = clas->superclass) {
 
 		addMethods(clas, declared, &ptr);
@@ -639,7 +639,7 @@ java_lang_Class_getConstructors0(struct Hjava_lang_Class* this, jint declared)
 		}
 	}
 	array = (HArrayOfObject*)AllocObjectArray(count, "Ljava/lang/reflect/Constructor;");
-	ptr = (Hjava_lang_reflect_Constructor**)&unhand(array)->body[0];
+	ptr = (Hjava_lang_reflect_Constructor**)&unhand_array(array)->body[0];
 	clas = this;
 	mth = CLASS_METHODS(clas);
 	for (i = CLASS_NMETHODS(clas)-1; i >= 0;  i--) {
@@ -676,7 +676,7 @@ java_lang_Class_getFields0(struct Hjava_lang_Class* clazz, int declared)
 		}
 	}
 	array = (HArrayOfObject*)AllocObjectArray(count, "Ljava/lang/reflect/Field;");
-	ptr = (Hjava_lang_reflect_Field**)&unhand(array)->body[0];
+	ptr = (Hjava_lang_reflect_Field**)&unhand_array(array)->body[0];
 	for (clas = clazz; clas != NULL; clas = clas->superclass) {
 		fld = CLASS_FIELDS(clas);
 		for (i = CLASS_NFIELDS(clas)-1; i >= 0;  i--) {

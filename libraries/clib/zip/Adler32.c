@@ -21,7 +21,7 @@
 void
 java_util_zip_Adler32_update(struct Hjava_util_zip_Adler32* this, HArrayOfByte* buf, jint from, jint len)
 {
-	unhand(this)->adler = adler32(unhand(this)->adler, &unhand(buf)->body[from], len);
+	unhand(this)->adler = adler32(unhand(this)->adler, &unhand_array(buf)->body[from], len);
 
 }
 

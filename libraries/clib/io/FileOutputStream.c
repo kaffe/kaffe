@@ -88,7 +88,7 @@ java_io_FileOutputStream_writeBytes(struct Hjava_io_FileOutputStream* fh, HArray
 	ssize_t bwritten;
 
 	fd = unhand(unhand(fh)->fd)->fd;
-	r = KWRITE(fd, &unhand(byteArray)->body[start], len, &bwritten);
+	r = KWRITE(fd, &unhand_array(byteArray)->body[start], len, &bwritten);
 	if (r) {
 		SignalError("java.io.IOException", SYS_ERROR(r));
 	}

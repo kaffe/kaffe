@@ -65,7 +65,7 @@ java_io_FileInputStream_readBytes(struct Hjava_io_FileInputStream* fh, HArrayOfB
 	int rc;
 	ssize_t ret;
 
-	rc = KREAD(unhand(unhand(fh)->fd)->fd, &unhand(bytes)->body[off], len, &ret);
+	rc = KREAD(unhand(unhand(fh)->fd)->fd, &unhand_array(bytes)->body[off], len, &ret);
 	if (rc) {
 		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}

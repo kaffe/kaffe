@@ -1020,9 +1020,12 @@ resolveObjectFields(Hjava_lang_Class* class)
 			maxalign = fsize;
 		}
 	}
-
+#if 0
 	/* Align start of this class's data */
-	offset = ((offset + maxalign - 1) / maxalign) * maxalign;
+	if (oldoffset == 0) {
+		offset = ((offset + maxalign - 1) / maxalign) * maxalign;
+	}
+#endif
 
 	/* Now work out where to put each field */
 	fld = CLASS_IFIELDS(class);
@@ -1059,8 +1062,12 @@ resolveObjectFields(Hjava_lang_Class* class)
 	}
 	class->gc_layout = map;
 
+#if 0
 	/* Find and align start of object */
-	offset = ((offset + maxalign - 1) / maxalign) * maxalign;
+	if (oldoffset == 0) {
+		offset = ((offset + maxalign - 1) / maxalign) * maxalign;
+	}
+#endif
 	nbits = offset/ALIGNMENTOF_VOIDP;
 
 DBG(GCPRECISE, 

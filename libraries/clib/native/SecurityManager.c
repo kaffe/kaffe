@@ -49,7 +49,7 @@ java_lang_SecurityManager_getClassContext0(void)
 	cnt = 0;
 	for (i = 0; info[i].meth != ENDOFSTACK; i++) {
 		if (info[i].meth != 0 && info[i].meth->class != 0) {
-			unhand(array)->body[cnt] = (Hjava_lang_Object*)info[i].meth->class;
+			unhand_array(array)->body[cnt] = (Hjava_lang_Object*)info[i].meth->class;
 			cnt++;
 		}
 	}

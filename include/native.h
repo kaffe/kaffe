@@ -40,15 +40,8 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
 
 #include <java_lang_Object.h>
 
-/* Build an object handle */
-#define	HandleTo(class)					\
-	typedef struct H##class {			\
-		Hjava_lang_Object base;			\
-		struct Class##class data[1];		\
-	} H##class
-
 /* Turn a handle into the real thing */
-#define	unhand(o)	((o)->data)
+#define	unhand(o)	(o)
 
 /* Include array types */
 #include "Arrays.h"

@@ -53,7 +53,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return execute_java_constructor(0,javaLangIntegerClass,"(I)V",
-						(jint)(unhand(arr)->body[elem]));
+						(jint)(unhand_array(arr)->body[elem]));
 	}
 	else if ( clazz == shortClass ) {
 		HArrayOfShort *arr = (HArrayOfShort *)obj;
@@ -61,7 +61,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return execute_java_constructor(0,javaLangShortClass,"(S)V",
-						(jint)(unhand(arr)->body[elem]));
+						(jint)(unhand_array(arr)->body[elem]));
 	}
 	else if ( clazz == longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
@@ -69,7 +69,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return execute_java_constructor(0,javaLangLongClass,"(J)V",
-						(jlong)(unhand(arr)->body[elem]));
+						(jlong)(unhand_array(arr)->body[elem]));
 	}
 	else if ( clazz == byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
@@ -77,7 +77,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return execute_java_constructor(0,javaLangByteClass,"(B)V",
-						(jint)(unhand(arr)->body[elem]));
+						(jint)(unhand_array(arr)->body[elem]));
 	}
 	else if ( clazz == booleanClass ) {
 		HArrayOfBoolean *arr = (HArrayOfBoolean *)obj;
@@ -85,7 +85,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return execute_java_constructor(0,javaLangBooleanClass,"(Z)V",
-						(jint)(unhand(arr)->body[elem]));
+						(jint)(unhand_array(arr)->body[elem]));
 	}
 	else if ( clazz == charClass ) {
 		HArrayOfChar *arr = (HArrayOfChar *)obj;
@@ -93,7 +93,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return execute_java_constructor(0,javaLangCharacterClass,"(C)V",
-						(jint)(unhand(arr)->body[elem]));
+						(jint)(unhand_array(arr)->body[elem]));
 	}
 	else if ( clazz == floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
@@ -101,7 +101,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return execute_java_constructor(0,javaLangFloatClass,"(F)V",
-						(jfloat)(unhand(arr)->body[elem]));
+						(jfloat)(unhand_array(arr)->body[elem]));
 	}
 	else if ( clazz == doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
@@ -109,7 +109,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		return execute_java_constructor(0,javaLangDoubleClass,"(D)V",
-						(jdouble)(unhand(arr)->body[elem]));
+						(jdouble)(unhand_array(arr)->body[elem]));
 	}
 	else {
 		/* If clazz isn't one of the above then it's either a
@@ -120,7 +120,7 @@ java_lang_reflect_Array_get(struct Hjava_lang_Object* obj, jint elem)
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	}
 }
 
@@ -139,7 +139,7 @@ java_lang_reflect_Array_getBoolean(struct Hjava_lang_Object* obj, jint elem)
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else {
 		SignalError("java.lang.IllegalArgumentException", "");
 	}
@@ -160,7 +160,7 @@ java_lang_reflect_Array_getByte(struct Hjava_lang_Object* obj, jint elem)
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else {
 		SignalError("java.lang.IllegalArgumentException", "");
 	}
@@ -181,13 +181,13 @@ java_lang_reflect_Array_getChar(struct Hjava_lang_Object* obj, jint elem)
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else {
 		SignalError("java.lang.IllegalArgumentException", "");
 	}
@@ -208,13 +208,13 @@ java_lang_reflect_Array_getShort(struct Hjava_lang_Object* obj, jint elem)
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else {
 		SignalError("java.lang.IllegalArgumentException", "");
 	}
@@ -235,25 +235,25 @@ java_lang_reflect_Array_getInt(struct Hjava_lang_Object* obj, jint elem)
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == shortClass ) {
 		HArrayOfShort *arr = (HArrayOfShort *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == charClass ) {
 		HArrayOfChar *arr = (HArrayOfChar *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else {
 		SignalError("java.lang.IllegalArgumentException", "");
 	}
@@ -274,31 +274,31 @@ java_lang_reflect_Array_getLong(struct Hjava_lang_Object* obj, jint elem)
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == intClass ) {
 		HArrayOfInt *arr = (HArrayOfInt *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == shortClass ) {
 		HArrayOfShort *arr = (HArrayOfShort *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == charClass ) {
 		HArrayOfChar *arr = (HArrayOfChar *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else {
 		SignalError("java.lang.IllegalArgumentException", "");
 	}
@@ -319,37 +319,37 @@ java_lang_reflect_Array_getFloat(struct Hjava_lang_Object* obj, jint elem)
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == intClass ) {
 		HArrayOfInt *arr = (HArrayOfInt *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == shortClass ) {
 		HArrayOfShort *arr = (HArrayOfShort *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == charClass ) {
 		HArrayOfChar *arr = (HArrayOfChar *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else {
 		SignalError("java.lang.IllegalArgumentException", "");
 	}
@@ -370,43 +370,43 @@ java_lang_reflect_Array_getDouble(struct Hjava_lang_Object* obj, jint elem)
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == intClass ) {
 		HArrayOfInt *arr = (HArrayOfInt *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == shortClass ) {
 		HArrayOfShort *arr = (HArrayOfShort *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == charClass ) {
 		HArrayOfChar *arr = (HArrayOfChar *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else if ( clazz == byteClass ) {
 		HArrayOfByte *arr = (HArrayOfByte *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		return unhand(arr)->body[elem];
+		return unhand_array(arr)->body[elem];
 	} else {
 		SignalError("java.lang.IllegalArgumentException", "");
 	}
@@ -426,7 +426,7 @@ java_lang_reflect_Array_set(struct Hjava_lang_Object* obj, jint elem, struct Hja
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
 		if (val == NULL || soft_instanceof(CLASS_ELEMENT_TYPE(OBJECT_CLASS(obj)), val)) {
-			unhand(arr)->body[elem] = val;
+			unhand_array(arr)->body[elem] = val;
 		} else {
 			SignalError("java.lang.IllegalArgumentException", "");
 		}
@@ -478,7 +478,7 @@ java_lang_reflect_Array_setBoolean(struct Hjava_lang_Object* obj, jint elem, jbo
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else {
 		SignalError("java.lang.IllegalArgumentException", "");
 	}
@@ -499,43 +499,43 @@ java_lang_reflect_Array_setByte(struct Hjava_lang_Object* obj, jint elem, jbyte 
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == shortClass ) {
 		HArrayOfShort *arr = (HArrayOfShort *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == charClass ) {
 		HArrayOfChar *arr = (HArrayOfChar *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == intClass ) {
 		HArrayOfInt *arr = (HArrayOfInt *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else {
 		SignalError("java.lang.IllegalArgumentException", "");
 	}
@@ -556,31 +556,31 @@ java_lang_reflect_Array_setChar(struct Hjava_lang_Object* obj, jint elem, jchar 
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == intClass ) {
 		HArrayOfInt *arr = (HArrayOfInt *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else {
 		SignalError("java.lang.IllegalArgumentException", "");
 	}
@@ -601,31 +601,31 @@ java_lang_reflect_Array_setShort(struct Hjava_lang_Object* obj, jint elem, jshor
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == intClass ) {
 		HArrayOfInt *arr = (HArrayOfInt *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else {
 		SignalError("java.lang.IllegalArgumentException", "");
 	}
@@ -646,25 +646,25 @@ java_lang_reflect_Array_setInt(struct Hjava_lang_Object* obj, jint elem, jint va
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == longClass ) {
 		HArrayOfLong *arr = (HArrayOfLong *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else {
 		SignalError("java.lang.IllegalArgumentException", "");
 	}
@@ -685,19 +685,19 @@ java_lang_reflect_Array_setLong(struct Hjava_lang_Object* obj, jint elem, jlong 
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == floatClass ) {
 		HArrayOfFloat *arr = (HArrayOfFloat *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else {
 		SignalError("java.lang.IllegalArgumentException", "");
 	}
@@ -718,13 +718,13 @@ java_lang_reflect_Array_setFloat(struct Hjava_lang_Object* obj, jint elem, jfloa
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else if ( clazz == doubleClass ) {
 		HArrayOfDouble *arr = (HArrayOfDouble *)obj;
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else {
 		SignalError("java.lang.IllegalArgumentException", "");
 	}
@@ -745,7 +745,7 @@ java_lang_reflect_Array_setDouble(struct Hjava_lang_Object* obj, jint elem, jdou
 		if (elem < 0 || elem >= obj_length(arr))
 			SignalError("java.lang.ArrayIndexOutOfBoundsException", "");
 		
-		unhand(arr)->body[elem] = val;
+		unhand_array(arr)->body[elem] = val;
 	} else {
 		SignalError("java.lang.IllegalArgumentException", "");
 	}
@@ -779,7 +779,7 @@ java_lang_reflect_Array_multiNewArray(struct Hjava_lang_Class* clazz, HArrayOfIn
 
 	/* Copy dimentions into array */
 	for( i = 0; i < s; i++ ) {
-		dims[i] = unhand(sizes)->body[i];
+		dims[i] = unhand_array(sizes)->body[i];
 		if (dims[i] < 0) {
 			SignalError("java.lang.NegativeArraySizeException", "");
 		}

@@ -1,3 +1,34 @@
+Sat Feb 13 01:14:16 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* include/Arrays.h
+	include/java_lang_String.h
+	include/native.h
+	kaffe/kaffeh/support.c
+	kaffe/kaffevm/classMethod.c
+	kaffe/kaffevm/jni.c
+	kaffe/kaffevm/string.c
+	kaffe/kaffevm/stringSupport.h
+	kaffe/kaffevm/mem/gc-mem.c
+	libraries/clib/io/File.c
+	libraries/clib/io/FileInputStream.c
+	libraries/clib/io/FileOutputStream.c
+	libraries/clib/io/RandomAccessFile.c
+	libraries/clib/native/Array.c
+	libraries/clib/native/Class.c
+	libraries/clib/native/ClassLoader.c
+	libraries/clib/native/Method.c
+	libraries/clib/native/ObjectStreamClassImpl.c
+	libraries/clib/native/SecurityManager.c
+	libraries/clib/native/ZipFile.c
+	libraries/clib/net/InetAddressImpl.c
+	libraries/clib/net/PlainDatagramSocketImpl.c
+	libraries/clib/net/PlainSocketImpl.c
+	libraries/clib/zip/Adler32.c
+	libraries/clib/zip/CRC32.c
+	libraries/clib/zip/Deflater.c
+	libraries/clib/zip/Inflater.c: fixed alignment bug on sparc,
+	switch unhand to unhand_array for arrays in KNI.
+
 Sat Feb 13 00:59:00 1999  Moses DeJong <dejong@cs.umn.edu>
 
 	* libraries/javalib/java/util/zip/ZipEntry.java,

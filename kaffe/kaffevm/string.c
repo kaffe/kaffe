@@ -117,7 +117,7 @@ stringC2CharArray(const char* cs)
 
 	/* Convert C chars to Java chars */
 	for (k = 0; k < len; k++) {
-		unhand(ary)->body[k] = (unsigned char) cs[k];
+		unhand_array(ary)->body[k] = (unsigned char) cs[k];
 	}
 	return(ary);
 }
@@ -338,7 +338,7 @@ stringCharArray2Java(const jchar *data, int len)
 			fakeAry = (HArrayOfChar*)buf;
 		}
 		memset(fakeAry, 0, sizeof(*fakeAry));
-		memcpy(unhand(fakeAry)->body, data, len * sizeof(*data));
+		memcpy(unhand_array(fakeAry)->body, data, len * sizeof(*data));
 		obj_length(fakeAry) = len;
 
 		/* Attach fake array to fake string */

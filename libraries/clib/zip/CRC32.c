@@ -99,7 +99,7 @@ crc32(uint32 crc, uint8* buf, int len)
 void
 java_util_zip_CRC32_update(struct Hjava_util_zip_CRC32* this, HArrayOfByte* buf, jint from, jint len)
 {
-	unhand(this)->crc = crc32(unhand(this)->crc, &unhand(buf)->body[from], len);
+	unhand(this)->crc = crc32(unhand(this)->crc, &unhand_array(buf)->body[from], len);
 }
 
 void

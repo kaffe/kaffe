@@ -74,7 +74,7 @@ java_util_zip_ZipFile_getZipData0(struct Hkaffe_util_Ptr* zip, struct Hjava_util
 		return (0);
 	}
 	array = (HArrayOfByte*)AllocArray(unhand(zentry)->size, TYPE_Byte);
-	memcpy(unhand(array)->body, buf, unhand(zentry)->size);
+	memcpy(unhand_array(array)->body, buf, unhand(zentry)->size);
 	return (array);
 }
 
@@ -89,7 +89,7 @@ java_util_zip_ZipFile_getZipEntries0(struct Hkaffe_util_Ptr* zip)
 
 	zfile = (jarFile*)zip;
 	vec = (Hjava_util_Vector*)execute_java_constructor("java.util.Vector", 0, "(I)V", zfile->count);
-	elems = unhand(unhand(vec)->elementData)->body;
+	elems = unhand_array(unhand(vec)->elementData)->body;
 	for (i = 0, entry = zfile->head; i < zfile->count; i++, entry = entry->next) {
 		elems[i] = (HObject*)makeZipEntry(entry);
 	}

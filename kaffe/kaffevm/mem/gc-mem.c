@@ -107,7 +107,8 @@ static int totalsmallobjs;
 static void 
 printslack(void)
 {
-	printf("allocated %d small objects, total slack %d, slack/per "
+	fprintf(stderr, 
+		"allocated %d small objects, total slack %d, slack/per "
 		"object %8.2f\n", 
 		totalsmallobjs, totalslack, totalslack/(double)totalsmallobjs);
 }
@@ -122,7 +123,7 @@ gc_heap_check(void)
 
 	for (i = 0; i < NR_FREELISTS; i++) {
 		gc_block* blk = freelist[i].list;
-		if (blk == 0 || blk == 0xffffffff) {
+		if (blk == 0 || blk == (gc_block*)0xffffffff) {
 			continue;
 		} else {
 			gc_freeobj* mem = blk->free;

@@ -95,7 +95,7 @@ Java_java_lang_reflect_Method_invoke(JNIEnv* env, jobject _this, jobject _obj, j
 	meth = &clazz->methods[slot];
 
 	len = argobj ? obj_length(argobj) : 0;
-	body = argobj ? (Hjava_lang_Object**)unhand(argobj)->body : 0;
+	body = argobj ? OBJARRAY_DATA(argobj) : 0;
 	for (sig = meth->signature->data + 1, i = j = 0;
 	     *sig != ')' && i < len; ++sig, ++i, ++j) {
 		a = body[i] ? OBJECT_CLASS(body[i]) : 0;

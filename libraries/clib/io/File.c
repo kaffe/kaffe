@@ -266,7 +266,7 @@ java_io_File_list0(struct Hjava_io_File* this)
 	for (i = 0; i < count; i++) {
 		mentry = dirlist;
 		dirlist = mentry->next;
-		unhand(array)->body[i] = (Hjava_lang_Object*)stringC2Java(mentry->name);
+		unhand_array(array)->body[i] = (Hjava_lang_Object*)stringC2Java(mentry->name);
 		KFREE(mentry);
 	}
 

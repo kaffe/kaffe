@@ -38,7 +38,7 @@ java_lang_ClassLoader_defineClass0(struct Hjava_lang_ClassLoader* this, struct H
 	classEntry *centry;
 	errorInfo info;
 
-	hand.base = &unhand(data)->body[offset];
+	hand.base = &unhand_array(data)->body[offset];
 	hand.buf = hand.base;
 	hand.size = length;
 
@@ -206,7 +206,7 @@ java_lang_ClassLoader_getSystemResourceAsBytes0(struct Hjava_lang_String* str)
 	 * to avoid this copy but we cannot for the moment.
 	 */
 	data = (HArrayOfByte*)AllocArray(hand.size, TYPE_Byte);
-	memcpy(unhand(data)->body, hand.buf, hand.size);
+	memcpy(unhand_array(data)->body, hand.buf, hand.size);
 	if (hand.base != NULL) {
 		KFREE(hand.base);
 	}

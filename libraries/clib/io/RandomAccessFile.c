@@ -85,7 +85,7 @@ java_io_RandomAccessFile_readBytes(struct Hjava_io_RandomAccessFile* this, HArra
 	/* Adjust length */
 	len = (len < obj_length(bytes) - off ? len : obj_length(bytes) - off);
 
-	rc = KREAD(unhand(unhand(this)->fd)->fd, &unhand(bytes)->body[off], len, &ret);
+	rc = KREAD(unhand(unhand(this)->fd)->fd, &unhand_array(bytes)->body[off], len, &ret);
 	if (rc) {
 		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}
@@ -137,7 +137,7 @@ java_io_RandomAccessFile_writeBytes(struct Hjava_io_RandomAccessFile* this, HArr
 	int rc;
 	ssize_t bwritten;
 
-	rc = KWRITE(unhand(unhand(this)->fd)->fd, &unhand(bytes)->body[off], len, &bwritten);
+	rc = KWRITE(unhand(unhand(this)->fd)->fd, &unhand_array(bytes)->body[off], len, &bwritten);
 	if (rc) {
 		SignalError("java.io.IOException", SYS_ERROR(rc));
 	}

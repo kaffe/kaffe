@@ -32,7 +32,7 @@ java_util_zip_Inflater_setDictionary(struct Hjava_util_zip_Inflater* this, HArra
 	z_stream* dstream;
 
 	dstream = GET_STREAM(this);
-	r = inflateSetDictionary (dstream, &unhand(buf)->body[from], len);
+	r = inflateSetDictionary (dstream, &unhand_array(buf)->body[from], len);
 	if (r < 0) {
 		SignalError("java.lang.Error", dstream->msg ? dstream->msg : "unknown error");
 	}
@@ -54,10 +54,10 @@ java_util_zip_Inflater_inflate(struct Hjava_util_zip_Inflater* this, HArrayOfByt
 		return (0);
 	}
 
-	dstream->next_in = &unhand(unhand(this)->buf)->body[unhand(this)->off];
+	dstream->next_in = &unhand_array(unhand(this)->buf)->body[unhand(this)->off];
 	dstream->avail_in = ilen;
 
-	dstream->next_out = &unhand(buf)->body[off];
+	dstream->next_out = &unhand_array(buf)->body[off];
 	dstream->avail_out = len;
 
 	r = inflate(dstream, Z_PARTIAL_FLUSH);

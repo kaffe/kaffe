@@ -69,7 +69,7 @@ kaffe_io_ObjectStreamClassImpl_inputClassFields(struct Hkaffe_io_ObjectStreamCla
 	if (unhand(cls)->fields == 0) {
 		unhand(cls)->fields = getFields(cls);
 	}
-	fld = (Field**)unhand(unhand(cls)->fields)->body;
+	fld = (Field**)unhand_array(unhand(cls)->fields)->body;
 	len = obj_length(unhand(cls)->fields);
 
 	if (unhand(cls)->iclazz != unhand(cls)->clazz) {
@@ -130,7 +130,7 @@ kaffe_io_ObjectStreamClassImpl_outputClassFields(struct Hkaffe_io_ObjectStreamCl
 	if (unhand(cls)->fields == 0) {
 		unhand(cls)->fields = getFields(cls);
 	}
-	fld = (Field**)unhand(unhand(cls)->fields)->body;
+	fld = (Field**)unhand_array(unhand(cls)->fields)->body;
 	len = obj_length(unhand(cls)->fields);
 
 	if (unhand(cls)->iclazz != unhand(cls)->clazz) {
@@ -194,7 +194,7 @@ kaffe_io_ObjectStreamClassImpl_outputClassFieldInfo(struct Hkaffe_io_ObjectStrea
 	if (unhand(cls)->fields == 0) {
 		unhand(cls)->fields = getFields(cls);
 	}
-	fld = (Field**)unhand(unhand(cls)->fields)->body;
+	fld = (Field**)unhand_array(unhand(cls)->fields)->body;
 	len = obj_length(unhand(cls)->fields);
 
 	do_execute_java_method(out, "writeShort", "(I)V", 0, 0, len);
@@ -399,12 +399,12 @@ getFields(struct Hkaffe_io_ObjectStreamClassImpl* cls)
 		if ((fld->accflags & ACC_TRANSIENT) != 0) {
 			continue;
 		}
-		unhand(array)->body[cnt] = (void*)fld;
+		unhand_array(array)->body[cnt] = (void*)fld;
 		cnt++;
 	}
 
 	/* Sort the array */
-	qsort(unhand(array)->body, cnt, sizeof(void*), compare);
+	qsort(unhand_array(array)->body, cnt, sizeof(void*), compare);
 
 	return (array);
 }

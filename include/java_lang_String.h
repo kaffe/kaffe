@@ -10,14 +10,14 @@ extern "C" {
 
 /* Header for class java_lang_String */
 
-typedef struct Classjava_lang_String {
+typedef struct Hjava_lang_String {
+  Hjava_lang_Object base;
   HArrayOfChar* value;
   jint offset;
   jint count;
   jint hash;
   jbool interned;
-} Classjava_lang_String;
-HandleTo(java_lang_String);
+} Hjava_lang_String;
 
 extern struct Hjava_lang_String* java_lang_String_intern0(struct Hjava_lang_String*);
 extern void java_lang_String_unintern0(struct Hjava_lang_String*);

@@ -20,7 +20,7 @@
 
 #define STRING_SIZE(STR)	(unhand(STR)->count)
 #define STRING_DATA(STR)	\
-		(&(unhand(unhand(STR)->value)->body[unhand(STR)->offset]))
+		(&(unhand_array(unhand(STR)->value)->body[unhand(STR)->offset]))
 
 /* Create a String object from the supplied C (not UTF-8!) string */
 extern Hjava_lang_String* stringC2Java(const char*);

@@ -33,7 +33,7 @@ java_util_zip_Deflater_setDictionary(struct Hjava_util_zip_Deflater* this, HArra
 
         dstream = GET_STREAM(this);
 
-	r = deflateSetDictionary (dstream, &unhand(buf)->body[from], len);
+	r = deflateSetDictionary (dstream, &unhand_array(buf)->body[from], len);
 	if (r < 0) {
 		SignalError("java.lang.Error", dstream->msg ? dstream->msg : "unknown error");
 	}
@@ -50,10 +50,10 @@ java_util_zip_Deflater_deflate(struct Hjava_util_zip_Deflater* this, HArrayOfByt
 
 	ilen = unhand(this)->len;
 
-	dstream->next_in = &unhand(unhand(this)->buf)->body[unhand(this)->off];
+	dstream->next_in = &unhand_array(unhand(this)->buf)->body[unhand(this)->off];
 	dstream->avail_in = ilen;
 
-	dstream->next_out = &unhand(buf)->body[off];
+	dstream->next_out = &unhand_array(buf)->body[off];
 	dstream->avail_out = len;
 
 	r = deflate(dstream, unhand(this)->finish ? Z_FINISH : Z_NO_FLUSH);
