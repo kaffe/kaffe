@@ -9,6 +9,8 @@
  */
 
 #include "config.h"
+#include "config-std.h"
+#include "config-mem.h"
 #include "toolkit.h"
 #include <limits.h>
 #include <math.h>

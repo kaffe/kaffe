@@ -32,6 +32,11 @@ void bcopy(void*, void*, size_t);
 #define	memcpy(_d, _s, _n)	bcopy((_s), (_d), (_n))
 #endif
 
+#if !defined(HAVE_MEMMOVE)
+/* use bcopy instead */
+#define memmove(to,from,size)	bcopy((from),(to),(size))
+#endif
+
 #if !defined(HAVE_GETPAGESIZE)
 #define	getpagesize()	8192
 #endif
