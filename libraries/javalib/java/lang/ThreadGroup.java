@@ -134,7 +134,8 @@ final public synchronized void destroy() {
 		}
 	}
 	ngroups = 0;
-	parent.remove(this);
+	if (parent != null)
+		parent.remove(this);
 	destroyed = true;
 }
 
