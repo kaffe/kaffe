@@ -258,7 +258,11 @@ gcGetObjectIndex(Collector* gcif, const void* mem)
 {
 	gc_unit* unit = UTOUNIT(mem);
 	gc_block* info = GCMEM2BLOCK(unit);
-        return (GC_GET_FUNCS(info, GCMEM2IDX(info, unit)));
+	if (!gc_heap_isobject(info, unit)) {
+		return (-1);
+	} else {
+		return (GC_GET_FUNCS(info, GCMEM2IDX(info, unit)));
+	}
 }
 
 static
