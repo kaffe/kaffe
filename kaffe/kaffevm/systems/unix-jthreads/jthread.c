@@ -14,7 +14,7 @@
  *            Tim Wilkinson <tim@transvirtual.com>
  */
 
-#define DBG(s)
+#define DBG(s)		
 #define SDBG(s)
 
 #include "jthread.h"
@@ -39,7 +39,7 @@
 
 /*
  * Variables.
- * This should be kept static to ensure encapsulation.
+ * These should be kept static to ensure encapsulation.
  */
 static int preemptive = true;	/* enable preemptive scheduling */
 static int talive; 		/* number of threads alive */
@@ -104,6 +104,7 @@ static void blockOnFile(int fd, int op);
 static void killThread(jthread *jtid);
 static void resumeThread(jthread* jtid);
 static void reschedule(void);
+static void restore_fds();
 
 /*
  * macros to set and extract stack pointer from jmp_buf
@@ -111,8 +112,10 @@ static void reschedule(void);
  */
 #define GET_SP(E)       (((void**)(E))[SP_OFFSET])
 #define SET_SP(E, V)    ((void**)(E))[SP_OFFSET] = (V)
+#define GET_FP(E)       (((void**)(E))[FP_OFFSET])
+#define SET_FP(E, V)    ((void**)(E))[FP_OFFSET] = (V)
 
-/* XXX - I'm not quite sure what this does */
+/* amount of stack space to be duplicated at stack creation time */
 #if !defined(STACK_COPY)
 #define STACK_COPY      (32*4)
 #endif
@@ -451,8 +454,22 @@ intsRestoreAll()
 static void
 interrupt(int sig)
 {
+        static int withchild = false;
+
+        /* This bizzare bit of code handles the SYSV machines which re-throw 
+	 * SIGCHLD when you reset the handler.  It also works for those that 
+	 * don't.
+         * Perhaps there's a way to detect this in the configuration process?
+         */
+        if (sig == SIGCHLD) {
+		if (withchild == true) {
+			return;
+		}
+		withchild = true;
+	}
 	/* Re-enable signal - necessary for SysV */
-	catchSignal(sig, interrupt);
+        catchSignal(sig, interrupt);
+	withchild = false;
 
 	/*
 	 * If ints are blocked, this might indicate an inconsistent state of
@@ -674,12 +691,13 @@ jthread_init(int pre,
 	struct itimerval tm;
 
 	/* set stdin, stdout, and stderr in async mode */
-	jthreadedFileDescriptor(0);
-	jthreadedFileDescriptor(1);
+	assert(0 == jthreadedFileDescriptor(0));
+	assert(1 == jthreadedFileDescriptor(1));
 #if (DBG(1) + 1) > 0
 	/* for debugging, you leave stderr in blocking mode */
-	jthreadedFileDescriptor(2);
+	assert(2 == jthreadedFileDescriptor(2));
 #endif
+	atexit(restore_fds);
 
 	preemptive = pre;
 	max_priority = maxpr;
@@ -691,10 +709,10 @@ jthread_init(int pre,
 	threadQhead = allocator((maxpr + 1) * sizeof (jthread *));
 	threadQtail = allocator((maxpr + 1) * sizeof (jthread *));
 
+	catchSignal(SIGVTALRM, interrupt);
 	tm.it_interval.tv_sec = tm.it_value.tv_sec = 0;
 	tm.it_interval.tv_usec = tm.it_value.tv_usec = 10000;/* 10 ms */
 	setitimer(ITIMER_VIRTUAL, &tm, 0);
-	catchSignal(SIGVTALRM, interrupt);
 	catchSignal(SIGALRM, interrupt);
 	catchSignal(SIGIO, interrupt);
 
@@ -758,6 +776,7 @@ start_this_sucker_on_a_new_frame()
 	jthread_exit(); 
 }
 
+
 /*
  * create a new jthread
  */
@@ -766,6 +785,7 @@ jthread_create(unsigned char pri, void (*func)(void *), int daemon,
         void *jlThread, size_t threadStackSize)
 {
 	jthread *jtid; 
+	void	*oldstack, *newstack;
 
 	jmutex_lock(&threadLock);
         jtid = newThreadCtx(threadStackSize);
@@ -804,10 +824,13 @@ DBG(	fprintf(stderr, "creating thread %p, daemon=%d\n", jtid, daemon); )
 		assert(!"Never!");
 		/* NOT REACHED */
 	} 
-
 	/* set up context for new thread */
-	memcpy(jtid->stackEnd-STACK_COPY, GET_SP(jtid->env), STACK_COPY);
-	SET_SP(jtid->env, jtid->stackEnd-STACK_COPY);
+	newstack = jtid->stackEnd-STACK_COPY;
+	memcpy(newstack, oldstack = GET_SP(jtid->env), STACK_COPY);
+	SET_SP(jtid->env, newstack);
+#if defined(FP_OFFSET)
+	SET_FP(jtid->env, newstack + ((void *)GET_FP(jtid->env) - oldstack));
+#endif
 
         resumeThread(jtid);
         return jtid;
@@ -1270,15 +1293,17 @@ jcondvar_broadcast(jcondvar *cv, jmutex *lock)
 
 /*
  * Create a threaded file descriptor.
+ *
+ * We try various fcntl and ioctl to put the file descriptor in non-blocking
+ * mode and to enable asynchronous notifications.
  */
 int
 jthreadedFileDescriptor(int fd)
 {
-	int r;
+	int r, on = 1;
 	int pid = getpid();
 
 	/* Make non-blocking */
-	/* O_NONBLOCK alternative is FIONBIO */ 
 	if ((r = fcntl(fd, F_GETFL, 0)) < 0)
 		return (r);
 
@@ -1287,15 +1312,49 @@ jthreadedFileDescriptor(int fd)
 		| O_ASYNC
 #elif defined(FASYNC)
 		| FASYNC
-#else
-#error Need ASYNC or FASYNC!
 #endif
 		)) < 0)
 		return (r);
 
+#if defined(FIOSSAIOSTAT)
+	/* on hpux */
+	if ((r = ioctl(fd, FIOSSAIOSTAT, &on)) < 0)
+		return (r);
+
+#elif defined(FIOASYNC)
+	if ((r = ioctl(fd, FIOASYNC, &on)) < 0)
+		return (r);
+#endif
+
+#if !(defined(O_ASYNC) || defined(FIOASYNC) ||  \
+      defined(FASYNC) || defined(FIOSSAIOSTAT))
+#error	Could not put socket in async mode
+#endif
+
+#if defined(F_SETOWN)
 	/* Allow socket to signal this process when new data is available */
+	/* On some systems, this will flag an error if fd is not a socket */
 	fcntl(fd, F_SETOWN, pid);
+#endif
 	return (fd);
+}
+
+/*
+ * In SVR4 systems (notably AIX and HPUX 9.x), putting a file descriptor 
+ * in non-blocking mode affects the actual terminal file.  
+ * Thus, the shell we see the fd in
+ * non-blocking mode when we exit and log the user off.
+ *
+ * Under Solaris, this happens if you use FIONBIO to get into non-blocking 
+ * mode.  (as opposed to O_NONBLOCK)
+ */
+static void
+restore_fds()
+{
+	int i;
+	/* clear non-blocking flag for file descriptor stdin, stdout, stderr */
+	for (i = 0; i < 3; i++)
+	    fcntl(i, F_SETFL, fcntl(i, F_GETFL, 0) & ~O_NONBLOCK);
 }
 
 /*

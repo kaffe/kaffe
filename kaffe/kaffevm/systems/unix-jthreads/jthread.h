@@ -52,7 +52,7 @@
 
 #else	/* !KVER */
 
-/*======== begin of definitions that apply to FreeBSD user mode only ========*/
+/*======== begin of definitions that apply to plain UNIX only ========*/
 
 #include <assert.h>
 #include <setjmp.h>
@@ -68,6 +68,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define HAVE_SETITIMER	1
 #define HAVE_WAITPID	1
@@ -81,10 +82,58 @@
  * On NetBSD and OpenBSD it's 2 as well.
  */
 #define SP_OFFSET               2
-#include <sys/ttycom.h>
-#include <sys/filio.h>	
+#define HAVE_SYS_FILIO_H 1
+
 #elif defined(__linux__)
+/* Linux */
 #define SP_OFFSET		4
+
+#elif defined(__svr4__) && defined(__sparc__)
+
+/* Solaris */
+#define SP_OFFSET		1
+#define HAVE_SYS_FILIO_H 1
+
+#elif defined(_AIX) && defined(_POWER)
+
+/* AIX on IBM PowerPC */
+#define SP_OFFSET		3
+#include <sys/select.h>		/* another AIX oddity */
+
+#elif defined(hpux)
+
+/* HPUX */
+#define STACK_GROWS_UP  	1
+#define SP_OFFSET		1
+
+#elif defined(hppa) && !defined(hpux)
+
+/* HP-BSD - this is a Utah thing */
+#define STACK_GROWS_UP  	1
+#define SP_OFFSET		2
+
+/* We will clear all signals rather than just the ones we want.
+ * This is okay because of how sigprocmask is used - but it's not a
+ * general solition.
+ */
+#define sigprocmask(op, nsig, osig)     sigsetmask(0)
+typedef int sigset_t;
+
+#elif defined(sgi) && defined(mips)
+
+/* SGI running IRIX 6.2 */
+#define SP_OFFSET		2
+#define FP_OFFSET		13
+
+#else
+#error Your system was not yet tested
+#endif
+
+#if HAVE_SYS_FILIO_H
+#include <sys/filio.h>
+#endif
+
+#ifndef FD_COPY
 #define FD_COPY(from, to)	memcpy(from, to, sizeof(from))
 #endif
 
@@ -106,7 +155,7 @@ static jlong currentTime()
 /* let main thread loop until all threads finish, for tests */
 void 	jthread_exit_when_done();
 
-/*======== end of definitions that apply to FreeBSD user mode only ========*/
+/*======== end of definitions that apply to plain UNIX only ========*/
 
 #endif  /* !KVER */
 
