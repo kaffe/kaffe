@@ -517,14 +517,13 @@ public class Jar {
 
 
 	    String absolute_name = tmp.getAbsolutePath();
-	    String canon = tmp.getCanonicalPath();
 
 	    if (debug) {
+	        String canon = tmp.getCanonicalPath();
+
 		System.out.println("absolute  was \"" + absolute_name + "\"");
 		System.out.println("canon     was \"" + canon + "\"");
-	    }
 
-	    if (debug) {
 		System.out.println("file name is \"" + files[i]
 				   + "\"");
 

@@ -19,4 +19,7 @@
 #include "jit-md.h"
 #endif
 
+#define SIGNAL_ARGS(sig, sc) int sig
+#undef HAVE_SIGALTSTACK
+
 #endif

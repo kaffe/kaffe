@@ -29,6 +29,8 @@
 #define STACK_POINTER(scp) ((scp)->si_addr)
 #else
 #warning Some exceptions may not work properly.
+#define SIGNAL_ARGS(sig, sc) int sig
+#undef HAVE_SIGALTSTACK
 #endif
 
 #endif

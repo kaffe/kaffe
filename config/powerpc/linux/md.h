@@ -25,4 +25,7 @@ extern void init_md(void);
 #endif
 #define SP_OFFSET	0
 
+#define SIGNAL_ARGS(sig, sc) int sig
+#undef HAVE_SIGALTSTACK
+
 #endif

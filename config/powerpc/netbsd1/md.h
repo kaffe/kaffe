@@ -46,4 +46,7 @@ extern int kaffe_setjmp (void *jb);
 
 #endif
 
+#define SIGNAL_ARGS(sig, sc) int sig
+#undef HAVE_SIGALTSTACK
+
 #endif

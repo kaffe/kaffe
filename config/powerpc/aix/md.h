@@ -34,4 +34,7 @@ extern int __aix_cmpxchg(void **A, void *O, void *N);
 #define COMPARE_AND_EXCHANGE(A,O,N)		\
 	__aix_cmpxchg((void**)(A), (void*)(O), (void*)(N))
 
+#define SIGNAL_ARGS(sig, sc) int sig
+#undef HAVE_SIGALTSTACK
+
 #endif
