@@ -2702,11 +2702,17 @@ javax_imageio_spi_SRCS = \
 	javax/imageio/spi/RegisterableService.java \
 	javax/imageio/spi/ServiceRegistry.java
 javax_imageio_stream_SRCS = \
+	javax/imageio/stream/FileCacheImageInputStream.java \
+	javax/imageio/stream/FileCacheImageOutputStream.java \
+	javax/imageio/stream/FileImageInputStream.java \
+	javax/imageio/stream/FileImageOutputStream.java \
 	javax/imageio/stream/IIOByteBuffer.java \
 	javax/imageio/stream/ImageInputStream.java \
 	javax/imageio/stream/ImageInputStreamImpl.java \
 	javax/imageio/stream/ImageOutputStream.java \
-	javax/imageio/stream/ImageOutputStreamImpl.java
+	javax/imageio/stream/ImageOutputStreamImpl.java \
+	javax/imageio/stream/MemoryCacheImageInputStream.java \
+	javax/imageio/stream/MemoryCacheImageOutputStream.java
 javax_naming_SRCS = \
 	javax/naming/AuthenticationException.java \
 	javax/naming/AuthenticationNotSupportedException.java \
