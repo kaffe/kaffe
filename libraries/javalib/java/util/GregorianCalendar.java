@@ -120,62 +120,59 @@ private long computeDateTime() {
 				time += 365;
 			}
 		}
-
-		if (isSet[MONTH]) {
-			end = fields[MONTH];
-			for (int month = Calendar.JANUARY; month < end; month++) {
-				switch (month) {
-				case Calendar.JANUARY:
-				case Calendar.MARCH:
-				case Calendar.MAY:
-				case Calendar.JULY:
-				case Calendar.AUGUST:
-				case Calendar.OCTOBER:
-				case Calendar.DECEMBER:
-				default:
-					time += 31;
-					break;
-				case Calendar.FEBRUARY:
-					if (isLeapYear(fields[YEAR])) {
-						time += 29;
-					}
-					else {
-						time += 28;
-					}
-					break;
-				case Calendar.APRIL:
-				case Calendar.SEPTEMBER:
-				case Calendar.JUNE:
-				case Calendar.NOVEMBER:
-					time += 30;
-					break;
+	}
+	
+	if (isSet[MONTH]) {
+		end = fields[MONTH];
+		for (int month = Calendar.JANUARY; month < end; month++) {
+			switch (month) {
+			case Calendar.JANUARY:
+			case Calendar.MARCH:
+			case Calendar.MAY:
+			case Calendar.JULY:
+			case Calendar.AUGUST:
+			case Calendar.OCTOBER:
+			case Calendar.DECEMBER:
+			default:
+				time += 31;
+				break;
+			case Calendar.FEBRUARY:
+				if (isLeapYear(fields[YEAR])) {
+					time += 29;
 				}
+				else {
+					time += 28;
+				}
+				break;
+			case Calendar.APRIL:
+			case Calendar.SEPTEMBER:
+			case Calendar.JUNE:
+			case Calendar.NOVEMBER:
+				time += 30;
+				break;
 			}
+		}
 
-			if (isSet[DAY_OF_MONTH]) {
-				time += fields[DAY_OF_MONTH] - 1;
-			}
-			else if (isSet[WEEK_OF_MONTH] && isSet[DAY_OF_WEEK]) {
-				throw new kaffe.util.NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
-							 "with WEEK_OF_MONTH and DAY_OF_WEEK set.");
-			}
-			else if (isSet[DAY_OF_WEEK_IN_MONTH] && isSet[DAY_OF_WEEK]) {
-				throw new kaffe.util.NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
-							 "with WEEK_OF_MONTH_IN_MONTH and DAY_OF_WEEK set.");
-			}
+		if (isSet[DAY_OF_MONTH]) {
+			time += fields[DAY_OF_MONTH] - 1;
 		}
-		else if (isSet[DAY_OF_YEAR]) {
-			time += fields[DAY_OF_YEAR];
-		}
-		else if (isSet[DAY_OF_WEEK] && isSet[WEEK_OF_YEAR]) {
+		else if (isSet[WEEK_OF_MONTH] && isSet[DAY_OF_WEEK]) {
 			throw new kaffe.util.NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
-						 "with DAY_OF_WEEK and WEEK_OF_YEAR set.");
+							    "with WEEK_OF_MONTH and DAY_OF_WEEK set.");
+		}
+		else if (isSet[DAY_OF_WEEK_IN_MONTH] && isSet[DAY_OF_WEEK]) {
+			throw new kaffe.util.NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
+							    "with WEEK_OF_MONTH_IN_MONTH and DAY_OF_WEEK set.");
 		}
 	}
-	else {
-		throw new kaffe.util.NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
-					 "without YEAR set.");
+	else if (isSet[DAY_OF_YEAR]) {
+		time += fields[DAY_OF_YEAR];
 	}
+	else if (isSet[DAY_OF_WEEK] && isSet[WEEK_OF_YEAR]) {
+		throw new kaffe.util.NotImplemented(GregorianCalendar.class.getName() + ".computeDateTime() " +
+						    "with DAY_OF_WEEK and WEEK_OF_YEAR set.");
+	}
+
 	time *= 24;
 
 	if (isSet[HOUR_OF_DAY]) {
