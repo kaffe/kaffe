@@ -667,12 +667,14 @@ dnl Do we enable GCJ support
 dnl -------------------------------------------------------------------------
 
 if test "x$enable_gcj" != "xno"; then
-  AC_PROG_CXX
   enable_gcj=no # pessimist
 
   have_recent_gcc=yes # optimist
   AC_CHECK_FUNCS([__throw __terminate_func __get_eh_info], [],
 		 [have_recent_gcc=no])
+  pushdef([AC_MSG_ERROR], [have_recent_gcc=no])
+  AC_PROG_CXX
+  popdef([AC_MSG_ERROR])
 
   if test "x$have_recent_gcc" = xyes; then
     AC_LANG_SAVE
