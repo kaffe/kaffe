@@ -914,16 +914,20 @@ int16
 getWord(const unsigned char* code,
 	const unsigned int pc)
 {
-	return ((int16)((code[(pc)+0] << 8)
-			| (code[(pc)+1])));
+	return ((int16)((code[pc+0] << 8)
+			| (code[pc+1])));
 }
 
-#define	DWORD(_CODE, _PC) ((int32)( \
-			   (_CODE[(_PC)+0] << 24) | \
-			   (_CODE[(_PC)+1] << 16) | \
-			   (_CODE[(_PC)+2] << 8) | \
-			   (_CODE[(_PC)+3])))
-
+static inline
+int32
+getDWord(const unsigned char* code,
+	 const unsigned int pc)
+{
+	return ((int32)((code[pc+0] << 24)
+			| (code[pc+1] << 16)
+			| (code[pc+2] << 8)
+			| (code[pc+3])));
+}
 
 /*
  * types for type checking (pass 3b)
@@ -1757,7 +1761,7 @@ verifyMethod3a(errorInfo* einfo,
 			status[pc] |= END_BLOCK;
 			
 			n = pc + 1;
-			branchoffset = DWORD(code, n);
+			branchoffset = getDWord(code, n);
 			newpc = pc + branchoffset;
 			BRANCH_IN_BOUNDS(newpc, "goto_w");
 			status[newpc] |= START_BLOCK;
@@ -1793,7 +1797,7 @@ verifyMethod3a(errorInfo* einfo,
 			goto JSR_common;
 		case JSR_W:
 			newpc = pc + 1;
-			newpc = pc + DWORD(code, newpc);
+			newpc = pc + getDWord(code, newpc);
 			
 		JSR_common:
 			ENSURE_NON_WIDE;
@@ -1836,7 +1840,7 @@ verifyMethod3a(errorInfo* einfo,
 			n = (pc + 1) % 4;
 			if (n) n = pc + 5 - n;
 			else   n = pc + 1;
-			newpc = pc + DWORD(code, n);
+			newpc = pc + getDWord(code, n);
 			BRANCH_IN_BOUNDS(newpc, "lookupswitch");
 			status[newpc] |= START_BLOCK;
 			DBG(VERIFY3,
@@ -1847,14 +1851,14 @@ verifyMethod3a(errorInfo* einfo,
 			
 			/* get number of key/target pairs */
 			n += 4;
-			low = DWORD(code, n);
+			low = getDWord(code, n);
 			if (low < 0) {
 				return verifyErrorInVerifyMethod3a(einfo, method, "lookupswitch with npairs < 0");
 			}
 			
 			/* make sure all targets are in bounds */
 			for (n += 4, high = n + 8*low; n < high; n += 8) {
-				newpc = pc + DWORD(code, n+4);
+				newpc = pc + getDWord(code, n+4);
 				BRANCH_IN_BOUNDS(newpc, "lookupswitch");
 				status[newpc] |= START_BLOCK;
 				
@@ -1879,7 +1883,7 @@ verifyMethod3a(errorInfo* einfo,
 			n = (pc + 1) % 4;
 			if (n) n = pc + 5 - n;
 			else   n = pc + 1;
-			newpc = pc + DWORD(code, n);
+			newpc = pc + getDWord(code, n);
 			BRANCH_IN_BOUNDS(newpc, "tableswitch");
 			status[newpc] |= START_BLOCK;
 			DBG(VERIFY3,
@@ -1889,8 +1893,8 @@ verifyMethod3a(errorInfo* einfo,
 			    );
 			
 			/* get the high and low values of the table */
-			low  = DWORD(code, n + 4);
-			high = DWORD(code, n + 8);
+			low  = getDWord(code, n + 4);
+			high = getDWord(code, n + 8);
 			if (high < low) {
 				DBG(VERIFY3, dprintf("ERROR: low = %d, high = %d\n", low, high); );
 				return verifyErrorInVerifyMethod3a(einfo, method, "tableswitch high val < low val");
@@ -1901,7 +1905,7 @@ verifyMethod3a(errorInfo* einfo,
 			 * the validity of all the branches in the table
 			 */
 			for (high = n + 4*(high - low + 1); n < high; n += 4) {
-				newpc = pc + DWORD(code, n);
+				newpc = pc + getDWord(code, n);
 				BRANCH_IN_BOUNDS(newpc, "tableswitch");
 				status[newpc] |= START_BLOCK;
 				
@@ -2199,7 +2203,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				
 			case GOTO_W:
 				newpc = pc + 1;
-				newpc = pc + DWORD(code, newpc);
+				newpc = pc + getDWord(code, newpc);
 				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
 				
 				if (!merge(einfo, method, curBlock, nextBlock)) {
@@ -2213,7 +2217,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				goto JSR_common;
 			case JSR_W:
 				newpc = pc + 1;
-				newpc = pc + DWORD(code, newpc);
+				newpc = pc + getDWord(code, newpc);
 			JSR_common:
 				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
 				
@@ -2291,7 +2295,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				n = (pc + 1) % 4;
 				if (n) n = pc + 5 - n;
 				else   n = pc + 1;
-				newpc = pc + DWORD(code, n);
+				newpc = pc + getDWord(code, n);
 				nextBlock = inWhichBlock(newpc, blocks, numBlocks);
 				if (!merge(einfo, method, curBlock, nextBlock)) {
 					return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging into the default branch of a lookupswitch instruction");
@@ -2299,11 +2303,11 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				
 				/* get number of key/target pairs */
 				n += 4;
-				low = DWORD(code, n);
+				low = getDWord(code, n);
 				
 				/* branch into all targets */
 				for (n += 4, high = n + 8*low; n < high; n += 8) {
-					newpc = pc + DWORD(code, n+4);
+					newpc = pc + getDWord(code, n+4);
 					nextBlock = inWhichBlock(newpc, blocks, numBlocks);
 					if (!merge(einfo, method, curBlock, nextBlock)) {
 						return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging into a branch of a lookupswitch instruction");
@@ -2319,11 +2323,11 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				n = (pc + 1) % 4;
 				if (n) n = pc + 5 - n;
 				else   n = pc + 1;
-				newpc = pc + DWORD(code, n);
+				newpc = pc + getDWord(code, n);
 				
 				/* get the high and low values of the table */
-				low  = DWORD(code, n + 4);
-				high = DWORD(code, n + 8);
+				low  = getDWord(code, n + 4);
+				high = getDWord(code, n + 8);
 				
 				n += 12;
 				
@@ -2331,7 +2335,7 @@ verifyMethod3b(errorInfo* einfo, const Method* method,
 				 * the validity of all the branches in the table
 				 */
 				for (high = n + 4*(high - low + 1); n < high; n += 4) {
-					newpc = pc + DWORD(code, n);
+					newpc = pc + getDWord(code, n);
 					nextBlock = inWhichBlock(newpc, blocks, numBlocks);
 					if (!merge(einfo, method, curBlock, nextBlock)) {
 						return verifyErrorInVerifyMethod3b(einfo, method, curBlock, "error merging into a branch of a tableswitch instruction");
