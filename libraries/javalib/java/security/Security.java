@@ -184,6 +184,110 @@ public final class Security {
 		}
 		return -1;
 	}
+	
+	static class Engine {
+		final Provider provider;
+		final String algorithm;
+		final Object engine;
+		Engine(Provider provider, String algorithm, Object engine) {
+			this.provider = provider;
+			this.algorithm = algorithm;
+			this.engine = engine;
+		}
+
+		Provider getProvider()
+		{
+			return this.provider;
+		}
+		
+		String getAlgorithm()
+		{
+			return this.algorithm;
+		}
+
+		Object getEngine()
+		{
+			return this.engine;
+		}
+	}
+
+	static Engine getCryptInstance(String engClass)
+			throws NoSuchAlgorithmException {
+		return getCryptInstance(engClass, null);
+	}
+
+	static Engine getCryptInstance(String engClass, String algorithm)
+			throws NoSuchAlgorithmException {
+		Provider[] providers = getProviders();
+		for (int i = 0; i < providers.length; i++) {
+			try {
+				return getCryptInstance(engClass,
+				    algorithm, providers[i]);
+			} catch (NoSuchAlgorithmException e) {
+			}
+		}
+		throw algorithm == null ?
+			new NoSuchAlgorithmException() :
+			new NoSuchAlgorithmException(algorithm);
+	}
+
+	static Engine getCryptInstance(String engClass, String alg, String prov)
+		    throws NoSuchAlgorithmException, NoSuchProviderException {
+
+		// Make sure provider is installed
+		Provider p = getProvider(prov);
+		if (p == null) {
+			throw new NoSuchProviderException(prov);
+		}
+		return getCryptInstance(engClass, alg, p);
+	}
+
+	static Engine getCryptInstance(String engClass, String alg, Provider p)
+		    throws NoSuchAlgorithmException {
+
+		// See if algorithm name is an alias
+		if (alg != null) {
+			String alias = (String)p.get("Alg.Alias."
+						+ engClass + "." + alg);
+			if (alias != null) {
+				alg = alias;
+			}
+		}
+
+		// Find a class that implements the class and algorithm
+		String name = null;
+		if (alg != null) {
+			name = (String)p.get(engClass + "." + alg);
+		} else {
+			String prefix = engClass + ".";
+			for (Iterator i = p.entrySet().iterator();
+					i.hasNext(); ) {
+				Map.Entry e = (Map.Entry)i.next();
+				String key = (String)e.getKey();
+				if (key.startsWith(prefix)) {
+					alg = key.substring(prefix.length());
+					name = (String)e.getValue();
+					break;
+				}
+			}
+		}
+		if (name == null) {
+			throw new NoSuchAlgorithmException(
+			  "\"" + alg + "\" not supported by provider");
+		}
+
+		// Instantiate class
+		try {
+			return new Engine(p, alg,
+				Class.forName(name).newInstance());
+		} catch (ClassNotFoundException e) {
+			throw new NoSuchAlgorithmException("class "
+				+ name + " not found");
+		} catch (Exception e) {
+			throw new NoSuchAlgorithmException("can't instantiate"
+				+ " class " + name + ": " + e);
+		}
+	}
 }
 
 

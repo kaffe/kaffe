@@ -84,5 +84,3 @@ public class PipedReader extends Reader {
     }
   }
 }
-
-

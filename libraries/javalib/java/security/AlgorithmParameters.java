@@ -1,7 +1,7 @@
 /*
  * AlgorithmParameters.java
  *
- * Copyright (c) 2001 University of Utah and the Flux Group.
+ * Copyright (c) 2001, 2003 University of Utah and the Flux Group.
  * All rights reserved.
  *
  * This file is licensed under the terms of the GNU Public License.
@@ -15,8 +15,6 @@
 package java.security;
 
 import java.io.IOException;
-
-import kaffe.security.Engine;
 
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
@@ -92,8 +90,8 @@ public class AlgorithmParameters
     public static AlgorithmParameters getInstance(String algorithm)
 	throws NoSuchAlgorithmException
     {
-	return getInstance(Engine.getCryptInstance(ENGINE_CLASS,
-						   algorithm));
+	return getInstance(Security.getCryptInstance(ENGINE_CLASS,
+						     algorithm));
     }
 
     public static AlgorithmParameters getInstance(String algorithm,
@@ -101,12 +99,12 @@ public class AlgorithmParameters
 	throws NoSuchAlgorithmException,
 	       NoSuchProviderException
     {
-	return getInstance(Engine.getCryptInstance(ENGINE_CLASS,
-						   algorithm,
-						   provider));
+	return getInstance(Security.getCryptInstance(ENGINE_CLASS,
+						     algorithm,
+						     provider));
     }
 
-    private static AlgorithmParameters getInstance(Engine e)
+    private static AlgorithmParameters getInstance(Security.Engine e)
     {
 	AlgorithmParametersSpi spi;
 	AlgorithmParameters retval;

@@ -211,7 +211,7 @@ public int getActualMinimum(int field) {
 	return getActualLimit(field, false);
 }
 
-public static synchronized Locale[] getAvailableLocales()
+public static Locale[] getAvailableLocales()
 {
 	return (DateFormat.getAvailableLocales());
 }
@@ -223,22 +223,22 @@ public int getFirstDayOfWeek()
 
 abstract public int getGreatestMinimum(int field);
 
-public static synchronized Calendar getInstance()
+public static Calendar getInstance()
 {
 	return (getInstance(TimeZone.getDefault(), Locale.getDefault()));
 }
 
-public static synchronized Calendar getInstance(Locale aLocale)
+public static Calendar getInstance(Locale aLocale)
 {
 	return (getInstance(TimeZone.getDefault(), aLocale));
 }
 
-public static synchronized Calendar getInstance(TimeZone zone)
+public static Calendar getInstance(TimeZone zone)
 {
 	return (getInstance(zone, Locale.getDefault()));
 }
 
-public static synchronized Calendar getInstance(TimeZone zone, Locale aLocale)
+public static Calendar getInstance(TimeZone zone, Locale aLocale)
 {
 	return (new GregorianCalendar( zone, aLocale));
 }
@@ -259,7 +259,7 @@ final public Date getTime()
 	return (new Date(getTimeInMillis()));
 }
 
-public long getTimeInMillis()
+protected long getTimeInMillis()
 {
 	if (!isTimeSet) {
 		computeTime();

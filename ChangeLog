@@ -1,3 +1,167 @@
+2003-02-20 Dalibor Topic <robilad@yahoo.com>
+
+	* libraries/clib/awt/X/evt.c:
+	(Java_java_awt_Toolkit_evtInit) Added assertions to catch failed
+	loading of classes earlier.
+	
+	* libraries/javalib/bootstrap.classlist,
+	libraries/javalib/essential.files:
+	Updated for new character database handling code.
+
+	* libraries/javalib/gnu/java/lang/CharData.java:
+	new file, taken from GNU Classpath.
+
+	* libraries/javalib/java/lang/Character.java:
+	replaced by implementation from GNU Classpath.
+
+	* libraries/javalib/java/lang/String.java:
+	(String) new constructor needed by Character. Merged in from GNU
+	Classpath.
+	(zeroBasedStringValue) new method needed by Character. Merged in
+	from GNU Classpath.
+
+	* libraries/javalib/java/lang/System.java:
+	(static) removed loading of system properties from
+	system.properties.
+
+	* libraries/javalib/java/util/zip/Checksum.java,
+	libraries/javalib/java/util/zip/ZipException.java:
+	replaced by implementation from GNU Classpath.
+
+	* libraries/javalib/kaffe/lang/Application.java:
+	(Application) removed unused constructors.
+	(getResource, getResourceAsStream, loadClass) removed unused
+	methods.
+
+	* libraries/javalib/Makefile.am
+	(Klasses_jar_SRCS) Added gnu_java_lang_SRCS.
+	(gnu_java_lang_SRCS) new variable.
+	(java_awt_SRCS) Added ImageFrameLoader.java, ImageLoader.java,
+	ImageNativeProducer.java.
+	
+	* libraries/javalib/Makefile.in:
+	regenerated.
+
+	* libraries/javalib/profiles/allatonce/all.files,
+	libraries/javalib/profiles/default/coreawt.files,
+	libraries/javalib/profiles/default/core.files:
+	updated for class library changes.
+	
+2003-02-19 Dalibor Topic <robilad@yahoo.com>
+
+	Merged in some class library fixes from JanosVM 1.0.
+
+	2002-10-31 Thursday 19:39  tullmann
+
+        * libraries/javalib/java/awt/: Image.java, ImageFrameLoader.java,
+        ImageLoader.java, ImageNativeProducer.java: move package-level
+        classes into their own files (out of java/awt/Image.java)
+
+	2003-01-24 Friday 16:41  stack
+
+        * libraries/javalib/java/io/IOException.java: add constructors that
+        take cause parameters
+
+	2002-12-19 Thursday 16:01  stack
+
+        * libraries/javalib/java/lang/: Byte.java, Integer.java, Long.java,
+        Short.java: add the string to NumberFormatExceptions
+
+	2002-09-05 Thursday 13:25  tullmann
+
+        * libraries/javalib/java/lang/: Error.java, Exception.java,
+        InternalError.java, Runtime.java, RuntimeException.java,
+        Throwable.java, VirtualMachineError.java: add jdk1.4 exception
+        chaining support
+
+	2003-01-24 Friday 16:41  stack
+
+        * libraries/javalib/java/lang/NativeLibrary.java: static
+        synchronized is a big no-no
+
+	2003-01-29 Wednesday 16:53  stack
+
+        * libraries/javalib/java/lang/System.java: throw
+        IllegalArgumentException if the key passed to get/setProperty is
+        empty
+
+	2003-01-24 Friday 16:42  stack
+
+        * libraries/javalib/java/lang/System.java: update property security
+        checks
+
+	2003-02-06 Thursday 16:06  stack
+
+        * libraries/javalib/java/lang/SecurityManager.java: minor change
+        for spec compliance
+
+	2003-01-24 Friday 18:01  stack
+
+        * libraries/javalib/java/security/:
+        AlgorithmParameterGenerator.java, AlgorithmParameters.java,
+        KeyFactory.java, KeyPairGenerator.java, KeyStore.java,
+        MessageDigest.java, SecureRandom.java, Security.java,
+        Signature.java: engine fixups
+
+	2003-01-24 Friday 17:54  stack
+
+        * libraries/javalib/java/security/Security.java: make Engine an
+        inner class
+
+	2003-01-24 Friday 17:50  stack
+
+        * libraries/javalib/java/security/:
+        AlgorithmParameterGenerator.java, AlgorithmParameters.java,
+        KeyFactory.java, KeyPairGenerator.java, KeyStore.java,
+        MessageDigest.java, SecureRandom.java, Signature.java: use the
+        Engine class in Security
+
+	2003-01-24 Friday 16:42  stack
+
+        * libraries/javalib/java/security/SecureRandom.java: make next()
+        behave like sun's
+
+	2002-12-31 Tuesday 17:19  stack
+
+        * libraries/javalib/java/security/Permission.java: add checks for
+        the name argument in the constructor
+
+	2002-09-12 Thursday 16:07  stack
+
+        * libraries/javalib/java/security/Security.java: look for the
+        java.security file in the right place
+
+	2003-01-24 Friday 16:42  stack
+
+        * libraries/javalib/java/text/DateFormat.java: remove static
+        synchronized
+
+	2002-04-08 Monday 10:03  stack
+
+        * libraries/javalib/: Klasses.jar, java/text/SimpleDateFormat.java,
+        java/util/GregorianCalendar.java: attempt to fix daylight savings
+        problems, prolly have to do it again six months from now
+
+	2003-01-24 Friday 16:43  stack
+
+        * libraries/javalib/java/util/Calendar.java: remove synchronized on
+        some static methods
+
+	2003-01-24 Friday 16:42  stack
+
+        * libraries/javalib/java/: net/Socket.java, util/Locale.java:
+        security check
+
+	2002-07-05 Friday 10:41  stack
+
+        * libraries/javalib/kaffe/security/provider/SHA1PRNG.java: move
+        counter increment
+
+	2002-06-07 Friday 13:29  stack
+
+        * libraries/javalib/kaffe/security/provider/SHA1PRNG.java:
+        comments!
+
 2003-02-19 Dalibor Topic <robilad@yahoo.com>
 
 	* libraries/javalib/java/awt/Frame.java:

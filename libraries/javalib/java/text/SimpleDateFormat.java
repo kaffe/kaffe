@@ -450,7 +450,6 @@ public Date parse(String source, ParsePosition pos) {
 								index++;
 								i++;
 							} else {
-								System.out.println("hello - " + i + " " + index);
 								error = true;
 							}
 						} else {
@@ -460,7 +459,6 @@ public Date parse(String source, ParsePosition pos) {
 					default:
 						if( source.charAt(index) !=
 						    patt[i] ) {
-							System.out.println("hello 2 - " + i + " " + index);
 							error = true;
 						}
 						index++;
@@ -712,7 +710,7 @@ private int parseTimeZone (String source, int start, int endIndex) {
 			}
 		}
 		if (sign == 0) {
-			calendar.set(Calendar.ZONE_OFFSET, 0);
+			// calendar.set(Calendar.ZONE_OFFSET, 0);
 			return index;
 		}
 
@@ -768,7 +766,7 @@ private int parseTimeZone (String source, int start, int endIndex) {
 		// XXX Ugh, this is messy...  Basically, we can't tell whether
 		// DST applies or not, so we have to wait till later to
 		// figure it out.
-		calendar.set(Calendar.ZONE_OFFSET, 0);
+		// calendar.set(Calendar.ZONE_OFFSET, 0);
 		return start + bestLen;
 	}
 

@@ -35,54 +35,13 @@ private int exitcode;
 private static boolean sysio;
 
 /**
- * create and start an application
- * with classpath "" (system classes only)
- */
-public Application(String cname, String[] args) throws ApplicationException {
-	this(cname, args, null, "");
-}
-
-/**
- * create and start an application with a given classpath
- */
-public Application(String cname, String[] args, String classpath) throws ApplicationException {
-	this(cname, args, null, classpath);
-}
-
-/**
- * create and start an application and attache a given application resource
- * classpath is "" (system classes only)
- */
-public Application(String cname, String[] args, ApplicationResource res) throws ApplicationException {
-	this(cname, args, res, "");
-}
-
-/**
- * create an application with a given classpath and initial resource
- */
-public Application(String cname, String[] args, ApplicationResource res, String classpath) throws ApplicationException {
-	this(cname, args, res, new ClassPathReader(true /* do cache */, classpath));
-}
-
-/**
  * 1. create an application
- * 2. if res != null, add it as a resource
- * 3. start the application in separate thread
- *
- * NB: we must add the resource first or else the application may run
- * to completion before we had a chance to do so.
- *
- * You can provide an resource reader application if you like.
+ * 2. start the application in separate thread
  *
  * @param cname	Name of main class
  * @param args  argv[] argument passed to main()
- * @param res   An application resource to be attached before the app
- *		is started.
- * @param reader A resource reader from which to read this apps resources.
  */
-public Application(String cname, String[] args, ApplicationResource res, ResourceReader reader) throws ApplicationException {
-
-	this.reader = reader;
+public Application(String cname, String[] args) throws ApplicationException {
 
 	try {
 		/* Find the class we're to execute */
@@ -93,10 +52,7 @@ public Application(String cname, String[] args, ApplicationResource res, Resourc
 		arguments = args;
 
 		tid = new Thread(null, this, cname);
-		if (res != null) {
-			this.initResource = res;
-			add(res);
-		}
+
 		setupSystemIO();
 		tid.start();
 	}
@@ -235,70 +191,6 @@ public Throwable exitException() {
 
 public int exitValue() {
 	return (exitcode);
-}
-
-
-/*************************************************************************/
-
-public URL getResource(String name) {
-	// this just creates a "system:..." URL
-	return (getSystemResource(name));
-}
-
-public InputStream getResourceAsStream(String name) {
-	InputStream is = (getSystemResourceAsStream(name));
-	if (is != null) {
-		return (is);
-	}
-	try {
-		is = reader.getResourceAsStream(name);
-	} catch (Exception e) {
-		is = null;
-	}
-	return (is);
-}
-
-public Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
-	Class cls;
-//	System.out.println("loadClass: " + name);
-
-	cls = findLoadedClass(name);	// already loaded
-	if (cls == null) {
-		if (name.startsWith("java.") || name.startsWith("kaffe.")) {
-			try {
-				// try to load it via primordial classpath
-				cls = findSystemClass(name);	
-			} catch (ClassNotFoundException e) {
-			} catch (NoClassDefFoundError e) {
-			}
-		}
-		else {
-			try {
-				String newname = name.replace('.', '/') + ".class";
-				InputStream in = getSystemResourceAsStream(newname);
-				byte[] data = new byte[in.available()];
-				in.read(data);
-				in.close();
-				cls = defineClass(null, data, 0, data.length);
-			} catch (Exception e) {
-			}
-		}
-	}
-
-	// still not found, try our classpath reader
-	if (cls == null) {
-		try {
-			byte[] data = reader.getByteCode(name);
-			cls = defineClass(null, data, 0, data.length);
-		}
-		catch (Exception _) {
-			throw new ClassNotFoundException(name);
-		}
-	}
-	if (cls != null && resolve) {
-		resolveClass(cls);
-	}
-	return (cls);
 }
 
 private native void exit0();

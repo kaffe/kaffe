@@ -86,6 +86,9 @@ java/awt/image/ImageObserver.java
 java/awt/image/ImageProducer.java
 java/awt/image/IndexColorModel.java
 java/awt/Image.java
+java/awt/ImageFrameLoader.java
+java/awt/ImageLoader.java
+java/awt/ImageNativeProducer.java
 java/awt/image/MemoryImageSource.java
 java/awt/image/Raster.java
 java/awt/image/SampleModel.java

@@ -20,4 +20,12 @@ public RuntimeException () {
 public RuntimeException (String s) {
 	super(s);
 }
+
+public RuntimeException (Throwable c) {
+	super(c);
+}
+
+public RuntimeException (String s, Throwable c) {
+	super(s,c);
+}
 }

@@ -1,3 +1,4 @@
+gnu/java/lang/CharData.java
 gnu/regexp/CharIndexed.java
 gnu/regexp/CharIndexedCharArray.java
 gnu/regexp/CharIndexedInputStream.java
@@ -223,6 +224,8 @@ java/util/Map.java
 java/util/MissingResourceException.java
 java/util/NoSuchElementException.java
 java/util/Properties.java
+java/util/PropertyPermission.java
+java/util/PropertyPermissionCollection.java
 java/util/PropertyResourceBundle.java
 java/util/Random.java
 java/util/regex/Matcher.java

@@ -606,4 +606,55 @@ protected void finalize() throws Throwable {
 final native public static synchronized void unintern0(String str);
 */
 
+  /**
+   * Special constructor which can share an array when safe to do so.
+   *
+   * @param data the characters to copy
+   * @param offset the location to start from
+   * @param count the number of characters to use
+   * @param dont_copy true if the array is trusted, and need not be copied
+   * @throws NullPointerException if chars is null
+   * @throws StringIndexOutOfBoundsException if bounds check fails
+   */
+  String(char[] data, int offset, int count, boolean dont_copy)
+  {
+    if (offset < 0 || count < 0 || offset + count > data.length)
+      throw new StringIndexOutOfBoundsException();
+    if (dont_copy)
+      {
+        value = data;
+        this.offset = offset;
+      }
+    else
+      {
+        value = new char[count];
+        System.arraycopy(data, offset, value, 0, count);
+        this.offset = 0;
+      }
+    this.count = count;
+  }
+
+
+  /**
+   * Returns the value array of the given string if it is zero based or a
+   * copy of it that is zero based (stripping offset and making length equal
+   * to count). Used for accessing the char[]s of gnu.java.lang.CharData.
+   * Package private for use in Character.
+   */
+  static char[] zeroBasedStringValue(String s)
+  {
+    char[] value;
+
+    if (s.offset == 0 && s.count == s.value.length)
+      value = s.value;
+    else
+      {
+        int count = s.count;
+        value = new char[count];
+        System.arraycopy(s.value, s.offset, value, 0, count);
+      }
+
+    return value;
+  }
+
 }

@@ -21,6 +21,16 @@ public abstract class Permission implements Guard, Serializable {
 	private String name;
 
 	public Permission(String name) {
+		if( name == null )
+		{
+			throw new NullPointerException(
+				"Null name not allowed for Permission");
+		}
+		if( name.equals("") )
+		{
+			throw new IllegalArgumentException(
+				"Empty name not allowed for Permission");
+		}
 		this.name = name;
 	}
 

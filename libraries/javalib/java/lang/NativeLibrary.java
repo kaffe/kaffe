@@ -29,7 +29,6 @@ class NativeLibrary {
 
 	NativeLibrary(String path, ClassLoader loader)
 		throws FileNotFoundException {
-		loader = ClassLoader.getSystemClassLoader();
 		if (loader == null)
 		{
 			// possible exception here
@@ -66,10 +65,10 @@ class NativeLibrary {
 		super.finalize();
 	}
 
-	private static native synchronized int linkLibrary(String path)
+	private static native int linkLibrary(String path)
 		throws FileNotFoundException;
 	
-	private static native synchronized void unlinkLibrary(int index);
+	private static native void unlinkLibrary(int index);
 
 	/**
 	 * @return The configured native library prefix (e.g. lib)

@@ -1,483 +1,73 @@
-/*
- * Java core library component.
- *
- * Copyright (c) 1997, 1998, 1999
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
+/* java.lang.Character -- Wrapper class for char, and Unicode subsets
+   Copyright (C) 1998, 1999, 2001, 2002 Free Software Foundation, Inc.
+
+This file is part of GNU Classpath.
+
+GNU Classpath is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+GNU Classpath is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GNU Classpath; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+Linking this library statically or dynamically with other modules is
+making a combined work based on this library.  Thus, the terms and
+conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent modules to produce an
+executable, regardless of the license terms of these independent
+modules, and to copy and distribute the resulting executable under
+terms of your choice, provided that you also meet, for each linked
+independent module, the terms and conditions of the license of that
+module.  An independent module is a module which is not derived from
+or based on this library.  If you modify this library, you may extend
+this exception to your version of the library, but you are not
+obligated to do so.  If you do not wish to do so, delete this
+exception statement from your version. */
+
 
 package java.lang;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.util.StringTokenizer;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipEntry;
-import kaffe.util.IntegerHashtable;
+import gnu.java.lang.CharData;
 
-public final class Character implements Serializable, Comparable {
-
-  public static final int MIN_RADIX = 2;
-  public static final int MAX_RADIX = 36;
-  public static final char MIN_VALUE = 0x0000;
-  public static final char MAX_VALUE = 0xffff;
-  public static final byte UNASSIGNED = 0;		// Cn
-  public static final byte UPPERCASE_LETTER = 1;	// Lu
-  public static final byte LOWERCASE_LETTER = 2;	// Ll
-  public static final byte TITLECASE_LETTER = 3;	// Lt
-  public static final byte MODIFIER_LETTER = 4;		// Lm
-  public static final byte OTHER_LETTER = 5;		// Lo
-  public static final byte NON_SPACING_MARK = 6;	// Mn
-  public static final byte ENCLOSING_MARK = 7;		// Me
-  public static final byte COMBINING_SPACING_MARK = 8;	// Mc
-  public static final byte DECIMAL_DIGIT_NUMBER = 9;	// Nd
-  public static final byte LETTER_NUMBER = 10;		// Nl
-  public static final byte OTHER_NUMBER = 11;		// No
-  public static final byte SPACE_SEPARATOR = 12;	// Zs
-  public static final byte LINE_SEPARATOR = 13;		// Zl
-  public static final byte PARAGRAPH_SEPARATOR = 14;	// Zp
-  public static final byte CONTROL = 15;		// Cc
-  public static final byte FORMAT = 16;			// Cf
-  public static final byte PRIVATE_USE = 18;		// Co
-  public static final byte SURROGATE = 19;		// Cs
-  public static final byte DASH_PUNCTUATION = 20;	// Pd
-  public static final byte START_PUNCTUATION = 21;	// Ps
-  public static final byte END_PUNCTUATION = 22;	// Pe
-  public static final byte CONNECTOR_PUNCTUATION = 23;	// Pc
-  public static final byte OTHER_PUNCTUATION = 24;	// Po
-  public static final byte MATH_SYMBOL = 25;		// Sm
-  public static final byte CURRENCY_SYMBOL = 26;	// Sc
-  public static final byte MODIFIER_SYMBOL = 27;	// Sk
-  public static final byte OTHER_SYMBOL = 28;		// So
-
-  public static final Class TYPE = Class.getPrimitiveClass("char");
-
-  private final char value;
-
-  /* This is what Sun's JDK1.1 "serialver java.lang.Character" spits out */
-  private static final long serialVersionUID = 3786198910865385080L;
-
-  private static final char FULLWIDTH_LATIN_CAPITAL_LETTER_A = '\uff21';
-  private static final char FULLWIDTH_LATIN_CAPITAL_LETTER_Z = '\uff3a';
-  private static final char FULLWIDTH_LATIN_SMALL_LETTER_A = '\uff41';
-  private static final char FULLWIDTH_LATIN_SMALL_LETTER_Z = '\uff5a';
-
-  public Character(char value)
-  {
-    this.value = value;
-  }
-
-  public char charValue()
-  {
-    return (value);
-  }
-
-  public int hashCode()
-  {
-    return ((int)value);
-  }
-
-  public boolean equals(Object obj)
-  {
-    return (obj instanceof Character)
-      && (((Character) obj).value == this.value);
-  }
-
-  public String toString()
-  {
-    return (String.valueOf(value));
-  }
-
-  public int compareTo(Character c)
-  {
-    return (int)value - (int)c.value;
-  }
-
-  public int compareTo(Object o)
-  {
-    return compareTo((Character)o);
-  }
-
-  /**
-   * @deprecated Replaced by isWhitespace(char).
-   */
-  public static boolean isSpace(char ch)
-  {
-    switch ((int)ch) {
-    case 0x0009:	// HORIZONTAL TABULATION
-    case 0x000A:	// NEW LINE
-    case 0x000C:	// FORM FEED
-    case 0x000D:	// CARRIAGE RETURN
-    case 0x0020:	// SPACE
-      return (true);
-    default:
-      return (false);
-    }
-  }
-
-  public static boolean isLetterOrDigit(char ch)
-  {
-    return (isLetter(ch) || isDigit(ch));
-  }
-  
-  /**
-   * @deprecated Replaced by isJavaIdentifierStart(char).
-   */
-  public static boolean isJavaLetter(char ch)
-  {
-    return ((ch == '$') || (ch == '_') || isLetter(ch));
-  }
-  
-  /**
-   * @deprecated Replaced by isJavaIdentifierPart(char).
-   */
-  public static boolean isJavaLetterOrDigit(char ch)
-  {
-    return ((ch == '$') || (ch == '_') || isLetterOrDigit(ch));
-  }
-
-  public static boolean isTitleCase(char ch)
-  {
-      switch (getType(ch)) {
-      case TITLECASE_LETTER:
-	  return true;
-      }
-      return false;
-  }
-  
-  /**
-   * Determines if a character has a defined meaning in Unicode. 
-   * A character is defined if at least one of the following is true:  <br>
-   *   It has an entry in the Unicode attribute table.  <br>
-   *   Its value is in the range 0x3040 <= ch <= 0x9FA5.  <br>
-   *   Its value is in the range 0xF900 <= ch <= 0xFA2D.  <br>
-   */
-  public static boolean isDefined(char ch) {
-    // FIXME: check compatibility: U+3040 is not defined in Unicode 2.1.8
-    if (getType(ch) == UNASSIGNED) {
-      return (false);
-    }
-    return (true);
-  }
-
-  public static boolean isIdentifierIgnorable(char ch)
-  {
-    if ((ch >= 0x0000 && ch <= 0x0008) ||	// ISO control characters that
-        (ch >= 0x000E && ch <= 0x001B) ||	// are not whitespace
-        (ch >= 0x007F && ch <= 0x009F) ||	// and this range
-        (ch >= 0x200C && ch <= 0x200F) ||	// join controls
-        (ch >= 0x202A && ch <= 0x202E) ||	// bidirectional controls
-        (ch >= 0x206A && ch <= 0x206F) ||	// format controls
-        (ch == 0xFEFF)) {			// zero-width no-break space
-      return (true);
-    }
-    else {
-      return (false);
-    }
-  }
-
-  public static boolean isLowerCase(char ch)
-  {
-    switch (getType(ch)) {
-    case LOWERCASE_LETTER:
-      return (true);
-    }
-    return (false);
-  }
-
-  public static boolean isUpperCase(char ch)
-  {
-    switch (getType(ch)) {
-    case UPPERCASE_LETTER:
-      return (true);
-    }
-    return (false);
-  }
-
-  public static boolean isDigit(char ch)
-  {
-    if (getType(ch) == DECIMAL_DIGIT_NUMBER) {
-      return (true);
-    }
-    return (false);
-  }
-
-  public static boolean isLetter(char ch)
-  {
-    switch (getType(ch)) {
-    case UPPERCASE_LETTER:
-    case LOWERCASE_LETTER:
-    case TITLECASE_LETTER:
-    case MODIFIER_LETTER:
-    case OTHER_LETTER:
-      return (true);
-    default:
-      return (false);
-    }
-  }
-
-  /**
-   * Converts the caracter argument to lowercase.
-   *
-   * @param ch the character to be converted.
-   * @return the lowercase equivalent defined by the Unicode database
-   * 	or the character itself.
-   */
-  public static char toLowerCase(char ch)
-  {
-      CharacterProperties chProp = getCharProp(ch);
-      if (chProp.lower != 0x0000) {
-	  return chProp.lower;
-      }
-      else {
-	  return ch;
-      }
-  }
-
-  /**
-   * Converts the caracter argument to uppercase.
-   *
-   * @param ch the character to be converted.
-   * @return the uppercase equivalent defined by the Unicode database
-   * 	or the character itself.
-   */
-  public static char toUpperCase(char ch)
-  {
-      CharacterProperties chProp = getCharProp(ch);
-      if (chProp.upper != 0x0000) {
-	  return chProp.upper;
-      }
-      else {
-	  return ch;
-      }
-  }
-
-  /**
-   * Converts the caracter argument to titlecase.
-   *
-   * @param ch the character to be converted.
-   * @return the titlecase equivalent defined by the Unicode database
-   * 	or the character itself.
-   */
-  public static char toTitleCase(char ch)
-  {
-      CharacterProperties chProp = getCharProp(ch);
-      if (chProp.title != 0x0000) {
-	  return chProp.title;
-      }
-      else {
-	  return ch;
-      }
-  }
-
-  /**
-   * Returns the numeric value of the character ch in the specified
-   * radix.
-   *
-   * @param ch the character to be converted.
-   * @param radix the radix.
-   * @return the numeric value or -1.
-   */
-  public static int digit(char ch, int radix)
-  {
-    if (radix < MIN_RADIX || radix > MAX_RADIX) {
-      return -1;
-    }
-
-    int val = radix;
-    if (isDigit(ch)) {
-	// FIXME: true as long `decimal digit value' == `numeric value'
-	// FIXME: in the Unicode Database.  Add a check in unicode.pl
-	val =  getCharProp(ch).numeric;
-	if (val < 0) {
-	    return -1;
-	}
-    }
-    else if (('A' <= ch) && (ch <= 'Z')) {
-	// Help the compiler, group constant values !
-	val = (int)ch - ('A' - 10);
-    }
-    else if (('a' <= ch) && (ch <= 'z')) {
-	// Help the compiler, group constant values !
-	val = (int)ch - ('a' - 10);
-    }
-    else if((FULLWIDTH_LATIN_CAPITAL_LETTER_A <= ch)
-	    && (ch <= FULLWIDTH_LATIN_CAPITAL_LETTER_Z)) {
-	val = (int)ch - (FULLWIDTH_LATIN_CAPITAL_LETTER_A - 10);
-    }
-    else if((FULLWIDTH_LATIN_SMALL_LETTER_A <= ch)
-	    && (ch <= FULLWIDTH_LATIN_SMALL_LETTER_Z)) {
-	val = (int)ch - (FULLWIDTH_LATIN_SMALL_LETTER_A - 10);
-    }
-
-    return (val < radix) ? val : -1;
-  }
-
-  public static char forDigit(int digit, int radix)
-  {
-    if (radix < MIN_RADIX || radix > MAX_RADIX) {
-      return 0x0000;
-    }
-    if (digit < 0 || digit >= radix) {
-      return 0x0000;
-    }
-    if (digit < 10) {
-      return (char)(((int)'0')+digit);
-    }
-    else {
-      return (char)(((int)'a')+(digit-10));
-    }
-  }
-
-  /**
-   * Returns the Unicode numeric value of the character as a nonnegative
-   * integer.
-   *
-   * @param ch the character to be converted.
-   * @return the numeric value equivalent defined in the Unicode database
-   * 	or -2 if it is negative or not integer, else -1.
-   */
-  public static int getNumericValue(char ch)
-  {
-    int val = getCharProp(ch).numeric;
-
-    if (val == -1) {
-      return digit(ch, Character.MAX_RADIX);
-    }
-    else {
-      return val;
-    }
-  }
-
-  /**
-   * Returns a value indicating a character category.
-   *
-   * @param ch the character to be tested.
-   * @return the Unicode category of the character as an integer.
-   */
-  public static int getType(char ch)
-  {
-      return getCharProp(ch).category;
-  }
-
-  public static boolean isISOControl(char ch)
-  {
-    if (ch < 32) {	// U+0000 - U+001F
-      return (true);
-    }
-    if (ch < 127) {
-      return (false);
-    }
-    if (ch < 160) {	// U+007F - U+009F
-      return (true);
-    }
-    return (false);
-  }
-
-  public static boolean isJavaIdentifierPart(char ch)
-  {
-    switch (getType(ch)) {
-    case UPPERCASE_LETTER:
-    case LOWERCASE_LETTER:
-    case TITLECASE_LETTER:
-    case MODIFIER_LETTER:
-    case OTHER_LETTER:
-    case CURRENCY_SYMBOL:
-    case CONNECTOR_PUNCTUATION:
-    case DECIMAL_DIGIT_NUMBER:
-    case LETTER_NUMBER:
-    case COMBINING_SPACING_MARK:
-    case NON_SPACING_MARK:
-      return (true);
-    default:
-      return isIdentifierIgnorable(ch);
-    }
-  }
-
-  public static boolean isJavaIdentifierStart(char ch)
-  {
-    switch (getType(ch)) {
-    case UPPERCASE_LETTER:
-    case LOWERCASE_LETTER:
-    case TITLECASE_LETTER:
-    case MODIFIER_LETTER:
-    case OTHER_LETTER:
-    case CURRENCY_SYMBOL:
-    case CONNECTOR_PUNCTUATION:
-      return (true);
-    default:
-      return (false);
-    }
-  }
-
-  public static boolean isSpaceChar(char ch)
-  {
-    switch (getType(ch)) {
-    case SPACE_SEPARATOR:
-    case LINE_SEPARATOR:
-    case PARAGRAPH_SEPARATOR:
-      return (true);
-    default:
-      return (false);
-    }
-  }
-
-  public static boolean isUnicodeIdentifierPart(char ch)
-  {
-    switch (getType(ch)) {
-    case UPPERCASE_LETTER:
-    case LOWERCASE_LETTER:
-    case TITLECASE_LETTER:
-    case MODIFIER_LETTER:
-    case OTHER_LETTER:
-    case CONNECTOR_PUNCTUATION:
-    case DECIMAL_DIGIT_NUMBER:
-    case LETTER_NUMBER:
-    case COMBINING_SPACING_MARK:
-    case NON_SPACING_MARK:
-      return (true);
-    default:
-      return isIdentifierIgnorable(ch);
-    }
-  }
-
-  public static boolean isUnicodeIdentifierStart(char ch)
-  {
-      return (isLetter(ch));
-  }
-
-  public static boolean isWhitespace(char ch)
-  {
-    switch ((int)ch) {
-    case 0x0009:	// HORIZONTAL TABULATION.
-    case 0x000A:	// LINE FEED.
-    case 0x000B:	// VERTICAL TABULATION.
-    case 0x000C:	// FORM FEED.
-    case 0x000D:	// CARRIAGE RETURN.
-    case 0x001C:	// FILE SEPARATOR.
-    case 0x001D:	// GROUP SEPARATOR.
-    case 0x001E:	// RECORD SEPARATOR.
-    case 0x001F:	// UNIT SEPARATOR.
-	return (true);
-    }
-
-    switch (getType(ch)) {
-    case SPACE_SEPARATOR:
-	// but not a no-break separator
-        return (!getCharProp(ch).noBreak);
-    case LINE_SEPARATOR:
-    case PARAGRAPH_SEPARATOR:
-	return (true);
-    default:
-	return (false);
-    }
-  }
-
-    /* taken from GNU Classpath */
+/**
+ * Wrapper class for the primitive char data type.  In addition, this class
+ * allows one to retrieve property information and perform transformations
+ * on the 57,707 defined characters in the Unicode Standard, Version 3.0.0.
+ * java.lang.Character is designed to be very dynamic, and as such, it
+ * retrieves information on the Unicode character set from a separate
+ * database, gnu.java.lang.CharData, which can be easily upgraded.
+ *
+ * <p>For predicates, boundaries are used to describe
+ * the set of characters for which the method will return true.
+ * This syntax uses fairly normal regular expression notation.
+ * See 5.13 of the Unicode Standard, Version 3.0, for the
+ * boundary specification.
+ *
+ * <p>See <a href="http://www.unicode.org">http://www.unicode.org</a>
+ * for more information on the Unicode Standard.
+ *
+ * @author Tom Tromey <tromey@cygnus.com>
+ * @author Paul N. Fisher
+ * @author Jochen Hoenicke
+ * @author Eric Blake <ebb9@email.byu.edu>
+ * @see CharData
+ * @since 1.0
+ * @status updated to 1.4
+ */
+public final class Character implements Serializable, Comparable
+{
   /**
    * A subset of Unicode blocks.
    *
@@ -537,7 +127,6 @@ public final class Character implements Serializable, Comparable {
     }
   } // class Subset
 
-    /* taken from GNU Classpath */
   /**
    * A family of character subsets in the Unicode specification. A character
    * is in at most one of these blocks.
@@ -1392,229 +981,1272 @@ public final class Character implements Serializable, Comparable {
     };
   } // class UnicodeBlock
 
-    private static class CharacterProperties {
-	char unicode;
-	int category;
-	boolean noBreak;
-	short numeric;
-	char upper;
-	char lower;
-	char title;
+  /**
+   * The immutable value of this Character.
+   *
+   * @serial the value of this Character
+   */
+  private final char value;
 
-	static IntegerHashtable cache = new IntegerHashtable();
+  /**
+   * Compatible with JDK 1.0+.
+   */
+  private static final long serialVersionUID = 3786198910865385080L;
 
-	CharacterProperties(char unicode, int category, boolean noBreak,
-		short numeric, char upper, char lower, char title) {
-	    this.unicode = unicode;
-	    this.category = category;
-	    this.noBreak = noBreak;
-	    this.numeric = numeric;
-	    this.upper = upper;
-	    this.lower = lower;
-	    this.title = title;
+  /**
+   * Smallest value allowed for radix arguments in Java. This value is 2.
+   *
+   * @see #digit(char, int)
+   * @see #forDigit(int, int)
+   * @see Integer#toString(int, int)
+   * @see Integer#valueOf(String)
+   */
+  public static final int MIN_RADIX = 2;
 
-	    cache.put((int)unicode, this);
-	}
+  /**
+   * Largest value allowed for radix arguments in Java. This value is 36.
+   *
+   * @see #digit(char, int)
+   * @see #forDigit(int, int)
+   * @see Integer#toString(int, int)
+   * @see Integer#valueOf(String)
+   */
+  public static final int MAX_RADIX = 36;
 
+  /**
+   * The minimum value the char data type can hold.
+   * This value is <code>'\\u0000'</code>.
+   */
+  public static final char MIN_VALUE = '\u0000';
 
-	private static byte propTable[];
+  /**
+   * The maximum value the char data type can hold.
+   * This value is <code>'\\uFFFF'</code>.
+   */
+  public static final char MAX_VALUE = '\uFFFF';
 
-	// three basic type tables of N entries are
-	// better than one tablee of N objects
-	private static char rangeStart[];
-	private static char rangeEnd[];
-	private static int rangeOffset[];
+  /**
+   * Class object representing the primitive char data type.
+   *
+   * @since 1.1
+   */
+  public static final Class TYPE = Class.getPrimitiveClass("char");
 
+  /**
+   * Lu = Letter, Uppercase (Informative).
+   *
+   * @since 1.1
+   */
+  public static final byte UPPERCASE_LETTER = 1;
 
-	static {
-	    try {
-	    	propTable = getResource("kaffe/lang/unicode.tbl");
-	    } catch (IOException e) {
-		throw new Error("Missing Kaffe Unicode Database table: " + e);
-	    }
-	    byte tbl[];
-	    try {
-	    	tbl = getResource("kaffe/lang/unicode.idx");
-	    } catch (IOException e) {
-		throw new Error("Missing Kaffe Unicode Database index: " + e);
-	    }
-	    if (tbl.length % 7 != 0) {
-		throw new Error("Corrupted Kaffe Unicode Database");
-	    }
-	    int n = tbl.length / 7;
-	    rangeStart = new char[n];
-	    rangeEnd = new char[n];
-	    rangeOffset = new int[n];
-	    
-	    for (int i = 0, o = 0; i < n; i++, o += 7) {
-		rangeStart[i] = (char)(((tbl[o] & 0xFF) << 8)
-				      + (tbl[o + 1] & 0xFF));
-		rangeEnd[i] = (char)(((tbl[o + 2] & 0xFF) << 8)
-				    + (tbl[o + 3] & 0xFF));
-		rangeOffset[i] = (int)(((tbl[o + 4] & 0xFF) << 16)
-				     + ((tbl[o + 5] & 0xFF) << 8)
-				     +  (tbl[o + 6] & 0xFF));
-	    }
-	}
+  /**
+   * Ll = Letter, Lowercase (Informative).
+   *
+   * @since 1.1
+   */
+  public static final byte LOWERCASE_LETTER = 2;
 
-	// Read in a resource and convert it to a byte array
-	private static byte[] getResource(String name) throws IOException {
-		String pathSep = System.getProperties().getProperty("path.separator");
-		String classpath = System.getProperties().getProperty("java.class.path");
-		StringTokenizer t = new StringTokenizer(classpath, pathSep);
-		InputStream in = null;
-		while (t.hasMoreTokens()) {
-			try {
-				ZipFile zf = new ZipFile(t.nextToken());
-				if (zf != null) {
-					ZipEntry ze = zf.getEntry(name);
-					if (ze != null) {
-						in = zf.getInputStream(ze);
-						break;
-					}
-				}
-			}
-			catch (IOException e) {
-				/* Be more error tolerant: if a classpath
-				 * entry is not existant or corrupted,
-				 * ignore it.
-				 *
-				 * We can not print the exception since
-				 * CharacterProperties are not initialized yet.
-				 */
-			}
-		}
-//		InputStream in = Character.class.getResourceAsStream(name);
-		if (in == null) {
-			throw new IOException("not found");
-		}
-		ByteArrayOutputStream out = new ByteArrayOutputStream(5000);
-		byte[] buf = new byte[1024];
-		int r;
+  /**
+   * Lt = Letter, Titlecase (Informative).
+   *
+   * @since 1.1
+   */
+  public static final byte TITLECASE_LETTER = 3;
 
-		while ((r = in.read(buf)) != -1) {
-			out.write(buf, 0, r);
-		}
-		return out.toByteArray();
-	}
+  /**
+   * Mn = Mark, Non-Spacing (Normative).
+   *
+   * @since 1.1
+   */
+  public static final byte NON_SPACING_MARK = 6;
 
-	/**
-	 * Lookup the corresponding range for the character ch.
-	 * @param ch the character searched.
-	 * @return the index of his range or -1.
-	 */
-	private static int getIndex(char ch) {
-	    // use local tables
-	    char start[] = rangeStart;
-	    char end[] = rangeEnd;
+  /**
+   * Mc = Mark, Spacing Combining (Normative).
+   *
+   * @since 1.1
+   */
+  public static final byte COMBINING_SPACING_MARK = 8;
 
-	    int lo = 0;
-	    int hi = start.length - 1;
+  /**
+   * Me = Mark, Enclosing (Normative).
+   *
+   * @since 1.1
+   */
+  public static final byte ENCLOSING_MARK = 7;
 
-	    while (lo <= hi) {
-		int med = (lo + hi) >> 1;
-		if (ch < start[med]) {
-		    hi = med - 1;
-		}
-		else if (ch > end[med]) {
-		    lo = med + 1;
-		}
-		else {
-		    return med;
-		}
-	    }
-	    return -1;
-	}
+  /**
+   * Nd = Number, Decimal Digit (Normative).
+   *
+   * @since 1.1
+   */
+  public static final byte DECIMAL_DIGIT_NUMBER = 9;
 
+  /**
+   * Nl = Number, Letter (Normative).
+   *
+   * @since 1.1
+   */
+  public static final byte LETTER_NUMBER = 10;
 
-	/**
-	 * Decode the properties of the character ch with the range index
-	 * index.
-	 * @param ch the query character.
-	 * @param index the range index for this character.
-	 * @return the properties of the character ch.
-	 */
-	private static CharacterProperties decodeProp(char ch, int index) {
-	    byte tbl[] = propTable;
-	    byte method = (byte)((rangeOffset[index] >> 20) & 0x3);
-	    int offset = rangeOffset[index] & 0xFFFFF;
+  /**
+   * No = Number, Other (Normative).
+   *
+   * @since 1.1
+   */
+  public static final byte OTHER_NUMBER = 11;
 
-	    if (method == 0) {
-		// not compressed, add delta to offset
-		offset += 3 * ((int)ch - (int)rangeStart[index]);
-	    }
-	    else if (method == 3) {
-		// not compressed, extended entry
-		offset += 9 * ((int)ch - (int)rangeStart[index]);
-	    }
+  /**
+   * Zs = Separator, Space (Normative).
+   *
+   * @since 1.1
+   */
+  public static final byte SPACE_SEPARATOR = 12;
 
-	    boolean noBreak = false;
-	    int category = tbl[offset] & 0x1F;
-	    if (category == 31) {
-		category = 12;
-		noBreak = true;
-	    }
+  /**
+   * Zl = Separator, Line (Normative).
+   *
+   * @since 1.1
+   */
+  public static final byte LINE_SEPARATOR = 13;
 
-	    if (method < 3) {
-		// 0: not compressed
-		// 1: compressed, same value
-		// 2: compressed, one increment
+  /**
+   * Zp = Separator, Paragraph (Normative).
+   *
+   * @since 1.1
+   */
+  public static final byte PARAGRAPH_SEPARATOR = 14;
 
-		char generic = (char)(((tbl[offset + 1] & 0xFF) << 8)
-				     + (tbl[offset + 2] & 0xFF));
-		if (method == 2) {
-		    // compressed, one increment, add delta to value
-		    generic += (short)(0xFFFF & ((int)ch - (int)rangeStart[index]));
-		}
+  /**
+   * Cc = Other, Control (Normative).
+   *
+   * @since 1.1
+   */
+  public static final byte CONTROL = 15;
 
-		switch ((tbl[offset] >> 5) & 0x3) {	// field
-		case 0:	// none
-		    return new CharacterProperties(ch, category, noBreak,
-			    (short)-1, (char)0x0000, (char)0x0000, (char)0x0000);
-		case 1:	// uppercase and titlecase
-		    return new CharacterProperties(ch, category, noBreak,
-			    (short)-1, generic, (char)0x0000, generic);
-		case 2:	// lowercase
-		    return new CharacterProperties(ch, category, noBreak,
-			    (short)-1, (char)0x0000, generic, (char)0x0000);
-		default: // numeric
-		    return new CharacterProperties(ch, category, noBreak,
-			    (short)generic, (char)0x0000, (char)0x0000, (char)0x0000);
-		}
-	    }
+  /**
+   * Cf = Other, Format (Normative).
+   *
+   * @since 1.1
+   */
+  public static final byte FORMAT = 16;
 
-	    // 3: not compressed, extended entry
-	    short numeric = (short)(((tbl[offset + 1] & 0xFF) << 8)
-				   + (tbl[offset + 2] & 0xFF));
-	    char upper = (char)(((tbl[offset + 3] & 0xFF) << 8)
-			       + (tbl[offset + 4] & 0xFF));
-	    char lower = (char)(((tbl[offset + 5] & 0xFF) << 8)
-			       + (tbl[offset + 6] & 0xFF));
-	    char title = (char)(((tbl[offset + 7] & 0xFF) << 8)
-			       + (tbl[offset + 8] & 0xFF));
-	    return new CharacterProperties(ch, category, noBreak,
-		    numeric, upper, lower, title);
-	}
-    }
+  /**
+   * Cs = Other, Surrogate (Normative).
+   *
+   * @since 1.1
+   */
+  public static final byte SURROGATE = 19;
 
-    private static CharacterProperties getCharProp(char ch) {
-	// consult the cache
-	CharacterProperties chProp = (CharacterProperties)CharacterProperties.cache.get((int)ch);
-	if (chProp != null) {
-	    return chProp;
-	}
+  /**
+   * Co = Other, Private Use (Normative).
+   *
+   * @since 1.1
+   */
+  public static final byte PRIVATE_USE = 18;
 
-	// lookup
-	int index = CharacterProperties.getIndex(ch);
+  /**
+   * Cn = Other, Not Assigned (Normative).
+   *
+   * @since 1.1
+   */
+  public static final byte UNASSIGNED = 0;
 
-	if (index < 0) {
-	    chProp = new CharacterProperties(ch, UNASSIGNED, false, (short)-1,
-		    (char)0x0000, (char)0x0000, (char)0x0000);
-	}
-	else {
-	    chProp = CharacterProperties.decodeProp(ch, index);
-	}
-	return chProp;
-    }
+  /**
+   * Lm = Letter, Modifier (Informative).
+   *
+   * @since 1.1
+   */
+  public static final byte MODIFIER_LETTER = 4;
 
-}
+  /**
+   * Lo = Letter, Other (Informative).
+   *
+   * @since 1.1
+   */
+  public static final byte OTHER_LETTER = 5;
+
+  /**
+   * Pc = Punctuation, Connector (Informative).
+   *
+   * @since 1.1
+   */
+  public static final byte CONNECTOR_PUNCTUATION = 23;
+
+  /**
+   * Pd = Punctuation, Dash (Informative).
+   *
+   * @since 1.1
+   */
+  public static final byte DASH_PUNCTUATION = 20;
+
+  /**
+   * Ps = Punctuation, Open (Informative).
+   *
+   * @since 1.1
+   */
+  public static final byte START_PUNCTUATION = 21;
+
+  /**
+   * Pe = Punctuation, Close (Informative).
+   *
+   * @since 1.1
+   */
+  public static final byte END_PUNCTUATION = 22;
+
+  /**
+   * Pi = Punctuation, Initial Quote (Informative).
+   *
+   * @since 1.4
+   */
+  public static final byte INITIAL_QUOTE_PUNCTUATION = 29;
+
+  /**
+   * Pf = Punctuation, Final Quote (Informative).
+   *
+   * @since 1.4
+   */
+  public static final byte FINAL_QUOTE_PUNCTUATION = 30;
+
+  /**
+   * Po = Punctuation, Other (Informative).
+   *
+   * @since 1.1
+   */
+  public static final byte OTHER_PUNCTUATION = 24;
+
+  /**
+   * Sm = Symbol, Math (Informative).
+   *
+   * @since 1.1
+   */
+  public static final byte MATH_SYMBOL = 25;
+
+  /**
+   * Sc = Symbol, Currency (Informative).
+   *
+   * @since 1.1
+   */
+  public static final byte CURRENCY_SYMBOL = 26;
+
+  /**
+   * Sk = Symbol, Modifier (Informative).
+   *
+   * @since 1.1
+   */
+  public static final byte MODIFIER_SYMBOL = 27;
+
+  /**
+   * So = Symbol, Other (Informative).
+   *
+   * @since 1.1
+   */
+  public static final byte OTHER_SYMBOL = 28;
+
+  /**
+   * Undefined bidirectional character type. Undefined char values have
+   * undefined directionality in the Unicode specification.
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_UNDEFINED = -1;
+
+  /**
+   * Strong bidirectional character type "L".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_LEFT_TO_RIGHT = 0;
+
+  /**
+   * Strong bidirectional character type "R".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_RIGHT_TO_LEFT = 1;
+
+  /**
+   * Strong bidirectional character type "AL".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC = 2;
+
+  /**
+   * Weak bidirectional character type "EN".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_EUROPEAN_NUMBER = 3;
+
+  /**
+   * Weak bidirectional character type "ES".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_EUROPEAN_NUMBER_SEPARATOR = 4;
+
+  /**
+   * Weak bidirectional character type "ET".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_EUROPEAN_NUMBER_TERMINATOR = 5;
+
+  /**
+   * Weak bidirectional character type "AN".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_ARABIC_NUMBER = 6;
+
+  /**
+   * Weak bidirectional character type "CS".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_COMMON_NUMBER_SEPARATOR = 7;
+
+  /**
+   * Weak bidirectional character type "NSM".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_NONSPACING_MARK = 8;
+
+  /**
+   * Weak bidirectional character type "BN".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_BOUNDARY_NEUTRAL = 9;
+
+  /**
+   * Neutral bidirectional character type "B".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_PARAGRAPH_SEPARATOR = 10;
+
+  /**
+   * Neutral bidirectional character type "S".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_SEGMENT_SEPARATOR = 11;
+
+  /**
+   * Strong bidirectional character type "WS".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_WHITESPACE = 12;
+
+  /**
+   * Neutral bidirectional character type "ON".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_OTHER_NEUTRALS = 13;
+
+  /**
+   * Strong bidirectional character type "LRE".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_LEFT_TO_RIGHT_EMBEDDING = 14;
+
+  /**
+   * Strong bidirectional character type "LRO".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_LEFT_TO_RIGHT_OVERRIDE = 15;
+
+  /**
+   * Strong bidirectional character type "RLE".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING = 16;
+
+  /**
+   * Strong bidirectional character type "RLO".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE = 17;
+
+  /**
+   * Weak bidirectional character type "PDF".
+   *
+   * @since 1.4
+   */
+  public static final byte DIRECTIONALITY_POP_DIRECTIONAL_FORMAT = 18;
+
+  /**
+   * Stores unicode block offset lookup table. Exploit package visibility of
+   * String.value to avoid copying the array.
+   * @see #readChar(char)
+   * @see CharData#BLOCKS
+   */
+  private static final char[] blocks = String.zeroBasedStringValue(CharData.BLOCKS);
+
+  /**
+   * Stores unicode attribute offset lookup table. Exploit package visibility
+   * of String.value to avoid copying the array.
+   * @see CharData#DATA
+   */
+  private static final char[] data = String.zeroBasedStringValue(CharData.DATA);
+
+  /**
+   * Stores unicode numeric value attribute table. Exploit package visibility
+   * of String.value to avoid copying the array.
+   * @see CharData#NUM_VALUE
+   */
+  private static final char[] numValue
+	  = String.zeroBasedStringValue(CharData.NUM_VALUE);
+
+  /**
+   * Stores unicode uppercase attribute table. Exploit package visibility
+   * of String.value to avoid copying the array.
+   * @see CharData#UPPER
+   */
+  private static final char[] upper = String.zeroBasedStringValue(CharData.UPPER);
+
+  /**
+   * Stores unicode lowercase attribute table. Exploit package visibility
+   * of String.value to avoid copying the array.
+   * @see CharData#LOWER
+   */
+  private static final char[] lower = String.zeroBasedStringValue(CharData.LOWER);
+
+  /**
+   * Stores unicode direction attribute table. Exploit package visibility
+   * of String.value to avoid copying the array.
+   * @see CharData#DIRECTION
+   */
+  // Package visible for use by String.
+  static final char[] direction = String.zeroBasedStringValue(CharData.DIRECTION);
+
+  /**
+   * Stores unicode titlecase table. Exploit package visibility of
+   * String.value to avoid copying the array.
+   * @see CharData#TITLE
+   */
+  private static final char[] title = String.zeroBasedStringValue(CharData.TITLE);
+
+  /**
+   * Mask for grabbing the type out of the contents of data.
+   * @see CharData#DATA
+   */
+  private static final int TYPE_MASK = 0x1F;
+
+  /**
+   * Mask for grabbing the non-breaking space flag out of the contents of
+   * data.
+   * @see CharData#DATA
+   */
+  private static final int NO_BREAK_MASK = 0x20;
+
+  /**
+   * Mask for grabbing the mirrored directionality flag out of the contents
+   * of data.
+   * @see CharData#DATA
+   */
+  private static final int MIRROR_MASK = 0x40;
+
+  /**
+   * Grabs an attribute offset from the Unicode attribute database. The lower
+   * 5 bits are the character type, the next 2 bits are flags, and the top
+   * 9 bits are the offset into the attribute tables.
+   *
+   * @param ch the character to look up
+   * @return the character's attribute offset and type
+   * @see #TYPE_MASK
+   * @see #NO_BREAK_MASK
+   * @see #MIRROR_MASK
+   * @see CharData#DATA
+   * @see CharData#SHIFT
+   */
+  // Package visible for use in String.
+  static char readChar(char ch)
+  {
+    // Perform 16-bit addition to find the correct entry in data.
+    return data[(char) (blocks[ch >> CharData.SHIFT] + ch)];
+  }
+
+  /**
+   * Wraps up a character.
+   *
+   * @param value the character to wrap
+   */
+  public Character(char value)
+  {
+    this.value = value;
+  }
+
+  /**
+   * Returns the character which has been wrapped by this class.
+   *
+   * @return the character wrapped
+   */
+  public char charValue()
+  {
+    return value;
+  }
+
+  /**
+   * Returns the numerical value (unsigned) of the wrapped character.
+   * Range of returned values: 0x0000-0xFFFF.
+   *
+   * @return the value of the wrapped character
+   */
+  public int hashCode()
+  {
+    return value;
+  }
+
+  /**
+   * Determines if an object is equal to this object. This is only true for
+   * another Character object wrapping the same value.
+   *
+   * @param o object to compare
+   * @return true if o is a Character with the same value
+   */
+  public boolean equals(Object o)
+  {
+    return o instanceof Character && value == ((Character) o).value;
+  }
+
+  /**
+   * Converts the wrapped character into a String.
+   *
+   * @return a String containing one character -- the wrapped character
+   *         of this instance
+   */
+  public String toString()
+  {
+    // Package constructor avoids an array copy.
+    return new String(new char[] { value }, 0, 1, true);
+  }
+
+  /**
+   * Returns a String of length 1 representing the specified character.
+   *
+   * @param ch the character to convert
+   * @return a String containing the character
+   * @since 1.4
+   */
+  public static String toString(char ch)
+  {
+    // Package constructor avoids an array copy.
+    return new String(new char[] { ch }, 0, 1, true);
+  }
+
+  /**
+   * Determines if a character is a Unicode lowercase letter. For example,
+   * <code>'a'</code> is lowercase.
+   * <br>
+   * lowercase = [Ll]
+   *
+   * @param ch character to test
+   * @return true if ch is a Unicode lowercase letter, else false
+   * @see #isUpperCase(char)
+   * @see #isTitleCase(char)
+   * @see #toLowerCase(char)
+   * @see #getType(char)
+   */
+  public static boolean isLowerCase(char ch)
+  {
+    return getType(ch) == LOWERCASE_LETTER;
+  }
+
+  /**
+   * Determines if a character is a Unicode uppercase letter. For example,
+   * <code>'A'</code> is uppercase.
+   * <br>
+   * uppercase = [Lu]
+   *
+   * @param ch character to test
+   * @return true if ch is a Unicode uppercase letter, else false
+   * @see #isLowerCase(char)
+   * @see #isTitleCase(char)
+   * @see #toUpperCase(char)
+   * @see #getType(char)
+   */
+  public static boolean isUpperCase(char ch)
+  {
+    return getType(ch) == UPPERCASE_LETTER;
+  }
+
+  /**
+   * Determines if a character is a Unicode titlecase letter. For example,
+   * the character "Lj" (Latin capital L with small letter j) is titlecase.
+   * <br>
+   * titlecase = [Lt]
+   *
+   * @param ch character to test
+   * @return true if ch is a Unicode titlecase letter, else false
+   * @see #isLowerCase(char)
+   * @see #isUpperCase(char)
+   * @see #toTitleCase(char)
+   * @see #getType(char)
+   */
+  public static boolean isTitleCase(char ch)
+  {
+    return getType(ch) == TITLECASE_LETTER;
+  }
+
+  /**
+   * Determines if a character is a Unicode decimal digit. For example,
+   * <code>'0'</code> is a digit.
+   * <br>
+   * Unicode decimal digit = [Nd]
+   *
+   * @param ch character to test
+   * @return true if ch is a Unicode decimal digit, else false
+   * @see #digit(char, int)
+   * @see #forDigit(int, int)
+   * @see #getType(char)
+   */
+  public static boolean isDigit(char ch)
+  {
+    return getType(ch) == DECIMAL_DIGIT_NUMBER;
+  }
+
+  /**
+   * Determines if a character is part of the Unicode Standard. This is an
+   * evolving standard, but covers every character in the data file.
+   * <br>
+   * defined = not [Cn]
+   *
+   * @param ch character to test
+   * @return true if ch is a Unicode character, else false
+   * @see #isDigit(char)
+   * @see #isLetter(char)
+   * @see #isLetterOrDigit(char)
+   * @see #isLowerCase(char)
+   * @see #isTitleCase(char)
+   * @see #isUpperCase(char)
+   */
+  public static boolean isDefined(char ch)
+  {
+    return getType(ch) != UNASSIGNED;
+  }
+
+  /**
+   * Determines if a character is a Unicode letter. Not all letters have case,
+   * so this may return true when isLowerCase and isUpperCase return false.
+   * <br>
+   * letter = [Lu]|[Ll]|[Lt]|[Lm]|[Lo]
+   *
+   * @param ch character to test
+   * @return true if ch is a Unicode letter, else false
+   * @see #isDigit(char)
+   * @see #isJavaIdentifierStart(char)
+   * @see #isJavaLetter(char)
+   * @see #isJavaLetterOrDigit(char)
+   * @see #isLetterOrDigit(char)
+   * @see #isLowerCase(char)
+   * @see #isTitleCase(char)
+   * @see #isUnicodeIdentifierStart(char)
+   * @see #isUpperCase(char)
+   */
+  public static boolean isLetter(char ch)
+  {
+    return ((1 << getType(ch))
+            & ((1 << UPPERCASE_LETTER)
+               | (1 << LOWERCASE_LETTER)
+               | (1 << TITLECASE_LETTER)
+               | (1 << MODIFIER_LETTER)
+               | (1 << OTHER_LETTER))) != 0;
+  }
+
+  /**
+   * Determines if a character is a Unicode letter or a Unicode digit. This
+   * is the combination of isLetter and isDigit.
+   * <br>
+   * letter or digit = [Lu]|[Ll]|[Lt]|[Lm]|[Lo]|[Nd]
+   *
+   * @param ch character to test
+   * @return true if ch is a Unicode letter or a Unicode digit, else false
+   * @see #isDigit(char)
+   * @see #isJavaIdentifierPart(char)
+   * @see #isJavaLetter(char)
+   * @see #isJavaLetterOrDigit(char)
+   * @see #isLetter(char)
+   * @see #isUnicodeIdentifierPart(char)
+   */
+  public static boolean isLetterOrDigit(char ch)
+  {
+    return ((1 << getType(ch))
+            & ((1 << UPPERCASE_LETTER)
+               | (1 << LOWERCASE_LETTER)
+               | (1 << TITLECASE_LETTER)
+               | (1 << MODIFIER_LETTER)
+               | (1 << OTHER_LETTER)
+               | (1 << DECIMAL_DIGIT_NUMBER))) != 0;
+  }
+
+  /**
+   * Determines if a character can start a Java identifier. This is the
+   * combination of isLetter, any character where getType returns
+   * LETTER_NUMBER, currency symbols (like '$'), and connecting punctuation
+   * (like '_').
+   *
+   * @param ch character to test
+   * @return true if ch can start a Java identifier, else false
+   * @deprecated Replaced by {@link #isJavaIdentifierStart(char)}
+   * @see #isJavaLetterOrDigit(char)
+   * @see #isJavaIdentifierStart(char)
+   * @see #isJavaIdentifierPart(char)
+   * @see #isLetter(char)
+   * @see #isLetterOrDigit(char)
+   * @see #isUnicodeIdentifierStart(char)
+   */
+  public static boolean isJavaLetter(char ch)
+  {
+    return isJavaIdentifierStart(ch);
+  }
+
+  /**
+   * Determines if a character can follow the first letter in
+   * a Java identifier.  This is the combination of isJavaLetter (isLetter,
+   * type of LETTER_NUMBER, currency, connecting punctuation) and digit,
+   * numeric letter (like Roman numerals), combining marks, non-spacing marks,
+   * or isIdentifierIgnorable.
+   *
+   * @param ch character to test
+   * @return true if ch can follow the first letter in a Java identifier
+   * @deprecated Replaced by {@link #isJavaIdentifierPart(char)}
+   * @see #isJavaLetter(char)
+   * @see #isJavaIdentifierStart(char)
+   * @see #isJavaIdentifierPart(char)
+   * @see #isLetter(char)
+   * @see #isLetterOrDigit(char)
+   * @see #isUnicodeIdentifierPart(char)
+   * @see #isIdentifierIgnorable(char)
+   */
+  public static boolean isJavaLetterOrDigit(char ch)
+  {
+    return isJavaIdentifierPart(ch);
+  }
+
+  /**
+   * Determines if a character can start a Java identifier. This is the
+   * combination of isLetter, any character where getType returns
+   * LETTER_NUMBER, currency symbols (like '$'), and connecting punctuation
+   * (like '_').
+   * <br>
+   * Java identifier start = [Lu]|[Ll]|[Lt]|[Lm]|[Lo]|[Nl]|[Sc]|[Pc]
+   *
+   * @param ch character to test
+   * @return true if ch can start a Java identifier, else false
+   * @see #isJavaIdentifierPart(char)
+   * @see #isLetter(char)
+   * @see #isUnicodeIdentifierStart(char)
+   * @since 1.1
+   */
+  public static boolean isJavaIdentifierStart(char ch)
+  {
+    return ((1 << getType(ch))
+            & ((1 << UPPERCASE_LETTER)
+               | (1 << LOWERCASE_LETTER)
+               | (1 << TITLECASE_LETTER)
+               | (1 << MODIFIER_LETTER)
+               | (1 << OTHER_LETTER)
+               | (1 << LETTER_NUMBER)
+               | (1 << CURRENCY_SYMBOL)
+               | (1 << CONNECTOR_PUNCTUATION))) != 0;
+  }
+
+  /**
+   * Determines if a character can follow the first letter in
+   * a Java identifier.  This is the combination of isJavaLetter (isLetter,
+   * type of LETTER_NUMBER, currency, connecting punctuation) and digit,
+   * numeric letter (like Roman numerals), combining marks, non-spacing marks,
+   * or isIdentifierIgnorable.
+   * <br>
+   * Java identifier extender =
+   *   [Lu]|[Ll]|[Lt]|[Lm]|[Lo]|[Nl]|[Sc]|[Pc]|[Mn]|[Mc]|[Nd]|[Cf]
+   *   |U+0000-U+0008|U+000E-U+001B|U+007F-U+009F
+   *
+   * @param ch character to test
+   * @return true if ch can follow the first letter in a Java identifier
+   * @see #isIdentifierIgnorable(char)
+   * @see #isJavaIdentifierStart(char)
+   * @see #isLetterOrDigit(char)
+   * @see #isUnicodeIdentifierPart(char)
+   * @since 1.1
+   */
+  public static boolean isJavaIdentifierPart(char ch)
+  {
+    int category = getType(ch);
+    return ((1 << category)
+            & ((1 << UPPERCASE_LETTER)
+               | (1 << LOWERCASE_LETTER)
+               | (1 << TITLECASE_LETTER)
+               | (1 << MODIFIER_LETTER)
+               | (1 << OTHER_LETTER)
+               | (1 << NON_SPACING_MARK)
+               | (1 << COMBINING_SPACING_MARK)
+               | (1 << DECIMAL_DIGIT_NUMBER)
+               | (1 << LETTER_NUMBER)
+               | (1 << CURRENCY_SYMBOL)
+               | (1 << CONNECTOR_PUNCTUATION)
+               | (1 << FORMAT))) != 0
+      || (category == CONTROL && isIdentifierIgnorable(ch));
+  }
+
+  /**
+   * Determines if a character can start a Unicode identifier.  Only
+   * letters can start a Unicode identifier, but this includes characters
+   * in LETTER_NUMBER.
+   * <br>
+   * Unicode identifier start = [Lu]|[Ll]|[Lt]|[Lm]|[Lo]|[Nl]
+   *
+   * @param ch character to test
+   * @return true if ch can start a Unicode identifier, else false
+   * @see #isJavaIdentifierStart(char)
+   * @see #isLetter(char)
+   * @see #isUnicodeIdentifierPart(char)
+   * @since 1.1
+   */
+  public static boolean isUnicodeIdentifierStart(char ch)
+  {
+    return ((1 << getType(ch))
+            & ((1 << UPPERCASE_LETTER)
+               | (1 << LOWERCASE_LETTER)
+               | (1 << TITLECASE_LETTER)
+               | (1 << MODIFIER_LETTER)
+               | (1 << OTHER_LETTER)
+               | (1 << LETTER_NUMBER))) != 0;
+  }
+
+  /**
+   * Determines if a character can follow the first letter in
+   * a Unicode identifier. This includes letters, connecting punctuation,
+   * digits, numeric letters, combining marks, non-spacing marks, and
+   * isIdentifierIgnorable.
+   * <br>
+   * Unicode identifier extender =
+   *   [Lu]|[Ll]|[Lt]|[Lm]|[Lo]|[Nl]|[Mn]|[Mc]|[Nd]|[Pc]|[Cf]|
+   *   |U+0000-U+0008|U+000E-U+001B|U+007F-U+009F
+   *
+   * @param ch character to test
+   * @return true if ch can follow the first letter in a Unicode identifier
+   * @see #isIdentifierIgnorable(char)
+   * @see #isJavaIdentifierPart(char)
+   * @see #isLetterOrDigit(char)
+   * @see #isUnicodeIdentifierStart(char)
+   * @since 1.1
+   */
+  public static boolean isUnicodeIdentifierPart(char ch)
+  {
+    int category = getType(ch);
+    return ((1 << category)
+            & ((1 << UPPERCASE_LETTER)
+               | (1 << LOWERCASE_LETTER)
+               | (1 << TITLECASE_LETTER)
+               | (1 << MODIFIER_LETTER)
+               | (1 << OTHER_LETTER)
+               | (1 << NON_SPACING_MARK)
+               | (1 << COMBINING_SPACING_MARK)
+               | (1 << DECIMAL_DIGIT_NUMBER)
+               | (1 << LETTER_NUMBER)
+               | (1 << CONNECTOR_PUNCTUATION)
+               | (1 << FORMAT))) != 0
+      || (category == CONTROL && isIdentifierIgnorable(ch));
+  }
+
+  /**
+   * Determines if a character is ignorable in a Unicode identifier. This
+   * includes the non-whitespace ISO control characters (<code>'\u0000'</code>
+   * through <code>'\u0008'</code>, <code>'\u000E'</code> through
+   * <code>'\u001B'</code>, and <code>'\u007F'</code> through
+   * <code>'\u009F'</code>), and FORMAT characters.
+   * <br>
+   * Unicode identifier ignorable = [Cf]|U+0000-U+0008|U+000E-U+001B
+   *    |U+007F-U+009F
+   *
+   * @param ch character to test
+   * @return true if ch is ignorable in a Unicode or Java identifier
+   * @see #isJavaIdentifierPart(char)
+   * @see #isUnicodeIdentifierPart(char)
+   * @since 1.1
+   */
+  public static boolean isIdentifierIgnorable(char ch)
+  {
+    return (ch <= '\u009F' && (ch < '\t' || ch >= '\u007F'
+                               || (ch <= '\u001B' && ch >= '\u000E')))
+      || getType(ch) == FORMAT;
+  }
+
+  /**
+   * Converts a Unicode character into its lowercase equivalent mapping.
+   * If a mapping does not exist, then the character passed is returned.
+   * Note that isLowerCase(toLowerCase(ch)) does not always return true.
+   *
+   * @param ch character to convert to lowercase
+   * @return lowercase mapping of ch, or ch if lowercase mapping does
+   *         not exist
+   * @see #isLowerCase(char)
+   * @see #isUpperCase(char)
+   * @see #toTitleCase(char)
+   * @see #toUpperCase(char)
+   */
+  public static char toLowerCase(char ch)
+  {
+    // Signedness doesn't matter, as result is cast back to char.
+    return (char) (ch + lower[readChar(ch) >> 7]);
+  }
+
+  /**
+   * Converts a Unicode character into its uppercase equivalent mapping.
+   * If a mapping does not exist, then the character passed is returned.
+   * Note that isUpperCase(toUpperCase(ch)) does not always return true.
+   *
+   * @param ch character to convert to uppercase
+   * @return uppercase mapping of ch, or ch if uppercase mapping does
+   *         not exist
+   * @see #isLowerCase(char)
+   * @see #isUpperCase(char)
+   * @see #toLowerCase(char)
+   * @see #toTitleCase(char)
+   */
+  public static char toUpperCase(char ch)
+  {
+    // Signedness doesn't matter, as result is cast back to char.
+    return (char) (ch + upper[readChar(ch) >> 7]);
+  }
+
+  /**
+   * Converts a Unicode character into its titlecase equivalent mapping.
+   * If a mapping does not exist, then the character passed is returned.
+   * Note that isTitleCase(toTitleCase(ch)) does not always return true.
+   *
+   * @param ch character to convert to titlecase
+   * @return titlecase mapping of ch, or ch if titlecase mapping does
+   *         not exist
+   * @see #isTitleCase(char)
+   * @see #toLowerCase(char)
+   * @see #toUpperCase(char)
+   */
+  public static char toTitleCase(char ch)
+  {
+    // As title is short, it doesn't hurt to exhaustively iterate over it.
+    for (int i = title.length - 2; i >= 0; i -= 2)
+      if (title[i] == ch)
+        return title[i + 1];
+    return toUpperCase(ch);
+  }
+
+  /**
+   * Converts a character into a digit of the specified radix. If the radix
+   * exceeds MIN_RADIX or MAX_RADIX, or if the result of getNumericValue(ch)
+   * exceeds the radix, or if ch is not a decimal digit or in the case
+   * insensitive set of 'a'-'z', the result is -1.
+   * <br>
+   * character argument boundary = [Nd]|U+0041-U+005A|U+0061-U+007A
+   *    |U+FF21-U+FF3A|U+FF41-U+FF5A
+   *
+   * @param ch character to convert into a digit
+   * @param radix radix in which ch is a digit
+   * @return digit which ch represents in radix, or -1 not a valid digit
+   * @see #MIN_RADIX
+   * @see #MAX_RADIX
+   * @see #forDigit(int, int)
+   * @see #isDigit(char)
+   * @see #getNumericValue(char)
+   */
+  public static int digit(char ch, int radix)
+  {
+    if (radix < MIN_RADIX || radix > MAX_RADIX)
+      return -1;
+    char attr = readChar(ch);
+    if (((1 << (attr & TYPE_MASK))
+         & ((1 << UPPERCASE_LETTER)
+            | (1 << LOWERCASE_LETTER)
+            | (1 << DECIMAL_DIGIT_NUMBER))) != 0)
+      {
+        // Signedness doesn't matter; 0xffff vs. -1 are both rejected.
+        int digit = numValue[attr >> 7];
+        return (digit >= 0 && digit < radix) ? digit : -1;
+      }
+    return -1;
+  }
+
+  /**
+   * Returns the Unicode numeric value property of a character. For example,
+   * <code>'\\u216C'</code> (the Roman numeral fifty) returns 50.
+   *
+   * <p>This method also returns values for the letters A through Z, (not
+   * specified by Unicode), in these ranges: <code>'\u0041'</code>
+   * through <code>'\u005A'</code> (uppercase); <code>'\u0061'</code>
+   * through <code>'\u007A'</code> (lowercase); and <code>'\uFF21'</code>
+   * through <code>'\uFF3A'</code>, <code>'\uFF41'</code> through
+   * <code>'\uFF5A'</code> (full width variants).
+   *
+   * <p>If the character lacks a numeric value property, -1 is returned.
+   * If the character has a numeric value property which is not representable
+   * as a nonnegative integer, such as a fraction, -2 is returned.
+   *
+   * character argument boundary = [Nd]|[Nl]|[No]|U+0041-U+005A|U+0061-U+007A
+   *    |U+FF21-U+FF3A|U+FF41-U+FF5A
+   *
+   * @param ch character from which the numeric value property will
+   *        be retrieved
+   * @return the numeric value property of ch, or -1 if it does not exist, or
+   *         -2 if it is not representable as a nonnegative integer
+   * @see #forDigit(int, int)
+   * @see #digit(char, int)
+   * @see #isDigit(char)
+   * @since 1.1
+   */
+  public static int getNumericValue(char ch)
+  {
+    // Treat numValue as signed.
+    return (short) numValue[readChar(ch) >> 7];
+  }
+
+  /**
+   * Determines if a character is a ISO-LATIN-1 space. This is only the five
+   * characters <code>'\t'</code>, <code>'\n'</code>, <code>'\f'</code>,
+   * <code>'\r'</code>, and <code>' '</code>.
+   * <br>
+   * Java space = U+0020|U+0009|U+000A|U+000C|U+000D
+   *
+   * @param ch character to test
+   * @return true if ch is a space, else false
+   * @deprecated Replaced by {@link #isWhitespace(char)}
+   * @see #isSpaceChar(char)
+   * @see #isWhitespace(char)
+   */
+  public static boolean isSpace(char ch)
+  {
+    // Performing the subtraction up front alleviates need to compare longs.
+    return ch-- <= ' ' && ((1 << ch)
+                           & ((1 << (' ' - 1))
+                              | (1 << ('\t' - 1))
+                              | (1 << ('\n' - 1))
+                              | (1 << ('\r' - 1))
+                              | (1 << ('\f' - 1)))) != 0;
+  }
+
+  /**
+   * Determines if a character is a Unicode space character. This includes
+   * SPACE_SEPARATOR, LINE_SEPARATOR, and PARAGRAPH_SEPARATOR.
+   * <br>
+   * Unicode space = [Zs]|[Zp]|[Zl]
+   *
+   * @param ch character to test
+   * @return true if ch is a Unicode space, else false
+   * @see #isWhitespace(char)
+   * @since 1.1
+   */
+  public static boolean isSpaceChar(char ch)
+  {
+    return ((1 << getType(ch))
+            & ((1 << SPACE_SEPARATOR)
+               | (1 << LINE_SEPARATOR)
+               | (1 << PARAGRAPH_SEPARATOR))) != 0;
+  }
+
+  /**
+   * Determines if a character is Java whitespace. This includes Unicode
+   * space characters (SPACE_SEPARATOR, LINE_SEPARATOR, and
+   * PARAGRAPH_SEPARATOR) except the non-breaking spaces
+   * (<code>'\u00A0'</code>, <code>'\u2007'</code>, and <code>'\u202F'</code>);
+   * and these characters: <code>'\u0009'</code>, <code>'\u000A'</code>,
+   * <code>'\u000B'</code>, <code>'\u000C'</code>, <code>'\u000D'</code>,
+   * <code>'\u001C'</code>, <code>'\u001D'</code>, <code>'\u001E'</code>,
+   * and <code>'\u001F'</code>.
+   * <br>
+   * Java whitespace = ([Zs] not Nb)|[Zl]|[Zp]|U+0009-U+000D|U+001C-U+001F
+   *
+   * @param ch character to test
+   * @return true if ch is Java whitespace, else false
+   * @see #isSpaceChar(char)
+   * @since 1.1
+   */
+  public static boolean isWhitespace(char ch)
+  {
+    int attr = readChar(ch);
+    return ((((1 << (attr & TYPE_MASK))
+              & ((1 << SPACE_SEPARATOR)
+                 | (1 << LINE_SEPARATOR)
+                 | (1 << PARAGRAPH_SEPARATOR))) != 0)
+            && (attr & NO_BREAK_MASK) == 0)
+      || (ch <= '\u001F' && ((1 << ch)
+                             & ((1 << '\t')
+                                | (1 << '\n')
+                                | (1 << '\u000B')
+                                | (1 << '\u000C')
+                                | (1 << '\r')
+                                | (1 << '\u001C')
+                                | (1 << '\u001D')
+                                | (1 << '\u001E')
+                                | (1 << '\u001F'))) != 0);
+  }
+
+  /**
+   * Determines if a character has the ISO Control property.
+   * <br>
+   * ISO Control = [Cc]
+   *
+   * @param ch character to test
+   * @return true if ch is an ISO Control character, else false
+   * @see #isSpaceChar(char)
+   * @see #isWhitespace(char)
+   * @since 1.1
+   */
+  public static boolean isISOControl(char ch)
+  {
+    return getType(ch) == CONTROL;
+  }
+
+  /**
+   * Returns the Unicode general category property of a character.
+   *
+   * @param ch character from which the general category property will
+   *        be retrieved
+   * @return the character category property of ch as an integer
+   * @see #UNASSIGNED
+   * @see #UPPERCASE_LETTER
+   * @see #LOWERCASE_LETTER
+   * @see #TITLECASE_LETTER
+   * @see #MODIFIER_LETTER
+   * @see #OTHER_LETTER
+   * @see #NON_SPACING_MARK
+   * @see #ENCLOSING_MARK
+   * @see #COMBINING_SPACING_MARK
+   * @see #DECIMAL_DIGIT_NUMBER
+   * @see #LETTER_NUMBER
+   * @see #OTHER_NUMBER
+   * @see #SPACE_SEPARATOR
+   * @see #LINE_SEPARATOR
+   * @see #PARAGRAPH_SEPARATOR
+   * @see #CONTROL
+   * @see #FORMAT
+   * @see #PRIVATE_USE
+   * @see #SURROGATE
+   * @see #DASH_PUNCTUATION
+   * @see #START_PUNCTUATION
+   * @see #END_PUNCTUATION
+   * @see #CONNECTOR_PUNCTUATION
+   * @see #OTHER_PUNCTUATION
+   * @see #MATH_SYMBOL
+   * @see #CURRENCY_SYMBOL
+   * @see #MODIFIER_SYMBOL
+   * @see #INITIAL_QUOTE_PUNCTUATION
+   * @see #FINAL_QUOTE_PUNCTUATION
+   * @since 1.1
+   */
+  public static int getType(char ch)
+  {
+    return readChar(ch) & TYPE_MASK;
+  }
+
+  /**
+   * Converts a digit into a character which represents that digit
+   * in a specified radix. If the radix exceeds MIN_RADIX or MAX_RADIX,
+   * or the digit exceeds the radix, then the null character <code>'\0'</code>
+   * is returned.  Otherwise the return value is in '0'-'9' and 'a'-'z'.
+   * <br>
+   * return value boundary = U+0030-U+0039|U+0061-U+007A
+   *
+   * @param digit digit to be converted into a character
+   * @param radix radix of digit
+   * @return character representing digit in radix, or '\0'
+   * @see #MIN_RADIX
+   * @see #MAX_RADIX
+   * @see #digit(char, int)
+   */
+  public static char forDigit(int digit, int radix)
+  {
+    if (radix < MIN_RADIX || radix > MAX_RADIX
+        || digit < 0 || digit >= radix)
+      return '\0';
+    return Number.digits[digit];
+  }
+
+  /**
+   * Returns the Unicode directionality property of the character. This
+   * is used in the visual ordering of text.
+   *
+   * @param ch the character to look up
+   * @return the directionality constant, or DIRECTIONALITY_UNDEFINED
+   * @see #DIRECTIONALITY_UNDEFINED
+   * @see #DIRECTIONALITY_LEFT_TO_RIGHT
+   * @see #DIRECTIONALITY_RIGHT_TO_LEFT
+   * @see #DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC
+   * @see #DIRECTIONALITY_EUROPEAN_NUMBER
+   * @see #DIRECTIONALITY_EUROPEAN_NUMBER_SEPARATOR
+   * @see #DIRECTIONALITY_EUROPEAN_NUMBER_TERMINATOR
+   * @see #DIRECTIONALITY_ARABIC_NUMBER
+   * @see #DIRECTIONALITY_COMMON_NUMBER_SEPARATOR
+   * @see #DIRECTIONALITY_NONSPACING_MARK
+   * @see #DIRECTIONALITY_BOUNDARY_NEUTRAL
+   * @see #DIRECTIONALITY_PARAGRAPH_SEPARATOR
+   * @see #DIRECTIONALITY_SEGMENT_SEPARATOR
+   * @see #DIRECTIONALITY_WHITESPACE
+   * @see #DIRECTIONALITY_OTHER_NEUTRALS
+   * @see #DIRECTIONALITY_LEFT_TO_RIGHT_EMBEDDING
+   * @see #DIRECTIONALITY_LEFT_TO_RIGHT_OVERRIDE
+   * @see #DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING
+   * @see #DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE
+   * @see #DIRECTIONALITY_POP_DIRECTIONAL_FORMAT
+   * @since 1.4
+   */
+  public static byte getDirectionality(char ch)
+  {
+    // The result will correctly be signed.
+    return (byte) (direction[readChar(ch) >> 7] >> 2);
+  }
+
+  /**
+   * Determines whether the character is mirrored according to Unicode. For
+   * example, <code>\u0028</code> (LEFT PARENTHESIS) appears as '(' in
+   * left-to-right text, but ')' in right-to-left text.
+   *
+   * @param ch the character to look up
+   * @return true if the character is mirrored
+   * @since 1.4
+   */
+  public static boolean isMirrored(char ch)
+  {
+    return (readChar(ch) & MIRROR_MASK) != 0;
+  }
+
+  /**
+   * Compares another Character to this Character, numerically.
+   *
+   * @param anotherCharacter Character to compare with this Character
+   * @return a negative integer if this Character is less than
+   *         anotherCharacter, zero if this Character is equal, and
+   *         a positive integer if this Character is greater
+   * @throws NullPointerException if anotherCharacter is null
+   * @since 1.2
+   */
+  public int compareTo(Character anotherCharacter)
+  {
+    return value - anotherCharacter.value;
+  }
+
+  /**
+   * Compares an object to this Character.  Assuming the object is a
+   * Character object, this method performs the same comparison as
+   * compareTo(Character).
+   *
+   * @param o object to compare
+   * @return the comparison value
+   * @throws ClassCastException if o is not a Character object
+   * @throws NullPointerException if o is null
+   * @see #compareTo(Character)
+   * @since 1.2
+   */
+  public int compareTo(Object o)
+  {
+    return compareTo((Character) o);
+  }
+} // class Character

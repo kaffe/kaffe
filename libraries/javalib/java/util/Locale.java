@@ -20,6 +20,8 @@ final public class Locale
   implements Cloneable, Serializable
 {
 	final private static long serialVersionUID = 9149081749638150636L;
+	final public static PropertyPermission SET_PERMISSION =
+		new PropertyPermission("user.language", "write");
 	final public static Locale CANADA = new Locale("en", "CA");
 	final public static Locale CANADA_FRENCH = new Locale("fr", "CA");
 	final public static Locale CHINA = new Locale("zh", "CN");
@@ -228,6 +230,9 @@ public static synchronized void setDefault(Locale newLocale) {
 	if (newLocale == null) {
 		throw new NullPointerException();
 	}
+	SecurityManager sm = System.getSecurityManager();
+	if( sm != null )
+		sm.checkPermission(SET_PERMISSION);
 
 	defaultLocale = newLocale;
 }

@@ -24,41 +24,64 @@ public class Throwable extends Object implements Serializable
 	 */
 	private transient Object backtrace;
 	private String message;
-	private Throwable cause = this;
+	private boolean setCause;
+	private Throwable cause;
 
 	// This is what Sun's JDK1.1 "serialver java.lang.Throwable" spits out
 	private static final long serialVersionUID = -3042686055658047285L;
 
 public Throwable() {
-	this((String)null);
-}
-
-public Throwable(String mess) {
-	message = mess;
+	this.message = null;
+	this.setCause = false;
+	this.cause = null;
 	fillInStackTrace();
 }
 
-/** since 1.4 */
-public Throwable(Throwable cause) {
-	this (cause == null ? null : cause.getMessage(), cause);
+public Throwable(String mess) {
+	this.message = mess;
+	this.setCause = false;
+	this.cause = null;
+	fillInStackTrace();
 }
 
-/** since 1.4 */
+public Throwable(Throwable cause) {
+	this.message = (cause == null) ? null : cause.getMessage();
+	this.setCause = true;
+	this.cause = cause;
+	fillInStackTrace();
+}
+
 public Throwable(String mess, Throwable cause) {
-	this(mess);
-	initCause(cause);
+	this.message = mess;
+	this.setCause = true;
+	this.cause = cause;
+	fillInStackTrace();
 }
 
 native public Throwable fillInStackTrace();
 
-private boolean causeIsSet() {
-	return this.cause != this;
+public Throwable getCause() {
+	return this.cause;
 }
 
-/** since 1.4 */
-public Throwable getCause() {
-	return causeIsSet() ? cause : null;
+public Throwable initCause(Throwable th) {
+	// can be called *at most once*, cannot be called if appropriate constructor 
+	// was invoked
+	if (this.setCause)
+		throw new IllegalStateException("Cause can be set at most once on an exception");
+
+	if (th == this)
+		throw new IllegalArgumentException("A throwable cannot be its own cause");
+
+	this.setCause = true;
+	this.cause = th;
+	return this;
 }
+
+// public StackTraceElement[] getStackTrace()
+// {
+// 	return StackTraceElement.fromBackTrace(this.backtrace);
+// }
 
 public String getLocalizedMessage() {
 	return (getMessage());
@@ -68,20 +91,6 @@ public String getMessage() {
 	return (message);
 }
 
-/** since 1.4 */
-public Throwable initCause(Throwable cause) {
-	if (cause == this) {
-		throw new IllegalArgumentException();
-	}
-	else if (causeIsSet()) {
-		throw new IllegalStateException();
-	}
-	else {
-		this.cause = cause;
-		return this;
-	}
-}
-
 public void printStackTrace() {
 	printStackTrace(System.err);
 }
@@ -89,11 +98,36 @@ public void printStackTrace() {
 public void printStackTrace(PrintStream s) {
 	s.println(this.toString());
 	printStackTrace0(s);
+
+	// include the cause, XXX see JDK doc for suggestion on reducing verbosity of redundant traces
+	if (this.setCause)
+	{
+		if (this.cause == null)
+			s.println("Caused by: <null cause>");
+		else
+		{
+			s.print("Caused by: ");
+			cause.printStackTrace(s);
+		}
+	}
 }
 
 public void printStackTrace(PrintWriter s) {
 	s.println(this.toString());
 	printStackTrace0(s);
+
+	// include the cause, XXX see JDK doc for suggestion on reducing verbosity of redundant traces
+	if (this.setCause)
+	{
+		if (this.cause == null)
+			s.println("Caused by: <null cause>");
+		else
+		{
+			s.print("Caused by: ");
+			cause.printStackTrace(s);
+		}
+	}
+
 }
 
 native private void printStackTrace0(Object s);
@@ -106,5 +140,4 @@ public String toString() {
 		return (this.getClass().getName());
 	}
 }
-
 }

@@ -764,12 +764,19 @@ Java_java_awt_Toolkit_evtInit ( JNIEnv* env, jclass clazz )
   }
 
   ComponentEvent = (*env)->FindClass( env, "java/awt/ComponentEvt");
+  assert(ComponentEvent != NULL);
   MouseEvent     = (*env)->FindClass( env, "java/awt/MouseEvt");
+  assert(MouseEvent != NULL);
   FocusEvent     = (*env)->FindClass( env, "java/awt/FocusEvt");
+  assert(FocusEvent != NULL);
   WindowEvent    = (*env)->FindClass( env, "java/awt/WindowEvt");
+  assert(WindowEvent != NULL);  
   KeyEvent       = (*env)->FindClass( env, "java/awt/KeyEvt");
+  assert(KeyEvent != NULL);
   PaintEvent     = (*env)->FindClass( env, "java/awt/PaintEvt");
+  assert(PaintEvent != NULL);
   WMEvent        = (*env)->FindClass( env, "java/awt/WMEvent");
+  assert(WMEvent != NULL);
 
   getComponentEvent = (*env)->GetStaticMethodID( env, ComponentEvent, "getEvent", 
 												 "(IIIIII)Ljava/awt/ComponentEvt;");

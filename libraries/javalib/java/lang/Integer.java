@@ -59,7 +59,7 @@ public static Integer decode(String nm) throws NumberFormatException
 	}
 	/* A string like "0x-1234" must generate an error; disallow it here */
 	if (nm.startsWith("-")) {
-		throw new NumberFormatException();
+		throw new NumberFormatException(nm);
 	}
 	return (new Integer(parseUnsignedInt(nm, base, sign)));
 }
@@ -128,7 +128,7 @@ public static int parseInt(String s) throws NumberFormatException
 public static int parseInt(String s, int radix) throws NumberFormatException
 {
 	if (s == null || s.length() <= 0) {
-		throw new NumberFormatException("bad number: " + s);
+		throw new NumberFormatException(s);
 	}
 
 	/* Check for negativity */
@@ -143,19 +143,19 @@ public static int parseInt(String s, int radix) throws NumberFormatException
 private static int parseUnsignedInt(String s, int radix, int sign) throws NumberFormatException
 {
 	if (s == null || s.length() <= 0) {
-		throw new NumberFormatException();
+		throw new NumberFormatException(s);
 	}
 	int result = 0;
 	for (int pos = 0; pos < s.length(); pos++) {
 		int digit = Character.digit(s.charAt(pos), radix);
 		if (digit == -1) {
-			throw new NumberFormatException();
+			throw new NumberFormatException(s);
 		}
 		int nresult = (result * radix) + (sign * digit);
 		if (((sign == 1) && (result > nresult)) ||
 		    ((sign == -1) && (result < nresult)) )
 		{
-			throw new NumberFormatException();
+			throw new NumberFormatException(s);
 		}
 		result = nresult;
 	}

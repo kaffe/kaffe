@@ -60,7 +60,7 @@ public static Long decode(String nm) throws NumberFormatException
 	}
 	/* A string like "0x-1234" must generate an error; disallow it here */
 	if (nm.startsWith("-")) {
-		throw new NumberFormatException();
+		throw new NumberFormatException(nm);
 	}
 	return (new Long(parseUnsignedLong(nm, base, sign)));
 }
@@ -148,7 +148,7 @@ public static long parseLong(String s) throws NumberFormatException {
 
 public static long parseLong(String s, int radix) throws NumberFormatException {
 	if (s == null || s.length() <= 0) {
-		throw new NumberFormatException();
+		throw new NumberFormatException(s);
 	}
 
 	/* Check for negativity */
@@ -162,19 +162,19 @@ public static long parseLong(String s, int radix) throws NumberFormatException {
 
 private static long parseUnsignedLong(String s, int radix, long sign) throws NumberFormatException {
 	if (s == null || s.length() <= 0) {
-		throw new NumberFormatException();
+		throw new NumberFormatException(s);
 	}
 	long result = 0;
 	for (int pos = 0; pos < s.length(); pos++) {
 		int digit = Character.digit(s.charAt(pos), radix);
 		if (digit == -1) {
-			throw new NumberFormatException();
+			throw new NumberFormatException(s);
 		}
 		long nresult = (result * radix) + (sign * digit);
 		if (((sign == 1) && (result > nresult)) ||
 		    ((sign == -1) && (result < nresult)) )
 		{
-			throw new NumberFormatException();
+			throw new NumberFormatException(s);
 		}
 		result = nresult;
 	}

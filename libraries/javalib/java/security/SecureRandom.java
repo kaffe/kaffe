@@ -12,8 +12,6 @@ package java.security;
 
 import java.util.Random;
 
-import kaffe.security.Engine;
-
 public class SecureRandom extends Random {
 
 static final String ENGINE_CLASS = "SecureRandom";
@@ -23,7 +21,7 @@ private final SecureRandomSpi engine;
 
 public SecureRandom() { 
 	try {
-		Engine e = Engine.getCryptInstance(ENGINE_CLASS);
+		Security.Engine e = Security.getCryptInstance(ENGINE_CLASS);
 		provider = e.getProvider();
 		engine = (SecureRandomSpi)e.getEngine();
 	}
@@ -44,14 +42,14 @@ protected SecureRandom(SecureRandomSpi engine, Provider provider) {
 
 public static SecureRandom getInstance(String alg)
 		throws NoSuchAlgorithmException {
-	Engine e = Engine.getCryptInstance(ENGINE_CLASS, alg);
+	Security.Engine e = Security.getCryptInstance(ENGINE_CLASS, alg);
 	return new SecureRandom((SecureRandomSpi)e.getEngine(),
 				e.getProvider());
 }
 
 public static SecureRandom getInstance(String alg, String prov) 
 		throws NoSuchAlgorithmException, NoSuchProviderException {
-	Engine e = Engine.getCryptInstance( ENGINE_CLASS, alg, prov);
+	Security.Engine e = Security.getCryptInstance( ENGINE_CLASS, alg, prov);
 	return new SecureRandom((SecureRandomSpi)e.getEngine(),
 				e.getProvider());
 }
@@ -80,11 +78,15 @@ public void nextBytes(byte[] bytes) {
 
 protected final int next(int numBits) {
 	byte[] res = new byte[(numBits + 7) / 8];
+	int lpc, retval = 0;
+	
 	nextBytes(res);
-	return ( (res[0] & 0xFF) |
-		((res[1] <<  8) & 0xFF00) |
-		((res[2] << 16) & 0xFF0000) |
-		((res[3] << 24) & 0xFF000000));
+	for( lpc = res.length - 1; lpc >= 0; lpc-- )
+	{
+		retval |= (res[res.length - lpc - 1] << (8 * lpc)) & 0xFF;
+	}
+	return retval >> (res.length * 8 - numBits);
+
 }
 
 public static byte[] getSeed(int numBytes) {

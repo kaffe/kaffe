@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.util.Properties;
+import java.util.PropertyPermission;
 
 public final class System {
 	final public static InputStream in;
@@ -42,22 +43,6 @@ static {
 	// XXX what are the constraints on the initialization order in here?
 
 	props = initProperties(new Properties());
-	// Load any system properties from the system.properties resource
-	InputStream sin = ClassLoader.getSystemResourceAsStream("system.properties");
-	if (sin != null) {
-		try {
-			props.load(sin);
-		}
-		catch (IOException e) {
-		}
-		finally {
-			try {
-				sin.close();
-			}
-			catch (IOException e) {
-			}
-		}
-	}
 
 	// Initialise the I/O
 	if (props.getProperty("kaffe.embedded", "false").equals("false")) {
@@ -194,10 +179,18 @@ public static void arraycopy(Object src, int src_position, Object dst, int dst_p
 	}
 }
 
-private static void checkPropertyAccess() {
+private static void checkPropertiesAccess() {
 	SecurityManager sm = getSecurityManager();
 	if (sm != null)
 		sm.checkPropertiesAccess();
+}
+
+private static void checkPropertyAccess(String key) {
+	SecurityManager sm = getSecurityManager();
+	if (key.length() == 0)
+		throw new IllegalArgumentException("key can't be empty");
+	if (sm != null)
+		sm.checkPropertyAccess(key);
 }
 
 native public static long currentTimeMillis();
@@ -211,19 +204,19 @@ public static void gc() {
 }
 
 public static Properties getProperties() {
-	checkPropertyAccess();
+	checkPropertiesAccess();
 
 	return props;
 }
 
 public static String getProperty(String key) {
-	checkPropertyAccess();
+	checkPropertyAccess(key);
 
 	return props.getProperty(key);
 }
 
 public static String getProperty(String key, String def) {
-	checkPropertyAccess();
+	checkPropertyAccess(key);
 
 	return props.getProperty(key, def);
 }
@@ -284,12 +277,16 @@ public static void setOut(PrintStream out) {
 native private static void setOut0(PrintStream out);
 
 public static String setProperty(String key, String value) {
-	checkPropertyAccess();
+	SecurityManager sm = getSecurityManager();
+	if (sm != null)
+		sm.checkPermission(new PropertyPermission(key, "write"));
+	if (key.length() == 0)
+		throw new IllegalArgumentException("key can't be empty");
 	return (String)props.setProperty(key, value);
 }
 
 public static void setProperties(Properties prps) {
-	checkPropertyAccess();
+	checkPropertiesAccess();
 	if (prps == null) {
 		props.clear();
 		return;

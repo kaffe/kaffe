@@ -20,4 +20,12 @@ public InternalError () {
 public InternalError (String s) {
 	super(s);
 }
+
+public InternalError (Throwable c) {
+	super(c);
+}
+
+public InternalError (String s, Throwable c) {
+	super(s,c);
+}
 }

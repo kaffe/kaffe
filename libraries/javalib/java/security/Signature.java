@@ -15,8 +15,6 @@
  
 package java.security;
 
-import kaffe.security.Engine;
-
 import java.security.spec.AlgorithmParameterSpec;
 
 // See MessageDigest for a description of why this extends SignatureSpi
@@ -37,18 +35,18 @@ public abstract class Signature extends SignatureSpi {
 
 	public static Signature getInstance(String algorithm)
 			throws NoSuchAlgorithmException {
-		return getInstance(Engine.getCryptInstance(
+		return getInstance(Security.getCryptInstance(
 			ENGINE_CLASS, algorithm));
 	}
 
 	public static Signature getInstance(String algorithm, String provider)
 			throws NoSuchAlgorithmException,
 				NoSuchProviderException {
-		return getInstance(Engine.getCryptInstance(
+		return getInstance(Security.getCryptInstance(
 			ENGINE_CLASS, algorithm, provider));
 	}
 
-	private static Signature getInstance(Engine e) {
+	private static Signature getInstance(Security.Engine e) {
 		Signature s = (Signature)e.getEngine();
 		s.state = UNINITIALIZED;
 		s.provider = e.getProvider();

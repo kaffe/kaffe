@@ -1,7 +1,7 @@
 /*
  * KeyFactory.java
  *
- * Copyright (c) 2001 University of Utah and the Flux Group.
+ * Copyright (c) 2001, 2003 University of Utah and the Flux Group.
  * All rights reserved.
  *
  * This file is licensed under the terms of the GNU Public License.
@@ -13,8 +13,6 @@
  */
 
 package java.security;
-
-import kaffe.security.Engine;
 
 import java.security.spec.KeySpec;
 import java.security.spec.InvalidKeySpecException;
@@ -73,20 +71,20 @@ public class KeyFactory
     public static KeyFactory getInstance(String algorithm)
 	throws NoSuchAlgorithmException
     {
-	return getInstance(Engine.getCryptInstance(ENGINE_CLASS,
-						   algorithm));
+	return getInstance(Security.getCryptInstance(ENGINE_CLASS,
+						     algorithm));
     }
 
     public static KeyFactory getInstance(String algorithm, String provider)
 	throws NoSuchAlgorithmException,
 	       NoSuchProviderException
     {
-	return getInstance(Engine.getCryptInstance(ENGINE_CLASS,
-						   algorithm,
-						   provider));
+	return getInstance(Security.getCryptInstance(ENGINE_CLASS,
+						     algorithm,
+						     provider));
     }
 
-    private static KeyFactory getInstance(Engine e)
+    private static KeyFactory getInstance(Security.Engine e)
     {
 	KeyFactorySpi spi;
 	KeyFactory retval;

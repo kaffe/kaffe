@@ -20,4 +20,12 @@ public VirtualMachineError () {
 public VirtualMachineError (String s) {
 	super(s);
 }
+
+public VirtualMachineError (Throwable c) {
+	super(c);
+}
+
+public VirtualMachineError (String s, Throwable c) {
+	super(s,c);
+}
 }

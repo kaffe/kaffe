@@ -36,7 +36,7 @@ public byte byteValue() {
 public static Byte decode(String nm) throws NumberFormatException {
 	int val = Integer.decode(nm).intValue();
 	if (val < MIN_VALUE || val > MAX_VALUE)
-	    throw new NumberFormatException();
+	    throw new NumberFormatException(nm);
 	return new Byte((byte) val);
 }
 
@@ -72,7 +72,7 @@ public static byte parseByte(String s) throws NumberFormatException {
 public static byte parseByte(String s, int radix) throws NumberFormatException {
 	int val = Integer.parseInt(s, radix);
 	if (val < MIN_VALUE || val > MAX_VALUE) {
-		throw new NumberFormatException();
+		throw new NumberFormatException(s);
 	}
 	return (byte) val;
 }

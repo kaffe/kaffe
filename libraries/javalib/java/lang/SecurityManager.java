@@ -10,6 +10,7 @@
 
 package java.lang;
 
+import java.util.PropertyPermission;
 import java.io.FileDescriptor;
 import java.net.InetAddress;
 import java.security.Permission;
@@ -105,11 +106,11 @@ public void checkPrintJobAccess() {
 }
 
 public void checkPropertiesAccess() {
-	throw new SecurityException();
+	this.checkPermission(new PropertyPermission("*", "read,write"));
 }
 
 public void checkPropertyAccess(String key) {
-	throw new SecurityException();
+	this.checkPermission(new PropertyPermission(key, "read"));
 }
 
 void checkPropertyAccess(String key, String def) {

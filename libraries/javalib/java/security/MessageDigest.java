@@ -17,8 +17,6 @@ package java.security;
 
 import java.util.Arrays;
 
-import kaffe.security.Engine;
-
 // Note: it is a historical screwup that this class extends MessageDigestSpi.
 // It should not but does. Unfortunately, MessageDigestSpi is abstract, and
 // this class inherits that abstractness. That is why we must be able to
@@ -39,18 +37,18 @@ public abstract class MessageDigest extends MessageDigestSpi {
 
 	public static MessageDigest getInstance(String algorithm)
 			throws NoSuchAlgorithmException {
-		return getInstance(Engine.getCryptInstance(
+		return getInstance(Security.getCryptInstance(
 			ENGINE_CLASS, algorithm));
 	}
 
 	public static MessageDigest getInstance(String algorithm, String prov)
 			throws NoSuchAlgorithmException,
 				NoSuchProviderException {
-		return getInstance(Engine.getCryptInstance(
+		return getInstance(Security.getCryptInstance(
 			ENGINE_CLASS, algorithm, prov));
 	}
 
-	private static MessageDigest getInstance(Engine e) {
+	private static MessageDigest getInstance(Security.Engine e) {
 		MessageDigest md = (MessageDigest)e.getEngine(); // ***note
 		// should be: md = new MessageDigest(e.algorithm);
 	  /**	md.engine = (MessageDigestSpi)e.engine;	  **/

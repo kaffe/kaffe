@@ -172,7 +172,7 @@ public Date parse(Object src, ParsePosition pos) {
 	return (parse((String)src, pos));
 }
 
-public static synchronized Locale[] getAvailableLocales() {
+public static Locale[] getAvailableLocales() {
 	return (LOCALES);
 }
 

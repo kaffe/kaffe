@@ -1,11 +1,18 @@
 /*
  * Java core library component.
  *
- * Copyright (c) 1999
- *      Transvirtual Technologies, Inc.  All rights reserved.
+ * SHA1PRNG.java
+ * SHA-1 based pseudo-random number generator.
  *
+ * Copyright (c) 2002 The University of Utah and the Flux Group.
+ * All rights reserved.
+ *
+ * This file is licensed under the terms of the GNU Public License.
  * See the file "license.terms" for information on usage and redistribution
- * of this file.
+ * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+ *
+ * Contributed by the Flux Research Group, Department of Computer Science,
+ * University of Utah, http://www.cs.utah.edu/flux/
  */
 
 package kaffe.security.provider;
@@ -16,19 +23,55 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandomSpi;
 
+/**
+ * SHA-1 based pseudo-random number generator.
+ */
 public class SHA1PRNG
 	extends SecureRandomSpi
 {
+	/**
+	 * The "true" random seed size.
+	 */
 	private static final int SEED_SIZE = 8;
+
+	/**
+	 * The size of the data that we'll run the digest over.
+	 */
 	private static final int DATA_SIZE = 16;
-	
+
+	/**
+	 * An SHA-1 digest object.
+	 */
 	private MessageDigest md;
+
+	/**
+	 * The "true" random seed.
+	 */
 	private byte seed[] = new byte[SEED_SIZE];
-	private int seedPos = 0;
-	private byte data[] = new byte[DATA_SIZE];
-	private int dataPos = 0;
-	private long counter = 0;
 	
+	/**
+	 * Uh...
+	 */
+	private int seedPos = 0;
+
+	/**
+	 * The random data, we only use the first SEED_SIZE bytes.
+	 */
+	private byte data[] = new byte[DATA_SIZE];
+
+	/**
+	 * The position in data pointing to the first unused bytes.
+	 */
+	private int dataPos = 0;
+
+	/**
+	 * Counter that is added into the data to be digested.
+	 */
+	private long counter = 0;
+
+	/**
+	 * Construct an initialize an SHA1PRNG pseudo-random number generator.
+	 */
 	public SHA1PRNG()
 	{
 		try
@@ -37,6 +80,7 @@ public class SHA1PRNG
 			
 			this.md = MessageDigest.getInstance("SHA-1");
 
+			/* XXX This is a lame source of randomness. */
 			new Random().nextBytes(this.seed);
 			digest = this.md.digest(this.seed);
 			System.arraycopy(digest, 0, this.data, 0, SEED_SIZE);
@@ -56,7 +100,7 @@ public class SHA1PRNG
 		try
 		{
 			int lpc;
-			
+
 			for( lpc = 0; lpc < otherSeed.length; lpc++ )
 			{
 				this.seed[this.seedPos++ % SEED_SIZE] ^=
@@ -72,9 +116,12 @@ public class SHA1PRNG
 	
 	protected void engineNextBytes(byte[] bytes)
 	{
-		this.counter += 1;
 		if( bytes.length < (SEED_SIZE - this.dataPos) )
 		{
+			/*
+			 * We can satisfy the request without generating new
+			 * random data.
+			 */
 			System.arraycopy(this.data, this.dataPos,
 					 bytes, 0,
 					 bytes.length);
@@ -86,6 +133,10 @@ public class SHA1PRNG
 			int subLen, dataLen;
 			byte digest[];
 
+			/*
+			 * Its a request that will require new randomness be
+			 * generated.
+			 */
 			while( bpos < blen )
 			{
 				subLen = blen - bpos;
@@ -94,6 +145,7 @@ public class SHA1PRNG
 				{
 					subLen = dataLen;
 				}
+				/* Copy available data. */
 				System.arraycopy(this.data,
 						 this.dataPos,
 						 bytes,
@@ -103,11 +155,17 @@ public class SHA1PRNG
 				this.dataPos += subLen;
 				if( this.dataPos >= SEED_SIZE )
 				{
+					/*
+					 * Generate new stuff, first copy the
+					 * seed into the random data.
+					 */
 					System.arraycopy(this.seed,
 							 0,
 							 this.data,
 							 0,
 							 SEED_SIZE);
+					this.counter += 1;
+					/* Now copy the counter. */
 					this.data[SEED_SIZE    ] =
 						(byte)(this.counter);
 					this.data[SEED_SIZE + 1] =
@@ -124,7 +182,9 @@ public class SHA1PRNG
 						(byte)(this.counter >> 48);
 					this.data[SEED_SIZE + 7] =
 						(byte)(this.counter >> 56);
+					/* Rerun the digest. */
 					digest = this.md.digest(this.data);
+					/* Copy the first 64 bits over. */
 					System.arraycopy(digest,
 							 0,
 							 this.data,
@@ -143,5 +203,4 @@ public class SHA1PRNG
 		this.engineNextBytes(retval);
 		return retval;
 	}
-	
 }

@@ -275,6 +275,9 @@ java/awt/image/ImageProducer.java
 java/awt/image/ImagingOpException.java
 java/awt/image/IndexColorModel.java
 java/awt/Image.java
+java/awt/ImageFrameLoader.java
+java/awt/ImageLoader.java
+java/awt/ImageNativeProducer.java
 java/awt/image/MemoryImageSource.java
 java/awt/image/PackedColorModel.java
 java/awt/image/PixelGrabber.java
@@ -807,8 +810,6 @@ java/util/prefs/PreferenceChangeEvent.java
 java/util/prefs/PreferenceChangeListener.java
 java/util/prefs/PreferencesFactory.java
 java/util/prefs/Preferences.java
-java/util/PropertyPermissionCollection.java
-java/util/PropertyPermission.java
 java/util/RandomAccess.java
 java/util/Stack.java
 java/util/StringTokenizer.java

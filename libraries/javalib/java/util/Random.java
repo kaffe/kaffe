@@ -49,10 +49,10 @@ public void nextBytes(byte[] bytes) {
 	try {
 		for (int i = 0; i < bytes.length; i += 4) {
 			int next = next(32);
-			bytes[i + 0] = (byte)(next);
-			bytes[i + 1] = (byte)(next >> 8);
-			bytes[i + 2] = (byte)(next >> 16);
-			bytes[i + 3] = (byte)(next >> 24);
+			bytes[i + 0] = (byte)((next      ) & 0xff);
+			bytes[i + 1] = (byte)((next >>  8) & 0xff);
+			bytes[i + 2] = (byte)((next >> 16) & 0xff);
+			bytes[i + 3] = (byte)((next >> 24) & 0xff);
 		}
 	} catch (ArrayIndexOutOfBoundsException _) { }
 }

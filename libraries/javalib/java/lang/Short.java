@@ -34,7 +34,7 @@ public static Short decode(String nm) throws NumberFormatException
 {
 	int val = Integer.decode(nm).intValue();
 	if (val < MIN_VALUE || val > MAX_VALUE)
-	    throw new NumberFormatException();
+	    throw new NumberFormatException(nm);
 	return new Short((short) val);
 }
 
@@ -85,7 +85,7 @@ public static short parseShort(String s, int radix) throws NumberFormatException
 {
 	int val = Integer.parseInt(s, radix);
 	if (val < MIN_VALUE || val > MAX_VALUE)
-		throw new NumberFormatException();
+		throw new NumberFormatException(s);
 	return (short)val;
 }
 

@@ -27,6 +27,7 @@ jrelib_DATA = rt.jar
 toolslib_DATA = kjc.jar
 
 Klasses_jar_SRCS = \
+	$(gnu_java_lang_SRCS) \
 	$(gnu_java_util_SRCS) \
 	$(gnu_regexp_SRCS) \
 	$(java_io_SRCS) \
@@ -52,7 +53,7 @@ Klasses_jar_SRCS = \
 	$(kaffe_lang_SRCS) \
 	$(kaffe_management_SRCS) \
 	$(kaffe_net_SRCS) \
-	$(kaffe_security_SRCS) \
+        $(kaffe_security_SRCS) \
 	$(kaffe_security_provider_SRCS) \
 	$(kaffe_util_SRCS) \
 	$(kaffe_util_zip_SRCS) \
@@ -169,6 +170,8 @@ gnu_java_awt_SRCS = \
 	gnu/java/awt/Buffers.java \
 	gnu/java/awt/ComponentDataBlitOp.java \
 	gnu/java/awt/EventModifier.java 
+gnu_java_lang_SRCS = \
+	gnu/java/lang/CharData.java
 gnu_java_nio_SRCS = \
 	gnu/java/nio/ByteBufferImpl.java \
 	gnu/java/nio/CharBufferImpl.java \
@@ -361,6 +364,9 @@ java_awt_SRCS = \
 	java/awt/HeadlessException.java \
 	java/awt/IllegalComponentStateException.java \
 	java/awt/Image.java \
+	java/awt/ImageFrameLoader.java \
+	java/awt/ImageLoader.java \
+	java/awt/ImageNativeProducer.java \
 	java/awt/ImageCapabilities.java \
 	java/awt/Insets.java \
 	java/awt/ItemEvt.java \
@@ -1678,7 +1684,7 @@ kaffe_rmi_server_SRCS = \
 	kaffe/rmi/server/UnicastServer.java \
 	kaffe/rmi/server/UnicastServerRef.java 
 kaffe_security_SRCS = \
-	kaffe/security/Engine.java
+        kaffe/security/Engine.java
 kaffe_security_provider_SRCS = \
 	kaffe/security/provider/Kaffe.java \
 	kaffe/security/provider/MD2.java \
@@ -2230,9 +2236,7 @@ EXTRA_DIST = \
 	$(serialized_converters) \
 	$(gnu_regexp_message_bundles) \
 	kaffe/io/ByteToCharEUC_JP.tbl \
-	kaffe/io/CharToByteEUC_JP.tbl \
-	kaffe/lang/unicode.idx \
-	kaffe/lang/unicode.tbl
+	kaffe/io/CharToByteEUC_JP.tbl 
 
 dist-hook:
 	rm -rf `find $(distdir) -name CVS`
@@ -2260,13 +2264,10 @@ compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(Klasses_jar_SRCS)
 	echo timestamp > $(LIBDIR)/stamp
 
 $(srcdir)/Klasses.jar.bootstrap: rt.jar bootstrap.classlist
-	cp $(srcdir)/kaffe/lang/unicode.idx $(srcdir)/kaffe/lang/unicode.tbl lib/kaffe/lang
 	if [ -f $(srcdir)/Klasses.jar.bootstrap ]; then \
 		mv -f $(srcdir)/Klasses.jar.bootstrap $(srcdir)/Klasses.jar.bootstrap.save; \
 	fi
 	(cd $(LIBDIR) && $(ZIP) -DX -r - `grep '\.class$$' $(abssrcdir)/libraries/javalib/bootstrap.classlist` \
-	 kaffe/lang/unicode.idx \
-	 kaffe/lang/unicode.tbl \
 	) > $(srcdir)/Klasses.jar.bootstrap
 
 .PHONY: bootstrap
@@ -2282,7 +2283,6 @@ endif
 
 .PHONY: jar-classes
 jar-classes rt.jar: $(LIBDIR)/stamp
-	cp $(srcdir)/kaffe/lang/unicode.idx $(srcdir)/kaffe/lang/unicode.tbl $(LIBDIR)/kaffe/lang
 	cp $(srcdir)/kaffe/io/ByteToCharEUC_JP.tbl $(srcdir)/kaffe/io/CharToByteEUC_JP.tbl $(LIBDIR)/kaffe/io
 	for i in $(serialized_converters) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done
 	for i in $(gnu_regexp_message_bundles) ; do cp $(srcdir)/$$i $(LIBDIR)/$$i ; done

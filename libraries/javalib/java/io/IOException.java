@@ -23,4 +23,11 @@ public IOException () {
 public IOException (String s) {
 	super(s);
 }
+public IOException (Throwable c) {
+	super(c);
+}
+
+public IOException (String s, Throwable c) {
+	super(s,c);
+}
 }

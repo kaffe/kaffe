@@ -229,8 +229,6 @@ java/util/LinkedList.java
 java/util/ListResourceBundle.java
 java/util/Observable.java
 java/util/Observer.java
-java/util/PropertyPermissionCollection.java
-java/util/PropertyPermission.java
 java/util/RandomAccess.java
 java/util/Stack.java
 java/util/StringTokenizer.java

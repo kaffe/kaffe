@@ -1,7 +1,7 @@
 /*
  * KeyStore.java
  *
- * Copyright (c) 2001 University of Utah and the Flux Group.
+ * Copyright (c) 2001, 2003 University of Utah and the Flux Group.
  * All rights reserved.
  *
  * This file is licensed under the terms of the GNU Public License.
@@ -13,8 +13,6 @@
  */
 
 package java.security;
-
-import kaffe.security.Engine;
 
 import java.util.Date;
 import java.util.Enumeration;
@@ -178,7 +176,8 @@ public class KeyStore
     {
 	try
 	{
-	    return getInstance(Engine.getCryptInstance(ENGINE_CLASS, type));
+	    return getInstance(Security.getCryptInstance(ENGINE_CLASS,
+							 type));
 	}
 	catch(NoSuchAlgorithmException e)
 	{
@@ -194,9 +193,9 @@ public class KeyStore
     {
 	try
 	{
-	    return getInstance(Engine.getCryptInstance(ENGINE_CLASS,
-						       type,
-						       provider));
+	    return getInstance(Security.getCryptInstance(ENGINE_CLASS,
+							 type,
+							 provider));
 	}
 	catch(NoSuchAlgorithmException e)
 	{
@@ -205,7 +204,7 @@ public class KeyStore
 	}
     }
 
-    private static KeyStore getInstance(Engine e)
+    private static KeyStore getInstance(Security.Engine e)
     {
 	return new KeyStore((KeyStoreSpi)e.getEngine(),
 			    e.getProvider(),

@@ -1,5 +1,6 @@
 # Used when kjc runs (while compiling classes)
 
+gnu/java/lang/CharData.class
 java/io/BufferedInputStream.class
 java/io/BufferedOutputStream.class
 java/io/BufferedReader.class
@@ -44,7 +45,6 @@ java/lang/ArrayStoreException.class
 java/lang/Boolean.class
 java/lang/Byte.class
 java/lang/Character.class
-java/lang/Character$CharacterProperties.class
 java/lang/CharSequence.class
 java/lang/Class.class
 java/lang/Class$CallStack.class
