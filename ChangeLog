@@ -1,3 +1,8 @@
+Fri Apr 23 10:38:06 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/javalib/kaffe/io/ObjectStreamClassImpl.java: added
+	handling for byte arrays.
+
 Thu Apr 22 09:38:32 PDT 1999  Robert Zawiasa <rhz@bibl.u-szeged.hu>
 
 	* libraries/javalib/kaffe/net/www/protocol/http/HttpURLConnection.java:
