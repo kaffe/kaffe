@@ -117,9 +117,21 @@ lookupClassEntry(Utf8Const* name, Hjava_lang_ClassLoader* loader,
 	return (entry);
 }
 
-#if defined(TRANSLATOR)
+#if defined(TRANSLATOR) && !defined(JIT3)
 /*
  * Find method containing pc.
+ * This is the old version that linearly scans the class entry pool.
+ *
+ * It is only used in JIT2.  JIT3 uses a faster implementation
+ * in methodCache.c.  JIT2 could use that implementation too if calls 
+ * to makeMethodActive are added.
+ *
+ * For now, let's leave this code here.  It could be used a potential
+ * fallback for gc systems that would not support gcGetObjectBase().
+ *
+ * Note that the only reason this code is in this file is that
+ * the classEntryPool is a private structure --- what we'd really need
+ * here is an "map" function over the elements in the class entry pool.
  */
 Method*
 findMethodFromPC(uintp pc)
@@ -149,7 +161,6 @@ findMethodFromPC(uintp pc)
 /*
  * Remove all entries from the class entry pool that belong to a given
  * class.  Return the number of entries removed.
- * NB: this will go in a sep file dealing with class entries some day.
  */
 int
 removeClassEntries(Hjava_lang_ClassLoader* loader)

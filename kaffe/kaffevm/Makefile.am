@@ -46,6 +46,7 @@ libkaffevm_la_SOURCES = \
 	baseClasses.c \
 	classMethod.c \
 	classPool.c \
+	methodCache.c \
 	code-analyse.c \
 	code.c \
 	constants.c \
@@ -81,6 +82,7 @@ noinst_HEADERS = \
 	baseClasses.h \
 	bytecode.h \
 	classMethod.h \
+	methodCache.h \
 	classpath.h \
 	code-analyse.h \
 	code.h \

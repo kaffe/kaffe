@@ -43,6 +43,7 @@
 #include "soft.h"
 #include "thread.h"
 #include "gcRefs.h"
+#include "methodCache.h"
 
 /*****************************************************************************
  * Class-related functions
@@ -107,11 +108,9 @@ DBG(CLASSGC,
         if (!CLASS_IS_ARRAY(clazz) && CLASS_METHODS(clazz) != 0) {
                 Method *m = CLASS_METHODS(clazz);
                 for (i = 0; i < CLASS_NMETHODS(clazz); i++) {
-#if defined(TRANSLATOR) && defined (UNREGISTER_JIT_METHOD)
+#if defined(TRANSLATOR) && defined (JIT3)
 			if (METHOD_JITTED(m)) {
-				UNREGISTER_JIT_METHOD (m->c.ncode.ncode_start,
-					m->ncode,
-					m->c.ncode.ncode_end - m->ncode);
+				makeMethodInactive(m);
 			}
 #endif
                         utf8ConstRelease(m->name);

@@ -38,6 +38,7 @@
 #include "locks.h"
 #include "md.h"
 #include "jni.h"
+#include "methodCache.h"
 #include "gcj/gcj.h"
 
 #if 0
@@ -358,14 +359,15 @@ retry:
 
 		/* is it empty?  This test should work even if an
 		 * object has been finalized before this class is
-		 * loaded. If Object.finalize() is emtpy, save a pointer
+		 * loaded. If Object.finalize() is empty, save a pointer
 		 * to the method itself, and check meth against it in
 		 * the future.
 		 */
 		if ((meth->c.bcode.codelen == 1
 		     && meth->c.bcode.code[0] == RETURN)) {
-			if (!object_fin && meth->class == ObjectClass)
+			if (!object_fin && meth->class == ObjectClass) {
 				object_fin = meth;
+			}
 			class->finalizer = 0;
 		} else if (meth == object_fin) {
 			class->finalizer = 0;
@@ -474,8 +476,11 @@ DBG(STATICINIT,
 		}
 
 		/* Since we'll never run this again we might as well
-		 * loose it now.
+		 * lose it now.
 		 */
+#if defined(TRANSLATOR) && defined(JIT3)
+		makeMethodInactive(meth);
+#endif
 		METHOD_NATIVECODE(meth) = 0;
 		KFREE(meth->c.ncode.ncode_start);
 		meth->c.ncode.ncode_start = 0;

@@ -44,7 +44,7 @@
 #include "soft.h"
 #include "thread.h"
 #include "itypes.h"
-#include "code.h"
+#include "methodCache.h"
 
 char* engine_name = "Just-in-time v3";
 char* engine_version = KAFFEVERSION;
@@ -150,12 +150,6 @@ translate(Method* xmeth, errorInfo* einfo)
 
 	jboolean success = true;
 	int iLockRoot;
-
-	/* Since we get here by calling the trampoline, we must be about
-	 * to call this method - so make sure it's OK before generating
-	 * code to avoid any extra initialization calls.
-	 */
-	processClass(xmeth->class, CSTATE_COMPLETE, einfo);
 
 	lockMutex(&xmeth->class->head);
 
@@ -424,6 +418,7 @@ void
 installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 {
 	uint32 i;
+	bool res;
 	jexceptionEntry* e;
 
 	/* Work out new estimate of code per bytecode */
@@ -432,7 +427,7 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 	codeperbytecode = code_generated / bytecode_processed;
 
 	GC_WRITE(meth, code->mem);
-	SET_METHOD_NATIVECODE(meth, code->code);
+	SET_METHOD_JITCODE(meth, code->code);
 	meth->c.ncode.ncode_start = code->mem;
 	meth->c.ncode.ncode_end = (void*)((uintp)code->code + code->codelen);
 
@@ -457,6 +452,8 @@ installMethodCode(void* ignore, Method* meth, nativeCodeInfo* code)
 			meth->lines->entry[i].start_pc = getInsnPC(meth->lines->entry[i].start_pc) + (uintp)code->code;
 		}
 	}
+	res = makeMethodActive(meth);
+	assert(res == true);
 }
 
 /*
