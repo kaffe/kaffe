@@ -52,7 +52,7 @@ public class SoTimeout {
         Socket rsocket = null;
 	try {
 	    rsocket = server.accept(); 
-	} catch (InterruptedIOException e) {
+	} catch (SocketTimeoutException e) {
 	    // System.out.println(e);
 	    System.out.println("Success 1.");
 	}
