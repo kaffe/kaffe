@@ -1,5 +1,10 @@
 1999-08-15  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
+	* ltconfig, ltmain.sh: Update from libtool 1.3.3
+	* libltdl/configure.in, libltdl/configure: Likewise.
+	* libltdl/ltdl.c, libltdl/ltdl.h: Likewise.
+	Just a couple of minor portability issues.
+
 	* configure.in (help): Align.
 	* configure: Regen.
 

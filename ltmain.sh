@@ -54,8 +54,8 @@ modename="$progname"
 # Constants.
 PROGRAM=ltmain.sh
 PACKAGE=libtool
-VERSION=1.3.2a
-TIMESTAMP=" (1.385.2.156 1999/05/27 11:41:01)"
+VERSION=1.3.3
+TIMESTAMP=" (1.385.2.181 1999/07/02 15:49:11)"
 
 default_mode=
 help="Try \`$progname --help' for more information."
@@ -69,7 +69,7 @@ rm="rm -f"
 Xsed='sed -e 1s/^X//'
 sed_quote_subst='s/\([\\`\\"$\\\\]\)/\\\1/g'
 SP2NL='tr \040 \012'
-NL2SP='tr \012 \040'
+NL2SP='tr \015\012 \040\040'
 
 # NLS nuisances.
 # Only set LANG and LC_ALL to C if already set.
@@ -638,6 +638,12 @@ compiler."
 # #undef WIN32_LEAN_AND_MEAN
 # #include <stdio.h>
 #
+# #ifndef __CYGWIN__
+# #  ifdef __CYGWIN32__
+# #    define __CYGWIN__ __CYGWIN32__
+# #  endif
+# #endif
+#
 # #ifdef __cplusplus
 # extern "C" {
 # #endif
@@ -646,8 +652,10 @@ compiler."
 # }
 # #endif
 #
+# #ifdef __CYGWIN__
 # #include <cygwin/cygwin_dll.h>
 # DECLARE_CYGWIN_DLL( DllMain );
+# #endif
 # HINSTANCE __hDllInstance_base;
 #
 # BOOL APIENTRY
@@ -893,6 +901,14 @@ compiler."
 	  fi
 	  case "$arg" in
 	  *.la | *.lo) ;;  # We handle these cases below.
+	  force)
+	    if test "$dlself" = no; then
+	      dlself=needless
+	      export_dynamic=yes
+	    fi
+	    prev=
+	    continue
+	    ;;
 	  self)
 	    if test "$prev" = dlprefiles; then
 	      dlself=yes
@@ -1222,7 +1238,7 @@ compiler."
 	fi
 
 	if test -n "$dependency_libs"; then
-	  # Extract -R from dependency_libs
+	  # Extract -R and -L from dependency_libs
 	  temp_deplibs=
 	  for deplib in $dependency_libs; do
 	    case "$deplib" in
@@ -1234,7 +1250,13 @@ compiler."
 	    -L*) case "$compile_command $temp_deplibs " in
 		 *" $deplib "*) ;;
 		 *) temp_deplibs="$temp_deplibs $deplib";;
-		 esac;;
+		 esac
+		 temp_dir=`$echo "X$deplib" | $Xsed -e 's/^-L//'`
+		 case " $lib_search_path " in
+		 *" $temp_dir "*) ;;
+		 *) lib_search_path="$lib_search_path $temp_dir";;
+		 esac
+		 ;;
 	    *) temp_deplibs="$temp_deplibs $deplib";;
 	    esac
 	  done
@@ -2430,7 +2452,7 @@ EOF
       fi
 
       dlsyms=
-      if test -n "$dlfiles$dlprefiles" || test "$dlself" = yes; then
+      if test -n "$dlfiles$dlprefiles" || test "$dlself" != no; then
 	if test -n "$NM" && test -n "$global_symbol_pipe"; then
 	  dlsyms="${outputname}S.c"
 	else
@@ -2843,7 +2865,7 @@ else
   fi"
 	else
 	  echo >> $output "\
-  program='$outputname'
+  program='$outputname$exeext'
   progdir=\"\$thisdir/$objdir\"
 "
 	fi
@@ -3268,24 +3290,16 @@ libdir='$install_libdir'\
 	  # Install the shared library and build the symlinks.
 	  $show "$install_prog $dir/$realname $destdir/$realname"
 	  $run eval "$install_prog $dir/$realname $destdir/$realname" || exit $?
-	  test "X$dlname" = "X$realname" && dlname=
 
 	  if test $# -gt 0; then
 	    # Delete the old symlinks, and create new ones.
 	    for linkname
 	    do
-	      test "X$dlname" = "X$linkname" && dlname=
 	      if test "$linkname" != "$realname"; then
 		$show "(cd $destdir && $rm $linkname && $LN_S $realname $linkname)"
 		$run eval "(cd $destdir && $rm $linkname && $LN_S $realname $linkname)"
 	      fi
 	    done
-	  fi
-
-	  if test -n "$dlname"; then
-	    # Install the dynamically-loadable library.
-	    $show "$install_prog $dir/$dlname $destdir/$dlname"
-	    $run eval "$install_prog $dir/$dlname $destdir/$dlname" || exit $?
 	  fi
 
 	  # Do each command in the postinstall commands.
@@ -3719,9 +3733,7 @@ libdir='$install_libdir'\
 	  # Delete the libtool libraries and symlinks.
 	  for n in $library_names; do
 	    rmfiles="$rmfiles $dir/$n"
-	    test "X$n" = "X$dlname" && dlname=
 	  done
-	  test -n "$dlname" && rmfiles="$rmfiles $dir/$dlname"
 	  test -n "$old_library" && rmfiles="$rmfiles $dir/$old_library"
 
 	  $show "$rm $rmfiles"
