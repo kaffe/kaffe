@@ -1,5 +1,5 @@
 /* NumberFormat.java -- Formats and parses numbers
-   Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000, 2001, 2003 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,14 +38,14 @@ exception statement from your version. */
 
 package java.text;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.MissingResourceException;
-import java.util.Currency;
+import java.io.InvalidObjectException;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.IOException;
-import java.io.InvalidObjectException;
+import java.util.Currency;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * This is the abstract superclass of all classes which format and 
@@ -89,61 +89,76 @@ public abstract class NumberFormat extends Format implements Cloneable
      * Attribute set to all characters containing digits of the integer
      * part.
      */
-    public static final NumberFormat.Field INTEGER = new Field("integer");
+    public static final NumberFormat.Field INTEGER
+      = new Field("integer");
 
     /**
      * Attribute set to all characters containing digits of the fractional
      * part.
      */
-    public static final NumberFormat.Field FRACTION = new Field("fraction");
+    public static final NumberFormat.Field FRACTION
+      = new Field("fraction");
 
     /**
      * Attribute set to all characters containing digits of the exponential
      * part.
      */
-    public static final NumberFormat.Field EXPONENT = new Field("exponent");
+    public static final NumberFormat.Field EXPONENT
+      = new Field("exponent");
 
     /**
      * Attribute set to all characters containing a decimal separator.
      */
-    public static final NumberFormat.Field DECIMAL_SEPARATOR = new Field("decimal separator");
+    public static final NumberFormat.Field DECIMAL_SEPARATOR
+      = new Field("decimal separator");
 
     /**
      * Attribute set to all characters containing a sign (plus or minus).
      */
-    public static final NumberFormat.Field SIGN = new Field("sign");
+    public static final NumberFormat.Field SIGN
+      = new Field("sign");
 
     /**
-     * Attribute set to all characters containing a grouping separator (e.g. a comma,
-     * a white space,...).
+     * Attribute set to all characters containing a grouping separator (e.g.
+     * a comma, a white space,...).
      */
-    public static final NumberFormat.Field GROUPING_SEPARATOR = new Field("grouping separator");
+    public static final NumberFormat.Field GROUPING_SEPARATOR
+      = new Field("grouping separator");
 
     /**
-     * Attribute set to all characters containing an exponential symbol (e.g. 'E')
+     * Attribute set to all characters containing an exponential symbol (e.g.
+     * 'E')
      */
-    public static final NumberFormat.Field EXPONENT_SYMBOL = new Field("exponent symbol");
+    public static final NumberFormat.Field EXPONENT_SYMBOL
+      = new Field("exponent symbol");
 
     /**
      * Attribute set to all characters containing a percent symbol (e.g. '%')
      */
-    public static final NumberFormat.Field PERCENT = new Field("percent");
+    public static final NumberFormat.Field PERCENT
+      = new Field("percent");
 
     /**
      * Attribute set to all characters containing a permille symbol.
      */
-    public static final NumberFormat.Field PERMILLE = new Field("permille");
+    public static final NumberFormat.Field PERMILLE
+      = new Field("permille");
 
     /**
      * Attribute set to all characters containing the currency unit.
      */
-    public static final NumberFormat.Field CURRENCY = new Field("currency");
+    public static final NumberFormat.Field CURRENCY
+      = new Field("currency");
 
     /**
      * Attribute set to all characters containing the exponent sign.
      */
-    public static final NumberFormat.Field EXPONENT_SIGN = new Field("exponent sign");
+    public static final NumberFormat.Field EXPONENT_SIGN
+      = new Field("exponent sign");
 
+    /**
+     * Private fields to register all fields contained in this descriptor.
+     */
     private static final NumberFormat.Field[] allFields =
     {
       INTEGER, FRACTION, EXPONENT, DECIMAL_SEPARATOR, SIGN,
@@ -151,25 +166,44 @@ public abstract class NumberFormat extends Format implements Cloneable
       PERMILLE, CURRENCY, EXPONENT_SIGN
     };
 
-    // For deserialization purpose
+    /**
+     * This constructor is only used by the deserializer. Without it,
+     * it would fail to construct a valid object.
+     */
     private Field()
     {
       super("");
     }
-    
-    private Field(String s)
+
+    /**
+     * Create a Field instance with the specified field name.
+     *
+     * @param field_name Field name for the new Field instance.
+     */
+    protected Field(String field_name)
     {
-      super(s);
+      super (field_name);
     }
 
+    /**
+     * This function is used by the deserializer to know which object
+     * to use when it encounters an encoded NumberFormat.Field in a 
+     * serialization stream. If the stream is valid it should return
+     * one of the above field. In the other case we throw an exception.
+     *
+     * @return a valid official NumberFormat.Field instance.
+     *
+     * @throws InvalidObjectException if the field name is invalid.
+     */
     protected Object readResolve() throws InvalidObjectException
     {
       String s = getName();
-      for (int i=0;i<allFields.length;i++)
+      for (int i = 0; i < allFields.length; i++)
 	if (s.equals(allFields[i].getName()))
 	  return allFields[i];
 
-      throw new InvalidObjectException("no such NumberFormat field called " + s);
+      throw new InvalidObjectException("no such NumberFormat field called "
+				       + s);
     }
   }
 
@@ -317,16 +351,6 @@ public abstract class NumberFormat extends Format implements Cloneable
     return computeInstance (loc, "currencyFormat", "$#,##0.00;($#,##0.00)");
   }
 
-  public Currency getCurrency()
-  {
-    throw new UnsupportedOperationException("getCurrency");
-  }
-
-  public void setCurrency(Currency currency)
-  {
-    throw new UnsupportedOperationException("setCurrency");    
-  }
-
   /**
    * This method returns a default instance for the default locale. This
    * will be a concrete subclass of <code>NumberFormat</code>, but the 
@@ -407,6 +431,8 @@ public abstract class NumberFormat extends Format implements Cloneable
    * will be a concrete subclass of <code>NumberFormat</code>, but the 
    * actual class returned is dependent on the locale.
    *
+   * @param locale The desired locale.
+   *
    * @return An instance of the default <code>NumberFormat</code> class.
    */
   public static final NumberFormat getNumberInstance ()
@@ -420,9 +446,7 @@ public abstract class NumberFormat extends Format implements Cloneable
    * <code>NumberFormat</code>, but the actual class returned is dependent
    * on the locale.
    *
-   * @param loc the desired locale.
-   *
-   * @return An instance of a generic number formatter for the specified locale.
+   * @return An instance of a generic number formatter for the default locale.
    */
   public static NumberFormat getNumberInstance (Locale loc)
   {
@@ -435,6 +459,7 @@ public abstract class NumberFormat extends Format implements Cloneable
    * but the actual class returned is dependent on the locale.
    *
    * @return An instance of an integer number formatter for the default locale.
+   * @since 1.4 
    */
   public static final NumberFormat getIntegerInstance()
   {
@@ -446,13 +471,14 @@ public abstract class NumberFormat extends Format implements Cloneable
    * default locale. This will be a concrete subclass of <code>NumberFormat</code>,
    * but the actual class returned is dependent on the locale.
    *
-   * @param loc the desired locale.
+   * @param locale the desired locale.
    *
-   * @return An instance of an integer number formatter for the default locale.
+   * @return An instance of an integer number formatter for the desired locale.
+   * @since 1.4 
    */
-  public static NumberFormat getIntegerInstance(Locale loc)
+  public static NumberFormat getIntegerInstance(Locale locale)
   {
-    NumberFormat format = computeInstance (loc, "numberFormat", "#,##0");
+    NumberFormat format = computeInstance (locale, "numberFormat", "#,##0");
     format.setParseIntegerOnly (true);
     return format;
   }
@@ -734,5 +760,45 @@ public abstract class NumberFormat extends Format implements Cloneable
       (byte) minimumIntegerDigits : Byte.MAX_VALUE;
     serialVersionOnStream = 1;
     stream.defaultWriteObject();
+  }
+
+  /**
+   * Returns the currency used by this number format when formatting currency
+   * values.
+   *
+   * The default implementation throws UnsupportedOperationException.
+   *
+   * @return The used currency object, or null.
+   *
+   * @throws UnsupportedOperationException If the number format class doesn't
+   * implement currency formatting.
+   *
+   * @since 1.4
+   */
+  public Currency getCurrency()
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Sets the currency used by this number format when formatting currency
+   * values.
+   *
+   * The default implementation throws UnsupportedOperationException.
+   *
+   * @param currency The new currency to be used by this number format.
+   *
+   * @throws NullPointerException If currenc is null.
+   * @throws UnsupportedOperationException If the number format class doesn't
+   * implement currency formatting.
+   *
+   * @since 1.4
+   */
+  public void setCurreny(Currency currency)
+  {
+    if (currency == null)
+      throw new NullPointerException("currency may not be null");
+    
+    throw new UnsupportedOperationException();
   }
 }
