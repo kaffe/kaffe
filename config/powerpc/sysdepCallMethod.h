@@ -334,7 +334,7 @@ static inline void sysdepCallMethod(callMethodInfo* call)
 	ARG_FPR(2);
 	ARG_FPR(1);
 	ARG_FPR(0);
-	case 0:
+	/* case 0: */
 	}
 
 	/* load GPR registers from gpr[] */
@@ -347,7 +347,7 @@ static inline void sysdepCallMethod(callMethodInfo* call)
 	ARG_GPR(2);
 	ARG_GPR(1);
 	ARG_GPR(0);
-	case 0:
+	/* case 0: */
 	}
 
 	/* Ensure that the assignments to f* registers won't be optimized away. */

@@ -1,5 +1,11 @@
 2003-10-30  Dalibor Topic <robilad@kaffe.org>
 
+	* config/powerpc/sysdepCallMethod.h:
+	(sysdepCallMethod) Commented out unused switch labels to fix
+	compiler warnings on powerpc-darwin.
+	
+2003-10-30  Dalibor Topic <robilad@kaffe.org>
+
 	* kaffe/kaffevm/jni.c:
 	(Kaffe_AttachCurrentThread) Changed prototype of env
 	to void** to match spec. Renamed env to penv to match header.
