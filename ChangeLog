@@ -1,3 +1,32 @@
+2004-08-18  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/java/util/AbstractCollection.java,
+	libraries/javalib/java/util/AbstractList.java,
+	libraries/javalib/java/util/AbstractMap.java,
+	libraries/javalib/java/util/AbstractSequentialList.java,
+	libraries/javalib/java/util/ArrayList.java,
+	libraries/javalib/java/util/AbstractSequentialList.java,
+	libraries/javalib/java/util/ArrayList.java,
+	libraries/javalib/java/util/Arrays.java,
+	libraries/javalib/java/util/BitSet.java,
+	libraries/javalib/java/util/Calendar.java,
+	libraries/javalib/java/util/Collection.java,
+	libraries/javalib/java/util/ListIterator.java,
+	librraies/javalib/java/util/Map.java,
+	libraries/javalib/java/util/SortedSet.java:
+	Resynced with GNU Classpath.
+
+	2004-08-16  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+        * java/util/AbstractCollection.java, java/util/AbstractList.java,
+        java/util/AbstractMap.java, java/util/AbstractSequentialList.java,
+        java/util/ArrayList.java, java/util/Arrays.java,
+        java/util/BitSet.java, java/util/Calendar.java,
+        java/util/Collection.java, java/util/ListIterator.java,
+        java/util/Map.java, java/util/SortedSet.java:
+        Added additional exceptions to documentation, along
+        with some additions and corrections.
+
 2004-08-18  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
