@@ -1,5 +1,3 @@
-package java.io;
-
 
 /*
  * Java core library component.
@@ -10,69 +8,69 @@ package java.io;
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
-abstract public class Reader
-{
+
+package java.io;
+
+abstract public class Reader {
 	protected Object lock;
-	private char[] single = new char[1];
+	private final char[] single = new char[1];
 
 protected Reader() {
 	lock = this;
 }
 
-protected Reader(Object lk) {
-	if (lk == null) {
+protected Reader(Object lock) {
+	if (lock == null) {
 		throw new NullPointerException();
 	}
-	lock = lk;
+	this.lock = lock;
 }
 
 abstract public void close() throws IOException;
 
-public void mark(int readAheadLimit) throws IOException
-{
-	// Stream does not support marking.
+public void mark(int readAheadLimit) throws IOException {
+	throw new IOException("mark() not supported");
 }
 
 public boolean markSupported() {
-	return (false);
+	return false;
 }
 
+// This is just the VERY inefficient generic read(), it should be
+// overridden in almost every subclass
 public int read () throws IOException {
-	// this is just the VERY inefficient generic read(), it should be
-	// overridden in almost every subclass
-	return (read( single, 0, 1) < 0) ? -1 : single[0];
+	synchronized (lock) {
+	        return read(single, 0, 1) < 0 ? -1 : single[0];
+	}
 }
 
-public int read(char cbuf[]) throws IOException
-{
-	return (read(cbuf, 0, cbuf.length));
+public int read(char cbuf[]) throws IOException {
+	return read(cbuf, 0, cbuf.length);
 }
 
 abstract public int read(char cbuf[], int off, int len) throws IOException;
 
-public boolean ready() throws IOException
-{
-	return (true);
+public boolean ready() throws IOException {
+	return false;
 }
 
-public void reset() throws IOException
-{
-	throw new IOException();
+public void reset() throws IOException {
+	throw new IOException("reset() not supported");
 }
 
-public long skip(long n) throws IOException
-{
+public long skip(long n) throws IOException {
 	char[] buf = new char[1024];
-	long sk = 0;
-	int r = 1;
+	int skipped = 0;
 
-	while (r > 0) {
-		r = read(buf, 0, (int)((long)buf.length < n ? (long)buf.length : n));
-		if (r > 0) {
-			sk += r;
-			n -= r;
-		}
+	while (n > 0) {
+		int r = read(buf, 0, buf.length < n ? buf.length : (int)n);
+		if (r <= 0)
+			break;
+		n -= r;
+		skipped += r;
 	}
-	return (sk);
+	return skipped;
 }
+
 }
+
