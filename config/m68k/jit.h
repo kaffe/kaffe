@@ -25,11 +25,6 @@ typedef struct _exceptionFrame {
         uintp	retpc;
 } exceptionFrame;
 
-/* Is this frame valid (ie. is it on the current stack) ? */
-#define	FRAMEOKAY(f)							\
-	((f) && (f)->retfp >= (uintp)TCTX(currentThread)->stackBase &&	\
-	 (f)->retfp < (uintp)TCTX(currentThread)->stackEnd)
-
 /* Get the next frame in the chain */
 #define	NEXTFRAME(f)							\
 	(((exceptionFrame*)(f))->retfp)
@@ -47,12 +42,12 @@ typedef struct _exceptionFrame {
 
 /* Call the relevant exception handler (rewinding the stack as
    necessary). */
-#define CALL_KAFFE_EXCEPTION(frame, info, obj)				\
+#define CALL_KAFFE_EXCEPTION(frame, handler, obj)			\
 	__asm__ __volatile__(						\
 		"move%.l %1,%/d0\n\t"					\
-		"move%.l %0,%/fp\n\t"					\
+		"move%.l %0,%/a6\n\t"					\
 		"jmp (%2)"						\
-		: : "g"(frame->retfp), "g"(obj), "a"(info.handler)	\
+		: : "g"(frame), "g"(obj), "a"(handler)			\
 		: "d0", "cc", "memory")
 
 /**/
@@ -83,6 +78,8 @@ extern void m68k_do_fixup_trampoline(void);
 /* Register management information. */
 /**/
 
+#define	_GL_	(Rglobal|Rnosaveoncall)
+
 /* Define the register set */
 
 /* Until we have some method of determining in the prologue which
@@ -92,31 +89,42 @@ extern void m68k_do_fixup_trampoline(void);
 #define	REGISTER_SET							\
 	{ /* d0 */	0, 0, Rint, 		0, 0, 0  },		\
 	{ /* d1 */	0, 0, Rint, 		0, 0, 1  },		\
-	{ /* d2 */	0, 0, Rint, 		/*Rnosaveoncall*/0, 0, 2  }, \
-	{ /* d3 */	0, 0, Rint, 		/*Rnosaveoncall*/0, 0, 3  }, \
-	{ /* d4 */	0, 0, Rint, 		/*Rnosaveoncall*/0, 0, 4  }, \
-	{ /* d5 */	0, 0, Rint, 		/*Rnosaveoncall*/0, 0, 5  }, \
-	{ /* d6 */	0, 0, Rint, 		/*Rnosaveoncall*/0, 0, 6  }, \
-	{ /* d7 */	0, 0, Rint, 		/*Rnosaveoncall*/0, 0, 7  }, \
+	{ /* d2 */	0, 0, Rint, 		Rnosaveoncall, 0, 2  }, \
+	{ /* d3 */	0, 0, Rint, 		Rnosaveoncall, 0, 3  }, \
+	{ /* d4 */	0, 0, Rint, 		_GL_, 0, 4  }, \
+	{ /* d5 */	0, 0, Rint, 		_GL_, 0, 5  }, \
+	{ /* d6 */	0, 0, Rint, 		_GL_, 0, 6  }, \
+	{ /* d7 */	0, 0, Rint, 		_GL_, 0, 7  }, \
 	{ /* a0 */	0, 0, Rref,		0, 0, 8  },		\
 	{ /* a1 */	0, 0, Rref,		0, 0, 9  },		\
-	{ /* a2 */	0, 0, Rref,		/*Rnosaveoncall*/0, 0, 10 }, \
-	{ /* a3 */	0, 0, Rref,		/*Rnosaveoncall*/0, 0, 11 }, \
-	{ /* a4 */	0, 0, Rref,		/*Rnosaveoncall*/0, 0, 12 }, \
-	{ /* a5 */	0, 0, Rref,		/*Rnosaveoncall*/0, 0, 13 }, \
+	{ /* a2 */	0, 0, Rref,		_GL_, 0, 10 }, \
+	{ /* a3 */	0, 0, Rref,		_GL_, 0, 11 }, \
+	{ /* a4 */	0, 0, Rref,		_GL_, 0, 12 }, \
+	{ /* a5 */	0, 0, Rref,		_GL_, 0, 13 }, \
 	{ /* fp */	0, 0, Reserved,		0, 0, 14 },		\
 	{ /* sp */	0, 0, Reserved,		0, 0, 15 },		\
 	{ /* fp0 */	0, 0, Rfloat|Rdouble,	0, 0, 16 },		\
 	{ /* fp1 */	0, 0, Rfloat|Rdouble,	0, 0, 17 },		\
-	{ /* fp2 */	0, 0, Rfloat|Rdouble,	/*Rnosaveoncall*/0, 0, 18 }, \
-	{ /* fp3 */	0, 0, Rfloat|Rdouble,	/*Rnosaveoncall*/0, 0, 19 }, \
-	{ /* fp4 */	0, 0, Rfloat|Rdouble,	/*Rnosaveoncall*/0, 0, 20 }, \
-	{ /* fp5 */	0, 0, Rfloat|Rdouble,	/*Rnosaveoncall*/0, 0, 21 }, \
-	{ /* fp6 */	0, 0, Rfloat|Rdouble,	/*Rnosaveoncall*/0, 0, 22 }, \
-	{ /* fp7 */	0, 0, Rfloat|Rdouble,	/*Rnosaveoncall*/0, 0, 23 }, 
+	{ /* fp2 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 18 }, \
+	{ /* fp3 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 19 }, \
+	{ /* fp4 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 20 }, \
+	{ /* fp5 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 21 }, \
+	{ /* fp6 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 22 }, \
+	{ /* fp7 */	0, 0, Rfloat|Rdouble,	Rnosaveoncall, 0, 23 }, 
 
 /* Number of registers in the register set */
 #define	NR_REGISTERS	24
+
+/* Number of function globals in register set */
+#define NR_GLOBALS      8
+
+/* Number of arguments passed in registers - we don't have any */
+#undef  NR_ARGUMENTS
+
+/* Define the registers to be saved and restore in the prologue/epilogue */
+#define SRNR            10
+#define SAVEMASK        0x3F3C
+#define RESTOREMASK     0x3CFC
 
 /**/
 /* Opcode generation. */
@@ -128,7 +136,13 @@ extern void m68k_do_fixup_trampoline(void);
 			*(P) = framesize; \
 	}
 
-#define EXTRA_LABELS(P,D,L)
+#define Llong16                 (Larchdepend+0) /* Label is 16 bits long */
+#define Llnegframe              (Larchdepend+1)
+
+#define EXTRA_LABELS(P,D,L) \
+	case Llong16:           LABEL_Llong16(P,D,L);		break; \
+	case Lnegframe:		LABEL_Lnegframe(P,D,L);		break; \
+	case Llnegframe:	LABEL_Llnegframe(P,D,L);	break;
 
 /* Define if generated code uses two operands rather than one */
 #define	TWO_OPERAND
@@ -158,7 +172,11 @@ extern void m68k_do_fixup_trampoline(void);
 #define SLOT2ARGOFFSET(_n)    (8 + SLOTSIZE * (_n))
 
 /* Generate slot offset for a local (non-argument) (relative to fp) */
+#if !defined(JIT3)
 #define SLOT2LOCALOFFSET(_n)  (-SLOTSIZE * (maxTemp+maxLocal+maxStack - (_n)))
+#else
+#define SLOT2LOCALOFFSET(N)     (-SLOTSIZE * ((N) - maxArgs + 1))
+#endif
 
 /* Wrap up a native call for the JIT */
 #define	KAFFEJIT_TO_NATIVE(_m)

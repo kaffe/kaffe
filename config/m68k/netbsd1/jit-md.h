@@ -42,4 +42,21 @@
 		(f).retpc = (uintp)(c)->sc_pc;				\
 	} while (0)
 
+/*
+ * Flush the cache on netbsd.
+ */
+#define FLUSH_040NETBSD_DCACHE(beg, end) \
+	__asm__ __volatile__( \
+		"movem%.l %/d0-%/d7/%/a0-%/a5,%-\n\t" \
+		"move%.l %0,%/a1\n\t" \
+		"move%.l %1,%/d1\n\t" \
+		"sub%.l %/d1,%/a1\n\t" \
+		"movel  %#0x80000004,d0\n\t" \
+		"trap   %#12\n\t" \
+		"movem%.l %+,%/d0-%/d7/%/a0-%/a5" \
+		: : "g" (beg), "g" (end))
+
+#undef	FLUSH_DCACHE
+#define	FLUSH_DCACHE(B,E)	FLUSH_040NETBSD_DCACHE(B,E)
+
 #endif
