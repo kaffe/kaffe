@@ -54,7 +54,8 @@ package java.io;
  *
  * @author Per Bothner <bothner@cygnus.com>
  * @author Aaron M. Renn (arenn@urbanophile.com)
- * @date April 22, 1998.  
+ * @author Guilhem Lavaux <guilhem@kaffe.org>
+ * @date December 28, 2003.
  */
 /* Written using "Java Class Libraries", 2nd edition, plus online
  * API docs for JDK 1.2 beta from http://www.javasoft.com.
@@ -147,7 +148,7 @@ public class LineNumberReader extends BufferedReader
   {
     if (readLimit < 0)
       throw new IllegalArgumentException("Read-ahead limit is negative");
-	      
+
     synchronized (lock)
       {
 	// This is basically the same as BufferedReader.mark.
@@ -401,7 +402,7 @@ public class LineNumberReader extends BufferedReader
 
     int skipped;
     char[] buf = new char[1];
-    
+
     for (skipped = 0; skipped < count; skipped++)
       {
         int ch = read(buf, 0, 1);
