@@ -116,38 +116,31 @@ final public int readInt() throws IOException {
 }
 
 final public String readLine() throws IOException {
-	boolean EOL=false;
-	long ptr;
-	StringBuffer buffer=new StringBuffer();
+	final StringBuffer buffer = new StringBuffer();
+	int nread = 0;
 
-	while (!EOL) {
-		int data=read();
+	while (true) {
+		final int data = read();
+		final char ch = (char) (data & 0xff);
 
-		if (data==-1) {
-			EOL=true;
+		if (data == -1)
+			break;
+		nread++;
+
+		if (ch == '\n')
+			break;
+		if (ch == '\r') {	// Check for '\r\n'
+			final int data2 = read();
+			final char ch2 = (char) (data & 0xff);
+			final long posn = getFilePointer();
+
+			if (data2 != -1 && ch2 != '\n')
+				seek(posn);	// Restore byte for next line
+			break;
 		}
-		else {
-			buffer.append((byte )data);
-			if ((char )data=='\n') EOL=true;
-			if ((char )data=='\r') {
-				/* Check for "\r\n" */
-				ptr=getFilePointer();
-				int nextByte=read();
-
-				if (nextByte==-1) EOL=true;
-				else if ((char )nextByte=='\n') {
-					buffer.append((byte )nextByte);
-					EOL=true;
-				}
-				else {
-					/* Jump back to ptr */
-					seek(ptr);
-				}
-			}
-		}
+		buffer.append(ch);
 	}
-
-	return buffer.toString();
+	return (nread == 0) ? null : buffer.toString();
 }
 
 final public long readLong() throws IOException {    

@@ -1,3 +1,8 @@
+Wed Oct 21 08:41:29 1998  Archie Cobbs <archie@whistle.com>
+
+	* libraries/javalib/java/io/RandomAccessFile.java:
+	fix bugs in readLine() method
+
 Mon Oct 19 22:27:56 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* kaffe/kaffevm/baseClasses.h, kaffe/kaffevm/classMethod.[ch],
