@@ -19,6 +19,7 @@
 
 extern void _callException(void*, void*, void*);
 #undef CALL_KAFFE_EXCEPTION
-#define	CALL_KAFFE_EXCEPTION(A, B, C) _callException((void*)(A), (void*)(B), (void*)(C))
+#define	CALL_KAFFE_EXCEPTION(A, B, C) \
+	_callException((void*)((A)->retbp), (void*)((B).handler), (void*)(C))
 
 #endif
