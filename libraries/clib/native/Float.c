@@ -51,7 +51,9 @@ java_lang_Float_valueOf(struct Hjava_lang_String* str)
 jint
 java_lang_Float_floatToIntBits(jfloat val)
 {
-	return (*(jint*)&val);
+        jvalue d;
+	d.f = val;
+	return d.i;
 }
 
 /*
@@ -60,5 +62,7 @@ java_lang_Float_floatToIntBits(jfloat val)
 float
 java_lang_Float_intBitsToFloat(jint val)
 {
-	return (*(jfloat*)&val);
+        jvalue d;
+	d.i = val;
+	return d.f;
 }

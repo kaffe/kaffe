@@ -11,6 +11,7 @@
 #include "config.h"
 #include "config-std.h"
 #include "config-mem.h"
+#include "config-hacks.h"
 #include <math.h>
 #include "../../../kaffe/kaffevm/classMethod.h"
 #include "../../../kaffe/kaffevm/gtypes.h"
@@ -23,7 +24,7 @@
  * Convert double to string.
  */
 struct Hjava_lang_String*
-java_lang_Double_toString(double val)
+java_lang_Double_toString(jdouble val)
 {
 	char str[MAXNUMLEN];
 
@@ -72,16 +73,40 @@ java_lang_Double_valueOf(struct Hjava_lang_String* str)
  * Convert double to jlong.
  */
 jlong
-java_lang_Double_doubleToLongBits(double val)
+java_lang_Double_doubleToLongBits(jdouble val)
 {
-	return (*(jlong*)&val);
+	jvalue d;
+	d.d = val;
+
+#if defined(DOUBLE_ORDER_OPPOSITE)
+	{
+		/* swap low and high word */
+		uint32 r = *(uint32*)&d.j;
+		uint32 *s = (uint32*)&d.j + 1;
+		d.i = *s;
+		*s = r;
+	}
+#endif
+	return d.j;
 }
 
 /*
  * Convert jlong to double.
  */
-double
+jdouble
 java_lang_Double_longBitsToDouble(jlong val)
 {
-	return (*(double*)&val);
+	jvalue d;
+	d.j = val;
+
+#if defined(DOUBLE_ORDER_OPPOSITE)
+	{
+		/* swap low and high word */
+		uint32 r = *(uint32*)&d.j;
+		uint32 *s = (uint32*)&d.j + 1;
+		d.i = *s;
+		*s = r;
+	}
+#endif
+	return d.d;
 }
