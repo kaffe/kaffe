@@ -1,5 +1,0 @@
-#! /bin/sh
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-exec @bindir@/java sun.rmi.rmic.Main ${1+"$@"}
-

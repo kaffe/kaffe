@@ -1,5 +1,0 @@
-#! /bin/sh
-# Script to run Appletviewer
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-exec @bindir@/java sun.applet.AppletViewer ${1+"$@"}

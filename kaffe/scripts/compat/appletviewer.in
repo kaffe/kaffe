@@ -1,6 +1,0 @@
-#! /bin/sh
-# Script to run Appletviewer
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-exec @bindir@/kaffe kaffe.applet.AppletViewer ${1+"$@"}
-
