@@ -434,7 +434,7 @@ gnu_java_net_PlainSocketImpl_socketAccept(struct Hgnu_java_net_PlainSocketImpl* 
 			       sizeof(addr.sin_addr));
 			break;
 
-#if notnow && defined(AF_INET6)
+#if defined(notnow) && defined(AF_INET6)
 		case AF_INET6:
 			remote_addr = (HArrayOfByte *)newArray(TYPE_CLASS(TYPE_Byte),
 							       sizeof(in6->sin6_addr));

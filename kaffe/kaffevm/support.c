@@ -356,7 +356,7 @@ execute_java_constructor(const char* cname, Hjava_lang_ClassLoader* loader,
    to be promoted to jlong, and all jfloats to be promoted to jdouble,
    unless explicitly overridden.  It implies NO_HOLES, unless
    explicitly defined otherwise.  */
-#if PROMOTE_TO_64bits
+#if defined(PROMOTE_TO_64bits)
 # ifndef PROMOTE_jint2jlong
 #  define PROMOTE_jint2jlong 1
 # endif
@@ -373,7 +373,7 @@ execute_java_constructor(const char* cname, Hjava_lang_ClassLoader* loader,
 
 /* If PROMOTE_jint2jlong is enabled, all integer values are to be
    passed as jlongs.  It is only set by PROMOTE_TO_64bits.  */
-#if PROMOTE_jint2jlong
+#if defined(PROMOTE_jint2jlong)
 # define PROM_i j
 #else
 # define PROM_i i
@@ -384,7 +384,7 @@ execute_java_constructor(const char* cname, Hjava_lang_ClassLoader* loader,
    be marked as 'D'.  No known port uses this.  In fact, alpha must
    explicitly set it to 0, to prevent PROMOTE_TO_64bits from enabling
    it.  */
-#if PROMOTE_jfloat2jdouble
+#if defined(PROMOTE_jfloat2jdouble)
 # define PROM_f d
 #else
 # define PROM_f f
@@ -394,8 +394,8 @@ execute_java_constructor(const char* cname, Hjava_lang_ClassLoader* loader,
    and jdoubles to be forced into even arguments, by introducing a
    padding integer argument. The argument DO is used to adjust the
    input argument list.  */
-#if ALIGN_AT_64bits
-# if NO_HOLES
+#if defined(ALIGN_AT_64bits)
+# if defined(NO_HOLES)
 #  error "ALIGN_AT_64bits is incompatible with NO_HOLES"
 # endif
 # define ENSURE_ALIGN64(DO) do { \
