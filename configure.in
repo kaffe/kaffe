@@ -419,6 +419,19 @@ if test "${x_libraries}" != NONE && test -n "${x_libraries}"; then
 fi
 if test "${x_includes}" != NONE && test -n "${x_includes}"; then
 	X_INCLUDES=-I`echo ${x_includes} | sed -e "s/:/ -I/g"`
+	# This hack looks for libjpeg.a in /usr/local/lib and for
+	# jpeglib.h in /usr/local/include.
+	# Are there more locations where these files would normally be?
+	# I guess we need to require this a --with option or conditionally
+	# compile them in if we don't find it here.
+	GUESSWHEREJPEGLIBIS="/usr/local"
+	for DIR in $GUESSWHEREJPEGLIBIS
+	do
+		if test -r $DIR/include/jpeglib.h -a -r $DIR/lib/libjpeg.a; then
+			X_INCLUDES="$X_INCLUDES -I$DIR/include"
+			JPEG_LIBRARIES="-L$DIR/lib -ljpeg"
+		fi
+	done
 fi
 AC_SUBST(X_INCLUDES)
 AC_SUBST(X_LIBRARIES)
@@ -427,7 +440,7 @@ AC_CHECK_LIBRARY(ipc,shmat,X_LIBRARIES)
 OLIBS=$LIBS
 LIBS="$LIBS $X_LIBRARIES"
 AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBRARIES)
-LIBS=$LIBS
+LIBS=$OLIBS
 AC_SUBST(JPEG_LIBRARIES)
 AWTLIB="$X_LIBRARIES $JPEG_LIBRARIES"
 AC_SUBST(AWTLIB)
@@ -625,7 +638,7 @@ JAVA_LIBRARIES=" \
 ../../libraries/clib/net/libnet$LIBEXT \
 ../../libraries/clib/zip/libzip$LIBEXT \
 ../../libraries/clib/math/libmath$LIBEXT \
-../../libraries/clib/math/libmanagement$LIBEXT \
+../../libraries/clib/management/libmanagement$LIBEXT \
 "
 
 dnl If we have X then include AWT support.
@@ -634,7 +647,7 @@ make_output="$make_output \
 libraries/clib/awt/Makefile \
 "
 JAVA_LIBRARIES="$JAVA_LIBRARIES \
-../../libraries/clib/math/libawt$LIBEXT \
+../../libraries/clib/awt/libawt$LIBEXT \
 "
 fi
 
@@ -646,7 +659,7 @@ if test "$dynamic_libraries" = "yes" ; then
 	NOSHAREDLIBS="-L../kaffevm -lkaffevm $VM_LIBRARIES $STD_LIBRARIES"
 	KAFFE_LIBDEP=""
 else
-	NOSHAREDLIBS="../kaffevm/libkaffevm$LIBEXT $JAVA_LIBRARIES $STD_LIBRARIES $ZIP_LIBRARIES $NET_LIBRARIES $X_LIBRARIES"
+	NOSHAREDLIBS="../kaffevm/libkaffevm$LIBEXT $JAVA_LIBRARIES $STD_LIBRARIES $ZIP_LIBRARIES $NET_LIBRARIES $X_LIBRARIES $AWTLIB"
 	KAFFE_LIBDEP="$KAFFE_LIBDEP ../kaffevm/libkaffevm$LIBEXT $JAVA_LIBRARIES"
 	PIC=""
 	PICVM=""
