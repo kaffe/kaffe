@@ -1,5 +1,23 @@
 1999-09-08  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
+	* kaffe/kaffevm/baseClasses.h
+	(javaLangArrayIndexOutOfBoundsException): Declare.
+	* kaffe/kaffevm/jit/machine.c (javaLangNullPointerException,
+	javaLangArrayIndexOutOfBoundsException): Remove bogus
+	declarations (use them from baseClasses.h).
+	(checkCaughtExceptions): Use the exception variables correctly.
+	(initInsnSequence): Remove meth from the definition.
+	(translate): Remove meth from invocation of initInsnSequence.
+	* kaffe/kaffevm/jni.c (Kaffe_wrapper): Likewise.
+	* config/sparc/jit.h (FRAMEOBJECT): Wrap cast to exceptionFrame*
+	between parentheses.  Add one more cast for ->retbp, so that we
+	can get ->retbp in it.
+	(CALL_KAFFE_EXCEPTION): Take handler as second argument, instead
+	of info.  Cast frame to exceptionFrame* before getting retbp.
+	Optimized it a little bit, allowing gcc to load the arguments
+	directly into the appropriate registers.
+	(FPFRAME): Define.
+
 	* libraries/javalib/java/math/BigInteger.java (toByteArray):
 	Initialize divisor correctly.
 	Reported by Hrishikesh Dandekar <Hrishikesh_Dandekar@NAI.com>

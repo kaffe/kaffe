@@ -35,9 +35,11 @@ typedef struct _exceptionFrame {
 #define	NEXTFRAME(f)							\
 	(((exceptionFrame*)(f))->retbp)
 
-/* Extract the PC from the given frame */
+/* Extract PC & FP from the given frame */
 #define	PCFRAME(f)							\
 	((f)->retpc)
+#define	FPFRAME(f)							\
+	((f)->retbp)
 
 /* Get the first exception frame from a subroutine call */
 #define	FIRSTFRAME(f, o)						\
@@ -49,21 +51,24 @@ typedef struct _exceptionFrame {
 
 /* Extract the object argument from given frame */
 #define FRAMEOBJECT(f)							\
-	(*(Hjava_lang_Object**)(((exceptionFrame*)(f)->retbp)->retbp+68))
+	(*(Hjava_lang_Object**)						\
+	 (((exceptionFrame*)(((exceptionFrame*)(f))->retbp)		\
+	   )->retbp+68))
 
 /* Call the relevant exception handler (rewinding the stack as
    necessary). */
-#define CALL_KAFFE_EXCEPTION(frame, info, obj)				\
+#define CALL_KAFFE_EXCEPTION(F, H, O)					\
+do {									\
+	register int o1 asm("o1"), o2 asm("o2"), o3 asm("o3");		\
 	asm volatile("							\n\
-		mov %0,%%o1						\n\
-		mov %1,%%o2						\n\
-		mov %2,%%o3						\n\
 		ta 3							\n\
 		sub %%sp,64,%%sp					\n\
-		mov %%o3,%%fp						\n\
-		jmpl %%o2,%%g0						\n\
-		restore	%%o1,0,%%o0					\n\
-	" : : "r" (obj), "r" (info.handler), "r" (frame->retbp) : "o1", "o2", "o3")
+		mov %2,%%fp						\n\
+		jmpl %1,%%g0						\n\
+		restore	%0,0,%%o0					\n\
+	" : : "r" (o1=(int)(O)), "r" (o2=(int)(H)), "r" (o3=(int)(F))); \
+        asm volatile("" : : "r"(o1), "r"(o2), "r"(o3)); 		\
+} while (0)
 
 
 /**/

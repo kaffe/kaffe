@@ -67,10 +67,6 @@ int argcount = 0;		/* Function call argument count */
 uint32 pc;
 uint32 npc;
 
-/* Various exception related things */
-extern Hjava_lang_Class javaLangArrayIndexOutOfBoundsException;
-extern Hjava_lang_Class javaLangNullPointerException;
-
 jitflags willcatch;
 
 /* Define CREATE_NULLPOINTER_CHECKS in md.h when your machine cannot use the
@@ -295,7 +291,7 @@ DBG(MOREJIT,
 	/* Next reduce bytecode to native code */
 	/***************************************/
 
-	if (!(success = initInsnSequence(meth, codeperbytecode * len, meth->localsz,
+	if (!(success = initInsnSequence(codeperbytecode * len, meth->localsz,
 					 meth->stacksz, einfo))) {
 		goto done1;
 	}
@@ -551,7 +547,7 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
  * Init instruction generation.
  */
 bool
-initInsnSequence(Method* meth, int codesize, int localsz, int stacksz,
+initInsnSequence(int codesize, int localsz, int stacksz,
 		 struct _errorInfo *einfo)
 {
 	/* Clear various counters */
@@ -861,10 +857,10 @@ checkCaughtExceptions(Method* meth, int pc)
 			willCatch(NULLPOINTER);
 		}
 		else {
-			if (instanceof(&javaLangArrayIndexOutOfBoundsException, etype)) {
+			if (instanceof(javaLangArrayIndexOutOfBoundsException, etype)) {
 				willCatch(BADARRAYINDEX);
 			}
-			if (instanceof(&javaLangNullPointerException, etype)) {
+			if (instanceof(javaLangNullPointerException, etype)) {
 				willCatch(NULLPOINTER);
 			}
 		}
