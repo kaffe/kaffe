@@ -1,5 +1,6 @@
 # Used when kjc runs (while compiling classes) and kaffeh (to generate headers)
 
+gnu/classpath/SystemProperties.class
 gnu/classpath/VMSystemProperties.class
 gnu/java/io/PlatformHelper.class
 gnu/java/io/EncodingManager.class
@@ -213,6 +214,7 @@ java/util/Collections$EmptyMap.class
 java/util/Collections$EmptySet.class
 java/util/Collections$ReverseComparator.class
 java/util/Collections$SynchronizedCollection.class
+java/util/Collections$SynchronizedIterator.class
 java/util/Collections$SynchronizedList.class
 java/util/Collections$SynchronizedMap.class
 java/util/Collections$SynchronizedSet.class
@@ -230,6 +232,7 @@ java/util/HashMap$HashEntry.class
 java/util/HashMap$HashIterator.class
 java/util/HashSet.class
 java/util/Hashtable.class
+java/util/Hashtable$3.class
 java/util/Hashtable$Enumerator.class
 java/util/Hashtable$HashEntry.class
 java/util/Hashtable$HashIterator.class
