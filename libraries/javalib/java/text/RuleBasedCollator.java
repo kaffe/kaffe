@@ -158,21 +158,15 @@ public class RuleBasedCollator extends Collator
     String expansion;
 
     CollationElement(String key, int primary, short secondary, short tertiary,
-		     short equality, String expansion)
+		     short equality, String expansion, boolean ignore)
     {
       this.key = key;
       this.primary = primary;
       this.secondary = secondary;
       this.tertiary = tertiary;
       this.equality = equality;
-      this.ignore = false;
+      this.ignore = ignore;
       this.expansion = expansion;
-    }
-    
-    CollationElement(String key)
-    {
-      this.key = key;
-      this.ignore = true;
     }
 
     final int getValue()
@@ -196,13 +190,13 @@ public class RuleBasedCollator extends Collator
     static final int GREATERT = 2;
     static final int EQUAL = 3;
     static final int RESET = 4;
-    static final int IGNORE = 5;
-    static final int INVERSE_SECONDARY = 6;
+    static final int INVERSE_SECONDARY = 5;
     
     int comparisonType;
     String textElement;
     int hashText;
     int offset;
+    boolean ignore;
 
     String expansionOrdering;
   }
@@ -250,7 +244,7 @@ public class RuleBasedCollator extends Collator
    */
   static final CollationElement SPECIAL_UNKNOWN_SEQ = 
     new CollationElement("", (short) 32767, (short) 0, (short) 0,
-			 (short) 0, null);
+			 (short) 0, null, false);
   
   /**
    * This method initializes a new instance of <code>RuleBasedCollator</code>
@@ -447,26 +441,16 @@ main_parse_loop:
 	  throw new ParseException
 	    ("Modifier '!' is not yet supported by Classpath", i+base_offset);
 	case '<':
-	  ignoreChars = false;
 	  type = CollationSorter.GREATERP;
 	  break;
 	case ';':
-	  if (!ignoreChars)
-	    type = CollationSorter.GREATERS;
-	  else
-	    type = CollationSorter.IGNORE;
+	  type = CollationSorter.GREATERS;
 	  break;
 	case ',':
-	  if (!ignoreChars)
-	    type = CollationSorter.GREATERT;
-	  else
-	    type = CollationSorter.IGNORE;
+	  type = CollationSorter.GREATERT;
 	  break;
 	case '=':
-	  if (!ignoreChars)
-	    type = CollationSorter.EQUAL;
-	  else
-	    type = CollationSorter.IGNORE;
+	  type = CollationSorter.EQUAL;
 	  break;
 	case '\'':
 	  eatingChars = !eatingChars;
@@ -549,10 +533,14 @@ main_parse_loop:
 
 	CollationSorter sorter = new CollationSorter();
 	
+	if (operator == CollationSorter.GREATERP)
+	  ignoreChars = false;
+
 	sorter.comparisonType = operator;
 	sorter.textElement = sb.toString();
 	sorter.hashText = sorter.textElement.hashCode();
 	sorter.offset = base_offset+rules.length();
+	sorter.ignore = ignoreChars;
 	sb.setLength(0);
 
 	v.add(sorter);
@@ -568,10 +556,14 @@ main_parse_loop:
 	    || (sb.length() == 0 && !nextIsModifier && !eatingChars))
 	  throw new ParseException("text element empty at " + pos, pos);
 
+	if (operator == CollationSorter.GREATERP)
+	  ignoreChars = false;
+
 	sorter.comparisonType = operator;
 	sorter.textElement = sb.toString();
  	sorter.hashText = sorter.textElement.hashCode();
 	sorter.offset = base_offset+pos;
+	sorter.ignore = ignoreChars;
 	v.add(sorter);
       }
 
@@ -674,8 +666,6 @@ element_loop:
 	      last_tertiary_seq = tertiary_seq;
 	    equality_seq = 0;
 	    break;
-	  case CollationSorter.IGNORE:
-	    ignoreChar = true;
 	  case CollationSorter.EQUAL:
 	    equality_seq++;
 	    break;
@@ -687,18 +677,9 @@ element_loop:
 	      ("Invalid unknown state '" + elt.comparisonType + "'", elt.offset);
 	  }
 
-	CollationElement e;
-
-	if (!ignoreChar)
-	  {
-	    e = new CollationElement(elt.textElement, primary_seq,
-				     secondary_seq, tertiary_seq,
-				     equality_seq, elt.expansionOrdering);
-	  }
-	else
-	  e = new CollationElement(elt.textElement);
-
-	v.add(e);
+	v.add(new CollationElement(elt.textElement, primary_seq,
+				   secondary_seq, tertiary_seq,
+				   equality_seq, elt.expansionOrdering, elt.ignore));
       }
 
     this.inverseAccentComparison = inverseComparisons; 
@@ -741,16 +722,44 @@ element_loop:
   public int compare(String source, String target)
   {
     CollationElementIterator cs, ct;
+    CollationElement ord1block = null;
+    CollationElement ord2block = null;
+    boolean advance_block_1 = true;
+    boolean advance_block_2 = true;
 
     cs = getCollationElementIterator(source);
     ct = getCollationElementIterator(target);
 
     for(;;)
       {
-        CollationElement ord1block = cs.nextBlock(); 
-        CollationElement ord2block = ct.nextBlock(); 
 	int ord1;
 	int ord2;
+
+	/*
+	 * We have to check whether the characters are ignorable.
+	 * If it is the case then forget them. 
+	 */
+	if (advance_block_1)
+	  {
+	    ord1block = cs.nextBlock();
+	    if (ord1block != null && ord1block.ignore)
+	      continue;
+	  }
+	
+	if (advance_block_2)
+	  {
+	    ord2block = ct.nextBlock();
+	    if (ord2block != null && ord2block.ignore)
+	      {
+	        advance_block_1 = false;
+	        continue;
+	      }
+	 }
+	else
+	  advance_block_2 = true;
+
+	if (!advance_block_1)
+	  advance_block_1 = true;
 
 	if (ord1block != null)
 	  ord1 = ord1block.getValue();
@@ -781,12 +790,12 @@ element_loop:
 	
 	if (prim1 == 0 && getStrength() < TERTIARY)
 	  {
-	    ct.previousBlock();
+            advance_block_2 = false;
 	    continue;
 	  }
 	else if (prim2 == 0 && getStrength() < TERTIARY)
 	  {
-	    cs.previousBlock();
+	    advance_block_1 = false;
 	    continue;
 	  }
 
@@ -861,7 +870,7 @@ element_loop:
     else
       v = (short) c;
     return new CollationElement("" + c, last_primary_value + v,
-				(short) 0, (short) 0, (short) 0, null);
+				(short) 0, (short) 0, (short) 0, null, false);
   }
 
   /**
@@ -883,7 +892,7 @@ element_loop:
     else
       v = (short) c;
     return new CollationElement("" + c, (short) 0,
-				(short) 0, (short) (last_tertiary_value + v), (short) 0, null);
+				(short) 0, (short) (last_tertiary_value + v), (short) 0, null, false);
   }
 
   /**
@@ -945,6 +954,13 @@ element_loop:
 
     while (ord != CollationElementIterator.NULLORDER)
       {
+	// If the primary order is null, it means this is an ignorable
+	// character.
+	if (CollationElementIterator.primaryOrder(ord) == 0)
+	  {
+            ord = cei.next();
+	    continue;
+	  }
         switch (getStrength())
           {
             case PRIMARY:

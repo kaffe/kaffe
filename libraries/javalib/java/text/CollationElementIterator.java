@@ -357,11 +357,8 @@ public final class CollationElementIterator
 	    /* Third case: the simplest. We have got the prefix and it
 	     * has not to be expanded.
 	     */
-	    if (!prefix.ignore)
-	      {
-		v.add (prefix);
-		vi.add (new Integer(idx_idx));
-	      }
+	    v.add (prefix);
+	    vi.add (new Integer(idx_idx));
 	    idx += prefix.key.length();
 	    /* If the sequence is in an expansion, we must decrease the
 	     * counter.

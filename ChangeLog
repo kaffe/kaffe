@@ -1,6 +1,26 @@
+2004-05-29  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-jthreads/signal.c
+	(nullException): Check whether currentJThread exists.
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c
+	(currentJThread): Set to NULL.
+
+	* libraries/javalib/java/text/RuleBasedCollator.java
+	(CollationElement.CollationElement): Removed unused constructor.
+	New argument for the other one.
+	(subParseString): Mark the element as ignorable but do not erase
+	them from the database.
+	(compare): Take into account the ignore field for ignorable
+	elements.
+	(buildCollationVector): Use the ignore field now.
+
+	* libraries/javalib/java/text/CollationElementIterator.java
+	(setText): Keep ignorable characters.
+	
 2004-05-27  Michael Franz  <developer.franz@verizon.net>
 
-	libraries/clib/awt/X/evt.c,
+	* libraries/clib/awt/X/evt.c,
 	libraries/clib/awt/X/toolkit.h,
 	libraries/clib/io/AudioPlayer.c,
 	libraries/clib/io/File.c,

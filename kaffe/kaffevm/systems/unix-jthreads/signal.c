@@ -97,9 +97,9 @@ nullException(SIGNAL_ARGS(sig, ctx))
 #if defined(STACK_POINTER)
 	stackptr = (void *)STACK_POINTER(GET_SIGNAL_CONTEXT_POINTER(ctx));
 #if defined(STACK_GROWS_UP)
-	if (stackptr >= currentJThread->stackEnd)
+	if (currentJThread != NULL && stackptr >= currentJThread->stackEnd)
 #else
-	if (stackptr <= currentJThread->stackBase)
+	if (currentJThread != NULL && stackptr <= currentJThread->stackBase)
 #endif
 	  stackOverflowHandler(EXCEPTIONFRAMEPTR);
 	else

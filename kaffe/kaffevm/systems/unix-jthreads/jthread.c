@@ -113,7 +113,7 @@ static void (*ondeadlock)(void);	/* call when we detect deadlock */
 static int  max_priority;		/* maximum supported priority */
 static int  min_priority;		/* minimum supported priority */
 
-jthread* currentJThread;
+jthread* currentJThread = NULL;
 
 /* Context switch related functions */
 #ifndef JTHREAD_CONTEXT_SAVE
