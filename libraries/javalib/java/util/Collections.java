@@ -15,15 +15,31 @@
 
 package java.util;
 
+import java.io.Serializable;
+
 public class Collections {
+
+	// An empty set
 	public static final Set EMPTY_SET = new AbstractSet() {
 		public int size() {
 			return 0;
 		}
 		public Iterator iterator() {
-			return new EmptyIterator();
+			return new Iterator() {
+				public boolean hasNext() {
+					return false;
+				}
+				public Object next() {
+					throw new NoSuchElementException();
+				}
+				public void remove() {
+					throw new IllegalStateException();
+				}
+			};
 		}
 	};
+
+	// An empty list
 	public static final List EMPTY_LIST = new AbstractList() {
 		public int size() {
 			return 0;
@@ -32,19 +48,6 @@ public class Collections {
 			throw new IndexOutOfBoundsException();
 		}
 	};
-
-	// An empty iterator
-	private static class EmptyIterator implements Iterator {
-		public boolean hasNext() {
-			return false;
-		}
-		public Object next() {
-			throw new NoSuchElementException();
-		}
-		public void remove() {
-			throw new IllegalStateException();
-		}
-	}
 
 	// This class is not instantiable
 	private Collections() {
@@ -166,34 +169,279 @@ public class Collections {
 		return max;
 	}
 
+	private static class UMCollection extends AbstractCollection
+			implements Collection, Serializable {
+		private final Collection c;
+
+		UMCollection(Collection c) {
+			this.c = c;
+		}
+		public Iterator iterator() {
+			return unmodifiableIterator(c.iterator());
+		}
+		public int size() {
+			return c.size();
+		}
+		public boolean contains(Object o) {
+			return c.contains(o);
+		}
+		public Object[] toArray(Object[] a) {
+			return c.toArray(a);
+		}
+		public Object[] toArray() {
+			return c.toArray();
+		}
+		public boolean remove(Object o) {
+			throw new UnsupportedOperationException();
+		}
+		public boolean equals(Object o) {
+			return ((Object)this).equals(o);
+		}
+		public int hashCode() {
+			return ((Object)this).hashCode();
+		}
+	}
+
 	public static Collection unmodifiableCollection(Collection c) {
-	  throw new kaffe.util.NotImplemented(Collections.class.getName()
-		+ ".unmodifiableCollection()");
+		return new UMCollection(c);
+	}
+
+	private static class UMSet extends AbstractSet
+			implements Set, Serializable {
+		private final Set s;
+
+		UMSet(Set s) {
+			this.s = s;
+		}
+		public Iterator iterator() {
+			return unmodifiableIterator(s.iterator());
+		}
+		public int size() {
+			return s.size();
+		}
+		public boolean contains(Object o) {
+			return s.contains(o);
+		}
+		public Object[] toArray(Object[] a) {
+			return s.toArray(a);
+		}
+		public boolean remove(Object o) {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	public static Set unmodifiableSet(Set s) {
-	  throw new kaffe.util.NotImplemented(Collections.class.getName()
-		+ ".unmodifiableSet()");
+		return new UMSet(s);
+	}
+
+	private static class UMSortedSet implements SortedSet, Serializable {
+		private final SortedSet s;
+
+		UMSortedSet(SortedSet s) {
+			this.s = s;
+		}
+		public int size() {
+			return s.size();
+		}
+		public boolean isEmpty() {
+			return s.isEmpty();
+		}
+		public boolean contains(Object o) {
+			return s.contains(o);
+		}
+		public Iterator iterator() {
+			return unmodifiableIterator(s.iterator());
+		}
+		public Object[] toArray() {
+			return s.toArray();
+		}
+		public Object[] toArray(Object[] a) {
+			return s.toArray(a);
+		}
+		public boolean add(Object o) {
+			throw new UnsupportedOperationException();
+		}
+		public boolean remove(Object o) {
+			throw new UnsupportedOperationException();
+		}
+		public boolean containsAll(Collection c) {
+			return s.containsAll(c);
+		}
+		public boolean addAll(Collection c) {
+			throw new UnsupportedOperationException();
+		}
+		public boolean removeAll(Collection c) {
+			throw new UnsupportedOperationException();
+		}
+		public boolean retainAll(Collection c) {
+			throw new UnsupportedOperationException();
+		}
+		public void clear() {
+			throw new UnsupportedOperationException();
+		}
+		public boolean equals(Object o) {
+			return s.equals(o);
+		}
+		public int hashCode() {
+			return s.hashCode();
+		}
+		public Comparator comparator() {
+			return s.comparator();
+		}
+		public SortedSet subSet(Object fromElement, Object toElement) {
+			return unmodifiableSortedSet(
+				s.subSet(fromElement, toElement));
+		}
+		public SortedSet headSet(Object toElement) {
+			return unmodifiableSortedSet(s.headSet(toElement));
+		}
+		public SortedSet tailSet(Object fromElement) {
+			return unmodifiableSortedSet(s.tailSet(fromElement));
+		}
+		public Object first() {
+			return s.first();
+		}
+		public Object last() {
+			return s.last();
+		}
 	}
 
 	public static SortedSet unmodifiableSortedSet(SortedSet s) {
-	  throw new kaffe.util.NotImplemented(Collections.class.getName()
-		+ ".unmodifiableSortedSet()");
+		return new UMSortedSet(s);
+	}
+
+	public static class UMList extends AbstractList
+			implements List, Serializable {
+		private final List list;
+
+		UMList(List list) {
+			this.list = list;
+		}
+		public int size() {
+			return list.size();
+		}
+		public Object get(int index) {
+			return list.get(index);
+		}
+		public int indexOf(Object o) {
+			return list.indexOf(o);
+		}
+		public int lastIndexOf(Object o) {
+			return list.lastIndexOf(o);
+		}
 	}
 
 	public static List unmodifiableList(List list) {
-	  throw new kaffe.util.NotImplemented(Collections.class.getName()
-		+ ".unmodifiableList()");
+		return new UMList(list);
+	}
+
+	private static class UMMap extends AbstractMap
+			implements Map, Serializable {
+		private final Map m;
+
+		UMMap(Map m) {
+			this.m = m;
+		}
+		public int size() {
+			return m.size();
+		}
+		public boolean containsValue(Object value) {
+			return m.containsValue(value);
+		}
+		public boolean containsKey(Object key) {
+			return m.containsKey(key);
+		}
+		public Object get(Object key) {
+			return m.get(key);
+		}
+		public Object remove(Object key) {
+			throw new UnsupportedOperationException();
+		}
+		public void putAll(Map t) {
+			throw new UnsupportedOperationException();
+		}
+		public void clear() {
+			throw new UnsupportedOperationException();
+		}
+		public Set keySet() {
+			return unmodifiableSet(m.keySet());
+		}
+		public Collection values() {
+			return unmodifiableCollection(m.values());
+		}
+		public Set entrySet() {
+			return unmodifiableSet(m.entrySet());
+		}
 	}
 
 	public static Map unmodifiableMap(Map m) {
-	  throw new kaffe.util.NotImplemented(Collections.class.getName()
-		+ ".unmodifiableMap()");
+		return new UMMap(m);
+	}
+
+	private static class UMSortedMap implements SortedMap, Serializable {
+		private final SortedMap m;
+
+		UMSortedMap(SortedMap m) {
+			this.m = m;
+		}
+		public int size() {
+			return m.size();
+		}
+		public boolean isEmpty() {
+			return m.isEmpty();
+		}
+		public boolean containsValue(Object value) {
+			return m.containsValue(value);
+		}
+		public boolean containsKey(Object key) {
+			return m.containsKey(key);
+		}
+		public Object get(Object key) {
+			return m.get(key);
+		}
+		public Object put(Object key, Object value) {
+			throw new UnsupportedOperationException();
+		}
+		public Object remove(Object key) {
+			throw new UnsupportedOperationException();
+		}
+		public void putAll(Map t) {
+			throw new UnsupportedOperationException();
+		}
+		public void clear() {
+			throw new UnsupportedOperationException();
+		}
+		public Set keySet() {
+			return unmodifiableSet(m.keySet());
+		}
+		public Collection values() {
+			return unmodifiableCollection(m.values());
+		}
+		public Set entrySet() {
+			return unmodifiableSet(m.entrySet());
+		}
+		public Comparator comparator() {
+			return m.comparator();
+		}
+		public SortedMap subMap(Object fromKey, Object toKey) {
+			return unmodifiableSortedMap(m.subMap(fromKey, toKey));
+		}
+		public SortedMap headMap(Object toKey) {
+			return unmodifiableSortedMap(m.headMap(toKey));
+		}
+		public SortedMap tailMap(Object fromKey) {
+			return unmodifiableSortedMap(m.tailMap(fromKey));
+		}
+		public Object firstKey() {
+			return m.firstKey();
+		}
+		public Object lastKey() {
+			return m.lastKey();
+		}
 	}
 
 	public static SortedMap unmodifiableSortedMap(SortedMap m) {
-	  throw new kaffe.util.NotImplemented(Collections.class.getName()
-		+ ".unmodifiableSortedMap()");
+		return new UMSortedMap(m);
 	}
 
 	public static Collection synchronizedCollection(Collection c) {
@@ -233,29 +481,56 @@ public class Collections {
 				return 1;
 			}
 			public Iterator iterator() {
-				return new Iterator() {
-					private int index = 0;
-					public boolean hasNext() {
-						return index < 1;
-					}
-					public Object next() {
-						if (index == 1) {
-							throw new NoSuchElementException();
-						}
-						index++;
-						return o;
-					}
-					public void remove() {
-						throw new UnsupportedOperationException();
-					}
-				};
+				return nCopies(1, o).iterator();
 			}
 		};
 	}
 
-	public static List nCopies(int n, Object o) {
-	  throw new kaffe.util.NotImplemented(Collections.class.getName()
-		+ ".nCopies()");
+	public static List nCopies(final int num, final Object o) {
+		if (num < 0) {
+			throw new IllegalArgumentException();
+		}
+		if (num == 0) {
+			return EMPTY_LIST;
+		}
+		return new AbstractList() {
+			public int size() {
+				return num;
+			}
+			public Object get(int index) {
+				if (index < 0 || index >= num) {
+					throw new IndexOutOfBoundsException();
+				}
+				return o;
+			}
+			public int indexOf(Object o2) {
+				if (o == null ? o2 == null : o.equals(o2)) {
+					return 0;
+				}
+				return -1;
+			}
+			public int lastIndexOf(Object o2) {
+				if (o == null ? o2 == null : o.equals(o2)) {
+					return num - 1;
+				}
+				return -1;
+			}
+			public ListIterator listIterator(int index) {
+				if (index < 0 || index > num) {
+					throw new IndexOutOfBoundsException();
+				}
+				return new AbstractListIterator(this, num - index);
+			}
+			public List subList(int fromIndex, int toIndex) {
+				if (fromIndex < 0 || toIndex > num) {
+					throw new IndexOutOfBoundsException();
+				}
+				if (fromIndex > toIndex) {
+					throw new IllegalArgumentException();
+				}
+				return nCopies(toIndex - fromIndex, o);
+			}
+		};
 	}
 
 	private static final Comparator REVERSE_COMPARATOR = new Comparator() {
@@ -276,6 +551,20 @@ public class Collections {
 			}
 			public Object nextElement() {
 				return i.next();
+			}
+		};
+	}
+
+	private static Iterator unmodifiableIterator(final Iterator i) {
+		return new Iterator() {
+			public boolean hasNext() {
+				return i.hasNext();
+			}
+			public Object next() {
+				return i.next();
+			}
+			public void remove() {
+  				throw new UnsupportedOperationException();
 			}
 		};
 	}
