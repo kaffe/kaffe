@@ -15,6 +15,7 @@ import java.io.ObjectStreamConstants;
 import java.io.StreamCorruptedException;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.OptionalDataException;
 import java.io.ObjectInputStream;
 import java.io.NotActiveException;
@@ -231,11 +232,14 @@ private void resetObjectReferences() {
 	objectReferences.removeAllElements();
 }
 
-private Object getObject() throws StreamCorruptedException, OptionalDataException {
+private Object getObject() throws StreamCorruptedException, OptionalDataException, InvalidClassException {
 	try {
 		ObjectStreamClassImpl cls = (ObjectStreamClassImpl)parent.readObject();
 		Object obj = cls.getObject(parent, this);
 		return (obj);
+	}
+	catch (InvalidClassException ice) {
+		throw ice;
 	}
 	catch (ClassNotFoundException e1) {
 		throw new StreamCorruptedException("error getting object: " + e1);

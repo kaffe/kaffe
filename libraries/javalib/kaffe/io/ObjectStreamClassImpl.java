@@ -69,21 +69,22 @@ public void getObjectWithoutSuper(Object obj, ObjectInputStream in, ObjectInputS
 	if (superstream != null) {
 		superstream.getObjectWithoutSuper(obj, in, impl);
 	}
+	else {
+		// invoke <init>()V on super class (if it's possible)
+		invokeSuperclassInitV (obj, clazz.getSuperclass());
+	}
 
         try {
-                if ((method & ObjectStreamConstants.SC_EXTERNALIZABLE) != 0)
- {
+                if ((method & ObjectStreamConstants.SC_EXTERNALIZABLE) != 0) {
                         ((Externalizable)obj).readExternal(in);
                 }
-                else if ((method & ObjectStreamConstants.SC_WRITE_METHOD) !=
- 0) {
+                else if ((method & ObjectStreamConstants.SC_WRITE_METHOD) != 0) {
 			boolean restore = impl.enableBuffering(true);
                         invokeObjectReader0(obj, in);
 			impl.enableBuffering(restore);
 			getEndOfDataBlock(in, impl);
                 }
-                else if ((method & ObjectStreamConstants.SC_SERIALIZABLE) !=
- 0) {
+                else if ((method & ObjectStreamConstants.SC_SERIALIZABLE) != 0) {
                         defaultReadObject(obj, in);
                 }
                 else {
@@ -404,6 +405,7 @@ private native static void init();
 private native Object allocateNewObject();
 private native Object allocateNewArray(int size);
 public native static boolean hasWriteObject(Class cls);
+private native void invokeSuperclassInitV(Object obj, Class sc);
 private native void inputClassFields(Object obj, ObjectInputStream in);
 private native void outputClassFields(Object obj, ObjectOutputStream out);
 private native boolean invokeObjectReader0(Object obj, ObjectInputStream in);

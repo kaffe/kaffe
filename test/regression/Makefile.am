@@ -48,6 +48,7 @@ TESTS = \
 ## Misc tests
 	ReflectInterfaces.java \
 	TestSerializable.java \
+	TestSerializable2.java \
 	TestCasts.java \
 	Alias.java \
 	NullPointerTest.java \

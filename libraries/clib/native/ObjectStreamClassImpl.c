@@ -99,6 +99,24 @@ kaffe_io_ObjectStreamClassImpl_allocateNewArray(struct Hkaffe_io_ObjectStreamCla
 }
 
 void
+kaffe_io_ObjectStreamClassImpl_invokeSuperclassInitV(struct Hkaffe_io_ObjectStreamClassImpl* cls, struct Hjava_lang_Object* obj, struct Hjava_lang_Class* sc)
+{
+	Method* meth;
+
+	if (sc == NULL) {
+		return;
+	}
+
+	meth = findMethodLocal(sc, constructor_name, void_signature);
+	if (meth == NULL) {
+		SignalErrorf("java.io.InvalidClassException",
+			     "%s; <init>",
+			     sc->name->data);
+	}
+	do_execute_java_method(obj, 0, 0, meth, 0);
+}
+
+void
 kaffe_io_ObjectStreamClassImpl_inputClassFields(struct Hkaffe_io_ObjectStreamClassImpl* cls, struct Hjava_lang_Object* obj, struct Hjava_io_ObjectInputStream* in)
 {
 	int i;
