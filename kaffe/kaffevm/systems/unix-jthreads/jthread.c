@@ -744,6 +744,13 @@ jthread_init(int pre,
         jthread *jtid; 
 	int i;
 
+	/* XXX this is f***ed.  On BSD, we get a SIGHUP if we try to put
+	 * a process that has a pseudo-tty in async mode in the background
+	 * So we'll just ignore it and keep running.  Note that this will
+	 * detach us from the session too.
+	 */
+	catchSignal(SIGHUP, SIG_IGN);
+
 	/* 
 	 * If debugging is not enabled, set stdin, stdout, and stderr in 
 	 * async mode.
@@ -771,12 +778,6 @@ jthread_init(int pre,
 	atexit(restore_fds);
 	catchSignal(SIGINT, restore_fds_and_exit);
 	catchSignal(SIGTERM, restore_fds_and_exit);
-	/* XXX this is f***ed.  On BSD, we get a SIGHUP if we try to put
-	 * a process that has a pseudo-tty in async mode in the background
-	 * So we'll just ignore it and keep running.  Note that this will
-	 * detach us from the session too.
-	 */
-	catchSignal(SIGHUP, SIG_IGN);
 
 	preemptive = pre;
 	max_priority = maxpr;
@@ -1479,12 +1480,6 @@ jthreadedFileDescriptor(int fd)
 	if (fd == -1)
 		return (fd);
 
-	/* Make non-blocking */
-	if ((r = fcntl(fd, F_GETFL, 0)) < 0) {
-		perror("F_GETFL");
-		return (r);
-	}
-
 #if defined(F_SETFD)
 	/* set close-on-exec flag for this file descriptor */
 	if ((r = fcntl(fd, F_SETFD, 1)) < 0) {
@@ -1492,6 +1487,12 @@ jthreadedFileDescriptor(int fd)
 		return (r);
 	}
 #endif
+
+	/* Make non-blocking */
+	if ((r = fcntl(fd, F_GETFL, 0)) < 0) {
+		perror("F_GETFL");
+		return (r);
+	}
 
 	/*
 	 * Apparently, this can fail, for instance when we stdout is 
