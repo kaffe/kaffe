@@ -115,14 +115,19 @@ typedef struct _methodTrampoline {
 /* Opcode generation. */
 /**/
 
+/* Extra label types */
+#define Llong8		(Larchdepend+0)	/* Label is 8 bits long */
+
 #define LABEL_Lframe(P,D,L)						\
 	{								\
 		int framesize = SLOTSIZE * (maxLocal + maxStack +	\
 			maxTemp - maxArgs);				\
 		*(uint32*)(P) = framesize;				\
 	}
+#define LABEL_Llong8(P,V,L)	*(char*)(P) = (V)
 
 #define	EXTRA_LABELS(P,D,L)						\
+	case Llong8:	LABEL_Llong8(P,D,L);	break;			\
 	case Lframe:	LABEL_Lframe(P,D,L);	break;
 
 /* Define if generated code uses two operands rather than one */
