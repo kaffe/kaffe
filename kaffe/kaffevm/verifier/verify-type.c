@@ -35,8 +35,13 @@ Type* getTUNSTABLE(void)
 }
 
 static Type  verify_INT;
-Type* TINT = &verify_INT;
-       
+static Type* TINT = &verify_INT;
+
+Type* getTINT(void)
+{
+  return TINT;
+}
+
 static Type  verify_FLOAT;
 static Type* TFLOAT = &verify_FLOAT;
 

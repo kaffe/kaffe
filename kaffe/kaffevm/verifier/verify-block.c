@@ -497,7 +497,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case ICONST_M1: /* pushes -1 onto the stack */
 		case BIPUSH:    /* sign extends an 8-bit int to 32-bits and pushes it onto stack */
 		case SIPUSH:    /* sign extends a 16-bit int to 32-bits and pushes it onto stack */
-			OPSTACK_PUSH(TINT);
+			OPSTACK_PUSH(getTINT());
 			break;
 			
 		case FCONST_0:
@@ -525,7 +525,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		LDC_common:
 			tag = CONST_TAG(idx, pool);
 			switch(tag) {
-			case CONSTANT_Integer: OPSTACK_PUSH(TINT);    break;
+			case CONSTANT_Integer: OPSTACK_PUSH(getTINT());    break;
 			case CONSTANT_Float:   OPSTACK_PUSH(getTFLOAT());  break;
 			case CONSTANT_ResolvedString:
 			case CONSTANT_String:
@@ -610,8 +610,8 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case ILOAD:
 			GET_CONST_INDEX;
 		ILOAD_common:
-			ENSURE_LOCAL_TYPE(idx, TINT);
-			OPSTACK_PUSH(TINT);
+			ENSURE_LOCAL_TYPE(idx, getTINT());
+			OPSTACK_PUSH(getTINT());
 			break;
 			
 			
@@ -622,8 +622,8 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case ISTORE:
 			GET_CONST_INDEX;
 		ISTORE_common:
-			OPSTACK_POP_T(TINT);
-			block->locals[idx] = *TINT;
+			OPSTACK_POP_T(getTINT());
+			block->locals[idx] = *getTINT();
 			break;
 			
 			
@@ -717,7 +717,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			 * for creating a primitive array
 			 */
 		case NEWARRAY:
-		        OPSTACK_POP_T(TINT);   /* array size */
+		        OPSTACK_POP_T(getTINT());   /* array size */
 			
 			switch(code[pc + 1]) {
 			case TYPE_Boolean: OPSTACK_PUSH(getTBOOLARR());   break;
@@ -741,17 +741,17 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 				return verifyError(v, "arraylength: top of operand stack is not an array");
 			}
 			
-			*type = *TINT;
+			*type = *getTINT();
 			break;
 			
 			
 #define ARRAY_LOAD(_T, _ARRT) \
-                                OPSTACK_POP_T(TINT); \
+                                OPSTACK_POP_T(getTINT()); \
                                 OPSTACK_POP_T(_ARRT); \
 				OPSTACK_PUSH(_T);
 
 #define ARRAY_WLOAD(_T, _ARRT) \
-                                OPSTACK_POP_T(TINT); \
+                                OPSTACK_POP_T(getTINT()); \
                                 OPSTACK_POP_T(_ARRT); \
 				OPSTACK_WPUSH(_T);
 			
@@ -759,7 +759,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case AALOAD:
 			ENSURE_OPSTACK_SIZE(2);
 			
-			if (getOpstackTop(block)->data.class != TINT->data.class) {
+			if (getOpstackTop(block)->data.class != getTINT()->data.class) {
 				return verifyError(v, "aaload: item on top of stack is not an integer");
 			}
 			opstackPopBlind(block);
@@ -781,10 +781,10 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			DBG(VERIFY3, dprintf("%sarray type: ", indent); printType(type); dprintf("\n"); );
 			break;
 			
-		case IALOAD: ARRAY_LOAD(TINT,   getTINTARR());   break;
+		case IALOAD: ARRAY_LOAD(getTINT(),   getTINTARR());   break;
 		case FALOAD: ARRAY_LOAD(getTFLOAT(), getTFLOATARR()); break;
-		case CALOAD: ARRAY_LOAD(TINT,   getTCHARARR());  break;
-		case SALOAD: ARRAY_LOAD(TINT,   getTSHORTARR()); break;
+		case CALOAD: ARRAY_LOAD(getTINT(),   getTCHARARR());  break;
+		case SALOAD: ARRAY_LOAD(getTINT(),   getTSHORTARR()); break;
 			
 		case LALOAD: ARRAY_WLOAD(getTLONG(),   getTLONGARR());   break;
 		case DALOAD: ARRAY_WLOAD(getTDOUBLE(), getTDOUBLEARR()); break;
@@ -793,7 +793,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 
 		case BALOAD:
 			/* BALOAD can be used for bytes or booleans .... */
-			OPSTACK_POP_T(TINT);
+			OPSTACK_POP_T(getTINT());
 
 			if (!typecheck (v, getTBYTEARR(), getOpstackTop(block)) &&
 			    !typecheck (v, getTBOOLARR(), getOpstackTop(block))) {
@@ -805,7 +805,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			}
 
 			opstackPopBlind(block);
-			OPSTACK_PUSH(TINT);
+			OPSTACK_PUSH(getTINT());
 			break;
 
 
@@ -815,7 +815,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			 */
 			ENSURE_OPSTACK_SIZE(3);
 			
-			if (getOpstackItem(block, 2)->data.class != TINT->data.class) {
+			if (getOpstackItem(block, 2)->data.class != getTINT()->data.class) {
 				return verifyError(v, "aastore: array index is not an integer");
 			}
 			
@@ -855,21 +855,21 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 
 #define ARRAY_STORE(_T, _ARRT) \
 				OPSTACK_POP_T(_T); \
-				OPSTACK_POP_T(TINT); \
+				OPSTACK_POP_T(getTINT()); \
 				OPSTACK_POP_T(_ARRT);
 			
 #define ARRAY_WSTORE(_T, _ARRT) \
 				OPSTACK_WPOP_T(_T); \
-				OPSTACK_POP_T(TINT); \
+				OPSTACK_POP_T(getTINT()); \
 				OPSTACK_POP_T(_ARRT);
 			
 			
 			
 			
-		case IASTORE: ARRAY_STORE(TINT,   getTINTARR());   break;
+		case IASTORE: ARRAY_STORE(getTINT(),   getTINTARR());   break;
 		case FASTORE: ARRAY_STORE(getTFLOAT(), getTFLOATARR()); break;
-		case CASTORE: ARRAY_STORE(TINT,   getTCHARARR());  break;
-		case SASTORE: ARRAY_STORE(TINT,   getTSHORTARR()); break;
+		case CASTORE: ARRAY_STORE(getTINT(),   getTCHARARR());  break;
+		case SASTORE: ARRAY_STORE(getTINT(),   getTSHORTARR()); break;
 			
 		case LASTORE: ARRAY_WSTORE(getTLONG(),   getTLONGARR());   break;
 		case DASTORE: ARRAY_WSTORE(getTDOUBLE(), getTDOUBLEARR()); break;
@@ -878,8 +878,8 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 
 		case BASTORE: 
 			/* BASTORE can store either bytes or booleans .... */
-			OPSTACK_POP_T(TINT);
-			OPSTACK_POP_T(TINT);
+			OPSTACK_POP_T(getTINT());
+			OPSTACK_POP_T(getTINT());
 
 			if ( !typecheck(v, getTBYTEARR(), getOpstackTop(block)) &&
 			     !typecheck(v, getTBOOLARR(), getOpstackTop(block))) {
@@ -899,10 +899,10 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case IAND: case IOR:  case IXOR:
 		case IADD: case ISUB: case IMUL: case IDIV: case IREM:
 		case ISHL: case ISHR: case IUSHR:
-			OPSTACK_POP_T(TINT);
+			OPSTACK_POP_T(getTINT());
 			break;
 		case INEG:
-			OPSTACK_PEEK_T(TINT);
+			OPSTACK_PEEK_T(getTINT());
 			break;
 			
 			
@@ -915,7 +915,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			break;
 			
 		case LSHL: case LSHR: case LUSHR:
-			OPSTACK_POP_T(TINT);
+			OPSTACK_POP_T(getTINT());
 			OPSTACK_WPEEK_T(getTLONG());
 			break;
 			
@@ -939,21 +939,21 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case LCMP:
 			OPSTACK_WPOP_T(getTLONG());
 			OPSTACK_WPOP_T(getTLONG());
-			opstackPushBlind(block, TINT);
+			opstackPushBlind(block, getTINT());
 			break;
 			
 		case FCMPG:
 		case FCMPL:
 			OPSTACK_POP_T(getTFLOAT());
 			OPSTACK_POP_T(getTFLOAT());
-			opstackPushBlind(block, TINT);
+			opstackPushBlind(block, getTINT());
 			break;
 				
 		case DCMPG:
 		case DCMPL:
 			OPSTACK_WPOP_T(getTDOUBLE());
 			OPSTACK_WPOP_T(getTDOUBLE());
-			opstackPushBlind(block, TINT);
+			opstackPushBlind(block, getTINT());
 			break;
 			
 			
@@ -961,7 +961,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			if (wide == true) { GET_WIDX; }
 			else              { GET_IDX; }
 			
-			ENSURE_LOCAL_TYPE(idx, TINT);
+			ENSURE_LOCAL_TYPE(idx, getTINT());
 			
 			pc = getNextPC(code, pc);
 			if (wide == true) {
@@ -977,27 +977,27 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case INT2BYTE:
 		case INT2CHAR:
 		case INT2SHORT:
-			OPSTACK_PEEK_T(TINT);
+			OPSTACK_PEEK_T(getTINT());
 			break;
 			
 		case I2F:
-			OPSTACK_POP_T(TINT);
+			OPSTACK_POP_T(getTINT());
 			opstackPushBlind(block, getTFLOAT());
 			break;
 		case I2L:
-			OPSTACK_POP_T(TINT);
+			OPSTACK_POP_T(getTINT());
 			CHECK_STACK_OVERFLOW(2);
 			opstackWPushBlind(block, getTLONG());
 			break;
 		case I2D:
-			OPSTACK_POP_T(TINT);
+			OPSTACK_POP_T(getTINT());
 			CHECK_STACK_OVERFLOW(2);
 			opstackWPushBlind(block, getTDOUBLE());
 			break;
 			
 		case F2I:
 			OPSTACK_POP_T(getTFLOAT());
-			opstackPushBlind(block, TINT);
+			opstackPushBlind(block, getTINT());
 			break;
 		case F2L:
 			OPSTACK_POP_T(getTFLOAT());
@@ -1010,7 +1010,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 		case L2I:
 			OPSTACK_WPOP_T(getTLONG());
-			opstackPushBlind(block, TINT);
+			opstackPushBlind(block, getTINT());
 			break;
 		case L2F:
 			OPSTACK_WPOP_T(getTLONG());
@@ -1023,7 +1023,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 		case D2I:
 			OPSTACK_WPOP_T(getTDOUBLE());
-			opstackPushBlind(block, TINT);
+			opstackPushBlind(block, getTINT());
 			break;
 		case D2F:
 			OPSTACK_WPOP_T(getTDOUBLE());
@@ -1044,7 +1044,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			if (!isReference(getOpstackItem(block, 1))) {
 				return verifyError(v, "instanceof: top of stack is not a reference type");
 			}
-			*getOpstackTop(block) = *TINT;
+			*getOpstackTop(block) = *getTINT();
 			break;
 			
 		case CHECKCAST:
@@ -1056,7 +1056,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			n = code[pc + 3];
 			ENSURE_OPSTACK_SIZE(n);
 			while (n > 0) {
-				if (getOpstackTop(block)->data.class != TINT->data.class) {
+				if (getOpstackTop(block)->data.class != getTINT()->data.class) {
 					return verifyError(v, "multinewarray: first <n> things on opstack must be integers");
 				}
 				opstackPopBlind(block);
@@ -1127,7 +1127,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 		case ANEWARRAY:
 			GET_WIDX;
-			OPSTACK_PEEK_T(TINT);
+			OPSTACK_PEEK_T(getTINT());
 			
 			type = getOpstackTop(block);
 			if (pool->tags[idx] == CONSTANT_ResolvedClass) {
@@ -1194,7 +1194,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			/* TODO: we should just have a function that returns a type based on a signature */
 			switch (*sig) {
 			case 'I': case 'Z': case 'S': case 'B': case 'C':
-				opstackPushBlind(block, TINT);
+				opstackPushBlind(block, getTINT());
 				break;
 				
 			case 'F': opstackPushBlind(block, getTFLOAT()); break;
@@ -1234,7 +1234,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 			switch (*sig) {
 			case 'I': case 'Z': case 'S': case 'B': case 'C':
-				OPSTACK_POP_T_BLIND(TINT);
+				OPSTACK_POP_T_BLIND(getTINT());
 				break;
 				
 			case 'F': OPSTACK_POP_T_BLIND(getTFLOAT());   break;
@@ -1281,7 +1281,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 			switch (*sig) {
 			case 'I': case 'Z': case 'S': case 'B': case 'C':
-				OPSTACK_POP_T_BLIND(TINT);
+				OPSTACK_POP_T_BLIND(getTINT());
 				break;
 				
 			case 'F': OPSTACK_POP_T_BLIND(getTFLOAT());   break;
@@ -1340,14 +1340,14 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 		case IF_ICMPGE:
 		case IF_ICMPLT:
 		case IF_ICMPLE:
-			OPSTACK_POP_T(TINT);
+			OPSTACK_POP_T(getTINT());
 		case IFEQ:
 		case IFNE:
 		case IFGT:
 		case IFGE:
 		case IFLT:
 		case IFLE:
-			OPSTACK_POP_T(TINT);
+			OPSTACK_POP_T(getTINT());
 			break;
 			
 		case IFNONNULL:
@@ -1361,7 +1361,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 		case LOOKUPSWITCH:
 		case TABLESWITCH:
-			OPSTACK_POP_T(TINT);
+			OPSTACK_POP_T(getTINT());
 			return(true);
 			
 			
@@ -1385,7 +1385,7 @@ verifyBasicBlock(Verifier* v, BlockInfo* block)
 			
 			
 		case IRETURN:
-			OPSTACK_PEEK_T(TINT);
+			OPSTACK_PEEK_T(getTINT());
 			sig = getMethodReturnSig(v->method);
 			if (strlen(sig) != 1 || (*sig != 'I' && *sig != 'Z' && *sig != 'S' && *sig != 'B' && *sig != 'C')) {
 				return verifyError(v, "ireturn: method doesn't return an integer");

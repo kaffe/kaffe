@@ -672,7 +672,7 @@ checkMethodCall(Verifier* v,
 			
 		case 'Z': case 'S': case 'B': case 'C':
 		case 'I':
-			if (binfo->opstack[paramIndex].data.class != TINT->data.class) {
+			if (binfo->opstack[paramIndex].data.class != getTINT()->data.class) {
 				return typeErrorInCheckMethodCall(v, argbuf, pc, idx, pool, methSig);
 			}
 			
@@ -745,7 +745,7 @@ checkMethodCall(Verifier* v,
 	switch (*argbuf) {
 	case 'Z': case 'S': case 'B': case 'C':
 	case 'I':
-		binfo->opstack[binfo->stacksz++] = *TINT;
+		binfo->opstack[binfo->stacksz++] = *getTINT();
 		break;
 		
 	case 'F':
@@ -852,7 +852,7 @@ loadInitialArgs(Verifier* v)
 		
 		switch (*argbuf) {
 		case 'Z': case 'S': case 'B': case 'C':
-		case 'I': locals[paramCount++] = *TINT; break;
+		case 'I': locals[paramCount++] = *getTINT(); break;
 		case 'F': locals[paramCount++] = *getTFLOAT(); break;
 			
 		case 'J':

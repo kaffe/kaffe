@@ -95,7 +95,7 @@ typedef struct Type
  */
 extern Type* getTUNSTABLE(void);
 
-extern Type* TINT;
+extern Type* getTINT(void);
 extern Type* getTFLOAT(void);
 extern Type* getTLONG(void);
 extern Type* getTDOUBLE(void);

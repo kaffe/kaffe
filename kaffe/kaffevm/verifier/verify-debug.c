@@ -423,7 +423,7 @@ printType(const Type* t)
 		break;
 		
 	case TINFO_PRIMITIVE:
-		if (type == TINT->data.class) {
+		if (type == getTINT()->data.class) {
 			dprintf("TINT");
 		}
 		else if (type == getTLONG()->data.class) {
