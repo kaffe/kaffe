@@ -2,6 +2,11 @@ Thu Dec  9 11:51:04 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/net/URLDecoder.java: fix bug parsing %xx
 	* kaffe/kaffevm/inflate.c: eliminate compiler warning
+	* libraries/clib/awt/X/Makefile.am, libraries/clib/io/Makefile.am,
+	libraries/clib/management/Makefile.am, libraries/clib/net/Makefile.am,
+	libraries/clib/math/Makefile.am, libraries/clib/native/Makefile.am,
+	libraries/clib/security/Makefile.am, libraries/clib/zip/Makefile.am,
+	libraries/extensions/microsoft/clib/Makefile.am: fix libtool problem
 
 Mon Dec  6 17:42:57 PST 1999  Archie Cobbs <archie@whistle.com>
 
