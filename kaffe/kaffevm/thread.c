@@ -510,7 +510,9 @@ getCurrentThread(void)
 	Hjava_lang_Thread* tid;
 	
 	tid = jthread_getcookie(jthread_current());
+#ifndef INTERPRETER
 	assert(tid);
+#endif
 	return tid;
 }
 
