@@ -24,7 +24,7 @@ public String sval;
 public double nval;
 
 private PushbackReader pushIn;
-private LineNumberReader lineIn;
+private BufferedReader bufferedIn;
 private Reader rawIn;
 private TableEntry lookup[] = new TableEntry[256];
 private TableEntry ordinary = new TableEntry();
@@ -36,6 +36,7 @@ private boolean toLower;
 private StringBuffer buffer = new StringBuffer();
 private boolean endOfFile;
 private boolean EOLPushedBack;
+private int lineNumber = 1;
 
 /**
  * @deprecated
@@ -46,8 +47,8 @@ public StreamTokenizer (InputStream i) {
 
 public StreamTokenizer(Reader r) {
 	rawIn = r;
-	lineIn = new LineNumberReader(rawIn);
-	pushIn = new PushbackReader(lineIn);
+	bufferedIn = new BufferedReader(rawIn);
+	pushIn = new PushbackReader(bufferedIn);
 	for (int i = 0; i < lookup.length; i++) {
 		lookup[i] = new TableEntry();
 	}
@@ -59,11 +60,6 @@ private int chrRead() throws IOException {
 		return (-1);
 	}
 	else {
-		/* if EOL was pushed back, increase line number again */
-		if (EOLPushedBack) {
-			EOLPushedBack = false;
-			lineIn.setLineNumber(lineIn.getLineNumber() + 1);
-		}
 		return (pushIn.read());
 	}
 }
@@ -74,12 +70,6 @@ private void unRead(int c) throws IOException {
 		endOfFile = true;
 	} else {
 		pushIn.unread(c);
-
-		/* decrease line number if EOL is pushed back */
-		if (c == '\n') {
-			EOLPushedBack = true;
-			lineIn.setLineNumber(lineIn.getLineNumber() - 1);
-		}
 	}
 }
 
@@ -94,7 +84,7 @@ public void eolIsSignificant(boolean flag) {
 }
 
 public int lineno() {
-	return (lineIn.getLineNumber() + 1);
+	return (lineNumber);
 }
 
 public void lowerCaseMode(boolean fl) {
@@ -163,11 +153,42 @@ private void nextTokenType() throws IOException {
 	}
 }
 
+private boolean EOLParsed(int chr) {
+	/* Checks whether chr is an EOL character
+	   like \r, \n.
+	   Returns true if that's the case, false
+	   otherwise.
+	 */
+	if (chr == '\r' || chr == '\n') {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+private void skipEOL(int chr) throws IOException {
+	/* Skips the \r in \r\n.
+	 */
+	if (chr == '\r') {
+		chr = chrRead();
+		if (chr != '\n') {
+			unRead(chr);
+		}
+	}
+}
+
 private void parseWhitespaceChars(int chr) throws IOException {
 	do {
-		if (chr=='\n' && EOLSignificant) {
-			ttype = TT_EOL;
-			return;
+		if (EOLParsed(chr)) {
+			lineNumber ++;
+
+			skipEOL(chr);
+
+			if (EOLSignificant) {
+				ttype = TT_EOL;
+				return;
+			}
 		}
 		
 		chr = chrRead();
@@ -270,15 +291,9 @@ private void parseCommentChars() throws IOException {
 private void parseStringQuoteChars(int chr) throws IOException {
 	int cq = chr;
 
-	/* Save the correct line number in case the string
-	 * contains escaped EOL characters. Reset line number
-	 * later accordingly.
-	 */
-	int stringLineNumber = lineIn.getLineNumber();
-
-	buffer.setLength( 0);
+	buffer.setLength(0);
 	chr = chrRead();
-	while ( chr != cq && chr != '\n' && chr != -1) {
+	while ( chr != cq && !(EOLParsed(chr)) && chr != -1) {
 		if ( chr == '\\' ) {
 			chr = chrRead();
 			switch (chr) {
@@ -313,7 +328,7 @@ private void parseStringQuoteChars(int chr) throws IOException {
 		buffer.append((char)chr);
 		chr = chrRead();
 	}
-	if ( chr == '\n' ) {
+	if (EOLParsed(chr)) {
 		unRead(chr);
 	}
 
@@ -324,8 +339,6 @@ private void parseStringQuoteChars(int chr) throws IOException {
 	 */
 	ttype = cq;
 	sval = buffer.toString();
-
-	lineIn.setLineNumber(stringLineNumber);
 }
 
 private void parseCPlusPlusCommentChars() throws IOException {
@@ -454,7 +467,12 @@ public void resetSyntax() {
 private void skipCComment() throws IOException {
 	for (;;) {
 		int chr = chrRead();
-		if (chr == '*') {
+
+		if (EOLParsed(chr)) {
+			lineNumber ++;
+			skipEOL(chr);
+		}
+		else if (chr == '*') {
 			int next = chrRead();
 			if (next=='/') {
 				break;
@@ -475,11 +493,11 @@ private void skipLine() throws IOException {
 	 */
 	int chr = chrRead();
 
-	while (chr != '\n' && chr != -1)
+	while (!EOLParsed(chr) && chr != -1)
 		chr = chrRead();
 
-	if (chr == '\n') {
-		unRead('\n');
+	if (EOLParsed(chr)) {
+		unRead(chr);
 	}
 }
 
