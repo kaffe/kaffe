@@ -14,7 +14,7 @@
 extern int argcount;
 
 extern int slot_type(SlotInfo*);
-extern jvalue slot_value(SlotInfo*);
+extern jvalue *slot_value(SlotInfo*);
 extern void writeslot(sequence*, int, SlotInfo*, int);
 extern void readslot(sequence*, int, SlotInfo*, int);
 

@@ -1,5 +1,11 @@
 2004-12-09  Adam Heath  <doogie@brainfood.com>
 
+	* kaffe/kaffevm/jit3/basecode.c, kaffe/kaffevm/jit3/basecode.h,
+	  kaffe/kaffevm/jit3/icode.c:
+	  Fix 'function returns an aggretate type' warning.
+
+2004-12-09  Adam Heath  <doogie@brainfood.com>
+
 	* tools/gjdoc/javalib/Makefile.am, tools/gjdoc/javalib/Makefile.in:
 	  Fix broken invocation of rebuildLib, by exporting vars in the
 	  Makefile.

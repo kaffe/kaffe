@@ -113,9 +113,9 @@ slot_type(SlotInfo* data)
 }
 
 jvalue
-slot_value(SlotInfo* data)
+*slot_value(SlotInfo* data)
 {
-	return (data->slot->wseq->u[2].value);
+	return &(data->slot->wseq->u[2].value);
 }
 
 void

@@ -816,7 +816,7 @@ move_int(SlotInfo* dst, SlotInfo* src)
 	}
 #if defined(HAVE_move_int_const)
 	else if (slot_type(src) == Tconst) {
-		move_int_const(dst, slot_value(src).i);
+		move_int_const(dst, slot_value(src)->i);
 	}
 #endif
 	else if (isGlobal(dst->slot)) {
@@ -835,7 +835,7 @@ move_ref(SlotInfo* dst, SlotInfo* src)
 	}
 #if defined(HAVE_move_ref_const)
 	else if (slot_type(src) == Tconst) {
-		move_ref_const(dst, slot_value(src).l);
+		move_ref_const(dst, slot_value(src)->l);
 	}
 #endif
 	else if (isGlobal(dst->slot)) {
@@ -877,7 +877,7 @@ move_float(SlotInfo* dst, SlotInfo* src)
 	}
 #if defined(HAVE_move_float_const)
 	else if (slot_type(src) == Tconst) {
-		move_float_const(dst, slot_value(src).f);
+		move_float_const(dst, slot_value(src)->f);
 	}
 #endif
 	else if (isGlobal(dst->slot)) {
@@ -901,7 +901,7 @@ move_double(SlotInfo* dst, SlotInfo* src)
 	}
 #if defined(HAVE_move_double_const)
 	else if (slot_type(src) == Tconst) {
-		move_double_const(dst, slot_value(src).d);
+		move_double_const(dst, slot_value(src)->d);
 	}
 #endif
 	else if (isGlobal(dst->slot)) {
@@ -988,16 +988,16 @@ add_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 		/* Disabled as it does not clear Carry and breaks
                    add_long() on ARM */
 		if (slot_type(src2) == Tconst) {
-			move_int_const(dst, slot_value(src).i + slot_value(src2).i);
+			move_int_const(dst, slot_value(src)->i + slot_value(src2)->i);
 		}
 		else
 #endif
 		{
-			add_int_const(dst, src2, slot_value(src).i);
+			add_int_const(dst, src2, slot_value(src)->i);
 		}
 	}
 	else if (slot_type(src2) == Tconst) {
-		add_int_const(dst, src, slot_value(src2).i);
+		add_int_const(dst, src, slot_value(src2)->i);
 	}
 	else
 #endif
@@ -1178,7 +1178,7 @@ sub_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
 #if defined(HAVE_sub_int_const)
 	if (slot_type(src2) == Tconst) {
-		sub_int_const(dst, src, slot_value(src2).i);
+		sub_int_const(dst, src, slot_value(src2)->i);
 	}
 	else
 #endif
@@ -1338,16 +1338,16 @@ void
 mul_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
 	if (slot_type(src2) == Tconst) {
-		if (mul_int_const_optimize(dst, src, slot_value(src2).i) != 0) {
+		if (mul_int_const_optimize(dst, src, slot_value(src2)->i) != 0) {
 			return;
 		}
 	}
 #if defined(HAVE_mul_int) && defined(HAVE_mul_int_const)
 	if (slot_type(src) == Tconst) {
-		mul_int_const(dst, src2, slot_value(src).i);
+		mul_int_const(dst, src2, slot_value(src)->i);
 	}
 	else if (slot_type(src2) == Tconst) {
-		mul_int_const(dst, src, slot_value(src2).i);
+		mul_int_const(dst, src, slot_value(src2)->i);
 	}
 	else
 #endif
@@ -1521,7 +1521,7 @@ void
 div_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
 	if (slot_type(src2) == Tconst) {
-		if (div_int_const_optimize(dst, src, slot_value(src2).i) != 0) {
+		if (div_int_const_optimize(dst, src, slot_value(src2)->i) != 0) {
 			return;
 		}
 	}
@@ -1818,10 +1818,10 @@ and_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
 #if defined(HAVE_and_int_const)
 	if (slot_type(src) == Tconst) {
-		and_int_const(dst, src2, slot_value(src).i);
+		and_int_const(dst, src2, slot_value(src)->i);
 	}
 	else if (slot_type(src2) == Tconst) {
-		and_int_const(dst, src, slot_value(src2).i);
+		and_int_const(dst, src, slot_value(src2)->i);
 	}
 	else
 #endif
@@ -1894,10 +1894,10 @@ or_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
 #if defined(HAVE_or_int_const)
 	if (slot_type(src) == Tconst) {
-		or_int_const(dst, src2, slot_value(src).i);
+		or_int_const(dst, src2, slot_value(src)->i);
 	}
 	else if (slot_type(src2) == Tconst) {
-		or_int_const(dst, src, slot_value(src2).i);
+		or_int_const(dst, src, slot_value(src2)->i);
 	}
 	else
 #endif
@@ -1954,10 +1954,10 @@ xor_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
 #if defined(HAVE_xor_int_const)
 	if (slot_type(src) == Tconst) {
-		xor_int_const(dst, src2, slot_value(src).i);
+		xor_int_const(dst, src2, slot_value(src)->i);
 	}
 	else if (slot_type(src2) == Tconst) {
-		xor_int_const(dst, src, slot_value(src2).i);
+		xor_int_const(dst, src, slot_value(src2)->i);
 	}
 	else
 #endif
@@ -2006,7 +2006,7 @@ lshl_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
 #if defined(HAVE_lshl_int_const)
 	if (slot_type(src2) == Tconst) {
-		lshl_int_const(dst, src, slot_value(src2).i);
+		lshl_int_const(dst, src, slot_value(src2)->i);
 	}
 	else
 #endif
@@ -2083,7 +2083,7 @@ ashr_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
 #if defined(HAVE_ashr_int_const)
 	if (slot_type(src2) == Tconst) {
-		ashr_int_const(dst, src, slot_value(src2).i);
+		ashr_int_const(dst, src, slot_value(src2)->i);
 	}
 	else
 #endif
@@ -2142,7 +2142,7 @@ lshr_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
 #if defined(HAVE_lshr_int_const)
 	if (slot_type(src2) == Tconst) {
-		lshr_int_const(dst, src, slot_value(src2).i);
+		lshr_int_const(dst, src, slot_value(src2)->i);
 	}
 	else
 #endif
@@ -2557,7 +2557,7 @@ void
 load_offset_scaled_int(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	if (slot_type(idx) == Tconst) {
-		load_offset_int(dst, src, slot_value(idx).i * sizeof(jint) + offset);
+		load_offset_int(dst, src, slot_value(idx)->i * sizeof(jint) + offset);
 	}
 	else
 #if defined(HAVE_load_offset_scaled_int)
@@ -2578,7 +2578,7 @@ void
 load_offset_scaled_ref(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	if (slot_type(idx) == Tconst) {
-		load_offset_ref(dst, src, slot_value(idx).i * sizeof(jref) + offset);
+		load_offset_ref(dst, src, slot_value(idx)->i * sizeof(jref) + offset);
 	}
 	else
 #if defined(HAVE_load_offset_scaled_ref)
@@ -2599,7 +2599,7 @@ void
 load_offset_scaled_long(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	if (slot_type(idx) == Tconst) {
-		load_offset_long(dst, src, slot_value(idx).i * sizeof(jlong) + offset);
+		load_offset_long(dst, src, slot_value(idx)->i * sizeof(jlong) + offset);
 	}
 	else
 #if defined(HAVE_load_offset_scaled_long)
@@ -2620,7 +2620,7 @@ void
 load_offset_scaled_float(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	if (slot_type(idx) == Tconst) {
-		load_offset_float(dst, src, slot_value(idx).i * sizeof(jfloat) + offset);
+		load_offset_float(dst, src, slot_value(idx)->i * sizeof(jfloat) + offset);
 	}
 	else
 #if defined(HAVE_load_offset_scaled_float)
@@ -2641,7 +2641,7 @@ void
 load_offset_scaled_double(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	if (slot_type(idx) == Tconst) {
-		load_offset_double(dst, src, slot_value(idx).i * sizeof(jdouble) + offset);
+		load_offset_double(dst, src, slot_value(idx)->i * sizeof(jdouble) + offset);
 	}
 	else
 #if defined(HAVE_load_offset_scaled_double)
@@ -2662,7 +2662,7 @@ void
 load_offset_scaled_byte(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	if (slot_type(idx) == Tconst) {
-		load_offset_byte(dst, src, slot_value(idx).i * sizeof(jbyte) + offset);
+		load_offset_byte(dst, src, slot_value(idx)->i * sizeof(jbyte) + offset);
 	}
 	else
 #if defined(HAVE_load_offset_scaled_byte)
@@ -2682,7 +2682,7 @@ void
 load_offset_scaled_char(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	if (slot_type(idx) == Tconst) {
-		load_offset_char(dst, src, slot_value(idx).i * sizeof(jchar) + offset);
+		load_offset_char(dst, src, slot_value(idx)->i * sizeof(jchar) + offset);
 	}
 	else
 #if defined(HAVE_load_offset_scaled_char)
@@ -2703,7 +2703,7 @@ void
 load_offset_scaled_short(SlotInfo* dst, SlotInfo* src, SlotInfo* idx, int offset)
 {
 	if (slot_type(idx) == Tconst) {
-		load_offset_short(dst, src, slot_value(idx).i * sizeof(jshort) + offset);
+		load_offset_short(dst, src, slot_value(idx)->i * sizeof(jshort) + offset);
 	}
 	else
 #if defined(HAVE_load_offset_scaled_short)
@@ -2753,7 +2753,7 @@ store_offset_int(SlotInfo* dst, jint offset, SlotInfo* src)
 	else
 #if defined(HAVE_store_const_offset_int)
 	if (slot_type(src) == Tconst) {
-		store_const_offset_int(dst, offset, slot_value(src).i);
+		store_const_offset_int(dst, offset, slot_value(src)->i);
 	}
 	else
 #endif
@@ -3008,7 +3008,7 @@ store_offset_byte(SlotInfo* dst, jint offset, SlotInfo* src)
 	else
 #if defined(HAVE_store_const_offset_byte)
 	if (slot_type(src) == Tconst) {
-		store_const_offset_byte(dst, offset, slot_value(src).i);
+		store_const_offset_byte(dst, offset, slot_value(src)->i);
 	}
 	else
 #endif
@@ -3161,7 +3161,7 @@ void
 store_offset_scaled_int(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
 	if (slot_type(idx) == Tconst) {
-		store_offset_int(dst, slot_value(idx).i * sizeof(jint) + offset, src);
+		store_offset_int(dst, slot_value(idx)->i * sizeof(jint) + offset, src);
 	}
 	else
 #if defined(HAVE_store_offset_scaled_int)
@@ -3182,7 +3182,7 @@ void
 store_offset_scaled_ref(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
 	if (slot_type(idx) == Tconst) {
-		store_offset_ref(dst, slot_value(idx).i * sizeof(jref) + offset, src);
+		store_offset_ref(dst, slot_value(idx)->i * sizeof(jref) + offset, src);
 	}
 	else
 #if defined(HAVE_store_offset_scaled_ref)
@@ -3203,7 +3203,7 @@ void
 store_offset_scaled_long(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
 	if (slot_type(idx) == Tconst) {
-		store_offset_long(dst, slot_value(idx).i * sizeof(jlong) + offset, src);
+		store_offset_long(dst, slot_value(idx)->i * sizeof(jlong) + offset, src);
 	}
 	else
 #if defined(HAVE_store_offset_scaled_long)
@@ -3224,7 +3224,7 @@ void
 store_offset_scaled_float(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
 	if (slot_type(idx) == Tconst) {
-		store_offset_float(dst, slot_value(idx).i * sizeof(jfloat) + offset, src);
+		store_offset_float(dst, slot_value(idx)->i * sizeof(jfloat) + offset, src);
 	}
 	else
 #if defined(HAVE_store_offset_scaled_float)
@@ -3245,7 +3245,7 @@ void
 store_offset_scaled_double(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
 	if (slot_type(idx) == Tconst) {
-		store_offset_double(dst, slot_value(idx).i * sizeof(jdouble) + offset, src);
+		store_offset_double(dst, slot_value(idx)->i * sizeof(jdouble) + offset, src);
 	}
 	else
 #if defined(HAVE_store_offset_scaled_double)
@@ -3266,13 +3266,13 @@ void
 store_offset_scaled_byte(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
 	if (slot_type(idx) == Tconst) {
-		store_offset_byte(dst, slot_value(idx).i * sizeof(jbyte) + offset, src);
+		store_offset_byte(dst, slot_value(idx)->i * sizeof(jbyte) + offset, src);
 	}
 	else
 #if defined(HAVE_store_offset_scaled_byte)
 #if defined(HAVE_store_const_offset_scaled_byte)
 	if (slot_type(src) == Tconst) {
-		store_const_offset_scaled_byte(dst, idx, offset, slot_value(src).i);
+		store_const_offset_scaled_byte(dst, idx, offset, slot_value(src)->i);
 	}
 	else
 #endif
@@ -3300,7 +3300,7 @@ void
 store_offset_scaled_char(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
 	if (slot_type(idx) == Tconst) {
-		store_offset_char(dst, slot_value(idx).i * sizeof(jchar) + offset, src);
+		store_offset_char(dst, slot_value(idx)->i * sizeof(jchar) + offset, src);
 	}
 	else
 #if defined(HAVE_store_offset_scaled_char)
@@ -3321,7 +3321,7 @@ void
 store_offset_scaled_short(SlotInfo* dst, SlotInfo* idx, int offset, SlotInfo* src)
 {
 	if (slot_type(idx) == Tconst) {
-		store_offset_short(dst, slot_value(idx).i * sizeof(jshort) + offset, src);
+		store_offset_short(dst, slot_value(idx)->i * sizeof(jshort) + offset, src);
 	}
 	else
 #if defined(HAVE_store_offset_scaled_short)
@@ -3412,7 +3412,7 @@ pusharg_int(SlotInfo* src, int idx)
 {
 #if defined(HAVE_pusharg_int_const)
 	if (slot_type(src) == Tconst) {
-		pusharg_int_const(slot_value(src).i, idx);
+		pusharg_int_const(slot_value(src)->i, idx);
 	}
 	else
 #endif
@@ -3429,7 +3429,7 @@ pusharg_ref(SlotInfo* src, int idx)
 {
 #if defined(HAVE_pusharg_ref_const)
 	if (slot_type(src) == Tconst) {
-		pusharg_ref_const(slot_value(src).l, idx);
+		pusharg_ref_const(slot_value(src)->l, idx);
 	}
 	else
 #endif
@@ -4028,7 +4028,7 @@ cmp_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
 #if defined(HAVE_cmp_int_const)
 	if (slot_type(src2) == Tconst) {
-		cmp_int_const(dst, src, slot_value(src2).i);
+		cmp_int_const(dst, src, slot_value(src2)->i);
 	}
 	else
 #endif
@@ -4085,10 +4085,10 @@ cmp_ref(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 	 * equality.
 	 */
 	if (slot_type(src2) == Tconst) {
-		cmp_ref_const(dst, src, slot_value(src2).l);
+		cmp_ref_const(dst, src, slot_value(src2)->l);
 	}
 	else if (slot_type(src) == Tconst) {
-		cmp_ref_const(dst, src2, slot_value(src).l);
+		cmp_ref_const(dst, src2, slot_value(src)->l);
 	}
 	else
 #endif
