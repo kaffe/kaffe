@@ -119,7 +119,10 @@ stringC2CharArray(const char* cs)
 	/* Get new array object */
 	ary = (HArrayOfChar*)newArrayChecked(TYPE_CLASS(TYPE_Char),
 					     len, &info);
-	if (!ary) return 0;
+	if (!ary) {
+		discardErrorInfo(&info);
+		return 0;
+	}
 	
 	/* Convert C chars to Java chars */
 	for (k = 0; k < len; k++) {
@@ -465,11 +468,17 @@ stringCharArray2Java(const jchar *data, int len)
 	/* Create a new String object */
 	ary = (HArrayOfChar*)newArrayChecked(charClass, len,
 					     &info);
-	if (!ary) return 0;
+	if (!ary) {
+		discardErrorInfo(&info);
+		return 0;
+	}
 	
 	memcpy(ARRAY_DATA(ary), data, len * sizeof(jchar));
 	string = (Hjava_lang_String*)newObjectChecked(StringClass, &info);
-	if (!string) return 0;
+	if (!string) {
+		discardErrorInfo(&info);
+		return 0;
+	}
 	unhand(string)->value = ary;
 	unhand(string)->count = len;
 

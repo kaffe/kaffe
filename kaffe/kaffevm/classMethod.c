@@ -331,43 +331,17 @@ retry:
 			JVMPI_Method *jvmpi_methods;
 			JVMPI_Field *jvmpi_fields;
 			JVMPI_Event ev;
-			int lpc;
 			
 			jvmpi_methods = alloca(sizeof(JVMPI_Method) *
 					       class->nmethods);
-			for( lpc = 0; lpc < class->nmethods; lpc++ )
-			{
-				jvmpiConvertMethod(&jvmpi_methods[lpc],
-						   &class->methods[lpc]);
-			}
 			jvmpi_fields = alloca(sizeof(JVMPI_Field) *
 					      (class->nsfields +
 					       class->nfields));
-			for( lpc = 0;
-			     lpc < (class->nsfields + class->nfields);
-			     lpc++ )
-			{
-				jvmpiConvertField(&jvmpi_fields[lpc],
-						  &class->fields[lpc]);
-			}
-			ev.event_type = JVMPI_EVENT_CLASS_LOAD;
-			ev.u.class_load.class_name =
-				class->name->data;
-			ev.u.class_load.source_name =
-				class->sourcefile;
-			ev.u.class_load.num_interfaces =
-				class->interface_len;
-			ev.u.class_load.num_methods =
-				class->nmethods;
 			ev.u.class_load.methods = jvmpi_methods;
-			ev.u.class_load.num_static_fields =
-				class->nsfields;
 			ev.u.class_load.statics = &jvmpi_fields[0];
-			ev.u.class_load.num_instance_fields =
-				class->nfields;
 			ev.u.class_load.instances =
 				&jvmpi_fields[class->nsfields];
-			ev.u.class_load.class_id = class;
+			jvmpiFillClassLoad(&ev, class);
 			jvmpiPostEvent(&ev);
 		}
 #endif

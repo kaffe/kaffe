@@ -2692,45 +2692,61 @@ define_insn(INVOKEVIRTUAL)
 
 		check_stack_ref(idx);
 
-		if (is_virtual) {
-			/* Find dispatch table in object */
-			load_offset_ref(tmp, stack(idx), method_dtable_offset);
-
-			/* Check method table for cached entry */
-			load_offset_ref(tmp, tmp,
-				DTABLE_METHODOFFSET + 
-				method_idx() * DTABLE_METHODSIZE);
-		} else {
-			/* Explicitly check that object is non-null.
-			 * Implicitly done in the dispatch table lookup. */
-			explicit_check_null(INVOKEVIRTUAL, stack(idx), 35);
+		if( !is_virtual &&
+		    METHOD_TRANSLATED(method_method()) &&
+		    (METHOD_NATIVECODE(method_method()) == soft_null_call) )
+		{
+			idx += 1;
+			pop(idx);
 		}
-
-		/* Push arguments & object */
-		build_call_frame(method_sig(), stack(idx), idx);
-		idx++;
-
-		if (is_virtual) {
-			slot_nowriteback(tmp);
+		else
+		{
+			if (is_virtual) {
+				/* Find dispatch table in object */
+				load_offset_ref(tmp, stack(idx),
+						method_dtable_offset);
+				
+				/* Check method table for cached entry */
+				load_offset_ref(tmp, tmp,
+						DTABLE_METHODOFFSET + 
+						method_idx() *
+						DTABLE_METHODSIZE);
+			} else {
+				/* Explicitly check that object is non-null.
+				 * Implicitly done in the dispatch table
+				 * lookup.
+				 */
+				explicit_check_null(INVOKEVIRTUAL,
+						    stack(idx),
+						    35);
+			}
+			
+			/* Push arguments & object */
+			build_call_frame(method_sig(), stack(idx), idx);
+			idx++;
+			
+			if (is_virtual) {
+				slot_nowriteback(tmp);
+			}
+			pop(idx);
+			begin_func_sync();
+			
+			/* Call it */
+			low = method_returntype();
+			if (is_virtual) {
+				call(tmp);
+				slot_freetmp(tmp);
+			} else {
+				call_indirect_method(method_method());
+			}
+			
+			/* Pop args */
+			popargs();
+			
+			end_func_sync();
+			METHOD_RETURN_VALUE();
 		}
-		pop(idx);
-		begin_func_sync();
-
-		/* Call it */
-		low = method_returntype();
-		if (is_virtual) {
-			call(tmp);
-			slot_freetmp(tmp);
-		} else {
-			call_indirect_method(method_method());
-		}
-
-		/* Pop args */
-		popargs();
-
-		end_func_sync();
-		METHOD_RETURN_VALUE();
-	} 
+	}
 }
 
 define_insn(INVOKESPECIAL)
@@ -2795,23 +2811,32 @@ define_insn(INVOKESPECIAL)
 
 		check_stack_ref(idx);
 
-		/* Push arguments & object */
-		build_call_frame(method_sig(), stack(idx), idx);
-		idx++;
-
-		pop(idx);
-		begin_func_sync();
-
-		/* Call it */
-		low = method_returntype();
-
-		call_indirect_method(method_method());
-
-		/* Pop args */
-		popargs();
-
-		end_func_sync();
-		METHOD_RETURN_VALUE();
+		if( METHOD_TRANSLATED(method_method()) &&
+		    (METHOD_NATIVECODE(method_method()) == soft_null_call) )
+		{
+			idx += 1;
+			pop(idx);
+		}
+		else
+		{
+			/* Push arguments & object */
+			build_call_frame(method_sig(), stack(idx), idx);
+			idx++;
+			
+			pop(idx);
+			begin_func_sync();
+			
+			/* Call it */
+			low = method_returntype();
+			
+			call_indirect_method(method_method());
+			
+			/* Pop args */
+			popargs();
+			
+			end_func_sync();
+			METHOD_RETURN_VALUE();
+		}
 	}
 }
 
@@ -2858,22 +2883,30 @@ define_insn(INVOKESTATIC)
 	else {
 		idx = method_nargs();
 
-		/* Push arguments */
-		build_call_frame(method_sig(), 0, idx);
-
-		pop(idx);
-		begin_func_sync();
-
-		/* Call it */
-		low = method_returntype();
-
-		call_indirect_method(method_method());
-
-		/* Pop args */
-		popargs();
-
-		end_func_sync();
-		METHOD_RETURN_VALUE();
+		if( METHOD_TRANSLATED(method_method()) &&
+		    (METHOD_NATIVECODE(method_method()) == soft_null_call) )
+		{
+			pop(idx);
+		}
+		else
+		{
+			/* Push arguments */
+			build_call_frame(method_sig(), 0, idx);
+			
+			pop(idx);
+			begin_func_sync();
+			
+			/* Call it */
+			low = method_returntype();
+			
+			call_indirect_method(method_method());
+			
+			/* Pop args */
+			popargs();
+			
+			end_func_sync();
+			METHOD_RETURN_VALUE();
+		}
 	}
 }
 

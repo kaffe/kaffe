@@ -1,3 +1,46 @@
+2003-10-11  Timothy S. Stack <stack@cs.utah.edu>
+
+	* config/i386/jit3-i386.def:
+	Use shorter form of some 'push' opcodes.
+	
+	* include/jvmpi.h:
+	Add JVMPI_REQUESTED_EVENT flag.
+
+	* kaffe/jvmpi/jvmpi_kaffe.h,
+	kaffe/jvmpi/jvmpi_kaffe.c:
+	Refactored some code for creating events and added support for
+	requested events.
+
+	* kaffe/kaffevm/classMethod.c,
+	kaffe/kaffevm/object.c,
+	kaffe/kaffevm/thread.c:
+	Moved code for dealing with events to jvmpi_kaffe.c
+
+	* kaffe/kaffevm/findInJar.c:
+	Correctly handle KSTAT's return value and make sure classhome is
+	non-NULL before calling discoverClasspath().
+
+	* kaffe/kaffevm/kaffe.def:
+	Don't bother calling empty methods.
+
+	* kaffe/kaffevm/soft.h,
+	kaffe/kaffevm/soft.c:
+	Add soft_null_call() for the jitters to use when a method is
+	completely empty.
+	
+	* kaffe/kaffevm/string.c:
+	Call discardErrorInfo() before returning if there was a failure.
+
+	* kaffe/kaffevm/jit3/codeproto.h,
+	kaffe/kaffevm/jit3/icode.c:
+	Add popargs_noreturn for softcalls that can't return
+	(e.g. soft_athrow).  Just saves a little bit of stack popping
+	code...
+
+	* kaffe/kaffevm/jit3/machine.c:
+	Change the internal nullCall to soft_null_call so that it can be
+	referenced in kaffe.def.
+
 2003-10-10  Alexander Kotelnikov <sacha@myxomop.com>
 
 	* config/alpha/alpha.c:

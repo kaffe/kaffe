@@ -38,6 +38,11 @@
 #include "fp.h"
 #include "jvmpi_kaffe.h"
 
+void
+soft_null_call(void)
+{
+}
+
 /*
  * soft_new
  */

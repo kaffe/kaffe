@@ -3503,12 +3503,15 @@ pusharg_long(SlotInfo* src, int idx)
 }
 
 void
-popargs(void)
+popargs_internal(int does_return)
 {
  	if (argcount != 0) {
+		if( does_return )
+		{
 #if defined(HAVE_popargs)
-		slot_slot_const(0, 0, argcount, HAVE_popargs, Tnull);
+			slot_slot_const(0, 0, argcount, HAVE_popargs, Tnull);
 #endif
+		}
 		if (argcount > maxPush) {
 			maxPush = argcount;
 		}
@@ -4839,7 +4842,7 @@ softcall_nosuchclass(Utf8Const* name)
 	begin_func_sync();
 	pusharg_utf8_const(name, 0);
 	call_soft(soft_nosuchclass);
-	popargs();
+	popargs_noreturn();
 	end_func_sync();
 }
 
@@ -4857,7 +4860,7 @@ softcall_nosuchmethod(struct Hjava_lang_Class* cls, Utf8Const* name, Utf8Const* 
 	pusharg_class_const(cls, 0);
 #endif
 	call_soft(soft_nosuchmethod);
-	popargs();
+	popargs_noreturn();
 	end_func_sync();
 }
 
@@ -4873,7 +4876,7 @@ softcall_nosuchfield(Utf8Const* cls, Utf8Const* name)
 	pusharg_utf8_const(cls, 0);
 #endif
 	call_soft(soft_nosuchfield);
-	popargs();
+	popargs_noreturn();
 	end_func_sync();
 }
 
@@ -4889,7 +4892,7 @@ softcall_linkage(Utf8Const* cls, Utf8Const* name)
 	pusharg_utf8_const(cls, 0);
 #endif
 	call_soft(soft_linkage);
-	popargs();
+	popargs_noreturn();
 	end_func_sync();
 }
 
@@ -4905,7 +4908,7 @@ softcall_illegalaccess(Utf8Const* cls, Utf8Const* name)
 	pusharg_utf8_const(cls, 0);
 #endif
 	call_soft(soft_illegalaccess);
-	popargs();
+	popargs_noreturn();
 	end_func_sync();
 }
 
@@ -4921,7 +4924,7 @@ softcall_incompatibleclasschange(Utf8Const* cls, Utf8Const* name)
 	pusharg_utf8_const(cls, 0);
 #endif
 	call_soft(soft_incompatibleclasschange);
-	popargs();
+	popargs_noreturn();
 	end_func_sync();
 }
 
@@ -5007,7 +5010,7 @@ softcall_athrow(SlotInfo* obj)
 	begin_func_sync();
 	pusharg_ref(obj, 0);
 	call_soft(soft_athrow);
-	popargs();
+	popargs_noreturn();
 	end_func_sync();
 }
 

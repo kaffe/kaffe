@@ -1607,8 +1607,7 @@ define_insn(push_int, push_xRC)
 	if (inRegister(1, Rint|Rref)) {
 		r = rreg_int(1);
 
-		OUT = 0xFF;
-		OUT = 0xF0|r;
+		OUT = 0x50|r;
 
 		debug(("pushl %s\n", regname(r)));
 	}
@@ -1625,8 +1624,7 @@ define_insn(push_float, fpush_xRC)
 {
 	int r = rreg_int(1);	/* Move the float into a register */
 
-	OUT = 0xFF;
-	OUT = 0xF0|r;
+	OUT = 0x50|r;
 
 	debug(("pushl %s\n", regname(r)));
 }

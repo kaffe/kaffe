@@ -360,7 +360,7 @@ initClasspath(void)
 		makeClasspath(writable_cp);
 		KFREE(writable_cp);
 	}
-	else {
+	else if(hm) {
 		discoverClasspath(hm);
 	}
 
@@ -553,7 +553,7 @@ getClasspathType(const char* path)
 	char buf[4];
 	struct stat sbuf;
 
-	if (KSTAT(path, &sbuf) < 0) {
+	if (KSTAT(path, &sbuf)) {
 		return (CP_INVALID);
 	}
 

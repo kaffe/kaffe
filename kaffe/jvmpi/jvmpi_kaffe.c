@@ -1,3 +1,17 @@
+/*
+ * jvmpi_kaffe.c
+ * Routines for generating an assembly file with debugging information
+ *
+ * Copyright (c) 2003 University of Utah and the Flux Group.
+ * All rights reserved.
+ *
+ * This file is licensed under the terms of the GNU Public License.
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+ *
+ * Contributed by the Flux Research Group, Department of Computer Science,
+ * University of Utah, http://www.cs.utah.edu/flux/
+ */
 
 #include "config.h"
 
@@ -16,6 +30,7 @@
 #include "java_lang_Thread.h"
 #include "thread.h"
 #include "stackTrace.h"
+#include "stringSupport.h"
 
 #include <assert.h>
 
@@ -25,6 +40,9 @@ JVMPI_Interface *jvmpiCreateInterface(jint version)
 {
 	JVMPI_Interface *retval;
 
+	assert((version == JVMPI_VERSION_1) ||
+	       (version == JVMPI_VERSION_1_1));
+	
 	retval = &jvmpi_data.jk_Interface;
 	retval->version = version;
 	return( retval );
@@ -32,6 +50,7 @@ JVMPI_Interface *jvmpiCreateInterface(jint version)
 
 void jvmpiPostEvent(JVMPI_Event *ev)
 {
+	assert(ev != NULL);
 	assert(ev->event_type >= 0);
 	assert(ev->event_type < JVMPI_EVENT_COUNT);
 
@@ -98,6 +117,117 @@ void jvmpiConvertLineno(JVMPI_Lineno *dst,
 
 	dst->offset = src->start_pc - (uintp)start_pc;
 	dst->lineno = src->line_nr;
+}
+
+void jvmpiFillObjectAlloc(JVMPI_Event *ev, struct Hjava_lang_Object *obj)
+{
+	struct Hjava_lang_Class *cl;
+	
+	assert(ev != NULL);
+	assert(obj != NULL);
+
+	cl = OBJECT_CLASS(obj);
+	ev->event_type = JVMPI_EVENT_OBJECT_ALLOC;
+	ev->u.obj_alloc.arena_id = -1;
+	ev->u.obj_alloc.class_id = cl;
+	if( CLASS_IS_ARRAY(cl) )
+	{
+		jint prim_type = 0;
+		
+		switch( CLASS_PRIM_SIG(CLASS_ELEMENT_TYPE(cl)) )
+		{
+		case 'I':
+			prim_type = JVMPI_INT;
+			break;
+		case 'Z':
+			prim_type = JVMPI_BOOLEAN;
+			break;
+		case 'S':
+			prim_type = JVMPI_SHORT;
+			break;
+		case 'B':
+			prim_type = JVMPI_BYTE;
+			break;
+		case 'C':
+			prim_type = JVMPI_CHAR;
+			break;
+		case 'F':
+			prim_type = JVMPI_FLOAT;
+			break;
+		case 'D':
+			prim_type = JVMPI_DOUBLE;
+			break;
+		case 'J':
+			prim_type = JVMPI_LONG;
+			break;
+		default:
+			assert(0);
+			break;
+		}
+		ev->u.obj_alloc.is_array = prim_type;
+	}
+	else
+	{
+		ev->u.obj_alloc.is_array = JVMPI_NORMAL_OBJECT;
+	}
+	ev->u.obj_alloc.size = GC_getObjectSize(main_collector, obj);
+	ev->u.obj_alloc.obj_id = obj;
+}
+
+void jvmpiFillThreadStart(JVMPI_Event *ev, struct Hjava_lang_Thread *tid)
+{
+	struct Hjava_lang_String *name;
+	
+	assert(ev != NULL);
+	assert(tid != NULL);
+	
+	ev->event_type = JVMPI_EVENT_THREAD_START;
+	if( (name = stringCharArray2Java(unhand_char_array(tid->name),
+					 obj_length(tid->name))) != NULL )
+	{
+		ev->u.thread_start.thread_name = stringJava2C(name);
+	}
+	else
+	{
+		ev->u.thread_start.thread_name = NULL;
+	}
+	ev->u.thread_start.group_name = stringJava2C(tid->group->name);
+	ev->u.thread_start.parent_name = NULL;
+	ev->u.thread_start.thread_id = tid;
+	ev->u.thread_start.thread_env_id =
+		&jthread_get_data((jthread_t)tid->PrivateInfo)->jniEnv;
+}
+
+void jvmpiFillClassLoad(JVMPI_Event *ev, struct Hjava_lang_Class *cl)
+{
+	int lpc;
+	
+	assert(ev != NULL);
+	assert(cl != NULL);
+
+	for( lpc = 0; lpc < CLASS_NMETHODS(cl); lpc++ )
+	{
+		jvmpiConvertMethod(&ev->u.class_load.methods[lpc],
+				   &CLASS_METHODS(cl)[lpc]);
+	}
+	for( lpc = 0; lpc < CLASS_NSFIELDS(cl); lpc++ )
+	{
+		jvmpiConvertField(&ev->u.class_load.statics[lpc],
+				  &CLASS_SFIELDS(cl)[lpc]);
+	}
+	for( lpc = 0; lpc < CLASS_NIFIELDS(cl); lpc++ )
+	{
+		jvmpiConvertField(&ev->u.class_load.statics[lpc],
+				  &CLASS_IFIELDS(cl)[lpc]);
+	}
+	ev->event_type = JVMPI_EVENT_CLASS_LOAD;
+	ev->u.class_load.class_name = CLASS_CNAME(cl);
+	ev->u.class_load.source_name = CLASS_SOURCEFILE(cl);
+	ev->u.class_load.num_interfaces = cl->interface_len;
+	ev->u.class_load.num_methods = CLASS_NMETHODS(cl);
+	ev->u.class_load.num_static_fields = CLASS_NSFIELDS(cl);
+	ev->u.class_load.num_instance_fields = CLASS_NIFIELDS(cl);
+	ev->u.class_load.class_id = cl;
 }
 
 static jint jvmpiCreateSystemThread(char *name,
@@ -322,8 +452,8 @@ static jobjectID jvmpiGetThreadObject(JNIEnv *env_id)
 
 static jint jvmpiGetThreadStatus(JNIEnv *env_id)
 {
+	jint retval = 0;
 	jthread_t jt;
-	jint retval;
 
 	assert(env_id != NULL);
 
@@ -424,6 +554,62 @@ static jint jvmpiRequestEvent(jint event_type, void *arg)
 {
 	jint retval = JVMPI_NOT_AVAILABLE;
 
+	switch( event_type )
+	{
+	case JVMPI_EVENT_HEAP_DUMP:
+		break;
+	case JVMPI_EVENT_MONITOR_DUMP:
+		break;
+	case JVMPI_EVENT_OBJECT_DUMP:
+		break;
+	case JVMPI_EVENT_CLASS_LOAD:
+		{
+			struct Hjava_lang_Class *cl;
+			JVMPI_Method *jvmpi_methods;
+			JVMPI_Field *jvmpi_fields;
+			JVMPI_Event ev;
+
+			cl = (struct Hjava_lang_Class *)arg;
+			jvmpi_methods = alloca(sizeof(JVMPI_Method) *
+					       cl->nmethods);
+			jvmpi_fields = alloca(sizeof(JVMPI_Field) *
+					      (cl->nsfields +
+					       cl->nfields));
+			ev.u.class_load.methods = jvmpi_methods;
+			ev.u.class_load.statics = &jvmpi_fields[0];
+			ev.u.class_load.instances =
+				&jvmpi_fields[cl->nsfields];
+			jvmpiFillClassLoad(&ev, cl);
+			ev.event_type |= JVMPI_REQUESTED_EVENT;
+			jvmpiPostEvent(&ev);
+		}
+		break;
+	case JVMPI_EVENT_THREAD_START:
+		{
+			struct Hjava_lang_Thread *tid;
+			JVMPI_Event ev;
+
+			tid = (struct Hjava_lang_Thread *)arg;
+			jvmpiFillThreadStart(&ev, tid);
+			ev.event_type |= JVMPI_REQUESTED_EVENT;
+			jvmpiPostEvent(&ev);
+			KFREE(ev.u.thread_start.parent_name);
+			KFREE(ev.u.thread_start.group_name);
+			KFREE(ev.u.thread_start.thread_name);
+		}
+		break;
+	case JVMPI_EVENT_OBJECT_ALLOC:
+		{
+			struct Hjava_lang_Object *obj;
+			JVMPI_Event ev;
+
+			obj = (struct Hjava_lang_Object *)arg;
+			jvmpiFillObjectAlloc(&ev, obj);
+			ev.event_type |= JVMPI_REQUESTED_EVENT;
+			jvmpiPostEvent(&ev);
+		}
+		break;
+	}
 	return( retval );
 }
 

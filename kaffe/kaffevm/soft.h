@@ -16,6 +16,7 @@ struct _dispatchTable;
 struct Hjava_lang_Class;
 struct Hjava_lang_Object;
 
+void	soft_null_call(void);
 void*	soft_new(struct Hjava_lang_Class*);
 void*	soft_newarray(jint, jint);
 void*	soft_anewarray(struct Hjava_lang_Class*, jint);

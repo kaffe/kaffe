@@ -106,7 +106,6 @@ struct {
 } jitStats;
 
 static jboolean generateInsnSequence(errorInfo*);
-static void nullCall(void);
 static void initFakeCalls(void);
 static void makeFakeCalls(void);
 static void relinkFakeCalls(void);
@@ -214,7 +213,7 @@ DBG(MOREJIT,
 
 	/* Handle null calls specially */
 	if (METHOD_BYTECODE_LEN(xmeth) == 1 && METHOD_BYTECODE_CODE(xmeth)[0] == RETURN) {
-		SET_METHOD_NATIVECODE(xmeth, (nativecode*)nullCall);
+		SET_METHOD_NATIVECODE(xmeth, (nativecode*)soft_null_call);
 		goto done;
 	}
 
@@ -1250,12 +1249,6 @@ jit_soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
  * Include the machine specific trampoline functions.
  */
 #include "trampolines.c"
-
-static
-void
-nullCall(void)
-{
-}
 
 typedef struct _fakeCall {
 	struct _fakeCall*	next;

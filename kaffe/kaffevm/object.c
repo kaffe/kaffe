@@ -58,12 +58,7 @@ newObjectChecked(Hjava_lang_Class* class, errorInfo *info)
 	    {
 		    JVMPI_Event ev;
 		    
-		    ev.event_type = JVMPI_EVENT_OBJECT_ALLOC;
-		    ev.u.obj_alloc.arena_id = -1;
-		    ev.u.obj_alloc.class_id = class;
-		    ev.u.obj_alloc.is_array = JVMPI_NORMAL_OBJECT;
-		    ev.u.obj_alloc.size = CLASS_FSIZE(class);
-		    ev.u.obj_alloc.obj_id = obj;
+		    jvmpiFillObjectAlloc(&ev, obj);
 		    jvmpiPostEvent(&ev);
 	    }
 #endif
@@ -137,27 +132,42 @@ newArrayChecked(Hjava_lang_Class* elclass, int count, errorInfo *info)
 	Hjava_lang_Class* class = 0;
 	Hjava_lang_Object* obj = 0;
 
-	if (CLASS_IS_PRIMITIVE(elclass) || elclass == PtrClass) {
-		size_t total_count = (TYPE_SIZE(elclass) * count) + ARRAY_DATA_OFFSET;
-		if (total_count > count) {
-			obj = gc_malloc(total_count, GC_ALLOC_PRIMARRAY);
+	if ((class = lookupArray(elclass, info)) != NULL) {
+		size_t total_count;
+		
+		if (CLASS_IS_PRIMITIVE(elclass) || elclass == PtrClass) {
+			total_count = (TYPE_SIZE(elclass) * count) +
+				ARRAY_DATA_OFFSET;
+			if (total_count > count) {
+				obj = gc_malloc(total_count,
+						GC_ALLOC_PRIMARRAY);
+			}
 		}
-	}
-	else {
-		size_t total_count = (PTR_TYPE_SIZE * count) + ARRAY_DATA_OFFSET;
-		if (total_count > count) {
-			obj = gc_malloc(total_count, GC_ALLOC_REFARRAY);
+		else {
+			total_count = (PTR_TYPE_SIZE * count) +
+				ARRAY_DATA_OFFSET;
+			if (total_count > count) {
+				obj = gc_malloc(total_count,
+						GC_ALLOC_REFARRAY);
+			}
 		}
-	}
-	if (obj) {
-		class = lookupArray(elclass, info);
-	} else {
-		postOutOfMemory(info);
-	}
+		if (obj != NULL) {
+			obj->dtable = class->dtable;
+			ARRAY_SIZE(obj) = count;
 
-	if (class) {
-		obj->dtable = class->dtable;
-		ARRAY_SIZE(obj) = count;
+#if defined(ENABLE_JVMPI)
+			if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_OBJECT_ALLOC) )
+			{
+				JVMPI_Event ev;
+
+				jvmpiFillObjectAlloc(&ev, obj);
+				jvmpiPostEvent(&ev);
+			}
+#endif
+			
+		} else {
+			postOutOfMemory(info);
+		}
 	}
 DBG(NEWOBJECT,
 	dprintf("newArray %p class %s count %d\n", obj,

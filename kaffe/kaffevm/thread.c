@@ -377,13 +377,7 @@ firstStartThread(void* arg)
 	{
 		JVMPI_Event ev;
 
-		ev.event_type = JVMPI_EVENT_THREAD_START;
-		ev.u.thread_start.thread_name = // XXX stringJava2C(tid->name);
-		ev.u.thread_start.group_name = stringJava2C(tid->group->name);
-		ev.u.thread_start.parent_name = NULL;
-			// XXX stringJava2C(tid->parent->name);
-		ev.u.thread_start.thread_id = tid;
-		ev.u.thread_start.thread_env_id = THREAD_JNIENV();
+		jvmpiFillThreadStart(&ev, tid);
 		jvmpiPostEvent(&ev);
 		KFREE(ev.u.thread_start.parent_name);
 		KFREE(ev.u.thread_start.group_name);

@@ -117,7 +117,9 @@ void pusharg_double(SlotInfo*, int);
 void pusharg_string_const(void*, int);
 void pusharg_class_const(struct Hjava_lang_Class*, int);
 void pusharg_utf8_const(Utf8Const*, int);
-void popargs(void);
+void popargs_internal(int does_return);
+#define popargs() popargs_internal(1)
+#define popargs_noreturn() popargs_internal(0)
 
 void return_int(SlotInfo*);
 void return_ref(SlotInfo*);
