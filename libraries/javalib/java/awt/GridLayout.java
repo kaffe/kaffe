@@ -1,0 +1,148 @@
+/*
+ * Java core library component.
+ *
+ * Copyright (c) 1997, 1998
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ */
+
+
+package java.awt;
+
+
+public class GridLayout
+  implements LayoutManager
+{
+	int cols;
+	int rows;
+	int hgap;
+	int vgap;
+
+public GridLayout () {
+	this( 1, 1, 0, 0);
+}
+
+public GridLayout (int rows, int cols) {
+	this( rows, cols, 0, 0);
+}
+
+public GridLayout (int rows, int cols, int hgap, int vgap) {
+	this.rows = rows;
+	this.cols = cols;
+	this.hgap = hgap;
+	this.vgap = vgap;
+}
+
+public void addLayoutComponent ( String name, Component comp) {
+}
+
+Dimension adjustDim ( Container parent) {	
+	Dimension d = new Dimension( cols, rows);
+	
+	boolean extCol = true;
+	while ( parent.nChildren > d.width * d.height ) {
+		if ( extCol )	d.width++;
+		else					d.height++;
+		extCol = !extCol;
+	}
+	
+	return d;
+}
+
+public int getColumns () {
+	return cols;
+}
+
+public int getHgap () {
+	return hgap;
+}
+
+Dimension getLayoutSize ( Container parent, boolean preferred) {	
+	int maxW = 0;
+	int maxH = 0;
+	
+	Dimension d = adjustDim( parent);
+	
+	for ( int i=0; i<parent.nChildren; i++) {
+		Component c = parent.children[i];
+		Dimension cd = preferred ? c.getPreferredSize() : c.getMinimumSize();
+		maxW = Math.max( maxW, cd.width);
+		maxH = Math.max( maxH, cd.height );
+	}
+	
+	Insets in = parent.insets;
+	return new Dimension(	in.left + in.right + maxW * d.width + hgap * ( d.width + 1),
+												in.top + in.bottom + maxH * d.height + vgap * ( d.height + 1) );
+}
+
+public int getRows () {
+	return rows;
+}
+
+public int getVgap () {
+	return vgap;
+}
+
+public void layoutContainer ( Container parent) {
+	Insets in = parent.insets;
+	int tw = parent.width - in.left - in.right - hgap;
+	int th = parent.height - in.top - in.bottom - vgap;
+	
+	Dimension d = adjustDim( parent);
+	
+	int cw = tw / d.width;
+	int ch = th / d.height;
+	
+	int x0 = in.left + hgap;
+	int x = x0;
+	int y = in.top + vgap;
+	int ix = 0;
+	
+	for ( int i=0; i<parent.nChildren; i++) {
+		Component c = parent.children[i];
+		c.setBounds( x, y, cw-hgap, ch-hgap);
+		if ( ix == d.width-1 ){
+			ix = 0;
+			x = x0;
+			y += ch;
+		}
+		else {
+			ix++;
+			x += cw;
+		}
+	}
+}
+
+public Dimension minimumLayoutSize ( Container parent) {
+	return getLayoutSize( parent, false);
+}
+
+public Dimension preferredLayoutSize ( Container parent) {
+	return getLayoutSize( parent, true);
+}
+
+public void removeLayoutComponent ( Component comp) {
+}
+
+public void setColumns ( int cols) {
+	this.cols = cols;
+}
+
+public void setHgap ( int hgap) {
+	this.hgap = hgap;
+}
+
+public void setRows ( int rows) {
+	this.rows = rows;
+}
+
+public void setVgap ( int vgap) {
+	this.vgap = vgap;
+}
+
+public String toString () {
+	return ("GridLayout: rows: " + rows + ",cols: " + cols + ",hgap: " + hgap + ",vgap: " + vgap);
+}
+}

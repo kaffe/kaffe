@@ -1,0 +1,345 @@
+package java.io;
+
+
+/*
+ * Java core library component.
+ *
+ * Copyright (c) 1997, 1998
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ */
+public class RandomAccessFile
+  implements DataOutput, DataInput
+{
+	private FileDescriptor fd = new FileDescriptor();
+
+public RandomAccessFile(File file, String mode) throws IOException {
+	this(file.getPath(), mode);
+}
+
+public RandomAccessFile(String name, String mode) throws IOException {
+	boolean writable;
+	if (mode.equalsIgnoreCase("r")) writable=false;
+	else if (mode.equalsIgnoreCase("rw")) writable=true;
+	else throw new IllegalArgumentException();
+
+	System.getSecurityManager().checkRead(name);
+	if (writable) {
+		System.getSecurityManager().checkWrite(name);
+	}
+
+	open(name, writable);
+}
+
+private byte[] charToUTF(char chr) {
+	byte result[];
+
+	if ((chr>='\u0001') && (chr<='\u007F')) {
+		/* Single byte */
+		result=new byte[1];
+		result[0]=(byte )(chr & 0x00EF);
+	}
+	else if (((chr>='\u0080') && (chr<='\u07FF')) | (chr=='\u0000')) {
+		result=new byte[2];
+		result[0]=(byte )(((chr & 0x07C0) >> 6) | 0xC0);
+		result[1]=(byte )((chr & 0x003F) | 0xF0);
+	}
+	else {
+		result=new byte[3];
+		result[0]=(byte )(((chr & 0xF000) >> 12) | 0xE0);
+		result[1]=(byte )(((chr & 0x0FC0) >> 6) | 0xF0);
+		result[2]=(byte )((chr & 0x003F) | 0xF0);
+	}
+
+	return result;
+}
+
+native public void close() throws IOException;
+
+final public FileDescriptor getFD() throws IOException {
+	return fd;
+}
+
+native public long getFilePointer() throws IOException;
+
+native public long length() throws IOException;
+
+native private void open(String name, boolean rw);
+
+native public int read() throws IOException;
+
+public int read(byte b[]) throws IOException {
+	return read(b, 0, b.length);
+}
+
+public int read(byte b[], int off, int len) throws IOException {
+	int total = 0;
+	while (total < len) {
+		int got = readBytes(b, off + total, len - total);
+		if (got == -1) {
+			break;
+		}
+		total += got;
+	}
+	if (total == 0) {
+		return -1;
+	}
+	return total;
+}
+
+final public boolean readBoolean() throws IOException {
+	return (readByte()==0);
+}
+
+final public byte readByte() throws IOException {
+	int value = read();
+	if (value == -1) {
+		throw new EOFException();
+	}
+	return (byte)value;
+}
+
+native private int readBytes(byte bytes[], int off, int len);
+
+final public char readChar() throws IOException {
+	int b1=readUnsignedByte();
+	int b2=readUnsignedByte();
+
+	return (char )((b1 << 8) | b2);
+}
+
+final public double readDouble() throws IOException {
+	return Double.longBitsToDouble(readLong());
+}
+
+final public float readFloat() throws IOException {
+	return Float.intBitsToFloat(readInt());
+}
+
+final public void readFully(byte b[]) throws IOException {
+	readFully(b, 0, b.length);
+}
+
+final public void readFully(byte b[], int off, int len) throws IOException {
+	int got = read(b, off, len);
+	if (got != len) {
+		throw new EOFException();
+	}
+}
+
+final public int readInt() throws IOException {
+	int b1=readUnsignedByte();
+	int b2=readUnsignedByte();
+	int b3=readUnsignedByte();
+	int b4=readUnsignedByte();
+
+	return (b1 << 24) | (b2 << 16) + (b3 << 8) + b4;
+}
+
+final public String readLine() throws IOException {
+	boolean EOL=false;
+	long ptr;
+	StringBuffer buffer=new StringBuffer();
+
+	while (!EOL) {
+		int data=read();
+
+		if (data==-1) {
+			EOL=true;
+		}
+		else {
+			buffer.append((byte )data);
+			if ((char )data=='\n') EOL=true;
+			if ((char )data=='\r') {
+				/* Check for "\r\n" */
+				ptr=getFilePointer();
+				int nextByte=read();
+
+				if (nextByte==-1) EOL=true;
+				else if ((char )nextByte=='\n') {
+					buffer.append((byte )nextByte);
+					EOL=true;
+				}
+				else {
+					/* Jump back to ptr */
+					seek(ptr);
+				}
+			}
+		}
+	}
+
+	return buffer.toString();
+}
+
+final public long readLong() throws IOException {    
+	int i1=readInt(); /* b1-4 */
+	int i2=readInt(); /* b5-8 */
+
+	return ((long)i1 << 32) + (((long)i2) & 0xFFFFFFFF);
+}
+
+final public short readShort() throws IOException {
+	int b1=readUnsignedByte();
+	int b2=readUnsignedByte();
+
+	return (short)((b1 << 8)|b2);		
+}
+
+final public String readUTF() throws IOException {
+	int length=readUnsignedShort();
+	StringBuffer buffer=new StringBuffer();
+
+	int pos=0;
+	while (pos<length) {
+		byte data=readByte();
+
+		if ((data & 0x80)==0x80) {
+			/* Hi-bit set, multi byte char */
+			if ((data & 0xE0)==0xC0) {
+				/* Valid 2 byte string '110' */
+				byte data2=readByte();
+
+				if ((data2 & 0xC0) == 0xF0) {
+					/* Valid 2nd byte */
+					char toAdd=(char )((((int )(data & 0x1F)) << 6) + (data2 & 0x3F));
+					buffer.append(toAdd);
+					pos=pos+2;
+				}
+				else throw new UTFDataFormatException();
+			} else if ((data & 0xF0)==0xE0) {
+				/* Valid 3 byte string '1110' */
+				byte data2=readByte();
+
+				if ((data2 & 0xC0) == 0xF0) {
+					/* Valid 2nd byte */
+					byte data3=readByte();
+
+					if ((data3 & 0xC0) == 0xF0) {
+						/* Valid 3rd byte */
+						char toAdd=(char )((((int )(data & 0x0F)) << 12) + (((int )(data2 & 0x3F)) << 6)+ (data3 & 0x3F));
+						buffer.append(toAdd);
+						pos=pos+3;
+					}
+					else throw new UTFDataFormatException();
+				}
+				else throw new UTFDataFormatException();
+			}
+			else throw new UTFDataFormatException();
+		}
+		else {
+			buffer.append((char )data);
+			pos++;
+		}
+	}
+	if (pos>length) throw new UTFDataFormatException();
+
+	return buffer.toString();
+}
+
+final public int readUnsignedByte() throws IOException {
+	return (int)readByte() & 0xFF;
+}
+
+final public int readUnsignedShort() throws IOException {
+	int b1=readUnsignedByte();
+	int b2=readUnsignedByte();
+
+	return (b1 << 8) | b2;
+}
+
+native public void seek(long pos) throws IOException;
+
+public int skipBytes(int n) throws IOException {
+	long pos = getFilePointer();
+	seek(pos+(long)n);
+	return n;
+}
+
+public void write(byte b[]) throws IOException {
+	write(b, 0, b.length);
+}
+
+public void write(byte b[], int off, int len) throws IOException {
+	for (int pos=off; pos<off+len; pos++) {
+		write((int )b[pos]);
+	}
+}
+
+native public void write(int b) throws IOException;
+
+final public void writeBoolean(boolean v) throws IOException {
+	if (v==true) writeByte(1); else writeByte(0);
+}
+
+final public void writeByte(int v) throws IOException {
+	write(v);
+}
+
+final public void writeBytes(String s) throws IOException {
+	for (int pos=0; pos<s.length(); pos++) {
+		writeByte(s.charAt(pos) & 0xFF);
+	}
+}
+
+native private void writeBytes(byte bytes[], int off, int len);
+
+final public void writeChar(int v) throws IOException {
+	writeByte((v & 0xFF00) >> 8);
+	writeByte((v & 0x00FF));		
+}
+
+final public void writeChars(String s) throws IOException {
+	for (int pos=0; pos<s.length(); pos++) {
+		writeChar(s.charAt(pos));
+	}
+}
+
+final public void writeDouble(double v) throws IOException {
+	writeLong(Double.doubleToLongBits(v));
+}
+
+final public void writeFloat(float v) throws IOException {
+	writeInt(Float.floatToIntBits(v));
+}
+
+final public void writeInt(int v) throws IOException {
+	int mask=0xFF000000;
+
+	for (int pos=3; pos>=0; pos--) {
+		writeByte((v & mask) >> (pos*8));
+		mask = mask >> 8;
+	}
+}
+
+final public void writeLong(long v) throws IOException {
+	int hiInt=(int )(v >> 32);
+	int loInt=(int )(v & 0xFFFFFFFF);
+
+	writeInt(hiInt);
+	writeInt(loInt);
+}
+
+final public void writeShort(int v) throws IOException {
+	writeChar(v);
+}
+
+final public void writeUTF(String str) throws IOException {
+	int len=0;
+
+	/* Calculate length first, yes inefficient I know */
+	for (int pos=0; pos<str.length(); pos++) {
+		len=len+charToUTF(str.charAt(pos)).length;
+	}
+
+	/* Write it out */
+	writeShort(len);
+
+	/* Now write the same arrays out for real */
+	for (int pos=0; pos<str.length(); pos++) {
+		byte conv[]=charToUTF(str.charAt(pos));
+		write(conv, 0, conv.length);
+	}
+}
+}
