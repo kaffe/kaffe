@@ -658,7 +658,7 @@ presym_sym (handle, symbol)
 
 	syms++;
 	while (syms->address) {
-		if (syms->address && strcmp(syms->name, symbol) == 0)
+		if (strcmp(syms->name, symbol) == 0)
 			return syms->address;
 		syms++;
 	}
@@ -1051,6 +1051,8 @@ lt_dlopen (filename)
 			return 0;
 		}
 		handle->usage = 0;
+		handle->depcount = 0;
+		handle->deplibs = 0;
 		newhandle = handle;
 		if (tryall_dlopen(&newhandle, 0) != 0) {
 			lt_dlfree(handle);
@@ -1244,10 +1246,8 @@ lt_dlopenext (filename)
 	int	len;
 	const char *saved_error = last_error;
 	
-	if (!filename) {
-		last_error = file_not_found_error;
-		return 0;
-	}
+	if (!filename)
+		return lt_dlopen(filename);
 	len = strlen(filename);
 	if (!len) {
 		last_error = file_not_found_error;
@@ -1322,7 +1322,8 @@ lt_dlclose (handle)
 			handles = handle->next;
 		error = handle->type->lib_close(handle);
 		error += unload_deplibs(handle);
-		lt_dlfree(handle->filename);
+		if (handle->filename)
+			lt_dlfree(handle->filename);
 		if (handle->name)
 			lt_dlfree(handle->name);
 		lt_dlfree(handle);

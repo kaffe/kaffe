@@ -1,3 +1,14 @@
+Mon Mar  1 15:30:30 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* configure.in: new --enable/disable-debug options to compile with
+	-DDEBUG or -DNDEBUG; default is neither, so we get assertions but
+	no -vmdebug
+	* acinclude.m4, libltdl/acinclude.m4: update from libtool with
+	cygwin glitches
+	* aclocal.m4, libltdl/aclocal.m4: regen
+	* libltdl/ltdl.c: update from libtool; minor optimizations
+	* configure, libltdl/configure: regen
+
 Mon Mar  1 09:53:31 1999  Godmar Back  <gback@cs.utah.edu>
 
 	* libraries/javalib/java/util/BitSet.java: double size in ensureSize

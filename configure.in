@@ -208,6 +208,18 @@ engine_frag=$srcdir/kaffe/kaffevm/$with_engine/Makefile.frag
 AC_CHECK_FUNCS(getpagesize)
 
 dnl =========================================================================
+dnl Allow selection of debugging mechanisms
+dnl -------------------------------------------------------------------------
+
+AC_ARG_WITH(debug,[  --enable-debug            Enable run-time debugging machinery
+  --disable-debug           Disable assertion checking (but not -g)])
+case "$enable_debug" in
+"") ;;
+no) CPPFLAGS="$CPPFLAGS -DNDEBUG";;
+*) CPPFLAGS="$CPPFLAGS -DDEBUG";;
+esac
+
+dnl =========================================================================
 dnl Do we include our Sun compatibility scripts?
 dnl -------------------------------------------------------------------------
 
