@@ -1,3 +1,7 @@
+Sun Jan 17 07:27:40 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
+
+	* ltconfig: updated from libtool, to fix SunOS4/GNU ld problem
+
 Sun Jan 17 04:26:15 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* test/regression/Makefile.am (EXTRA_DIST): added
