@@ -455,6 +455,38 @@ java_lang_Class_getFields0(struct Hjava_lang_Class* clazz, int declared)
 	return (array);
 }
 
+/*
+ * Check whether the parameters of Method `mth' have exactly the same
+ * types as `argtypes', where argtypes is an array of Hjava_lang_Class *
+ *
+ * Note that checking the arguments might cause the resolution of names
+ * that are part of the signature.  These must be resolved by the same 
+ * classloader that loaded the class to which the method belongs.
+ *
+ * This function is used by getMethod0 and getConstructor0.
+ *
+ * Returns 1 if they are exactly the same, 0 if not.
+ */
+static
+int
+checkParameters(Method* mth, HArrayOfObject* argtypes)
+{
+	char *sig = makeCString(Utf8Const2JavaString(mth->signature));
+	int   i;
+
+	sig++;	/* skip leading '(' */
+	for (i = 0; i < ARRAY_SIZE(argtypes); i++) {
+
+		/* signature was too short or type doesn't match */
+		if (!*sig || (struct Hjava_lang_Class *)
+				OBJARRAY_DATA(argtypes)[i] != 
+				classFromSig(&sig, mth->class->loader))
+			return (0);
+	}
+	/* return false if signature was too long */
+	return (*sig == ')' ? 1 : 0);
+}
+
 Hjava_lang_reflect_Method*
 java_lang_Class_getMethod0(struct Hjava_lang_Class* this, struct Hjava_lang_String* name, HArrayOfObject* arr, jint declared)
 {
@@ -468,8 +500,8 @@ java_lang_Class_getMethod0(struct Hjava_lang_Class* this, struct Hjava_lang_Stri
 		for (i = 0;  i < n;  ++mth, ++i) {
 			if (((mth->accflags & ACC_PUBLIC) || declared)
 			    && equalUtf8JavaStrings (mth->name, name)) {
-				/* Now check parameters - XXX */
-				return (makeMethod(clas, i));
+				if (checkParameters(mth, arr))
+					return (makeMethod(clas, i));
 			}
 		}
 		clas = clas->superclass;
@@ -490,8 +522,8 @@ java_lang_Class_getConstructor0(struct Hjava_lang_Class* this, HArrayOfObject* a
 		int i;
 		for (i = 0;  i < n;  ++mth, ++i) {
 			if (((mth->accflags & ACC_PUBLIC) || declared) && (mth->accflags & ACC_CONSTRUCTOR)) {
-				/* Now check parameters - XXX */
-				return (makeConstructor(clas, i));
+				if (checkParameters(mth, arr))
+					return (makeConstructor(clas, i));
 			}
 		}
 		clas = clas->superclass;

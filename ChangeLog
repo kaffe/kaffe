@@ -1,4 +1,9 @@
-Fri Apr 10 00:52:06 1998  Godmar Back  <gback@lal.cs.utah.edu>
+Tue Apr 14 15:53:40 1998  Godmar Back  <gback@cs.utah.edu>
+
+	* libraries/clib/native/Class.c: added check for parameters
+	  in getMethod0 and getConstructor0.
+
+Fri Apr 10 00:52:06 1998  Godmar Back  <gback@cs.utah.edu>
 
 	* Fixes for ClassLoader
 	* kaffe/kaffevm/classMethod.[ch]: exported lookupClassEntry
