@@ -55,8 +55,8 @@ getMethodSignatureClass(constIndex idx, Hjava_lang_Class* this, bool loadClass, 
 	    pool->tags[idx] != CONSTANT_InterfaceMethodref) {
 DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	)
 		/* shouldn't that be ClassFormatError or something? */
-		SET_LANG_EXCEPTION_MESSAGE(einfo, NoSuchMethodError, 
-			"method name unknown")
+		postExceptionMessage(einfo, JAVA_LANG(NoSuchMethodError),
+			"method name unknown, tag = %d", pool->tags[idx]);
                 return (false);
 	}
 
@@ -147,7 +147,7 @@ getClass(constIndex idx, Hjava_lang_Class* this, errorInfo *einfo)
 		break;
 
 	default:
-		SET_LANG_EXCEPTION(einfo, ClassFormatError)
+		postException(einfo, JAVA_LANG(ClassFormatError));
 		return NULL;
 	}
 
@@ -187,7 +187,8 @@ getField(constIndex idx, Hjava_lang_Class* this, bool isStatic, fieldInfo* ret, 
 	pool = CLASS_CONSTANTS(this);
 	if (pool->tags[idx] != CONSTANT_Fieldref) {
 DBG(RESERROR,	dprintf("No Fieldref found\n");				)
-		SET_LANG_EXCEPTION(einfo, NoSuchFieldError)
+		postExceptionMessage(einfo, JAVA_LANG(NoSuchFieldError),
+			"tag was %d", pool->tags[idx]);
 		return (false);
 	}
 
@@ -266,7 +267,7 @@ findMethod(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature, error
 			return mptr;
 		}
 	}
-	SET_LANG_EXCEPTION_MESSAGE(einfo, NoSuchMethodError, name->data)
+	postExceptionMessage(einfo, JAVA_LANG(NoSuchMethodError), name->data);
 	return (0);
 }
 

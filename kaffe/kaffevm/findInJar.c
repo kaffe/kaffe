@@ -167,8 +167,10 @@ ZDBG(			printf("Opening JAR file %s for %s\n", ptr->path, cname); )
 			}
 			hand.base = getDataJarFile(ptr->u.jar, entry);
 			if (hand.base == 0) {
-				SET_IO_EXCEPTION_MESSAGE(einfo, 
-					IOException, ptr->u.jar->error);
+				postExceptionMessage(einfo,
+					JAVA_IO(IOException),
+					"Couldn't extract data from jar: %s", 
+					ptr->u.jar->error);
 				hand.type = CP_INVALID;
 				goto done;
 			}
@@ -198,8 +200,9 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 			 */
 			if ((rc = KFSTAT(fp, &sbuf)) != 0) {
 				KCLOSE(fp);
-				SET_IO_EXCEPTION_MESSAGE(einfo, IOException, 
-								SYS_ERROR(rc))
+				postExceptionMessage(einfo, 
+					JAVA_IO(IOException),
+					"Couldn't fstat: %s", SYS_ERROR(rc));
 				hand.type = CP_INVALID;
 				goto done;
 			}
@@ -212,8 +215,10 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 			while (i < hand.size) {
 				rc = KREAD(fp, hand.buf, hand.size - i, &j);
 				if (rc != 0) {
-					SET_IO_EXCEPTION_MESSAGE(einfo, 
-						IOException, SYS_ERROR(rc))
+					postExceptionMessage(einfo, 
+						JAVA_IO(IOException),
+						"Couldn't read: %s", 
+						SYS_ERROR(rc));
 					hand.type = CP_INVALID;
 					break;
 				} else {
@@ -239,7 +244,7 @@ FDBG(			printf("Opening java file %s for %s\n", buf, cname); )
 	hand.type = CP_INVALID;
 	/* cut off the ".class" suffix for the exception msg */
 	cname[strlen(cname) - strlen(".class")] = '\0';
-	SET_LANG_EXCEPTION_MESSAGE(einfo, NoClassDefFoundError, cname);
+	postExceptionMessage(einfo, JAVA_LANG(NoClassDefFoundError), cname);
 
 	done:;
 	unlockStaticMutex(&jarlock);

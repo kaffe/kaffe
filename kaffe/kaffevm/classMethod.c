@@ -130,8 +130,8 @@ retry:
 	 * can learn that things went wrong.
 	 */
 	if (class->state == CSTATE_FAILED) {
-		SET_LANG_EXCEPTION_MESSAGE(einfo, 
-			NoClassDefFoundError, class->name->data)
+		postExceptionMessage(einfo, JAVA_LANG(NoClassDefFoundError),
+			class->name->data);
 		success = false;
 		goto done;
 	}
@@ -141,7 +141,8 @@ retry:
 		if (class->state == CSTATE_DOING_PREPARE) {
 			if (THREAD_NATIVE() == class->processingThread) {
 				/* Check for circular dependent classes */
-				SET_LANG_EXCEPTION(einfo, ClassCircularityError)
+				postException(einfo, 
+					JAVA_LANG(ClassCircularityError));
 				success = false;
 				goto done;
 			} else {
@@ -199,7 +200,7 @@ retry:
 			 * be java.lang.Object or the class file is broken.
 			 */
 			if (CLASS_IS_INTERFACE(class)) {
-				SET_LANG_EXCEPTION(einfo, VerifyError)
+				postException(einfo, JAVA_LANG(VerifyError));
 				success = false;
 				goto done;
 			}
@@ -340,7 +341,7 @@ retry:
 
 		/* every class must have one since java.lang.Object has one */
 		if (meth == NULL) {
-			SET_LANG_EXCEPTION(einfo, InternalError);
+			postException(einfo, JAVA_LANG(InternalError));
 			success = false;
 			goto done;
 		}
@@ -381,8 +382,9 @@ retry:
 		 * initializer failed, return false as well
 		 */
 		if (class->state == CSTATE_INIT_FAILED) {
-			SET_LANG_EXCEPTION_MESSAGE(einfo, 
-				NoClassDefFoundError, class->name->data)
+			postExceptionMessage(einfo, 
+				JAVA_LANG(NoClassDefFoundError), 
+				class->name->data);
 			success = false;
 			goto done;
 		}
@@ -436,8 +438,9 @@ DBG(STATICINIT,
 
 		if (exc != 0) {
 			/* this is special-cased in throwError */
-			SET_LANG_EXCEPTION_MESSAGE(einfo,
-				ExceptionInInitializerError, exc)
+			einfo->type = KERR_INITIALIZER_ERROR;
+			einfo->throwable = exc;
+
 			/*
 			 * we return false here because COMPLETE fails
 			 */
@@ -797,27 +800,26 @@ DBG(VMCLASSLOADER,
 DBG(VMCLASSLOADER,		
 				dprintf("exception!\n");			
     )
-				SET_LANG_EXCEPTION_MESSAGE(einfo, 
-					RethrowException, excobj)
+				einfo->type = KERR_RETHROW;
+				einfo->throwable = excobj;
 				clazz = NULL;
 			} else
 			if (clazz == NULL) {
 DBG(VMCLASSLOADER,		
 				dprintf("loadClass returned clazz == NULL!\n");
     )
-				SET_LANG_EXCEPTION_MESSAGE(einfo, 
-					NoClassDefFoundError, name->data)
+				postExceptionMessage(einfo,
+					JAVA_LANG(NoClassDefFoundError), 
+					name->data);
 			} else
 			if (strcmp(clazz->name->data, name->data)) {
-				/* 1.2 says: 
-				 * Bad class name (expect: THIS, get: THAT) 
-				 * XXX make error more informative.
-				 */
 DBG(VMCLASSLOADER,		
 				dprintf("loadClass returned wrong name!\n");
     )
-				SET_LANG_EXCEPTION_MESSAGE(einfo, 
-					NoClassDefFoundError, name->data)
+				postExceptionMessage(einfo,
+					JAVA_LANG(NoClassDefFoundError), 
+					"Bad class name (expect: %s, get: %s)",
+					name->data, clazz->name->data);
 				clazz = NULL;
 			}
 DBG(VMCLASSLOADER,		
@@ -1434,7 +1436,8 @@ checkForAbstractMethods(Hjava_lang_Class* class, errorInfo *einfo)
 	if ((class->accflags & ACC_ABSTRACT) == 0) {
 		for (i = class->msize - 1; i >= 0; i--) {
 			if (mtab[i] == NULL) {
-				SET_LANG_EXCEPTION(einfo, AbstractMethodError)
+				postException(einfo, 
+					JAVA_LANG(AbstractMethodError));
 				return (false);
 			}
 		}
@@ -1661,7 +1664,7 @@ DBG(RESERROR,
 	dprintf("lookupClassField failed %s:%s\n", 
 		clp->name->data, name->data);
     )
-	SET_LANG_EXCEPTION_MESSAGE(einfo, NoSuchFieldError, name->data)
+	postExceptionMessage(einfo, JAVA_LANG(NoSuchFieldError), name->data);
 	return (0);
 }
 

@@ -500,7 +500,7 @@ Kaffe_GetMethodID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 		postError(env, &info);
 	} 
 	else if (METHOD_IS_STATIC(meth)) {
-		SET_LANG_EXCEPTION_MESSAGE(&info, NoSuchMethodError, (char*)name)
+		postExceptionMessage(&info, JAVA_LANG(NoSuchMethodError), name);
 		postError(env, &info);
 		meth = 0;
 	}
@@ -1787,7 +1787,7 @@ Kaffe_GetStaticMethodID(JNIEnv* env, jclass cls, const char* name, const char* s
 	if (meth == 0) {
 		postError(env, &info);
 	} else if (!METHOD_IS_STATIC(meth)) {
-		SET_LANG_EXCEPTION_MESSAGE(&info, NoSuchMethodError, (char*)name)
+		postExceptionMessage(&info, JAVA_LANG(NoSuchMethodError), name);
 		postError(env, &info);
 		meth = 0;
 	}

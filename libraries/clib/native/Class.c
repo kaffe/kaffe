@@ -110,8 +110,11 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 		 */
 		if (!strcmp(einfo.classname, "java.lang.VerifyError")) 
 		{
-			SET_LANG_EXCEPTION_MESSAGE(&einfo, 
-				ClassNotFoundException, einfo.mess)
+			errorInfo einfo_copy = einfo;
+			postExceptionMessage(&einfo, 
+				JAVA_LANG(ClassNotFoundException), 
+				einfo.mess);
+			discardErrorInfo(&einfo_copy);
 		} else
 		if (!strcmp(einfo.classname, "java.lang.NoClassDefFoundError"))
 		{
@@ -132,8 +135,11 @@ java_lang_Class_forName(struct Hjava_lang_String* str)
 			 * of the exception  (FIXME?)
 			 */
 			if (buf[0] == '[' || !strcmp(einfo.mess, buf)) {
-				SET_LANG_EXCEPTION_MESSAGE(&einfo, 
-					ClassNotFoundException, einfo.mess)
+				errorInfo einfo_copy = einfo;
+				postExceptionMessage(&einfo,
+					JAVA_LANG(ClassNotFoundException), 
+					einfo.mess);
+				discardErrorInfo(&einfo_copy);
 			}
 		}
 		utf8ConstRelease(utf8buf);
@@ -715,7 +721,6 @@ checkParameters(Method* mth, HArrayOfObject* argtypes)
 {
 	const char *sig = mth->signature->data;
 	int   i;
-	errorInfo info;
 
 	/* The JDK doc says and experimentation shows that a null second 
 	 * parameter to all get(Declared){Method|Constructor} functions
@@ -727,13 +732,23 @@ checkParameters(Method* mth, HArrayOfObject* argtypes)
 
 	sig++;	/* skip leading '(' */
 	for (i = 0; i < ARRAY_SIZE(argtypes); i++) {
+		Hjava_lang_Class* sigclass;
+		errorInfo info;
 
 		/* signature was too short or type doesn't match */
-		/* NB: if classFromSig fails, we pretend we don't care. */
-		if (!*sig || (struct Hjava_lang_Class *)
-				OBJARRAY_DATA(argtypes)[i] != 
-				classFromSig(&sig, mth->class->loader, &info))
+		if (*sig == 0) {
 			return (0);
+		}
+
+		/* NB: if classFromSig fails, we pretend we don't care. */
+		sigclass = classFromSig(&sig, mth->class->loader, &info);
+		if (sigclass == 0) {
+			discardErrorInfo(&info);
+		}
+		if (sigclass != 
+			(struct Hjava_lang_Class *)OBJARRAY_DATA(argtypes)[i]) {
+			return (0);
+		}
 	}
 	/* return false if signature was too long */
 	return ((*sig == ')' ? 1 : 0));

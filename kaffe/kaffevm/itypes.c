@@ -132,7 +132,7 @@ classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo
 		return(cl);
 	default:
 		/* malformed signature */
-		SET_LANG_EXCEPTION(einfo, VerifyError);
+		postException(einfo, JAVA_LANG(VerifyError));
 		return (NULL);
 	}
 }

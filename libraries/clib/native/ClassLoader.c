@@ -160,8 +160,11 @@ java_lang_ClassLoader_findSystemClass0(Hjava_lang_ClassLoader* this, Hjava_lang_
 		if (!strcmp(info.classname, "java.lang.NoClassDefFoundError")
 		    && !strcmp(info.mess, name))
 		{
-			SET_LANG_EXCEPTION_MESSAGE(&info,
-				ClassNotFoundException, info.mess)
+			errorInfo info_tmp = info;
+			postExceptionMessage(&info,
+				JAVA_LANG(ClassNotFoundException), 
+				info.mess);
+			discardErrorInfo(&info_tmp);
 		}
 		if (name != buffer) {
 			KFREE(name);
@@ -189,16 +192,20 @@ java_lang_ClassLoader_getSystemResourceAsBytes0(struct Hjava_lang_String* str)
 	char* lname;
 	classFile hand;
 	HArrayOfByte* data;
-	errorInfo err;
+	errorInfo einfo;
 
 	lname = name = stringJava2C(str);
 	/* skip leading slashes */
 	while (*lname && *lname == '/') {
 		lname++;
 	}
-	hand = findInJar(lname, &err);
+	hand = findInJar(lname, &einfo);
 	KFREE(name);
+	/* Specs says to return null if the resource wasn't found.
+	 * But we return null for any error.
+	 */
 	if (hand.type == 0) {
+		discardErrorInfo(&einfo);
 		return (NULL);
 	}
 

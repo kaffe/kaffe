@@ -12,26 +12,43 @@
 #ifndef __errors_h
 #define __errors_h
 
+#define KERR_EXCEPTION			0x0001
+#define KERR_RETHROW			0x0002
+#define KERR_INITIALIZER_ERROR		0x0004
+#define KERR_OUT_OF_MEMORY		0x0008
+#define KERR_CODE_MASK			0x00ff
+
+#define KERR_FREE_MESSAGE		0x8000
+
+struct Hjava_lang_Throwable;
+
 /*
  * This struct serves to keep information about an exception
  * that will be thrown later if some operation failed.
  */
 typedef struct _errorInfo {
-	char *classname;		/* name of exception class */
-	void *mess;			/* accompanying data, usually msg */
+	int type;		/* type of error */
+	const char* classname;	/* full dotted name of exception/error class */
+	char* mess;		/* accompanying msg */
+	struct Hjava_lang_Throwable* throwable;	/* a throwable */
 } errorInfo;
 
-#define SET_LANG_EXCEPTION(ep, NAME) { \
-  (ep)->classname = "java.lang." #NAME; \
-  (ep)->mess = ""; }
+/* post a short exception without message */
+extern void postException(errorInfo *, const char *name);
 
-#define SET_LANG_EXCEPTION_MESSAGE(ep, NAME, MESS) { \
-  (ep)->classname = "java.lang." #NAME; \
-  (ep)->mess = (void*)MESS; }
+/* post an exception with a print like message */
+extern void postExceptionMessage(errorInfo *, 
+	const char *name, const char *msgfmt, ...);
 
-#define SET_IO_EXCEPTION_MESSAGE(ep, NAME, MESS) { \
-  (ep)->classname = "java.io." #NAME; \
-  (ep)->mess = (void*)MESS; }
+#define MAX_ERROR_MESSAGE_SIZE        1024
+
+extern void discardErrorInfo(errorInfo *);
+/* dump error info to stderr */
+extern void dumpErrorInfo(errorInfo *);
+
+#define JAVA_LANG(NAME)		"java.lang." #NAME
+#define JAVA_IO(NAME)		"java.io." #NAME
+
 
 #define NEW_LANG_EXCEPTION(NAME) \
   (struct Hjava_lang_Throwable*)execute_java_constructor("java.lang." #NAME, \
@@ -50,14 +67,10 @@ typedef struct _errorInfo {
 	0, "(Ljava/lang/String;)V", stringC2Java(MESS))
 
 #define NoSuchMethodError(M) NEW_LANG_EXCEPTION_MESSAGE(NoSuchMethodError, M)
-#define ClassFormatError NEW_LANG_EXCEPTION(ClassFormatError)
 #define LinkageError NEW_LANG_EXCEPTION(LinkageError)
-#define ClassNotFoundException(M) NEW_LANG_EXCEPTION_MESSAGE(ClassNotFoundException, M)
-#define NoSuchFieldError(M) NEW_LANG_EXCEPTION_MESSAGE(NoSuchFieldError, M)
 #define OutOfMemoryError NEW_LANG_EXCEPTION(OutOfMemoryError)
 #define UnsatisfiedLinkError NEW_LANG_EXCEPTION(UnsatisfiedLinkError)
 #define VirtualMachineError NEW_LANG_EXCEPTION(VirtualMachineError)
-#define ClassCircularityError NEW_LANG_EXCEPTION(ClassCircularityError)
 #define IncompatibleClassChangeError NEW_LANG_EXCEPTION(IncompatibleClassChangeError)
 #define IllegalAccessError NEW_LANG_EXCEPTION(IllegalAccessError)
 #define NegativeArraySizeException NEW_LANG_EXCEPTION(NegativeArraySizeException)
@@ -68,11 +81,9 @@ typedef struct _errorInfo {
 #define ArrayStoreException NEW_LANG_EXCEPTION(ArrayStoreException)
 #define ArithmeticException NEW_LANG_EXCEPTION(ArithmeticException)
 #define AbstractMethodError NEW_LANG_EXCEPTION(AbstractMethodError)
-#define VerifyError NEW_LANG_EXCEPTION(VerifyError)
 #define ThreadDeath NEW_LANG_EXCEPTION(ThreadDeath)
 #define StackOverflowError NEW_LANG_EXCEPTION(StackOverflowError)
 #define IllegalThreadStateException NEW_LANG_EXCEPTION(IllegalThreadStateException)
 #define	InstantiationException(M) NEW_LANG_EXCEPTION_MESSAGE(InstantiationException, M)
-#define	IOException(M) NEW_IO_EXCEPTION_MESSAGE(IOException, M)
 
 #endif

@@ -25,7 +25,7 @@
 #define	ADDCLASS(this, super, access, constants)			\
 	classThis = setupClass(classThis, this, super, access, loader);	\
 	if (classThis == 0) {						\
-                SET_LANG_EXCEPTION(einfo, ClassFormatError);		\
+                postException(einfo, JAVA_LANG(ClassFormatError));	\
 		return (0);						\
 	}
 

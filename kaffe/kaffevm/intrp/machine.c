@@ -218,7 +218,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 		switch (code[pc]) {
 		default:
 			fprintf(stderr, "Unknown bytecode %d\n", code[pc]);
-			throwException(VerifyError);
+			throwException(NEW_LANG_EXCEPTION(VerifyError));
 			break;
 #include "kaffe.def"
 		}

@@ -42,8 +42,8 @@ readClass(Hjava_lang_Class* classThis, classFile* fp, struct Hjava_lang_ClassLoa
 	/* Read in class info */
 	readu4(&magic, fp);
 	if (magic != JAVAMAGIC) {
-		SET_LANG_EXCEPTION_MESSAGE(einfo, ClassFormatError, 
-				    "Bad magic number");
+		postExceptionMessage(einfo, JAVA_LANG(ClassFormatError), 
+				    "Bad magic number 0x%x", magic);
 		return (0);
 	}
 	readu2(&minor_version, fp);

@@ -71,25 +71,100 @@ throwException(Hjava_lang_Throwable* eobj)
 Hjava_lang_Throwable* 
 error2Throwable(errorInfo* einfo)
 {
-	Hjava_lang_Throwable *err;
+	Hjava_lang_Throwable *err = 0;
 
-	/* special case this, message is actually a throwable here */
-	if (!strcmp(einfo->classname, 
-		    "java.lang.ExceptionInInitializerError")) 
-	{
-		err = (Hjava_lang_Throwable*)execute_java_constructor(
-			    einfo->classname, 
-			    0, "(Ljava/lang/Throwable;)V", einfo->mess);
-	} else 
-	if (!strcmp(einfo->classname, "java.lang.RethrowException")) {
-		err = (Hjava_lang_Throwable*)einfo->mess;
-	} else {
+	switch (einfo->type & KERR_CODE_MASK) {
+	case KERR_EXCEPTION:
 		err = (Hjava_lang_Throwable*)execute_java_constructor(
 			    einfo->classname, 
 			    0, "(Ljava/lang/String;)V",
 			    stringC2Java(einfo->mess));
+		break;
+
+	case KERR_RETHROW:
+		err = einfo->throwable;
+		break;
+
+	case KERR_INITIALIZER_ERROR:
+		err = (Hjava_lang_Throwable*)execute_java_constructor(
+			    JAVA_LANG(ExceptionInInitializerError),
+			    0, "(Ljava/lang/Throwable;)V", einfo->throwable);
+		break;
+
+#ifdef notyet
+	case KERR_OUT_OF_MEMORY:
+		err = preallocatedOOMException;
+		break;
+#endif
 	}
+
+	discardErrorInfo(einfo);
 	return (err);
+}
+
+/*
+ * post a simple exception using its full name without a message
+ */
+void 
+postException(errorInfo *einfo, const char *name)
+{
+	einfo->type = KERR_EXCEPTION;
+	einfo->classname = name;
+	einfo->mess = "";
+	einfo->throwable = 0;
+}
+
+/*
+ * post a longer exception with a message using full name
+ */
+void 
+postExceptionMessage(errorInfo *einfo,
+	const char * fullname, const char * fmt, ...)
+{
+        char *msgBuf;
+        int msgLen;
+        va_list args;
+
+	msgBuf = KMALLOC(MAX_ERROR_MESSAGE_SIZE);
+	if (msgBuf == 0) {
+		einfo->type = KERR_OUT_OF_MEMORY;
+		return;
+	}
+
+        va_start(args, fmt);
+#ifdef HAVE_VSNPRINTF
+        msgLen = vsnprintf(msgBuf, MAX_ERROR_MESSAGE_SIZE, fmt, args);
+#else
+        /* XXX potential buffer overruns problem: */
+        msgLen = vsprintf(msgBuf, fmt, args);
+#endif
+        va_end(args);
+
+	einfo->type = KERR_EXCEPTION | KERR_FREE_MESSAGE;
+	einfo->classname = fullname;
+	einfo->mess = msgBuf;
+	einfo->throwable = 0;
+}
+
+/*
+ * dump error info to stderr
+ */
+void
+dumpErrorInfo(errorInfo *einfo)
+{
+	/* XXX */
+}
+
+/*
+ * discard the errorinfo, freeing a message if necessary
+ */
+void 
+discardErrorInfo(errorInfo *einfo)
+{
+	if (einfo->type & KERR_FREE_MESSAGE) {
+		KFREE(einfo->mess);
+		einfo->type &= ~KERR_FREE_MESSAGE;
+	}
 }
 
 /*

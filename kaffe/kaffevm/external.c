@@ -244,10 +244,8 @@ native(Method* m, errorInfo *einfo)
 {
 	char stub[MAXSTUBLEN];
 	const char* s;
-	char* ptr;
 	int i;
 	void* func;
-	char *errmask = "Failed to locate native function:\t%s.%s%s";
 
 	/* Construct the stub name */
 	strcpy(stub, STUB_PREFIX);
@@ -290,13 +288,9 @@ DBG(LIBTOOL,
     )
 	SET_METHOD_NATIVECODE(m, (void*)error_stub);
 
-	/* construct nice error message */
-	i = strlen(errmask) + strlen(m->class->name->data) 
-		+ strlen(m->name->data) + strlen(m->signature->data) + 1;
-	ptr = gc_malloc(i, GC_ALLOC_NOWALK);
-	sprintf(ptr, errmask, m->class->name->data, m->name->data, m->signature->data);
-
-	SET_LANG_EXCEPTION_MESSAGE(einfo, UnsatisfiedLinkError, ptr);
+	postExceptionMessage(einfo, JAVA_LANG(UnsatisfiedLinkError),
+		"Failed to locate native function:\t%s.%s%s",
+		m->class->name->data, m->name->data, m->signature->data);
 	return (false);
 }
 

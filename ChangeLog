@@ -1,3 +1,11 @@
+Thu Mar 25 17:15:56 1999  Godmar Back  <gback@cs.utah.edu>
+
+	* config/i386/linux/jit-md.h: attempt at dealing with Linux sigcontext
+	versioning problem: always disable SA_SIGINFO.
+
+	* kaffe/kaffeh/*, kaffe/kaffevm/*, libraries/clib/native/*:
+	changed errorInfo to allocate copy of error messages.
+
 Thu Mar 25 11:08:06 PST 1999  Archie Cobbs <archie@whistle.com>
 
 	* libraries/javalib/java/lang/Thread.java: make checkAccess() final

@@ -17,6 +17,7 @@
 #include "../../../kaffe/kaffevm/access.h"
 #include "../../../kaffe/kaffevm/stringSupport.h"
 #include "../../../kaffe/kaffevm/support.h"
+#include "../../../kaffe/kaffevm/exception.h"
 #include <native.h>
 #include "java_io_ObjectInputStream.h"
 #include "java_io_ObjectOutputStream.h"
@@ -58,6 +59,9 @@ kaffe_io_ObjectStreamClassImpl_init(void)
 	ObjectOutputStreamSig = utf8ConstNew("(Ljava/io/ObjectOutputStream;)V", -1);
 	ObjectInputStreamSig = utf8ConstNew("(Ljava/io/ObjectInputStream;)V", -1);
 	ptrType = lookupClass("kaffe/util/Ptr", &einfo);
+	if (ptrType == 0) {
+		throwError(&einfo);
+	}
 }
 
 struct Hjava_lang_Object*
@@ -429,6 +433,8 @@ kaffe_io_ObjectStreamClassImpl_getSerialVersionUID0(Hjava_lang_Class* cls)
 	fld = lookupClassField(cls, serialVersionUIDName, true, &einfo);
 	if (fld != 0) {
 		return (*(jlong*)FIELD_ADDRESS((Field*)fld));
+	} else {
+		discardErrorInfo(&einfo);
 	}
 
 	/* Okay - since there's no field we have to compute the UID */
@@ -595,6 +601,7 @@ findDefaultSerialization(Hjava_lang_Class* clazz)
 	/* Use the JNI because it handles errors */
 	nclazz = lookupClass(name, &einfo);
 	if (nclazz == 0) {
+		discardErrorInfo(&einfo);
 		nclazz = clazz;
 	}
 

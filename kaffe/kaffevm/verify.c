@@ -106,7 +106,7 @@ DBG(	printf("Verifing class %s\n", (char*)class->name->data);	)
 
 	/* If we found an inconsistency then throw an exception */
 	if (error == true) {
-		SET_LANG_EXCEPTION(einfo, ClassFormatError)
+		postException(einfo, JAVA_LANG(ClassFormatError));
 		return (false);
 	}
 	return (true);

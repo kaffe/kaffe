@@ -323,7 +323,7 @@ DBG(JIT,	dprintf("pc = %d, npc = %d\n", pc, npc);	)
 		switch (base[pc]) {
 		default:
 			fprintf(stderr, "Unknown bytecode %d\n", base[pc]);
-			SET_LANG_EXCEPTION(einfo, VerifyError)
+			postException(einfo, JAVA_LANG(VerifyError));
 			success = false;
 			goto done;
 #include "kaffe.def"

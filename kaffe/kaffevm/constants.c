@@ -68,8 +68,9 @@ RDBG(		printf("Constant type %d\n", type);			)
 		case CONSTANT_Utf8:
 			readu2(&len, fp);
 			if (!utf8ConstIsValidUtf8(fp->buf, len)) {
-				SET_LANG_EXCEPTION_MESSAGE(einfo,
-				    ClassFormatError, "Invalid UTF-8 constant");
+				postExceptionMessage(einfo,
+					JAVA_LANG(ClassFormatError), 
+					"Invalid UTF-8 constant");
 				goto fail;
 			}
 			pool[i] = (ConstSlot) utf8ConstNew(fp->buf, len);
@@ -138,8 +139,9 @@ RDBG(		printf("Constant type %d\n", type);			)
 			break;
 
 		default:
-			SET_LANG_EXCEPTION_MESSAGE(einfo,
-				ClassFormatError, "Invalid constant type");
+			postExceptionMessage(einfo, 
+				JAVA_LANG(ClassFormatError), 
+				"Invalid constant type %d", type);
 fail:
 			while (--i >= 0) {
 				if (tags[i] == CONSTANT_Utf8) {

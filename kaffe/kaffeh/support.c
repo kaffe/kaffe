@@ -703,3 +703,11 @@ static void  gcFree(struct _Collector *collector, void *mem)
 {
 	jfree(mem);
 }
+
+void 
+postExceptionMessage(struct _errorInfo *e, 
+	const char *name, const char *msgfmt, ...)
+{
+	/* XXX */
+	fprintf(stderr, "Error %s, %s\n", name, msgfmt);
+}
