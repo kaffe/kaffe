@@ -1,3 +1,13 @@
+2005-02-14  Dalibor Topic  <robilad@kaffe.org>
+
+	Resynced with GNU Classpath.
+
+	2005-02-10  Michael Koch  <konqueror@gmx.de>
+
+        * configure.ac: Define GTK_CAIRO in config.h
+        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkToolkit.c
+        (gtkInit): Compile Graphics2D stuff conditionally.
+
 2005-02-14  Jim Huang  <jserv@kaffe.org>
 
 	* configure.ac: Fix typo.

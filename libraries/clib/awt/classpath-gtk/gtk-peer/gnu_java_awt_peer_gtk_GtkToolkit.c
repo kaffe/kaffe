@@ -1,5 +1,5 @@
 /* gtktoolkit.c -- Native portion of GtkToolkit
-   Copyright (C) 1998, 1999 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -67,7 +67,9 @@ jmethodID beginNativeRepaintID;
 jmethodID endNativeRepaintID;
 
 jmethodID initComponentGraphicsID;
+#ifdef GTK_CAIRO
 jmethodID initComponentGraphics2DID;
+#endif
 jmethodID setCursorID;
 
 JavaVM *java_vm;
@@ -119,7 +121,10 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkInit (JNIEnv *env,
   char *homedir, *rcpath = NULL;
 
   jclass gtkgenericpeer, gtkcomponentpeer, gtkchoicepeer, gtkwindowpeer, gtkscrollbarpeer, gtklistpeer,
-    gtkmenuitempeer, gtktextcomponentpeer, window, gdkgraphics, gdkgraphics2d;
+    gtkmenuitempeer, gtktextcomponentpeer, window, gdkgraphics;
+#ifdef GTK_CAIRO
+  jclass gdkgraphics2d;
+#endif
 
   gtkgenericpeer = (*env)->FindClass(env, "gnu/java/awt/peer/gtk/GtkGenericPeer");
 
@@ -188,8 +193,10 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkInit (JNIEnv *env,
                                      "gnu/java/awt/peer/gtk/GtkTextComponentPeer");
   gdkgraphics = (*env)->FindClass (env,
                                    "gnu/java/awt/peer/gtk/GdkGraphics");
+#ifdef GTK_CAIRO
   gdkgraphics2d = (*env)->FindClass (env,
                                      "gnu/java/awt/peer/gtk/GdkGraphics2D");
+#endif
   setBoundsCallbackID = (*env)->GetMethodID (env, window,
 					     "setBoundsCallback",
 					     "(IIII)V");
@@ -236,9 +243,11 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkInit (JNIEnv *env,
   initComponentGraphicsID = (*env)->GetMethodID (env, gdkgraphics,
                                                  "initComponentGraphics",
                                                  "()V");
+#ifdef GTK_CAIRO
   initComponentGraphics2DID = (*env)->GetMethodID (env, gdkgraphics2d,
                                                    "initComponentGraphics2D",
                                                    "()V");
+#endif
   global_gtk_window_group = gtk_window_group_new ();
 
   init_dpi_conversion_factor ();
