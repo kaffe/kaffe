@@ -1,3 +1,10 @@
+Mon Feb  8 10:47:55 1999  Jose Orlando Pereira <jop@di.uminho.pt>
+
+	* libraries/javalib/java/net/DatagramSocket.java: bind socket
+	when creating it.
+	* libraries/javalib/java/net/MulticastSocket.java: set SO_REUSEADDR 
+	by default; allow joinGroup with other addrs than 224.0.0.0.
+
 Mon Feb  8 07:37:24 1999  Alexandre Oliva  <oliva@dcc.unicamp.br>
 
 	* kaffe/kaffe/Makefile.am: link libkaffevm after dlopened modules,
