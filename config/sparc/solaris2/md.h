@@ -20,6 +20,12 @@
 /**/
 #include <siginfo.h>
 #include <ucontext.h>
+#if defined(HAVE_SYS_RESOURCE_H)
+#include <sys/resource.h>
+#endif
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
 
 /* Function prototype for signal handlers */
 #define	SIGNAL_ARGS(sig, sc) int sig, siginfo_t* sip, ucontext_t* sc
@@ -27,6 +33,20 @@
 #define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
 #define SIGNAL_PC(scp) ((scp)->uc_mcontext.gregs[REG_PC])
 #define STACK_POINTER(scp) ((scp)->uc_mcontext.gregs[REG_SP])
+
+#if defined(HAVE_GETRLIMIT)
+#define KAFFEMD_STACKSIZE
+
+static inline size_t mdGetStackSize()
+{
+  struct rlimit rl;
+
+  if (getrlimit(RLIMIT_STACK, &rl) < 0)
+    return -1;
+  else
+    return rl.rlim_cur;
+}
+#endif
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"

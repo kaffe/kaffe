@@ -14,6 +14,12 @@
 
 #include "sparc/common.h"
 #include "sparc/threads.h"
+#if defined(HAVE_SYS_RESOURCE_H)
+#include <sys/resource.h>
+#endif
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
 
 #undef SP_OFFSET
 #define SP_OFFSET 2
@@ -27,6 +33,20 @@
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"
+#endif
+
+#if defined(HAVE_GETRLIMIT)
+#define KAFFEMD_STACKSIZE
+
+static inline size_t mdGetStackSize()
+{
+  struct rlimit rl;
+
+  if (getrlimit(RLIMIT_STACK, &rl) < 0)
+    return -1;
+  else
+    return (rl.rlim_max >= RLIM_INFINITY) ? rl.rlim_cur : rl.rlim_max;
+}
 #endif
 
 #endif

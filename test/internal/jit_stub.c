@@ -29,6 +29,7 @@
 #include "jthread.h"
 #include "stringParsing.h"
 #include "stringSupport.h"
+#include "md.h"
 
 #include <xprof/debugFile.h>
 
@@ -147,6 +148,7 @@ int main(int argc, char *argv[])
 		Hjava_lang_Thread mainThread;
 		parsedString testName;
 		char *tests;
+		int stackSize;
 		
 		initTypes();
 		loadStaticClass(&ObjectClass, "java/lang/Object");
@@ -155,7 +157,14 @@ int main(int argc, char *argv[])
 		loadStaticClass(&javaLangNullPointerException, "java/lang/NullPointerException");
 		loadStaticClass(&javaLangArrayIndexOutOfBoundsException, "java/lang/ArrayIndexOutOfBoundsException");
 		memset(&mainThread, 0, sizeof(mainThread));
-		jthread_createfirst(MAINSTACKSIZE,
+#if defined(KAFFEMD_STACKSIZE)
+		stackSize = mdGetStackSize();
+		if (stackSize < 0)
+		  stackSize = MAINSTACKSIZE;
+#else
+		stackSize = MAINSTACKSIZE;
+#endif
+		jthread_createfirst(stackSize,
 				    java_lang_Thread_NORM_PRIORITY,
 				    &mainThread);
 

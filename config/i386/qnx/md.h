@@ -24,8 +24,14 @@
 
 #include "i386/common.h"
 #include "i386/threads.h"
-
 #include "support.h"
+
+#if defined(HAVE_SYS_RESOURCE_H)
+#include <sys/resource.h>
+#endif
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
 /*
  * Redefine stack pointer offset.
  */
@@ -121,5 +127,20 @@ static inline void sysdepCallMethod(callMethodInfo *call)
 "		subl %0,%%esp \n"
 "	" : : "r" ((call)->argsize * sizeof(jint)) : "cc");
 }
+
+
+#if defined(HAVE_GETRLIMIT)
+#define KAFFEMD_STACKSIZE
+
+static inline size_t mdGetStackSize()
+{
+  struct rlimit rl;
+
+  if (getrlimit(RLIMIT_STACK, &rl) < 0)
+    return -1;
+  else
+    return (rl.rlim_max >= RLIM_INFINITY) ? rl.rlim_cur : rl.rlim_max;
+}
+#endif
 
 #endif

@@ -378,13 +378,6 @@ detectStackBoundaries(jthread_t jtid, int mainThreadStackSize)
 {
         stack_t newstack;
 
-#if defined(HAVE_GETRLIMIT)
-	struct rlimit rl;
-	
-	if (getrlimit(RLIMIT_STACK, &rl) >= 0)
-	  mainThreadStackSize = (rl.rlim_max >= RLIM_INFINITY) ? rl.rlim_cur : rl.rlim_max;
-#endif
-
 #if defined(STACK_POINTER) && defined(SA_ONSTACK) && defined(HAVE_SIGALTSTACK)
 
 	/*

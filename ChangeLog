@@ -1,5 +1,34 @@
 2004-04-24  Guilhem Lavaux <guilhem@kaffe.org>
 
+	* config/i386/beos/md.h, config/i386/bsdi/md.h,
+	config/i386/dgux/md.h, config/i386/freebsd2/md.h,
+	config/i386/gnu/md.h, config/i386/linux/md.h,
+	config/i386/netbsd1/md.h, config/i386/nextstep3/md.h,
+	config/i386/openbsd2/md.h, config/i386/oskit/md.h,
+	config/i386/qnx/md.h, config/i386/sco3.2v5/md.h,
+	config/i386/solaris2/md.h, config/i386/univel_svr4/md.h,
+	config/sparc/bsdi3/md.h, config/sparc/linux/md.h,
+	config/sparc/openbsd2/md.h, config/sparc/solaris2/md.h,
+	config/sparc/sunos4/md.h, config/sparc/uxpds/md.h:
+	Defined macro KAFFEMD_STACKSIZE and implemented new
+	function mdGetStackSize.
+	
+	* kaffe/kaffevm/thread.c
+	(initNativeThreads): If KAFFEMD_STACKSIZE is defined
+	use mdGetStackSize to retrieve the real stack size.
+
+	* kaffe/kaffevm/systems/unix-jthreads/signal.c
+	(detectStackBoundaries): Removed redundant code.
+
+	* test/internal/jit_stub.c:
+	(main) If KAFFEMD_STACKSIZE is defined use
+	mdGetStackSize to retrieve the real stack size.
+
+	* FAQ/FAQ.kaffemd: New file to describe the
+	different KAFFEMD_* defines.
+	
+2004-04-24  Guilhem Lavaux <guilhem@kaffe.org>
+
 	* config/powerpc/darwin/md.h: Implemented SIGNAL_ARGS,
 	SIGNAL_CONTEXT_POINTER, GET_SIGNAL_CONTEXT_POINTER, STACK_POINTER.
 

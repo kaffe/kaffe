@@ -14,6 +14,12 @@
 
 #include "sparc/common.h"
 #include "sparc/threads.h"
+#if defined(HAVE_SYS_RESOURCE_H)
+#include <sys/resource.h>
+#endif
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
 
 /*
  * Redefine stack pointer offset.
@@ -42,5 +48,19 @@ extern int getsockname(int, struct sockaddr*, int*);
 extern int getpeername(int, struct sockaddr*, int*);
 extern int select(int, fd_set*, fd_set*, fd_set*, struct timeval*);
 extern int vfprintf(FILE *, char *, va_list);
+
+#if defined(HAVE_GETRLIMIT)
+#define KAFFEMD_STACKSIZE
+
+static inline size_t mdGetStackSize()
+{
+  struct rlimit rl;
+
+  if (getrlimit(RLIMIT_STACK, &rl) < 0)
+    return -1;
+  else
+    return rl.rlim_cur;
+}
+#endif
 
 #endif

@@ -31,6 +31,12 @@
 #if defined(HAVE_SIGCONTEXT_H)
 #include <sigcontext.h>
 #endif
+#if defined(HAVE_SYS_RESOURCE_H)
+#include <sys/resource.h>
+#endif
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
 
 /* newer Linux kernel actually implement SA_SIGINFO.
  * But we don't need it, so let's turn it off
@@ -61,5 +67,19 @@
 /* Linux requires a little initialisation */
 extern void init_md(void);
 #define	INIT_MD()	init_md()
+
+#if defined(HAVE_GETRLIMIT)
+#define KAFFEMD_STACKSIZE
+
+static inline size_t mdGetStackSize()
+{
+  struct rlimit rl;
+
+  if (getrlimit(RLIMIT_STACK, &rl) < 0)
+    return -1;
+  else
+    return (rl.rlim_max >= RLIM_INFINITY) ? rl.rlim_cur : rl.rlim_max;
+}
+#endif
 
 #endif

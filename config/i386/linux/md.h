@@ -37,6 +37,12 @@
 #if defined(HAVE_SIGCONTEXT_H)
 #include <sigcontext.h>
 #endif
+#if defined(HAVE_SYS_RESOURCE_H)
+#include <sys/resource.h>
+#endif
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
 
 /*
  * newer Linux kernel actually implement SA_SIGINFO.
@@ -69,6 +75,20 @@ extern void init_md(void);
 #define GET_SIGNAL_CONTEXT_POINTER(sc) (&sc)
 #define SIGNAL_PC(scp) (scp)->eip
 #define STACK_POINTER(scp) (scp)->esp
+
+#if defined(HAVE_GETRLIMIT)
+#define KAFFEMD_STACKSIZE
+
+static inline size_t mdGetStackSize()
+{
+  struct rlimit rl;
+
+  if (getrlimit(RLIMIT_STACK, &rl) < 0)
+    return -1;
+  else
+    return (rl.rlim_max >= RLIM_INFINITY) ? rl.rlim_cur : rl.rlim_max;
+}
+#endif
 
 #if defined(TRANSLATOR)
 #include "jit-md.h"
