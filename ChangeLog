@@ -1,3 +1,20 @@
+Fri Aug 28 21:44:06 1998  Archie Cobbs <archie@whistle.com>
+
+	* configure, configure.in, FAQ/FAQ.install-root: specify
+	install root via ./configure --with-installroot=DIR option
+	* libraries/javalib/java/lang/Thread.java,
+	libraries/javalib/Klasses.jar: add {Inheritable}ThreadLocal classes
+	* libraries/javalib/java/lang/ThreadLocal.java,
+	libraries/javalib/java/lang/InheritableThreadLocal.java,
+	test/regression/ThreadLocalTest.java: new files
+	* test/regression/TestScript: add ThreadLocalTest
+	* libraries/javalib/kaffe/util/Assert.java: replace with a
+	version that doesn't define methods named "true" and "false".
+	* include/Makefile.in: make java_lang_Thread.h, java_lang_Throwable.h,
+	and java_lang_ThreadGroup.h derived files using kaffeh
+	* java_lang_Thread.h, java_lang_Throwable.h: regenerate automatically
+	* kaffe/kaffevm/intrp/machine.c: eliminate compiler warnings
+
 Fri Aug 28 13:34:59 1998  Archie Cobbs <archie@whistle.com>
 
 	* Makefile.in, */Makefile.in, */*/Makefile.in, */*/*/Makefile.in,
