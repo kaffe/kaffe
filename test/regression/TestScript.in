@@ -11,7 +11,8 @@
 # of this file. 
 
 : ${JAVA=kaffe} ${SRCDIR=@srcdir@} ${PATHSEP='@PATHSEP@'}
-test -z "@JIKES@" || : ${JIKES="@JIKES@ -nowarn"}
+# If you want to use jikes as default compiler for the regression tests uncomment the line below.
+#test -z "@JIKES@" || : ${JIKES="@JIKES@ -nowarn"}
 : ${JAVAC=${JIKES-"$JAVA at.dms.kjc.Main"}" -classpath \".$PATHSEP$SRCDIR$PATHSEP$SRCDIR/../../libraries/javalib/Klasses.jar$PATHSEP$CLASSPATH\""}
 overallerror=0
 error=0
