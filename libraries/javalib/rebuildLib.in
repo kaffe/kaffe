@@ -39,6 +39,8 @@ CLASSES="\
  $SRCDIR/java/util/*.java \
  $SRCDIR/java/util/mime/*.java \
  $SRCDIR/java/util/zip/*.java \
+ $SRCDIR/java/sql/*.java \
+ $SRCDIR/java/math/*.java \
  $SRCDIR/kaffe/awt/*.java \
  $SRCDIR/kaffe/beans/editors/*.java \
  $SRCDIR/kaffe/io/*.java \

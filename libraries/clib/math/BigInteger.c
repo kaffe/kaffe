@@ -1,419 +1,418 @@
 /*
  * java.math.BigInteger.c
  *
- * Copyright (c) 1996, 1997
+ * Copyright (c) 1996, 1997, 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
- * See the file "lib-license.terms" for information on usage and redistribution
+ * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
 
 #include "config.h"
-#include "config-std.h"
-#include "config-mem.h"
-#include "BigInteger.h"
-#include "../../../kaffe/kaffevm/itypes.h"
-#include <native.h>
 
-void
-java_math_BigInteger_plumbInit(void)
-{
-	/* No init needed */
-}
+#if defined(HAVE_GMP_H)
 
-#if defined(HAVE_LIBGMP)
-
+#include <jni.h>
 #include <gmp.h>
 
-static
+#undef	malloc
+#undef	free
+
+static jfieldID number;
+
 void
-bytes2mpz(MP_INT* out, HArrayOfByte* val)
+Java_java_math_BigInteger_initialize0(JNIEnv* env, jclass cls)
 {
-	int l;
-	int i;
-
-	l = obj_length(val);
-	mpz_set_ui(out, (uint8)unhand(val)->body[0]);
-	for (i = 1; i < l; i++) {
-		mpz_mul_ui(out, out, 256);
-		mpz_add_ui(out, out, (uint8)unhand(val)->body[i]);
-	}
+	number = (*env)->GetFieldID(env, cls, "number", "kaffe.util.Ptr");
 }
 
-static
 void
-mpz2bytes(HArrayOfByte** outp, MP_INT* val)
+Java_java_math_BigInteger_init0(JNIEnv* env, jobject r)
 {
-	int l;
-	HArrayOfByte* out;
+	mpz_ptr res;
+
+	res = (mpz_ptr)malloc(sizeof(mpz_t));
+	mpz_init(res);
+
+	(*env)->SetObjectField(env, r, number, (jobject)res);
+}
+
+void
+Java_java_math_BigInteger_finalize0(JNIEnv* env, jobject r)
+{
+	mpz_ptr res;
+
+	res = (*env)->GetObjectField(env, r, number);
+
+	mpz_clear(res);
+	free(res);
+}
+
+void
+Java_java_math_BigInteger_assignBytes0(JNIEnv* env, jobject r, jint sign, jarray magnitude)
+{
+	mpz_ptr res;
+	jbyte* data;
 	int i;
-	MP_INT rem;
+	int len;
 
-	mpz_init(&rem);
+	res = (*env)->GetObjectField(env, r, number);
 
-	l = (mpz_sizeinbase(val, 2) + 7) / 8;
-	out = (HArrayOfByte*)AllocArray(l, TYPE_Byte);
+	len = (*env)->GetArrayLength(env, magnitude);
+	data = (*env)->GetByteArrayElements(env, magnitude, 0);
 
-	for (i = l - 1; i >= 0; i--) {
-		mpz_divmod_ui(val, &rem, val, 256);
-		unhand(out)->body[i] = mpz_get_ui(&rem);
+	mpz_clear(res);
+	for (i = 0; i < len; i++) {
+		mpz_mul_ui(res, res, (unsigned long)256);
+		mpz_add_ui(res, res, (unsigned long)(data[i] & 0xFF));
 	}
 
-	mpz_clear(&rem);
+	(*env)->ReleaseByteArrayElements(env, magnitude, data, JNI_ABORT);
 
-	(*outp) = out;
-}
-
-HArrayOfByte*
-java_math_BigInteger_plumbAdd(HArrayOfByte* src1, HArrayOfByte* src2)
-{
-	MP_INT d;
-	MP_INT s1;
-	MP_INT s2;
-	HArrayOfByte* result;
-
-	mpz_init(&d);
-	mpz_init(&s1);
-	mpz_init(&s2);
-
-	bytes2mpz(&s1, src1);
-	bytes2mpz(&s2, src2);
-
-	mpz_add(&d, &s1, &s2);
-
-	mpz2bytes(&result, &d);
-
-	mpz_clear(&d);
-	mpz_clear(&s1);
-	mpz_clear(&s2);
-
-	return (result);
-}
-
-struct Hjava_math_BigInteger*
-java_math_BigInteger_plumbSubtract(HArrayOfByte* src1, HArrayOfByte* src2)
-{
-	MP_INT r;
-	MP_INT s1;
-	MP_INT s2;
-	Hjava_math_BigInteger* result;
-	HArrayOfByte* array;
-
-	mpz_init(&r);
-	mpz_init(&s1);
-	mpz_init(&s2);
-
-	bytes2mpz(&s1, src1);
-	bytes2mpz(&s2, src2);
-
-	mpz_sub(&r, &s1, &s2);
-
-	result = (Hjava_math_BigInteger*)AllocObject("java/math/BigInteger");
-
-	if (mpz_cmp_ui(&r, 0) < 0) {
-		/* Result if negative */
-		mpz_abs(&r, &r);
-		unhand(result)->signum = -1;
+	if (sign == -1) {
+		mpz_neg(res, res);
 	}
-	else {
-		/* Result if positive */
-		unhand(result)->signum = 1;
-	}
-
-	mpz2bytes(&array, &r);
-	unhand(result)->magnitude = array;
-	unhand(result)->bitCount = 0;
-	unhand(result)->bitLength = 0;
-	unhand(result)->firstNonzeroByteNum = 0;
-	unhand(result)->lowestSetBit = 0;
-
-	mpz_clear(&r);
-	mpz_clear(&s1);
-	mpz_clear(&s2);
-
-	return (result);
 }
 
-HArrayOfByte*
-java_math_BigInteger_plumbMultiply(HArrayOfByte* src1, HArrayOfByte* src2)
+void
+Java_java_math_BigInteger_assignString0(JNIEnv* env, jobject r, jstring val, jint radix)
 {
-	MP_INT d;
-	MP_INT s1;
-	MP_INT s2;
-	HArrayOfByte* result;
+	mpz_ptr res;
+	const jbyte* str;
 
-	mpz_init(&d);
-	mpz_init(&s1);
-	mpz_init(&s2);
+	res = (*env)->GetObjectField(env, r, number);
+	str = (*env)->GetStringUTFChars(env, val, 0);
 
-	bytes2mpz(&s1, src1);
-	bytes2mpz(&s2, src2);
+	mpz_set_str(res, (char*)str, (int)radix);
 
-	mpz_mul(&d, &s1, &s2);
-
-	mpz2bytes(&result, &d);
-
-	mpz_clear(&d);
-	mpz_clear(&s1);
-	mpz_clear(&s2);
-
-	return (result);
+	(*env)->ReleaseStringUTFChars(env, val, str);
 }
 
-HArrayOfByte*
-java_math_BigInteger_plumbDivide(HArrayOfByte* src1, HArrayOfByte* src2)
+void
+Java_java_math_BigInteger_add0(JNIEnv* env, jobject r, jobject s1, jobject s2)
 {
-	MP_INT q;
-	MP_INT r;
-	MP_INT s1;
-	MP_INT s2;
-	HArrayOfByte* result;
+	mpz_ptr res;
+	mpz_srcptr src1;
+	mpz_srcptr src2;
 
-	mpz_init(&q);
-	mpz_init(&r);
-	mpz_init(&s1);
-	mpz_init(&s2);
+	src1 = (mpz_srcptr)(*env)->GetObjectField(env, s1, number);
+	src2 = (mpz_srcptr)(*env)->GetObjectField(env, s2, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
 
-	bytes2mpz(&s1, src1);
-	bytes2mpz(&s2, src2);
-
-	mpz_divmod(&q, &r, &s1, &s2);
-
-	mpz2bytes(&result, &q);
-
-	mpz_clear(&q);
-	mpz_clear(&r);
-	mpz_clear(&s1);
-	mpz_clear(&s2);
-
-	return (result);
+	mpz_add(res, src1, src2);
 }
 
-HArrayOfByte*
-java_math_BigInteger_plumbRemainder(HArrayOfByte* src1, HArrayOfByte* src2)
+void
+Java_java_math_BigInteger_sub0(JNIEnv* env, jobject r, jobject s1, jobject s2)
 {
-	MP_INT q;
-	MP_INT r;
-	MP_INT s1;
-	MP_INT s2;
-	HArrayOfByte* result;
+	mpz_ptr res;
+	mpz_srcptr src1;
+	mpz_srcptr src2;
 
-	mpz_init(&q);
-	mpz_init(&r);
-	mpz_init(&s1);
-	mpz_init(&s2);
+	src1 = (mpz_srcptr)(*env)->GetObjectField(env, s1, number);
+	src2 = (mpz_srcptr)(*env)->GetObjectField(env, s2, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
 
-	bytes2mpz(&s1, src1);
-	bytes2mpz(&s2, src2);
-
-	mpz_divmod(&q, &r, &s1, &s2);
-
-	mpz2bytes(&result, &r);
-
-	mpz_clear(&q);
-	mpz_clear(&r);
-	mpz_clear(&s1);
-	mpz_clear(&s2);
-
-	return (result);
+	mpz_sub(res, src1, src2);
 }
 
-HArrayOfArray*
-java_math_BigInteger_plumbDivideAndRemainder(HArrayOfByte* src1, HArrayOfByte* src2)
+void
+Java_java_math_BigInteger_mul0(JNIEnv* env, jobject r, jobject s1, jobject s2)
 {
-	MP_INT q;
-	MP_INT r;
-	MP_INT s1;
-	MP_INT s2;
-	HArrayOfArray* result;
+	mpz_ptr res;
+	mpz_srcptr src1;
+	mpz_srcptr src2;
 
-	mpz_init(&r);
-	mpz_init(&r);
-	mpz_init(&s1);
-	mpz_init(&s2);
+	src1 = (mpz_srcptr)(*env)->GetObjectField(env, s1, number);
+	src2 = (mpz_srcptr)(*env)->GetObjectField(env, s2, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
 
-	result = (HArrayOfArray*)AllocObjectArray(2, "[B");
-
-	bytes2mpz(&s1, src1);
-	bytes2mpz(&s2, src2);
-
-	mpz_divmod(&q, &r, &s1, &s2);
-
-	mpz2bytes((HArrayOfByte**)&unhand(result)->body[0], &q);
-	mpz2bytes((HArrayOfByte**)&unhand(result)->body[1], &r);
-
-	mpz_clear(&q);
-	mpz_clear(&r);
-	mpz_clear(&s1);
-	mpz_clear(&s2);
-
-	return (result);
+	mpz_mul(res, src1, src2);
 }
 
-HArrayOfByte*
-java_math_BigInteger_plumbGcd(HArrayOfByte* src1, HArrayOfByte* src2)
+void
+Java_java_math_BigInteger_div0(JNIEnv* env, jobject r, jobject s1, jobject s2)
 {
-	MP_INT r;
-	MP_INT s1;
-	MP_INT s2;
-	HArrayOfByte* result;
+	mpz_ptr res;
+	mpz_srcptr src1;
+	mpz_srcptr src2;
 
-	mpz_init(&r);
-	mpz_init(&s1);
-	mpz_init(&s2);
+	src1 = (mpz_srcptr)(*env)->GetObjectField(env, s1, number);
+	src2 = (mpz_srcptr)(*env)->GetObjectField(env, s2, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
 
-	bytes2mpz(&s1, src1);
-	bytes2mpz(&s2, src2);
-
-	mpz_gcd(&r, &s1, &s2);
-
-	mpz2bytes(&result, &r);
-
-	mpz_clear(&r);
-	mpz_clear(&s1);
-	mpz_clear(&s2);
-
-	return (result);
+	mpz_tdiv_q(res, src1, src2);
 }
 
-HArrayOfByte*
-java_math_BigInteger_plumbModPow(HArrayOfByte* src1, HArrayOfByte* src2, HArrayOfByte* src3)
+void
+Java_java_math_BigInteger_rem0(JNIEnv* env, jobject r, jobject s1, jobject s2)
 {
-	MP_INT r;
-	MP_INT s1;
-	MP_INT s2;
-	MP_INT s3;
-	HArrayOfByte* result;
+	mpz_ptr res;
+	mpz_srcptr src1;
+	mpz_srcptr src2;
 
-	mpz_init(&r);
-	mpz_init(&s1);
-	mpz_init(&s2);
-	mpz_init(&s3);
+	src1 = (mpz_srcptr)(*env)->GetObjectField(env, s1, number);
+	src2 = (mpz_srcptr)(*env)->GetObjectField(env, s2, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
 
-	bytes2mpz(&s1, src1);
-	bytes2mpz(&s2, src2);
-	bytes2mpz(&s3, src3);
-
-	mpz_powm(&r, &s1, &s2, &s3);
-
-	mpz2bytes(&result, &r);
-
-	mpz_clear(&r);
-	mpz_clear(&s1);
-	mpz_clear(&s2);
-	mpz_clear(&s3);
-
-	return (result);
+	mpz_tdiv_r(res, src1, src2);
 }
 
-HArrayOfByte*
-java_math_BigInteger_plumbModInverse(HArrayOfByte* src1, HArrayOfByte* src2)
+void
+Java_java_math_BigInteger_divrem0(JNIEnv* env, jobject r1, jobject r2, jobject s1, jobject s2)
 {
-	int res;
-	MP_INT r;
-	MP_INT s1;
-	MP_INT s2;
-	HArrayOfByte* result;
+	mpz_ptr res1;
+	mpz_ptr res2;
+	mpz_srcptr src1;
+	mpz_srcptr src2;
 
-	mpz_init(&r);
-	mpz_init(&s1);
-	mpz_init(&s2);
+	src1 = (mpz_srcptr)(*env)->GetObjectField(env, s1, number);
+	src2 = (mpz_srcptr)(*env)->GetObjectField(env, s2, number);
+	res1 = (mpz_ptr)(*env)->GetObjectField(env, r1, number);
+	res2 = (mpz_ptr)(*env)->GetObjectField(env, r2, number);
 
-	bytes2mpz(&s1, src1);
-	bytes2mpz(&s2, src2);
-
-	if ((res = mpz_invert(&r, &s1, &s2)) != 0)
-		mpz2bytes(&result, &r);
-
-	mpz_clear(&r);
-	mpz_clear(&s1);
-	mpz_clear(&s2);
-	
-	if (res)
-		return result;
-	else
-		SignalError("java/lang/ArithmeticException", "no modInverse");
+	mpz_tdiv_qr(res1, res2, src1, src2);
 }
 
-HArrayOfByte*
-java_math_BigInteger_plumbSquare(HArrayOfByte* src)
+void
+Java_java_math_BigInteger_abs0(JNIEnv* env, jobject r, jobject s)
 {
-	MP_INT s;
-	HArrayOfByte* result;
+	mpz_ptr res;
+	mpz_srcptr src;
 
-	mpz_init(&s);
+	src = (mpz_srcptr)(*env)->GetObjectField(env, s, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
 
-	bytes2mpz(&s, src);
+	mpz_abs(res, src);
+}
 
-	mpz_mul(&s, &s, &s);
+void
+Java_java_math_BigInteger_neg0(JNIEnv* env, jobject r, jobject s)
+{
+	mpz_ptr res;
+	mpz_srcptr src;
 
-	mpz2bytes(&result, &s);
+	src = (mpz_srcptr)(*env)->GetObjectField(env, s, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
 
-	mpz_clear(&s);
+	mpz_neg(res, src);
+}
 
-	return (result);
+void
+Java_java_math_BigInteger_pow0(JNIEnv* env, jobject r, jobject s, jint power)
+{
+	mpz_ptr res;
+	mpz_srcptr src;
+
+	src = (mpz_srcptr)(*env)->GetObjectField(env, s, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
+
+	mpz_pow_ui(res, src, (unsigned long)power);
+}
+
+void
+Java_java_math_BigInteger_gcd0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	mpz_ptr res;
+	mpz_srcptr src1;
+	mpz_srcptr src2;
+
+	src1 = (mpz_srcptr)(*env)->GetObjectField(env, s1, number);
+	src2 = (mpz_srcptr)(*env)->GetObjectField(env, s2, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
+
+	mpz_gcd(res, src1, src2);
+}
+
+void
+Java_java_math_BigInteger_mod0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	mpz_ptr res;
+	mpz_srcptr src1;
+	mpz_srcptr src2;
+
+	src1 = (mpz_srcptr)(*env)->GetObjectField(env, s1, number);
+	src2 = (mpz_srcptr)(*env)->GetObjectField(env, s2, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
+
+	mpz_mod(res, src1, src2);
+}
+
+void
+Java_java_math_BigInteger_modpow0(JNIEnv* env, jobject r, jobject s1, jobject s2, jobject s3)
+{
+	mpz_ptr res;
+	mpz_srcptr src1;
+	mpz_srcptr src2;
+	mpz_srcptr src3;
+
+	src1 = (mpz_srcptr)(*env)->GetObjectField(env, s1, number);
+	src2 = (mpz_srcptr)(*env)->GetObjectField(env, s2, number);
+	src3 = (mpz_srcptr)(*env)->GetObjectField(env, s3, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
+
+	mpz_powm(res, src1, src2, src3);
+}
+
+void
+Java_java_math_BigInteger_and0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	mpz_ptr res;
+	mpz_srcptr src1;
+	mpz_srcptr src2;
+
+	src1 = (mpz_srcptr)(*env)->GetObjectField(env, s1, number);
+	src2 = (mpz_srcptr)(*env)->GetObjectField(env, s2, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
+
+	mpz_and(res, src1, src2);
+}
+
+void
+Java_java_math_BigInteger_or0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	mpz_ptr res;
+	mpz_srcptr src1;
+	mpz_srcptr src2;
+
+	src1 = (mpz_srcptr)(*env)->GetObjectField(env, s1, number);
+	src2 = (mpz_srcptr)(*env)->GetObjectField(env, s2, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
+
+	mpz_ior(res, src1, src2);
+}
+
+void
+Java_java_math_BigInteger_xor0(JNIEnv* env, jobject r, jobject s1, jobject s2)
+{
+	mpz_ptr res;
+	mpz_srcptr src1;
+	mpz_srcptr src2;
+	mpz_t tmp;
+
+	src1 = (mpz_srcptr)(*env)->GetObjectField(env, s1, number);
+	src2 = (mpz_srcptr)(*env)->GetObjectField(env, s2, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
+
+	mpz_init(tmp);
+	mpz_and(res, src1, src2);
+	mpz_com(res, res);
+	mpz_ior(tmp, src1, src2);
+	mpz_and(res, res, tmp);
+
+	mpz_clear(tmp);
+}
+
+void
+Java_java_math_BigInteger_not0(JNIEnv* env, jobject r, jobject s)
+{
+	mpz_ptr res;
+	mpz_srcptr src;
+
+	src = (mpz_srcptr)(*env)->GetObjectField(env, s, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
+
+	mpz_com(res, src);
+}
+
+void
+Java_java_math_BigInteger_setbit0(JNIEnv* env, jobject r, jobject s, jint n)
+{
+	mpz_ptr res;
+	mpz_srcptr src;
+
+	src = (mpz_srcptr)(*env)->GetObjectField(env, s, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
+
+	mpz_set(res, src);
+	mpz_setbit(res, (unsigned long)n);
+}
+
+void
+Java_java_math_BigInteger_clrbit0(JNIEnv* env, jobject r, jobject s, jint n)
+{
+	mpz_ptr res;
+	mpz_srcptr src;
+
+	src = (mpz_srcptr)(*env)->GetObjectField(env, s, number);
+	res = (mpz_ptr)(*env)->GetObjectField(env, r, number);
+
+	mpz_set(res, src);
+	mpz_clrbit(res, (unsigned long)n);
+}
+
+jint
+Java_java_math_BigInteger_scansetbit0(JNIEnv* env, jobject s)
+{
+	mpz_srcptr src;
+
+	src = (mpz_srcptr)(*env)->GetObjectField(env, s, number);
+
+	return ((jint)mpz_scan1(src, 0));
+}
+
+
+jint
+Java_java_math_BigInteger_cmp0(JNIEnv* env, jclass cls, jobject s1, jobject s2)
+{
+	mpz_srcptr src1;
+	mpz_srcptr src2;
+
+	src1 = (mpz_srcptr)(*env)->GetObjectField(env, s1, number);
+	src2 = (mpz_srcptr)(*env)->GetObjectField(env, s2, number);
+
+	return (mpz_cmp(src1, src2));
+}
+
+jstring
+Java_java_math_BigInteger_toString0(JNIEnv* env, jobject* s, jint base)
+{
+	char* res;
+	mpz_srcptr src;
+	jstring str;
+
+	src = (mpz_srcptr)(*env)->GetObjectField(env, s, number);
+
+	res = mpz_get_str(0, (int)base, src);
+	str = (*env)->NewStringUTF(env, res);
+	free(res);
+
+	return (str);
+}
+
+jdouble
+Java_java_math_BigInteger_toDouble0(JNIEnv* env, jobject* s)
+{
+	mpz_srcptr src;
+
+	src = (mpz_srcptr)(*env)->GetObjectField(env, s, number);
+
+	return ((jdouble)mpz_get_d(src));
+}
+
+
+jint
+Java_java_math_BigInteger_toInt0(JNIEnv* env, jobject* s)
+{
+	mpz_srcptr src;
+
+	src = (mpz_srcptr)(*env)->GetObjectField(env, s, number);
+
+	return ((jint)mpz_get_si(src));
+}
+
+jint
+Java_java_math_BigInteger_probablyPrime0(JNIEnv* env, jobject* s, jint prop)
+{
+	mpz_srcptr src;
+
+	src = (mpz_srcptr)(*env)->GetObjectField(env, s, number);
+
+	return (mpz_probab_prime_p(src, (int)prop));
 }
 
 #else
 
-HArrayOfByte*
-java_math_BigInteger_plumbAdd(HArrayOfByte* src1, HArrayOfByte* src2)
-{
-	unimp("bigint");
-}
-
-struct Hjava_math_BigInteger*
-java_math_BigInteger_plumbSubtract(HArrayOfByte* src1, HArrayOfByte* src2)
-{
-	unimp("bigint");
-}
-
-HArrayOfByte*
-java_math_BigInteger_plumbMultiply(HArrayOfByte* src1, HArrayOfByte* src2)
-{
-	unimp("bigint");
-}
-
-HArrayOfByte*
-java_math_BigInteger_plumbDivide(HArrayOfByte* src1, HArrayOfByte* src2)
-{
-	unimp("bigint");
-}
-
-HArrayOfByte*
-java_math_BigInteger_plumbRemainder(HArrayOfByte* src1, HArrayOfByte* src2)
-{
-	unimp("bigint");
-}
-
-HArrayOfArray*
-java_math_BigInteger_plumbDivideAndRemainder(HArrayOfByte* src1, HArrayOfByte* src2)
-{
-	unimp("bigint");
-}
-
-HArrayOfByte*
-java_math_BigInteger_plumbGcd(HArrayOfByte* src1, HArrayOfByte* src2)
-{
-	unimp("bigint");
-}
-
-HArrayOfByte*
-java_math_BigInteger_plumbModPow(HArrayOfByte* src1, HArrayOfByte* src2, HArrayOfByte* src3)
-{
-	unimp("bigint");
-}
-
-HArrayOfByte*
-java_math_BigInteger_plumbModInverse(HArrayOfByte* src1, HArrayOfByte* src2)
-{
-	unimp("bigint");
-}
-
-HArrayOfByte*
-java_math_BigInteger_plumbSquare(HArrayOfByte* src)
-{
-	unimp("bigint");
-}
+/* We should put some dummies in here */
 
 #endif
