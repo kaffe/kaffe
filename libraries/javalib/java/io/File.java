@@ -115,6 +115,9 @@ public String getParent()
 	int slashIndex=path.lastIndexOf(separatorChar);
 	if (slashIndex==-1) {
 		return null;
+	} 
+	else if (slashIndex==0) {
+		return File.separator;
 	}
 	else {
 		return path.substring(0, slashIndex);
