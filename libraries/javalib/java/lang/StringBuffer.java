@@ -238,12 +238,8 @@ public synchronized void setLength(int newLength)
 	used = newLength;
 }
 
-public String toString()
-	{
-	char buf[] = new char[used];
-	if (used > 0) {
-		getChars(0, used, buf, 0);
-	}
-	return new String(buf);
+public String toString() {
+	return new String(this);
 }
+
 }

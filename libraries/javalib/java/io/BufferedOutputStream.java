@@ -39,13 +39,16 @@ public synchronized void flush() throws IOException {
 }
 
 public synchronized void write(byte b[], int off, int len) throws IOException {
-	if (count + len > buf.length) {
-		writeBuffer();
-		out.write(b, off, len);
-		return;
-	}
-	System.arraycopy(b, off, buf, count, len);
-	count += len;
+	while (count + len > buf.length) {
+		int left = buf.length - count;
+		System.arraycopy(b, off, buf, count, left);
+		count += left;
+                writeBuffer();
+		off += left;
+		len -= left;
+        }
+        System.arraycopy(b, off, buf, count, len);
+        count += len;
 }
 
 public synchronized void write(int b) throws IOException {

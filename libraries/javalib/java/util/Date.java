@@ -94,7 +94,7 @@ public int getDay()
 	{
 	Calendar cal = Calendar.getInstance();
 	cal.setTime(this);
-	return (cal.get(Calendar.DAY_OF_WEEK));
+	return (cal.get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY);
 }
 
 public int getHours()

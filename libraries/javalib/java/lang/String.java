@@ -27,26 +27,25 @@ final public class String implements Serializable
 	/* This is what Sun's JDK1.1 "serialver java.lang.String" spits out */
 	static final long serialVersionUID = -6849794470754667710L;
 
-public String()
-	{
+public String() {
 	value = new char[0];
 }
 
-public String( String other)
-	{
+public String( String other) {
 	this( other.toCharArray());
 }
 
-public String (StringBuffer sb)
-	{
-	count = sb.length();
-	value = new char[count];
-	if (count > 0)
-		sb.getChars(0, count, value, 0);
+public String (StringBuffer sb) {
+	synchronized (sb) {
+		count = sb.length();
+		value = new char[count];
+		if (count > 0) {
+			sb.getChars(0, count, value, 0);
+		}
+	}
 }
 
-public String( byte[] bytes)
-	{
+public String( byte[] bytes) {
 	initString( bytes, 0, bytes.length, ByteToCharConverter.getDefault());
 }
 

@@ -16,7 +16,6 @@ class SocketInputStream
   extends FileInputStream
 {
 	boolean eof;
-/* Do I need this? */
 	SocketImpl impl;
 	byte[] temp;
 
@@ -33,6 +32,6 @@ public int read(byte b[], int off, int length) throws IOException {
 	return socketRead(b, off, length);
 }
 
-/* I have no idea what this is for */
 native private int socketRead(byte buf[], int offset, int len);
+
 }
