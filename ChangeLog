@@ -1,3 +1,10 @@
+2004-04-03  Adam Heath <doogie@debian.org>
+
+        * configure.ac, configure:
+	  Disable lines with dnl, not #.
+	  Disable -Wpadded.
+	  s/Wfloat-equal/-Wfloat-equal/
+
 2004-04-02  Adam Heath <doogie@debian.org>
 
         * kaffe/kaffe/main.c, kaffe/kaffevm/exception.h,
