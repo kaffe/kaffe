@@ -1,5 +1,5 @@
 /* java_nio_VMDirectByteBuffer.c - Native methods for VMDirectByteBuffer
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -7,7 +7,7 @@ GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
-
+ 
 GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -55,14 +55,27 @@ static jobject NIOGetRawData (JNIEnv *, void *pointer);
 static void *
 NIOGetPointer (JNIEnv *env, jobject rawdata)
 {
+#if SIZEOF_VOID_P == 4
   return (void *) (*env)->GetIntField (env, rawdata, fieldNativePointer);
+#elif SIZEOF_VOID_P == 8
+  return (void *) (*env)->GetLongField (env, rawdata, fieldNativePointer);
+#else
+#error unsupported pointer size
+#endif
 }
 
 static jobject
 NIOGetRawData (JNIEnv *env, void *pointer)
 {
+#if SIZEOF_VOID_P == 4
   return (*env)->NewObject (env, classRawData, methodRawDataInit,
-                            (jint) pointer);
+			    (jint) pointer);
+#elif SIZEOF_VOID_P == 8
+  return (*env)->NewObject (env, classRawData, methodRawDataInit,
+			    (jlong) pointer);
+#else
+#error unsupported pointer size
+#endif
 }
 
 JNIEXPORT void JNICALL
@@ -74,52 +87,54 @@ Java_java_nio_VMDirectByteBuffer_init
   if (classRawData == NULL)
     {
       JCL_ThrowException(env, "java/lang/InternalError",
-                              "unable to find internal class");
+			      "unable to find internal class");
       return;
     }
 
   methodRawDataInit = (*env)->GetMethodID (env, classRawData,
-                                           "<init>", "(I)V");
+					   "<init>", "(I)V");
   if (methodRawDataInit == NULL)
     {
       JCL_ThrowException(env, "java/lang/InternalError",
-                              "unable to find internal constructor");
+			      "unable to find internal constructor");
       return;
     }
-
+  
   fieldNativePointer = (*env)->GetFieldID (env, classRawData, "data", "I");
   if (fieldNativePointer == NULL)
     {
       JCL_ThrowException(env, "java/lang/InternalError",
-                              "unable to find internal field");
+			      "unable to find internal field");
       return;
     }
-#else /* SIZEOF_VOID_P != 4 */
+#elif SIZEOF_VOID_P == 8
   classRawData = (*env)->FindClass (env, "gnu/classpath/RawData64");
   if (classRawData == NULL)
     {
       JCL_ThrowException(env, "java/lang/InternalError",
-                              "unable to find internal class");
+			      "unable to find internal class");
       return;
     }
 
   methodRawDataInit = (*env)->GetMethodID (env, classRawData,
-                                           "<init>", "(L)V");
+					   "<init>", "(J)V");
   if (methodRawDataInit == NULL)
     {
       JCL_ThrowException(env, "java/lang/InternalError",
-                              "unable to find internal constructor");
+			      "unable to find internal constructor");
       return;
     }
-
-  fieldNativePointer = (*env)->GetFieldID (env, classRawData, "data", "L");
+  
+  fieldNativePointer = (*env)->GetFieldID (env, classRawData, "data", "J");
   if (fieldNativePointer == NULL)
     {
       JCL_ThrowException(env, "java/lang/InternalError",
-                              "unable to find internal field");
+			      "unable to find internal field");
       return;
     }
-#endif /* SIZEOF_VOID_P != 4 */
+#else
+#error unsupported pointer size
+#endif
 }
 
 JNIEXPORT jobject JNICALL
@@ -127,16 +142,16 @@ Java_java_nio_VMDirectByteBuffer_allocate
   (JNIEnv *env, jclass clazz __attribute__ ((__unused__)), jint capacity)
 {
   void *buffer;
-
+  
   buffer = malloc (capacity);
 
   if (buffer == NULL)
     {
       JCL_ThrowException (env, "java/lang/OutOfMemoryError",
-                          "unable to allocate memory for direct byte buffer");
-      return NULL;
+			  "unable to allocate memory for direct byte buffer");
+      return 0;
     }
-
+  
   return NIOGetRawData (env, buffer);
 }
 
