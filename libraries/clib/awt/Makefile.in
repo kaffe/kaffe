@@ -56,7 +56,7 @@ OBJECT=\
 		X/imggif$(OBJEXT) \
 		X/imgjpeg$(OBJEXT) \
 		X/imgpng$(OBJEXT) \
-		X/cbd$(OBJEXT) \
+		X/cbd$(OBJEXT)
 
 DEPENDS=        $(OBJECT:@OBJEXT@=.d)
 SOURCES=        $(OBJECT:@OBJEXT@=.c)
