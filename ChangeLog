@@ -2,6 +2,182 @@
 
         Resynced with GNU Classpath.
 	
+	2005-01-27  Michael Koch  <konqueror@gmx.de>
+
+	* javax/swing/AbstractAction.java
+	(ENABLED_PROPERTY): Removed.
+	(setEnabled): Replaced constant with real string.
+	* javax/swing/AbstractButton.java
+	(createActionPropertyChangeListener.propertyChange): Likewise.
+	* javax/swing/JComboBox.java
+	(DEFAULT_MAXIMUM_ROW_COUNT): Made private.
+	(EDITABLE_CHANGED_PROPERTY): Removed.
+	(MAXIMUM_ROW_COUNT_CHANGED_PROPERTY):Likewise.
+	(ENABLED_CHANGED_PROPERTY):Likewise.
+	(RENDERER_CHANGED_PROPERTY):Likewise.
+	(EDITOR_CHANGED_PROPERTY):Likewise.
+	(MODEL_CHANGED_PROPERTY):Likewise.
+	(uiClassID):Likewise.
+	(getUIClassID): Replaced constant with real string.
+	(setModel):Likewise.
+	(setEditable):Likewise.
+	(setMaximumRowCount):Likewise.
+	(setRenderer):Likewise.
+	(setEditor):Likewise.
+	(setEnabled):Likewise.
+	* javax/swing/JLabel.java
+	(DISABLED_ICON_CHANGED_PROPERTY): Removed.
+	(DISPLAYED_MNEMONIC_CHANGED_PROPERTY): Likewise.
+	(DISPLAYED_MNEMONIC_INDEX_CHANGED_PROPERTY): Likewise.
+	(HORIZONTAL_ALIGNMENT_CHANGED_PROPERTY): Likewise.
+	(HORIZONTAL_TEXT_POSITION_CHANGED_PROPERTY): Likewise.
+	(ICON_CHANGED_PROPERTY): Likewise.
+	(ICON_TEXT_GAP_CHANGED_PROPERTY): Likewise.
+	(LABEL_FOR_CHANGED_PROPERTY): Likewise.
+	(TEXT_CHANGED_PROPERTY): Likewise.
+	(VERTICAL_ALIGNMENT_CHANGED_PROPERTY): Likewise.
+	(VERTICAL_TEXT_POSITION_CHANGED_PROPERTY): Likewise.
+	(setText): Replaced constant with real string.
+	(setIcon): Likewise.
+	(setDisabledIcon): Likewise.
+	(setDisplayedMnemonic): Likewise.
+	(setIconTextGap): Likewise.
+	(setVerticalAlignment): Likewise.
+	(setHorizontalAlignment): Likewise.
+	(setVerticalTextPosition): Likewise.
+	(setHorizontalTextPosition): Likewise.
+	(setLabelFor): Replaced constant with real string.
+	Fire property change event after property got changed.
+	* javax/swing/JList.java
+	(CELL_RENDERER_PROPERTY_CHANGED): Likewise.
+	(FIXED_CELL_HEIGHT_PROPERTY_CHANGED): Likewise.
+	(FIXED_CELL_WIDTH_PROPERTY_CHANGED): Likewise.
+	(LAYOUT_ORIENTATION_PROPERTY_CHANGED): Likewise.
+	(MODEL_PROPERTY_CHANGED): Likewise.
+	(PROTOTYPE_CELL_VALUE_PROPERTY_CHANGED): Likewise.
+	(SELECTION_BACKGROUND_PROPERTY_CHANGED): Likewise.
+	(SELECTION_FOREGROUND_PROPERTY_CHANGED): Likewise.
+	(SELECTION_MODEL_PROPERTY_CHANGED): Likewise.
+	(setFixedCellWidth): Reimplemented.
+	(setFixedCellHeight): Exit if new value is identical.
+	Replaced constant with real string.
+	(setSelectionBackground): Likewise.
+	(setSelectionForeground): Likewise.
+	(setPrototypeCellValue): Likewise.
+	(setCellRenderer): Replaced constant with real string.
+	(setModel): Likewise.
+	(setSelectionModel): Likewise.
+	* javax/swing/JMenuBar.java
+	(BORDER_PAINTED_CHANGED_PROPERTY): Removed.
+	(MODEL_CHANGED_PROPERTY): Likewise.
+	(MARGIN_CHANGED_PROPERTY): Likewise.
+	(setBorderPainted): Reimplemented.
+	(setMargin): Likewise.
+	(setSelectionModel): Replaced constant with real string.
+	* javax/swing/JPopupMenu.java
+	(LABEL_CHANGED_PROPERTY): Removed.
+	(VISIBLE_CHANGED_PROPERTY): Likewise.
+	(borderPainted): Likewise.
+	(setLabel): Replaced constant with real string.
+	(setVisible): Exit if new value is identical.
+	Replaced constant with real string.
+	* javax/swing/JProgressBar.java
+	(BORDER_PAINTED_CHANGED_PROPERTY): Removed.
+	(ORIENTATION_CHANGED_PROPERTY): Likewise.
+	(STRING_CHANGED_PROPERTY): Likewise.
+	(STRING_PAINTED_CHANGED_PROPERTY): Likewise.
+	(INDETERMINATE_CHANGED_PROPERTY): Likewise.
+	(setOrientation): Replaced constant with real string.
+	(setStringPainted): Likewise.
+	(setString): Likewise.
+	(setBorderPainted): Likewise.
+	(setIndeterminate): Likewise.
+	* javax/swing/JScrollBar.java
+	(BLOCK_INCREMENT_CHANGED_PROPERTY): Removed.
+	(MODEL_CHANGED_PROPERTY): Likewise.
+	(ORIENTATION_CHANGED_PROPERTY): Likewise.
+	(setOrientation): Replaced constant with real string.
+	(setModel): Likewise.
+	(setUnitIncrement): Likewise.
+	(setBlockIncrement): Likewise.
+	* javax/swing/JScrollPane.java
+	(COLUMN_HEADER_CHANGED_PROPERTY): Removed.
+	(COMPONENT_ORIENTATION_CHANGED_PROPERTY): Likewise.
+	(HORIZONTAL_SCROLLBAR_CHANGED_PROPERTY): Likewise.
+	(HORIZONTAL_SCROLLBAR_POLICY_CHANGED_PROPERTY): Likewise.
+	(LAYOUT_CHANGED_PROPERTY): Likewise.
+	(ROW_HEADER_CHANGED_PROPERTY): Likewise.
+	(VERTICAL_SCROLLBAR_CHANGED_PROPERTY): Likewise.
+	(VERTICAL_SCROLLBAR_POLICY_CHANGED_PROPERTY): Likewise.
+	(VIEWPORT_CHANGED_PROPERTY): Likewise.
+	(VIEWPORT_BORDER_CHANGED_PROPERTY): Likewise.
+	(WHEEL_SCROLLING_ENABLED_CHANGED_PROPERTY): Likewise.
+	(setComponentOrientation): Replaced constant with real string.
+	(setColumnHeader): Likewise.
+	(setHorizontalScrollBar): Likewise.
+	(setHorizontalScrollBarPolicy): Likewise.
+	(setRowHeader): Likewise.
+	(setVerticalScrollBar): Likewise.
+	(setVerticalScrollBarPolicy): Likewise.
+	(setWheelScrollingEnabled): Likewise.
+	(setViewport): Likewise.
+	(setViewportBorder): Likewise.
+	* javax/swing/JSlider.java
+	(INVERTED_CHANGED_PROPERTY): Removed.
+	(LABEL_TABLE_CHANGED_PROPERTY): Likewise.
+	(MAJOR_TICK_SPACING_CHANGED_PROPERTY): Likewise.
+	(MINOR_TICK_SPACING_CHANGED_PROPERTY): Likewise.
+	(MODEL_CHANGED_PROPERTY): Likewise.
+	(ORIENTATION_CHANGED_PROPERTY): Likewise.
+	(PAINT_LABELS_CHANGED_PROPERTY): Likewise.
+	(PAINT_TICKS_CHANGED_PROPERTY): Likewise.
+	(setModel): Replaced constant with real string.
+	(setOrientation): Likewise.
+	(setLabelTable): Likewise.
+	(setInverted): Likewise.
+	(setMajorTickSpacing): Likewise.
+	(setMinorTickSpacing): Likewise.
+	(setPaintTicks): Likewise.
+	(setPaintLabels): Likewise.
+	* javax/swing/JTabbedPane.java
+	(MODEL_CHANGED_PROPERTY): Removed.
+	(TAB_PLACEMENT_CHANGED_PROPERTY): Likewise.
+	(TAB_LAYOUT_POLICY_CHANGED_PROPERTY): Likewise.
+	(setModel): Replaced constant with real string.
+	(setTabPlacement): Likewise.
+	(setTabLayoutPolicy): Likewise.
+	* javax/swing/JToolBar.java
+	(ORIENTATION_CHANGED_PROPERTY): Removed.
+	(FLOATABLE_CHANGED_PROPERTY): Likewise.
+	(BORDER_PAINTED_CHANGED_PROPERTY): Likewise.
+	(MARGIN_CHANGED_PROPERTY): Likewise.
+	(ROLLOVER_CHANGED_PROPERTY): Likewise.
+	(setRollover): Replaced constant with real string.
+	(setMargin): Likewise.
+	(setBorderPainted): Likewise.
+	(setFloatable): Likewise.
+	(setOrientation): Likewise.
+	* javax/swing/plaf/basic/BasicComboBoxUI.java
+	(PropertyChangeHandler.propertyChange): Likewise.
+	* javax/swing/plaf/basic/BasicComboPopup.java
+	(PropertyChangeHandler.propertyChange): Likewise.
+	* javax/swing/plaf/basic/BasicMenuBarUI.java
+	(PropertyChangeHandler.propertyChange): Likewise.
+	* javax/swing/plaf/basic/BasicProgressBarUI.java
+	(PropertyChangeHandler.propertyChange): Likewise.
+	* javax/swing/plaf/basic/BasicScrollBarUI.java
+	(PropertyChangeHandler.propertyChange): Likewise.
+	* javax/swing/plaf/basic/BasicSliderUI.java
+	(PropertyChangeHandler.propertyChange): Likewise.
+	* javax/swing/plaf/basic/BasicTabbedPaneUI.java
+	(PropertyChangeHandler.propertyChange): Likewise.
+	* javax/swing/plaf/basic/BasicToolBarUI.java
+	(PropertyChangeHandler.propertyChange): Likewise.
+	
+2005-01-27  Dalibor Topic  <robilad@kaffe.org>
+
+        Resynced with GNU Classpath.
+	
 	2005-01-26  Michael Koch  <konqueror@gmx.de>
 
 	* javax/swing/DefaultButtonModel.java

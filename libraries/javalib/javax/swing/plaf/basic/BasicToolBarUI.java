@@ -1,5 +1,5 @@
 /* BasicToolBarUI.java --
-   Copyright (C) 2004 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -1218,7 +1218,7 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
     public void propertyChange(PropertyChangeEvent e)
     {
       // FIXME: need name properties so can change floatFrame title.
-      if (e.getPropertyName().equals(JToolBar.ROLLOVER_CHANGED_PROPERTY))
+      if (e.getPropertyName().equals("rollover"))
 	setRolloverBorders(toolBar.isRollover());
     }
   }

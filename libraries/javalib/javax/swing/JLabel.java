@@ -1,5 +1,5 @@
 /* JLabel.java --
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -90,59 +90,6 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
 
   /** The gap between the icon and the text. */
   private transient int iconTextGap = 4;
-
-  /**
-   * Fired in a PropertyChangeEvent when the "disabledIcon" property changes.
-   */
-  public static final String DISABLED_ICON_CHANGED_PROPERTY = "disabledIcon";
-
-  /**
-   * Fired in a PropertyChangeEvent when the "displayedMnemonic" property
-   * changes.
-   */
-  public static final String DISPLAYED_MNEMONIC_CHANGED_PROPERTY = "displayedMnemonic";
-
-  /**
-   * Fired in a PropertyChangeEvent when the "displayedMnemonicIndex" property
-   * changes.
-   */
-  public static final String DISPLAYED_MNEMONIC_INDEX_CHANGED_PROPERTY = "displayedMnemonicIndex";
-
-  /**
-   * Fired in a PropertyChangeEvent when the "horizontalAlignment" property
-   * changes.
-   */
-  public static final String HORIZONTAL_ALIGNMENT_CHANGED_PROPERTY = "horizontalAlignment";
-
-  /**
-   * Fired in a PropertyChangeEvent when the "horizontalTextPosition" property
-   * changes.
-   */
-  public static final String HORIZONTAL_TEXT_POSITION_CHANGED_PROPERTY = "horizontalTextPosition";
-
-  /** Fired in a PropertyChangeEvent when the "icon" property changes. */
-  public static final String ICON_CHANGED_PROPERTY = "icon";
-
-  /** Fired in a PropertyChangeEvent when the "iconTextGap" property changes. */
-  public static final String ICON_TEXT_GAP_CHANGED_PROPERTY = "iconTextGap";
-
-  /** Fired in a PropertyChangeEvent when the "labelFor" property changes. */
-  public static final String LABEL_FOR_CHANGED_PROPERTY = "labelFor";
-
-  /** Fired in a PropertyChangeEvent when the "text" property changes. */
-  public static final String TEXT_CHANGED_PROPERTY = "text";
-
-  /**
-   * Fired in a PropertyChangeEvent when the "verticalAlignment" property
-   * changes.
-   */
-  public static final String VERTICAL_ALIGNMENT_CHANGED_PROPERTY = "verticalAlignment";
-
-  /**
-   * Fired in a PropertyChangeEvent when the "verticalTextPosition" property
-   * changes.
-   */
-  public static final String VERTICAL_TEXT_POSITION_CHANGED_PROPERTY = "verticalTextPosition";
 
   /**
    * Creates a new horizontally and vertically centered JLabel object with no
@@ -289,7 +236,7 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
       {
 	String oldText = text;
 	text = newText;
-	firePropertyChange(TEXT_CHANGED_PROPERTY, oldText, newText);
+	firePropertyChange("text", oldText, newText);
 
 	if (text != null && text.length() <= displayedMnemonicIndex)
 	  setDisplayedMnemonicIndex(text.length() - 1);
@@ -319,7 +266,7 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
       {
 	Icon oldIcon = icon;
 	icon = newIcon;
-	firePropertyChange(ICON_CHANGED_PROPERTY, oldIcon, newIcon);
+	firePropertyChange("icon", oldIcon, newIcon);
       }
   }
 
@@ -352,7 +299,7 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
       {
 	Icon oldIcon = disabledIcon;
 	disabledIcon = newIcon;
-	firePropertyChange(DISABLED_ICON_CHANGED_PROPERTY, oldIcon, newIcon);
+	firePropertyChange("disabledIcon", oldIcon, newIcon);
       }
   }
 
@@ -367,7 +314,7 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
   {
     if (displayedMnemonic != mnemonic)
       {
-	firePropertyChange(DISPLAYED_MNEMONIC_CHANGED_PROPERTY,
+	firePropertyChange("displayedMnemonic",
 	                   displayedMnemonic, mnemonic);
 	displayedMnemonic = mnemonic;
 
@@ -424,7 +371,7 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
       {
 	int oldIndex = displayedMnemonicIndex;
 	displayedMnemonicIndex = newIndex;
-	firePropertyChange(DISPLAYED_MNEMONIC_INDEX_CHANGED_PROPERTY,
+	firePropertyChange("displayedMnemonicIndex",
 	                   oldIndex, newIndex);
       }
   }
@@ -501,7 +448,7 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
   {
     if (iconTextGap != newGap)
       {
-	firePropertyChange(ICON_TEXT_GAP_CHANGED_PROPERTY, iconTextGap, newGap);
+	firePropertyChange("iconTextGap", iconTextGap, newGap);
 	iconTextGap = newGap;
       }
   }
@@ -531,8 +478,7 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
 
     int oldAlignment = verticalAlignment;
     verticalAlignment = checkVerticalKey(alignment, "verticalAlignment");
-    firePropertyChange(VERTICAL_ALIGNMENT_CHANGED_PROPERTY,
-		       oldAlignment, verticalAlignment);
+    firePropertyChange("verticalAlignment", oldAlignment, verticalAlignment);
   }
 
   /**
@@ -558,7 +504,7 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
     
     int oldAlignment = horizontalAlignment;
     horizontalAlignment = checkHorizontalKey(alignment, "horizontalAlignment");
-    firePropertyChange(HORIZONTAL_ALIGNMENT_CHANGED_PROPERTY, oldAlignment,
+    firePropertyChange("horizontalAlignment", oldAlignment,
                        horizontalAlignment);
   }
 
@@ -586,7 +532,7 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
 	int oldPos = verticalTextPosition;
 	verticalTextPosition = checkVerticalKey(textPosition,
 	                                        "verticalTextPosition");
-	firePropertyChange(VERTICAL_TEXT_POSITION_CHANGED_PROPERTY, oldPos,
+	firePropertyChange("verticalTextPosition", oldPos,
 	                   verticalTextPosition);
       }
   }
@@ -615,7 +561,7 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
 	int oldPos = horizontalTextPosition;
 	horizontalTextPosition = checkHorizontalKey(textPosition,
 	                                            "horizontalTextPosition");
-	firePropertyChange(HORIZONTAL_TEXT_POSITION_CHANGED_PROPERTY, oldPos,
+	firePropertyChange("horizontalTextPosition", oldPos,
 	                   horizontalTextPosition);
       }
   }
@@ -671,8 +617,9 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
   {
     if (c != labelFor)
       {
-	firePropertyChange(LABEL_FOR_CHANGED_PROPERTY, labelFor, c);
+	Component oldLabelFor = labelFor;
 	labelFor = c;
+	firePropertyChange("labelFor", oldLabelFor, labelFor);
       }
   }
 

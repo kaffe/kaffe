@@ -1,5 +1,5 @@
 /* BasicSliderUI.java --
-   Copyright (C) 2004 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -222,9 +222,9 @@ public class BasicSliderUI extends SliderUI
     public void propertyChange(PropertyChangeEvent e)
     {
       // Check for orientation changes.
-      if (e.getPropertyName().equals(JSlider.ORIENTATION_CHANGED_PROPERTY))
+      if (e.getPropertyName().equals("orientation"))
 	recalculateIfOrientationChanged();
-      else if (e.getPropertyName().equals(JSlider.MODEL_CHANGED_PROPERTY))
+      else if (e.getPropertyName().equals("model"))
         {
 	  BoundedRangeModel oldModel = (BoundedRangeModel) e.getOldValue();
 	  oldModel.removeChangeListener(changeListener);

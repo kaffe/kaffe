@@ -184,13 +184,13 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
      */
     public void propertyChange(PropertyChangeEvent e)
     {
-      if (e.getPropertyName().equals(JTabbedPane.TAB_LAYOUT_POLICY_CHANGED_PROPERTY))
+      if (e.getPropertyName().equals("tabLayoutPolicy"))
         {
 	  layoutManager = createLayoutManager();
 
 	  tabPane.setLayout(layoutManager);
         }
-      else if (e.getPropertyName().equals(JTabbedPane.TAB_PLACEMENT_CHANGED_PROPERTY)
+      else if (e.getPropertyName().equals("tabPlacement")
                && tabPane.getTabLayoutPolicy() == JTabbedPane.SCROLL_TAB_LAYOUT)
         {
 	  incrButton = createIncreaseButton();

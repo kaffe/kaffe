@@ -1,5 +1,5 @@
 /* JComboBox.java --
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -92,43 +92,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
    * Maximum number of rows that should be visible by default  in the
    * JComboBox's popup
    */
-  public static final int DEFAULT_MAXIMUM_ROW_COUNT = 8;
-
-  /**
-   * Fired in a PropertyChangeEvent when the 'editable' property changes.
-   */
-  public static final String EDITABLE_CHANGED_PROPERTY = "editable";
-
-  /**
-   * Fired in a PropertyChangeEvent when the 'maximumRowCount' property
-   * changes.
-   */
-  public static final String MAXIMUM_ROW_COUNT_CHANGED_PROPERTY = "maximumRowCount";
-
-  /**
-   * Fired in a PropertyChangeEvent when the 'enabled' property changes.
-   */
-  public static final String ENABLED_CHANGED_PROPERTY = "enabled";
-
-  /**
-   * Fired in a PropertyChangeEvent when the 'renderer' property changes.
-   */
-  public static final String RENDERER_CHANGED_PROPERTY = "renderer";
-
-  /**
-   * Fired in a PropertyChangeEvent when the 'editor' property changes.
-   */
-  public static final String EDITOR_CHANGED_PROPERTY = "editor";
-
-  /**
-   * Fired in a PropertyChangeEvent when the 'dataModel' property changes.
-   */
-  public static final String MODEL_CHANGED_PROPERTY = "dataModel";
-
-  /**
-   * name for the UI delegate for this combo box.
-   */
-  private static final String uiClassID = "ComboBoxUI";
+  private static final int DEFAULT_MAXIMUM_ROW_COUNT = 8;
 
   /**
    * dataModel used by JComboBox to keep track of its list data and currently
@@ -298,7 +262,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
    */
   public String getUIClassID()
   {
-    return uiClassID;
+    return "ComboBoxUI";
   }
 
   /**
@@ -342,7 +306,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
     dataModel = newDataModel;
 
     // Notifies the listeners of the model change.
-    firePropertyChange(MODEL_CHANGED_PROPERTY, oldDataModel, dataModel);
+    firePropertyChange("model", oldDataModel, dataModel);
   }
 
   /**
@@ -397,7 +361,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
     if (isEditable != editable)
       {
 	isEditable = editable;
-	firePropertyChange(EDITABLE_CHANGED_PROPERTY, ! isEditable, isEditable);
+	firePropertyChange("editable", ! isEditable, isEditable);
       }
   }
 
@@ -415,7 +379,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
       {
 	int oldMaximumRowCount = maximumRowCount;
 	maximumRowCount = rowCount;
-	firePropertyChange(MAXIMUM_ROW_COUNT_CHANGED_PROPERTY,
+	firePropertyChange("maximumRowCount",
 	                   oldMaximumRowCount, maximumRowCount);
       }
   }
@@ -447,7 +411,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
       {
 	ListCellRenderer oldRenderer = renderer;
 	renderer = aRenderer;
-	firePropertyChange(RENDERER_CHANGED_PROPERTY, oldRenderer,
+	firePropertyChange("renderer", oldRenderer,
 	                   renderer);
       }
   }
@@ -483,7 +447,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
     if (editor != null)
       editor.addActionListener(this);
 
-    firePropertyChange(EDITOR_CHANGED_PROPERTY, oldEditor, editor);
+    firePropertyChange("editor", oldEditor, editor);
   }
 
   /**
@@ -967,8 +931,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
     if (enabled != oldEnabled)
       {
 	super.setEnabled(enabled);
-	firePropertyChange(ENABLED_CHANGED_PROPERTY, oldEnabled,
-	                   (boolean) enabled);
+	firePropertyChange("enabled", oldEnabled, enabled);
       }
   }
 

@@ -1509,7 +1509,7 @@ public abstract class AbstractButton extends JComponent
         public void propertyChange(PropertyChangeEvent e)
         {
           Action act = (Action) (e.getSource());	
-	  if (e.getPropertyName().equals(AbstractAction.ENABLED_PROPERTY))
+	  if (e.getPropertyName().equals("enabled"))
 	    setEnabled(act.isEnabled());
 	  else if (e.getPropertyName().equals(Action.NAME))
             setText((String)(act.getValue(Action.NAME)));

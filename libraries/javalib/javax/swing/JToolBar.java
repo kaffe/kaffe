@@ -1,5 +1,5 @@
 /* JToolBar.java --
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -378,21 +378,6 @@ public class JToolBar extends JComponent implements SwingConstants, Accessible
   /** The orientation of the JToolBar. */
   private int orientation = HORIZONTAL;
 
-  /** Fired in a PropertyChangeEvent when the orientation property changes. */
-  public static final String ORIENTATION_CHANGED_PROPERTY = "orientation";
-
-  /** Fired in a PropertyChangeEvent when the floatable property changes. */
-  public static final String FLOATABLE_CHANGED_PROPERTY = "floatable";
-
-  /** Fired in a PropertyChangeEvent when the borderPainted property changes. */
-  public static final String BORDER_PAINTED_CHANGED_PROPERTY = "borderPainted";
-
-  /** Fired in a PropertyChangeEvent when the margin property changes. */
-  public static final String MARGIN_CHANGED_PROPERTY = "margin";
-
-  /** Fired in a PropertyChangeEvent when the rollover property changes. */
-  public static final String ROLLOVER_CHANGED_PROPERTY = "rollover";
-
   /**
    * This method creates a new JToolBar object with horizontal orientation
    * and no name.
@@ -519,7 +504,7 @@ public class JToolBar extends JComponent implements SwingConstants, Accessible
     if (b != rollover)
       {
 	rollover = b;
-	firePropertyChange(ROLLOVER_CHANGED_PROPERTY, ! rollover, rollover);
+	firePropertyChange("rollover", ! rollover, rollover);
 	revalidate();
 	repaint();
       }
@@ -595,7 +580,7 @@ public class JToolBar extends JComponent implements SwingConstants, Accessible
       {
 	Insets oldMargin = this.margin;
 	this.margin = margin;
-	firePropertyChange(MARGIN_CHANGED_PROPERTY, oldMargin, this.margin);
+	firePropertyChange("margin", oldMargin, this.margin);
 	revalidate();
 	repaint();
       }
@@ -622,7 +607,7 @@ public class JToolBar extends JComponent implements SwingConstants, Accessible
     if (painted != paintBorder)
       {
 	paintBorder = painted;
-	firePropertyChange(BORDER_PAINTED_CHANGED_PROPERTY, ! paintBorder,
+	firePropertyChange("borderPainted", ! paintBorder,
 	                   paintBorder);
 	repaint();
       }
@@ -649,7 +634,7 @@ public class JToolBar extends JComponent implements SwingConstants, Accessible
     if (floatable != this.floatable)
       {
 	this.floatable = floatable;
-	firePropertyChange(FLOATABLE_CHANGED_PROPERTY, ! floatable, floatable);
+	firePropertyChange("floatable", ! floatable, floatable);
       }
   } // setFloatable()
 
@@ -692,8 +677,7 @@ public class JToolBar extends JComponent implements SwingConstants, Accessible
       {
 	int oldOrientation = this.orientation;
 	this.orientation = orientation;
-	firePropertyChange(ORIENTATION_CHANGED_PROPERTY, oldOrientation,
-	                   this.orientation);
+	firePropertyChange("orientation", oldOrientation, this.orientation);
 	revalidate();
 	repaint();
       }

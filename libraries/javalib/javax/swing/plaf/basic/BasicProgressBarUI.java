@@ -103,7 +103,7 @@ public class BasicProgressBarUI extends ProgressBarUI
     {
       // Only need to listen for indeterminate changes.
       // All other things are done on a repaint.
-      if (e.getPropertyName().equals(JProgressBar.INDETERMINATE_CHANGED_PROPERTY))
+      if (e.getPropertyName().equals("inderterminate"))
 	if (((Boolean) e.getNewValue()).booleanValue())
 	  startAnimationTimer();
 	else

@@ -1,5 +1,5 @@
 /* AbstractAction.java --
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -62,8 +62,6 @@ public abstract class AbstractAction
    */
   protected boolean enabled = true;
   
-  public static final String ENABLED_PROPERTY = "enabled";
-
   /**
    * changeSupport
    */
@@ -193,7 +191,7 @@ public abstract class AbstractAction
     if (enabled != this.enabled)
     {
       this.enabled = enabled;
-      firePropertyChange(ENABLED_PROPERTY, !this.enabled, this.enabled);
+      firePropertyChange("enabled", !this.enabled, this.enabled);
     }
   }
 

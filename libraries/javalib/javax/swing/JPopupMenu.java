@@ -1,5 +1,5 @@
-/* JPopupMenu.java
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+/* JPopupMenu.java --
+   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -95,9 +95,6 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
   /** name for the UI delegate for this menuItem. */
   private static final String uiClassID = "PopupMenuUI";
 
-  /** Fire a PropertyChangeEvent when the "borderPainted" property changes. */
-  public static final String LABEL_CHANGED_PROPERTY = "label";
-
   /* indicates if popup's menu border should be painted*/
   private boolean borderPainted = true;
 
@@ -142,9 +139,6 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
   /* Field indicating if popup menu is visible or not */
   private boolean visible = false;
   
-  /* Bound Property indicating visibility of the popup menu*/
-  public static final String VISIBLE_CHANGED_PROPERTY = "visible";
-
   /**
    * Creates a new JPopupMenu object.
    */
@@ -288,18 +282,6 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
 	    super.add(items[i], constraints, i);
 	  }
       }
-  }
-
-  /**
-   * Paints popup menu's border if borderPainted is true
-   *
-   * @param graphics graphics context used to paint this popup's menu border.
-   */
-  protected void borderPainted(Graphics graphics)
-  {
-    if (borderPainted)
-      getBorder().paintBorder(this, graphics, 0, 0, getSize(null).width,
-                              getSize(null).height);
   }
 
   /**
@@ -449,7 +431,7 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
   /**
    * Sets label for this popup menu. This method fires PropertyChangeEvent
    * when the label property is changed. Please note that most
-   * of the Look & Feel will ignore this property.
+   * of the Look &amp; Feel will ignore this property.
    *
    * @param label label for this popup menu
    */
@@ -459,7 +441,7 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
       {
 	String oldLabel = this.label;
 	this.label = label;
-	firePropertyChange(LABEL_CHANGED_PROPERTY, oldLabel, label);
+	firePropertyChange("label", oldLabel, label);
       }
   }
 
@@ -571,11 +553,14 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
    */
   public void setVisible(boolean visible)
   {
+    if (visible == isVisible())
+      return;
+
     boolean old = isVisible();
     this.visible = visible;
     if (old != isVisible())
       {
-	firePropertyChange(VISIBLE_CHANGED_PROPERTY, old, (boolean) isVisible());
+	firePropertyChange("visible", old, isVisible());
 	if (visible)
 	  {
 	    firePopupMenuWillBecomeVisible();

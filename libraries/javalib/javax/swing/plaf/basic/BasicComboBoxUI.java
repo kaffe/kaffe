@@ -1,5 +1,5 @@
 /* BasicComboBoxUI.java --
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -1146,7 +1146,7 @@ public class BasicComboBoxUI extends ComboBoxUI
      */
     public void propertyChange(PropertyChangeEvent e)
     {
-      if (e.getPropertyName().equals(JComboBox.ENABLED_CHANGED_PROPERTY))
+      if (e.getPropertyName().equals("enabled"))
         {
 	  arrowButton.setEnabled(comboBox.isEnabled());
 
@@ -1154,7 +1154,7 @@ public class BasicComboBoxUI extends ComboBoxUI
 	    comboBox.getEditor().getEditorComponent().setEnabled(comboBox
 	                                                         .isEnabled());
         }
-      else if (e.getPropertyName().equals(JComboBox.EDITABLE_CHANGED_PROPERTY))
+      else if (e.getPropertyName().equals("editable"))
         {
 	  if (comboBox.isEditable())
 	    {
@@ -1170,7 +1170,7 @@ public class BasicComboBoxUI extends ComboBoxUI
 	  comboBox.revalidate();
 	  comboBox.repaint();
         }
-      else if (e.getPropertyName().equals(JComboBox.MODEL_CHANGED_PROPERTY))
+      else if (e.getPropertyName().equals("dataModel"))
         {
 	  // remove ListDataListener from old model and add it to new model
 	  ComboBoxModel oldModel = (ComboBoxModel) e.getOldValue();

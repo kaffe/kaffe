@@ -1,5 +1,5 @@
 /* JList.java --
-   Copyright (C) 2002, 2003, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003, 2004, 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -129,34 +129,6 @@ public class JList extends JComponent implements Accessible, Scrollable
    */
   public static final int HORIZONTAL_WRAP = 2;
 
-  /** Fired in a PropertyChangeEvent when the "cellRenderer" property changes. */
-  public static final String CELL_RENDERER_PROPERTY_CHANGED = "cellRenderer";
-
-  /** Fired in a PropertyChangeEvent when the "fixedCellHeight" property changes. */
-  public static final String FIXED_CELL_HEIGHT_PROPERTY_CHANGED = "fixedCellHeight";
-
-  /** Fired in a PropertyChangeEvent when the "fixedCellWidth" property changes. */
-  public static final String FIXED_CELL_WIDTH_PROPERTY_CHANGED = "fixedCellWidth";
-
-  /** Fired in a PropertyChangeEvent when the "layoutOrientation" property changes. */
-  public static final String LAYOUT_ORIENTATION_PROPERTY_CHANGED = "layoutOrientation";
-
-  /** Fired in a PropertyChangeEvent when the "model" property changes. */
-  public static final String MODEL_PROPERTY_CHANGED = "model";
-
-  /** Fired in a PropertyChangeEvent when the "prototypeCellValue" property changes. */
-  public static final String PROTOTYPE_CELL_VALUE_PROPERTY_CHANGED = "prototypeCellValue";
-
-  /** Fired in a PropertyChangeEvent when the "selectionBackground" property changes. */
-  public static final String SELECTION_BACKGROUND_PROPERTY_CHANGED = "selectionBackground";
-
-  /** Fired in a PropertyChangeEvent when the "selectionForeground" property changes. */
-  public static final String SELECTION_FOREGROUND_PROPERTY_CHANGED = "selectionForeground";
-
-  /** Fired in a PropertyChangeEvent when the "selectionModel" property changes. */
-  public static final String SELECTION_MODEL_PROPERTY_CHANGED = "selectionModel";
-
-
   /**
    * This property indicates whether "drag and drop" functions are enabled
    * on the list.
@@ -187,7 +159,6 @@ public class JList extends JComponent implements Accessible, Scrollable
    * is one of the integer constants {@link #VERTICAL}, {@link
    * #VERTICAL_WRAP}, or {@link #HORIZONTAL_WRAP}. 
    */
-
   int layoutOrientation;
   
   /** This property holds the data elements displayed by the list. */
@@ -406,9 +377,12 @@ public class JList extends JComponent implements Accessible, Scrollable
    */
   public void setFixedCellHeight(int h)
   {
+    if (fixedCellHeight == h)
+      return;
+
     int old = fixedCellHeight;
     fixedCellHeight = h;
-    firePropertyChange(FIXED_CELL_WIDTH_PROPERTY_CHANGED, old, h);
+    firePropertyChange("fixedCellWidth", old, h);
   }
 
 
@@ -435,16 +409,18 @@ public class JList extends JComponent implements Accessible, Scrollable
    * #prototypeCellValue} property is set, but setting it explicitly
    * overrides the width computed from {@link #prototypeCellValue}.
    *
-   * @see #getFixedCellWidth
+   * @see #getFixedCellHeight
    * @see #getPrototypeCellValue
    */
-  public void setFixedCellWidth(int h)
+  public void setFixedCellWidth(int w)
   {
-    int old = fixedCellHeight;
-    fixedCellHeight = h;
-    firePropertyChange(FIXED_CELL_HEIGHT_PROPERTY_CHANGED, old, h);
+    if (fixedCellWidth == w)
+      return;
+    
+    int old = fixedCellWidth;
+    fixedCellWidth = w;
+    firePropertyChange("fixedCellWidth", old, w);
   }
-
 
   /** 
    * Gets the value of the {@link #visibleRowCount} property. 
@@ -735,9 +711,12 @@ public class JList extends JComponent implements Accessible, Scrollable
    */
   public void setSelectionBackground(Color c)
   {
+    if (selectionBackground == c)
+      return;
+
     Color old = selectionBackground;
     selectionBackground = c;
-    firePropertyChange(SELECTION_BACKGROUND_PROPERTY_CHANGED, old, c);
+    firePropertyChange("selectionBackground", old, c);
     repaint();
   }
 
@@ -758,9 +737,12 @@ public class JList extends JComponent implements Accessible, Scrollable
    */
   public void setSelectionForeground(Color c)
   {
+    if (selectionForeground == c)
+      return;
+
     Color old = selectionForeground;
     selectionForeground = c;
-    firePropertyChange(SELECTION_FOREGROUND_PROPERTY_CHANGED, old, c);
+    firePropertyChange("selectionForeground", old, c);
   }
 
   /**
@@ -871,7 +853,7 @@ public class JList extends JComponent implements Accessible, Scrollable
     
     ListCellRenderer old = cellRenderer;
     cellRenderer = renderer;
-    firePropertyChange(CELL_RENDERER_PROPERTY_CHANGED, old, renderer);
+    firePropertyChange("cellRenderer", old, renderer);
     revalidate();
     repaint();
   }
@@ -907,7 +889,7 @@ public class JList extends JComponent implements Accessible, Scrollable
     if (this.model != null)
       this.model.addListDataListener(listListener);
     
-    firePropertyChange(MODEL_PROPERTY_CHANGED, old, model);
+    firePropertyChange("model", old, model);
     revalidate();
     repaint();
   }
@@ -939,7 +921,7 @@ public class JList extends JComponent implements Accessible, Scrollable
     if (selectionModel != null)
       selectionModel.addListSelectionListener(listListener);
     
-    firePropertyChange(SELECTION_MODEL_PROPERTY_CHANGED, old, model);
+    firePropertyChange("selectionModel", old, model);
     revalidate();
     repaint();
   }
@@ -1019,6 +1001,9 @@ public class JList extends JComponent implements Accessible, Scrollable
    */
   public void setPrototypeCellValue(Object obj)
   {
+    if (prototypeCellValue == obj)
+      return;
+
     Object old = prototypeCellValue;
     Component comp = getCellRenderer()
       .getListCellRendererComponent(this, obj, 0, false, false); 
@@ -1026,7 +1011,7 @@ public class JList extends JComponent implements Accessible, Scrollable
     fixedCellWidth = d.width;
     fixedCellHeight = d.height;
     prototypeCellValue = obj;
-    firePropertyChange(PROTOTYPE_CELL_VALUE_PROPERTY_CHANGED, old, obj);
+    firePropertyChange("prototypeCellValue", old, obj);
   }
 
   public AccessibleContext getAccessibleContext()

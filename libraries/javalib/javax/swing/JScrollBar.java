@@ -152,18 +152,6 @@ public class JScrollBar extends JComponent implements Adjustable, Accessible
 
   private static final long serialVersionUID = -8195169869225066566L;
   
-  /** Fired in a PropertyChangeEvent when the "blockIncrement" changes. */
-  public static final String BLOCK_INCREMENT_CHANGED_PROPERTY = "blockIncrement";
-
-  /** Fired in a PropertyChangeEvent when the "model" changes. */
-  public static final String MODEL_CHANGED_PROPERTY = "model";
-
-  /** Fired in a PropertyChangeEvent when the "orientation" changes. */
-  public static final String ORIENTATION_CHANGED_PROPERTY = "orientation";
-
-  /** Fired in a PropertyChangeEvent when the "unitIncrement" changes. */
-  public static final String UNIT_INCREMENT_CHANGED_PROPERTY = "unitIncrement";
-
   /** How much the thumb moves when moving in a block. */
   protected int blockIncrement = 10;
 
@@ -287,7 +275,7 @@ public class JScrollBar extends JComponent implements Adjustable, Accessible
       {
 	int oldOrientation = this.orientation;
 	this.orientation = orientation;
-	firePropertyChange(ORIENTATION_CHANGED_PROPERTY, oldOrientation,
+	firePropertyChange("orientation", oldOrientation,
 	                   this.orientation);
       }
   }
@@ -315,7 +303,7 @@ public class JScrollBar extends JComponent implements Adjustable, Accessible
       {
 	BoundedRangeModel oldModel = model;
 	model = newModel;
-	firePropertyChange(MODEL_CHANGED_PROPERTY, oldModel, model);
+	firePropertyChange("model", oldModel, model);
       }
   }
 
@@ -344,7 +332,7 @@ public class JScrollBar extends JComponent implements Adjustable, Accessible
       {
 	int oldInc = this.unitIncrement;
 	this.unitIncrement = unitIncrement;
-	firePropertyChange(UNIT_INCREMENT_CHANGED_PROPERTY, oldInc,
+	firePropertyChange("unitIncrement", oldInc,
 	                   this.unitIncrement);
       }
   }
@@ -374,7 +362,7 @@ public class JScrollBar extends JComponent implements Adjustable, Accessible
       {
 	int oldInc = this.blockIncrement;
 	this.blockIncrement = blockIncrement;
-	firePropertyChange(BLOCK_INCREMENT_CHANGED_PROPERTY, oldInc,
+	firePropertyChange("blockIncrement", oldInc,
 	                   this.blockIncrement);
       }
   }
