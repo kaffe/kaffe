@@ -427,6 +427,9 @@ public class ObjectInputStream extends InputStream
     short field_count = this.realInputStream.readShort ();
     ObjectStreamField[] fields = new ObjectStreamField[field_count];
     Class clazz = resolveClass(name);
+    ObjectStreamClass osc = new ObjectStreamClass (name, uid,
+                                                   flags, fields);
+    assignNewHandle (osc);
 
     dumpElementln("CLASSDESC NAME=" + name + "; UID=" + Long.toHexString(uid) + "; FLAGS=" + Integer.toHexString(flags) + "; FIELD COUNT=" + field_count);
     
@@ -438,17 +441,35 @@ public class ObjectInputStream extends InputStream
 	String class_name;
 
 	dumpElementln ("  TYPE CODE=" + type_code + "; FIELD NAME=" + field_name);
-		  
-	if (type_code == 'L' || type_code == '[')
-	  class_name = (String)readObject ();
-	else
-	  class_name = String.valueOf (type_code);
-		  
+
+        ObjectStreamField of;
+	
 	// There're many cases you can't get java.lang.Class from
 	// typename if your context class loader can't load it,
 	// then use typename to construct the field
-	ObjectStreamField of =
-	  new ObjectStreamField (field_name, class_name);
+	// GL => No. You lose the capability to access the class loader.
+	// Type resolution must be done here. If it is an object we
+	// create the class just here if it is something else we delegate
+	// to TypeSignature.
+	if (type_code == 'L' || type_code == '[')
+	{
+	  class_name = (String)readObject ();
+	  /* We need to fully resolve only when an object is concerned.
+	   * in the other case just use TypeSignature
+	   */
+	  if (class_name.charAt(0) == 'L')
+	    of = new ObjectStreamField (field_name,
+		       resolveClass(class_name.substring(1,
+				       class_name.length()-1)));
+	  else
+	    of = new ObjectStreamField (field_name, class_name);
+	}
+	else
+	{
+	  class_name = String.valueOf (type_code);
+	  of = new ObjectStreamField (field_name, class_name);
+	}
+		  
 	Field f;
 	try
 	{
@@ -456,7 +477,7 @@ public class ObjectInputStream extends InputStream
 	  if (f == null)
 	    throw new NoSuchFieldException();
 	  if (!f.getType().equals(of.getType()))
-	    throw new InvalidClassException("invalid field type for " + field_name + " in class " + class_name); 
+	    throw new InvalidClassException("invalid field type for " + field_name + " in class " + class_name + " (requested was \"" + of.getType() + " and found \"" + f.getType() + "\")"); 
 	}
 	catch (NoSuchFieldException _)
 	{
@@ -473,11 +494,13 @@ public class ObjectInputStream extends InputStream
       System.arraycopy(fields, 0, new_fields, 0, real_count);
       fields = new_fields;
     }
+
+    /* Just before computing fields related parameters we must
+     * update it in the descriptor according to the just computed
+     * adaptation.
+     */
+    osc.fields = fields;
  
-    ObjectStreamClass osc = new ObjectStreamClass (name, uid,
-                                                   flags, fields);
-    assignNewHandle (osc);
-  
     boolean oldmode = setBlockDataMode (true);
     osc.setClass (clazz, lookupClass(clazz.getSuperclass()));
     classLookupTable.put (clazz, osc);
@@ -1882,8 +1905,6 @@ public class ObjectInputStream extends InputStream
       {
 	Field f = getField (klass, field_name);
 	ObjectStreamField of = new ObjectStreamField(field_name, f.getType());
-
-	System.out.println("f=" + field_name + " rf=" + f.getName() + " rt=" + of.getTypeString() + " t=" + type_code);
 
 	if (of.getTypeString() == null ||
 	    !of.getTypeString().equals(type_code))

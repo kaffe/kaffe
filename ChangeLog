@@ -1,3 +1,10 @@
+2003-08-14  Guilhem Lavaux <guilhem@kaffe.org>
+
+	* libraries/javalib/java/io/ObjectInputStream.java:
+	(readClassDescriptor) use resolveClass to solve field type in the
+	special case where the type is a true object. If it is a primitive
+	fall back on the default behaviour.
+
 2003-08-14  Rob Gonzalez <rob@kaffe.org>
 
 	* kaffe/kaffevm/verify.h
